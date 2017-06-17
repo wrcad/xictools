@@ -1,0 +1,38 @@
+The tar file distribution contains the bsimsoi device code which should
+go into the directory "src/lib/dev/b3soi" of the SPICE engine.  The
+other four files "inpdomod.c","inp2m.c","cktbindn.c" and "gendefs.h" 
+should replace the files with the same name in "src/lib/inp" and in
+"src/lib/ckt" and "src/include" respctively.  
+"inpdomod.c" adds level9 to SPICE (which is the level BSIM3SOI uses) and 
+"inp2m.c", "cktbindn.c" and "gendefs.h" changes the way SPICE parses lines 
+beginning with "m" so that they can handle the optional body node.
+
+
+
+To decode the tared code file, enter UNIX operating system and go to the 
+directory containing the tared file, then type commands as following:
+
+             > uncompress BSIMPD2p1.tar
+             > tar -xvf BSIMPD2p1.tar
+
+
+
+To decode the tared manual file, put (or use FTP) the downloaded manual tared
+file into a directory of UNIX and go to the directory containing the tared 
+file, then type commands as following:
+
+             > mv bsimpd_man2p1_ps_tar.Z bsimpd_man2p1.ps.tar.Z
+             > uncompress bsimpd_man2p1.ps.tar
+             > tar -xvf bsimpd_man2p1.ps.tar
+
+To print the manual to postscript printer, invoke:
+
+             > lpr bsimpd_man2p1.ps
+or
+
+             > lpr -P <printer_name> bsimpd_man2p1.ps
+
+
+
+
+Jiannong Feng    10/27/1999

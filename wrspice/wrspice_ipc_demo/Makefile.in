@@ -1,0 +1,93 @@
+#######################################################################
+# wrspice_ipc_demo/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.6 2014/10/05 03:17:48 stevew Exp $
+#######################################################################
+
+DATE = @DATE@
+SPICE_VERSION = @SPICE_VERSION@
+DEVLIB_VERSION = @DEVLIB_VERSION@
+
+prefix = @prefix@
+CXX = @CXX@
+CC = @CC@
+LINKCC = @LINKCC@
+CFLAGS = @CFLAGSG@ @DYNAMIC_LIBS@ @TOOLKITCFLAGS@ @UFLAGS@ -DWRSPICE
+LFLAGS = @LFLAGS@ @TOOLKITLFLAGS@ @UFLAGS@
+PIC_OPT = @PIC_OPT@
+#LSHFLAG = @LSHFLAG@
+LIBS = $(APPLIBS) @CURSES@ @LIBS@ @TOOLKITLIBS@ @STDCLIB@
+STDCLIB = @STDCLIB@
+SLIBS = @SLIBS@
+OSNAME = @OSNAME@
+ARCH = @ARCH@
+DIST_SUFFIX = @DIST_SUFFIX@
+GRPREF = @GRPREF@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ @TOOLKITCFLAGS@ -DWRSPICE
+INSTALL = @INSTALL@
+INSTALL_USER = @INSTALL_USER@
+NTSUFFIX = @NTSUFFIX@
+FILTER = @FILTER@
+MALLOC = @MALLOC@
+SECURE = @SECURE@
+NTREGEX = @NTREGEX@
+NTDBGOBJ = @NTDBGOBJ@
+#DEVLIB_SHARED = @DEVLIB_SHARED_FILE@
+DEVLIB_STATIC = @DEVLIB_STATIC_FILE@
+DEVLIB_CALL = @DEVLIB_CALL@
+TOOLROOT = @TOOLROOT@
+
+GFX_PROG = xic
+GFX_EXEC_DIR = $(prefix)/$(TOOLROOT)/bin
+SPICE_PROG = wrspice
+BUG_ADDR = wrspice@wrcad.com
+ANALYSES = op dc tf ac tran pz disto noise sense
+SPICE_HOST =
+SPICED_LOG = /tmp/$(SPICE_PROG)d.log
+DEFAULT_EDITOR = xeditor
+ASCII_RAWFILE = 1
+OPT_CHAR = -
+SPICE_NOTICE =
+
+LPATH = .
+MISCUTIL = $(LPATH)/miscutil/miscutil.a
+
+CCFILES = wrspiced.cc spclient.cc sced_spiceipc.cc
+INCLUDE = -I. -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
+all: spclient wrspiced
+
+spclient: spclient.o sced_spiceipc.o $(MISCUTIL)
+	$(CXX) -o spclient $(CFLAGS) $(INCLUDE) spclient.o sced_spiceipc.o \
+        $(MISCUTIL)
+
+wrspiced: wrspiced.cc $(MISCUTIL)
+	$(CXX) -o wrspiced $(CFLAGS) $(INCLUDE) wrspiced.cc $(MISCUTIL)
+
+sced_spiceipc.o:
+	$(CXX) $(CFLAGS) -DDEMO_EXPORT $(INCLUDE) -c $*.cc
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+$(MISCUTIL)::
+	cd $(@D); $(MAKE)
+
+clean::
+	cd $(LPATH)/miscutil; $(MAKE) clean
+	rm -f spclient wrspiced
+
+distclean::
+	cd $(LPATH)/miscutil; $(MAKE) distclean
+	rm -f spclient wrspiced Makefile config.*
+
+depend:
+	cd $(LPATH)/miscutil; $(MAKE) depend
+	@echo depending in wrspice_ipc_demo
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) -DDEMO_EXPORT $(FILTER) \
+ >> Makefile; \
+	fi
+
+#######################################################################

@@ -1,0 +1,101 @@
+======================================================================================
+======================================================================================
+
+  ---------------------------
+  Verilog-A definition of PSP
+  ---------------------------
+
+
+  (c) Copyright notice
+
+  Since 2012 until today, PSP has been co-developed by NXP Semiconductors and
+  Delft University of Technology. For this part of the model, each claim undivided
+  ownership and copyrights
+  Until and including 2011, PSP has been co-developed by NXP Semiconductors and
+  Arizona State University. For this part of the model, NXP Semiconductors claims
+  undivided ownership and copyrights.
+
+
+  Version: PSP 103.3.0 (including JUNCAP2 200.4.0), September 2013
+
+  This version of PSP is contained in SiMKit 4.2
+  
+======================================================================================
+======================================================================================
+
+  Authors: G.D.J. Smit, A.J. Scholten, and D.B.M. Klaassen (NXP Semiconductors)
+           R. van der Toorn (Delft University of Technology)
+
+  Former contributers:
+           G. Gildenblat, W. Yao, Z. Zhu, X. Li and W. Wu (Arizona State University)
+           R. van Langevelde (Philips Research)
+
+  The most recent version of the model code, the documentation, and contact
+  information can be found on:
+
+       http://psp.ewi.tudelft.nl/
+       
+======================================================================================
+======================================================================================
+
+This package consists of the following files:
+
+     - releasenotesPSP103.txt         This file
+
+     - psp103.va                      Main file for PSP model
+     - psp103t.va                     Main file for PSP model with self heating
+     - psp103_nqs.va                  Main file for PSP model with NQS-effects
+     - juncap200.va                   Main file for JUNCAP2 stand-alone model
+
+     - Common103_macrodefs.include    Common macro definitions
+     - PSP103_macrodefs.include       Macro definitions for PSP
+     - PSP103_module.include          Actual model code for intrinsic MOS model
+     - PSP103_SPCalculation.include   Surface potential and related calculations
+     - PSP103_binning.include         Geometry scaling equation for binning
+     - PSP103_binpars.include         Parameterlist for global PSP binning model
+     - PSP103_nqs_macrodefs.include   Macro definitions for PSP-NQS
+     - PSP103_InitNQS.include         PSP-NQS initialization code
+     - PSP103_ChargesNQS.include      Calculation of NQS-charge contributions
+     - JUNCAP200_macrodefs.include    Macro definitions for JUNCAP2 model
+     - JUNCAP200_parlist.include      JUNCAP2 parameter list
+     - JUNCAP200_varlist1.include     JUNCAP2 variable declarations
+     - JUNCAP200_varlist2.include     JUNCAP2 variable declarations
+     - JUNCAP200_InitModel.include    JUNCAP2 model initialization code
+
+======================================================================================
+======================================================================================
+
+Usage
+-----
+
+Depending which model one wants to use, one should compile one of the four .va-files
+(psp103.va, psp103t.va, psp103_nqs.va, and juncap200.va). The module names are
+"PSP103VA", "PSP103TVA", and "PSPNQS103VA" (for QS, self heating, and NQS,
+respectively), and "JUNCAP200" for the JUNCAP2-model.
+
+
+======================================================================================
+======================================================================================
+
+Release notes vA-code of PSP 103.3.0 (December 2013)
+---------------------------------------------------------
+
+Changes:
+
+- Added excess noise model.
+- Solved minor numerical issue in avalanche current calculation (occurring when A4 is
+  large and the body is forward biased).
+- Added MULT-scaling to OP-output variable Pdiss.
+- Fixed missing T-scaling in OP-output variables lp_bgidl and lp_bgidld.
+- Fix unexpected behavior when NF>1 combined with SWGEO=0.
+  
+
+PSP 103.3.0 is backwards compatible with the previous version, PSP 103.2.0
+
+======================================================================================
+======================================================================================
+
+The authors want to thank Laurent Lemaitre and Colin McAndrew (Freescale)
+for their help with ADMS and the implementation of the model code. Geoffrey
+Coram (Analog Devices) is acknowledged for input concerning the Verilog-A
+implementation of the model.

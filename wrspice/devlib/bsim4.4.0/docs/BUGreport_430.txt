@@ -1,0 +1,376 @@
+Title: List of Bugs in BSIM4.3.0 and Bug Fixes in BSIM4.4.0
+=====================================================
+
+  Xuemei (Jane) Xi,  Ali M. Niknejad and Chenming Hu
+
+
+  The following is a list of the bugs and code robustness improvements 
+found in BSIM4.3.0 along with the bug fixes and improvement, which have 
+been evaluated by BSIM team and the bug reporters and were approved by 
+Compact Model Council (CMC) member companies (Please see "CMC's Bug 
+Reporting and Resolution Procedure" attached at the bottom of this file). 
+
+Bug 1:
+------
+  Bug reporters: Mohamed Ahmed,  Mentor Graphic and  David Zweidinger, TI
+  C files involved: b4ld.c
+  C code containing the bug:
+
+          T2 = 1.0 + exp(T0 * log(T1));
+          if(vs == 0.0) T3 = 0.0;
+          else          T3 = (T2 - 1.0) * T0 / vs; 
+          dT2_dVg = T3 * dvs_dVg;
+          dT2_dVd = T3 * dvs_dVd;
+          dT2_dVb = T3 * dvs_dVb;
+          Fsevl = 1.0 / exp(log(T2)/ T0);
+          T4 = -1.0 / T0 * Fsevl / T2;
+          dFsevl_dVg = T4 * dT2_dVg;
+          dFsevl_dVd = T4 * dT2_dVd;
+          dFsevl_dVb = T4 * dT2_dVb;
+  
+Proposed bug fix:
+
+          if(T1 > 0.0)  
+          {	T2 = 1.0 + exp(T0 * log(T1));
+          	T3 = (T2 - 1.0) * T0 / vs; 
+          	Fsevl = 1.0 / exp(log(T2)/ T0);
+          	dT2_dVg = T3 * dvs_dVg;
+          	dT2_dVd = T3 * dvs_dVd;
+          	dT2_dVb = T3 * dvs_dVb;
+          	T4 = -1.0 / T0 * Fsevl / T2;
+          	dFsevl_dVg = T4 * dT2_dVg;
+          	dFsevl_dVd = T4 * dT2_dVd;
+          	dFsevl_dVb = T4 * dT2_dVb;
+          } else {
+          	Fsevl = 1.0;
+          	dFsevl_dVg = 0.0;
+          	dFsevl_dVd = 0.0;
+          	dFsevl_dVb = 0.0;
+          }
+
+
+Bug 2:
+------
+  Bug reporters: Wei-Kai Shil Intel
+  C files involved: b4set.c
+  C code containing the bug:
+
+        if (!model->BSIM4rnoibGiven)
+            model->BSIM4rnoib = 0.37;
+
+  
+Proposed bug fix:
+
+        if (!model->BSIM4rnoibGiven)
+            model->BSIM4rnoib = 0.5164; /*bugfix */
+
+
+Bug 3:
+------
+  Bug reporters: Wenli Wang, Cadence, and Peter Lee, Renesas   
+  C files involved: b4ld.c
+  C code containing the bug:
+	  if (model->BSIM4capMod == 0) /* code merge -JX */
+	  {   
+	          cgdo = pParam->BSIM4cgdo; 
+	          qgdo = pParam->BSIM4cgdo * vgd;
+	          cgso = pParam->BSIM4cgso;
+	          qgso = pParam->BSIM4cgso * vgs;
+	  }
+	  else /* For both capMod == 1 and 2 */
+	  {   T0 = vgd + DELTA_1;
+	      T1 = sqrt(T0 * T0 + 4.0 * DELTA_1);
+	      T2 = 0.5 * (T0 - T1);
+
+	      T3 = pParam->BSIM4weffCV * pParam->BSIM4cgdl;
+	      T4 = sqrt(1.0 - 4.0 * T2 / pParam->BSIM4ckappad); 
+	      cgdo = pParam->BSIM4cgdo + T3 - T3 * (1.0 - 1.0 / T4)
+		   * (0.5 - 0.5 * T0 / T1);
+	      qgdo = (pParam->BSIM4cgdo + T3) * vgd - T3 * (T2
+		   + 0.5 * pParam->BSIM4ckappad * (T4 - 1.0));
+
+	      T0 = vgs + DELTA_1;
+	      T1 = sqrt(T0 * T0 + 4.0 * DELTA_1);
+	      T2 = 0.5 * (T0 - T1);
+	      T3 = pParam->BSIM4weffCV * pParam->BSIM4cgsl;
+	      T4 = sqrt(1.0 - 4.0 * T2 / pParam->BSIM4ckappas); 
+	      cgso = pParam->BSIM4cgso + T3 - T3 * (1.0 - 1.0 / T4)
+		   * (0.5 - 0.5 * T0 / T1);
+	      qgso = (pParam->BSIM4cgso + T3) * vgs - T3 * (T2
+		   + 0.5 * pParam->BSIM4ckappas * (T4 - 1.0));
+	  }
+
+  
+Proposed bug fix:
+
+	  if (here->BSIM4rgateMod == 3) 
+	  {   
+	          vgdx = vgmd; 
+	          vgsx = vgms; 
+	  }  
+	  else  /* For rgateMod == 0, 1 and 2 */
+	  {
+	          vgdx = vgd; 
+	          vgsx = vgs; 
+	  }
+	  if (model->BSIM4capMod == 0) 
+	  {   
+	          cgdo = pParam->BSIM4cgdo; 
+	          qgdo = pParam->BSIM4cgdo * vgdx;
+	          cgso = pParam->BSIM4cgso;
+	          qgso = pParam->BSIM4cgso * vgsx;
+	  }
+	  else /* For both capMod == 1 and 2 */
+	  {   T0 = vgdx + DELTA_1;
+	      T1 = sqrt(T0 * T0 + 4.0 * DELTA_1);
+	      T2 = 0.5 * (T0 - T1);
+
+	      T3 = pParam->BSIM4weffCV * pParam->BSIM4cgdl;
+	      T4 = sqrt(1.0 - 4.0 * T2 / pParam->BSIM4ckappad); 
+	      cgdo = pParam->BSIM4cgdo + T3 - T3 * (1.0 - 1.0 / T4)
+		   * (0.5 - 0.5 * T0 / T1);
+	      qgdo = (pParam->BSIM4cgdo + T3) * vgdx - T3 * (T2
+		   + 0.5 * pParam->BSIM4ckappad * (T4 - 1.0));
+
+	      T0 = vgsx + DELTA_1;
+	      T1 = sqrt(T0 * T0 + 4.0 * DELTA_1);
+	      T2 = 0.5 * (T0 - T1);
+	      T3 = pParam->BSIM4weffCV * pParam->BSIM4cgsl;
+	      T4 = sqrt(1.0 - 4.0 * T2 / pParam->BSIM4ckappas); 
+	      cgso = pParam->BSIM4cgso + T3 - T3 * (1.0 - 1.0 / T4)
+		   * (0.5 - 0.5 * T0 / T1);
+	      qgso = (pParam->BSIM4cgso + T3) * vgsx - T3 * (T2
+		   + 0.5 * pParam->BSIM4ckappas * (T4 - 1.0));
+	  }
+
+**	Add declaration at the beginning: 
+double vgdx, vgsx;
+
+Bug 4:
+------
+  Bug reporters: Keith Green, TI  and To Ivan, Alexandre Ardelea , Motorola
+  C files involved: b4ld.c
+  C code containing the bug:
+ 
+          here->BSIM4IdovVds = Ids;
+
+  
+Proposed bug fix:
+
+          here->BSIM4IdovVds = Ids;
+          if(here->BSIM4IdovVds < = 1.0e-9) here->BSIM4IdovVds = 1.0e-9;
+
+
+Bug 5:
+------
+  Bug reporters: David Zweidinger and Keith Green, TI  
+  C files involved: b4ld.c
+  C code containing the bug:
+	T0 = AbulkCV * VdseffCV; /* bugfix */
+            T1 = 12.0 * (Vgsteff - 0.5 * T0 + 1.0e-20);
+	T2 = T0 / T1;
+	T3 = T0 * T2;
+
+            T4 = (1.0 - 12.0 * T2 * T2);
+            T7 = T2 * (2.0 + 6.0 * T2) - 0.5;
+            T5 = T7 * AbulkCV;
+            T6 = T7 * VdseffCV;  
+
+             qgate = CoxWL * (Vgsteff - 0.5 * T0 + T3);  
+
+Proposed bug fix:
+
+          T0 = AbulkCV * VdseffCV;
+          T1 = 12.0 * (Vgsteff - 0.5 * T0 + 1.0e-20);
+          T2 = VdseffCV / T1;
+          T3 = T0 * T2;
+
+          T4 = (1.0 - 12.0 * T2 * T2 * AbulkCV);
+          T5 = (6.0 * T0 * (4.0 * Vgsteff - T0) / (T1 * T1) - 0.5);
+          T6 = 12.0 * T2 * T2 * Vgsteff;
+
+          qgate = CoxWL * (Vgsteff - 0.5 * VdseffCV + T3);
+
+Bug 6:
+------
+  Bug reporters:  Peter Lee, Renesas   
+  C files involved: b4ld.c
+  C code containing the bug:
+     At line 3623, 3745, 3815, 3934
+                      gcdbdb = 0.0;
+
+  
+Proposed bug fix:
+
+     At line 3623, 3745, 3815, 3934
+                      gcdbdb = 0.0; gcsbsb = 0.0;
+
+Bug 7:
+------
+  Bug reporters:  Peter Lee, Renesas   
+  C files involved: b4check.c, b4temp.c
+  Action: Move following code from b4check.c to b4temp.c
+
+	    	  if (model->BSIM4wlod < 0.0)
+	          {   fprintf(stderr, "Warning: WLOD = %g is less than 0. Set to 0.0\n",model->BSIM4wlod);
+               	      model->BSIM4wlod = 0.0;
+	          }
+	          if (model->BSIM4kvsat < -1.0 )
+	          {   fprintf(stderr, "Warning: KVSAT = %g is too small; Reset to -1.0.\n",model->BSIM4kvsat);
+	       	      model->BSIM4kvsat = -1.0;
+            	  }
+            	  if (model->BSIM4kvsat > 1.0)
+            	  {   fprintf(stderr, "Warning: KVSAT = %g is too big; Reset to 1.0.\n",model->BSIM4kvsat);
+           	      model->BSIM4kvsat = 1.0;
+            	  }
+
+
+Bug 8:
+------
+  Bug reporters:  Taisto Tinttunen, APLAC Solutions Corporation, Finland   
+  C files involved: b4ld.c
+  C code containing the bug:
+	here->BSIM4cbd = DrainSatCurrent * (evbd + here->BSIM4XExpBVS - 1.0
+                                         - model->BSIM4xjbvd * T2) +
+			ckt->CKTgmin * vbd_jct;
+  
+Proposed bug fix:
+
+	here->BSIM4cbd = DrainSatCurrent * (evbd + here->BSIM4XExpBVD - 1.0
+                                         - model->BSIM4xjbvd * T2) +
+			ckt->CKTgmin * vbd_jct;
+
+Bug 9:
+------
+  Bug reporters:  Andre Martinez,Paul Humphries, Analog Devices   
+  C files involved: b4set.c
+  Issue: parameter default missing. 
+  
+Proposed bug fix:
+
+        if (!model->BSIM4gamma1Given)
+
+            model->BSIM4gamma1 = 0.0;
+
+        if (!model->BSIM4lgamma1Given)
+
+            model->BSIM4lgamma1 = 0.0;
+
+        if (!model->BSIM4wgamma1Given)
+
+            model->BSIM4wgamma1 = 0.0;
+
+        if (!model->BSIM4pgamma1Given)
+
+            model->BSIM4pgamma1 = 0.0;
+
+        if (!model->BSIM4gamma2Given)
+
+            model->BSIM4gamma2 = 0.0;
+
+        if (!model->BSIM4lgamma2Given)
+
+            model->BSIM4lgamma2 = 0.0;
+
+        if (!model->BSIM4wgamma2Given)
+
+            model->BSIM4wgamma2 = 0.0;
+
+        if (!model->BSIM4pgamma2Given)
+
+            model->BSIM4pgamma2 = 0.0;
+
+        if (!model->BSIM4vbxGiven)
+
+            model->BSIM4vbx = 0.0;
+
+        if (!model->BSIM4lvbxGiven)
+
+            model->BSIM4lvbx = 0.0;
+
+        if (!model->BSIM4wvbxGiven)
+
+            model->BSIM4wvbx = 0.0;
+
+        if (!model->BSIM4pvbxGiven)
+
+            model->BSIM4pvbx = 0.0;
+
+
+Bug 10:
+------
+  Bug reporters:  Joachim Assenmacher, Infineon Technologies AG
+   
+  C files involved: b4temp.c
+  C code containing the bug:
+        pParam->BSIM4dlcig = model->BSIM4dlcig + tmp2;
+  
+Proposed bug fix:
+
+        pParam->BSIM4dlcig = model->BSIM4dlcig;
+
+
+Robustness 1:
+------
+  Reporters:  Peter Lee, Renesas   
+  C files involved: b4ld.c
+  C code containing the bug:
+
+          /* Calculate VADIBL */
+          if (pParam->BSIM4thetaRout > 0.0)
+
+  
+Proposed improvement:
+
+          /* Calculate VADIBL */
+          if (pParam->BSIM4thetaRout > MIN_EXP)
+
+
+Robustness 2:
+------
+  Reporters:  Peter Lee, Renesas   
+  C files involved: b4ld.c
+  C code containing the bug:
+
+          if ((pParam->BSIM4pclm > 0.0) && (diffVds > 1.0e-10))
+  
+Proposed improvement:
+
+          if ((pParam->BSIM4pclm > MIN_EXP) && (diffVds > 1.0e-10))
+
+
+Robustness 3:
+------
+  Reporters:  Peter Lee, Renesas   
+  C files involved: b4ld.c
+  C code containing the bug:
+
+          if (pParam->BSIM4pdits > 0.0)
+  
+Proposed improvement:
+
+          if (pParam->BSIM4pdits > MIN_EXP)
+
+
+Improvement :
+------
+  Requesters:  Richard Q Williams, IBM   
+  C files involved: b4check.c
+  Action: 
+	Parameters Checking regrouping to avoid extensive warnings to circuit designers
+
+
+
+CMC Bug Reporting Procedure for BSIM3/4
+1. User reports bug to simulator vendor.
+2. Spice provider reports bug to Berkeley with recommended fix, test case and significance.
+3. Berkeley will immediately post on the website with the recommended fix.
+4. Berkeley will notify CMC, BSIM3/4 mailing list and FSA
+5. CMC members review bug and proposed fixes
+6. At the next CMC meeting the CMC will decide on what action to take on each bug. A revision
+number (e.g. 3.2.1) will be assigned to the code with the accepted bug fixes.
+7. Berkeley will post the list of approved bug fixes on the website along with the revision 
+number assigned. Where appropriate this may include sections of revised code but Berkeley 
+will not post a complete new release of the code for each minor version. For example v3.2.1 
+might be specified as equivalent to v3.2 with the bug fixes posted on a particular Web page.
+

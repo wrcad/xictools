@@ -1,0 +1,81 @@
+# xclient.scr
+# $Id: xclient.scr,v 1.5 2013/11/18 19:31:08 stevew Exp $
+
+# This is an example script that allows the user to interact with a
+# running Xic server, much like the xclient program.  Responses are
+# printed in the console window.
+#
+# From Xic running in this directory, to run type:  !exec ./xclient.scr
+
+# Change this to actual server host, if not the local machine.
+hostname = "localhost"
+
+// IANA-registered port for this service.
+port = 6115
+
+# Open a connection to the server.
+hs = Sopen(hostname, port)
+if (!hs)
+    Print("Failed to contact server");
+    Exit()
+end
+
+retcode[2]
+# Drain the initial return from the server.
+reply = ReadReply(retcode, hs)
+if (retcode[2] != 0)
+    Print("Read error", GetError())
+    Close(hs)
+    Exit()
+end
+
+# Loop, getting input from the prompt line and printing responses on
+# the console window.
+
+prompt = "ok> "
+while (1)
+    # Get a line of input.
+    message = AskString(prompt, 0);
+    ret = WriteMsg(message, hs);
+    if (!ret)
+        Print("WriteMsg failed:", GetError())
+        Close(hs)
+        Exit()
+    end
+    reply = ReadReply(retcode, hs)
+    if (retcode[2] != 0)
+        Print("ReadReply failed:", GetError())
+        Close(hs)
+        Exit()
+    end
+
+    # Break out if we are done.
+    if (!Strncmp(message, "close", 5) | !Strncmp(message, "kill", 4))
+        break;
+    end
+
+    # Process the reply into something we can use.  Since the return
+    # type can be anything, we must use the delete operator to clear
+    # the var of previous type and contents.
+    delete var
+    var = ConvertReply(reply, retcode)
+
+    Print("Return code:", retcode[0], retcode[1], retcode[2])
+
+    # Change the prompt according to server state.
+    if (retcode[0] == 1)
+        prompt = "-?> "
+    elif (retcode[0] == 2)
+        prompt = "error> "
+    else
+        prompt = "ok> "
+    end
+
+    # If the "data valid" flag is set, print the return value.  The
+    # "longform" mode must be active to get return data.
+    if (retcode[2] != 0)
+        Print(var)
+    end
+end
+Print("Done")
+

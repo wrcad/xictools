@@ -1,0 +1,645 @@
+wrspice-3.1.5  9/18/09
+
+This is almost certainly the last of the "beta" releases.
+
+
+Changes and New Features
+------------------------
+
+* Changes to the capacitor model.
+
+  Capacitor models and devices now support temperature dependence
+  via first and second order coefficients, similar to resistors.
+
+  New capacitor model parameters:
+    tnom        parameter measurement temperature
+    tc1         first order temperature coefficient
+    tc2         second order temperature coefficient
+
+  New capacitor instance parameters:
+    temp        device operating temperature
+    tc1         first order temperature coefficient, overrides model.
+    tc2         second order temperature coefficient, overrides model.
+
+  The capacitance value is altered according to
+    Dt = temp - tnom
+    C = Cgiven*(1 + tc1*Dt + tc2*Dt*Dt)
+
+* Changes to the Josephson junction model.
+
+  1) The rtype=2 variation has been modified to better match the
+     rtype=1 results with the same parameters.  This includes the
+     intersection of the Rn projection with the axes.
+
+  2) New model parameter "vshunt".
+     If given, a linear shunt resistance will be added across all
+     instances of the device.  This is in addition to the
+     quasiparticle branch.  The resistance value is vshunt/Ic, where
+     vshunt is the model parameter value, and Ic is the device
+     (maximum) critical current.  This parameter facilitates SFQ
+     circuit simulation by eliminating the separate shunt resistor.
+
+* More unhandled HSPICE parameters added.
+
+  Diode parameters:  tcv, tlev, tlevc
+  BJT parameters:  iss, ns, tlev, tlevc, update
+
+  These give an "unhandled HSPICE parameter" warning, unless
+  ".options hspice" is given, in which case they are silently ignored. 
+
+* BSIM3 HSPICE XW, XL parameters handled.
+
+  The Bsim3 models (levels 7, 8, 9, 47, 49, 53) now accept the HSPICE
+  xw and xl parameters.
+
+  These modify the effective length and width, as given by the lint and
+  wint parameters:
+
+     eff_length = lint - xl/2
+     eff_width  = wint - xw/2
+
+
+Bugs Fixed
+----------
+
+* Fixed a bug:  Since vector scales are now carried through
+  calculations (see previous release note), it is possible for a
+  vector to have a scale vector from another plot.  These pointers
+  were not being zeroed if the plot containing the scale was
+  destroyed, which could cause segmentation faults.
+
+  Scales are no longer carried by unit-length (scalar) vectors.
+
+* X-Y plots were broken by the new scale handling code.  The scale
+  interpolation is now skipped in X-Y plots ("vs" argument to plot
+  command used).
+
+* Really fixed marker decoloring in the Vectors and Trace tools, as
+  was advertized in the previous release note.
+
+* (Windows Only)
+  Fixed the info text area in the help windows, which was not visible,
+  unless the window was resized, and not properly working when visible.
+
+* A warning message is now issued if duplicate .model lines are found
+  in a deck.  "Duplicate" means that the model name (first token
+  following ".model") is the same, case insensitive.  The first
+  definition encountered will be taken, subsequent definitions are
+  ignored.  Previously, this was silent.
+
+
+--------------------------------------------------------------------------------
+wrspice-3.1.4  9/4/09
+
+
+Changes and New Features
+------------------------
+
+* Update to the license validation code (Unix/Linux/OS X).
+
+  The programs will now attempt to validate using all IP and HW
+  addresses that can be determined from the machine's interfaces,
+  other than the loopback interface.  Previously, at most one IP and
+  one HW address were tested.  On machines with multiple interfaces,
+  there could be validation problems, as the IP/HW chosen at run time
+  might not be the same as assumed in the license file.
+
+* New capability: CSDF file support.
+
+  The Common Simulation Data Format (CSDF) is a text-mode file format
+  compatible with HSPICE, Synopsys WaveView, and other programs for
+  generating/plotting simulation results.
+
+  HSPICE results can now be loaded into WRspice for display, and WRspice
+  results can now be displayed in WaveView and similar programs.
+
+  In HSPICE, ".options csdf=1" or ".options post=csdf" will generate
+  CSDF post-processing output.
+
+  The CSDF format is less expressive than the rawfile format, but will
+  adequately handle common cases.
+
+  There is no known public specification for this format, the
+  implementation used files produced by HSPICE as a template.
+  Please report any compatibility problems!
+
+  The load command will automatically detect CSDF files and attempt to
+  generate a plot structure, just as for rawfiles.  E.g., "load
+  myckt.tr0" will load the transient analysis data, creating a "plot"
+  which contains the node voltage vectors.
+
+  For the write command, the Save Plot button in plot windows, and
+  batch mode, CSDF files will be generated if the file name has the
+  following extension forms:
+    .csdf
+    .tr[N]
+    .ac[N]
+    .sw[N]
+  where N is an integer.  E.g., .tr0, .ac1, .sw2.  These correspond to
+  transient, ac, and dc sweep results, respectively.
+
+  In server mode (the -S command line option was given), output will
+  always use rawfile format.  Otherwise, CSDF will be used if the
+  extension forms above are used in the file name.
+
+* Device instance syntax changes.
+
+  Resistors:
+    1. The instance keyword "r" now specifies resistance, and is
+       synonymous with "res" and "resistance".
+
+    2. There are new "tc1" and "tc2" resistor instance keywords.
+       If given, these will override tc1/tc2 in the resistor model,
+       if any.
+
+  Capacitors:
+    1. The instance keyword "c" now specifies capacitance, and is
+       synonymous with "cap" and "capacitance".  This used to indicate
+       current, synonymous with "i".
+
+  These changes were for compatibility with other simulators, and
+  foundry models.  For example, the following now works:
+
+  -------------------
+  * new r/c test 
+ 
+  .subckt rxxx n1 n2 w=10u l=10u 
+  r1 n1 n2 r='1.20e+03*(l-(0.0))/(w-(0.20e-06))' tc1=-1.50e-03 tc2=2.50e-06 
+  c1 n1 0  c='8.00e-05*0.5*(w-(0.20e-06))*(l-(0.0))+4.80e-11*(l-(0.0))' 
+  c2 n2 0  c='8.00e-05*0.5*(w-(0.20e-06))*(l-(0.0))+4.80e-11*(l-(0.0))' 
+  .ends rxxx 
+
+  xr1 1 0 rxxx l=100u
+  i1 0 1 1mA
+  -------------------
+
+* Plot window and plotting capability changes.
+
+  1) The Save button has been replaced by two new buttons:  Save Plot,
+     and Save Print.  Save Plot will save the plot to a rawfile or
+     CSDF file.  Save Print will save the data in the same form as
+     output from the print command.
+
+  2) The vectors will now be interpolated to the present scale in the
+     plot command and similar.
+
+  For example, suppose one has two plots, tran1 and tran2.  Tran1 was
+  run in the normal "interpolate" mode, and consists of a point at
+  each user time point.  Tran2 was run in "uousertp" mode, so consists
+  of data points at internal time points.
+
+  Previously, "plot tran1.v(1) tran2.v(1)" would plot funny-looking
+  rubbish for the second trace, since the scale is different.  Now,
+  the second trace would be interpolated to the scale of the first
+  trace (which is used in the plot) before plotting, so it will be
+  displayed correctly.
+
+  Only the plot and similar plotting commands will do this
+  automatically.  In other commands, or in general expressions, one
+  would need to use the interpolate function to interpolate a vector
+  to the current scale.
+
+  E.g., if the current plot is tran1,
+    let b = v(1) + interpolate(tran2.v(1))
+  would do the right thing.  Leaving out the interpolate call would
+  simply add the numbers term-by-term, padding when necessary, which
+  is probably not a useful result.
+
+* Update to the .measure capability.
+
+  1) The "at" clause will now work correctly if there is no trigger or
+     target.  E.g., ".measure tran outvar find vecname at time" now works.
+
+  2) The "param=exxpr" clause now works.  E.g.,
+     ".measure tran outvar param=expr" now works.  This is evaluated after
+     all non-param measures have been done, in file order.
+
+  3) Single-quoting can now be used in .measure lines without side
+     effects.
+
+     In WRspice, single-quoted quantities are expanded as expressions
+     at circuit load time.  This is no longer done in .measure lines,
+     instead a single-quoted block 'xxx' is changed to (xxx), i.e., the
+     quotes are replaced by parenthenses, to prevent expansion.
+
+     This was done for HSPICE compatibility.
+
+  4) Vector names found in .measure lines are now automatically added
+     to the save list, meaning that vectors needed for measurements
+     will always be saved in the plot during analysis, and don't need
+     to be explisitly included in .save lines.
+
+* New vector primitive.
+
+  The "function" p(src), where "src" is the name of a voltage or
+  current source in the current circuit, returns the instantaneous
+  power being supplied by the source.
+
+  However, this is not a real function but more like a hard-coded
+  macro that expands to "@src[p]", i.e., to the special vector parameter
+  for power.  In general, as with all '@' vectors, this will not be
+  available unless explicitly saved during analysis.
+
+  If p(src) in used in .measure or "debug" lines, the vector @src[p]
+  will be saved automatically.  All other uses will likely require
+  explicit use of .save lines or the save command for "@src[p]".
+
+* HSPICE parameters added.
+
+  The MOS model parameters
+    CALCACM
+    SFVTFLAG
+  have been added to the list of known but un-handled HSPICE parameters.
+
+  Using ".options hspice" will silence "unknown parameter" warning
+  messages.  These parameters are ignored in WRspice.
+
+* (Unix/Linux/OS X only)
+
+  Changed to arrow cursor in point-and-click text windows, such as the
+  Vectors listing.
+
+
+Bugs Fixed
+----------
+
+* (Unix/Linux/OS X)
+  License validation problems on machines with multiple network
+  interfaces have been fixed.
+
+* Iplots would stop working in Monte Carlo and operating range analysis.
+  Example: setup iplot, start MC analysis, iplot appears.  Delete iplot
+  window, repeat MC analysis, no iplot!  Repeat MC analysis, iplot is
+  back!
+
+* It is no longer possible to initiate a normal analysis on the same
+  circuit when a Monte Carlo or operating range analysis is paused. 
+  This could be initiated before, but it didn't work right and screws
+  up internal logic.  However, one can reload the circuit, run
+  whatever analysis is required, then return to the original circuit
+  and finish the paused analysis.
+
+* The red choice indicators in the Vectors panel no longer lose color
+  when the panel is updated.
+
+* In a single-trace plot, dragging a trace in from another plot window
+  will now automatically update the display to show both traces.  This
+  was not automatic before.
+
+* Fixed a bug that would cause seg faults when a plot was redrawn
+  after a new trace was dragged/dropped, due to a text update
+  problem.
+
+* The "interpolate" vector math function would seg fault if used.
+
+* Using the "plotname.vector" syntax with vectors with dissimilar
+  scales could cause seg faults.  This will no longer fault, but will
+  generally not produce a useful result without interpolation.
+
+
+--------------------------------------------------------------------------------
+wrspice-3.1.3  8/4/09
+
+Changes and New Features
+------------------------
+
+* Sync to the current common graphics package code shared with Xic,
+  which has undergone modification for Xic.  Not visible to the user,
+  except for bug fixes.
+
+
+Bugs Fixed
+----------
+
+* (GTK2 releases only)
+  Ghost drawing, including the factor updates while the marker is
+  active in plots, was not working properly.
+
+* The i686 stack backtrace code, called on memory error, seg faults
+  with gcc-4, since the stack alignment has apparently changed to 16
+  bytes.  A working alternative is now in place.
+  
+* (GTK1 releases only)
+  The search function in editor/file browser windows no longer visibly
+  scrolls, it now jumps if necessary to the new location.
+
+* The reverse search function in editor/file browser windows is now
+  much faster, previously there could be a lengthly delay when
+  searching up in large files.
+
+* (Windows only)
+  The menus in the text editor/file browser had inappropriate entries
+  for the current mode.  The Source button in the Options menu was
+  missing.
+
+
+--------------------------------------------------------------------------------
+wrspice-3.1.2  6/28/09
+
+Changes and New Features
+------------------------
+
+* Syntax extension to the plot command.
+
+  In the plot command line, keywords that take a value can now be followed
+  by an optional '=', with or without white space.  Each of the following
+  examples will work:
+
+    plot title "new title" ...
+    plot title="new title" ...
+    plot title = "new title" ...
+
+  Keywords that take two values now accept a comma as a delimiter
+  between the values, with or without white space.  The following
+  examples all work:
+
+    plot xlimits 1.0 9.0
+    plot xlimits 1.0,9.0
+    plot xlimits="1.0 9.0"
+
+* Plot options in .options line now recognized.
+
+  All of the plot "set" variables, if they appear in a .options line,
+  will now affect plots when the circuit is the current circuit. 
+  Previously, plot options set in .options would be ignored.
+
+* Plot window change.
+
+  The actions when clicking on the scale arrow icons in plot windows
+  have been revised to provide better scale choices.
+
+* Extended defaults for all MOS devices.
+
+  The defl, defw, defad, and defas option variables now set the default
+  length, width, drain area and source area for all MOS models. 
+  Previously, these only worked with the Spice3 models (levels 1-3 and
+  6).
+
+* MS Windows Only
+
+  The "Imlib:  jpeg, tiff, png, etc." print driver has a new feature. 
+  If the word "clipboard" is entered in the File Name text area, the
+  image will be composed in the Windows clipboard, so it can be pasted
+  into other Windows programs.
+
+
+Bugs Fixed
+----------
+
+* Fixed bug:  "set title" and other methods of setting the plot title
+  didn't work, they produced a garbage string in the plot window.
+
+* In plot windows, switching from single to multiple scale would leave
+  a residual Y-scale units string in the window.
+
+* MS Windows Only
+  The "Imlib: jpeg, tiff, png, etc." print driver was not available
+  due to some internal trouble.
+
+
+--------------------------------------------------------------------------------
+wrspice-3.1.1  4/4/09
+
+Changes and New Features
+------------------------
+
+* In Plot windows, in "Separate" mode, there is now a bit of space
+  between trace areas, for better visibility.
+
+  The triangle h-scale icons were moved to avoid being overwritten
+  by scale factors.
+
+
+Bugs Fixed
+----------
+
+* Fixed some internal timing problems with interrupt logic that would
+  cause disruption of communication when running under control of Xic.
+
+* Fixed a bug in plots which would cause the fixed marker to disappear
+  or reappear when the window was refreshed.
+
+
+--------------------------------------------------------------------------------
+wrspice-3.1.0  2/7/09
+
+This is the first release of the beta-test series of Generation-3
+WRspice.
+
+A draft manual is now available on the "docs" directory in the
+distribution area of wrcad.com.
+
+See the wrs3.0 file for the alpha-test series release notes.
+
+
+Changes and New Features
+------------------------
+
+* New feature:  support for multiple circuits in a single file.
+
+  Previously, when multiple files were listed on the command line in
+  batch mode, or given to the source command, they would simply be
+  concatenated.  It is now possible to give multiple circuits within a
+  single or several files.  WRspice will source the circuits as if
+  they were given individually, and similar for batch mode.  In batch
+  mode, the .cache/.endcache feature can therefor be used to advantage
+  without using a command script.
+
+  New card:  .newjob
+
+  The .newjob card is recognized in files directly read by WRspice,
+  and not in files read through .include/.lib directives.  When
+  encountered during a source, file parsing terminates, and lines that
+  follow are taken as belonging to a new circuit deck.  The script
+  execution and other operations that usually occur at the end of a
+  source operation are done before parsing resumes.
+
+  Thus, one can place multiple circuit decks in a single file,
+  separated by .newjob lines.  Sourcing the file is equivalent to
+  sourcing each circuit independently and sequentially.
+
+  The line that follows a .newjob line is interpreted in exactly the
+  same way as the first line of any input deck, i.e., it is
+  interpreted as a circuit title line except in a few odd cases.
+
+  If the first line of an input file is a .newjob line, it will be
+  ignored, except that when reading multiple files, it indicates that
+  a new circuit should start, rather than concatenation of the file
+  to previous input.
+
+  If multiple files are given to the source command, logical circuits
+  are loaded sequentially, separated by .newjob lines.  These may or
+  may not coincide with the physical files - lines in the files
+  between .newjob lines are concatenated.
+
+  Batch mode is similar.  A single batch job can now run multiple
+  circuits.  Logical circuts are read, run, and output generated, in
+  sequence.  The individual circuits can be concatenetated into a
+  single file, separated with .newjob lines, or a .newjob line can be
+  added to the top of the individual circuit files.  In the later
+  case, "wrspice -b file1 file2 ..." would run each circuit in
+  sequence.  If the .newjob lines weren't present, WRspice would
+  attempt to run a concatenation of the files.
+
+  Although circuits run in this manner are independent, note that
+  variables set by scripts associated with a circuit, for example,
+  would remain set for the later circuits.  Thus, there are potential
+  side effects which must be considered.
+
+  The .cache/.endcache blocks work as they would in separate files. 
+  Only one cache block can appear in a circuit, but of course a file
+  containing multiple circuits can contain multiple cache blocks.
+
+  After a source of multiple circuits, the current circuit will be the
+  last circuit read.
+
+  The .newjob lines separate the input into separate groups of lines,
+  so one must take care to ensure that all related .control, .verilog,
+  etc.  blocks and lines will appear in the correct group.  There are
+  no "common" lines.
+
+* New/updated "plot ." feature.
+
+  The command "plot ." extracts and plots all of the vectors found in
+  in the first .plot line in the circuit that matches the present
+  analysis type.  This feature has been extended:
+
+  1) Previously, the "." had to be the first argument.  This is no
+     longer true, it can now be anywhere in an argument list.
+
+  2) The "." is replaced by the vectors from the first ".plot" line
+     from the circuit file with matching analysis type.  The syntax
+     has been extended so that if there are more than one .plot lines,
+     those other than the first can also be used.  One can give
+
+     plot .@N
+ 
+     where the ".@' is literal, and N is an integer, representing the
+     n'th suitable .plot line.  N is a 1-based count, with N=0 the same
+     as N=1.
+
+  3) The same syntax and analogous logic now works with the print
+     command and .print lines.  The print command without arguments
+     will print the previous argument list given to the print command,
+     instead of prompting for input, similar to the plot command.
+
+* Some cleanup of the compose command.
+
+  1) Removed unimplemented log, dec keywords and updated documentation
+     which incorrectly advertized them.
+
+  2) Changed logic slightly, the start param is always first (there
+     used to be provision for order reversal, but this is unnecessary).
+
+* New option 'c' to codeblock command.
+
+  If 'c' is given to the codeblock command, the names of the bound
+  codeblocks of the currrent circuit (if any) are displayed.
+
+* Modified .options line handling.
+
+  The parsing and shell expansion of .option lines has been changed. 
+  Multiple .option lines are parsed top-to-bottom in file order,
+  left-to-right, and the result of setting each option is immediately
+  available.  Thus, forms like
+
+    .options aaa=1.0 bbb=$aaa
+
+  now work, and as do forms like
+
+    .options random tmpval=$&(gauss(.2,1))
+
+  In the second example, the variable random will be set when the
+  gauss function is evaluated, so it will return a random value and
+  not just the mean value.
+
+* Temporary print file deletion (Unix/Linux/OS X only).
+
+  When a plot or page is printed, a temporary file is produced in a
+  system directory (/tmp by default), and by default this file is not
+  removed.  There does not appear to be a portable way to know when a
+  print job is finished, or to know whether the print spooler requires
+  the existence of the file to be printed after the job is queued,
+  thus the default action is to not perform any cleanup.
+  
+  There is a new provision for deleting the temporary print files.
+
+  New variable:  hcopyrmdelay
+
+  If this variable is set to an integer value larger than 0, it will
+  specify that a temporary print file is to be deleted this many minutes
+  after creation.
+
+  The "at" command, available on all Unix/Linux/OS X platforms (but not
+  Windows) is used to schedule deletion, which will occur whether or not
+  WRspice is still running.
+
+  For this to work, the user must have permission to use "at".  See
+  "man at" for more information.
+  
+  This variable can also be set from the "hardcopy" page in the Plot Defs
+  tool from the Tools menu of the Tool Control window.
+
+* The standard internal buffer size has been quadrupled to 2048 bytes,
+  a more reasonable value for modern hardware.  The increases the
+  maximum allowable command length.
+
+* New "special" vectors.
+
+  The following vectors are available by name in all contexts:
+
+  @elapsed    The elapsed wall-clock time in seconds since the program
+              was started.
+
+  @space      The memory in use by the program, in bytes.
+
+
+Bugs Fixed
+----------
+
+* In the compose command, if the start, stop, and step parameters were
+  used to specify the data values, the composed values were wrong.
+
+* Added some checks to avoid seg faults from incorrect parameters
+  given to the compose command.
+
+* The program could not open temporary files in some cases.
+
+* The implicit source command would not take multiple files.  Now,
+  multiple files are concatenated or otherwise processed, as in the
+  explicit source command.
+
+* The file FileSel.hlp was missing from distribution files.
+
+* The postscript_line_draw print driver (and perhaps others) was not being
+  initialized correctly, and was effectively broken.  Furthermore, the
+  vertical positioning of the image on a page was not quite right, for
+  all PostScript print drivers.
+
+* Fixed the units propagation of math operators +,-,j().  If the two
+  operands do no have matching types, the result vector has no type. 
+  Previously, the result had the same type as the left operand.
+
+* The shell backquote-substitution was broken, would hang the program.
+
+* Backquote substitution within double-quotes will maintain the
+  single-token aspect of the quoting.  Previously, this was not
+  happening.
+
+* Previously, it was possible to generate really strange vector names
+  with the let command, for example "let aaa bbb=1" would create a
+  vector named "aaa bbb".  A check now prevents white space and many
+  other potentially troublesome characters from being included in
+  vector names.  Odd vector names can be double-quoted in expressions
+  when necessary.
+
+* Previously, vectors created in the constants plot could not be
+  removed.  This is no longer true, but the vectors created internally
+  remain immutable.
+
+* Fixed up the terminal setup, the default key mapping wasn't't right for
+  GNOME (without running mapkey).
+
+* Fixed bug:  .cache blocks with multiple lines would cause program
+  crashes.
+

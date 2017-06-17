@@ -1,0 +1,151 @@
+# netcgdtest.scr
+# $Id: netcgdtest.scr,v 1.5 2013/11/18 19:31:08 stevew Exp $
+
+// This script opens a connection to the server, asks the server to
+// open a file as a Cell Geometry Digest, then iterates through the
+// contents of the CGD, as transferred to the local machine via "geom"
+// queries.  The output is the same format as for the cgdtest.scr
+// script.
+//
+// First, start Xic in server mode with "xic -S".  Then, run another
+// Xic process normally, and run this script by typing:
+//   !exec ./netcgdtest.scr
+//
+ 
+// You may want to change these to experiment.
+hostname = "localhost"
+file_to_open = "/usr/local/xictools/xic/examples/chip.gds"
+
+// IANA-registered port for this service.
+port = 6115
+
+hs = Sopen(hostname, port)
+if (!hs)
+    Print("Failed to contact server");
+    Exit()
+end
+
+retcode[2]
+// Drain the initial return from the server.
+reply = ReadReply(retcode, hs)
+if (retcode[2] != 0)
+    Print("Read error", GetError())
+    Close(hs)
+    Exit()
+end
+
+// Switch to longform mode, so we get a return string from
+// OpenCellGeomDigest below.
+message = "longform"
+
+ret = WriteMsg(message, hs);
+if (!ret)
+    Print("WriteMsg failed:", GetError())
+    Close(hs)
+    Exit()
+end
+reply = ReadReply(retcode, hs)
+if (retcode[2] != 0)
+    Print("ReadReply failed:", GetError())
+    Close(hs)
+    Exit()
+end
+
+// Open the file as a CGD on the server.
+message = "OpenCellGeomDigest(0,\"" + file_to_open + "\", 0)"
+
+ret = WriteMsg(message, hs);
+if (!ret)
+    Print("WriteMsg failed:", GetError())
+    Close(hs)
+    Exit()
+end
+reply = ReadReply(retcode, hs)
+if (retcode[2] != 0)
+    Print("ReadReply failed:", GetError())
+    Close(hs)
+    Exit()
+end
+cgdname = ConvertReply(reply, retcode)
+Print(cgdname)
+
+// Get a list of cell names from the CGD on the server.  The chdname is
+// allowed to contain white space, so we quote this.
+cgdname = "\"" + cgdname + "\""
+message = "geom " + cgdname
+
+ret = WriteMsg(message, hs);
+if (!ret)
+    Print("WriteMsg failed:", GetError())
+    Close(hs)
+    Exit()
+end
+reply = ReadReply(retcode, hs)
+if (retcode[2] != 0)
+    Print("ReadReply failed:", GetError())
+    Close(hs)
+    Exit()
+end
+cells_list = ConvertReply(reply, retcode)
+
+// Iterate through the cell names...
+hcells = StringHandle(cells_list, " ")
+while (hcells)
+    cellname = ListContent(hcells)
+    Print(cellname)
+
+    // Get a list of layer names in the cell.
+    message = "geom " + cgdname + " " + cellname
+
+    ret = WriteMsg(message, hs);
+    if (!ret)
+        Print("WriteMsg failed:", GetError())
+        Close(hs)
+        Exit()
+    end
+    reply = ReadReply(retcode, hs)
+    if (retcode[2] != 0)
+        Print("ReadReply failed:", GetError())
+        Close(hs)
+        Exit()
+    end
+    layers_list = ConvertReply(reply, retcode)
+    
+    // Iterate through the layer names...
+    hlayers = StringHandle(layers_list, " ")
+    while (hlayers)
+        layer = ListContent(hlayers)
+        Print("    ", layer)
+
+        // Get the geometry for the cell/layer.
+        gmsg = message + " " + layer
+        ret = WriteMsg(gmsg, hs);
+        if (!ret)
+            Print("WriteMsg failed:", GetError())
+            Close(hs)
+            Exit()
+        end
+        reply = ReadReply(retcode, hs)
+        if (retcode[2] != 0)
+            Print("ReadReply failed:", GetError())
+            Close(hs)
+            Exit()
+        end
+
+        // Convert the geometry to an iterator, print the type code
+        // for each object.
+        hgs = ConvertReply(reply, retcode)
+        while (hgm = GsReadObject(hgs))
+            Print("      ", GetObjectType(hgm))
+            Close(hgm)
+        end
+        Close(hgs)
+
+        hlayers++
+    end
+
+    hcells++
+end
+Close(hs)
+Print("Done")
+

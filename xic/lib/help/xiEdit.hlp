@@ -1,0 +1,1892 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiEdit.hlp,v 1.84 2016/10/06 23:10:43 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiEdit.hlp
+!!TITLE
+xiEdit.hlp
+!!HTML
+
+!!SUBTOPICS
+xic:editmenu
+xic:cedit
+xic:edset
+xic:pcctl
+xic:crcel
+xic:crvia
+xic:flatn
+xic:join
+xic:lexpr
+xic:prpty
+xic:cprop
+
+
+!! 031815
+!!KEYWORD
+xic:editmenu
+!!TITLE
+Edit Menu
+!!HTML
+    The <b>Edit Menu</b> contains commands which control aspects of
+    layout editing, such as transformations and other settings, and
+    commands that bring up panels that control cell placement and
+    flattening, property editing, and other functions.
+
+    <p>
+    The table below summarizes the commands that appear in the <b>Edit
+    Menu</b>, including the internal command name and the command
+    function.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Edit Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:cedit"><b>Enable Editing</b></a></td>
+      <td><tt>cedit</tt></td> <td>none</td>
+      <td>Enable/disable editing mode for current cell</td></tr>
+    <tr><td><a href="xic:edset"><b>Setup</b></a></td>
+      <td><tt>edset</tt></td> <td>Editing Setup</td>
+      <td>Show <b>Editing Setup</b> panel</td></tr>
+    <tr><td><a href="xic:pcctl"><b>PCell Control</b></a></td>
+      <td><tt>pcctl</tt></td>
+      <td><b>PCell Control</b></td> <td>Set pcell options</td></tr>
+    <tr><td><a href="xic:crcel"><b>Create Cell</b></a></td>
+      <td><tt>crcel</tt></td>
+      <td>none</td> <td>Create new cell</td></tr>
+    <tr><td><a href="xic:crvia"><b>Create Via</b></a></td>
+      <td><tt>crvia</tt></td>
+      <td>none</td> <td>Create a standard via</td></tr>
+    <tr><td><a href="xic:flatn"><b>Flatten</b></a></td> <td><tt>flatn</tt></td>
+      <td><b>Flatten Hierarchy</b></td> <td>Flatten hierarchy</td></tr>
+    <tr><td><a href="xic:join"><b>Join/Split</b></a></td> <td><tt>join</tt></td>
+      <td><b>Join or Split Objects</b></td>
+      <td>Control join/split operations</td></tr>
+    <tr><td><a href="xic:lexpr"><b>Layer Expression</b></a></td>
+      <td><tt>lexpr</tt></td>
+      <td><b>Evaluate Layer Expression</b></td>
+      <td>Control layer expression evaluation</td></tr>
+    <tr><td><a href="xic:prpty"><b>Properties</b></a></td>
+      <td><tt>prpty</tt></td>
+      <td><b>Property Editor</b></td> <td>Edit properties</td></tr>
+    <tr><td><a href="xic:cprop"><b>Cell Properties</b></a></td>
+      <td><tt>cprop</tt></td> <td><b>Cell Property Editor</b></td>
+      <td>Edit cell properties</td></tr>
+    </table>
+
+!!SEEALSO
+xic:commands
+
+!! 111609
+!!KEYWORD
+xic:cedit
+!!TITLE
+Enable Editing
+!!HTML
+    <b>Keyword</b>: <tt>cedit</tt>
+
+    <p>
+    This button tracks the state of the IMMUTABLE flag of the current
+    cell, and will alter the flag if editing mode is changed.  When
+    the current cell is IMMUTABLE, it can not be modified, and all
+    editing features are disabled.  The side menu is hidden, the
+    <b>Modify Menu</b> is disabled, and all but this button and <a
+    href="xic:crcel"><b>Create Cell</b></a> are disabled in the
+    <b>Edit Menu</b>.
+
+    <p>
+    If there is no current cell, editing features are disabled.
+
+    <p>
+    Cells read into <i>Xic</i> through the <a href="xic:libs">library
+    mechanism</a> have the IMMUTABLE flag set.  This button can be
+    used to allow modification of these cells.
+
+    <p>
+    Setting the IMMUTABLE flag of the current cell from the
+    <b>Flags</b> button in the <a href="xic:cells"><b>Cells
+    Listing</b></a> panel from the <b>Cells Menu</b> or with the <a
+    href=!setflag"><b>!setflag</b></a> command will have the same
+    effect as use of this button.
+
+!!SEEALSO
+xic:editmenu
+
+!! 100416
+!!KEYWORD
+xic:edset
+!!TITLE
+Editing Setup Panel
+!!HTML
+    <img src="screenshots/edsetup.png" align=right>
+    <b>Keyword</b>: <tt>edset</tt>
+
+    <p>
+    The <b>Setup</b> button in the <b>Edit Menu</b> brings up the
+    <b>Editing Setup</b> panel.  The panel provides controls for
+    setting various parameters and options which apply during layout
+    editing.
+
+    <dl>
+    <dt><b>Constrain angles to 45 degree multiples</b><dd>
+    When this check box is active, <a href="xic:wire">wire</a> and <a
+    href="xic:polyg">polygon</a> vertices are constrained to form
+    angles of multiples of 45 degrees.  By default, a "smart" path
+    generator is employed, which will construct a valid path to the
+    pointer location from the previous point during wire or polygon
+    construction.  This will often add two vertices:  a 45 degree
+    extension, followed by a Manhattan extension, in order to connect
+    the points.  If the <b>Ctrl</b> key is held while the new point is
+    defined, the "smart" feature is disabled, and only one new vertex
+    is added.  If the <b>Shift</b> key is held, then the 45 degree
+    constraint is removed entirely.
+
+    <p>
+    The <a href="Constrain45"><b>Constrain45</b></a> variable tracks
+    the state of this check box, and setting or clearing the variable
+    will also set or clear the mode.
+
+    <P>
+    When active, rotation angles available in the <a
+    href="xic:spin"><b>spin</b></a> command, and translation angles in
+    the <a href="xic:strch"><b>Stretch</b></a> command, and the vertex
+    editors for polygons and wires, are constrained to multiples of 45
+    degrees.  However, pressing the <b>Shift</b> key will remove the
+    constraint in these commands while the key is held.  If the
+    <b>Constrain 45</b> variable is not defined, holding <b>Shift</b>
+    will impose the 45 degree angle constraint.  Thus, the
+    <b>Shift</b> key inverts the effective state of the <b>Constrain
+    45</b> variable (and this check box) in these commands.
+    </dl>
+
+    <dl>
+    <dt><b>Merge new boxes and polys with existing boxes/polys</b><dd>
+    When this check box is set, new <a href="xic:box">boxes</a> and <a
+    href="xic:polyg">polygons</a> that are created with the side menu
+    commands are merged with existing boxes and polygons to form a
+    larger polygon in the database.  New <a href="xic:wire">wires</a>
+    will be connected to existing wires on the same layer with the
+    same width and endpoint, but do not participate in the box/polygon
+    merging of new objects.
+
+    <p>
+    However, on layers with the <a href="NoMerge"><tt>NoMerge</tt></a>
+    technology file keyword set, merging is always suppressed.
+
+    <p>
+    The state of this check box tracks the logically inverted state of
+    the boolean variable <a
+    href="NoMergeObjects"><b>NoMergeObjects</b></a>, which can
+    (equivalently) be set with the <a href="!set"><b>!set</b></a>
+    command.
+
+    <p>
+    Existing objects can be similarly joined, or split into
+    trapezoids, whith the buttons in the <b>Join or Split Objects</b>
+    panel brought up with the <a href="xic:join"><b>Join/Split</b></a>
+    button in the <b>Edit Menu</b>.
+
+    <p>
+    Join (merging) operations are subject to the settings of several
+    <a href="JoinMaxPolyVerts">variables</a>, which have equivalent
+    entries in the <b>Join or Split Objects</b> panel.  These limit
+    the complexity of polygons created by merging, mostly for
+    optimizing for speed for merging large object collections.
+
+    <p>
+    The <b>Clip and merge new boxes only, not polys</b> button in this
+    panel modifies the merging behavior to clip and merge boxes only.
+
+    <p>
+    This object merging is separate and unrelated to the box merging
+    available when reading a layout file into the database, which has
+    a separate merging control in the <b>Setup</b> page of the <a
+    href="xic:imprt"><b>Import Control</b></a> panel from the
+    <b>Convert Menu</b>.
+    </dl>
+
+    <dl>
+    <dt><b>Clip and merge new boxes only, not polys</b><dd>
+    When merging is enabled (the <b>Merge new boxes and polys with
+    existing boxes/polys</b> check box is active), and this check box
+    is also active, polygons are ignored when merging, and new boxes
+    are clipped/merged.  This was the merging behavior in releases
+    prior to 3.1.7.
+
+    <p>
+    This setting has no effect if merging is not enabled.  It tracks
+    the state of the <a href="NoMergePolys"><b>NoMergePolys</b></a>
+    variable.
+    </dl>
+
+    <dl>
+    <dt><b>Prompt to save modified native cells</b><dd>
+    When the box is checked, the user will be prompted to save the
+    current cell if the cell is modified, and would be saved as a
+    native cell file, and a new current cell is about to be set.  This
+    was standard behavior in releases earlier than generation 4. 
+    Although it is always a good idea to save work periodically, the
+    prompt can be annoying to experienced users and is now disabled by
+    default.  The user will be given the chance to save modified cells
+    when exiting <i>Xic</i> in any case.
+
+    <p>
+    This check box tracks the state of the <a
+    href="AskSaveNative"><b>AskSaveNative</b></a> variable.  The
+    variable can be set as a boolean or cleared to change the mode,
+    which is equivalent to checking or un-checking this check box.
+    </dl>
+
+    <dl>
+    <dt><b>No wire width change in magnification</b><dd>
+    When the box is checked, the width of wires does not change when
+    the wire undergoes magnification, in a <a
+    href="xic:move"><b>Move</b></a>, <a
+    href="xic:copy"><b>Copy</b></a>, or <a
+    href="xic:flatn"><b>Flatten</b></a> operation.
+
+    <p>
+    This check box tracks the state of the <a
+    href="NoWireWidthMag"><b>NoWireWidthMag</b></a> variable.  The
+    variable can be set as a boolean or cleared to change the mode,
+    which is equivalent to checking or un-checking this check box.
+    </dl>
+
+    <dl>
+    <dt><b>Allow Create Cell to overwrite existing cell</b><dd>
+    When this check box is active, The <a href="xic:crcel"><b>Create
+    Cell</b></a> operation in the <b>Edit Menu</b> and the <a
+    href="CreateCell"><tt>CreateCell</tt></a> script function can
+    overwrite cells already in memory.  This can be dangerous and is
+    prevented by default, and the user is advised to be careful if using
+    this feature.
+
+    <p>
+    This check box tracks the state of the <a
+    href="CrCellOverwrite"><b>CrCellOverwrite</b></a> variable.  The
+    variable can be set as a boolean or cleared to change the mode,
+    which is equivalent to checking or un-checking this check box.
+    </dl>
+
+    <dl>
+    <dt><b>Maximum undo list length</b><dd>
+    This integer entry sets the number of operations remembered in the
+    <a href="xic:undo"><b>Undo</b></a> command.  If not set, 25
+    operations are saved.  If set to zero, the length is unlimited. 
+
+    <p>
+    This entry tracks the value of the <a
+    href="UndoListLength"><b>UndoListLength</b></a> variable.  The
+    variable can be set as an integer or cleared to change the value,
+    which is equivalent to changing the integer entry in this panel.
+    </dl>
+
+    <dl>
+    <dt><b>Maximum number of ghost-drawn objects</b><dd>
+    This integer entry sets the maximum number of objects to render
+    individually as "ghosts" attached to the mouse pointer during
+    operations such as move and copy.  This can be set to an unsigned
+    integer in the range 50-50000.  If there are more than this number,
+    some outlines won't be shown, the smaller-area objects will be
+    skipped.  The default is 4000 if this variable is not set.  If,
+    when moving a large number of objects, the pointer motion is too
+    sluggish, the user can set this variable to compensate.
+
+    <p>
+    This entry tracks the value of the <a
+    href="MaxGhostObjects"><b>MaxGhostObjects</b></a> variable.  The
+    variable can be set as an integer or cleared to change the value,
+    which is equivalent to changing the integer entry in this panel.
+    </dl>
+
+    <dl>
+    <dt><b>Maximum subcell depth in ghosting</b><dd>
+    This menu sets the maximum expansion depth for instance expansion
+    in ghosting.  If <b>as expanded</b>, this is the same as the
+    normal <a href="xic:expnd">expansion depth</a>.  The actual
+    expansion depth used in ghosting will not be larger than the
+    normal expansion depth, but can be smaller.  For example, setting
+    this to 0 (zero) will prevent expansion of ghosted subcells
+    entirely.
+
+    <p>
+    This entry tracks the value of the <a
+    href="MaxGhostDepth"><b>MaxGhostDepth</b></a> variable.  The
+    variable can be set as an integer or cleared to change the value,
+    which is equivalent to changing the integer entry in this panel.
+    </dl>
+
+!!SEEALSO
+xic:editmenu
+
+!! 091614
+!!KEYWORD
+xic:pcctl
+!!TITLE
+PCell Control
+!!HTML 
+    <img src="screenshots/pccontrol.png" align=right>
+    <b>Keyword</b>: <tt>pcctl</tt>
+
+    <p>
+    The <b>PCell Control</b> button in the <b>Edit Menu</b> brings up the
+    <b>PCell Control</b> panel.  From the panel, various options related
+    to <a href="xic:pcells">parameterized cells</a> (pcells) can be set.
+    The following elements are available.
+
+    <dl>
+    <dt><b>Auto-abutment mode</b><dd>
+    The drop-down menu provides three choices, <b>Mode 1</b> through
+    <b>Mode 3</b>.  This provides the three values for the
+    <b>otherPinsOnNet</b> parameter that is part of the Ciranova <a
+    href="pc_abut">auto-abutment</a> protocol as implemented in
+    <i>Xic</i>.  How the pcell uses this parameter is up to the pcell
+    author, there is really no <i>a-priori</i> interpretation.
+
+    <p>
+    The Ciranova <tt>Nmos2</tt> example pcell interprets the value to
+    have the following meanings.  This is likely to be used in other
+    pcells as well.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td valign=top><b>Mode 1</b><br>value 0</td> <td>Auto-abutment
+     is disabled.</td></tr>
+    <tr><td valign=top><b>Mode 2</b><br>value 1</td> <td>Abutment takes
+     place with no contact between the gates.</td></tr>
+    <tr><td valign=top><b>Mode 3</b><br>value 2</td> <td>Abutment takes
+     place with a contact (to layer M1) between the gates.</td></tr>
+    </table>
+
+    <p>
+    This setting tracks the value of the <a
+    href="PCellAbutMode"><b>PCellAbutMode</b></a> variable.  The
+    default (when the variable is not set) is Mode 2.  The variable
+    can be set to the integers 0-2, which correspond to the three
+    modes.
+    </dl>
+
+    <dl>
+    <dt><b>Hide and disable stretch handles</b><dd>
+    <i>Xic</i> implements the Ciranova <a href="pc_stretch">stretch
+    handle</a> protocol.  By default, the stretch handles are visible
+    in selected, expanded instances, and in the current cell if the
+    cell is a sub-master.  Setting this option will hide and disable
+    all stretch handles.
+
+    <p>
+    The <a href="PCellHideGrips"><b>PCellHideGrips</b></a> variable
+    tracks the state of this check box.
+    </dl>
+
+    <dl>
+    <dt><b>Instance min. pixel size for stretch handles</b><dd>
+    The stretch handles of a selected instance are shown only if the
+    instance is displayed large enough to avoid inadvertently engaging
+    the stretch handles when using the mouse for other purposes.  By
+    default, the smaller of the instance width or height must be 100
+    pixels or larger for stretch handles to appear.  This numerical
+    entry will modify this threshold.
+
+    <p>
+    The <a href="PCellGripInstSize"><b>PCellGripInstSize</b></a>
+    variable tracks the value of this entry.
+    </dl>
+
+    <dl>
+    <dt><b>List sub-masters as modified cells</b><dd>
+    When this check box is checked, the <a
+    href="xic:sv"><b>Modified Cells</b></a> panel, which appears
+    when exiting <i>Xic</i> or from the <a href="!sa"><b>!sa</b></a>
+    command when there are cells that are modified and unsaved, will
+    include sub-master cells.  Normally, sub-masters live only in
+    memory, to be re-created when needed, and are excluded from the
+    listing.  However, there may be times when it is desirable to
+    write these to disk.
+
+    <p>
+    The <a href="PCellListSubMasters"><b>PCellListSubMasters</b></a>
+    variable tracks the state of this check box.
+    </dl>
+
+    <dl>
+    <dt><b>Show all evaluation warnings</b><dd>
+    By default, certain warning messages are suppressed while
+    evaluating a pcell script, since they can be annoying and are
+    probably only of interest to the pcell author.  At present, this
+    applies only to coincident (duplicate) object checking.  If this
+    check box is checked, these messages will pop up in a window when
+    the pcell sub-master is created.
+
+    <p>
+    The <a href="PCellShowAllWarnings"><b>PCellShowAllWarnings</b></a>
+    variable tracks the state of this check box.
+    </dl>
+
+!!SEEALSO
+xic:editmenu
+xic:pcells
+
+!! 092109
+!!KEYWORD
+xic:crcel
+!!TITLE
+Create Cell
+!!HTML
+    <b>Keyword</b>: <tt>crcel</tt>
+
+    <p>
+    The <b>Create Cell</b> button in the <b>Edit Menu</b> will create
+    a new cell from the currently selected objects.  The user is
+    prompted for a name for the new cell.  The new cell is created in
+    memory, and should be saved to disk if future use is intended.  It
+    is marked as "modified" so the user will be given the chance to
+    save it when exiting <i>Xic</i>.
+
+    <p>
+    The <a href="!sqdump"><b>!sqdump</b></a> function is similar, but
+    writes a native file to disk and does not create a cell in
+    memory.
+
+    <p>
+    In electrical mode, note that the new cell is not a subcircuit. 
+    It must be edited and connection points added (with the <a
+    href="xic:subct"><b>subct</b></a> command) before it can be used
+    in another circuit.
+
+    <p>
+    The user is given the option to replace the selected objects with
+    an instance of the new cell.
+
+    <p>
+    By default, an attempt to overwrite a cell already in memory will
+    fail.  If the <a href="CrCellOverwrite"><b>CrCellOverwrite</b></a>
+    variable is set, existing cells in memory can be overwritten (use
+    this with care).
+
+!!SEEALSO
+button1
+xic:area
+xic:editmenu
+xic:flatn
+xic:subct
+
+!! 031815
+!!KEYWORD
+xic:crvia
+!!TITLE
+Create Via
+!!HTML
+    <b>Keyword</b>: <tt>crvia</tt>
+    <img src="screenshots/crvia.png" align=right>
+
+    <p>
+    The <b>Create Via</b> button in the <b>Edit Menu</b> brings up the
+    <b>Via Creation</b> panel, if <a href="stdvia">standard vias</a>
+    are defined in the <a href="techfile:stdvia">current
+    technology</a>.  If no standard vias are defined, the menu entry
+    will be grayed, and the panel will not be available.  This will be
+    the case for the example <tt>scmos</tt> and Hypres technology
+    files provided.  The <tt>xic_tech.demo</tt> technology file found
+    with the memory chip examples does provide standard via
+    definitions, should the user wish to try this feature.
+
+    <p>
+    The panel contans a number of entry areas, corresponding to the
+    standard via parameters as described below.  Of these, the
+    numerical parameters can be changed by the user to create
+    variants.  The fields that contain layer names can not be changed,
+    except by creating a new standard via definition.  Presently, this
+    must be done by editing the technology file.
+
+    <p>
+    Each row of the panel contains a description and two entry areas,
+    as most of the entries have separate values for X and Y
+    directions.  Dimensions are in microns.
+
+    <dl>
+    <dt><b>Via name, cut layer</b><dd>
+    This row contains two menus, which together provide access to all
+    of the available standard via definitions.  The menu on the right
+    provides the process layer names that are used as "cuts".  These
+    are the layers that represent holes in an insulating layer,
+    generally called "via layers".  The menu on the left provides the
+    names of standard vias defined which use that via layer.  Most
+    often, there is only one such definition, for a metal to metal
+    contact.  In other cases, one of the "conductors" may be an
+    implanted area, in which case there may be several choices.  When
+    the user selects a standard via using these menus, the other
+    fields in the panel will be set to the default values for the
+    various parameters.
+    </dl>
+
+    <dl>
+    <dt><b>Layer 1, Layer 2</b><dd>
+    These are the layer names of the two layers to be connected by the
+    via.  These can not be changed by the user, except by selecting another
+    standard via.  In <i>Xic</i>, <b>Layer 1</b>, and the '1' designation
+    in general, corresponds to the bottom conductor.
+    </dl>
+
+    <dl>
+    <dt><b>Cut width, height</b><dd>
+    The "cut" is the feature on the via layer that actually forms the
+    contact.  In a standard via, this is always rectangular.  In a
+    semiconductor process, this is almost always a square of a fixed
+    size.  Although the two dimensions can be changed by the user, one
+    must be aware of the relevant design rules before doing so.
+    </dl>
+
+    <dl>
+    <dt><b>Cut rows, columns</b><dd>
+    In order to lower contact resistance and handle higher current,
+    the cut structure can be arrayed.  In some situations it may be
+    possible to simply increase the size of a single cut, but in more
+    advanced processing the cut size is fixed and arrays are used. 
+    This is probably the most common variant.
+    </dl>
+
+    <dl>
+    <dt><b>Cut spacing X,Y</b><dd>
+    This is the space between cut edges (not center-to-center) in the
+    X and Y directions.  This is only useful if the cut is arrayed. 
+    In general, the two values are the same, and fixed at a minimum
+    from a design rule.  The values should be changed only with
+    knowledge of the appropriate design rules.
+    </dl>
+
+    <dl>
+    <dt><b>Enclosure 1 X,Y</b><dd>
+    In addition to the cut, the via will also contain squares of the
+    two metal layers.  The "Enclosure" is the distance the metal layer
+    overhangs the cut.  The two numbers apply to the bottom layer, in
+    the X and Y directions.  The two numbers are typically set to a
+    design rule minimum, and should be changed only with knowledge of
+    the design rules involved.
+    </dl>
+
+    <dl>
+    <dt><b>Offset 1 X,Y</b><dd>
+    If the offset parameters are zero, the metal rectangle is centered
+    on the cut.  One can set the offset to a nonzero value, which will
+    move the center of the metal rectangle relative to the center of
+    the cut.  This entry applies to the bottom conductor.  These
+    entries are almost always zero.
+    </dl>
+
+    <dl>
+    <dt><b>Enclosure 2 X,Y</b><dd>
+    As for <b>Enclosure 1</b>, but the values apply to the top conductor.
+    </dl>
+
+    <dl>
+    <dt><b>Offset 2 X,Y</b><dd>
+    As for <b>Offset 1</b>, but the values apply to the top conductor.
+    </dl>
+
+    <dl>
+    <dt><b>Origin offset X,Y<b><dd>
+    This is the origin of the sub-master coordinate system, which if
+    zero is centered on the cut array.  This is the same as Virtuoso,
+    but appears to differ from the OpenAccess specification which seems
+    to indicate that the origin is centered on the lower-left cut
+    element.  All features of the via are drawn relative to this offset,
+    so there are no design rule implications.  These values are most
+    often zero.
+    </dl>
+
+    <dl>
+    <dt><b>Implant 1, Implant 2</b><dd>
+    Up to two additional rectangles can be drawn in the via,
+    representing implant areas.  These may apply when contacting
+    activated substrate areas, where additional spacing rules to an
+    implant region edge may apply.  If defined in the standard via
+    definition, one or both of these entries may contain an implant
+    layer name.  If not, the entry area is grayed.  The layer names can
+    not be changed by the user, except by selecting another standard
+    via.
+    </dl>
+
+    <dl>
+    <dt><b>Implant 1 enc X,Y</b><dd>
+    If an <b>Implant 1</b> layer is present, these entries will
+    contain the enclosure values of the implant 1 layer rectangle
+    relative to the bottom conductor rectangle.  That is, the implant
+    1 rectangle will overhang the bottom conductor rectangle in the X
+    and Y directions by the values given.
+    </dl>
+
+    <dl>
+    <dt><b>Implant 2 enc X,Y</b><dd>
+    If an <b>Implant 2</b> layer is present, these entries will
+    contain the enclosure values of the implant 2 layer rectangle
+    relative to the top conductor rectangle.  That is, the implant
+    2 rectangle will overhang the top conductor rectangle in the X
+    and Y directions by the values given.
+    </dl>
+
+    The easiest way to understand the effect of these parameters is
+    to create some vias.
+
+    <p>
+    Entering the parameters has no effect until the <b>Apply</b> button
+    is pressed.  When <b>Apply</b> is pressed, a new internal sub-master
+    cell for the variant is created if necessary, and the via structure
+    is ghost-drawn and attached to the mouse pointer.  Instances of the
+    via will be placed where the user clicks in a drawing window.  As for
+    normal subcells, the current transform will be applied to the via.
+    Most process rules will not accept 45-degree rotations.  The placement
+    mode can be exited by pressing the <b>Esc</b> key.
+
+!!SEEALSO
+xic:editmenu
+
+!! 102913
+!!KEYWORD
+xic:flatn
+!!TITLE
+Flatten Hierarchy
+!!HTML
+    <img src="screenshots/flatten.png" align=right>
+    <b>Keyword</b>: <tt>flatn</tt>
+
+    <p>
+    The <b>Flatten</b> button in the <b>Edit Menu</b> brings up a
+    small <b>Flatten Hierarchy</b> pop-up which controls flattening of
+    the hierarchy by moving the contents of selected subcells into the
+    current cell.  A <b>Depth</b> choice menu selects the depth into
+    the hierarchy to flatten.  If 0, geometry in the selected subcells
+    is brought into the current cell, and sub-subcells are placed in
+    the current cell, becoming subcells.  If "<tt>all</tt>", the
+    entire subcell hierarchy is flattened, i.e., all geometry under a
+    selected subcell is brought into the current cell.
+
+    <p>
+    The <b>Use fast mode</b> check box will select a processing mode
+    that will skip undo list processing and object merging operations
+    for speed and reduced memory use.  This may be desirable for large
+    jobs containing complex cells, which may take a long time to
+    process.  In this mode, there is no "undo" capability, however.
+
+    <p>
+    If the <b>Use object merging when flattening</b> check box is
+    checked, the new object merging will be performed when objects
+    from the subcells are promoted to the current cell.  This is the
+    same merging as specified in the <a href="xic:edset"><b>Editing
+    Setup</b></a> panel from the <b>Edit Menu</b>.  Use of full
+    polygon merging can greatly increase processing time, simple box
+    clipping/merging has much lower overhead.  Merging will generally
+    reduce the object count in the layout.
+
+    <p>
+    The <b>Flatten</b> button on the pop-up initiates the operation. 
+    The subcells to be flattened must have been selected at this
+    point.
+
+    <p>
+    Pressing <b>Ctrl-c</b> will pause the process, and give the user the
+    option of terminating the job.  It is usually not desirable to
+    stop in the middle of a flatten operation, but invoking this
+    prompt may reassure the user that the operation is in progress and
+    not "hung".
+
+    <p>
+    In electrical mode, symbolic instances and library devices are
+    never flattened, they are considered atomic.  If you must flatten
+    an instance that is displayed symbolically, the instance must
+    first be forced to display as a schematic, either by reverting its
+    master to non-symbolic temporarily, or by adding a <b>NoSymb</b>
+    property to the instance with the <a href="xic:prpty"><b>Property
+    Editor</b></a>.
+
+!!SEEALSO
+xic:editmenu
+
+!! 070616
+!!KEYWORD
+xic:join
+!!TITLE
+Join or Split Objects
+!!HTML
+    <img src="screenshots/joinsplit.png" align=right>
+    <b>Keyword</b>: <tt>join</tt>
+
+    <p>
+    The <b>Join/Split</b> button in the <b>Edit Menu</b> brings up the
+    <b>Join or Split Objects</b> panel.  This panel contains controls
+    for setting defaults and initiating join and split operations. 
+    These operations are identical to those available from the <a
+    href="!join"><b>!join</b></a> and <a
+    href="!split"><b>!split</b></a> text commands.
+
+    <p>
+    The panel contains the following controls:
+
+    <dl>
+    <dt><b>No limits in join operation</b><dd>
+    This check box unsets the limits on the complexity of polygons
+    that are created during the merge, by setting the <a
+    href="JoinMaxPolyVerts"><b>JoinMaxPolyVerts</b></a>, <a
+    href="JoinMaxPolyGroup"><b>JoinMaxPolyGroup</b></a>, and <a
+    href="JoinMaxPolyQueue"><b>JoinMaxPolyQueue</b></a> variables to
+    "0" (zero).
+    </dl>
+
+    <dl>
+    <dt><b>Maximum vertices in joined polygon</b><dd>
+    This provides an entry area for setting the value of the <a
+    href="JoinMaxPolyVerts"><b>JoinMaxPolyVerts</b></a> variable,
+    which limits the number of vertices allowed in a polygon created
+    as the result of a join operation.
+    </dl>
+
+    <dl>
+    <dt><b>Maximum trapezoids per poly for join</b><dd>
+    This provides an entry area for setting the value of the <a
+    href="JoinMaxPolyGroup"><b>JoinMaxPolyGroup</b></a> variable,
+    which places a limit on the number of connected trapezoids that
+    can be used to form a polygon.
+    </dl>
+
+    <dl>
+    <dt><b>Trapezoid queue size for join</b><dd>
+    This provides an entry area for setting the value of the <a
+    href="JoinMaxPolyQueue"><b>JoinMaxPolyQueue</b></a> variable,
+    which provides a limit on the number of trapezoids that can be
+    considered for joining into polygons in a single pass.
+    </dl>
+
+    <dl>
+    <dt><b>Clean break in join operation limiting</b><dd>
+    When this check box is set, <i>Xic</i> will attempt to break
+    polygons where the vertex limit is reached into pieces so that the
+    boundaries are more visually attractive.  This tracks the state of
+    the <a href="JoinBreakClean"><b>JoinBreakClean</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Include wires (as polygons) in join/split</b><dd>
+    If this check box is set, wire objects will be included in
+    join/split operations, treated as polygons.  If not checked, wires
+    are ignored in these operations.  This tracks the state of the <a
+    href="JoinSplitWires"><b>JoinSplitWires</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Join</b><dd>
+    This push button initiates a join operation on selected objects. 
+    All suitable selected objects will be joined on their respective
+    layers, as for the <a href="!join"><b>!join</b></a> command
+    without an argument.  Unlike other commands that join (merge)
+    objects, this overrides the <a href="NoMerge"><tt>NoMerge</tt></a>
+    technology attribute if set on an object's layer.
+    </dl>
+
+    <dl>
+    <dt><b>Join Lyr</b><dd>
+    This will join objects on the current layer, whether selected or
+    not.  The layer must be visible, and not have the <a
+    href="NoMerge"><tt>NoMerge</tt></a> technology attribute set. 
+    This is equivalent to the <b>!join</b> command with the "layer"
+    argument.
+    </dl>
+
+    <dl>
+    <dt><b>Join All</b><dd>
+    This push button initiates a join operation on all objects in the
+    current cell, selected or not.  It applies to objects on visible,
+    selectable layers that do not have the <a
+    href="NoMerge"><tt>NoMerge</tt></a> technology attribute applied. 
+    This is the same as the <b>!join</b> command with the "all"
+    argument given.
+
+    </dl>
+
+    <dl>
+    <dt><b>Split Horiz</b><dd>
+    This will decompose complex polygons into a collection of
+    trapezoids (boxes and simple polygons in the database) that
+    collectively cover the same area and do not overlap.  The
+    splitting is performed using horizontal scan lines.  This is the
+    same effect as the <a href="!split"><b>!split</b></a> command. 
+    Wire objects will also be split if the <b>JoinSplitWires</b>
+    variable or the corresponding check box is set.
+    </dl>
+
+    <dl>
+    <dt><b>Split Vert</b><dd>
+    This will also decompose complex polygons into a collection of
+    trapezoids, however vertical scan lines are used.  This is the
+    same effect as using the "<tt>v</tt>" argument to the <b>!split</b>
+    command.  Wire objects will also be split if the
+    <b>JoinSplitWires</b> variable or the corresponding check box is
+    set.
+    </dl>
+
+!!SEEALSO
+xic:editmenu
+!layer
+
+!! 100516
+!!KEYWORD
+xic:lexpr
+!!TITLE
+Evaluate Layer Expression
+!!HTML
+    <img src="screenshots/lexpr.png" align=right>
+
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="xic:lexpr#examp"><b>Examples</b></a><br>
+    <a href="xic:lexpr#extln"><b>Extended Layer Names</b></a><br>
+    <a href="xic:lexpr#advex"><b>Advanced Examples</b></a>
+    </td></tr></table>
+
+    <p>
+    <b>Keyword</b>: <tt>lexpr</tt>
+
+    <p>
+    The <b>Layer Expression</b> button in the <b>Edit Menu</b> brings
+    up the <b>Evaluate Layer Expression</b> panel.  <a
+    href="layer_exp">Layer expressions</a> are logical expressions
+    referencing the geometry on existing layers, with various
+    operators and functions.  These evaluate to a pattern, which can
+    be applied to a new or existing layer.  Operations include
+    polarity inversion, intersection, union, and many more complex
+    possibilities.
+
+    <p>
+    The <b>Evaluate Layer Expression</b> panel allows layer
+    expressions to be applied to the current cell hierarchy, much the
+    same as the text-mode <a href="!layer"><b>!layer</b></a> command. 
+    The panel allows easy setting of variables which control the
+    expression evaluation, whether initiated from the panel or the
+    <b>!layer</b> command.
+
+    <p>
+    Full layer expression evaluation is available in physical mode
+    only, though joining, splitting and copying are available in
+    either mode.
+
+    <p>
+    The controls found in the <b>Evaluate Layer Expression</b> panel
+    are described below.
+
+    <dl>
+    <dt><b>To layer</b><dd>
+    This entry area requires the name of a layer on which new geometry
+    will be created while the layer expression is evaluated.  This is
+    the only control in the panel that requires an entry.  If the
+    layer name does not match an existing layer name (as a short or
+    <a href="LongName">long name</a>), a new layer is created, with a
+    name generated from the given name in the same way as in the <a
+    href="techfile:layers">technology file</a> layer definitions.
+
+    <p>
+    If no expression is given, the <b>To layer</b> is created, if it
+    does not exist.  If the layer exists, and one of <b>Joined</b>,
+    <b>Horiz Split</b>, or <b>Vert Split</b> is set, that operation
+    will be performed on the <b>To layer</b>.  The result is similar
+    to the corresponding operations as initiated form the <b>Join or
+    Split Objects</b> panel from the <a
+    href="xic:join"><b>Join/Split</b></a> button in the <b>Edit
+    Menu</b>, or the <a href="!join"><b>!join</b></a> and <a
+    href="!split"><b>!split</b></a> commands.  If the <b>To layer</b>
+    did not previously exist, or the <b>Default</b> new object format
+    is selected, layer creation is the only operation performed.
+    </dl>
+
+    <dl>
+    <dt><b>Depth to process</b><dd>
+    When the layer expression is evaluated, the layer geometry used in
+    the processing is obtained to this level in the hierarchy.  If 0,
+    only the geometry in the present cell is considered.  If
+    "<tt>all</tt>", the geometry of the complete hierarchy is taken.
+    </dl>
+
+    <dl>
+    <dt><b>Recursively create in subcells</b><dd>
+    This check box has effect only if the <b>Depth</b> is not zero. 
+    When checked, the layer expression is evaluated in the current
+    cell and each subcell to depth, using only the objects from that
+    cell.  If this is unchecked, the operation is quite different.  In
+    this case, there is no recursion, and all new geometry is created
+    in the current cell, but geometry in cells to depth is considered
+    when creating the new geometry.
+    </dl>
+
+    <dl>
+    <dt><b>Partition Size</b><dd>
+    To maximize computation speed, the expression evaluation is
+    performed step-wise over a logical grid in the target cell.  The
+    grid origin is the lower-left corner of the cell.  The partition
+    size is the width of an (assumed square) grid cell.  The
+    calculations are performed for each grid square that overlaps the
+    cell area.  This can be more efficient than calculating the whole
+    cell in one shot (which might not even be possible due to memory
+    limitations).
+
+    <p>
+    The gridding is used only if an actual expression is given, and
+    not simply a layer name (or no expression at all).  If the
+    expression consists only of a layer name, processing requires only
+    a simple copy and there would be no reason to use partitioning.
+
+    <p>
+    If the <b>None</b> button is pressed, no partitioning will be used.
+
+    <p>
+    The default partition size is 100 microns, which can be adjusted
+    for best performance.  The size should be large enough to minimize
+    the number of grid cells to evaluate, but small enough to limit
+    the amount of geometry to process on average in each grid, to
+    avoid huge memory consumption and other ill effects of taking too
+    big of a "bite".
+
+    <p>
+    For simple cells, the grid size can be large, or partitioning can
+    be skipped entirely.  Partitioning can be skipped by pressing the
+    <b>None</b> button, or by setting the size to a value larger than
+    the cell bounding box width and height.
+
+    <p>
+    This entry tracks the state of the <a
+    href="PartitionSize"><b>Partition Size</b></a> variable, which is
+    also used by the <b>!layer</b> command and elsewhere.
+    </dl>
+
+    <dl>
+    <dt><b>Number of helper threads</b><dd>
+    <font color=red>PRELIMINARY. EXPERIMENTAL!</font>
+
+    <p>
+    Multiple threads can be used when evaluating a layer expression
+    over a grid.  Evaluation in each of the grid cells can be done in
+    parallel, so these jobs are submitted to the thread pool.  This
+    allows processor cores to work simultaneously on different parts
+    of the grid.
+
+    <p>
+    Multi-threading will be used if this entry is set nonzero.  The
+    value is the number of helper threads that can be called upon to
+    parallelize the operation.  The speediest value is probably one
+    less than twice the number of available processor cores, as each
+    Intel core provides two hardware threads.  Your results may
+    differ, so one should experiment.  One can also experiment with
+    the partition size to get fastest results, larger partitions are
+    more likely to overcome the multi-threading overhead.
+
+    <p>
+    This should not be set to a value larger than the number of
+    available hardware threads minus one, but one might wish to try
+    smaller values.  If set to a larger value, software threads will
+    be used, which will increase computation time.  If set to 0, the
+    operation is single-threaded.
+
+    <p>
+    This entry tracks the value of the <a
+    href="Threads"><b>Threads</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Don't clear layer before evaluation</b><dd>
+    By default, the layer given in the <b>To layer</b> entry is
+    cleared before the expression is evaluated, so that the layer will
+    contain only the result of the operation.  It this check box is
+    set, the <b>To layer</b> will not be cleared, new data will appear
+    in addition to existing data.
+    </dl>
+
+    <dl>
+    <dt><b>New object format</b><dd>
+    This consists of four interlocking "radio" buttons which
+    establish the nature of the new objects created by evaluating the
+    layer expression.  If <b>Joined</b> is selected, objects will be
+    combined into polygons before being added to the cell.  If
+    <b>Horiz Split</b> is selected, objects are added as trapezoids,
+    with a horizontal orientation (maximal width) favored.  If
+    <b>Vert Split</b> is selected, objects will also be added as
+    trapezoids, however a vertical orientation (maximal height) is
+    favored.
+
+    <p>
+    The <b>Default</b> choice has the same effect as <b>Joined</b> in
+    cases where the layer expression contains more than a layer name,
+    i.e., it contains at least one operator, function, or numeric
+    entry.  If the expression consists of a layer name only, the
+    <b>Default</b> choice will read the objects from that layer and
+    add them to the <b>To layer</b>, without modification.  The other
+    new object format choices will cause the objects read from the
+    layer to be joined or split before being added to the <b>To
+    layer</b>.
+
+    <p>
+    When joining objects, there are several <a
+    href="JoinMaxPolyVerts">variables</a> which fine-tune the
+    operation.  These are most conveniently set from the <b>Join or
+    Split Objects</b> panel brought up by the <a
+    href="xic:join"><b>Join/Split</b></a> button in the <b>Edit
+    Menu</b>.
+    </dl>
+
+    <dl>
+    <dt><b>Expression</b><dd>
+    This entry area contains the <a href="layer_exp">layer
+    expression</a> to evaluate.  This is an expression consisting of
+    existing layer names, operators, and function calls, which will be
+    evaluated.  Dark areas will be rendered on the layer given in the
+    <b>To layer</b> entry.
+
+    <p>
+    Thus, this provides a means of creating a new layer from geometry
+    on existing layers.  Labels are ignored during processing, but all
+    other objects contribute.  The same layer name can appear in the
+    <b>To layer</b> entry and in the expression, in which case the
+    contents of that layer is updated with the result of the
+    expression.
+
+    <p>
+    There are eight registers which can be used to save and recall
+    layer expression strings, for convenience.  The <b>Save</b> and
+    <b>Recall</b> buttons provide access to these registers. 
+    Selecting an item in the <b>Save</b> menu will save the current
+    contents of the <b>Expression</b> entry in that register. 
+    Selecting an item in the <b>Recall</b> menu will load that text
+    into the <b>Expression</b> entry area.
+    </dl>
+
+    <dl>
+    <dt><b>Use object merging while processing</b><dd>
+    When this check box is set, new objects created during evaluation
+    of the layer expression will be merged with existing objects,
+    using the same object merging as specified in the <a
+    href="xic:edset"><b>Editing Setup</b></a> panel from the <b>Edit
+    Menu</b>.
+
+    <p>
+    If there is no <b>Expression</b> given, or the expression consists
+    only of the same layer name given in <b>To layer</b>, then merging
+    is not performed.
+
+    <p>
+    In every other case, the merging enabled from the <b>Edit Menu</b>
+    will be performed as new objects are added to the <b>To Layer</b>. 
+    This merging will defeat the purpose of the join and split format
+    choices, so one must consider when merging makes sense.  Merging
+    applies to objects initially on the <b>To layer</b>, if not
+    clearing, plus the accumulated objects added as the operation
+    progresses.
+
+    <p>
+    Full polygon merging can greatly increase the time and memory
+    required to process a large job.  Box clipping has much less
+    overhead.
+    </dl>
+
+    <dl>
+    <dt><b>Fast mode</b><dd>
+    When set, undo list processing and object merging will be skipped,
+    which reduces memory use and computational overhead to a minimum. 
+    However, the operation can not be undone, so this mode should be
+    used with care.
+    </dl>
+
+    <dl>
+    <dt><b>Evaluate</b><dd>
+    Pressing this button will create the <b>To layer</b> if necessary,
+    evaluate the layer expression, and add the newly created geometry
+    to the current hierarchy.
+    </dl>
+
+    <a name="examp"></a>
+    <h2>Examples</h2>
+
+    <dl>
+    <dt>Clear layer <tt>M0</tt><dd>
+    <b>To layer</b>: <tt>M0</tt><br>
+    <b>Expression</b>: <tt>0</tt>
+    <dt>Copy layer <tt>M1</tt> to layer <tt>NEW</tt><dd>
+    <b>To layer</b>: <tt>NEW</tt><br>
+    <b>Expression</b>: <tt>M1</tt>
+    <dt>Copy the inverse of layer <tt>M1</tt> to <tt>NEW</tt><dd>
+    <b>To layer</b>: <tt>NEW</tt><br>
+    <b>Expression</b>: <tt>!M1</tt>
+    <dt>Copy the intersection area of <tt>I1</tt> and <tt>I2</tt> to
+      <tt>NEW</tt><dd>
+    <b>To layer</b>: <tt>NEW</tt><br>
+    <b>Expression</b>: <tt>I1&I2</tt>
+    <dt>Copy the <tt>R1</tt> and <tt>R2</tt> areas to <tt>New</tt><dd>
+    <b>To layer</b>: <tt>NEW</tt><br>
+    <b>Expression</b>: <tt>R1|R2</tt>
+    </dl>
+
+    <a name="extln"></a>
+    <h2>Extended Layer Names</h2>
+    
+    <p>
+    The layer names in the layer expression (but not the <b>To layer</b>
+    entry) can acutally be given in an extended form:
+
+    <blockquote>
+    <i>lname</i>[<tt>.</tt><i>stname</i>][<tt>.</tt><i>cellname</i>]
+    </blockquote>
+
+    <p>
+    Most generally, the "layer" name consists of three tokens, two of
+    which are optional (indicated by square brackets above).  The
+    tokens are separated by a period ('<tt>.</tt>') character.  The
+    individual tokens can be double-quoted (i.e., using the
+    double-quote ('<tt>"</tt>') character), which must be used if the
+    tokens contain non-alphanumeric characters.  The period
+    separators must appear outside the scope of any quoting.
+
+    <dl>
+    <dt><i>lname</i><dd>
+    This is a short or long layer name, as found in the layer table.
+    <dt><i>stname</i><dd>
+    The name of a <a href="xic:stabs">symbol table</a> which contains
+    the <i>cellname</i>.
+    <dt><i>cellname</i><dd>
+    The name of a cell.
+    </dl>
+
+    <p>
+    If only one separator appears, the token that follows is taken as the
+    <i>cellname</i>, and the current symbol table is assumed.
+
+    <p>
+    The <i>cellname</i> is the name of a cell used as the source for
+    geometry.  If no <i>cellname</i> is given, the name of the
+    current cell is understood.  The odd case of an empty
+    <i>stname</i> indicates the "<tt>main</tt>" symbol table, e.g.,
+    <tt>layer..cell</tt> is equivalent to <tt>layer.main.cell</tt>.
+
+    <p>
+    If the <i>cellname</i> starts with the '<tt>@</tt>' character, and
+    no symbol table name is given, then the rest of the
+    <i>cellname</i> is taken as the name of a "special" database, as
+    created with script functions like <a
+    href="ChdOpenZdb"><tt>ChdOpenZdb</tt></a>.  If found, geometry
+    will be obtained from the database rather than a cell.  Otherwise,
+    when a <i>cellname</i> is given, the geometry is obtained from the
+    given cell, as if it were overlaid on the current cell.  The
+    <i>cellname</i> (or any of the three tokens) can be double quoted,
+    and must be quoted if the name contains a '<tt>.</tt>' character,
+    for example <tt>CPG."mycell.xic"</tt>.
+
+    <p>
+    If a <i>stname</i> is given, and the name matches an existing
+    symbol table name, the cell is obtained from that symbol table. 
+    If the symbol table name is given, the <i>cellname</i> field must
+    appear, but can be empty (a trailing period) which indicates the
+    name of the current cell.
+
+    <p>
+    If the <i>stname</i> is given, and the cell is not in this table,
+    it will be opened from disk into the given table (not the current
+    table) if found as a native cell file in the search path.
+
+    <p>
+    The coordinate origin of the source cell is taken as the origin of
+    the current cell.  The source cell must be in memory, or be in a
+    native cell in the search path.
+
+    <p>
+    Objects read from a "special" database are clipped to the boundary
+    of the cell being added to.  No such clipping is done when objects
+    are read from another cell.
+
+    <a name="advex"></a>
+    <h3>Advanced Examples</h3>
+
+    Suppose one has two versions of a cell, <tt>cell</tt> and
+    <tt>cell_old</tt>, and one needs to know if they differ on layer
+    <tt>M1</tt>.  Open a dummy cell for editing, then supply the
+    following and evaluate.
+    <blockquote>
+      <b>To layer</b>: <tt>ZZ</tt><br>
+      <b>Expression</b>: <tt>M1.cell^M1.cell_old</tt>
+    </blockquote>
+    Press the <b>Home</b> key to view the entire cell space.  Any
+    geometry shown on the new dummy layer <tt>ZZ</tt> is the
+    exclusive-OR of the geometry on <tt>M1</tt> of the two cells,
+    i.e., the difference.  If there is no geometry on <tt>ZZ</tt>,
+    <tt>M1</tt> is the same in <tt>cell</tt> and <tt>cell_old</tt>.
+
+    <p>
+    As a variation, suppose that the user has done the following:
+    <blockquote><tt>
+      <i>set <a href="xic:stabs">symbol table</a> to</i> "<tt>old</tt>"<br>
+      <i>open</i> <tt>oldstuff/mycell</tt><br>
+      <i>return to previous symbol table</i><br>
+      <i>open</i> <tt>newstuff/mycell</tt>
+    </tt></blockquote>
+    There are now two versions of <tt>mycell</tt> in memory.
+    To compare the layer <tt>M1</tt> in the two cells, one could then
+    evaluate
+    <blockquote>
+      <b>To layer</b>: <tt>ZZ</tt><br>
+      <b>Expresson</b>: <tt>M1^M1.old.</tt>
+    </blockquote>
+    Then the <tt>ZZ</tt> layer, which consists of the exclusive-OR of
+    old and new <tt>M1</tt> in <tt>mycell</tt>, would be added to the
+    current <tt>mycell</tt>.  Pressing the <b>Tab</b> key undoes the
+    addition.
+
+    <p>
+    Suppose one wants to import the inverse of the geometry on layer
+    <tt>VIA</tt> from <tt>cell</tt> into the current cell, also on
+    layer <tt>VIA</tt>:
+    <blockquote>
+      <b>To layer</b>: <tt>VIA</tt><br>
+      <b>Expression</b>: <tt>!VIA.cell</tt>
+    </blockquote>
+    The <tt>VIA</tt> layer now consists of the inverse from
+    <tt>cell</tt>.  Any geometry that existed on <tt>VIA</tt> in the
+    current cell before the command was given is deleted (assuming
+    that the <b>Don't clear</b> check box is unchecked).  The bounding
+    box of the current cell may have been expanded to include the
+    bounding box of <tt>cell</tt>.  The area used to create an
+    inversion is the rectangle bounding all cells referenced in the
+    expression, plus the current cell.
+
+    <p>
+    Suppose one simply wants to copy the geometry from layer
+    <tt>M2</tt> of <tt>cell</tt> into the current cell:
+    <blockquote>
+      <b>To layer</b>: <tt>M2</tt><br>
+      <b>Expression</b>: <tt>M2.cell</tt>
+    </blockquote>
+    The <tt>M2</tt> layer now consists of the geometry on <tt>M2</tt>
+    from <tt>cell</tt>.  The bounding box of the current cell may have
+    been expanded, in which case some of the <tt>M2</tt> features may
+    be off-screen (press the <b>Home</b> key to view the entire cell). 
+    Any objects previously existing on <tt>M2</tt> in the current cell
+    are deleted before the operation, unless the <b>Don't clear</b>
+    check box is checked.
+
+!!SEEALSO
+xic:editmenu
+
+!! 030415
+!!KEYWORD
+xic:prpty prppanel
+!!TITLE
+Property Editor
+!!HTML
+    <img src="screenshots/prpty.png" align=right>
+
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="xic:prpty#edit"><b>Editing Properties</b></a><br>
+    <a href="xic:prpty#add"><b>Adding Properties</b></a><br>
+    <a href="xic:prpty#del"><b>Deleting Properties</b></a>
+    </td></tr></table><br>
+
+    <p>
+    <b>Keyword</b>: <tt>prpty</tt>
+
+    <p>
+    The <b>Properties</b> button in the <b>Edit Menu</b> brings up the
+    <b>Property Editor</b> containing commands for adding and
+    modifying <a href="properties">properties</a> of objects.  For the
+    most part <i>Xic</i> does not use properties in physical layouts,
+    but they provide important electrical information in schematic
+    layouts, which is required when building a netlist or SPICE deck.
+
+    <p>
+    Clicking on a selected non-pcell instance with <a
+    href="button1">button 1</a> and the <b>Ctrl</b> key held will
+    also bring up the <b>Property Editor</b>, if it is not already
+    present.
+
+    <p>
+    When the <b>Property Editor</b> first appears, or upon pressing
+    the <b>Activate</b> button in the panel, or if the
+    <b>Properties</b> menu button is pressed with the <b>Property
+    Editor</b> already visible but inactive, a command state begins
+    where it is possible to list and edit the properties of selected
+    objects.  The command state is terminated by pressing the
+    <b>Activate</b> button again, or pressing the <b>Properties</b>
+    button in the <b>Edit Menu</b>, or presing the <b>Esc</b> key, or
+    by starting a different command.  The <b>Property Editor</b>
+    remains visible, but will go to an inactive state.  The
+    <b>Dismiss</b> button in the <b>Property Editor</b> will exit the
+    command state if active, and retire the panel.
+
+    <p>
+    Unless stated otherwise, the descriptions of operations below
+    apply only when the command state is active.  When inactive, the
+    presence of the <b>Property Editor</b> window has no effect, and
+    other commands can be executed normally.
+
+    <p>
+    When the command mode becomes active, properties of one of the
+    selected objects (if any) are shown in the text window of the
+    panel.  The objects are not generally shown as selected, but an
+    internal list of objects that were selected before the command
+    mode was started, or were clicked on with the command state
+    active, is maintained.  The object for which the properties are
+    displayed is marked with a dotted outline around the object or a
+    cross over the object.  Clicking on the marked object will delete
+    that object from the internal list, and another object's
+    properties (if any in the list) will be shown.  Clicking on an
+    unmarked object will mark that object, add it to the list if it is
+    not already there, and display its properties.
+
+    <p>
+    The <a href="xic:desel"><b>desel</b></a> button in the <a
+    href="topbuttons">top button menu</a> button group and other methods
+    of deselection will clear the list of objects.
+
+    <p>
+    If the <b>Global</b> button in the panel is active, all objects in
+    the list are shown as selected (blinking outline or symbol).  The
+    <b>Global</b> button allows manipulation of the properties of all
+    objects in the list, not just the marked object.
+
+    <p>
+    When more than one device is in the list, the arrow keys can be
+    used to cycle the marked object through the list.
+
+    <p>
+    <img src="screenshots/prptyinfo.png" align=right>
+    When the <b>Info</b> button is active, clicking on an object will
+    bring up or update the <b>Property Info</b> window, loaded with
+    the properties of the object.  This contains a listing identical
+    to the <b>Property Editor</b>, however there are no buttons other
+    than <b>Dismiss</b>.  The object whose properties are listed in
+    the <b>Property Info</b> window is marked on-screen similarly to
+    the current object in the <b>Property Editor</b>, but with a
+    different color.
+
+    <p>
+    When the <b>Property Editor</b> is active, clicking on an object
+    with the <b>Shift</b> or <b>Control</b> key pressed will also
+    bring up or update the <b>Property Info</b> window, whether or not
+    the <b>Info</b> button is active.
+
+    <p>
+    The <b>Property Editor</b> and <b>Property Info</b> windows are
+    drag/drop sources and receivers, meaning that one can drag
+    properties from one window to another.  This will apply the
+    dragged property to the object associated with the drop window
+    (the source object is not affected).  Properties that must be
+    unique, such as most electrical properties, will be replaced with
+    the dropped property.  Properties that are not unique will be
+    added, without replacement.  Only ordinary, user-modifiable
+    properties can be copied in this manner.  The prompt line, while
+    in editing mode, is also a drop receiver for these windows.
+
+    <p>
+    The listing in either window shows the property number, a
+    descriptive name in electrical mode, and the property string, for
+    all properties attached to the current object.  A property can be
+    selected in the list by clicking on the text - it will be shown
+    highlighted when selected.  The current selection is used as input
+    by many of the command buttons in the panel.
+
+    <p>
+    In the properties listing, color is used to distinguish the types
+    of properties.  The colors can be modified by setting <a
+    href="techfile:attr#color">Special GUI Colors</a> listed below. 
+    This can be done in the technology file, or with the <a
+    href="!setcolor"><b>!setcolor</b></a> command.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>variable</th> <th>default</th> <th>purpose</th></tr>
+    <tr><td>&nbsp;</td> <td>black</td>
+      <td>internal properties</td></tr>
+    <tr><td><tt>GUIcolorHl1</tt></td> <td>red</td>
+      <td>user-set <b>name</b> property</td></tr>
+    <tr><td><tt>GUIcolorHl2</tt></td> <td>dark blue</td>
+      <td>physical mode pseudo-properties</td></tr>
+    <tr><td><tt>GUIcolorHl4</tt></td> <td>sienna</td>
+      <td>ordinary (user-modifiable) properties</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The value of the electrical mode <b>name</b> property is shown in
+    a different color when the property is set.  This property always
+    exists, and it would not otherwise be obvious when viewing the
+    listing when the <b>name</b> property has been set by the user, or
+    is simply showing the name assigned by <i>Xic</i>.
+
+    <p>
+    The command buttons in the <b>Property Editor</b> allow addition,
+    modification, and deletion of properties both globally (on all
+    selected objects) or on the marked object.  Those properties in
+    the list marked as "internal" can not be modified.  The physical
+    mode pseudo-properties can not be edited, but can be added (with
+    the <b>Add</b> button).  In this case, no property is added, but
+    the operation will cause some aspect of the object to change.
+
+    <a name="edit"></a>
+    <h2>Editing Properties</h2>
+
+    <p>
+    The <b>Edit</b> button allows editing of the current property.  If
+    no property is selected in the text when the <b>Edit</b> button is
+    pressed, the first user-modifiable property listed will become
+    selected, and the text of that property will appear on the prompt
+    line for editing.  If a user-modifiable property was selected
+    before the <b>Edit</b> button was pressed, the text of that
+    property will appear on the prompt line.  The up/down arrow keys
+    will cycle through the editable properties listed in the window,
+    selecting and placing the text on the prompt line in sequence. 
+    Also, clicking on an entry for a modifiable property in the window
+    will select it and load its text into the prompt line. 
+
+    <p>
+    The text in the prompt line can be edited, and pressing the
+    <b>Enter</b> key completes the edit.  The property listing will
+    show the changes, if any.  While editing, text from other windows
+    can be inserted using drag/drop (from the property windows or the
+    <b>File Selection</b> pop-up only) or with the window system
+    cut/paste method.
+
+    <p>
+    When inserting text from property windows, <a
+    href="hypertext">hypertext</a> references are preserved. 
+    Hypertext entries can also be inserted in electrical mode by
+    clicking on a device contact point or wire (node reference), on
+    the '+' symbol of some devices (branch reference), or elsewhere on
+    a device (name reference).  Pressing <b>Shift</b> or
+    <b>Control</b> while clicking on a device or subcircuit will bring
+    up the <b>Property Info</b> window, whether or not editing is
+    active.
+
+    <p>
+    For physical properties and <b>value</b>, <b>param</b>, and
+    <b>other</b> electrical properties, the <a href="longtext">long
+    text</a> feature is available.  This is indicated by the presence
+    of a small "<b>L</b>" button to the left of the prompt line, which
+    appears when the prompt line cursor is in the first column.  If
+    this button is pressed, or <b>Ctrl-t</b> typed, a text editor
+    window appears, loaded with the text of the property (if any). 
+    When a property is in long text format, the display listings will
+    show only "<tt>[text]</tt>" as the content, and the prompt line
+    will show the same string as a hypertext entry.  In this case,
+    just pressing <b>Enter</b> will bring up the text editor leaded
+    with the "real" property text.  This feature allows long,
+    multi-line text blocks to be associated with properties.
+
+    <p>
+    The description thus far applies whether or not the <b>Global</b>
+    button is set.  With the <b>Global</b> button not set, when the
+    <b>Enter</b> key is pressed to complete the editing, the property
+    will be updated, and the text in the <b>Property Editor</b> will
+    display the change.  The operation, as with all operations
+    described in this section, can be undone or redone with the
+    <b>Undo</b>/<b>Redo</b> commands or <b>Tab</b>/<b>Shift Tab</b>
+    keys.
+
+    <p>
+    If the <b>Global</b> button is set, the user will be prompted, in
+    sequence, for a new string for each of the devices in the internal
+    list.  After the first prompt, the arrow keys and click-selection
+    are disabled.  Each device will be assigned a new property or a
+    matching existing property will be replaced.  For properties that
+    can have more than one instance (<b>other</b> electrical
+    properties and all physical properties) if the number and string
+    of the original property shown highlighted in the <b>Property
+    Editor</b> window match those of an existing property, that
+    property will be replaced, otherwise a new property will be added.
+
+    <a name="add"></a>
+    <h2>Adding Properties</h2>
+
+    In physical mode, the <b>Add</b> button will produce a drop-down
+    menu containing the following items.
+
+    <dl>
+    <dt><b>nomerge</b><dd>
+    The <b>nomerge</b> choice will add a <a
+    href="prpty:nomerge"><b>nomerge</b></a> property (a property used
+    by the extraction system) to the selected object or objects. 
+    </dl>
+
+    <dl>
+    <dt><b>flatten</b><dd>
+    The <a href="prpty:flatten"><b>flatten</b></a> property applies to
+    electrical and physical cells and instances.  It is used during <a
+    href="ext:assoc">association</a> and <a href="xic:lvs">LVS</a> to
+    determine if the contents of the instance master should be
+    logically <a href="ext:exthier">promoted</a> into the containing
+    cell.  Although <i>Xic</i> can handle most hierarchy differences
+    automatically and transparently, this property may be used when
+    needed to force proper behavior.
+
+    <p>
+    If a <b>flatten</b> property has been applied to the master cell,
+    then instances of the cell will be flattened, unless the instance
+    also has the <b>flatten</b> property applied, in which case the
+    instance will not be flattened.  If the master does not contain a
+    <b>flatten</b> property, then and instance will be flattened only
+    if the instance has a <b>flatten</b> property applied.  Thus, the
+    <b>flatten</b> property of an instance reverses the effect of a
+    <b>flatten</b> property applied to the master.
+
+    <p>
+    The <a href="FlattenPrefix"><b>FlattenPrefix</b></a> variable, and
+    equivalently the <b>Cell flattening name keys</b> entry area in
+    the <b>Net and Cell Config</b> page of the <a
+    href="xic:excfg"><b>Extraction Setup</b></a> panel from the
+    <b>Extract Menu</b>, provide another means of causing instances of
+    cells to be flattened.
+    </dl>
+
+    <dl>
+    <dt><b>any</b><dd>
+    The <b>any</b> choice allows an arbitrary property to be added. 
+    This will initiate prompting for a property number and string to
+    add. 
+    </dl>
+
+    <p>
+    In electrical mode, the <b>Add</b> button brings up a menu of
+    property types that can be added.  Selecting an entry will
+    initiate prompting for the associated string.  Any selection in
+    the listing will be ignored.  Unlike the case of the <b>Edit</b>
+    button, the arrow keys and subsequent selection in the listing
+    will not affect the prompt line.
+
+    <p>
+    With the <b>Global</b> button off, completion of editing by
+    pressing <b>Enter</b> will "add" the new property to the current
+    object.  In electrical mode, properties other than the
+    <b>other</b> property will be replaced if they exist, since there
+    can be at most one such property.  There can be arbitrarily many
+    <b>other</b> properties, or properties of any number in physical
+    mode.  Such properties are always added and not replaced.
+
+    <p>
+    If the <b>Global</b> button is active, an identical copy of the
+    property will be added to each of the devices in the internal
+    list.  This will be a replacement for electrical properties other
+    than <b>other</b>, and an addition otherwise.  Unlike the
+    <b>Edit</b> button case, there is no individual prompting for a
+    string for each device.  The initial string (and number, in the
+    case of physical mode) is added to each object.
+
+    <p>
+    In electrical mode, the <b>Add</b> menu contains buttons for the
+    modifiable device and subcircuit instance properties listed below. 
+    Unless stated otherwise, there can be at most one each of the
+    properties described below.  This is enforced by <i>Xic</i>, i.e.,
+    attempts to add a second property of a given type will cause
+    replacement, not addition.
+
+    <dl>
+    <dt><b>name</b><dd>
+    The <b>name</b> button allows the modification of a <a
+    href="prpty:name"><b>name</b></a> property.  The <b>name</b>
+    property specifies the device or subcircuit instance name to
+    SPICE.  Unlike the other user-settable properties, the <b>name</b>
+    property always exists.  If not explicitly set by the user, the
+    device name will be generated internally.  However, if a
+    correspondence to an existing SPICE file is necessary, the name
+    must be specified.  <i>Xic</i> allows any name, however for the
+    device to be recognized by SPICE, the name must start with the
+    device's key letter as expected by SPICE.  Deleting the
+    <b>name</b> property simply reverts back to the internally
+    generated name.
+
+    <p>
+    If an assigned name property conflicts with an internally
+    generated name, the internally generated name will be updated so
+    as to not conflict by appending "_<i>N</i>", where <i>N</i> is
+    some integer.
+    </dl>
+
+    <dl>
+    <dt><b>model</b><br><b>value</b><dd>
+    The <b>model</b> and <b>value</b> buttons allow addition of a <a
+    href="prpty:model"><b>model</b></a> or <a
+    href="prpty:value"><b>value</b></a>, respectively.  Only one of
+    the <b>model</b> or <b>value</b> properties should be used per
+    device, as this really represents two different names for the same
+    text field in SPICE output.  One has the choice a supplying a
+    device model or component value to the device, but not both.
+    These properties generally apply to devices only, not subcircuits.
+    </dl>
+
+    <dl>
+    <dt><b>param</b><dd>
+    The <a href="prpty:param"><b>param</b></a> property is a catch-all
+    for additional parameters found in the device and subcircuit
+    instance lines in SPICE, such as initial conditions or device
+    geometrical factors.  The string will generally contain a list of
+    <i>name</i><tt>=</tt><i>value</i> terms, each separated by white
+    space.  Only one <b>param</b> property is allowed.
+    </dl>
+
+    <dl>
+    <dt><b>devref</b><dd>
+    The <a href="prpty:devref"><b>devref</b></a> property provides the
+    name of the controlling device to current-controlled sources and
+    the current-controlled switch.  At most one <b>devref</b> property
+    is allowed.
+    </dl>
+
+    <dl>
+    <dt><b>other</b><dd>
+    The <b>other</b> button allows addition of an <a
+    href="prpty:other"><b>other</b></a> property.  These properties
+    have no significance to <i>Xic</i> and are not used in SPICE
+    output.  They can be used to store alternate values for the
+    <b>model</b>, <b>value</b>, or <b>param</b> properties, or to
+    store any other information desired by the user.  There can be
+    arbitrarily many <b>other</b> properties per device or subcircuit
+    instance.
+    </dl>
+
+    <dl>
+    <dt><b>nophys</b><dd>
+    The <b>nophys</b> button allows addition of a <a
+    href="prpty:nophys"><b>nophys</b></a> property.  This property
+    does not affect SPICE output, but specifies that the device or
+    subcircuit instance has no physical implementation.  When
+    <i>Xic</i> is associating physical and electrical objects for
+    extraction and LVS, a physical implementation will not be sought
+    for objects with this property.
+
+    <p>
+    When the property is created, the user is prompted as to whether
+    the device terminals should be shorted together during LVS. 
+    Devices that have the <b>nophys</b> property applied will be
+    rendered using a different color than "normal" devices.  See the
+    description of <a href="xic:lvs#nophys">LVS</a> for a more complete
+    discussion on the use of this property.
+    </dl>
+
+    <dl>
+    <dt><b>flatten</b><dd>
+    This will add a <a href="prpty:flatten"><b>flatten</b></a>
+    property, which applies to electrical and physical cells and
+    instances.  See the description in the listing of physical
+    properties above.
+    </dl>
+
+    <dl>
+    <dt><b>nosymb</b><dd>
+    The <b>nosymb</b> button is used to add a property to electrical
+    subcircuit instances which forces them to be displayed as
+    expanded, whether of not the master cell of the instance is
+    symbolic.  Instances with this property will behave in all
+    respects as if the master were non-symbolic.  Thus, instances of
+    the same master can be displayed symbolically or not, in the same
+    design.  This property uses the same property number as the <a
+    href="prpty:symbolic"><b>symbolic</b></a> property applied to
+    cells.
+    </dl>
+
+    <dl>
+    The <b>range</b> button is used to add a <a
+    href="prpty:range">property</a> to electrical device or subcell
+    instances (other than terminal devices) that <i>vectorizes</i> the
+    instance.  The user is prompted for two non-negative numbers which
+    define the subscripting range.  Vectorized instances and
+    connection rules are discussed <a href="elec:vecinst">here</a>.
+    </dl>
+
+    <a name="del"></a>
+    <h2>Deleting Properties</h2>
+
+    If a modifiable property is selected in the list, pressing the
+    <b>Delete</b> button will delete the property.  If there is no
+    selection, the user will be prompted.  In physical mode, the user
+    is requested to provide the number for the property or properties
+    to delete.  In electrical mode, the user is requested to provide a
+    code consisting of any combination of the letters n, m, v, p, o, y to
+    specify the properties to delete.  If the response is
+    "<tt>vp</tt>", for example, the <b>value</b> and <b>param</b>
+    properties will be deleted.  In the case of physical properties,
+    all of the properties with the given number will be deleted (there
+    can be more than one).  Similarly, in electrical mode, if
+    "<tt>o</tt>" is given, all <b>other</b> properties will be
+    deleted.
+
+    <p>
+    If the <b>Global</b> button is not active, the properties are
+    deleted from the current object.  If the <b>Global</b> button is
+    active, properties will be removed from all objects in the
+    internal list.  If a property was selected in the listing before
+    the <b>Delete</b> button was pressed, and this is a physical
+    property or <b>other</b> electrical property, only properties that
+    match both the number and string (physical mode), or <b>other</b>
+    properties that match the string (electrical mode) of the selected
+    property will be deleted.  If no selection is given, all
+    properties that match the specification given will be deleted.
+
+!!SEEALSO
+properties
+prptyspec
+spiceline
+xic:editmenu
+
+!! 012014
+!!KEYWORD
+xic:cprop
+!!TITLE
+Cell Property Editor
+!!HTML
+    <img src="screenshots/cprpty.png" align=right>
+    <b>Keyword</b>: <tt>cprop</tt>
+
+    <p>
+    The <b>Cell Properties</b> button in the <b>Edit Menu</b> brings
+    up the <b>Cell Property Editor</b>, which is used to view and
+    manipulate properties of the current cell.  It is a simplified
+    version of the <a href="xic:prpty"><b>Property Editor</b></a>
+    which is used to manipulate the properties of objects contained
+    within the current cell.
+
+    <p>
+    The <b>Cell Property Editor</b> contains buttons to add, edit, and
+    remove cell properties.  In general, cell properties are assigned
+    internally and can not be modified.  The exceptions are the
+    properties listed in the <b>Add</b> menu and further discussed
+    below.  Pressing the <b>Add</b> button brings up a pop-up menu
+    containing entries corresponding to properties that can be set or
+    modified by the user.  Only the properties that are applicable to
+    the current mode (physical or electrical) are active.
+
+    <p>
+    In physical mode, the entries listed below are available, allowing
+    modification of <a href="physprops">physical cell properties</a>.
+
+    <dl>
+    <dt><b>any</b><dd>
+      The <b>any</b> entry allows an arbitrary property to be
+      assigned to the cell.  The user will be prompted for a number
+      and string for the property.  These are arbitrary, however there
+      are certain numbers that are reserved by <i>Xic</i> and will not
+      be accepted.  <i>Xic</i> will not use these properties, but they
+      may be important for interfacing to third-party applications.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:flags"><b>flags</b></a><dd>
+      The <b>flags</b> entry is used to set flags in the cell, notably
+      the <tt>OPAQUE</tt> flag which causes the cell contents to be
+      ignored during extraction.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:flatten"><b>flatten</b></a><dd>
+    The <b>flatten</b> property applies to electrical and physical
+    cells and instances.  It is used during <a
+    href="xic:exthier">association</a> and <a href="xic:lvs">LVS</a>
+    to determine if the contents of the instance master should be
+    logically promoted into the containing cell.  Although <i>Xic</i>
+    can handle most hierarchy differences automatically and
+    transparently, this property may be used when needed to force
+    proper behavior.
+
+    <p>
+    If a <b>flatten</b> property has been applied to the master cell,
+    then instances of the cell will be flattened, unless the instance
+    also has the <b>flatten</b> property applied, in which case the
+    instance will not be flattened.  If the master does not contain a
+    <b>flatten</b> property, then and instance will be flattened only
+    if the instance has a <b>flatten</b> property applied.  Thus, the
+    <b>flatten</b> property of an instance reverses the effect of a
+    <b>flatten</b> property applied to the master.
+
+    The <a href="FlattenPrefix"><b>FlattenPrefix</b></a> variable, and
+    equivalently the <b>Cell flattening name keys</b> entry area in the
+    <b>Net and Cell Config</b> page of the <a href="xic:excfg"><b>Extraction
+    Setup</b></a> panel from the <b>Extract Menu</b>, provide another
+    means of causing instances of cells to be flattened.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:pc_params"><b>pc_params</b></a><dd>
+      The <b>pc_params</b> entry is used when defining <a
+      href="xic:pcells">parameterized cells</a> (pcells).  It is used
+      to set or modify the parameter list associated with the pcell.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:pc_params"><b>pc_script</b></a><dd>
+      The <b>pc_script</b> entry is used when defining <a
+      href="xic:pcells">parameterized cells</a> (pcells).  It is used
+      to set or modify the script which implements the pcell features.
+    </dl>
+
+    <p>
+    In electrical mode, the following properties can be set from
+    the <b>Add</b> menu.
+
+    <dl>
+    <dt><a href="prpty:param"><b>param</b></a><dd>
+    Selecting the <b>param</b> button allows a <b>param</b> property
+    to be added to the cell.  The <b>param</b> property provides
+    support for the subcircuit parameterization feature of
+    <i>WRspice</i> (see the description of the <a
+    href=".subckt"><tt>.subckt</tt></a> line).  The use of
+    parameterization is briefly described <a href="spiceline">here</a>.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:other"><b>other</b></a><dd>
+    Selecting <b>other</b> allows an <b>other</b> property to be added
+    to the cell.  These have no meaning to <i>Xic</i>, but might be of
+    use to the user.  Any number of <b>other</b> properties can be
+    added.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:virtual"><b>virtual</b></a><dd>
+    Adding a <b>virtual</b> property will prevent the cell from being
+    included in netlist output, most importantly SPICE output.  The
+    cell becomes a "placeholder", and the actual <tt>.subckt</tt>
+    text, which is required to satisfy references, is included in the
+    SPICE file by another means.  For example, the cell might
+    represent an opamp, and a <tt>.include</tt> line can be used to
+    bring in the <tt>.subckt</tt> block representing the opamp, from a
+    vendor model file.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:flatten"><b>flatten</b></a><dd>
+    See the description of the <b>flatten</b> property in the physical
+    <b>Add</b> menu properties list above.  The property has the same
+    use in electrical mode.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:macro"><b>macro</b></a><dd>
+    This property can be applied to device masters.  The only effect
+    is that when <i>Xic</i> is generating SPICE output, instances of
+    devices with this property will have an '<tt>X</tt>' prepended to
+    the device name, thereby making the device appear as a subcircuit
+    call in SPICE.  This enables a component, such as a resistor, to
+    be modeled by a subcircuit that may contain dependent sources to
+    model nonlinear behavior.  The subcircuit definition is likely
+    provided in the SPICE models from a vendor or foundry.
+    </dl>
+
+    <p>
+    For device cells, as would appear in the <a href="devlib">device
+    library</a> file, <b>model</b>, <b>value</b>, and <b>param</b>
+    properties can be applied.  When a device instance is placed, the
+    instance will inherit copies of these properties.  Instances of
+    non-devices do <b>not</b> inherit a <b>param</b> property from the
+    master.  The <b>model</b> and <b>value</b> properties can not be
+    applied with the <b>Cell Properties Editor</b>, but can be added
+    to device masters with the <a href="devedit"><b>Library Device
+    Parameters</b></a> panel.
+
+!!SEEALSO
+xic:editmenu
+xic:prpty
+

@@ -1,0 +1,51 @@
+#######################################################################
+# wrspice/cp/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 2.57 2010/03/22 00:32:51 stevew Exp $
+#######################################################################
+
+SPICE_VERSION = @SPICE_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @UFLAGS@ -DWRSPICE
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ -DWRSPICE
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+
+LIB_TARGET = cp.a
+
+LPATH = ../../../xt_base
+HFILES =
+CCFILES = \
+  alias.cc backq.cc commands.cc complete.cc cshpar.cc front.cc glob.cc \
+  history.cc ipcomm.cc lexical.cc quote.cc unixcom.cc variable.cc
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+depend:
+	@echo depending in wrspice/cp
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm *.o $(LIB_TARGET)
+
+distclean:
+	-rm *.o $(LIB_TARGET) Makefile
+
+#######################################################################

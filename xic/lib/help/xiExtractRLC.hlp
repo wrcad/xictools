@@ -1,0 +1,1436 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiExtractRLC.hlp,v 1.13 2015/11/03 05:24:32 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiExtractRLC.hlp
+!!TITLE
+xiExtractRLC.hlp
+!!HTML
+
+!!SUBTOPICS
+xic:exc
+fcinterf
+fcpanel
+xic:exlr
+fhinterf
+fhpanel
+
+
+!! 090314
+!!KEYWORD
+xic:exc
+!!TITLE
+Extract C Button: Capacitance Extraction
+!!HTML
+    <b>Keyword</b>: <tt>exc</tt>
+
+    <p>
+    The <b>Extract C</b> button in the <b>Extract Menu</b> brings up
+    the <a href="fcpanel"><b>Cap Extraction</b></a> panel which
+    controls the <a href="fcinterf">interface</a> to an external
+    program used for capacitance extraction.
+
+!!SUBTOPICS
+fcinterf
+fcpanel
+
+!! 053015
+!!KEYWORD
+fcinterf
+!!TITLE
+The Capacitance Extraction Interface
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="fcinterf#geom"><b>Geometry Construction</b></a><br>
+    <a href="fcinterf#tech"><b>Technology File Setup</b></a><br>
+    <a href="fcinterf#output"><b>Output File</b></a><br>
+    </td></tr></table>
+
+    <p>
+    The interface uses an external program to extract capacitance
+    values between conducting features in the layout.  The interface
+    supports the following capacitance extraction programs:
+    <ol>
+    <li>The <i>FasterCap</i> program from <a
+    href="http://fastfieldsolvers.com"><tt>FastFieldSolvers.com</tt></a>. 
+    This commercial program is recommended for users with capacitance
+    extraction as an important workflow element.  The auto-refinement
+    capability provides the best accuracy with the least amount of
+    setup.
+
+    <p>
+    <li>The <i>FastCap</i> program from Whiteley Research.
+    The interface also provides a crude, linear panel refinement
+    capability which can be used with this free version of
+    <i>FastCap</i>, which is available from the Whiteley Research free
+    software archive.  We will refer to the Whiteley Research program
+    as <i>FastCap-WR</i> to distinguish it from the MIT original.
+    </ol>
+
+    <p>
+    The interface generates a unified list file, which is compatible
+    with the programs listed above.  It is <b>not</b> directly
+    compatible with the original MIT <i>FastCap</i> program, or its
+    derivatives, that require multiple input files.  There are
+    accessory programs <a href="lstpack"><tt>lstpack</tt></a> and
+    <tt>lstunpack</tt> available which convert between the formats, so
+    the MIT <i>FastCap</i> can be used in a two-step flow involving
+    unpacking.
+
+    <p>
+    This is the second generation capacitance extraction interface. 
+    The original capacitance extraction interface, found in releases
+    4.0.8 and earlier, was quite a bit more complicated.  The present
+    interface affords at least the following simplifications:
+
+    <ul>
+    <li>The interface presently takes material from the current cell
+    as input, there is no need to select and save things into the
+    interface.
+    <p>
+    <li>There is no "dataset name", the file names use the current
+    cell name as a base name.
+    <p>
+    <li>The output file is always a unified list file, there is no
+    "old format" support except via the separate <tt>lstpack</tt> and
+    <tt>lstunpack</tt> utilities.
+    <p>
+    <li>There is no graphical "partition editor" as <i>FasterCap</i>
+    does not need external refinement.
+    </ul>
+
+    The new interface, however, is much more flexible and powerful
+    than the original interface.
+    <ul>
+    <li>There is no longer a fixed assumption that layers are planar,
+    or that layer ordering must begin with a conductor and alternate
+    with insulators.  Layers can appear in any order, and any layer
+    can be planarizing, or not.  If a layer is planarizing, it will
+    have variable thickness such that the top surface is in one plane.
+
+    <p>
+    <li>There is a new <a href="xic:ldb3d">layer-sequencing engine</a>
+    that is also used by the <a href="xic:csect"><b>Cross
+    Section</b></a> display command (in the <b>View Menu</b>), as well
+    as for <a href="fhinterf">inductance/resistance extraction</a>. 
+    Thus, the cross section display will always faithfully represent
+    the assumptions used in the interface.  Layer ordering is
+    basically that shown in the <a href="layertab">layer table</a>,
+    though <tt>Via</tt> layers are allowed to be out of sequence
+    (likely for drawing visibility reasons).  The "real" position of a
+    <tt>Via</tt> layer can be obtained from the layers it references.
+
+    <p>
+    <li>Geometry is taken from the current cell, to all levels of the
+    hierarchy.  There is provision for use of a special masking layer. 
+    If this layer is found in the layout, geometry will be clipped to
+    the patterning on this layer.
+
+    <p>
+    <li>The substrate is now more accurately included in the
+    calculation, taking into account the actual thickness and lateral
+    extent.
+    </ul>
+
+    <a name="geom"></a>
+    <h2>Geometry Construction</h2>
+
+    By default, a layer named "<tt>FCAP</tt>" will serve as the
+    masking layer.  If, however, the <a
+    href="FcLayerName"><b>FcLayerName</b></a> variable is set to a
+    layer name, that layer will provide the masking function.  We will
+    refer to this layer as the "mask layer".
+
+    <p>
+    If no objects are found on the mask layer, all geometry in the
+    current cell will be treated in the interface.  Be advised that
+    the capacitance extraction will very rapidly become untenable if
+    too much geometry is included.  The interface itself is not
+    designed to handle large object collections, though it will remain
+    snappy while generating files that may take weeks to run.  More
+    than 100 objects is probably pushing things.  The effective area
+    of interest (AOI) is the bounding box of the current cell.
+
+    <p>
+    If objects are found on the mask layer, then the mask layer
+    pattern is <b>and</b>ed with the other layers, and the resulting
+    geometry is processed by the interface.  The bounding box of the
+    mask layer patterning becomes the effective AOI, which can be
+    much smaller than the cell bounding box.  In any case, the AOI
+    bounds all geometry in the problem.
+
+    <p>
+    The geometry is as shown in the drawing window, though geometry is
+    saved in an internal representation that removes any overlap of
+    objects in the original layout.  Outside of the AOI, and above all
+    geometry and below the substrate, vacuum (relative permittivity of
+    1.0) is assumed.
+
+    <p>
+    The substrate is included in the calculation as follows.  A
+    variable named <a
+    href="SubstrateThickness"><b>SubstrateThickness</b></a> can be set
+    to specify the assumed substrate thickness in microns.  If not
+    set, a thickness of 75 microns is assumed.  Typically, the
+    substrate thickness would be set in the technology file with the
+    <tt>SubstrateThickness</tt> keyword, which sets the variable.  It
+    can be set interactively from the <b>Params</b> page of the <a
+    href="fcpanel"><b>Cap Extraction</b></a> panel.
+
+    <p>
+    <b>If the substrate has nonzero thickness</b>:
+
+    <blockquote>
+    The boundary of the substrate is taken as the AOI, bloated by the
+    value given by the <a href="FcPlaneBloat"><b>FcPlaneBloat</b></a>
+    variable.  This is generally desirable to move the substrate edge
+    effectively away from structures of interest.  If not set, a value
+    of 0.0 micron is assumed.
+
+    <p>
+    Interface panels will be created on the sides and bottom of the
+    substrate when the input list file is generated.  If a positive
+    <tt>FcPlaneBloat</tt> is given, dielectric interface panels will
+    also cover the top of the substrate outside of the AOI.
+    </blockquote>
+
+    <p>
+    <b>If the substrate has zero thickness</b>:
+
+    <blockquote>
+    This is obtained by setting the <b>SubstrateThickness</b> variable
+    to 0.  We attempt to treat the substrate as filling the infinite
+    half space, though is is not clear how to convey this to
+    <i>FasterCap</i>.  Outside of the AOI, the substrate/vacuum
+    interface extends to infinity.  We approximate this with finite
+    panels extending a distance given by <b>FcPlaneBloat</b> out of
+    the AOI.
+    </blockquote>
+
+    <p>
+    NOTE:  the original interface made no attempt to deal with the
+    substrate.  This is reasonable, as the different substrate
+    treatments should have little effect on results in most cases.
+
+    <p>
+    Note also that the <tt>FcPlaneBloat</tt> parameter extends the
+    substrate only, and not the geometry.  This is different from the
+    original interface, which would also extend the dark-field layers.
+    To effectively bloat the geometry as well as the substrate, one can
+    use the <tt>FCAP</tt> layer in most cases to enlarge the AOI.
+
+    <a href="tech"></a>
+    <h2>Technology File Setup</h2>
+
+    Setup parallels setup of the <a href="xic:ldb3d">three-dimensional
+    layer sequence database</a>, which in turn follows setup of the <a
+    href="ext:setup">extraction system</a>.  These sections should be
+    consulted for detailed setup information, here we provide some
+    supplemental information.
+
+    <p>
+    To the interface, there are two different materials:
+    <dl>
+    <dt>conductors<dd>
+    Conductors will have one of the following:
+    <ol>
+    <li>Any of the <a href="Conductor"><tt>Conductor</tt></a>,
+    <a href="Routing"><tt>Routing</tt></a>, <a
+    href="GroundPlane"><tt>GroundPlane</tt></a>, <a
+    href="GroundPlaneClear"><tt>GroundPlaneClear</tt></a>, or <a
+    href="Contact"><tt>Contact</tt></a> technology file keywords (or
+    their aliases) applied.  All of these implicitly give the
+    <tt>Conductor</tt> keyword.
+
+    <p>
+    <li>Any of the <a href="Rsh"><tt>Rsh</tt></a>, <a
+    href="Rho"><tt>Rho</tt></a>, <a href="Sigma"><tt>Sigma</tt></a>,
+    or <a href="Lambda"><tt>Lambda</tt></a> keywords applied with a
+    positive value.
+    </ol>
+    </dl>
+
+    <dl>
+    <dt>insulators<dd>
+    Insulators will have one of the
+    <a href="Dielectric"><tt>Dielectric</tt></a>
+    or <a href="Via"><tt>Via</tt></a> keywords applied, and also the
+    <a href="EpsRel"><tt>EpsRel</tt></a> keyword applied with a value
+    of 1.0 or larger.
+    </dl>
+
+    In addition, layers that are to be used in the interface as conductors
+    or insulators must have all of the following:
+    <ul>
+    <li>A <a href="Thickness"><tt>Thickness</tt></a> keyword applied with a
+    value greater than zero.
+    <li>Must be visible in the layer table.
+    <li>Must not have the <a href="Symbolic"><tt>Symbolic</tt></a>
+    keyword applied.
+    </ul>
+
+    The <tt>Dielectric</tt> technology file keyword was added to
+    support this interface.  This is intended to model an explicit
+    capacitor dielectric, and differs from <tt>Via</tt> layers in the
+    following ways.
+    <ul>
+    <li>Unlike <tt>Via</tt>, it is not assumed to be dark field (but
+    <a href="DarkField"><tt>DarkField</tt></a> can be applied to the
+    layer explicitly).
+    <li>Only one <tt>Dielectric</tt> keyword can appear per layer
+    (multiple <tt>Via</tt> keywords are allowed).
+    <li>Stacking order is as shown in the layer table (<tt>Via</tt>
+    layers are allowed to appear out of order).
+    <li><tt>Dielectric</tt> layers are not planarizing by default,
+    <tt>Via</tt> layers are.
+    </ul>
+
+    <p>
+    The present interface can take layers in any order.  This is in
+    contrast with the original interface, that required layers to
+    alternate conductor/insulator starting with a conductor, and
+    ordering was obtained entirely from <tt>Via</tt> references and
+    not the layer table order.
+
+    <p>
+    After all possible layers from the layer table are sequenced,
+    layers that are not used in the extracted geometry are discarded. 
+    Note that dark-field layers are inverted, as we are interested in
+    representing the physical material.  Thus, for example no
+    structure in a <tt>Via</tt> layer (i.e., no vias) in the layout
+    implies the presence of a continuous film of insulating material,
+    so the layer is actually present.
+
+    <p>
+    The same layer sequencer is used in the <a
+    href="xic:csect"><b>Cross Section</b></a> command in the <b>View
+    Menu</b>.  The cross section display and the interface will always
+    agree on the ordering and planarization of the layers.  It is
+    therefor a useful visualization tool when setting up the layers in
+    the technology file.
+
+    <p>
+    The <b>Cross Section</b> command is also useful for finding
+    errors.  One possible error occurs when not planarizing, and a
+    thin metal layer runs over the edge of a thicker dielectric layer. 
+    This will disconnect the metal between the two sides of the step,
+    which will cause a failure in the extraction.  Presently, the
+    interface assumes that the number of conductor groups remains the
+    same before and after 3D processing.  The disconnection can be
+    easily seen in the <b>Cross Section</b> view.
+
+    <p>
+    In addition to the layers that describe material geometry, the
+    interface can make use of a <a href="fcinterf#geom">masking
+    layer<a>.  This allows only certain specified parts of the current
+    cell to be evaluated.  When present, geometry is clipped to
+    objects on this layer before being processed in the interface.
+
+    <p>
+    By default, a layer named <tt>FCAP</tt> with purpose
+    <tt>drawing</tt> is assumed for the masking layer.  Such a layer
+    should be defined in the technology file.  It should be given a
+    GDSII mapping to allow saving of work containing the layer to
+    GDSII or OASIS files.  As an alternative, the <a
+    href="FcLayerName"><b>FcLayerName</b></a> variable can be set to
+    the name of another layer, which will instead provide the masking
+    function.
+
+    <a href="output"></a>
+    <h2>Output File</h2>
+
+    The output file is a unified <i>FasterCap</i> list file.  At the
+    top of the file is a comment containing the layer sequence.  For
+    example:
+
+    <p>
+    <pre>
+    * Layers           Plane        Thickness    EpsRel
+    * Substrate                     75.000       11.900
+    * Insulator CO     0.000        0.190        4.200
+    * Insulator VIA1   0.190        0.095        2.900
+    * Insulator VIA2   0.285        0.095        2.900
+    * Insulator VIA3   0.380        0.095        2.900
+    * Conductor M4     0.475        0.220
+    * Insulator VIA4   0.695        0.095        2.900
+    * Conductor M5     0.790        0.220
+    * Insulator VIA5   1.010        0.095        2.900
+    * Conductor M6     1.105        0.220
+    * Insulator VIA6   1.325        0.095        2.900
+    * Insulator VIA7   1.420        0.610        4.200
+    * Insulator VIA8   2.030        0.610        4.200
+    </pre>
+
+    <p>
+    The <tt>Plane</tt> is the base elevation of the mask objects of a
+    planarizing layer, that is, the top surface of the layer minus the
+    layer thickness value.  This field will be empty for
+    non-planarizing layers.
+
+!!SEEALSO
+fcpanel
+xic:ldb3d
+!fc
+
+!! 070814
+!!KEYWORD
+fcpanel
+!!TITLE
+The Cap Extraction Panel
+!!HTML
+    <img src="screenshots/cex1.png" align=right>
+
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="fcpanel#run"><b>The Run Page</b></a><br>
+    <a href="fcpanel#params"><b>The Params Page</b></a><br>
+    <a href="fcpanel#jobs"><b>The Jobs Page</b></a><br>
+    </td></tr></table>
+
+    This panel, brought up by the <a href="xic:exc"><b>Extract
+    C</b></a> button in the <a href="xic:extmenu"><b>Extract
+    Menu</b></a>, controls the <a href="fcinterf">interface</a> to
+    external capacitance extraction programs described therein.  The
+    interface can also be controlled to a large extent with the <a
+    href="!fc"><b>!fc</b></a> prompt line command.
+
+    <p>
+    The panel functionality is divided into three pages, selectable
+    through the tabs along the top of the window.  Common to all pages
+    is a <b>Help</b> button, status line, and <b>Dismiss</b> button. 
+    The status line indicates the number of background extraction jobs
+    currently running.
+
+    <a name="run"></a>
+    <h2>The Run Page</h2>
+
+    The <b>Run</b> page contains controls for running the supported
+    programs, or creating unified list format input files for these
+    programs.  This is the default page, shown when the panel appears.
+
+    <p>
+    <dl>
+    <dt><b>Run in foreground</b><dd>
+    At the top of the page is the <b>Run in foreground</b> check box. 
+    When checked, the program will run synchronously in the
+    foreground, rather than asynchronously in the background.  Aside
+    from possibly being helpful when debugging problems, it is not
+    clear that this mode has any value.
+
+    <p>
+    This check box sets, and is set by, the <a
+    href="FcForeg"><b>FcForeg</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Out to console</b><dd>
+    When the <b>Out to console</b> check box is checked, the program
+    output will be printed in the console window, i.e., the shell
+    window from which <i>Xic</i> is running.  This is most useful with
+    <i>FasterCap</i>, which iterates to a solution, and the user can
+    verify that all is well by watching this output.
+
+    <p>
+    This check box sets, and is set by, the <a
+    href="FcMonitor"><b>FcMonitor</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Show Numbers</b><dd>
+    When the interface is run to produce an input file, the mutually
+    connected conducting shapes are identified, and each disjoint
+    group is assigned a conductor number.  These numbers are used in
+    the input list file to specify the conductors, and in the output
+    file to identify the capacitance matrix indices.
+
+    <p>
+    When this check box is checked, the conductor numbers will be
+    shown on-screen, so that the user can easily determine the
+    conductor numbers associated with the layout objects.  Each number
+    is shown as a mark, which will appear at a corner of an object in
+    the conductor group.  The conductor number, and the layer name of
+    the associated object, are printed next to the cross-mark.
+
+    <p>
+    Note that due to the possibility of clipping by an <a
+    href="fcinterf#geom"><tt>FCAP</tt></a> layer, objects that are
+    connected in the cell may be disconnected when used in the
+    interface.  In that case, two or more marks may appear over the
+    same object, or different objects that are touching.  If this is
+    confusing, one can use the <a href="xic:lexpr"><b>Layer
+    Expression</b></a> panel from the <b>Edit Menu</b> to create
+    temporary layers for visualization, consisting of the conducting
+    layers <b>and</b>ed with the <tt>FCAP</tt> layer.  The resulting
+    shapes will have unique conductor number marks.
+    </dl>
+
+    <dl>
+    <dt><b>Run File</b><dd>
+    This button and adjacent text entry allows an arbitrary input file
+    to be run by the capacitance extraction program currently
+    configured.  The text area should contain a path to a valid input
+    file for the configured program.  The program will run, and
+    results will appear, as for a normal extraction run.
+    </dl>
+
+    <dl>
+    <dt><b>Run Extraction</b><dd>
+    This button will dump a temporary input file, run the program, and
+    display the results.  The result file is named
+    <i>cellname</i>-<i>pid</i><tt>.fc_log</tt>, where
+    <i>cellname</i> is the name of the current cell, and <i>pid</i>
+    is the process id of the spawned process used to run the program. 
+    The file contains listings of the input file produced by the
+    interface and the output file produced by the program.
+
+    <p>
+    By default, the program is run in the background.  The label at
+    the bottom of the panel will indicate that the job is running. 
+    When complete, a <b>File Browser</b> window containing the result
+    file will appear.  While jobs are running in the background, one
+    can continue using <i>Xic</i>.
+
+    <p>
+    If the <a href="FcForeg"><b>FcForeg</b></a> variable is set, from
+    the <b>Run in foreground</b> check box or with the <a
+    href="!set"><b>!set</b></a> command, then the program will instead
+    run in the foreground.  In this case, the result file is named
+    <i>cellname</i><tt>.fc_log</tt>, and <i>Xic</i> will be
+    unresponsive until the run completes.
+    </dl>
+
+    <dl>
+    <dt><b>Dump Unified List File</b><dd>
+    This button allows an input file to be generated, which is in a
+    unified list format compatible with the supported programs.  The
+    default name for this file is <i>cellname</i><tt>.lst</tt>, where
+    <i>cellname</i> is the current cell name.
+    </dl>
+
+    <dl>
+    <dt><b>FcArgs</b><dd>
+    This text entry area can be given a string, which will be included
+    in the argument list when the program is run with the <b>Run
+    Extraction</b> button.  This allows specialized command line
+    options to be provided during the run, which the user may require. 
+    This entry field is tied to the <a href="FcArgs"><b>FcArgs</b></a>
+    variable.
+
+    <p>
+    If the interface detects that <i>FasterCap</i> from
+    <tt>FastFieldSolvers.com</tt> is being used, and this entry is
+    empty, the default argument string
+    <blockquote>
+    <tt>-b -a0.01</tt>
+    </blockquote>
+    will be imposed.  A "<tt>-b</tt>" option will always be added if
+    missing from the <i>FasterCap</i> arguments list, as this argument
+    is necessary for correct <i>FasterFap</i> operation in this mode. 
+    The "<tt>-a</tt>" option is almost always used, as it specifies
+    auto-refinement, however it is technically not necessary and won't
+    be imposed if not given, except in the case where no arguments are
+    given at all.
+    </dl>
+
+    <dl>
+    <dt><b>Path to FasterCap or FastCap-WR</b><dd>
+    Near the bottom of the page is an entry area where the path to the
+    <i>FasterCap</i> or <i>FastCap-WR</i> executable program can be
+    edited.  This entry area displays and sets the <a
+    href="FcPath"><b>FcPath</b></a> variable.
+    </dl>
+
+    <a name="params"></a>
+    <h2>The Params Page</h2>
+
+    <img src="screenshots/cex2.png" align=right>
+    The upper half of this page provides entry areas for parameters
+    used by the interface related to the substrate, plus a menu for
+    choosing the units to use in the list file.
+
+    <dl>
+    <dt><b>SubstrateThickness</b><dd>
+    This sets the assumed substrate thickness in microns.  When the
+    thickness is nonzero, the substrate bottom and sides are assumed
+    to abut vacuum permittivity.  When the thickness is set to zero,
+    the substrate is assumed to completely fill the half-space below
+    the extraction area.
+
+    <p>
+    This entry sets, and is set by, the <a
+    href="SubstrateThickness"><b>SubstrateThickness</b></a>
+    variable.
+    </dl>
+
+    <dl>
+    <dt><b>FcPlaneBloat</b><dd>
+    This entry contains a length, in microns.  If nonzero, horizontal
+    dielectric/vacuum interface panels will extend outside of the <a
+    href="fcinterf#geom">area of interest (AOI)</a> along the top
+    surface of the substrate.  The extension distance is the
+    <b>FcPlaneBloat</b> distance. 
+
+    <p>
+    When the <b>SubstrateThickness</b> is nonzero, the substrate
+    bounding box, which is the AOI, will be bloated by this value
+    before writing of the substrate bottom and side interface panels
+    to the list file.  This will move the abrupt dielectric change at
+    the substrate edge away from the area of interest.
+
+    <p>
+    If the <b>SubstrateThickness</b> is zero the <b>FcPlaneBloat</b>
+    distance should be large enough to represent "infinity", but
+    making it too large will slow down computation.  The model is
+    approximating the entire half-space filled with substrate
+    dielectric material.
+
+    <p>
+    This entry sets, and is set by, the <a
+    href="FcPlaneBloat"><b>FcPlaneBloat</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>SubstrateEps</b><dd>
+    This entry supplies the relative dielectric constant asssumed for
+    the substrate.  This sets, and is set by, the <a
+    href="SubstrateEps"><b>SubstrateEps</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>FcUnits</b><dd>
+    This is an option menu which is used to set the length units used
+    in files produced by the interface.  Choices are meters,
+    centimeters, millimeters, microns (the default), inches, and mils. 
+    The selection, if not the default, will set the <a
+    href="FcUnits"><b>FcUnits</b></a> variable.  Similarly, setting
+    the variable with the <a href="!set"><b>!set</b></a> command will
+    update the state of the menu.  The choice currently in effect will
+    be applied when input files are generated.  The choice of units
+    will not affect the computed capacitance.
+    </dl>
+
+    <p>
+    The lower half of the page allows one to crudely refine the raw
+    panels while being written to the list file.  This is specifically
+    for <i>FasterCap-WR</i>, which requires refined panelization for
+    accuracy.  The <i>FasterCap</i> program does not require external
+    refinement, which is a major advantage.  In fact, the refinement
+    provided here should <b>not</b> be used with <i>FasterCap</i>,
+    as it may interfere with <i>FasterCap</i>'s refinement.
+
+    <p>
+    The refinement is "crude" due to each refined panel being
+    approximately the same size.  If the size is small enough,
+    sufficient spatial resolution for accurate capacitance calculation
+    is achieved.  This resolution is needed along edges, and at
+    corners, where there are strong field gradients, but is gross
+    overkill for most areas.  Since the solving time is
+    related to the total number of refined panels, this type of
+    refinement is very inefficient with respect to memory use and
+    execution speed.
+
+    <p>
+    The refinement works as follows.  First, the interface computes
+    the total area of all conductor and dielectric raw panels that
+    would be output to the list file.  This area is divided by the
+    <b>FcPanelTarget</b> number provided by the user.  This is a
+    number approximating the total refined panel count that
+    <i>FastCap-WR</i> will need to process.  The solution time should
+    be approximately the same for the same panel count, independent of
+    the actual geometry.  The square root of the divided area is used
+    when writing the panels to the list file.  The raw panels are
+    subdivided so that no panel edge is longer than this value.
+
+    <p>
+    A number like 10000 is probably about right for the
+    <b>FcPanelTarget</b> in providing decent accuracy in a reasonable
+    execution time.  Larger numbers provide more accuracy, but require
+    larger files and have longer solution time.  The list file will
+    contain a line for each refined panel.  The entry area will take
+    numbers up to 1e6, which is probably unreasonable for a normal
+    computer.
+    
+    <dl>
+    <dt><b>Enable</b><dd>
+    This check box will enable or disable the refinement.  This should
+    not be active when using <i>FasterCap</i>.  When pressed, the
+    <b>FcPanelTarget</b> entry will become un-grayed, and internally
+    the <a href="FcPanelTarget"><b>FcPanelTarget</b></a> variable will
+    be set to to the number shown in the <b>FcPanelTarget</b> entry
+    area.  When the <b>Enable</b> button is set inactive, the
+    <b>FcPanelTarget</b> variable is unset.  The <b>Enable</b> button
+    state will reflect whether or not the <b>FcPanelTarget</b>
+    variable is set.
+    </dl>
+
+    <dl>
+    <dt><b>FcPanelTarget</b><dd>
+    This entry area is seensitive only when the <b>Enable</b> check
+    box is checked.  It tracks the value of the <b>FcPanelTarget</b>
+    variable, which can be set to a real value of 1e3 - 1e6.  This
+    will be the approximate number of refined panels generated in the
+    list file.
+    </dl>
+
+    <a name="jobs"></a>
+    <h2>The Jobs Page</h2>
+
+    <p>
+    <img src="screenshots/cex3.png" align=right>
+    The <b>Jobs</b> page contains a list of running background jobs.
+    Each entry provides the process identification number (PID), the
+    name of the executing program, and the local date and time when
+    started.  Entries can be selected by clicking with the mouse.
+
+    <p>
+    When an entry is selected, the <b>Abort job</b> button below the
+    list becomes un-grayed.  Clicking this button will terminate the
+    selected process.  The user should consider that there is no
+    confirmation and no ability to resume the run.
+
+!!SEEALSO
+fcinterf
+xic:extmenu
+
+
+!! 090314
+!!KEYWORD
+xic:exlr
+!!TITLE
+Extract LR Button: Inductance/Resistance Extraction
+!!HTML
+    <b>Keyword</b>: <tt>exlr</tt>
+
+    <p>
+    The <b>Extract LR</b> button in the <b>Extract Menu</b> brings up
+    the <a href="fhpanel"><b>LR Extraction</b></a> panel which
+    controls the <a href="fhinterf">interface</a> to an external
+    program used for inductance and resistance extraction.  Presently,
+    the <i>FastHenry</i> program is supported.  The interface should
+    be compatible with any version of <i>FastHenry</i> or derivatives. 
+    A guaranteed-compatible version is distributed as free software on
+    the Whiteley Research web site (<tt>http://wrcad.com</tt>).
+
+
+!!SUBTOPICS
+fhinterf
+fhpanel
+
+!!SEEALSO
+xic:extmenu
+
+!! 032015
+!!KEYWORD
+fhinterf
+!!TITLE
+The Inductance/Resistance Extraction Interface
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="fhinterf#geom"><b>Geometry Construction</b></a><br>
+    <a href="fhinterf#terms"><b>Terminal Definition</b></a><br>
+    <a href="fhinterf#tech"><b>Technology File Setup</b></a><br>
+    <a href="fhinterf#output"><b>Output File</b></a><br>
+    </td></tr></table>
+
+    <p>
+    The interface uses an external program to extract inductance and
+    resistance values along conducting features in the layout.  The
+    interface currently supports the original <i>FastHenry</i> program
+    from MIT, and (presumably) all input format compatible successor
+    and derivative programs that can be run from a command line.
+
+    <ul>
+    <li><b>FastHenry-WR</b> from Whiteley Research.
+    The program is available available in the <a
+    href="http://wrcad.com/freestuff.html">free software archive</a>
+    on the Whiteley Research web site.  This package has been updated
+    to build easily with newer compilers.  It has been extended to
+    support superconductors, and incorporates features to accelerate
+    computation.
+
+    <p>
+    <li><b>FastHenry</b> from <a
+    href="http://www.rle.mit.edu/cpg/research_codes.htm">MIT</b></a>. 
+    This is the original <i>FastHenry</i> three-dimensional inductance
+    extraction program.
+    </ul>
+
+    <p>
+    This is the second generation interface to <i>FastHenry</i>.  The
+    original extraction interface, found in releases 4.0.8 and
+    earlier, was quite a bit more complicated.  The present interface
+    affords at least the following simplifications:
+
+    <ul>
+    <li>The interface presently takes material from the current cell
+    as input, there is no need to select and save things into the
+    interface.
+    <p>
+    <li>There is no "dataset name", the file names use the current
+    cell name as a base name.
+    <p>
+    <li>There is no longer a graphical "partition editor".  This was
+    too cumbersome.  Instead, a simple automatic refinement provision
+    is included.  It is hoped that one day auto-refinement will be
+    built into a <i>FastHenry</i> successor program, as was done in
+    the <i>FasterCap</i> program from <tt>fastfieldsolvers.com</tt>.
+    <p>
+    <li>There is no longer a graphical terminal definition editor.
+    Instead, a special layer is used to define terminal areas.
+    </ul>
+
+    The new interface, however, is much more flexible and powerful
+    than the original interface.
+    <ul>
+    <li>There is no longer a fixed assumption that layers are planar,
+    or that layer ordering must begin with a conductor and alternate
+    with insulators.  Layers can appear in any order, and any layer
+    can be planarizing, or not.  If a layer is planarizing, it will
+    have variable thickness such that the top surface is in one plane.
+
+    <p>
+    <li>There is a new <a href="xic:ldb3d">layer-sequencing engine</a>
+    that is also used by the <a href="xic:csect"><b>Cross
+    Section</b></a> display command (in the <b>View Menu</b>), as well
+    as for <a href="fcinterf">capacitance extraction</a>.  Thus, the
+    cross section display will always faithfully represent the
+    assumptions used in the interface.  Layer ordering is basically
+    that shown in the <a href="layertab">layer table</a>, though
+    <tt>Via</tt> layers are allowed to be out of sequence (likely for
+    drawing visibility reasons).  The "real" position of a
+    <tt>Via</tt> layer can be obtained from the layers it references.
+
+    <p>
+    <li>Geometry is taken from the current cell, to all levels of the
+    hierarchy.  There is provision for use of a special masking layer. 
+    If this layer is found in the layout, geometry will be clipped to
+    the patterning on this layer.
+    </ul>
+
+    <a name="geom"></a>
+    <h2>Geometry Construction</h2>
+
+    By default, a layer named "<tt>FHRY</tt>" will serve as the
+    masking layer.  If, however, the <a
+    href="FhLayerName"><b>FhLayerName</b></a> variable is set to a
+    layer name, that layer will provide the masking function.  We will
+    refer to this layer as the "mask layer".
+
+    <p>
+    If no objects are found on the mask layer, all geometry in the
+    current cell will be treated in the interface.  Be advised that
+    the inductance/resistance extraction will very rapidly become
+    untenable if too much geometry is included.  The interface itself
+    is not designed to handle large object collections, though it will
+    remain snappy while generating files that may take weeks to run. 
+    More than 100 objects is probably pushing things.  The effective
+    area of interest (AOI) is the bounding box of the current cell.
+
+    <p>
+    If objects are found on the mask layer, then the mask layer
+    pattern is <b>and</b>ed with the other layers, and the resulting
+    geometry is processed by the interface.  The bounding box of the
+    mask layer patterning becomes the effective AOI, which can be
+    much smaller than the cell bounding box.  In any case, the AOI
+    bounds all geometry in the problem.
+
+    <p>
+    The geometry is as shown in the drawing window, though geometry is
+    saved in an internal representation that removes any overlap of
+    objects in the original layout.  Outside of the AOI, and above all
+    geometry and below the substrate, empty space is assumed.
+
+    <p>
+    The geometric specification of conductors to <i>FastHenry</i>
+    consists of "node" definitions, and the definition of "segments"
+    that connect the nodes.  The nodes are points in three-dimensional
+    space, and touch or are enclosed in conducting objects.  Once the
+    node locations are assigned, the connecting segments are created. 
+    Nodes and segments that dead-end are removed, the remaining nodes
+    and segments can be thought of as a three-dimensional SPICE net,
+    where the segments represent inductors.  We compute the overall
+    inductance between different "terminals" of the network.
+
+    <p>
+    The interface works by tiling.  This assumes that current can flow
+    in any direction.  A tile is a rectangular prism, with a node in
+    the center, and a node at the center of each of the six faces. 
+    Segments, whose dimensions are set by the tile size, connect the
+    central node with each of the face nodes.  In order for adjacent
+    tiles to make contact, the face nodes of the adjacent faces must
+    coincide.  This will be true if the conducting objects are
+    decomposed into tiles properly, avoiding corners that are adjacent
+    to an edge.  The decomposition is performed along the X, Y, and Z
+    directions.  Tiles with a side longer than a given maximum dimension
+    will be subdivided.
+
+    <p>
+    This is the appropriate way to handle three-dimensional current
+    flow through constrictions such as vias, and account for
+    penetration or skin depth.  However, <i>FastHenry</i> was
+    originally set up to handle long, thin conductors where the
+    current flow is assumed to be in a fixed direction.  Most of the
+    examples use this approach, and use flags that internally
+    subdivide the segments transverse to current flow.  This provides
+    suitable accuracy and good efficiency for certain types of
+    problems.
+
+    <p>
+    When the full three-dimensional decomposition is used, the problem
+    size can quickly grow to the point where <i>FastHenry</i> can not
+    provide a solution in a reasonable amount of time.  Approximations
+    must be employed at this point to reduce segment count.  To a much
+    greater extent that for capacitance extraction, the user may have
+    to intervene to fine-tune the process.
+
+    <p>
+    The ability to tile requires that the geometry be Manhattan. 
+    Support for non-Manhattan geometry is provided by first internally
+    Manhattanizing non-Manhattan objects before processing.  The
+    granularity of the Manhattanization is controlled by the <a
+    href="FhMinRectSize"><b>FhMinRectSize</b></a> variable or the
+    corresponding text entry field in the <b>LR Extraction</b> panel
+    <b>Params</b> page.  Note that this can dramatically increase the
+    segment count, and therefor <i>FastHenry</i> run time.  When
+    possible, non-Manhattan features should be avoided when using
+    this interface to <i>FastHenry</i>.
+
+    <a name="terms"></a>
+    <h2>Terminal Definition</h2>
+
+    Terminals are the assumed external contact points used when
+    extracting the inductance matrix.  Unlike capacitance extraction,
+    inductance and resistance extraction requires terminal
+    definitions, and the results will depend fundamentally on the
+    terminal locations.
+
+    <p>
+    Terminals are specified by creating boxes or polygons and labels
+    on special layers.  The feature will define as equivalent all
+    nodes that touch or are enclosed in the shape, for any Z
+    coordinate (the features are in the X-Y plane).
+
+    <p>
+    Each terminal feature must have at least one overlapping text
+    label on the same layer, that provides the terminal name. 
+    Terminals must resolve to pairs, where each pair is a "port",
+    taking the inductance matrix as an N-port network.  The pair is
+    ordered, with one terminal being the "plus" terminal, the other
+    the "minus" terminal.
+
+    <p>
+    This is all accomplished by adherence to the following rules.
+
+    <ol>
+    <li>The features (boxes or polygons) and labels which equivalence
+    nodes and define terminals are created on special layers.  The
+    layer name is the same as the layer name of the conductor which
+    provides the nodes.  The purpose name is the special keyword
+    "<tt>fhterm</tt>".  Thus for example, for a metal layer named
+    "<tt>M1</tt>" (which has the default "<tt>drawing</tt>" purpose)
+    the corresponding special layer has the full layer-purpose pair
+    (LPP) name "<tt>M1:fhterm</tt>".  Such a LPP should be defined for
+    each conducting layer in the technology file.
+
+    <li>Terminal features must touch or enclose at least one node. 
+    Nodes can be found at the center of each edge of each tile.  When
+    connecting to the end of a metal strip, for example, the entire
+    transverse width of the strip end should be enclosed in or touch
+    the terminal feature, so that current flow is uniform.
+
+    <li>Each terminal feature must have at least one overlapping text
+    label on the same layer giving a terminal name.
+
+    <li>Each terminal is one of a pair, the pair representing a port.
+    The terminals of each pair must contact the same conductor group,
+    i.e., be connected.
+
+    <li>It is possible for a terminal to be used in more than one port,
+    in which case the terminal will have more than one overlapping label.
+
+    <li>Port-terminal association is by name.  Name labels must follow
+    these rules:
+    <ol>
+    <li>Terminal names consist of a port name and a suffix.  If the
+    name string contains punctuation or white space, the first
+    occurrence of such is stripped, and the port name is taken as the
+    characters to the left, and the suffix is taken as the characters
+    to the right, of where the punctuation or white space resided.  If
+    there is no punctuation or white space, the port name is the name
+    string with the rightmost character stripped, and the suffix is
+    this character.  The port name and suffix must each contain at
+    least one printable character or a fatal error results.  The port
+    name is arbitrary, but must be unique among the ports.
+
+    <li>Both terminals of a port must have the same port name, case
+    sensitive.  It is a fatal error if a terminal can not be paired.
+
+    <li>Both terminals of a port must have different suffixes.  The
+    suffix is used only to order the terminals in the port.  This is
+    done using lexicographic ordering of the suffix strings.  Beyond
+    ordering, the suffix is ignored.  It is a fatal error if the
+    suffixes are the same.
+
+    <li>Both terminals of a port must contact the same conductor group.
+    </ol>
+
+    <li>For each terminal feature, a list of intersecting nodes is
+    created internally.  The first node in the list is taken as the
+    reference.  If there are additional nodes, they are equivalenced
+    to the reference node, using the <i>FastHenry</i>
+    "<tt>.equiv</tt>" construct.
+
+    <li>For each port, a <i>FastHenry</i> "<tt>.extern</tt>" construct
+    is used to provide the reference nodes of the two terminals in order,
+    followed by the port name.
+    </ol>
+
+    <a name="tech"></a>
+    <h2>Technology File Setup</h2>
+
+    Setup parallels setup of the <a href="xic:ldb3d">three-dimensional
+    layer sequence database</a>, which in turn follows setup of the <a
+    href="ext:setup">extraction system</a>.  These sections should be
+    consulted for detailed setup information, here we provide some
+    supplemental information.
+
+    <p>
+    To the interface, there are two different materials:
+    <dl>
+    <dt>conductors<dd>
+    Conductors will have one of the following:
+    <ol>
+    <li>Any of the <a href="Conductor"><tt>Conductor</tt></a>,
+    <a href="Routing"><tt>Routing</tt></a>, <a
+    href="GroundPlane"><tt>GroundPlane</tt></a>, <a
+    href="GroundPlaneClear"><tt>GroundPlaneClear</tt></a>, or <a
+    href="Contact"><tt>Contact</tt></a> technology file keywords (or
+    their aliases) applied.  All of these implicitly give the
+    <tt>Conductor</tt> keyword.
+
+    <p>
+    <li>Any of the <a href="Rsh"><tt>Rsh</tt></a>, <a
+    href="Rho"><tt>Rho</tt></a>, <a href="Sigma"><tt>Sigma</tt></a>,
+    or <a href="Lambda"><tt>Lambda</tt></a> keywords applied with a
+    positive value.
+    </ol>
+    </dl>
+
+    <dl>
+    <dt>insulators<dd>
+    Insulators will have one of the
+    <a href="Dielectric"><tt>Dielectric</tt></a>
+    or <a href="Via"><tt>Via</tt></a> keywords applied, and also the
+    <a href="EpsRel"><tt>EpsRel</tt></a> keyword applied with a value
+    of 1.0 or larger.
+    </dl>
+
+    In addition, layers that are to be used in the interface as conductors
+    or insulators must have all of the following:
+    <ul>
+    <li>A <a href="Thickness"><tt>Thickness</tt></a> keyword applied with a
+    value greater than zero.
+    <li>Must be visible in the layer table.
+    <li>Must not have the <a href="Symbolic"><tt>Symbolic</tt></a>
+    keyword applied.
+    </ul>
+
+    <p>
+    The conductor layers can be given a resistivity or conductivity
+    with the <tt>Rho</tt> and <tt>Sigma</tt> keywords, respectively. 
+    Additionally, the <tt>Lambda</tt> parameter, which specifies the
+    London penetration depth for superconductors, can be specified. 
+    This is for the convenience of <i>Xic</i> users in the
+    superconducting electronics R&D community.  In this case,
+    <tt>Rho/Sigma</tt> specify the unpaired conductivity from the
+    two-fluid model.
+
+    <p>
+    The <tt>Dielectric</tt> technology file keyword was added to
+    support capacitance extraction.  This is intended to model an
+    explicit capacitor dielectric, and differs from <tt>Via</tt>
+    layers in the following ways.
+    <ul>
+    <li>Unlike <tt>Via</tt>, it is not assumed to be dark field (but
+    <a href="DarkField"><tt>DarkField</tt></a> can be applied to the
+    layer explicitly).
+    <li>Only one <tt>Dielectric</tt> keyword can appear per layer
+    (multiple <tt>Via</tt> keywords are allowed).
+    <li>Stacking order is as shown in the layer table (<tt>Via</tt>
+    layers are allowed to appear out of order).
+    <li><tt>Dielectric</tt> layers are not planarizing by default,
+    <tt>Via</tt> layers are.
+    </ul>
+
+    <p>
+    The present interface can take layers in any order.  This is in
+    contrast with the original interface, that required layers to
+    alternate conductor/insulator starting with a conductor, and
+    ordering was obtained entirely from <tt>Via</tt> references and
+    not the layer table order.
+
+    <p>
+    After all possible layers from the layer table are sequenced,
+    layers that are not used in the extracted geometry are discarded. 
+    Note that dark-field layers are inverted, as we are interested in
+    representing the physical material.  Thus, for example no
+    structure in a <tt>Via</tt> layer (i.e., no vias) in the layout
+    implies the presence of a continuous film of insulating material,
+    so the layer is actually present.
+
+    <p>
+    The same layer sequencer is used in the <a
+    href="xic:csect"><b>Cross Section</b></a> command in the <b>View
+    Menu</b>.  The cross section display and the interface will always
+    agree on the ordering and planarization of the layers.  This was
+    not true with the original interface.
+
+    <p>
+    In addition to the layers that describe material geometry, the
+    interface can make use of a <a href="fhinterf#geom">masking
+    layer<a>.  This allows only certain specified parts of the current
+    cell to be evaluated.  When present, geometry is clipped to
+    objects on this layer before being processed in the interface.
+
+    <p>
+    By default, a layer named <tt>FHRY</tt> with purpose
+    <tt>drawing</tt> is assumed for the masking layer.  Such a layer
+    should be defined in the technology file.  It should be given a
+    GDSII mapping to allow saving of work containing the layer to
+    GDSII or OASIS files.  As an alternative, the <a
+    href="FhLayerName"><b>FhLayerName</b></a> variable can be set to
+    the name of another layer, which will instead provide the masking
+    function.
+
+    <p>
+    Finally, the layers used in terminal definitions should be
+    configured into the technology file.  Generally, there is an
+    <i>Xic</i> layer corresponding to each conducting layer, with a
+    purpose name "<tt>fhterm</tt>" and the same base layer name.  In
+    order to save the layout with terminals as GDSII or OASIS, a GDSII
+    layer mapping should be applied for these layers.
+
+    <a name="output"></a>
+    <h2>Output File</h2>
+
+    The output file is a <i>FastHenry</i> input file, with format as
+    documented in the original <i>FastHenry</i> manual, potentially
+    with the extensions for superconductivity support (<tt>lambda</tt>
+    specifications) if the <a href="Lambda"><tt>Lambda</tt></a>
+    parameter is given to any layer used (making it a superconductor). 
+    Such constructs are <b>not</b> compatible with the original MIT
+    <i>FastHenry</i>, but require the Whiteley Research version, or a
+    derivative.
+
+    <p>
+    At the top of the file is a comment containing the layer sequence. 
+    For example:
+
+    <p>
+    <pre>
+    * Layers           Plane        Thickness    EpsRel
+    * Substrate                     75.000       11.900
+    * Insulator CO     0.000        0.190        4.200
+    * Insulator VIA1   0.190        0.095        2.900
+    * Insulator VIA2   0.285        0.095        2.900
+    * Insulator VIA3   0.380        0.095        2.900
+    * Conductor M4     0.475        0.220
+    * Insulator VIA4   0.695        0.095        2.900
+    * Conductor M5     0.790        0.220
+    * Insulator VIA5   1.010        0.095        2.900
+    * Conductor M6     1.105        0.220
+    * Insulator VIA6   1.325        0.095        2.900
+    * Insulator VIA7   1.420        0.610        4.200
+    * Insulator VIA8   2.030        0.610        4.200
+    </pre>
+
+    <p>
+    The <tt>Plane</tt> is the base elevation of the mask objects of a
+    planarizing layer, that is, the top surface of the layer minus the
+    layer thickness value.  This field will be empty for
+    non-planarizing layers.
+
+    <a name="tips"></a>
+    <h2>Tips and Hints</h2>
+
+    <ul>
+    <li>It is easy to generate input files that take an excessively
+    long time to run.  This is probably the most common pitfall.  The
+    run time increases with increasing segment count.  The segment
+    count is approximately proportional to the number of lines in the
+    input file.
+
+    <p>
+    <li>Non-Manhattan features can be very bad news.  These are
+    "Manhattanized" by converting non-Manhattan edges into stepwise
+    approximations.  The large number of edges that can be produced by
+    this may lead te excessive run time.  The <b>FhMinRectSize</b>
+    entry in the <b>Params</b> page of the control panel can be
+    increased to reduce the number of segments.
+
+    <p>
+    <li>Too-few segments is also to be avoided, as the calculation may
+    not be suitably accurate.  The <b>Volume Element Refinement</b>
+    check box in the <b>Params</b> page should always be checked.  The
+    entered number can be varied, the user should experiment.  Larger
+    values should provide better accuracy at the expense of longer
+    computation time.
+
+    <p>
+    <li>One should not try to extract "too much", due to the FastHenry
+    limitations.  How much is too much depends on a lot a factors,
+    the user should experiment to gain a feel for their process and
+    computer hardware.
+    </ul>
+
+!!SEEALSO
+fhpanel
+xic:ldb3d
+!fh
+
+!! 090614
+!!KEYWORD
+fhpanel
+!!TITLE
+The LR Extraction Panel
+!!HTML
+    <img src="screenshots/lrex1.png" align=right>
+
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="fhpanel#run"><b>The Run Page</b></a><br>
+    <a href="fhpanel#params"><b>The Params Page</b></a><br>
+    <a href="fhpanel#jobs"><b>The Jobs Page</b></a><br>
+    </td></tr></table>
+
+    <p>
+    This panel, brought up by the <a href="xic:exlr"><b>Extract
+    LR</b></a> button in the <a href="xic:extmenu"><b>Extract
+    Menu</b></a>, controls the <a href="fhinterf">interface</a> to
+    external inductance/resistance extraction programs described
+    therein.  The interface can also be controlled to a large extent
+    with the <a href="!fh"><b>!fh</b></a> prompt line command.
+
+    <p>
+    The panel functionality is divided into three pages, selectable
+    through the tabs along the top of the window.  Common to all pages
+    is a <b>Help</b> button, status line, and <b>Dismiss</b> button. 
+    The status line indicates the number of background extraction jobs
+    currently running.
+
+    <a name="run"></a>
+    <h2>The Run Page</h2>
+
+    The <b>Run</b> page contains controls for running the supported
+    programs, or creating input files for these programs.  This is the
+    default page, shown when the panel appears.
+
+    <p>
+    <dl>
+    <dt><b>Run in foreground</b><dd>
+    At the top of the page is the <b>Run in foreground</b> check box. 
+    When checked, the program will run synchronously in the
+    foreground, rather than asynchronously in the background.  Aside
+    from possibly being helpful when debugging problems, it is not
+    clear that this mode has any value.
+
+    <p>
+    This check box sets, and is set by, the <a
+    href="FhForeg"><b>FhForeg</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Out to console</b><dd>
+    When the <b>Out to console</b> check box is checked, the program
+    output will be printed in the console window, i.e., the shell
+    window from which <i>Xic</i> is running.  It may be useful to
+    verify that all is well by watching this output.
+
+    <p>
+    This check box sets, and is set by, the <a
+    href="FhMonitor"><b>FhMonitor</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Run File</b><dd>
+    This button and adjacent text entry allows a compatible input file
+    to be run by the inductance/resistance extraction program
+    currently configured.  The text area should contain a path to a
+    valid input file for the configured program.  The program will
+    run, and results will appear, as for a normal extraction run.
+    </dl>
+
+    <dl>
+    <dt><b>Run Extraction</b><dd>
+    This button will dump a temporary input file, run the program, and
+    display the results.  The result file is named
+    <i>cellname</i>-<i>pid</i><tt>.fh_log</tt>, where
+    <i>cellname</i> is the name of the current cell, and <i>pid</i>
+    is the process id of the spawned process used to run the program. 
+    The file contains listings of the input file produced by the
+    interface and the output file produced by the program.
+
+    <p>
+    By default, the program is run in the background.  The label at
+    the bottom of the panel will indicate that the job is running. 
+    When complete, a <b>File Browser</b> window containing the result
+    file will appear.  While jobs are running in the background, one
+    can continue using <i>Xic</i>.
+
+    <p>
+    If the <a href="FhForeg"><b>FhForeg</b></a> variable is set, from
+    the <b>Run in foreground</b> check box or with the <a
+    href="!set"><b>!set</b></a> command, then the program will instead
+    run in the foreground.  In this case, the result file is named
+    <i>cellname</i><tt>.fh_log</tt>, and <i>Xic</i> will be
+    unresponsive until the run completes.
+    </dl>
+
+    <dl>
+    <dt><b>Dump FastHenry File</b><dd>
+    This button allows an input file to be generated, which is in a
+    format compatible with the <i>FastHenry</i> program.  The default
+    name for this file is <i>cellname</i><tt>.inp</tt>, where
+    <i>cellname</i> is the current cell name.
+    </dl>
+
+    <dl>
+    <dt><b>FhArgs</b><dd>
+    This text entry area can be given a string, which will be included
+    in the argument list when the program is run with the <b>Run
+    Extraction</b> button.  This allows specialized command line
+    options to be provided during the run, which the user may require. 
+    This entry field is tied to the <a href="FhArgs"><b>FhArgs</b></a>
+    variable.
+    </dl>
+
+    <dl>
+    <dt><b>FhFreq</b><dd>
+    This consists of three entry areas, which take the starting and
+    ending evaluation frequencies for <i>FastHenry</i> runs, and the
+    number of intermediate frequencies to evaluate.  This corresponds
+    to the <tt>.Freq</tt> specification line in <i>FastHenry</i> input
+    files.  The frequencies are given in hertz.  If the third field in
+    empty, then evaluation is at the specified frequencies only.  This
+    variable is tied to the <a href="FhFreq"><b>FhFreq</b></a>
+    variable, which can also be set with the <b>!set</b> command.
+    </dl>
+
+    <dl>
+    <dt><b>Path to FastHenry</b><dd>
+    Near the bottom of the page is an entry area where the path to the
+    <i>FastHenry</i> executable program can be edited.  This entry
+    area displays and sets the <a href="FhPath"><b>FhPath</b></a>
+    variable.
+    </dl>
+
+    <a name="params"></a>
+    <h2>The Params Page</h2>
+
+    <img src="screenshots/lrex2.png" align=right>
+    The upper half of this page provides entry areas for parameters
+    used by the interface.
+
+    <dl>
+    <dt><b>FhUnits</b><dd>
+    This is an option menu which is used to set the length units used
+    in files produced by the interface.  Choices are meters,
+    centimeters, millimeters, microns (the default), inches, and mils. 
+    The selection, if not the default, will set the <a
+    href="FhUnits"><b>FhUnits</b></a> variable.  Similarly, setting
+    the variable with the <a href="!set"><b>!set</b></a> command will
+    update the state of the menu.  The choice currently in effect will
+    be applied when input files are generated.  The choice of units
+    will not affect the computed inductance/resistance.
+    </dl>
+
+    <dl>
+    <dt><b>FhMinRectSize</b><dd>
+    This numerical entry field is used to specify the minimum
+    rectangle width or height used when non-Manhattan objects are
+    converted to a Manhattan approximation for <i>FastHenry</i>.  The
+    value is entered in microns, and the default value is 1.0.  This
+    is tied to the <a href="FhMinRectSize"><b>FhMinRectSize</b></a>
+    variable, which can also be set directly with the <b>!set</b>
+    command.
+    </dl>
+
+    <p>
+    The lower half of the page allows one to crudely refine the raw
+    segmentation.  By default, this is not enabled, so that only
+    tiling provides refinement.  This may be a good starting point
+    for a third-party refinement algorithm, but with present
+    <i>FastHenry</i> programs is unlikely to provide accurate results as-is.
+    When enabled, the crude refinement should provide somewhat
+    better results.
+
+    <p>
+    The refinement algorithm works as follows.  First, the total volume
+    of all conductors is calculated.  This is divided by the <a
+    href="FhVolElTarget"><b>FhVolElTarget</b></a> as entered.  The
+    cube root is taken, which provides a length which is used as a
+    maximum.  If a side of a tile exceeds this length, it is
+    subdivided.  This is repeated until no tiles have sides larger
+    than the calculated length.  The total number of tiles (or "volume
+    elements") is approximately the target value entgered.  The total
+    number of segments is approximately six times larger.
+
+    <p>
+    The refinement is "crude" due to each refined volume element being
+    approximately the same size.  If the size is small enough,
+    sufficient spatial resolution for accurate calculation is
+    achieved.  This resolution is needed along edges, and at corners,
+    where there are strong field gradients, but is gross overkill for
+    most areas.  Since the solving time is related to the total number
+    of segments, this type of refinement is very inefficient with
+    respect to memory use and execution speed.
+
+    <dl>
+    <dt><b>Enable</b><dd>
+    This check box will enable or disable the refinement.  When
+    pressed, the <b>FhVolElTarget</b> entry will become un-grayed, and
+    internally the <a href="FhVolElTarget"><b>FhVolElTarget</b></a>
+    variable will be set to the number shown in the
+    <b>FhVolElTarget</b> entry area.  When the <b>Enable</b> button is
+    set inactive, the <b>FhVolElTarget</b> variable is unset.  The
+    <b>Enable</b> button state will reflect whether or not the
+    <b>FhVolElTarget</b> variable is set.
+    </dl>
+
+    <dl>
+    <dt><b>FhVolElTarget</b><dd>
+    This entry area is seensitive only when the <b>Enable</b> check
+    box is checked.  It tracks the value of the <b>FhVolElTarget</b>
+    variable, which can be set to a real value of 1e2 - 1e5.  This
+    will be the approximate number of refined tiles generated in the
+    input file.
+    </dl>
+
+    <a name="jobs"></a>
+    <h2>The Jobs Page</h2>
+
+    <p>
+    <img src="screenshots/lrex3.png" align=right>
+    The <b>Jobs</b> page contains a list of running background jobs.
+    Each entry provides the process identification number (PID), the
+    name of the executing program, and the local date and time when
+    started.  Entries can be selected by clicking with the mouse.
+
+    <p>
+    When an entry is selected, the <b>Abort job</b> button below the
+    list becomes un-grayed.  Clicking this button will terminate the
+    selected process.  The user should consider that there is no
+    confirmation and no ability to resume the run.
+
+!!SEEALSO
+fhinterf
+xic:extmenu
+

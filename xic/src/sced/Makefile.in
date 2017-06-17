@@ -1,0 +1,56 @@
+#######################################################################
+# xic/sced/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 5.61 2014/10/05 03:17:48 stevew Exp $
+#######################################################################
+
+GFX_VERSION = @GFX_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @NEEDINT64@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @NEEDINT64@
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+
+LIB_TARGET = sced.a
+
+LPATH = ../../../xt_base
+HFILES =
+CCFILES = \
+  ebtn_menu.cc funcs_sced.cc sced.cc sced_arcs.cc sced_check.cc \
+  sced_connect.cc sced_dev.cc sced_dots.cc sced_errlog.cc sced_expr.cc \
+  sced_fixup.cc sced_ghost.cc sced_modlib.cc sced_mutual.cc \
+  sced_netlist.cc sced_nodemap.cc sced_param.cc sced_plot.cc \
+  sced_prplabel.cc sced_prpty.cc sced_setif.cc sced_shapes.cc \
+  sced_spicein.cc sced_spiceipc.cc sced_spiceout.cc sced_spmap.cc \
+  sced_subckt.cc sced_symbolic.cc sced_txtcmds.cc sced_variables.cc
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+depend:
+	@echo depending in xic/sced
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm *.o $(LIB_TARGET)
+
+distclean:
+	-rm *.o $(LIB_TARGET) Makefile
+
+#######################################################################

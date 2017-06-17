@@ -1,0 +1,43 @@
+#######################################################################
+# xt_base/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.30 2016/05/14 20:29:11 stevew Exp $
+#######################################################################
+
+DATE = @DATE@
+
+SUBDIRS = \
+        ginterf \
+        miscutil \
+        malloc
+
+dummy: 
+	@for a in $(SUBDIRS); do \
+	    if [ -d $$a ]; then \
+	        (cd $$a; $(MAKE)) \
+	    fi; \
+	done
+	
+clean:
+	@for a in $(SUBDIRS); do \
+	    if [ -d $$a ]; then \
+	        (cd $$a; $(MAKE) $@) \
+	    fi; \
+	done
+
+distclean:
+	@for a in $(SUBDIRS) packages; do \
+	    if [ -d $$a ]; then \
+	        (cd $$a; $(MAKE) $@) \
+	    fi; \
+	done
+	-rm -f config.cache config.log config.status Makefile
+	-rm -rf autom4te.cache
+
+depend:
+	@for a in $(SUBDIRS); do \
+	    if [ -d $$a ]; then \
+	        (cd $$a; $(MAKE) $@) \
+	    fi; \
+	done
+

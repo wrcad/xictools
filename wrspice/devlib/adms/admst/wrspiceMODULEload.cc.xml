@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  $Id: wrspiceMODULEload.cc.xml,v 1.35 2016/01/29 00:11:40 stevew Exp $
+
+  Modified for use with WRspice, Whiteley Research Inc. (wrcad.com).
+  See the original header below for terms and conditions of use.
+-->
+
+<!--
+  Written by Laurent Lemaitre - r29173@users.sourceforge.net
+  Documentation:
+    http://sourceforge.net/docman/display_doc.php?docid=18993&group_id=84289
+  Target Interface: ngspice
+  Supported by adms-1.x.x
+  This file is used by adms - http://sourceforge.net/projects/mot-adms.
+  adms is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+  adms is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  You should have received a copy of the GNU General Public License
+  along with adms; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+
+<!DOCTYPE admst SYSTEM "admst.dtd">
+<admst version="2.3.0"
+  xmlns:admst="http://mot-adms.sourceforge.net/xml-files/admst">
+
+<!-- ---------------------------------------------------------------------- -->
+<admst:template match="module_load_cc">
+  <admst:text format="\n#include &quot;$(modlc)defs.h&quot;\n"/>
+
+  <admst:choose>
+    <admst:when test="[$LIMPRED='yes']">
+#define NP(p) inst->LIMPRED_##p
+    </admst:when>
+    <admst:otherwise>
+#define NP(p) *(ckt->CKTrhsOld + inst->p##_Node)
+    </admst:otherwise>
+  </admst:choose>
+
+#define BP(p,n) (NP(p) - NP(n))
+
+#define BR(p,n) *(ckt->CKTrhsOld + inst->p##_##n##_Branch)
+
+  <admst:text format="\n"/>
+  <admst:choose>
+    <admst:when test="[$added_m='yes' and
+        count(/module/variable[name='m' and parametertype='instance'
+        and input='yes'])!=0]">
+#define M(v) inst->m*(v)
+    </admst:when>
+    <admst:otherwise>
+#define M(v) (v)
+    </admst:otherwise>
+  </admst:choose>
+
+#define lsr_1(p, v)\\
+  ckt->rhsadd(inst->p##_Node, -v);
+
+#define lsr_2(p, n, v)\\
+  { double v_tmp_r = v;\\
+  ckt->rhsadd(inst->p##_Node, -v_tmp_r);\\
+  ckt->rhsadd(inst->n##_Node, v_tmp_r); }
+
+#define _load_static_residual1(p, v)\\
+  lsr_1(p, M(v))
+
+#define _load_static_residual2(p, n, v)\\
+  lsr_2(p, n, M(v))
+
+#define _load_static_jacobian1(Sp, Pp, v)\\
+  { double v_tmp_ = M(v);\\
+  lsr_1(Sp, -v_tmp_*NP(Pp))\\
+  ckt->ldadd(inst->PTR_J_##Sp##_##Pp, v_tmp_);\\
+  (inst->JSVAL_##Sp##_##Pp) += v_tmp_; }
+
+#define _load_static_jacobian2s(Sp, Sn, Pp, v)\\
+  { double v_tmp_ = M(v);\\
+  lsr_2(Sp, Sn, -v_tmp_*NP(Pp))\\
+  ckt->ldadd(inst->PTR_J_##Sp##_##Pp, v_tmp_);\\
+  ckt->ldadd(inst->PTR_J_##Sn##_##Pp, -v_tmp_);\\
+  (inst->JSVAL_##Sp##_##Pp) += v_tmp_;\\
+  (inst->JSVAL_##Sn##_##Pp) -= v_tmp_; }
+
+#define _load_static_jacobian2p(Sp, Pp, Pn, v)\\
+  { double v_tmp_ = M(v);\\
+  lsr_1(Sp, -v_tmp_*BP(Pp, Pn))\\
+  ckt->ldadd(inst->PTR_J_##Sp##_##Pp, v_tmp_);\\
+  ckt->ldadd(inst->PTR_J_##Sp##_##Pn, -v_tmp_);\\
+  (inst->JSVAL_##Sp##_##Pp) += v_tmp_;\\
+  (inst->JSVAL_##Sp##_##Pn) -= v_tmp_; }
+
+#define _load_static_jacobian4(Sp, Sn, Pp, Pn, v)\\
+  { double v_tmp_ = M(v);\\
+  lsr_2(Sp, Sn, -v_tmp_*BP(Pp, Pn))\\
+  ckt->ldadd(inst->PTR_J_##Sp##_##Pp, v_tmp_);\\
+  ckt->ldadd(inst->PTR_J_##Sn##_##Pn, v_tmp_);\\
+  ckt->ldadd(inst->PTR_J_##Sp##_##Pn, -v_tmp_);\\
+  ckt->ldadd(inst->PTR_J_##Sn##_##Pp, -v_tmp_);\\
+  (inst->JSVAL_##Sp##_##Pp) += v_tmp_;\\
+  (inst->JSVAL_##Sn##_##Pn) += v_tmp_;\\
+  (inst->JSVAL_##Sp##_##Pn) -= v_tmp_;\\
+  (inst->JSVAL_##Sn##_##Pp) -= v_tmp_; }
+
+#define _load_branch_P(p, n)\\
+  ckt->ldset(inst->PTR_##p##_##n##_Branch_PB, 1.0);\\
+  ckt->ldset(inst->PTR_##p##_##n##_Branch_BP, 1.0);
+
+#define _load_branch_N(p, n)\\
+  ckt->ldset(inst->PTR_##p##_##n##_Branch_NB, -1.0);\\
+  ckt->ldset(inst->PTR_##p##_##n##_Branch_BN, -1.0);
+
+#define _load_branch_static_residual(p, n, v)\\
+  { double v_tmp_ = M(v);\\
+    ckt->rhsadd(inst->p##_##n##_Branch, v_tmp_);\\
+  }
+
+#define _load_branch_dynamic_residual(p, n, v)\\
+  { double v_tmp_ = M(v);\\
+    if (ckt->CKTchargeCompNeeded) {\\
+      ckt->rhsadd(inst->p##_##n##_Branch, v_tmp_);\\
+    }\\
+  }
+
+#define _load_branch_whitenoise_residual(p, n, v)
+#define _load_branch_flickernoise_residual(p, n, v)
+
+#define _load_branch_static(p, n, v)\\
+{ double v_tmp_ = M(v);\\
+  ckt->rhsadd(inst->p##_##n##_Branch, -v_tmp_*BR(p,n));\\
+  ckt->ldadd(inst->PTR_##p##_##n##_Branch_BB, -v_tmp_);\\
+  (inst->JDVAL_##p##_##n##_Branch_BB) = v_tmp_; }
+
+#define _load_branch_dynamic(p, n, v)\\
+{ double v_tmp_ = M(v);\\
+  if (ckt->CKTchargeCompNeeded) {\\
+    double req = v_tmp_*ckt->CKTag[0];\\
+    double veq = req*BR(p,n);\\
+    ckt->rhsadd(inst->p##_##n##_Branch, -veq);\\
+    ckt->ldadd(inst->PTR_##p##_##n##_Branch_BB, -req);\\
+  }\\
+  (inst->JDVAL_##p##_##n##_Branch_BB) = v_tmp_; }
+
+  <admst:choose>
+    <admst:when test="[$DDTFUNC='onepass']">
+#define _load_dynamic_residual1(p, v)\\
+if (ckt->CKTchargeCompNeeded) {\\
+  ckt->rhsadd(inst->p##_Node, -M(v));\\
+}
+
+#define _load_dynamic_residual2(p, n, v)\\
+if (ckt->CKTchargeCompNeeded) {\\
+  double v_tmp_r = M(v);\\
+  ckt->rhsadd(inst->p##_Node, -v_tmp_r);\\
+  ckt->rhsadd(inst->n##_Node, v_tmp_r);\\
+}
+    </admst:when>
+    <admst:otherwise>
+      <!-- legacy -->
+#define _load_dynamic_residual1(p,v)\\
+if (ckt->CKTchargeCompNeeded) {\\
+  *(ckt->CKTstate0 + inst->STATE_##p##_GND) = M(v);\\
+  if (ckt->CKTmode &amp; MODEINITTRAN)\\
+    *(ckt->CKTstate1 + inst->STATE_##p##_GND) =\\
+      *(ckt->CKTstate0 + inst->STATE_##p##_GND);\\
+  ckt->integrate(inst->STATE_##p##_GND);\\
+  if (ckt->CKTmode &amp; MODEINITTRAN)\\
+    *(ckt->CKTstate1 + inst->STATE_##p##_GND+1) =\\
+      *(ckt->CKTstate0 + inst->STATE_##p##_GND+1);\\
+  ckt->rhsadd(inst->p##_Node,\\
+    -(*(ckt->CKTstate0 + inst->STATE_##p##_GND+1)));\\
+}
+
+#define _load_dynamic_residual2(p, n, v)\\
+if (ckt->CKTchargeCompNeeded) {\\
+  *(ckt->CKTstate0 + inst->STATE_##p##_##n) = M(v);\\
+  if (ckt->CKTmode &amp; MODEINITTRAN)\\
+    *(ckt->CKTstate1 + inst->STATE_##p##_##n) =\\
+      *(ckt->CKTstate0 + inst->STATE_##p##_##n);\\
+  ckt->integrate(inst->STATE_##p##_##n);\\
+  if (ckt->CKTmode &amp; MODEINITTRAN)\\
+    *(ckt->CKTstate1 + inst->STATE_##p##_##n+1) =\\
+      *(ckt->CKTstate0 + inst->STATE_##p##_##n+1);\\
+  ckt->rhsadd(inst->p##_Node,\\
+    -(*(ckt->CKTstate0 + inst->STATE_##p##_##n+1)));\\
+  ckt->rhsadd(inst->n##_Node,\\
+    *(ckt->CKTstate0 + inst->STATE_##p##_##n+1));\\
+}
+    </admst:otherwise>
+  </admst:choose>
+
+#define _load_dynamic_jacobian1(Sp, Pp, v)\\
+  { double v_tmp_ = M(v);\\
+    if (ckt->CKTchargeCompNeeded) {\\
+      double geq = v_tmp_*ckt->CKTag[0];\\
+      double ceq = geq*NP(Pp);\\
+      ckt->rhsadd(inst->Sp##_Node, ceq);\\
+      ckt->ldadd(inst->PTR_J_##Sp##_##Pp, geq);\\
+    }\\
+    (inst->JDVAL_##Sp##_##Pp) += v_tmp_; }
+
+#define _load_dynamic_jacobian2s(Sp, Sn, Pp, v)\\
+  { double v_tmp_ = M(v);\\
+    if (ckt->CKTchargeCompNeeded) {\\
+      double geq = v_tmp_*ckt->CKTag[0];\\
+      double ceq = geq*NP(Pp);\\
+      ckt->rhsadd(inst->Sp##_Node, ceq);\\
+      ckt->rhsadd(inst->Sn##_Node, -ceq);\\
+      ckt->ldadd(inst->PTR_J_##Sp##_##Pp, geq);\\
+      ckt->ldadd(inst->PTR_J_##Sn##_##Pp, -geq);\\
+    }\\
+    (inst->JDVAL_##Sp##_##Pp) += v_tmp_;\\
+    (inst->JDVAL_##Sn##_##Pp) -= v_tmp_; }
+
+#define _load_dynamic_jacobian2p(Sp, Pp, Pn, v)\\
+  { double v_tmp_ = M(v);\\
+    if (ckt->CKTchargeCompNeeded) {\\
+      double geq = v_tmp_*ckt->CKTag[0];\\
+      double ceq = geq*BP(Pp,Pn);\\
+      ckt->rhsadd(inst->Sp##_Node, ceq);\\
+      ckt->ldadd(inst->PTR_J_##Sp##_##Pp, geq);\\
+      ckt->ldadd(inst->PTR_J_##Sp##_##Pn, -geq);\\
+    }\\
+    (inst->JDVAL_##Sp##_##Pp) += v_tmp_;\\
+    (inst->JDVAL_##Sp##_##Pn) -= v_tmp_; }
+
+#define _load_dynamic_jacobian4(Sp, Sn, Pp, Pn, v)\\
+  { double v_tmp_ = M(v);\\
+    if (ckt->CKTchargeCompNeeded) {\\
+      double geq = v_tmp_*ckt->CKTag[0];\\
+      double ceq = geq*BP(Pp,Pn);\\
+      ckt->rhsadd(inst->Sp##_Node, ceq);\\
+      ckt->rhsadd(inst->Sn##_Node, -ceq);\\
+      ckt->ldadd(inst->PTR_J_##Sp##_##Pp, geq);\\
+      ckt->ldadd(inst->PTR_J_##Sn##_##Pn, geq);\\
+      ckt->ldadd(inst->PTR_J_##Sp##_##Pn, -geq);\\
+      ckt->ldadd(inst->PTR_J_##Sn##_##Pp, -geq);\\
+    }\\
+    (inst->JDVAL_##Sp##_##Pp) += v_tmp_;\\
+    (inst->JDVAL_##Sn##_##Pn) += v_tmp_;\\
+    (inst->JDVAL_##Sp##_##Pn) -= v_tmp_;\\
+    (inst->JDVAL_##Sn##_##Pp) -= v_tmp_; }
+
+  <admst:if test="[$LIMPRED='yes']">
+    <!--
+      Optional predictor and limiting, this seems necessary for some
+      models, in particular bsimsoi.  The limiting causes
+      nonconvergence in Eby Friedman's STT_PMTJ.va, and is not needed
+      in passive devices, so it can be turned off.  The predictor,
+      also enabled by LIMPRED, is probably always worthwhile, at least
+      in circuits that contain a nonlinear element.
+    -->
+    <admst:text format="\n"/>
+namespace {
+    inline double limit(sCKT *ckt, double newv, double oldv)
+    {
+    <admst:if test="[$package_limiting='yes']">
+        if (!(ckt->CKTmode & MODEDC)) {
+            double dv = newv - oldv;
+            const double lim = 3.0;
+            if (fabs(dv) > lim) {
+                ckt->incNoncon();
+                newv = oldv + (dv > 0.0 ? lim : -lim);
+            }
+        }
+    </admst:if>
+        return (newv);
+    }
+}
+  <admst:text format="\n"/>
+  </admst:if>
+  <admst:text format="\n\nint\n"/>
+  <admst:text format="$(moduc)dev::load(sGENinstance *geninst, sCKT *ckt)\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)s$(moduc)instance *inst = (s$(moduc)instance*)geninst;\n"/>
+  <admst:text format="$(indent)s$(moduc)model *model = (s$(moduc)model*)inst->GENmodPtr;\n"/>
+
+  <!-- Model varaible declarations. -->
+  <admst:variable name="SkipDCL" value="yes"/>
+  <admst:for-each select="variable">
+    <admst:if test="[input='no' and scope='global_model']">
+      <admst:apply-templates select="." match="variable:declaration"/>
+    </admst:if>
+  </admst:for-each>
+  <admst:for-each select="$model_vars">
+    <admst:apply-templates select="." match="variable:declaration"/>
+  </admst:for-each>
+  <admst:variable name="SkipDCL" value="no"/>
+  <admst:for-each select="$model_local_vars">
+    <admst:apply-templates select="." match="variable:declaration"/>
+  </admst:for-each>
+
+  <!-- Instance variable declarations -->
+  <admst:variable name="SkipDCL" value="yes"/>
+  <admst:for-each select="variable">
+    <admst:if test="[input='no' and scope='global_instance']">
+      <admst:apply-templates select="." match="variable:declaration"/>
+    </admst:if>
+    <admst:if test="[parametertype='instance' and
+        scope!='global_model' and scope!='global_instance' and
+        not(nilled(attribute))]">
+      <admst:apply-templates select="." match="variable:declaration"/>
+    </admst:if>
+  </admst:for-each>
+  <admst:for-each select="$instance_vars">
+    <admst:apply-templates select="." match="variable:declaration"/>
+  </admst:for-each>
+  <admst:variable name="SkipDCL" value="no"/>
+  <admst:for-each select="$instance_local_vars">
+    <admst:apply-templates select="." match="variable:declaration"/>
+  </admst:for-each>
+
+  <!-- The initial_step block items. -->
+  <admst:text format="\n"/>
+  <admst:for-each select="analog/code/item">
+    <admst:choose>
+      <admst:when test="adms[datatypename='block']">
+        <admst:if test="[name='initial_step']">
+          <admst:text format="$(indent)if (ckt->va_initial_step()) {\n"/>
+          <admst:variable name="nobrackets" value="yes"/>
+          <admst:apply-templates select="." match="push_indent"/>
+          <admst:apply-templates select="." match="block"/>
+          <admst:apply-templates select="." match="pop_indent"/>
+          <admst:variable name="nobrackets" value="no"/>
+          <admst:text format="$(indent)}\n"/>
+        </admst:if>
+        <admst:if test="[name='final_step']">
+          <admst:text format="$(indent)if (ckt->va_final_step()) {\n"/>
+          <admst:variable name="nobrackets" value="yes"/>
+          <admst:apply-templates select="." match="push_indent"/>
+          <admst:apply-templates select="." match="block"/>
+          <admst:apply-templates select="." match="pop_indent"/>
+          <admst:variable name="nobrackets" value="no"/>
+          <admst:text format="$(indent)}\n"/>
+        </admst:if>
+      </admst:when>
+    </admst:choose>
+  </admst:for-each>
+
+  <!-- Load the predictor state variables. -->
+  <admst:if test="[$LIMPRED='yes']">
+    <admst:for-each select="node[grounded='no']">
+      <admst:text format="$(indent)*(ckt->CKTstate0 + inst->STATE_%(name)) ="/>
+      <admst:text format=" ckt->CKTrhsOld[inst->%(name)_Node];\n"/>
+    </admst:for-each>
+    <admst:text format="\n"/>
+    <admst:text format="$(indent)if (ckt->CKTmode & MODEINITPRED) {\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text
+      format="$(indent)double xf2 = ckt->CKTdelta/ckt->CKTdeltaOld[1];\n"/>
+    <admst:text format="$(indent)double xf1 = 1.0 + xf2;\n"/>
+    <admst:for-each select="node[grounded='no']">
+      <admst:text format="$(indent)inst->LIMPRED_%(name) ="/>
+      <admst:text format=" xf1*(*(ckt->CKTstate1 + inst->STATE_%(name))) -\n"/>
+      <admst:apply-templates select="." match="push_indent"/>
+      <admst:text format="$(indent)xf2*(*(ckt->CKTstate2 +"/>
+      <admst:text format=" inst->STATE_%(name)));\n"/>
+      <admst:apply-templates select="." match="pop_indent"/>
+    </admst:for-each>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)}\n"/>
+    <admst:text format="$(indent)else {\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:for-each select="node[grounded='no']">
+      <admst:text format="$(indent)inst->LIMPRED_%(name) ="/>
+      <admst:text format=" limit(ckt, ckt->CKTrhsOld[inst->%(name)_Node],\n"/>
+      <admst:apply-templates select="." match="push_indent"/>
+      <admst:text format="$(indent)*(ckt->CKTstate1 + inst->STATE_%(name)));\n"/>
+      <admst:apply-templates select="." match="pop_indent"/>
+    </admst:for-each>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)}\n"/>
+  </admst:if>
+
+  <!-- Initialize Jacobian contibution elements. -->
+  <admst:for-each select="jacobian">
+    <admst:variable name="row" value="%(row/name)"/>
+    <admst:variable name="col" value="%(column/name)"/>
+    <admst:if test="[static='yes']">
+      <admst:text format="$(indent)inst->JSVAL_$(row)_$(col) = 0.0;\n"/>
+    </admst:if>
+    <admst:if test="[dynamic='yes']">
+      <admst:text format="$(indent)inst->JDVAL_$(row)_$(col) = 0.0;\n"/>
+    </admst:if>
+  </admst:for-each>
+
+  <!-- Initialize noise contribution elements. -->
+  <!-- This will cover noise blocks? -->
+  <admst:if test="[count($fnoise/item)!=0 or count($tnoise/item)!=0 or
+      count($wnoise/item)!=0]">
+    <admst:text format="\n"/>
+    <admst:for-each select="$fnoise/item">
+      <admst:text
+        format="$(indent)inst->fpnoise%(index($fnoise/item,.)) = 0.0;\n"/>
+      <admst:text
+        format="$(indent)inst->fenoise%(index($fnoise/item,.)) = 0.0;\n"/>
+    </admst:for-each>
+    <admst:text select="$tnoise/item"
+      format="$(indent)inst->tnoise%(index($tnoise/item,.)) = 0.0;\n"/>
+    <admst:text select="$wnoise/item"
+      format="$(indent)inst->wnoise%(index($wnoise/item,.)) = 0.0;\n"/>
+  </admst:if>
+
+  <!-- Load the constant matrix elements for the probes. -->
+  <admst:if test="[count($curprobes)!=0]">
+    <admst:text format="\n"/>
+    <admst:for-each select="$curprobes">
+      <admst:variable name="pname" path="branch/pnode/name"/>
+      <admst:text format="$(indent)_load_branch_P($(pname), $(pname));\n"/>
+      <admst:text format="$(indent)_load_branch_N($(pname), $(pname));\n"/>
+    </admst:for-each>
+  </admst:if>
+
+  <!-- The non-initial block items. -->
+  <admst:text format="\n"/>
+  <admst:for-each select="analog/code/item">
+    <admst:choose>
+      <admst:when test="adms[datatypename!='block']">
+        <admst:apply-templates select="." match="%(adms/datatypename)"/>
+      </admst:when>
+      <admst:otherwise>
+        <admst:if test="[name!='initial_model' and
+            name!='initial_instance' and name!='initializeModel' and
+            name!='initializeInstance' and name!='initial_step' and
+            name!='noise' and name!='final_step']">
+          <admst:apply-templates select="." match="block"/>
+        </admst:if>
+      </admst:otherwise>
+    </admst:choose>
+  </admst:for-each>
+<!--
+  <admst:apply-templates select="analog/code" match="debug_print"/>
+-->
+
+  <admst:text format="$(indent)return (OK);\n"/>
+
+  <admst:text format="}\n\n"/>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<admst:template match="debug_print">
+  <admst:text format="\n$(indent)// Instance local variables\n"/>
+  <admst:variable name="SkipDCL" value="yes"/>
+  <admst:for-each select="variable">
+    <admst:if test="[input='no' and scope='global_instance']">
+      <admst:apply-templates select="." match="variable:printf"/>
+    </admst:if>
+  </admst:for-each>
+  <admst:for-each select="$instance_vars">
+    <admst:apply-templates select="." match="variable:printf"/>
+  </admst:for-each>
+  <admst:variable name="SkipDCL" value="no"/>
+  <admst:for-each select="$instance_local_vars">
+    <admst:apply-templates select="." match="variable:printf"/>
+  </admst:for-each>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------- -->
+
+<admst:for-each select="/module">
+  <admst:apply-templates select="." match="init:translation"/>
+  <admst:open file="$(modlc)load.cc">
+    <admst:value-of select="/simulator/package_string"/>
+    <admst:text format="// Interface: %s\n"/>
+    <admst:value-of select="/simulator/currentdate"/>
+    <admst:value-of select="/simulator/fullname"/>
+    <admst:text format="// created by: %s - %s\n"/>
+    <admst:apply-templates select="." match="init:variables"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:apply-templates select="." match="module_load_cc"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+  </admst:open>
+  <admst:message format="$(modlc)load.cc: file created\n"/>
+</admst:for-each>
+
+</admst>
+

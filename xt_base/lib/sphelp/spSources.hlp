@@ -1,0 +1,2036 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spSources.hlp,v 1.22 2017/02/22 01:53:00 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spSources.hlp
+!!TITLE
+spSources.hlp
+!!HTML 
+
+!!SUBTOPICS
+src
+devexpr 
+polyexpr 
+tranfuncs 
+texp
+tgauss
+interp
+pulse
+gpulse
+pwl
+sffm
+am
+tsin
+spulse 
+table 
+depsource
+vccs
+vcvs
+cccs
+ccvs
+
+
+!! elements.tex 012509
+!!KEYWORD
+src isrc vsrc arbsource
+!!TITLE
+General I and V Sources
+!!HTML 
+    General form:
+    <blockquote>
+        <tt>v</tt><i>name</i> <i>n+ n-</i> [<i>expr</i>]
+          [[<tt>dc</tt>] <i>dcvalue</i>]<br>
+          &nbsp;&nbsp; [<tt>ac</tt> [<i>acmag</i> [<i>acphase</i>]] |
+           <tt>table</tt>(<i>name</i>)]<br>
+          &nbsp;&nbsp; [<tt>distof1</tt> [<i>f1mag</i> [<i>f1phase</i>]]] 
+          [<tt>distof2</tt> [<i>f2mag</i> [<i>f2phase</i>]]]<br>
+        <tt>i</tt><i>name</i> <i>n+ n-</i> [<i>expr</i>]
+          [[<tt>dc</tt>] <i>dcvalue</i>]<br>
+          &nbsp;&nbsp; [<tt>ac</tt> [<i>acmag</i> [<i>acphase</i>]] |
+           <tt>table</tt>(<i>name</i>)]<br>
+          &nbsp;&nbsp; [<tt>distof1</tt> [<i>f1mag</i> [<i>f1phase</i>]]] 
+          [<tt>distof2</tt> [<i>f2mag</i> [<i>f2phase</i>]]]<br>
+        <tt>a</tt><i>name</i> <i>n+ n-</i> v|I = <i>expr</i>
+          [[<tt>dc</tt>] <i>dcvalue</i>]<br>
+          &nbsp;&nbsp; [<tt>ac</tt> [<i>acmag</i> [<i>acphase</i>]] |
+           <tt>table</tt>(<i>name</i>)]<br>
+          &nbsp;&nbsp; [<tt>distof1</tt> [<i>f1mag</i> [<i>f1phase</i>]]] 
+          [<tt>distof2</tt> [<i>f2mag</i> [<i>f2phase</i>]]]
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote><tt>
+        vcc 10 0 dc 6<br>
+        vin 13 2 0.001 ac 1 sin(0 1 1meg)<br>
+        v2 10 1 ac table(acvals)<br>
+        isrc 23 21 ac 0.333 45.0 sffm(0 1 10k 5 1k)<br>
+        vmeas 12 9<br>
+        vin 1 0 2*v(2)+v(3)<br>
+        azz 2 0 v=.5*exp(v(2))<br>
+        ixx 2 4 pulse(0 1 1n 10n 10n) + pulse(0 1 40n 10n 10n)<br>
+    </tt></blockquote>
+
+    In <i>WRspice</i>, the specification of an "independent" source is
+    completely general, as the output can be governed by an arbitrary
+    <a href="devexpr">expression</a> containing functions of other
+    circuit variables.  The syntax is a superset of the notation used
+    in previous versions of SPICE, which separately keyed independent
+    and dependent sources.
+
+    <p>
+    The leading letter "<tt>v</tt>" keys a voltage source, and
+    "<tt>i</tt>" keys a current source.  In addition, the "arbitrary
+    source" used in SPICE3 is retained, but is keyed by "<tt>a</tt>",
+    rather than "<tt>b</tt>" ("<tt>b</tt>" is used for Josephson
+    junctions in <i>WRspice</i>).  This is a special case of the
+    general source specification included for backward compatibility.
+
+    <p>
+    The <i>n+</i> and <i>n-</i> are the positive and negative nodes,
+    respectively.  Note that voltage sources need not be grounded. 
+    Positive current is assumed to flow from the positive node,
+    through the source, to the negative node.  A current source of
+    positive value, will force current to flow in to the <i>n+</i>
+    node, through the source, and out of the <i>n-</i> node.  Voltage
+    sources, in addition to being used for circuit excitation, are
+    often used as 'ammeters' in <i>WRspice</i>, that is, zero valued
+    voltage sources may be inserted into the circuit for the purpose
+    of measuring current (in <i>WRspice</i>, an inductor can be used
+    for this purpose as well).  Zero-value voltage sources will, of
+    course, have no effect on circuit operation since they represent
+    short-circuits, however they add complexity which might slightly
+    affect simulation speed.
+
+    <p>
+    In <a href=".tran">transient</a> and <a href=".dc">dc</a>
+    analysis, sources can in general have complex definitions which
+    involve the dependent variable (e.g., time in transient analysis)
+    and other circuit variables.  There are built-in <a
+    href="tranfuncs">functions</a> (<tt>pulse</tt>, <tt>pwl</tt>, etc)
+    which can be included in the <i>expr</i>.
+
+    <p>
+    Constant values associated with the source are specified by
+    the following option keywords:
+
+    <dl>
+    <dt><tt>dc</tt> <i>dcvalue</i><dd>
+    This specifies a fixed dc analysis value for the source, and
+    enables the source to be used in a <a href=".dc">dc sweep</a> if
+    the <i>expr</i> is given.  If the <i>expr</i> is not given, the
+    source is available for use in a dc sweep whether or not the
+    <tt>dc</tt> keyword is given.  If an <i>expr</i> is present
+    without "<tt>dc</tt> <i>dcvalue</i>", the time=0 value of the
+    <i>expr</i> is used in dc analysis.  If the source value is zero
+    for both dc and transient analyses, this value and the <i>expr</i>
+    may be omitted.  If the source is the same constant value in dc
+    and transient analysis, the keyword "<tt>dc</tt>" and the value
+    can be omitted.
+    </dl>
+
+    <dl>
+    <dt><tt>ac</tt> [[<i>acmag</i>
+      [<i>acphase</i>]] | <tt>table</tt>(<i>name</i>)]<dd>
+    The parameter <i>acmag</i> is the ac magnitude and <i>acphase</i>
+    is the ac phase.  The source is set to this value in the ac
+    analysis.  If <i>acmag</i> is omitted following the keyword
+    <tt>ac</tt>, a value of unity is assumed.  If <i>acphase</i> is
+    omitted, a value of zero is assumed.  If the source is not an ac
+    small-signal input, the keyword <tt>ac</tt> and the ac values are
+    omitted.  Alternatively, a table can be specified, which contains
+    complex values at different frequency points.  In ac analysis the
+    source value will be derived from the table.  The table with the
+    given <i>name</i> should be specified in a <a
+    href=".table"><tt>.table</tt></a> line, with the <tt>ac</tt>
+    keyword present.  The values in the table are the real and
+    imaginary components, and <i>not</i> magnitude and phase.
+    </dl>
+
+    <dl>
+    <dt><tt>distof1</tt> and <tt>distof2</tt><dd>
+    These are the keywords that specify that the independent source
+    has distortion inputs at the frequencies <i>f1</i> and <i>f2</i>
+    respectively for <a href=".disto">distortion analysis</a>.  The
+    keywords may be followed by an optional magnitude and phase.  The
+    default values of the magnitude and phase are 1.0 and 0.0
+    respectively.
+    </dl>
+  
+    <p>
+    The <a href="devexpr"><i>expr</i></a> is used to assign a
+    time-dependent value for transient analysis and to supply a
+    functional dependence for dc analysis.  If a source is assigned a
+    time-dependent value, the time-zero value is used for dc analysis,
+    unless a dc value is also provided.
+
+!!SEEALSO
+depsource
+elements
+devexpr 
+
+!! elements.tex 092312
+!!KEYWORD
+devexpr 
+!!TITLE
+Device Expressions
+!!HTML 
+    <i>WRspice</i> contains a separate expression handling system for
+    expressions found in device lines.  Voltage and current source
+    lines may contain expressions, as can resistor and capacitor
+    device lines.  These use the same syntax as is used in vector <a
+    href="expressions">expressions</a> in <i>WRspice</i> shell
+    commands, and in <a href="squote">single-quoted</a> expressions. 
+
+    <p>
+    Although the syntax and most of the function names are equivalent
+    to vector expressions used in post-processing, the mathematics
+    subsystems are completely different.  There are three main
+    differences from ordinary vector expressions:
+
+    <ol>
+    <li>The expressions always resolve as scalars.  Before evaluation,
+    all vectors in the current plot are "scalarized" so that they
+    temporarily have unit length with the current value as the data
+    item.
+
+    <p>
+    <li>All inputs and results are real values.
+
+    <p>
+    <li>All expressions must be differentiable with respect to node
+    voltages and branch current variables.  This has subtle but
+    important consequences as explained below.
+    </ol>
+
+    <p>
+    The expression can contain vectors from the current plot or the <a
+    href="constants"><tt>constants</tt></a> plot, and circuit
+    parameters accessed through the <a
+    href="specialvec">@<i>device</i>[<i>param</i>]</a> construct.  In
+    addition, the variable "<tt>x</tt>", which can appear explicitly
+    in the expression, is defined to be the controlling variable in <a
+    href="depsource">dependent sources</a>, or is set to the scale
+    variable in the analysis (e.g., <tt>time</tt> for transient
+    analysis).
+
+    <p>
+    The functions which are used in the device description must be
+    differentiable with respect to node voltages and branch currents. 
+    Internally, the expressions are symbolically differentiated in
+    order to calculate the Jacobian, which is used to set up the
+    matrix which is solved during analysis.  This prevents use of the
+    logical operators, modulus operator, relational operators
+    (<tt>&#60;</tt>, <tt>></tt>, etc.), and the tri-conditional
+    operator (<i>a</i> <tt>?</tt> <i>b</i> <tt>:</tt> <i>c</i>) in
+    these expressions where an operand depends on a node voltage or
+    branch current.
+
+    <p>
+    In addition to the built-in functions, expressions used in devices
+    can include user-defined functions, which must have been defined
+    previously with the <a href="define"><b>define</b></a> command, or
+    with a <a href=".param"><tt>.param</tt></a> line, or in a
+    parameter definition list in a subcircuit call or definition. 
+    These can be used with either math package.  Internally, they are
+    saved in a data structure known as a parse tree.  When a
+    user-defined function is called in the context of a device
+    equation, checking is performed on the user-defined function parse
+    tree to see if any of the non-differentiable operations are
+    included.  If so, an error, such as
+    <blockquote>
+    <tt>invalid operator number 16 ("LT") in input</tt>
+    </blockquote>
+    is generated, and the equation setup fails.
+
+    <p>
+    This being said, the situation is actually a bit more complicated. 
+    As the circuit is being set up, all device equations, after
+    linking in the user-defined functions if any, are "simplified" by
+    evaluating and collapsing all of the constant terms as far as
+    possible.  This evaluation allows <b>all</b> of the operations. 
+    In general, these equations can be very complex, with lots of
+    parameters and conditional tests involving parameters.  However,
+    after simplification, the equation typically reduces to a much
+    simpler form, and the conditionals and other unsupported
+    constructs will have disappeared.
+
+    <p>
+    The bottom line of all of this is that for equations that appear
+    in a circuit description, the circuit variables (node voltages and
+    branch currents) can't be used in tri-conditional, logical, or
+    relational sub-expressions.  For example consider the following:
+
+    <blockquote>
+    <tt>.param myabs(a) = 'a &#60; 0 ? -a : a'</tt><br>
+    <tt>.param mymax(x,y) ='x > y ? x : y'</tt><br>
+    <tt>E2 2 0 function myabs(v(1))</tt><br>
+    <tt>E3 3 0 function mymax(v(1), 0)</tt>
+    </blockquote>
+
+    This will not work, as it specifically breaks the rules prohibiting
+    relational operators and tri-conditionals.  However, it really
+    should be possible to simulate a circuit with behavior described
+    as intended above, and it (usually) is.  One needs to find ways of
+    expressing the behavior by using supported math.
+
+    For example, either of these alternatives would be an acceptable
+    alternative for <tt>myabs</tt>.
+    <blockquote>
+    <tt>.param myabs(a) = abs(a)</tt><br>
+    <tt>.param myabs(a) = sqrt(a*a)</tt>
+    </blockquote>
+    For the special case of <tt>y = 0</tt>, an acceptable substitute
+    for <tt>mymax</tt> would be
+    <blockquote>
+    <tt>.param mymax(x,y) = 0.5*(abs(x) + x)</tt>
+    </blockquote>
+
+    Thus, the following lines are equivalent to the original
+    description, but will be accepted as <i>WRspice</i> input.
+    <blockquote>
+    <tt>.param myabs(a) = abs(a)</tt><br>
+    <tt>.param mymax(x,y) = 0.5*(abs(x) + x)</tt><br>
+    <tt>E2 2 0 function myabs(v(1))</tt><br>
+    <tt>E3 3 0 function mymax(v(1), 0)</tt>
+    </blockquote>
+
+    <p>
+    Someday, it may be possible to add internal intelligence to
+    <i>WRspice</i> to perform this type of substitution automatically.
+
+    <p>
+    Although the lists of math functions available in the two packages
+    are similar, the internal evaluation routines are different.  The
+    shell math functions must operate on vectors of complex values,
+    whereas the functions called in device expressions take scalar
+    real values only.  Furthermore, the device expressions should be
+    differentiable with respect to included node voltages and branch
+    currents, as the derivative of the expression is computed as part
+    of the iterative process of solving the circuit matrix equations. 
+    We have seen that this limits the operations available, and it
+    likewise puts restrictions on the functions.  The <tt>sgn</tt>
+    function grossly violates the differentiability requirement, and
+    many of the functions and/or their derivatives have restricted
+    ranges or singularities.  These can easily lead to convergence
+    problems unless some care is exercised.
+
+    <p>
+    As for all expressions, if an expression is enclosed in <a
+    href="squote">single quotes</a>, it will be evaluated when the
+    file is read, reducing to a constant.  However, if the expression
+    contains references to circuit variables such as node voltages or
+    branch currents, it will be left as an expression, to be evaluated
+    during the simulation.
+
+    <p>
+    The following math functions are available in device expressions
+    on most systems:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th align="left"><tt>abs</tt></th>
+       <td> absolute value</td></tr>
+    <tr><th align="left"><tt>acos</tt></th>
+       <td> arc-cosine</td></tr>
+    <tr><th align="left"><tt>acosh</tt></th>
+       <td> arc-hyperbolic cosine</td></tr>
+    <tr><th align="left"><tt>asin</tt></th>
+       <td> arc-sine</td></tr>
+    <tr><th align="left"><tt>asinh</tt></th>
+       <td> arc-hyperbolic sine</td></tr>
+    <tr><th align="left"><tt>atan</tt></th>
+       <td> arc-tangent</td></tr>
+    <tr><th align="left"><tt>atanh</tt></th>
+       <td> arc-hyperbolic tangent</td></tr>
+    <tr><th align="left"><tt>cbrt</tt></th>
+       <td> cube root</td></tr>
+    <tr><th align="left"><tt>cos</tt></th>
+       <td> cosine</td></tr>
+    <tr><th align="left"><tt>cosh</tt></th>
+       <td> hyperbolic cosine</td></tr>
+    <tr><th align="left"><tt>deriv</tt></th>
+       <td> derivative</td></tr>
+    <tr><th align="left"><tt>erf</tt></th>
+       <td> error function</td></tr>
+    <tr><th align="left"><tt>erfc</tt></th>
+       <td> complementary error function</td></tr>
+    <tr><th align="left"><tt>exp</tt></th>
+       <td> exponential (e raised to power)</td></tr>
+    <tr><th align="left"><tt>j0</tt></th>
+       <td> Bessel function, zero order</td></tr>
+    <tr><th align="left"><tt>j1</tt></th>
+       <td> Bessel function, first order</td></tr>
+    <tr><th align="left"><tt>jn</tt></th>
+       <td> Bessel function, n'th order</td></tr>
+    <tr><th align="left"><tt>ln</tt></th>
+       <td> natural log</td></tr>
+    <tr><th align="left"><tt>log</tt></th>
+       <td> natural log</td></tr>
+    <tr><th align="left"><tt>log10</tt></th>
+       <td>log base 10</td></tr>
+    <tr><th align="left"><tt>pow</tt></th>
+       <td>x to power y</td></tr>
+    <tr><th align="left"><tt>pwr</tt></th>
+       <td>x to power y</td></tr>
+    <tr><th align="left"><tt>sgn</tt></th>
+       <td> sign (+1,0,-1)</td></tr>
+    <tr><th align="left"><tt>sin</tt></th>
+       <td> sine</td></tr>
+    <tr><th align="left"><tt>sinh</tt></th>
+       <td> hyperbolic sine</td></tr>
+    <tr><th align="left"><tt>sqrt</tt></th>
+       <td> square root</td></tr>
+    <tr><th align="left"><tt>tan</tt></th>
+       <td> tangent</td></tr>
+    <tr><th align="left"><tt>tanh</tt></th>
+       <td> hyperbolic tangent</td></tr>
+    <tr><th align="left"><tt>y0</tt></th>
+       <td> Neumann function, zero order</td></tr>
+    <tr><th align="left"><tt>y1</tt></th>
+       <td> Neumann function, first order</td></tr>
+    <tr><th align="left"><tt>yn</tt></th>
+       <td> Neumann function, n'th order</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Most functions take a single argument.  Exceptions are <tt>jn</tt>
+    and <tt>yn</tt> which require two arguments.  The first argument
+    is an integer value for the order, and the second argument is the
+    function input.  The <tt>pow</tt> and functionally identical
+    <tt>pwr</tt> functions also require two arguments, the first
+    argument being the base, and the second being the exponent.  The
+    <tt>deriv</tt> function will differentiate the parse tree of the
+    argument with respect to the <tt>x</tt> variable (whether implicit
+    or explicit).  This is completely unlike the <tt>deriv</tt>
+    function for vectors, which performs a numerical differentiation
+    with respect to some scale.  Differentiating the parse tree gives
+    an analytic result which is generally more accurate.
+
+    <p>
+    In addition, there are special <a href="tranfuncs">tran
+    functions</a> which produce specified output in transient
+    analysis.  <i>WRspice</i> recognizes by context functions and tran
+    functions with the same name (<tt>exp, sin, gauss</tt>).  An
+    unrecognized function is assumed to be a table reference
+    (specified with a <a href=".table"><tt>.table</tt></a> line).
+
+    <p>
+    After simplification by collapsing all of the constant terms,
+    the following tokens are recognized in a device function.
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th align="left"><tt>+,*,/</tt></th>
+     <td> binary: add, multiply, divide</td></tr>
+    <tr><th align="left"><tt>-</tt></th>
+     <td> unary or binary: negate or subtract</td></tr>
+    <tr><th align="left"><tt>^</tt></th>
+     <td> binary: exponentiation</td></tr>
+    <tr><th align="left"><tt>()</tt></th>
+     <td>association</td></tr>
+    <tr><th align="left"><tt>,</tt></th>
+     <td> argument separator</td></tr>
+    <tr><th align="left"><tt>x</tt></th>
+     <td> independent variable</td></tr>
+    <tr><th align="left"><i>number</i></th>
+     <td> a floating point number</td></tr>
+    <tr><th align="left"><i>string</i></th>
+     <td> a library function, table, or circuit vector</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The independent variable <tt>x</tt> is context specific, and
+    usually represents a global input variable.  It is the running
+    variable in the current analysis (time in transient analysis, for
+    example), or the input variable in <a href="depsource">dependent
+    source</a> specifications.
+
+    <p>
+    In a chained analysis, the <tt>x</tt> variable will be that of
+    core analysis.  Thus, for a chained transient analysis, <tt>x</tt>
+    is time, as in the unchained case.  Since the functional
+    dependence is inoperable in any kind of ac small-signal analysis
+    (ac, noise, transfer function, pz, distortion, ac sensitivity)
+    <tt>x</tt> is not set and never used.  In "op" analysis,
+    <tt>x</tt> is always numerically zero.  The same is true in dc
+    sensitivity analysis.
+
+    <p>
+    During a "pure" dc sweep analysis, for "independent" sources
+    (keyed by <b>v</b>, <b>i</b>, or <b>a</b> and not <b>e</b>,
+    <b>f</b>, <b>g</b>, or <b>h</b>) other than the swept ones, if an
+    expression is given, the output of the source will be the result
+    of the expression where the input <tt>x</tt> is the swept voltage
+    (or the first sweep voltage if there are two), rather than time as
+    when in transient analysis.  However, if the source line has a
+    "dc" keyword and optional following constant value, during pure dc
+    analysis the source will output the fixed value, or zero, if the
+    value is omitted.  However, in pure dc analysis the tran functions
+    generally return zero.  The exceptions are <tt>pwl</tt>,
+    <tt>table</tt> and table references, and <tt>interp</tt>.  These
+    functions return values, but with the swept voltage (<tt>x</tt>)
+    as the input (in the case of <tt>table</tt> the input may be
+    explicit anyway).  For "dependent" sources (keyed by <b>e</b>,
+    <b>f</b>, <b>g</b>, or <b>h</b>) the <tt>x</tt> is the controlling
+    voltage or current as in transient analysis.  Again, if a "dc"
+    keyword appears, the output will be fixed at the given value,
+    ignoring the controlling variable.
+
+    <p>
+    Since circuit "vector" names used in device expressions must be
+    resolved before the actual vector is created, there is a potential
+    for error not present in normal vector expressions.  In
+    particular, name clashes between circuit node names and vectors in
+    the <tt>constants</tt> plot can cause trouble.
+
+    <p>
+    In device expressions, if a string token starts with a backslash
+    ('\') character, it will not be replaced with a value, should the
+    name happen to match one of the named constants, or other
+    potential substitution.  This will be needed, for example, if a
+    node name matches one of the predefined constant names, and one
+    needs to reference that node in a source expression.  The token
+    should be double quoted to ensure this interpretation by the
+    parser.
+
+    <p>
+    For example, suppose there is a node named "<tt>c</tt>", which is
+    also the name of a vector in the <tt>constants</tt> plot.  Such a
+    vector existed in earlier <i>WRspice</i> releases, as it was the
+    speed of light constant.  This constant is now named
+    "<tt>const_c</tt>" so a clash with this is unlikely.  However, the
+    user can create a vector named "<tt>c</tt>" in the
+    <tt>constants</tt> plot, so the possibility of a clash remains.
+
+    <p>
+    A source specification like
+
+    <blockquote>
+    <tt>vcon 1 2 5*v(c)</tt>
+    </blockquote>
+
+    will cause an error, possibly not until simulation time.  This
+    can be avoided by use of the form described above.
+
+    <blockquote>
+    <tt>vcon 1 2 5*v("\c")</tt>
+    </blockquote>
+
+!!SEEALSO
+tranfuncs
+polyexpr 
+src
+
+!! elements.tex 012509
+!!KEYWORD
+polyexpr 
+!!TITLE
+POLY Expressions
+!!HTML 
+    In SPICE2, nonlinear polynomial dependencies are specified using a
+    rather cumbersome syntax keyed by the word <tt>poly</tt>.  For
+    compatibility, this syntax is recognized by the dependent sources
+    in <i>WRspice</i>, making possible the use of the large number of
+    behavioral models developed for SPICE2.
+
+    <p>
+    There are three polynomial equations which can be specified through the
+    <tt>poly</tt>(<i>N</i>) parameter.
+
+    <dl><dt><tt>poly(1)</tt><dd>One-dimensional equation</dl>
+    <dl><dt><tt>poly(2)</tt><dd>Two-dimensional equation</dl>
+    <dl><dt><tt>poly(3)</tt><dd>Three-dimensional equation</dl>
+
+    <p>
+    The dimensionality refers to the number of controlling variables;
+    one, two, or three.  These parameters must immediately follow the
+    <tt>poly</tt>(<i>N</i>) token.  The inputs must correspond to the
+    type of the source, either pairs of nodes for voltage-controlled
+    sources, or voltage source or inductor names for
+    current-controlled sources.  Following the inputs is the list of
+    polynomial coefficients which define the equation.  These are
+    constants, and may be in any format recognized by <i>WRspice</i>.
+
+    <p>
+    The simplest case is one dimension, where the coefficients
+    <tt>c0, c1, ...</tt> evaluate to  
+    <blockquote>
+     c0 + c1*x + c2*x<sup>2</sup> + c3*x<sup>3</sup> + ...
+    </blockquote>
+
+    <p>
+    The number of terms is arbitrary.  If the number of terms is
+    exactly one, it is assumed to be the linear term (<tt>c1</tt>) and
+    not the constant term.  The following is an example of a
+    voltage-controlled voltage source which utilizes <tt>poly(1)</tt>.
+    <blockquote>
+     <tt>epolysrc 1 0 poly(1) 3 2 0 2 0.25</tt>
+    </blockquote>
+
+    <p>
+    The source output appears at node 1 to ground (note that
+    <i>WRspice</i> can use arbitrary strings as node specifiers).  The
+    input is the voltage difference between nodes 3 and 2.  The output
+    voltage is twice the input voltage plus .25 times the square of
+    the input voltage.
+
+    In the two dimensional case, the coefficients are interpreted in
+    the following order.
+    <blockquote>
+     c0 + c1*x + c2*y + c3*x<sup>2</sup> + c4*x*y + c5*y<sup>2</sup> +
+     c6*x<sup>3</sup> + c7*x<sup>2</sup>*y + c8*x*y<sup>2</sup> +
+     c9*y<sup>3</sup> + ...
+    </blockquote>
+
+    For example, to specify a source which produces
+    3.5*v(3,4) + 1.29*v(8)*v(3,4), one has
+    <blockquote>
+        <tt>exx 1 0 poly(2) 3 4 8 0 0 3.5 0 0 1.29</tt>
+    </blockquote>
+    Note that any coefficients that are unspecified are taken as zero.
+
+    <p>
+    The three dimensional case has a coefficient ordering interpretation
+    given by
+    <blockquote>
+     c0 + c1*x + c2*y + c3*z + c4*x<sup>2</sup> + c5*x*y + c6*x*z +
+     c7*y<sup>2</sup> + c8*y*z + c9*z<sup>2</sup> + c10*x<sup>3</sup> +
+     c11*x<sup>2</sup>*y + c12*x<sup>2</sup>*z * c13*x*y<sup>2</sup> +
+     c14*x*y*z + c15*x*z<sup>2</sup> + c16*y<sup>3</sup> +
+     c17*y<sup>2</sup>*z + c18*y*z<sup>2</sup> + c19*z<sup>3</sup> + ...
+    </blockquote>
+    which is rather complex but careful examination reveals the pattern.
+
+!!SEEALSO
+devexpr
+depsource
+
+!! elements.tex 031516
+!!KEYWORD
+tranfuncs 
+!!TITLE
+Tran Functions
+!!HTML
+    There are several built-in source functions, which are based on
+    and extend the source specifications in SPICE2.  These generally
+    produce time-dependent output for use in transient analysis.  For
+    brevity, these functions are referred to as "tran functions".
+
+    <p>
+    The tran functions are listed in the table below.  If parameters
+    other than source amplitudes are omitted, default values will be
+    assumed.  The tran functions, which require multiple space or
+    comma separated arguments in a particular order, are:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><a href="texp"><tt>exp</tt></a></td>
+     <td>exponential specification</td></tr>
+    <tr><td><a href="texp"><tt>texp</tt></a></td>
+     <td>exponential specification</td></tr>
+    <tr><td><a href="tgauss"><tt>gauss</tt></a></td>
+     <td>gaussian noise specification</td></tr>
+    <tr><td><a href="tgauss"><tt>tgauss</tt></a></td>
+     <td>gaussian noise specification</td></tr>
+    <tr><td><a href="interp"><tt>interp</tt></a></td>
+     <td>interpolation specification</td></tr>
+    <tr><td><a href="pulse"><tt>pulse</tt></a></td>
+     <td>pulse specification</td></tr>
+    <tr><td><a href="gpulse"><tt>gpulse</tt></a></td>
+     <td>gaussian pulse specification</td></tr>
+    <tr><td><a href="pwl"><tt>pwl</tt></a></td>
+     <td>piecewise-linear specification</td></tr>
+    <tr><td><a href="sffm"><tt>sffm</tt></a></td>
+     <td>single frequency fm specification</td></tr>
+    <tr><td><a href="am"><tt>am</tt></a></td>
+     <td>amplitude modulated specification</td></tr>
+    <tr><td><a href="tsin"><tt>sin</tt></a></td>
+     <td>sinusoidal specification</td></tr>
+    <tr><td><a href="tsin"><tt>tsin</tt></a></td>
+     <td>sinusoidal specification</td></tr>
+    <tr><td><a href="spulse"><tt>spulse</tt></a></td>
+     <td>sinusoidal pulse specification</td></tr>
+    <tr><td><a href="table"><tt>table</tt></a></td>
+     <td>reference to a <tt>.table</tt> specification</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The the <tt>texp</tt>, <tt>tgauss</tt>, and <tt>tsin</tt> are
+    aliases to <tt>exp</tt>, <tt>gauss</tt>, and <tt>sin</tt> tran
+    functions that avoid possible ambiguity with math functions of the
+    same name.
+
+    <p>
+    Unlike the math functions, the tran functions have variable-length
+    argument lists.  If arguments are omitted, default values are
+    assumed.
+
+    <p>
+    The tran functions are most often used to specify voltage/current
+    source output, however in <i>WRspice</i> these can be used in
+    general expressions.  The <tt>sin</tt>, <tt>exp</tt>,
+    <tt>gauss</tt> tran functions have names that conflict with math
+    functions.  There seems to be no way to absolutely reliably
+    distinguish the tran vs.  math functions by context, nor is it
+    possible to exclusively rename the functions without causing huge
+    compatibility problems.
+
+    <p>
+    Although the <tt>sin</tt> and <tt>exp</tt> functions are generally
+    distinguishable except for one unlikely case, with the additional
+    arguments to the <tt>gauss</tt> function for <a
+    href="hspicesim">HSPICE</a> compatibility in <i>WRspice</i>
+    release 3.0.0, the problem is more acute.
+
+    <p>
+    It may be necessary to edit legacy <i>WRspice</i> input files to
+    avoid this problem.
+
+    <p>
+    That being said, new intelligence has been added to differentiate
+    between the two species.  As in older releases, the argument count
+    will in many cases resolve ambiguity.
+
+    <p>
+    First of all, to guarantee that the tran functions are used in an
+    expression, they can be called by the synonym names <tt>tsin</tt>,
+    <tt>texp</tt>, and <tt>tgauss</tt>.
+
+    <p>
+    If <tt>sin</tt>, <tt>exp</tt>, or <tt>gauss</tt> use white-space
+    delimiting in the argument list, then they will be called as tran
+    functions.  The math functions always use commas to separate
+    arguments.  Commas are also legal argument separators in tran
+    functions, but (perhaps) are not as frequently used.  If comma
+    argument separators are used, the math functions are assumed.
+
+    <p>
+    Note that almost all math functions (with the exception of
+    <tt>gauss</tt> and a few others) take a single complex vector
+    argument.  It is possible to give these functions multiple
+    comma-separated "arguments", but in evaluation these are collapsed
+    by evaluation of the comma operator:
+    <blockquote>
+    <tt>a,b = (a + j*b)</tt>
+    </blockquote>
+    So, <tt>sin(1,1)</tt> is equivalent to <tt>sin((1+j))</tt>, which
+    returns a complex value.
+
+    <p>
+    In earlier <i>WRspice</i> releases, <tt>sin(a,b)</tt> was always
+    interpreted as the tran <tt>sin</tt> function, which has a minimum
+    of two arguments (and similar for <tt>exp</tt>).  Presently.
+    <blockquote>
+    <tt>sin(a,b)</tt> comma delimiter implies math<br>
+    <tt>sin(a b)</tt> space delimiter implies tran
+    </blockquote>
+
+    <p>
+    If ambiguity occurs in a function specification for a voltage or
+    current source, the tran function is favored if the specification
+    is ambiguous.
+
+    <p>
+    The tran functions implicitly use time as an independent variable,
+    and generally return 0 in dc analysis.  Exceptions are the
+    <tt>pwl</tt> and <tt>interp</tt> forms, which implicitly use the
+    value of "<tt>x</tt>" which is <a
+    href="devexpr">context-specific</a>.  In dependent sources, this
+    is the controlling value of the source rather than time.  The
+    <tt>table</tt> function takes its input directly from the second
+    argument.
+
+    <p>
+    The tran functions can also be used in regular vector expressions. 
+    They generate a vector corresponding to the current scale, which
+    must exist, be real, and monotonically increasing.  The length of
+    the returned vector is equal to the length of the scale.
+
+    <p>
+    For example:
+    <blockquote>
+        (do a tran analysis to establish a reasonable scale)<br>
+        <tt>let a = pulse(0 1 10n 10n 10n 20n)</tt><br>
+        <tt>plot a</tt>    (plots a pulse waveform)
+    </blockquote>
+    The construct can be used like any other token in a regular
+    vector expression.
+
+    <p>
+    The tran functions (other than <tt>table</tt> and
+    <tt>interp</tt>) take constant expressions as arguments.  The
+    argument list consists of comma or space separated expressions. 
+    Arguments are parsed as follows:
+
+    <ol>
+    <li>The outer parentheses, if these exist, are stripped from the
+     list.  <i>WRspice</i> can recognize most instances where
+     parentheses are not included, since these are optional in
+     standard SPICE syntax for the tran functions.
+
+    <p>
+    <li>Commas that are not enclosed in parentheses or square brackets are
+     converted to spaces.
+    <p>
+    <p>
+    <li>Minus signs ('-') that are not enclosed in parentheses or
+      square brackets, and are not followed by white space, and are
+      preceded by white space, are assumed to be the start of a new
+      token (argument).  An expression termination character
+      (semicolon) is added to the end of the previous argument.
+
+    <p>
+    <li>The string is parsed into individual expression units, which are
+      the arguments.  The separation is determined by context.
+    </ol>
+
+    <p>
+    There is no provision for a unary '+', thus, <tt>func(a, +b)</tt>
+    is taken as <tt>func(a+b)</tt>.  Parenthesis can be added to
+    enforce precedence.  The minus sign handling implies that
+    <tt>func(a, -b)</tt> and <tt>func(a -b)</tt> are taken as
+    <tt>func((a), (-b))</tt>, whereas <tt>func(a-b)</tt>, <tt>func(a-
+    b)</tt>, <tt>func(a - b)</tt>, etc.  are taken as
+    <tt>func((a)-(b))</tt>.
+
+    <p>
+    In addition to the built-in functions, expressions used in sources
+    can include user defined functions, which must have been defined
+    previously with the <a href="define"><b>define</b></a> command. 
+    These may be useful for encapsulating the tran functions.
+
+    <p>
+    Example:
+    <blockquote>
+      <tt>define mypulse(delay, width) pulse(0 1 delay 1n 1n width)</tt><br>
+      ....<br>
+      <tt>v1 1 0 mypulse(5n, 10n)</tt>
+    </blockquote>
+
+    <p>
+    Recall that a line in the deck starting with "<tt>*@</tt>" will be
+    executed before the deck is parsed.
+
+    <blockquote><tt>
+      title line<br>
+      *@ define mypulse(delay, width) pulse(0 1 delay 1n 1n width)<br>
+      v1 1 0 mypulse(5n, 10n)<br>
+      r1 1 0 100<br>
+      .end<br>
+    </tt></blockquote>
+
+!!SEEALSO
+expressions
+devexpr
+spsource
+
+!! elements.tex 012509
+!!KEYWORD
+texp
+!!TITLE
+Exponential
+!!HTML 
+    General forms:
+    <blockquote>
+        <tt>exp</tt>(<i>v1 v2</i> [<i>td1 tau1 td2 tau2</i>])
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote>
+        <tt>vin 3 0 exp(-4 -1 2ns 30ns 60ns 40ns)</tt>
+    </blockquote>
+
+    <p>
+    This function can be called as <tt>texp</tt> to avoid possible
+    conflict with the <a href="mathfuncs#exp"><tt>exp</tt></a> math
+    function.
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>parameter</th><th>description</th>
+        <th>default value</th><th>units</th></tr>
+    <tr><td><i>v1</i></td> <td>initial value</td>
+        <td>&nbsp;</td> <td>volts or amps</td></tr>
+    <tr><td><i>v2</i></td> <td>pulsed value</td>
+        <td>&nbsp;</td> <td>volts or amps</td></tr>
+    <tr><td><i>td1</i></td> <td>rise delay time</td>
+        <td><tt>0.0</tt></td> <td>seconds</td></tr>
+    <tr><td><i>tau1</i></td> <td>rise time constant</td>
+        <td><tt>tstep</tt></td> <td>seconds</td></tr>
+    <tr><td><i>td2</i></td> <td>fall delay time</td>
+        <td><i>td1</i><tt>+tstep</tt></td> <td>seconds</td></tr>
+    <tr><td><i>tau2</i></td> <td>fall time constant</td>
+        <td><tt>tstep</tt></td> <td>seconds</td></tr>
+    </table>
+
+    <p>
+    The shape of the waveform is described by the following table:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>time</th>  <th>value</th></tr>
+    <tr><td><tt>0</tt> to <i>td1</i></td> <td><i>v1</i></tr>
+    <tr><td><i>td1</i> to <i>td2</i></td>
+        <td><i>v1</i>+(<i>v2</i>-<i>v1</i>)*(1-<tt>exp</tt>(-(<tt>time</tt>-<i>td1</i>)/<i>tau1</i>))</tt></td></tr>
+    <tr><td><tt>td2</tt> to <tt>tstop</tt></td>
+        <td><i>v1</i>+(<i>v2</i>-<i>v1</i>)*(1-<tt>exp</tt>(-(<tt>time</tt>-<i>td1</i>)/<i>tau1</i>))<br>
+        +(<i>v1</i>-<i>v2</i>)*(1-<tt>exp</tt>(-(<tt>time</tt>-<i>td2</i>)/<i>tau2</i>))</td></tr>
+    </table>
+    </blockquote>
+ 
+    <p>
+    This function applies only to transient analysis, where time is
+    the running variable.  When referring to default values,
+    <tt>tstep</tt> is the printing increment and <tt>tstop</tt> is the
+    final time in <a href=".tran"> transient analysis</a>.  The
+    argument count is used to distinguish this function from the math
+    function of the same name.
+ 
+!!SEEALSO
+tranfuncs
+
+!! elements.tex 091516
+!!KEYWORD
+tgauss
+!!TITLE
+Gaussian Random
+!!HTML 
+    General form:
+    <blockquote>
+        <tt>gauss</tt>(<i>stddev mean lattice</i> [<i>interp</i>])
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote></tt>
+        v1 1 0 gauss(.5 2 100n 1)<br>
+        v2 1 0 gauss(.1 0 0)
+    </tt></blockquote>
+
+    <p>
+    This function can be called as <tt>tgauss</tt> to avoid possible
+    conflict with the <a href="hs_functions#gauss"><tt>gauss</tt></a>
+    math function.
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>parameter</th><th>description</th>
+        <th>default value</th><th>units</th></tr>
+    <tr><td><i>stddev</i></td> <td>standard deviation</td>
+        <td>-</td> <td>none</td></tr>
+    <tr><td><i>mean</i></td> <td>mean value</td>
+        <td>-</td> <td>none</td></tr>
+    <tr><td><i>lattice</i></td> <td>sample period</td>
+        <td>-</td> <td>seconds</td></tr>
+    <tr><td><i>interp</i></td> <td>interpolation</td>
+        <td>0</td> <td>none</td></tr>
+    </table>
+
+    <p>
+    The <tt>gauss</tt> function can be used to generate correlated
+    random output.  This function takes three or four arguments.
+
+    <p>
+    The parameter <i>lattice</i> is for use in transient analysis.  A
+    new random value is computed at each time increment of
+    <i>lattice</i>.  If <i>lattice</i> is 0, then no lattice is used,
+    and an uncorrelated random number is returned for each call.  The
+    <i>interp</i> parameter, used when <i>lattice</i> is nonzero, can
+    have value 1 or 0.  If <i>interp</i> is nonzero, the value
+    returned by the function is the (first order) interpolation of the
+    random values at the lattice points which frame the time variable. 
+    If <i>interp</i> is 0, the function returns the lattice cell's
+    value for any time within the lattice cell, i.e., a random step
+    with an amplitude change at every lattice point.
+
+    <p>
+    The first example above provides a random signal with standard
+    deviation of .5V and mean of 2V, based on random samples taken
+    every 100nS.
+
+    <p>
+    The <i>lattice</i> value should be on the order of the user print
+    increment <tt>tstep</tt> in the <a href=".tran">transient
+    analysis</a>.  It should not be less than the maximum internal
+    time step, since the past history is not stored, and a rejected
+    time point may back up the time across more than one lattice cell,
+    thus destroying the correlation.
+
+    <p>
+    This function applies only to transient analysis, where time is
+    the running variable.  The argument count is used to distinguish
+    this function from the math function of the same name.
+
+    <p>
+    One important application of this function is to provide
+    time-domain noise generation for <a href="refs#jeffery">noise
+    modeling</a>.  For example, below is a circuit which simulates the
+    thermal noise generated in a resistor at 4.2K.
+
+    <blockquote><tt>
+    *** noise demo<br>
+    *@ define noise(r,t,dt,n) gauss(sqrt(2*boltz*t/(r*dt)), 0, dt, n)<br>
+    r1 1 0 1.0<br>
+    ir1 1 0 noise(1.0, 4.2, 0.5p, 1)<br>
+    c1 1 0 1p<br>
+    <br>
+    .control<br>
+    tran 1p 1n<br>
+    plot v(1)<br>
+    .endc<br>
+    </tt></blockquote>
+
+    The second line defines a function named "noise" that takes four
+    arguments:  the resistance, temperature in Kelvin, the lattice
+    time increment, and the interpolation method.  This is simply a
+    wrapper around a <tt>gauss</tt> call, incorporating the standard
+    noise equation for current through a resistor at a given
+    temperature, and taking the inherent bandwidth to be one half of
+    the reciprocal of the lattice time increment (per Nyquist).  The
+    noise function is used in the specification for current source
+    <tt>ir1</tt>.  In a more complicated case, each resistor in a
+    circuit may have an associated noise current source similarly
+    defined.  It may be possible to demonstrate errors due to thermal
+    noise when simulating the circuit.
+
+!!SEEALSO
+tranfuncs
+
+!! elements.tex 012509
+!!KEYWORD
+interp
+!!TITLE
+Interpolation 
+!!HTML 
+    General forms:
+    <blockquote>
+        <tt>interp</tt>(<i>vector</i>)
+    </blockquote>
+
+    <p>
+    Example:
+    <blockquote>
+        <tt>vin 1 0 interp(tran1.v(1))</tt>
+    </blockquote>
+
+    <p>
+    The output is <i>vector</i> interpolated to the scale of the current
+    plot.  When used in a source, the output of the source is the
+    interpolated vector, or the initial or final value for points off
+    the ends of the original scale.
+
+    <p>
+    For example, say an amplifier produces vector <tt>v(1)</tt> (an
+    output) in plot <tt>tran1</tt>.  One desires to apply this as
+    input to another circuit.  This is achieved with a source
+    specification like that shown in the example above.  This works in
+    ordinary vector expressions as well.
+ 
+!!SEEALSO
+tranfuncs
+
+!! elements.tex 012509
+!!KEYWORD
+pulse
+!!TITLE
+Pulse
+!!HTML 
+    General forms:
+    <blockquote>
+        <tt>pulse</tt>(<i>v1 v2</i> [<i>td tr tf pw per td1 td2</i> ...])
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote>
+        <tt>vin 3 0 pulse(-1 1 2ns 2ns 2ns 50ns 100ns)</tt><br>
+        <tt>vin1 1 0 pulse(0 1 2n .5n .5n 1n 0 6n 10n)</tt><br>
+        <tt>v2 4 0 v(1)*pulse(0 1 5n 10n</tt>)
+    </blockquote>
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>parameter</th><th>description</th>
+        <th>default value</th><th>units</th></tr>
+    <tr><td><i>v1</i></td> <td>initial value</td>
+        <td>&nbsp;</td> <td>volts or amps</td></tr>
+    <tr><td><i>v2</i></td> <td>pulsed value</td>
+        <td>&nbsp;</td> <td>volts or amps</td></tr>
+    <tr><td><i>td</i></td> <td>delay time</td>
+        <td><tt>0.0</tt></td> <td>seconds</td></tr>
+    <tr><td><i>tr</i></td> <td>rise time</td>
+        <td><tt>tstep</tt></td> <td>seconds</td></tr>
+    <tr><td><i>tf</i></td> <td>fall time</td>
+        <td><tt>tstep</tt></td> <td>seconds</td></tr>
+    <tr><td><i>pw</i></td> <td>pulse width</td>
+        <td><tt>tstop</tt></td> <td>seconds</td></tr>
+    <tr><td><i>per</i></td> <td>period</td>
+        <td><tt>tstop</tt></td> <td>seconds</td></tr>
+    </table>
+
+    <p>
+    If any of the parameters <i>td1</i>, <i>td2</i>, ...  appear, the
+    period is ignored, and the pulse is repeated for the delays
+    <i>td1</i>, etc.  The output will be a superposition of these
+    pulses.  A single pulse so specified is described by the following
+    table:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>time</th>  <th>value</th></tr>
+    <tr><td><tt>0</tt></td> <td><i>v1</i></td></tr>
+    <tr><td><i>td</i></td> <td><i>v1</i></td></tr>
+    <tr><td><i>td</i>+<i>tr</i></td> <td><i>v2</i></td></tr>
+    <tr><td><i>td</i>+<i>tr</i>+<i>pw</i></td> <td><i>v2</i></td></tr>
+    <tr><td><i>td</i>+<i>tr</i>+<i>pw</i>+<i>tf</i></td> <td><i>v1</i></td></tr>
+    <tr><td><tt>tstop</tt></td> <td><i>v1</i></td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Intermediate points are determined by linear interpolation.  It is
+    not an error to omit unused parameters, for example the
+    specification
+    <blockquote>
+    <tt>vxx 3 0 pulse(0 1 2n 2n)</tt>
+    </blockquote>
+    describes a voltage which, starting from 0, begins rising at 2
+    nanoseconds, reaching 1 volt at 4 nanoseconds, and remains at
+    that value.
+
+    <p>
+    This function applies only to transient analysis, where time is
+    the running variable.  When referring to default values,
+    <tt>tstep</tt> is the printing increment and <tt>tstop</tt> is the
+    final time in <a href=".tran"> transient analysis</a>.
+ 
+!!SEEALSO
+tranfuncs
+
+!! elements.tex 031516
+!!KEYWORD
+gpulse
+!!TITLE
+Gaussian Pulse
+!!HTML 
+    General form:
+    <blockquote>
+        <tt>gpulse</tt>(<i>v1 v2 td pw per td1 td2</i> ...)
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote>
+        <tt>vsfq 3 0 gpulse(0 0 20p 2p 0 40p 60p)</tt><br>
+        <tt>vpulse 1 0 gpulse(0 1 100p 5p 100p)</tt><br>
+    </blockquote>
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>parameter</th><th>description</th>
+        <th>default value</th><th>units</th></tr>
+    <tr><td><i>v1</i></td> <td>base value</td>
+        <td><tt>0.0</tt></td> <td>volts or amps</td></tr>
+    <tr><td><i>v2</i></td> <td>pulse peak value</td>
+        <td><i>v1</i></td> <td>volts or amps</td></tr>
+    <tr><td><i>td</i></td> <td>delay time</td>
+        <td><tt>0.0</tt></td> <td>seconds</td></tr>
+    <tr><td><i>pw</i></td> <td>pulse width</td>
+        <td><tt>tstep</tt></td> <td>seconds</td></tr>
+    <tr><td><i>per</i></td> <td>period</td>
+        <td><tt>0,0</tt></td> <td>seconds</td></tr>
+    </table>
+
+    <p>
+    This generates a gaussian pulse signal, and as a special case,
+    as a voltage source will generate single flux quantum (SFQ)
+    pulses.
+
+    <p>
+    The expression used to generate a pulse is
+    <blockquote>
+    <i>value</i> = <i>v1</i> + (<i>v2</i> -
+      <i>v1</i>)*exp(-((<i>time</i> - <i>td</i>)/<i>pw</i>)<sup>2</sup>)
+    </blockquote>
+ 
+    The <i>td</i> delay value specifies the time of the initial pulse
+    peak.  The <i>pw</i> defines the pulse width, as evident in the
+    expression.  If the <i>per</i> is given a nonzero value larger
+    than twice the <i>pw</i>, a train of pulses will be generated, the
+    first being at <i>td</i> and at time increments of <i>per</i>
+    thereafter.  A <i>per</i> explicitly zero can be followed by any
+    number of time values.  A pulse will be generated to peak at each
+    of these values, in addition to the <i>td</i> value.
+
+    <p>
+    If the amplitude is set to zero, i.e., <i>v2</i> = <i>v1</i>, the
+    amplitude will be computed from the pulse width to yield a single
+    flux quantum pulse.  Such a pulse, as a voltage applied across an
+    inductor, will induce a single flux quantum of <i>phi0</i> =
+    <i>h</i>/(2*<i>e</i>) = 2.06783fWb <i>h</i> is Planck's constant,
+    <i>e</i> is the electron charge).  With superconductors, the flux
+    that threads superconducting loops is quantized in increments of
+    this value, due to the requirement that the superconducting wave
+    function meet periodic boundary conditions around the loop.  The
+    computed amplitude is
+
+    <blockquote>
+    <i>v2</i> = <i>v1</i> + <tt>phi0</tt>/(<i>pw</i>*<tt>sqrt(pi)</tt>)
+    </blockquote>
+
+    where <tt>phi0</tt> is the flux quantum whose value is given above.
+
+    <p>
+    In superconducting electronics, single flux quantum pulses are
+    generated and received by logic circuits.  A generator of SFQ
+    pulses is therefor a useful item when working with this
+    technology.
+
+    <p>
+    Example
+    <blockquote><td>
+    * gaussian pulse<br>
+    <br>
+    v1 1 0 gpulse(0 0 20p 2p 0 40p)<br>
+    l1 1 2 10p<br>
+    b1 2 0 100 jj3 area=.2<br>
+    r2 2 0 2<br>
+    .tran .1p 100p uic<br>
+    .plot tran v(1) v(2) i(l1) ysep<br>
+    <br>
+    * Nb 4500 A/cm2<br>
+    .model jj3 jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,<br>
+    + icrit=1m, r0=30, rn=1.7, cap=1.31p)
+    </tt></blockquote>
+
+    <p>
+    In the example, the generator produces two SFQ pulses.  The second
+    pulse causes the Josephson junction to emit a flux quantum, the
+    second one from the source is therefor expelled.  The inductor
+    current shows the same value before and after the second pulse,
+    as expected.
+
+!!SEEALSO
+tranfuncs
+
+!! elements.tex 022117
+!!KEYWORD
+pwl
+!!TITLE
+Piece-Wise Linear
+!!HTML 
+    General forms:
+    <blockquote>
+        <tt>pwl</tt>(<i>t1 v1</i> [<i>t2 v2 t3 v3 t4 v4</i> ...]
+        [<tt>r</tt> [[=] <i>ti</i>]] [<tt>td</tt> [=] <i>delay</i>])<br>
+        <tt>pwl</tt>(<i>vec1</i> [<i>vec2</i>]
+        [<tt>r</tt> [[=] <i>ti</i>]] [<tt>td</tt> [=] <i>delay</i>])
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote>
+        <tt>vclock 7 5 pwl(0 -7 10ns -7 11ns -3 17ns -3 18ns -7 50ns -7)<br>
+        vin 2 0 pwl(times amplitudes td=1ns)</tt>
+    </blockquote>
+
+    <p>
+    Each pair of values (<i>ti</i>, <i>vi</i>) specifies that the
+    value of the source is <i>vi</i> (in volts or amps) at time =
+    <i>ti</i>.  The value of the source at intermediate values of time
+    is determined by using linear interpolation on the input values. 
+    For times before the initial time value, the return is the initial
+    value, and for times after the final time value, the return is the
+    final value.
+
+    <p>
+    In the second form, the values are provided in the named vectors,
+    which must be in scope when the deck is parsed (which most often
+    happens just before a simulation is run, and not when the file is
+    read into <i>WRspice</i>).  If a single vector name is given, its
+    values are expected to be the same as would be provided in the
+    first form, i.e., an alternating sequence of times and amplitudes. 
+    If two vector names are given, the first vector is expected to
+    contain time values only, and the second vector contains the
+    corresponding amplitudes.  If vectors are used, all values are
+    obtained from the vectors, as it is presently not possible to mix
+    vectors and explicit values.
+
+    <p>
+    In the example below, both voltage sources provide the same
+    output.  Note that if the vectors are saved in the <a
+    href="constants"><tt>constants</tt></a> plot, they will be
+    resolved by name in any context.
+
+    <p>
+    Example
+    <blockquote><tt>
+    * PWL Test<br>
+    <br>
+    .exec<br>
+    compose constants.pwlvals values 0 0 10p 0 20p 1 40p 1 50p 0<br>
+    compose constants.tvals values 0 10p 20p 40p 50p<br>
+    compose constants.xvals values 0 0 1 1 0<br>
+    .endc<br>
+    <br>
+    v1 1 0 pwl(pwlvals)<br>
+    v2 2 0 pwl(tvals xvals)</tt>
+    </blockquote>
+
+    <p>
+    Use of vectors can simplify and make more efficient the handling
+    of very long PWL lists.  For example, suppose that one has just
+    run a long simulation of a circuit, and one would like to apply
+    the output of this circuit to another circuit.  Suppose that the
+    output is in vector <tt>v(1)</tt>.  First, save this vector as a
+    binary rawfile.  The binary format is faster to read/write than
+    the default ASCII.
+
+    <blockquote><tt>
+    set filetype=binary<br>
+    write myfile.raw v(1)
+    </tt></blockquote>
+
+    Then, on a subsequent run, one can load the saved vectors (the
+    vector and its scale are both saved), and for convenience add them
+    to the <tt>constants</tt> plot.
+
+    <blockquote><tt>
+    load myfile.raw<br>
+    let constants.tvals = time constants.xvals = v(1)
+    </tt></blockquote>
+
+    This needs to be done once only per session.  If the circuit file
+    contains a line like
+
+    <blockquote>
+    <tt>vin 2 0 pwl(tvals xvals)</tt>
+    </blockquote>
+
+    Then one can run any number of simulations while avoiding the need
+    to repeatedly parse and recreate the long PWL list from an input
+    file.
+
+    <p>
+    The <tt>pwl</tt> function is currently the only tran function that
+    takes parameters.  These parameters belong to the <tt>pwl</tt>
+    function, and must be included inside the parentheses when
+    parentheses are used.  The parameters are specified with an
+    identifier, optionally followed by an equal sign, and a number. 
+    The parameters must appear following the values list or vector
+    names.
+
+    <p>
+    <dl>
+    <dt><tt>r</tt><dd>
+    The <tt>r</tt> (repeat) option forces the wave function to repeat
+    periodically.  A time value can optionally follow <tt>r</tt>,
+    which if given must be one of the <i>ti</i> given but not the
+    final time value, or it can be zero.  If the time value is
+    omitted, it is taken as zero.  This time value is "mapped" to the
+    final time value when the sequence repeats.
+
+    <p>
+    For example, after the circuit time slightly exceeds the final
+    time value given, the next output value will be the value
+    following the time given with <tt>r</tt>, and its time will be the
+    final time plus the difference between the <tt>r</tt> point time
+    and the point that follows.
+
+    <p>
+    <dt><tt>td</tt><dd>
+    The <tt>td</tt> parameter can be set to a delay time, that will be
+    added to all time values, including those generated with the
+    <tt>r</tt> parameter.
+    </dl>
+
+    <p>
+    The two parameters are intended to behave in the same manner as
+    similar parameters defined in <a href="hspicesim">HSPICE</a>. 
+    There is one difference between <i>WRspice</i> and HSPICE
+    <tt>pwl</tt> behavior:  if the first time value is nonzero, in
+    HSPICE the time zero value will be the source <tt>dc</tt> value,
+    in <i>WRspice</i> is will be the value at the first given time
+    point.
+
+    <p>
+    In <a href="depsource">dependent sources</a> where the controlling
+    input is specified, a <tt>pwl</tt> construct if used in the
+    expression for the source will take as input the value of the
+    controlling input, and not time.  This is one means by which a
+    piecewise-linear transfer function can be implemented.  A similar
+    capability exists through the <a href="table"><tt>table</tt></a>
+    function.
+ 
+    <p>
+    Example:
+    <blockquote>
+        <tt>e1 1 0 2 0 pwl(-1 1 0 0 1 1)</tt>
+    </blockquote>
+
+    <p>
+    The example above implements a perfect rectifier (absolute value
+    generator) for voltages between -1 and 1V.  Outside this range, the
+    output is clipped to 1V.
+
+    <p>
+    The <tt>r</tt> and <tt>td</tt> parameters work in this case as
+    well, doing the same things, but with respect to the controlling
+    input.  For example:
+    <blockquote><tt>
+    e1 1 0 2 0 pwl(0 0 .5 1 1 0 R)<br>
+    v1 2 0 pwl(0 0 100p 5)
+    </tt></blockquote>
+
+    The output of <tt>e1</tt> is a periodic triangular wave, generated
+    by linearly sweeping the periodic transfer function.
+ 
+!!SEEALSO
+tranfuncs
+
+!! elements.tex 012509
+!!KEYWORD
+sffm
+!!TITLE
+Single-Frequency FM
+!!HTML 
+    General forms:
+    <blockquote>
+        <tt>sffm</tt>(<i>vo va</i> [<i>fc mdi fs</i>])
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote>
+        <tt>v1 12 0 sffm(0 1m 20k 5 1k)</tt>
+    </blockquote>
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>parameter</th><th>description</th>
+        <th>default value</th><th>units</th></tr>
+    <tr><td><i>vo</i></td> <td>offset</td>
+        <td>&nbsp;</td> <td>volts or amps</td></tr>
+    <tr><td><i>va</i></td> <td>amplitude</td>
+        <td>&nbsp;</td> <td>volts or amps</td></tr>
+    <tr><td><i>fc</i></td> <td>carrier frequency</td>
+        <td>1/<tt>tstop</tt></td> <td>hz</td></tr>
+    <tr><td><i>mdi</i></td> <td>modulation index</td>
+        <td>&nbsp;</td> <td>&nbsp;</td></tr>
+    <tr><td><i>fs</i></td> <td>signal frequency</td>
+        <td>1/<tt>tstop</tt></td> <td>hz</td></tr>
+    </table>
+
+    <p>
+    The shape of the waveform is described by the following equation:
+    <blockquote>
+        <i>value</i> = <i>vo</i> + <i>va</i>*<tt>sin</tt>((2*<tt>pi</tt>*<i>fc</i>*<tt>time</tt>)
+        + <i>mdi</i>*<tt>sin</tt>(2*<tt>pi</tt>*<i>fs</i>*<tt>time</tt>))
+    </blockquote>
+
+    <p>
+    This function applies only to transient analysis, where time is
+    the running variable.  When referring to default values,
+    <tt>tstep</tt> is the printing increment and <tt>tstop</tt> is the
+    final time in <a href=".tran"> transient analysis</a>.
+ 
+!!SEEALSO
+tranfuncs
+
+!! elements.tex 021416
+!!KEYWORD
+am
+!!TITLE
+Amplitude Modulation
+!!HTML 
+    General forms:
+    <blockquote>
+        <tt>am</tt>(<i>sa oc fm fc td</i>)
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote>
+        <tt>v1 12 0 am(10 1 10meg 100meg 10n)</tt>
+    </blockquote>
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>parameter</th><th>description</th>
+        <th>default value</th><th>units</th></tr>
+    <tr><td><i>sa</i></td> <td>signal amplitude</td>
+        <td>0</td> <td>volts or amps</td></tr>
+    <tr><td><i>oc</i></td> <td>offset constant</td>
+        <td>0</td> <td>&nbsp;</td></tr>
+    <tr><td><i>fm</i></td> <td>modulation frequency</td>
+        <td>1/<tt>tstop</tt></td> <td>hz</td></tr>
+    <tr><td><i>fc</i></td> <td>carrier frequency</td>
+        <td>0</td> <td>hz</td></tr>
+    <tr><td><i>td</i></td> <td>signal delay time</td>
+        <td>0</tt></td> <td>seconds</td></tr>
+    </table>
+
+    <p>
+    The shape of the waveform is described by the following table:
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>time</th>  <th>value</th></tr>
+    <tr><td><tt>0</tt> to <i>td</i></td> <td>0</td></tr>
+    <tr><td><i>td</i> to <tt>tstop</tt></td>
+        <i>sa</i> * {<i>oc</i> +
+        <tt>sin</tt>(2*<tt>pi</tt>*<i>fm</i>*(<tt>time</tt>-<i>td</i>))}
+        * <tt>sin</tt>(2*<tt>pi</tt>*<i>fc</i>*(<tt>time</tt>-<i>td</i>))
+    </td></tr></table>
+    </blockquote>
+
+    <p>
+    This function applies only to transient analysis, where time is
+    the running variable.  When referring to default values,
+    <tt>tstep</tt> is the printing increment and <tt>tstop</tt> is the
+    final time in <a href=".tran"> transient analysis</a>.  This
+    function is a work-alike to the similar function found in <a
+    href="hspicesim">HSPICE</a>.
+ 
+!!SEEALSO
+tranfuncs
+ 
+!! elements.tex 031016
+!!KEYWORD
+tsin
+!!TITLE
+Sinusoidal
+!!HTML 
+    General forms:
+    <blockquote>
+        <tt>sin</tt>(<i>vo va</i> [<i>freq td theta phi</i>])
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote>
+        <tt>vin 3 0 sin(0 1 100meg 1ns 1e10)</tt>
+    </blockquote>
+
+    <p>
+    This function can be called as <tt>tsin</tt> to avoid possible
+    conflict with the <a href="mathfuncs#sin"><tt>sin</tt></a> math
+    function.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>parameter</th><th>description</th>
+        <th>default value</th><th>units</th></tr>
+    <tr><td><i>vo</i></td> <td>offset</td>
+        <td>&nbsp;</td> <td>volts or amps</td></tr>
+    <tr><td><i>va</i></td> <td>amplitude</td>
+        <td>&nbsp;</td> <td>volts or amps</td></tr>
+    <tr><td><i>freq</i></td> <td>frequency</td>
+        <td>1/<tt>tstop</tt></td> <td>hz</td></tr>
+    <tr><td><i>td</i></td> <td>delay</td>
+        <td><tt>0.0</tt></td> <td>seconds</td></tr>
+    <tr><td><i>theta</i></td> <td>damping factor</td>
+        <td><tt>0.0</tt></td> <td>1/seconds</td></tr>
+    <tr><td><i>phi</i></td>   <td>phase delay</td>
+        <td><tt>0.0</tt></td> <td>degrees</td></tr>
+    </table>
+
+    <p>
+    The shape of the waveform is described by the following table:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>time</th>  <th>value</th></tr>
+    <tr><td><tt>0</tt> to <i>td</i></td> <td><i>vo</i> +
+      <i>va</i>*<tt>sin</tt>(<tt>pi</tt>*<tt>phi/180</tt>)</td></tr>
+    <tr><td><i>td</i> to <tt>tstop</tt></td>
+      <td><i>vo</i> + <i>va</i>*<tt>exp</tt>(-(<tt>time</tt>-<i>td</i>)*<i>theta</i>) *
+      <tt>sin</tt>(2*<tt>pi</tt>*(<i>freq</i>*(<tt>time</tt>-<i>td</i>) +
+      <tt>phi/360</tt>))</td></tr>
+    </table>
+    </blockquote>
+ 
+    <p>
+    This function applies only to transient analysis, where time is
+    the running variable.  When referring to default values,
+    <tt>tstep</tt> is the printing increment and <tt>tstop</tt> is the
+    final time in <a href=".tran"> transient analysis</a>.  The
+    argument count is used to distinguish this function from the math
+    function of the same name.
+ 
+!!SEEALSO
+tranfuncs
+
+!! elements.tex 012509
+!!KEYWORD
+spulse 
+!!TITLE
+Sinusoidal Pulse
+!!HTML 
+    General forms:
+    <blockquote>
+        <tt>spulse</tt>(<i>vo vp</i> [<i>per td decay</i>])
+    </blockquote>
+
+    <p>
+    Example:
+    <blockquote>
+        <tt>vin 1 0 spulse(0 1 25ns 40ns 1E8)</tt>
+    </blockquote>
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>parameter</th><th>description</th>
+        <th>default value</th><th>units</th></tr>
+    <tr><td><i>vo</i></td> <td>offset</td>
+        <td>&nbsp;</td> <td>volts or amps</td></tr>
+    <tr><td><i>vp</i></td> <td>peak amplitude</td>
+        <td>&nbsp;</td> <td>volts or amps</td></tr>
+    <tr><td><i>per</i></td> <td>period</td>
+        <td><tt>tstop</tt></td> <td>seconds</td></tr>
+    <tr><td><i>td</i></td> <td>delay</td>
+        <td><tt>0</tt></td> <td>seconds</td></tr>
+    <tr><td><i>decay</i></td> <td>decay const</td>
+        <td><tt>0</tt></td> <td>1/seconds</td></tr>
+    </table>
+
+    <p>
+    The waveform is described by the following table:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>time</th>  <th>value</th></tr>
+    <tr><td><tt>0</tt> to <i>td</i></td> <td><i>vo</i></td></tr>
+    <tr><td><i>td</i> to <i>tstop</i></td>
+      <td><i>vo</i> + .5*(<i>vp</i>-<i>vo</i>)*(1-<tt>cos</tt>(2*<tt>pi</tt>*(<tt>time</tt>-<i>delay</i>)/<i>per</i>))
+      *<tt>exp</tt>(-(<tt>time</tt>-<i>delay</i>)*<i>decay</i>)
+    </table>
+    </blockquote>
+ 
+    <p>
+    This function applies only to transient analysis, where time is
+    the running variable.  When referring to default values,
+    <tt>tstep</tt> is the printing increment and <tt>tstop</tt> is the
+    final time in <a href=".tran"> transient analysis</a>.
+ 
+!!SEEALSO
+tranfuncs
+
+!! elements.tex 012509
+!!KEYWORD
+table 
+!!TITLE
+Table Reference
+!!HTML 
+    General form:
+    <blockquote>
+        <tt>table</tt>(<i>table_name expr</i>)<br>
+        <i>table_name</i>(<i>expr</i>)  (for sources only)
+    </blockquote>
+
+    <p>
+    Example:
+    <blockquote>
+        <tt>vin 1 0 table(tab1 v(2))</tt><br>
+        <tt>exx 1 0 2 0 table(tab2 x)</tt><br>
+        <tt>exx 1 0 2 0 tab2(x)</tt><br>
+    </blockquote>
+
+    <p>
+    The table referenced must be specified in the input deck with a <a
+    href=".table"><tt>.table<</tt></a> line.  The reference to a table
+    is in the form of a <tt>table</tt> function, as above, which
+    takes two arguments.  The first argument is the name of a table
+    defined elsewhere in the circuit file with a <tt>.table</tt> line. 
+    The second argument is an expression which provides input to the
+    table.  The return value is the interpolated value from the table.
+
+    <p>
+    Tables can also be referenced as part of the ac specification for
+    a dependent or independent source.  These references are used in
+    ac analysis, and have a different referencing syntax.
+
+    <p>
+    In the expression used in voltage and current sources, dependent
+    and independent, the second form can be used and is equivalent. 
+    The <i>table_name</i> must not conflict with another internal or
+    user-defined function name.
+
+    <p>
+    The <tt>table</tt> reference provides one means of implementing
+    a piecewise-linear transfer function.  This can also be
+    accomplished by use of the <tt>pwl</tt> function in dependent
+    sources.
+ 
+!!SEEALSO
+tranfuncs
+
+!! elements.tex 012509
+!!KEYWORD
+depsource
+!!TITLE
+Dependent Sources
+!!HTML 
+    <i>WRspice</i> source specifications are completely general in
+    that they allow arbitrary functional dependence upon circuit
+    variables.  However, for compatibility with previous versions of
+    SPICE, the separate keying of independent and dependent sources is
+    retained.  <i>WRspice</i> allows circuits to contain dependent
+    sources characterized by any of the four equations in the table
+    below.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><a href="vccs"><tt>VCCS</tt></a></td> <td><tt>i = g(v)</tt></td>
+      <td>Voltage-Controlled Current Source</td></tr>
+    <tr><td><a href="vcvs"><tt>VCVS</tt></a></td> <td><tt>v = e(v)</tt></td>
+      <td>Voltage-Controlled Voltage Source</td></tr>
+    <tr><td><a href="cccs"><tt>CCCS</tt></a></td> <td><tt>i = f(i)</tt></td>
+      <td>Current-Controlled Current Source</td></tr>
+    <tr><td><a href="ccvs"><tt>CCVS</tt></a></td> <td><tt>v = h(i)</tt></td>
+      <td>Current-Controlled Voltage Source</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The functions <tt>g</tt>, <tt>e</tt>, <tt>f</tt>, and <tt>h</tt>
+    represent transconductance, voltage gain, current gain, and
+    transresistance, respectively.
+
+!!SEEALSO
+src
+
+!! elements.tex 030412
+!!KEYWORD
+vccs
+!!TITLE
+Voltage Controlled Current Sources
+!!HTML
+    This is a special case of the general source specification
+    included for backward compatibility.
+
+    <p>
+    General forms:
+    <blockquote>
+        <tt>g</tt><i>name</i> <i>n+ n- nc+ nc-</i> <i>expr</i>
+            <i>srcargs</i><br>
+        <tt>g</tt><i>name</i> <i>n+ n-</i> <tt>function</tt> | <tt>cur</tt>
+            [<tt>=</tt>] <i>expr</i> <i>srcargs</i><br>
+        <tt>g</tt><i>name</i> <i>n+ n-</i> <tt>poly</tt>(<i>N</i>)
+            <i>poly_spec</i> <i>srcargs</i><br>
+        where <i>srcargs</i> = [<tt>ac</tt> <tt>table</tt>(<i>name</i>)]<br>
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote><tt>
+        g1 2 0 5 0 0.1mmho<br>
+        g2 2 0 5 0 log10(x)<br>
+        g3 2 0 function log10(v(5))<br>
+    </tt></blockquote>
+
+    <p>
+    The <i>n+</i> and <i>n-</i> are the positive and negative nodes,
+    respectively.  Current flow is from the positive node, through the
+    source, to the negative node.  The <i>nc+</i> and <i>nc-</i> are
+    the positive and negative controlling nodes, respectively.
+
+    <p>
+    In the first form, if the <a href="devexpr"><i>expr</i></a> is a
+    constant, it represents the transconductance in siemens.  If no
+    expression is given, a unit constant value is assumed.  Otherwise,
+    the <i>expr</i> computes the source current, where the variable
+    "<tt>x</tt>" if used in the <i>expr</i> is taken to be the
+    controlling voltage (v(<i>nc+</i><tt>,</tt><i>nc-</i>)).  In this
+    case only, the <a href="pwl"><tt>pwl</tt></a> construct if used in
+    the <i>expr</i> takes as its input variable the value of
+    <tt>x</tt> rather than time, thus a piecewise linear transfer
+    function can be implemented using a <tt>pwl</tt> statement.  The
+    second form is similar, but <tt>x</tt> is not defined.  The
+    keywords "<tt>function</tt>" and "<tt>cur</tt>" are equivalent. 
+    The third form allows use of the SPICE2 <a
+    href="polyexpr"><tt>poly</tt></a> construct.
+ 
+    <p>
+    If the <tt>ac</tt> parameter is given and the <tt>table</tt>
+    keyword follows, then the named table is taken to contain complex
+    <i>transfer</i> coefficient data, which will be used in ac
+    analysis (and possibly elsewhere, see below).  For each frequency,
+    the source output will be the interpolated transfer coefficient
+    from the table multiplied by the input.  The table must be
+    specified with a <a href=".table"><tt>.table</tt></a> line, and
+    must have the <tt>ac</tt> keyword given.
+
+    <p>
+    If an ac table is specified, and no dc/transient transfer function
+    or coefficient is given, then in transient analysis, the source
+    transfer will be obtained through Fourier analysis of the table
+    data.  This is somewhat experimental, and may be prone to
+    numerical errors.
+
+    <p>
+    In ac analysis, the transfer coefficient can be real or complex. 
+    If complex, the imaginary value follows the real value.  Only
+    constants or constant expressions are valid in this case.  If the
+    source function is specified in this way, the real component is
+    used in dc and transient analysis.  This will also override a
+    table, if given.
+
+!!SEEALSO
+depsource
+
+!! elements.tex 030412
+!!KEYWORD
+vcvs
+!!TITLE
+Voltage-Controlled Voltage Sources
+!!HTML 
+    This is a special case of the general source specification
+    included for backward compatibility.
+
+    <p>
+    General forms:
+    <blockquote>
+        <tt>e</tt><i>name</i> <i>n+ n- nc+ nc-</i> <i>expr</i>
+            <i>srcargs</i><br>
+        <tt>e</tt><i>name</i> <i>n+ n-</i> <tt>function</tt> | <tt>vol</tt>
+            [<tt>=</tt>] <i>expr</i> <i>srcargs</i><br>
+        <tt>e</tt><i>name</i> <i>n+ n-</i> <tt>poly</tt>(<i>N</i>)
+            <i>poly_spec</i> <i>srcargs</i><br>
+        where <i>srcargs</i> = [<tt>ac</tt> <tt>table</tt>(<i>name</i>)]<br>
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote>
+        e1 2 3 14 1 2.0<br>
+        e1 2 3 14 1 x+.015*x*x<br>
+        e1 2 3 function v(14,1)+.015*v(14,1)*v(14,1)<br>
+    </blockquote>
+
+    <p>
+    The <i>n+</i> is the positive node, and <i>n-</i> is the negative
+    node, <i>nc+</i> and <i>nc-</i> are the positive and negative
+    controlling nodes, respectively.
+
+    <p>
+    In the first form, if the <a href="devexpr"><i>expr</i></a> is a
+    constant, it represents the linear voltage gain.  If no expression
+    is given, a unit constant value is assumed.  Otherwise, the
+    <i>expr</i> computes the source voltage, where the variable
+    "<tt>x</tt>" if used in the <i>expr</i> is taken to be the
+    controlling voltage (v(<i>nc+</i><tt>,</tt><i>nc-</i>)).  In this
+    case only, the <a href="pwl"><tt>pwl</tt></a> construct if used in
+    the <i>expr</i> takes as its input variable the value of
+    <tt>x</tt> rather than time, thus a piecewise linear transfer
+    function can be implemented using a <tt>pwl</tt> statement.  The
+    second form is similar, but <tt>x</tt> is not defined.  The
+    keywords "<tt>function</tt>" and "<tt>vol</tt>" are equivalent. 
+    The third form allows use of the SPICE2 <a
+    href="polyexpr"><tt>poly</tt></a> construct.
+ 
+    <p>
+    If the <tt>ac</tt> parameter is given and the <tt>table</tt>
+    keyword follows, then the named table is taken to contain complex
+    <i>transfer</i> coefficient data, which will be used in ac
+    analysis (and possibly elsewhere, see below).  For each frequency,
+    the source output will be the interpolated transfer coefficient
+    from the table multiplied by the input.  The table must be
+    specified with a <a href=".table"><tt>.table</tt></a> line, and
+    must have the <tt>ac</tt> keyword given.
+
+    <p>
+    If an ac table is specified, and no dc/transient transfer function
+    or coefficient is given, then in transient analysis, the source
+    transfer will be obtained through Fourier analysis of the table
+    data.  This is somewhat experimental, and may be prone to
+    numerical errors.
+
+    <p>
+    In ac analysis, the transfer coefficient can be real or complex. 
+    If complex, the imaginary value follows the real value.  Only
+    constants or constant expressions are valid in this case.  If the
+    source function is specified in this way, the real component is
+    used in dc and transient analysis.  This will also override a
+    table, if given.
+
+!!SEEALSO
+depsource
+ 
+!! elements.tex 030815
+!!KEYWORD
+cccs
+!!TITLE
+Current-Controlled Current Sources
+!!HTML 
+    This is a special case of the general source specification
+    included for backward compatibility.
+
+    <p>
+    General forms:
+    <blockquote>
+        <tt>f</tt><i>name</i> <i>n+ n- vnam</i> <i>expr</i> <i>srcargs</i><br>
+        <tt>f</tt><i>name</i> <i>n+ n-</i> <tt>function</tt> | <tt>cur</tt>
+            [<tt>=</tt>] <i>expr</i> <i>srcargs</i><br>
+        <tt>f</tt><i>name</i> <i>n+ n-</i> <tt>poly</tt>(<i>N</i>)
+            <i>poly_spec</i> <i>srcargs</i><br>
+        where <i>srcargs</i> = [<tt>ac</tt> <tt>table</tt>(<i>name</i>)]<br>
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote><tt>
+        f1 13 5 vsens 5<br>
+        f2 13 5 vsens 1-x*x ac table(acdata)<br>
+        f3 13 5 function 1-i(vsens)*i(vsens)
+    </tt></blockquote>
+
+    <p>
+    The <i>n+</i> and <i>n-</i> are the positive and negative nodes,
+    respectively.  Current flow is from the positive node, through the
+    source, to the negative node.  The <i>vnam</i> is the name of a
+    voltage source or inductor through which the controlling current
+    flows.  If <i>vnam</i> refers to a voltage source, the direction
+    of positive controlling current flow is from the positive node,
+    through the source, to the negative node.  If <i>vnam</i> names an
+    inductor, the current flow is from the first node specified for
+    the inductor, through the inductor, to the second node.
+
+    <p>
+    In the first form, if the <a href="devexpr"><i>expr</i></a> is a
+    constant, it represents the linear current gain.  If no expression
+    is given, a unit constant value is assumed.  Otherwise, the
+    <i>expr</i> computes the source current, where the variable
+    "<tt>x</tt>" if used in the <i>expr</i> is taken to be the
+    controlling current (i(<i>vnam</i>)).  In this case only, the <a
+    href="pwl"><tt>pwl</tt></a> construct if used in the <i>expr</i>
+    takes as its input variable the value of <tt>x</tt> rather than
+    time, thus a piecewise linear transfer function can be implemented
+    using a <tt>pwl</tt> statement.  The second form is similar, but
+    <tt>x</tt> is not defined.  The keywords "<tt>function</tt>" and
+    "<tt>cur</tt>" are equivalent.  The third form allows use of the
+    SPICE2 <a href="polyexpr"><tt>poly</tt></a> construct.
+
+    <p>
+    If the <tt>ac</tt> parameter is given and the <tt>table</tt>
+    keyword follows, then the named table is taken to contain complex
+    <i>transfer</i> coefficient data, which will be used in ac
+    analysis (and possibly elsewhere, see below).  For each frequency,
+    the source output will be the interpolated transfer coefficient
+    from the table multiplied by the input.  The table must be
+    specified with a <a href=".table"><tt>.table</tt></a> line, and
+    must have the <tt>ac</tt> keyword given.
+
+    <p>
+    If an ac table is specified, and no dc/transient transfer function
+    or coefficient is given, then in transient analysis, the source
+    transfer will be obtained through Fourier analysis of the table
+    data.  This is somewhat experimental, and may be prone to
+    numerical errors.
+
+    <p>
+    In ac analysis, the transfer coefficient can be real or complex. 
+    If complex, the imaginary value follows the real value.  Only
+    constants or constant expressions are valid in this case.  If the
+    source function is specified in this way, the real component is
+    used in dc and transient analysis.  This will also override a
+    table, if given.
+
+!!SEEALSO
+depsource
+
+!! elements.tex 030815
+!!KEYWORD
+ccvs
+!!TITLE
+Current-Controlled Voltage Sources
+!!HTML
+    This is a special case of the general source specification
+    included for backward compatibility.
+
+    <p>
+    General forms:
+    <blockquote>
+        <tt>h</tt><i>name</i> <i>n+ n- vnam</i> <i>expr</i> <i>srcargs</i><br>
+        <tt>h</tt><i>name</i> <i>n+ n-</i> <tt>function</tt> | <tt>vol</tt>
+            [<tt>=</tt>] <i>expr</i> <i>srcargs</i><br>
+        <tt>h</tt><i>name</i> <i>n+ n-</i> <tt>poly</tt>(<i>N</i>)
+            <i>poly_spec</i> <i>srcargs</i><br>
+        where <i>srcargs</i> = [<tt>ac</tt> <tt>table</tt>(<i>name</i>)]<br>
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote><tt>
+        h1 5 17 vz 0.5k<br>
+        h2 5 17 vz 0.71,0.71<br>
+        h3 5 17 vz 2.5*exp(x/2.5) ac table(myvals)<br>
+        ha 5 17 function 2.5*exp(i(vz)/2.5)<br>
+    </tt></blockquote>
+
+    <p>
+    The <i>n+</i> and <i>n-</i> are the positive and negative nodes,
+    respectively.  The <i>vnam</i> is the name of a voltage source or
+    inductor through which the controlling current flows.  If
+    <i>vnam</i> references a voltage source, the direction of positive
+    controlling current flow is from the positive node, through the
+    source, to the negative node.  If <i>vnam</i> references an
+    inductor, the controlling current flows from the first node
+    specified for the inductor, through the inductor, to the second
+    node.
+
+    <p>
+    <font color=red">In releases earlier than 4.1.15 the output for a
+    constant transfer value case was the reverse polarity of the
+    description here.
+    </font>
+
+    <p>
+    In the first form, if the <a href="devexpr"><i>expr</i></a> is a
+    constant, it represents the transresistance in ohms.  If no
+    expression is given, a unit constant value is assumed.  Otherwise,
+    the <i>expr</i> computes the source voltage, where the variable
+    "<tt>x</tt>" if used in the <i>expr</i> is taken to be the
+    controlling current (i(<i>vnam</i>)).  In this case only, the <a
+    href="pwl"><tt>pwl</tt></a> construct if used in the <i>expr</i>
+    takes as its input variable the value of <tt>x</tt> rather than
+    time, thus a piecewise linear transfer function can be implemented
+    using a <tt>pwl</tt> statement.  The second form is similar, but
+    <tt>x</tt> is not defined.  The keywords "<tt>function</tt>" and
+    "<tt>vol</tt>" are equivalent.  The third form allows use of the
+    SPICE2 <a href="polyexpr"><tt>poly</tt></a> construct.
+
+    <p>
+    If the <tt>ac</tt> parameter is given and the <tt>table</tt>
+    keyword follows, then the named table is taken to contain complex
+    <i>transfer</i> coefficient data, which will be used in ac
+    analysis (and possibly elsewhere, see below).  For each frequency,
+    the source output will be the interpolated transfer coefficient
+    from the table multiplied by the input.  The table must be
+    specified with a <a href=".table"><tt>.table</tt></a> line, and
+    must have the <tt>ac</tt> keyword given.
+
+    <p>
+    If an ac table is specified, and no dc/transient transfer function
+    or coefficient is given, then in transient analysis, the source
+    transfer will be obtained through Fourier analysis of the table
+    data.  This is somewhat experimental, and may be prone to
+    numerical errors.
+
+    <p>
+    In ac analysis, the transfer coefficient can be real or complex. 
+    If complex, the imaginary value follows the real value.  Only
+    constants or constant expressions are valid in this case.  If the
+    source function is specified in this way, the real component is
+    used in dc and transient analysis.  This will also override a
+    table, if given.
+
+!!SEEALSO
+depsource
+ 

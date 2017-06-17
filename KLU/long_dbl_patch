@@ -1,0 +1,352 @@
+diff -ru ../KLU.orig/KLU/Include/klu_version.h ./KLU/Include/klu_version.h
+--- ../KLU.orig/KLU/Include/klu_version.h	2012-05-27 03:47:35.000000000 -0700
++++ ./KLU/Include/klu_version.h	2014-04-18 12:31:12.709612771 -0700
+@@ -91,6 +91,34 @@
+ 
+ #ifdef DLONG
+ 
++#if defined(ENT_TYPE) && defined(ENT_ABRV)
++#define k1(a,b) klu_##a##b
++#define k2(a,b) k1(a,b)
++#define k3(b)   k2(ENT_ABRV,b)
++
++#define KLU_scale k3(l_scale)
++#define KLU_solve k3(l_solve)
++#define KLU_tsolve k3(l_tsolve)
++#define KLU_free_numeric k3(l_free_numeric)
++#define KLU_factor k3(l_factor)
++#define KLU_refactor k3(l_refactor)
++#define KLU_kernel_factor k3(l_kernel_factor)
++#define KLU_lsolve k3(l_lsolve)
++#define KLU_ltsolve k3(l_ltsolve)
++#define KLU_usolve k3(l_usolve)
++#define KLU_utsolve k3(l_utsolve)
++#define KLU_kernel k3(l_kernel)
++#define KLU_valid k3(l_valid)
++#define KLU_valid_LU k3(l_valid_LU)
++#define KLU_sort k3(l_sort)
++#define KLU_rgrowth k3(l_rgrowth)
++#define KLU_rcond k3(l_rcond)
++#define KLU_extract k3(l_extract)
++#define KLU_condest k3(l_condest)
++#define KLU_flops k3(l_flops)
++
++#else
++
+ #define KLU_scale klu_l_scale
+ #define KLU_solve klu_l_solve
+ #define KLU_tsolve klu_l_tsolve
+@@ -112,6 +140,36 @@
+ #define KLU_condest klu_l_condest
+ #define KLU_flops klu_l_flops
+ 
++#endif
++
++#else
++
++#if defined(ENT_TYPE) && defined(ENT_ABRV)
++#define k1(a,b) klu_##a##b
++#define k2(a,b) k1(a,b)
++#define k3(b)   k2(ENT_ABRV,b)
++
++#define KLU_scale k3(_scale)
++#define KLU_solve k3(_solve)
++#define KLU_tsolve k3(_tsolve)
++#define KLU_free_numeric k3(_free_numeric)
++#define KLU_factor k3(_factor)
++#define KLU_refactor k3(_refactor)
++#define KLU_kernel_factor k3(_kernel_factor)
++#define KLU_lsolve k3(_lsolve)
++#define KLU_ltsolve k3(_ltsolve)
++#define KLU_usolve k3(_usolve)
++#define KLU_utsolve k3(_utsolve)
++#define KLU_kernel k3(_kernel)
++#define KLU_valid k3(_valid)
++#define KLU_valid_LU k3(_valid_LU)
++#define KLU_sort k3(_sort)
++#define KLU_rgrowth k3(_rgrowth)
++#define KLU_rcond k3(_rcond)
++#define KLU_extract k3(_extract)
++#define KLU_condest k3(_condest)
++#define KLU_flops k3(_flops)
++
+ #else
+ 
+ #define KLU_scale klu_scale
+@@ -139,6 +197,8 @@
+ 
+ #endif
+ 
++#endif
++
+ 
+ #ifdef DLONG
+ 
+@@ -250,8 +310,13 @@
+ 
+ #ifndef COMPLEX
+ 
++#if defined(ENT_TYPE) && defined(ENT_ABRV)
++typedef ENT_TYPE Unit ;
++#define Entry ENT_TYPE
++#else
+ typedef double Unit ;
+ #define Entry double
++#endif
+ 
+ #define SPLIT(s)                    (1)
+ #define REAL(c)                     (c)
+diff -ru ../KLU.orig/KLU/Lib/Makefile ./KLU/Lib/Makefile
+--- ../KLU.orig/KLU/Lib/Makefile	2012-05-26 16:41:38.000000000 -0700
++++ ./KLU/Lib/Makefile	2014-04-18 13:20:16.713587110 -0700
+@@ -24,6 +24,11 @@
+     klu_d_scale.o klu_d_refactor.o \
+     klu_d_tsolve.o klu_d_diagnostics.o klu_d_sort.o klu_d_extract.o
+ 
++KLU_LD = klu_ld.o klu_ld_kernel.o klu_ld_dump.o \
++    klu_ld_factor.o klu_ld_free_numeric.o klu_ld_solve.o \
++    klu_ld_scale.o klu_ld_refactor.o \
++    klu_ld_tsolve.o klu_ld_diagnostics.o klu_ld_sort.o klu_ld_extract.o
++
+ KLU_Z = klu_z.o klu_z_kernel.o klu_z_dump.o \
+     klu_z_factor.o klu_z_free_numeric.o klu_z_solve.o \
+     klu_z_scale.o klu_z_refactor.o \
+@@ -34,6 +39,11 @@
+     klu_l_scale.o klu_l_refactor.o \
+     klu_l_tsolve.o klu_l_diagnostics.o klu_l_sort.o klu_l_extract.o
+ 
++KLU_LDL = klu_ldl.o klu_ldl_kernel.o klu_ldl_dump.o \
++    klu_ldl_factor.o klu_ldl_free_numeric.o klu_ldl_solve.o \
++    klu_ldl_scale.o klu_ldl_refactor.o \
++    klu_ldl_tsolve.o klu_ldl_diagnostics.o klu_ldl_sort.o klu_ldl_extract.o
++
+ KLU_ZL = klu_zl.o klu_zl_kernel.o klu_zl_dump.o \
+     klu_zl_factor.o klu_zl_free_numeric.o klu_zl_solve.o \
+     klu_zl_scale.o klu_zl_refactor.o \
+@@ -45,7 +55,7 @@
+     klu_l_free_symbolic.o klu_l_defaults.o klu_l_analyze_given.o \
+     klu_l_analyze.o klu_l_memory.o
+ 
+-OBJ = $(COMMON) $(KLU_D) $(KLU_Z) $(KLU_L) $(KLU_ZL)
++OBJ = $(COMMON) $(KLU_D) $(KLU_LD) $(KLU_Z) $(KLU_L) $(KLU_LDL) $(KLU_ZL)
+ 
+ libklu.a: $(OBJ)
+ 	$(ARCHIVE)  libklu.a $(OBJ)
+@@ -58,72 +68,108 @@
+ klu_d.o: ../Source/klu.c
+ 	$(C) -c $(I) $< -o $@
+ 
++klu_ld.o: ../Source/klu.c
++	$(C) -c -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_z.o: ../Source/klu.c
+ 	$(C) -c -DCOMPLEX $(I) $< -o $@
+ 
+ klu_d_kernel.o: ../Source/klu_kernel.c
+ 	$(C) -c $(I) $< -o $@
+ 
++klu_ld_kernel.o: ../Source/klu_kernel.c
++	$(C) -c -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_z_kernel.o: ../Source/klu_kernel.c
+ 	$(C) -c -DCOMPLEX $(I) $< -o $@
+ 
+ klu_d_sort.o: ../Source/klu_sort.c
+ 	$(C) -c $(I) $< -o $@
+ 
++klu_ld_sort.o: ../Source/klu_sort.c
++	$(C) -c -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_z_sort.o: ../Source/klu_sort.c
+ 	$(C) -c -DCOMPLEX $(I) $< -o $@
+ 
+ klu_d_diagnostics.o: ../Source/klu_diagnostics.c
+ 	$(C) -c $(I) $< -o $@
+ 
++klu_ld_diagnostics.o: ../Source/klu_diagnostics.c
++	$(C) -c -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_z_diagnostics.o: ../Source/klu_diagnostics.c
+ 	$(C) -c -DCOMPLEX $(I) $< -o $@
+ 
+ klu_d_dump.o: ../Source/klu_dump.c
+ 	$(C) -c $(I) $< -o $@
+ 
++klu_ld_dump.o: ../Source/klu_dump.c
++	$(C) -c -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_z_dump.o: ../Source/klu_dump.c
+ 	$(C) -c -DCOMPLEX $(I) $< -o $@
+ 
+ klu_d_factor.o: ../Source/klu_factor.c
+ 	$(C) -c $(I) $< -o $@
+ 
++klu_ld_factor.o: ../Source/klu_factor.c
++	$(C) -c -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_z_factor.o: ../Source/klu_factor.c
+ 	$(C) -c -DCOMPLEX $(I) $< -o $@
+ 
+ klu_d_free_numeric.o: ../Source/klu_free_numeric.c
+ 	$(C) -c $(I) $< -o $@
+ 
++klu_ld_free_numeric.o: ../Source/klu_free_numeric.c
++	$(C) -c -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_z_free_numeric.o: ../Source/klu_free_numeric.c
+ 	$(C) -c -DCOMPLEX $(I) $< -o $@
+ 
+ klu_d_extract.o: ../Source/klu_extract.c
+ 	$(C) -c $(I) $< -o $@
+ 
++klu_ld_extract.o: ../Source/klu_extract.c
++	$(C) -c -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_z_extract.o: ../Source/klu_extract.c
+ 	$(C) -c -DCOMPLEX $(I) $< -o $@
+ 
+ klu_d_refactor.o: ../Source/klu_refactor.c
+ 	$(C) -c $(I) $< -o $@
+ 
++klu_ld_refactor.o: ../Source/klu_refactor.c
++	$(C) -c -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_z_refactor.o: ../Source/klu_refactor.c
+ 	$(C) -c -DCOMPLEX $(I) $< -o $@
+ 
+ klu_d_scale.o: ../Source/klu_scale.c
+ 	$(C) -c $(I) $< -o $@
+ 
++klu_ld_scale.o: ../Source/klu_scale.c
++	$(C) -c -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_z_scale.o: ../Source/klu_scale.c
+ 	$(C) -c -DCOMPLEX $(I) $< -o $@
+ 
+ klu_d_solve.o: ../Source/klu_solve.c
+ 	$(C) -c $(I) $< -o $@
+ 
++klu_ld_solve.o: ../Source/klu_solve.c
++	$(C) -c -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_z_solve.o: ../Source/klu_solve.c
+ 	$(C) -c -DCOMPLEX $(I) $< -o $@
+ 
+ klu_d_tsolve.o: ../Source/klu_tsolve.c
+ 	$(C) -c $(I) $< -o $@
+ 
++klu_ld_tsolve.o: ../Source/klu_tsolve.c
++	$(C) -c -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_z_tsolve.o: ../Source/klu_tsolve.c
+ 	$(C) -c -DCOMPLEX $(I) $< -o $@
+ 
+@@ -159,72 +205,108 @@
+ klu_l.o: ../Source/klu.c
+ 	$(C) -c -DDLONG $(I) $< -o $@
+ 
++klu_ldl.o: ../Source/klu.c
++	$(C) -c -DDLONG -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_zl.o: ../Source/klu.c
+ 	$(C) -c -DCOMPLEX -DDLONG $(I) $< -o $@
+ 
+ klu_l_kernel.o: ../Source/klu_kernel.c
+ 	$(C) -c -DDLONG $(I) $< -o $@
+ 
++klu_ldl_kernel.o: ../Source/klu_kernel.c
++	$(C) -c -DDLONG -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_zl_kernel.o: ../Source/klu_kernel.c
+ 	$(C) -c -DCOMPLEX -DDLONG $(I) $< -o $@
+ 
+ klu_l_sort.o: ../Source/klu_sort.c
+ 	$(C) -c -DDLONG $(I) $< -o $@
+ 
++klu_ldl_sort.o: ../Source/klu_sort.c
++	$(C) -c -DDLONG -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_zl_sort.o: ../Source/klu_sort.c
+ 	$(C) -c -DCOMPLEX -DDLONG $(I) $< -o $@
+ 
+ klu_l_diagnostics.o: ../Source/klu_diagnostics.c
+ 	$(C) -c -DDLONG $(I) $< -o $@
+ 
++klu_ldl_diagnostics.o: ../Source/klu_diagnostics.c
++	$(C) -c -DDLONG -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_zl_diagnostics.o: ../Source/klu_diagnostics.c
+ 	$(C) -c -DCOMPLEX -DDLONG $(I) $< -o $@
+ 
+ klu_l_dump.o: ../Source/klu_dump.c
+ 	$(C) -c -DDLONG $(I) $< -o $@
+ 
++klu_ldl_dump.o: ../Source/klu_dump.c
++	$(C) -c -DDLONG -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_zl_dump.o: ../Source/klu_dump.c
+ 	$(C) -c -DCOMPLEX -DDLONG $(I) $< -o $@
+ 
+ klu_l_factor.o: ../Source/klu_factor.c
+ 	$(C) -c -DDLONG $(I) $< -o $@
+ 
++klu_ldl_factor.o: ../Source/klu_factor.c
++	$(C) -c -DDLONG -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_zl_factor.o: ../Source/klu_factor.c
+ 	$(C) -c -DCOMPLEX -DDLONG $(I) $< -o $@
+ 
+ klu_l_free_numeric.o: ../Source/klu_free_numeric.c
+ 	$(C) -c -DDLONG $(I) $< -o $@
+ 
++klu_ldl_free_numeric.o: ../Source/klu_free_numeric.c
++	$(C) -c -DDLONG -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_zl_free_numeric.o: ../Source/klu_free_numeric.c
+ 	$(C) -c -DCOMPLEX -DDLONG $(I) $< -o $@
+ 
+ klu_l_extract.o: ../Source/klu_extract.c
+ 	$(C) -c -DDLONG $(I) $< -o $@
+ 
++klu_ldl_extract.o: ../Source/klu_extract.c
++	$(C) -c -DDLONG -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_zl_extract.o: ../Source/klu_extract.c
+ 	$(C) -c -DCOMPLEX -DDLONG $(I) $< -o $@
+ 
+ klu_l_refactor.o: ../Source/klu_refactor.c
+ 	$(C) -c -DDLONG $(I) $< -o $@
+ 
++klu_ldl_refactor.o: ../Source/klu_refactor.c
++	$(C) -c -DDLONG -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_zl_refactor.o: ../Source/klu_refactor.c
+ 	$(C) -c -DCOMPLEX -DDLONG $(I) $< -o $@
+ 
+ klu_l_scale.o: ../Source/klu_scale.c
+ 	$(C) -c -DDLONG $(I) $< -o $@
+ 
++klu_ldl_scale.o: ../Source/klu_scale.c
++	$(C) -c -DDLONG -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_zl_scale.o: ../Source/klu_scale.c
+ 	$(C) -c -DCOMPLEX -DDLONG $(I) $< -o $@
+ 
+ klu_l_solve.o: ../Source/klu_solve.c
+ 	$(C) -c -DDLONG $(I) $< -o $@
+ 
++klu_ldl_solve.o: ../Source/klu_solve.c
++	$(C) -c -DDLONG -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_zl_solve.o: ../Source/klu_solve.c
+ 	$(C) -c -DCOMPLEX -DDLONG $(I) $< -o $@
+ 
+ klu_l_tsolve.o: ../Source/klu_tsolve.c
+ 	$(C) -c -DDLONG $(I) $< -o $@
+ 
++klu_ldl_tsolve.o: ../Source/klu_tsolve.c
++	$(C) -c -DDLONG -DENT_TYPE="long double" -DENT_ABRV=ld $(I) $< -o $@
++
+ klu_zl_tsolve.o: ../Source/klu_tsolve.c
+ 	$(C) -c -DCOMPLEX -DDLONG $(I) $< -o $@
+ 

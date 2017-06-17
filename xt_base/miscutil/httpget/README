@@ -1,0 +1,172 @@
+
+-----------------------------------------------------------------
+
+ HTTPGET and LIBHTTPGET Library
+ original release: 10/22/01
+ current release: 8/15/05 (2.18)
+
+-----------------------------------------------------------------
+$Id: README,v 1.1 2008/05/08 04:59:32 stevew Exp $
+-----------------------------------------------------------------
+
+This distribution contains the httpget program, which is used to
+retrieve files via HTTP or FTP protocol, and to post HTTP queries.
+
+This is similar to the httpget program supplied with the XmHTML widget
+by Ripley Software Development (http://www.xs4all.nl/~ripley/XmHTML),
+with a few additions:
+
+    1) Support for FTP file retrieval.
+    2) Optional graphical window for status reporting.
+    3) Support for POST queries.
+    4) Support for HTTP basic authentication.
+    5) Support for transaction logging.
+    6) Conversion to C++ and (hopefully) useful classes.
+
+The workings have been packaged into a library, libhttpget, which can
+be incorporated into other programs to provide in-process support for
+httpget-type functionality.
+
+Httpget is a command-line utility for retrieving files and posting
+queries to a remote HTTP or FTP server.  It can be used, for example,
+from within a shell script to automate a software update.
+
+The httpget program is invoked with
+
+    httpget [options] url
+
+where the options are listed below, and the url is a standard-syntax
+universal resource locator, i.e., a web address of a file, in a form
+like [http://]server/[document] or ftp://host/file.  The url should
+contain the http:// or ftp:// prefix to indicate HTTP or FTP protocol,
+respectively.  If no protocol is given, HTTP is assumed.  The options
+are:
+
+  -c file    Name of a cookie file. If not given no cookies are sent.
+             Cookies will be stored in and dispatched from this file,
+             during the transaction, if given.
+
+  -d         Enable HTTP debug mode, by enabling printing of extra
+             status messages during the transaction.
+
+  -e         Don't reissue the request for HTTP location change error.
+             Normal behavior if a 302 (location changed) response is
+             received is to reissue the request to the new location.
+             This option prevents this.
+
+  -fp | -fh  Output format for errors: plain or HTML.  Error messages
+             are in plain text by default, but can be HTML formatted
+             if -fh is given.
+
+  -g[x:y]    Use graphical window.  If the graphics support has been
+             included in the build, this option pops up a window which
+             provides status indication and a "stop" button. 
+             Optionally colon-separated x/y root window coordinates
+             can immediately follow, in which case the upper-left
+             corner of the pop-up will be at that location, if allowed
+             by the window manager.
+
+  -h         Show help.  The program lists these options and exits.
+
+  -i         Only get HTTP document info (HEAD).  The normal behavior
+             is to retrieve the entire document.  This option obtains
+             document parameters only.
+
+  -l file    Log bytes sent and received in file.  The log file will
+             contain a listing of the data transmitted and received.
+
+  -n         Don't print download status indication.  Normal behavior
+             is to print the number of bytes received.  This option
+             suppresses this.
+
+  -o file    Name of destination file on the local machine. If not
+             given the standard output is used for HTTP and the host
+             file name is used for FTP.
+
+  Httpget supports basic authentication, so that pages can be retrieved
+  from a server directory protected by this authentication method.
+
+  -u user    User name for authentication.
+  -p pass    Password for basic authentication.
+
+  -q file    Query file for POST.  The file is uploaded to the server.
+
+  The following two options set the time to wait for transmission.
+  If contact is not achieved in the timeout interval, httpget will
+  try again, up to the retry count.
+
+  -r num     Retry count, default is 0.
+  -t num     Timeout in seconds, default is 5.
+
+  -s         Save HTTP error to output on failure.  The normal behavior
+             is to emit errors to the standard error channel.  With this
+             option, errors are directed to the output channel (to the
+             file if the -o option is given).
+
+  -x         Use HTTP error code as program exit value.
+
+
+To build the library and executables, type:
+    ./configure
+    make
+    make install
+
+The generated Makefile may require tweeking for your particular
+operating system.  The GTK defines are optional, and can be removed if
+graphics support is not wanted.  The program is known to work under
+Win32/mingw (without graphics).  It should build with little or no
+modification on Unix/Linux systems.
+
+The comm.cc/comm.h files implement a class for low-level interface
+functions, such as managing the socket connections and transferring
+blocks of data.  The transact.cc/transact.h files implement a class
+which provides a higher level interface to the application.  The comm
+methods will probably not be used directly by the application.  The
+libhttpget library incorporates these two classes, and can be linked
+with the user's application to provide the functionality of the
+httpget program in-process.  The httpget program is just a wrapper
+around the library.
+
+Release 2.14 and later will build with gcc-3.x, earlier releases
+require gcc-2.95.x (or some tweeking).
+
+Feedback and bug reports should go to:
+
+Steve Whiteley
+Whiteley Research Inc.
+stevew@wrcad.com
+
+* * *
+
+This library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Library General Public License as
+published by the Free Software Foundation; either version 2 of the
+License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Library General Public License for more details.
+
+You should have received a copy of the GNU Library General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+====================================================================
+CHANGES
+
+Release 2.18
+
+  - Added support for the QT toolkit.
+
+Release 2.17
+
+  - If an ftp transfer can not be initiated, a zero-byte outfile is
+    no longer produced.  The file is created on the local machine
+    only if something will be written, or the source file is actually
+    empty.
+  
+  - If a transfer fails or is interrupted in non-graphics mode,
+    an extra linefeed is output so that the prompt or error message
+    is on a separate new line from the status messages.
+

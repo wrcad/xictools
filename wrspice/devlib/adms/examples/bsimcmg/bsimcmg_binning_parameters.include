@@ -1,0 +1,667 @@
+// ********************************************************
+// **** BSIM-CMG 107.0.0 released by Navid, Juan, and Sriramkumar on 07/12/2013 ****/
+// *  BSIM Common Multi-Gate Model Equations (Verilog-A)
+// ********************************************************
+//
+// ********************************************************
+// * Copyright 2012 Regents of the University of California. 
+// * All rights reserved.
+// *
+// * Project Director: Prof. Chenming Hu.
+// * Authors: Sriramkumar V., Navid Paydavosi, Juan Duarte, Darsen Lu, 
+// *          Chung-Hsun Lin, Mohan Dunga, Shijing Yao,
+// *          Ali Niknejad, Chenming Hu
+// ********************************************************
+// ********************************************************
+// *   NONDISCLOSURE STATEMENT
+// Software is distributed as is, completely without warranty or service
+// support. The University of California and its employees are not liable
+// for the condition or performance of the software.
+// The University of California owns the copyright and grants users a perpetual,
+// irrevocable, worldwide, non-exclusive, royalty-free license with 
+// respect to the software as set forth below.
+// The University of California hereby disclaims all implied warranties.
+// The University of California grants the users the right to modify, copy,
+// and redistribute the software and documentation, both within the user's
+// organization and externally, subject to the following restrictions
+// 1. The users agree not to charge for the University of California code
+// itself but may charge for additions, extensions, or support.
+// 2. In any product based on the software, the users agree to acknowledge
+// the University of California that developed the software. This
+// acknowledgment shall appear in the product documentation.
+// 3. The users agree to obey all U.S. Government restrictions governing
+// redistribution or export of the software.
+// 4. The users agree to reproduce any copyright notice which appears on
+// the software on any copy or modification of such made available
+// to others
+// Agreed to on __Sept. 11, 2012_________________
+// By: ___University of California, Berkeley____ 
+//     ___Chenming Hu_____________________ 
+//     ___Professor in Graduate School _______
+// ********************************************************
+parameter real LNBODY  =  0;
+parameter real NNBODY  =  0;
+parameter real PNBODY  =  0;
+
+parameter real LPHIG   =  0;
+parameter real NPHIG   =  0;
+parameter real PPHIG   =  0;
+
+parameter real LNGATE  =  0;
+parameter real NNGATE  =  0;
+parameter real PNGATE  =  0;
+
+parameter real LCIT=  0;
+parameter real NCIT=  0;
+parameter real PCIT=  0;
+
+parameter real LCDSC =  0;
+parameter real NCDSC =  0;
+parameter real PCDSC =  0;
+
+parameter real LCDSCD=  0;
+parameter real NCDSCD=  0;
+parameter real PCDSCD=  0;
+
+parameter real LCDSCDR =  LCDSCD;
+parameter real NCDSCDR =  NCDSCD;
+parameter real PCDSCDR =  PCDSCD;
+
+parameter real LDVT0   =  0;
+parameter real NDVT0   =  0;
+parameter real PDVT0   =  0;
+
+parameter real LDVT1   =  0;
+parameter real NDVT1   =  0;
+parameter real PDVT1   =  0;
+
+parameter real LDVT1SS =  0;
+parameter real NDVT1SS =  0;
+parameter real PDVT1SS =  0;
+
+parameter real LPHIN   =  0;
+parameter real NPHIN   =  0;
+parameter real PPHIN   =  0;
+
+parameter real LETA0   =  0;
+parameter real NETA0   =  0;
+parameter real PETA0   =  0;
+
+parameter real LETA0R  =  LETA0;
+parameter real NETA0R  =  NETA0;
+parameter real PETA0R  =  PETA0;
+
+parameter real LDSUB   =  0;
+parameter real NDSUB   =  0;
+parameter real PDSUB   =  0;
+
+parameter real LK1RSCE =  0;
+parameter real NK1RSCE =  0;
+parameter real PK1RSCE =  0;
+
+parameter real LLPE0   =  0;
+parameter real NLPE0   =  0;
+parameter real PLPE0   =  0;
+
+parameter real LDVTSHIFT  =  0;
+parameter real NDVTSHIFT  =  0;
+parameter real PDVTSHIFT  =  0;
+
+parameter real LPHIBE  =  0;
+parameter real NPHIBE  =  0;
+parameter real PPHIBE  =  0;
+
+parameter real LK0  =  0;
+parameter real NK0  =  0;
+parameter real PK0  =  0;
+
+parameter real LK01  =  0;
+parameter real NK01  =  0;
+parameter real PK01  =  0;
+
+parameter real LK0SI  =  0;
+parameter real NK0SI  =  0;
+parameter real PK0SI  =  0;
+
+parameter real LK0SI1  =  0;
+parameter real NK0SI1  =  0;
+parameter real PK0SI1  =  0;
+
+parameter real LK1SI  =  0;
+parameter real NK1SI  =  0;
+parameter real PK1SI  =  0;
+
+parameter real LK1SI1  =  0;
+parameter real NK1SI1  =  0;
+parameter real PK1SI1  =  0;
+
+parameter real LK1  =  0;
+parameter real NK1  =  0;
+parameter real PK1  =  0;
+
+parameter real LK11  =  0;
+parameter real NK11  =  0;
+parameter real PK11  =  0;
+
+parameter real LK1SAT  =  0;
+parameter real NK1SAT  =  0;
+parameter real PK1SAT  =  0;
+
+parameter real LK1SAT1  =  0;
+parameter real NK1SAT1  =  0;
+parameter real PK1SAT1  =  0;
+
+parameter real LDVTB   =  0;
+parameter real NDVTB   =  0;
+parameter real PDVTB   =  0;
+
+parameter real LLPEB   =  0;
+parameter real NLPEB   =  0;
+parameter real PLPEB   =  0;
+
+parameter real LQMFACTOR =  0.0;
+parameter real NQMFACTOR =  0.0;
+parameter real PQMFACTOR =  0.0;
+
+parameter real LQMTCENIV =  0.0;	 	     
+parameter real NQMTCENIV =  0.0;	 	     
+parameter real PQMTCENIV =  0.0;
+
+parameter real LQMTCENCV =  0.0;	 	     
+parameter real NQMTCENCV =  0.0;	 	     
+parameter real PQMTCENCV =  0.0;
+
+parameter real LQMTCENCVA =  0.0;	 	     
+parameter real NQMTCENCVA =  0.0;	 	     
+parameter real PQMTCENCVA =  0.0;
+
+parameter real LVSAT =  0;
+parameter real NVSAT =  0;
+parameter real PVSAT =  0;
+
+parameter real LVSAT1=  LVSAT;
+parameter real NVSAT1=  NVSAT;
+parameter real PVSAT1=  PVSAT;
+
+parameter real LVSAT1R=  LVSAT1;
+parameter real NVSAT1R=  NVSAT1;
+parameter real PVSAT1R=  PVSAT1;
+
+parameter real LPSAT =  0;
+parameter real NPSAT =  0;
+parameter real PPSAT =  0;
+
+parameter real LDELTAVSAT =  0;
+parameter real NDELTAVSAT =  0;
+parameter real PDELTAVSAT =  0;
+
+parameter real LKSATIV =  0;
+parameter real NKSATIV =  0;
+parameter real PKSATIV =  0;
+
+parameter real LVSATCV =  0;
+parameter real NVSATCV =  0;
+parameter real PVSATCV =  0;
+
+parameter real LPSATCV =  0;
+parameter real NPSATCV =  0;
+parameter real PPSATCV =  0;
+
+parameter real LDELTAVSATCV =  0;
+parameter real NDELTAVSATCV =  0;
+parameter real PDELTAVSATCV =  0;
+
+parameter real LMEXP   =  0;
+parameter real NMEXP   =  0;
+parameter real PMEXP   =  0;
+
+parameter real LMEXPR  =  0;
+parameter real NMEXPR  =  0;
+parameter real PMEXPR  =  0;
+
+parameter real LPTWG   =  0.0;
+parameter real NPTWG   =  0.0;
+parameter real PPTWG   =  0.0;
+
+parameter real LPTWGR   =  LPTWG;
+parameter real NPTWGR   =  NPTWG;
+parameter real PPTWGR   =  PPTWG;
+
+parameter real LU0 =  0;
+parameter real NU0 =  0;
+parameter real PU0 =  0;
+
+parameter real LETAMOB =  0;
+parameter real NETAMOB =  0;
+parameter real PETAMOB =  0;
+
+parameter real LUP =  0;                            
+parameter real NUP =  0;                            
+parameter real PUP =  0;                          
+
+parameter real LUA =  0;
+parameter real NUA =  0;
+parameter real PUA =  0;
+
+parameter real LUC =  0;
+parameter real NUC =  0;
+parameter real PUC =  0;
+
+parameter real LEU =  0;
+parameter real NEU =  0;
+parameter real PEU =  0;
+
+parameter real LUD =  0;
+parameter real NUD =  0;
+parameter real PUD =  0;
+
+parameter real LUCS=  0;
+parameter real NUCS=  0;
+parameter real PUCS=  0;
+
+parameter real LPCLM =  0;
+parameter real NPCLM =  0;
+parameter real PPCLM =  0;
+
+parameter real LPCLMG=  0;
+parameter real NPCLMG=  0;
+parameter real PPCLMG=  0;
+
+parameter real LPCLMCV =  0;
+parameter real NPCLMCV =  0;
+parameter real PPCLMCV =  0;
+
+parameter real LA1 =  0;
+parameter real NA1 =  0;
+parameter real PA1 =  0;
+
+parameter real LA11 =  0;
+parameter real NA11 =  0;
+parameter real PA11 =  0;
+
+parameter real LA2 =  0;
+parameter real NA2 =  0;
+parameter real PA2 =  0;
+
+parameter real LA21 =  0;
+parameter real NA21 =  0;
+parameter real PA21 =  0;
+
+parameter real LRDSW   =  0;
+parameter real NRDSW   =  0;
+parameter real PRDSW   =  0;
+
+parameter real LRSW    =  0.0;
+parameter real NRSW    =  0.0;
+parameter real PRSW    =  0.0;
+
+parameter real LRDW    =  0.0;  
+parameter real NRDW    =  0.0;  
+parameter real PRDW    =  0.0;
+
+parameter real LPRWGS   =  0;
+parameter real NPRWGS   =  0;
+parameter real PPRWGS   =  0;
+
+parameter real LPRWGD   =  0;
+parameter real NPRWGD   =  0;
+parameter real PPRWGD   =  0;
+
+parameter real LWR =  0;
+parameter real NWR =  0;
+parameter real PWR =  0;
+
+parameter real LPDIBL1 =  0;
+parameter real NPDIBL1 =  0;
+parameter real PPDIBL1 =  0;
+
+parameter real LPDIBL1R =  LPDIBL1;
+parameter real NPDIBL1R =  NPDIBL1;
+parameter real PPDIBL1R =  PPDIBL1;
+
+parameter real LPDIBL2 =  0;
+parameter real NPDIBL2 =  0;
+parameter real PPDIBL2 =  0;
+
+parameter real LDROUT  =  0;
+parameter real NDROUT  =  0;
+parameter real PDROUT  =  0;
+
+parameter real LPVAG   =  0;
+parameter real NPVAG   =  0;
+parameter real PPVAG   =  0;
+
+parameter real LAIGBINV=  0;
+parameter real NAIGBINV=  0;
+parameter real PAIGBINV=  0;
+
+parameter real LAIGBINV1=  0;
+parameter real NAIGBINV1=  0;
+parameter real PAIGBINV1=  0;
+
+parameter real LBIGBINV=  0;
+parameter real NBIGBINV=  0;
+parameter real PBIGBINV=  0;
+
+parameter real LCIGBINV=  0;
+parameter real NCIGBINV=  0;
+parameter real PCIGBINV=  0;
+
+parameter real LEIGBINV=  0;
+parameter real NEIGBINV=  0;
+parameter real PEIGBINV=  0;
+
+parameter real LNIGBINV=  0;
+parameter real NNIGBINV=  0;
+parameter real PNIGBINV=  0;
+
+parameter real LAIGBACC=  0;
+parameter real NAIGBACC=  0;
+parameter real PAIGBACC=  0;
+
+parameter real LAIGBACC1=  0;
+parameter real NAIGBACC1=  0;
+parameter real PAIGBACC1=  0;
+
+parameter real LBIGBACC=  0;
+parameter real NBIGBACC=  0;
+parameter real PBIGBACC=  0;
+
+parameter real LCIGBACC=  0;
+parameter real NCIGBACC=  0;
+parameter real PCIGBACC=  0;
+
+parameter real LNIGBACC=  0;
+parameter real NNIGBACC=  0;
+parameter real PNIGBACC=  0;
+
+parameter real LAIGC   =  0;
+parameter real NAIGC   =  0;
+parameter real PAIGC   =  0;
+
+parameter real LAIGC1   =  0;
+parameter real NAIGC1   =  0;
+parameter real PAIGC1   =  0;
+
+parameter real LBIGC   =  0;
+parameter real NBIGC   =  0;
+parameter real PBIGC   =  0;
+
+parameter real LCIGC   =  0;
+parameter real NCIGC   =  0;
+parameter real PCIGC   =  0;
+
+parameter real LPIGCD  =  0;
+parameter real NPIGCD  =  0;
+parameter real PPIGCD  =  0;
+
+parameter real LAIGS   =  0;
+parameter real NAIGS   =  0;
+parameter real PAIGS   =  0;
+
+parameter real LAIGS1   =  0;
+parameter real NAIGS1   =  0;
+parameter real PAIGS1   =  0;
+
+parameter real LBIGS   =  0;
+parameter real NBIGS   =  0;
+parameter real PBIGS   =  0;
+
+parameter real LCIGS   =  0;
+parameter real NCIGS   =  0;
+parameter real PCIGS   =  0;
+
+parameter real LAIGD   =  LAIGS;
+parameter real NAIGD   =  NAIGS;
+parameter real PAIGD   =  PAIGS;
+
+parameter real LAIGD1   =  LAIGS1;
+parameter real NAIGD1   =  NAIGS1;
+parameter real PAIGD1   =  PAIGS1;
+
+parameter real LBIGD   =  LBIGS;
+parameter real NBIGD   =  NBIGS;
+parameter real PBIGD   =  PBIGS;
+
+parameter real LCIGD   =  LCIGS;
+parameter real NCIGD   =  NCIGS;
+parameter real PCIGD   =  PCIGS;
+
+parameter real LNTOX   =  0;
+parameter real NNTOX   =  0;
+parameter real PNTOX   =  0;
+
+parameter real LPOXEDGE=  0;
+parameter real NPOXEDGE=  0;
+parameter real PPOXEDGE=  0;
+
+parameter real LAGISL  =  0;
+parameter real NAGISL  =  0;
+parameter real PAGISL  =  0;
+
+parameter real LBGISL  =  0;
+parameter real NBGISL  =  0;
+parameter real PBGISL  =  0;
+
+parameter real LCGISL  =  0;
+parameter real NCGISL  =  0;
+parameter real PCGISL  =  0;
+
+parameter real LEGISL  =  0;
+parameter real NEGISL  =  0;
+parameter real PEGISL  =  0;
+
+parameter real LPGISL  =  0;
+parameter real NPGISL  =  0;
+parameter real PPGISL  =  0;
+
+parameter real LAGIDL  =  LAGISL;
+parameter real NAGIDL  =  NAGISL;
+parameter real PAGIDL  =  PAGISL;
+
+parameter real LBGIDL  =  LBGISL;
+parameter real NBGIDL  =  NBGISL;
+parameter real PBGIDL  =  PBGISL;
+
+parameter real LCGIDL  =  LCGISL;
+parameter real NCGIDL  =  NCGISL;
+parameter real PCGIDL  =  PCGISL;
+
+parameter real LEGIDL  =  LEGISL;
+parameter real NEGIDL  =  NEGISL;
+parameter real PEGIDL  =  PEGISL;
+
+parameter real LPGIDL  =  LPGISL;
+parameter real NPGIDL  =  NPGISL;
+parameter real PPGIDL  =  PPGISL;
+
+parameter real LALPHA0 =  0.0;
+parameter real NALPHA0 =  0.0;
+parameter real PALPHA0 =  0.0;
+
+parameter real LALPHA1 =  0.0;
+parameter real NALPHA1 =  0.0;
+parameter real PALPHA1 =  0.0;
+
+parameter real LALPHAII0 =  0.0;
+parameter real NALPHAII0 =  0.0;
+parameter real PALPHAII0 =  0.0;
+
+parameter real LALPHAII1 =  0.0;
+parameter real NALPHAII1 =  0.0;
+parameter real PALPHAII1 =  0.0;
+
+parameter real LBETA0  =  0.0;
+parameter real NBETA0  =  0.0;
+parameter real PBETA0  =  0.0;
+
+//parameter real LALPHAII=  0.0;
+//parameter real NALPHAII=  0.0;
+//parameter real PALPHAII=  0.0;
+
+parameter real LBETAII0=  0.0;
+parameter real NBETAII0=  0.0;
+parameter real PBETAII0=  0.0;
+
+parameter real LBETAII1=  0.0;
+parameter real NBETAII1=  0.0;
+parameter real PBETAII1=  0.0;
+
+parameter real LBETAII2=  0.0;
+parameter real NBETAII2=  0.0;
+parameter real PBETAII2=  0.0;
+
+parameter real LESATII =  0.0;
+parameter real NESATII =  0.0;
+parameter real PESATII =  0.0;
+
+parameter real LLII=  0.0;	                         
+parameter real NLII=  0.0;	                         
+parameter real PLII=  0.0;
+
+parameter real LSII0 =  0.0;
+parameter real NSII0 =  0.0;
+parameter real PSII0 =  0.0;
+
+parameter real LSII1 =  0.0;
+parameter real NSII1 =  0.0;
+parameter real PSII1 =  0.0;
+
+parameter real LSII2 =  0.0;
+parameter real NSII2 =  0.0;
+parameter real PSII2 =  0.0;
+
+parameter real LSIID =  0.0;
+parameter real NSIID =  0.0;
+parameter real PSIID =  0.0;
+
+parameter real LCFS  =  0.0;
+parameter real NCFS  =  0.0;
+parameter real PCFS  =  0.0;
+
+parameter real LCFD  =  LCFS;
+parameter real NCFD  =  NCFS;
+parameter real PCFD  =  PCFS;
+
+parameter real LCOVS =  0.0;
+parameter real NCOVS =  0.0;
+parameter real PCOVS =  0.0;
+
+parameter real LCOVD =  LCOVS;
+parameter real NCOVD =  NCOVS;
+parameter real PCOVD =  PCOVS;
+
+parameter real LCGSL =  0.0;
+parameter real NCGSL =  0.0;
+parameter real PCGSL =  0.0;
+
+parameter real LCGDL =  LCGSL;
+parameter real NCGDL =  NCGSL;
+parameter real PCGDL =  PCGSL;
+
+parameter real LCKAPPAS  =  0.0;
+parameter real NCKAPPAS  =  0.0;
+parameter real PCKAPPAS  =  0.0;
+
+parameter real LCKAPPAD  =  LCKAPPAS;
+parameter real NCKAPPAD  =  NCKAPPAS;
+parameter real PCKAPPAD  =  PCKAPPAS;
+
+parameter real LCGBL =  0.0;
+parameter real NCGBL =  0.0;
+parameter real PCGBL =  0.0;
+
+parameter real LCKAPPAB  =  0.0;
+parameter real NCKAPPAB  =  0.0;
+parameter real PCKAPPAB  =  0.0;
+
+parameter real LNTGEN    =  0;
+parameter real NNTGEN    =  0;
+parameter real PNTGEN    =  0;
+
+parameter real LAIGEN    =  0;
+parameter real NAIGEN    =  0;
+parameter real PAIGEN    =  0;
+
+parameter real LBIGEN    =  0;
+parameter real NBIGEN    =  0;
+parameter real PBIGEN    =  0;
+
+parameter real LXRCRG1   =  0.0;
+parameter real NXRCRG1   =  0.0;
+parameter real PXRCRG1   =  0.0;
+
+parameter real LXRCRG2   =  0.0;
+parameter real NXRCRG2   =  0.0; 
+parameter real PXRCRG2   =  0.0;
+
+parameter real LINTNOI   =  0.0;
+
+parameter real LUTE=  0.0;
+parameter real NUTE=  0.0;
+parameter real PUTE=  0.0;
+
+parameter real LUTL=  0.0;                         
+parameter real NUTL=  0.0;                         
+parameter real PUTL=  0.0;                         
+
+parameter real LEMOBT =  0;
+parameter real NEMOBT =  0;
+parameter real PEMOBT =  0;
+
+parameter real LUA1=  0.0;
+parameter real NUA1=  0.0;
+parameter real PUA1=  0.0;
+
+parameter real LUC1=  0.0;
+parameter real NUC1=  0.0;
+parameter real PUC1=  0.0;
+
+parameter real LUD1=  0.0;
+parameter real NUD1=  0.0;
+parameter real PUD1=  0.0;
+
+parameter real LUCSTE=  0.0;
+parameter real NUCSTE=  0.0;
+parameter real PUCSTE=  0.0;
+
+parameter real LPTWGT  =  0;
+parameter real NPTWGT  =  0;
+parameter real PPTWGT  =  0;
+
+parameter real LAT =  0;
+parameter real NAT =  0;
+parameter real PAT =  0;
+
+parameter real LSTTHETASAT =  0;
+parameter real NSTTHETASAT =  0;
+parameter real PSTTHETASAT =  0;
+
+parameter real LPRT  =  0;
+parameter real NPRT  =  0;
+parameter real PPRT  =  0;
+
+parameter real LKT1  =  0;
+parameter real NKT1  =  0;
+parameter real PKT1  =  0;
+
+parameter real LTSS  =  0;
+parameter real NTSS  =  0;
+parameter real PTSS  =  0;
+
+parameter real LIIT  =  0;
+parameter real NIIT  =  0;
+parameter real PIIT  =  0;
+
+parameter real LTII  =  0.0;	                     
+parameter real NTII  =  0.0;	                     
+parameter real PTII  =  0.0;
+
+parameter real LTGIDL  =  0;
+parameter real NTGIDL  =  0;
+parameter real PTGIDL  =  0;
+
+parameter real LIGT    =  0;
+parameter real NIGT    =  0;
+parameter real PIGT    =  0;
+

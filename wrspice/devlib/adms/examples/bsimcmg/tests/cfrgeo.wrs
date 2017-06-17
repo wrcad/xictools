@@ -1,0 +1,76 @@
+*Sample netlist for BSIM-MG 
+* Geometry-dependent Cfr
+*
+*.option abstol=1e-6 reltol=1e-6 post ingold
+.temp 27
+
+*.hdl "bsimcmg.va"
+
+.param xhfin=30n
+
+.model nmos2 bsimcmg
++ DEVTYPE=1
++ CGEOMOD=2
++ HEPI=10n
++ LSP=5n
++ EPSRSP=7.5
++ TGATE=40n 
++ TMASK=10n 
++ TSILI=0n 
++ CRATIO=1.0
++ EOT=1.0n 
++ TOXP=1.2n 
++ HFIN=xhfin 
+
+* --- Voltage Sources ---
+vds supply  0 dc=0
+vgs gate  0 dc=0
+vbs bulk  0 dc=0
+
+* --- Transistor ---
+*X1 supply gate 0 bulk nmos2 TFIN=10n L=30n NFIN=1 FPITCH=20n LRSD=40n
+*X2 supply gate 0 bulk nmos2 TFIN=10n L=30n NFIN=1 FPITCH=40n LRSD=40n
+*X3 supply gate 0 bulk nmos2 TFIN=10n L=30n NFIN=1 FPITCH=60n LRSD=40n
+*X4 supply gate 0 bulk nmos2 TFIN=10n L=30n NFIN=1 FPITCH=80n LRSD=40n
+m1 supply gate 0 bulk nmos2 TFIN=10n L=30n NFIN=1 FPITCH=20n LRSD=40n
+m2 supply gate 0 bulk nmos2 TFIN=10n L=30n NFIN=1 FPITCH=40n LRSD=40n
+m3 supply gate 0 bulk nmos2 TFIN=10n L=30n NFIN=1 FPITCH=60n LRSD=40n
+m4 supply gate 0 bulk nmos2 TFIN=10n L=30n NFIN=1 FPITCH=80n LRSD=40n
+
+* --- DC Analysis ---
+.dc vgs 0.0 1.0 1.5
+*.print dc par'hfin' X1:CFGEO X2:CFGEO X3:CFGEO X4:CFGEO
+
+*.alter
+*.param hfin=40n
+
+*.alter
+*.param hfin=50n
+
+*.alter
+*.param hfin=60n
+
+.control
+load -c5+2 cfrgeo.lis
+alter m{1,2,3,4}, HFIN=30n
+run
+echo HFIN=30n
+show m{1,2,3,4}, CFGEO
+print prev.column_2[0] prev.column_3[0] prev.column_4[0] prev.column_6[0]
+alter m{1,2,3,4}, HFIN=40n
+run
+echo HFIN=40n
+show m{1,2,3,4}, CFGEO
+print prev2.column_2[1] prev2.column_3[1] prev2.column_4[1] prev2.column_6[1]
+alter m{1,2,3,4}, HFIN=50n
+run
+echo HFIN=50n
+show m{1,2,3,4}, CFGEO
+print prev3.column_2[2] prev3.column_3[2] prev3.column_4[2] prev3.column_6[2]
+alter m{1,2,3,4}, HFIN=60n
+run
+echo HFIN=60n
+show m{1,2,3,4}, CFGEO
+print prev4.column_2[3] prev4.column_3[3] prev4.column_4[3] prev4.column_6[3]
+.endc
+.end

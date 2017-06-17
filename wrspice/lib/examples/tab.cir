@@ -1,0 +1,34 @@
+* WRspice function and table demo
+*
+* WRspice has a feature which allows arbitrary functional variation of
+* controlled sources and much more flexibility in specifying
+* independent sources.  This file demonstrates new syntax.
+*
+* v1 is numerically equal to the exponentiation of
+* 2 times the sine.  "x" is replaced by the time variable.
+v1 1 0 exp(2*sin(6.28e9*x))
+r1 1 0 1
+*
+* v2 obtains values from table t1
+v2 2 0 table(t1 time)
+r2 2 0 1
+.table t1 0 0 100p .1 500p 0 750p .2 1000p 0
+*
+* v3 is a 0-1 ramp
+v3 3 0 pwl(0 0 1n 1)
+r3 3 0 1
+*
+* e1 illustrates use of sub-tables.  x is the voltage from v3
+e1 4 0 3 0 table(t2, x)
+r4 4 0 1
+.table t2 0 table t3 .5 table t4 .75 .75 1 0
+.table t3 0 0 .25 1 .5 0
+.table t4 0 0 .5 0 .625 1 .75 1
+*
+.tran 1p 1n
+
+.control
+run
+plot v({1,2,3,4}) ysep
+edit
+.endc

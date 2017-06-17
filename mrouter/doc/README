@@ -1,0 +1,22 @@
+
+MRouter Documentation
+$Id: README,v 1.2 2016/11/15 04:25:41 stevew Exp $
+
+This directory contains documention for the MRouter.
+
+xic/MRouter.hlp
+  This is the official documention for export to the Xic help system. 
+  To provide access to this from Xic, edit your technology file to set
+  the HelpPath to include the xic directory.  For example:
+
+  HelpPath ( /usr/local/xictools/xic/help /usr/local/MRouter/doc/xic )
+
+  The top-level topic is "mrouter".
+
+mrouter-x.x.x.pdf
+  This is the MRouter manual in PDF format.  This is presently the
+  only format that is installed, and provided in the binary
+  distribution packages.  However, the source distribution contains
+  the LaTex source, and a makefile for creating a manual in
+  PostScript, HTML, and DVI formats, in addition to PDF.
+   

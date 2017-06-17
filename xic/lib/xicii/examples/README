@@ -1,0 +1,24 @@
+
+XicII Example Files
+-------------------
+
+This directory provides some misc layouts.  Using XicII, these can be
+viewed, modified, and otherwise played with.  The files are also
+supplied as examples in Xic to illustrate extraction features, which
+are not enabled in XicII.
+
+
+scmos technology
+
+  amd2901.gds.gz
+    Note that you do *not* have to gunzip this file before reading into
+    XicII.  XicII will automatically decompress gzipped gds files.
+
+  chip.gds
+  tut11a.gds
+
+
+Hypres technology
+
+  extest.gds
+  hyp.gds

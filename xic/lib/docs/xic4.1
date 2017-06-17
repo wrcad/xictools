@@ -1,0 +1,1994 @@
+Xic Generation 4 Beta Release Notes
+
+See the release note archive for the alpha series (4.0.0 - 4.0.9)
+notes.
+
+With the start of the beta sequence, the old Generation 3 is
+officially deprecated.
+
+Where to make the jump between alpha, beta and production is rather
+arbitrary.  With the completion of alpha, all Generation 4 program
+features should be implemented and work as described in the
+documentation, and all "major" bugs should have been fixed.  During
+beta, there is continued fine-tuning and bug fixing of the new code
+introduced for Generation 4.  At some point, after running out of
+things to fix, the 4.2 production branch will start.  Be aware,
+however, that the program is never static, and new features are being
+added continually.  Even in "production" there will be new features
+under test.  The alpha/beta/production levels refer to the body of
+code developed for generation transition.
+
+*****************************************************
+Windows Notes:
+
+* If you have put the gtk2-bundle/bin directory in your search path,
+  it is best to remove it, as other programs may be effected.  The
+  effective path is now set locally in the bat files used to run
+  Xic and WRspice.
+
+Cygwin users:
+
+* Cygwin now defaults to a new "mintty" terminal emulator.  This does
+  NOT work AT ALL with WRspice, or any other native Windows
+  application that interacts with the console.  The same applies to
+  xterm and rvxt terminal emulators compiled under Cygwin.  These work
+  better for running Xic, or running WRspice from Xic, where the
+  terminal window is not interactive, but there are subtle problems so
+  this is not recommended.
+
+  WRspice can be run from the old-style native bash box, or a native
+  DOS box.  For example, start a terminal window ("DOS box") from
+  Windows, and give the commands
+    cd c:\cygwin\bin
+    bash --login -i
+  This gives the traditional Cygwin window, suitable for running
+  WRspice.  This can be encapsulated in a bat file that can be run
+  from an icon, there may be a c:/cygwin/Cygwin.bat file in the Cygwin
+  distribution that does exactly this.  If not, create a Cygwin.bat
+  file somewhere with the contents
+    @echo off
+    C:
+    chdir C:\cygwin\bin
+    bash --login -i
+  This assumes that Cygwin in installed in C:\Cygwin, modify the
+  file text appropriately of not.  Create a desktop icon that will
+  run this bat file, and use it to launch Cygwin windows for running
+  native Windows applications including WRspice and Xic.
+
+
+*****************************************************
+ATTENTION Mac users!
+
+You MUST update the gtk2-bundle-x11 package to 4.0.1 to run the
+current releases of Xic and WRspice.
+
+The new bundle can be installed with the wr_install script (unlike the
+original bundle).
+
+The new bundle contains the latest gtk release, which fixes a problem
+on 10.10 (Yosemite).  The old bundle gtk can not handle the long
+display name used in Yosemite, so the programs won't run without some
+trickery.
+
+WE HAVE UPDATED TO YOSEMITE !!!!!
+
+Starting with xic-4.1.14 and wrspice-4.1.21.  These are generated
+using the Mavericks xcode package so should still be compatible with
+Mavericks (testing needed!).
+
+*****************************************************
+
+
+===============================================================================
+xic-4.1.16  7/20/2015
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Internal multi-threading support.
+
+  This is mostly invisible, but a lot of work was done to support
+  multi-threading in future releases.  This will enable certain
+  operations to run faster by emplying multiple processor cores in
+  parallel.  This will be an ongoing effort.
+
+  Initially, multi-trhreading can be employed when evaluating layer
+  expressions, and the partitioning grid is used.  The evaluation in
+  each grid cell is parcelled out as a parallel thread process.
+
+  This is VERY PRELIMINARY and should not be used for anything real
+  yet.
+
+  There is a new Threads variable, which can be set from the General
+  page of the Window Attributes panel from the Attributes menu.
+  The "Number of helper threads" can take a value of 1-31.  The
+  best setting is probably one less than the number of available
+  processor cores (actually, some Intel processors provide two
+  pipelines per core).
+
+  When set to a value other than 0, helper threads will be used when
+  evaluating layer expressions with the !layer command or with the
+  Layer Expression panel from the Edit menu.  Experimentation with
+  partition size, number of threads, etc. is encouraged.
+  Use "!timedbg on" to enable operation timing.
+
+  As we saw in WRspice, use of multiple threads does not necessarily
+  mean that the job will run faster, as multi-threading has overhead. 
+  In general, using a larger partition size seems to be better, as
+  each thread job is more likely larger than the overhead.
+
+  Some of the work necessary to get this far:
+  - Added an argument for a context pointer to several hundred script
+    function implementations.  The context must be passed on the stack
+    in a multi-thread environment, not as a global variable as
+    previous.
+  - Rewrote the internal mamory management system for thread safety.
+    The "recycle mode" is gone, there is a new caching mechanism
+    compatible with threads.
+  - Wrote a lock-free stack for use as the free list.  This required
+    a bit of assembly language.
+  - Fought a huge battle with Windows, which had strange seg faults. 
+    Eventually traced this to bad code emitted with full compiler
+    optimization.  Backing off optimization fixed the problem.
+
+* Means to write an entire symbol table to an archive file.
+
+  In the Write Layout File panel from the Convert menu, the
+  "Write back-compatible format (warning! data loss)" check box
+  is gone (it is deemed obsolete, but the underlying variable can
+  still be set if this feature is ever needed).  In its place is
+  a new check box "Consider ALL cells in current symbol table for
+  output".
+
+  When checked, all cells in the current symbol table, not just the
+  hierarchy of the current cell, will be output as if they were part
+  of the hierarchy.  The usual filtering of library and sub-master
+  cells is retained.  The resulting file may have multiple top-level
+  cells.  Flattening/windowing is not done in this case.
+
+* Script function changes.
+
+  Added some named constants to script parser:
+    PI_2            pi/2
+    PI_4            pi/4
+    PHI0            2.0679e-15
+
+  New script functions:
+    testCoverageFull, testCoveragePartial, and testCoverageNone.
+
+    These provide efficient geometrical existence testing of layer
+    expressions in regions.
+
+    The existing testCoverage function is deprecated.
+
+  New script function: Export(filetype, allcells)
+
+    This can replace the ToGDS, etc. function family, and it allows
+    all cells in the current symbol table to be output, not just the
+    current cell hierarchy.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed a problem of overwriting archive files if two or more modified
+  top-level hierarchies originate from the same file.  This could have
+  very unfortunate consequences.
+
+  When an archive file (GDSII/OASIS, etc.) file is read, every cell is
+  marked with the originating file name.  On program exit, or with the
+  Save operation in the File menu, the top-level cells are identified,
+  and if they contain a modified cell in their hierarchy, they will be
+  listed in the pop-up for possible saving.  Suppose from editing the
+  original hierarchy there are now two or more top-level cells, due to
+  cell instances being deleted from the original hierarchy.  Suppose
+  further that the second hierarchy contains a modified cell.  Both
+  the original and the new top-level cells will be listed for update,
+  and both would update to the original file.  If the user carries
+  through the update as listed, the original file may well be
+  overwritten with something unintended.
+
+  Now, only the original top-level cell will use the originating file
+  name for updating.
+
+* The DRC output file had the header lines printed twice.
+
+* NoHoles DRC violations weren't being highlighted correctly in the
+  Show Errors command.
+
+* The SPICE output from physical extraction now properly accounts for
+  use of the same Prefix in different device blocks.  Previously,
+  a different Prefix was required in each device block to obtain
+  correct SPICE output from physical extraction.
+
+
+-------------------------------------------------------------------------------
+xic-4.1.15  6/27/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New object centroid calculation.
+
+  There is new functionality to compute the centroid point of objects. 
+  In mathematics, the centroid or geometric center of a
+  two-dimensional region is the arithmetic mean of all the points in
+  the shape.
+
+  New script fuction: GetObjectCentroid(handle, array)
+    Returns in the array the centroid of the object pointed to by the
+    handle.
+
+  New variable:  MarkObjectCentroid
+    When set, selected objects show a cross mark at the centroid.  This
+    can be set from the Window Attributes panel (see below).
+
+* New page in the Window Attributes panel.
+
+  The Window Attributes panel from the Attributes menu has a new
+  Selections page.  It contains two check boxes:
+
+  "Show origin of selected physical instances"
+  This was moved from the General page.
+
+  "Show centroids of selected physical objects"
+  This is new, and tracks the MarkObjectCentroid variable.  When
+  checked, selected objects will have a cross mark on the centroid.
+
+  The instance and object marks are now also shown when the object os
+  ghost-drawn and attached to the mouse pointer during a move/copy.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed a bug that would crash the program if an error message was too
+  long.
+
+* Fixed polygon clipping problem.  Horizontal slivers with edges that
+  are sharper than 45s are now Manhattanized, this helps avoid
+  clipping errors.
+
+
+-------------------------------------------------------------------------------
+xic-4.1.14  6/1/2015
+
+This release contains tweaks and bug fixes for the Fast[er]Cap interface.
+
+BUGS FIXED
+---- -----
+
+* The Dielectric keyword didn't work in the Parameter Editor (from the
+  Attributes menu).  It would erroneously add the "DarkField" keyword
+  instead.
+
+* Certain string variables, including the program path and arguments
+  for FasterCap, were not being set from the technology file correctly
+  if the string constained white space.  Only the characters before
+  the space were being read.
+
+* The "inconsistency #2" messasge from the FasterCap interface was
+  updated to something more informative.  This happens when dielectric
+  edges cause conductor breaks when not planarizing and the metal is
+  too thin.
+
+* In Windows, terminating a FasterCap run with the Abort button in the
+  Jobs page of the Fast[er]Cap Setup panel would sometimes kill Xic,
+  too.
+
+* Added a warning if the FasterCap argument list (FcArgs) is given and
+  doesn't provide the -a option.  In this case, there is no
+  auto-refinement, and unless the data set is already refined the
+  results will be garbage.
+
+
+-------------------------------------------------------------------------------
+xic-4.1.13  5/25/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* No more panic to gdb.
+
+  Stack backtraces are now generated internally on all supported
+  platforms.  Previously, the Linux/OS X releases relied on the gdb
+  program to do this, which may not be present.
+
+  If the program suffers a fatal error, it will create a stack trace
+  in a "gdbout" file in the current directory, and attempt to email
+  this to Whiteley Research for analysis.  The email will not be sent
+  if either of the variables XTNOMAIL or XICNOMAIL is found in the
+  environment.
+
+  The XTNOMAIL environment variable is new, it suppresses email from
+  both Xic and WRspice.
+
+  The XICNOGDB environment variable is no longer recognized, as gdb is
+  no longer used.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed a bug involving incorrect connectivity determination through
+  circular vias.
+
+* Device blocks weren't being listed correctly in the Device Block
+  menu in the Device Config page of the Extraction Setup panel.
+
+* Tweaked the default property label positions of new device instance
+  placements.  They were likely to be overwritten by wires in
+  schematics.
+
+
+-------------------------------------------------------------------------------
+xic-4.1.12  4/18/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Updates to the OpenAccess interface
+
+  - Standard Via variant placements now map to/from Xic standard vias.
+    The OaMinViaArray variable, which affected creation of via cell files
+    which is no longer done, is gone.
+
+  - The OpenAccess Libraries panel, which can be obtained from the
+    File menu when an OpenAccess database is found, have been
+    significantly enhanced.  There are several new buttons:
+
+    Writable Y/N
+       Enabled when a library is selected, toggles the writability
+       from Xic (the "branding").  The status is now reflected in
+       the second column in the listing.
+
+    Create
+       Allows the user to create a new OpenAccess library.
+
+    Defaults
+       Pop up the new OpenAccess Defaults panel, which allows setting
+       some interface options (see below).
+
+    Tech
+       Enabled when a writable library is selected.  Pops up the new
+       OpenAccess Tech panel, which controls how a technology database
+       is associated with the selected library (an OpenAccess
+       concept).  More about this below.
+
+    Destroy
+       Enabled when a writable library is selected.  Allows libraries
+       or cells in libraries to be deleted.
+
+  - New OpenAccess Defaults panel, allows setting:
+       The default library path (OaLibraryPath variable).
+       The default library (OaDefaultLib variable).
+       The default Tech library (OaDefTechLibrary variable).
+       Whether to dump CDF files (OaDumpCdfFiles variable).
+
+  - New OpenAccess Tech panel.
+       Every OpenAccess library should have a technology database. 
+       This can either be a tech database from another library that is
+       "attached", or a local database.  The panel allows libraries
+       to be attached and unattached, or a local tech database
+       created or destroyed.
+
+  - New documentation describing how to import designs from Virtuoso,
+       see "? cdsimport".
+
+* New library capabilities
+
+  1.  There is a new keyword:
+
+        Directory /path/to/directory
+
+  The "Directory" is literal, and is followed by a full path to an
+  existing directory.  The effect is to reference all design and
+  library files found in the given directory, as if
+
+        Reference /path/to/directory/filename
+
+  was given for each file.
+
+  2.  The Reference and Directory keywords now work in the device.lib
+  file.  Although it was previously possible to use devices that are
+  not defined in device.lib, such as when importing from Cadence, now
+  one can easily add per-file devices to the device menus.
+
+  For example, in device.lib, add a line
+
+        Directory  /path/to/my/devices
+
+  Then, put your imported or custom devices into your devices
+  directory.  The devices will then be listed in the device menus.
+
+* New Save As Device button in the File menu.
+
+  The new button, which appears in electrical mode only, brings up the
+  Device Parameters panel.  From this panel, the present cell can be
+  saved as a device, if it has no subcells or physical data.
+
+  The documentation of the panel was updated, making it a bit more
+  clear how to create a new device.
+
+  The presence of absence of a physical data block in native device
+  files/inlines is now arbitrary.  Previously, inline definitions
+  could not have an empty physical part, cell file definitions were
+  required to have one.
+
+
+BUGS FIXED
+---- -----
+
+* Device parameter labels were being put on layer ETC1 rather than
+  PARM.  This shouldn't matter, but to move to the correct layer:
+  1) delete the label on ETC1
+  2) select the device
+  3) give command: !regen
+  The label should reappear on the correct layer.
+
+* Fixed bugs in OpenAccess interface:
+
+  - Can't specify technology when creating a new library with
+    !oanewlib, generated error.
+  - Electrical cell save loses device.lib devices.
+  - Error saving native pcells, property not being set.
+
+* The hot-spot marker in the Device Parameters panel was not being
+  shown.
+
+* Saving a native cell file under a new name would trigger a spurious
+  warning about OpenAccess errors unless connected to an OpenAccess
+  database.
+
+
+-------------------------------------------------------------------------------
+xic-4.1.11  3/23/2015
+
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New Standard Via support (see 4.1.10 note)
+
+  Coding is complete, and the feature seems to work as designed.
+  Documentation has been completed.  The following are the main
+  help topic keywords (to see help, press '?' and enter the keyword
+  at the prompt).
+
+    xic:crvia
+    stdvia
+    techfile:stdvia
+
+  There is a new OpenViaSubMaster script function for creating
+  standard vias in scripts.
+
+  The OaMinViaArray variable is gone.  The functionality is no longer
+  used.  OpenAccess vias always translate directly to Xic vias.
+
+* New cell list filtering in Cells Listing panel
+
+  The cell filtering in the Cells Listing panel (from the Cells menu)
+  has changed.  There is a new Filter button on the left that brings
+  up a new Cell List Filter panel.  This is always available.  The old
+  filter panel, and the option menu choices to bring it up, are gone. 
+  The new panel sets things graphically, there is no longer a need to
+  create a string using ugly keywords.
+
+  By default, standard via and pcell sub-masters aren't shown in the
+  Cell Listing, but this can be changed from the Cell List Filter
+  panel.
+
+* Logic change when reading input regarding pcell and standard via
+  instances.
+
+  When a pcell or standard via instrance is read, an attempt is made
+  to create its sub-master if not already created.  If this fails,
+  then the instance is treated as an ordinary unresolved instance. 
+  This is an error for a standard via, as the technology should
+  provide the standard via definition.  For pcells, we check again
+  after the read.  The pcell sub-masters may have been provided by the
+  layout file, so everything is fine.  Otherwise, the instances
+  reference empty cells, as in any case where an unresolved reference
+  is seen.
+
+  Previously, there were no standard vias, and pcells were resolved
+  after the layout file was read.  This could lead to some bad
+  problems as the sub-masters were recognized by name, not parameter
+  list, and the name is not unique to a parameter set.
+
+  There is a new PCKEEP cell flag, which is set when a pcell
+  sub-master is read from a file.  Cells with this flag set will be
+  written to disk files.  Thus, if a layout file is generated which
+  includes the pcell submasters, then this file can be subsequently
+  read and written again, and the sub-masters will be retained. 
+  Previously they would be lost on the second write unless the user
+  remembered to enable writing of pcell sub-masters.
+
+* FastHenry interface
+
+  Terminals can now be arbitrary polygons, previously only rectangles
+  (box objects) were allowed.
+
+
+BUGS FIXED
+---- -----
+
+* The Planarize physical keyword was not working correctly in the Tech
+  Parameter Editor from the Attributes menu (it was actually treated
+  like the TLine keyword).
+
+* In the FastHenry interface, nodes that touch the edge of a terminal
+  will now be included in the equivalence list, as stated in the
+  documentation.  Previously, nodes actually needed to be internal to
+  the terminal rectangle.
+
+* In the FastHenry and FastCap interface, pressing the "Run File" button
+  without a file name given will now pop up an error message and exit.
+  Previously, it would try to run a "default" file which might exist,
+  but it was not clear to the user what was happening.
+
+
+-------------------------------------------------------------------------------
+xic-4.1.10  3/16/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New Standard Via support
+
+  This is a big, important new subsystem and capability that is being
+  added.  The next release will provide documentation and tested code. 
+  I don't like to put out unfinished features, but the FastHenry bug
+  needs an immediate fix.
+
+  Standard vias constitute a built-in system for creating and managing
+  vias.  They are something like a pcell, with the super-master always
+  available internally.  The sub-master variants are created when
+  needed.  Their use should ensure design rule compliance and provide
+  the recommended structure for use with the extraction system.
+
+  The standard vias follow the same feature in OpenAccess/Cadence
+  Virtuoso.  When using ReadCdsTech to access a Virtuoso tech file,
+  the standard via definitions will be imported.  They will now be
+  saved when writing an Xic technology file, and read from an Xic
+  technology file.
+
+  If standard vias have been defined, the new Create Via entry in the
+  Edit menu will be un-greyed.  This brings up a panel allowing the
+  user to define and place a via.
+
+  Standard via sub-masters will not be written to file, unless the
+  "Include standard via cell sub-masters" box is checked in the Write
+  Layout File panel.  They will be written also if the Strip For
+  Export box is checked.  In general, they are re-created as needed
+  when a layout file is read.
+
+  Anyone wishing to play with this can use the xic_tech.demo tech file
+  in the memory chip examples, which now defines the standard vias for
+  that technology.
+
+  Documentation will be available in the next release.
+
+* New predefined macros
+
+  If the release number is 4.1.10, the following macros will be
+  defined:
+  GENERATION  4
+  MAJOR       1
+  MINOR       10
+
+  These can be used in the tech file and scripts to check versions.
+  Unfortunately, this isn't as useful as it looks, as in earlier
+  releases these are not defined, so the tests won't work.  In the
+  future this will be much more valuable.
+
+
+BUGS FIXED
+---- -----
+
+* The FastHenry extraction interface had some problems, now fixed.
+
+  1.  The FastHenry interface had a stupid error that caused it to
+      basically not work.
+
+  2.  The xiExtractRLC.hlp file which contains all help topics about
+      the FastHenry/FastCap interfaces was not getting packaged in
+      the Linux releases.
+
+  3.  There was a case-sensitivity issue that prevented the interface
+      from locating the Zc.mat file in some cases.
+
+* Making certain changes in the Extraction Setup panel, such as
+  changing the via search depth, now invalidates extraction. 
+  Previously this would have to be done manually.
+
+
+-------------------------------------------------------------------------------
+xic-4.1.9  3/9/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Very cool new !mkscript command.
+
+  Syntax:  mkscript [-d depth]  [filename]
+
+  The command writes a script file that will create the contents of
+  the current cell, and its hierarchy to arbitrary depth.  When
+  executed, the script will create the cells, and place objects and
+  subcells as needed to recreate the original cells.
+
+  This is useful as a starting point for creating parameterized cells. 
+  It can also be useful to new users for learning the scripting
+  language.
+
+  The function presently works in one mode only, i.e., you can
+  generate a script that will build electrical or physical cells or
+  hierarchies, but not both modes together.  One could generate a
+  script for each mode and combine them by hand, however.
+
+  Although things seem pretty solid for physical mode, electrical mode
+  is far more complex and should be considered experimental at this
+  point.  There are probably things that don't work, for example
+  mutual inductors probably won't be created.  The situation should
+  improve in time, though it is not clear if this feature is of much
+  use in electrical mode.
+
+  Incorporation of this feature led to some significant updates in
+  script functions and elsewhere for efficient support.
+
+* Script syntax extension: array initializer.
+
+  One can initialize an array with the new syntax
+
+  array[index] = [a, b, c, ... ]
+
+  The left side represents a starting address, in the format of
+  an array element specification.  The values from the right side
+  are placed in the array starting at the indicated address, in the
+  natural order of array scalar access.  The array size is expanded when
+  necessary.  The line also serves to declare the array.
+
+  The a, b, c, ... can be expressions, or most commonly simple numbers.
+
+  Example:
+  a[0] = [1, 2, 3, 4]
+
+  Declares and creates a size 4 array named a, with components 1, 2, 3,
+  4.  This is equivalent to the lines
+
+  a[0] = 1
+  a[1] = 2
+  a[2] = 3
+  a[3] = 4
+
+* New and modified script library functions.
+
+  Mode
+    The second argument can now be a string.
+
+  TouchCell             (new)
+    This function will create a new empty cell with a given name, if a
+    cell with that name does not currently exist in memory. 
+    Optionally, the cell will become the current cell.  This can be
+    much faster than Edit or OpenCell for a cell in memory.
+
+  SetCurLayer
+  NewCurLayer
+    These existing functions now return the index number of the
+    previous current layer.  Previously they always returned 1.
+
+  SetCurLayerFast       (new)
+    This is like SetCurLayer, but does not update anything visual.  It
+    is therefor much faster, but the caller should revert to the
+    original layer, or things in the graphical interface that depend
+    on the current layer will be wrong.
+
+  IsShowSymbolic        (new)
+    Return true if the current cell is being displayed symbolically.
+
+  ShowSymbolic          (bug fixed, now works)
+    Set the symbolic display mode, and the flag in the current cell
+    to either symbolic or not.  Takes care of all updates.
+
+  SetSymbolicFast       (new)
+    This sets the symbolic flag in the current cell, but does no
+    updating.  The user needs to switch back before a redraw or major
+    operation.  Much faster than ShowSymbolic.
+
+  GetTransformString    (new)
+    This new function returns a string describing the current
+    transform in a specific format.  This is the same format used in
+    status line.
+
+  SetTransform
+    The first argument of this existing function can be a string in
+    the format mentioned above.
+
+  Place/PlaceH
+    These functions now take a transform string optional argument.  If
+    the argument is given and not null, it will specify the transform
+    for the instance placement.  In this case, when the UseTransform
+    protocol is in effect, the current transform will be added to the
+    string transform.  Then, instance placements will have the same
+    transformation behavior as geometrical objects.
+
+  The existing interface for managing properties of objects and the
+  current cell was significantly changed.  It was pretty awful as it
+  was, and the new interface is greatly improved.
+
+  If your script uses the old interface, it is now probably broken. 
+  I'm betting that nobody has penetrated deep into the weeds enough to
+  be setting properties from scripts, at least electrical-mode
+  properties.  Physical mode properties may well be ok as is.
+
+  Whiteley Research will update any customer scripts that are broken
+  by this update for free, email Steve for more info.
+
+  The new category is "Property Management" which replaces "Property
+  Management by Handles" and "Other Property Management Functions".
+
+  PrpHandle             (was PrptyHandle)
+    Same as the old function, but does not allow a handle value 0 and
+    does not return current cell properties.
+    
+  GetPrpHandle
+    Same as existing function
+
+  CellPrpHandle         (new)
+    Returns a property handle to current cell properties.
+
+  GetCellPrpHandle
+    Same as existing function.
+
+  PrpNext               (was PrptyNext)
+    Same as existing function.
+
+  PrpNumber             (was PrptyNumber)
+    Same as existing function.
+
+  PrpString             (was PrptyString)
+    Same as existing function.
+
+  PrptyString           (was GetPropertyString and GetProperty)
+    This is not related to the existing PrptyString function.  It
+    replaces the two existing functions mentioned, the first argument
+    can be a property list or object list handle.
+
+  GetPropertyString     (new)
+    Return a property string from a selected object.
+
+  GetCellPropertyString (new)
+    Return a property string for a cell property.
+
+  PrptyAdd
+    Same as existing function, but does not accept handle value 0 or
+    set cell properties.
+
+  AddProperty
+    Same as existing function.
+
+  AddCellProperty
+    Same as existing function, but accepts some additional electrical
+    property types.
+
+  PrptyRemove
+    Same as existing function, but does not accept handle value 0 or
+    remove properties from current cell.
+
+  RemoveProperty
+    Same as existing function.
+
+  RemoveCellProperty
+    Same as existing function.
+
+* Support for current-controlled devices.
+
+  Previously, there was no true support for current-controlled sources
+  and switch devices.  The problem was that the source device
+  reference name had no natural property.  Although there were
+  work-arounds for dependent sources, the current-controlled switch
+  device simply could not work without hiding it in a hand-created
+  subcircuit or similar.  In the Source SPICE function, all of the
+  dependent sources were mapped to simple voltage or current sources,
+  but incorrectly.  Since in WRspice the voltage and current sources
+  take arbitrary functions of node voltages and branch currents, the
+  dependent sources are redundant, and with some hand-editing the
+  extracted schematic could be made to work.  This is, of course, a
+  pain.
+
+  There is now complete support for dependent sources and the current
+  controlled switch.  These devices should now be extracted correctly
+  by Source SPICE without user intervention.
+
+  There is a new "devref" property, whose sole purpose is to take the
+  name of a reference device.  This is a user-specified property, which
+  will have an automatically generated label, similar to other electrical
+  properties.
+
+  The format for the "device keys" has been extended to handle device
+  references.  Although the DeviceKey device library property is retained
+  for backwards compatibility, there is a new DeviceKeyV2 property that
+  allows setting the new data fields.
+
+  In the Source SPICE command, unresolved subcircuit calls are now written
+  as spicetext labels, meaning that the calls will be included in SPICE
+  output.  Previously these would disappear.  A warning is still issued.
+  These are likely to be resolved through a .inc/.lib reference.
+
+* PCell execution.
+
+  While a PCell is executing, the Set/Unset script functions are now
+  locked out, which prevents the PCell from making persistent changes. 
+  The PushVar/PopVar functions, which automatically revert after
+  execution, must be used instead.
+
+* Via connectivity detection in extraction.
+
+  The algorithm that determines whether or not connectivity exists
+  through a via during extraction has been updated.  This is a
+  performance-critical function.  Previously, the default was to run a
+  fast simple test suitable for semiconductor processes, but could
+  give wrong results in cases where vias have complex geometry.  An
+  optional "full test" could handle the latter cases, but was assumed
+  too slow for standard processes.  However, with some slight
+  modification the full test is very close to being as fast as the
+  simple test, and has been made permanent.
+
+  The ViaFullTest variable is no longer recognized.  There is a new
+  boolean variable: ViaConvex
+
+  When set, non-rectangular vias are assumed to be convex polygons,
+  and the connectivity is checked in a small constructed rectangle
+  centered in the figure bounding box, simplifying testing.  This is
+  for Hypres-style circular vias.  Setting this option variable when
+  circular vias are used might cause extraction to run a little
+  faster.  It has no effect on rectangular vias.
+
+  The "Use full via test" check box in the Net Config page of the
+  Extraction Setup panel is now "Assume convex vias", and is tied
+  to this variable.
+
+* New NoToTop boolean variable.
+
+  By default, most if not all Xic sub-windows will rise to the top if
+  completely covered by the Xic main window.  This includes plot
+  windows from WRspice running under control of Xic (however most
+  window managers don't support this).  If this variable is set, the
+  action will be disabled.  This will apply to plot windows from
+  WRspice that is started after the variable is set.
+
+  Some (probably most) window managers will do this automatically for
+  sub-windows, in which case setting this variable will have no effect
+  on the Xic sub-windows, but would still affect WRspice plot windows
+  if the window manager supports this.  The only window manager I know
+  of that supports this is Exceed 2008, because it is old.  The
+  protocol is deemed a security risk and has been disabled in modern
+  window managers for some time.
+
+
+BUGS FIXED
+---- -----
+
+* Instance array bug in several script functions.
+
+  The Dx/Dy array parameters in the Cell Placement Control panel are
+  edge-to-edge spacing.  That is, for a value of zero, the array
+  elements abut.  The interpretation also applies to the inputs to
+  various script functions that generate instance arrays.  This was
+  never really emphasized in the documentation.
+
+  In cell definitions in files, however, instance array spacing is
+  always specified as center-to-center.  In this case, a value of dx
+  or dy set to zero would place all of the elements in the same
+  location, which is not good.
+
+  The Place, PlaceH, PlaceSetArrayParams, and Replace script
+  functions all had a test like
+    if(dx == 0) nx = 1
+  and similar for dy/ny.  That is, if dx or dy is zero, that dimension
+  becomes 1, i.e., no longer an array.  Unfortunately the test was
+  applied to the edge-to-edge spacing, which is wrong.
+
+* The ShowSymbolic script function was not working.
+
+* Fixed various parsing errors in the Source SPICE command.  Opening
+  parenthesis were disappearing, causing syntax errors.
+
+* The GridReg0 keyword (which corresponds to the "last" grid) is no
+  longer written to the tech file.  The keyword is now silently
+  ignored when a tech file is read.
+
+* Eliminated spurious GTK warning when executing keyboard macros.
+
+
+-------------------------------------------------------------------------------
+xic-4.1.8  2/23/2015
+
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Edge snapping change
+
+  The edge snapping now includes objects in expanded subcells, and the
+  boundaries of unexpanded subcells.
+
+* Help buttons added.
+
+  Help buttons were added to the following pop-ups:
+
+    Cell Hierarchy Tree from the Show Tree button in the  Cell menu.
+    Set Display Window from the Zoom button in the View menu.
+    Info from the Info button in the View menu.
+    Write Tech File from the Save Tech button in the Atttributes menu.
+    Color Selection from the Set Color button in the Attributes menu.
+    Layer Editor from the Edit Layers button in the  Attributes menu.
+
+* Color Selection panel changes.
+
+  The Color Selection pop-up has a new Apply button.  Colors in Xic
+  are not actually changed until Apply is pressed.  Previously, colors
+  would be automatically changed if changed in the panel, which made
+  it too easy to make changes unintensionally.
+
+  When Apply is pressed and a layer or attribute color is changed, the
+  main windows and any similar sub-windows will be redrawn.  It the
+  NoPhysRedraw variable is set, the windows won't be redrawn in
+  physical mode, they will always be redrawn in electrical mode. 
+  Previously, there was no automatic window redraw.
+
+* Fill Pattern Editor changes
+
+  The Fill Pattern Editor has new Load and Apply buttons.  These load
+  the pattern from the current layer, or set the pattern in the
+  current layer, respectively.  These supplement the drag/drop which
+  is unchanged.
+
+  The Sample pattern now shows the outlining and cut as currently set
+  with the buttons.
+
+* Fill/color drop actions on layers.
+
+  When a fill pattern or color is drag/dropped on a layer entry in the
+  layer table or layer palette, the main and similar sub-windows are
+  now redrawn, unless in physical mode with the NoPhysRedraw variable
+  set.  Previously, there was no automatic redraw.
+
+* Button 3 actions in layer table and layer palette.
+
+  Over a layer entry, button 3 has the following effects.
+
+  Pressing and holding button 3 with Ctrl and Shift not pressed wil
+  cause the layer color to blink periodically (as before).
+
+  Clicking button 3 with Ctrl pressed and Shift not pressed will set
+  the current layer to to clicked-on layer, and bring up the Color
+  Selection panel.
+
+  Clicking button 3 with Shift pressed and Ctrl not pressed will set
+  the current layer to to clicked-on layer, and bring up the Fill
+  Pattern Editor panel.
+
+  Clicking button 3 with both Ctrl and Shift pressed will set the
+  current layer to to clicked-on layer, and bring up the Tech
+  Parameter Editor panel.
+
+
+BUGS FIXED
+---- -----
+
+* The Place button in the Cell Placement Control panel was not working
+  correctly - pressing it would not enter placement mode.  One would
+  have to press the side menu place button instead.  This bug was
+  introduced in the last release.
+
+* Fixed some ugliness with the Flatten pop-up, it was too narrow for
+  some fonts, cutting off features.  The Current Transform window
+  had the same problem.
+
+* The side menu buttons that produce menus now display tooltips (a
+  pop-up description when the mouse pointer hovers over the button),
+  the same as other buttons.
+
+* The following variables that were new in the last release were not
+  being internally registered and therefor weren't working correctly:
+
+    Drc
+    DrcLevel
+    DrcNoPopup
+    DrcMaxErrors
+    DrcInterMaxObjs
+    DrcInterMaxTime
+    DrcInterMaxErrors
+    DrcInterSkipInst
+
+* Under Gnome in Centos 6 (at least), some of the pop-up windows had
+  the default icon instead of the Xic icon in the title bar.  A fix
+  was found and applied.
+
+
+-------------------------------------------------------------------------------
+xic-4.1.7  2/16/2015
+
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New techfile keyword/variable association.
+
+  There are a number of keywords for use in the technology file that
+  initialize parts of Xic.  There is also a large number of variables
+  that control Xic.  An important initial step in unification of
+  keyword and variable handling was made.  Most variables can now be
+  set from the technology file, using the variable name as a keyword.
+  These variables, if set, will contribute a line in the attributes
+  section of a new technology file being created.
+
+  There is no need to change your existing technology file.
+
+  There are two types of variable:  Booleans and strings.  Boolean
+  variables are either set or not.  String variables are set to
+  some value, or not set.
+
+  In the technology file, to set a variable as a boolean, one can use
+  a line like
+
+  BooleanVariableName y
+
+  which is the same syntax as for setting a boolean techfile keyword.
+  A string variable is set with the form
+
+  StringVariableName some text...
+
+  which will set the variable to whatever text follows it (with
+  leading and trailing white space stripped).  When given in the
+  technology file, the variable name will be recognized without case
+  sensitivity.  In all other contexts, the variable name is
+  case-sensitive.  Only internally-known variables can be set in this
+  way, and there is no ambiguity due to case.
+
+  These lines don't have defaults.  If the variable is set, its value
+  will be printed in the appropriate form when a new technology file
+  is being created.  The options to write defaults as comments, etc.,
+  don't apply, nothing is printed if a variable is not set.
+
+  The new command !attrvars [filename] will generate a list of all
+  possible boolean and string variables that can be set in this way in
+  a file (default name is attrvars.txt).  It is a rather lengthly
+  list.
+
+  In effect, there are now about 250 new technology keywords.
+
+  The following techfile keywords are no longer explicit, they set a
+  variable of the same name (as some did before).  The variables that
+  are new in this release are marked.
+
+    GridNoCoarseOnly    (new)
+    GridThreshold       (new)
+
+    BoxLineStyle        (new)
+    Constrain45
+    LayerReorderMode
+    NoPlanarize
+    RoundFlashSides     (new, also ElecRoundFlashSides)
+
+    MergeOnRead         (MergeInput)
+    InToLower
+    OutToUpper
+
+    AntennaTotal
+    SubstrateEps
+    SubstrateThickness
+
+    Drc                 (new)
+    DrcNoPopup          (new)
+    DrcLevel            (new)
+    DrcMaxErrors        (new)
+    DrcInterMaxObjs     (new)
+    DrcInterMaxTime     (new)
+    DrcInterMaxErrors   (new)
+    DrcInterSkipInst    (new)
+
+  The MergeOnRead keyword used to set a variable named MergeInput. 
+  This parameter, if used in a tech file, should be renamed to
+  "MergeInput".  However, MergeOnRead will still work, but is not
+  documented.
+
+  The MaxRoundSides variable has been removed, since it is no longer
+  used.
+
+* Separate "sides" for electrical and physical modes.
+
+  One can now specify the number of sides used to approximate round
+  objects separately in electrical and physical modes.  Previously
+  there was one parameter for both.
+
+  For physical mode, the variable is RoundFlashSides, which can be set
+  from the sides button in the side menu.  For electrical mode,
+  ElecRoundFlashSides is the variable, which can be set from the "sides"
+  entry from the menu displayed by the shapes button in the side menu.
+  Both can be set in the range 8-256 and the values default to 32 when
+  the variable is not set.
+
+* Starting now, new Apple licenses will key to the machine ID only,
+  and will ignore the host name.  This will avoid problems with DHCP
+  assigning host names.  The ID uniquely identifies the machine, so
+  that the host name is redundant anyway.  Old licenses will continue
+  to work, but will (as now) require the configured host name.
+
+  Apple users can get a new license file upon request.
+
+  Why isn't this also a problem on Windows?  Because the Windows DHCP
+  client does not support host name changes!  Microsoft brain-deadness
+  makes things easier, for once.
+
+* Grid Setup panel change
+
+  Help button added.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed a buffer overrun problem when translating native cell files
+  directly to an archive file.  If the cell files use layer names
+  longer than 7 characters, the buffer would overrun.  Thus,
+  Generation 3 cell files would be fine, but newer files that use long
+  layer names would cause trouble.
+
+* Fixed a buffer overrun problem in the File Selection panel.  File
+  names longer than 62 characters would cause trouble, if ever listed
+  in the file listing window.
+
+* When using the Conversion panel to directly convert the native cells
+  in the current directory to an archive, so that the source directory
+  is ".", the suggested new file name on the prompt line is now (for
+  example) "newfile.gds" instead of ".gds".
+
+* The Global Attributes editing from the Tech Parameter Editor in the
+  Attributes menu was discarding the new value and not changing the
+  parameter.
+
+
+-------------------------------------------------------------------------------
+xic-4.1.6  2/9/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Graphical interface changes.
+
+  1.  The Current Transform and Place buttons have been moved out of
+  the Edit menu, to buttons at the top of the side menu, both
+  electrical and physical.  These replace the identity transform and
+  last transform buttons, which are gone (the functionality is
+  available from the Current Transform panel brought up by the new
+  side menu button.
+
+  The Current Transform panel has new acceleration logic:  if the
+  current transform is not identity, when the panel appears, focus
+  goes to the Identity button, and if pressed focus goes to the
+  Dismiss button.  Thus, pressing Enter twice will set identity.  If
+  the current transform is identity, focus goes to the Last Transform
+  button, then Dismiss.  The accelerator for the side menu button
+  that brings up the Current Transform panel is "xf", and the button
+  name is "xform",
+
+  The Current Transform panel was revised slightly making it more
+  compact, and a Help button was added.
+
+  2.  Change to the button 3 zoom operation.  Now, dragging or
+  clicking twice with button 3 have the same effect, which is to zoom
+  in to the rectangle defined by the two coordinates.  Previously,
+  only clicking twice did this - dragging produced a transient dotted
+  rectangle for a subsequent zoom in/out operation with another button
+  click.
+
+  Now, in either the drag or click-twice case, if Ctrl or Shift is
+  down when the second point is defined, the dotted box is produced as
+  in the previous drag.  In this case, clicking outside of the dotted
+  box in the same window will zoom in, expanding the content of the
+  dotted box to the click location.  clicking inside of the dotted box
+  will zoom out, shrinking the contents of the dotted box to the new
+  click locations.  If the click is in a different drawing window, the
+  dotted box contents will be shown in that window.
+
+  3.  The display is now redrawn after a layer visibility change in
+  physical mode, unless the new boolean variable NoPhysRedraw is set. 
+  Historically, the redraw was suppressed in physical mode, since it
+  may take some time to redraw the screen, and one may want to make
+  several layer visibility changes.  With modern hardware, the screen
+  displays very quickly in most cases, so that this "feature" is
+  mostly an annoyance.  Setting the new NoPhysRedraw will revert to
+  the legacy behavior, if desired.
+
+  Shift-button 2 suppresses redraw when clicking on a layer sample in
+  the layer table, which toggles visibility, except when the variable
+  is set, when it will force a redraw.
+
+  4.  The vis and sel icon fields at the bottom of the layer table are
+  now visible all of the time.  The corresponding buttons in the top
+  button row above the layer table are therefor redundant and have
+  been removed. 
+
+  5.  There is a new "rdraw" button to the left of the coordinate
+  display, which will redraw the main window and any sub-windows
+  showing the same display mode as the main window.  This has a red
+  square icon (red for redraw).
+
+  6.  New icons, not only for the new buttons, but for some existing
+  ones, too.
+
+  7.  The key combination Ctrl-Shift-up arrow increases the subcell
+  expansion depth.  Ctrl-Shift-down arrow decreases the expansion
+  depth.  Previously these has the same effect as the right and left
+  arrows, which cycle through the last five window views.
+ 
+* New math functions in the scripting library.
+
+  The following math functions have been added to the script function
+  library.
+
+  cbrt(x)       Cube root of x.
+  erf(x)        Error function.
+  erfc(x)       Complementary error function.
+  j0(x)         Bessel function order 0
+  j1(x)         Bessel function order 1.
+  jn(x, n)      Bessel function order n.
+  y0(x)         Bessel function second kind order 0.
+  y1(x)         Bessel function second kind order 1.
+  yn(x, n)      Bessel function second kind order n.
+
+
+BUGS FIXED
+---- -----
+
+* In schematics, the automatically generated node numbers given to
+  connections between subcircuits that have no wire should now be
+  consistent run-to-run.  This really wasn't a problem, as all
+  internal referencing is consistent, just a little surprising
+  that they change.
+
+* Addressed some window placement issues seen only on OpenSuse 13.1,
+  but could possibly be affecting other operating systems.  I don't
+  know if this is a problem with gtk (2.24.23) or with the KDE window
+  manager, or both.  If a window contains a group box containing check
+  boxes, then the window will ignore the placement directive and will
+  appear at some random location on-screen.  Strange.
+
+* Fixed a bug that would prevent random file access of layout files
+  containing electrical data in some cases.
+
+* Fixed subtle logic incorrectness in the devs button in the
+  electrical side menu.  The button now stays pressed when the user
+  changes the menu style.
+
+
+-------------------------------------------------------------------------------
+xic-4.1.5  1/29/2015
+
+A "major milestone" with this release - the total manual pages has
+passed 1000!
+
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Changes to the Attributes Menu, Window Attributes panel.
+
+  The Set Cursor button in the Attributes menu is gone.  The cursor
+  selection has moved to the Window Attributes panel, produced by the
+  Set Attributes button in the Attributes menu.  The edge snapping
+  control has moved to the Grid Setup panel.
+
+  The Window Attributes panel is now paged, to reduce screen size
+  and organize the controls.  The tab names are General, Phys Props,
+  Terminals, Labels.  The cursor control that used to be in the
+  Cursor Modes panel is now in the General page.  The other controls
+  previoulsy existed in the Windows Setup panel.
+ 
+* Major update to the edge snapping capability.
+
+  The edge snapping feature allows the mouse cursor to snap to edges of
+  nearby geometry, potentially even if off-grid.  This feature has been
+  enhanced in this release.
+
+  Previously, the status applied to all drawing windows, and was
+  controlled by variable named EdgeSnapMode, which was tied to an
+  option menu in the Cursor Modes panel from the Set Cursor button in
+  the Attributes menu.
+
+  Now, edge snapping can be set independently in each drawing window. 
+  The EdgeSnapMode variable is no longer used or recognized by Xic. 
+  The Cursor Modes panel and Set Cursor button in the Attributes menu
+  are gone (more about that below).  The edge snapping mode is now
+  controlled from the Grid Setup panel.
+
+  It is now possible to snap to non-manhattan edges.
+
+  It is now possible to snap to the outer edge of wires, and/or to the
+  path that defines the wire.
+
+  There is a new EdgeSnapping techfile keyword, which will set the
+  edge snapping state of the main window.  Sub-windows will inherit the
+  main window edge snapping state, but the state can be changed in
+  the sub-window.
+
+  New techfile keyword:
+    EdgeSnapping [none|some|all] [+|-off_grid] [+|-non_manh] [+|-edge_of_wire]
+      [+|-path_of_wire]
+  Default is effectively
+    EdgeSnapping some -off_grid -non_manh +edge_of_wires -path_of_wires
+
+  Only the first letter of the keywords is needed.  The first word
+  specifies when edge snapping is enabled:
+    none    not enabled
+    some    enabled in some commands (the default)
+    all     always enabled
+
+  The remaining items are flags that must start with a + or - character.
+  The + turns the option on, the - turns the option off.
+
+  There is a new Edge Snapping script function group that includes the
+  following new functions.  These get and set the edge snapping mode
+  and flags for a window.
+
+    SetEdgeSnappingMode(win, mode)
+    SetEdgeOffGrid(win, off_grid)
+    SetEdgeNonManh(win, non_manh)
+    SetEdgeWireEdge(win, wire_edge)
+    SetEdgeWirePath(win, wire_path)
+    GetEdgeSnappingMode(win)
+    GetEdgeOffGrid(win)
+    GetEdgeNonManh(win)
+    GetEdgeWireEdge(win)
+    GetEdgeWirePath(win)
+
+* Update to the Grid Setup panel.
+
+  The Grid Setup panel is obtained from the Set Grid button in the
+  Main Window sub-menu of the main window Attributes menu, or from the
+  Set Grid button in the Attributes menu of sub-menus.  It is also
+  obtained by pressing Ctrl-g when a drawing window has the keyboard
+  focus.
+
+  The panel is now paged.  There are two tabs:  Snapping and Style. 
+  The Snapping page, shown initially by default, contains the Snap
+  Spacing and SnapPerGrid controls which set the grid shap points. 
+  These are unchanged from the original Grid Setup panel.  Below these
+  is a new Edge Snapping control group, where the edge snapping
+  feature may be controlled.  The group contains an option menu with
+  options
+
+    Disabled
+    Enabled in some commands
+    Enabled always
+
+  There are four check boxes:
+
+    Allow off-grid snapping
+    Include non-Manhattan edges
+    Include wire edges
+    Include wire path
+
+  When the panel first appears, the initial keyboard focus is now to
+  the Snap Spacing entry.  Thus, text typed will go to this entry. 
+  Pressing Enter when a text entry has the focus now calls the Apply
+  callback and sets focus to the Dismiss button, where another Enter
+  press will dismiss the panel.  So, to quickly change the grid
+  spacing from the keyboard only, one can type
+
+      Ctrl-g (adjust number) Enter Enter
+
+  The Style page contains controls mostly familiar from the previous
+  panel design, with two new additions in an "All Windows" group. 
+  Unlike other controls in the panel, these controls apply to all
+  drawing windows.  The control group appears only in the panel for
+  the main drawing window, and is absent in the Grid Setup panels for
+  sub-windows.
+
+  The "No coarse when fine invisible" will turn off the grid display
+  in physical mode if the fine grid is too fine.  This is always true
+  in electrical mode, and was always true in Xic until recently.
+  The default behavior now is to still show the coarse grid only if the
+  fine grid is too fine, but the coarse grid is not too fine.
+
+  The Visibility Threshold entry sets the number of screen pixels below
+  which the grid is too fine and won't be shown.
+
+  There are two new techfile keywords corresponding to these entries:
+  GridNoCoarseOnly (boolean)
+  GridThreshold (integer 4-40)
+
+* Update to the Rulers command
+
+  The ruler creation command entered from the Rulers button in the View
+  menu has been enhanced.
+
+  The command has its own edge snapping defaults.  The default is that
+  edge snapping and all edge snapping flags are enabled.  These can be
+  changed, while in the command, from the Snapping page of the Set Grid
+  panel.  The defaults themselves can be set from the technology file
+  with new keywords.
+
+  New techfile keywords:
+
+    RulerEdgeSnapping (same format as EdgeSnapping)
+    RulerSnapToGrid (boolean)
+
+  The RulerSnapToGrid sets the initial state of the grid snapping
+  option in the command, which can be toggled in the command by
+  pressing the period ('.') key.  This state was previously saved in a
+  variable named RulerSnapToGrid, which is no longer used or
+  recognized in Xic.
+
+  There are a number of new script functions which set or query the
+  ruler command defaults:
+
+    SetRulerSnapToGrid(snap)
+    SetRulerEdgeSnappingMode(mode)
+    SetRulerEdgeOffGrid(off_grid)
+    SetRulerEdgeNonManh(non_manh)
+    SetRulerEdgeWireEdge(wire_edge)
+    SetRulerEdgeWirePath(wire_path)
+    GetRulerSnapToGrid()
+    GetRulerEdgeSnappingMode()
+    GetRulerEdgeOffGrid()
+    GetRulerEdgeNonManh()
+    GetRulerEdgeWireEdge()
+    GetRulerEdgeWirePath()
+
+* More new script functions
+
+  Some new script functions for creating round and half-round objects.
+
+    Round
+    RoundH
+    HalfRound
+    HalfRoundH
+
+* Update to the round/donut/arc commands.
+
+  In the round/donut/arc commands, which are found in the physical
+  mode side menu, one can now press Enter and be prompted for the
+  value currently being set:  radius1, radius2, start angle, end
+  angle.
+
+  When entering a radius, one can enter two numbers (separated by space)
+  which will be interpreted as X and Y radii, producing an elliptical
+  shape if different.  If only one number is entered, the shape will be
+  circular.
+
+  The elliptical aspect ratio of the inner and outer surfaces of a donut
+  or arc shape can now be different.  For arcs, the angle parameter is
+  now properly interpreted for elliptical shapes.
+
+* Update to the spin command.
+
+  In spin command, found in the physical mode side menu, one can press
+  Enter to enter the rotation angle.  One can quickly rotate selected
+  objects using mostly or all keyboard commands:
+
+  select objects
+  type "spin" or press button to enter the spin command
+  click or use Ctrl-e to define the rotation origin
+  press Enter and enter the rotation angle, then Enter
+  press Enter, this causes the objects to be rotated about the origin.
+
+* The !ro command has been renamed !spin.
+
+  The name of the !ro command was changed to !spin, since it is
+  similar to the spin physical side-menu command (with "spin" as
+  accelerator), and might be confused with "ro" which is the
+  accelerator to generate a round object.
+
+* Misc.
+
+  In electrical mode, when the fine grid is too fine, both the fine
+  and coarse grid are now not shown.  This is as it used to be before
+  a few releases ago when the logic changed to show only the coarse
+  grid when zoomed out.  This seems to be of little value in
+  electrical mode.
+
+  The File Select and Open buttons have traded place in the File menu. 
+  The File Select button now has a Ctrl-o accelerator (used to be
+  Alt-z).  The positioning and accelerator are now common with WRspice.
+
+
+BUGS FIXED
+---- -----
+
+* Mutual inductors have apparently been broken for some time.  Xic
+  would fail to correctly read mutual inductors in old files, causing
+  the mutual coupling to be lost.
+
+* Improved operation with second monitor, particularly on the Mac. 
+
+  This still has issues in OS X, X-Quartz does not handle this well.
+
+  Windows were not appearing.  I found the graphics call that was
+  failing and instituted a work-around where needed.  This should
+  prevent windows from never appearing.
+
+  The main problem at present appears to be that the program may not
+  come up on the right monitor when started from a Terminal window.
+  It seems to work correctly when started from an xterm, meaning that
+  the program appears on the name screen as the xterm.
+
+  All pop-up windows from the program should appear on the same screen
+  as the main window.  There may be problems dragging pop-up windows
+  to another screen - they may disappear!  This is a well-known issue
+  in X-Quartz, who point at internal interface changes made by Apple.
+  If you drag the main application to a new screen first, then drag
+  the pop-ups, it seems to work.
+
+* In the File Selection panel, double clicking on a name in the files
+  list would spuriously start a drag operation.
+
+* If the iplot electrical side-menu button is active and a new cell is
+  edited, at least by drag/drop from the File Manager, the button would
+  remain active, but no iplot would be shown during simulation.  The
+  button is now deactivated as it should be.
+
+* For a dot grid, the logic when showing coarse only was incorrect,
+  dots were improperly printed at fine-grid increments,
+
+
+-------------------------------------------------------------------------------
+xic-4.1.4  1/9/2015
+
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Script function and layer expression syntax changes
+
+  In scripts and layer expressions, the operator-equivalent keywords
+    gt lt ge le ne eq or and not
+  are now case-insensitive, previously only lower case was recognized.
+
+  In layer expressions "xor" is now recognized as equivalent to the
+  exclusive-or operator '^', case-insensitive.
+
+  In layer expressions, the "not" keyword now maps to a binary minus
+  when used in binary-operator context.  Thus the following are
+  equivalent:
+    A not B
+    A - B
+    A &! B
+
+* Updates to Design Rule Checking system
+
+  There is a new Exist design rule.  This will flag a violation for
+  any object that exists on a layer with this rule.  This can be given
+  to a derived layer that represents a layer combination or operation
+  result that should never occur.
+
+  The DRC Menu has changed a bit.  The button order has changed
+  slightly, and top entry is now "Setup", which (as before) brings up a
+  panel (now called DRC Parameter Setup) from which various parameters
+  and limits can be set.  The panel contains new layer and rule
+  filtering capability.  These allow control over which layers and
+  rules are tested during a DRC run, much more conveniently than
+  setting the inhibit flags for each rule.
+
+  The layer and rule filtering make use of the following new variables:
+    DrcLayerList
+    DrcUseLayerList
+    DrcRuleList
+    DrcUseRuleList
+
+  It is now possible to set the maximum number of errors to record
+  before returning in interactive DRC via the panel.  This can be set
+  in the technology file with the new DrcInterMaxErrors keyword.
+
+  See the help for this panel (keyword xic:limit) for complete info.
+
+  The Check in Foreground and Check in Background menu buttons have
+  been replaced with a single Batch Check button, which brings up a
+  new DRC Run Control panel.  The panel contains a number of settings
+  for new features, which are a bit experimental at this point.  See
+  the help on the panel (keyword xic:check) for complete information. 
+  The panel provides buttons to initiate foreground and background
+  jobs, and a page for listing and possibly terminating background
+  jobs.
+
+  On such feature is the ability to run DRC sequentially in areas of a
+  grid that tiles the layout.  This may have memory use or performance
+  advantages in certain cases.  This feature makes use of the new
+  variable DrcPartitionSize.
+
+  When identifying the parts of an object edge where to construct a
+  test region in one of the "edge" tests, it is now possible to
+  constrain the active part of the edge based on an arbitrary layer
+  expression, just inside of just outside of the edge.  The rules now
+  accept new Inside and Outside keywords (each followed by a layer
+  expression or layer name) in the technology file.  Corresponding
+  entries have been added to rule editing panels for these rules. 
+  This is a bit obscure, see the documentation for a complete
+  discussion and examples of when this might be useful.
+
+* New and modified script functions
+
+  (zoidlist) ExtentZ(zoidlist)
+  In layer expressions: extent()
+
+  The ChdWrite script function can now "write" to the main database.
+
+  (zoidlist) DrcZlist(layername, rulename, index, source)
+  In layer expressions: drcZlist()
+
+  (zoidlist) DrcZlistEx(source, target, inside, outside, incode, outcode, dim)
+  In layer expressions: drcZlistEx()
+
+  The DRCchdCheckArea function has new "flatten" boolean argument.
+
+  The DRCsetLimits and DRCgetLimits functions are now deprecated in favor
+  of the following new functions:
+  (int) DRCsetMaxErrors(value)
+  (int) DRCgetMaxErrors()
+  (int) DRCsetInterMaxObjs(value)
+  (int) DRCgetInterMaxObjs()
+  (int) DRCsetInterMaxTime(value)
+  (int) DRCgetInterMaxTime()
+  (int) DRCsetInterMaxErrors(value)
+  (int) DRCgetInterMaxErrors()
+  (int) DRCsetInterSkipInst(value)
+  (int) DRCgetInterSkipInst()
+
+* Misc. interface changes
+
+  -  When in a command mode (the Mode entry in the status line is not
+  "Idle"), and you press the ?  key followed by Enter, a help window
+  describing the mode will appear, thus ?  without a following keyword
+  is now context sensitive.  For example, start the box command by
+  pressing the button in the side menu.  Then give ?  followed by
+  Enter.  The help on the box command will pop up.  Previously, the
+  top-level topic would appear.  The functionality of the Help button
+  in the Help Menu and the !help command have not changed, the
+  context-sensitivity applies only to ?.
+
+  -  A Ctrl-C break can now be detected over all Xic windows, not just
+  drawing windows.
+
+  -  Errors from the X-Windows system no longer terminate the program.
+
+  -  In the Ruler command, the exact length of the ruler is now printed
+  when a ruler is created.  This can be useful for precise measurement
+  of the distance between two points.  The Ruler command now
+  integrates with the edge snapping mechanism, and the little "snap
+  box" now follows the cursor when grid snapping is off.
+
+  -  In the !layer command, option characters can now be grouped,
+  previously these were required to be given as separate tokens.
+
+  -  In the technology file, the DerivedLayer keyword now supports
+  optional split/splith/splitv/join keywords before the layer
+  expression, in the manner of the !layer command.  These control how
+  the geometry is represented when the layer is evaluated.
+
+  -  In the AddDerivedLayer script function, the expression can also
+  contain one of these leading keywords.
+
+
+BUGS FIXED
+---- -----
+
+* The Cell Hierarchy Digest (CHD) default cell name configuration was
+  broken.
+
+* Exiting the Ruler command without ever pressing mouse button 1 would
+  potentially cause a fault.
+
+* Strange prompt line behavior when the line contains both hypertext
+  and regular text was fixed.  After an expose, fictitious extra
+  characters would be displayed after the end of the string.
+
+* Mouse wheel panning/zooming could trash the display for complicated
+  displays that take some time to draw.  Events are now properly
+  locked out until drawing is finished.
+
+* In CHD display mode, if the top cell was scrolled off-screen, a
+  cryptic error message would pop up and nothing would be drawn. 
+  Now, there is no message and the grid is shown, as one would
+  expect.
+
+* Fixed a bug affecting opening cells with electrical data through a
+  CHD that has electrical data, would crash the program.
+
+
+-------------------------------------------------------------------------------
+xic-4.1.3  12/9/2014
+
+Oops, sorry.
+Re-release to fix a stupid error that caused Xic to not be able to
+locate the license file in local authentication mode unless it is in
+the current or home directory.
+
+
+-------------------------------------------------------------------------------
+xic-4.1.2  12/8/2014
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New feature: derived layers
+
+  Internal support for a new "derived layer" type was added, along
+  with a derived layer database.  Derived layers can now be read from
+  and saved to an Xic technology file using the new DerivedLayer
+  keyword.  The derived layers from a Virtuoso technology file will be
+  saved, and regurgitated when using !dumpcds to write a Virtuoso
+  ASCII technology file.
+
+  The DRC system can now use derived layers.  Rules can be defined on
+  derived layers, and derived layers can be used as target
+  expressions.  The DRC system will take care of the evaluation
+  required to create geometry for the derived layers, and subsequent
+  clearing.
+
+  Derived layers can be adopted for other purposes through a set
+  of script interface functions:
+    AddDerivedLayer
+    RemDerivedLayer
+    IsDerivedLayer
+    GetDerivedLayerIndex
+    GetDerivedLayerExpString
+    GetDerivedLayerLexpr
+    EvalDerivedLayers
+    ClearDerivedLayers
+
+  Most of the functions in the Layer group will set or query a
+  parameter on a derived layer if a derived layer name is given.
+
+  Derived layers will be recognized in layer expressions, so can be
+  used to create normal layers which, unlike derived layers, are
+  visible.
+
+  This is an important new capability which will be extended in
+  future releases.
+
+* Update to design rule checking.
+
+  Long-overdue attention was paid to the DRC system.  Expect further
+  improvements over time.
+
+  The NoHoles and Connected tests now use regional inversion which
+  can be much faster for complex designs.
+
+  The MinSpace and MinSpaceTo rules can now use one or two dimensional
+  spacing tables, similar to Virtuoso.  The technology file syntax for
+  these rule definitions has been extended to include spacing table
+  definitions.  There is now a pop-up spacing table editor available
+  from the panels that set up these rules.
+
+  The comment field syntax was extended to support multiple separate
+  comment strings.  The Xic rules may actually represent several
+  OpenAccess constraints, each with a separate comment.
+
+  The MinSpaceFrom rule now handles Enclosed and Opposite variations. 
+  Both variations require that the object be covered completely by the
+  target, with a specified minimum distance between outside edges
+  (which can be zero).  The Opposite variation applies to rectangles,
+  and allows a smaller enclosure if two opposite sides have a larger
+  enclosure.  Opposite with both values the same is equivalent to
+  Enclosed, and corner tests are done.  Otherwise Opposite skips
+  corner tests.
+
+  Derived layers can be used the same as normal layers in design
+  rules, and design rules can be applied to derived layers.
+
+* Update to !dumpcds (Cadence-compatible export) command.
+
+  The !dumpcds command creates Virtuoso-compatible technology and
+  display resource files, based on the current state of the Xic
+  technology settings.  More of the Cadence Virtuoso v6 technology
+  nodes are produced now, including constraints representing design
+  rules.
+
+* Enhancements to built-in updating facility.
+
+  While a distribution file is being downloaded during use of the
+  !update command:
+  - The cursor style now changes to the "wait" cursor (system
+    dependent style).
+  - The bytes read and total bytes are now printed on the prompt line
+    and updated during the download.
+  - The download can now be stopped with Ctrl-c.
+
+  It wasn't mentioned before, but under Windows there is no longer a
+  need to execute the downloaded exe file manually.  This will be done
+  automatically on program exit.
+
+* Internal infrastructure updates.
+
+  Rewrote the StreamIn/Out GDSII layer/datatype to Xic layer mapping
+  implementation, since it was a dumb approach that used too much
+  memory.
+
+  Update to the undo system.  The system should be a little smarter
+  about detecting changes.
+
+  The set of script functions that set and access technology
+  parameters and flags for the extraction system is now available in
+  feature sets where the extraction system is not availble.  This
+  reflects the availability of the corresponding technology file
+  keywords that are already available for all feature sets.
+
+* Miscellaneous
+
+  The fat outline can now be used with stippled fill patterns for
+  object display.
+
+  New script funcs:
+    SetLayerExKeyword
+    RemoveLayerExKeyword
+    IsLayerDielectric
+
+
+BUGS FIXED
+---- -----
+
+* The !update command would probably not work under Apple until this
+  release.
+
+* The messages printed by the !update command under Windows were not
+  quite right, but the system worked.
+
+* Misc. fixes in the DRC system.
+
+
+-------------------------------------------------------------------------------
+xic-4.1.1  10/29/2014
+
+Welcome to the first beta-test release of Generation 4 Xic.  The following
+changes are relative to the 4.0.9 release, the last of the alpha series.
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New xic.dll in Windows.
+
+  The Windows release now places virtually all of the Xic code into a
+  DLL, which is now called from an executable stub to run the program. 
+  This will allow plug-in support to be added eventually.  Poor design
+  of Microsoft software requires this architecture for full shared
+  library support.  The WRspice program also uses this architecture,
+  to support device model plug-ins.
+
+* Error/warning message system audited.
+
+  Error and warning handling was centralized.  Most errors and
+  warnings are now logged, meaning that the message is assigned a
+  sequence number and is written to the error log file.  This avoids
+  messages getting "lost", as would happen previously with unlogged
+  messages.  If several unlogged messages were generated, only one
+  window would appear, and contain only the last message emitted. 
+  Now, the window will show the last few messages emitted.
+
+  The pop-up windows used for error messages now contain a button that
+  when pressed will display the error log file in a separate file
+  browser window.
+
+* 3-D trapezoid database changes.
+
+  New variable:  Db3ZoidLimit (integer >= 1000, default 10000)
+
+  This sets the total trapezoid count limit of geometry to save in the
+  3-D database.  If the limit is exceeded, the operation (cross
+  section generation, or capcitance/inductance extraction) will be
+  aborted.
+
+  The database is not efficient for large collections, and if given
+  too much to process, there will be long periods of unresponsiveness.
+  The limit avoids this, when inadvertent.
+
+  The database now spatially sorts objects in storage, which speeds up
+  operations somewhat.
+
+* Script interpreter changes.
+
+  The number parser used to parse numbers in scripts recognizes the
+  SPICE multiplier suffixes, i.e., "numbers" like 1K, 2.2g, etc.  are
+  recognized.  This change was actually made several releases ago as a
+  test, that somehow did not get reverted in the release and was not
+  documented.
+
+  The ToReal function now uses the SPICE number parser.
+
+  New ToStringA function, which will print a number in a string using
+  SPICE suffix multipliers.
+
+* Logging Options panel change
+
+  In the Logging Options panel (from the Help Menu),
+    "RLC extraction (Fast[er]Cap/FastHenry interfaces)"
+  is now
+    "3-D processing(Cross Sections, C and LR extract)"
+
+  This is available in all feature sets.
+
+* Got rid of "preferences" example script.
+
+  Moved the preferences.scr script from /scripts to /examples.  This
+  is obsolete for the most part, but illustrates how to use forms in
+  scripts.
+
+  There is a new /scripts/paths.scr which, similar to the old script,
+  allows editing the search paths.
+
+* Support for parameterized cell parameter constraints implemented.
+
+  The present implementation does not use the "pc_constr" property
+  that was defined for this use, this property number is no longer
+  reserved for this purpose.  This property is no longer listed in
+  the Cell Property Editor menus.
+
+  Instead, the syntax entension to the "pc_params" property, found
+  in the super-master, defines the constraints.  This extension is used
+  only in the super-master.
+
+  The Parameters pop-up now uses the constraints, if any, when setting
+  up the input widget for the parameter.  This will restrict the input
+  to allowed values only.
+
+  Made sure all error returns produce a pop-up message (wasn't
+  happening before).
+
+* Parameterized cell handling improvements.
+
+  Some improvement/fine tuning of the pcell code was done.
+
+  There is now an "official" way to return error codes from native,
+  Python, and Tcl pcell scripts.  Xic will now recognize the error
+  return and not place a bad pcell instance.  Constraints are now
+  recognized and incoprporated into the sliders used for stretch
+  handles.
+
+  The example pcells have been rewritten to illustrate use of
+  constraints and error returns.
+
+  New Md5Digest script function
+  New !md5 command.
+  New "@MD5 digest" in pc_script property
+
+  The script function and command will generate a checksum of a file. 
+  This checksum can be provided in a parameterized cell that obtains
+  its script from a separate file.  If given, the script file must
+  match the checksum.  This ensures that the correct script will be
+  used.
+
+  New !pcdump command
+      This prints the default parameters and constraints for all pcells
+      that have been evaluated in the session.
+
+  New script functions:
+      CheckPCellParam
+      CheckPCellParams
+
+  These check parameters against the constraints.
+
+  The auto-abutment support has been updated and improved, with new
+  documentation.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed a problem with window redrawing when the main window is resized.
+
+* Prevented the Cross Section command from hanging the program.
+
+  There is now a limit on the number of raw trapezoids handled by the
+  3-D database (cross section command, capacitance/inductance
+  extraction).  Previously, one could click twice in the Cross Section
+  command at the top-level of a complex design, which would completely
+  overwhelm the database and would take who-knows-how-long to process. 
+  Worse, the call is made when the server grab is active, so that the
+  entire desktop, not just Xic, is unresponsive.  The only way out is
+  to log in from another terminal and kill the Xic process.  The call
+  is no longer made with the server grab in force, and the call will
+  now never try to process too much data (at least by default).
+

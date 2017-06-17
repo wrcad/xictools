@@ -1,0 +1,359 @@
+#######################################################################
+# xic/bin/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 5.150 2015/12/08 21:59:30 stevew Exp $
+#######################################################################
+
+DATE = @DATE@
+GFX_VERSION = @GFX_VERSION@
+
+# NOTE: "make depend" builds the symbolic links, which must be done
+# before programs can be built.
+
+prefix = @prefix@
+CXX = @CXX@
+CC = @CC@
+LINKCC = @LINKCC@
+CFLAGS = @CFLAGSG@ @DYNAMIC_LIBS@ @NEEDINT64@ @UFLAGS@
+LFLAGS = @LFLAGS@ @TOOLKITLFLAGS@ @UFLAGS@
+LSHFLAG = @LSHFLAG@
+LIBS = @LIBS@ @TOOLKITLIBS@ @EXTRALIBS@
+STDCLIB = @STDCLIB@
+OSNAME = @OSNAME@
+ARCH = @ARCH@
+DIST_SUFFIX = @DIST_SUFFIX@
+GRPREF = @GRPREF@
+TOOLKIT = @TOOLKIT@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ @NEEDINT64@
+INSTALL = @INSTALL@
+NTSUFFIX = @NTSUFFIX@
+FILTER = @FILTER@
+MALLOC = @MALLOC@
+NTREGEX = @NTREGEX@
+OA_SUBDIR = @OA_SUBDIR@
+DLL_XIC_PROG = @DLL_XIC_PROG@
+NODLL_XIC_PROG = @NODLL_XIC_PROG@
+TOOLROOT = @TOOLROOT@
+WINPTHREADFIX = @WINPTHREADFIX@
+
+XIC_PROG = xic
+SPICE_PROG = wrspice
+BUG_ADDR = xic@wrcad.com
+
+INSTALL_BIN    = $(INSTALL) -s -c -m 0755
+INSTALL_SCRIPT = $(INSTALL) -c -m 0755
+INSTALL_LIB    = $(INSTALL) -c -m 0644
+INSTALL_LIB_RO = $(INSTALL) -c -m 0444
+
+LPATH = ../../xt_base
+GRAPHICS = $(LPATH)/ginterf/ginterf.a
+MISCUTIL = $(LPATH)/miscutil/miscutil.a
+HTTPGET = $(LPATH)/miscutil/httpget
+SECURE = ../../secure/secure.a
+
+INCLUDE = -I../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil -I../../secure
+TARGETS = $(XIC_PROG) wrencode wrdecode wrsetpass
+
+SUBDIRS = \
+  ../src/$(GRPREF)xic ../src/cd ../src/display ../src/drc ../src/edit \
+  ../src/extract ../src/fileio ../src/geom ../src/main ../src/parser \
+  ../src/sced ../src/wrspif ../src/sparse ../src/tech $(OA_SUBDIR)
+
+APP_LIBS_BASE = \
+  ../src/$(GRPREF)xic/$(GRPREF)xic.a ../src/cd/cd.a ../src/display/display.a \
+  ../src/fileio/fileio.a ../src/geom/geom.a ../src/main/main.a \
+  ../src/parser/parser.a ../src/sparse/sparse.a ../src/wrspif/wrspif.a \
+  ../src/tech/tech.a
+
+APP_LIBS_XIC = \
+  ../src/edit/edit.a ../src/sced/sced.a ../src/drc/drc.a \
+  ../src/extract/extract.a
+
+all:  $(TARGETS) plugins
+
+#--------------------
+# The first two targets are for Windows, create xic with everything in
+# a DLL, so that we can link plugins against the DLL.
+
+$(DLL_XIC_PROG): main.cc $(XIC_PROG).dll
+	$(CC) -o $(XIC_PROG) main.cc ../src/gtkxic/resource.o -L. -l$(XIC_PROG)
+
+$(XIC_PROG).dll: $(XIC_PROG).o $(SECURE) $(APP_LIBS_BASE) $(APP_LIBS_XIC) \
+  $(GRAPHICS) $(MISCUTIL) $(NTDGBOBJ) $(MALLOC) $(OA_SUBDIR)
+
+	@echo $@: dynamic link
+	@$(LINKCC) $(LSHFLAG) -o $(XIC_PROG).dll $(LFLAGS) $(XIC_PROG).o \
+  $(SECURE) $(APP_LIBS_BASE) $(APP_LIBS_XIC) \
+  $(APP_LIBS_BASE) $(APP_LIBS_XIC) $(GRAPHICS) \
+  $(MISCUTIL) $(NTREGEX) $(LIBS) $(MALLOC) $(STDCLIB)
+
+#--------------------
+
+$(NODLL_XIC_PROG): $(XIC_PROG).o $(SECURE) $(APP_LIBS_BASE) $(APP_LIBS_XIC) \
+  $(GRAPHICS) $(MISCUTIL) $(NTDGBOBJ) $(MALLOC) $(OA_SUBDIR)
+	-@echo $@: dynamic link;
+	-@$(LINKCC) -o $(XIC_PROG) $(LFLAGS) $(XIC_PROG).o \
+  $(SECURE) $(APP_LIBS_BASE) $(APP_LIBS_XIC) \
+  $(APP_LIBS_BASE) $(APP_LIBS_XIC) $(GRAPHICS) \
+  $(MISCUTIL) $(NTREGEX) $(LIBS) $(MALLOC) $(STDCLIB)
+
+plugins::
+	cd ../plugins; $(MAKE)
+
+# sa-filetool will always rebuild fietool.o, to set a three-month lifetime
+# for the binary.
+
+sa-filetool: sa-filetool.o ../src/cd/cd.a ../src/fileio/fileio.a \
+  ../src/geom/geom.a ../src/parser/parser.a $(MISCUTIL)
+	$(LINKCC) -o sa-filetool sa-filetool.o ../src/cd/cd.a \
+  ../src/fileio/fileio.a ../src/geom/geom.a ../src/parser/parser.a \
+  ../src/fileio/fileio.a $(MISCUTIL) -lm -lz $(STDCLIB)
+	rm -f sa-filetool.o
+
+wrencode: cryptmain.cc ../src/parser/parser.a $(MISCUTIL)
+	$(LINKCC) $(CFLAGS) -o wrencode $(INCLUDE) -DENCODING cryptmain.cc \
+  ../src/parser/parser.a $(MISCUTIL) $(STDCLIB) $(WINPTHREADFIX)
+
+wrdecode: cryptmain.cc ../src/parser/parser.a $(MISCUTIL)
+	$(LINKCC) $(CFLAGS) -o wrdecode $(INCLUDE) cryptmain.cc \
+  ../src/parser/parser.a $(MISCUTIL) $(STDCLIB) $(WINPTHREADFIX)
+
+wrsetpass: cryptmain.cc ../src/parser/parser.a $(MISCUTIL)
+	$(LINKCC) $(CFLAGS) -o wrsetpass $(INCLUDE) -DENCODING -DSETPASS \
+  cryptmain.cc ../src/parser/parser.a $(MISCUTIL) $(STDCLIB) $(WINPTHREADFIX)
+
+#######################################################################
+####### Recursively generate libraries ################################
+
+$(APP_LIBS_BASE) $(APP_LIBS_XIC) $(OA_SUBDIR)::
+	@if [ x$@ = x$(OA_SUBDIR) ]; then \
+	    cd $(OA_SUBDIR); $(MAKE); \
+	else \
+	    cd $(@D); $(MAKE); \
+	fi
+
+$(GRAPHICS)::
+	cd $(@D); $(MAKE)
+
+$(MISCUTIL)::
+	cd $(@D); $(MAKE)
+	if [ x$(NTREGEX) != x ]; then \
+	    cd $(LPATH)/miscutil/libregex; $(MAKE); \
+	fi
+
+$(SECURE)::
+	cd $(@D); $(MAKE)
+
+#######################################################################
+####### Object file targets ###########################################
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+sa-filetool.o: sa-filetool.cc Makefile
+	$(CXX) $(CFLAGS) $(INCLUDE) -DTIMELIM=`$(LPATH)/util/timegen 3` \
+  -c $*.cc
+
+EXECOBJS = xic.o
+DARGS = \
+  -DBDCODE="\"`date +%m%d%y-%H%M%S`"\" \
+  -DPREFIX="\"$(prefix)\"" \
+  -DOSNAME="\"$(OSNAME)\"" \
+  -DARCH="\"$(ARCH)\"" \
+  -DDIST_SUFFIX="\"$(DIST_SUFFIX)\"" \
+  -DTOOLS_ROOT="\"$(TOOLROOT)\"" \
+  -DVERSION_STR=\"$(GFX_VERSION)\" \
+  -DSPICE_PROG=\"$(SPICE_PROG)\" \
+  -DBUG_ADDR=\"$(BUG_ADDR)\" \
+  -DBUILD_DATE="\"$(DATE)\""
+
+$(EXECOBJS): Makefile
+	$(CXX) $(CFLAGS) $(DARGS) $(INCLUDE) -c $*.cc
+
+.PHONY: $(MALLOC)
+
+$(MALLOC)::
+	cd $(@D); $(MAKE)
+
+$(LPATH)/mswdebug/stackdump.o:
+	cd ../../mswdebug; $(MAKE) stackdump.o
+
+#######################################################################
+####### Dependencies ##################################################
+# note: mingw requires explicit return from cd
+
+CCFILES = xic.cc sa-filetool.cc
+
+depend:
+	@for a in ../include $(SUBDIRS) ../plugins; do \
+	    (dir=`pwd`; cd $$a; $(MAKE) depend; cd $$dir) \
+	done
+	@echo depending in xic/bin
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+#######################################################################
+####### Clean up ######################################################
+# note: mingw requires explicit return from cd
+
+eclean:
+	-rm -f $(XIC_PROG)$(NTSUFFIX)
+
+clean:
+	-@for a in $(SUBDIRS) ../plugins; do \
+	    (dir=`pwd`; cd $$a; $(MAKE) clean; cd $$dir) \
+	done
+	-@for a in $(TARGETS); do \
+	    rm $$a$(NTSUFFIX); \
+	done
+	-rm -f *.o
+
+distclean:
+	-@for a in $(SUBDIRS) ../include ../lib ../plugins ../packages; do \
+	    (dir=`pwd`; cd $$a; $(MAKE) distclean; cd $$dir) \
+	done
+	-@for a in $(TARGETS); do \
+	    rm -f $$a$(NTSUFFIX); \
+	done
+	-rm -f *.o Makefile
+
+#######################################################################
+####### Install programs into system location #########################
+
+XIC_FNAME = $(XIC_PROG)$(NTSUFFIX)
+
+# Note:  when using set expansion, make variables seem to be
+# implicitly quoted, so that these have to be moved to a shall
+# variable for the splitting to work correctly.
+
+INSTALL_PREFIX ?= $(prefix)
+destn = $(INSTALL_PREFIX)/$(TOOLROOT)/$(XIC_PROG)
+
+install_xic: install_test install_xic_clean install_xic_bin \
+  install_xic_help install_xic_icons install_xic_plugins \
+  install_xic_startup install_xic_scripts install_xic_scrkit \
+  install_xic_examples install_xic_docs
+
+install_xic_bin:        $(destn)/bin
+install_xic_help:       $(destn)/help
+install_xic_icons:      $(destn)/icons
+install_xic_plugins:    $(destn)/plugins
+install_xic_startup:    $(destn)/startup
+install_xic_scripts:    $(destn)/scripts
+install_xic_scrkit:     $(destn)/scrkit
+install_xic_examples:   $(destn)/examples
+install_xic_docs:       $(destn)/docs
+
+install_test::
+	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
+	    echo "No!  Use pagkage to install!"; \
+	    exit 1; \
+	fi
+
+install_xic_clean::
+	-@rm -rf $(destn)
+
+$(destn)/bin::
+	@$(LPATH)/util/mkdirpth $(destn)/bin
+	$(INSTALL_BIN) $(XIC_FNAME) $(destn)/bin;
+	$(INSTALL_BIN) wrencode$(NTSUFFIX) $(destn)/bin;
+	$(INSTALL_BIN) wrdecode$(NTSUFFIX) $(destn)/bin;
+	$(INSTALL_BIN) wrsetpass$(NTSUFFIX) $(destn)/bin;
+	@if [ $(DLL_XIC_PROG) = $(XIC_PROG) ]; then \
+	    $(INSTALL_BIN) $(XIC_PROG).dll $(destn)/bin; \
+	fi
+
+$(destn)/help::
+	cd ../lib/help; $(MAKE)
+	@$(LPATH)/util/mkdirpth $@ $@/screenshots
+	help=`../packages/util/xic_files help`; \
+        for a in $$help; do \
+	    $(INSTALL_LIB) ../lib/help/$$a $@; \
+	done
+	helpss=`../packages/util/xic_files help_screenshots`; \
+        for a in $$helpss; do \
+	    $(INSTALL_LIB) ../lib/help/screenshots/$$a $@/screenshots; \
+	done
+
+$(destn)/icons::
+	@$(LPATH)/util/mkdirpth $@
+	icons=`../packages/util/xic_files icons`; \
+        for a in $$icons; do \
+	    $(INSTALL_LIB) ../lib/icons/$$a $@; \
+	done
+
+$(destn)/plugins::
+	@$(LPATH)/util/mkdirpth $@
+	plugins=`../packages/util/xic_files plugins $(OSNAME)`; \
+	for a in $$plugins; do \
+	    $(INSTALL_LIB) ../plugins/$$a $@; \
+	done
+	oaplugin=`../packages/util/xic_files oaplugin $(OSNAME)`; \
+	for a in $$oaplugin; do \
+	    $(INSTALL_LIB) ../src/oa/$$a $@; \
+	done
+
+$(destn)/startup::
+	@$(LPATH)/util/mkdirpth $@
+	startup=`../packages/util/xic_files startup`; \
+	for a in $$startup; do \
+	    $(INSTALL_LIB) ../lib/startup/$$a $@; \
+	done
+
+$(destn)/scripts::
+	@$(LPATH)/util/mkdirpth $@
+	scripts=`../packages/util/xic_files scripts`; \
+	for a in $$scripts; do \
+	    $(INSTALL_LIB) ../lib/scripts/$$a $@; \
+	done
+
+$(destn)/scrkit::
+	@$(LPATH)/util/mkdirpth $@
+	# update files, in case they're old or not present.
+	$(INSTALL_LIB) ../include/si_args.h ../src/scrkit
+	$(INSTALL_LIB) ../include/si_if_variable.h ../src/scrkit
+	$(INSTALL_LIB) ../include/si_scrfunc.h ../src/scrkit
+	$(INSTALL_LIB) $(LPATH)/miscutil/miscmath.h ../src/scrkit
+	scrkit=`../packages/util/xic_files scrkit`; \
+	for a in $$scrkit; do \
+	    $(INSTALL_LIB) ../src/scrkit/$$a $@; \
+	done
+
+$(destn)/examples::
+	@$(LPATH)/util/mkdirpth $@
+	examples=`../packages/util/xic_files examples`; \
+	for a in $$examples; do \
+	    $(INSTALL_LIB) ../lib/examples/$$a $@; \
+	done
+	@$(LPATH)/util/mkdirpth $@/PCells
+	examples_pcells=`../packages/util/xic_files examples_pcells`; \
+	for a in $$examples_pcells; do \
+	    $(INSTALL_LIB) ../lib/examples/PCells/$$a $@/PCells; \
+	done
+	@$(LPATH)/util/mkdirpth $@/memchip_example
+	examples_memchip_example=`../packages/util/xic_files examples_memchip_example`; \
+	for a in $$examples_memchip_example; do \
+	    $(INSTALL_LIB) ../lib/examples/memchip_example/$$a $@/memchip_example; \
+	done
+
+$(destn)/docs::
+	@$(LPATH)/util/mkdirpth $@
+	docs=`../packages/util/xic_files docs`; \
+	for a in $$docs; do \
+	    cp ../lib/docs/$$a $@; \
+	done
+	IFS="."; \
+	tmp=$(GFX_VERSION); \
+	set -- $$tmp; \
+	cp ../lib/docs/xic$$1.$$2 $@
+
+package::
+	$(MAKE) all
+	-rm -rf ../packages/root
+	mkdir ../packages/root
+	$(MAKE) INSTALL_PREFIX=../packages/root$(prefix) install_xic
+	cd ../packages; make $(XIC_PROG)-$(OSNAME)
+
+#######################################################################

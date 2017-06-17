@@ -1,0 +1,142 @@
+ ****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+  Copyright (C) 2012 Synopsys, Inc. All Rights Reserved.                        
+  Unpublished-rights reserved under US copyright laws.
+  This program is protected by law and is subject to the
+  terms and conditions of the license agreement from Synopsys.
+  Use of this program is your acceptance to be bound by the
+  license agreement. HSPICE is the trademark of Synopsys, Inc.
+  Input File: inverter_dc.sp                                                    
+  Command line options: -hdlpath ../code -i inverter_dc.sp -o inverter_dc
+ lic:  
+ lic: FLEXlm: v10.8 
+ lic: USER:   navidp               HOSTNAME: bwrcrdsl-2.EECS.Berkeley.EDU 
+ lic: HOSTID:                      PID:      26622 
+ lic: Using FLEXlm license file: 
+ lic: 1701@sunv40z-1.eecs.berkeley.edu 
+ lic: Checkout 1 hspice 
+ lic: License/Maintenance for hspice will expire on 19-dec-2013/2013.03 
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER sunv40z-1.eecs.berkeley.
+ lic:   
+ Init: read install configuration file: /tools/synopsys/hspice/G-2012.06/hspice/meta.cfg
+ Loading pVA library inverter_dc.pvadir/pvaRTL_linux.so...
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *sample netlist for bsimsoi -- tanvir morshed 2010
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 xn0.                            bsimsoi(va)        1.00 
+        2 xp0.                            bsimsoi(va)        1.00 
+ **info** *pvaI* Creating Verilog-A module 'bsimsoi' for XP0
+
+ **info** *pvaI* Creating Verilog-A module 'bsimsoi' for XN0
+
+  
+      
+ *****************************************************************
+ ******  option summary
+ ******
+ runlvl  = 3         bypass  = 2         
+  Opening plot unit= 15
+ file=inverter_dc.pa0                                                          
+
+ ******  
+ *sample netlist for bsimsoi -- tanvir morshed 2010
+
+  ******  dc transfer curves tnom=  25.000 temp=  25.000 *****
+x
+
+        volt    voltage    
+                    out    
+    0.            1.5000   
+   50.00000m      1.5000   
+  100.00000m      1.5000   
+  150.00000m      1.5000   
+  200.00000m      1.5000   
+  250.00000m      1.5000   
+  300.00000m      1.5000   
+  350.00000m      1.4999   
+  400.00000m      1.4998   
+  450.00000m      1.4994   
+  500.00000m      1.4982   
+  550.00000m      1.4944   
+  600.00000m      1.4839   
+  650.00000m      1.4577   
+  700.00000m      1.3810   
+  750.00000m      1.0489   
+  800.00000m    614.0158m  
+  850.00000m    201.7672m  
+  900.00000m     64.0760m  
+  950.00000m     22.2120m  
+    1.00000       7.2128m  
+    1.05000       2.2594m  
+    1.10000     699.7580u  
+    1.15000     214.1255u  
+    1.20000      64.6178u  
+    1.25000      19.3235u  
+    1.30000       5.7965u  
+    1.35000       1.7945u  
+    1.40000     615.7066n  
+    1.45000       0.       
+    1.50000       0.       
+y
+-----------------------------------------------
+
+          ***** job concluded
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *sample netlist for bsimsoi -- tanvir morshed 2010
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+  
+  
+ ******  Machine Information  ******
+ CPU:
+ model name	: Intel(R) Xeon(R) CPU           E5645  @ 2.40GHz
+ cpu MHz	: 1596.000
+  
+ OS:
+ Linux version 2.6.32-358.18.1.el6.x86_64 (mockbuild@x86-003.build.bos.redhat.com) (gcc version 4.4.7 20120313 (Red Hat 4.4.7-3) (GCC) ) #1 SMP Fri Aug 2 17:04:38 EDT 2013
+
+
+  ******  HSPICE Threads Information  ******
+
+  Command Line Threads Count :     1
+  Available CPU Count        :    24
+  Actual Threads Count       :     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =      25 # elements   =       5
+  # resistors   =       0 # capacitors =       0 # inductors   =       0
+  # mutual_inds =       0 # vccs       =       0 # vcvs        =       0
+  # cccs        =       0 # ccvs       =       0 # volt_srcs   =       3
+  # curr_srcs   =       0 # diodes     =       0 # bjts        =       0
+  # jfets       =       0 # mosfets    =       0 # U elements  =       0
+  # T elements  =       0 # W elements =       0 # B elements  =       0
+  # S elements  =       0 # P elements =       0 # va device   =       2
+  # vector_srcs =       0 # N elements =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.00           1           0
+  dc sweep           0.01          31         151
+  readin             0.06
+  errchk             0.06
+  setup              0.01
+  output             0.00
+
+
+           peak memory used        110.16 megabytes
+           total cpu time            0.14 seconds
+           total elapsed time        0.44 seconds
+           job started at     12:48:18 11/06/2013
+           job ended   at     12:48:18 11/06/2013
+
+
+ lic: Release hspice token(s) 
+ lic: total license checkout elapse time:        0.22(s)

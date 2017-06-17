@@ -1,0 +1,67 @@
+#######################################################################
+# devlib/b3soi/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.12 2015/10/04 20:05:28 stevew Exp $
+#######################################################################
+
+DEVLIB_VERSION = @DEVLIB_VERSION@
+DATE = @DATE@
+OSNAME = @OSNAME@
+
+CC = @CC@
+CXX = @CXX@
+LINKCC = @LINKCC@
+CFLAGS = @CFLAGS_S@ @UFLAGS@
+LSHFLAG = @LSHFLAG@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGS_S@
+FILTER = @FILTER@
+PIC_OPT = @PIC_OPT@
+SOEXT = @SOEXT@
+DEVWINDLL = @DEVWINDLL@
+
+MODULE = bsoi32
+TARGET = $(MODULE).$(SOEXT)
+HFILES = b3sdefs.h
+CFILES =
+CCFILES = b3s.cc b3sacld.cc b3saski.cc b3saskm.cc b3scheck.cc b3sconv.cc \
+  b3sic.cc b3sload.cc b3snois.cc b3spzld.cc b3sset.cc b3sseti.cc b3ssetm.cc \
+  b3stemp.cc b3strun.cc
+COBJS = $(CCFILES:.cc=.o) $(CFILES:.c=.o)
+INCLUDE = -I../include
+DEFS = -D__WRMODULE__=$(MODULE) -D__WRVERSION__=$(DEVLIB_VERSION)
+
+$(TARGET): $(COBJS)
+	$(LINKCC) -o $(TARGET) $(LSHFLAG) $(COBJS) $(DEVWINDLL)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(PIC_OPT) $(INCLUDE) $(DEFS) -c $*.cc
+
+.c.o:
+	$(CC) $(CFLAGS) $(PIC_OPT) $(INCLUDE) $(DEFS) -c $*.c
+
+depend:
+	@echo depending in devlib/b3soi-3.2
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    if [ "z$(CCFILES)" != "z" ]; then \
+	        for a in $(CCFILES); do \
+	            $(DEPEND_PROG) $(INCLUDE) $$a $(FILTER)>> Makefile; \
+	        done \
+	    fi; \
+	    if [ "z$(CFILES)" != "z" ]; then \
+	        for a in $(CFILES); do \
+	            $(DEPEND_PROG) $(INCLUDE) $$a $(FILTER)>> Makefile; \
+	        done \
+	    fi; \
+	fi
+
+clean:
+	-rm $(COBJS) $(TARGET)
+
+distclean:
+	-rm $(COBJS) $(TARGET) Makefile
+
+modname:
+	@echo $(MODULE)
+
+#######################################################################

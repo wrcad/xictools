@@ -1,0 +1,18 @@
+
+The files in this directory are examples associated with the book
+
+  Verilog HDL, A Guide to Digital Design and Synthesis
+
+  by Samir Palnitkar
+
+  SunSoft Press
+  A Prentice Hall Title
+  ISBN 0-13-451675-3
+
+This is an excellent book for learning Verilog.  Th examples in this
+directory were pulled from the file ver_book.tar which is available
+from www.prenhall.com/pub/ptr/palnitkar/verilog.
+
+Note:
+Some files were modified slightly, such as to replace the unsupported
+"$gr_waves" with "$monitor".

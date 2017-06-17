@@ -1,0 +1,41 @@
+jspice3 optimization routine: margins
+.control
+#
+# Find the margins of the circuit.
+#
+# External vectors:
+#   upper[], lower[], flags[]
+#
+# External system vectors:
+#   oplo, ophi, value[], checkVAL1, checkN1
+#
+# Internal vectors:
+#   ma_cnt ma_temp
+
+let ma_cnt = 0
+while (ma_cnt < 20)
+    let upper[ma_cnt] = value[ma_cnt]
+    let lower[ma_cnt] = value[ma_cnt]
+    let ma_cnt = ma_cnt + 1
+end
+
+let ma_cnt = 0
+while (ma_cnt < 20)
+    if (flags[ma_cnt] = 0)
+        let ma_cnt = ma_cnt + 1
+        continue
+    endif
+
+    let ma_temp = value[ma_cnt]
+    let checkVAL1 = value[ma_cnt]
+    let checkN1 = ma_cnt
+    check
+
+    let value[ma_cnt] = ma_temp
+    let lower[ma_cnt] = oplo
+    let upper[ma_cnt] = ophi
+    let ma_cnt = ma_cnt + 1
+end
+
+unlet ma_cnt ma_temp
+.endc

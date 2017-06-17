@@ -1,0 +1,53 @@
+#######################################################################
+# xic/main/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.21 2015/02/14 05:25:08 stevew Exp $
+#######################################################################
+
+GFX_VERSION = @GFX_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @NEEDINT64@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @NEEDINT64@
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+
+LIB_TARGET = display.a
+
+LPATH = ../../../xt_base
+HFILES =
+CCFILES = \
+  dsp.cc dsp_box.cc dsp_color.cc dsp_control.cc dsp_grid.cc \
+  dsp_image.cc dsp_label.cc dsp_layer.cc dsp_line.cc dsp_mark.cc \
+  dsp_poly.cc dsp_prpty.cc dsp_render.cc dsp_ruler.cc dsp_setif.cc \
+  dsp_snap.cc dsp_terminal.cc dsp_view.cc dsp_window.cc dsp_wire.cc
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+depend:
+	@echo depending in xic/display
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm *.o $(LIB_TARGET)
+
+distclean:
+	-rm *.o $(LIB_TARGET) Makefile
+
+#######################################################################

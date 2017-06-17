@@ -1,0 +1,19 @@
+/* XPM */
+static const char * selcp_xpm[] = {
+"12 12 3 1",
+" 	c none",
+".	c sienna",
+"o	c white",
+" oooooooooo ",
+" oooooooooo ",
+" oo......oo ",
+" oo.  . .oo ",
+" oo..  ..oo ",
+" oo. .  .oo ",
+" oo.  . .oo ",
+" oo..  ..oo ",
+" oo. .  .oo ",
+" oo......oo ",
+" oooooooooo ",
+" oooooooooo "};
+

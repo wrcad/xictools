@@ -1,0 +1,1905 @@
+WRspice Generation 4 Beta Release Notes
+
+This is a companion to Xic-4, and inherits the new installation
+location, graphics system, and other common infrastructure.  However,
+unlike Xic, there was no major capability change from the previous
+branch.  Thus, WRspice is in "beta" test, but updates may reflect
+changes to common infrastructure from Xic alpha development.
+
+However, there have been important additions since the initial
+release, as described in the notes below.
+
+
+*****************************************************
+*** IMPORTANT ***
+
+WRspice now limits the maximum internal time step to the printing time
+step (Tstep).  This is obtained from the tran line
+
+.tran Tstep Tstop [Tstart [Tmax]]     (simplified syntax)
+
+I.e., Tmax now defaults to Tstep.
+
+This was done to improve results from circuits containing only devices
+that weakly limit the time step (e.g.  MOSFETs) which otherwise can be
+ugly and wrong (e.g., ring oscillator results).  This allows users of
+such devices to get good results without having to set an explicit
+maximum time step in the tran line.
+
+However, if the printing time steps are very closely spaced, the
+simulation time can dramatically increase, since these points are now
+actually being calculated and not just interpolated.  The user in
+this situation has several options:
+
+1.  Accept the longer analysis time as the cost of greater accuracy.
+2.  Use a larger printing time increment (Tstep).
+3.  Use the Tmax parameter in the tran line to set a larger limit.
+4.  Use .options oldsteplim to use the old limit of (Tstop-Tstart)/50.
+
+
+*****************************************************
+*** IMPORTANT ***
+
+Node names are no longer parameter expanded (as of 4.1.12) by
+default.
+
+I know of at least one old deck where this feature was used.
+
+If the boolean variable pexnodes is set, then parameter expansion will
+occur, for backward compatibility.
+
+
+*****************************************************
+Windows Notes:
+
+* If you have a .wrspiceinit file left over from Generation 3, the
+  font assignment will cause trouble.  This file might be found in the
+  current directory, or whatever directory WRspice takes as the "home"
+  directory.  If the WRspice tool window is big and ugly, you may have
+  this problem.
+
+  With a text editor, delete all lines that start with "setfont".
+
+* If you have put the gtk2-bundle/bin directory in your search path,
+  it is best to remove it, as other programs may be affected.  The
+  effective path is now set locally in the bat files used to run
+  Xic and WRspice.
+
+Cygwin users:
+
+* Cygwin now defaults to a new "mintty" terminal emulator.  This does
+  NOT work AT ALL with WRspice, or any other native Windows
+  application that interacts with the console.  The same applies to
+  xterm and rvxt terminal emulators compiled under Cygwin.  These work
+  better for running Xic, or running WRspice from Xic, where the
+  terminal window is not interactive, but there are subtle problems so
+  this is not recommended.
+
+  WRspice can be run from the old-style native bash box, or a native
+  DOS box.  For example, start a terminal window ("DOS box") from
+  Windows, and give the commands
+    cd c:\cygwin\bin
+    bash --login -i
+  This gives the traditional Cygwin window, suitable for running
+  WRspice.  This can be encapsulated in a bat file that can be run
+  from an icon, there may be a c:/cygwin/Cygwin.bat file in the Cygwin
+  distribution that does exactly this.  If not, create a Cygwin.bat
+  file somewhere with the contents
+    @echo off
+    C:
+    chdir C:\cygwin\bin
+    bash --login -i
+  This assumes that Cygwin in installed in C:\Cygwin, modify the
+  file text appropriately of not.  Create a desktop icon that will
+  run this bat file, and use it to launch Cygwin windows for running
+  native Windows applications including WRspice and Xic.
+
+  WRspice 4.1.21 and later can be invoked with the -x option, which
+  will cause it to create its own terminal window, which behaves
+  properly.
+
+
+*****************************************************
+ATTENTION Mac users!
+
+You MUST update the gtk2-bundle-x11 package to 4.0.1 to run the
+current releases of Xic and WRspice.
+
+The new bundle can be installed with the wr_install script (unlike the
+original bundle).
+
+The new bundle contains the latest gtk release, which fixes a problem
+on 10.10 (Yosemite).  The old bundle gtk can not handle the long
+display name used in Yosemite, so the programs won't run without some
+trickery.
+
+WE HAVE UPDATED TO YOSEMITE !!!!!
+
+Starting with xic-4.1.14 and wrspice-4.1.21.  These are generated
+using the Mavericks xcode package so should still be compatible with
+Mavericks (testing needed!).
+
+*****************************************************
+
+
+===============================================================================
+Current Release
+wrspice-4.1.28  9/12/2015
+
+Sorry about the flurry of new releases, which is the result of combining
+intensive development, auditing, and user feedback.
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* WRspice shell comments
+
+  Script lines can now have trailing '#' comments, e.g. lines like
+
+    alter I0, dc=0.0021             #Main JTL
+
+  now work in scripts and control blocks.  This was true a long time
+  ago but the capability was lost somewhere.  This is standard C-shell
+  behavior, so should be expected of the WRspice shell.
+
+
+BUGS FIXED
+---- -----
+
+* An analysis call in an .exec block would crash the program.  It is
+  not possible to build a circuit object before text expansion.  Now,
+  this will fail cleanly with a message.  The following script would
+  crash the program:
+
+    ****
+    .exec
+    run
+    .endc
+
+* Fixed a bug that could crash the program when evaluating vectors
+  when there was no current circuit.
+
+* Fine-tuning of layout in mplot (range analysis plot) windows.  Text
+  would get cut-off at window edges, and the WR logo would overlap
+  scale factors, in some cases.
+
+* The wrong units were applied to node voltages in PSF output.
+
+* It was impossible to set the values of inductors, capacitors, and
+  resistors with the alter command, or forms like "let @r1[r]=1k".  We
+  assume now that any device parameter that can take an expression
+  (internally a parse tree object) can also take a real-valued
+  constant.  The type consistency checking was failing in this case.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.27  9/10/2015
+
+BUGS FIXED
+---- -----
+
+Oops!
+The 4.1.26 release was a dud, and was pulled from the distribution site.
+Sorry.
+
+Mutual inductors were NOT fixed, except for the LinuxRHEL7_64 release,
+where I happened to make the fix.  In that release, due to another bug
+unknown at the time, the KLU plug-in was defective and not being
+loaded.  The mutual inductor fix worked with the SPARSE package, but
+not with KLU.
+
+* The LinuxRHEL7_64 release now ships with a working KLU sparse-matrix
+  solver.
+
+* The mutual inductors now work in all releases.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.26  9/9/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Limited Cadence PSF support.
+
+  Support for Cadence Parameter Storage Format (PSF) is being added as
+  part of an effort to integrate WRspice into the Virtuoso Analog
+  Design Environment.
+
+  More information will be available soon.
+
+* Mutual inductor update.
+
+  Mutual inductors now better support nonlinear inductors. 
+  Previously, the results were inaccurate as the coupling factor
+  k*sqrt(L1*L2) was not being adjusted for changing L1/L2.
+
+  When accessing parameters, the "k" parameter, given as coeff, was
+  returned as coeff*sqrt(L1*L2), which is true in Spice3 as well. 
+  Now, the coeff is returned, and there is a new parameter "factor"
+  that returns coeff*sqrt(L1*L2).
+
+
+BUGS FIXED
+---- -----
+
+* Forms like PWL( 0 ... were not being parsed correctly.
+  The space between the ( and the first token would cause trouble.
+
+* The --no-xshm command line argument has not been recognized since
+  gtk-1,2.  This is now handled explicitly, calling the deprecated
+  gdk_set_use_xshm function, which may or may not do anything.
+
+* Mutual inductors were still broken, inductor lines were required to
+  appear before the mutual inductor line in input.  This was fixed,
+  the order now arbitrary as it should be.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.25  8/22/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Support for multi-threading in chained-dc analysis.
+
+  In WRspice, most analysis types allow dc analysis chaining.  That
+  is, the basic analysis specification is followed by a dc analysis
+  specification involving one or two sources in the circuit, and the
+  analysis is run at each dc bias condition.  The result is a family
+  of multi-dimensional vectors, one dimension per bias condition.
+
+  In this release, the dc-point analyses may be run using multiple
+  threads.  All supported operating systems provide multi-threading,
+  however parallel runs require multiple cores or cpus.  Multiple
+  threads will be used automatically if:
+
+  1.  The "loopthrds" variable is set to an integer 1 or larger.
+      This is a new option variable that indicates the number of
+      "helper" threads to use.  It can be set to an integer in the
+      range 0 through 31, with 0 being the same as not set (single
+      threading).  The "best" value can be found experimentally, but
+      the value plus the main thread probably equals the number of
+      available cpu cores.
+
+  2.  The analysis specification supports multi-threading.  Presently
+      the following analyses can be multi-threaded:
+
+      tran,     without scrolling, segmenting, and with the "nousertp"
+                mode not set.
+      ac
+      tf
+
+  To Do: concurrent threads in loop/Monte Carlo analysis.  This will
+  be provided next time.  These analysis require a rebuild of the
+  circuit object for each trial.
+
+  Hint:  If your requirements can be met with chained dc analysis
+  instead of loop analysis, overhead can be minimized.  Chained dc
+  can be used in many instances, since a source voltage can be used
+  in an expression for a component value, for example.
+
+  In chained dc analysis, the same circuit object is re-used multiple
+  times.  In loop analysis, the circuit object must be recreated
+  for each trial run, since the deck after shell substitution will
+  have changed.
+
+* The threads variable name change:  threads -> loadthrds
+
+  This sets the number of loading threads.  The name has changed to
+  loadthrds.
+
+  Can loopthrds and loadthrds be used together? Yes.  Is it faster?
+  Don't know, experiment!
+
+  Both variables can be set from the General page of the Simulation
+  Options tool.
+
+
+BUGS FIXED
+---- -----
+
+* Some minor tweaks to colors, and locations of scale factor icons
+  used in plots.
+
+* The .global lines were not being handled correctly, they were
+  being ignored.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.24  7/31/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Major internal changes as a step toward multi-threading of repeated
+  analysis.  Actual use of multi-threading in repeated analysis
+  will be provided as an option in a future release.
+
+  The overall internal architecture of the program is changing. 
+  However, as yet this should be invisible to the user, with an
+  important exception to be described.
+
+  A circuit is now described by two different data structures.  For
+  lack of better terminology, I'll call them the "circuit source" and
+  "circuit object", analogous to source and object code in
+  programming.  When a circuit file is "sourced" into wrspice, a
+  circuit source is created, and becomes the "current circuit".  This
+  contains the raw text of the circuit file, subcircuit expanded, with
+  control blocks, options, measures, and other things separated and
+  pre-processed.
+
+  When the user requests an analysis be run, a new circuit object
+  is created from the circuit source.  The circuit is "parsed" at this
+  time, and any errors will be displayed.
+
+  This is presently the main difference the user might see between the
+  old and new architecure:
+  OLD:  The circuit is parser in the source command, and errors will be
+        reported at that time.
+  NEW:  The circuit is not parsed until an analysis is requested, so
+        parse errors will not be seen until that time.
+
+  The circuit object can be destroyed when the analysis is complete,
+  but it is presently kept around until the next analysis is run, at
+  which time it is destroyed.
+
+  The new architecture will allow, eventually, multiple circuit objects
+  to be running at the same time, in different threads.
+
+  Work remains to make the plot structure thread-safe.  The plot
+  structure is created when an analysis starts, and accepts the
+  simulation data as it is generated.  With multiple threads, each
+  thread will be writing to a different block of the output array.
+
+  The option of having separate plot structures for each thread may be
+  a possibility, in which case two threads could be running an
+  entirely different analysis.
+
+  The noparse debugging variable is gone, as the circuit is now never
+  parsed when sourced.
+
+* New devcnt command.
+
+  new command:  devcnt [ modnames ... ]
+
+  This will print the number of device instantiations for each device
+  model found in the current circuit.  The arguments are model names,
+  where glob-type wildcard characters *,?,[],{} may be employed. 
+  Matching is case-insensitive.  If no models are given, device counts
+  of all models will be listed.  Note that every device has a model,
+  which is created internally if not given explicitly.  In particular,
+  simple resistor, inductor, and capacitor devices have default models
+  named "R", "L", and "C".
+
+* New examples.
+
+  The new jjloop.cir and jjloop1.cir example files illustrate two ways
+  of iterating an analysis over a parameter space: the loop command,
+  and chained dc analysis.
+
+
+BUGS FIXED
+---- -----
+
+* Mutual inductors were broken, by the new multi-threaded loading
+  code added in 4.1.22 (broken when single-threaded, too)
+
+* Sensitivity analysis was also broken by the multi-threaded loading
+  code.  Worse, the error exit from the analysis was not done
+  correctly and crashed the program.
+
+* The resistor noise scaling factor parameter ("NOISE") was
+  incorrectly defaulting to 0, breaking noise analysis unless the
+  parameter was explicitly given.
+
+* Revised the Makefiles on the verilog examples to support the new
+  CentOS 7 distributions.  Also fixed the versioning, which was wrong
+  in the precompiled modules.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.23  6/27/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* ADMS Makefile portability
+
+  The ADMS example Makefiles and template were updated for
+  portability.  Previously, these were customized to the operating
+  system which produced the distribution.  Further, the release number
+  was hard-coded in the file.  This information is now obtained at
+  build time by calling "wrspice --v".  The change allows a Makefile
+  developed on any supported platform to be directly portable to any
+  other supported platform, an important factor when exporting device
+  models.
+
+* Debugging output can now be redirected.
+
+  Previously, most of the debugging and informational output from the
+  flags in the Debug Options tool would print directly to the screen,
+  outside of the WRspice shell input/output mechanism.  This is no
+  longer true.  One can now set one or more debugging flags, or
+  things like "trantrace" and give a command like
+
+  mycircuit.cir >& outfile
+
+  This will redirect output to "outfile".  The debugging output is
+  primarily to the standard error channel.  The ">&" is the c-shell
+  redirection indicator for both standard output and standard error,
+  as implemented in the WRspice shell.
+
+* Improved load-balancing with multi-threaded loading.
+
+  Lots of work and experimentation was done trying to fine-tune
+  multi-threaded device model calculation for speed.  Unfortunately,
+  little success was achieved.  The model now in use provides a
+  mechanism for load balancing, the previous release gave each thread
+  and equal-sized job.  Now, tasks are parcelled out in smaller
+  chunks, so that threads that finish early can obtain more work and
+  continue.  This should be faster, but I don't see much difference on
+  a lightly-loaded Linux machine.
+
+  Some misc. benchmarks.  These are total run-times of a post-layout
+  mixed-mode circuit with 336 BSIM4 transistors and a number of
+  junction capacitors and poly resistors.  The "threads" column is the
+  value of the threads variable and is the number of helper threads
+  employed.  Some of these machines are antiques.
+
+    OS              CPU(cores)  runtime  threads
+    Windows         Intel (2)   200.9
+                                126.2    1
+    RHEL5-32        AMD (2)     225.5
+                                162.3    1
+    RHEL5-64        AMD (2)     255.6
+                                179.4    1
+    CentOS6-64      Intel (8)    75.4
+                                 49.4    1
+                                 35.5    3
+                                 33.6    6
+    OS X            Intel (2)   184.2
+                                127.2    1
+    OpenSuse 13.1   Intel (4)    77.0
+                                 40.2    3
+    FreeBSD 10.1    Intel (8)   100.1
+                                 70.0    1
+                                 45.3    3
+                                 40.4    6
+
+* Update to rusage command, new "stats" command.
+
+  Some new resource keywords were added:
+
+  cvchktime
+    The time spent convergence testing in dc and transient analysis.
+
+  trantstime
+    The time required to compute the next time step in transient
+    analysis
+
+  tranouttime
+    The time spent saving data during transient analysis.
+
+  The format for "rusage all" is new.  Previously, all of the values
+  were printed in an alphabetized list.  Now, the results are presented
+  in logical groups, which is much more convenient.
+
+  There is a new "stats" command.  This is identical to rusage, except
+  that if given without arguments, all statistics are printed in the
+  new format described for rusage.  Giving "stats" omits some less
+  useful things from the "rusage all" listing.
+
+* Trapcheck and adjoint options now off by default.
+
+  The option keywords "notrapcheck" and "noadjoint" are gone, replaced
+  with "trapcheck" and "useadjoint".  These features are now off by
+  default.  They contribute more than a little overhead that is most
+  likely unneeded.
+
+  The trapcheck feature is intended to prevent the oscillatory
+  behavior sometimes seen in circuits with "stiff" equations with
+  trapezoidal integration.  In most benchmark circuits, this
+  introduces a lot of false-positives which boosts the total
+  interation count, increasing simulation time.
+
+  Previously, an "adjoint" matrix was created and loaded for each BSIM
+  MOS device, which was used to compute the device currents in case
+  the user was outputting these with a .save @device[name] directive. 
+  This adds overhead that is a waste if the user is not interested in
+  the currents.
+
+* Tool window now double-buffered.
+
+  The Tool window now uses a technique to avoid the flickering that
+  may appear on some screens, mostly in Windows.
+
+  In transient analysis, the percent complete is now printed in the
+  Tools window and updated periodically during the run.
+
+
+BUGS FIXED
+---- -----
+
+* The (relatively new) LIMITING keyword was inadvertently left out of
+  ADMS example Makefiles, which caused all models to be built without
+  limiting.  The limiting is required for convergence in most of these
+  models, so that the pre-compiled modules were effectively broken.
+  The template example Makefile in /devkit was ok, only the Makefiles
+  in the device directories had the problem.
+
+* The use of >& redirection would likely fault, due to a double close
+  of the output channel.
+
+* Misc.  fixes and tweaks to ADMS xml scripts, in response to customer
+  feedback, thanks for the input!
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.22  6/15/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Multi-threaded matrix loading.
+
+  Introduction of multi-threading into WRspice is a major change.
+
+  WRspice currently supports multi-threaded matrix loading on all
+  supported platforms.  The concept is to use otherwise unused
+  processor cores to evaluate device model code in parallel, thus
+  reducing simulation time.  This is experimental, and applies to
+  transient analysis only.
+
+  The load function is the function that evaluates all of the device
+  model code, and sets up the circuit matrix and right-hand side
+  vector, for subsequent LU factorization and solution.  This
+  dominates circuit simulation time in some circuits, particularly
+  when using complex device models such as BSIM.
+
+  There is a new option variable:  threads  (integer 0-31)
+  The threads variable has a new corresponding entry in the General
+  page of the Simulation Options panel.
+
+  This is the number of helper threads that will be created to assist
+  the main thread in evaluating device code.  If 0 or not set, no
+  helper threads are used.
+
+  This is experimental, but shows promise.  It will not necessarily
+  make simulations run faster and in fact can have the opposite
+  effect.  The latter is sadly true in Josephson circuits tested thus
+  far.  The problem is that multi-threading adds a small amount of
+  overhead, and the load function may be called hundreds of thousands
+  of times in these simulations.  The model calculation for JJs runs
+  very quickly, and the overhead becomes significant.  The same is
+  true for other simple devices.  Work to improve this situation is
+  ongoing.
+
+  On the other hand, if there is a lot of computation in the device
+  model,  this will dominate the overhead and we see shorter load
+  times.  This is true for BSIM MOS models, in circuits with more
+  that about 20 transistors.  Overall speedups of between 2 and 3
+  have been seen.
+
+  One should experiment with the value of the threads variable.  It
+  should not be set to more than the number of cores that are
+  available.  On an 8-core intel processor, the fastest results came
+  from threads=5.  Your results may vary.
+
+* For anyone out there compiling their own loadable device model
+  modules from c/c++, note that the template of the load function has
+  changed.  The ADMS scripts have been updated, so this will not be
+  visible to the user unless the user is writing c++ model code
+  directly.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed a bug in the ADMS scripts that caused incorrect compilation
+  when a device model contained more than one v()<+ contribution.
+
+* The integer entry areas in the tools panels were not showing the
+  correct value if the value was set before the panel was popped up. 
+  The entries showed the default value instead, but were correctly
+  greyed.
+
+* Giving Ctrl-Z and later "fg" in OS X no longer terminates the
+  program.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.21  6/3/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Enabled -x command line option in Windows.
+
+  For some reason, this was disabled in the Windows release, but seems
+  to work fine after enabling.  This causes WRspice to create its own
+  console window, in all supported operating systems.  One can use
+  this when starting WRspice from a mintty window in Cygwin to get a
+  properly functioning command interface.
+
+* Updates to Verilog-a support.
+
+  This is documented in the devkit/README.adms file in the 4.1.20
+  release, but should have been mentioned in the release note.
+
+  1.  Rewrote support for text output from Verilog-a.
+      Now supported: $display, $monitor.
+      The $strobe logic is now correct.
+      Output from display/monitor/strobe/write now goes to the
+      console.  Previously, output went to the pop-up error window.
+
+  2. The file descriptor in $fdisplay etc. can be
+     0   output to the pop-up error window.
+
+     1 or < 0
+         output to the standard output (terminal window).
+
+  3. New $simparam keywords
+     tstep
+     tstart
+     tstop
+     delta
+     delmin
+     delmax
+     abstol
+     reltol
+     chgtol
+     volttol
+     predictor
+
+* Mac version built on Yosemite.
+
+  It shouldn't matter, but this is the first release built on OS X
+  Yosemite.  It should run on Mavericks and Yosemite.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed a problem with the validation system crashing the program on
+  startup under certain circumstances.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.20  5/25/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* No more panic to gdb.
+
+  Stack backtraces are now generated internally on all supported
+  platforms.  Previously, the Linux/OS X releases relied on the gdb
+  program to do this, which may not be present.
+
+  If the program suffers a fatal error, it will create a stack trace
+  in a "gdbout" file in the current directory, and attempt to email
+  this to Whiteley Research for analysis.  The email will not be sent
+  if either of the variables XTNOMAIL or SPICENOMAIL is found in the
+  environment.
+
+  The XTNOMAIL environment variable is new, it suppresses email from
+  both Xic and WRspice.
+
+  The SPICENOGDB environment variable is no longer recognized, as gdb
+  is no longer used.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.19  5/2/2015
+
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Verilog-a time-domain noise support.
+
+  The rdist_xxx functions now accept an optional final argument, which
+  if given is taken as the random number time lattice spacing.  If not
+  given, the lattice time spacing is set to the transient analysis
+  TStep (as it was before).  This is a WRspice extension, which has
+  significance only in transient analysis.
+
+* New devkit/README.adms documentation file.
+
+  This documents a few things about ADMS and the WRspice support.
+
+* New Windows notes
+
+  A new section in devkit/adms/README explains how to set up tools to
+  build Verilog modules in Windows.
+
+  An updated gtk2-bundle is available.  This is intended to fix some
+  funny behaviour with drop-down menus reported under Windows 7. 
+  Updating to the new bundle is optional but recommended.
+
+  The tools used to build the programs for Windows have been updated.
+  This should have no effect on the programs, but please report any
+  anomalies.
+
+  The local updates to both Cygwin and MinGW yielded unfortunate
+  revelations.  These tools are used to build the programs on Windows. 
+  Cygwin has been recommended as a Linux-like environment for running
+  Xic/WRspice on Windows.
+
+  1.  Cygwin now configures "mintty" as the default terminal emulator.
+  This does not work with WRspice, or with any other native Windows
+  program that has command line interactivity.  Users should run
+  WRspice from bash in a DOS box, which was the previous way things
+  worked.
+
+  2.  MinGW tools no longer function properly on the reference Windows
+  computer, due to a bug known since 2012.  This package has been used
+  and recommended for building native, legally unencumbered programs
+  on Windows forever.  Unfortunately, this project can no longer be
+  recommended, but a spin-off, called MinGW-w64, is recommended.  This
+  will now be used to build Windows releases (still 32-bit programs
+  for now, but 64-bit support is feasible with MinGW-w64).  Also
+  recommended is the win-builds project, which provides MinGW-w64 as
+  one of numerous packages.
+
+
+BUGS FIXED
+---- -----
+
+* The logic for handling save command/.save lines was reversed.  These
+  were being ignored in all but .op analysis.  The correct logic is to
+  only ignore these in .op analysis.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.18  4/15/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Added an example "noise.cir" and a bit of text to the documemtation
+  (help tgauss, help .noise)) describing time-domain noise analysis.
+
+BUGS FIXED
+---- -----
+
+* "tran 0.1p 1n" (for example) would omit the final time output due to
+  a numerical quantization issue.  This would occur if the TSTEP value
+  was "too small" relative to the final time.  This has been fixed.
+
+  If just plotting, then a missing final data point would probably not
+  be noticed, which is likely why this has gone unnoticed for a very
+  long time.  However, if using the final simulation time in a
+  .measure statement, the measure won't be performed, which is indeed
+  noticeable, and puzzling.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.17  4/9/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Verilog random functions updated to include time correlation.
+
+  The random distribution functions introduced in the last release
+
+    $rdist_uniform(seed, low, high)
+    $rdist_normal(seed, mean, stddev)
+    $rdist_exponential(seed, mean)
+    $rdist_poisson(seed, mean)
+    $rdist_chi_square(seed, dof)
+    $rdist_t(seed, dof)
+    $rdist_erlang(seed, k, mean)
+
+  have been modified so that they can actually be used in device
+  models without causing nonconvergence.
+
+  During transient analysis, logically a separate random value is
+  obtained to correspond to each integer multiple of the transient
+  time step.  The actual random value returned by the function is
+  linearly interpolated at the simulation time from this array.  Thus,
+  the value will not change during the Newton iterations, allowing
+  convergence.  Further, if the time step is cut due to
+  non-convergence, the relation to the past history is preserved.
+
+  For non-transient analysis, a new random number is generated on the
+  first call in the analysis, and the same value is returned on each
+  subsequent call during the analysis.  The idea is that physically
+  the randomness is a time-dependent fluctuation.
+
+
+BUGS FIXED
+---- -----
+
+* The Verilog-a initial_step and final_step blocks are now handled.
+
+  Blocks named "initial_step" now execute on the first iteration of
+  the first step in transient analysis.  Previously, these blocks
+  would execute in all iterations of all time steps, which was
+  incorrect.
+
+  Blocks named "final_step" now execute when the simulation time
+  equals the final analysis time, all iterations.  Previously, these
+  blocks would execute in all iterations of all time steps, which was
+  incorrect.
+
+* The .options fpemode=2 floating-point debugging mode now works in OS
+  X.  This was not correctly enabled in OS X previously.
+
+* Invocation of a function without arguments, such as "print
+  ogauss()", would crash the program.  Note that all internal
+  functions require arguments.
+
+* The internal gaussian random number generator now properly resets
+  when a seed command is given.  It computes two normal derivates at
+  once, saving the second for a subsequent call.  This state was not
+  being reset.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.16  3/27/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New Verilog-a internal function support.
+
+  The following Verilog statistical functions are now supported:
+  
+    $random[(seed)]
+    $rdist_uniform(seed, low, high)
+    $rdist_normal(seed, mean, stddev)
+    $rdist_exponential(seed, mean)
+    $rdist_poisson(sed, mean)
+    $rdist_chi_square(seed, dof)
+    $rdist_t(seed, dof)
+    $rdist_erlang(seed, k, mean)
+
+  The seed integer is used to seed the common uniform random number
+  generator.  The passed seed is compared to the last seed given (to
+  any of these functions, or 0 if this is the first time).  If the
+  same, the random values are obtained from the current pseudo-random
+  sequence.  If different, the random generater is restarted with the
+  new seed.
+  
+* New built-in statistical functions.
+
+  Corresponding WRspice functions are now available.  These give a
+  different random value for each call, with the different statistical
+  distributions, working similarly to the existing ogauss function. 
+  Each relies on the seed function to seed the internal random number
+  generator which is common to all random sources.
+
+  exponential(mean)
+    Exponential weighting.
+
+  chisq(deg_of_freedom)
+    Chi-square weighting.
+
+  erlang(k, mean)
+    Erlang weighting.
+
+  tdist(deg_of_freedom)
+    Student's T weighting.
+
+  beta(a, b)
+    Beta weighting.
+
+  binomial(p, n)
+    Binomial weighting.
+
+  poisson(mean)
+    Poisson weighting.
+
+
+BUGS FIXED
+---- -----
+
+* The Verilog-a translation system now maps the Verilog "a % b"
+  construct to "fmod(a, b)" in the C++ code, which is appropriate for
+  real numbers.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.15  3/9/2015 (re-release)
+
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New variable nototop.
+
+  Ordinarily, the window manager is asked to raise new windows to the
+  top.  If this boolean variable is set, that will not happen.  This
+  is to provide a work-around as a version of Exceed seems to want to
+  keep the windows on top permanently.
+
+
+BUGS FIXED
+---- -----
+
+* The CCVS outputs were opposite polarity of what the manual specifies
+  and what Spice3 produces.  This must have been true in WRspice for
+  many years.  This is fixed, better late than never.
+
+* The plot window positioning should now work better with
+  multi-monitors.  The WRspice tool window should appear on the same
+  screen as the starting xterm window.  The plot (and all) windows
+  should appear on this window.
+
+  Beware that there are known bugs in XQuartz relating to
+  multi-monitor applications.  Dragging X-windows between screens can
+  cause windows to disappear.  See BUGS FIXED for 4.1.12.
+
+* Updated ADMS scripts so that forms like V(p,n) <+ R1*I(p,n) and
+  I(p,n) <+ V(v,n)/R2 could coexist.  The first form modified nodal
+  analysis stamp was not quite correct, but would work in most cases.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.14  2/23/2015
+
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Update to the ADMS scripts for Verilog-A parsing.
+
+  1.  The scripts now correctly handle inductor-type devices, where
+  there is a dynamic contribution
+
+    V(p,n) <+ ddt(L*I(p,n))
+
+  This was not included in the original ADMS scripts due to certain
+  technical difficulties.  The WRspice scripts now have the extensions
+  needed to provide this support.
+
+  2.  There are new Verilog inductor and capacitor examples in the
+  devkit.
+
+  3.  It is now possible to use device key letters a, e, f, g, h, i, v
+  in Verilog devices.  These are keys to the various WRspice source
+  devices.  Previously, and I'm not sure there was a good reason, it
+  was not possible to override an internal source device.  Not that
+  this is a good idea, but it is at least now possible.
+
+* Update to the setdim command.
+
+  This command edits the dimensionality of the current plot.  Some new
+  features were added, and bugs fixed.
+
+  1.  Entering setdim without arguments will print the length and
+      dimensions of the scale vector of the current plot.
+
+  2.  If one gives the vector length as the number of dimensions, the
+      plot becomes multi-dimensional, with each dimension having one
+      point.  There is no limit to the number of dimensions in this
+      case.  Such vectors plot as collections of multi-colored points. 
+      This type of plot is generated normally by, for example, use of
+      the loop command to repeat op analysis.  Additional argumens to
+      the command are ignored.
+
+  3.  If the number of dimensions is given as 0 or 1, the plot becomes
+      one-dimensional, as a "normal" vector.
+
+* Plot display change
+
+  When plotting in line mode and the vector has only one point, a
+  glyph will be shown.  Previously a single pixel was shown, which is
+  almost invisible.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.13  2/12/2015
+
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Starting now, new Apple licenses will key to the machine ID only,
+  and will ignore the host name.  This will avoid problems with DHCP
+  assigning host names.  The ID uniquely identifies the machine, so
+  that the host name is redundant anyway.  Old licenses will continue
+  to work, but will (as now) require the configured host name.
+
+  Apple users can get a new license file upon request.
+
+  Why isn't this also a problem on Windows?  Because the Windows DHCP
+  client does not support host name changes!  Microsoft brain-deadness
+  makes things easier, for once.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed a buffer overrun problem in the File Selection panel.  File
+  names longer than 62 characters would cause trouble, if ever listed
+  in the file listing window.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.12  1/26/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Audit of parameter substitution, changes made.
+
+  Made some changes to which syntax elements are parameter expanded. 
+  Things like node names were being expanded, which probably shouldn't
+  be.  Further, parameter expansion of top-level lines was being
+  handled differently than lines in subcircuits.  The parameter
+  substitution is now consolidated in one place (the subcircuit
+  expansion module) and is now done consistently.
+
+  By reducing the number of elements that are parameter expanded, we
+  reduce to possibility of error due to inadvertent name matches, and
+  also reduce processing time for input files.
+
+  Some examples:
+
+  Node names
+    Prev:  were expanded in most places.
+    Now:   not expanded by default, can be enabled.
+
+  Model names in .model, subcircuit names in .subckt
+    Prev:  expanded.
+    Now:   not expanded.
+
+  Device names
+    Prev:  expanded in subcircuits, not at top level.
+    Now:   not expanded.
+
+  There is a new variable: pexnodes (boolean)
+
+  When set, device and subcircuit call node names will be parameter
+  expanded, for backwards compatibility.  This is done correctly,
+  unlike in earlier releases that would not handle global names
+  properly in subcircuit expansion.  I know of at least one old deck
+  that actually used this feature.
+
+* Model name recognition change.
+
+  When parsing devices with optional nodes, it is necessary to find
+  the model name token.  This is now searched for right-to-left.  The
+  consequence is that optional node names (which are to the left of
+  the model name) can now match nodel names.  This is pretty obscure
+  and definitely not recommended, but is allowed.
+
+  E.g.
+  b0 1 2 jjm jjm area=.1
+  .model jjm jj(...
+  .plot tran v(jjm) ...
+
+* Misc.
+
+  In the File menu, the "Open" button is now labeled "File Selection",
+  which is more descriptive and matches the Xic menu.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed bug:  device names were being parameter expanded, which caused
+  circuits that inadvertently had matching parameter and device names
+  to fail in subcircuit expansion.
+
+* Improved operation with second monitor, particularly on the Mac. 
+
+  This still has issues in OS X, X-Quartz does not handle this well.
+
+  Windows were not appearing.  I found the graphics call that was
+  failing and instituted a work-around where needed.  This should
+  prevent windows from never appearing.
+
+  The main problem at present appears to be that the program may not
+  come up on the right monitor when started from a Terminal window.
+  It seems to work correctly when started from an xterm, meaning that
+  the program appears on the name screen as the xterm.
+
+  All pop-up windows from the program should appear on the same screen
+  as the main window.  There may be problems dragging pop-up windows
+  to another screen - they may disappear!  This is a well-known issue
+  in X-Quartz, who point at internal interface changes made by Apple.
+  If you drag the main application to a new screen first, then drag
+  the pop-ups, it seems to work.
+
+* In the File Selection panel, double clicking on a name in the files
+  list (to source a file) would spuriously start a drag operation.
+
+* In .measure lines, the trig and targ arguments were not parsing
+  correctly.  Forms like trig v(x) and trig i(x) (anything with
+  parentheses) were not accepted, though equivalent forms "trig x" and
+  "trig x#branch" were ok.  This has been repaired, so that any of
+  these forms will work.
+
+* Fixed a problem in .measure line evaluation that would cause
+  "special" vectors (those in the form @device[param]) evaluation to
+  fail.  In particular, the form p(Vdd) which is an alias for @Vdd[p]
+  (which gives instantaneous power) would fail.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.11  1/19/2015
+
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Support added for nonlinear inductors
+
+  Inductors (as for capacitors and resistors) now accept an expresssion
+  for the inductance parameter (which is the default parameter).  The
+  expression represents the partitial derivative of flux with respect
+  to branch current, which can be a function of circuit variables.
+  Note that the function can depend on the inductor branch current
+  in which case the inductor is nonlinear.
+
+  Examples:
+
+  L1 1 2 100pH*(1 + 1e3*L1#branch*L1#branch)
+  Vramp 1 0 pwl(0 0 1nS 1)
+  L2 3 4 (1 + v(1))*1pH
+
+  The mutual inductor model has not changed.  Results may be questionable
+  if one or both of the inductors are nonlinear (value dependent on their
+  branch current).  The user should probably avoid this case, though
+  the results may be "close enough".
+
+
+BUGS FIXED
+---- -----
+
+* If a model name of a device with optional nodes was parameterized in
+  a subcircuit, the parse would fail, or other problems would arise.
+  The word is now parameter expanded before being checked as a model
+  name.  This was a problem with the JJ device, forms like below would
+  fail.
+
+  .subckt mysckt 1 2 model=foo ...
+  b0 1 2 phase model ...
+  .model foo jj(...
+
+  Specifically, the word "model" was not recogized as a model name
+  since there was no parameter expansion.  The optional node "phase"
+  was therefor treated like a parameter name and not a node, meaning
+  that the name would not be modified in subcircuit expansion, which
+  means that the "phase" node name would be common to all instances,
+  which is wrong.  This is the default behavior - if the model can't
+  be identified, the optional nodes are assumed to be parameter names.
+
+* An artifact in "tran uic" data is now avoided.  The output at time=0
+  does not take account of the initial conditions applied in device
+  lines, often causing a discontinuity at the origin in plots.  The
+  "time=0" output is now actually the output after the first internal
+  time point, which is very close to time=0.  The output, having been
+  computed, includes the effects of device initial conditions, thus
+  the discontinuity is avoided.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.10  11/22/2014
+
+BUG FIXED
+--- -----
+
+* Control-c interrupt processing was broken, and pressing Control-c
+  would terminate the program, rather than abort the current command
+  or pause the analysis, at least in Linux.
+
+  This was deemed serious enough to precipitate this release.
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New oldsteplim option.
+
+  In transient analysis, WRspice by default limits the maximum
+  internal time step to the printing time step (Tstep).  This is
+  obtained from the tran line
+
+    .tran Tstep Tstop [Tstart [Tmax]]     (simplified syntax)
+
+  I.e., Tmax now defaults to Tstep.  Previously if defaulted to
+  (Tstop-Tstart)/50, which is usually a much larger value.
+
+  The oldsteplim boolean option if given will revert the run to the
+  earlier limiting condition.
+
+  This was done to improve results from circuits containing only
+  devices that weakly limit the time step (e.g.  MOSFETs) which
+  otherwise can be ugly and wrong (e.g., ring oscillator results). 
+  This allows users of such devices to get good results without having
+  to set an explicit maximum time step in the tran line.
+
+  However, if the printing time steps are very closely spaced, the
+  simulation time can dramatically increase, since these points are
+  now actually being calculated and not just interpolated.  The user
+  in this situation has several options:
+
+  1.  Accept the longer analysis time as the cost of greater accuracy.
+  2.  Use a larger printing time increment (Tstep).
+  3.  Use the Tmax parameter in the tran line to set a larger limit.
+  4.  Use .options oldsteplim to use the old limit of (Tstop-Tstart)/50.
+
+
+===============================================================================
+wrspice-4.1.9  11/21/2014 (re-release, Linux only)
+
+Fixed an issue with license validation failing when the license is
+keyed by the HW address and the machine runs DHCP and is not
+connected to the network.
+
+wrspice-4.1.9  9/29/2014
+
+
+BUGS FIXED
+---- -----
+
+* OOPS!
+
+  The KLU plug-in shipped since 4.1.6 was not being loaded when
+  WRspice starts.  It did not contain the modifications for
+  extended-precision, and was therefor treated as broken by WRspice
+  and silently ignored.  When loaded, the KLU module takes over and
+  performs the matrix computations, and in some cases simulations may
+  run considerably faster than when using the legacy SPICE matrix
+  solver.  Use of KLU is enabled by default.
+
+  This release provides a working KLU plug-in, otherwise it is
+  logically identical to 4.1.8.
+
+  When WRspice starts, one should see in the banner:
+
+    Loading KLU fast sparse matrix solver, by Tim Davis,
+    University of Florida, CISE, http://www.cise.ufl.edu/~davis.
+
+* Fixed "Warning: help database keyword clash for options."
+
+  This message will appear if an old help database file
+  (spOptions.hlp) is still present.  Some systems may not delete this
+  file during an update.  The present release has a dummy empty file
+  of this name to ensure that the problem won't occur.
+
+
+===============================================================================
+Current Release
+wrspice-4.1.8  9/16/2014
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New resistor NOISE parameter
+
+  Added a real-valued parameter NOISE to resistor instances and
+  models.  This parameter multiplies the linear conductance used in
+  the noise equations.  The default value is 1.0.  Probably the major
+  use is to give NOISE=0.0 to remove a resistor from a circuit noise
+  analysis.
+
+* Plotting colors
+
+  When plotting multi-dimensional traces using the "ysep"
+  vertically-separated plotting mode, the dimensional colors are now
+  used (as when plotting a multi-dimensional single trace). 
+  Previously, all dimensions used the same color.
+
+* New "plotwin" command
+
+  This command provides an interface for destroying plot windows, most
+  useful in scripts, applies in graphical mode only.  There are two
+  forms:
+
+  plotwin [id]
+
+  Given without an argument, or with literal "id" (only the first
+  letter is significant, case insensitive), the id number of the most
+  recently created plot window is printed.  Every plot window has a
+  unique running id number, which can be used as a "handle" to the
+  window.
+
+  plotwin k[ill] [idarg]
+
+  This form is used to destroy plot windows.  The first token is a
+  word starting with 'k', case insensitive.  The idarg is a number. 
+  If not given or zero, the most recently created plot is destroyed. 
+  If idarg is positive, the plot window with that id is destroyed.  If
+  idarg is negative, the plot window relative to the most recently
+  created plot window is destroyed.  E.g., -1 destroys the plot before
+  the most recent, -2 the one before that, etc.  The idarg can also be
+  a word starting with 'a' (for "all") in which case all plot windows
+  are destroyed.
+  
+* Change to backquote processing in WRspice shell.
+
+  Previously, text enclosed by backquotes was sent to the operating
+  system shell for evaluation.  Now, the text is evaluated by the
+  WRspice shell itself, unless the text begins with the keyword
+  "shell" in which case the rest of it is sent to the operating system
+  for evaluation as before.
+
+  This may require updating legacy scripts.  For example, lines like
+
+    set datestring="`date`"
+
+  must be changed to
+
+    set datestring="`shell date`"
+
+  The new approach makes it possible to get the output of internal
+  WRspice commands and functions into strings, which was not easy (or
+  even possible?) before.
+
+  Example (that motivated this update)
+
+  plot something...
+  set myplotid=`plotwin`
+  ...
+  ...
+  plotwin kill $myplotid
+
+* New pwd command.
+
+  WRspice now has a built-in 'pwd' command.  This command takes no
+  arguments.  It prints the full path to the current working
+  directory.
+
+* New setdim command.
+
+  This command allows the dimensions of the current plot to be changed.
+  It is a bit experimental at this point.
+
+  syntax:  setdims numdims dim dim ...
+
+  All arguments are positive numbers.  There should be numdims-1 "dims"
+  given.
+
+  The numdims is the new dimensionality of the plot.  Values of 1-8
+  are allowed.
+
+  The sub-dimensions that follow are integers 2 or larger.
+
+  The dimension list must be compatible with the existing plot dimensions
+  in that 1) the total number of points must remain the same, and 2)
+  the size of the basic vector (scale period) remains the same.
+
+* Enabled the rhost command.
+
+  This was not included in the command dispatch table for some reason. 
+  As far as I can tell it works properly.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed a bug that would crash the program under certain conditions
+  when the marker was used in plot windows.
+
+* Fixed a crash in the show command when there is no current circuit.
+
+* Typing "help" without an argument would (probably) not bring up the
+  top page, and could cause a program hang or crash.
+
+* Fixed a printing bug of the text in the toolbar under Windows.
+
+* File descriptors were not being closed, and looping scripts that ran
+  repeated analysis could fail if the system limit on open file
+  descriptors was reached.  This limit is about 500 under Windows.
+
+
+===============================================================================
+wrspice-4.1.7  6/2/2014
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Added the BSIM-CMG 1.0.7 finfet model to the ADMS examples.
+
+  This model has no CMC QA data, but includes a collection of example
+  input files with Hspice results.  The model works well and is
+  fully supported in WRspice.
+
+* Useful new options in the load command.
+
+  The load command reads plot data from a file into WRspice.  In addition
+  to rawfile and CSDF formats (which are auto-detected) there are two
+  new formats selected by options.
+
+    -p printfile
+
+    The printfile is a file produced with the WRspice (or Spice3 and
+    perhaps others) print command.
+
+    -cN[+[M]] datafile
+
+    The datafile contains columns of numbers that are parsed into
+    vectors which are named "column_0", "column_1", etc.  See the load
+    function documentation for a complete description.  This is useful
+    for pulling data out of printed reports or output from other
+    programs.
+
+* New plot alias names.
+
+  The Spice3 syntax for plot number indirection has been supplemented
+  with new keywords which avoid having the hide the construct from the
+  expression parser.  For example, -1.foo indicates a vector named foo
+  in the plot that was created before the current plot.  However, this
+  must be double-quoted in WRspice input or it will be taken as the
+  number -1.  Now, the new keyword "prev" can be used instead, e.g.
+  prev.foo, which does not require quoting.
+
+  The new keywords are:
+
+    curplot.vector         indicates vector in the current plot
+
+    prev[N].vector         N is an optional integer, the form indicates
+                           the plot ahead of the current plot by N in
+                           the internal plot list.
+
+                           prev.vector is the same as prev1.vector
+                           prev0.vector is the same as curplot.vector
+                           prev2.vector is the same as -2.vector, etc.
+
+    next[N].vector         N is an optional integer, the form indicates
+                           the plot that follows the current plot by N in
+                           the internal plot list.
+                           next.vector is the same as next1.vector
+                           next0.vector is the same as curplot.vector
+                           next2.vector is the same as +2.vector, etc.
+
+    plot[N].vector         N is an optional integer, the form indicates
+                           the Nth plot in the internal plot list.
+  
+                           plot.vector is the same as plot0.vector, which
+                           is the constants plot.
+
+* New SPICE option: gmax (real value)
+
+  This can be given in a .options line, or set as a variable like
+  other options.  The default value is 1e6, and the allowed range is
+  1e-2 - 1e12.  The value can also be set from the Convergence page
+  of the Simulation Options tool.
+
+  The diagonal elements of the circuit matrix will be limited so as to
+  be no larger than gmax.  No normal circuit will have conductance
+  values near gmax, however during iterative solving, large values may
+  be produced by some device models.  This can cause non-convergence
+  or the matrix may become singular.  By limiting the matrix elements,
+  the problem is avoided.
+
+  There was no gmax limiting in previous versions of WRspice.
+
+  The BSIM-CMG transient analysis examples required this fix.
+
+* The .IC and .NODESET lines required the form "v(xxx)=value", now
+  the form "xxx=value" will work too.
+
+* The .measure lines can now use syntax like "param'expr'", previously
+  this was required to be "param='expr'".  Thus the '=' sign is now
+  optional, and no white space between a keyword and the delimited
+  expression is ok.  This is for Hspice compatibility.
+
+  Also, ".meas" and ".measure" are now equivalent.
+
+* Important change to the transient analysis TMAX default.
+
+  The TMAX is the maximum allowed internal time step.
+
+  The simplified .tran line syntax is: .tran TSTEP TSTOP [TSTART [TMAX]]
+
+  Previously, if not given explicitly in a .tran line or tran command,
+  the TMAX defaulted to the larger of TSTEP and (TSTOP - TSTART)/50,
+  as in Spice3.
+
+  This was probably a bug in Spice3.  In WRspice, TMAX now takes the
+  smaller of the two values.
+
+  The new value produces much better looking results for circuits that
+  by nature take too-large time steps, at the expense of simulation
+  time.  Some MOS ring oscillators exhibit this problem, and previous
+  default-parameter results could be seriously ugly and wrong unless
+  the user set TMAX.
+
+* The default value of the ITL4 parameter (maximum time-point iterations)
+  has returned to 10.  It was set to 20 in the last release.  There was
+  really no good reason to change this value to something non-standard.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.6  5/12/2014
+
+As can be seen from the notes below, this is an important release.
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* The -m command line option has changed.
+
+  There is a new related option -mnone that when given, suppresses
+  auto-loading of loadable modules.  This is functionally identical to
+  the old -m option.
+
+  The new -m syntax is: -m path
+
+  The path is either a path to a loadable module, or a path to a
+  directory containing loadable modules.  The module, or modules in
+  the directory, will be loaded.  This implies -mnone, i.e., there is
+  no auto-loading if the -m option is given.
+
+* The devload command can now take a directory path argument, and will
+  load all modules found in the given directory.
+
+* A framework for running automated Compact Modeling Council (CMC)
+  tests was developed.  This was used to validate a number of the
+  device models in WRspice, mostly Verilog-A models imported as
+  loadable modules.  The complete framework along with model QA data
+  and scripts for the models thus far evaluated is available as a
+  separate download.
+
+  Some minor changes were made to WRspice to support this:
+
+  - The minimum reltol parameter value was reduced to 1e-8 from 1e-5
+    for compatibility with CMC QA scripts.
+
+  - Modified the license authorization via license server to be much
+    faster, which improves CMC QA testing which often requires many
+    WRspice runs of simple circuits.  The authorizing was causing
+    significant delay in this case, which has been greatly reduced,
+    however using local authorization is faster still.
+
+  - Now, if --v or --vv appears with other command line arguments, the
+    other arguments will be ignored.  Previously, this was an error.
+    (These arguments weren't documented!  They cause WRspice to print
+    a version string and exit.)
+
+  - New boolean circuit option:  dcoddstep
+    Consider the DC sweep specification ".dc vxxx 0 1.1 0.2"
+    WRspice will evaluate at 0.0, 0.2, ... 1.0.  If dcoddstep is
+    given, evaluation will also be performed at the end-of-range
+    value 1.1.  This is the default for some other simulators.
+
+  - In AC DEC analysis, with fstop/fstart < 10, WRspice will tweak the
+    frequency delta to hit the final value, if the change would be
+    small.  This is mostly for cases where fstop/fstart is 2, 4, or 8
+    and N=10.  If no correction, the value is 1.995 rather than 2.0,
+    etc.  Other simulators do this, so it is important when comparing
+    results.
+
+  - Extended availability of the "m" device parameter.  This parameter,
+    available for many devices, is a device multiplier.  For example,
+    giving m=2 is equivalent to instantiating two identical devices.
+
+    The "m" functionality is generally added on to the device model
+    when it is incorporated into the simulator - it is not built into
+    the model.
+
+    The "m" parameter can be tested with the CMC QA scripts.  Most
+    simulators support this.
+
+    Support for "m" has been extended in WRspice.
+      -  All Verilog-A models can have an "m" parameter added when the
+         module is built, by setting a switch in the Makefile.
+      -  All bulk BSIM models after 4.6.5 have "m".
+
+The CMC and other testing precipitated a number of improvements.
+
+* Updated the example Verilog-A source to the latest releases of the
+  various models (where available) and added some additional models.
+
+  Most of the models have been CMC QA tested in WRspice, test results
+  will be made available as a separate download.
+
+  Makefiles are now provided, as are prebuilt-modules.  If desired,
+  the pre-built modules, or mdules that you build yourself, can be
+  auto-loaded by copying the modules to the devices directory in
+  the startup directory in the installation area.
+
+  The bsim6 module is no longer auto-loaded by default, as it was
+  in the 4.1.5 release.
+
+* New boolean option: extprec
+
+  When this option is set, WRspice will use extended precision
+  arithmetic when setting up and solving the circuit equations.  With
+  Intel, this mode uses the 80-bit native floating point format for
+  all calculations, rather than the 64-bit "double precision".  This
+  requires that floating point numbers use 16 bytes rather than 8,
+  however matrix space is allocated assuming complex numbers, which
+  are 16 bytes.  Thus, this mode has no memory-use penalty, and may
+  actually cause some circuits to simulate faster.
+
+  The mode applies to both KLU and Sparse matrix solvers.  It adds
+  about three decimal digits of precision to the calculations.  Using
+  extended precision may avoid "singular matrix" and other convergence
+  problems with some circuits.  See and run the new "precision.cir"
+  file in the examples for more information.
+
+* The itl4 (maximum transient itertions) default value was increased
+  to 20 from 10.
+
+* Change to floating-point error handling, fpemode option.
+
+  The fpemode option variable can be set to one of three integer
+  values:
+    0    (default) Halt computation if an error is detected.  In
+         some cases, the computation will be retried, after
+         going to a smaller step size in simulation (for example),
+         so the halt does not necessarily mean simulatiuon failure.
+
+    1    Ignore floating-point errors and just continue.  This is
+         what most other simulators do.
+
+    2    This is for debugging.  A floating-point error will cause
+         a signal to be emitted, that when caught will terminate
+         the program.  Under control of a debugger, the expression
+         causing the exception can be located easily, but this
+         is not likely to be useful for the general user.
+
+    Previously, there were two "signaling" modes, that attempted to
+    return to the running program.  This is no longer possible and
+    these would instead hang the program if used.
+
+    If set as an option, e.g. ".options fpemode=1" then the mode
+    applies only when the circuit is running.
+
+* New boolean option: forcegmin
+
+  When set, this will enforce a minimum gmin conductance to ground on
+  all nodes in the circuit (including internal nodes of devices). 
+  This may facilitate convergence.  This has a new check box in the
+  Convergence page of the Sim Defs tool.
+
+* Miscellaneous
+
+  - Slight change to the dynamic gmin stepping logic, no longer fails
+    if there are two successive failed trials.
+
+  - Logic change:  there is no longer an attempt to reorder a singular
+    matrix after the first iteration at a step.  This will pretty much
+    always fail, stopping the simulation.  Instead, we just return,
+    and let the driver try again with a smaller step.  This seems to
+    be a huge improvement.
+
+  - Implemented device state backup/restore for Verilog devices, which
+    is used for reverting to a known-good state after convergence
+    failure.
+
+  - Added trapcheck.cir example file, illustrates trapezoidal
+    integration problem.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed an obscure bug which would cause incorrect plot scale values
+  in a plot window after importing multi-dimensional traces with
+  drag/drop.
+
+* Fixed bug which prevented reloading of loadable modules.
+
+* Fixed subtle bug that prevented ".ac" from being recognized as a
+  help keyword.
+
+* AC source magnitude was defaulting to 0, now defaults to 1.0 which
+  is standard.
+
+* The dump command printed the real value twice instead of real and
+  imaginary for complex matrix elements.
+
+* Parsing numerical tokens with leading '.' would crash the program in
+  some cases.
+
+* Typing "where" (the where command) with no current circuit would
+  crash the program.
+
+* Found/Fixed a bug in BSIM 4.7/4.8 that breaks noise analysis for
+  tnoimod != 2.
+
+* Fixed bug in file selection panel, the file listing window would get
+  into a loop adding and removing the vertical scrollbar on occasion.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.5  3/1/2014
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Apple packages now automatically clear old installed files before
+  installing the new files, like most other install systems.
+
+* Updated the KLU sparse-matrix solver software to the latest release
+  version.
+
+* The Windows release is now provided in the form of a wrspice.dll
+  file, and a tiny wrspice.exe that calls the dll.  This form is
+  needed for support of dynamically loadable device models.
+
+* The Windows release now supports loadable device models, and the
+  infrastructure is now provided in the distribution file.
+
+* Updates to the Verilog-a system, to support new BSIM6 and
+  BSIMSOI-4.5 models.
+
+  1.  The adms-2.3.0 distribution, which is the third-party translator
+      needed for Verilog-a support, is now supplied as an enhanced
+      "adms-2.3.0-wr" package available in the free software repository
+      at wrcad.com.  Users should install this, rather than other
+      distributions.
+
+  2.  These two models have been added to the devkit examples.  The
+      BSIM6 model seems to work very well.  A pre-built loadable
+      module for the BSIM6 MOS device is now included in all
+      distributions.
+
+* New list variable: modpath
+  This variable provides a list of directories where loadable device
+  modules will be searched for.  If this variable is not set, WRspice
+  will look in the "devices" subdirectory of the "startup" directory
+  in the installation area.
+
+* New boolean variable: nomodload
+  If set in the startup file, the automatic loading of device model
+  modules is skipped.
+
+* The devload command can now take an arguemnt "all", in which case
+  it will load all known modules, the same as the start-up behavior.
+
+* The BSIM-4.8.0 MOS (non-Verilog) model has been added, as levels 17
+  and 59.
+
+* The "named pipe" or "fifo" is now created in the user's home
+  directory by default in Linux/OS X, but can still be created
+  anywhere by setting the WRSPICE_FIFO environment variable.
+  Previously, this was created in the current directory.
+
+* In the listing command, when using both "deck" and "expand" modes,
+  long lines are now (by default) broken up and the SPICE '+'
+  continuation syntax is used.
+
+  This is suppressed if a word starting with 'n' ("nocontinue") is
+  given to the listing command.
+
+* Slightly different handling of the .TEMP line now.  The temperature
+  given (or the first temperature if more than one) is translated to
+  a dummy input line ".options temp=xxx".  This is added ahead of
+  any "real" .options lines so will be overridden if ".options
+  temp..." is given explicitly.
+
+* Slight change to .measure line handling:  if there is no measurement
+  specified, the vector is set to the trigger time, same as the scale. 
+  Previously, the vector was simply set to 0, and the time was
+  available from the associated scale vector only.
+
+* New boolean variable: wmfocusfix
+  If the user finds that the terminal window loses keyboard focus when
+  another window, such as a plot, pops up, then setting this variable
+  may fix the problem.  This should be set in the .wrspiceinit file,
+  so that when WRspice is started from a terminal window, the terminal
+  won't lose focus when the WRspice tool control window appears.  In
+  some cases, this fix may have side effects, such as causing the
+  pop-up windows to appear below other windows, so it may not be
+  suitable in some cases.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed some problems with the automated download/install system.  It
+  should work for Apple starting with this release.
+
+* The .TEMP line was being ignored in batch mode.
+
+* If the WRspice tool control window was destroyed when WRspice was
+  running under Xic, there would be a cascade of GTK error messages in
+  the console, and possibly a program crash.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.4  2/17/2014
+
+This is the initial release of Generation 4 for Apple OS X.
+
+Notes:
+1.  The releases will only work with 10.9 (Mavericks) and later.
+2.  The releases require that an X-server be running.  This (X-quartz)
+    must be installed explicitly in Mavericks, it is not automatically
+    installed as it was in earlier OS X releases.
+3.  The packages are not relocatable.  The programs will be installed
+    under /usr/local/xictools.
+4.  The programs now use the gtk-2 graphical toolkit, as is used in
+    all other Gen 4 releases.  As for Windows, a separate package is
+    required to be installed for this support.  This package,
+    called "gtk2-bundle-x11" must be installed to run the programs.
+    It will rarely require updating.
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Built-in support for tiff and ppm/pgm/pnm image file formats was
+  added to the help viewer.  Previously, these formats were supported
+  only through a third-party conversion program (netpbm) that may not
+  be available.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.3  2/9/2014
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* The following was left over from the 3.2 branch and never made it
+  into the 4.1 notes or documentation.
+
+  - Added named fifo feature.  When it starts, WRspice creates a
+    "named pipe".  This looks like a file, but has the property that
+    text written to this "file" will be sourced into WRspice.  In
+    particular, if you are editing a SPICE file with your favorite
+    text editor, you can "save" the text to this file name, and it
+    gets sourced into WRspice.  See "help fifo" for the details.
+
+  - New environment variable WRSPICE_HOME.
+    This is another way to specify the installation location to
+    WRspice.
+
+* Big fixup of the Microsoft Windows distribution.  There is much less
+  user setup involved now, probably none for most users.
+
+  - The programs are now started from bat files, which set the PATH
+    for the gtk2-bundle DLL's.  Now, no user path setup is needed.
+
+  - The Update WRspice button in the File menu command now schedules
+    an exit procedure, which creates a new process to run the
+    distribution installation when the user exits the program. 
+    Previously, this was done manually.
+
+  - The uninstall function is now explicitly called when updating.
+    Previously, new installs just overwrote the old installation.
+
+  - The uninstall icons no longer appear in the Start Menu (or page).
+    Use the Add/Remove Software panel to remove the programs.
+
+  See the README file in the distribution area for more information.
+
+* Hard-coded the program icons.  The WRspice icons should now show in
+  Linux without the user having to set this up.
+
+
+BUGS FIXED
+----------
+
+* Windows bug fixes.
+
+  - Fixed errors in the File Selection panel involving hard-coded
+    Unix/Linux assumptions.
+
+  - Fixed colors in Print-to-clipboard operation of the Print Control
+    panel.
+
+* Pressing the Tool Control Window title bar delete button, then
+  answering N to the prompt, would crash the program.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.1.2  2/3/2014
+
+BUGS FIXED
+----------
+
+* Oops.  The Microsoft version was not finding its startup files, a
+  major problem.
+
+* The File Selection now handles file names with embedded white space
+  correctly.
+
+-------------------------------------------------------------------------------
+wrspice-4.1.1  1/31/2014
+
+Welcome the Generation 4 of WRspice.
+
+This is a companion to Xic-4, and inherits the new installation
+location, graphics system, and other common infrastructure.  However,
+unlike Xic, there is no capability change from the previous branch.
+

@@ -1,0 +1,45 @@
+Dear BSIM4 Users,
+ 
+Thank you for your support for the BSIM4 models. We are releasing BSIM4.7
+today (April 8, 2011).
+
+Compared with BSIM4.6.5, several new features are added in this version
+
+1) Imporoved DIBL/Rout model from BSIMSOI
+
+2) Improved GIDL/GISL model from BSIMSOI
+
+3) Improved sub-threshold temperature dependence
+
+4) Improved thermal noise model (tnoiMod=2)
+
+5) Limiting of diode ideality factor (NJS,NJD)
+
+6) New parameter "mtrlCompatMod" to ensure consistent results of mtrlMod=0
+   versus mtrlMod=1.
+
+We welcome everyone to visit our website at: 
+
+http://www-device.eecs.berkeley.edu/~bsim3/bsim4_get.html 
+
+The following resources can be accessed and downloaded:
+
+- Release Note of BSIM4.7.0
+- Document describing the enhancements and bug-fixes
+- BSIM4.7.0 source code 
+- BSIM4.7.0 user manual 
+- Testing examples by CMC
+- Testing examples by BSIM Group
+
+We would like to express our sincere thanks to all the users who gave us
+suggestions.
+  
+We thank you for your support for BSIM4 and welcome your feedback on this
+latest release.
+ 
+Sincerely,
+ 
+BSIM Team
+UC Berkeley
+
+

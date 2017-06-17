@@ -1,0 +1,39 @@
+*** noise demo
+* WRspice has the ability to model noise in the time domain.  This
+* simple example illustrates thermal resistor noise in an RLC circuit. 
+* More complex cases can be used to model noise-induced errors, etc.
+* See the document MarkJerreryNoiseMemo.pdf in the docs area of the
+* distribution archive of wrcad.com for more info (password required).
+
+* Below defines a function "noise" which encapsulates the thermal
+* noise equation and a call to the gauss "tran" function.  The noise
+* function is called in current sources that are added across
+* resistors in the circuit, as in the text that follows.  There are
+* two equivalent ways to define the function:
+
+* 9/15/2016: Fixed the expressions, which were wrong.  The cutoff
+* frequency is 1/(2*dt) NOT 1/dt (from Nyquist sampling equations).
+
+* This one is active (recall that *@ is like .exec/.endc for one line).
+*@ define noise(r,t,dt,n) gauss(sqrt(2*boltz*t/(r*dt)), 0, dt, n)
+
+* This one is commented out, comment the one above and uncomment this
+* to try it out.
+* .param noise(r,t,dt,n) = gauss(sqrt(2*boltz*t/(r*dt)), 0, dt, n)
+
+r1 1 0 1.0
+c1 1 0 5p
+l1 1 0 1p
+
+ir1 1 0 noise(1.0, 4.2, 0.5p, 1)
+* Arguments are resistance, temperature in Kelvin, lattice delta, and
+* interpolation method.  See the documentation for "tgauss" for an
+* explanation of the final two arguments.
+
+.meas tran foo from 1e-11 to 1n rms v(1) print
+
+.control
+tran .5p 10n
+plot v(1)
+plot combplot mag(fft(v(1)))
+.endc

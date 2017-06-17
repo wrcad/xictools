@@ -1,0 +1,6 @@
+* Standard WRspice system startup file
+* This file should be edited to provide system-wide defaults.
+
+* set up hardcopy
+set hcopycommand = "lpr -h"
+*set hcopydriver = postscript_line_draw

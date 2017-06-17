@@ -1,0 +1,23 @@
+($Id: README,v 1.7 2017/01/23 22:54:18 stevew Exp $)
+
+This directory contains "reference" output from MRouter.  The DEF
+outputs differ in detail, see ../README.  Qrouter output is no longer
+provided.  Yes, it is different from MRouter output due to several
+factors.  Output from different releases of MRouter, and Qrouter, will
+likely differ as well.  Presumably, all of these different wirings
+extract to the same netlist and are therefor equivalent.
+
+The output from the same release of MRouter compiled on different
+machines should match, however (neglecting Windows line termination).
+
+mrouter-(router_version)-out.lef
+  The LEF regurgitation from the present MRouter release with input
+  from the OSU035 LEF file.
+
+(testname)-(router)-(router_version)[-q].def
+  The routed DEF output.  The -q applies to mrouter when using
+  Qrouter compatibility.
+
+Only the "-q" version of openMSP430, needed for test2, is provided,
+since these files are a bit large.
+

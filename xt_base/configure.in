@@ -1,0 +1,1136 @@
+dnl Configure input script for XicTools.
+dnl Process this file with autoconf to produce a configure script.
+dnl Copyright (c) Whiteley Research Inc, 2002
+dnl $Id: configure.in,v 1.233 2016/09/28 22:49:23 stevew Exp $
+
+dnl ***
+dnl *** Initialize
+dnl ***
+
+AC_INIT(configure)
+
+linux32=no
+if test "`uname -m`" = i686; then
+    linux32=yes;
+fi
+
+dnl Override hack for 32-bit build on x86_64 machine.
+linux32_64=no
+if test $linux32 = no; then
+    if test "`uname -m`" = x86_64; then
+        if test -f BUILD-32; then
+            CC="gcc -m32 -march=i686"
+            CXX="g++ -m32 -march=i686"
+            GCC=yes
+            linux32_64=yes
+            linux32=yes
+            export PKG_CONFIG_PATH=/usr/lib/pkgconfig
+        fi
+    fi
+fi
+
+
+DATE=`/bin/date`
+if test -d ../wrspice; then
+    SPICE_VERSION=`../wrspice/version wrspice`
+    DEVLIB_VERSION=`../wrspice/version devlib`
+    DEVLIB_SHARED_FILE=libwrsdev.so.2.0
+    DEVLIB_STATIC_FILE=libwrsdev.a
+fi
+if test -d ../xic; then
+    GFX_VERSION=`../xic/version xic`
+fi
+if test -d ../xt_accs; then
+    ACCS_VERSION=`../xt_accs/version accs`
+fi
+if test -d ../xt_base; then
+    XTLSERV_VERSION=`../xt_base/version xtlserv`
+fi
+TOOLROOT="xictools"
+AC_SUBST(prefix)
+AC_SUBST(DATE)
+AC_SUBST(SPICE_VERSION)
+AC_SUBST(DEVLIB_VERSION)
+AC_SUBST(DEVLIB_SHARED_FILE)
+AC_SUBST(DEVLIB_STATIC_FILE)
+AC_SUBST(GFX_VERSION)
+AC_SUBST(ACCS_VERSION)
+AC_SUBST(XTLSERV_VERSION)
+AC_SUBST(TOOLROOT)
+
+dnl ***
+dnl *** Setup configure args
+dnl ***
+
+dnl --enable-m64
+dnl enable addition of -m64 gcc option to force 64-bit output
+m64="no"
+AC_ARG_ENABLE(m64,
+    [  ]--enable-m64            enable 64-bit build,
+if test $enable_m64 = yes; then
+    m64="yes"
+fi
+)
+
+dnl --enable-mingw[=/path/to/mingw]
+dnl enable mingw (Win32), the default on MSW systems, cross tools otherwise
+mingw="no"
+if test x"$MINGW" = x; then
+    mingw_dir="/usr/local/mingw32"
+else
+    mingw_dir="$MINGW"
+fi
+AC_ARG_ENABLE(mingw,
+    [  ]--enable_mingw=DIR      build using mingw path optional,
+if test $enable_mingw != yes -a $enable_mingw != no; then
+    mingw_dir=$enable_mingw
+    mingw=yes
+elif test $enable_mingw = yes; then
+    mingw=yes
+fi
+)
+
+dnl --enable-mingwlib=/path/to/mingw_libs
+dnl this sets a -L/path to extra libraries used with mingw
+mingwlib=
+AC_ARG_ENABLE(mingwlib,
+    [  ]--enable_mingwlib=DIR   specify path to extra libs for mingw,
+if test $enable_mingwlib != yes -a $enable_mingwlib != no; then
+    mingwlib="$enable_mingwlib"
+fi
+)
+
+dnl --enable-nospice
+dnl disable WRspice build
+nospice="no"
+AC_ARG_ENABLE(nospice,
+    [  ]--enable-nospice        skip wrspice build,
+if test $enable_nospice = yes; then
+    nospice="yes"
+fi
+)
+
+if test ! -d wrspice; then
+    nospice=yes
+fi
+
+dnl  Enable OpenAccess support, i.e., enable and build the OA plugin.  This
+dnl  requires the presence of an OpenAccess source tree (for the include
+dnl  files) and the shared libraries in order to run.  The source code is
+dnl  available from the Si2 organization.  Note that commercial use requires
+dnl  joining the OpenAccess Si2 interest group.
+dnl
+dnl --enable-oa=/path/to/oa/libs/
+OA_DEF_LOC=/usr/local/cad/OA-22.04
+with_oa="no"
+AC_ARG_ENABLE(oa,
+    [  ]--enable-oa[[=path_to_oa]]             enable link to OpenAccess,
+if test $enable_oa != yes -a $enable_oa != no; then
+    oa_loc=$enable_oa
+    with_oa=yes
+elif test $enable_oa = yes; then
+    with_oa=yes
+    oa_loc=$OA_DEF_LOC
+fi
+)
+
+dnl  Enable (limited) support for Cadence psf simulation data file format. 
+dnl  This links to prebuilt libraries supplied with the oasis simulator
+dnl  integration toolkit, for integrating a simulator (such as WRspice)
+dnl  with the Cadence Analog Design Environment.  This is a Cadence
+dnl  product, and will work with Centos 6 and 7 and equivalent.
+dnl --enable-psf=/path/to/oasis-kit/libs/
+PDF_DEF_LOC=$HOME/cadence/oasis-kit/tools.lnx86
+with_psf="no"
+with_psf_ok="no"
+AC_ARG_ENABLE(psf,
+    [  ]--enable-psf[[=path_to_psf]]           enable Cadence PSF support,
+if test $enable_psf != yes -a $enable_psf != no; then
+    psf_loc=$enable_psf
+    with_psf=yes
+elif test $enable_psf = yes; then
+    with_psf=yes
+    psf_loc=$PSF_DEF_LOC
+fi
+)
+
+dnl --enable-valgrind
+dnl should valgrind be enabled
+valgrind="no"
+AC_ARG_ENABLE(valgrind,
+    [  ]--enable-valgrind       enable valgrind,
+if test $enable_valgrind = yes; then
+    valgrind="yes"
+fi
+)
+
+dnl --enable-profiling
+dnl should profiling be enabled
+profiling="no"
+AC_ARG_ENABLE(profiling,
+    [  ]--enable-profiling      enable profiling,
+if test $enable_profiling = yes; then
+    profiling="yes"
+fi
+)
+
+dnl --enable-gtk2[=config_dir]
+dnl redundant except for giving pkg-confgig path
+AC_ARG_ENABLE(gtk2,  [  ]--enable-gtk2[[=config_dir]]           link with gtk2,
+if test $enable_gtk2 != yes -a $enable_gtk2 != no; then
+    gtkloc="$enable_gtk2"
+    gtklocd="$enable_gtk2/"
+fi
+)
+
+dnl --enable-quartz
+dnl use OS X GTK-2 Quartz backend
+with_quartz="no"
+AC_ARG_ENABLE(quartz, [  ]--enable-quartz   use Quartz backend for OS X,
+if test $enable_quartz = yes; then
+    with_quartz=yes
+fi
+)
+
+echo '#define HAVE_GTK2 1'>> confdefs.h
+
+if test $nospice = no; then
+    WRSPICE_TARGET='device_lib $(SPICE_PROG)'
+fi
+AC_SUBST(WRSPICE_TARGET)
+
+
+dnl ***
+dnl *** Check operating system and build environment
+dnl ***
+
+sys_os=`uname`
+case $sys_os in
+CYGWIN*)
+    mingw=yes
+    sys_os="CYGWIN"
+    CC=$mingw_dir/bin/gcc
+    CXX=$mingw_dir/bin/g++
+    GCC=yes
+    TOOLKIT="Win32"
+    WINDRES=$mingw_dir/bin/windres
+    RESOURCE=resource.o
+    AR=$mingw_dir/bin/ar
+    RANLIB=$mingw_dir/bin/ranlib
+    LD=$mingw_dir/bin/ld
+    # static link avoids libwinpthread-1.dll dependence
+    WINPTHREADFIX="-static"
+    ;;
+*)
+    AC_PROG_CC
+    AC_PROG_CXX
+    TOOLKIT="Gtk2"
+    if test "$AR" = ""; then
+        AR=ar
+    fi
+    if test "$RANLIB" = ""; then
+        AC_PROG_RANLIB
+    fi
+    if test "$LD" = ""; then
+        LD=ld
+    fi
+    ;;
+esac
+AC_SUBST(TOOLKIT)
+AC_SUBST(WINDRES)
+AC_SUBST(RESOURCE)
+AC_SUBST(AR)
+AC_SUBST(RANLIB)
+AC_SUBST(LD)
+AC_SUBST(WINPTHREADFIX)
+
+if test "$GCC" = yes; then
+    DEPEND_PROG='$(CC) -MM'
+    c_flags="-Wall -W -Wshadow -Wwrite-strings"
+    if test $profiling = yes; then
+        c_flags="-pg $c_flags"
+    fi
+else
+    DEPEND_PROG='gcc -MM'
+fi
+AC_SUBST(DEPEND_PROG)
+
+AC_PROG_MAKE_SET
+
+LEX="flex -l"
+AC_PROG_LEX
+AC_PROG_YACC
+AC_PATH_XTRA
+
+DARWIN_ARCH=unknown
+
+DLL_SPICE_PROG='dll-$(SPICE_PROG)'
+NODLL_SPICE_PROG='$(SPICE_PROG)'
+DLL_XIC_PROG='dll-$(XIC_PROG)'
+NODLL_XIC_PROG='$(XIC_PROG)'
+
+case $sys_os in
+CYGWIN*)
+    NTSUFFIX=".exe"
+    FILTER="|sed -e s/C:// -e s///"
+    MALLOC=
+    OSNAME="Win32"
+    ARCH="i386"
+    DIST_SUFFIX="exe"
+    m64="no"
+    dnl  # needed for gcc-2
+    dnl c_flags="-fvtable-thunks $c_flags"
+    INSTALL='$(LPATH)/util/install-sh'
+    lib_dirs="/usr/lib /usr/local/lib"
+    SOEXT=dll
+    oa_lpath=$oa_loc/lib/mingw_32/opt
+    LSHFLAG="-shared -Wl,--enable-auto-import,--export-all-symbols"
+    oa_cflags="-DOA_WINDOWS -DOA_MINGW -DOA_NO_DLL_ATTR"
+    DLL_SPICE_PROG='$(SPICE_PROG)'
+    NODLL_SPICE_PROG='nodll-$(SPICE_PROG)'
+    DLL_XIC_PROG='$(XIC_PROG)'
+    NODLL_XIC_PROG='nodll-$(XIC_PROG)'
+;;
+Darwin)
+    kern=`uname -r`
+    tifs=$IFS
+    IFS="."
+    set $kern
+    IFS=$tifs
+dnl uname -r returns the kernel release, it seems that the major
+dnl index - 4 is the OS release, e.g. kernel 10.4.0 is OS X 10.6.4.
+    if test $1 -ge 13; then
+        OSNAME="Darwin64"
+        ARCH="x86_64"
+        DIST_SUFFIX="pkg.tgz"
+        # Assume Yosemite back end,
+        SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+        UFLAGS="-mmacosx-version-min=10.10 -arch $ARCH -isysroot $SDK"
+        DARWIN_ARCH=$ARCH
+        MALLOC='$(LPATH)/malloc/malloc.a'
+        oa_lpath=$oa_loc/lib/darwin_64/opt
+    else
+        echo "Architecture not supported."
+        exit
+    fi
+    m64="no"
+    INSTALL='STRIPPROG="strip -S" $(LPATH)/util/install-sh'
+    lib_dirs="$lib_dirs $ac_x_libraries"
+    SOEXT=dylib
+    LSHFLAG="-dynamiclib -undefined dynamic_lookup"
+;;
+FreeBSD)
+    rel=`uname -r`
+    tifs=$IFS
+    IFS="."
+    set $rel
+    IFS=$tifs
+    if test $1 = 10; then
+        OSNAME="FreeBSD10"
+    else
+        echo "Architecture not supported."
+        exit
+    fi
+    ARCH="i386"
+    DIST_SUFFIX="pkg.tbz"
+    MALLOC='$(LPATH)/malloc/malloc.a'
+    m64="no"
+    PIC_OPT="-fPIC"
+    LFLAGS="-rdynamic"
+    LSHFLAG="-shared"
+    INSTALL='$(LPATH)/util/install-sh'
+    lib_dirs="$lib_dirs $ac_x_libraries"
+    SOEXT=so
+    oa_lpath=$oa_loc/lib/freebsd_32/opt
+;;
+Linux)
+    OSNAME="LinuxUnknown"
+    ARCH="x86_64"
+    if test -f /etc/redhat-release; then
+        # RedHat/CentOS
+        # Supported 7_64, 6_64, 5_64, 5_32
+        if test x"`cat /etc/redhat-release | grep 7\.[[0-9]]`" != x; then
+            if test $linux32 = yes; then
+                echo "Architecture not supported."
+                exit
+            fi
+            OSNAME="LinuxRHEL7_64"
+            ARCH="x86_64"
+            lib_dirs="/usr/lib64 /usr/local/lib64"
+            with_psf_ok=yes
+        elif test x"`cat /etc/redhat-release | grep 6\.[[0-9]]`" != x; then
+            if test $linux32 = yes; then
+                echo "Architecture not supported."
+                exit
+            fi
+            OSNAME="LinuxRHEL6_64"
+            ARCH="x86_64"
+            lib_dirs="/usr/lib64 /usr/local/lib64"
+            with_psf_ok=yes
+        elif test x"`cat /etc/redhat-release | grep 5\.[[0-9]]`" != x; then
+            if test $linux32 = yes; then
+                OSNAME="LinuxRHEL5"
+                ARCH="i686"
+                ac_x_libraries=/usr/X11R6/lib
+            else
+                OSNAME="LinuxRHEL5_64"
+                ARCH="x86_64"
+                lib_dirs="/usr/lib64 /usr/local/lib64"
+                largs="-L/usr/local/lib64"
+            fi
+        else
+            echo "Architecture not supported."
+            exit
+        fi
+    elif test -f /etc/os-release; then
+        # SuSE (open SuSE)
+        if test $linux32 = yes; then
+            echo "Architecture not supported."
+            exit
+        fi
+        OSNAME="LinuxOSuSE_64"
+        ARCH="x86_64"
+        lib_dirs="/usr/lib64"
+    else
+        echo "Architecture not supported."
+        exit
+    fi
+    
+    DIST_SUFFIX="rpm"
+    m64="no"
+    MALLOC='$(LPATH)/malloc/malloc.a'
+    PIC_OPT="-fPIC"
+    LFLAGS="-rdynamic"
+    LSHFLAG="-shared"
+    INSTALL='$(LPATH)/util/install-sh'
+    lib_dirs="$lib_dirs $ac_x_libraries"
+    SOEXT=so
+    if test -f BUILD-32; then
+        oa_lpath=$oa_loc/lib/linux_32/opt
+    else
+        oa_lpath=$oa_loc/lib/linux_64/opt
+    fi
+;;
+*)
+    echo "*** Operating system $sys_os not supported"
+    exit
+;;
+esac
+
+if test $profiling = yes; then
+   LFLAGS="-pg $LFLAGS"
+fi
+
+AC_SUBST(SDK)
+AC_SUBST(UFLAGS)
+AC_SUBST(DARWIN_ARCH)
+AC_SUBST(NTSUFFIX)
+AC_SUBST(FILTER)
+AC_SUBST(MALLOC)
+AC_SUBST(OSNAME)
+AC_SUBST(ARCH)
+AC_SUBST(DIST_SUFFIX)
+AC_SUBST(INCLXTRA)
+AC_SUBST(SOEXT)
+AC_SUBST(DLL_SPICE_PROG)
+AC_SUBST(NODLL_SPICE_PROG)
+AC_SUBST(DLL_XIC_PROG)
+AC_SUBST(NODLL_XIC_PROG)
+
+if test $with_oa = yes; then
+    OA_INCLUDE=$oa_loc/include/oa
+    OA_LIBS="-L$oa_lpath -loaCommon -loaBase -loaPlugIn -loaDM -loaTech \
+ -loaDesign"
+    OA_CFLAGS="-O -g -Wall -W -Wwrite-strings $oa_cflags"
+    OA_SUBDIR="../src/oa"
+    echo '#define HAVE_OA 1'>> confdefs.h
+fi
+AC_SUBST(OA_INCLUDE)
+AC_SUBST(OA_LIBS)
+AC_SUBST(OA_CFLAGS)
+AC_SUBST(OA_SUBDIR)
+
+dnl # Always enable pthreads, supported on all platforms.
+PTHREADOPT="-pthread"
+
+if test x$with_psf = xyes -a x$with_psf_ok = xyes; then
+TKTOOLS=$psf_loc
+PSINCL=" \\
+-I\$(TKTOOLS)/dfII/include                 \\
+-I\$(TKTOOLS)/dfII/pvt/include             \\
+-I\$(TKTOOLS)/virtuos/include              \\
+-I\$(TKTOOLS)/dfII/src/artist/psf/awfPSFWriter -DWITH_PSFILE"
+PSLIBS=" \\
+\$(TKTOOLS)/dfII/pvt/lib/64bit/awflib.a    \\
+\$(TKTOOLS)/lib/64bit/drlLog.a             \\
+\$(TKTOOLS)/lib/64bit/psl.a                \\
+\$(TKTOOLS)/virtuos/lib/64bit/virtuos.a    \\
+\$(TKTOOLS)/lib/64bit/libfastt.a           \\
+\$(TKTOOLS)/lib//64bit/libcls.a            \\
+\$(TKTOOLS)/lib/64bit/libcdsCommon.a -lelf"
+fi
+AC_SUBST(TKTOOLS)
+AC_SUBST(PSLIBS)
+AC_SUBST(PSINCL)
+
+dnl # gcc-4.8.3 win-builds has trouble with -O3 when multi-threading.
+dnl # Get seg faults, always at lines that disassemble to a movaps
+dnl # instruction.  Seems to be an optimization for handling BBox on
+dnl # the stack, which is not being aligned-16?  Haven't a clue why
+dnl # it only crashes with multi-threads.
+if test $OSNAME = Win32; then
+    CFLAGS_S="-O2 $c_flags $PTHREADOPT"
+    CFLAGS_SG="-O2 -g $c_flags $PTHREADOPT"
+else
+    CFLAGS_S="-O3 $c_flags $PTHREADOPT"
+    CFLAGS_SG="-O3 -g $c_flags $PTHREADOPT"
+fi
+CFLAGSG="-O -g $c_flags $PTHREADOPT"
+CFLAGS="-O $c_flags $PTHREADOPT"
+
+if test $valgrind = yes; then
+   dnl # Minimal optimization for memory leak debugging
+   CFLAGS_S="-O0 $c_flags"
+   CFLAGSG="-O0 -g $c_flags"
+   CFLAGS_SG="-O0 -g $c_flags"
+   CFLAGS="-O0 $c_flags"
+fi
+
+AC_SUBST(CFLAGS)
+AC_SUBST(CFLAGS_S)
+AC_SUBST(CFLAGSG)
+AC_SUBST(CFLAGS_SG)
+AC_SUBST(PIC_OPT)
+AC_SUBST(LFLAGS)
+AC_SUBST(LSHFLAG)
+AC_SUBST(INSTALL)
+
+
+dnl ***
+dnl *** Graphical interface configuration
+dnl ***
+
+AC_CHECK_PROG(have_cfg, pkg-config, "yes", "no", $PATH:$gtkloc)
+if test $have_cfg = yes; then
+    ${gtklocd}pkg-config --exists gtk+-2.0
+    if test $? = 0; then
+        GRPREF=gtk
+        TOOLKITINC="-DUSE_GTK `${gtklocd}pkg-config --cflags gtk+-2.0`"
+dnl Filter needed in Windows, pkg-config adds ^M that chokes g++.
+        TOOLKITLIBS="`${gtklocd}pkg-config --libs gtk+-2.0 |sed -e s///`"
+        if test $OSNAME = "Darwin64" -a $with_quartz = yes; then
+            TOOLKITCFLAGS="-DWITH_QUARTZ"
+        fi
+    else
+        echo "gtk2 not found"
+        exit
+    fi
+else
+    echo "pkg-config not found"
+    exit
+fi
+
+AC_SUBST(GRPREF)
+AC_SUBST(TOOLKITINC)
+AC_SUBST(TOOLKITLIBS)
+AC_SUBST(TOOLKITCFLAGS)
+AC_SUBST(TOOLKITLFLAGS)
+AC_SUBST(MOC)
+AC_SUBST(QTBASE)
+
+
+dnl ***
+dnl *** Python and Tcl/Tk configuration
+dnl ***
+
+if test $OSNAME = "Darwin64"; then
+    if test -d /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/python2.7; then
+        PY_INCLUDE="-I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/python2.7"
+        PY_LIBS="-L/usr/lib -lpython2.7"
+        PY_TARGETS="py27.dylib"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    fi
+    if test -f /usr/include/tcl.h; then
+        TCL_INCLUDE=
+        TCL_LIBS="-ltcl"
+        echo '#define HAVE_TCL 1'>> confdefs.h
+    fi
+    if test -f /usr/include/tk.h; then
+        TK_INCLUDE="$X_CFLAGS"
+        TK_LIBS="-ltk"
+        echo '#define HAVE_TK 1'>> confdefs.h
+    fi
+elif test $OSNAME = "FreeBSD10"; then
+    if test -d /usr/local/include/python2.7; then
+        PY_INCLUDE="-I/usr/local/include/python2.7"
+        PY_LIBS="-L/usr/local/lib -lpython2.7"
+        PY_TARGETS="py27.so"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    elif test -d /usr/local/include/python2.6; then
+        PY_INCLUDE="-I/usr/local/include/python2.6"
+        PY_LIBS="-L/usr/local/lib -lpython2.6"
+        PY_TARGETS="py26.so"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    fi
+    if test -d /usr/local/include/tcl8.6; then
+        TCL_INCLUDE="-I/usr/local/include/tcl8.6"
+        TCL_LIBS="-L/usr/local/lib -ltcl86"
+        echo '#define HAVE_TCL 1'>> confdefs.h
+    elif test -d /usr/local/include/tcl8.5; then
+        TCL_INCLUDE="-I/usr/local/include/tcl8.5"
+        TCL_LIBS="-L/usr/local/lib -ltcl85"
+        echo '#define HAVE_TCL 1'>> confdefs.h
+    elif test -d /usr/local/include/tcl8.4; then
+        TCL_INCLUDE="-I/usr/local/include/tcl8.4"
+        TCL_LIBS="-L/usr/local/lib -ltcl84"
+        echo '#define HAVE_TCL 1'>> confdefs.h
+    fi
+    if test -d /usr/local/include/tk8.6; then
+        TK_INCLUDE="-I/usr/local/include/tk8.6 $X_CFLAGS"
+        TK_LIBS="-L/usr/local/lib -ltk86"
+        echo '#define HAVE_TK 1'>> confdefs.h
+    elif test -d /usr/local/include/tk8.5; then
+        TK_INCLUDE="-I/usr/local/include/tk8.5 $X_CFLAGS"
+        TK_LIBS="-L/usr/local/lib -ltk85"
+        echo '#define HAVE_TK 1'>> confdefs.h
+    elif test -d /usr/local/include/tk8.4; then
+        TK_INCLUDE="-I/usr/local/include/tk8.4 $X_CFLAGS"
+        TK_LIBS="-L/usr/local/lib -ltk84"
+        echo '#define HAVE_TK 1'>> confdefs.h
+    fi
+elif test $OSNAME = "LinuxRHEL5"; then
+    if test -d /usr/include/python2.6; then
+        PY_INCLUDE="-I/usr/include/python2.6"
+        PY_LIBS="-lpython2.6"
+        PY_TARGETS="py26.so"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    fi
+    if test -f /usr/include/tcl.h; then
+        TCL_INCLUDE=
+        TCL_LIBS="-ltcl"
+        echo '#define HAVE_TCL 1'>> confdefs.h
+    fi
+    if test -f /usr/include/tk.h; then
+        TK_INCLUDE="$X_CFLAGS"
+        TK_LIBS="-ltk"
+        echo '#define HAVE_TK 1'>> confdefs.h
+    fi
+elif test $OSNAME = "LinuxRHEL5_64"; then
+    if test -d /usr/include/python2.6; then
+        PY_INCLUDE="-I/usr/include/python2.6"
+        PY_LIBS="-lpython2.6"
+        PY_TARGETS="py26.so"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    fi
+    if test -f /usr/include/tcl.h; then
+        TCL_INCLUDE=
+        TCL_LIBS="-ltcl"
+        echo '#define HAVE_TCL 1'>> confdefs.h
+    fi
+    if test -f /usr/include/tk.h; then
+        TK_INCLUDE="$X_CFLAGS"
+        TK_LIBS="-ltk"
+        echo '#define HAVE_TK 1'>> confdefs.h
+    fi
+elif test $OSNAME = "LinuxRHEL6_64"; then
+    if test -d /usr/include/python2.6; then
+        PY_INCLUDE="-I/usr/include/python2.6"
+        PY_LIBS="-lpython2.6"
+        PY_TARGETS="py26.so"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    fi
+    if test -f /usr/include/tcl.h; then
+        TCL_INCLUDE=
+        TCL_LIBS="-ltcl"
+        echo '#define HAVE_TCL 1'>> confdefs.h
+    fi
+    if test -f /usr/include/tk.h; then
+        TK_INCLUDE="$X_CFLAGS"
+        TK_LIBS="-ltk"
+        echo '#define HAVE_TK 1'>> confdefs.h
+    fi
+elif test $OSNAME = "LinuxRHEL7_64"; then
+    if test -d /usr/include/python2.7; then
+        PY_INCLUDE="-I/usr/include/python2.7"
+        PY_LIBS="-lpython2.7"
+        PY_TARGETS="py27.so"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    fi
+    if test -f /usr/include/tcl.h; then
+        TCL_INCLUDE=
+        TCL_LIBS="-ltcl"
+        echo '#define HAVE_TCL 1'>> confdefs.h
+    fi
+    if test -f /usr/include/tk.h; then
+        TK_INCLUDE="$X_CFLAGS"
+        TK_LIBS="-ltk"
+        echo '#define HAVE_TK 1'>> confdefs.h
+    fi
+elif test $OSNAME = "LinuxOSuSE_64"; then
+    if test -d /usr/include/python2.7; then
+        PY_INCLUDE="-I/usr/include/python2.7"
+        PY_LIBS="-lpython2.7"
+        PY_TARGETS="py27.so"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    fi
+    if test -f /usr/include/tcl.h; then
+        TCL_INCLUDE=
+        TCL_LIBS="-ltcl8.6"
+        echo '#define HAVE_TCL 1'>> confdefs.h
+    fi
+    if test -f /usr/include/tk.h; then
+        TK_INCLUDE="$X_CFLAGS"
+        TK_LIBS="-ltk8.6"
+        echo '#define HAVE_TK 1'>> confdefs.h
+    fi
+fi
+
+AC_SUBST(PY_TARGETS)
+AC_SUBST(PY_INCLUDE)
+AC_SUBST(PY_LIBS)
+AC_SUBST(TCL_INCLUDE)
+AC_SUBST(TCL_LIBS)
+AC_SUBST(TK_INCLUDE)
+AC_SUBST(TK_LIBS)
+
+
+dnl ***
+dnl *** Checks for header files
+dnl ***
+
+AC_HEADER_DIRENT
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS(
+    alloca.h dirent.h fcntl.h fenv.h float.h fnmatch.h limits.h pwd.h \
+    regex.h setjmp.h sgtty.h stdlib.h strings.h sys/dir.h sys/file.h \
+    sys/ioctl.h sys/resource.h sys/time.h sys/wait.h term.h termcap.h \
+    termio.h termios.h ulimit.h unistd.h)
+AC_EGREP_HEADER(sys_errlist, stdio.h, AC_DEFINE(SYS_ERRLIST_DEF))
+dnl Detect when select takes int* as second arg (for HPUX)
+AC_EGREP_HEADER(select.*int.*int, sys/time.h, AC_DEFINE(SELECT_TAKES_INTP))
+
+
+dnl ***
+dnl *** Checks for typedefs, structures, and compiler characteristics
+dnl ***
+AC_C_CONST
+AC_HEADER_TIME
+AC_STRUCT_TM
+AC_TYPE_SIGNAL
+dnl check for socklen_t
+dnl AC_CHECK_SOCKTYPE(TYPE, DEFAULT)
+AC_DEFUN(AC_CHECK_SOCKTYPE,
+[AC_REQUIRE([AC_HEADER_STDC])dnl
+AC_MSG_CHECKING(for $1)
+AC_CACHE_VAL(ac_cv_type_$1,
+[AC_EGREP_CPP(dnl
+changequote(<<,>>)dnl
+<<(^|[^a-zA-Z_0-9])$1[^a-zA-Z_0-9]>>dnl
+changequote([,]), [#include <sys/types.h>
+#include <sys/socket.h>
+#if STDC_HEADERS
+#include <stdlib.h>
+#include <stddef.h>
+#endif], ac_cv_type_$1=yes, ac_cv_type_$1=no)])dnl
+AC_MSG_RESULT($ac_cv_type_$1)
+if test $ac_cv_type_$1 = no; then
+    AC_DEFINE($1, $2)
+fi
+]) 
+AC_CHECK_SOCKTYPE(socklen_t, int)
+
+AC_CHECK_TYPE(int64_t, long long)
+if test $ac_cv_type_int64_t = "no"; then
+    NEEDINT64="-DNEED_INT64_TYPEDEF"
+fi
+
+dnl ***
+dnl *** Check for needed libraries
+dnl ***
+
+if test $OSNAME = "Win32"; then
+    zzldflags=$LDFLAGS
+    LDFLAGS=
+    if test "z$mingwlib" != z; then
+        LDFLAGS="-L$mingwlib"
+    fi
+    AC_CHECK_LIB(z, main)
+    IMG_FLAGS=
+    IMG_LIBS=
+    AC_CHECK_LIB(png, main)
+    AC_CHECK_LIB(png, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBPNG"
+          IMG_LIBS="$IMG_LIBS -lpng")
+    AC_CHECK_LIB(jpeg, main)
+    AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
+          IMG_LIBS="$IMG_LIBS -ljpeg")
+    AC_CHECK_LIB(tiff, main)
+    AC_CHECK_LIB(tiff, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBTIFF"
+          IMG_LIBS="$IMG_LIBS -ltiff")
+    IMG_INCLUDES="-I/usr/local/include"
+    LDFLAGS=$zzldflags
+    MSLIBS=
+    if test z"$mingwlib" != z; then
+        MSLIBS="-L$mingwlib "
+    fi
+    MSLIBS=${MSLIBS}"-lgdi32 -lwinspool -lcomdlg32 -lole32 -loleaut32 \
+ -luuid -lodbc32 -lversion -lcomctl32 -lwsock32 -lws2_32 -liphlpapi"
+    MSLIBS2="-lbfd -liberty -lintl -liconv -lm"
+    dnl -lbfd -liberty required for stackdump.o, and fnmatch used in mswfile.cc
+    SLIBS="$MSLIBS"
+    LIBS="$MSLIBS $MSLIBS2 $LIBS"
+    NTREGEX='$(LPATH)/miscutil/libregex/libregex.a'
+    EXTRALIBS="-lpthread"
+elif test $OSNAME = "Darwin64"; then
+    if test $with_quartz = yes; then
+        LIBS=-L/usr/local/gtk2-bundle/lib
+        IMG_LIBS=-L/usr/local/gtk2-bundle/lib
+        IMG_INCLUDES="-I/usr/local/gtk2-bundle/include"
+    else
+        LIBS=-L/usr/local/gtk2-bundle-x11/lib
+        IMG_LIBS=-L/usr/local/gtk2-bundle-x11/lib
+        IMG_INCLUDES="-I/usr/local/gtk2-bundle-x11/include"
+    fi
+
+    IMG_FLAGS=
+    AC_CHECK_LIB(z, main)
+    AC_CHECK_LIB(png16, main)
+    AC_CHECK_LIB(png16, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBPNG"
+          IMG_LIBS="$IMG_LIBS -lpng16"
+           echo '#define HAVE_LIBPNG 1'>> confdefs.h
+    )
+    AC_CHECK_LIB(jpeg, main)
+    AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
+          IMG_LIBS="$IMG_LIBS -ljpeg")
+    AC_CHECK_LIB(tiff, main)
+    AC_CHECK_LIB(tiff, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBTIFF"
+          IMG_LIBS="$IMG_LIBS -ltiff")
+    CURSES="-lcurses"
+else
+    tmplibs1=$LIBS
+    AC_CHECK_LIB(m, main)
+    AC_CHECK_LIB(dl, main)
+    zzldflags=$LDFLAGS
+    LDFLAGS=""
+    if test "$ac_x_libraries" != ""; then
+        LDFLAGS="$LDFLAGS -L$ac_x_libraries"
+    fi
+    if test $m64 = yes; then
+        LDFLAGS="$LDFLAGS -L/usr/local/m64/lib"
+    else
+        LDFLAGS="$LDFLAGS -L/usr/local/lib"
+    fi
+    AC_CHECK_LIB(X11, main)
+    AC_CHECK_LIB(Xext, main)
+    gxi=`${gtklocd}pkg-config --libs gtk+-2.0 | grep lXi`
+    if test x"$gxi" != x; then
+        AC_CHECK_LIB(Xi, main)
+    fi
+
+    IMG_INCLUDES="-I/usr/local/include -I/usr/X11R6/include"
+    IMG_LIBS=
+    IMG_FLAGS=
+
+    if test $OSNAME = "LinuxRHEL6_64"; then
+        AC_CHECK_LIB(png, main)
+        AC_CHECK_LIB(png, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBPNG"
+          IMG_LIBS="$IMG_LIBS /usr/lib64/libpng12.a")
+        AC_CHECK_LIB(jpeg, main)
+        AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
+          IMG_LIBS="$IMG_LIBS /usr/lib64/libjpeg.a")
+        AC_CHECK_LIB(tiff, main)
+        AC_CHECK_LIB(tiff, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBTIFF"
+          IMG_LIBS="$IMG_LIBS /usr/lib64/libtiff.a")
+    else
+        AC_CHECK_LIB(png, main)
+        AC_CHECK_LIB(png, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBPNG"
+          IMG_LIBS="$IMG_LIBS -lpng")
+        AC_CHECK_LIB(jpeg, main)
+        AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
+          IMG_LIBS="$IMG_LIBS -ljpeg")
+        AC_CHECK_LIB(tiff, main)
+        AC_CHECK_LIB(tiff, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBTIFF"
+          IMG_LIBS="$IMG_LIBS -ltiff")
+    fi
+    tmplibs1="$tmplibsq $IMG_LIBS"
+    AC_CHECK_LIB(z, main)
+    AC_CHECK_LIB(z, main, tmplibs1="$tmplibs1 -lz")
+    LDFLAGS=$zzldflags
+
+    DYNAMIC_LIBS="-DDYNAMIC_LIBS"
+    LIBS=$tmplibs1
+
+    if test "$ac_x_libraries" != ""; then
+        largs="$largs -L$ac_x_libraries"
+    fi
+
+    if test x"$largs" != x; then
+        LIBS="$largs $LIBS"
+    fi
+    if test $OSNAME = "LinuxRHEL7_64"; then
+        EXTRALIBS="-lpthread -ldl -lX11 -lXext"
+    elif test $OSNAME = "FreeBSD10"; then
+        LIBS="$LIBS -lexecinfo"
+        SLIBS="$LIBS -lexecinfo"
+        EXTRALIBS="ldl -lX11 -lXext"
+    elif test $OSNAME = "LinuxOSuSE_64"; then
+        EXTRALIBS="-lpthread -ldl -lX11 -lXext"
+    fi
+
+    AC_CHECK_LIB(ncurses, main, [ CURSES="-lncurses" ],
+        AC_CHECK_LIB(curses, main, [
+            found=no
+            for a in $lib_dirs; do
+                if test -f $a/libcurses.a; then
+                    CURSES="$a/libcurses.a"
+                    break
+                fi
+            done
+            if test $found = no; then
+                CURSES="-lcurses"
+            fi ], AC_CHECK_LIB(termcap, main, [
+                found=no
+                for a in $lib_dirs; do
+                    if test -f $a/libtermcap.a; then
+                        CURSES="$a/libtermcap.a"
+                        break
+                    fi
+                done
+                if test $found = no; then
+                    CURSES="-ltermcap"
+                fi ])
+    ))
+fi
+AC_SUBST(MSLIBS)
+AC_SUBST(DYNAMIC_LIBS)
+AC_SUBST(NTREGEX)
+AC_SUBST(NTNOCONS)
+AC_SUBST(WRSRES)
+AC_SUBST(MOZYRES)
+AC_SUBST(XEDRES)
+AC_SUBST(NEEDINT64)
+AC_SUBST(CURSES)
+AC_SUBST(SLIBS)
+AC_SUBST(IMG_FLAGS)
+AC_SUBST(IMG_INCLUDES)
+AC_SUBST(IMG_LIBS)
+AC_SUBST(EXTRALIBS)
+
+dnl ***
+dnl *** WRspice device library
+dnl ***
+
+DEVLIB_CALL='../devlib/$(DEVLIB_STATIC)'
+#if test "x$LSHFLAG" != x; then
+#    if test "x$LSHFLAG" = x"-G"; then
+#        DEVLIB_CALL='-Wl,-R$(prefix)/lib $(DEVLIB_SHARED)'
+#    elif test $OSNAME = "Darwin"; then
+#        DEVLIB_CALL='$(DEVLIB_SHARED)'
+#    else
+#        DEVLIB_CALL='-Wl,-rpath,$(prefix)/lib $(DEVLIB_SHARED)'
+#    fi
+#fi
+AC_SUBST(DEVLIB_CALL)
+
+dnl ***
+dnl *** Checks for library functions
+dnl ***
+
+AC_FUNC_VPRINTF
+AC_FUNC_WAIT3
+if test $OSNAME = "Win32"; then
+    dnl these are macros
+    ac_cv_func_gethostname="yes"
+    ac_cv_func_gethostbyname="yes"
+    ac_cv_func_select="yes"
+    ac_cv_func_socket="yes"
+fi
+AC_CHECK_LIB(m, main)
+AC_CHECK_FUNCS(
+    access acosh atexit cbrt chdir clearerr dup2 erf erfc fork fseeko \
+    ftime getcwd getenv gethostname gethostbyname getpid getpwuid \
+    getrlimit getrusage getwd hstrerror isatty kill lgamma mkstemp \
+    mkstemps perror popen posix_memalign posix_openpt qsort raise \
+    re_comp select shmget sigaction signal socket srand stat strchr \
+    strcasecmp strerror strtok_r system tcgetpgrp ulimit unlink)
+
+tmplibs=$LIBS
+LIBS="$LIBS $CURSES" 
+AC_CHECK_FUNCS(tgetent tigetstr)
+LIBS=$tmplibs
+
+dnl defines for htm
+AC_CHECK_FUNC(strtok_r, ,SRCS_EXTRA="strtok_r.c")
+HTM_DEFS="-DGIF_DECODE -DHAVE_CONFIG_H"
+AC_SUBST(HTM_DEFS)
+AC_SUBST(SRCS_EXTRA)
+
+dnl defines for vl, httpget
+AC_CHECK_FUNC(gettimeofday, VL_DEFS="$VL_DEFS -DHAVE_GETTIMEOFDAY"
+  [echo '#define HAVE_GETTIMEOFDAY 1'>> confdefs.h])
+AC_CHECK_FUNC(times, VL_DEFS="$VL_DEFS -DHAVE_TIMES"
+  [echo '#define HAVE_TIMES 1'>> confdefs.h])
+AC_CHECK_FUNC(vasprintf, VL_DEFS="$VL_DEFS -DHAVE_VASPRINTF"
+  [echo '#define HAVE_VASPRINTF 1'>> confdefs.h])
+AC_CHECK_FUNC(vsnprintf, VL_DEFS="$VL_DEFS -DHAVE_VSNPRINTF"
+  [echo '#define HAVE_VSNPRINTF 1'>> confdefs.h])
+AC_CHECK_FUNC(srandom, [echo '#define HAVE_SRANDOM 1'>> confdefs.h],
+  VL_DEFS="$VL_DEFS -DNO_RANDOM")
+AC_SUBST(VL_DEFS)
+
+dnl Check for computed goto language entension support
+dnl
+echo $ac_n "checking for computed goto support in C++ ... "
+#echo $ECHO_N "checking for computed goto support in C++ ... $ECHO_C"
+cat > conftest.cc << EOF
+int main()
+{ static void *a[[]] = { &&l1, &&l2 }; goto *a[[0]];
+l1: return (0);
+l2: return (0); }
+EOF
+
+$CXX -c conftest.cc 1>&5 2>&5
+if test $? = 0; then
+    echo '#define HAVE_COMPUTED_GOTO 1'>> confdefs.h
+    echo yes
+else
+    echo no
+fi
+rm -rf conftest*
+
+dnl  Configure for local malloc.  The local allocation system has
+dnl  problems with Windows, OS X, AIX.
+if test x$MALLOC != x; then
+    if test -f ./malloc/local_malloc.cc; then  
+        echo '#define HAVE_LOCAL_ALLOCATOR 1'>> confdefs.h
+    fi
+fi
+
+LINKCC=$CXX
+if test $OSNAME = "Win32"; then
+    LINKCC="$CXX -static-libgcc -static-libstdc++"
+    DEVWINDLL="-L../../wrspice/bin -lwrspice"
+fi
+dnl # No longer attempt to statically link gcc stuff, impossible as
+dnl # other libraries link to it.
+dnl #LINKCC="$CXX -nodefaultlibs"
+dnl #STDCLIB="-Wl,-Bstatic -lstdc++ -Wl,-Bdynamic -lgcc -lgcc_eh -lc"
+AC_SUBST(LINKCC)
+AC_SUBST(STDCLIB)
+AC_SUBST(DEVWINDLL)
+
+dnl delete graphics-specific libraries
+if test -f ginterf/ginterf.a; then
+    rm -f ginterf/ginterf.a;
+fi
+
+AC_CONFIG_HEADER(miscutil/config.h)
+
+makefiles="Makefile \
+    util/Makefile \
+    ginterf/Makefile \
+    ginterf/help/Makefile \
+    ginterf/htm/Makefile \
+    ginterf/imsave/Makefile \
+    ginterf/${GRPREF}interf/Makefile \
+    miscutil/Makefile \
+    miscutil/httpget/Makefile \
+    malloc/Makefile \
+    packages/Makefile \
+    packages/files/make_config"
+if test -d ../secure; then
+    makefiles="$makefiles ../secure/Makefile"
+fi
+if test -d ../xt_accs; then
+    makefiles="$makefiles \
+        ../xt_accs/Makefile \
+        ../xt_accs/packages/Makefile"
+fi
+if test -d ../mrouter; then
+    makefiles="$makefiles ../mrouter/mrouter/Makefile"
+fi
+if test -d ../xic; then
+    if test $with_oa = yes; then
+        oa=../xic/src/oa/Makefile
+    fi
+    makefiles="$makefiles \
+        ../xic/include/Makefile \
+        ../xic/src/cd/Makefile \
+        ../xic/src/display/Makefile \
+        ../xic/src/drc/Makefile \
+        ../xic/src/edit/Makefile \
+        ../xic/src/extract/Makefile \
+        ../xic/src/fileio/Makefile \
+        ../xic/src/geom/Makefile \
+        ../xic/src/${GRPREF}xic/Makefile \
+        ../xic/src/main/Makefile \
+        $oa \
+        ../xic/src/parser/Makefile \
+        ../xic/src/sced/Makefile \
+        ../xic/src/scrkit/Makefile \
+        ../xic/src/sparse/Makefile \
+        ../xic/src/wrspif/Makefile \
+        ../xic/src/tech/Makefile \
+        ../xic/plugins/Makefile \
+        ../xic/packages/Makefile \
+        ../xic/bin/Makefile"
+fi
+if test -d ../KLU; then
+    makefiles="$makefiles ../KLU/Makefile"
+fi
+if test -d ../vl; then
+    makefiles="$makefiles ../vl/Makefile ../vl/packages/Makefile"
+fi
+if test -d ../wrspice; then
+    makefiles="$makefiles \
+        ../wrspice/include/Makefile \
+        ../wrspice/lib/startup/Makefile \
+        ../wrspice/src/analysis/Makefile \
+        ../wrspice/src/ckt/Makefile \
+        ../wrspice/src/cp/Makefile \
+        ../wrspice/src/fte/Makefile \
+        ../wrspice/src/${GRPREF}wrs/Makefile \
+        ../wrspice/src/inp/Makefile \
+        ../wrspice/src/misc/Makefile \
+        ../wrspice/src/plot/Makefile \
+        ../wrspice/src/sparse/Makefile \
+        ../wrspice/wrspice_ipc_demo/Makefile \
+        ../wrspice/packages/Makefile
+        ../wrspice/bin/Makefile \
+        ../wrspice/devlib/Makefile"
+    (cd ../wrspice/devlib; make -f Makefile.in devlist)
+    subd="`cat ../wrspice/devlib/devices ../wrspice/devlib/modules`"
+    for a in $subd adms adms/include disto include; do
+        makefiles="$makefiles ../wrspice/devlib/$a/Makefile"
+    done
+    rm -f ../wrspice/devlib/devices ../wrspice/devlib/modules
+    (cd ../wrspice/devlib/adms/examples; make exlist)
+    exmp="`cat ../wrspice/devlib/adms/examples/examples`"
+    for a in $exmp; do
+        makefiles="$makefiles ../wrspice/devlib/adms/examples/$a/Makefile"
+    done
+    rm -f ../wrspice/devlib/adms/examples/examples
+fi
+
+AC_OUTPUT($makefiles)
+
+if test -d util; then
+    if test -f util/Makefile; then
+        (cd util; ${MAKE-make})
+    fi
+fi
+if test -d ../xic/lib; then
+    (cd ../xic/lib; ${MAKE-make})
+fi
+if test -d ../wrspice/lib; then
+    (cd ../wrspice/lib; ${MAKE-make})
+fi
+
+if test -d ../KLU; then
+    (cd ../KLU; make unpack patch)
+fi
+if test -d ../mrouter; then
+    (cd ../mrouter; ./configure)
+fi
+(cd ..; ${MAKE-make} depend)
+

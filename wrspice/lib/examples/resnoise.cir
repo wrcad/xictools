@@ -1,0 +1,13 @@
+* simple resistor circuit
+
+iin 1 0 1m AC
+rl 1 0 1k
+
+.noise v(1) iin dec 10 10 100k 1
+.print noise "onoise-spectrum"
+
+.control
+run
+plot onoise_rl
+edit
+.endc

@@ -1,0 +1,83 @@
+
+
+vldir=../../../vl
+version=`../../../../version vl`
+program=vl
+utod=../../util/utod.exe
+
+# The inno packager exeutable.
+inno="/inno-5.5.1/iscc"
+
+cwd=`pwd`
+cd ../../../vl
+make export
+cd $cwd
+rm -rf vl
+mv ../../../packages/pkgfiles/vl-$version vl
+
+cd vl
+autoconf-2.13
+./configure
+make depend
+make
+cd $cwd
+
+topdir=data
+rm -rf $topdir
+mkdir $topdir
+
+bin=$topdir/bin
+share=$topdir/share
+lib=$share/vl
+
+mkdir $bin
+mkdir $share
+mkdir $lib
+
+echo copying vl.exe
+install -sc -m 0755 vl/vl.exe $bin
+
+echo copying examples
+
+cp -r $vldir/examples_ivl $lib
+$utod $lib/examples_ivl/*
+$utod $lib/examples_ivl/contrib/*
+$utod $lib/examples_ivl/extra/*
+$utod $lib/examples_ivl/ivltests/*
+
+cp -r $vldir/examples_book $lib
+$utod $lib/examples_book/*
+$utod $lib/examples_book/ch13/eg/*
+$utod $lib/examples_book/ch13/mag_comp/*
+$utod $lib/examples_book/ch13/vending/*
+$utod $lib/examples_book/ch14/eg/*
+$utod $lib/examples_book/ch14/mag_comp/*
+$utod $lib/examples_book/ch14/vending/*
+
+cp -r $vldir/examples_vbs $lib
+$utod $lib/examples_vbs/*
+
+cp $vldir/README $lib
+cp $vldir/ChangeLog $lib
+cp $vldir/verilog-manual.html $lib
+$utod $lib/README
+$utod $lib/ChangeLog
+$utod $lib/verilog-manual.html
+
+echo Completed copying files to Data directory
+
+pkgfiles=../../pkgfiles
+
+sed -e s/VERSION/$version/ < $program.iss.in > $program.iss
+$utod $program.iss
+
+$inno $program.iss > build.log
+if [ $? != 0 ]; then
+    echo Compile failed!
+    exit 1
+fi
+
+mv Output/*.exe $pkgfiles
+rmdir Output
+echo Done
+

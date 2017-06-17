@@ -1,0 +1,3234 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiFile.hlp,v 1.102 2017/03/22 07:30:07 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiFile.hlp
+!!TITLE
+xiFile.hlp
+!!HTML
+
+!!SUBTOPICS
+xic:filemenu
+xic:fsel
+xic:open
+xic:sv
+xic:save
+xic:sadev
+xic:hcopy
+xic:files
+xic:hier
+xic:chdadd
+xic:chdconfig
+refcell
+xic:overtab
+xic:geom
+xic:cgdopen
+xic:libs
+xic:oalib
+xic:quit
+
+
+!! 041215
+!!KEYWORD
+xic:filemenu
+!!TITLE
+File Menu
+!!HTML
+    The <b>File Menu</b> contains commands for opening, listing, and
+    saving files and cells.  The printer interface for hard-copy plots
+    is also found in this menu.
+
+    <p>
+    Some of the menu commands bring up more complicated panels which
+    themselves may contain various command buttons and other objects. 
+    Most of these windows can be moved by pressing the left mouse
+    button in the area outside of any buttons, or on a label object,
+    and dragging the outline to the desired location.  This applies to
+    the error message and information windows that pop up under
+    certain circumstances.  These windows can also be deleted by
+    double clicking with button 2 in the area outside of buttons or
+    other objects.
+
+    <p>
+    The table below lists the commands found in the <b>File Menu</b>,
+    along with the internal command name and function.
+!!IFDEF OpenAccess
+    The <b>OpenAccess Libs</b> button will appear only if the
+    OpenAccess <a href="oaplugin">plug-in</a> is loaded.
+!!ENDIF
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>File Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:fsel"><b>File Select</b></a></td>
+      <td><tt>fsel</tt></td>
+      <td><b>File Selection</b></td> <td>Open file</td></tr>
+    <tr><td><a href="xic:open"><b>Open</b></a></td> <td><tt>open</tt></td>
+      <td>none</td> <td>Open new cell or file</td></tr>
+    <tr><td><a href="xic:sv"><b>Save</b></a></td> <td><tt>sv</tt></td>
+      <td><b>Modified Cells</b></td> <td>Save modified cells</td></tr>
+    <tr><td><a href="xic:save"><b>Save As</b></a></td> <td><tt>save</tt></td>
+      <td>none</td> <td>Save file, rename</td></tr>
+    <tr><td><a href="xic:sadev"><b>Save As Device</b></a></td>
+      <td><tt>sadev</tt></td> <td><b>Device Parameters</b></td> <td>Electrical
+      mode only, apply defaults and save device</td></tr>
+    <tr><td><a href="xic:hcopy"><b>Print</b></a></td> <td><tt>hcopy</tt></td>
+      <td><b>Print Control Panel</b></td> <td>Hard copy plot</td></tr>
+    <tr><td><a href="xic:files"><b>Files List</b></a></td>
+      <td><tt>files</tt></td>
+      <td><b>Path Files Listing</b></td> <td>List search path files</td></tr>
+    <tr><td><a href="xic:hier"><b>Hierarchy Digests</b></a></td>
+      <td><tt>hier</tt></td>
+      <td><b>Cell Hierarchy Digests</b></td>
+      <td>List of Cell Hierarchy Digests</td></tr>
+    <tr><td><a href="xic:geom"><b>Geometry Digests</b></a></td>
+      <td><tt>geom</tt></td>
+      <td><b>Cell Geometry Digests</b></td>
+      <td>List of Cell Geometry Digests</td></tr>
+    <tr><td><a href="xic:libs"><b>Libraries List</b></a></td>
+      <td><tt>libs</tt></td>
+      <td><b>Libraries</b></td> <td>List libraries</td></tr>
+!!IFDEF OpenAccess
+    <tr><td><a href="xic:oalib"><b>OpenAccess Libs</b></a></td>
+      <td><tt>oalib</tt></td>
+      <td><b>OpenAccess Libraries</b></td>
+      <td>List OA libraries (with OA only)</td></tr>
+!!ENDIF
+    <tr><td><a href="xic:quit"><b>Quit</b></a></td> <td><tt>quit</tt></td>
+      <td>none</td> <td>Exit <i>Xic</i></td></tr>
+    </table>
+
+!!SEEALSO
+xic:commands
+
+!! 102208
+!!KEYWORD
+xic:fsel
+!!TITLE
+File Select
+!!HTML
+    <img src="screenshots/filesel.png" align=right>
+    <b>Keyword</b>: <tt>fsel</tt>
+
+    <p>
+    The <b>File Select</b> button in the <b>File Menu</b> brings up
+    the <a href="filesel"><b>File Selection</b></a> panel.  The
+    <b>File Selection</b> panel can be used to select files to edit,
+    or to manage files and directories on disk.  The button can be
+    used to bring up more than one <b>File Selection</b> panel, and
+    drag/drop can be used to move files and directories.  From this
+    button, the <b>File Selection</b> panel will list files in the
+    current directory, but this can be changed from the panel.
+
+!!SEEALSO
+xic:filemenu
+
+!! 022716
+!!KEYWORD
+xic:open
+!!TITLE
+Open
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="xic:open#input"><b>Input to the Open Command</b></a><br>
+    <a href="xic:open#read"><b>Reading Input With the Open Command</b></a><br>
+    <a href="xic:open#confl"><b>Opening New Cells - Conflict Resolution</b></a><br>
+    <a href="xic:open#tests"><b>Object Tests</b></a>
+    </td></tr></table>
+
+    <p>
+    <b>Keyword</b>: <tt>open</tt>
+
+    <p>
+    The <b>Open</b> button in the <b>File Menu</b> is used to read a
+    file and/or load a cell for editing.  The button presents a
+    drop-down menu containing the names of the last eight cells opened
+    for editing, plus "<b>new</b>" and "<b>temporary</b>" entries.
+
+    <p>
+    If one holds down <b>Shift</b> while selecting one of cells from
+    the history list, the <a href="xic:place">Cell Placement
+    Control</a> panel will appear with that cell added as the current
+    master.  This applies to cell names and not <b>new</b> or
+    <b>temporary</b>.  This is a quick backdoor for instantiating
+    cells recently edited.
+
+    <p>
+    The <b>temporary</b> button in the menu opens a new cell with a
+    unique name.  This can be used for experimentation, or for other
+    purposes.  The <a href="xic:save"><b>Save As</b></a> command can
+    be used to save the contents to a cell with a more descriptive
+    name, if desired.
+
+    <p>
+    Selecting <b>new</b> will use the <a href="promptline">prompt
+    line</a> to request a file or cell name to open.  The internal
+    keyword <tt>open</tt> is associated with this button.  The
+    accelerator actually maps to the <b>new</b> button in the pop-up
+    menu, i.e., the accelerator will cause prompting for the name of a
+    file or cell to open.
+
+    <p>
+    The default name used in the prompt for the cell to edit will be
+    one of the following.  Each of these sources is tested in order,
+    and the first one that is visible and has a selection will yield
+    the default name.
+
+    <ul>
+    <li>A selection in the <a href="filesel"><b>File Selection</b></a>
+     pop-up from the <a href="xic:fsel"><b>File Select</b></a> button
+     in the <a href="xic:filemenu"><b>File Menu</b></a>.
+    <li>A selection in the <b>Cells Listing</b> pop-up from the <a
+     href="xic:cells"><b>Cells List</b></a> button in the <b>Cell
+     Menu</b>.
+    <li>A selection in the <b>Files Listing</b> pop-up from the <a
+     href="xic:files"><b>Files List</b></a> button in the <b>File
+     Menu</b>, or its <b>Content List</b>.
+    <li>A selection in the <b>Content List</b> of the <b>Libraries</b>
+     pop-up from the <a href="xic:libs"><b>Libraries List</b></a>
+     button in the <b>File Menu</b>.
+    <li>A selection in the <b>Cell Hierarchy Tree</b> pop-up from the <a
+     href="xic:tree"><b>Show Tree</b></a> button in the <b>Cell
+     Menu</b> or from the <b>Tree</b> button in the <b>Cells
+     Listing</b> pop-up.
+    <li>A cell name that is selected in the <b>Info</b> pop-up, from
+     the <a href="xic:info"><b>Info</b></a> button in either the <a
+     href="xic:viewmenu"><b>View Menu</b></a> or the <b>Cells
+     Listing</b> pop-up.
+    <li>The name of a selected subcell in the drawing window, the most
+     recently selected if there is more than one.
+    <li>The next cell from the command line invoking <i>Xic</i>.
+    <li>The current cell name.
+    </ul>
+
+    <a name="input"></a>
+    <h2>Input to the Open Command</h2>
+
+    The text given to the <b>Open</b> command must contain at least
+    one and at most two names.  If a name contains white space, the
+    name must be <a href="quoting">quoted</a> with double quote marks
+    ("<tt>name with space</tt>") for it to be recognized as a single
+    token.  The first name is generally that of a multi-cell source,
+    such as a path to a layout file.  The second name, which is
+    optional, is the name of a cell from that source to open as the
+    current cell.  If not given, depending on the source, either a
+    default cell is opened, or the user is presented a list of cells
+    from which to choose.  If a single name is given, it can also be
+    the name of a cell in memory, or the name of a cell resolvable
+    through a library or the search path for native cells.
+
+    <p>
+    In short, the first or only name given can be one of the following.
+    <ul>
+!!IFDEF OpenAccess
+    <li>The name of an OpenAccess library, if the OpenAccess
+    <a href="oaplugin">plug-in</a> has been loaded.
+!!ENDIF
+
+    <li>A path to a layout file in a <a href="xic:fsaf">supported
+    format</a>.
+
+    <li>The access name of a <a href="xic:hier">Cell Hierarchy
+    Digest</a> (CHD) in memory.
+
+    <li>A path to a CHD file on disk.
+
+    <li>A URL to a layout file on a remote server.  This can also
+    apply to a CHD file, but the layout file referenced by the CHD
+    must be available locally.
+
+    <li>The name of a <a href="libraries">library</a> file.
+    </ul>
+
+    <p>
+    In each of the cases above, a second name can appear, giving the
+    name of a cell to open.  If no cell name is given, the action
+    depends on the type of source.
+!!IFDEF OpenAccess
+    An OpenAccess <a href="xic:oalib">library</a> source requires
+    that a cell name be given, otherwise the OpenAccess database is
+    not consulted.
+!!ENDIF
+
+    <p>
+    If no cell name is given and the source is a layout file
+    containing only one top-level cell, that cell will be opened.  If
+    there are multiple top-level cells, a pop-up will appear allowing
+    the user to choose which cell to open.  These calls will already
+    be in memory, the choice simply defines the current cell for
+    editing.
+
+    <p>
+    If the source is a CHD and no cell name is given, the CHD's <a
+    href="xic:chdconfig">default cell</a> will be opened.  This is
+    either a cell configured into the CHD, or the first (lowest
+    offset) top-level cell found in the original layout file.  There
+    will never be a selection pop-up with a CHD source.
+
+    <p>
+    If the file is a library file, the second argument should be one
+    of the reference names from the library, or the name of a cell
+    defined in the library.  If no second name is given, a pop-up
+    listing the library contents will appear, allowing the user to
+    select a reference or cell.
+
+    <p>
+    The <b>Open</b> command can access the internet.  The name given
+    to the <b>Open</b> command can be in the form of a URL, followed
+    by options.  The URL must begin with "<tt>http://</tt>" or
+    "<tt>ftp://</tt>", and the file is expected to be suitable
+    <i>Xic</i> input.
+
+    <p>
+    There is presently only one option that can follow the url:
+    <dl>
+    <dt>-o <i>filename</i>
+    <dd>
+       Ordinarily a temporary file is used for downloading, which is
+       destroyed.  The user must save the hierarchy to retain a copy
+       on the user's machine.  If this option is given, the downloaded
+       file will be saved in the given file and not destroyed.
+    </dl>
+
+    <p>
+    If the name can not be resolved as a source archive as described
+    above, it may be the name of one of the special library files.  If
+    not, it is taken as a name for a cell.  If it can not be resolved
+    as a known cell, a new, empty cell is created with that name.
+    
+    <ul>
+    <li>The name of the model or device library file.
+
+    <li>The name of a cell already in memory.
+
+    <li>The name of a cell resolvable through open libraries or the
+    native cell search path.
+
+    <li>The name of a new cell to create and open.
+    </ul>
+
+    <p>
+    If the name given is that of the present <a
+    href="modlib">model library</a> (default "<tt>model.lib</tt>") or
+    <a href="devlib">device library</a> (default
+    "<tt>device.lib</tt>"), the library file is first copied into the
+    current directory if it doesn't exist there, and the file in the
+    current directory is then opened for <a href="texteditor">text
+    editing</a>.  These files contain the devices and some of the
+    models used in electrical mode for producing SPICE files.
+
+    <p>
+    Cells can also be opened for editing within <i>Xic</i> by dragging
+    the name from a file manager and dropping in the main drawing
+    window, or by pressing the <b>Ok</b> or <b>Open</b> buttons in the
+    <a href="filesel"><b>File Selection</b></a> panel.  Files can also
+    be opened from the <b>Open</b> buttons in the files, cells, and
+    contents listing listing pop-ups in the <b>File Menu</b>.  These
+    are all equivalent to opening the cell with the <b>Open</b>
+    command, so that the information in this section applies in those
+    cases.
+
+    <p>
+    If the name string given to edit matches the name of a cell in
+    memory, the editing context is switched to that cell, and no disk
+    file is read in this case.  However, if the name given to edit
+    contains a directory separation character, i.e., is a path, then
+    <i>Xic</i> will always attempt to read the file from disk.  Thus,
+    if the user wants to re-read a native cell file from disk, if the
+    cell is already in memory, the user should add a path prefix to
+    the name.  For example "<tt>./noname</tt>", assuming
+    <tt>noname</tt> is in the current directory, will force <i>Xic</i>
+    to read the disk file, even if the <tt>noname</tt> cell is already
+    in memory.
+
+    <p>
+    The interpretation of any path prefix which is included with the
+    name of a native file to open for editing is set by the variables
+    <a href="NoReadExclusive"><b>NoReadExclusive</b></a> and <a
+    href="AddToBack"><b>AddToBack</b></a>.  The top level cell will
+    always be read from the given file if a path to the file is
+    specified.  Subcells are resolved by cell name only through the <a
+    href="xicpaths">search path</a>.  The search path is modified
+    during the read according to the state of the
+    <b>NoReadExclusive</b> and <b>AddToBack</b> variables.
+
+    <p>
+    All of the settings in the <b>Setup</b> page of the <a
+    href="xic:imprt"><b>Import Control</b></a> panel (from the
+    <b>Convert Menu</b>) apply.  However, none of the options, such as
+    layer filtering or cell name modification, found in the <b>Read
+    File</b> page of the same panel apply in this case.  If these
+    options are needed, the <b>Read File</b> button in this page
+    should be used to read the file, rather than the <b>Open</b>
+    command.  Note that this is different from pre-3.0.0 releases, in
+    which cell name case changes and file-based aliasing were
+    supported in the <b>Open</b> command.
+
+    <p>
+    This <a href="!set:cvimport">table</a> lists the variables and
+    modes that apply to the <b>Open</b> and similar commands.
+
+    <a name="read"></a>
+    <h2>Reading Input With the Open Command</h2>
+
+    <p>
+    While a layout file is being read and processed, a <a
+    href="logfiles">log file</a> is written.  This file contains a
+    record of messages emitted during the conversion.  If during a
+    conversion an error or warning message is emitted, a file browsing
+    window containing the log file will appear when the conversion is
+    complete, though this can be suppressed by setting the <a
+    href="NoPopUpLog"><b>NoPopUpLog</b></a> variable.  These messages
+    also appear on the prompt line during the conversion.  The file
+    browser is a read-only version of the <a href="texteditor">text
+    editor</a> window.  The log files can be accessed from the <a
+    href="xic:logs"><b>Log Files</b></a> button in the <b>Help
+    Menu</b>.
+
+    <p>
+    When reading a layout file, there is a message updated
+    periodically on the prompt line indicating bytes read.  One can
+    abort the read with <b>Ctrl-c</b>, and a 'y' response to the
+    resulting prompt.  It is advisable to clear the cells from the
+    partially read hierarchy from memory with the <b>Clear</b> button
+    in the <a href="xic:cells"><b>Cells Listing</b></a> pop-up.
+
+    <p>
+    CGX and GDSII files that have been compressed with the GNU
+    <tt>gzip</tt> program or have been written in compressed form by
+    <i>Xic</i> can be read in directly, whether or not the file name
+    contains the standard "<tt>.gz</tt>" suffix.  Support for
+    compressed files extends to CGX and GDSII only (OASIS files use a
+    different compression methodology).
+
+    <p>
+    The header of a GDSII file optionally contains information about
+    fonts, reference libraries, and other things.  This information is
+    saved as properties of the top-level cells derived from the file,
+    i.e., those cells that are not used as subcells of another cell in
+    the file.  <i>Xic</i> does not use this information, but it will
+    be put back into a GDSII file subsequently written by <i>Xic</i>,
+    as other applications may need this information.
+
+    <p>
+    When reading GDSII or OASIS input, <i>Xic</i> will attempt to map
+    the layer number and data type combinations found in the file to
+    existing <i>Xic</i> layers, and if that fails a new <i>Xic</i>
+    layer will be created.  This is described in the section on GDSII
+    <a href="gdslayer">layer mapping</a>.
+
+    <p>
+    When reading CIF, layer names are matched to those defined in the
+    current technology in a case-insensitive mode.  This differs from
+    native and CGX file types, which use case-sensitive matching. 
+    Layers found in the file which do not match any in the technology
+    are created, using default parameters.
+
+    <p>
+    When a cell is written to disk, it is by default written in the
+    format of origin, though a format change can be coerced in the <a
+    href="xic:save"><b>Save As</b></a> command by supplying a file
+    extension.  Explicit conversions can also be performed with the
+    commands in the <a href="xic:cvrtmenu"><b>Convert Menu</b></a>.
+
+    <p>
+    If a cell is opened for editing that contains empty cells, the
+    user is given the option of deleting these references.  If empty
+    cells are found in the hierarchy, a pop-up appears, which allows
+    their deletion.  The cell names listed are those that for each
+    mode (electrical and physical) the named cell either does not
+    exist or has no content.
+
+    <p>
+    This test can be performed at any time with the <a
+    href="!empties"><b>!empties</b></a> command.  The test can be
+    suppressed by setting the <b>Skip testing for empty cells</b>
+    check box in the <b>Setup</b> page of the <a
+    href="xic:imprt"><b>Import Control</b></a> panel from the
+    <b>Convert Menu</b>, or (equivalently) by setting the <a
+    href="NoCheckEmpties"><b>NoCheckEmpties</b></a> variable.
+
+    <a name="confl"></a>
+    <h2>Opening New Cells - Conflict Resolution</h2>
+
+    <i>Xic</i> keeps an internal database of all cells that have been
+    used, by name.  When a new file is opened for editing, it may
+    contain definitions for cells with the same name as those already
+    in memory.  <i>Xic</i> provides several features for dealing with
+    this situation when it arises.
+
+    <p>
+    The symbol table used to store cells can be changed.  Creating and
+    installing a new symbol table enables <i>Xic</i> to start with a
+    fresh database, though the original database can be reinstalled at
+    any time.  There is no problem with cells of the same name
+    existing in different symbol tables.  The symbol tables are
+    manipulated with the <a href="xic:stabs"><b>Symbol Tables</b></a>
+    panel from the <b>Cell Menu</b>.  Symbol tables are useful for
+    global context saving and switching, but since only one table can
+    be installed at a time, it is generally not possible to access
+    cells from different symbol tables simultaneously.  Cells used in
+    a hierarchy must exist in the same symbol table.
+
+    <p>
+    When a file is being read from disk and a cell whose name
+    conflicts with an existing cell in memory is encountered, a
+    <b>Merge Control</b> pop-up will generally appear.  This allows
+    the user to choose whether or not to overwrite the physical and/or
+    electrical part of the cell in memory.  Press <b>Apply</b> to
+    continue with the conversion.  One must press <b>Apply</b> for
+    each cell where there is a conflict, or press <b>Apply to Rest</b>
+    to apply the present setting to the rest of the cells that clash. 
+    Dismissing the pop-up performs the same function as <b>Apply to
+    Rest</b>.  The pop-up is removed when all conversions are done.
+
+    <p>
+    If the <a href="NoAskOverwrite"><b>NoAskOverwrite</b></a> variable
+    is set (with the <a href="!set"><b>!set</b></a> command), or
+    equivalently the <b>Don't prompt for overwrite instructions</b>
+    button in the <b>Setup</b> page of the <a
+    href="xic:imprt"><b>Import Control</b></a> panel (from the <a
+    href="xic:cvrtmenu"><b>Convert Menu</b></a>) is active, no
+    <b>Merge Control</b> pop-up will appear, and the default action
+    will be used.  The default action will also be used in
+    non-graphics (<a href="xic:server">server</a> or <a
+    href="xic:batch">batch</a>) mode.
+
+    <p>
+    The default action can be specified by setting the <a
+    href="NoOverwritePhys"><b>NoOverwritePhys</b></a> and/or the <a
+    href="NoOverwriteElec"><b>NoOverwriteElec</b></a> variables, or
+    equivalently by making a selection from the <b>Default when new
+    cells conflict</b> menu in the <b>Setup</b> page of the <b>Import
+    Control</b> panel.  If no choice is made by any means, the default
+    is to overwrite the cell in memory, both physical and electrical
+    parts.  The initial selections in the <b>Merge Control</b> pop-up
+    will reflect the settings of the default action.
+
+    <a name="tests"></a>
+    <h2>Object Tests</h2>
+
+    While a file is being read, tests for reentrant or otherwise
+    strange polygons are normally performed.  A polygon that is
+    reentrant overlaps itself.  This can be a problem since the
+    polygon may be rendered differently on different CAD systems, as
+    the presentation of the polygon may become ambiguous.  The test is
+    performed on physical data only.  This adds a little overhead. 
+    The test is skipped if the boolean variable <b>NoPolyCheck</b> is
+    set (with the <b>!set</b> command).  This test can also be turned
+    off from the <b>Setup</b> page of the <b>Import Control</b> panel.
+
+    <p>
+    There will also be a warning message added to the log if a polygon
+    vertex list is modified by <i>Xic</i>.  The checking function will
+    remove duplicate, inline, and "needle" vertices.  This does not
+    change the shape of the polygon, but reduces complexity and memory
+    use.  If the file is written back to disk, the warnings will not
+    reappear when reading the new file.
+
+    <p>
+    Similarly, wire objects are also tested for rendering
+    difficulties.  Wire objects consist of a vertex list, a width
+    parameter, and an end style parameter.  To render or otherwise
+    process a wire, a polygon representing the actual shape has to be
+    generated internally, making use of these parameters.  With some
+    parameter sets, this can be difficult or impossible.  In addition,
+    ambiguity arises between different tools in how (for example)
+    acute angles are rendered, and how the "rounded" end style is
+    implemented.
+
+    <p>
+    Wires that are impossible or difficult to render are logged. 
+    Wires that are impossible to render are never added to memory. 
+    Wires that are difficult to render are listed as "questionable" in
+    the log file.  These may or may not look "good" in the <i>Xic</i>
+    display.  It is possible that wires that look good in <i>Xic</i>
+    will not be processed correctly in another tool, and vice-versa,
+    so the user should be aware of the presence of these wires.
+
+    <p>
+    If when reading a file a warning message about "badly formed
+    polygons" appears in the log file, here is how to proceed.  Note
+    the cell that contained the polygon, and edit it.  Use the <a
+    href="!polycheck"><b>!polycheck</b></a> command to select the bad
+    polygons.  The <a href="xic:info"><b>Info</b></a> command in the
+    <a href="xic:viewmenu"><b>View Menu</b></a> can be used to obtain
+    the vertex list.  In many cases, the polygon will not cause
+    problems, however it is wise to recreate one that is flagged as
+    bad.  The <a href="xic:crcel"><b>Create Cell</b></a> command can
+    be used to save the bad polygons to a separate cell for further
+    inspection.  A <a href="!split"><b>!split</b></a> operation
+    followed by a <a href="!join"><b>!join</b></a> should effectively
+    repair a degenerate polygon.
+
+    <p>
+    Similarly, there is a <a href="!wirecheck"><b>!wirecheck</b></a>
+    command that can be used to identify "questionable" wires in the
+    current cell.  To avoid problems down-stream, these should
+    probably be converted to polygons.  This can be done with
+    <b>!split</b>/<b>!join</b>, or with the <a href"xic:polyg">polygon
+    creation</a> command in the side menu.
+
+    <p>
+    By default, <i>Xic</i> checks for identical, coincident objects
+    when reading input files, and prints a warning message in the log
+    file if such objects are found.  The <b>Duplicate item
+    handling</b> menu in the <b>Setup</b> page of the <b>Import
+    Control</b> panel can be used to set the action to perform on
+    duplicates.  Choices are no checking at all, warn only, or warn
+    and remove duplicates.
+
+!!SEEALSO
+devedit
+fileorg
+quoting
+xic:filemenu
+xic:pcells
+
+!! 030713
+!!KEYWORD
+xic:sv
+!!TITLE
+Save
+!!HTML
+    <b>Keyword</b>: <tt>sv</tt>
+
+    <p>
+    The <b>Save</b> button in the <b>File Menu</b> allows saving
+    unsaved work to disk files, under the present file/cell name.
+
+    <p>
+    <img src="screenshots/modcells.png" align=right>
+    If there are cells in memory that have been modified, the
+    <b>Modified Cells</b> pop-up will appear.  This is the same
+    pop-up that appears when exiting <i>Xic</i> if there are unsaved
+    cells.  It can also be invoked with the <a
+    href="!sa"><b>!sa</b></a> command.
+
+    <p>
+    The pop-up displays a listing of all modified
+    cells and hierarchies, each with a yes/no entry that can be
+    toggled by the user to set whether the cell or hierarchy will be
+    saved.  The display has four columns.  Column 1 gives the name of
+    the cell, which for a hierarchy is the top level cell.
+
+    <p>
+    The second column is "<tt>yes</tt>" or "<tt>no</tt>".  Clicking on
+    this word will toggle between the two states.  The buttons at the
+    top of the panel will set the states of all of these words: 
+    <b>Save All</b> sets them to "<tt>yes</tt>", <b>Skip All</b> sets
+    them to "<tt>no</tt>".
+
+    <p>
+    Initially, all normal cells in the listing will be set to
+    "<tt>yes</tt>", meaning that all of the listed items will be
+    updated on disk.  If PCell submasters are being listed, then their
+    initial state is "<tt>no</tt>", meaning that the master cell of a
+    specific PCell instance and parameter set will not be written to
+    disk.  By default, the PCell sub-masters that are created in
+    memory when a PCell is instantiated are not listed in the
+    <b>Modified Cells</b> pop-up.
+
+    <p>
+    PCell sub-master cells are normally recreated in memory from the
+    original parameterized cell definition when needed.  However,
+    there may be times when keeping a cache of PCell sub-masters is
+    useful for performance reasons, or to export where the original
+    PCell is not available or the format not supported.
+
+    <p>
+    If the boolean variable <a
+    href="PcListSubMasters"><tt>PcListSubMasters</tt></a> is set, then
+    sub-masters created in memory for PCell instantiation will be
+    listed in the <b>Modified Cells</b> pop-up.
+
+    <p>
+    The third column gives the type of file that will be created or
+    updated.  This entry is shown in color, and the color used for
+    archives is different than the color used for native and other
+    single-cell files.
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><tt>X</tt></td> <td><i>Xic</i> native</td></tr>
+    <tr><td><tt>B</tt></td> <td>CGX</td></tr>
+    <tr><td><tt>C</tt></td> <td>CIF</td></tr>
+    <tr><td><tt>G</tt></td> <td>GDSII</td></tr>
+    <tr><td><tt>O</tt></td> <td>OASIS</td></tr>
+!!IFDEF OpenAccess
+    <tr><td><tt>A</tt></td> <td>OpenAccess</td></tr>
+!!ENDIF
+    <tr><td><tt>P</tt></td> <td>PCell sub-masters (native)</td></tr>
+    </table>
+    </blockquote>
+
+!!IFDEF OpenAccess
+    <p>
+    If a cell was read from an OpenAccess library and modified, it
+    will (by default) be saved to the same library.  <i>Xic</i> can
+    write only to OpenAccess libraries that were created by <i>Xic</i>
+    or otherwise <a href="!oabrand">branded</a> by <i>Xic</i>.  This
+    should prevent unintentional overwriting of Virtuoso cells. 
+    Overwriting a Virtuoso cell from <i>Xic</i> will hopelessly
+    clobber the cell for Virtuoso.  Some day this may work, but for
+    now expect the worst.
+!!ENDIF
+
+    <p>
+    If saved, PCell sub-masters will be saved as native cell files in
+    the current directory.
+
+    <p>
+    The fourth column is the full path name of the file that will be
+    written if the second column is "<tt>yes</tt>".
+!!IFDEF OpenAccess
+    In the case of OpenAccess, this will be the library name.
+!!ENDIF
+
+    <p>
+    <i>Xic</i> native cells are saved under their own name, in the
+    directory containing the file the cell was read from, or the
+    current directory if the cell was created within <i>Xic</i>.  If a
+    cell from an <a href="xic:fsaf">archive file</a> was modified, the
+    hierarchy is saved in the name of the original archive file, or
+    the top-level cell name with an extension if the original file name is
+    unknown.  The file type is the same as the origin of the
+    hierarchy.  The <a href="xic:save"><b>Save As</b></a> button can
+    be used to save under a different name or file type.
+
+    <p>
+    In all cases, the previous version of an overwritten file is given
+    a "<tt>.bak</tt>" extension and retained (any existing
+    "<tt>.bak</tt>" file will be overwritten, however).
+
+    <p>
+    While the pop-up is visible, most other controls are inoperable. 
+    Pressing <b>Apply - Continue</b>, or deleting the window, will
+    save the files marked "<tt>yes</tt>", retire the pop-up, and allow
+    <i>Xic</i> to continue.  Pressing the <b>ABORT</b> button will
+    retire the pop-up and abort the present command.
+
+!!SEEALSO
+xic:filemenu
+
+!! 022316
+!!KEYWORD
+xic:save
+!!TITLE
+Save As
+!!HTML
+    <b>Keyword</b>: <tt>save</tt>
+
+    <p>
+    The <b>Save As</b> button in the <b>File Menu</b> will save to
+    disk the cell or hierarchy currently being edited, possibly under
+    a new name or file type.
+
+    <p>
+    If editing a cell from the device library, the <b>Save As</b>
+    command will bring up the <a href="devedit"><b>Library Cell
+    Parameters</b></a> panel, which allows device defaults to be
+    edited, and has provision for saving the cell into a device
+    library file or as a native cell file.
+
+    <p>
+    Otherwise, the <b>Save File</b> dialog appears which provides an
+    expandable and selectable tree representation of the directory
+    structure, rooted in the directory where the file was originally
+    read from, or the current directory.  The name or path to the file
+    can be modified on the prompt line, or directories can be selected
+    from the pop-up which will modify the prompt line.
+
+    <p>
+    If the default is accepted, the cell or hierarchy will be saved in
+    the format of origin:  one of the <a href="xic:fsaf">archive
+    formats</a>, or native.
+
+    <p>
+    The response string actually supports syntax which provides
+    coercion to another format, and other features.  The general form
+    of the response string is:
+
+    <blockquote>
+    [<i>filetype</i>] <i>file_path</i> [<i>cellname</i>]
+    </blockquote>
+
+    If the first word in the string is a recognized file format
+    keyword, which is a known file format suffix <b>without</b> the
+    period, output will be generated in that format.  The following
+    <i>filetype</i> keywords are recognized:
+
+    <p>
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>CGX</td><td><tt>"cgx"</tt></td></tr>
+    <tr><td>CIF</td><td><tt>"cif"</tt></td></tr>
+    <tr><td>GDSII</td><td><tt>"gds", "str", "strm", "stream"</tt></td></tr>
+    <tr><td>OASIS</td><td><tt>"oas"</tt></td></tr>
+!!IFDEF OpenAccess
+    <tr><td>OpenAccess</td><td><tt>"oa"</tt></td></tr>
+!!ENDIF
+    <tr><td>Native</td><td><tt>"xic"</tt></td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    If the first word is not one of the recognized format keywords,
+    then it is taken as a path to the output to produce.  If this path
+    has a file extension from the list above, meaning that the file
+    name ends with a period followed by one of the words from the
+    table, this will specify that format type for output.
+!!IFDEF OpenAccess
+    This does not apply to OpenAccess, however.
+
+    <p>
+    OpenAccess is available only if the <a href="oaplugin">plug-in</a>
+    was successfully loaded.
+!!ENDIF
+
+    <p>
+    If the specified output format is one of the archive formats (CGX,
+    CIF, GDSII, OASIS), then the entire cell hierarchy under the
+    current cell will be saved in the output file produced.
+
+    <p>
+    If saving a hierarchy in CGX or GDSII format, the file name can be
+    given an additional, final suffix "<tt>.gz</tt>", which will cause
+    the file to be written in compressed (gzipped) format.  These
+    compressed files can be read into <i>Xic</i> directly, and can be
+    uncompressed using the widely available GNU <tt>gzip</tt> or
+    <tt>gunzip</tt> programs.  Compression is supported for CGX and
+    GDSII files only.  The "<tt>.gz</tt>" suffix can be removed, if
+    already present, to suppress compression.
+
+    <p>
+    If the file extension given is "<tt>.xic</tt>", then the current
+    cell (not hierarchy) is saved in the file specified as a native
+    cell file.  The file, and the new cell name, will include the
+    "<tt>.xic</tt>" extension.  It is usually preferable to use the
+    "<tt>xic</tt>" <i>filetype</i> keyword to coerce native output to
+    avoid changing the cell name.
+
+    <p>
+    There are a number of ways to save to native symbol files, as
+    explained below.  The general form is
+    <blockquote>
+    [<tt>xic</tt>] [<i>word1</i> [<i>word2</i>]]
+    </blockquote>
+    <table border=0>
+    <tr><th><i>word1</i></th> <th><i>word2</i></th> <th>description</th></tr>
+    <tr><td valign=top>blank</td> <td valign=top>blank</td> <td>Save
+        the current cell (only) as a native cell file in the current
+        directory.</td></tr>
+
+    <tr><td valign=top>*</td> <td valign=top>blank</td> <td>A literal
+        asterisk indicates to save all cells in the current hierarchy
+        as native cell files in the current directory.</td></tr>
+
+    <tr><td valign=top><i>word</i></td> <td valign=top>blank</td>
+        <td>If <i>word</i> is a path to an existing directory, save
+        the current cell as a native cell file in that directory.  If
+        <i>word</i> is a path to an existing file, first move the
+        existing file out of the way by giving it a <tt>.bak</tt>
+        extension, then save the cell under the given file name. 
+        Otherwise, <i>word</i> is taken as a new name for the cell,
+        which may contain a directory path.  The native cell will be
+        saved under that name.</td></tr>
+
+    <tr><td valign=top><i>word1</i></td> <td
+        valign=top><i>word2</i></td> <td>The first word is taken as a
+        directory path.  This directory will be created if it doesn't
+        exist, if possible.  The second word is a new name for the
+        cell.  This must be a simple name, not a path.  The current
+        cell will be saved in the directory as a native cell file
+        using the new name.</td></tr>
+
+    <tr><td valign=top><i>word</i></td> <td valign=top><b>.</b></td>
+        <td>The first word is taken as a directory path.  This
+        directory will be created if it doesn't exist, if possible. 
+        The literal period as the second word indicates to save the
+        current cell it the directory as a native cell file, using the
+        present cell name.  This form is useful to force creation of
+        the directory.</td></tr>
+
+    <tr><td valign=top><i>word</i></td> <td valign=top>*</td> <td>The
+        first word is taken as a directory path.  This directory will
+        be created if it doesn't exist, if possible.  The literal
+        asterisk as the second word indicates to save all cells in the
+        hierarchy of the current cell, as native cell files in the
+        directory.</td></tr>
+    </table>
+
+    The <tt>xic</tt> filetype specifier can be omitted if the source
+    of the current cell is a native cell file.  If omitted, in any
+    case if the <i>word1</i> is a path to an existing directory
+    (including "<tt>.</tt>" as the current directory), the
+    "<tt>xic</tt>" is understood, and the behavior is as described in
+    the table above.
+
+!!IFDEF OpenAccess
+    <p>
+    To save to an OpenAccess library, the "<tt>oa</tt>" <i>filetype</i>
+    <b>must</b> be given, any added file extensions are not recognized.
+    The remainder of the line is interpreted as follows:
+
+    <table border=0>
+    <tr><th><i>word1</i></th> <th><i>word2</i></th> <th>description</th></tr>
+    <tr><td valign=top>blank</td> <td valign=top>blank</td> <td>
+    The current cell is written to the library named in the
+    <a href="OaDefLibrary"><b>OaDefLibrary</b></a> variable.</td></tr>
+
+    <tr><td valign=top>*</td> <td valign=top>blank</td> <td>
+    If only an asterisk appears, the current cell and its hierarchy
+    are written to the library named in the <b>OaDefLibrary</b>
+    variable.</td></tr>
+
+    <tr><td valign=top><i>library</i></td> <td valign=top>blank</td> <td>
+    If a single word is given, it is taken as the name of a library
+    in which to save the current cell.  If no such library exists,
+    the user will be prompted to create it.</td></tr>
+
+    <tr><td valign=top><i>library</i></td> <td valign=top><i>cell</i></td> <td>
+    If two words are given, the first word is taken as the library
+    name as above.  The second word is the name that the current cell
+    will be saved under, thus the OpenAccess cell name can be different.
+    </td></tr>
+
+    <tr><td valign=top><i>library</i></td> <td valign=top>*</td> <td>
+    If an asterisk follows the library name, the current cell and its
+    hierarchy will be written to the library.</td></tr>
+    </table>
+!!ENDIF
+
+    <p>
+    When a file is read into <i>Xic</i>, the full path to that file is
+    saved within <i>Xic</i>, and that file is the default written to
+    during a save.  The previous version of a file that has been
+    overwritten is saved in a file in the same directory with the same
+    name, but with a "<tt>.bak</tt>" extension added.  Cells that are
+    created within <i>Xic</i>, i.e., that do not have a known origin
+    file, are saved by default in the current directory as native cell
+    files.  This includes native-format versions of cells that were
+    read in as part of an archive file.
+
+!!SEEALSO
+xic:filemenu
+
+
+!! 041615
+!!KEYWORD
+xic:sadev devedit
+!!TITLE
+Save As Device, Editing Devices
+!!HTML
+    <img src="screenshots/devedit.png" align=right>
+    <b>Keyword</b>: <tt>sadev</tt>
+
+    <p>
+    The <b>Save As Device</b> button appears in the <b>File Menu</b>
+    in electrical mode only.  If the current cell is suitable as a
+    device definition, meaning that the physical part is empty and
+    there are no subcells, then the <b>Device Parameters</b> panel
+    will appear.  From this panel, the default device properties can
+    be set, and the current cell saved as a device in either a file or
+    an updated <a href="devlib">device library</a>.
+
+    <p>
+    Devices in the device library can be edited, while in electrical
+    mode, by simply giving the device name to the <a
+    href="xic:open"><b>Open</b></a> command or equivalent, and
+    enabling editing mode with the <a href="xic:cedit"><b>Enable
+    Editing</b></a> button in the <b>Edit Menu</b>.  When saving, with
+    either <a href="xic:sv"></b>Save</b></a> or <a
+    href="xic:save"><b>Save As</b></a>, the <b>Device Parameters</b>
+    pop-up will appear, as it will, of course, with the <b>Save As
+    Device</b> button.
+
+    <p>
+    The panel will also appear in the <b>Save As</b> command if the
+    name of the cell or file to save has been specified as the name of
+    the device library file (default "<tt>device.lib</tt>").  Again,
+    the cell must contain geometry appropriate for a device, i.e., no
+    physical data and no subcells.
+
+    <p>
+    When creating a new device symbol, one can use an existing symbol
+    from the device library as a starting point, and save under a new
+    name.  This will tend to keep the new device size and other
+    characteristics similar to existing devices.
+
+    <p>
+    The remainder of this section describes the controls found in the
+    <b>Device Parameters</b> panel.
+
+    <p>
+    The <a href="xic:subct"><b>subct</b></a> side-menu command is used
+    to set the device connection points.  The order of appearance on
+    the SPICE line is the same as the numerical order in the marks
+    shown in the <b>subct</b> command.  The <b>subct</b> command
+    creates the <a href="prpty:node"><b>node</b> properties</a>
+    required for electrical connection.  At least one connection point
+    is required, unless the <b>SPICE Prefix</b> begins with 'x' or 'X'
+    (indicating a macro) in which case a connection point is not
+    required.  Thus it is possible for a macro, like a subcircuit, to
+    connect to global nodes only.
+
+    <p>
+    The <b>Device Name</b> entry area contains the device (cell) name. 
+    This is arbitrary and can be changed, however a name must appear. 
+    This is the name by which the device is known to <i>Xic</i>, and
+    the name that will appear in the device selection menu.
+
+    <p>
+    The <b>SPICE Prefix</b> is one or more characters that will be
+    prepended to the device instance lines when a SPICE file is
+    created.  An entry in this field is usually mandatory.  The pop-up
+    will accept anything, however the first character should match the
+    requirements of SPICE, which expects a certain key letter for each
+    device, such as '<tt>R</tt>' for resistors (case independent). 
+    Additional characters can appear, and should be alphanumeric.  An
+    exception is the terminal device, which is not instantiated in
+    SPICE, and must have a prefix starting with the character
+    '<tt>@</tt>' for internal use by <i>Xic</i>.  In <i>Xic</i>, the
+    <b>SPICE prefix</b> for normal devices has no internal
+    significance except as a unique identifier of that particular
+    device, so the prefix should be unique in the device library file. 
+    The prefix is saved in a <a href="prpty:name"><b>name</b>
+    property</a> applied to the device.
+
+    <p>
+    If the current cell is not a SPICE device but rather a macro,
+    which will instantiate a subcircuit (such as the "<tt>opamp</tt>"
+    example in the supplied <tt>device.lib</tt> file) the SPICE Prefix
+    <i>must</i> start with '<tt>x</tt>' or `<tt>X</tt>'.
+
+    <p>
+    A subcircuit added in this manner is expected to reference a
+    <tt>.subckt</tt> macro in the <a href="modlib">model library</a>. 
+    The name of the macro (not the file name) is given to instances of
+    the device as a <a href="prpty:model"><b>model</b> property</a>. 
+    A default model property can be supplied to the device.  In the
+    example, the name of the device is "<tt>opamp</tt>", and the
+    <b>model</b> property is given as "<tt>ua741</tt>".  There should
+    be a file in the models subdirectories along the library <a
+    href="xicpaths">search path</a>, or an entry in the model library
+    file, starting with "<tt>.subckt ua741</tt> ..." and containing
+    the subcircuit definition, terminated with "<tt>.ends</tt>".  Note
+    that subcircuits and models can be intermixed freely in the model
+    files, but the reference names must be unique.
+
+    <p>
+    There is one special case:  ground terminals.  These have exactly
+    one connection (a <b>node</b> property), and no other properties
+    including a <b>name</b> property (prefix).  If this matches the
+    current cell, and a ground terminal in intended, then the <b>SPICE
+    Prefix</b> should be left blank.
+
+    <p>
+    The <b>Default Model</b> and <b>Default Value</b> fields are
+    optional for devices.  Either one, but not both can be given,
+    providing a default model name or default value to the device.  If
+    both are given, the <b>Default Value</b> entry will be ignored. 
+    These entries translate into <b>model</b> and <a
+    href="prpty:value"><b>value</b> properties</a> applied to the
+    device.  Instances will inherit which ever of these properties is
+    given, but they can be changed on a per-instance basis.
+
+    <p>
+    If the device is a macro, i.e., the SPICE prefix starts with
+    '<tt>x</tt>' or '<tt>X</tt>', then the <b>Default Model</b> field
+    is mandatory and contains the name of the subcircuit that will be
+    instantiated.  This name should be found in a <tt>.subckt</tt>
+    line in the model library.
+
+    <p>
+    The <b>Default Parameters</b> field provides a default parameter
+    set for the device or macro.  The string can be any text relevant
+    to the device in the context of SPICE, and will appear as a <a
+    href="prpty:param"><b>param</b> property</a> when the device is
+    instantiated.  This property can subsequently be changed in the
+    instances.
+
+    <a name="hspot"></a>
+    <p>
+    The <b>Hot Spot</b> button, and associated menu and entry area,
+    allows a <a href="prpty:branch"><b>branch</b> property</a> to be
+    applied to the device.  The <b>branch</b> property allows an
+    internal value or function to be associated with a location in the
+    schematic symbol, which can be clicked on in the drawing to obtain
+    the values, after a simulation.  For most devices, this will yield
+    the current through the device.  The <b>branch</b> property is
+    "internal", meaning that it can not be changed in instances by the
+    user.
+
+    <p>
+    The <b>Hot Spot</b> button will be active when the device contains
+    a <b>branch</b> property.  Pressing the button will create the
+    property.
+
+    <p>
+    The <b>branch</b> property contains the hot spot coordinates,
+    which are marked on-screen with a white cross when the <b>Hot
+    Spot</b> button is active.  While the <b>Hot Spot</b> button is
+    active, clicking in the drawing will move the hot spot, and the
+    white cross, to the button-down location.  The user should click
+    to locate the hot spot where desired in the drawing.  In most of
+    the devices in the supplied device library file, the hot spot is
+    located on the '+' symbol that appears near the top device
+    terminal.
+
+    <p>
+    The menu contains an orientation for the hot spot data.  This is
+    needed when the returned value is a current, and indicates the
+    actual direction of positive current flow, relative to the device
+    symbol.  Typically, the two device terminals are oriented
+    vertically, with the '+' associated with the top terminal, which
+    would imply that the orientation choice should be "<b>Down</b>". 
+    If a scalar value is returned, so that there is no orientation,
+    the correct choice would be "<b>none</b>".  This selection will
+    set the style and orientation of the plot trace marker applied
+    when the hot spot is clicked on in the <a
+    href="xic:plot"><b>plot</b></a> and <a
+    href="xic:iplot"><b>iplot</b></a> (electrical side menu) commands.
+
+    <p>
+    The text entry provides an expression for the value to be
+    returned.  The description of the <a
+    href="prpty:branch"><b>branch</b></a> property describes this. 
+    This is the <i>string</i> part of the property description line,
+    and may be empty for inductors and voltage sources.
+
+    <p>
+    The <b>No Physical Implementation</b> box should be checked if the
+    device will never have a direct correspondence to geometry in the
+    physical layout.  This is true for example for voltage and current
+    sources.  Devices with this property set will not be considered in
+    LVS testing and will never appear in netlists extracted from
+    physical data.  The device terminals will never appear in physical
+    layouts.  This will apply a <a href="prpty:nophys"><b>nophys</b>
+    property</a> to the device.
+
+    <p>
+    Once all needed fields have been filled in, the device can be
+    saved.  The <b>Save in Library</b> button will perform the
+    following steps:
+
+    <ol>
+    <li>The device library file will be copied to the current
+    directory, if it doesn't already exist in the current directory. 
+    If it does exist in that directory, the file will be copied and
+    given a "<tt>.bak</tt>" extension.
+
+    <p>
+    <li>The present device is written into the device library file. 
+    If the name already appears in the file, the existing device will
+    be replaced.  If the name does not appear, the device will be
+    appended to the file.
+
+    <p>
+    It is critical that the first line of a device description in the
+    device library be a comment naming the device, in the form
+    <blockquote>
+    (<tt>Symbol:</tt> <i>devname</i>);
+    </blockquote>
+    When updating the library, the process looks for lines of this
+    form.  <i>Xic</i> will always add this line, but it may not be
+    present if the file has been hand edited.
+
+    <p>
+    <li>The modified device library is read back into <i>Xic</i>, and
+    <i>Xic</i> is updated to use the new library.
+
+    <p>
+    <li>The pop-up is retired, and a message indicates completion.
+    </ol>
+
+    <p>
+    If, instead, it is desirable to avoid touching the device library
+    but the user wishes to save the device, the <b>Save as Cell
+    File</b> button can be used to save the device as a native cell
+    file.
+
+    <p>
+    After saving, the device selection menus are updated, in case the
+    device was saved to a location that was referenced in the device
+    library, such as by a <tt>Directory</tt> keyword.
+
+    <p>
+    <b>Warning</b>:  Be aware that it is not good to have cell files
+    lying around that conflict with cells provided by the device
+    library, as they can potentially cause trouble.  Such files should
+    be moved somewhere safe, at least out of the search path.
+
+!!SEEALSO
+xic:filemenu
+cdsimport
+
+!! 071310
+!!KEYWORD
+xic:hcopy
+!!TITLE
+Print
+!!HTML
+    <img src="screenshots/print.png" align=right>
+    <b>Keyword</b>: <tt>hcopy</tt>
+
+    <p>
+    The <b>Print</b> button from the <b>File Menu</b> brings up the <a
+    href="hcopypanel"><b>Print Control Panel</b></a> for controlling hard
+    copy plot generation.  The panel supports a variety of printers
+    and file formats through internal drivers.
+
+    <p>
+    While the <b>Print Control Panel</b> is visible, <i>Xic</i> is in
+    "print mode" where the colors and other attributes of the main
+    drawing window are set to those in force for the current print
+    driver.  The print driver is selected with the <b>Format</b> menu
+    in the <b>Print Control Panel</b>.
+
+    <p>
+    Each print driver can have its own set of attributes and colors,
+    which can be set from the <a href="techfile:attr">technology
+    file</a>.  Thus colors, fill, etc., can be set to provide best
+    results from the driver.  Changing the colors or attributes while
+    in print mode will affect the setting for the current print driver
+    only, and the original setting will be restored when print mode is
+    exited.  The settings applied to a driver are remembered the next
+    time the driver is selected in print mode.
+
+    <p>
+    If, after setting up print driver-specific attributes and colors,
+    the <a href="xic:updat"><b>Save Tech</b></a> button is used to
+    generate a technology file, the file will contain the
+    driver-specific information.
+
+    <p>
+    The driver-specific attributes include all of the settings from
+    the <b>Main Window</b> sub-menu of the <a
+    href="xic:attrmenu"><b>Attributes Menu</b></a>, including all grid
+    settings other than the spacing and snapping values.  Grid spacing
+    and snapping values carry over when switching to and from print
+    mode.  Individual layer colors, as well as the other attribute
+    colors used in drawing windows, can be set for the driver with the
+    <b>Color Selection</b> panel from the <a href="xic:color"><b>Set
+    Color</b></a> button in the <b>Attributes Menu</b>.  Fill patterns
+    are set with the <b>Fill Pattern Editor</b>, from the <a
+    href="xic:fill"><b>Set Fill</b></a> button.  Layer visibility can
+    be set for the driver by clicking with mouse <a
+    href="button2">button 2</a> in the <a href="layertab">layer
+    table</a>.  All of these settings apply only to the current print
+    driver when in print mode, instead of the general screen display
+    as when not in print mode. 
+
+    <p>
+    Not all attributes will be recognized and used by all print
+    drivers.  In particular, the "line draw" drivers will typically
+    ignore the fill pattern and simply draw an outline, though the
+    HPGL and Xfig drivers have a means to use predefined fill patterns
+    defined in the specific interface protocol.  This can be set up in
+    the technology file by use of the <a
+    href="HPGLfilled"><tt>HPGLfilled</tt></a> and <a
+    href="XfigFilled"><tt>XfigFilled</tt></a> keywords, respectively.
+
+    <p>
+    The temporary file produced may be quite large in some cases. 
+    This file is created in the <tt>/tmp</tt> directory by default. 
+    If this directory has insufficient disk space the
+    <b>XIC_TMP_DIR</b> <a href="xic:env">environment</a> variable
+    should be set to a path to a suitable directory.
+
+!!SEEALSO
+hcopytech
+!set:hardcopy
+xic:filemenu
+
+!! 090914
+!!KEYWORD
+xic:files filespanel
+!!TITLE
+Path Files Listing
+!!HTML
+    <img src="screenshots/filelist.png" align=right>
+    <b>Keyword</b>: <tt>files</tt>
+
+    <p>
+    The <b>Path Files Listing</b> panel lists the layout files and
+    libraries found along the <a href="xicpaths">search path</a>,
+    including the files found through <a href="xt_redirect">redirect
+    files</a>.  The panel can be used to open files and cells for
+    editing and placement, among other useful features.  The panel is
+    brought up with the <b>Files List</b> button in the <b>File
+    Menu</b>.
+
+    <p>
+    The panel contains a drop-down menu which has an entry for each
+    directory in the search path, and each directory referenced in a
+    redirect file.  The main text area lists the files found in the
+    currently selected directory.
+
+    <p>
+    File names are listed in columns.  A character specifies the file
+    type:  "X" for <i>Xic</i> native, "B" for CGX, "C" for CIF, "G"
+    for GDSII, "O" for OASIS, and "L" for <a href="libraries">library
+    files</a>.  Unrecognized file types are not listed.  The
+    directories are polled periodically, and the file listing is
+    refreshed when changes are found.  Unfortunately, this is not
+    available under Windows 95/98/ME.  In that case, resizing the
+    window or popping the listing down then up again will refresh the
+    listing.
+
+    <p>
+    The text area of the files listing is a <a href="dragdrop">drag
+    and drop</a> source and receiver.  As a receiver, files or
+    directories dropped in this area will appear in the directory that
+    contains the listed files.  By default, a confirmation pop-up will
+    appear before any action occurs, but experienced users can disable
+    this by setting the <a
+    href="NoAskFileAction"><b>NoAskFileAction</b></a> variable.  See
+    the description of the <a href="filemgr"><b>File Selection</b></a>
+    panel for the operations that can be performed via drag/drop. 
+    File names from the listing can be dragged into the drawing
+    windows, which will load the file into the window.
+
+    <p>
+    A file can be selected by clicking on the name, and while selected
+    it will be highlighted.  When a file name is selected, the
+    <b>Open</b>, <b>Place</b>, and <b>Contents</b> command buttons
+    become active.  These buttons are inactive (grayed) unless a file
+    name is selected.
+
+    <p>
+    With a file name selected, pressing the <b>Open</b> button will
+    load the file into the main window, as if the file was opened with
+    the <a href="xic:open"><b>Open</b></a> command in the <b>File
+    Menu</b>.  If the file is a library or has multiple top-level
+    cells, a window appears which enables the user to make a selection
+    to resolve the ambiguity.  If the current cell is modified, the
+    user will be given the opportunity to save it before switching to
+    the new cell.
+
+    <p>
+    Similarly, pressing the <b>Place</b> button will load the
+    top-level cell (after ambiguity resolution, if necessary) into the
+    <a href="xic:place"><b>Cell Placement Control</b></a> panel, from
+    which it can be instantiated.
+
+    <p>
+    <img src="screenshots/clisting2.png" align=right>
+    The <b>Contents</b> button brings up a panel which displays a
+    listing of the cells found in the currently selected <a
+    href="xic:fsaf">archive file</a>, or a list of references if the
+    selected file is a library.  This button is enabled only when the
+    selected file name corresponds to an archive or library (codes B,
+    C, G, O, or L).  The <b>Contents</b> button makes it possible to
+    extract individual cells and subcells from an archive file,
+    without having to load the whole file.  It also provides access to
+    the references contained within a library file.
+
+    <p>
+    The contents listing window contains <b>Open</b> and <b>Place</b>
+    buttons.  These buttons are normally grayed, but become active
+    when a name is selected in the contents listing.  Names are
+    selecting by clicking with the mouse, as in the <b>Path Files
+    Listing</b> panel.
+
+    <p>
+    Pressing the <b>Open</b> button will extract the named cell from
+    the source file or library, along with its hierarchy, and load it
+    into the main window.  If the current cell is modified, the user
+    will be given the opportunity to save it before switching to the
+    new cell.
+
+    <p>
+    Similarly, pressing the <b>Place</b> button will load the
+    selected cell into the <b>Cell Placement Control</b> panel, from
+    which it can be instantiated.
+
+    <p>
+    The contents listing is a drag source for <a
+    href="dragdrop">drag/drop</a>.  Names from the list can be dropped
+    into a drawing window, with an effect similar to using the
+    <b>Open</b> button.  If a cell name from the contents list is
+    dragged and dropped into a drawing window, that cell and its
+    descendents will be extracted from the archive and displayed in
+    the window.
+
+    <p>
+    When <i>Xic</i> is in CHD display mode, i.e., the <b>Display</b>
+    button in the <a href="xic:hier"><b>Cell Hierarchy Digests</b></a>
+    panel is active, the <b>Open</b> and <b>Place</b> buttons in the
+    <b>Path Files Listing</b> and the contents window are not
+    available.  The <b>Place</b> buttons are not available in the <a
+    href="xiv"><i>Xiv</i></a> feature set.
+
+!!SEEALSO
+fileorg
+xic:cells
+xic:filemenu
+
+!! 012411
+!!KEYWORD
+xic:chdcgd
+!!TITLE
+Cell Hierarchy and Geometry Digests
+!!HTML
+    Cell Hierarchy Digests (CHDs) are in-memory objects that map a
+    cell hierarchy from a layout archive into a compact form, and are
+    used to extract cell data.  A "bare" CHD contains an offset into
+    the original file for each cell, so that cell data are acquired by
+    reading the original file.
+
+    <p>
+    The CHD facilitates extracting geometric information from the
+    layout file on a per-cell basis, and is used internally during
+    certain operations, including windowing, flattening, and empty
+    cell filtering.
+
+    <p>
+    A CHD will contain physical and possibly electrical cell hierarchy
+    data, as extracted from an archive file.  Operations with a CHD
+    that contains electrical data will either pass-through electrical
+    data untouched, or strip it entirely.  If the CHD is used to read
+    into the database or to write a file, and there is no windowing or
+    flattening, the electrical data will appear in the database or in
+    the output file.  If windowing or flattening is employed, only the
+    physical data will be processed.  The output will contain only the
+    physical data.
+
+    <p>
+    A CHD facilitates random-access to cells within the file, which in
+    general is a reasonably efficient process.  However, if the source
+    file is gzip-compressed (GDSII and CGX files only), random seeking
+    can be a very slow process, as the decompression state must evolve
+    from the beginning of the file.  Seeking backwards requires
+    rewinding the file and decompressing to the desired offset.
+
+    <p>
+    However, there is a random-access mapping option available,
+    controlled by the setting of the <a
+    href="ChdRandomGzip"><b>ChdRandomGzip</b></a> variable.  This can
+    speed random access into gzipped files, but requires some memory
+    overhead.  See the variable description for more information, this
+    feature is not available in all <i>Xic</i> distributions.
+
+    <p>
+    The CHD is designed to minimize memory use, and allows processing
+    of huge layout files that can not fit entirely in virtual memory
+    in the normal database.  Additional memory reduction is
+    accomplished by saving cell instance lists in compressed form in
+    memory.  However, this may have a small computation overhead due
+    to the required decompression before use.  The <a
+    href="ChdCmpThreshold"><b>ChdCmpThreshold</b></a> variable can be
+    used to turn off this compression, if speed is paramount and
+    memory use is not an issue.
+
+    <p>
+    Optionally, a CHD can be linked to a companion data structure,
+    called a Cell Geometry Digest (CGD).  A CGD is a compact object
+    that supplies cell geometry data.  When a CGD is linked, cell
+    geometry are obtained through the CGD (if present in the CGD),
+    instead of from the original archive file.  This can reduce access
+    time considerably.
+
+    <p>
+    When using a CHD to access cell data, and the CHD has a linked
+    CGD, and the cell data were previously removed from the CGD, the
+    data will be obtained from the original layout file.  Thus the CGD
+    can be used as a kind of cache.
+
+    <p>
+    There are three types of CGD:
+    <ol>
+    <li>The "memory" CGD saves all geometry data in memory.  The
+     geometry data are highly compressed, so that this makes sense
+     even for very large layouts.
+    <li>A "file" CGD instead stores offsets into a CGD file on disk. 
+     The disk file can also contain the CHD representation.  This
+     access method is not quite as fast as the in-memory variant, but
+     is still generally much faster that reading the original layout
+     file since 1) the data are highly compressed so fewer bytes are
+     read, and 2) the data are sorted by layer so per-layer searches
+     are more direct.
+    <li>A "remote access" CGD obtains geometry data from a remote host
+     which is running <i>Xic</i> in <a href="xic:server">server
+     mode</a>.  The CGD is a stub which links to a CGD in server
+     memory, and data are returned via interprocess communication
+     calls.
+    </ol>
+
+    <p>
+    The three types indicate the creation mode of a CGD.  In fact, the
+    data access is specified on a per-record basis, so that a CGD
+    could contain records of each type.  The mixing of types, and
+    specifically the ability to bring some records into memory (i.e.,
+    caching), will be more fully developed in future releases.
+
+    <p>
+    The CGD contains a reference count, which is incremented when the
+    CGD is linked to a CHD, and decremented when unlinked.  It is
+    possible for a CGD to be used by multiple CHDs.  It is not
+    possible to destroy a CGD while the reference count is nonzero,
+    i.e., when it is linked to a CHD.
+
+    <p>
+    In <i>Xic</i>, CHDs and CGDs are given access names, which are
+    used to access the CHD or CGD in memory.  These names are
+    arbitrary but must be unique among the CHDs or CGDs.  They may be
+    assigned by the user or generated within <i>Xic</i>.
+
+    <p>
+    The <a href="xic:hier"><b>Cell Hierarchy Digests</b></a> panel,
+    from the <b>Hierarchy Digests</b> button in the <b>File Menu</b>
+    is the main entry point for creation and manipulation of CHDs. 
+    Similarly, the <a href="xic:geom"><b>Cell Geometry Digests</b></a>
+    panel from the <b>Geometry Digests</b> button in the <b>File
+    Menu</b> is the main entry point for CGD creation and
+    manipulation.  These two panels provide the GUI interface to
+    CHD/CGD creation and manipulation.
+
+    <p>
+    In most if not all <i>Xic</i> commands that prompt for the name of
+    a layout file, instead of a file name, the access name of an
+    existing CHD can be given, or the name of a saved CHD file can be
+    given.  In the latter two cases, the command obtains geometric
+    data through the CHD, which can be much faster, but operates as
+    one would expect if directly giving the name of the referenced
+    layout file.
+
+    <p>
+    However, a linked CGD provides only physical data, and properties
+    and text labels are stripped.
+
+!!SEEALSO
+xic:filemenu
+
+
+!!REDIRECT xic:chdsav   xic:hier#save
+
+!! 022816
+!!KEYWORD
+xic:hier
+!!TITLE
+Cell Hierarchy Digests
+!!HTML
+    <img src="screenshots/chds.png" align=right>
+    <b>Keyword</b>: <tt>hier</tt>
+
+    <p>
+    The <b>Hierarchy Digests</b> button in the <b>File Menu</b> brings
+    up the <b>Cell Hierarchy Digests</b> listing of the Cell Hierarchy
+    Digests (CHDs) currently in memory.  A CHD is a compact
+    representation of a cell hierarchy, which facilitates access to
+    data on a per-cell basis.  The CHD and companion <a
+    href="xic:geom">Cell Geometry Digest</a> (CGD) data structures
+    provide a foundation for many of the operations in <i>Xic</i>,
+    including windowing, flattening, and empty cell removal.  An
+    overview of CHD/CGD capabilities is available <a
+    href="xic:chdcgd">here</a>.
+
+    <p>
+    Each saved CHD has a unique but otherwise arbitrary access name. 
+    The access name is initially assigned by the user or generated by
+    <i>Xic</i>.
+
+    <p>
+    The listing consists of the CHDs by access name.  The middle
+    column in the CHD listing will show the name of a linked CGD, if
+    any.  The right column lists the source file name and default
+    top-level cell.
+
+    <p>
+    Most <i>Xic</i> commands that take a layout file path as input
+    will accept a CHD access name.  The command will operate with the
+    data obtained through the CHD, which can be identical with that
+    from the original layout file, but operations will in general
+    proceed more quickly.
+
+    <p>
+    Clicking on one of the rows in the listing will select that CHD. 
+    The selected CHD is acted on by most of the command buttons
+    arrayed along the top of the panel, which provide the following
+    functions.
+
+    <dl>
+    <dt><b>Add</b><dd>
+    This button brings up the <a href="xic:chdadd"><b>Open Cell
+    Hierarchy Digest</b></a> panel, which allows a new CHD to be
+    created and added to the list.
+    </dl>
+
+    <a name="save"></a>
+    <dl>
+    <dt><b>Save</b><dd>
+    A CHD can be saved to a file, and recalled into memory later.
+    This button produces the <b>Save Hierarchy Digest File</b> pop-up
+    that solicits a file name/path into which a representation of the
+    currently selected CHD will be saved.  A previously saved CHD can
+    be recalled with the <b>Add</b> button.
+
+    <p>
+    If the <b>Include geometry records in file</b> check box in the
+    pop-up is checked, geometry records will be included in the file. 
+    These records are effectively a concatenation of a <a
+    href="xic:geom">Cell Geometry Digest</a> file representation.  <a
+    href="layerchange">Layer filtering</a> can be employed to specify
+    layers to include, through the layer filtering control group which
+    is activated when including geometry.
+
+    <p>
+    With geometry included, the resulting file is a highly compact but
+    easily random-accessible representation of the layout file. 
+    However, it does not include text labels, properties, or
+    electrical data.
+    </dl>
+
+    <dl>
+    <dt><b>Delete</b><dd>
+    The presently selected CHD is destroyed, after confirmation.
+    </dl>
+
+    <dl>
+    <dt><b>Config</b><dd>
+    This brings up the <a href="xic:chdconfig"><b>Configure Cell
+    Hierarchy Digest</b></a> panel which enables configuration of the
+    CHD.  There are two attributes that may be configured:  the
+    assumed top-level cell in the hierarchy, and the linking of a CGD
+    for geometry access.  The pop-up provides control of these
+    attributes.
+    </dl>
+
+    <dl>
+    <dt><b>Display</b><dd>
+    When this toggle button is pressed, the main window and new
+    sub-windows display the cell hierarchy in the CHD.  Editing is not
+    possible in any window in this mode, so the <a
+    href="sidemenu">side menu</a> becomes invisible.  The display is
+    very similar to that of the normal display mode.  The usual
+    zooming/panning, expansion, and other modes apply, though no
+    selection operations are available.  In CHD display mode, the
+    <b>Edit</b>, <b>Modify</b>, <b>DRC</b>, and <b>Extract</b> menus
+    are unavailable, and various other functions in the other menus
+    are unavailable.
+
+    <p>
+    When the <b>Display</b> button is pressed, a small pop-up appears,
+    which allows the user to select an area to display before the
+    image is created, which is compute intensive and time consuming. 
+    The user should enter the center x and y and display width (in
+    microns) of the region of the top-level cell to be displayed. 
+    Pressing <b>Apply</b> will create and display the image. 
+    Alternatively, the <b>Center Full View</b> button can be pressed
+    to display the entire cell.
+
+    <p>
+    The features in the display are obtained through the CHD, and thus
+    no additional memory is required than that used by the CHD itself. 
+    Since the CHD occupies a small fraction of the memory required to
+    hold the originating layout file in the main database, very large
+    files can be viewed, much larger than files viewed the normal way
+    for a given amount of available system memory.
+
+    <p>
+    The row in the CHD listing that is currently being displayed is
+    marked, by an "open" icon in Windows, or by a different background
+    color.  This display mode will persist as long as the <b>Display</b>
+    button is active, whether or not the pop-up is visible.
+
+    <p>
+    The root cell in the display is initially the default cell from
+    the CHD.  This cell can be <a href="xic:chdconfig">specified</a>
+    in the pop-up from the <b>Config</b> button.  If no cell name is
+    specified, the top-level cell in the CHD (a cell not used as a
+    subcell within the CHD) with the lowest offset (there may be more
+    than one) is assumed.  If a <a href="xic:geom">Cell Geometry
+    Digest</a> (CGD) has been linked to the CHD in the configuration
+    panel, the displayed geometry is obtained from the CGD.  In this
+    case, text labels, which are never included in the CGD database,
+    are absent from the display.
+
+    <p>
+    <a href="dragdrop">Drag and drop</a> can be used from the contents
+    listing (below) to change the root cell in the display.  This does
+    not change the default cell of the CHD, and only applies to the
+    display in the drop-target window.
+    </dl>
+
+    <dl>
+    <dt><b>Contents</b><dd>
+    <img src="screenshots/clisting1.png" align=right>
+    This button brings up or updates a listing of the cells in the
+    currently selected CHD.  The cell names can be selected by
+    clicking in the listing.  Only cells which correspond to the
+    current display mode (physical or electrical) are shown.
+
+    <p>
+    The contents listing pop-up contains <b>Info</b>, <b>Open</b>, and
+    <b>Place</b> buttons, which are active when a name is selected. 
+    Pressing <b>Info</b> will display info about the selected cell, as
+    saved in the CHD.  Pressing <b>Open</b> will extract the selected
+    cell and its hierarchy from the source file into the main
+    database, and display it in the main window, as if opened with the
+    <a href="xic:open"><b>Open</b></a> button in the <b>File Menu</b>. 
+    Pressing <b>Place</b> will likewise extract the cell hierarchy,
+    but load it into the <a href="xic:place"><b>Cell Placement
+    Control</b></a> panel for instantiation.
+
+    <p>
+    The contents listing is enabled as a <a href="dragdrop">drag
+    source</a>.  If an item is dragged to a drawing window and dropped
+    the following will happen.  If the drop window is displaying the
+    CHD (the <b>Display</b> button is active), the window display will
+    become rooted in the dropped cell.  Nothing new is read into
+    memory.  If the drop window is in normal display mode, the cell
+    and its hierarchy will be read from the CHD's source into the main
+    database, and the cell will be displayed.  Note that this can
+    cause out-of-memory problems if one isn't careful.
+    </dl>
+
+    <dl>
+    <dt><b>Cell</b><dd>
+    It is possible to create "<a href="refcell">reference</a> cells"
+    in the main database that reference the CHD.  These cells are
+    otherwise empty, but when placed in a layout, and the layout is
+    saved to disk, the hierarchy from the CHD will be written into the
+    output file.
+
+    <p>
+    This can be used to assemble a top-level cell or reticle
+    containing very large amounts of data, far more than can be kept
+    in memory in the usual way.
+
+    <p>
+    Pressing the <b>Cell</b> button will solicit the name of the
+    reference cell.  This is the name of a cell found in the CHD, and
+    will also be the name of the reference cell created in memory. 
+    The pop-up is initially loaded with the name of the default cell
+    of the CHD, but another cell name can be dragged from the contents
+    listing or entered manually.
+
+    <p>
+    Pressing <b>Apply</b> in the solicitation pop-up will create the
+    reference cell in memory.
+
+    <p>
+    In normal editing mode, the reference cells can be placed in the
+    normal way (though they appear to have no content - they display
+    as an empty box).  The reference cells can be saved as native
+    cells, in which case they remain as reference cells, and can be
+    loaded into <i>Xic</i> just as any native cell.
+
+    <p>
+    When a reference cell is written to an archive file such as GDSII
+    or OASIS, the reference cell is replaced by the cell and its
+    hierarchy, as extracted from the original layout file.
+
+    <p>
+    Reference cells cannot be flattened with the <a
+    href="xic:flatn"><b>Flatten</b></a> command, they will simply
+    disappear.
+    </dl>
+
+    <dl>
+    <dt><b>Info</b><dd>
+    Pressing this button will bring up or update a window containing
+    information about the currently-selected CHD.
+    </dl>
+
+    <dl>
+    <dt><b>?</b> (quick info)<dd>
+    This button brings up "quick info" about the currently selected
+    CHD, including the full path to the source file.  The same
+    information can be obtained from the <b>Info</b> button, but this
+    is much more extensive and may take some time to compute.  The
+    quick info is instantaneous.
+    </dl>
+
+    <dl>
+    <dt><b>Help</b><dd>
+    This brings up the help window describing the <b>Cell Hierarchy
+    Digests</b> pop-up.
+    </dl>
+
+    <p>
+    The buttons and controls below the listing window provide general
+    CHD-related functions, that do not make use of selections in the
+    listing.
+
+    <dl>
+    <dt><b>Use auto-rename when writing CHD reference cells</b><dd>
+    This mode applies when writing a cell hierarchy containing <a
+    href="xic:hier#refcell">reference cells</a>.  A reference cell is
+    a cell in memory that has no content of its own, but rather serves
+    as a pointer to a cell hierarchy obtained through a CHD.  When
+    such cells are encountered when writing a hierarchy from the main
+    database, the reference cell is replaced with the hierarchy
+    obtained through the referenced CHD.
+
+    <p>
+    When writing CHD reference hierarchies, there are two algorithms
+    that can be employed that prevent writing duplicate cell names. 
+    When this check box is not checked, cells encountered with the
+    same name as a cell previously written will be skipped, i.e., no
+    new cell definition will be added to the output file, and all
+    subsequent instances of the cell will call the existing
+    definition.
+
+    <p>
+    When this box is checked, and a duplicate cell name is
+    encountered, and the existing definition came from a different
+    CHD, the name is changed and a new cell definition is added to the
+    output file.  References to the cell will call the cell by its new
+    name.  However, name clashes from equivalent CHD's will cause the
+    new cell definition to be skipped, as in the default mode.  An
+    "equivalent CHD" can mean the same CHD in memory, or a different
+    CHD but opened on the same file with the same aliasing.
+
+    <p>
+    This button tracks the state of the <a
+    href="RefCellAutoRename"><b>RefCellAutoRename</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Load top cell only</b><dd>
+    When a cell is brought into the main database through a CHD, if
+    this box is checked:
+    <ol>
+    <li>Only that cell, and not its subcells, will be loaded into the
+    main database.  Any subcells of the cell become <a
+    href="refcell">reference cells</a> in the main database.
+    <li>The name of the cell will be added to the <a
+    href="xic:overtab">override table</a>.
+    </ol>
+    This allows editing of the requested cell, and when written to
+    disk the complete hierarchy will appear, however loading the whole
+    hierarchy into memory is avoided.
+
+    <p>
+    This check box tracks the state of the <b>ChdLoadTopOnly</b>
+    variable.
+    </dl>
+
+    <dl>
+    <dt><b>Fail on unresolved</b><dd>
+    This check box tracks the state of the <a
+    href="ChdFailOnUnresolved"><b>ChdFailOnUnresolved</b></a>
+    variable.  When checked, when using a CHD to access cell data and a
+    cell is found that can't be resolved in the source file or through
+    the <a href="xic:libs">library mechanism</a>, the operation will
+    halt with a fatal error.  If not set, processing will continue,
+    with the non-references either being ignored (e.g., when
+    flattening), or converted to empty cells (when reading into the
+    database), or propagated to output (when writing output),
+    depending on the operation.
+    </dl>
+
+    <dl>
+    <dt><b>Use cell table</b><dd>
+    When checked, when a CHD is used to access cell data, cells found in
+    the <a href="xic:overtab">override table</a> will override those
+    in the source.  Depending on settings, such cells may be
+    effectively replaced by cells in memory, or simply skipped.
+
+    <p>
+    This check box tracks the state of the <a
+    href="UseCellTab"><b>UseCellTab</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Edit Cell Table</b><dd>
+    This button displays the <a href="xic:overtab"><b>Cell Table
+    Listing</b></a> panel.  This enables editing of the list of cell
+    names that are treated specially during CHD file-access
+    operations, the "override table".
+    </dl>
+
+    <dl>
+    <dt><b>Default Geometry Handling</b><dd>
+    This menu sets the default way to handle geometry records found
+    when reading a saved CHD file.  This mode will apply when a CHD
+    file name is given as input for a command (which is generally
+    possible for commands that are soliciting a layout file), and
+    there is no specific means of controlling the geometry record
+    processing.
+
+    <p>
+    There are three choices.  The initial default is to create a
+    memory-type CGD from the geometry records, and link it to the CHD. 
+    In this case, all geometry data will reside in memory, which makes
+    sense even for very large designs as the data are highly
+    compressed.  The second option is to create a file-type CGD and
+    link it to the CHD.  In this type of CGD, geometry is obtained
+    from the geometry records in the CHD file when needed, and does
+    not reside in memory.  The third option is to ignore the geometry
+    records, and therefor not create a linked CGD.  Geometry will be
+    obtained from the original layout file in this case (the original
+    layout file must still exist in the same location as when the CHD
+    file was created).
+    </dl>
+
+!!SEEALSO
+xic:filemenu
+
+!! 012511
+!!KEYWORD
+xic:chdadd
+!!TITLE
+Open Cell Hierarchy Digest
+!!HTML
+    <img src="screenshots/chdopen1.png" align=right>
+
+    This panel specifies a path to a layout or saved Cell Hierarchy
+    Digest (CHD) file, from which a new CHD will be created in memory
+    and added to the <a href="xic:hier"><b>Cell Hierarchy
+    Digests</b></a> listing.  The panel is brought up with the
+    <b>Add</b> button in the <b>Cell Hierarchy Digests</b> panel.
+
+    <p>
+    The panel provides two separate "notebook" tabs that specify the
+    type of file to read:  layout file or saved CHD file.  The
+    notebook pages expose the controls applicable to the type of
+    input, however either type of file can be entered in the entry
+    area of either page.  The tabs serve to simplify the panel.
+
+    <p>
+    All cell hierarchy data, both physical and electrical, will be
+    extracted from a layout file.  However, if the <a
+    href="LockMode"><b>LockMode</b></a> variable is set while in
+    physical mode, the electrical data, if any, will be omitted.  If
+    the source is a saved CHD file, the CHD in memory will be
+    recreated verbatim, ignoring current mode settings.
+
+    <p>
+    When the source is a layout file, systematic <a
+    href="cellname">cell name modifications</a> can be applied, if
+    desired.  This is sometimes useful for avoiding name clashes.  If
+    cell name modification is used, the modified names must be used
+    when specifying a cell to the new CHD, the original cell names are
+    not retained.
+
+    <p>
+    When reading a layout file, it is possible to save some
+    statistical information in the CHD, regarding counts of the
+    geometrical objects in the file.  This information will slightly
+    increase the size of the CHD in memory, with the bottom selection
+    requiring the most memory, the top selection the least.  The
+    information saved is counts of the number of boxes, polygons, and
+    wires seen.  The choices are:
+
+    <dl>
+    <dt><b>no geometry info saved</b><dd>
+    Don't save any statistical information.
+    </dl>
+
+    <dl>
+    <dt><b>totals only</b><dd>
+    This is the default, the totals for the file will be available.
+    </dl>
+
+    <dl>
+    <dt><b>per layer counts</b><dd>
+    The total counts for the file will be available for each layer used.
+    </dl>
+
+    <dl>
+    <dt><b>per cell counts</b><dd>
+    The counts will be available for each cell in the file.
+    </dl>
+
+    <dl>
+    <dt><b>per-cell and per-layer counts</b><dd>
+    The counts will be available for each layer used in each cell.
+    </dl>
+
+    <p>
+    This information will be printed in the <b>Info</b> window of the
+    <b>Cell Hierarchy Digests</b> pop-up.  The file totals are shown in
+    the CHD info, which is shown when there is no selection in the
+    <b>Contents</b> window.  The per-cell counts are shown in the
+    <b>Info</b> window when a cell name is selected in the
+    <b>Contents</b> listing.
+
+    <p>
+    If the CHD is going to be used in an operation with layer
+    filtering, it is recommended that <b>per-cell and per-layer
+    counts</b> be selected, as this allows <a
+    href="ecfilt">efficient removal</a> of cells made empty by the
+    layer filtering.
+
+    <p>
+    <img src="screenshots/chdopen2.png" align=right>
+    If the file name specified is a saved CHD file (previously created
+    from the <b>Save</b> button in the <b>Cell Hierarchy Digests</b>
+    pop-up), then the other entries (cell name mapping and geometry
+    counts) are ignored.  The cell name mapping is retained from the
+    original CHD that was saved.  The geometry counts are presently
+    discarded when a CHD is saved.
+
+    <p>
+    If the CHD file being read contains geometry records, the
+    processing of these records can be specified by the radio buttons
+    in the <b>CHD file</b> page.  There are three choices.  The first
+    option is to create a memory-type CGD from the geometry records,
+    and link it to the CHD.  In this case, all geometry data will
+    reside in memory, which makes sense even for very large designs as
+    the data are highly compressed.  The second option is to create a
+    file-type CGD and link it to the CHD.  In this type of CGD,
+    geometry is obtained from the geometry records in the CHD file
+    when needed, and does not reside in memory.  The third option is
+    to ignore the geometry records, and therefor not create a linked
+    CGD.  Geometry will be obtained from the original layout file in
+    this case (the original layout file must still exist in the same
+    location as when the CHD file was created).
+
+    <p>
+    These options are identical to default options which can be set
+    from the <b>Cell Hierarchy Digests</b> panel, but the present
+    panel overrides the default setting and applies only to the
+    current operation.
+
+!!SEEALSO
+xic:hier
+
+!! 012511
+!!KEYWORD
+xic:chdconfig
+!!TITLE
+Configure Cell Hierarchy Digest
+!!HTML
+    <img src="screenshots/chdconfig.png" align=right>
+
+    The <b>Config</b> button in the <a href="xic:hier"><b>Cell
+    Hierarchy Digests</b></a> panel brings up the <b>Configure Cell
+    Hierarchy Digest</b> panel, with which it is possible to change
+    the default top cell of a Cell Hierarchy Digest (CHD), and to link
+    a <a href="xic:chdcgd">Cell Geometry Digest</a> (CGD) which can
+    accelerate geometry record access.
+
+    <p>
+    The present default top-level cell name is shown in the editable
+    area near the top of the pop-up.  In an unconfigured CHD, the
+    default top-level cell is the first cell encountered in the layout
+    file that is not used as a subcell by any other cell in the file. 
+    Any cell defined in the file can be assigned as the top-level cell
+    of the CHD.  In any operation involving the CHD when a top-level
+    cell is not otherwise specified, the configured cell will be taken
+    as the default.
+
+    <p>
+    To configure a new top-level cell, use the <b>Contents</b> listing
+    of the <a href="xic:hier"><b>Cell Hierarchy Digests</b></a> panel,
+    if necessary, to identify an alternate cell name.  Note that this
+    is the name after any cell name modification is applied.  A cell
+    name can be dragged from the contents listing and dropped in the
+    entry area, or the name can be entered manually.
+
+    <p>
+    Pressing the <b>Apply</b> button in this group will complete the
+    cell name configuration.  The label of the <b>Apply</b> button
+    will change to "<tt>Clear</tt>", and the controls in this group
+    will be grayed.  The label at the top of the panel will indicate
+    that a top-level cell has been configured.  Pressing <b>Clear</b>
+    will un-configure the top-level cell, reverting to the default.
+
+    <p>
+    The <b>Last</b> button will recall the last cell name used, if
+    any.
+
+    <p>
+    A <a href="xic:geom">Cell Geometry Digest</a> (CGD) can be linked
+    to the CHD.  In this case, geometrical data retrieved through the
+    CHD will be obtained from the CGD, and not the original layout
+    file.  This linking can be accomplished, or removed, with the
+    lower group of controls.
+
+    <p>
+    To link an existing CGD, one enters its access name into the
+    <b>CGD name</b> entry area.  This is the name shown in the first
+    column of the <a href="xic:geom"><b>Cell Geometry Digests</b></a>
+    listing.  Pressing the <b>Apply</b> button in this group will
+    perform the link, gray the entries, and the button label will
+    change to "<tt>Clear</tt>".  The label text at the top of the
+    panel will indicate that the CHD is now configured "with geometry". 
+    Pressing the <b>Clear</b> button will reverse the process.
+
+    <p>
+    If the name in the <b>CGD name</b> entry area matches an existing
+    CGD, that CGD will be linked, whatever the status of the <b>Open
+    new CGD</b> check box.  If <b>Open new CGD</b> is checked, and the
+    <b>CGD name</b> is empty or a non-matching name, a new CGD will be
+    created, and either saved under the name given, or assigned a new
+    name by <i>Xic</i> if no name is given.
+
+    <p>
+    Pressing <b>Apply</b> when a new CGD is to be created will bring
+    up the <a href="xic:cgdopen"><b>Open Cell Geometry Digest</b></a>
+    panel.  This allows setting up parameters in the new CGD as
+    needed.  Pressing <b>Apply</b> in this panel will complete the
+    operation, as reflected by the state shown in the <b>Configure
+    Cell Hierarchy Digest</b> panel.  The new CGD will be listed in
+    the <a href="xic:geom"><b>Cell Geometry Digests</b></a> panel, if
+    it is visible.
+
+    <p>
+    When a CGD is created in this manner, specifically for linking to
+    a CHD, the new CGD will be automatically destroyed when unlinked
+    from the CHD (or when the linking CHD is destroyed).  One can see
+    the CGD disappear from the <b>Cell Geometry Digests</b> panel when
+    unlinked (<b>Clear</b> is pressed) in this case.
+
+    <p>
+    Please note that there is no way for the CHD to know whether the
+    linked CHD applies to the same original layout file.  Linking to a
+    CHD produced from a completely different layout will "succeed", and
+    there will be no errors even in use.  As geometry is being read,
+    if a cell is not found in the linked CGD, no geometry will be
+    returned, and the cell will appear to contain no geometry.  If is
+    up to the user to make sure that CHD and linked CGD cell name
+    spaces are compatible.
+
+!!SEEALSO
+xic:hier
+
+!! 030216
+!!KEYWORD
+refcell
+!!TITLE
+Reference Cells
+!!HTML
+    Reference cells are "pseudo cells" which exist in memory or on
+    disk as native cell files only.  These cells contain no content,
+    but instead reference another cell hierarchy.  Reference cells
+    have the same name as the top-level cell assumed in the referenced
+    hierarchy.  Reference cells can be used with physical layout data
+    only.
+
+    <p>
+    When reference cells are placed in a layout, and the layout is
+    written to an <a href="xic:fsaf">archive file</a> format on disk,
+    the reference cells are replaced with the hierarchy referenced.
+
+    <p>
+    Reference cells can be created from the <a href="xic:hier"><b>Cell
+    Hierarchy Digests</b></a> panel, with the <b>Cell</b> button.
+
+    <p>
+    Here is an example to illustrate how reference cells may be
+    created and used.  Assume that we have a file named
+    "<tt>input.gds</tt>" that contains a cell named
+    "<tt>input_top</tt>".
+
+    <p>
+    From the <b>Cell Hierarchy Digests</b> panel, the <b>Add</b>
+    button is used to create a CHD for <tt>input.gds</tt>.
+
+    <p>
+    The resulting CHD is selected in the listing, and the <b>Cell</b>
+    button is pressed.  A pop-up will appear requesting the name for
+    the cell.  The default name is the default top-level cell for the
+    CHD, or the <a href="xic:chdconfig">configured name</a>.  If this
+    is not our desired name "<tt>input_top</tt>", the text is changed
+    accordingly, and <b>Apply</b> is pressed.  The reference cell will
+    be created in memory (it will be listed in the <a
+    href="xic:cells"><b>Cells Listing</b></a> panel).
+
+    <p>
+    If memory is tight, the CHD that was just created can be deleted. 
+    It will be recreated if necessary.  The <b>Cell Hierarchy
+    Digests</b> panel can be dismissed.
+
+    <p>
+    The user can view the new cell with the <a
+    href="xic:open"><b>Open</b></a> command.  Note that it has a
+    bounding box, but no content.  Trying to modify the cell by adding
+    a box, for example, will fail.  Reference cells are immutable -
+    meaning read-only.
+
+    <p>
+    The reference cell named "<tt>input_top</tt>" is ready to be
+    placed into another hierarchy.  One can begin editing a new cell,
+    assume that it is called "<tt>foo</tt>".  The user will be asked
+    whether to save the previous (reference) cell.  The reference cell
+    can be saved as a native cell, however it is not possible to
+    change the cell name.  The cell can be saved in this manner if the
+    user wants a copy which can be reused in the future.  Incidently,
+    it is possible to coerce saving of a reference cell to an archive
+    format, as usual, in which case the new file will contain the
+    referenced cell hierarchy.
+
+    <p>
+    The user should make sure that the current <a
+    href="xic:expnd">expansion level</a> is set to 0.  When editing
+    "<tt>foo</tt>", the <a href="xic:place"><b>place</b></a> button in
+    the side menu can be used to place one or more instances of
+    "<tt>input_top</tt>", perhaps using the <b>Current Transform</b>
+    to rotate, mirror, or magnify the instances.  This will be no
+    different than placing normal instances.  The bounding boxes of
+    the newly placed cells will be visible, as normal, however if the
+    expansion level is increased, the bounding boxes disappear and
+    there is no visible indication of the newly place cells, except
+    that the overall bounding box encompasses them.  Again, the
+    reference cells have no content.
+
+    <p>
+    The hierarchy under <tt>foo</tt> can be saved to an archive format
+    in the usual manner, for example one can type "<tt>sav</tt>" in the
+    drawing window or press the <b>Save As</b> button in the
+    <b>File</b> menu.  In response to the prompt, one can enter
+    "<tt>foo.gds</tt>", for example, to produce a GDSII file, and
+    press <b>Enter</b>.  The user should then confirm saving to GDSII
+    format at the confirmation prompt, and the file <tt>foo.gds</tt>
+    will be created.
+
+    <p>
+    To have a look at the new GDSII file, the user can clear the
+    database with the <a href="xic:stabs"><b>Symbol Tables</b></a>
+    pop-up or by typing "<tt>!!Clear(0)</tt>".  Then, the <a
+    href="xic:open"><b>Open</b></a> command can be used to open
+    <tt>foo.gds</tt>.  The unexpanded display will look the same as
+    before, but note now that when expanded, the contents of the cells
+    are displayed, as obtained from the <tt>input.gds</tt> file, but
+    this content is now included in <tt>foo.gds</tt>.
+
+    <p>
+    This procedure serves a similar purpose to the <a
+    href="xic:assem"<b>Layout File Merge Tool</b></a> and the <a
+    href="!assmeble"><b>!assemble</b></a> command, but is graphical
+    and easier to perform.  It enables assembling a higher-level
+    layout file from lower-level component files.  Since the component
+    files don't have to be in memory, one can assemble huge layouts
+    with a modest computer, using any of these techniques.
+
+    <h4>Reference Cell Structure</h4>
+
+    A reference cell is basically an empty physical native cell with
+    a <a href="prpty:refcell"><b>refcell</b></a> property (property
+    number 7150).  This property contains the information that ties
+    the reference cell to a source and provides a bounding box.  A
+    complete example of a reference cell is shown below,
+
+    <blockquote>
+    <pre>
+    (Symbol asic2);
+    ($Id: xiFile.hlp,v 1.102 2017/03/22 07:30:07 stevew Exp $);
+    (xic 4.2.9 LinuxRHEL7_64 03/01/2016 04:36 GMT);
+    (PHYSICAL);
+    (RESOLUTION 1000);
+    ( CREATED 3/1/2016 4:36:34, MODIFIED 3/1/2016 4:36:34 );
+    5 7150 filename="/usr/local/cad/layouts/asic2.gds" cellname=asic2
+    &nbsp;&nbsp;&nbsp;&nbsp; bound=0.000,0.000,2328.100,2543.700;
+    9 asic2;
+    DS 0 1 1;
+    DF;
+    E
+    </pre>
+    </blockquote>
+
+    <p>
+    This reference cell is a stand-in for a cell named
+    "<tt>asic2</tt>" which is found in the path given.  Note the
+    simple form of the cell, particularly realizing that the comment
+    lines (enclosed in parentheses) are optional.  It is completely
+    feasible to create reference cells with a text editor.  The only
+    reason that the CHD was used is that it provides the correct cell
+    bounding box.  The bounding box is used in the display, but does
+    not affect the actual location or size of the cell hierarchy when
+    expanded.
+
+!!SEEALSO
+prptyspec
+
+!! 022816
+!!KEYWORD
+xic:overtab
+!!TITLE
+Cell Table Listing
+!!HTML
+    <img src="screenshots/ctablist.png" align=right>
+    
+    Whenever a <a href="xic:hier">Cell Hierarchy Digest</a> (CHD) is
+    used to access a cell hierarchy for any purpose <i>other</i> than
+    to read the cells into the main database, a cell substitution
+    mechanism can be employed.  This mechanism is enabled by setting
+    the <a href="UseCellTab"><b>UseCellTab</b></a> variable, or
+    equivalently by setting the <b>Use cell table</b> check box in the
+    <a href="xic:hier"><b>Cell Hierarchy Digests</b></a> panel.
+
+    <p>
+    Each <a href="xic:stabs">symbol table</a> contains a hash table
+    for cell names, which is used as the "cell override table" when
+    working with CHDs.  The <b>Cell Table Listing</b> panel lists the
+    cell names in this table, for the current symbol table.  This
+    panel is made available through the <b>Edit Cell Tab</b> button in
+    the <b>Cell Hierarchy Digests</b> panel.
+
+    <p>
+    The names listed in the table are cells found in the global string
+    table for cell names.  This includes the names of cells read into
+    memory, and the names of cells referenced in CHDs in memory.  The
+    names persist even if the corresponding cell or CHD is removed
+    from memory, until a global clear is performed with the <a
+    href="ClearAll"><tt>ClearAll</tt></a> script function.
+
+    <p>
+    The panel provides the following buttons to manipulate the table
+    contents.
+
+    <dl>
+    <dt><b>Add</b><dd>
+    The <b>Add</b> button produces an entry form that allows the user
+    to enter a new cell name into the table.  The name given must be
+    that of a cell previously opened or referenced by a CHD, as
+    explained above.
+
+    <p>
+    The listing window is also sensitive as a drop receiver, so that
+    cell names can be dragged/dropped from other windows, such as the
+    <a href="xic:cells"><b>Cells Listing</b></a> panel, or the
+    <b>Contents</b> listing of the <a href="xic:hier"><b>Cell
+    Hierarchy Digests</b></a> panel.
+
+    <p>
+    If a cell is read into the main database from a CHD, and the <a
+    href="ChdLoadTopOnly"><b>ChdLoadTopOnly</b></a> variable is set,
+    then the cell will automatically be added to the table.
+
+    <p>
+    The state of the <b>ChdLoadTopOnly</b> variable (set or not)
+    tracks the state of the <b>Load top cell only</b> check box in the
+    <a href="xic:hier"><b>Cell Hierarchy Digests</b></a> panel.
+    </dl>
+
+    <dl>
+    <dt><b>Remove</b><dd>
+    This button allows names to be removed from the table, individually.
+    </dl>
+
+    <dl>
+    <dt><b>Clear</b><dd>
+    The <b>Clear</b> button will remove all names from the table, after
+    confirmation.
+    </dl>
+
+    <dl>
+    <dt><b>Override</b> and <b>Skip</b><dd>
+    These two mutually-exclusive selections set how entries in the
+    table are to be used.  When <b>Override</b> is selected, listed
+    cells that exist in the main database will override the cell in
+    the CHD, as described below.  If an override cell does not exist
+    in the main database in the current symbol table, the operation
+    will fail with an error.
+
+    <p>
+    If <b>Skip</b> is selected, the cells will simply be skipped. 
+    This is applicable when writing an archive file via a CHD, in
+    which case cell definitions for the override cells will not
+    appear, however references to the cells will remain.  The file
+    will require the <a href="xic:libs">library mechanism</a> or some
+    other means of satisfying the references when the file is read. 
+    In this mode, it does not matter whether or not the named cells
+    exist in the main database.
+
+    <p>
+    These two choices track the state of the <a
+    href="SkipOverrideCells"><b>SkipOverrideCells</b></a> variable.
+    </dl>
+
+    <p>
+    The table can also be maintained through use of <a
+    href="funcs:cvrt:ctab">script functions</a>.
+
+    <p>
+    When a CHD is accessing cell data, if overriding is enabled and
+    the cell name matches a name in the table, the CHD will access the
+    cell in main memory and not from any other source.  The contents
+    of the cell will be streamed recursively, however only subcells
+    with names that are also in the table will have cell definitions
+    included.  Subcells that are not included in the table should
+    exist in the CHD, otherwise there will be an undefined cell in
+    output.
+
+    <p>
+    Note that substituting cells will not prevent the CHD from
+    outputting cells that, given the substitutions, are not used in
+    the hierarchy.  For example, suppose cell A in the CHD has an
+    instance of cell B, and this is the only instantiation of B. 
+    Consider that A is overridden by a version that does not
+    instantiate B.  In the current release, the output file will
+    contain B, as an unused cell (top-level).
+
+    <p>
+    As an example of how the override mechanism and related features
+    can be used, imagine that we have a large GDSII layout file, and
+    we would like to make a small modification to the top-level cell. 
+    Suppose that the file to too large to load into main memory in the
+    usual way for editing.
+
+    <p>
+    The first step is to create a CHD for the file, using the <b>Cell
+    Hierarchy Digests</b> panel from the <b>File Menu</b>.  The
+    <b>Add</b> button can be used to create the CHD, which will be
+    listed on the panel.
+
+    <p>
+    Next, we grab the cell that we wish to modify into the main
+    database.  Select the CHD and press the <b>Contents</b> button in
+    the <b>Cell Hierarchy Digests</b> panel.  A listing of all cells
+    in the file will appear, with the top-level cells listed first,
+    with an asterisk.
+
+    <p>
+    Press the <b>Load Top Cell</b> button.  With this button pressed,
+    when a cell is opened in the main database from the CHD, only that
+    cell, and not its complete hierarchy, will be opened in memory. 
+    This is important, since we know that the complete hierarchy of
+    the cell we plan to edit will not fit in memory.
+
+    <p>
+    In the content listing, drag the name of the cell to be edited to
+    the main drawing window and drop it there.  The cell will be
+    displayed, and is ready for editing.  Note that, when unexpanded,
+    all of the subcells appear normal, however when expanded, they
+    disappear.  The subcells are actually <a href="refcell">CHD
+    reference cells</a>, which have no content but serve as a pointer
+    to the CHD when the subcell data is needed.
+
+    <p>
+    Once the appropriate changes have been made, there are two ways to
+    save the modifications.  The first way relies on the assumption we
+    made earlier that the cell being edited is the top-level cell in the
+    hierarchy.  Since this is so, we could simply save the current cell
+    as GDSII.  When saving, the reference cells are expanded to the
+    full hierarchy during writing.
+
+    <p>
+    The second method illustrates the use of the override cells. 
+    Press the <b>Edit Cell Tab</b> button to bring up the editor
+    window for the override cell table.  The cell of interest will
+    already be listed, since it was automatically inserted when it was
+    opened for editing from a CHD when the <b>Load Top Cell</b> button
+    was active.
+
+    <p>
+    Press the <b>Use Cell Tab</b> button in the <b>Cell Hierarchy
+    Digests</b> panel, which will enable use of the override table.
+
+    <p>
+    In the <b>Convert Menu</b>, press the <b>Conversion</b> button to
+    bring up the <b>Conversion</b> panel.  At the top of the
+    <b>Conversion</b> panel, set the <b>Input Source</b> to <b>Cell
+    Hier Name</b>, select the <b>GDSII</b> output format tab, then
+    press the <b>Convert</b> button.  When prompted, give the name of
+    the CHD we created, from the <b>Cell Hierarchy Digests</b> panel,
+    it will be something like "CellHier1".  Then, give the name of a
+    GDSII file to create.  The new file will contain the modifications
+    we performed.
+
+!! 032111
+!!KEYWORD
+xic:geom
+!!TITLE
+Cell Geometry Digests
+!!HTML
+    <img src="screenshots/cgds.png" align=right>
+    <b>Keyword</b>: <tt>geom</tt>
+
+    <p>
+    This panel, brought up with the <b>Geometry Digests</b> button in
+    the <b>File Menu</b>, provides a list of Cell Geometry Digests
+    currently in memory.  A <a href="xic:chdcgd">Cell Geometry
+    Digest</a> (CGD) is a per-layer/per-cell database of highly
+    compacted representations of cell geometry.  Logically, a cell
+    name and layer name are passed to the database, which returns a
+    data block which when expanded yields a representation of the
+    geometry on the given layer in the given cell.  The database
+    contains no information about cell instances, and text labels and
+    object properties are excluded.
+
+    <p>
+    This is basically a companion to the <a href="xic:hier">Cell
+    Hierarchy Digest</a> (CHD), which contains hierarchy information
+    but no geometry information.  The two data types together provide
+    complete physical information about the file.
+
+    <p>
+    A CGD can be <a href="xic:chdconfig">linked</a> to a CHD.  After
+    linking, the CHD will retrieve needed geometrical information from
+    the linked CGD, rather than from the original layout file.  This
+    can be faster, since the CGD geometry data may be in memory, and
+    are sorted by layer and compacted.  Even with all geometry data
+    residing in memory, the combined size of the CHD/CGD structures is
+    still much smaller than the memory required for loading the
+    original layout file into the main database in the normal way. 
+    The main database, however, provides the spatial sorting for fast
+    access of objects at a given location, which is absent in the
+    CHD/CGD combination.
+
+    <p>
+    Each saved CGD is given a unique but otherwise arbitrary name,
+    which is used to access the CGD.  The CGDs presently in memory are
+    listed by name, and can be selected by clicking.
+
+    <p>
+    The listing contains a middle column labeled <b>Type, Linked</b>,
+    which will contain <b>Mem</b>, <b>File</b>, or <b>Rem</b>
+    indicating the geometry storage type of the CGD.  This will be
+    followed by <b>yes</b> if the CGD is linked to a CHD.  An asterisk
+    '<b>*</b>' will follow <b>yes</b> if the CGD will be destroyed
+    when unlinked from its CHD.  The right column contains the source
+    file name, if any.  The <b>Info</b> button will provide more
+    information about the CGD, including the full path to the source
+    file.
+
+    <p>
+    The selected CGD is used as input for operations initiated by the
+    row of buttons arrayed across the top of the panel.  These buttons
+    are:
+
+    <dl>
+    <dt><b>Add</b><dd>
+    This button brings up the <a href="xic:cgdopen"><b>Open Cell
+    Geometry Digest</b></a> panel, from which a new CGD can be created
+    and added to the list.
+    </dl>
+
+    <dl>
+    <dt><b>Save</b><dd>
+    The currently selected CGD can be saved to a file, for later
+    recall.  This button brings up a pop-up which solicits a name for
+    this file.  Pressing <b>Apply</b> will save the selected CGD to a
+    disk representation in the given file path.  A previously saved
+    CHD can be recalled into memory from the panel brought up by the
+    <b>Add</b> button.
+    </dl>
+
+    <dl>
+    <dt><b>Delete</b><dd>
+    This will destroy the selected CGD, after confirmation.  Only CGDs
+    that are not currently linked to a CHD can be destroyed.
+    </dl>
+
+    <dl>
+    <dt><b>Contents</b><dd>
+    This will pop up or update a listing of the cells found in the
+    selected CGD.  Cell names can be selected by clicking.  With a
+    name selected, the <b>Info</b> button becomes active.  Clicking
+    <b>Info</b> will pop up or update another window, which lists the
+    layers used in the selected cell.  Only layers that have
+    associated geometry are saved in the CGD.  Each layer is listed
+    with two numbers, representing the size of the compressed data
+    stream for the layer ('c') and the uncompressed size ('u').  These
+    aren't particularly useful to the user, but do give some
+    indication of how much geometry is associated with each layer. 
+    Beware, however, that gigabytes of replicated features may be
+    represented by only a few bytes.
+    </dl>
+
+    <dl>
+    <dt><b>Info</b><dd>
+    This button pops up a window listing information about the
+    selected CGD.  The information includes the type of CGD, and other
+    parameters such as memory use, cell count, etc.
+    </dl>
+
+!!SEEALSO
+xic:filemenu
+
+!! 012511
+!!KEYWORD
+xic:cgdopen
+!!TITLE
+Open Cell Geometry Digest
+!!HTML
+    <img src="screenshots/cgdopen1.png" align=right>
+
+    This panel is used to create a new <a href="xic:chdcgd"><b>Cell
+    Geometry Digest</b></a> in memory, which is added to the listing
+    in the <a href="xic:geom"><b>Cell Geometry Digests</b></a> panel. 
+    This panel is brought up with the <b>Add</b> button in the <b>Cell
+    Hierarchy Digests</b> panel.
+
+    <p>
+    There are three "notebook" tabs that correspond to the three types
+    of CGD.  Each corresponding page contains controls for setting the
+    parameters appropriate for the selected CGD type.
+
+    <dl>
+    <dt><b>in memory</b><dd>
+    The <b>in memory</b> tab corresponds to a "memory" CGD.  This type
+    of CGD saves all geometry data in memory.  The geometry data are
+    highly compressed, so that this makes sense even for very large
+    layouts.
+
+    <p>
+    The source from which to create the CGD is entered into the entry
+    area at the top of the page.  The source can be one of the
+    following:
+
+    <ol>
+    <li>A path to a layout (archive) file.
+    <li>The access name of a CHD already in memory.
+    <li>A path to a saved CHD file.
+    <li>A path to a saved CGD file.
+    </ol>
+
+    <p>
+    If the source is a layout file, one can apply <a
+    href="layerchange">layer filtering</a> as the file is being read. 
+    It is also possible to apply <a href="cellname">cell name
+    mapping</a>.  If mapping is employed, layer data are accessed via
+    the modified cell names.  If the CGD is to be linked with a CHD,
+    the cell name mapping, if any is used, should be the same when
+    creating the CHD and the CGD.  The control groups below the entry
+    expose the layer filtering and cell name mapping capabilities.
+
+    <p>
+    If the source is a CHD access name, or a CHD file, the cell name
+    mapping is automatically set to the same as was used in creating
+    the CHD.  The layer filtering is available if the source is a CHD
+    access name, or if the source is a CHD file <a
+    href="xic:geom">saved</a> without geometry records (with the
+    <b>Save</b> button in the <b>Cell Hierarchy Digests</b> panel). 
+    If the source is a CHD file containing geometry records, the CGD
+    uses those geometry records verbatim.
+
+    <p>
+    If the source is a saved CGD file (from the <b>Save</b> button in
+    the <b>Cell Geometry Digests</b> panel), the CGD will import this
+    file verbatim.
+    </dl>
+
+    <br clear=all>
+    <dl>
+    <dt><b>file reference</b><dd>
+    <img src="screenshots/cgdopen2.png" align=right>
+    The <b>file reference</b> tab corresponds to a "file" CGD.  This
+    type of CGD stores offsets into a CGD file on disk.  The disk file
+    can potentially also contain a CHD representation.  This access
+    method is not quite as fast as the in-memory variant, but is still
+    generally much faster that reading the original layout file since
+    1) the data are highly compressed so fewer bytes are read, and 2)
+    the data are sorted by layer so per-layer searches are more
+    direct.
+
+    <p>
+    This page consists of an entry area, into which a source is
+    entered.  The source can be either a path to a saved CGD file, or
+    to a saved CHD file that contains geometry records.  In either
+    case, the new CGD is created to reference the geometry data by
+    offset into the source file.
+
+    During its lifetime, this type of CGD maintains an open file
+    descriptor to its source file.  Although it is not likely, it may
+    be possible to hit a system limit for open file descriptors if too
+    many file CGDs are simultaneously open.
+    </dl>
+
+    <br clear=all>
+    <dl>
+    <dt><b>remote server reference</b><dd>
+    <img src="screenshots/cgdopen3.png" align=right>
+    The <b>remote server reference</b> tab corresponds to a "remote
+    access" CGD.  This type of CGD obtains geometry data from a remote
+    host which is running <i>Xic</i> in <a href="xic:server">server
+    mode</a>.  The remote access CGD is a stub which links to a CGD in
+    server memory, and data are returned via interprocess
+    communication calls.
+
+    <p>
+    This page provides separate entry areas for the host name, port,
+    and remote CGD access name.  These correspond to the remote host
+    running the <i>Xic</i> server, which must have a CGD in memory (of
+    any type).  The new CGD will transparently link to the remote CGD,
+    under a local access name.
+
+    <p>
+    The <b>Host name</b> entry must contain the network host name of
+    the machine running the server.  The <b>Port number</b> is
+    optional, if not specified the port used defaults to 6115, which
+    is the IANA registered port number for the "<tt>xic/tcp</tt>"
+    service.  If the server is for some reason using a different port
+    number, that same port number must be entered.  The access name of
+    the CGD to reference on the server must be entered into the
+    <b>Server CGD access name</b> entry area.
+
+    <p>
+    During its lifetime, this type of CGD maintains an open socket to
+    the server.  Since the number of connections is limited, it is
+    best to free this type of CGD as soon as possible.
+    </dl>
+
+    <p>
+    Below the notebook area is an entry for access name.  This is the
+    name under which the new CGD will be listed in the <b>Cell
+    Geometry Digests</b> panel.  A default is provided that is
+    guaranteed not to conflict with an existing CGD.
+
+    <p>
+    The user can specify an access name.  If the name is in use by an
+    existing CGD, and the existing CGD is not linked to a CHD, it will
+    be destroyed, and the new CGD will be created and saved under the
+    same name.  However, if the existing CGD is linked, it cannot be
+    destroyed, and the CGD creation will fail with an error message.
+
+    <p>
+    When the <b>Apply</b> button is pressed, if all goes properly the
+    source will be processed, the new CGD will be created, and added
+    to the list in memory under the access name given.
+
+!!SEEALSO
+xic:geom
+
+!! 022116
+!!KEYWORD
+xic:libs libspanel
+!!TITLE
+Libraries
+!!HTML
+    <img src="screenshots/libraries.png" align=right>
+    <b>Keyword</b>: <tt>libs</tt>
+
+    <p>
+    The <b>Libraries List</b> button in the <b>File Menu</b> brings up
+    the <b>Libraries</b> panel, which displays a listing of <a
+    href="libraries">libraries</a> found along the present search
+    path.  To speed the search, only files with a "<tt>.lib</tt>"
+    extension are checked for the library keyword at the top of the
+    file, so library files that do not have a "<tt>.lib</tt>"
+    extension will not appear in this list.  The first column in the
+    listing contains an icon which indicates whether the library is
+    open or closed.
+
+    <p>
+    Open libraries are searched to resolve cells when a layout file is
+    being read.  Closed libraries are ignored.  A library is opened if
+    it is ever listed in a content window from the <a
+    href="xic:files"><b>Path Files Listing</b></a> panel, or if a cell
+    from that library is ever directly opened, such as by giving
+    "/<i>path</i>/<i>library</i> <i>cellname</i>" to the <a
+    href="xic:open"><b>Open</b></a> command in the <b>File Menu</b>,
+    or if opened with the <b>Open/Close</b> button (see below).
+
+    <p>
+    Libraries are an important component of the <i>Xic</i> <a
+    href="fileorg">cell resolution capability</a>.  Immediately after
+    an archive file has been read into the main database, the new
+    hierarchy is traversed to identify cells that are referenced in
+    the hierarchy but were not defined in the file.  First, the open
+    libraries are searched, and if an unresolved cell name matches a
+    name in a library, the cell is read into memory through the
+    library.  The library file itself is usually only an indirection
+    mechanism, with the actual cells saved in another archive file, or
+    as native cell files, though it is also possible to define inline
+    cells in the library file.
+
+    <p>
+    If a cell is not resolved in the open libraries, then the <a
+    href="xicpaths">search path</a> is traversed for a native cell
+    file that matches the cell name.  If one is found, it is read into
+    memory.  If not found, the unresolved cell becomes an empty cell,
+    and will otherwise behave normally in the database.  A warning
+    will be issued in the log file when a cell is found to be
+    unresolved.
+
+    <p>
+    The library mechanism is also available when a <a
+    href="xic:hier">Cell Hierarchy Digest</a> (CHD) is used for file
+    access.  If the archive file source for the CHD contained
+    unresolved references, the CHD will likewise have unresolved
+    references.  These cells can be resolved when reading with the CHD
+    if they match an open library reference to a cell in an archive
+    file.  Presently, native and inlined cells can not resolve CHD
+    references, except when reading into the main database.
+
+    <p>
+    By default, a cell that can't be resolved through a library is not
+    an error, it will be handled appropriately.  Processing will
+    continue, with the non-references either being ignored (e.g., when
+    flattening), or converted to empty cells (when reading into the
+    database), or propagated to output (when writing output),
+    depending on the operation.
+
+    <p>
+    However, if the <b>Fail on Unresolved</b> button in the <a
+    href="xic:hier"><b>Cell Hierarchy Digests</b></a> pop-up, or
+    equivalently the <a
+    href="ChdFailOnUnresolved"><b>ChdFailOnUnresolved</b></a> variable
+    is set, an unresolved cell will halt the operation with a fatal
+    error.
+
+    <p>
+    When reading a library cell into memory, the hierarchy under the
+    cell will also be read, unless the subcell name already exists in
+    memory in which case that subcell will not be read.
+
+    <p>
+    Cells read through the library mechanism have two internal
+    attribute flags set, which affect their behavior.  First, the
+    LIBRARY flag will, by default, prevent the cell from being written
+    when a hierarchy containing the cell is written to an archive
+    file.  This means that the file will not be self-contained, and
+    will require the presence of the (open) library to completely
+    resolve all cells.  Second, the IMMUTABLE flag is set, which
+    prevents a cell from being modified or renamed.  Thus, library
+    cells by default can not be edited when opened in this manner.
+
+    <p>
+    The flags can be switched on and off for any cell with the <a
+    href="xic:cells#flags"><b>Set Cell Flags</b></a> panel from the
+    <b>Flags</b> button in the <b>Cells Listing</b> panel.
+
+    <p>
+    Libraries are listed and searched in the order opened, and shown
+    in the listing.  When resolving a reference, the first match will
+    apply, superseding any later entries.  The libraries can be
+    selected by clicking on the entries.  When a library is selected,
+    the <b>Open/Close</b> and <b>Contents</b> buttons become enabled,
+    which will act on the selection.  The selection has no other
+    purpose.
+
+    <p>
+    The <b>Open/Close</b> button toggles the open state of the
+    selected library.  The <b>Open/Close</b> button is active when a
+    library is selected in the <b>Libraries</b> panel.  Without a
+    selection, the button is grayed.  Clicking the open/closed folder
+    icon in the selected row will have the same effect as pressing the
+    button.  Closing a library merely removes it from the search list,
+    and any cells in memory from the library remain.
+
+    <p>
+    <img src="screenshots/clisting3.png" align=right>
+    The <b>Contents</b> button is also activated when a library is
+    selected in the <b>Libraries</b> panel.  Pressing <b>Contents</b>
+    will pop up a listing of the contents of the selected library. 
+    The entries can be cells, archives, or other libraries.  The
+    contents items can be selected by clicking on the names.  When a
+    selection is active, the <b>Open</b> and <b>Place</b> buttons
+    become active.  The <b>Open</b> button will load the selected cell
+    into the main window.  The <b>Place</b> button will pop up the <a
+    href="xic:place"><b>Cell Placement Control</b></a> panel, loaded
+    with the selected cell, with which the cell can be instantiated. 
+    If the selected item is another library or an archive file, an
+    intermediate ambiguity resolution pop-up will appear, and the user
+    must select a cell to edit or place.
+
+    <p>
+    The above is manifestly true only if the referenced cell is in an
+    archive file.  A native cell will always be superseded by an
+    inlined cell of the same reference name found earlier in the
+    library search.  Also, the <a
+    href="NoReadExclusive"><b>NoReadExclusive</b></a> and <a
+    href="AddToBack"><b>AddToBack</b></a> variables will affect cell
+    name resolution as in a normal open.
+
+    <p>
+    The <b>No Overwrite Lib Cells</b> button tracks the state of the <a
+    href="NoOverwriteLibCells"><b>NoOverwriteLibCells</b></a>
+    variable.  By default, cells in memory that were read from a
+    library can be overwritten by cells of the same name subsequently
+    read into memory from an archive or native cell file.  If this
+    button is set, library cells (with the LIBRARY flag set) in memory
+    will not be overwritten.
+
+    <p>
+    The contents listing is a drag source for <a
+    href="dragdrop">drag/drop</a>.  Names from the list can be dropped
+    into a drawing window, with an effect similar to using the
+    <b>Open</b> button.
+
+    <p>
+    When <i>Xic</i> is in CHD display mode, i.e., the <b>Display</b>
+    button in the <a href="xic:hier"><b>Cell Hierarchy Digests</b></a>
+    panel is active, the <b>Open</b> and <b>Place</b> buttons in the
+    contents window are not available.  The <b>Place</b> button is not
+    available in the <a href="xiv"><i>Xiv</i></a> feature set.
+
+!!SEEALSO
+fileorg
+xic:filemenu
+
+!!IFDEF OpenAccess
+!! 030416
+!!KEYWORD
+xic:oalib
+!!TITLE
+OpenAccess Libraries
+!!HTML
+    <img src="screenshots/oalibraries.png" align=right>
+    <b>Keyword</b>: <tt>oalib</tt>
+
+    <p>
+    The <b>OpenAccess Libs</b> button will appear in the <b>File
+    Menu</b> only if the <a href="oaplugin">OpenAccess plug-in</a> has
+    been loaded, in which case there is a connection to an OpenAccess
+    database on the current computer.  Pressing the <b>OpenAccess
+    Libs</b> button brings up the <b>OpenAccess Libraries</b> panel. 
+    The release number of the OpenAccess database software in use is
+    shown in the panel above the listing of available libraries.  The
+    listing displays the names of libraries specified in the
+    OpenAccess <tt>lib.defs</tt> or <tt>cds.lib</tt> file.
+
+    <p>
+    Similar to the <a href="xic:libs"><b>Libraries List</b></a> panel,
+    the first column in the listing contains an icon which indicates
+    whether the library is open or closed.  The comments in that
+    description apply to OpenAccess (OA) cells opened in this manner
+    as well.  However, it is possible to list the content of OA
+    libraries whether or not they are open.  Regular libraries must be
+    open for the contents to be listed.
+
+    <p>
+    Open libraries are searched to resolve cells when a layout file is
+    being read into <i>Xic</i>.  Closed libraries are ignored in this
+    case.  However, direct references to an OA library from an OA cell
+    are always "open".  The open and closed status is toggled by the
+    <b>Open/Close</b> button in the panel, which acts on the entry
+    which has been selected by clicking on it.
+
+    <p>
+    The <b>Open/Close</b> button toggles the open state of the
+    selected OA library.  The <b>Open/Close</b> button is active when
+    a library is selected in the <b>OpenAccess Libraries</b> panel. 
+    Without a selection, the button is grayed.  Clicking the
+    open/closed folder icon in the selected row will have the same
+    effect as pressing the button.  Closing a library merely removes
+    it from the search list, and any cells in memory from the library
+    remain.
+
+    <p>
+    The second column in the listing indicates whether or not the
+    library is writable from <i>Xic</i>.  By default, libraries
+    created in <i>Xic</i> are writable from <i>Xic</i>, other
+    libraries are not.  This prevents, for example, Virtuoso cells
+    from being overwritten from <i>Xic</i>, which could cause loss of
+    data (putting it mildly).  The writability of the
+    currently-selected library can be toggled with the <b>Writable
+    Y/N</b> button.  Clicking on the <b>Y</b> or <b>N</b> in the
+    selected line will toggle the state, as if the button was pressed. 
+    Library writability can also be set with the <a
+    href="!oabrand"><b>!oabrand</b></a> command.
+
+    <p>
+    <img src="screenshots/clisting4.png" align=right>
+    The <b>Contents</b> button is also activated when a library is
+    selected in the <b>OpenAccess Libraries</b> panel.  Pressing
+    <b>Contents</b> will pop up a listing of the cells in the selected
+    OA library.  The contents items can be selected by clicking on the
+    names.  When a selection is active, the <b>Open</b> and
+    <b>Place</b> buttons become active.  The <b>Open</b> button will
+    load the selected cell into the main window.  The <b>Place</b>
+    button will pop up the <a href="xic:place"><b>Cell Placement
+    Control</b></a> panel, loaded with the selected cell, with which
+    the cell can be instantiated. 
+
+    <p>
+    One can specify whether to read and write physical or electrical
+    data from OpenAccess, or both, with the <b>Data to use from OA</b>
+    radio button group.  These buttons track the <a
+    href="OaUseOnly"><b>OaUseOnly</b></a> variable.  If this variable
+    is set to "1" or any word starting with "p" or "P", only physical
+    data will be converted.  If set to "2" or any word starting with
+    "e" or "E", only electrical data (schematic and symbol) will be
+    converted.  If set to anything else or not set, both physical and
+    electrical data will be converted.
+
+    <p>
+    The restriction applies to conversion to and from OpenAccess,
+    by any method in <i>Xic</i>.
+
+    <p>
+    When a cell is read into <i>Xic</i> from OA, the OA "layout" view
+    is read as the physical cell data, the "schematic" view is read as
+    the schematic data, and the "symbol" view is read as the symbolic
+    representation.  These need not all exist.  The same view names
+    apply when writing data to OpenAccess.
+
+    <p>
+    These view names are the defaults, as used by Cadence Virtuoso. 
+    However, any of the <a
+    href="OaDefLayoutView"><b>OaDefLayoutView</b></a>, <a
+    href="OaDefSchematicView"><b>OaDefSchematicView</b></a>, and <a
+    href="OaDefSymbolView"><b>OaDefSymbolView</b></a> variables can be
+    defined to provide alternate default view names.
+
+    <p>
+    When reading electrical info into <i>Xic</i>, a simulator-specific
+    view is used for obtaining CDF (component data, from Virtuoso)
+    parameters and properties.  By default, this view is named
+    "<tt>HspiceD</tt>", but another view can be chosen by setting the
+    variable <a href="OaDefDevPropView"><b>OaDefDevPropView</b></a>. 
+    The default choice provides compatibility with Hspice, and
+    therefor <i>WRspice</i> in fair measure.  If is not an error if no
+    <tt>HspiceD</tt> views are found.
+
+    <p>
+    These four variables have corresponding entry areas in the <a
+    href="xic:oadefs"><b>OpenAccess Defaults</b></a> panel brought up
+    with the <b>Defaults</b> button.  The text of the variables and
+    entry areas track one another.
+
+    <p>
+    The contents listing is a drag source for <a
+    href="dragdrop">drag/drop</a>.  Names from the list can be dropped
+    into a drawing window, with an effect similar to using the
+    <b>Open</b> button.
+
+    <p>
+    When OpenAccess if available, the <a
+    href="xic:open"><b>Open</b></a> command and similar, when
+    prompting for the name of a file or cell to load, will recognize
+    an OpenAccess library name followed by a cell name (two
+    space-separated words).
+
+    <p>
+    When <i>Xic</i> is in CHD display mode, i.e., the <b>Display</b>
+    button in the <a href="xic:hier"><b>Cell Hierarchy Digests</b></a>
+    panel is active, the <b>Open</b> and <b>Place</b> buttons in the
+    contents window are not available.  The <b>Place</b> button is not
+    available in the <a href="xiv"><i>Xiv</i></a> feature set.
+
+    <p>
+    The <b>Create</b> button allows a new library to be created.  When
+    pressed, a pop-up appears, requesting a name for the library,
+    which can be any name allowed by OpenAccess.  Pressing the
+    <b>Create</b> button in the pop-up will create the library, and
+    its name will appear in the listing.  The new library has write
+    permission from <i>Xic</i>.  It will attach the default technology
+    if set, otherwise there is no technology associated with the new
+    library, the user will probably need to use the <b>Tech</b> button
+    to either create a local tech database in the library, or link to
+    the tech database in another library.  New libraries can also be
+    created with the <a href="!oanewlib"><b>!oanewlib</b></a> command.
+
+    <p>
+    The <b>Tech</b> button, which is un-grayed when a library is
+    selected, brings up the <a href="xic:oatech"><b>OpenAccess
+    Tech</b></a> panel.  This panel allows control of the technology
+    database associated with the library.  The <a
+    href="!oatech"><b>!oatech</b></a> command can also be used to set
+    the technology database.
+
+    <p>
+    The <b>Defaults</b> button displays the <a
+    href="xic:oadefs"><b>OpenAccess Defaults</b></a> panel, from which some
+    parameters used by the OpenAccess interface can be defined.
+
+    <p>
+    The <b>Destroy</b> button is un-grayed when a library is selected. 
+    When pressed, and after confirmation, the selected library and all
+    of its content will be destroyed.  Presently, the library is
+    removed from the <tt>lib.defs</tt> file, but not otherwise
+    touched.  To reclaim the disk space used by the library, the user
+    can manually delete the corresponding directory.  The <a
+    href="!oadelete"><b>!oadelete</b></a> command can also be used to
+    delete libraries, and to delete cells in libraries.
+
+!!SEEALSO
+xic:filemenu
+cdsimport
+!!ENDIF
+
+!!IFDEF OpenAccess
+!! 041415
+!!KEYWORD
+xic:oatech
+!!TITLE
+OpenAccess Tech
+!!HTML
+    <img src="screenshots/oatech.png" align=right>
+
+    The <b>OpenAccess Tech</b> panel is brought up with the
+    <b>Tech</b> button in the <a href="xic:oalib"><b>OpenAccess
+    Libraries</b></a> panel.  This panel is only available when an
+    OpenAccess database is being accessed with the <a
+    href="oaplugin">plug-in</a>, in which case the <b>OpenAccess
+    Libs</b> button appears in the <b>File Menu</b>.
+
+    <p>
+    In OpenAccess, every library is generally required to have an
+    associated technology database.  The technology database contains
+    information about layers, physical attributes, design constraints,
+    etc., similar to the <i>Xic</i> technology file.  The database can
+    either be "attached" or "local".  When attached, it references the
+    technology database from another library.  If local, the library
+    contains its own private technology database, to which other
+    libraries can attach.  This panel controls the technology database
+    for the library initially selected in the <b>OpenAccess
+    Libraries</b> panel.
+
+    <p>
+    The settings indicate the current status of the library.  The top
+    line contains buttons and an entry area that control attached
+    technology.  In libraries containing user cells, it is most common
+    that an attachment is used, typically to a library supplied by the
+    foundry in a process design kit.  In a typical situation, an
+    organization may make use of a single foundry process for several
+    users and projects.  It is likely then that all of the
+    user/project libraries attach to the one foundry library.  In this
+    case, the <b>Default Tech Library</b> in the <a
+    href="xic:oadefs"><b>OpenAccess Defaults</b></a> panel or
+    equivalently the <a
+    href="OaDefTechLibrary"><b>OaDefTechLibrary</b></a> variable can
+    be set to the name of the foundry library.  Then, new libraries
+    will automatically attach this library, and the user will never
+    have to use the <b>OpenAccess Tech</b> panel.
+
+    <p>
+    If a database is currently attached.  the <b>Unattach</b> button
+    will be un-grayed, and the name of the attached library will
+    appear in the status area just above the <b>Dismiss</b> button. 
+    Pressing <b>Unattach</b> will (you guessed it) unattach the
+    referenced database, and the <b>Unattach</b> button will become
+    grayed.  One can reattach, or attach the technology from a
+    different library, by entering the name of the target library and
+    pressing the <b>Attach</b> button.  The <b>Default</b> button will
+    enter the default tech library name (if any) or the previous
+    attachment name (if any) into the text entry area when pressed,
+    and the entry area is not grayed.
+
+    <p>
+    If there is no attachment, then the <b>Create new Tech</b> button
+    will be un-grayed, along with the <b>Attach</b> button.  Pressing
+    <b>Create New Tech</b> will create a new local technology
+    database.  The <b>Attach</b> button will be grayed, as it is not
+    possible to have an attached database if a local database is
+    present.  The <b>Destroy Tech</b> button becomes un-grayed, and
+    will destroy the local database when pressed.
+
+    <p>
+    The <a href="!oatech"><b>!oatech</b></a> command can perform may of
+    the same operations.
+
+!!SEEALSO
+xic:oalib
+!!ENDIF
+
+!! IFDEF OpenAccess
+!! 022216
+!!KEYWORD
+xic:oadefs
+!!TITLE
+OpenAccess Defaults
+!!HTML
+    <img src="screenshots/oadefs.png" align=right>
+
+    The <b>OpenAccess Defaults</b> panel is brought up with the
+    <b>Defaults</b> button in the <a href="xic:oalib"><b>OpenAccess
+    Libraries</b></a> panel.  This panel is only available when an
+    OpenAccess database is being accessed with the <a
+    href="oaplugin">plug-in</a>, in which case the <b>OpenAccess
+    Libs</b> button appears in the <b>File Menu</b>.
+
+    <p>
+    Each of the entry areas tracks a variable that is used to set default
+    behavior in the interface to the OpenAccess database.
+
+    <dl>
+    <dt><b>Library Path</b><dd>
+    This entry tracks the setting of the <a
+    href="OaLibraryPath"><b>OaLibraryPath</b></a> variable.  It can be
+    set to a full path to a directory.  If a library to be accessed is
+    not listed in the <tt>lib.defs</tt> (or <tt>cds.lib</tt>) file,
+    the system will look for the library as a subdirectory of the
+    directory path given.  This allows use of OpenAccess libraries
+    that are hidden from other tools.
+
+    <p>
+    <dt><b>Default Library</b><dd>
+    This tracks the setting of the <a
+    href="OaDefLibrary"><b>OaDefLibrary</b></a> variable.  It can be
+    set to a library name found in the <tt>lib.defs</tt> (or
+    <tt>cds.lib</tt>) file, or to a subdirectory of the <b>Library
+    Path</b> if any.  This will be used when reading from or writing
+    to the OpenAccess database, if the library name is not otherwise
+    specified.
+
+    <p>
+    <dt><b>Default Tech Library</b><dd>
+    This tracks the setting of the <a
+    href="OaDefTechLibrary"><b>OaDefTechLibrary</b></a> variable.  It
+    can be set to a library name found in the <tt>lib.defs</tt> (or
+    <tt>cds.lib</tt>) file, or to a subdirectory of the <b>Library
+    Path</b> if any.  When a library is created, it will attach the
+    technology database associated with the library name entered, if
+    any.  If the named library has an attached technology, the same
+    attachment will be applied to the new library.  Otherwise, the new
+    library will attach the local technology database of the named
+    library.
+
+    <p>
+    <dt><b>Default Layout View</b><dd>
+    This tracks the setting of the <a
+    href="OaDefLayoutView"><b>OaDefLayoutView</b></a> variable.  It
+    specifies an alternate view name for physical layout data.  If not
+    specified, the default layout view name is "<tt>layout</tt>".
+
+    <p>
+    <dt><b>Default Schematic View</b><dd>
+    This tracks the setting of the <a
+    href="OaDefSchematicView"><b>OaDefSchematicView</b></a> variable. 
+    It specifies an alternate view name for electrical schematic data. 
+    If not specified, the default schematic view name is
+    "<tt>schematic</tt>".
+
+    <p>
+    <dt><b>Default Symbol View</b><dd>
+    This tracks the setting of the <a
+    href="OaDefSymbolView"><b>OaDefSymbolView</b></a> variable. 
+    It specifies an alternate view name for electrical symbol data. 
+    If not specified, the default symbol view name is
+    "<tt>symbol</tt>".
+
+    <p>
+    <dt><b>Default Properties View</b><dd>
+    This tracks the setting of the <a
+    href="OaDefDevPropView"><b>OaDefDevPropView</b></a> variable.  It
+    specifies an alternate view name for the simulator-specific view
+    which (if present) provides values for certain device properties
+    (from the Common Design Framework (CDF) database).  If not
+    specified, the default simulator view name is "<tt>HspiceD</tt>". 
+    This specifies Hspice compatibility in Virtuoso, which is a good
+    match for <i>WRspice</i>.
+
+    <p>
+    <dt><b>Dump CDF files while reading</b><dd>
+    This check box tracks the set/unset status of the <a
+    href="OaDumpCdfFiles"><b>OaDumpCdfFiles</b></a> variable.  When
+    checked, when a parameterized cell is opened in OpenAccess, the
+    Common Design Framework (CDF) data for the cell will be dumped to
+    a file in the current directory.  The file name is the cell name
+    with a "<tt>.cdf</tt>" extension.  This is for
+    development/debugging.
+    </dl>
+
+!!SEEALSO
+xic:oalib
+!!ENDIF
+
+!! 061608
+!!KEYWORD
+xic:quit
+!!TITLE
+Quit
+!!HTML
+    <b>Keyword</b>: <tt>quit</tt>
+
+    <p>
+    Pressing the <b>Quit</b> button in the <b>File Menu</b> will exit
+    <i>Xic</i>, after confirmation is there is unsaved work.
+
+    <p>
+    If there are modified cells, the pop-up described for the <a
+    href="xic:sv"><b>Save</b></a> command appears.  This displays a
+    list of the cells and hierarchies that have been modified, and
+    allows the user to save them.
+
+!!SEEALSO
+xic:filemenu
+

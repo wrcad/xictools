@@ -1,0 +1,106 @@
+# spiral1.scr
+# $Id: spiral1.scr,v 1.2 2013/11/18 19:31:08 stevew Exp $
+#
+# Example script to produce a spiral on the current layer.
+# This variation uses GUI pop-ups to obtain input.
+# From Xic running in this directory, to run type:  !exec ./spiral1.scr
+
+# num = AskReal("Number of turns? ", "1")
+num = PopUpNumeric("Number of turns?", 1, 1, 10, 1, 0)
+if (num < 0 | num > 100)
+    ShowPrompt("Bad input (< 0 or > 100) for turns: ", num)
+    Exit()
+end
+# width = AskReal("Width of spiral path? ", "4")
+width = PopUpNumeric("Width of spiral path?", 4, .1, 10, .01, 2)
+if (width < 0)
+    ShowPrompt("Bad input (< 0) for width: ", width)
+    Exit()
+end
+# rmin = AskReal("Starting radius? ", "20")
+rmin = PopUpNumeric("Starting radius?", 20, width/2, 1000, .01, 2)
+if (rmin < width/2)
+    ShowPrompt("Bad input (< width/2) for min radius: ", rmin)
+    Exit()
+end
+# spa = AskReal("Pitch? ", "10")
+spa = PopUpNumeric("Pitch? ", 10, width, 100, .01, 2)
+if (spa < width)
+    ShowPrompt("Bad input (< width) for pitch: ", pitch)
+    Exit()
+end
+# nums = AskReal("Edges per 360 degrees? ", "50")
+nums = PopUpNumeric("Edges per 360 degrees? ", 50, 3, 90, 1, 0)
+if (nums < 3 | nums > 90)
+    ShowPrompt("Bad input (< 3 or > 90) for edge count: ", nums)
+    Exit()
+end
+
+# initialize
+width = width/2
+dth = 2*pi/nums
+n = nums*num + 1
+i = 0
+theta = 0
+
+# there is an internal limit of 2000 polygon vertices
+nverts = 2*n + 1
+if (nverts > 2000)
+    ShowPrompt("Sorry, resulting polygon would have too many vertices.")
+    Exit()
+end
+
+# allocate array, size 2*nverts
+array[4000] = 0
+
+l = 4*n
+j = 0
+
+# fill in the array
+while (i < n)
+    r = rmin + theta*spa/(2*pi)
+    x = (r-width)*cos(theta)
+    y = (r-width)*sin(theta)
+    array[j] = x
+    array[j+1] = y
+    x = (r+width)*cos(theta)
+    y = (r+width)*sin(theta)
+    array[l-j-2] = x
+    array[l-j-1] = y
+    j = j + 2
+    i = i + 1
+    theta = theta + dth
+end
+
+# close the path, necessary for polygon
+array[l] = array[0]
+array[l+1] = array[1]
+
+# get the location for the spiral and transform array
+ShowPrompt("Point to locate center of spiral");
+xy[2]
+PushGhost(array, nverts)
+ShowGhost(8)
+if !Point(xy)
+    Exit()
+end
+ShowGhost(0)
+PopGhost()
+
+i = 0
+j = 0
+while (i < nverts)
+    array[j] = array[j] + xy[0]
+    array[j+1] = array[j+1] + xy[1]
+    i = i + 1
+    j = j + 2
+end
+
+# create the polygon
+drc = DRCstate(0)
+Polygon(nverts, array)
+Commit()
+DRCstate(drc)
+ShowPrompt("Info: spiral not drc'ed.  Drc takes a long time for these objects.")
+
+#done

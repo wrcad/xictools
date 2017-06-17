@@ -1,0 +1,37 @@
+
+This directory contains startup and technology files for Xic.  See the
+manual or the on-line help for detailed information about the file
+formats.
+
+xic_tech             This is the default technology file.  By default,
+                     this is a link to xic_tech.scmos.
+
+xic_tech.cni         A technology file for use with the Synopsys
+                     (Ciranova) PyCell Studio.
+
+xic_tech.scmos       A technology file for generic MOSIS CMOS.  This is
+                     the likely starting point for a custom CMOS technology
+                     file.
+
+xic_tech.hyp         A technology file for the Hypres, Inc.  superconducting
+                     Josephson juncion foundry (www.hypres.com).
+
+xic_tech.n65         An example technology file that shows how to link to
+                     Virtuoso tech files in a PDK.
+
+device.lib           The library of devices for electrical mode.  This can
+                     be customized if necessary.
+
+model.lib            A very skeletal collection of device models, used when
+                     producing SPICE output.  This will most likely require
+                     customization.
+
+upd_install.sh       Script used by the application to install program
+                     updates.
+
+xic_format_lib       This contains script code for printing physical
+                     and electrical netlists, can be customized.
+
+xic_mesg             This is the text that appears in the About box.
+
+xic_stipples         Default stipple patterns for the Fill Pattern Editor.

@@ -1,0 +1,819 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System database file for the MRouter plug-in.
+!!  $Id: MRouter.hlp,v 1.6 2017/02/17 23:23:04 stevew Exp $
+!!  No Copyright, No Restrictions.
+!!  Add this to your Xic help database for access to this help in
+!!  Xic.
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+MRouter.hlp
+!!TITLE
+MRouter.hlp
+!!HTML
+
+!!SUBTOPICS
+mrouter
+!mr
+MRouter
+
+!! 053108
+!!KEYWORD
+mrouter
+!!TITLE
+The MRouter maze router plug-in
+!!HTML
+    <font color="red"><b>This is in early development, and everything
+    here is very preliminary.</b></font>
+
+    <p>
+    The <i>MRouter</i> is an open-source router available from the
+    free software archive on <a
+    href="http://wrcad.com/freestuff.html"><tt>wrcad.com</tt></a>.  It
+    is a derived from the <i>Qrouter</i> from <a
+    href="http://opencircuitdesign.com"><tt>opencircuitdesign.com</tt></a>.
+
+    <p>
+    The <i>MRouter</i> is a separate, stand-alone open-source project.
+    Presently, users must download and build the <i>MRouter</i> tool. 
+    Instructions can be found in the README file in the distribution. 
+    Eventually, packages for the supported operating systems will be
+    provided.  Once installed in the standard location, <i>Xic</i>
+    will find and load the plug-in on start-up.  A message "Loading
+    MRouter" will be printed in the console along with the other
+    startup messages.
+
+    <p>
+    When <i>Xic</i> starts, it will look for the <i>MRouter</i>
+    plug-in in the following locations, in order.
+    <ol>
+    <li>The value of the <tt>MROUTER_PATH</tt> environment variable,
+    if found.  This is the full path to the shared library.  If this
+    variable exists, no other locations are checked.
+
+    <p>
+    <li>The <i>MRouter</i> installation location, which defaults to
+    <tt>/usr/local/mrouter</tt>.  If installed in another location,
+    the environment variable <tt>MROUTER_HOME</tt> can be set to the
+    equivalent path.  The library will be found in the <tt>lib</tt>
+    subdirectory of the installation location.
+    </ol>
+
+    <p>
+    There is a version compatibility test applied before the plug-in
+    can be loaded.  The <i>MRouter</i> version string consists of
+    three integers separated by periods, as
+    <blockquote>
+    <i>major</i><tt>.</tt><i>minor</i><tt>.</tt><i>release</i>
+    </blockquote>
+    The <i>major</i> and <i>minor</i> numbers must match the version
+    <i>Xic</i> was built for.  If not, the plug-in is not loaded. 
+    The <i>release</i> number need not match, consequently there may
+    be differences in behavior seen, but there should be no
+    instability.
+
+    <p>
+    If the <tt>XIC_PLUGIN_DBG"</tt> variable is set in the environment,
+    messages are printed in the console tracing the plug-in search
+    and load.  This can be used to diagnosae a problem, as the process
+    is otherwise silent.
+
+    <p>
+    The <i>Qrouter</i> source code was converted from C to C++, and
+    architected into two classes:
+
+    <ol>
+    <li>A database class.  This caches technology and routing
+    information.  It can read and write technology and route
+    information in standard LEF and DEF file formats.  It makes use of
+    the open-source Cadence LEF/DEF toolkit to provide complete and
+    correct handling of these files.
+
+    <li>The maze router itself.  This is logically the same as the
+    <i>Qrouter</i>, but the code has been refactored to make use of
+    C++ encapsulation and other elements of the language.  This will
+    facilitate future development of new modes and features, and
+    maintenance.
+    </ol>
+
+    <p>
+    The two classes are exported as a plug-in library, intended to be
+    used with <i>Xic</i>, or another application.  <i>Xic</i> has a
+    developing interface to the <i>MRouter</i> plug-in.  providing
+    full control of the routing operations, visualization, etc.
+
+    <p>
+    Presently, the router is controlled exclusively with the <a
+    href="!mr"><b>!mr</b></a> text command.  The <a
+    href="MRouter"><tt>MRouter</tt></a> script function can be used to
+    perform the operations from scripts.
+
+!! 053108
+!!KEYWORD
+!mr
+!!TITLE
+!mr
+!!HTML
+    <b>Syntax: <tt>!mr</tt> <i>subcmd</i> [<i>arguments</i>]</b>
+
+    <p>
+    This is a command-line interface to the <a
+    href="mrouter">MRouter</a> plug-in.  The command exists only if
+    the MRouter plug-in is loaded.  This plug-in is not supplied with
+    <i>Xic</i>, but is available from the free sofware archive on <a
+    href="http://wrcad.com/freestuff.html"><tt>wrcad.com</tt></a>.
+
+    <p>
+    <font color="red"><b>This is in early development, and everything
+    here is very preliminary.</b></font>
+
+    <p>
+    The entire interface to the plug-in is implemented under the
+    <b>!mr</b> command.  The first argument is a sub-command keyword
+    as described below.  Arguments that follow are appropriate for
+    that sub-command.  The following sub-commands are available.
+
+    <p>
+    <dl>
+    <dt><b>reset</b><dd>
+    <b>Syntax:</b> <tt>!mr reset</tt> [<tt>all</tt>]<br>
+    If the <tt>all</tt> argument is given, the router and database are
+    both reset to a pristine state.  If <tt>all</tt> is not given,
+    only the router is reset, database information is retained.  In
+    this context, <tt>true</tt>, <tt>yes</tt>, and <tt>1</tt> (one)
+    are synonyms for <tt>all</tt>, case insensitive, and only the
+    leading character is actually read.
+    </dl>
+
+    <dl>
+    <dt><b>set</b><dd>
+    <b>Syntax:</b> <tt>!mr set</tt> [<i>paramname</i> [<i>value</i>]]<br>
+    The <b>set</b> sub-command is used to set or query values for
+    parameters used by the database and router.  If no further
+    arguments are given, a list of the parameters and their present
+    values is printed in a pop-up window.  Id a parameter name is
+    given by no value, that parameter name and its current value (or
+    its default) will be printed.  Otherwise, the parameter whose name
+    is given will be set to the given value.
+
+    <p>
+    The known parameters are as follows.
+    <dl>
+    <dt><tt>debug</tt><dd>
+    The <i>value</i> is a hex number whose bits are flags that turn on
+    various debugging options.  Presently undocumented.
+    </dl>
+
+    <dl>
+    <dt><tt>verbose</tt><dd>
+    This sets or displays the verbosity level for messages emitted by
+    the database and router.  If No <i>value</i> is given, the present
+    verbosity level is printed on the prompt line.  This is an integer
+    in the range 0-4, where 4 is the most verbose.  The <i>value</i>
+    should otherwise be an integer in this range.  The default
+    verbosity is 0.
+    </dl>
+
+    <dl>
+    <dt>global</tt><dd>
+    Up to six "global" nets can be specified.  These are usually power
+    or ground nets, to be treated specially by the router.  Values are
+    space-separated net names, which when specified are added to the
+    internal list of global nets incrementally.  That is, multiple
+    calls can be made to define the global nets, or equivalently all
+    of the global nets can be listed for a single call.  The internal
+    list can be cleared with <tt>unset global</tt>.  If no net
+    names are given, the current global net name list is printed.
+    </dl>
+
+    <dl>
+    <dt><tt>vdd</tt><dd>
+    This is for <i>Qrouter</i> compatibility, for setting the name of the
+    power net.  This is actually equivalent to <tt>global</tt>.
+    </dl>
+
+    <dl>
+    <dt><tt>gnd</tt><dd>
+    This is for <i>Qrouter</i> compatibility, for setting the name of the
+    ground net.  This is actually equivalent to <tt>global</tt>.
+    </dl>
+
+    <dl>
+    <dt><tt>layers</tt><dd>
+    The <i>value</i> is an integer that represents the number o layers
+    that the router will use.  This can be set to a number less than
+    or equal to the number of layers that have been defined (from LEF
+    or technology input).  For example, if given a value 4, only the
+    first 4 routing layers will be used by the router.  If no number
+    is given, the number of layers that the router would use is
+    printed.
+    </dl>
+
+    <dl>
+    <dt><tt>maxnets</tt><dd>
+    The <i>value</i> is the maximum number of nets allowed in a
+    design.  This can be set to limit the number of nets accepted for
+    routing by the router.  Jobs with too many nets will be rejected. 
+    If no number is given, the current maximum is printed.
+    </dl>
+
+    <dl>
+    <dt><tt>lefresol</tt><dd>
+    The <i>value</i> is the LEF resolution, as is normally provided in
+    a LEF file.  Acceptable values (from the LEF specification) are
+    100, 200, 400, 800, 1000, 2000, 4000, 8000, 10000, 20000.  The
+    internal coordinates use this many points per micron.  The
+    resolution is 100 if not otherwise given.  If not given, the
+    current value is printed.  Otherwise, the resolution may be set to
+    the value given, however once the LEF resolution is set, whether
+    by LEF file or this keyword, it can not be changed except by
+    resetting the database.
+    </dl>
+
+    <dl>
+    <dt><tt>mfggrid</tt><dd>
+    The <i>value</i> is the manufacturing grid usually obtained from a
+    LEF file.  It is provided as a real number in microns.  The value
+    must be exactly representable in the LEF resolution, and will
+    quantize coordinate values.  The <i>value</i> can be 0, in which
+    case no manufacturing grid will be used, which is the default.  If
+    no <i>value</i> is given, the present manufacturing grid, in
+    microns, is printed.
+    </dl>
+
+    <dl>
+    <dt><tt>definresol</tt><dd>
+    The <i>value</i> is the resolution as normally read from a DEF
+    file.  Acceptable values are as listed for <tt>lefresol</tt>, and
+    furthermore the value must exactly divide the <tt>lefresol</tt>. 
+    The resolution is 100 if not otherwise given.  If not given, the
+    current value is printed.  Otherwise, the resolution may be set to
+    the value given, however once the DEF input resolution is set,
+    whether by DEF file or this keyword, it can not be changed except
+    by resetting the database.
+    </dl>
+
+    <dl>
+    <dt><tt>defoutresol</tt><dd>
+    The <i>value</i> is the resolution used when writing DEF files
+    with <tt>write def</tt>, which defaults to the
+    <tt>definresol</tt>.  Setting to 0 clears the overriding.  If no
+    <i>value</i> is given, the present DEF output resolution override
+    is printed.
+    </dl>
+
+    <dl>
+    <dt><tt>netorder</tt><dd>
+    The <i>value</i> can be set to one of the following integer
+    values.  It controls the order in which nets are routed.
+    <dl>
+    <dt>0<dd>
+    Use the default ordering, where nets with the most taps are routed
+    first.
+    <dt>1<dd>
+    Use alternate ordering, where the nets with the largest minimum box
+    containing taps are routed first.
+    <dt>2<dd>
+    Retain the ordering as nets were defined.
+    </dl>
+    If no <i>value</i> is given, the present ordering enumerator is
+    printed.
+    </dl>
+
+    <dl>
+    <dt><tt>passes</tt><dd>
+    The <i>value</i> is an integer that is the maximum number of
+    attempted passes of the route search algorithm, where the routing
+    constraints (maximum cost and route area mask) are relaxed on each
+    pass.  The default number of passes is 10.  With no <i>value</i>,
+    the maximum number of passes is printed.  Otherwise, a positive
+    integer is expected for the <i>value</i>. 
+    </dl>
+
+    <dl>
+    <dt><tt>increments</tt><dd> The <i>value</i> is a list of positive
+    integers, each giving the incremental halo width in the routing
+    mask for the corresponding routing pass.  The mask is used to
+    limit the area where a route can be implemented.  On each pass,
+    this area is expanded by the corresponding <tt>increments</tt>
+    value.  The final increments value is used for any subsequent
+    passes.  The default is effectively the single integer "1", so
+    that the masking area is bloated by one channel on each pass.  If
+    no integers are given, the internal list of increments is printed.
+    </dl>
+
+    <dl>
+    <dt><tt>via_stack</tt><dd>
+    The <i>value</i> sets the maximum number of vias that may be
+    stacked directly on top of each other at a single point.  A
+    <i>value</i> of "<tt>none</tt>" or "<tt>0</tt>" or "<tt>1</tt>"
+    will disallow stacked vias.  A <i>value</i> of "<tt>all</tt>" will
+    allow all vias to be stacked.  Otherwise, the <i>value</i> should
+    be an integer less than or equal to the number of via layers.  If
+    no <i>value</i> is given, the present <tt>via_stack</tt> value is
+    printed on the prompt line.  By default, all vias are assumed
+    stackable.
+    </dl>
+
+    <dl>
+    <dt><tt>via_pattern</tt><dd>
+    If vias are not square, then they are placed in a checkerboard
+    pattern, with every other via rotated 90 degrees.  If inverted,
+    the rotation is swapped relative to the grid positions used in the
+    non-inverted case.  If no <i>value</i> is given, the
+    <tt>via_pattern</tt> valkue is printed on the prompt line. 
+    Otherwise, if the <i>value</i> is 0 or a word starting with
+    "<tt>n</tt>", the pattern is not inverted.  If the <i>value</i> is
+    nonzero of a word starting with "<tt>i</tt>", the pattern is
+    inverted.
+    </dl>
+    </dl>
+
+    <dl>
+    <dt><b>setcost</b><dd>
+    <b>Syntax:</b> <tt>!mr setcost</tt> [<i>paramname</i> [<i>value</i>]]<br>
+    This is similar to the set command.  but in exclusively for the
+    cost parameters used to optimize routing.  Advanced users and
+    experimenters may appreciate the ability to access these
+    parameters.  The cost parameters are the following.  For most of
+    these, only the first character is checked.  If the first
+    character is `c', the second character is also checked.
+
+    <p>
+    <dl>
+    <dt><tt>segcost</tt><dd>
+explain
+    <dt><tt>viacost</tt><dd>
+explain
+    <dt><tt>jogcost</tt><dd>
+explain
+    <dt><tt>xvercost</tt> or <tt>crossovercost</tt><dd>
+explain
+    <dt><tt>blockcost</tt><dd>
+explain
+    <dt><tt>offsetcost</tt><dd>
+explain
+    <dt><tt>conflictcost</tt><dd>
+explain
+    </dl>
+    </dl>
+
+    <dl>
+    <dt><b>unset</b><dd>
+    <b>Syntax:</b> <tt>!mr unset</tt> <i>keyword</i> [<i>keyword</i> ...]<br>
+    The arguments are the keywords that are accepted by the <b>set</b>
+    or <b>setcost</b> commands.  At least one must be given, but any number
+    can appear in the argument list.  For each keyword, the default
+    values are set, undoing any <b>set</b> operation.
+    </dl>
+
+    <dl>
+    <dt><b>ignore</b><dd>
+    <b>Syntax:</b> <tt>!mr ignore</tt> [<i>netname</i> ...]<br>
+    With no options, print a list of names of nets currently being
+    ignored by the router.  Otherwise, the arguments consist of net
+    names or the special token <tt>-u</tt>.  Net names given before or
+    without <tt>-u</tt> will be added to the ignored net list.  Net
+    names given after <tt>-u</tt> will be removed from the ignore netd
+    list, if found.
+    </dl>
+
+    <dl>
+    <dt><b>critical</b><dd>
+    <b>Syntax:</b> <tt>!mr critical</tt> [<i>netname</i> ...]<br>
+    With no options, print a list of names of nets currently being
+    assumed critical by the router.  Otherwise, the arguments consist
+    of net names or the special token <tt>-u</tt>.  Net names given
+    before or without <tt>-u</tt> will be added to the critical net
+    list.  Net names given after <tt>-u</tt> will be removed from the
+    critical net list, if found.
+    </dl>
+
+    <dl>
+    <dt><b>obstruction</b><dd>
+    <b>Syntax:</b> <tt>!mr obstruction</tt> [<tt>-u</tt>] [[<i>L</i> <i>B</i>
+      <i>R</i> <i>T</i>] <i>layer</i>]<br>
+    If no arguments, pop up a list of user-defined obstructions.  If
+    only a layer is given (by name or 1-based conductor index) then a
+    listing of obstructions on that layer is displayed.  Otherwise, if
+    <tt>-u</tt> is not given, The obstruction rectangle for the given
+    layer is added to the obstruction list (if not already present). 
+    If the <tt>-u</tt> (un-obstruct) option is also given, an existing
+    matching obstruction will be removed from the list.  If
+    <tt>-u</tt> is given with only a layer, all obstructions on the
+    layer will be removed.  If <tt>-u</tt> is given with no other
+    options, all user obstructions will be removed.  Obviously, the
+    last two forms should be used with care.
+
+    <p>
+    Most of this doesn't work yet.
+    </dl>
+
+    <dl>
+    <dt><b>layer</b><dd>
+    <b>Syntax:</b> <tt>!mr layer</tt> [<i>layer</i> [<i>option</i>]
+      [<i>args</i>]]<br>
+    This command sets or queries some basic parameters of routing
+    layers.  If no layers are given, a listing of the routing layers
+    with their present parameter values is shown.  The first argument
+    is a layer name of 1-based routing layer index.  If only this is
+    given, the parameters for the given layer are displayed.  The
+    <i>option</i> that may follow indicates the parameter.  It can be
+    one of the following.
+
+    <dl>
+    <dt><tt>-n</tt><dd>
+    This indicates the layer name.  If a word follows, the layer will
+    be given this name.  If no word follows, the present layer name
+    will be printed on the prompt line.
+
+    <dt><tt>-l</tt><dd>
+    This indicates the user layer number (GDSII layer).  This may
+    indicate the GDSII layer number.  It is a user parameter and not
+    used by the router.  It must be a non-negative integer if given. 
+    If a number follows, it will be assigned, otherwise the present
+    value is printed.
+
+    <dt><tt>-t</tt><dd>
+    This indicates the user type number (GDSII datatype).  This
+    may indicate the GDSII datatype number.  It is a user parameter
+    and not used by the router.  It must be a non-negative integer if
+    given.  If a number follows, it will be assigned, otherwise the
+    present value is printed.
+
+    <dt><tt>-w</tt><dd>
+    This indicates the default wire width used for routing, in
+    microns.  It must be a positive number.  If a number follows, it
+    will be assigned, otherwise the current value is printed.
+
+    <dt><tt>-p</tt><dd>
+    This indicates the pitch of the routing, meaning the wire width
+    plus minimim spacing between wires.  This must be a positive value
+    larger than the wire width.  If a number follows, it will be
+    assigned, otherwise the current value is printed.
+
+    <dt><tt>-d</tt><dd>
+    This indicates the preferred route direction, which can be
+    horizontal of vertical.  If a word follows, the first character
+    of which is `h' or `v', the direction is set.  Otherwise, the
+    current direction is printed.
+    </dl>
+    </dl>
+
+    <dl>
+    <dt><b>newlayer</b><dd>
+    <b>Syntax:</b> <tt>!mr newlayer</tt> <i>name</i><br>
+    This creates a new layer with the given name and appends it to the
+    layers list.  The <b>layer</b> command can then be used to fill in
+    the routing parameters.
+    </dl>
+
+    <dl>
+    <dt><b>boundary</b><dd>
+    <b>Syntax:</b> <tt>!mr boundary</tt> [<i>L</i> <i>B</i> <i>R</i>
+      <i>T</i>]<br>
+    This sets or prints the bounding box of the routed area.  This is
+    ordinarily set from the cell and technology data.
+    </dl>
+
+    <dl>
+    <dt><b>read</b><dd>
+    <b>Syntax:</b> <tt>!mr read</tt> <i>source</i> [<i>filename</i>]<br>
+    This sub-command will read a file or convey information into the
+    router database.  The <i>source</i> keyord must be one of the
+    following.
+
+    <dl>
+    <dt><tt>tech</tt><dd>
+    Routing information will be read from the <i>Xic</i> technology database.
+    This will contain data set from the technology file, read from OpenAccess,
+    or set by some other means.  The <i>filename</i> will be ignored if
+    given.
+    </dl>
+
+    <dl>
+    <dt><tt>config</tt><dd>
+    This will read a configuration file in the format used by the
+    <tt>Qrouter</tt> from which <i>MRouter</i> was derived.  If no
+    <i>filename</i> is given, the name "<tt>route.config</tt>" is
+    assumed.  If given, the <i>filename</i> should be a path to
+    a Qrouter-style config file.
+    </dl>
+
+    <dl>
+    <dt><tt>lef</tt><dd>
+    The <i>filename</i> should be a path to a file in the Cadence LEF
+    format (Layout Exchange Format).  This is an industry-standard
+    format used to provide routing information about the standard cells
+    top be used by the router.  This includes technology information
+    about the routing layers (e.g., routing direction, pitch, width),
+    and/or definitions of the standard cells including size information
+    and terminal locations.  It may also provide definitions for the
+    standard vias defined for the process.
+    </dl>
+
+    <dl>
+    <dt><tt>def</tt><dd>
+    The <i>filename</i> should be a path to a file in the Cadence DEF
+    format (Design Exchange Format).  This is an industry-standard
+    format used to pass netlist information.  This will include
+    placement locations and orientations of the cell instances used in
+    the design, plus a list of nets which define the circuit.  The DEF
+    file provides the nets in abstract form, the router implements
+    these nets in physical form.
+    </dl>
+    </dl>
+
+    <dl>
+    <dt><b>write</b><dd>
+    <b>Syntax:</b> <tt>!mr write</tt> <i>target</i> [<i>filename</i>]<br>
+    The <b>write</b> sub-command will create a file or otherwise transfer
+    information from the router database.  The <i>target</i> can be
+    one of the following.
+
+    <p>
+    <dl>
+    <dt><tt>tech</tt><dd>
+    This will update the <i>Xic</i> technology database with technology
+    information from the router database.  The <i>filename</i> will be
+    ignored if given.
+    </dl>
+
+    <dl>
+    <dt><tt>lef</tt><dd>
+    The <i>filename</i> is the name of a LEF file to write.  The file
+    will contain the technology and standard-cell informatiopn found
+    in the router database.
+    </dl>
+
+    <dl>
+    <dt><tt>def</tt><dd>
+    The <i>filename</i> is the name of a DEF file to write.  The file
+    will contaain the components, pins, and nets as saved in the router
+    database.
+    </dl>
+    </dl>
+
+    <dl>
+    <dt><b>append</b><dd>
+    <b>Syntax:</b> <tt>!mr append</tt> <i>deffile1</i> <i>deffile2</i><br>
+    This will copy the DEF file <i>deffile1</i>, while adding the physical
+    routing information, to <i>deffile2</i>.  This is pretty much the same
+    as the Qrouter output method.  The <i>deffile1</i> must be the original
+    input DEF file, or contain the same instance placements and abstract
+    routes.
+    </dl>
+
+    <dl>
+    <dt><b>stage1</b><dd>
+    <b>Syntax:</b> <tt>!mr stage1</tt> [<i>options</i>]<br>
+    Execute stage1 routing.  This works through the entire netlist,
+    routing as much as possible but not doing any rip-up and re-route. 
+    Nets that fail to route are put in the "FailedNets" list.  The
+    number of failed routes is printed on the prompt line.
+
+    <p>
+    The <tt>stage1</tt> keyword can be followed by the following options.
+
+    <dl>
+    <dt><tt>-d</tt><dd>
+    Draw the area being searched in real-time.  This slows down the
+    algorithm and is intended only for diagnostic use.  <font
+    color=red>Not implemented.</font>
+
+    <dt><tt>-s</tt><dd>
+    Single-step stage one, i.e., do one route per call, incrementally.
+
+    <dt><tt>-m</tt>[ ]<i>value</i><dd>
+    The <i>value</i> follows the option character with or without
+    intervening white space.  It can be an integer 0 or larger, and will
+    set the search mask size.  It can also be set to one of the following
+    keywords, where only the first character is significant.
+    <dl>
+    <dt><tt>n[one]</tt><dd>Don't limit the search area.
+    <dt><tt>a[uto]</tt><dd>Select the mask automatically.
+    <dt><tt>b[box]</tt><dd>Use the net bounding box as a mask.
+    </dl>
+
+    <dt><tt>-f</tt><dd>
+    Force a terminal to be routable.
+
+    <dt><i>netname</i><dd>
+    Route the named net only.
+    </dl>
+    </dl>
+
+    <dl>
+    <dt><b>stage2</b><dd>
+    <b>Syntax:</b> <tt>!mr stage2</tt> [<i>options</i>]<br>
+    Execute stage2 routing.  This stage works through the failed nets
+    list, routing with collisions, and then ripping up the colliding
+    nets and appending them to the failed nets list.
+
+    <p>
+    The number of failed nets remaining is printed on exit.
+
+    <p>
+    The <tt>stage2</tt> keyword can be followed by the following options.
+
+    <dl>
+    <dt><tt>-d</tt><dd>
+    Draw the area being searched in real-time.  This slows down the
+    algorithm and is intended only for diagnostic use.  <font
+    color=red>Not implemented.</font>
+
+    <dt><tt>-s</tt><dd>
+    Single-step stage two, i.e., do one route per call, incrementally.
+
+    <dt><tt>-m</tt>[ ]<i>value</i><dd>
+    The <i>value</i> follows the option character with or without
+    intervening white space.  It can be an integer 0 or larger, and will
+    set the search mask size.  It can also be set to one of the following
+    keywords, where only the first character is significant.
+    <dl>
+    <dt><tt>n[one]</tt><dd>Don't limit the search area.
+    <dt><tt>a[uto]</tt><dd>Select the mask automatically.
+    <dt><tt>b[box]</tt><dd>Use the net bounding box as a mask.
+    </dl>
+
+    <dt><tt>-f</tt><dd>
+    Force a terminal to be routable.
+
+    <dt><tt>-l</tt> <i>N</i><dd>
+    Fail route if the solution collides with more than <i>N</i>nets.
+
+    <dt><tt>-t</tt> <i>N</i><dd>
+    Keep trying <i>N</i> additional times.
+
+    <dt><i>netname</i><dd>
+    Route the named net only.
+    </dl>
+    </dl>
+
+    <dl>
+    <dt><b>stage3</b><dd>
+    <b>Syntax:</b> <tt>!mr stage3</tt> [<i>options</i>]<br>
+    Execute stage3 routing.  This works through the entire netlist,
+    ripping up each route in turn and re-routing it.
+
+    <p>
+    The number of failed nets remaining is printed on exit.
+
+    <p>
+    The <tt>stage1</tt> keyword can be followed by the following options.
+
+    <dl>
+    <dt><tt>-d</tt><dd>
+    Draw the area being searched in real-time.  This slows down the
+    algorithm and is intended only for diagnostic use.  <font
+    color=red>Not implemented.</font>
+
+    <dt><tt>-s</tt><dd>
+    Single-step stage three, i.e., do one route per call, incrementally.
+
+    <dt><tt>-m</tt>[ ]<i>value</i><dd>
+    The <i>value</i> follows the option character with or without
+    intervening white space.  It can be an integer 0 or larger, and will
+    set the search mask size.  It can also be set to one of the following
+    keywords, where only the first character is significant.
+    <dl>
+    <dt><tt>n[one]</tt><dd>Don't limit the search area.
+    <dt><tt>a[uto]</tt><dd>Select the mask automatically.
+    <dt><tt>b[box]</tt><dd>Use the net bounding box as a mask.
+    </dl>
+
+    <dt><tt>-f</tt><dd>
+    Force a terminal to be routable.
+
+    <dt><tt>-l</tt> <i>N</i><dd>
+    Fail route if the solution collides with more than <i>N</i>nets.
+
+    <dt><tt>-t</tt> <i>N</i><dd>
+    Keep trying <i>N</i> additional times.
+
+    <dt><i>netname</i><dd>
+    Route the named net only.
+    </dl>
+    </dl>
+
+    <dl>
+    <dt><b>ripup</b><dd>
+    <b>Syntax:</b> <tt>!mr ripup</tt> <tt>-a</tt>|<i>netname</i> ...<br>
+    Rip up (remove all physical routing information from) a net or
+    nets, or all nets in the design.  If <tt>-a</tt> is specified,
+    all nets will be ripped up.  Otherwise, the arguments are names of
+    nets to rip up.
+    </dl>
+
+    <dl>
+    <dt><b>failed</b><dd>
+    <b>Syntax:</b> <tt>!mr failed</tt> [<i>option</i>]<br>
+    The default operation, i.e., with no argument given, is to print
+    the number of nets currently in the failed nets list.  Otherwise,
+    one of the following options may be given.
+    <dl>
+    <dt><tt>-a</tt><dd>
+    Move all nets to the failed net list, ordered by the standard metric.
+    <dt><tt>-u</tt><dd>
+    Move all nets to the failed nets list, as originally ordered.
+    <dt><tt>-p</tt><dd>Print a list of failed net names.
+    </dl>
+    </dl>
+
+    <dl>
+    <dt><b>congest</b><dd>
+    <b>Syntax:</b> <tt>!mr congest</tt> [<tt>-n</tt> <i>N</i>]
+      [<i>filename</i>]<br>
+    This command will compute and print a congestion value for each
+    cell instance.  The values are print in sorted order, highest
+    congestion to lowest.  By default, all instances are listed, if
+    the <tt>-n</tt> option is given, only the highest <i>N</i>
+    instances are listed (<i>N</i> being a positive integer).  If a
+    <i>filename</i> is given, output goes to that file, otherwise
+    output goes to the standard output.  This command is intended to
+    identify highly congested parts of a layout, which may benefit
+    from additional fill in a subsequent routing run.
+    </dl>
+
+    <dl>
+    <dt><b>source</b><dd>
+    <b>Syntax:</b> <tt>!mr source</tt> <i>cellname</i> ...<br>
+    The arguments are cell names, that should be resolvable in
+    <i>Xic</i>.  Each is loaded into <i>Xic</i> if not already
+    present, using the library resolution method, and loaded into the
+    router database as if given in a LEF file.
+    </dl>
+
+    <dl>
+    <dt><b>place</b><dd>
+    <b>Syntax:</b> <tt>!mr place</tt><br>
+    All cells that have a placement record in the router database are
+    instantiated in <i>Xic</i> at the proper location and orientation.
+    </dl>
+
+    <dl>
+    <dt><b>draw</b><dd>
+    <b>Syntax:</b> <tt>!mr draw</tt><br>
+    Implememt the routes using wires and standard vias, in the
+    <i>Xic</i> current cell.
+    </dl>
+
+!!SEEALSO
+keybang
+
+!!KEYWORD
+funcs:router
+!!TITLE
+Router Functions
+!!HTML
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+
+    <tr><th colspan=2 align=center>
+        <a href="funcs:router:mrouter">Maze Router Interface</a></th></tr>
+
+    <tr><td><a href="funcs:router:mrouter#MRouter">
+     <tt>MRouter</tt>(<i>command</i>)</a>
+     </td><td>Send command to maze router.</td></tr>
+    </table>
+
+!!SEEALSO
+scr:iffuncs
+
+!!REDIRECT MRouter      funcs:router:mrouter#MRouter
+
+!!KEYWORD
+funcs:router:mrouter
+!!TITLE
+The MRouter Maze Router Interface
+!!HTML
+    This is the scripting interface to the <a
+    href="mrouter">MRouter</a> plug-in.  The function exists only if
+    the MRouter plug-in is loaded.  This plug-in is not supplied with
+    <i>Xic</i>, but is available from the free sofware archive on <a
+    href="http://wrcad.com/freestuff.html"><tt>wrcad.com</tt></a>.
+
+    <p>
+    <font color="red"><b>This is in early development, and everything
+    here is very preliminary.</b></font>
+
+    <!-- 121016 -->
+    <a name="MRouter"></a>
+    <dl>
+    <dt><b>(int) <tt>MRouter</tt>(<i>command</i>)</b>
+    <dd><br>
+    This function will pass the <i>command</i> string to the router
+    plug-in, where it will be evaluated.  The entire interface to the
+    plug-in is implemented by this function.  The command text is
+    exactly the same as would be passed to the <a
+    href="!mr"><b>!mr</b></a> command, and response to the command is
+    the same.  This function is basically the same as the <a
+    href="TextCmd"><tt>TextCmd</tt></a> function calling the
+    <b>!mr</b> command.
+    </dl>
+
+!!SEEALSO
+funcs:router
+

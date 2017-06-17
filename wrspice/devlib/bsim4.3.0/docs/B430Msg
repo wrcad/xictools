@@ -1,0 +1,51 @@
+Dear BSIM Users,
+
+Thank you for your support of the BSIM models. We are releasing the BSIM4.3.0 models 
+today, May 09, 2003.
+
+BSIM4.3.0 is developed to address several new issues in modeling sub-0.13 micron CMOS 
+technology and RF high-speed CMOS circuit simulation. The plans and progress of the 
+development were presented and discussed at several Compact Model Council (CMC) 
+meetings in 2002 ~ 2003 period. Many inputs and several requests from those meetings 
+were incorporated into the model. BSIM4.3.0 version was tested by several companies 
+and their feedback was incorporated into this version as well. 
+
+BSIM4.3.0 has the following major improvements and additions over BSIM4.2.1:  
+
+1. A new scalable stress effect model  for process induced stress effect; device 
+performance becoming thus a function of the active area geometry  and the location  
+of the device in the active area;
+
+2. A unified current-saturation model that includes all mechanisms of current saturation
+- velocity saturation, velocity overshoot and source end velocity limit;  
+
+3. A new temperature model format that allows convenient prediction of temperature 
+effects on saturation velocity, mobility, and S/D resistances;
+
+4. Enhanced accuracy and flexibility of holistic thermal noise model;
+
+5. Improved accuracy of  forward body bias model; and
+
+6. Extension of gate direct tunneling model to multiple-layer gate dielectrics.
+
+In addition, there are nine bug fixes in this version.  The complete list of bugs and 
+fixes and the users who reported them, the BSIM4.3.0 source code, BSIM4.3.0 user manual,  
+BSIM4.3.0 new enhancement  document  and testing examples can  be downloaded at: 
+http://www-device.eecs.berkeley.edu/~bsim3/bsim4.html
+
+BSIM4.3.0 beta received intensive evaluation by TSMC, Silvaco, STmicroelectronics, TI 
+Tiburon-DA and Motorola. Their testing materially and substantially improved the quality 
+of the present production release. We would like to express our sincere thanks to the 
+input from all the users.  Special thank goes to  Dr. Keith Green, Chairman of the 
+Technical Issues Subcommittee of CMC; Britt Brooks, chair of CMC, Dr. Joe Watts, 
+Secretary of CMC, and Dr. Ke-Wei Su for their guidance and technical support.
+
+We would like to acknowledge the data and support provided by the following companies: 
+TSMC, NEC, IBM, Mindspeed, TI, Hitachi, and AMD.
+
+We thank you for your support to BSIM and welcome your feedback on this latest model.
+
+Sincerely,
+
+BSIM Team
+UC Berkeley

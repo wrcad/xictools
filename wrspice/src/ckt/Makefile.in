@@ -1,0 +1,52 @@
+#######################################################################
+# wrspice/ckt/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 2.59 2015/07/24 06:25:00 stevew Exp $
+#######################################################################
+
+SPICE_VERSION = @SPICE_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGS_SG@ @UFLAGS@ -DWRSPICE
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGS_SG@ -DWRSPICE
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+
+LIB_TARGET = ckt.a
+
+LPATH = ../../../xt_base
+HFILES =
+CCFILES = \
+  breakpt.cc ckt.cc cktparam.cc niaciter.cc nicomcof.cc niconv.cc \
+  niditer.cc niinit.cc niinteg.cc niiter.cc niniter.cc symtab.cc \
+  veriloga.cc
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+depend:
+	@echo depending in wrspice/ckt
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm *.o $(LIB_TARGET)
+
+distclean:
+	-rm *.o $(LIB_TARGET) Makefile
+
+#######################################################################

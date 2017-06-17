@@ -1,0 +1,93 @@
+dnl Configure input script for imsave
+dnl Process this file with autoconf to produce a configure script.
+dnl Copyright (C) Whiteley Research Inc, 2002
+dnl $Id: configure.in,v 1.1 2005/10/08 04:09:41 stevew Exp $
+
+dnl *** Initialize
+AC_INIT(create.cc)
+AC_SUBST(prefix)
+
+dnl *** Check compiler and friends
+AC_PROG_CC
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+if test "$GCC" = yes; then
+    DEPEND_PROG="gcc -MM"
+    CFLAGS="-O2 -g -Wall"
+    if test -f /bin/arch; then
+        if test "`/bin/arch`" = "sun4"; then
+            dnl Solaris 8 with gcc: the ctype macros use arrays, which
+            dnl cause "char subscript" warnings, so these are turned off.
+            dnl The __EXTENSIONS__ macro is needed to make certain function
+            dnl prototypes visible
+            CFLAGS="$CFLAGS -Wno-char-subscripts -D__EXTENSIONS__"
+        fi
+    fi
+else
+    DEPEND_PROG="cc -M"
+    CFLAGS="-O"
+fi
+dnl g++ 2.95 will not compile programs including X headers, since they
+dnl contain prototypes with implicit int returns.  Have to set
+dnl -fpermissive in this case
+AC_DEFUN(AC_CHECK_XMESS,   
+[AC_MSG_CHECKING([for $1])   
+AC_CACHE_VAL(ac_cv_$1,
+  zzztmp=$CPPFLAGS
+  CPPFLAGS="-x c++ $ac_x_includes"
+  [AC_TRY_COMPILE(
+    [#include <X11/Xlib.h>], [],  
+    [eval "ac_cv_needs_$1=no"], [eval "ac_cv_needs_$1=yes"])
+  if eval "test \"`echo '$ac_cv_needs_'$1`\" = yes"; then
+    CPPFLAGS="-x c++ -$1 $ac_x_includes"
+    AC_TRY_COMPILE(
+      [#include <X11/Xlib.h>], [],
+      [eval "ac_cv_$1=yes"], [eval "ac_cv_$1=no"])
+  fi
+  if eval "test \"`echo '$ac_cv_'$1`\" = yes"; then
+      AC_MSG_RESULT(yes)
+      PERMISSIVE="-$1 -w"
+  else
+      AC_MSG_RESULT(no)
+  fi
+  CPPFLAGS=$zzztmp
+  ])
+])
+if test -x /usr/ucb/install; then
+    INSTALL="/usr/ucb/install"
+else
+    INSTALL="install"
+fi
+AC_SUBST(CFLAGS)
+AC_SUBST(DEPEND_PROG)
+AC_SUBST(INSTALL)
+
+dnl *** Checks for header files
+dnl need this for PATH_XTRA
+AC_CHECK_LIB(m, main) 
+AC_CHECK_LIB(socket, main) 
+if test $ac_cv_lib_socket_main = "yes"; then
+    AC_CHECK_LIB(nsl, main)
+fi
+AC_PATH_XTRA
+AC_HEADER_STDC
+AC_EGREP_HEADER(sys_errlist, stdio.h, AC_DEFINE(SYS_ERRLIST_DEF))
+AC_CHECK_XMESS(fpermissive)
+AC_SUBST(PERMISSIVE)
+
+dnl *** Checks for typedefs, structures, and compiler characteristics
+AC_C_CONST
+AC_HEADER_TIME
+AC_STRUCT_TM
+
+dnl *** Check for needed libraries
+dnl reverse order of link, order is important
+LDFLAGS="-L$ac_x_libraries -L/usr/local/lib"
+dnl reverse order of link, order is important
+AC_CHECK_LIB(png, main, IMS_DEFS="$IMS_DEFS -DHAVE_LIBPNG")
+AC_CHECK_LIB(jpeg, main, IMS_DEFS="$IMS_DEFS -DHAVE_LIBJPEG")
+AC_CHECK_LIB(tiff, main, IMS_DEFS="$IMS_DEFS -DHAVE_LIBTIFF")
+AC_SUBST(IMS_DEFS)
+
+dnl *** Perform subsitutions and create headers
+AC_OUTPUT(Makefile)

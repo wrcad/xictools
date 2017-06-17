@@ -1,0 +1,75 @@
+$Id: README,v 1.6 2017/01/24 00:11:23 stevew Exp $
+
+This directory provides some miscellaneous examples.
+
+main-plg.cc, Makefile, Makefile.in
+
+  This is a version of the 'mrouter' program that loads the MRouter at
+  run-time.  It contains example C++ code which illustrates how to
+  load the MRouter plug-in shared library object.  This will be of
+  interest to application developers who wish to import the MRouter
+  functionality, without linking at compile-time in the traditional
+  manner.
+
+  To build, first build and install MRouter.  Then, from here, type
+  "make" to build the mrouter-plg binary.  It works the same as
+  mrouter, but loads the libmrouter object at run time.
+
+map9v3.def
+
+  The DEF file for the map9v3 example, which describes the standard
+  cell instance placement and netlist.
+
+map9v3.rsc
+
+  This is new-style routing script to perform routing of the map9v3
+  example using the stand-alone mrouter (or mrouter-plg) program.  The
+  operations and result are very similar to running "make test" in the
+  mrouter/test directory, however that uses the config file approach
+  inherited from Qrouter.
+
+  DON'T RUN THIS HERE (in the MRouter installation area) as you
+  probably don't have the required permissions and you don't want to
+  create files here anyway.
+
+  Instead, create a new directory in your work space, and copy
+  map9v3.rsc to this new directory.
+
+  If the MRouter in not installed in the standard place
+  (/usr/local/mrouter), you will need to edit the map9v3.rsc file to
+  correct the path given on the second line.
+
+  From your directory, and assuming that the "mrouter" program is in
+  your search path, you can give the command
+
+    mrouter < map9v3.rsc
+
+  This will do the routing, writing output into a DEF file.
+
+map9v3_blk.def
+
+  A DEF file that specifies the same obstructions as in map9v3.rsc,
+  but in DEF format.
+
+openMSP430.def
+openMSP430.rsc
+openMSP430_blk.def
+
+  As above, but for a different design.  This is a fairly complex
+  circuit, and may take about an hour to route (depending on your
+  computer).
+
+osu35/
+
+  This is the LEF and GDSII files associated with the Oklahoma State
+  350nm open-source CMOS library, which are used by the examples.  For
+  the examples to work, these files must be found, meaning that the
+  MRouter must be installed in the standard location
+  (/usr/local/mrouter) or the scripts must be edited to correct the
+  path.
+
+xic/
+
+  This provides files allowing the examples to be run from the Xic
+  program.  See the README file there for more information.
+

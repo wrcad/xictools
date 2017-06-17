@@ -1,0 +1,232 @@
+
+                    G I N T E R F  L I B R A R Y
+                    ----------------------------
+
+(c) Copyright Whiteley Research Inc., 2005
+$Id: README,v 2.1 2005/10/21 06:40:57 stevew Exp $
+
+ * This library is available for non-commercial use under the terms of    *
+ * the GNU Library General Public License as published by the Free        *
+ * Software Foundation; either version 2 of the License, or (at your      *
+ * option) any later version.                                             *
+ *                                                                        *
+ * A commercial license is available to those wishing to use this         *
+ * library or a derivative work for commercial purposes.  Contact         *
+ * Whiteley Research Inc., 456 Flora Vista Ave., Sunnyvale, CA 94086.     *
+ * This provision will be enforced to the fullest extent possible under   *
+ * law.                                                                   *
+ *                                                                        *
+ * This library is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
+ * Library General Public License for more details.                       *
+ *                                                                        *
+
+I.  Introduction
+
+Then ginterf library is a general library providing graphical and
+printing support.  In addition, there are a number of classes and
+functions that support non-graphical things such as directory path
+handling, strings, etc.
+
+Below is a table of the files and subdirectories with a brief
+description of each.
+
+encode.cc
+encode.h
+    MIME encoding package, used by the mail client.
+
+filestat.cc
+filestat.h
+    Some utilities for file type determination, etc.  Includes
+    wrapping to allow 64-bit file pointers on some 32-bit systems
+    (Linux).
+
+fontutil.cc
+fontutil.h
+    Font name parsing and related.
+
+gr_pkg_setup.h
+    Library setup include file.
+
+graphics.cc
+graphics.h
+    Basic library definitions and code.
+
+grfont.cc
+grfont.h
+    A scalable vector font for rendering in drawing windows.
+
+grtypes.h
+    Some definitions (included by graphics.h).
+
+gtkinterf
+    GTK-specific code.
+
+help (directory)
+    Help system toolkit-independent code.
+
+hpgl.cc
+hpgl.h
+    HPGL hardcopy driver.
+
+htm (directory)
+    Toolkit-independent HTML viewer widget code.
+
+httpget (directory)
+    Code for http/ftp file transfer.
+
+imsave (directory)
+    Code for generating image files in varions formats.
+
+largefile.h
+    Linux and Solaris 64-bit file pointer support.
+
+lstring.cc
+lstring.h
+    String manipulation functions.
+
+md5.cc
+msw.h
+    MD5 encryption/decryption package.
+
+mswinterf (directory)
+    Microsoft Win32-specific code.
+
+nulldev.h
+    NULL device (no graphics) stubs.
+
+pathlist.cc
+pathlist.h
+    Functions supporting manipulation of directory search paths.
+
+pcl.cc
+pcl.h
+    HP PCL hardcopy driver.
+
+pixtab.cc
+pixtab.h
+    Pixelization class.
+
+psbc.cc
+psbc.h
+    PostScript color bitmap hardcopy driver.
+
+psbm.cc
+psbm.h
+    PostScript mono bitmap hardcopy driver.
+    
+psencode.cc
+    RLL encoding for Postscript.
+
+pslindrw.cc
+pslindrw.h
+    PostScript line-draw hardcopy driver.
+
+qtinterf (directory)
+    QT-specific code.
+
+raster.cc
+raster.h
+    Common raster code for hardcopy support.
+
+rgbmap.cc
+rgbmap.h
+    Common rgb-map code for hardcopy support.
+
+versatec.cc
+versatec.h
+    Versatec hardcopy driver.
+
+wp.cc
+wp.h
+    WordPerfect hardcopy driver.
+
+xdraw.cc
+xdraw.h
+    Xdraw exportable X-window drawing package.
+
+xfig.cc
+xfig.h
+    Xfig hardcopy driver.
+
+
+II.  How to Use the  Library.
+
+The top-level toolkit-independent include file is graphics.h.  This is
+included by the toolkit top-level include files gtkinterf.h, etc. 
+Subsidiary include files may also be required to support various parts
+of the library.
+
+The library is modular, meaning that only the sections of the library
+actually needed will be linked.  This is enforced by a somewhat
+unconventional setup procedure to be described.  In particular, it is
+possible to use the non-graphics part of the library without having to
+resolve dependencies in the graphical part at link time.
+
+There are six lines that are required in the application to set up the
+library.  As an example, the following block might appear in the main
+application file (location is unimportant).  It is assumed that
+graphics.h has been included (this is necessary);
+
+(1)    #define GR_CONFIG (GR_ALL_PKGS | GR_ALL_DRIVERS)
+(2)    #include "gr_pkg_setup.h"
+
+(3)    static class GRpkg gp;
+(4)    GRpkg& GR = gp;
+
+(5)    static GRappCallStubs mcalls;
+(6)    GRappCalls &GRappIf = mcalls;
+
+The first two lines determine which toolkits and hardcopy drivers are
+supported.  One must define the variable GR_CONFIG to an ORed
+combination of the tokens defined at the top of graphics.h.  In this
+example, all toolkits and drivers are made available to the
+application.
+
+The second line should appear as shown.  This implements the startup
+code in accordance with the GR_CONFIG settings.
+
+The third and fourth lines instantiate that main class of the library. 
+This instantiation is available globally as the variable "GR",
+declared in graphics.h.  It is possible to derive from the GRpkg
+class, and instantiate the derived class instead.  The GR reference
+must be set in any case.
+
+The remaining two lines instantiate a callback class that is primarily
+used by the hardcopy drivers.  If this interface is needed by the
+application, a derived class will be instantiated.  Otherwise, the
+convenience GRappCallStubs can be instantiated, as shown.  The GRappIf
+reference, declared in graphics.h, must be set.
+
+In the application's main procedure, we may have lines similar to
+those shown below.  None of these are mandatory, but this is the
+"standard" way to interact with the library.
+
+
+(1)    if (GR.InitPkg(GR_ALL_PKGS | GR_ALL_DRIVERS, &argc, argv))
+        return (1);
+(2)    GR.InitColormap(0, 0, false);
+
+(3)    GRcontext *gx = GR.New(0, appclass, 0);
+
+     . . .
+
+(4)    GR.MainLoop();
+
+Line 1 initializes the packages in the library.  The first argument is
+usually GR_CONFIG, but could instead be a subset of the enabled
+toolkits and drivers set in GR_CONFIG.  The second tow arguments are
+the arguments to the main function.  The toolkit will use these to
+find toolkit-specific command-line arguments.
+
+The InitColormap call is useful for 8-plane displays.  Unless you need
+a colormap, use the form shown.
+
+The third line creates a graphics context for the application.  This
+can be use to pop-up the widgets defined in the library.
+
+The fourth line, which should appear logically at the end of the main
+function, starts the event loop for the toolkit.  This function will
+not return until the user initiates an exit.
+

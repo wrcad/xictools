@@ -1,0 +1,17 @@
+*****************************************************************************
+Copyright 2003: UNIVERSITY OF FLORIDA;  ALL RIGHTS RESERVED.
+Code: UFSOI-7.5 (UFPDB-2.5 and FD/SOI) Models and Type-I Interface
+Authors: UF SOI Group
+*****************************************************************************
+
+The UFSOI (PDB and FD) MOSFET models were developed at the University of Florida, 
+Gainesville. The Type-I interface (api and glue for Spice3e2) source code can be 
+obtained from the University of Florida (Professor J. G. Fossum, Department of 
+Electrical and Computer Engineering, Gainesville, FL 32611-6130; fossum@tec.ufl.edu), 
+but the UF copyright prohibits any subsequent distribution or transfer, either in 
+original or modified form, in whole or in part, to another party or person without
+express permission from Professor Fossum.
+
+The Spice3e2 source code was developed at the University of California, Berkeley.
+It is public-domain, but its distribution is restricted by a similar UCB copyright.
+

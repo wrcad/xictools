@@ -1,0 +1,21 @@
+* FFT demo
+* This circuit simply produces a square wave, which can be used as
+* input to the fft function.  For example, try
+* tran 10p 2n
+* Then, type "let s = fft(v(1))", and "plot s".
+* This plots the real part.  One can also plot im(s), plot mag(s), etc.
+* The inverse fft can be obtained: let inv = ifft(s).
+* This should look the same as v(1).
+*
+v 1 0 pulse(0 1 10p 10p 10p 90p 200p)
+r 1 0 1
+.end
+
+.control
+tran 10p 2n
+let s = fft(v(1))
+plot s ysep
+inv = ifft(s)
+plot v(1) inv
+edit
+.endc

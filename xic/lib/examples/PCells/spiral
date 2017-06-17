@@ -1,0 +1,23 @@
+(Symbol spiral);
+($Id: spiral,v 1.3 2014/10/10 05:23:20 stevew Exp $);
+(PHYSICAL);
+(RESOLUTION 1000);
+5 7198 num=1:step(1,1,20,1),
+  width=4:range(0.005,100),
+  rmin=18:range(0.005,1000),
+  spa=6:range(0.005,100),
+  nums=50:step(1,3,90,1);
+
+( Below illustrates the new @MD5 checksum feature.  If the script is
+  modified, an updated checksum will be needed here, e.g., from
+  "!md5 filename" in Xic.  The checksum ensures that the script
+  accessed is always the correct one. but you can remove this below
+  to skip checking. )
+
+5 7199 @read /usr/local/xictools/xic/examples/PCells/spiralpc.scr
+  @MD5 3bb48308dd20053716a85a2074391d4a;
+
+9 spiral;
+DS 0 1 1;
+DF;
+E

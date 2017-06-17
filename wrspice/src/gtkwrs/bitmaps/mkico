@@ -1,0 +1,18 @@
+#! /bin/bash
+
+# Use ImageMagick to create the Windows ico file.
+#
+# This is probably no good under Windows, since there is an unrelated
+# System32/convert command - ImageMagick needs to be installed (under
+# Cygwin?) and the call below changed to call ImageMagick's convert.
+
+icodir=../../../../lib/wrspice/icons
+
+if [ -f spice.ico ]; then
+  mv -f spice.ico spice.ico.bak
+fi
+convert \
+  $icodir/wrspice_16x16.xpm \
+  $icodir/wrspice_32x32.xpm \
+  $icodir/wrspice_48x48.xpm \
+  spice.ico

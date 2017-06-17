@@ -1,0 +1,1762 @@
+xic-3.0.12 1/8/2009
+
+This will be the last alpha release, the next release will be 3.1.0.
+
+Changes and New Features
+------------------------
+
+* Internal unit scale now user-settable.
+
+  Previously, Xic has used a fixed internal resolution of 1000 units
+  per micron.  However, users may need more resolution and/or the ability
+  to render smaller features accurately, thus provision has been made to
+  enable different resolutions.
+
+  The required major changes to the Xic code base:
+  - The resolution can now be different in electrical and physical modes,
+    electrical mode always uses 1000 units per micron.
+  - Coordinate printing in many places required modification to print
+    the correct number of decimal places.
+
+  The internal resolution is set with a variable:
+
+  New variable: Database Resolution (integer)
+
+  This Can be set to 1000, 2000, 5000, or 10000.  If not set, the default
+  is 1000.
+
+  The is is the internal database resolution, i.e., the number of
+  units per micron.
+
+  This can only be set in a .xicinit file or the technology file,
+  or from a .xicstart file if no technology file is read.
+
+* XSectThickness, SpotSize variable, !tospot command changes.
+
+  These variables and command took a value in internal units.  Now,
+  the values are taken in microns, so as to be independent of the
+  internal database resolution.
+
+* Cell Placement Control pop-up changes.
+
+  1) Instance placement, new corner reference feature.
+
+  When placing instances, with the instance bounding box "attached" to
+  the mouse pointer, pressing the Enter key will cycle throught the
+  corners of the bounding box, and the cell's origin, as reference
+  points.  The reference point is the point in the cell that
+  corresponds to the mouse pointer.
+
+  Previously, the reference point was a coice between the cell origin
+  and the lower left corner, as selected by two "radio" check boxes in
+  the Cell Placement control panel.  These buttons have been replaced
+  with a drop down menu containing the foru corner choices plus the
+  origin choice.  Pressing the Enter key cycles through these choices
+  when placing cells.
+
+  If the instance is arrayed, the corners used for reference are those
+  of the entire array.
+
+  In electrical mode, the reference terminal is always used as the
+  reference, point, but if there are no terminals, the pointer will
+  snap to the nearest on-grid location closest to the corners,
+
+  2) New "Smash Mode" for cell instance placement.
+
+  The Cell Placement Control panel has a new Smash button.  When Smash
+  is active, instances will be smashed into the parent where the user
+  clicks, meaning that the cell content will be merged into the parent
+  cell.  The flattening is one-level, so that any subcells of the cell
+  being placed become subcells in the parent.
+
+  The !cont command, which previously performed this operation, has been
+  removed as it is now redundant.
+
+  3) Logic change.
+
+  When the Cell Placement Control is popped down, place mode is
+  exited.  Previously, place mode, if active, would remain active. 
+  The Place button in the control panel must be pressed to be in Place
+  mode, when instances can be added to the drawing.
+
+* Object moving, modified corner reference feature.
+
+  Presing Enter while moving or copying objects (while the objects are
+  "attached" to the mouse pointer) will now cycle around the corners
+  of the bounding box of the objects being moved/copied, and the
+  original reference location.  Previously, the original reference
+  location was not returned to.
+
+* New Info button in the Properties Editor.
+
+  When pressed, clicking on an object will bring up or update the
+  Properties Info listing.  This is the same as Shift-Click, but the
+  new button makes the presence of this feature explicit.
+
+* Logo command change.
+
+  The Logo command from the side menu, that produces physical text,
+  no longer limits the size of the physical text according to design
+  rules.  The default vector font will almost certainly produce design
+  rule violations, no matter what.
+
+* Added internal buffering to compression interface.
+
+  This might improve speed when reading OASIS files that use
+  compression.
+
+* Script function changes.
+
+  The Place function now has additional optional arguments that control
+  placement, arraying, and "smash" mode.
+
+  The PlaceParams function has been removed.  These parameters are now
+  applied directly to the Place function.
+
+  The SetZref function can now take an array argument representing a
+  rectangular region.
+
+  The AdvanceZref function has a new argument to specify a rectangular
+  region.
+
+  New function: GetZrefBB
+  Returns the bounding box of the reference trapezoid list.
+
+  New function: ListLayersDb
+  Returns a list of layers used in a special database.
+
+  New function: GetZlistZbdb
+  Returns the trapezoid list from a bin in a ZBDB special database.
+
+  New function: FindSPtable
+  Find a spatial parameter table by name.
+
+* Script language change
+
+  The form !string, where string is a string-type variable, is now
+  recognized.  This construct will be TRUE only if the string variable
+  contains a null string.
+
+* Windows Only - Prompt line display change
+
+  The prompt line will now display line termination characters as a
+  paragraph symbol, and other non-printing characters as a black dot.
+  These behave like normal characters when editing, previously they
+  were invisible but would foul up character positioning when editing.
+
+  NOTE:  If your property or label strings suddenly have embedded or
+  trailing black dots when in the editor, it means that the string
+  contains control characters, most likely Ctrl-M from Windows.  These
+  can be removed, but are typically invisible and harmless.
+
+  NOTE:  Embedded newline characters are now shown as a paragraph
+  symbol - previously these were invisible.  When editing, Shift-Enter
+  can be used to add newlines, which cause a line break when the label
+  is displayed.
+
+
+Bugs Fixed
+----------
+
+* Unix/Linux
+  Resizing a drawing window containing an image that takes more than a
+  second or two to draw would often cause the image to become garbled,
+  and even caused segmentation faults on occasion.  This should be
+  fixed now.
+
+* Bug fixed in OASIS reader, property records in strict-mode tables
+  would cause the read to fail.
+
+* Another OASIS bug fixed:  Couldn't read/write OASIS files larger than
+  about 4G due to a 32-bit integer overflow problem.
+
+* Fixed some logic issues with the Advanced OASIS pop-up.
+
+* Boxes in electrical schematics are no longer merged when cells are
+  flattened.
+
+* In electrical mode, is is now not possible to set the grid so that
+  the snap spacing is not a multiple of one micron.  This makes it
+  more difficult to place devices and subcircuits such that contacts
+  are not made due to a tiny gap due to grid resolution.
+
+* Fixed a bug that would prevent CHD's read from a saved file from
+  working properly under certain circumstances.
+
+* Fixed tiny OASIS reader overflow bug - did not produce errors, but
+  would cause a mysterious seg fault very rarely.
+
+* Fixed potential integer overflow in DRC corner overlap test function.
+
+* Fixed bug:  certain error messages were not being reported the first
+  time an archive containing electrical data was read.
+
+* Fixes to move/copy/stretch, etc.  ghost drawing when a large number
+  of objects are selected.  When there are too many objects, a
+  bounding rectangle will be shown.  Previously, this rectangle was
+  not being shown in some cases.
+
+* Modified startup sequence so that initialization files are read
+  after the graphics is initialized.  Some commands in init files
+  can cause faults otherwise.
+
+* The OpenCellHierDigest script function had an incorrect argument
+  count assumption and was therefor broken.
+
+* Windows Only
+  Fixed some problems caused by the evil Microsoft line termination
+  (Ctrl-M) charcter.
+
+  1) If a label contains multiple lines and the cell is in CIF or
+     native format, every time the cell is saved, an additional Ctrl-M
+     would be added to the end of each line.  These are (mostly)
+     invisible and harmless, but shouldn't be there.
+  2) When displaying strings in the prompt line (and a few other
+     places), control characters would be invisible, but would foul up
+     the character positioning in editing mode.  Now, normal line
+     termination characters are shown as a paragraph symbol, and other
+     control characters are shown as a black dot.  These behave like a
+     normal characters when editing, but are not shown in the label
+     on-screen (but line terminators cause line breaks).
+
+
+-----------------------------------------------------------------------------
+xic-3.0.11 11/20/2008
+
+This should be the last alpha release.  The beta series will focus on
+finding/fixing bugs, and general refinement and fine-tuning.
+
+
+Previous Open Issues
+--------------------
+
+* Compatibility of reading through a CHD with the Library mechanism.
+  Presently, CHDs built from archives with missing cell references
+  don't work properly.
+
+  RESOLUTION - CHD operations can now make use of libraries.
+
+* Check memory cell overwrite actions for IMMUTABLE cells, may be
+  problems.
+
+  RESOLUTION - The IMMUTABLE status is not considered when overwriting
+  cells in memory.
+
+
+Changes and New Features
+------------------------
+
+* Memory cell overwrite logic for IMMUTABLE/LIBRARY cells.
+
+  When a cell is read while reading an archive file or native cell
+  into memory, and a cell of the same name exists in memory, and we
+  are overwriting cells in memory:
+
+  1) If the existing cell is IMMUTABLE, it will be overwritten.  The
+     IMMUTABLE flag has no bearing on whether or not a cell can be
+     overwritten in memory.  The overwritten cell will no longer be
+     IMMUTABLE.
+
+     Previously, IMMUTABLE cells would not be overwritten.
+
+  2) If the existing cell has the LIBRARY flag set, it will be
+     overwritten, unless the NoOverwriteLibCells variable is set.  The
+     overwritten cell will no longer have the LIBRARY flag set.
+
+     Previously, LIBRARY cells would be oversritten, unless IMMUTABLE
+     was also set, which is the default for library cells.
+
+  New Variable: NoOverwriteLibCells (boolean)
+
+    This tracks a new button in the Libraries Listing pop-up.
+
+    By default, existing cells in memory can be overwritten if a cell
+    of the same name is read when opening cells from an archive file,
+    if the overwriting mode is enabled.  Setting this variable will
+    prevent existing cells that were opened through the library
+    mechanism (and thus has the LIBRARY flag set) from being
+    overwritten.
+
+*  Electrical mode layer usage.
+
+  - The order of the layers in the electrical mode layer table was
+    changed.
+
+  - The SPTX layer was being used as the default layer for labels,
+    which was hideously wrong (recall that labels on this layer are
+    automatically included in SPICE output).
+
+  - The default layer for labels is now ETC1.  The "default layer" is
+    used if the current layer is SCED, otherwise the current layer is
+    used.
+
+  - The default layer for shapes is now ETC2.  The "default layer" is
+    used if the current layer is SCED, otherwise the current layer is
+    used.
+
+  - Boxes are no longer merged in electrical mode.  In the Set Import
+    Parameters panel, the "Clip and merge overlapping boxes" setting
+    now applies to physical mode only
+
+* New/modified unfilled object border presentation styles.
+
+  Layers now support three different boundary styles for rendered
+  objects with empty fill patterns.  These styles can be set in the
+  technology file or from the Fill Pattern Editor.  These apply in
+  both electrical and physical modes.
+
+  1. A thin solid line boundary.
+  2. A thin dashed line boundary.
+  3. A thick solid line boundary for Manhattan boxes and polygons, and
+     a thin solid line boundary for other objects.
+
+  The third style is equivalent to the style used in Generation 2 Xic,
+  and replaces the UseFatSegments variable and corresponding button in
+  the Main Window Attributes (from Attributes/Set Attributes) panel.
+  The button and variable have been removed.  Unlike the previous
+  mode, the present mode can be applied on a per-layer basis.
+
+  The new syntax for the Filled technology file keyword, for empty fill,
+  is
+
+    Filled n [o|f]
+
+  The tokens can be words starting with the indicated letters, or just
+  the letters themselves, e.g., "n", "no", and "none" are equivalent. 
+  This is case insensitive.
+
+  The first token must start with 'n', to indicate empty fill.  If
+  there is no second token, or the second token is unrecognized, a
+  thin solid outline (style 1) is used.  If the second token starts
+  with 'o', a thin dashed line (style 2) is used.  If the second token
+  starts with 'f', a think solid line is used for edge segments of
+  Manhattan objects, and a thin solid line is used for non-Manhattan
+  objects (style 3).
+
+  The line style used for dashed lines can be set with the BoxLinestyle
+  attribute keyword in the technology file.
+
+  The Fill Pattern Editor (from Attributes/Set Fill) has a new "Fat"
+  button next to the "Outline" button.  the Fat button is only enabled
+  when Outline is in the pressed state.  The status of the Fat button
+  is only applicable with empty fill.  If the Fat button is in the
+  pressed state when empty fill is assigned, "fat" solid edge segments
+  will be used for Manhattan features (thin solid edges are used for
+  non-Manhattan features).  If Fat is not pressed, and Outline is
+  pressed, a thin dashed line will be used for all edges.  If Outline
+  is not pressed, a thin solid line is used for all boundaries.
+
+* GTK2 font selection and tracking.
+
+  Much work was done on the font selection and window font tracking
+  mechanism in the non-Windows releases.  The problem is that GTK1 and
+  GTK2 have very different font systems, and both must be fully
+  supported.
+
+  In the GTK2 Font Selection pop-up, only compatible fonts are now
+  listed, i.e., fixed-pitch only for certain fonts.  The GTK1 Font
+  Selection already had this capability, but this "filtering"
+  capability was not provided in the stock GTK2 selector so had to be
+  added.
+
+  In GTK2, it was easy to select a proportional font where a fixed
+  font was required, which would cause trouble in places like the
+  prompt line editor.  This is now prevented from happening.
+
+* GTK2 HTML Help viewer now uses Pango fonts.
+
+  In GTK2 releases, the HTML viewer now uses the Pango font backend,
+  instead of X fonts.  These fonts use anti-aliasing and should be
+  easier to read and more attractive.  However, a lot of
+  infrastructure was developed for X font handling that had to be
+  adapted, so there may be, uh, imperfections.  Also, an attempt has
+  been made for interoperability between the two font systems, since
+  font names used in the tech file, mozyrc file, and elsewhere are
+  quite different between the two systems.
+
+  Previously, X fonts were used in thte GTK2 help viewer only, with
+  the native-to-GTK2 Pnago fonts used elsewhere.  This is why the fonts
+  selected in the font selection window might look different from the
+  font actually used, among other problems.
+
+  Unfortunately, the new font system seem to require more processing
+  time.
+
+  The font fields in the .mozyrc file are ignored in Xic, since these
+  fonts are set in the technology file.  These fields are now used
+  only in the stand-alone mozy program, and WRspice.
+
+* Cell Hierarchy Digest (CHD) compatibility with libraries.
+
+  When reading using a CHD, the library mechanism is now used to
+  resolve cells that were not defined in but were referenced by cells
+  in the source file of the CHD.
+
+  This required a big rewrite of the core functions for accessing
+  files through a CHD.  In general, cells that are missing in the file
+  source of the chd will be transparently accessed, if the missing
+  cell can be obtained from a library, and the cell is contained in an
+  archive file (not (yet) native or inlined symbols, except when
+  reading into the main database).  By default, an unresolved cell
+  is not an error.
+
+  New variable: ChdFailOnUnresolved (boolean)
+
+  If this variable is set, when doing an operation with a CHD that was
+  created from a file containing unresolved references (cells that
+  were referenced but not defined in the file), and the cells can't be
+  referenced through libraries, the operation will fail.  If not set,
+  processing will continue, with the non-references either being
+  ignored (e.g., when flattening), or converted to empty cells (when
+  reading into the database), or propagated to output (when writing
+  output), depending on the operation.
+
+* Preliminary support for electrical mode in CHDs.
+
+  - When creating a CHD with Cell Hierarchy Digests panel or
+    elsewhere, electrical data found in the file will be included in
+    the CHD, unless the LockMode variable is set in physical mode.
+
+  - If the CHD is used to read into the database or to write a file, and
+    there is no windowing or flattening, the electrical data will
+    appear in the database or in the output file.
+
+  - If windowing or flattening is employed, only the physical data
+    will be processed.  The output will contain only the physical
+    data.
+
+* Cell Hierarchy Digests listing panel changes.
+
+  - The Contents button is no longer a toggle.  Clicking on the
+    Contents button will update an existing Contents listing.
+
+  - The Contents listing now shows references to cells in the current
+    mode (physical or electrical), previously only physical cells were
+    listed in either mode.
+
+  - The Display button produces a new pop-up, which enables the
+    display area to be set before the image processing.  Previously,
+    the entire cell would be shown in the first image, which can be
+    quite time consuming.
+
+  - New "Fail on Unresolved" button.  This tracks/controls the state
+    of the ChdFailOnUnresolved variable.  When set, if a CHD cell
+    reference can't be resolved, the operation will terminate.
+    When unset, the operation will complete, but with missing cell
+    definitions in output.
+
+* Cell Geometry Digests listing panel changes
+
+  - The Contents button no longer toggles.  Clicking on the Contents
+    button will update an existing Contents listing.
+
+  - The Content list has new Info button, which becomes active when a
+    selection is made.  Pressing Info will bring up a window listing
+    the layers used in the selected entry.  Previously, this was
+    automatic when clicking on an entry in the Contents listing.
+
+  - The Contents listing and its Info window are no longer drag
+    sources.  Previously, drag/drop could be initiated from these
+    windows, but this would cause errors since the source does not
+    provide cell data.
+
+  - The second column in the listing now displays the source file,
+    previously this entry was blank.
+
+* Cells Listing panel changes.
+
+  - The Flags button no longer toggles.  The Flags display window can
+    be unpdated by clicking on the Flags button.
+
+  - The Flags pop-up pops down after Apply is pressed, and if the
+    Cells Listing is refreshed.
+
+* Update to the Zoom pop-up
+
+  - The window entries are now preset and updated with the current
+    display parameters.
+
+  - Each drawing window now has its own zoom window.  Previously, only
+    one zoom window was available.
+
+* Misc.
+
+  - In the Unix/Linux releases, pop up windows that don't need to be
+    adjustable are now fixed-size.
+
+  - The integer parser used for the technology file now handles hex
+    numbers in "0x" form.
+
+
+Bugs Fixed
+----------
+
+* The View Menu submenu update was broken, and was causing seg faults. 
+  This was fixed early, and updated 3.0.10 distribution files were
+  released.
+
+* The Merge Control pop-up count was not being correctly initialized,
+  causing it to not appear at times when needed.
+
+* Fixed an issue in the macro parser used for scripts and when parsing
+  the tech file.  A macro definition with arguments would cause
+  replacement of the macro name found in text without arguments.  Now,
+  the replacement candidate must also have arguments.
+
+* Font selection in GTK2 releases was not working well.
+
+* Fixed a problem with internal file offset reporting when reading GDSII
+  files.
+
+* The Open File code was erroneously stripping the path from the given
+  name.
+
+* Under Unix/Linux, using the title bar X (destroy window) button on
+  the Merge Control pop-up would cause a segmentation fault.
+
+* When using the Properties Editor and when the prompt line was in
+  edit mode, using the window frame (X) button to destroy the
+  Properties Editor would cause faults.
+
+
+-----------------------------------------------------------------------------
+xic-3.0.10 10/28/2008
+
+Lots of changes this time, this is a major release.  There are a few
+issues to be resolved in the next release, which will be the last
+scheduled Alpha release.  The upcoming Bata releases will focus mostly
+on feature validation/bug fixes and usability tweeks.
+
+
+Open Issues
+-----------
+
+* Compatibility of reading through a CHD with the Library mechanism.
+  Presently, CHDs built from archives with missing cell references
+  don't work properly.
+
+* Check memory cell overwrite actions for IMMUTABLE cells, may be
+  problems.
+
+
+Changes and New Features
+------------------------
+
+* File/Edit Menu changes.
+
+  The "Edit" command in the Edit Menu no longer exists.
+
+  The "New" command in the File Menu no longer exists.
+
+  The new "Open" command in the File Menu has the functionality
+  or the old Edit command.
+
+  The old "Open" command in the File Menu has been renamed "File Select".
+
+  This will be the final reference to the "Edit" command.  Those of us
+  whose fingers are used to typing "edi" (edit) to open a cell or file
+  will have to learn to type "op" (open) instead.  The new internal
+  name for the File Select is "fsel", changed from "open".
+
+  The Edit Menu does not exist in Xiv, but the former Edit command or
+  something like it needs to be available.  So, this command has been
+  moved and renamed as above.  The new name "Open", is more accurately
+  descriptive, particularly for the Xiv program which has no editing
+  capability.
+
+  The "New" button in the File Menu is gone.  The function of creating
+  a new, temporary cell is available from the Open pop-up menu, from
+  the entry labeled "temporary".
+
+* Conversion Panel changes:
+
+  1) The state of the Input Source radio button group is now
+     persistent.
+
+  2) Minor layout changes to the GDSII, OASIS, and CIF "Output Format"
+     notebook pages.
+
+* Changes to the listing pop-ups available from the File menu.
+
+  Most of the pop-ups from the File Menu that operate on cells
+  have been modified.  The logic and nomenclature have been simplified
+  and made more consistent, and new buttons added in sub-pop-ups
+  to avoid use of parent-pop-up buttons with sub-pop-up selections.
+
+  1) The button logic has changed, there are no more "modal" buttons
+     (actually one exception, the Show button in the Cells Listing). 
+     With a modal button set, clicking on a list entry would cause an
+     action to be performed.  This logic is a) probably confusing to
+     the user, and b) messy to implement and prone to interoperability
+     and timing problems.  Now, the previously modal buttons are
+     greyed except when an item is selected in the listing, in which
+     case they can be pressed to initiate the action on the selected
+     item.
+
+  2) As a consequence of 1), clicking on an entry in the listing does
+     nothing more than select an item in the list, operations are no
+     longer initiated upon selection.  The user must make a selection,
+     then press the desired button.
+
+  3) The Edit and Master buttons previously acted on selections in the
+     contents listing and other pop-ups, i.e., buttons in the parent
+     pop-up were used with a child pop-up.  This was a poor choice of
+     logic and could be confusing.  Now, contents list and tree
+     pop-ups have their own own Open/Place buttons.  Pop-up buttons
+     now only apply to selections in the same pop-up.  The Edit/Master
+     labels have been replaced with Open/Place.
+
+     In all cases, Open will open the selected object in the main
+     window, and make the cell shown the current cell for editing.  In
+     all cases, the Place button will pop up the Cell Placement
+     Control panel, loaded with the selected cell (or top-level cell
+     from a selected file).  The Open and Place buttons are not
+     available when the main window is in CHD display mode (The
+     Display button in the Cell Hierarchy Digests window is active).
+
+  4) Clicking on a previously selected item now has no effect,
+     previously the item would be deselected.  The user can click in
+     the white space to deselect items.
+
+  5) Selections from these windows can be drag/dropped into drawing
+     windows.
+
+     If the drawing window is displaying a CHD (the Display button in
+     the Cell Hierarchy Digests button is active), the dropped text is
+     taken as a cell name found in the displayed CHD.  If not found,
+     an error is reported, otherwise the dropped cell becomes the root
+     cell displayed.  This does not change the default cell name of the
+     CHD, it only affects the display in that window.
+
+     If the drawing window is in normal display mode, the dropped text
+     will be opened as cells in the main database.  If dropped in the
+     main drawing window, the cell shown will become the current cell. 
+     Depending on the source, the cells may be open through a CHD or
+     library, but the end result will be new cells in memory.
+
+*  Library List changes:
+
+  1) The Edit and Master buttons are gone.  The functionality is
+     replaced by new Open and Place buttons in the contents listing
+     pop-up.
+
+  2) The Open listing now uses open and closed icons rather than the
+     persence or absence of the letter "O" in the first column, which
+     is visually more appealing.
+
+  3) There is a new "Contents" button to list the contents of a
+     selected library.  Previously, the contents window was shown
+     automatically when a library was selected.
+
+* File Listing changes:
+
+  1) The Edit and Master buttons now apply only to selections in the
+     Files List panel, and have been renamed Open and Place.  The
+     contents list has its own Open/Place buttons that apply to
+     selections in that panel.
+
+* Cells Listing changes:
+
+  1) Except for the Show button, no buttons are modal, and are greyed
+     when there is no selection in the panel.  Once a selection has
+     been made, the user can press one of these buttons to initiate an
+     action:  Open/Place/Copy, etc.
+
+  2) The "replace" function previously hidden away in the Copy
+     operation now has its own "Replace" button.  This enables cell
+     instances selected in a drawing window to be replaced by
+     instances of the cell selected in the Cells List.
+
+* New cell list filtering in the Cells Listing panel.
+
+  It is now possible to list cells in memory according to various
+  attributes.  In the Cells Listing panel, there are two new entries
+  in the mode menu: Filter Phys and Filter Elec.  Selecting either
+  will pop up a dialog from which the filtering criteria can be
+  entered, as a list of keywords.  The the help for the Cells
+  Listing (help keyword: xic:cells) for complete information.
+
+* Changes to the Cell Hierarchy Digests listing panel.
+
+  The Display, Cell, and Info buttons are no longer sensitive to a
+  selection in the contents listing.
+
+  When Display is selected, the display will initially be rooted in the
+  default cell of the selected CHD.  This can be changed with the
+  Config button through the Configure CHD pop-up.  The Default Top
+  Cell entry of this pop-up is now a drag receiver, so names can be
+  dragged from the contents listing.  If no cell name is configured,
+  the top-level cell in the CHD with the lowest file offset is used.
+
+  Drag and drop can be used from the contents listing to change the
+  root cell in the display.  This does not change the default cell of
+  the CHD, and only applies to the display in the drop-target window.
+
+  The pop-up for the Cell button is also a drag receiver, so names can
+  be dragged from the contents pop-up.  The initial name will be the
+  default cell as for Display.
+
+  The info button will display info for the currently selected CHD.
+
+  The contents pop-up has three new buttons:  Info, Open, and Place. 
+  These are active when there is a name selected in the list. 
+  Pressing Info will display info about the cell, as saved in the CHD. 
+  Pressing Open will extract the selected cell and its hierarchy from
+  the sounce file into the main database, and display it in the main
+  window.  Pressing Place will likewise extract the cell hierarchy,
+  but load it into the Cell Placement Control panel for instantiation.
+
+* Tree display window changes.
+
+  The Tree pop-up now contains new buttons Info, Open, and Place. 
+  These are greyed unless the Tree window contains a selection.  Info
+  will display information about the selected cell.  Open will open
+  the selected cell in the main window, and make it the current cell
+  for editing.  Place will bring up the Cell Placement Control panel,
+  loaded with the selected cell.
+
+  The Open and Place buttons are not available when the main drawing
+  window is showing a CHD hierarchy (the Display button in the Cell
+  Hierarchy Digests listing is active).
+
+  The Tree listing will switch when going to/from CHD display mode.
+
+* Info window changes.
+
+  In the Info window, clicking outside of the cell bounding box in a
+  drawing window will now display information about the current cell. 
+  As before, clicking anywhere in the drawing window with the Shift
+  key held will do the same.
+
+  Clicking in a subwindow showing a cell different from the current
+  cell will now display info about that cell.  Previously, this
+  did nothing.
+
+* Script debugger change
+
+  The script debugger no longer toggles between edit and run modes
+  based on the last menu opened.  Instead, a new button will toggle
+  between the two modes.
+
+* Prompt Line editing: New editing control sequence Ctrl-K.
+
+  Pressing Ctrl-K will delete-to-end, i.e., the character at the
+  cursor and those to the right are deleted.
+
+* Update to the !tk command (tcl/tk script execution).
+
+  The !tk command now handles tcl and tk scripts differently.  As
+  previously, tk scripts are executed in an event loop, with a
+  default window produced.  Tcl scripts, on the other hand, are
+  directly linearly processed by a tcl interpreter, with no graphics.
+  The files read by !tk must have either a .tk or a .tcl extension,
+  previously there was no constraint, all files were assumed to be
+  tk.
+
+  It wasn't previously documented, but arguments could be passed to
+  a tcl/tk script:  !tk script.tk arg1 arg2...
+  The arguments are available within the script as argc/argv[] as
+  for other tck/tk shells.
+
+* Update to User Menu script names.
+
+  It is now possible to place arbitrary labels into the User Menu, not
+  just the script file base names.  These names can contain white
+  space.
+
+  1.  The Script keyword in the technology file will now accept
+      a quoted argument, if the script name contains white space, it
+      should be quoted.
+
+  2.  The !script command will now properly process names with white
+      space.
+
+  3.  In .scm script menu files, the token in the Library declaration
+      will now appear in the menu.  This can be quoted (optionally) and
+      contain white space, e.g.,
+        (Library "My Commands");
+      Previously, this token was ignored, and the menu label was the
+      base name of the .scm file.
+
+  4.  In the reference list of .scm files, the name token can be
+      omitted if the path is to another .scm file, in which case
+      the menu label takes the name from the referenced .scm file.
+      If a name appears, it will override the name in the referenced
+      .scm file.  The name token is required for .scr files, and
+      provides the menu label.
+
+  5.  The name token in .scm file reference lists can be quoted,
+      and should be quoted if the name contains white space.
+
+  6.  If the first non-blank line of a script file is of the form
+        #menulabel "Menu Text"
+      The "Menu Text" will appear in the User Menu, rather than the
+      base name of the script file.  This applies only to scripts
+      at the top level, i.e., not called through a .scm file.
+      When referenced through a .scm file, the name token provides
+      the menu label.
+
+* Changes to the script function library.
+
+  There are a number of new and modified functions, to expose new
+  underlying capabiliities.  Several existing functions were modified
+  for consistency of argument order, and to add an "all" option for
+  object list processing.  In all functions that take an object handle
+  as an argument, the following argument will be a boolean "all"
+  variable if the "process all objects" logic makes sense.
+
+  See the help for information about these functions.
+
+  New functions:
+
+    ChdCreateReferenceCell
+    ChdLoadCell
+    WriteSPtable
+    NewSPtable
+    SetCellFlag
+    GetCellFlag
+
+    These new functions replace existing functions, the new functions
+    provide an "all" option.
+
+    New function        Old function (removed)
+
+    DeleteObjects       ObjectDelete
+    SelectObjects       ObjectSelect
+    DeselectObjects     ObjectDeselect
+    MoveObjects         ObjectMove
+    MoveObjectsToLayer  ObjectMoveToLayer
+    CopyObjects         ObjectCopy
+    CopyObjectsToLayer  ObjectCopyToLayer
+
+  Modified functions:
+
+    These functions have had argument ordering changes, and the clipping
+    functions now take a fixed argument count.
+
+    ClipAround
+    ClipAroundCopy
+    ClipTo
+    ClipToCopy
+    ClipIntersectCopy
+    FilterObjects
+
+    These functions provide a new "all" argument.
+
+    BloatObjects
+    ManhattanizeObjects
+    SplitObjects
+
+    A new mode argument was added to EdgeObjects, and the implementation
+    was rewritten.
+
+    EdgeObjects
+
+    The ListCellsInMem function now has a fairly powerful filtering
+    capability.
+
+    ListCellsInMem
+
+    The FromArchive function can now take CHD name as the first
+    argument, rather than a file path.
+
+    FromArchive
+
+  Miscellaneous:
+
+    -  Script errors now go to a pop-up window rather than to the
+       console.
+
+    -  All script function argument type-checking errors now produce
+       an error message.
+
+
+Bugs Fixed
+----------
+
+* Use of layer filtering was erroneously enabled on program startup.
+
+* Fixed bugs in prompt line text editor:
+
+  1) The LinuxRHEL distributions use GTK2 for graphics, which uses
+     anti-aliasing in text rendering.  Overwriting characters without
+     erasing first causes visual effects, the overwritten characters
+     look slightly different, which could be seen when the arrow keys
+     were used to move the cursor through a line of text.
+     Characters are now always erased before overwrite to avoid this.
+
+  2) Fixed a problem where the cursor would disappear when right
+     shifting a longer-than-space-available line of text with the
+     left arrow key.
+
+* The "Link" button in the drop file transfer action pop-up was
+  broken.
+
+
+-----------------------------------------------------------------------------
+xic-3.0.9 10/2/2008
+
+Changes and New Features
+------------------------
+
+* Main Graphical Interface change.
+
+  The desel and layer buttons have been removed from the side menus
+  (these are the two buttons closest to the bottom).  Their
+  functionality has been reimplemented in two new small buttons
+  located to the left of the layer table.  This change allows these
+  functions to be available in Xiv (the XicTools viewer program),
+  which has no side menu.  Thus, there are now three small buttons
+  where the old "S" button resided.  These buttons have new icons
+  which are hopefully reasonably suggestive as to their function.
+
+* Command interface additions.
+
+  Just as the '!' character switches the prompt line to editing mode
+  to accept a command, the '?' character will now switch to editing
+  mode, to accept a "help directive".
+
+  A "help directive" can be one of the following:
+
+   -  A help system keyword, so "? keyword" is the same as
+      "!help keyword".  If no keyword is given, the default help topic
+      is shown, as for "!help" without arguments.
+   -  One of the new single character directives.  These apply only
+      after '?', and print information that is not from the help
+      system, but derived from internal tables.  These are
+ 
+      Character  Result
+      !, b, B    Giving exctly one of these characters will print a
+                 listing of the '!' commands that are available in the
+                 program.
+
+      v, V       Giving exactly one of these characters will print a
+                 listing of the variable names that have significance
+                 within the program.  Variables are listed whether or
+                 not the variable is actually set.
+
+      s, S       Giving exactly one of these characters will print a
+                 list of variables that are currently set, the same as
+                 the "!set" command without arguments.
+
+      f, F       Giving exactly one of these characters will print a
+                 list of all of the internal script interface functions
+                 available within tthe program.
+      
+    Each listing will provide the listed items as colored links. 
+    Clicking on the links will pop up help about the item.
+
+    The Xic program is modular, and the XicII and Xiv programs are
+    effectively Xic with only a subset of modules.  The listings
+    provide definitive summaries of the functions and variables
+    actually available in the program, in case this is not clear from
+    the documentation.
+  
+    The '!' command line interface also provides a help escape, if the
+    first character that follows '!' is '?'.
+
+    ! ?          Print help for all script functions.
+    ! ? name     Print help for the keyword given for name.
+    ! ? ?        Print a listing of available '!' functions, as for "? !".
+
+* Conversions using CHD for input allow cell name specification.
+
+  From the Conversion panel, if a CHD name or file is used as input, a
+  second cell name argument can be passed (after the CHD name or CHD
+  file path).  If a cell name is given, it will be taken as top-level
+  in the CHD for conversion.  If not given, the configured cell (if
+  any) will serve as top level, and if no cell was configured, all
+  cells in the CHD are converted.  The cell name must be the aliased
+  name, if aliasing ws used when the CHD was created.
+
+* Editing data from CHD.
+
+  It is now possible to use a CHD as input to the Edit command and
+  similar (such as the Read Layout File dialog).  The CHD name is
+  given to the file/cell prompt.  A cell name can be given as a second
+  argument, which will be the root cell extracted through the CHD,
+  overriding any cell configured into the CHD.  The cell name myst be
+  the aliased name, if aliasing was used when the CHD was created.
+
+* Change to the !update command.
+
+  All distributions except Windows now use the "sudo" program for
+  permission authorization.  FreeBSD users must install this package
+  or port.
+
+  To be able to install updates (and use the temporary root access
+  provided by the sudo command), the user must be included in the
+  /etc/sudoers file.
+
+  At the password prompt give your password, not the root password.
+
+  If you don't want to use sudo for some reason, su can be used
+  instead, by setting the Xic variable InstallCmdFormat (or
+  installcmdfmt in WRspice) to the string
+
+  xterm -e su root -c \"%s\"
+
+  Xic doesn't know if the installation was actually successful, so the
+  end message of the command was changed.
+
+* New sanity check.
+
+  In the Conversion and Write Layout File panels, the user is now
+  warned and given a chance to abort before writing a file with the
+  "wrong" extension, e.g., myfile.gds when saving as OASIS.
+
+* Misc. script function changes.
+
+  1) The Strpath function now returns a copy of the file name rather
+     than a pointer into the existing string.
+  2) The ChdWriteSplit script function implementation was completed
+     and debugged.
+  3) If a script halts due to an error executing an internal function,
+     additional error messages are now printed.
+
+* The Xiv viewer program now provides selections.  Some of the
+  available '!' commands (e.g., !area) assume selected objects.
+
+
+Bugs Fixed
+----------
+
+* Fixed inconsistencies and unfinished work on code for reading cells
+  through libraries.
+
+* Fixed bug: deleting immutable cells would cause program crashes.
+
+* Fixed bug:  a CGD linked to a CHD wouldn't work if aliasing was used
+  to build the CHD.  Now, when a CGD is created from the Configure CHD
+  window, the CGD will have the same aliasing as the CHD, no matter
+  the current settings of aliasing variables.
+
+* Did some fixup related to linked CGD access through CHD.  In
+  particular, there were cases where the linked CGD was not being used
+  (and the file used instead) to obtain geometry.  Now, a linked CGD
+  will be used in all cases.
+
+* The !update command would fail in the installation phase if the path
+  in the TMPDIR or XIC_TMP_DIR environments contained a '-' character.
+
+* Fixed a bug in the OASIS integer parser that would cause failure in
+  obscure cases.
+
+* With the ChdLoadTopOnly variable set or the equivalent button in the
+  Cell Hierarchies Listing panel pressed, the Edit command using a CHD
+  name would require a second cellname argument.  Now, this is
+  optional, if not given the CHD default cell is assumed.
+
+
+-----------------------------------------------------------------------------
+xic-3.0.8 9/16/2008
+
+Changes and New Features
+------------------------
+
+* Synchronous WRspice interprocess communication interface removed.
+
+  This legacy feature no longer serves any purpose and has been removed.
+
+  The NoAsyncSpice variable is no longer recognized in Xic.
+
+  The asynchronous interface is used in all cases on all platforms.
+
+* MOS device extraction
+
+  The BodyMinDimen measurement parameter in tech file device blocks
+  has a new hack for MOS devices, to catch the case where MOS Width <
+  Length.  The hack applies to devices that
+
+    1) have a device name that starts with "nmos" or "pmos"
+    2) have contacts named "s" and "d"
+    3) has a rectangular device body
+
+  In this case, the "BodyMinDimen" parameter is set to the S/D spacing
+  across the body (and is therefor not necessarily the minimum
+  dimension).  The "usual" MOS device lines
+
+    Measure Length BodyMinDimen*1e-6
+    Measure Width (BodyArea/BodyMinDimen)*1e-6
+
+  will now give correct results for W < L, for rectangular MOS
+  devices.
+
+  This can be turned off (for backwards compatibility) by setting the
+  boolean variable NoMosMinDimen.
+
+* Antenna analysis keywords in tech file
+
+  New layer block keyword:      Antenna <float_value>
+  New attribute keyword:        AntennaTotal <float_value>
+
+  These parameters are used as defaults to the !antenna command. 
+  Arguments given to the !antenna command override these defaults.  If
+  the !antenna command is given without arguments, The command
+  arguments are constructed from the defaults, and displayed on the
+  promptline where they can be edited, before the run.  The run begins
+  when the user presses the Enter key.
+
+  These keywords can be edited from the Extract/Edit Parameters
+  panel.
+
+
+Bugs Fixed
+----------
+
+* Fixed a problem in the WRspice interprocess communication code
+  that would cause Xic to seem sluggish after a SPICE run, and
+  other strange problems such as failure to run initially if an
+  iplot was active.
+
+* Tweeks and minor bug fixes/changes to the WRspice interprocess
+  communication interface.
+
+  Xic is notified when a run is paused from WRspice (red X button in
+  the toolbar), and will change state accordingly.  However, Xic is
+  not notified when a run is restarted from WRspice (green triangle
+  button in the toolbar), and will continue to assume that WRspice is
+  not busy.  Messages sent to WRspice in this state would hang until
+  the run ended or the connection timed out.  Messages are sent in
+  response to the plot, iplot, and run buttons, on !spcmd, and on Xic
+  program termination.  If a run was resumed from Xic, with the run
+  button in the side menu, then these messages are locked out, since
+  the Xic interface is aware that WRspice is busy in that case.
+
+  In the case of Xic termination, WRspice would finish a run in
+  progress before terminating.
+
+  Now, WRspice is interrupted before a message is sent in the case
+  that Xic believes that WRspice is not busy, which stops any run in
+  progress so that WRspice can handle the message.  After the message
+  operation, a run that was in progress will need to be restarted,
+  either with the run button or the WRspice toolbar.  On Xic
+  termination, WRspice will now terminate immediately.
+
+  After pausing a run, the Run pop-up will now disappear after a few
+  seconds, the same as when a run completes.  This avoids the case
+  where the run is restarted from WRspice, yet the popup, being
+  unaware of this, would continue to indicate that the run was paused. 
+
+
+-----------------------------------------------------------------------------
+xic-3.0.7 9/9/2008
+
+Bugs Fixed
+----------
+
+* Oops.  Modifications to the timer interrupt handling in 3.0.6 caused
+  a problem in communicating to the license server.  In particular,
+  the connection would be lost, and Xic would shut down after ten
+  minutes.  This was not a problem in local authentication mode.
+
+* If a Return was typed into the console window, the Peek-mode timer
+  delay would be effectively 0.
+
+* The !update command installation would fail if the "xterm" program
+  is not found in the user's shell search path.  Now, this will
+  succeed if xterm is found in the "normal" location on the system. 
+  This affects the xterm used in the '!' shell escape, too.
+
+* Some release distribution files were overwriting xic.old with the
+  new release - it should be the previous release (the present xic
+  executable before an update).
+
+-----------------------------------------------------------------------------
+xic-3.0.6 9/8/2008
+
+Changes and New Features
+------------------------
+
+* Improvements to the WRspice interface.
+
+  1) The 3.0.6 wrspiced program (in WRspice-3.0.6) allows the toolbar
+     to be displayed when running WRspice remotely through wrspiced,
+     the same as when running on the local machine without wrspiced.
+
+     Note:  When the Xic SpiceHost variable is set (directly or from
+     SPICE_HOST in the environment), the WRspice interface uses the
+     daemon on the given host.  If this variable is not set, Xic will
+     use WRspice on the local system (if found).
+
+  2) New '!' command:  !spcmd [command text...]
+
+     This will establish a stream to WRspice (if not already
+     established with the run button) and run the command (if given). 
+     This is a means for running arbitrary WRspice commands through
+     the interprocess communication channel from Xic.
+
+     Any standard output/error from WRspice as a result of the command
+     will be written in the console window.  This is true whether
+     WRspice is local, or remote through wrspiced.
+
+* New script math functions.
+
+  Like other math functions, these can be called in any expression in
+  scripts, or in expressions elsewhere, such as in the technology file
+  (for example, in the Measure statements in device blocks).
+
+  The arguments must be scalar values.
+
+   (scalar) min(x, y)   returns the smaller of x, y
+   (scalar) max(x, y)   returns the larger of x, y
+
+
+Bugs Fixed
+----------
+
+* The parser for "spicetext" labels would crash on certain incorrect
+  constructs, such as "spicetext:".  These are now accepted, the
+  general form can actually be
+
+    spicetext(punctuation)(alpha)(numeric)(non-numeric)
+
+* Pressing button 3, as for a zoom operation, would reset the
+  "reference point" used in the coordinate readout.  Now, after the
+  zoom, the original reference point is restored.
+
+* Prevented the timer interrupts from causing potential application
+  freezing due to a conflict.
+
+
+-----------------------------------------------------------------------------
+xic-3.0.5 8/22/2008
+
+Changes and New Features
+------------------------
+
+* URL file location aliasing in help windows (Unix/Linux/OS X only).
+
+  The $HOME/.mozyrc file (the optional startup file for help windows)
+  can now contain a line like
+
+    Alias /images /real/path/to/images
+
+  then, for HTML text like <img src=/images/xxx ...  >, the location
+  will be mapped to /real/path/to/images/xxx internally.  This applies
+  to image source and general urls.  Any such path in the HTML source
+  that has as a prefix the first token of an Alias line will
+  effectively have this text replaced by the second token.
+
+* New feature: antenna checking.
+
+  New command: !antenna [layer_name layer_min_ratio]... [min_ratio]
+
+  In the design of CMOS circuits, design rules and guidelines often
+  provide a limit on the area of a wire net connected to a MOS gate. 
+  During processing, the wire net can act as an "antenna" which
+  accumulates charge, potentially damaging the thin MOS gate oxide. 
+  This command provides checking of antenna nets.
+
+  Note that this is part of the extraction system and not DRC.  The
+  DRC system presently does not maintain a sophisticated enough state
+  to identify device contacts or follow wire nets.
+
+  If given without arguments, the !antenna command will identify and
+  print an entry for each wire net in the hierarchy of the current
+  cell which connects to a MOS gate.  The results go to a file,
+  created in the current directory, named cellname.antenna.log, where
+  "cellname" is the name of the current cell.  The user is given a
+  chance to view this file when the operation completes.
+
+  The arguments provide a "filtering" function, whereby only entries
+  outside of the filter range are printed in the file.  The filtering
+  parameter is the ratio of wire net area to total gate area connected
+  to the net.  These ratios can apply to individual layers contained
+  in the wire net, or the total wire net area.  Only entries that
+  exceed given parameters are printed in the log file.
+
+  For example,
+
+    !antenna POLY 20 M1 30 50
+
+  This will print wire nets where at least one of the following is true:
+    1) The ratio of POLY area to gate area exceeds 20.
+    2) The ratio of M1 area to gate area exceeds 30.
+    3) The ratio of total wire net area to gate area exceeds 50.
+
+  Thus, the log file will typically contain only those nets that
+  exceed the guidelines.
+
+  These "bad" nets can be displayed in the Show Paths or Quick Paths
+  commands.  After the !antenna command has been run, and/or with the
+  log file in the current directory, while in either of these
+  commands, pressing the "f" key will
+
+    1) Prompt for an antenna net number.  This is the number in the
+       log file that begins the report for each net.
+
+    2) The file will be accessed, and the corresponding wire net will
+       be extracted and highlighted.  The wire net is identified via the
+       reference bounding box provided in the log file, on the same
+       line as the net number.
+
+* White space in cell names disallowed.
+
+  Previous versions of Xic allowed white space in cell names. 
+  However, some Xic features, such as selection of cell names in the
+  Cells Listing panel will not work with cell names containing white
+  space, and there are probably many other examples.  Most basic
+  operations will work, though the cell name containing white space
+  will have to be quoted when given in the prompt area and elsewhere. 
+  The use of white space in cell names can lead to trouble and is
+  discouraged.
+
+  In the present release, by default, white space is not permitted in
+  cell names.  When reading archive files, the cell name alias
+  mechanism is used to convert white space characters found in cell
+  names to underscore characters.  Attempts to open a new cell with a
+  name containing white space will fail.  However, white space is
+  allowed, as before, if the NoStrictCellnames variable is set.
+
+  New variable:  NoStrictCellnames (boolean)
+
+  If the boolean variable NoStrictCellnames is set, there will be no
+  checking of cell names for white space, and the legacy behavior of
+  accepting white space in cell names will be enabled.  Otherwise,
+  white space is not allowed in cell names, and if such cells are
+  found in an archive being read, aliasing will be employed to map
+  white space characters to underscores.
+
+* Script function changes:  Rotate() and RotateToLayer().
+
+  The Rotate and RotateToLayer script functions have an additional
+  boolean argument.  If the argument is nonzero (true), then the
+  original objects will be deleted after the rotate operation ("move
+  mode"), otherwise the original objects are retained ("copy mode")
+  which was the only mode available in earlier releases.  Note that
+  legacy scripts using these functions must be modified for
+  compatibility with the new argument prototype.
+
+* The TERM layer is gone.
+
+  The TERM layer in electrical mode is no longer defined internally or
+  in the supplied example tech files.  This layer is not used by Xic. 
+  Its intended purpose was pretty obscure, and the user can define
+  this layer if needed.
+
+* New electrical layer: SPTX.
+
+  There is a new electrical layer names SPTX.  Labels that appear on
+  the SPTX layer will be included in SPICE output, much like the
+  "spicetext" labels.  The "spicetext" feature still exists.  Labels
+  on the SPTX layer that are not "spicetext" labels will appear
+  verbatim, ahead of any "spicetext" labels, and are sorted by
+  position top-to-bottom and left-to-right.  Thus, there are now two
+  ways to get label text into SPICE output.
+
+* Change to window rendering methodology.
+
+  In Xic-3, a "local image" is used to compose images for screen
+  rendering.  When running with X-Windows, this provides much faster
+  rendering of complex displays, particularly when running remotely
+  over a network, than the standard method of server-side image
+  manipulation.  However, this means that the entire block of pixels
+  contained in the window image must be transferred to the X server,
+  which is slower than the conventional method for simple displays,
+  and makes Xic seem a bit sluggish. 
+
+  The local image method is now not used when editing simple cells and
+  hierarchies.  In the local image method, a large block of data
+  representing the image must be transferred between the client and
+  X-server for a window update.  This is noticably slower than
+  transferring a few "draw" command to the server, which renders the
+  image in server memory.  However, for complex images, the local
+  image method is far faster, i.e., the image data block is much
+  smaller than a long sequence of "draw" commands.
+
+  This is rather academic, as even over a network the time required to
+  trasnfer a screen image is likely in the .1 second range, which is
+  only slightly sluggish.
+
+* New predefined macro in scripts: RELEASE.
+
+  In scripts, the macro name RELEASE is now predefined to the release
+  number code, i.e., as if given with #define.  The release number
+  code is a five digit integer xyzz0, corresponding to release x.y.z. 
+  x (3) and y are one digit, z is two digits 0 padded.  The trailing 0
+  is a historical anachronism.
+
+* New "preprocessor" directive in scripts: #if
+
+  In scripts, there is a new "preprocessor" clause "#if expression". 
+  The expression is a constant expression containing macros previously
+  defined with #define, or predefines.  The expression is evaluated
+  numerically, and if the result is nonzero (as an integer), the block
+  that follows until the corresponding #else or #endif is evaluated. 
+  If the result is 0 (as an integer), the block of lines that follow
+  is skipped.
+
+  Thus, for example, scripts can now be sensitive to the Xic release
+  number, and can therefor be more portable across different releases
+  of Xic.
+
+  Note:  #ifdef/#ifndef RELEASE can be used to test for releases
+  earlier than this one.
+
+  Example:
+
+    #ifndef RELEASE
+    # old release
+    code...
+    #else
+    #if RELEASE == 30050
+    # this release (xic-3.0.5)
+    code...
+    #else
+    # a future release
+    code...
+    #endif
+    #endif
+
+* New predefined macros in the technology files:  RELEASE, program
+  name.
+
+  In tech files, the macro name RELEASE is now predefined to the
+  release number code, i.e., as if given with Define.  The release
+  number code is a five digit integer xyzz0, corresponding to release
+  x.y.z.  x (3) and y are one digit, z is two digits 0 padded.  The
+  trailing 0 is a historical anachronism.
+
+  In tech files, the program name token ("Xic", "XicII", "Xiv") is now
+  predefined as a macro.  Thus, the tech file can now be portable
+  between programs.
+
+* New "preprocessor" directive in technology files: If
+
+  In tech files, there is a new "preprocessor" clause "If expression". 
+  The expression is a constant expression containing macros previously
+  defined with Define, or predefines.  The expression is evaluated
+  numerically, and if the result is nonzero (as an integer), the block
+  that follows until the corresponding Else or Endif is read.  If the
+  result is 0 (as an integer), the block of lines that follow is
+  skipped.
+
+  Thus, tech files can now be sensitive to the Xic release number, and
+  can therefor be more portable across different releases of Xic.
+
+  Note:  IfDef/IfnDef RELEASE can be used to test for releases earlier
+  than this one.
+
+  Example:
+
+    IfnDef RELEASE
+    # old release
+    text lines...
+    Else
+    If RELEASE == 30050
+    # this release (xic-3.0.5)
+    text lines...
+    Else
+    # a future release
+    text lines...
+    EndIf
+    EndIf
+
+
+Bugs Fixed
+----------
+
+* In the Main Window Attributes panel, the "Subcell visibility
+  threshold" spin button up/down controls caused an infinite recursion
+  and fault (Unix/Linux/OS X only).
+
+* In the busy state (when the hourglass or similar cursor is shown),
+  key-up events are now processed normally instead of being ignored. 
+  This fixes subtle problems, such as when using Ctrl-R to redraw the
+  screen, the Ctrl key up event can get lost causing subsequent funny
+  behavior like the inability to move windows (the window manager
+  thinks that the Ctrl key is still down).
+
+* If a mouse button is down when busy mode is entered, and is released
+  while busy, the release event is now handled when busy mode is
+  exited.  Previously, the release event was discarded, which could
+  cause funny behavior.  E.g., assume a design that takes a long time
+  to draw.  Select an object and start a drag-move/copy.  With button
+  1 still down, do something that redisplays the screen, such as
+  clicking button 2.  While busy, release button 1.  When the screen
+  update finishes, the move/copy will be performed.  Previously, the
+  operation would not be done, and the object would still be attached
+  to the mouse pointer, but clicking would have no effect.  Pressing
+  Esc would exit the funny state.
+
+* If one presses button 2 in a drawing window, and releases in another
+  drawing window, the release window should display the area around
+  the press location, with the press location located at the release
+  location in the release window.  This was not happening.
+
+* Windows only - none of the commands in the Modify Meny were working,
+  including Undo/Redo accelerated from the Tab/Shift-Tab keys.
+
+
+-----------------------------------------------------------------------------
+xic-3.0.4 7/22/2008
+
+Changes and New Features
+------------------------
+
+* Major rewrite for local transformation stack.
+
+  There is no longer a global transformation stack, transformations
+  are handled locally.  This will produce no visible changes in Xic
+  operation, but allows for future musti-threading.  This change
+  was made in response to an OEM library user.
+  
+* New electrical cell property: VIRTUAL
+
+  The VIRTUAL property can be applied to electrical cells with the
+  Cell Property Editor and by other means.  Cells with this property
+  will not be included on netlist output, and in particular will not
+  be included in SPICE output for simulation.  When generating SPICE,
+  the .subckt definitions of cells with this property will be absent,
+  however any calls to the subcircuit will still be present.  Thus,
+  additional text must be added with include lines or by some other
+  means to satisfy the references.  This is a way to introcude
+  "foreign" subcircuits into the Xic/WRspice framework.
+
+* Enhancements to the SPICE-to-circuit translator, and SPICE parser.
+
+  1) Subcircuit parameters should now be handled properly.
+
+  2) The .include and .lib processing match WRspice, whth the
+     'h' (HSPICE compatibility) option recognized, and a directory
+     change to the target directory during the read.
+
+* Some work on the snapping indicator.
+
+  1) It should have been noted in the documentation that edge snapping
+     occurrs in physical mode only.
+  2) In electrical mode, the cursor will now indicate and snap to a
+     connection point, in a command or not.
+
+* In the "main state" (outside of any command) the move/copy accelerators
+  have changed.
+
+  Previously, the Ctrl key imposed a constraint of motion only along
+  angular multiples of 45 degrees.  This key is also used with the
+  arrow keys to change the current transform angle and reflection.
+  It was confusing to see the object attached to the pointer jump to
+  a new location when the Ctrl key was pressed.
+
+  Now, the Shift key imposes the constraint, as previously applied
+  with the Ctrl key.  Whether to move or copy, previously controlled
+  with the Shift key, is now toggled by pressing the SpaceBar.  A
+  persistent message indicates move or copy mode.  The last mode is
+  remembered between operations.
+
+* Change to layer syntax in layer expressions and the !layer command.
+
+  In layer expressions, the layer tokens have the form
+      layer[.stname][.cellname].
+  This allows a given cell and symbol table to act as the source
+  for geometry.
+
+  Now, if there is no stname and the cellname starts with '@', the
+  rest of the cellname is taken as the name of a "special" database,
+  which is used to supply geometry instead of a cell.  These databases
+  are created with script functions like ChdOpenZdb.  Thus, layer
+  expressions can now access these databases.
+
+  In previous releases, the '$' character would have a similar effect,
+  though this was undocumented, and '$' was a stupid choice since it
+  is a valid character in cell names.
+
+
+Bugs Fixed
+----------
+
+* Pixed incorrect polygon positioning in the PostScript Line Draw
+  print driver.
+
+* Fixes to the HPGL print driver, this was basically broken.
+
+* Fixed some bugs and added enhancements to the SPICE-to-circuit
+  translator.
+
+* Fixed bug:  reading wires into a special database with functions
+  like ChdOpenZdb failed.
+
+
+-----------------------------------------------------------------------------
+xic-3.0.3  7/1/2008
+
+Changes and New Features
+------------------------
+
+* The example SCMOS tech file was updated to the latest layers and
+  parameters from MOSIS.
+
+* In scripts, "delete handle" is now the same as Close(handle), except
+  the handle becomes an undefined variable rather than a scalar 0.
+
+* When reading the technology file or an input file, the layer table
+  is updated only once rather than after each new layer is created.
+
+
+Bugs Fixed
+----------
+
+* Fixed memory double-free error that occurred when a bad DRC rule was
+  found in the tech file.
+
+* Fixed a bug in the DRC system which would cause errors to be missed. 
+  With multiple MinSpaceTo rules, the test area was bloating only from
+  the first MinSpaceTo rule dimension, it now bloats according to the
+  maximum MinSpaceTo dimension found.
+
+* Some touch-up in the html viewer to avoid mung from bad html at
+  www.mosis.com.
+
+
+-----------------------------------------------------------------------------
+xic-3.0.2  6/19/2008
+
+Changes and New Features
+------------------------
+
+* The overall font used in GTK versions (not Windows) of Xic and
+  WRspice is now set explicitly.  Previously, this was a GTK library
+  default, which in many cases seemed too large.
+
+  Thus, the appearance of the application may be different with this
+  release.
+
+  Here is how to change the font, if it seems to big or too small. 
+  The font is set in the file "gtkrc" found in either the startup
+  directory, or the startup/default_theme directory.  The startup
+  directory is usually /usr/local/share/xictools/xic/startup, and
+  analogous for WRspice.
+
+  In the startup directory, there is a directory named
+  "default_theme", containing the distribution gtkrc file (also see
+  the README file for more information).  Copy the gtkrc file from
+  startup/default_theme into startup.  Edit startup/gtkrc to change
+  the font definition.  The startup/gtkrc file will have precedence,
+  and will not be clobbered when the software is updated.
+
+* The internal name of the main symbol table was changed to "main"
+  from "<main>".  Although allowed, non-alphanumeric characters are
+  not recommended in symbol table names, as these can cause trouble if
+  the name is used as part of a "layer" name in the !layer command.
+
+* In the !layer command, and layer expressions in general, the
+  extended layer name syntax has been changed.  The new syntax for a
+  layer name token is:
+
+    lname[.stname][.cellname]
+
+  Most generally, the "layer" name consists of three tokens, two of
+  which are optional (indicated by square brackets above).  The tokens
+  are separated by a period ('.') character.  The individual tokens
+  can be double-quoted (i.e., using the double-quote ('"') character),
+  which must be used if the tokens contain non-alphanumeric
+  characters.  The period separators must appear outside the scope of
+  any quoting.
+
+  lname
+    This is a short or long layer name, as found in the layer table.
+
+  stname
+    The name of a symbol table which contains the cellname.
+
+  cellname
+    The name of a cell.
+
+  If only one separator appears, the token that follows is taken as the
+  cellname, and the current symbol table is assumed.
+
+  The cellname is the name of a cell used as the source for geometry.  If
+  no cellname is given, the name of the current cell is understood.  The
+  odd case of an empty stname indicates the "main" symbol table, e.g.,
+  layer..cell is equivalent to layer.main.cell.
+
+  Previously the syntax was
+
+    lname[.cname]
+
+  where cname could take the form
+
+    [$stname$]cellname
+
+  The $ characters were literal delimiters used to separate the symbol
+  table name.
+
+  This syntax is no longer recognized.
+
+  The '$' character is valid in GDSII cell names, and was a bad cloice
+  for the delimiter.  It is less likely that a '.' would appear in a cell
+  name, since it is not a valid GDSII cell name character.
+
+* In the Cut and Export command:
+  1) The default file name for output has changed to something more
+     distinctive to avoid clobbering other files.
+  2) The bounding box parameters are reset after the operation, so that
+     the next time the Conversion or Write File pop-ups appear, they won't
+     have the old Cut and Export settings.  The Cut and Export rectangle
+     can be recalled with the Recall-0 selection.
+
+* Duplicate object testing is now performed on layers with the NoMerge
+  technology file attribute set.  Previously, Duplicate object processing
+  was disabled on layers if NoMerge was set, not sure why.
+
+* Fixed bug in help viewer: mouse pointer coordinates were incorrect after
+  window resize until window was scrolled.
+
+
+Bugs Fixed
+----------
+
+* GTK-2 versions (LinuxRHEL5_64 only) would crash immediately on
+  geometry creation.
+
+* Fixed incorrect edge-snapping logic.
+
+* Fixed a subtle bug in the computational geometry system that could
+  cause errors in clipping applied to non-Manhattan geometry.
+
+
+-----------------------------------------------------------------------------
+xic-3.0.1  5/28/2008
+
+Changes and New Features
+------------------------
+
+* The handling of .include lines in simulations, i.e., insertion of
+  local file text, now understands the .inc/.include 'h' option
+  introduced in WRspice-3.0.1.  The .inc keyword is recognized as a
+  synonym for .include.
+
+
+Bugs Fixed
+----------
+
+* Fixed seg fault in extraction.
+
+* Fixed incorrect extraction with the flattening feature provided by
+  the FlattenPrefix variable.
+
+* Fixed bug:  Xic would hang if a simulation was started, and WRspice
+  startup failed due to licensing or some other problem.
+
+* The !update command should work now, and can be used to install the
+  next and future updates.  Please report any issues.
+
+  The !update command in 3.0.0 was incomplete and did not work.
+
+
+-----------------------------------------------------------------------------
+xic-3.0.0  5/16/2008
+
+This is the initial alpha release of xic-3.0.
+
+Please provide feedback, particularly if you find a bug, to
+Steve Whiteley  (stevew@wrcad.com).
+
+Changes are documented in the help system under the keyword "xic3". 
+Click the "Xic Generation 3 Changes" link in the default help page, or
+type "!help xic3" to see this information.
+
+The program binaries are now located in <prefix>/share/xictools/bin, where
+<prefix> defaults to /usr/local.  You should add this directory to your
+shell search path to conveniently run the programs.
+

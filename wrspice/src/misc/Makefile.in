@@ -1,0 +1,55 @@
+#######################################################################
+# wrspice/misc/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 2.62 2015/04/09 19:26:36 stevew Exp $
+#######################################################################
+
+SPICE_VERSION = @SPICE_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @UFLAGS@ -DWRSPICE
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ -DWRSPICE
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+
+LIB_TARGET = misc.a
+
+LPATH = ../../../xt_base
+VPATH = ../../../vl
+NFILES = hash.cc spnumber.cc spparse.cc
+HFILES =
+CCFILES = \
+  $(NFILES) texthelp.cc time.cc ttyio.cc vardb.cc verilog.cc wlist.cc
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil -I$(VPATH)
+
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+$(NFILES): $(LPATH)/spnumber/$@
+	cp -f $(LPATH)/spnumber/$@ .
+
+depend: $(NFILES)
+	@echo depending in wrspice/misc
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm *.o $(LIB_TARGET)
+
+distclean:
+	-rm *.o $(LIB_TARGET) Makefile $(NFILES)
+
+#######################################################################

@@ -1,0 +1,58 @@
+jspice3 optimization routine: merit
+.control
+#
+# Determines if a given set of margins is better than previous sets.
+# Decision is based on marg[0] = minimum normalized margin,
+# marg[1] = margin width - to + of minimum margin and
+# marg[2] = sum of all margins.  First check marg[0], if it is
+# unchanged check marg[1] and marg[2].  Output is in vector
+# better, 1 if yes, 0 if no.
+
+# External vectors:
+#   upper[], lower[], flags[], margbest[], better
+#
+# External system vectors:
+#   value[]
+#
+# Internal vectors:
+#   me_i, me_marg[], me_u, me_l, me_x 
+
+let me_marg[2] = 0.0
+let me_marg[0] = 1.0
+
+let me_i = 0
+while (me_i < 20)
+    if (flags[me_i] = 0)
+        let me_i = me_i + 1
+        continue
+    endif
+    let me_u = abs((upper[me_i] - value[me_i]) / value[me_i])
+    let me_l = abs((lower[me_i] - value[me_i]) / value[me_i])
+    if (me_u > me_l)
+        let me_x = me_l
+    else
+        let me_x = me_u
+    endif
+    if (me_x <= me_marg[0])
+        let me_marg[0] = me_x
+        let me_marg[1] = me_u + me_l
+    endif
+    let me_marg[2] = me_marg[2] + me_u + me_l
+    let me_i = me_i + 1
+end
+
+# Determine if trial variable set is better.
+
+better = 0
+if ((me_marg[0] > margbest[0]) or \
+    (me_marg[0] = margbest[0] and me_marg[1] > margbest[1]) or \
+    (me_marg[0] = margbest[0] and me_marg[2] > margbest[2]))
+
+    let better = 1
+    let margbest[0] = me_marg[0]
+    let margbest[1] = me_marg[1]
+    let margbest[2] = me_marg[2]
+endif
+
+unlet me_marg me_i me_l me_u me_x
+.endc

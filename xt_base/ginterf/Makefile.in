@@ -1,0 +1,83 @@
+#######################################################################
+# src/ginterf/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.31 2014/07/19 23:12:58 stevew Exp $
+#######################################################################
+
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @UFLAGS@ -DGRPREF=@GRPREF@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+GRPREF = @GRPREF@
+
+LIB_TARGET = ginterf.a
+
+HFILES = \
+  fontutil.h gr_pkg_setup.h graphics.h grfont.h grlinedb.h hpgl.h \
+  nulldev.h pcl.h pixtab.h polydecomp.h psbc.h psbm.h pslindrw.h \
+  raster.h rgbmap.h rgbzimg.h shmctl.h xdraw.h xfig.h
+CCFILES = \
+  colorname.cc fontutil.cc graphics.cc grfont.cc grlinedb.cc hpgl.cc \
+  pcl.cc pixtab.cc polydecomp.cc psbc.cc psbm.cc psencode.cc \
+  pslindrw.cc raster.cc rgbmap.cc rgbzimg.cc shmctl.cc xfig.cc
+SUBDIRS = help htm imsave $(GRPREF)interf
+SUBDIRS_STAMP = $(SUBDIRS:=/stamp)
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I. -I../miscutil
+
+# note: mingw requires explicit return from cd
+
+recurse: $(SUBDIRS_STAMP)
+	$(MAKE) $(LIB_TARGET)
+
+$(LIB_TARGET): $(CCOBJS) $(SUBDIRS:=/*.o)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS) $(SUBDIRS:=/*.o)
+	$(RANLIB) $(LIB_TARGET)
+
+$(SUBDIRS:=/*.o):
+	cd $(@D); $(MAKE)
+
+$(SUBDIRS_STAMP)::
+	cd $(@D); $(MAKE)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+files::
+	@echo [ $(CCFILES) $(HFILES) Makefile.in FORMAT3.2 README ]
+
+subdirs::
+	@echo [ gtkinterf help htm imsave ]
+
+clean:
+	-@for a in $(SUBDIRS); do \
+	    (dir=`pwd`; cd $$a; $(MAKE) clean; cd $$dir) \
+	done
+	-@rm -f $(CCOBJS) $(LIB_TARGET)
+
+distclean:
+	-@for a in $(SUBDIRS); do \
+	    (dir=`pwd`; cd $$a; $(MAKE) distclean; cd $$dir) \
+	done
+	-@rm -f $(CCOBJS) $(LIB_TARGET) Makefile config.h
+
+depend:
+	@for a in $(SUBDIRS); do \
+	    (dir=`pwd`; cd $$a; $(MAKE) depend; cd $$dir) \
+	done
+	@echo depending in ginterf
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) \
+  $(FILTER) >> Makefile; \
+	fi
+
+#######################################################################

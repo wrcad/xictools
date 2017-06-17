@@ -1,0 +1,12 @@
+$Id: README,v 1.1 2016/06/23 17:24:21 stevew Exp $
+
+This directory contains the source distributions for the LEF and DEF
+toolkits, and documentation, as obtained from the Si2 organization. 
+These are redistributed here under the terms of the covering
+Apache-2.0 license.
+
+The patch files are applied before use in the router.  The most
+important change is to compile files with -fPIC, so that they can be
+used in a shared library.  There are other tweaks, such as support for
+Apple OS X and syntax updates for Bison-3.  View the files for more
+info.

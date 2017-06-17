@@ -1,0 +1,86 @@
+#######################################################################
+# xic/gtkxic/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 5.114 2016/02/27 21:04:20 stevew Exp $
+#######################################################################
+
+GFX_VERSION = @GFX_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @NEEDINT64@ @TOOLKITCFLAGS@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @NEEDINT64@ @TOOLKITCFLAGS@
+WINDRES = @WINDRES@
+AR = @AR@
+LD = @LD@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+INCLUDE = $(APPINCL) @TOOLKITINC@
+RESOURCE = @RESOURCE@
+
+LIB_TARGET = gtkxic.a
+
+LPATH = ../../../xt_base
+HFILES = \
+  gtkasm.h gtkcoord.h gtkcv.h gtkhtext.h gtkinlines.h gtklpal.h \
+  gtkltab.h gtkmain.h gtkmenu.h gtkmenucfg.h gtkparam.h gtkprpty.h
+CCFILES = \
+  gtkasm.cc gtkasmpage.cc gtkasmprog.cc gtkasmtf.cc gtkattri.cc \
+  gtkauxtab.cc gtkcells.cc gtkcfilt.cc gtkcflags.cc gtkcgdlist.cc \
+  gtkcgdopen.cc gtkchdcfg.cc gtkchdlist.cc gtkchdopen.cc gtkchdsave.cc \
+  gtkclrtab.cc gtkcmp.cc gtkcnmap.cc gtkcolor.cc gtkcoord.cc gtkcv.cc \
+  gtkcvin.cc gtkcvofmt.cc gtkcvout.cc gtkdbgflg.cc gtkdebug.cc \
+  gtkdevs.cc gtkdlgcb.cc gtkdots.cc gtkdrcedit.cc gtkdrclim.cc \
+  gtkdrcrun.cc gtkdspwin.cc gtkdvedit.cc gtkedset.cc gtkempty.cc \
+  gtkexpand.cc gtkextcmd.cc gtkextdev.cc gtkextfc.cc gtkextfh.cc \
+  gtkextsel.cc gtkextset.cc gtkfiledlg.cc gtkfiles.cc gtkfillp.cc \
+  gtkflatten.cc gtkgrid.cc gtkhtext.cc gtkjoin.cc gtkkeymacro.cc \
+  gtkkeymap.cc gtklexp.cc gtklibs.cc gtkllist.cc gtklogo.cc gtklpal.cc \
+  gtklpedit.cc gtkltab.cc gtkltalias.cc gtkltedit.cc gtkmain.cc \
+  gtkmclchg.cc gtkmem.cc gtkmenu.cc gtkmenucfg.cc gtkmerge.cc \
+  gtkmodif.cc gtknodmp.cc gtkoadefs.cc gtkoalibs.cc gtkoasis.cc \
+  gtkoatech.cc gtkparam.cc gtkpcctrl.cc gtkpcprms.cc gtkpfilt.cc \
+  gtkplace.cc gtkprpcedit.cc gtkprpedit.cc gtkprpinfo.cc gtkptedit.cc \
+  gtkptext.cc gtkrule.cc gtksel.cc gtksim.cc gtkspif.cc gtkstab.cc \
+  gtktech.cc gtktedit.cc gtktree.cc gtkvia.cc gtkwndc.cc gtkxdraw.cc \
+  gtkxform.cc gtkzoom.cc
+CCOBJS = $(CCFILES:.cc=.o) $(RESOURCE)
+APPINCL = -I. -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil \
+  -I$(LPATH)/ginterf/gtkinterf -I$(LPATH)/secure
+
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+depend:
+	@echo depending in xic/gtkxic
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm *.o $(LIB_TARGET)
+
+distclean:
+	-rm *.o $(LIB_TARGET) Makefile
+
+resource.o: resource.cc xic.rc
+	vers=$(GFX_VERSION); \
+	IFS="$$IFS."; \
+	set $$vers; \
+	$(WINDRES) -DXIC_BIN_VERSION="0,$$1,$$2,$$3" \
+ -DXIC_FILE_VERSION=\\\"$$1.$$2.$$3\\\" \
+ -DXIC_PROG_VERSION=\\\"Xic-$$1.$$2.$$3\\\"  xic.rc resource_temp.o
+	$(CC) -c -o restmp.o resource.cc
+	$(LD) -r -o resource.o resource_temp.o restmp.o
+	rm -f resource_temp.o restmp.o
+
+#######################################################################

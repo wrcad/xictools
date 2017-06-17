@@ -1,0 +1,833 @@
+./vbs -q ../EXAMPLES/000module.v
+Compiling file '../EXAMPLES/000module.v'.
+Top-level module:  main
+
+
+Simulation stopped at time unit 0 due to event starvation.
+
+./vbs -q  ../EXAMPLES/dec001_delay.v
+Compiling file '../EXAMPLES/dec001_delay.v'.
+Top-level module:  main
+
+current time: 1
+current time: 6
+current time: 16
+current time: 31
+
+Simulation stopped at time unit 31 due to $finish.
+
+./vbs -q  ../EXAMPLES/dec002_posneg.v
+Compiling file '../EXAMPLES/dec002_posneg.v'.
+Top-level module:  main
+
+0:  negedge a or posedge b.
+0:  negedge b.
+0:  c changed.
+1:  posedge a.
+1:  negedge a or posedge b.
+1:  c changed.
+2:  negedge a or posedge b.
+2:  negedge b.
+2:  c changed.
+3:  posedge a.
+3:  negedge a or posedge b.
+3:  c changed.
+
+Simulation stopped at time unit 4 due to $finish.
+
+./vbs -q  ../EXAMPLES/dec003_posneg.v
+Compiling file '../EXAMPLES/dec003_posneg.v'.
+Top-level module:  main
+
+3:  negedge a
+6:  posedge a
+
+Simulation stopped at time unit 21 due to event starvation.
+
+./vbs -q  ../EXAMPLES/expr_add.v
+Compiling file '../EXAMPLES/expr_add.v'.
+Top-level module:  main
+
+03 06 (0x3 0x6)
+0a 10 (0xa 0x10)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_andand.v
+Compiling file '../EXAMPLES/expr_andand.v'.
+Top-level module:  main
+
+34 && 12 (Ok)
+a && 0 (Ok)
+234 && a (Ok)
+a && a (Ok)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_eqeq.v
+Compiling file '../EXAMPLES/expr_eqeq.v'.
+Top-level module:  main
+
+123 == 123 (Ok)
+a == 0 (Ok)
+2 == a (Ok)
+a == a (Ok)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_grteq.v
+Compiling file '../EXAMPLES/expr_grteq.v'.
+Top-level module:  main
+
+123 >= 123 (Ok)
+a >= 0 (Ok)
+2 >= a (Ok)
+a >= a (Ok)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_grtthan.v
+Compiling file '../EXAMPLES/expr_grtthan.v'.
+Top-level module:  main
+
+123 > 123 (Ok)
+a > 0 (Ok)
+2 > a (Ok)
+a > a (Ok)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_invert.v
+Compiling file '../EXAMPLES/expr_invert.v'.
+Top-level module:  main
+
+05 fa (0x05 0xfa)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_leseq.v
+Compiling file '../EXAMPLES/expr_leseq.v'.
+Top-level module:  main
+
+123 <= 123 (Ok)
+a <= 0 (Ok)
+2 <= a (Ok)
+a <= a (Ok)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_lesthan.v
+Compiling file '../EXAMPLES/expr_lesthan.v'.
+Top-level module:  main
+
+123 < 123 (Ok)
+a < 0 (Ok)
+2 < a (Ok)
+a < a (Ok)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_logand.v
+Compiling file '../EXAMPLES/expr_logand.v'.
+Top-level module:  main
+
+aa 0a (0xaa 0x0a)
+02 02 (0x02 0x02)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_logor.v
+Compiling file '../EXAMPLES/expr_logor.v'.
+Top-level module:  main
+
+aa eb (0xaa 0xeb)
+ef ef (0xef 0xef)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_logxor.v
+Compiling file '../EXAMPLES/expr_logxor.v'.
+Top-level module:  main
+
+aa 5b (0xaa 0x5b)
+5f 04 (0x5f 0x04)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_lshift.v
+Compiling file '../EXAMPLES/expr_lshift.v'.
+Top-level module:  main
+
+04 30 (0x04 0x30)
+c0 00 (0xc0 0x00)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_not.v
+Compiling file '../EXAMPLES/expr_not.v'.
+Top-level module:  main
+
+00 01 (0x00 0x01)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_noteq.v
+Compiling file '../EXAMPLES/expr_noteq.v'.
+Top-level module:  main
+
+123 != 123 (Ok)
+a != 0 (Ok)
+2 != a (Ok)
+a != a (Ok)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_oror.v
+Compiling file '../EXAMPLES/expr_oror.v'.
+Top-level module:  main
+
+0 || 0 (Ok)
+a || 0 (Ok)
+234 || a (Ok)
+a || a (Ok)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_rshift.v
+Compiling file '../EXAMPLES/expr_rshift.v'.
+Top-level module:  main
+
+00 04 (0x00 0x04)
+01 00 (0x01 0x00)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_sub.v
+Compiling file '../EXAMPLES/expr_sub.v'.
+Top-level module:  main
+
+01 09 (0x1 0x9)
+06 fd (0x6 0xfd)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_qstr.v
+Compiling file '../EXAMPLES/expr_qstr.v'.
+Top-level module:  main
+
+61 0062 (0x61 0x62)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_eqeqeq.v
+Compiling file '../EXAMPLES/expr_eqeqeq.v'.
+Top-level module:  main
+
+1x01 === 1x01 (Ok)
+a === 1x0x_1x0x (Ok)
+1x0x_1x0x === a (Ok)
+a === a (Ok)
+
+Simulation stopped at time unit 0 due to event starvation.
+
+./vbs -q  ../EXAMPLES/expr_noteqeq.v
+Compiling file '../EXAMPLES/expr_noteqeq.v'.
+Top-level module:  main
+
+1x01 !== 1x01 (Ok)
+a !== 1x0x_1x0x (Ok)
+1x0x_1x0x !== a (Ok)
+a !== a (Ok)
+
+Simulation stopped at time unit 0 due to event starvation.
+
+./vbs -q  ../EXAMPLES/expr_ternary.v
+Compiling file '../EXAMPLES/expr_ternary.v'.
+Top-level module:  main
+
+01110100 (0111_0100)
+10010110 (1001_0110)
+xxx101x0 (xxx1_01x0)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_mintypmax.v
+Compiling file '../EXAMPLES/expr_mintypmax.v'.
+Top-level module:  main
+
+6 (min=1, typ(default)=6, max=14)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/expr_concat.v
+Compiling file '../EXAMPLES/expr_concat.v'.
+Top-level module:  main
+
+05d b3 (0x5d 0xb3)
+
+Simulation stopped at time unit 0 due to event starvation.
+
+./vbs -q  ../EXAMPLES/mi001_regdecl.v
+Compiling file '../EXAMPLES/mi001_regdecl.v'.
+Top-level module:  main
+
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/mi002_always.v
+Compiling file '../EXAMPLES/mi002_always.v'.
+Top-level module:  main
+
+In always statement, time = 1
+In always statement, time = 2
+In always statement, time = 3
+In always statement, time = 4
+In always statement, time = 5
+In always statement, time = 6
+In always statement, time = 7
+In always statement, time = 8
+In always statement, time = 9
+
+Simulation stopped at time unit 10 due to $finish.
+
+./vbs -q  ../EXAMPLES/mi003_modinst.v
+Compiling file '../EXAMPLES/mi003_modinst.v'.
+Top-level module:  main
+
+0: a1 = 0 main_a1 = 0 b1 = x main_b1 = x
+0: a2 = 0 main_a2 = 0 b2 = x main_b2 = x
+a = 0 b = 1
+a = 0 module_a = 0 b = 1 module_b = 1
+a = 0 b = 1
+a = 0 module_a = 0 b = 1 module_b = 1
+0: b1 = 1
+0: a1 = 0 main_a1 = 0 b1 = 1 main_b1 = 1
+0: b2 = 1
+0: a2 = 0 main_a2 = 0 b2 = 1 main_b2 = 1
+1: a1 = 1 main_a1 = 0 b1 = 1 main_b1 = 1
+1: a2 = 1 main_a2 = 0 b2 = 1 main_b2 = 1
+a = 1 module_a = 0 b = 0 module_b = 1
+a = 1 module_a = 0 b = 0 module_b = 1
+1: b1 = 0
+1: a1 = 1 main_a1 = 0 b1 = 0 main_b1 = 1
+1: b2 = 0
+1: a2 = 1 main_a2 = 0 b2 = 0 main_b2 = 1
+2: a1 = 0 main_a1 = 0 b1 = 0 main_b1 = 1
+2: a2 = 0 main_a2 = 0 b2 = 0 main_b2 = 1
+a = 0 b = 1
+a = 0 b = 1
+2: b1 = 1
+2: a1 = 0 main_a1 = 0 b1 = 1 main_b1 = 1
+2: b2 = 1
+2: a2 = 0 main_a2 = 0 b2 = 1 main_b2 = 1
+3: a1 = 0 main_a1 = 1 b1 = 1 main_b1 = 1
+3: a2 = 0 main_a2 = 1 b2 = 1 main_b2 = 1
+4: a1 = 0 main_a1 = 0 b1 = 1 main_b1 = 1
+4: a2 = 0 main_a2 = 0 b2 = 1 main_b2 = 1
+a = 0 module_a = 0 b = 1 module_b = 1
+a = 0 module_a = 0 b = 1 module_b = 1
+5: a1 = 1 main_a1 = 0 b1 = 1 main_b1 = 1
+5: a2 = 1 main_a2 = 0 b2 = 1 main_b2 = 1
+a = 1 module_a = 0 b = 0 module_b = 1
+a = 1 module_a = 0 b = 0 module_b = 1
+5: b1 = 0
+5: a1 = 1 main_a1 = 0 b1 = 0 main_b1 = 1
+5: b2 = 0
+5: a2 = 1 main_a2 = 0 b2 = 0 main_b2 = 1
+
+Simulation stopped at time unit 5 due to event starvation.
+
+./vbs -q  ../EXAMPLES/mi004_function.v
+Compiling file '../EXAMPLES/mi004_function.v'.
+Top-level module:  main
+
+a = 0000, main_a = 0000
+result = entering my_func:
+a = 0000, input_a = 0000
+c = xxxx, func_c = xxxx
+leaving my_func:
+a = 0000, input_a = 0000
+c = 0100, func_c = 0101
+0101 (5)
+a = 0000, main_a = 0000
+
+Simulation stopped at time unit 0 due to event starvation.
+
+./vbs -q  ../EXAMPLES/mi005_task.v
+Compiling file '../EXAMPLES/mi005_task.v'.
+Top-level module:  main
+
+a = 5
+result = 7
+
+Simulation stopped at time unit 0 due to event starvation.
+
+./vbs -q  ../EXAMPLES/mi006_assign.v
+Compiling file '../EXAMPLES/mi006_assign.v'.
+Top-level module:  main
+
+0:  a = x d = x
+0:  a = 0 d = 1
+1:  a = 1 d = 1
+2:  a = 2 d = 1
+3:  a = 3 d = 1
+4:  a = 4 d = 1
+
+Simulation stopped at time unit 5 due to $finish.
+
+./vbs -q  ../EXAMPLES/mi007_intdecl.v
+Compiling file '../EXAMPLES/mi007_intdecl.v'.
+Top-level module:  main
+
+a = 1234, b = 23456789, c = 0
+
+Simulation stopped at time unit 0 due to event starvation.
+
+./vbs -q  ../EXAMPLES/mi008_memdecl.v
+Compiling file '../EXAMPLES/mi008_memdecl.v'.
+Top-level module:  main
+
+a[1] = 1 (1)
+b[2] = 2 (2)
+c[3] = 33 (33)
+a[0] = x (x)
+b[1] = x (x)
+c[2] = x (x)
+
+Simulation stopped at time unit 0 due to event starvation.
+
+./vbs -q  ../EXAMPLES/mi009_paramdecl.v
+Compiling file '../EXAMPLES/mi009_paramdecl.v'.
+Top-level module:  main
+
+a = 8, b = 20, c = 0
+
+Simulation stopped at time unit 0 due to event starvation.
+
+./vbs -q  ../EXAMPLES/mi010_paramdecl.v
+Compiling file '../EXAMPLES/mi010_paramdecl.v'.
+Top-level module:  main
+
+a = 9, b = 99, c = 0
+
+Simulation stopped at time unit 0 due to event starvation.
+
+./vbs -q  ../EXAMPLES/stmt001_task.v
+Compiling file '../EXAMPLES/stmt001_task.v'.
+Top-level module:  main
+
+Hello world.
+Hello again, time = 0.
+5 6 11 171 (5 6 11 171)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/stmt002_bassign.v
+Compiling file '../EXAMPLES/stmt002_bassign.v'.
+Top-level module:  main
+
+xxxxxxxx xxxx x xxxxxxxx (x x x x)
+long variable name = xxxxxxxx (x)
+ff f 0 ff (ff f 0 ff)
+long variable name = 81 (81)
+cc c 1 66 (cc c 1 66)
+long variable name = bd (bd)
+c0 6 1 76 (c0 6 1 76)
+long variable name = 0c (0c)
+0 1 1 7 (0 1 1 7)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/stmt003_if.v
+Compiling file '../EXAMPLES/stmt003_if.v'.
+Top-level module:  main
+
+correct, passed a true test.
+correct, a = f (0xf)
+correct, a[2:3] = 3 (0x3)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/stmt004_ifelse.v
+Compiling file '../EXAMPLES/stmt004_ifelse.v'.
+Top-level module:  main
+
+correct, failed a false test.
+correct, passed a true test.
+correct, a = 0 (0x0).
+correct, a = f (0xf)
+correct, a[2:3] = 3 (0x3)
+correct, a[4:4] = 0 (0x0)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/stmt005_case.v
+Compiling file '../EXAMPLES/stmt005_case.v'.
+Top-level module:  main
+
+selected 4, 5, 6 (Ok)
+selected default (Ok)
+selected 1z0z_11zz (Ok)
+selected 1001_101z (Ok)
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/stmt006_for.v
+Compiling file '../EXAMPLES/stmt006_for.v'.
+Top-level module:  main
+
+a = 5
+a = 4
+a = 3
+a = 2
+a = 1
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/stmt007_forever.v
+Compiling file '../EXAMPLES/stmt007_forever.v'.
+Top-level module:  main
+
+a = 5
+a = 4
+a = 3
+a = 2
+a = 1
+a = 0
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/stmt008_repeat.v
+Compiling file '../EXAMPLES/stmt008_repeat.v'.
+Top-level module:  main
+
+a = 5
+a = 4
+a = 3
+a = 2
+a = 1
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/stmt009_while.v
+Compiling file '../EXAMPLES/stmt009_while.v'.
+Top-level module:  main
+
+a = 5
+a = 4
+a = 3
+a = 2
+a = 1
+
+Simulation stopped at time unit 0 due to $finish.
+
+./vbs -q  ../EXAMPLES/stmt010_nbassign.v
+Compiling file '../EXAMPLES/stmt010_nbassign.v'.
+Top-level module:  main
+
+0:  a = 0, b = 1
+0:  a = 0, b = 1
+1:  a = 1, b = 0
+2:  a = 0, b = 1
+3:  a = 1, b = 0
+4:  a = 0, b = 1
+
+Simulation stopped at time unit 5 due to $finish.
+
+./vbs -q  ../EXAMPLES/x_allev.v
+Compiling file '../EXAMPLES/x_allev.v'.
+Top-level module:  main
+
+0:  a = x, b = x, c = x
+0:  a = 0, b = 0, c = 0
+0:  a = 0, b = 0, c = 3
+1:  a = 1, b = 3, c = 3
+1:  a = 1, b = 3, c = 0
+
+Simulation stopped at time unit 2 due to $finish.
+
+./vbs -q  ../EXAMPLES/x_allexpr.v
+Compiling file '../EXAMPLES/x_allexpr.v'.
+Top-level module:  main
+
+d = 12 (12)
+
+Simulation stopped at time unit 0 due to event starvation.
+
+./vbs -q  ../EXAMPLES/x_bases.v
+Compiling file '../EXAMPLES/x_bases.v'.
+Top-level module:  main
+
+numbers are 16 bits wide (a=0xabcd, b=43981...
+a abcd 43981 125715 1010101111001101 (not specified)
+a bcd 0000043981 0125715 1010101111001101 (3/10/7/16)
+b abcd 43981 125715 1010101111001101 (not specified)
+b bcd 0000043981 0125715 1010101111001101 (3/10/7/16)
+
+Simulation stopped at time unit 0 due to event starvation.
+
+./vbs -q  ../EXAMPLES/x_bit.v
+Compiling file '../EXAMPLES/x_bit.v'.
+Top-level module:  main
+
+a=1000(1000)
+a=0100(0100)
+a=0010(0010)
+a=0001(0001)
+a=1000(1000)
+a=0100(0100)
+a=0010(0010)
+a=0001(0001)
+
+Simulation stopped at time unit 0 due to event starvation.
+
+./vbs -q  ../EXAMPLES/x_comment.v
+Compiling file '../EXAMPLES/x_comment.v'.
+Top-level module:  main
+
+Passed the comment test!
+
+Simulation stopped at time unit 5 due to $finish.
+
+./vbs -q  ../EXAMPLES/x_counter.v
+Compiling file '../EXAMPLES/x_counter.v'.
+Top-level module:  main
+
+0:  x
+0:  0
+5:  1
+7:  2
+9:  3
+11:  4
+13:  5
+15:  6
+17:  7
+23:  6
+25:  5
+27:  4
+29:  3
+31:  2
+33:  1
+35:  0
+37:  15
+39:  14
+41:  13
+43:  12
+45:  11
+47:  10
+49:  9
+51:  8
+53:  7
+55:  6
+
+Simulation stopped at time unit 57 due to $finish.
+
+./vbs -q  ../EXAMPLES/x_cport.v
+Compiling file '../EXAMPLES/x_cport.v'.
+Top-level module:  main
+
+0: x,y = x,x
+0: x,y = 0,1
+1: x,y = 0,0
+Expected output:
+0: x,y = 0,1
+1: x,y = 0,0
+
+Simulation stopped at time unit 3 due to event starvation.
+
+./vbs -q  ../EXAMPLES/x_dae.v
+Compiling file '../EXAMPLES/x_dae.v'.
+Top-level module:  main
+
+0:  a = x
+0:  b = x
+1:  a = 0
+1:  b = 1
+3:  a = 1
+
+Simulation stopped at time unit 4 due to $finish.
+
+./vbs -q  ../EXAMPLES/x_delayedloop.v
+Compiling file '../EXAMPLES/x_delayedloop.v'.
+Top-level module:  main
+
+1:  Starting loop.
+1:  First line in loop.
+2:  Second line in loop.
+2:  Third line in loop.
+2:  First line in loop.
+3:  Second line in loop.
+3:  Third line in loop.
+3:  First line in loop.
+4:  Second line in loop.
+4:  Third line in loop.
+4:  First line in loop.
+5:  Second line in loop.
+5:  Third line in loop.
+5:  First line in loop.
+6:  Second line in loop.
+6:  Third line in loop.
+7:  Ending loop.
+
+Simulation stopped at time unit 7 due to $finish.
+
+./vbs -q  ../EXAMPLES/x_divmain.v ../EXAMPLES/x_dividev1.v
+Compiling file '../EXAMPLES/x_divmain.v'.
+Compiling file '../EXAMPLES/x_dividev1.v'.
+Top-level module:  divide_test
+
+Finished at 71:  7 / 2 = 3(1,0)
+
+Simulation stopped at time unit 71 due to $finish.
+
+./vbs -q  ../EXAMPLES/x_divmain.v ../EXAMPLES/x_dividev2.v
+Compiling file '../EXAMPLES/x_divmain.v'.
+Compiling file '../EXAMPLES/x_dividev2.v'.
+Top-level module:  divide_test
+
+Finished at 69:  7 / 2 = 3(0,1)
+
+Simulation stopped at time unit 69 due to $finish.
+
+./vbs -q  ../EXAMPLES/x_inflp.v
+Compiling file '../EXAMPLES/x_inflp.v'.
+Top-level module:  main
+
+0:  a = x, b = x, c = x
+0:  a = 0, b = 0, c = 1
+1:  a = 1, b = 0, c = 1
+1:  a = 1, b = 1, c = 0
+
+Simulation stopped at time unit 2 due to $finish.
+
+./vbs -q  ../EXAMPLES/x_lpevctl.v
+Compiling file '../EXAMPLES/x_lpevctl.v'.
+Top-level module:  main
+
+time=20, clk=1
+time=40, clk=1
+time=60, clk=1
+time=80, clk=1
+time=100, clk=1
+time=120, clk=1
+time=140, clk=1
+time=160, clk=1
+time=180, clk=1
+time=200, clk=1
+time=220, clk=1
+time=240, clk=1
+time=260, clk=1
+time=280, clk=1
+time=300, clk=1
+time=320, clk=1
+time=340, clk=1
+time=360, clk=1
+time=380, clk=1
+time=400, clk=1
+time=420, clk=1
+time=440, clk=1
+time=460, clk=1
+time=480, clk=1
+time=500, clk=1
+time=520, clk=1
+time=540, clk=1
+time=560, clk=1
+time=580, clk=1
+time=600, clk=1
+time=620, clk=1
+time=640, clk=1
+time=660, clk=1
+
+Simulation stopped at time unit 660 due to $finish.
+
+./vbs -q  ../EXAMPLES/x_monitor.v
+Compiling file '../EXAMPLES/x_monitor.v'.
+Top-level module:  main
+
+            a  b  c
+0:  monitor x, x, x
+0:  strobe             x, x, x
+0:  monitor 0, 0, 0
+0:  strobe             0, 0, 0
+1:  monitor 1, 1, 0
+1:  monitor 1, 1, 1
+1:  monitor 0, 1, 1
+1:  strobe             0, 1, 1
+3:  monitor 1, 0, 1
+3:  strobe             1, 0, 1
+4:  monitor 0, 0, 1
+4:  strobe             0, 0, 1
+5:  monitor 1, 1, 1
+5:  monitor 1, 1, 0
+5:  strobe             1, 1, 0
+
+Simulation stopped at time unit 5 due to event starvation.
+
+./vbs -q  ../EXAMPLES/x_mulmain.v ../EXAMPLES/x_multv1.v
+Compiling file '../EXAMPLES/x_mulmain.v'.
+Compiling file '../EXAMPLES/x_multv1.v'.
+Top-level module:  multiple_test
+
+Finished at 69:  14 * 13 = 182
+
+Simulation stopped at time unit 69 due to $finish.
+
+./vbs -q  ../EXAMPLES/x_mulmain.v ../EXAMPLES/x_multv2.v
+Compiling file '../EXAMPLES/x_mulmain.v'.
+Compiling file '../EXAMPLES/x_multv2.v'.
+Top-level module:  multiple_test
+
+Finished at 69:  14 * 13 = 182
+
+Simulation stopped at time unit 69 due to $finish.
+
+./vbs -q  ../EXAMPLES/x_nds.v
+Compiling file '../EXAMPLES/x_nds.v'.
+Top-level module:  main
+
+
+Simulation stopped at time unit 1 due to $finish.
+
+./vbs -q  ../EXAMPLES/x_nested.v
+Compiling file '../EXAMPLES/x_nested.v'.
+Top-level module:  main
+
+1:  Delayed 1 time unit.
+2:  Delayed 2 time unit.
+3:  Delayed 3 time unit.
+4:  Delayed 4 time unit.
+5:  Delayed 5 time unit.
+6:  Delayed 6 time unit.
+7:  Delayed 7 time unit.
+8:  Delayed 8 time unit.
+9:  Delayed 9 time unit.
+10:  Delayed 10 time unit.
+11:  Delayed 11 time unit.
+12:  Delayed 12 time unit.
+13:  Delayed 13 time unit.
+14:  Delayed 14 time unit.
+15:  Delayed 15 time unit.
+16:  Delayed 16 time unit.
+17:  Delayed 17 time unit.
+18:  Delayed 18 time unit.
+
+Simulation stopped at time unit 19 due to $finish.
+
+./vbs -q  ../EXAMPLES/x_range.v
+Compiling file '../EXAMPLES/x_range.v'.
+Top-level module:  main
+
+a=00010000(000 10 000) b=00001000(000 01 000)
+c=00001000(000 01 000) d=00010000(000 10 000)
+d=00001000 (000 01 000)
+d=01001000 (010 01 000)
+d=01001010 (010 01 010)
+c=0101 (0101), b=0100 (0100)
+c=1 (1), b=1 (1)
+b=00001000 (0000_1000) c=00001000 (0000_1000) d=00010000 (0001_0000)
+d[6:2] = b[1:3](000) + c[6:2](00010)
+d=00001000 (0000_1000)
+b=00001000 (0000_1000)
+
+Simulation stopped at time unit 0 due to event starvation.
+

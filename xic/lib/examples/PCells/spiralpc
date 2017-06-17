@@ -1,0 +1,96 @@
+(Symbol spiralpc);
+($Id: spiralpc,v 1.1 2014/10/08 20:56:14 stevew Exp $);
+(PHYSICAL);
+(RESOLUTION 1000);
+5 7199 (||text||)\
+# Script to generate a spiral polygon
+
+# parameters
+# num           The number of turns of the spiral.
+# width         The width of the spiral trace.
+# rmin          The minimum radius minus half of the width.
+# spa           The space between traces.
+# nums          The number of sides per 360 degress.
+
+# Note: return without a value is a failure indication.
+if (num < 1 | num > 20)
+    AddError("Param num out of range [1 - 20].")
+    return
+end
+if (width < 0.005 | width > 100.0)
+    AddError("Param width out of range [0.005 - 100.0].")
+    return
+end
+if (rmin < 0.005 | rmin > 1000.0)
+    AddError("Param rmin is out of range [0.005 - 1000.0].")
+    return
+end
+if (spa < 0.005 | spa > 100.0)
+    AddError("Param spa is out of range [0.005 - 100.0].")
+    return
+end
+if (nums < 3 | nums > 90)
+    AddError("Param nums is out of range [3 - 90].")
+    return
+end
+
+spa = spa + width
+width = width/2
+rmin = rmin + width
+dth = 2*pi/nums
+n = nums*num + 1
+i = 0
+theta = 0
+
+# There is a limit of 2000 polygon vertices imposed here.
+nverts = 2*n + 1
+if (nverts > 2000)
+    AddError("Resulting polygon would have too many (> 2000) vertices.")
+    return
+end
+
+# Allocate array, size 2*nverts.
+array[4000] = 0
+
+l = 4*n
+j = 0
+
+# Fill in the array.
+while (i < n)
+    r = rmin + theta*spa/(2*pi)
+    x = (r-width)*cos(theta)
+    y = (r-width)*sin(theta)
+    array[j] = x
+    array[j+1] = y
+    x = (r+width)*cos(theta)
+    y = (r+width)*sin(theta)
+    array[l-j-2] = x
+    array[l-j-1] = y
+    j = j + 2
+    i = i + 1
+    theta = theta + dth
+end
+
+# Close the path, necessary for polygon.
+array[l] = array[0]
+array[l+1] = array[1]
+
+# Create the polygon, turn off DRC if DRC enabled.
+#if FEATURESET == "FULL"
+drc = DRCstate(0)
+#endif
+Polygon(nverts, array)
+Commit()
+#if FEATURESET == "FULL"
+DRCstate(drc)
+#endif
+;
+5 7198 num=1:step(1,1,20,1),
+  width=4:range(0.005,100),
+  rmin=18:range(0.005,1000),
+  spa=6:range(0.005,100),
+  nums=50:step(1,3,90,1);
+9 spiralpc;
+DS 0 1 1;
+DF;
+E

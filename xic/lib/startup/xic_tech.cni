@@ -1,0 +1,23 @@
+# Xic technology file for import from Ciranova/Synopsys PyCell Studio
+# $Id: xic_tech.cni,v 1.1 2013/03/02 19:06:33 stevew Exp $
+#
+# The PyCell Studio is a free download from Synopsys for creating
+# Python-based portable PCells.
+
+# The CNI_ROOT variable must be set in the environment to the PyCell
+# Studio installation location.
+Set cni130 = $(CNI_ROOT)/tech/cni130
+
+# There are various other tech/DRF files to play with.
+# ReadDRF /usr/local/ciranova/quickstart/display.drf
+# ReadCniTech /usr/local/ciranova/quickstart/IPL_cni130/Santana.tech
+#
+# ReadDRF $(cni130)/cdsTech/display.drf
+# ReadCdsTech $(cni130)/cdsTech/cds.tech
+
+ReadDRF $(cni130)/santanaDisplay/SantanaDisplay.drf
+ReadCniTech $(cni130)/santanaTech/Santana.tech
+ReadCniTech $(cni130)/santanaDisplay/SantanaDisplay.tech
+
+SnapGridSpacing .01
+

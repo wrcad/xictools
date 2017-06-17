@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  $Id: wrspiceMODULEsetm.cc.xml,v 1.12 2015/07/30 17:27:11 stevew Exp $
+
+  Modified for use with WRspice, Whiteley Research Inc. (wrcad.com).
+  See the original header below for terms and conditions of use.
+-->
+
+<!--
+  Written by Laurent Lemaitre - r29173@users.sourceforge.net
+  Documentation:
+    http://sourceforge.net/docman/display_doc.php?docid=18993&group_id=84289
+  Target Interface: ngspice
+  Supported by adms-1.x.x
+  This file is used by adms - http://sourceforge.net/projects/mot-adms.
+  adms is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+  adms is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  You should have received a copy of the GNU General Public License
+  along with adms; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+
+<!DOCTYPE admst SYSTEM "admst.dtd">
+<admst version="2.3.0" xmlns:admst="http://mot-adms.sourceforge.net/xml-files/admst">
+
+<!-- ---------------------------------------------------------------------- -->
+<admst:template match="module_setm_cc">
+
+  <admst:text format="\n#include &quot;$(modlc)defs.h&quot;\n"/>
+
+  <admst:text format="\n\nint\n"/>
+  <admst:text format="$(moduc)dev::setModl(int param, IFdata *data, sGENmodel *genmod)\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)s$(moduc)model *model = (s$(moduc)model*)genmod;\n"/>
+
+  <admst:text format="\n$(indent)switch (param) {\n"/>
+  <!--
+    When using "unified" mode, the model struct contains the same
+    parameters as the instances.
+  -->
+  <admst:choose>
+    <admst:when test="[$unified='yes']">
+      <admst:for-each select="variable[parametertype='instance' and input='yes']">
+        <admst:text format="$(indent)case $(moduc)_%(name):\n"/>
+        <admst:apply-templates select="." match="push_indent"/>
+        <admst:choose>
+          <admst:when test="[type='real']">
+            <admst:text format="$(indent)model->%(name) = data->v.rValue;\n"/>
+          </admst:when>
+          <admst:when test="[type='integer']">
+            <admst:text format="$(indent)model->%(name) = data->v.iValue;\n"/>
+          </admst:when>
+          <admst:when test="[type='string']">
+            <admst:text format="$(indent)model->%(name) = data->v.sValue;\n"/>
+          </admst:when>
+          <admst:otherwise>
+            <admst:fatal
+              format="module_setm_cc: unsupported parameter type.\n"/>
+          </admst:otherwise>
+        </admst:choose>
+        <admst:text format="$(indent)model->%(name)_Given = 1;\n"/>
+        <admst:text format="$(indent)break;\n"/>
+        <admst:apply-templates select="." match="pop_indent"/>
+      </admst:for-each>
+    </admst:when>
+    <admst:otherwise>
+      <admst:for-each select="variable[parametertype='model' and input='yes']">
+        <admst:text format="$(indent)case $(moduc)_MOD_%(name):\n"/>
+        <admst:apply-templates select="." match="push_indent"/>
+        <admst:choose>
+          <admst:when test="[type='real']">
+            <admst:text format="$(indent)model->%(name) = data->v.rValue;\n"/>
+          </admst:when>
+          <admst:when test="[type='integer']">
+            <admst:text format="$(indent)model->%(name) = data->v.iValue;\n"/>
+          </admst:when>
+          <admst:when test="[type='string']">
+            <admst:text format="$(indent)model->%(name) = data->v.sValue;\n"/>
+          </admst:when>
+          <admst:otherwise>
+            <admst:fatal
+              format="module_setm_cc: unsupported parameter type 'string'.\n"/>
+          </admst:otherwise>
+        </admst:choose>
+        <admst:text format="$(indent)model->%(name)_Given = 1;\n"/>
+        <admst:text format="$(indent)break;\n"/>
+        <admst:apply-templates select="." match="pop_indent"/>
+      </admst:for-each>
+    </admst:otherwise>
+  </admst:choose>
+  <admst:text format="$(indent)default:\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)return (E_BADPARM);\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="$(indent)return (OK);\n"/>
+
+  <admst:text format="}\n\n"/>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------- -->
+
+<admst:for-each select="/module">
+  <admst:apply-templates select="." match="init:translation"/>
+  <admst:open file="$(modlc)setm.cc">
+    <admst:value-of select="/simulator/package_string"/>
+    <admst:text format="// Interface: %s\n"/>
+    <admst:value-of select="/simulator/currentdate"/>
+    <admst:value-of select="/simulator/fullname"/>
+    <admst:text format="// created by: %s - %s\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:apply-templates select="." match="module_setm_cc"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+  </admst:open>
+  <admst:message format="$(modlc)setm.cc: file created\n"/>
+</admst:for-each>
+
+</admst>
+

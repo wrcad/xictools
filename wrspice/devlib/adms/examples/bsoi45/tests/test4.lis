@@ -1,0 +1,320 @@
+ ****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+  Copyright (C) 2012 Synopsys, Inc. All Rights Reserved.                        
+  Unpublished-rights reserved under US copyright laws.
+  This program is protected by law and is subject to the
+  terms and conditions of the license agreement from Synopsys.
+  Use of this program is your acceptance to be bound by the
+  license agreement. HSPICE is the trademark of Synopsys, Inc.
+  Input File: test4.sp                                                          
+  Command line options: -hdlpath ../code -i test4.sp -o test4
+ lic:  
+ lic: FLEXlm: v10.8 
+ lic: USER:   navidp               HOSTNAME: bwrcrdsl-2.EECS.Berkeley.EDU 
+ lic: HOSTID:                      PID:      26555 
+ lic: Using FLEXlm license file: 
+ lic: 1701@sunv40z-1.eecs.berkeley.edu 
+ lic: Checkout 1 hspice 
+ lic: License/Maintenance for hspice will expire on 19-dec-2013/2013.03 
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER sunv40z-1.eecs.berkeley.
+ lic:   
+ Init: read install configuration file: /tools/synopsys/hspice/G-2012.06/hspice/meta.cfg
+ Loading pVA library test4.pvadir/pvaRTL_linux.so...
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *id-vd characteristics for nmos -- tanvir morshed 2010
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 x1.                             bsimsoi(va)        1.00 
+ **info** *pvaI* Creating Verilog-A module 'bsimsoi' for X1
+
+  
+      
+ *****************************************************************
+ ******  option summary
+ ******
+ runlvl  = 3         bypass  = 2         
+  Opening plot unit= 15
+ file=test4.pa0                                                                
+
+ ******  
+ *id-vd characteristics for nmos -- tanvir morshed 2010
+
+  ******  dc transfer curves tnom=  25.000 temp=  25.000 *****
+
+   *** source        0:vd =  5.000e-02       ***
+
+x
+
+        volt    current    
+                    vd     
+    0.         -1.990e-13  
+  2.0000e-02   -3.268e-13  
+  4.0000e-02   -5.471e-13  
+  6.0000e-02   -9.237e-13  
+  8.0000e-02   -1.535e-12  
+    0.10000    -2.551e-12  
+    0.12000    -4.256e-12  
+    0.14000    -7.077e-12  
+    0.16000    -1.177e-11  
+    0.18000    -1.955e-11  
+    0.20000    -3.244e-11  
+    0.22000    -5.378e-11  
+    0.24000    -8.909e-11  
+    0.26000    -1.473e-10  
+    0.28000    -2.434e-10  
+    0.30000    -4.012e-10  
+    0.32000    -6.601e-10  
+    0.34000    -1.083e-09  
+    0.36000    -1.773e-09  
+    0.38000    -2.891e-09  
+    0.40000    -4.694e-09  
+    0.42000    -7.585e-09  
+    0.44000    -1.218e-08  
+    0.46000    -1.944e-08  
+    0.48000    -3.076e-08  
+    0.50000    -4.826e-08  
+    0.52000    -7.498e-08  
+    0.54000    -1.153e-07  
+    0.56000    -1.751e-07  
+    0.58000    -2.628e-07  
+    0.60000    -3.889e-07  
+    0.62000    -5.663e-07  
+    0.64000    -8.093e-07  
+    0.66000    -1.132e-06  
+    0.68000    -1.544e-06  
+    0.70000    -2.052e-06  
+    0.72000    -2.656e-06  
+    0.74000    -3.351e-06  
+    0.76000    -4.126e-06  
+    0.78000    -4.971e-06  
+    0.80000    -5.875e-06  
+    0.82000    -6.828e-06  
+    0.84000    -7.821e-06  
+    0.86000    -8.846e-06  
+    0.88000    -9.899e-06  
+    0.90000    -1.097e-05  
+    0.92000    -1.206e-05  
+    0.94000    -1.315e-05  
+    0.96000    -1.424e-05  
+    0.98000    -1.532e-05  
+    1.00000    -1.640e-05  
+    1.02000    -1.746e-05  
+    1.04000    -1.851e-05  
+    1.06000    -1.954e-05  
+    1.08000    -2.056e-05  
+    1.10000    -2.156e-05  
+    1.12000    -2.254e-05  
+    1.14000    -2.351e-05  
+    1.16000    -2.445e-05  
+    1.18000    -2.538e-05  
+    1.20000    -2.629e-05  
+y
+-----------------------------------------------
+ ******  
+ *id-vd characteristics for nmos -- tanvir morshed 2010
+
+  ******  dc transfer curves tnom=  25.000 temp=  25.000 *****
+
+   *** source        0:vd =    0.5500        ***
+
+x
+
+        volt    current    
+                    vd     
+    0.         -2.046e-12  
+  2.0000e-02   -3.070e-12  
+  4.0000e-02   -5.002e-12  
+  6.0000e-02   -8.185e-12  
+  8.0000e-02   -1.307e-11  
+    0.10000    -2.137e-11  
+    0.12000    -3.479e-11  
+    0.14000    -5.684e-11  
+    0.16000    -9.277e-11  
+    0.18000    -1.514e-10  
+    0.20000    -2.467e-10  
+    0.22000    -4.017e-10  
+    0.24000    -6.526e-10  
+    0.26000    -1.059e-09  
+    0.28000    -1.714e-09  
+    0.30000    -2.767e-09  
+    0.32000    -4.453e-09  
+    0.34000    -7.139e-09  
+    0.36000    -1.140e-08  
+    0.38000    -1.810e-08  
+    0.40000    -2.858e-08  
+    0.42000    -4.483e-08  
+    0.44000    -6.980e-08  
+    0.46000    -1.078e-07  
+    0.48000    -1.652e-07  
+    0.50000    -2.511e-07  
+    0.52000    -3.782e-07  
+    0.54000    -5.647e-07  
+    0.56000    -8.349e-07  
+    0.58000    -1.221e-06  
+    0.60000    -1.763e-06  
+    0.62000    -2.506e-06  
+    0.64000    -3.501e-06  
+    0.66000    -4.796e-06  
+    0.68000    -6.435e-06  
+    0.70000    -8.450e-06  
+    0.72000    -1.086e-05  
+    0.74000    -1.368e-05  
+    0.76000    -1.689e-05  
+    0.78000    -2.049e-05  
+    0.80000    -2.445e-05  
+    0.82000    -2.874e-05  
+    0.84000    -3.335e-05  
+    0.86000    -3.823e-05  
+    0.88000    -4.337e-05  
+    0.90000    -4.874e-05  
+    0.92000    -5.432e-05  
+    0.94000    -6.009e-05  
+    0.96000    -6.604e-05  
+    0.98000    -7.215e-05  
+    1.00000    -7.843e-05  
+    1.02000    -8.486e-05  
+    1.04000    -9.144e-05  
+    1.06000    -9.817e-05  
+    1.08000    -1.051e-04  
+    1.10000    -1.121e-04  
+    1.12000    -1.194e-04  
+    1.14000    -1.268e-04  
+    1.16000    -1.343e-04  
+    1.18000    -1.421e-04  
+    1.20000    -1.499e-04  
+y
+-----------------------------------------------
+ ******  
+ *id-vd characteristics for nmos -- tanvir morshed 2010
+
+  ******  dc transfer curves tnom=  25.000 temp=  25.000 *****
+
+   *** source        0:vd =    1.0500        ***
+
+x
+
+        volt    current    
+                    vd     
+    0.         -1.114e-11  
+  2.0000e-02   -1.569e-11  
+  4.0000e-02   -2.410e-11  
+  6.0000e-02   -3.683e-11  
+  8.0000e-02   -5.753e-11  
+    0.10000    -9.095e-11  
+    0.12000    -1.451e-10  
+    0.14000    -2.317e-10  
+    0.16000    -3.720e-10  
+    0.18000    -5.962e-10  
+    0.20000    -9.566e-10  
+    0.22000    -1.532e-09  
+    0.24000    -2.450e-09  
+    0.26000    -3.910e-09  
+    0.28000    -6.222e-09  
+    0.30000    -9.868e-09  
+    0.32000    -1.559e-08  
+    0.34000    -2.450e-08  
+    0.36000    -3.831e-08  
+    0.38000    -5.953e-08  
+    0.40000    -9.191e-08  
+    0.42000    -1.409e-07  
+    0.44000    -2.144e-07  
+    0.46000    -3.238e-07  
+    0.48000    -4.852e-07  
+    0.50000    -7.213e-07  
+    0.52000    -1.063e-06  
+    0.54000    -1.551e-06  
+    0.56000    -2.237e-06  
+    0.58000    -3.179e-06  
+    0.60000    -4.443e-06  
+    0.62000    -6.090e-06  
+    0.64000    -8.175e-06  
+    0.66000    -1.073e-05  
+    0.68000    -1.379e-05  
+    0.70000    -1.733e-05  
+    0.72000    -2.135e-05  
+    0.74000    -2.582e-05  
+    0.76000    -3.070e-05  
+    0.78000    -3.595e-05  
+    0.80000    -4.153e-05  
+    0.82000    -4.741e-05  
+    0.84000    -5.355e-05  
+    0.86000    -5.993e-05  
+    0.88000    -6.651e-05  
+    0.90000    -7.329e-05  
+    0.92000    -8.023e-05  
+    0.94000    -8.733e-05  
+    0.96000    -9.456e-05  
+    0.98000    -1.019e-04  
+    1.00000    -1.094e-04  
+    1.02000    -1.170e-04  
+    1.04000    -1.247e-04  
+    1.06000    -1.324e-04  
+    1.08000    -1.403e-04  
+    1.10000    -1.482e-04  
+    1.12000    -1.562e-04  
+    1.14000    -1.643e-04  
+    1.16000    -1.725e-04  
+    1.18000    -1.807e-04  
+    1.20000    -1.890e-04  
+y
+-----------------------------------------------
+
+          ***** job concluded
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *id-vd characteristics for nmos -- tanvir morshed 2010
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+  
+  
+ ******  Machine Information  ******
+ CPU:
+ model name	: Intel(R) Xeon(R) CPU           E5645  @ 2.40GHz
+ cpu MHz	: 1596.000
+  
+ OS:
+ Linux version 2.6.32-358.18.1.el6.x86_64 (mockbuild@x86-003.build.bos.redhat.com) (gcc version 4.4.7 20120313 (Red Hat 4.4.7-3) (GCC) ) #1 SMP Fri Aug 2 17:04:38 EDT 2013
+
+
+  ******  HSPICE Threads Information  ******
+
+  Command Line Threads Count :     1
+  Available CPU Count        :    24
+  Actual Threads Count       :     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =      15 # elements   =       5
+  # resistors   =       0 # capacitors =       0 # inductors   =       0
+  # mutual_inds =       0 # vccs       =       0 # vcvs        =       0
+  # cccs        =       0 # ccvs       =       0 # volt_srcs   =       4
+  # curr_srcs   =       0 # diodes     =       0 # bjts        =       0
+  # jfets       =       0 # mosfets    =       0 # U elements  =       0
+  # T elements  =       0 # W elements =       0 # B elements  =       0
+  # S elements  =       0 # P elements =       0 # va device   =       1
+  # vector_srcs =       0 # N elements =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.00           1           0
+  dc sweep           0.03         183         436
+  readin             0.06
+  errchk             0.04
+  setup              0.00
+  output             0.00
+
+
+           peak memory used        110.13 megabytes
+           total cpu time            0.13 seconds
+           total elapsed time        0.43 seconds
+           job started at     12:48:15 11/06/2013
+           job ended   at     12:48:16 11/06/2013
+
+
+ lic: Release hspice token(s) 
+ lic: total license checkout elapse time:        0.22(s)

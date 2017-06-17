@@ -1,0 +1,15 @@
+
+The hostname in blocks is now lower case, and the test hostname is
+lower cased before the MD5 comparison.
+
+When testing blocks using MD5 checksum, if the lower-cased hostname
+fails, the straight hostname is tried, so pre-Gen3 license files will
+still work.
+
+Gen3 programs/server are completely compatible with Gen2 license files
+and server.
+
+The Gen3 validate program produces license files that are NOT
+COMPATIBLE with Gen2 programs/server if a hostname contains an
+upper-case character.
+

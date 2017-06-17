@@ -1,0 +1,37 @@
+#!/bin/sh
+# Make directory hierarchy. 
+# Written by Noah Friedman <friedman@prep.ai.mit.edu>
+# Public domain.
+# $Id: mkdirpth,v 1.1 2004/09/21 19:41:18 stevew Exp $
+
+defaultIFS=' 	
+'
+IFS="${IFS-${defaultIFS}}"
+
+errstatus=0
+
+for file in ${1+"$@"} ; do 
+   oIFS="${IFS}"
+   # Some sh's can't handle IFS=/ for some reason.
+   IFS='%'
+   set - `echo ${file} | sed -e 's@/@%@g' -e 's@^%@/@'`
+   IFS="${oIFS}"
+
+   pathcomp=''
+
+   for d in ${1+"$@"} ; do
+     pathcomp="${pathcomp}${d}"
+
+     if test ! -d "${pathcomp}"; then
+        echo "mkdir $pathcomp" 1>&2
+        mkdir "${pathcomp}" || errstatus=$?
+        chmod 755 "${pathcomp}"
+     fi
+
+     pathcomp="${pathcomp}/"
+   done
+done
+
+exit $errstatus
+
+# eof

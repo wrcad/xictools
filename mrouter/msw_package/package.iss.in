@@ -1,0 +1,42 @@
+
+[Setup]
+
+AppName=MRouter
+AppVerName=MRouter-VERSION
+AppVersion=VERSION
+AppPublisher=Whiteley Research Inc.
+AppPublisherURL=http://wrcad.com
+
+OutputBaseFilename=mrouter-Win32-VERSION-i386
+
+Compression=bzip
+
+DefaultDirName=c:\usr\local
+DirExistsWarning=no
+
+PrivilegesRequired=admin
+
+UninstallFilesDir={app}\mrouter\uninstall
+UninstallDisplayIcon={app}\mrouter\bin\mrouter.exe
+
+[Files]
+
+Source: "data\bin\mrouter.exe"; DestDir: "{app}\mrouter\bin"; Flags: ignoreversion
+
+Source: "data\doc\*"; DestDir: "{app}\mrouter\doc"
+Source: "data\doc\xic\*"; DestDir: "{app}\mrouter\doc\xic"
+
+Source: "data\examples\*"; DestDir: "{app}\mrouter\examples"
+Source: "data\examples\xic\*"; DestDir: "{app}\mrouter\examples\xic"
+Source: "data\examples\osu35\*"; DestDir: "{app}\mrouter\examples\osu35"
+
+Source: "data\include\*"; DestDir: "{app}\mrouter\include"
+
+Source: "data\lib\*"; DestDir: "{app}\mrouter\lib"
+
+[code]
+
+function InitializeSetup(): Boolean;
+begin
+  Result := True;
+end;

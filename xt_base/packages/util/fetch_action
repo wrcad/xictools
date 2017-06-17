@@ -1,0 +1,45 @@
+#! /bin/sh
+# $Id: fetch_action,v 1.9 2014/07/21 00:33:12 stevew Exp $
+
+# This is a mozy method=post handler for the fetch form
+
+progs=
+oses=
+
+while [ 1 = 1 ]; do
+    read inp
+    if [ $? != 0 ]; then
+        break
+    fi
+    tifs="$IFS"
+    IFS="="
+    set $inp
+    IFS="$tifs"
+    case $1 in
+    xt_accs | devkit | wrspice | xic | xicii | xiv | xtlserv)
+        if [ x"$progs" = x ]; then
+            progs=$1
+        else
+            progs="$progs $1"
+        fi
+        ;;
+    Darwin* | Debian* | FreeBSD* | Linux* | Solaris* | Windows)
+        if [ x"$oses" = x ]; then
+            oses=$1
+        else
+            oses="$oses $1"
+        fi
+    esac
+done
+
+if [ x"$progs" = x ]; then
+    echo NO PROGHAMS SELECTED!
+    exit 1
+fi
+if [ x"$oses" = x ]; then
+    echo NO DISTRIBUTIONS SELECTED!
+    exit 1
+fi
+
+util/fetchdist "$progs" "$oses"
+echo TRANSFER COMPLETED

@@ -1,0 +1,135 @@
+# This is a demo which shows some of the features of the Tcl/Tk interface
+# in Xic.  The run the demo, from within Xic type on the prompt line
+#    !tk tkdemo.tk
+# The argument to the !tk command should be a path to this file.  This is
+# not standard Tk and can not be run with wish.
+#
+# The tcl/tk libraries must be installed on your system.  This is not
+# available under Microsoft Windows.
+#
+# After starting the demo, a gray pop-up with some buttons should appear.
+# Press the Show button - this should display the content of the main Xic
+# window in the pop-up.  You can click in the pop-up image to pan, and use
+# the +/- buttons to zoom.  Click on the button showing the date to end
+# the demo.
+#
+# Whiteley Research Inc., 9/7/01, modified 1/21/03
+# Not copyrighted - public domain - free software
+
+ # This is the window used for drawing by Xic.  Note the '-background ""'
+ # directive.  This is necessary for proper redrawing after expose events.
+frame .f -width 8c -height 8c -background ""
+pack .f
+
+ # A button showing the date, obtained from Xic.  Press this to exit.
+button .b -text [xic DateString] -command {
+     # Clean up
+    if [info exists ghandle] {
+        xic GRdestroyPixmap $ghandle $pixm
+        xic Close $ghandle
+    }
+    exit
+}
+pack .b
+
+ # Pressing the "Show" button will display the view from the main Xic window
+ # in the Tk window.
+button .b1 -text "Show" -command {
+    set win_id [xwin .f]
+    set ghandle [xic GRopen $env(DISPLAY) $win_id]
+     # The win_id is the X id of the drawing window, the ghandle is the
+     # handle value returned from Xic upon opening graphics on this window.
+    if {$ghandle == 0} {
+        xic ErrorMsg "Error: tkdemo failed to create graphics handle."
+        exit
+    }
+
+    set size(0) 0
+    set size(1) 0
+    set size(2) 0
+    set size(3) 0
+    xic GetWindowView 0 &size()
+     # The size array contains the displayed area of the cell in the main
+     # Xic window, in order L, B, R, T
+
+    xic GRdraw $ghandle $size(0) $size(1) $size(2) $size(3)
+     # This draws the Xic view into the Tk window
+
+    xic GRupdate $ghandle
+     # Due to the way Tk (and X) works, unless GRupdate is called after
+     # drawing, the drawing won't be visible.  The operations are stuck
+     # in a cache somewhere waiting.  GRupdate flushes the operations.
+
+    set dsize(0) 0
+    set dsize(1) 0
+    xic GRgetDrawableSize $ghandle $win_id &dsize()
+     # The dsize array contains the size in pixels of the Tk drawing area.
+
+    set pixm [xic GRcreatePixmap $ghandle $dsize(0) $dsize(1)]
+    xic GRcopyDrawable $ghandle $pixm $win_id 0 0 $dsize(0) $dsize(1) 0 0
+    xic GRupdate $ghandle
+     # We have created a pixmap of the same size and depth as the drawing
+     # area, and copied the drawing area into it.  This will be used to
+     # redraw the drawing area after an expose event.
+
+    bind .f <Expose> {
+         # This sets up a handler for expose events.  Expose events are
+         # received when a previously obscured part of the window is
+         # uncovered.  The pixmap is copied into the Tk window.
+        xic GRcopyDrawable $ghandle $win_id $pixm 0 0 $dsize(0) $dsize(1) 0 0
+        xic GRupdate $ghandle
+    }
+    bind .f <Button-1> {
+         # This sets up a handler for button-1 press events.  When button
+         # 1 is pressed in the Tk window, the window is redrawn so that the
+         # clicked-on location is centered (like button-2 in the main Xic
+         # window). 
+        set w [expr "($size(2) - $size(0))/2"]
+        set h [expr "($size(3) - $size(1))/2"]
+        set x [expr "(%x*2*$w)/$dsize(0) + $size(0)"]
+        set y [expr "(($dsize(1) - %y)*2*$h)/$dsize(1) + $size(1)"]
+        set size(0) [expr "$x - $w"]
+        set size(1) [expr "$y - $h"]
+        set size(2) [expr "$x + $w"]
+        set size(3) [expr "$y + $h"]
+        xic GRdraw $ghandle $size(0) $size(1) $size(2) $size(3)
+        xic GRupdate $ghandle
+        xic GRcopyDrawable $ghandle $pixm $win_id 0 0 $dsize(0) $dsize(1) 0 0
+        xic GRupdate $ghandle
+    }
+}
+
+ # Pressing the "+" button will zoom in by a factor of 2.
+button .b2 -text "+" -command {
+    set x [expr "($size(0) + $size(2))/2"]
+    set y [expr "($size(1) + $size(3))/2"]
+    set w [expr "($size(2) - $size(0))/4"]
+    set h [expr "($size(3) - $size(1))/4"]
+    set size(0) [expr "$x - $w"]
+    set size(1) [expr "$y - $h"]
+    set size(2) [expr "$x + $w"]
+    set size(3) [expr "$y + $h"]
+    xic GRdraw $ghandle $size(0) $size(1) $size(2) $size(3)
+    xic GRupdate $ghandle
+    xic GRcopyDrawable $ghandle $pixm $win_id 0 0 $dsize(0) $dsize(1) 0 0
+    xic GRupdate $ghandle
+}
+
+ # Pressing the "-" button will zoom out by a factor of 2.
+button .b3 -text "-" -command {
+    set x [expr "($size(0) + $size(2))/2"]
+    set y [expr "($size(1) + $size(3))/2"]
+    set w [expr "($size(2) - $size(0))"]
+    set h [expr "($size(3) - $size(1))"]
+    set size(0) [expr "$x - $w"]
+    set size(1) [expr "$y - $h"]
+    set size(2) [expr "$x + $w"]
+    set size(3) [expr "$y + $h"]
+    xic GRdraw $ghandle $size(0) $size(1) $size(2) $size(3)
+    xic GRupdate $ghandle
+    xic GRcopyDrawable $ghandle $pixm $win_id 0 0 $dsize(0) $dsize(1) 0 0
+    xic GRupdate $ghandle
+}
+pack .b1 .b2 .b3 -side left
+wm title . "Xic-Tk Demo"
+

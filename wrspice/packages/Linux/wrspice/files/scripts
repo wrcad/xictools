@@ -1,0 +1,19 @@
+%pre
+if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
+    prefix=/usr/local
+else
+    prefix=$RPM_INSTALL_PREFIX
+fi
+
+# Remove some crap possibly left behind.
+rm -rf $prefix/xictools/$prog/devkit/examples/bsimsoi
+
+
+%post
+if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
+    prefix=/usr/local
+else
+    prefix=$RPM_INSTALL_PREFIX
+fi
+
+# Nothing to do now.

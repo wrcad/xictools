@@ -1,0 +1,100 @@
+dnl Configure input script for vl.
+dnl Process this file with autoconf to produce a configure script.
+dnl $Id: configure.in,v 1.5 2008/08/29 23:51:09 stevew Exp $
+
+dnl *** Initialize
+AC_INIT(vl_sim.cc)
+DATE=`/bin/date`
+AC_SUBST(prefix)
+AC_SUBST(DATE)
+
+dnl *** Check compiler and friends
+AC_PROG_CC
+AC_PROG_CXX
+dnl text for MS Windows environmnet
+AC_CYGWIN
+AC_MINGW32
+if test x$MINGW32 = x"yes"; then
+    NTSUFFIX=".exe"
+    FILTER="|sed -e s///"
+elif test x$CYGWIN = x"yes"; then
+    NTSUFFIX=".exe"
+fi
+AC_SUBST(NTSUFFIX)
+AC_SUBST(FILTER)
+AC_SUBST(STDCLIB)
+AC_PROG_MAKE_SET
+AC_PROG_LEX
+AC_PROG_YACC
+AC_PROG_RANLIB
+if test "$GCC" = yes; then
+    DEPEND_PROG="gcc -MM"
+    CFLAGS="-O -g -Wall"
+    if test -f /bin/arch; then
+        if test "`/bin/arch`" = "sun4"; then
+            dnl Solaris 8 with gcc: the ctype macros use arrays, which
+            dnl cause "char subscript" warnings, so these are turned off.
+            dnl The __EXTENSIONS__ macro is needed to make certain function
+            dnl prototypes visible
+            CFLAGS="$CFLAGS -Wno-char-subscripts -D__EXTENSIONS__"
+        fi
+    fi
+else
+    DEPEND_PROG="cc -M"
+    CFLAGS="-O"
+fi
+if test -x /usr/ucb/install; then
+    INSTALL="/usr/ucb/install"
+else
+    INSTALL="install"
+fi
+if test x$MINGW32 = x"yes"; then
+    INSTALL_USER="-o Administrator -g Everyone"
+else
+    if test "`uname`" = Linux; then
+        INSTALL_USER="-o root -g root"
+    else
+        INSTALL_USER="-o root -g bin"
+    fi
+fi
+
+AC_SUBST(CFLAGS)
+AC_SUBST(DEPEND_PROG)
+AC_SUBST(INSTALL)
+AC_SUBST(INSTALL_USER)
+AR=ar
+AC_SUBST(AR)
+AC_SUBST(UFLAGS)
+
+dnl *** Checks for header files
+AC_HEADER_STDC
+AC_CHECK_HEADERS(stdlib.h fstream.h iostream.h)
+AC_EGREP_HEADER(sys_errlist, stdio.h, AC_DEFINE(SYS_ERRLIST_DEF))
+dnl Detect when select takes int* as second arg (for HPUX)
+AC_EGREP_HEADER(select.*int.*int, sys/time.h,
+    AC_DEFINE(SELECT_TAKES_INTP))
+
+dnl *** Checks for typedefs, structures, and compiler characteristics
+AC_C_CONST
+AC_HEADER_TIME
+AC_STRUCT_TM
+
+dnl *** Check for needed libraries
+dnl reverse order of link, order is important
+AC_CHECK_LIB(m, main)
+AC_CHECK_LIB(stdc++, main)
+
+dnl *** Checks for library functions
+AC_TYPE_SIGNAL
+AC_FUNC_VPRINTF
+AC_FUNC_WAIT3
+AC_CHECK_FUNC(gettimeofday, VL_DEFS="$VL_DEFS -DHAVE_GETTIMEOFDAY")
+AC_CHECK_FUNC(times, VL_DEFS="$VL_DEFS -DHAVE_TIMES")
+AC_CHECK_FUNC(vsnprintf, VL_DEFS="$VL_DEFS -DHAVE_VSNPRINTF")
+AC_SUBST(VL_DEFS)
+
+dnl *** Perform subsitutions and create headers
+AC_OUTPUT(Makefile)
+
+${MAKE-make} depend;
+

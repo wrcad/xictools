@@ -1,0 +1,74 @@
+* 3-stage Josephson counter
+*
+* This is an example spice circuit description file
+* which contains Josephson junctions.
+*
+*.tran 1p 500p uic
+r1 17 2 50
+r2 1 6 50
+r3 1 10 50
+r4 1 14 50
+r5 3 18 50
+r6 7 13 50
+r7 11 13 50
+r8 15 13 50
+r9 3 20 50
+r10 4 5 .5
+r11 8 9 .5
+r12 12 19 .5
+l1 5 6 1p
+l2 9 10 1p
+l3 19 14 1p
+*
+* First stage for SFQ pulse generation only
+*
+x1 3 2 4 100 101 count
+x2 7 6 8 200 201 count
+x3 11 10 12 300 301 count
+x4 15 14 16 400 401 count
+*
+.subckt count 1 4 5 6 7
+*
+* Two junction SQUID flip-flop
+*
+r1 3 0 1
+r2 5 0 1
+b1 3 0 6 jj1
+b2 5 0 7 jj1
+l1 3 4 2p
+l2 4 5 2p
+l3 1 2 2p
+l4 2 0 2p
+k1 l1 l3 .99
+k2 l2 l4 .99
+.ends count
+*
+* flux bias
+v1 13 0 pulse(0 12.75m 10p 10p)
+* gate bias
+v2 1 0 pulse(0 14.9m 10p 10p)
+*
+v3 20 0 pwl(0 0	70p 0
++ 75p  15m 90p  15m 100p -15m 115p -15m 
++ 125p 15m 140p 15m 150p -15m 165p -15m
++ 175p 15m 190p 15m 200p -15m 215p -15m
++ 225p 15m 240p 15m 250p -15m 265p -15m
++ 275p 15m 290p 15m 300p -15m 315p -15m
++ 325p 15m 340p 15m 350p -15m 365p -15m
++ 375p 15m 390p 15m 400p -15m 415p -15m
++ 425p 15m 440p 15m 450p -15m 465p -15m 500p -15m)
+*
+* flux bias first stage
+v4 17 0 pulse(0 14m 10p 10p)
+*gate bias first stage
+*
+v5 18 0 pulse(0 13m 10p 10p)
+*Nb 3000 A/cm2   area = 10 square microns
+.model jj1 jj(rtype=1,cct=1,icon=10m,vg=2.8m,delv=0.08m,
++ icrit=0.3m,r0=99.999996,rn=5.490196,cap=0.388546p)
+
+.control
+tran 1p 600p
+plot v({4,8,12,16}) ysep
+edit
+.endc

@@ -1,0 +1,3524 @@
+********Modified File: b4soild.c********
+
+
+
+17,18d16
+<  * Modified by Larry Wagner, Calvin Bittner, 5 fixes.  08/04/2010
+<  * Modified by Larry Wagner, Calvin Bittner, FD derivatives fixes.  08/25/2010
+113d110
+<   double testLW, dVgstNVt_dT, dVgstNVt2_dT;  /* LFW_FD */
+115,119c112
+< /*  LFW_FD next 4 lines */
+<   double dVgstNVt_dVg, dVgstNVt_dVd, dVgstNVt_dVb, dVgstNVt_dVe;
+<   double dExpVgst_dVg, dExpVgst_dVd, dExpVgst_dVb, dExpVgst_dVe, dVgstNVt2_dVg;
+<   double dVgstNVt2_dVd, dVgstNVt2_dVb, dVgstNVt2_dVe, dExpArg2_dVd, dExpArg2_dVb, dExpArg2_dVe;
+<   double dExpVgst2_dVg, dExpVgst2_dVd, dExpVgst2_dVb, dExpVgst2_dVe;
+---
+>     double dVgstNVt_dT, dVgstNVt2_dT; /* new line Wagner */
+123c116
+<   double Vfbeff, dVfbeff_dVg, dVfbeff_dVd, dVfbeff_dVe, dVfbeff_dVb, V3, V4;
+---
+>     double Vfbeff, dVfbeff_dVg, dVfbeff_dVd, dVfbeff_dVb, V3, V4;
+135,146c128,139
+<   double Vgs_eff, Vfb, dVfb_dVb, dVfb_dVd, dVfb_dVg, dVfb_dVe, dVfb_dT;
+<   double Phis, sqrtPhis, dsqrtPhis_dVd, dsqrtPhis_dVe, dsqrtPhis_dVb, dsqrtPhis_dVg;
+<   double Vth, dVth_dVb, dVth_dVd, dVth_dVg, dVth_dVe, dVth_dT;
+<   double Vgst, dVgst_dVg, dVgst_dVd, dVgst_dVb, dVgst_dVe, dVgst_dT, dVgs_eff_dVg, dVgs_eff_dT;
+<   double n, dn_dVb, dn_dVe, dn_dVg, Vtm;
+<   double ExpArg, dExpArg_dVg, dExpArg_dVd, dExpArg_dVb, dExpArg_dVe, dExpArg_dT, dExpArg2_dVg, dExpArg2_dT, V0;
+<   double ueff, dueff_dVg, dueff_dVd, dueff_dVb, dueff_dVe, dueff_dT;
+<     double Esat, Vdsat;
+<   double EsatL, dEsatL_dVg, dEsatL_dVd, dEsatL_dVb, dEsatL_dVe, dEsatL_dT;
+<   double dVdsat_dVg, dVdsat_dVb, dVdsat_dVd, dVdsat_dVe, dVdsat_dT, Vasat;
+<   double dVasat_dVg, dVasat_dVb, dVasat_dVd, dVasat_dVe, dVasat_dT;
+<   double Va, dVa_dVd, dVa_dVg, dVa_dVb, dVa_dVe, dVa_dT;
+---
+>     double Vgs_eff, Vfb, dVfb_dVb, dVfb_dVd, dVfb_dT;
+>     double Phis, dPhis_dVb, sqrtPhis, dsqrtPhis_dVb, Vth, dVth_dVb, dVth_dVd, dVth_dT;
+>     double Vgst, dVgst_dVg, dVgst_dVb, dVgst_dT, dVgs_eff_dVg, dVgs_eff_dT, Nvtm;  /* enhanced line Wagner */
+>     double Vgdt, Vgsaddvth, Vgsaddvth2, Vgsaddvth1o3, n, dn_dVb, Vtm;
+>     double ExpArg, V0;
+>     double dExpArg_dT, dExpArg2_dT;    /* new line Wagner */
+>     double ueff, dueff_dVg, dueff_dVd, dueff_dVb, dueff_dT;
+>     double Esat, dEsat_dVg, dEsat_dVd, dEsat_dVb, Vdsat, Vdsat0;
+>     double EsatL, dEsatL_dVg, dEsatL_dVd, dEsatL_dVb, dEsatL_dT;
+>     double dVdsat_dVg, dVdsat_dVb, dVdsat_dVd, dVdsat_dT, Vasat, dAlphaz_dVg, dAlphaz_dVb;
+>     double dVasat_dVg, dVasat_dVb, dVasat_dVd, dVasat_dT;
+>     double Va, Va2, dVa_dVd, dVa_dVg, dVa_dVb, dVa_dT;
+150c143
+<   double T0, dT0_dVg, dT0_dVd, dT0_dVe, dT0_dVb, dT0_dT;
+---
+>     double T0, dT0_dVg, dT0_dVd, dT0_dVb, dT0_dVrg, dT0_dT;
+154,155c147,148
+<   double T3, dT3_dVg, dT3_dVd, dT3_dVe, dT3_dVb, dT3_dT;
+<   double T4, dT4_dVe, dT4_dVg, dT4_dVd, dT4_dVb, dT4_dT;
+---
+>     double T3, dT3_dVg, dT3_dVd, dT3_dVb, dT3_dT;
+>     double T4, dT4_dVg, dT4_dVd, dT4_dVb, dT4_dT;
+157,158c150,151
+<   double T6, dT6_dVg, dT6_dVd, dT6_dVe, dT6_dVb, dT6_dT, dT6_dVp;
+<   double T7, dT7_dVg, dT7_dVb, dT7_dVd, dT7_dVe;
+---
+>     double T6, dT6_dVg, dT6_dVd, dT6_dVb, dT6_dT, dT6_dVp;
+>     double T7, dT7_dVg, dT7_dVd, dT7_dVb;
+163,165d155
+<   /* LFW_FD 2 new lines */
+<   double dT02_dVg, dT02_dVd, dT02_dVb, dT02_dVe, dT12_dVg, dT12_dVd, dT12_dVb, dT12_dVe;
+<   double dT22_dVg, dT22_dVd, dT22_dVb, dT22_dVe;
+167,168d156
+<   /* LFW_FD 1 new line */
+<   double dTL1_dVg, dTL1_dVd, dTL1_dVb, dTL1_dVe;
+170c158
+<   double tmp, Abulk, dAbulk_dVb, Abulk0, dAbulk0_dVg, dAbulk0_dVb, dAbulk0_dVd, dAbulk0_dVe;
+---
+>     double tmp, Abulk, dAbulk_dVb, Abulk0, dAbulk0_dVb;
+173,179c161,166
+<   double VACLM, dVACLM_dVg, dVACLM_dVd, dVACLM_dVb, dVACLM_dVe, dVACLM_dT;
+<   double VADIBL, dVADIBL_dVg, dVADIBL_dVd, dVADIBL_dVb, dVADIBL_dVe, dVADIBL_dT;
+<   double Xdep, dXdep_dVd, dXdep_dVe, dXdep_dVb, dXdep_dVg;
+<   double lt1, dlt1_dVd, dlt1_dVe, dlt1_dVb, dlt1_dVg;
+<   double ltw, dltw_dVd, dltw_dVe, dltw_dVb, dltw_dVg;
+<   double Delt_vth, dDelt_vth_dVd, dDelt_vth_dVe, dDelt_vth_dVb, dDelt_vth_dVg, dDelt_vth_dT;
+<   double Theta0, dTheta0_dVd, dTheta0_dVe, dTheta0_dVb, dTheta0_dVg;
+---
+>     double VACLM, dVACLM_dVg, dVACLM_dVd, dVACLM_dVb, dVACLM_dT;
+>     double VADIBL, dVADIBL_dVg, dVADIBL_dVd, dVADIBL_dVb, dVADIBL_dT;
+>     double VAHCE,  dVAHCE_dVg, dVAHCE_dVd, dVAHCE_dVb;
+>     double Xdep, dXdep_dVb, lt1, dlt1_dVb, ltw, dltw_dVb;
+>     double Delt_vth, dDelt_vth_dVb, dDelt_vth_dT;
+>     double Theta0, dTheta0_dVb, Theta1, dTheta1_dVb;
+181c168
+<   double DIBL_Sft, dDIBL_Sft_dVd, Lambda, dLambda_dVg, dLambda_dVb, dLambda_dVd, dLambda_dVe;
+---
+>     double DIBL_Sft, dDIBL_Sft_dVd, DIBL_fact, Lambda, dLambda_dVg;
+189,190c176,177
+<   double Vdseff, dVdseff_dVg, dVdseff_dVd, dVdseff_dVb, dVdseff_dVe, dVdseff_dT;
+<   double VdseffCV, dVdseffCV_dVg, dVdseffCV_dVd, dVdseffCV_dVb, dVdseffCV_dVe;
+---
+>     double Vdseff, dVdseff_dVg, dVdseff_dVd, dVdseff_dVb, dVdseff_dT;
+>     double VdseffCV, dVdseffCV_dVg, dVdseffCV_dVd, dVdseffCV_dVb;
+193,199c180,187
+<   double dAbulk_dVg, dAbulk_dVd, dAbulk_dVe, dn_dVd ;
+<   double beta, dbeta_dVg, dbeta_dVd, dbeta_dVb, dbeta_dVe, dbeta_dT;
+<   double gche, dgche_dVg, dgche_dVd, dgche_dVb, dgche_dVe, dgche_dT;
+<   double fgche1, dfgche1_dVg, dfgche1_dVd, dfgche1_dVb, dfgche1_dVe, dfgche1_dT;
+<   double fgche2, dfgche2_dVg, dfgche2_dVd, dfgche2_dVb, dfgche2_dVe, dfgche2_dT;
+<   double Idl, dIdl_dVg, dIdl_dVd, dIdl_dVb, dIdl_dVe, dIdl_dT;
+<   double Ids, Gm, Gds, Gmb, dIds_dVg, dIds_dVb, dIds_dVd, dIds_dVe, dIds_dT;
+---
+>     double dAbulk_dVg, dn_dVd ;
+>     double beta, dbeta_dVg, dbeta_dVd, dbeta_dVb, dbeta_dT;
+>     double gche, dgche_dVg, dgche_dVd, dgche_dVb, dgche_dT;
+>     double fgche1, dfgche1_dVg, dfgche1_dVd, dfgche1_dVb, dfgche1_dT;
+>     double fgche2, dfgche2_dVg, dfgche2_dVd, dfgche2_dVb, dfgche2_dT;
+>     double Idl, dIdl_dVg, dIdl_dVd, dIdl_dVb, dIdl_dT;
+>     double Ids, Gm, Gds, Gmb;
+>     double dIds_dT;                                                     /* new line Wagner */
+201,205c189,195
+<   double Rds, dRds_dVg, dRds_dVb, dRds_dVd, dRds_dVe, dRds_dT, WVCox, WVCoxRds, dWVCoxRds_dT;
+<   double dWVCoxRds_dVg, dWVCoxRds_dVb, dWVCoxRds_dVd, dWVCoxRds_dVe;
+<   double Vgst2Vtm, dVgst2Vtm_dT, VdsatCV, dVdsatCV_dVg, dVdsatCV_dVd, dVdsatCV_dVb, dVdsatCV_dVe, dVdsatCV_dT;
+<   double Leff, Weff, dWeff_dVg, dWeff_dVb, dWeff_dVd, dWeff_dVe, dWeff_dT;
+<   double AbulkCV, dAbulkCV_dVg, dAbulkCV_dVb, dAbulkCV_dVd, dAbulkCV_dVe;
+---
+>     double Rds, dRds_dVg, dRds_dVb, dRds_dT, WVCox, WVCoxRds;
+>     double dWVCoxRds_dT;                                                /* new line Wagner */
+>     double dVdsatCV_dT;                                                 /* new line Wagner */
+>     double Vgst2Vtm, dVgst2Vtm_dT, VdsatCV, dVdsatCV_dVd, dVdsatCV_dVg, dVdsatCV_dVb;
+>     double Leff, Weff, dWeff_dVg, dWeff_dVb;
+>     double dWeff_dT;                                                    /* new line Wagner */
+>     double AbulkCV, dAbulkCV_dVb;
+211a202
+>     double junk[50];
+219,220c210
+<   double Vbd, Ves, Vesfb;
+<   double DeltVthtemp, dDeltVthtemp_dVd, dDeltVthtemp_dVe, dDeltVthtemp_dVb, dDeltVthtemp_dVg, dDeltVthtemp_dT;
+---
+>     double Vbd, Ves, Vesfb, sqrtXdep, DeltVthtemp, dDeltVthtemp_dT;
+222,224c212,214
+<   double DeltVthw, dDeltVthw_dVd, dDeltVthw_dVe, dDeltVthw_dVb, dDeltVthw_dVg, dDeltVthw_dT;
+<   double Gm0, Gds0, Gmb0, Gme0, GmT0, GmT;
+<   double dDIBL_Sft_dVg, dDIBL_Sft_dVe, dDIBL_Sft_dVb;
+---
+>     double DeltVthw, dDeltVthw_dVb, dDeltVthw_dT;
+>     double Gm0, Gds0, Gmb0, GmT0, Gmc, GmT;
+>     double dDIBL_Sft_dVb;
+245,247c235,237
+<   double Cgg, Cgd, Cgb, Cge;
+<   double Csg, Csd, Csb, Cse, Cbg, Cbd, Cbb, Cbe, CbeLW;
+<   double Cgg1, Cgb1, Cgd1, Cge1, Cbg1, Cbb1, Cbd1, Cbe1, Csg1, Csd1, Csb1, Cse1;
+---
+>     double Cgg, Cgd, Cgs, Cgb, Cdg, Cdd, Cds, Cdb, Qg, Qd;
+>     double Csg, Csd, Css, Csb, Cbg, Cbd, Cbs, Cbb, Qs, Qb;
+>     double Cgg1, Cgb1, Cgd1, Cbg1, Cbb1, Cbd1, Csg1, Csd1, Csb1;
+269,270c259,260
+<   double Denomi ,dDenomi_dVg, dDenomi_dVd, dDenomi_dVb, dDenomi_dVe, dDenomi_dT;
+<   double Qsub0  ,dQsub0_dVg   ,dQsub0_dVb  ,dQsub0_dVd, dQsub0_dVe ;
+---
+>     double Denomi ,dDenomi_dVg ,dDenomi_dVd ,dDenomi_dVb ,dDenomi_dT;
+>     double Qsub0  ,dQsub0_dVg   ,dQsub0_dVb  ,dQsub0_dVd ;
+295c285
+<   double sqrtPhisExt, dsqrtPhisExt_dVd, dsqrtPhisExt_dVe, dsqrtPhisExt_dVb, dsqrtPhisExt_dVg;
+---
+>     double sqrtPhisExt, dsqrtPhisExt_dVb;
+298c288,289
+<   double dT11_dVb, dT11_dVd, dT11_dVe, dT13_dVb, dT13_dVd, dT13_dVe, dT14_dVb, dT14_dVd, dT14_dVe, dT13_dVg, dT14_dVg;
+---
+>     double dT11_dVb, dT13_dVb, dT14_dVb, dT13_dT;                       /* dT13_dT added -Tanvir*/
+>     double dVgst_dVd;
+318c309
+<     double EhlidFactor, dEhlidFactor_dVb, dEhlidFactor_dT;
+---
+>     double EhlidFactor, dEhlidFactor_dVb, dEhlidFactor_dVd, dEhlidFactor_dT;
+320c311
+<     double dT10_dT, dT11_dT, dT13_dT, DioMax;  /* LFW_FD enhance line */
+---
+>     double dT10_dT, dT11_dT, DioMax;
+326,329c317,320
+<   double CoxWLcen, QovCox, dQac0_dVg, dQac0_dVe, DeltaPhi, dDeltaPhi_dVg, dDeltaPhi_dT;
+<   double  dDeltaPhi_dVd, dDeltaPhi_dVb, dDeltaPhi_dVe;
+<   double dTcen_dVd, dTcen_dVe, dTcen_dT, dCoxeff_dVd, dCoxeff_dT, dCoxWLcenb_dT, qinoi, qbulk, qbulk1;
+<   double dCoxeff_dVe;
+---
+>     double CoxWLcen, QovCox, dQac0_dVg, DeltaPhi, dDeltaPhi_dVg, dDeltaPhi_dVd, dDeltaPhi_dVb;
+>     double dDeltaPhi_dT;                                                /* new line Wagner */
+>     double dTcen_dVd, dTcen_dT, dCoxeff_dVd, dCoxeff_dT, dCoxWLcenb_dT, qinoi, qbulk;
+>     double qbulk1;                                                      /* new line Wagner */
+337c328
+<   double noff, dnoff_dVg, dnoff_dVd, dnoff_dVb, dnoff_dVe;
+---
+>     double noff, dnoff_dVd, dnoff_dVb;
+351,352c342,343
+<   double Igc, dIgc_dVg, dIgc_dVd, dIgc_dVe, dIgc_dVb, Igs, dIgs_dVg, dIgs_dVs, Igd, dIgd_dVg, dIgd_dVd;
+<   double Igcs, dIgcs_dVg, dIgcs_dVd, dIgcs_dVb, dIgcs_dVe, Igcd, dIgcd_dVg, dIgcd_dVd, dIgcd_dVb, dIgcd_dVe;
+---
+>     double Igc, dIgc_dVg, dIgc_dVd, dIgc_dVb, Igs, dIgs_dVg, dIgs_dVs, Igd, dIgd_dVg, dIgd_dVd;
+>     double Igcs, dIgcs_dVg, dIgcs_dVd, dIgcs_dVb, Igcd, dIgcd_dVg, dIgcd_dVd, dIgcd_dVb;
+362,364c353,354
+<   double Vbsitf, dVbsitf_dVg, dVbsitf_dVd, dVbsitf_dVb, dVbsitf_dVe, dVbsitf_dT, dVbs_dVb;
+<   double dVbs_dVg, dVbs_dVd, dVbs_dVe, dVbs_dT;
+<   double dIgb1_dVe, Giie, dRatio_dVe, dVdiff_dVe;
+---
+>     double Vbsitf, dVbsitf_dVg, dVbsitf_dVd, dVbsitf_dVb, dVbsitf_dVe, dVbsitf_dT;
+>     double dIgb1_dVe, gige, Giie, dT0_dVe, dRatio_dVe, dVdiff_dVe;
+382c372
+<   double Vgb, dVgb_dVg, dVgb_dVd, dVgb_dVe, dVgb_dVb, Vox, dVox_dVg, dVox_dVd, dVox_dVb;
+---
+>     double Vgb, dVgb_dVg, dVgb_dVb, Vox, dVox_dVg, dVox_dVd, dVox_dVb;
+388c378
+<   double Voxacc, dVoxacc_dVg, dVoxacc_dVd, dVoxacc_dVe, dVoxacc_dVb, dVoxacc_dT;
+---
+>     double Voxacc, dVoxacc_dVg, dVoxacc_dVd, dVoxacc_dVb, dVoxacc_dT;
+391,392c381,382
+<   double Igb2, dIgb2_dVg, dIgb2_dVd, dIgb2_dVb, dIgb2_dVe, dIgb2_dT;
+<     double gigs, gigd, gigb, gigg, gigT, gige;  /* LFW_FD enhance line */
+---
+>     double Igb2, dIgb2_dVg, dIgb2_dVd, dIgb2_dVb, dIgb2_dT;
+>     double gigs, gigd, gigb, gigg, gigT;
+406,407c396,397
+<   double FP, dFP_dT, dFP_dVg, dFP_dVb, dFP_dVd, dFP_dVe;
+<   double VADITS, dVADITS_dVg, dVADITS_dVd, dVADITS_dVb, dVADITS_dVe, dVADITS_dT; /* for DITS */
+---
+>     double FP, dFP_dT, dFP_dVg;
+>     double VADITS, dVADITS_dVg, dVADITS_dVd, dVADITS_dT; /* for DITS */
+434,435c424,425
+<   double Ig_agbcp2, dIg_agbcp2_dVg, dIg_agbcp2_dVp, dIg_agbcp2_dT;
+<   double vgp_eff, vgp, dvgp_eff_dvg, dvgp_eff_dvp, dvgp_eff_dT;
+---
+>     double Ig_agbcp2, dIg_agbcp2_dVg, dIg_agbcp2_dVp;
+>     double vgp_eff, vgp, dvgp_eff_dvg, dvgp_eff_dvp;
+442c432
+<   double Qac02, dQac02_dVrg, dQac02_dVd, dQac02_dVg, dQac02_dVb, dQac02_dVe, dQac02_dT;
+---
+>     double Qac02, dQac02_dVrg, dQac02_dVd, dQac02_dVg, dQac02_dVb, dQac02_dT;
+446,454c436,446
+<   double Vfb2, dVfb2_dVg, dVfb2_dVd, dVfb2_dVb, dVfb2_dVe, dVfb2_dT;
+<   double Vfbeff2, dVfbeff2_dVd, dVfbeff2_dVrg, dVfbeff2_dVg, dVfbeff2_dVb, dVfbeff2_dVe, dVfbeff2_dT;
+<   double Qsub02, dQsub02_dVg, dQsub02_dVrg, dQsub02_dVd, dQsub02_dVb, dQsub02_dVe, dQsub02_dT;
+<   double VdsatCV2, dVdsatCV2_dVg, dVdsatCV2_dVb, dVdsatCV2_dVd, dVdsatCV2_dVe, dVdsatCV2_dT;
+<   double VdseffCV2, dVdseffCV2_dVg, dVdseffCV2_dVd, dVdseffCV2_dVb, dVdseffCV2_dVe, dVdseffCV2_dT;
+<   double Cbg12, Cbd12, Cbb12, Cbe12;
+<   double Cgg12, Cgd12, Cgb12, Cge12;
+<   double Csg12, Csd12, Csb12, Cse12;
+<   double Tcen2, dTcen2_dVg, dTcen2_dVd, dTcen2_dVb, dTcen2_dVe, dTcen2_dT;
+---
+>     double Vfb2, dVfb2_dVd, dVfb2_dVb, dVfb2_dT;
+>     double Vfbeff2, dVfbeff2_dVd, dVfbeff2_dVrg, dVfbeff2_dVg, dVfbeff2_dVb, dVfbeff2_dT;
+>     double Qsub02, dQsub02_dVg, dQsub02_dVrg, dQsub02_dVd, dQsub02_dVb, dQsub02_dT;
+>     double VdsatCV2, dVdsatCV2_dVg,  dVdsatCV2_dVb;
+>     double dVdsatCV2_dT;                                            /* new line Wagner */
+>     double VdseffCV2, dVdseffCV2_dVg, dVdseffCV2_dVd, dVdseffCV2_dVb;
+>     double dVdseffCV2_dT;                                           /* new line Wagner */
+>     double Cbg12, Cbd12, Cbb12;
+>     double Cgg12, Cgd12, Cgb12;
+>     double Csg12, Csd12, Csb12;
+>     double Tcen2, dTcen2_dVg, dTcen2_dVd, dTcen2_dVb, dTcen2_dT;
+456c448
+<   double Coxeff2, dCoxeff2_dVg, dCoxeff2_dVd, dCoxeff2_dVb, dCoxeff2_dVe, dCoxeff2_dT;
+---
+>     double Coxeff2, dCoxeff2_dVg, dCoxeff2_dVd, dCoxeff2_dVb, dCoxeff2_dT;
+459c451
+<   double DeltaPhi2, dDeltaPhi2_dVg, dDeltaPhi2_dVd, dDeltaPhi2_dVb, dDeltaPhi2_dVe;
+---
+>     double DeltaPhi2, dDeltaPhi2_dVg, dDeltaPhi2_dVd, dDeltaPhi2_dVb;
+465c457
+<   double Csg2, Csd2, Csb2, Cse2;
+---
+>     double Csg2, Csd2, Csb2;
+478,479d469
+<   double tt1, t0,t1,dt1_dVg,dt1_dVb,t2,dt2_dVg,dt2_dVb,tdelta ;
+<   double dt1_dVd,dt1_dVe,dt2_dVd,dt2_dVe;
+1037d1026
+< 
+1167c1156
+<             /* T1 = sqrt(EPSSI / (model->B4SOIepsrox * EPSOX / 3.9)      Bug fix #3 Jun 09 Body type is generalized for mtrlMod 1*/
+---
+>             /* T1 = sqrt(EPSSI / (model->B4SOIepsrox * EPSOX / 3.9)                     /* Bug fix #3 Jun 09 Body type is generalized for mtrlMod 1*/
+1664c1653,1654
+<         Vgs_eff2 = Vgs;
+---
+>         if (here->B4SOIagbcp2 > 0)
+>         {   Vgs_eff2 = Vgs;
+1665a1656
+>         }
+1691,1696d1681
+<             /* LFW_FD 5 new lines */
+<             dVbs_dVg = 0.0;
+<             dVbs_dVd = 0.0;
+<             dVbs_dVb = 1.0;
+<             dVbs_dVe = 0.0;
+<             dVbs_dT = 0.0;
+1716,1717c1701
+<                  /* dVbs0t_dT = T1 * dvbi_dT; */
+<                     dVbs0t_dT = (1.0 - T1) * dphi_dT + T1 * dvbi_dT;   /* LFW_FD new line */
+---
+>                     dVbs0t_dT = T1 * dvbi_dT;
+1729d1712
+<                 dVbs0_dVd = 0.0;   /* flexilint */
+1747,1748c1730
+<                  /* dVbs0t_dT = 0.0;  LFW_FD changed line */
+<                     dVbs0t_dT = model->B4SOIcsi * T0 * dphi_dT;
+---
+>                     dVbs0t_dT = 0.0;
+1771,1772c1753
+<          /* dVbs0mos_dVd = dVbs0_dVd + T5 * (dVbs0t_dVd - dVbs0_dVd);   LFW_FD  */
+<             dVbs0mos_dVd = dVbs0_dVd * (1 + T5) - T5 * dVbs0t_dVd;
+---
+>             dVbs0mos_dVd = dVbs0_dVd + T5 * (dVbs0t_dVd - dVbs0_dVd);   /* v4.1 */
+1795c1776
+<         /*  dPhis_dVb = -1;     LFW_FD not used  */
+---
+>             dPhis_dVb = -1; /* w.r.t Vbs0mos */
+1940c1921
+<                 /*dDelt_vth_dT = here->B4SOIthetavth * (dvbi_dT - dphi_dT);  */
+---
+>                 /*dDelt_vth_dT = here->B4SOIthetavth * (dvbi_dT - dphi_dT); /* v4.1 */
+1962c1943
+<                 /* dDeltVthw_dT = T0 * (dvbi_dT - dphi_dT); v4.1 */ /* v4.2 bugfix temp deriv */
+---
+>                 /* dDeltVthw_dT = T0 * (dvbi_dT - dphi_dT); /* v4.1 */ /* v4.2 bugfix temp deriv */
+1979c1960
+<                    + T1 / model->B4SOItnom;     v4.1 */ /* v4.2 bugfix temp deriv */
+---
+>                    + T1 / model->B4SOItnom;  /* v4.1 */ /* v4.2 bugfix temp deriv */
+2038c2019
+<                 /*   dVthFD_dT = dDeltVthtemp_dT - dDelt_vth_dT
+---
+>                 dVthFD_dT = dDeltVthtemp_dT - dDelt_vth_dT
+2042,2048c2023
+<                              - pParam->B4SOIk1eff * dsqrtPhi_dT);     v4.1 */
+<                 /* LFW_FD fixed expression */
+<                 dVthFD_dT = (pParam->B4SOIk1ox * dsqrtPhis_dT - pParam->B4SOIk1eff * dsqrtPhi_dT) * Lpe_Vb
+<                             - here->B4SOIk2ox * dVbs0mos_dT - dDelt_vth_dT - dDeltVthw_dT
+<                             + pParam->B4SOIk3b * dVbs0mos_dT * tmp2
+<                             + (pParam->B4SOIk3 + pParam->B4SOIk3b * Vbs0mos) * dtmp2_dT
+<                             + dDeltVthtemp_dT - dDIBL_Sft_dT - dDITS_Sft_dT;
+---
+>                             - pParam->B4SOIk1eff * dsqrtPhi_dT);  /* v4.1 */
+2056c2031
+<             DEXP( ((VtgsFD - model->B4SOIvofffd)/ T10), ExpVtgsFD, T0);
+---
+>             DEXP((VtgsFD - model->B4SOIvofffd)/ T10, ExpVtgsFD, T0);
+2072c2047
+<             DEXP( ((VgstFD - model->B4SOIvofffd)/ T10), ExpVgstFD, T0);
+---
+>             DEXP((VgstFD - model->B4SOIvofffd)/ T10, ExpVgstFD, T0);
+2198,2207c2173,2175
+<               /*dVbsitf_dVb = 0.0;                   */
+<               /*if (selfheat) dVbsitf_dT = dVbs0_dT; */
+<               /*else dVbsitf_dT = 0;                 */
+<                 /* LFW_FD fix */
+<                 dVbs_dVg = dVbsitf_dVg;
+<                 dVbs_dVd = dVbsitf_dVd;
+<                 dVbs_dVb = dVbsitf_dVb = 0.0;
+<                 dVbs_dVe = dVbsitf_dVe;
+<                 if (selfheat) {dVbsitf_dT = dVbs0_dT; dVbs_dT = dVbsitf_dT;}
+<                 else {dVbsitf_dT = 0; dVbs_dT = 0;}
+---
+>                 dVbsitf_dVb = 0.0;
+>                 if (selfheat) dVbsitf_dT = dVbs0_dT;
+>                 else dVbsitf_dT = 0;
+2219,2226d2186
+<                 /* LFW_FD  7 new lines */
+<         /* Note that Vbs has not been redefined */
+<         /*      dVbs_dVb = dVbsitf_dVb;         */
+<                 dVbs_dVg = 0.0;
+<                 dVbs_dVd = 0.0;
+<                 dVbs_dVb = 1.0;
+<                 dVbs_dVe = 0.0;
+<                 dVbs_dT  = 0.0;
+2302,2316c2262,2267
+<       /* LFW_FD comment out next 6 lines           */
+<       /*if (dVbseff_dVb < 1e-20) {                 */
+<       /*    dVbseff_dVb = 1e-20;                   */
+<       /*    dVbsh_dVb *= 1e20;                     */
+<       /*}                                          */
+<       /*else                                       */
+<       /*    dVbsh_dVb /= dVbseff_dVb;              */
+<       /*=======================================================================*/
+<       /* Some derivatives were originally taken w.r.t. Vbseff, and named *_dVb */
+<       /* Later in the code, they were corrected by multiplying or dividing     */
+<       /* by dVbseff_dVb.                                                       */
+<       /* Now, all derivatives labeled *_dVb are taken w.r.t. Vbs               */
+<       /* The correction factor "dVbseff_dVb" has been removed where it is      */
+<       /* no longer needed.                                                     */
+<       /*=======================================================================*/
+---
+>         if (dVbseff_dVb < 1e-20) {
+>             dVbseff_dVb = 1e-20;
+>             dVbsh_dVb *= 1e20;
+>         }
+>         else
+>             dVbsh_dVb /= dVbseff_dVb;
+2319c2270
+<     /*  dPhis_dVb = -1;     LFW_FD not uesed */
+---
+>         dPhis_dVb = -1;
+2321,2326c2272
+<       /*dsqrtPhis_dVb = -0.5 / sqrtPhis; */
+<       /* LFW_FD  fix/add 4 lines */
+<         dsqrtPhis_dVg = -0.5 * dVbseff_dVg / sqrtPhis;
+<         dsqrtPhis_dVd = -0.5 * dVbseff_dVd / sqrtPhis;
+<         dsqrtPhis_dVb = -0.5 * dVbseff_dVb / sqrtPhis;
+<         dsqrtPhis_dVe = -0.5 * dVbseff_dVe / sqrtPhis;
+---
+>         dsqrtPhis_dVb = -0.5 / sqrtPhis;
+2329,2334c2275
+<       /*dXdep_dVb = (Xdep0 / sqrtPhi) * dsqrtPhis_dVb; */
+<       /* LFW_FD  fix/add 4 lines */
+<         dXdep_dVg = Xdep0 * dsqrtPhis_dVg / sqrtPhi;
+<         dXdep_dVd = Xdep0 * dsqrtPhis_dVd / sqrtPhi;
+<         dXdep_dVb = Xdep0 * dsqrtPhis_dVb / sqrtPhi;
+<         dXdep_dVe = Xdep0 * dsqrtPhis_dVe / sqrtPhi;
+---
+>         dXdep_dVb = (Xdep0 / sqrtPhi) * dsqrtPhis_dVb;
+2351,2352c2292
+< /*      here->B4SOInstar = model->B4SOIvtm / Charge_q *  */
+<         here->B4SOInstar = Vtm / Charge_q *
+---
+>         here->B4SOInstar = model->B4SOIvtm / Charge_q *
+2369,2374c2309
+<      /* dlt1_dVb =model->B4SOIfactor1 * (0.5 / T3 * T1 * dXdep_dVb + T3 * T2); */
+<      /* LFW_FD fix/add 4 lines */
+<         dlt1_dVg = model->B4SOIfactor1 * (T3 * T2 * dVbseff_dVg + 0.5 * T1 * dXdep_dVg / T3);
+<         dlt1_dVd = model->B4SOIfactor1 * (T3 * T2 * dVbseff_dVd + 0.5 * T1 * dXdep_dVd / T3);
+<         dlt1_dVb = model->B4SOIfactor1 * (T3 * T2 * dVbseff_dVb + 0.5 * T1 * dXdep_dVb / T3);
+<         dlt1_dVe = model->B4SOIfactor1 * (T3 * T2 * dVbseff_dVe + 0.5 * T1 * dXdep_dVe / T3);
+---
+>         dlt1_dVb =model->B4SOIfactor1 * (0.5 / T3 * T1 * dXdep_dVb + T3 * T2);
+2392,2397c2327
+<      /* dltw_dVb=model->B4SOIfactor1*(0.5 / T3 * T1 * dXdep_dVb + T3 * T2); */
+<      /* LFW_FD fix/add 4 lines */
+<         dltw_dVg = model->B4SOIfactor1 * (T3 * T2 * dVbseff_dVg + 0.5 * T1 * dXdep_dVg / T3);
+<         dltw_dVd = model->B4SOIfactor1 * (T3 * T2 * dVbseff_dVd + 0.5 * T1 * dXdep_dVd / T3);
+<         dltw_dVb = model->B4SOIfactor1 * (T3 * T2 * dVbseff_dVb + 0.5 * T1 * dXdep_dVb / T3);
+<         dltw_dVe = model->B4SOIfactor1 * (T3 * T2 * dVbseff_dVe + 0.5 * T1 * dXdep_dVe / T3);
+---
+>         dltw_dVb=model->B4SOIfactor1*(0.5 / T3 * T1 * dXdep_dVb + T3 * T2);
+2407,2416c2337,2340
+<           /*dT1_dVb = -T0 / lt1 * T1 * dlt1_dVb;                           */
+<           /*dTheta0_dVb = (1.0 + 4.0 * T1) * dT1_dVb;                      */
+<           /*dT1_dT = -T0 / lt1 * T1 * dlt1_dT;      v4.2 bugfix temp deriv */
+<           /*dTheta0_dT = (1.0 + 4.0 * T1) * dT1_dT;    v4.2 bugfix temp deriv */
+<             /* LFW_FD fix 5 derivatives */
+<             dTheta0_dVg = -(1.0 + 4.0 * T1) * T1 * T0 * dlt1_dVg / lt1;
+<             dTheta0_dVd = -(1.0 + 4.0 * T1) * T1 * T0 * dlt1_dVd / lt1;
+<             dTheta0_dVb = -(1.0 + 4.0 * T1) * T1 * T0 * dlt1_dVb / lt1;
+<             dTheta0_dVe = -(1.0 + 4.0 * T1) * T1 * T0 * dlt1_dVe / lt1;
+<             dTheta0_dT  = -(1.0 + 4.0 * T1) * T1 * T0 * dlt1_dT  / lt1;
+---
+>             dT1_dVb = -T0 / lt1 * T1 * dlt1_dVb;
+>             dTheta0_dVb = (1.0 + 4.0 * T1) * dT1_dVb;
+>             dT1_dT = -T0 / lt1 * T1 * dlt1_dT;   /* v4.2 bugfix temp deriv */
+>             dTheta0_dT = (1.0 + 4.0 * T1) * dT1_dT; /* v4.2 bugfix temp deriv */
+2421,2423d2344
+<             /* LFW_FD fix 5 derivatives */
+<             dTheta0_dVg = 0.0;
+<             dTheta0_dVd = 0.0;
+2425d2345
+<             dTheta0_dVe = 0.0;
+2431,2433d2350
+<         /* LFW_FD add 3 derivatives */
+<         dT2_dVg = - T2 / Xdep * dXdep_dVg;
+<         dT2_dVd = - T2 / Xdep * dXdep_dVd;
+2435d2351
+<         dT2_dVe = - T2 / Xdep * dXdep_dVe;
+2439,2444c2355,2357
+<         /* LFW_FD add/fix 5 derivatives */
+<         dT3_dVg = pParam->B4SOIcdscb * dVbseff_dVg;
+<         dT3_dVd = pParam->B4SOIcdscb * dVbseff_dVd + pParam->B4SOIcdscd;
+<         dT3_dVb = pParam->B4SOIcdscb * dVbseff_dVb;
+<         dT3_dVe = pParam->B4SOIcdscb * dVbseff_dVe;
+<         dT3_dT =  pParam->B4SOIcdscb * dVbseff_dT; /* LFW */
+---
+>         dT3_dVb = pParam->B4SOIcdscb;
+>         dT3_dVd = pParam->B4SOIcdscd;
+>         dT3_dT =  pParam->B4SOIcdscb * dVbseff_dT;   /* new line Wagner */
+2447,2452c2360,2362
+<         /* LFW_FD add/fix 5 derivatives */
+<         dT4_dVg = (dT2_dVg + T3 * dTheta0_dVg + Theta0 * dT3_dVg) / model->B4SOIcox;
+<         dT4_dVd = (dT2_dVd + T3 * dTheta0_dVd + Theta0 * dT3_dVd) / model->B4SOIcox;
+<         dT4_dVb = (dT2_dVb + T3 * dTheta0_dVb + Theta0 * dT3_dVb) / model->B4SOIcox;
+<         dT4_dVe = (dT2_dVe + T3 * dTheta0_dVe + Theta0 * dT3_dVe) / model->B4SOIcox;
+<         dT4_dT = (dT2_dT + dTheta0_dT* T3 + Theta0*dT3_dT)/ model->B4SOIcox; /* LFW */
+---
+>         dT4_dVb = (dT2_dVb + Theta0 * dT3_dVb + dTheta0_dVb * T3)
+>             / model->B4SOIcox;
+>         dT4_dVd = Theta0 * dT3_dVd / model->B4SOIcox;
+2453a2364,2366
+>       /* fix below expression Wagner */
+>       /*dT4_dT = (dT2_dT + dTheta0_dT* T3)/ model->B4SOIcox;    v4.2 bugfix temp deriv */
+>         dT4_dT = (dT2_dT + dTheta0_dT* T3 + Theta0*dT3_dT)/ model->B4SOIcox;
+2456d2368
+<             dn_dVg = dT4_dVg;
+2459d2370
+<             dn_dVe = dT4_dVe;
+2470d2380
+<             dn_dVg = T0 * dT4_dVg;
+2473c2383
+<             dn_dVe = T0 * dT4_dVe;
+---
+>           /*dn_dT = T0 * (3.0 - 8.0 * T5 * T0) * dT4_dT;  wrong place - see 3 lines above Wagner */
+2509,2511d2418
+<         /* LFW_FD add/fix 4 derivatives */
+<         dDelt_vth_dVg = pParam->B4SOIdvt0 * dTheta0_dVg * V0;
+<         dDelt_vth_dVd = pParam->B4SOIdvt0 * dTheta0_dVd * V0;
+2513d2419
+<         dDelt_vth_dVe = pParam->B4SOIdvt0 * dTheta0_dVe * V0;
+2523,2532c2429,2432
+<           /*dT1_dVb = -T0 / ltw * T1 * dltw_dVb;                         */
+<           /*dT2_dVb = (1.0 + 4.0 * T1) * dT1_dVb;                        */
+<           /*dT1_dT = -T0 / ltw * T1 * dltw_dT;    v4.2 bugfix temp deriv */
+<           /*dT2_dT = (1.0 + 4.0 * T1) * dT1_dT;   v4.2 bugfix temp deriv */
+<           /* LFW_FD add/fix 5 derivatives */
+<             dT2_dVg = -(1.0 + 4.0 * T1) * T1 * T0 * dltw_dVg / ltw;
+<             dT2_dVd = -(1.0 + 4.0 * T1) * T1 * T0 * dltw_dVd / ltw;
+<             dT2_dVb = -(1.0 + 4.0 * T1) * T1 * T0 * dltw_dVb / ltw;
+<             dT2_dVe = -(1.0 + 4.0 * T1) * T1 * T0 * dltw_dVe / ltw;
+<             dT2_dT  = -(1.0 + 4.0 * T1) * T1 * T0 * dltw_dT  / ltw;
+---
+>             dT1_dVb = -T0 / ltw * T1 * dltw_dVb;
+>             dT2_dVb = (1.0 + 4.0 * T1) * dT1_dVb;
+>             dT1_dT = -T0 / ltw * T1 * dltw_dT; /* v4.2 bugfix temp deriv */
+>             dT2_dT = (1.0 + 4.0 * T1) * dT1_dT;/* v4.2 bugfix temp deriv */
+2537,2539d2436
+<           /* LFW_FD add/fix 5 derivatives */
+<             dT2_dVg = 0.0;
+<             dT2_dVd = 0.0;
+2541,2542c2438
+<             dT2_dVe = 0.0;
+<             dT2_dT = 0.0;
+---
+>             dT2_dT = 0.0;     /* new line Wagner */
+2547,2549d2442
+<       /* LFW_FD add/fix 5 derivatives */
+<         dDeltVthw_dVg = pParam->B4SOIdvt0w * dT2_dVg * V0;
+<         dDeltVthw_dVd = pParam->B4SOIdvt0w * dT2_dVd * V0;
+2551,2553c2444,2445
+<         dDeltVthw_dVe = pParam->B4SOIdvt0w * dT2_dVe * V0;
+<         if (selfheat)
+<         dDeltVthw_dT = T0 * (dvbi_dT - dphi_dT) + pParam->B4SOIdvt0w * dT2_dT * V0;
+---
+>         if (selfheat)   /*dDeltVthw_dT = T0 * dvbi_dT;*/ /* v4.2 bugfix temp deriv */
+>             dDeltVthw_dT = T0 * (dvbi_dT - dphi_dT) + pParam->B4SOIdvt0w * dT2_dT * V0; /* v4.2 bugfix temp deriv */
+2561,2565d2452
+<       /* LFW_FD add/fix 5 derivatives */
+<         dDeltVthtemp_dVg = TempRatioMinus1 * pParam->B4SOIkt2 * dVbseff_dVg;
+<         dDeltVthtemp_dVd = TempRatioMinus1 * pParam->B4SOIkt2 * dVbseff_dVd;
+<         dDeltVthtemp_dVb = TempRatioMinus1 * pParam->B4SOIkt2 * dVbseff_dVb;
+<         dDeltVthtemp_dVe = TempRatioMinus1 * pParam->B4SOIkt2 * dVbseff_dVe;
+2566a2454,2456
+>             /*dDeltVthtemp_dT = T1 / model->B4SOItnom; */ /* v4.2 bugfix temp deriv */
+>           /* fix below expression Wagner */
+>           /*dDeltVthtemp_dT = pParam->B4SOIk1ox * (T0 - 1.0) * dsqrtPhi_dT + T1 / model-> B4SOItnom;    v4.2 bugfix temp deriv */
+2579,2583c2469
+<             /* LFW_FD add/fix 4 derivatives */
+<             dT3_dVg = T4 * dVbseff_dVg;
+<             dT3_dVd = T4 * dVbseff_dVd;
+<             dT3_dVb = T4 * dVbseff_dVb;
+<             dT3_dVe = T4 * dVbseff_dVe;
+---
+>             dT3_dVb = T4 ;
+2587,2591c2473
+<             /* LFW_FD add/fix 4 derivatives */
+<             dT3_dVg = pParam->B4SOIetab * dVbseff_dVg;
+<             dT3_dVd = pParam->B4SOIetab * dVbseff_dVd;
+<             dT3_dVb = pParam->B4SOIetab * dVbseff_dVb;
+<             dT3_dVe = pParam->B4SOIetab * dVbseff_dVe;
+---
+>             dT3_dVb = pParam->B4SOIetab ;
+2595c2477
+<            dDIBL_Sft_dVb = pParam->B4SOItheta0vb0 * Vds * dT3_dVb;  v4.2 bugfix */
+---
+>            dDIBL_Sft_dVb = pParam->B4SOItheta0vb0 * Vds * dT3_dVb; /* v4.2 bugfix */
+2597,2599c2479
+<       /* LFW_FD add/fix 4 derivatives */
+<         dDIBL_Sft_dVg = theta0vb0 * Vds * dT3_dVg;
+<         dDIBL_Sft_dVd = theta0vb0 * (Vds * dT3_dVd + T3) ;
+---
+>         dDIBL_Sft_dVd = theta0vb0 * T3;
+2601c2481,2482
+<         dDIBL_Sft_dVe = theta0vb0 * Vds * dT3_dVe;
+---
+>       /* fix below expression Wagner */
+>       /*dDIBL_Sft_dT = T3 * Vds * dtheta0vb0_dT;    v4.2 bug fix */
+2603d2483
+< 
+2608,2612c2488,2490
+<       /* LFW_FD add/fix 4 derivatives */
+<         dsqrtPhisExt_dVg = dsqrtPhis_dVg - T9 * (dVbsh_dVg - dVbseff_dVg);
+<         dsqrtPhisExt_dVd = dsqrtPhis_dVd - T9 * (dVbsh_dVd - dVbseff_dVd);
+<         dsqrtPhisExt_dVb = dsqrtPhis_dVb - T9 * (dVbsh_dVb - dVbseff_dVb);
+<         dsqrtPhisExt_dVe = dsqrtPhis_dVe - T9 * (dVbsh_dVe - dVbseff_dVe);
+---
+>         dsqrtPhisExt_dVb = dsqrtPhis_dVb - T9 * (dVbsh_dVb - 1);
+>       /* fix 1st line of below expression Wagner */
+>       /*dsqrtPhisExt_dT = dsqrtPhis_dT - T9 * (dVbsh_dT) */
+2627,2632c2505,2510
+<       /* LFW_FD add/fix 2 derivatives */
+<         dVth_dVg = pParam->B4SOIk1ox * dsqrtPhisExt_dVg * Lpe_Vb
+<                  - here->B4SOIk2ox * dVbseff_dVg - dDelt_vth_dVg  - dDeltVthw_dVg
+<                  + pParam->B4SOIk3b * dVbseff_dVg * tmp2
+<                  + dDeltVthtemp_dVg - dDIBL_Sft_dVg;   /* LFW_FD fix line */
+<         dvth0_dT=0;
+---
+>         if (selfheat){
+>             if (!model->B4SOIvth0Given)
+>                 dvth0_dT = dphi_dT + pParam->B4SOIk1eff * dsqrtPhi_dT;
+>             else dvth0_dT=0;}
+> 
+>         else dvth0_dT=0;        /* v4.2 temp deriv */
+2640,2641c2518,2520
+< 
+<       /* LFW_FD add/fix 4 derivatives */
+---
+>         dVth_dVb = Lpe_Vb * pParam->B4SOIk1ox * dsqrtPhisExt_dVb
+>             - dDelt_vth_dVb - dDeltVthw_dVb
+>             + T6 - dDIBL_Sft_dVb - dDITS_Sft_dVb;
+2643,2656c2522,2523
+<         dVth_dVb = pParam->B4SOIk1ox * dsqrtPhisExt_dVb * Lpe_Vb
+<                    - here->B4SOIk2ox * dVbseff_dVb - dDelt_vth_dVb - dDeltVthw_dVb
+<                    + pParam->B4SOIk3b * dVbseff_dVb * tmp2
+<                    + dDeltVthtemp_dVb - dDIBL_Sft_dVb - dDITS_Sft_dVb;
+< 
+<         dVth_dVd = pParam->B4SOIk1ox * dsqrtPhisExt_dVd * Lpe_Vb
+<                    - here->B4SOIk2ox * dVbseff_dVd - dDelt_vth_dVd - dDeltVthw_dVd
+<                    + pParam->B4SOIk3b * dVbseff_dVd * tmp2
+<                    + dDeltVthtemp_dVd - dDIBL_Sft_dVd - dDITS_Sft_dVd - dDITS_Sft2_dVd;
+< 
+<         dVth_dVe = pParam->B4SOIk1ox * dsqrtPhisExt_dVe * Lpe_Vb
+<                    - here->B4SOIk2ox * dVbseff_dVe - dDelt_vth_dVe - dDeltVthw_dVe
+<                    + pParam->B4SOIk3b * dVbseff_dVe * tmp2
+<                    + dDeltVthtemp_dVe - dDIBL_Sft_dVe;  /* LFW_FD fix line */
+---
+> 
+>         dVth_dVd = -dDIBL_Sft_dVd - dDITS_Sft_dVd - dDITS_Sft2_dVd;
+2660a2528,2531
+>           /* fix below expression Wagner */
+>           /*dVth_dT = dDeltVthtemp_dT - dDelt_vth_dT - dDeltVthw_dT - dDITS_Sft_dT
+>                 +(pParam->B4SOIk1ox * dsqrtPhisExt_dT- pParam->B4SOIk1eff * dsqrtPhi_dT) * Lpe_Vb
+>                 + model->B4SOItype * dvth0_dT - dDIBL_Sft_dT;     v4.2 temp deriv */
+2665a2537
+> 
+2721a2594
+>             dVthzb_dT = dDeltVthtempzb_dT - dDelt_vthzb_dT - dDeltVthwzb_dT;
+2723,2726c2596,2597
+<             /* Vthzb2 = Vthzb + 1.12;    v4.1 */ /* v4.2 never used */
+<         } else                      /* LFW_FD */
+<           Vthzb = dVthzb_dT = 0.0;  /* LFW_FD flexilint */
+< 
+---
+>             /* Vthzb2 = Vthzb + 1.12; /* v4.1 */ /* v4.2 never used */
+>         }
+2730c2601
+<         dVgst_dVg = dVgs_eff_dVg - dVth_dVg;  /* LFW_FD fix derivative */
+---
+>         dVgst_dVg = dVgs_eff_dVg;
+2733c2604
+<         dVgst_dVe = -dVth_dVe;               /* LFW_FD new line */
+---
+>         /* 4 new lines Wagner */
+2741,2751c2612,2614
+<       /* LFW_FD add/fix 4 derivatives */
+<         dVgstNVt_dVg = (pParam->B4SOImstar * dVgst_dVg - VgstNVt * dn_dVg * Vtm) / T10;
+<         dVgstNVt_dVd = (pParam->B4SOImstar * dVgst_dVd - VgstNVt * dn_dVd * Vtm) / T10;
+<         dVgstNVt_dVb = (pParam->B4SOImstar * dVgst_dVb - VgstNVt * dn_dVb * Vtm) / T10;
+<         dVgstNVt_dVe = (pParam->B4SOImstar * dVgst_dVe - VgstNVt * dn_dVe * Vtm) / T10;
+<         ExpArg = (pParam->B4SOIvoff - (1- pParam->B4SOImstar) * Vgst)/T10;  /* LFW_FD */
+<       /* LFW_FD add/fix 4 derivatives */
+<         dExpArg_dVg = (-(1- pParam->B4SOImstar) * dVgst_dVg - ExpArg * dn_dVg * Vtm) / T10;
+<         dExpArg_dVd = (-(1- pParam->B4SOImstar) * dVgst_dVd - ExpArg * dn_dVd * Vtm) / T10;
+<         dExpArg_dVb = (-(1- pParam->B4SOImstar) * dVgst_dVb - ExpArg * dn_dVb * Vtm) / T10;
+<         dExpArg_dVe = (-(1- pParam->B4SOImstar) * dVgst_dVe - ExpArg * dn_dVe * Vtm) / T10;
+---
+>         ExpArg = (pParam->B4SOIvoff - (1- pParam->B4SOImstar) * Vgst)
+>             / T10;              /* v4.0 */
+>         /* 11 new lines Wagner */
+2753a2617,2618
+>           /*fix below expression Wagner */
+>           /*dVgstNVt_dT = -(pParam->B4SOImstar*dVth_dT + VgstNVt*dT10_dT)/T10; */
+2754a2620,2621
+>           /*fix 1st line of below expression Wagner */
+>           /*dExpArg_dT =  (1- pParam->B4SOImstar)*dVth_dT/T10  */
+2764,2765d2630
+<       /* LFW_FD new line */
+<         dExpVgst_dVg = dExpVgst_dVd = dExpVgst_dVb = dExpVgst_dVe = dExpVgst_dT = 0.0;
+2768,2769c2633
+<         {   ExpVgst = 1.0;      /* LFW_FD flexilint */
+<             Vgsteff = Vgst;
+---
+>         {   Vgsteff = Vgst;
+2772,2776c2636,2639
+<           /* LFW_FD add/fix 5 derivatives */
+<             dVgsteff_dVg = dVgst_dVg;
+<             dVgsteff_dVd = dVgst_dVd;
+<             dVgsteff_dVb = dVgst_dVb;
+<             dVgsteff_dVe = dVgst_dVe;
+---
+>             dVgsteff_dVg = dVgs_eff_dVg + T0 * dVbseff_dVg; /* v3.0 */
+>             dVgsteff_dVd = -dVth_dVd + T0 * dVbseff_dVd; /* v3.0 */
+>             dVgsteff_dVb = T0 * dVbseff_dVb;
+>             dVgsteff_dVe = T0 * dVbseff_dVe; /* v3.0 */
+2778c2641,2643
+<                dVgsteff_dT = dVgst_dT                  ; /* LFW */
+---
+>               /*fix below expression Wagner */
+>               /*dVgsteff_dT  = -dVth_dT + T0 * dVbseff_dT;    v3.0 */
+>                 dVgsteff_dT = dVgst_dT;
+2780a2646
+>             dExpVgst_dT = 0.0;    /* new line Wagner */
+2785,2789d2650
+<           /* LFW_FD add/fix 4 derivatives */
+<             dExpVgst_dVg = (dVgst_dVg - T0 * dn_dVg * Vtm) /(n * Vtm);
+<             dExpVgst_dVd = (dVgst_dVd - T0 * dn_dVd * Vtm) /(n * Vtm);
+<             dExpVgst_dVb = (dVgst_dVb - T0 * dn_dVb * Vtm) /(n * Vtm);
+<             dExpVgst_dVe = (dVgst_dVe - T0 * dn_dVe * Vtm) /(n * Vtm);
+2794,2800c2655,2659
+<           /*T1  = -T3 * (dVth_dVb + T0 * Vtm * dn_dVb);*/
+<           /* LFW_FD fix T1 and 4 derivatives */
+<             T1  = -T3 * (           T0 * Vtm * dn_dVb);
+<             dVgsteff_dVg = Vtm * cdep0 / model->B4SOIcox * dExpVgst_dVg;
+<             dVgsteff_dVd = Vtm * cdep0 / model->B4SOIcox * dExpVgst_dVd;
+<             dVgsteff_dVb = Vtm * cdep0 / model->B4SOIcox * dExpVgst_dVb;
+<             dVgsteff_dVe = Vtm * cdep0 / model->B4SOIcox * dExpVgst_dVe;
+---
+>             T1  = -T3 * (dVth_dVb + T0 * Vtm * dn_dVb);
+>             dVgsteff_dVg = T3 * dVgs_eff_dVg+ T1 * dVbseff_dVg; /* v3.0 */
+>             dVgsteff_dVd = -T3 * (dVth_dVd + T0 * Vtm * dn_dVd)+ T1 * dVbseff_dVd; /* v3.0 */
+>             dVgsteff_dVe = T1 * dVbseff_dVe; /* v3.0 */
+>             dVgsteff_dVb = T1 * dVbseff_dVb;
+2804c2663
+<                    + Vgsteff / Temp+ T1 * dVbseff_dT;    v3.0 */ /* v4.2 temp deriv*/
+---
+>                    + Vgsteff / Temp+ T1 * dVbseff_dT; /* v3.0 */ /* v4.2 temp deriv*/
+2818,2822d2676
+<           /* LFW_FD add/fix 4 derivatives */
+<             dExpVgst_dVg = ExpVgst * dVgstNVt_dVg;
+<             dExpVgst_dVd = ExpVgst * dVgstNVt_dVd;
+<             dExpVgst_dVb = ExpVgst * dVgstNVt_dVb;
+<             dExpVgst_dVe = ExpVgst * dVgstNVt_dVe;
+2829,2833c2683,2687
+<           /* LFW_FD add/fix 4 derivatives */
+<             dT1_dVg = T10 * dExpVgst_dVg / (1.0 + ExpVgst) + T1 * dn_dVg / n;
+<             dT1_dVd = T10 * dExpVgst_dVd / (1.0 + ExpVgst) + T1 * dn_dVd / n;
+<             dT1_dVb = T10 * dExpVgst_dVb / (1.0 + ExpVgst) + T1 * dn_dVb / n;
+<             dT1_dVe = T10 * dExpVgst_dVe / (1.0 + ExpVgst) + T1 * dn_dVe / n;
+---
+>             dT1_dVg = ExpVgst / (1.0 + ExpVgst) * pParam->B4SOImstar;
+>             dT1_dVb = -dT1_dVg * (dVth_dVb + Vgst / n * dn_dVb)
+>                 + T1 / n * dn_dVb;
+>             dT1_dVd = -dT1_dVg * (dVth_dVd + Vgst / n * dn_dVd)
+>                 + T1 / n * dn_dVd;
+2850,2859c2704,2709
+<           /* LFW_FD fix all 5 T2 derivatives */
+<             TL1 = dT2_dVg;
+<             dTL1_dVg = TL1 * dExpArg_dVg;
+<             dTL1_dVd = TL1 * dExpArg_dVd;
+<             dTL1_dVb = TL1 * dExpArg_dVb;
+<             dTL1_dVe = TL1 * dExpArg_dVe;
+<             dT2_dVg  = -(dn_dVg * Vtm * TL1 + T10 * dTL1_dVg) / (1.0 - pParam->B4SOImstar);
+<             dT2_dVd  = -(dn_dVd * Vtm * TL1 + T10 * dTL1_dVd) / (1.0 - pParam->B4SOImstar);
+<             dT2_dVb  = -(dn_dVb * Vtm * TL1 + T10 * dTL1_dVb) / (1.0 - pParam->B4SOImstar);
+<             dT2_dVe  = -(dn_dVe * Vtm * TL1 + T10 * dTL1_dVe) / (1.0 - pParam->B4SOImstar);
+---
+>             dT2_dVd = -dT2_dVg * (dVth_dVd - Vtm * ExpArg * dn_dVd
+>                     / (1.0 - pParam->B4SOImstar))
+>                 + (T2 - pParam->B4SOImstar) / n * dn_dVd;
+>             dT2_dVb = -dT2_dVg * (dVth_dVb - Vtm * ExpArg * dn_dVb
+>                     / (1.0 - pParam->B4SOImstar))
+>                 + (T2 - pParam->B4SOImstar) / n * dn_dVb;
+2861,2862c2711,2715
+<                dT2_dT = -(dT10_dT * TL1
+<                           +T10*TL1*(-dVtm_dT/Vtm-dcdep0_dT/cdep0+dExpArg_dT)
+---
+>               /*fix below expression Wagner */
+>               /*dT2_dT = -dT2_dVg * ( dVth_dT - ExpArg * T10 * T3
+>                         / (1.0 - pParam->B4SOImstar) ); */
+>                 dT2_dT = -(dT10_dT*dT2_dVg
+>                            +T10*dT2_dVg*(-dVtm_dT/Vtm-dcdep0_dT/cdep0+dExpArg_dT)
+2871,2875c2724,2730
+<           /* LFW_FD fix 4 derivatives */
+<             dVgsteff_dVg = (T2 * dT1_dVg - T1 * dT2_dVg) / T3;
+<             dVgsteff_dVd = (T2 * dT1_dVd - T1 * dT2_dVd) / T3;
+<             dVgsteff_dVb = (T2 * dT1_dVb - T1 * dT2_dVb) / T3;
+<             dVgsteff_dVe = (T2 * dT1_dVe - T1 * dT2_dVe) / T3;
+---
+>             dVgsteff_dVb = T4 * dVbseff_dVb;
+>             dVgsteff_dVe = T4 * dVbseff_dVe; /* v3.0 */
+>             dVgsteff_dVg = (T2 * dT1_dVg - T1 * dT2_dVg)
+>                 / T3 * dVgs_eff_dVg
+>                 + T4 * dVbseff_dVg; /* v3.0 */
+>             dVgsteff_dVd = (T2 * dT1_dVd - T1 * dT2_dVd)
+>                 / T3+ T4 * dVbseff_dVd; /* v3.0 */
+2876a2732,2734
+>               /*fix below expression Wagner */
+>               /*dVgsteff_dT = (T2 * dT1_dT - T1 * dT2_dT)
+>                     / T3+ T4 * dVbseff_dT;    v3.0 */
+2889,2890c2747
+<             /* LFW_FD enhance line */
+<             dFP_dVg = dFP_dVb = dFP_dVd = dFP_dVe = dFP_dT = 0.0;
+---
+>             dFP_dVg = dFP_dT = 0.0;
+2895,2901c2752,2755
+<             /* LFW_FD fix/add 5 derivatives */
+<             dFP_dVg = FP * FP * T9 / Vgst2Vtm * dVgsteff_dVg;
+<             dFP_dVb = FP * FP * T9 / Vgst2Vtm * dVgsteff_dVb;
+<             dFP_dVd = FP * FP * T9 / Vgst2Vtm * dVgsteff_dVd;
+<             dFP_dVe = FP * FP * T9 / Vgst2Vtm * dVgsteff_dVe;
+<             if (selfheat)
+<                 dFP_dT = FP * T9 * dVgst2Vtm_dT / (1.0 + T9) / Vgst2Vtm;
+---
+>             dFP_dVg = FP * FP * T9 / Vgst2Vtm;
+>           /* fix "then" expression Wagner */
+>           /*if (selfheat) dFP_dT = dFP_dVg * dVgst2Vtm_dT;*/
+>             if (selfheat) dFP_dT = FP * T9 * dVgst2Vtm_dT / (1.0 + T9) / Vgst2Vtm;
+2909,2917c2763,2765
+<       /* LFW_FD fix/add 4 derivatives */
+<         dWeff_dVg = -(2.0 - here->B4SOInbc) *
+<                       (pParam->B4SOIdwg * dVgsteff_dVg + pParam->B4SOIdwb * dsqrtPhis_dVg);
+<         dWeff_dVb = -(2.0 - here->B4SOInbc) *
+<                       (pParam->B4SOIdwg * dVgsteff_dVb + pParam->B4SOIdwb * dsqrtPhis_dVb);
+<         dWeff_dVd = -(2.0 - here->B4SOInbc) *
+<                       (pParam->B4SOIdwg * dVgsteff_dVd + pParam->B4SOIdwb * dsqrtPhis_dVd);
+<         dWeff_dVe = -(2.0 - here->B4SOInbc) *
+<                       (pParam->B4SOIdwg * dVgsteff_dVe + pParam->B4SOIdwb * dsqrtPhis_dVe);
+---
+>         dWeff_dVg = -(2.0 - here->B4SOInbc) * pParam->B4SOIdwg;
+>         dWeff_dVb = -(2.0 - here->B4SOInbc) * pParam->B4SOIdwb
+>             * dsqrtPhis_dVb;
+2931,2933d2778
+<           /* LFW_FD add 2 derivatives */
+<             dWeff_dVd *= T0;
+<             dWeff_dVe *= T0;
+2938,2939c2783
+<           /* LFW_FD enhance line */
+<             Rds = dRds_dVg = dRds_dVb = dRds_dVd = dRds_dVe = dRds_dT = 0.0;
+---
+>             Rds = dRds_dVg = dRds_dVb = dRds_dT = 0.0;
+2943,2947d2786
+<           /* LFW_FD add 4 derivatives */
+<             dT0_dVg = pParam->B4SOIprwg * dVgsteff_dVg + pParam->B4SOIprwb * dsqrtPhis_dVg;
+<             dT0_dVb = pParam->B4SOIprwg * dVgsteff_dVb + pParam->B4SOIprwb * dsqrtPhis_dVb;
+<             dT0_dVd = pParam->B4SOIprwg * dVgsteff_dVd + pParam->B4SOIprwb * dsqrtPhis_dVd;
+<             dT0_dVe = pParam->B4SOIprwg * dVgsteff_dVe + pParam->B4SOIprwb * dsqrtPhis_dVe;
+2952,2956c2791,2792
+<               /* LFW_FD add/fix 4 derivatives */
+<                 dRds_dVg = rds0 * dT0_dVg;
+<                 dRds_dVb = rds0 * dT0_dVb;
+<                 dRds_dVd = rds0 * dT0_dVd;
+<                 dRds_dVe = rds0 * dT0_dVe;
+---
+>                 dRds_dVg = rds0 * pParam->B4SOIprwg;
+>                 dRds_dVb = rds0 * pParam->B4SOIprwb * dsqrtPhis_dVb;
+2969,2973c2805,2808
+<               /* LFW_FD add/fix 4 derivatives */
+<                 dRds_dVg = (rds0*T1- 20*Rds*T1) * dT0_dVg;
+<                 dRds_dVb = (rds0*T1- 20*Rds*T1) * dT0_dVb;
+<                 dRds_dVd = (rds0*T1- 20*Rds*T1) * dT0_dVd;
+<                 dRds_dVe = (rds0*T1- 20*Rds*T1) * dT0_dVe;
+---
+>                 T1 *= T1;
+>                 dRds_dVg = rds0 * pParam->B4SOIprwg * T1;
+>                 dRds_dVb = rds0 * pParam->B4SOIprwb * dsqrtPhis_dVb
+>                     * T1;
+2983c2818
+<             /* here->B4SOIrds = Rds;    v2.2.3 bug fix */ /* v4.2 bugfix # 39 */
+---
+>             /* here->B4SOIrds = Rds; /* v2.2.3 bug fix */ /* v4.2 bugfix # 39 */
+2985c2820
+<         here->B4SOIrds = Rds / here->B4SOInf; /* LFW_FD  fix  */
+---
+>         here->B4SOIrds = Rds; /* v4.2 bugfix # 39 */
+2991,2994c2826,2827
+<            /* LFW_FD expand next 3 lines   */
+<             dAbulk_dVg = dAbulk_dVb = dAbulk_dVd = dAbulk_dVe = 0.0;
+<             dAbulk0_dVg = dAbulk0_dVb = dAbulk0_dVd = dAbulk0_dVe = 0.0;
+<             dAbulk0_dT =  dAbulk_dT = 0.0;
+---
+>             dAbulk0_dVb = dAbulk_dVg = dAbulk_dVb = 0.0;
+>             dAbulk0_dT =  dAbulk_dT = 0.0;   /* new line Wagner */
+3000,3001d2832
+<               /* LFW_FD add/fix 5 derivatives */
+<                 dT11_dVg = -pParam->B4SOIketa * T11 * T11 * dVbsh_dVg;
+3003,3004c2834
+<                 dT11_dVd = -pParam->B4SOIketa * T11 * T11 * dVbsh_dVd;
+<                 dT11_dVe = -pParam->B4SOIketa * T11 * T11 * dVbsh_dVe;
+---
+>              // new line below - Wagner
+3010,3011c2840,2841
+<               /* LFW_FD add/fix 5 derivatives */
+<                 dT11_dVg = (20.0-T11) * T12 * pParam->B4SOIketa * dVbsh_dVg;
+---
+>              // fix line below - Wagner
+>              // dT11_dVb = -pParam->B4SOIketa * T12 * T12 * dVbsh_dVb;
+3013,3014c2843
+<                 dT11_dVd = (20.0-T11) * T12 * pParam->B4SOIketa * dVbsh_dVd;
+<                 dT11_dVe = (20.0-T11) * T12 * pParam->B4SOIketa * dVbsh_dVe;
+---
+>              // new line below - Wagner
+3022,3023d2850
+<           /* LFW_FD add/fix 5 derivatives */
+<             dT13_dVg = (Vbsh * dT11_dVg + T11 * dVbsh_dVg) / T10;
+3025,3026c2852
+<             dT13_dVd = (Vbsh * dT11_dVd + T11 * dVbsh_dVd) / T10;
+<             dT13_dVe = (Vbsh * dT11_dVe + T11 * dVbsh_dVe) / T10;
+---
+>          // new line below - Wagner
+3033,3034d2858
+<               /* LFW_FD add/fix 5 derivatives */
+<                 dT14_dVg = T10 * dT13_dVg;
+3036,3037c2860
+<                 dT14_dVd = T10 * dT13_dVd;
+<                 dT14_dVe = T10 * dT13_dVe;
+---
+>              // new line below - Wagner
+3044,3046c2867,2869
+<              /* T10 = 0.0179546 * T11 * T11;                         never used - Wagner */
+<               /* LFW_FD add/fix 5 derivatives */
+<                 dT14_dVg = (T14 * 1.0593220339 - 6.3559322034) * T11 * dT13_dVg;
+---
+>              // T10 = 0.0179546 * T11 * T11;                      // never used - Wagner
+>              // fix line below - Wagner
+>              // dT14_dVb = T10 * dT13_dVb;
+3048,3049c2871
+<                 dT14_dVd = (T14 * 1.0593220339 - 6.3559322034) * T11 * dT13_dVd;
+<                 dT14_dVe = (T14 * 1.0593220339 - 6.3559322034) * T11 * dT13_dVe;
+---
+>              // new line below - Wagner
+3060,3061d2881
+<           /* LFW_FD add/fix 4 derivatives */
+<             dT1_dVg = T10 * dT14_dVg;
+3063,3064d2882
+<             dT1_dVd = T10 * dT14_dVd;
+<             dT1_dVe = T10 * dT14_dVe;
+3073,3077c2891
+<           /* LFW_FD add/fix 4 derivatives */
+<             dT2_dVg = -tmp2 / tmp1 * pParam->B4SOIxj * dXdep_dVg / T9;
+<             dT2_dVb = -tmp2 / tmp1 * pParam->B4SOIxj * dXdep_dVb / T9;
+<             dT2_dVd = -tmp2 / tmp1 * pParam->B4SOIxj * dXdep_dVd / T9;
+<             dT2_dVe = -tmp2 / tmp1 * pParam->B4SOIxj * dXdep_dVe / T9;
+---
+>             dT2_dVb = -T9 * tmp2 / tmp1 / Xdep * dXdep_dVb;
+3080,3084d2893
+<           /* LFW_FD add 4 derivatives */
+<             dT7_dVg = -3.0 * T7 / tmp1 * pParam->B4SOIxj * dXdep_dVg / T9;
+<             dT7_dVb = -3.0 * T7 / tmp1 * pParam->B4SOIxj * dXdep_dVb / T9;
+<             dT7_dVd = -3.0 * T7 / tmp1 * pParam->B4SOIxj * dXdep_dVd / T9;
+<             dT7_dVe = -3.0 * T7 / tmp1 * pParam->B4SOIxj * dXdep_dVe / T9;
+3087,3088d2895
+<           /* LFW_FD add/fix 4 derivatives */
+<             dAbulk0_dVg = T1 * dT2_dVg + T2 * dT1_dVg;
+3090,3091d2896
+<             dAbulk0_dVd = T1 * dT2_dVd + T2 * dT1_dVd;
+<             dAbulk0_dVe = T1 * dT2_dVe + T2 * dT1_dVe;
+3097,3105c2902,2903
+<           /* LFW_FD add/fix 4 derivatives */
+<             dAbulk_dVg = dAbulk0_dVg + dAbulk_dVg * dVgsteff_dVg
+<                        - (T1 * pParam->B4SOIags * pParam->B4SOIa0 * dT7_dVg + T8 * dT1_dVg) * Vgsteff;
+<             dAbulk_dVb = dAbulk0_dVb - T1 * T8 * dVgsteff_dVb
+<                        - (T1 * pParam->B4SOIags * pParam->B4SOIa0 * dT7_dVb + T8 * dT1_dVb) * Vgsteff;
+<             dAbulk_dVd = dAbulk0_dVd - T1 * T8 * dVgsteff_dVd
+<                        - (T1 * pParam->B4SOIags * pParam->B4SOIa0 * dT7_dVd + T8 * dT1_dVd) * Vgsteff;
+<             dAbulk_dVe = dAbulk0_dVe - T1 * T8 * dVgsteff_dVe
+<                        - (T1 * pParam->B4SOIags * pParam->B4SOIa0 * dT7_dVe + T8 * dT1_dVe) * Vgsteff;
+---
+>             dAbulk_dVb = dAbulk0_dVb
+>                 - T8 * Vgsteff * (dT1_dVb + 3.0 * T1 * dT2_dVb / tmp2);
+3110c2908
+<          /* TL2 = T14;                                          not used - Wagner */
+---
+>          // TL2 = T14;                                          // not used - Wagner
+3113,3116c2911,2914
+<          /* dTL5_dT = -T13*dphi_dT/(phi + pParam->B4SOIketas);  not used - Wagner */
+<          /* dTL6_dT = 0.5*T14*dTL5_dT/(1-T13);                  not used - Wagner */
+<          /* fix line below - Wagner                                               */
+<          /* dTL7_dT = T10*dTL6_dT + T14*dTL1_dT;                                  */
+---
+>          // dTL5_dT = -T13*dphi_dT/(phi + pParam->B4SOIketas);  // not used - Wagner
+>          // dTL6_dT = 0.5*T14*dTL5_dT/(1-T13);                  // not used - Wagner
+>          // fix line below - Wagner
+>          // dTL7_dT = T10*dTL6_dT + T14*dTL1_dT;
+3135,3136c2933,2934
+<          /* fix line below - Wagner */
+<          /* dAbulk0_dVb *= T9 * T9; */
+---
+>          // fix line below - Wagner
+>          // dAbulk0_dVb *= T9 * T9;
+3138,3139d2935
+<           /* LFW_FD add/fix 5 derivatives */
+<             dAbulk0_dVg *= T10;
+3141,3142c2937
+<             dAbulk0_dVd *= T10;
+<             dAbulk0_dVe *= T10;
+---
+>          // new line below - Wagner
+3150,3152c2945,2947
+<          /* fix line below - Wagner  */
+<          /* dAbulk_dVb *= T9 * T9;   */
+<          /* T10 = T9 * T9;        3.2 bug fix */
+---
+>          // fix line below - Wagner
+>          // dAbulk_dVb *= T9 * T9;
+>          // T10 = T9 * T9;     /* 3.2 bug fix */
+3154d2948
+<           /* LFW_FD add/fix 5 derivatives */
+3156,3158c2950,2951
+<             dAbulk_dVb *= T10;         /* 3.2 bug fix */
+<             dAbulk_dVd *= T10;         /* 3.2 bug fix */
+<             dAbulk_dVe *= T10;
+---
+>             dAbulk_dVb *= T10;
+>          // new line below - Wagner
+3186,3195c2979,2981
+<               /* LFW_FD fix 5 derivatives */
+<                 dDenomi_dVg = (T2 + 2.0 * ub * T3) / toxe_mob * (dVgsteff_dVg + 2 * dVth_dVg)
+<                             + T3 * uc * dVbseff_dVg;
+<                 dDenomi_dVb = (T2 + 2.0 * ub * T3) / toxe_mob * (dVgsteff_dVb + 2 * dVth_dVb)
+<                             + T3 * uc * dVbseff_dVb;
+<                 dDenomi_dVd = (T2 + 2.0 * ub * T3) / toxe_mob * (dVgsteff_dVd + 2 * dVth_dVd)
+<                             + T3 * uc * dVbseff_dVd;
+<                 dDenomi_dVe = (T2 + 2.0 * ub * T3) / toxe_mob * (dVgsteff_dVe + 2 * dVth_dVe)
+<                             + T3 * uc * dVbseff_dVe;
+< 
+---
+>                 dDenomi_dVg = (T2 + 2.0 * ub * T3) / toxe_mob;                          /* Bug fix #4 Jun 09 implementing Eeff correctly*/
+>                 dDenomi_dVd = dDenomi_dVg * 2 * dVth_dVd;
+>                 dDenomi_dVb = dDenomi_dVg * 2 * dVth_dVb + uc * T3 ;
+3197,3198c2983,2986
+<                    dDenomi_dT = (T2 + 2.0 * ub * T3) / toxe_mob * (2 * dVth_dT + dVgsteff_dT - dT14_dT)
+<                               + (dua_dT + Vbseff * duc_dT + uc * dVbseff_dT
+---
+>                   /* fix 1st line of below expression Wagner */
+>                   /*dDenomi_dT = dDenomi_dVg * 2 * dVth_dT */
+>                     dDenomi_dT = dDenomi_dVg * (2 * dVth_dT + dVgsteff_dT - dT14_dT)
+>                         + (dua_dT + Vbseff * duc_dT
+3207,3215c2995,2999
+<               /* LFW_FD fix 5 derivatives */
+<                 dDenomi_dVg = (ua + uc * Vbseff + 2.0 * ub * (Vgsteff -T14) / toxe) / toxe * dVgsteff_dVg
+<                             + (Vgsteff -T14) /toxe * uc * dVbseff_dVg;
+<                 dDenomi_dVb = (ua + uc * Vbseff + 2.0 * ub * (Vgsteff -T14) / toxe) / toxe * dVgsteff_dVb
+<                             + (Vgsteff -T14) /toxe * uc * dVbseff_dVb;
+<                 dDenomi_dVd = (ua + uc * Vbseff + 2.0 * ub * (Vgsteff -T14) / toxe) / toxe * dVgsteff_dVd
+<                             + (Vgsteff -T14) /toxe * uc * dVbseff_dVd;
+<                 dDenomi_dVe = (ua + uc * Vbseff + 2.0 * ub * (Vgsteff -T14) / toxe) / toxe * dVgsteff_dVe
+<                             + (Vgsteff -T14) / toxe * uc * dVbseff_dVe;
+---
+>             dDenomi_dVg = (ua + uc * Vbseff
+>                     + 2.0 * ub * (Vgsteff -T14) / toxe)
+>                 / toxe;
+>             dDenomi_dVd = 0.0;
+>             dDenomi_dVb = (Vgsteff -T14) * uc / toxe;
+3217c3001,3005
+<                    dDenomi_dT = (ua + uc * Vbseff + 2.0 * ub * (Vgsteff -T14) / toxe) / toxe * (dVgsteff_dT-dT14_dT)
+---
+>               /*fix below expression Wagner */
+>               /*dDenomi_dT = (Vgsteff -T14) / toxe
+>                     * (dua_dT + Vbseff * duc_dT + dub_dT
+>                             * (Vgsteff -T14) / toxe);*/
+>                 dDenomi_dT = dDenomi_dVg * (dVgsteff_dT - dT14_dT)
+3219c3007
+<                               * (dua_dT + Vbseff * duc_dT + uc * dVbseff_dT + dub_dT
+---
+>                            * (dua_dT + Vbseff * duc_dT + dub_dT
+3230,3240c3018,3026
+<               /* LFW_FD fix 5 derivatives */
+<                 dDenomi_dVg = (ua + 2.0 * ub * T3) * T2 * (dVgsteff_dVg + 2 * dVth_dVg) / toxe_mob
+<                             + T4 * uc * dVbseff_dVg;
+<                 dDenomi_dVb = (ua + 2.0 * ub * T3) * T2 * (dVgsteff_dVb + 2 * dVth_dVb) / toxe_mob
+<                             + T4 * uc * dVbseff_dVb;
+<                 dDenomi_dVd = (ua + 2.0 * ub * T3) * T2 * (dVgsteff_dVd + 2 * dVth_dVd) / toxe_mob
+<                             + T4 * uc * dVbseff_dVd;
+<                 dDenomi_dVe = (ua + 2.0 * ub * T3) * T2 * (dVgsteff_dVe + 2 * dVth_dVe) / toxe_mob
+<                             + T4 * uc * dVbseff_dVe;
+<                 if (selfheat)
+<                    dDenomi_dT = (ua + 2.0 * ub * T3) * T2 * (dVgsteff_dT + 2 * dVth_dT) / toxe_mob
+---
+>                 dDenomi_dVg = (ua + 2.0 * ub * T3) * T2
+>                     / toxe_mob;                                                                                         /* Bug fix #4 Jun 09 implementing Eeff correctly*/
+>                 dDenomi_dVd = dDenomi_dVg * 2.0 * dVth_dVd;
+>                 dDenomi_dVb = dDenomi_dVg * 2.0 * dVth_dVb
+>                     + uc * T4 ;
+>                 if (selfheat)
+>                   /*fix line 1 of below expression Wagner */
+>                   /*dDenomi_dT = dDenomi_dVg * 2.0 * dVth_dT */
+>                     dDenomi_dT = dDenomi_dVg * (2 * dVth_dT + dVgsteff_dT - dT14_dT)
+3242c3028
+<                               + T4 * (Vbseff * duc_dT + uc * dVbseff_dT);
+---
+>                         + T4 * Vbseff * duc_dT;
+3252,3257c3038
+<               /* LFW_FD add/fix 5 derivatives */
+<                 dT1_dVg = T1 * pParam->B4SOIeu * 1.0e-8/ T0 / toxe/6.0 * dVgsteff_dVg;
+<                 dT1_dVb = T1 * pParam->B4SOIeu * 1.0e-8/ T0 / toxe/6.0 * dVgsteff_dVb;
+<                 dT1_dVd = T1 * pParam->B4SOIeu * 1.0e-8/ T0 / toxe/6.0 * dVgsteff_dVd;
+<                 dT1_dVe = T1 * pParam->B4SOIeu * 1.0e-8/ T0 / toxe/6.0 * dVgsteff_dVe;
+<                 dT1_dT =  T1 * pParam->B4SOIeu * 1.0e-8/ T0 / toxe/6.0 * dVgsteff_dT;
+---
+>                 dT1_dVg = T1 * pParam->B4SOIeu * 1.0e-8/ T0 / toxe/6.0;
+3276,3281c3057
+<               /* LFW_FD add/fix 5 derivatives */
+<                 dT11_dVg = - ud * ucs * exp(-(ucs+1.0) * log(1.0 +  Vgsteff/VgsteffVth)) * dVgsteff_dVg / VgsteffVth;
+<                 dT11_dVb = - ud * ucs * exp(-(ucs+1.0) * log(1.0 +  Vgsteff/VgsteffVth)) * dVgsteff_dVb / VgsteffVth;
+<                 dT11_dVd = - ud * ucs * exp(-(ucs+1.0) * log(1.0 +  Vgsteff/VgsteffVth)) * dVgsteff_dVd / VgsteffVth;
+<                 dT11_dVe = - ud * ucs * exp(-(ucs+1.0) * log(1.0 +  Vgsteff/VgsteffVth)) * dVgsteff_dVe / VgsteffVth;
+<                 dT11_dT =  - ud * ucs * exp(-(ucs+1.0) * log(1.0 +  Vgsteff/VgsteffVth)) * dVgsteff_dT / VgsteffVth;
+---
+>                 dT11_dVg = (ucs - 1.0)*ud/(VgsteffVth* exp((ucs-1.0) * log(1.0 +  Vgsteff/VgsteffVth))); /* Bug Fix # 21 Jul09*/
+3282a3059,3062
+>                 dDenomi_dVg = T2 * dT1_dVg + dT11_dVg;
+>                 dDenomi_dVd = 0.0;
+>                 /* dDenomi_dVb = T1 * pParam->B4SOIuc;            v4.2 bugfix # 35 */
+>                 dDenomi_dVb = T1 * uc;
+3284,3289d3063
+<               /* LFW_FD add/fix 5 derivatives */
+<                 dDenomi_dVg = T2 * dT1_dVg + T1 * uc * dVbseff_dVg + dT11_dVg;
+<                 dDenomi_dVb = T2 * dT1_dVb + T1 * uc * dVbseff_dVb + dT11_dVb;
+<                 dDenomi_dVd = T2 * dT1_dVd + T1 * uc * dVbseff_dVd + dT11_dVd;
+<                 dDenomi_dVe = T2 * dT1_dVe + T1 * uc * dVbseff_dVe + dT11_dVe;
+< 
+3291,3292c3065,3067
+<                    dDenomi_dT = T2 * dT1_dT + T1 * (dua_dT + Vbseff * duc_dT + uc * dVbseff_dT) + dT11_dT;
+< 
+---
+>                     dDenomi_dT = dDenomi_dVg * pParam->B4SOIeu * dVth_dT
+>                         + (dua_dT + dub_dT * T3) * T3 * T2
+>                         + T4 * Vbseff * duc_dT;
+3308d3082
+<                 dDenomi_dVe *= T9;   /* LFW_FD  new line */
+3318d3091
+<             dueff_dVe = T9 * dDenomi_dVe;    /* LFW_FD  new line */
+3325,3329d3097
+<           /* LFW_FD add 4 derivatives */
+<             dWVCoxRds_dVg = WVCox * dRds_dVg + Rds * vsattemp * model->B4SOIcox * dWeff_dVg;
+<             dWVCoxRds_dVb = WVCox * dRds_dVb + Rds * vsattemp * model->B4SOIcox * dWeff_dVb;
+<             dWVCoxRds_dVd = WVCox * dRds_dVd + Rds * vsattemp * model->B4SOIcox * dWeff_dVd;
+<             dWVCoxRds_dVe = WVCox * dRds_dVe + Rds * vsattemp * model->B4SOIcox * dWeff_dVe;
+3346d3113
+<             dEsatL_dVe = T0 * dueff_dVe;   /* LFW_FD new line */
+3356d3122
+<               /* LFW_FD add/fix 5 derivatives */
+3358,3361c3124
+<                 dLambda_dVb = 0.0;
+<                 dLambda_dVd = 0.0;
+<                 dLambda_dVe = 0.0;
+<                 dLambda_dT  = 0.0;
+---
+>                 dLambda_dT = 0.0;  /* new line Wagner */
+3369,3373c3132,3133
+<               /* LFW_FD add/fix 5 derivatives */
+<                 dLambda_dVg = 0.5 * pParam->B4SOIa1 * (1.0 + T1 / T2) * dVgsteff_dVg;
+<                 dLambda_dVb = 0.5 * pParam->B4SOIa1 * (1.0 + T1 / T2) * dVgsteff_dVb;
+<                 dLambda_dVd = 0.5 * pParam->B4SOIa1 * (1.0 + T1 / T2) * dVgsteff_dVd;
+<                 dLambda_dVe = 0.5 * pParam->B4SOIa1 * (1.0 + T1 / T2) * dVgsteff_dVe;
+---
+>                 dLambda_dVg = 0.5 * pParam->B4SOIa1 * (1.0 + T1 / T2);
+>                 /* 5 new lines Wagner */
+3375a3136
+>                  /*dT2_dT = 0.5 * T1 * dT1_dT / T2; fixed below */
+3384,3388c3145,3146
+<               /* LFW_FD add/fix 5 derivatives */
+<                 dLambda_dVg = 0.5 * pParam->B4SOIa1 * (1.0 + T1 / T2) * dVgsteff_dVg;
+<                 dLambda_dVb = 0.5 * pParam->B4SOIa1 * (1.0 + T1 / T2) * dVgsteff_dVb;
+<                 dLambda_dVd = 0.5 * pParam->B4SOIa1 * (1.0 + T1 / T2) * dVgsteff_dVd;
+<                 dLambda_dVe = 0.5 * pParam->B4SOIa1 * (1.0 + T1 / T2) * dVgsteff_dVe;
+---
+>                 dLambda_dVg = 0.5 * pParam->B4SOIa1 * (1.0 + T1 / T2);
+>                 /* 5 new lines Wagner */
+3390a3149
+>                  /*dT2_dT = 0.5 * T1 * dT1_dT / T2; fixed below */
+3414,3418c3173,3175
+<               /* LFW_FD add/fix 5 derivatives */
+<                 dT0_dVg = -(Abulk * dEsatL_dVg + EsatL * dAbulk_dVg + dVgsteff_dVg) * T1;
+<                 dT0_dVd = -(Abulk * dEsatL_dVd + EsatL * dAbulk_dVd + dVgsteff_dVd) * T1;
+<                 dT0_dVb = -(Abulk * dEsatL_dVb + EsatL * dAbulk_dVb + dVgsteff_dVb) * T1;
+<                 dT0_dVe = -(Abulk * dEsatL_dVe + EsatL * dAbulk_dVe + dVgsteff_dVe) * T1;
+---
+>                 dT0_dVg = -(Abulk * dEsatL_dVg + EsatL * dAbulk_dVg + 1.0) * T1;
+>                 dT0_dVd = -(Abulk * dEsatL_dVd) * T1;
+>                 dT0_dVb = -(Abulk * dEsatL_dVb + EsatL * dAbulk_dVb) * T1;
+3423,3427c3180,3182
+<               /* LFW_FD add/fix 5 derivatives */
+<                 dVdsat_dVg = T3 * dT0_dVg + T2 * dEsatL_dVg + EsatL * T0 *dVgsteff_dVg;
+<                 dVdsat_dVb = T3 * dT0_dVb + T2 * dEsatL_dVb + EsatL * T0 *dVgsteff_dVb;
+<                 dVdsat_dVd = T3 * dT0_dVd + T2 * dEsatL_dVd + EsatL * T0 *dVgsteff_dVd;
+<                 dVdsat_dVe = T3 * dT0_dVe + T2 * dEsatL_dVe + EsatL * T0 *dVgsteff_dVe;
+---
+>                 dVdsat_dVg = T3 * dT0_dVg + T2 * dEsatL_dVg + EsatL * T0;
+>                 dVdsat_dVd = T3 * dT0_dVd + T2 * dEsatL_dVd;
+>                 dVdsat_dVb = T3 * dT0_dVb + T2 * dEsatL_dVb;
+3440,3448c3195,3201
+<               /* LFW_FD add/fix 4 derivatives */
+<                 dT0_dVg = 2.0 * ((2.0 * Abulk * WVCoxRds - 1.0 + 1.0 / Lambda) * dAbulk_dVg
+<                         + Abulk * Abulk * dWVCoxRds_dVg - Abulk * dLambda_dVg / (Lambda * Lambda));
+<                 dT0_dVb = 2.0 * ((2.0 * Abulk * WVCoxRds - 1.0 + 1.0 / Lambda) * dAbulk_dVb
+<                         + Abulk * Abulk * dWVCoxRds_dVb - Abulk * dLambda_dVb / (Lambda * Lambda));
+<                 dT0_dVd = 2.0 * ((2.0 * Abulk * WVCoxRds - 1.0 + 1.0 / Lambda) * dAbulk_dVd
+<                         + Abulk * Abulk * dWVCoxRds_dVd - Abulk * dLambda_dVd / (Lambda * Lambda));
+<                 dT0_dVe = 2.0 * ((2.0 * Abulk * WVCoxRds - 1.0 + 1.0 / Lambda) * dAbulk_dVe
+<                         + Abulk * Abulk * dWVCoxRds_dVe - Abulk * dLambda_dVe / (Lambda * Lambda));
+---
+>                 dT0_dVg = 2.0 * (T8 * tmp2 - Abulk * tmp1
+>                         + (2.0 * T9 + 1.0 / Lambda - 1.0) * dAbulk_dVg);
+>                 /*                    dT0_dVb = 2.0 * (T8 * tmp3  this is equivalent to one below, but simpler
+>                               + (2.0 * T9 + 1.0 / Lambda - 1.0) * dAbulk_dVg);  */
+>                 dT0_dVb = 2.0 * (T8 * (2.0 / Abulk * dAbulk_dVb + tmp3)
+>                         + (1.0 / Lambda - 1.0) * dAbulk_dVb);
+>                 dT0_dVd = 0.0;
+3472,3484c3225,3230
+<               /* LFW_FD add/fix 4 derivatives */
+<                 dT1_dVg = (2.0 / Lambda - 1.0) * dVgsteff_dVg - 2.0 * Vgst2Vtm * dLambda_dVg / (Lambda * Lambda)
+<                         + EsatL * dAbulk_dVg + Abulk * dEsatL_dVg
+<                         + 3.0 * (dVgsteff_dVg * Abulk * WVCoxRds + Vgst2Vtm * dAbulk_dVg * WVCoxRds + Vgst2Vtm * Abulk * dWVCoxRds_dVg);
+<                 dT1_dVb = (2.0 / Lambda - 1.0) * dVgsteff_dVb - 2.0 * Vgst2Vtm * dLambda_dVb / (Lambda * Lambda)
+<                         + EsatL * dAbulk_dVb + Abulk * dEsatL_dVb
+<                         + 3.0 * (dVgsteff_dVb * Abulk * WVCoxRds + Vgst2Vtm * dAbulk_dVb * WVCoxRds + Vgst2Vtm * Abulk * dWVCoxRds_dVb);
+<                 dT1_dVd = (2.0 / Lambda - 1.0) * dVgsteff_dVd - 2.0 * Vgst2Vtm * dLambda_dVd / (Lambda * Lambda)
+<                         + EsatL * dAbulk_dVd + Abulk * dEsatL_dVd
+<                         + 3.0 * (dVgsteff_dVd * Abulk * WVCoxRds + Vgst2Vtm * dAbulk_dVd * WVCoxRds + Vgst2Vtm * Abulk * dWVCoxRds_dVd);
+<                 dT1_dVe = (2.0 / Lambda - 1.0) * dVgsteff_dVe - 2.0 * Vgst2Vtm * dLambda_dVe / (Lambda * Lambda)
+<                         + EsatL * dAbulk_dVe + Abulk * dEsatL_dVe
+<                         + 3.0 * (dVgsteff_dVe * Abulk * WVCoxRds + Vgst2Vtm * dAbulk_dVe * WVCoxRds + Vgst2Vtm * Abulk * dWVCoxRds_dVe);
+---
+>                 dT1_dVg = (2.0 / Lambda - 1.0) - 2.0 * Vgst2Vtm * tmp1
+>                     + Abulk * dEsatL_dVg + EsatL * dAbulk_dVg
+>                     + 3.0 * (T9 + T7 * tmp2 + T6 * dAbulk_dVg);
+>                 dT1_dVb = Abulk * dEsatL_dVb + EsatL * dAbulk_dVb
+>                     + 3.0 * (T6 * dAbulk_dVb + T7 * tmp3);
+>                 dT1_dVd = Abulk * dEsatL_dVd;
+3504,3512c3250,3253
+<               /* LFW_FD add/fix 4 derivatives */
+<                 dT2_dVg = dVgsteff_dVg * (EsatL + 4.0 * T6)
+<                         + Vgst2Vtm * (dEsatL_dVg + 2 * Vgst2Vtm * dWVCoxRds_dVg);
+<                 dT2_dVb = dVgsteff_dVb * (EsatL + 4.0 * T6)
+<                         + Vgst2Vtm * (dEsatL_dVb + 2 * Vgst2Vtm * dWVCoxRds_dVb);
+<                 dT2_dVd = dVgsteff_dVd * (EsatL + 4.0 * T6)
+<                         + Vgst2Vtm * (dEsatL_dVd + 2 * Vgst2Vtm * dWVCoxRds_dVd);
+<                 dT2_dVe = dVgsteff_dVe * (EsatL + 4.0 * T6)
+<                         + Vgst2Vtm * (dEsatL_dVe + 2 * Vgst2Vtm * dWVCoxRds_dVe);
+---
+>                 dT2_dVg = EsatL + Vgst2Vtm * dEsatL_dVg
+>                     + T6 * (4.0 + 2.0 * Vgst2Vtm * tmp2);
+>                 dT2_dVb = Vgst2Vtm * (dEsatL_dVb + 2.0 * T6 * tmp3);
+>                 dT2_dVd = Vgst2Vtm * dEsatL_dVd;
+3529,3533c3270
+<               /* LFW_FD add/fix 2 derivatives */
+<                 dVdsat_dVd = (dT1_dVd - (T1 * dT1_dVd - dT0_dVd * T2
+<                            - T0 * dT2_dVd) / T3 - Vdsat * dT0_dVd) / T0;
+<                 dVdsat_dVe = (dT1_dVe - (T1 * dT1_dVe - dT0_dVe * T2
+<                            - T0 * dT2_dVe) / T3 - Vdsat * dT0_dVe) / T0;
+---
+>                 dVdsat_dVd = (dT1_dVd - (T1 * dT1_dVd - T0 * dT2_dVd) / T3) / T0;
+3547d3283
+<             dT1_dVe = dVdsat_dVe;   /* LFW_FD new line */
+3556d3291
+<             dT2_dVe = T0 * dT1_dVe + T3 * dVdsat_dVe;    /* LFW_FD new line */
+3565d3299
+<             dVdseff_dVe = dVdsat_dVe - 0.5 * (dT1_dVe + dT2_dVe);  /* LFW_FD new line */
+3584,3600c3318,3324
+<           /* LFW_FD fix/add 4 derivatives */
+<             dT0_dVg = dEsatL_dVg + dVdsat_dVg
+<                     + 2.0 * (tmp4 * (WVCoxRds * dVgsteff_dVg + dWVCoxRds_dVg * Vgsteff)
+<                     - T9 * (0.5  * (Abulk * dVdsat_dVg + dAbulk_dVg * Vdsat
+<                     - Abulk * Vdsat * dVgsteff_dVg / Vgst2Vtm) / Vgst2Vtm));
+<             dT0_dVb = dEsatL_dVb + dVdsat_dVb
+<                     + 2.0 * (tmp4 * (WVCoxRds * dVgsteff_dVb + dWVCoxRds_dVb * Vgsteff)
+<                     - T9 * (0.5  * (Abulk * dVdsat_dVb + dAbulk_dVb * Vdsat
+<                     - Abulk * Vdsat * dVgsteff_dVb / Vgst2Vtm) / Vgst2Vtm));
+<             dT0_dVd = dEsatL_dVd + dVdsat_dVd
+<                     + 2.0 * (tmp4 * (WVCoxRds * dVgsteff_dVd + dWVCoxRds_dVd * Vgsteff)
+<                     - T9 * (0.5  * (Abulk * dVdsat_dVd + dAbulk_dVd * Vdsat
+<                     - Abulk * Vdsat * dVgsteff_dVd / Vgst2Vtm) / Vgst2Vtm));
+<             dT0_dVe = dEsatL_dVe + dVdsat_dVe
+<                     + 2.0 * (tmp4 * (WVCoxRds * dVgsteff_dVe + dWVCoxRds_dVe * Vgsteff)
+<                     - T9 * (0.5  * (Abulk * dVdsat_dVe + dAbulk_dVe * Vdsat
+<                     - Abulk * Vdsat * dVgsteff_dVe / Vgst2Vtm) / Vgst2Vtm));
+---
+>             dT0_dVg = dEsatL_dVg + dVdsat_dVg + T7 * (1.0 + tmp2 * Vgsteff)
+>                 - T8 * (Abulk * dVdsat_dVg - Abulk * Vdsat / Vgst2Vtm
+>                         + Vdsat * dAbulk_dVg);
+> 
+>             dT0_dVb = dEsatL_dVb + dVdsat_dVb + T7 * tmp3 * Vgsteff
+>                 - T8 * (dAbulk_dVb * Vdsat + Abulk * dVdsat_dVb);
+>             dT0_dVd = dEsatL_dVd + dVdsat_dVd - T8 * Abulk * dVdsat_dVd;
+3622,3626c3346,3347
+<           /* LFW_FD fix/add 4 derivatives */
+<             dT1_dVg = -2.0 * dLambda_dVg / (Lambda * Lambda) + WVCoxRds * dAbulk_dVg + dWVCoxRds_dVg * Abulk;
+<             dT1_dVb = -2.0 * dLambda_dVb / (Lambda * Lambda) + WVCoxRds * dAbulk_dVb + dWVCoxRds_dVb * Abulk;
+<             dT1_dVd = -2.0 * dLambda_dVd / (Lambda * Lambda) + WVCoxRds * dAbulk_dVd + dWVCoxRds_dVd * Abulk;
+<             dT1_dVe = -2.0 * dLambda_dVe / (Lambda * Lambda) + WVCoxRds * dAbulk_dVe + dWVCoxRds_dVe * Abulk;
+---
+>             dT1_dVg = -2.0 * tmp1 +  WVCoxRds * (Abulk * tmp2 + dAbulk_dVg);
+>             dT1_dVb = dAbulk_dVb * WVCoxRds + T9 * tmp3;
+3639,3641c3360
+<           /* LFW_FD fix/add 2 derivatives */
+<             dVasat_dVd = (dT0_dVd - Vasat * dT1_dVd) / T1;
+<             dVasat_dVe = (dT0_dVe - Vasat * dT1_dVe) / T1;
+---
+>             dVasat_dVd = dT0_dVd / T1;
+3650,3652d3368
+<               /* LFW_FD add 2 derivatives */
+<                 dT0_dVd = -T0 / Abulk * dAbulk_dVd;
+<                 dT0_dVe = -T0 / Abulk * dAbulk_dVe;
+3656,3660c3372,3374
+<               /* LFW_FD add/fix 4 derivatives */
+<                 dT1_dVg = Leff * (dAbulk_dVg + (dVgsteff_dVg - T2 * dEsatL_dVg) / EsatL);
+<                 dT1_dVb = Leff * (dAbulk_dVb + (dVgsteff_dVb - T2 * dEsatL_dVb) / EsatL);
+<                 dT1_dVd = Leff * (dAbulk_dVd + (dVgsteff_dVd - T2 * dEsatL_dVd) / EsatL);
+<                 dT1_dVe = Leff * (dAbulk_dVe + (dVgsteff_dVe - T2 * dEsatL_dVe) / EsatL);
+---
+>                 dT1_dVg = Leff * ((1.0 - T2 * dEsatL_dVg) / EsatL + dAbulk_dVg);
+>                 dT1_dVb = Leff * (dAbulk_dVb - T2 * dEsatL_dVb / EsatL);
+>                 dT1_dVd = -T2 * dEsatL_dVd / Esat;
+3673,3675c3387
+<               /* LFW_FD add/fix 2 derivatives */
+<                 dVACLM_dVd = (dT0_dVd * T1 + T0 * dT1_dVd) * diffVds + T9 * (1.0 - dVdseff_dVd);
+<                 dVACLM_dVe = (dT0_dVe * T1 + T0 * dT1_dVe) * diffVds - T9 * dVdseff_dVe;
+---
+>                 dVACLM_dVd = T0 * dT1_dVd * diffVds + T9 * (1.0 - dVdseff_dVd);
+3686c3398
+<                 dVACLM_dVd = dVACLM_dVg = dVACLM_dVb = dVACLM_dVe = dVACLM_dT = 0.0;  /* LFW_FD expand line */
+---
+>                 dVACLM_dVd = dVACLM_dVg = dVACLM_dVb = dVACLM_dT = 0.0;
+3696,3706c3408,3414
+<               /* LFW_FD fix/add 4 derivatives */
+<                 dT0_dVg = T8 * dVgsteff_dVg + Vgst2Vtm * (Abulk * dVdsat_dVg + dAbulk_dVg * Vdsat);
+<                 dT0_dVb = T8 * dVgsteff_dVb + Vgst2Vtm * (Abulk * dVdsat_dVb + dAbulk_dVb * Vdsat);
+<                 dT0_dVd = T8 * dVgsteff_dVd + Vgst2Vtm * (Abulk * dVdsat_dVd + dAbulk_dVd * Vdsat);
+<                 dT0_dVe = T8 * dVgsteff_dVe + Vgst2Vtm * (Abulk * dVdsat_dVe + dAbulk_dVe * Vdsat);
+< 
+<               /* LFW_FD fix/add 4 derivatives */
+<                 dT1_dVg = dVgsteff_dVg + Abulk * dVdsat_dVg + dAbulk_dVg * Vdsat;
+<                 dT1_dVb = dVgsteff_dVb + Abulk * dVdsat_dVb + dAbulk_dVb * Vdsat;
+<                 dT1_dVd = dVgsteff_dVd + Abulk * dVdsat_dVd + dAbulk_dVd * Vdsat;
+<                 dT1_dVe = dVgsteff_dVe + Abulk * dVdsat_dVe + dAbulk_dVe * Vdsat;
+---
+>                 dT0_dVg = Vgst2Vtm * Abulk * dVdsat_dVg + T8
+>                     + Vgst2Vtm * Vdsat * dAbulk_dVg;
+>                 dT1_dVg = 1.0 + Abulk * dVdsat_dVg + Vdsat * dAbulk_dVg;
+>                 dT1_dVb = dAbulk_dVb * Vdsat + Abulk * dVdsat_dVb;
+>                 dT0_dVb = Vgst2Vtm * dT1_dVb;
+>                 dT1_dVd = Abulk * dVdsat_dVd;
+>                 dT0_dVd = Vgst2Vtm * dT1_dVd;
+3724,3729c3432,3434
+<               /* LFW_FD fix/add 4 derivatives */
+<                 dVADIBL_dVg = (dVgsteff_dVg - (dT0_dVg - T0 * dT1_dVg /T1 )/T1) / T2;
+<                 dVADIBL_dVb = (dVgsteff_dVb - (dT0_dVb - T0 * dT1_dVb /T1 )/T1) / T2;
+<                 dVADIBL_dVd = (dVgsteff_dVd - (dT0_dVd - T0 * dT1_dVd /T1 )/T1) / T2;
+<                 dVADIBL_dVe = (dVgsteff_dVe - (dT0_dVe - T0 * dT1_dVe /T1 )/T1) / T2;
+< 
+---
+>                 dVADIBL_dVg = (1.0 - dT0_dVg / T1 + T0 * dT1_dVg / T9) / T2;
+>                 dVADIBL_dVb = (-dT0_dVb / T1 + T0 * dT1_dVb / T9) / T2;
+>                 dVADIBL_dVd = (-dT0_dVd / T1 + T0 * dT1_dVd / T9) / T2;
+3741,3745c3446,3449
+<                   /* LFW_FD fix/add 4 derivatives */
+<                     dVADIBL_dVg = (dVADIBL_dVg - VADIBL * pParam->B4SOIpdiblb * dVbseff_dVg) * T3;
+<                     dVADIBL_dVb = (dVADIBL_dVb - VADIBL * pParam->B4SOIpdiblb * dVbseff_dVb) * T3;
+<                     dVADIBL_dVd = (dVADIBL_dVd - VADIBL * pParam->B4SOIpdiblb * dVbseff_dVd) * T3;
+<                     dVADIBL_dVe = (dVADIBL_dVe - VADIBL * pParam->B4SOIpdiblb * dVbseff_dVe) * T3;
+---
+>                     dVADIBL_dVg *= T3;
+>                     dVADIBL_dVb = (dVADIBL_dVb - VADIBL * pParam->B4SOIpdiblb)
+>                         * T3;
+>                     dVADIBL_dVd *= T3;
+3757,3761c3461,3464
+<                   /* LFW_FD fix/add 4 derivatives */
+<                     dVADIBL_dVg = dVADIBL_dVg * T3 + VADIBL * (20.0 - T3) * T4 * pParam->B4SOIpdiblb * dVbseff_dVg;
+<                     dVADIBL_dVb = dVADIBL_dVb * T3 + VADIBL * (20.0 - T3) * T4 * pParam->B4SOIpdiblb * dVbseff_dVb;
+<                     dVADIBL_dVd = dVADIBL_dVd * T3 + VADIBL * (20.0 - T3) * T4 * pParam->B4SOIpdiblb * dVbseff_dVd;
+<                     dVADIBL_dVe = dVADIBL_dVe * T3 + VADIBL * (20.0 - T3) * T4 * pParam->B4SOIpdiblb * dVbseff_dVe;
+---
+>                     dVADIBL_dVg *= T3;
+>                     dVADIBL_dVb = dVADIBL_dVb * T3
+>                         - VADIBL * pParam->B4SOIpdiblb * T4 * T4;
+>                     dVADIBL_dVd *= T3;
+3774c3477
+<                 dVADIBL_dVd = dVADIBL_dVg = dVADIBL_dVb = dVADIBL_dVe = dVADIBL_dT = 0.0; /* LFW_FD enhance line */
+---
+>                 dVADIBL_dVd = dVADIBL_dVg = dVADIBL_dVb = dVADIBL_dT = 0.0;
+3791,3794c3494
+<               /* LFW_FD fix/add 3 derivatives */
+<                 dVADITS_dVd = VADITS * dFP_dVd + FP * T2 * dT1_dVd / pParam->B4SOIpdits;
+<                 dVADITS_dVb = VADITS * dFP_dVb;
+<                 dVADITS_dVe = VADITS * dFP_dVe;
+---
+>                 dVADITS_dVd = FP * T2 * dT1_dVd / pParam->B4SOIpdits;
+3801c3501
+<                 dVADITS_dVg = dVADITS_dVd = dVADITS_dVb = dVADITS_dVe = dVADITS_dT = 0; /* LFW_FD enhance line */
+---
+>                 dVADITS_dVg = dVADITS_dVd = dVADITS_dT = 0;
+3810,3814c3510,3512
+<               /* LFW_FD fix/add 4 derivatives */
+<                 dT0_dVg =  T8 * dVgsteff_dVg - T9 * dEsatL_dVg / EsatL;
+<                 dT0_dVb =  T8 * dVgsteff_dVb - T9 * dEsatL_dVb / EsatL;
+<                 dT0_dVd =  T8 * dVgsteff_dVd - T9 * dEsatL_dVd / EsatL;
+<                 dT0_dVe =  T8 * dVgsteff_dVe - T9 * dEsatL_dVe / EsatL;
+---
+>                 dT0_dVg = T8 * (1.0 - Vgsteff * dEsatL_dVg / EsatL);
+>                 dT0_dVb = -T9 * dEsatL_dVb / EsatL;
+>                 dT0_dVd = -T9 * dEsatL_dVd / EsatL;
+3825a3524,3525
+>                 dT0_dVg = T8 * (1.0 - Vgsteff * dEsatL_dVg / EsatL) * T1;
+> 
+3827,3831c3527,3528
+<               /* LFW_FD fix/add 4 derivatives */
+<                 dT0_dVg = (1.0 - 20.0 * T0) * TL1 * (T8 * dVgsteff_dVg - T9 * dEsatL_dVg / EsatL);
+<                 dT0_dVb = (1.0 - 20.0 * T0) * TL1 * (T8 * dVgsteff_dVb - T9 * dEsatL_dVb / EsatL);
+<                 dT0_dVd = (1.0 - 20.0 * T0) * TL1 * (T8 * dVgsteff_dVd - T9 * dEsatL_dVd / EsatL);
+<                 dT0_dVe = (1.0 - 20.0 * T0) * TL1 * (T8 * dVgsteff_dVe - T9 * dEsatL_dVe / EsatL);
+---
+>                 dT0_dVb = -T9 * dEsatL_dVb;
+>                 dT0_dVd = -T9 * dEsatL_dVd;
+3850d3546
+<             dT1_dVe = (tmp1 * dVADIBL_dVe + tmp2 * dVACLM_dVe) / tmp3;   /* LFW_FD new line */
+3866,3868c3562
+<           /* LFW_FD fix/add 2 derivatives */
+<             dT2_dVb = (tmp1 * dVADITS_dVb + tmp2 * dT1_dVb) / tmp3;
+<             dT2_dVe = (tmp1 * dVADITS_dVe + tmp2 * dT1_dVe) / tmp3;
+---
+>             dT2_dVb = (                   tmp2 * dT1_dVb) / tmp3;
+3890d3583
+<             dVa_dVe = dVasat_dVe + T2 * dT0_dVe + T0 * dT2_dVe;  /* LFW_FD new line */
+3899,3900c3592
+<           /* LFW_FD fix/add 3 derivatives */
+<             dbeta_dVd = CoxWovL * dueff_dVd + beta * dWeff_dVd / Weff ;
+---
+>             dbeta_dVd = CoxWovL * dueff_dVd;
+3902d3593
+<             dbeta_dVe = CoxWovL * dueff_dVe + beta * dWeff_dVe / Weff ;
+3909,3917c3600,3604
+<           /* LFW_FD fix/add 4 derivatives */
+<             dT0_dVg = -0.5 * (Abulk * dVdseff_dVg + dAbulk_dVg * Vdseff
+<                       -Abulk * Vdseff * dVgsteff_dVg / Vgst2Vtm) / Vgst2Vtm;
+<             dT0_dVb = -0.5 * (Abulk * dVdseff_dVb + dAbulk_dVb * Vdseff
+<                       -Abulk * Vdseff * dVgsteff_dVb / Vgst2Vtm) / Vgst2Vtm;
+<             dT0_dVd = -0.5 * (Abulk * dVdseff_dVd + dAbulk_dVd * Vdseff
+<                       -Abulk * Vdseff * dVgsteff_dVd / Vgst2Vtm) / Vgst2Vtm;
+<             dT0_dVe = -0.5 * (Abulk * dVdseff_dVe + dAbulk_dVe * Vdseff
+<                       -Abulk * Vdseff * dVgsteff_dVe / Vgst2Vtm) / Vgst2Vtm;
+---
+>             dT0_dVg = -0.5 * (Abulk * dVdseff_dVg
+>                     - Abulk * Vdseff / Vgst2Vtm + Vdseff * dAbulk_dVg) / Vgst2Vtm;
+>             dT0_dVd = -0.5 * Abulk * dVdseff_dVd / Vgst2Vtm;
+>             dT0_dVb = -0.5 * (Abulk * dVdseff_dVb + dAbulk_dVb * Vdseff)
+>                 / Vgst2Vtm;
+3927,3931c3614,3616
+<           /* LFW_FD fix/add 4 derivatives */
+<             dfgche1_dVg = Vgsteff * dT0_dVg + dVgsteff_dVg * T0;
+<             dfgche1_dVb = Vgsteff * dT0_dVb + dVgsteff_dVb * T0;
+<             dfgche1_dVd = Vgsteff * dT0_dVd + dVgsteff_dVd * T0;
+<             dfgche1_dVe = Vgsteff * dT0_dVe + dVgsteff_dVe * T0;
+---
+>             dfgche1_dVg = Vgsteff * dT0_dVg + T0;
+>             dfgche1_dVd = Vgsteff * dT0_dVd;
+>             dfgche1_dVb = Vgsteff * dT0_dVb;
+3942d3626
+<             dfgche2_dVe = (dVdseff_dVe - T9 * dEsatL_dVe) / EsatL; /* LFW_FD new line */
+3953,3955d3636
+<           /* LFW_FD add 1 derivative */
+<             dgche_dVe = (beta * dfgche1_dVe + fgche1 * dbeta_dVe
+<                       - gche * dfgche2_dVe) / fgche2;
+3971,3972c3652
+<           /* LFW_FD fix/add 3 derivatives */
+<             dIdl_dVd = (gche * dVdseff_dVd + T9 * dgche_dVd - Idl * dRds_dVd * gche) / T0;
+---
+>             dIdl_dVd = (gche * dVdseff_dVd + T9 * dgche_dVd) / T0;
+3975d3654
+<             dIdl_dVe = (gche * dVdseff_dVe + T9 * dgche_dVe - Idl * dRds_dVe * gche) / T0;
+3984,3988d3662
+<           /* LFW_FD add 4 derivatives */
+<             dIds_dVg = (dIdl_dVg * T0 - Idl * (dVdseff_dVg + T9 * dVa_dVg) / Va)/ here->B4SOInseg;
+<             dIds_dVb = (dIdl_dVb * T0 - Idl * (dVdseff_dVb + T9 * dVa_dVb) / Va)/ here->B4SOInseg;
+<             dIds_dVd = (dIdl_dVd * T0 + Idl * (1.0 - dVdseff_dVd - T9 * dVa_dVd) / Va)/ here->B4SOInseg;
+<             dIds_dVe = (dIdl_dVe * T0 - Idl * (dVdseff_dVe + T9 * dVa_dVe) / Va)/ here->B4SOInseg;
+3998c3672
+< /*          IdovVds = IdlovVdseff * T0 / here->B4SOInseg;    LFW_FD not needed */
+---
+>             IdovVds = IdlovVdseff * T0 / here->B4SOInseg; /* v4.0 */
+4004,4005c3678
+<             Gme0 = dIdl_dVe * T0 - Idl * (dVdseff_dVe + T9 * dVa_dVe) / Va; /* LFW_FD new line */
+<           /*Gmc = 0.0;  LFW_FD not used */
+---
+>             Gmc = 0.0;
+4013,4021c3686,3689
+<           /*Gm = (Gm0 * dVgsteff_dVg+ Gmb0 * dVbseff_dVg) / here->B4SOInseg;    v3.0 */
+<           /*Gmb = (Gm0 * dVgsteff_dVb + Gmb0 * dVbseff_dVb) / here->B4SOInseg;       */
+<           /*Gds = (Gm0 * dVgsteff_dVd+ Gmb0 * dVbseff_dVd + Gds0) / here->B4SOInseg;    v3.0 */
+<           /*Gme = (Gm0 * dVgsteff_dVe + Gmb0 * dVbseff_dVe) / here->B4SOInseg;    v3.0 */
+<           /* LFW_FD fix 4 derivatives */
+<             Gm  = dIds_dVg;
+<             Gmb = dIds_dVb;
+<             Gds = dIds_dVd;
+<             Gme = dIds_dVe;
+---
+>             Gm = (Gm0 * dVgsteff_dVg+ Gmb0 * dVbseff_dVg) / here->B4SOInseg; /* v3.0 */
+>             Gmb = (Gm0 * dVgsteff_dVb + Gmb0 * dVbseff_dVb) / here->B4SOInseg;
+>             Gds = (Gm0 * dVgsteff_dVd+ Gmb0 * dVbseff_dVd + Gds0) / here->B4SOInseg; /* v3.0 */
+>             Gme = (Gm0 * dVgsteff_dVe + Gmb0 * dVbseff_dVe) / here->B4SOInseg; /* v3.0 */
+4028,4036d3695
+<             /* LFW_FD flexilint inits */
+<             Ibsdif = dIbsdif_dVb = dIbsdif_dT = 0;
+<             Ibddif = dIbddif_dVb = dIbddif_dT = 0;
+<             Ibs1 = dIbs1_dVb = dIbs1_dT = Ibd1 = dIbd1_dVb = dIbd1_dVd = dIbd1_dT = 0;
+<             Ibs2 = dIbs2_dVb = dIbs2_dT = Ibd2 = dIbd2_dVb = dIbd2_dVd = dIbd2_dT = 0;
+<             Ibs3 = dIbs3_dVb = dIbs3_dT = Ibd3 = dIbd3_dVb = dIbd3_dVd = dIbd3_dT = 0;
+<             Ibs4 = dIbs4_dVb = dIbs4_dT = Ibd4 = dIbd4_dVb = dIbd4_dVd = dIbd4_dT = 0;
+<             Igisl = Ggisls = Ggislg = Ggislb = 0.0;
+<             dIc_dVd = dIc_dVb = 0.0;
+4579c4238
+<                     /*Ibddif = dIbddif_dVb = dIbddif_dT = 0; v4.2 */
+---
+>                     /*Ibddif = dIbddif_dVb = dIbddif_dVd = dIbddif_dT = 0; v4.2 */
+4615c4274
+<                         dEhlidFactor_dVb = dEhlidFactor_dT = 0;  /* LFW_FD flexilint */
+---
+>                         dEhlidFactor_dVb = dEhlidFactor_dVd = dEhlidFactor_dT = 0;
+4626a4286
+>                         dEhlidFactor_dVd = -dEhlidFactor_dVb;
+4837c4497
+<                             /* dIbs4_dT = (1 - T1) * WsTsi * djtuns_dT;  Bug fix #8 Jun 09 'typo's corrected for Drain side */
+---
+>                             /* dIbs4_dT = (1 - T1) * WsTsi * djtuns_dT; /* Bug fix #8 Jun 09 'typo's corrected for Drain side */
+4877c4537
+<                                 = Ggidld = Ggidlg = Ggidlb = Ggidlt = 0.0;  /* LFW_FD inits */
+---
+>                     = Ggidld = Ggidlg = Ggidlb = 0.0;
+4879,4880c4539,4540
+<                                 = Ggisls = Ggislg = Ggislb = Ggislt = 0.0; /* This is an appx solution */
+< 
+---
+>                     = Ggisls = Ggislg = Ggislb = 0.0;                   /* This is an appx solution */
+>                 /* Final code will comply with BSIM MG in future releases */
+4884,4914c4544,4547
+<                 Gjsb = 0.0;
+<                 Gjdb = 0.0;
+<                 Gjsd = 0.0;
+<                 Gjdd = 0.0;
+< 
+<            /*   here->B4SOIigidl= Igidl  */
+<            /*       = Ggidld = Ggidlg = Ggidlb = Ggidlt = 0.0;  LFW_FD enhance line */
+<            /*   here->B4SOIigisl= Igisl                         Bug fix #9 Jun 09 Code added to set Igisl components to zero */
+<            /*       = Ggisls = Ggislg = Ggislb = Ggislt = 0.0;  This is an appx solution - LFW_FD enhance line */
+<                 /* Final code will comply with BSIM MG in future releases */
+<            /*   here->B4SOIitun = 0;                                      */
+<               /* LFW_FD  next 21 lines; fix Ibs, Ibd, and derivatives Gjs* and Gjd*   */
+<            /*   Ibs = 0;  */
+<            /*   Ibd = 0;  */
+<            /* Add Gmin since body node is floating - LFW - DIDN'T Converge */
+<            /* Connect to electrical source, since source is BSIM reference */
+<            /* Also option to connect to both source and drain              */
+<            /*   if (here->B4SOImode == 1)                                  */
+<            /*   {                                                          */
+<            /*      Ibs = 1.0e-18 * vbs;                                    */
+<            /*      Ibd = 1.0e-18 * vbd;                                    */
+<            /*   }                                                          */
+<            /*   else                                                       */
+<            /*   {                                                          */
+<            /*      Ibs = 1.0e-18 * vbd;                                    */
+<            /*      Ibd = 1.0e-18 * vbs;                                    */
+<            /*   }                                                          */
+<            /*   Gjsb = 1.0e-18;                                            */
+<            /*   Gjdb = 1.0e-18;                                            */
+<            /*   Gjsd = 0.0;                                                */
+<            /*   Gjdd = -1.0e-18;                                           */
+---
+>                 here->B4SOIic = Ic = Gcd = Gcb = GcT = 0.0;
+> 
+>                 Gjsb = 0;
+>                 Gjsd = 0;
+4916d4548
+<                 GjdT = 0;
+4918c4550,4552
+<                 here->B4SOIic = Ic = Gcd = Gcb = GcT = 0.0;
+---
+>                 Gjdb = 0;
+>                 Gjdd = 0;
+>                 GjdT = 0;
+4930,4940c4564
+<           /* LFW_FD 12 new lines per flexilint */
+<             Vfb = 0.0;
+<             Voxacc = dVoxacc_dVg = dVoxacc_dVd = dVoxacc_dVb = dVoxacc_dVe = 0.0;
+<             Voxdepinv = dVoxdepinv_dVg = dVoxdepinv_dVd = dVoxdepinv_dVb
+<                       = dVoxdepinv_dT= dVoxdepinv_dVe = 0.0;
+< 
+<             Vgb = Vgs_eff - Vbs;      /* flexilint - moved from below if stmt */
+<             dVgb_dVg = dVgs_eff_dVg - dVbs_dVg;
+<             dVgb_dVd = - dVbs_dVd;
+<             dVgb_dVe = - dVbs_dVe;
+<             dVgb_dVb = - dVbs_dVb;
+---
+>             /* 2 new lines Wagner */
+4944a4569,4571
+>                 Vgb = Vgs_eff - Vbs;
+>                 dVgb_dVg = dVgs_eff_dVg;
+>                 dVgb_dVb = -1;
+4952,4957c4579,4582
+<               /* LFW_FD add/fix 5 derivatives */
+<                 dT3_dVg = -dVgs_eff_dVg + dVbs_dVg;
+<                 dT3_dVd = dVbs_dVd;
+<                 dT3_dVe = dVbs_dVe;
+<                 dT3_dVb = dVbs_dVb;
+<                 dTL3_dT = dVfb_dT - dVgs_eff_dT + dVbs_dT;
+---
+>                 dT3_dVg = -dVgs_eff_dVg;
+>                 dT3_dVd = 0;
+>                 dT3_dVb = 1;
+>                 dTL3_dT = dVfb_dT - dVgs_eff_dT; /* new line Wagner */
+4963,4965d4587
+<                   /* LFW_FD add 2 derivatives */
+<                     dT0_dVd = T3 * dT3_dVd / T0;
+<                     dT0_dVe = T3 * dT3_dVe / T0;
+4973,4975d4594
+<                   /* LFW_FD add 2 derivatives */
+<                     dT0_dVd = T3 * dT3_dVd / T0;
+<                     dT0_dVe = T3 * dT3_dVe / T0;
+4983,4985d4601
+<               /* LFW_FD add 2 derivatives */
+<                 dVfbeff_dVd = -0.5 * (dT3_dVd + dT0_dVd);
+<                 dVfbeff_dVe = -0.5 * (dT3_dVe + dT0_dVe);
+4992,4994c4608
+<               /* LFW_FD add/fix 2 derivatives */
+<                 dVoxacc_dVd = -dVfbeff_dVd;
+<                 dVoxacc_dVe = -dVfbeff_dVe;
+---
+>                 dVoxacc_dVd = 0.0;
+4997c4611
+<                     Voxacc = dVoxacc_dVg = dVoxacc_dVb = dVoxacc_dVd = dVoxacc_dVe = 0.0; /* LFW_FD enhance line */
+---
+>                     Voxacc = dVoxacc_dVg = dVoxacc_dVb = 0.0;
+5004d4617
+<               /* LFW_FD add/fix 4 derivatives */
+5006,5010c4619,4621
+<                 dT0_dVd = -dVgsteff_dVd - dVbseff_dVd - dVfbeff_dVd;
+<                 dT0_dVb = -dVgsteff_dVb - dVbseff_dVb - dVfbeff_dVb;
+<                 dT0_dVe = -dVgsteff_dVe - dVbseff_dVe - dVfbeff_dVe;
+< 
+<                 dVoxdepinv_dT = 0.0;  /* flexilint */
+---
+>                 dT0_dVd = -dVgsteff_dVd - dVbseff_dVd; /* v3.0 */
+>                 dT0_dVb = -dVgsteff_dVb - dVfbeff_dVb - dVbseff_dVb;
+>                 dT0_dVe = -dVgsteff_dVe - dVbseff_dVe;
+5047,5051c4658,4661
+<                   /* LFW_FD add/fix 5 derivatives */
+<                     dVoxdepinv_dVg = dVgs_eff_dVg - (2.0*T1*dT1_dVg) - dVbs_dVg;
+<                     dVoxdepinv_dVd = -(2.0*T1*dT1_dVd) - dVbs_dVd;
+<                     dVoxdepinv_dVb = -(2.0*T1*dT1_dVb) - dVbs_dVb;
+<                     dVoxdepinv_dVe = -(2.0*T1*dT1_dVe) - dVbs_dVe;
+---
+>                     dVoxdepinv_dVg = dVgs_eff_dVg - (2.0*T1*dT1_dVg);
+>                     dVoxdepinv_dVd = -(2.0*T1*dT1_dVd);
+>                     dVoxdepinv_dVb = -(2.0*T1*dT1_dVb + 1);
+>                     dVoxdepinv_dVe = -(2.0*T1*dT1_dVe); /* v3.0 */
+5053,5054c4663,4665
+<                        dVoxdepinv_dT = dVgs_eff_dT -(2.0*T1*dT1_dT) - dVbs_dT - dVfb_dT;
+<                     else dVoxdepinv_dT = 0.0;
+---
+>                       /*fix below expression Wagner */
+>                       /*dVoxdepinv_dT = -(2.0*T1*dT1_dT);*/
+>                         dVoxdepinv_dT = dVgs_eff_dT -(2.0*T1*dT1_dT) - dVfb_dT;
+5060,5067c4671,4672
+< 
+<             /* LFW_FD next 6 lines - flexilint inits */
+<             Igd  = dIgd_dVg  = dIgd_dVd  = 0.0;
+<             Igcd = dIgcd_dVg = dIgcd_dVd = dIgcd_dVb = dIgcd_dVe = 0.0;
+<             Igs  = dIgs_dVg  = dIgs_dVs  = 0.0;
+<             Igcs = dIgcs_dVg = dIgcs_dVd = dIgcs_dVb = dIgcs_dVe = 0.0;
+<             ExpVxNVt = 0.0;
+<             dIgcd_dT = dIgcs_dT = 0.0;
+---
+>             ExpVxNVt = 0.0;              /* new line Wagner */
+>             dIgcd_dT = dIgcs_dT = 0.0;   /* new line Wagner */
+5104c4709,4710
+<                     /* Wagner New fix (moved from below into else block */
+---
+>                 }
+>                 /* 3 new lines Wagner */
+5108d4713
+<                 }
+5127,5128c4732,4733
+<                 /* LFW_FD fix derivative */
+<                 if (selfheat) dT5_dT = T12 * (T3 - 2 * T4 * Voxdepinv) * dVoxdepinv_dT;
+---
+>                 /* 2 new lines Wagner */
+>                 if (selfheat) dT5_dT = T12 * (T3 - 2 * T4) * dVoxdepinv_dT;
+5133c4738
+<                     dT6_dVg = dT6_dVd = dT6_dVb = dT6_dVe = dT6_dT = 0.0;  /* LFW_FD enhance line */
+---
+>                     dT6_dVg = dT6_dVd = dT6_dVb = 0.0;
+5137c4742
+<                     dT6_dVg = dT6_dVd = dT6_dVb = dT6_dVe = dT6_dT = 0.0;  /* LFW_FD enhance line */
+---
+>                     dT6_dVg = dT6_dVd = dT6_dVb = 0.0;
+5143d4747
+<                     dT6_dVe = dT6_dVg * dVoxdepinv_dVe;  /* LFW_FD new line */
+5146,5148d4749
+<                     /* LFW_FD fix - move from below into this else block */
+<                     if (selfheat) dT6_dT = T6 * dT5_dT;
+<                     else dT6_dT = 0.0;
+5150a4752,4754
+>                 /* 2 new lines Wagner */
+>                 if (selfheat) dT6_dT = T6 * dT5_dT;
+>                 else dT6_dT = 0.0;
+5155d4758
+<                 dIgc_dVe = T11 * (T2 * dT6_dVe);   /* LFW_FD new line */
+5188d4790
+<                 dIgcs_dVe = dIgc_dVe * T10;  /* LFW_FD new line */
+5203d4804
+<                 dIgcd_dVe = dIgc_dVe * T10;   /* LFW_FD new line */
+5216d4816
+<                 here->B4SOIgIgcse = dIgcs_dVe;   /* LFW_FD new line */
+5223d4822
+<                 here->B4SOIgIgcde = dIgcd_dVe;   /* LFW_FD new line */
+5302c4901
+<                               + here->B4SOIgIgcsb + here->B4SOIgIgcse);  /* LFW_FD fix line */
+---
+>                     + here->B4SOIgIgcsb);
+5304c4903
+<                               + here->B4SOIgIgcdb + here->B4SOIgIgcde);  /* LFW_FD fix line */
+---
+>                     + here->B4SOIgIgcdb);
+5307d4905
+<             Vfb2 = dVox_dT = 0.0;
+5343a4942,4944
+>               /* fix below exprssion Wagner */
+>               /*if (selfheat)
+>                     dVaux_dT = T2 / (1 + T1) * dVox_dT;*/
+5345c4946
+<                     dVaux_dT = T2 / (1 + T1) * dVox_dT;  /* LFW_FD fix line */
+---
+>                     dVaux_dT = model->B4SOIvevb * dT1_dT / (1 + T1);
+5376d4976
+<                 else dT6_dT = 0.0;  /* flexilint */
+5385,5386d4984
+<                 else
+<                    dT5_dT = 0.0;   /* flexilint */
+5389c4987
+<               /* LFW_FD fix 5 derivatives */
+---
+>                 /* fix expression below - Wagner */
+5390a4989
+>                      /* Vgb*T5*dVaux_dVg);*/
+5392,5393c4991,4993
+<                           + Vgb * Vaux * T5 * Leff * dWeff_dVg  * agb1 * OxideRatio / here->B4SOInseg;
+<                 dIgb1_dVd = T1 * (Vgb*Vaux*dT5_dVd + Vgb*T5*dVaux_dVd + dVgb_dVd*Vaux*T5);
+---
+>                       + Vgb * Vaux * T5 * Leff * dWeff_dVg / here->B4SOInseg;
+>                 dIgb1_dVd = T1 * (Vgb*Vaux*dT5_dVd + Vgb*T5*dVaux_dVd);
+>                 /* fix expression below - Wagner */
+5394a4995
+>                       /*Vgb*T5*dVaux_dVb);*/
+5396,5397c4997,4998
+<                           + Vgb * Vaux * T5 * Leff * dWeff_dVb  * agb1 * OxideRatio / here->B4SOInseg;
+<                 dIgb1_dVe = T1 * (Vgb*Vaux*dT5_dVe + Vgb*T5*dVaux_dVe + dVgb_dVe*Vaux*T5);
+---
+>                       + Vgb * Vaux * T5 * Leff * dWeff_dVb / here->B4SOInseg;
+>                 dIgb1_dVe = T1 * (Vgb*Vaux*dT5_dVe + Vgb*T5*dVaux_dVe); /* v3.0 */
+5398a5000,5001
+>                  /* fix expression below - Wagner */
+>                  /* dIgb1_dT = T1 * Vgb * (Vaux*dT5_dT + T5*dVaux_dT);*/
+5400,5401c5003
+<                             + Vgb * Vaux * T5 * Leff * dWeff_dT  * agb1 * OxideRatio / here->B4SOInseg
+<                             + T1 * dVgs_eff_dT * Vaux * T5;
+---
+>                              + Vgb * Vaux * T5 * Leff * dWeff_dT / here->B4SOInseg;
+5416d5017
+<                 dVox_dVe = dVoxacc_dVe * dVoxeff_dVox;   /* LFW_FD new line */
+5439,5443c5040,5042
+<               /* LFW_FD fix/add 4 derivatives */
+<                 dVaux_dVg = - T2 / (1 + T1) * dVgb_dVg;
+<                 dVaux_dVd = - T2 / (1 + T1) * dVgb_dVd;
+<                 dVaux_dVe = - T2 / (1 + T1) * dVgb_dVe;
+<                 dVaux_dVb = - T2 / (1 + T1) * dVgb_dVb;
+---
+>                 dVaux_dVg = -T2 / (1 + T1);
+>                 dVaux_dVd = 0;
+>                 dVaux_dVb = -dVaux_dVg;
+5478d5076
+<                 else dT6_dT = 0.0;  /* flexilint */
+5484d5081
+<                 dT5_dVe = -T7 * dVox_dVe * T2 / T0 * (T4 + (T3 - T4 * Vox) / T0 * dT0_dVox); /* LFW_FD new line */
+5487,5488d5083
+<                 else
+<                     dT5_dT = 0.0;         /* flexilint */
+5491,5497c5086,5096
+<               /* LFW_FD fix 5 derivatives */
+<                 dIgb2_dVg = T1 * (Vgb*Vaux*dT5_dVg + dVgb_dVg*Vaux*T5 + Vgb*T5*dVaux_dVg)
+<                           + Vgb * Vaux * T5 * Leff * dWeff_dVg *agb2 * OxideRatio / here->B4SOInseg;
+<                 dIgb2_dVd = T1 * (Vgb*Vaux*dT5_dVd + dVgb_dVd*Vaux*T5 + Vgb*T5*dVaux_dVd);
+<                 dIgb2_dVb = T1 * (Vgb*Vaux*dT5_dVb + dVgb_dVb*Vaux*T5 + Vgb*T5*dVaux_dVb)
+<                           + Vgb * Vaux * T5 * Leff * dWeff_dVb * agb2 * OxideRatio / here->B4SOInseg;
+<                 dIgb2_dVe = T1 * (Vgb*Vaux*dT5_dVe + dVgb_dVe*Vaux*T5 + Vgb*T5*dVaux_dVe);
+---
+>                 /* fix below expression - Wagner */
+>                 dIgb2_dVg = T1 * (Vgb*Vaux*dT5_dVg + dVgb_dVg*Vaux*T5 +
+>                       /*Vgb*T5*dVaux_dVg);*/
+>                         Vgb*T5*dVaux_dVg)
+>                       + Vgb * Vaux * T5 * Leff * dWeff_dVg / here->B4SOInseg;
+>                 dIgb2_dVd = T1 * (Vgb*Vaux*dT5_dVd + Vgb*T5*dVaux_dVd);
+>                 /* fix below expression - Wagner */
+>                 dIgb2_dVb = T1 * (Vgb*Vaux*dT5_dVb + dVgb_dVb*Vaux*T5 +
+>                       /*Vgb*T5*dVaux_dVb);*/
+>                         Vgb*T5*dVaux_dVb)
+>                       + Vgb * Vaux * T5 * Leff * dWeff_dVb / here->B4SOInseg;
+5498a5098,5099
+>                  /* fix below expression - Wagner */
+>                  /* dIgb2_dT = T1 * Vgb * (Vaux*dT5_dT + T5*dVaux_dT);*/
+5500,5501c5101
+<                             + Vgb * Vaux * T5 * Leff * dWeff_dT * agb2 * OxideRatio / here->B4SOInseg
+<                             + T1 * dVgs_eff_dT * Vaux * T5;
+---
+>                              + Vgb * Vaux * T5 * Leff * dWeff_dT / here->B4SOInseg;
+5522c5122
+<                     dIgb_dVe = dIgb2_dVe;   /* LFW_FD fix line */
+---
+>                     dIgb_dVe = 0; /* v3.0 */
+5560d5159
+<                 dvgp_eff_dT =  0.5 * (1.0 - T0 / T1) * dVfb_dT;  /* LFW_FD new line */
+5572d5170
+<                 dT2_dT  = vgp * dvgp_eff_dT;            /* LFW_FD new line */
+5584d5181
+<                     dT6_dT  = 0.0;     /* LFW_FD new line */
+5591d5187
+<                     dT6_dT  = 0.0;     /* LFW_FD new line */
+5600d5195
+<                     dT6_dT  = T7 * dvgp_eff_dT;   /* LFW_FD new line */
+5606d5200
+<                 dIg_agbcp2_dT  = T11 * (T2 * dT6_dT + T6 * dT2_dT);  /* LFW_FD new line */
+5612d5205
+<                 dIg_agbcp2_dT  = 0.0;  /* LFW_FD new line */
+5632c5225
+<                         here->B4SOIiii = Iii = Idsmosfet = dIiibjt_dVb = dIiibjt_dVd = dIiibjt_dT = 0.0;
+---
+>                         here->B4SOIiii = Iii = 0.0;
+5757c5350
+<                         /* Giig = Giib = Giid = GiiT = 0.0;  */
+---
+>                         /* Giig = Giib = Giid = GiiT = 0.0;
+5759,5763c5352,5356
+<                         /* here->B4SOIiii = Iii = 0.0; v4.2 bugfix #38 */
+<                         /* Idsmosfet = 0.0;           v4.2 bugfix #38 */
+<                         /*dIiibjt_dVb = 0.0;          v4.2 bugfix #38 */
+<                         /*dIiibjt_dVd = 0.0; */
+<                         /*dIiibjt_dT  = 0.0; */
+---
+>                         /* here->B4SOIiii = Iii = 0.0; */ /* v4.2 bugfix # 38 */
+>                         /* Idsmosfet = 0.0; */                          /*v 4.2 bugfix #38 */
+>                         /*dIiibjt_dVb = 0.0;                            /* v4.2 bugfix # 38 */
+>                         /*dIiibjt_dVd = 0.0;
+>                           dIiibjt_dT  = 0.0; */
+5937c5530,5531
+<                               dT4_dVb = 0.0;
+---
+>                                 dT4_dVd = 0.0;
+> 
+6119d5712
+<             Rs = Rd = 0.0;   /* flexilint */
+6346,6349d5938
+< 
+< /* Fix NF problem with tnoimod=1 -  LFW     */
+<                 here->B4SOIidovVds *= here->B4SOInf;
+< 
+6364d5952
+<                 here->B4SOIgIgcse *= here->B4SOInf;  /* LFW_FD new line */
+6369d5956
+<                 here->B4SOIgIgcde *= here->B4SOInf;  /* LFW_FD new line */
+6423d6009
+<           /* LFW_FD fix 2 derivatives */
+6425c6011
+<                                 + here->B4SOIgIgcsb + here->B4SOIgIgcse);
+---
+>                     + here->B4SOIgIgcsb);
+6427c6013
+<                                 + here->B4SOIgIgcdb + here->B4SOIgIgcde);
+---
+>                     + here->B4SOIgIgcdb);
+6431,6441d6016
+<           /* LFW_FD  9 new lines - flexilint */
+<             Cbb = Cbd = Cbg = 0.0;
+<             Qsub0 = Qac0 = 0.0;
+<             qjs = qjd = 0.0;
+<             CboxWL = 0.0;
+<             Qe1 = dQe1_dVb = dQe1_dVe = dQe1_dT = 0;
+<             Vfbeff2=dVfbeff2_dVd=dVfbeff2_dVrg=dVfbeff2_dVg=dVfbeff2_dVb=dVfbeff2_dVe=dVfbeff2_dT=0.0;
+<             VdseffCV2 = dVdseffCV2_dVg = dVdseffCV2_dVd = dVdseffCV2_dVb = dVdseffCV2_dVe = 0.0;
+<             Vgsteff2 = 0.0;
+<             dVgsteff2_dVd=dVgsteff2_dVg=dVgsteff2_dVb=dVgsteff2_dVe=dVgsteff2_dT=0.0;
+< 
+6452d6026
+<                 qgate  = qdrn = qsrc = qbody = qsub = 0.0; /* flexilint */
+6469d6042
+<                 dnoff_dVg = pParam->B4SOInoff * dn_dVg;   /* LFW_FD new line */
+6472d6044
+<                 dnoff_dVe = pParam->B4SOInoff * dn_dVe;   /* LFW_FD new line */
+6478d6049
+<                         TL1 = ExpVgst;      /* LFW_FD new line */
+6481,6490d6051
+<                       /* LFW_FD  4 new derivatives */
+<                         dExpVgst_dVg = 2.0 * TL1 * dExpVgst_dVg * exp( -pParam->B4SOIdelvt / (noff * Vtm))
+<                                      + ExpVgst * pParam->B4SOIdelvt * dnoff_dVg / (noff * noff * Vtm);
+<                         dExpVgst_dVd = 2.0 * TL1 * dExpVgst_dVd * exp( -pParam->B4SOIdelvt / (noff * Vtm))
+<                                      + ExpVgst * pParam->B4SOIdelvt * dnoff_dVd / (noff * noff * Vtm);
+<                         dExpVgst_dVb = 2.0 * TL1 * dExpVgst_dVb * exp( -pParam->B4SOIdelvt / (noff * Vtm))
+<                                      + ExpVgst * pParam->B4SOIdelvt * dnoff_dVb / (noff * noff * Vtm);
+<                         dExpVgst_dVe = 2.0 * TL1 * dExpVgst_dVe * exp( -pParam->B4SOIdelvt / (noff * Vtm))
+<                                      + ExpVgst * pParam->B4SOIdelvt * dnoff_dVe / (noff * noff * Vtm);
+< 
+6492,6496d6052
+<                       /* LFW_FD  4 fix derivatives */
+<                         dVgsteff_dVg = Vgsteff * dnoff_dVg / noff + noff * Vtm * dExpVgst_dVg / (1.0 + ExpVgst);
+<                         dVgsteff_dVd = Vgsteff * dnoff_dVd / noff + noff * Vtm * dExpVgst_dVd / (1.0 + ExpVgst);
+<                         dVgsteff_dVb = Vgsteff * dnoff_dVb / noff + noff * Vtm * dExpVgst_dVb / (1.0 + ExpVgst);
+<                         dVgsteff_dVe = Vgsteff * dnoff_dVe / noff + noff * Vtm * dExpVgst_dVe / (1.0 + ExpVgst);
+6499,6507c6055,6067
+<                         T2 = 2.0 * pParam->B4SOImstar * pParam->B4SOInoff;  /* LFW_FD new line */
+<                         T1 = -T0 * (T2*dVth_dVb + (T2*Vgst-pParam->B4SOIdelvt) / noff * dnoff_dVb)
+<                              + Vgsteff / noff * dnoff_dVb;   /* LFW_FD fix line */
+<                       /* LFW_FD  fix _dT derivatives */
+<                         if (selfheat) {
+<                         dExpVgst_dT = 2.0 * TL1 * dExpVgst_dT * exp( -pParam->B4SOIdelvt / (noff * Vtm))
+<                                     + ExpVgst * pParam->B4SOIdelvt * (dVtm_dT / Vtm + dnoff_dT / noff) / (noff * Vtm);
+<                         dVgsteff_dT = Vgsteff * (dnoff_dT / noff + dVtm_dT / Vtm) + noff * Vtm * dExpVgst_dT / (1.0 + ExpVgst);
+<                         }
+---
+>                         T1 = -T0 * (dVth_dVb + (Vgst-pParam->B4SOIdelvt) / noff * dnoff_dVb)
+>                             + Vgsteff / noff * dnoff_dVb;
+>                         dVgsteff_dVd = -T0 * (dVth_dVd + dVth_dVb*dVbseff_dVd + (Vgst-pParam->B4SOIdelvt)/ noff * dnoff_dVd)
+>                             + Vgsteff / noff * dnoff_dVd;
+>                         dVgsteff_dVg = T0 * (dVgs_eff_dVg - dVth_dVb*dVbseff_dVg);
+>                         dVgsteff_dVb = T1 * dVbseff_dVb;
+>                         dVgsteff_dVe = T1 * dVbseff_dVe;
+>                         if (selfheat)
+>                           /*fix below expression Wagner */
+>                           /*dVgsteff_dT = -T0 * (dVth_dT+dVth_dVb*dVbseff_dT */
+>                             dVgsteff_dT = -T0 * (-dVgst_dT
+>                                           + (Vgst - pParam->B4SOIdelvt) / Temp)
+>                                           + Vgsteff / Temp;
+6509d6068
+< 
+6514,6519d6072
+<                           /* LFW_FD  add 4 derivatives */
+<                             dExpVgst2_dVg = dExpVgst_dVg * exp(-eggbcp2 / noff / Vtm) + ExpVgst2 * eggbcp2 * dnoff_dVg / (noff * noff * Vtm);
+<                             dExpVgst2_dVd = dExpVgst_dVd * exp(-eggbcp2 / noff / Vtm) + ExpVgst2 * eggbcp2 * dnoff_dVd / (noff * noff * Vtm);
+<                             dExpVgst2_dVb = dExpVgst_dVb * exp(-eggbcp2 / noff / Vtm) + ExpVgst2 * eggbcp2 * dnoff_dVb / (noff * noff * Vtm);
+<                             dExpVgst2_dVe = dExpVgst_dVe * exp(-eggbcp2 / noff / Vtm) + ExpVgst2 * eggbcp2 * dnoff_dVe / (noff * noff * Vtm);
+< 
+6521,6526d6073
+<                           /* LFW_FD  fix 4 derivatives */
+<                             dVgsteff2_dVg = Vgsteff2 * dnoff_dVg / noff + noff * Vtm * dExpVgst2_dVg / (1.0 + ExpVgst2);
+<                             dVgsteff2_dVd = Vgsteff2 * dnoff_dVd / noff + noff * Vtm * dExpVgst2_dVd / (1.0 + ExpVgst2);
+<                             dVgsteff2_dVb = Vgsteff2 * dnoff_dVb / noff + noff * Vtm * dExpVgst2_dVb / (1.0 + ExpVgst2);
+<                             dVgsteff2_dVe = Vgsteff2 * dnoff_dVe / noff + noff * Vtm * dExpVgst2_dVe / (1.0 + ExpVgst2);
+< 
+6531a6079,6085
+>                            /* dVgsteff2_dVd = -T02 * (dVth_dVd + dVth_dVb*dVbseff_dVd + (Vgst-pParam->B4SOIdelvt-1.12) / noff * dnoff_dVd)
+>                                 + Vgsteff2 / noff * dnoff_dVd; */
+>                                                         dVgsteff2_dVd = -T02 * (dVth_dVd + dVth_dVb*dVbseff_dVd + (Vgst-pParam->B4SOIdelvt-eggbcp2) / noff * dnoff_dVd)
+>                                 + Vgsteff2 / noff * dnoff_dVd;  /* bugfix 4.3.1 -Tanvir */
+>                             dVgsteff2_dVg = T02 * (dVgs_eff_dVg - dVth_dVb*dVbseff_dVg);
+>                             dVgsteff2_dVb = T12 * dVbseff_dVb;
+>                             dVgsteff2_dVe = T12 * dVbseff_dVe;
+6548,6557d6101
+<                   /* LFW_FD  add 4 derivatives */
+<                     dExpVgst_dVg = ExpVgst * (dVgstNVt_dVg/(pParam->B4SOImstar * pParam->B4SOInoff)
+<                                  + pParam->B4SOIdelvt * dnoff_dVg / (noff * noff * Vtm));
+<                     dExpVgst_dVd = ExpVgst * (dVgstNVt_dVd/(pParam->B4SOImstar * pParam->B4SOInoff)
+<                                  + pParam->B4SOIdelvt * dnoff_dVd / (noff * noff * Vtm));
+<                     dExpVgst_dVb = ExpVgst * (dVgstNVt_dVb/(pParam->B4SOImstar * pParam->B4SOInoff)
+<                                  + pParam->B4SOIdelvt * dnoff_dVb / (noff * noff * Vtm));
+<                     dExpVgst_dVe = ExpVgst * (dVgstNVt_dVe/(pParam->B4SOImstar * pParam->B4SOInoff)
+<                                  + pParam->B4SOIdelvt * dnoff_dVe / (noff * noff * Vtm));
+< 
+6559,6563d6102
+<                   /* LFW_FD  fix 4 derivatives */
+<                     dVgsteff_dVg = Vgsteff * dnoff_dVg / noff + noff * Vtm * dExpVgst_dVg / (1.0 + ExpVgst);
+<                     dVgsteff_dVd = Vgsteff * dnoff_dVd / noff + noff * Vtm * dExpVgst_dVd / (1.0 + ExpVgst);
+<                     dVgsteff_dVb = Vgsteff * dnoff_dVb / noff + noff * Vtm * dExpVgst_dVb / (1.0 + ExpVgst);
+<                     dVgsteff_dVe = Vgsteff * dnoff_dVe / noff + noff * Vtm * dExpVgst_dVe / (1.0 + ExpVgst);
+6567a6107,6109
+>                     dVgsteff_dVd = -T0 * (dVth_dVd + dVth_dVb*dVbseff_dVd + (Vgst-pParam->B4SOIdelvt) / noff * dnoff_dVd)
+>                         + Vgsteff / noff * dnoff_dVd;
+>                     dVgsteff_dVg =  T0 * (dVgs_eff_dVg - dVth_dVb*dVbseff_dVg);
+6568a6111,6112
+>                     dVgsteff_dVb = T1 * dVbseff_dVb;
+>                     dVgsteff_dVe = T1 * dVbseff_dVe;
+6580,6585d6123
+<                       /* LFW_FD  add 4 derivatives */
+<                         dExpVgst2_dVg = dExpVgst_dVg * exp(-eggbcp2 / noff / Vtm) + ExpVgst2 * eggbcp2 * dnoff_dVg / (noff * noff * Vtm);
+<                         dExpVgst2_dVd = dExpVgst_dVd * exp(-eggbcp2 / noff / Vtm) + ExpVgst2 * eggbcp2 * dnoff_dVd / (noff * noff * Vtm);
+<                         dExpVgst2_dVb = dExpVgst_dVb * exp(-eggbcp2 / noff / Vtm) + ExpVgst2 * eggbcp2 * dnoff_dVb / (noff * noff * Vtm);
+<                         dExpVgst2_dVe = dExpVgst_dVe * exp(-eggbcp2 / noff / Vtm) + ExpVgst2 * eggbcp2 * dnoff_dVe / (noff * noff * Vtm);
+< 
+6587,6592d6124
+<                       /* LFW_FD  fix 4 derivatives */
+<                         dVgsteff2_dVg = Vgsteff2 * dnoff_dVg / noff + noff * Vtm * dExpVgst2_dVg / (1.0 + ExpVgst2);
+<                         dVgsteff2_dVd = Vgsteff2 * dnoff_dVd / noff + noff * Vtm * dExpVgst2_dVd / (1.0 + ExpVgst2);
+<                         dVgsteff2_dVb = Vgsteff2 * dnoff_dVb / noff + noff * Vtm * dExpVgst2_dVb / (1.0 + ExpVgst2);
+<                         dVgsteff2_dVe = Vgsteff2 * dnoff_dVe / noff + noff * Vtm * dExpVgst2_dVe / (1.0 + ExpVgst2);
+< 
+6597a6130,6134
+>                                            /* dVgsteff2_dVd = -T02 * (dVth_dVd + dVth_dVb*dVbseff_dVd + (Vgst-pParam->B4SOIdelvt - 1.12) / noff * dnoff_dVd)
+>                             + Vgsteff2 / noff * dnoff_dVd;       */
+>                         dVgsteff2_dVd = -T02 * (dVth_dVd + dVth_dVb*dVbseff_dVd + (Vgst-pParam->B4SOIdelvt - eggbcp2) / noff * dnoff_dVd)
+>                             + Vgsteff2 / noff * dnoff_dVd;       /* bugfix 4.3.1 -Tanvir */
+>                                                 dVgsteff2_dVg = T02 * (dVgs_eff_dVg - dVth_dVb*dVbseff_dVg);
+6618,6623d6154
+<                   /* LFW_FD  add 4 derivatives */
+<                     dVgstNVt_dVg = (pParam->B4SOImstarcv * dVgst_dVg - VgstNVt * dnoff_dVg * Vtm) / T10;
+<                     dVgstNVt_dVd = (pParam->B4SOImstarcv * dVgst_dVd - VgstNVt * dnoff_dVd * Vtm) / T10;
+<                     dVgstNVt_dVb = (pParam->B4SOImstarcv * dVgst_dVb - VgstNVt * dnoff_dVb * Vtm) / T10;
+<                     dVgstNVt_dVe = (pParam->B4SOImstarcv * dVgst_dVe - VgstNVt * dnoff_dVe * Vtm) / T10;
+< 
+6626,6631d6156
+<                   /* LFW_FD  add 4 derivatives */
+<                     dExpArg_dVg = (-(1- pParam->B4SOImstarcv) * dVgst_dVg - ExpArg * dnoff_dVg * Vtm) / T10;
+<                     dExpArg_dVd = (-(1- pParam->B4SOImstarcv) * dVgst_dVd - ExpArg * dnoff_dVd * Vtm) / T10;
+<                     dExpArg_dVb = (-(1- pParam->B4SOImstarcv) * dVgst_dVb - ExpArg * dnoff_dVb * Vtm) / T10;
+<                     dExpArg_dVe = (-(1- pParam->B4SOImstarcv) * dVgst_dVe - ExpArg * dnoff_dVe * Vtm) / T10;
+< 
+6653,6657c6178,6181
+<                       /* LFW_FD  fix 4 derivatives */
+<                         dVgsteff_dVg = dVgst_dVg;
+<                         dVgsteff_dVd = dVgst_dVd;
+<                         dVgsteff_dVb = dVgst_dVb;
+<                         dVgsteff_dVe = dVgst_dVe;
+---
+>                         dVgsteff_dVg = dVgs_eff_dVg + T0 * dVbseff_dVg;
+>                         dVgsteff_dVd = -dVth_dVd + T0 * dVbseff_dVd;
+>                         dVgsteff_dVb = T0 * dVbseff_dVb;
+>                         dVgsteff_dVe = T0 * dVbseff_dVe;
+6668,6673d6191
+<                       /* LFW_FD  add 4 derivatives */
+<                         dExpVgst_dVg = (dVgst_dVg - T0 * dnoff_dVg * Vtm) /(noff * Vtm);
+<                         dExpVgst_dVd = (dVgst_dVd - T0 * dnoff_dVd * Vtm) /(noff * Vtm);
+<                         dExpVgst_dVb = (dVgst_dVb - T0 * dnoff_dVb * Vtm) /(noff * Vtm);
+<                         dExpVgst_dVe = (dVgst_dVe - T0 * dnoff_dVe * Vtm) /(noff * Vtm);
+< 
+6678,6684c6196,6200
+<                      /* T1  = -T3 * (dVth_dVb + T0 * Vtm * dnoff_dVb); */
+<                         T1  = -T3 * (           T0 * Vtm * dnoff_dVb);  /* LFW_FD fixed line */
+<                       /* LFW_FD  fix 4 derivatives */
+<                         dVgsteff_dVg = Vtm * cdep0 / model->B4SOIcox * dExpVgst_dVg;
+<                         dVgsteff_dVd = Vtm * cdep0 / model->B4SOIcox * dExpVgst_dVd;
+<                         dVgsteff_dVb = Vtm * cdep0 / model->B4SOIcox * dExpVgst_dVb;
+<                         dVgsteff_dVe = Vtm * cdep0 / model->B4SOIcox * dExpVgst_dVe;
+---
+>                         T1  = -T3 * (dVth_dVb + T0 * Vtm * dnoff_dVb);
+>                         dVgsteff_dVg = T3 * dVgs_eff_dVg+ T1 * dVbseff_dVg;
+>                         dVgsteff_dVd = -T3 * (dVth_dVd + T0 * Vtm * dnoff_dVd)+ T1 * dVbseff_dVd;
+>                         dVgsteff_dVe = T1 * dVbseff_dVe;
+>                         dVgsteff_dVb = T1 * dVbseff_dVb;
+6697,6702d6212
+<                       /* LFW_FD  add 4 derivatives */
+<                         dExpVgst_dVg = ExpVgst * dVgstNVt_dVg;
+<                         dExpVgst_dVd = ExpVgst * dVgstNVt_dVd;
+<                         dExpVgst_dVb = ExpVgst * dVgstNVt_dVb;
+<                         dExpVgst_dVe = ExpVgst * dVgstNVt_dVe;
+< 
+6704,6709c6214,6218
+<                       /* LFW_FD  fix 4 derivatives */
+<                         dT1_dVg = T10 * dExpVgst_dVg / (1.0 + ExpVgst) + T1 * dnoff_dVg / noff;
+<                         dT1_dVd = T10 * dExpVgst_dVd / (1.0 + ExpVgst) + T1 * dnoff_dVd / noff;
+<                         dT1_dVb = T10 * dExpVgst_dVb / (1.0 + ExpVgst) + T1 * dnoff_dVb / noff;
+<                         dT1_dVe = T10 * dExpVgst_dVe / (1.0 + ExpVgst) + T1 * dnoff_dVe / noff;
+< 
+---
+>                         dT1_dVg = ExpVgst / (1.0 + ExpVgst) * pParam->B4SOImstarcv;
+>                         dT1_dVb = -dT1_dVg * (dVth_dVb + (Vgst-pParam->B4SOIdelvt) / noff * dnoff_dVb)
+>                             + T1 / noff * dnoff_dVb;
+>                         dT1_dVd = -dT1_dVg * (dVth_dVd + (Vgst-pParam->B4SOIdelvt) / noff * dnoff_dVd)
+>                             + T1 / noff * dnoff_dVd;
+6720,6721c6229,6230
+<                         /* dT2_dVg = -model->B4SOIcox / (Vtm * pParam->B4SOIcdep0) */
+<                         /*  * exp(ExpArg) * (1 - pParam->B4SOImstarcv);    v4.2 bug fix */
+---
+>                         /* dT2_dVg = -model->B4SOIcox / (Vtm * pParam->B4SOIcdep0)
+>                          * exp(ExpArg) * (1 - pParam->B4SOImstarcv); /* v4.2 bug fix */
+6726,6738c6235,6240
+< 
+<                       /* LFW_FD  5 new lines */
+<                         TL1 = dT2_dVg;
+<                         dTL1_dVg = TL1 * dExpArg_dVg;
+<                         dTL1_dVd = TL1 * dExpArg_dVd;
+<                         dTL1_dVb = TL1 * dExpArg_dVb;
+<                         dTL1_dVe = TL1 * dExpArg_dVe;
+< 
+<                       /* LFW_FD  fix/add 5 derivatives */
+<                         dT2_dVg  = -(dnoff_dVg * Vtm * TL1 + T10 * dTL1_dVg) / (1.0 - pParam->B4SOImstarcv);
+<                         dT2_dVd  = -(dnoff_dVd * Vtm * TL1 + T10 * dTL1_dVd) / (1.0 - pParam->B4SOImstarcv);
+<                         dT2_dVb  = -(dnoff_dVb * Vtm * TL1 + T10 * dTL1_dVb) / (1.0 - pParam->B4SOImstarcv);
+<                         dT2_dVe  = -(dnoff_dVe * Vtm * TL1 + T10 * dTL1_dVe) / (1.0 - pParam->B4SOImstarcv);
+---
+>                         dT2_dVd = -dT2_dVg * (dVth_dVd - Vtm * ExpArg * dnoff_dVd
+>                                 / (1.0 - pParam->B4SOImstarcv))
+>                             + (T2 - pParam->B4SOImstarcv) / noff * dnoff_dVd;
+>                         dT2_dVb = -dT2_dVg * (dVth_dVb - Vtm * ExpArg * dnoff_dVb
+>                                 / (1.0 - pParam->B4SOImstarcv))
+>                             + (T2 - pParam->B4SOImstarcv) / noff * dnoff_dVb;
+6740,6741c6242,6246
+<                             dT2_dT = -(dT10_dT*TL1
+<                                    +T10*TL1*(-dVtm_dT/Vtm-dcdep0_dT/cdep0+dExpArg_dT)
+---
+>                           /*fix below expression Wagner */
+>                           /*dT2_dT = -dT2_dVg * ( dVth_dT - ExpArg * T10 * T3
+>                                     / (1.0 - pParam->B4SOImstarcv) ); */
+>                             dT2_dT = -(dT10_dT*dT2_dVg
+>                                    +T10*dT2_dVg*(-dVtm_dT/Vtm-dcdep0_dT/cdep0+dExpArg_dT)
+6751,6755c6256,6263
+<                       /* LFW_FD  fix 4 derivatives */
+<                         dVgsteff_dVg = (T2 * dT1_dVg - T1 * dT2_dVg) / T3;
+<                         dVgsteff_dVd = (T2 * dT1_dVd - T1 * dT2_dVd) / T3;
+<                         dVgsteff_dVb = (T2 * dT1_dVb - T1 * dT2_dVb) / T3;
+<                         dVgsteff_dVe = (T2 * dT1_dVe - T1 * dT2_dVe) / T3;
+---
+>                         dVgsteff_dVb = T4 * dVbseff_dVb;
+>                         dVgsteff_dVe = T4 * dVbseff_dVe;
+>                         dVgsteff_dVg = (T2 * dT1_dVg - T1 * dT2_dVg)
+>                             / T3 * dVgs_eff_dVg
+>                             + T4 * dVbseff_dVg;
+> 
+>                         dVgsteff_dVd = (T2 * dT1_dVd - T1 * dT2_dVd)
+>                             / T3+ T4 * dVbseff_dVd;
+6771,6776d6278
+<                       /* LFW_FD  add 4 derivatives */
+<                         dVgstNVt2_dVg = (pParam->B4SOImstarcv * dVgst_dVg - VgstNVt2 * dnoff_dVg * Vtm) / T10;
+<                         dVgstNVt2_dVd = (pParam->B4SOImstarcv * dVgst_dVd - VgstNVt2 * dnoff_dVd * Vtm) / T10;
+<                         dVgstNVt2_dVb = (pParam->B4SOImstarcv * dVgst_dVb - VgstNVt2 * dnoff_dVb * Vtm) / T10;
+<                         dVgstNVt2_dVe = (pParam->B4SOImstarcv * dVgst_dVe - VgstNVt2 * dnoff_dVe * Vtm) / T10;
+< 
+6781,6786d6282
+<                       /* LFW_FD  add 4 derivatives */
+<                         dExpArg2_dVg = (-(1- pParam->B4SOImstarcv) * dVgst_dVg - ExpArg2 * dnoff_dVg * Vtm) / T10;
+<                         dExpArg2_dVd = (-(1- pParam->B4SOImstarcv) * dVgst_dVd - ExpArg2 * dnoff_dVd * Vtm) / T10;
+<                         dExpArg2_dVb = (-(1- pParam->B4SOImstarcv) * dVgst_dVb - ExpArg2 * dnoff_dVb * Vtm) / T10;
+<                         dExpArg2_dVe = (-(1- pParam->B4SOImstarcv) * dVgst_dVe - ExpArg2 * dnoff_dVe * Vtm) / T10;
+< 
+6807a6304
+>                             /* T0 is dVgsteff2_dVbseff */
+6809,6814c6306,6309
+<                           /* LFW_FD  fix 4 derivatives */
+<                             dVgsteff2_dVg = dVgst_dVg;
+<                             dVgsteff2_dVd = dVgst_dVd;
+<                             dVgsteff2_dVb = dVgst_dVb;
+<                             dVgsteff2_dVe = dVgst_dVe;
+< 
+---
+>                             dVgsteff2_dVg = dVgs_eff_dVg + T0 * dVbseff_dVg;
+>                             dVgsteff2_dVd = -dVth_dVd + T0 * dVbseff_dVd;
+>                             dVgsteff2_dVb = T0 * dVbseff_dVb;
+>                             dVgsteff2_dVe = T0 * dVbseff_dVe;
+6832,6837c6327,6330
+<                           /* LFW_FD  fix 4 derivatives */
+<                             dVgsteff2_dVg = Vgsteff2 * (dVgst_dVg / Vtm - T0 * dnoff_dVg) / noff;
+<                             dVgsteff2_dVd = Vgsteff2 * (dVgst_dVd / Vtm - T0 * dnoff_dVd) / noff;
+<                             dVgsteff2_dVb = Vgsteff2 * (dVgst_dVb / Vtm - T0 * dnoff_dVb) / noff;
+<                             dVgsteff2_dVe = Vgsteff2 * (dVgst_dVe / Vtm - T0 * dnoff_dVe) / noff;
+< 
+---
+>                             dVgsteff2_dVg = T3 * dVgs_eff_dVg+ T1 * dVbseff_dVg;
+>                             dVgsteff2_dVd = -T3 * (dVth_dVd + T0 * Vtm * dnoff_dVd)+ T1 * dVbseff_dVd;
+>                             dVgsteff2_dVe = T1 * dVbseff_dVe;
+>                             dVgsteff2_dVb = T1 * dVbseff_dVb;
+6849,6853c6342,6350
+<                           /* LFW_FD  fix 4 derivatives */
+<                             dT1_dVg = dnoff_dVg * T1 / noff + T10 * ExpVgst2 * dVgstNVt2_dVg / (1.0 + ExpVgst2);
+<                             dT1_dVd = dnoff_dVg * T1 / noff + T10 * ExpVgst2 * dVgstNVt2_dVd / (1.0 + ExpVgst2);
+<                             dT1_dVb = dnoff_dVg * T1 / noff + T10 * ExpVgst2 * dVgstNVt2_dVb / (1.0 + ExpVgst2);
+<                             dT1_dVe = dnoff_dVg * T1 / noff + T10 * ExpVgst2 * dVgstNVt2_dVe / (1.0 + ExpVgst2);
+---
+>                             dT1_dVg = ExpVgst2 / (1.0 + ExpVgst2) * pParam->B4SOImstarcv;
+>                          /* dT1_dVb = -dT1_dVg * (dVth_dVb + (Vgst - pParam->B4SOIdelvt - 1.12) / noff * dnoff_dVb)
+>                                 + T1 / noff * dnoff_dVb;  */
+>                                                         dT1_dVb = -dT1_dVg * (dVth_dVb + (Vgst - pParam->B4SOIdelvt - eggbcp2) / noff * dnoff_dVb)
+>                                 + T1 / noff * dnoff_dVb; /* bugfix 4.3.1 -Tanvir */
+>                          /*   dT1_dVd = -dT1_dVg * (dVth_dVd + (Vgst - pParam->B4SOIdelvt - 1.12) / noff * dnoff_dVd)
+>                                 + T1 / noff * dnoff_dVd; */
+>                                                         dT1_dVd = -dT1_dVg * (dVth_dVd + (Vgst - pParam->B4SOIdelvt - eggbcp2) / noff * dnoff_dVd)
+>                                 + T1 / noff * dnoff_dVd; /* bugfix 4.3.1 -Tanvir */
+6871,6882c6368,6373
+<                             /* LFW_FD next 5 lines new */
+<                             TL1 = dT2_dVg;
+<                             dTL1_dVg = TL1 * dExpArg2_dVg;
+<                             dTL1_dVd = TL1 * dExpArg2_dVd;
+<                             dTL1_dVb = TL1 * dExpArg2_dVb;
+<                             dTL1_dVe = TL1 * dExpArg2_dVe;
+< 
+<                             /* LFW_FD fix next 5 derivatives */
+<                             dT2_dVg  = -(dnoff_dVg * Vtm * TL1 + T10 * dTL1_dVg) / (1.0 - pParam->B4SOImstarcv);
+<                             dT2_dVd  = -(dnoff_dVg * Vtm * TL1 + T10 * dTL1_dVd) / (1.0 - pParam->B4SOImstarcv);
+<                             dT2_dVb  = -(dnoff_dVg * Vtm * TL1 + T10 * dTL1_dVb) / (1.0 - pParam->B4SOImstarcv);
+<                             dT2_dVe  = -(dnoff_dVg * Vtm * TL1 + T10 * dTL1_dVe) / (1.0 - pParam->B4SOImstarcv);
+---
+>                             dT2_dVd = -dT2_dVg * (dVth_dVd - Vtm * ExpArg2 * dnoff_dVd
+>                                     / (1.0 - pParam->B4SOImstarcv))
+>                                 + (T2 - pParam->B4SOImstarcv) / noff * dnoff_dVd;
+>                             dT2_dVb = -dT2_dVg * (dVth_dVb - Vtm * ExpArg2 * dnoff_dVb
+>                                     / (1.0 - pParam->B4SOImstarcv))
+>                                 + (T2 - pParam->B4SOImstarcv) / noff * dnoff_dVb;
+6884,6885c6375,6379
+<                                dT2_dT = -(dT10_dT*TL1
+<                                       +T10*TL1*(-dVtm_dT/Vtm-dcdep0_dT/cdep0+dExpArg2_dT)
+---
+>                               /*fix below expression Wagner */
+>                               /*dT2_dT = -dT2_dVg * ( dVth_dT - ExpArg2 * T10 * T3
+>                                         / (1.0 - pParam->B4SOImstarcv) ); */
+>                                 dT2_dT = -(dT10_dT*dT2_dVg
+>                                        +T10*dT2_dVg*(-dVtm_dT/Vtm-dcdep0_dT/cdep0+dExpArg2_dT)
+6894,6898c6388,6394
+<                             /* LFW_FD fix next 4 derivatives */
+<                             dVgsteff2_dVg = (T2 * dT1_dVg - T1 * dT2_dVg) / T3;
+<                             dVgsteff2_dVd = (T2 * dT1_dVd - T1 * dT2_dVd) / T3;
+<                             dVgsteff2_dVb = (T2 * dT1_dVb - T1 * dT2_dVb) / T3;
+<                             dVgsteff2_dVe = (T2 * dT1_dVe - T1 * dT2_dVe) / T3;
+---
+>                             dVgsteff2_dVb = T4 * dVbseff_dVb;
+>                             dVgsteff2_dVe = T4 * dVbseff_dVe;
+>                             dVgsteff2_dVg = (T2 * dT1_dVg - T1 * dT2_dVg)
+>                                 / T3 * dVgs_eff_dVg
+>                                 + T4 * dVbseff_dVg;
+>                             dVgsteff2_dVd = (T2 * dT1_dVd - T1 * dT2_dVd)
+>                                 / T3+ T4 * dVbseff_dVd;
+6912,6919c6408,6409
+<                 /* LFW_FD flexilint initializations next 9 lines */
+<                 Qsub02 = dQsub02_dVrg = dQsub02_dVg = dQsub02_dVd = dQsub02_dVb = dQsub02_dVe = dQsub02_dT = 0.0;
+<                 Qac02 = dQac02_dVrg = dQac02_dVg = dQac02_dVd = dQac02_dVb = dQac02_dVe = dQac02_dT = 0.0;
+<                 dqsrc_dT = 0.0;
+<                 dVdseffCV2_dT = 0;
+<                 T02 = dT02_dVg = dT02_dVd = dT02_dVb = dT02_dVe = 0.0;
+<                 T12 = dT12_dVg = dT12_dVd = dT12_dVb = dT12_dVe = 0.0;
+<                 T22 = dT22_dVg = dT22_dVd = dT22_dVb = dT22_dVe = 0.0;
+---
+>                 dqsrc_dT = 0.0;       /* new line Wagner */
+>                 dVdseffCV2_dT = 0;    /* new line Wagner */
+6927,6931c6417,6420
+<                         /* LFW_FD flexilint initializations next 4 lines */
+<                         Qac0 = dQac0_dVrg = dQac0_dVg = dQac0_dVd = dQac0_dVb = dQac0_dVe = dQac0_dT = 0.0;
+<                         dQac02_dVrg = dQac02_dVg = dQac02_dVd = dQac02_dVb = dQac02_dVe = dQac02_dT = 0.0;
+<                         Qsub0 = dQsub0_dVrg = dQsub0_dVg = dQsub0_dVd = dQsub0_dVb = dQsub0_dVe = dQsub0_dT = 0.0;
+<                         dQsub02_dVrg = dQsub02_dVg = dQsub02_dVd = dQsub02_dVb = dQsub02_dVe = dQsub02_dT = 0.0;
+---
+>                         Qac0 = dQac0_dVrg = dQac0_dVd = dQac0_dVb = dQac0_dT = 0.0;
+>                         dQac02_dVrg = dQac02_dVd = dQac02_dVb = dQac02_dT  = 0.0;
+>                         Qsub0 = dQsub0_dVrg = dQsub0_dVg = dQsub0_dVd = dQsub0_dVb = dQsub0_dT = 0.0;
+>                         dQsub02_dVrg = dQsub02_dVg = dQsub02_dVd = dQsub02_dVb = dQsub02_dT = 0.0;
+6937,6940c6426
+<                         /* LFW_FD fix/add next 3 derivatives */
+<                         dVfb_dVd = dVth_dVd - pParam->B4SOIk1eff * dsqrtPhis_dVd;
+<                         dVfb_dVg = dVth_dVg - pParam->B4SOIk1eff * dsqrtPhis_dVg;
+<                         dVfb_dVe = dVth_dVe - pParam->B4SOIk1eff * dsqrtPhis_dVe;
+---
+>                         dVfb_dVd = dVth_dVd;
+6957,6961c6443,6444
+<                         /* LFW_FD fix/add next 4 derivatives */
+<                         dVfbeff_dVd = (1.0 - T1 - T2) * dVfb_dVd - T1 * dVbseff_dVd;
+<                         dVfbeff_dVb = (1.0 - T1 - T2) * dVfb_dVb - T1 * dVbseff_dVb;
+<                         dVfbeff_dVg = (1.0 - T1 - T2) * dVfb_dVg - T1 * (dVbseff_dVg - dVgs_eff_dVg);
+<                         dVfbeff_dVe = (1.0 - T1 - T2) * dVfb_dVe - T1 * dVbseff_dVe;
+---
+>                         dVfbeff_dVd = (1.0 - T1 - T2) * dVfb_dVd;
+>                         dVfbeff_dVb = (1.0 - T1 - T2) * dVfb_dVb - T1;
+6974,6976d6456
+<                         /* LFW_FD add next 2 derivatives */
+<                         dQac0_dVg = CoxWLb * (dVfbeff_dVg - dVfb_dVg);
+<                         dQac0_dVe = CoxWLb * (dVfbeff_dVe - dVfb_dVe);
+6987,6989d6466
+<                             /* LFW_FD add next 2 derivatives */
+<                             dVfb2_dVg = dVfb_dVg;
+<                             dVfb2_dVe = dVfb_dVe;
+7003,7007c6480,6481
+<                             /* LFW_FD fix/add next 4 derivatives */
+<                             dVfbeff2_dVg =  (1.0 - T2) * dVfb2_dVg - T1 * (dVfb2_dVg - dVgs_eff2_dVg + dVbseff_dVg);
+<                             dVfbeff2_dVd =  (1.0 - T2) * dVfb2_dVd - T1 * (dVfb2_dVd + dVbseff_dVd);
+<                             dVfbeff2_dVb =  (1.0 - T2) * dVfb2_dVb - T1 * (dVfb2_dVb + dVbseff_dVb);
+<                             dVfbeff2_dVe =  (1.0 - T2) * dVfb2_dVe - T1 * (dVfb2_dVe + dVbseff_dVe);
+---
+>                             dVfbeff2_dVd = (1.0 - T1 - T2) * dVfb2_dVd;        /* Samuel Mertens */
+>                             dVfbeff2_dVb = (1.0 - T1 - T2) * dVfb2_dVb - T1;   /* Samuel Mertens */
+7019,7021d6492
+<                             /* LFW_FD add next 2 derivatives */
+<                             dQac02_dVg = CoxWLb2 * (dVfbeff2_dVg - dVfb2_dVg);
+<                             dQac02_dVe = CoxWLb2 * (dVfbeff2_dVe - dVfb2_dVe);
+7045,7049c6516,6518
+<                         /* LFW_FD fix/add next 4 derivatives */
+<                         dQsub0_dVd = -T2 * (dVfbeff_dVd + dVbseff_dVd + dVgsteff_dVd);
+<                         dQsub0_dVg = T2 * (dVgs_eff_dVg - dVfbeff_dVg - dVbseff_dVg - dVgsteff_dVg);
+<                         dQsub0_dVb = -T2 * (dVfbeff_dVb + dVbseff_dVb + dVgsteff_dVb);
+<                         dQsub0_dVe = -T2 * (dVfbeff_dVe + dVbseff_dVe + dVgsteff_dVe);
+---
+>                         dQsub0_dVg = -T2;
+>                         dQsub0_dVd = -T2 * dVfbeff_dVd;
+>                         dQsub0_dVb = -T2 * (dVfbeff_dVb + 1);
+7068,7072c6537,6539
+<                             /* LFW_FD fix/add next 4 derivatives */
+<                             dQsub02_dVg = T2 * (dVgs_eff2_dVg - dVfbeff2_dVg - dVbseff_dVg - dVgsteff2_dVg);
+<                             dQsub02_dVd = -T2 * ( dVfbeff2_dVd + dVbseff_dVd + dVgsteff2_dVd);
+<                             dQsub02_dVb = -T2 * ( dVfbeff2_dVb + dVbseff_dVb + dVgsteff2_dVb);
+<                             dQsub02_dVe = -T2 * ( dVfbeff2_dVe + dVbseff_dVe + dVgsteff2_dVe);
+---
+>                             dQsub02_dVg = -T2;
+>                             dQsub02_dVd = -T2 * dVfbeff2_dVd;
+>                             dQsub02_dVb = -T2 * (dVfbeff2_dVb + 1);
+7085,7088d6551
+<                    /* LFW_FD add next 3 derivatives */
+<                     dAbulkCV_dVg = pParam->B4SOIabulkCVfactor * dAbulk0_dVg;
+<                     dAbulkCV_dVd = pParam->B4SOIabulkCVfactor * dAbulk0_dVd;
+<                     dAbulkCV_dVe = pParam->B4SOIabulkCVfactor * dAbulk0_dVe;
+7093,7097c6556,6557
+<                    /* LFW_FD fix/add next 4 derivatives */
+<                     dVdsatCV_dVg = (dVgsteff_dVg -VdsatCV * dAbulkCV_dVg) / AbulkCV;
+<                     dVdsatCV_dVd = (dVgsteff_dVd -VdsatCV * dAbulkCV_dVd) / AbulkCV;
+<                     dVdsatCV_dVb = (dVgsteff_dVb -VdsatCV * dAbulkCV_dVb) / AbulkCV;
+<                     dVdsatCV_dVe = (dVgsteff_dVe -VdsatCV * dAbulkCV_dVe) / AbulkCV;
+---
+>                     dVdsatCV_dVg = 1.0 / AbulkCV;
+>                     dVdsatCV_dVb = -VdsatCV * dAbulkCV_dVb / AbulkCV;
+7105,7109c6565,6567
+<                    /* LFW_FD fix/add next 4 derivatives */
+<                     dVdseffCV_dVg = ( 1.0 - T1 - T2) * dVdsatCV_dVg;
+<                     dVdseffCV_dVd = ( 1.0 - T1 - T2) * dVdsatCV_dVd + T1;
+<                     dVdseffCV_dVb = ( 1.0 - T1 - T2) * dVdsatCV_dVb;
+<                     dVdseffCV_dVe = ( 1.0 - T1 - T2) * dVdsatCV_dVe;
+---
+>                     dVdseffCV_dVg = T3;
+>                     dVdseffCV_dVd = T1;
+>                     dVdseffCV_dVb = -T3 * VdsatCV * dAbulkCV_dVb;
+7125,7129c6583,6584
+<                        /* LFW_FD fix/add next 4 derivatives */
+<                         dVdsatCV2_dVg = (dVgsteff2_dVg - VdsatCV2 * dAbulkCV_dVg) / AbulkCV;
+<                         dVdsatCV2_dVd = (dVgsteff2_dVd - VdsatCV2 * dAbulkCV_dVd) / AbulkCV;
+<                         dVdsatCV2_dVb = (dVgsteff2_dVb - VdsatCV2 * dAbulkCV_dVb) / AbulkCV;
+<                         dVdsatCV2_dVe = (dVgsteff2_dVe - VdsatCV2 * dAbulkCV_dVe) / AbulkCV;
+---
+>                         dVdsatCV2_dVg = 1.0 / AbulkCV;
+>                         dVdsatCV2_dVb = -VdsatCV2 * dAbulkCV_dVb / AbulkCV;
+7136,7140c6591,6593
+<                        /* LFW_FD fix/add next 4 derivatives */
+<                         dVdseffCV2_dVg = (1.0 - T1 - T2 ) * dVdsatCV2_dVg;
+<                         dVdseffCV2_dVd = (1.0 - T1 - T2 ) * dVdsatCV2_dVd + T1;
+<                         dVdseffCV2_dVb = (1.0 - T1 - T2 ) * dVdsatCV2_dVb;
+<                         dVdseffCV2_dVe = (1.0 - T1 - T2 ) * dVdsatCV2_dVe;
+---
+>                         dVdseffCV2_dVg = T3;
+>                         dVdseffCV2_dVd = T1;
+>                         dVdseffCV2_dVb = -T3 * VdsatCV2 * dAbulkCV_dVb;
+7156d6608
+<                     Cbg12 = Cbd12 = Cbb12 = Cbe12 = 0; /* LFW_FD flexilint */
+7160,7161c6612,6613
+<                         qbulk = Cbg1 = Cbd1 = Cbb1 = Cbe1 = 0;  /* LFW_FD enhance 2 lines */
+<                         Cbg12 = Cbd12 = Cbb12 = Cbe12 = 0; /* v4.1 */
+---
+>                         qbulk = Cbg1 = Cbd1 = Cbb1 = 0;
+>                         Cbg12 = Cbd12 = Cbb12 = 0; /* v4.1 */
+7179,7205c6631,6633
+<                        /* LFW_FD fix next 3 lines with next 20 lines */
+< /*                      Cbg1 = CoxWLb * (T4 + T5 * dVdseffCV_dVg);   */
+< /*                      Cbd1 = CoxWLb * T5 * dVdseffCV_dVd ;         */
+< /*                      Cbb1 = CoxWLb * (T5 * dVdseffCV_dVb + T6 * dAbulkCV_dVb);*/
+< 
+<                         dT0_dVg = AbulkCV * dVdseffCV_dVg + dAbulkCV_dVg * VdseffCV;
+<                         dT0_dVd = AbulkCV * dVdseffCV_dVd + dAbulkCV_dVd * VdseffCV;
+<                         dT0_dVb = AbulkCV * dVdseffCV_dVb + dAbulkCV_dVb * VdseffCV;
+<                         dT0_dVe = AbulkCV * dVdseffCV_dVe + dAbulkCV_dVe * VdseffCV;
+< 
+<                         dT1_dVg = 12.0 * (dVgsteff_dVg - 0.5 * dT0_dVg);
+<                         dT1_dVd = 12.0 * (dVgsteff_dVd - 0.5 * dT0_dVd);
+<                         dT1_dVb = 12.0 * (dVgsteff_dVb - 0.5 * dT0_dVb);
+<                         dT1_dVe = 12.0 * (dVgsteff_dVe - 0.5 * dT0_dVe);
+< 
+<                         Cbg1 = CoxWLb * (T7 * (0.5 - T0 / T1) * dVdseffCV_dVg
+<                              - T7 * VdseffCV * ((dT0_dVg - T0 * dT1_dVg / T1) / T1)
+<                              - dAbulkCV_dVg * (0.5 * VdseffCV - T3) );
+<                         Cbd1 = CoxWLb * (T7 * (0.5 - T0 / T1) * dVdseffCV_dVd
+<                              - T7 * VdseffCV * ((dT0_dVd - T0 * dT1_dVd / T1) / T1)
+<                              - dAbulkCV_dVd * (0.5 * VdseffCV - T3) );
+<                         Cbb1 = CoxWLb * (T7 * (0.5 - T0 / T1) * dVdseffCV_dVb
+<                              - T7 * VdseffCV * ((dT0_dVb - T0 * dT1_dVb / T1) / T1)
+<                              - dAbulkCV_dVb * (0.5 * VdseffCV - T3) );
+<                         Cbe1 = CoxWLb * (T7 * (0.5 - T0 / T1) * dVdseffCV_dVe
+<                              - T7 * VdseffCV * ((dT0_dVe - T0 * dT1_dVe / T1) / T1)
+<                              - dAbulkCV_dVe * (0.5 * VdseffCV - T3) );
+---
+>                         Cbg1 = CoxWLb * (T4 + T5 * dVdseffCV_dVg);
+>                         Cbd1 = CoxWLb * T5 * dVdseffCV_dVd ;
+>                         Cbb1 = CoxWLb * (T5 * dVdseffCV_dVb + T6 * dAbulkCV_dVb);
+7234,7261c6662,6664
+<                            /* LFW_FD fix next 3 lines with next 20 lines */
+< /*                          Cbg12 = CoxWLb2 * (T4 + T5 * dVdseffCV2_dVg);*/
+< /*                          Cbd12 = CoxWLb2 * T5 * dVdseffCV2_dVd ;      */
+< /*                          Cbb12 = CoxWLb2 * (T5 * dVdseffCV2_dVb + T6 * dAbulkCV_dVb);*/
+< 
+<                             dT0_dVg = AbulkCV * dVdseffCV2_dVg + dAbulkCV_dVg * VdseffCV2;
+<                             dT0_dVd = AbulkCV * dVdseffCV2_dVd + dAbulkCV_dVd * VdseffCV2;
+<                             dT0_dVb = AbulkCV * dVdseffCV2_dVb + dAbulkCV_dVb * VdseffCV2;
+<                             dT0_dVe = AbulkCV * dVdseffCV2_dVe + dAbulkCV_dVe * VdseffCV2;
+< 
+<                             dT1_dVg = 12.0 * (dVgsteff2_dVg - 0.5 * dT0_dVg);
+<                             dT1_dVd = 12.0 * (dVgsteff2_dVd - 0.5 * dT0_dVd);
+<                             dT1_dVb = 12.0 * (dVgsteff2_dVb - 0.5 * dT0_dVb);
+<                             dT1_dVe = 12.0 * (dVgsteff2_dVe - 0.5 * dT0_dVe);
+< 
+<                             Cbg12 = CoxWLb2 * (T7 * (0.5 - T0 / T1) * dVdseffCV2_dVg
+<                                   - T7 * VdseffCV2 * ((dT0_dVg - T0 * dT1_dVg / T1) / T1)
+<                                   - dAbulkCV_dVg * (0.5 * VdseffCV2 - T3) );
+<                             Cbd12 = CoxWLb2 * (T7 * (0.5 - T0 / T1) * dVdseffCV2_dVd
+<                                   - T7 * VdseffCV2 * ((dT0_dVd - T0 * dT1_dVd / T1) / T1)
+<                                   - dAbulkCV_dVd * (0.5 * VdseffCV2 - T3) );
+<                             Cbb12 = CoxWLb2 * (T7 * (0.5 - T0 / T1) * dVdseffCV2_dVb
+<                                   - T7 * VdseffCV2 * ((dT0_dVb - T0 * dT1_dVb / T1) / T1)
+<                                   - dAbulkCV_dVb * (0.5 * VdseffCV2 - T3) );
+<                             Cbe12 = CoxWLb2 * (T7 * (0.5 - T0 / T1) * dVdseffCV2_dVe
+<                                   - T7 * VdseffCV2 * ((dT0_dVe - T0 * dT1_dVe / T1) / T1)
+<                                   - dAbulkCV_dVe * (0.5 * VdseffCV2 - T3) );
+< 
+---
+>                             Cbg12 = CoxWLb2 * (T4 + T5 * dVdseffCV2_dVg);
+>                             Cbd12 = CoxWLb2 * T5 * dVdseffCV2_dVd ;
+>                             Cbb12 = CoxWLb2 * (T5 * dVdseffCV2_dVb + T6 * dAbulkCV_dVb);
+7304,7331c6707,6709
+<                 /* LFW_FD fix next 3 lines with next 20 lines */
+<                 /*  Cgg1 = CoxWL * (T4 + T5 * dVdseffCV_dVg); */
+<                 /*  Cgd1 = CoxWL * T5 * dVdseffCV_dVd;        */
+<                 /*  Cgb1 = CoxWL * (T5 * dVdseffCV_dVb + T6 * dAbulkCV_dVb);*/
+<                     dT0_dVg = dAbulkCV_dVg * VdseffCV + AbulkCV * dVdseffCV_dVg;
+<                     dT0_dVd = dAbulkCV_dVd * VdseffCV + AbulkCV * dVdseffCV_dVd;
+<                     dT0_dVb = dAbulkCV_dVb * VdseffCV + AbulkCV * dVdseffCV_dVb;
+<                     dT0_dVe = dAbulkCV_dVe * VdseffCV + AbulkCV * dVdseffCV_dVe;
+< 
+<                     dT1_dVg = 12.0 * (dVgsteff_dVg - 0.5 * dT0_dVg);
+<                     dT1_dVd = 12.0 * (dVgsteff_dVd - 0.5 * dT0_dVd);
+<                     dT1_dVb = 12.0 * (dVgsteff_dVb - 0.5 * dT0_dVb);
+<                     dT1_dVe = 12.0 * (dVgsteff_dVe - 0.5 * dT0_dVe);
+< 
+<                     dT2_dVg = (dT0_dVg - T2 * dT1_dVg) / T1;
+<                     dT2_dVd = (dT0_dVd - T2 * dT1_dVd) / T1;
+<                     dT2_dVb = (dT0_dVb - T2 * dT1_dVb) / T1;
+<                     dT2_dVe = (dT0_dVe - T2 * dT1_dVe) / T1;
+< 
+<                     dT3_dVg = dT0_dVg * T2 + T0 * dT2_dVg;
+<                     dT3_dVd = dT0_dVd * T2 + T0 * dT2_dVd;
+<                     dT3_dVb = dT0_dVb * T2 + T0 * dT2_dVb;
+<                     dT3_dVe = dT0_dVe * T2 + T0 * dT2_dVe;
+< 
+<                     Cgg1 = CoxWL * (dVgsteff_dVg - 0.5 * dT0_dVg + dT3_dVg);
+<                     Cgd1 = CoxWL * (dVgsteff_dVd - 0.5 * dT0_dVd + dT3_dVd);
+<                     Cgb1 = CoxWL * (dVgsteff_dVb - 0.5 * dT0_dVb + dT3_dVb);
+<                     Cge1 = CoxWL * (dVgsteff_dVe - 0.5 * dT0_dVe + dT3_dVe);
+---
+>                     Cgg1 = CoxWL * (T4 + T5 * dVdseffCV_dVg);
+>                     Cgd1 = CoxWL * T5 * dVdseffCV_dVd;
+>                     Cgb1 = CoxWL * (T5 * dVdseffCV_dVb + T6 * dAbulkCV_dVb);
+7343,7345d6720
+<                     /* LFW_FD 2 new lines per flexilint */
+<                     T12 = T02 = Cgg12 = Cgd12 = Cgb12 = Cge12 = 0.0;
+<                     Csg12 = Csd12 = Csb12 = Cse12 = 0.0;
+7364,7393c6739,6741
+<                        /* LFW_FD fix next 3 lines with next 20 lines */
+<                    /*   Cgg12 = CoxWL2 * (T4 + T5 * dVdseffCV2_dVg); */
+<                    /*   Cgd12 = CoxWL2 * T5 * dVdseffCV2_dVd;        */
+<                    /*   Cgb12 = CoxWL2 * (T5 * dVdseffCV2_dVb + T6 * dAbulkCV_dVb);*/
+< 
+<                         dT02_dVg = dAbulkCV_dVg * VdseffCV2 + AbulkCV * dVdseffCV2_dVg;
+<                         dT02_dVd = dAbulkCV_dVd * VdseffCV2 + AbulkCV * dVdseffCV2_dVd;
+<                         dT02_dVb = dAbulkCV_dVb * VdseffCV2 + AbulkCV * dVdseffCV2_dVb;
+<                         dT02_dVe = dAbulkCV_dVe * VdseffCV2 + AbulkCV * dVdseffCV2_dVe;
+< 
+<                         dT12_dVg = 12.0 * (dVgsteff2_dVg - 0.5 * dT02_dVg);
+<                         dT12_dVd = 12.0 * (dVgsteff2_dVd - 0.5 * dT02_dVd);
+<                         dT12_dVb = 12.0 * (dVgsteff2_dVb - 0.5 * dT02_dVb);
+<                         dT12_dVe = 12.0 * (dVgsteff2_dVe - 0.5 * dT02_dVe);
+< 
+<                         dT2_dVg = (dT02_dVg - T2 * dT12_dVg) / T12;
+<                         dT2_dVd = (dT02_dVd - T2 * dT12_dVd) / T12;
+<                         dT2_dVb = (dT02_dVb - T2 * dT12_dVb) / T12;
+<                         dT2_dVe = (dT02_dVe - T2 * dT12_dVe) / T12;
+< 
+<                         dT3_dVg = dT02_dVg * T2 + T02 * dT2_dVg;
+<                         dT3_dVd = dT02_dVd * T2 + T02 * dT2_dVd;
+<                         dT3_dVb = dT02_dVb * T2 + T02 * dT2_dVb;
+<                         dT3_dVe = dT02_dVe * T2 + T02 * dT2_dVe;
+< 
+<                         Cgg12 = CoxWL2 * (dVgsteff2_dVg - 0.5 * dT02_dVg + dT3_dVg);
+<                         Cgd12 = CoxWL2 * (dVgsteff2_dVd - 0.5 * dT02_dVd + dT3_dVd);
+<                         Cgb12 = CoxWL2 * (dVgsteff2_dVb - 0.5 * dT02_dVb + dT3_dVb);
+<                         Cge12 = CoxWL2 * (dVgsteff2_dVe - 0.5 * dT02_dVe + dT3_dVe);
+< 
+---
+>                         Cgg12 = CoxWL2 * (T4 + T5 * dVdseffCV2_dVg);
+>                         Cgd12 = CoxWL2 * T5 * dVdseffCV2_dVd;
+>                         Cgb12 = CoxWL2 * (T5 * dVdseffCV2_dVb + T6 * dAbulkCV_dVb);
+7415,7431c6763,6765
+<                        /* LFW_FD fix next 3 lines with next 12 lines */
+<                     /*  Csg1 = CoxWL * (T4 + T5 * dVdseffCV_dVg);    */
+<                     /*  Csd1 = CoxWL * T5 * dVdseffCV_dVd;           */
+<                     /*  Csb1 = CoxWL * (T5 * dVdseffCV_dVb + T6 * dAbulkCV_dVb);*/
+<                         dT1_dVg = 2.0 * dT1_dVg;
+<                         dT1_dVd = 2.0 * dT1_dVd;
+<                         dT1_dVb = 2.0 * dT1_dVb;
+<                         dT1_dVe = 2.0 * dT1_dVe;
+< 
+<                         Csg1 = -CoxWL * (0.5 * dVgsteff_dVg + 0.25 * dT0_dVg
+<                                      - 2.0 * T0 * dT0_dVg / T1 + T0 * T0 * dT1_dVg / (T1 * T1));
+<                         Csd1 = -CoxWL * (0.5 * dVgsteff_dVd + 0.25 * dT0_dVd
+<                                      - 2.0 * T0 * dT0_dVd / T1 + T0 * T0 * dT1_dVd / (T1 * T1));
+<                         Csb1 = -CoxWL * (0.5 * dVgsteff_dVb + 0.25 * dT0_dVb
+<                                      - 2.0 * T0 * dT0_dVb / T1 + T0 * T0 * dT1_dVb / (T1 * T1));
+<                         Cse1 = -CoxWL * (0.5 * dVgsteff_dVe + 0.25 * dT0_dVe
+<                                      - 2.0 * T0 * dT0_dVe / T1 + T0 * T0 * dT1_dVe / (T1 * T1));
+---
+>                         Csg1 = CoxWL * (T4 + T5 * dVdseffCV_dVg);
+>                         Csd1 = CoxWL * T5 * dVdseffCV_dVd;
+>                         Csb1 = CoxWL * (T5 * dVdseffCV_dVb + T6 * dAbulkCV_dVb);
+7457,7473c6791,6793
+<                            /* LFW_FD fix next 3 lines with next 12 lines */
+<                          /* Csg12 = CoxWL2 * (T4 + T5 * dVdseffCV2_dVg); */
+<                          /* Csd12 = CoxWL2 * T5 * dVdseffCV2_dVd;        */
+<                          /* Csb12 = CoxWL2 * (T5 * dVdseffCV2_dVb + T6 * dAbulkCV_dVb);*/
+<                             dT12_dVg = 2.0 * dT12_dVg;
+<                             dT12_dVd = 2.0 * dT12_dVd;
+<                             dT12_dVb = 2.0 * dT12_dVb;
+<                             dT12_dVe = 2.0 * dT12_dVe;
+< 
+<                             Csg12 = -CoxWL2 * (0.5 * dVgsteff2_dVg + 0.25 * dT02_dVg
+<                                             - 2.0 * T02 * dT02_dVg / T12 + T02 * T02 * dT12_dVg / (T12 * T12));
+<                             Csd12 = -CoxWL2 * (0.5 * dVgsteff2_dVd + 0.25 * dT02_dVd
+<                                             - 2.0 * T02 * dT02_dVd / T12 + T02 * T02 * dT12_dVd / (T12 * T12));
+<                             Csb12 = -CoxWL2 * (0.5 * dVgsteff2_dVb + 0.25 * dT02_dVb
+<                                             - 2.0 * T02 * dT02_dVb / T12 + T02 * T02 * dT12_dVb / (T12 * T12));
+<                             Cse12 = -CoxWL2 * (0.5 * dVgsteff2_dVe + 0.25 * dT02_dVe
+<                                             - 2.0 * T02 * dT02_dVe / T12 + T02 * T02 * dT12_dVe / (T12 * T12));
+---
+>                             Csg12 = CoxWL2 * (T4 + T5 * dVdseffCV2_dVg);
+>                             Csd12 = CoxWL2 * T5 * dVdseffCV2_dVd;
+>                             Csb12 = CoxWL2 * (T5 * dVdseffCV2_dVb + T6 * dAbulkCV_dVb);
+7499,7531d6818
+<                        /* LFW_FD add next 28 lines of code */
+<                         dT1_dVg = dVgsteff_dVg - 0.5 * dT0_dVg;
+<                         dT1_dVd = dVgsteff_dVd - 0.5 * dT0_dVd;
+<                         dT1_dVb = dVgsteff_dVb - 0.5 * dT0_dVb;
+<                         dT1_dVe = dVgsteff_dVe - 0.5 * dT0_dVe;
+< 
+<                         dT2_dVg = - 2.0 * T2 * dT1_dVg / T1;
+<                         dT2_dVd = - 2.0 * T2 * dT1_dVd / T1;
+<                         dT2_dVb = - 2.0 * T2 * dT1_dVb / T1;
+<                         dT2_dVe = - 2.0 * T2 * dT1_dVe / T1;
+< 
+<                         dT3_dVg = dVgsteff_dVg *  (2.0 * T0 * T0 / 3.0 + Vgsteff * (Vgsteff - 4.0 * T0 / 3.0))
+<                                 + Vgsteff * (4.0 * T0 *dT0_dVg /3 + dVgsteff_dVg * (Vgsteff - 4.0 * T0 / 3.0)
+<                                 + Vgsteff * (dVgsteff_dVg -4.0 * dT0_dVg / 3.0))
+<                                 - 2.0 * T0 * T0 * dT0_dVg / 5.0;
+<                         dT3_dVd = dVgsteff_dVd *  (2.0 * T0 * T0 / 3.0 + Vgsteff * (Vgsteff - 4.0 * T0 / 3.0))
+<                                 + Vgsteff * (4.0 * T0 *dT0_dVd /3 + dVgsteff_dVd * (Vgsteff - 4.0 * T0 / 3.0)
+<                                 + Vgsteff * (dVgsteff_dVd -4.0 * dT0_dVd / 3.0))
+<                                 - 2.0 * T0 * T0 * dT0_dVd / 5.0;
+<                         dT3_dVb = dVgsteff_dVb *  (2.0 * T0 * T0 / 3.0 + Vgsteff * (Vgsteff - 4.0 * T0 / 3.0))
+<                                 + Vgsteff * (4.0 * T0 *dT0_dVb /3 + dVgsteff_dVb * (Vgsteff - 4.0 * T0 / 3.0)
+<                                 + Vgsteff * (dVgsteff_dVb -4.0 * dT0_dVb / 3.0))
+<                                 - 2.0 * T0 * T0 * dT0_dVb / 5.0;
+<                         dT3_dVe = dVgsteff_dVe *  (2.0 * T0 * T0 / 3.0 + Vgsteff * (Vgsteff - 4.0 * T0 / 3.0))
+<                                 + Vgsteff * (4.0 * T0 *dT0_dVe /3 + dVgsteff_dVe * (Vgsteff - 4.0 * T0 / 3.0)
+<                                 + Vgsteff * (dVgsteff_dVe -4.0 * dT0_dVe / 3.0))
+<                                 - 2.0 * T0 * T0 * dT0_dVe / 5.0;
+< 
+<                         Csg1 = - T2 * dT3_dVg -  dT2_dVg * T3;
+<                         Csd1 = - T2 * dT3_dVd -  dT2_dVd * T3;
+<                         Csb1 = - T2 * dT3_dVb -  dT2_dVb * T3;
+<                         Cse1 = - T2 * dT3_dVe -  dT2_dVe * T3;
+< 
+7547,7557c6834,6843
+<                        /* LFW_FD delete next 10 lines of code */
+<                     /*  T7 = 4.0 / 3.0 * Vgsteff * (Vgsteff - T0)        */
+<                     /*      + 0.4 * T0 * T0;                             */
+<                     /*  T4 = -2.0 * qsrc / T1 - T2 * (Vgsteff * (3.0     */
+<                     /*              * Vgsteff - 8.0 * T0 / 3.0)          */
+<                     /*          + 2.0 * T0 * T0 / 3.0);                  */
+<                     /*  T5 = (qsrc / T1 + T2 * T7) * AbulkCV;            */
+<                     /*  T6 = (qsrc / T1 * VdseffCV + T2 * T7 * VdseffCV);*/
+<                     /*  Csg1 = T4 + T5 * dVdseffCV_dVg;                  */
+<                     /*  Csd1 = T5 * dVdseffCV_dVd;                       */
+<                     /*  Csb1 = T5 * dVdseffCV_dVb + T6 * dAbulkCV_dVb;   */
+---
+>                         T7 = 4.0 / 3.0 * Vgsteff * (Vgsteff - T0)
+>                             + 0.4 * T0 * T0;
+>                         T4 = -2.0 * qsrc / T1 - T2 * (Vgsteff * (3.0
+>                                     * Vgsteff - 8.0 * T0 / 3.0)
+>                                 + 2.0 * T0 * T0 / 3.0);
+>                         T5 = (qsrc / T1 + T2 * T7) * AbulkCV;
+>                         T6 = (qsrc / T1 * VdseffCV + T2 * T7 * VdseffCV);
+>                         Csg1 = T4 + T5 * dVdseffCV_dVg;
+>                         Csd1 = T5 * dVdseffCV_dVd;
+>                         Csb1 = T5 * dVdseffCV_dVb + T6 * dAbulkCV_dVb;
+7576,7611c6862,6864
+<                            /* LFW_FD fix next 3 lines with next 28 lines */
+<                         /*  Csg12 = T4 + T5 * dVdseffCV2_dVg;            */
+<                         /*  Csd12 = T5 * dVdseffCV2_dVd;                 */
+<                         /*  Csb12 = T5 * dVdseffCV2_dVb + T6 * dAbulkCV_dVb;*/
+< 
+<                             dT12_dVg = dVgsteff2_dVg - 0.5 * dT02_dVg;
+<                             dT12_dVd = dVgsteff2_dVd - 0.5 * dT02_dVd;
+<                             dT12_dVb = dVgsteff2_dVb - 0.5 * dT02_dVb;
+<                             dT12_dVe = dVgsteff2_dVe - 0.5 * dT02_dVe;
+< 
+<                             dT2_dVg = - 2.0 * T2 * dT12_dVg / T12;
+<                             dT2_dVd = - 2.0 * T2 * dT12_dVd / T12;
+<                             dT2_dVb = - 2.0 * T2 * dT12_dVb / T12;
+<                             dT2_dVe = - 2.0 * T2 * dT12_dVe / T12;
+< 
+<                             dT3_dVg = dVgsteff2_dVg *  (2.0 * T02 * T02 / 3.0 + Vgsteff2 * (Vgsteff2 - 4.0 * T02 / 3.0))
+<                                     + Vgsteff2 * (4.0 * T02 *dT02_dVg /3 + dVgsteff2_dVg * (Vgsteff2 - 4.0 * T02 / 3.0)
+<                                     + Vgsteff2 * (dVgsteff2_dVg -4.0 * dT02_dVg / 3.0))
+<                                     - 2.0 * T02 * T02 * dT02_dVg / 5.0;
+<                             dT3_dVd = dVgsteff2_dVd *  (2.0 * T02 * T02 / 3.0 + Vgsteff2 * (Vgsteff2 - 4.0 * T02 / 3.0))
+<                                     + Vgsteff2 * (4.0 * T02 *dT02_dVd /3 + dVgsteff2_dVd * (Vgsteff2 - 4.0 * T02 / 3.0)
+<                                     + Vgsteff2 * (dVgsteff2_dVd -4.0 * dT02_dVd / 3.0))
+<                                     - 2.0 * T02 * T02 * dT02_dVd / 5.0;
+<                             dT3_dVb = dVgsteff2_dVb *  (2.0 * T02 * T02 / 3.0 + Vgsteff2 * (Vgsteff2 - 4.0 * T02 / 3.0))
+<                                     + Vgsteff2 * (4.0 * T02 *dT02_dVb /3 + dVgsteff2_dVb * (Vgsteff2 - 4.0 * T02 / 3.0)
+<                                     + Vgsteff2 * (dVgsteff2_dVb -4.0 * dT02_dVb / 3.0))
+<                                     - 2.0 * T02 * T02 * dT02_dVb / 5.0;
+<                             dT3_dVe = dVgsteff2_dVe *  (2.0 * T02 * T02 / 3.0 + Vgsteff2 * (Vgsteff2 - 4.0 * T02 / 3.0))
+<                                     + Vgsteff2 * (4.0 * T02 *dT02_dVe /3 + dVgsteff2_dVe * (Vgsteff2 - 4.0 * T02 / 3.0)
+<                                     + Vgsteff2 * (dVgsteff2_dVe -4.0 * dT02_dVe / 3.0))
+<                                     - 2.0 * T02 * T02 * dT02_dVe / 5.0;
+< 
+<                             Csg12 = - T2 * dT3_dVg -  dT2_dVg * T3;
+<                             Csd12 = - T2 * dT3_dVd -  dT2_dVd * T3;
+<                             Csb12 = - T2 * dT3_dVb -  dT2_dVb * T3;
+<                             Cse12 = - T2 * dT3_dVe -  dT2_dVe * T3;
+---
+>                             Csg12 = T4 + T5 * dVdseffCV2_dVg;
+>                             Csd12 = T5 * dVdseffCV2_dVd;
+>                             Csb12 = T5 * dVdseffCV2_dVb + T6 * dAbulkCV_dVb;
+7640d6892
+<                         Cse1 = - 0.5 * (Cge1 + Cbe1);           /* LFW_FD new line */
+7648d6899
+<                             Cse12 = -0.5 * (Cge12 + Cbe12);     /* LFW_FD new line */
+7678,7681d6928
+<                    /* LFW_FD  commentary only; next 2 lines */
+<                    /* Correct definition of qgate below. Not used because it changes CMC defined model.*/
+<                    /*        qgate = qinv + Qac0 + Qsub0 - qbulk;*/
+< 
+7697,7702c6944,6946
+<                    /* LFW_FD  fix/add next 4 lines */
+<                     Csg = Csg1;
+<                     Csd = Csd1;
+<                     Csb = Csb1;
+<                     Cse = Cse1;
+< 
+---
+>                     Csg = Csg1 * dVgsteff_dVg;
+>                     Csd = Csd1 + Csg1 * dVgsteff_dVd;
+>                     Csb = Csg1 * dVgsteff_dVb + Csb1 * dVbseff_dVb;
+7708,7720c6952,6957
+<                    /* LFW_FD  fix/add next 4 lines */
+<                     Cgg = Cgg1 + dQsub0_dVg + dQac0_dVg;
+<                     Cgd = Cgd1 + dQsub0_dVd + dQac0_dVd;
+<                     Cgb = Cgb1 + dQsub0_dVb + dQac0_dVb;
+<                     Cge = Cge1 + dQsub0_dVe + dQac0_dVe;
+< 
+<                    /* LFW_FD  commentary only; next 5 lines */
+< /*           Use these with correct definition of qgate above   */
+< /*                  Cgg = Cgg1 + dQsub0_dVg + dQac0_dVg - Cbg1; */
+< /*                  Cgd = Cgd1 + dQsub0_dVd + dQac0_dVd - Cbd1; */
+< /*                  Cgb = Cgb1 + dQsub0_dVb + dQac0_dVb - Cbb1; */
+< /*                  Cge = Cge1 + dQsub0_dVe + dQac0_dVe - Cbe1; */
+< 
+---
+>                     Cgg = (Cgg1 + dQsub0_dVg) * dVgsteff_dVg
+>                         + dQac0_dVrg + dQsub0_dVrg;
+>                     Cgd = (Cgg1 + dQsub0_dVg) * dVgsteff_dVd + Cgd1
+>                         + dQac0_dVd + dQsub0_dVd;
+>                     Cgb = (Cgg1 + dQsub0_dVg) * dVgsteff_dVb
+>                         + (Cgb1 + dQsub0_dVb + dQac0_dVb) * dVbseff_dVb;
+7728,7733c6965,6970
+<                    /* LFW_FD  fix/add next 4 lines */
+<                     Cbg = Cbg1 - dQac0_dVg - dQsub0_dVg;
+<                     Cbd = Cbd1 - dQac0_dVd - dQsub0_dVd;
+<                     Cbb = Cbb1 - dQac0_dVb - dQsub0_dVb - Ce1b;
+<                     Cbe = Cbe1 - dQac0_dVe - dQsub0_dVe - Ce1e;
+< 
+---
+>                     Cbg = (Cbg1 - dQsub0_dVg) * dVgsteff_dVg
+>                         - dQac0_dVrg - dQsub0_dVrg;
+>                     Cbd = (Cbg1 - dQsub0_dVg) * dVgsteff_dVd + Cbd1
+>                         - dQac0_dVd - dQsub0_dVd;
+>                     Cbb = (Cbg1 - dQsub0_dVg) * dVgsteff_dVb - dQe1_dVb
+>                         + (Cbb1 - dQsub0_dVb - dQac0_dVb) * dVbseff_dVb;
+7743,7752c6980,6995
+<                         /* LFW_FD fixed next 12 lines */
+<                         Csg += Csg12;
+<                         Csd += Csd12;
+<                         Csb += Csb12;
+<                         Cse += Cse12;
+< 
+<                         Cgg += Cgg12 + dQsub02_dVg + dQac02_dVg;
+<                         Cgd += Cgd12 + dQsub02_dVd + dQac02_dVd;
+<                         Cgb += Cgb12 + dQsub02_dVb + dQac02_dVb;
+<                         Cge += Cge12 + dQsub02_dVe + dQac02_dVe;
+---
+>                         Csg += Csg12 * dVgsteff2_dVg;
+>                         Csd += Csd12 + Csg12 * dVgsteff2_dVd;
+>                         Csb += Csg12 * dVgsteff2_dVb + Csb12 * dVbseff_dVb;
+>                      /* commented out next "if" Wagner */
+>                      /* if (selfheat) CsT += Csg12 * dVgsteff2_dT; */
+> 
+>                         Cgg += (Cgg12 + dQsub02_dVg) * dVgsteff2_dVg
+>                             + dQac02_dVrg + dQsub02_dVrg;
+>                         Cgd += (Cgg12 + dQsub02_dVg) * dVgsteff2_dVd + Cgd12
+>                             + dQac02_dVd + dQsub02_dVd;
+>                         Cgb += (Cgg12 + dQsub02_dVg) * dVgsteff2_dVb
+>                             + (Cgb12 + dQsub02_dVb + dQac02_dVb) * dVbseff_dVb;
+>                      /* commented out next "if" Wagner */
+>                      /* if (selfheat)
+>                             CgT += (Cgg12 + dQsub02_dVg) * dVgsteff2_dT
+>                                 + dQac02_dT + dQsub02_dT; */
+7754,7757c6997,7006
+<                         Cbg += Cbg12 - dQac02_dVg - dQsub02_dVg;
+<                         Cbd += Cbd12 - dQac02_dVd - dQsub02_dVd;
+<                         Cbb += Cbb12 - dQac02_dVb - dQsub02_dVb;
+<                         Cbe += Cbe12 - dQac02_dVe - dQsub02_dVe;
+---
+>                         Cbg += (Cbg12 - dQsub02_dVg) * dVgsteff2_dVg
+>                             - dQac02_dVrg - dQsub02_dVrg;
+>                         Cbd += (Cbg12 - dQsub02_dVg) * dVgsteff2_dVd + Cbd12
+>                             - dQac02_dVd - dQsub02_dVd;
+>                         Cbb += (Cbg12 - dQsub02_dVg) * dVgsteff2_dVb
+>                             + (Cbb12 - dQsub02_dVb - dQac02_dVb) * dVbseff_dVb;
+>                      /* commented out next "if" Wagner */
+>                      /* if (selfheat)
+>                             CbT += (Cbg12 - dQsub02_dVg) * dVgsteff2_dT
+>                                 - dQac02_dT - dQsub02_dT; */
+7762c7011
+<                     here->B4SOIcgsb = - (Cgg  + Cgd  + Cgb + Cge);   /* LFW_FD fixed line */
+---
+>                     here->B4SOIcgsb = - (Cgg  + Cgd  + Cgb);
+7764d7012
+<                     here->B4SOIcgeb = Cge;                           /* LFW_FD new line */
+7768c7016,7017
+<                     here->B4SOIcbsb = -(Cbg  + Cbd  + Cbb + Cbe); /* LFW_FD fixed line */
+---
+>                     here->B4SOIcbsb = -(Cbg  + Cbd  + Cbb)
+>                         + Ce1e;
+7770c7019
+<                     here->B4SOIcbeb = Cbe;                        /* LFW_FD fixed line */
+---
+>                     here->B4SOIcbeb = - Ce1e ;
+7778c7027
+<                     here->B4SOIcdeb = -(Cge + Cse + Cbe) - Ce1e;   /* LFW_FD fixed line */
+---
+>                     here->B4SOIcdeb = 0;
+7780,7783c7029,7031
+<                     here->B4SOIcdsb = Cgg + Cgd + Cgb + Cge        /* LFW_FD fixed expression */
+<                                     + Cbg + Cbd + Cbb + Cbe + Ce1e
+<                                     + Csg + Csd + Csb + Cse + Ce1b;
+< 
+---
+>                     here->B4SOIcdsb = (Cgg + Cgd + Cgb
+>                             + Cbg + Cbd + Cbb
+>                             + Csg + Csd + Csb) + Ce1b;
+7789c7037
+<                  /* dVgsteff_dVb /= dVbseff_dVb;   LFW_FD comment out line */
+---
+>                     dVgsteff_dVb /= dVbseff_dVb;
+7801c7049
+<                      /* dVgsteff2_dVb /= dVbseff_dVb;  LFW_FD comment out line */
+---
+>                         dVgsteff2_dVb /= dVbseff_dVb;
+7810,7817c7058
+<                    /* LFW_FD flexilint inits next 7 lines */
+<                     Vfbzb = pParam->B4SOIvfbzb + pParam->B4SOIdelvt;
+<                     dVfbzb_dT = 0.0;
+<                     Vfbzb2 = dVfbzb2_dT = 0.0;
+<                     Tcen2 = dTcen2_dVg = dTcen2_dVd = dTcen2_dVb = dTcen2_dVe = dTcen2_dT = 0.0;
+<                     Coxeff2 = dCoxeff2_dVg = dCoxeff2_dVd = dCoxeff2_dVb = dCoxeff2_dVe = dCoxeff2_dT = 0.0;
+<                     CoxWLcenb2= dCoxWLcenb2_dT= 0.0;
+<                     dDeltaPhi2_dT = 0.0;
+---
+>                     dDeltaPhi2_dT = 0.0;          /* new line Wagner */
+7820,7824c7061,7064
+<                        /* LFW_FD enhance next 4 lines */
+<                         Qac0 = dQac0_dVg = dQac0_dVb = dQac0_dVd = dQac0_dVe = dQac0_dT = 0.0;
+<                         dQac02_dVg = dQac02_dVb = dQac02_dVd = dQac02_dVe = dQac02_dT = 0.0;
+<                         Qsub0 = dQsub0_dVg = dQsub0_dVd = dQsub0_dVb = dQsub0_dVe = dQsub0_dT = 0.0;
+<                         dQsub02_dVg = dQsub02_dVd = dQsub02_dVb = dQsub02_dVe = dQsub02_dT = 0.0;
+---
+>                         Qac0 = dQac0_dVg = dQac0_dVb = dQac0_dT = 0.0;
+>                         dQac02_dVg = dQac02_dVb = dQac02_dT = 0.0;
+>                         Qsub0 = dQsub0_dVg = dQsub0_dVd = dQsub0_dVb = dQsub0_dT = 0.0;
+>                         dQsub02_dVg = dQsub02_dVd = dQsub02_dVb = dQsub02_dT = 0.0;
+7845c7085
+<                          /* dTL0_dT = (V3 * dTL3_dT - 2.0 * DELTA_3 * dVfbzb_dT) / T0;  LFW_FD delete line */
+---
+>                             dTL0_dT = (V3 * dTL3_dT - 2.0 * DELTA_3 * dVfbzb_dT) / T0; /* new line Wagner */
+7854,7858c7094,7095
+<                        /* LFW_FD fix/add next 4 lines */
+<                         dVfbeff_dVg = T1 * (dVgs_eff_dVg - dVbseff_dVg);
+<                         dVfbeff_dVd = T1 * ( - dVbseff_dVd);
+<                         dVfbeff_dVb = T1 * ( - dVbseff_dVb);
+<                         dVfbeff_dVe = T1 * ( - dVbseff_dVe);
+---
+>                         dVfbeff_dVg = T1 * dVgs_eff_dVg;
+>                         dVfbeff_dVb = -T1;
+7882,7886c7119,7120
+<                           /* LFW_FD fix/add next 4 lines */
+<                             dVfbeff2_dVg = T1 * (dVgs_eff2_dVg - dVbseff_dVg);
+<                             dVfbeff2_dVd = T1 * ( - dVbseff_dVd);
+<                             dVfbeff2_dVb = T1 * ( - dVbseff_dVb);
+<                             dVfbeff2_dVe = T1 * ( - dVbseff_dVe);
+---
+>                             dVfbeff2_dVg = T1 * dVgs_eff2_dVg;
+>                             dVfbeff2_dVb = -T1;
+7896,7900c7130,7131
+<                        /* LFW_FD fix/add next 4 lines */
+<                         dT0_dVg = (dVgs_eff_dVg - dVbseff_dVg) /Tox;
+<                         dT0_dVd = - dVbseff_dVd /Tox;
+<                         dT0_dVb = - dVbseff_dVb /Tox;
+<                         dT0_dVe = - dVbseff_dVe /Tox;
+---
+>                         dT0_dVg = dVgs_eff_dVg / Tox;
+>                         dT0_dVb = -1.0 / Tox;
+7905,7910c7136,7138
+<                            /* LFW_FD fix/add next 5 lines */
+<                             TL1 = pParam->B4SOIacde * Tcen;
+<                             dTcen_dVg = TL1 * dT0_dVg;
+<                             dTcen_dVd = TL1 * dT0_dVd;
+<                             dTcen_dVb = TL1 * dT0_dVb;
+<                             dTcen_dVe = TL1 * dT0_dVe;
+---
+>                             dTcen_dVg = pParam->B4SOIacde * Tcen;
+>                             dTcen_dVb = dTcen_dVg * dT0_dVb;
+>                             dTcen_dVg *= dT0_dVg;
+7919c7147,7148
+<                             dTcen_dVg = dTcen_dVb = dTcen_dVd = dTcen_dVe = dTcen_dT = 0.0;    /* LFW_FD enhance line */
+---
+>                             dTcen_dVg = dTcen_dVb = dTcen_dT = 0.0;
+>                             dTcen_dT = 0;  /* new line Wagner */
+7923c7152,7153
+<                             dTcen_dVg = dTcen_dVb = dTcen_dVd = dTcen_dVe = dTcen_dT = 0.0;    /* LFW_FD enhance line */
+---
+>                             dTcen_dVg = dTcen_dVb = dTcen_dT = 0.0;
+>                             dTcen_dT = 0;  /* new line Wagner */
+7940,7941d7169
+<                         dTcen_dVd *= T1;   /* LFW_FD new line */
+<                         dTcen_dVe *= T1;   /* LFW_FD new line */
+7948,7952c7176,7177
+<                            /* LFW_FD fix/add next 4 lines */
+<                             dT0_dVg = (dVgs_eff2_dVg - dVbseff_dVg) / Tox;
+<                             dT0_dVd = -dVbseff_dVd / Tox;
+<                             dT0_dVb = -dVbseff_dVb / Tox;
+<                             dT0_dVe = -dVbseff_dVe / Tox;
+---
+>                             dT0_dVg = dVgs_eff2_dVg / Tox;
+>                             dT0_dVb = -1.0 / Tox;
+7957,7961c7182,7184
+<                               /* LFW_FD fix/add next 4 lines */
+<                                 dTcen2_dVg = pParam->B4SOIacde * Tcen2 * dT0_dVg;
+<                                 dTcen2_dVd = pParam->B4SOIacde * Tcen2 * dT0_dVd;
+<                                 dTcen2_dVb = pParam->B4SOIacde * Tcen2 * dT0_dVb;
+<                                 dTcen2_dVe = pParam->B4SOIacde * Tcen2 * dT0_dVe;
+---
+>                                 dTcen2_dVg = pParam->B4SOIacde * Tcen2;
+>                                 dTcen2_dVb = dTcen2_dVg * dT0_dVb;
+>                                 dTcen2_dVg *= dT0_dVg;
+7968c7191
+<                                 dTcen2_dVg = dTcen2_dVd = dTcen2_dVb = dTcen2_dVe = dTcen2_dT = 0.0;  /* LFW_FD enhance line */
+---
+>                                 dTcen2_dVg = dTcen2_dVb = dTcen2_dT = 0.0;
+7972c7195
+<                                 dTcen2_dVg = dTcen2_dVd = dTcen2_dVb = dTcen2_dVe = dTcen2_dT = 0.0;  /* LFW_FD enhance line */
+---
+>                                 dTcen2_dVg = dTcen2_dVb = dTcen2_dT = 0.0;
+7986,7987d7208
+<                             dTcen2_dVd *= T1;    /* LFW_FD new line */
+<                             dTcen2_dVe *= T1;    /* LFW_FD new line */
+7998,8003c7219,7221
+<                        /* LFW_FD fix/add next 5 lines */
+<                         TL1 = T2 * T2 * T3;
+<                         dCoxeff_dVg = TL1 * dTcen_dVg;
+<                         dCoxeff_dVd = TL1 * dTcen_dVd;
+<                         dCoxeff_dVb = TL1 * dTcen_dVb;
+<                         dCoxeff_dVe = TL1 * dTcen_dVe;
+---
+>                         dCoxeff_dVg = T2 * T2 * T3;
+>                         dCoxeff_dVb = dCoxeff_dVg * dTcen_dVb;
+>                         dCoxeff_dVg *= dTcen_dVg;
+8017,8022c7235,7237
+<                           /* LFW_FD fix/add next 5 lines */
+<                             TL1 = T2 * T2 * T3;
+<                             dCoxeff2_dVg = TL1 * dTcen2_dVg;
+<                             dCoxeff2_dVd = TL1 * dTcen2_dVd;
+<                             dCoxeff2_dVb = TL1 * dTcen2_dVb;
+<                             dCoxeff2_dVe = TL1 * dTcen2_dVe;
+---
+>                             dCoxeff2_dVg = T2 * T2 * T3;
+>                             dCoxeff2_dVb = dCoxeff2_dVg * dTcen2_dVb;
+>                             dCoxeff2_dVg *= dTcen2_dVg;
+8044,8048c7259,7262
+<                        /* LFW_FD fix/add next 4 lines */
+<                         dQac0_dVg = CoxWLcenb * dVfbeff_dVg + QovCox * dCoxeff_dVg;
+<                         dQac0_dVb = CoxWLcenb * dVfbeff_dVb + QovCox * dCoxeff_dVb;
+<                         dQac0_dVd = CoxWLcenb * dVfbeff_dVd + QovCox * dCoxeff_dVd;
+<                         dQac0_dVe = CoxWLcenb * dVfbeff_dVe + QovCox * dCoxeff_dVe;
+---
+>                         dQac0_dVg = CoxWLcenb * dVfbeff_dVg
+>                             + QovCox * dCoxeff_dVg;
+>                         dQac0_dVb = CoxWLcenb * dVfbeff_dVb
+>                             + QovCox * dCoxeff_dVb;
+8057,8061c7271,7274
+<                            /* LFW_FD fix/add next 4 lines */
+<                             dQac02_dVg = CoxWLcenb2 * dVfbeff2_dVg + QovCox2 * dCoxeff2_dVg;
+<                             dQac02_dVd = CoxWLcenb2 * dVfbeff2_dVd + QovCox2 * dCoxeff2_dVd;
+<                             dQac02_dVb = CoxWLcenb2 * dVfbeff2_dVb + QovCox2 * dCoxeff2_dVb;
+<                             dQac02_dVe = CoxWLcenb2 * dVfbeff2_dVe + QovCox2 * dCoxeff2_dVe;
+---
+>                             dQac02_dVg = CoxWLcenb2 * dVfbeff2_dVg
+>                                 + QovCox2 * dCoxeff2_dVg;
+>                             dQac02_dVb = CoxWLcenb2 * dVfbeff2_dVb
+>                                 + QovCox2 * dCoxeff2_dVb;
+8088,8093c7301,7305
+<                        /* LFW_FD fix/add next 4 lines */
+<                         dQsub0_dVg = T2 * (dVgs_eff_dVg - dVfbeff_dVg - dVbseff_dVg - dVgsteff_dVg) + QovCox * dCoxeff_dVg;
+<                         dQsub0_dVd = -T2 * (dVfbeff_dVd + dVbseff_dVd + dVgsteff_dVd) + QovCox * dCoxeff_dVd;
+<                         dQsub0_dVb = -T2 * (dVfbeff_dVb + dVbseff_dVb + dVgsteff_dVb) + QovCox * dCoxeff_dVb;
+<                         dQsub0_dVe = -T2 * (dVfbeff_dVe + dVbseff_dVe + dVgsteff_dVe) + QovCox * dCoxeff_dVe;
+< 
+---
+>                         dQsub0_dVg = T2 * (dVgs_eff_dVg - dVfbeff_dVg - dVgsteff_dVg)
+>                             + QovCox * dCoxeff_dVg;
+>                         dQsub0_dVd = -T2 * dVgsteff_dVd;
+>                         dQsub0_dVb = -T2 * (dVfbeff_dVb + 1 + dVgsteff_dVb)
+>                             + QovCox * dCoxeff_dVb;
+8120,8125c7332,7336
+<                            /* LFW_FD fix/add next 4 lines */
+<                             dQsub02_dVg = T2 * (dVgs_eff2_dVg - dVfbeff2_dVg - dVbseff_dVg - dVgsteff2_dVg) + QovCox2 * dCoxeff2_dVg;
+<                             dQsub02_dVd = -T2 * (dVfbeff2_dVd + dVbseff_dVd + dVgsteff2_dVd) + QovCox2 * dCoxeff2_dVd;
+<                             dQsub02_dVb = -T2 * (dVfbeff2_dVb + dVbseff_dVb + dVgsteff2_dVb) + QovCox2 * dCoxeff2_dVb;
+<                             dQsub02_dVe = -T2 * (dVfbeff2_dVe + dVbseff_dVe + dVgsteff2_dVe) + QovCox2 * dCoxeff2_dVe;
+< 
+---
+>                             dQsub02_dVg = T2 * (dVgs_eff2_dVg - dVfbeff2_dVg - dVgsteff2_dVg)
+>                                 + QovCox2 * dCoxeff2_dVg;
+>                             dQsub02_dVd = -T2 * dVgsteff2_dVd;
+>                             dQsub02_dVb = -T2 * (dVfbeff2_dVb + 1 + dVgsteff2_dVb)
+>                                 + QovCox2 * dCoxeff2_dVb;
+8153,8159c7364,7367
+<                    /* LFW_FD fix/add next 5 lines */
+<                     dDeltaPhi_dVg = 2.0 * Vtm * (T1 -T0) / (Denomi + T1 * Vgsteff) * dVgsteff_dVg;
+<                     dDeltaPhi_dVd = 2.0 * Vtm * (T1 -T0) / (Denomi + T1 * Vgsteff) * dVgsteff_dVd;
+<                     dDeltaPhi_dVb = 2.0 * Vtm * (T1 -T0) / (Denomi + T1 * Vgsteff) * dVgsteff_dVb;
+<                     dDeltaPhi_dVe = 2.0 * Vtm * (T1 -T0) / (Denomi + T1 * Vgsteff) * dVgsteff_dVe;
+< 
+<                     DeltaPhi2 = dDeltaPhi2_dVg = dDeltaPhi2_dVd = dDeltaPhi2_dVb = dDeltaPhi2_dVe = 0.0;   /* flexilint */
+---
+>                     dDeltaPhi_dVg = 2.0 * Vtm * (T1 -T0) / (Denomi + T1 * Vgsteff);
+>                     dDeltaPhi_dVd = dDeltaPhi_dVg * dVgsteff_dVd;
+>                     dDeltaPhi_dVb = dDeltaPhi_dVg * dVgsteff_dVb;
+>                     DeltaPhi2= dDeltaPhi2_dVg= 0.0;   /* new line Wagner */
+8174,8178c7382,7384
+<                        /* LFW_FD fix/add next 4 lines */
+<                         dDeltaPhi2_dVg = 2.0 * Vtm * (T1 -T0) / (Denomi + T1 * Vgsteff2) * dVgsteff2_dVg;
+<                         dDeltaPhi2_dVd = 2.0 * Vtm * (T1 -T0) / (Denomi + T1 * Vgsteff2) * dVgsteff2_dVd;
+<                         dDeltaPhi2_dVb = 2.0 * Vtm * (T1 -T0) / (Denomi + T1 * Vgsteff2) * dVgsteff2_dVb;
+<                         dDeltaPhi2_dVe = 2.0 * Vtm * (T1 -T0) / (Denomi + T1 * Vgsteff2) * dVgsteff2_dVe;
+---
+>                         dDeltaPhi2_dVg = 2.0 * Vtm * (T1 -T0) / (Denomi + T1 * Vgsteff2);
+>                         dDeltaPhi2_dVd = dDeltaPhi2_dVg * dVgsteff2_dVd;
+>                         dDeltaPhi2_dVb = dDeltaPhi2_dVg * dVgsteff2_dVb;
+8205,8211c7411,7414
+<                    /* LFW_FD fix/add next 5 lines */
+<                     TL1 = dTcen_dVg = -Tcen * T2 / T1;
+<                     dTcen_dVg = TL1 * (T5 * 4.0 * dVth_dVg + dVgsteff_dVg);
+<                     dTcen_dVd = TL1 * (T5 * 4.0 * dVth_dVd + dVgsteff_dVd);
+<                     dTcen_dVb = TL1 * (T5 * 4.0 * dVth_dVb + dVgsteff_dVb);
+<                     dTcen_dVe = TL1 * (T5 * 4.0 * dVth_dVe + dVgsteff_dVe);
+< 
+---
+>                     dTcen_dVg = -Tcen * T2 / T1;
+>                     dTcen_dVd = dTcen_dVg * (T5 * 4.0 * dVth_dVd + dVgsteff_dVd);
+>                     dTcen_dVb = dTcen_dVg * (T5 * 4.0 * dVth_dVb + dVgsteff_dVb);
+>                     dTcen_dVg *= dVgsteff_dVg;
+8225,8231c7428,7431
+<                    /* LFW_FD fix/add next 5 lines */
+<                     TL1 = dCoxeff_dVg = T0 * T0 * T1;
+<                     dCoxeff_dVg = TL1 * dTcen_dVg;
+<                     dCoxeff_dVd = TL1 * dTcen_dVd;
+<                     dCoxeff_dVb = TL1 * dTcen_dVb;
+<                     dCoxeff_dVe = TL1 * dTcen_dVe;
+< 
+---
+>                     dCoxeff_dVg = T0 * T0 * T1;
+>                     dCoxeff_dVd = dCoxeff_dVg * dTcen_dVd;
+>                     dCoxeff_dVb = dCoxeff_dVg * dTcen_dVb;
+>                     dCoxeff_dVg *= dTcen_dVg;
+8233,8234c7433
+<                       /*dCoxeff_dT = T1 * dTcen_dT * (T0 - Coxeff / (Cox + Ccen));*/
+<                         dCoxeff_dT = TL1 * dTcen_dT;     /* LFW_FD fix line */
+---
+>                         dCoxeff_dT = T1 * dTcen_dT * (T0 - Coxeff / (Cox + Ccen));
+8243d7441
+<                     CoxWLcen2 = 0.0;    /* flexilint */
+8257,8263c7455,7458
+<                        /* LFW_FD fix/add next 5 lines */
+<                         TL1 = dTcen2_dVg = -Tcen2 * T2 / T1;
+<                         dTcen2_dVg = TL1 * (T5 * 4.0 * dVth_dVg + dVgsteff2_dVg);
+<                         dTcen2_dVd = TL1 * (T5 * 4.0 * dVth_dVd + dVgsteff2_dVd);
+<                         dTcen2_dVb = TL1 * (T5 * 4.0 * dVth_dVb + dVgsteff2_dVb);
+<                         dTcen2_dVe = TL1 * (T5 * 4.0 * dVth_dVe + dVgsteff2_dVe);
+< 
+---
+>                         dTcen2_dVg = -Tcen2 * T2 / T1;
+>                         dTcen2_dVd = dTcen2_dVg * (T5 * 4.0 * dVth_dVd + dVgsteff2_dVd);
+>                         dTcen2_dVb = dTcen2_dVg * (T5 * 4.0 * dVth_dVb + dVgsteff2_dVb);
+>                         dTcen2_dVg *= dVgsteff2_dVg;
+8276,8282c7471,7474
+<                        /* LFW_FD fix/add next 5 lines */
+<                         TL1 = dCoxeff2_dVg = T0 * T0 * T1;
+<                         dCoxeff2_dVg = TL1 * dTcen2_dVg;
+<                         dCoxeff2_dVd = TL1 * dTcen2_dVd;
+<                         dCoxeff2_dVb = TL1 * dTcen2_dVb;
+<                         dCoxeff2_dVe = TL1 * dTcen2_dVe;
+< 
+---
+>                         dCoxeff2_dVg = T0 * T0 * T1;
+>                         dCoxeff2_dVd = dCoxeff2_dVg * dTcen2_dVd;
+>                         dCoxeff2_dVb = dCoxeff2_dVg * dTcen2_dVb;
+>                         dCoxeff2_dVg *= dTcen2_dVg;
+8296,8297d7487
+<                   /* LFW_FD fix/add next 4 lines */
+<                     dAbulkCV_dVg = pParam->B4SOIabulkCVfactor * dAbulk0_dVg;
+8299,8300d7488
+<                     dAbulkCV_dVd = pParam->B4SOIabulkCVfactor * dAbulk0_dVd;
+<                     dAbulkCV_dVe = pParam->B4SOIabulkCVfactor * dAbulk0_dVe;
+8307,8312d7494
+<                   /* LFW_FD add next 4 lines */
+<                     dVdsatCV_dVg = (dVgsteff_dVg - dDeltaPhi_dVg - VdsatCV * dAbulkCV_dVg) / AbulkCV;
+<                     dVdsatCV_dVd = (dVgsteff_dVd - dDeltaPhi_dVd - VdsatCV * dAbulkCV_dVd) / AbulkCV;
+<                     dVdsatCV_dVb = (dVgsteff_dVb - dDeltaPhi_dVb - VdsatCV * dAbulkCV_dVb) / AbulkCV;
+<                     dVdsatCV_dVe = (dVgsteff_dVe - dDeltaPhi_dVe - VdsatCV * dAbulkCV_dVe) / AbulkCV;
+< 
+8320,8324c7502,7504
+<                   /* LFW_FD fix/add next 4 lines */
+<                     dVdseffCV_dVg = (1.0 - T1 - T2) * dVdsatCV_dVg;
+<                     dVdseffCV_dVd = (1.0 - T1 - T2) * dVdsatCV_dVd + T1;
+<                     dVdseffCV_dVb = (1.0 - T1 - T2) * dVdsatCV_dVb;
+<                     dVdseffCV_dVe = (1.0 - T1 - T2) * dVdsatCV_dVe;
+---
+>                     dVdseffCV_dVg = T4;
+>                     dVdseffCV_dVd = T1;
+>                     dVdseffCV_dVb = -T3 * VdsatCV * dAbulkCV_dVb;
+8345,8365d7524
+<                   /* LFW_FD add next 16 lines */
+<                     dT0_dVg = dAbulkCV_dVg * VdseffCV + AbulkCV * dVdseffCV_dVg;
+<                     dT0_dVd = dAbulkCV_dVd * VdseffCV + AbulkCV * dVdseffCV_dVd;
+<                     dT0_dVb = dAbulkCV_dVb * VdseffCV + AbulkCV * dVdseffCV_dVb;
+<                     dT0_dVe = dAbulkCV_dVe * VdseffCV + AbulkCV * dVdseffCV_dVe;
+< 
+<                     dT1_dVg = dVgsteff_dVg - dDeltaPhi_dVg;
+<                     dT1_dVd = dVgsteff_dVd - dDeltaPhi_dVd;
+<                     dT1_dVb = dVgsteff_dVb - dDeltaPhi_dVb;
+<                     dT1_dVe = dVgsteff_dVe - dDeltaPhi_dVe;
+< 
+<                     dT2_dVg = 12.0 * (dT1_dVg - 0.5 * dT0_dVg);
+<                     dT2_dVd = 12.0 * (dT1_dVd - 0.5 * dT0_dVd);
+<                     dT2_dVb = 12.0 * (dT1_dVb - 0.5 * dT0_dVb);
+<                     dT2_dVe = 12.0 * (dT1_dVe - 0.5 * dT0_dVe);
+< 
+<                     dT3_dVg = (dT0_dVg - T3 * dT2_dVg) / T2;
+<                     dT3_dVd = (dT0_dVd - T3 * dT2_dVd) / T2;
+<                     dT3_dVb = (dT0_dVb - T3 * dT2_dVb) / T2;
+<                     dT3_dVe = (dT0_dVe - T3 * dT2_dVe) / T2;
+< 
+8368,8372c7527,7533
+<                   /* LFW_FD fix/add next 4 lines */
+<                     Cgg1 = CoxWLcen * (dT1_dVg - dT0_dVg * (0.5 - T3) + T0 * dT3_dVg) + QovCox * dCoxeff_dVg;
+<                     Cgd1 = CoxWLcen * (dT1_dVd - dT0_dVd * (0.5 - T3) + T0 * dT3_dVd) + QovCox * dCoxeff_dVd;
+<                     Cgb1 = CoxWLcen * (dT1_dVb - dT0_dVb * (0.5 - T3) + T0 * dT3_dVb) + QovCox * dCoxeff_dVb;
+<                     Cge1 = CoxWLcen * (dT1_dVe - dT0_dVe * (0.5 - T3) + T0 * dT3_dVe) + QovCox * dCoxeff_dVe;
+---
+>                     Cgg1 = CoxWLcen * (T4 * (1.0 - dDeltaPhi_dVg)
+>                             + T5 * dVdseffCV_dVg);
+>                     Cgd1 = CoxWLcen * T5 * dVdseffCV_dVd + Cgg1
+>                         * dVgsteff_dVd + QovCox * dCoxeff_dVd;
+>                     Cgb1 = CoxWLcen * (T5 * dVdseffCV_dVb + T6 * dAbulkCV_dVb)
+>                         + Cgg1 * dVgsteff_dVb + QovCox * dCoxeff_dVb;
+>                     Cgg1 = Cgg1 * dVgsteff_dVg + QovCox * dCoxeff_dVg;
+8385,8387d7545
+<                    /* LFW_FD 2 new lines per flexilint */
+<                     T02 = T12 = T22 = T52 = 0.0;  /* flexilint */
+<                     Cgg12 = Cgd12 = Cgb12 = Cge12 = 0.0;
+8392,8397d7549
+<                        /* LFW_FD add next 4 lines */
+<                         dVdsatCV2_dVg = (dVgsteff2_dVg - dDeltaPhi2_dVg - VdsatCV2 * dAbulkCV_dVg) / AbulkCV;
+<                         dVdsatCV2_dVd = (dVgsteff2_dVd - dDeltaPhi2_dVd - VdsatCV2 * dAbulkCV_dVd) / AbulkCV;
+<                         dVdsatCV2_dVb = (dVgsteff2_dVb - dDeltaPhi2_dVb - VdsatCV2 * dAbulkCV_dVb) / AbulkCV;
+<                         dVdsatCV2_dVe = (dVgsteff2_dVe - dDeltaPhi2_dVe - VdsatCV2 * dAbulkCV_dVe) / AbulkCV;
+< 
+8405,8410c7557,7559
+<                        /* LFW_FD fix/add next 4 lines */
+<                         dVdseffCV2_dVg = (1.0 - T12 - T22) * dVdsatCV2_dVg;
+<                         dVdseffCV2_dVd = (1.0 - T12 - T22) * dVdsatCV2_dVd + T12;
+<                         dVdseffCV2_dVb = (1.0 - T12 - T22) * dVdsatCV2_dVb;
+<                         dVdseffCV2_dVe = (1.0 - T12 - T22) * dVdsatCV2_dVe;
+< 
+---
+>                         dVdseffCV2_dVg = T4;
+>                         dVdseffCV2_dVd = T12;
+>                         dVdseffCV2_dVb = -T3 * VdsatCV2 * dAbulkCV_dVb;
+8430,8450d7578
+<                        /* LFW_FD add next 16 lines */
+<                         dT02_dVg = dAbulkCV_dVg * VdseffCV2 + AbulkCV * dVdseffCV2_dVg;
+<                         dT02_dVd = dAbulkCV_dVd * VdseffCV2 + AbulkCV * dVdseffCV2_dVd;
+<                         dT02_dVb = dAbulkCV_dVb * VdseffCV2 + AbulkCV * dVdseffCV2_dVb;
+<                         dT02_dVe = dAbulkCV_dVe * VdseffCV2 + AbulkCV * dVdseffCV2_dVe;
+< 
+<                         dT12_dVg = dVgsteff2_dVg - dDeltaPhi2_dVg;
+<                         dT12_dVd = dVgsteff2_dVd - dDeltaPhi2_dVd;
+<                         dT12_dVb = dVgsteff2_dVb - dDeltaPhi2_dVb;
+<                         dT12_dVe = dVgsteff2_dVe - dDeltaPhi2_dVe;
+< 
+<                         dT22_dVg = 12.0 * (dT12_dVg - 0.5 * dT02_dVg);
+<                         dT22_dVd = 12.0 * (dT12_dVd - 0.5 * dT02_dVd);
+<                         dT22_dVb = 12.0 * (dT12_dVb - 0.5 * dT02_dVb);
+<                         dT22_dVe = 12.0 * (dT12_dVe - 0.5 * dT02_dVe);
+< 
+<                         dT3_dVg = (dT02_dVg - T3 * dT22_dVg) / T22;
+<                         dT3_dVd = (dT02_dVd - T3 * dT22_dVd) / T22;
+<                         dT3_dVb = (dT02_dVb - T3 * dT22_dVb) / T22;
+<                         dT3_dVe = (dT02_dVe - T3 * dT22_dVe) / T22;
+< 
+8455,8460c7583,7589
+<                        /* LFW_FD fix/add next 4 lines */
+<                         Cgg12 = CoxWLcen2 * (dT12_dVg - dT02_dVg * (0.5 - T3) + T02 * dT3_dVg) + QovCox2 * dCoxeff2_dVg;
+<                         Cgd12 = CoxWLcen2 * (dT12_dVd - dT02_dVd * (0.5 - T3) + T02 * dT3_dVd) + QovCox2 * dCoxeff2_dVd;
+<                         Cgb12 = CoxWLcen2 * (dT12_dVb - dT02_dVb * (0.5 - T3) + T02 * dT3_dVb) + QovCox2 * dCoxeff2_dVb;
+<                         Cge12 = CoxWLcen2 * (dT12_dVe - dT02_dVe * (0.5 - T3) + T02 * dT3_dVe) + QovCox2 * dCoxeff2_dVe;
+< 
+---
+>                         Cgg12 = CoxWLcen2 * (T4 * (1.0 - dDeltaPhi2_dVg)
+>                                 + T52 * dVdseffCV2_dVg);
+>                         Cgd12 = CoxWLcen2 * T52 * dVdseffCV2_dVd + Cgg12
+>                             * dVgsteff2_dVd + QovCox2 * dCoxeff2_dVd;
+>                         Cgb12 = CoxWLcen2 * (T52 * dVdseffCV2_dVb + T6 * dAbulkCV_dVb)
+>                             + Cgg12 * dVgsteff2_dVb + QovCox2 * dCoxeff2_dVb;
+>                         Cgg12 = Cgg12 * dVgsteff2_dVg + QovCox2 * dCoxeff2_dVg;
+8479,8481c7608
+<                    /* LFW_FD 2 new lines - flexilint */
+<                     Csg2 = Cbg12 = Cbd12 = Cbb12 = Cbe12 = 0;
+<                     dqbulk_dT = 0;
+---
+>                     dqbulk_dT = 0;       /* new line Wagner */
+8484c7611
+<                         qbulk = Cbg1 = Cbd1 = Cbb1 = Cbe1 = dqbulk_dT = 0; /* LFW_FD enhance line */
+---
+>                         qbulk = Cbg1 = Cbd1 = Cbb1 = Cbg1 = Cbg12 = Cbb12 = Cbd12 = 0;
+8497,8514c7624,7629
+<                        /* LFW_FD fix/add next 4 derivatives */
+<                         Cbg1 =  CoxWLcenb * T7 * (0.5 - T0 / T2) * dVdseffCV_dVg
+<                              - CoxWLcenb * T7 * VdseffCV * ((dT0_dVg -T0 * dT2_dVg / T2) /T2)
+<                              - CoxWLcenb * VdseffCV * (0.5 - T0 / T2) * dAbulkCV_dVg
+<                              + QovCox * dCoxeff_dVg;
+<                         Cbb1 =  CoxWLcenb * T7 * (0.5 - T0 / T2) * dVdseffCV_dVb
+<                              - CoxWLcenb * T7 * VdseffCV * ((dT0_dVb -T0 * dT2_dVb / T2) /T2)
+<                              - CoxWLcenb * VdseffCV * (0.5 - T0 / T2) * dAbulkCV_dVb
+<                              + QovCox * dCoxeff_dVb;
+<                         Cbd1 =  CoxWLcenb * T7 * (0.5 - T0 / T2) * dVdseffCV_dVd
+<                              - CoxWLcenb * T7 * VdseffCV * ((dT0_dVd -T0 * dT2_dVd / T2) /T2)
+<                              - CoxWLcenb * VdseffCV * (0.5 - T0 / T2) * dAbulkCV_dVd
+<                              + QovCox * dCoxeff_dVd;
+<                         Cbe1 =  CoxWLcenb * T7 * (0.5 - T0 / T2) * dVdseffCV_dVe
+<                              - CoxWLcenb * T7 * VdseffCV * ((dT0_dVe -T0 * dT2_dVe / T2) /T2)
+<                              - CoxWLcenb * VdseffCV * (0.5 - T0 / T2) * dAbulkCV_dVe
+<                              + QovCox * dCoxeff_dVe;
+< 
+---
+>                         Cbg1 = CoxWLcenb * (T10 + T11 * dVdseffCV_dVg);
+>                         Cbd1 = CoxWLcenb * T11 * dVdseffCV_dVd + Cbg1
+>                             * dVgsteff_dVd + QovCox * dCoxeff_dVd;
+>                         Cbb1 = CoxWLcenb * (T11 * dVdseffCV_dVb + T12 * dAbulkCV_dVb)
+>                             + Cbg1 * dVgsteff_dVb + QovCox * dCoxeff_dVb;
+>                         Cbg1 = Cbg1 * dVgsteff_dVg + QovCox * dCoxeff_dVg;
+8539,8556c7654,7659
+<                           /* LFW_FD fix/add next 4 derivatives */
+<                             Cbg12 =  CoxWLcenb2 * T7 * (0.5 - T02 / T22) * dVdseffCV2_dVg
+<                                   - CoxWLcenb2 * T7 * VdseffCV2 * ((dT02_dVg -T02 * dT22_dVg / T22) /T22)
+<                                   - CoxWLcenb2 * VdseffCV2 * (0.5 - T02 / T22) * dAbulkCV_dVg
+<                                   + QovCox2 * dCoxeff2_dVg;
+<                             Cbb12 =  CoxWLcenb2 * T7 * (0.5 - T02 / T22) * dVdseffCV2_dVb
+<                                   - CoxWLcenb2 * T7 * VdseffCV2 * ((dT02_dVb -T02 * dT22_dVb / T22) /T22)
+<                                   - CoxWLcenb2 * VdseffCV2 * (0.5 - T02 / T22) * dAbulkCV_dVb
+<                                   + QovCox2 * dCoxeff2_dVb;
+<                             Cbd12 =  CoxWLcenb2 * T7 * (0.5 - T02 / T22) * dVdseffCV2_dVd
+<                                   - CoxWLcenb2 * T7 * VdseffCV2 * ((dT02_dVd -T02 * dT22_dVd / T22) /T22)
+<                                   - CoxWLcenb2 * VdseffCV2 * (0.5 - T02 / T22) * dAbulkCV_dVd
+<                                   + QovCox2 * dCoxeff2_dVd;
+<                             Cbe12 =  CoxWLcenb2 * T7 * (0.5 - T02 / T22) * dVdseffCV2_dVe
+<                                   - CoxWLcenb2 * T7 * VdseffCV2 * ((dT02_dVe -T02 * dT22_dVe / T22) /T22)
+<                                   - CoxWLcenb2 * VdseffCV2 * (0.5 - T02 / T22) * dAbulkCV_dVe
+<                                   + QovCox2 * dCoxeff2_dVe;
+< 
+---
+>                             Cbg12 = CoxWLcenb2 * (T10 + T11 * dVdseffCV2_dVg);
+>                             Cbd12 = CoxWLcenb2 * T11 * dVdseffCV2_dVd + Cbg12
+>                                 * dVgsteff2_dVd + QovCox2 * dCoxeff2_dVd;
+>                             Cbb12 = CoxWLcenb2 * (T11 * dVdseffCV2_dVb + T12 * dAbulkCV_dVb)
+>                                 + Cbg12 * dVgsteff2_dVb + QovCox2 * dCoxeff2_dVb;
+>                             Cbg12 = Cbg12 * dVgsteff2_dVg + QovCox2 * dCoxeff2_dVg;
+8580c7683
+<                     Csg2 = Csd2 = Csb2 = Cse2 = 0.0;    /* LFW_FD enhance line */
+---
+>                     Csg2 = Csd2 = Csb2 = 0.0;    /* CJB  LFW */
+8605,8618c7708,7713
+<                        /* LFW_FD fix/add next 4 derivatives */
+<                         Csg = QovCox * dCoxeff_dVg
+<                             - CoxWLcen * (dT1_dVg / 2.0 + dT0_dVg / 4.0
+<                             - 2.0 * T0 * dT0_dVg / T2 + 2.0 * T0 * T0 * dT2_dVg / (T2 * T2));
+<                         Csd = QovCox * dCoxeff_dVd
+<                             - CoxWLcen * (dT1_dVd / 2.0 + dT0_dVd / 4.0
+<                             - 2.0 * T0 * dT0_dVd / T2 + 2.0 * T0 * T0 * dT2_dVd / (T2 * T2));
+<                         Csb = QovCox * dCoxeff_dVb
+<                             - CoxWLcen * (dT1_dVb / 2.0 + dT0_dVb / 4.0
+<                             - 2.0 * T0 * dT0_dVb / T2 + 2.0 * T0 * T0 * dT2_dVb / (T2 * T2));
+<                         Cse = QovCox * dCoxeff_dVe
+<                             - CoxWLcen * (dT1_dVe / 2.0 + dT0_dVe / 4.0
+<                             - 2.0 * T0 * dT0_dVe / T2 + 2.0 * T0 * T0 * dT2_dVe / (T2 * T2));
+< 
+---
+>                         Csg = CoxWLcen * (T4 + T5 * dVdseffCV_dVg);
+>                         Csd = CoxWLcen * T5 * dVdseffCV_dVd + Csg * dVgsteff_dVd
+>                             + QovCox * dCoxeff_dVd;
+>                         Csb = CoxWLcen * (T5 * dVdseffCV_dVb + T6 * dAbulkCV_dVb)
+>                             + Csg * dVgsteff_dVb + QovCox * dCoxeff_dVb;
+>                         Csg = Csg * dVgsteff_dVg + QovCox * dCoxeff_dVg;
+8643,8656c7738,7743
+<                            /* LFW_FD fix/add next 4 derivatives */
+<                             Csg2 = QovCox2 * dCoxeff2_dVg
+<                                  - CoxWLcen2 * (dT12_dVg / 2.0 + dT02_dVg / 4.0
+<                                  - 2.0 * T02 * dT02_dVg / T22 + 2.0 * T02 * T02 * dT22_dVg / (T22 * T22));
+<                             Csd2 = QovCox2 * dCoxeff2_dVd
+<                                  - CoxWLcen2 * (dT12_dVd / 2.0 + dT02_dVd / 4.0
+<                                  - 2.0 * T02 * dT02_dVd / T22 + 2.0 * T02 * T02 * dT22_dVd / (T22 * T22));
+<                             Csb2 = QovCox2 * dCoxeff2_dVb
+<                                  - CoxWLcen2 * (dT12_dVb / 2.0 + dT02_dVb / 4.0
+<                                  - 2.0 * T02 * dT02_dVb / T22 + 2.0 * T02 * T02 * dT22_dVb / (T22 * T22));
+<                             Cse2 = QovCox2 * dCoxeff2_dVe
+<                                  - CoxWLcen2 * (dT12_dVe / 2.0 + dT02_dVe / 4.0
+<                                  - 2.0 * T02 * dT02_dVe / T22 + 2.0 * T02 * T02 * dT22_dVe / (T22 * T22));
+< 
+---
+>                             Csg2 = CoxWLcen2 * (T4 + T5 * dVdseffCV2_dVg);
+>                             Csd2 = CoxWLcen2 * T5 * dVdseffCV2_dVd + Csg2 * dVgsteff2_dVd
+>                                 + QovCox2 * dCoxeff2_dVd;
+>                             Csb2 = CoxWLcen2 * (T5 * dVdseffCV2_dVb + T6 * dAbulkCV_dVb)
+>                                 + Csg2 * dVgsteff2_dVb + QovCox2 * dCoxeff2_dVb;
+>                             Csg2 = Csg2 * dVgsteff2_dVg + QovCox2 * dCoxeff2_dVg;
+8677,8718c7764,7769
+<                       /* LFW_FD add next 32 lines */
+<                         dT2_dVg = dT2_dVg / 12.0;
+<                         dT2_dVd = dT2_dVd / 12.0;
+<                         dT2_dVb = dT2_dVb / 12.0;
+<                         dT2_dVe = dT2_dVe / 12.0;
+< 
+<                         dT3_dVg = T3 * dCoxeff_dVg / Coxeff
+<                                 - 2.0 * T3 * T2 * dT2_dVg / (T2 * T2);
+<                         dT3_dVd = T3 * dCoxeff_dVd / Coxeff
+<                                 - 2.0 * T3 * T2 * dT2_dVd / (T2 * T2);
+<                         dT3_dVb = T3 * dCoxeff_dVb / Coxeff
+<                                 - 2.0 * T3 * T2 * dT2_dVb / (T2 * T2);
+<                         dT3_dVe = T3 * dCoxeff_dVe / Coxeff
+<                                 - 2.0 * T3 * T2 * dT2_dVe / (T2 * T2);
+< 
+<                         dT4_dVg = dT1_dVg * (2.0 * T0 * T0 / 3.0 + T1 * (T1 - 4.0 * T0 / 3.0))
+<                                 + T1 * (4.0 * T0 * dT0_dVg / 3.0
+<                                 + dT1_dVg * (T1 - 4.0 * T0 / 3.0)
+<                                 + T1 * (dT1_dVg - 4.0 * dT0_dVg /3.0))
+<                                 - 2.0 * T0 * T0 * dT0_dVg / 5.0;
+<                         dT4_dVd = dT1_dVd * (2.0 * T0 * T0 / 3.0 + T1 * (T1 - 4.0 * T0 / 3.0))
+<                                 + T1 * (4.0 * T0 * dT0_dVd / 3.0
+<                                 + dT1_dVd * (T1 - 4.0 * T0 / 3.0)
+<                                 + T1 * (dT1_dVd - 4.0 * dT0_dVd /3.0))
+<                                 - 2.0 * T0 * T0 * dT0_dVd / 5.0;
+<                         dT4_dVb = dT1_dVb * (2.0 * T0 * T0 / 3.0 + T1 * (T1 - 4.0 * T0 / 3.0))
+<                                 + T1 * (4.0 * T0 * dT0_dVb / 3.0
+<                                 + dT1_dVb * (T1 - 4.0 * T0 / 3.0)
+<                                 + T1 * (dT1_dVb - 4.0 * dT0_dVb /3.0))
+<                                 - 2.0 * T0 * T0 * dT0_dVb / 5.0;
+<                         dT4_dVe = dT1_dVe * (2.0 * T0 * T0 / 3.0 + T1 * (T1 - 4.0 * T0 / 3.0))
+<                                 + T1 * (4.0 * T0 * dT0_dVe / 3.0
+<                                 + dT1_dVe * (T1 - 4.0 * T0 / 3.0)
+<                                 + T1 * (dT1_dVe - 4.0 * dT0_dVe /3.0))
+<                                 - 2.0 * T0 * T0 * dT0_dVe / 5.0;
+< 
+<                                  /* LFW_FD fix/add next 4 derivatives */
+<                         Csg = -(dT3_dVg * T4 + T3 * dT4_dVg);
+<                         Csd = -(dT3_dVd * T4 + T3 * dT4_dVd);
+<                         Csb = -(dT3_dVb * T4 + T3 * dT4_dVb);
+<                         Cse = -(dT3_dVe * T4 + T3 * dT4_dVe);
+< 
+---
+>                         Csg = T5 * (1.0 - dDeltaPhi_dVg) + T6 * dVdseffCV_dVg;
+>                         Csd = Csg * dVgsteff_dVd + T6 * dVdseffCV_dVd
+>                             + QovCox * dCoxeff_dVd;
+>                         Csb = Csg * dVgsteff_dVb + T6 * dVdseffCV_dVb
+>                             + T7 * dAbulkCV_dVb + QovCox * dCoxeff_dVb;
+>                         Csg = Csg * dVgsteff_dVg + QovCox * dCoxeff_dVg;
+8750,8790c7801,7806
+<                            /* LFW_FD add next 32 lines */
+<                             dT22_dVg = dT22_dVg / 12.0;
+<                             dT22_dVd = dT22_dVd / 12.0;
+<                             dT22_dVb = dT22_dVb / 12.0;
+<                             dT22_dVe = dT22_dVe / 12.0;
+< 
+<                             dT3_dVg = T3 * dCoxeff2_dVg / Coxeff2
+<                                     - 2.0 * T3 * T22 * dT22_dVg / (T22 * T22);
+<                             dT3_dVd = T3 * dCoxeff2_dVd / Coxeff2
+<                                     - 2.0 * T3 * T22 * dT22_dVd / (T22 * T22);
+<                             dT3_dVb = T3 * dCoxeff2_dVb / Coxeff2
+<                                     - 2.0 * T3 * T22 * dT22_dVb / (T22 * T22);
+<                             dT3_dVe = T3 * dCoxeff2_dVe / Coxeff2
+<                                     - 2.0 * T3 * T22 * dT22_dVe / (T22 * T22);
+< 
+<                             dT4_dVg = dT12_dVg * (2.0 * T02 * T02 / 3.0 + T12 * (T12 - 4.0 * T02 / 3.0))
+<                                     + T12 * (4.0 * T02 * dT02_dVg / 3.0
+<                                     + dT12_dVg * (T12 - 4.0 * T02 / 3.0)
+<                                     + T12 * (dT12_dVg - 4.0 * dT02_dVg /3.0))
+<                                     - 2.0 * T02 * T02 * dT02_dVg / 5.0;
+<                             dT4_dVd = dT12_dVd * (2.0 * T02 * T02 / 3.0 + T12 * (T12 - 4.0 * T02 / 3.0))
+<                                     + T12 * (4.0 * T02 * dT02_dVd / 3.0
+<                                     + dT12_dVd * (T12 - 4.0 * T02 / 3.0)
+<                                     + T12 * (dT12_dVd - 4.0 * dT02_dVd /3.0))
+<                                     - 2.0 * T02 * T02 * dT02_dVd / 5.0;
+<                             dT4_dVb = dT12_dVb * (2.0 * T02 * T02 / 3.0 + T12 * (T12 - 4.0 * T02 / 3.0))
+<                                     + T12 * (4.0 * T02 * dT02_dVb / 3.0
+<                                     + dT12_dVb * (T12 - 4.0 * T02 / 3.0)
+<                                     + T12 * (dT12_dVb - 4.0 * dT02_dVb /3.0))
+<                                     - 2.0 * T02 * T02 * dT02_dVb / 5.0;
+<                             dT4_dVe = dT12_dVe * (2.0 * T02 * T02 / 3.0 + T12 * (T12 - 4.0 * T02 / 3.0))
+<                                     + T12 * (4.0 * T02 * dT02_dVe / 3.0
+<                                     + dT12_dVe * (T12 - 4.0 * T02 / 3.0)
+<                                     + T12 * (dT12_dVe - 4.0 * dT02_dVe /3.0))
+<                                     - 2.0 * T02 * T02 * dT02_dVe / 5.0;
+<                            /* LFW_FD fix/add next 4 derivatives */
+<                             Csg2 = -(dT3_dVg * T4 + T3 * dT4_dVg);
+<                             Csd2 = -(dT3_dVd * T4 + T3 * dT4_dVd);
+<                             Csb2 = -(dT3_dVb * T4 + T3 * dT4_dVb);
+<                             Cse2 = -(dT3_dVe * T4 + T3 * dT4_dVe);
+< 
+---
+>                             Csg2 = T5 * (1.0 - dDeltaPhi2_dVg) + T6 * dVdseffCV2_dVg;
+>                             Csd2 = Csg2 * dVgsteff2_dVd + T6 * dVdseffCV2_dVd
+>                                 + QovCox2 * dCoxeff2_dVd;
+>                             Csb2 = Csg2 * dVgsteff2_dVb + T6 * dVdseffCV2_dVb
+>                                 + T7 * dAbulkCV_dVb + QovCox2 * dCoxeff2_dVb;
+>                             Csg2 = Csg2 * dVgsteff2_dVg + QovCox2 * dCoxeff2_dVg;
+8817d7832
+<                         Cse = -0.5 * Cge1;  /* LFW_FD new line */
+8821d7835
+<                            /* LFW_FD fix/add next 4 lines */
+8823,8825c7837,7840
+<                             Csd2 = -0.5 * Cgd12;
+<                             Csb2 = -0.5 * Cgb12;
+<                             Cse2 = -0.5 * Cge12;
+---
+>                             Csd -= 0.5 * Cgd12;
+>                             Csb -= 0.5 * Cgb12;
+>                             Csd2 = 0.0;     /* CJB  LFW */
+>                             Csb2 = 0.0;     /* CJB  LFW */
+8869,8872c7884,7890
+<                    /* LFW_FD fix/add next 3 lines */
+<                     Cbd = Cbd1 - dQac0_dVd - dQsub0_dVd;
+<                     Cbb = Cbb1 - dQac0_dVb - dQsub0_dVb - Ce1b;
+<                     Cbe = Cbe1 - dQac0_dVe - dQsub0_dVe - Ce1e;
+---
+>                     Cbd = Cbd1 - dQsub0_dVd;
+>                     Cbb = Cbb1 - dQac0_dVb - dQsub0_dVb - Ce1b / dVbseff_dVb;
+>                   /* comment out next 4 lines Wagner */
+>                   /*if (selfheat)
+>                         CbT = Cbg1 * dVgsteff_dT - dQac0_dT
+>                             - dQsub0_dT - dQe1_dT;
+>                     else CbT = 0.0;*/
+8876,8878c7894
+<                    /* LFW_FD fix/add next 2 lines */
+<                     Cgb = Cgb1 - Cbb - Ce1b;
+<                     Cge = Cge1 - Cbe - Ce1e;
+---
+>                     Cgb = Cgb1 - Cbb - Ce1b / dVbseff_dVb;
+8885,8887c7901,7903
+<                   /*Cgb *= dVbseff_dVb; */
+<                   /*Cbb *= dVbseff_dVb; */
+<                   /*Csb *= dVbseff_dVb; */
+---
+>                     Cgb *= dVbseff_dVb;
+>                     Cbb *= dVbseff_dVb;
+>                     Csb *= dVbseff_dVb;
+8894d7909
+<                        /* LFW_FD fix next 12 lines */
+8896,8899c7911,7917
+<                         Cbd += Cbd12 - dQac02_dVd - dQsub02_dVd;
+<                         Cbb += Cbb12 - dQac02_dVb - dQsub02_dVb;
+<                         Cbe += Cbe12 - dQac02_dVe - dQsub02_dVe;
+< 
+---
+>                         Cbd += Cbd12 - dQsub02_dVd;
+>                         Cbb += (Cbb12 - dQac02_dVb - dQsub02_dVb)*dVbseff_dVb;
+>                       /* comment out next 4 lines Wagner */
+>                       /*if (selfheat)
+>                             CbT += Cbg12 * dVgsteff2_dT - dQac02_dT
+>                                 - dQsub02_dT;
+>                         else CbT = 0.0;*/
+8902,8903c7920,7925
+<                         Cgb = Cgb1 + Cgb12 - Cbb - Ce1b;
+<                         Cge = Cge1 + Cge12 - Cbe - Ce1e;
+---
+>                         Cgb = Cgb1 + Cgb12 - Cbb - Ce1b / dVbseff_dVb;
+>                       /* comment out next 4 lines Wagner */
+>                       /*if (selfheat)
+>                             CgT += Cgg12 * dVgsteff2_dT + dQac02_dT
+>                                 + dQsub02_dT;
+>                         else  CgT = 0.0; */
+8904a7927,7931
+>                         Cgb *= dVbseff_dVb;
+>                     /*  Cbb *= dVbseff_dVb; */
+>                       /* comment out next 2 lines Wagner */
+>                       /*if (selfheat) CsT += Csg2 * dVgsteff2_dT;
+>                         else  CsT = 0.0;*/
+8906,8908c7933,7934
+<                         Csd += Csd2;
+<                         Csb += Csb2;
+<                         Cse += Cse2;
+---
+>                         Csd += Csd2;  /* CJB  LFW */
+>                         Csb += Csb2;  /* CJB  LFW */
+8913c7939
+<                     here->B4SOIcgsb = -(Cgg + Cgd + Cgb + Cge);   /* LFW_FD fix line */
+---
+>                     here->B4SOIcgsb = -(Cgg + Cgd + Cgb);
+8915d7940
+<                     here->B4SOIcgeb = Cge;                        /* LFW_FD fix line */
+8919c7944,7945
+<                     here->B4SOIcbsb = -(Cbg + Cbd + Cbb + Cbe);   /* LFW_FD fix line */
+---
+>                     here->B4SOIcbsb = -(Cbg + Cbd + Cbb)
+>                         + Ce1e;
+8921c7947
+<                     here->B4SOIcbeb = Cbe;                        /* LFW_FD fix line */
+---
+>                     here->B4SOIcbeb = -Ce1e;
+8929c7955
+<                     here->B4SOIcdeb =  -(Cge + Cse + Cbe) - Ce1e; /* LFW_FD fix line */
+---
+>                     here->B4SOIcdeb = 0;
+8931,8933c7957,7958
+<                     here->B4SOIcdsb = Cgg + Cgd + Cgb + Cge       /* LFW_FD fix expression */
+<                                     + Cbg + Cbd + Cbb + Cbe + Ce1e
+<                                     + Csg + Csd + Csb + Cse + Ce1b;
+---
+>                     here->B4SOIcdsb = (Cgg + Cgd + Cgb + Cbg + Cbd + Cbb
+>                             + Csg + Csd + Csb) + Ce1b;
+8960,8964d7984
+< 
+<             /* flexilint inits */
+<             gcjdbs = gcjdT = 0.0;
+<             gcjsbs = gcjsT = 0.0;
+< 
+9005,9006d8024
+<                     else
+<                         darg_dT = 1.0;          /* flexilint */
+9012d8029
+<                         else ddT3_dVb_dT = 1.0;    /* flexilint */
+9018d8034
+<                         else ddT3_dVb_dT = 1.0;    /* flexilint */
+9025,9026d8040
+<                     else
+<                         dT3_dT = 1.0;  /* flexilint */
+9079,9080d8092
+<                     else
+<                         darg_dT = 1.0;          /* flexilint */
+9086d8097
+<                         else ddT3_dVb_dT = 1.0;    /* flexilint */
+9092d8102
+<                         else ddT3_dVb_dT = 1.0;    /* flexilint */
+9099,9100d8108
+<                     else
+<                         dT3_dT = 1.0;  /* flexilint */
+9455c8463
+<                     gcgeb = here->B4SOIcgeb * ag0;     /* fix line */
+---
+>                     gcgeb = 0 ;/*v3.1 changed*/
+9483c8491
+<                     gcgeb = (here->B4SOIcgeb - pParam->B4SOIcgeo) *ag0;   /* LFW_FD fix line */
+---
+>                     gcgeb = (-pParam->B4SOIcgeo) *ag0;
+9519c8527
+<                         + here->B4SOIcdeb + here->B4SOIcgeb + here->B4SOIceeb) * ag0;     /* LFW_FD fix line */
+---
+>                         + here->B4SOIcdeb + here->B4SOIceeb) * ag0;
+9611c8619
+<                     gcgeb = here->B4SOIcgeb * ag0;    /* LFW_FD fix line */
+---
+>                     gcgeb = 0; /* v3.1 */
+9638c8646
+<                     gcgeb = (here->B4SOIcgeb - pParam->B4SOIcgeo) * ag0;   /* LFW_FD  fix line */
+---
+>                     gcgeb = (- pParam->B4SOIcgeo) * ag0;
+9641c8649
+<                     gcegb = (- pParam->B4SOIcgeo) * ag0;      /* LFW_FD  fix line */
+---
+>                     gcegb = gcgeb; /* v3.1 added */
+9673c8681
+<                         + here->B4SOIcdeb + here->B4SOIcgeb + here->B4SOIceeb) * ag0;  /* LFW_FD fix line */
+---
+>                         + here->B4SOIcdeb + here->B4SOIceeb) * ag0;
+9744c8752
+<                    qgs = qgso;
+---
+>                    gs = qgso;
+
+
+
+
+********Modified File: b4soidef.h********
+
+281d280
+<     double B4SOIgIgcse;
+287d285
+<     double B4SOIgIgcde;
+329d326
+<     double B4SOIcgeb;

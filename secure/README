@@ -1,0 +1,401 @@
+========================================================================
+XicTools Gen4 License Server 
+Copyright (C) Whiteley Research Inc. 2015
+$Id: README,v 2.13 2016/06/08 04:00:06 stevew Exp $
+========================================================================
+
+This document describes installation and use of the XicTools license
+server.
+
+
+I. Introduction
+---------------
+
+The XicTools applications require authentication to operate, which is
+obtained via a file named "LICENSE" provided by Whiteley Research Inc. 
+to customers.
+
+There are two types of license available: host-locked, and floating.
+
+host-locked licenses
+    These are the traditional licenses for Xic and WRspice that have
+    been available for many years.  They allow the program to run on a
+    single host, with no user limit.  Authentication can be provided
+    via a license server, which may be running on a different machine,
+    or locally without running a license server.  In the latter mode,
+    network connectivity is not required, so this type of license may
+    be desirable for laptops.
+
+floating licenses
+    This type of license is new, and is available starting in 2016. 
+    The license must be served by the license server, the local
+    validation mode is not available.  The server must be run on a
+    designated machine, for which the licenses are prepared.  A
+    floating license will enable a certain number of users to run
+    simultaneously, depending on the number of "users" purchased.  The
+    programs can be run on any machine compatible with the software,
+    and able to reach the server via a tcp/ip network.  Once the user
+    limit is reached, additional authentications will fail, until one
+    of the existing sessions terminates. 
+
+There are two methods by which authentication can be established:
+
+  1) The "local" method.
+
+    This mode will only authenticate host-locked licenses.
+
+    With this method, the LICENSE file and application are installed
+    on the same machine, and no license server is used.  For a single
+    host running XicTools applications, this is the simplest
+    authentication method.  To use local authentication:
+
+    a) Make sure that the variable XT_AUTH_MODE is set to "Local" in
+       the environment.  The command can be added to the user's shell
+       startup file.  See the program installation documentation for
+       more information.
+
+    b) Make sure that the LICENSE file is placed in the startup
+       directory of each application, or in a subdirectory named
+       "license" under "xictools" in the installation location (which
+       defaults to /usr/local/xictools).  The LICENSE file will also be
+       found in the user's home directory, or the current directory
+       on program startup.
+
+       The file name of the license file must be "LICENSE" or
+       "LICENSE.dat".
+
+     The steps above are necessary for Xic and WRspice running on
+     Linux or OS X, which expect to connect to a license server by
+     default.  Windows programs use local mode by default.
+
+     If you are using local mode, you don't need to read the rest
+     of this document.
+
+  2) The license server.
+
+    It is necessary to run the license server if the license file
+    provides floating licenses.  Otherwise, if several machines are
+    used to run the programs, it may be necessary or more convenient
+    to run a license server, which can consolidate all of the
+    licensing into one location on one machine.  The license server
+    (xtlserv) is a daemon process which runs on a single machine, the
+    "license host".
+
+    To authenticate floating licenses, the server MUST run on the host
+    that provided the license key.  Otherwise, any binary compatible
+    machine connected via tcp/ip to the hosts running XicTools
+    applications will suffice.
+
+    This is a fundamental difference between node-locked and floating
+    licenses:  the node-locked license is keyed by the machine running
+    the programs, a floating license is keyed by the machine running
+    the license server.
+
+    The xtlserv license server can run on any of the supported
+    operating systems, including Windows.  The Windows capability is
+    new, and should be considered slightly experimental at this point. 
+    Separate distribution files are available for the various
+    supported operating systems.
+
+The remainder of this document describes in detail the license server
+daemon program.
+
+
+II. Installation and Configuration
+----------------------------------
+
+The license server is a program named "xtlserv" and is installed into
+the bin directory of the xictools installation location, which is by
+default /usr/local/xictools/bin.  On installation, the directory
+.../xictools/license is created under the same root.  The license
+directory contains a copy of this file (README), and is the default
+(and only) directory where LICENSE files can be found by the server. 
+By default, the server log file will be maintained in this directory.
+
+The xtlserv distribution file can run on any binary compatible
+machine, however if the license file enables floating licenses, it
+must be installed on the machine for which the license was configured. 
+The license host must be reachable via tcp/ip networking protocol by
+client hosts running XicTools applications.
+
+The LICENSE file supplied by Whiteley Research contains site-specific
+configuration data typically negotiated at the time of purchase. 
+A single LICENSE file can license one or more applications on one
+or more hosts.  This is an encrypted binary file, and it is bad news
+if it becomes corrupted.  In particular, when transferring the file
+via ftp, binary mode should always be used.
+
+All "LICENSE" files supplied by Whiteley Research are named "LICENSE",
+however the server will read all files with the basename "LICENSE"
+found in the license directory, for example "LICENSE", "LICENSE.1",
+"LICENSE.xic.myhost" would all be valid file names.  The "LICENSE"
+basename must be separated by a given extension by a period (".'). 
+Thus, if the user has more than one LICENSE file, they can be
+consolidated into the license directory by renaming the LICENSE files
+to add an arbitrary extension (the extension should be meaningful to
+the user).  BE CAREFUL to not overwrite LICENSE files!  You should
+keep copies of your LICENSE files in a safe location.
+
+The license directory must contain at least one valid license file or
+the server will not start.  After installing the xtlserv distribution,
+the user should install the "LICENSE" file(s) into the license
+directory.
+
+The daemon uses port number 6116 by default.  In some installations,
+it may be necessary to enable this port for tcp communications, if a
+firewall is used.
+
+Older versions of the programs (xic up through 3.2.13, wrspice up
+through 3.2.8, and xtlserv 3.0) used a different port number (3010)
+than the current (and IANA registered) port 6116.  Although newer
+programs can connect with an old license server, the reverse is NOT
+true.  Older programs can not work with xtlserv-3.1 or later, unless
+the xtlserv -p option is used to set the port to 3010.  It is possible
+to run two license server daemons, one on the default port, and one on
+port 3010, if necessary.
+
+
+II.1  The xtlserv license server program
+
+The server program "xtlserv" is a daemon process which is typically
+initiated at boot time.  Before xtlserv can run, a LICENSE file must
+be installed.
+
+The command to start the server is as follows:
+
+  path/xtlserv [-l license_dir][-p port][-o log_dir][-d dir]
+
+The arguments enclosed in [...] are optional, and have the following
+effects.  If is probably not likely that you need to use these, except
+perhaps to put the log file somewhere else, such as in /var/log.
+
+  -l license_dir
+  The given license_dir is a full path to the directory which contains
+  the LICENSE[.xxx] files.  This will override the default license
+  directory, and will be the only directory where license files can be
+  found.  The default is /usr/local/xictools/license.
+
+  -p port
+  This will cause xtlserv to use the given port number for
+  communication, rather than the default port number 6116.  Don't
+  change this unless you have a good reason and understand the
+  implications.
+
+  -o log_dir
+  The given log_dir is a full path to the directory which will contain
+  the log file (xtdaemon.log).  This is the same as the license_dir by
+  default.
+
+  -d dir
+  The given dir is a full path to the directory which contains both
+  the LICENSE[.xxx] and log files.  The -l and -o options, if also
+  given, overrule the -d option for the appropriate file.
+
+The default "dir" is /usr/local/xictools/license.  However, if the
+variable XT_PREFIX is set in the environment, the "/usr/local" part of
+the default dir is replaced by the value of XT_PREFIX.  If the
+distribution is installed under /usr/local, which is normal, or the
+XT_PREFIX environment variable is set appropriately, then no options
+are required for xtlserv.  In Windows, the installer sets the correct
+"dir" location, so it is not necessary to set XT_PREFIX.
+
+The xtlserv program can most conveniently be started in the system
+startup script, on the license host.  On some systems this
+script may be called /etc/rc or /etc/rc.local.  Lines similar to the
+following can be added to the appropriate file:
+
+  if [ -x /usr/local/xictools/bin/xtlserv ]; then
+      echo Starting XicTools license daemon
+      /usr/local/xictools/bin/xtlserv
+  fi
+
+There is a similar way to do this on Windows, those familiar with
+Windows can probably set this up.
+
+The daemon can also be started manually from the command line.  The
+process will continue to run unless 1) it is killed with "xtjobs
+-kill", or 2) it is explicitly killed with a signal sent by the
+process owner with the "kill" command, or 3) it faults and crashes. 
+The xtjobs program is a subsidiary control program described below.
+
+The server should be started by root, although this may not be
+strictly necessary on all systems.  Starting from the system startup
+file is as if started by root.  The process owner must have write
+permission for the log file.
+
+Once started, the server will maintain a log file,
+/usr/local/xictools/license/xtdaemon.log (default location). 
+This file can grow to about 100Kb, at which point it is copied to a
+backup file, and a new log started.  The backup file (named
+xtdaemon.log.last) will be overwritten if already present.  The log
+file is important for diagnosing problems with server operation, and
+should be sent to Whiteley Research if problems are encountered.
+
+
+II.2  Configuration
+-------------------
+
+Every host expected to run an XicTools program must have a means to
+obtain the license server host name (if not authenticating in local
+mode).  This can be accomplished in one (or more) of the following
+ways:
+  1) The license host name can be given in the program command line
+     (xic -Lservername[:port], wrspice -l servername[:port]).
+
+  2) The environment variable XTLSERVER can be set in the shell from
+     which the program is invoked.
+
+  3) A "license.host" file can exist in the program's startup
+     directory.  This file contains a single line giving the
+     host name and optional port as servername[:port].
+
+  4) An entry for "xtlserver" can be a recognized alias in the host
+     namespace available to the host.
+
+These options have precedence in the order given.  If none of these
+conditions is encountered, the local machine is assumed to be the
+license host. 
+
+Method 2 can be set by entering the shell commands below, possibly in
+a startup script:
+
+for csh, tcsh:
+    setenv XTLSERVER servername[:port]
+
+for sh, bash:
+    export XTLSERVER=servername[:port]
+
+where servername is the host name of the license host, as known in the
+host namespace of the local host, for example "myhost" or
+"myhost.mydomain.com".  This may be followed by a colon and port
+number to specify the port, if for some reason the license server is
+using a non-default port.
+
+Method 3 requires creating a one-line file in the startup directory of
+the program (e.g., /usr/local/xictools/xic/startup)
+named "license.host".  The single line contains the server name (same
+as servername above) with optional port number as above.  This must be
+done for each program.
+
+Method 4 requires the local name service to be informed of the alias. 
+This is system dependent.  For simple configurations, the /etc/hosts
+file can be modified by adding the "xtlserver" alias, for example
+
+192.168.1.1             chaucer.wrcad.com      chaucer
+192.168.1.2             keats.wrcad.com        keats
+192.168.1.3             bard.wrcad.com         bard       xtlserver
+
+if the machine "bard" is to be the license server.  A non-default
+port can not be specified with this method.
+
+
+III. Running Applications
+-------------------------
+
+Once the systems are configured and the server started, the programs
+can be run as per the site configuration in the LICENSE file.  If,
+while a program is running, the license server becomes unreachable or
+the license server process is killed, a warning message appears.  This
+message informs the user that the program will terminate in ten
+minutes.  Termination will occur even if the server is restarted.  On
+seeing the warning, the user should save work and restart the program.
+
+If a program terminates in response to an uncatchable signal, it may
+not inform the server of its demise, thus not allowing another process
+of the same program to be run if the user limit is reached.  After
+about 15 minutes, the server will mark the job as dead.  The server
+will clear dead processes every five minutes, so after 20 minutes the
+server will have fully corrected itself.
+
+An immediate fix can be performed with the xtjobs program (see below). 
+The xtjobs program can be used to list the processes that the server
+believes to be currently running, and to remove processes being
+managed,
+
+Although use of the xtjobs program is far easier, an immediate purge
+of dead processes can be effected by sending the server process a
+hangup (SIGHUP) signal:
+
+  kill -HUP pid
+
+where pid is the server process id.  This command must be issued by
+the owner of the license server daemon (root) from the license server
+host.  The process may not be recognized as dead until as much as 15
+minutes after it terminates, and the kill command will have no effect
+before this time.  A message in the log file indicates when a dead
+process is purged.
+
+
+IV. Troubleshooting
+-------------------
+
+If there are problems, please check the following:
+
+Is the LICENSE file inaccessible or corrupted?  The license file base
+name must be "LICENSE", and the path must be given to xtlserv if the
+file is not in the default location.  This is a binary file that can
+be corrupted by ascii-mode ftp transfers and similar.  The size of the
+file should be 1536 bytes.
+
+Is the server running?  This can be checked from the license host by the
+command
+  ps auxww |grep xtlserv
+which will list the process, if running.
+
+Is the application directed to the server host properly?  Note that
+the application must be able to locate its startup files if the
+"license.host" method is used.
+
+Are all machines using the same port number?  Older versions of the
+programs (xic up through 3.2.13, wrspice up through 3.2.8, and xtlserv
+3.0) used a different port number (3010) than the current (and IANA
+registered) port 6116.  Although newer programs can connect with an
+old license server, the reverse is NOT true.  Older programs can not
+work with xtlserv-3.1 or later, unless the xtlserv -p option is used
+to set the port to 3010.
+
+If the application will not run because the quota is exceeded, yet the
+quota is not in fact exceeded, processes may have terminated without
+notifying the server.  This should self-correct after 20 minutes, or
+the xtjobs program can be used to correct the problem immediately.
+
+
+V. The xtjobs Program
+---------------------
+
+This program is supplied in the same directory as the license server. 
+The program is invoked as
+
+  xtjobs [hostname[:port]] [-kill | -p host pid]
+
+The hostname argument is the name of a machine with a running xtlserv
+server process.  If not given, the value of the XTLSERV environment
+variable is used, and if this is not set the local machine is assumed. 
+The host name can be followed by a colon and port number, which
+specifies the port to use.  This is needed if the server is not using
+the default port.  The default action is to generate a listing, on the
+standard output, of all jobs being maintained by the server.  Before
+generating the listing, all dead process entries are removed.
+
+If "-kill" is supplied on the command line, the xtlserver process will
+exit.  Otherwise, the server process must be killed by sending a
+signal from the local machine using the Unix kill command.  You do not
+want to do this if there are running programs.
+
+Individual entries in the list can be deleted with the -p option,
+which is followed by the host name and pid of a process in the listing.
+This will delete the entry, and server management.  Thus, processes
+that are known to be dead can be removed.
+
+If a process entry of an active process is removed, or the server is
+killed, the application will detect the lack of server support after a
+few minutes and issue a warning, and will terminate after 10 minutes.
+
+Obviously, this command can allow users to adversely affect the work
+of others.  The administrator may wish to relocate this command to a
+private area, and/or restrict execution permission.
+
+VI. Change Log
+
+4.2.3 (6/7/2016)  Windows will now validate IP/HW keys if the CDROM
+test fails.

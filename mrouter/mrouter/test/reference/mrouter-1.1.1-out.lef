@@ -1,0 +1,3229 @@
+VERSION 5.4 ;
+NAMESCASESENSITIVE ON ;
+BUSBITCHARS "[]" ;
+DIVIDERCHAR "/" ;
+UNITS
+   DATABASE MICRONS 1000 ;
+END UNITS
+
+USEMINSPACING OBS ON ;
+USEMINSPACING PIN OFF ;
+CLEARANCEMEASURE EUCLIDEAN ;
+
+MANUFACTURINGGRID 0.1 ;
+
+LAYER nwell
+   TYPE MASTERSLICE ;
+END nwell
+
+LAYER nactive
+   TYPE MASTERSLICE ;
+END nactive
+
+LAYER pactive
+   TYPE MASTERSLICE ;
+END pactive
+
+LAYER poly
+   TYPE MASTERSLICE ;
+END poly
+
+LAYER cc
+   TYPE CUT ;
+   SPACING 0.9 ;
+END cc
+
+LAYER metal1
+   TYPE ROUTING ;
+   DIRECTION HORIZONTAL ;
+   WIDTH 0.6 ;
+   OFFSET 1 ;
+   PITCH 2 ;
+   SPACING 0.6 ;
+END metal1
+
+LAYER via1
+   TYPE CUT ;
+   SPACING 0.6 ;
+END via1
+
+LAYER metal2
+   TYPE ROUTING ;
+   DIRECTION VERTICAL ;
+   WIDTH 0.6 ;
+   OFFSET 0.8 ;
+   PITCH 1.6 ;
+   SPACING 0.6 ;
+END metal2
+
+LAYER via2
+   TYPE CUT ;
+   SPACING 0.6 ;
+END via2
+
+LAYER metal3
+   TYPE ROUTING ;
+   DIRECTION HORIZONTAL ;
+   WIDTH 0.6 ;
+   OFFSET 1 ;
+   PITCH 2 ;
+   SPACING 0.6 ;
+END metal3
+
+LAYER via3
+   TYPE CUT ;
+   SPACING 0.8 ;
+END via3
+
+LAYER metal4
+   TYPE ROUTING ;
+   DIRECTION VERTICAL ;
+   WIDTH 1.2 ;
+   OFFSET 1.6 ;
+   PITCH 3.2 ;
+   SPACING 1.2 ;
+END metal4
+
+VIA M2_M1 DEFAULT
+   LAYER metal1 ;
+      RECT -0.4 -0.4 0.4 0.4 ;
+   LAYER via1 ;
+      RECT -0.2 -0.2 0.2 0.2 ;
+   LAYER metal2 ;
+      RECT -0.4 -0.4 0.4 0.4 ;
+END M2_M1
+
+VIA M3_M2 DEFAULT
+   LAYER metal2 ;
+      RECT -0.4 -0.4 0.4 0.4 ;
+   LAYER via2 ;
+      RECT -0.2 -0.2 0.2 0.2 ;
+   LAYER metal3 ;
+      RECT -0.4 -0.4 0.4 0.4 ;
+END M3_M2
+
+VIA M4_M3 DEFAULT
+   LAYER metal3 ;
+      RECT -0.4 -0.4 0.4 0.4 ;
+   LAYER via3 ;
+      RECT -0.2 -0.2 0.2 0.2 ;
+   LAYER metal4 ;
+      RECT -0.6 -0.6 0.6 0.6 ;
+END M4_M3
+
+VIARULE viagen21 GENERATE
+   LAYER metal1 ;
+      DIRECTION HORIZONTAL ;
+      WIDTH 0.6 TO 60 ;
+      OVERHANG 0.2 ;
+
+   LAYER metal2 ;
+      DIRECTION VERTICAL ;
+      WIDTH 0.6 TO 60 ;
+      OVERHANG 0.2 ;
+END viagen21
+
+VIARULE viagen32 GENERATE
+   LAYER metal3 ;
+      DIRECTION HORIZONTAL ;
+      WIDTH 0.6 TO 60 ;
+      OVERHANG 0.2 ;
+
+   LAYER metal2 ;
+      DIRECTION VERTICAL ;
+      WIDTH 0.6 TO 60 ;
+      OVERHANG 0.2 ;
+END viagen32
+
+VIARULE viagen43 GENERATE
+   LAYER metal3 ;
+      DIRECTION HORIZONTAL ;
+      WIDTH 0.6 TO 60 ;
+      OVERHANG 0.4 ;
+
+   LAYER metal4 ;
+      DIRECTION VERTICAL ;
+      WIDTH 0.6 TO 60 ;
+      OVERHANG 0.4 ;
+END viagen43
+
+VIARULE TURN1 GENERATE
+   LAYER metal1 ;
+      DIRECTION HORIZONTAL ;
+
+   LAYER metal1 ;
+      DIRECTION VERTICAL ;
+END TURN1
+
+VIARULE TURN2 GENERATE
+   LAYER metal2 ;
+      DIRECTION HORIZONTAL ;
+
+   LAYER metal2 ;
+      DIRECTION VERTICAL ;
+END TURN2
+
+VIARULE TURN3 GENERATE
+   LAYER metal3 ;
+      DIRECTION HORIZONTAL ;
+
+   LAYER metal3 ;
+      DIRECTION VERTICAL ;
+END TURN3
+
+VIARULE TURN4 GENERATE
+   LAYER metal4 ;
+      DIRECTION HORIZONTAL ;
+
+   LAYER metal4 ;
+      DIRECTION VERTICAL ;
+END TURN4
+
+MACRO FILL
+   CLASS CORE ;
+   FOREIGN FILL ;
+   ORIGIN 0 0 ;
+   SIZE 1.6 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 -0.6 2 0.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 19.4 2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+END FILL
+
+MACRO AND2X1
+   CLASS CORE ;
+   FOREIGN AND2X1 ;
+   ORIGIN 0 0 ;
+   SIZE 6.4 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 6.6 1.2 8.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 10.6 3.4 11.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.6 9.8 3.4 11.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 -0.6 6.8 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3 -0.6 3.8 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 4.6 1.2 5.4 3.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.4 3.2 6 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 14.8 6 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 12.6 6 13.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 14.8 4.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 6.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 14.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 2 14.8 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.2 13.6 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.2 13.6 4.6 14.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4 5.8 4.6 14.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 1.8 6 4.8 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4 5.8 4.8 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 1.8 5.2 2.4 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 5.2 2.4 5.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 1.2 1.2 5.2 DO 1 BY 1 STEP 0 0 ;
+   END
+END AND2X1
+
+MACRO AND2X2
+   CLASS CORE ;
+   FOREIGN AND2X2 ;
+   ORIGIN 0 0 ;
+   SIZE 6.4 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 6.6 1.2 8.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 8.6 2.8 9.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.4 7 3.2 7.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.2 7.2 2.8 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 -0.6 6.8 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3 -0.6 3.8 5 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 4.6 1.2 5.4 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.4 4.2 6 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 10.8 6 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 8.6 6 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 11.2 4.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 6.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 14.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 2 14.8 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.2 10 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.2 10 4.6 10.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4 5.8 4.6 10.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4 5.8 4.8 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 1.8 5.8 4.8 6.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 5.4 2.4 6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 1.2 1.2 6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 1.2 1.2 5.2 DO 1 BY 1 STEP 0 0 ;
+   END
+END AND2X2
+
+MACRO AOI21X1
+   CLASS CORE ;
+   FOREIGN AOI21X1 ;
+   ORIGIN 0 0 ;
+   SIZE 6.4 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 1.2 8.8 2 9.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 8.6 1.2 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 6.6 2.8 8.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN C
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 5.2 4.6 6 5.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5 3.8 5.8 4.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END C
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 5.2 -0.6 6 3.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 6.8 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 1 -0.6 1.8 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 1.2 4.4 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 8.6 5.8 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 8.6 6 9.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 8.8 6 9.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 10.8 6 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 1.2 4.2 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 19.4 6.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 12 2.8 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 3.6 10.8 4.4 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 10.8 1.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 10.8 4.4 11.4 DO 1 BY 1 STEP 0 0 ;
+   END
+END AOI21X1
+
+MACRO AOI22X1
+   CLASS CORE ;
+   FOREIGN AOI22X1 ;
+   ORIGIN 0 0 ;
+   SIZE 8 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 1.2 8.8 2 9.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 8.6 1.2 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 6.6 2.8 8.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN C
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 6.8 8.6 7.6 10.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END C
+
+   PIN D
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 5 7.8 5.8 8.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 6.6 6 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 6.6 5.8 8.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END D
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 6.8 -0.6 7.6 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 8.4 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.8 -0.6 1.6 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.8 1.2 4.4 10.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.4 1.2 5 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.8 9.6 5.8 10.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 9.6 5.8 17.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 10.8 6 17.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 8.6 4.4 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 19.4 8.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 12 2.8 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 3.6 18.2 7.6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 6.8 10.8 7.6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 10.8 1.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 10.8 4.4 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 10.8 4.4 11.4 DO 1 BY 1 STEP 0 0 ;
+   END
+END AOI22X1
+
+MACRO BUFX2
+   CLASS CORE ;
+   FOREIGN BUFX2 ;
+   ORIGIN 0 0 ;
+   SIZE 4.8 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 7.8 1.2 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 -0.6 5.2 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 -0.6 2.8 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.8 1.2 4.4 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 10.8 4.4 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 1.2 4.4 8.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 19.4 5.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 12 2.8 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 0.4 10.8 1.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 10.8 2.6 11.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 5.8 2.6 11.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 9.4 3.2 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 5.8 2.6 6.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 1.2 1.2 6.4 DO 1 BY 1 STEP 0 0 ;
+   END
+END BUFX2
+
+MACRO BUFX4
+   CLASS CORE ;
+   FOREIGN BUFX4 ;
+   ORIGIN 0 0 ;
+   SIZE 6.4 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 8.6 1.4 9.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.6 7.8 1.4 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 5.2 -0.6 6 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 6.8 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 -0.6 2.8 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 6.6 4.6 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 10.8 4.4 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4 4.6 4.6 11.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 1.2 4.4 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 5.2 10.8 6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 6.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 12 2.8 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 0.4 10.8 1.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 10.8 3 11.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.4 5.8 3 11.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.4 8 3.4 8.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 5.8 3 6.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 1.2 1.2 6.4 DO 1 BY 1 STEP 0 0 ;
+   END
+END BUFX4
+
+MACRO DFFNEGX1
+   CLASS CORE ;
+   FOREIGN DFFNEGX1 ;
+   ORIGIN 0 0 ;
+   SIZE 19.2 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN Q
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 15 5.4 15.8 6.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 15 5.6 18.8 6.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 14.6 9.6 18.8 10.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 18 1.2 18.8 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 14.6 9.4 15.4 10.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Q
+
+   PIN CLK
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 5.4 13.4 6.2 14.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 1.2 6.6 2.8 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4 5.4 4.8 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4.2 4.6 5 5.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 6.8 6 7.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 12 6.6 12.8 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 1.2 6.8 12.8 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 12.6 6 13.4 DO 1 BY 1 STEP 0 0 ;
+         LAYER metal2 ;
+             RECT ITERATE 5.2 6.8 6 13.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END CLK
+
+   PIN D
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2.8 8.6 7.6 9.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 6.8 8.6 7.6 9.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.8 8.4 3.6 9.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END D
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 7.4 -0.6 8.4 3.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 10.8 -0.6 11.6 3.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 16.4 -0.6 17.2 5 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 19.6 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 -0.6 2.8 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 7.6 14.8 8.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 10.8 14.8 11.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 16.4 10.8 17.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 19.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 11 2.8 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 16.2 8.2 17 9 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.2 8.2 17 8.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.2 8 14 8.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.2 2.6 14 4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.4 1.2 14.6 3.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 9.8 1.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.8 11.4 14.6 12.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10.8 11.4 11.8 12.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10.8 11.4 14.6 12 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10.8 10.2 11.4 12.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4.2 10.2 11.4 10.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 9.8 5 10.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.4 14.8 14.6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.2 14 14 14.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.2 14.8 10 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.2 13.6 9.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 7 13.6 10.6 14.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.8 13.4 10.6 14.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 7 13.4 7.8 14.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 7 3.8 7.8 4.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 7 3.8 9.8 4.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.2 1.2 9.8 4.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.2 1.2 10 3.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.2 11.4 9 12.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 11.4 4.4 12.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 11.4 9 12 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 2.6 4.4 4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 2.6 5.6 3.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4.8 1.2 5.6 3.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4.8 14.8 5.6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 14.8 5.6 15.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 14 4.4 15.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 1.2 1.2 6 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal2 ;
+         RECT ITERATE 13.2 12.2 14 14.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.2 3.2 13.8 14.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.2 3.2 14 11.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 10.8 4.4 14.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 3.2 4.2 14.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 3.2 4.4 10 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 5.2 1.2 10.8 DO 1 BY 1 STEP 0 0 ;
+   END
+END DFFNEGX1
+
+MACRO NOR3X1
+   CLASS CORE ;
+   FOREIGN NOR3X1 ;
+   ORIGIN 0 0 ;
+   SIZE 12.8 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 4.6 3.8 5.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 6.6 5.2 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN C
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 5.2 8.6 6.8 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END C
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 5.2 -0.6 6 2.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 13.2 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 -0.6 2.8 3.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 4 2.6 4.6 4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4 3.4 8 4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 6.8 1.2 7.6 4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 7.4 3.2 8 11.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 7.4 10.6 10.8 11.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 10 10.6 10.6 17.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 10 10.6 10.8 11.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 10 12 10.8 17.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 1.2 4.4 3.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 19.4 13.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 12.8 2.8 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 8.6 18.2 12.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.6 12 12.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.6 12 9.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.6 12 12.4 18 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 12 9.2 18 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 12.8 6 17.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.4 11.8 6 17.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.4 11.8 9 12.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 18.2 7.6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 6.8 13 7.6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 12.8 1.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 11.6 1.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 12.8 4.4 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 11.6 4.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 11.6 4.2 12.2 DO 1 BY 1 STEP 0 0 ;
+   END
+END NOR3X1
+
+MACRO DFFPOSX1
+   CLASS CORE ;
+   FOREIGN DFFPOSX1 ;
+   ORIGIN 0 0 ;
+   SIZE 19.2 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN Q
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 15 5.4 15.8 6.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 15 5.6 18.8 6.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 14.6 9.6 18.8 10.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 18 1.2 18.8 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 14.6 9.4 15.4 10.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Q
+
+   PIN CLK
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 4.2 6.8 5 7.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 3.8 6 4.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.4 3.8 6 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 1.2 6.8 12.2 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 11 6.6 11.8 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 11.6 6.8 12.2 11.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 11.6 10.6 14 11.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 13.4 10.6 14 13 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 13.4 12.2 14.8 13 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 1.2 6.6 2.8 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END CLK
+
+   PIN D
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2.6 8.6 7.6 9.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 6.8 8.6 7.6 9.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.6 8.4 3.4 9.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END D
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 7.4 -0.6 8.4 3.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 10.8 -0.6 11.6 3.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 16.4 -0.6 17.2 5 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 19.6 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 -0.6 2.8 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 7.6 14.8 8.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 10.8 14.8 11.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 16.4 10.8 17.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 19.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 11 2.8 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 16.2 8.2 17 9 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.2 8.2 17 8.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.2 8 14 8.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.2 2.6 14 4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.4 1.2 14.6 3.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.4 14.8 14.6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.2 14 14 14.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 9.8 1.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.6 12 11.8 12.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11 11.8 11.8 12.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.6 10.2 10.2 12.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.4 10.2 10.2 10.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 9.8 6 10.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 10 6.2 10.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.2 14.8 10 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.2 13.6 9.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 7 13.6 10.6 14.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.8 13.4 10.6 14.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 7 13.4 7.8 14.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 7 3.8 7.8 4.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 7 3.8 9.8 4.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.2 1.2 9.8 4.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.2 1.2 10 3.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.2 11.4 9 12.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 11.4 4.4 12.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 11.4 9 12 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 2.6 4.4 4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 2.6 5.6 3.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4.8 1.2 5.6 3.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4.8 14.8 5.6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 14.8 5.6 15.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 14 4.4 15.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 1.2 1.2 6 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal2 ;
+         RECT ITERATE 13.2 3.2 14 14.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 3.2 4.4 14.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 5.2 1.2 10.8 DO 1 BY 1 STEP 0 0 ;
+   END
+END DFFPOSX1
+
+MACRO FAX1
+   CLASS CORE ;
+   FOREIGN FAX1 ;
+   ORIGIN 0 0 ;
+   SIZE 24 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN YC
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 22.8 6.6 23.6 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 23 1.2 23.6 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 22.8 14.8 23.6 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 22.8 1.2 23.6 3.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END YC
+
+   PIN YS
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 19.4 9.2 20 15.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 19.8 1.2 20.4 4.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 19.6 14.8 20.4 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 19.8 3.8 21.4 4.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 20.8 3.8 21.4 9.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 19.4 9.2 21.4 9.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 20.8 4.6 22 5.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 19.6 1.2 20.4 3.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END YS
+
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 6.6 1.2 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 1.2 5.8 18.4 6.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.6 6 8.2 6.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 7.4 5.6 18.4 6.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 17.8 5.6 18.4 7.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 17.8 6.8 18.6 7.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.6 6 2 6.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 8.6 2.8 9.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.2 7.2 3.6 7.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.8 7 6.6 7.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.8 7 16.8 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.2 7.2 10.2 7.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 9.4 6.8 16.8 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 16 6.8 16.8 7.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.2 7.2 2.8 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN C
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 8.6 11 9.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 8.6 11.8 9 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 10.4 8.2 15.2 8.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 14.4 8 15.2 8.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 8.6 5.2 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END C
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 7.8 -0.6 8.6 4.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 11 -0.6 11.8 3.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 18 -0.6 18.8 5 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 21.2 -0.6 22 3.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 24.4 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 -0.6 2.8 4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 7.8 10.8 8.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 11 12.8 11.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 18 9.2 18.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 21.2 14.8 22 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 24.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 12 2.8 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 20.8 10.6 22.4 11.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 19.4 7 20.2 8.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.4 1.2 15.2 5 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.2 1.2 15.2 4.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.2 10.2 15.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.4 9.4 15.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 12 9.6 12.8 10.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 12.8 9.4 13.6 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.4 4.4 13.4 5 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 12.6 1.2 13.4 5 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.4 1.2 10.2 5 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 12.6 11.6 13.4 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.4 10.8 10.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.4 11.6 13.4 12.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 1.2 6 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 10.8 6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 4.6 4.4 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 1.2 4.4 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 1.2 1.2 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 10.8 4.4 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 10.8 1.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 10.8 4.4 11.4 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal2 ;
+         RECT ITERATE 5.2 10.8 6 11.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.4 4.4 6 11.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 10.8 21.6 11.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 20.8 10.6 21.6 11.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 12 9.6 12.8 11.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 4.4 6 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.4 9.4 15.2 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.6 4.2 15.2 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 19.4 7.8 20.2 8.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.6 7.8 20.2 8.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.4 4.2 15.2 5 DO 1 BY 1 STEP 0 0 ;
+   END
+END FAX1
+
+MACRO HAX1
+   CLASS CORE ;
+   FOREIGN HAX1 ;
+   ORIGIN 0 0 ;
+   SIZE 16 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN YC
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 5.2 8.4 6 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4.6 1.2 5.4 4 DO 1 BY 1 STEP 0 0 ;
+         LAYER metal2 ;
+             RECT ITERATE 5.4 3.2 6 9.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 8.4 6 9.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4.6 3.2 6 4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END YC
+
+   PIN YS
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 13.4 4 14 14.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 14.2 1.2 15 3.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 13.4 13.6 15 14.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 14.4 1.2 15 4.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 13.4 4 15 4.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 14.4 13.6 15 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 14.2 14.8 15 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 13.2 10.6 14 11.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END YS
+
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.8 5.8 1.6 6.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 6 9 6.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 8.4 6.6 10.8 7.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 10 6.6 10.8 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 6 1.2 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 8.6 2.8 9.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.4 7.2 3.2 8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.4 7.2 7.8 7.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 7.2 7.8 9.2 8.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 8.4 7.8 9.2 8.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.2 8 3 8.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 6.2 -0.6 7 5 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 12.6 -0.6 13.4 3.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 16.4 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 -0.6 1.2 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 6.8 14.8 7.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 11 10.8 11.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 12.6 14.8 13.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 16.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 15.2 2.8 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 8.4 10.8 9.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.6 9.6 9.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.6 9.6 12 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.4 5.4 12 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.4 5.4 12.6 6.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.6 5.4 12.6 6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.6 2.4 10.2 6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.4 2.4 10.2 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 7.8 1.2 8.6 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11 1.2 11.8 4.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 7.8 1.2 11.8 1.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.8 4.6 5.6 5.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3 1.2 3.8 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 14 4.4 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.8 8.4 4.4 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 14.8 1.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 14 1.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 14 4.4 14.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.8 8.4 4.6 9.2 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal2 ;
+         RECT ITERATE 3.8 8.4 4.6 9.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.8 4.6 4.4 9.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.8 4.6 4.6 5.4 DO 1 BY 1 STEP 0 0 ;
+   END
+END HAX1
+
+MACRO INVX1
+   CLASS CORE ;
+   FOREIGN INVX1 ;
+   ORIGIN 0 0 ;
+   SIZE 3.2 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 3.8 1.2 5.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 -0.6 3.6 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 -0.6 1.2 3.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 1.2 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 19.4 3.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 14.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+END INVX1
+
+MACRO INVX2
+   CLASS CORE ;
+   FOREIGN INVX2 ;
+   ORIGIN 0 0 ;
+   SIZE 3.2 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 5.8 1.2 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 -0.6 3.6 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 -0.6 1.2 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 1.2 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 19.4 3.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 10.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+END INVX2
+
+MACRO INVX4
+   CLASS CORE ;
+   FOREIGN INVX4 ;
+   ORIGIN 0 0 ;
+   SIZE 4.8 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 5.8 1.2 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 -0.6 4.4 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 5.2 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 -0.6 1.2 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 1.2 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 10.8 4.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 5.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 10.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+END INVX4
+
+MACRO INVX8
+   CLASS CORE ;
+   FOREIGN INVX8 ;
+   ORIGIN 0 0 ;
+   SIZE 8 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 5.8 1.2 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 -0.6 4.4 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 6.8 -0.6 7.6 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 8.4 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 -0.6 1.2 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 9.4 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 5.8 6 6.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 9.4 6 10.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 1.2 6 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 1.2 2.8 6.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 10.8 4.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 6.8 10.8 7.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 8.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 10.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+END INVX8
+
+MACRO NAND2X1
+   CLASS CORE ;
+   FOREIGN NAND2X1 ;
+   ORIGIN 0 0 ;
+   SIZE 4.8 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 5.8 1.2 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 10.6 4.4 12.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 -0.6 5.2 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 -0.6 1.2 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3 1.2 3.8 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 4.6 3.8 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 4.6 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 14.8 4.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 5.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 14.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+END NAND2X1
+
+MACRO NAND3X1
+   CLASS CORE ;
+   FOREIGN NAND3X1 ;
+   ORIGIN 0 0 ;
+   SIZE 6.4 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 9.8 1.2 11.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 8.6 3.6 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN C
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 11.8 4.4 13.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END C
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 -0.6 6.8 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 -0.6 1.2 7.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 14.8 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4 1.2 4.8 7.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4.2 6.8 5.8 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.2 14 5.8 14.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 6.8 5.8 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 10.6 6 11.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 14.8 6 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.2 14 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 15.2 4.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 6.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 14.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+END NAND3X1
+
+MACRO NOR2X1
+   CLASS CORE ;
+   FOREIGN NOR2X1 ;
+   ORIGIN 0 0 ;
+   SIZE 4.8 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 3.8 1.2 5.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 8.6 4.4 10.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 -0.6 4.4 3.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 5.2 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 -0.6 1.2 3.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 6.6 2.8 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.2 1.2 2.8 11.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 10.8 3.8 11.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3 10.8 3.8 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 1.2 2.8 3.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 19.4 5.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 10.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+END NOR2X1
+
+MACRO OAI21X1
+   CLASS CORE ;
+   FOREIGN OAI21X1 ;
+   ORIGIN 0 0 ;
+   SIZE 6.4 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 1.2 6.2 2 7.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 6.6 1.2 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 7.8 2.8 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN C
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 4.4 12.6 5.2 13.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 10.6 6 11.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4.6 10.8 5.2 13.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END C
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 -0.6 6.8 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 -0.6 2.8 4.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.4 6.6 4 11.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 1.2 5.8 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 1.2 6 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.4 6.6 6 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3 10.8 3.8 18.8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 4.6 14.8 5.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 6.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 10.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 0.6 5 4.2 5.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 1.2 4.4 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 1.2 1.2 5.2 DO 1 BY 1 STEP 0 0 ;
+   END
+END OAI21X1
+
+MACRO OAI22X1
+   CLASS CORE ;
+   FOREIGN OAI22X1 ;
+   ORIGIN 0 0 ;
+   SIZE 8 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 1.2 6.2 2 7.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 6.6 1.2 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 7.8 2.8 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN C
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 6.8 6.6 7.6 8.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END C
+
+   PIN D
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 5.2 7.8 6 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END D
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 -0.6 8.4 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 -0.6 2.8 4.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 6.6 4.4 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3 10.8 5 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 2.4 6 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.4 2.4 6 7.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 6.6 6 7.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 6.6 4.2 18.8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 6.8 10.8 7.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 8.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 10.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 0.6 5 4.2 5.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 6.8 1.2 7.6 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 1.2 4.4 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 1.2 1.2 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 1.2 7.6 1.8 DO 1 BY 1 STEP 0 0 ;
+   END
+END OAI22X1
+
+MACRO OR2X1
+   CLASS CORE ;
+   FOREIGN OR2X1 ;
+   ORIGIN 0 0 ;
+   SIZE 6.4 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 3.8 1.2 5.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2.2 5.8 3.6 6.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 6.6 2.8 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 -0.6 4.4 3.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 6.8 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 -0.6 1.2 3.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 5.2 8.6 6 9.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4.8 14.2 6 14.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4.6 14.8 5.4 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.4 1.2 6 14.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 1.2 6 3.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 19.4 6.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3 10.8 3.8 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 0.4 9.6 1.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 9.6 4.6 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.8 9.4 4.6 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.8 7.2 4.4 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4.2 4.2 4.8 7.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.2 4.2 4.8 4.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.2 1.2 2.8 4.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 1.2 2.8 3.2 DO 1 BY 1 STEP 0 0 ;
+   END
+END OR2X1
+
+MACRO OR2X2
+   CLASS CORE ;
+   FOREIGN OR2X2 ;
+   ORIGIN 0 0 ;
+   SIZE 6.4 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 3.8 1.2 5.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2.4 7.4 3.2 8.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 6.6 3 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 -0.6 4.4 4.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 6.8 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 -0.6 1.2 3.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 5.2 8.6 6 9.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4.6 10.8 5.4 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.4 1.2 6 11.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 1.2 6 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE -0.4 19.4 6.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3 10.8 3.8 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 0.4 9.6 1.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 9.6 4.4 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4 5.4 4.6 9.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.8 9 4.6 9.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.2 5.4 4.6 6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.2 1.2 2.8 6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 1.2 2.8 3.2 DO 1 BY 1 STEP 0 0 ;
+   END
+END OR2X2
+
+MACRO TBUFX1
+   CLASS CORE ;
+   FOREIGN TBUFX1 ;
+   ORIGIN 0 0 ;
+   SIZE 8 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 6 6.6 7.6 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN EN
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 12.6 2 13.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END EN
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 6.4 -0.6 7.2 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 8.4 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 -0.6 1.2 3.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 8.6 4.6 9.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4 1.2 4.6 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.8 10.8 4.6 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.8 1.2 4.6 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 6.4 10.8 7.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 8.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 14.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 2 14.8 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.6 10 3.2 15.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.4 7.4 3 10.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.6 2.4 3.2 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.6 6.6 3.4 7.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 1.2 2.8 3.2 DO 1 BY 1 STEP 0 0 ;
+   END
+END TBUFX1
+
+MACRO TBUFX2
+   CLASS CORE ;
+   FOREIGN TBUFX2 ;
+   ORIGIN 0 0 ;
+   SIZE 11.2 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 9 6.6 10.8 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN EN
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 8.6 1.2 10.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 5.8 1.4 6.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 5.8 1 10.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END EN
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 8.4 -0.6 9.2 4.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 11.6 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 -0.6 1.2 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 5.2 2.4 6 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 8.6 6 9.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 10.8 6 17.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 2.4 5.8 17.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 8.4 12.2 9.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 11.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 10.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 6.8 5.2 10.8 5.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10.2 1.2 10.8 5.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 1.2 4.4 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 6.8 1.2 7.6 5.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10 1.2 10.8 4.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 1.2 7.6 1.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10 10.8 10.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 18.2 7.6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 6.8 10.8 7.6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 10.8 4.4 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 6.8 10.8 10.8 11.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 10.8 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 1.2 2.6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 8.2 2.8 9 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 1.2 2.8 5.2 DO 1 BY 1 STEP 0 0 ;
+   END
+END TBUFX2
+
+MACRO XOR2X1
+   CLASS CORE ;
+   FOREIGN XOR2X1 ;
+   ORIGIN 0 0 ;
+   SIZE 11.2 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 6.8 2.6 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 7 4.8 7.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4 7 4.8 7.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 6.6 2 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 9.2 6.6 10.8 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 1.2 3 4.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 8.2 -0.6 9.2 4.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 11.6 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.2 -0.6 3 4.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 4.8 1.2 6.4 4.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.4 6.8 6 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.8 1.2 6.4 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4.8 10.8 6.4 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.2 8.6 6 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2.2 12.2 3 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 8.2 12.2 9.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 11.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 12.2 3 18.8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 8.4 5.2 9.2 6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 5.2 10.8 5.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10 1.2 10.8 5.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10 10.8 10.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 10.8 9.2 11.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 10.8 10.8 11.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 7.2 6.6 8 7.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 7.2 5.4 7.8 7.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 7 5.4 7.8 6.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 5.4 5.2 6.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.4 8.8 4.2 9.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.6 8.6 3.4 9.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.2 5.2 3 6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 5.2 3 5.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 1.2 1.2 5.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 10.8 1.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.2 10.8 3 11.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 10.8 3 11.4 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal2 ;
+         RECT ITERATE 8.4 10.8 9.2 11.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.6 5.2 9.2 11.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.4 8.8 4.2 9.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 6.8 4.2 9.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 6.8 9.2 7.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 5.2 9.2 6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.2 10.8 3 11.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.2 5.2 2.8 11.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 7 5.4 7.8 6.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 5.4 4.4 6.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.2 5.4 7.8 6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.2 5.2 3 6 DO 1 BY 1 STEP 0 0 ;
+   END
+END XOR2X1
+
+MACRO MUX2X1
+   CLASS CORE ;
+   FOREIGN MUX2X1 ;
+   ORIGIN 0 0 ;
+   SIZE 9.6 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 6.8 8.6 7.6 10.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 7.8 2.8 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN S
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 7.8 1.2 9.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END S
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 7.2 -0.6 8 6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 10 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 -0.6 2.8 5.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 4.6 11.2 5.4 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.4 5 6.2 6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.6 5 6.2 11.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4.6 11.2 6.2 11.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.6 6.6 7.6 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4.6 2 5.4 5.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 7.2 10.8 8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 10 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 11.2 2.8 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 0.4 14 1.2 18 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 10 1 18 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 10 4.2 10.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 6.2 4.2 10.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 7.2 5 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3.6 6.2 4.6 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 6.2 4.6 6.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 2 1 6.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 2 1.2 4 DO 1 BY 1 STEP 0 0 ;
+   END
+END MUX2X1
+
+MACRO XNOR2X1
+   CLASS CORE ;
+   FOREIGN XNOR2X1 ;
+   ORIGIN 0 0 ;
+   SIZE 11.2 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.2 5.6 3.8 7.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 6.6 3.8 7.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 5.4 5.2 6.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 7 5.4 7.8 6.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 7.2 5.4 7.8 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 7.2 6.6 8 7.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 6.6 2 7.4 DO 1 BY 1 STEP 0 0 ;
+         LAYER metal2 ;
+             RECT ITERATE 3.6 5.4 7.8 6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 7 5.4 7.8 6.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 5.4 4.4 6.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN B
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 9.2 6.6 10.8 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END B
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2 1.2 3 4.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 8.2 -0.6 9.2 4.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 11.6 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.2 -0.6 3 4.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 5.8 1.2 6.4 8.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4.8 10.8 6.4 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 6.2 8.2 6.8 11.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 6.2 8.6 7.6 9.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 4.8 1.2 6.4 4.8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 2.2 12.2 3 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 8.2 12.2 9.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 11.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 12.2 3 18.8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 8.4 5.2 9.2 6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 5.2 10.8 5.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10 1.2 10.8 5.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10 10.8 10.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 10.8 9.2 11.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 10.8 10.8 11.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 10.8 1.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 1.8 10.8 2.6 11.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 9.6 2.6 11.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 10.8 2.6 11.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 9.6 5.4 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4.6 9.4 5.4 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.4 8.2 3.2 9 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.4 8.2 5 8.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4.4 6.8 5 8.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4.4 6.8 5.2 7.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 1.8 5.2 2.6 6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 5.2 2.6 5.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 1.2 1.2 5.8 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal2 ;
+         RECT ITERATE 8.4 10.8 9.2 11.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.6 5.2 9.2 11.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4.4 6.8 5.2 7.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4.4 6.8 9.2 7.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 5.2 9.2 6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 1.8 10.8 2.6 11.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 1.8 5.2 2.4 11.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 1.8 5.2 2.6 6 DO 1 BY 1 STEP 0 0 ;
+   END
+END XNOR2X1
+
+MACRO LATCH
+   CLASS CORE ;
+   FOREIGN LATCH ;
+   ORIGIN 0 0 ;
+   SIZE 11.2 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN Q
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 10 1.2 10.8 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 7.4 7.6 10.8 8.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Q
+
+   PIN CLK
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 4.4 4.6 5.2 7.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 1.2 6.6 6.6 7.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 5.8 6.6 6.6 8.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 1.2 6.6 2.8 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END CLK
+
+   PIN D
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 9.4 4.4 11.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.6 9.4 4.4 10.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END D
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 8.4 -0.6 9.2 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 11.6 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 -0.6 2.8 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 8.4 10.8 9.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 11.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2 10.8 2.8 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 5.2 9.4 9.4 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 1.2 6 4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5 1.2 6.2 3.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5 14.8 6.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 14 6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4.2 8 5 8.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 8 1.2 8.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 8 5 8.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 1.2 1.2 6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 9.8 1.2 18.8 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal2 ;
+         RECT ITERATE 5.2 3.2 6 14.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 5.2 1.2 10.8 DO 1 BY 1 STEP 0 0 ;
+   END
+END LATCH
+
+MACRO DFFSR
+   CLASS CORE ;
+   FOREIGN DFFSR ;
+   ORIGIN 0 0 ;
+   SIZE 35.2 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN Q
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 32.4 10.2 33.2 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 32.6 5 33.4 11 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 32.4 1.2 33.2 5.8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Q
+
+   PIN CLK
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 16.4 4.6 18 5.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END CLK
+
+   PIN R
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 6.8 8.6 7.6 9.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 24.4 8.4 25.2 9.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 1.8 9 25.2 9.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 1.8 8.8 2.6 9.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END R
+
+   PIN S
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 7 10.2 7.8 11 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 29.8 10 30.6 10.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 10.2 30.6 10.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 10.2 4.4 11.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END S
+
+   PIN D
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 13.2 5.8 14 7.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END D
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 13.2 -0.6 14 3.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 16.4 -0.6 17.2 3.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 27.6 -0.6 28.4 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 34 -0.6 34.8 3.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 35.6 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 3.6 -0.6 4.4 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 14.8 4.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 6.8 14.8 7.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 13.2 14.8 14 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 16.4 14.8 17.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 24.4 14.8 25.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 27.6 14.8 28.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 30.8 14.8 31.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 34 14.8 34.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 35.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 14.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 29.2 13.6 30 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 29.2 13.6 31.8 14.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 31.2 9 31.8 14.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 22.8 11.4 23.6 12.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 22.8 11.4 31.8 12 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 31.4 6.4 32 9.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 30.8 1.2 31.6 7 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 27 7.6 30.8 8.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 27 5.8 27.8 8.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 26 5.8 27.8 6.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 26 4.4 26.8 6.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 24.4 4.4 26.8 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 24.4 1.2 25.2 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 26 12.6 26.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 26 12.6 28.6 13.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 21.2 13.4 25.4 14.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 22.8 1.2 23.6 4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 22.8 16 23.6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 21.2 1.2 22 4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 21.2 4.6 22 8.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 21 4.6 22 5.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 21.2 16 22 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 19.6 1.2 20.4 4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 13.4 6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3 13.4 7.2 14.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.8 11.4 12.4 13.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 6.6 12.8 12.4 13.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3 12.2 3.6 14.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 12.2 3.6 13 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 19.6 11.4 20.4 12.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.8 11.4 20.4 12 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 19.6 16 20.4 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 18.4 6.2 19.2 7 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.8 6.2 19.2 6.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.8 6 15.6 6.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 18 1.2 18.8 4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 15.6 7.6 18.8 8.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 18 12.6 18.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.8 1.2 15.6 4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.8 7.6 11.8 8.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11 4.6 11.8 8.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.8 4.6 15.6 5.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11 4.6 15.6 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13 12.6 15.6 13.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.8 14 15.6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.6 1.2 12.4 4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.6 14 12.4 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10 1.2 10.8 4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4.6 12 6 12.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10 11.4 10.8 12.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.4 11.6 10.8 12.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10 16 10.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 1.2 9.2 4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 14.8 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 1.8 13.6 2.4 15.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 13.6 2.4 14.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 1.2 1.2 14.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.4 7.2 9.2 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 16 9.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.8 5.8 5.8 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5 4.4 5.8 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5 4.4 7.6 5.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 6.8 1.2 7.6 5.2 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal2 ;
+         RECT ITERATE 22.8 3.2 23.6 16.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 21.2 3.2 22 16.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 19.6 3.2 20.4 16.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 18 3.2 18.8 14.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.8 3.2 15.6 14.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.6 3.2 12.4 14.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10 3.2 10.8 16.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 3.2 9.2 16.8 DO 1 BY 1 STEP 0 0 ;
+   END
+END DFFSR
+
+MACRO CLKBUF1
+   CLASS CORE ;
+   FOREIGN CLKBUF1 ;
+   ORIGIN 0 0 ;
+   SIZE 14.4 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 7.2 2.2 8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 6.6 1.2 8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 -0.6 4.4 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 6.8 -0.6 7.6 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 10 -0.6 10.8 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 13.2 -0.6 14 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 14.8 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 -0.6 1.2 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 11.6 9.4 12.4 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 11.6 5.8 14 6.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 13.2 5.8 14 10.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 11.6 9.4 14 10.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 11.6 1.2 12.4 6.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 10.8 4.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 6.8 10.8 7.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 10 10.8 10.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 13.2 10.8 14 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 14.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 10.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 8.4 9.4 9.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 9.4 10.6 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.8 5.8 10.6 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.8 7.2 12.4 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 5.8 10.6 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 1.2 9.2 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 9.4 6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 9.4 7.4 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 6.6 5.8 7.4 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 6.6 7.2 9 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 5.8 7.4 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 1.2 6 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 9.4 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 9.4 3.8 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3 5.8 3.8 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3 7.2 5.6 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 5.8 3.8 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 1.2 2.8 6.6 DO 1 BY 1 STEP 0 0 ;
+   END
+END CLKBUF1
+
+MACRO CLKBUF2
+   CLASS CORE ;
+   FOREIGN CLKBUF2 ;
+   ORIGIN 0 0 ;
+   SIZE 20.8 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 7.2 2.2 8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 6.6 1.2 8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 -0.6 4.4 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 6.8 -0.6 7.6 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 10 -0.6 10.8 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 13.2 -0.6 14 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 16.4 -0.6 17.2 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 19.6 -0.6 20.4 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 21.2 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 -0.6 1.2 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 18 9.4 18.8 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 18 5.8 20.4 6.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 19.6 5.8 20.4 10.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 18 9.4 20.4 10.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 18 1.2 18.8 6.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 10.8 4.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 6.8 10.8 7.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 10 10.8 10.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 13.2 10.8 14 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 16.4 10.8 17.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 19.6 10.8 20.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 21.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 10.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 14.8 9.4 15.6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.8 9.4 16.6 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 15.8 5.8 16.6 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 15.8 7.2 18.4 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.8 5.8 16.6 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.8 1.2 15.6 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.6 9.4 12.4 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.6 9.4 14 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.2 5.8 14 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.2 7.2 15 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.6 5.8 14 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.6 1.2 12.4 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 9.4 9.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 9.4 10.6 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.8 5.8 10.6 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.8 7.2 12.4 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 5.8 10.6 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 1.2 9.2 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 9.4 6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 9.4 7.4 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 6.6 5.8 7.4 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 6.6 7.2 9 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 5.8 7.4 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 1.2 6 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 9.4 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 9.4 3.8 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3 5.8 3.8 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3 7.2 5.6 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 5.8 3.8 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 1.2 2.8 6.6 DO 1 BY 1 STEP 0 0 ;
+   END
+END CLKBUF2
+
+MACRO CLKBUF3
+   CLASS CORE ;
+   FOREIGN CLKBUF3 ;
+   ORIGIN 0 0 ;
+   SIZE 27.2 BY 20 ;
+   SYMMETRY X Y ;
+   SITE core ;
+   PIN A
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 0.4 7.2 2.2 8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 6.6 1.2 8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END A
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 -0.6 4.4 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 6.8 -0.6 7.6 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 10 -0.6 10.8 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 13.2 -0.6 14 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 16.4 -0.6 17.2 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 19.6 -0.6 20.4 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 22.8 -0.6 23.6 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 26 -0.6 26.8 5.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 -0.6 27.6 0.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 -0.6 1.2 5.2 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   PIN Y
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 24.4 9.4 25.2 18.8 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 24.4 5.8 26.8 6.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 26 5.8 26.8 10.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 24.4 9.4 26.8 10.2 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 24.4 1.2 25.2 6.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END Y
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      USE ABUTMENT ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 3.6 10.8 4.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 6.8 10.8 7.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 10 10.8 10.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 13.2 10.8 14 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 16.4 10.8 17.2 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 19.6 10.8 20.4 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 22.8 10.8 23.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 26 10.8 26.8 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE -0.4 19.4 27.6 20.6 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 0.4 10.8 1.2 20.6 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 21.2 9.4 22 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 21.2 9.4 23.4 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 22.6 5.8 23.4 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 22.6 7.2 25.2 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 21.2 5.8 23.4 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 21.2 1.2 22 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 18 9.4 18.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 18 9.4 20.2 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 19.4 5.8 20.2 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 19.4 7.2 21.8 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 18 5.8 20.2 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 18 1.2 18.8 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.8 9.4 15.6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.8 9.4 16.6 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 15.8 5.8 16.6 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 15.8 7.2 18.4 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.8 5.8 16.6 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 14.8 1.2 15.6 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.6 9.4 12.4 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.6 9.4 14 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.2 5.8 14 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 13.2 7.2 15 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.6 5.8 14 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 11.6 1.2 12.4 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 9.4 9.2 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 9.4 10.6 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.8 5.8 10.6 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 9.8 7.2 12.4 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 5.8 10.6 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 8.4 1.2 9.2 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 9.4 6 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 9.4 7.4 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 6.6 5.8 7.4 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 6.6 7.2 9 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 5.8 7.4 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5.2 1.2 6 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 9.4 2.8 18.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 9.4 3.8 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3 5.8 3.8 10.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 3 7.2 5.6 8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 5.8 3.8 6.6 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2 1.2 2.8 6.6 DO 1 BY 1 STEP 0 0 ;
+   END
+END CLKBUF3
+
+MACRO PADFC
+   CLASS ENDCAP TOPRIGHT ;
+   FOREIGN PADFC ;
+   ORIGIN 0 0 ;
+   SIZE 300 BY 300 ;
+   SYMMETRY X Y 90 ;
+   SITE corner ;
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 0.6 0.6 299.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 104 300 202 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 202.2 0 300 97.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 98 0 195.8 299.4 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal2 ;
+         RECT ITERATE 0.6 0.6 299.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 129.6 300 202 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 104 300 125.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 76.8 300 97.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 227.6 0 300 72.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 202.2 0 223.2 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 174.8 0 195.8 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 98 0 170.4 299.4 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal3 ;
+         RECT ITERATE 0.6 0.6 299.4 299.4 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal4 ;
+         RECT ITERATE 0.6 0.6 299.4 299.4 DO 1 BY 1 STEP 0 0 ;
+   END
+END PADFC
+
+MACRO PADGND
+   CLASS PAD ;
+   FOREIGN PADGND ;
+   ORIGIN 0 0 ;
+   SIZE 90 BY 300 ;
+   SYMMETRY 90 ;
+   SITE IO ;
+   PIN YPAD
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal4 ;
+             RECT ITERATE 37.4 254.8 51.2 269.8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END YPAD
+
+   PIN gnd
+      DIRECTION INOUT ;
+      USE GROUND ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 34.8 0 54.8 0.8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END gnd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 6 1.8 84 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 1.8 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 104.2 90 202 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 55.6 0 90 97.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 0 34.2 97.8 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal2 ;
+         RECT ITERATE 6 0 84 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 129.6 90 202 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 104.2 90 125.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 76.8 90 97.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 76.6 89.6 97.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 0 90 72.4 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal3 ;
+         RECT ITERATE 0.6 0.6 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal4 ;
+         RECT ITERATE 53 0.6 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0.6 35.6 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 271.6 89.4 299 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0.6 89.4 253 DO 1 BY 1 STEP 0 0 ;
+   END
+END PADGND
+
+MACRO PADVDD
+   CLASS PAD ;
+   FOREIGN PADVDD ;
+   ORIGIN 0 0 ;
+   SIZE 90 BY 300 ;
+   SYMMETRY 90 ;
+   SITE IO ;
+   PIN YPAD
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal4 ;
+             RECT ITERATE 42.2 266 44.4 268.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END YPAD
+
+   PIN vdd
+      DIRECTION INOUT ;
+      USE POWER ;
+      PORT 
+         LAYER metal1 ;
+             RECT ITERATE 35.4 0 54.6 0.8 DO 1 BY 1 STEP 0 0 ;
+      END
+   END vdd
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 6 1.8 84 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 1.8 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 104.2 90 202 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 55.6 0 90 97.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 0 34.4 97.8 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal2 ;
+         RECT ITERATE 6 1.8 84 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 1.8 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 129.6 90 202 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 104.2 90 125.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 76.8 90 97.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 55.6 0 90 72.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 35.4 0 54.6 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 0 34.4 72.4 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal3 ;
+         RECT ITERATE 0.6 0.6 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal4 ;
+         RECT ITERATE 46.2 0.6 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0.6 40.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 270.2 89.4 299 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0.6 89.4 264.2 DO 1 BY 1 STEP 0 0 ;
+   END
+END PADVDD
+
+MACRO PADINC
+   CLASS PAD ;
+   FOREIGN PADINC ;
+   ORIGIN 0 0 ;
+   SIZE 90 BY 300 ;
+   SYMMETRY 90 ;
+   SITE IO ;
+   PIN YPAD
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal4 ;
+             RECT ITERATE 42.2 266 44.4 268.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END YPAD
+
+   PIN DI
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal2 ;
+             RECT ITERATE 81.6 0 83.4 0.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 82.2 -0.4 83 0.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END DI
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 6 0 84 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 104.2 90 202 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 0 90 97.8 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal2 ;
+         RECT ITERATE 6 1.4 84 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 1.4 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 129.6 90 202 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 104.2 90 125.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 76.8 90 97.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 84.2 0 90 72.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 0.6 80.8 72.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 79 0 80.8 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 55.6 0 78.2 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 35.4 0 54.6 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 0 34.4 72.4 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal3 ;
+         RECT ITERATE 0.6 1.4 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 84.4 0.6 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0.6 80.6 299.4 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal4 ;
+         RECT ITERATE 46.2 0.6 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0.6 40.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 270.2 89.4 299 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0.6 89.4 264.2 DO 1 BY 1 STEP 0 0 ;
+   END
+END PADINC
+
+MACRO PADINOUT
+   CLASS PAD ;
+   FOREIGN PADINOUT ;
+   ORIGIN 0 0 ;
+   SIZE 90 BY 300 ;
+   SYMMETRY 90 ;
+   SITE IO ;
+   PIN YPAD
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal4 ;
+             RECT ITERATE 42.2 266 44.4 268.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END YPAD
+
+   PIN DO
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal2 ;
+             RECT ITERATE 7.6 0 9.4 0.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 8.2 -0.4 9 0.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END DO
+
+   PIN DI
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal2 ;
+             RECT ITERATE 81.6 0 83.4 0.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 82.2 -0.4 83 0.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END DI
+
+   PIN OEN
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal2 ;
+             RECT ITERATE 2.2 0 4 0.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 2.6 -0.4 3.4 0.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END OEN
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 6 0 84 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 104.2 90 202 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 0 90 97.8 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal2 ;
+         RECT ITERATE 6 1.4 84 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 1.4 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 129.6 90 202 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 104.2 90 125.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 76.8 90 97.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 84.2 0 90 72.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10.2 0.6 80.8 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 79 0 80.8 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4.8 0 6.8 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 0 1.4 72.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 55.6 0 78.2 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 35.4 0 54.6 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10.2 0 34.4 300 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal3 ;
+         RECT ITERATE 0.6 1.4 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 84.4 0.6 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10.4 0.6 80.6 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 5 0.6 6.6 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0.6 1.2 299.4 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal4 ;
+         RECT ITERATE 46.2 0.6 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0.6 40.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 270.2 89.4 299 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0.6 89.4 264.2 DO 1 BY 1 STEP 0 0 ;
+   END
+END PADINOUT
+
+MACRO PADNC
+   CLASS PAD ;
+   FOREIGN PADNC ;
+   ORIGIN 0 0 ;
+   SIZE 90 BY 300 ;
+   SYMMETRY 90 ;
+   SITE IO ;
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 0.6 0 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 104.2 90 202 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 0 90 97.8 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal2 ;
+         RECT ITERATE 0.6 0 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 129.6 90 202 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 104.2 90 125.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 76.8 90 97.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 0 90 72.4 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal3 ;
+         RECT ITERATE 0.6 0.6 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal4 ;
+         RECT ITERATE 0.6 0.6 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+   END
+END PADNC
+
+MACRO PADOUT
+   CLASS PAD ;
+   FOREIGN PADOUT ;
+   ORIGIN 0 0 ;
+   SIZE 90 BY 300 ;
+   SYMMETRY 90 ;
+   SITE IO ;
+   PIN YPAD
+      DIRECTION OUTPUT TRISTATE ;
+      PORT 
+         LAYER metal4 ;
+             RECT ITERATE 42.2 266 44.4 268.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END YPAD
+
+   PIN DO
+      DIRECTION INPUT ;
+      PORT 
+         LAYER metal2 ;
+             RECT ITERATE 7.6 0 9.4 0.4 DO 1 BY 1 STEP 0 0 ;
+            RECT ITERATE 8.2 -0.4 9 0.4 DO 1 BY 1 STEP 0 0 ;
+      END
+   END DO
+
+   OBS
+      LAYER metal1 ;
+         RECT ITERATE 6 0 84 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 104.2 90 202 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 0 90 97.8 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal2 ;
+         RECT ITERATE 6 1.4 84 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 1.4 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 129.6 90 202 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 104.2 90 125.2 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 76.8 90 97.8 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 84.2 0 90 72.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10.2 0.6 90 72.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 0.6 6.8 72.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 81.6 0 83.4 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 79 0 80.8 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 55.6 0 78.2 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 35.4 0 54.6 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10.2 0 34.4 300 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 4.8 0 6.8 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 2.2 0 4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0 0 1.4 72.4 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal3 ;
+         RECT ITERATE 0.6 1.4 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 10.4 0.6 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0.6 6.6 299.4 DO 1 BY 1 STEP 0 0 ;
+      LAYER metal4 ;
+         RECT ITERATE 46.2 0.6 89.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0.6 40.4 299.4 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 270.2 89.4 299 DO 1 BY 1 STEP 0 0 ;
+         RECT ITERATE 0.6 0.6 89.4 264.2 DO 1 BY 1 STEP 0 0 ;
+   END
+END PADOUT
+
+END LIBRARY

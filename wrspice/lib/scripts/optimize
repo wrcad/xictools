@@ -1,0 +1,87 @@
+jspice3 optimization routine: optimize
+.control
+#
+# Main loop for the optimizer
+# 
+# Many thanks to Clark Hamilton of NIST (Boulder, CO)
+# who developed the logic.
+#
+# External vectors:
+#   upper[], lower[], flags[], margbest[], better
+#
+# External system vectors:
+#   value[]
+#
+# Internal vectors:
+#   o_runnum, o_cnt, o_delta
+#
+# value[] and flags[] are defined in circuit file header
+# value[]: current set of center values for circuit
+# flags[]: set to 1 for the indices of value[] being optimized
+
+unlet upper lower margbest flags better
+let upper[19] = 0
+let lower[19] = 0
+let margbest[2] = 0
+let better = 0
+rusage space
+source $argv[1]
+rusage space
+echo optimizing: $argv[1]
+margins
+rusage space
+
+let o_runnum = 1
+while (o_runnum < 2)
+    echo optimization pass $&o_runnum
+    let o_cnt = 0
+    while (o_cnt < 3)
+        if (flags[o_cnt] = 0)
+            let o_cnt = o_cnt + 1
+            continue
+        endif
+        let o_delta = upper[o_cnt] - lower[o_cnt]
+        let o_delta = o_delta / (value[o_cnt] * 5 * o_runnum)
+        let value[o_cnt] = value[o_cnt] + o_delta
+        margins
+        merit
+rusage space
+echo 1 n=$&o_cnt val=$&value[$&o_cnt] better=$&better
+        if (better <> 0)
+            while (better <> 0)
+                let value[o_cnt] = value[o_cnt] + o_delta
+                margins
+                merit
+rusage space
+echo 2 n=$&o_cnt val=$&value[$&o_cnt] better=$&better
+            end
+            let value[o_cnt] = value[o_cnt] - o_delta
+        else
+            let value[o_cnt] = value[o_cnt] - 2*o_delta
+            margins
+            merit
+rusage space
+echo 3 n=$&o_cnt val=$&value[$&o_cnt] better=$&better
+            if (better <> 0)
+                while (better <> 0)
+                    let value[o_cnt] = value[o_cnt] - o_delta
+                    margins
+                    merit
+rusage space
+echo 4 n=$&o_cnt val=$&value[$&o_cnt] better=$&better
+                endif
+                let value[o_cnt] = value[o_cnt] + o_delta
+            else
+                let value[o_cnt] = value[o_cnt] + o_delta
+            endif
+        endif
+rusage space
+echo done n=$&o_cnt val=$&value[$&o_cnt] up=$&upper[$&o_cnt] \
+low=$&lower[$&o_cnt]
+        let o_cnt = o_cnt + 1
+    end
+    let o_runnum = o_runnum + 1
+end
+                
+unlet o_cnt o_runnum o_delta
+.endc

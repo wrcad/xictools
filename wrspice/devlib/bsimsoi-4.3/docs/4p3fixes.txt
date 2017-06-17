@@ -1,0 +1,749 @@
+
+31st Dec, 2009
+=======
+Bugs/Fixes for bsimsoi4.2 incorporated into bsimsoi4.3
+----------------------------------------------------------------------------------------------
+
+Following forum members participating in the BSIMSOI4.2 bugfixing and code improvement are acknowledged:
+
+Geoffrey Coram (ADI), Richard Poore (Agilent), Samuel Mertens (Ansoft),  
+Jushan Xie (Cadence), Cal Bittner (IBM), Larry Wagner (IBM), Joddy Wang (Synopsys) 
+
+==============================================================================================
+
+Notes: All below line numbers refer positions within the original UCB 09/22/2009 source files. 
+ 
+==============================================================================================
+
+1. b4soiacld.c:  Two local variables (gigpg and gigpp) are directly used without initialization in reverse mode. 
+    At line 274, add the following two line 
+      gigpg = here->B4SOIgigpg; 
+      gigpp = here->B4SOIgigpp; 
+ 
+----------------------------------------------------------------------------------------------------      
+All remaining fixes below found in b4soild.c with reference line numbers from BSIMSOIv4.2 09/22/2009 release
+====================================================================================================
+2. line 398 b4soild.c: (add declares)
+   4.2: 
+    double dTheta0_dT, dn_dT, dsqrtPhisExt_dT, dT3zb_dT, dltwzb_dT, dlt1zb_dT, dTheta0zb_dT, dvth0_dT, dDIBL_Sft_dT,dtmp2_dT; /* v4.2 temp deriv */
+   4.3 fix:
+    double dTheta0_dT, dn_dT, dsqrtPhisExt_dT, dT3zb_dT, dltwzb_dT, dlt1zb_dT, dTheta0zb_dT, dDeltvthwzb_dT, dvth0_dT, dDIBL_Sft_dT,dtmp2_dT; /* v4.2 temp deriv */ 
+
+3. little "v" vs. big "V" bug:
+   4.2 (line 2449)
+      dDeltvthwzb_dT = ( T0 * (dvbi_dT - dphi_dT)+ dT0_dT *V0); /* v4.2 bugfix temp deriv */
+   4.3 fix:
+      dDeltVthwzb_dT = ( T0 * (dvbi_dT - dphi_dT)+ dT0_dT *V0); /* v4.2 bugfix temp deriv */
+
+
+4. b4soild.c junction DC swapping: (Synopsys)
+   add new line after line 439: 
+      double nrecf0s, nrecf0d, nrecr0s, nrecr0d, vrec0s, vrec0d, ntuns, ntund, vtun0s,vtun0d;/*bugfix for junction DC swapping */
+   add new lines after line 1398:
+      nrecf0s = pParam->B4SOInrecf0; /* bugfix_snps start for junction DC part*/
+      nrecf0d = pParam->B4SOInrecf0d;
+      nrecr0s = pParam->B4SOInrecr0;
+      nrecr0d = pParam->B4SOInrecr0d;
+      vrec0s  = pParam->B4SOIvrec0;
+      vrec0d  = pParam->B4SOIvrec0d;
+      ntuns   = pParam->B4SOIntun;
+      ntund   = pParam->B4SOIntund;
+      vtun0s  = pParam->B4SOIvtun0;
+      vtun0d  = pParam->B4SOIvtun0d; /* bugfix_snps end for junction DC part*/
+   add new lines after line 1407:
+      nrecf0s = pParam->B4SOInrecf0d; /* bugfix_snps start for junction DC part*/
+      nrecf0d = pParam->B4SOInrecf0;
+      nrecr0s = pParam->B4SOInrecr0d;
+      nrecr0d = pParam->B4SOInrecr0;
+      vrec0s  = pParam->B4SOIvrec0d;
+      vrec0d  = pParam->B4SOIvrec0;
+      ntuns   = pParam->B4SOIntund;
+      ntund   = pParam->B4SOIntun;
+      vtun0s  = pParam->B4SOIvtun0d;
+      vtun0d  = pParam->B4SOIvtun0; /* bugfix_snps end for junction DC part*/
+   add new lines after line 1467:
+            T0 = Ahlis;   /* bugfix_snps */
+	    Ahlis = Ahlid; /* bugfix_snps */
+	    Ahlid = T0;  /* bugfix_snps */
+	
+	    T0 = dAhlis_dT;  /* bugfix_snps */
+	    dAhlis_dT = dAhlid_dT;  /* bugfix_snps */
+	    dAhlid_dT = T0;  /* bugfix_snps */
+   changed lines: 3636,3638,3641,3643,
+                  3658,3662,3668-3670,
+                  3697,3699,3702,3704-3705,
+                  3718,3722,3728-3730,
+                  3972-3973,3977,  
+                  3991-3993,
+                  4004-4005,4009,
+                  4024-4026
+                     
+   
+
+
+   
+5. Abulk discontinuity reported by Cadence:
+   4.2 (line 2652):
+       if (T13 < 0.96) {
+            T14 = 1 / sqrt(1-T13);
+            T10 = 0.5 * T14 / (1-T13);
+            dT14_dVb = T10 * dT13_dVb;
+        } else {
+            T11 = 1.0 / (1.0 - 1.043406 * T13);
+            T14 = (6.00167 - 6.26044 * T13) * T11;
+            T10 = 0.001742 * T11 * T11;
+            dT14_dVb = T10 * dT13_dVb;
+        }
+
+   4.3 fix: 
+       if (T13 < 0.96) {
+            T14 = 1 / sqrt(1-T13);
+            T10 = 0.5 * T14 / (1-T13);
+            dT14_dVb = T10 * dT13_dVb;
+        } else {
+            T11 = 1.0 / (1.0 - 1.0593220339 * T13);
+            T14 = (6.0169491525 - 6.3559322034 * T13) * T11;
+            T10 = 0.0179546 * T11 * T11;
+            dT14_dVb = T10 * dT13_dVb;
+        }
+
+
+
+    
+6.  dT1_dVb, dT1_dVd, and dT1_dT bug: Vgst ==> Vgst - pParam->B4SOIdelvt
+    4.2 lines 5540-5546)
+        dT1_dVb = -dT1_dVg * (dVth_dVb + Vgst / noff * dnoff_dVb)
+                + T1 / noff * dnoff_dVb;
+        dT1_dVd = -dT1_dVg * (dVth_dVd + Vgst / noff * dnoff_dVd)
+                + T1 / noff * dnoff_dVd;
+        T3 = (1.0 / Temp);
+        if (selfheat)
+           dT1_dT = -dT1_dVg * (dVth_dT + Vgst * T3) + T1 * T3;
+ 
+
+    4.3 fix: 
+        dT1_dVb = -dT1_dVg * (dVth_dVb + (Vgst-pParam->B4SOIdelvt) / noff * dnoff_dVb)
+                + T1 / noff * dnoff_dVb;
+        dT1_dVd = -dT1_dVg * (dVth_dVd + (Vgst-pParam->B4SOIdelvt) / noff * dnoff_dVd)
+                + T1 / noff * dnoff_dVd;
+        T3 = (1.0 / Temp);
+        if (selfheat)
+           dT1_dT = -dT1_dVg * (dVth_dT + (Vgst-pParam->B4SOIdelvt) * T3) + T1 * T3;
+
+    (and ..... Vgst ==> Vgst - pParam->B4SOIdelvt - 1.12)
+    4.2 5632-5638)
+        dT1_dVb = -dT1_dVg * (dVth_dVb + Vgst / noff * dnoff_dVb)
+                + T1 / noff * dnoff_dVb;
+        dT1_dVd = -dT1_dVg * (dVth_dVd + Vgst / noff * dnoff_dVd)
+                + T1 / noff * dnoff_dVd;
+        T3 = (1.0 / Temp);
+        if (selfheat)
+           dT1_dT = -dT1_dVg * (dVth_dT + Vgst * T3) + T1 * T3;
+    
+    4.3 fix:
+        dT1_dVb = -dT1_dVg * (dVth_dVb + (Vgst - pParam->B4SOIdelvt - 1.12) / noff * dnoff_dVb)
+                + T1 / noff * dnoff_dVb;
+        dT1_dVd = -dT1_dVg * (dVth_dVd + (Vgst - pParam->B4SOIdelvt - 1.12) / noff * dnoff_dVd)
+                + T1 / noff * dnoff_dVd;
+        T3 = (1.0 / Temp);
+        if (selfheat)
+           dT1_dT = -dT1_dVg * (dVth_dT + (Vgst - pParam->B4SOIdelvt - 1.12) * T3) + T1 * T3;
+
+
+      
+7. Vfbeff bug in dervative T2 variable (missing 25.0 multiplier when agbcp2>0):
+   4.2 line 5737)
+      T2 = -DELTA_3_SOI / T0
+   4.3 fix: 
+      T2 = -25.0*DELTA_3_SOI / T0
+
+   4.2 line 5741)
+      T2 = DELTA_3_SOI2 / T0;
+   4.3 fix:
+      T2 = 25.0*DELTA_3_SOI2 / T0;
+
+   4.2 (line 6214)
+      T2 = -DELTA_3 / T0;
+   4.3 fix:
+      T2 = -25.0*DELTA_3 / T0; 
+   
+   4.2 (line 6218)
+      T2 = DELTA_3 / T0;
+   4.3 fix:
+      T2 = 25.0*DELTA_3 / T0;
+   
+8.qsrc2 and derivatives bug (must restore T12 intermediate variable when agbcp2 > 0)  
+   4.2 line 6680
+    qsrc2 = -CoxWLcen2 * ( (Vgsteff2 - DeltaPhi2) / 2.0 + T02 / 4.0
+            - 0.5 * T02 * T02 / T2);
+
+   4.3 fix: 
+       T12 = Vgsteff2 - DeltaPhi2; /* must restore for derivatives below*/
+       qsrc2 = -CoxWLcen2 * ( (Vgsteff2 - DeltaPhi2) / 2.0 + T02 / 4.0
+            - 0.5 * T02 * T02 / T22);    /* CJB  LFW */
+
+   (and .....)
+   after line 6722 "if" must add new line:
+        T12 = Vgsteff2 - DeltaPhi2; /* must restore for derivatives below*/
+  
+   (and .....)
+   after line 6756, must add 2 new lines:
+        Csd2 = 0.0;     /* CJB  LFW */
+        Csb2 = 0.0;     /* CJB  LFW */
+
+
+9. Restore T12: for qsrc2 (double check)
+   
+   
+   T12 = Vgsteff2 - DeltaPhi2; /* must restore for derivatives below*/
+
+10. New initializations after line 4614:
+      Idsmosfet = 0.0;
+      Ratio = dRatio_dVg = dRatio_dVd = dRatio_dVb = dRatio_dVe = dRatio_dT = 0.0;
+   
+11. Iii derivatives (lines 4956-4958)
+    4.2:
+        dIiibjt_dVd = T0 * Ic *T4
+                     + T0 *Ic *T1*dT4_dVd;
+        dIiibjt_dVb = -T0 * Ic *T4 + T0*Ic*T1*dT4_dVb;
+     
+    4.3 fix:
+         
+         dIiibjt_dVd = T0 * Ic *T4
+                      + T0 *Ic *T1*dT4_dVd + T0 * dIc_dVd * T1 * T4;
+         dIiibjt_dVb = -T0 * Ic *T4 + T0*Ic*T1*dT4_dVb + T0 * dIc_dVb * T1 * T4;  
+    
+
+  
+12. bug in dVgsteff2_dVd: 
+    (line 5441-5444)
+    4.2:
+           T12 = -T02 * (dVth_dVb + (Vgst-Eg-pParam->B4SOIdelvt) / noff * dnoff_dVb)
+               + Vgsteff2 / noff * dnoff_dVb;
+           dVgsteff2_dVd = -T02 * (dVth_dVd + dVth_dVb*dVbseff_dVd + (Vgst - 1.12) / noff * dnoff_dVd)
+               + Vgsteff2 / noff * dnoff_dVd;
+    4.3 fix:
+           T12 = -T02 * (dVth_dVb + (Vgst-1.12-pParam->B4SOIdelvt) / noff * dnoff_dVb)
+               + Vgsteff2 / noff * dnoff_dVb;
+           dVgsteff2_dVd = -T02 * (dVth_dVd + dVth_dVb*dVbseff_dVd + (Vgst-pParam->B4SOIdelvt-1.12) / noff * dnoff_dVd)
+               + Vgsteff2 / noff * dnoff_dVd;
+   
+    (and ... lines 5480-5483 agbcp2>0)
+    4.2:
+            T12 = -T02 * (dVth_dVb + (Vgst-Eg-pParam->B4SOIdelvt) / noff * dnoff_dVb)
+                + Vgsteff2 / noff * dnoff_dVb;
+            dVgsteff2_dVd = -T02 * (dVth_dVd + dVth_dVb*dVbseff_dVd + (Vgst - 1.12) / noff * dnoff_dVd)
+                + Vgsteff2 / noff * dnoff_dVd; 
+    4.3 fix:
+            T12 = -T02 * (dVth_dVb + (Vgst-1.12-pParam->B4SOIdelvt) / noff * dnoff_dVb)
+                + Vgsteff2 / noff * dnoff_dVb;
+            dVgsteff2_dVd = -T02 * (dVth_dVd + dVth_dVb*dVbseff_dVd + (Vgst-pParam->B4SOIdelvt - 1.12) / noff * dnoff_dVd)
+                + Vgsteff2 / noff * dnoff_dVd;
+ 
+13. Line 5426:    dVgsteff_dVd bug: Vgst ==> Vgst - delvt
+    4.2:
+       dVgsteff_dVd = -T0 * (dVth_dVd + dVth_dVb*dVbseff_dVd + Vgst / noff * dnoff_dVd)
+                             + Vgsteff / noff * dnoff_dVd; 
+    
+    4.3 fix:
+       dVgsteff_dVd = -T0 * (dVth_dVd + dVth_dVb*dVbseff_dVd + (Vgst-pParam->B4SOIdelvt)/ noff * dnoff_dVd)
+                               + Vgsteff / noff * dnoff_dVd;
+                                
+    (and ... line 5464)
+    4.2:
+       dVgsteff_dVd = -T0 * (dVth_dVd + dVth_dVb*dVbseff_dVd + Vgst / noff * dnoff_dVd)
+                               + Vgsteff / noff * dnoff_dVd;
+    4.3 fix
+       dVgsteff_dVd = -T0 * (dVth_dVd + dVth_dVb*dVbseff_dVd + (Vgst-pParam->B4SOIdelvt) / noff * dnoff_dVd)
+                               + Vgsteff / noff * dnoff_dVd;
+  
+
+   
+              
+
+
+  
+14. missing initializations of Csg2,Csd2,Csb2
+    Add line before line 6659 i.e. if (model->B4SOIxpart > 0.5)
+        Csg2 = Csd2 = Csb2 = 0.0;    /* CJB  LFW */
+
+15. Cbb bug, and Csd,Csb bug (when agbcp2 > 0)
+    4.2 (line 6813)
+          Cbb += Cbb12 - dQac02_dVb - dQsub02_dVb;
+    4.3 fix:
+          Cbb += (Cbb12 - dQac02_dVb - dQsub02_dVb)*dVbseff_dVb; 
+  
+    (and ....comment out following line:)
+    4.2 (line 6827)
+          /*  Cbb *= dVbseff_dVb; */
+
+    (and ... after line 6830, add 2 lines)
+          Csd += Csd2;  /* CJB  LFW */
+          Csb += Csb2;  /* CJB  LFW */
+
+16. multiply by B4SOInf:
+    At line 5334:
+    Add new line:
+                // Xue fix 10/29/2009
+                here->B4SOIgmT *= here->B4SOInf;
+    At line 5376:
+    Add new lines:
+                /* bugfix_snps NF*/
+                here->B4SOIgjdb *= here->B4SOInf;
+                here->B4SOIgjdd *= here->B4SOInf;
+                here->B4SOIgjdg *= here->B4SOInf;
+                here->B4SOIgjde *= here->B4SOInf;
+                here->B4SOIgjdT *= here->B4SOInf;
+                here->B4SOIgjsb *= here->B4SOInf;
+                here->B4SOIgjsd *= here->B4SOInf;
+                here->B4SOIgjsg *= here->B4SOInf;
+                here->B4SOIgjsT *= here->B4SOInf;
+
+                here->B4SOIcth  *= here->B4SOInf;
+                here->B4SOIgmT  *= here->B4SOInf;
+                here->B4SOIgtempg *= here->B4SOInf;
+                here->B4SOIgtempb *= here->B4SOInf;
+                here->B4SOIgtempe *= here->B4SOInf;
+                here->B4SOIgtempT *= here->B4SOInf;
+                here->B4SOIgtempd *= here->B4SOInf;
+                /* bugfix NF ends */
+  
+17. CboxWL missing B4SOInf multiplier:
+    4.2 (line 6043):
+          CboxWL = pParam->B4SOIkb1 * model->B4SOIfbody * Cbox
+                 * (pParam->B4SOIweffCV / here->B4SOInseg
+                 * pParam->B4SOIleffCVbg + here->B4SOIaebcp);
+    4.3 fix:
+          CboxWL = pParam->B4SOIkb1 * model->B4SOIfbody * Cbox
+                 * (pParam->B4SOIweffCV / here->B4SOInseg
+	         * here->B4SOInf     /* bugfix_snps nf*/
+                 * pParam->B4SOIleffCVbg + here->B4SOIaebcp);
+
+    (and .... again at line 6770)   
+
+18. cjsbs, cjdbs missing B4SOInf multiplier:
+    4.2 (line 6902)
+         cjsbs = model->B4SOIunitLengthGateSidewallJctCapS
+             * pParam->B4SOIwdiosCV * model->B4SOItsi / 1e-7;
+    4.3 fix:
+         cjsbs = model->B4SOIunitLengthGateSidewallJctCapS
+             * pParam->B4SOIwdiosCV * model->B4SOItsi * here->B4SOInf / 1e-7; /* bugfix_snps nf*/
+  
+    4.2 (line 6908)
+         cjdbs = model->B4SOIunitLengthGateSidewallJctCapD
+             * pParam->B4SOIwdiodCV * model->B4SOItsi / 1e-7;
+    4.3 fix:
+         cjdbs = model->B4SOIunitLengthGateSidewallJctCapD
+             * pParam->B4SOIwdiodCV * model->B4SOItsi * here->B4SOInf / 1e-7; /* bugfix_snps nf*/
+  
+19. new rbody checks needed:
+    4.2 (line 6915)
+          arg = 1.0 - (vsbs > DioMax ? DioMax : vsbs) / PhiBSWG;         
+    4.3 fix:
+          if (here->B4SOIrbodyMod)
+              arg = 1.0 - (vsbs > DioMax ? DioMax : vsbs) / PhiBSWG;         
+          else
+              arg = 1.0 - (vbs > DioMax ? DioMax : vbs) / PhiBSWG;            
+  
+    (and ....)
+    4.2 (line 6938)
+          if (vsbs > DioMax)                                                                     
+             T3 += dT3_dVb * (vsbs - DioMax);
+    4.3
+          if (here->B4SOIrbodyMod)
+          {
+              if (vsbs > DioMax)                                                                      
+                  T3 += dT3_dVb * (vsbs - DioMax);
+          }
+          else
+          {
+               if (vbs > DioMax)                                                                       
+                   T3 += dT3_dVb * (vbs - DioMax);
+          }
+
+    (and ....)
+    4.2 (line 6955)
+          arg = 1.0 - (vdbd > DioMax ? DioMax : vdbd) / PhiBSWG;       
+    4.3 fix:
+          if (here->B4SOIrbodyMod)
+              arg = 1.0 - (vdbd > DioMax ? DioMax : vdbd) / PhiBSWG;      
+          else
+              arg = 1.0 - (vbd > DioMax ? DioMax : vbd) / PhiBSWG;       
+
+    (and ....) 
+    4.2 (line 6978)
+          if (vdbd > DioMax)                                                             
+             T3 += dT3_dVb * (vdbd - DioMax);
+    4.3 fix:
+          if (here->B4SOIrbodyMod)
+          {
+              if (vdbd > DioMax)                                                              
+                  T3 += dT3_dVb * (vdbd - DioMax);
+          }
+          else
+          {
+              if (vbd > DioMax)                                                                                 T3 += dT3_dVb * (vbd - DioMax);
+           }
+
+
+    
+20. qsrc/qdrn swapping bug:
+    4.2 (line 6941)
+          qjs = cjsbs * T3 + model->B4SOItt * Ibsdif;
+                         gcjsbs = cjsbs * dT3_dVb + model->B4SOItt * dIbsdif_dVb;
+    4.3 fix:
+          if (here->B4SOImode > 0)
+          {
+              qjs = cjsbs * T3 + model->B4SOItt * Ibsdif;
+              gcjsbs = cjsbs * dT3_dVb + model->B4SOItt * dIbsdif_dVb;
+          }
+          else
+          {
+              qjs = cjsbs * T3 + model->B4SOItt * Ibddif;
+              gcjsbs = cjsbs * dT3_dVb + model->B4SOItt * dIbddif_dVb;
+          }
+  
+    (and ....) 
+    4.2 (line 6982)
+          qjd = cjdbs * T3 + model->B4SOItt * Ibddif;
+          gcjdbs = cjdbs * dT3_dVb + model->B4SOItt * dIbddif_dVb;    
+    4.3 fix:
+          if (here->B4SOImode > 0)
+          {
+              qjd = cjdbs * T3 + model->B4SOItt * Ibddif;
+              gcjdbs = cjdbs * dT3_dVb + model->B4SOItt * dIbddif_dVb;
+          }
+          else
+          {
+               qjd = cjdbs * T3 + model->B4SOItt * Ibsdif;
+               gcjdbs = cjdbs * dT3_dVb + model->B4SOItt * dIbsdif_dVb;
+          }
+  
+21. afterline 3930, add dIc_dVd = dIc_dVb=0.0; 
+  
+22. cth and its gtemp* derivatives:
+    line 5211-5217 
+            here->B4SOIgtempg = - Gm * Vds; 
+            here->B4SOIgtempb = - Gmb * Vds; 
+            /* v3.0 */ 
+            here->B4SOIgtempe = - Gme * Vds; 
+            here->B4SOIgtempT = -GmT * Vds; 
+            here->B4SOIgtempd = - (Gds * Vds + Ids); 
+  
+    changed to: 
+            here->B4SOIgtempg = -model->B4SOItype*Gm * Vds; 
+            here->B4SOIgtempb = -model->B4SOItype*Gmb * Vds; 
+            /* v3.0 */ 
+            here->B4SOIgtempe = -model->B4SOItype*Gme * Vds; 
+            here->B4SOIgtempT = -GmT * Vds; 
+            here->B4SOIgtempd = -model->B4SOItype* (Gds * Vds + Ids);  
+     
+
+23. Qjs/Qjd has issue of nf:
+       Line 6941-6942 
+                        qjs = cjsbs * T3 + model->B4SOItt * Ibsdif;
+                        gcjsbs = cjsbs * dT3_dVb + model->B4SOItt * dIbsdif_dVb;
+       changed to
+                        qjs = cjsbs * T3 + model->B4SOItt * Ibsdif * here->B4SOInf;
+                        gcjsbs = cjsbs * dT3_dVb + model->B4SOItt * dIbsdif_dVb * here->B4SOInf;
+       (and new lines)
+                        qjs = cjsbs * T3 + model->B4SOItt * Ibddif;
+                        gcjsbs = cjsbs * dT3_dVb + model->B4SOItt * dIbddif_dVb;
+       changed to
+                        qjs = cjsbs * T3 + model->B4SOItt * Ibddif * here->B4SOInf;
+                        gcjsbs = cjsbs * dT3_dVb + model->B4SOItt * dIbddif_dVb * here->B4SOInf;
+
+       Line 6945
+                        gcjsT = model->B4SOItt * dIbsdif_dT + dcjsbs_dT * T3 + dT3_dT * cjsbs;
+       changed to
+                        gcjsT = model->B4SOItt * dIbsdif_dT * here->B4SOInf + dcjsbs_dT * T3 + dT3_dT * cjsbs;
+      
+       Line 6982-6983
+                        qjd = cjdbs * T3 + model->B4SOItt * Ibddif;
+                        gcjdbs = cjdbs * dT3_dVb + model->B4SOItt * dIbddif_dVb;
+       changed to
+                        qjd = cjdbs * T3 + model->B4SOItt * Ibddif * here->B4SOInf;
+                        gcjdbs = cjdbs * dT3_dVb + model->B4SOItt * dIbddif_dVb * here->B4SOInf;
+       (and new lines)
+                        qjd = cjdbs * T3 + model->B4SOItt * Ibsdif;
+                        gcjdbs = cjdbs * dT3_dVb + model->B4SOItt * dIbsdif_dVb;
+       changed to
+                        qjd = cjdbs * T3 + model->B4SOItt * Ibsdif * here->B4SOInf;
+                        gcjdbs = cjdbs * dT3_dVb + model->B4SOItt * dIbsdif_dVb * here->B4SOInf;
+       Line 6986
+                        gcjdT = model->B4SOItt * dIbddif_dT + dcjdbs_dT * T3 + dT3_dT * cjdbs;
+       changed to
+                        gcjdT = model->B4SOItt * dIbddif_dT * here->B4SOInf + dcjdbs_dT * T3 + dT3_dT * cjdbs;
+
+    The output of Iii multiplied with nf:
+    Add code at Line 5376:
+       here->B4SOIiii *= here->B4SOInf;
+
+23a. missing NF in pParam->B4SOIrth and pParam->B4SOIcth calculations in b4soitemp.c: 
+     Line 1102:
+            pParam->B4SOIrth = here->B4SOIrth0 
+		/ (pParam->B4SOIweff + model->B4SOIwth0) 
+		* here->B4SOInseg;
+	    pParam->B4SOIcth = here->B4SOIcth0 
+		* (pParam->B4SOIweff + model->B4SOIwth0)
+		/ here->B4SOInseg;
+     changed to:
+            pParam->B4SOIrth = here->B4SOIrth0
+		/ (pParam->B4SOIweff + model->B4SOIwth0)
+		* here->B4SOInseg / here->B4SOInf;  /* bugfix_snps nf*/
+	    pParam->B4SOIcth = here->B4SOIcth0
+		* (pParam->B4SOIweff + model->B4SOIwth0)
+		/ here->B4SOInseg * here->B4SOInf; /* bugfix_snps nf*/
+ 
+
+24.NF omission w.r.t. area component of gate-channel tunneling current
+   b4soitemp.c line 1346:
+   4.2:
+        pParam->B4SOIAechvb *= pParam->B4SOIweff/here->B4SOInseg
+		* pParam->B4SOIleff
+		* pParam->B4SOIToxRatio
+		+ here->B4SOIagbcpd; /* v4.0 */
+
+   4.3 Fix:
+        pParam->B4SOIAechvb *= (pParam->B4SOIweff/here->B4SOInseg
+                * pParam->B4SOIleff
+                + here->B4SOIagbcpd/here->B4SOInf)   /* LFW */ 
+                * pParam->B4SOIToxRatio;  /* From Geoffrey Coram 10/22/09 */ 
+ 
+25.Need source and drain edge components of Gate-source,Gate-drain diffusion tunneling currents
+   b4soitemp.c line 1339:
+   4.2:
+        pParam->B4SOIAechvbEdge = pParam->B4SOIAechvb * pParam->B4SOIweff/here->B4SOInseg
+	        * pParam->B4SOIdlcig * pParam->B4SOIToxRatioEdge; /* v3.1 bug fix */
+   4.3 Fix:
+        pParam->B4SOIAechvbEdges = pParam->B4SOIAechvb
+                * (pParam->B4SOIweff/here->B4SOInseg + here->B4SOIpsbcp)
+                * pParam->B4SOIdlcig * pParam->B4SOIToxRatioEdge; /* v3.1 bug fix */
+        pParam->B4SOIAechvbEdged = pParam->B4SOIAechvb
+                * (pParam->B4SOIweff/here->B4SOInseg + here->B4SOIpdbcp)
+                * pParam->B4SOIdlcig * pParam->B4SOIToxRatioEdge; /* v3.1 bug fix */
+
+   b4soidef.h, line 921:
+   4.2:
+        double B4SOIAechvbEdge;
+   4.3 Fix:
+        double B4SOIAechvbEdges;
+        double B4SOIAechvbEdged;
+
+      
+   b4soild.c changes:
+   4.2 (line 4279):
+        T11 = pParam->B4SOIAechvbEdge;
+   4.3 Fix:
+    /*  T11 = pParam->B4SOIAechvbEdge; */
+        T13 = pParam->B4SOIAechvbEdges;
+        T14 = pParam->B4SOIAechvbEdged;
+
+   4.2 (line 4299):  
+        Igs = T11 * T2 * T6;
+        dIgs_dVg = T11 * (T2 * dT6_dVg + T6 * dT2_dVg);
+
+   4.3 Fix:
+    /*  Igs = T11 * T2 * T6; */
+        Igs = T13 * T2 * T6;
+        dIgs_dVg = T13 * (T2 * dT6_dVg + T6 * dT2_dVg);
+
+
+   4.2 line 4324):
+        Igd = T11 * T2 * T6;
+        dIgd_dVg = T11 * (T2 * dT6_dVg + T6 * dT2_dVg);
+   4.3 Fix:
+    /*  Igd = T11 * T2 * T6; */
+        Igd = T14 * T2 * T6;
+        dIgd_dVg = T14 * (T2 * dT6_dVg + T6 * dT2_dVg);
+  
+26. NF omission  
+   b4soild.c:
+   4.2 (line 4405):
+           T1 = Leff * Weff * 3.7622e-7 * OxideRatio
+              / here->B4SOInseg + here->B4SOIagbcpd /* v4.0 */;
+   4.3 Fix :
+           T1 = (Leff * Weff / here->B4SOInseg + here->B4SOIagbcpd/here->B4SOInf) * 3.7622e-7 * OxideRatio;
+   
+   and ....
+   4.2 (line 4479):
+           T1 = Leff * Weff * 4.9758e-7  * OxideRatio
+              / here->B4SOInseg + here->B4SOIagbcpd /* v4.0 */;
+   4.3 Fix :
+           T1 = (Leff * Weff / here->B4SOInseg + here->B4SOIagbcpd/here->B4SOInf) * 4.9758e-7  * OxideRatio;
+  
+   and ....
+   4.2Prod (line 4595):
+           T11 = T11 * here->B4SOIagbcp2 * pParam->B4SOIoxideRatio;
+   Fix:
+           T11 = T11 * here->B4SOIagbcp2 * pParam->B4SOIoxideRatio/here->B4SOInf;
+  
+
+27. dIiibjt_dT fix (Samuel Mertens)
+   b4soild.c:
+   4.2 (line 4944):
+         dIiibjt_dT = T0 * Ic * T4 * dVbci_dT
+                    + T0 *Ic *T1 * dT4_dT;
+   4.3 Fix:
+         dIiibjt_dT = T0 * Ic * T4 * dVbci_dT
+                    + T0 *Ic *T1 * dT4_dT + T0 * GcT *T1 * T4;   /* Samuel Mertens */
+
+28. dVfbeff2_dVd, dVfbeff2_dVb fix.  Get rid of 25.0 because now already in T2 expression. (Samuel Mertens)
+   b4soild.c:
+   4.2 (line 5745):
+           dVfbeff2_dVd = (1.0 - T1 - 25.0 * T2) * dVfb2_dVd;
+           dVfbeff2_dVb = (1.0 - T1 - 25.0 * T2) * dVfb2_dVb - T1;
+   4.3 Fix:
+           dVfbeff2_dVd = (1.0 - T1 - T2) * dVfb2_dVd;
+           dVfbeff2_dVb = (1.0 - T1 - T2) * dVfb2_dVb - T1;
+
+29. Fatal checks are moved outside of paramChk "if" statement in b4soicheck.c
+    b4soicheck.c:
+    At line 339:  
+      if (model->B4SOIparamChk ==1)
+    move the following 6 checks to BEFORE this "if" statement
+    so that they will always happen:
+      if (pParam->B4SOInigc <= 0.0)
+      {   fprintf(fplog, "Fatal: nigc = %g is non-positive.\n",
+                  pParam->B4SOInigc);
+          printf("Fatal: nigc = %g is non-positive.\n", pParam->B4SOInigc);
+          Fatal_Flag = 1;
+      }
+      if (pParam->B4SOIpoxedge <= 0.0)
+      {   fprintf(fplog, "Fatal: poxedge = %g is non-positive.\n",
+                  pParam->B4SOIpoxedge);
+          printf("Fatal: poxedge = %g is non-positive.\n", pParam->B4SOIpoxedge);
+          Fatal_Flag = 1;
+      }
+      if (pParam->B4SOIpigcd <= 0.0)
+      {   fprintf(fplog, "Fatal: pigcd = %g is non-positive.\n",
+                  pParam->B4SOIpigcd);
+          printf("Fatal: pigcd = %g is non-positive.\n", pParam->B4SOIpigcd);
+          Fatal_Flag = 1;
+      }
+
+      if (model->B4SOItoxref < 0.0)
+      {   fprintf(fplog, "Warning: TOXREF = %g is negative.\n",
+                  model->B4SOItoxref);
+          printf("Warning:  Toxref = %g is negative.\n", model->B4SOItoxref);
+          Fatal_Flag = 1;
+      }
+
+      if (model->B4SOItoxqm <= 0.0)
+      {   fprintf(fplog, "Fatal: Toxqm = %g is not positive.\n",
+                  model->B4SOItoxqm);
+          printf("Fatal: Toxqm = %g is not positive.\n", model->B4SOItoxqm);
+          Fatal_Flag = 1;
+      }
+
+      if (model->B4SOIdeltavox <= 0.0)
+      {   fprintf(fplog, "Fatal: Deltavox = %g is not positive.\n",
+                  model->B4SOIdeltavox);
+          printf("Fatal: Deltavox = %g is not positive.\n", model->B4SOIdeltavox);
+      }
+
+30. Igisl and Igidl current formulations revised for continuity and consistency:
+	Reported by Rick Poore (Agilent)
+
+file: b4soild.c 
+
+	4.2: lines 3475 - 3488
+	T4 = Vbs - fgisl;
+	if (T4==0)
+	T5 =1;
+	else
+	T5 = kgisl/T4;
+	T6 = exp(T5);
+	if (T6<EXPL_THRESHOLD)
+	{Ggisls*=exp(T5);
+	Ggislg*=exp(T5);
+	Ggislb = -Igisl*exp(T5)*T5/T4;
+	Igisl*=exp(T5);
+	}
+	else
+	Ggislb=0.0;
+
+	4.3 Fix:  
+	if (T4==0)
+      T5 = EXPL_THRESHOLD;
+      else
+      T5 = kgisl/T4;
+      if (T5<EXPL_THRESHOLD)
+      {T6 = exp(T5);
+      Ggislb = -Igisl*T6*T5/T4;
+      }
+      else
+      {T6 = MAX_EXPL;
+      Ggislb=0.0;
+      }
+      Ggisls*=T6;
+      Ggislg*=T6;
+      Igisl*=T6;
+
+	4.2 lines 3521 - 3533
+	
+	T4 = Vbd - fgidl;
+	if (T4==0)
+	T5 =1;
+	else
+	T5 = kgidl/T4;
+	T6 = exp(T5);
+	if (T6<EXPL_THRESHOLD)
+	{Ggidld*=exp(T5);
+	Ggidlg*=exp(T5);
+	Ggidlb = -Igidl*exp(T5)*T5/T4;
+	Igidl*=exp(T5);
+	}
+	else
+	Ggidlb=0.0;
+
+	4.3 Fix:  
+	if (T4==0)
+      T5 = EXPL_THRESHOLD;
+      else
+      T5 = kgidl/T4;
+      if (T5<EXPL_THRESHOLD)
+      {T6 = exp(T5);
+      Ggidlb = -Igidl*T6*T5/T4;
+      }
+      else
+      {T6 = MAX_EXPL;
+      Ggidlb=0.0;
+      }
+      Ggidld*=T6;
+      Ggidlg*=T6;
+      Igidl*=T6;
+
+31. NF scaling error in Gbpbs: 
+	Reported by Geoffrey Coram (ADI)
+
+	4.2 Line 5307 
+	here->B4SOIgbgiigbpb = Giib - Gbpbs;
+
+	4.3 Fix: 
+  	here->B4SOIgbgiigbpb = Giib - Gbpbs / here->B4SOInf; 
+
+32. Noise bug in spice3f5:
+	Reported and fix provided by Geoffrey Coram (ADI)
+
+	To update charge and capacitance computation in noise calculations, 
+	following code has been added in file noisean.c lines(115-117)
+
+	ckt->CKTmode = (ckt->CKTmode & MODEUIC) | MODEDCOP | MODEINITSMSIG;
+      error = CKTload(ckt);
+      if(error) return(error);
+		
+33. In Ic and Iii computations, vbs_jct/vbd_jct are used to evaluate junction        potential instead of Vbs/Vbd 
+ 	Reported by Samuel Mertens (Ansoft)
+
+	4.2 Line 3901
+	T0 = 1 + (Vbs + Vbd) / pParam->B4SOIvearly; 
+
+	4.3 Fix:
+	T0 = 1 + (vbs_jct + vbd_jct) / pParam->B4SOIvearly;
+
+	4.2 Line 4860
+	T1 = Vbci - (Vbs - Vds);
+
+	4.3 Fix:
+	T1 = Vbci - (vbs_jct - Vds);

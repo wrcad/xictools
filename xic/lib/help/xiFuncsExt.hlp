@@ -1,0 +1,2323 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiFuncsExt.hlp,v 1.35 2016/07/07 21:48:41 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiFuncsExt.hlp
+!!TITLE
+xiFuncsExt.hlp
+!!HTML
+
+!!SUBTOPICS
+funcs:ext
+funcs:ext:menu
+funcs:ext:term
+funcs:ext:group
+funcs:ext:pdev
+funcs:ext:subc
+funcs:ext:edev
+funcs:ext:extrl
+
+
+!! Menu Commands
+!!REDIRECT DumpPhysNetlist      funcs:ext:menu#DumpPhysNetlist
+!!REDIRECT DumpElecNetlist      funcs:ext:menu#DumpElecNetlist
+!!REDIRECT SourceSpice          funcs:ext:menu#SourceSpice
+!!REDIRECT ExtractAndSet        funcs:ext:menu#ExtractAndSet
+!!REDIRECT FindPath             funcs:ext:menu#FindPath
+!!REDIRECT FindPathOfGroup      funcs:ext:menu#FindPathOfGroup
+
+!! Terminals
+!!REDIRECT ListTerminals        funcs:ext:term#ListTerminals
+!!REDIRECT FindTerminal         funcs:ext:term#FindTerminal
+!!REDIRECT CreateTerminal       funcs:ext:term#CreateTerminal
+!!REDIRECT DestroyTerminal      funcs:ext:term#DestroyTerminal
+!!REDIRECT GetTerminalName      funcs:ext:term#GetTerminalName
+!!REDIRECT SetTerminalName      funcs:ext:term#SetTerminalName
+!!REDIRECT GetTerminalType      funcs:ext:term#GetTerminalType
+!!REDIRECT SetTerminalType      funcs:ext:term#SetTerminalType
+!!REDIRECT GetTerminalFlags     funcs:ext:term#GetTerminalFlags
+!!REDIRECT SetTerminalFlags     funcs:ext:term#SetTerminalFlags
+!!REDIRECT UnsetTerminalFlags   funcs:ext:term#UnsetTerminalFlags
+!!REDIRECT GetElecTerminalLoc   funcs:ext:term#GetElecTerminalLoc
+!!REDIRECT SetElecTerminalLoc   funcs:ext:term#SetElecTerminalLoc
+!!REDIRECT ClearElecTerminalLoc funcs:ext:term#ClearElecTerminalLoc
+
+!! Physical Terminals
+!!REDIRECT ListPhysTerminals    funcs:ext:pterm#ListPhysTerminals
+!!REDIRECT FindPhysTerminal     funcs:ext:pterm#FindPhysTerminal
+!!REDIRECT CreatePhysTerminal   funcs:ext:pterm#CreatePhysTerminal
+!!REDIRECT HasPhysTerminal      funcs:ext:pterm#HasPhysTerminal
+!!REDIRECT DestroyPhysTerminal  funcs:ext:pterm#DestroyPhysTerminal
+!!REDIRECT GetPhysTerminalLoc   funcs:ext:pterm#GetPhysTerminalLoc
+!!REDIRECT SetPhysTerminalLoc   funcs:ext:pterm#SetPhysTerminalLoc
+!!REDIRECT GetPhysTerminalLayer funcs:ext:pterm#GetPhysTerminalLayer
+!!REDIRECT SetPhysTerminalLayer funcs:ext:pterm#SetPhysTerminalLayer
+!!REDIRECT GetPhysTerminalGroup funcs:ext:pterm#GetPhysTerminalGroup
+!!REDIRECT GetPhysTerminalObject funcs:ext:pterm#GetPhysTerminalObject
+
+!! Physical Conductor Groups
+!!REDIRECT Group                funcs:ext:group#Group
+!!REDIRECT GetNumberGroups      funcs:ext:group#GetNumberGroups
+!!REDIRECT GetGroupBB           funcs:ext:group#GetGroupBB
+!!REDIRECT GetGroupNode         funcs:ext:group#GetGroupNode
+!!REDIRECT GetGroupName         funcs:ext:group#GetGroupName
+!!REDIRECT GetGroupNetName      funcs:ext:group#GetGroupNetName
+!!REDIRECT GetGroupCapacitance  funcs:ext:group#GetGroupCapacitance
+!!REDIRECT CountGroupObjects    funcs:ext:group#CountGroupObjects
+!!REDIRECT ListGroupObjects     funcs:ext:group#ListGroupObjects
+!!REDIRECT CountGroupVias       funcs:ext:group#CountGroupVias
+!!REDIRECT ListGroupVias        funcs:ext:group#ListGroupVias
+!!REDIRECT CountGroupDevContacts funcs:ext:group#CountGroupDevContacts
+!!REDIRECT ListGroupDevContacts funcs:ext:group#ListGroupDevContacts
+!!REDIRECT CountGroupSubcContacts funcs:ext:group#CountGroupSubcContacts
+!!REDIRECT ListGroupSubcContacts funcs:ext:group#ListGroupSubcContacts
+!!REDIRECT CountGroupTerminals  funcs:ext:group#CountGroupTerminals
+!!REDIRECT ListGroupTerminals   funcs:ext:group#ListGroupTerminals
+!!REDIRECT ListGroupTerminalNames funcs:ext:group#ListGroupTerminalNames
+!!REDIRECT CountGroupPhysTerminals funcs:ext:group#CountGroupPhysTerminals
+!!REDIRECT ListGroupPhysTerminals funcs:ext:group#ListGroupPhysTerminals
+
+!! Physical Devices
+!!REDIRECT ListPhysDevs         funcs:ext:pdev#ListPhysDevs
+!!REDIRECT GetPdevName          funcs:ext:pdev#GetPdevName
+!!REDIRECT GetPdevIndex         funcs:ext:pdev#GetPdevIndex
+!!REDIRECT GetPdevDual          funcs:ext:pdev#GetPdevDual
+!!REDIRECT GetPdevBB            funcs:ext:pdev#GetPdevBB
+!!REDIRECT GetPdevMeasure       funcs:ext:pdev#GetPdevMeasure
+!!REDIRECT ListPdevMeasures     funcs:ext:pdev#ListPdevMeasures
+!!REDIRECT ListPdevContacts     funcs:ext:pdev#ListPdevContacts
+!!REDIRECT GetPdevContactName   funcs:ext:pdev#GetPdevContactName
+!!REDIRECT GetPdevContactBB     funcs:ext:pdev#GetPdevContactBB
+!!REDIRECT GetPdevContactGroup  funcs:ext:pdev#GetPdevContactGroup
+!!REDIRECT GetPdevContactLayer  funcs:ext:pdev#GetPdevContactLayer
+!!REDIRECT GetPdevContactDev    funcs:ext:pdev#GetPdevContactDev
+!!REDIRECT GetPdevContactDevName funcs:ext:pdev#GetPdevContactDevName
+!!REDIRECT GetPdevContactDevIndex funcs:ext:pdev#GetPdevContactDevIndex
+
+!! Physical Subcircuits
+!!REDIRECT ListPhysSubckts      funcs:ext:subc#ListPhysSubckts
+!!REDIRECT GetPscName           funcs:ext:subc#GetPscName
+!!REDIRECT GetPscIndex          funcs:ext:subc#GetPscIndex
+!!REDIRECT GetPscIdNum          funcs:ext:subc#GetPscIdNum
+!!REDIRECT GetPscInstName       funcs:ext:subc#GetPscInstName
+!!REDIRECT GetPscDual           funcs:ext:subc#GetPscDual
+!!REDIRECT GetPscBB             funcs:ext:subc#GetPscBB
+!!REDIRECT ListPscContacts      funcs:ext:subc#ListPscContacts
+!!REDIRECT IsPscContactIgnorable funcs:ext:subc#IsPscContactIgnorable
+!!REDIRECT GetPscContactName    funcs:ext:subc#GetPscContactName
+!!REDIRECT GetPscContactGroup   funcs:ext:subc#GetPscContactGroup
+!!REDIRECT GetPscContactSubcGroup funcs:ext:subc#GetPscContactSubcGroup
+!!REDIRECT GetPscContactSubc    funcs:ext:subc#GetPscContactSubc
+!!REDIRECT GetPscContactSubcName funcs:ext:subc#GetPscContactSubcName
+!!REDIRECT GetPscContactSubcIndex funcs:ext:subc#GetPscContactSubcIndex
+
+!! Electrical Devices
+!!REDIRECT ListElecDevs         funcs:ext:edev#ListElecDevs
+!!REDIRECT SetEdevProperty      funcs:ext:edev#SetEdevProperty
+!!REDIRECT GetEdevProperty      funcs:ext:edev#GetEdevProperty
+!!REDIRECT GetEdevObj           funcs:ext:edev#GetEdevObj
+
+!! Resistance/Inductance Extraction
+!!REDIRECT ExtractRL            funcs:ext:extrl#ExtractRL
+!!REDIRECT ExtractNetResistance funcs:ext:extrl#ExtractNetResistance
+
+
+!!KEYWORD
+funcs:ext
+!!TITLE
+Extraction Functions
+!!HTML
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+
+    <!-- 052409 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:ext:menu">Menu Commands</a></th></tr>
+
+    <tr><td><a href="funcs:ext:menu#DumpPhysNetlist">
+     <tt>DumpPhysNetlist</tt>(<i>filename</i>, <i>depth</i>, <i>modestring</i>,
+     <i>names</i>)</a>
+     </td><td>Dump physical netlist</td></tr>
+    <tr><td><a href="funcs:ext:menu#DumpElecNetlist">
+     <tt>DumpElecNetlist</tt>(<i>filename</i>, <i>depth</i>, <i>modestring</i>,
+     <i>names</i>)</a>
+     </td><td>Dump electrical netlist</td></tr>
+    <tr><td><a href="funcs:ext:menu#SourceSpice">
+     <tt>SourceSpice</tt>(<i>filename</i>, <i>modestring</i>)</a>
+     </td><td>Update electrical from SPICE file</td></tr>
+    <tr><td><a href="funcs:ext:menu#ExtractAndSet">
+     <tt>ExtractAndSet</tt>(<i>depth</i>, <i>modestring</i>)</a>
+     </td><td>Update electrical from physical</td></tr>
+    <tr><td><a href="funcs:ext:menu#FindPath">
+     <tt>FindPath</tt>(<i>x</i>, <i>y</i>, <i>depth</i>,
+     <i>use_extract</i>)</a>
+     </td><td>Return objects in netlist</td></tr>
+    <tr><td><a href="funcs:ext:menu#FindPathOfGroup">
+     <tt>FindPathOfGroup</tt>(<i>groupnum</i>, <i>depth</i>)</a>
+     </td><td>Return objects in netlist</td></tr>
+
+    <!-- 060716 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:ext:term">Terminals</a></th></tr>
+
+    <tr><td><a href="funcs:ext:term#ListTerminals">
+     <tt>ListTerminals</tt>()</a>
+     </td><td>List cell contact terminals</td></tr>
+    <tr><td><a href="funcs:ext:term#FindTerminal">
+     <tt>FindTerminal</tt>(<i>name</i>, <i>index</i>, <i>use_e</i>,
+     <i>xe</i>, <i>ye</i>, <i>use_p</i>, <i>xp</i>, <i>yp</i>)</a>
+     </td><td>Find a cell connection terminal</td></tr>
+    <tr><td><a href="funcs:ext:term#CreateTerminal">
+     <tt>CreateTerminal</tt>(<i>name</i>, <i>x</i>, <i>y</i>,
+     <i>termtype</i>)</a>
+     </td><td>Create new contact terminal</td></tr>
+    <tr><td><a href="funcs:ext:term#DestroyTerminal">
+     <tt>DestroyTerminal</tt>(<i>thandle</i>)</a>
+     </td><td>Remove and destroy cell contact terminal</td></tr>
+    <tr><td><a href="funcs:ext:term#GetTerminalName">
+     <tt>GetTerminalName</tt>(<i>thandle</i>)</a>
+     </td><td>Return terminal name</td></tr>
+    <tr><td><a href="funcs:ext:term#SetTerminalName">
+     <tt>SetTerminalName</tt>(<i>thandle</i>, <i>name</i>)</a>
+     </td><td>Assign terminal name</td></tr>
+    <tr><td><a href="funcs:ext:term#GetTerminalType">
+     <tt>GetTerminalType</tt>(<i>thandle</i>)</a>
+     </td><td>Return terminal type code</td></tr>
+    <tr><td><a href="funcs:ext:term#SetTerminalType">
+     <tt>SetTerminalType</tt>(<i>thandle</i>, <i>termtype</i>)</a>
+     </td><td>Set terminal type</td></tr>
+    <tr><td><a href="funcs:ext:term#GetTerminalFlags">
+     <tt>GetTerminalFlags</tt>(<i>thandle</i>)</a>
+     </td><td>Return terminal flags</td></tr>
+    <tr><td><a href="funcs:ext:term#SetTerminalFlags">
+     <tt>SetTerminalFlags</tt>(<i>thandle</i>, <i>flags</i>)</a>
+     </td><td>Set terminal flags</td></tr>
+    <tr><td><a href="funcs:ext:term#UnsetTerminalFlags">
+     <tt>UnsetTerminalFlags</tt>(<i>thandle</i>, <i>flags</i>)</a>
+     </td><td>Unset terminal flags</td></tr>
+    <tr><td><a href="funcs:ext:term#GetElecTerminalLoc">
+     <tt>GetElecTerminalLoc</tt>(<i>thandle</i>, <i>index</i>,
+     <i>array</i>)</a>
+     </td><td>Return electrical terminal location</td></tr>
+    <tr><td><a href="funcs:ext:term#SetElecTerminalLoc">
+     <tt>SetElecTerminalLoc</tt>(<i>thandle</i>, <i>x</i>, <i>y</i>)</a>
+     </td><td>Assign electrical terminal location</td></tr>
+    <tr><td><a href="funcs:ext:term#ClearElecTerminalLoc">
+     <tt>ClearElecTerminalLoc</tt>(<i>thandle</i>, <i>x</i>, <i>y</i>)</a>
+     </td><td>Delete symbolic duplicate location</td></tr>
+
+    <!-- 060716 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:ext:pterm">Physical Terminals</a></th></tr>
+
+    <tr><td><a href="funcs:ext:pterm#ListPhysTerminals">
+     <tt>ListPhysTerminals</tt>()</a>
+     </td><td>List physical cell contact terminals</td></tr>
+    <tr><td><a href="funcs:ext:pterm#FindPhysTerminal">
+     <tt>FindPhysTerminal</tt>(<i>name</i>, <i>use_p</i>,
+     <i>xp</i>, <i>yp</i>)</a>
+     </td><td>Find a physical cell connection terminal</td></tr>
+    <tr><td><a href="funcs:ext:pterm#CreatePhysTerminal">
+     <tt>CreatePhysTerminal</tt>(<i>thandle</i>, <i>x</i>, <i>y</i>,
+     <i>layer</i>)</a>
+     </td><td>Create new linkage to layout terminal</td></tr>
+    <tr><td><a href="funcs:ext:pterm#HasPhysTerminal">
+     <tt>HasPhysTerminal</tt>(<i>thandle</i>)</a>
+     </td><td>Check if terminal has physical component</td></tr>
+    <tr><td><a href="funcs:ext:pterm#DestroyPhysTerminal">
+     <tt>DestroyPhysTerminal</tt>(<i>thandle</i>)</a>
+     </td><td>Remove and destroy layout terminal linkage</td></tr>
+    <tr><td><a href="funcs:ext:pterm#GetPhysTerminalLoc">
+     <tt>GetPhysTerminalLoc</tt>(<i>thandle</i>, <i>array</i>)</a>
+     </td><td>Return layout terminal location</td></tr>
+    <tr><td><a href="funcs:ext:pterm#SetPhysTerminalLoc">
+     <tt>SetPhysTerminalLoc</tt>(<i>thandle</i>, <i>x</i>, <i>y</i>)</a>
+     </td><td>Assign layout terminal location</td></tr>
+    <tr><td><a href="funcs:ext:pterm#GetPhysTerminalLayer">
+     <tt>GetPhysTerminalLayer</tt>(<i>thandle</i>)</a>
+     </td><td>Return associated layer name</td></tr>
+    <tr><td><a href="funcs:ext:pterm#SetPhysTerminalLayer">
+     <tt>SetPhysTerminalLayer</tt>(<i>thandle</i>, <i>layer</i>)</a>
+     </td><td>Set layer name for hinting</td></tr>
+    <tr><td><a href="funcs:ext:pterm#GetPhysTerminalGroup">
+     <tt>GetPhysTerminalGroup</tt>(<i>thandle</i>)</a>
+     </td><td>Return associated physical group number</td></tr>
+    <tr><td><a href="funcs:ext:pterm#GetPhysTerminalObject">
+     <tt>GetPhysTerminalObject</tt>(<i>thandle</i>)</a>
+     </td><td>Return handle to associated object</td></tr>
+
+    <!-- 070516 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:ext:group">Physical Conductor Groups</a></th></tr>
+
+    <tr><td><a href="funcs:ext:group#Group">
+     <tt>Group</tt>()</a>
+     </td><td>Run extraction</td></tr>
+    <tr><td><a href="funcs:ext:group#GetNumberGroups">
+     <tt>GetNumberGroups</tt>()</a>
+     </td><td>Return number of groups</td></tr>
+    <tr><td><a href="funcs:ext:group#GetGroupBB">
+     <tt>GetGroupBB</tt>(<i>group</i>, <i>array</i>)</a>
+     </td><td>Return bounding box of group</td></tr>
+    <tr><td><a href="funcs:ext:group#GetGroupNode">
+     <tt>GetGroupNode</tt>(<i>group</i>)</a>
+     </td><td>Return node of group</td></tr>
+    <tr><td><a href="funcs:ext:group#GetGroupName">
+     <tt>GetGroupName</tt>(<i>group</i>)</a>
+     </td><td>Return net or formal terminal name</td></tr>
+    <tr><td><a href="funcs:ext:group#GetGroupNetName">
+     <tt>GetGroupNetName</tt>(<i>group</i>)</a>
+     </td><td>Return net name</td></tr>
+    <tr><td><a href="funcs:ext:group#GetGroupCapacitance">
+     <tt>GetGroupCapacitance</tt>(<i>group</i>)</a>
+     </td><td>Return group capacitance</td></tr>
+    <tr><td><a href="funcs:ext:group#CountGroupObjects">
+     <tt>CountGroupObjects</tt>(<i>group</i>)</a>
+     </td><td>Count physical objects in group</td></tr>
+    <tr><td><a href="funcs:ext:group#ListGroupObjects">
+     <tt>ListGroupObjects</tt>(<i>group</i>)</a>
+     </td><td>Return list of objects in group</td></tr>
+    <tr><td><a href="funcs:ext:group#CountGroupVias">
+     <tt>CountGroupVias</tt>(<i>group</i>)</a>
+     </td><td>Count standard vias or via cells used in the group</td></tr>
+    <tr><td><a href="funcs:ext:group#ListGroupVias">
+     <tt>ListGroupVias</tt>(<i>group</i>)</a>
+     </td><td>Return list of standard via or via cell instances used in
+     the group</td></tr>
+    <tr><td><a href="funcs:ext:group#CountGroupDevContacts">
+     <tt>CountGroupDevContacts</tt>(<i>group</i>)</a>
+     </td><td>Count device contacts in group</td></tr>
+    <tr><td><a href="funcs:ext:group#ListGroupDevContacts">
+     <tt>ListGroupDevContacts</tt>(<i>group</i>)</a>
+     </td><td>Return list of device contacts in group</td></tr>
+    <tr><td><a href="funcs:ext:group#CountGroupSubcContacts">
+     <tt>CountGroupSubcContacts</tt>(<i>group</i>)</a>
+     </td><td>Count subcircuit contacts in group</td></tr>
+    <tr><td><a href="funcs:ext:group#ListGroupSubcContacts">
+     <tt>ListGroupSubcContacts</tt>(<i>group</i>)</a>
+     </td><td>Return list of subcircuit contacts in group</td></tr>
+    <tr><td><a href="funcs:ext:group#CountGroupTerminals">
+     <tt>CountGroupTerminals</tt>(<i>group</i>)</a>
+     </td><td>Count cell connection terminals in group</td></tr>
+    <tr><td><a href="funcs:ext:group#ListGroupTerminals">
+     <tt>ListGroupTerminals</tt>(<i>group</i>)</a>
+     </td><td>Return list of cell connection terminals in group</td></tr>
+    <tr><td><a href="funcs:ext:group#ListGroupTerminalNames">
+     <tt>ListGroupTerminalNames</tt>(<i>group</i>)</a>
+     </td><td>Return list of cell contact terminal names in group</td></tr>
+    <tr><td><a href="funcs:ext:group#CountGroupPhysTerminals">
+     <tt>CountGroupPhysTerminals</tt>(<i>group</i>)</a>
+     </td><td>Count physical terminals in group</td></tr>
+    <tr><td><a href="funcs:ext:group#ListGroupPhysTerminals">
+     <tt>ListGroupPhysTerminals</tt>(<i>group</i>)</a>
+     </td><td>Return list of physical terminals in group</td></tr>
+
+    <!-- 070809 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:ext:pdev">Physical Devices</a></th></tr>
+
+    <tr><td><a href="funcs:ext:pdev#ListPhysDevs">
+     <tt>ListPhysDevs</tt>(<i>name</i>, <i>pref</i>, <i>indices</i>,
+     <i>area_array</i>)</a>
+     </td><td>Return list of physical devices</td></tr>
+    <tr><td><a href="funcs:ext:pdev#GetPdevName">
+     <tt>GetPdevName</tt>(<i>device_handle</i>)</a>
+     </td><td>Return device name</td></tr>
+    <tr><td><a href="funcs:ext:pdev#GetPdevIndex">
+     <tt>GetPdevIndex</tt>(<i>device_handle</i>)</a>
+     </td><td>Return device index</td></tr>
+    <tr><td><a href="funcs:ext:pdev#GetPdevDual">
+     <tt>GetPdevDual</tt>(<i>device_handle</i>)</a>
+     </td><td>Return corresponding electrical device</td></tr>
+    <tr><td><a href="funcs:ext:pdev#GetPdevBB">
+     <tt>GetPdevBB</tt>(<i>device_handle</i>, <i>array</i>)</a>
+     </td><td>Return device bounding box</td></tr>
+    <tr><td><a href="funcs:ext:pdev#GetPdevMeasure">
+     <tt>GetPdevMeasure</tt>(<i>device_handle</i>, <i>mname</i>)</a>
+     </td><td>Return device measurement</td></tr>
+    <tr><td><a href="funcs:ext:pdev#ListPdevMeasures">
+     <tt>ListPdevMeasures</tt>(<i>device_handle</i>)</a>
+     </td><td>Return list of measurement keywords</td></tr>
+    <tr><td><a href="funcs:ext:pdev#ListPdevContacts">
+     <tt>ListPdevContacts</tt>(<i>device_handle</i>)</a>
+     </td><td>Return list of device contacts</td></tr>
+    <tr><td><a href="funcs:ext:pdev#GetPdevContactName">
+     <tt>GetPdevContactName</tt>(<i>dev_contact_handle</i>)</a>
+     </td><td>Return device contact name</td></tr>
+    <tr><td><a href="funcs:ext:pdev#GetPdevContactBB">
+     <tt>GetPdevContactBB</tt>(<i>dev_contact_handle</i>, <i>array</i>)</a>
+     </td><td>Return device contact bounding box</td></tr>
+    <tr><td><a href="funcs:ext:pdev#GetPdevContactGroup">
+     <tt>GetPdevContactGroup</tt>(<i>dev_contact_handle</i>)</a>
+     </td><td>Return device contact conductor group</td></tr>
+    <tr><td><a href="funcs:ext:pdev#GetPdevContactLayer">
+     <tt>GetPdevContactLayer</tt>(<i>dev_contact_handle</i>)</a>
+     </td><td>Return device contact layer</td></tr>
+    <tr><td><a href="funcs:ext:pdev#GetPdevContactDev">
+     <tt>GetPdevContactDev</tt>(<i>dev_contact_handle</i>)</a>
+     </td><td>Return device containing contact</td></tr>
+    <tr><td><a href="funcs:ext:pdev#GetPdevContactDevName">
+     <tt>GetPdevContactDevName</tt>(<i>dev_contact_handle</i>)</a>
+     </td><td>Return name of device containing contact</td></tr>
+    <tr><td><a href="funcs:ext:pdev#GetPdevContactDevIndex">
+     <tt>GetPdevContactDevIndex</tt>(<i>dev_contact_handle</i>)</a>
+     </td><td>Return index of device containing contact</td></tr>
+
+    <!-- 061116 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:ext:subc">Physical Subcircuits</a></th></tr>
+
+    <tr><td><a href="funcs:ext:subc#ListPhysSubckts">
+     <tt>ListPhysSubckts</tt>(<i>name</i>, <i>index</i>, <i>l</i>, <i>b</i>,
+     <i>r</i>, <i>t</i>)</a>
+     </td><td>Return list of physical subcircuits</td></tr>
+    <tr><td><a href="funcs:ext:subc#GetPscName">
+     <tt>GetPscName</tt>(<i>subckt_handle</i>)</a>
+     </td><td>Return master name of physical subcircuit</td></tr>
+    <tr><td><a href="funcs:ext:subc#GetPscIndex">
+     <tt>GetPscIndex</tt>(<i>subckt_handle</i>)</a>
+     </td><td>Return index of physical subcircuit</td></tr>
+    <tr><td><a href="funcs:ext:subc#GetPscIdNum">
+     <tt>GetPscIdNum</tt>(<i>subckt_handle</i>)</a>
+     </td><td>Return id number of physical subcircuit</td></tr>
+    <tr><td><a href="funcs:ext:subc#GetPscInstName">
+     <tt>GetPscInstName</tt>(<i>subckt_handle</i>)</a>
+     </td><td>Return instance name ofphysical subcircuit</td></tr>
+    <tr><td><a href="funcs:ext:subc#GetPscDual">
+     <tt>GetPscDual</tt>(<i>subckt_handle</i>)</a>
+     </td><td>Return corresponding electrical subcircuit</td></tr>
+    <tr><td><a href="funcs:ext:subc#GetPscBB">
+     <tt>GetPscBB</tt>(<i>subckt_handle</i>, <i>array</i>)</a>
+     </td><td>Return physical subcircuit bounding box</td></tr>
+    <tr><td><a href="funcs:ext:subc#GetPscLoc">
+     <tt>GetPscLoc</tt>(<i>subckt_handle</i>, <i>array</i>)</a>
+     </td><td>Return physical subcircuit placement location</td></tr>
+    <tr><td><a href="funcs:ext:subc#GetPscTransform">
+     <tt>GetPscTransform</tt>(<i>subckt_handle</i>, <i>type</i>,
+     <i>array</i>)</a>
+     </td><td>Return physical subcircuit orientation string</td></tr>
+    <tr><td><a href="funcs:ext:subc#ListPscContacts">
+     <tt>ListPscContacts</tt>(<i>subckt_handle</i>)</a>
+     </td><td>Return list of contacts</td></tr>
+    <tr><td><a href="funcs:ext:subc#IsPscContactIgnorable">
+     <tt>IsPscContactIgnorable</tt>(<i>subc_contact_handle</i>)</a>
+     </td><td>Return 1 if contact to ignored subcircuit</td></tr>
+    <tr><td><a href="funcs:ext:subc#GetPscContactName">
+     <tt>GetPscContactName</tt>(<i>subc_contact_handle</i>)</a>
+     </td><td>Return name of subcircuit</td></tr>
+    <tr><td><a href="funcs:ext:subc#GetPscContactGroup">
+     <tt>GetPscContactGroup</tt>(<i>subc_contact_handle</i>)</a>
+     </td><td>Return conductor group of contact</td></tr>
+    <tr><td><a href="funcs:ext:subc#GetPscContactSubcGroup">
+     <tt>GetPscContactSubcGroup</tt>(<i>subc_contact_handle</i>)</a>
+     </td><td>Return group of contact in subcircuit</td></tr>
+    <tr><td><a href="funcs:ext:subc#GetPscContactSubc">
+     <tt>GetPscContactSubc</tt>(<i>subc_contact_handle</i>)</a>
+     </td><td>Return subcircuit containing contact</td></tr>
+    <tr><td><a href="funcs:ext:subc#GetPscContactSubcName">
+     <tt>GetPscContactSubcName</tt>(<i>subc_contact_handle</i>)</a>
+     </td><td>Return name of subcircuit containing contact</td></tr>
+    <tr><td><a href="funcs:ext:subc#GetPscContactSubcIndex">
+     <tt>GetPscContactSubcIndex</tt>(<i>subc_contact_handle</i>)</a>
+     </td><td>Return index of subcircuit containing contact</td></tr>
+    <tr><td><a href="funcs:ext:subc#GetPscContactSubcIdNum">
+     <tt>GetPscContactSubcIdNum</tt>(<i>subc_contact_handle</i>)</a>
+     </td><td>Return id number of subcircuit containing contact</td></tr>
+    <tr><td><a href="funcs:ext:subc#GetPscContactSubcInstName">
+     <tt>GetPscContactSubcInstName</tt>(<i>subc_contact_handle</i>)</a>
+     </td><td>Return instance name of subcircuit containing contact</td></tr>
+
+    <!-- 100508 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:ext:edev">Electrical Devices</a></th></tr>
+
+    <tr><td><a href="funcs:ext:edev#ListElecDevs">
+     <tt>ListElecDevs</tt>(<i>regex</i>)</a>
+     </td><td>Return list of electrical devices</td></tr>
+    <tr><td><a href="funcs:ext:edev#SetEdevProperty">
+     <tt>SetEdevProperty</tt>(<i>devname</i>, <i>prpty</i>, <i>string</i>)</a>
+     </td><td>Set electrical device property</td></tr>
+    <tr><td><a href="funcs:ext:edev#GetEdevProperty">
+     <tt>GetEdevProperty</tt>(<i>devname</i>, <i>prpty</i>)</a>
+     </td><td>Return electrical device property</td></tr>
+    <tr><td><a href="funcs:ext:edev#GetEdevObj">
+     <tt>GetEdevObj</tt>(<i>devname</i>)</a>
+     </td><td>Return electrical device subcell object</td></tr>
+
+    <!-- 052409 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:ext:extrl">Resistance/Inductance
+        Extraction</a></th></tr>
+
+    <tr><td><a href="funcs:ext:extrl#ExtractRL">
+     <tt>ExtractRL</tt>(<i>conductor_zoidlist</i>, <i>layername</i>,
+     <i>r_or_l</i>, <i>array</i>, <i>term</i>, ...)</a>
+     </td><td>Extract resistance or inductance from object</td></tr>
+    <tr><td><a href="funcs:ext:extrl#ExtractNetResistance">
+     <tt>ExtractNetResistance</tt>(<i>net_handle</i>, <i>spicefile</i>,
+     <i>array</i>, <i>term</i>, ...)</a>
+     </td><td>Extract resistance from wire net</td></tr>
+    </table>
+
+!!SEEALSO
+scr:iffuncs
+
+!!KEYWORD
+funcs:ext:menu
+!!TITLE
+Menu Commands
+!!HTML
+
+    The functions in this section provide an interface to the
+    extraction system.  This interface is by no means complete, but it
+    allows many common operations to be performed and allows traversal
+    and information retrieval.
+    <hr>
+
+    <!-- 061516 -->
+    <a name="DumpPhysNetlist"></a>
+    <dl>
+    <dt><b>(int) <tt>DumpPhysNetlist</tt>(<i>filename</i>, <i>depth</i>,
+     <i>modestring</i>, <i>names</i>)</b>
+    <dd><br>This function dumps a netlist file extracted from the physical
+    part of the database, much like the <a href="xic:pnet"><b>Dump
+    Phys Netlist</b></a> command in the <b>Extract Menu</b>.  The
+    <i>filename</i> argument is a file name which will receive the
+    output.  If null or empty, the file will be the base name of the
+    current cell with "<tt>.physnet</tt>" appended.  The <i>depth</i>
+    argument specifies the depth of the hierarchy to process.  If an
+    integer, 0 represents the current cell only, 1 includes the first
+    level subcells, etc.  A negative integer specifies to process the
+    entire hierarchy.  This argument can also be a string beginning
+    with the letter '<tt>a</tt>', which will process all levels of the
+    hierarchy.
+
+    <p>
+    The third argument is a string, consisting of characters from the
+    table below, which set the mode of the command.  These are
+    analogous to the check boxes that appear with the <b>Dump Phys
+    Netlist</b> command.  If a character does not appear in the
+    string, that option is turned off.  If it appears in lower case,
+    the option is turned on, and if it appears in upper case, the
+    option will be set by the present value of the corresponding <a
+    href="!set"><b>!set</b></a> variable.  The characters can appear
+    in any order.
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>character</th> <th>option</th> <th>corresponding variable</th></tr>
+    <tr><td><tt>n</tt></td> <td><b>net</b></td> <td><b>PnetNet</b></td></tr>
+    <tr><td><tt>d</tt></td> <td><b>devs</b></td> <td><b>PnetDevs</b></td></tr>
+    <tr><td><tt>s</tt></td> <td><b>spice</b></td> <td><b>PnetSpice</b></td></tr>
+    <tr><td><tt>b</tt></td> <td><b>list bottom-up</b></td> <td><b>PnetBottomUp</b></td></tr>
+    <tr><td><tt>g</tt></td> <td><b>show geometry</b></td> <td><b>PnetShowGeometry</b></td></tr>
+    <tr><td><tt>c</tt></td> <td><b>include wire cap</b></td> <td><b>PnetIncludeWireCap</b></td></tr>
+    <tr><td><tt>a</tt></td> <td><b>list all cells</b></td> <td><b>PnetListAll</b></td></tr>
+    <tr><td><tt>l</tt></td> <td><b>ignore labels</b></td> <td><b>PnetNoLabels</b></td></tr>
+    </table>
+
+    <p>
+    The final argument, if not null or empty, contains a
+    space-separated list of physical format names, each of which must
+    match a <tt>PnetFormat</tt> name in the <a
+    href="xic:fmtlib">format library</a> file, or option names from
+    the table above.  The names that contain white space should be
+    double-quoted.
+
+    <p>
+    For each cell, a field in the output is generated for each format
+    choice implicit in the <i>modestring</i> or given in the
+    <i>names</i>.  In most cases, only one format is probably wanted. 
+    The option text in the table above can also be included in the
+    <i>names</i>, which is equivalent to giving the corresponding
+    lower-case letter in the <i>modestring</i>.  The <i>modestring</i>
+    setting will have precedence if there is a conflict.  If both the
+    <i>modestring</i> and the <i>names</i> string are empty or null,
+    an effective mode string consisting of all of the upper-case
+    option letters is used.
+
+    <p>
+    Example:  print a SPICE file
+    <blockquote>
+      <tt>DumpPhysNetlist("myfile.cir", "a", "s", 0)</tt><br>
+      or<br>
+      <tt>DumpPhysNetlist("myfile.cir", "a", 0, "spice")</tt>
+    </blockquote>
+
+    <p>
+    If the function succeeds, 1 is returned, otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 061516 -->
+    <a name="DumpElecNetlist"></a>
+    <dl>
+    <dt><b>(int) <tt>DumpElecNetlist</tt>(<i>filename</i>, <i>depth</i>,
+     <i>modestring</i>, <i>names</i>)</b>
+    <dd><br>This function dumps a netlist file extracted from the
+    electrical part of the database, much like the <a
+    href="xic:enet"><b>Dump Elec Netlist</b></a> command in the
+    <b>Extract Menu</b>.  The <i>filename</i> argument is a file name
+    which will receive the output.  If null or empty, the file will be
+    the base name of the current cell with "<tt>.elecnet</tt>"
+    appended.  The <i>depth</i> argument specifies the depth of the
+    hierarchy to process.  If an integer, 0 represents the current
+    cell only, 1 includes the first level subcells, etc.  A negative
+    integer specifies to process the entire hierarchy.  This argument
+    can also be a string beginning with the letter '<tt>a</tt>', which
+    will process all levels of the hierarchy.
+
+    <p>
+    The third argument is a string, consisting of characters from the
+    table below, which set the mode of the command.  These are
+    analogous to the check boxes that appear with the <b>Dump Elec
+    Netlist</b> command.  If a character does not appear in the
+    string, that option is turned off.  If it appears in lower case,
+    the option is turned on, and if it appears in upper case, the
+    option will be set by the present value of the corresponding <a
+    href="!set"><b>!set</b></a> variable.  The characters can appear
+    in any order.
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>character</th> <th>option</th> <th>corresponding variable</th></tr>
+    <tr><td><tt>n</tt></td> <td><b>net</b></td> <td><b>EnetNet</b></td></tr>
+    <tr><td><tt>s</tt></td> <td><b>spice</b></td> <td><b>EnetSpice</b></td></tr>
+    <tr><td><tt>b</tt></td> <td><b>list bottom-up</b></td> <td><b>EnetBottomUp</b></td></tr>
+    </table>
+
+    <p>
+    The final argument, if not null or empty, contains a
+    space-separated list of electrical format names, each of which
+    must match an <tt>EnetFormat</tt> name in the <a
+    href="xic:fmtlib">format library</a> file, or option names from
+    the table above.  The names that contain white space should be
+    double quoted.
+
+    <p>
+    For each cell, a field in the output is generated for each format
+    choice implicit in the <i>modestring</i> or given in the
+    <i>names</i>.  In most cases, only one format is probably wanted. 
+    The option text in the table above can also be included in the
+    <i>names</i>, which is equivalent to giving the corresponding
+    lower-case letter in the <i>modestring</i>.  The <i>modestring</i>
+    setting will have precedence if there is a conflict.  If both the
+    <i>modestring</i> and the <i>names</i> string are empty or null,
+    an effective mode string consisting of all of the upper-case
+    option letters is used.
+
+    <p>
+    If the function succeeds, 1 is returned, otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SourceSpice"></a>
+    <dl>
+    <dt><b>(int) <tt>SourceSpice</tt>(<i>filename</i>, <i>modestring</i>)</b>
+    <dd><br>This function will parse a SPICE file, adding to or updating
+    the electrical part of the database with the devices and
+    subcircuits found.  This is equivalent to the <a
+    href="xic:sourc"><b>Source SPICE</b></a> command in the <b>Extract
+    Menu</b>.  The first argument is a path to the SPICE file to
+    process.
+
+    <p>
+    The final argument is a string, consisting of characters from the
+    table below, which set the mode of the command.  These are
+    analogous to the check boxes that appear with the <b>Source
+    SPICE</b> command.  If a character does not appear in the string,
+    that option is turned off.  If it appears in lower case, the
+    option is turned on, and if it appears in upper case, the option
+    will be set by the present value of the corresponding <a
+    href="!set"><b>!set</b></a> variable.  The characters can appear
+    in any order.  If the string is empty or null, all options will be
+    set by the corresponding variables.
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>character</th> <th>option</th> <th>corresponding variable</th></tr>
+    <tr><td><tt>a</tt></td> <td><b>all devs</b></td> <td><b>SourceAllDevs</b></td></tr>
+    <tr><td><tt>r</tt></td> <td><b>create</b></td> <td><b>SourceCreate</b></td></tr>
+    <tr><td><tt>l</tt></td> <td><b>clear</b></td> <td><b>SourceClear</b></td></tr>
+    </table>
+
+    <p>
+    If the operation succeeds, 1 is returned, otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 113009 -->
+    <a name="ExtractAndSet"></a>
+    <dl>
+    <dt><b>(int) <tt>ExtractAndSet</tt>(<i>depth</i>, <i>modestring</i>)</b>
+    <dd><br>This function performs extraction on the physical part of the
+    database, updating the electrical part.  This is equivalent to the
+    <a href="xic:exset"><b>Source Physical</b></a> command in the
+    <b>Extract Menu</b>.  The first argument indicates the depth of
+    the hierarchy to process.  This can be an integer:  0 means
+    process the current cell only, 1 means process the current cell
+    plus the subcells, etc., and a negative integer sets the depth to
+    process the entire hierarchy.  This argument can also be a string
+    starting with '<tt>a</tt>' such as "<tt>a</tt>" or "<tt>all</tt>"
+    which indicates to process the entire hierarchy.
+
+    <p>
+    The final argument is a string, consisting of characters from the
+    table below, which set the mode of the command.  These are
+    analogous to the check boxes that appear with the <b>Source
+    Physical</b> command.  If a character does not appear in the
+    string, that option is turned off.  If it appears in lower case,
+    the option is turned on, and if it appears in upper case, the
+    option will be set by the present value of the corresponding <a
+    href="!set"><b>!set</b></a> variable.  The characters can appear
+    in any order.  If the string is empty or null, all options will be
+    set by the corresponding variables.
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>character</th> <th>option</th> <th>corresponding variable</th></tr>
+    <tr><td><tt>a</tt></td> <td><b>all devs</b></td> <td><b>NoExsetAllDevs</b></td></tr>
+    <tr><td><tt>r</tt></td> <td><b>create</b></td> <td><b>NoExsetCreate</b></td></tr>
+    <tr><td><tt>l</tt></td> <td><b>clear</b></td> <td><b>ExsetClear</b></td></tr>
+    <tr><td><tt>c</tt></td> <td><b>include wire cap</b></td> <td><b>ExsetIncludeWireCap</b></td></tr>
+    <tr><td><tt>n</tt></td> <td><b>ignore labels</b></td> <td><b>ExsetNoLabels</b></td></tr>
+    </table>
+
+    <p>
+    If the operation succeeds, 1 is returned, otherwise 0 is returned. 
+    This function does not redraw the windows.
+    </dl>
+    <hr>
+
+    <!-- 051809 -->
+    <a name="FindPath"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>FindPath</tt>(<i>x</i>, <i>y</i>, <i>depth</i>,
+      <i>use_extract</i>)</b>
+    <dd><br>
+    This function returns a handle to a list of copies of physical
+    conducting objects in a wire net.  The <i>x</i>,<i>y</i> point
+    (microns, in the physical part of the current cell) should
+    intersect a conducting object, and the list will consist of this
+    object plus connected objects.  The <i>depth</i> argument is an
+    integer or a string beginning with "<tt>a</tt>" (for "all") which
+    gives the hierarchy search depth.  Only objects in cells to this
+    depth will be considered for addition to the list (0 means objects
+    in the current cell only).  If the boolean value
+    <i>use_extract</i> is nonzero, the main extraction functions will
+    be used to determine the connectivity.  If the value is zero, the
+    connectivity is established through geometry.  This is similar to
+    the <b>Select Path</b> and <b>"Quick" Path</b> modes available in
+    the <a href="xic:exsel"><b>Path Selection Control</b></a> panel.
+
+    <p>
+    The return value is a handle to a list of object copies, or 0 if
+    no objects are found.
+    </dl>
+    <hr>
+
+    <!-- 052409 -->
+    <a name="FindPathOfGroup"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>FindPathOfGroup</tt>(<i>groupnum</i>,
+      <i>depth</i>)</b>
+    <dd><br>
+    This function returns a handle to a list of copies of physical
+    conducting objects in the group number from the current cell
+    given, to the given depth.  The depth argument is an integer or a
+    string beginning with "<tt>a</tt>" (for "<tt>all</tt>") which
+    gives the hierarchy search depth.  Only objects in cells to this
+    depth will be considered for addition to the list (0 means objects
+    in the current cell only).
+
+    <p>
+    The function will fail (halt the script) on a major error.  If the
+    group number is out of range, or a "minor" error occurs, the
+    function will return a scalar 0, and an error message should be
+    available from <a href="GetError"><tt>GetError</tt></a>.
+
+    <p>
+    Otherwise, the return value is a handle to a list of object
+    copies, or the list may be empty if the group has no physical
+    objects.
+    </dl>
+
+!!SEEALSO
+funcs:ext
+
+!!KEYWORD
+funcs:ext:term
+!!TITLE
+Terminals
+!!HTML
+    Here, a "terminal" refers to a <a
+    href="prpty:node"><b>node</b></a> property of an electrical device
+    or circuit.  Both masters and instances have such properties,
+    though their internal structure differs a bit.  A
+    "terminal_handle" is a handle to a list of terminals, that can be
+    passed to functions that provide information about or operate on
+    node properties.
+
+    <p>
+    In the next section, we introduce "physical terminals", which are
+    different objects.  A physical terminal is a data structure that
+    stores information about the physical aspects of a terminal,
+    including its location in the layout, an object that it may be
+    bound to, and the associated layer.  If a schematic has a layout
+    and has been associated, then each terminal (node property) has a
+    pointer to the corresponding physical terminal, and vice-versa. 
+    Thus, in general either object can be used to reference data.  In
+    fact, in most of the functions in this section and the next, the
+    "handle" argument can be a handle to either a node property or
+    physical terminal.
+
+    <p>
+    However, cells that are electrical-only will not have physical
+    terminals, and similarly, a layout without a corresponding
+    schematic will lack node properties.  In these cases, only the
+    existing object type can be used.
+
+    <!-- 041113 -->
+    <a name="ListTerminals"></a>
+    <dl>
+    <dt><b>(terminal_handle) <tt>ListTerminals</tt>()</b>
+    <dd><br>
+    Return a handle containing a list of the connection terminals of
+    the current cell.  These correspond to the normal contact
+    terminals as would be defined with the <a
+    href="xic:subct"><b>subct</b></a> command, as represented by <a
+    href="prpty:node"><b>node</b></a> properties of the electrical
+    cell view.  On success, a handle is returned containing the
+    terminal list.  If there are no terminals defined or some other
+    error occurs, a scalar 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 041113 -->
+    <a name="FindTerminal"></a>
+    <dl>
+    <dt><b>(terminal_handle) <tt>FindTerminal</tt>(<i>name</i>, <i>index</i>,
+    <i>use_e</i>, <i>xe</i>, <i>ye</i>, <i>use_p</i>, <i>xp</i>, <i>yp</i>)</b>
+    <dd><br>
+    This function will return a handle referencing a single terminal,
+    if one can be found among the current cell contact terminals that
+    matches the arguments.  The arguments specify parameters, any of
+    which can be ignored.  The non-ignored parameters must all match.
+
+    <p>
+    The <i>name</i> can be a string that will match an applied
+    terminal name (not a default name generated by <i>Xic</i>).  The
+    argument will be ignored if a scalar 0 or null or empty string is
+    passed.
+
+    <p>
+    The <i>index</i> is the terminal order index, or -1 if the
+    parameter is to be ignored.  This is the number that is shown
+    within the terminal box in the <a
+    href="xic:subct"><b>subct</b></a> command.
+
+    <p>
+    If <i>use_e</i> is a nonzero value, the next two arguments are
+    taken as a location in the electrical drawing.  These are
+    specified in fictitious "microns" which represent 1000 internal
+    units.  These are the numbers displayed in the <a
+    href="coordline">coordinate readout</a> area while a schematic is
+    being edited.  A location match will depend of whether the
+    electrical cell is <a href="xic:symbl">symbolic</a> or not.  If
+    symbolic, a location match to any of the placement locations will
+    count as a match (terminals can have more than one "hot spot" in
+    the symbolic display).  If <i>use_e</i> is 0, the two arguments
+    that follow are ignored and can be any numeric values.
+
+    <p>
+    Similarly, if <i>use_p</i> is nonzero, the next two arguments
+    represent a coordinate in the layout, given in (real) microns.  If
+    a physical terminal is placed at the given location, a match will
+    be indicated.  If <i>use_p</i> is zero, the two arguments that
+    follow are ignored, and can be set to any numeric values.
+
+    <p>
+    The arguments should provide at least one matchable parameter. 
+    Internally, the list of terminals is scanned, and the first
+    matching terminal found is returned, referenced by a handle.  If
+    no terminals match, a scalar zero is returned.
+    </dl>
+    <hr>
+
+    <!-- 041113 -->
+    <a name="CreateTerminal"></a>
+    <dl>
+    <dt><b>(terminal_handle) <tt>CreateTerminal</tt>(<i>name</i>, <i>x</i>,
+    <i>y</i>, <i>termtype</i>)</b>
+    <dd><br>
+    This function will create a new terminal in the schematic of the
+    current cell.  If a <i>name</i> string is passed, the terminal
+    will be given that name.  If this argument is a scalar 0 or a null
+    or empty string, the terminal will not have an assigned name but
+    will use an internally generated name.  The terminal will be
+    placed at the location indicated by the <i>x</i> and <i>y</i>
+    arguments, which are in fictitious "microns" representing 1000
+    database units.  These are the same coordinates as displayed in
+    the <a href="coordline">coordinate readout</a> while a schematic
+    is being edited.
+
+    <p>
+    The <i>termtype</i> argument can be a scalar integer or a keyword,
+    from the list below.  This will assign a type to the terminal. 
+    The type is not used by <i>Xic</i>, but this facility may be
+    useful to the user.
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td> <td><tt>input</tt></td></tr>
+    <tr><td>1</td> <td><tt>output</tt></td></tr>
+    <tr><td>2</td> <td><tt>inout</tt></td></tr>
+    <tr><td>3</td> <td><tt>tristate</tt></td></tr>
+    <tr><td>4</td> <td><tt>clock</tt></td></tr>
+    <tr><td>5</td> <td><tt>outclock</tt></td></tr>
+    <tr><td>6</td> <td><tt>supply</tt></td></tr>
+    <tr><td>7</td> <td><tt>outsupply</tt></td></tr>
+    <tr><td>8</td> <td><tt>ground</tt></td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Keyword matching is case-insensitive.  If the argument is not
+    recognized, and the default "<tt>input</tt>" will be used.
+
+    <p>
+    The function returns a handle that references the new terminal on
+    success, or a scalar zero otherwise.
+    </dl>
+    <hr>
+
+    <!-- 041213 -->
+    <a name="DestroyTerminal"></a>
+    <dl>
+    <dt><b>(int) <tt>DestroyTerminal</tt>(<i>thandle</i>)</b>
+    <dd><br>
+    This function will destroy the terminal referenced by the passed
+    handle, and will close the handle.  This destroys the terminal,
+    which is actually a <a href="prpty:node"><b>node</b></a> property
+    of the electrical current cell, and the linkage into the physical
+    layout, if any.  If a terminal was destroyed, value one is
+    returned, or zero on error.
+    </dl>
+    <hr>
+
+    <!-- 060716 -->
+    <a name="GetTerminalName"></a>
+    <dl>
+    <dt><b>(string) <tt>GetTerminalName</tt>(<i>thandle</i>)</b>
+    <dd><br>
+    Return a string containing the name of the terminal or physical
+    terminal referenced by the handle passed as an argument.  Both
+    objects have name fields that track.  However, if no name was
+    assigned, for a terminal a default name generated by <i>Xic</i> is
+    returned, whereas the return from a physical terminal will be
+    null.
+    </dl>
+    <hr>
+
+    <!-- 060716 -->
+    <a name="SetTerminalName"></a>
+    <dl>
+    <dt><b>(int) <tt>SetTerminalName</tt>(<i>thandle</i>, <i>name</i>)</b>
+    <dd><br>
+    The first argument is a handle that references a terminal or
+    physical terminal.  The second argument is a string which gives a
+    name to apply.  It can also be a scalar 0, or if null or empty any
+    existing assigned name will be removed.  Both terminals and
+    physical terminals have names that track, this will change both,
+    when both objects exist.  The return value is one on success, zero
+    if error.
+    </dl>
+    <hr>
+
+    <!-- 060716 -->
+    <a name="GetTerminalType"></a>
+    <dl>
+    <dt><b>(int) <tt>GetTerminalType</tt>(<i>thandle</i>)</b>
+    <dd><br>
+    Return a type code for the terminal referenced by the handle
+    passed as an argument, which can also be a handle to the
+    corresponding physical terminal.  A non-negative return represents
+    success.  The code represents the terminal type set by the user. 
+    The terminal type is not used by <i>Xic</i>, but is available for
+    user applications.  The defined types are listed below.  The
+    default is type 0.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td> <td><tt>input</tt></td></tr>
+    <tr><td>1</td> <td><tt>output</tt></td></tr>
+    <tr><td>2</td> <td><tt>inout</tt></td></tr>
+    <tr><td>3</td> <td><tt>tristate</tt></td></tr>
+    <tr><td>4</td> <td><tt>clock</tt></td></tr>
+    <tr><td>5</td> <td><tt>outclock</tt></td></tr>
+    <tr><td>6</td> <td><tt>supply</tt></td></tr>
+    <tr><td>7</td> <td><tt>outsupply</tt></td></tr>
+    <tr><td>8</td> <td><tt>ground</tt></td></tr>
+    </table>
+    </blockquote>
+    </dl>
+    <hr>
+
+    <!-- 060716 -->
+    <a name="SetTerminalType"></a>
+    <dl>
+    <dt><b>(int) <tt>SetTerminalType</tt>(<i>thandle</i>, <i>termtype</i>)</b>
+    <dd><br>
+    This function will apply a terminal type to the terminal
+    referenced by the handle passed as the first argument, which can
+    also be a handle to the corresponding physical terminal.  The
+    second argument is either an integer, or a string keyword, from
+    the list below.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td> <td><tt>input</tt></td></tr>
+    <tr><td>1</td> <td><tt>output</tt></td></tr>
+    <tr><td>2</td> <td><tt>inout</tt></td></tr>
+    <tr><td>3</td> <td><tt>tristate</tt></td></tr>
+    <tr><td>4</td> <td><tt>clock</tt></td></tr>
+    <tr><td>5</td> <td><tt>outclock</tt></td></tr>
+    <tr><td>6</td> <td><tt>supply</tt></td></tr>
+    <tr><td>7</td> <td><tt>outsupply</tt></td></tr>
+    <tr><td>8</td> <td><tt>ground</tt></td></tr>
+    </table>
+    </blockquote>
+
+    The function returns one if the type is set successfully, zero
+    otherwise.
+    </dl>
+    <hr>
+
+    <!-- 060716 -->
+    <a name="GetTerminalFlags"></a>
+    <dl>
+    <dt><b>(int) <tt>GetTerminalFlags</tt>(<i>thandle</i>)</b>
+    <dd><br>
+    Return the flags for the terminal referenced by the handle passed
+    as an argument, which can also be a handle to the corresponding
+    physical terminal.  The return value is an integer with bits
+    representing flags as listed in the table below.  On error, the
+    return value is -1.
+
+    <dl>
+    <dt><tt>0x1</tt> (<a href="BYNAME"><tt>BYNAME</tt></a>)<dd> 
+     The terminal makes connections in the schematic by name rather
+     than by location.
+    <dt><tt>0x2</tt> (<tt>VIRTUAL</tt>)<dd>
+     No longer used, reserved.
+    <dt><tt>0x4</tt> (<a href="FIXED"><tt>FIXED</tt></a>)<dd>
+     The physical terminal has been placed by the user, and <i>Xic</i>
+     should never move it.
+    <dt><tt>0x8</tt> (<a href="SCINVIS"><tt>SCINVIS</tt></a>)<dd>
+     The electrical terminal will not be shown in schematics.
+    <dt><tt>0x10</tt> (<a href="SYINVIS"><tt>SYINVIS</tt></a>)<dd>
+     The electrical terminal will not be shown in the symbol.
+    <dt><tt>0x100</tt> (<tt>UNINIT</tt>)<dd>
+     The terminal is not initialized (internal).
+    <dt><tt>0x200</tt> (<tt>LOCSET</tt>)<dd>
+     The physical terminal location has been set (internal).
+    <dt><tt>0x400</tt> (<tt>POINTS</tt>)<dd>
+     Set when the terminal has multiple hot-spots.
+    <dt><tt>0x800</tt> (<tt>NOPHYS</tt>)<dd>
+     Set if the terminal has no physical implementation, such as a
+     temperature node.  Such terminals have no physical terminals.
+    </dl>
+    </dl>
+    <hr>
+
+    <!-- 060716 -->
+    <a name="SetTerminalFlags"></a>
+    <dl>
+    <dt><b>(int) <tt>SetTerminalFlags</tt>(<i>thandle</i>, <i>flags</i>)</b>
+    <dd><br>
+    This will set the first five flags listed for
+    <tt>GetTerminalFlags</tt> in the terminal referenced by the first
+    argument, which can also be a handle to the corresponding physical
+    terminal.  All but the five least significant bits in the
+    <i>flags</i> integer are ignored.  The bits that are set will set
+    the corresponding flag in the terminal, unset bits are ignored. 
+    The value one is returned on success, zero otherwise.
+    </dl>
+    <hr>
+
+    <!-- 060716 -->
+    <a name="UnsetTerminalFlags"></a>
+    <dl>
+    <dt><b>(int) <tt>UnsetTerminalFlags</tt>(<i>thandle</i>, <i>flags</i>)</b>
+    <dd><br>
+    This will unset the first five flags listed for
+    <tt>GetTerminalFlags</tt> in the terminal referenced by the first
+    argument, which can also be a handle to the corresponding physical
+    terminal.  All but the five least significant bits in the
+    <i>flags</i> integer are ignored.  The bits that are set will
+    unset the corresponding flag in the terminal, unset bits are
+    ignored.  The value one is returned on success, zero otherwise.
+    </dl>
+    <hr>
+
+    <!-- 060716 -->
+    <a name="GetElecTerminalLoc"></a>
+    <dl>
+    <dt><b>(int) <tt>GetElecTerminalLoc</tt>(<i>thandle</i>, <i>index</i>,
+    <i>array</i>)</b>
+    <dd><br>
+    This will return terminal locations in the electrical schematic,
+    of the terminal referenced by the first argument.  This argument
+    can also be a handle to the corresponding physical terminal.  The
+    return is dependent on whether the electrical cell is <a
+    href="xic:symbl">symbolic</a> or not.  Values for <i>x</i> and
+    <i>y</i> are returned in the <i>array</i>, which must have size
+    two or larger.  The returned values are in fictitions "microns"
+    that correspond to 1000 database units.  This is the same
+    coordinate system indicated by the <a href="coordline">coordinate
+    readout</a> when editing a schematic.
+
+    <p>
+    If the electrical cell is not symbolic, the integer <i>index</i>
+    argument must be zero, and the terminal location in the schematic
+    is returned.
+
+    <p>
+    If the electrical cell is symbolic, there can be arbitrarily many
+    "copies" of the terminal, representing multiple "hot spots" where
+    the terminal can make connections.  The <i>index</i> argument is a
+    0-based index for these locations.  To get all of the locations,
+    one should call this function repeatedly while incrementing the
+    index from zero.  A return value of zero indicates that the index
+    is out of range (or some error occurred).  A return value of one
+    indicates success, with the array containing the location.
+    </dl>
+    <hr>
+
+    <!-- 060716 -->
+    <a name="SetElecTerminalLoc"></a>
+    <dl>
+    <dt><b>(int) <tt>SetElecTerminalLoc</tt>(<i>thandle</i>, <i>x</i>,
+    <i>y</i>)</b>
+    <dd><br>
+    This function specifies a location for the terminal referenced by
+    the first arguemnt, for use in electrical mode.  The <i>x</i> and
+    <i>y</i> are coordinates in fictitions "microns" which are 1000
+    database units.  This is the same coordinate system used in the
+    coordinate readout when editing a schematic.  As for most of these
+    functions, the first argument can also be a handle to the
+    corresponding physical terminal.
+
+    <p>
+    The function behaves differently depending on whether the
+    electrical current cell is symbolic or not.  If the electrical
+    current cell not symbolic, the passed coordinates set the terminal
+    location within the schematic.  Otherwise, in symbolic mode, there
+    can be arbitrarily many locations set.  The function will add the
+    passed location to the list of locations for the terminal, if it
+    is not already using the location.
+
+    <p>
+    The function returns one on success, zero otherwise.
+    </dl>
+    <hr>
+
+    <!-- 060716 -->
+    <a name="ClearElecTerminalLoc"></a>
+    <dl>
+    <dt><b>(int) <tt>ClearElecTerminalLoc</tt>(<i>thandle</i>, <i>x</i>,
+    <i>y</i>)</b>
+    <dd><br>
+    This function applies only when the electric current cell is in
+    symbolic mode.  When true, a terminal may be displayed in
+    arbitrarily many locations, representing different possible
+    connection points.  The <i>x</i> and <i>y</i> are coordinates in
+    fictitions "microns" which are 1000 database units.  This is the
+    same coordinate system used in the coordinate readout when editing
+    a schematic.  If the coordinates match a hot spot of the terminal,
+    that location is deleted.
+
+    <p>
+    It is not possible to delete the last location, there is always at
+    least one active location.  Calling this function when the
+    electrical current cell is not symbolic has no effect.  The
+    function returns one on success, zero if error.
+
+    <p>
+    As for most of these functions, the first argument can also be a
+    handle to the corresponding physical terminal.
+    </dl>
+
+!!SEEALSO
+funcs:ext
+
+!!KEYWORD
+funcs:ext:pterm
+!!TITLE
+Physical Terminals
+!!HTML
+    As noted in the description in the <a
+    href="funcs:ext:term><b>Terminals</b></a> section, physical
+    terminals are a separate data structure that save layout
+    information about the terminal, such as effective location, the
+    layer attached to, or an object attached to.  When a schematic
+    exists and has been associated, the physical terminal and the
+    electrical node property are linked, so access to one
+    automatically provides access to the other.  Thus, most of the the
+    functions in this section that access physical terminals will also
+    take a handle to a regular terminal equivalently, as did the
+    functions in the previous section.  However, if one data type does
+    not exist, for the function to succeed, the exissting data type
+    must be passed, and it must contain the data to be accessed.
+
+    <p>
+    Physical terminals that correspond to cell connection points
+    are stored with the physical data, and are therefor potentially
+    available when there is no schematic.  Most commonly, however,
+    they are created upon reading the electrical data for a cell.
+
+    <!-- 060716 -->
+    <a name="ListPhysTerminals"></a>
+    <dl>
+    <dt><b>(physterm_handle) <tt>ListPhysTerminals</tt>()</b>
+    <dd><br>
+    This returns a handle to a list of physical terminal structures
+    that correspond to the cell connection points, as obtained from
+    the physical part of the current cell.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="FindPhysTerminal"></a>
+    <dl>
+    <dt><b>(physterm_handle) <tt>FindPhysTerminal</tt>(<i>name</i>,
+        <i>use_p</i>, <i>xp</i>, <i>yp</i>)</b>
+    <dd><br>
+    This attempts to find a physical terminal structure by name or
+    location.  If a name is given, i.e., the argument is not null or
+    0, then it will match the name of the terminal returned.  If the
+    boolean <i>use_p</i> is nonzero (true), then the coordinates
+    <i>xp</i> and <i>yp</i>, given in microns, will match the
+    placement location of the returned terminal.  If both are given,
+    both must match.
+
+    <p>
+    An empty handle (scalar 0) is returned if there is no matching
+    physical terminal found.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="CreatePhysTerminal"></a>
+    <dl>
+    <dt><b>(int) <tt>CreatePhysTerminal</tt>(<i>thandle</i>, <i>x</i>,
+    <i>y</i>, <i>layer</i>)</b>
+    <dd><br>
+    As created, (electrical) terminals do not contain the data
+    structures necessary for a corresponding terminal in the physical
+    layout.  This is fine as-is, if the user is intending to only work
+    with a schematic, or if the terminal does not have an actual
+    physical counterpart.  However, in general one must create the
+    physical terminal.
+
+    <p>
+    This function will create a new physical terminal, if one of the
+    same name does not currently exist.  The first argument can be a
+    handle to a terminal (electrical node) or a string giving a name. 
+    In the first case, the new physical terminal is created, given the
+    name of the electrical terminal, and the linkage established.  In
+    the second case, which does not require the existance of the
+    electrical schematic, the physical terminal is created under the
+    given name, and saved in the physical data.  It will be linked to
+    corresponding electrical data during association, when possible.
+
+    <p>
+    The <i>x</i> and <i>y</i> give the initial terminal location in
+    the layout in microns.  The layer argument can be scalar 0, which
+    is ignored, or the name of a layer.  The layer must have the <a
+    href="Routing"><tt>Routing</tt></a> keyword applied.  If given,
+    this will set the layer hint for the new terminal.
+
+    <p>
+    The return value is 1 on success, 0 otherwise.  It is not an error
+    if the physical terminal already exists, the function will return 1
+    and perform no other operation in that case.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="HasPhysTerminal"></a>
+    <dl>
+    <dt><b>(int) <tt>HasPhysTerminal</tt>(<i>thandle</i>)</b>
+    <dd><br>
+    This function returns 1 if the (electrical) terminal referenced by
+    the handle argument has a physical terminal link, 0 if no link has
+    been assigned.  On error, a value -1 is returned.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="DestroyPhysTerminal"></a>
+    <dl>
+    <dt><b>(int) <tt>DestroyPhysTerminal</tt>(<i>thandle</i>)</b>
+    <dd><br>
+    This will unlink and destroy the physical terminal data structure
+    that maintains the terminal linkage into the physical layout, if
+    any.  The argument can be a handle to the corresponding electrical
+    terminal, or to the physical terminal itself.  In the latter case,
+    the passed handle will be closed.  The electrical terminal (if
+    any) will still be valid, as will its handle if that was passed. 
+    The function returns one on success, zero if an error occurs.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="GetPhysTerminalLoc"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPhysTerminalLoc</tt>(<i>thandle</i>, <i>array</i>)</b>
+    <dd><br>
+    Return the layout location for the physical terminal referenced by
+    the handle passed as an argument.  The first argument can
+    alternatively be a handle to the corresponding electrical
+    terminal.  The second argument is an array of size two or larger
+    which will receive the x-y coordinate, in microns.  The function
+    returns one on success, zero otherwise.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="SetPhysTerminalLoc"></a>
+    <dl>
+    <dt><b>(int) <tt>SetPhysTerminalLoc</tt>(<i>thandle</i>, <i>x</i>,
+    <i>y</i>)</b>
+    <dd><br>
+    Set the location of the physical terminal referenced by the first
+    argument to the layout coordinate given, in microns.  The first
+    argument can also be a handle to the corresponding electrical
+    terminal.  Generally, physical terminal locations are set by
+    <i>Xic</i>, using extraction results.  However, this may fail,
+    requiring that the user provide a location for one or more
+    terminals.  Terminals that have been placed by the user (using
+    this function) will by default remain fixed in the location.  The
+    function returns one on success, zero if an error occurs.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="GetPhysTerminalLayer"></a>
+    <dl>
+    <dt><b>(string) <tt>GetPhysTerminalLayer</tt>(<i>thandle</i>)</b>
+    <dd><br>
+    Return a string containing the layer name for the physical
+    terminal referenced by the handle passed as an argument.  A handle
+    to the corresponding electrical terminal is also accepted. 
+    Non-virtual physical terminals are associated with an object on a
+    <a href="Routing"><tt>Routing</tt></a> layer.  A null string is
+    returned if there is no associated layer.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="SetPhysTerminalLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>SetPhysTerminalLayer</tt>(<i>thandle</i>,
+      <i>layer</i>)</b>
+    <dd><br>
+    This function will set the associated layer hint on the physical
+    terminal referenced by the handle passed as the first argument.  A
+    handle to the corresponding electrical terminal is also accepted. 
+    If the second argument is the name of a physical layer which has
+    the <a href="Routing"><tt>Routing</tt></a> keyword set, the
+    terminal hint layer will be set to that layer.  If the second
+    argument is a scalar 0, or a null or empty string, any existing
+    hint layer will be removed.  The function returns one on success,
+    zero otherwise.
+    </dl>
+    <hr>
+
+
+    <!-- 061016 -->
+    <a name="GetPhysTerminalGroup"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPhysTerminalGroup</tt>(<i>thandle</i>)</b>
+    <dd><br>
+    This function will return the conductor group number to which the
+    physical terminal referenced by the argument is assigned.  A
+    handle to the corresponding electrical terminal is also accepted. 
+    The group assignment is made during extraction and association. 
+    The return value is a non-negative integer on success, or -1 if
+    extraction/association has not been run (or been reverted), or -2
+    if some error occurred.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="GetPhysTerminalObject"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>GetPhysTerminalObject</tt>(<i>thandle</i>)</b>
+    <dd><br>
+    Return a handle to a physical object that is associated with the
+    physical terminal referenced by the handle passed as an argument. 
+    A handle to the coresponding electrical terminal is also accepted. 
+    Physical terminals are associated with underlying conducting
+    objects as part of the connectivity algorithm.  Not all terminals
+    have an associated object, in which case they are "virtual".  An
+    empty handle (scalar 0) is returned in this case.
+    </dl>
+
+!!SEEALSO
+funcs:ext
+
+!!KEYWORD
+funcs:ext:group
+!!TITLE
+Physical Conductor Groups
+!!HTML
+
+    <!-- 030204 -->
+    <a name="Group"></a>
+    <dl>
+    <dt><b>(int) <tt>Group</tt>()</b>
+    <dd><br>This function will run the grouping and device extraction
+    algorithm on the current physical cell.  The grouping algorithm
+    identifies the wire nets.  The returned value is the number of
+    groups used, or 0 if an error occurs.  The group index extends
+    from 0 through the number returned minus one.  Group 0 is the
+    ground group, if a ground plane layer has been defined.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetNumberGroups"></a>
+    <dl>
+    <dt><b>(int) <tt>GetNumberGroups</tt>()</b>
+    <dd><br>This returns the number of conductor groups allocated by the
+    extraction process in the physical part of the current cell.  The
+    group index passed to other functions should be less than this
+    value.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetGroupBB"></a>
+    <dl>
+    <dt><b>(int) <tt>GetGroupBB</tt>(<i>group</i>, <i>array</i>)</b>
+    <dd><br>This function returns the bounding box of the conductor group
+    whose index is passed as the first argument.  The coordinates, in
+    microns relative to the current physical cell origin, are
+    returned in the <i>array</i>, which must have size 4 or larger. 
+    If the function succeeds, 1 is returned, otherwise 0 is returned. 
+    The saved order is L, B, R, T.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetGroupNode"></a>
+    <dl>
+    <dt><b>(int) <tt>GetGroupNode</tt>(<i>group</i>)</b>
+    <dd><br>This function returns the node number from the electrical
+    database which corresponds to the physical group index passed as
+    the argument.  If the association failed, -1 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetGroupName"></a>
+    <dl>
+    <dt><b>(string) <tt>GetGroupName</tt>(<i>group</i>)</b>
+    <dd><br>This will return a string containing a name for the group
+    whose number is passed as the argument.  The name is the name of a
+    formal terminal attached to the group, or the net name if no
+    formal terminal.  If the group has no name, a null string is
+    returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetGroupNetName"></a>
+    <dl>
+    <dt><b>(string) <tt>GetGroupNetName</tt>(<i>group</i>)</b>
+    <dd><br>This will return a string containing the net name for the
+    group whose number is passed as the argument.  If the group has no
+    net name, a null string is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetGroupCapacitance"></a>
+    <dl>
+    <dt><b>(real) <tt>GetGroupCapacitance</tt>(<i>group</i>)</b>
+    <dd><br>This will return the capacitance assigned to the group whose
+    index is passed as the argument.  If no capacitance has been
+    assigned.  0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="CountGroupObjects"></a>
+    <dl>
+    <dt><b>(int) <tt>CountGroupObjects</tt>(<i>group</i>)</b>
+    <dd><br>
+    Return the number of physical objects that implement the group. 
+    If there is an error, such as the argument being out of range, -1
+    is returned.
+    </dl>
+    <hr>
+
+    <!-- 070516 -->
+    <a name="ListGroupObjects"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>ListGroupObjects</tt>(<i>group</i>)</b>
+    <dd><br>
+    This function returns a handle to the list of objects associated
+    with the current physical cell which constitute the group, as
+    found by the extraction system.  These may or may not correspond
+    to actual objects in the cell.  For example, the objects returned
+    have been processed by the <a href="Conductor"><tt>Conductor
+    Exclude</tt></a> directive, so would possibly be clipped versions
+    of the original objects.  Additionally, objects from wire-only
+    subcells and vias that have been logically flattened during
+    extraction will be included.  Objects from flattened via instances
+    will mave the <tt>MergeCreated</tt> (<tt>0x1</tt>) flag set, which
+    can be tested with <a
+    href="GetObjectFlags"><tt>GetObjectFlags</tt></a>.  This allows
+    the caller to filter out redundant metal if standard vias are
+    used, in addition to the objects, to represent the net.
+
+    <p>
+    The argument is the group number.  The returned objects are
+    copies, so can not be modified or selected.  If an error occurs, 0
+    is returned.
+    </dl>
+    <hr>
+
+    <!-- 070516 -->
+    <a name="CountGroupVias"></a>
+    <dl>
+    <dt><b>(int) <tt>CountGroupVias</tt>(<i>group</i>)</b>
+    <dd><br>
+    Return the number of via instances used to implement the group,
+    from the extraction system.  This is the number of vias that would
+    be returned by <tt>ListGroupVias</tt> (below).  If there is an
+    error, such as the group number argument being out of range, -1 is
+    returned.
+    </dl>
+    <hr>
+
+    <!-- 070516 -->
+    <a name="ListGroupVias"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>ListGroupVias</tt>(<i>group</i>)</b>
+    <dd><br>
+    This function returns a handle to the list of via instances
+    associated with the current physical cell which are used in the
+    group, as obtained from the extraction system.  This may include
+    vias that were "promoted" due to the logical flattening of
+    wire-only subcells during extraction.  Vias in such cells are
+    treated as if they reside in their parent cells, recursively.
+
+    <p>
+    The argument is the group number.  The via instances are copies,
+    so can not be modified or selected.  If an error occurs, 0 is
+    returned.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="CountGroupDevContacts"></a>
+    <dl>
+    <dt><b>(int) <tt>CountGroupDevContacts</tt>(<i>group</i>)</b>
+    <dd><br>
+    This function returns a count of the number of device contacts
+    which are assigned to the conductor group whose index is passed as
+    the argument.  If an error occurs, -1 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="ListGroupDevContacts"></a>
+    <dl>
+    <dt><b>(dev_contact_handle) <tt>ListGroupDevContacts</tt>(<i>group</i>)</b>
+    <dd><br>This function returns a handle to the list of device contacts
+    which are assigned to the conductor group whose index is passed as
+    the argument.  If an error occurs, 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="CountGroupSubcContacts"></a>
+    <dl>
+    <dt><b>(int) <tt>CountGroupSubcContacts</tt>(<i>group</i>)</b>
+    <dd><br>
+    This function returns a count of subcircuit contacts associated
+    with the group index passed as the argument.  If an error occurs,
+    -1 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="ListGroupSubcContacts"></a>
+    <dl>
+    <dt><b>(subc_contact_handle) <tt>ListGroupSubcContacts</tt>(<i>group</i>)</b>
+    <dd><br>This function returns a handle to a list of subcircuit
+    contacts associated with the group index passed as the argument. 
+    If an error occurs, 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="CountGroupTerminals"></a>
+    <dl>
+    <dt><b>(int) <tt>CountGroupTerminals</tt>(<i>group</i>)</b>
+    <dd><br>
+    Return a count of cell connection terminals associated with the
+    group number passed as an argument.  If an error occurs, -1 is
+    returned.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="ListGroupTerminals"></a>
+    <dl>
+    <dt><b>(terminal_handle) <tt>ListGroupTerminals</tt>(<i>group</i>)</b>
+    <dd><br>This will return a handle to a list of cell connection
+    terminals associated with the group number passed as an argument. 
+    If an error occurs, 0 is returned.  If the group contains no cell
+    connection terminals, the list will be empty.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="ListGroupTerminalNames"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListGroupTerminalNames</tt>(<i>group</i>)</b>
+    <dd><br>This function returns a list of names of the cell
+    connection terminals assigned to the conductor group whose index
+    is passed as the argument.  If an error occurs, 0 is returned.  If
+    the group contains no cell connection terminals, the list will be
+    empty.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="CountGroupPhysTerminals"></a>
+    <dl>
+    <dt><b>(int) <tt>CountGroupPhysTerminals</tt>(<i>group</i>)</b>
+    <dd><br>
+    Return a count of the physical terminal descriptors from the
+    physical cell that are associated with the group number given.
+    </dl>
+    <hr>
+
+    <!-- 061016 -->
+    <a name="ListGroupPhysTerminals"></a>
+    <dl>
+    <dt><b>(physterm_handle) <tt>ListGroupPhysTerminals</tt>(<i>group</i>)</b>
+    <dd><br>
+    Return a handle to a list of the physical terminal descriptors
+    from the physical cell that are associated with the group number
+    given.
+    </dl>
+
+!!SEEALSO
+funcs:ext
+
+!!KEYWORD
+funcs:ext:pdev
+!!TITLE
+Physical Devices
+!!HTML
+
+    <!-- 070809 -->
+    <a name="ListPhysDevs"></a>
+    <dl>
+    <dt><b>(device_handle) <tt>ListPhysDevs</tt>(<i>name</i>, <i>pref</i>,
+     <i>indices</i>, <i>area_array</i>)</b>
+    <dd><br>This function returns a handle to a list of devices
+    extracted from the physical part of the current cell.  The first
+    two arguments are strings which match the <tt>Name</tt> and
+    <tt>Prefix</tt> fields from the technology file <a
+    href="ext:deviceblock">device block</a> of the device to list. 
+    Either or both of these arguments can be null or empty, in which
+    case no devices are excluded by the comparison.  i.e., such values
+    act as wildcards.
+
+    <p>
+    The third argument is a string providing a list of device indices,
+    or ranges of indices, to allow.  These are integers that are
+    unique to each instance of a device type in a cell.  If this
+    argument is null or empty, all indices will be returned.  Each
+    token in the string is an integer (e.g., "2"), or range of
+    integers (e.g., "1-4"), using the hyphen (minus sign) to separate
+    the minimum and maximum index to include.  The tokens are
+    separated by white space and/or commas.  For example,
+    "1,3-5,7,9-12".
+
+    <p>
+    The final argument, if not 0, is an array of size four or larger
+    containing rectangle coordinates, in microns, in order L,B,R,T. 
+    If 0 is passed for this argument, the entire cell is searched for
+    devices.  Otherwise, only the area provided will be searched.
+
+    <p>
+    On success, a handle is returned, otherwise 0 is returned.  The
+    handle can be used in the functions that take a device handle as
+    an argument.  This is <i>not</i> an object handle.  The returned
+    device handle can be manipulated with the generic handle
+    functions, and like other handles should be iterated through or
+    explicitly closed when no longer needed.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPdevName"></a>
+    <dl>
+    <dt><b>(string) <tt>GetPdevName</tt>(<i>device_handle</i>)</b>
+    <dd><br>This function returns a string containing the name of the
+    device referenced by the handle.  The name string is composed of
+    the <tt>Name</tt> field for the device (from the <a
+    href="ext:deviceblock">device block</a>), followed by an
+    underscore, followed by the device index number.  If the handle is
+    defunct or some other error occurs, a null string is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPdevIndex"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPdevIndex</tt>(<i>device_handle</i>)</b>
+    <dd><br>This function returns the index of the device referenced by
+    the handle passed as an argument.  The index is an integer which
+    is unique among the devices of a given type.  If the handle is
+    defunct or an error occurs, -1 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPdevDual"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>GetPdevDual</tt>(<i>device_handle</i>)</b>
+    <dd><br>This function returns an object handle which references the
+    dual device in the electrical database to the physical device
+    referenced by the argument.  If association failed for the device,
+    0 is returned.  The dual device is a subcell obtained from the
+    device library.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPdevBB"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPdevBB</tt>(<i>device_handle</i>, <i>array</i>)</b>
+    <dd><br>This function obtains the bounding box of the device
+    referenced by the first argument.  The coordinates, in microns
+    using the origin of the current physical cell, are returned in the
+    <i>array</i>, which must have size 4 or larger.  If the function
+    succeeds, 1 is returned, otherwise the returned value is 0.  The
+    saved order is L, B, R, T.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPdevMeasure"></a>
+    <dl>
+    <dt><b>(real) <tt>GetPdevMeasure</tt>(<i>device_handle</i>, <i>mname</i>)</b>
+    <dd><br>This function returns a device parameter corresponding to
+    a <tt>Measure</tt> line given in the <a
+    href="ext:deviceblock">Device block</a> for the device referenced
+    by the first argument.  The second argument is a string giving the
+    name from a <tt>Measure</tt> line.  The returned value is the
+    measured parameter, or 0 if there was an error.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="ListPdevMeasures"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListPdevMeasures</tt>(<i>device_handle</i>)</b>
+    <dd><br>This function returns a string list handle corresponding
+    to a list of the names associated with <tt>Measure</tt> lines in
+    the <a href="ext:deviceblock">device block</a> for the device
+    referenced by the handle.  These are the names that can be passed
+    to <tt>GetPdevMeasure</tt> to perform the measurement.  If an
+    error occurs, 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="ListPdevContacts"></a>
+    <dl>
+    <dt><b>(dev_contact_handle) <tt>ListPdevContacts</tt>(<i>device_handle</i>)</b>
+    <dd><br>This function returns a handle to a list of contact
+    descriptors for the device referenced by the argument.  The
+    returned handle can be passed to the functions below to obtain
+    information about the device contacts.  If there is an error, 0 is
+    returned.  The returned handle can be manipulated with the generic
+    handle functions, and like other handles should be iterated
+    through or closed explicitly when no longer needed.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPdevContactName"></a>
+    <dl>
+    <dt><b>(string) <tt>GetPdevContactName</tt>(<i>dev_contact_handle</i>)</b>
+    <dd><br>This function returns the name string of the contact
+    referenced by the argument.  Contact names are assigned in the
+    device block for the device containing the contact.  If an error
+    occurs, a null string is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPdevContactBB"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPdevContactBB</tt>(<i>dev_contact_handle</i>,
+      <i>array</i>)</b>
+    <dd><br>This function returns the bounding box of the contact
+    referenced by the first argument.  The coordinates, in microns
+    relative to the origin of the physical current cell, are returned
+    in the <i>array</i>, which must have size 4 or larger.  If the
+    operation is successful, 1 is returned, otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPdevContactGroup"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPdevContactGroup</tt>(<i>dev_contact_handle</i>)</b>
+    <dd><br>This function returns the conductor group index to which the
+    contact referenced by the argument is assigned.  If there is an
+    error, -1 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPdevContactLayer"></a>
+    <dl>
+    <dt><b>(string) <tt>GetPdevContactLayer</tt>(<i>dev_contact_handle</i>)</b>
+    <dd><br>This function returns the name string of the layer to which
+    the contact referenced by the argument is assigned.  All contacts
+    are assigned to layers which have the <tt>Conductor</tt>
+    attribute.  If there is an error, a null string is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPdevContactDev"></a>
+    <dl>
+    <dt><b>(device_handle) <tt>GetPdevContactDev</tt>(<i>dev_contact_handle</i>)</b>
+    <dd><br>This function returns a handle to the device containing the
+    contact referenced by the argument.  If an error occurs, 0 is
+    returned.  The returned handle should be closed (for example, with
+    the <tt>Close</tt> function) when no longer needed.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPdevContactDevName"></a>
+    <dl>
+    <dt><b>(string) <tt>GetPdevContactDevName</tt>(<i>dev_contact_handle</i>)</b>
+    <dd><br>This function returns the name of the device containing the
+    contact referenced by the argument.  A null string is returned on
+    error.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPdevContactDevIndex"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPdevContactDevIndex</tt>(<i>dev_contact_handle</i>)</b>
+    <dd><br>This returns the index number of the device to which the
+    contact, referenced by the passed handle, is associated.  Each
+    device of a given type has an index number assigned, which is
+    unique in the containing cell.  On error, -1 is returned.  A valid
+    index is 0 or larger.
+    </dl>
+
+!!SEEALSO
+funcs:ext
+
+!!KEYWORD
+funcs:ext:subc
+!!TITLE
+Physical Subcircuits
+!!HTML
+
+    <!-- 030204 -->
+    <a name="ListPhysSubckts"></a>
+    <dl>
+    <dt><b>(subckt_handle) <tt>ListPhysSubckts</tt>(<i>name</i>, <i>index</i>,
+      <i>l</i>, <i>b</i>, <i>r</i>, <i>t</i>)</b>
+    <dd><br>This function returns a handle to a list of subcircuits from
+    the physical part of the current cell.  Subcircuits are subcells
+    which contain devices or sub-subcells that contain devices. 
+    Subcells that contain only wire are typically not saved internally
+    as subcircuits.  The first argument is a string name which will
+    match the returned subcircuits.  If this argument is null or
+    empty, then this test will not exclude any subcircuits to be
+    returned.  The second argument is the index number of the
+    subcircuit to be returned.  If the value is -1, subcells with any
+    index will be returned.  The remaining four values define a
+    rectangular area, given in microns relative to the current
+    physical cell origin, where subcircuits will be searched for.  If
+    all four values are 0, the entire cell will be searched.  The
+    returned handle references subcircuits, and is distinct from
+    device handles and object handles.  The handle can be passed to
+    the generic handle functions, and like other handles should be
+    iterated through or closed when no longer needed.  The function
+    returns 0 if an error occurs.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPscName"></a>
+    <dl>
+    <dt><b>(string) <tt>GetPscName</tt>(<i>subckt_handle</i>)</b>
+    <dd><br>This function returns the cell name corresponding to the
+    subcircuit referenced by the handle.  if an error occurs, a null
+    string is returned.
+    </dl>
+    <hr>
+
+    <!-- 061116 -->
+    <a name="GetPscIndex"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPscIndex</tt>(<i>subckt_handle</i>)</b>
+    <dd><br>This function returns the index of the subcircuit
+    referenced by the argument.  The index is a zero-based sequence
+    for each subcircuit master.  If an error occurs, -1 is returned.
+    </dl>
+    <hr>
+
+    <!-- 061116 -->
+    <a name="GetPscIdNum"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPscIdNum</tt>(<i>subckt_handle</i>)</b>
+    <dd><br>
+    This function returns the ID number of the subcircuit referenced
+    by the argument.  The ID number is unique among all instances in
+    the parent cell.  If an error occurs, -1 is returned.
+    </dl>
+    <hr>
+
+    <!-- 061116 -->
+    <a name="GetPscInstName"></a>
+    <dl>
+    <dt><b>(string) <tt>GetPscInstName</tt>(<i>subckt_handle</i>)</b>
+    <dd><br>
+    This function returns an instance name corresponding to the
+    subcircuit instance referenced by the handle.  This is the cell
+    name, followed by an underscore, followed by the index number.  if
+    an error occurs, a null string is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPscDual"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>GetPscDual</tt>(<i>subckt_handle</i>)</b>
+    <dd><br>This function returns an object handle which references the
+    subcell in the electrical database which is the dual of the
+    physical subcircuit referenced by the argument.  If the
+    association fails, 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPscBB"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPscBB</tt>(<i>subckt_handle</i>, <i>array</i>)</b>
+    <dd><br>This function returns the bounding box of the subcircuit
+    referenced by the first argument.  The coordinates, in microns
+    relative to the origin of the current physical cell, are returned
+    in the array, which must have size 4 or larger.  If the operation
+    succeeds, 1 is returned, otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 061116 -->
+    <a name="GetPscLoc"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPscLoc</tt>(<i>subckt_handle</i>, <i>array</i>)</b>
+    <dd><br>
+    This returns the instance placement location, in microns, in the
+    array passed as a second argument.  The array must have size two
+    or larger.  On success, the function returns 1, and the array
+    location 0 will contain the X value, and the 1 location will
+    contain the Y value.  Zero is returned on error, with the array
+    values undefined.
+    </dl>
+    <hr>
+
+    <!-- 061116 -->
+    <a name="GetPscTransform"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPscTransform</tt>(<i>subckt_handle</i>, <i>type</i>,
+      <i>array</i>)</b>
+    <dd><br>
+    This function returns a string describing the instance
+    orientation.  There are presently three format types, specified by
+    the second argument.  If this argument is zero, then the
+    <i>Xic</i> transformation string is returned.  This is the same
+    CIF-like encoding as used for the current transformation in the
+    status line of <i>Xic</i>.  In this case the third argument is
+    ignored and can be zero.
+
+    <p>
+    If the second argument is one, the return will be a Cadence DEF
+    orientation code.  In addition, if an array of size two or larger
+    is passed as a third argument, the values will be filled in with
+    the X and Y origin correction values implied by the transformation. 
+    In a DEF transformation, the lower left corner position of the
+    bounding box is invariant, implying that there is an additional
+    translation after rotation/mirroring to enforce this.  Pass 0 for
+    this argument if these values aren't needed.
+
+    <p>
+    In DEF, there is no support for 45, 135, 225, and 315 rotations, a
+    null string is returned in these cases.  Magnification is ignored.
+
+    <p>
+    If the second argument is any other value, the OpenAccess strings
+    are returned, otherwise all is as for DEF.
+
+    <p>
+    The following table lists equivalent orientation codes for DEF,
+    OpenAccess, and <i>Xic</i>.  The <b>Origin</b> column indicates the
+    position of the original lower-left corner after the operation.
+
+    <blockquote><table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>LEF/DEF</th> <th>OpenAccess</th> <th><i>Xic</i></th>
+      <th>Origin</th></tr>
+    <tr><td>N</td>  <td>R0</td>   <td>R0     <td>LL</td></tr>
+    <tr><td>W</td>  <td>R90</td>  <td>R90    <td>LR</td></tr>
+    <tr><td>S</td>  <td>R180</td> <td>R180   <td>UR</td></tr>
+    <tr><td>E</td>  <td>R270</td> <td>R270   <td>UL</td></tr>
+    <tr><td>FN</td> <td>MY</td>   <td>MX     <td>LR</td></tr>
+    <tr><td>FW</td> <td>MX90</td> <td>R270MY <td>LL</td></tr>
+    <tr><td>FS</td> <td>MX</td>   <td>MY     <td>UL</td></tr>
+    <tr><td>FE</td> <td>MY90</td> <td>R90MX  <td>UR</td></tr>
+    </table></blockquote>
+
+    <!-- 030204 -->
+    <a name="ListPscContacts"></a>
+    <dl>
+    <dt><b>(subc_contact_handle) <tt>ListPscContacts</tt>(<i>subckt_handle</i>)</b>
+    <dd><br>This function returns a handle to a list of subcircuit
+    contacts associated with the subcircuit referenced by the handle. 
+    The returned handle is a distinct type, in particular subcircuit
+    contacts are different from device contacts.  The return handle
+    can be used with the functions which query information about
+    subcircuit contacts, or with the generic handle functions.  If an
+    error occurs, this function returns 0.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="IsPscContactIgnorable"></a>
+    <dl>
+    <dt><b>(int) <tt>IsPscContactIgnorable</tt>(<i>subc_contact_handle</i>)</b>
+    <dd><br>If the subcircuit associated with the contact referenced from
+    the argument is flattened or ignored, return 1.  Otherwise 0 is
+    returned.  When 1 is returned, the contact can usually be skipped
+    in listings.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPscContactName"></a>
+    <dl>
+    <dt><b>(string) <tt>GetPscContactName</tt>(<i>subc_contact_handle</i>)</b>
+    <dd><br>This function returns a name string, if available, from the
+    subcircuit contact referenced by the argument.  If the subcircuit
+    does not provide a name, the returned string will be a number
+    giving the subcircuit group contacted.  A null string is returned
+    on error.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPscContactGroup"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPscContactGroup</tt>(<i>subc_contact_handle</i>)</b>
+    <dd><br>This function returns the group index in the current cell
+    corresponding to the subcircuit contact referenced by the
+    argument.  If an error occurs, this function returns -1.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPscContactSubcGroup"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPscContactSubcGroup</tt>(<i>subc_contact_handle</i>)</b>
+    <dd><br>This function returns the group index in the subcircuit
+    associated with the subcircuit contact referenced by the argument. 
+    On error, the function returns -1.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPscContactSubc"></a>
+    <dl>
+    <dt><b>(subckt_handle) <tt>GetPscContactSubc</tt>(<i>subc_contact_handle</i>)</b>
+    <dd><br>This function returns a handle to the subcircuit which is
+    associated with the subcircuit contact referenced by the argument. 
+    On error, the function return 0.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPscContactSubcName"></a>
+    <dl>
+    <dt><b>(string) <tt>GetPscContactSubcName</tt>(<i>subc_contact_handle</i>)</b>
+    <dd><br>This function returns a string containing the name of the
+    subcircuit associated with the contact referenced by the argument. 
+    A null string is returned on error.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetPscContactSubcIndex"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPscContactSubcIndex</tt>(<i>subc_contact_handle</i>)</b>
+    <dd><br>This function returns the index of the subcircuit associated
+    with the contact referenced by the argument.  Each subcircuit of a
+    given kind has an index number that is unique in the containing
+    cell.  On error, -1 is returned.  Valid index values are 0 and
+    larger.
+    </dl>
+    <hr>
+
+    <!-- 061116 -->
+    <a name="GetPscContactSubcIdNum"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPscContactSubcIdNum</tt>(<i>subc_contact_handle</i>)</b>
+    <dd><br>
+    This function returns the ID number of the subcircuit associated
+    with the contact referenced by the argument.  Each subcircuit has
+    an ID number that is unique in the containing cell.  On error, -1
+    is returned.  Valid index values are 0 and larger.
+    </dl>
+    <hr>
+
+    <!-- 061116 -->
+    <a name="GetPscContactSubcInstName"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPscContactSubcInstName</tt>(<i>subc_contact_handle</i>)</b>
+    <dd><br>
+    This function returns a string containing an instance name of the
+    subcircuit associated with the contact referenced by the argument. 
+    The instance name consists of the cell name followed by an
+    underscore, which is followed by the index.  A null string is
+    returned on error.
+    </dl>
+    <hr>
+
+!!SEEALSO
+funcs:ext
+
+!!KEYWORD
+funcs:ext:edev
+!!TITLE
+Electrical Devices
+!!HTML
+
+    <!-- 030204 -->
+    <a name="ListElecDevs"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListElecDevs</tt>(<i>regex</i>)</b>
+    <dd><br>This function returns a handle to a list of strings containing
+    device names from the electrical database.  The names correspond
+    to devices used in the current circuit.  The argument is a regular
+    expression used to filter the device names.  If the argument is
+    null or empty, all devices are listed.  This function returns 0 on
+    error.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SetEdevProperty"></a>
+    <dl>
+    <dt><b>(int) <tt>SetEdevProperty</tt>(<i>devname</i>, <i>prpty</i>,
+      <i>string</i>)</b>
+    <dd><br>This function is used to set property values of electrical
+    devices and mutual inductors.  It is equivalent to the
+    <tt>Set</tt> command, or the keyboard <a
+    href="!set"><b>!set</b></a> command, with the
+    <tt>@</tt><i>devname</i><tt>.</tt><i>prpty</i> syntax.  The first
+    argument is the name of a device in the current circuit.  This is
+    the value of a <b>name</b> property for some device.  The second
+    argument is a string giving the property type to set or modify. 
+    The possible strings are prefixes of "<tt>name</tt>",
+    "<tt>model</tt>", "<tt>value</tt>", "<tt>param</tt>",
+    "<tt>other</tt>", and "<tt>nophys</tt>".  The single character
+    string "<tt>n</tt>" implies <b>name</b>, and (additionally)
+    "<tt>y</tt>" implies <b>nophys</b>.  If the string is
+    unrecognized, the property type defaults to <b>other</b>.  If the
+    device is a mutual inductor, only the <b>name</b> and <b>value</b>
+    properties can be applied.  The final argument is a string
+    containing the body of the property.  If the string is null or
+    empty, the property is removed (or reset to the default in the
+    case of the <b>name</b> property).  The function returns 1 on
+    success, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetEdevProperty"></a>
+    <dl>
+    <dt><b>(string) <tt>GetEdevProperty</tt>(<i>devname</i>, <i>prpty</i>)</b>
+    <dd><br>This function returns a string containing the text of the
+    specified property for the given device.  The two arguments have
+    the same format and interpretation as the first two arguments of
+    <tt>SetEdevProperty</tt>, i.e., the device name and property name. 
+    The return value is a string containing the text for that
+    property.  If the device or property does not exist or some other
+    error occurs, a null string is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetEdevObj"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>GetEdevObj</tt>(<i>devname</i>)</b>
+    <dd><br>This function returns a handle to the electrical subcell from
+    the device library corresponding to the given device name.  If an
+    error occurs, 0 is returned.
+    </dl>
+
+!!SEEALSO
+funcs:ext
+
+!!KEYWORD
+funcs:ext:extrl
+!!TITLE
+Resistance/Inductance Extraction
+!!HTML
+
+    <!-- 052609 -->
+    <a name="ExtractRL"></a>
+    <dl>
+    <dt><b>(int) <tt>ExtractRL</tt>(<i>conductor_zoidlist</i>, <i>layername</i>,
+      <i>r_or_l</i>, <i>array</i>, <i>term</i>, ...)</b>
+    <dd><br>
+    This will use the square-counting system to estimate the
+    resistance or inductance of a conducting object with respect to
+    two or more terminals.  The first argument is a trapezoid list
+    representing a single conducting area, on the layer given in the
+    second argument.  The layer keywords set electrical parameters
+    used in the estimation.
+
+    <dl>
+    <dt>For Resistance:<dd>
+      The <a href="Rsh"><tt>Rsh</tt></a> layer keyword gives the
+      ohms-per-square of the material.  If not set, the value is
+      computed from <tt>Rho</tt> or <tt>Sigma</tt> and
+      <tt>Thickness</tt> if these are set.  If these keywords are also
+      not given, a value of 1.0 is assumed.
+    </dl>
+    <dl>
+    <dt>For Inductance:<dd>
+      The <a href="Tline"><tt>Tline</tt></a> keyword
+      supplies the appropriate parameters.  In this case, the material
+      is assumed to be over a ground plane covered by dielectric.
+    </dl>
+
+    <p>
+    The third argument is a boolean which if nonzero indicates
+    inductance estimation, and zero indicates resistance estimation.
+
+    <p>
+    The fourth argument is an array which will hold the return values,
+    which will be resized if necessary.  The zeroth component of the
+    array gives the number of returned values, which are returned in
+    the rest of the array.  If there are two terminals, the number of
+    returned values is 1.  For more than two terminals, the number of
+    returned values is <i>n</i>*(<i>n</i>-1)/2, where <i>n</i> is the
+    number of terminals.  The values are the effective two-terminal
+    decomposition for terminals <i>i</i>,<i>j</i> (<i>i</i> !=
+    <i>j</i>) in the order, e.g., for <i>n</i> = 4; 01, 02, 03, 12,
+    13, 23.
+
+    <p>
+    The following arguments are trapezoid lists representing the
+    terminals.  Arguments that are not trapezoid lists will be
+    ignored.  There must be at least two terminals passed.  Terminal
+    areas should be spatially disjoint, and in the computation, the
+    terminal areas are clipped by the conductor area.  Terminals are
+    assigned numbers in left-to-right order.
+
+    <p>
+    The algorithm is most efficient if all coordinates are on some
+    grid.  This provide for efficient tiling of the structure.
+
+    <p>
+    Structures that require a very large number of tiles may require
+    excessive time and memory to compute, and/or suffer from a loss of
+    accuracy.  The approximate threshold is 10<sup>5</sup> tiling
+    squares.  Non-Manhattan shapes have strict internal limiting of
+    tile count.  Manhattan structures can require an arbitrarily large
+    number of tiles, thus the potential for resource overuse.
+
+    <p>
+    The return value is always 1.  The function will fail (terminating
+    the script) if an error is encountered.
+    </dl>
+    <hr>
+
+    <!-- 052409 -->
+    <a name="ExtractNetResistance"></a>
+    <dl>
+    <dt><b>(int) <tt>ExtractNetResistance</tt>(<i>net_handle</i>,
+      <i>spicefile</i>, <i>array</i>, <i>term</i>, ...)</b>
+    <dd><br>
+    This function will extract resistance of a conductor net, taking
+    into account multiple conducting layers connected by vias.  The
+    resistance decomposition of each conducting object and its vias
+    and/or terminals is computed using the algorithm used by the
+    <tt>ExtractRL</tt> function.  The resistance of the connected
+    network is then computed, with respect to the terminals specified.
+
+    <p>
+    The first argument is a handle to a list of objects as returned
+    from <a href="FindPath"><tt>FindPath</tt></a> or <a
+    href="FindPathOfGroup"><tt>FindPathOfGroup</tt></a>.
+
+    <p>
+    The second argument is a string giving a file name, which will
+    contain a generated SPICE listing representing the extracted
+    resistor network.  In the SPICE file, each terminal and each via
+    are assigned node numbers.  A comment indicates the range of
+    numbers used for terminals.  If this argument is 0 (NULL) or an
+    empty string, no SPICE file is written.
+
+    <p>
+    The third argument is an array which will hold the return values,
+    which will be resized if necessary.  The zeroth component of the
+    array gives the number of returned values, which are returned in
+    the rest of the array.  If there are two terminals, the number of
+    returned values is 1.  For more than two terminals, the number of
+    returned values is <i>n</i>*(<i>n</i>-1)/2, where <i>n</i> is the
+    number of terminals.  The values are the effective two-terminal
+    decomposition for terminals <i>i</i>,<i>j</i> (<i>i</i> !=
+    <i>j</i>) in the order, e.g., for <i>n</i> = 4; 01, 02, 03, 12,
+    13, 23.
+
+    <p>
+    The following arguments are trapezoid lists representing the
+    terminals.  Arguments that are not trapezoid lists will be
+    ignored.  There must be at least two terminals passed.  Terminal
+    areas should be spatially disjoint, and in the computation, the
+    terminal areas are clipped by the conductor area.  Terminals are
+    assigned numbers in left-to-right order.
+
+    <p>
+    The return value is always 1.  The function will fail (terminating
+    the script) if an error is encountered.
+    </dl>
+
+!!SEEALSO
+funcs:ext
+

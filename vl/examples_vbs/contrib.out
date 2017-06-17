@@ -1,0 +1,400 @@
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+contrib_inst.v
+0: x,y = 0,1
+1: x,y = 1,0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+contrib_mem.v
+Hello, world!
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+contrib_mux.v
+sel => 0, a => 0, b => 0, f => 0
+sel => 0, a => 0, b => 0, f => 0
+sel => 0, a => 0, b => 0, f => 0
+sel => 0, a => 0, b => 0, f => 0
+sel => 0, a => 0, b => 0, f => 0
+sel => 0, a => 0, b => 0, f => 0
+sel => 0, a => 0, b => 0, f => 0
+sel => 0, a => 0, b => 0, f => 0
+sel => 0, a => 0, b => 0, f => 0
+sel => 0, a => 1, b => 0, f => 0
+sel => 0, a => 1, b => 0, f => 1
+sel => 0, a => 1, b => 0, f => 1
+sel => 0, a => 1, b => 0, f => 1
+sel => 0, a => 1, b => 0, f => 1
+sel => 0, a => 1, b => 0, f => 1
+sel => 0, a => 1, b => 0, f => 1
+sel => 0, a => 1, b => 0, f => 1
+sel => 0, a => 1, b => 0, f => 1
+sel => 0, a => 1, b => 0, f => 1
+sel => 1, a => 1, b => 0, f => 1
+sel => 1, a => 1, b => 0, f => x
+sel => 1, a => 1, b => 0, f => x
+sel => 1, a => 1, b => 0, f => x
+sel => 1, a => 1, b => 0, f => x
+sel => 1, a => 1, b => 0, f => x
+sel => 1, a => 1, b => 0, f => x
+sel => 1, a => 1, b => 0, f => x
+sel => 1, a => 1, b => 0, f => x
+sel => 1, a => 1, b => 0, f => x
+sel => 1, a => 1, b => 1, f => x
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+sel => 1, a => 1, b => 1, f => 1
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+contrib_net1.v
+     0 x x
+     1 x x
+     2 x x
+     3 x x
+     4 x x
+input word x -  output word x
+     0 x x
+     1 9 9
+     2 x x
+     3 x x
+     4 x x
+input word 9 -  output word x
+     0 x x
+     1 9 9
+     2 1 1
+     3 x x
+     4 x x
+input word 1 -  output word 1
+     0 x x
+     1 9 9
+     2 1 1
+     3 10 10
+     4 x x
+input word 10 -  output word 1
+     0 x x
+     1 9 9
+     2 1 1
+     3 10 10
+     4 12 12
+input word 12 -  output word 1
+     0 4 4
+     1 9 9
+     2 1 1
+     3 10 10
+     4 12 12
+input word 4 -  output word 1
+     0 4 4
+     1 15 15
+     2 1 1
+     3 10 10
+     4 12 12
+input word 15 -  output word 1
+     0 4 4
+     1 15 15
+     2 2 2
+     3 10 10
+     4 12 12
+input word 2 -  output word 2
+     0 4 4
+     1 15 15
+     2 2 2
+     3 11 11
+     4 12 12
+input word 11 -  output word 2
+     0 4 4
+     1 15 15
+     2 2 2
+     3 11 11
+     4 10 10
+input word 10 -  output word 2
+     0 3 3
+     1 15 15
+     2 2 2
+     3 11 11
+     4 10 10
+input word 3 -  output word 2
+     0 3 3
+     1 14 14
+     2 2 2
+     3 11 11
+     4 10 10
+input word 14 -  output word 2
+     0 3 3
+     1 14 14
+     2 10 10
+     3 11 11
+     4 10 10
+input word 10 -  output word 10
+     0 3 3
+     1 14 14
+     2 10 10
+     3 12 12
+     4 10 10
+input word 12 -  output word 10
+     0 3 3
+     1 14 14
+     2 10 10
+     3 12 12
+     4 14 14
+input word 14 -  output word 10
+     0 8 8
+     1 14 14
+     2 10 10
+     3 12 12
+     4 14 14
+input word 8 -  output word 10
+     0 8 8
+     1 1 1
+     2 10 10
+     3 12 12
+     4 14 14
+input word 1 -  output word 10
+     0 8 8
+     1 1 1
+     2 15 15
+     3 12 12
+     4 14 14
+input word 15 -  output word 15
+     0 8 8
+     1 1 1
+     2 15 15
+     3 0 0
+     4 14 14
+input word 0 -  output word 15
+     0 8 8
+     1 1 1
+     2 15 15
+     3 0 0
+     4 5 5
+input word 5 -  output word 15
+     0 14 14
+     1 1 1
+     2 15 15
+     3 0 0
+     4 5 5
+input word 14 -  output word 15
+     0 14 14
+     1 6 6
+     2 15 15
+     3 0 0
+     4 5 5
+input word 6 -  output word 15
+     0 14 14
+     1 6 6
+     2 10 10
+     3 0 0
+     4 5 5
+input word 10 -  output word 10
+     0 14 14
+     1 6 6
+     2 10 10
+     3 9 9
+     4 5 5
+input word 9 -  output word 10
+     0 14 14
+     1 6 6
+     2 10 10
+     3 9 9
+     4 3 3
+input word 3 -  output word 10
+     0 13 13
+     1 6 6
+     2 10 10
+     3 9 9
+     4 3 3
+input word 13 -  output word 10
+     0 13 13
+     1 6 6
+     2 10 10
+     3 9 9
+     4 3 3
+input word 6 -  output word 10
+     0 13 13
+     1 6 6
+     2 11 11
+     3 9 9
+     4 3 3
+input word 11 -  output word 11
+     0 13 13
+     1 6 6
+     2 11 11
+     3 8 8
+     4 3 3
+input word 8 -  output word 11
+     0 13 13
+     1 6 6
+     2 11 11
+     3 8 8
+     4 12 12
+input word 12 -  output word 11
+     0 7 7
+     1 6 6
+     2 11 11
+     3 8 8
+     4 12 12
+input word 7 -  output word 11
+     0 7 7
+     1 2 2
+     2 11 11
+     3 8 8
+     4 12 12
+input word 2 -  output word 11
+     0 7 7
+     1 2 2
+     2 6 6
+     3 8 8
+     4 12 12
+input word 6 -  output word 6
+     0 7 7
+     1 2 2
+     2 6 6
+     3 9 9
+     4 12 12
+input word 9 -  output word 6
+     0 7 7
+     1 2 2
+     2 6 6
+     3 9 9
+     4 12 12
+input word 12 -  output word 6
+     0 3 3
+     1 2 2
+     2 6 6
+     3 9 9
+     4 12 12
+input word 3 -  output word 6
+     0 3 3
+     1 13 13
+     2 6 6
+     3 9 9
+     4 12 12
+input word 13 -  output word 6
+     0 3 3
+     1 13 13
+     2 12 12
+     3 9 9
+     4 12 12
+input word 12 -  output word 12
+     0 3 3
+     1 13 13
+     2 12 12
+     3 6 6
+     4 12 12
+input word 6 -  output word 12
+     0 3 3
+     1 13 13
+     2 12 12
+     3 6 6
+     4 8 8
+input word 8 -  output word 12
+     0 6 6
+     1 13 13
+     2 12 12
+     3 6 6
+     4 8 8
+input word 6 -  output word 12
+     0 6 6
+     1 9 9
+     2 12 12
+     3 6 6
+     4 8 8
+input word 9 -  output word 12
+     0 6 6
+     1 9 9
+     2 7 7
+     3 6 6
+     4 8 8
+input word 7 -  output word 7
+     0 6 6
+     1 9 9
+     2 7 7
+     3 1 1
+     4 8 8
+input word 1 -  output word 7
+     0 6 6
+     1 9 9
+     2 7 7
+     3 1 1
+     4 5 5
+input word 5 -  output word 7
+     0 6 6
+     1 9 9
+     2 7 7
+     3 1 1
+     4 5 5
+input word 6 -  output word 7
+     0 6 6
+     1 10 10
+     2 7 7
+     3 1 1
+     4 5 5
+input word 10 -  output word 7
+     0 6 6
+     1 10 10
+     2 7 7
+     3 1 1
+     4 5 5
+input word 7 -  output word 7
+     0 6 6
+     1 10 10
+     2 7 7
+     3 5 5
+     4 5 5
+input word 5 -  output word 7
+     0 6 6
+     1 10 10
+     2 7 7
+     3 5 5
+     4 10 10
+input word 10 -  output word 7
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+contrib_psrn.v
+0  clk = 0 rn = xxxx 
+100  clk = 1 rn = xxxx 
+200  clk = 0 rn = 6c80 
+300  clk = 1 rn = 6c80 
+400  clk = 0 rn = 6c80 
+500  clk = 1 rn = 6c80 
+600  clk = 0 rn = 6c80 

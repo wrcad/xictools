@@ -1,0 +1,129 @@
+* jj ring oscillator
+
+* Ic = .2mA @ 100 uA/u^2  (10KA/cm^2) (given)
+* Cj = 65fF/u^2  (assumption) => C = .13pF
+* Bc = 1.0 => IcCR^2 = 1/pi => R = 3.5
+* L = 5.2pH (given)
+* Bl = 2pi(LIc/phi0) = 2pi(5.2*.2/2.07) ~ pi
+
+*.noexec
+*.options Lval=2.6p Rnval=3 Cval=160f Ibval=180
+.options Lval=2.6p Rnval=4.9 Cval=68f Ibval=160
+ 
+
+.control
+
+# Generate a table of pulse width and amplitude
+compose rn values 3.0 3.5 4.0
+compose cv values 100f 130f 160f
+compose ib values 140 160 180
+set Lval = 2.6p
+let I=0
+while I < 3
+    let J = 0
+    while J < 3
+        let K = 0;
+        while K < 3
+            set Rnval = $&rn[$&I]
+            set Cval = $&cv[$&J]
+            set Ibval = $&ib[$&K]
+            echo -n "Rn=$Rnval C=$Cval Ib=$Ibval : "
+            reset
+            run
+            echo pw=$&pw[0] vp=$&pw[1]
+#            if (I+J+K > 0)
+#                combine
+#            end
+            free p y
+            K = K+1
+        end
+        J = J+1
+    end
+    I = I+1
+end
+
+# Plot pulse width and amplitude vs Jc for values below
+compose Jc values 5000 10000 20000 50000
+set Lval = 2.6p
+let I = 0
+while I < 4
+    let C = 1e4*130f/Jc[$&I]
+    let Rn = sqrt(1/(pi*0.2*C*1e12))
+    set Rnval = $&Rn
+    set Cval = $&C
+    set Ibval = 160
+    echo -n "Rn=$Rnval C=$Cval Ib=$Ibval : "
+    reset
+    run
+    echo pw=$&pw[0] vp=$&pw[1]
+    if (I > 0)
+        combine
+    end
+    I = I + 1
+end
+pick width 0 2 pw
+pick ampl 1 2 pw
+settype s width
+settype v ampl
+plot width ampl vs Jc
+
+edit
+.endc
+
+.save v(5)
+* Josephson transmission line, 10 junctions
+.subckt jtl 1 10
+b1 1 0 100 jj1
+l1 1 2 $Lval
+b2 2 0 101 jj1
+l2 2 3 $Lval
+b3 3 0 102 jj1
+l3 3 4 $Lval
+b4 4 0 103 jj1
+l4 4 5 $Lval
+b5 5 0 104 jj1
+l5 5 6 $Lval
+b6 6 0 105 jj1
+l6 6 7 $Lval
+b7 7 0 106 jj1
+l7 7 8 $Lval
+b8 8 0 107 jj1
+l8 8 9 $Lval
+b9 9 0 108 jj1
+l9 9 10 $Lval
+r1 1 50 1000
+r2 2 50 1000
+r3 3 50 1000
+r4 4 50 1000
+r5 5 50 1000
+r6 6 50 1000
+r7 7 50 1000
+r8 8 50 1000
+r9 9 50 1000
+vs 50 0 pulse(0 '$Ibval/1000' 0p 5p)
+.ends
+
+vs 50 0 pulse(0 '$Ibval/1000' 0p 5p)
+r1 50 1 1000
+i1 0 1 pulse(0 .5m 10p 1p 1p 2p)
+b0 1 0 100 jj1
+l1 1 2 $Lval
+x1 2 3 jtl
+x2 3 4 jtl
+x3 4 5 jtl
+x4 5 6 jtl
+x5 6 10 jtl
+** retrigger
+vx 20 0 1.5*v(10)
+rx 20 1 1
+ry 10 0 1
+.tran .1p 300p
+* use v(5) to measure pulse width
+.plot tran v(1) v(5)
+
+.measure tran t1 trig v(5) val=.6m rise=3
+.measure tran t2 trig v(5) val=.6m rise=4
+.measure tran pw trig t1 td=20p targ t2 td=20p pw v(5) max v(5)
+
+.model jj1 jj(rtype=1,cct=1,icon=10m,vg=2.8m,delv=0.08m,
++ icrit=0.2m,r0=$Rnval,rn=$Rnval,cap=$Cval)

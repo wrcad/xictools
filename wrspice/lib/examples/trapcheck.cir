@@ -1,0 +1,40 @@
+* Trapezoidal Integration Ringing Demo
+
+* Trapezoidal integration has its advantages, however it is prone to
+* artifacts when solving stiff equation sets, or sets with strong
+* discontinuities.  The artifact consists of an oscillation between time
+* points around the correct value.  Depending on various factors, the
+* oscillation may die away quickly, persist for some time, or grow
+* eventually leading to nonconvergence.
+
+* WRspice has built-in secret magic to avoid this.  By setting the
+* notrapcheck option, this magic is not applied, and the artifacts can be
+* observed, as they would be seen in other simulators.  By default, the
+* fix is applied, so that this artifact is not seen.
+
+* If The Gear integration is used rather than trapezoidal, the
+* oscillations are also not seen.
+
+D0 2 1 d
+.model d d
+L0 3 0 10m
+R0 1 3 1.1
+V0 2 0 100*sin(1000*time)
+
+.control
+set steptype=nousertp
+tran 10u 10m
+plot v(3)
+set notrapcheck
+tran 10u 10m
+plot v(3)
+unset notrapcheck
+set method=gear
+tran 10u 10m
+plot v(3)
+edit
+echo First plot:  default trapezoid integration, looks clean.
+echo Second plot: trapezoid integration, notrapcheck set so uglies present.
+echo Third plot:  Gear integration, looks clean.
+.endc
+

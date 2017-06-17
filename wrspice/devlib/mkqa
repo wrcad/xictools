@@ -1,0 +1,22 @@
+#! /bin/bash
+
+# $Id: mkqa,v 1.1 2014/04/29 04:05:18 stevew Exp $
+# mkqa - create a tar file for export of the qa setup.
+
+(cd qa/bsim4.8.0/*nmos;         make clean)
+(cd qa/bsim6.0/nmos;            make clean)
+(cd qa/bsim6.1/nmos;            make clean)
+(cd qa/bsimsoi-4.4/nmos;        make clean)
+(cd qa/bsimsoi-4.4C/nmos;       make clean)
+(cd qa/bsimsoi-4.5/nmos;        make clean)
+(cd qa/hicum2/alltests;         make clean)
+(cd qa/mextram/bjt504;          make clean)
+(cd qa/psp102/asym_nmos;        make clean)
+(cd qa/psp102/sym_nmos;         make clean)
+(cd qa/psp103/asym_nmos;        make clean)
+(cd qa/psp103/sym_nmos;         make clean)
+
+date=`/bin/date +%m%d%y`
+tar czf wrspice-cmcqa-$date.tar.gz --transform 's,^qa/,wrspice-cmcqa/,' \
+  --transform 's/^qa$/wrspice-cmcqa/' --exclude '*/CVS/*' --exclude '*/CVS'\
+  --exclude '*/distfiles/*' --exclude '*/distfiles' qa

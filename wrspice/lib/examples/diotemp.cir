@@ -1,0 +1,23 @@
+* Demonstration of analysis over temperature.
+
+* The "loop" command can be used to generate temperature-dopendent
+* results.  Note that the temp must be specified in the devices,
+* not in the .options line.  Shell variables in the .options line are
+* expanded only when the run starts.
+*
+.model diode D is=1.0e-14 tt=0.1n cjo=2p
+d1 1 0 diode temp=$value1
+i1 0 1 100u
+
+* This simply computes the diode Vd for constant current.  To plot
+* over temperature. enter for example "loop 25 75 1 op".  The
+* results can be printed.  To plot, a scale must be created, e.g.,
+* let tempr = 25 + vector(51)", then "plot v(1) vs tempr".
+
+.control
+loop 25 75 1 op
+let tempr = 25 + vector(51)
+plot v(1) vs tempr
+edit
+.endc
+

@@ -1,0 +1,162 @@
+#######################################################################
+# secure/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.43 2016/01/15 19:45:09 stevew Exp $
+#######################################################################
+
+DATE = @DATE@
+XTLSERV_VERSION = @XTLSERV_VERSION@
+
+# NOTE: use gcc for linking, since g++ forces dynamic link of
+# libstdc++.  All c++ code *must* be statically linked for this to
+# not cause trouble.
+
+prefix = @prefix@
+CXX = @CXX@
+CC = @CC@
+LINKCC = @LINKCC@
+CFLAGS = @CFLAGSG@ @UFLAGS@ -DVERSION=\"$(XTLSERV_VERSION)\"
+LFLAGS = @LFLAGS@ @TOOLKITLFLAGS@ @UFLAGS@
+SLIBS = @SLIBS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ -DVERSION=\"$(XTLSERV_VERSION)\"
+STDCLIB = @STDCLIB@
+AR = @AR@
+RANLIB = @RANLIB@
+INSTALL = @INSTALL@
+FILTER = @FILTER@
+NTSUFFIX = @NTSUFFIX@
+NTNOCONS = @NTNOCONS@
+OSNAME = @OSNAME@
+TOOLROOT = @TOOLROOT@
+
+INSTALL_BIN = $(INSTALL) -s -c -m 0755
+INSTALL_SCRIPT = $(INSTALL) -c -m 0755
+INSTALL_LIB = $(INSTALL) -c -m 0644
+INSTALL_LIB_RO = $(INSTALL) -c -m 0444
+
+LPATH = ../xt_base
+MISCUTIL = $(LPATH)/miscutil/miscutil.a
+LIB_TARGET = secure.a
+CCFILES = \
+  lfinfo.cc licinfo.cc secure.cc secure_int.cc validate.cc xtlserv.cc \
+  xtjobs.cc
+COBJS = secure.o secure_int.o
+
+INCLUDE = -I. -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
+$(LIB_TARGET): $(COBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(COBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+all: $(LIB_TARGET) lfinfo licinfo validate xtjobs xtlserv
+
+server: xtjobs xtlserv lfinfo
+
+licinfo: licinfo.o secure.a $(MISCUTIL)
+	$(LINKCC) $(LFLAGS) $(INCLUDE) -o licinfo licinfo.o secure.a \
+  $(MISCUTIL) $(SLIBS) $(STDCLIB)
+
+make_key: make_key.c
+	$(LINKCC) $(LFLAGS) $(INCLUDE) -o make_key make_key.c $(STDCLIB)
+
+lfinfo: lfinfo.o $(MISCUTIL)
+	$(LINKCC) $(LFLAGS) $(INCLUDE) -o lfinfo lfinfo.o \
+  $(MISCUTIL) $(SLIBS) $(STDCLIB)
+
+validate: validate.o $(MISCUTIL)
+	$(LINKCC) $(LFLAGS) $(INCLUDE) -o validate validate.o \
+  $(MISCUTIL) $(SLIBS) $(STDCLIB)
+
+bintest: bintest.cc
+	$(CXX) -o bintest bintest.cc
+
+xtjobs: xtjobs.o secure.a $(MISCUTIL)
+	$(LINKCC) $(LFLAGS) $(NTNOCONS) $(INCLUDE) -o xtjobs xtjobs.o \
+  secure.a $(MISCUTIL) $(SLIBS) $(STDCLIB)
+
+xtlserv: xtlserv.o $(MISCUTIL)
+	@echo $@: dynamic link
+	@$(LINKCC) $(LFLAGS) $(NTNOCONS) $(INCLUDE) -o xtlserv xtlserv.o \
+  $(MISCUTIL) $(SLIBS) $(STDCLIB)
+
+$(MISCUTIL)::
+	cd $(LPATH)/miscutil; $(MAKE)
+
+DARGS = \
+  -DPREFIX="\"$(prefix)\"" \
+  -DTOOLS_ROOT="\"$(TOOLROOT)\""
+
+xtlserv.o:
+	$(CXX) $(CFLAGS) $(DARGS) $(INCLUDE) -c $*.cc
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+.c.o:
+	$(CC) $(CFLAGS) $(INCLUDE) -c $*.c
+
+depend:: key.h
+	@echo depending in secure
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+eclean::
+	-rm -f lfinfo$(NTSUFFIX) xtlserv$(NTSUFFIX) xtjobs$(NTSUFFIX)
+
+clean::
+	-rm -f lfinfo$(NTSUFFIX) licinfo$(NTSUFFIX) validate$(NTSUFFIX) \
+  make_key$(NTSUFFIX) xtlserv$(NTSUFFIX) xtjobs$(NTSUFFIX) licinfo$(NTSUFFIX) \
+  *.o *.a
+
+distclean::
+	cd packages; $(MAKE) distclean
+	-rm -f lfinfo$(NTSUFFIX) licinfo$(NTSUFFIX) validate$(NTSUFFIX) \
+  make_key$(NTSUFFIX) xtlserv$(NTSUFFIX) xtjobs$(NTSUFFIX) licinfo$(NTSUFFIX) \
+  *.o *.a LICENSE* Makefile validate.log xtdaemon.log
+
+INSTALL_PREFIX ?= $(prefix)
+dst_lib = $(INSTALL_PREFIX)/$(TOOLROOT)/license
+dst_bin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
+
+install: install_test install_clean $(dst_bin) $(dst_lib)
+
+install_test::
+	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
+	    echo "No!  Use pagkage to install!"; \
+	    exit 1; \
+	fi
+
+install_clean::
+	-@rm -f $(dst_bin)/xtlserv$(NTSUFFIX)
+	-@rm -f $(dst_bin)/xtjobs$(NTSUFFIX)
+	-@rm -f $(dst_lib)/README
+
+$(dst_bin)::
+	@$(LPATH)/util/mkdirpth $@
+	$(INSTALL_BIN) xtlserv$(NTSUFFIX) $@
+	$(INSTALL_BIN) xtjobs$(NTSUFFIX) $@
+
+$(dst_lib)::
+	@$(LPATH)/util/mkdirpth $@
+	$(INSTALL_LIB) README $@
+
+install_license::
+	@$(LPATH)/util/mkdirpth $(dst_lib)
+	-@if [ -f $(dst_lib)/LICENSE ]; then \
+	    mv -f $(dst_lib)/LICENSE $(dst_lib)/zzLICENSE.old; \
+	fi
+	$(INSTALL_LIB_RO) LICENSE $(dst_lib)
+
+package::
+	$(MAKE) server
+	-rm -rf packages/root
+	mkdir packages/root
+	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
+	cd packages; make xtlserv-$(OSNAME)
+
+#######################################################################

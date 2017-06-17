@@ -1,0 +1,69 @@
+* Math Precision demo
+
+* This circuit illustrates a numerical precision problem often found
+* with MOSFET models.  The circuit consists of
+* 1. A 1-volt voltage source connected to the drain.
+* 2. The drain node is connected to an "internal" drain node by a
+*    .001 ohm resistance.  This represents what happens in some MOS
+*    models when no drain resistance is given.  The internal node is
+*    unused, and follows the drain node voltage, due to the very low
+*    resistance connection.  However, this is bad, as we shall see.
+* 3. The MOS channel is modeled by a 10 giga-ohm resistor, we assume
+*    that the transistor of "off".
+* 4. The source and internal source nodes are tied together by a .001
+*    ohm resistor, as for the drain.
+* 5. The source is connected to ground through a 0-volt voltage source
+*    to be used as a current meter.
+
+Vd d 0 1.0
+Rd d di .001
+Rc di si 1e13
+Rs si s .001
+Vs s 0 0
+
+* Of course, since everything is connected in series, including the
+* two voltage sources, the current measured by the two sources will be
+* the same.  Of course this is wrong!  The current through Vs is
+* correct, but the current through Vd is off.  So what is going on?
+
+* Assume that double-precision math is being used.  The voltage on
+* node si is very close to zero.  How precise can this be?  It can be
+* very precise, approximately 1e-308 resolution near zero volts. 
+* Thus, the voltage difference between v(si) and v(s), which along
+* with Rs sets the current measured by Vs, can be represented
+* accurately.
+
+* Now consider the voltage on the di node, which must be very close to
+* the voltage of the drain, which is 1 volt.  How closely can a double
+* precision number represent voltages near 1 volt?  The answer is
+* about one part in 1e16.  But this voltage quantization, divided by
+* the Rd resistance, gives 1e-13 amps, which is about the same as the
+* current we are trying to measure!
+
+* WRspice has a ".options extprec" feature which will solve the
+* circuit equations using more precision.  One can see that use of
+* this option provides much more accurate results for this case.
+
+.control
+if $?extprec
+    set extprecback
+    unset extprec
+end
+echo See the comments in the circuit file for an explananion.  We have
+echo two current sources in series, and one would expect them to measure
+echo the same magnitude current (but opposite signs).  However, with
+echo double precision math, the two current magnitudes differ
+echo substantially.
+op
+print I(Vd) I(Vs)
+echo With the extprec option given, there is much better agreement.
+set extprec
+op
+print I(Vd) I(Vs)
+if ($?extprecback)
+    unset extprecback
+else
+    unset extprec
+end
+edit
+.endc

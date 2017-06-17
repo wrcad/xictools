@@ -1,0 +1,530 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: PlotPanel.hlp,v 1.18 2017/03/28 22:23:13 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+PlotPanel.hlp
+!!TITLE
+PlotPanel.hlp
+!!HTML
+
+!!SUBTOPICS
+plotpanel
+mplotpanel
+
+
+!! useriface.tex 101516
+!!KEYWORD
+plotpanel
+!!TITLE
+Plot Panel
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="plotpanel#zoom"><b>Zooming In</b></a><br>
+    <a href="plotpanel#textsel"><b>Text String Selection</b></a><br>
+    <a href="plotpanel#trdnd"><b>Trace Drag and Drop</b></a><br>
+    <a href="plotpanel#multidim"><b>Multidimensional Traces</b></a><br>
+    <a href="plotpanel#scale"><b>Scale Icons</b></a><br>
+    <a href="plotpanel#field"><b>Field Width Icons</b></a>
+    </dt></dr></table>
+
+    <img src=screenshots/plot.png align=right>
+    <p>
+    This panel displays and controls aspects of plots generated from a
+    simulation with the <a href="plot"><b>plot</b></a> command.  The
+    plot window contains a row of buttons on the right side.  The
+    button presence is determined by the nature of the data plotted,
+    as not all data support all features.  The buttons that may be
+    present are listed below.
+    <br clear=all>
+
+    <p>
+    <dl>
+    <dt><b>Dismiss</b>
+    <dd>Remove the plot from the screen.
+    </dl>
+
+    <dl>
+    <dt><b>Help</b>
+    <dd>Bring up the help viewer with pertinent information.
+    </dl>
+
+    <dl>
+    <dt><b>Redraw</b>
+    <dd>Redraw the graph.  This would be necessary to see new colors
+    if the colors are changed, with the <b>Colors</b> pop-up from the
+    <b>Tools</b> menu of the <b>Tool Control</b> window. 
+    </dl>
+
+    <dl>
+    <dt><b>Print</b>
+    <dd>Bring up the <a href="hcopypanel">printer control panel</a>
+    which controls hardcopy generation.  The resulting hardcopy data
+    from the plot can be sent to a printer or saved in a file.
+    </dl>
+
+    <dl>
+    <dt><b>Save Plot</b>
+    <dd>
+    The will save the plot data in a rawfile or Common Simulation
+    Data Format (CSDF) file.  Either file format can be read in with
+    the <a href="load"><b>load</b></a> command to regenerate the plot. 
+    See the description of the <a href="write"><b>write</b></a>
+    command for information about the formats, and how they can be
+    specified.  The user is prompted for a name for the file.
+    </dl>
+
+    <dl>
+    <dt><b>Save Print</b>
+    <dd>
+    This will save the plot data in a file, in the same format as
+    output from the <a href="print"><b>print</b></a> command.  The
+    user is prompted for a name for the file.
+    </dl>
+
+    <dl>
+    <dt><b>Points</b>
+    <dd>If this button is active, the data points are marked with a
+    glyph.  This is mutually exclusive with the <b>Comb</b> button.
+    </dl>
+
+    <dl>
+    <dt><b>Comb</b>
+    <dd>If this button, which is mutually exclusive with the
+    <b>Points</b> button, is active, the data will be presented as a
+    histogram.  If neither of <b>Points</b> or <b>Comb</b> is
+    selected, a (possibly interpolated) line drawing connecting the
+    points will be presented.
+    </dl>
+
+    <dl>
+    <dt><b>Log X</b>
+    <dd>If the data are consistent with a logarithmic scale of the
+    x-axis, this button will appear.  When active, a log scale will be
+    used on the x-axis.
+    </dl>
+
+    <dl>
+    <dt><b>Log Y</b>
+    <dd>If the data are consistent with a logarithmic scale of the
+    y-axis, this button will appear.  When active, a log scale will be
+    used on the y-axis.  Note that all traces must be consistent with
+    a log scale, and all traces will use a log scale if this button is
+    active.
+    </dl>
+
+    <dl>
+    <dt><b>Marker</b>
+    <dd>When active, a marker will be attached to the cursor, and the
+    scale factors of the plot will be replaced with the current
+    position of the marker relative to the data.  This is useful for
+    actually obtaining numerical data from the plot.  If button 1 is
+    clicked, a reference mark will be left behind, and the readout
+    will be relative to the values at the reference.  Clicking with
+    button 2 will remove the reference.
+
+    <p>
+    When using the marker in a polar or Smith plot, the display
+    indicates the real, imaginary, radius, and angle in degrees of the
+    current marker position.  The radius and angle are shown in the
+    lower left corner of the plot window.  In Smith plots, a family of
+    real and imaginary values are shown, corresponding to a set of
+    values usually displayed along the x axis.  For the imaginary
+    contours, the values correspond to the values printed in left to
+    right order.  If mouse button three is used to zoom into a section
+    of the Smith plot such that the x axis is invisible, the values
+    corresponding to the displayed real contours are listed along the
+    top of the plot window.  These numbers correspond to the displayed
+    real contours in left to right order.  They also correspond to the
+    imaginary contours, however depending on the location in the Smith
+    chart, not all imaginary contours, or additional contours, may be
+    visible.  Ambiguity can be resolved through use of the marker.
+    </dl>
+
+    <dl>
+    <dt><b>Separate</b>
+    <dd>When active, each trace will be assigned a portion of the
+    overall vertical plot area, and a separate scale.  The traces will
+    be scaled so as to not overlap.  Otherwise, the entire vertical
+    area is used for each trace.  The button will appear if there is
+    more than one trace in the plot.
+    </dl>
+
+    <dl>
+    <dt><b>Single</b>, <b>Group</b>
+    <dd>In the most general case, two buttons in a "radio group"
+    control the y-axis scales of the traces.  These buttons are
+    labeled <b>Single</b> and <b>Group</b>.  If neither button is
+    active, each trace will have an independent "best fit" y scale. 
+    If <b>Single</b> is active, all traces will be plotted on the same
+    "best fit" y scale.  If <b>Group</b> is active, the traces are
+    scaled according to their data type.  The types are voltage,
+    current, and other.  Each group will have a separate "best fit"
+    scale.  If the trace is from a node voltage, then it will have
+    type voltage, however functions of voltages will probably have
+    type other.  This is similarly true for currents.
+
+    <p>
+    The <b>Single</b> and <b>Group</b> buttons are prevented from
+    being active at the same time.  If there is only one trace, or the
+    traces are all of the same type, the <b>Group</b> button will not
+    appear.  If there is only one trace, then the <b>Single</b> button
+    will also not appear.
+    </dl>
+
+    <a name="zoom"></a>
+    <h2>Zooming In</h2>
+
+    <p>
+    If button 3 is pressed and held while pointing at the graph, an
+    outline box is shown, which follows the cursor, anchored at the
+    location pointed to.  Releasing button 3 will create a new plot of
+    the area in the box.  Pressing <b>Ctrl</b>-button 1 is equivalent
+    to button 3 for this operation.
+
+    <a name="textsel"></a>
+    <h2>Text String Selection</h2>
+
+    <p>
+    Text that appears in plots will use a font that can be changed
+    from the <a href="fontspanel">font selection panel</a> obtained
+    from the <b>Fonts</b> button in the <b>Tools</b> menu of the
+    <b>Tool Control</b> window.  This is the <b>Fixed Pitch Drawing
+    Window Font</b> in the menu.  This font can also be changed with
+    the <a href="setfont"><b>setfont</b></a> command.
+
+    <p>
+    Most of the text strings in plot windows can be edited, and
+    persistent text labels can be added.  The possible manipulations
+    are described below.
+
+    <p>
+    A string must be selected before it can be edited or otherwise
+    altered.  A string can be selected by clicking on it with the left
+    mouse button (button 1).  The selection is indicated by the
+    appearance of a thick black bar to the left of the string, and a
+    thin bar at the end of the string.  At most one string can be
+    selected at a time.
+
+    A string can be deselected by clicking in the plot window away
+    from any string.  Clicking on another string will move the
+    selection to that string.  When a string is selected, the left and
+    right arrow keys will cycle the selection to other strings in the
+    plot that can be modified.
+
+    Only a selected string can be modified in any way.  With a string
+    selected:
+    <ul>
+    <li>Pressing the <b>Delete</b> key will erase the string.  There is
+    no "undo" so be careful.
+    <li>The up and down arrow keys cycle through the various available
+    colors, recoloring the selected string.  These are the same 19
+    colors used for plot traces.  To change the color of the title,
+    for example, one would click on the title string, then press the
+    up or down arrow keys until the title color is satisfactory.
+    <li>The selected string can be dragged to a new location, or copied
+    to a new location or to a different plot window.
+    <li>The string can be edited.
+    </ul>
+
+    <p>
+    A drag can be initiated by pressing and holding button 1 over
+    the selected string, and moving the mouse pointer.  A "ghost"
+    outline of the string will be "attached" to the mouse pointer. 
+    When the button is released, the string will be moved to the new
+    location.  If the <b>Shift</b> key is pressed while the mouse
+    button is released, the string will be copied to the new location. 
+    Strings can be copied to other plot windows using this drag and drop
+    technique, but the <b>Shift</b> key is ignored in this case.
+
+    <p>
+    While dragging the string, the left and right arrow keys cycle
+    through left, center, and right justification of the string.  The
+    string outline box attached to the mouse pointer will shift to
+    indicate the justification.
+
+    <p>
+    The selected string can be edited by using the <b>Backspace</b>
+    key to remove characters from the right, and by adding new
+    characters to the end of the string.  The string has has a notion
+    of "termination".  Terminated strings can't be edited.  When a
+    selected string is terminated, the right-side indicator bar is
+    black.  If the string is not terminated, the indicator bar is red
+    (by default, actually this is the first trace color).  A string is
+    un-terminated by pressing <b>Backspace</b>.  Pressing
+    <b>Backspace</b> additional times will remove characters from the
+    right.  Typed characters will be added to the end of the string. 
+    The string is terminated by pressing the <b>Enter</b> key, which
+    causes the right-side indicator bar to turn black.
+
+    <p>
+    With no selection, or if the selection is terminated, typing
+    characters into the plot window will start a new string at the
+    mouse cursor location, which becomes the new selection.  Terminate
+    the new string by pressing <b>Enter</b>.
+
+    <p>
+    The strings, as modified or added, will appear in hard-copies
+    generated from the <b>Print</b> button in the plot window.  If a
+    new plot is created by using button 3 to zoom in, the child plot
+    will inherit the text strings of the parent plot.  However, if the
+    plot is saved to disk with the <b>Save Plot</b> button, the saved
+    strings will revert to the original strings.  The file data format
+    presently does not provide for alternate strings.
+
+    <a name="trdnd"></a>
+    <h2>Trace Drag and Drop</h2>
+
+    <p>
+    In plots, the traces can be moved by dragging with
+    mouse button 1, either within a plot or between plot windows. 
+    Thus, the order of the traces can be changed.  Traces can be
+    "grabbed" by pressing button 1 near the trace legend, but not over
+    the legend text itself.  A square wave marker is attached to the
+    pointer when a trace is being dragged.
+
+    <p>
+    Traces can be dropped within the legend area of another trace, in
+    which case the dragged trace occupies the drop trace location, and
+    the drop trace and below are shifted down.  Traces can be dropped
+    in the legend area but below all existing legends to move a trace
+    to the end.
+
+    <p>
+    Dragging trace data between plots is an an easy way to see
+    differences between simulation runs.  The trace data are copied
+    and interpolated to the new scale.  If the new scale is not
+    compatible, the operation will fail.
+
+    <p>
+    While a trace is being dragged, pressing the <b>Delete</b> key
+    will delete the trace (and end the drag).  This will permanently
+    remove the trace data from the plot, and is not undoable. 
+    However, if the plot contains only a single trace, it will not be
+    deleted.
+
+    <a name="multidim"></a>
+    <h2>Multidimensional Traces</h2>
+
+    When a plot window is displaying multidimensional data, the
+    dimension map icon will appear in the upper left corner of the
+    plot window.  Clicking on this icon will toggle display of the
+    dimension map.  The dimension map allows the user to display only
+    chosen dimensions of the traces.
+
+    <p>
+    Consider the plot produced by
+
+    <blockquote>
+      <tt>set value1 = temp<br>
+      loop -50 125 25 dc vds 0.0 1.2 0.02 vgs 0.2 1.2 0.2</tt>
+    </blockquote>
+
+    <p>
+    The <a href="loop"><b>loop</b></a> command produces a three
+    dimensional plot, with dimensions { 8, 6, 61 }.  When plotting
+    <tt>i(vds)</tt>, the display would contain 48 traces, representing
+    <tt>id</tt> vs. <tt>vds</tt> for each <tt>vgs</tt> and temperature
+    value.
+
+    <p>
+    The visibility of these traces is set by the columns of clickable
+    dimension selector indices shown in the dimension map.  Initially,
+    the traces for all dimensions are shown.  Clicking anywhere in the
+    dimension list with the center mouse button, or equivalently with
+    the left (or only) mouse button while pressing <b>Shift</b>, will
+    hide the traces for all dimensions.  Clicking anywhere in the
+    dimension list with the right mouse button, or equivalently with
+    the left (or only) mouse button while pressing <b>Ctrl</b>, will
+    show the traces for all dimensions.  Clicking or dragging over the
+    entries with the left mouse button will toggle display of the
+    corresponding traces.
+
+    <p>
+    In the present case the dimension map contains two columns:  the
+    left column contains eight numbers 0-7, and the right columns
+    contains six numbers 0-5.  Clicking on these numbers toggles the
+    visibility per dimension, i.e., clicking in the left column would
+    display/suppress all traces for a given temperature, clicking in
+    the right column will display/suppress traces corresponding to a
+    <tt>vgs</tt> value.  Multiple entries in the same column can be
+    toggled by dragging the mouse pointer over them.
+
+    <p>
+    This dimensional partitioning would apply for any number of
+    dimensions.  If a column contains too many dimensions to list
+    completely, a label "more" will exist at the bottom of the
+    listing.  Clicking on this label will cycle through all of the
+    dimensions, in the columns that require it.
+
+    <p>
+    If the plot is displaying a single multidimensional variable, then
+    each least dimension is displayed in a separate color.  The
+    numbers in the rightmost column of the dimension map will use the
+    same colors.  In other columns, and in the rightmost column if
+    more than one variable is being plotted, the indices use a uniform
+    color to indicate that the dimension is shown, and in all cases
+    black indicates a dimension that is not being shown.
+
+    <p>
+    The dimensions shown can also be controlled by mplot windows from
+    the <a href="mplot"><b>mplot</b></a> command.  These are the
+    windows generally used to display results from <a
+    href="oprng_analysis">operating range</a> and <a
+    href="monte">Monte Carlo</a> analysis.  The mplot display consists
+    of an array of pass/fail indication cells, one for each trial. 
+    These can be selected or deselected by clicking on them.
+
+    <p>
+    An mplot window is always associated with an internal plot
+    structure, as listed with the <b>Plots</b> tool.  The plot
+    structure may also contain multidimensional vectors, for example
+    if one uses the "<tt>-k</tt>" option to the <a
+    href="check"><b>check</b></a> command, all trial data will be
+    saved.
+
+    <p>
+    If an mplot window with selections is present, and the <b>plot</b>
+    command is used to plot a multidimensional vector from the same
+    internal plot structure as the mplot, then only the dimensions
+    corresponding to the selected trials will be shown on the plot
+    window.
+
+    <p>
+    In this plot window, a "flat" dimension map will be used.  This is
+    a single column, with length equal to the product of the "real"
+    dimensions.  The visibility of each flat dimension can be toggled
+    with the map entries as usual.  The mplot selections have no
+    effect on a plot window once it is displayed, but will initialize
+    new plot windows to 1) enforce a flat dimension mapping, and 2)
+    set the initial states of the flat map.  After changing the mplot
+    selections, one must use the <b>plot</b> command again to see the
+    revised dimensions, or alternatively one can note the numbers of
+    the mplot cells, and manipulate the same numbers in the dimensions
+    map of the first plot, to see the new data.
+
+    <p>
+    If one has a plot structure containing multidimensional vectors
+    from any source, such as from the <b>loop</b> commnd, one can
+    still use the mplot capability.  Giving the command
+
+    <blockquote>
+    <tt>mplot</tt> <i>vector</i>
+    </blockquote>
+
+    <p>
+    for any multidimensional vector will produce an mplot window.  The
+    number of mplot cells will equal the number of flat dimensions in
+    the vector.  The pass/fail indication means nothing in this case,
+    all cells display "fail".  One can select the dimension cells in
+    the mplot, which will affect subsequent plots from the <b>plot</b>
+    command of any vector in the same internal plot structure, as
+    described above.  The <i>vector</i> given to the <b>mplot</b>
+    command can be any vector from the plot, it is used for dimension
+    counting only.
+
+    <p>
+    In older <i>WRspice</i> releases, the upper dimensions were
+    represented as "flat", so that in the plot there would be a single
+    column of numbers (0-47 in our original example above, six
+    <tt>vgs</tt> values times eight temperatures), and clicking on
+    these numbers would display/suppress the corresponding trace.
+
+    <a name="scale"></a>
+    <h2>Scale Icons</h2>
+
+    <p>
+    The plot windows contain icons for changing the scales.  These are
+    triangles; the x-axis icons are in the lower left corner, and the
+    y-axis icons are arrayed along the right edge.  Clicking on one of
+    these icons has the following effects:
+
+    <dl>
+    <dt><b>right</b> or <b>up</b>:
+      <dl>
+      <dt>button 1:
+        <dd>Move the scale interval to the right or up.
+      </dl><dl>
+      <dt>button 2 or <b>Shift</b>-button 1:
+        <dd>Extend the right or top scale factor to the right or up.
+      </dl><dl>
+      <dt>button 3 or <b>Ctrl</b>-button 1:
+        <dd>Contract the right or top scale factor to the left or down.
+      </dl>
+    </dl/<dl>
+    <dt><b>left</b> or <b>down</b>:
+      <dl>
+      <dt>button 1:
+        <dd>Move the scale interval to the left or down.
+      </dl><dl>
+      <dt>button 2 or <b>Shift</b>-button 2:
+        <dd>Extend the left or bottom scale factor to the left or down.
+      </dl><dl>
+      <dt>button 3 or <b>Ctrl</b>-button 1:
+        <dd>Contract the left or bottom scale factor to the right or up.
+      </dl>
+    </dl>
+
+    <a name="field"></a>
+    <h2>Field Width Icons</h2>
+
+    When a plot is displaying multiple data traces with different
+    scales, a pair of triangular marks similar in appearance to the
+    scale icons appear near the top-left corner of the plot grid
+    frame.  Clicking on these marks will move the plot grid frame to
+    the left or right, shrinking or expanding the left margin area
+    used for the trace label text.  This can improve the appearance of
+    the plot when trace labels are unusually long or short.
+
+!! useriface.tex 012709
+!!KEYWORD
+mplotpanel
+!!TITLE
+Mplot Panel
+!!HTML
+    <img src=screenshots/mplot.png align=right>
+    This panel appears when plotting results from <a
+    href="oprng_analysis">operating range</a> or <a href="monte">Monte
+    Carlo</a> analysis, and is brought up by the <a
+    href="mplot"><b>mplot</b></a> command.  The display consists of an
+    array of cells, each of which represent the results of a single
+    trial.  As the results become available, the cells indicate a pass
+    or fail, In operating range analysis, the cells indicate a
+    particular bias condition according to the axes.  In Monte Carlo
+    analysis, the position of the cells has no significance.  In this
+    case the display indicates the number of trials completed.
+
+    <p>
+    The panel includes a <b>Help</b> button which brings up a help
+    message, a <b>Redraw</b> button to redraw the plot if, for
+    example, the plotting colors are redefined, and a <b>Print</b>
+    button for generating hard copy output of the plot.
+
+    <p>
+    Text entered while the pointer is in the <b>mplot</b> window will
+    appear in the plot, and hardcopies.  This text, and other text
+    which appears in the plot, can be edited in the manner of text in
+    the <a href="plotpanel">plot</a> windows.
+
+    <p>
+    The cells in an <b>mplot</b> can be selected/deselected by
+    clicking on them.  Clicking with button 1 will select/deselect
+    that cell.  Using button 2, the row containing the cell will be
+    selected or deselected, and with button 3 the column will be
+    selected or deselected.  A selected cell will be shown with a
+    colored background, with an index number printed.
+
+    <p>
+    Only one <b>mplot</b> window can have selections.  Clicking in a
+    new window will deselect all selections in other <b>mplot</b>
+    windows.  See the description of the <a
+    href="mplot"><b>mplot</b></a> command for information about use of
+    the selections.
+

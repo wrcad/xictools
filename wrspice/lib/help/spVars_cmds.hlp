@@ -1,0 +1,576 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spVars_cmds.hlp,v 1.25 2017/02/22 01:53:00 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spVars_cmds.hlp
+!!TITLE
+spVars_cmds.hlp
+!!HTML 
+
+!!SUBTOPICS
+command_vars
+
+
+!!REDIRECT appendwrite          command_vars#appendwrite
+!!REDIRECT checkiterate         command_vars#checkiterate
+!!REDIRECT diff_abstol          command_vars#diff_abstol
+!!REDIRECT diff_reltol          command_vars#diff_reltol
+!!REDIRECT diff_vntol           command_vars#diff_vntol
+!!REDIRECT dollarcmt            command_vars#dollarcmt
+!!REDIRECT dpolydegree          command_vars#dpolydegree
+!!REDIRECT editor               command_vars#editor
+!!REDIRECT errorlog             command_vars#errorlog
+!!REDIRECT filetype             command_vars#filetype
+!!REDIRECT fourgridsize         command_vars#fourgridsize
+!!REDIRECT helpinitxpos         command_vars#helpinitxpos
+!!REDIRECT helpinitypos         command_vars#helpinitypos
+!!REDIRECT helppath             command_vars#helppath
+!!REDIRECT installcmdfmt        command_vars#installcmdfmt
+!!REDIRECT modpath              command_vars#modpath
+!!REDIRECT mplot_cur            command_vars#mplot_cur
+!!REDIRECT nfreqs               command_vars#nfreqs
+!!REDIRECT nocheckupdate        command_vars#nocheckupdate
+!!REDIRECT nomodload            command_vars#nomodload
+!!REDIRECT noeditwin            command_vars#noeditwin
+!!REDIRECT nopadding            command_vars#nopadding
+!!REDIRECT nopage               command_vars#nopage
+!!REDIRECT noprtitle            command_vars#noprtitle
+!!REDIRECT numdgt               command_vars#numdgt
+!!REDIRECT printautowidth       command_vars#printautowidth
+!!REDIRECT printnoheader        command_vars#printnoheader
+!!REDIRECT printnoindex         command_vars#printnoindex
+!!REDIRECT printnopageheader    command_vars#printnopageheader
+!!REDIRECT printnoscale         command_vars#printnoscale
+!!REDIRECT noprintscale         command_vars#printnoscale
+!!REDIRECT random               command_vars#random
+!!REDIRECT rawfile              command_vars#rawfile
+!!REDIRECT rawfileprec          command_vars#rawfileprec
+!!REDIRECT rhost                command_vars#rhost
+!!REDIRECT rprogram             command_vars#rprogram
+!!REDIRECT spectrace            command_vars#spectrace
+!!REDIRECT specwindow           command_vars#specwindow
+!!REDIRECT specwindoworder      command_vars#specwindoworder
+!!REDIRECT spicepath            command_vars#spicepath
+!!REDIRECT units                command_vars#units
+
+!! variables.tex 022117
+!!KEYWORD
+command_vars
+!!TITLE
+Command-Specific Variables
+!!HTML
+    These variables control the operation of specific <i>WRspice</i>
+    commands and functions.  Most of these variables can be set
+    indirectly from the <a href="cmdopts"><b>Command Options</b></a>
+    tool from the <b>Commands</b> button in the <a
+    href="toolsmenu"><b>Tools</b></a> menu of the <a
+    href="toolbar"><b>Tool Control</b></a> window.
+
+    <p>
+    <a name="appendwrite"></a>
+    <dl>
+    <dt><tt>appendwrite</tt><dd>
+    When set, data written with the <a href="write"><b>write</b></a>
+    command will be appended to the file, if the file already
+    exists.  If not set, the file will be overwritten.
+    </dl>
+
+    <a name="checkiterate"></a>
+    <dl>
+    <dt><tt>checkiterate</tt><dd>
+    This sets the binary search depth used in finding operating range
+    extrema in <a href="oprng_analysis">operating range</a> analysis
+    initiated with the <a href="check"><b>check</b></a> command.  It
+    can be set to an integer value 0-10.  If not set or set to zero,
+    the search is skipped.
+    </dl>
+
+    <a name="diff_abstol"></a>
+    <dl>
+    <dt><tt>diff_abstol</tt><dd>
+    This variable sets the absolute error tolerance used by the <a
+    href="diff"><b>diff</b></a> command.  The default is 1e-12.
+    </dl>
+
+    <a name="diff_reltol"></a>
+    <dl>
+    <dt><tt>diff_reltol</tt><dd>
+    This variable sets the relative error tolerance used by the <a
+    href="diff"><b>diff</b></a> command.  The default is 1e-3.
+    </dl>
+
+    <a name="diff_vntol"></a>
+    <dl>
+    <dt><tt>diff_vntol</tt><dd>
+    This variable sets the absolute voltage tolerance used by the <a
+    href="diff"><b>diff</b></a> command.  The default is 1e-6.
+    </dl>
+
+    <a name="dollarcmt"></a>
+    <dl>
+    <dt><tt>dollarcmt</tt><dd>
+    This boolean variable, when set, alters the interpretation of
+    comments triggered by '$' and ';' characters, for compatibility
+    with input files intended for other simulators.
+
+    <p>
+    In other simulators, the '$' character always indicates the start
+    of a comment.  The ';' (semicolon) character is interpreted as
+    equivalent to '$' for purposes of comment identification.  In
+    <i>WRspice</i>, '$' is used for shell variable substitution, a
+    feature that does not appear in other simulators and prevents
+    general use of '$' comments.  This can cause trouble when reading
+    files intended for other simulators.  <i>WRspice</i> will detect
+    and strip "obvious" comments, where the '$' is preceded with a
+    backslash or surrounded by white space, but this may not be
+    sufficient.
+
+    <p>
+    Setting this variable will cause '$' and ';' to indicate the start
+    of a comment when reading input, if the character is preceded by
+    start of line, white space, or a comma, independent of what
+    follows the character.
+    </dl>
+
+    <a name="dpolydegree"></a>
+    <dl>
+    <dt><tt>dpolydegree</tt><dd>
+    This variable sets the polynomial degree used by the <a
+    href="deriv"><tt><tt>deriv</tt></tt></a> function for
+    differentiation.  If not set, the value is 2 (quadratic).  The
+    valid range is 0-7.
+    </dl>
+
+    <a name="editor"></a>
+    <dl>
+    <dt><tt>editor</tt><dd>
+    This variable is set to the name or path of the text editor to be
+    used within <i>WRspice</i>.  This overrides the
+    <b>SPICE_EDITOR</b> and <b>EDITOR</b> <a
+    href="environment">environment</a> variables.  If no editor is
+    set, the internal editor <a href="xeditor"><tt>xeditor</tt></a> is
+    used if graphics is available, otherwise the <tt>vi</tt> editor is
+    used.
+    </dl>
+
+    <a name="errorlog"></a>
+    <dl>
+    <dt><tt>errorlog</tt><dd>
+    If this variable is set to a file path, all error and warning
+    messages will be copied to the file.  The variable can also be set
+    as a boolean, in which case all errors and warnings will be copied
+    to a file named "<tt>wrspice.errors</tt>" in the current
+    directory.  When not set, errors that are not currently displayed
+    in the error window are lost.  Only the last 200 messages are
+    retained in the error window.
+    </dl>
+
+    <a name="filetype"></a>
+    <dl>
+    <dt><tt>filetype</tt><dd>
+    This variable can be set to either of the keywords <tt>ascii</tt>
+    or <tt>binary</tt>.  It determines whether ASCII or binary format
+    is used in the generated rawfiles, for example from the <a
+    href="write"><b>write</b></a> command.  The default is
+    <tt>ascii</tt>, but this can be overridden with the <a
+    href="environment">environment</a> variable
+    <b>SPICE_ASCIIRAWFILE</b>, which is set to "1" (for ASCII), or "0"
+    (zero, for binary).
+    </dl>
+
+    <a name="fourgridsize"></a>
+    <dl>
+    <dt><tt>fourgridsize</tt><dd>
+    When a <a href="fourier"><b>fourier</b></a> command is given, the
+    data are first interpolated onto a linear grid.  The size of the
+    grid is given by this variable.  If unspecified, a size of 200 is
+    used.
+    </dl>
+
+    <a name="helpinitxpos"></a>
+    <dl>
+    <dt><tt>helpinitxpos</tt><dd>
+    This variable specifies the distance in pixels from the left edge
+    of the screen to the left edge of the help window, when it first
+    appears.  If not set, the value taken is 100 pixels.
+    </dl>
+
+    <a name="helpinitypos"></a>
+    <dl>
+    <dt><tt>helpinitypos</tt><dd>
+    This variable specifies the distance in pixels from the top edge
+    of the screen to the top edge of the help window, when it first
+    appears.  If not set, the value taken is 100 pixels.
+    </dl>
+
+    <a name="helppath"></a>
+    <dl>
+    <dt><tt>helppath</tt><dd>
+    This variable specifies the search path used to locate directories
+    containing help database files.  This variable takes its initial
+    value from the <b>SPICE_HLP_PATH</b> <a
+    href="environment">environment</a> variable, if set, otherwise it
+    assumes a built-in default "<tt>(
+    /usr/local/xictools/wrspice/help )</tt>", or, if
+    <b>XT_PREFIX</b> is defined in the environment, its value replaces
+    "<tt>/usr/local</tt>".
+    </dl>
+
+    <a name="installcmdfmt"></a>
+    <dl>
+    <dt><tt>installcmdfmt</tt><dd>
+    Setting this string allows modification of the installation command
+    used in the <a href="wrupdate"><b>wrupdate</b></a> command, for
+    non-Windows releases only.  If not set the effective value used is
+    <blockquote>
+    <tt>xterm -e sudo %s</tt>
+    </blockquote>
+
+    <p>
+    As an example, a reasonable alternative might be
+    <blockquote>
+    <tt>xterm -e su root -c \"%s\"</tt>
+    </blockquote>
+    Which would use <tt>su</tt> rather than <tt>sudo</tt>, and require
+    the root password.
+
+    <p>
+    The characters "<tt>%s</tt>" are replaced with a script invocation
+    command that actually performs the installation.  If this does not
+    appear in the given string, this command will be added to the
+    end, following a space character.
+
+    <p>
+    The internal script invocation command calls <tt>/bin/sh</tt> to
+    run the shell script <tt>upd_install.sh</tt> found in the startup
+    directory of the installation location.  The three arguments to
+    this script are the distribution file path, the distribution name
+    token (such as "<tt>Linux2</tt>"), and the installation location
+    prefix (such as "<tt>/usr/local</tt>").  This script, too, can be
+    customized or replaced.
+
+    <p>
+    The default strings pop-up a terminal (xterm) window, and ask for
+    a password.  The user, who needs to know a bit about Unix shell
+    programming, can modify this behavior by setting this variable to
+    a new string.
+    </dl>
+
+    <a name="modpath"></a>
+    <dl>
+    <dt><tt>modpath</tt><dd>
+    This <a href="variablesub">list variable</a> contains directory
+    paths where <a href="loadable">loadable device module</a> files
+    are expected to be found.  A list variable in <i>WRspice</i> takes
+    the form of a list of words, surrounded by space-separated
+    parentheses, for example
+    <blockquote>
+    <tt>( /path/to/dir1 /path/to/dir2 "/usr/bill/my files" )</tt>
+    </blockquote>
+    If a directory path contains white space, it should be quoted,
+    as above.
+
+    <p>
+    The loadable device modules found in <tt>modpath</tt> directories
+    are normally loaded automatically on program start-up.  See the
+    description of the <a href="devload"><b>devload</b></a> command
+    for more information.
+    </dl>
+
+    <a name="mplot_cur"></a>
+    <dl>
+    <dt><tt>mplot_cur</tt><dd>
+    This variable contains the name of the last <a
+    href="marganal">margin analysis</a> output file generated.  This
+    variable can be set, but has no effect, as the file names are
+    generated internally.
+    </dl>
+
+    <a name="nfreqs"></a>
+    <dl>
+    <dt><tt>nfreqs</tt><dd>
+    This variable specifies how many multiples of the fundamental
+    frequency to print in the <a href="fourier"><b>fourier</b></a>
+    command.  If not set, 10 values are printed.
+    </dl>
+
+    <a name="nocheckupdate"></a>
+    <dl>
+    <dt><tt>nocheckupdate</tt><dd>
+    By default, when the program starts, the distribution repository
+    will be queried via the internet, and if a newer release is
+    available, a message will appear that notifies the user.  If this
+    variable is set in the <a href="startup_files">startup file</a>,
+    this checking will be skipped.
+    </dl>
+
+    <a name="noeditwin"></a>
+    <dl>
+    <dt><tt>noeditwin</tt><dd>
+    If this boolean variable is set, no window is created for the text
+    editor.  This is desirable for editors that create their own
+    windows.
+    </dl>
+
+    <a name="nomodload"></a>
+    <dl>
+    <dt><tt>nomodload</tt><dd>
+    This variable has relevance only if set in the <a
+    href="startup_files"><tt>.wrspiceinit</tt></a> file.  If set, the
+    automatic loading of <a href="devload">device model modules</a>
+    will be suppressed.  This normally occurs after the
+    <tt>.wrspiceinit</tt> file (if any) is read and processed.  This
+    variable is set if the <tt>-m</tt> <a href="-m">command line
+    option</a> is given.
+    </dl>
+
+    <a name="nopadding"></a>
+    <dl>
+    <dt><tt>nopadding</tt><dd>
+    If set, binary rawfiles with vectors of less than maximum length
+    are not zero padded.
+    </dl>
+
+    <a name="nopage"></a>
+    <dl>
+    <dt><tt>nopage</tt><dd>
+    If set, page breaks are suppressed in the <a
+    href="print"><b>print</b></a> and <a
+    href="asciiplot"><b>asciiplot</b></a> commands.  The <a
+    href="nobreak"><tt>nobreak</tt></a> variable is similar, but
+    suppresses page breaks only in the <b>asciiplot</b> command.
+
+    <p>
+    When given in the <tt>.options</tt> line, page ejects are
+    suppressed in printed output, in batch mode.
+    </dl>
+
+    <a name="noprtitle"></a>
+    <dl>
+    <dt><tt>noprtitle</tt><dd>
+    In interactive mode, when a circuit file is <a
+    href="source">sourced</a>, the <a href="titleinc">title line</a>
+    from the circuit is printed on-screen.  If this boolean variable
+    is set, the title printing is suppressed, and circuit sourcing is
+    silent unless there are errors.  The variable can be set by
+    checking the box in the <b>source</b> page of the <a
+    href="cmdopts"><b>Command Options</b></a> tool from the <a
+    href="toolsmenu"><b>Tools</b></a> menu.
+    </dl>
+
+    <a name="numdgt"></a>
+    <dl>
+    <dt><tt>numdgt</tt><dd>
+    This variable specifies the number of significant digits to print
+    in <a href="print"><b>print</b></a>, <a
+    href="asciiplot"><b>asciiplot</b></a>, <a
+    href="fourier"><b>fourier</b></a>, and some other commands.  The
+    default precision is six digits.
+
+    <p>
+    This variable sets the number of significant digits printed in
+    output from batch mode, when used in the <tt>.options</tt> line.
+    </dl>
+
+    <a name="printautowidth"></a>
+    <dl>
+    <dt><tt>printautowidth</tt><dd>
+    In column mode of the <a href="print"><b>print</b></a> command, if
+    this boolean variable is set, the logical page width is expanded
+    as necessary to print all vectors, up to a hard limit of 2048
+    characters.
+    </dl>
+
+    <a name="printnoheader"></a>
+    <dl>
+    <dt><tt>printnoheader</tt><dd>
+    In column mode of the <a href="print"><b>print</b></a> command, if
+    this boolean variable is set, the three-line header that normally
+    appears at the top of the first page of output is suppressed.
+    </dl>
+
+    <a name="printnoindex"></a>
+    <dl>
+    <dt><tt>printnoindex</tt><dd>
+    In column mode of the <a href="print"><b>print</b></a> command, if
+    this boolean variable is set, the column of index values that
+    normally appears to the left of all vector data is suppressed.
+    </dl>
+
+    <a name="printnopageheader"></a>
+    <dl>
+    <dt><tt>printnopageheader</tt><dd>
+    In column mode of the <a href="print"><b>print</b></a> command, if
+    this boolean variable is set, the two line page header which
+    is normally printed at the top of each page is omitted.
+    </dl>
+
+    <a name="printnoscale"></a>
+    <dl>
+    <dt><tt>printnoscale</tt><dd>
+    In column mode of the <a href="print"><b>print</b></a> command,
+    the values of the scale vector are by default printed in the first
+    data column of each page.  Setting this boolean variable
+    suppresses this.  A deprecated alias <tt>noprintscale</tt> is also
+    recognized, for backwards compatibility with Spice3 and earlier
+    <i>WRspice</i> releases.
+    </dl>
+
+    <a name="random"></a>
+    <dl>
+    <dt><tt>random</tt><dd>
+    When set, the <a href="hspicesim">HSPICE</a>-compatible random
+    number functions (<a href="unif"><tt>unif</tt></a>, <a
+    href="aunif"><tt> aunif</tt></a>, <a
+    href="gauss"><tt>gauss</tt></a>, <a
+    href="agauss"><tt>agauss</tt></a>, <a
+    href="limit"><tt>limit</tt></a>) will return random values.  When
+    not set and not running <a href="monte">Monte Carlo analysis</a>
+    these functions always return mean values.
+
+    <p>
+    This applies to the listed functions only, and not the <a
+    href="statfuncs">statistical functions</a>, and not the
+    voltage/current source random <a href="tranfuncs">functions</a>,
+    which always produce random output.
+
+    <p>
+    This can be set with the <a href="set"><b>set</b></a> command or
+    in a <a href=".options"><tt>.options</tt></a> line to enable the
+    random functions for use in scripts, during analysis, or working
+    from the command line.  The random output is disabled by default
+    since some foundry model sets make use of random functions
+    intended for HSPICE Monte Carlo analysis, and this would cause big
+    trouble in <i>WRspice</i>.
+
+    <p>
+    Warning:  with this variable set, reading in foundry models such
+    as those from IBM will generate random model parameters, as these
+    models have built-in random generation compatible with HSPICE and
+    <i>WRspice</i>.  This may be exactly what you want, but if not,
+    be forewarned.
+    </dl>
+
+    <a name="rawfile"></a>
+    <dl>
+    <dt><tt>rawfile</tt><dd>
+    This variable sets the default name for the data file to be
+    produced.  The default is as entered with the <a
+    href="-r"><tt>-r</tt></a> command line option, or
+    "<tt>rawspice.raw</tt>".  An extension sets the file format, which
+    can be the native rawfile format, or the Common Simulation Data
+    Format (CSDF).  See the description of the <a
+    href="write"><b>write</b></a> command for more information about
+    the formats and how they can be specified.  In server mode (the <a
+    href="-s"><tt>-s</tt></a> command line option was given) data will
+    be output in rawfile format in all cases.  The <a
+    href="filetype"><tt>filetype</tt></a> variable is used to set
+    whether native rawfiles are written using ASCII or binary number
+    representations (ASCII is the default).
+    </dl>
+
+    <a name="rawfileprec"></a>
+    <dl>
+    <dt><tt>rawfileprec</tt><dd>
+    This variable sets the number of digits used to print data in an
+    ASCII rawfile.  The default is 15.
+    </dl>
+
+    <a name="rhost"></a>
+    <dl>
+    <dt><tt>rhost</tt><dd>
+    This variable specifies the name of the default machine to submit
+    remote simulations to.  This machine must have a <a
+    href="wrspiced"><tt>wrspiced</tt></a> daemon running.  The default
+    machine can also be specified in the <b>SPICE_HOST</b> <a
+    href="environment">environment</a> variable, which will be
+    overridden if <tt>rhost</tt> is set.  Additional machines can be
+    added to an internal list with the <a
+    href="rhostcom"><b>rhost</b></a> command.  The host name can be
+    optionally suffixed with a colon followed by the port number to
+    use to communicate with the <tt>wrspiced</tt> daemon.  The port
+    must match that set up by the daemon.  If not given, the port
+    number is obtained from the operating system for
+    "<tt>wrspice/tcp</tt>" or 6114 (the IANA registered port number
+    for this service) if this is not defined.
+    </dl>
+
+    <a name="rprogram"></a>
+    <dl>
+    <dt><tt>rprogram</tt><dd>
+    The name of the program to run when an <a
+    href="rspice"><b>rspice</b></a> command is given.  If not set, the
+    program path used will be determined as in the <a
+    href="aspice"><b>aspice</b></a> command.
+    </dl>
+
+    <a name="spectrace"></a>
+    <dl>
+    <dt><tt>spectrace</tt><dd>
+    This enables messages to be printed during Fourier analysis with
+    the <a href="spec"><b>spec</b></a> command, for debugging purposes.
+    </dl>
+
+    <a name="specwindow"></a>
+    <dl>
+    <dt><tt>specwindow</tt><dd>
+    This variable is set to one of the following strings, which will
+    determine the type of windowing used for the Fourier transform in
+    the <a href="spec"><b>spec</b></a> command.  If not set, the
+    default is <tt>hanning</tt>.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><tt>bartlet</tt></td>    <td>Bartlet (triangle) window</td></tr>
+    <tr><td><tt>blackman</tt></td>   <td>Blackman order 2 window</td></tr>
+    <tr><td><tt>cosine</tt></td>     <td>Hanning (cosine) window</td></tr>
+    <tr><td><tt>gaussian</tt></td>   <td>Gaussian window</td></tr>
+    <tr><td><tt>hamming</tt></td>    <td>Hamming window</td></tr>
+    <tr><td><tt>hanning</tt></td>    <td>Hanning (cosine) window</td></tr>
+    <tr><td><tt>none</tt></td>       <td>No windowing</td></tr>
+    <tr><td><tt>rectangular</tt></td> <td>Rectangular window</td></tr>
+    <tr><td><tt>triangle</tt></td>   <td>Bartlet (triangle) window</td></tr>
+    </table>
+    </dl>
+
+    <a name="specwindoworder"></a>
+    <dl>
+    <dt><tt>specwindoworder</tt><dd>
+    This can be set to an integer in the range 2-8.  This sets the
+    order when the gaussian window is used in the <a
+    href="spec"><b>spec</b></a> command.  If not set, order 2 is used.
+    </dl>
+
+    <a name="spicepath"></a>
+    <dl>
+    <dt><tt>spicepath</tt><dd>
+    This variable can be set to a path to a simulator executable which
+    will be executed when asynchronous jobs are submitted with the <a
+    href="aspice"><b>aspice</b></a> command.  If not set, the path
+    used will default to the value of the <a
+    href="environment">environment</a> variable <b>SPICE_PATH</b>.  If
+    this environment variable is not set, the path is constructed from
+    the value of the environment variable <b>SPICE_EXEC_DIR</b>
+    prepended to the name of the presently running program.  If the
+    <b>SPICE_EXEC_DIR</b> variable is not set, the path used is that
+    of the presently running <i>WRspice</i>.
+    </dl>
+
+    <a name="units"></a>
+    <dl>
+    <dt><tt>units</tt><dd>
+    If this variable is set to "<tt>degrees</tt>", all trig functions
+    will use degrees instead of radians for the units of their
+    arguments.  The default is "<tt>radians</tt>".
+    </dl>
+
+!!SEEALSO
+variables
+

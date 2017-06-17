@@ -1,0 +1,298 @@
+#######################################################################
+# src/xictools_accs/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.34 2015/12/08 21:59:30 stevew Exp $
+#######################################################################
+
+ACCS_VERSION = @ACCS_VERSION@
+DATE = @DATE@
+
+prefix = @prefix@
+CXX = @CXX@
+CC = @CC@
+LINKCC = @LINKCC@
+CFLAGS = @CFLAGSG@ @DYNAMIC_LIBS@ @UFLAGS@ -DXICTOOLS
+LFLAGS = @LFLAGS@ @TOOLKITLFLAGS@ @UFLAGS@
+MSLIBS = @MSLIBS@
+LIBS = @LIBS@ @TOOLKITLIBS@ @EXTRALIBS@
+OSNAME = @OSNAME@
+GRPREF = @GRPREF@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ -DXICTOOLS
+RANLIB = @RANLIB@
+STDCLIB = @STDCLIB@
+INSTALL = @INSTALL@
+NTSUFFIX = @NTSUFFIX@
+FILTER = @FILTER@
+NTREGEX = @NTREGEX@
+MOZYRES = @MOZYRES@
+XEDRES = @XEDRES@
+TOOLROOT = @TOOLROOT@
+WINPTHREADFIX = @WINPTHREADFIX@
+
+LPATH = ../xt_base
+GRAPHICS = $(LPATH)/ginterf/ginterf.a
+MISCUTIL = $(LPATH)/miscutil/miscutil.a
+INSTALL_BIN    = $(INSTALL) -s -c -m 0755
+INSTALL_SCRIPT = $(INSTALL) -c -m 0755
+INSTALL_LIB    = $(INSTALL) -c -m 0644
+INSTALL_LIB_RO = $(INSTALL) -c -m 0444
+
+CCFILES = mozy.cc xeditor.cc httpget.cc hlp2html.cc hlpsrv.cc fcpp.cc \
+  lstpack.cc lstunpack.cc
+INCLUDE = -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
+ODIR = ./xt_accs-$(ACCS_VERSION)
+
+#######################################################################
+####### Executable and related targets ################################
+
+ACCESSORIES = mozy xeditor httpget hlpsrv hlp2html fcpp lstpack lstunpack
+
+all:  $(ACCESSORIES)
+
+mozy: mozy.o $(GRAPHICS) $(MISCUTIL) $(MOZYRES) Makefile
+	@echo $@: dynamic link
+	@$(LINKCC) $(NTNOCONS) -o mozy $(LFLAGS) mozy.o $(GRAPHICS) \
+  $(MISCUTIL) $(NTREGEX) $(LIBS) $(MOZYRES) $(STDCLIB)
+
+xeditor: xeditor.o $(GRAPHICS) $(MISCUTIL) $(XEDRES) Makefile
+	@echo $@: dynamic link
+	@$(LINKCC) $(NTNOCONS) -o xeditor $(LFLAGS) xeditor.o $(GRAPHICS) \
+  $(MISCUTIL) $(NTREGEX) $(LIBS) $(XEDRES) $(STDCLIB)
+
+httpget:  httpget.o $(GRAPHICS) $(MISCUTIL)
+	$(LINKCC) -o httpget $(LFLAGS) httpget.o $(GRAPHICS) \
+  $(MISCUTIL) $(LIBS) $(STDCLIB)
+
+hlpsrv: hlpsrv.o $(GRAPHICS) $(MISCUTIL) Makefile
+	@$(LINKCC) -o hlpsrv $(LFLAGS) hlpsrv.o \
+  $(LPATH)/ginterf/help/help_read.o $(LPATH)/ginterf/graphics.o $(MISCUTIL) \
+  $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
+
+hlp2html: hlp2html.o $(GRAPHICS) $(MISCUTIL) Makefile
+	@$(LINKCC) -o hlp2html $(LFLAGS) hlp2html.o \
+  $(LPATH)/ginterf/help/help_read.o $(LPATH)/ginterf/graphics.o $(MISCUTIL) \
+  $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
+
+fcpp: fcpp.cc $(MISCUTIL)
+	$(LINKCC) $(CFLAGS) $(INCLUDE) -o fcpp fcpp.cc $(MISCUTIL) \
+  $(STDCLIB) $(STDCLIB) $(WINPTHREADFIX)
+
+lstpack: lstpack.cc $(MISCUTIL)
+	$(LINKCC) $(CFLAGS) $(INCLUDE) -o lstpack lstpack.cc $(MISCUTIL) \
+  $(STDCLIB) $(STDCLIB) $(WINPTHREADFIX)
+
+lstunpack: lstunpack.cc $(MISCUTIL)
+	$(LINKCC) $(CFLAGS) $(INCLUDE) -o lstunpack lstunpack.cc $(MISCUTIL) \
+  $(STDCLIB) $(STDCLIB) $(WINPTHREADFIX)
+
+
+mozy.o: mozy.cc
+	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \
+  -DVERSION_STR=\"$(ACCS_VERSION)\" $(INCLUDE) -c mozy.cc
+
+xeditor.o: xeditor.cc
+	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \
+  -DVERSION_STR=\"$(ACCS_VERSION)\" $(INCLUDE) -c xeditor.cc
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+#######################################################################
+####### Recursively generate libraries ################################
+
+$(GRAPHICS)::
+	cd $(@D); $(MAKE)
+
+$(MISCUTIL)::
+	cd $(@D); $(MAKE)
+	if [ x$(NTREGEX) != x ]; then \
+	    cd $(LPATH)/miscutil/libregex; $(MAKE); \
+	fi
+
+foo $(MOZYRES) $(XEDRES):
+	cd $(@D); $(MAKE) $(@F)
+
+#######################################################################
+####### Dependencies in this directory ################################
+
+depend::
+	@echo depending in xictools_accs
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+#######################################################################
+####### Clean up ######################################################
+
+eclean::
+	-rm -f mozy$(NTSUFFIX) xeditor$(NTSUFFIX) httpget$(NTSUFFIX) \
+  hlpsrv$(NTSUFFIX) hlp2html$(NTSUFFIX) fcpp$(NTSUFFIX) lstpack$(NTSUFFIX) \
+  lstunpack$(NTSUFFIX)
+
+clean:: eclean
+	-rm -f *.o $(ODIR).tar.gz
+
+distclean:: eclean
+	-rm -f *.o Makefile $(ODIR).tar.gz
+
+#######################################################################
+####### Installation ##################################################
+
+INSTALL_PREFIX ?= $(prefix)
+dst_lib = $(INSTALL_PREFIX)/$(TOOLROOT)
+dst_bin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
+
+install: install_test install_force
+
+install_force: install_clean install_bin install_startup install_help
+
+install_bin: $(dst_bin)
+install_startup: $(dst_lib)/mozy/startup
+install_help: $(dst_lib)/mozy/help
+
+install_test::
+	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
+	    echo "No!  Use pagkage to install!"; \
+	    exit 1; \
+	fi
+
+install_clean::
+	-@for aa in $(ACCESSORIES); do \
+	    rm -f $(dst_bin)/$$aa$(NTSUFFIX); \
+	done
+
+$(dst_bin)::
+	@$(LPATH)/util/mkdirpth $@
+	for aa in $(ACCESSORIES); do \
+	    $(INSTALL_BIN) $$aa$(NTSUFFIX) $@; \
+	done
+
+$(dst_lib)/mozy/startup::
+	@$(LPATH)/util/mkdirpth $@
+	startup=`packages/util/accs_files startup`; \
+	for a in $$startup; do \
+	    $(INSTALL_LIB) lib/mozy/startup/$$a $@; \
+	done
+
+$(dst_lib)/mozy/help::
+	if [ -f lib/mozy/help/Makefile ]; then \
+	    (cd lib/mozy/help; $(MAKE)); \
+	fi
+	@$(LPATH)/util/mkdirpth $@
+	help=`packages/util/accs_files help`; \
+	for a in $$help; do \
+	    $(INSTALL_LIB) lib/mozy/help/$$a $@; \
+	done
+	@$(LPATH)/util/mkdirpth $@/screenshots
+	ss=`packages/util/accs_files help_ss`; \
+	for a in $$ss; do \
+	    $(INSTALL_LIB) lib/mozy/help/screenshots/$$a $@/screenshots; \
+	done
+
+package::
+	$(MAKE) $(ACCESSORIES)
+	-rm -rf packages/root
+	mkdir packages/root
+	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
+	cd packages; make xt_accs-$(OSNAME)
+
+export::
+	if [ -d $(ODIR) ]; then \
+	    rm -rf $(ODIR); \
+	fi;
+	mkdir $(ODIR);
+	cp -pf version $(ODIR)
+	cp -pf export_files/README $(ODIR)
+	mkdir $(ODIR)/lib
+	mkdir $(ODIR)/lib/mozy
+	mkdir $(ODIR)/lib/mozy/startup
+	for a in `packages/util/accs_files startup`; do \
+	    cp -pf lib/mozy/startup/$$a $(ODIR)/lib/mozy/startup; \
+	done
+	mkdir $(ODIR)/lib/mozy/help
+	for a in `packages/util/accs_files help`; do \
+	    cp -pf lib/mozy/help/$$a $(ODIR)/lib/mozy/help; \
+	done
+	mkdir $(ODIR)/lib/mozy/help/screenshots
+	for a in `packages/util/accs_files help_ss`; do \
+	    cp -pf lib/mozy/help/screenshots/$$a \
+  $(ODIR)/lib/mozy/help/screenshots; \
+	done
+	mkdir $(ODIR)/util
+	cp -pf $(LPATH)/util/install-sh $(ODIR)/util
+	cp -pf $(LPATH)/util/install_bin $(ODIR)/util
+	cp -pf $(LPATH)/util/mkdirpth $(ODIR)/util
+	mkdir $(ODIR)/src
+	cp -pf export_files/Makefile.in $(ODIR)/src
+	cp -pf $(LPATH)/configure.in $(ODIR)/src
+	cp -pf $(LPATH)/configure $(ODIR)/src
+	$(LPATH)/util/mvdir $(LPATH)/ginterf $(ODIR)/src/ginterf
+	$(LPATH)/util/mvdir $(LPATH)/miscutil $(ODIR)/src/miscutil
+	mkdir $(ODIR)/src/xictools_accs
+	for a in $(ACCESSORIES); do \
+	    cp -pf $$a.cc $(ODIR)/src/xictools_accs/$$a.cc; \
+	done
+	cp -pf export_files/accs_makefile.in \
+          $(ODIR)/src/xictools_accs/Makefile.in
+	mkdir $(ODIR)/src/packages
+	cp -pf packages/Makefile.in $(ODIR)/src/packages
+	mkdir $(ODIR)/src/packages/util
+	cp -pfr packages/util/accs_files $(ODIR)/src/packages/util
+	cp -pfr packages/util/wr_install $(ODIR)/src/packages/util
+	mkdir $(ODIR)/src/packages/files
+	cp -pfr packages/files/make_config.in $(ODIR)/src/packages/files
+	mkdir $(ODIR)/src/packages/root
+	mkdir $(ODIR)/src/packages/pkgfiles
+	mkdir $(ODIR)/src/packages/Darwin
+	mkdir $(ODIR)/src/packages/Darwin/xt_accs
+	cp -pf packages/Darwin/xt_accs/Makefile \
+          $(ODIR)/src/packages/Darwin/xt_accs
+	for a in `make -sC packages/Darwin/xt_accs subdirs`; do \
+	    mkdir $(ODIR)/src/packages/Darwin/xt_accs/$$a; \
+	done
+	for a in `make -sC packages/Darwin/xt_accs files`; do \
+	    cp -pf packages/Darwin/xt_accs/$$a \
+              $(ODIR)/src/packages/Darwin/xt_accs/$$a; \
+	done
+	mkdir $(ODIR)/src/packages/FreeBSD
+	mkdir $(ODIR)/src/packages/FreeBSD/xt_accs
+	cp -pf packages/FreeBSD/xt_accs/Makefile \
+          $(ODIR)/src/packages/FreeBSD/xt_accs
+	for a in `make -sC packages/FreeBSD/xt_accs subdirs`; do \
+	    mkdir $(ODIR)/src/packages/FreeBSD/xt_accs/$$a; \
+	done
+	for a in `make -sC packages/FreeBSD/xt_accs files`; do \
+	    cp -pf packages/FreeBSD/xt_accs/$$a \
+              $(ODIR)/src/packages/FreeBSD/xt_accs/$$a; \
+	done
+	mkdir $(ODIR)/src/packages/Linux
+	mkdir $(ODIR)/src/packages/Linux/xt_accs
+	cp -pf packages/Linux/xt_accs/Makefile \
+          $(ODIR)/src/packages/Linux/xt_accs
+	for a in `make -sC packages/Linux/xt_accs subdirs`; do \
+	    mkdir $(ODIR)/src/packages/Linux/xt_accs/$$a; \
+	done
+	for a in `make -sC packages/Linux/xt_accs files`; do \
+	    cp -pf packages/Linux/xt_accs/$$a \
+              $(ODIR)/src/packages/Linux/xt_accs/$$a; \
+	done
+	mkdir $(ODIR)/src/packages/Win32
+	mkdir $(ODIR)/src/packages/Win32/xt_accs
+	cp -pf packages/Win32/xt_accs/Makefile \
+          $(ODIR)/src/packages/Win32/xt_accs
+	for a in `make -sC packages/Win32/xt_accs subdirs`; do \
+	    mkdir $(ODIR)/src/packages/Win32/xt_accs/$$a; \
+	done
+	for a in `make -sC packages/Win32/xt_accs files`; do \
+	    cp -pf packages/Win32/xt_accs/$$a \
+              $(ODIR)/src/packages/Win32/xt_accs/$$a; \
+	done
+	tar czf $(ODIR).tar.gz $(ODIR)
+	rm -rf $(ODIR)
+	@echo
+	@echo "Export source created in $(ODIR).tar.gz"
+	@echo
+
+#######################################################################

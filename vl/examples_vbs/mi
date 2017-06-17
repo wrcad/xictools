@@ -1,0 +1,5 @@
+#! /bin/sh
+
+for t in mi0*.v; do
+    vl $t
+done

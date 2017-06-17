@@ -1,0 +1,132 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spVars_debug.hlp,v 1.16 2015/07/31 03:38:56 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spVars_debug.hlp
+!!TITLE
+spVars_debug.hlp
+!!HTML 
+
+!!SUBTOPICS
+debug_vars
+
+
+!!REDIRECT debug        debug_vars#debug
+!!REDIRECT async        debug_vars#debug
+!!REDIRECT control      debug_vars#debug
+!!REDIRECT cshpar       debug_vars#debug
+!!REDIRECT eval         debug_vars#debug
+!!REDIRECT ginterface   debug_vars#debug
+!!REDIRECT parser       debug_vars#debug
+!!REDIRECT siminterface debug_vars#debug
+!!REDIRECT vecdb        debug_vars#debug
+!!REDIRECT xdisplay     debug_vars#display
+!!REDIRECT dontplot     debug_vars#dontplot
+!!REDIRECT nosubckt     debug_vars#nosubckt
+!!REDIRECT program      debug_vars#program
+!!REDIRECT trantrace    debug_vars#trantrace
+
+!! variables.tex 073015
+!!KEYWORD
+debug_vars
+!!TITLE
+Debugging Variables
+!!HTML
+    These variables turn on debugging modes and otherwise provide
+    debugging utility.  Most of these variables can be set indirectly
+    from the <a href="dbgopts"><b>Debug Options</b></a> tool from the
+    <b>Debug</b> button in the <a href="toolsmenu"><b>Tools</b></a>
+    menu of the <a href="toolbar"><b>Tool Control</b></a> window.
+
+    <p>
+    <a name="debug"></a>
+    <dl>
+    <dt><tt>debug</tt><dd>
+    This variable may be a boolean (i.e., set to nothing), in which
+    case all debugging is turned on, a string token from the list
+    below, in which case the string specifies which part of the
+    program to enable debugging for, or a list of these strings, which
+    enables any combination.  The possible values are:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th align="left"><tt>async</tt></th>
+       <td>The <b>aspice</b> and <b>rspice</b> code</td></tr>
+    <tr><th align="left"><tt>control</tt></th>
+       <td>The control structure code</td></tr>
+    <tr><th align="left"><tt>cshpar</tt></th>
+       <td>The C-shell pre-processor and parser</td></tr>
+    <tr><th align="left"><tt>eval</tt></th>
+       <td>The expression evaluation routines</td></tr>
+    <tr><th align="left"><tt>ginterface</tt></th>
+       <td>Graphics package interface routines</td></tr>
+    <tr><th align="left"><tt>helpsys</tt></th>
+       <td>The help system</td></tr>
+    <tr><th align="left"><tt>plot</tt></th>
+       <td>The plotting routines</td></tr>
+    <tr><th align="left"><tt>parser</tt></th>
+       <td>The parser for expressions</td></tr>
+    <tr><th align="left"><tt>siminterface</tt></th>
+       <td>The interface to the simulator</td></tr>
+    <tr><th align="left"><tt>vecdb</tt></th>
+       <td>The vector database</td></tr>
+    </table></br>
+    </dl>
+
+    <a name="display"></a>
+    <dl>
+    <dt><tt>display</tt><dd>
+    This variable contains the display name for X used by the graphics
+    system, generally of the form <i>host</i>:<i>number</i>.  This
+    variable is read-only.
+    </dl>
+
+    <a name="dontplot"></a>
+    <dl>
+    <dt><tt>dontplot</tt><dd>
+    This variable disables the plotting system for debugging purposes. 
+    When this variable is set, and a <a href="plot"><b>plot</b></a>
+    command is given, no graphical operations are performed.
+    </dl>
+
+    <a name="nosubckt"></a>
+    <dl>
+    <dt><tt>nosubckt</tt><dd>
+    This variable disables the expansion of subcircuits when set, for
+    debugging purposes.  A circuit with subcircuits cannot be parsed
+    if this is set.
+    </dl>
+
+    <a name="program"></a>
+    <dl>
+    <dt><tt>program</tt><dd>
+    This variable contains the full path name of the program.
+    </dl>
+
+    <a name="trantrace"></a>
+    <dl>
+    <dt><tt>trantrace</tt><dd>
+    This can take integer values 0-2, a value 0 is the same as if
+    unset.  When set to 1 or 2, a message is printed at every internal
+    time point during transient analysis, providing information about
+    the predicted and used time step, integration order, convergence
+    testing results, and breakpoints.  The value 2 is more verbose
+    than 1.
+
+    <p>
+    Also, for values 1 and 2 equivalently, the <a href=".op">operating
+    point</a> analysis is traced, with iteration counts, step values
+    and other information printed.  This is done for any operating
+    point analysis, for transient analysis or not.
+    </dl>
+
+!!SEEALSO
+variables
+

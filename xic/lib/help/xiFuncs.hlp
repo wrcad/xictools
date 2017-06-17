@@ -1,0 +1,220 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiFuncs.hlp,v 1.16 2016/12/11 01:50:34 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiFuncs.hlp
+!!TITLE
+xiFuncs.hlp
+!!HTML
+
+!!SUBTOPICS
+scr:iffuncs
+
+!! 082408
+!!KEYWORD
+scr:iffuncs scrfuncs functions
+!!TITLE
+Script Interface Functions
+!!HTML
+    There is a growing library of user interface functions which
+    control various aspects of <i>Xic</i> for use in <a
+    href="xicscript">scripts</a>.
+
+    <p>
+    Functions that manipulate objects in the database use a coordinate
+    system based in microns (1 micron usually equals 1000 <a
+    href="xicdb#units">database units</a>).  All coordinates are real
+    values.
+
+    <p>
+    There are two levels of run-time error reporting.  For serious
+    errors, a message is emitted to the controlling terminal, and the
+    script terminates.  Most interface functions will generate this
+    type of error only in response to bad arguments, meaning usually
+    arguments of the wrong type.  Less serious errors simply cause the
+    function to return, returning a value that indicates that the
+    operation was unsuccessful.  Many of the functions return 1 if
+    successful, or 0 if not successful.  In some cases where a string
+    is normally returned, a null string return indicates an error
+    occurred.  It is up to the user to test the return values for
+    success or failure.
+
+    <p>
+    When the documentation specifies that a null string value is
+    acceptable as a function argument, the value zero can be passed
+    instead of a string variable.  The token <tt>NULL</tt>, which is
+    predefined as 0, can be used equivalently.
+
+    <p>
+    The table below outlines the collections of interface functions
+    presently available, by category and sub-category.  Most of these
+    functions return a value.  In the descriptions, if a value is
+    returned, the type, in parentheses, is indicated ahead of the
+    function name.
+
+    <dl>
+    <dt>
+    The first group of main module functions:<br>
+    <a href="funcs:main1"><b>Main Functions 1</b></a>
+    <dd>
+    <a href="funcs:main1:curcell">Current Cell</a><br>
+    <a href="funcs:main1:cell">Cell Info</a><br>
+    <a href="funcs:main1:db">Database</a><br>
+    <a href="funcs:main1:stab">Symbol Tables</a><br>
+    <a href="funcs:main1:dsp">Display</a><br>
+    <a href="funcs:main1:exit">Exit</a><br>
+    <a href="funcs:main1:anno">Annotation</a><br>
+    <a href="funcs:main1:ghost">Ghost Rendering</a><br>
+    <a href="funcs:main1:graphics">Graphics</a><br>
+    <a href="funcs:main1:hcopy">Hard Copy</a><br>
+    <a href="funcs:main1:keyb">Keyboard</a><br>
+    <a href="funcs:main1:libs">Libraries</a><br>
+    <a href="funcs:main1:mode">Mode</a><br>
+    <a href="funcs:main1:prompt">Prompt Line</a><br>
+    <a href="funcs:main1:script">Scripts</a><br>
+    <a href="funcs:main1:tech">Technology File</a><br>
+    <a href="funcs:main1:var">Variables</a><br>
+    <a href="funcs:main1:version">Version</a>
+    </dl>
+
+    <dl>
+    <dt>The second group of main module functions:<br>
+    <a href="funcs:main2"><b>Main Functions 2</a></b>
+    <dd>
+    <a href="funcs:main2:array#arrays">Arrays</a><br>
+    <a href="funcs:main2:bit#bitwise">Bitwise Logic</a><br>
+    <a href="funcs:main2:error">Error Reporting</a><br>
+    <a href="funcs:main2:handle">Generic Handle Functions</a><br>
+    <a href="funcs:main2:mem">Memory Management</a><br>
+    <a href="funcs:main2:scrv">Script Variables</a><br>
+    <a href="funcs:main2:path">Path Manipulation and Query</a><br>
+    <a href="funcs:main2:regex">Regular Expressions</a><br>
+    <a href="funcs:main2:shndl">String List Handles</a><br>
+    <a href="funcs:main2:string">String Manipulation and Conversion</a><br>
+    <a href="funcs:main2:cwd">Currrent Directory</a><br>
+    <a href="funcs:main2:date">Date and Time</a><br>
+    <a href="funcs:main2:file">File System Interface</a><br>
+    <a href="funcs:main2:skt">Socket and <i>Xic</i> Client/Server Interface</a><br>
+    <a href="funcs:main2:sys">System Command Interface</a><br>
+    <a href="funcs:main2:menu">Menu Buttons</a><br>
+    <a href="funcs:main2:mouse">Mouse Input</a><br>
+    <a href="funcs:main2:grin">Graphical Input</a><br>
+    <a href="funcs:main2:textin">Text Input</a><br>
+    <a href="funcs:main2:textout">Text Output</a>
+    </dl>
+
+    <dl>
+    <dt>The third group of main module functions:<br>
+    <a href="funcs:main3"><b>Main Functions 3</b></a>
+    <dd>
+    <a href="funcs:main3:snap">Grid and Edge Snapping</a><br>
+    <a href="funcs:main3:grid">Grid Style</a><br>
+    <a href="funcs:main3:curlyr">Current Layer</a><br>
+    <a href="funcs:main3:ltab">Layer Table</a><br>
+    <a href="funcs:main3:ldb">Layer Database</a><br>
+    <a href="funcs:main3:layer">Layers</a><br>
+    <a href="funcs:main3:layerex">Layers - Extraction Support</a><br>
+    <a href="funcs:main3:sel">Selections</a><br>
+    <a href="funcs:main3:pfgen">Pseudo-Flat Generator</a><br>
+    <a href="funcs:main3:meas">Geometry Measurement</a>
+    </dl>
+
+    <dl>
+    <dt>Function related to reading and writing of layout data:<br>
+    <a href="funcs:cvrt"><b>Layout File Input/Output Functions</b></a>
+    <dd>
+    <a href="funcs:cvrt:lalias">Layer Aliasing</a><br>
+    <a href="funcs:cvrt:cnmap">Cell Name Mapping</a><br>
+    <a href="funcs:cvrt:ctab">Cell Table</a><br>
+    <a href="funcs:cvrt:wnd">Windowing and Flattening</a><br>
+    <a href="funcs:cvrt:scale">Scale Factor</a><br>
+    <a href="funcs:cvrt:wrflg">Export Flags</a><br>
+    <a href="funcs:cvrt:rdflg">Import Flags</a><br>
+    <a href="funcs:cvrt:cvt">Layout File Format Conversion</a><br>
+    <a href="funcs:cvrt:exprt">Export Layout File</a><br>
+    <a href="funcs:cvrt:chd">Cell Hierarchy Digest</a><br>
+    <a href="funcs:cvrt:cgd">Cell Geometry Digest</a><br>
+    <a href="funcs:cvrt:asm">Assembly Stream</a>
+    </dl>
+
+    <dl>
+    <dt>First group of functions for geometry editing:<br>
+    <a href="funcs:geom1"><b>Geometry Editing Functions 1</b></a>
+    <dd>
+    <a href="funcs:geom1:gen">General Editing</a><br>
+    <a href="funcs:geom1:cells">Cells</a><br>
+    <a href="funcs:geom1:xform">Currrent Transform</a><br>
+    <a href="funcs:geom1:drvlyr">Derived Layers</a><br>
+    <a href="funcs:geom1:objbh">Object Management by Handles</a>
+    </dl>
+
+    <dl>
+    <dt>Second group of functions for geometry editing.<br>
+    <a href="funcs:geom2"><b>Geometry Editing Functions 2</b></a>
+    <dd>
+    <a href="funcs:geom2:cell">Cells, PCells, and Instance Placement</a><br>
+    <a href="funcs:geom2:clip">Clipping Functions</a><br>
+    <a href="funcs:geom2:obj">Other Object Management Functions</a><br>
+    <a href="funcs:geom2:prpbh">Property Management by Handles</a><br>
+    <a href="funcs:geom2:prp">Other Property Management Functions</a>
+    </dl>
+
+    <dl>
+    <dt>These are the computational geometry functions:<br>
+    <a href="funcs:lexpr"><b>Computational Geometry and Layer
+     Expressions</b></a>
+    <dd>
+    <a href="funcs:lexpr:zoid">Trapezoid Lists and Layer Expressions</a><br>
+    <a href="funcs:lexpr:oper">Operations</a><br>
+    <a href="funcs:lexpr:spt">Spatial Parameter Tables</a><br>
+    <a href="funcs:lexpr:db">Polymorphic Flat Database</a><br>
+    <a href="funcs:lexpr:ntab">Named String Tables</a>
+    </dl>
+
+    <dl>
+    <dt>These functions are specific to design rule checking:<br>
+    <a href="funcs:drc"><b>Design Rule Checking Functions</b></a>
+    <dd>
+    <a href="funcs:drc:drc">DRC</a>
+    </dl>
+
+    <dl>
+    <dt>Functions specifically for the extraction system:<br>
+    <a href="funcs:ext"><b>Extraction Functions</b></a>
+    <dd>
+    <a href="funcs:ext:menu">Menu Commands</a><br>
+    <a href="funcs:ext:term">Terminals</a><br>
+    <a href="funcs:ext:group">Physical Conductor Groups</a><br>
+    <a href="funcs:ext:pdev">Physical Devices</a><br>
+    <a href="funcs:ext:subc">Physical Subcircuits</a><br>
+    <a href="funcs:ext:edev">Electrical Devices</a><br>
+    <a href="funcs:ext:extrl">Resistance/Inductance Extraction</a>
+    </dl>
+
+    <dl>
+    <dt>Functions for electrical schematic editing:<br>
+    <a href="funcs:sced"><b>Schematic Editor Functions</b></a>
+    <dd>
+    <a href="funcs:sced:io">Output Generation</a><br>
+    <a href="funcs:sced:nodes">Electrical Nodes</a><br>
+    <a href="funcs:sced:symbl">Symbolic Mode</a>
+    </dl>
+
+!!IFDEF MRouter
+    <dl>
+    <dt>Functions for optional router:<br>
+    <a href="funcs:router<b>Router Interface Functions</b></a>
+    <dd>
+    <a href="funcs:router:mrouter">Maze Router Plug-In</a>
+    </dl>
+!!ENDIF
+
+!!SEEALSO
+xicscript
+

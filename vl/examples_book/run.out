@@ -1,0 +1,957 @@
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+block.v
+0  x = 0, y = 1, z = 1, count = 0, reg_a = 0000, reg_b = 0000
+15  x = 0, y = 1, z = 1, count = 0, reg_a = 0004, reg_b = 0000
+25  x = 0, y = 1, z = 1, count = 1, reg_a = 0004, reg_b = 6000
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+cff.v
+0   CLK = 0, D = 1, Q = x, QBAR = x 
+5   CLK = 1, D = 1, Q = 1, QBAR = 0 
+10   CLK = 0, D = 1, Q = 1, QBAR = 0 
+20   CLK = 0, D = 0, Q = 1, QBAR = 0 
+25   CLK = 1, D = 0, Q = 0, QBAR = 1 
+30   CLK = 0, D = 0, Q = 0, QBAR = 1 
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+con_comp.v
+Module stimulus.stimulus compiled
+Module top.top.b1 instantiated
+Module bus_master.bus_master instantiated
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+counter.v
+0  Count Q = 0000 Clear= 1
+34  Count Q = 0000 Clear= 0
+40  Count Q = 0001 Clear= 0
+60  Count Q = 0010 Clear= 0
+80  Count Q = 0011 Clear= 0
+100  Count Q = 0100 Clear= 0
+120  Count Q = 0101 Clear= 0
+140  Count Q = 0110 Clear= 0
+160  Count Q = 0111 Clear= 0
+180  Count Q = 1000 Clear= 0
+200  Count Q = 1001 Clear= 0
+220  Count Q = 1010 Clear= 0
+234  Count Q = 0000 Clear= 1
+284  Count Q = 0000 Clear= 0
+300  Count Q = 0001 Clear= 0
+320  Count Q = 0010 Clear= 0
+340  Count Q = 0011 Clear= 0
+360  Count Q = 0100 Clear= 0
+380  Count Q = 0101 Clear= 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+delay.v
+0  A= 0, B=0, C= 0, OUT= x
+9  A= 0, B=0, C= 0, OUT= 0
+10  A= 1, B=1, C= 1, OUT= 0
+14  A= 1, B=1, C= 1, OUT= 1
+20  A= 1, B=0, C= 0, OUT= 1
+29  A= 1, B=0, C= 0, OUT= 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+demux1_4.v
+0 OUT0 = x,OUT1= x,OUT2= x,OUT3= x,IN= x,S1= x,S0= x 
+5 OUT0 = 1,OUT1= z,OUT2= z,OUT3= z,IN= 1,S1= 0,S0= 0 
+10 OUT0 = z,OUT1= 1,OUT2= z,OUT3= z,IN= 1,S1= 0,S0= 1 
+15 OUT0 = z,OUT1= z,OUT2= 1,OUT3= z,IN= 1,S1= 1,S0= 0 
+20 OUT0 = z,OUT1= z,OUT2= z,OUT3= 1,IN= 1,S1= 1,S0= 1 
+25 OUT0 = x,OUT1= x,OUT2= x,OUT3= x,IN= 1,S1= x,S0= 0 
+30 OUT0 = x,OUT1= x,OUT2= x,OUT3= x,IN= 1,S1= 0,S0= x 
+35 OUT0 = z,OUT1= z,OUT2= z,OUT3= z,IN= 1,S1= z,S0= 0 
+40 OUT0 = z,OUT1= z,OUT2= z,OUT3= z,IN= 1,S1= 0,S0= z 
+45 OUT0 = x,OUT1= x,OUT2= x,OUT3= x,IN= 1,S1= x,S0= z 
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+dff.v
+0  Count Q = 0000 Clear= 1
+34  Count Q = 0000 Clear= 0
+40  Count Q = 0001 Clear= 0
+60  Count Q = 0010 Clear= 0
+80  Count Q = 0011 Clear= 0
+100  Count Q = 0100 Clear= 0
+120  Count Q = 0101 Clear= 0
+140  Count Q = 0110 Clear= 0
+160  Count Q = 0111 Clear= 0
+180  Count Q = 1000 Clear= 0
+200  Count Q = 1001 Clear= 0
+220  Count Q = 1010 Clear= 0
+234  Count Q = 0000 Clear= 1
+284  Count Q = 0000 Clear= 0
+300  Count Q = 0001 Clear= 0
+320  Count Q = 0010 Clear= 0
+340  Count Q = 0011 Clear= 0
+360  Count Q = 0100 Clear= 0
+380  Count Q = 0101 Clear= 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+dffshort.v
+0  Count Q = 0000 Clear= 1
+34  Count Q = 0000 Clear= 0
+40  Count Q = 0001 Clear= 0
+60  Count Q = 0010 Clear= 0
+80  Count Q = 0011 Clear= 0
+100  Count Q = 0100 Clear= 0
+120  Count Q = 0101 Clear= 0
+140  Count Q = 0110 Clear= 0
+160  Count Q = 0111 Clear= 0
+180  Count Q = 1000 Clear= 0
+200  Count Q = 1001 Clear= 0
+220  Count Q = 1010 Clear= 0
+234  Count Q = 0000 Clear= 1
+284  Count Q = 0000 Clear= 0
+300  Count Q = 0001 Clear= 0
+320  Count Q = 0010 Clear= 0
+340  Count Q = 0011 Clear= 0
+360  Count Q = 0100 Clear= 0
+380  Count Q = 0101 Clear= 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+disable.v
+Encountered a TRUE bit at element number 13
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+display.v
+Hello Verilog World
+At time 200 virtual address is 0000000001c
+230
+ID of the port is 00101
+Bus value is 10xx
+This string is displayed from display_example.display_example level of hierarchy
+This is a 
+ multi-line string with a % sign
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+files.v
+handle1 = 8, handle2 = 10, handle3 = 20 
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+for-rel.v
+0 Q 1'b0 CLK 1'b0 RST 1'b1 D 1'bx
+5 Q 1'b0 CLK 1'b1 RST 1'b1 D 1'bx
+10 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+15 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+20 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+25 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+30 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+35 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+40 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+45 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+50 Q 1'b1 CLK 1'b0 RST 1'b0 D 1'b0
+55 Q 1'b1 CLK 1'b1 RST 1'b0 D 1'b0
+60 Q 1'b1 CLK 1'b0 RST 1'b0 D 1'b0
+65 Q 1'b1 CLK 1'b1 RST 1'b0 D 1'b0
+70 Q 1'b1 CLK 1'b0 RST 1'b0 D 1'b0
+75 Q 1'b1 CLK 1'b1 RST 1'b0 D 1'b0
+80 Q 1'b1 CLK 1'b0 RST 1'b0 D 1'b0
+85 Q 1'b1 CLK 1'b1 RST 1'b0 D 1'b0
+90 Q 1'b1 CLK 1'b0 RST 1'b0 D 1'b0
+95 Q 1'b1 CLK 1'b1 RST 1'b0 D 1'b0
+100 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+105 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+110 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+115 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+120 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+125 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+130 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+135 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+140 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+145 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+150 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+155 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+160 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+165 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+170 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+175 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+180 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+185 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+190 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+195 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+200 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+205 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+210 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+215 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+220 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+225 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+230 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+235 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+240 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+245 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+250 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+255 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+260 Q 1'b0 CLK 1'b0 RST 1'b0 D 1'b0
+265 Q 1'b0 CLK 1'b1 RST 1'b0 D 1'b0
+270 Q 1'b1 CLK 1'b0 RST 1'b0 D 1'b1
+275 Q 1'b1 CLK 1'b1 RST 1'b0 D 1'b1
+280 Q 1'b1 CLK 1'b0 RST 1'b0 D 1'b1
+285 Q 1'b1 CLK 1'b1 RST 1'b0 D 1'b1
+290 Q 1'b1 CLK 1'b0 RST 1'b0 D 1'b1
+295 Q 1'b1 CLK 1'b1 RST 1'b0 D 1'b1
+300 Q 1'b1 CLK 1'b0 RST 1'b0 D 1'b1
+305 Q 1'b1 CLK 1'b1 RST 1'b0 D 1'b1
+310 Q 1'b1 CLK 1'b0 RST 1'b0 D 1'b1
+315 Q 1'b1 CLK 1'b1 RST 1'b0 D 1'b1
+320 Q 1'b1 CLK 1'b0 RST 1'b0 D 1'b1
+325 Q 1'b1 CLK 1'b1 RST 1'b0 D 1'b1
+330 Q 1'b1 CLK 1'b0 RST 1'b0 D 1'b1
+335 Q 1'b1 CLK 1'b1 RST 1'b0 D 1'b1
+340 Q 1'b1 CLK 1'b0 RST 1'b0 D 1'b1
+345 Q 1'b1 CLK 1'b1 RST 1'b0 D 1'b1
+350 Q 1'b1 CLK 1'b0 RST 1'b0 D 1'b1
+355 Q 1'b1 CLK 1'b1 RST 1'b0 D 1'b1
+360 Q 1'b1 CLK 1'b0 RST 1'b0 D 1'b1
+365 Q 1'b1 CLK 1'b1 RST 1'b0 D 1'b1
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+for.v
+Count = 0
+Count = 1
+Count = 2
+Count = 3
+Count = 4
+Count = 5
+Count = 6
+Count = 7
+Count = 8
+Count = 9
+Count = 10
+Count = 11
+Count = 12
+Count = 13
+Count = 14
+Count = 15
+Count = 16
+Count = 17
+Count = 18
+Count = 19
+Count = 20
+Count = 21
+Count = 22
+Count = 23
+Count = 24
+Count = 25
+Count = 26
+Count = 27
+Count = 28
+Count = 29
+Count = 30
+Count = 31
+Count = 32
+Count = 33
+Count = 34
+Count = 35
+Count = 36
+Count = 37
+Count = 38
+Count = 39
+Count = 40
+Count = 41
+Count = 42
+Count = 43
+Count = 44
+Count = 45
+Count = 46
+Count = 47
+Count = 48
+Count = 49
+Count = 50
+Count = 51
+Count = 52
+Count = 53
+Count = 54
+Count = 55
+Count = 56
+Count = 57
+Count = 58
+Count = 59
+Count = 60
+Count = 61
+Count = 62
+Count = 63
+Count = 64
+Count = 65
+Count = 66
+Count = 67
+Count = 68
+Count = 69
+Count = 70
+Count = 71
+Count = 72
+Count = 73
+Count = 74
+Count = 75
+Count = 76
+Count = 77
+Count = 78
+Count = 79
+Count = 80
+Count = 81
+Count = 82
+Count = 83
+Count = 84
+Count = 85
+Count = 86
+Count = 87
+Count = 88
+Count = 89
+Count = 90
+Count = 91
+Count = 92
+Count = 93
+Count = 94
+Count = 95
+Count = 96
+Count = 97
+Count = 98
+Count = 99
+Count = 100
+Count = 101
+Count = 102
+Count = 103
+Count = 104
+Count = 105
+Count = 106
+Count = 107
+Count = 108
+Count = 109
+Count = 110
+Count = 111
+Count = 112
+Count = 113
+Count = 114
+Count = 115
+Count = 116
+Count = 117
+Count = 118
+Count = 119
+Count = 120
+Count = 121
+Count = 122
+Count = 123
+Count = 124
+Count = 125
+Count = 126
+Count = 127
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+forever1.v
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+forever2.v
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+fulladd.v
+0  A= 0000, B=0000, C_IN= 0,, C_OUT= 0, SUM= 0000
+5  A= 0011, B=0100, C_IN= 0,, C_OUT= 0, SUM= 0111
+10  A= 0010, B=0101, C_IN= 0,, C_OUT= 0, SUM= 0111
+15  A= 1001, B=1001, C_IN= 0,, C_OUT= 1, SUM= 0010
+20  A= 1010, B=1111, C_IN= 0,, C_OUT= 1, SUM= 1001
+25  A= 1010, B=0101, C_IN= 1,, C_OUT= 1, SUM= 0000
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+fulladd1.v
+0  A= 0000, B=0000, C_IN= 0,, C_OUT= 0, SUM= 0000
+5  A= 0011, B=0100, C_IN= 0,, C_OUT= 0, SUM= 0111
+10  A= 0010, B=0101, C_IN= 0,, C_OUT= 0, SUM= 0111
+15  A= 1001, B=1001, C_IN= 0,, C_OUT= 1, SUM= 0010
+20  A= 1010, B=1111, C_IN= 0,, C_OUT= 1, SUM= 1001
+25  A= 1010, B=0101, C_IN= 1,, C_OUT= 1, SUM= 0000
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+fulladd2.v
+0  A= 0000, B=0000, C_IN= 0,, C_OUT= 0, SUM= 0000
+5  A= 0011, B=0100, C_IN= 0,, C_OUT= 0, SUM= 0111
+10  A= 0010, B=0101, C_IN= 0,, C_OUT= 0, SUM= 0111
+15  A= 1001, B=1001, C_IN= 0,, C_OUT= 1, SUM= 0010
+20  A= 1010, B=1111, C_IN= 0,, C_OUT= 1, SUM= 1001
+25  A= 1010, B=0101, C_IN= 1,, C_OUT= 1, SUM= 0000
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+func1.v
+Parity calculated = 1
+Parity calculated = 0
+Parity calculated = 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+func2.v
+0 left= xxxxxxxx right = xxxxxxxx addr = xxxxxxxx
+1 left= 68acf134 right = 1a2b3c4d addr = 3456789a
+11 left= 898cf1fe right = 62633c7f addr = c4c678ff
+21 left= feadff34 right = 7fab7fcd addr = ff56ff9a
+31 left= 7f555554 right = 1fd55555 addr = 3faaaaaa
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+hier.v
+Displaying in top.top.m1
+Displaying in top.top.m2
+Displaying in top.top.m3
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+imp_del.v
+0 out 1'bz in1 1'b0 in2 1'b0
+10 out 1'b0 in1 1'b0 in2 1'b0
+20 out 1'b0 in1 1'b1 in2 1'b1
+30 out 1'b1 in1 1'b1 in2 1'b1
+60 out 1'b1 in1 1'b0 in2 1'b1
+70 out 1'b0 in1 1'b0 in2 1'b1
+100 out 1'b0 in1 1'b1 in2 1'b1
+105 out 1'b0 in1 1'b0 in2 1'b1
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+memory.v
+Memory [0] = xxxxxxxx
+Memory [1] = xxxxxxxx
+Memory [2] = 11111111
+Memory [3] = 01010101
+Memory [4] = 00000000
+Memory [5] = 10101010
+Memory [6] = 1111zzzz
+Memory [7] = 00001111
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+memory1.v
+Memory [0] = xxxxxxxx
+Memory [1] = xxxxxxxx
+Memory [2] = 11111111
+Memory [3] = 01010101
+Memory [4] = 00000000
+Memory [5] = 10101010
+Memory [6] = 1111zzzz
+Memory [7] = 00001111
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+monitor.v
+0 Value of signals clock = 0 reset = 1
+5 Value of signals clock = 1 reset = 1
+10 Value of signals clock = 0 reset = 1
+15 Value of signals clock = 1 reset = 1
+20 Value of signals clock = 0 reset = 1
+25 Value of signals clock = 1 reset = 1
+30 Value of signals clock = 0 reset = 1
+35 Value of signals clock = 1 reset = 1
+40 Value of signals clock = 0 reset = 1
+45 Value of signals clock = 1 reset = 1
+50 Value of signals clock = 0 reset = 0
+55 Value of signals clock = 1 reset = 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+mux.v
+0   OUT= 1, S= 0 I0= 1, I1= 0
+5   OUT= 0, S= 1 I0= 1, I1= 0
+10   OUT= 0, S= 0 I0= 0, I1= 1
+15   OUT= 1, S= 1 I0= 0, I1= 1
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+mux4_1.v
+IN0= 1, IN1= 0, IN2= 1, IN3= 0
+S1 = 0, S0 = 0, OUTPUT = 1 
+S1 = 0, S0 = 1, OUTPUT = 0 
+S1 = 1, S0 = 0, OUTPUT = 1 
+S1 = 1, S0 = 1, OUTPUT = 0 
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+mux_1.v
+IN0= 1, IN1= 0, IN2= 1, IN3= 0
+S1 = 0, S0 = 0, OUTPUT = 1 
+S1 = 0, S0 = 1, OUTPUT = 0 
+S1 = 1, S0 = 0, OUTPUT = 1 
+S1 = 1, S0 = 1, OUTPUT = 0 
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+mux_2.v
+IN0= 1, IN1= 0, IN2= 1, IN3= 0
+S1 = 0, S0 = 0, OUTPUT = 1 
+S1 = 0, S0 = 1, OUTPUT = 0 
+S1 = 1, S0 = 0, OUTPUT = 1 
+S1 = 1, S0 = 1, OUTPUT = 0 
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+nested.v
+0  x = 0, y = x, z = xx, w = xx
+5  x = 0, y = 1, z = xx, w = xx
+10  x = 0, y = 1, z = 01, w = xx
+30  x = 0, y = 1, z = 01, w = 10
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+net_decl.v
+0 out 1'b0 in1 1'b0 in2 1'b0
+20 out 1'b1 in1 1'b1 in2 1'b1
+60 out 1'b0 in1 1'b0 in2 1'b1
+100 out 1'b1 in1 1'b1 in2 1'b1
+105 out 1'b0 in1 1'b0 in2 1'b1
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+nonblock.v
+0 x = 0, y = 1, z = 1, count = 1, reg_a = 0000, reg_b = 0000
+10 x = 0, y = 1, z = 1, count = 1, reg_a = 0000, reg_b = 6000
+15 x = 0, y = 1, z = 1, count = 1, reg_a = 0004, reg_b = 6000
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+nor.v
+0   OUT = 1, A = 0, B = 0
+5   OUT = 0, A = 0, B = 1
+10   OUT = 0, A = 1, B = 0
+15   OUT = 0, A = 1, B = 1
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+parallel.v
+0  x = 0, y = x, z = xx, w = xx
+5  x = 0, y = 1, z = xx, w = xx
+10  x = 0, y = 1, z = 01, w = xx
+20  x = 0, y = 1, z = 01, w = 10
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+param1.v
+Displaying hello_world id number = 1
+Displaying hello_world id number = 2
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+param2.v
+Displaying hello_world id number = 1
+Displaying hello_world id number = 2
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+param3.v
+Module top.top.b1 : delay1 = 4, delay2 = 5, delay3 = 6
+Module top.top.b2 : delay1 = 9, delay2 = 4, delay3 = 7
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+real.v
+2.13 2
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+reg_del.v
+0 1'b0 1'bx 1'bx 1'bx 1'bx
+10 1'b0 1'b1 1'bx 1'bx 1'bx
+30 1'b0 1'b1 1'b0 1'bx 1'bx
+52 1'b0 1'b1 1'b0 1'b1 1'bx
+53 1'b1 1'b1 1'b0 1'b1 1'bx
+58 1'b1 1'b1 1'b0 1'b1 1'b0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+repeat1.v
+Count = 0
+Count = 1
+Count = 2
+Count = 3
+Count = 4
+Count = 5
+Count = 6
+Count = 7
+Count = 8
+Count = 9
+Count = 10
+Count = 11
+Count = 12
+Count = 13
+Count = 14
+Count = 15
+Count = 16
+Count = 17
+Count = 18
+Count = 19
+Count = 20
+Count = 21
+Count = 22
+Count = 23
+Count = 24
+Count = 25
+Count = 26
+Count = 27
+Count = 28
+Count = 29
+Count = 30
+Count = 31
+Count = 32
+Count = 33
+Count = 34
+Count = 35
+Count = 36
+Count = 37
+Count = 38
+Count = 39
+Count = 40
+Count = 41
+Count = 42
+Count = 43
+Count = 44
+Count = 45
+Count = 46
+Count = 47
+Count = 48
+Count = 49
+Count = 50
+Count = 51
+Count = 52
+Count = 53
+Count = 54
+Count = 55
+Count = 56
+Count = 57
+Count = 58
+Count = 59
+Count = 60
+Count = 61
+Count = 62
+Count = 63
+Count = 64
+Count = 65
+Count = 66
+Count = 67
+Count = 68
+Count = 69
+Count = 70
+Count = 71
+Count = 72
+Count = 73
+Count = 74
+Count = 75
+Count = 76
+Count = 77
+Count = 78
+Count = 79
+Count = 80
+Count = 81
+Count = 82
+Count = 83
+Count = 84
+Count = 85
+Count = 86
+Count = 87
+Count = 88
+Count = 89
+Count = 90
+Count = 91
+Count = 92
+Count = 93
+Count = 94
+Count = 95
+Count = 96
+Count = 97
+Count = 98
+Count = 99
+Count = 100
+Count = 101
+Count = 102
+Count = 103
+Count = 104
+Count = 105
+Count = 106
+Count = 107
+Count = 108
+Count = 109
+Count = 110
+Count = 111
+Count = 112
+Count = 113
+Count = 114
+Count = 115
+Count = 116
+Count = 117
+Count = 118
+Count = 119
+Count = 120
+Count = 121
+Count = 122
+Count = 123
+Count = 124
+Count = 125
+Count = 126
+Count = 127
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+seq.v
+0  x = 0, y = x, z = xx, w = xx
+5  x = 0, y = 1, z = xx, w = xx
+15  x = 0, y = 1, z = 01, w = xx
+35  x = 0, y = 1, z = 01, w = 10
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+sig_ctrl.v
+0  Main Sig = 10 Country Sig = 00 Car_on_cntry = 0
+200  Main Sig = 10 Country Sig = 00 Car_on_cntry = 1
+205  Main Sig = 01 Country Sig = 00 Car_on_cntry = 1
+235  Main Sig = 00 Country Sig = 00 Car_on_cntry = 1
+245  Main Sig = 00 Country Sig = 10 Car_on_cntry = 1
+300  Main Sig = 00 Country Sig = 10 Car_on_cntry = 0
+305  Main Sig = 00 Country Sig = 01 Car_on_cntry = 0
+335  Main Sig = 10 Country Sig = 00 Car_on_cntry = 0
+500  Main Sig = 10 Country Sig = 00 Car_on_cntry = 1
+505  Main Sig = 01 Country Sig = 00 Car_on_cntry = 1
+535  Main Sig = 00 Country Sig = 00 Car_on_cntry = 1
+545  Main Sig = 00 Country Sig = 10 Car_on_cntry = 1
+600  Main Sig = 00 Country Sig = 10 Car_on_cntry = 0
+605  Main Sig = 00 Country Sig = 01 Car_on_cntry = 0
+635  Main Sig = 10 Country Sig = 00 Car_on_cntry = 0
+800  Main Sig = 10 Country Sig = 00 Car_on_cntry = 1
+805  Main Sig = 01 Country Sig = 00 Car_on_cntry = 1
+835  Main Sig = 00 Country Sig = 00 Car_on_cntry = 1
+845  Main Sig = 00 Country Sig = 10 Car_on_cntry = 1
+900  Main Sig = 00 Country Sig = 10 Car_on_cntry = 0
+905  Main Sig = 00 Country Sig = 01 Car_on_cntry = 0
+935  Main Sig = 10 Country Sig = 00 Car_on_cntry = 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+sr_latch.v
+0  set = 0, reset= 0, q= x
+5  set = 0, reset= 1, q= 0
+10  set = 0, reset= 0, q= 0
+15  set = 1, reset= 0, q= 1
+20  set = 0, reset= 1, q= 0
+25  set = 0, reset= 0, q= 0
+30  set = 1, reset= 0, q= 1
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+string.v
+Hello Verilog Worl 144'h6c726f5720676f6c69726556206f6c6c6548
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+task1.v
+0 AB_AND = xxxxxxxxxxxxxxxx, AB_OR = xxxxxxxxxxxxxxxx, AB_XOR = xxxxxxxxxxxxxxxx, A = xxxxxxxxxxxxxxxx, B = xxxxxxxxxxxxxxxx
+1 AB_AND = xxxxxxxxxxxxxxxx, AB_OR = xxxxxxxxxxxxxxxx, AB_XOR = xxxxxxxxxxxxxxxx, A = 1111000010100111, B = 1010010110001100
+11 AB_AND = 1010000010000100, AB_OR = 1111010110101111, AB_XOR = 0101010100101011, A = 1111000010100111, B = 1010010110001100
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+task2.v
+0 clock 1'b0
+17 clock 1'b1
+20 clock 1'b0
+30 clock 1'b1
+42 clock 1'b0
+47 clock 1'b1
+50 clock 1'b0
+60 clock 1'b1
+72 clock 1'b0
+77 clock 1'b1
+80 clock 1'b0
+90 clock 1'b1
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+tff_cntr.v
+0  Count Q = 0000 Clear= 1
+34  Count Q = 0000 Clear= 0
+40  Count Q = 0001 Clear= 0
+60  Count Q = 0010 Clear= 0
+80  Count Q = 0011 Clear= 0
+100  Count Q = 0100 Clear= 0
+120  Count Q = 0101 Clear= 0
+140  Count Q = 0110 Clear= 0
+160  Count Q = 0111 Clear= 0
+180  Count Q = 1000 Clear= 0
+200  Count Q = 1001 Clear= 0
+220  Count Q = 1010 Clear= 0
+234  Count Q = 0000 Clear= 1
+284  Count Q = 0000 Clear= 0
+300  Count Q = 0001 Clear= 0
+320  Count Q = 0010 Clear= 0
+340  Count Q = 0011 Clear= 0
+360  Count Q = 0100 Clear= 0
+380  Count Q = 0101 Clear= 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+timescl.v
+500 , In dummy1.dummy1 toggle = 1 
+1000 , In dummy1.dummy1 toggle = 0 
+1500 , In dummy1.dummy1 toggle = 1 
+2000 , In dummy1.dummy1 toggle = 0 
+2500 , In dummy1.dummy1 toggle = 1 
+3000 , In dummy1.dummy1 toggle = 0 
+3500 , In dummy1.dummy1 toggle = 1 
+4000 , In dummy1.dummy1 toggle = 0 
+4500 , In dummy1.dummy1 toggle = 1 
+5000 , In dummy2.dummy2 toggle = 1 
+5000 , In dummy1.dummy1 toggle = 0 
+5500 , In dummy1.dummy1 toggle = 1 
+6000 , In dummy1.dummy1 toggle = 0 
+6500 , In dummy1.dummy1 toggle = 1 
+7000 , In dummy1.dummy1 toggle = 0 
+7500 , In dummy1.dummy1 toggle = 1 
+8000 , In dummy1.dummy1 toggle = 0 
+8500 , In dummy1.dummy1 toggle = 1 
+9000 , In dummy1.dummy1 toggle = 0 
+9500 , In dummy1.dummy1 toggle = 1 
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+while1.v
+Count = 0
+Count = 1
+Count = 2
+Count = 3
+Count = 4
+Count = 5
+Count = 6
+Count = 7
+Count = 8
+Count = 9
+Count = 10
+Count = 11
+Count = 12
+Count = 13
+Count = 14
+Count = 15
+Count = 16
+Count = 17
+Count = 18
+Count = 19
+Count = 20
+Count = 21
+Count = 22
+Count = 23
+Count = 24
+Count = 25
+Count = 26
+Count = 27
+Count = 28
+Count = 29
+Count = 30
+Count = 31
+Count = 32
+Count = 33
+Count = 34
+Count = 35
+Count = 36
+Count = 37
+Count = 38
+Count = 39
+Count = 40
+Count = 41
+Count = 42
+Count = 43
+Count = 44
+Count = 45
+Count = 46
+Count = 47
+Count = 48
+Count = 49
+Count = 50
+Count = 51
+Count = 52
+Count = 53
+Count = 54
+Count = 55
+Count = 56
+Count = 57
+Count = 58
+Count = 59
+Count = 60
+Count = 61
+Count = 62
+Count = 63
+Count = 64
+Count = 65
+Count = 66
+Count = 67
+Count = 68
+Count = 69
+Count = 70
+Count = 71
+Count = 72
+Count = 73
+Count = 74
+Count = 75
+Count = 76
+Count = 77
+Count = 78
+Count = 79
+Count = 80
+Count = 81
+Count = 82
+Count = 83
+Count = 84
+Count = 85
+Count = 86
+Count = 87
+Count = 88
+Count = 89
+Count = 90
+Count = 91
+Count = 92
+Count = 93
+Count = 94
+Count = 95
+Count = 96
+Count = 97
+Count = 98
+Count = 99
+Count = 100
+Count = 101
+Count = 102
+Count = 103
+Count = 104
+Count = 105
+Count = 106
+Count = 107
+Count = 108
+Count = 109
+Count = 110
+Count = 111
+Count = 112
+Count = 113
+Count = 114
+Count = 115
+Count = 116
+Count = 117
+Count = 118
+Count = 119
+Count = 120
+Count = 121
+Count = 122
+Count = 123
+Count = 124
+Count = 125
+Count = 126
+Count = 127
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+while2.v
+Encountered a TRUE bit at element number 13

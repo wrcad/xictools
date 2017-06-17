@@ -1,0 +1,665 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiFuncsDrc.hlp,v 1.15 2015/01/09 01:15:12 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiFuncsDrc.hlp
+!!TITLE
+xiFuncsDrc.hlp
+!!HTML
+
+!!SUBTOPICS
+funcs:drc
+funcs:drc:drc
+
+!!REDIRECT DRCstate             funcs:drc:drc#DRCstate
+!!REDIRECT DRCsetLimits         funcs:drc:drc#DRCsetLimits
+!!REDIRECT DRCgetLimits         funcs:drc:drc#DRCgetLimits
+!!REDIRECT DRCsetMaxErrors      funcs:drc:drc#DRCsetMaxErrors
+!!REDIRECT DRCgetMaxErrors      funcs:drc:drc#DRCgetMaxErrors
+!!REDIRECT DRCsetInterMaxObjs   funcs:drc:drc#DRCsetInterMaxObjs
+!!REDIRECT DRCgetInterMaxObjs   funcs:drc:drc#DRCgetInterMaxObjs
+!!REDIRECT DRCsetInterMaxTime   funcs:drc:drc#DRCsetInterMaxTime
+!!REDIRECT DRCgetInterMaxTime   funcs:drc:drc#DRCgetInterMaxTime
+!!REDIRECT DRCsetInterMaxErrors funcs:drc:drc#DRCsetInterMaxErrors
+!!REDIRECT DRCgetInterMaxErrors funcs:drc:drc#DRCgetInterMaxErrors
+!!REDIRECT DRCsetInterSkipInst  funcs:drc:drc#DRCsetInterSkipInst
+!!REDIRECT DRCgetInterSkipInst  funcs:drc:drc#DRCgetInterSkipInst
+!!REDIRECT DRCsetLevel          funcs:drc:drc#DRCsetLevel
+!!REDIRECT DRCgetLevel          funcs:drc:drc#DRCgetLevel
+!!REDIRECT DRCcheckArea         funcs:drc:drc#DRCcheckArea
+!!REDIRECT DRCchdCheckArea      funcs:drc:drc#DRCchdCheckArea
+!!REDIRECT DRCcheckObjects      funcs:drc:drc#DRCcheckObjects
+!!REDIRECT DRCregisterExpr      funcs:drc:drc#DRCregisterExpr
+!!REDIRECT DRCtestBox           funcs:drc:drc#DRCtestBox
+!!REDIRECT DRCtestPoly          funcs:drc:drc#DRCtestPoly
+!!REDIRECT DRCzList             funcs:drc:drc#DRCzList
+!!REDIRECT DRCzListEx           funcs:drc:drc#DRCzListEx
+
+!!KEYWORD
+funcs:drc
+!!TITLE
+Design Rule Checking Functions
+!!HTML
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+
+    <!-- 010715 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:drc:drc">Design Rule Checking</a></th></tr>
+
+    <tr><td><a href="funcs:drc:drc#DRCstate">
+     <tt>DRCstate</tt>(<i>state</i>)</a>
+     </td><td>Set interactive DRC</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCsetLimits">
+     <tt>DRCsetLimits</tt>(<i>batch_cnt</i>, <i>intr_cnt</i>, <i>intr_time</i>,
+     <i>skip_cells</i>)</a>
+     </td><td>Set DRC limit values</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCgetLimits">
+     <tt>DRCgetLimits</tt>(<i>array</i>)</a>
+     </td><td>Return DRC limit values</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCsetMaxErrors">
+     <tt>DRCsetMaxErrors</tt>(<i>value</i>)</a>
+     </td><td>Set the batch mode error limit</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCgetMaxErrors">
+     <tt>DRCgetMaxErrors</tt>()</a>
+     </td><td>Return the batch mode error limit</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCsetInterMaxObjs">
+     <tt>DRCsetInterMaxObjs</tt>(<i>value</i>)</a>
+     </td><td>Set the interactive mode object count limit</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCgetInterMaxObjs">
+     <tt>DRCgetInterMaxObjs</tt>()</a>
+     </td><td>Return the interactive mode object count limit</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCsetInterMaxTime">
+     <tt>DRCsetInterMaxTime</tt>(<i>value</i>)</a>
+     </td><td>Set the interactive mode time limit</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCgetInterMaxTime">
+     <tt>DRCgetInterMaxTime</tt>()</a>
+     </td><td>Return the interactive mode time limit</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCsetInterMaxErrors">
+     <tt>DRCsetInterMaxErrors</tt>(<i>value</i>)</a>
+     </td><td>Set the interactive mode error count limit</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCgetInterMaxErrors">
+     <tt>DRCgetInterMaxErrors</tt>()</a>
+     </td><td>Return the interactive mode error count limit</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCsetInterSkipInst">
+     <tt>DRCsetInterSkipInst</tt>(<i>value</i>)</a>
+     </td><td>Set the interactive mode instance skip flag</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCgetInterSkipInst">
+     <tt>DRCgetInterSkipInst</tt>()</a>
+     </td><td>Return the interactive mode instance skip flag</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCsetLevel">
+     <tt>DRCsetLevel</tt>(<i>level</i>)</a>
+     </td><td>Set DRC error reporting level</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCgetLevel">
+     <tt>DRCgetLevel</tt>()</a>
+     </td><td>Return DRC error reporting level</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCcheckArea">
+     <tt>DRCcheckArea</tt>(<i>array</i>, <i>file_handle_or_name</i>)</a>
+     </td><td>Perform DRC in area</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCchdCheckArea">
+     <tt>DRCchdCheckArea</tt>(<i>chdname</i>, <i>cellname</i>,
+     <i>gridsize</i>, <i>array</i>, <i>file_handle_or_name</i>,
+     <i>flatten</i>)</a>
+     </td><td>Perform DRC in area using CHD</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCcheckObjects">
+     <tt>DRCcheckObjects</tt>(<i>file_handle</i>)</a>
+     </td><td>Perform DRC for selected objects</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCregisterExpr">
+     <tt>DRCregisterExpr</tt>(<i>expr</i>)</a>
+     </td><td>Register a layer expression</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCtestBox">
+     <tt>DRCtestBox</tt>(<i>left</i>, <i>bottom</i>, <i>right</i>, <i>top</i>,
+     <i>ld</i>)</a>
+     </td><td>Perform DRC for given box</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCtestPoly">
+     <tt>DRCtestPoly</tt>(<i>num</i>, <i>points</i>, <i>ld</i>)</a><br>
+     </td><td>Perform DRC for given polygon</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCzList">
+     <tt>DRCzList</tt>(<i>layername</i>, <i>rulename</i>, <i>index</i>,
+     <i>source</i>)</a><br>
+     </td><td>Create test areas in returned trapezoid list</td></tr>
+    <tr><td><a href="funcs:drc:drc#DRCzListEx">
+     <tt>DRCzListEx</tt>(<i>source</i>, <i>target</i>, <i>inside</i>,
+     <i>outside</i>, <i>incode</i>, <i>outcode</i>, <i>dimen</i>)</a><br>
+     </td><td>Create test areas in returned trapezoid list</td></tr>
+
+    </table>
+
+!!SEEALSO
+scr:iffuncs
+
+!!KEYWORD
+funcs:drc:drc
+!!TITLE
+Design Rule Checking
+!!HTML
+
+    The following functions relate to the design rule checking
+    subsystem.
+    <hr>
+
+    <!-- 030204 -->
+    <a name="DRCstate"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCstate</tt>(<i>istate</i>)</b>
+    <dd><br>This function sets the interactive DRC state, and returns the
+    existing state.  If the argument is 0, interactive DRC is turned
+    off.  If nonzero, interactive DRC is turned on.  If greater than
+    1, error messages will not pop up.  The return value is the
+    present state, which is a value of 0-2, similarly interpreted.
+    </dl>
+    <hr>
+
+    <!-- 010715 -->
+    <a name="DRCsetLimits"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCsetLimits</tt>(<i>batch_cnt</i>, <i>intr_cnt</i>,
+        <i>intr_time</i>, <i>skip_cells</i>)</b>
+    <dd><br>
+    <b>Deprecated in favor of DRCsetMaxErrors and similar.</b>
+
+    <p>
+    This function sets the limits used in design rule checking. 
+    Each argument, if negative, will cause the related value to be
+    unchanged by the function call.  For the first three arguments,
+    the value "0" is interpreted as "no limit".
+
+    <dl>
+    <dt><i>batch_cnt</i><dd>
+    This sets the maximum number of errors to record in batch-mode
+    error checking.  When this number is reached, the checking is
+    aborted.  Values 0 - 100000 are accepted.
+    <dt><i>intr_cnt</i><dd>
+    This sets the maximum number of objects tested in interactive DRC. 
+    The testing aborts when this count is reached.  Values of 0 -
+    100000 are accepted.
+    <dt><i>intr_time</i><dd>
+    This sets the maximum time allowed for interactive DRC testing. 
+    The value given is in milliseconds, and values of 0 - 30000 are
+    accepted.
+    <dt><i>skip_cells</i><dd>
+    If nonzero, testing of newly placed, moved, or copied subcells is
+    skipped in interactive DRC.  If zero, subcells will be tested. 
+    This can be a lengthly operation.
+    </dl>
+
+    <p>
+    This function always returns 1.  Out-of-range arguments are set to
+    the maximum permissible values.
+    </dl>
+    <hr>
+
+    <!-- 010715 -->
+    <a name="DRCgetLimits"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCgetLimits</tt>(<i>array</i>)</b>
+    <dd><br>
+    <b>Deprecated in favor of DRCgetMaxErrors and similar.</b>
+
+    <p>
+    This function fills the <i>array</i>, which must have size 4
+    or larger, with the current DRC limit values.  These are, in
+    order,
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>[0]</td><td>The batch error count limit.</td></tr>
+    <tr><td>[1]</td><td>The interactive object count limit.</td></tr>
+    <tr><td>[2]</td><td>The interactive time limit in milliseconds.</td></tr>
+    <tr><td>[3]</td><td>A flag which indicates interactive DRC is skipped
+      for subcells.</td></tr>
+    </table>
+
+    <p>
+    The return value is always 1.  The function fails if the array
+    argument is bad.
+    </dl>
+    <hr>
+
+    <!-- 010715 -->
+    <a name="DRCsetMaxErrors"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCsetMaxErrors</tt>(<i>value</i>)</b>
+    <dd><br>
+    Set the maximum violation count allowed before a batch DRC run is
+    terminated.  If set to 0, no limit is imposed.  The value is
+    clipped to the acceptable range 0 - 100,000.  If not set, a value
+    0 (no limit) is assumed.  The function returns the previous value.
+    </dl>
+    <hr>
+
+    <!-- 010715 -->
+    <a name="DRCgetMaxErrors"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCgetMaxErrors</tt>()</b>
+    <dd><br>
+    Returns the maximum violation count before a batch DRC run is
+    terminated.  If set to 0, no limit is imposed.
+    </dl>
+    <hr>
+
+    <!-- 010715 -->
+    <a name="DRCsetInterMaxObjs"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCsetInterMaxObjs</tt>(<i>value</i>)</b>
+    <dd><br>
+    Set the maximum number of objects tested in interctive DRC. 
+    Further testing is skipped when this value is reached.  A value of
+    0 imposes no limit.  The passed value is clipped to the acceptable
+    range 0 - 100,000, the value used if not set is 1000.  The
+    function returns the previous setting.
+    </dl>
+    <hr>
+
+    <!-- 010715 -->
+    <a name="DRCgetInterMaxObjs"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCgetInterMaxObjs</tt>()</b>
+    <dd><br>
+    Return the maximum number of objects tested in interctive DRC. 
+    Further testing is skipped when this value is reached.  A value of
+    0 imposes no limit.
+    </dl>
+    <hr>
+
+    <!-- 010715 -->
+    <a name="DRCsetInterMaxTime"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCsetInterMaxTime</tt>(<i>value</i>)</b>
+    <dd><br>
+    Set the maximum time in milliseconds allowed for interactive DRC
+    testing after an operation.  The testing will abort after this
+    limit, returning program control to the user.  If set to 0, no
+    time limit is imposed.  the passed value is clipped to the
+    acceptable range 0 - 30,000.  If not set, a value of 5000 (5
+    seconds) is used.  The function returns the previous value.
+    </dl>
+    <hr>
+
+    <!-- 010715 -->
+    <a name="DRCgetInterMaxTime"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCgetInterMaxTime</tt>()</b>
+    <dd><br>
+    Return the maximum time in milliseconds allowed for interactive
+    DRC testing after an operation.  The testing will abort after this
+    limit, returning program control to the user.  If set to 0, no
+    time limit is imposed.
+    </dl>
+    <hr>
+
+    <!-- 010715 -->
+    <a name="DRCsetInterMaxErrors"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCsetInterMaxErrors</tt>(<i>value</i>)</b>
+    <dd><br>
+    Set the maximum number of errors allowed in interactive DRC
+    testing after an operation.  Further testing is skipped after this
+    count is reached.  A value of 0 imposes no limit.  The value will
+    be clipped to the acceptable rnge 0 - 1000.  If not set, a value
+    of 100 is used.  The function returns the previous value.
+    </dl>
+    <hr>
+
+    <!-- 010715 -->
+    <a name="DRCgetInterMaxErrors"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCgetInterMaxErrors</tt>()</b>
+    <dd><br>
+    Return the maximum number of errors allowed in interactive DRC
+    testing after an operation.  Further testing is skipped after this
+    count is reached.  A value of 0 imposes no limit.
+    </dl>
+    <hr>
+
+    <!-- 010715 -->
+    <a name="DRCsetInterSkipInst"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCsetInterSkipInst</tt>(<i>value</i>)</b>
+    <dd><br>
+    If the boolean argument is nonzero, cell instances will not be
+    checked for violations in interactive DRC.  The test can be
+    lengthly and the user may want to defer such testing.  The return
+    value is 0 or 1 representing the previous setting.
+    </dl>
+    <hr>
+
+    <!-- 010715 -->
+    <a name="DRCgetInterSkipInst"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCgetInterSkipInst</tt>()</b>
+    <dd><br>
+    The return value of this function is 0 or 1 representing whether
+    cell instances are skipped (if 1) in interactive DRC testing.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="DRCsetLevel"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCsetLevel</tt>(<i>level</i>)</b>
+    <dd><br>This function sets the DRC error recording level to the argument.
+    The argument is interpreted as follows:
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0 or negative</td><td> One error is reported per object.</td></tr>
+    <tr><td>1</td><td> One error of each type is reported per object.</td></tr>
+    <tr><td>2 or larger</td><td>   All errors are reported.</td></tr>
+    </table>
+
+    <p>
+    This function always succeeds, and the previous level (0, 1, 2) is
+    returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="DRCgetLevel"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCgetLevel</tt>()</b>
+    <dd><br>This function returns the current error reporting level for
+    design rule checking.  Possible values are
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td><td>One error is reported per object.</td></tr>
+    <tr><td>1</td><td>One error of each type is reported per object.</td></tr>
+    <tr><td>2</td><td>All errors are reported.</td></tr>
+    </table>
+
+    <p>
+    This function always succeeds.
+    </dl>
+    <hr>
+
+    <!-- 022309 -->
+    <a name="DRCcheckArea"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCcheckArea</tt>(<i>array</i>,
+      <i>file_handle_or_name</i>)</b>
+    <dd><br>
+    This function performs batch-mode design rule checking in the
+    current cell.
+
+    <p>
+    The <i>array</i> argument is an array of size 4 or larger, or 0
+    can be passed for this argument.  If an array is passed, it
+    represents a rectangular area where checking is performed, and the
+    values are in microns in order L,B,R,T.  If 0 is passed, the
+    entire area of the current cell is checked.
+
+    <p>
+    The second argument can be a file handle opened with the <a
+    href="Open"><tt>Open</tt></a> function for writing, or the name of
+    a file to open, or an empty string, or a null string or
+    (equivalently) the scalar 0.  This sets the destination for error
+    recording.  If the argument is null or 0, a file will be created
+    in the current directory using the name template
+    "<tt>drcerror.log.</tt><i>cellname</i>", where <i>cellname</i> is
+    the current cell.  If an empty string is passed (give "" as the
+    argument), output will go to the error log, and appear in the
+    pop-up which appears on-screen.  If a string is given, it is taken
+    as a file name to open.
+
+    <p>
+    The function returns an integer, either the number of errors found
+    or -1 on error.  If -1 is returned, an error message is probably
+    available from the <a href="GetError"><tt>GetError</tt></a>
+    function.
+    </dl>
+    <hr>
+
+    <!-- 010815 -->
+    <a name="DRCchdCheckArea"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCchdCheckArea</tt>(<i>chdname</i>, <i>cellname</i>,
+     <i>gridsize</i>, <i>array</i>, <i>file_handle_or_name</i>,
+     <i>flatten</i>)</b>
+    <dd><br>
+    This function performs a batch-mode DRC of the given top-level
+    cell, from the <a href="xic:hier">Cell Hierarchy Digest</a> (CHD)
+    whose access name is given as the first argument.  Unlike other
+    DRC commands, this function does not require that the entire
+    layout be in memory, thus it is theoretically possible to perform
+    DRC on designs that are too large for available memory.
+
+    <p>
+    If the given cellname is null or 0 is passed, the default cell for
+    the named CHD is assumed.
+
+    <p>
+    The checking is performed on the areas of a grid, and only the
+    cells needed to render the grid area are read into memory
+    temporarily.  The gridsize argument gives the size of this grid,
+    in microns.  If 0 is passed, no grid is used, and the entire
+    layout will be read into memory, as in the normal case.  If a
+    negative value is passed, the value associated with the <a
+    href="DrcPartitionSize"><b>DrcPartitionSize</b></a> variable is
+    used.  The chosen grid size should be small enough to avoid page
+    swapping, but too-small of a grid will lengthen checking time
+    (larger is better in this regard).  The user can experiment to
+    find a reasonable value for their designs.  A good starting value
+    might be 400.0 microns.
+
+    <p>
+    The <i>array</i> argument is an array of size 4 or larger, or 0
+    can be passed for this argument.  If an array is passed, it
+    represents a rectangular area where checking is performed, and the
+    values are in microns in order L,B,R,T.  If 0 is passed, the
+    entire area of the <i>cellname</i> is checked.
+
+    <p>
+    The <i>file_handle_or_name</i> argument can be a file handle
+    opened with the <a href="Open"><tt>Open</tt></a> function for
+    writing, or the name of a file to open, or an empty or null string
+    or the scalar 0.  This sets the destination for error recording. 
+    If the argument is null, empty or 0, a file will be created in the
+    current directory using the name template
+    "<tt>drcerror.log.</tt><i>cellname</i>", where <i>cellname</i> is
+    the top-level cell being checked.  If a string is given, it is
+    taken as a file name to open.  There is no provision for sending
+    output to the on-screen error logger, unlike in the
+    <tt>DRCcheckArea</tt> function.
+
+    <p>
+    If the boolean argument <i>flatten</i> is true, the geometry will
+    be flattened as it is read into memory.  This will make life
+    simpler and faster for the DRC evaluation functions, at the
+    expense of (probably) much larger memory use.  The user can
+    experiment to find if this option provides any speed benefit.
+
+    <p>
+    The function returns an integer, either the number of errors found
+    or -1 on error.  If -1 is returned, an error message is probably
+    available from the <a href="GetError"><tt>GetError</tt></a>
+    function.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="DRCcheckObjects"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCcheckObjects</tt>(<i>file_handle</i>)</b>
+    <dd><br>This function checks each selected object for design rule
+    violations.  The argument is a file handle returned from the <a
+    href="Open"><tt>Open</tt></a> function, or 0.  If a file handle is
+    passed, output goes to that file, otherwise output goes to the
+    on-screen error logger.  This function returns the number of
+    errors found.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="DRCregisterExpr"></a>
+    <dl>
+    <dt><b>(expr_handle) <tt>DRCregisterExpr</tt>(<i>expr</i>)</b>
+    <dd><br>This function creates a parse tree from the string argument,
+    which is a <a href="layer_exp">layer expression</a>, for later
+    use, and returns a handle to the expression.  This avoids the
+    overhead of parsing the expression on each function call.  The
+    returned handle is used by other functions (currently just the two
+    below).
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="DRCtestBox"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCtestBox</tt>(<i>left</i>, <i>bottom</i>, <i>right</i>,
+      <i>top</i>, <i>expr_handle</i>)</b>
+    <dd><br>This function tests a rectangular area specified by the first
+    four arguments for regions where a layer expression is true.  The
+    <i>expr_handle</i> argument is the handle of a layer expression
+    returned by <tt>DRCregisterExpr</tt>.  The returned value is 0 if
+    the expression is nowhere true, 1 if the expression is true
+    somewhere but not everywhere, and 2 if the expression is true
+    everywhere in the test region.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="DRCtestPoly"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCtestPoly</tt>(<i>num</i>, <i>points</i>,
+     <i>expr_handle</i>)</b>
+    <dd><br>This function tests a polygon area for regions where a layer
+    expression is true.  The first argument is the number of points in
+    the polygon.  The second argument is the name of an array variable
+    containing the polygon data.  The polygon data are stored
+    sequentially as x,y pairs, and the last point must be the same
+    coordinate as the first.  The length of the vector must be at
+    least two times the value passed for the first argument.  The
+    <i>expr_handle</i> argument is the handle of a layer expression
+    returned by <tt>DRCregisterExpr</tt>.  The returned value is 0 if
+    the expression is nowhere true, 1 if the expression is true
+    somewhere but not everywhere, and 2 if the expression is true
+    everywhere in the test region. 
+    </dl>
+    <hr>
+
+    <!-- 010715 -->
+    <a name="DRCzList"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>DRCzList</tt>(<i>layername</i>, <i>rulename</i>,
+     <i>index</i>, <i>source</i>)</b>
+    <dd><br>
+    This function will access existing design rule definitions, and
+    use the associated test region generator to create a new trapezoid
+    list, which is returned.  For example, in a <tt>MinSpaceTo</tt>
+    rule test, we construct a "halo" around source polygons.  If this
+    halo intersects any target polygons, a violation would be flagged. 
+    The list of trapezoids that constitute the halos around the source
+    polygons is the return of this function.
+
+    <p>
+    The first three arguments specify an existing design rule.  The
+    rule is defined on the layer named in the first argument (a
+    string).  The type of rule is given as a string in the second
+    argument.  This is the name of an <a href="drcrules#edge">"edge"
+    rule</a>, which uses test regions constructed along edges to
+    evaluate the rule.  Valid names are the user-defined rules and
+
+    <blockquote><tt>
+    MinEdgeLength<br>
+    MaxWidth<br>
+    MinWidth<br>
+    MinSpace<br>
+    MinSpaceTo<br>
+    MinSpaceFrom<br>
+    MinOverlap<br>
+    MinNoOverlap
+    </tt></blockquote>
+
+    <p>
+    The third argument is an integer index which specifies the rule to
+    choose if there is more than one of the named type assigned to the
+    layer.  The index is zero based, and indicates the position of the
+    rule when listed in the window of the <a
+    href="xic:dredt"><b>Design Rule Editor</b></a> panel from the
+    <b>Edit Rules</b> button in the <b>DRC Menu</b>, relative to and
+    counting only rules of the same type.  The is also the order as
+    first seen by <i>Xic</i>, as read from the technology file or
+    created interactively.
+
+    <p>
+    The fourth argument is a "zoidlist" as is taken by many of the
+    functions that deal with layer expressions and trapezoid lists, as
+    <a href="funcs:lexpr:zoid">explained</a> for those functions.  If
+    the value passed is a scalar 0, then geometry is obtained from the
+    full hierarchy of the current cell.  In this case, the created
+    test areas will be identical to those created during a DRC run. 
+    It may be instructive to create a visible layer from this result,
+    to see where testing is being performed.
+
+    <p>
+    If the argument instead passes trapezoids, the result will be
+    creation of the test regions as if the passed trapezoids were
+    features on the layer or <tt>Region</tt> associated with the rule. 
+    The actual features on the layer are ignored.
+
+    <p>
+    The function will fail and halt execution if the first three
+    arguments do not indicate an existing design rule definition.
+    </dl>
+    <hr>
+
+    <!-- 010715 -->
+    <a name="DRCzListEx"></a>
+    <dl>
+    <dt><b>(int) <tt>DRCzListEx</tt>(<i>source</i>, <i>target</i>,
+     <i>inside</i>, <i>outside</i>, <i>incode</i>, <i>outcode</i>,
+     <i>dimen</i>)</b>
+    <dd><br>
+    This is similar to <tt>DRCzList</tt>, however it does not
+    reference an existing rule.  Instead, it accesses the test area
+    generator directly, effectively creating an internal, temporary
+    rule.
+
+    <p>
+    The first argument is a "zoidlist" as expected by other functions
+    that accept this <a href="funcs:lexpr:zoid">argument type</a>. 
+    Unlike for <tt>DRCzList</tt>, this argument can not be zero or
+    null.
+
+    <p>
+    The second argument is a string providing a target layer
+    expression.  This may be scalar 0 or null.  The <i>inside</i> and
+    <i>outside</i> arguments are strings providing layer expressions
+    that will select which parts of an edge will be used for <a
+    href="drcrules#edge">test area generation</a>.  The <i>inside</i>
+    is the area inside the figure at the edge, and <i>outside</i> is
+    just outside of the figure along the edge.  Either can be null or
+    scalar 0.
+
+    <p>
+    The <i>incode</i> and <i>outcode</i> are integer values 0-2 which
+    indicate how the inside and outside expressions are to be
+    interpreted with regard to defining the "active" part of the edge. 
+    The values have the following interpretations:
+
+    <blockquote>
+    <table border=0 cellspacing=2>
+    <tr><td>0</td> <td>Don't care, the value expression is ignored.</td></tr>
+    <tr><td>1</td> <td>The active parts of the edge are where the expression
+      is clear.</td></tr>
+    <tr><td>2</td> <td>The active parts of the edge are where the expression
+      is dark. </td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The <i>dimen</i> is the width of the test area, in microns.  It
+    must be a positive real number.
+
+    <p>
+    If all goes well, a trapezoid list reprseenting the effective test
+    areas is returned.
+    </dl>
+
+!!SEEALSO
+funcs:drc
+

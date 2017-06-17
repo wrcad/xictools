@@ -1,0 +1,50 @@
+
+Dear Dr. Krummenacher,
+
+Thank you for sending the ekv-2.6 files.  I have incorporated the
+model into my WRspice simulator, as well as into the ngspice simulator
+from the Internet.
+
+I have run into some difficulty, though, and may have found a problem
+in the code.  As it seems that the file in question (ekvcap.c) has
+been stable for a couple of years, and the EKV model seems to be
+fairly widely used, there may be some other cause for the problem
+described below.  I would appreciate any help from your group
+concerning this.
+
+The problem relates to extremely poor convergence in transient
+analysis.  Although everything seemed to be working, and I could
+simulate the i-v curves and such things using dc analysis quite
+effectively, I could not use the model in transient analysis. 
+Inevitably, for all but the most trivial of circuits, the simulation
+would halt with a "timestep too small" message.  Both simulators
+(WRspice and ngspice) exhibited this behavior.
+
+After quite a bit of head scratching and experimentation, I have come
+to suspect that the sign is reversed for the three capacitance terms
+computed in the ekvcap.c file.  In particular, the lines starting at
+line 268 of this file are
+
+	*cgs = dQG_dVS;
+	*cgd = dQG_dVD;
+	*cgb = -(dQG_dVG + dQG_dVD + dQG_dVS);
+
+In the documentation section 6.2.1 (page 14), the formula for
+capacitance appears with a negative sign, i.e.,
+
+    Cxy = -dQx/dVy, for x != y
+
+When I changed the signs of the three terms above in ekvcap.c, the
+convergence problems disappeared.  With the original code, these three
+capacitances were negative, which would explain the numerical
+instability.  With the sign change, these capacitances approximately
+match the capacitances obtained with the "simple" (XQC=1) capacitance
+calculation at the end of ekvcap.c.  Using the simple model also
+clears up the convergence problem.
+
+
+Regards,
+
+Steve Whiteley, PhD
+President, Whiteley Research Inc.
+www.wrcad.com

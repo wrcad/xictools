@@ -1,0 +1,2136 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spModels.hlp,v 1.36 2016/10/16 19:25:43 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spModels.hlp
+!!TITLE
+spModels.hlp
+!!HTML 
+
+!!SUBTOPICS
+.model
+temperature
+capmodel
+resmodel
+swmodel
+tramodel
+urcmodel
+diomodel
+bjtmodel
+jfetmodel
+mesmodel
+moslevel
+mosmodel
+jjmodel 
+
+
+!! elements.tex 030814
+!!KEYWORD
+.model
+!!TITLE
+Device Models
+!!HTML 
+    Many devices reference models, which contain values for the
+    numerous parameters describing the device, which would be
+    cumbersome to include in each device reference.  Device models are
+    specified on a <tt>.model</tt> line.  The model can be referenced
+    by any number of devices of the corresponding type.
+
+    <p>
+    General form:
+    <blockquote>
+         <tt>.model</tt> <i>modname type</i> (<i>pname1=pval1</i>
+             <i>pname2=pval2</i> ... )
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote><tt>
+         .model mod1 npn (bf=50 is=1e-13 vbf=50)<br>
+         .model interconnect ltra (r=0.2 l=9.13nh c=3.65pf
+                    len=5 rel=.002 compactrel=1.0E-4)<br>
+    </tt></blockquote>
+
+    <p>
+    The <tt>.model</tt> line specifies a set of model parameters that
+    will be used by one or more devices.  The <i>modname</i> is the
+    model name, which is case insensitive in matching references, and
+    <tt>type</tt> is one of the following types:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><a href="capmodel"><tt>c</tt></a></td>
+     <td>Capacitor model</td></tr>
+    <tr><td><a href="resmodel"><tt>r</tt></a></td>
+     <td>Resistor model</td></tr>
+    <tr><td><a href="swmodel"><tt>sw</tt></a></td>
+     <td>Voltage-controlled switch</td></tr>
+    <tr><td><a href="swmodel"><tt>csw</tt></a></td>
+     <td>Current-controlled switch</td></tr>
+    <tr><td><a href="ltramodel"><tt>tra</tt></a></td>
+     <td>General transmission line model</td></tr>
+    <tr><td><a href="ltramodel"><tt>ltra</tt></a></td>
+     <td>Lossy transmission line model</td></tr>
+    <tr><td><a href="urcmodel"><tt>urc</tt></a></td>
+     <td>Uniform RC line model</td></tr>
+    <tr><td><a href="diomodel"><tt>d</tt></a></td>
+     <td>Diode model</td></tr>
+    <tr><td><a href="bjtmodel"><tt>npn</tt></a></td>
+     <td>NPN BJT model</td></tr>
+    <tr><td><a href="bjtmodel"><tt>pnp</tt></a></td>
+     <td>PNP BJT model</td></tr>
+    <tr><td><a href="jfetmodel"><tt>njf</tt></a></td>
+     <td>N-channel JFET model</td></tr>
+    <tr><td><a href="jfetmodel"><tt>pjf</tt></a></td>
+     <td>P-channel JFET model</td></tr>
+    <tr><td><a href="mesmodel"><tt>nmf</tt></a></td>
+     <td>N-channel MESFET model</td></tr>
+    <tr><td><a href="mesmodel"><tt>pmf</tt></a></td>
+     <td>P-channel MESFET model</td></tr>
+    <tr><td><a href="mosmodel"><tt>nmos</tt></a></td>
+     <td>N-channel MOSFET model</td></tr>
+    <tr><td><a href="mosmodel"><tt>pmos</tt></a></td>
+     <td>P-channel MOSFET model</td></tr>
+    <tr><td><a href="jjmodel"><tt>jj</tt></a></td>
+     <td>Josephson junction model</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Parameter values are defined by appending the parameter name, as
+    given for each model type, followed by an equal sign and the
+    parameter value.  Model parameters that are not given a value are
+    generally assigned default values.
+
+    <p>
+    The <a href="show"><b>show</b></a> command with the <tt>-M</tt>
+    option is useful for listing the parameters that can be specified
+    to a model.  Only the parameters not listed as "<tt>RO</tt>"
+    (read-only) can appear in a <tt>.model</tt> line.
+ 
+    <p>
+    <a name="units">
+    In the tables found in the subtopics, the various model parameters
+    are listed.  The <b>units</b> field of the tables provides the
+    assumed units of measure for the parameter, which is expressed
+    using symbols from the following table. 
+    </a>
+ 
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td> M       </td><td>  meters </td></tr>
+    <tr><td> cM      </td><td>  centimeters </td></tr>
+    <tr><td> &#181M  </td><td>  microns </td></tr>
+    <tr><td> S       </td><td>  seconds </td></tr>
+    <tr><td> Hz      </td><td>  hertz </td></tr>
+    <tr><td> F       </td><td>  farads </td></tr>
+    <tr><td> H       </td><td>  henries </td></tr>
+    <tr><td> O       </td><td>  ohms </td></tr>
+    <tr><td> C       </td><td>  degrees Celsius </td></tr>
+    <tr><td> sq      </td><td>  square </td></tr>
+    <tr><td> A       </td><td>  amperes </td></tr>
+    <tr><td> V       </td><td>  volts </td></tr>
+    <tr><td> eV      </td><td>  electron-volts </td></tr>
+    <tr><td> deg     </td><td>  degrees </td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The resistor and smeiconductor models include <a
+    href="temperature">temperature</a> dependence.
+    
+!!SEEALSO
+spinput
+
+!! elements.tex 091511
+!!KEYWORD
+temperature
+!!TITLE
+Analysis at Different Temperatures
+!!HTML 
+    All input data for <i>WRspice</i> is assumed to have been measured
+    at a nominal temperature of 25C, which can be changed by use of
+    the <a href="tnom"><tt>tnom</tt></a> parameter on the <a
+    href=".options"><tt>.options</tt></a> control line.  Note that
+    this is the same default temperature used in <a
+    href="hspicesim">HSPICE</a>, but is not the same as in Berkeley
+    SPICE3 or in <i>WRspice</i> releases prior to 3.2.15, which was
+    27C.
+
+    <p>
+    This value can further be overridden for any device which models
+    temperature effects by specifying the <tt>tnom</tt> parameter on
+    the model itself.  The circuit simulation is performed at a
+    temperature of 25C unless overridden by a <a
+    href="temp"><tt>temp</tt></a> parameter on the <tt>.options</tt>
+    control line.  Individual device instances may further override
+    the circuit temperature through the specification of a
+    <tt>temp</tt> parameter on the instance.
+
+    <p>
+    Temperature dependent support is provided for resistors and
+    semiconductor devices.  The details of the temperature adjustments
+    can be found in the description of the models.  For details of the
+    BSIM temperature adjustment, see <a href="park">Park</a> (BSIM1),
+    <a href="szeto">Szeto</a> (BSIM2), and <a href="cheng">Cheng</a>
+    (BSIM3).
+
+    <p>
+    Temperature appears explicitly in the exponential terms of the BJT
+    and diode model equations.  In addition, saturation currents have
+    a built-in temperature dependence.  The temperature dependence of
+    the saturation current in the BJT models is determined by:
+
+    <blockquote>
+    <i>I</i><sub>s</sub>(<i>T</i><sub>1</sub>) =
+     <i>I</i><sub>s</sub>(<i>T</i><sub>0</sub>)
+     (<i>T</i><sub>1</sub>/<i>T</i><sub>0</sub>)<sup><i>XTI</i></sup>
+     exp( <i>E</i><sub>g</sub><i>q</i>(<i>T</i><sub>1</sub> -
+      <i>T</i><sub>0</sub>) /
+     <i>k</i><i>T</i><sub>1</sub><i>T</i><sub>0</sub> )
+    </blockquote>
+
+    where <i>k</i> is Boltzmann's constant, <i>q</i> is the electronic
+    charge, <i>E</i><sub>g</sub> is the energy gap which is a model
+    parameter, and <i>XTI</i> is the saturation current temperature
+    exponent (also a model parameter, and usually equal to 3).
+
+    <p>
+    The temperature dependence of forward and reverse beta is according to
+    the formula:
+
+    <blockquote>
+    <i<B</i>(<i>T</i><sub>1</sub>) = <i<B</i>(<i>T</i><sub>0</sub>)  
+     (<i>T</i><sub>1</sub>/<i>T</i><sub>0</sub>)<sup><i>XTB</i></sup>
+    </blockquote>
+
+    <p>
+    where <i>T</i><sub>1</sub> and <i>T</i><sub>0</sub> are in Kelvin,
+    and <i>XTB</i> is a user-supplied model parameter.  Temperature
+    effects on beta are carried out by appropriate adjustment to the
+    values of <i>B</i><sub>F</sub>, <i>I</i><sub>SE</sub>,
+    <i>B</i><sub>R</sub>, and <i>I</i><sub>SC</sub> (<i>WRspice</i>
+    model parameters <tt>bf</tt>, <tt>ise</tt>, <tt>br</tt>, and
+    <tt>isc</tt>, respectively).
+
+    <p>
+    Temperature dependence of the saturation current in the junction
+    diode model is determined by:
+
+    <blockquote>
+    <i>I</i><sub>s</sub>(<i>T</i><sub>1</sub>) =
+     <i>I</i><sub>s</sub>(<i>T</i><sub>0</sub>)
+     (<i>T</i><sub>1</sub>/<i>T</i><sub>0</sub>)<sup><i>XTI</i>/<i>N</i></sup>
+     exp( <i>E</i><sub>g</sub><i>q</i>(<i>T</i><sub>1</sub> -
+      <i>T</i><sub>0</sub>) /
+     <i>Nk</i><i>T</i><sub>1</sub><i>T</i><sub>0</sub> )
+    </blockquote>
+
+    <p>
+    where <i>N</i> is the emission coefficient, which is a model
+    parameter, and the other symbols have the same meaning as above. 
+    Note that for Schottky barrier diodes, the value of the saturation
+    current temperature exponent, <i>XTI</i>, is usually 2.
+
+    <p>
+    Temperature appears explicitly in the value of junction potential,
+    <i>Phi</i> (in <i>WRspice</i>, <tt>phi</tt>), for all device
+    models.  The temperature dependence is determined by:
+
+    <blockquote>
+    <i>Phi</i>(<i>T</i>) = (<i>kT</i>/<i>q</i>)
+     ln( <i>N</i><sub>a</sub><i>N</i><sub>d</sub> /
+     <i>N</i><sub>i</sub>(<i>T</i>)<sup>2</sup> )
+    </blockquote>
+
+    where <i>k</i> is Boltzmann's constant, <i>q</i> is the electronic
+    charge, <i>N</i><sub>a</sub> is the acceptor impurity density,
+    <i>N</i><sub>d</sub> is the donor impurity density, and
+    <i>N</i><sub>i</sub> is the intrinsic carrier concentration.
+
+    <p>
+    Temperature appears explicitly in the value of surface mobility,
+    <i>u</i><sub>0</sub> (or <tt>u0</tt>, for the MOSFET models). 
+    This temperature dependence is determined by:
+
+    <blockquote>
+    <i>u</i><sub>0</sub>(<i>T</i>) =
+     <i>u</i><sub>0</sub>(<i>T</i><sub>0</sub>) /  
+     (<i>T</i>/<i>T</i><sub>0</sub>)<sup>1.5</sup>
+    </blockquote>
+
+    <p>
+    The effects of temperature on resistors is modeled by the formula:
+    <blockquote>
+    <i>R</i>(<i>T</i>) = <i>R</i>(<i>T</i><sub>0</sub>)[1 +
+    <i>TC</i><sub>1</sub>(<i>T</i>-<i>T</i><sub>0</sub>) +
+    <i>TC</i><sub>2</sub>(<i>T</i>-<i>T</i><sub>0</sub>)<sup>2</sup>]
+    </blockquote>
+
+    where <i>T</i> is the circuit temperature, <i>T</i><sub>0</sub> is
+    the nominal temperature, and <i>TC</i><sub>1</sub> and
+    <i>TC</i><sub>2</sub> are the first and second-order temperature
+    coefficients.
+
+!! elements.tex 091511
+!!KEYWORD
+capmodel
+!!TITLE
+Capacitor Models
+!!HTML 
+    <b>Type Name:</b> <tt>c</tt>
+
+    <p>
+    The <a href="cap">capacitor</a> model contains process information
+    that may be used to compute the capacitance from strictly
+    geometric information.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>name</th>
+        <th>parameter</th>
+        <th>units</th> <th>default</th> <th>example</th></tr>
+    <tr><td><tt>cj</tt></td>
+        <td>junction bottom capacitance</td>
+        <td>F/M<sup>2</sup></td>        <td>-</td>      <td>5e-5</td></tr>
+    <tr><td><tt>cjsw</tt></td>
+        <td>junction sidewall capacitance</td>
+        <td>F/M</td>                    <td>-</td>      <td>2e-11</td></tr>
+    <tr><td><tt>defw</tt></td>
+        <td>default device width</td>
+        <td>M</td>                      <td>1e-6</td>   <td>2e-6</td></tr>
+    <tr><td><tt>narrow</tt></td>
+        <td>narrowing due to side etching</td>
+        <td>M</td>                      <td>0.0</td>    <td>1e-7</td></tr>
+    <tr><td><tt>tnom</tt></td>
+        <td>parameter measurement temperature</td>
+        <td>C</td>                      <td>25</td>     <td>50</td></tr>
+    <tr><td><tt>tc1</tt></td>
+        <td>first order temperature coeff</td>
+        <td>O/C</td>                    <td>0.0</td>    <td>-</td></tr>
+    <tr><td><tt>tc2</tt></td>
+        <td>second order temperature coeff</td>
+        <td>O/C<sup>2</sup></td>        <td>0.0</td>    <td>-</td></tr>
+    </table>
+
+    <p>
+    The capacitor has a nominal capacitance computed as below, where
+    <i>l</i> and <i>w</i> are parameters from the device line.
+    <blockquote>
+    C = <tt>cj</tt>&#183(<i>l</i>-<tt>narrow</tt>)&#183(<i>w</i>-<tt>narrow</tt>)
+    + &nbsp&nbsp2&#183<tt>cjsw</tt>&#183(<i>l</i>+<i>w</i>-2&#183<tt>narrow</tt>)
+    </blockquote>
+
+    <p>
+    After the nominal capacitance is calculated, it is adjusted for
+    temperature by the formula:
+    <blockquote>
+          C(temp) = C(<tt>tnom</tt>)&#183(1 +
+          <tt>tc1</tt>&#183(temp-<tt>tnom</tt>) +
+          <tt>tc2</tt>&#183(temp-<tt>tnom</tt>)<sup>2</sup>)
+    </blockquote>
+!!SEEALSO
+.model
+ 
+!! elements.tex 091714
+!!KEYWORD
+resmodel
+!!TITLE
+Resistor Models
+!!HTML 
+    <b>Type Name:</b> <tt>r</tt>
+
+    <p>
+    The <a href="res">resistor</a> model consists of process-related
+    device data that allow the resistance to be calculated from
+    geometric information and to be corrected for temperature.  The
+    parameters available (multiple names are aliases) are:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Resistor Model Parameters</caption>
+    <tr><th>name</th>
+        <th>parameter</th>
+        <th>units</th> <th>default</th> <th>example</th></tr>
+    <tr><td><tt>tc1</tt>, <tt>tc</tt>, <tt>tc1r</tt></td>
+        <td>first order temperature coeff</td>
+        <td>O/C</td>                    <td>0.0</td>    <td>-</td></tr>
+    <tr><td><tt>tc2</tt>, <tt>tc2r</tt></td>
+        <td>second order temperature coeff</td>
+        <td>O/C<sup>2</sup></td>        <td>0.0</td>    <td>-</td></tr>
+    <tr><td><tt>rsh</tt></td>
+        <td>sheet resistance</td>
+        <td>O/sq</td>                   <td>-</td>      <td>50</td></tr>
+    <tr><td><tt>defl</tt>, <tt>l</tt>, <tt>w</tt></td>
+        <td>default length</td>
+        <td>M</td>                      <td>0</td>   <td>2e-6</td></tr>
+    <tr><td><tt>defw</tt>, <tt>w</tt></td>
+        <td>default width</td>
+        <td>M</td>                      <td>0</td>   <td>2e-6</td></tr>
+    <tr><td><tt>dl</tt>, <tt>dlr</tt></td>
+        <td>length reduction due to etching</td>
+        <td>M</td>                      <td>0.0</td>    <td>1e-7</td></tr>
+    <tr><td><tt>narrow</tt>, <tt>dw</tt></td>
+        <td>narrowing due to side etching</td>
+        <td>M</td>                      <td>0.0</td>    <td>1e-7</td></tr>
+    <tr><td><tt>tnom</tt>, <tt>tref</tt></td>
+        <td>parameter measurement temperature</td>
+        <td>C</td>                      <td>25</td>     <td>50</td></tr>
+    <tr><td><tt>temp</tt></td>
+        <td>default instance temperature</td>
+        <td>C</td>                      <td>25</td>     <td>50</td></tr>
+    <tr><td><tt>kf</tt></td>
+        <td>flicker noise coefficient</td>
+        <td>-</td>                      <td>0</td>     <td>&nbsp;</td></tr>
+    <tr><td><tt>af</tt></td>
+        <td>flicker noise exponent of current</td>
+        <td>-</td>                      <td>2</td>     <td>&nbsp;</td></tr>
+    <tr><td><tt>ef</tt></td>
+        <td>flicker noise exponent of frequency</td>
+        <td>-</td>                      <td>1</td>     <td>&nbsp;</td></tr>
+    <tr><td><tt>wf</tt></td>
+        <td>flicker noise exponent of width</td>
+        <td>-</td>                      <td>1</td>     <td>&nbsp;</td></tr>
+    <tr><td><tt>lf</tt></td>
+        <td>flicker noise exponent of length</td>
+        <td>-</td>                      <td>1</td>     <td>&nbsp;</td></tr>
+    <tr><td><tt>noise</tt></td>
+        <td>noise conductance multiplier</td>
+        <td>-</td>                      <td>1</td>     <td>&nbsp;</td></tr>
+    </table>
+
+    <p>
+    The sheet resistance is used with the etch reduction parameters and
+    <i>l</i> and <i>w</i> from the resistor element line to determine
+    the nominal resistance by the formula
+    <blockquote>
+        R = <tt>rsh</tt>&#183(<i>l</i> - <tt>dl</tt>)/(<i>w</i> -
+          <tt>narrow</tt>)</tt>
+    </blockquote>
+
+    <p>
+    The parameters <tt>defw</tt> and <tt>defl</tt> are used to supply
+    default values for element <i>w</i> and <tt>l</tt> if not
+    specified on the device line.  A fatal error is produced if the
+    resistance can't be determined from given parameters.
+
+    <p>
+    After the nominal resistance is calculated, it is adjusted for
+    temperature by the formula:
+    <blockquote>
+          R(temp) = R(<tt>tnom</tt>)&#183(1 +
+          <tt>tc1</tt>&#183(temp-<tt>tnom</tt>) +
+          <tt>tc2</tt>&#183(temp-<tt>tnom</tt>)<sup>2</sup>)
+    </blockquote>
+
+    <p>
+    The flicker noise capability can be used in noise analysis.  This
+    requires that <tt>kf</tt>, <tt>l</tt>, and <tt>w</tt> be
+    specified.  To use, the instance line must reference a model, but
+    also can have a resistance specified which will override model
+    calculation of resistance.
+
+    <p>
+    Flicker noise model:
+
+    <blockquote>
+    <i>Noise</i> = <tt>(KF *</tt> <i>I</i><tt>^AF) /
+      (</tt><i>Leff</i><tt>^LF *</tt> <i>Weff</i><tt>^WF *</tt>
+      <i>f</i><tt>^EF)</tt>
+    </blockquote>
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Param</th> <th>Description</th> <th>Units</th></tr>
+    <tr><td><i>Noise</i></td>  <td>Noise spectrum density</td>
+      <td>A<sup>2</sup>Hz</td></tr>
+    <tr><td><i>I</i></td>      <td>Current</td>            <td>A</td></tr>
+    <tr><td><i>Leff</i></td>   <td>Eff length (L-DL)</td>  <td>M</td></tr>
+    <tr><td><i>Weff</i></td>   <td>Eff width  (W-DW)</td>  <td>M</td></tr>
+    <tr><td><i>f</i></td>      <td>Frequency</td>          <td>Hz</td></tr>
+    <tr><th>Param</th> <th>Description</th> <th>Default, Range</th></tr>
+    <tr><td><tt>KF</tt></td>   <td>Flicker noise coefficient</td>
+      <td>0,  >= 0</td></tr>
+    <tr><td><tt>AF</tt></td>   <td>Exponent of current</td>
+      <td>2,  > 0</td></tr>
+    <tr><td><tt>LF</tt></td>   <td>Exp. of eff. length</td>
+      <td>1,  > 0</td></tr>
+    <tr><td><tt>WF</tt></td>   <td>Exp. of eff. width</td>
+      <td>1,  > 0</td></tr>
+    <tr><td><tt>EF</tt></td>   <td>Exp. of frequency</td>
+      <td>1,  > 0</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The <tt>noise</tt> parameter will multiply the conductance used in
+    the noise equations.  It provides a default which is overridden by
+    the instance parameter of the same name.  This can be used to
+    model empirical excess noise, or to remove the devices from noise
+    analysis by setting the parameter to zero.
+
+!!SEEALSO
+.model
+ 
+!! elements.tex 012609
+!!KEYWORD
+swmodel
+!!TITLE
+Switch Models
+!!HTML 
+    <b>Type Names:</b> <tt>csw</tt>, <tt>sw</tt>
+
+    <p>
+    The <a href="sw">switch</a> model allows an almost ideal switch to
+    be described in <i>WRspice</i>.  The switch is not quite ideal, in
+    that the resistance can not change from 0 to infinity, but must
+    always have a finite positive resistance.  By proper selection of
+    the on and off resistances, they can be effectively zero and
+    infinity in comparison to other circuit elements.  There are two
+    different types of switch devices; current-controlled (keyed by
+    <tt>w</tt>), and voltage-controlled (keyed by <tt>s</tt>).  Both
+    reference the model described below.  The parameters available
+    are:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Switch Model Parameters</caption>
+    <tr><th>name</th>
+        <th>parameter</th>
+        <th>units</th> <th>default</th> <th>switch</th></tr>
+    <tr><td><tt>vt</tt></td>
+        <td>threshold voltage</td>
+        <td>V</td>              <td>0.0</td>    <td>S</td></tr>
+    <tr><td><tt>it</tt></td>
+        <td>threshold current</td>
+        <td>A</td>              <td>0.0</td>    <td>W</td></tr>
+    <tr><td><tt>vh</tt></td>
+        <td>hysteresis voltage</td>
+        <td>V</td>              <td>0.0</td>    <td>S</td></tr>
+    <tr><td><tt>ih</tt></td>
+        <td>hysteresis current</td>
+        <td>A</td>              <td>0.0</td>    <td>W</td></tr>
+    <tr><td><tt>ron</tt></td>
+        <td>on resistance</td>
+        <td>O</td>              <td>1.0</td>    <td>both</td></tr>
+    <tr><td><tt>roff</tt></td>
+        <td>off resistance</td>
+        <td>O</td>              <td>1/<a href="gmin"><tt>gmin</tt></a></td>
+        <td>both</td></tr>
+    </table>
+    The <tt>gmin</tt> parameter, can be set on the <a
+    href=".options"><tt>.options</tt></a> line.  Its default value
+    results is an off resistance of 1.0e+12 ohms. 
+
+    <p>
+    The use of an ideal element that is highly nonlinear such as a
+    switch can cause large discontinuities to occur in the circuit
+    node voltages.  A rapid change such as that associated with a
+    switch changing state can cause numerical roundoff or tolerance
+    problems leading to erroneous results or timestep difficulties. 
+    The user of switches can improve the situation by taking the
+    following steps.
+
+    <p>
+    First of all it is wise to set ideal switch impedances only high
+    and low enough to be negligible with respect to other circuit
+    elements.  Using switch impedances that are close to "ideal" in
+    all cases will aggravate the problem of discontinuities mentioned
+    above.  Of course, when modeling real devices such as MOSFETS, the
+    on resistance should be adjusted to a realistic level depending on
+    the size of the device being modeled.
+
+    <p>
+    If a wide range of on to off resistance must be used in the
+    switches (<tt>roff/ron</tt> > 1e+12), then the tolerance on errors
+    allowed during transient analysis should be decreased by using the
+    <tt>.options</tt> line and specifying <tt>trtol</tt> to be less
+    than the default value of 7.0 (options can also be set from the
+    prompt line from within <i>WRspice</i>).  When switches are placed
+    around capacitors, then the option <tt>chgtol</tt> should also be
+    reduced.  Suggested values for these two options are 1.0 and 1e-16
+    respectively.  These changes inform <i>WRspice</i> to be more
+    careful around the switch points so that no errors are made due to
+    the rapid change in the circuit.
+ 
+!!SEEALSO
+.model
+
+!! elements.tex 040410
+!!KEYWORD
+tramodel ltramodel
+!!TITLE
+Transmission Line Model
+!!HTML
+    <b>Type Names:</b> <tt>ltra</tt>, <tt>tra</tt>
+
+    <p>
+    The <a href="tra">general transmission line</a> model may be used
+    in conjunction with transmission line devices, though the use is
+    optional.  The parameters that appear in the model are the same
+    parameters that can be given on the device line (with the
+    exception of the initial conditions).
+
+    <p>
+    Transmission line models can have either of two type names: 
+    <tt>tra</tt> or <tt>ltra</tt>.  The <tt>ltra</tt> name is required
+    to support the SPICE3 LTRA lossy transmission line model.  If this
+    name is used, the <tt>level</tt> will default to 2.  This will be
+    overridden if the level is set explicitly.  If the <tt>tra</tt>
+    keyword is used, then the level will default to 1.  Otherwise, the
+    two words are interchangeable.
+
+    <p>
+    The parameters provided in the model will serve as defaults to the
+    referencing device, but can be overridden if explicitly set on the
+    device line.
+ 
+!!SEEALSO
+.model
+multidec
+trytocompact
+
+!! elements.tex 012609
+!!KEYWORD
+urcmodel
+!!TITLE
+Uniform RC Line Model
+!!HTML 
+    <b>Type Name:</b> <tt>urc</tt>
+
+    <p>
+    The <a href="urc">urc</a> model is derived from a model proposed
+    by L.  Gertzberrg in 1974.  The model is accomplished by a
+    subcircuit type expansion of the URC line into a network of lumped
+    RC segments with internally generated nodes.  The RC segments are
+    in a geometric progression, increasing toward the middle of the
+    URC line, with <tt>k</tt> as a proportionality constant.  The
+    number of lumped segments used, if not specified on the urc line,
+    is determined by the following formula:
+
+    <blockquote>
+    N = log(2pi&#183;<i>Fmax</i>&#183;<i>RC</i>&#183;
+     ((<tt>k</tt>-1)/<tt>k</tt>)<sup>2</sup>) / log(<tt>k</tt>)
+    </blockquote>
+
+    where <i>Fmax</i> is the maximum frequency, and <i>R</i> and
+    <i>C</i> are the total values for the given length.
+
+    <p>
+    The urc line will be made up strictly of resistor and capacitor
+    segments unless the <tt>isperl</tt> parameter is given a non-zero
+    value, in which case the capacitors are replaced with reverse
+    biased diodes with a zero-bias junction capacitance equivalent to
+    the capacitance replaced, and with a saturation current taking the
+    value given <tt>isperl</tt> in amps per meter of transmission
+    line, and with an optional series resistance specified by
+    <tt>rsperl</tt> in ohms per meter.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>URC Model Parameters</caption>
+    <tr><th>name</th>
+        <th>parameter</th>
+        <th>units</th> <th>default</th> <th>example</th></tr>
+    <tr><td><tt>k</tt></td>
+        <td>propagation constant</td>
+        <td>-</td>              <td>1.5</td>    <td>1.2</td></tr>
+    <tr><td><tt>fmax</tt></td>
+        <td>maximum frequency</td>
+        <td>Hz</td>             <td>1.0G</td>   <td>6.5meg</td></tr>
+    <tr><td><tt>rperl</tt></td>
+        <td>resistance per length</td>
+        <td>O/M</td>            <td>1000</td>   <td>10</td></tr>
+    <tr><td><tt>cperl</tt></td>
+        <td>capacitance per length</td>
+        <td>F/M</td>            <td>1.0e-12</td><td>2pF</td></tr>
+    <tr><td><tt>isperl</tt></td>
+        <td>saturation current per length</td>
+        <td>A/M</td>            <td>0</td>      <td>-</td></tr>
+    <tr><td><tt>rsperl</tt></td>
+        <td>diode resistance per length</td>
+        <td>O/M</td>            <td>0</td>      <td>-</td></tr>
+    </table>
+ 
+!!SEEALSO
+.model
+
+!! elements.tex 100311
+!!KEYWORD
+diomodel
+!!TITLE
+Junction Diode Model
+!!HTML 
+    <b>Type Name:</b> <tt>d</tt>
+
+    <p>
+    The dc characteristics of the <a href="dio">diode</a> are
+    determined by the parameters <tt>is</tt> and <tt>n</tt>.  An ohmic
+    resistance, <tt>rs</tt>, is included.  Charge storage effects are
+    modeled by a transit time, <tt>tt</tt>, and a nonlinear depletion
+    layer capacitance which is determined by the parameters
+    <tt>cjo</tt>, <tt>vj</tt>, and <tt>m</tt>.  The temperature
+    dependence of the saturation current is defined by the parameters
+    <tt>eg</tt>, the energy and <tt>xti</tt>, the saturation current
+    temperature exponent.  The nominal temperature at which these
+    parameters were measured is <tt>tnom</tt>, which defaults to the
+    value specified on the <a href=".options"><tt>.options</tt></a>
+    control line.  Reverse breakdown is modeled by an exponential
+    increase in the reverse diode current and is determined by the
+    parameters <tt>bv</tt> and <tt>ibv</tt> (both of which are
+    positive numbers).
+
+    <p>
+    The diode model is an enhanced version of the SPICE3 diode model,
+    as used in NGspice, but with additional support for <a
+    href="hspicesim">HSPICE</a> model parameters.
+
+    <p>
+    The parameters marked with an asterisk in the <b>area</b> column
+    scale with the <tt>area</tt> and/or the <tt>m</tt> (multiplicity)
+    parameters given in the device line.  The parameters marked with
+    two asterisks scale with the <tt>pj</tt> (perimeter factor)
+    parameter given in the device line.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Diode Model Parameters</caption>
+    <tr><th>name</th> <th>area</th>
+         <th>parameter</th>
+         <th>units</th> <th>default</th> <th>example</th></tr>
+    <tr><td><tt>is, js</tt></td> <td>*</td>
+         <td>saturation current</td>
+         <td>A</td>     <td>1.0e-14</td>        <td>1.0e-14</td></tr>
+    <tr><td><tt>jsw</tt></td> <td>**</td>
+         <td>sidewall saturation current</td>
+         <td>A</td>     <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>rs</tt></td> <td>*</td>
+         <td>ohmic resistance</td>
+         <td>O</td>     <td>0</td>              <td>10</td></tr>
+    <tr><td><tt>trs, trs1</tt></td> <td>&nbsp;</td>
+        <td>ohmic resistance 1st order temp. coeff.</td>
+        <td>-</td>      <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>trs2</tt></td> <td>&nbsp;</td>
+        <td>ohmic resistance 2nd order temp. coeff.</td>
+        <td>-</td>      <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>n</tt></td> <td>&nbsp;</td>
+        <td>emission coefficient</td>
+        <td>-</td>      <td>1</td>              <td>1.0</td></tr>
+    <tr><td><tt>tt</tt></td> <td>&nbsp;</td>
+        <td>transit-time</td>
+        <td>S</td>      <td>0</td>              <td>0.1nS</td></tr>
+    <tr><td><tt>tt1</tt></td> <td>&nbsp;</td>
+        <td>transit-time 1st order temp. coeff.</td>
+        <td>-</td>      <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>tt2</tt></td> <td>&nbsp;</td>
+        <td>transit-time 2nd order temp. coeff.</td>
+        <td>-</td>      <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>cjo, cj0, cj</tt></td> <td>*</td>
+        <td>zero-bias junction capacitance</td>
+        <td>F</td>      <td>0</td>              <td>2pF</td></tr>
+    <tr><td><tt>vj, pb</tt></td> <td>&nbsp;</td>
+        <td>junction potential</td>
+        <td>V</td>      <td>1</td>              <td>0.6</td></tr>
+    <tr><td><tt>m, mj</tt></td> <td>&nbsp;</td>
+        <td>grading coefficient</td>
+        <td>-</td>      <td>0.5</td>            <td>0.5</td></tr>
+    <tr><td><tt>tm1</tt></td> <td>&nbsp;</td>
+        <td>grading coefficient 1st temp. coeff.</td>
+        <td>-</td>      <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>tm2</tt></td> <td>&nbsp;</td>
+        <td>grading coefficient 2nd temp. coeff.</td>
+        <td>-</td>      <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>cjp, cjsw</tt></td> <td>**</td>
+        <td>sidewall junction capacitance</td>
+        <td>F</td>      <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>php</tt></td> <td>&nbsp;</td>
+        <td>sidewall junction potential</td>
+        <td>V</td>      <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>mjsw</tt></td> <td>&nbsp;</td>
+        <td>sidewall grading coefficient</td>
+        <td>-</td>      <td>0.33</td>           <td>&nbsp;</td></tr>
+    <tr><td><tt>ikf, ik</tt></td> <td>*</td>
+        <td>forward knee current</td>
+        <td>A</td>      <td>1e-3</td>           <td>&nbsp;</td></tr>
+    <tr><td><tt>ikr</tt></td> <td>*</td>
+        <td>reverse knee current</td>
+        <td>A</td>      <td>1e-3</td>           <td>&nbsp;</td></tr>
+    <tr><td><tt>eg</tt></td> <td>&nbsp;</td>
+        <td>activation energy</td>
+        <td>eV</td> <td>1.11</td> <td> 1.11 Si<br>0.69 Sbd<br>0.67 Ge</td></tr>
+    <tr><td><tt>xti</tt></td> <td>&nbsp;</td>
+        <td>saturation-current temp. exponent</td>
+        <td>-</td>      <td>3.0</td> <td>3.0 junc<br>2.0 Sbd</td></tr>
+    <tr><td><tt>kf</tt></td> <td>&nbsp;</td>
+        <td>flicker noise coefficient</td>
+        <td>-</td>      <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>af</tt></td> <td>&nbsp;</td>
+        <td>flicker noise exponent</td>
+        <td>-</td>      <td>1</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>fc</tt></td> <td>&nbsp;</td>
+        <td>forward-bias junction fit parameter</td>
+        <td>-</td>      <td>0.5</td>            <td>&nbsp;</td></tr>
+    <tr><td><tt>fcs</tt></td> <td>&nbsp;</td>
+        <td>forward-bias sidewall junction fit parameter</td>
+        <td>-</td>      <td>0.5</td>            <td>&nbsp;</td></tr>
+    <tr><td><tt>bv</tt></td> <td>&nbsp;</td>
+        <td>reverse breakdown voltage</td>
+        <td>V</td>      <td>infinite</td>       <td>40.0</td></tr>
+    <tr><td><tt>ibv</tt></td> <td>*</td>
+        <td>current at reverse breakdown voltage</td>
+        <td>A</td>      <td>1.0E-3</td>         <td>&nbsp;</td></tr>
+    <tr><td><tt>tnom, tref</tt></td> <td>&nbsp;</td>
+        <td>parameter measurement temperature</td>
+        <td>C</td>      <td>25</td>             <td>50</td></tr>
+
+    <tr><th colspan=6>HSPICE Compatibility</th></tr>
+    <tr><td><tt>level</tt></td> <td>&nbsp;</td>
+        <td>device type selector</td>
+        <td>-</td>      <td>&nbsp;</td>             <td>&nbsp;</td></tr>
+    <tr><td><tt>tlev</tt></td> <td>&nbsp;</td>
+        <td>equation set selector</td>
+        <td>-</td>      <td>&nbsp;</td>             <td>&nbsp;</td></tr>
+    <tr><td><tt>tlevc</tt></td> <td>&nbsp;</td>
+        <td>equation set selector</td>
+        <td>-</td>      <td>&nbsp;</td>             <td>&nbsp;</td></tr>
+    <tr><td><tt>area</tt></td> <td>&nbsp;</td>
+        <td>area default</td>
+        <td>-</td>      <td>&nbsp;</td>             <td>&nbsp;</td></tr>
+    <tr><td><tt>pj</tt></td> <td>&nbsp;</td>
+        <td>sidewall perimeter factor default</td>
+        <td>-</td>      <td>&nbsp;</td>             <td>&nbsp;</td></tr>
+    <tr><td><tt>cta</tt></td> <td>&nbsp;</td>
+        <td>junction capacitance temp. coeff.</td>
+        <td>-</td>      <td>&nbsp;</td>             <td>&nbsp;</td></tr>
+    <tr><td><tt>ctp</tt></td> <td>&nbsp;</td>
+        <td>sidewall capacitance temp. coeff.</td>
+        <td>-</td>      <td>&nbsp;</td>             <td>&nbsp;</td></tr>
+    <tr><td><tt>tcv</tt></td> <td>&nbsp;</td>
+        <td>breakdown voltage temp. coeff.</td>
+        <td>-</td>      <td>&nbsp;</td>             <td>&nbsp;</td></tr>
+    <tr><td><tt>pb</tt></td> <td>&nbsp;</td>
+        <td>junction potential temp. coeff.</td>
+        <td>-</td>      <td>&nbsp;</td>             <td>&nbsp;</td></tr>
+    <tr><td><tt>php</tt></td> <td>&nbsp;</td>
+        <td>sidewall potential temp. coeff.</td>
+        <td>-</td>      <td>&nbsp;</td>             <td>&nbsp;</td></tr>
+    </table>
+
+    <p>
+    The <a href="hspicesim">HSPICE</a> compatibility parameters
+    provide some minimal compatibility with the HSPICE diode model. 
+    The <tt>level</tt> parameter, if present, can take values of 1 and
+    3, corresponding to the HSPICE junction and geometric junction
+    models.  There is presently no support for the <tt>level=2</tt>
+    Fowler-Nordheim model.  The <tt>tlev</tt> and <tt>tlevc</tt>
+    parameters switch equation sets.  Both take values of 0 and 1, and
+    if set to any other value will assume a value of 1, i.e., higher
+    values are not supported.  The remaining parameters are as defined
+    in the HSPICE documentation.
+ 
+!!SEEALSO
+.model
+
+!! elements.tex 091511
+!!KEYWORD
+bjtmodel
+!!TITLE
+BJT Models
+!!HTML 
+    <b>Type Names:</b> <tt>npn</tt>, <tt>pnp</tt>
+
+    <p>
+    The <a href="bjt">bipolar junction transistor</a> model in
+    <i>WRspice</i> is an adaptation of the integral charge control
+    model of Gummel and Poon.  This modified Gummel-Poon model extends
+    the original model to include several effects at high bias levels. 
+    The model will automatically simplify to the simpler Ebers-Moll
+    model when certain parameters are not specified.  The parameter
+    names used in the modified Gummel-Poon model have been chosen to
+    be more easily understood by the program user, and to reflect
+    better both physical and circuit design thinking.
+
+    <p>
+    The dc model is defined by the parameters <tt>is</tt>,
+    <tt>bf</tt>, <tt>nf</tt>, <tt>ise</tt>, <tt>ikf</tt>, and
+    <tt>ne</tt> which determine the forward current gain
+    characteristics, <tt>is</tt>, <tt>br</tt>, <tt>nr</tt>,
+    <tt>isc</tt>, <tt>ikr</tt>, and <tt>nc</tt> which determine the
+    reverse current gain characteristics, and <tt>vaf</tt> and
+    <tt>var</tt> which determine the output conductance for forward
+    and reverse regions.  Three ohmic resistances <tt>rb</tt>,
+    <tt>rc</tt>, and <tt>re</tt> are included, where <tt>rb</tt> can
+    be high current dependent.  Base charge storage is modeled by
+    forward and reverse transit times, <tt>tf</tt> and <tt>tr</tt>,
+    the forward transit time <tt>tf</tt> being bias dependent if
+    desired, and nonlinear depletion layer capacitances which are
+    determined by <tt>cje</tt>, <tt>vje</tt>, and <tt>mje</tt> for the
+    B-E junction , <tt>cjc</tt>, <tt>vjc</tt>, and <tt>mjc</tt> for
+    the B-C junction and <tt>cjs</tt>, <tt>vjb</tt>, and <tt>mjs</tt>
+    for the C-S (Collector-Substrate) junction.  The temperature
+    dependence of the saturation current, <tt>is</tt>, is determined
+    by the energy-gap, <tt>eg</tt>, and the saturation current
+    temperature exponent, <tt>xti</tt>.  Additionally base current
+    temperature dependence is modeled by the beta temperature exponent
+    <tt>xtb</tt> in the new model.  The values specified are assumed
+    to have been measured at the temperature <tt>tnom</tt>, which can
+    be specified on the <tt>.options</tt> line or overridden by a
+    specification on the <tt>.model</tt> line.
+
+    <p>
+    The BJT parameters used in the modified Gummel-Poon model are
+    listed below.  The parameter names used in earlier versions of
+    SPICE2 are still accepted.  The parameters marked with an asterisk
+    in the <b>area</b> column scale with the <tt>area</tt> parameter
+    given in the device line.
+
+    <p>
+    There is also a level=4 BJT model which uses the VBIC equation
+    set, as used in the NGspice-17 simulator.  This model is
+    documented elsewhere.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Modified Gummel-Poon BJT Parameters</caption>
+    <tr><th>name</th> <th>area</th>
+        <th>parameter</th>
+        <th>units</th> <th>default</th> <th>example</th></tr>
+    <tr><td><tt>is</tt></td> <td>*</td>
+        <td>transport saturation current</td>
+        <td>A</td>      <td>1.0e-16</td>        <td>1.0e-15</td></tr>
+    <tr><td><tt>bf</tt></td> <td>&nbsp;</td>
+        <td>ideal maximum forward beta</td>
+        <td>-</td>      <td>100</td>            <td>100</td></tr>
+    <tr><td><tt>nf</tt></td> <td>&nbsp; </td>
+        <td>forward current emission coefficient</td>
+        <td>-</td>      <td>1.0</td>            <td>1</td></tr>
+    <tr><td><tt>vaf</tt></td> <td>&nbsp;</td>
+        <td>forward Early voltage</td>
+        <td>V</td>      <td>infinite</td>       <td>200</td></tr>
+    <tr><td><tt>ikf</tt></td> <td>*</td>
+        <td>corner for forward beta high current roll-off</td>
+        <td>A</td>      <td>infinite</td>       <td>0.01</td></tr>
+    <tr><td><tt>ise</tt></td> <td>*</td>
+        <td>B-E leakage saturation current</td>
+        <td>A</td>      <td>0</td>              <td>1.0e-13</td></tr>
+    <tr><td><tt>ne</tt></td> <td>&nbsp;</td>
+        <td>B-E leakage emission coefficient</td>
+        <td>-</td>      <td>1.5</td>            <td>2</td></tr>
+    <tr><td><tt>br</tt></td> <td>&nbsp;</td>
+        <td>ideal maximum reverse beta</td>
+        <td>-</td>      <td>1</td>              <td>0.1</td></tr>
+    <tr><td><tt>nr</tt></td> <td>&nbsp;</td>
+        <td>reverse current emission coef</td>
+        <td>-</td>      <td>1</td>              <td>1</td></tr>
+    <tr><td><tt>var</tt></td> <td>&nbsp;</td>
+        <td>reverse Early voltage</td>
+        <td>V</td>      <td>infinite</td>       <td>200</td></tr>
+    <tr><td><tt>ikr</tt></td> <td>*</td>
+        <td>corner for reverse beta high current roll-off</td>
+        <td>A</td>      <td>infinite</td>       <td>0.01</td></tr>
+    <tr><td><tt>isc</tt></td> <td>*</td>
+        <td>B-C leakage saturation current</td>
+        <td>A</td>      <td>0</td>              <td>1.0e-13</td></tr>
+    <tr><td><tt>nc</tt></td> <td>&nbsp;</td>
+        <td>B-C leakage emission coefficient</td>
+        <td>-</td>      <td>2</td>              <td>1.5</td></tr>
+    <tr><td><tt>rb</tt></td> <td>*</td>
+        <td>zero bias base resistance</td>
+        <td>O</td>      <td>0</td>              <td>100</td></tr>
+    <tr><td><tt>irb</tt></td> <td>*</td>
+        <td>current where base resistance falls halfway to its min value</td>
+        <td>A</td>      <td>infinite</td>       <td> 0.1</td></tr>
+    <tr><td><tt>rbm</tt></td> <td>*</td>
+        <td>minimum base resistance at high currents</td>
+        <td>O</td>      <td><tt>rb</tt></td>    <td>10</td></tr>
+    <tr><td><tt>re</tt></td> <td>*</td>
+        <td>emitter resistance</td>
+        <td>O</td>      <td>0</td>              <td>1</td></tr>
+    <tr><td><tt>rc</tt></td> <td>*</td>
+        <td>collector resistance</td>
+        <td>O</td>      <td>0</td>              <td>10</td></tr>
+    <tr><td><tt>cje</tt></td> <td>*</td>
+        <td>B-E zero-bias depletion capacitance</td>
+        <td>F</td>      <td>0</td>              <td>2pF</td></tr>
+    <tr><td><tt>vje</tt></td> <td>&nbsp;</td>
+        <td>B-E built-in potential</td>
+        <td>V</td>      <td>0.75</td>           <td>0.6</td></tr>
+    <tr><td><tt>mje</tt></td> <td>&nbsp;</td>
+        <td>B-E junction exponential factor</td>
+        <td>-</td>      <td>0.33</td>           <td>0.33</td></tr>
+    <tr><td><tt>tf</tt></td> <td>&nbsp;</td>
+        <td>ideal forward transit time</td>
+        <td>S</td>      <td>0</td>              <td>0.1nS</td></tr>
+    <tr><td><tt>xtf</tt></td> <td>&nbsp;</td>
+        <td>coefficient for bias dependence of <tt>tf</tt></td>
+        <td>-</td>      <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>vtf</tt></td> <td>&nbsp;</td>
+        <td>voltage describing VBC dependence of <tt>tf</tt></td>
+        <td>V</td>      <td>infinite</td>       <td>&nbsp;</td></tr>
+    <tr><td><tt>itf</tt></td> <td>*</td>
+        <td>high-current parameter for effect on <tt>tf</tt></td>
+        <td>A</td>      <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>ptf</tt></td> <td>&nbsp;</td>
+        <td>excess phase at omega=<tt>1.0/tf</tt></td>
+        <td>deg</td>    <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>cjc</tt></td> <td>*</td>
+        <td>B-C zero-bias depletion capacitance</td>
+        <td>F</td>      <td>0</td>              <td>2pF</td></tr>
+    <tr><td><tt>vjc</tt></td> <td>&nbsp;</td>
+        <td>B-C built-in potential</td>
+        <td>V</td>      <td>0.75</td>           <td>0.5</td></tr>
+    <tr><td><tt>mjc</tt></td> <td>&nbsp;</td>
+        <td>B-C junction exponential factor</td>
+        <td>-</td>      <td>0.33</td>           <td>0.5</td></tr>
+    <tr><td><tt>xcjc</tt></td> <td>&nbsp;</td>
+        <td>fraction of B-C depletion cap connected to internal base node</td>
+        <td>-</td>      <td>1</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>tr</tt></td> <td>&nbsp;</td>
+        <td>ideal reverse transit time</td>
+        <td>S</td>      <td>0</td>              <td>10nS</td></tr>
+    <tr><td><tt>cjs</tt></td> <td>*</td>
+        <td>zero-bias collector-substrate capacitance</td>
+        <td>F</td>      <td>0</td>              <td>2pF</td></tr>
+    <tr><td><tt>vjs</tt></td> <td>&nbsp;</td>
+        <td>substrate junction built-in potential</td>
+        <td>V</td>      <td>0.75</td>           <td>&nbsp;</td></tr>
+    <tr><td><tt>mjs</tt></td> <td>&nbsp;</td>
+        <td>substrate junction exponential factor</td>
+        <td>-</td>      <td>0</td>              <td>0.5</td></tr>
+    <tr><td><tt>xtb</tt></td> <td>&nbsp;</td>
+        <td>forward and reverse beta temperature exponent</td>
+        <td>-</td>      <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>eg</tt></td> <td>&nbsp;</td>
+        <td>energy gap for temperature effect on <tt>is</tt></td>
+        <td>eV</td>     <td>1.11</td>           <td>&nbsp;</td></tr>
+    <tr><td><tt>xti</tt></td> <td>&nbsp;</td>
+        <td>transport saturation current temperature exponent</td>
+        <td>-</td>      <td>3</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>kf</tt></td> <td>&nbsp;</td>
+        <td>flicker-noise coefficient</td>
+        <td>-</td>      <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>af</tt></td> <td>&nbsp;</td>
+        <td>flicker-noise exponent</td>
+        <td>-</td>      <td>1</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>fc</tt></td> <td>&nbsp;</td>
+        <td>coefficient for forward-bias depletion capacitance formula</td>
+        <td>-</td>      <td>0.5</td>            <td>&nbsp;</td></tr>
+    <tr><td><tt>tnom</tt></td> <td>&nbsp;</td>
+        <td>parameter measurement temperature</td>
+        <td>C</td>      <td>25</td>             <td>50</td></tr>
+    </table>
+ 
+!!SEEALSO
+.model
+
+!! elements.tex 091511
+!!KEYWORD
+jfetmodel
+!!TITLE
+JFET Models
+!!HTML 
+    <b>Type Names:</b> <tt>njf</tt>, <tt>pjf</tt>
+
+    <p>
+    There are two <a href="jfet">JFET</a> models available, selectable
+    with the <tt>level</tt> parameter given in the list of model
+    parameters.  If <tt>level=2</tt> is given, the Parker-Skellern
+    JFET model from Macquarie University in Sydney, Australia will be
+    used.  Parameters given must apply to that model.  Documentation
+    for this model is available from the Whiteley Research <a
+    href="http://wrcad.com/restricted/xictools/docs">web site</a>,
+    or from <a
+    href="http://www.elec.mq.edu.au/cnerf/spice/spice.html">
+    http://www.elec.mq.edu.au/cnerf/spice/spice.html</a>.
+
+    <p>
+    If no <tt>level</tt> parameter is given, or is set to something
+    other than 2, the standard SPICE3 JFET model will be used.  This
+    JFET model is derived from the FET model of Shichman and Hodges. 
+    The dc characteristics are defined by the parameters <tt>vto</tt>
+    and <tt>beta</tt>, which determine the variation of drain current
+    with gate voltage, <tt>lambda</tt>, which determines the output
+    conductance, and <tt>is</tt>, the saturation current of the two
+    gate junctions.  Two ohmic resistances, <tt>rd</tt> and
+    <tt>rs</tt>, are included.  Charge storage is modeled by nonlinear
+    depletion layer capacitances for both gate junctions which vary as
+    the -1/2 power of junction voltage and are defined by the
+    parameters <tt>cgs</tt>, <tt>cgd</tt>, and <tt>pb</tt>.  The
+    fitting parameter <tt>b</tt> is a new addition, see <a
+    href="parker">Parker</a>.
+
+    <p>
+    The parameters marked with an asterisk in the <b>area</b> column
+    scale with the <tt>area</tt> parameter given in the device line.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>JFET level=1 Model Parameters</caption>
+    <tr><th>name</th> <th>area</th>
+        <th>parameter</th>
+        <th>units</th> <th>default</th> <th>example</th></tr>
+    <tr><td><tt>vto</tt></td> <td>&nbsp;</td>
+        <td>threshold voltage</td>
+        <td>V</td>      <td>-2.0</td>           <td>-2.0</td></tr>
+    <tr><td><tt>beta</tt></td> <td>*</td>
+        <td>transconductance parameter</td>
+        <td>A/V<sup>2</sup></td><td>1.0e-4</td> <td>1.0e-3</td></tr>
+    <tr><td><tt>lambda</tt></td> <td>&nbsp;</td>
+        <td>channel length modulation parameter</td>
+        <td>1/V</td>    <td>0</td>              <td>1.0e-4</td></tr>
+    <tr><td><tt>rd</tt></td> <td>*</td>
+        <td>drain ohmic resistance</td>
+        <td>O</td>      <td>0</td>              <td>100</td></tr>
+    <tr><td><tt>rs</tt></td> <td>*</td>
+        <td>source ohmic resistance</td>
+        <td>O</td>      <td>0</td>              <td>100</td></tr>
+    <tr><td><tt>cgs</tt></td> <td>*</td>
+        <td>zero-bias G-S junction capacitance</td>
+        <td>F</td>      <td>0</td>              <td>5pF</td></tr>
+    <tr><td><tt>cgd</tt></td> <td>*</td>
+        <td>zero-bias G-D junction capacitance</td>
+        <td>F</td>      <td>0</td>              <td>1pF</td></tr>
+    <tr><td><tt>pb</tt></td> <td>&nbsp;</td>
+        <td>gate junction potential</td>
+        <td>V</td>      <td>1</td>              <td>0.6</td></tr>
+    <tr><td><tt>is</tt></td> <td>*</td>
+        <td>gate junction saturation current</td>
+        <td>A</td>      <td>1.0e-14</td>        <td>1.0e-14</td></tr>
+    <tr><td><tt>b</tt></td> <td>&nbsp;</td>
+        <td>doping tail parameter</td>
+        <td>-</td>      <td>1</td>              <td>1.1</td></tr>
+    <tr><td><tt>kf</tt></td> <td>&nbsp;</td>
+        <td>flicker noise coefficient</td>
+        <td>-</td>      <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>af</tt></td> <td>&nbsp;</td>
+        <td>flicker noise exponent</td>
+        <td>-</td>      <td>1</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>fc</tt></td> <td>&nbsp;</td>
+        <td>coefficient for forward-bias depletion capacitance formula</td>
+        <td>-</td>      <td>0.5</td>            <td>&nbsp;</td></tr>
+    <tr><td><tt>tnom</tt></td> <td>&nbsp;</td>
+        <td>parameter measurement temperature</td>
+        <td>C</td>      <td>25</td>             <td>50</td></tr>
+    </table>
+    <br>
+ 
+!!SEEALSO
+.model
+
+!! elements.tex 012609
+!!KEYWORD
+mesmodel
+!!TITLE
+MESFET Model
+!!HTML 
+    <b>Type Names:</b> <tt>nmf</tt>, <tt>pmf</tt>
+
+    <p>
+    The <a href="mes">MESFET</a> model is derived from the GaAs FET
+    model of <a href="refs#statz1">Statz</a> et al.  The dc
+    characteristics are defined by the parameters <tt>vto</tt>,
+    <tt>b</tt>, and <tt>beta</tt>, which determine the variation of
+    drain current with gate voltage, <tt>alpha</tt>, which determines
+    saturation voltage, and <tt>lambda</tt>, which determines the
+    output conductance.
+
+    <p>
+    Two ohmic resistances, <tt>rd</tt> and <tt>rs</tt>, are included. 
+    Charge storage is modeled by total gate charge as a function of
+    gate-drain and gate-source voltages and is defined by the
+    parameters <tt>vgs</tt>, <tt>cgd</tt>, and <tt>pb</tt>.
+
+    <p>
+    The parameters marked with an asterisk in the <b>area</b> column
+    scale with the <tt>area</tt> parameter given in the device line.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>MES Model Parameters</caption>
+    <tr><th>name</th> <th>area</th>
+        <th>parameter</th>
+        <th>units</th> <th>default</th> <th>example</th></tr>
+    <tr><td><tt>vto</tt></td> <td>&nbsp;</td>
+        <td>pinch-off voltage</td>
+        <td>V</td>      <td>-2.0</td>           <td>-2.0</td></tr>
+    <tr><td><tt>beta</tt></td> <td>*</td>
+        <td>transconductance parameter</td>
+        <td>A/V<sup>2</sup></td><td>1.0e-4</td> <td>1.0e-3</td></tr>
+    <tr><td><tt>b</tt></td> <td>*</td>
+        <td>doping tail extending parameter</td>
+        <td>1/V</td>    <td>0.3</td>            <td>0.3</td></tr>
+    <tr><td><tt>alpha</tt></td> <td>*</td>
+        <td>saturation voltage parameter</td>
+        <td>1/V</td>    <td>2</td>              <td>2</td></tr>
+    <tr><td><tt>lambda</tt></td> <td>&nbsp;</td>
+        <td>channel length modulation parameter</td>
+        <td>1/V</td>    <td>0</td>              <td>1.0e-4</td></tr>
+    <tr><td><tt>rd</tt></td> <td>*</td>
+        <td>drain ohmic resistance</td>
+        <td>O</td>      <td>0</td>              <td>100</td></tr>
+    <tr><td><tt>rs</tt></td> <td>*</td>
+        <td>source ohmic resistance</td>
+        <td>O</td>      <td>0</td>              <td>100</td></tr>
+    <tr><td><tt>cgs</tt></td> <td>*</td>
+        <td>zero-bias G-S junction capacitance</td>
+        <td>F</td>      <td>0</td>              <td>5pF</td></tr>
+    <tr><td><tt>cgd</tt></td> <td>*</td>
+        <td>zero-bias G-D junction capacitance</td>
+        <td>F</td>      <td>0</td>              <td>1pF</td></tr>
+    <tr><td><tt>pb</tt></td> <td>&nbsp;</td>
+        <td>gate junction potential</td>
+        <td>V</td>      <td>1</td>              <td>0.6</td></tr>
+    <tr><td><tt>kf</tt></td> <td>&nbsp;</td>
+        <td>flicker noise coefficient</td>
+        <td>-</td>      <td>0</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>af</tt></td> <td>&nbsp;</td>
+        <td>flicker noise exponent</td>
+        <td>-</td>      <td>1</td>              <td>&nbsp;</td></tr>
+    <tr><td><tt>fc</tt></td> <td>&nbsp;</td>
+        <td>coef for forward-bias depletion capacitance formula</td>
+        <td>-</td>      <td>0.5</td>            <td>&nbsp;</td></tr>
+    </table>
+ 
+!!SEEALSO
+.model
+
+!! elements.tex 022514
+!!KEYWORD
+moslevel
+!!TITLE
+MOSFET Device Models
+!!HTML
+    The device library supplied with <i>WRspice</i> contains a number
+    of MOS models supplied by various development groups.  The models
+    that are currently provided in the device library are listed
+    below.  Specific models are selected through the
+    <tt>level</tt> parameter.  Other parameters are specific to that
+    model, and there is not in general a great deal of commonality of
+    parameter names between the various models.  Only the simple
+    models provided in SPICE3 will be documented.  Documentation for
+    the third-party models is available from the Whiteley Research
+    <a href="http://wrcad.com/restricted/xictools/docs/">web
+    site</a>.
+
+    <p>
+    The <a href="devmod"><b>devmod</b></a> command can be used to
+    change the model levels of these devices, with the exception of
+    the MOS device (levels 1-3 and 6) whose level numbers are fixed. 
+    Alternatively, the <a href=".mosmap"><tt>.mosmap</tt></a> keyword
+    can be used in SPICE input to map the level number of a foreign
+    simulator into the number expected by <i>WRspice</i>.  The
+    <tt>.mosmap</tt> line, which must be read before the corresponding
+    <tt>.model</tt> line, is followed by two integers.  The first
+    integer is the level number found in the file, the second is the
+    <i>WRspice</i> level number appropriate for the model parameter
+    set.  Both of these methods avoid the need to copy the model file
+    and edit the level number.
+
+    <p>
+    The table below lists all of the MOS levels recognized in
+    <i>WRspice</i>.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Level</th> <th>Name</th> <th>Description</th></tr>
+    <tr><td>1</td>     <td>MOS</td>
+        <td>The SPICE3 mos1 (Shichman-Hodges) model</td></tr>
+    <tr><td>2</td>     <td>MOS</td>
+        <td>The SPICE3 mos2 model (see
+        <a href="refs#vlad">reference</a>)</td></tr>
+    <tr><td>3</td>     <td>MOS</td>
+        <td>The SPICE3 mos3 model (a semi-empirical model,
+        see reference for mos2)</td></tr>
+    <tr><td>4</td>     <td>BSIM1</td>
+        <td>The SPICE3 bsim1 model (empirical model, see
+        <a href="refs#sheu">reference</a>)</td></tr>
+    <tr><td>5</td>     <td>BSIM2</td>
+        <td>The SPICE3 bsim2 model, successor to bsim1</td></tr>
+    <tr><td>6</td>     <td>MOS</td>
+        <td>The SPICE3 mos6 model</td></tr>
+
+    <tr><td>7, 49</td> <td>BSIM3.2.0</td>
+         <td>U.C. Berkeley bsim3.2.0 model</td></tr>
+    <tr><td>8, 47</td> <td>BSIM3.2.4</td>
+        <td>U.C. Berkeley bsim3.2.4 model</td></tr>
+    <tr><td>9, 53</td> <td>BSIM3.3.0</td>
+        <td>U.C. Berkeley bsim3.3.0 model</td></tr>
+
+    <tr><td>12</td>    <td>BSIM4.2.1</td>
+        <td>U.C. Berkeley bsim4.2.1 model</td></tr>
+    <tr><td>13</td><td>BSIM4.3.0</td>
+        <td>U.C. Berkeley bsim4.3.0 model</td></tr>
+    <tr><td>14</td>    <td>BSIM4.4.0</td>
+        <td>U.C. Berkeley bsim4.4.0 model</td></tr>
+    <tr><td>15, 54</td><td>BSIM4.6.5</td>
+        <td>U.C. Berkeley bsim4.6.5 model</td></tr>
+    <tr><td>16, 56</td><td>BSIM4.7.0</td>
+        <td>U.C. Berkeley bsim4.7.0 model</td></tr>
+    <tr><td>17, 59</td><td>BSIM4.8.0</td>
+        <td>U.C. Berkeley bsim4.8.0 model</td></tr>
+
+    <tr><td>20</td>    <td>BSIMSOI-3.0</td>
+       <td>U.C. Berkeley bsimsoi-3.0 model</td></tr>
+    <tr><td>21</td>    <td>BSIMSOI-3.2</td>
+       <td>U.C. Berkeley bsimsoi-3.2 model</td></tr>
+    <tr><td>22, 57</td><td>BSIMSOI-4.0</td>
+       <td>U.C. Berkeley bsimsoi-4.0 model</td></tr>
+    <tr><td>23, 70</td><td>BSIMSOI-4.3</td>
+       <td>U.C. Berkeley bsimsoi-4.3 model</td></tr>
+    <tr><td>24, 71</td><td>BSIMSOI-4.4</td>
+       <td>U.C. Berkeley bsimsoi-4.4 model</td></tr>
+
+    <tr><td>25, 55</td><td>EKV-2.6</td>
+        <td>EKV-2.6 MOS model from EPFL, Lausanne, Switzerland</td></tr>
+
+    <tr><td>30</td>    <td>HiSIM-1.1.0</td>
+        <td>Hiroshima University hisim-1.1.0 model.</td></tr>
+    <tr><td>31, 64</td><td>HiSIM-1.2.0</td>
+        <td>Hiroshima University hisim-1.2.0 model.</td></tr>
+
+    <tr><td>33</td>    <td>Soi3</td>
+        <td>Southampton Thermal Analogue (STAG) release 2.6
+        SOI model</td></tr>
+
+    <tr><td>36, 58</td><td>UFSOI-7.5</td>
+        <td>U. Florida SOI model release 7.5</td></tr>
+    </table>
+
+    <p>
+    Notes:
+
+    <dl>
+    <dt>BSIM models<dd>
+    The home page for the Berkeley BSIM models is<br>
+    <a href="http://www-device.eecs.berkeley.edu/~bsim3">
+    <tt>http://www-device.eecs.berkeley.edu/~bsim3</tt></a>.<br>
+    The home page for the Berkeley BSIMSOI models is<br>
+    <a href="http://www-device.eecs.berkeley.edu/~bsimsoi">
+    <tt>http://www-device.eecs.berkeley.edu/~bsimsoi</tt></a>.
+
+    <p>
+    In <i>WRspice</i> release 3.2.5, MOS level 54 was changed to point
+    to the BSIM-4.6.5 model, which replaced the BSIM-4.6.1 model.  In
+    earlier releases, level 54 pointed to BSIM-4.3.0.  Going forward,
+    level 54 will point to the "latest and greatest" BSIM4 model
+    available.
+    </dl>
+
+    <dl>
+    <dt>EKV-2.6<dd>
+    The level EKV-2.6 model installation has not been validated by
+    EPFL, and by agreement until such validation is performed there is
+    no claim that this is <i>THE</i> EKV model.  The EKV home page is<br>
+    <a href="http://legwww.epfl.ch/ekv"><tt>http://legwww.epfl.ch/ekv</tt></a>.
+    </dl>
+
+    <dl>
+    <dt>STAG<dd>
+    The STAG (Southampton Thermal Analogue Model) does not appear to be
+    available from or supported by the author anymore.  This model will
+    likely be removed in a future release.
+    </dl>
+
+    <dl>
+    <dt>HiSIM<dd>
+    The HiSIM model source code is no longer generally available, and
+    is behind a Compact Modeling Council firewall.  It is unlikely that
+    newer HiSIM models will be added unless there is a specific
+    customer request.
+    </dl>
+
+    <dl>
+    <dt>UFSOI-7.5<dd>
+    The home page for the U. Florida modes is<br>
+    <a href="http://www.soi.tec.ufl.edu">
+    <tt>http://www.soi.tec.ufl.edu</tt></a>.
+    </dl>
+
+    <p>
+    Manuals for the BSIM3/4 and other third-party MOS models are available
+    on the Whiteley Research web site.
+
+    <p>
+    If you need a specific device model, please send a note to
+    Whiteley Research.  It is possible that the model can be added.
+
+    <h2>HSPICE MOS Level 49 Compatibility in <i>WRspice</i></h2>
+
+    In <i>WRspice</i>, level 49 is equivalent to level 7, which is the
+    BSIM3v3.2 model from Berkeley.  However, there are differences in
+    the parameter sets between this model and the level 49 model of <a
+    href="hspicesim">HSPICE</a>, which is based on BSIM3 and
+    customized for HSPICE.  In particular, the HSPICE extensions are
+    not supported in <i>WRspice</i>.
+
+    <p>
+    This document lists the parameters that are accepted in HSPICE level
+    49 model parameter sets that are not supported in the Berkeley model,
+    or have different interpretation.  The parameters are listed in
+    alphabetical order, by category.  This list is possibly incomplete.
+
+    <p>
+    This list also applies to the level 8 (BSIM3v3.2.4) model in
+    <i>WRspice</i>.  In <i>WRspice</i> release 2.2.50 and earlier,
+    level 49 was mapped to level 8.  However, the <tt>VERSION</tt>
+    parameter in level 8 <i>must</i> be "3.2.4" if given, which is not
+    generally true in imported files.  The level 7 model handles
+    earlier versions, notably 3.1, without complaint.
+
+    <h3>1. General parameters</h3>
+
+    <dl>
+    <dt><tt>BINFLAG</tt><dd>This is not used for <i>WRspice</i>.
+    <dt><tt>SCALM, SCALE</tt><dd>In HSPICE these are the "model scaling factor"
+      and "element scaling factor".  There are no <i>WRspice</i> equivalents.
+    <dt><tt>TREF</tt><dd>Temperature at which parameters are extracted.  This
+      is taken as an alias for the BSIM3 <tt>TNOM</tt> parameter in <i>WRspice</i>.
+    <dt><tt>NQSMOD</tt><dd>This is accepted by <i>WRspice</i> as an extension
+      to BSIM3, and serves as the default for devices that use the model.  If
+      also given on the device line, that value will override.
+    </dl>
+
+    <h3>2. Length and Width</h3>
+
+    <dl>
+    <dt><tt>LREF, WREF</tt><dd>In HSPICE these are "channel length reference"
+      and "channel width reference".  There are no <i>WRspice</i> equivalents.
+    <dt><tt>XW, XL</tt><dd>In HSPICE these account for masking and etching
+      effects.  In release 3.1.5 and later, the <tt>XW</tt> and
+      <tt>XL</tt> parameters are handled by the BSIM3 bulk-mos models
+      (levels 7, 8, 9, 47, 49, and 53) implementing the formula below.
+      With earlier releases, one must modify <tt>WINT</tt> and <tt>LINT</tt>.
+    <blockquote>
+      <tt>WINT</tt><sub>new</sub> = <tt>WINT</tt><sub>old</sub> - <tt>XW</tt>/2<br>
+      <tt>LINT</tt><sub>new</sub> = <tt>LINT</tt><sub>old</sub> - <tt>XL</tt>/2
+    </blockquote>
+    </dl>
+
+    <h3>3. MOS Diode Model Parameters</h3>
+
+    <dl>
+    <dt><tt>ACM</tt><dd>In HSPICE this selects the area calculation method.
+      <i>WRspice</i> uses only one model for the bulk-to-source and bulk-to-drain
+      diodes. It corresponds to the HSPICE equivalent of <tt>ACM</tt>=0. Do
+      not use this parameter for <i>WRspice</i>. <tt>ACM</tt> is not needed if
+      <tt>AS</tt>, <tt>AD</tt>, <tt>PS</tt>, and <tt>PD</tt> are specified
+      explicitly.
+    <dt><tt>CJGATE</tt><dd>In HSPICE this is the zero-bias gate-edge sidewall
+      bulk junction capacitance used with <tt>ACM</tt>=3 only. There is no
+      <i>WRspice</i> equivalent.
+    <dt><tt>HDIF, LDIF</tt><dd>In HSPICE this is the "length of heavily doped
+      diffusion" and "length of lightly doped diffusion". They are used with
+      the HSPICE <tt>ACM</tt>=2 MOS diode models, and there are no <i>WRspice</i>
+      equivalents. <tt>HDIF</tt> and <tt>LDIF</tt> are not needed if <tt>AS</tt>,
+      <tt>AD</tt>, <tt>PS</tt>, and <tt>PD</tt> are specified explicitly.
+    <dt><tt>N</tt><dd>In HSPICE this is the "emission coefficient", and is
+      taken as an alias for the BSIM3 <tt>NJ</tt> parameter.
+    <dt><tt>RDC</tt><dd>In HSPICE this is additional drain resistance due to
+      contact resistance. If <tt>RD</tt> is specified, use
+      <blockquote>
+      <tt>RD</tt><sub>new</sub> = <tt>RD</tt><sub>old</sub> + <tt>RDC</tt>
+      </blockquote>
+      If <tt>RSH</tt> is specified, then <tt>RDC</tt> should be added to
+      <tt>RD</tt>=<tt>NRD</tt>*<tt>RSH</tt>.  Since <tt>NRD</tt> is a device
+      parameter and not a model parameter, a typical <tt>NRD</tt> value must
+      be used.
+    <dt><tt>RSC</tt><dd>In HSPICE this is additional source resistance due to
+      contact resistance. If <tt>RS</tt> is specified, use
+      <blockquote>
+      <tt>RS</tt><sub>new</sub> = <tt>RS</tt><sub>old</sub> + <tt>RSC</tt>
+      </blockquote>
+      If <tt>RSH</tt> is specified, then <tt>RSC</tt> should be added to
+      <tt>RS</tt>=<tt>NRS</tt>*<tt>RSH</tt>. Since <tt>NRS</tt> is a device
+      parameter and not a model parameter, a typical <tt>NRS</tt> value must
+      be used.
+    <dt><tt>WMLT, LMLT</tt><dd>In HSPICE these are "length of heavily doped
+      diffusion" and "length of lightly doped diffusion" used in the
+      <tt>ACM</tt>=1-3 models. There are no <i>WRspice</i> equivalents.
+      <tt>WMLT</tt> and <tt>LMLT</tt> are not needed if <tt>AS</tt>, <tt>AD</tt>,
+      <tt>PS</tt>, and <tt>PD</tt> are specified explicitly.
+    </dl>
+
+    <h3>4. Capacitance Parameters</h3>
+
+    <dl>
+    <dt><tt>CAPOP</tt><dd>Do not use <tt>CAPOP</tt> for <i>WRspice</i>.
+      <tt>CAPMOD</tt> is included in the BSIM3 model.
+      <tt>CAPOP</tt> is HSPICE specific, and not included in the BSIM3 parameter
+      set.  The default BSIM3 capacitance model is <tt>CAPMOD</tt>=3.
+    <dt><tt>CJM</tt><dd>This is taken as an alias for the BSIM3 <tt>CJ</tt>
+      parameter in <i>WRspice</i>.
+    <dt><tt>MJ0</tt><dd>This is taken as an alias for the BSIM3 <tt>MJ</tt>
+      parameter in <i>WRspice</i>.
+    <dt><tt>PJ</tt><dd>This is taken as an alias for the BSIM3 <tt>PB</tt>
+      parameter in <i>WRspice</i>.
+    <dt><tt>CTA, CTP</tt><dd>In HSPICE these are the "junction capacitance CJ
+      temp. coeff." and "junction sidewall capacitance CJSW temp. coeff", used
+      with <tt>TLEVC</tt>=1. There are no <i>WRspice</i> equivalents.
+    <dt><tt>PTA, PTP</tt><dd>In HSPICE these are the "junction potential PB
+      temp. coeff." and "fermi potential PHI temp. coeff", used with
+      <tt>TLEVC</tt>=1 or 2. There are no <i>WRspice</i> equivalents.
+    <dt><tt>PHP</tt><dd>This is taken as an alias for the BSIM3 <tt>PBSW</tt>
+      parameter in <i>WRspice</i>.
+    <dt><tt>TLEV, TLEVC</tt><dd>In HSPICE this is the "temperature equation
+      level selector" and "temperature equation level selector for junction
+      capacitances and potentials". Do not use these parameters for
+      <i>WRspice</i>.
+    </dl>
+
+    <h3>5. Impact Ionization</h3>
+
+    <dl>
+    <dt><tt>ALPHA, LALPHA, WALPHA, VCR, LVCR, WVCR</tt>, and <tt>IIRAT</tt><dd>
+      These are impact ionization parameters in HSPICE. There are no
+      <i>WRspice</i> equivalents. BSIM3 has its own impact ionization
+      model which is instead used in most cases.
+    </dl>
+
+    <h3>6. V3.2 parameters</h3>
+
+    Level 49 parameter sets in <i>WRspice</i> may include BSIM3v3.2
+    parameters, though historically HSPICE level 49 was based on
+    BSIM3v3.1.  The following parameters are new for v3.2:
+
+    <dl>
+    <dl><tt>ALPHA1, ACDE, MOIN, NOFF, VOFFCV</tt><dd>All except <tt>ALPHA1</tt>
+      are used in a new capacitance model (<tt>CAPMOD</tt>=3). <tt>ALPHA1</tt>
+      modifies the substrate current equation as follows:
+      <blockquote>
+      <tt>Isub ~ (ALPHA0 + ALPHA1*Leff) / Leff</tt>
+      </blockquote>
+    </dl>
+
+!!SEEALSO
+mosmodel
+
+!! elements.tex 091511
+!!KEYWORD
+mosmodel
+!!TITLE
+MOSFET Models
+!!HTML 
+    <b>Type Names:</b> <tt>nmos</tt>, <tt>pmos</tt>
+
+    <p>
+    <i>WRspice</i> provides the basic MOS models provided in SPICE2/3,
+    plus third-party models from various development groups.  A
+    complete listing of the MOS models supported in the current
+    <i>WRspice</i> release is provided <a href="moslevel">here</a>. 
+    Documentation for the third-party models is available on the
+    Whiteley Research <a
+    href="http://wrcad.com/restricted/xictools/docs/"> web
+    site</a>.  This section will describe the features common to all
+    MOS models.
+
+    <p>
+    The <tt>level</tt> parameter in the MOS model description
+    specifies the model to be used.  Where possible, the level chosen
+    for the imported models will match the level used in Synopsys
+    <a href="hspicesim">HSPICE</a>.
+
+    <h3>MOS Default Values</h3>
+
+    <p>
+    The MOS device length, width, source area and drain area will
+    default to common values if not specified for a device.  These
+    values are set by the following variables:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Variable</th> <th>Purpose</th> <th>Default</th></tr>
+    <tr><td><a href="defad"><tt>defad</tt></a></td> <td>drain area</td>
+      <td>0 M<sup>2</sup></td></tr>
+    <tr><td><a href="defas"><tt>defas</tt></a></td> <td>source area</td>
+      <td>0 M<sup>2</sup></td></tr>
+    <tr><td><a href="defl"><tt>defl</tt></a></td>
+      <td>gate length</td> <td>1 uM</td></tr>
+    <tr><td><a href="defw"><tt>defw</tt></a></td>
+      <td>gate width</td> <td>1 uM</td></tr>
+    </table>
+    </blockquote>
+
+    <h3>MOS Model Binning</h3>
+
+    <p>
+    <i>WRspice</i> supports MOS model selection by the L and W
+    parameters from the MOS <a href="mos">element line</a>.  This
+    facility is used to automatically select the proper model for a
+    specific device dimension, from among several models which are
+    nominally similar but optimized for a particular device size. 
+    This facility works with any of the MOS model levels.
+
+    <p>
+    The MOS models for the specified ranges should use the same "base"
+    name plus an arbitrary but unique extension separated from the
+    base name with a period.  The element line should refer to the
+    model by the base name.  Each of the different models with the
+    same base name should have ranges specified with the model
+    parameters <tt>LMIN</tt>, <tt>LMAX</tt>, <tt>WMIN</tt>,
+    <tt>WMAX</tt>.  The model associated with an instance is the first
+    model found such that the base name matches, and <tt>LMIN &#60= L
+    &#60= LMAX</tt> and <tt>WMIN &#60= W &#60= WMAX</tt>.  If the
+    MIN/MAX parameters are not found in a model line, the test is
+    always true, i.e., if no MIN/MAX parameters are specified in a
+    model, that model would match any <tt>L</tt>, <tt>W</tt>.
+
+    <p>
+    Example:
+
+    <blockquote><tt>
+    m1 1 2 3 4 nm l=1.5u w=1u<br>
+    m2 a b c d nm l=3u w=5u<br>
+    ...<br>
+    .model nm.1 nmos(level=8 lmin=1u lmax=2u wmin=1u wmax=2u ...)<br>
+    .model nm.2 nmos(level=8 lmin=2u lmax=4u wmin=1u wmax=2u ...)<br>
+    .model nm.3 nmos(level=8 lmin=1u lmax=2u wmin=2u wmax=5u ...)<br>
+    .model nm.4 nmos(level=8 lmin=2u lmax=4u wmin=2u wmax=5u ...)<br>
+    .model nm.5 nmos(level=8 ...)
+    </tt></blockquote>
+
+    <p>
+    In this example <tt>m1</tt> would use model <tt>nm.1</tt>,
+    <tt>m2</tt> would use <tt>nm.4</tt>.  The model <tt>nm.5</tt> is a
+    "catch all" for elements that don't match the other models.  The
+    extension can be omitted in one of the model names.
+
+    <p>
+    If a model that uses selection cannot be resolved, the circuit
+    run will be aborted.
+
+    <h3>SPICE2/3 Legacy MOS Models</h3>
+
+    This section describes the basic SPICE2/3 models.  The level 1-3
+    and 6 models can be used for quick analysis and examples, but are
+    probably not suitable for serious design work using modern
+    deep-submicron devices.  The BSIM1 and BSIM2 models are for
+    compatibility only, and are not likely to be useful except for
+    analysis of legacy projects.
+
+    <p>
+    The dc characteristics of the level 1 through level 3 MOSFETs are
+    defined by the device parameters <tt>vto</tt>, <tt>kp</tt>,
+    <tt>lambda</tt>, <tt>phi</tt> and <tt>gamma</tt>.  These
+    parameters are computed by <i>WRspice</i> if process parameters
+    (<tt>nsub</tt>, <tt>tox</tt>, ...) are given, but user-specified
+    values always override.  <tt>vto</tt> is positive (negative) for
+    enhancement mode and negative (positive) for depletion mode
+    N-channel (P-channel) devices.  Charge storage is modeled by three
+    constant capacitors, <tt>cgso</tt>, <tt>cgdo</tt>, and
+    <tt>cgbo</tt> which represent overlap capacitances, by the
+    nonlinear thin-oxide capacitance which is distributed among the
+    gate, source, drain, and bulk regions, and by the nonlinear
+    depletion-layer capacitances for both substrate junctions divided
+    into bottom and periphery, which vary as the <tt>mj</tt> and
+    <tt>mjsw</tt> power of junction voltage respectively, and are
+    determined by the parameters <tt>cbd</tt>, <tt>cbs</tt>,
+    <tt>cj</tt>, <tt>cjsw</tt>, <tt>mj</tt>, <tt>mjsw</tt> and
+    <tt>pb</tt>.  Charge storage effects are modeled by the piecewise
+    linear voltage-dependent capacitance model proposed by Meyer.  The
+    thin-oxide charge storage effects are treated slightly different
+    for the level 1 model.  These voltage-dependent capacitances are
+    included only if <tt>tox</tt> is specified in the input
+    description and they are represented using Meyer's formulation.
+
+    <p>
+    There is some overlap among the parameters describing the
+    junctions, e.g.  the reverse current can be input either as
+    <tt>is</tt> (in A) or as <tt>js</tt> (in A/M<sup>2</sup>). 
+    Whereas the first is an absolute value the second is multiplied by
+    <tt>ad</tt> and <tt>as</tt> to give the reverse current of the
+    drain and source junctions respectively.  This methodology has
+    been chosen since there is no sense in relating always junction
+    characteristics with <tt>ad</tt> and <tt>as</tt> entered on the
+    device line; the areas can be defaulted.  The same idea applies
+    also to the zero-bias junction capacitances <tt>cbd</tt> and
+    <tt>cbs</tt> (in F) on one hand, and <tt>cj</tt> (in
+    F/M<sup>2</sup>) on the other.  The parasitic drain and source
+    series resistance can be expressed as either <tt>rd</tt> and
+    <tt>rs</tt> (in ohms) or <tt>rsh</tt> (in ohms/sq.), the latter
+    being multiplied by the number of squares <tt>nrd</tt> and
+    <tt>nrs</tt> input on the device line.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>MOS level 1 to level 3 parameters</caption>
+    <tr><th>name</th> <th>parameter</th> <th>units</th> <th>default</th>
+        <th>example</th></tr>
+    <tr><td><tt>level</tt></td>
+        <td>model index</td>
+        <td>-</td>              <td>1</td>      <td>&nbsp;</td></tr>
+    <tr><td><tt>vto</tt></td>
+        <td>zero-bias threshold voltage</td>
+        <td>V</td>              <td>0.0</td>    <td>1.0</td></tr>
+    <tr><td><tt>kp</tt></td>
+        <td>transconductance parameter</td>
+        <td>A/V<sup>2</sup></td> <td>2.0e-5</td> <td>3.1e-5</td></tr>
+    <tr><td><tt>gamma</tt></td>
+        <td>bulk threshold parameter</td>
+        <td>V<sup>0.5</sup></td> <td>0.0</td>   <td>0.37</td></tr>
+    <tr><td><tt>phi</tt></td>
+        <td>surface potential</td>
+        <td>V</td>              <td>0.6</td>    <td>0.65</td></tr>
+    <tr><td><tt>lambda</tt></td>
+        <td>channel-length modulation (MOS1 and MOS2 only)</td>
+        <td>1/V</td>            <td>0.0</td>    <td>0.02</td></tr>
+    <tr><td><tt>rd</tt></td>
+        <td>drain ohmic resistance</td>
+        <td>O</td>              <td>0.0</td>    <td>1.0</td></tr>
+    <tr><td><tt>rs</tt></td>
+        <td>source ohmic resistance</td>
+        <td>O</td>              <td>0.0</td>    <td>1.0</td></tr>
+    <tr><td><tt>cbd</tt></td>
+        <td>zero-bias B-D junction capacitance</td>
+        <td>F</td>              <td>0.0</td>    <td>20fF</td></tr>
+    <tr><td><tt>cbs</tt></td>
+        <td>zero-bias B-S junction capacitance</td>
+        <td>F</td>              <td>0.0</td>    <td>20fF</td></tr>
+    <tr><td><tt>is</tt></td>
+        <td>bulk junction saturation current</td>
+        <td>A</td>              <td>1.0e-14</td><td>1.0e-15</td></tr>
+    <tr><td><tt>pb</tt></td>
+        <td>bulk junction potential</td>
+        <td>V</td>              <td>0.8</td>    <td>0.87</td></tr>
+    <tr><td><tt>cgso</tt></td>
+        <td>gate-source overlap cap per meter channel width</td>
+        <td>F/M</td>            <td>0.0</td>    <td>4.0e-11</td></tr>
+    <tr><td><tt>cgdo</tt></td>
+        <td>gate-drain overlap cap per meter channel width</td>
+        <td>F/M</td>            <td>0.0</td>    <td>4.0e-11</td></tr>
+    <tr><td><tt>cgbo</tt></td>
+        <td>gate-bulk overlap cap per meter channel length</td>
+        <td>F/M</td>            <td>0.0</td>    <td>2.0e-10</td></tr>
+    <tr><td><tt>rsh</tt></td>
+        <td>drain and source diffusion sheet resistance</td>
+        <td>O/sq</td>           <td>0.0</td>    <td>10.0</td></tr>
+    <tr><td><tt>cj</tt></td>
+        <td>zero-bias bulk junction bottom capacitance per junction area</td>
+        <td>F/M<sup>2</sup></td><td>0.0</td>    <td>2.0e-4</td></tr>
+    <tr><td><tt>mj</tt></td>
+        <td>bulk junction bottom grading coefficient</td>
+        <td>-</td>              <td>0.5</td>    <td>0.5</td></tr>
+    <tr><td><tt>cjsw</tt></td>
+        <td>zero-bias bulk junction sidewall cap per junction perimeter</td>
+        <td>F/M</td>            <td>0.0</td>    <td>1.0e-9</td></tr>
+    <tr><td><tt>mjsw</tt></td>
+        <td>bulk junction sidewall grading coefficient</td>
+        <td>-</td>         <td>0.50(1)<br>0.33(2,3)</td> <td>&nbsp;</td></tr>
+    <tr><td><tt>js</tt></td>
+        <td>bulk junction saturation current per junction area</td>
+        <td>A/M<sup>2</sup></td> <td>1.0E-8</td> <td>&nbsp;</td></tr>
+    <tr><td><tt>tox</tt></td>
+        <td>oxide thickness</td>
+        <td>M</td>              <td>1.0e-7</td> <td>1.0e-7</td></tr>
+    <tr><td><tt>nsub</tt></td>
+        <td>substrate doping</td>
+        <td>1/cM<sup>3</sup></td> <td>0.0</td>  <td>4.0e15</td></tr>
+    <tr><td><tt>nss</tt></td>
+        <td>surface state density</td>
+        <td>1/cM<sup>2</sup></td> <td>0.0</td>  <td>1.0e10</td></tr>
+    <tr><td><tt>nfs</tt></td>
+        <td>fast surface state density</td>
+        <td>1/cM<sup>2</sup></td> <td>0.0</td>  <td>1.0e10</td></tr>
+    <tr><td><tt>tpg</tt></td>
+        <td>type of gate material:<br>+1 opposite to substrate<br>-1 same as
+           substrate<br>0 Al gate</td>
+        <td>-</td>              <td>1.0</td>    <td>&nbsp;</td></tr>
+    <tr><td><tt>xj</tt></td>
+        <td>metallurgical junction depth</td>
+        <td>M</td>              <td>0.0</td>    <td>1u</td></tr>
+    <tr><td><tt>ld</tt></td>
+        <td>lateral diffusion</td>
+        <td>M</td>              <td>0.0</td>    <td>0.8u</td></tr>
+    <tr><td><tt>uo</tt></td>
+        <td>surface mobility</td>
+        <td>cM<sup>2</sup>/VS</td> <td>600</td> <td>700</td></tr>
+    <tr><td><tt>ucrit</tt></td>
+        <td>critical field for mobility degradation (MOS2 only)</td>
+        <td>V/cM</td>           <td>1.0e4</td>  <td>1.0e4</td></tr>
+    <tr><td><tt>uexp</tt></td>
+        <td>critical field exponent in mobility degradation (MOS2)</td>
+        <td>-</td>              <td>0.0</td>    <td>0.1</td></tr>
+    <tr><td><tt>utra</tt></td>
+        <td>transverse field coefficient (mobility) (deleted for MOS2)</td>
+        <td>-</td>              <td>0.0</td>    <td>0.3</td></tr>
+    <tr><td><tt>vmax</tt></td>
+        <td>maximum carrier drift velocity</td>
+        <td>M/S</td>            <td>0.0</td>    <td>5.0e4</td></tr>
+    <tr><td><tt>neff</tt></td>
+        <td>total channel charge (fixed and mobile) coefficient
+          (MOS2 only)</td>
+        <td>-</td>              <td>1.0</td>    <td>5.0</td></tr>
+    <tr><td><tt>kf</tt></td>
+        <td>flicker noise coefficient</td>
+        <td>-</td>              <td>0.0</td>    <td>1.0e-26</td></tr>
+    <tr><td><tt>af</tt></td>
+        <td>flicker noise exponent</td>
+        <td>-</td>              <td>1.0</td>    <td>1.2</td></tr>
+    <tr><td><tt>fc</tt></td>
+        <td>coefficient for forward-bias depletion capacitance formula</td>
+        <td>-</td>              <td>0.5</td>    <td>&nbsp;</td></tr>
+    <tr><td><tt>delta</tt></td>
+        <td>width effect on thresh voltage (MOS2 and MOS3)</td>
+        <td>-</td>              <td>0.0</td>    <td>1.0</td></tr>
+    <tr><td><tt>theta</tt></td>
+        <td>mobility modulation (MOS3 only)</td>
+        <td>1/V</td>            <td>0.0</td>    <td>0.1</td></tr>
+    <tr><td><tt>eta</tt></td>
+        <td>static feedback (MOS3 only)</td>
+        <td>-</td>              <td>0.0</td>    <td>1.0</td></tr>
+    <tr><td><tt>kappa</tt></td>
+        <td>saturation field factor (MOS3)</td>
+        <td>-</td>              <td>0.2</td>    <td>0.5</td></tr>
+    <tr><td><tt>tnom</tt></td>
+        <td>parameter measurement temperature</td>
+        <td>C</td>              <td>25</td>     <td>50</td></tr>
+    </table>
+
+    <p>
+    <a name="bsim"></a>
+    The level 4 (BSIM1) parameters are all values obtained from process
+    characterization, and can be generated automatically.  <a
+    href="refs#pierret">J.  Pierret</a> describes a means of generating
+    a 'process' file, and the program <a
+    href="proc2mod"><tt>proc2mod</tt></a> provided with <i>WRspice</i>
+    will convert this file into a sequence of <tt>.model</tt> lines
+    suitable for inclusion in <i>WRspice</i> input. 
+    Parameters marked below with an * in the l/w column also have
+    corresponding parameters with a length and width dependency.  For
+    example, <tt>vfb</tt> is the basic parameter with units of Volts,
+    and <tt>lvfb</tt> and <tt>wvfb</tt> also exist and have units of
+    Volt-umeter The formula
+    <blockquote>
+        <tt>p=p0 + pL/Leffective + pw/Weffective</tt>
+     </blockquote>
+    is used to evaluate the parameter for the actual device specified
+    with
+    <blockquote>
+        <tt>Leffective=Linput-dl</tt>
+    </blockquote>
+    and
+    <blockquote>
+        <tt>Weffective=Winput-dw</tt>
+    </blockquote>
+
+    <p>
+    Note that unlike the other models in <i>WRspice</i>, the BSIM model is
+    designed for use with a process characterization system that
+    provides all the parameters, thus there are no defaults for the
+    parameters, and leaving one out is considered an error.  For an
+    example set of parameters and the format of a process file, see
+    the SPICE2 implementation <a href="refs#sheu">notes</a>.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>BSIM1 (level 4) parameters</caption>
+    <tr><th>name</th> <th>l/w</th>
+        <th>parameter</th>
+        <th>units</th></tr>
+    <tr><td><tt>vfb</tt></td> <td>*</td>
+        <td>flat-band voltage</td>
+        <td>V</td</tr>>
+    <tr><td><tt>phi</tt></td> <td>*</td>
+        <td>surface inversion potential</td>
+        <td>V</td></tr>
+    <tr><td><tt>k1</tt></td> <td>*</td>
+        <td>body effect coefficient</td>
+        <td>V<sup>0.5</sup></td></tr>
+    <tr><td><tt>k2</tt></td> <td>*</td>
+        <td>drain/source depletion charge sharing coefficient</td>
+        <td>-</td></tr>
+    <tr><td><tt>eta</tt></td> <td>*</td>
+        <td>zero-bias drain-induced barrier lowering coefficient</td>
+        <td>-</td></tr>
+    <tr><td><tt>muz</tt></td> <td>&nbsp;</td>
+        <td>zero-bias mobility</td>
+        <td>cM<sup>2</sup>/VS</td></tr>
+    <tr><td><tt>dl</tt></td> <td>&nbsp;</td>
+        <td>shortening of channel</td>
+        <td>&#181M</td></tr>
+    <tr><td><tt>dw</tt></td> <td>&nbsp;</td>
+        <td>narrowing of channel</td>
+        <td>&#181M</td></tr>
+    <tr><td><tt>u0</tt></td> <td>*</td>
+        <td>zero-bias transverse-field mobility degradation coefficient</td>
+        <td>1/V</td></tr>
+    <tr><td><tt>u1</tt></td> <td>*</td>
+        <td>zero-bias velocity saturation coefficient</td>
+        <td>&#181M/V</td></tr>
+    <tr><td><tt>x2mz</tt></td> <td>*</td>
+        <td>sens. of mobility to substrate bias at vds=0</td>
+        <td>cM<sup>2</sup>/V<sup>2</sup>S</td></tr>
+    <tr><td><tt>x2e</tt></td> <td>*</td>
+        <td>sens. of drain-induced barrier lowering effect to substrate
+          bias</td>
+        <td>1/V</td></tr>
+    <tr><td><tt>x3e</tt></td> <td>*</td>
+        <td>sens. of drain-induced barrier lowering effect to drain bias
+          at Vds=Vdd</td>
+        <td>1/V</td></tr>
+    <tr><td><tt>x2u0</tt></td> <td>*</td>
+        <td>sens. of transverse field mobility degradation effect to
+          substrate bias</td>
+        <td>1/V<sup>2</sup></td></tr>
+    <tr><td><tt>x2u1</tt></td> <td>*</td>
+        <td>sens. of velocity saturation effect to substrate bias</td>
+        <td>&#181M/V<sup>2</sup></td></tr>
+    <tr><td><tt>mus</tt></td> <td>&nbsp;</td>
+        <td>mobility at zero substrate bias and at Vds=Vdd</td>
+        <td>cM<sup>2</sup>/V<sup>2</sup>S</td></tr>
+    <tr><td><tt>x2ms</tt></td> <td>*</td>
+        <td>sens. of mobility to substrate bias at Vds=Vdd</td>
+        <td>cM<sup>2</sup>/V<sup>2</sup>S</td></tr>
+    <tr><td><tt>x3ms</tt></td> <td>*</td>
+        <td>sens. of mobility to drain bias at Vds=Vdd</td>
+        <td>cM<sup>2</sup>/V<sup>2</sup>S</td></tr>
+    <tr><td><tt>x3u1</tt></td> <td>*</td>
+        <td>sens. of velocity saturation effect on drain bias at
+          Vds=Vdd</td>
+        <td>&#181M/V<sup>2</sup></td></tr>
+    <tr><td><tt>tox</tt></td> <td>&nbsp;</td>
+        <td>gate oxide thickness</td>
+        <td>&#181M</td></tr>
+    <tr><td><tt>temp</tt></td> <td>&nbsp;</td>
+        <td>temperature at which parameters were measured</td>
+        <td>C</td></tr>
+    <tr><td><tt>vdd</tt></td> <td>&nbsp;</td>
+        <td>measurement bias range</td>
+        <td>V</td></tr>
+    <tr><td><tt>cgdo</tt></td> <td>&nbsp;</td>
+        <td>gate-drain overlap capacitance were measured</td>
+        <td>F/M</td></tr>
+    <tr><td><tt>cgso</tt></td> <td>&nbsp;</td>
+        <td>gate-source overlap capacitance per meter channel width</td>
+        <td>F/M</td></tr>
+    <tr><td><tt>cgbo</tt></td> <td>&nbsp;</td>
+        <td>gate-bulk overlap capacitance per meter channel length</td>
+        <td>F/M</td></tr>
+    <tr><td><tt>xpart</tt></td> <td>&nbsp;</td>
+        <td>gate-oxide capacitance charge model flag</td>
+        <td>-</td></tr>
+    <tr><td><tt>n0</tt></td> <td>*</td>
+        <td>zero-bias subthreshold slope coefficient</td>
+        <td>-</td></tr>
+    <tr><td><tt>nb</tt></td> <td>*</td>
+        <td>sens. of subthreshold slope to substrate bias</td>
+        <td>-</td></tr>
+    <tr><td><tt>nd</tt></td> <td>*</td>
+        <td>sens. of subthreshold slope to drain bias</td>
+        <td>-</td></tr>
+    <tr><td><tt>rsh</tt></td> <td>&nbsp;</td>
+        <td>drain and source diffusion sheet resistance</td>
+        <td>O/sq</td></tr>
+    <tr><td><tt>js</tt></td> <td>&nbsp;</td>
+        <td>source drain junction current density</td>
+        <td>A/M<sup>2</sup></td></tr>
+    <tr><td><tt>pb</tt></td> <td>&nbsp;</td>
+        <td>built in potential of source drain junction</td>
+        <td>V</td></tr>
+    <tr><td><tt>mj</tt></td> <td>&nbsp;</td>
+        <td>grading coefficient of source drain junction</td>
+        <td>-</td></tr>
+    <tr><td><tt>pbsw</tt></td> <td>&nbsp;</td>
+        <td>built in potential of source drain junction sidewall</td>
+        <td>V</td></tr>
+    <tr><td><tt>mjsw</tt></td> <td>&nbsp;</td>
+        <td>grading coefficient of source drain junction sidewall</td>
+        <td>-</td></tr>
+    <tr><td><tt>cj</tt></td> <td>&nbsp;</td>
+        <td>source drain junction capacitance per unit area</td>
+        <td>F/M<sup>2</sup></td></tr>
+    <tr><td><tt>cjsw</tt></td> <td>&nbsp;</td>
+        <td>source drain junction sidewall capacitance per unit length</td>
+        <td>F/M</td></tr>
+    <tr><td><tt>wdf</tt></td> <td>&nbsp;</td>
+        <td>source drain junction default width</td>
+        <td>M</td></tr>
+    <tr><td><tt>dell</tt></td> <td>&nbsp;</td>
+        <td>source drain junction length reduction</td>
+        <td>M</td></tr>
+    </table>
+
+    <p>
+    The parameter <tt>xpart</tt> = 0 selects a 40/60 drain/source
+    charge partition in saturation, while <tt>xpart</tt> = 1 selects a
+    0/100 drain/source charge partition.
+ 
+!!SEEALSO
+.model
+
+!! elements.tex 101516
+!!KEYWORD
+jjmodel 
+!!TITLE
+Josephson Models
+!!HTML
+    <b>Type Name:</b> <tt>jj</tt>
+
+    <p>
+    The <a href="jj">Josephson junction</a> model is an extended
+    version of the RSJ model as used by <a
+    href="jewett">Jewett</a>.
+
+    <p>
+    The parameters marked with an asterisk in the <b>area</b> column
+    scale with the <tt>area</tt> parameter given in the device line.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Josephson Junction Model Parameters</caption>
+    <tr><th>name</th> <th>area</th>
+        <th>parameter</th>
+        <th>units</th> <th>default</th> <th>example</th></tr>
+    <tr><td><tt>pijj</tt></td> <td></td>
+        <td>pi junction</td>
+        <td>-</td>      <td>0</td> <td>1</td></tr>
+    <tr><td><tt>icrit</tt></td> <td>*</td>
+        <td>junction critical current</td>
+        <td>A</td>      <td>1.0e-3</td> <td>1.5e-3</td></tr>
+    <tr><td><tt>cap</tt></td> <td>*</td>
+        <td>junction capacitance</td>
+        <td>F</td>      <td>1.0e-12</td><td>5.0e-13</td></tr>
+    <tr><td><tt>rn</tt> or <tt>rnorm</tt></td> <td>*</td>
+        <td>normal state resistance</td>
+        <td>O</td>      <td>1.7</td>    <td>2.0</td></tr>
+    <tr><td><tt>r0</tt> or <tt>rsub</tt></td> <td>*</td>
+        <td>subgap resistance</td>
+        <td>O</td>      <td>30</td>     <td>50</td></tr>
+    <tr><td><tt>vg</tt> or <tt>vgap</tt></td> <td>&nbsp;</td>
+        <td>gap voltage</td>
+        <td>V</td>      <td>3.0e-3</td> <td>2.8e-3</td></tr>
+    <tr><td><tt>delv</tt></td> <td>&nbsp;</td>
+        <td>gap voltage spread</td>
+        <td>V</td>      <td>1.0e-4</td> <td>8.0e-5</td></tr>
+    <tr><td><tt>rtype</tt></td> <td>&nbsp;</td>
+        <td>quasiparticle branch model</td>
+        <td>-</td>      <td>1</td>      <td>2</td></tr>
+    <tr><td><tt>cct</tt></td> <td>&nbsp;</td>
+        <td>critical current model</td>
+        <td>-</td>      <td>1</td>      <td>3</td></tr>
+    <tr><td><tt>icon</tt></td> <td>&nbsp;</td>
+        <td>critical current first zero</td>
+        <td>A</td>      <td>1.0e-2</td> <td>2.5e-2</td></tr>
+    <tr><td><tt>icfact</tt></td> <td>&nbsp;</td>
+        <td>ratio of critical to gap currents</td>
+        <td>-</td>      <td>pi/4</td>   <td>0.7</td></tr>
+    <tr><td><tt>vshunt</tt></td> <td>&nbsp;</td>
+        <td>voltage to specify fixed shunt resistance</td>
+        <td>-</td>      <td>0</td>   <td>200uV</td></tr>
+    </table>
+    <br>
+
+    <p>
+    If <tt>pijj</tt> is set to a nonzero integer value, instances will
+    be "pi" junctions by default, though this can be overridden per
+    instance by giving <tt>pijj=0</tt> on the device line.
+
+    <p>
+    The <tt>rtype</tt> parameter determines the quasiparticle branch
+    modeling employed.  Legal values are as follows:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td><td>  The junction is completely unshunted (effectively sets
+        <tt>rn</tt> and <tt>r0</tt> to infinity)</td></tr>
+    <tr><td>1</td><td>  Standard piecewise-linear model</td></tr>
+    <tr><td>2</td><td>  Analytic exponentially-derived approximation</td></tr>
+    <tr><td>3</td><td>  Fifth order polynomial approximation model</td></tr>
+    <tr><td>4</td><td>  "Temperature" variation, allow modulation of the gap
+        parameter</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The default is <tt>rtype</tt>=1.  Setting <tt>rtype</tt>=0 will
+    disable modeling of the quasiparticle current, effectively setting
+    the RSJ shunt resistance to infinity.  Conditions with
+    <tt>rtype</tt>=1 and <tt>rtype</tt>=2 are as described by Jewett,
+    however it is not assumed that the normal resistance projects
+    through the origin.  The <tt>icfact</tt> parameter can be set to a
+    value lower than the default BCS theoretical value to reflect the
+    behavior of most real junctions.  The quasiparticle resistance is
+    approximated with a fifth order polynomial if <tt>rtype</tt>=3,
+    which seems to give good results for the modeling of some NbN
+    junctions (which tend to have gently sloping quasiparticle
+    curves).
+
+    <p>
+    <tt>Rtype</tt>=4 uses a piecewise-linear quasiparticle
+    characteristic identical to <tt>rtype</tt>=1, however the gap
+    voltage and critical current are now proportional to the absolute
+    value of the control current set with a
+    <tt>control=</tt><i>src_name</i> entry in the device line.  This
+    is to facilitate modeling of temperature changes or nonequilibrium
+    effects.  For control current of 1 (Amp) or greater, the full gap
+    and critical current are used, otherwise they decrease linearly to
+    zero.  If no device control source is specified, the algorithm
+    reverts to <tt>rtype</tt>=1.  It is expected that a nonlinear
+    transfer function will be implemented with a controlled source,
+    which will in turn provide the controlling current to the junction
+    in this mode.  For example, the controlling current can be
+    translated from a circuit voltage representing temperature with an
+    external nonlinear source.  The functional dependence is in
+    general a complicated function, but a reasonable approximation is
+    1 - (T/T<sub>c</sub>)<sup>4</sup>.  See the examples for an
+    example input file (<tt>ex8.cir</tt>) which illustrates
+    <tt>rtype</tt>=4.
+
+    <p>
+    It is currently not possible to use other than the piecewise
+    linear model with temperature variation.  If <tt>rtype</tt>=4,
+    then legal values for the critical current parameter are
+    <tt>cct</tt>=0 (no critical current) and <tt>cct</tt>=1 (fixed
+    critical current).  If another value is specified for
+    <tt>cct</tt>, <tt>cct</tt> reverts to 0.  Thus, magnetic coupling
+    and quasiparticle injection are not simultaneously available.
+
+    <p>
+    In general, the <tt>cct</tt> parameter can take one of the
+    following values:
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td><td>  No critical current</td></tr>
+    <tr><td>1</td><td>  Fixed critical current</td></tr>
+    <tr><td>2</td><td>  Sin(x)/x modulated supercurrent</td></tr>
+    <tr><td>3</td><td>  Symmetric linear reduction modulation</td></tr>
+    <tr><td>4</td><td>  Asymmetric linear reduction modulation</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The <tt>control</tt> parameter should be used with devices using
+    <tt>cct</tt> 2,3, or 4.  With <tt>cct</tt>=2, the first zero is
+    equal to the value of the model parameter <tt>icon</tt>.  For
+    <tt>cct</tt>=3, the maximum critical current is at control current
+    zero, and it reduces linearly to zero at control current =
+    &#177<tt>icon</tt>.  Junctions with <tt>cct</tt>=4 have maximum
+    critical current at control current = -<tt>icon</tt>, and linear
+    reduction to zero at control current = +<tt>icon</tt>.  If
+    <tt>cct</tt> is specified as 2, 3, or 4, the area parameter, if
+    given, is set to unity.  Otherwise, the model parameters are
+    scaled appropriately by the area before use.
+
+    <p>
+    If the <tt>vshunt</tt> parameter is given, every device instance
+    will be shunted by a linear resistor.  This is in addition to the
+    resistance of the quasiparticle branch.  The value of this
+    resistance is
+    <blockquote>
+    Rshunt = <i>Vshunt</i>/<i>Ic</i>
+    </blockquote>
+    where <i>Vshunt</i> is the value given for the model parameter,
+    and <i>Ic</i> is the (maximum) critical current of the Josephson
+    junction device.  This parameter is useful for simulating SFQ
+    circuits, as it can automatically provide the appropriate shunt
+    resistance, which would otherwise be a separate resistor.
+ 
+!!SEEALSO
+.model
+ 

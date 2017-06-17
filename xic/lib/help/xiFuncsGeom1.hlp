@@ -1,0 +1,2783 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiFuncsGeom1.hlp,v 1.42 2017/03/22 22:27:07 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiFuncsGeom1.hlp
+!!TITLE
+xiFuncsGeom1.hlp
+!!HTML
+
+!!SUBTOPICS
+funcs:geom1
+funcs:geom1:gen
+funcs:geom1:xform
+funcs:geom1:drvlyr
+funcs:geom1:objbh
+
+
+!! General Editing
+!!REDIRECT ClearCell            funcs:geom1:gen#ClearCell
+!!REDIRECT Commit               funcs:geom1:gen#Commit
+!!REDIRECT Undo                 funcs:geom1:gen#Undo
+!!REDIRECT Redo                 funcs:geom1:gen#Redo
+!!REDIRECT SelectLast           funcs:geom1:gen#SelectLast
+
+!! Current Transform
+!!REDIRECT SetTransform         funcs:geom1:xform#SetTransform
+!!REDIRECT StoreTransform       funcs:geom1:xform#StoreTransform
+!!REDIRECT RecallTransform      funcs:geom1:xform#RecallTransform
+!!REDIRECT GetTransformString   funcs:geom1:xform#GetTransformString
+!!REDIRECT GetCurAngle          funcs:geom1:xform#GetCurAngle
+!!REDIRECT GetCurMX             funcs:geom1:xform#GetCurMX
+!!REDIRECT GetCurMY             funcs:geom1:xform#GetCurMY
+!!REDIRECT GetCurMagn           funcs:geom1:xform#GetCurMagn
+!!REDIRECT UseTransform         funcs:geom1:xform#UseTransform
+
+!! Derived Layers
+!!REDIRECT AddDerivedLayer      funcs:geom1:drvlyr#AddDerivedLayer
+!!REDIRECT RemDerivedLayer      funcs:geom1:drvlyr#RemDerivedLayer
+!!REDIRECT IsDerivedLayer       funcs:geom1:drvlyr#IsDerivedLayer
+!!REDIRECT GetDerivedLayerIndex funcs:geom1:drvlyr#GetDerivedLayerIndex
+!!REDIRECT GetDerivedLayerExpString funcs:geom1:drvlyr#GetDerivedLayerExpString
+!!REDIRECT GetDerivedLayerLexpr funcs:geom1:drvlyr#GetDerivedLayerLexpr
+!!REDIRECT EvalDerivedLayers    funcs:geom1:drvlyr#EvalDerivedLayers
+!!REDIRECT ClearDerivedLayers   funcs:geom1:drvlyr#ClearDerivedLayers
+
+!! Object Management by Handles
+!!REDIRECT ListElecInstances    funcs:geom1:objbh#ListElecInstances
+!!REDIRECT ListPhysInstances    funcs:geom1:objbh#PhysElecInstances
+!!REDIRECT SelectHandle         funcs:geom1:objbh#SelectHandle
+!!REDIRECT SelectHandleTypes    funcs:geom1:objbh#SelectHandleTypes
+!!REDIRECT AreaHandle           funcs:geom1:objbh#AreaHandle
+!!REDIRECT ObjectHandleDup      funcs:geom1:objbh#ObjectHandleDup
+!!REDIRECT ObjectHandlePurge    funcs:geom1:objbh#ObjectHandlePurge
+!!REDIRECT ObjectNext           funcs:geom1:objbh#ObjectNext
+!!REDIRECT MakeObjectCopy       funcs:geom1:objbh#MakeObjectCopy
+!!REDIRECT ObjectString         funcs:geom1:objbh#ObjectString
+!!REDIRECT ObjectCopyFromString funcs:geom1:objbh#ObjectCopyFromString
+!!REDIRECT FilterObjects        funcs:geom1:objbh#FilterObjects
+!!REDIRECT FilterObjectsA       funcs:geom1:objbh#FilterObjectsA
+!!REDIRECT CheckObjectsConnected funcs:geom1:objbh#CheckObjectsConnected
+!!REDIRECT CheckForHoles        funcs:geom1:objbh#CheckForHoles
+!!REDIRECT BloatObjects         funcs:geom1:objbh#BloatObjects
+!!REDIRECT EdgeObjects          funcs:geom1:objbh#EdgeObjects
+!!REDIRECT ManhattanizeObjects  funcs:geom1:objbh#ManhattanizeObjects
+!!REDIRECT GroupObjects         funcs:geom1:objbh#GroupObjects
+!!REDIRECT JoinObjects          funcs:geom1:objbh#JoinObjects
+!!REDIRECT SplitObjects         funcs:geom1:objbh#SplitObjects
+!!REDIRECT DeleteObjects        funcs:geom1:objbh#DeleteObjects
+!!REDIRECT SelectObjects        funcs:geom1:objbh#SelectObjects
+!!REDIRECT DeselectObjects      funcs:geom1:objbh#DeselectObjects
+!!REDIRECT MoveObjects          funcs:geom1:objbh#MoveObjects
+!!REDIRECT MoveObjectsToLayer   funcs:geom1:objbh#MoveObjectsToLayer
+!!REDIRECT CopyObjects          funcs:geom1:objbh#CopyObjects
+!!REDIRECT CopyObjectsToLayer   funcs:geom1:objbh#CopyObjectsToLayer
+!!REDIRECT CopyObjectsH         funcs:geom1:objbh#CopyObjectsH
+!!REDIRECT GetObjectType        funcs:geom1:objbh#GetObjectType
+!!REDIRECT GetObjectID          funcs:geom1:objbh#GetObjectID
+!!REDIRECT GetObjectArea        funcs:geom1:objbh#GetObjectArea
+!!REDIRECT GetObjectPerim       funcs:geom1:objbh#GetObjectPerim
+!!REDIRECT GetObjectCentroid    funcs:geom1:objbh#GetObjectCentroid
+!!REDIRECT GetObjectBB          funcs:geom1:objbh#GetObjectBB
+!!REDIRECT SetObjectBB          funcs:geom1:objbh#SetObjectBB
+!!REDIRECT GetObjectListBB      funcs:geom1:objbh#GetObjectListBB
+!!REDIRECT GetObjectXY          funcs:geom1:objbh#GetObjectXY
+!!REDIRECT SetObjectXY          funcs:geom1:objbh#SetObjectXY
+!!REDIRECT GetObjectLayer       funcs:geom1:objbh#GetObjectLayer
+!!REDIRECT SetObjectLayer       funcs:geom1:objbh#SetObjectLayer
+!!REDIRECT GetObjectFlags       funcs:geom1:objbh#GetObjectFlags
+!!REDIRECT SetObjectNoDrcFlag   funcs:geom1:objbh#SetObjectNoDrcFlag
+!!REDIRECT SetObjectMark1Flag   funcs:geom1:objbh#SetObjectMark1Flag
+!!REDIRECT SetObjectMark2Flag   funcs:geom1:objbh#SetObjectMark2Flag
+!!REDIRECT GetObjectState       funcs:geom1:objbh#GetObjectState
+!!REDIRECT GetObjectGroup       funcs:geom1:objbh#GetObjectGroup
+!!REDIRECT SetObjectGroup       funcs:geom1:objbh#SetObjectGroup
+!!REDIRECT GetObjectCoords      funcs:geom1:objbh#GetObjectCoords
+!!REDIRECT SetObjectCoords      funcs:geom1:objbh#SetObjectCoords
+!!REDIRECT GetObjectMagn        funcs:geom1:objbh#GetObjectMagn
+!!REDIRECT SetObjectMagn        funcs:geom1:objbh#SetObjectMagn
+!!REDIRECT GetWireWidth         funcs:geom1:objbh#GetWireWidth
+!!REDIRECT SetWireWidth         funcs:geom1:objbh#SetWireWidth
+!!REDIRECT GetWireStyle         funcs:geom1:objbh#GetWireStyle
+!!REDIRECT SetWireStyle         funcs:geom1:objbh#SetWireStyle
+!!REDIRECT SetWireToPoly        funcs:geom1:objbh#SetWireToPoly
+!!REDIRECT GetWirePoly          funcs:geom1:objbh#GetWirePoly
+!!REDIRECT GetLabelText         funcs:geom1:objbh#GetLabelText
+!!REDIRECT SetLabelText         funcs:geom1:objbh#SetLabelText
+!!REDIRECT GetLabelFlags        funcs:geom1:objbh#GetLabelFlags
+!!REDIRECT GetLabelXform        funcs:geom1:objbh#GetLabelFlags
+!!REDIRECT SetLabelFlags        funcs:geom1:objbh#SetLabelFlags
+!!REDIRECT SetLabelXform        funcs:geom1:objbh#SetLabelFlags
+!!REDIRECT GetInstanceArray     funcs:geom1:objbh#GetInstanceArray
+!!REDIRECT SetInstanceArray     funcs:geom1:objbh#SetInstanceArray
+!!REDIRECT GetInstanceXform     funcs:geom1:objbh#GetInstanceXform
+!!REDIRECT GetInstanceXformA    funcs:geom1:objbh#GetInstanceXformA
+!!REDIRECT SetInstanceXform     funcs:geom1:objbh#SetInstanceXform
+!!REDIRECT SetInstanceXformA    funcs:geom1:objbh#SetInstanceXformA
+!!REDIRECT GetInstanceMaster    funcs:geom1:objbh#GetInstanceMaster
+!!REDIRECT SetInstanceMaster    funcs:geom1:objbh#SetInstanceMaster
+!!REDIRECT GetInstanceName      funcs:geom1:objbh#GetInstanceName
+!!REDIRECT SetInstanceName      funcs:geom1:objbh#SetInstanceName
+!!REDIRECT GetInstanceAltName   funcs:geom1:objbh#GetInstanceAltName
+!!REDIRECT GetInstanceType      funcs:geom1:objbh#GetInstanceType
+!!REDIRECT GetInstanceIdNum     funcs:geom1:objbh#GetInstanceIdNum
+!!REDIRECT GetInstanceAltIdNum  funcs:geom1:objbh#GetInstanceAltIdNum
+
+!!KEYWORD
+funcs:geom1
+!!TITLE
+Geometry Editing Functions 1
+!!HTML
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+
+    <!-- 032015 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:geom1:gen">General Editing</a></th></tr>
+
+    <tr><td><a href="funcs:geom1:gen#ClearCell">
+     <tt>ClearCell</tt>(<i>undoable</i>, <i>layer_list</i>)</a>
+     </td><td>Clear content of current cell</td></tr>
+    <tr><td><a href="funcs:geom1:gen#Commit">
+     <tt>Commit</tt>()</a>
+     </td><td>Finalize changes in database</td></tr>
+    <tr><td><a href="funcs:geom1:gen#Undo">
+     <tt>Undo</tt>()</a>
+     </td><td>Undo last operation</td></tr>
+    <tr><td><a href="funcs:geom1:gen#Redo">
+     <tt>Redo</tt>()</a>
+     </td><td>Redo last undone operation</td></tr>
+    <tr><td><a href="funcs:geom1:gen#SelectLast">
+     <tt>SelectLast</tt>(<i>types</i>)</a>
+     </td><td>Select most recent new object</td></tr>
+
+    <!-- 030115 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:geom1:xform">Current Transform</a></th></tr>
+
+    <tr><td><a href="funcs:geom1:xform#SetTransform">
+     <tt>SetTransform</tt>(<i>angle_or_string</i>, <i>reflection</i>,
+     <i>magnification</i>)</a>
+     </td><td>Set current transform</td></tr>
+    <tr><td><a href="funcs:geom1:xform#StoreTransform">
+     <tt>StoreTransform</tt>(<i>register</i>)</a>
+     </td><td>Save current transform parameters</td></tr>
+    <tr><td><a href="funcs:geom1:xform#RecallTransform">
+     <tt>RecallTransform</tt>(<i>register</i>)</a>
+     </td><td>Recall current transform parameters</td></tr>
+    <tr><td><a href="funcs:geom1:xform#GetTransformString">
+     <tt>GetTransformString</tt>()</a>
+     </td><td>Return a code string for the current transform</td></tr>
+    <tr><td><a href="funcs:geom1:xform#GetCurAngle">
+     <tt>GetCurAngle</tt>()</a>
+     </td><td>Return current transform angle</td></tr>
+    <tr><td><a href="funcs:geom1:xform#GetCurMX">
+     <tt>GetCurMX</tt>()</a>
+     </td><td>Return current transform mirror-x</td></tr>
+    <tr><td><a href="funcs:geom1:xform#GetCurMY">
+     <tt>GetCurMY</tt>()</a>
+     </td><td>Return current transform mirror-y</td></tr>
+    <tr><td><a href="funcs:geom1:xform#GetCurMagn">
+     <tt>GetCurMagn</tt>()</a>
+     </td><td>Return current transform magnification</td></tr>
+    <tr><td><a href="funcs:geom1:xform#UseTransform">
+     <tt>UseTransform</tt>(<i>enable</i>, <i>x</i>, <i>y</i>)</a>
+     </td><td>Enable use of current transform</td></tr>
+
+    <!-- 032217 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:geom1:drvlyr">Derived Layers</a></th></tr>
+
+    <tr><td><a href="funcs:geom1:drvlyr#AddDerivedLayer">
+     <tt>AddDerivedLayer</tt>(<i>lname</i>, <i>index</i>, <i>lexpr</i>)</a>
+     </td><td>Add a derived layer definition</td></tr>
+    <tr><td><a href="funcs:geom1:drvlyr#RemDerivedLayer">
+     <tt>RemDerivedLayer</tt>(<i>lname</i>)</a>
+     </td><td>Remove a derived layer definition</td></tr>
+    <tr><td><a href="funcs:geom1:drvlyr#IsDerivedLayer">
+     <tt>IsDerivedLayer</tt>(<i>lname</i>)</a>
+     </td><td>True if name matches a derived layer definition</td></tr>
+    <tr><td><a href="funcs:geom1:drvlyr#GetDerivedLayerIndex">
+     <tt>GetDerivedLayerIndex</tt>(<i>lname</i>)</a>
+     </td><td>Return the index of the specified derived layer</td></tr>
+    <tr><td><a href="funcs:geom1:drvlyr#GetDerivedLayerExpString">
+     <tt>GetDerivedLayerExpString</tt>(<i>lname</i>)</a>
+     </td><td>Return the layer expression string of the specified
+     derived layer</td></tr>
+    <tr><td><a href="funcs:geom1:drvlyr#GetDerivedLayerLexpr">
+     <tt>GetDerivedLayerLexpr</tt>(<i>lname</i>, <i>noexp</i>)</a>
+     </td><td>Return a layer expression object for the specified
+     derived layer</td></tr>
+    <tr><td><a href="funcs:geom1:drvlyr#EvalDerivedLayers">
+     <tt>EvalDerivedLayers</tt>(<i>list</i>, <i>array</i>)</a>
+     </td><td>Evaluate the list of derived layers in an area</td></tr>
+    <tr><td><a href="funcs:geom1:drvlyr#ClearDerivedLayers">
+     <tt>ClearDerivedLayers</tt>(<i>list</i>)</a>
+     </td><td>Clear geometry of derived layers in list</td></tr>
+
+    <!-- 070516 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:geom1:objbh">Object Management by Handles</a></th></tr>
+
+    <tr><td><a href="funcs:geom1:objbh#ListElecInstances">
+     <tt>ListElecInstances</tt>()</a>
+     </td><td>List electrical cell instances from current cell</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#ListPhysInstances">
+     <tt>ListPhysInstances</tt>()</a>
+     </td><td>List physical cell instances from current cell</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SelectHandle">
+     <tt>SelectHandle</tt>()</a>
+     </td><td>Return handle to a list of selected objects</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SelectHandleTypes">
+     <tt>SelectHandleTypes</tt>(<i>types</i>)</a>
+     </td><td>Return handle to list of selected objects of given types</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#AreaHandle">
+     <tt>AreaHandle</tt>(<i>l</i>, <i>b</i>, <i>r</i>, <i>t</i>,
+     <i>types</i>)</a>
+     </td><td>Return handle to a list of objects in area</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#ObjectHandleDup">
+     <tt>ObjectHandleDup</tt>(<i>object_handle</i>, <i>types</i>)</a>
+     </td><td>Duplicate handle with given object types</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#ObjectHandlePurge">
+     <tt>ObjectHandlePurge</tt>(<i>object_handle</i>, <i>types</i>)</a>
+     </td><td>Remove from list objects with given types</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#ObjectNext">
+     <tt>ObjectNext</tt>(<i>object_handle</i>)</a>
+     </td><td>Advance list to next object</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#MakeObjectCopy">
+     <tt>MakeObjectCopy</tt>(<i>numpts</i>, <i>array</i>)</a>
+     </td><td>Create a phony object copy</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#ObjectString">
+     <tt>ObjectString</tt>(<i>object_handle</i>)</a>
+     </td><td>Return CIF-like string for object</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#ObjectCopyFromString">
+     <tt>ObjectCopyFromString</tt>(<i>string</i>, <i>layer</i>)</a>
+     </td><td>Return new object fromCIF-like string</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#FilterObjects">
+     <tt>FilterObjects</tt>(<i>object_list</i>, <i>template_list</i>,
+     <i>all</i>, <i>touchok</i>, <i>remove</i>)</a>
+     </td><td>Select objects via template</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#FilterObjectsA">
+     <tt>FilterObjectsA</tt>(<i>object_list</i>, <i>array</i>,
+     <i>array_size</i>, <i>touchok</i>, <i>remove</i>)</a>
+     </td><td>Select objects via given polygon</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#CheckObjectsConnected">
+     <tt>CheckObjectsConnected</tt>(<i>object_handle</i>)</a>
+     </td><td>Return 1 if objects in list form one group</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#CheckForHoles">
+     <tt>CheckForHoles</tt>(<i>object_handle</i>, <i>all</i>)</a>
+     </td><td>Return 1 if object(s) have "holes"</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#BloatObjects">
+     <tt>BloatObjects</tt>(<i>object_handle</i>, <i>all</i>, <i>dimen</i>,
+     <i>lname</i>, <i>mode</i>)</a>
+     </td><td>Create list of bloated objects</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#EdgeObjects">
+     <tt>EdgeObjects</tt>(<i>object_handle</i>, <i>all</i>, <i>dimen</i>,
+     <i>lname</i>, <i>mode</i>)</a>
+     </td><td>Create list of edge "wire" polygons</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#ManhattanizeObjects">
+     <tt>ManhattanizeObjects</tt>(<i>object_handle</i>, <i>all</i>,
+     <i>dimen</i>, <i>lname</i>, <i>mode</i>)</a>
+     </td><td>Create list of Manhattanized objects</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GroupObjects">
+     <tt>GroupObjects</tt>(<i>object_handle</i>, <i>array</i>)</a>
+     </td><td>Create connected groups of objects</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#JoinObjects">
+     <tt>JoinObjects</tt>(<i>object_handle</i>, <i>lname</i>)</a>
+     </td><td>Join touching objects in a list</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SplitObjects">
+     <tt>SplitObjects</tt>(<i>object_handle</i>, <i>all</i>, <i>lname</i>,
+     <i>vert</i>)</a>
+     </td><td>Split into trapezoids objects in a list</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#DeleteObjects">
+     <tt>DeleteObjects</tt>(<i>object_handle</i>, <i>all</i>)</a>
+     </td><td>Delete objects</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SelectObjects">
+     <tt>SelectObjects</tt>(<i>object_handle</i>, <i>all</i>)</a>
+     </td><td>Select objects</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#DeselectObjects">
+     <tt>DeselectObjects</tt>(<i>object_handle</i>, <i>all</i>)</a>
+     </td><td>Deselect objects</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#MoveObjects">
+     <tt>MoveObjects</tt>(<i>object_handle</i>, <i>all</i>, <i>refx</i>,
+     <i>refy</i>, <i>x</i>, <i>y</i>)</a>
+     </td><td>Move object(s)</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#MoveObjectsToLayer">
+     <tt>MoveObjectsToLayer</tt>(<i>object_handle</i>, <i>all</i>, <i>refx</i>,
+     <i>refy</i>, <i>x</i>, <i>y</i>, <i>oldlayer</i>, <i>newlayer</i>)</a>
+     </td><td>Move object(s) with layer change</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#CopyObjects">
+     <tt>CopyObjects</tt>(<i>object_handle</i>, <i>all</i>, <i>refx</i>,
+     <i>refy</i>, <i>x</i>, <i>y</i>, <i>repcnt</i>)</a>
+     </td><td>Copy object(s)</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#CopyObjectsToLayer">
+     <tt>CopyObjectsToLayer</tt>(<i>object_handle</i>, <i>all</i>, <i>refx</i>,
+     <i>refy</i>, <i>x</i>, <i>y</i>, <i>oldlayer</i>, <i>newlayer</i>,
+     <i>repcnt</i>)</a>
+     </td><td>Copy object(s) with layer change</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#CopyObjectsH">
+     <tt>CopyObjectsH</tt>(<i>object_handle</i>, <i>all</i>, <i>refx</i>,
+     <i>refy</i>, <i>x</i>, <i>y</i>, <i>oldlayer</i>, <i>newlayer</i>,
+     <i>todb</i>)</a>
+     </td><td>Copy object(s) to handle</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetObjectType">
+     <tt>GetObjectType</tt>(<i>object_handle</i>)</a>
+     </td><td>Return the object's type code</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetObjectID">
+     <tt>GetObjectID</tt>(<i>object_handle</i>)</a>
+     </td><td>Return the object's id number</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetObjectArea">
+     <tt>GetObjectArea</tt>(<i>object_handle</i>)</a>
+     </td><td>Return the object's area in square microns</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetObjectPerim">
+     <tt>GetObjectPerim</tt>(<i>object_handle</i>)</a>
+     </td><td>Return the object's perimeter in microns</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetObjectCentroid">
+     <tt>GetObjectCentroid</tt>(<i>object_handle</i>, <i>array</i>)</a>
+     </td><td>Compute the object's centroid point</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetObjectBB">
+     <tt>GetObjectBB</tt>(<i>object_handle</i>, <i>array</i>)</a>
+     </td><td>Return the object's bounding box</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetObjectBB">
+     <tt>SetObjectBB</tt>(<i>object_handle</i>, <i>array</i>)</a>
+     </td><td>Set the object's bounding box, scale object</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetObjectListBB">
+     <tt>GetObjectListBB</tt>(<i>object_handle</i>, <i>array</i>)</a>
+     </td><td>Return the bounding box of all objects in list</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetObjectXY">
+     <tt>GetObjectXY</tt>(<i>object_handle</i>, <i>array</i>)</a>
+     </td><td>Return the object's reference point</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetObjectXY">
+     <tt>SetObjectXY</tt>(<i>object_handle</i>, <i>x</i>, <i>y</i>)</a>
+     </td><td>Set the object's reference point, move object</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetObjectLayer">
+     <tt>GetObjectLayer</tt>(<i>object_handle</i>)</a>
+     </td><td>Return the object's layer name</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetObjectLayer">
+     <tt>SetObjectLayer</tt>(<i>object_handle</i>, <i>layername</i>)</a>
+     </td><td>Set the object's layer</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetObjectFlags">
+     <tt>GetObjectFlags</tt>(<i>object_handle</i>)</a>
+     </td><td>Return the object's flags</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetObjectNoDrcFlag">
+     <tt>SetObjectNoDrcFlag</tt>(<i>object_handle</i>, <i>value</i>)</a>
+     </td><td>Set or unset the <tt>NoDRC</tt> object flag</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetObjectMark1Flag">
+     <tt>SetObjectMark1Flag</tt>(<i>object_handle</i>, <i>value</i>)</a>
+     </td><td>Set or unset the <tt>Mark1</tt> object flag</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetObjectMark2Flag">
+     <tt>SetObjectMark2Flag</tt>(<i>object_handle</i>, <i>value</i>)</a>
+     </td><td>Set or unset the <tt>Mark2</tt> object flag</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetObjectState">
+     <tt>GetObjectState</tt>(<i>object_handle</i>)</a>
+     </td><td>Return the object's state</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetObjectGroup">
+     <tt>GetObjectGroup</tt>(<i>object_handle</i>)</a>
+     </td><td>Return the object's conductor group number</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetObjectGroup">
+     <tt>SetObjectGroup</tt>(<i>object_handle</i>, <i>group_num</i>)</a>
+     </td><td>Set the object's conductor group number</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetObjectCoords">
+     <tt>GetObjectCoords</tt>(<i>object_handle</i>, <i>array</i>)</a>
+     </td><td>Return the object's coordinates</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetObjectCoords">
+     <tt>SetObjectCoords</tt>(<i>object_handle</i>, <i>array</i>,
+     <i>size</i>)</a>
+     </td><td>Set the object's coordinates</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetObjectMagn">
+     <tt>GetObjectMagn</tt>(<i>object_handle</i>)</a>
+     </td><td>Return the magnification of a subcell</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetObjectMagn">
+     <tt>SetObjectMagn</tt>(<i>object_handle</i>, <i>magn</i>)</a>
+     </td><td>Set object's magnification, rescale object</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetWireWidth">
+     <tt>GetWireWidth</tt>(<i>object_handle</i>)</a>
+     </td><td>Return width of wire</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetWireWidth">
+     <tt>SetWireWidth</tt>(<i>object_handle</i>, <i>width</i>)</a>
+     </td><td>Set width of wire</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetWireStyle">
+     <tt>GetWireStyle</tt>(<i>object_handle</i>)</a>
+     </td><td>Return wire end style</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetWireStyle">
+     <tt>SetWireStyle</tt>(<i>object_handle</i>, <i>code</i>)</a>
+     </td><td>Set wire end style</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetWireToPoly">
+     <tt>SetWireToPoly</tt>(<i>object_handle</i>)</a>
+     </td><td>Convert wire to polygon</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetWirePoly">
+     <tt>GetWirePoly</tt>(<i>object_handle</i>, <i>array</i>)</a>
+     </td><td>Return wire bounding polygon</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetLabelText">
+     <tt>GetLabelText</tt>(<i>object_handle</i>)</a>
+     </td><td>Return text of label</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetLabelText">
+     <tt>SetLabelText</tt>(<i>object_handle</i>, <i>text</i>)</a>
+     </td><td>Set text in label</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetLabelFlags">
+     <tt>GetLabelFlags</tt>(<i>object_handle</i>)</a>
+     </td><td>Return flags for label</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetLabelFlags">
+     <tt>SetLabelFlags</tt>(<i>object_handle</i>, <i>flags</i>)</a>
+     </td><td>Set flags for label</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetInstanceArray">
+     <tt>GetInstanceArray</tt>(<i>object_handle</i>, <i>array</i>)</a>
+     </td><td>Return instance array parameters</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetInstanceArray">
+     <tt>SetInstanceArray</tt>(<i>object_handle</i>, <i>array</i>)</a>
+     </td><td>Set instance array parameters, resize array</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetInstanceXform">
+     <tt>GetInstanceXform</tt>(<i>object_handle</i>)</a>
+     </td><td>Return instance transformation string</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetInstanceXformA">
+     <tt>GetInstanceXformA</tt>(<i>object_handle</i>, <i>array</i>)</a>
+     </td><td>Return instance transformation in array</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetInstanceXform">
+     <tt>SetInstanceXform</tt>(<i>object_handle</i>, <i>transform</i>)</a>
+     </td><td>Set instance transformation from string</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetInstanceXformA">
+     <tt>SetInstanceXformA</tt>(<i>object_handle</i>, <i>array</i>)</a>
+     </td><td>Set instance transformation from array</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetInstanceMaster">
+     <tt>GetInstanceMaster</tt>(<i>object_handle</i>)</a>
+     </td><td>Return name of instance master cell</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetInstanceMaster">
+     <tt>SetInstanceMaster</tt>(<i>object_handle</i>, <i>newname</i>)</a>
+     </td><td>Set instance master, replace instance</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetInstanceName">
+     <tt>GetInstanceName</tt>(<i>object_handle</i>)</a>
+     </td><td>Return name of instance</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#SetInstanceName">
+     <tt>SetInstanceName</tt>(<i>object_handle</i>, <i>newname</i>)</a>
+     </td><td>Set instance name property</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetInstanceAltName">
+     <tt>GetInstanceAltName</tt>(<i>object_handle</i>)</a>
+     </td><td>Return alternate name of instance</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetInstanceType">
+     <tt>GetInstanceType</tt>(<i>object_handle</i>)</a>
+     </td><td>Return instance type code</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetInstanceIdNum">
+     <tt>GetInstanceIdNum</tt>(<i>object_handle</i>)</a>
+     </td><td>Return instance id number</td></tr>
+    <tr><td><a href="funcs:geom1:objbh#GetInstanceAltIdNum">
+     <tt>GetInstanceAltIdNum</tt>(<i>object_handle</i>)</a>
+     </td><td>Return instance alternate id number</td></tr>
+
+    </table>
+
+!!SEEALSO
+scr:iffuncs
+
+!!KEYWORD
+funcs:geom1:gen
+!!TITLE
+General Editing
+!!HTML
+
+    <!-- 041704 -->
+    <a name="ClearCell"></a>
+    <dl>
+    <dt><b>(int) <tt>ClearCell</tt>(<i>undoable</i>, <i>layer_list</i>)</b>
+    <dd><br>This function will clear the content of the present mode
+    (electrical or physical) part of the current cell.  If the first
+    argument is nonzero, the deletions will be added to the internal
+    undo list, otherwise not.  The latter is more efficient, though
+    this makes the deletions irreversible.  The second argument, if
+    null or empty, indicates that all objects on all layers will be
+    deleted, including subcells.  Otherwise this can be set to a
+    string containing a space-separated list of layer names, following
+    an optional special character '<tt>!</tt>' or '<tt>^</tt>' which
+    must be the first character in the string if used.  If the special
+    character does not appear, the deletions apply only to the layers
+    listed.  If the special character appears, the deletions apply
+    only to the layers <i>not</i> listed.  Recall that the internal
+    name for the layer that contains subcells is "<tt>$$</tt>", thus
+    for example using "<tt>!  $$</tt>" would delete all geometry but
+    retain the subcells.
+
+    <p>
+    The return value is the number of objects deleted.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Commit"></a>
+    <dl>
+    <dt><b><tt>Commit</tt>()</b>
+    <dd><br>The <tt>Commit</tt> function terminates the present operation,
+    adding it to the undo list.  It will also redisplay any changes. 
+    This function should be called after each change or after a group
+    of related changes.  It is implicitly called when a script exits.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Undo"></a>
+    <dl>
+    <dt><b><tt>Undo</tt>()</b>
+    <dd><br>This function will undo the most recent operation.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Redo"></a>
+    <dl>
+    <dt><b><tt>Redo</tt>()</b>
+    <dd><br>This function will redo the last undone operation.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SelectLast"></a>
+    <dl>
+    <dt><b>(int) <tt>SelectLast</tt>(<i>types</i>)</b>
+    <dd><br>This function selects objects that have been created by the
+    script functions since the last call to <tt>Commit</tt> or
+    <tt>SelectLast</tt> (which calls <tt>Commit</tt>), according to
+    <i>type</i>.  The <i>type</i> argument is a string whose
+    characters serve to enable selection of a given type of object: 
+    '<tt>b</tt>' for boxes, '<tt>p</tt>' for polygons, '<tt>w</tt>'
+    for wires, '<tt>l</tt>' for labels, and '<tt>c</tt>' for
+    instances.  If this string is empty or null, then all objects will
+    be selected.  Objects that are created using <tt>PressButton</tt>
+    or otherwise using <i>Xic</i> input implicitly call
+    <tt>Commit</tt>, so can't be selected in this manner.
+    </dl>
+
+!!SEEALSO
+funcs:geom1
+
+!!KEYWORD
+funcs:geom1:xform
+!!TITLE
+Current Transform
+!!HTML
+
+    <!-- 030115 -->
+    <a name="SetTransform"></a>
+    <dl>
+    <dt><b>(int) <tt>SetTransform</tt>(<i>angle_or_string</i>,
+     <i>reflection</i>, <i>magnification</i>)</b>
+    <dd><br>
+    This command sets the "current transform" to the values provided. 
+    It is similar in action to the controls in the <a
+    href="xic:xform"><b>Current Transform</b></a> panel.  The first
+    argument can be a floating point angle that will be snapped to the
+    nearest multiple of 45 degrees in physical mode, 90 degrees in
+    electrical mode.  If bit 1 of <i>reflection</i> is set, a
+    reflection of the x-axis is specified.  If bit 2 of
+    <i>reflection</i> is set, a reflection of the y-axis is specified. 
+    The <i>magnification</i> sets the scaling applied to transformed
+    objects, and is accepted only while in physical mode.  It is
+    ignored if less than or equal to zero.
+
+    <p>
+    The first argument can alternatively be a string, in the format as
+    returned from <a
+    href="GetTransformString"><tt>GetTransformString</tt></a>.  The
+    string will be parsed, and if no error the transform will be set. 
+    The two remaining arguments are ignored, but must be given (0 can
+    be passed for both).
+
+    <p>
+    The return value is 1 on success, 0 otherwise.
+
+    <p>
+    <blockquote>
+    Examples:
+    <dl><dt>Set rotation 180, mirror the X axis:
+    <dd><tt>SetTransform(180, 1, 1)</tt>, or
+      <tt>SetTransform("R180MX", 0, 0)</tt>
+    </dl>
+    <dl><dt>Set rotation 180, mirror the Y axis:
+    <dd><tt>SetTransform(180, 2, 1)</tt>, or
+      <tt>SetTransform("R180MY", 0, 0)</tt>
+    </dl>
+    <dl><dt>Set rotation 180, mirror both X,Y axes:
+    <dd><tt>SetTransform(180, 3, 1)</tt></dl>, or
+      <tt>SetTransform("R180MYMX", 0, 0)</tt>
+    </blockquote>
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="StoreTransform"></a>
+    <dl>
+    <dt><b>(int) <tt>StoreTransform</tt>(<i>register</i>)</b>
+    <dd><br>This function will save the current transform settings into a
+    register, which can be recalled with <tt>RecallTransform</tt>. 
+    The argument is a register number 0-5.  These correspond to the
+    "last" and registers 1-5 in the <a href="xic:xform"><b>Current
+    Transform</b></a> pop-up.  This function returns 1 on success, 0
+    if the argument is out of range.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="RecallTransform"></a>
+    <dl>
+    <dt><b>(int) <tt>RecallTransform</tt>(<i>register</i>)</b>
+    <dd><br>This function will restore the transform settings previously
+    saved with <tt>StoreTransform</tt>.  The argument is a register
+    number 0-5.  These correspond to the "last" and registers 1-5 in
+    the <a href="xic:xform"><b>Current Transform</b></a> pop-up.  This
+    function returns 1 on success, 0 if the argument is out of range.
+    </dl>
+    <hr>
+
+    <!-- 030215 -->
+    <a name="GetTransformString"></a>
+    <dl>
+    <dt><b>(string) <tt>GetTransformString</tt>()</b>
+    <dd><br>
+    Return a string describing the current transform, an empty string
+    will indicate the identity transform.  The string is a sequence of
+    tokens and contains no white space.  It is the same format used to
+    indicate the current transform in the <i>Xic</i> <a
+    href="statusline">status line</a>.  The tokens are:
+
+    <blockquote>
+    [<tt>R</tt><i>ang</i>][<tt>MY</tt>][<tt>MX</tt>][<tt>M</tt><i>magn</i>]
+    </blockquote>
+
+    <p>
+    The square brackets indicate that each token is optional and do
+    not appear in the string.  If the rotation angle is nonzero, the
+    first token will appear, where <i>ang</i> is the angle in degrees. 
+    This is an integer multiple of 45 degrees in physical mode, 90
+    degrees in electrical mode, larger than zero and smaller than 360.
+
+    <p>
+    If reflection of Y or X is in force, one or both of the mext two
+    tokens will appear.  These are literal.  If the magnification is
+    not unity, the final token will appear, with <i>magn</i> being a
+    real number in the range 0.001 through 1000.0.
+
+    <p>
+    The order of the tokens must be as shown.
+
+    <p>
+    The returned string, or one in the same format, can be passed to
+    the first argument of <tt>SetTransform</tt>.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetCurAngle"></a>
+    <dl>
+    <dt><b>(int) <tt>GetCurAngle</tt>()</b>
+    <dd><br>This returns the rotation angle of the current transform, in
+    degrees.  This will be 0, 45, 90, 135, 180, 225, 270, 315 in
+    physical mode, or 0, 90, 180, 270 in electrical mode.  The
+    <tt>SetTransform</tt> function can be used to set the rotation
+    angle.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetCurMX"></a>
+    <dl>
+    <dt><b>(int) <tt>GetCurMX</tt>()</b>
+    <dd><br>This returns 1 if the current transform mirrors the x-axis, 0
+    otherwise.  The <tt>SetTransform</tt> function can be used to set
+    the mirror transformations.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetCurMY"></a>
+    <dl>
+    <dt><b>(int) <tt>GetCurMY</tt>()</b>
+    <dd><br>This returns 1 if the current transform mirrors the y-axis, 0
+    otherwise.  The <tt>SetTransform</tt> function can be used to set
+    the mirror transformations.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetCurMagn"></a>
+    <dl>
+    <dt><b>(real) <tt>GetCurMagn</tt>()</b>
+    <dd><br>This returns the magnification component of the current
+    transform.  The <tt>SetTransform</tt> function can be used to set
+    the magnification.
+    </dl>
+    <hr>
+
+    <!-- 041705 -->
+    <a name="UseTransform"></a>
+    <dl>
+    <dt><b>(int) <tt>UseTransform</tt>(<i>enable</i>, <i>x</i>, <i>y</i>)</b>
+    <dd><br>This command enables and disables use of the <a
+    href="xic:xform">current transform</a> in the <tt>ShowGhost</tt>
+    function, as well as the functions that create objects: 
+    <tt>Box</tt>, <tt>Polygon</tt>, <tt>Arc</tt>, <tt>Wire</tt>, and
+    <tt>Label</tt>.  The functions <tt>Move</tt>, <tt>Copy</tt>,
+    <tt>Logo</tt>, and <tt>Place</tt> naturally use the current
+    transform and are unaffected by this function.
+
+    <p>
+    All arguments are numeric.  If the first argument is nonzero, the
+    current transformation will be used in subsequent calls to the
+    functions listed above.  If the first argument is zero, the
+    current transform is ignored by these functions.  The remaining
+    arguments provide the translation applied to the object being
+    created, before the current transform is applied.
+
+    <p>
+    If <tt>UseTransform(1, ...)</tt> has been given,
+    <tt>ShowGhost</tt> will apply the current transform to the list of
+    objects to display, using the pointer location as the translation
+    rather than the <i>x</i>, <i>y</i> supplied to
+    <tt>UseTransform</tt>, which are ignored.  The other functions
+    listed above will create the object after applying the current
+    transform, using <i>x</i>, <i>y</i>.
+
+    <p>
+    In some scripts, it will be necessary to call <tt>UseTransform(1,
+    ...)</tt> twice, once to enable <tt>ShowGhost</tt>, and again
+    after the location for the new object is obtained.  In particular,
+    if <tt>Point</tt> is used to obtain the coordinate,
+    <tt>UseTransform</tt> should be called before <tt>Point</tt> (so
+    the ghost drawing will be accurate) and again with the coordinates
+    returned from <tt>Point</tt> before the new object is created.
+
+    <p>
+    The <tt>Box</tt> function will actually create a polygon if the
+    current transform is being used and the rotation angle is 45
+    degrees or one of the other non-Manhattan angles.  The
+    <tt>Polygon</tt> function will actually create a box if the
+    rotated figure can be so represented.  The <tt>Polygon</tt>
+    function will never create boxes unless use of the current
+    transform is enabled.
+
+    <p>
+    Below is an example script that will place boxes on the current
+    layer where the user clicks.  Note that the size and rotation
+    angle of the box can be changed while in the script through the
+    <b>Transform Menu</b>.
+
+    <p>
+    <pre>
+    &#32;  ShowPrompt("Click to place boxes")
+    &#32;  PushGhostBox(0, 0, 1, 1)
+    &#32;  UseTransform(1, 0, 0)
+    &#32;  while (1)
+    &#32;      ShowGhost(8)
+    &#32;      a[2]
+    &#32;      if !Point(a)
+    &#32;          ShowPrompt("")
+    &#32;          Exit()
+    &#32;      end
+    &#32;      ShowGhost(0)
+    &#32;      UseTransform(1, a[0], a[1])
+    &#32;      Box(0, 0, 1, 1)
+    &#32;      Commit()
+    &#32;  end
+    </pre>
+    </dl>
+
+!!SEEALSO
+funcs:geom1
+
+!! 032217
+!!KEYWORD
+funcs:geom1:drvlyr
+!!TITLE
+Derived Layers
+!!HTML
+    These functions provide an interface to the <a
+    href="drvlayer">derived layer</a> capability.  Derived layers are
+    invisible internal layers that imply geometry resulting from
+    evaluation of a layer expression, which may involve normal layers
+    and other derived layers.  Derived layers are recognized by name
+    in <a href="layer_exp">layer expressions</a>.
+
+    <p>
+    There are actually two implementations of derived layer
+    functionality.  The interface functions allow explicit choice of
+    which evaluation method to use.  Within <i>Xic</i>, this detail
+    is generally invisible to the user.
+
+    <p>
+    In the original implementation, developed for the
+    DRC system, the geometry of derived layers must be created or
+    updated before the derived layer is referenced.  In use, reference
+    to a derived layer in a layer expression retrieves this geometry,
+    very similar to what happens when a normal layer is referenced. 
+    Ordinarily, the derived layer geometry will be cleared after final
+    use.  This method may be fast when the same layer expressions
+    must be evaluated many times, so it seems a good match for DRC,
+    where it is used.
+
+    <p>
+    To use this method, the interface function
+    <tt>EvalDerivedLayers</tt> is called to create the geometry for
+    each derived layer that will be evaluated.  Then,
+    <tt>GetDerivedLayerLexpr</tt> is called with a boolean true second
+    argument to get the evaluation objects as needed, which are
+    evaluated to create new geometry.  When done,
+    <tt>ClearDerivedLayers</tt> is called to destroy the precomputed
+    geometry.
+    
+    <p>
+    In the second mode of operation, when the parse tree for the
+    derived layer is created, references to derived layers will be
+    recursively parsed and stitched into the tree.  The final parse
+    tree will contain normal layers only, and can therefor be
+    evaluated in any context, without the need for precomputed
+    geometry caches.
+
+    <p>
+    With this method, there is no need to call
+    <tt>EvalDerivedLayers</tt> and <tt>ClearDerivedLayers</tt>, as
+    there is no use of cached geometry.  The evaluation object is
+    returned from <tt>GetDerivedLayerLexpr</tt> with a boolean false
+    second argument.
+
+
+    <!-- 010815 -->
+    <a name="AddDerivedLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>AddDerivedLayer</tt>(<i>lname</i>, <i>index</i>,
+     <i>lexpr</i>)</b>
+    <dd><br>
+    This will add a derived layer to the database, under the name
+    given in the first argument.  The second argument is an integer
+    layer number for the layer, which is used for ordering when the
+    derived layers are printed, for example to an updated technology
+    file.  If not positive, <i>Xic</i> will generate a number to be
+    used for a new layer.  Numbers need not be unique, sorting is
+    alphabetic among derived layer names with the same index number. 
+    If a derived layer of the same name already exists, it will be
+    silently overwritten.
+
+    <p>
+    The third argument is a string starting with an optional keyword
+    followed by a layer expression, separated by space.  The keyword
+    is one of <tt>join</tt>, <tt>split</tt>, or <tt>splitv</tt>. 
+    These are the same keywords, and have the same effects, as is
+    explained for the <a href="DerivedLayer"><tt>DerivedLayer</tt></a>
+    keyword in the technology file.  The expression can reference by
+    name ordinary layers and derived layers.  The expression is not
+    parsed until evaluation time.
+
+    <p>
+    The function fails if either the <i>lname</i> or <i>lexpr</i> are
+    null or empty strings.
+    </dl>
+
+    <!-- 120114 -->
+    <a name="RemDerivedLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>RemDerivedLayer</tt>(<i>lname</i>)</b>
+    <dd><br>
+    If a derived layer exists with the given name, remove the
+    definition from the internal registry, so that the derived layer
+    definition and any existing geometry becomes inaccessible.  The
+    derived layer definition can be restored with
+    <tt>AddDerivedLayer</tt>.  If the derived layer is found and
+    removed, this function will return 1, otherwise 0 is returned.
+    </dl>
+
+    <!-- 120114 -->
+    <a name="IsDerivedLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>IsDerivedLayer</tt>(<i>lname</i>)</b>
+    <dd><br>
+    This function will return 1 if the string argument matches a
+    derived layer name in the database, 0 otherwise.  Matching is
+    case-insensitive.
+
+    <p>
+    The name can be in the form "<i>layer</i>:<i>purpose</i>" as for
+    normal <i>Xic</i> layers, however the entire token is taken
+    verbatim.  This is a subtle difference from normal layers, where
+    for example "<tt>m1:drawing</tt>" and "<tt>m1</tt>" are equivalent
+    (the <tt>drawing</tt> purpose being the default).  As derived
+    layer names, the two would differ, and the notion of a purpose
+    does not apply to derived layers.
+    </dl>
+
+    <!-- 120114 -->
+    <a name="GetDerivedLayerIndex"></a>
+    <dl>
+    <dt><b>(int) <tt>GetDerivedLayerIndex</tt>(<i>lname</i>)</b>
+    <dd><br>
+    This returns a positive integer which is the layer index number of
+    the derived layer whose name was given, or 0 if no derived layer
+    can be found with that name (case insensitive).
+    </dl>
+
+    <!-- 120114 -->
+    <a name="GetDerivedLayerExpString"></a>
+    <dl>
+    <dt><b>(string) <tt>GetDerivedLayerExpString</tt>(<i>lname</i>)</b>
+    <dd><br>
+    This returns the layer expression string for the derived layer
+    whose name is passed.  If the derived layer is not found, a null
+    string is returned.
+    </dl>
+
+    <!-- 032217 -->
+    <a name="GetDerivedLayerLexpr"></a>
+    <dl>
+    <dt><b>(layer_expr) <tt>GetDerivedLayerLexpr</tt>(<i>lname</i>,
+     <i>noexp</i>)</b>
+    <dd><br>
+    This returns a parsed layer expression object created from the
+    layer expression of the derived layer whose name is passed.  This
+    can be passed to other functions which can use this data type.  If
+    there is a parse error, the function fails fatally.  Otherwise the
+    return is a valid parse tree object.
+
+    <p>
+    The boolean second argument will suppress derived layer expansion
+    if set.
+
+    <p>
+    There are two ways to handle derived layers.  Generally, layer
+    expression parse trees are expanded (second argument is false),
+    meaning that when a derived layer is encountered, the parser
+    recursively descends into the layer's expression.  The resulting
+    tree references only normal layers, and evaluation is
+    straightforward.
+
+    <p>
+    A second approach might be faster.  The parse trees are not
+    expanded (second argument is true), and a parse node to a derived
+    layer contains a layer descriptor, just as for normal layers. 
+    Before any computation, <tt>EvalDerivedLayers</tt> must be called,
+    which actually creates database objects in a database for the
+    derived layer.  Evaluation involves only finding the geometry in
+    the search area, as for a normal layer.
+    </dl>
+
+    <!-- 032217 -->
+    <a name="EvalDerivedLayers"></a>
+    <dl>
+    <dt><b>(string) <tt>EvalDerivedLayers</tt>(<i>list</i>, <i>array</i>)</b>
+    <dd><br>
+    Derived layer evaluation objects (such as the return from
+    <tt>GetDerivedLayerLexpr</tt>) that are not recursively expanded
+    must have derived layer geometry precomputed before use.  This
+    function creates derived layer geometry for this purpose.
+
+    <p>
+    Evaluation creates the geometry described by the layer expression. 
+    Derived layers are never visible, so this geometry is internal,
+    but can be accessed, e.g., by design rule evaluation functions, or
+    used to create normal layers with the <a
+    href="!layer"><b>!layer</b></a> command or the <a
+    href="xic:lexpr"><b>Evaluate Layer Expression</b></a> panel from
+    the <b>Edit Menu</b>.
+
+    <p>
+    The first argument is a string containing a list of derived layer
+    names, separated by commas or white space.  The function will
+    evaluate these derived layers, and any derived layers referenced
+    in their layer expressions, in an order such that the derived
+    layers will be evaluated before being referenced during another
+    evaluation.
+
+    <p>
+    All geometry created will exist in the current cell, and the layer
+    expressions will source all levels of the hierarchy.  Any geometry
+    left in the current cell from a previous evaluation will be
+    cleared first.  Derived layer geometry in subcells is ignored.
+
+    <p>
+    The second argument can set the area where the layers will be
+    evaluated, which can be any rectangular region of the current
+    cell.  This can be an array of size four or larger, specifying
+    left, bottom, right, and top coordinates in microns in the 0, 1,
+    2, 3 indices.  The argument can also be a scalar 0 which indicates
+    to use the entire current cell.
+
+    <p>
+    The return is a string listing all of the derived layers
+    evaluated, which will include derived layers referenced by the
+    original list but not included in the list.  This should be passed
+    to <tt>ClearDerivedLayers</tt> when finished using the layers.
+    </dl>
+
+    <!-- 120114 -->
+    <a name="ClearDerivedLayers"></a>
+    <dl>
+    <dt><b>(int) <tt>ClearDerivedLayers</tt>(<i>list</i>)</b>
+    <dd><br>
+    The argument is a string containing a list of derived layer names,
+    separated by commas or white space.  This may be the return from
+    <tt>EvalDerivedLayers</tt>.  All of the layers listed will be
+    cleared in the current cell.  If a layer name is not resolved as a
+    derived layer, it is silently ignored.  Clearing already clear
+    layers is not an error.  Derived layers should be cleared after
+    their work is done, to recycle memory.  The return value is an
+    integer count of the number of derived layers that were cleared.
+    </dl>
+
+!!SEEALSO
+funcs:geom1
+
+
+!! 022712
+!!KEYWORD
+funcs:geom1:objbh
+!!TITLE
+Object Management by Handles
+!!HTML
+
+    The following functions provide a fairly complete interface to
+    database objects.
+
+    <p>
+    Internally, most of the "<tt>Set</tt>..." functions in this group
+    modify objects via application of the <a
+    href="properties#pseudoprops">pseudo-properties</a>.  This allows
+    modification of most objects and types, with the restrictions
+    listed in the table below.  Without restrictions, the functions
+    can act on database objects or the "object copies" which are
+    memory objects not part of any cell.  The objects can be from
+    electrical or physical cells, and the containing cell (if any)
+    need not be the current cell.  However, a restriction when working
+    with copies is that the object type can not be changed.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>boxes</td> <td>no restrictions</td></tr>
+    <tr><td>polys</td> <td>no restrictions</td></tr>
+    <tr><td>wires</td> <td>can't accept electrical wires on the
+      active (SCED) layer</td></tr>
+    <tr><td>labels</td> <td>no restrictions</td></tr>
+    <tr><td>instances</td> <td>can't accept electrical instances</td></tr>
+    </table>
+
+    <p>
+    As mentioned, some of the functions generate or accept lists of
+    "object copies".  These are objects that are not included in the
+    object database for any cell.  A list of copies behaves in most
+    respects like an ordinary object list.  The <a
+    href="CopyObjects"><tt>CopyObjects</tt></a> function can be used
+    to create a new database object from a copy.  The handle
+    manipulation functions such as <a
+    href="HandleCat"><tt>HandleCat</tt></a> work, but lists of copies
+    can <i>not</i> be mixed with lists of database objects,
+    <tt>HandleCat</tt> will fail quietly if this is attempted.  Copies
+    can not be selected.
+    <hr>
+
+    <!-- 062116 -->
+    <a name="ListElecInstances"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>ListElecInstances</tt>()</b>
+    <dd><br>
+    This function returns a handle to a complete list of cell
+    instances found in the electrical part of the current cell. 
+    Operation is identical in electrical and physical modes.  In the
+    schematic, cell instances represent subcircuits, devices, and
+    pins.  The "<tt>GetInstance</tt>" functions described below can be
+    used to obtain information about the instances.
+    </dl>
+    <hr>
+
+    <!-- 062116 -->
+    <a name="ListPhysInstances"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>ListPhysInstances</tt>()</b>
+    <dd><br>
+    This function returns a handle to a complete list of cell
+    instances found in the physical layout of the current cell. 
+    Operation is identical in electrical and physical modes.  The
+    "<tt>GetInstance</tt>" functions described below can be used to
+    obtain information about the instances.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SelectHandle"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>SelectHandle</tt>()</b>
+    <dd><br>This function returns a handle to the list of objects
+    currently selected.  The list is copied internally, and so is
+    unchanged if the objects are subsequently deselected.
+
+    <p>
+    A handle to the object list is returned.  The <tt>ObjectNext</tt>
+    function is used to advance the handle to point to the next object
+    in the list.  The <tt>HandleContent</tt> function returns the
+    number of objects remaining in the list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SelectHandleTypes"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>SelectHandleTypes</tt>(<i>types</i>)</b>
+    <dd><br>This function returns a handle to a list of objects that are
+    currently selected, but only the types of objects specified in the
+    argument are included.  The argument is a string which specifies
+    the types of objects to include.  If zero or an empty string is
+    passed, all types are included, and the function is equivalent to
+    <tt>SelectHandle</tt>.  Otherwise the characters in the string
+    signify which objects to include:
+  
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>'<tt>b</tt>'</td><td>boxes</td></tr>
+    <tr><td>'<tt>p</tt>'</td><td>polygons</td></tr>
+    <tr><td>'<tt>w</tt>'</td><td>wires</td></tr>
+    <tr><td>'<tt>l</tt>'</td><td>labels</td></tr>
+    <tr><td>'<tt>c</tt>'</td><td>subcells</td></tr>
+    </table>
+  
+    <p>
+    For example, passing "<tt>pwb</tt>" would include polygons, wires,
+    and boxes only.  The order of the characters is unimportant. 
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="AreaHandle"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>AreaHandle</tt>(<i>l</i>, <i>b</i>, <i>r</i>,
+      <i>t</i>, <i>types</i>)</b>
+    <dd><br>This function creates a list of objects that touch the rectangular
+    area specified by the first four coordinates (which are the left,
+    bottom, right, and top values of the rectangle).  The fifth
+    argument is a string which specifies the types of objects to
+    include.  If zero or an empty string is passed, all types are
+    included, otherwise the characters in the string signify which
+    objects to include:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>'<tt>b</tt>'</td><td>boxes</td></tr>
+    <tr><td>'<tt>p</tt>'</td><td>polygons</td></tr>
+    <tr><td>'<tt>w</tt>'</td><td>wires</td></tr>
+    <tr><td>'<tt>l</tt>'</td><td>labels</td></tr>
+    <tr><td>'<tt>c</tt>'</td><td>subcells</td></tr>
+    </table>
+
+    <p>
+    For example, passing "<tt>pwb</tt>" would include polygons, wires,
+    and boxes only.  The order of the characters is unimportant.
+
+    <p>
+    A handle to the object list is returned.  The <tt>ObjectNext</tt>
+    function is used to advance the handle to point to the next object
+    in the list.  The <tt>HandleContent</tt> function returns the
+    number of objects remaining in the list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="ObjectHandleDup"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>ObjectHandleDup</tt>(<i>object_handle</i>,
+     <i>types</i>)</b>
+    <dd><br>This function creates a new handle and list of objects.  The
+    new object list consists of those objects in the list referenced
+    by the argument whose types are given in the string <i>types</i>
+    argument.  If zero or an empty string is passed, all types are
+    included, otherwise the characters in the string signify which
+    objects to include:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>'<tt>b</tt>'</td><td>boxes</td></tr>
+    <tr><td>'<tt>p</tt>'</td><td>polygons</td></tr>
+    <tr><td>'<tt>w</tt>'</td><td>wires</td></tr>
+    <tr><td>'<tt>l</tt>'</td><td>labels</td></tr>
+    <tr><td>'<tt>c</tt>'</td><td>subcells</td></tr>
+    </table>
+
+    <p>
+    The return value is a handle, or 0 if an error occurred.  Note
+    that the new handle may be empty if there were no matching
+    objects.  The function will fail if the handle argument is not a
+    pointer to an object list.
+    </dl>
+    <hr>
+ 
+    <!-- 030204 -->
+    <a name="ObjectHandlePurge"></a>
+    <dl>
+    <dt><b>(int) <tt>ObjectHandlePurge</tt>(<i>object_handle</i>,
+     <i>types</i>)</b>
+    <dd><br>This function will purge from the list of objects referenced
+    by the handle argument objects with types listed in the
+    <i>types</i> string.  If zero or an empty string is passed, all
+    types are deleted, otherwise the characters in the string signify
+    which objects to delete:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>'<tt>b</tt>'</td><td>boxes</td></tr>
+    <tr><td>'<tt>p</tt>'</td><td>polygons</td></tr>
+    <tr><td>'<tt>w</tt>'</td><td>wires</td></tr>
+    <tr><td>'<tt>l</tt>'</td><td>labels</td></tr>
+    <tr><td>'<tt>c</tt>'</td><td>subcells</td></tr>
+    </table>
+
+    <p>
+    The return value is the number of objects remaining in the list. 
+    The function will fail if the handle argument does not reference a
+    list of objects.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="ObjectNext"></a>
+    <dl>
+    <dt><b>(int) <tt>ObjectNext</tt>(<i>object_handle</i>)</b>
+    <dd><br>This function is called with a handle to a list of objects,
+    and causes the handle to reference the next object in the list. 
+    If there are no more objects, the handle is closed, and this
+    function returns zero.  Otherwise, 1 is returned.  This function
+    will fail if the handle passed is not a handle to an object list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="MakeObjectCopy"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>MakeObjectCopy</tt>(<i>numpts</i>,
+     <i>array</i>)</b>
+    <dd><br>This function creates an object copy from the <i>numpts</i>
+    coordinate pairs in the <i>array</i>.  The function returns an
+    object list handle referencing the "copy", which can be used in
+    the same manner as copies of "real" objects.  The coordinate list
+    must be closed, i.e., the last coordinate pair must be the same as
+    the first.  If the coordinates represent a rectangle, a box object
+    is created, otherwise the object is a polygon.  Coordinates are in
+    microns, relative to the origin of the current cell.  The object
+    is associated with the current layer (but of course it really does
+    not exist on that layer).
+    </dl>
+    <hr>
+
+    <!-- 080705 -->
+    <a name="ObjectString"></a>
+    <dl>
+    <dt><b>(string) <tt>ObjectString</tt>(<i>object_handle</i>)</b>
+    <dd><br>
+    This function returns a CIF-like string describing the object
+    pointed to by the given object handle.  This provides all of the
+    geometric information for the object.  Strings of this format can
+    be reconverted to object copies with the
+    <tt>ObjectCopyFromString</tt> function.
+
+    <p>
+    On error or for an empty handle, a null string is returned.  The
+    function will fail if the argument is not a handle to an object
+    list.
+    </dl>
+    <hr>
+
+    <!-- 080705 -->
+    <a name="ObjectCopyFromString"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>ObjectCopyFromString</tt>(<i>string</i>,
+     <i>layer</i>)</b>
+    <dd><br>
+    This function will create an object copy from the CIF-like string,
+    as generated by the <tt>ObjectString</tt> function.  Boxes,
+    polygons, and wires are supported, labels and subcells will not
+    return a handle.  The object will be associated with the layer
+    named in the second argument.  The layer will be created if it
+    does not exist.  Only physical layers are accepted.
+
+    <p>
+    On success, a handle to an object list containing the new copy is
+    returned.  On error, a scalar zero is returned.  The function will
+    fail if the string is null or a new layer cannot be created.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="FilterObjects"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>FilterObjects</tt>(<i>object_list</i>,
+    <i>template_list</i>, <i>all</i>, <i>touchok</i>, <i>remove</i>)</b>
+    <dd><br>This function creates a handle to a list of objects that is a
+    subset of the objects contained in the <i>object_list</i>.  The
+    objects in the new list are those that touch or overlap objects in
+    the <i>template_list</i>, which is also a handle to a list of
+    objects.
+
+    <p>
+    If <i>all</i> is nonzero, all of the objects in the
+    <i>template_list</i> will be used for comparison, otherwise only
+    the head object in the template list will be used.
+
+    <p>
+    If <i>touchok</i> is nonzero, objects in the object list that
+    touch but do not overlap the template object(s) will be added to
+    the new list, otherwise not.
+
+    <p>
+    If <i>remove</i> is nonzero, objects that are added to the new
+    list are removed from the <i>object_list</i>, otherwise the
+    <i>object_list</i> is not touched.  The function will fail if the
+    handle arguments are of the wrong type.  The return value is a new
+    handle to a list of objects.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="FilterObjectsA"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>FilterObjectsA</tt>(<i>object_list</i>,
+    <i>array</i>, <i>array_size</i>, <i>touchok</i>, <i>remove</i>)</b>
+    <dd><br>This function creates a handle to a list of objects, which
+    consist of the objects in the <i>object_list</i> that touch or
+    overlap the polygon defined in the <i>array</i>.  The
+    <i>array_size</i> is the number of x-y coordinates represented in
+    the array.  In the array, the values are x-y coordinate pairs
+    representing the polygon vertices, and the first pair must match
+    the last pair (i.e., the figure must be closed).  The values are
+    specified in microns.  If <i>touchok</i> is nonzero, objects that
+    touch but do not overlap the polygon will be added to the list,
+    otherwise not.  If <i>remove</i> is nonzero, objects that are
+    added to the new list are removed from the <i>object_list</i>,
+    otherwise the <i>object_list</i> is not touched.
+
+    <p>
+    The function will fail if <i>array_size</i> is less than 4, or the
+    size of the array is less than twice <i>array_size</i>, or if the
+    handle argument is not a handle to a list of objects.  The return
+    value is a new handle to a list of objects.
+    </dl>
+    <hr>
+
+    <!-- 100408 -->
+    <a name="CheckObjectsConnected"></a>
+    <dl>
+    <dt><b>(int) <tt>CheckObjectsConnected</tt>(<i>object_handle</i>)</b>
+    <dd><br>This function returns 1 unless the list contains objects on
+    the layer of the first object in the list that are mutually
+    disjoint, meaning that there exist two objects and one can not
+    draw a curve from the interior of one to the other without
+    crossing empty area.  If disjoint objects are found, 0 is
+    returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="CheckForHoles"></a>
+    <dl>
+    <dt><b>(int) <tt>CheckForHoles</tt>(<i>object_handle</i>, <i>all</i>)</b>
+    <dd><br>This function returns 1 if the object, or collection of
+    objects, has "holes", i.e., uncovered areas completely surrounded
+    by geometry.  The first argument is a handle to a list of objects. 
+    If the second argument is nonzero, the geometry represented by
+    all objects in the list is checked.  If zero, only the first
+    object (which might be a complex polygon containing holes) is
+    checked.  If no holes are found, 0 is returned.
+
+    <p>
+    When <i>all</i> is true, only objects on the same layer as the
+    first object in the list are considered.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="BloatObjects"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>BloatObjects</tt>(<i>object_handle</i>,
+     <i>all</i>, <i>dimen</i>, <i>lname</i>, <i>mode</i>)</b>
+    <dd><br>This function returns a handle to a list of object copies
+    which are bloated versions of the objects referenced by the handle
+    argument, similar to the <a href="!bloat"><b>!bloat</b></a>
+    command.  The passed handle and objects are not affected.  Edges
+    will be pushed outward or pulled inward by <i>dimen</i> (positive
+    values push outward).  The <i>dimen</i> is given in microns.
+
+    <p>
+    The <i>all</i> argument is a boolean that if nonzero indicates
+    that all objects in the list referenced by the handle may be
+    processed.  If zero, only the first object in the list will be
+    processed.
+
+    <p>
+    The <i>lname</i> argument is a layer name.  If this argument is
+    zero, or a null or empty string, all objects on the returned list
+    are associated with the layer of the first object in the passed
+    list, and only objects on this layer in the passed list are
+    processed.  Otherwise, the layer will be created if it does not
+    exist, and all new objects will be associated with this layer, and
+    all objects in the passed list will be processed.
+
+    <p>
+    The <i>mode</i> argument is an integer that specifies the
+    algorithm to use for bloating.  Giving zero specifies the default
+    algorithm.  See the description of the <a
+    href="!bloat"><b>!bloat</b></a> command for documentation of the
+    algorithms available.
+
+    <p>
+    The <a href="DeleteObjects"><tt>DeleteObjects</tt></a> function can
+    be called to delete the old objects.  The <a
+    href="CopyObjects"><tt>CopyObjects</tt></a> function can be called
+    on the returned objects to add them to the database.  This
+    function returns a handle to the new list upon success, or 0 if
+    there are no objects.  The function will fail if the first
+    argument is not a handle to a list of objects or copies, or the
+    <i>lname</i> argument is non-null and not a valid layer name.
+
+    <p>
+    This function uses the <a
+    href="JoinMaxPolyVerts"><b>JoinMax<i>XXX</i></b></a> variables in
+    processing.  There is no effect on objects in the list whose
+    handle is passed as the argument, or on the handle.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="EdgeObjects"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>EdgeObjects</tt>(<i>object_handle</i>,
+     <i>all</i>, <i>dimen</i>, <i>lname</i>, <i>mode</i>)</b>
+    <dd><br>
+    This function creates new polygon copies that cover the edges of
+    the figures in the passed handle.  The <i>dimen</i> is half the
+    effective path width of the generated wire-like shapes that cover
+    the edges.
+
+    <p>
+    If the boolean argument <i>all</i> is nonzero, all of the objects
+    in the passed list may be processed, otherwise only the object at
+    the head of the list will be processed.
+
+    <p>
+    The <i>lname</i> argument is a layer name.  If this argument is
+    zero, or a null or empty string, all objects on the returned list
+    are associated with the layer of the first object in the passed
+    list, and only objects on this layer in the passed list are
+    processed.  Otherwise, the layer will be created if it does not
+    exist, and all new objects will be associated with this layer, and
+    all objects in the passed list will be processed.
+
+    <p>
+    The <i>mode</i> is an integer which specifies the algorithm to
+    use.  The algorithms are described with the <a
+    href="EdgesZ"><tt>EdgesZ</tt></a> function.
+
+    <p>
+    The <a href="DeleteObjects"><tt>DeleteObjects</tt></a> function can
+    be called to delete the old objects.  The <a
+    href="CopyObjects"><tt>CopyObjects</tt></a> function can be called
+    on the returned objects to add them to the database.  This
+    function returns a handle to the new list upon success, or 0 if
+    there are no objects.  The function will fail if the first
+    argument is not a handle to a list of objects or copies, or the
+    <i>lname</i> argument is non-null and not a valid layer name.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="ManhattanizeObjects"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>ManhattanizeObjects</tt>(<i>object_handle</i>,
+     <i>all</i>, <i>dimen</i>, <i>lname</i>, <i>mode</i>)</b>
+    <dd><br>This function will convert the objects pointed to by the
+    handle argument into a list of copies, which is referenced by the
+    returned handle.  The supplied objects and handle are not
+    affected.  Each new object is a Manhattan approximation of the
+    original object.  The <i>dimen</i> argument is the minimum height
+    or width in microns of rectangles created to approximate the
+    non-Manhattan parts.
+
+    <p>
+    The <i>all</i> argument is a boolean that if nonzero indicates
+    that all objects in the list referenced by the handle may be
+    processed.  If zero, only the first object in the list will be
+    processed.
+
+    <p>
+    The <i>lname</i> argument is a layer name, or zero.  If a layer
+    name is given, the new objects will be associated with that layer,
+    which will be created if it does not exist.  If 0 or an empty
+    string is passed, the new objects will be associated with the
+    layer of the original object.
+
+    <p>
+    The <i>mode</i> argument is a boolean value which selects one of two
+    Manhattanizing algorithms to employ.  These algorithms are described
+    with the <a href="!manh"><b>!manh</b></a> command.
+
+    <p>
+    The function will fail if the first argument is not a handle to a
+    list of objects or copies, or the <i>lname</i> argument is
+    non-null and not a valid layer name, or the <i>dimen</i> argument
+    is smaller than 0.01.  On success, a handle to the list of copies
+    is returned.  Each object in the returned list is a box or
+    Manhattan polygon which approximates one of the original objects. 
+    Of course, if the original objects were all Manhattan, the shapes
+    will be unchanged, though the coordinates will be moved to a
+    <i>dimen</i> grid if the gridding mode (<i>mode</i> nonzero) is
+    given.
+
+    <p>
+    The <a href="DeleteObjects"><tt>DeleteObjects</tt></a> function can
+    be called to delete the old objects.  The <a
+    href="CopyObjects"><tt>CopyObjects</tt></a> function can be called on
+    the returned objects to add them to the database.
+
+    <p>
+    This function uses the <a
+    href="JoinMaxPolyVerts"><b>JoinMax<i>XXX</i></b></a> variables in
+    processing.  There is no effect on objects in the list whose
+    handle is passed as the argument, or on the handle.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GroupObjects"></a>
+    <dl>
+    <dt><b>(int) <tt>GroupObjects</tt>(<i>object_handle</i>, <i>array</i>)</b>
+    <dd><br>This function acts on the first object in the list and all
+    other objects on the same layer found in the list.  The objects
+    are copied, then sorted into groups, so that each group forms a
+    single figure, i.e., no two members of the same group are
+    disjoint.  The groups are then joined into polygons, and a handle
+    to each group is returned in the array.  The array will be resized
+    if necessary.  The returned value is the number of groups,
+    corresponding to the used entries in the array.  The <a
+    href="H"><tt>H</tt></a> function should be used on the array
+    elements to convert the values to an object handle data type,
+    similar to the treatment of the array returned from the <a
+    href="HandleArray"><tt>HandleArray</tt></a> function.  The <a
+    href="CloseArray"><tt>CloseArray</tt></a> function can be used to
+    close the handles.  The created objects are copies, so are not
+    added to the database.
+
+    <p>
+    This function uses the <a
+    href="JoinMaxPolyVerts"><b>JoinMax<i>XXX</i></b></a> variables in
+    processing.  There is no effect on objects in the list whose
+    handle is passed as the first argument, or on the handle.  The
+    value 0 is returned on error or if the list is empty.
+    </dl>
+    <hr>
+
+    <!-- 040904 -->
+    <a name="JoinObjects"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>JoinObjects</tt>(<i>object_handle</i>,
+     <i>lname</i>)</b>
+    <dd><br>This function will combine the objects in the list passed as
+    the first argument, if possible, into a new list of object copies,
+    which is returned.  The passed handle and objects are not
+    affected.  All objects in the returned list will be associated
+    with the layer named in the second argument.  This layer will be
+    created if it does not exist, and the output will consist of the
+    joined outlines of all of the objects in the passed list, from any
+    layer.  If 0, or a null or empty string is passed, the new objects
+    will be associated with the layer of the first object in the
+    passed list, and only the outlines of objects on this layer found
+    in the passed list will contribute to the result.
+
+    <p>
+    The <a href="DeleteObjects"><tt>DeleteObjects</tt></a> function can
+    be called to delete the old objects.  The <a
+    href="CopyObjects"><tt>CopyObjects</tt></a> function can be called on
+    the returned objects to add them to the database.  This function
+    returns a handle to the new list upon success, or 0 if there are
+    no objects.  The function will fail if the first argument is not a
+    handle to a list of objects or copies, or the <i>lname</i>
+    argument is non-null and not a valid layer name.
+
+    <p>
+    This function uses the <a
+    href="JoinMaxPolyVerts"><b>JoinMax<i>XXX</i></b></a> variables in
+    processing.  There is no effect on objects in the list whose
+    handle is passed as the argument, or on the handle.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="SplitObjects"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>SplitObjects</tt>(<i>object_handle</i>,
+     <i>all</i>, <i>lname</i>, <i>vert</i>)</b>
+    <dd><br>This function will split the objects in the list passed as the
+    first argument into horizontal or vertical trapezoids (polygons or
+    boxes) and return a list of the new objects.  The new objects are
+    "object copies" and are not added to the database.
+
+    <p>
+    If the boolean argument <i>all</i> is nonzero, all of the objects
+    in the list referenced by the handle will be processed. 
+    Otherwise, only the first object will be processed.
+
+    <p>
+    The new objects are placed on the layer with the name given in
+    <i>lname</i>, which is created if it does not exist, independent
+    of the originating layer of the objects.  If a null string or 0 is
+    passed for <i>lname</i>, the target layer will be the layer of the
+    first object found in the object list.
+
+    <p>
+    The <i>vert</i> argument is an integer which if nonzero indicates
+    a vertical decomposition, otherwise a horizontal decomposition is
+    produced. 
+
+    The handle and objects passed are untouched.  The
+    <tt>DeleteObjects</tt> function can be called to delete the old
+    objects.  The <tt>CopyObjects</tt> function can be called on the
+    returned objects to add them to the database.  This function
+    returns a handle to the new list upon success, or 0 if there are
+    no objects.  The function will fail if the first argument is not a
+    handle to a list of objects or copies, or the <i>lname</i>
+    argument is non-null and not a valid layer name.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="DeleteObjects"></a>
+    <dl>
+    <dt><b>(int) <tt>DeleteObjects</tt>(<i>object_handle</i>, <i>all</i>)</b>
+    <dd><br>
+    Calling this function will delete referenced objects from the
+    current cell.  If the boolean argument <i>all</i> is nonzero, all
+    objects in the list will be deleted.  Otherwise, only the first
+    object in the list will be deleted.  Once deleted, the objects are
+    no longer referenced by the handle, which may become empty as a
+    result.
+
+    <p>
+    This function will fail if the handle passed is not a handle to an
+    object list.  The number of objects deleted is returned.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="SelectObjects"></a>
+    <dl>
+    <dt><b>(int) <tt>SelectObjects</tt>(<i>object_handle</i>, <i>all</i>)</b>
+    <dd><br>
+    This function will select objects referenced by the handle.  If
+    the boolean argument <i>all</i> is nonzero, all objects in the
+    list will be selected.  Otherwise, only the first object in the
+    list will be selected.
+
+    <p>
+    It is not possible to select object copies, 0 is returned if the
+    passed handle represents copies.  Otherwise the return value is
+    the number of newly selected objects.
+
+    <p>
+    This function will fail if the handle passed is not a handle to an
+    object list.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="DeselectObjects"></a>
+    <dl>
+    <dt><b>(int) <tt>DeselectObjects</tt>(<i>object_handle</i>,
+     <i>all</i>)</b><dd><br>
+    This function will deselect objects referenced by the handle.  If
+    the boolean argument <i>all</i> is nonzero, all objects in the
+    list will be deselected.  Otherwise, only the first object in the
+    list will be deselected.
+
+    <p>
+    It is not possible to select object copies, 0 is returned if the
+    passed handle represents copies.  Otherwise the return value is
+    the number of newly deselected objects.
+
+    <p>
+    This function will fail if the handle passed is not a handle to an
+    object list.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="MoveObjects"></a>
+    <dl>
+    <dt><b>(int) <tt>MoveObjects</tt>(<i>object_handle</i>, <i>all</i>,
+     <i>refx</i>, <i>refy</i>, <i>x</i>, <i>y</i>)</b>
+    <dd><br>This function is similar to the <tt>Move</tt> function,
+    however it operates on the object(s) referenced by the handle.  An
+    object is moved such that the coordinate <i>refx</i>, <i>refy</i>
+    is translated to <i>x</i>, <i>y</i>.  The <a
+    href="xic:xform">current transform</a> will be applied to the
+    move.  If <i>all</i> is nonzero, all objects in the list are
+    moved, otherwise only the object currently referenced is moved. 
+    The function returns the number of objects moved.  This function
+    will fail if the handle passed is not a handle to an object list.
+
+    <p>
+    If the handle references object copies, each copy is translated
+    and possibly transformed as described above.  The handle will
+    subsequently reference the modified object.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="MoveObjectsToLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>MoveObjectsToLayer</tt>(<i>object_handle</i>, <i>all</i>,
+     <i>refx</i>, <i>refy</i>, <i>x</i>, <i>y</i>, <i>oldlayer</i>,
+     <i>newlayer</i>)</b>
+    <dd><br>This is similar to the <tt>MoveObjects</tt> function, but
+    allows layer change.  If <i>newlayer</i> is 0, null, or empty,
+    <i>oldlayer</i> is ignored and the function behaves identically to
+    <tt>MoveObjects</tt>.  Otherwise the <i>newlayer</i> string must be
+    a layer name.  If <i>oldlayer</i> is 0, null, or empty, all moved
+    objects are placed on <i>newlayer</i>.  Otherwise, <i>oldlayer</i>
+    must be a layer name, in which case only objects on
+    <i>oldlayer</i> will be placed on <i>newlayer</i>, other objects
+    will remain on the same layer.  Subcell objects are moved as in
+    <tt>MoveObjects</tt>, i.e., the layer arguments are ignored.
+    </dl>
+    <hr>
+
+    <!-- 101415 -->
+    <a name="CopyObjects"></a>
+    <dl>
+    <dt><b>(int) <tt>CopyObjects</tt>(<i>object_handle</i>, <i>all</i>,
+     <i>refx</i>, <i>refy</i>, <i>x</i>, <i>y</i>, <i>repcnt</i>)</b>
+    <dd><br>This function is similar to the <tt>Copy</tt> function,
+    however it operates on the object(s) referenced by the handle.  An
+    object is copied such that the coordinate <i>refx</i>, <i>refy</i>
+    is translated to <i>x</i>, <i>y</i>.
+
+    <p>
+    The <i>repcnt</i> is an integer replication count in the range
+    1-100000, which will be silently taken as one if out of range.  If
+    not one, multiple copies are made, at multiples of the translation
+    factors given.
+
+    <p>
+    The <a href="xic:xform">current transform</a> will be applied to
+    the copy.  If <i>all</i> is nonzero, all of the objects in the
+    list are copied, otherwise only the object currently being
+    referenced is copied.  The function returns the number of objects
+    copied.  This function will fail if the handle passed is not a
+    handle to an object list.
+
+    <p>
+    If the handle references object copies, the object copies that are
+    referenced remains untouched, however the new objects, translated
+    and possibly transformed as described above, are added to the
+    database.  The <i>repcnt</i> is ignored in this case.
+    </dl>
+    <hr>
+
+    <!-- 082009 -->
+    <a name="CopyObjectsToLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>CopyObjectsToLayer</tt>(<i>object_handle</i>, <i>all</i>,
+     <i>refx</i>, <i>refy</i>, <i>x</i>, <i>y</i>, <i>oldlayer</i>,
+     <i>newlayer</i>, <i>repcnt</i>)</b>
+    <dd><br>This is similar to the <tt>CopyObjects</tt> function, but
+    allows layer change.  If <i>newlayer</i> is 0, null, or empty,
+    <i>oldlayer</i> is ignored and the function behaves identically to
+    <tt>CopyObjects</tt>.  Otherwise the <i>newlayer</i> string must be
+    a layer name.  If <i>oldlayer</i> is 0, null, or empty, all copied
+    objects are placed on <i>newlayer</i>.  Otherwise, <i>oldlayer</i>
+    must be a layer name, in which case only objects on
+    <i>oldlayer</i> will be placed on <i>newlayer</i>, other objects
+    will remain on the same layer.  Subcell objects are copied as in
+    <tt>CopyObjects</tt>, i.e., the layer arguments are ignored.
+    </dl>
+    <hr>
+
+    <!-- 092615 -->
+    <a name="CopyObjectsH"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>CopyObjectsH</tt>(<i>object_handle</i>,
+     <i>all</i>, <i>refx</i>, <i>refy</i>, <i>x</i>, <i>y</i>, <i>oldlayer</i>,
+     <i>newlayer</i>, <i>todb</i>)</b>
+    <dd><br>
+    This function returns an object handle, containing copies of the
+    objects in the handle passed as the first argument.  If boolean
+    <i>all</i> is set, all passed objects will be copied, otherwise
+    only the first object in the list will be copied.  The next four
+    arguments set the copy translation, with <i>refx</i> and
+    <i>refy</i> in the passed object translated to <i>x</i>, <i>y</i>
+    in the copy.  The current transform is also applied to the copy.
+
+    <p>
+    The two layer name arguments behave as in
+    <tt>CopyObjectToLayer</tt>.  If <i>newlayer</i> is 0, null, or
+    empty, <i>oldlayer</i> is ignored and no object layers will
+    change.  Otherwise the <i>newlayer</i> string must be a layer
+    name.  If <i>oldlayer</i> is 0, null, or empty, all copied objects
+    are placed on <i>newlayer</i>.  Otherwise, <i>oldlayer</i> must be
+    a layer name, in which case only objects on <i>oldlayer</i> will
+    be placed on <i>newlayer</i>, other objects will remain on the
+    same layer.  Subcell objects are copied as in
+    <tt>CopyObjects</tt>, i.e., the layer arguments are ignored.
+
+    <p>
+    The final argument is a boolean that when true, the copies are
+    added to the database, and the returned handle points to the
+    database objects.  If false, the returned handle contains "object
+    copies" which do not appear in the database.  Note that when
+    copies are added to the database, unlike other copy functions
+    merging is disabled, and the replication feature is not available.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetObjectType"></a>
+    <dl>
+    <dt><b>(string) <tt>GetObjectType</tt>(<i>object_handle</i>)</b>
+    <dd><br>This function returns a one-character string representing the
+    type of object referenced by the handle argument.  If the handle
+    is invalid, a null string is returned.  The types are:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>'<tt>b</tt>'</td><td>boxes</td></tr>
+    <tr><td>'<tt>p</tt>'</td><td>polygons</td></tr>
+    <tr><td>'<tt>w</tt>'</td><td>wires</td></tr>
+    <tr><td>'<tt>l</tt>'</td><td>labels</td></tr>
+    <tr><td>'<tt>c</tt>'</td><td>subcells</td></tr>
+    </table>
+
+    <p>
+    This function will fail if the handle passed is not a handle to an
+    object list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetObjectID"></a>
+    <dl>
+    <dt><b>(int) <tt>GetObjectID</tt>(<i>object_handle</i>)</b>
+    <dd><br>This function returns a unique id number for the object.  The
+    id is actually the address of the object in the process memory, so
+    it is valid only for the current <i>Xic</i> process.  If the
+    referenced object is a copy, the id returned is the address of the
+    real object, not the copy.  If no object is referenced by the
+    handle, 0 is returned.  The function fails if the handle is not an
+    object list type.
+    </dl>
+    <hr>
+
+    <!-- 072904 -->
+    <a name="GetObjectArea"></a>
+    <dl>
+    <dt><b>(int) <tt>GetObjectArea</tt>(<i>object_handle</i>)</b>
+    <dd><br>Return the area in square microns of the object pointed to by
+    the handle.  Zero is returned for a defunct handle or upon error.
+    </dl>
+    <hr>
+
+    <!-- 072904 -->
+    <a name="GetObjectPerim"></a>
+    <dl>
+    <dt><b>(int) <tt>GetObjectPerim</tt>(<i>object_handle</i>)</b>
+    <dd><br>Return the perimeter in microns of the object pointed to by
+    the handle.  Zero is returned for a defunct handle or upon error.
+    </dl>
+    <hr>
+
+    <!-- 062715 -->
+    <a name="GetObjectCentroid"></a>
+    <dl>
+    <dt><b>(int) <tt>GetObjectCentroid</tt>(<i>object_handle</i>,
+      <i>array</i>)</b>
+    <dd><br>
+    Return the centroid coordinates in microns of the object pointed
+    to by the handle.  The second argument is an array of size two or
+    larger that will contain the centroid coordinates upon successful
+    return.  The return value is zero for a defunct handle or upon error,
+    one if success.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetObjectBB"></a>
+    <dl>
+    <dt><b>(int) <tt>GetObjectBB</tt>(<i>object_handle</i>, <i>array</i>)</b>
+    <dd><br>This function loads the left, bottom, right, and top
+    coordinates of the object's bounding box (in microns) into the
+    <i>array</i> passed.  This function will fail if the handle passed
+    is not a handle to an object list, or if the size of the array is
+    less than 4.  The return value is 1 if successful, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 021912 -->
+    <a name="SetObjectBB"></a>
+    <dl>
+    <dt><b>(int) <tt>SetObjectBB</tt>(<i>object_handle</i>, <i>array</i>)</b>
+    <dd><br>This function will alter the shape of the object pointed
+    to by the handle such that it has the bounding box passed.  The
+    <i>array</i> contains the left, bottom, right, and top
+    coordinates, in microns.  This function will fail if the handle
+    passed is not a handle to an object list, or if the size of the
+    array is less than 4.  The return value is 1 if successful, 0
+    otherwise.  This function has no effect on subcells, but other
+    types of object will be rescaled to the new bounding box.
+    </dl>
+    <hr>
+
+    <!-- 120615 -->
+    <a name="GetObjectListBB"></a>
+    <dl>
+    <dt><b>(int) <tt>GetObjectListBB</tt>(<i>object_handle</i>, <i>array</i>)</b>
+    <dd><br>
+    This is similar to <tt>GetObjectBB</tt>, but computes the bounding
+    box of all objects in the list of objects referenced by the
+    handle.  not just the list head.  The function loads the left,
+    bottom, right, and top coordinates of the aggregate bounding box
+    (in microns) into the array passed.  This function will fail if
+    the handle passed is not a handle to an object list, or if the
+    size of the array is less than 4.  The return value is a count of
+    the objects in the list.
+    </dl>
+    <hr>
+
+    <!-- 011110 -->
+    <a name="GetObjectXY"></a>
+    <dl>
+    <dt><b>(int) <tt>GetObjectXY</tt>(<i>object_handle</i>, <i>array</i>)</b>
+    <dd><br>
+    This function will retrieve the "XY" position from the object
+    pointed to by the handle into the array, which must have size 2 or
+    larger.  This is a coordinate, in microns, the interpretation of
+    which depends on the object type.  For boxes, that value is the
+    lower-left corner of the box.  For wires and polygons, the value
+    is the first vertex in the coordinate list.  For labels, the value
+    is the text anchor position.  For subcells, the value is the
+    instantiation point, the same as the translation in the
+    instantiation transform.
+
+    <p>
+    On success, the return value is 1, with the array values set. 
+    Otherwise, 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 011110 -->
+    <a name="SetObjectXY"></a>
+    <dl>
+    <dt><b>(int) <tt>SetObjectXY</tt>(<i>object_handle</i>, <i>x</i>,
+      <i>y</i>)</b>
+    <dd><br>
+    This function will set the "XY" coordinate of the object pointed
+    to by the handle, as if setting the <tt>XprpXY</tt> <a
+    href="properties">pseudo-property</a> number 7215 on the object. 
+    This has the effect of moving the object to a new location.  The
+    interpretation of the coordinate, which is supplied in microns,
+    depends on the type of object.  For boxes, the lower-left corner
+    will assume the new value.  For polygons and wires, the object
+    will be moved so that the first vertex in the coordinate list will
+    assume the new value.  For labels, the text will be anchored at
+    the new value, and for subcells, the new value will set the
+    translation part of the instantiation transform.
+
+    <p>
+    A value of 1 is returned if the operation succeeds, and the object
+    will be moved.  On failure, 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetObjectLayer"></a>
+    <dl>
+    <dt><b>(string) <tt>GetObjectLayer</tt>(<i>object_handle</i>)</b>
+    <dd><br>This function returns the name of the layer on which the
+    object referenced by the handle is defined.  For subcells, this
+    layer is named "<tt>$$</tt>", but objects will return a layer from
+    the layer table.  This function will fail if the handle passed is
+    not a handle to an object list.  A stale handle will return a null
+    string.
+    </dl>
+    <hr>
+
+    <!-- 021912 -->
+    <a name="SetObjectLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>SetObjectLayer</tt>(<i>object_handle</i>,
+      <i>layername</i>)</b>
+    <dd><br>This function will move the object to the layer named in
+    the string <i>layername</i>.  This will have no effect on
+    subcells.  A value 1 is returned if successful, 0 otherwise.  This
+    function will fail if the handle passed is not a handle to an
+    object list.
+    </dl>
+    <hr>
+
+    <!-- 070516 -->
+    <a name="GetObjectFlags"></a>
+    <dl>
+    <dt><b>(int) <tt>GetObjectFlags</tt>(<i>object_handle</i>)</b>
+    <dd><br>This function returns internal flag data from the object
+    referenced by the handle.  This function will fail if the handle
+    passed is not a handle to an object list.  A stale handle will
+    return 0.
+
+    <p>
+    The following flags are defined:
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Name</th> <th>Bit</th> <th>Description</th></tr>
+    <tr><td><tt>MergeDeleted</tt></td> <td><tt>0x1</tt></td>
+      <td>Object has been deleted due to merge.</td></tr>
+    <tr><td><tt>MergeCreated</tt></td> <td><tt>0x2</tt></td>
+      <td>Object has been created due to merge.</td></tr>
+    <tr><td><tt>NoDRC</tt></td>        <td><tt>0x4</tt></td>
+      <td>Skip DRC tests on this object.</td></tr>
+    <tr><td><tt>Expand</tt></td>       <td><tt>0x8</tt></td>
+      <td>Five flags are used to keep track of cell expansion in main
+      plus four sub-windows, in cell instances only.</td></tr>
+    <tr><td><tt>Mark1</tt></td>        <td><tt>0x100</tt></td>
+      <td>General purpose application flag.</td></tr>
+    <tr><td><tt>Mark2</tt></td>        <td><tt>0x200</tt></td>
+      <td>General purpose application flag.</td></tr>
+    <tr><td><tt>MarkExtG</tt></td>     <td><tt>0x400</tt></td>
+      <td>Extraction system, in grouping phonycell.</td></tr>
+    <tr><td><tt>MarkExtE</tt></td>     <td><tt>0x800</tt></td>
+      <td>Extraction system, in extraction phonycell.</td></tr>
+    <tr><td><tt>InQueue</tt></td>      <td><tt>0x1000</tt></td>
+      <td>Object is in selection queue.</td></tr>
+    <tr><td><tt>NoMerge</tt></td>      <td><tt>0x4000</tt></td>
+      <td>Object will not be merged.</td></tr>
+    <tr><td><tt>IsCopy</tt></td>       <td><tt>0x8000</tt></td>
+      <td>Object is a copy, not in database.</td></tr>
+    </table>
+
+    <p>
+    The bitwise logic functions such as <a
+    href="AndBits"><tt>AndBits</tt></a> can be used to check the state
+    of the flags.  Of these, only <tt>NoDRC</tt>, <tt>Mark1</tt>, and
+    <tt>Mark2</tt> can be arbitrarily set by the user, using functions
+    described below.
+    </dl>
+    <hr>
+
+    <!-- 070516 -->
+    <a name="SetObjectNoDrcFlag"></a>
+    <dl>
+    <dt><b>(int) <tt>SetObjectNoDrcFlag</tt>(<i>object_handle</i>,
+      <i>value</i>)</b>
+    <dd><br>
+    This will set the state of the <tt>NoDRC</tt> flag of the object
+    referenced by the handle.  The second argument is a boolean
+    representing the flag state.  This can be called on any object,
+    but is only significant for boxes, polygons, and wires in the
+    database.  Objects with this flag set are ignored during design
+    rule checking.
+
+    <p>
+    The return value is 0 or 1 representing the previous state of the
+    flag, or -1 on error.
+    </dl>
+    <hr>
+
+    <!-- 070516 -->
+    <a name="SetObjectMark1Flag"></a>
+    <dl>
+    <dt><b>(int) <tt>SetObjectMark1Flag</tt>(<i>object_handle</i>,
+      <i>value</i>)</b>
+    <dd><br>
+    This will set the state of the <tt>Mark1</tt> flag of the object
+    referenced by the handle.  The second argument is a boolean
+    representing the flag state.  This can be called on any object.
+    The flag is unused by <i>Xic</i>, but can be set and tested by the
+    user for any purpose.  The flag persists as long as the object is
+    in memory.
+
+    <p>
+    The return value is 0 or 1 representing the previous state of the
+    flag, or -1 on error.
+    </dl>
+    <hr>
+
+    <!-- 070516 -->
+    <a name="SetObjectMark2Flag"></a>
+    <dl>
+    <dt><b>(int) <tt>SetObjectMark2Flag</tt>(<i>object_handle</i>,
+      <i>value</i>)</b>
+    <dd><br>
+    This will set the state of the <tt>Mark2</tt> flag of the object
+    referenced by the handle.  The second argument is a boolean
+    representing the flag state.  This can be called on any object.
+    The flag is unused by <i>Xic</i>, but can be set and tested by the
+    user for any purpose.  The flag persists as long as the object is
+    in memory.
+
+    <p>
+    The return value is 0 or 1 representing the previous state of the
+    flag, or -1 on error.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetObjectState"></a>
+    <dl>
+    <dt><b>(int) <tt>GetObjectState</tt>(<i>object_handle</i>)</b>
+    <dd><br>This function returns a status value for the object referenced
+    by the handle.  The status values are:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td><td>normal state</td></tr>
+    <tr><td>1</td><td>object is selected</td></tr>
+    <tr><td>2</td><td>object is deleted</td></tr>
+    <tr><td>3</td><td>object is incomplete</td></tr>
+    <tr><td>4</td><td>object is internal only</td></tr>
+    </table>
+
+    <p>
+    Only values 0 and 1 are likely to be seen.  This function will
+    fail if the handle passed is not a handle to an object list.  A
+    stale handle will return 0.
+    </dl>
+    <hr>
+
+    <!-- 033009 -->
+    <a name="GetObjectGroup"></a>
+    <dl>
+    <dt><b>(int) <tt>GetObjectGroup</tt>(<i>object_handle</i>)</b>
+    <dd><br>
+    This function returns the conductor group number of the object,
+    which is a non-negative integer or possibly -1 in certain cases,
+    and is assigned internally by the extraction system.  This is used
+    by the extraction system to establish connectivity nets of boxes,
+    polygons, and wires, and for subcell indexing.  If extraction is
+    unavailable or not being used, then an arbitrary integer can be
+    applied for other uses with the <tt>SetObjectGroup</tt> function.
+
+    <p>
+    This function will fail if the handle passed is not a handle to an
+    object list.  If no group has been assigned, or the handle is
+    stale, or the object is part of the "ground" group, 0 is returned. 
+    Otherwise, any assigned number will be returned.
+    </dl>
+    <hr>
+
+    <!-- 033009 -->
+    <a name="SetObjectGroup"></a>
+    <dl>
+    <dt><b>(int) <tt>SetObjectGroup</tt>(<i>object_handle</i>,
+      <i>group_num</i>)</b>
+    <dd><br>
+    This function will assign the group number to the object.  All
+    objects and instances may receive a group number, which is an
+    arbitrary integer.  The group number is usually assigned and used
+    by the extraction system, and should <b>not</b> be assigned with
+    this function if extraction is being used.  However, if extraction
+    is unavailable or not being used, then this function allows an
+    arbitrary integer to be associated with an object, which might be
+    useful.  Beware that this number is zeroed if the object is
+    modified, or in copies.
+
+    <p>
+    The <tt>GetObjectGroup</tt> function can be used to obtain the
+    group number of an object or cell instance.
+
+    <p>
+    This function will fail if the handle passed is not a handle to an
+    object list.  If the group number is successfully assigned, 1 is
+    returned, 0 is returned otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetObjectCoords"></a>
+    <dl>
+    <dt><b>(int) <tt>GetObjectCoords</tt>(<i>object_handle</i>,
+      <i>array</i>)</b>
+    <dd><br>This function will obtain the vertex list for polygons and
+    wires, or the bounding box vertices of other objects, starting
+    from the lower left corner and working clockwise.  If an array is
+    passed, the vertex coordinates are copied into the array, and the
+    vertex count is returned.  The array will contain the x, y values
+    of the vertices, in microns, if successful.  The coordinates are
+    copied only if the array is large enough, or can be resized.  If
+    the array is a pointer to a too small array, or the array is too
+    small but has other variables pointing to it, resizing is
+    impossible and the copying is skipped.  In this case, the returned
+    value is the negative vertex count.  If 0 is passed instead of the
+    array, the (positive) vertex count is returned.  Zero is returned
+    if there is an error.  This function will fail if the handle
+    passed is not a handle to an object list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SetObjectCoords"></a>
+    <dl>
+    <dt><b>(int) <tt>SetObjectCoords</tt>(<i>object_handle</i>, <i>array</i>,
+     <i>size</i>)</b>
+    <dd><br>This function will modify a physical object to have the vertex
+    list passed in the array.  The size is the number of vertices (one
+    half the size of the array used).  For all but wires, the first
+    and last vertices must coincide, thus the minimum number of
+    vertices is four.  The array consists of x, y coordinates of the
+    vertices.  If the operation is successful, 1 is returned,
+    otherwise 0 is returned.  The coordinates in the array are in
+    microns.  If the coordinates represent a rectangle, the new object
+    will be a box, if it was previously a polygon or box.  A box may
+    be converted to a polygon if the coordinates are not those of a
+    rectangle.  For labels, the coordinates must represent a
+    rectangle, and the label will be stretched to the new box.  The
+    function has no effect on instances.  This function will fail if
+    the handle passed is not a handle to an object list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetObjectMagn"></a>
+    <dl>
+    <dt><b>(real) <tt>GetObjectMagn</tt>(<i>object_handle</i>)</b>
+    <dd><br>This function returns the magnification part of the transform
+    if the object referenced by the handle is a subcell, or 1.0 for
+    other objects.  Only physical subcells can have non-unit
+    magnification.  This function will fail if the handle passed is
+    not a handle to an object list.  A stale handle returns 0.
+    </dl>
+    <hr>
+
+    <!-- 021912 -->
+    <a name="SetObjectMagn"></a>
+    <dl>
+    <dt><b>(int) <tt>SetObjectMagn</tt>(<i>object_handle</i>, <i>magn</i>)</b>
+    <dd><br>This will set the magnification of the subcell referenced
+    by the handle, or scale other physical objects.  The real number
+    <i>magn</i> must be between .001 and 1000 inclusive.  If the
+    operation is successful, 1 is returned, otherwise 0 is returned. 
+    This function will fail if the handle passed is not a handle to an
+    object list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetWireWidth"></a>
+    <dl>
+    <dt><b>(real) <tt>GetWireWidth</tt>(<i>object_handle</i>)</b>
+    <dd><br>This function will return the wire width if the object
+    referenced by the handle is a wire, otherwise 0 is returned. 
+    This function will fail if the handle passed is not a handle to an
+    object list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SetWireWidth"></a>
+    <dl>
+    <dt><b>(int) <tt>SetWireWidth</tt>(<i>object_handle</i>, <i>width</i>)</b>
+    <dd><br>This function will set the width of the wire referenced by the
+    handle to the given <i>width</i> (in microns).  If the operation
+    is successful, 1 is returned, otherwise 0 is returned.  This
+    function will fail if the handle passed is not a handle to an
+    object list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetWireStyle"></a>
+    <dl>
+    <dt><b>(int) <tt>GetWireStyle</tt>(<i>object_handle</i>)</b>
+    <dd><br>This function returns the end style code of the wire pointed
+    to by the handle, or -1 if the object is not a wire.  The codes are
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td><td>flush ends</td></tr>
+    <tr><td>1</td><td>projecting rounded ends</td></tr>
+    <tr><td>2</td><td>projecting square ends</td></tr>
+    </table>
+
+    <p>
+    This function will fail if the handle passed is not a handle to an
+    object list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SetWireStyle"></a>
+    <dl>
+    <dt><b>(int) <tt>SetWireStyle</tt>(<i>object_handle</i>, <i>code</i>)</b>
+    <dd><br>This function will change the end style of the wire referenced by
+    the handle to the given <i>code</i>.  The code is an integer which can
+    take the following values
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td><td>flush ends</td></tr>
+    <tr><td>1</td><td>projecting rounded ends</td></tr>
+    <tr><td>2</td><td>projecting square ends</td></tr>
+    </table>
+
+    <p>
+    If the operation succeeds, 1 is returned, otherwise 0.  This can
+    apply to physical wires only.  This function will fail if the
+    handle passed is not a handle to an object list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SetWireToPoly"></a>
+    <dl>
+    <dt><b>(int) <tt>SetWireToPoly</tt>(<i>object_handle</i>)</b>
+    <dd><br>This function converts the wire object referenced by the
+    handle to a polygon object.  If the conversion is done, the handle
+    will reference the new polygon object.  The conversion will be
+    done only if the wire has nonzero width.  If the wire is not a
+    copy, the wire object in the database will be converted to a
+    polygon.  Otherwise, only the copy will be changed.  Upon success,
+    the function returns 1, otherwise 0 is returned.  The function
+    fails if the argument is not a handle to an object list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetWirePoly"></a>
+    <dl>
+    <dt><b>(int) <tt>GetWirePoly</tt>(<i>object_handle</i>, <i>array</i>)</b>
+    <dd><br>This function returns the polygon used for rendering a wire. 
+    This will be different from the wire vertices, if the wire has
+    nonzero width.  The first argument is a handle to an object list
+    which references a wire object.  The second argument is an array
+    which will hold the polygon coordinates.  This argument can be 0,
+    if the polygon points are not needed.  The array will be resized
+    if necessary (and possible).  The return value is the number of
+    vertices required or used in the polygon.  If an error occurs, the
+    return value is 0.  If an array is passed which can't be resized
+    because it is referenced by a pointer, the return value is a
+    negative value, the negative vertex count required.  The function
+    will fail if the first argument is not a handle to an object list,
+    or the second argument is not an array or zero.  The coordinates
+    returned in the array are in microns, relative to the origin of
+    the current cell.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetLabelText"></a>
+    <dl>
+    <dt><b>(string) <tt>GetLabelText</tt>(<i>object_handle</i>)</b>
+    <dd><br>This function returns the label text if the object referenced
+    by the handle is a label.  Otherwise, a null string is returned. 
+    The actual text is always returned, and not the symbolic text that
+    is shown on-screen for script and long text labels.  This function
+    will fail if the handle passed is not a handle to an object list.
+    </dl>
+    <hr>
+
+    <!-- 021912 -->
+    <a name="SetLabelText"></a>
+    <dl>
+    <dt><b>(int) <tt>SetLabelText</tt>(<i>object_handle</i>, <i>text</i>)</b>
+    <dd><br>This function will set the label text of a label
+    referenced by the handle.  Setting the text in this manner will
+    cause a long-text label to revert to a normal label.  If the
+    operation succeeds, the return value is 1, otherwise 0 is
+    returned.  This function will fail if the handle passed is not a
+    handle to an object list.
+    </dl>
+    <hr>
+
+    <!-- 022713 -->
+    <a name="GetLabelFlags"></a>
+    <dl>
+    <dt><b>(int) <tt>GetLabelFlags</tt>(<i>object_handle</i>)</b>
+    <dd><br>This function returns the <a href="labelflags">flags
+    word</a> used to specify a number of label presentation
+    attributes.
+
+    <p>
+    This function will fail if the handle passed is not a handle to an
+    object list.
+
+    <p>
+    The function was named <tt>GetLabelXform</tt> in releases prior to
+    4.0, and is still recognized by that name, though this is
+    deprecated and undocumented.
+    </dl>
+    <hr>
+
+    <!-- 022713 -->
+    <a name="SetLabelFlags"></a>
+    <dl>
+    <dt><b>(int) <tt>SetLabelFlags</tt>(<i>object_handle</i>, <i>flags</i>)</b>
+    <dd><br>This function will apply the given flags to the label
+    referenced by the handle.  The flags are the <a
+    href="labelflags">label flags</a> used by <i>Xic</i>.  If the
+    operation is successful, 1 is returned, otherwise 0 is returned. 
+    This function will fail if the handle passed is not a handle to an
+    object list.
+
+    <p>
+    The function was named <tt>SetLabelXform</tt> in releases prior to
+    4.0, and is still recognized by that name, though this is
+    deprecated and undocumented.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetInstanceArray"></a>
+    <dl>
+    <dt><b>(int) <tt>GetInstanceArray</tt>(<i>object_handle</i>,
+      <i>array</i>)</b>
+    <dd><br>This function fills in the <i>array</i>, which must have size
+    of four or larger, with the array parameters for the instance
+    referenced by the handle.  If the operation succeeds, 1 is
+    returned, and the array components have the following values,
+    relative to the untransformed coordinates:
+
+    <p>
+    <table border=0>
+    <tr><td>array[0]</td><td>number of cells along x</td></tr>
+    <tr><td>array[1]</td><td>number of cells along y</td></tr>
+    <tr><td>array[2]</td><td>center to center x spacing (in microns)</td></tr>
+    <tr><td>array[3]</td><td>center to center y spacing (in microns)</td></tr>
+    </table>
+
+    <p>
+    If the operation fails, 0 is returned.  This function will fail if
+    the handle passed is not a handle to an object list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SetInstanceArray"></a>
+    <dl>
+    <dt><b>(int) <tt>SetInstanceArray</tt>(<i>object_handle</i>,
+      <i>array</i>)</b>
+    <dd><br>This function will change the array parameters of the instance
+    referenced by the handle to the indicated values.  The
+    <i>array</i> values are in the format as returned from
+    <tt>GetInstanceArray</tt>.  Only physical mode subcells can be
+    changed by this function, arrays are not supported in electrical
+    mode.  If the operation succeeds, 1 is returned, otherwise 0 is
+    returned.  This function will fail if the handle passed is not a
+    handle to an object list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetInstanceXform"></a>
+    <dl>
+    <dt><b>(string) <tt>GetInstanceXform</tt>(<i>object_handle</i>)</b>
+    <dd><br>This function returns a string giving the CIF transformation
+    code for the instance referenced by the handle.  If the object is
+    not an instance, a null string is returned.  This function will
+    fail if the handle passed is not a handle to an object list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetInstanceXformA"></a>
+    <dl>
+    <dt><b>(string) <tt>GetInstanceXformA</tt>(<i>object_handle</i>,
+      <i>array</i>)</b>
+    <dd><br>This function fills in the <i>array</i>, which must have size
+    4 or larger, with the components of the transformation of the
+    instance referenced by the handle.  The values are:
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><i>array</i>[0]</td><td>1 if mirror-y, 0 if no mirror-y</td></tr>
+    <tr><td><i>array</i>[1]</td><td>angle in degrees</td></tr>
+    <tr><td><i>array</i>[2]</td><td>translation x</td></tr>
+    <tr><td><i>array</i>[3]</td><td>translation y</td></tr>
+    </table>
+
+    <p>
+    This is the same data as provided by the <tt>GetInstanceXform</tt>
+    function, but in numerical rather than string form.  The transform
+    components are applied in the order as found in the array, i.e.,
+    mirror first, then rotate, then translate.  The function returns 1
+    if successful, 0 otherwise.  It will fail if the handle passed is
+    not a handle to an object list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SetInstanceXform"></a>
+    <dl>
+    <dt><b>(int) <tt>SetInstanceXform</tt>(<i>object_handle</i>,
+      <i>transform</i>)</b>
+    <dd><br>This function applies the given <i>transform</i> to the
+    instance referenced by the handle.  The <i>transform</i> is in the
+    form of a CIF transformation string, as returned by
+    <tt>GetInstanceXform</tt>.  Note that coordinates in the transform
+    string are in internal units (1 unit = .001 micron).  Only
+    physical-mode subcells can be modified by this function.  If the
+    operation succeeds, 1 is returned, otherwise 0 is returned.  This
+    function will fail if the handle passed is not a handle to an
+    object list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SetInstanceXformA"></a>
+    <dl>
+    <dt><b>(int) <tt>SetInstanceXformA</tt>(<i>object_handle</i>,
+      <i>array</i>)</b>
+    <dd><br>This function applies the given transform parameters in the
+    <i>array</i> to the instance referenced by the handle.  The
+    parameters are:
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><i>array</i>[0]</td><td>1 if mirror-y, 0 if no mirror-y</td></tr>
+    <tr><td><i>array</i>[1]</td><td>angle in degrees</td></tr>
+    <tr><td><i>array</i>[2]</td><td>translation x</td></tr>
+    <tr><td><i>array</i>[3]</td><td>translation y</td></tr>
+    </table>
+
+    <p>
+    Only physical-mode subcells can be modified by this function.  If
+    the operation succeeds, 1 is returned, otherwise 0 is returned. 
+    The transform components are applied in the order as found in the
+    array, i.e., mirror first, then rotate, then translate.  The
+    function returns 1 if successful, 0 otherwise.  It will fail if
+    the handle passed is not a handle to an object list.
+    </dl>
+    <hr>
+
+    <!-- 062116 -->
+    <a name="GetInstanceMaster"></a>
+    <dl>
+    <dt><b>(string) <tt>GetInstanceName</tt>(<i>object_handle</i>)</b>
+    <dd><br>
+    Note:  prior to 4.2.12, this function was called
+    <tt>GetInstanceName</tt>.
+
+    <p>
+    This function returns the master cell name of the instance
+    referenced by the handle.  If the object is not an instance, a
+    null string is returned.  This function will fail if the handle
+    passed is not a handle to an object list.  The cell instance can
+    be electrical or physical, and operation is identical in
+    electrical and physical mode.
+    </dl>
+    <hr>
+
+    <!-- 062116 -->
+    <a name="SetInstanceMaster"></a>
+    <dl>
+    <dt><b>(int) <tt>SetInstanceMaster</tt>(<i>object_handle</i>,
+      <i>newname</i>)</b>
+    <dd><br>
+    Note:  prior to 4.2.12, this function was called
+    <tt>SetInstanceName</tt>.
+
+    <p>
+    This currently works with physical cell data only.
+
+    <p>
+    This function will replace the instance referenced by the
+    handle with an instance of the cell given as <i>newname</i>, in
+    the parent cell of the referenced instance.  The current transform
+    is added to the transform of the new instance.  This function will
+    fail if the handle passed is not a handle to an object list.  If
+    successful, 1 is returned, otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 060616 -->
+    <a name="GetInstanceName"></a>
+    <dl>
+    <dt><b>(string) <tt>GetInstanceName</tt>(<i>object_handle</i>)</b>
+    <dd><br>
+    Note:  prior to 4.2.12, this function returned the name of the
+    instance master cell.  The <tt>GetInstanceMaster</tt> function now
+    performs that operation.
+
+    <p>
+    This function returns a name for the electrical cell instance
+    referenced by the handle.  This is the name of the object, as
+    would appear in a generated SPICE file.
+
+    <p>
+    Currently, for physical instances, and for unnamed electrical
+    instances, a null string is returned.
+
+    <p>
+    Internally, names are generated in the following way.  Each device
+    has a prefix, as specified in the technology file.  The prefix for
+    subcircuits is "X", which is defined internally.  The prefixes
+    follow (or should follow) SPICE conventions.  The database of
+    instance placements is scanned in order of the placement location
+    (upper-left corner of the instance bounding box) top to bottom,
+    then left to right.  Each instance encountered is given an index
+    number as a count of the same prefix previously encountered in the
+    scan.  The prefix followed by the index forms the instance name. 
+    This will identify each instance uniquely, and the sequencing is
+    predictable from spatial location in the schematic.  For example. 
+    <tt>X1</tt> will be above or to the left of <tt>X2</tt>.
+
+    <p>
+    Rather than the internal name.  this function will return an
+    assigned name, if one has been given using
+    <tt>SetInstanceName</tt> or by setting the name property,
+
+    <p>
+    The index number can be obtained as an integer with
+    <tt>GetInstanceIdNum</tt>.  See also <tt>GetInstanceAltName</tt>
+    for a different subcircuit name style.
+    </dl>
+    <hr>
+
+    <!-- 060616 -->
+    <a name="SetInstanceName"></a>
+    <dl>
+    <dt><b>(int) <tt>SetInstanceName</tt>(<i>object_handle</i>,
+      <i>newname</i>)</b>
+    <dd><br>
+    Note:  prior to 4.2.12, this function would re-master the instance,
+    the same as the present <tt>SetInstanceMaster</tt> function.
+
+    <p>
+    This will set a name for the electrical instance referenced by the
+    handle, which is in effect applying a name property to the
+    instance.  this makes sense for devices, subcircuits, and terminal
+    devices.  The new name will be used when generating netlist
+    output, so should conform to any requirements, for example SPICE
+    conventions, being in force.
+
+    <p>
+    If the string is null or 0, any applied name will be deleted,
+    equivalent to "removing" a name property.
+
+    <p>
+    The return value is 1 on success, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 060616 -->
+    <a name="GetInstanceAltName"></a>
+    <dl>
+    <dt><b>(string) <tt>GetInstanceAltName</tt>(<i>object_handle</i>)</b>
+    <dd><br>
+    This returns an alternative instance name for the electrical
+    subcircuit cell instance referenced by the handle.  The format is
+    the master cell name, followed by an underscore, followed by an
+    integer.  The integer is zero-based and sequential among instances
+    of a given master.  For example, instances of master
+    "<tt>foo</tt>" would have names <tt>foo_0</tt>, <tt>foo_1</tt>,
+    etc.  This is more useful an some cases than the SPICE-style names
+    <tt>X1</tt>, <tt>X2</tt>, ...  as returned by
+    <tt>GetInstanceName</tt>.
+
+    <p>
+    For electrical device instances, this function returns the same
+    name As the <tt>GetInstanceName</tt> function.
+
+    <p>
+    The <tt>GetInstanceAltIdNum</tt> function returns the index number
+    used, as an integer.  This is different from the regular index,
+    where every instance, of whatever type, has a unique index.  Here,
+    instances of each master each have an index count starting from
+    zero.  The order that instances appear, however, is the same in
+    both lists.
+
+    <p>
+    Presently, this function returns a null string for physical
+    instances.
+    </dl>
+    <hr>
+
+    <!-- 060616 -->
+    <a name="GetInstanceType"></a>
+    <dl>
+    <dt><b>(string) <tt>GetInstanceType</tt>(<i>object_handle</i>)</b>
+    <dd><br>
+    This function will return a string consisting of a single letter
+    that indicates the type of cell instance referenced by the handle.
+    The function will fail if the handle is of the wrong type.  A null
+    string is returned if the object referenced is not a cell instance.
+    Otherwise, the following strings may be returned.
+
+    <p>
+    These apply to electrical cell instances.
+    <dl>
+    <dt>"b"<dd>
+       The instance is "bad".  There has been an error.
+
+    <dt>"n"<dd>
+       The instance type is "null" meaning that it has no electrical
+       significance in a schematic.
+
+    <dt>"g"<dd>
+       The instance is a ground pin.  It has a "hot spot" that when
+       placed forces a ground contact at that location.
+
+    <dt>"t"<dd>
+       This is a terminal device, which has a name label and hot spot.
+       When placed, it forces a contact to a net named in the label
+       at the hot spot location.
+
+    <dt>"d"<dd>
+       The instance represents a device, such as a resistor, capacitor,
+       or transistor.
+
+    <dt>"m"<dd>
+       This is a macro, which implements a subcircuit that is placed
+       in the schematic, as a "black box".  Unlike a subcircuit, a
+       macro has no sub-structure.
+
+    <dt>"s"<dd>
+       This is an instance of a circuit cell, i.e., a subcircuit.  Its
+       master contains instances of devices and other objects representing
+       a circuit.
+    </dl>
+
+    <p>
+    For physical instances, at present there is only one return.
+    <dl>
+    <dt>"p"<dd>
+       This is a physical instance.
+    </dl>
+    </dl>
+    <hr>
+
+    <!-- 060616 -->
+    <a name="GetInstanceIdNum"></a>
+    <dl>
+    <dt><b>(int) <tt>GetInstanceIdNum</tt>(<i>object_handle</i>)</b>
+    <dd><br>
+    This function returns the integer index number used in electrical
+    device and subcircuit instance names.  See the <a
+    href="GetInstanceName"><tt>GetInstanceName</tt></a> description
+    for information about how the numbers are computed.  Each
+    subcircuit will have a unique number.  Devices are numbered
+    according to their prefix strings, each unique prefix has its own
+    number sequence.  These values are always non-negative.
+
+    <p>
+    For physical instances, an internal indexing number used by the
+    extraction system is returned.
+
+    <p>
+    This function will return -1 on error.
+    </dl>
+    <hr>
+
+    <!-- 060616 -->
+    <a name="GetInstanceAltIdNum"></a>
+    <dl>
+    <dt><b>(int) <tt>GetInstanceAltIdNum</tt>(<i>object_handle</i>)</b>
+    <dd><br>
+    This returns an alternative index for electrical subcircuits, as
+    used in the <a
+    href="GetInstanceAltName"><tt>GetInstanceAltName</tt></a>
+    function.  Every subcircuit master will have its instances
+    numbered sequentially starting with 0.  The ordering is set by the
+    instance placement location in the schematic, top to bottom then
+    left to right, with the upper-left corner of the bounding box
+    being the reference location.
+
+    <p>
+    For other instances, the return value is the same as
+    <tt>GetInstanceIdNum</tt>.
+    </dl>
+
+!!SEEALSO
+funcs:geom1
+

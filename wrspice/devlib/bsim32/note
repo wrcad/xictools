@@ -1,0 +1,26 @@
+
+I downloaded the Bsim3v2 tar distribution.  In the course of adapting
+the model to WRspice (www.srware.com) I came across a few minor
+things.
+
+1) in b3ld.c line 2326:
+                      if (FABS(cbhat - Ibtot)) > tol)
+has a syntax error.  This shows up if NEWCONV is not set.
+
+2) in b3temp.c line 819:
+	      here->BSIM3cgso = pParam->BSIM3cgso;
+	      here->BSIM3cgdo = pParam->BSIM3cgdo;
+pParam is out of initialization scope.  Although it looks like pParam
+won't be used before set, it appears possible that the pointer can be
+to the wrong object.
+It seems that that "pParam" should be "here->pParam" (?).
+
+Minor points:
+ * there are a number of variables defined but not used in b3ld.c, and
+   eslewhere, plus other minor things from "gcc -Wall".
+ * it would be nice if the files were de-tabbed before release.
+
+Overall, this is a great piece of work.  Thanks for your efforts.
+
+Steve Whiteley
+Whiteley Research Inc.

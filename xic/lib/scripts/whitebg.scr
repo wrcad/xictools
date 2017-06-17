@@ -1,0 +1,68 @@
+# This script simply changes the layer and attribute colors so that
+# electrical schematics will be displayed with a white background. 
+# The colors are the same as used in the example tech files when the
+# "WhiteSchem" macro definition is uncommented.
+#
+# ($Id: whitebg.scr,v 1.2 2012/03/26 22:47:11 stevew Exp $)
+
+if (TechParseLine("ElecLayer SCED RGB 0 0 0") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer ETC1 RGB 105 195 195") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer ETC2 RGB 170 125 105") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer NAME RGB 185 155 90") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer MODL RGB 85 215 80") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer VALU RGB 210 70 65") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer PARM RGB 225 95 215") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer NODE RGB 175 175 155") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer SPTX RGB 0 135 15") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecBackground 243 243 243") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecGhostColor 1 1 1") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecHighlightingColor 1 1 1") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecSelectColor1 109 255 105") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecMarkerColor 191 188 40") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecInstanceBBColor 50 175 163") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecInstanceNameColor 214 161 170") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecCoarseGridColor 28 23 15") == 0)
+    Print(GetError())
+end
+if (TechParseLine("PhysCoarseGridColor 0 215 215") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecFineGridColor 0 157 160") == 0)
+    Print(GetError())
+end
+if (TechParseLine("PhysFineGridColor 0 0 207") == 0)
+    Print(GetError())
+end
+

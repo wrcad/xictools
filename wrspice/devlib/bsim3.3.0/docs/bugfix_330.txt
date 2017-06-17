@@ -1,0 +1,69 @@
+Title: List of Bugs in BSIM3v3.2.4 and Bug Fixes in BSIM3v3.3.0
+=====================================================
+
+  Xuemei (Jane) Xi, Ali M. Niknejad and Chenming Hu
+
+
+  The following is a list of the bugs and code robustness improvements 
+found in BSIM3v3.2.4 along with the bug fixes and improvement, which have 
+been evaluated by BSIM team and the bug reporters and were approved by 
+Compact Model Council (CMC) member companies (Please see "CMC's Bug 
+Reporting and Resolution Procedure" attached at the bottom of this file). 
+
+Bug 1:
+------
+  Reporter: Geoffrey J. Coram, Analog Device
+  C files involved: b3ld.c
+  C code containing the bug:
+   
+   capMod == 3
+
+Proposed fix:
+   define VgDP to replace  (Vgsteff - DeltaPhi),
+   where,		  
+		  T0 = Vgsteff - DeltaPhi - 0.001;
+		  dT0_dVg = 1.0 - dDeltaPhi_dVg;
+		  T1 = sqrt(T0 * T0 + Vgsteff * 0.004);
+		  VgDP = 0.5 * (T0 + T1);
+		  dVgDP_dVg = 0.5 * (dT0_dVg + (T0 * dT0_dVg + 0.002) / T1);                  
+
+Bug 2:
+------
+  Reporter: Device EGC,  Mentor Graphics
+  C files involved: b4check.c
+  C code containing the bug:
+
+        else if ((pParam->BSIM3rds0 > 0.0) && (pParam->BSIM3rds0 < 0.001))
+        {   fprintf(fplog, "Warning: Rds at current temperature = %g is less than 0.001 ohm. Set to zero.\n",
+                    pParam->BSIM3rds0);
+            printf("Warning: Rds at current temperature = %g is less than 0.001 ohm. Set to zero.\n",
+                   pParam->BSIM3rds0);
+            pParam->BSIM3rds0 = 0.0;
+        }
+
+
+Proposed fix:
+
+        if (pParam->BSIM3rds0 < 0.0)
+        {   fprintf(fplog, "Warning: Rds at current temperature = %g is negative. Set to zero.\n",
+                    pParam->BSIM3rds0);
+            printf("Warning: Rds at current temperature = %g is negative. Set to zero.\n",
+                   pParam->BSIM3rds0);
+            pParam->BSIM3rds0 = 0.0;
+        }
+
+
+CMC Bug Reporting Procedure for BSIM3/4
+1. User reports bug to simulator vendor.
+2. Spice provider reports bug to Berkeley with recommended fix, test case and significance.
+3. Berkeley will immediately post on the website with the recommended fix.
+4. Berkeley will notify CMC, BSIM3/4 mailing list and FSA
+5. CMC members review bug and proposed fixes
+6. At the next CMC meeting the CMC will decide on what action to take on each bug. A revision
+number (e.g. 3.2.1) will be assigned to the code with the accepted bug fixes.
+7. Berkeley will post the list of approved bug fixes on the website along with the revision 
+number assigned. Where appropriate this may include sections of revised code but Berkeley 
+will not post a complete new release of the code for each minor version. For example v3.2.1 
+might be specified as equivalent to v3.2 with the bug fixes posted on a particular Web page.
+
+

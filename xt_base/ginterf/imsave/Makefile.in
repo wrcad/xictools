@@ -1,0 +1,63 @@
+
+# Generic Makefile for IMSAVE
+# $Id: Makefile.in,v 1.7 2014/02/15 18:40:33 stevew Exp $
+#
+# Each of the defines in the CFLAGS can be removed if you don't have the
+# library, or don't want compiled-in support for that file format.
+
+# If you use gcc-2.95.3 with older X include files that contain function
+# prototypes that omit the return type, the compile will fail.  In this
+# case, add -fpermissive to the CFLAGS and ignore the warnings.
+
+# Below are the recognized CFLAGS defines.  The configure script
+# defines some or all of these in IMS_DEFS.
+#
+# -DHAVE_LIBPNG         | libpng (PNG images) available
+# -DHAVE_LIBJPEG        | libjpeg (JPEG images) available
+# -DHAVE_LIBTIFF        | libtiff (TIFF images) available
+
+IMSAVE_VERSION = 1.4
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGS@ @IMG_FLAGS@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGS@ @IMG_FLAGS@
+FILTER = @FILTER@
+INCLUDE = -I. @IMG_INCLUDES@
+
+HFILES = imsave.h
+CCFILES = create.cc jpeg.cc png.cc ppm.cc ps.cc save.cc tiff.cc
+CCOBJS = $(CCFILES:.cc=.o)
+LIBOBJS = $(CCOBJS)
+
+stamp: $(LIBOBJS)
+	touch stamp
+
+.cc.o:
+	@echo $*.o
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+files::
+	@echo [ $(CCFILES) $(HFILES) Makefile.in README ]
+
+subdirs::
+	@echo ]
+
+clean:
+	-@rm -f $(CCOBJS)
+
+distclean: clean
+	-@rm -f Makefile
+
+depend: $(CCFILES)
+	@echo depending in imsave
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+install:
+
+uninstall:
+
+##########################################################################

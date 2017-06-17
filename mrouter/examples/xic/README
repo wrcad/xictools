@@ -1,0 +1,86 @@
+($Id: README,v 1.5 2017/01/17 02:28:23 stevew Exp $)
+
+This directory provides the files needed to run the MRouter routing
+examples from within Xic.
+
+DON'T RUN FROM HERE (in the MRouter installation area) as you probably
+don't have the needed permissions and you don't want to add junk here
+anyway.
+
+A recommended procedure is:
+
+1.  You should have installed the MRouter, preferably in its default
+    location.  If installed in a different location, the exroute.scr
+    and osu35.lib files will need editing to change the assumed
+    installation path (see below).
+
+2.  Copy this directory (/usr/local/mrouter/examples/xic, by default)
+    to your work area.
+
+3.  Change to your newly copied directory.  It should contain this
+    README file, along with exroute.scr and others.
+
+4.  If you did not install MRouter in the standard location
+    (/usr/local/mrouter), you need to edit the exroute.scr file to
+    change the MROUTER_PATH variable to the correct location for
+    your system.  You will also have to edit osu35.lib similarly.
+    You only need to edit your copies of these files.
+
+5.  Start Xic, using the tech file (xic_tech) provided.  Give the
+    command
+
+      !exec ./exroute
+
+    After responding to the prompt, this will do the routing and
+    display the routed cell.
+
+6.  Read and understand the exroute.scr script file, and the MRouter
+    documentation.  Create your own examples and/or experiment with
+    the various commands.
+
+Note:  the xic_tech file here is the same as the xic_tech.scmos file
+in the Xic distribution, with a minor configuration change (the
+PinLayer support is enabled). 
+
+The examples make use of the Oklahome State open-source CMOS library,
+which has LEF and physical layout definitions provided.  This process
+flow is basically compatible with the scmos tech file.
+
+The procedure will create a file named "map9v3.gds" or
+"openMSP430.gds", which is a saved GDSII representation of the placed
+and routed top-level cell.  However, you can't just start Xic and read
+this file successfully, there are two things that must be done first:
+
+1.  The GDSII file does not contain the library cells, these will
+    be resolved through the library mechanism.  For this to happen,
+    the osu35.lib library file must be open.  This can be accomplished
+    by opening this library from the listing presented by the
+    Libraries button in the File menu.  It can also be opened with the
+    OpenLibrary script function, as in exroute.scr.  The library must
+    be open before the GDSII file is read.
+
+2.  The standard vias, as defined from the library LEF file, must be
+    defined somehow, otherwise they won't be resolved when the GDSII
+    file is read.  The xic_tech file given here does not contain
+    standard via definitions.  There are a couple of ways to define
+    the standard vias:
+
+    A.  After running the exroute.scr file, create a new technology
+        file using the Save Tech button in the Attributes menu.  Give
+        the new file an extension so as not to overwrite the xic_tech
+        file.  The new file has the standard vias defined (search for
+        the lines that begin with "StandardVia").  If this tech file is
+        used instead of the original, the standard vias will be
+        defined.
+
+    B.  The file "stdvias" contains the standard via definitions from
+        a tech file produced as above.  The file "stdvia.scr" is a
+        script that will read the stdvias file and define the standard
+        vias.  Thus.  after starting Xic with the given xic_tech file,
+        one can give "!exec ./stdvia.scr" to define the standard vias
+        within Xic.
+
+With the library open and the standard vias defined, the GDSII file
+can be read in the normal way without errors, and both the layout and
+a schematic are available.
+

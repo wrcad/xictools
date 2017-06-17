@@ -1,0 +1,728 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiFileTool.hlp,v 1.11 2014/09/09 16:58:29 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2009.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiFileTool.hlp
+!!TITLE
+xiFileTool.hlp
+!!HTML
+
+!!SUBTOPICS
+filetool
+ft:set
+ft:eval
+ft:info
+ft:text
+ft:comp
+ft:split
+ft:cfile
+
+
+!! 090814
+!!KEYWORD
+filetool
+!!TITLE
+The FileTool Utility
+!!HTML
+    <h2>Introduction</h2>
+
+    The <i>FileTool</i> is a command-line program for analysis and
+    manipulation of layout files.  Although the <i>FileTool</i>
+    originated as a separate stand-alone application that made use of
+    <i>Xic</i> technology, the current version is a polymorphism of
+    the <i>Xic</i> executable.  There are two ways to access the
+    <i>FileTool</i>:
+
+    <ol>
+    <li>Copy or symbolically link the <tt>xic</tt>, executable file
+    (or the <tt>xic.exe</tt> file under Windows) to a new link or file
+    named "<tt>filetool</tt>" (or "<tt>filetool.exe</tt>" under
+    Windows).  You now have a <i>FileTool</i> program that behaves in
+    all respects as described in this documentation.
+
+    <p>
+    Under Unix/Linux/OS X, the best way is to use a symbolic link. 
+    For example, in the same directory as the <tt>xic</tt>
+    executable, become root and type (for example)
+    <blockquote>
+    <tt>ln -s xic filetool</tt>
+    </blockquote>
+    This will symbolically link the <tt>xic</tt> binary executable to
+    the <tt>filetool</tt> name, without actually copying the file.  If
+    the <tt>xic</tt> file is replaced for an update, the link will
+    automatically access the new executable.
+
+    <p>
+    This is <b>not</b> automatically done when the programs are
+    installed.  The user must intervene to obtain a <tt>filetool</tt>
+    executable target.
+
+    <p>
+    Under Windows, there are no symbolic links, so the file must
+    actually be copied.  Thus, after an update, the copy operation
+    should be repeated, to obtain any updates that relate to the
+    <i>FileTool</i>.
+
+    <p>
+    <li>One can also effectively run the <i>FileTool</i> directly from
+    <i>Xic</i> with, for example,
+    <blockquote>
+    <tt>xic -F</tt> <i>filetool_args...</i>
+    </blockquote>
+    The <tt>-F</tt> must be the first argument, and all arguments
+    that follow are interpreted as <i>FileTool</i> arguments.  The
+    program will behave in all respects as if started under the name
+    "<tt>filetool</tt>".
+    </ol>
+
+    <p>
+    The <i>FileTool</i> can be incorporated in the user's automation
+    scripts to implement perhaps complicated manipulations on layout
+    files, or as an aid to understanding content and diagnosing
+    problems with layout files, or as a general purpose utility. 
+    Here are some of the tasks that the <i>FileTool</i> can perform:
+
+    <ul>
+    <li>Print information about a layout file: statistics, layers used,
+     top-level cell, etc.
+    <li>Translate layout files, or parts of layout files, to a
+     different format (CIF, CGX, GDSII, OASIS are supported), or to an
+     ASCII text representation.
+    <li>When writing, many different translation modes are available:
+     layer filtering and aliasing, cell name mapping operations, windowing
+     with or without clipping, flattening, scaling, empty cell removal.
+    <li>Compare two layout files, listing the differences.
+    <li>Split a layout file into multiple files, each representing 
+     a portion of the original layout.
+    <li>Combine cells from multiple layout files into a single file.
+    <li>Generate or process assemble scripts as used by the <i>Xic</i>
+!!IFDEF Xic
+     <a href="!assemble"><b>!assemble</b></a>
+!!ELSE
+     <b>!assemble</b>
+!!ENDIF
+     command.
+    </ul>
+
+    <p>
+    When started, none of the <i>Xic</i> startup or technology files
+    are read.  Instead, a file named "<tt>.filetoolrc</tt>" will be
+    read, if it can be found in the current directory of the user's
+    home directory.  This is a script file, like the
+    <tt>.xicstart</tt> file, however the only function likely to be
+    useful is the <a href="Set"><tt>Set</tt></a> function, which sets
+    variables.  Variables can also be set from the <i>FileTool</i>
+    command line, but the <tt>.filetoolrc</tt> file can be used to set
+    variables that are almost always needed, such as favorite OASIS
+    flags when working with OASIS files.
+
+    <p>
+    The file formats supported by the <i>FileTool</i> are:
+
+    <dl>
+    <dt><b>GDSII</b><dd>
+    The industry standard stream format.  Any release level is
+    supported for input.  For output, the default release level is 7,
+    but this can be set to earlier levels.  Compressed (gzipped) GDSII
+    files can be read or written.
+    </dl>
+
+    <dl>
+    <dt><b>OASIS</b><dd>
+    The emerging standard, which provides more compact data files than
+    GDSII.  Any conforming OASIS file can be read as input.  A number
+    of options affect OASIS output.
+    </dl>
+
+    <dl>
+    <dt><b>CGX</b><dd>
+    A compact data representation developed by Whiteley Research Inc.
+    Compressed (gzipped) CGX files can be read or written.
+    </dl>
+
+    <dl>
+    <dt><b>CIF</b><dd>
+    The obsolete but still used CIF format.  Any known dialect should
+    work as input.  The output dialect can be selected via options.
+    </dl>
+
+    <p>
+    Input files can be any of these file types, the format is
+    recognized automatically.  Output files can also be any of these
+    file types, but the format is specified by the extension of the
+    file name.
+
+    <p>
+    The operations can be saved to a script file, or read from a
+    script file.  The script file format is the same as used by the
+    <b>!assemble</b> command in <i>Xic</i>, thus scripts generated by
+    the <i>FileTool</i> can be executed in <i>Xic</i>.
+
+    <h2>Command Line Options</h2>
+
+    If the <i>FileTool</i> is executed without arguments, a synopsis
+    of available command line options is printed.  Otherwise, the
+    arguments are given in one of the following forms.
+
+    <dl>
+    <dt><tt>filetool</tt><dd>
+    [<tt>-set</tt> <i>var</i>[=<i>value</i>] ...]<br>
+    &nbsp;&nbsp<tt>-eval</tt> <i>script_file_to_read</i> |<br>
+    &nbsp;&nbsp<tt>-info</tt> <i>layout_file</i> [<i>flags</i>] |<br>
+    &nbsp;&nbsp<tt>-text</tt> <i>layout_file</i> [<i>text_opts</i>] |<br>
+    &nbsp;&nbsp<tt>-comp</tt> <i>comp_args</i> |<br>
+    &nbsp;&nbsp<tt>-split</tt> <i>split_args</i> |<br>
+    &nbsp;&nbsp<tt>-cfile</tt> <i>cfile_args</i> |<br>
+    &nbsp;&nbsp<i>translate_args</i>
+    </dl>
+
+    <p>
+    The <a href="ft:set"><tt>-set</tt></a> option is used to set internal
+    variables, which have relevance in the modes indicated by the other
+    main options.
+
+    <p>
+    The <a href="ft:eval"><tt>-eval</tt></a> option is used to execute an
+    assemble script.
+
+    <p>
+    The <a href="ft:info"><tt>-info</tt></a> option is used to obtain
+    information and statistics about a layout file.
+
+    <p>
+    The <a href="ft:text"><tt>-text</tt></a> option will translate all
+    or part of a layout file to an ASCII text representation.
+
+    <p>
+    The <a href="ft:comp"><tt>-comp</tt></a> option will set up a
+    comparison of two layout files, recording differences.
+
+    <p>
+    The <a href="ft:split"><tt>-split</tt></a> option is used to write
+    multiple layout files corresponding to regions in a large layout.
+
+    <p>
+    The <a href="ft:cfile"><tt>-cfile</tt></a> option is used to write
+    a <a href="xic:hier">Cell Hierarchy Digest</a> (CHD) file from a
+    layout file, similar to the <b>Save</b> button in the <b>Cell
+    Hierarchy Digests</b> panel.
+
+    <p>
+    Otherwise, the given options are expected to provide directives
+    similar in logic to that of an <a href="ft:assem">assembly
+    script</a>.
+
+!! 051310
+!!KEYWORD
+ft:set
+!!TITLE
+FileTool:  Setting Variables
+!!HTML
+    There are a number of internal variables which control various
+    properties of the file readers/writers, translation modes, etc. 
+    These are the same variables as used in <i>Xic</i>.  In some
+    cases, these variables are overridden by command line options, but
+    in cases where no applicable option exists, these variables can be
+    set to provide the desired effect.  Variables can also be set in
+    the <tt>.filetoolrc</tt> file.  Variables set from the command
+    line will override settings in the <tt>.filetoolrc</tt> file.
+
+    <p>
+    The <tt>-set</tt> options must appear first on the command line,
+    and unlike the other main directives, can appear ahead of the
+    other directives.  These are optional.
+
+    <p>
+    The format can take two forms:  either a single <tt>-set</tt>
+    option followed by a quoted list of <i>name</i>=<i>value</i>
+    pairs:
+    <blockquote>
+    <tt>-set</tt> "<i>name1</i>=<i>value1</i> <i>name2</i>
+      <i>name3</i>=<i>value3</i> ..."
+    </blockquote>
+    or, each <i>name</i>=<i>value</i> pair can have its own "<tt>-set</tt>":
+    <blockquote>
+    <tt>-set</tt> <i>name1</i>=<i>value1</i> <tt>-set</tt> <i>name2</i>
+      <tt>-set</tt> <i>name3</i>=<i>value3</i>
+    </blockquote>
+
+    <p>
+    Note that the value part is optional, for boolean variables.  The
+    token following each "<tt>-set</tt>" must not contain white space,
+    or be quoted if it contains white space, e.g.,
+    <blockquote>
+    <tt>-set</tt> "<i>name</i> = <i>value</i>"
+    </blockquote>
+    is legitimate.
+
+    <p>
+    The following variables have relevance to operations that are
+    available through the <i>FileTool</i>.
+
+    <p>
+    In addition to the variables listed in the table, which are
+    <i>Xic</i> variables, there is one special boolean variable
+    recognized: 
+    <blockquote>
+    <tt>timedbg</tt>[=<i>filename</i>]
+    </blockquote>
+    If set, run times for various operations are printed, similar to
+    enabling the
+!!IFDEF Xic
+    <a href="!timedbg"><b>!timedbg</b></a>
+!!ELSE
+    <b>!timedbg</b>
+!!ENDIF
+    feature in <i>Xic</i>.  If set to a value, the value is taken as a
+    path to a file for the timing messages.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th colspan=2>Database Setup</th></tr>
+    <tr><td>
+    <a href="DatabaseResolution"><b>DatabaseResolution</b></a>
+    </td><td>&nbsp;</td></tr>
+
+    <tr><th colspan=2>Symbol Path</th></tr>
+    <tr><td>
+    <a href="Path"><b>Path</b></a><br>
+    <a href="NoReadExclusive"><b>NoReadExclusive</b></a>
+    </td><td valign=top>
+    <a href="AddToBack"><b>AddToBack</b></a>
+    </td></tr>
+
+    <tr><th colspan=2>Conversion - General</th></tr>
+    <tr><td>
+    <a href="ChdFailOnUnresolved"><b>ChdFailOnUnresolved</b></a><br>
+    <a href="MultiMapOk"><b>MultiMapOk</b></a><br>
+    <a href="UnknownGdsLayerBase"><b>UnknownGdsLayerBase</b></a>
+    </td><td valign=top>
+    <a href="UnknownGdsDatatype"><b>UnknownGdsDatatype</b></a><br>
+    <a href="NoStrictCellnames"><b>NoStrictCellnames</b></a>
+    </td></tr>
+
+    <tr><th colspan=2>Conversion - Import and Conversion Commands</th></tr>
+    <tr><td>
+    <a href="AutoRename"><b>AutoRename</b></a><br>
+    <a href="NoOverwritePhys"><b>NoOverwritePhys</b></a><br>
+    <a href="NoOverwriteElec"><b>NoOverwriteElec</b></a><br>
+    <a href="NoOverwriteLibCells"><b>NoOverwriteLibCells</b></a><br>
+    <a href="NoCheckEmpties"><b>NoCheckEmpties</b></a><br>
+    <a href="NoReadLabels"><b>NoReadLabels</b></a><br>
+    <a href="MergeInput"><b>MergeInput</b></a><br>
+    <a href="NoPolyCheck"><b>NoPolyCheck</b></a><br>
+    <a href="DupCheckMode"><b>DupCheckMode</b></a><br>
+    <a href="LayerList"><b>LayerList</b></a><br>
+    <a href="UseLayerList"><b>UseLayerList</b></a><br>
+    <a href="LayerAlias"><b>LayerAlias</b></a>
+    </td><td valign=top>
+    <a href="UseLayerAlias"><b>UseLayerAlias</b></a><br>
+    <a href="InToLower"><b>InToLower</b></a><br>
+    <a href="InToUpper"><b>InToUpper</b></a><br>
+    <a href="InUseAlias"><b>InUseAlias</b></a><br>
+    <a href="InCellNamePrefix"><b>InCellNamePrefix</b></a><br>
+    <a href="InCellNameSuffix"><b>InCellNameSuffix</b></a><br>
+    <a href="NoMapDatatypes"><b>NoMapDatatypes</b></a><br>
+    <a href="CifLayerMode"><b>CifLayerMode</b></a><br>
+    <a href="OasReadNoChecksum"><b>OasReadNoChecksum</b></a><br>
+    <a href="OasPrintNoWrap"><b>OasPrintNoWrap</b></a><br>
+    <a href="OasPrintOffset"><b>OasPrintOffset</b></a>
+    </td></tr>
+
+    <tr><th colspan=2>Conversion - Export Commands</th></tr>
+    <tr><td>
+    <a href="StripForExport"><b>StripForExport</b></a><br>
+    <a href="WriteAllCells"><b>WriteAllCells</b></a><br>
+    <a href="SkipInvisible"><b>SkipInvisible</b></a><br>
+    <a href="KeepBadArchive"><b>KeepBadArchive</b></a><br>
+    <a href="NoCompressContext"><b>NoCompressContext</b></a><br>
+    <a href="RefCellAutoRename"><b>RefCellAutoRename</b></a><br>
+    <a href="UseCellTab"><b>UseCellTab</b></a><br>
+    <a href="SkipOverrideCells"><b>SkipOverrideCells</b></a><br>
+    <a href="OutToLower"><b>OutToLower</b></a><br>
+    <a href="OutToUpper"><b>OutToUpper</b></a><br>
+    <a href="OutUseAlias"><b>OutUseAlias</b></a><br>
+    <a href="OutCellNamePrefix"><b>OutCellNamePrefix</b></a><br>
+    <a href="OutCellNameSuffix"><b>OutCellNameSuffix</b></a><br>
+    <a href="CifOutStyle"><b>CifOutStyle</b></a><br>
+    <a href="CifOutExtensions"><b>CifOutExtensions</b></a>
+    </td><td valign=top>
+    <a href="CifAddBBox"><b>CifAddBBox</b></a><br>
+    <a href="GdsOutLevel"><b>GdsOutLevel</b></a><br>
+    <a href="GdsMunit"><b>GdsMunit</b></a><br>
+    <a href="NoGdsMapOk"><b>NoGdsMapOk</b></a><br>
+    <a href="OasWriteCompressed"><b>OasWriteCompressed</b></a><br>
+    <a href="OasWriteNameTab"><b>OasWriteNameTab</b></a><br>
+    <a href="OasWriteRep"><b>OasWriteRep</b></a><br>
+    <a href="OasWriteChecksum"><b>OasWriteChecksum</b></a><br>
+    <a href="OasWriteNoTrapezoids"><b>OasWriteNoTrapezoids</b></a><br>
+    <a href="OasWriteWireToBox"><b>OasWriteWireToBox</b></a><br>
+    <a href="OasWriteRndWireToPoly"><b>OasWriteRndWireToPoly</b></a><br>
+    <a href="OasWriteNoGCDcheck"><b>OasWriteNoGCDcheck</b></a><br>
+    <a href="OasWriteUseFastSort"><b>OasWriteUseFastSort</b></a><br>
+    <a href="OasWritePrptyMask"><b>OasWritePrptyMask</b></a>
+    </td></tr>
+
+    <tr><th colspan=2>Geometry</th></tr>
+    <tr><td>
+    <a href="JoinMaxPolyVerts"><b>JoinMaxPolyVerts</b></a><br>
+    <a href="JoinMaxPolyGroup"><b>JoinMaxPolyGroup</b></a><br>
+    <a href="JoinMaxPolyQueue"><b>JoinMaxPolyQueue</b></a>
+    </td><td valign=top>
+    <a href="JoinBreakClean"><b>JoinBreakClean</b></a><br>
+    <a href="PartitionSize"><b>PartitionSize</b></a>
+    </td></tr>
+    </table>
+    </blockquote>
+
+!!SEEALSO
+!set
+filetool
+
+!! 102109
+!!KEYWORD
+ft:eval
+!!TITLE
+FileTool:  Assemble Script File Evaluation
+!!HTML
+    Assemble script files can be produced by <i>Xic</i>, and contain a
+    specification for complicated operations on layout files, such as
+    merging several files into a single output file, while creating a
+    new top-level cell to contain instances of the cells read from
+    input.  These files can be evaluated with the <i>FileTool</i>.
+
+    <p>
+    The command is of the form
+    <blockquote>
+    <tt>filetool</tt> [<tt>-set</tt> <i>variables</i>] <tt>-eval</tt>
+      <i>script_file</i>
+    </blockquote>
+
+    <p>
+    The <i>FileTool</i> will read and execute the script, reading
+    input and generating output as per the directives in the script
+    file.
+
+    <p>
+    The script file format is described <a href="!assemble">here</a>.
+
+!!SEEALSO
+xic:assem
+!assemble
+filetool
+
+!! 102109
+!!KEYWORD
+ft:info
+!!TITLE
+FileTool:  Obtaining File Information
+!!HTML
+    In this mode, the <i>FileTool</i> will read a layout file, and
+    print useful information about the file.  The command line for
+    this mode is
+    <blockquote>
+    <tt>filetool</tt> [<tt>-set</tt> <i>variables</i>] <tt>-info</tt>
+      <i>filename</i> [<i>flags</i>]
+    </blockquote>
+
+    <p>
+    It is unlikely that the <tt>-set</tt> variables will be used with
+    this option, though the layer filtering options may apply on
+    occasion.
+
+    <p>
+    The output format and <i>flags</i> are identical to those of the
+    <i>Xic</i> <a href="!fileinfo"><b>!fileinfo</b></a> command.
+
+!!SEEALSO
+!fileinfo
+filetool
+
+!! 102109
+!!KEYWORD
+ft:text
+!!TITLE
+FileTool:  ASCII Text Representation of Layout Files
+!!HTML
+    The supported file formats other than CIF are binary, and thus the
+    content is not easy to decipher.  This mode of the <i>FileTool</i>
+    will convert records from a layout file into an ASCII
+    representation.  This may be valuable for identifying problems in
+    the file or understanding file organization and content.
+
+    <p>
+    For this mode, the command takes the form:
+    <blockquote>
+    <tt>filetool</tt> [<tt>-set</tt> <i>variables</i>] <tt>-text</tt>
+        <i>layout_file</i> [<tt>-o</tt> <i>output_file</i>]
+        [<i>start</i>[-<i>end</i>]] [<tt>-c</tt> <i>cells</i>]
+        [<tt>-r</tt> <i>recs</i>]
+    </blockquote>
+
+    <p>
+    Following the layout file path, there are optional arguments.
+
+    <dl>
+    <dt><tt>-o</tt> <i>output_file</i><dd>
+      If this is given, the text output will be placed in the supplied
+      file name.  Without this option given, text output is to the
+      standard output.
+    </dl>
+
+    <p>
+    The remaining arguments control the range of text conversion. 
+    Without these options, the entire file will be written as ASCII
+    text.  For all but tiny layout files, the user will probably want
+    to limit the size of the output.
+
+    <dl>
+    <dt>[<i>start</i>[-<i>end</i>]]<dd>
+      The <i>start</i> and <i>end</i> are file offsets, which can be
+      given in decimal or "0x" hex form.  Printing will start with the
+      first record with offset greater than or equal to <i>start</i>. 
+      If <i>end</i> is given, the last record printed will be at most
+      the record containing this offset.  If both numbers are given,
+      they must be separated by a '-' with no white space.
+    </dl>
+
+    <dl>
+    <dt><tt>-c</tt> <i>cells</i><dd>
+      This options supplies a count, indicating the number of cell
+      definitions that will be printed.  If the count is 0, and
+      <i>start</i> is also given, the records from <i>start</i> to the
+      end of the cell definition will be printed.
+    </dl>
+
+    <dl>
+    <dt><tt>-r</tt> <i>recs</i><dd>
+      This provides a count of the number of records to print. 
+      Printing will stop after the indicated number of records have
+      been output.
+    </dl>
+
+    <p>
+    Printing will start at the beginning of the file or the
+    <i>start</i> record if given, and will end at the end of file or
+    the point at which the first end condition is satisfied.
+
+    <p>
+    There are two variables which may be of interest when using this
+    mode.  These can be set with <tt>-set</tt> options ahead of the
+    <tt>-text</tt> argument.
+
+    <dl>
+    <dt><tt>OasPrintNoWrap</tt><br>
+    Value: boolean<dd>
+      This applies when converting OASIS input to ASCII text.  When
+      set, the text output for a single record will occupy one
+      (arbitrarily long) line.  When not set, lines are broken and
+      continued with indentation.
+    </dl>
+
+    <dl>
+    <dt><tt>OasPrintOffset</tt><br>
+    Value: boolean<dd>
+      This applies when converting OASIS input to ASCII text.  When
+      set, the first token for each record output gives the offset in
+      the file or containing CBLOCK.  When not set, file offsets are
+      not printed.
+    </dl>
+
+!!SEEALSO
+xic:convt
+filetool
+
+!! 102109
+!!KEYWORD
+ft:comp
+!!TITLE
+FileTool:  Layout File Comparison
+!!HTML
+    This mode compares the geometry and instance placements in cells
+    from two cell hierarchies, usually from different files.  The
+    results are written to a log file.
+
+    <p>
+    The command line format for this mode is
+    <blockquote>
+    <tt>filetool</tt> [<tt>-set</tt> <i>variables</i>] <tt>-comp</tt>
+      <i>comp_args</i>
+    </blockquote>
+
+    <p>
+    The operations and arguments are identical to those of the
+    <i>Xic</i> <a href="!compare"><b>!compare</b></a> command.  This
+    includes the operations involving <a href="xic:hier">Cell
+    Hierarchy Digests</a> (CHDs) and in-memory hierarchies, provided
+    that those have been created by script functions in the
+    <tt>.filetoolrc</tt> file.  However, it is most likely that from
+    the <i>FileTool</i>, the sources will always be on-disk layout
+    files.
+
+!!SEEALSO
+xic:diff
+!compare
+filetool
+
+!! 102109
+!!KEYWORD
+ft:split
+!!TITLE
+FileTool:  Layout File Splitting
+!!HTML
+    The <i>FileTool</i> can be used to split a large layout file into
+    a collection of smaller layout files.
+
+    <p>
+    For splitting, the command line takes the form:
+    <blockquote>
+    <tt>filetool</tt> [<tt>-set</tt> <i>variables</i>] <tt>-split</tt>
+      <i>split_args</i>
+    </blockquote>
+
+    <p>
+    This mode will write output files corresponding to the partitions
+    of a square grid logically covering all or part of a specified
+    cell in a given layout file.  The output files contain physical
+    data only.  These files can be flat or hierarchical.
+
+    <p>
+    The operations and <i>split_args</i> are identical to those of the
+    <i>Xic</i> <a href="!splwrite"><b>!splwrite</b></a> command.
+
+!!SEEALSO
+!splwrite
+filetool
+
+!! 120110
+!!KEYWORD
+ft:cfile
+!!TITLE
+FileTool:  CHD File Generation
+!!HTML
+    The <i>FileTool</i> can be used to generate a Cell Hierarchy
+    Digest (CHD) file.  The file format is the same as produced with
+    the <b>Save</b> button in the <a href="xic:hier"><b>Cell Hierarchy
+    Digests</b></a> panel.  The CHD file can subsequently be read into
+    the <b>Cell Hierarchy Digests</b> panel with the <b>Add</b>
+    button.
+
+    <p>
+    The command line takes the form:
+    <blockquote>
+    <tt>filetool</tt> [<tt>-set</tt> <i>variables</i>] <tt>-cfile</tt>
+      <tt>-i</tt> <i>layout_file</i> <tt>-o</tt> <i>chd_file</i> [<tt>-g</tt>]
+      [<tt>-c</tt>]
+    </blockquote>
+
+    <p>
+    If the <tt>-g</tt> option is given, geometry records will be
+    included in the file.  These records are effectively a
+    concatenation of a <a href="xic:geom">Cell Geometry Digest</a>
+    file representation.  Layer filtering can be employed to specify
+    layers to include.
+
+    <p>
+    The resulting file is a highly compact but easily random-accessible
+    representation of the layout file.
+
+    <p>
+    Future releases of <i>Xic</i> will make use of these files in
+    creative ways, stay tuned.
+
+    <p>
+    The <tt>-c</tt> option will skip use of compression when creating
+    the file.  Files produced with this option (and without geometry)
+    should be compatible with <i>Xic</i> release 3.2.16 and earlier,
+    which did not support compression.  If backward compatibility is
+    not needed, this option should not be used.
+
+!!SEEALSO
+filetool
+
+!! 071010
+!!KEYWORD
+ft:assem
+!!TITLE
+FileTool:  Layout File Merging and Translation
+!!HTML
+    The <i>FileTool</i> can take a list of arguments which correspond
+    logically to the keywords of an assembly specification script. 
+    The argument list begins after any <tt>-set</tt> variables
+    present.
+
+    <p>
+    This automates reading of cells from archives, subsequent
+    processing, and writing to a new archive file.  It provides the
+    capabilities of the <b>Conversion</b> panel in the <b>Convert
+    Menu</b> in <i>Xic</i>, such as format translation, windowing, and
+    flattening.  Additionally, multiple input files and cells can be
+    processed and merged into a larger archive, on-the-fly or by using
+    a
+!!IFDEF Xic
+    <a href="xic:hier">Cell Hierarchy Digest</a>
+!!ELSE
+    Cell Hierarchy Digest
+!!ENDIF
+    (CHD) so as to avoid memory limitations.  Cell definitions for the
+    read and possibly modified cells are streamed into the output
+    file, and the output file can contain a new top-level cell in
+    which the cells read are instantiated.  The input and output can
+    be any of the supported archive formats (CGX, CIF, GDSII, OASIS),
+    in any combination.
+
+    <p>
+    The same operations can be controlled by a specification script
+    file, the path to which is given as the argument following
+    "<tt>-eval</tt>".  The script uses a language which will be
+    described.  This supplies the output file name and the description
+    of the top-level cell (if any), the files to be used as input, the
+    cells to extract from these files, and the operations to perform. 
+    It is a simple text file, prepared by the user, containing a
+    number of keywords with values.  The specification script can also
+    be obtained from the
+!!IFDEF Xic
+    <a href="xic:assem"><b>Assemble</b></a>
+!!ELSE
+    <b>Assemble</b>
+!!ENDIF
+    command in the <b>Convert Menu</b>, which is a graphical front-end
+    to the
+!!IFDEF Xic
+    <a href="!assemble"><b>!assemble</b></a>
+!!ELSE
+    <b>!assemble</b>
+!!ENDIF
+    command in <i>Xic</i>.
+
+    <p>
+    Alternatively, the argument list can consist of a series of option
+    tokens and values.  These are logically almost equivalent to the
+    language of the specification file.  This gives the user the
+    option to enter job descriptions entirely from the command line. 
+    These command-line options start with a '-' character.
+
+    <p>
+    Only physical data are read, electrical data will be stripped in
+    output.  A log file is produced when the command is run.  If not
+    specified with a <tt>LogFile</tt>/<tt>-log</tt> directive, the
+    file will be named named "<tt>filetool.log</tt>" and is written in
+    the current directory.  The log file contains warning and error
+    messages emitted by the readers during file processing, and should
+    be consulted if a problem occurs.
+
+    <p>
+    The details of the file format and corresponding command line
+    options are provided in the description of the <a
+    href="!assemble#input"><b>!assemble</b></a> command.
+
+!!SEEALSO
+xic:assem
+filetool
+

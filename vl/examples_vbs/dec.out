@@ -1,0 +1,27 @@
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+dec001_delay.v
+current time: 1
+current time: 6
+current time: 16
+current time: 31
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+dec002_posneg.v
+1:  posedge a.
+1:  negedge a or posedge b.
+1:  c changed.
+2:  negedge a or posedge b.
+2:  negedge b.
+2:  c changed.
+3:  posedge a.
+3:  negedge a or posedge b.
+3:  c changed.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+dec003_posneg.v
+3:  negedge a
+6:  posedge a

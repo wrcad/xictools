@@ -1,0 +1,141 @@
+
+This document describes the WRspice Josephson junction model.
+
+I. derivation of the model.
+
+
+The expression for the junction current is
+
+   J = C*dV/dT + G(V) + Ic(Ci)*sin(P),	   (1)
+
+where:
+   J      is the total device current
+   C      is the capacitance
+   V      is the junction voltage
+   G(V)   is the quasiparticle conductance
+   Ci     is the control current
+   Ic(Ci) is the supercurrent amplitude
+   P      is the junction phase
+
+
+The integration method is either trapezoidal or rectangular.  Thus for a new
+time point for some variable X being integrated,
+
+Trap:  X  = X0 + d*(X' + X0')/2		   (2)
+       X' = -X0' + 2*(X - X0)/d		   (3)
+
+Rect:  X  = X0 + d*X'			   (4)
+       X' = (X - X0)/d			   (5)
+
+Where:
+   X    is the value at the present time point
+   X0   is the value at the previous time point
+   X'   is the time derivative at the present time point
+   X0'  is the derivative at the previous time point
+   d    is delta time
+
+
+Thus, the first term in (1) can be expressed
+
+   C*dV/dT ->  C*(-V0' + 2*(V - V0)/d)    [Trap]  (6)
+	       C*(V - V0)/d               [Rect]  (7)
+
+In the matrix formulation, one solves AV = I, where A is the coefficient
+operator matrix, V is the node voltage vector, and I the source current 
+vector.  To linearize the problem, one linearizes A, and modifies I with
+the residue terms. 
+
+For the capacitance term, the matrix element is the term which multiplies V.
+
+   ELT = 2*C/d  [Trap]	 (8)
+   ELT = C/d    [Rect]	 (9)
+
+The RHS vector is modified as
+
+   RHS = RHS + C*(V0' + 2*V0/d)	 [Trap]  (10)
+   RHS = RHS + C*V0/d            [Rect]  (11)
+
+
+The other terms, being generally nonlinear, are solved using Newton
+iterations.  This is done by linearizing the terms around the previous
+iteration result.  For the second term, one can write
+
+   G(V) ~ G(VL) + (V - VL)*g	(12)
+
+where:
+   V     is the current voltage across the device
+   G(V)	 is the present nonlinear current through the device
+   VL    is the voltage calculated by the last Newton iteration
+   G(VL) is the current at the last iteration
+   g     is the derivative dG/dV evaluated at VL
+
+Thus,
+
+   ELT = g			 (13)
+   RHS = RHS - G(VL) + VL*g	 (14)
+
+
+The supercurrent term is slightly more complicated because there are two
+independent variables.
+
+   Ic(Ci)*sin(P) ~ (Ic(CiL) + (Ci-CiL)*Ic')*(sin(PL) + (P-PL)*cos(PL)) (15)
+
+Neglecting terms second order in the difference,
+
+   Ic(Ci)*sin(P) ~
+      (Ic(CiL) + (Ci-CiL)*Ic')*sin(PL) + Ic(CiL)*(P-PL)*cos(PL)       (16)
+
+
+The phase is given by dP/dt = V/Cp, where Cp is a constant.  Thus, using
+(2-5) above,
+
+   P = P0 + d*(V + V0)/(2*Cp)     [Trap]	(17)
+   P = P0 + d*V/Cp                [Rect]	(18)
+
+This holds for the last Newton interation as well
+
+   PL = P0 + d*(VL + V0)/(2*Cp)   [Trap]	(19)
+   PL = P0 + d*VL/Cp              [Rect]	(20)
+
+
+Thus
+    P - PL = d*(V - VL)/(2*Cp)   [Trap]	(21)
+           = d*(V - VL)/Cp       [Rect]	(22)
+
+Rewriting (16)
+
+   Ic(Ci)*sin(P) ~
+      (Ic(CiL) + (Ci-CiL)*Ic')*sin(PL) +
+         Ic(CiL)*cos(PL)*(V-VL)*d/(2*Cp)  [Trap]  (23)
+
+      (Ic(CiL) + (Ci-CiL)*Ic')*sin(PL) +
+         Ic(CiL)*cos(PL)*(V-VL)*d/Cp	  [Rect]  (24)
+
+There are two matrix elememts:
+
+   ELTvv = Ic(CiL)*cos(PL)*d/(2*Cp)  [Trap]  (25)
+   ELTvv = Ic(CiL)*cos(PL)*d/Cp      [Rect]  (26)
+
+   ELTvi = Ic'*sin(PL)
+
+The RHS term is modified accordingly
+
+   RHS = RHS - Ic(CiL)*sin(PL) + CiL*Ic'*sin(PL)
+                + Ic(CiL)*cos(PL)*VL*d/(2*Cp)	  [Trap]  (27)
+
+   RHS = RHS - Ic(CiL)*sin(PL) + CiL*Ic'*sin(PL)
+                + Ic(CiL)*cos(PL)*VL*d/Cp	  [Rect]  (28)
+
+
+Define:
+   crt  = Ic(CiL)*sin(PL)
+   dcrt	= Ic'*sin(PL)
+   ag   = 2/d if Trap, 1/d if Rect
+   gcs  = Ic(CiL)*cos(PL)/(ag*Cp)
+
+   ELTvv = gcs
+   ELTvi = dcrt
+
+   RHS   = RHS - crt + CiL*dcrt + VL*gcs
+
+

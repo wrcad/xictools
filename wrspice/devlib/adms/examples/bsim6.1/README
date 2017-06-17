@@ -1,0 +1,53 @@
+$Id: README,v 1.1 2014/04/22 19:58:04 stevew Exp $
+
+This is BSIM6.1.0 Release 03/20/2014.
+
+The complete package, which includes the PDF manual, is available from
+UC Berkeley:
+
+      http://www-device.eecs.berkeley.edu/bsim/?page=BSIM6
+
+The manual will also probably be available in the "docs" directory of
+the distribution repository at http://wrcad.com (password protected,
+for customers only).
+
+This is the follow-on to the high-priority bsim6.0 model, but
+unfortunately can not be recommended.  See the QA report in the
+separate QA package download for details.
+Faults include
+1) Poor agreement with QA data.
+2) Poor agreement with previous model, requiring flag-value
+   changes.
+3) Poor numerical conditioning, requires ".options extprec".
+
+This *MUST* be built with the adms-2.3.0-wr package obtained from
+wrcad.com, in the "free software" area.
+
+A pre-built module is available in the "module_dist" directory.
+
+To build:
+
+0.  Make sure that the admst-2.3.0-wr package is installed on your
+system.  This is available from the free software area of wrcad.com. 
+The package has important improvements and bug fixes, and is required
+for building modules for WRspice.  Use of another adms distribution
+will cause trouble.
+
+1.  If you are reading this from the WRspice installation area, copy
+this directory to a personal work area, and work from there.  Below,
+"this directory" implies the copied directory (with its files and
+any sub-directories).
+
+2.  The Makefile has been provided.  Have a look at the top part of
+the file where the configuration variables are set, and read the
+comments.  Make any desired changes.
+
+3.  Type "make".  This will create and compile the C++ files, eventually
+producing the loadable module named "bsim6.so" ("bsim6.dylib" in OS X).
+
+4.  Use the devload command or -m command-line option in WRspice to
+load the module.  You will then be able to run the examples.
+
+Note - only one of bsim6.0/bsim6.1 can be loaded at the same time, due
+to use of the same model level and name for both.
+

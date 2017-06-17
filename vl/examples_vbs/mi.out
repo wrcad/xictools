@@ -1,0 +1,113 @@
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+mi001_regdecl.v
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+mi002_always.v
+In always statement, time = 1
+In always statement, time = 2
+In always statement, time = 3
+In always statement, time = 4
+In always statement, time = 5
+In always statement, time = 6
+In always statement, time = 7
+In always statement, time = 8
+In always statement, time = 9
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+mi003_modinst.v
+a = 0 b = 1
+a = 0 module_a = 0 b = 1 module_b = 1
+0: a1 = 0 main_a1 = 0 b1 = 1 main_b1 = x
+0: b1 = 1
+a = 0 b = 1
+a = 0 module_a = 0 b = 1 module_b = 1
+0: a1 = 0 main_a1 = 0 b1 = 1 main_b1 = 1
+0: a2 = 0 main_a2 = 0 b2 = 1 main_b2 = 1
+0: b2 = 1
+1: a1 = 1 main_a1 = 0 b1 = 1 main_b1 = 1
+1: a2 = 1 main_a2 = 0 b2 = 1 main_b2 = 1
+a = 1 module_a = 0 b = 0 module_b = 1
+a = 1 module_a = 0 b = 0 module_b = 1
+1: a1 = 1 main_a1 = 0 b1 = 0 main_b1 = 1
+1: b1 = 0
+1: a2 = 1 main_a2 = 0 b2 = 0 main_b2 = 1
+1: b2 = 0
+2: a1 = 0 main_a1 = 0 b1 = 0 main_b1 = 1
+2: a2 = 0 main_a2 = 0 b2 = 0 main_b2 = 1
+a = 0 b = 1
+a = 0 b = 1
+2: a1 = 0 main_a1 = 0 b1 = 1 main_b1 = 1
+2: b1 = 1
+2: a2 = 0 main_a2 = 0 b2 = 1 main_b2 = 1
+2: b2 = 1
+3: a1 = 0 main_a1 = 1 b1 = 1 main_b1 = 1
+3: a2 = 0 main_a2 = 1 b2 = 1 main_b2 = 1
+4: a1 = 0 main_a1 = 0 b1 = 1 main_b1 = 1
+4: a2 = 0 main_a2 = 0 b2 = 1 main_b2 = 1
+a = 0 module_a = 0 b = 1 module_b = 1
+a = 0 module_a = 0 b = 1 module_b = 1
+5: a1 = 1 main_a1 = 0 b1 = 1 main_b1 = 1
+5: a2 = 1 main_a2 = 0 b2 = 1 main_b2 = 1
+a = 1 module_a = 0 b = 0 module_b = 1
+a = 1 module_a = 0 b = 0 module_b = 1
+5: a1 = 1 main_a1 = 0 b1 = 0 main_b1 = 1
+5: b1 = 0
+5: a2 = 1 main_a2 = 0 b2 = 0 main_b2 = 1
+5: b2 = 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+mi004_function.v
+a = 0000, main_a = 0000
+result = entering my_func:
+a = 0000, input_a = 0000
+c = xxxx, func_c = xxxx
+leaving my_func:
+a = 0000, input_a = 0000
+c = 0100, func_c = 0101
+0101 (5)
+a = 0000, main_a = 0000
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+mi005_task.v
+a = 5
+result = 7
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+mi006_assign.v
+0:  a = 0 d = 1
+1:  a = 1 d = 1
+2:  a = 2 d = 1
+3:  a = 3 d = 1
+4:  a = 4 d = 1
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+mi007_intdecl.v
+a = 1234, b = 23456789, c = 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+mi008_memdecl.v
+a[1] = 1 (1)
+b[2] = 2 (2)
+c[3] = 33 (33)
+a[0] = x (x)
+b[1] = x (x)
+c[2] = x (x)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+mi009_paramdecl.v
+a = 8, b = 20, c = 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+mi010_paramdecl.v
+a = 9, b = 99, c = 0

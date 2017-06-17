@@ -1,0 +1,383 @@
+
+                      SECURITY SYSTEM INTERNALS
+                 Whiteley Research Inc. Proprietary
+                             2/2/02
+
+LICENSE File Format
+-------------------
+
+In the validate program, the input fills an array of blocks of
+
+struct sTR
+{
+    sTR() { memset(this, 0, sizeof(sTR)); }
+
+    unsigned int  death_date;     // no use after this date (seconds)
+    unsigned char valid_addr[4];  // host internet address
+    char *valid_host;             // host name
+    unsigned char limits[4];      // 0: code, 1: user limit, 2,3: not used
+};
+
+
+The user limit is used only for code == 3 (Server) entries, and entries
+that cover subnets.  Subnet entries have "any_host_access" in the host
+name, and valid_addr[3] = 0.  The user limit on a server is 1 if it is a
+slave server, 0 otherwise.
+
+The host and ip address fields can have various forms.
+
+   form 1)  The host is the hostname, with no domain.  The ip address is
+            the address of that host.
+   form 2)  The host name is in the form hostname:hwaddress, and the ip
+            address is 192.168.0.1.  This is an alternate form.  The
+            hwaddress is the hostid on Sun machines, or the ethernet
+            addresson other systems.
+   form 3)  The host is "any_host_access", and the ip address is
+            the subnet address (last entry 0).  This matches any
+            machine in the subnet.
+   form 4)  (Windows)  The hostname is hostname:ProductID.  The ip address
+            is 192.168.0.1.
+
+To generate the LICENSE file, start with 64 blocks of
+
+// data block in authentication file
+struct dblk
+{
+    dblk() { memset(this, 0, sizeof(dblk)); }
+
+    unsigned int timelim;         // no use after this date (seconds)
+    unsigned char limits[4];      // 0: code
+                                  // 1: user limit flag
+                                  // 2: some user limit
+                                  // 3: user limit saved block
+    // Just for fun, the user limit is not saved in the same block,
+    // rather it is obtained from base[blk->limits[3]]->limits[2].
+    unsigned char sum[16];        // checksum of corresponding block
+};
+
+The sTR's are randomly pushed into the dblk array (with setblk()):
+Here, j is the index of the sTR input block, and i is the position in
+the dblk array.  Note that the user limit is not stored in the same block.
+
+static void
+setblk(int i, int j)
+{
+    Blocks[i].timelim = htonl(Tr[j].death_date);
+    Blocks[i].limits[0] = Tr[j].limits[0];  // prog code
+    Blocks[i].limits[1] = Tr[j].limits[1] ? 1 : 0;  // user limit flag
+    Blocks[i].limits[2] = key[16];
+    Blocks[i].limits[3] = j;                // block where user limit saved
+    block blk;
+    blk.addr[0] = Tr[j].valid_addr[0];
+    blk.addr[1] = Tr[j].valid_addr[1];
+    blk.addr[2] = Tr[j].valid_addr[2];
+    blk.addr[3] = Tr[j].valid_addr[3];
+    blk.code[0] = Tr[j].limits[0];
+    blk.code[1] = key[0];
+    blk.code[2] = key[16];
+    blk.code[3] = key[32];
+    int k;
+    for (k = 0; Tr[j].valid_host[k] && k < HOSTNAMLEN; k++)
+        blk.hostname[k] = Tr[j].valid_host[k];
+    unsigned char *s = (unsigned char*)key;
+    for ( ; k < HOSTNAMLEN; k++)
+        blk.hostname[k] = *s++;
+    MD5cx ctx;
+    ctx.update((const unsigned char*)&blk, sizeof(block));
+    ctx.update((const unsigned char*)key, sizeof(key));
+    unsigned char final[16];
+    ctx.final(final);
+    for (k = 0; k < 16; k++)
+        Blocks[i].sum[k] = final[k];
+}
+
+This makes use of a block struct
+
+// used for checksum
+#define HOSTNAMLEN 56
+struct block
+{
+    block() { memset(this, 0, sizeof(block)); }
+
+    unsigned char addr[4];        // internet address
+    unsigned char code[4];        // program code, etc
+    char hostname[HOSTNAMLEN];    // host name
+};
+
+to compute the checksum for each block.  The data used in the checksum must
+be known to the application: host name, ip address, key
+
+   1)  The addr field is copied directly
+   2)  The code field is set:
+       code[0] = program code
+       code[1] = key[0]    (dummy value)
+       code[2] = key[16]   (dummy value)
+       code[3] = key[32]   (dummy value)
+   3)  The host name is copied into the hostname field, padded with the key
+   4)  The md5 checksum is computed on the 64 bytes set
+   5)  The checksum is written to dblk::sum
+
+The dblk's that aren't used for input data are filled with garbage.
+
+Loop through the blocks, and write the user limits.
+
+    for (int i = 0; i < NumBlocks; i++) {
+        if (Tr[i].limits[1])
+            Blocks[i].limits[2] = Tr[i].limits[1];
+    }
+
+The last block in the file is special, and not used for input blocks.
+It is set as follows:
+
+   1)  Initialize to garbage values
+   2)  Zero the sum field of the last bleck, and compute the md5 checksum
+       for all the blocks.
+   3)  Write the checksum into the last block sum field.
+
+The blocks are written as a file named "LICENSE".  It is 1536 bytes long,
+(64 blocks * sizeif(dblk) (24) = 1536).
+
+
+------------------ Client Side ------------------------------------------
+
+The client fills in this struct:
+
+struct sJobReq
+{
+    sJobReq() { memset(this, 0, sizeof(sJobReq)); }
+
+    char host[64];          // host request is from
+    char user[64];          // user for requesting process
+    unsigned int date;      // date/time
+    unsigned char addr[4];  // IP address of requester
+    int reqtype;            // OPEN, CKECK, CLOSE
+    unsigned int pid;       // requesting process id
+    unsigned code;          // application program code
+};
+
+This is written to the socket connected to the server.
+
+The server responds with another sJobReq struct.  This is processed in
+unwind().
+
+static int
+unwind(sJobReq *cref, sJobReq *c)
+{
+    size_t size = sizeof(sJobReq);
+    MD5cx ctx;
+    ctx.update((const unsigned char*)cref, size);
+    unsigned char sum[16];
+    ctx.final(sum);
+        
+    unsigned char nsum[16];
+    for (int i = 0; i < 16; i++) {
+        if (sum[i] < 127)
+            nsum[15-i] = sum[i]+1;
+        else if (sum[i] == 127)
+            nsum[15-i] = 0;
+        else
+            nsum[15-i] = sum[i];
+    }
+    unsigned char *cc = (unsigned char *)c;
+
+    // use first 8 bytes to generate index to sum
+    int s = 0;
+    for (int i = 0; i < 8; i++)
+       s += cc[i];
+    s %= (size - 26);  // size - (16 + 8 + 2)
+    int i = s + 8;
+    
+    // copy sum to location
+    for (int j = 0; j < 16; i++, j++)
+        sum[j] = cc[i];
+    int retval = cc[size-2];
+
+    if (memcmp(sum, nsum, 16))
+        return (ERR_NOTLIC);
+    return (retval);
+}
+
+   1) compute the checksum of the initial sJobReq sent, int "sum"
+
+   2) the sum value is encoded into "nsum"
+
+   3) sum the first 8 bytes of the returned sJobReq as unsigned.
+
+   4) do some other manipulations to obtain an offset.
+
+   5) copy the 16 bytes in the returned sJobReq at the offset into "sum"
+
+   6) obtain the return value from another offset
+
+   7) compare the "sum" with "nsum" for pass/fail
+
+
+------------------ Server Side ------------------------------------------
+
+   1)  Initialize an sJobReq with the host name and possibly the ip
+       address.
+
+   2)  Pass this to validate().
+
+In validate()
+
+   3)  Read in the LICENSE file (read_license()).
+       a) Read data into a dblk array.
+       b) Copy the sum field of the last block, and zero it.
+       c) Compute the checksum for the blocks and compare with stored
+          checksum.
+
+   4)  Look for a matching block in the license blocks (find_valid()).
+
+       a) Create a block struct with the info from the sJobReq.
+       b) Compute its checksum
+       c) Look through the license blocks for an identical checksum.
+          If found, return a pointer to that block.
+
+       Note that the search is a two-step process, first to match the
+       ip address directly, next to match as part of a subnet.  Note
+       also that server entries can never have subnet authorization.
+
+// Find the block with matching checksum
+//
+dblk*
+find_valid(dblk *blocks, sJobReq *c)
+{
+    block myblk;
+    int i;
+    for (i = 0; c->host[i] && i < HOSTNAMLEN; i++)
+        myblk.hostname[i] = c->host[i];
+    unsigned char *s = (unsigned char*)key;
+    for ( ; i < HOSTNAMLEN; i++)
+        myblk.hostname[i] = *s++;
+    myblk.addr[0] = c->addr[0];
+    myblk.addr[1] = c->addr[1];
+    myblk.addr[2] = c->addr[2];
+    myblk.addr[3] = c->addr[3];
+    myblk.code[0] = ntohl(c->code);
+    myblk.code[1] = key[0];
+    myblk.code[2] = key[16];
+    myblk.code[3] = key[32];
+
+    MD5cx ctx;
+    ctx.update((const unsigned char*)&myblk, sizeof(block));
+    ctx.update((const unsigned char*)key, sizeof(key));
+    unsigned char final[16];
+    ctx.final(final);
+    for (i = 0; i < NUMBLKS; i++)
+        if (!memcmp(final, blocks[i].sum, 16))
+            break;
+    if (i < NUMBLKS)
+        return (blocks + i);
+
+    if (c->code != SERVER_CODE) {
+        // No entry for host.  Look for a site license.
+        //
+        char buf[64];
+        decode(strs23, buf);
+        for (i = 0; buf[i] && i < HOSTNAMLEN; i++)
+            myblk.hostname[i] = buf[i];
+        s = (unsigned char*)key;
+        for ( ; i < HOSTNAMLEN; i++)
+            myblk.hostname[i] = *s++;
+        myblk.addr[0] = c->addr[0];
+        myblk.addr[1] = c->addr[1];
+        myblk.addr[2] = c->addr[2];
+        myblk.addr[3] = 0;
+        myblk.code[0] = ntohl(c->code);
+        myblk.code[1] = key[0];
+        myblk.code[2] = key[16];
+        myblk.code[3] = key[32];
+
+        ctx.update((const unsigned char*)&myblk, sizeof(block));
+        ctx.update((const unsigned char*)key, sizeof(key));
+        ctx.final(final);
+        for (i = 0; i < NUMBLKS; i++)
+            if (!memcmp(final, blocks[i].sum, 16))
+                break;
+        if (i < NUMBLKS)
+            return (blocks + i);
+    }
+    return (0);
+}
+
+   5)  From the returned block, check time and user limits.
+
+// Check if trying to run after the expiration date,
+// if set.  Return true if ok to proceed
+//
+bool
+check_time(dblk *blk)
+{
+    if (blk->timelim == 0)
+        return (true);
+    time_t loc;
+    time(&loc);
+    if ((unsigned)loc < ntohl(blk->timelim))
+        return (true);
+    return (false);
+}
+
+
+// See if there are more than the maximum number of copies
+// running.  If not, return true.  Add a new XTV_OPEN request to the
+// job list
+//
+bool
+check_users(dblk *blk, dblk *blbase, sJobReq *c)
+{
+    // In the job list, the reqtype field is used as a flag to indicate
+    // that a user limit exists, and identifies the relevant block
+
+    if (blk->limits[1] != 0) {
+        int count = 1;
+        for (job *j = JobList; j; j = j->next) {
+            if (ntohl(j->request->code) == blk->limits[0] &&
+                    j->request->reqtype == blk->limits[3] + 1)
+                count++;
+        }
+#ifdef DEBUG
+        errlog("count %d base %d", count, blbase[blk->limits[3]].limits[2]);
+#endif
+        if (count > blbase[blk->limits[3]].limits[2])
+            return (false);
+    }
+
+    if (ntohl(c->reqtype) == XTV_OPEN) {
+        job *j = new job;
+        j->request = new sJobReq;
+        memcpy(j->request, c, sizeof(sJobReq));
+        j->request->date = time(0);  // use server's date
+        j->request->reqtype = blk->limits[1] ? blk->limits[3] + 1 : 0;
+        j->next = JobList;
+        JobList = j;
+    }
+    return (true);
+}
+
+   6)  Create a return sJobReq and write this back to the client
+
+// Create a return token in buf
+//
+void
+frand(unsigned char *buf, size_t size, unsigned char *sum, int retval)
+{
+    // fill buf with crap
+    for (unsigned int i = 0; i < size; i++)
+        buf[i] = random() % 256;
+
+    // use first 8 bytes to generate index to sum
+    int s = 0;
+    for (int i = 0; i < 8; i++)
+       s += buf[i];
+    s %= (size - 26);  // size - (16 + 8 + 2)
+    int i = s + 8;
+
+    // copy sum to location
+    for (int j = 0; j < 16; i++, j++)
+        buf[i] = sum[j];
+
+    // add retval, second to last byte
+    i = size - 2;
+        buf[i] = retval & 0xff;
+}

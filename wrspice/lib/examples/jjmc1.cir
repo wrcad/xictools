@@ -1,0 +1,233 @@
+* 3-stage Josephson counter, Monte Carlo analysis\n\n\
+To run, give these commands to WRspice after sourcing this file:\n\
+    mplot -on\n\
+    check
+*
+*
+.monte
+.exec
+# Monte Carlo analysis of a Josephson binary counter.
+# This is an example of a Monte Carlo analysis input file.
+#
+# This differs from jjmc.cir in that .params are used to generate
+# the random values instead of vector values.
+#
+# After sourcing the file, optionally enter "mplot -on" to see results
+# graphically, then "check" to initiate run.  The results will be left
+# in a file.
+#
+compose checkPNTS values 50p 135p 185p 235p 285p 335p 385p 435p 485p
+#
+# Put the random values from the circuit in the output file, and to
+# the console.  Note that .param values defined in the circuit are known
+# here in the .exec block, but are not known in the .control block.
+echof value1 value2
+echo Test values: value1 value2
+#
+# One can define other initialized constants here as well.
+let failthres = 1
+#
+# end of header
+.endc
+.control
+#
+# The following code is evaluated just after the time variable exceeds
+# each one of the checkPNTS.
+#
+if time > checkPNTS[0]
+    if time < checkPNTS[1]
+# time is 50p, set quiescent phase differences.  Uninitialized variables
+# do not require declaration in header.
+        p0 = v(200) - v(201)
+        p1 = v(300) - v(301)
+        p2 = v(400) - v(401)
+        checkFAIL = 0
+    else
+        echo -n "  Checking at time $&time ... "
+    end
+end
+if time > checkPNTS[1]
+    if time < checkPNTS[2]
+# time = 135p, state should be '001'. if not set checkFAIL to 1
+# pi and the other variables in the 'constants' plot are known
+        if abs(v(200) - v(201) + p0 - 2*pi) > failthres
+            checkFAIL = 1;
+        end
+        if abs(v(300) - v(301) - p1) > failthres
+            checkFAIL = 1;
+        end
+        if abs(v(400) - v(401) - p2) > failthres
+            checkFAIL = 1;
+        end
+    end
+end
+if time > checkPNTS[2]
+    if time < checkPNTS[3]
+# time = 185p, state should be '010'. if not set checkFAIL to 1
+        if abs(v(200) - v(201) - p0) > failthres
+            checkFAIL = 1;
+        end
+        if abs(v(300) - v(301) + p1 - 2*pi) > failthres
+            checkFAIL = 1;
+        end
+        if abs(v(400) - v(401) - p2) > failthres
+            checkFAIL = 1;
+        end
+    end
+end
+if time > checkPNTS[3]
+    if time < checkPNTS[4]
+# time = 235p, state should be '011'. if not set checkFAIL to 1
+        if abs(v(200) - v(201) + p0 - 2*pi) > failthres
+            checkFAIL = 1;
+        end
+        if abs(v(300) - v(301) + p1 - 2*pi) > failthres
+            checkFAIL = 1;
+        end
+        if abs(v(400) - v(401) - p2) > failthres
+            checkFAIL = 1;
+        end
+    end
+end
+if time > checkPNTS[4]
+    if time < checkPNTS[5]
+# time = 285p, state should be '100'. if not set checkFAIL to 1
+        if abs(v(200) - v(201) - p0) > failthres
+            checkFAIL = 1;
+        end
+        if abs(v(300) - v(301) - p1) > failthres
+            checkFAIL = 1;
+        end
+        if abs(v(400) - v(401) + p2 - 2*pi) > failthres
+            checkFAIL = 1;
+        end
+    end
+end
+if time > checkPNTS[5]
+    if time < checkPNTS[6]
+# time = 335p, state should be '101'. if not set checkFAIL to 1
+        if abs(v(200) - v(201) + p0 - 2*pi) > failthres
+            checkFAIL = 1;
+        end
+        if abs(v(300) - v(301) - p1) > failthres
+            checkFAIL = 1;
+        end
+        if abs(v(400) - v(401) + p2 - 2*pi) > failthres
+            checkFAIL = 1;
+        end
+    end
+end
+if time > checkPNTS[6]
+    if time < checkPNTS[7]
+# time = 385p, state should be '110'. if not set checkFAIL to 1
+        if abs(v(200) - v(201) - p0) > failthres
+            checkFAIL = 1;
+        end
+        if abs(v(300) - v(301) + p1 - 2*pi) > failthres
+            checkFAIL = 1;
+        end
+        if abs(v(400) - v(401) + p2 - 2*pi) > failthres
+            checkFAIL = 1;
+        end
+    end
+end
+if time > checkPNTS[7]
+    if time < checkPNTS[8]
+# time = 435p, state should be '111'. if not set checkFAIL to 1
+        if abs(v(200) - v(201) + p0 - 2*pi) > failthres
+            checkFAIL = 1;
+        end
+        if abs(v(300) - v(301) + p1 - 2*pi) > failthres
+            checkFAIL = 1;
+        end
+        if abs(v(400) - v(401) + p2 - 2*pi) > failthres
+            checkFAIL = 1;
+        end
+    end
+end
+if time > checkPNTS[1]
+    if checkFAIL <> 0
+        echo FAILED
+    else
+        echo OK
+    end
+end
+#
+# end of pass/fail logic
+.endc
+
+* Define the random values, these are evaluated ahead of each trial.
+*.param value1 = '13*gauss(.2,1)'
+*.param value2 = '38*gauss(.2,1)'
+.param value1 = 'agauss(13, 2.6, 1)'
+.param value2 = 'agauss(38, 7.6, 1)'
+*.param value1 = 'gauss(13, .2, 1)'
+*.param value2 = 'gauss(38, .2, 1)'
+
+.tran 1p 500p uic
+.subckt count 1 4 5 6 7
+c1 4 0 3.2p
+r1 3 8 .4
+r2 4 9 1.1
+b1 3 0 6 jj1
+b2 5 0 7 jj1
+l1 3 4 2.0p
+l2 4 5 2.0p
+l3 1 2 2.0p
+l4 2 0 2.0p
+l5 8 0 1.4p
+l6 9 0 .1p
+k1 l1 l3 .99
+k2 l2 l4 .99
+.ends count
+r1 17 2 50
+r2 1 6 50
+r3 1 10 50
+r4 1 14 50
+r5 3 18 50
+r6 7 13 50
+r7 11 13 50
+r8 15 13 50
+r9 3 20 50
+r10 4 5 .43
+r11 8 9 .43
+r12 12 19 .43
+r13 16 30 .5
+l1 5 6 2.1p
+l2 9 10 2.1p
+l3 19 14 2.1p
+l4 30 0 2p
+x1 3 2 4 100 101 count
+x2 7 6 8 200 201 count
+x3 11 10 12 300 301 count
+x4 15 14 16 400 401 count
+*
+* Below are the sources which vary.
+* In general, the value1 or value2 parameters can replace any numerical
+* value in the circuit description.
+*
+*flux bias
+v1 13 0 pulse(0 value1%m 10p 10p)
+*gate bias
+v2 1 0 pulse(0 value2%m 10p 10p)
+*
+*
+v3 20 0 pwl(0 0 70p 0
++ 75p  15m 90p  15m 100p -15m 115p -15m 
++ 125p 15m 140p 15m 150p -15m 165p -15m
++ 175p 15m 190p 15m 200p -15m 215p -15m
++ 225p 15m 240p 15m 250p -15m 265p -15m
++ 275p 15m 290p 15m 300p -15m 315p -15m
++ 325p 15m 340p 15m 350p -15m 365p -15m
++ 375p 15m 390p 15m 400p -15m 415p -15m
++ 425p 15m 440p 15m 450p -15m 465p -15m 500p -15m)
+*
+* flux bias first stage
+v4 18 0 pulse(0 13m 10p 10p)
+* gate bias first stage
+v5 17 0 pulse(0 39m 8p 10p)
+*
+*Nb 3000 A/cm2   area = 20 square microns
+.model jj1 jj(rtype=1,cct=1,icon=10m,vg=2.8m,delv=0.08m,
++ icrit=0.6m,r0=49.999998,rn=2.745098,cap=0.777093p)
+.end

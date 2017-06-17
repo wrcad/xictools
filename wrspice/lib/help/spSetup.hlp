@@ -1,0 +1,806 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spSetup.hlp,v 1.18 2016/01/30 20:43:03 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spSetup.hlp
+!!TITLE
+spSetup.hlp
+!!HTML 
+
+!!SUBTOPICS
+setup
+platforms
+environment
+startup_files
+tbsetup
+startup_ops
+
+
+!! not in manual
+!!KEYWORD
+setup
+!!TITLE
+Installation and Setup
+!!HTML
+    Instructions for downloading and installing the <i>WRspice</i>
+    distribution files can be found in the "Binary Distribution
+    Repository" link on <a href="http://wrcad.com">wrcad.com</a>.
+
+    <p>
+    If the program is installed in the default location under
+    <tt>/usr/local</tt>, the installation should be complete. 
+    Otherwise, the <b>XT_PREFIX</b> (and/or some other) <a
+    href="environment">environment</a> variables should be set in
+    order for <i>WRspice</i> to locate things such as the help
+    database.  Commands to set these environment variables should be
+    added to the user's shell startup file.
+
+    <p>
+    If the installation host is to be used as a SPICE server for
+    remote client access, the <a href="wrspiced"><tt>wrspiced</tt></a>
+    daemon must be enabled, after some minor configuration.
+
+    <p>
+    <i>WRspice</i> can be customized through the <a
+    href="startup_files">startup file</a>, if necessary.
+
+!!SEEALSO
+platforms
+
+!! not in manual
+!!KEYWORD
+platforms
+!!TITLE
+Platforms and Architectures
+!!HTML
+    The <i>XicTools</i> package has been developed primarily under
+    BSD-4.4 Unix (FreeBSD), which is the reference operating
+    system.  The tools have also been ported to Linux, SunOS, Solaris,
+    Alpha-OSF, Ultrix, and HPUX.  The tools are now available
+    for Microsoft Windows, WinXP and newer.
+
+!!REDIRECT WRSPICE_HOME         environment#WRSPICE_HOME
+!!REDIRECT WRSPICE_FIFO         environment#WRSPICE_FIFO
+!!REDIRECT XT_AUTH_MODE         environment#XT_AUTH_MODE
+!!REDIRECT XT_LICENSE_PATH      environment#XT_LICENSE_PATH
+!!REDIRECT XTLSERVER            environment#XTLSERVER
+!!REDIRECT XT_PREFIX            environment#XT_PREFIX
+!!REDIRECT XT_REMOTE_TEST       environment#XT_REMOTE_TEST
+!!REDIRECT XT_KLU_PATH          environment#XT_KLU_PATH
+!!REDIRECT XT_LOCAL_MALLOC      environment#XT_LOCAL_MALLOC
+!!REDIRECT XT_SYSTEM_MALLOC     environment#XT_SYSTEM_MALLOC
+!!REDIRECT XTNETDEBUG           environment#XT_REMOTE_TEST
+!!REDIRECT HOME                 environment#HOME
+!!REDIRECT DISPLAY              environment#DISPLAY
+!!REDIRECT EDITOR               environment#EDITOR
+!!REDIRECT SPICE_EDITOR         environment#SPICE_EDITOR
+!!REDIRECT TMPDIR               environment#TMPDIR
+!!REDIRECT SPICE_TMP_DIR        environment#SPICE_TMP_DIR
+!!REDIRECT SPICE_EXEC_DIR       environment#SPICE_EXEC_DIR
+!!REDIRECT SPICE_PATH           environment#SPICE_PATH
+!!REDIRECT SPICE_LIB_DIR        environment#SPICE_LIB_DIR
+!!REDIRECT SPICE_INP_PATH       environment#SPICE_INP_PATH
+!!REDIRECT SPICE_HLP_PATH       environment#SPICE_HLP_PATH
+!!REDIRECT SPICE_NEWS_FILE      environment#SPICE_NEWS_FILE
+!!REDIRECT SPICE_BUGADDR        environment#SPICE_BUGADDR
+!!REDIRECT SPICE_OPTCHAR        environment#SPICE_OPTCHAR
+!!REDIRECT SPICE_ASCIIRAWFILE   environment#SPICE_ASCIIRAWFILE
+!!REDIRECT SPICE_HOST           environment#SPICE_HOST
+!!REDIRECT SPICE_DAEMONLOG      environment#SPICE_DAEMONLOG
+!!REDIRECT SPICENOMAIL          environment#SPICENOMAIL
+!!REDIRECT XTNOMAIL             environment#XTNOMAIL
+
+!! useriface.tex 013016
+!!KEYWORD
+environment
+!!TITLE
+Environment Variables
+!!HTML
+    Environment variables are keyword/value pairs that are made
+    available to an application by the command shell or operating
+    system.  The value of an environment variable is a text string,
+    which may be empty.  Environment variables can be set by the user
+    to control various defaults in <i>WRspice</i>.
+
+    <h3>Unix/Linux</h3>
+
+    Environment variables are maintained by the user's command shell. 
+    It is often convenient to set environment variables in a shell
+    startup file such as <tt>.cshrc</tt> or <tt>.login</tt> for the
+    C-shell or <tt>.profile</tt> for the Bourne shell.  These files
+    reside in the user's home directory.  See the manual page for your
+    shell for more information.
+
+    <p>
+    For the C-shell, the command that sets an environment variable is
+    <blockquote>
+        <tt>setenv</tt> <i>variable_name</i> [<i>value</i>]
+    </blockquote>
+    For example,
+    <blockquote>
+        <tt>setenv XT_DUMMY "hello world!"</tt>
+    </blockquote>
+    Note that if the value contains white space, it should be quoted. 
+    Note also that it is not necessary to have a value, in which case
+    the variable acts as a boolean (set or not set).
+
+    <p>
+    In the C-shell, one can use <tt>setenv</tt> without arguments, or
+    <tt>printenv</tt>, to list all of the environment variables
+    currently set.
+
+    <p>
+    For a modern Bourne-type shell, such as <tt>bash</tt>, the
+    corresponding command is
+    <blockquote>
+        <tt>export</tt> <i>variable_name</i>[=<i>value</i>]
+    </blockquote>
+    In this type of shell one can list the variables currently set by
+    giving the shell <tt>set</tt> command with no arguments.
+
+    <h3>Microsoft Windows</h3>
+
+    Under Windows, environment variables can be set in a DOS box with
+    the "<tt>set</tt>" command before starting the program from the
+    command line, or in the <tt>AUTOEXEC.BAT</tt> file, or from the
+    <b>System</b> entry in the <b>Control Panel</b>.  Only the latter
+    two methods work if the programs are started from an icon.  If
+    using a Cygwin bash-box, environment variables can be set in the
+    startup file as under Unix.
+
+    <p>
+    <i>WRspice</i> is <b>not</b> compatible with the <tt>mintty</tt>
+    terminal emulator which is the current default in Cygwin.  Only
+    Cygwin-built programs work properly from this terminal if they
+    use a command line interface.
+
+    <h3><i>WRspice</i> Environment Variables</h3>
+
+    The following environment variables are used by all <i>XicTools</i>
+    programs.
+
+    <p>
+    <a name="WRSPICE_HOME"></a>
+    <dl>
+    <dt><b>WRSPICE_HOME</b>
+    <dd>
+    If found in the environment when <i>WRspice</i> starts, it is
+    expected to contain a path to the <i>WRspice</i> installation area
+    or equivalent, which defaults to
+    "<tt>/usr/local/xictools/wrspice</tt>".  This overrides <a
+    href="XT_PFREFIX"><b>XT_PREFIX</b></a> if that environment
+    variable is also found.
+
+    <p>
+    There is an important subtlety when using this variable.  Although
+    it allows <i>WRspice</i> to find its startup files anywhere, only the
+    directory structure implied by <b>XT_PREFIX</b>, that is, for
+    <i>WRspice</i>,
+    <blockquote>
+    <tt>$XT_PREFIX/xictools/wrspice</tt>
+    </blockquote>
+    is compatible with the program installation script.  The variable
+    is perhaps useful for pointing <i>WRspice</i> toward a secondary
+    set of startup files, perhaps heavily customized by the user,
+    which may reside in an arbitrary location.
+    </dl>
+
+    <a name="WRSPICE_FIFO"></a>
+    <dl>
+    <dt><b>WRSPICE_FIFO</b>
+    <dd>
+    When <i>WRspice</i> starts, it creates a "named pipe", otherwise
+    known as a <a href="fifo">fifo</a>.  Text written to the fifo is
+    piped into <i>WRspice</i>, as if input with the <a
+    href="source"><b>source</b></a> command.  If this variable is
+    found in the environment, the text of this variable is taken as
+    the base name for the fifo, instead of "<tt>wrsfifo</tt>".  In
+    Unix/Linux, this name can have a full path.  All components of the
+    path except for the file name must exist.  If there is a conflict
+    with an existing entity, an integer suffix will be added to make
+    the name unique.  In Windows, any path given is stripped and
+    ignored.
+    </dl>
+
+    <a name="XT_AUTH_MODE"></a>
+    <dl>
+    <dt><b>XT_AUTH_MODE</b>
+    <dd>
+    By default, Unix/Linux versions of <i>Xic</i> and <i>WRspice</i>
+    use authorization provided by an external license server, possibly
+    hosted on a different machine.  On the other hand, the Windows
+    versions and <i>XicII</i>/<i>Xiv</i> use built-in authorization. 
+    Both the external license server and the programs not using the
+    license server make use of a file named "<tt>LICENSE</tt>"
+    provided by Whiteley Research, Inc., which provides authorization
+    to run on the host computer.
+
+    <p>
+    It is possible to run <i>Xic</i> and <i>WRspice</i> without a
+    license server, and to run <i>XicII</i>/<i>Xiv</i> from a license
+    server.  The status is set with the environment variable
+    <b>XT_AUTH_MODE</b>.  This variable has meaning if set to one of
+    the keywords "<tt>Server</tt>" or "<tt>Local</tt>"
+
+    <p>
+    If set to "<tt>Server</tt>", <i>XicII</i> and <i>Xiv</i> will
+    validate through a license server the same way as <i>Xic</i> and
+    <i>WRspice</i> normally do.  If set to "<tt>Local</tt>",
+    <i>Xic</i> and <i>WRspice</i> will be self-validating the way
+    <i>XicII</i> normally is.
+
+    <p>
+    <i>Xic</i> and/or <i>WRspice</i> users on a single licensed
+    workstation may prefer to set the environment variable in their
+    shell startup file and not use the external license server.
+
+    <p>
+    When the programs look for the LICENSE file in "<tt>Local</tt>"
+    mode, if the file is not found in the startup or license
+    directories, the programs will look in the home and current
+    directories, in that order, unless <b>XT_LICENSE_PATH</b> is
+    also set.
+    </dl>
+
+    <a name="XT_LICENSE_PATH"></a>
+    <dl>
+    <dt><b>XT_LICENSE_PATH</b>
+    <dd>
+    When using local validation (i.e., not using the license server)
+    <b>XT_LICENSE_PATH</b> can be set to the full path to the license
+    file.  Only this file will be used - the regular search is
+    suppressed.
+    </dl>
+
+    <a name="XTLSERVER"></a>
+    <dl>
+    <dt><b>XTLSERVER</b><dd>
+    This provides the host name of the host running the license server
+    needed to validate the application.  It is in a format
+    understandable to the local name server.  The host name can
+    optionally be suffixed by "<tt>:</tt><i>port</i>", where
+    <i>port</i> is the port number in use by the server.  There should
+    be no space around the colon when using this form.
+    </dl>
+
+    <a name="XT_PREFIX"></a>
+    <dl>
+    <dt><b>XT_PREFIX</b><dd>
+    All of the <i>XicTools</i> programs respond to the
+    <b>XT_PREFIX</b> environment variable.  When the tools are
+    installed in a non-standard location, i.e., other than
+    <tt>/usr/local</tt>, this can be set to the directory prefix which
+    effectively replaces "<tt>/usr/local</tt>", and the programs will
+    be able to access the installation library files without further
+    directives.  This should not be needed under Windows, as the
+    Registry provides the default paths.
+    </dl>
+
+    <a name="XT_REMOTE_TEST"></a>
+    <dl>
+    <dt><b>XT_REMOTE_TEST</b>, <b>XTNETDEBUG</b>
+    <dd>
+    There are two environment variables used for debugging the network
+    interfaces.  If the variable <b>XT_REMOTE_TEST</b> is defined,
+    <i>Xic</i> will link to <i>WRspice</i> on the local machine
+    through the <tt>wrspiced</tt> daemon.  Ordinarily, <i>Xic</i> will
+    fork a <i>WRspice</i> process directly on the local machine.  If
+    the variable <b>XTNETDEBUG</b> is defined, <i>Xic</i> and
+    <i>WRspice</i> will echo interprocess messages sent and received
+    to the console.  In server mode, <i>Xic</i> will not go into the
+    background, but will remain in the foreground, printing status
+    messages while servicing requests.
+    </dl>
+
+    <a name="XT_KLU_PATH"></a>
+    <dl>
+    <dt><b>XT_KLU_PATH</b>
+    <dd>
+    This can be set to the full path to the KLU (sparse matrix solver)
+    plug-in.  For example, this path by default in a Linux installation is
+    <blockquote>
+    <tt>/usr/local/xictools/wrspice/startup/klu_wr.so</tt>
+    </blockquote>
+    The plug-in is found automatically so this variable is needed only
+    for special cases.
+
+    <p>
+    The KLU version changed in wrspice-4.2.7, and the plug-ins are not
+    compatible.  Current <i>WRspice</i> releases will not load the old
+    plug-in, however older releases will load a new plug-in if found
+    in the default location, which will likely cause a program crash. 
+    This variable can be set in this case to avoid the problem.
+    </dl>
+
+    <a name="XT_LOCAL_MALLOC"></a>
+    <dl>
+    <dt><b>XT_LOCAL_MALLOC</b>
+    <dd>
+    Linux and FreeBSD releases can use an included local memory
+    allocation package.  In earlier <i>WRspice</i> releases, this
+    allocator, rather than the allocator provided by the operating
+    system, was used by default.  In 32-bit releases, the local
+    allocator was often able to allocate more memory than the
+    allocators provided by the operating system.  It also provided
+    custom error reporting and statistics.
+
+    <p>
+    This feature is now disabled, as in modern operating systems there
+    is dubious benefit, and it can produce stability problems in some
+    cases.  However, if this variable is set in the environment when
+    <i>WRspice</i> is started, the local allocator will be used.  The
+    interested user is encouraged to experiment.
+    </dl>
+
+    <a name="XT_SYSTEM_MALLOC"></a>
+    <dl>
+    <dt><b>XT_SYSTEM_MALLOC</b>
+    <dd>
+    This variable was once used to disable the internal local memory
+    allocator, which in earlier releases was enabled by default.
+    Currently, this variable is ignored.
+    </dl>
+
+    <p>
+    There are several environment variables which can be used to alter
+    some of the <i>WRspice</i> defaults.  On startup, <i>WRspice</i>
+    checks for the following variables in the environment, and alters
+    internal defaults accordingly.  The defaults can be modified when
+    the program is built, the defaults listed below are those assigned
+    in the distribution.
+
+    <a name="HOME"></a>
+    <dl>
+    <dt><b>HOME</b><dd>
+    This is used only in the Microsoft Windows version, and can be set
+    to a full directory path which will be taken as the user's home
+    directory.
+    </dl>
+
+    <a name="DISPLAY"></a>
+    <dl>
+    <dt><b>DISPLAY</b><dd>
+    This variable defines the X window system display that
+    <i>WRspice</i> will use, but is ignored if the <a
+    href="-d"><tt>-d</tt></a> option is used on the <i>WRspice</i>
+    command line.  The display must be specified for <a
+    href="graphics">graphics</a> to be enabled in <i>WRspice</i>.
+    </dl>
+
+    <a name="EDITOR"></a>
+    <dl>
+    <dt><b>EDITOR</b><dd>
+    If defined to the invoking string for a text editor, that editor
+    will be used in the <a href="edit"><b>edit</b></a> command.  This
+    is superseded by the <b>SPICE_EDITOR</b> variable, if set.
+    </dl>
+
+    <a name="SPICE_EDITOR"></a>
+    <dl>
+    <dt><b>SPICE_EDITOR</b><dd>
+    The text editor called by the <a href="edit"><b>edit</b></a>
+    command can be set with this variable.  The variable is defined to
+    the command string one would type to invoke the editor.  This will
+    supersede the <b>EDITOR</b> variable, if set, but which would
+    otherwise have the same effect.  If no editor is specified in the
+    environment, or with the <a href="editor"><tt>editor</tt></a>
+    shell variable, which supersedes the environment variables, a
+    default internal editor is used.  The default internal editor can
+    also be specified by setting <b>SPICE_EDITOR</b> to nothing,
+    "<tt>default</tt>", or "<tt>xeditor</tt>".
+    </dl>
+
+    <a name="TMPDIR"></a>
+    <dl>
+    <dt><b>TMPDIR</b><dd>
+    This specifies a directory to use for temporary files, and is
+    superseded by <b>SPICE_TMP_DIR</b>, if defined.  The default
+    location if not specified is <tt>/tmp</tt>.
+    </dl>
+
+    <a name="SPICE_TMP_DIR"></a>
+    <dl>
+    <dt><b>SPICE_TMP_DIR</b><dd>
+    When <i>WRspice</i> creates a temporary file, it will look for a
+    directory named by the <b>SPICE_TMP_DIR</b> environment
+    variable, and if not found the directory named in the
+    <b>TMPDIR</b> variable, and if still not found the file will be
+    created in <tt>/tmp</tt>.
+    </dl>
+
+    <a name="SPICE_EXEC_DIR"></a>
+    <dl>
+    <dt><b>SPICE_EXEC_DIR</b><dd>
+    This variable can be used to define the directory containing the
+    <i>XicTools</i> binaries, used by the <a
+    href="aspice"><b>aspice</b></a> command and the <a
+    href="wrspiced"><tt>wrspiced</tt></a> daemon.  If not set, the
+    default is "<tt>/usr/local/xictools/bin</tt>", or, if
+    <b>XT_PREFIX</b> is set, its value replaces "<tt>/usr/local</tt>".
+    </dl>
+
+    <a name="SPICE_PATH"></a>
+    <dl>
+    <dt><b>SPICE_PATH</b><dd>
+    This can be used to set the full path to the <i>WRspice</i>
+    executable, for the <a href="aspice"><b>aspice</b></a> command and
+    the <a href="wrspiced"><tt>wrspiced</tt></a> daemon.  If not set,
+    the default is "<tt>/usr/local/xictools/bin/wrspice</tt>",
+    or, if <b>XT_PREFIX</b> is set, its value replaces
+    "<tt>/usr/local</tt>".  The <b>SPICE_EXEC_DIR</b> variable can
+    also be used for this purpose, unless the <tt>wrspice</tt>
+    executable has been renamed.  The <a
+    href="spicepath"><tt>spicepath</tt></a> shell variable, if set,
+    will override the path set in the environment.  </dl>
+    </dl>
+
+    <a name="SPICE_LIB_DIR"></a>
+    <dl>
+    <dt><b>SPICE_LIB_DIR</b><dd>
+    This variable can be used to change the default location where
+    <i>WRspice</i> looks for system <a href="startup_files">startup
+    files</a>.  If not set, the internal default is
+    "<tt>/usr/local/xictools/wrspice/startup</tt>", or, if
+    <b>XT_PREFIX</b> is set, its value replaces "<tt>/usr/local</tt>".
+    </dl>
+
+    <a name="SPICE_INP_PATH"></a>
+    <dl>
+    <dt><b>SPICE_INP_PATH</b><dd>
+    This can be set to a list of directories to search for input files
+    and scripts.  If not set, the internal default is "<tt>( . 
+    /usr/local/xictools/wrspice/scripts )</tt>", or, if
+    <b>XT_PREFIX</b> is set, its value replaces "<tt>/usr/local</tt>".
+    </dl>
+
+    <a name="SPICE_HLP_PATH"></a>
+    <dl>
+    <dt><b>SPICE_HLP_PATH</b><dd>
+    This can be set to a list of directories to search for a
+    href="helpsys">help database</a> files.  If not set, the internal
+    default is "<tt>( /usr/local/xictools/wrspice/help )</tt>",
+    or, if <b>XT_PREFIX</b> is set, its value replaces
+    "<tt>/usr/local</tt>".  This is superseded by the <a
+    href="helppath"><tt>helppath</tt></a> shell variable, if set.
+    </dl>
+
+    <a name="SPICE_NEWS_FILE"></a>
+    <dl>
+    <dt><b>SPICE_NEWS_FILE</b><dd>
+    This variable can be set to the full path to a text file which is
+    printed when <i>WRspice</i> starts.  If not set, the file
+    <tt>/usr/local/xictools/wrspice/startup/news</tt> will be
+    printed, if it exists (if <b>XT_PREFIX</b> is set, its value
+    replaces "<tt>/usr/local</tt>").
+    </dl>
+
+    <a name="SPICE_BUGADDR"></a>
+    <dl>
+    <dt><b>SPICE_BUGADDR</b><dd>
+    This variable can be set to an internet mail address to use in the
+    <a href="bug">bug reporting</a> command.  If not set, the built in
+    default is the Whiteley Research technical support address.
+    </dl>
+
+    <a name="SPICE_OPTCHAR"></a>
+    <dl>
+    <dt><b>SPICE_OPTCHAR</b><dd>
+    This variable can be defined to a character that will be used to
+    flag options on the <i>WRspice</i> <a href="arguments">command
+    line</a>.  If not defined, the option character is "-".
+    </dl>
+
+    <a name="SPICE_ASCIIRAWFILE"></a>
+    <dl>
+    <dt><b>SPICE_ASCIIRAWFILE</b><dd>
+    If this variable is defined to "0" (zero), or to a word starting
+    with 'f' or 'F' such as "False", or 'n' or 'N' such as "No",
+    <i>WRspice</i> will create binary plot-data files (rawfiles).  If
+    not set or set to something else, <i>WRspice</i> will create the
+    default ASCII-format rawfiles.  The <a
+    href="filetype"><tt>filetype</tt></a> shell variable can also be
+    used to set the mode, which will supersede the environment
+    variable.  The rawfiles are normally created with the <a
+    href="write"><b>write</b></a> command.
+    </dl>
+
+    <a name="SPICE_HOST"></a>
+    <dl>
+    <dt><b>SPICE_HOST</b><dd>
+    This variable can be used to set the host name to use for <a
+    href="rspice">remote SPICE</a> runs.  The host name can optionally
+    be suffixed by a colon followed by the port number to use for
+    communication with the <tt>wrspiced</tt> daemon.  If not given,
+    the port is obtained from the operating system for
+    "<tt>wrspice/tcp</tt>", or 6114 (the IANA registered port number
+    for this service) if this is not defined.  There is no default for
+    this variable.  Hosts can also be specified with the <a
+    href="rhostcom"><b>rhost</b></a> command, and given with the <a
+    href="rhost"><tt>rhost</tt></a> shell variable.
+    </dl>
+
+    <a name="SPICE_DAEMONLOG"></a>
+    <dl>
+    <dt><b>SPICE_DAEMONLOG</b><dd>
+    This variable is used by the <a
+    href="wrspiced"><tt>wrspiced</tt></a> daemon program to set an
+    alternate path for the log file.  The default path is
+    <tt>/tmp/wrspiced.log</tt>.
+    </dl>
+
+    <a name="SPICENOMAIL"></a>
+    <dl>
+    <dt><b>SPICENOMAIL</b><dd>
+    If the variable <b>SPICENOMAIL</b> is set, no mail will be sent
+    during a program crash.  If a fatal error is
+    encountered, a file named "<tt>gdbout</tt>" is created in the
+    current directory, which contains a stack backtrace from the stack
+    frame of the error.  Despite the name, the file is generated
+    internally on all platforms, and no longer makes use of the
+    <tt>gdb</tt> program.
+
+    <p>
+    By default, this file will be emailed to Whiteley Research for
+    analysis.  However, the emailing can be suppressed by setting this
+    variable in the environment.  The <tt>gdbout</tt> file is produced
+    in any case, and would be very useful to Whiteley Research for
+    fixing program bugs.
+    </dl>
+
+    <a name="XTNOMAIL"></a>
+    <dl>
+    <dt><b>XTNOMAIL</b><dd>
+    This has the same effect as <b>SPICENOMAIL</b> but also prevents 
+    email from the <i>Xic</i> program.
+    </dl>
+
+!!REDIRECT license.host         startup_files#license.host
+!!REDIRECT .wrspiceinit         startup_files#wrspiceinit
+!!REDIRECT .wrpasswd            startup_files#wrpasswd
+
+!! useriface.tex 101010
+!!KEYWORD
+startup_files
+!!TITLE
+Startup Files
+!!HTML
+    <i>WRspice</i> will attempt to source startup files used for
+    initialization when the program is started.  First, a file named
+    <tt>wrspiceinit</tt> is searched for in the system startup
+    directory, and if found is sourced into <i>WRspice</i>.  The
+    system startup directory has a default location built into the
+    program (<tt>/usr/local/xictools/wrspice/startup</tt>, or if
+    <b>XT_PREFIX</b> is set in the <a
+    href="environment">environment</a>, its value replaces
+    "<tt>/usr/local</tt>"), but this can be changed by setting the
+    <b>SPICE_LIB_DIR</b> environment variable to another location.
+
+    <a name="license.host"></a>
+    <dl>
+    <dt><tt>license.host</tt> file<dd>
+    When using a license server on a remote machine, it is necessary
+    to provide the name of this machine or <i>WRspice</i> can not run.
+    One way to do this is to create a <tt>license.host</tt> file in
+    the startup directory, e.g.
+    <tt>/usr/local/xictools/wrspice/startup</tt>.  The
+    <tt>license.host</tt> file consists of a single line of text,
+    giving the host name of the license server machine.  The host
+    name can optionally be suffixed with "<tt>:</tt><i>port</i>", where
+    <i>port</i> is the port number in use by the license server.  This
+    is required if for some reason the license server is not running
+    on the default port.
+    </dl>
+
+    <a name="wrspiceinit"></a>
+    <dl>
+    <dt><tt>.wrspiceinit</tt> file<dd>
+    Files named "<tt>.wrspiceinit</tt>" are searched for in the user's
+    home directory, and the current directory, and are sourced, if
+    found, in that order.  If running on Microsoft Windows which does
+    not support the notion of a home directory, <i>WRspice</i> will
+    look in the environment for a variable named "<b>HOME</b>", and
+    its value will be taken as the path to the "home directory".  If
+    not set, the search is skipped.
+
+    <p>
+    These files have identical format, and contain ordinary script
+    commands, which can be used to set the default behavior of
+    <i>WRspice</i>.  The first line is ignored, but all remaining
+    lines are taken as script commands.  The special directive <a
+    href="tbsetup"><b>tbsetup</b></a>, which can only appear in these
+    files, provides the setup information for the graphical interface. 
+    Unlike ordinary input files, it is not necessary to enclose the
+    commands in <a href=".exec"><tt>.control</tt> or
+    <tt>.exec</tt></a> blocks in the startup files.
+    </dl>
+
+    <dl>
+    <dt>X Resources<dd>
+    When using the X window system, the X resource-passing mechanism
+    can be used to set the default colors used in plots.  The resource
+    mechanism is otherwise ignored in the current version of
+    <i>WRspice</i>.  The base names for the color resources are
+    "<tt>color0</tt>" through "<tt>color19</tt>", with the
+    corresponding class names capitalized.  Thus, one way to define
+    alternative plotting colors is to create a file named
+    "<tt>Wrspice</tt>" in the user's home directory, which contains
+    lines like
+    <blockquote>
+    <tt>*color2: red</tt>
+    </blockquote>
+    for each new color definition.  The color name should be known to
+    the X window system, i.e., be listed in the <tt>rgb.txt</tt> file
+    in the X-windows system library.
+
+    <p>
+    The same definitions could be placed in a <tt>.wrspiceinit</tt>
+    file with lines like "<tt>set color2 = red</tt>".
+    </dl>
+
+    <a name="wrpasswd"></a>
+    <dl>
+    <dt><tt>.wrpasswd</tt> file<dd>
+    <p>
+    On startup, <i>WRspice</i> will read the <tt>.wrpasswd</tt> file
+    if found in the user's home directory.  This file contains the
+    encrypted password to the program distribution repository, and is
+    created in <i>WRspice</i> with the <a
+    href="passwd"><b>passwd</b></a> command.  This file can also be
+    generated from <i>Xic</i>.  If present and the password is active,
+    <i>WRspice</i> will check for the availability of updates on
+    startup, and the <a href="wrupdate"><b>wrupdate</b></a> command
+    will be enabled.
+    </dl>
+
+!!SEEALSO
+startup_ops
+
+!! useriface.tex 012709
+!!KEYWORD
+tbsetup
+!!TITLE
+tbsetup command
+!!HTML
+    This command can appear in the <a href="startup_files">startup
+    files</a> only.  It is inserted into or updated in the
+    <tt>.wrspiceinit</tt> file in the user's home directory in
+    response to the <a href="tbupdate"><b>update</b></a> command, or
+    from pressing the <b>Update Tools</b> button in the <b>File</b>
+    menu of the <a href="toolbar"><b>Tool Control</b></a> window.  It
+    is not likely that the user will need to work with <b>tbsetup</b>
+    directly, though it can be used to customize the <b>Tools</b> menu
+    in the <b>Tool Control</b> window.
+
+    <p>
+    The command string takes the following form:
+    <blockquote>
+    <tt>tbsetup</tt> [<tt>old</tt>] [<tt>vert</tt>] [<tt>toolbar on|off</tt>
+     <i>x y</i>]
+     [<i>name1</i> <tt>on|off</tt> <i>x y</i>] [<i>name2</i> ...
+    </blockquote>
+    The <tt>old</tt> and <tt>vert</tt> keywords are ignored.  They
+    exist for backward compatibility.
+
+    <p>
+    By invoking the <b>update</b> command from the prompt line or
+    pressing the <b>Update Tools</b> button in the <b>File</b> menu of
+    the <b>Tool Control</b> window, a <tt>.wrspiceinit</tt> file is
+    created in the user's home directory if necessary, and the
+    <b>tbsetup</b> command will be added or updated.  This will save
+    the current state of the windows from the <b>Tools</b> menu, which
+    will be recreated when the program is started the next time.
+
+    <p>
+    If no <b>tbsetup</b> command is found on program startup, a
+    default configuration is used (all tools initially invisible).
+
+    <p>
+    For each argument block in the <b>tbsetup</b> call, the first
+    token gives the tool name, with the "<tt>toolbar</tt>" entry
+    indicating the <b>Tool Control</b> window itself.  For other than
+    the <b>Tool Control</b> window, which is always shown, the
+    <tt>on</tt> and <tt>off</tt> keywords specify whether the tools
+    are shown at startup.  The two numbers that follow give the
+    position of the upper left corner of the tool on the screen (the
+    screen origin is the upper left corner, coordinates are in
+    pixels).  For other than the first (<b>Tool Control</b> window)
+    entry, the blocks can be rearranged or deleted.  The <b>Tools</b>
+    menu will show only the tools listed, in the order given.  Thus,
+    the <b>Tools</b> menu can be customized.
+
+    <p>
+    To generate an initial custom configuration, simply start
+    <i>WRspice</i> on a system that supports graphics, and the <b>Tool
+    Control</b> window will appear somewhere on-screen.  After opening
+    some of the tools from the <b>Tools</b> menu and arranging them as
+    necessary and/or moving the <b>Tool Control</b> window, the
+    <b>Update Tools</b> button in the <b>File</b> menu can be pressed. 
+    A <tt>.wrspiceinit</tt> file will be created, or an existing file
+    updated, in the user's home directory.  Alternatively, the
+    <tt>update</tt> command can be given from the command line.  Hand
+    editing of the <tt>.wrspiceinit</tt> file may be used to remove
+    buttons or change the button order in the <b>Tools</b> menu.  Once
+    edited, only the tools present will be updated.
+
+!!SEEALSO
+graphics
+startup_files
+
+!! 092615
+!!KEYWORD
+startup_ops
+!!TITLE
+Startup Operations
+!!HTML
+    When <i>WRspice</i> starts, the following operations are generally
+    performed.
+
+    <ol>
+    <li>If configured, the program will check for the availability of
+    software updates.  A pop-up message will notify the user if an
+    update is available.  These can be downloaded and installed with
+    the <a href="wrupdate"><b>wrupdate</b></a> command.  The <a
+    href="passwd"><b>passwd</b></a> command is used to enable this
+    feature, The username and password to the Whiteley Research
+    software repository should be given, and the command will create a
+    <tt>.wrpasswd</tt> file in the user's home directory.  This will
+    enable update checking in both <i>Xic</i> and <i>WRspice</i>.
+
+    <p>
+    <li>The program will check the <tt>wrcad.com</tt> web site for a
+    message file.  If a file is found, and the user has not seen it,
+    the message text will be shown in a pop-up window.  This is a
+    means of providing users with bug reports or other information
+    which could be important.
+
+    <p>
+    The record of the message is saved in the <tt>.wr_cache</tt>
+    directory in the user's home directory.  There are two files:
+    <dl>
+    <dt><tt>wrspice_current_mesg</tt><dd>
+    The is the current message text.
+    <dt><tt>wrspice_current_mesg_digest</tt><dd>
+    This is a checksum of the current message.
+    </dl>
+
+    <p>
+    The program will compare the checksum of the message to the
+    checksum on <tt>wrcad.com</tt>.  If a message is found at
+    <tt>wrcad.com</tt>, and there is no checksum or a different
+    checksum in the user's home directory, the message is downloaded
+    and shown, and the user's files are updated.  Thus, the user will
+    only see the message once, but can find a copy of the message in
+    their <tt>.wr_cache</tt> directory.  Note that there is only one
+    message file, future messages overwrite the files.
+
+    <p>
+    <li>If a new <i>WRspice</i> release is run for the first time, the
+    release notes will appear in a pop-up window, as if the
+    <b>Notes</b> button in the <b>Help</b> menu was pressed.  There is
+    a file in the user's <tt>.wr_cache</tt> directory named
+    "<tt>wrspice_current_release</tt>" that contains a release number. 
+    If, when <i>WRspice</i> starts, this file is missing or the
+    release number is not current, <i>WRspice</i> will show the
+    release notes and update the file.  If the release numbers match,
+    there is no action.
+    </ol>
+
+    <p>
+    If the <a href="nocheckupdate"><b>nocheckupdate</b></a> variable
+    is set (from an <a href="startup_files">initialization file</a>)
+    then there will be no communications with <tt>wrcad.com</tt>, so
+    the checking for updates and a message will be skipped.  This
+    should be set if the user doesn't have internet access, for
+    example, to avoid the delays caused by lack of access and
+    subsequent connection timeout.
+
+!!SEEALSO
+startup_files
+

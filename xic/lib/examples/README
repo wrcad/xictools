@@ -1,0 +1,441 @@
+                         Xic Examples
+
+$Id: README,v 1.4 2016/03/30 04:53:16 stevew Exp $
+
+This directory contains various example input files for Xic.
+
+The Mosis design rules are no longer available in this directory. 
+They can be downloaded from www.mosis.com/files/scmos/scmos.pdf.
+
+----
+
+EXAMPLE FILE: amd2901.gds.gz
+EXAMPLE FILE: fixvia.scr
+
+(Warning: this is archaic, not tested recently)
+
+This file was produced by the free Alliance LSI development system
+
+  # Alliance VLSI CAD System
+  #
+  # Home page          : http://www-asim.lip6.fr/alliance/
+  # E-mail support     : mailto:alliance-support@asim.lip6.fr
+  # ftp sites          : ftp://ftp.lip6.fr/lip6/softs/alliance/
+  #                   or ftp://ftp-asim.lip6.fr/pub/alliance/
+
+The CIF output from that system was read into Xic, using a modified
+technology file (available upon request).  It was then rewritten as a
+gds file.
+
+Note that the gds file is compressed with gzip (.gz suffix).  There is
+no need to decompress, Xic can read gzipped gds files directly.
+
+The file has a problem, though.  The Alliance system uses the same via
+layer for contacts to poly and active, whereas the Xic scmos (and
+MOSIS design rules) as distributed expects separate via layers for the
+two contact types.  The result is that the gds file has no CPP, but
+uses CCA for contacts to poly.
+
+There are many ways to fix this problem.  Here we illustrate one
+solution, which is not necessarily the easiest but displays some
+unique features of Xic.
+
+In the present directory is a script named "fixvia.scr".  This script
+will automatically convert all CCA vias over CPG to CCP.  This is the
+kind of special-purpose script to which one has to resort at times,
+and is worth studying.
+
+The following works with Xic release 2.3.5 or later.
+
+* From this directory, start Xic with "xic -Tscmos amd2901.gds".
+
+* Since the fixvia script is probably not in the script search path,
+  it likely won't have a button in the user menu.  It can still be
+  executed with the debugger.  Press the debug button in the user
+  menu.
+
+* On the debugger panel, press the Open button in the File menu, and
+  enter "./fixvia.scr".  The script text should become visible in the
+  window.
+
+* Press the Run button in the Execute menu.  The script cycles through
+  all of the subcells, fixing the vias.  If the interactive DRC is
+  active (the Set Interactive button in the DRC menu is active), there
+  will be a lengthly error list, since the scmos technology file
+  expects a different via size.  This can be ignored here.
+
+* You can cancel the debugger and the error window.  The design now
+  should have the correct via types.
+
+* The gds file has no electrical information.  To extract electrical
+  information, type "!exset a".  This operation takes a few minutes.
+
+* When finished, press the Dump LVS button in the Extract menu, and
+  enter 'a' at the prompt.  This will compare the extracted schematic
+  with the physical layout.  There should be no errors, but it may be
+  instructive to view the resulting file by answering "y" at the final
+  prompt.
+
+* The schematic can be viewed by pressing the Electrical button in the
+  View Menu.  By adding a few sources, this schematic could in
+  principle be simulated with SPICE.  The Deck button in the side menu
+  will generate a SPICE file of the entire chip.
+
+Now that you have addressed the via problem the hard (but
+instructional) way, you should know that there is a simpler approach. 
+Use the Save Tech button in the Attributes menu to produce a local copy
+of the scmos technolofy file.  Then, with a text editor, add the
+following line to the block of lines that follow "LayerName CCA":
+
+    Via CPG CMF
+
+There is already a Via line in this block, and you can add the new
+line just below it.  You now have a custom technology file suitable
+for Alliance output.  Change the name of the modified technology file
+to something like "xic_tech.ali".  Then, after starting Xic with the
+command "xic -Tali", the amd2901.gds file can be read in, and LVS
+should work directly.
+
+----
+
+EXAMPLE FILE: cgdtest.scr
+EXAMPLE FILE: cgdtest1.scr
+
+These are scripts that illustrate some aspects of working with Cell
+Geometry Digests (CGDs).  The comments in the files describe the
+purpose and operation.
+
+----
+
+EXAMPLE FILE: chip.gds
+
+The chip.gds file contains a former student's CMOS test chip design,
+and uses the xic_tech.scmos technology file.  This is a physical
+design only.
+
+* Open the chip.gds file in physical mode.
+
+* Go to electrical mode.  The display window is empty.
+
+* Give the command "!exset a" on the prompt line.  After a few seconds,
+  a schematic should appear.  It is not a "normal" schematic, but
+  electrically it matches the physical design from which it was
+  extracted.  The entire hierarchy has been extracted.
+
+* Open the Extract menu and press the Dump LVS button.  Enter 'a' when
+  prompted for the depth.  Enter 'y' when given the option to view the
+  resulting file.  You can browse the file to see the results of the
+  comparison.  Since the file was extracted from the physical layout,
+  there is no surprise that the tests pass.
+
+----
+
+EXAMPLE FILE: density1.scr
+EXAMPLE FILE: density2.scr
+EXAMPLE FILE: density.scr
+
+These scripts illustrate different ways to extract density maps
+(fraction of dark area for a layer in a grid) from a layout.  See
+the comments in the files for a complete description.
+
+----
+
+EXAMPLE FILE: diffpair
+EXAMPLE FILE: mosamp  (ma2 and ma2 are subcells of mosamp)
+EXAMPLE FILE: ma1
+EXAMPLE FILE: ma2
+
+These are schematic files containing a bipolar differential pair and a
+MOS linear amplifier.  These are the same circuits as can be found in
+the WRspice examples under files with similar names.
+
+* Start Xic and go to electrical mode by pressing the Electrical button
+  in the View Menu.
+
+* Read in one of thse files by pressing Edit in the Edit Menu and
+  selecting "New", then typing the file name.  The schematic will
+  appear.  The mosamp circuit has two subcircuits, shown by default as
+  empty boxes.  To see the detail, press the Expand button in the View
+  Menu, then press "Apply" in the pop-up.
+
+* Press the "Run" button in the side menu.  This has an icon with an
+  "S".  If WRspice is installed, a connection to the WRspice program
+  will be established.  Press the Enter key to start the simulation.
+
+* A pop-up message will indicate when simulation is complete.  Press
+  the Plot button in the side menu.  The points corresponding to nodes
+  to be plotted will appear.
+
+* Press Enter.  A plot will appear.
+
+* The cycle can be repeated for different analysis strings, and
+  different variables can be selected for plotting.  Modifications can
+  be made to the circuit.  This is a good way to learn the basics of
+  working with a schematic in Xic.
+
+----
+
+EXAMPLE FILE: extest.gds
+
+(Warning: this is archaic, not tested recently)
+
+The extest.gds file contains a layout for the Hypres technology file
+containing a number of device structures which test and illustrate the
+extraction capabilities.  The file must be used with the xic_tech.hyp
+file distributed with release 2.2.16a or later.
+
+Here are some illustrative procedures, assuming that Xic 2.3.0 or
+later is running.
+
+* Start Xic with the Hypres technology file, by using the startup line
+  "xic -Thyp".
+
+* Open the extest.gds file in physical mode.  You can type "ed
+  extest.gds" as an accelerator, or use the Edit button in the Edit
+  Menu.
+
+* Open the Extract menu and select Dump Phys Netlist, and press "Go in
+  the resulting pop-up.  Give 'a' to the initial prompt.  After a few
+  seconds, the prompt line will ask if you want to view the physical
+  netlist file produced.  Answer 'y' and browse the file.  Note that
+  there are three sections per cell:  the netlist, an extracted device
+  list, and a SPICE text listing of extracted devices and subcircuits. 
+  Each of these fields can be enabled or suppressed with the buttons
+  in the initial pop-up.  The format of the SPICE device lines is set
+  with the Spice keyword in the Device block of the technology file.
+
+* Press the Show Groups button in the Extract menu.  Note that for
+  inductors, the underlying (M2) conductor is split by the LX layer,
+  providing separate groups for the inductor terminals (LC areas). 
+  This is the result of using "Conductor exclude LX" in the M2 layer
+  block in the technology file.
+
+* In the Extract menu, select Compute Params.  Then click on the
+  various resistor, inductor, and Josephson junction devices.  The
+  prompt line should indicate a value for the device.  See the help on
+  Device Blocks (!help deviceblock) for the Cmput keyword for how to
+  set what is printed in this mode.
+
+* Switch to electrical mode (the Electrical button in the View Menu). 
+  A schematic corresponding to part of the physical layout is shown.
+
+* Press the Compare Devices button in the Extract menu, then click on
+  one of the device symbols.  A text box will appear, showing a
+  comparison of the physical extracted parameters and the values from
+  the corresponding device in the schematic.  If you click on a device
+  with the Shift key held, the component properties will be set from
+  the parameters extracted from the corresponding physical device. 
+  The label will appear or change when the property is updated.
+
+* Typing "!exset" will update the properties of all devices in the
+  schematic.
+
+* The Compare Devices and !exset commands also work from physical
+  mode, Compare Devices by clicking on device bodies.  The update can
+  be verified by opening an electrical mode subwindow and observing
+  the label change.
+
+Notes:
+
+To see how to incorporate these features, see the help for the
+extraction system and Device blocks, and look at the blocks in the
+supplied technology files.
+
+Extraction can be rather compute-intensive, so there may be a
+noticeable delay for complex circuits or structures (like the spiral
+in the test file).
+
+----
+
+EXAMPLE FILE: hyt.gds
+
+(Warning: this is archaic, not tested recently)
+
+Some layout styles make extensive use of subcells for vias and common
+device features such as resistor contacts.  In other cases, a subcell
+may encapsulate single or multiple devices, yet it is desirable that
+these subcells, in all cases, be transparent with respect to
+extraction.  "Transparent" means that the subcell is not included in
+the extracted hierarchy, and the subcell contents behave in all
+respects as if it were part of the parent cell.
+
+In the case of simple vias, and other cells which do not contain
+entire devices, terminals, or subcircuits that contain entire devices
+or terminals, there are no special requirements as these are reflected
+into the parent automatically.
+
+First consider the case where resistor contacts are defined in subcells,
+while the resistor body, or a portion of it, is in the current cell.
+In order to extract these devices, the Depth keyword must be used in the
+defining technology file Device block for the resistor.  In the situation
+described, the Depth value should be set to 1, which tells the extraction
+package to look in the current cell and the first level of subcells for
+resistor geometry.  Other, more complicated hierarchical situations can
+be accommodated by setting the Depth value to larger than one, depending
+on the maximum level of hierarchy necessary to extract all of the
+geometry needed to recognize the device.
+
+If the resistor end subcells do not contain other devices, terminals,
+or subcells that contain devices or terminals, the extraction package
+needs no further configuration to extract and process these resistors. 
+The same applies to any device similarly defined.
+
+In order to make devices encapsulated in subcells transparent, one must
+apply a special prefix the the names of all such subcells, and set the
+PnetFlattenPrefix variable to this prefix.  The prefix can be any text
+token that contains characters valid in a cell name.  The Rename command
+in the Cells Listing pop-up can be used to supply to prefix to the
+appropriate cells in an existing design.  The PnetFlattenPrefix variable
+can be set with the !set command.
+
+Cells with the prefix will be temporarily flattened into the parent before
+extraction is performed.  Thus, devices in these cells will appear in the
+parent cell.
+
+As an example, one can load the "hyt.gds" file, using the Hypres
+technology file (-Thyp).  The technology file supplied with Xic-2.4.16
+and later contains the necessary "Depth 1" keyword in the device block
+for resistor definition.  This keyword must be present for the example
+to work.  If you have a custom or old technology file and wish to use
+this feature, you should update your technology file "res" device
+block similarly.
+
+* Start Xic with the Hypres technology file, by using the startup line
+  "xic -Thyp".
+
+* Open the hyt.gds file in physical mode.  You can type "ed hyt.gds"
+  as an accelerator, or use the Edit button in the Edit Menu.
+
+  The layout consists of a resistor whose ends are defined in subcells
+  named "hyend", a piece of conductor in a subcell named "hynull", and
+  a Josephson junction in subcell "hyjj".  Use the Expand command in
+  the View Menu to turn on/off the detail.
+
+* Press the "Show Groups" button in the Extract Menu.  Note that the
+  continuity of the conductor nets is established through the subcells
+  hynull and hyend, as the adjacent metal pieces are given the same
+  group numbers.
+
+* Now switch to Electrical mode (press Electrical under the View
+  Menu).  There is no schematic.  Enter "!exset a" on the prompt line. 
+  This will create a schematic from the layout.  The schematic should
+  consist of a resistor, connected to a subcell that contains a
+  junction.  This is exactly what we have in the physical layout.
+  You may have to use Expand to see the subcell boundary.
+
+* Now suppose that the junction in intended to be part of the parent
+  cell, i.e., the junction is in a subcell for layout convenience, but
+  this should be invisible in the extracted circuit.  To effect this
+  change, press the Cells List button in the File Menu.  A list of
+  cells will appear.  Click on "hyjj" in the list - it will become
+  highlighted, and press the Rename button at the top of the pop-up. 
+  Into the dialog which appears, enter "zzjj" and press Apply.  This
+  procedure changes the name of the "hyjj" cell (all instances) to
+  "zzjj".  The "zz" is chosen to be a unique prefix for transparent
+  cells.  This prefix can be any string (but must be valid as part of
+  a cell name).
+
+* Next, enter into the prompt line "!set PnetFlattenPrefix zz"
+  (without the quotes).  This tells Xic to logically flatten any cells
+  whose name starts with "zz" during extraction.
+
+* To see the effect, in electrical mode, drag button 1 over all of the
+  schematic symbols to select them, then press the Delete key.  The
+  screen should be empty.  Then, type into the prompt line "!exset a". 
+  The schematic should appear.  In this case, the schematic consists
+  of a resistor and a connected junction, and no subcells.
+
+----
+
+EXAMPLE FILE: jj_cmos_if/
+
+This contains some rather old designs for a Josephson-to-CMOS
+level translator.  See the README file for more information.
+
+----
+
+EXAMPLE FILE: memchip_example/
+
+This contains full designs of two memory chips.  These are "real"
+designs imported from Cadence.  The design illustrates a lot of
+features new in Generation 4, added for Cadence compatibility.  See
+the README file in this subdirectory for more information.
+
+----
+
+EXAMPLE FILE: netcgdtest.scr
+
+This script illustrates use of the experimental "geometry server"
+mode of Xic.  See the file comments for more information.
+
+----
+
+EXAMPLE FILE: PCells/
+
+This directory contains some parameterized cell examples.  See the
+README file in this subdirectory for more information.
+
+----
+
+EXAMPLE FILE: preferences.scr
+
+An old script that used to be provided in the default User menu, but
+is now obsolete.  This is retained as an example of how to use various
+types of form elements in scripts.
+
+----
+
+EXAMPLE FILE: rsfq_lib.tar.gz
+
+This is an example library of superconducting Josephson junction RSFQ
+logic cells, some of which are inductorless.  Un-tar the file in a
+suitable location, and see the documentation files within for more
+information.
+
+----
+
+EXAMPLE FILE: spiral1.scr
+
+Another version of the script that generates a spiral.  This one uses
+graphical interface widgets to for parameter input.
+
+----
+
+EXAMPLE FILE: tkdemo.tk
+
+This is a demo that illustrates the interface to the popular Tcl/Tk
+scripting language.  This will work under Unix/Linux only, and you
+must have the Tcl/Tk 8.x libraries installed on your system.
+
+----
+
+EXAMPLE FILE: tut11a.gds
+
+I don't remember where this came from, but it is yet another CMOS
+layout for the user to play with.
+
+----
+
+EXAMPLE FILE: vec_examp1
+EXAMPLE FILE: vec_examp2
+
+These two schematics illustrate the new wire net vectorization
+features.  Simply read them into Xic in schematic mode.  The labels
+explain the display.
+
+----
+
+EXAMPLE FILE: xclient.cc
+
+This is an example client that communicates with Xic in server mode.
+It illustrates C/C++ code to connect to the server and process server
+messages.
+
+----
+
+EXAMPLE FILE: xclient.scr
+
+This is similar to xclient, but is implemented as a script.
+
+----
+

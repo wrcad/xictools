@@ -1,0 +1,1252 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiCadence.hlp,v 1.32 2017/03/22 07:30:07 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiCadence.hlp
+!!TITLE
+xiCadence.hlp
+!!HTML
+
+!!SUBTOPICS
+cdscompat
+ReadDRF
+ReadCdsTech
+ReadOaTech
+ReadCdsLmap
+cdsconnect
+cdsimport
+
+
+!! 032117
+!!KEYWORD
+cdscompat cadence Cadence
+!!TITLE
+Cadence&#174; Compatibility Features
+!!HTML
+!!IFDEF OpenAccess
+    Limited compatibility with Cadence Virtuoso&#174 is available on
+    two levels.  First, technology, display resource (DRF), and layer
+    mapping files can be read directly by <i>Xic</i>.  These files are
+    generally provided in vendor-supplied process design kits intended
+    for use with Cadence Virtuoso.  Second, the OpenAccess <a
+    href="oaplugin">plug-in</a> allows <i>Xic</i> to access the
+    Cadence libraries directly.  Designs can be loaded into
+    <i>Xic</i>, however presently they cannot be returned to Virtuoso
+    without losing data required by Virtuoso.
+!!ELSE
+    Limited compatibility with Cadence Virtuoso&#174 is available. 
+    The ASCII technology, display resource (DRF), and layer mapping
+    files can be read directly by <i>Xic</i>.  These files are
+    generally provided in vendor-supplied process design kits
+    intended for use with Cadence Virtuoso.
+!!ENDIF
+
+    <p>
+    For export to a Cadence environment, the <a
+    href="!dumpcds"><b>!dumpcds</b></a> command will create compatible
+    technology and DRF files based on the <i>Xic</i> technology file
+    in use.
+
+    <p>
+    Import of a Cadence technology environment is handled by three
+    keywords which are given in the <i>Xic</i> technology file.  In
+    fact, a minimal technology file can consist of little more than
+    these keywords.  The keywords should appear in the order given,
+    but otherwise can appear anywhere in the <i>Xic</i> technology
+    file.
+
+    <dl>
+    <dt><a href="ReadDRF"><tt>ReadDRF</tt></a> <i>drf_file</i><dd>
+    This reads the display resource file (DRF), which creates tables
+    of layer colors, fill patterns, and similar for use in displays.
+    </dl>
+
+    <dl>
+    <dt><a href="ReadCdsTech"><tt>ReadCdsTech</tt></a> <i>techfile</i><dd>
+    This will read a Virtuoso ASCII technology file.  The technology
+    file contains the layer definitions, and usually quite a lot of
+    technology information.  From this, many of the <i>Xic</i> design
+    rules and extraction keywords can be obtained.
+    </dl>
+
+!!IFDEF OpenAccess
+    <dl>
+    <dt><a href="ReadOaTech"><tt>ReadOaTech</tt></a> <i>library</i><dd>
+    This will obtain Virtuoso technology information directly from
+    OpenAccess.  The <i>library</i> is an OpenAccess library, listed
+    in the <tt>lib.defs</tt> or <tt>cds.lib</tt> file.  This obtains
+    technology information by use of the OpenAccess <a
+    href="oaplugin">plug-in</a>.  There should be no reason to use
+    both this and <tt>ReadCdsTech</tt>, as they should retrieve the
+    same information.
+    </dl>
+!!ENDIF
+
+    <dl>
+    <dt><a href="ReadCdsLmap"><tt>ReadCdsLmap</tt></a> <i>filename</i><dd>
+    The <i>filename</i> is the path to a Virtuoso layer mapping file. 
+    This provides GDSII layer/datatype numbers for the layers.  This
+    must appear in the <i>Xic</i> technology file after
+    <tt>ReadCdsTech</tt>.
+    </dl>
+
+    <p>
+    An <i>Xic</i> technology file can consist of these statements
+    only.  This will set the layers and their colors, fill patterns,
+    and some or all of the electrical, extraction, and design rule
+    information.
+
+    <p>
+    When a technology file is written with the <a
+    href="xic:updat"><b>Save Tech</b></a> command, it will have the
+    usual format and the lines described above are <b>not</b> included
+    in the new file.
+
+    <p>
+    The ability to read the Lisp/Skill file format used by Virtuoso
+    is provided by an internal <a href="lisp">Lisp parser</a>.  The
+    parser is available to run general scripts through the
+    <a href="!lisp"><b>!lisp</b></a> command, though this has limited
+    utility at present.
+
+    <p>
+    In the technology file, is is sometimes useful to enable debugging
+    output from the Lisp parser.  The following keyword enables this.
+
+    <dl>
+    <dt><a href="LispLogging"><tt>LispLogging</tt></a> [<tt>y/n</tt>]<dd>
+    If this boolean keyword is set in the technology file, a <a
+    href="xic:logs">log file</a> will be generated when the Lisp
+    parser is used.  This can be used to track down issues when
+    parsing Virtuoso-style input files.  Asserting this keyword is
+    equivalent to setting the Lisp logging in the
+    <href="xic:dblog"><b>Logging Options</b></a> panel from the
+    <b>Help Menu</b>, which otherwise can't be done before the
+    technology file is read on program startup.
+    </dl>
+
+!!SUBTOPICS
+cdsconnect
+cdsimport
+
+!! 032117
+!!KEYWORD
+lisp
+!!TITLE
+The Lisp Parser
+!!HTML
+    <p>
+    The language supported here is similar to Lisp, and to the Cadence
+    Skill language.  The intention is not to replicate all features of
+    these languages, but to provide a minimal subset of features for
+    compatibility.  The language will be referred to as "Lisp", but it
+    should not be confused with the full-blown programming language.
+
+    <p>
+    The language differs from classic Lisp in that algebraic
+    expressions within lists are evaluated, as in Skill.  These reduce
+    to a number token.  One subtlety is detection of unary minus, for
+    example <tt>(2 -1)</tt> could be interpreted as a list of two
+    numbers, or one number (the difference).  The parser will assume a
+    unary minus if the preceding character is space or '<tt>(</tt>',
+    and the following character is an integer or period followed by an
+    integer.
+
+    <p>
+    One of the advantages of Lisp is the ease with which the syntax
+    can be parsed.  The basic data object is a "node", which has the form
+    <blockquote>
+    [<i>name</i>]( <i>data</i> ... )
+    </blockquote>
+    If a node has a <i>name</i>, there is no space between the name and
+    the opening parenthesis.  A named node is roughly equivalent to a
+    function call.  The <i>data</i> can be nodes, strings, or numerical
+    expressions.  The items are separated by white space.  The <i>data</i>
+    can use arbitrarily many lines in the input file.
+
+    <p>
+    Lisp variables are defined when assigned to, and have global scope
+    unless declared in a <tt>let</tt> node, in which case their scope
+    is within the <tt>let</tt> node, i.e., local.
+
+    <p>
+    A Lisp file consists of one or more named nodes.  When the file is
+    accessed with the <b>!lisp</b> command, each of the nodes is evaluated.
+    The nodes must have names that are known to <i>Xic</i>.  These are:
+
+    <dl>
+    <dt><tt>main</tt><dd>
+    The content of this node is evaluated.  This is a special name for
+    the "main" function of a script.
+    </dl>
+    <dl>
+    <dt>Built-in function name<dd>
+    These are the basic Lisp functions and operator-equivalents.
+    </dl>
+    <dl>
+    <dt><i>Xic</i> function name<dd>
+    All of the <i>Xic</i> script functions will be recognized, however
+    in Lisp the first character of these functions is always lower
+    case.  i.e., the <tt>Edit</tt> script function would be accessed
+    as <tt>edit</tt>( ) in Lisp.  Also, only <i>Xic</i> functions that
+    take string or numeric arguments will work at present.
+    </dl>
+    <dl>
+    <dt>User-defined procedures<dd>
+    These are Lisp functions defined by the user with the Lisp
+    <tt>procedure</tt>( ) function.
+    </dl>
+    <dl>
+    <dt>Cadence compatibility name<dd>
+    There is a growing number of <a href="cdscompat">node names</a>
+    that are used to interpret Cadence startup and control files.
+    </dl>
+
+    <p>
+    A node name that can't be resolved will generate an error.
+
+    <p>
+    The parser uses the same numerical parser as the <i>WRspice</i>
+    program, and hence recognizes numbers in the same (SPICE) format. 
+    All of the math functions based on the standard C library, as used
+    in the native <a href="scr:mathfuncs">scripting language</a>, are
+    available.
+
+    <p>
+    The following built-in node names are recognized.
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th colspan=2>Operator equivalents</th></tr>
+    <tr><td><tt>expt</tt></td>       <td><tt>expt(x y)       &#60==>  x ^ y</td></tr>
+    <tr><td><tt>times</tt></td>      <td><tt>times(x y)      &#60==>  x * y</td></tr>
+    <tr><td><tt>quotient</tt></td>   <td><tt>quotient(x y)   &#60==>  x / y</td></tr>
+    <tr><td><tt>plus</tt></td>       <td><tt>plus(x y)       &#60==>  x + y</td></tr>
+    <tr><td><tt>difference</tt></td> <td><tt>difference(x y) &#60==>  x - y</td></tr>
+    <tr><td><tt>lessp</tt></td>      <td><tt>lessp(x y)      &#60==>  x &#60 y</td></tr>
+    <tr><td><tt>leqp</tt></td>       <td><tt>leqp(x y)       &#60==>  x &#60= y</td></tr>
+    <tr><td><tt>greaterp</tt></td>   <td><tt>greaterp(x y)   &#60==>  x > y</td></tr>
+    <tr><td><tt>geqp</tt></td>       <td><tt>geqp(x y)       &#60==>  x >= y</td></tr>
+    <tr><td><tt>equal</tt></td>      <td><tt>equal(x y)      &#60==>  x == y</td></tr>
+    <tr><td><tt>nequal</tt></td>     <td><tt>nequal(x y)     &#60==>  x != y</td></tr>
+    <tr><td><tt>and</tt></td>        <td><tt>and(x y)        &#60==>  x && y</td></tr>
+    <tr><td><tt>or</tt></td>         <td><tt>or(x y)         &#60==>  x || y</td></tr>
+    <tr><td><tt>colon</tt></td>      <td><tt>colon(x y)      &#60==>  '(x y) &#60==> x : y</td></tr>
+    <tr><td><tt>setq</tt></td>       <td><tt>setq(x y)       &#60==>  x = y</td></tr>
+
+    <tr><th colspan=2>Lists</th></tr>
+    <tr><td><tt>'</tt></td>          <td>returns list of arguments</td></tr>
+    <tr><td><tt>list</tt></td>       <td>returns substituted list of arguments</td></tr>
+    <tr><td><tt>cons</tt></td>       <td>add element to front of list</td></tr>
+    <tr><td><tt>append</tt></td>     <td>append lists</td></tr>
+    <tr><td><tt>car</tt></td>        <td>return leading element of list</td></tr>
+    <tr><td><tt>cdr</tt></td>        <td>return list starting at second element</td></tr>
+    <tr><td><tt>nth</tt></td>        <td>return N'th element of list</td></tr>
+    <tr><td><tt>member</tt></td>     <td>return true if element in list</td></tr>
+    <tr><td><tt>length</tt></td>     <td>return length of list</td></tr>
+    <tr><td><tt>xCoord</tt></td>     <td>return first element of list</td></tr>
+    <tr><td><tt>yCoord</tt></td>     <td>return second element of list</td></tr>
+
+    <tr><th colspan=2>Miscellaneous</th></tr>
+    <tr><td><tt>main</tt></td>       <td>main function</td></tr>
+    <tr><td><tt>procedure</tt></td>  <td>define a procedure</td></tr>
+    <tr><td><tt>argc</tt></td>       <td>command line argument count</td></tr>
+    <tr><td><tt>argv</tt></td>       <td>command line argument list</td></tr>
+    <tr><td><tt>let</tt></td>        <td>variable scope container</td></tr>
+    </table>
+
+!!SEEALSO
+cdscompat
+
+!! 021913
+!!KEYWORD
+ReadDRF
+!!TITLE
+ReadDRF keyword
+!!HTML
+    This technology file keyword is used to import a Cadence Virtuoso
+    display resource (DRF) file into <i>Xic</i>.  The syntax is
+    <blockquote>
+    <tt>ReadDRF</tt> <i>drf_file</i>
+    </blockquote>
+
+    <p>
+    The display resource file is generally provided by a process
+    design kit intended to be used with Virtuoso.  The file contains
+    definitions of the layer colors and fill patterns, and other
+    presentation attributes.  Although the names may vary, the display
+    resource file in one installation is named "<tt>display.drf</tt>"
+
+    <p>
+    The display resource file (DRF) ia a collection of "nodes", as
+    understood by the <a href="!lisp">Lisp parser</a>.  A named node
+    has the form
+    <blockquote>
+    <i>name</i>( <i>data</i> ... )
+    </blockquote>
+    There can be no space between the node name and the opening
+    parenthesis.  The <i>data</i> are other Lisp nodes, strings, or
+    numerical data or expressions.  This can occupy arbitrarily many
+    lines in the file.  The DRF file consists of successive Lisp
+    nodes, with names and expected content defined by Cadence.
+
+    <p>
+    The following top-level display resource Lisp nodes are understood
+    by <i>Xic</i>.  Presently, the only effect from these nodes is the
+    creation of internal lists of data items, which are referenced by
+    the nodes given in the Cadence ASCII technology file.  Thus,
+    reading in the display resource file has no effect on <i>Xic</i>
+    operation other than providing display attributes for layers
+    defined in the Cadence ASCII technology file.
+
+    <dl>
+    <dt><tt>drDefineDisplay</tt><dd>
+    This node is ignored.
+    </dl>
+
+    <dl>
+    <dt><tt>drDefineColor</tt><dd>
+    For all entries with a display name of "<tt>display</tt>", the
+    color is added to an internal color list.  This internal list will
+    be referenced in the technology file <tt>techDisplays</tt> node.
+    </dl>
+
+    <dl>
+    <dt><tt>drDefineStipple</tt><dd>
+    For all entries with a display name of "<tt>display</tt>", the
+    stipple pattern is added to an internal stipple list.  This
+    internal list will be referenced in the technology file
+    <tt>techDisplays</tt> node.
+    </dl>
+
+    <dl>
+    <dt><tt>drDefineLineStyle</tt><dd>
+    This node is ignored.
+    </dl>
+
+    <dl>
+    <dt><tt>drDefinePacket</tt><dd>
+    For all entries with a display name of "<tt>display</tt>", the
+    packet is added to an internal packet list.  This internal list
+    will be referenced in the technology file <tt>techDisplays</tt>
+    node.
+    </dl>
+
+!!SEEALSO
+cdscompat
+
+!! 062016
+!!KEYWORD
+ReadCdsTech
+!!TITLE
+ReadCdsTech keyword
+!!HTML
+    This technology file keyword is used to import a Cadence Virtuoso
+    ASCII technology file into <i>Xic</i>.  The syntax is
+    <blockquote>
+    <tt>ReadCdsTech</tt> <i>techfile</i>
+    </blockquote>
+
+    <p>
+    The ASCII technology file is generally provided in process design
+    kits intended for use with Virtuoso.  The file name varies, but
+    "<tt>techfile</tt>" and "<tt>techfile.txt</tt>" have been used. 
+    The file at minimum provides the list of layers used in the
+    process.  Generally, there is a wealth of technology information
+    available, and the file can be quite large and complex.
+
+    <p>
+    If a display resource file is also being read, it should be read
+    first.  Other than this, <tt>ReadCdsTech</tt> can appear anywhere
+    in the technology file, and will cause <i>Xic</i> to read
+    information from the Cadence ASCII technology file given in
+    <i>techfile</i>.  This should be a full path to the file, unless
+    the file is in the library <a href="xicpaths">search path</a>.
+
+    <p>
+    The technology file is collections of "nodes", as understood by the
+    <a href="!lisp">Lisp parser</a>.  A named node has the form
+    <blockquote>
+    <i>name</i>( <i>data</i> ... )
+    </blockquote>
+    There can be no space between the node name and the opening
+    parenthesis.  The <i>data</i> are other Lisp nodes, strings, or
+    numerical data or expressions.  This can occupy arbitrarily many
+    lines in the file.  The file consists of successive Lisp nodes,
+    with names and content that are defined by Cadence or OpenAccess. 
+    The nodes that are understood by <i>Xic</i> are described below.
+
+    <p>
+    Both Virtuoso 5.x and 6.x technology files can be read.  Far more
+    information can be obtained from 6.x (OpenAccess) technology
+    files, however.  This includes:
+    
+    <ul>
+    <li>Extraction technology <a href="ext:setup">keywords</a> such as
+    <tt>Conductor</tt>, <tt>Via</tt>, etc.  (as are available from 5.x
+    files) but additionally electrical/physical data such as
+    <tt>Thickness</tt>, resistivity, and capacitance parameters are
+    available.
+
+    <p>
+    <li>Design rules are generated from the "constraint groups".
+    </ul>
+
+    This will provide a much more complete starting point from the
+    technology file provided with a foundry kit.  However, this still
+    may be incomplete.  For example, a typical technology file may
+    provide thickness values for conductors only, not insulators.
+
+    <p>
+    Depending on the PDK, the imported design rules and derived layer
+    definitions may require review and augmentation.  The "real"
+    design rules are likely provided in separate configuration files
+    for Mentor Calibre, Cadence Assura, and/or others.  In experience
+    with one PDK, it was found that the rule set obtained through the
+    OpenAccess technology database left a lot to be desired.
+
+    <ol>
+    <li>The very basic rules, such as <tt>MinWidth</tt> and
+    <tt>MinSpace</tt> came through fine, including the spacing tables. 
+    Other simple rules also come through properly.
+
+    <li>Derived layers come across fine, however within the syntax
+    limitation, expresions are limited to a single operator, i.e., a form
+    like "<i>layer operator layer</i>".  Thus, a complex definition requires
+    multiple derived layers for intermediate layers, which is acceptable.  It
+    was concerning, though, that the derived layers were not used
+    anywhere within the technology file, such as in the constraints. 
+    There seemed also to be errors, for example one obvious place
+    where "<tt>'and</tt>" was used where "<tt>'or</tt>" was clearly
+    required.
+
+    <li>The constraints helpfully included a design rule violation number,
+    but were shown to be wrong when the rule was looked up.  For example,
+    One rule specified "(PP OR NP) Enclosure of PO ...", yet there were
+    separate constraints "PP Enclosure PO..." and "NP Enclosure PO..."
+    specified, which is wrong.
+
+    <li>An attempt to DRC a known-clean layout with imported rules
+    yielded a lot of bogus errors.  Additional work would be necessary
+    to obtain a "good" set of design rules.
+
+    <li>As more tools use OpenAccess, perhaps there will be
+    improvements in the rulesets provided through the OpenAccess
+    technology database.  At present, it appears that this is not
+    primary to the serious DRC tools, but may be used by Virtuoso,
+    possibly for editing feedback.
+    </ol>
+
+    <p>
+    The tree below shows the hierarchy of the nodes that are
+    recognized in the technology file.  Most of these are ignored. 
+    Below we describe the nodes that are actually used, and what
+    information they provide.
+
+    <p>
+    Below, nodes that were added for Virtuoso 6.1.4 are marked marked
+    with '*'.  The <tt>constraintGroups</tt> listing is greatly
+    simplified, there is actually far more stucture than indicated.
+
+    <blockquote>
+    <pre>
+    include
+    comment
+    controls
+    &nbsp;&nbsp;techParams
+    &nbsp;&nbsp;techPermissions
+    &nbsp;&nbsp;viewTypeUnits *
+    &nbsp;&nbsp;mfgGridResolution *
+    layerDefinitions
+    &nbsp;&nbsp;techLayers
+    &nbsp;&nbsp;techPurposes
+    &nbsp;&nbsp;techLayerPurposePriorities
+    &nbsp;&nbsp;&nbsp;&nbsp;techDisplays
+    &nbsp;&nbsp;&nbsp;&nbsp;techLayerproperties
+    &nbsp;&nbsp;&nbsp;&nbsp;techDerivedLayers *
+    layerRules
+    &nbsp;&nbsp;functions *
+    &nbsp;&nbsp;routingDirections *
+    &nbsp;&nbsp;stampLabelLayers *
+    &nbsp;&nbsp;currentDensityTables *
+    &nbsp;&nbsp;viaLayers
+    &nbsp;&nbsp;equivalentLayers
+    &nbsp;&nbsp;streamLayers
+    viaDefs *
+    &nbsp;&nbsp;standardViaDefs *
+    &nbsp;&nbsp;customViaDefs *
+    constraintGroups *
+    &nbsp;&nbsp;foundry *
+    &nbsp;&nbsp;&nbsp;&nbsp;spacings *
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;maxWidth
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minWidth
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minDiagonalWidth
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minSpacing
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minSameNetSpacing
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minDiagonalSpacing
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minArea
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minHoleArea
+    &nbsp;&nbsp;&nbsp;&nbsp;viaStackLimits *
+    &nbsp;&nbsp;&nbsp;&nbsp;spacingTables *
+    &nbsp;&nbsp;&nbsp;&nbsp;orderedSpacings *
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minOverlap
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minEnclosure
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minExtension
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minOppExtension
+    &nbsp;&nbsp;&nbsp;&nbsp;antennaModels *
+    &nbsp;&nbsp;&nbsp;&nbsp;electrical *
+    &nbsp;&nbsp;LEFDefaultRouteSpec *
+    &nbsp;&nbsp;&nbsp;&nbsp;interconnect *
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;maxRoutingDistance *
+    &nbsp;&nbsp;&nbsp;&nbsp;routingGrids *
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verticalPitch *
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;horizontalPitch *
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;verticalOffset *
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;horizontalOffset *
+    devices
+    &nbsp;&nbsp;tcCreateCDSDeviceClass
+    &nbsp;&nbsp;multipartPathTemplates *
+    &nbsp;&nbsp;extractMOS *
+    &nbsp;&nbsp;extractRES *
+    &nbsp;&nbsp;symContactDevice
+    &nbsp;&nbsp;ruleContactDevice
+    &nbsp;&nbsp;symEnhancementDevice
+    &nbsp;&nbsp;symDepletionDevice
+    &nbsp;&nbsp;symPinDevice
+    &nbsp;&nbsp;symRectPinDevice
+    &nbsp;&nbsp;tcCreateDeviceClass
+    &nbsp;&nbsp;tcDeclareDevice
+    viaSpecs *
+    physicalRules
+    &nbsp;&nbsp;orderedSpacingRules
+    &nbsp;&nbsp;spacingRules
+    &nbsp;&nbsp;mfgGridResolution
+    electricalRules
+    &nbsp;&nbsp;characterizationRules
+    &nbsp;&nbsp;orderedCharacterizationRules
+    leRules
+    &nbsp;&nbsp;leLswLayers
+    lxRules
+    &nbsp;&nbsp;lxExtractLayers
+    &nbsp;&nbsp;lxNoOverlapLayers
+    &nbsp;&nbsp;lxMPPTemplates
+    compactorRules
+    &nbsp;&nbsp;compactorLayers
+    &nbsp;&nbsp;symWires
+    &nbsp;&nbsp;symRules
+    lasRules
+    &nbsp;&nbsp;lasLayers
+    &nbsp;&nbsp;lasDevices
+    &nbsp;&nbsp;lasWires
+    &nbsp;&nbsp;lasProperties
+    prRules
+    &nbsp;&nbsp;prRoutingLayers
+    &nbsp;&nbsp;prViaTypes
+    &nbsp;&nbsp;prStackVias
+    &nbsp;&nbsp;prMastersliceLayers
+    &nbsp;&nbsp;prViaRules
+    &nbsp;&nbsp;prGenViaRules
+    &nbsp;&nbsp;prTurnViaRules
+    &nbsp;&nbsp;prNonDefaultRules
+    &nbsp;&nbsp;prRoutingPitch
+    &nbsp;&nbsp;prRoutingOffset
+    &nbsp;&nbsp;prOverlapLayer
+    </pre>
+    </blockquote>
+
+    <p>
+    We mention below only the nodes from which information is
+    extracted.  Note that this is a mixture of 5.x and 6.x nodes,
+    providing unified support for all current Virtuoso releases.  In
+    most cases, a node with an unrecognized name will produce a
+    warning message.  These can be ignored, the purpose is only to
+    identify "new" information in the technology file that might be
+    useful to parse.
+
+    <dl>
+    <dt><tt>include</tt><dd>
+    This node contains a string, which is a path to another Lisp file.
+    That file will be opened and read.
+    </dl>
+
+    <dl>
+    <dt><tt>controls/viewTypeUnits</tt><dd>
+    For <tt>maskLayout</tt>, if <tt>microns</tt>, the <i>Xic</i> database
+    resolutions 1000, 2000, 5000, 10000, and 20000 are accepted.
+    </dl>
+
+    <dl>
+    <dt><tt>controls/mfgGridResolution</tt><dd>
+    This will set the <i>Xic</i> <a href="MfgGrid"><tt>MfgGrid</tt></a>
+    parameter.
+    </dl>
+
+    <dl>
+    <dt><tt>layerDefinitions/techLayers</tt><dd>
+    This associates OpenAccess layer numbers with layer names and
+    abbreviations.  These are recorded in the <i>Xic</i> layer
+    database.
+    </dl>
+
+    <dl>
+    <dt><tt>layerDefinitions/techPurposes</tt><dd>
+    This associates OpenAccess purpose numbers with purpose names and
+    abbreviations.  These are recorded in the <i>Xic</i> layer
+    database.
+    </dl>
+
+    <dl>
+    <dt><tt>layerDefinitions/techLayerPurposePriorities</tt><dd>
+    This contains a list of layer-purpose pairs, using layer and
+    purpose names previously defined.  Each layer-purpose pair is used
+    to create an <i>Xic</i> layer.  These are created in the order
+    listed.
+
+    <p>
+    In Virtuoso, there is no distinction between physical and
+    electrical layers as there is in <i>Xic</i>.  All Virtuoso layers
+    are taken as physical layers, except for the following internal
+    Virtuoso layer numbers which with any purpose number will generate
+    an <i>Xic</i> layer listed in both the electrical and physical
+    layer tables in <i>Xic</i>.
+
+    <blockquote>
+    <table cellspacing=2 border=0>
+    <tr><th>Layer Number</th> <th>Virtuoso Layer Name</th></tr>
+    <tr><td>228</td> <td><tt>wire</tt></td></tr>
+    <tr><td>229</td> <td><tt>pin</tt></td></tr>
+    <tr><td>230</td> <td><tt>text</tt></td></tr>
+    <tr><td>231</td> <td><tt>device</tt></td></tr>
+    <tr><td>236</td> <td><tt>instance</tt></td></tr>
+    <tr><td>237</td> <td><tt>annotate</tt></td></tr>
+    </table>
+    </blockquote>
+    </dl>
+
+    <dl>
+    <dt><tt>layerDefinitions/techDisplays</tt><dd>
+    This will assign the colors and fill patterns to layers that exist
+    in the <i>Xic</i> layer table.  This references the internal
+    packet, color, and stipple lists created from the display resource
+    nodes.  In addition, the initial visibility and selectability
+    states are set here, as well as the <a
+    href="Invalid"><tt>Invalid</tt></a> flag.
+    </dl>
+
+    <dl>
+    <dt><tt>layerDefinitions/techLayerproperties</tt><dd>
+    This node provides some directly applicable parameters, which are
+    read and added to the appropriate layer.  These include
+    <tt>sheetResistance</tt>, <tt>areaCapacitance</tt>,
+    <tt>edgeCapacitance</tt>, and <tt>thickness</tt>.  The thickness
+    value is specified in angstroms, which is converted to microns. 
+    The capacitance value units are picofarads and microns, thus no
+    conversion is required.
+    </dl>
+
+    <dl>
+    <dt><tt>layerDefinitions/techDerivedLayers</tt><dd>
+    The derived layers will be imported directly, with the expression
+    converted to an <i>Xic</i> <a href="layer_exp">layer
+    expression</a> string.  The expression given in this node type
+    consists of a single operator and two layer names.  The operator
+    keywords which map to geometrical combinations (<tt>'and</tt>,
+    <tt>'or</tt>, <tt>'not</tt>, and <tt>'xor</tt>) are accepted. 
+    Others are ignored.
+    </dl>
+
+    <dl>
+    <dt><tt>layerRules/routingDirections</tt><dd>
+    Layers found in this table are given the <tt>Routing</tt> attribute.
+    </dl>
+
+    <dl>
+    <dt><tt>layerRules/viaLayers</tt><dd>
+    The conducting layers are assigned the <tt>Conductor</tt>
+    attribute.  The via layer is assigned the <tt>Via</tt> attribute. 
+    This is in 5.x files only.
+    </dl>
+
+    <dl>
+    <dt><tt>layerRules/streamLayers</tt><dd>
+    A GDSII import/export mapping is applied for each layer given.
+    This is in 5.x files only.
+    </dl>
+
+    <dl>
+    <dt><tt>viaDefs/standardViaDefs</tt><dd>
+    This identifies layers that are given the <tt>Via</tt> attribute. 
+    The metal layers that are referenced by the via are given the
+    <tt>Conductor</tt> attribute.  The standard via definition is
+    imported, and will be available for via generation from the <a
+    href="xic:crvia"><b>Via Creation</b></a> panel from the <b>Edit
+    Menu</b>.
+    </dl>
+
+    <dl>
+    <dt><tt>constraintGroups/foundry/spacings/maxWidth</tt><dd>
+    This identifies a <a href="MaxWidth"><tt>MaxWidth</tt></a> rule.
+    </dl>
+
+    <dl>
+    <dt><tt>constraintGroups/foundry/spacings/minWidth</tt><dd> This
+    identifies a <a href="MinWidth"><tt>MinWidth</tt></a> rule.
+    </dl>
+
+    <dl>
+    <dt><tt>constraintGroups/foundry/spacings/minDiagonalWidth</tt><dd>
+    This will map to a <tt>Diagonal</tt> clause in a <a
+    href="MinWidth"><tt>MinWidth</tt></a> rule.
+    </dl>
+
+    <dl>
+    <dt><tt>constraintGroups/foundry/spacings/minSpacing</tt><dd>
+    This maps to either a <a href="MinSpace"><tt>MinSpace</tt></a>
+    rule (one layer given) or a <a
+    href="MinSpaceTo"><tt>MinSpaceTo</tt></a> rule if two layers are
+    given.
+    </dl>
+
+    <dl>
+    <dt><tt>constraintGroups/foundry/spacings/minSameNetSpacing</tt><dd>
+    This provides the <tt>SameNet</tt> clause to a <a
+    href="MinSpace"><tt>MinSpace</tt></a> or <a
+    href="MinSpaceTo"><tt>MinSpaceTo</tt></a> rule.
+    </dl>
+
+    <dl>
+    <dt><tt>constraintGroups/foundry/spacings/minDiagonalSpacing</tt><dd>
+    This provides the <tt>Diagonal</tt> clause to a <a
+    href="MinSpace"><tt>MinSpace</tt></a> or <a
+    href="MinSpaceTo"><tt>MinSpaceTo</tt></a> rule.
+    </dl>
+
+    <dl>
+    <dt><tt>constraintGroups/foundry/spacings/minArea</tt><dd>
+    This identifies a <a href="MinArea"><tt>MinArea</tt></a> rule.
+    </dl>
+
+    <dl>
+    <dt><tt>constraintGroups/foundry/spacings/minHoleArea</tt><dd>
+    This provides the dimension for area filtering in a
+    <a href="NoHoles"><tt>NoHoles</tt></a> rule.
+    </dl>
+
+    <dl>
+    <dt><tt>constraintGroups/foundry/spacings/minHoleWidth</tt><dd>
+    This provides the dimension for minimum width filtering in a
+    <a href="NoHoles"><tt>NoHoles</tt></a> rule.
+    </dl>
+
+    <dl>
+    <dt><tt>constraintGroups/foundry/spacingTables</tt><dd>
+    This provides tables of length, width, and spacing values, for
+    size-dependent spacing rules.  These tables are parsed and added
+    to <a href="MinSpace"><tt>MinSpace</tt></a> and <a
+    href="MinSpaceTo"><tt>MinSpaceTo</tt></a> rules.
+    </dl>
+    
+    <dl>
+    <dt><tt>constraintGroups/foundry/orderedSpacings/minEnclosure</tt><dd>
+    This maps to a <a href="MinSpaceFrom"><tt>MinSpaceFrom</tt></a>
+    rule, with the source and target layers swapped.  It provides the
+    <tt>Enclosed</tt> clause, which applies when the target figure is
+    completely surrounded by the source material.  The alias
+    <tt>minEnclosureDistance</tt> is also recognized.
+    </dl>
+    
+    <dl>
+    <dt><tt>constraintGroups/foundry/orderedSpacings/minExtension</tt><dd>
+    This is almost identical with <tt>minEnclosure</tt>, but does not
+    require that the target figure be fully surrounded.  It maps to a
+    <a href="MinSpaceFrom"><tt>MinSpaceFrom</tt></a> rule in the same
+    manner, but sets the rule dimension, not the <tt>Enclosed</tt>
+    value.  The alias <tt>minOverlapDistance</tt> is also recognized.
+    </dl>
+    
+    <dl>
+    <dt><tt>constraintGroups/foundry/orderedSpacings/minOppExtension</tt><dd>
+    This is handled similarly to the two rules above, but sets the
+    <tt>Opposite</tt> clause of the <tt>MinSpaceFrom</tt> rule.
+    </dl>
+
+    <dl>
+    <dt><tt>constraintGroups/LEFDefaultRouteSpec/interconnect/maxRoutingDistance</tt><dd>
+    This provides the <tt>maxdist</tt> <a href="Routing">routing</a>
+    parameter.
+    </dl>
+
+    <dl>
+    <dt><tt>constraintGroups/LEFDefaultRouteSpec/routingGrids/horizontalPitch</tt><br>
+    <dt><tt>constraintGroups/LEFDefaultRouteSpec/routingGrids/verticalPitch</tt><dd>
+    These provide the <tt>pitch</tt> <a href="Routing">routing</a>
+    parameter.
+    </dl>
+
+    <dl>
+    <dt><tt>constraintGroups/LEFDefaultRouteSpec/routingGrids/horizontalOffset</tt><br>
+    <dt><tt>constraintGroups/LEFDefaultRouteSpec/routingGrids/verticalOffset</tt><dd>
+    These provide the <tt>offset</tt> <a href="Routing">routing</a>
+    parameter.
+    </dl>
+
+    <dl>
+    <dt><tt>layerRules/routingDirections</tt><dd>
+    This provides the preferred routing direction.
+    </dl>
+
+    <dl>
+    <dt><tt>constraintGroups/foundry/spacings/minWidth</tt><dd>
+    This maps to the <tt>width</tt> <a href="Routing">routing</a>
+    parameter.
+    </dl>
+
+!!SEEALSO
+cdscompat
+
+!!IFDEF OpenAccess
+!! 032117
+!!KEYWORD
+ReadOaTech
+!!TITLE
+ReadOaTech keyword
+!!HTML
+    This is similar to <tt>ReadCdsTech</tt>, however it retrieves the
+    tech data from OpenAccess relative to a given library, instead of
+    from the ASCII technology file.  The syntax is
+    <blockquote>
+    <tt>ReadOaTech</tt> <i>library</i>
+    </blockquote>
+
+    The <i>library</i> must be listed in the OpenAccess library
+    definitions file, named <tt>lib.defs</tt> or named
+    <tt>cds.lib</tt> in Cadence installations.  The OpenAccess
+    <a href="oaplugin">plug-in</a> is used to obtain the information,
+    and of course must be available and set to connect to an OpenAccess
+    database.
+
+    <p>
+    The technology information is extracted into a temporary Virtuoso
+    ASCII technology file, which is then parsed by the equivalent of
+    specifying <tt>ReadCdsTech</tt> with this file.  The same file can
+    be obtained from the print option of the <a
+    href="!oatech"><b>!oatech</b></a> command.  This can be used to
+    view the tech information that is being extracted.
+
+!!SEEALSO
+cdscompat
+!!ENDIF
+
+!! 021913
+!!KEYWORD
+ReadCdsLmap
+!!TITLE
+ReadCdsLmap keyword
+!!HTML
+   This technology file keyword allows import of a Cadence Virtuoso
+   layer mapping file.  This file provides the layer/datatype numbers
+   for the layers defined in the display resource file.  It is
+   important that these numbers be equivalent in <i>Xic</i> for
+   success in transferring design data via GDSII or OASIS files.  The
+   file is generally provided within a process design kit.  The name
+   of the file will vary, in one case it is the name of the technology
+   with a "<tt>.layermap</tt>" extension.
+
+   <p>
+   The syntax is
+   <blockquote>
+   <tt>ReadCdsLmap</tt> <i>filename</i>
+   </blockquote>
+
+   <p>
+   The <i>filename</i> is a path to the Virtuoso layer mapping file. 
+   This must appear in the <i>Xic</i> technology file after the <a
+   href="ReadCdsTech"><tt>ReadCdsTech</tt></a> line, as the layers
+   must exist in the <i>Xic</i> database before they can be assigned a
+   GDSII mapping.
+
+!!SEEALSO
+cdscompat
+
+!!IFDEF OpenAccess
+!! 022416
+!!KEYWORD
+cdsconnect
+!!TITLE
+Connecting to Cadence Installations
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="cdsconnect#compat"><b>Compatibility and Setup</b></a><br>
+    <a href="cdsconnect#exprpc"><b>Express PCells</b></a>
+    </td></tr></table>
+
+    <p>
+    The OpenAccess plug-in makes it possible for <i>Xic</i> to access
+    Cadence cell libraries, by making use of the OpenAccess libraries
+    provided with the Cadence installation.
+
+    <p>
+    When accessing Virtuoso design data, <i>Xic</i> should be provided
+    with a consistent technology file.  The <a
+    href="cdscompat">Cadence compatibility</a> features include the
+    ability to read Virtuoso display resource, ASCII technology, and
+    GDSII layer mapping files.  These files are provided in the
+    process design kit in use.  The user should create a skeletal
+    <i>Xic</i> technology file which will read these files.  Then,
+    layout appearance will be consistent between Virtuoso and
+    <i>Xic</i>.
+
+    <a name="compat"></a>
+    <h2>Compatibility and Setup</h2>
+
+    The present release of <i>Xic</i> is known to be compatible with
+    Virtuoso 6.1.6 in terms of OpenAccess versioning.  It is very
+    likely compatible with earlier 6.1.<i>x</i> releases, but these
+    have not been tested, though 6.1.4 has been verified with earlier
+    <i>Xic</i> releases.
+
+    <p>
+    The installation location of the Cadence tools may be set in the
+    environment variable <b>CDSHOME</b>.  The user should verify that
+    this variable is set in the environment.  If not, the user must
+    locate the installation directory for Cadence tools some other
+    way.
+
+    <p>
+    Listing the installation directory, e.g.,
+    <blockquote>
+    <tt>ls $CDSHOME</tt>
+    </blockquote>
+    will provide a listing of files and subdirectories, which include
+    the names "<tt>tools</tt>" and "<tt>tools.lnx86</tt>".  In
+    addition, there will be a subdirectory (perhaps more than one)
+    with a name similar or identical to "<tt>oa_v22.43.050</tt>". 
+    This is OpenAccess.  In this directory you will find a
+    "<tt>lib</tt>" directory containing subdirectories with library
+    files for 32 and 64-bit systems.  The files of interest will match
+    the <i>Xic</i> installation bit-width.  The OpenAccess provided
+    with Virtuoso 6.1.6 is newer than the publicly available version
+    of OpenAccess that <i>Xic</i> is compiled against, but that does
+    not appear to matter.  If there are multiple OpenAccess versions
+    present, probably the newest one (largest release numbers) should
+    be used, but if problems are encountered other versions can be
+    tried.
+
+    <p>
+    The full path to the directory containing the apporpriate
+    OpenAccess shared library files must be added to the system's
+    library search string.  On an example Cadence installation, the
+    path, for 64-bits, is
+    <blockquote>
+    <tt>$CDSHOME/oa_v22.43.050/lib/linux_rhel50_gcc44x_64/opt</tt>
+    </blockquote>
+    In addition, callbacks may require that <i>Xic</i> have access to
+    additional shared libraries supplied by Cadence.  For 64-bits,
+    this directory is
+    <blockquote>
+    $CDSHOME/tools.lnx86/lib/64bit
+    </blockquote>
+
+    <p>
+    Traditionally in Unix/Linux, the shared library search path is
+    modified by setting the <b>LD_LIBRARY_PATH</b> environment
+    variable.  This variable provides additional locations for the
+    system to search for needed shared libraries, in addition to
+    system default locations that are implicit.
+
+    <p>
+    This variable can be used to set the search path, but in
+    <i>Xic</i> there is a better way:  set the <a
+    href="XIC_LIBRARY_PATH"><b>XIC_LIBRARY_PATH</b></a> environment
+    variable instead.  This is like <b>LD_LIBRARY_PATH</b>.  but
+    applies only to the <i>Xic</i> program.  Setting
+    <b>LD_LIBRARY_PATH</b> applies to all programs, whether they need
+    the additional search locations or not.
+
+    <p>
+    The <b>XIC_LIBRARY_PATH</b> variable is most conveniently set
+    in the user's shell startup file.  The variable string consists of
+    a list of directories, separated by colon ('<tt>:</tt>')
+    characters.  The directories in the list are searched
+    left-to-right to resolve shared library references, when a program
+    is started.  One should probably also include the value of the
+    <b>LD_LIBRARY_PATH</b> in case that has been set for some other
+    reason.
+
+    <p>
+    For our example, lines like the following should be added to the
+    shell startup files.  For <tt>bash</tt> and similar:
+    <blockquote><tt>
+    # Hook Xic to the Cadence OpenAccess library<br>
+    XIC_LIBRARY_PATH=$CDSHOME/oa_v22.43.050/lib/linux_rhel50_gcc44x_64/opt<br>
+    XIC_LIBRARY_PATH=$XIC_LIBRARY_PATH:$CDSHOME/tools/lib/64bit<br>
+    export XIC_LIBRARY_PATH
+    </tt>
+    </blockquote>
+    and for C-shell:
+    <blockquote><tt>
+    # Hook Xic to the Cadence OpenAccess library<br>
+    setenv XIC_LIBRARY_PATH $CDSHOME/oa_v22.43.050/lib/linux_rhel50_gcc44x_64/opt<br>
+    setenv XIC_LIBRARY_PATH $XIC_LIBRARY_PATH:$CDSHOME/tools/lib/64bit<br>
+    </tt>
+    </blockquote>
+    Similar commands can be given on the command line.
+
+    <p>
+    Once the new definitions apply, when <i>Xic</i> starts, the
+    following message should appear on the console among the initial
+    startup messages:
+    <blockquote>
+    <tt>Using OpenAccess (oa.so).</tt>
+    </blockquote>
+    If the message is not seen, try setting the <a
+    href="XIC_PLUGIN_DBG"><b>XIC_PLUGIN_DBG</b></a> environment
+    variable and starting <i>Xic</i> again.  Messages printed in the
+    console window should indicate where the error occurs.
+
+    <p>
+    With OpenAccess successfully connected, the <b>File Menu</b> will
+    contain the <a href="xic:oalib"><b>OpenAccess Libs</b></a> button. 
+    If <i>Xic</i> was started in a directory with a <tt>cds.lib</tt>
+    file, the libraries in the file should be listed in the pop-up. 
+    Probably, it is best when working with <i>Xic</i> to work from a
+    different directory than when working with Virtuoso.  If so, you
+    will want to copy in your <tt>cds.lib</tt> file, which defines the
+    Cadence libraries available.  You can modify this copy with a text
+    editor if desired.  The libraries will be listed in the
+    <b>OpenAccess Libraries</b> panel if they exist.
+
+    <a name="exprpc"></a>
+    <h2>Express PCells</h2>
+
+    In Virtuoso, foundry devices are most likely represented as
+    parameterized cells (pcells).  These are cells with an internal
+    script which generates a physical layout according to a set of
+    device parameters.
+
+    <p>
+    Parameterized cells in the Cadence environment are most
+    probably based on the Skill language and are not portable outside
+    of a Cadence environment.  However, Virtuoso provides a feature
+    called "Express PCells" which caches pcell sub-masters in the
+    user's home directory.  A pcell sub-master is an ordinary cell,
+    created from a pcell using a specific parameter set.  The pcell
+    cache provides the benefit that pcell evaluation is avoided, so
+    that designs may be opened more quickly.  A second advantage is
+    that the cached sub-masters, unlike the pcells, can be exported.
+
+    <p>
+    Before a layout containing Skill-based pcell instances can be
+    fully loaded into <i>Xic</i>, the Express PCell feature must be
+    enabled, and all of the pcell submasters needed must be cached. 
+
+    <p>
+    One should be aware that if only a schematic is being imported
+    into <i>Xic</i>, it isn't necessary to worry about pcells, as the
+    pcell schematic symbol is available.  Only the physical layout
+    changes with different device parameters.
+
+    <p>
+    To enable Express PCells, the environment variable
+    <b>CDS_ENABLE_EXP_PCELL</b> should be set to "<tt>true</tt>".
+    Again, this is most conveniently done in the user's shell
+    startup script.  For <tt>bash</tt>:
+    <blockquote>
+    <tt>export CDS_ENABLE_EXP_PCELL=true</tt>
+    </blockquote>
+    For C-shell:
+    <blockquote>
+    <tt>setenv CDS_ENABLE_EXP_PCELL true</tt>
+    </blockquote>
+
+    From a Virtuoso Layout Editor window, the <b>Tools</b> menu will
+    contain an <b>Express PCell Manager</b> button.  This brings up a
+    window allowing control of the feature.  With the feature on,
+    loading a design will populate the cache.  It should then be
+    possible to load the same design into <i>Xic</i>, with no
+    unresolved pcell references.  Note that when obtaining the pcell
+    sub-masters through OpenAcess, a license checkout for the Cadence
+    system occurs.  Virtuoso will not export a sub-master from the
+    cache without a license.
+
+!!SEEALSO
+cdscompat
+!!ENDIF
+
+!!IFDEF OpenAccess
+!! 022816
+!!KEYWORD
+cdsimport
+!!TITLE
+Importing a Design from Virtuoso
+!!HTML
+    Once the OpenAccess database of a Cadence Virtuoso installation is
+    <a href="cdsconnect">connected</a> to <i>Xic</i>, designs created
+    in Virtuoso can be imported into <i>Xic</i>.  Physical (layout)
+    data should transfer without issues.  Schematic and schematic
+    symbol data will transform as electrical cells, some of which are
+    devices.  These will probably work successfully as <i>Xic</i>
+    cells, but it is possible that a bit of intervention will be
+    needed.  It is disasterous if the cells are written back to
+    Virtuoso.  By default, Virtuoso libraries are read-only in
+    <i>Xic</i> to prevent this from happening.
+
+    <p>
+    <i>Xic</i> obtains technology information from its own technology
+    file, and (presently) not directly from OpenAccess.  However, the
+    same technology information should be available to <i>Xic</i>
+    through <a href="cdscompat">direct reading</a> of the appropriate
+    <tt>display.drf</tt> and ASCII technology files.  These files
+    should be available in the process design kit in use.
+
+    <p>
+    The user's <tt>cds.lib</tt> file (or a copy) should exist in the
+    current directory.  This file will be used and updated by
+    <i>Xic</i>.  It is fine to share a <tt>cds.lib</tt> with an active
+    Virtuoso installation, but it is probably better to maintain
+    separate files, so that the <i>Xic</i> libraries, which are
+    presently incompatible with Virtuoso, are invisible in Virtuoso.
+
+    <p>
+    If the OpenAccess database is connected, the <a
+    href="xic:oalib"><b>OpenAccess Libraries</b></a> panel, from the
+    <b>OpenAccess Libs</b> button in the <b>File Menu</b>, will
+    display the libraries that are defined in the <tt>cds.lib</tt>
+    file.  The button will appear in the <b>File Menu</b> only if an
+    OpenAccess database is connected.
+
+    <p>
+    From the panel, one can select a library by clicking on the
+    listing, and list the contents with the <b>Contents</b> button in
+    the panel.  Pressing the <b>Contents</b> button brings up a
+    listing of the cells contained in the library.
+
+    <p>
+    Presently, <i>Xic</i> does not use "views" in the same manner as
+    Virtuoso.  Each of the listed cell names contain one or more of
+    the following OpenAccess standard views, which are used to create
+    the <i>Xic</i> cell.  The <tt>maskLayout</tt> view contributes the
+    physical data.  The <tt>schematic</tt> view provides the
+    electrical data, and the <tt>schematicSymbol</tt> view provides
+    the <i>Xic</i> symbolic representation.  Other views are ignored
+    by <i>Xic</i>.
+
+    <p>
+    In the <b>Listing</b> panel, one can select cells bu clicking on a
+    name.  When a cell is selected, the <b>Open</b> button becomes
+    active.  Pressing this button will read that cell, and its
+    hierarchy, into <i>Xic</i>.  Note that it does not matter whether
+    or not the library is "open" in the <b>OpenAccess Libraries</b>
+    listing.  The "open" status means that cells in the library will
+    resolve instantiations as archive files are being read, but
+    explicitly read cells, and subcells referenced in OpenAccess, are
+    always read.
+
+    <p>
+    Before data can be successfully read into <i>Xic</i>, Virtuoso
+    parameterized cells must be cached, using the Cadence Express
+    PCells feature.  <i>Xic</i> can not create super-masters for
+    Virtuoso (Skill-based) pcells, but will import cached
+    super-masters.  The imported cell will be an ordinary cell in
+    <i>Xic</i>, but will retain properties that identify the cell as
+    originating as a Virtuoso pcell.
+
+    <p>
+    Once the hierarchy is read, it should appear visually very similar
+    if not identical to the corresponding views in Virtuoso, if the
+    appropriate technology has been accessed properly.  Electrical
+    cells will always have a symbolic representation, since in
+    Virtuoso schematic instantiations are always symbolic, unlike
+    in <i>Xic</i>.
+
+    <p>
+    If there are errors or warnings emitted during the import, the log
+    file listing will appear.  The user should inspect this and take
+    appropriate action if needed.
+
+    <p>
+    With the design now local in <i>Xic</i>, it can be saved to disk
+    in any of the formats supported by <i>Xic</i>.  Initially, it is
+    recommended saving the imported design as a collection of native
+    cell files, into a clean directory.  The <a
+    href="xic:exprt"><b>Export Control</b></a> panel from the
+    <b>Convert Menu</b> can be used for this.  Then, the devices can
+    be "harvested".
+
+    <p>
+    Initially, a number of the imported cells represent devices. 
+    These correspond to Virtuoso pcells, and have the same name. 
+    Except for some terminal devices that are created during
+    translation as needed, the standard device library is not used. 
+    The imported devices serve the same purpose as the library
+    devices, and will work in the same way.  However, they will not
+    appear in the <a href="xic:devs">device selection menus</a>, and
+    they are treated as ordinary cells in the hierarchy.  By
+    "harvesting" the devices, we will make "official" <i>Xic</i>
+    devices out of them, allowing use in other designs, and remove
+    them as ordinary cells in the imported hierarchy.
+
+    <p>
+    The following procedure can be used to identify the "device"
+    cells.  Bring up the <a href="xic:cells"><b>Cells Listing</b></a>
+    panel from the <b>Cells Menu</b>.  In the lower right-hand corner,
+    select <b>Elec Cells</b> in the menu.  Click the <b>Filter</b>
+    button on the side of the listing, which will bring up the <b>Cell
+    List Filter</b> panel.  Make sure that the only box checked is the
+    one next to <b>Device</b> (between <b>not</b> and <b>Device</b>). 
+    Then click <b>Apply</b>.  The listing will now consist of the
+    device cells only.  You should save this list, using <b>Save
+    Text</b> or otherwise.
+
+    <p>
+    After saving the imported design in a directory as native cell
+    files, <i>Xic</i> can be exited.  To harvest the devices, we will
+    create a new directory (if needed), and move the device cells in
+    our list from the directory containing our design to the new
+    directory.  We will then add the new directory as a reference in a
+    local <tt>device.lib</tt> file, if this hasn't been done
+    previously.  Then, next time we use <i>Xic</i>, the devices will
+    be present in the device selection menus, and can be used in new
+    schematics just as any other device.  Specifically, suppose that
+    you saved the design as native cell files in a directory named
+    "<tt>chip1</tt>", and you have another directory named
+    "<tt>devices</tt>".  By hand, move each of the files in the list
+    of devices from <tt>chip1</tt> to <tt>devices</tt>.  Then, add the
+    <tt>devices</tt> directory to the <tt>device.lib</tt> file.  The
+    default system-wide <tt>device.lib</tt> is in the <tt>startup</tt>
+    directory in the installation area
+    (<tt>/usr/local/xictools/xic/startup</tt> by default).  You can
+    modify this file, or better copy this file to your current
+    directory, and modify the copy.  With a text editor, add a line to
+    the end of the <tt>device.lib</tt> file:
+
+    <blockquote>
+    <tt>Directory</tt>  <i>/full/path/to/your/devices</i>
+    </blockquote>
+
+    The second token should be the actual full path to the
+    <tt>devices</tt> directory that you created.  Note that in the
+    future, all that you need to do to "install" a new device is to
+    move the file into your <tt>devices</tt> directory.
+
+    <p>
+    Once finished, one can start <i>Xic</i> again, with the same
+    technology file, and read in the top-level cell from the saved
+    native cell files directory.  The devices will be included, now
+    resolved through the library mechanism.  One may wish to save the
+    design in an archive format such as OASIS or GDSII, which may be
+    more convenient than the directory full of cell files.  The
+    archive file will not contain the devices.  Be aware that to
+    export the design to another <i>Xic</i> installation, the
+    <tt>devices</tt> directory will have to be exported too.
+
+!!SEEALSO
+oaplugin
+!!ENDIF
+

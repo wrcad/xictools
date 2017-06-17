@@ -1,0 +1,2435 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spVars_sim.hlp,v 1.41 2017/03/28 22:23:13 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spVars_sim.hlp
+!!TITLE
+spVars_sim.hlp
+!!HTML 
+
+!!SUBTOPICS
+options
+sim_vars
+batch_vars
+unused_vars
+syntax_vars
+
+
+!! format.tex 092716
+!!KEYWORD
+options
+!!TITLE
+<i>WRspice</i> Options
+!!HTML 
+    In any SPICE-like program, the <a
+    href=".options"><tt>.options</tt></a> line in input allows setting
+    of variables and flags that control aspects of the simulation run.
+    <i>WRspice</i> provides this support as well, however in a more general
+    context as there is little difference between "options" and "variables",
+    as set with the <a href="set"><b>set</b></a> command.  In <i>WRspice</i>,
+    an "option" is simply a variable set in the <tt>.options</tt> line
+    of an input file that has been sourced.
+
+    <p>
+    The options are stored in a table within the circuit structure,
+    and are in force when the circuit is the current circuit.  In the
+    listing or variables provided from the <a
+    href="set"><b>set</b></a> command given with no arguments, or in
+    the <a href="variablespanel"><b>Variables</b></a> tool from the
+    <b>Tools</b> menu in the <a href="toolbar"><b>Tool Control</b></a>
+    window, the option variables that are in force are indicated with
+    a "+" in the first column.
+
+    <p>
+    The variables set in the <tt>.options</tt> line may be available
+    for substitution (into <tt>$</tt><i>variable</i> references)
+    when the circuit is the current circuit, but otherwise do not
+    affect the shell.  For example, setting the variable
+    <tt>noglob</tt> from a <tt>.options</tt> line will <i>not</i>
+    affect the global expansion of the shell, but references to
+    <tt>$noglob</tt> would behave as if the boolean <tt>noglob</tt>
+    was set, while the circuit is the current circuit.
+
+    <p>
+    Shell variables set in the <tt>.options</tt> line are set before
+    the rest of the SPICE text is expanded, so that shell variable
+    references in the text can be defined from the <tt>.options</tt>
+    line, as in the <a href=".exec"><tt>.exec</tt></a> block.  The
+    <tt>.exec</tt> lines are executed before the <tt>.options</tt>
+    lines are expanded.
+
+    <p>
+    Since options can be set in the shell, as well as from the
+    circuit, <i>WRspice</i> must merge the two sets of variables
+    according to some rule.  The rule allows three variations:
+    <ol>
+    <li><tt>global</tt> mode (the default)<br>
+    In global options merging, if a boolean variable is set in either
+    the circuit or the shell, it is taken as set.  If a non-boolean
+    variable is set in only one of the circuit or the shell, the
+    variable is taken as set using the given value.  If a non-boolean
+    variable is set in both the circuit and the shell, the shell value
+    will be used.
+
+    <p>
+    This is the default mode, and the only mode available in Berkeley
+    SPICE3.  This allows the interactive user to use the <b>set</b>
+    command to override options set in the circuit file.  This may
+    also be somewhat dangerous, as the shell override may occur for a
+    forgotten variable, causing the user to wonder about strange
+    results.
+
+    <li><tt>local</tt> mode<br>
+    This is similar to <tt>global</tt> mode, except that in the case
+    of a non-boolean variable being defined in both the circuit and
+    the shell, the circuit definition will apply.
+
+    <p>
+    In this mode, the <b>set</b> command can be used to set circuit
+    variables that were not defined on <tt>.options</tt> lines in
+    the circuit file.  The <b>set</b> command will have no effect on
+    variables that were defined in this way.
+
+    <li><tt>noshell</tt> mode<br>
+    In this mode, the circuit will ignore variables set in the shell,
+    and apply only variables set in <tt>.options</tt> lines.
+    This applies, however, only to the set of variables that affect
+    circuit setup or simulation, as listed in the table below.  It also
+    only applies during the actual circuit setup and simulation runs. 
+    It does <b>not</b> apply when the shell is running commands, such
+    as from <a href=".control"><tt>.control</tt></a> and <tt>.exec</tt>
+    lines, or other scripts.  The mode is taken as <tt>local</tt>
+    in these cases.
+    </ol>
+
+    <p>
+    There are two variables which control the option merging mode.
+    Both, like any variables, can be set from the shell or from the
+    circuit via <tt>.options</tt> lines.
+
+    <dl>
+    <dt><a href="optmerge"><tt>optmerge</tt></a><dd>
+    This variable can be set to one of three string constants:
+    "<tt>global</tt>", "<tt>local</tt>", or "<tt>noshell</tt>".
+    <dt><a href="noshellopts"><tt>noshellopts</tt></a><dd>
+    This boolean variable is deprecated.  When set, it will override
+    <tt>optmerge</tt> if also given, and force the "<tt>noshell</tt>"
+    mode.
+    </dl>
+
+    If set in both the shell and the circuit, resolution is according
+    to these rules.
+    <ul>
+    <li>If <tt>noshellopts</tt> is set in the circuit or from the
+    shell, it will be in effect, setting <tt>noshell</tt> mode.
+    <li>Otherwise, if <tt>optmerge</tt> is set to "<tt>noshell</tt>"
+    in either the circuit or the shell, <tt>noshell</tt> mode will be
+    in effect.
+    <li>Otherwise, if <tt>optmerge</tt> is set to "<tt>local</tt>"
+    in either the circuit or the shell, <tt>local</tt> mode will be
+    in effect.
+    <li>Otherwise, the <tt>global</tt> mode is in effect.
+    </ul>
+
+    <p>
+    The table below is a listing of the "official" options.  What
+    makes these variables official options is that most of these set a
+    flag or value in the circuit data structure, which is used when
+    simulations are run.  This is in addition to the setting of the
+    variable in the normal database for variables, which is used for
+    shell variable substitution, etc.  From the user's perspective,
+    there is no real distinction between "options" and "variables".  A
+    complete description of each of these <a
+    href="sim_vars">variables</a> is provided elsewhere.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Parameter Name</th>  <th>Description</th></tr>
+    <tr><th colspan=2>Real-Valued Parameters</th></tr>
+    <tr><td><a href="abstol"><tt>abstol</tt></a></td>
+      <td>The absolute current error tolerance of the program.</td></tr>
+    <tr><td><a href="chgtol"><tt>chgtol</tt></a></td>
+      <td>The minimum charge used when computing the time step
+      in transient analysis.</td></tr>
+    <tr><td><a href="dcmu"><tt>dcmu</tt></a></td>
+      <td>Mixing parameter to help dc convergence.</td></tr>
+    <tr><td><a href="defad"><tt>defad</tt></a></td>
+      <td>The default value for MOS drain diffusion area.</td></tr>
+    <tr><td><a href="defas"><tt>defas</tt></a></td>
+      <td>The default value for MOS source diffusion area.</td></tr>
+    <tr><td><a href="defl"><tt>defl</tt></a></td>
+      <td>The default value for MOS channel length.</td></tr>
+    <tr><td><a href="defw"><tt>defw</tt></a></td>
+      <td>The default value for MOS channel width.</td></tr>
+    <tr><td><a href="delmin"><tt>delmin</tt></a></td>
+      <td>The minimum time step allowed.</td></tr>
+    <tr><td><a href="dphimax"><tt>dphimax</tt></a></td>
+      <td>The maximum allowed phase change per time step.</td></tr>
+    <tr><td><a href="dphimax"><tt>jjdphimax</tt></a></td>
+      <td>An alias for <tt>dphimax</tt>.</td></tr>
+    <tr><td><a href="gmax"><tt>gmax</tt></a></td>
+      <td>The maximum conductance allowed in circuit equations.</td></tr>
+    <tr><td><a href="gmin"><tt>gmin</tt></a></td>
+      <td>The minimum conductance allowed in circuit equations.</td></tr>
+    <tr><td><a href="maxdata"><tt>maxdata</tt></a></td>
+      <td>Maximum output data size in kilobytes.</td></tr>
+    <tr><td><a href="minbreak"><tt>minbreak</tt></a></td>
+      <td>The minimum time, in seconds, between breakpoints.</td></tr>
+    <tr><td><a href="pivrel"><tt>pivrel</tt></a></td>
+      <td>The relative ratio between the largest column entry and an
+      acceptable pivot value.</td></tr>
+    <tr><td><a href="pivtol"><tt>pivtol</tt></a></td>
+      <td>The absolute minimum value for a matrix entry to be
+      accepted as a pivot.</td></tr>
+    <tr><td><a href="rampup"><tt>rampup</tt></a></td>
+      <td>Time to ramp up sources in transient analysis.</td></tr>
+    <tr><td><a href="reltol"><tt>reltol</tt></a></td>
+      <td>The relative error tolerance of the program.</td></tr>
+    <tr><td><a href="temp"><tt>temp</tt></a></td>
+      <td>The assumed circuit operating temperature.</td></tr>
+    <tr><td><a href="tnom"><tt>tnom</tt></a></td>
+      <td>The nominal temperature for device model parameters.</td></tr>
+    <tr><td><a href="trapratio"><tt>trapratio</tt></a></td>
+      <td>The threshold for trapezoidal integration convergence
+      failure detection.</td></tr>
+    <tr><td><a href="trtol"><tt>trtol</tt></a></td>
+      <td>The transient time step prediction factor,
+      the approximate overestimation of the actual truncation error.</td></tr>
+    <tr><td><a href="vntol"><tt>vntol</tt></a></td>
+      <td>The absolute voltage error tolerance of the program.</td></tr>
+    <tr><td><a href="xmu"><tt>xmu</tt></a></td>
+      <td>The SPICE2 trapezoidal/Euler mixing parameter.</td></tr>
+
+    <tr><th colspan=2>Integer-Valued Parameters</th></tr>
+    <tr><td><a href="bypass"><tt>bypass</tt></td>
+      <td>Set to 0 to disable element computation bypassing.</td></tr>
+    <tr><td><a href="fpemode"><tt>fpemode</tt></td>
+      <td>Set floating point error handling method (0-2).</td></tr>
+    <tr><td><a href="gminsteps"><tt>gminsteps</tt></td>
+      <td>The number of increments to use for non-dynamic gmin
+      stepping.</td></tr>
+    <tr><td><a href="interplev"><tt>interplev</tt></td>
+      <td>The interpolation level used for scale data.</td></tr>
+    <tr><td><a href="itl1"><tt>itl1</tt></a></td>
+      <td>The dc operating point iteration limit.</td></tr>
+    <tr><td><a href="itl2"><tt>itl2</tt></a></td>
+      <td>The dc transfer curve iteration limit.</td></tr>
+    <tr><td><a href="itl2gmin"><tt>itl2gmin</tt></td>
+      <td>The iteration limit that applies during gmin stepping.</td></tr>
+    <tr><td><a href="itl2src"><tt>itl2src</tt></td>
+      <td>The iteration limit that applies during source stepping.</td></tr>
+    <tr><td><a href="itl4"><tt>itl4</tt></a></td>
+      <td>The transient timepoint iteration limit.</td></tr>
+    <tr><td><a href="loadthrds"><tt>loadthrds</tt></td>
+      <td>The number of helper threads used for device evaluation
+      and matrix loading.</td></tr>
+    <tr><td><a href="loopthrds"><tt>loopthrds</tt></td>
+      <td>The number of helper threads used when performing repeated
+      analysis.</td></tr>
+    <tr><td><a href="maxord"><tt>maxord</tt></td>
+      <td>The maximum integration order.</td></tr>
+    <tr><td><a href="srcsteps"><tt>srcsteps</tt></td>
+      <td>The number of increments to use for non-dynamic source
+      stepping.</td></tr>
+    <tr><td><a href="srcsteps"><tt>itl6</tt></td>
+      <td>An alias for <tt>srcsteps</tt>.</td></tr>
+
+    <tr><th colspan=2>Boolean Parameters</th></tr>
+    <tr><td><a href="dcoddstep"><tt>dcoddstep</tt></a></td>
+      <td>Always include range end point in dc sweep.</td></tr>
+    <tr><td><a href="extprec"><tt>extprec</tt></a></td>
+      <td>Use extended precision when solving circuit equations.</td></tr>
+    <tr><td><a href="forcegmin"><tt>forcegmin</tt></a></td>
+      <td>Enforce all nodes mave at least gmin conductivity to
+      ground.</td></tr>
+    <tr><td><a href="gminfirst"><tt>gminfirst</tt></a></td>
+      <td>Attempt gmin stepping before source stepping.</td></tr>
+    <tr><td><a href="hspice"><tt>hspice</tt></a></td>
+      <td>Suppress warnings from unsupported HSPICE input.</td></tr>
+    <tr><td><a href="jjaccel"><tt>jjaccel</tt></a></td>
+      <td>Attempt to speed up Josephson junction transient analysis.</td></tr>
+    <tr><td><a href="noiter"><tt>noiter</tt></a></td>
+      <td>Don't Newton iterate.</td></tr>
+    <tr><td><a href="nojjtp"><tt>nojjtp</tt></a></td>
+      <td>Don't use Josephson junction time step limiting.</td></tr>
+    <tr><td><a href="noklu"><tt>noklu</tt></a></td>
+      <td>Don't use KLU sparse matrix solver, use SPICE3 Sparse.</td></tr>
+    <tr><td><a href="nomatsort"><tt>nomatsort</tt></a></td>
+      <td>With Sparse solver, don't sort elements for cache locality.</td></tr>
+    <tr><td><a href="noopiter"><tt>noopiter</tt></a></td>
+      <td>Skip initial dc convergence attempt.</td></tr>
+    <tr><td><a href="noshellopts"><tt>noshellopts</tt></a></td>
+      <td>Ignore circuit variables not set in <tt>.options</tt> line.</td></tr>
+    <tr><td><a href="oldlimit"><tt>oldlimit</tt></a></td>
+      <td>Use SPICE2 voltage limiting.</td></tr>
+    <tr><td><a href="oldsteplim"><tt>oldsteplim</tt></a></td>
+      <td>Use SPICE3/<i>WRspice</i>-3 timestep limiting.</td></tr>
+    <tr><td><a href="renumber"><tt>renumber</tt></a></td>
+      <td>Renumber lines after subcircuit expansion.</td></tr>
+    <tr><td><a href="savecurrent"><tt>savecurrent</tt></a></td>
+      <td>Save device current special vectors.</td></tr>
+    <tr><td><a href="spice3"><tt>spice3</tt></a></td>
+      <td>Use the SPICE3 integration level control logic in transient
+      analysis.</td></tr>
+    <tr><td><a href="trapcheck"><tt>trapcheck</tt></a></td>
+      <td>Perform trapezoidal integration convergence testing in transient
+      analysis.</td></tr>
+    <tr><td><a href="trytocompact"><tt>trytocompact</tt></td>
+      <td>Enable compaction in LTRA (lossy transmission line) model.</td></tr>
+    <tr><td><a href="useadjoint"><tt>useadjoint</tt></a></td>
+      <td>Create an adjoint matric for BSIM device current monitoring.</td></tr>
+
+    <tr><th colspan=2>String Parameters</th></tr>
+    <tr><td><a href="method"><tt>method</tt></a></td>
+      <td>Integration method: "<tt>trap</tt>" (default) or
+      "<tt>gear</tt>".</td></tr>
+    <tr><td><a href="optmerge"><tt>optmerge</tt></a></td>
+      <td>Options merging method: "<tt>global</tt>" (default) or
+      "<tt>local</tt>" or "<tt>noshell</tt>".</td></tr>
+    <tr><td><a href="parhier"><tt>parhier</tt></a></td>
+      <td>Parameter substitution precedence: "<tt>global</tt>" (default) or
+      "<tt>local</tt>".</td></tr>
+    <tr><td><a href="steptype"><tt>steptype</tt></a></td>
+      <td>Time advancement method: "<tt>interpolate</tt>" (default) or
+      "<tt>hitusertp</tt>", "<tt>nousertp</tt>, "<tt>fixedstep</tt>".</td></tr>
+
+    <tr><th colspan=2>Batch and Output Parameters</th></tr>
+    <tr><td><a href="acct"><tt>acct</tt></a></td>
+      <td>Print accounting information in batch output.</td></tr>
+    <tr><td><a href="dev"><tt>dev</tt></a></td>
+      <td>Print device list in batch output.</td></tr>
+    <tr><td><a href="list"><tt>list</tt></a></td>
+      <td>Print a listing of the input file in batch output.</td></tr>
+    <tr><td><a href="modvar"><tt>mod</tt></a></td>
+      <td>Print device model list in batch output.</td></tr>
+    <tr><td><a href="node"><tt>node</tt></a></td>
+      <td>Print a tabulation of the operating point node voltages in batch
+      output.</td></tr>
+    <tr><td><a href="nopage"><tt>nopage</tt></a></td>
+      <td>Suppress page breaks in batch output.</td></tr>
+    <tr><td><a href="numdgt"><tt>numdgt</tt></a></td>
+      <td>Number of significant digets printed in output.</td></tr>
+    <tr><td><a href="opts"><tt>opts</tt></a></td>
+      <td>Print a summary of the specified options in batch output.</td></tr>
+    <tr><td><a href="post"><tt>post</tt></a></td>
+      <td>Give post-simulation option.</td></tr>
+
+    <tr><th colspan=2>Obsolete/Unsupported Parameters</th></tr>
+    <tr><td><a href="cptime"><tt>cptime</tt></a></td>
+      <td>Obsolete SPICE2 parameter.</td></tr>
+    <tr><td><a href="itl3"><tt>itl3</tt></a></td>
+      <td>Obsolete SPICE2 parameter.</td></tr>
+    <tr><td><a href="itl5"><tt>itl5</tt></a></td>
+      <td>Obsolete SPICE2 parameter.</td></tr>
+    <tr><td><a href="limpts"><tt>limpts</tt></a></td>
+      <td>Obsolete SPICE2 parameter.</td></tr>
+    <tr><td><a href="limtim"><tt>limtim</tt></a></td>
+      <td>Obsolete SPICE2 parameter.</td></tr>
+    <tr><td><a href="lvlcod"><tt>lvlcod</tt></a></td>
+      <td>Obsolete SPICE2 parameter.</td></tr>
+    <tr><td><a href="lvltim"><tt>lvltim</tt></a></td>
+      <td>Obsolete SPICE2 parameter.</td></tr>
+    <tr><td><a href="nomod"><tt>nomod</tt></a></td>
+      <td>Obsolete SPICE2 parameter.</td></tr>
+
+    </table>
+
+!!SEEALSO
+variables
+batch_vars
+sim_vars
+unused_vars
+
+!! reals
+!!REDIRECT abstol       sim_vars#abstol
+!!REDIRECT chgtol       sim_vars#chgtol
+!!REDIRECT dcmu         sim_vars#dcmu
+!!REDIRECT defad        sim_vars#defad
+!!REDIRECT defas        sim_vars#defas
+!!REDIRECT defl         sim_vars#defl
+!!REDIRECT defw         sim_vars#defw
+!!REDIRECT delmin       sim_vars#delmin
+!!REDIRECT dphimax      sim_vars#dphimax
+!!REDIRECT gmax         sim_vars#gmax
+!!REDIRECT gmin         sim_vars#gmin
+!!REDIRECT maxdata      sim_vars#maxdata
+!!REDIRECT minbreak     sim_vars#minbreak
+!!REDIRECT pivrel       sim_vars#pivrel
+!!REDIRECT pivtol       sim_vars#pivtol
+!!REDIRECT rampup       sim_vars#rampup
+!!REDIRECT reltol       sim_vars#reltol
+!!REDIRECT temp         sim_vars#temp
+!!REDIRECT tnom         sim_vars#tnom
+!!REDIRECT trtol        sim_vars#trtol
+!!REDIRECT trapratio    sim_vars#trapratio
+!!REDIRECT vntol        sim_vars#vntol
+!!REDIRECT xmu          sim_vars#xmu
+
+!! integers
+!!REDIRECT bypass       sim_vars#bypass
+!!REDIRECT fpemode      sim_vars#fpemode
+!!REDIRECT gminsteps    sim_vars#gminsteps
+!!REDIRECT interplev    sim_vars#interplev
+!!REDIRECT itl1         sim_vars#itl1
+!!REDIRECT itl2         sim_vars#itl2
+!!REDIRECT itl2gmin     sim_vars#itl2gmin
+!!REDIRECT itl2src      sim_vars#itl2src
+!!REDIRECT itl4         sim_vars#itl4
+!!REDIRECT loadthrds    sim_vars#loadthrds
+!!REDIRECT loopthrds    sim_vars#loopthrds
+!!REDIRECT maxord       sim_vars#maxord
+!!REDIRECT srcsteps     sim_vars#srcsteps
+
+!! booleans
+!!REDIRECT dcoddstep    sim_vars#dcoddstep
+!!REDIRECT extprec      sim_vars#extprec
+!!REDIRECT forcegmin    sim_vars#forcegmin
+!!REDIRECT gminfirst    sim_vars#gminfirst
+!!REDIRECT hspice       sim_vars#hspice
+!!REDIRECT jjaccel      sim_vars#jjaccel
+!!REDIRECT noiter       sim_vars#noiter
+!!REDIRECT nojjtp       sim_vars#nojjtp
+!!REDIRECT noklu        sim_vars#noklu
+!!REDIRECT nomatsort    sim_vars#nomatsort
+!!REDIRECT noopiter     sim_vars#noopiter
+!!REDIRECT noshellopts  sim_vars#noshellopts
+!!REDIRECT oldlimit     sim_vars#oldlimit
+!!REDIRECT oldsteplim   sim_vars#oldsteplim
+!!REDIRECT renumber     sim_vars#renumber
+!!REDIRECT savecurrent  sim_vars#savecurrent
+!!REDIRECT spice3       sim_vars#spice3
+!!REDIRECT trapcheck    sim_vars#trapcheck
+!!REDIRECT notrapcheck  sim_vars#notrapcheck
+!!REDIRECT trytocompact sim_vars#trytocompact
+!!REDIRECT useadjoint   sim_vars#useadjoint
+!!REDIRECT noadjoint    sim_vars#noadjoint
+
+!! strings
+!!REDIRECT method       sim_vars#method
+!!REDIRECT trap         sim_vars#method
+!!REDIRECT gear         sim_vars#method
+!!REDIRECT optmerge     sim_vars#optmerge
+!!REDIRECT parhier      sim_vars#parhier
+!!REDIRECT steptype     sim_vars#steptype
+!!REDIRECT hitusertp    sim_vars#steptype
+!!REDIRECT nousertp     sim_vars#steptype
+!!REDIRECT fixedstep    sim_vars#steptype
+
+!! variables.tex 082015
+!!KEYWORD
+sim_vars
+!!TITLE
+Simulation Option Variables
+!!HTML
+    These variables control parameters and modes related to
+    simulation.  Most of these variables can be set indirectly from
+    the <a href="simopts"><b>Simulation Options</b></a> tool from the
+    <b>Sim Opts</b> button in the <a href="toolsmenu"><b>Tools</b></a>
+    menu of the <a href="toolbar"><b>Tool Control</b></a> window,
+    which is equivalent to using the <a href="set"><b>set</b></a>
+    command to set the variable in the <i>WRspice</i> shell.
+
+    <p>
+    Most of these variables are referred to as "options" in historic
+    SPICE vernacular as they are commonly given in a <a
+    href=".options"><tt>.options</tt></a> line in SPICE input.  In
+    versions of SPICE that are batch-mode only, this is the only way
+    to set these parameters.  In <i>WRspice</i>, there is little
+    difference between shell variables and options, however there are
+    subtleties, particularly with respect to resolving conflicts if
+    one of these parameters is set both as a shell variable and in a
+    <tt>.options</tt> line in the current circuit.  These issues are
+    discussed in the section desctibing the <a
+    href="options">options</a>.
+
+    <h3>Real-Valued Parameters</h3>
+
+!! 082015
+    <p>
+    <a name="abstol"></a>
+    <dl>
+    <dt><tt>abstol</tt><dd>
+    This variable sets the absolute error tolerance used in
+    convergence testing branch currents.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>1e-12</td> <td>1e-15</td> <td>1e-9</td>
+      <th>Simultion Defaults/Tolerance</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="chgtol"></a>
+    <dl>
+    <dt><tt>chgtol</tt><dd>
+    This variable sets the minimum charge used when predicting the time
+    step in transient analysis.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>1e-14</td> <td>1e-16</td> <td>1e-12</td>
+      <th>Simultion Defaults/Timestep</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="dcmu"></a>
+    <dl>
+    <dt><tt>dcmu</tt><dd>
+    This option variable takes a value of 0.0 - 0.5, with the default
+    being 0.5.  It applies during <a href=".op">operating point</a>
+    analysis.  When set to a value less than 0.5, the Newton iteration
+    algorithm mixes in some of the previous solution, which can
+    improve convergence.  The smaller the value, the larger the
+    mixing.  This gives the user another parameter to twiddle when
+    trying to achieve dc convergence.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>0.5</td> <td>0.0</td> <td>0.5</td>
+      <th>Simultion Defaults/Convergence</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="defad"></a>
+    <dl>
+    <dt><tt>defad</tt><dd>
+    This variable sets the default value for MOS drain diffusion area,
+    and applies to all MOS device models.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>0.0</td> <td>0.0</td> <td>1e-3</td>
+      <th>Simultion Defaults/Devices</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="defas"></a>
+    <dl>
+    <dt><tt>defas</tt><dd>
+    This sets the default value for MOS source diffusion area, and
+    applies to all MOS device models.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>0.0</td> <td>0.0</td> <td>1e-3</td>
+      <th>Simultion Defaults/Devices</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="defl"></a>
+    <dl>
+    <dt><tt>defl</tt><dd>
+    This sets the default value for MOS channel length, and applies to
+    all MOS device models.  The default is model dependent, and is
+    100.0 microns for MOS levels 1-3 and 6, and typically 5.0 microns
+    for other models.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>&nbsp;</td> <td>0.0</td> <td>1e4</td>
+      <th>Simultion Defaults/Devices</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="defw"></a>
+    <dl>
+    <dt><tt>defw</tt><dd>
+    This variable sets the default value for MOS channel width, and
+    applies to all MOS device models.  The default is model dependent,
+    and is 100.0 microns for MOS levels 1-3 and 6, and typically 5.0
+    microns for other models.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>&nbsp;</td> <td>0.0</td> <td>1e4</td>
+      <th>Simultion Defaults/Devices</th></tr>
+    </table>
+    </dl>
+
+!! 092716
+    <a name="delmin"></a>
+    <dl>
+    <dt><tt>delmin</tt><dd>
+    This can be used to specify the minimum internal time step alowed
+    during transient analysis.  When a convergence fails, the internal time
+    step is reduced, and a solution is attempted again.  If repeated failures
+    drop the internal timestep below <tt>delmin</tt>, the run will abort
+    with a "timestep too small" message.
+
+    <p>
+    If this variable is not set or set to 0.0, <i>WRspice</i> will use
+    <tt>1e-6</tt>*<i>tmax</i>.  The <i>tmax</i> is the maximum
+    internal timestep which can be be specified in the <a
+    href=".tran">transient analysis specification</a>, or defaults to
+    <i>tstep</i>, the transient user timestep.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>0.0</td> <td>0.0</td> <td>1.0</td>
+      <th>Simulation Options/Timestep</th></tr>
+    </table>
+
+    <p>
+    It may be counterintuitive, but using a larger <tt>delmin</tt> may
+    avoid nonconvergence.  The matrix elements for reactive terms have
+    the time delta in the denominator, thus these become large for
+    small delta.  when delta becomes too small, the matrix elements
+    may become so large that solutions lose accuracy and won't
+    converge.  On non-convergence, the time delta is cut, making
+    matters worse and leading to a "timestep too small" error and
+    termination of analysis.
+    </dl>
+
+!! 082015
+    <a name="dphimax"></a>
+    <dl>
+    <dt><tt>dphimax</tt><dd>
+    This variable sets the maximum allowable phase change of sinusoidal
+    and exponential sources between internal time points in transient
+    analysis.
+
+    <p>
+    Consider a circuit consisting of a sinusoidal voltage source
+    driving a resistor network.  The internal transient time steps are
+    normally determined from a truncation error estimation from the
+    numerical integration of reactive elements.  Since there are no
+    such elements in this case, a large, fixed time step is used. 
+    This may not be sufficient to reasonably define the sinusoidal
+    source waveform, so the timestep is cut.  This variable sets the
+    time scale for the cut.  The default value of pi/5 provides about
+    10 points per cycle.  All of the built-in source functions that
+    are exponential or sinusoidal reference this variable in the
+    timestep cutting algorithm.
+
+    <p>
+    This variable also limits the transient time step when Josephson
+    junction devices are present, i.e., it is equivalent to the
+    <tt>jjdphimax</tt> variable in Jspice3.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>&pi;/5</td> <td>&pi;/1000</td> <td>&pi;</td>
+      <th>Simultion Defaults/Timestep</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="gmax"></a>
+    <dl>
+    <dt><tt>gmax</tt><dd>
+    The diagonal elements of the circuit matrix are limited to be no
+    larger than a value, which can be set with the <tt>gmax</tt>
+    option.  No normal circuit elements will have conductance near
+    this value, however during iterative solving, large values may be
+    produced by some device models.  This can cause non-convergence or
+    the matrix may become singular.  By limiting the matrix elements,
+    the problem is avoided.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>1e6</td> <td>1e-2</td> <td>1e12</td>
+      <th>Simultion Defaults/Convergence</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="gmin"></a>
+    <dl>
+    <dt><tt>gmin</tt><dd>
+    This sets the value of <tt>gmin</tt>, the minimum conductance
+    allowed by the program.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>1e-12</td> <td>1e-15</td> <td>1e-6</td>
+      <th>Simultion Defaults/Tolerance</th></tr>
+    </table>
+    </dl>
+
+!! 032817
+    <a name="maxdata"></a>
+    <dl>
+    <dt><tt>maxdata</tt><dd>
+    This variable sets the maximum allowable memory stored as plot
+    data during an analysis, in kilobytes.  For all analyses except
+    transient with the <tt>steptype</tt> variable set to
+    "<tt>nousertp</tt>", the run will abort at the beginning if the
+    memory would exceed the limit.  Otherwise, the run will end when
+    the limit is reached.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>256000</td> <td>1e3</td> <td>2e9</td>
+      <th>Simultion Defaults/General</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="minbreak"></a>
+    <dl>
+    <dt><tt>minbreak</tt><dd>
+    This sets the minimum interval between breakpoints in transient
+    analysis.  If this variable is not set or set to 0.0,
+    <i>WRspice</i> will use a value of 5e-8*<i>maxStep</i>, where
+    <i>maxStep</i> may be specified in the <a href=".tran">transient
+    analysis initiation</a>, or defaults to (<i>endTime</i> -
+    <i>startTime</i>)/50.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>0.0</td> <td>0.0</td> <td>1.0</td>
+      <th>Simulation Options/Timestep</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="pivrel"></a>
+    <dl>
+    <dt><tt>pivrel</tt><dd>
+    This variable sets the relative ratio between the largest column
+    entry and an acceptable pivot value.  In the numerical pivoting
+    algorithm the allowed minimum pivot value is determined by
+    <blockquote>
+    <i>epsrel</i> = MAX(<i>pivrel</i>*<i>maxval</i>, <i>pivtol</i>)
+    </blockquote>
+    where <i>maxval</i> is the maximum element in the column where a
+    pivot is sought (partial pivoting).
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>1e-3</td> <td>1e-5</td> <td>1.0</td>
+      <th>Simulation Options/Tolerance</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="pivtol"></a>
+    <dl>
+    <dt><tt>pivtol</tt><dd>
+    This variable sets the absolute minimum value for a matrix entry
+    to be accepted as a pivot.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>1e-13</td> <td>1e-18</td> <td>1e-9</td>
+      <th>Simulation Options/Tolerance</th></tr>
+    </table>
+    </dl>
+
+!! 072716
+    <a name="rampup"></a>
+    <dl>
+    <dt><tt>rampup</tt><dd>
+    When set to a value <i>dt</i>, during <a href=".tran">transient
+    analysis</a> all source values are effectively multiplied by
+    <tt>pwl(0 0</tt> <i>dt</i> <tt>1)</tt>.  That is, all sources ramp
+    up from zero, and assume their normal values at time = <i>dt</i>.
+  
+    <p>
+    The dc operating point calculation (if <tt>uic</tt> is not given)
+    becomes trivial with all sources set to zero.
+  
+    <p>
+    This is mostly intended for Josephson junction circuits so
+    constant valued sources can be used without convergence problems.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>0</td> <td>0</td> <td>1</td>
+      <th>Simulation Options/Convergence</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="reltol"></a>
+    <dl>
+    <dt><tt>reltol</tt><dd>
+    This sets the relative error tolerance used in convergence
+    testing.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>1e-3</td> <td>1e-8</td> <td>1e-2</td>
+      <th>Simulation Options/Tolerance</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="temp"></a>
+    <dl>
+    <dt><tt>temp</tt><dd>
+    This variable specifies the assumed operating <a
+    href="temperature">temperature</a> of the circuit under
+    simulation.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>25</td> <td>-273.15</td> <td>1e3</td>
+      <th>Simulation Options/Temperature</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="tnom"></a>
+    <dl>
+    <dt><tt>tnom</tt><dd>
+    The <tt>tnom</tt> variable sets the nominal <a
+    href="temperature">temperature</a>.  This is the temperature at
+    which device model parameters are assumed to have been measured.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>25</td> <td>-273.15</td> <td>1e3</td>
+      <th>Simulation Options/Temperature</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="trapratio"></a>
+    <dl>
+    <dt><tt>trapratio</tt><dd>
+    This controls the "sensitivity" of the trapezoid integration
+    convergence test, as described with the <a
+    href="trapcheck"><tt>trapcheck</tt></a> variable.  Higher
+    values make the test less sensitive (and effective) but reduce the
+    number of false positives that can slow down simulation.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>10.0</td> <td>2.0</td> <td>100.0</td>
+      <th>Simulation Options/Timestep</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="trtol"></a>
+    <dl>
+    <dt><tt>trtol</tt><dd>
+    This is a factor used during time step prediction in transient
+    analysis.  This parameter is an estimate of the factor by which
+    <i>WRspice</i> overestimates the actual truncation error.  Larger
+    values will cause <i>WRspice</i> to attempt larger time steps.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>7.0</td> <td>1.0</td> <td>20.0</td>
+      <th>Simulation Options/Timestep</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="vntol"></a>
+    <dl>
+    <dt><tt>vntol</tt><dd>
+    This variable sets the absolute voltage error tolerance used in
+    convergence testing.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>1e-6</td> <td>1e-9</td> <td>1e-3</td>
+      <th>Simulation Options/Tolerance</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="xmu"></a>
+    <dl>
+    <dt><tt>xmu</tt><dd>
+    This is the trapezoid/Euler mixing parameter that was provided in
+    SPICE2, but not in SPICE3.  It effectively provides a mixture of
+    trapezoidal and backward Euler integration, which can be useful if
+    trapezoidal integration produces nonconvergence.  It applies only
+    when trapezoid integration is in use, and the maximum order is
+    larger than 1.  When <tt>xmu</tt> is 0.5 (the default), pure
+    trapezoid integration is used.  If 0.0, pure backward-Euler
+    (rectangular) integration is used, but the time step predictor
+    still uses the trapezoid formula, so this will not be the same as
+    setting <a href="maxord"><tt>maxord</tt></a> to 1 (which also
+    enforces backward-Euler integration).  Trapezoidal integration
+    convergence problems can sometimes be solved by setting
+    <tt>xmu</tt> to values below 0.5.  Setting <tt>xmu</tt> below
+    about 0.4 is not recommended, better to use Gear integration. 
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>0.5</td> <td>0.0</td> <td>0.5</td>
+      <th>Simulation Options/Timestep</th></tr>
+    </table>
+    </dl>
+
+    <h3>Integer-Valued Parameters</h3>
+
+!! 082015
+    <a name="bypass"></a>
+    <dl>
+    <dt><tt>bypass</tt><dd>
+    When bypassing is enabled, which is the default, semiconductor
+    devices will skip certain computations when terminal voltages are
+    relatively static.  This is a speed optimization.  This variable
+    can be set as an integer to a value of 0 (zero) to disable
+    bypassing.  This can perhaps increase accuracy, at the expense of
+    speed.  When set to a nonzero value, or to no value, there is no
+    effect as bypassing is enabled by default.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>1</td> <td>0</td> <td>1</td>
+      <th>Simulation Options/Devices</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="fpemode"></a>
+    <dl>
+    <dt><tt>fpemode</tt><dd>
+    The <tt>fpemode</tt> variable can be set to an integer which
+    controls how the program responds to a floating-point exception,
+    such as divide by zero or overflow.  The accepted values are
+
+    <dl>
+    <dt>0 (default)<dd>
+    Halt computation if an error is detected.  In many cases, the
+    computation will be retried, after going to a smaller step size in
+    simulation (for example), so the halt does not necessarily mean
+    simulatiuon failure.
+    <dt>1<dd>
+    Ignore floating-point errors and just continue.  This is what most
+    other simulators do.
+    <dt>2<dd>
+    This is for debugging.  A floating-point error will cause a signal
+    to be emitted, that when caught will terminate the program.  Under
+    control of a debugger, the expression causing the exception can be
+    located easily, but this is not likely to be useful for the
+    general user.
+    </dl>
+
+    <p>
+    In releases prior to 4.1.6, there were two "signaling" modes, that
+    attempted to return to the running program.  This is no longer
+    possible and these would instead hang the program if used.
+
+    <p>
+    If set as an option, e.g. "<tt>.options fpemode=1</tt>" then the
+    mode applies only when the circuit is running a simulation.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>0</td> <td>0</td> <td>2</td>
+      <th>Simulation Options/General</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="gminsteps"></a>
+    <dl>
+    <dt><tt>gminsteps</tt><dd>
+    This variable controls the gmin stepping used in <a
+    href=".op">operating point</a> analysis.  The values are integers
+    in the range -1 through 20, with the default being 0.  If -1, no
+    gmin stepping will be attempted.  If set to 0 (the default) the
+    dynamic gmin stepping algorithm is used.  This will use
+    variable-sized steps, reattempting with a smaller step after
+    failure.  If positive, the Berkeley SPICE3 gmin stepping algorithm
+    will be used, with a fixed number of steps as given.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>0</td> <td>-1</td> <td>20</td>
+      <th>Simulation Options/Convergence</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="interplev"></a>
+    <dl>
+    <dt><tt>interplev</tt><dd>
+    In <a href=".tran">transient analysis</a>, in the default <a
+    href="steptype"><tt>steptype</tt></a> mode, internal timepoint
+    data are interpolated onto the external (user supplied) time
+    points.  Only the interpolated data are saved.  This variable sets
+    the polynomial degree of interpolation, in the range 1-3.  The
+    default is 1 (linear interpolation).
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>1</td> <td>1</td> <td>3</td>
+      <th>Simulation Options/Timestep</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="itl1"></a>
+    <dl>
+    <dt><tt>itl1</tt><dd>
+    The <tt>itl1</tt> variable sets the dc iteration limit before
+    convergence failure is indicated.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>400</td> <td>10</td> <td>1000</td>
+      <th>Simulation Options/Convergence</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="itl2"></a>
+    <dl>
+    <dt><tt>itl2</tt><dd>
+    The <tt>itl2</tt> variable sets the dc transfer curve iteration
+    limit before convergence failure is indicated.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>100</td> <td>4</td> <td>500</td>
+      <th>Simulation Options/Convergence</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="itl2gmin"></a>
+    <dl>
+    <dt><tt>itl2gmin</tt><dd>
+    The <tt>itl2gmin</tt> variable sets the maximum number of
+    iterations to allow per step during dynamic gmin stepping when
+    finding the dc operating point.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>20</td> <td>4</td> <td>500</td>
+      <th>Simulation Options/Convergence</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="itl2src"></a>
+    <dl>
+    <dt><tt>itl2src</tt><dd>
+    The <tt>itl2src</tt> variable sets the maximum number of
+    iterations to allow per step during dynamic source stepping when
+    finding the dc operating point.  The default is 20.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>20</td> <td>4</td> <td>500</td>
+      <th>Simulation Options/Convergence</th></tr>
+    </table>
+    </dl>
+
+!! 013016
+    <a name="itl4"></a>
+    <dl>
+    <dt><tt>itl4</tt><dd>
+    This variable sets the number of timepoint iterations in transient
+    analysis above which convergence failure is indicated.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>20</td> <td>4</td> <td>100</td>
+      <th>Simulation Options/Convergence</th></tr>
+    </table>
+    </dl>
+
+!! 082315
+    <a name="loadthrds"></a>
+    <dl>
+    <dt><tt>loadthrds</tt><dd>
+    <i>WRspice</i> currently supports <a
+    href="spthreads">multi-threaded</a> matrix loading on all
+    supported platforms.  The concept is to use otherwise unused
+    processor cores to evaluate device model code in parallel, thus
+    reducing simulation time.  This is experimental, and applies to dc
+    (including operating point) and transient analysis only.
+
+    <p>
+    The load function is the function that evaluates all of the device
+    model code, and sets up the circuit matrix and right-hand side
+    vector, for subsequent LU factorization and solution.  This
+    dominates circuit simulation time in some circuits, particularly
+    when using complex device models such as BSIM.
+
+    <p>
+    This variable sets the number of helper threads that will be
+    created to assist the main thread in evaluating device code.  If 0
+    or not set, no helper threads are used.  It has a corresponding
+    entry in the <b>General</b> page of the <b>Simulation Options</b>
+    panel.
+
+    <p>
+    Multiple threads will not necessarily make simulations run faster
+    and in fact can have the opposite effect.  The latter is sadly
+    true in Josephson circuits tested thus far.  The problem is that
+    multi-threading adds a small amount of overhead, and the load
+    function may be called hundreds of thousands of times in these
+    simulations.  The model calculation for JJs runs very quickly, and
+    the overhead becomes significant.  The same is true for other
+    simple devices.  Work to improve this situation is ongoing.
+
+    <p>
+    On the other hand, if there is a lot of computation in the device
+    model, this will dominate the overhead and we see shorter load
+    times.  This is true for BSIM MOS models, in circuits with more
+    than about 20 transistors.  Such simulations can run 2-3 times
+    faster than a single thread.  One should experiment with the value
+    of the <tt>loadthrds</tt> variable.  Most likely for best
+    performance, the value plus the main thread should equal the
+    number of available hardware threads, which is usually twice the
+    number of available CPU cores.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>0</td> <td>0</td> <td>31</td>
+      <th>Simulation Options/General</th></tr>
+    </table>
+    </dl>
+
+!! 120215
+    <a name="loopthrds"></a>
+    <dl>
+    <dt><tt>loopthrds</tt><dd>
+    <i>WRspice</i> currently supports <a
+    href="spthreads">multi-threaded</a> simulation runs when
+    performing <a href="multidc">chained-dc</a> analysis.  Most
+    analysis types allow dc analysis chaining.  That is, the basic
+    analysis specification is followed by a <a href=".dc">dc
+    analysis</a> specification involving one or two sources or device
+    parameters in the circuit, and the analysis is run at each dc bias
+    condition.  The result will be a family of multi-dimensional
+    vectors, one dimension per bias condition.
+
+    <p>
+    In this release, the dc-point analyses may be run using multiple
+    threads.  All supported operating systems provide multi-threading,
+    however parallel runs require multiple cores or CPUs.  Multiple
+    threads will be used automatically if:
+
+    <ol>
+    <li>The <tt>loopthrds</tt> variable is set to an integer 1 or larger.
+    This option variable indicates the number of "helper" threads to
+    use.  It can be set to an integer in the range 0 through 31, with
+    0 being the same as not set (single threading).  The "best" value
+    can be found experimentally, but the value plus the main thread
+    probably equals twice the number of available CPU cores.
+
+    <p>
+    <li>The analysis specification supports multi-threading.  Presently
+    the following analyses can be multi-threaded:
+    <blockquote>
+    <b>tran</b>, without scrolling, segmenting, and with the "nousertp"
+    mode not set.<br>
+    <b>ac</b><br>
+    <b>tf</b>
+    </blockquote>
+    </ol>
+
+    <p>
+    Concurrent threads in loop/Monte Carlo analysis is not yet
+    available, but will be be provided in a future release.  These
+    analysis require a rebuild of the circuit object for each trial.
+
+    <blockquote>
+    Hint:  If your requirements can be met with chained dc analysis
+    instead of loop analysis, overhead can be minimized.  Chained dc
+    can be used in many instances, since a source voltage can be used
+    in an expression for a component value, for example.
+    </blockquote>
+
+    <p>
+    In chained dc analysis, the same circuit object is re-used
+    multiple times.  In loop analysis, the circuit object must be
+    recreated for each trial run, since the deck after shell
+    substitution will have changed.
+
+    <p>
+    The <tt>loopthrds</tt> and <tt>loadthrds</tt> can be used together.
+    One should experiment to find the fastest settings.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>0</td> <td>0</td> <td>31</td>
+      <th>Simulation Options/General</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="maxord"></a>
+    <dl>
+    <dt><tt>maxord</tt><dd>
+    This variable sets the maximum order of the <a
+    href="method">integration method</a> used.  Setting this to 1 will
+    always use rectangular integration.  If unset, the value taken is
+    2, which is the maximum order for the default trapezoidal
+    integration.  If Gear integration is used, the maximum order is 6.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>2</td> <td>1</td> <td>6</td>
+      <th>Simulation Options/Timestep</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="srcsteps"></a>
+    <dl>
+    <dt><tt>srcsteps</tt><dd>
+    This variable controls the source stepping used in <a
+    href=".op">operating point</a> analysis.  The values are integers
+    in the range -1 through 20, with the default being 0.  If -1, no
+    source stepping will be attempted.  If set to 0 (the default) the
+    dynamic source stepping algorithm is used.  This will use
+    variable-sized steps, reattempting with a smaller step after
+    failure.  If positive, the Berkeley SPICE3 source stepping
+    algorithm will be used, with a fixed number of steps as given.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
+      <th>Set From</th></tr>
+    <tr><td>0</td> <td>-1</td> <td>20</td>
+      <th>Simulation Options/Convergence</th></tr>
+    </table>
+    </dl>
+
+    <h3>Boolean Parameters</h3>
+
+!! 082015
+    <a name="dcoddstep"></a>
+    <dl>
+    <dt><tt>dcoddstep</tt><dd>
+    Consider the dc sweep specification
+    <blockquote>
+    <tt>.dc vxxx 0 1.1 0.2</tt>
+    </blockquote>
+    <i>WRspice</i> will evaluate at 0.0, 0.2, ...  1.0.  If
+    <tt>dcoddstep</tt> is given, evaluation will also be performed at
+    the end-of-range value 1.1.  This is the default for some other
+    simulators, so <tt>dcoddstep</tt> provides compatibility.
+
+    <p>
+    Where set: <b>Simulation Options/General</b>
+    </dl>
+
+!! 082015
+    <a name="extprec"></a>
+    <dl>
+    <dt><tt>extprec</tt><dd>
+    When this option is set, <i>WRspice</i> will use extended
+    precision arithmetic when setting up and solving the circuit
+    equations.  With Intel, this mode uses the 80-bit native floating
+    point format for all calculations, rather than the 64-bit "double
+    precision".  This requires that floating point numbers use 16
+    bytes rather than 8, however matrix space is allocated assuming
+    complex numbers, which are 16 bytes.  Thus, this mode has no
+    memory-use penalty, and may actually cause some circuits to
+    simulate faster.
+
+    <p>
+    The mode applies to both KLU and Sparse matrix solvers.  It adds
+    about three decimal digits of precision to the calculations. 
+    Using extended precision may avoid "singular matrix" and other
+    convergence problems with some circuits.  See and run the
+    "<tt>precision.cir</tt>" file in the examples for more
+    information.
+
+    <p>
+    Where set: <b>Simulation Options/General</b>
+    </dl>
+
+!! 082015
+    <a name="forcegmin"></a>
+    <dl>
+    <dt><tt>forcegmin</tt><dd>
+    When set, this will enforce a minimum <tt>gmin</tt> conductance to
+    ground on all nodes in the circuit (including internal nodes of
+    devices).  This may facilitate convergence.
+
+    <p>
+    Where set: <b>Simulation Options/Convergence</b>
+    </dl>
+
+!! 082015
+    <a name="gminfirst"></a>
+    <dl>
+    <dt><tt>gminfirst</tt><dd>
+    When this boolean option variable is set, during <a
+    href=".op">operating point</a> analysis, gmin stepping is
+    attempted before source stepping.  This is the default in Berkeley
+    SPICE, however the <i>WRspice</i> default is to apply source
+    stepping first, which seems more effective.
+
+    <p>
+    Where set: <b>Simulation Options/Convergence</b>
+    </dl>
+
+!! 082015
+    <a name="hspice"></a>
+    <dl>
+    <dt><tt>hspice</tt><dd>
+    When set, many of the <a href="hspicesim">HSPICE</a> parameters
+    and keywords that are not handled are silently ignored. 
+    Ordinarily, these produce a warning message.  In particular, when
+    set:
+
+    <ol>
+    <li>The following MOS model parameters are silently ignored.
+    <table border=0>
+    <tr>
+    <td><tt>
+    acm<br>
+    alpha<br>
+    binflag<br>
+    calcacm<br>
+    capop<br>
+    cjgate<br>
+    cta<br>
+    </tt></td>
+
+    <td><tt>
+    ctp<br>
+    dtemp<br>
+    hdif<br>
+    iirat<br>
+    lalpha<br>
+    ldif<br>
+    lmlt<br>
+    </tt></td>
+
+    <td><tt>
+    lref<br>
+    lvcr<br>
+    mismatchflag<br>
+    nds<br>
+    pta<br>
+    ptp<br>
+    rd<br>
+    </tt></td>
+
+    <td><tt>
+    rdc<br>
+    rs<br>
+    rsc<br>
+    scale<br>
+    scalm<br>
+    sfvtflag<br>
+    sigma<br>
+    </tt></td>
+
+    <td><tt>
+    tlev<br>
+    tlevc<br>
+    vcr<br>
+    vnds<br>
+    walpha<br>
+    wmlt<br>
+    wref<br>
+    </tt></td>
+
+    <td valign=top><tt>
+    wvcr<br>
+    xl<br>
+    xw<br>
+    </tt></td>
+    </tr>
+    </table>
+
+    <p>
+    <li>The following BJT model parameters are silently ignored.
+    <table border=0>
+    <tr>
+    <td><tt>
+    iss<br>
+    </tt></td>
+
+    <td><tt>
+    ns<br>
+    </tt></td>
+
+    <td><tt>
+    tlev<br>
+    </tt></td>
+
+    <td><tt>
+    tlevc<br>
+    </tt></td>
+
+    <td><tt>
+    update<br>
+    </tt></td>
+    </tr>
+    </table>
+
+    <p>
+    <li>The following MOS device parameters are silently ignored.
+    <pre>
+        dtemp
+    </pre>
+
+    <li>The following control lines are silently ignored.
+    <table border=0>
+    <tr>
+    <td><tt>
+    .alias<br>
+    .alter<br>
+    .connect<br>
+    .data<br>
+    </tt></td>
+
+    <td><tt>
+    .dellib<br>
+    .dout<br>
+    .global<br>
+    .graph<br>
+    </tt></td>
+
+    <td><tt>
+    .hdl<br>
+    .lin<br>
+    .malias<br>
+    .protect<br>
+    </tt></td>
+
+    <td valign=top><tt>
+    .stim<br>
+    .unprotect<br>
+    </tt></td>
+    </table>
+    </ol>
+    </dl>
+
+    <p>
+    Where set: <b>Simulation Options/Parser</b>
+    </dl>
+
+!! 082015
+    <a name="jjaccel"></a>
+    <dl>
+    <dt><tt>jjaccel</tt><dd>
+    This applies only when Josephson junctions are present in the
+    circuit, and performing transient analysis.  It causes a faster
+    convergence testing and iteration control algorithm to be used,
+    rather than the standard more comprehensive algorithm suitable for
+    all devices.  If the circuit consists of Josephson junctions,
+    passive elements, and sources only, then setting this option may
+    provide a reduction in simulation time.  It probably should not be
+    used if semiconductor devices are present.
+
+    <p>
+    Where set: <b>Simulation Options/Timestep</b>
+    </dl>
+
+!! 082015
+    <a name="noiter"></a>
+    <dl>
+    <dt><tt>noiter</tt><dd>
+    <font color="red">Not currently implemented.</font>
+
+    <p>
+    During transient analysis, at each new time step, Newton
+    iterations are used to solve the nonlinear circuit equations.  The
+    first iteration, the prediction step, uses extrapolation from past
+    values to obtain a best guess at the solution for use as input. 
+    Additional iterations use the previous output values as input.
+
+    <p>
+    In cases where the nonlinearity is weak, or where the internal
+    time step is forced to be small (as when Josephson junctions are
+    present) iterations beyond the predictor sometimes lead to
+    unneeded accuracy.  Setting the variable <tt>noiter</tt> causes
+    skipping of iterations beyond the prediction step, and also
+    skipping of certain other code.  This maximizes the simulation
+    rate, but can lead to errors if not used carefully.  Much the same
+    effect can be obtained by setting <tt>reltol</tt> to a large
+    value, however <tt>noiter</tt> is more efficient as convergence
+    testing and matrix loading are skipped, as there is a-priori
+    knowledge that no iterations are to take place.  The iteration
+    count and total internal timepoint count are available from the
+    <b>rusage</b> command.
+    </dl>
+
+!! 082015
+    <a name="nojjtp"></a>
+    <dl>
+    <dt><tt>nojjtp</tt><dd>
+    During transient analysis with Josephson junctions present, the
+    default time step is given by <i>T</i> = <i>phi</i>/<i>vmax</i>,
+    where <i>phi</i> = <tt>phi</tt><sub>0</sub>/2pi (<i>phi</i> =
+    3.291086546e-16, <tt>phi</tt><sub>0</sub> is the magnetic flux
+    quantum), and <i>vmax</i> = <tt>max</tt>(<i>Vj</i>,
+    <tt>sqrt</tt>(<i>phi</i>*<i>Jc</i>/<i>C</i>)).  If the variable
+    <tt>nojjtp</tt> is set, the timestep is determined from a
+    truncation error calculation, as is the case when Josephson
+    junctions are not present in the circuit.  The user should
+    experiment to determine which timestep leads to faster execution.
+
+    <p>
+    Where set: <b>Simulation Options/Timestep</b>
+    </dl>
+
+!! 082015
+    <a name="noklu"></a>
+    <dl>
+    <dt><tt>noklu</tt><dd>
+    When this boolean variable is set, KLU will not be used for <a
+    href="sparse">sparse matrix</a> calculations.  Otherwise, if the
+    KLU plug-in is available, KLU will be used by default.  The KLU
+    plug-in is provided with all <i>WRspice</i> distributions, and is
+    installed in the startup directory.
+
+    <p>
+    Where set: <b>Simulation Options/General</b>
+    </dl>
+
+!! 082015
+    <a name="nomatsort"></a>
+    <dl>
+    <dt><tt>nomatsort</tt><dd>
+    When using <a href="sparse">Sparse</a> (i.e., KLU is unavailable
+    or disabled), this boolean variable when set will prevent using
+    element sorting to improve speed.  This corresponds to the legacy
+    <i>WRspice</i> sparse code.  It may be interesting for comparison
+    purposes, but setting this variable will slow simulation of most
+    circuits.  This variable has no effect if KLU is being used.
+
+    <p>
+    Where set: <b>Simulation Options/General</b>
+    </dl>
+
+!! 082015
+    <a name="noopiter"></a>
+    <dl>
+    <dt><tt>noopiter</tt><dd>
+    This boolean variable applies when one of <a
+    href="gminsteps"><tt>gminsteps</tt></a> or <a
+    href="srcsteps"><tt>srcsteps</tt></a> is given a positive value,
+    and thus <a href=".op">operating point</a> analysis is using a
+    Berkeley algorithm.  In this case, by default a direct iterative
+    solution of the circuit matrix is attempted, and if this fails the
+    stepping methods are attempted.  This initial direct solution
+    attempt most often fails with complex circuits and can be time
+    consuming.  Setting <tt>noopiter</tt> will skip this initial
+    attempt.
+
+    <p>
+    Where set: <b>Simulation Options/Convergence</b>
+    </dl>
+
+!! 082015
+    <a name="noshellopts"></a>
+    <dl>
+    <dt><tt>noshellopts</tt><dd>
+    This option is deprecated, use <a href="optmerge"><tt>optmerge</tt></a>
+    instead.  See the section describing <a href="options">options</a> for
+    a discussion of option merging and the role of this variable.
+
+    <p>
+    If set, do not use <i>WRspice</i> options that have been set
+    interactively through the shell.  Use only options that appear in
+    a <a href=".options"><tt>.options</tt></a> line in the circuit
+    file when running a simulation of the circuit.
+    </dl>
+
+!! 082015
+    <a name="oldlimit"></a>
+    <dl>
+    <dt><tt>oldlimit</tt><dd>
+    When set, the SPICE2 limiting algorithm for MOS devices is used. 
+    Otherwise, an improved limiting procedure is used.
+
+    <p>
+    Where set: <b>Simulation Options/Devices</b>
+    </dl>
+
+!! 082015
+    <a name="oldsteplim"></a>
+    <dl>
+    <dt><tt>oldsteplim</tt><dd>
+    In <a href=".tran">transient analysis</a>, <i>WRspice</i> by
+    default limits the maximum internal time step to the printing time
+    step (<i>tstep</i>).  This is obtained from the <tt>tran</tt> line
+    <blockquote>
+    (simplified syntax)<br>
+    <tt>.tran</tt> <i>tstep</i> <i>tstop</i> [<i>tstart</i> [<i>tmax</i>]]
+    </blockquote>
+
+    I.e., <i>tmax</i> now defaults to <i>tstep</i>.  Previously if
+    defaulted to (<i>tstop</i> - <i>tstart</i>)/50, which is usually a
+    much larger value.
+
+    <p>
+    The <tt>oldsteplim</tt> boolean option if given will revert the
+    run to the earlier limiting condition.
+
+    <p>
+    It is important to understand the consequences of this difference.
+    This change was made to improve results from circuits containing
+    only devices that weakly limit the time step (e.g.  MOSFETs, ring
+    oscillator results) which otherwise can be ugly and wrong.  This
+    allows users of such devices to get good results without having to
+    set an explicit maximum time step in the tran line.
+
+    <p>
+    However, if the printing time increment <i>tstep</i> is too small,
+    the simulation time can dramatically increase, since these points
+    are actually being calculated and not just interpolated.  The user
+    in this situation has several options:
+
+    <ol>
+    <li>Accept the longer analysis time as the cost of greater accuracy.
+    <li>Use a larger printing time increment (<i>tstep</i>).
+    <li> Use the <i>tmax</i> parameter to set a larger limit.
+    <li>Use <tt>.options oldsteplim</tt> to use the old limit of
+    (<i>tstop</i>-<i>tstart</i>)/50.
+    </ol>
+    </dl>
+
+!! 082015
+    <a name="renumber"></a>
+    <dl>
+    <dt><tt>renumber</tt><dd>
+    When set, the source lines are renumbered sequentially after
+    subcircuit expansion.
+
+    <p>
+    Where set: <b>Simulation Options/Parser</b>
+    </dl>
+
+!! 082015
+    <a name="savecurrent"></a>
+    <dl>
+    <dt><tt>savecurrent</tt><dd>
+    If this variable is set, then all device current special vectors
+    are saved in the plot by default during analysis.  This enables
+    plotting of device currents using the @<i>device</i>[<i>param</i>]
+    construct.
+
+    <p>
+    Where set: <b>Simulation Options/General</b>
+    </dl>
+
+!! 082015
+    <a name="spice3"></a>
+    <dl>
+    <dt><tt>spice3</tt><dd>
+    By default, <i>WRspice</i> uses a custom algorithm for controlling
+    integration order during transient analysis.  This algorithm
+    provides the following advantages over the SPICE3 algorithm:
+
+    <ol>
+    <li>It provides a possibly better determination of when to use
+     higher integration orders.  This is slightly different from the
+     SPICE3 algorithm even for the order 2 that SPICE3 supports, and
+     probably takes a few more Euler time steps, but the
+     <i>WRspice</i> code appears to be less susceptible to trapezoid
+     integration nonconvergence.
+
+    <li><i>WRspice</i> allows the full range of Gear integration
+     orders, unlike SPICE3 which does not advance integration order
+     above 2, when <a href="maxord"><tt>maxord</tt><a> is larger than
+     2.  It is not clear how useful higher-order Gear integration is. 
+     Unlike Gear 2, which is much more stable in general than
+     trapezoidal integration for stiff systems, this is not true of
+     the higher orders.
+
+    <li>When the time step is reduced and integration order is cut due
+     to non-convergence, backward-Euler is now enforced for the next
+     two time steps.  In SPICE3, only the first time step is forced to
+     be backward-Euler.  The new approach reduces the tendency of some
+     circuits to not converge when trapezoidal integration is used. 
+    </ol>
+
+    <p>
+    The standard SPICE3 logic can be used if desired, by setting the
+    boolean option variable <tt>spice3</tt>.  <i>WRspice</i> releases
+    prior to 3.2.13 used the SPICE3 algorithm exclusively.
+
+    <p>
+    Where set: <b>Simulation Options/Timestep</b>
+    </dl>
+
+!! 082015
+    <a name="trapcheck"></a>
+    <dl>
+    <dt><tt>trapcheck</tt><dd>
+    In some circuits, whose equations are "stiff" in a mathematical
+    sense, trapezoidal integration may not converge in transient
+    analysis.  These circuits likely have a low impedance (voltage
+    source) driving a capacitor, and/or a high impedance driving an
+    inductor.  Non-convergence can take several forms:
+
+    <ol>
+    <li>The run exits with a "timestep too small" message.
+    <li>The run exits with a math error such as overflow or underflow.
+    <li>Circuit variables oscillate between values at every internal
+       time point.  The oscillations may increase in amplitude as
+       simulation progresses.
+    <li>Circuit variables monotonically diverge to huge values.
+    </ol>
+
+    <p>
+    When using trapezoidal integration, there is a test to check for
+    the oscillatory behavior characteristic of this type of
+    nonconvergence.  If nonconvergence is detected, the present time
+    point is rejected, the time step is cut by a factor of eight, and
+    the time point calculation is repeated using backward Euler
+    integration.  The circuit will return to trapezoid integration in
+    a few internal time steps.
+
+    <p>
+    This is an improvement, but does not solve all convergence
+    problems.  In particular, this test will not detect monotonic
+    divergence, which could be detected by other means but too late to
+    do anything about it.
+
+    <p>
+    This test is not enabled by default, since it tends to cause
+    circuits to simulate a little more slowly.  It tends to produce
+    false-positives which increase the iteration count.  When needed,
+    it can be enabled by setting the <tt>trapcheck</tt> variable.
+
+    <p>
+    <a name="notrapcheck"></a>
+    In <i>WRspice</i> releases prior to 4.1.22, this test was enabled
+    by default, and could be disabled by setting a variable named
+    "<tt>notrapcheck</tt>".  The <tt>notrapcheck</tt> variable is no
+    longer recognized.
+
+    <p>
+    Where set: <b>Simulation Options/Timestep</b>
+    </dl>
+
+!! 082015
+    <a name="trytocompact"></a>
+    <dl>
+    <dt><tt>trytocompact</tt><dd>
+    This boolean variable is applicable only to the LTRA model.  When
+    specified, the simulator tries to condense LTRA transmission line
+    past history of input voltages and currents.
+
+    <p>
+    Where set: <b>Simulation Options/Devices</b>
+    </dl>
+
+!! 082015
+    <a name="useadjoint"></a>
+    <dl>
+    <dt><tt>useadjoint</tt><dd>
+    Most of the BSIM device models in <i>WRspice</i> have added code
+    that builds an adjoint matrix which is used to accurately compute
+    device currents.  The computed currents are not used in the device
+    models, but are available as simulation outputs.  This has a small
+    performance overhead so is not enabled by default, but will be
+    enabled by setting this variable.  Without this, it may not be
+    possible to obtain device currents during the simulation, using
+    the <tt>@</tt><i>device</i>[<i>param</i>] "pseudo-vector".
+
+    <p>
+    <a name="noadjoint"></a>
+    In <i>WRspice</i> releases prior to 4.1.23, this feature was
+    enabled by default, and a variable named "<tt>noadjoint</tt>"
+    could be set to disable the feature.  The <tt>noadjoint</tt>
+    option is no longer recognized.
+
+    <p>
+    Where set: <b>Simulation Options/Devices</b>
+    </dl>
+
+    <h3>String Parameters</h3>
+
+!! 082015
+    <a name="method"></a>
+    <dl>
+    <dt><tt>method</tt><dd>
+    This string can be set to either of the keywords "<tt>trap</tt>",
+    which is the default and sets trapezoidal integration, or
+    "<tt>gear</tt>", for Gear integration.  The <a
+    href="maxord"><tt>maxord</tt></a> variable sets the maximum order
+    of the integration.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Values</th> <th>Set From</th></tr>
+    <tr><td><tt>trap</tt></td> <td><tt>trap</tt>, <tt>gear</tt></td>
+      <th>Simulation Options/Timestep</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="optmerge"></a>
+    <dl>
+    <dt><tt>optmerge</tt><dd>
+    This variable is used to specify the rule for dealing with options
+    and variables that are set in the shell and also in the circuit
+    (given in <a href=".options"><tt>.options</tt></a> lines).  The
+    description of <a href="options">option merging</a> explains the
+    use of this variable.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Values</th> <th>Set From</th></tr>
+    <tr><td><tt>global</tt></td> <td><tt>global</tt>, <tt>local</tt>,
+      <tt>noshell</tt></td> <th>Simulation Options/Parser</th></tr>
+    </table>
+    </dl>
+
+!! 082015
+    <a name="parhier"></a>
+    <dl>
+    <dt><tt>parhier</tt><dd>
+    By default, parameter definitions from <tt>.param</tt> lines,
+    subcircuit instantiation lines, and subcircuit definition lines
+    have top-down precedence, meaning that when resolving parameter
+    name clashes, the definition at the highest level in the
+    subcircuit hierarchy takes precedence.  Thus, by default,
+    parameters defined in <tt>.param</tt> lines outside of any
+    subcircuit will override parameters of the same name anywhere in
+    the hierarchy.
+
+    <p>
+    The <tt>parhier</tt> option variable can be set to one of the
+    literal keywords "<tt>global</tt>" or "<tt>local</tt>".  The
+    "<tt>global</tt>" setting retains default behavior.  The
+    "<tt>local</tt>" setting reverses the precedence to bottom-up.  In
+    this case, parameter definitions at the lowest level within
+    subcircuits will have precedence.
+
+    <p>
+    The parameter scoping rules are identical to <a
+    href="hspicesim">HSPICE</a> in release 3.2.15 and later.  Earlier
+    releases had different scoping rules, with the default being
+    closer but not identical to the "local" rule.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Values</th> <th>Set From</th></tr>
+    <tr><td><tt>global</tt></td> <td><tt>global</tt>, <tt>local</tt></td>
+      <th>Simulation Options/Parser</th></tr>
+    </table>
+    </dl>
+
+!! 013016
+    <a name="steptype"></a>
+    <dl>
+    <dt><tt>steptype</tt><dd>
+    This string can be set to one of four keywords which determine
+    the data output mode in transient analysis.  It can be set to
+    "<tt>interpolate</tt>", which is the default,
+    "<tt>hitusertp</tt>", "<tt>nousertp</tt>", or "<tt>fixedstep</tt>".
+    The integers 0, 1, 2, 3 are effectively synonyms for these
+    keywords.
+
+    <p>
+    If not set, or set to "<tt>interpolate</tt>", output points are
+    interpolated from internal time points to the user time
+    increments, with degree 1 (the default) to 3, set by the <a
+    href="interplev"><tt>interplev</tt></a> variable.
+
+    <p>
+    If set to "<tt>hitusertp</tt>", then during transient analysis the
+    time step will be cut so as to land on the user time points.  This
+    requires more simulation time, but provides the greatest accuracy. 
+
+    <p>
+    Setting to "<tt>nousertp</tt>" will cause internal timepoint data
+    to be saved, either in internal data structures in interactive
+    mode or in the rawfile in batch mode.  The amount of data can grow
+    quite large.
+
+    <p>
+    If set to "<tt>fixedstep</tt>", operation is similar to
+    "<tt>hitusertp</tt>", however the internal time step is
+    constrained to this value exactly.  No smaller time step is taken,
+    if convergence fails then the run terminates.  The time delta is
+    that given for the transient analysis.  This mode is only useful
+    for debugging as truncation error is ignored.  As a side-effect
+    the integration method will be rectangular.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Default</th> <th>Values</th> <th>Set From</th></tr>
+    <tr><td><tt>interpolate</tt></td> <td><tt>interpolate</tt>,
+      <tt>hitusertp</tt>, <tt>nousertp</tt>, <tt>fixedstep</tt></td>
+      <th>Simulation Options/Timestep</th></tr>
+    </table>
+    </dl>
+
+!!SEEALSO
+variables
+batch_vars
+unused_vars
+
+!!REDIRECT acct         batch_vars#acct
+!!REDIRECT dev          batch_vars#dev
+!!REDIRECT list         batch_vars#list
+!!REDIRECT modvar       batch_vars#mod
+!! "mod" is also a math func
+!!REDIRECT node         batch_vars#node
+!!REDIRECT opts         batch_vars#opts
+!!REDIRECT post         batch_vars#post
+
+!! variables.tex 102011
+!!KEYWORD
+batch_vars
+!!TITLE
+Batch Mode Option Variables
+!!HTML
+    The following variables are mostly familiar from Berkeley SPICE2,
+    and are used by <i>WRspice</i> when running in <a
+    href="batchmode">batch mode</a>.  Generally, these would be
+    included in a <a href=".options"><tt>.options</tt></a> line in the
+    SPICE input file.  They have no effect when running <i>WRspice</i>
+    interactively.
+
+    <p>
+    <a name="acct"></a>
+    <dl>
+    <dt><tt>acct</tt><dd>
+    When <i>WRspice</i> is run in batch mode, print out resource usage
+    information at the end of the run, similar in format to the output
+    of the <a href="rusage"><tt>rusage all</tt></a> command.  This
+    boolean variable has meaning only when set in the input file in a
+    <tt>.options</tt> line.
+    </dl>
+
+    <a name="dev"></a>
+    <dl>
+    <dt><tt>dev</tt><dd>
+    This option variable is unique to <i>WRspice</i>.  When given, a
+    listing of all device instances and parameters is printed in the
+    batch output, in a format similar to the output of the <a
+    href="show"><tt>show -d *</tt></a> command.  This boolean variable
+    has meaning only when set in the input file in a <tt>.options</tt>
+    line.
+    </dl>
+
+    <a name="list"></a>
+    <dl>
+    <dt><tt>list</tt><dd>
+    When <i>WRspice</i> is run in batch mode, print a circuit listing
+    before running the simulation.  This boolean variable has meaning
+    only when set in a <tt>.options</tt> line of the input file.
+    </dl>
+
+    <a name="mod"></a>
+    <dl>
+    <dt><tt>mod</tt><dd>
+    This option variable is unique to <i>WRspice</i>.  Logically, it
+    is the inversion of the SPICE2 <tt>nomod</tt> option, if given a
+    listing of device models and parameters is added to batch output. 
+    The format is similar to the output of the <a href="show"><tt>show
+    -m *</tt></a> command.  This boolean variable has meaning only
+    when set in a <tt>.options</tt> line of the input file.
+    </dl>
+
+    <a name="node"></a>
+    <dl>
+    <dt><tt>node</tt><dd>
+    The SPICE2 variable to print a node summary.  When given, a list
+    of the node voltages and branch currents after dc operating point
+    analysis is printed.  The values are printed whether or not
+    operating point analysis succeeds.  This boolean variable has
+    meaning only when set in the <tt>.options</tt> line of the input
+    file.
+    </dl>
+
+    <a name="opts"></a>
+    <dl>
+    <dt><tt>opts</tt><dd>
+    When <i>WRspice</i> is run in batch mode, print out all the
+    variables set and their values.  This boolean variable has meaning
+    only when set in the <tt>.options</tt> line of the input file.
+    </dl>
+
+    <a name="post"></a>
+    <dl>
+    <dt><tt>post</tt><dd>
+    This option variable is similar to the <tt>post</tt> option of <a
+    href="hspicesim">HSPICE</a>.  It must be set to one of the
+    following literal keywords.
+
+    <dl>
+    <dt><tt>post=csdf</tt><dd>
+    In batch mode, if no rawfile (<a href="-r"><tt>-r</tt> option</a>)
+    was specified on the <i>WRspice</i> command line, a <a
+    href="load">CSDF file</a> will be produced for the batch run.  The
+    name of the file will be that of the input file suffixed with
+    "<tt>.csdf</tt>" if the input file name is known, or
+    "<tt>unknown.csdf</tt>" if the input file name can't be
+    determined.
+    </dl>
+
+    <dl>
+    <dt><tt>post=raw</tt><dd>
+    In batch mode, if no rawfile (<tt>-r</tt> option) was specified on
+    the <i>WRspice</i> command line, a rawfile will be produced for
+    the batch run.  The name of the file will be that of the input
+    file suffixed with "<tt>.raw</tt>" if the input file name is
+    known, or "<tt>unknown.raw</tt>" if the input file name can't be
+    determined.
+    </dl>
+    </dl>
+
+!!SEEALSO
+variables
+sim_vars
+
+!!REDIRECT cptime       unused_vars#cptime
+!!REDIRECT itl3         unused_vars#itl3
+!!REDIRECT itl5         unused_vars#itl5
+!!REDIRECT limpts       unused_vars#limpts
+!!REDIRECT limtim       unused_vars#limtim
+!!REDIRECT lvlcod       unused_vars#lvlcod
+!!REDIRECT lvltim       unused_vars#lvltim
+!!REDIRECT nomod        unused_vars#nomod
+
+!! variables.tex 102011
+!!KEYWORD
+unused_vars
+!!TITLE
+Unused Option Variables
+!!HTML
+    The following variables have no significance to
+    <i>WRspice</i>, but were used in Berkeley SPICE2 and thus may be
+    present in input files.  These are silently ignored by
+    <i>WRspice</i>.
+
+    <a name="cptime"></a>
+    <dl>
+    <dt><tt>cptime</tt><dd>
+    The SPICE2 option to set the maximum allowable CPU time for the
+    job.  This has no effect in <i>WRspice</i>.
+    </dl>
+
+    <a name="itl3"></a>
+    <dl>
+    <dt><tt>itl3</tt><dd>
+    The SPICE2 option to set the lower transient iteration limit for
+    timestep control.  This is not used in <i>WRspice</i>.
+    </dl>
+
+    <a name="itl5"></a>
+    <dl>
+    <dt><tt>itl5</tt><dd>
+    The SPICE2 option to set the maximum number of iterations for the
+    job.  This is not used in <i>WRspice</i>.
+    </dl>
+
+    <a name="limpts"></a>
+    <dl>
+    <dt><tt>limpts</tt><dd>
+    The SPICE2 variable which sets the maximum number of points per
+    analysis.  This is not used in <i>WRspice</i>.
+    </dl>
+
+    <a name="limtim"></a>
+    <dl>
+    <dt><tt>limtim</tt><dd>
+    The SPICE2 option to reserve time for output generation.  This is
+    not used in <i>WRspice</i>.
+    </dl>
+
+    <a name="lvlcod"></a>
+    <dl>
+    <dt><tt>lvlcod</tt><dd>
+    The SPICE2 option to generate machine code.  This is not used in
+    <i>WRspice</i>.
+    </dl>
+
+    <a name="lvltim"></a>
+    <dl>
+    <dt><tt>lvltim</tt><dd>
+    The SPICE2 variable to set the type of timestep control.  This is
+    not used in <i>WRspice</i>.
+    </dl>
+
+    <a name="nomod"></a>
+    <dl>
+    <dt><tt>nomod</tt><dd>
+    The SPICE2 variable to suppress printing of a summary of models. 
+    This is not used in <i>WRspice</i>.
+    </dl>
+
+!!SEEALSO
+variables
+sim_vars
+
+!!REDIRECT modelcard    syntax_vars#modelcard
+!!REDIRECT nobjthack    syntax_vars#nobjthack
+!!REDIRECT pexnodes     syntax_vars#pexnodes
+!!REDIRECT plot_catchar syntax_vars#plot_catchar
+!!REDIRECT spec_catchar syntax_vars#spec_catchar
+!!REDIRECT strictnumparse syntax_vars#strictnumparse
+!!REDIRECT subc_catchar syntax_vars#subc_catchar
+!!REDIRECT subc_catmode syntax_vars#subc_catmode
+!!REDIRECT subend       syntax_vars#subend
+!!REDIRECT subinvoke    syntax_vars#subinvoke
+!!REDIRECT substart     syntax_vars#substart
+!!REDIRECT units_catchar syntax_vars#units_catchar
+!!REDIRECT var_catchar  syntax_vars#var_catchar
+
+!! variables.tex 012615
+!!KEYWORD
+syntax_vars
+!!TITLE
+Syntax Control Variables
+!!HTML
+    These variables alter the expected syntax of various types of
+    <i>WRspice</i> input.  It may, on occasion, be useful or necessary
+    to use one or more of these variables to provide compatibility
+    with SPICE input intended for another simulator, or for
+    compatibility with earlier releases of <i>WRspice</i>.
+
+
+    <a name="modelcard"></a>
+    <dl>
+    <dt><tt>modelcard</tt><dd>
+    This variable allows the keyword that specifies a model to be reset.     
+    If unset, the keyword is "<tt>.model</tt>".
+    </dl>
+
+    <a name="nobjthack"></a>
+    <dl>
+    <dt><tt>nobjthack</tt><dd>
+    If this boolean is set, bipolar transistors are assumed to have four
+    nodes.  Otherwise, three nodes are acceptable.  This only affects
+    subcircuit expansion.
+    </dl>
+
+    <a name="pexnodes"></a>
+    <dl>
+    <dt><tt>pexnodes</tt><dd>
+    When this boolean variable is set, node names in device and
+    subcircuit call lines will be parameter expanded as the circuit is
+    read in.  In 4.1.12 and later, node names are not parameter
+    expanded by default, to save processing time and avoid unintended
+    matches causing errors.  This variable can be set for backward
+    compatibility, for files that actually used this feature.
+
+    <a name="plot_catchar"></a>
+    <dl>
+    <dt><tt>plot_catchar</tt><dd>
+    One can specify a fully qualified vector name as input to
+    <i>WRspice</i>, where the default syntax is
+
+    <blockquote>
+    <i>plotname</i><tt>.</tt><i>vectorname</i>
+    </blockquote>
+
+    <p>
+    The character used to separate the <i>plotname</i> from the
+    <i>vectorname</i>, which defaults to a period ('<tt>.</tt>'), can
+    be changed with this variable.  If this variable is set to a
+    single-character string, then that character becomes the
+    separation character.
+    </dl>
+
+    <a name="spec_catchar"></a>
+    <dl>
+    <dt><tt>spec_catchar</tt><dd>
+    By default, vector names that begin with the character '<tt>@</tt>'
+    are interpreted as "special" vectors that provide the value of
+    a model, device, or circuit parameter.  These have forms like
+
+    <blockquote>
+    <tt>@</tt><i>devicename</i>[<i>paramname</i>] for a device parameter,<br>
+    <tt>@</tt><i>modelname</i>[<i>paramname</i>] for a model parameter, or<br>
+    <tt>@</tt><i>paramname</i> for a circuit parameter.
+    </blockquote>
+
+    <p>
+    The character used to indicate a special vector can be changed
+    from the default '<tt>@</tt>' with this variable.  If this
+    variable is set to a single-character string, then that character
+    is used to indicate a special vector.
+    </dl>
+
+    <a name="strictnumparse"></a>
+    <dl>
+    <dt><tt>strictnumparse</tt><dd>
+    When this variable is set, <i>WRspice</i> will not allow trailing
+    characters after a number, unless they are separated from the
+    number with an underscore ('_').  This may prevent errors, for
+    example writing "<tt>1meter</tt>" and expecting it to have a value
+    of 1.
+    </dl>
+
+    <a name="subc_catchar"></a>
+    <dl>
+    <dt><tt>subc_catchar</tt><dd>
+    When <i>WRspice</i> processes an input circuit containing
+    subcircuits, it internally generates a "flat" representation of
+    the circuit through <a href="subckt#expand">subcircuit
+    expansion</a>.  All subcircuit calls are replaced with the
+    subcircuit body text, and the node and device names in the
+    subcircuit are given new names that are unique in the overall
+    circuit.  One can view this flattened representation with the <a
+    href="listing"><b>listing e</b></a> command.
+
+    <p>
+    This variable can be set to a string consisting of a single
+    punctuation character, which will be used as the field separation
+    character in names generated in subcircuit expansion.  It should
+    be a character that is not likely to confuse the expression
+    parser.  This requirement is rather ambiguous, but basically means
+    that math operators, comma, semicolon, and probably others should
+    be avoided.
+
+    <p>
+    In release 3.2.15 and later the default is '<tt>.</tt>' (period),
+    which is also used in <a href="hspicesim">HSPICE</a>, and provides
+    nice-looking listings.
+
+    <p>
+    In releases 3.2.5 - 3.2.14, the default was '<tt>_</tt>'
+    (underscore).
+
+    <p>
+    In release 3.2.4 and earlier, and in SPICE3, the concatenation
+    character was '<tt>:</tt>' (colon).
+
+    <p>
+    This variable can appear in a <a
+    href=".options"><tt>.options</tt></a> line in SPICE input, where
+    is will set the concatenation character used for the circuit.  See
+    also the description of the <tt>subc_catmode</tt> variable below.
+    </dl>
+
+    <a name="subc_catmode"></a>
+    <dl>
+    <dt><tt>subc_catmode</tt><dd>
+    When <i>WRspice</i> processes an input circuit containing
+    subcircuits, it internally generates a "flat" representation of
+    the circuit through <a href="subckt#expand">subcircuit
+    expansion</a>.  All subcircuit calls are replaced with the
+    subcircuit body text, and the node and device names in the
+    subcircuit are given new names that are unique in the overall
+    circuit.  One can view this flattened representation with the <a
+    href="listing"><b>listing e</b></a> command.
+
+    <p>
+    Previous <i>WRspice</i> versions used the SPICE3 algorithm for
+    generating the new node and device names.  Release 3.2.15 and
+    later have a new, simpler algorithm as the default, but support
+    for the old algorithm is retained.
+
+    <p>
+    This string variable can be set to one of the keywords
+    "<tt>wrspice</tt>" or "<tt>spice3</tt>".  It sets the encoding
+    mode for subcircuit node and device names.  In 3.2.15 and later,
+    the "<tt>wrspice</tt>" mode is the default.  In earlier releases,
+    only the "<tt>spice3</tt>" mode was available.
+
+    <p>
+    A detailed discussion of the two mapping modes is provided in the
+    description of <a href="subckt#expand">subcircuit expansion</a>.
+
+    <p>
+    Typically, the user may not know or care about subcircuit mapping
+    details, however in some SPICE input it may be necessary to
+    reference subcircuit nodes in <a href=".save"><tt>.save</tt></a>
+    lines and elsewhere.  In this case knowledge of, and control of,
+    the mapping employed is necessary.
+
+    <p>
+    There is also a compatibility issue with older <i>WRspice</i>
+    input files that explicitly reference subcircuit nodes, as both
+    the default renaming algorithm and <a
+    href="subc_catchar">concatenation character</a> have changed as
+    <i>WRspice</i> evolved.  The format of the subcircuit node names
+    depends on the algorithm, so SPICE input that explicitly
+    references subcircuit node names implicitly assuming a certain
+    mapping algorithm will require either changes to the node names,
+    or specification of the matching algorithm and concatenation
+    character.  Such files can be easily updated to be compatible with
+    newer <i>WRspice</i> releases, but some familiarity with the
+    renaming modes is needed.
+
+    <p>
+    This variable can appear in a <a
+    href=".options"><tt>.options</tt></a> line in SPICE input, where
+    is will set the name mapping algorithm used for the circuit. 
+    Typically, to "fix" an old input file, one would add a
+    <tt>.options</tt> line specifying the <tt>spice3</tt> mapping
+    algorithm, and either the colon or underscore (as appropriate) for
+    the concatenation character.
+    </dl>
+
+    <a name="subend"></a>
+    <dl>
+    <dt><tt>subend</tt><dd>
+    This variable allows the keyword which ends a subcircuit definition
+    to be changed.  If unset, The keyword is "<tt>.ends</tt>".
+    </dl>
+
+    <a name="subinvoke"></a>
+    <dl>
+    <dt><tt>subinvoke</tt><dd>
+    This variable allows the prefix which invokes a subcircuit to be
+    changed.  If unset, the prefix is "<tt>x</tt>".
+    </dl>
+
+    <a name="substart"></a>
+    <dl>
+    <dt><tt>substart</tt><dd>
+    This variable allows the keyword which begins a subcircuit
+    definition to be changed.  If unset, the keyword is
+    "<tt>.subckt</tt>".  The equivalent "<tt>.macro</tt>" keyword
+    applies whether or not this variable is set.
+    </dl>
+
+    <a name="units_catchar"></a>
+    <dl>
+    <dt><tt>units_catchar</tt><dd>
+    A "units string" can follow numbers given to <i>WRspice</i>, and
+    these units are carried through expressions, simplified, and
+    printed with results.  The units string follows a number,
+    separated by a separation character which is most often optional. 
+    In releases prior to 3.2.4, this character was hard coded to
+    '<tt>_</tt>' (underscore), but presently defaults to '<tt>#</tt>'
+    to avoid conflict with the subcircuit field separator character.
+
+    <p>
+    The character used as the units separation character can be
+    changed by setting this variable to a length-one string containing
+    the new character.  The character in the single-character string
+    becomes the new separation character.  For example,
+
+    <blockquote>
+    <tt>set units_catchar = "_"</tt>
+    </blockquote>
+
+    will return to the pre-3.2.4 default.
+
+    <p>
+    Further, it is now possible to add "denominator units", which was
+    not possible in pre-3.2.4 releases.  A second appearance of the
+    separation character, or the first appearance if there was no
+    separation character ahead of the units string, is logically like
+    '<tt>/</tt>', and units that follow are denominator units.
+
+    <p>
+    Examples:
+    <table border=0>
+    <tr><td><tt>1.0#F#S</tt></td>  <td>1 Farad per second</td></tr>
+    <tr><td><tt>1.0F#S</tt></td>   <td>1 femtosecond (note that 'F' can
+      be a multiplier or a unit!)</td></tr>
+    <tr><td><tt>1.0FS</tt></td>    <td>1 femtosecond</td></tr>
+    <tr><td><tt>1.0#FS</tt></td>   <td>1 Farad-second</td></tr>
+    <tr><td><tt>1.0S</tt></td>     <td>1 second</td></tr>
+    <tr><td><tt>1.0#S</tt></td>    <td>1 second</td></tr>
+    <tr><td><tt>1.0##S</tt></td>   <td>1 Hertz</td></tr>
+    </table>
+    </dl>
+
+    <a name="var_catchar"></a>
+    <dl>
+    <dt><tt>var_catchar</tt><dd>
+    When expanding shell variables, i.e. replacing forms like
+    "<tt>$var</tt>" in <i>WRspice</i> input with the value that has
+    been assigned to <tt>var</tt>, it is sometimes useful to use the
+    "concatenation character", which defaults to '<tt>%</tt>', to
+    separate the variable name from surrounding text.
+
+    <p>
+    For example, if "<tt>set one = 1</tt>" is active, then
+    "<tt>$one%k</tt>" will expand to "<tt>1k</tt>".  Note that it is
+    also possible to use the form "<tt>{$one}k</tt>" to achieve the
+    same objective.
+
+    <p>
+    The same applies when expanding parameters in SPICE input, using
+    definitions from a <tt>.param</tt> line.  If one has "<tt>.param
+    one=1</tt>" in scope, then "<tt>one%k</tt>" expands to
+    "<tt>1k</tt>".
+
+    <p>
+    This variable allows the default concatenation character
+    '<tt>%</tt>' to be changed.  If this variable is set to a
+    single-character string, then that character becomes the
+    concatenation character.
+    </dl>
+
+!!SEEALSO
+variables
+

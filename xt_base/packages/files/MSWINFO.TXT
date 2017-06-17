@@ -1,0 +1,372 @@
+
+                         M S W I N F O . T X T
+                         Whiteley Research Inc.
+                                12/8/15
+
+This file contains notes relevant to the Microsoft Windows release of
+the XicTools.
+
+
+Installation and Setup
+----------------------
+
+In order to license a Windows host, two pieces of information are
+needed:
+
+   - The machine's host name
+   - The Windows Product ID
+
+The recommended way to retrieve this information is to download the
+"licinfo.exe" program from the http://wrcad.com web site.  When run,
+this program generates a file named "XtLicenseInfo" which should be
+emailed to Whiteley Research.  A pop-up window displays the
+information, and indicates success or failure.
+
+The distributions are available from the wrcad.com web site, along
+with the distributions for Linux and OS X.  The distributions come in
+self-extracting .EXE files.  Simply run the files to do the
+installation.  The programs can later be uninstalled, either from the
+Windows Add/Remove Software window or by clicking the Uninstall icons
+in the XicTools program group in the Start page.
+
+The same process can be used to install updated releases - it is not
+necessary to uninstall first.  A more convenient way to keep current
+is to set up automatic update checking.  For this, you need to have a
+"home" directory.  The procedure is discussed below.  Then, the
+!passwd command in Xic or the password command in WRspice can be run,
+and the user/password to the distribution repository entered.  This
+will produce a file ".wrpasswd" in the home directory, used to
+authenticate with the web server at wrcad.com.  When this is set up,
+the programs will check for updates on startup.  If an update is
+available, the user is asked (separately) whether to download the
+update distribution file, and whether to install it.  The actual
+installation will start when the user exits the program.
+
+Before an update, any configuration files in the installation that
+have been customized should be saved as they may be overwritten.
+
+** WARNING ***********************************************************
+*  The programs use an entry in the Windows Registry to find their   *
+*  startup files, license, etc.  This entry is created by the        *
+*  installer program.                                                *
+**********************************************************************
+Thus
+
+  1)  The correct way to move an existing installation to another
+      location is to uninstall the program, and reinstall to the new
+      location using the standard distribution file.  If you just move
+      the files to a new location, the Registry won't be updated and
+      the program won't run correctly.
+
+  2)  You can not simply copy files from another machine when creating
+      a new installation.  The files must be installed through the
+      distribution files, or the Registry entry won't be set.
+
+The Registry entry used (by the inno installer program) is (for
+example)
+
+  HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\Xic-4is1
+
+The Windows regedit utility can be used to repair the Registry if
+necessary.  The Windows reg utility can also be used to query and
+modify the Registry from the command line.
+
+The programs are installed by default under the prefix C:\usr\local,
+which can be specified to the program installer.  The installation
+directories will be created if necessary.  All of the programs will
+install under a directory named "xictools" under the prefix, (for
+example, Xic files would be installed by default in
+C:\usr\local\xictools\xic).  The structure of the tree is exactly that
+as under Linux, which simplifies compatibility.  It is recommended
+that the default installation location be used, if possible.
+
+The Generation 4 programs all use the GTK-2 toolkit for the user
+interface.  The DLLs and other support files for this toolkit are in
+the gtk2-bundle distribution file.  This must be installed, by
+executing the file, in the same manner as the program distribution
+files.  You will only need to do this once, or at least very
+infrequently.  The default location is under C:\usr\local\gtk2-bundle.
+
+**********************************************************************
+*  IMPORTANT!  The installation prefix given to the installer for    *
+*  all programs, and the gtk2-bundle, MUST be the same.              *
+**********************************************************************
+
+By default, the actual binary executable is run from a script (.bat)
+file, which is installed in the same directory as the executables,
+which by default is C:\usr\local\xictools\bin.  The script takes care
+of properly specifying the path to the DLLs provided by the
+gtk2-bundle.
+
+A program group named XicTools is created in the Start menu (or
+equivalent), from which the programs can be started.  The programs can
+also be started from a command line, in either a Windows Command
+Prompt window or a Cygwin shell window.  One will need to type the
+full path to the bat file (e.g., type "C:\usr\local\xictools\bin\xic.bat"
+to start Xic).  There are two ways to avoid having to type the whole
+path:
+
+  1)  Add the directory to your search path.  This is the PATH variable
+      in the environment.  This can be set in your Command Prompt
+      window by giving a command like
+
+        PATH=%PATH%;c:\usr\local\xictools\bin
+
+      of the PATH can be set from the Control Panel (the procedure is
+      described below for Windows 8).
+
+  2)  The bat files can be copied from the installattion location
+      into a directory that is already in the search path, or to the
+      current directory.
+
+Note that if you know your way around Windows bat scripts, you can
+avoid the installation location requirement in the warning above.
+
+* DLL issues.
+
+  As of xic-4.2.7, wrspice-4.2.4, and xt_accs-4.2.2, there should no
+  longer be any DLL issues.  You should NOT have the gtk2-bundle/bin
+  in your search path.
+
+  The programs that need the bundle DLLs should be run from the .bat
+  files, i.e., xic.bat, wrspice.bat, and from the accessories
+  mozy.bat, xeditor.bat, and httpget.bat.  These are installed by
+  default in /usr/local/xictools/bin.
+
+  All other programs provided in the distributions can be run from the
+  .exe files and don't need the gtk2-bundle.
+
+  It is no longer necessary to install the distributions all using the
+  same location prefix.  The bat files are now smart enough to figure
+  out where to look in the registry.  That being said, it is still
+  strongly recommended to install everything in the default location.
+
+  Older versions of the programs had a dependence on DLLs found in
+  gtk2-bundle/bin.  In particular libwinpthread-1.dll was required by
+  just about everything.  The best fix is to update your programs.
+  Otherwise, you need to have the needed DLLs in the search path when
+  the program is run.
+
+General Notes
+------- -----
+
+The XicTools for Windows are supported on Windows 8.1 and later.  The
+programs retain the "look and feel" of the Unix/Linux versions as much
+as possible, given the constraints of the Windows operating system.
+
+Starting with Generation 4, the programs use the GTK-2 graphical
+interface toolkit, as used by the other releases.  The native Win32
+interface is gone.  The GTK-2 libraries are supplied in a separate
+installation module.  Installation is mandatory, but the libraries are
+quite static so will not require much attention after the initial
+installation.
+
+Most basic features are available under Windows.  Some of the more
+advanced features are not.
+
+  o  There is no support for plug-ins, so presently no Tcl/Tk or Python
+     script language support, and no OpenAccess connectivity.
+
+  o  There is no automatic provision for remote running of the programs
+     as with the X window system in Linux.
+
+  o  Under Unix/Linux, when the program crashes (of course, a very rare
+     occurrence!), the gdb debugger is called to generate a stack
+     trace, which is emailed to Whiteley Research for analysis.  Since
+     it is rare to find gdb on a Windows system, an alternative is
+     built in.  This produces a file named, for example,
+     xic.stackdump, which is emailed (if possible) to Whiteley
+     Research.
+
+  o  Windows does not provide a reliable interface for internet mail,
+     so the email clients and crash-dump report in the XicTools may
+     not work.  The mail in XicTools works by passing the message to a
+     Windows interface called "MAPI", which in turn relies on another
+     installed program to actually send the mail.
+
+     To get this working in Windows 8, I had to download and install
+     something called "live mail" from Microsoft, which eventually
+     worked.  This app supports MAPI, apparently the Windows 8 Mail
+     app does not(?).  The Windows 8 Mail app also does not work with
+     POP3 mail servers, solidifying my disrespect.
+
+  o  The XicTools programs can use a separate license server daemon
+     under Unix/Linux.  Under Windows, no license server is used, as
+     the authentication is built into the programs.
+
+The "environment variables" mentioned in the Xic/WRspice documentation
+are available, and can be set in a Command Prompt window with the
+"set" command before starting the programs, or from the System entry
+in the Control Panel (or wherever this capability lives in your
+version of Windows).  Only the latter method applies if the programs
+are started from an icon or menu.
+
+Directory path names used by the programs can use either '/' or '\' as
+the directory separator character, interchangeably.  The path can also
+contain a drive specifier.
+
+The path variables used by Xic that contain lists of directory paths
+must use either a space or ';' (semicolon) as a separator.  Under
+Unix/Linux, the separation characters are space and ':' (colon).
+
+The text files used by the programs can have either DOS or Unix line
+termination.  Text files produced by the programs under Windows will
+use the DOS format, which is expected in Windows.
+
+Under Windows, where the concept of a "home directory" is somewhat
+tenuous, the programs will look for environment variables,
+particularly HOME, and if found interpret the value as a path to the
+home directory.  This is true when programs look for startup files. 
+When the program is started from an icon or shortcut, and the start
+directory is not explicitly set in the icon properties (it defaults to
+C:/), the current directory will be the home directory, rather than
+C:/.
+
+Those used to a Linux environment are encouraged to download and
+install the Cygwin tools.  These include most of your favorite Linux
+commands, plus a complete compiler toolchain for application
+development.  In particular, the bash shell is quite useful, as it
+provides a "DOS box" that responds to Unix shell commands, and from
+which one can execute shell scripts.  The tools can be downloaded as
+individual modules.
+
+Unfortunately, by default Cygwin presently installs the mintty terminal
+emulator as the basic console window.  This window is not compatible
+with WRspice, or any other non-Cygwin program that uses the command
+line interactively.  To use Cygwin with WRspice and other non-Cygwin
+programs, one should run from a Windows DOS-box.  Here are two
+possibilities:
+
+1.  Presss Windows-r to bring up the window that starts a command,
+and enter "cmd" in this windoow.  Click "OK" and a DOS window will
+appear.  You can also get a DOS box from the Start Menu.  In the
+DOS window, give these commands:
+    cd c:/cygwin/bin
+    bash --login -i
+The first line will differ if Cygwin is installed in a non-default
+location.  The bash shell from Cygwin is now running in the DOS box,
+and you can run WRspice from there.
+
+2.  You can create icons that run bash in DOS boxes, which is the
+way Cygwin worked originally.  There may still be a Cygwin.bat
+file in c:/cygwin (or whatever the Cygwin installation directory
+is).  If not there, you can create one, with text something like
+
+    @echo off
+    cd c:\cygwin\bin
+    bash --login -i
+
+Create an icon that will run the bat file.  This can replace the icon
+that Cygwin created, unless you really like the mintty and want to
+keep it around for running Cygwin tools only.
+
+If it is needed and does not exist, Xic and WRspice will create a \tmp
+directory on the current drive.  This will contain temporary files,
+used by the programs.  These should be removed automatically when the
+programs terminate, but if not the files can be safely deleted if Xic
+and WRspice are not running.
+
+
+Setting Environment Variables
+------- ----------- ---------
+
+By running Cygwin, the setting of environment variables and similar
+becomes very familiar to a Linux user.  In particular, running Xic
+from a Cygwin bash-shell window emulates pretty well the Linux
+experience.  This is a recommended approach for those familiar with
+Unix/Linux.
+
+Otherwise, environment variables can be set manually in a Command
+Prompt window from which the programs are run.  The bat files can be
+modified and "set" lines added, as an option to avoid manual setting
+of variables that should always be in force.  Another option is to set
+the system default environment variables.  Be aware that all other
+programs will see the variables.  Setting the system environment
+variables is probably something to avoid if possible.  If you insist,
+here is the procedure for Windows 8.1.  Other supported Windows
+releases are probably not horribly different.
+
+  1.  Go to the infamous Start page, click on the circle with down
+      arrow icon near the bottom-left corner.  This shifts to the Apps
+      page.
+
+  2.  Find the Control Panel, it is listed on the Apps page under
+      Windwos System.  You can use the search tool if necessary. 
+      Eventually, you'll find the icon, then click it to bring up the
+      Control Panel.
+
+  3.  Click System and Security.  The display will change to a new set
+      of choices.
+
+  4.  Click System.
+
+  5.  Click Advanced system settings along the left.  This brings up a
+      System Properties window.
+
+  6.  Click the Environment Variables button near the bottom of the
+      Advanced page (this page should be shown initially).
+
+There are a couple of things one may want to do here, as examples.
+
+  1.  Add the XicTools bin directory to the system search path.
+
+      Scroll the lower System variables window to find the Path entry. 
+      Click on this to select it.  Click the Edit...  button below,
+      which brings up a text entry window.  In the Variable value
+      window, scroll all the way to the right, and add, for example
+      (use the actual path if different on your system)
+
+        ;c:\usr\local\xictools\bin
+
+      Check the spelling, and make sure there is no white space, and
+      that the character before the 'c' is a semicolon, and the
+      character that follows the 'c' is a colon.  Then click the OK
+      button.
+
+  2.  Add a HOME variable to define a "home directory".
+
+      Press the New...  button below the UPPER listing window (not the
+      one you just used).  This brings up a text entry as we saw
+      before.  Enter HOME for Variable name, For Variable value, enter
+      a path to some directory which you want to be your "working"
+      directory, where Xic and WRspice will look for startup files,
+      license files, etc.  Enter the full path to this directory. 
+      Check spelling, Click OK.
+
+Finally, Click the OK button at the bottom of the window, we're done.
+
+When a program is started from an icon, an icon property specifies the
+directory where the program logically starts from.  This is the
+apparent current directory seen by the user when running the program. 
+By default, this is usually something like "C:\", which is not a good
+choice.  The user should have a directory dedicated for this, and the
+following procedure can be used to cause the programs started from an
+icon to start in this directory.
+
+  1.  Go to the Start page, click on the circle with down arrow icon
+      near the bottom-left corner.  This shifts to the Apps page.
+
+  2.  Find the XicTools program group.  There should be entries for
+      the programs that you have installed.
+
+  3.  For each program:
+      a.  Click on the program icon with the RIGHT mouse button.  An
+          icon banner along the bottom of the screen will appear.
+
+      b.  Click on Open File Location.  This brings up a listing
+          showing the XicTools programs.
+
+      c.  Above the list, find the Properties icon and click it.  This
+          brings up a multi-page Properties pop-up.
+
+      d.  In the Shortcut page, change the entry in the "Start in"
+          entry area to a full directory path to the directory where
+          the program should start.  This might be the same directory
+          that you used for the HOME environment variable. 
+
+      e.  Then click the Apply button, and click OK if there is a
+          confirmation pop-up.
+
+This applies to the icon in the Apps page.  Other icons can be set
+similarly.
+

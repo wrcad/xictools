@@ -1,0 +1,199 @@
+#! /bin/sh
+# $Id: fetchdist,v 1.20 2015/07/19 20:05:41 stevew Exp $
+
+progs=$1
+oses=$2
+
+# Where files are placed
+outdir=$HOME/export/xictools
+
+# The version script
+release=$HOME/src/xictools/version
+
+
+# Grab the distribution file
+# arguments: program osname
+#
+get()
+{
+    program=$1
+    osname=$2
+    version=`$release $program`
+    if [ x$version = x ]; then
+        echo Unknown program: $program
+        exit 1
+    fi
+
+    echo Fetching $program-$osname >&2
+    case $osname in
+    Darwin)
+        fname=$program-$osname-$version-univ.pkg.tgz
+        dir=stevew@wilde:/Users/stevew/src/xictools/src/packages/pkgfiles
+        rsync $dir/$fname $outdir/$osname/$fname
+        chmod 0644 $outdir/$osname/$fname
+        ;;
+    Darwin64)
+        fname=$program-$osname-$version-x86_64.pkg
+        dir=stevew@macbook:/Users/stevew/src/xictools/src/packages/pkgfiles
+        rsync $dir/$fname $outdir/$osname/$fname
+        chmod 0644 $outdir/$osname/$fname
+        ;;
+    Debian)
+        fname="$program-$osname-$version-i386.deb"
+        dir=stevew@shelley:/home/stevew/src/xictools-32/src/packages/pkgfiles
+        rsync $dir/$fname $outdir/$osname/$fname
+        chmod 0644 $outdir/$osname/$fname
+        ;;
+    Debian64)
+        fname="$program-$osname-$version-amd64.deb"
+        dir=stevew@shelley:/home/stevew/src/xictools/src/packages/pkgfiles
+        rsync $dir/$fname $outdir/$osname/$fname
+        chmod 0644 $outdir/$osname/$fname
+        ;;
+    FreeBSD*)
+        fname="$program-$osname-$version-i386.pkg.tbz"
+        dir=/usr1/stevew/src/xictools/src/packages/pkgfiles
+        cp -fp $dir/$fname $outdir/$osname/$fname
+        chmod 0644 $outdir/$osname/$fname
+        ;;
+    Linux*)
+        tmpifs="$IFS"
+        IFS="_"
+        set $osname
+        IFS="$tmpifs"
+        osbase=$1
+        if [ $# = 1 ]; then
+            if [ $osbase = Linux2 -o $osbase = Linux ]; then
+                arch=i386
+            else
+                arch=i686
+            fi
+        else
+            arch=x86_64
+        fi
+        fname="$program-$osbase-$version-$arch.rpm"
+        case $osname in
+        Linux)
+            dir=stevew@keats:/usr1/stevew/src/xictools/src/packages/pkgfiles
+            rsync $dir/$fname $outdir/$osname/$fname
+            chmod 0644 $outdir/$osname/$fname
+            ;;
+        Linux2)
+            dir=stevew@yeats:/home/stevew/src/xictools-linux2/src/packages/pkgfiles
+            rsync $dir/$fname $outdir/$osname/$fname
+            chmod 0644 $outdir/$osname/$fname
+            ;;
+        LinuxRHEL3)
+            dir=stevew@yeats:/home/stevew/src/xictools-32/src/packages/pkgfiles
+            rsync $dir/$fname $outdir/$osname/$fname
+            chmod 0644 $outdir/$osname/$fname
+            ;;
+        LinuxRHEL3_64)
+            dir=stevew@yeats:/home/stevew/src/xictools/src/packages/pkgfiles
+            rsync $dir/$fname $outdir/$osname/$fname
+            chmod 0644 $outdir/$osname/$fname
+            ;;
+        LinuxRHEL5)
+            dir=stevew@shelley:/home/stevew/src/xictools-32/src/packages/pkgfiles
+            rsync $dir/$fname $outdir/$osname/$fname
+            chmod 0644 $outdir/$osname/$fname
+            ;;
+        LinuxRHEL5_64)
+            dir=stevew@shelley:/home/stevew/src/xictools/src/packages/pkgfiles
+            rsync $dir/$fname $outdir/$osname/$fname
+            chmod 0644 $outdir/$osname/$fname
+            ;;
+        LinuxRHEL6)
+            dir=stevew@poe:/home/stevew/src/xictools-32/src/packages/pkgfiles
+            rsync $dir/$fname $outdir/$osname/$fname
+            chmod 0644 $outdir/$osname/$fname
+            ;;
+        LinuxRHEL6_64)
+            dir=stevew@poe:/home/stevew/src/xictools/src/packages/pkgfiles
+            rsync $dir/$fname $outdir/$osname/$fname
+            chmod 0644 $outdir/$osname/$fname
+            ;;
+        LinuxRHEL7)
+            dir=stevew@frost:/home/stevew/src/xictools-32/src/packages/pkgfiles
+            rsync $dir/$fname $outdir/$osname/$fname
+            chmod 0644 $outdir/$osname/$fname
+            ;;
+        LinuxRHEL7_64)
+            dir=stevew@frost:/home/stevew/src/xictools/src/packages/pkgfiles
+            rsync $dir/$fname $outdir/$osname/$fname
+            chmod 0644 $outdir/$osname/$fname
+            ;;
+        *)
+            echo "Unknown distribution name $osname"
+            ;;
+        esac
+        ;;
+    Solaris*)
+        tmpifs="$IFS"
+        IFS="_"
+        set $osname
+        IFS="$tmpifs"
+        osbase=$1
+        if [ $# = 1 ]; then
+            arch=sparc
+        else
+            arch=sparc64
+        fi
+        fname="$program-$osbase-$version-$arch.pkg.gz"
+        case $osname in
+        Solaris)
+            dir=stevew@dickens:/export/home/stevew/src/xictools/src/packages/pkgfiles
+            rsync --rsh=/usr/bin/rsh $dir/$fname $outdir/$osname/$fname
+            chmod 0644 $outdir/$osname/$fname
+            ;;
+        Solaris8)
+            dir=stevew@yeats:/export/home/stevew/src/xictools/src/packages/pkgfiles
+            rsync --rsh=/usr/bin/rsh $dir/$fname $outdir/$osname/$fname
+            chmod 0644 $outdir/$osname/$fname
+            ;;
+        Solaris8_64)
+            dir=stevew@yeats:/export/home/stevew/src/xictools/src64/packages/pkgfiles
+            rsync --rsh=/usr/bin/rsh $dir/$fname $outdir/$osname/$fname
+            chmod 0644 $outdir/$osname/$fname
+            ;;
+        *)
+            echo "Unknown distribution name $osname"
+            ;;
+        esac
+        ;;
+    Windows)
+        if [ $program = accessories ]; then
+            fname=accs-Win32-$version-i386.exe
+        else
+            fname=$program-Win32-$version-i386.exe
+        fi
+        dir=stevew@keats:/nt/home/Administrator/src/xictools/src/packages/pkgfiles
+        rsync $dir/$fname $outdir/$osname/$fname
+        chmod 0644 $outdir/$osname/$fname
+        ;;
+    *)
+        echo "Unknown distribution name $osname"
+        ;;
+    esac
+    echo '--------------------------------------------------------------'>&2
+}
+
+reposit=$HOME/src/xictools/src/packages/util
+
+if [ ! -f $outdir/wr_install -o \
+         "x`diff --brief $outdir/wr_install $reposit/wr_install`" != x ]; then
+    cp -fp $reposit/wr_install $outdir/wr_install
+    echo Updated wr_install
+fi
+if [ ! -f $outdir/licinfo -o \
+         "x`diff --brief $outdir/licinfo $reposit/licinfo`" != x ]; then
+    cp -fp $reposit/licinfo $outdir/licinfo
+    echo Updated licinfo
+fi
+
+for o in $oses; do
+    for p in $progs; do
+        get $p $o
+    done
+done
+

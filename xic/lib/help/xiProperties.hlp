@@ -1,0 +1,2128 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiProperties.hlp,v 1.57 2017/03/22 07:30:08 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiProperties.hlp
+!!TITLE
+xiProperties.hlp
+!!HTML
+
+!!SUBTOPICS
+properties
+physprops
+pseudoprops
+elecprops
+prptyspec
+physpropfmt
+elecpropuser
+elecpropxic
+spiceline
+prpescapes
+
+
+!! 021513
+!!KEYWORD
+properties
+!!TITLE
+Cell, Instance and Object Properties
+!!HTML
+    A property consists of an integer and a corresponding text string. 
+    Every database object, including cells, instances, and geometrical
+    objects, has the native ability to accept properties, though this
+    is enabled selectively.  Properties are saved in the design data
+    file along with the item to which it is attached.
+
+    <p>
+    The <a href="xic:prpty"><b>Property Editor</b><a>, which is
+    brought up with the <b>Properties</b> button in the <b>Edit
+    Menu</b>, provides the primary means of property manipulation of
+    objects found in the current cell.  The <a
+    href="xic:cprop"><b>Cell Property Editor</b></a>, which is
+    obtained with the <b>Cell Properties</b> button in the same menu,
+    provides the primary means for manipulating properties of the
+    current cell itself.
+
+    <p>
+    Properties can be applied to physical objects and cells by the
+    user, using the user's property number and format, to suit the
+    user's purposes.  This is fine, as long as the user's property
+    numbers are outside of the range reserved by <i>Xic</i>.  Other
+    properties are set by <i>Xic</i> for internal use such as to store
+    the grid used for the layout, or the GDSII end style for wires. 
+    Still others may be set by the user, but have significance to
+    <i>Xic</i>.  In schematic layouts, these properties define
+    electrical parameters for devices, and are used when generating
+    SPICE output.  In electrical mode, the user is restricted to a
+    small set of properties understood by <i>Xic</i>, whereas in
+    physical mode any non-restricted number and string are allowed. 
+    Finally, <i>Xic</i> supports "pseudo-properties" which are not
+    actual properties, i.e., they are not stored, but their
+    application modifies or returns some parameter related to the
+    object.  These are listed in the <b>Property Editor</b> when in
+    physical mode.
+
+!!SUBTOPICS
+physprops
+elecprops
+prptyspec
+pseudoprops
+
+!! 032015
+!!KEYWORD
+physprops
+!!TITLE
+Physical Mode Properties
+!!HTML
+    In physical mode, the user has wide freedom to apply properties to
+    cells, subcells, and objects.  The only constraint is that the
+    following number ranges are restricted and must be avoided, for
+    arbitrary user-specified properties.  However, there are some
+    properties within the range that can be set by the user, that have
+    specific syntax requirements and meaning to <i>Xic</i>.  These
+    will be described.
+
+    <p>
+    The property number ranges used by <i>Xic</i> are:
+    <dl>
+    <dt>1 - 30<dd>
+    These numbers are used or reserved in electrical mode only, they
+    can be used freely in physical mode cells, instances, and objects.
+    <dt>7000 - 7199<dd>
+    Property values in this range are reserved for use by <i>Xic</i>,
+    and should (in general) not be assigned by the user.
+    <dt>7200 - 7299<dd>
+    These values are reserved for the <a
+    href="pseudoprops">pseudo-properties</a> and can not be used for
+    other purposes.
+    </dl>
+
+    <p>
+    The <a href="xic:prpty"><b>Property Editor</b></a> from the
+    <b>Properties</b> button in the <b>Edit Menu</b> is used to assign
+    properties to cell instances and objects within the current cell. 
+    The <b>Add</b> button in the editor allows addition of special
+    properties used by <i>Xic</i>, and arbitrary user-specified
+    properties.  See the <b>Property Editor</b> description for
+    a description of the properties that can be added.
+
+    <p>
+    The object's existing properties, and available <a
+    href="pseudoprops">pseudo-properties</a> are listed in the
+    <b>Property Editor</b>, with color and syntax coding to indicate
+    the classification.  Pseudo-properties are not actual properties,
+    but when applied to an object will change or report some parameter
+    of the object.
+
+    <p>
+    The <a href="xic:cprop"><b>Cell Property Editor</b></a> from the
+    <b>Cell Properties</b> button in the <b>Edit Menu</b> allows
+    editing of the properties of the current cell.  See the <b>Cell
+    Property Editor</b> description for a list and discussion of the
+    cell properties that can be added with the <b>Add</b> menu.
+   
+    <p>
+    A description of the physical properties used by <i>Xic</i>,
+    including the property string syntax, is provided <a
+    href="physpropfmt">here</a>.
+
+!!SEEALSO
+properties
+prptyspec
+xic:editmenu
+
+!!REDIRECT XprpType     pseudoprops#XprpType
+!!REDIRECT XprpBB       pseudoprops#XprpBB
+!!REDIRECT XprpLayer    pseudoprops#XprpLayer
+!!REDIRECT XprpFlags    pseudoprops#XprpFlags
+!!REDIRECT XprpState    pseudoprops#XprpState
+!!REDIRECT XprpGroup    pseudoprops#XprpGroup
+!!REDIRECT XprpCoords   pseudoprops#XprpCoords
+!!REDIRECT XprpMagn     pseudoprops#XprpMagn
+!!REDIRECT XprpWwidth   pseudoprops#XprpWwidth
+!!REDIRECT XprpWstyle   pseudoprops#XprpWstyle
+!!REDIRECT XprpText     pseudoprops#XprpText
+!!REDIRECT XprpXform    pseudoprops#XprpXform
+!!REDIRECT XprpArray    pseudoprops#XprpArray
+!!REDIRECT XprpTransf   pseudoprops#XprpTransf
+!!REDIRECT XprpName     pseudoprops#XprpName
+!!REDIRECT XprpXY       pseudoprops#XprpXY
+!!REDIRECT XprpWidth    pseudoprops#XprpWidth
+!!REDIRECT XprpHeight   pseudoprops#XprpHeight
+
+!! 101016
+!!KEYWORD
+pseudoprops
+!!TITLE
+Pseudo-Properties
+!!HTML
+    <i>Xic</i> supports "pseudo-properties" which when applied are not
+    saved as properties, but rather change or return some parameter
+    related to the object.  This allows the property setting mechanism
+    to be used to alter the physical layout, which can be an important
+    feature in design automation.
+
+    <p>
+    In physical mode, when the <a href="xic:prpty"><b>Property
+    Editor</b><a/> is in use, the listing will include the available
+    pseudo-properties for the current object.  The pseudo-properties
+    can be "added" or "edited" to modify the current object (or all
+    objects if in global mode).  As usual, such changes can be
+    undone/redone with the standard operations.
+
+    <p>
+    Internally, pseudo-properties can be applied to any object,
+    electrical or physical.  Many of the script functions that modify
+    objects use the pseudo-property mechanism internally.  These
+    functions can take electrical or physical input.  The graphical
+    user interface, though, allows pseudo-properties to be applied in
+    physical mode only, through the <b>Property Editor</b>.
+
+    <p>
+    The pseudo-properties are listed below, giving the property number
+    and an internal name for the pseudo-property.
+
+    <a name="XprpType"></a>
+    <dl>
+    <dt>7200: <tt>XprpType</tt>
+    <dd>This value can be read from all objects.  The returned
+     property string consists of a single character:  <tt>b</tt>,
+     <tt>p</tt>, <tt>w</tt>, <tt>l</tt>, or <tt>c</tt> for boxes,
+     polygons, wires, labels, or subcells respectively.  The returned
+     value indicates the type of object.
+    </dl>
+
+    <a name="XprpBB"></a>
+    <dl>
+    <dt>7201: <tt>XprpBB</tt>
+    <dd>This value can be read from all objects, and can be applied to
+     boxes, polygons, wires, and labels.  The property string is in
+     the form <i>left</i>,<i>bottom</i> <i>right</i>,<i>top</i> where
+     the <i>left</i>, etc. are the coordinates of the object's
+     bounding box in internal units.  The x and y values are separated
+     by commas.  When this property is applied to an object other than
+     a subcell, the object's geometry is stretched to conform to the
+     bounding box given.
+    </dl>
+
+    <a name="XprpLayer"></a>
+    <dl>
+    <dt>7202: <tt>XprpLayer</tt>
+    <dd>This value can be read from all objects, and can be applied to
+     boxes, polygons, wires, and labels.  The property string is the
+     name of the layer on which the object is defined.  For subcells,
+     the returned name is "<tt>$$</tt>", which is the internal name
+     for the layer on which subcells are defined.  When this property
+     is given to an object (not a subcell), and if the name is found
+     in the layer table, the object will be moved to the given layer.
+    </dl>
+
+    <a name="XprpFlags"></a>
+    <dl>
+    <dt>7203: <tt>XprpFlags</tt>
+    <dd>This value can be read from all objects, and can be applied to
+     all objects.  The property string is a list of values and
+     keywords corresponding to special flags associated with the
+     object.  These flags are set internally, and should not be set by
+     the general user.
+    </dl>
+
+    <a name="XprpState"></a>
+    <dl>
+    <dt>7204: <tt>XprpState</tt>
+    <dd>This value can be read from all objects, and can be applied to
+     all objects.  The property string contains one of the keywords
+     <tt>normal</tt>, <tt>selected</tt>, <tt>deleted</tt>,
+     <tt>incomplete</tt>, and <tt>internal</tt>.  This indicates a
+     state value for the object which is used internally.  These
+     values should not be set by the general user.
+    </dl>
+
+    <a name="XprpGroup"></a>
+    <dl>
+    <dt>7205: <tt>XprpGroup</tt>
+    <dd>This value can be read from all objects, and can be applied to
+     all objects.  The property string is an integer corresponding to
+     the conductor group assigned to the object by the extraction
+     system.  Though all objects have this data field, it has
+     relevance to objects other than labels that are defined on
+     conducting layers only.  It is generally unwise for the user to
+     set this value.
+    </dl>
+
+    <a name="XprpCoords"></a>
+    <dl>
+    <dt>7206: <tt>XprpCoords</tt>
+    <dd>This value can be read from all objects, and can be applied to
+     boxes, polygons, wires, and labels.  The property string is a
+     list of coordinates, one for each vertex, with the x and y values
+     separated by a comma.  Line feeds are included in returned
+     strings to keep the line length below 80 characters.  The values
+     are in internal units.  For boxes, labels, and subcells, the
+     coordinates are those of the bounding box.  For polygons and
+     wires, the coordinates are the actual vertices.  For all but
+     wires, the first and last coordinates are the same, i.e., the
+     path is closed.  For boxes, polygons, wires, and labels, applying
+     this property will change the object geometry.  When applied to
+     boxes or polygons, If the new geometry is a Manhattan rectangle,
+     the new figure will be a box, otherwise it will be a polygon. 
+     When applied to wires, the new object will always be a wire, but
+     with the new path.  The coordinates given to a label must
+     describe a Manhattan rectangle, and the label will be stretched
+     to fill the given rectangle, as with applying <tt>XprpBB</tt>. 
+    </dl>
+
+    <a name="XprpMagn"></a>
+    <dl>
+    <dt>7207: <tt>XprpMagn</tt>
+    <dd>This value can be read from all objects, and can be applied to
+     all objects.  The return value is "1.000000" for objects other
+     than cell instances, and the magnification value for cell
+     instances.  When applied to an object or cell instance, the size
+     of the object will change, and a "reference point" of the object
+     will remain in a fixed location.
+
+     <blockquote>
+     <table border=1 cellpadding=2 bgcolor="#ffffee">
+     <tr><th>object</th> <th>reference point</th></tr>
+     <tr><td>box</td> <td>lower-left corner</td></tr>
+     <tr><td>polygon</td> <td>first vertex in internal list</td></tr>
+     <tr><td>wire</td> <td>first vertex in internal list</td></tr>
+     <tr><td>label</td> <td>label reference point</td></tr>
+     <tr><td>instance</td> <td>transformed master origin</td></tr>
+     </table>
+     </blockquote>
+    </dl>
+
+    <a name="XprpWwidth"></a>
+    <dl>
+    <dt>7208: <tt>XprpWwidth</tt>
+    <dd>This value can be read from wires, and can be applied to
+     wires.  The property string is the width of the wire in internal
+     units.  When applied to a wire, the width will take the new
+     value.  This has no effect when applied to objects other than
+     wires.
+    </dl>
+
+    <a name="XprpWstyle"></a>
+    <dl>
+    <dt>7209: <tt>XprpWstyle</tt>
+    <dd>This value can be read from and applied to wires.  When the
+     property string is read, only the first character is significant,
+     the rest if any are ignored.  This is used to set the end style
+     of the wire to one of three possible states:  <b>flush</b>,
+     <b>rounded</b>, or <b>extended</b>.  In <i>Xic</i>, both wire
+     ends will have the same style.  If <b>flush</b>, the wire is
+     truncated normal to the edges at the end vertices.  If
+     <b>rounded</b>, the wire continues beyond the vertex by half the
+     wire width, but is given a rounded (ideally semicircular) shape
+     (this style is rarely used and is not recommended).  The
+     <b>extended</b> style is similar in that the wire extends a
+     half-width past the vertices, but the end is square.  This is the
+     <i>Xic</i> default.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>leading character</th> <th>style</th></tr>
+    <tr><td><tt>f</tt>,<tt>F</tt>, or <tt>0</tt> (zero)</td> <td>flush</td></tr>
+    <tr><td><tt>r</tt>,<tt>R</tt>, or <tt>1</tt> (one)</td> <td>rounded</td></tr>
+    <tr><td><tt>e</tt>,<tt>E</tt>, or <tt>2</tt></td> <td>extended</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+     Applying this property to a wire will cause that wire to be
+     rendered with the given end style.  The property has no effect if
+     given to objects other than wires.
+    </dl>
+
+    <a name="XprpText"></a>
+    <dl>
+    <dt>7210: <tt>XprpText</tt>
+    <dd>This value can be read from labels, and can be applied to
+     labels.  The return value is the text of the label.  The full
+     text including encoded hypertext entries is provided.  When
+     applied to a label, the label takes the new text.  There is no
+     effect if this property is applied to objects other than labels.
+    </dl>
+
+    <a name="XprpXform"></a>
+    <dl>
+    <dt>7211: <tt>XprpXform</tt>
+    <dd>This value can be read from and applied to text labels.  It
+    controls a set of flags associated with the label which define the
+    presentation attributes.
+
+    <p>
+    The general syntax for the string value is
+    <blockquote>
+    [<tt>+</tt>|<tt>-</tt>] [<tt>0x</tt>]<i>hex</i>|<i>word</i>[,...]
+    </blockquote>
+
+    <p>
+    Optionally, the string begins with a <tt>+</tt> or <tt>-</tt>
+    character.  If <tt>+</tt> appears, it indicates that the flag bits
+    that are specified will be set, and those not specified will be
+    unchanged.  If <tt>-</tt> is given, the flag bits specified will
+    be unset, those not specified will be unchanged.  If neither, the
+    flags will be set to a new value consisting of the bits specified
+    which are set, other bits are not set.
+
+    <p>
+    The remaining part of the string effectively specifies a set of
+    flag bits.  This consists of space or comma-separated keywords or
+    hex integers.  Hex integers can have an optional "<tt>0x</tt>" or
+    "<tt>0X</tt>" prefix.  The overall value is the OR of all terms
+    given.  The table below lists the accepted keywords and the
+    equivalent flag bits.  Keyword recognition is case-insensitive.
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Word</th> <th>Hex Bits</th> <th>Description</th></tr>
+    <tr><td><tt>R0</tt></td> <td>0</td> <td>no rotation (dummy token)</td></tr>
+    <tr><td><tt>R45</tt></td> <td>10</td> <td>45 degree rotation</td></tr>
+    <tr><td><tt>R90</tt></td> <td>1</td> <td>90 degree rotation</td></tr>
+    <tr><td><tt>R135</tt></td> <td>11</td> <td>135 degree rotation</td></tr>
+    <tr><td><tt>R180</tt></td> <td>2</td> <td>180 degree rotation</td></tr>
+    <tr><td><tt>R225</tt></td> <td>12</td> <td>225 degree rotation</td></tr>
+    <tr><td><tt>R270</tt></td> <td>3</td> <td>270 degree rotation</td></tr>
+    <tr><td><tt>R315</tt></td> <td>13</td> <td>315 degree rotation</td></tr>
+    <tr><td><tt>MY</tt></td> <td>4</td> <td>mirror Y after rotation</td></tr>
+    <tr><td><tt>MX</tt></td> <td>8</td> <td>mirror X after rotation and
+      mirror Y</td></tr>
+    <tr><td><tt>HJL</tt></td> <td>0</td> <td>left justify (dummy
+      token)</td></tr>
+    <tr><td><tt>HJC</tt></td> <td>20</td> <td>center X justify</td></tr>
+    <tr><td><tt>HJR</tt></td> <td>40</td> <td>right justify</td></tr>
+    <tr><td><tt>VJB</tt></td> <td>0</td> <td>bottom justify (dummy
+      token)</td></tr>
+    <tr><td><tt>VJC</tt></td> <td>80</td> <td>center Y justify</td></tr>
+    <tr><td><tt>VJT</tt></td> <td>100</td> <td>top justify</td></tr>
+    <tr><td><tt>T0</tt></td> <td>0</td> <td>text font 0 (dummy)</td></tr>
+    <tr><td><tt>T1</tt></td> <td>200</td> <td>text font 1 (unused)</td></tr>
+    <tr><td><tt>T2</tt></td> <td>400</td> <td>text font 2 (unused)</td></tr>
+    <tr><td><tt>T3</tt></td> <td>600</td> <td>text font 3 (unused)</td></tr>
+    <tr><td><tt>SHOW</tt></td> <td>1000</td> <td>show hidden label</td></tr>
+    <tr><td><tt>HIDE</tt></td> <td>2000</td> <td>hide label</td></tr>
+    <tr><td><tt>TLEN</tt></td> <td>4000</td> <td>show in top-level
+      only</td></tr>
+    <tr><td><tt>LIML</tt></td> <td>8000</td> <td>limit lines</td></tr>
+    </table>
+
+    <p>
+    The <tt>HJR</tt> will override <tt>HJC</tt> if both are given,
+    similarly <tt>VJT</tt> will override <tt>VJC</tt>.
+
+    <p>
+    The <tt>SHOW</tt>/<tt>HIDE</tt> bits are for implementing a
+    clickable text display, where the label text can be shown or
+    "hidden" by rendering a small glyph instead.  At most one of these
+    bits should be set.  Either bit overrides the default which is in
+    force when neither is set.  These can be applied to any label,
+    however the "clickability" of the label is set by the <a
+    href="LabelHiddenMode"><b>LabelHiddenMode</b></a> variable.  All
+    labels are "clickable" by default, press <b>Shift</b> and click on
+    the label to toggle the hidden/viewing status.
+
+    <p>
+    The <tt>TLEV</tt> bit gives the label the property of being
+    invisible in instances of the containing cell, but visible when
+    the cell is viewed as the top-level (current cell).
+
+    <p>
+    The <tt>LIML</tt> bit causes the label to limit the number of
+    lines displayed, when the label text has multiple lines.  The
+    maximum line count defaults to 5, and is otherwise given with the
+    <a href="LabelMaxLines"><b>LabelMaxLines</b></a> variable.
+
+!!IFDEF OpenAccess
+    <p>
+    The <tt>TLEV</tt> and <tt>LIML</tt> bits may be applied when
+    reading schematic cells through OpenAccess for Virtuoso
+    compatibility, but are not otherwise used in <i>Xic</i>, except as
+    controlled through this pseudo-property.
+!!ENDIF
+
+    <p>
+    When applied to a label, the label will be rendered using the new
+    flags.  This property has no effect when applied to objects other
+    than labels.
+    </dl>
+
+    <a name="XprpArray"></a>
+    <dl>
+    <dt>7212: <tt>XprpArray</tt>
+    <dd>This value can be read from subcell instances, and can be
+     applied to subcell instances.  The property string is of the form
+     "<i>nx</i>,<i>ny</i> <i>dx</i>,<i>dy</i>" where <i>nx</i> and
+     <i>ny</i> are the number of columns and rows, and the <i>dx</i>
+     and <i>dy</i> are the center to center spacings in internal
+     units, for an array of subcells.  When applied to an instance,
+     the array parameters of the instance are correspondingly changed. 
+     This property has no effect on objects other than subcells.
+    </dl>
+
+    <a name="XprpTransf"></a>
+    <dl>
+    <dt>7213: <tt>XprpTransf</tt>
+    <dd>This value can be read from subcell instances, and can be
+     applied to subcell instances.  The property string is the CIF
+     transformation string for the instance, with coordinates in
+     internal units.  When applied to an instance, the instance
+     placement and orientation change to reflect the new
+     transformation.  This property has no effect on objects other
+     than subcells.
+    </dl>
+
+    <a name="XprpName"></a>
+    <dl>
+    <dt>7214: <tt>XprpName</tt>
+    <dd>This value can be read from subcell instances, and can be
+     applied to subcell instances.  The property string is the name of
+     the instantiated cell.  If this property is set, the instance is
+     replaced by an instance of the given cell name.  The current
+     transform is added to the existing transform when the new
+     instance is placed.  This property has no effect on objects other
+     than subcells.
+    </dl>
+
+    <a name="XprpXY"></a>
+    <dl>
+    <dt>7215: <tt>XprpXY</tt>
+    <dd>This pseudo-property has a value that is an x,y coordinate,
+    and can be read from or applied to any object or subcell.  The
+    interpretation of this coordinate depends on the type of object. 
+    For boxes, it is the lower-left corner.  For polygons and wires,
+    it is the first vertex in the vertex list.  For labels, it is the
+    text anchor point, and for subcells it is the placement
+    coordinate.  Setting the property is equivalent to moving the
+    object.
+    </dl>
+
+    <a name="XprpWidth"></a>
+    <dl>
+    <dt>7216: <tt>XprpWidth</tt>
+    <dd>This pseudo-property returns the width of any object or cell
+    instance in internal units.  It can be applied to objects but not
+    cell instances, and will scale the object to the specified width.
+    </dl>
+
+    <a name="XprpHeight"></a>
+    <dl>
+    <dt>7217: <tt>XprpHeight</tt>
+    <dd>This pseudo-property returns the height of any object or cell
+    instance in internal units.  It can be applied to objects but not
+    cell instances, and will scale the object to the specified height.
+    </dl>
+
+    <p>
+    The settable pseudo-properties for an object are listed in the
+    <b>Property Editor</b>, along with the "real" properties.  These
+    can be changed in the same way, which will produce physical
+    changes to the object.
+
+!!SEEALSO
+xic:editmenu
+xic:prpty
+xic:cprop
+
+!! 110313
+!!KEYWORD
+elecprops
+!!TITLE
+Electrical Mode Properties
+!!HTML
+    In electrical mode, only properties with certain values and data
+    can be entered, and only to objects corresponding to library
+    devices or subcircuit instances.
+
+    <p>
+    These properties are generally applied with the <a
+    href="xic:prpty"><b>Property Editor</b></a> from the
+    <b>Properties</b> button of the <b>Edit Menu</b>.  However, the
+    most frequently used properties, such as those that set device
+    parameters, have values that are shown on-screen as text labels. 
+    If one edits the label, the underlying property value is changed
+    as well.  This is generally more convenient than using the
+    <b>Property Editor</b>.  Labels are edited by first selecting a
+    label by clicking on it, then entering the <a
+    href="xic:label"<b>label</b></a> command by pressing the button in
+    the side menu.
+
+    <p>
+    A description of the electrical properties used by <i>Xic</i>,
+    including the property string syntax, is provided <a
+    href="prptyspec">here</a>.
+
+    <p>
+    See the description of the <b>Property Editor</b> for a listing
+    and discussion of the properties that can be added with the
+    <b>Add</b> menu.
+
+    <p>
+    Properties of the current call can be added or modified with the
+    <a href="xic:cprop"><b>Cell Property Editor</b></a> from the
+    <b>Cell Properties</b> button in the <b>Edit Menu</b>, and are
+    listed in the <b>Add</b> menu of the editor.  See the <b>Cell
+    Property Editor</b> description for a list and discussion of these
+    properties.
+
+!!SEEALSO
+properties
+prptyspec
+xic:editmenu
+
+!! 021513
+!!KEYWORD
+prptyspec
+!!TITLE
+Property Specifications
+!!HTML
+    In <i>Xic</i>, cells and database objects contain a list of
+    number-string associations called "properties".  These are used to
+    store various pieces of information about the object.  Some
+    properties a used only by the internals of <i>Xic</i> and are not
+    accessible to the user, while other properties can be set by the
+    user to assign certain attributes to an object.  The user will
+    encounter properties primarily in electrical mode, as this is the
+    means by which devices are assigned values, models, and other
+    parameters.
+
+    <p>
+    The properties that are assigned by <i>Xic</i>, and/or have
+    meaning to <i>Xic</i> are described in the sub-topics.  Generally,
+    the property numbers 7000 - 7199 are reserved by <i>Xic</i>, and
+    property numbers in this range should not be assigned by the user. 
+    Also, property numbers in the range 7200 - 7299 correspond to <a
+    href="properties#pseudoprops">pseudo-properties</a> which are used
+    to query or change the parameters of a physical object.  These
+    values should not be used for assigned properties.
+
+!!SUBTOPICS
+physpropfmt
+elecpropuser
+elecpropxic
+
+!!SEEALSO
+properties
+physprops
+elecprops
+pseudoprops
+xic:editmenu
+
+!!REDIRECT prpty:text           physpropfmt#test
+!!REDIRECT prpty:pathtype       physpropfmt#pathtype
+!!REDIRECT prpty:grid           physpropfmt#grid
+!!REDIRECT prpty:flags          physpropfmt#flags
+!!REDIRECT prpty:refcell        physpropfmt#refcell
+!!REDIRECT prpty:pflatten       physpropfmt#flatten
+!!REDIRECT prpty:nomerge        physpropfmt#nomerge
+!!REDIRECT prpty:stdvia         physpropfmt#stdvia
+!!REDIRECT prpty:termorder      physpropfmt#termorder
+!!REDIRECT prpty:skipdrc        physpropfmt#skipdrc
+!!REDIRECT prpty:labelsize      physpropfmt#labelsize
+
+!! 101016
+!!KEYWORD
+physpropfmt
+!!TITLE
+Physical Mode Property Specifications
+!!HTML
+    This section lists the properties known to <i>Xic</i> that may be
+    found in physical cells, instances, or objects.  This lists only
+    properties likely to be encountered by the user, there may be
+    additional properties that are not specifically documented used
+    internally by <i>Xic</i>.  All physical properties known to
+    <i>Xic</i> use numbers in the reserved range 7000 - 7199.
+
+    <a name="text"></a>
+    <dl>
+    <dt><b>text</b> property, number 7012<dd>
+    This property saves GDSII label parameters ANGLE, MAG, WIDTH, and
+    PTYPE, which are unused by <i>Xic</i>.  The string consists of a
+    concatenation of keyword/value pairs, using the keywords above
+    (not all need be present).  These attributes will be reassigned to
+    the label when a GDSII file is written.
+    </dl>
+
+    <a name="pathtype"></a>
+    <dl>
+    <dt><b>pathtype</b> property, number 7033<dd>
+    This property is used for physical mode wires of nonzero width
+    which have a non-default path type.  The string has the form
+    <blockquote>
+    <tt>PATHTYPE</tt> <i>pathtype</i>
+    </blockquote>
+    where <i>pathtype</i> is 0 for flush ends, 1 for rounded ends. 
+    The default pathtype is 2 (extended ends).  This property is added
+    to wires in native and CIF output if the <a
+    href="CifOutExtensions"><b>CifOutExtensions</b></a> variable has
+    the <b>wire extension</b> flag set, and the <b>wire extension
+    new</b> flag is <b>not</b> set.  The wire end style is included in
+    the <a href="symfilefmt#cifext">wire specification</a> in the
+    present default syntax, so <b>wire extension new</b> is set by
+    default.
+    </dl>
+
+    <a name="grid"></a>
+    <dl>
+    <dt><b>grid</b> property, number 7100<dd>
+    This property is applied to the top-level physical cell when the
+    cell is saved, preserving the current grid setting.  This property
+    is used in physical mode only.  The property string has the format
+    <blockquote>
+    <tt>grid</tt> <i>resol</i> <i>snap</i>
+    </blockquote>
+    where <i>resol</i> is the number of internal units per snap point,
+    and <i>snap</i> is the number of snap points per grid line if
+    positive, or grid lines per snap point if negative.
+    </dl>
+
+    <a name="flags"></a>
+    <dl>
+    <dt><b>flags</b> property, number 7105<dd>
+    This property can be be applied to physical cells.  The property
+    string can take one of two forms:  a hex number, or a
+    space-separated list of string tokens.  The tokens and
+    corresponding bits are
+ 
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Bit</th> <th>Keyword</th> <th>Description</th></tr>
+    <tr><td>0</td> <td><tt>OPAQUE</tt></td> <td>When set, the cell is
+      "opaque" with regard to extraction.  The cell will look like a
+      black box with terminals.</td></tr>
+    <tr><td>1</td> <td><tt>CONNECTOR</tt></td> <td>Not implemented,
+      don't use.</td></tr>
+    <tr><td>2</td> <td><tt>USER0</tt></td> <td rowspan=6>User flags, not
+      used by <i>Xic</i>.  These flags may be useful to the user.</td></tr>
+    <tr><td>3</td> <td><tt>USER1</tt></td></tr>
+    </table>
+
+    <p>
+    When the <a href="ExtractOpaque"><b>ExtractOpaque</b></a> variable
+    is set, the <tt>OPAQUE</tt> flag is ignored.
+    </dl>
+
+    <a name="refcell"></a>
+    <dl>
+    <dt><b>refcell</b> property, number 7150<dd>
+    A <a href="refcell">reference cell</a> is an empty cell with a
+    <b>refcell</b> property, which references a cell hierarchy in
+    another layout file.  Reference cells can exist in memory or as a
+    native cell file on disk.
+
+    <p>
+    The string for this property consists of space-separated
+    <i>keyword</i>=<i>value</i> pairs.  The known keywords are as
+    follows:
+
+    <dl>
+    <dt><tt>cellname</tt><dd>
+    The top-level cell to extract from the referenced hierarchy.
+    <dt><tt>dbname</tt><dd>
+    The CHD name in memory.  This is never written to a file, it is only
+    used when the cell is in memory.
+    <dt><tt>filename</tt><dd>
+    The full path to the referenced layout file.
+    <dt><tt>bound</tt><dd>
+    The bounding box, may be used for area filtering, in the form
+    <i>L</i>,<i>B</i>,<i>R</i>,<i>T</i> where the values are
+    floating-point in microns.
+    <dt><tt>aflags</tt><dd>
+    Alias flags integer, these set name aliasing modes.
+    <dt><tt>aprefix</tt><dd>
+    Cell name change prefix.
+    <dt><tt>asuffix</tt><dd>
+    Cell name change suffix.
+    </dl>
+    </dl>
+
+    <a name="flatten"></a>
+    <dl>
+    <dt><b>flatten</b> property, number 7151<dd>
+    During extraction, simple cells that contain only geometry or
+    perhaps all or part of a device can be logically <a
+    href="ext:exthier">flattened</a> into their parent cells for
+    extraction purposes.  If this property is set in a cell, that cell
+    will always be considered as part of its containing cell by the
+    extraction system.
+
+    <p>
+    This is identical to the effect of listing the cell name in the
+    <a href="FlattenPrefix"><b>FlattenPrefix</b></a> variable.
+
+    <p>
+    The string for this property is ignored, but is set to
+    "<tt>flatten</tt>" by convention.
+    </dl>
+
+    <a name="nomerge"></a>
+    <dl>
+    <dt><b>nomerge</b> property, number 7152<dd>
+    The <b>nomerge</b> property applies to physical boxes, polygons,
+    and wires, and is used by the extraction system.  If this property
+    is found on any object used to recognize a device body, that
+    device will never be merged with similar devices.  This is
+    relevant when merging is enabled for the device during extraction,
+    and one wants to suppress this in individual cases.  It prevents
+    both parallel and series merging.
+    </dl>
+
+    <a name="stdvia"></a>
+    <dl>
+    <dt><b>stdvia</b> property, number 7160<dd>
+    This property is given to <a href="stdvia">standard via</a>
+    sub-masters and instances.
+!!IFDEF OpenAccess
+    The property is recognized by the OpenAccess <a
+    href="oaplugin">plug-in</a> providing transparent conversion
+    between OpenAccess and <i>Xic</i> standard vias.
+!!ENDIF
+    The syntax is described <a href="stdvia#prpty">here</a>.
+    </dl>
+
+    <a name="termorder"></a>
+    <dl>
+    <dt><b>termorder</b> property, number 7168<dd>
+    This is set to a space-separated list of group names, and can be
+    applied to physical cells.  It will provide the cell connection
+    terminal names and ordering when electrical data are absent.  The
+    names must match <a href="ext:netname">net name labels</a> placed
+    in the layout.  Names not found are silently ignored.
+    </dl>
+
+    <a name="skipdrc"></a>
+    <dl>
+    <dt><b>skipdrc</b> property, number 7178<dd>
+    This property is applied in output to boxes, polygons, or wires
+    which have the <a href="xic:sflag"><b>skip DRC</b></a> flag set. 
+    It is used to set the <b>skip DRC</b> flag in boxes, polygons, and
+    wires as an input file is being read.
+    </dl>
+
+    <a name="labelsize"></a>
+    <dl>
+    <dt><b>labelsize</b> property, number 7180<dd>
+    This property is added to <a href="xic:label">labels</a> when
+    writing to GDSII, and saves the label width, height and visibility
+    status.  The string has the format
+    <blockquote>
+    <tt>width</tt> <i>width</i> <tt>height</tt> <i>height</i>
+      [<tt>show</tt>|<tt>hide</tt>] [<tt>tlev</tt>] [<tt>liml</tt>]
+    </blockquote>
+    where <i>width</i> and <i>height</i> are in internal units.
+
+    <p>
+    The keywords "<tt>show</tt>" or "<tt>hide</tt>" appended to the
+    string store the display state of the label, which can be visible
+    or "hidden", toggled by clicking with button 1 with the
+    <b>Shift</b> key held.  The <a
+    href="LabelHiddenMode"><b>LabelHiddenMode</b></a> variable
+    controls the scope of this feature.
+
+    <p>
+    The <tt>tlev</tt> keyword gives the label the property of being
+    invisible in instances of the containing cell, but visible when
+    the cell is viewed as the top-level (current cell).
+
+    <p>
+    The <tt>liml</tt> keyword causes the label to limit the number of
+    lines displayed, when the label text has multiple lines.  The
+    maximum line count defaults to 5, and is otherwise given with the
+    <a href="LabelMaxLines"><b>LabelMaxLines</b></a> variable.
+
+    <p>
+    The four flags are the same as those accessible with the <a
+    href="XprpXfrom"><tt>XprpXform</tt></a> pseudo-property.
+    </dl>
+
+!!IFDEF OpenAccess
+    <p>
+    This group of properties applies to the OpenAccess
+    <a href="oaplugin">interface</a>.
+
+    <dl>
+    <dt><b>oa_cstmvia</b> property, number 7161<dd>
+    This property is applied by the translator to <i>Xic</i> cells
+    that represent a custom via object from OpenAccess.  The format
+    is described in the link.
+    </dl>
+
+    <dl>
+    <dt><a href="oa_orig"><b>oa_orig</b></a> property, number 7183<dd>
+    This property is applied transiently when reading cell data into
+    <i>Xic</i>.  The format is described in the link.
+    </dl>
+!!ENDIF
+
+    <p>
+    The following group of properties implements the Ciranova abutment
+    protocol for parameterized cells.  Parameterized cells may use
+    this protocol to automatically merge abutted instances so as to
+    share common features.
+
+    <dl>
+    <dt><a href="prpty:ab_class"><b>ab_class</b></a> property, number 7185<dd>
+    This is similar to the Ciranova <tt>pycAbutClass</tt> property.
+    The format of the <b>ab_class</b> property is described in the link.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:ab_rules"><b>ab_rules</b></a> property, number 7186<dd>
+    This is similar to the Ciranova <tt>pycAbutRules</tt> property.
+    The format of the <b>ab_rules</b> property is described in the link.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:ab_directs"><b>ab_directs</b></a> property, number
+    7187<dd>
+    This is similar to the Ciranova <tt>pycAbutDirections</tt> property.
+    The format of the <b>ab_directs</b> property is described in the link.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:ab_shapename"><b>ab_shapename</b></a> property, number
+    7188<dd>
+    This is similar to the Ciranova <tt>pycShapeName</tt> property.
+    The format of the <b>ab_shapename</b> property is described in the link.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:ab_pinsize"><b>ab_pinsize</b></a> property, number
+    7189<dd>
+    This is similar to the Ciranova <tt>pycPinSize</tt> property.
+    The format of the <b>ab_pinsize</b> property is described in the link.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:ab_inst"><b>ab_inst</b></a> property, number 7190<dd>
+    The format of the <b>ab_inst</b> property is described in the link.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:ab_prior"><b>ab_prior</b></a> property, number 7191<dd>
+    The format of the <b>ab_prior</b> property is described in the link.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:ab_copy"><b>ab_copy</b></a> property, number 7192<dd>
+    The format of the <b>ab_copy</b> property is described in the link.
+    </dl>
+
+    The following property is required to implement the Ciranova
+    protocol for stretch handles in parameterized cells.  A stretch
+    handle is a display element that can be dragged with the mouse,
+    which initiates a change of a cell property and appropriate
+    remastering.
+
+    <dl>
+    <dt><a href="prpty:grip"><b>grip</b></a> property, number 7195<dd>
+    The format of the <b>grip</b> property is described in the link.
+    </dl>
+
+    <p>
+    The remaining properties support <a
+    href="xic:pcells">parameterized cells</a> (pcells).  The
+    super-master pcell contains a script reference, default parameter
+    values, and (optionally) parameter constraint strings.  When the
+    super-master is instantiated, the script is executed producing a
+    sub-master under a modified name, plus an instance of the
+    sub-master.  The instance contains the name of the super-master
+    and a copy of the instantiation parameters.
+
+    <dl>
+    <dt><a href="prpty:pc_name"><b>pc_name</b></a> property, number 7197<dd>
+    This property is assigned by <i>Xic</i> to pcell sub-masters and
+    their instances.  It provides the name of the pcell from which the
+    sub-master or instance was derived.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:pc_params"><b>pc_params</b></a> property, number
+    7198<dd>
+    This property is assigned by the user to pcells, and contains the
+    default parameter set.  It will be assigned by <i>Xic</i> to
+    sub-masters and instances, and contains the parameter set that was
+    used to create the sub-master.
+    </dl>
+
+    <dl>
+    <dt><a href="prpty:pc_script"><b>pc_script</b></a> property, number
+    7199<dd>
+    This property is assigned by the user to a pcell, and appears only
+    in the super-master.  It contains the script, or a path to a
+    script, which is executed when the pcell is instantiated.
+    </dl>
+
+!!SEEALSO
+prptyspec
+physprops
+
+!! not in manual
+!!KEYWORD
+prpty:flatten
+!!TITLE
+flatten property
+!!HTML
+    This property has <a href="prpty:eflatten">electrical</a> and <a
+    href="prpty:pflatten">physical</a> versions.  Both similarly
+    control whether an instance is smashed into its parent before
+    hierarchical comparisons in <a href="xic:lvs">LVS</a>.  The
+    properties can account for hierarchical differences between layout
+    and schematic, that might cause spurious LVS violations.
+
+!!SEEALSO
+prptyspec
+
+!!REDIRECT prpty:model          elecpropuser#model
+!!REDIRECT prpty:value          elecpropuser#value
+!!REDIRECT prpty:param          elecpropuser#param
+!!REDIRECT prpty:other          elecpropuser#other
+!!REDIRECT prpty:nophys         elecpropuser#nophys
+!!REDIRECT prpty:virtual        elecpropuser#virtual
+!!REDIRECT prpty:eflatten       elecpropuser#flatten
+!!REDIRECT prpty:range          elecpropuser#range
+!!REDIRECT prpty:macro          elecpropuser#macro
+!!REDIRECT prpty:devref         elecpropuser#devref
+
+!! 030415
+!!KEYWORD
+elecpropuser
+!!TITLE
+User-Specified Electrical Property Specifications
+!!HTML
+    The properties described in this section provide user-specified
+    information to device and subcircuit instances, and to device and
+    cell definitions.  In many cases, the property applied to a device
+    definition will supply a default for a similar property created in
+    the new instance when the device is instantiated.  The instance
+    property can be subsequently modified by the user.
+
+    <p>
+    The <a href="prpty:name"><b>name</b></a> property , plus the
+    <b>devref</b>, <b>model</b>, <b>value</b> and <b>param</b>
+    properties discussed below, translate into fields of device
+    definition lines when generating SPICE output, and in order to set
+    these properties proficiently, the user must have familiarity with
+    the <a href="spiceline">SPICE syntax</a>.
+
+    <p>
+    The strings for these properties may contain special <a
+    href="prpescapes">escape sequences</a> indicating hypertext
+    references or other characteristics.
+
+    <a name="model"></a>
+    <dl>
+    <dt><b>model</b> property, number 1<dd>
+    The <b>model</b> property appears in device instances and defines
+    a device model to be included in the SPICE line for the device. 
+    This property is normally assigned to the device instance with the
+    <a href="xic:prpty"><b>Property Editor</b></a> from the <a
+    href="xic:editmenu"><b>Edit Menu</b></a>, but a default model can
+    be supplied by including this property in the device definition in
+    the device library file.
+
+    <blockquote>
+      <tt>5 1</tt> <i>model_name</i>;
+    </blockquote>
+    The <i>model_name</i> is arbitrary, but a corresponding entry should
+    exist in a model library file.
+    </dl>
+
+    <a name="value"></a>
+    <dl>
+    <dt><b>value</b> property, number 2<dd>
+    The <b>value</b> property supplies a string to be used in the
+    device line in SPICE output for the device "value".  It should not
+    appear if the device has a model property, and if it does, it will
+    be ignored.  The property is normally applied to device instances
+    with the <b>Property Editor</b>, but can appear in the device
+    definition in the device library file to assign a default value
+    for the device.
+
+    <blockquote>
+      <tt>5 2</tt> <i>value</i>;
+    </blockquote>
+    The <i>value</i> is a string which may, for example, represent a
+    floating point number specifying the component value, e.g., in
+    ohms for a resistor.  In general, any string can appear, and it
+    may include hypertext references.  A complex string would be
+    necessary for a voltage source with functional dependence, for
+    example.
+
+    <p>
+    The <b>model</b> and <b>value</b> properties are mutually
+    exclusive, either can be supplied, but not both.
+    </dl>
+
+    <a name="param"></a>
+    <dl>
+    <dt><b>param</b> property, number 3<dd>
+    The <b>param</b> property specifies the part of the device SPICE
+    line which provides an initial condition and other data not
+    included in a model or value string.  The property is normally
+    applied to device and subcircuit instances with the <b>Property
+    Editor</b>, or to cells with the <b>Cell Property Editor</b>. 
+    When applied to cells or subcircuit instances, the property is
+    used to provide parameter definitions for SPICE (see the
+    description of the <a href=".subckt"><tt>.subckt</tt></a> line). 
+    This can also appear in the device definition in the device
+    library file to provide a default.  If given to a cell, instances
+    of the cell will inherit the property, which can then be changed
+    from within <i>Xic</i> on a per-instance basis.  For device
+    instances, this property specifies any parameter, such as device
+    area, which is provided in the device line after the model.  This
+    manifestation was referred to as the initial condition
+    (<b>initc</b>) property in previous documentation.
+
+    <blockquote>
+      <tt>5 3</tt> <i>string</i>;
+    </blockquote>
+    The <i>string</i> will be appended to the device line when a SPICE file
+    is created.  It can contain initial condition data or other
+    parameters significant to the device, which are syntactically
+    expected to the right of the model or value.
+
+    <p>
+    The parameter definitions in a <b>param</b> property string have
+    the form
+
+    <blockquote>
+    <i>name1</i><tt>=</tt><i>value1</i>
+    <i>name2</i><tt>=</tt><i>value2</i> ...
+    </blockquote>
+
+    There may be white space around the '<tt>=</tt>' character.  The
+    <i>name</i> tokens are parameter names, which are alphanumeric
+    words starting with an alpha character.  The <i>value</i> token
+    can not be empty, and must be a single text token.  This means
+    that if the <i>value</i> string contains white space, it must be
+    single or double quoted.  Be aware that the interpretation of
+    single quoted ('<tt>word</tt>') and double quoted
+    ("<tt>word</tt>") differs fundamentally.  Double quoting implies a
+    manifest string type.  The string will be assigned verbatim to the
+    parameter, which will be of string type.  No further processing
+    will be done.  Single quoting implies an expression which reduces
+    to a number when evaluated.  If a <b>value</b> is not quoted, it
+    will be evaluated as an expression if necessary, otherwise it will
+    be taken as a numeric value.  Generally, parameter assignment
+    failures are silently ignored.
+    </dl>
+  
+    <a name="other"></a>
+    <dl>
+    <dt><b>other</b> property, number 4<dd>
+    The <b>other</b> property is a catch-all device property that is
+    not used by <i>Xic</i> and does not appear in SPICE output.  There
+    can be arbitrarily many <b>other</b> properties specified for a
+    device, unlike the <b>model</b>, <b>value</b>, and
+    <b>param</b> properties which can appear at most once.  The
+    <b>other</b> property can be used for storage of alternate values
+    for the <b>model</b>, <b>value</b>, and <b>param</b> properties. 
+    It is applied to device instances with the <b>Property Editor</b>. 
+    Although it can be used in device definitions in the device
+    library file, there seems to be no reason for doing so. 
+
+    <blockquote>
+      <tt>5 4</tt> <i>string</i>;
+    </blockquote>
+    </dl>
+
+    <a name="nophys"></a>
+    <dl>
+    <dt><b>nophys</b> property, number 5<dd>
+    When the <b>nophys</b> property is applied to an electrical device
+    or subcircuit, that device or subcircuit is assumed to have no
+    physical implementation and is ignored in the algorithm that
+    associates electrical and physical devices and subcircuits.  A
+    device or subcircuit with this property has no dual in the
+    physical layout, and its terminals will never be placed in the
+    physical layout, where they would otherwise be visible with the
+    <b>Show Terms</b> command.  Devices and subcircuits with this
+    property will be ignored in <a href="xic:lvs">LVS</a> testing.
+
+    <p>
+    In order to actually simulate a circuit that has been extracted
+    from the physical layout, it is necessary to add sources and
+    perhaps other devices, which have no counterparts in the physical
+    layout.  In general, this will cause LVS errors in subsequent LVS
+    runs.  The <b>nophys</b> property can be added to the additional
+    devices to avoid these errors.
+
+    <p>
+    By "ignoring" these devices, the device terminals are considered
+    as open circuits.  However, there are times when it would be
+    useful to consider these devices as shorted.  For example, suppose
+    that one wishes to include parasitic series inductance in a
+    resistor during simulation.  However, this inductance would cause
+    LVS to fail, since the series inductor added to the schematic has
+    no explicit physical counterpart.
+
+    <p>
+    It is possible to configure the <b>nophys</b> property to indicate
+    that when the electrical netlist is generated for use by the
+    extraction system, the corresponding devices will be forced such
+    that all terminals connect to the same net, i.e., the terminals
+    are effectively shorted together.  Thus, the inductor in the
+    example above, if given this property, would disappear properly
+    during LVS.
+
+    <p>
+    The numerical value of the property is 5.  The property string is
+    either "<tt>nophys</tt>" or "<tt>shorted</tt>".  The latter
+    indicates that the shorting feature is to be used.  <i>Xic</i>
+    will always set the property string to one of these values. 
+    Devices inherit this property from cell definitions in the device
+    library file.  The format is
+    <blockquote>
+      <tt>5 5 nophys</tt>; or<br>
+      <tt>5 5 shorted;</tt>
+    </blockquote>
+
+    <p>
+    Devices with the <b>nophys</b> property applied will be rendered
+    using a different color than other devices.
+    </dl>
+
+    <a name="virtual"></a>
+    <dl>
+    <dt><b>virtual</b> property, number 6<dd>
+    When the <b>virtual</b> property is applied to an electrical
+    subcircuit, the subcircuit will not be included in netlist output. 
+    This means that in SPICE output, the corresponding
+    "<tt>.subckt</tt>" block of lines will be absent.  However, calls
+    to this subcircuit, if any, will be included, and must be resolved
+    through text from a <tt>.include</tt> line or by some other means.
+
+    <p>
+    This is a method for including "foreign" subcircuits within the
+    <i>Xic</i>/<i>WRspice</i> framework.
+
+    <p>
+    The numerical value of the property is 6.  The property string is
+    "<tt>virtual</tt>".  <i>Xic</i> will always set the property
+    string to this value.  This property applies only to electrical
+    cell definitions (subcircuits).  The format is
+    <blockquote>
+      <tt>5 6 virtual</tt>;
+    </blockquote>
+    </dl>
+
+    <a name="flatten"></a>
+    <dl>
+    <dt><b>flatten</b> property, number 7<dd>
+    This can be applied to electrical masters and instances.  The
+    state is active if the instance has the property and the master
+    does not, or the instance does not have the property and the
+    master does.  If active, the schematic will be logically flattened
+    into its parent before association in <a href="xic:lvs">LVS</a>.
+    </dl>
+
+    <a name="range"></a>
+    <dl>
+    <dt><b>range</b> property, number 8<dd>
+    The <b>range</b> property can be applied to device (other than
+    terminal devices) and subcircuit instances.  The property contains
+    two non-negative integers, which define a range of values between
+    the start and end integers inclusive, stepping by one.  When
+    applied to an instance, the instance becomes <i>vectorized</i>,
+    with the range providing the subscripts for the individual scalar
+    instances.  Scalar contact terminals become vectors, and vectors
+    become bundles.  Use of vector instances can simplify some
+    schematics with repeated circuit blocks.  More information about
+    vector instances and the rules for connecting to them can be found
+    <a href="elec:vecinst">here</a>.
+
+    <p>
+    The property number is 8, and the property string consists of two
+    non-negative integers, the starting and ending values of the
+    subscripting range.  The property applies only to non-terminal
+    device instances and subcell instances.
+    </dl>
+
+    <a name="macro"></a>
+    <dl>
+    <dt><b>macro</b> property, number 20<dd>
+    The <b>macro</b> property can be meaningfully applied to device
+    master cells.  When present, its only effect is that in SPICE
+    output, an '<tt>X</tt>' is prepended to the device name in device
+    reference lines.  Thus, SPICE will treat the device instance as a
+    subcircuit call.  These instances must have a <b>model</b> property that
+    will match a <tt>.subckt</tt> definition somewhere, likely from
+    a PDK device model file.
+
+    <p>
+    This accounts for devices that are likely the electrical part of
+    parameterized cells, that implement nonlinear behavior through
+    a network of controlled sources expressed as a subcircuit in the
+    SPICE model definitions file.  MOS capacitors and poly resistors
+    are devices that are frequently modelled this way.
+
+    <p>
+    Within <i>Xic</i>, this property is otherwise ignored, so that a
+    device with this property is treated as a device consistently.
+    </dl>
+  
+    <a name="devref"></a>
+    <dl>
+    <dt><b>devref</b> property, number 21<dd>
+    This property maps text that appears in a SPICE device call after
+    the node list but ahead of the model or value.  The purpose is to
+    provide the name of a reference device for current-controlled
+    sources (<a href="dev:cccs">CCCS</a> and <a
+    href="dev:ccvs">CCVS</a>), and the current-controlled switch (<a
+    href="dev:csw">CSW</a>).  This property can be applied to device
+    instances only, and is supplied by the user typically with the <a
+    href="xic:prpty"><b>Property Editor</b></a>.
+
+    <p>
+    The property supports <a href="hypertext">hypertext</a>, and the
+    reference name should be added as a hypertext reference, so that
+    the correct device is referenced if the name should change.  That
+    is, when editing the property string on the prompt line, click on
+    the device to reference.  The device name will be entered in the
+    line using colored text, indicating a hypertext entry.  Unlike
+    plain test, the hypertext entry will still be correct if the
+    referenced device name changes.
+
+    <p>
+    There is no default, and a missing property will produce a syntax
+    error in a generated SPICE file.
+
+!!SEEALSO
+devlib
+prptyspec
+elecprops
+elecpropxic
+
+!!REDIRECT prpty:bnode          elecpropxic#bnode
+!!REDIRECT prpty:node           elecpropxic#node
+!!REDIRECT prpty:name           elecpropxic#name
+!!REDIRECT prpty:labloc         elecpropxic#labloc
+!!REDIRECT prpty:oldmut         elecpropxic#oldmut
+!!REDIRECT prpty:mut            elecpropxic#mut
+!!REDIRECT prpty:branch         elecpropxic#branch
+!!REDIRECT prpty:labref         elecpropxic#labref
+!!REDIRECT prpty:mutlrf         elecpropxic#mutlrf
+!!REDIRECT prpty:symbolic       elecpropxic#symbolic
+!!REDIRECT prpty:nodemap        elecpropxic#nodemap
+!!REDIRECT prpty:run            elecpropxic#run
+!!REDIRECT prpty:plot           elecpropxic#plot
+!!REDIRECT prpty:iplot          elecpropxic#iplot
+
+!! 022816
+!!KEYWORD
+elecpropxic
+!!TITLE
+<i>Xic</i>-Managed Electrical Property Specifications
+!!HTML
+    The properties that are set by <i>Xic</i> in electrical mode are
+    described below.  The electrical property values use the integers
+    1-21.  The values 22-30 are reserved for future use.
+
+    <a name="bnode"></a>
+    <dl>
+    <dt><b>bnode</b> property, number 9<dd>
+    The <b>bnode</b> property identifies the location of a "bus
+    connector" which is used to specify multiple connections to a
+    device or subcircuit.  It may appear in subcircuit cell
+    definitions and instance references.
+
+    <blockquote>
+      <tt>5 9</tt> <i>index beg_range end_range x y</i>;
+    </blockquote>
+
+    <p>
+    The <i>index</i> is a non-negative integer index which serves to
+    link the bus node to an existing node with the same index.  The
+    <i>beg_range</i> and <i>end_range</i> are non-negative integers
+    which set the indexing of the bus.  The bus bit indices range from
+    <i>beg_range</i> through <i>end_range</i>.  Note that the numbers
+    can be ascending or descending.  The "bit" for <i>beg_range</i> is
+    connected to the node with the given <i>index</i>.  The "bit" for
+    <i>end_range</i> is connected to the node with index equal to
+    <i>index</i> + <tt>abs(</tt><i>beg_range</i> -
+    <i>end_range</i><tt>)</tt>.  If no node property has an equal
+    index value, then that "bit" is simply open.
+
+    <p>
+    For cells, the <i>elecX</i> and <i>elecY</i> each have the general
+    form
+    <blockquote>
+    <i>schemX</i>[<tt>:</tt><i>symbX</i>[<tt>,</tt><i>symbX</i> ...]]
+    </blockquote>
+    and similar for the Y values.  This represents a single X,Y
+    contact location in the schematic, and an arbitrary number of
+    contact locations in the <a href="xic:symbl">schematic symbol</a>. 
+    The schematic value is separated from the symbolic values by a
+    colon.  The symbolic values are separated from each other by
+    commas.  If the 3.2 format is being written due to the <a
+    href="Out32nodes"><b>Out32nodes</b></a> variable being set, at
+    most one number will appear following the colon, the first that
+    would otherwise be listed if there are multiple contact points.
+
+    <p>
+    If there is no symbolic representation, or the terminal location
+    has not been set in the symbolic view, the <i>elecX</i> and
+    <i>elecY</i> each consist of a single number.  In the more
+    general case, both terms should supply the same number of
+    integers.
+
+    <p>
+    In cell instances, there is no colon delimiter, and the general
+    form is simply a comma-separated list of numbers.  This is all
+    identical to the coordinate specification for a <b>node</b>
+    property.
+    </dl>
+
+    <a name="node"></a>
+    <dl>
+    <dt><b>node</b> property, number 10<dd>
+    The <b>node</b> property defines a circuit connection point.  It
+    appears as a property of wires, device and subcircuit instances,
+    and cells.  Its string is a bit different in the three cases.
+
+    <dl>
+    <dt>Wire property<dd>
+      <tt>5 10</tt> <i>circuit_node</i>
+    </dl>
+
+    <p>
+    Any text that follows the form shown above is ignored.  The
+    <i>circuit_node</i> is the node number in the current cell of the
+    net containing the wire.  All wires that participate in
+    connectivity, i.e., on the <tt>SCED</tt> layer and any layer with
+    the <a href="WireActive"><tt>WireActive</tt></a> technology file
+    keyword applied, should have a <b>node</b> property.
+
+    <dl>
+    <dt>Instance property<dd>
+      <tt>5 10</tt> <i>circuit_node</i> <i>index</i> <i>elecX</i> <i>elecY</i>
+        [<i>name</i>]
+    </dl>
+
+    <p>
+    A subcircuit or device instance will have one <b>node</b> property
+    per circuit connection.  The <i>circuit_node</i> is the node
+    number of the connection in the current cell.  The <i>index</i> is
+    the terminal ordering parameter.  Each <b>node</b> property of an
+    instance will have a unique <i>index</i>.  The indices form a
+    compact run starting with 0.
+
+    <p>
+    The <i>elecX</i> and <i>elecY</i>, are integers, or
+    comma-separated lists of integers.  Both terms specify the same
+    number of integers.  Taken as ordered X,Y values, these provide
+    the "hot spots" where connection to the terminal can be made. 
+    <i>Xic</i> allows an arbitrary number of hot spots per node.  If
+    the <a href="Out32nodes"><b>Out32nodes</b></a> variable is set,
+    which forces output compatible with earlier <i>Xic</i> releases,
+    the <i>elecX</i> and <i>elecY</i> will each consist of a single
+    value, the first in the list that would otherwise be output if
+    there are multiple contact points.
+
+    <p>
+    Internally, there are 1000 integer counts per "micron", and hot
+    spots must appear on a 1 "micron" (1000 unit) grid.  In a cell
+    file, scaling may be applied.  In particular, the default for CIF
+    and native cell files is 100 units per micron, but this is usually
+    changed to 1000 units with the <tt>RESOLUTION 1000</tt> directive. 
+    Anyway, if a user is for some reason writing a node property
+    string by hand, the hot spot locations must be chosen
+    appropriately, arbitrary locations do not work.
+
+    <p>
+    Anything that follows is actually ignored by the reader.  The
+    terminal's name is printed in output since it might be of interest
+    to humans.
+
+    <dl>
+    <dt>Cell property<dd>
+      <tt>5 10</tt> <i>circuit_node</i> <i>index</i> elecX</i> elecY</i>
+        [<tt>0x</tt><i>flagstype</i> <i>name</i> <i>physX</i> <i>physY</i>
+        <i>layer_name</i>]
+    </dl>
+
+    <dl>
+    <dt>Cell property, old 3.2 syntax<dd>
+      <tt>5 10</tt> <i>circuit_node</i> <i>index</i> elecX</i> elecY</i>
+        [<i>name</i> <i>physX</i> <i>physY</i> <i>flags</i>
+        <i>layer_name</i> <i>type_name</i>]
+    </dl>
+
+    <p>
+    The <b>node</b> properties applied to a cell make it possible for
+    the cell to be instantiated and used as a subcircuit (or device)
+    in another cell.
+
+    <p>
+    The property string parser can recognize and read the old release
+    3.2 string format for compatibility.  When writing output in any
+    file format, if the variable <a
+    href="Out32nodes"><b>Out32nodes</b></a> is set, the old string
+    format will be generated.  This will, however, strip out multiple
+    contact points if any have been defined, as this is not supported
+    by the older format, which allows exactly one contact per node. 
+    The variable tracks the <b>Use back-compatible format (warning! 
+    data loss)</b> check box in the <a href="xic:exprt"><b>Export
+    Control</b></a> panel from the <b>Export Cell Data</b> button
+    in the <b>Convert Menu</b>.
+
+    <p>
+    The <i>circuit_node</i> is the node number in the current cell
+    where contact is to be made.  In a device cell that has no
+    internal nodes, this will be -1.  The <i>index</i> is an ordering
+    parameter as discussed above.  Index zero is the reference node. 
+    When the device or subcircuit is placed in a schematic, the
+    location of the reference node corresponds to where the user
+    clicks.
+
+    <p>
+    The <i>elecX</i> and <i>elecY</i> each have the general form
+    <blockquote>
+    <i>schemX</i>[<tt>:</tt><i>symbX</i>[<tt>,</tt><i>symbX</i> ...]]
+    </blockquote>
+    and similar for the Y values.  This represents a single X,Y
+    contact location in the schematic, and an arbitrary number of
+    contact locations in the <a href="xic:symbl">schematic symbol</a>. 
+    The schematic value is separated from the symbolic values by a
+    colon.  The symbolic values are separated from each other by
+    commas.  If the 3.2 format is being written due to the
+    <b>Out32nodes</b> variable being set, at most one number will
+    appear following the colon, the first that would otherwise be
+    listed if there are multiple contact points.
+
+    <p>
+    If there is no symbolic representation, or the terminal location
+    has not been set in the symbolic view, the <i>elecX</i> and
+    <i>elecY</i> each consist of a single number.  In the more
+    general case, both terms should supply the same number of
+    integers.
+
+    <p>
+    The remaining tokens are optional.  The <i>flagstype</i> is a hex
+    integer that if present <b>must</b> be prefixed with "<tt>0x</tt>"
+    or "<tt>0X</tt>".  The least significant byte contains a value
+    that specifies a terminal type.  This is a numerical equivalent of
+    the optional <i>type_name</i> which appears in the old 3.2 format
+    syntax.  The values and keywords are listed below.  <i>Xic</i>
+    does not presently use this.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>value</th> <th>keyword</th></tr>
+    <tr><td>0</td> <td><tt>input</tt> (default)</td></tr>
+    <tr><td>1</td> <td><tt>output</tt></td></tr>
+    <tr><td>2</td> <td><tt>inout</tt></td></tr>
+    <tr><td>3</td> <td><tt>tristate</tt></td></tr>
+    <tr><td>4</td> <td><tt>clock</tt></td></tr>
+    <tr><td>5</td> <td><tt>outclock</tt></td></tr>
+    <tr><td>6</td> <td><tt>supply</tt></td></tr>
+    <tr><td>7</td> <td><tt>outsupply</tt></td></tr>
+    <tr><td>8</td> <td><tt>ground</tt></td></tr>
+    </table>
+    </blockquote>
+
+    The remainder of the word may contain any of the following
+    flag bits.
+    <dl>
+    <dt><tt>0x100</tt> (BYNAME)<dd>
+    The terminal will associate to a wire net by name, there will be no
+    connectivity due to placement location in the schematic.
+    <dt><tt>0x200</tt> (VIRTUAL)<dd>
+    The terminal is "virtual" meaning that there is no wire vertex or
+    subcircuit or device contact at the terminal's location in the
+    schematic.  This is irrelevant if the BYNAME flag is set.
+    <dt><tt>0x400</tt> (FIXED)<dd>
+    It set, <i>Xic</i> will not move the corresponding physical
+    terminal location in the layout.  This indicates that the location
+    has been "locked" by the user.
+    <dt><tt>0x800</tt> (INVIS)<dd>
+    The terminal will be invisible in the schematic, except when the
+    <a href="xic:subct"><b>subct</b></a> command from the side menu,
+    used for terminal editing, is active.  The corresponding terminal
+    in the layout will show normally.
+    </dl>
+
+    The <i>name</i> is the terminal name.  This is either a short name
+    provided by the user, or if not provided a default name will be
+    created by <i>Xic</i>.  The name is unique among the cell's
+    terminals.
+
+    <p>
+    If the cell has a physical counterpart, the remaining arguments
+    have significance.  In particular, if the cell has no physical
+    counterpart, or the node has no physical counterpart, the
+    remaining parameters should not appear.  The lack of physical
+    coordinates informs the reader that this terminal has no physical
+    counterpart.  The coordinates should be set to zero in device
+    cells that have a physical implementation.
+
+    <p>
+    If the node has a corresponding physical implementation in the
+    layout, the <i>physX</i> and <i>physY</i> will be given.  When the
+    property is being read, the presence of these numbers indicates
+    that internal setup to link to the layout is required.  If both
+    numbers don't appear, the node will exist in the schematic only. 
+    This is appropriate for devices that don't have a physical
+    implementation, such as voltage sources, or for cases like the
+    phase node of a Josephson junction, or in the case where there is
+    no layout.  In output, if the physical association exists.  the
+    two numbers give the corresponding point in the layout.  These
+    will be nonzero if the corresponding location has been identified,
+    either by running extraction, or if the location was set by hand.
+
+    <p>
+    It is not necessarily true that all nodes of the device either
+    have or don't have the optional parameters.  The phase node of a
+    Josephson junction device, for example, does not have a physical
+    counterpart.  The other two nodes do have physical
+    implementations, since these are the physical connection points. 
+    A side-effect is that in SPICE files extracted from physical data
+    only the two nodes will appear in the device instantiation lines. 
+    This is acceptable to <i>WRspice</i>, since the phase node is
+    optional.  If a device has no nodes with the optional parameters
+    given, then it can never have a physical counterpart.  The <a
+    href="prpty:nophys"><b>nophys</b></a> property should also be
+    given in that case.  This is true for devices like voltage sources
+    that have no physical implementation.
+
+    <p>
+    If the physical location is valid, a <i>layer_name</i> will be
+    provided.  This is the name of a physical layer which has the
+    <tt>Conductor</tt> attribute, and an object on this layer touches
+    or is under the physical location.
+
+    In the old 3.2 format, the flags values are the following:
+    <dl>
+    <dt><tt>0x2</tt> (VIRTUAL)<dd>
+    The terminal is "virtual" meaning that there is no wire vertex or
+    subcircuit or device contact at the terminal's location in the
+    schematic.  This is irrelevant if the BYNAME flag is set.
+    <dt><tt>0x4</tt> (FIXED)<dd>
+    It set, <i>Xic</i> will not move the corresponding physical
+    terminal location in the layout.  This indicates that the location
+    has been "locked" by the user.
+    </dl>
+
+    In the old format, instead of a numerical type code, an optional
+    <i>type_name</i> can be given.  This is one of the keywords from
+    the table shown earlier.
+    </dl>
+
+    <a name="name"></a>
+    <dl>
+    <dt><b>name</b> property, number 11<dd>
+    The <b>name</b> property gives the device an identifying prefix or
+    name.  If a name has been assigned to the device with the <a
+    href="xic:prpty"><b>Properties</b></a> command or equivalent, that
+    name will be used in SPICE output.  Otherwise, the name prefix
+    from the device library file is suffixed with a unique integer
+    generated by <i>Xic</i> to form the name.  SPICE expects that the
+    first character of the name match the convention for the device,
+    for example, resistors use R, capacitors C, etc (see the SPICE <a
+    href="elements">documentation</a>).
+
+    <blockquote>
+      <tt>5 11</tt> <i>prefix</i><tt>.</tt><i>assigned_name</i> <i>devnum</i>
+      <i>subname physX physY</i>;
+    </blockquote>
+
+    <p>
+    The <i>prefix</i> is the default name prefix, and should conform
+    to the SPICE conventions.  The <i>assigned_name</i>, if present,
+    will be used in actual SPICE output.  The <i>assigned_name</i>
+    should <b>not</b> be present in device definitions; it is used
+    in cell files for device instances to which a name has been
+    assigned with the <b>Property Editor</b>.  The <i>prefix</i>
+    can start with any character, but is intended to have
+    significance to SPICE.  The character '<tt>@</tt>' is reserved
+    for the terminal device, and '<tt>#</tt>' is reserved for the bus
+    terminal device.  The <i>assigned_name</i> can be any contiguous
+    string.  The <i>devnum</i> is an index assigned by <i>Xic</i> to
+    the device, and is used when forming the default device name. 
+    This should always be specified as 0 in the device library file.
+
+    <p>
+    If the name applies to a subcircuit (<b>not</b> a macro reference
+    in the device library file), the three additional entries may
+    appear in cell files.  The <i>subname</i> will be set to
+    "<tt>subckt</tt>", and the <i>physX</i> and <i>physY</i> are
+    coordinates where the physical subcircuit instance label is
+    applied.  This will be in a physical instance of the subcircuit,
+    or the two coordinates are set to -1 to indicate that the label
+    has not been placed.
+
+    <p>
+    <i>Xic</i> generates the internal device or subcircuit index, used
+    as part of the default device or subcircuit name, according to the
+    position of the upper-left corner of the bounding box of the
+    object.  The numbering starts with zero, and increases for
+    positions with smaller Y value, or with larger X value for devices
+    with the same Y coordinate.  Each device and subcircuit type has
+    its own numbering.
+    </dl>
+
+    <a name="labloc"></a>
+    <dl>
+    <dt><b>labloc</b> property, number 12<dd>
+    The <b>name</b>, <b>model</b>, <b>value</b>, <b>param</b> and
+    <b>devref</b> property values are normally displayed on-screen
+    near the device body.  This is a device property for setting the
+    default locations of the property labels when shown on-screen.  If
+    this property does not appear, the internal default locations are
+    used.  This property allows more control over label placement, on
+    a per-device basis.  This property should only be used in devices
+    in the device library file.  Presently, the property can only be
+    added with a text editor by editing the property strings in the
+    device library file.
+
+    <blockquote>
+    <tt>5 12</tt> <i>pname code</i> [ <i>pname code</i> ] ... ;
+    </blockquote>
+
+    The <i>pname</i> is one of the literal tokens "<tt>name</tt>",
+    "<tt>model</tt>", "<tt>value</tt>", "<tt>param</tt>", and
+    "<tt>devref</tt>".  For backward compatibility, "<tt>initc</tt>"
+    is accepted as an alias for "<tt>param</tt>".  The <i>code</i> is
+    an integer, -1 - 23.  If the <i>code</i> is -1, the default
+    placement is used.  If code is 0 - 23, the placement and
+    justification are as shown in the figure.  The '.' position
+    implies the justification.  Horizontally, all are left or right
+    justified except for 16 and 19 which are centered.  Similarly,
+    vertical justification is bottom or top except for 17 and 18 which
+    are center justified.
+
+    <p>
+    <img src="cpos33.png" border=1>
+
+    The default locations are shwon in the table below.  The locations
+    differ when the height of the placement bounding box is less than
+    or greater than the width.
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Property</th> <th>height > width</th>
+      <th>height &#60;= width</th></tr>
+    <tr><td><b>name</b> <td>5</td> <td>2</td></tr>
+    <tr><td><b>model</b> <td>8</td> <td>13</td></tr>
+    <tr><td><b>value</b> <td>8</td> <td>13</td></tr>
+    <tr><td><b>param</b> <td>11</td> <td>14</td></tr>
+    <tr><td><b>devref</b> <td>18</td> <td>12</td></tr>
+    </table>
+    </dl>
+
+    <a name="oldmut"></a>
+    <dl>
+    <dt><b>oldmut</b> property, number 13<dd>
+    This property was once used for compatibility with the mutual
+    inductors used in the schematic files produced by the
+    <tt>Jspice3</tt> program.  The format should not be used, and is
+    not documented.
+    </dl>
+
+    <a name="mut"></a>
+    <dl>
+    <dt><b>mut</b> property, number 14<dd>
+    This property appears with the properties of cells containing
+    mutual inductors, and is not copied to instantiations of the cell. 
+    Mutual inductors do not appear as devices in the device library
+    file, rather, they are implemented with this property.  Mutual
+    properties are generated by selecting the "<b>mut</b>" device from
+    the <a href="xic:devs">device menu</a>, with one property assigned
+    for each mutual inductor pair in the circuit.
+
+    <blockquote>
+    <tt>5 14</tt> <i>num name1 num1 name2 num2 coeff</i> [<i>name</i>];
+    </blockquote>
+
+    This property appears only in the list for cell definitions, and
+    not for instances.  It defines a mutual inductor pair within the
+    cell.  The <i>num</i> is the index of the mutual inductor pair,
+    used in forming the default specification to SPICE: 
+    "<tt>K</tt><i>num</i>".  However, if the <i>name</i> appears
+    (supplied in <i>Xic</i> by using the label editor on a mutual
+    inductor label), the SPICE specification will use <i>name</i>
+    (without <i>num</i>).  The <i>name1</i>, <i>num1</i>,
+    <i>name2</i>, <i>num2</i> are the prefixes and assigned numbers of
+    the inductors in the mutual inductor pair.  The <i>coeff</i> is a
+    string which represents the coupling factor as given to SPICE.
+    </dl>
+
+    <a name="branch"></a>
+    <dl>
+    <dt><b>branch</b> property, number 15<dd>
+    The <b>branch</b> property is used to define a "hot spot" that
+    when clicked on yields a device parameter, such as device current,
+    which can be used in plots.  In SPICE, voltage sources and
+    inductors have internal storage for current values present by
+    default.  Other device parameters may require additional
+    computational or storage overhead.  If the <b>branch</b>
+    property is given in the device definition in the device library
+    file, it is added to instantiated devices by <i>Xic</i>.
+
+    <blockquote>
+      <tt>5 15</tt> <i>x y dx dy</i> [<i>string</i>];
+    </blockquote>
+
+    <p>
+    The <i>x</i> and <i>y</i> values specify the hot spot where the
+    branch current can be accessed by clicking.  The next two numbers
+    specify the assumed direction of current flow.  They are
+    interpreted as a unit vector directed outward from the origin
+    along the +/- x or y axes.  Thus,
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>direction</th> <th><i>dx</i></th> <th><i>dy</i></th></tr>
+    <tr><td>+y</td>   <td align=right>0</td> <td align=right>1</td><tr>
+    <tr><td>-y</td>   <td align=right>0</td> <td align=right>-1</td><tr>
+    <tr><td>+x</td>   <td align=right>1</td> <td align=right>0</td><tr>
+    <tr><td>-x</td>   <td align=right>-1</td> <td align=right>0</td><tr>
+    </table>
+
+    are the options.  The <i>string</i> will be expanded and added to
+    the token list in the prompt line when the branch is selected for
+    plotting.
+
+    <p>
+    When the hot spot is clicked on, an expression will be produced
+    which after expansion is added to the input line in the <a
+    href="xic:plot"><b>plot</b></a> command.  The <i>string</i> token
+    can contain the following literal tokens, which will be replaced
+    with the appropriate values during expansion:
+
+    <dl><dt><tt>&#60</tt><tt>v></tt>     <dd>Voltage across the device</dl>
+    <dl><dt><tt>&#60</tt><tt>value></tt> <dd>The value property</dl>
+    <dl><dt><tt>&#60</tt><tt>name></tt>  <dd>The device name</dl>
+
+    <p>
+    Anything else in the <i>string</i> will be copied literally.  If
+    the <i>string</i> is absent, the expression will be
+    <tt>&#60</tt><tt>name>#branch</tt>.
+
+    <p>
+    Examples:<br>
+    for a resistor, the string is
+    <blockquote>
+    <tt>&#60</tt><tt>v>/&#60</tt><tt>value></tt>
+    </blockquote>
+    to return the current.  Similarly for a capacitor:
+    <blockquote>
+    <tt>&#60</tt><tt>value>*deriv(&#60</tt><tt>v>)</tt>
+    </blockquote>
+    Thus the current will be computed using the <i>WRspice</i>
+    <tt>deriv</tt> function.  For an inductor or voltage source, no
+    string is required, as the default
+    <blockquote>
+    <tt>&#60</tt><tt>name>#branch</tt>
+    </blockquote>
+    is appropriate.  For a current source, one can use
+    <blockquote>
+    <tt>@&#60</tt><tt>name>[c]</tt>
+    </blockquote>
+    This works through the <i>WRspice</i>
+    <tt>@</tt><i>device</i>[<i>param</i>] mechanism, however the
+    vector must be saved, most conveniently by setting the <a
+    href="devlib"><b>LibSave</b></a> global property for the device.
+    </dl>
+
+    <a name="labref"></a>
+    <dl>
+    <dt><b>labref</b> property, number 16<dd>
+    The <b>labref</b> property is applied by <i>Xic</i> to labels that
+    are associated with device properties or wire nodes.  The property
+    is not used in the device library file.
+
+    <blockquote>
+    <tt>5 16</tt> <i>name num property</i><br>
+    <tt>5 16</tt> <i>x y</i> <tt>10</tt>;
+    </blockquote>
+
+    This property applies only to labels, and indicates that the label
+    is to be bound to a given property of a certain device or mutual
+    inductor, or wire.
+
+    <p>
+    The first form applies to a label for an instance or mutual
+    inductor property.  Bound labels automatically reflect changes in
+    the underlying property string, and may be used to set the string
+    using the label editing function in <i>Xic</i>.  The <i>name</i>
+    and <i>num</i> are the device prefix and assigned number of the
+    device to which the label is bound.  The <i>property</i> is the
+    property number of the bound property.  If the label is assigned
+    to a mutual inductor pair, the <i>name</i> is `<tt>K</tt>'.
+
+    <p>
+    The second form applies to labels that have been attached to a
+    wire, and are used to contribute a name for the net containing
+    the wire.  The <i>x</i> and <i>y</i> specify the coordinates of a
+    vertex of the wire.  The <tt>10</tt> is the value of the
+    <b>node</b> property.
+    </dl>
+
+    <a name="mutlrf"></a>
+    <dl>
+    <dt><b>mutlrf</b> property, number 17<dd>
+    This property is assigned to inductor instances which are
+    referenced for use in mutual inductor pairs.  One such property
+    exists per reference.  It is not used in device library files.
+
+    <blockquote>
+    <tt>5 17 mutual;</tt>
+    </blockquote>
+
+    This property applies only to inductors that are referenced as one
+    of a mutual inductor pair.  There can be several such properties
+    if the inductor is associated with multiple mutual inductor pairs.
+    </dl>
+
+    <a name="symbolic"></a>
+    <dl>
+    <dt><b>symbolic</b> property, number 18<dd>
+    The <b>symbolic</b> property is a property applied to cells
+    which have a symbolic view associated.  It does not appear in
+    device library files, as all devices are essentially symbolic.  It
+    is not inherited by instances.
+
+    <blockquote>
+    <tt>5 18 0/1</tt> <i>geometry_spec</i>;
+    </blockquote>
+
+    The third field is nonzero if the symbolic mode is active, and 0
+    if symbolic mode is inactive.  The <i>geometry_spec</i> is a
+    string of separated CIF primitives for the symbolic
+    representation, which can include L, B, P, W, and 94 (label)
+    directives.  Each record (CIF primitive) is terminated by a colon
+    (<b>not</b> a semicolon!) which must be immediately followed by an
+    end-of-line character.  Colons that are not at the end of a text
+    line will <b>not</b> terminate a record.
+
+    <p>
+    The <b>symbolic</b> property may be applied to subcircuit
+    instances, in which case it will negate the effect of a
+    <b>symbolic</b> property found in the instance master cell.  In
+    this utilization, the property is named <b>nosymb</b>.  The flag
+    and <i>geometry_spec</i> are ignored and need not be provided.  A
+    subcircuit instance with this property would (in all cases) be
+    displayed as expanded.  Thus, it is possible in <i>Xic</i> to have
+    different instances of the same subcircuit cell master display
+    symbolically and expanded within the same containing cell.
+    </dl>
+
+    <a name="nodemap"></a>
+    <dl>
+    <dt><b>nodemap</b> property, number 19<dd>
+    The <b>nodemap</b> property is applied to the electrical cell
+    definition and is not inherited by instances.  The <b>nodemap</b>
+    property provides a mapping between internally generated node
+    numbers and assigned textual names.
+
+    <blockquote>
+    <tt>5 19 0/1</tt> <i>name x y name x y ...</i>;
+    </blockquote>
+
+    <p>
+    The third token can be 0 or 1, but is unused.  In releases prior
+    to 3.1.5, a 0 value would disable the node map.  In current
+    releases, node mapping is always enabled.
+
+    <p>
+    The remainder of the line consists of triples containing an
+    assigned name and a coordinate pair.  The coordinates correspond
+    to a device or subcircuit terminal connected to the assigned node,
+    and serve as the reference to that node.  See <a
+    href="xic:nodmp"><b>nodmp</b></a> for more information on node
+    mapping.
+    </dl>
+
+    The "global" properties are added to the electrical top level cell
+    of a hierarchy when being saved.  They save plot points and other
+    information in the file, to use as defaults when the file is
+    subsequently loaded for editing.
+
+    <a name="prpty:run"></a>
+    <dl>
+    <dt><b>run</b> property, number 7101<dd>
+    The <b>run</b> property string specifies the default analysis
+    command entered when the <a href="xic:run"><b>run</b></a> button
+    is pressed, which initiates a simulation.
+    </dl>
+
+    <a name="prpty:plot"></a>
+    <dl>
+    <dt><b>plot</b> property, number 7102<dd>
+    The <b>plot</b> property string represents the plot points used in
+    the <a href="xic:plot"><b>plot</b></a> command, in the format of
+    arguments to the <i>WRspice</i> <tt>plot</tt> command.
+    </dl>
+
+    <a name="prpty:iplot"></a>
+    <dl>
+    <dt><b>iplot</b> property, number 7103<dd>
+    The <b>iplot</b> property string specifies the points to plot when
+    using the <a href="xic:iplot"><b>iplot</b></a> button, in the
+    format of arguments to the <i>WRspice</i> <tt>plot</tt> command.
+    </dl>
+
+    The strings for the <b>plot</b> and <b>iplot</b> properties may
+    contain special <a href="prpescapes">escape sequences</a>
+    indicating hypertext references or other characteristics.
+
+!!SEEALSO
+prptyspec
+elecprops
+elecpropuser
+
+!! 030415
+!!KEYWORD
+spiceline
+!!TITLE
+SPICE Device Line
+!!HTML
+    In SPICE, each line of a given device type begins with the device
+    name, set by the <b>name</b> property.  This is followed by the
+    device nodes, corresponding to the order of enumeration in the
+    <i>device_node</i> of the <b>node</b> properties.  This is
+    followed by text from the <b>devref</b> property, which is
+    intended to provide a reference device name for current-controlled
+    sources and the current-controlled switch.  It is not used
+    generally.  This is followed by the <b>value</b> or <b>model</b>
+    property (these are really just two different names for the same
+    text field).  This is followed by the text of the <b>param</b>
+    property.
+
+    <p>
+    The device name, if not assigned by the user with the <a
+    href="xic:prpty"><b>Property Editor</b></a>, and nodes are
+    assigned by <i>Xic</i> so as to be unique.
+
+    <p>
+    The line looks like:
+    <blockquote>
+      <i>name</i> n<i>1</i> ... n<i>Last</i> <i>devref</i> <i>value/model</i>
+      <i>parameter_string</i>
+    </blockquote>
+
+    <p>
+    The <i>name</i> is either the user assigned name, or the device
+    prefix with a unique numerical suffix created by <i>Xic</i> if no
+    name was assigned.  The nodes can be numbers or text tokens, in
+    accordance with the current <a href="xic:nodmp">node name
+    mapping</a>.  The remaining properties are read verbatim from the
+    specifications, with <a href="hypertext">hypertext</a> references
+    expanded.
+
+    <p>
+    Hypertext references are generated when assigning properties by
+    clicking on devices or other features in the drawing.  Since
+    <i>Xic</i> assigns device names and nodes, if one needs to
+    reference a specific device or node, a hypertext reference
+    provides a link which is independent of the assigned values, which
+    can change.
+
+    <p>
+    When applied to subcircuit cells and instances, the <b>param</b>
+    property provides support for <a href=".subckt">subcircuit
+    parameterization</a>, which is available in <i>WRspice</i> and
+    some other simulators.
+
+    <p>
+    Here is a brief description of how to use parameterization. 
+    Suppose that you are editing a cell that contains a resistor, and
+    you wish to parameterize the resistance value.  Give the
+    resistor a <b>value</b> property consisting of some word, say
+    "<tt>rshunt</tt>".  Using the <a href="xic:cprop"><b>Cell
+    Properties Editor</b></a>, give the cell a <b>param</b> property
+    something like "<tt>rshunt=2.5</tt>".  This will give the resistor
+    a default value of 2.5 ohms.  Editing another cell, place two
+    instances of the previous cell.  Using the <a
+    href="xic:prpty"><b>Property Editor</b></a> give one of the
+    instances a <b>param</b> property of "<tt>rshunt=5</tt>".  A label
+    will appear containing this text.  The other instance will not
+    have a similar label.  The resistor in the labeled subcircuit will
+    have value 5, set by the <b>param</b> property applied to the
+    instance.  The other instance will have resistance value 2.5, as
+    set by the <b>param</b> property applied to the master, which
+    serves as the default value.
+
+!! 062908
+!!KEYWORD
+prpescapes
+!!TITLE
+Special Escapes
+!!HTML
+    In property and label strings, there is a special encoding used to
+    indicate certain attributes, such as <a
+    href="hypertext">hypertext</a> references.  These are in the form:
+
+    <blockquote>
+    <tt>(||</tt><i>something</i><tt>||)</tt>
+    </blockquote>
+
+    The following forms are recognized by <i>Xic</i>
+    <dl>
+    <dt><tt>(||sc||)</tt><dd>
+    This sequence is simply converted to a semicolon ('<tt>;</tt>')
+    when the string is internalized.  In CIF, semicolons can not be
+    included in label or property strings, as the character is
+    reserved for line termination.  <i>Xic</i> will convert
+    semicolons in property strings and labels to this form when
+    creating a CIF or native file.
+    </dl>
+
+    <dl>
+    <dt><tt>(||text||)</tt><dd>
+    This token may appear at the beginning of a label string, and
+    indicates that the string is in <a href="longtext">long text</a>
+    format.  These labels do not appear on-screen (the characters
+    "<tt>[text]</tt>" appear instead), but the full string can be
+    accessed with the <a href="xic:label">label editor</a>.  Thus,
+    large blocks of text can be saved as properties or <a
+    href="spicetext">spicetext</a> labels without crowding the
+    screen.
+    </dl>
+
+    <dl>
+    <dt><tt>(||</tt><i>x</i>:<i>y type</i><tt>||)</tt><dd>
+    This sequence indicates a hypertext reference, and can appear
+    anywhere in a property or label string, in electrical data only. 
+    Hypertext references are generated when assigning properties by
+    clicking on other devices in the drawing.  Since <i>Xic</i> by
+    default internally assigns device names and nodes, if one needs to
+    reference a specific device or node, a hypertext reference
+    provides a link which is independent of the assigned values, which
+    can change.  The <i>x</i>,<i>y</i> is a coordinate, in internal
+    units, giving a location for the reference.  This is generally the
+    point where the user clicked to create the reference.  The
+    space-separated integer that follows gives the type of the
+    reference, and is one of:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>1</td> <td>node reference</td></tr>
+    <tr><td>2</td> <td>branch reference</td></tr>
+    <tr><td>4</td> <td>device name reference</td></tr>
+    <tr><td>8</td> <td>subcircuit name reference</td></tr>
+    </table>
+
+    <p>
+    In the case of a node reference, the coordinate must be over a
+    connection point, or along a wire.  For a branch, the coordinate
+    must be over a branch reference point of a device.  For a device
+    name reference, the coordinate must be in or on the bounding box
+    of a device.  For a subcircuit name reference, the coordinate must
+    be in or on the bounding box of a subcircuit.
+
+    <p>
+    When the string is used, the hypertext reference is resolved, and
+    the actual text replaces the hypertext reference in the string.
+    </dl>
+
+!!SEEALSO
+prptyspec
+

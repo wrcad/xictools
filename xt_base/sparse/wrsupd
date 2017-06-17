@@ -1,0 +1,28 @@
+#! /bin/bash
+
+# Update the files here from the WRspice tree.
+
+files="\
+ spbuild.cc \
+ spconfig.h \
+ spfactor.cc \
+ spmacros.h \
+ spoutput.cc \
+ spsolve.cc \
+ sputils.cc"
+
+a=spmatrix.h
+diff -q $a ../wrspice/include/$a
+if [ $? != 0 ]; then
+    mv -f $a $a.bak
+    cp -f ../wrspice/include/$a .
+fi
+
+for a in $files; do
+    diff -q $a ../wrspice/sparse/$a
+    if [ $? != 0 ]; then
+        mv -f $a $a.bak
+        cp -f ../wrspice/sparse/$a .
+    fi
+done
+    

@@ -1,0 +1,12 @@
+
+There were two changes made, search for "XXX".
+
+1.  In parameters.inc, added back the "exclude 0" which had been
+removed via an "insideADMS" define.
+
+2.  In tscaling.inc, added back the ability to set temperature to
+other than the reference value, which had been removed with a
+"insideADMS" define.
+
+Note to model developers:
+Please use "insideADMS" to turn on ADMS extensions ONLY.

@@ -1,0 +1,6 @@
+SRW --
+
+File mcl1.v removed from standard test directory since it takes too long
+and churns out too much stuff.
+
+File always3.1.9B.v hangs forever, which appears to be correct behavior.

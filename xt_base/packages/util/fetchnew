@@ -1,0 +1,180 @@
+#! /bin/sh
+
+#
+# Update the distribution files.
+#
+# (c) Whiteley Research Inc. 2008
+# $Id: fetchnew,v 1.14 2015/07/19 20:05:41 stevew Exp $
+#
+# Usage: fetchnew "programs..." "oses..."|all
+
+
+if [ $# = 0 ]; then
+    echo 'fetchnew "programs..." "oses..."|all'
+    exit 0
+fi
+
+progs=$1
+oses=$2
+if [ x"$oses" = x"all" ]; then
+    oses="\
+  Darwin \
+  Darwin64 \
+  Debian \
+  Debian64 \
+  FreeBSD \
+  FreeBSD7 \
+  Linux2 \
+  LinuxRHEL3 \
+  LinuxRHEL4 \
+  LinuxRHEL5 \
+  LinuxRHEL6 \
+  LinuxRHEL7 \
+  LinuxRHEL3_64 \
+  LinuxRHEL4_64 \
+  LinuxRHEL5_64 \
+  LinuxRHEL6_64 \
+  LinuxRHEL7_64 \
+  Solaris8 \
+  Solaris8_64 \
+  Win32"
+fi
+
+login=stevew
+srcdir=/usr1/stevew/export/xictools
+libdir=/usr1/stevew/src/xictools/lib
+release_file_sfx="release.new"
+
+destdir=/home/webadmin/wrcad.com/html/restricted
+srcpfx=/usr1/stevew/src/
+
+home=`addr`
+echo Connecting to $home
+
+# Grab the version file from the web site, and look up the current
+# version for the program and operating system.  Echo the new release
+# number followed by the subdirectory name.
+# arguments:  program_name operating_system
+#
+check_release()
+{
+    prog="$1"
+    os="$2"
+    vers=`cat $destdir/$1_$release_file_sfx`
+    if [ x"$vers" != "x" ]; then
+        set $vers
+        while [ x"$1" != "x" ]; do
+            if [ $1 = $os ]; then
+                echo $2 $5
+                return;
+            fi
+            shift
+            shift
+            shift
+            shift
+            shift
+        done;
+    fi
+}
+
+
+# Construct the name of the distribution file from the arguments.
+# arguments: program_name operating_system version_number
+#
+filename()
+{
+    prog=$1
+    os=$2
+    vers=$3
+    case $os in
+    Darwin)
+        echo $prog-$os-$vers-univ.pkg.tgz
+        ;;
+    Darwin64)
+        echo $prog-$os-$vers-x86_64.pkg
+        ;;
+    Debian)
+        echo $prog-$os-$vers-i386.deb
+        ;;
+    Debian64)
+        echo $prog-$os-$vers-amd64.deb
+        ;;
+    FreeBSD*)
+        echo $prog-$os-$vers-i386.pkg.tbz
+        ;;
+    Linux*)
+        tmpifs="$IFS"
+        IFS="_"
+        set $os
+        IFS="$tmpifs"
+        osbase=$1
+        if [ $# = 1 ]; then
+            if [ $osbase = Linux2 -o $osbase = Linux ]; then
+                arch=i386
+            else
+                arch=i686
+            fi
+        else
+            arch=x86_64
+        fi
+        echo $prog-$osbase-$vers-$arch.rpm
+        ;;
+    Solaris*)
+        tmpifs="$IFS"
+        IFS="_"
+        set $os
+        IFS="$tmpifs"
+        osbase=$1
+        if [ $# = 1 ]; then
+            arch=sparc
+        else
+            arch=sparc64
+        fi
+        echo $prog-$osbase-$vers-$arch.pkg.gz
+        ;;
+    Windows | Win32)
+        if [ $prog = accessories ]; then
+            echo accs-Win32-$vers-i386.exe
+        else
+            echo $prog-Win32-$vers-i386.exe
+        fi
+        ;;
+    esac
+}
+
+
+# Grab the release file and put it in place.
+# arguments:  program os
+#
+get()
+{
+    program=$1
+    os=$2
+    vers=`check_release $program $os`
+    if [ x"$vers" = "x" ]; then
+        echo Not found: $program $os
+        exit
+    fi
+    set $vers
+    vers=$1
+    dir=$2
+    fname=`filename $program $os $vers`
+    if [ x"$fname" = "x" ]; then
+        echo Unknown: $program $os
+        exit
+    fi
+
+    newloc=$destdir/xictools/$os/$dir/$fname
+    if [ ! -f $newloc ]; then
+        echo $fname
+        rsync --rsh=ssh $login@$home:$srcdir/$os/$fname $newloc
+    fi
+}
+
+
+for o in $oses; do
+    for p in $progs; do
+        get $p $o
+    done
+done
+

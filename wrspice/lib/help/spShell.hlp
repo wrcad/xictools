@@ -1,0 +1,755 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spShell.hlp,v 1.20 2016/08/09 03:46:11 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spShell.hlp
+!!TITLE
+spShell.hlp
+!!HTML 
+
+!!SUBTOPICS
+spshell
+editing
+ccom
+historysub
+aliases
+glob
+quoting
+io
+semi
+variablesub
+script
+fifo
+
+
+!! useriface.tex 012309
+!!KEYWORD
+spshell
+!!TITLE
+Shell Features
+!!HTML 
+    The command line interpreter in <i>WRspice</i> provides many of
+    the features of a UNIX shell.  The interpreter, in addition to
+    parsing and responding to command text input, is used as an
+    interpreter for control scripts which control <i>WRspice</i>
+    operation.  In addition, circuit descriptions have all shell
+    variables expanded during the sourcing process.  Thus, shell
+    variables can be used to set circuit parameters.
+
+    <p>
+    Various features are available in the <i>WRspice</i> shell which
+    are similar to the user interface of the C-Shell.  See the subtopics
+    for more information.
+
+!!SUBTOPICS
+editing
+ccom
+historysub
+aliases
+glob
+quoting
+io
+semi
+variablesub
+script
+fifo
+
+ 
+!! useriface.tex 012309
+!!KEYWORD
+editing
+!!TITLE
+<i>WRspice</i> Shell: Command Line Editing
+!!HTML 
+    The <i>WRspice</i> shell contains a line editor system similar to
+    that found in some UNIX shells.  The left and right arrow keys can
+    be used to move the cursor within the line of text, so that text
+    can be entered or modified at any point.  Pressing the
+    <b>Enter</b> key sends the line of text to <i>WRspice</i>,
+    regardless of where the cursor is at the time.  The up arrow key
+    will load the line of text with the previously entered line
+    progressively.  The down arrow key cycles back through the history
+    text.  <b>Ctrl-E</b> places the cursor at the end of text,
+    <b>Ctrl-A</b> places the cursor at the beginning of the line. 
+    <b>Bsp</b> (backspace) erases the character to the left of the
+    cursor, <b>Delete</b> deletes the character at the cursor, and
+    <b>Ctrl-K</b> will delete from the cursor to the end of the line. 
+    <b>Ctrl-U</b> will delete the entire line.
+
+    <p>
+    The following keys perform editing functions:
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th align="left"><b>Ctrl-A</b></th>
+      <td>Move cursor to beginning of line</td></tr>
+    <tr><th align="left"><b>Ctrl-D</b></th>
+      <td>List possible completion matches</td></tr>
+    <tr><th align="left"><b>Tab</b></th>
+      <td>Insert completion match, if any</td></tr>
+    <tr><th align="left"><b>Ctrl-E</b></th>
+      <td>Move cursor to end of line</td></tr>
+    <tr><th align="left"><b>Ctrl-H</b> or <b>Bsp</b></th>
+      <td>Erase character to left of cursor</td></tr>
+     <tr><th align="left"><b>Ctrl-K</b></th>
+       <td>Delete to end of line</td></tr>
+     <tr><th align="left"><b>Ctri-U</b></th>
+       <td>Delete line</td></tr>
+     <tr><th align="left"><b>Ctrl-V</b></th>
+       <td>Insert following character verbatim</td></tr>
+     <tr><th align="left"><b>Del</b></th>
+       <td>Delete character at cursor</td></tr>
+     <tr><th align="left">Left arrow</th>
+       <td>Move cursor left</td></tr>
+     <tr><th align="left">Right arrow</th>
+       <td>Move cursor right</td></tr>
+     <tr><th align="left">Up arrow</th>
+       <td>Back through history list</td></tr>
+     <tr><th align="left">Down arrow</th>
+       <td>Forward through history list</td></tr>
+    </table><br>
+
+    <p>
+    By default, command line editing is enabled in interactive mode,
+    which means that <i>WRspice</i> takes control of the low level
+    functions of the terminal window.  Command line editing can be
+    disabled by setting the <a href="noedit"><tt>noedit</tt></a>
+    variable (with the <a href="set"><b>set</b></a> command).  If the
+    terminal window doesn't work with the editor, it may be necessary
+    that "<tt>set noedit</tt>" appear in the <i>WRspice</i> <a
+    href="startup_files">startup</a> (<tt>.wrspiceinit</tt>) file. 
+    When <tt>noedit</tt> is set, the <a href="ccom">command
+    completion</a> character is <b>Esc</b>, rather than <b>Tab</b>.
+
+    <p>
+    Some terminals may not send the expected character or sequence
+    when one of these keys is pressed, consequently there is a limited
+    key mapping facility available.  This mapping is manipulated with
+    the <a href="mapkey"><b>mapkey</b></a> command, which allows most
+    of the keys and combinations listed above to be remapped.
+
+    <p>
+    Unless <i>WRspice</i> can read the system terminfo/termcap data it
+    needs, it will not allow command line editing, and a warning
+    message will be issued.  This may mean that the <b>TERM</b> or
+    <b>TERMINFO</b> environment variables are not set or bogus, or the
+    system terminal info database is incomplete or bad.  One can enter
+    alternative terminal names with the <a href="-t"><tt>-t</tt></a>
+    command line option to potentially fix this problem.  The
+    non-editing mode is like a standard terminal line, where backspace
+    is available, but the arrow keys and others that move the cursor
+    have no special significance.  This is the mode used when "<tt>set
+    noedit</tt>" is given.
+
+!!SEEALSO
+spshell
+
+!! useriface.tex 012309
+!!KEYWORD
+ccom
+!!TITLE
+<i>WRspice</i> Shell: Command Completion
+!!HTML 
+    Tenex-style command, filename, and keyword completion is
+    available.  If <b>Ctrl-D</b> (EOF) is typed, a list of the
+    commands or possible arguments is printed.  If a <b>Tab</b> (or
+    instead, <b>Esc</b> if command line editing is disabled) is typed,
+    then <i>WRspice</i> will try to complete the word being typed
+    based on the choices available, or if there is more than one
+    possibility, it will complete as much as it can.  Command
+    completion knows about commands, most keywords, variable and
+    vector names, file names, and several other types of arguments. 
+    To get a list of all commands, the user can type <b>Ctrl-D</b> at
+    the <i>WRspice</i> prompt.  Note that for keyboard input, the
+    <tt>EOF</tt> character, <b>Ctrl-D</b>, does <i>not</i> exit the
+    shell.
+
+    <p>
+    Command completion is disabled if the <a href="-q"><tt>-q</tt></a>
+    option is given on the <i>WRspice</i> command line, or if the
+    <a href="nocc"><tt>nocc</tt></a> variable is set.
+
+!!SEEALSO
+spshell
+
+!! useriface.tex 012309
+!!KEYWORD
+historysub
+!!TITLE
+<i>WRspice</i> Shell: History Substitution
+!!HTML 
+    History substitutions, similar to C-shell history substitutions,
+    are also available.  History substitutions are prefixed by the
+    character !, or at the beginning of a line, the character ^. 
+    Briefly, the string !!  is replaced by the previous command, the
+    string !<i>prefix</i> is replaced by the last command with that
+    prefix, the string !?<i>pattern</i> is replaced by the last
+    command containing that pattern, the string !<i>number</i> is
+    replaced by the event with that number, and
+    ^<i>oldpattern</i>^<i>newpattern</i> is replaced by the previous
+    command with <i>newpattern</i> substituted for <i>oldpattern</i>.
+
+    <p>
+    Additionally, a !<i>string</i> sequence may be followed by a
+    modifier prefixed with a :.  This modifier may select one or more
+    words from the event - :1 selects the first word, :2-5 selects the
+    second through the fifth word, :$ selects the last word, and :$-0
+    selects all of the words but reverses their order.
+
+    <p>
+    Two other :  modifiers are supported:  :p will cause the command
+    to be printed but not executed, and :s^<i>old</i>^<i>new</i> will
+    replace the pattern <i>old</i> with the pattern <i>new</i>.  (The
+    sequence ^<i>old</i>^<i>new</i> is synonymous with
+    !!:s^<i>old</i>^<i>new</i>.)
+
+    <p>
+    All the commands typed by the user are saved on the history list. 
+    This may be examined with the <a
+    href="historycomm"><b>history</b></a> command, and its maximum
+    length changed by changing the value of the <a
+    href="historyvar"><tt>history</tt></a> variable.
+
+!!SEEALSO
+spshell
+
+!! useriface.tex 012309
+!!KEYWORD
+aliases
+!!TITLE
+<i>WRspice</i> Shell: Aliases
+!!HTML 
+    Aliases are defined with the <a href="alias"><b>alias</b></a>
+    command, and may be removed with the <a
+    href="unalias"><b>unalias</b></a> command.
+
+    <p>
+    After history expansion, if the first word on the command line has
+    been defined as an alias, the text for which it is an alias for is
+    substituted.  The alias may contain references to the arguments
+    provided on the command line, in which case the appropriate
+    arguments are substituted in.  If there are no such references,
+    any arguments given are appended to the end of the alias text.
+
+    <p>
+    If a command line starts with a backslash (`\') any alias
+    substitution is inhibited.
+
+!!SEEALSO
+spshell
+
+!! useriface.tex 012309
+!!KEYWORD
+glob
+!!TITLE
+<i>WRspice</i> Shell: Global Substitution
+!!HTML 
+    The characters <tt>~</tt>, <tt>{</tt>, and <tt>}</tt> have
+    the same effects as they do in the C-Shell, i.e., home directory
+    and alternative expansion.  In alternative expansion, if a token
+    contains a form like "<tt>{foo,bar,baz}</tt>", the token is
+    replicated with each replication containing one of the list items
+    from the curly braces replacing the curly brace construct.  For
+    example, the string
+    "<tt>stuff{string1,string2,...stringN}morestuff</tt>" is replaced
+    by the list of words "<tt>stuffstring1morestuff
+    stuffstring2morestuff ...  stuffstringNmorestuff</tt>".  Curly
+    braces may be nested.  A particularly useful example is
+
+    <blockquote>
+    <tt>plot v({4,5,7})</tt>
+    </blockquote>
+    which is equivalent to
+    <blockquote>
+    <tt>plot v(4) v(5) V(7)</tt>
+    </blockquote>
+
+    <p>
+    The string <tt>~</tt><i>user</i> (tilde at the beginning of a
+    word) is replaced by the given user's home directory, or if the
+    first component of the pathname is simply <tt>~</tt>, the current
+    user's home directory is understood.
+
+    <p>
+    It is possible to use the wildcard characters <tt>*</tt>,
+    <tt>?</tt>, <tt>[</tt>, and <tt>]</tt> to match file names, where
+    <tt>*</tt> denotes 0 or more characters, <tt>?</tt> denotes one
+    character, and <tt>[]</tt> denotes one of the specified
+    characters, but these substitutions are performed only if the
+    variable <a href="noglob"><tt>noglob</tt></a> is unset.  The
+    pattern <tt>[^abc]</tt> will match all characters except
+    <tt>a</tt>, <tt>b</tt>, and <tt>c</tt>.  The <tt>noglob</tt>
+    variable is normally set so that the symbols have their usual
+    meanings in algebraic expressions.  This can be unset with the <a
+    href="unset"><b>unset</b></a> command if command "globbing" is
+    desired.
+
+!!SEEALSO
+spshell
+
+!! useriface.tex 091714
+!!KEYWORD
+quoting
+!!TITLE
+<i>WRspice</i> Shell: Quoting
+!!HTML 
+
+    <h4>Single and Double Quoting</h4>
+
+    Words may be quoted with the characters (<tt>"</tt>) (double
+    quote), and (<tt>'</tt>) (single quote).  A word enclosed by
+    either of these quotes may contain white space.  A string enclosed
+    by double quotes may have further special-character substitutions
+    done on it, but it will be considered a single token by the shell. 
+    A number so quoted is considered a string.  A string enclosed by
+    single quotes also has all its special characters protected.  Thus
+    no <a href="glob">global expansion</a> (<tt>*</tt>, <tt>?</tt>,
+    etc), <a href="variablesub">variable expansion</a> (<tt>$</tt>),
+    or <a href="historysub">history substitution</a> (<tt>^</tt>,
+    <tt>!</tt>) will be done.
+
+    <h4>Single-Character Quoting</h4>
+
+    The backslash character (<tt>\<\tt>) performs the usual single
+    character quoting function, i.e., it suppresses the
+    special-character interpretation of the character that follows,
+    forcing the shell to interpret it literally.  In addition,
+    <b>Ctrl-V</b> also provides a single character quoting function
+    from the keyboard. 
+
+    <h4>Back-Quoting, Command Evaluation</h4>
+
+    A string enclosed by backquotes (<tt>`</tt>) is considered a
+    command and is executed, and the output of the command replaces
+    the text.
+
+    <p>
+    In releases 4.1.7 and earlier, the command was simply sent to the
+    operating system, and evaluated by whatever shell is supervising
+    the user's login.  In release 4.1.8 and later, back-quoted text is
+    evaluated by the <i>WRspice</tt> shell itself, unless the text
+    begins with the keyword "<tt>shell</tt>" in which case the rest of
+    it is sent to the operating system for evaluation.
+
+    <p>
+    The new approach makes it possible to get the output of internal
+    <i>WRspice</i> commands and functions into strings, which was not
+    easy (or even possible?) before.  However, this may require
+    updating legacy scripts.  For example, lines like
+    <blockquote>
+    <tt>set datestring="`date`"</tt>
+    </blockquote>
+    must be changed to
+    <blockquote>
+    <tt>set datestring="`shell date`"</tt>
+    </blockquote>
+
+!!SEEALSO
+spshell
+
+!! useriface.tex 012309
+!!KEYWORD
+io
+!!TITLE
+<i>WRspice</i> Shell: Input/Output Redirection
+!!HTML 
+    The input to or output from commands may be changed from the
+    terminal to a file by including an IO redirection on the command
+    line.  The possible redirections are:
+
+    <dl)
+    <dt><tt>></tt> <i>file</i><dd>
+         Send the output of the command into the file.  The file is
+         created if it doesn't exist.
+    </dl>
+
+    <dt><tt>>></tt> <i>file</i><dd>
+         Append output to the file.  The file is created if it doesn't
+         exist.
+    </dl>
+
+    <dt><tt>>&</tt> <i>file</i><dd>
+         Sends both the output and the error messages to the
+         file.  The file is created if it doesn't exist.
+    </dl>
+
+    <dt><tt>>>&</tt> <i>file</i><dd>
+         Appends both the output and the error messages to the
+         file.  The file is created if it doesn't exist.
+    </dl>
+
+    <dt><tt>&#60;</tt> <i>file</i><dd>
+         Read input from the file.
+    </dl>
+
+    <p>
+    Both an input redirection and an output redirection may be present
+    on a command line.  No more than one of each may be present,
+    however.  IO redirections must be at the end of the command line.
+
+!!SEEALSO
+spshell
+
+!! useriface.tex 012309
+!!KEYWORD
+semi
+!!TITLE
+<i>WRspice</i> Shell: Semicolon Termination
+!!HTML
+    More than one command may be put on one line, separated by
+    semicolons '<tt>;</tt>'.  The semicolons must be isolated by white
+    space, however.  Thus a multi-command alias might be written
+    <blockquote>
+        <tt>alias</tt> <i>word</i> '<i>command1</i> ; <i>command2</i> ;
+        ...'
+    </blockquote>
+
+!!SEEALSO
+spshell
+
+!! useriface.tex 080816
+!!KEYWORD
+variablesub
+!!TITLE
+<i>WRspice</i> Shell: Variables and Variable Substitution
+!!HTML
+    Shell variables can be set with the <a href="set"><b>set</b></a>
+    command, or graphically with some of the tools available in the
+    <b>Tools</b> menu of the <a href="toolbar"><b>Tool
+    Control</b></a> window.  In particular, the <b>Shell</b> button in
+    the <b>Tools</b> menu brings up a panel which allows those
+    variables which control shell behavior to be set.  Both methods of
+    setting and unsetting the shell variables are equivalent.  The
+    <b>Variables</b> tool in the <b>Tools</b> menu provides a listing
+    of the variables currently set, and is updated dynamically when
+    variables are set and unset.  A variable with any alphanumeric
+    name can be set, though there are quite a number of predefined
+    variable names which have significance to <i>WRspice</i>.
+
+    <p>
+    Shell variables have boolean type if they are defined without
+    assigning any text to them.  Otherwise, the variables take a
+    single text token as their defining value, or a list of text
+    tokens if the assigned value consists of a list of tokens
+    surrounded by space-separated parentheses.
+
+    <p>
+    The values of variables previously set can be accessed in
+    commands, circuit descriptions, and elsewhere by writing
+    <tt>$</tt><i>varname</i> where the value of the variable is to
+    appear.  However, if a backslash (\) precedes <tt>$</tt>, the
+    variable substitution is not performed.  The special variables
+    <tt>$$</tt> and <tt>$&#60</tt> refer to the process ID of the
+    program and a line of input which is read from the terminal when
+    the variable is evaluated, respectively.  Also, the notation
+    <tt>$?foo</tt> evaluates to 1 if the variable <tt>foo</tt> is
+    defined, 0 otherwise, and <tt>$#foo</tt> evaluates to the number
+    of elements in <tt>foo</tt> if it is a list, 1 if it is a number
+    or string, and 0 if it is a boolean variable.  If <tt>foo</tt> is
+    a valid variable, and is of type list, then the expression
+    <tt>$foo</tt>[<i>low</i>-<i>high</i>] represents a range of
+    elements.  The values in the range specification [...] can also be
+    shell variable references.  Either the upper index or the lower
+    may be left out, and the reverse of a list may be obtained with
+    <tt>$foo</tt>[<i>len</i>-0].
+
+    <p>
+    In releases 4.2.12 and later, the independent token <tt>$?</tt> is
+    replaced by the current value of the "global return value".  The
+    global return value is an internal constant accessible from all
+    scripts, and can be used to pass data between scripts and return
+    data from scripts.  It is a global variable so one must make sure
+    that its value can not be changed unexpectedly before use.  The
+    initial value is zero, and it retains its most recent value
+    indefinitely.
+
+    <p>
+    The global return value is set by the string comparison commands
+    <a href="strcmds"><b>strcmp</b></a> and friends, and can be set
+    directly with the <a href="retval"><b>retval</b></a> commands. 
+    This can be called within a script to set a value that the caller
+    can access after the script returns.
+
+    <p>
+    If a variable reference has the form <tt>$&</tt><i>word</i>, then
+    <i>word</i> is assumed to be a <a href="expressions">vector</a>,
+    and its value is used to satisfy the reference.  <a
+    href="setandlet">Vectors</a> consist of one or more real or
+    complex numbers, and are produced, among other ways, during
+    simulation, in which case they represent simulation output.  The
+    shell variable substitution mechanism allows reference to all of
+    the vectors in scope.  The reference can be followed by range
+    specifiers in square brackets, consistent with the dimensionality
+    and size of the vector.  The range specifier can itself contain
+    shell variable references.
+
+    <p>
+    The sequences <tt>$?&</tt><i>vector</i> and
+    <tt>$#&</tt><i>vector</i> are accepted.  The first expands to 1 if
+    <i>vector</i> is defined (with the <a href="let"><b>let</b></a>
+    command or otherwise), 0 if not.  The second expands to the vector
+    length or 0 if <i>vector</i> is undefined.  This is analogous to
+    <tt>$?</tt><i>variable</i> and <tt>$#</tt><i>variable</i> for
+    shell variables.
+
+    <p>
+    The notation <tt>$&</tt>(<i>expression</i>) is replaced by the
+    value of the vector <i>expression</i>.  A range specification can
+    be added, for example
+    <blockquote>
+    <tt>echo $&(a+1)[2]</tt>
+    </blockquote>
+    prints the third entry in vector <tt>a+1</tt>, or 0 if out of range.
+
+    <p>
+    When a real number is converted into text during expansion, up to
+    14 significant figures may be used to avoid loss of precision. 
+    Trailing zeroes are omitted.  However, in releases 4.2.4 and
+    earlier, and Spice3, only six significant digits were used.
+
+    <p>
+    When a circuit file is sourced into <i>WRspice</i>, each line of
+    the circuit description has variable substitution performed by the
+    shell.  Thus, shell variables can be used to define circuit
+    parameters, if within the circuit description the parameter is
+    specified in the form of a variable reference.  The variable
+    substitution in a <i>WRspice</i> deck allows a concatenation
+    character '<tt>%</tt>'.  This is used between a variable and other
+    text, which would otherwise mask the variable.  For example
+    <blockquote><tt>
+         set value = 10
+         v1 1 0 pulse(0 $value%m 5p 10p)
+    </tt></blockquote>
+
+    expands to
+    <blockquote><tt>
+         v1 1 0 pulse(0 10m 5p 10p).
+    </tt></blockquote>
+    Without the %, the pattern match would fail.
+
+!!SEEALSO
+spshell
+
+!!REDIRECT unixcomcomm  script#unixcom
+
+!! useriface.tex 092915
+!!KEYWORD
+script
+!!TITLE
+<i>WRspice</i> Shell: Commands and Scripts
+!!HTML
+    Command files are files containing circuit descriptions and/or
+    shell commands.  The first line of a command file is ignored, so
+    must be blank or a comment.  This is a result of the <a
+    href="source"><b>source</b></a> command being used for both
+    circuit input and command file execution.
+
+    <p>
+    A pure script file, i.e., one which does not include a circuit
+    description, consists of an unread "title" line, followed by a <a
+    href=".control">control block</a>.  The control block begins with
+    a "<tt>.control</tt>" line, continues with one or more executable
+    statements, and terminates with a "<tt>.endc</tt>" line.  In
+    <i>WRspice</i>, an "<tt>.exec</tt>" line can be used rather than
+    the <tt>.control</tt> line, though for backward compatibility with
+    SPICE3, it is recommended that the traditional <tt>.control</tt>
+    be used.  The executable statements are any statements
+    understandable to the <i>WRspice</i> shell.  Typically, such
+    statements appear just as they would be entered on the command
+    line if given as text input.  A script may be executed by entering
+    its file name (there is an implicit <tt>source</tt> command)
+    followed by any arguments.  Scripts can call other scripts to any
+    depth.
+
+    <p>
+    In script text, the '<tt>#</tt>' character is used to designate a
+    comment.  If the '<tt>#</tt>' is the first character in a line, or
+    follows white space, the '<tt>#</tt>', and the preceding white
+    space, and any trailing text, is ignored.  If the '<tt>#</tt>' is
+    preceded by a backslash, the comment interpretation is explicitly
+    suppressed.  The in-line comment interpretation of '<tt>#</tt>'
+    applies only in scripts, not from the command line.
+
+    <p>
+    Before a script is read, the variables <a
+    href="argc"><tt>argc</tt></a> and <a href="argv"><tt>argv</tt></a>
+    are set to the number of words on the command line, and a list of
+    those words respectively.  Their previous values (if any) are
+    pushed onto a stack, and popped back in place when the script
+    terminates.  Thus, within a command script, these predefined
+    variables are available for use in the script.  Otherwise, command
+    files may not be reentrant since there are no local variables,
+    however, the procedures may explicitly manipulate a stack.
+
+    <p>
+    If a command file contains a circuit discription, then there is a
+    subtle difference between <tt>.control</tt> and <tt>.exec</tt>
+    blocks, either or both of which can be contained in the file.  By
+    "file" we actually mean the totality of text after expanding all
+    <tt>.include</tt>, <tt>.lib</tt> and similar statements.  The
+    <tt>.exec</tt> block is executed before the circuit lines are
+    parsed, and thus before the lines are shell and parameter
+    expanded.  Thus, shell variables set in the <tt>.exec</tt> block
+    will be used when expanding the circuit.  The <tt>.control</tt>
+    block is executed after the circuit is parsed, and is therefor the
+    correct place to put analysis and post-processing commands.
+
+    <p>
+    There may be various command scripts installed in the default
+    scripts directory, and the default <a
+    href="sourcepath"><tt>sourcepath</tt></a> includes this directory,
+    so one can use these command files (almost) like built-in
+    commands.  In addition to scripts, there is an executable data
+    structure called a <a href="codeblock">codeblock</a>.  Codeblocks
+    are derived from scripts, but store the command text internally,
+    so are somewhat more efficient.  A codeblock has the same name (in
+    general) as the script file from which it was derived.
+
+    <p>
+    When a line of input is given to <i>WRspice</i>, the first word on
+    the line determines how the line is processed.  The following
+    logic is used to make this determination.
+
+    <ol>
+    <li>If the word is an <a href="alias">alias</a>, the line is
+    replaced with the result after alias substitution, and the line is
+    re-parsed.
+
+    <p>
+    <li>If the word matches the name of a <a
+    href="codeblock">codeblock</a> in memory, the codeblock is
+    executed.
+
+    <p>
+    <li>If the word matches the name of an internal command, that
+    command is executed.
+
+    <p>
+    <li>If the first word is a vector name and is followed by
+    "<tt>=</tt>", the line is taken to be an implicit <a
+    href="let"><b>let</b></a> command (an assignment), in which case
+    the line is executed as if it were preceded by the word "let".
+
+    <p>
+    <li>If the word matches the name of a file found in one of the
+    directories of the current <a
+    href="sourcepath"><tt>sourcepath</tt></a> (search path), an
+    implicit <a href="source"><b>source</b></a> command is assumed. 
+    The line is executed as if it were preceded by the word "source". 
+    Thus, typing the name of a circuit or script file will source or
+    run the file.
+
+    <p>
+    <li>If the variable <a href="unixcom"><tt>unixcom</tt></a> is set,
+    and the word matches the name of a command known to the operating
+    system, the line will be sent to the operating system for
+    execution. 
+    </ol>
+
+    <a href="unixcom"></a>
+    <p>
+    If the variable <a href="unixcom"><tt>unixcom</tt></a> is set and the
+    operating system is supportive, commands which are not built-ins
+    are considered shell commands and executed as if the program were
+    a shell.  However, using this option increases the start-up time
+    of the program.  Probably <i>WRspice</i> should not be used as a
+    login shell.
+
+    <p>
+    <i>WRspice</i> can be used as the "shell" in UNIX shell scripts,
+    In these scripts, the <tt>wrspice</tt> executable should be
+    called, using the convention applicable to the user's UNIX shell. 
+    This generally requires that the first line of the script begin
+    with the characters "<tt>#!</tt>" and be followed by a
+    space-separated program invocation string.  The remainder of the
+    file should consist of standard <i>WRspice</i> command file lines,
+    the first line of which (second line of the file) will be ignored.
+
+    <p>
+    For example, below is a script that can be saved in a file, which
+    should be made executable (using the UNIX command "<tt>chmod
+    +x</tt> <i>filename</i>").  From the UNIX shell, typing the name
+    of the file will run <i>WRspice</i> on the example file
+    <tt>mosamp2.cir</tt> and display the plot.
+
+    <pre>
+    #! wrspice -J
+    #
+    .control
+    source /usr/local/xictools/wrspice/examples/mosamp2.cir
+    set noaskquit
+    echo Press Enter to quit
+    pause
+    quit
+    .endc
+    </pre>
+
+    <p>
+    Typing the name of the file is the same as executing "<tt>wrspice
+    -J</tt> <i>file</i>".  <i>WRspice</i> ignores the "<tt>#!</tt>"
+    line, so that the next line is the "title" line and is also
+    ignored.  The -J (JSPICE3 compatibility) option means to not bring
+    up the <b>Tool Control</b> window.
+
+!!SEEALSO
+spshell
+ 
+!!SEEALSO
+commands
+
+!! useriface.tex 022514
+!!KEYWORD
+fifo
+!!TITLE
+<i>WRspice</i> Shell: The FIFO
+!!HTML
+    When <i>WRspice</i> starts, it creates a "named pipe".  For other
+    than Windows, this looks to the user like a file named
+    "<tt>wrsfifo</tt>" in the user's home directory, or
+    <tt>wrsfifo1</tt>, <tt>wrsfifo2</tt>, etc., if there are multiple
+    copies of <i>WRspice</i> running.  In Windows, the file will
+    instead have a name like "<tt>\\.\pipe\wrsfifo</tt>", which will
+    again vary if there are multiple <i>WRspice</i> processes running.
+
+    <p>
+    If a variable named <a
+    href="WRSPICE_FIFO"><tt>WRSPICE_FIFO</tt></a> is found in the
+    environment, the text of this variable is taken as the base name
+    for the fifo, instead of "<tt>wrsfifo</tt>".  In Unix/Linux, this
+    name can have a full path.  All components of the path except for
+    the file name must exist.  If there is a conflict with an existing
+    entity, an integer suffix will be added to make the name unique. 
+    In Windows, any path given is stripped and ignored.
+
+    <p>
+    A named pipe, or "fifo" has the property that text written to this
+    "file" will be sourced into <i>WRspice</i>, as if the <a
+    href="source"><b>source</b></a> command was used on a regular file
+    containing the data written.  In particular, if you are editing a
+    SPICE file with your favorite text editor, you can "save" the text
+    to this file name, and it gets sourced into <i>WRspice</i>.  One
+    should also save to a regular file, or changes may be lost!
+
+    <p>
+    When <i>WRspice</i> terminates normally, the fifo will be deleted. 
+    However, if <i>WRspice</i> crashes, or is killed by a signal, the
+    fifo may be left behind, in which case it can be, and should be,
+    deleted by the user.  The fifo can be deleted using the same
+    command as a regular file.
+
+    <p>
+    As <i>WRspice</i> is a single-threaded program, it will only be
+    "listening" to the fifo when idle.  Exactly what happens when
+    <i>WRspice</i> is busy when data are written to the fifo is
+    operating system dependent.  Likely, the write will hang until
+    <i>WRspice</i> goes into idle mode, i.e., the simulation or other
+    operation completes.
+
+!!SEEALSO
+spshell
+

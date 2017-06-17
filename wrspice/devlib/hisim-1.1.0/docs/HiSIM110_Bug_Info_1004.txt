@@ -1,0 +1,105 @@
+
+************************************************************
+   HiSIM 1.1.0 Bug Information             rev. Oct/04/2002
+************************************************************
+
+These are the bug information find-out so far
+in the source code and user's manual of HiSIM1.1.0,
+contributed by B.D.Hu, W.Liu and K.Machida.
+These bugs will be fixed in the next Web-release
+version; HiSIM1.1.1 by the end of October.
+
+***************
+ USER'S MANUAL
+***************
+   ****************************
+   FILE:    HiSIM 1.1 User's Manual    <----- ADDED NEWLY!
+   LINE:    28p., COISUB flag
+   WRONG:   COISUB = 0: yes (default)
+            COISUB >= 1: no
+   CORRECT: COISUB = 0: no (default)
+            COISUB >= 1: yes
+
+   ****************************
+   FILE:    HiSIM 1.1 User's Manual    <----- ADDED NEWLY!
+   LINE:    28p., COIIGS flag
+   WRONG:   COIIGS = 0: yes (default)
+            COIIGS >= 1: no
+   CORRECT: COIIGS = 0: no (default)
+            COIIGS >= 1: yes
+
+   ****************************
+   FILE:    HiSIM 1.1 User's Manual    <----- ADDED NEWLY!
+   LINE:    28p., COGIDL flag
+   WRONG:   COGIDL = 0: yes (default)
+            COGIDL >= 1: no
+   CORRECT: COGIDL = 0: no (default)
+            COGIDL >= 1: yes
+
+   ****************************
+   FILE:    HiSIM 1.1 User's Manual
+   LINE:    21p., Eq.(79)
+   WRONG:   exp(Eg beta / 2 / q)
+   CORRECT: exp(-Eg beta / 2 / q)
+
+   ****************************
+   FILE:    HiSIM 1.1 User's Manual
+   LINE:    10p., Eq.(29)
+   WRONG:   2 epsilon_si 2 Phi_B
+   CORRECT: 2 epsilon_si ( 2 Phi_B - Vbs )
+
+   ****************************
+   FILE:    HiSIM 1.1 User's Manual
+   LINE:    10p., Eq.(30)
+   WRONG:   SC3 2 Phi_B / Lgate
+   CORRECT: SC3 ( 2 Phi_B - Vbs ) / Lgate
+
+   ****************************
+   FILE:    HiSIM 1.1 User's Manual
+   LINE:    12p., Eq.(36)
+   WRONG:   Phi_B   (two "Phi_B".)
+   CORRECT: Phi_BC 
+
+   ****************************
+   FILE:    HiSIM 1.1 User's Manual
+   LINE:    12p., Eq.(37)
+   WRONG:   SC3 2 Phi_B / Lp
+   CORRECT: SC3 ( 2 Phi_B - Vbs ) / Lp
+
+   ****************************
+   FILE:    HiSIM 1.1 User's Manual
+   LINE:    13p., Eq.(42)
+   WRONG:   PGD1
+   CORRECT: PGD1 Nsub / Nsubc 
+
+
+*************
+ SOURCE CODE
+*************
+   ****************************
+   FILE:    hsm1eval1_1.c
+   LINE:    3185
+   WRONG:   Vth_dVbs = Vthp_dVgs - dVth_dVgs ;
+   CORRECT: Vth_dVgs = Vthp_dVgs - dVth_dVgs ;
+
+   ****************************
+   FILE:    hsm1eval1_0.c
+   LINE:    3910
+   WRONG:   if ( flg_rsrd == 0 || Ids <= 0.0 ) {
+   CORRECT: if ( flg_rsrd == 0 || Ids < 0.0 ) {
+
+   ****************************
+   FILE:    hsm1eval1_1.c
+   LINE:    4075
+   WRONG:   if ( flg_rsrd == 0 || Ids <= 0.0 ) {
+   CORRECT: if ( flg_rsrd == 0 || Ids < 0.0 ) {
+
+
+*******************************
+
+
+Feel free to let us know the bug informations.
+
+Sincerely,
+
+STARC PhD Gr.

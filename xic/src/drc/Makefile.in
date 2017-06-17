@@ -1,0 +1,52 @@
+#######################################################################
+# xic/drc/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 5.54 2015/02/17 05:56:33 stevew Exp $
+#######################################################################
+
+GFX_VERSION = @GFX_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @NEEDINT64@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @NEEDINT64@
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+
+LIB_TARGET = drc.a
+
+LPATH = ../../../xt_base
+HFILES =
+CCFILES = \
+  drc.cc drc_edit.cc drc_eval.cc drc_error.cc drc_menu.cc drc_poly.cc \
+  drc_results.cc drc_rule.cc drc_setif.cc drc_tech.cc drc_techif.cc \
+  drc_txtcmds.cc drc_user.cc drc_util.cc drc_variables.cc funcs_drc.cc
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+depend:
+	@echo depending in xic/drc
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm *.o $(LIB_TARGET)
+
+distclean:
+	-rm *.o $(LIB_TARGET) Makefile
+
+#######################################################################

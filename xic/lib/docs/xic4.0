@@ -1,0 +1,565 @@
+Xic Generation 4 Alpha Release Notes
+
+During alpha, updates will be fairly frequent.  If you haven't, you
+may want to set up the update availability notification.  Run the
+!passwd command, and give the repository user/password
+
+  user: gumby
+  password: resKuM24
+
+You don't need to do this if you have run the WRspice passwd command.
+When Xic starts, it will check for updates, and pop up a message if an
+update is available.  You can run the !update command to download and
+install the update.
+
+Windows Notes:
+
+* If you have put the gtk2-bundle/bin directory in your search path,
+  it is best to remove it, as other programs may be effected.  The
+  effective path is now set locally in the bat files used to run
+  Xic and WRspice.
+
+-----
+The ALPHA series is complete with 4.0.9.  The BETA release that follows
+is 4.1.1.
+-----
+-------------------------------------------------------------------------------
+xic-4.0.9  9/16/2014
+
+BIG CHANGE
+---- ------
+
+The Xiv and XicII "products" for Generation 4 are now available!
+
+BUT,
+
+The XicII and Xiv products are now "virtual products".  They are now
+simply licensing levels, or feature sets, of Xic.  If you currently
+run XicII or Xiv, updating to Generation 4 is simple.  Just install
+Generation 4 Xic, and run with your present license file.  Read
+below, however, for some important details.
+
+WHAT THIS MEANS:
+
+1.  There is only one program (named "Xic") and distribution file.
+
+2.  Depending on your license, the program may provide a reduced
+    feature set.  There are three levels:
+
+    VIEWER    (Xiv license)
+      No editing, extraction, DRC.
+
+    EDITOR    (XicII license)
+      No extraction, DRC.
+
+    FULL      (Xic license)
+      All features enabled.
+
+3.  IF YOU RUN XicII or Xiv ON LINUX or OS X...
+
+    You will need to set the XT_AUTH_MODE envirionment variable to
+    Local (or else run a license server).
+
+    Add a line to your shell startup file:
+    For bash, in $HOME/.bashrc
+      export XT_AUTH_MODE=Local
+    For tcsh, in $HOME/.cshrc
+      setenv XT_AUTH_MODE Local
+
+    The XicII and Xiv programs previously used Local authentication
+    (no license server) by default.  Xic, however, uses Server mode
+    by default on other than Windows.
+
+4.  Previously, there were predefined macros defined when running the
+    programs:  "Xic", "XicII", and "Xiv".  These were tested in the
+    example technology files to hide inappropriate constructs.  For
+    example, design rules are not known to XicII and Xiv, so that a
+    full Xic technology file that includes design rules would generate
+    warning messages when used with these programs.  To avoid this,
+    the design rules are specified in macro test blocks:
+
+    IfDef Xic
+    (design rule definitions...)
+    EndIf
+
+    THIS NO LONGER WORKS!  The macro "Xic" is now always defined!
+
+    As a replacement, there is a new FEATURESET macro, that is defined
+    to one of "VIEWER", "EDITOR", or "FULL".  The lines above can be
+    replaced by
+
+    If FEATURESET == "FULL"
+    (design rule definitions...)
+    EndIf
+
+    The example technology files in this release have this change.
+    You may need to make similar changes to your custom technology
+    file.
+
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* The "XicII" virtual product now has the User Menu and full scripting
+  support.
+
+* The "Extract RLC" interface is gone.
+
+  The button in the Extract Menu is now "Extract LR" which brings up
+  an all-new interface to the FastHenry program.  The new interface is
+  similar to the new capacitance extraction interface.  It uses the
+  same three-dimensional geometry database, so that layers can appear
+  in any order, and there is no reqirement or assumption of
+  planarization.  See the help system for a complete description.
+
+  Variables no longer recognized:
+    FxPlaneBloat
+    FxUnits
+    FxForeg
+    FxMonitor
+    FcNoPart
+    FcPartMax
+    FcEdgeMax
+    FcThinEdge
+    FcOldFormat
+
+  New Variables
+    FhForeg
+    FhMonitor
+    FhUnits
+    FhVolElTarget
+
+  The !fx and !fxcell commands are gone.  There is a new !fh command.
+
+* Update to the "!fc run" command.
+
+  The files used can now be specified.  If no input file is given, the
+  interface will create one as if the Run Extraction button in the
+  interface panel was pressed.  If the other files are not specified,
+  internally-generated file names will be used.
+
+  !fc run [-i infile] [-o outfile] [-r resultfile]
+
+* Path Selections Control panel change
+
+  This panel is provided by the Net Selections button in the Extract
+  Menu.  There is no longer a "Save Path to RLC" button, as the
+  extraction interface is no longer compatible.  The "Save Path to
+  File" button can be used to create input for the present extraction
+  interfaces.
+
+* Grid rendering change
+
+  The coarse grid is now still visible if the fine grid is too closely
+  spaced and not shown.  Previously, the coarse grid lines were not
+  shown when the fine grid is too closely spaced.
+
+* Extraction system changes.
+
+  There is now more control over time-costly via searches during
+  extraction.  In particular, it is likely that much of this testing
+  can be skipped, and this is now done by default.
+
+  New variables:
+    ViaTestFull (boolean)
+    Perform a more costly connectivity test when set.
+    
+    ViaSearchDepth (integer, default 0)
+    How far to descend into the hierarcy when searching for vias,
+    by default this is 0 (look in current cell only).
+
+    ViaCheckBtwnSubs (boolean)
+    By default, is is assumed that subcells are never connected by an
+    isolated patch of via material between metal objects owned by the
+    two subcells.  This avoids a very costly search.  Set this variable
+    to perform the search if needed.
+
+    In all vias are Cadence-style subcells with metal caps, then the
+    new defaults should alway be appropriate, which provides the best
+    performance.
+
+  These variables tie to entry areas in the new Via Detection group
+  in the Net Config page of the Extraction Setup panel.  This page
+  was previously named "Net and Cell Config".  The cell config group
+  was moved to the "Misc Config" page.
+
+* New command "!exlayers".
+
+  This prints lists of layers that have the CONDUCTOR, ROUTING,
+  CONTACT, and VIA keywords applied, in the console window.  This is
+  for informational and debugging purposes.
+
+* Miscellaneous
+
+  The "Write sub-masters to output layout files" check box has been
+  removed from the PCell Control panel from the Edit Menu.  The
+  functionality now resides in the new "Include parameterized cell
+  sub-masters" check box in the Write Layout File panel from the
+  Convert Menu.  In addition to being a more logical place for this
+  control, it provides access when the Xiv feature set is in use,
+  which does not provide the PCell Control panel.
+
+  The "Use 3.2-compatible format in ALL output (for back compat
+  only!)" check box has been removed from the "Set Export Parameters"
+  panel from the Convert Menu.  The functionality is now provided bu a
+  new "Use back-compatible format (warning!  data loss)"  check box in
+  the Write Layout File panel.  Further, setting the box will apply
+  the old syntax only when creating output from the Conversion system,
+  and not when using Save/SaveAs.
+
+  If using Save/SaveAs and any of the variables StripForExport,
+  WriteAllFiles, SkipInvisible, PCellKeepSubMasters, or Out32nodes is
+  set, a warning will pop-up explaining that these variables will be
+  ignored by the present command, and one must use the Conversion
+  write function for these variables to have effect.
+
+
+BUGS FIXED
+---- -----
+
+* A grid drawing error in Cross Section displays was fixed.
+
+* The cross marks used in the capacitance extraction interface when
+  "Show Numbers" is in effect are now roughly fixed-size.  They were
+  previously too small for some layouts.
+
+* The cross marks in the capactiance interface were not being erased
+  properly.
+
+* The capacitance extraction interface was incorrectly scaling the
+  SubstrateThickness value to nanometers instead of microns in output,
+  causing (at least) slow capactiance extraction.
+
+* Fixed a bug in the three-dimensional geometry database used by the
+  cross section and capacitance extraction, certain error messages
+  would cause a fault if shown.
+
+* Fixed the sub-window Dump to File command, which was not working.
+
+* Partial core-leak audit of the extraction system, fixed some pretty
+  bad ones.
+
+* Fixed a spurious "unrecognized keyword" warning for the Constrain45
+  techfile keyword.
+
+* Deleting all cells when extraction data is present would leave
+  residual empty cells in the database.
+
+
+-------------------------------------------------------------------------------
+xic-4.0.8  7/21/2014
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New capacitance extraction tool
+
+  The new interface panel to the FasterCap program from
+  FastFieldSolvers.com can be obtained from the Extract C button in
+  the Extract Menu.
+
+  See "?  fcinterf" for a complete description of the new interface. 
+  It is simpler and more flexible than the old "Extract RLC"
+  interface.
+
+  The old "Extract RLC" interface should not be used for capacitance
+  extraction, this will probably become inductance extraction only in
+  the next release.
+
+  The new !fc command can also be used to control the interface.
+
+* There is a new layer sequencing and 3D geometry database used for
+  the Cross Section command (in the View Menu), as well as in the
+  new capacitance extraction interface.
+
+  All of the extraction system keyword handling has been moved into
+  the main program.  This means that these technology file keywords,
+  such as Conductor, Via, Thickness, etc., will be recognized in XicII
+  and Xiv, where the extraction system is not present.
+
+  The 3D geometry system will use these keywords to
+  1.  obtain layer thickness (Thickness keyword)
+  2.  obtain layer polarity (invert for DarkField, Via,
+      GroundPlaneClear keywords)
+  3.  layer is planarizing or not (assume planarizing for Conductor
+      and Via)
+
+* Cross Section, View Menu
+
+  The Cross Section command has been updated to use the new 3D layer
+  sequencer.  This provides accurate representation of planarizing and
+  non-planarizing layers, in any order.
+
+  The Cross Section command now requires use of the keywords that were
+  formerly available only from the extraction system.  These keywords,
+  such as Thickness and DarkField, control how the layer is rendered.
+
+  Several related variables are now obsolete and are no longer
+  recognized:
+
+    XSectLayers
+    XSectThickness
+    XSectTopPlanar
+
+  The following Technology file keyword is no longer recognized:
+
+    CrossField
+
+  The CrossThick technology file keyword still exists.  If given, and
+  the Thickness keyword is also given, the CrossThick value will be
+  used in the display, for visibility.  The Thickness in any case
+  represents the physical film thickness.
+
+* New Variables and keywords
+
+  New variable: NoPlanarize (boolean)
+
+    By default, all layers with the Conductor or Via keyword applied
+    will be planarizing.  If this variable is set, then no layers are
+    planarizing by default.  There is also a NoPlanarize technology
+    file global keyword which will set the NoPlanarize variable if
+    present.
+
+  New variable:  SubstrateThickness (non-negative real value
+  in microns)
+
+    Sets the assumed substrate thickness, which is otherwise taken as
+    75 microns.  There is also a SubstrateThickness technology file
+    keyword which sets this variable.
+
+  New variable:  SubstrateEps (real value 1.0 or larger)
+
+    This sets the relative dielectric constant assumed for the
+    substrate.  If not set, a value of 11.9 is used.  The existing
+    SubstrateEps technology file keyword now sets this variable.
+
+  There are new variables used by the new capacitance extraction
+  interface, see the dicumentation for details.
+
+* New layer block technology file keyword
+
+  Planarize  [y|n]
+
+  This sets whether of not the layer is planarizing, overriding
+  any default setting.
+
+* Major change to technology keyword editing.
+
+  The Edit Tech Params button has been removed from the Extract and
+  Convert Menus.  The functionality has been added to the panel obtained
+  from the Edit Tech Params button in the Attributes Menu.  This new
+  panel is paged to provide keyword setting of multiple classes of
+  keywords.
+
+  The device block editing function found in the previous extraction
+  keyword editor has moved to Device Config page of the Extraction Setup
+  panel.
+
+* Extraction Setup, Window Attributes panel changes
+
+  The controls that set the size of terminals and terminal text, and
+  whether to erase behind terminals, has moved from the Misc.  Config
+  page of the Extraction Setup panel to the Window Attributes panel. 
+  The Window Attributes panel is obtained from the Set Attributes
+  button in the Attributes Menu.
+
+* Documentation update
+
+  Major rewrite of the descriptions of the technology file keywords in
+  the help system and manual.  The original very long text is now
+  divided up into sections.
+
+
+-------------------------------------------------------------------------------
+xic-4.0.7  6/17/2014
+
+(note added: This is the final edit, didn't get into last package)
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Alpha snapshot of a new interface to the FasterCap program from
+  FastFieldSolvers.com.
+
+  This is similar to the "RLC Extraction" system, but with a simpler
+  interface, and more flexible layer sequencing and interpretation.
+
+  This release provides a sort of sneak-preview.  The documentation
+  is very sketchy at present, see "? xic:fc2".
+
+  The control panel is accessed with !fc2.  The "!fc2" command is
+  temporary and not documented, eventually the new interface will
+  be available from the Extract menu.
+
+* Prompt line editor
+
+  Now, when prompt-line editing starts, the mouse pointer is warped
+  into the left side of the prompt area.  So, the Left/Right Arrow
+  keys will move the text carat, and not pan the main window.
+
+  Also, a new PromptEditFocusBackgColor applies when mouse pointer is
+  in the prompt area, and the prompt area thus has full focus.
+
+* Side menu spin command
+
+  The angle readout now defaults to degrees, was radians.  Change with
+  a 'd' or 'r' keypress, spacebar toggles.
+
+
+BUGS FIXED
+----------
+
+* Apple packages now clear files from a previous release when
+  updating.
+
+* The Device Menu panel wasn't giving up focus when a device was
+  selected from the drop-down menu.
+
+* The hypertext prompt line editor, used in (for example) constructing
+  the plot command when running WRspice simulations, was badly
+  screwed up (extra space characters added).
+
+* Fixed a bug in file selection panel, the file listing window would
+  get into a loop adding and removing the vertical scrollbar on
+  occasion.
+
+
+-------------------------------------------------------------------------------
+xic-4.0.6  2/17/2014
+
+This is the initial release of Generation 4 for Apple OS X.
+
+Notes:
+1.  The releases will only work with 10.9 (Mavericks) and later.
+2.  The releases require that an X-server be running.  This (X-quartz)
+    must be installed explicitly in Mavericks, it is not automatically
+    installed as it was in earlier OS X releases.
+3.  The packages are not relocatable.  The programs will be installed
+    under /usr/local/xictools.
+4.  The programs now use the gtk-2 graphical toolkit, as is used in
+    all other Gen 4 releases.  As for Windows, a separate package is
+    required to be installed for this support.  This package,
+    called "gtk2-bundle-x11" must be installed to run the programs.
+    It will rarely require updating.
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Built-in support for tiff and ppm/pgm/pnm image file formats was
+  added to the help viewer.  Previously, these formats were supported
+  only through a third-party conversion program (netpbm) that may not
+  be available.
+
+
+-------------------------------------------------------------------------------
+xic-4.0.5  2/9/2014
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Big fixup of the Microsoft Windows distribution.  There is much less
+  user setup involved now, probably none for most users.
+
+  - The programs are now started from bat files, which set the PATH
+    for the gtk2-bundle DLL's.  Now, no user path setup is needed.
+
+  - The !update command now schedules an exit procedure, which creates
+    a new process to run the distribution installation when the user
+    exits the program.  Previously, this was done manually.
+
+  - The uninstall function is now explicitly called when updating.
+    Previously, new installs just overwrote the old installation.
+
+  - The uninstall icons no longer appear in the Start Menu (or page).
+    Use the Add/Remove Software panel to remove the programs.
+
+  See the README file in the distribution area for more information.
+
+* Hard-coded the program icons.  The Xic icons should now show in
+  Linux without the user having to set this up.
+
+* When writing a cell's instances to disk in any file format, the
+  order is now deterministic:  alphabetic in master name, then
+  descending in bounding box top and ascending in bounding box left.
+  Previously, instances were grouped by master but were otherwise
+  random.  The ordering will facilitate cell comparison.
+
+* OpenAccess plug-in change.
+  The PCellParams property for sub-masters read from Virtuoso now
+  contains only the changed parameters, which matches the instance
+  property string.  Previously, all parameters were saved, which was a
+  waste of memory.
+
+* When a keypress over a sub-window is forwarded to the main window,
+  the focus is now shifted to the main window.  This avoids typing a
+  command then pressing Enter, and finding that the forwarding window
+  accepts the Enter, doing something unexpected.
+
+* Improved the Ruler command and some others visually, much less
+  flashing now.
+
+
+BUGS FIXED
+----------
+
+* Windows bug fixes.
+
+  - Fixed errors in the File Selection panel involving hard-coded
+    Unix/Linux assumptions.
+
+  - Fixed colors in Print-to-clipboard operation of the Print Control
+    panel.
+
+* Duplicate PCellName and PCellParams properties were being added to
+  some PCell instances when input was read (properties were set from
+  both the sub-master and the file).  Now will keep properties from
+  sub-master.
+
+* Using the default save string when saving a native cell, or
+  otherwise giving the name of an existing file to the Save As
+  command, would fail.  The Save As command now behaves sensible when
+  given the path to an existing file when saving a native cell:  It
+  will move the existing file giving it a "bak" extension, then save
+  the cell.
+
+* If only cells are enabled for selection in the Selection Control
+  Panel, nothing could be selected in the Info command.
+
+* The CGX writer was incorrectly setting all text labels to "hidden",
+  so that the labels would not appear when the file was read.
+
+
+-------------------------------------------------------------------------------
+xic-4.0.4  2/3/2014
+
+BUGS FIXED
+----------
+
+* Oops.  The Microsoft version was not finding its startup files, a
+  major problem.
+
+* The File Selection and Path Files List now handle file names with
+  embedded white space correctly.
+
+-------------------------------------------------------------------------------
+xic-4.0.3  1/30/2014
+
+Welcome the the first public release of Xic Generation 4!  This has
+some exciting new features, including:
+
+- Plug-in OpenAccess support and compatibility.
+- Plug-in language support for Python nd TclTk,
+- Expanded  PCell support.
+- Support for arbitrary layer names, and purposes, and a new layer
+  table format.
+
+The "changes" document is in the help system with keyword "xic40". 
+There is a link on the top help page, or you can type "?  xic40" to
+bring up the changes document.  The xic40 document links to hundreds
+of new and revised help pages, which also appear in the manual.
+
+BE ADVISED, THIS IS A *ALPHA TEST* RELEASE.  This means that
+1) There will be bugs, incomplete feature implementations, etc. 
+   However, The legacy core features should be clean (no guarantees,
+   though).
+2) The documentation is still being generated and revised.

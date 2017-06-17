@@ -1,0 +1,102 @@
+SCED spice model library
+# Xic model.lib file 3.1.7 8/10/2009
+# >>> NOTE: The Hypres JJ models have changed.
+#
+# This file contains only a few representative device models.  It is
+# expected that each site will have a central model.lib file, customized
+# by the maintainer.  Users can in addition generate custom model.lib
+# files.  Remember that models can also be kept in /models subdirectories
+# in the library search path.
+
+# Josephson junctions for Hypres foundry process.
+# Based on Hypres Design Rules Revision #24, Jan. 11, 2008.
+# Note that capacitance values are substantially larger than the models
+# provided earlier.
+
+# These scale to 1mA for area=1.  Use the area device parameter to set
+# actual critical current.
+
+* Nb 30 A/cm2
+.model jj1 jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
++ icrit=1m, r0=30, rn=1.7, cap=123.3p)
+
+* Nb 1000 A/cm2
+.model jj2 jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
++ icrit=1m, r0=30, rn=1.7, cap=5.0p)
+
+* Nb 4500 A/cm2
+.model jj3 jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
++ icrit=1m, r0=30, rn=1.7, cap=1.31p)
+.model jjr jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
++ icrit=1m, vshunt=0.5mV cap=1.31p)
+
+# Made-up YBCO model, the Vg is kept small so that timestep-limiting
+# does not make simulations ridiculously slow.  This will not affect
+# SFQ circuits since junction voltage is always much smaller than this
+# value.
+* YBCO
+.model ybco1 jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
++ icrit=1m, r0=1, rn=1, cap=.1p)
+
+# These were picked out of the WRspice examples more or less randomly
+# bipolar transistors
+.model npn1 npn(bf=80 rb=100 ccs=2pf tf=0.3ns tr=6ns cje=3pf cjc=2pf
++ va=50)
+.model npn2 npn(is=1.0e-16 bf=50 br=0.1 rb=50 rc=10 tf=0.12ns tr=5ns
++   cje=0.4pf pe=0.8 me=0.4 cjc=0.5pf pc=0.8 mc=0.333 ccs=1pf va=50)
+
+#diodes
+.model d1 d(is=1.0e-14 tt=0.1n cjo=2p)
+
+# MOS
+.model m1 nmos(nsub=2.2e15 uo=575 ucrit=49k uexp=0.1 tox=0.11u xj=2.95u
++   level=2 cgso=1.5n cgdo=1.5n cbd=4.5f cbs=4.5f ld=2.4485u nss=3.2e10
++   kp=2e-5 phi=0.6 )
+.model m2 nmos(vto=0.5 phi=0.7 kp=1.0e-6 gamma=1.83 lambda=0.115
++   level=1 cgso=1u cgdo=1u cbd=50p cbs=50p)
+
+# the subcircuit for the opamp macro
+* UA741 operational amplifier "macromodel" subcircuit
+* created using Parts release 4.01 on 07/05/89 at 09:09
+* (REV N/A)
+* connections:   non-inverting input
+*                | inverting input
+*                | | positive power supply
+*                | | | negative power supply
+*                | | | | output
+*                | | | | |
+.subckt ua741    1 2 3 4 5
+*
+  c1   11 12 4.664E-12
+  c2    6  7 20.00E-12
+  dc    5 53 dx
+  de   54  5 dx
+  dlp  90 91 dx
+  dln  92 90 dx
+  dp    4  3 dx
+  egnd 99  0 poly(2) (3,0) (4,0) 0 .5 .5
+  fb    7 99 poly(5) vb vc ve vlp vln 0 10.61E6 -10E6 10E6 10E6 -10E6
+  ga    6  0 11 12 137.7E-6
+  gcm   0  6 10 99 2.574E-9
+  iee  10  4 dc 10.16E-6
+  hlim 90  0 vlim 1K
+  q1   11  2 13 qx
+  q2   12  1 14 qx
+  r2    6  9 100.0E3
+  rc1   3 11 7.957E3
+  rc2   3 12 7.957E3
+  re1  13 10 2.740E3
+  re2  14 10 2.740E3
+  ree  10 99 19.69E6
+  ro1   8  5 150
+  ro2   7 99 150
+  rp    3  4 18.11E3
+  vb    9  0 dc 0
+  vc    3 53 dc 2.600
+  ve   54  4 dc 2.600
+  vlim  7  8 dc 0
+  vlp  91  0 dc 25
+  vln   0 92 dc 25
+.model dx D(Is=800.0E-18)
+.model qx NPN(Is=800.0E-18 Bf=62.50)
+.ends

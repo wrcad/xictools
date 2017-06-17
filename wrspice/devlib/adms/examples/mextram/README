@@ -1,0 +1,54 @@
+$Id: README,v 1.5 2014/04/22 19:34:09 stevew Exp $
+
+This is the MEXTRAM BJT model Verilog-A code.  Documentation and newer
+versions may be available from the developers at NXP
+(http://www.nxp.com/models/bipolar-models/mextram.html) or TU Delft
+(http://mextram.ewi.tudelft.nl/page_Introduction.php).
+
+There were two changes made in the source code, search for "XXX".
+
+1.  In parameters.inc, added back the "exclude 0" which had been
+removed via an "insideADMS" define.
+
+2.  In tscaling.inc, added back the ability to set temperature to
+other than the reference value, which had been removed with a
+"insideADMS" define.
+
+Note to model developers:
+Please use "insideADMS" to turn on ADMS extensions ONLY.
+
+Full QA data are available in the separate QA download file.  WRspice
+agreement with QA data is outstanding.
+
+A pre-built module is available in the "module_dist" directory.
+
+To build:
+
+0.  Make sure that the admst-2.3.0-wr package is installed on your
+system.  This is available from the free software area of wrcad.com. 
+The package has important improvements and bug fixes, and is required
+for building modules for WRspice.  Use of another adms distribution
+will cause trouble.
+
+1.  If you are reading this from the WRspice installation area, copy
+this directory to a personal work area, and work from there.  Below,
+"this directory" implies the copied directory (with its files and
+any sub-directories).
+
+2.  The Makefile has been provided.  Have a look at the top part of
+the file where the configuration variables are set, and read the
+comments.  Make any desired changes.
+
+3.  Type "make".  This will create and compile the C++ files, eventually
+producing the loadable module named "bjt504.so" ("bjt504.dylib" in OS X).
+
+Note: there are several variations of the bjt504 model which can be
+built.
+
+4.  Use the devload command or -m command-line option in WRspice to
+load the module.  You will then be able to run the examples.
+
+NOTE: Like the hicum2 bjt model, this shows some convergence issues.
+See the notes in the test files about additions I made to get around
+this.
+

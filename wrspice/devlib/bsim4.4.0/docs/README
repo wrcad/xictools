@@ -1,0 +1,39 @@
+Dear BSIM Users, 
+
+Thank you for your support of the BSIM models. We are releasing the BSIM4.4.0 models 
+today, March 4, 2004.
+
+BSIM4.4.0 is developed to address trap-assisted tunneling and recombination current 
+that occurs at reverse biased P-N junction where the doping on both sides of the 
+junction is relatively high due to the halo-doping technology. The plans and progress 
+of the development were presented and discussed at Compact Model Council (CMC) 
+meeting in December 2003. The modification was tested by several companies 
+and their feedback was incorporated into this release. 
+
+BSIM4.4.0 has the following major feature improvements over BSIM4.3.0:  
+
+1. A new trap-assisted tunneling and recombination current model that is applicable 
+to gate-edge side-wall, STI-edge side-wall and bottom junction;
+
+2. A new parameter VFBSDOFF introduced to improve the gate overlap tunneling current;  
+
+3. A new parameter LINTNOI introducing an offset to the length reduction parameter(Lint)  
+to improve the accuracy of the flicker noise model;  
+
+In addition, there are ten bug fixes in this version.  The complete list of bugs and 
+fixes and the users who reported them, the BSIM4.4.0 source code, BSIM4.4.0 user manual,  
+BSIM4.4.0 new enhancement  document  and testing examples can  be downloaded at: 
+http://www-device.eecs.berkeley.edu/~bsim3/bsim4.html
+
+BSIM4.4.0 received intensive evaluation by TI, IBM, Renesas, Intel, Analog Device, 
+Cadence. Their testing materially and substantially improved the quality  of the present 
+production release. Special thank goes to Dr. Keith Green, Dr. Joe Watts, Dr. Peter Lee, 
+Britt Brooks, for their guidance and technical support. We would also like to express our 
+sincere thanks to all the other users who provided their input.  
+
+We thank you for your support to BSIM and welcome your feedback on this latest version.
+
+Sincerely,
+
+BSIM Team
+UC Berkeley

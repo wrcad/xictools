@@ -1,0 +1,759 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  $Id: wrspiceMODULEset.cc.xml,v 1.39 2015/07/30 18:00:52 stevew Exp $
+
+  Modified for use with WRspice, Whiteley Research Inc. (wrcad.com).
+  See the original header below for terms and conditions of use.
+-->
+
+<!--
+  Written by Laurent Lemaitre - r29173@users.sourceforge.net
+  Documentation:
+    http://sourceforge.net/docman/display_doc.php?docid=18993&group_id=84289
+  Target Interface: ngspice
+  Supported by adms-1.x.x
+  This file is used by adms - http://sourceforge.net/projects/mot-adms.
+  adms is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+  adms is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  You should have received a copy of the GNU General Public License
+  along with adms; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+
+<!DOCTYPE admst SYSTEM "admst.dtd">
+<admst version="2.3.0" xmlns:admst="http://mot-adms.sourceforge.net/xml-files/admst">
+
+<!-- Set this to 'yes' for runtime debugging output. -->
+<admst:variable name="DEBUG" value="no"/>
+
+<!-- ---------------------------------------------------------------------- -->
+<admst:template match="module_set_cc">
+
+  <admst:text format="\n#include &quot;$(modlc)defs.h&quot;\n"/>
+  <admst:if test="[$DEBUG='yes']">
+    <admst:text format="#include &lt;stdio.h>\n"/>
+  </admst:if>
+
+  <admst:text format="\n\nnamespace {\n"/>
+  <admst:text format="$(indent)// Function to allocate (or obtain) a matrix element pointer.\n"/>
+  <admst:text format="$(indent)int get_node_ptr(sCKT *ckt, s$(moduc)instance *inst)\n"/>
+  <admst:text format="$(indent){\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:for-each select="jacobian">
+    <admst:value-of select="column/name"/>
+    <admst:value-of select="row/name"/>
+    <admst:text format="$(indent)if (inst->PTR_J_%s_%s_required) {\n"/>
+    <admst:value-of select="column/name"/>
+    <admst:value-of select="row/name"/>
+    <admst:value-of select="column/name"/>
+    <admst:value-of select="row/name"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)TSTALLOC(PTR_J_%s_%s, %s_Node, %s_Node)\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)}\n"/>
+  </admst:for-each>
+  <admst:for-each select="$branches">
+    <admst:variable name="pname" path="branch/pnode/name"/>
+    <admst:variable name="nname" path="branch/nnode/name"/>
+    <admst:variable name="bname" value="$(pname)_$(nname)_Branch"/>
+    <admst:if test="branch/pnode[grounded='no']">
+      <admst:text format="$(indent)if (inst->PTR_$(bname)_P_required) {\n"/>
+      <admst:apply-templates select="." match="push_indent"/>
+      <admst:text format="$(indent)TSTALLOC(PTR_$(bname)_PB, $(pname)_Node, $(bname))\n"/>
+      <admst:text format="$(indent)TSTALLOC(PTR_$(bname)_BP, $(bname), $(pname)_Node)\n"/>
+      <admst:apply-templates select="." match="pop_indent"/>
+      <admst:text format="$(indent)}\n"/>
+    </admst:if>
+    <admst:if test="branch/nnode[grounded='no']">
+      <admst:text format="$(indent)if (inst->PTR_$(bname)_N_required) {\n"/>
+      <admst:apply-templates select="." match="push_indent"/>
+      <admst:text format="$(indent)TSTALLOC(PTR_$(bname)_NB, $(nname)_Node, $(bname))\n"/>
+      <admst:text format="$(indent)TSTALLOC(PTR_$(bname)_BN, $(bname), $(nname)_Node)\n"/>
+      <admst:apply-templates select="." match="pop_indent"/>
+      <admst:text format="$(indent)}\n"/>
+    </admst:if>
+    <admst:text format="$(indent)if (inst->PTR_$(bname)_BB_required) {\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)TSTALLOC(PTR_$(bname)_BB, $(bname), $(bname))\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)}\n"/>
+
+  </admst:for-each>
+  <admst:for-each select="$curprobes">
+    <admst:variable name="pname" path="branch/pnode/name"/>
+    <admst:variable name="bname" value="$(pname)_$(pname)_Branch"/>
+    <admst:variable name="ndname" value="$(pname)probe_Node"/>
+    <admst:text format="$(indent)TSTALLOC(PTR_$(bname)_PB, $(ndname), $(bname))\n"/>
+    <admst:text format="$(indent)TSTALLOC(PTR_$(bname)_BP, $(bname), $(ndname))\n"/>
+    <admst:text format="$(indent)TSTALLOC(PTR_$(bname)_NB, $(pname)_Node, $(bname))\n"/>
+    <admst:text format="$(indent)TSTALLOC(PTR_$(bname)_BN, $(bname), $(pname)_Node)\n"/>
+  </admst:for-each>
+
+  <admst:text format="$(indent)return (OK);\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="}\n"/>
+
+  <admst:text format="\n\nint\n"/>
+  <admst:text format="$(moduc)dev::setup(sGENmodel *genmod, sCKT *ckt, int *states)\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)s$(moduc)model *model = (s$(moduc)model*)genmod;\n"/>
+  <admst:text format="$(indent)s$(moduc)instance *inst;\n"/>
+  <admst:text format="$(indent)for ( ; model; model = model->next()) {\n\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)inst = 0;\n"/>
+
+  <admst:variable name="goodone"/>
+  <admst:variable name="pval"/>
+  <admst:if test="[$n_flavor!='']">
+    <!--
+      This device has p/n flavors, here we attempt to set the correct
+      type.  If either of has_n_flavor or has_p_flavor is 'yes', we
+      shouldn't need to do anything special.
+    -->
+    <admst:if test="[$has_n_flavor='no' and $has_p_flavor='no']">
+      <admst:if test="[count($goodone)='0']">
+        <!-- Look for a parameter named 'DEVTYPE' -->
+        <admst:for-each select="variable[input='yes' and name='DEVTYPE' and
+            (type='integer' or type='real')]">
+          <admst:for-each select="range[infexpr/hasspecialnumber='NO' and
+              supexpr/hasspecialnumber='NO']">
+            <admst:variable name="min" value="%(infexpr)"/>
+            <admst:variable name="max" value="%(supexpr)"/>
+            <admst:if test="[math:is_mone($min)/value='yes' and
+                math:is_one($max)/value='yes']">
+              <admst:variable name="pval" value="-1"/>
+              <admst:push into="$goodone" select=".."/>
+            </admst:if>
+            <admst:if test="[math:is_zero($min)/value='yes' and
+                math:is_one($max)/value='yes']">
+              <admst:variable name="pval" value="0"/>
+              <admst:push into="$goodone" select=".."/>
+            </admst:if>
+          </admst:for-each>
+        </admst:for-each>
+      </admst:if>
+      <admst:if test="[count($goodone)='0']">
+        <!-- Look for a parameter named 'TYPE' -->
+        <admst:for-each select="variable[input='yes' and name='TYPE' and
+            (type='integer' or type='real')]">
+          <admst:for-each select="range[infexpr/hasspecialnumber='NO' and
+              supexpr/hasspecialnumber='NO']">
+            <admst:variable name="min" value="%(infexpr)"/>
+            <admst:variable name="max" value="%(supexpr)"/>
+            <admst:if test="[math:is_mone($min)/value='yes' and
+                math:is_one($max)/value='yes']">
+              <admst:variable name="pval" value="-1"/>
+              <admst:push into="$goodone" select=".."/>
+            </admst:if>
+            <admst:if test="[math:is_zero($min)/value='yes' and
+                math:is_one($max)/value='yes']">
+              <admst:variable name="pval" value="0"/>
+              <admst:push into="$goodone" select=".."/>
+            </admst:if>
+          </admst:for-each>
+        </admst:for-each>
+      </admst:if>
+      <!--
+        Look for an integer or real parameter with a range [-1:1] or
+        [0:1].  If we find exactly one, assume that it is what sets
+        the p/n type, and further assume that the larger value
+        corresponds to n-type.  Fail if we don'f find exactly one such
+        parameter.
+      -->
+      <admst:if test="[count($goodone)='0']">
+        <admst:for-each select="variable[input='yes' and type='integer']">
+          <admst:for-each select="range[infexpr/hasspecialnumber='NO' and
+              supexpr/hasspecialnumber='NO']">
+            <admst:variable name="min" value="%(infexpr)"/>
+            <admst:variable name="max" value="%(supexpr)"/>
+            <admst:if test="[math:is_mone($min)/value='yes' and
+                math:is_one($max)/value='yes']">
+              <admst:variable name="pval" value="-1"/>
+              <admst:push into="$goodone" select=".."/>
+            </admst:if>
+          </admst:for-each>
+        </admst:for-each>
+      </admst:if>
+      <admst:if test="[count($goodone)='0']">
+        <admst:for-each select="variable[input='yes' and type='real']">
+          <admst:for-each select="range[infexpr/hasspecialnumber='NO' and
+              supexpr/hasspecialnumber='NO']">
+            <admst:variable name="min" value="%(infexpr)"/>
+            <admst:variable name="max" value="%(supexpr)"/>
+            <admst:if test="[math:is_mone($min)/value='yes' and
+                math:is_one($max)/value='yes']">
+              <admst:variable name="pval" value="-1"/>
+              <admst:push into="$goodone" select=".."/>
+            </admst:if>
+          </admst:for-each>
+        </admst:for-each>
+      </admst:if>
+      <admst:if test="[count($goodone)='0']">
+        <admst:for-each select="variable[input='yes' and type='integer']">
+          <admst:for-each select="range[infexpr/hasspecialnumber='NO' and
+              supexpr/hasspecialnumber='NO']">
+            <admst:variable name="min" value="%(infexpr)"/>
+            <admst:variable name="max" value="%(supexpr)"/>
+            <admst:if test="[math:is_zero($min)/value='yes' and
+                math:is_one($max)/value='yes']">
+              <admst:variable name="pval" value="0"/>
+              <admst:push into="$goodone" select=".."/>
+            </admst:if>
+          </admst:for-each>
+        </admst:for-each>
+      </admst:if>
+      <admst:if test="[count($goodone)='0']">
+        <admst:for-each select="variable[input='yes' and type='real']">
+          <admst:for-each select="range[infexpr/hasspecialnumber='NO' and
+              supexpr/hasspecialnumber='NO']">
+            <admst:variable name="min" value="%(infexpr)"/>
+            <admst:variable name="max" value="%(supexpr)"/>
+            <admst:if test="[math:is_zero($min)/value='yes' and
+                math:is_one($max)/value='yes']">
+              <admst:variable name="pval" value="0"/>
+              <admst:push into="$goodone" select=".."/>
+            </admst:if>
+          </admst:for-each>
+        </admst:for-each>
+      </admst:if>
+      <!--
+        No joy so far, look for parameters with suggestive names that
+        have no range.  If we find one, guess that the pval is -1,
+        which we have no way of knowing.  This will work for the
+        psp102/103 models, which match 'TYPE' below.
+      -->
+      <admst:if test="[count($goodone)='0']">
+        <!-- Look for a range-less parameter named 'DEVTYPE'. -->
+        <admst:for-each select="variable[input='yes' and name='DEVTYPE']">
+          <admst:if test="[nilled(range)]">
+            <admst:push into="$goodone" select="."/>
+              <admst:variable name="pval" value="-1"/>
+          </admst:if>
+        </admst:for-each>
+      </admst:if>
+      <admst:if test="[count($goodone)='0']">
+        <!-- Look for a range-less parameter named 'TYPE'. -->
+        <admst:for-each select="variable[input='yes' and name='TYPE']">
+          <admst:if test="[nilled(range)]">
+            <admst:push into="$goodone" select="."/>
+              <admst:variable name="pval" value="-1"/>
+          </admst:if>
+        </admst:for-each>
+      </admst:if>
+      <admst:if test="[count($goodone)!='1']">
+        <admst:warning
+  format="I can't figure out how to set the N/P type variations for this\n"/>
+        <admst:warning
+  format="model.  The $n_flavor and $p_flavor flag keywords will be accepted\n"/>
+        <admst:warning
+  format="but will do nothing.\n"/>
+      </admst:if>
+      <admst:if test="[count($goodone)='1']">
+        <!--
+          OK, but warn the user since this is sort of a hack.
+        -->
+        <admst:warning
+  format="I am guessing that the $goodone parameter sets the model P/N type.\n"/>
+        <admst:warning
+          format="This will be set to 1/$pval for $n_flavor/$p_flavor.\n"/>
+        <admst:text format="$(indent)if (!model->$(goodone)_Given)\n"/>
+        <admst:apply-templates select="." match="push_indent"/>
+        <admst:text format="$(indent)model->$(goodone) = (model->$n_flavor ? 1 : $pval);\n"/>
+        <admst:apply-templates select="." match="pop_indent"/>
+        <!--
+          We now want to skip any further assignment of the $goodone,
+          $n_flavor, and $p_flavor variables below.  We'll push the
+          latter two into $goodone, for testing.
+        -->
+        <admst:push into="$goodone"
+          select="variable[name='$n_flavor' or name='$p_flavor']"/>
+      </admst:if>
+
+    </admst:if>
+  </admst:if>
+
+  <!--
+    In the case of the "unified" instance (i.e., all parameters are
+    instance parameters) the model parameters are the same as the
+    instance parameters.  Each parameter has an element and a "Given"
+    flag.  In SPICE, the model values will be initialized in a .model
+    line.
+  -->
+  <admst:choose>
+    <admst:when test="[$unified='yes']">
+      <admst:variable name="inst_to_model" value="yes"/>
+      <admst:for-each select="variable[parametertype='instance' and input='yes']">
+        <admst:variable name="v" select="%(name)"/>
+        <admst:choose>
+          <admst:when test="$goodone[name='$v']"/>
+          <admst:otherwise>
+            <admst:text format="$(indent)if (!model->%(name)_Given)\n"/>
+            <admst:apply-templates select="." match="push_indent"/>
+            <admst:text format="$(indent)model->%(name)="/>
+            <admst:text format="%(e(default/tree));\n"/>
+            <admst:apply-templates select="." match="pop_indent"/>
+          </admst:otherwise>
+        </admst:choose>
+      </admst:for-each>
+      <admst:variable name="inst_to_model" value="no"/>
+    </admst:when>
+    <admst:otherwise>
+      <admst:for-each select="variable[parametertype='model' and input='yes']">
+        <admst:variable name="v" select="%(name)"/>
+        <admst:choose>
+          <admst:when test="$goodone[name='$v']"/>
+          <admst:otherwise>
+            <admst:text format="$(indent)if (!model->%(name)_Given)\n"/>
+            <admst:apply-templates select="." match="push_indent"/>
+            <admst:text format="$(indent)model->%(name)="/>
+            <admst:text format="%(e(default/tree));\n"/>
+            <admst:apply-templates select="." match="pop_indent"/>
+          </admst:otherwise>
+        </admst:choose>
+      </admst:for-each>
+    </admst:otherwise>
+  </admst:choose>
+
+  <admst:text format="\n$(indent)for (inst = model->inst(); inst; inst = inst->next()) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+
+  <admst:for-each select="variable[parametertype='instance' and input='yes']">
+    <!--
+      In the case of a "unified" instance, the shadow params from the
+      model struct are used to initialize the instance params.  So,
+      any parameter can be set from a .model or instance line, with
+      the .model values acting as defaults.
+    -->
+    <admst:choose>
+      <admst:when test="[$unified='yes']">
+        <admst:text format="$(indent)if (!inst->%(name)_Given) {\n"/>
+        <admst:apply-templates select="." match="push_indent"/>
+        <admst:text format="$(indent)inst->%(name) = model->%(name);\n"/>
+        <admst:text
+          format="$(indent)inst->%(name)_Given = model->%(name)_Given;\n"/>
+        <admst:apply-templates select="." match="pop_indent"/>
+        <admst:text format="$(indent)}\n"/>
+      </admst:when>
+      <admst:otherwise>
+        <admst:text format="$(indent)if (!inst->%(name)_Given)\n"/>
+        <admst:apply-templates select="." match="push_indent"/>
+        <admst:text format="$(indent)inst->%(name)="/>
+        <admst:text format="%(e(default/tree));\n"/>
+        <admst:apply-templates select="." match="pop_indent"/>
+      </admst:otherwise>
+    </admst:choose>
+  </admst:for-each>
+
+  <admst:if test="[count(node[location='internal'])!=0 or
+      count($branches)!=0]">
+    <admst:text
+      format="\n$(indent)// Initialize internal nodes and branches.\n"/>
+  </admst:if>
+  <!--
+    The connected external nodes have been assigned by SPICE.  Unconnected
+    optional nodes are assigned -1.
+  -->
+  <admst:for-each select="node[location='internal']">
+    <admst:text format="$(indent)inst->%(name)_Node = -1;\n"/>
+  </admst:for-each>
+  <admst:for-each select="$curprobes">
+    <admst:text format="$(indent)inst->%(branch/pnode/name)probe_Node = -1;\n"/>
+  </admst:for-each>
+  <admst:for-each select="$branches">
+    <admst:variable name="pname" path="branch/pnode/name"/>
+    <admst:variable name="nname" path="branch/nnode/name"/>
+    <admst:variable name="bname" value="$(pname)_$(nname)_Branch"/>
+    <admst:text format="$(indent)inst->$(bname) = -1;\n"/>
+  </admst:for-each>
+  <admst:for-each select="$curprobes">
+    <admst:variable name="pname" path="branch/pnode/name"/>
+    <admst:variable name="bname" value="$(pname)_$(pname)_Branch"/>
+    <admst:text format="$(indent)inst->$(bname) = -1;\n"/>
+  </admst:for-each>
+
+  <admst:text format="\n$(indent)// Set states.\n"/>
+  <admst:text format="$(indent)inst->GENstate = *states;\n"/>
+  <admst:text format="$(indent)*states += $(moduc)_NUM_STATES;\n"/>
+
+  <admst:text format="\n$(indent)// Set flags.\n"/>
+  <admst:for-each select="node[attribute[name='optional']/value='yes']">
+    <admst:text format="$(indent)inst->%(name)_Node_required = false;\n"/>
+  </admst:for-each>
+  <admst:for-each select="node[grounded='no' and location='internal']">
+    <admst:text format="$(indent)inst->%(name)_Node_required = false;\n"/>
+  </admst:for-each>
+  <admst:for-each select="jacobian">
+    <admst:value-of select="column/name"/>
+    <admst:value-of select="row/name"/>
+    <admst:text format="$(indent)inst->PTR_J_%s_%s_required = false;\n"/>
+  </admst:for-each>
+  <admst:for-each select="$branches">
+    <admst:variable name="pname" path="branch/pnode/name"/>
+    <admst:variable name="nname" path="branch/nnode/name"/>
+    <admst:variable name="bname" value="$(pname)_$(nname)_Branch"/>
+    <admst:if test="branch/pnode[grounded='no']">
+      <admst:text
+        format="$(indent)inst->PTR_$(bname)_P_required = false;\n"/>
+    </admst:if>
+    <admst:if test="branch/nnode[grounded='no']">
+      <admst:text
+        format="$(indent)inst->PTR_$(bname)_N_required = false;\n"/>
+    </admst:if>
+    <admst:text
+      format="$(indent)inst->PTR_$(bname)_BB_required = false;\n"/>
+  </admst:for-each>
+
+  <!-- Initialize port_connected flags. -->
+  <admst:for-each select="node[attribute[name='optional']/value='yes']">
+    <admst:text format="$(indent)inst->%(name)_Node_connected ="/>
+    <admst:text format=" (inst->%(name)_Node >= 0);\n"/>
+  </admst:for-each>
+
+  <!-- Initialize node_created flags. -->
+  <admst:for-each select="node[attribute[name='optional']/value='yes']">
+    <admst:text format="$(indent)inst->%(name)_Node_created = false;\n"/>
+  </admst:for-each>
+  <admst:for-each select="node[grounded='no' and location='internal']">
+    <admst:text format="$(indent)inst->%(name)_Node_created = false;\n"/>
+  </admst:for-each>
+
+  <!-- Initialize node_collapsed flags. -->
+  <admst:for-each select="$collapsable">
+    <admst:variable name="pnode" path="branch/pnode"/>
+    <admst:variable name="nnode" path="branch/nnode"/>
+    <admst:variable name="pname" path="$pnode/name"/>
+    <admst:variable name="nname" path="$nnode/name"/>
+    <admst:text format="$(indent)inst-> $(pname)_$(nname)_collapsed = false;\n"/>
+  </admst:for-each>
+
+  <!--
+    The "curprobes" are current monitors that are applied at an
+    external node, given probe forms like I(<ext>), I(ext,ext), and
+    I(ext).  We need to add a dummy voltage source to be used as a
+    current meter, which requires a new new node and branch.  We know
+    now that we need to do this, and we actually must do this before
+    calling topology so that internal nodes collpase to the correct
+    node.
+  -->
+  <admst:for-each select="$curprobes">
+    <admst:variable name="pname" path="branch/pnode/name"/>
+    <admst:variable name="bname" value="$(pname)_$(pname)_Branch"/>
+    <admst:variable name="ndname" value="$(pname)probe_Node"/>
+    <admst:text format="$(indent)if (inst->$(ndname) == -1) {\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)sCKTnode *tmp;\n"/>
+    <admst:text format="$(indent)int error = ckt->mkVolt(&amp;tmp,"/>
+    <admst:text format=" inst->GENname, &quot;$(pname)probe&quot;);\n"/>
+    <admst:text format="$(indent)if (error)\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)return (error);\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)inst->$(ndname) = inst->$(pname)_Node;\n"/>
+    <admst:text format="$(indent)inst->$(pname)_Node = tmp->number();\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)}\n"/>
+
+    <admst:text format="$(indent)if (inst->$(bname) == -1) {\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)sCKTnode *tmp;\n"/>
+    <admst:text format="$(indent)int error = ckt->mkCur(&amp;tmp,"/>
+    <admst:text format=" inst->GENname, &quot;$(bname)&quot;);\n"/>
+    <admst:text format="$(indent)if (error)\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)return (error);\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)inst->$(bname) = tmp->number();\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)}\n"/>
+  </admst:for-each>
+
+  <!--
+    The topology function determines which matrix elements are required
+    at run time.  This is a pared-down tree as would be executing when
+    matrix loading, however it only sets the _required flags of elements
+    that would be needed.  Since most of the math is clipped out, there
+    is a high potential that remaining math will cause FP exceptions,
+    so exception handling is disabled during this call.
+  -->
+  <admst:text format="\n$(indent)int fpestate = ckt->disableFPE();\n"/>
+  <admst:text format="$(indent)int error = topology(ckt, model, inst);\n"/>
+  <admst:text format="$(indent)ckt->enableFPE(fpestate);\n"/>
+  <admst:text format="$(indent)if (error)\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)return (error);\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+
+  <admst:if test="[count(node[location='internal'])!=0 or
+      count($branches)!=0]">
+    <admst:text
+      format="\n$(indent)// Allocate internal nodes and branches.\n"/>
+  </admst:if>
+  <!--
+    What to do with optional nodes?  It they are connected, then they
+    have a node assignment from the device constructor, and all should
+    be well.  If they are not connected, they should (probably) be
+    treated exactly like internal nodes.  At this point, the topology
+    call should have identified the nodes to collapse, and the
+    resolve_ties call will have assigned an existing node number to
+    these.  Any internal or optional nodes that are still unassigned
+    should have a new node created.  This will be done here - first
+    check the optional nodes, then the internal nodes.
+  -->
+  <admst:for-each select="node[attribute[name='optional']/value='yes']">
+    <admst:text format="$(indent)inst->resolve_ties();\n"/>
+    <admst:text format="$(indent)if (inst->%(name)_Node == -1"/>
+    <admst:text format=" &amp;&amp; inst->%(name)_Node_required) {\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)sCKTnode *tmp;\n"/>
+    <admst:text format="$(indent)error = ckt->mkVolt(&amp;tmp,"/>
+    <admst:text format=" inst->GENname, &quot;%(name)&quot;);\n"/>
+    <admst:text format="$(indent)if (error)\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)return (error);\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)inst->%(name)_Node = tmp->number();\n"/>
+    <admst:text format="$(indent)inst->%(name)_Node_created = true;\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)}\n"/>
+  </admst:for-each>
+  <admst:for-each select="node[location='internal']">
+    <admst:text format="$(indent)inst->resolve_ties();\n"/>
+    <admst:variable name="nname" value="%(name)"/>
+    <!--
+      Set up the node creation logic.  The node will actually be
+      created only if its required flag is set.  The required nodes
+      will be found in the Jacobian or potential contributions.
+
+      <admst:if test="/module/jacobian/column[name=$nname]">
+      </admst:if>
+    -->
+    <admst:text format="$(indent)if (inst->$(nname)_Node == -1"/>
+    <admst:text format=" &amp;&amp; inst->$(nname)_Node_required) {\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)sCKTnode *tmp;\n"/>
+    <admst:text format="$(indent)error = ckt->mkVolt(&amp;tmp,"/>
+    <admst:text format=" inst->GENname, &quot;$(nname)&quot;);\n"/>
+    <admst:text format="$(indent)if (error)\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)return (error);\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)inst->$(nname)_Node = tmp->number();\n"/>
+    <admst:text format="$(indent)inst->%(name)_Node_created = true;\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)}\n"/>
+  </admst:for-each>
+  <admst:text format="$(indent)inst->resolve_ties();\n"/>
+
+  <admst:for-each select="$branches">
+    <admst:variable name="pname" path="branch/pnode/name"/>
+    <admst:variable name="nname" path="branch/nnode/name"/>
+    <admst:variable name="bname" value="$(pname)_$(nname)_Branch"/>
+    <admst:text format="$(indent)if (inst->$(bname) == -1 &amp;&amp;\n"/>
+    <admst:choose>
+      <admst:when test="branch/nnode[grounded='yes']">
+        <admst:apply-templates select="." match="push_indent"/>
+        <admst:apply-templates select="." match="push_indent"/>
+        <admst:text format="$(indent)inst->PTR_$(bname)_P_required) {\n"/>
+        <admst:apply-templates select="." match="pop_indent"/>
+      </admst:when>
+      <admst:otherwise>
+        <admst:apply-templates select="." match="push_indent"/>
+        <admst:apply-templates select="." match="push_indent"/>
+        <admst:text format="$(indent)(inst->PTR_$(bname)_P_required ||\n"/>
+        <admst:text format="$(indent)inst->PTR_$(bname)_N_required)) {\n"/>
+        <admst:apply-templates select="." match="pop_indent"/>
+      </admst:otherwise>
+    </admst:choose>
+    <admst:choose>
+      <admst:when test="branch/nnode[grounded='no']">
+        <admst:text format="$(indent)if (inst->$(pname)_Node >= 0"/>
+        <admst:text format=" && inst->$(nname)_Node >= 0 &amp;&amp;\n"/>
+        <admst:apply-templates select="." match="push_indent"/>
+        <admst:apply-templates select="." match="push_indent"/>
+        <admst:text format="$(indent)inst->$(pname)_Node != inst->$(nname)_Node) {\n"/>
+        <admst:apply-templates select="." match="pop_indent"/>
+        <admst:apply-templates select="." match="pop_indent"/>
+      </admst:when>
+      <admst:otherwise>
+        <admst:text format="$(indent)if (inst->$(pname)_Node > 0) {\n"/>
+      </admst:otherwise>
+    </admst:choose>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)sCKTnode *tmp;\n"/>
+    <admst:text format="$(indent)error = ckt->mkCur(&amp;tmp,"/>
+    <admst:text format=" inst->GENname, &quot;$(bname)&quot;);\n"/>
+    <admst:text format="$(indent)if (error)\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)return (error);\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)inst->$(bname) = tmp->number();\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)}\n"/>
+    <admst:text format="$(indent)else\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)inst->$(bname) = 0;\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)}\n"/>
+  </admst:for-each>
+
+  <admst:if test="[$DEBUG='yes']">
+    <admst:for-each select="node[attribute[name='optional']/value='yes']">
+      <admst:text
+        format="printf(&quot;inst->%(name)_Node_required = %%d\\n&quot;,"/>
+      <admst:text format=" inst->%(name)_Node_required);\n"/>
+    </admst:for-each>
+    <admst:for-each select="node[grounded='no' and location='internal']">
+      <admst:text
+        format="printf(&quot;inst->%(name)_Node_required = %%d\\n&quot;,"/>
+      <admst:text format=" inst->%(name)_Node_required);\n"/>
+    </admst:for-each>
+    <admst:for-each select="jacobian">
+      <admst:value-of select="column/name"/>
+      <admst:value-of select="row/name"/>
+      <admst:text
+        format="printf(&quot;inst->PTR_J_%s_%s_Node_required = %%d\\n&quot;,"/>
+      <admst:value-of select="column/name"/>
+      <admst:value-of select="row/name"/>
+      <admst:text format=" inst->PTR_J_%s_%s_required);\n"/>
+    </admst:for-each>
+    <admst:for-each select="$branches">
+      <admst:variable name="pname" path="branch/pnode/name"/>
+      <admst:variable name="nname" path="branch/nnode/name"/>
+      <admst:variable name="bname" value="$(pname)_$(nname)_Branch"/>
+      <admst:text
+        format="printf(&quot;inst->PTR_$(bname)_P_required = %%d\\n&quot;,"/>
+      <admst:text format=" inst->PTR_$(bname)_P_required);\n"/>
+      <admst:if test="branch/nnode[grounded='no']">
+        <admst:text
+          format="printf(&quot;inst->PTR_$(bname)_N_required = %%d\\n&quot;,"/>
+        <admst:text format=" inst->PTR_$(bname)_N_required);\n"/>
+      </admst:if>
+    </admst:for-each>
+    <admst:for-each select="node[attribute[name='optional']/value='yes']">
+      <admst:text
+        format="printf(&quot;inst->%(name)_Node_connected = %%d\\n&quot;,"/>
+      <admst:text format=" inst->%(name)_Node_connected);\n"/>
+    </admst:for-each>
+  </admst:if>
+
+  <admst:text format="\n$(indent)// Get matrix element pointer.\n"/>
+  <admst:text format="$(indent)error = get_node_ptr(ckt, inst);\n"/>
+  <admst:text format="$(indent)if (error != OK)\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)return (error);\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+
+  <admst:text format="\n$(indent)return (OK);\n"/>
+  <admst:text format="}\n"/>
+
+  <!--
+    The unsetup function.
+  -->
+  <admst:text format="\n\nint\n"/>
+  <admst:text format="$(moduc)dev::unsetup(sGENmodel *genmod, sCKT *ckt)\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)s$(moduc)model *model = (s$(moduc)model*)genmod;\n"/>
+  <admst:text format="$(indent)for ( ; model; model = model->next()) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)s$(moduc)instance *inst = model->inst();\n"/>
+  <admst:text format="$(indent)for ( ; inst; inst = inst->next()) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+
+  <admst:for-each select="node[attribute[name='optional']/value='yes']">
+    <admst:text format="$(indent)if (inst->%(name)_Node_created &amp;&amp;"/>
+    <admst:text format=" inst->%(name)_Node > 0) {\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)inst->%(name)_Node = 0;\n"/>
+    <admst:text format="$(indent)inst->%(name)_Node_created = false;\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)}\n"/>
+  </admst:for-each>
+  <admst:for-each select="node[location='internal']">
+    <admst:text format="$(indent)if (inst->%(name)_Node_created &amp;&amp;"/>
+    <admst:text format=" inst->%(name)_Node > 0) {\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)inst->%(name)_Node = 0;\n"/>
+    <admst:text format="$(indent)inst->%(name)_Node_created = false;\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)}\n"/>
+  </admst:for-each>
+  <admst:for-each select="$branches">
+    <admst:variable name="pname" path="branch/pnode/name"/>
+    <admst:variable name="nname" path="branch/nnode/name"/>
+    <admst:variable name="bname" value="$(pname)_$(nname)_Branch"/>
+    <admst:text format="$(indent)if (inst->$bname > 0) {\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)inst->$bname = 0;\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)}\n"/>
+  </admst:for-each>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="$(indent)return (OK);\n"/>
+  <admst:text format="}\n"/>
+
+  <!--
+    The resetup function.
+  -->
+  <admst:text format="\n\n// Reset the matrix element pointers.\n"/>
+  <admst:text format="//\n"/>
+  <admst:text format="int\n"/>
+  <admst:text format="$(moduc)dev::resetup(sGENmodel *genmod, sCKT *ckt)\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)s$(moduc)model *model = (s$(moduc)model*)genmod;\n"/>
+  <admst:text format="$(indent)for ( ; model; model = model->next()) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)s$(moduc)instance *inst = model->inst();\n"/>
+  <admst:text format="$(indent)for ( ; inst; inst = inst->next()) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)int error = get_node_ptr(ckt, inst);\n"/>
+  <admst:text format="$(indent)if (error != OK)\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)return (error);\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="$(indent)return (OK);\n"/>
+
+  <admst:text format="}\n\n"/>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------- -->
+
+<admst:for-each select="/module">
+  <admst:apply-templates select="." match="init:translation"/>
+  <admst:open file="$(modlc)set.cc">
+    <admst:value-of select="/simulator/package_string"/>
+    <admst:text format="// Interface: %s\n"/>
+    <admst:value-of select="/simulator/currentdate"/>
+    <admst:value-of select="/simulator/fullname"/>
+    <admst:text format="// Created by: %s - %s\n"/>
+    <admst:variable name="SkipProbe" value="yes"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:apply-templates select="." match="module_set_cc"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:variable name="SkipProbe" value="no"/>
+  </admst:open>
+  <admst:message format="$(modlc)set.cc: file created\n"/>
+</admst:for-each>
+
+</admst>
+

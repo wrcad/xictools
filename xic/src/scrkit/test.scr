@@ -1,0 +1,4 @@
+
+a = my_NewArray(1.11, 2.22, 3.33, 4.44, 5.55)
+b = my_Func(2.345, 12, TRUE, "i\'m a string", a)
+Print("return value", b)

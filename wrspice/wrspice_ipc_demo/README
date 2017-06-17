@@ -1,0 +1,388 @@
+
+README, WRspice IPC demo
+$Id: README,v 1.6 2014/10/05 03:17:48 stevew Exp $
+
+Updated for WRspice release 3.2.11.
+
+This directory contains files which illustrate the interprocess
+communications capability of WRspice.  This may be useful for WRspice
+users who wish to develop custom interfaces to WRspice.
+
+The directory contains...
+
+spclient
+   This is a dummy application created out of code ripped out of Xic,
+   for access to WRspice.  It works with wrspiced on remote systems,
+   or with WRspice directly on the local machine (run in the
+   background), making available WRspice commands on a command line
+   interface.  It also allows WRspice graphics to appear on the local
+   machine (if system permissions allow).
+
+   The spclient.cc file contains the "user" code which can serve as a
+   template or starting point for a custom application.  The
+   sced_spiceipc.cc file and header files provide the actual
+   interface.  It is less likely that a developer will need to modify
+   the existing code in these files.  The program also makes use of
+   some of the utility classes and functions found in the miscutil
+   subdirectory.
+
+wrspiced
+   This is the WRspice daemon, also distributed with WRspice.  It
+   manages communication with WRspice on a server system, exporting
+   WRspice simulation capability over a network.
+
+These programs, or course, require WRspice.  See the Whiteley Research
+web site at www.wrcad.com for information about obtaining WRspice.
+
+
+Building the Programs
+---------------------
+
+Unlike earlier releases of this demo, there is no editing of the files
+required.
+
+In the wrspice_ipc_demo directory (which contains this file), type
+
+  ./configure
+
+This will build the Makefiles, configured for your computer.  When this
+finishes, type
+
+  make
+
+This will compile the source code into the executable files: spclient
+and wrspiced.  This completes the build process.
+
+The programs will build successfully on any of the platforms supported
+by WRspice.  If there is trouble, please alert Whiteley Research.
+
+
+The spclient Program
+--------------------
+
+There is one environment variable that spclient may read on startup:
+
+PATH_TO_WRSPICE         Full path to the wrspice executable program.
+
+This provides the default assumed location of WRspice on the local
+machine.  It is not necessary to set this variable, as the path can be
+provided on the command line, and defaults to the standard
+installation location for WRspice if no path is provided.
+
+The spclient program can run WRspice in one of two modes:
+
+1.  local mode
+
+  In this case, WRspice exists on and is run on the same machine as
+  spclient.  The spclient program will run WRspice in the background,
+  routing input/output appropriately.
+
+2.  remote mode
+
+  In this case, spclient will connect to a wrspiced daemon running
+  on another (or the same) machine.  The wrspiced will run WRspice
+  on the remote machine, channelling input/output back to spclient.
+
+It is possible to run WRspice with or without graphics, in both modes.
+When graphics is used, a channel is opened to the display running
+spclient, if permissions allow, so that WRspice can draw on the local
+screen.
+
+The spclient is invoked from the shell command line as
+
+  spclient [-g] [-t] [-s path_to_wrspice] [[-r] host[:port]] [-d display]
+
+The square brackets indicate optional arguments (all arguments are
+optional).
+
+Arguments are:
+  -g         Use X graphics if given.
+
+  -t         Show the WRspice toolbar if using graphics when given.
+
+  -s path    Path to WRspice executable for local mode.  If not
+             given, this will default to the value of the 
+             PATH_TO_WRSPICE environment variable if set, and finally
+             to "/usr/local/xictools/bin/wrspice".
+
+  -r host    Name of remote machine running wrspiced (this can be
+             the local machine, too).  The port number can follow,
+             separated by a colon.  The "-r" is optional.  The port
+             number defaults to 6114, the IANA registered port for
+             this service, to which wrspiced will default.  It is
+             possible to use a different port if necessary for some
+             reason, but the port in use must be the same in
+             wrspiced and spclient.
+
+             If a host if given, remote mode will be used, any local
+             path specified is ignored.
+
+  -d display When using a remote host, this specifies the X display
+             string to use, which is needed when running graphics.
+             If not given, a display name will be created as follows:
+             If the local DISPLAY variable is something like ":0.0",
+             the remote display name will be "localhostname:0.0".
+             If the local DISPLAY variable is already in the form
+             "localhostname:0.0", this is passed verbatim.
+             
+             One can use ssh transport for the X connection on the
+             remote system as follows.  Use "ssh -X" to open a shell
+             on the remote machine.  Type "echo $DISPLAY" into this
+             window, it will print something like "localhost:10.0".
+             Use this value for the 'd' option.  The shell must
+             remain open while spclient is running WRspice, exiting
+             the shell will close the X connection.
+
+Just giving "spclient" with no arguments will start a WRspice process
+on the local machine without graphics, provided that WRspice is
+installed in the standard location.
+
+Graphics Permissions
+
+When running graphics in remote mode, it is necessary that the
+remote host have permission to draw on the local display.
+ 
+In legacy X-window systems, the display name would typically be in the
+form hostname:0.0.  A remote system will draw to the local display if
+the local hostname was used in the display name, and the local X
+server permissions were set (with xauth/xhost) to allow access. 
+Typically, the user would log in to a remote system with telnet or
+ssh, set the DISPLAY variable, perhaps give "xhost +" on the local
+machine, then run X programs.
+ 
+This method has been largely superseded by use of "X forwarding" in
+ssh.  This is often automatic, or may require the '-X' option on the
+ssh command line.  In this case, after using ssh to log in to the
+remote machine, the DISPLAY variable is automatically set to display
+on the local machine.  X applications "just work", with no need to
+fool with the DISPLAY variable, or permissions.
+ 
+The present remote access code does not know about the ssh protocol,
+so we have to fake it in some cases.  In most cases the older method
+will still work.
+
+The ssh protocol works by setting up a dummy display, with a name
+something like "localhost:10.0", which in actuality connects back to
+the local display.  Depending on how many ssh connections are
+currently in force, the "10" could be "11", "12", etc.
+
+In the present case, if we want to use ssh for X transmission, the
+display name must match an existing ssh display name on the remote
+system that maps back to the local display.
+ 
+If there is an existing ssh connection to the remote machine, the
+associated DISPLAY can be used.  If there is no existing ssh
+connection, one can be established, and that used.  E.g., from the ssh
+window, type "echo $DISPLAY" and use the value printed.
+
+The display name provided to the '-d' option will override the assumed
+display name created internally with the local host name.
+
+Command Interface
+
+If a hostname is given, the program will communicate with wrspiced
+running on that host.  Without a hostname, the program will
+communicate with WRspice, after forking a process on the local
+machine.
+
+The program takes command text, pretty much like WRspice in normal
+operation.
+
+There are a few commands that are only available through IPC and
+therefor spclient.  These are listed below.
+
+send filename
+  The "send filename" command will send a local file, after expanding
+  .inc/.lib lines, to WRspice, where it is sourced.  The regular
+  source command will source a file from the WRspice host.  Unlike
+  the other special IPC commands listed here, the send command is
+  implemented on the client side, the remaining commands are
+  implemented in WRspice.
+
+inprogress
+  Returns "y" or "n", depending on whether or not WRspice is currently
+  running a simulation.  This is only valuable in asynchronous mode,
+  which is not currently used in the spclient demo.
+
+decksource
+  The lines that follow are a SPICE deck, terminated by a line containing
+  the single character '@'.  This is used in the FileToSpice function.
+
+curplot
+  The current plot name is returned, or "none".
+
+curckt
+  The curent circuit name is returned, or "none".
+
+freeplot [name]
+  This will destroy the plot with the given name, or the current plot
+  if no name is given.  It is not possible to destroy the "constants"
+  plot.
+
+freecir [name]
+  This will destroy the circuit with the given name, or the current
+  circuit in no name is given.
+
+close
+  This will terminate WRspice, but not the program.  A new WRspice will
+  be started automatically if a WRspice command is subsequently given.
+
+winid number
+  The number is an X window ID.  This is used to register a big window
+  such as Xic's, so that WRspice can arrange for its windows to always
+  appear on top.
+
+vecget vecname
+  The return value is the value of the 0'th component of the named vector,
+  in a format ok%15e or ok%15e,%15e for complex.
+
+eval expression
+  The expression is a vector expression as understood by WRspice.
+  The expression will be evaluated, and the result returned as binary
+  data.  A simple example:  load a deck and run it, say it produces
+  an output vector named "v(1)".  Then "eval v(1)" will return a
+  block of data containing all of the v(1) values from the
+  simulation.
+
+ping
+  The returned value is "okC", where C is the subcircuit concatenation
+  character (which presently defaults to underscore).
+
+Any other input will be passed to the WRspice command interpreter.
+
+More information can be found in the comments in spclient.cc.
+
+
+The wrspiced Program
+--------------------
+
+WRspice can be accessed and run from a remote system for asynchronous
+simulation runs, for assistance in computationally intensive tasks
+such as Monte Carlo analysis, and as a simulator for the Xic graphical
+editor.  This is made possible through a daemon (background) process
+which controls WRspice on the remote machine.  The daemon has the
+executable name "wrspiced", and should be running on the remote
+machine.  This can be initiated in the system startup procedure, or
+manually.  Generally, any user can start wrspiced, but only one daemon
+can be running on the host computer.
+
+SPICE Server Configuration
+
+There is little or no configuration required to run <tt>wrspiced</tt>,
+but there are a few basic prerequisites.  Our assumption is that
+WRspice is installed on a network-reachable remote computer (the
+"SPICE server"), and we wish to submit jobs to this WRspice from
+within Xic, or from within WRspice running on local computers (the
+"clients").
+
+The SPICE server must have WRspice installed, and WRspice must be
+licensed to run on the server.  As a prerequisite, WRspice should
+operate on the SPICE server host in the normal way.
+
+In order for the "SPICE server" to actually become a server, the
+wrspiced daemon program must be running.  This program is part of the
+WRspice distribution, and is installed in the same directory as the
+wrspice executable.  The daemon manages the queue of submitted jobs
+and responses, and maintains the communications port.
+
+The wrspiced daemon will establish itself on a port, and wait for
+client messages.  Client machines must use the same port number.
+
+Historically, wrspiced has used the service name "spice" and port
+number 3004.  Releases 3.2.8 and later use the service name "wrspice"
+instead of "spice", and use port number 6114 by default.  The port
+6114 is registered with IANA for this service.
+
+The system services database is represented by the contents of the
+file /etc/services in simple installations.  If using NIS, then the
+system will get its services information from elsewhere.  A system
+administrator can add service names and port assignments to this
+database.  The wrspiced program does not require this.
+
+Starting the Daemon
+
+The wrspiced program command line has the following form:
+
+    wrspiced [-fg] [-l logfile] [-p program] [-m maxjobs] [-t port]
+
+There are five optional arguments.
+
+    -fg
+    If given, the wrspiced program will remain in the foreground
+    (i.e., not become a "daemon"), but will service requests normally. 
+    This may be useful for debugging purposes.
+
+    -l logfile
+    The logfile is a path to a file that will receive statis messages
+    from wrspiced.  The default is the value of the SPICE_DAEMONLOG
+    environment variable if set when the program is started, or
+    "/tmp/wrspiced.log".
+
+    -p program
+    This specifies the WRspice program to run, in case for some reason
+    the wrspice binary has been renamed, or wrspice is not in the
+    expected location.  This overrides the values of the SPICE_PATH
+    and SPICE_EXEC_DIR variables, which can also be used to set the
+    path to the binary.  The default is
+    "/usr/local/xictools/bin/wrspice".
+
+    -m maxjobs
+    This sets the maximum number of jobs that the server will allow to
+    be running at the same time.  The default is 5.
+
+    -t port
+    This sets the port to be used by the daemon, and overrides any
+    port set in the services database.  Clients must use the same port
+    number to connect to the SPICE server.
+
+The daemon is started by simply typing the command.  If a machine is
+to operate continuously as a SPICE server, it is recommended that the
+wrspiced daemon be started in the system initialization scripts.  The
+daemon will run until explicitly killed by a signal, or the machine is
+halted.  When the wrspiced process terminates, any WRspice processes
+under management will also be killed.  The daemon can be terminated,
+by the process owner, by giving the command "ps aux | grep wrspiced"
+and noting the process id (pid) number of the running wrspiced
+process, and then issuing "kill pid" using this pid number.
+
+It may be necessary to become root before starting wrspiced, as on
+some systems connection to the port will otherwise be refused due to
+permission requirements.  Starting by root is also required if the log
+file is to be written to a directeor such as /var/log that requires
+root permission for writing.
+
+Client Configuration
+
+The port number used by the client must be the same as that used for
+the server.  As for the server, if not supplied the port number will
+be resolved if possible in the services database (e.g., the
+/etc/services file), and will revert to a default if not found.
+
+In Xic and WRspice, the port number to use can be specified with the
+host name, by appending the number following a colon, i.e.,
+
+    hostname[:port]
+
+A WRspice server can receive jobs from Xic, and from WRspice (rspice
+command).  Both programs have means by which the SPICE server can be
+specified from within the program.  One means common to both programs
+is through use of the SPICE_HOST environment variable.  The variable
+should be set to the host name of the SPICE server, as resolvable by
+the client, followed by the optional colon and port number.  When set,
+Xic will by default use this server for SPICE jobs initiated with the
+Run button in the side menu, and WRspice will use this host in the
+rspice command.  In a situation where the SPICE server provides the
+only SPICE available, the SPICE_HOST variable should be set in the
+user's shell startup script.  In WRspice the rhost shell variable and
+the rhost command can also be used to specify the remote host, and
+these override any value set in the environment.
+
+Note:  In Xic, when WRspice connects, a message is printed in the
+terminal window similar to
+
+    Stream established to wrspice://chaucer, port 4573.
+
+The "port" in this case is not the wrspiced port discussed above, but
+is a transient port created for the process.
+
+

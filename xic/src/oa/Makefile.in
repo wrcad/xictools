@@ -1,0 +1,84 @@
+#######################################################################
+# xic/oa/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.14 2016/03/09 05:43:35 stevew Exp $
+#######################################################################
+
+GFX_VERSION = @GFX_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @OA_CFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @OA_CFLAGS@ @NEEDINT64@
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+PIC_OPT = @PIC_OPT@
+SOEXT = @SOEXT@
+LSHFLAG = @LSHFLAG@
+OA_INCLUDE = @OA_INCLUDE@
+OA_LIBS = @OA_LIBS@
+OSNAME = @OSNAME@
+
+LIB_TARGET = oa.a
+SHLIB_TARGET = oa.$(SOEXT)
+
+LPATH = ../../../xt_base
+HFILES = \
+  oa.h \
+  oa_alib.h \
+  oa_errlog.h \
+  oa_lib_observer.h \
+  oa_nametab.h \
+  oa_net.h \
+  oa_prop.h \
+  oa_tech_observer.h \
+  oa_via.h
+CCFILES = \
+  oa.cc \
+  oa_alib.cc \
+  oa_errlog.cc \
+  oa_lib_observer.cc \
+  oa_library.cc \
+  oa_load.cc \
+  oa_nametab.cc \
+  oa_net.cc \
+  oa_prop.cc \
+  oa_save.cc \
+  oa_tech.cc \
+  oa_tech_observer.cc \
+  oa_via.cc
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I../../include -I$(LPATH)/miscutil -I$(LPATH)/ginterf -I$(OA_INCLUDE)
+
+DARGS = -DOSNAME="\"$(OSNAME)\""
+
+SHLIB_TARGET: $(CCOBJS)
+	@echo $(SHLIB_TARGET): linking
+	@$(CXX) $(LSHFLAG) -o $(SHLIB_TARGET) $(CCOBJS) $(OA_LIBS)
+
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(DARGS) $(PIC_OPT) $(INCLUDE) -c $*.cc
+
+depend:
+	@echo depending in xic/oa
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-@rm -f *.o $(LIB_TARGET) $(SHLIB_TARGET)
+
+distclean:
+	-@rm -f *.o $(LIB_TARGET) $(SHLIB_TARGET) Makefile
+
+#######################################################################

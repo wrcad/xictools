@@ -1,0 +1,220 @@
+$Id: license_gen.txt,v 2.2 2008/12/17 18:16:30 stevew Exp $
+
+This document explains how to create a LICENSE file, needed to run
+XicTools products.
+
+1. The validate program.
+
+   LICENSE files are generated with the validate program, which resides
+   in xictools/src/secure.  This program is not built automatically,
+   you must cd to that directory and type
+
+   make validate
+
+   if the program binary does not currently exist.
+
+   The validate program is not intended to be installed globally, but
+   an administrator can move it to an arbitrary location if desired. 
+   It is stand-alone and does not access any fixed-location files.
+
+2. Running validate.
+
+2.1 The host name and IP address entries.
+
+   There are some important things that need to be known in order to
+   successfully create a LICENSE file.  This interface is rather
+   arcane, as this program is not intended for general use.
+
+   The licensing keys off of two data items:  the "host name" and the
+   IP address.  In the simplest form, the host name is the actual
+   machine name, i.e., it never includes the domain components.  On
+   Unix/Linux, the "hostname" system command will print the full
+   hostname.  For example:
+
+   > hostname
+   chaucer.localdomain
+
+   In this example, the "hostname" for the validate program is
+   "chaucer".
+
+   The IP address must be a static IP address that the machine
+   resolves for its own name.  It should not be the loopback address
+   (127.0.0.1).
+
+   In more complex cases, there are variations.
+
+   a) To generate a class C license, i.e., one that will work for any
+      machine in a class C range of addresses, the hostname will be
+      the word
+              
+      any
+
+      and the IP address will be the site's IP, with the last
+      component given as 0, for example
+
+      126.24.6.0
+
+   b) Similarly, to generate a class B license, which will enable any
+      host in a class B range, the hostname given should be
+
+      any b
+
+      and the IP address will be the site's IP address with the last
+      two components given as 0, for example
+
+      126.24.0.0
+
+   c) Using the ethernet address rather than an IP address.
+
+      There are times when it is preferable to key off of the
+      machine's hardware (ethernet) address, rather than an IP
+      address.  This is necessary, for example, when licensing a
+      single machine and the IP address is non-static.
+
+      In this case the hostname takes the form
+
+      host:xx:xx:xx:xx:xx:xx
+
+      Where the "host" is the machine name, which is followed by a
+      colon (':'), which is followed by the six-component ethernet
+      address.  There should be no white space, and each address
+      component should be a two-character hex value, 0-padded.  For
+      example
+
+      seattle:00:30:28:c5:94:1e
+
+      for machine name "seattle" with ethernet address "00:30:28:c5:94:1e".
+
+      In this case the IP address *must* be a special "magic" address,
+      which is
+
+      192.168.0.1
+
+   d) Microsoft Windows support.
+
+      This is left undocumented for now.
+
+2.2 The program code.
+
+   The program to be licensed is given by a code number.  These numbers
+   are listed at the top of the xictools/src/secure/secure.h file, and
+   are
+
+   SERVER_CODE         3  (for license server)
+   XIV_CODE            7  (for Xiv program)
+   XICII_CODE          9  (for XicII program)
+   XIC_CODE            11 (for Xic program)
+   XIC_DAEMON_CODE     12 (For Xic running non-graphically)
+   WRSPICE_CODE        14 (for the WRspice program)
+
+   There is an enabling hierarchy:
+      The Xic code (11) will also enable Xiv (7), XicII (9), and daemon (12).
+      The XicII code (9) will also enable Xiv (7).
+     
+   The license server is no longer itself licensed in the Generation 3
+   products.
+
+2.3 Overview and running validate.
+
+   The LICENSE file consists of up to 64 records.  Each record enables
+   a specific program on a specific host, or IP range of hosts in the
+   class B/C variations.
+
+   The validate program will prompt, on the command line, for the data
+   needed for each record.  At the end of each record, the user is
+   asked whether to create an additional record, or exit.
+
+   The validate program takes no arguments under Unix/Linux.
+
+   Below are the specific prompts that validate gives for a record.
+
+   Program code? [0]
+     Reply with the program code number from the list in 2.2 above.
+
+   Months active? [unlimited]
+     This specifies the time duration of the license, in months.  If
+     you give 0 or just press Enter, there is no time limit. 
+     Otherwise, give a positive number to set the termination date.
+
+   Hostname (+/-)? [yourhost]
+     Give the host name string as described in 2.1 above.  Ignore the
+     "(+/-)" in the prompt, this has no current meaning.
+
+   Internet address? [your_ip_addr]
+     Give the corresonding IP address, as described in 2.1 above.
+
+   Slave server? [n]
+     This only appears when the program code is "3" (license server).
+     Always give "n", or just press Enter.
+
+   Add another block ('r' to repeat last)? [n]
+     This completes the record.  Give 'y' if you need to add another
+     record.  You can enter 'r' to repeat the present record, if you
+     entered something wrong.  Enter 'n' or just press Enter if you're
+     done.  If you give 'y' or 'r', the sequence of prompts begins
+     again.
+
+   When exiting, there may be additional prompts, like
+
+   Code 12 user limitation? [0]
+     These set the number of program instances that the license server
+     will accept simultaneously.  Enter 0 or just press Enter for no
+     limit.
+
+   A log of the transactions will be written in the current directory
+   in a file named "log.hostname", where "hostname" is the host name
+   of the present machine.  This should be kept for documentation
+   purposes.
+
+2.4 The LICENSE file
+
+   The LICENSE file should appear in the current directory.  This will
+   be given to the end user for installation.
+
+   The LICENSE file is a binary file of size 1536 bytes.  It can be
+   corrupted by ascii-mode ftp transmission, so be sure to use binary
+   mode.  If a LICENSE file has a size different than 1536 bytes, it is
+   corrupt and must be replaced.
+
+   It is not possible to "decrypt" a LICENSE file to retrieve the
+   original entries.
+
+   A license file can be tested with the lfinfo program, which, like
+   the validate program, resides in xictools/src/secure.  It must be
+   built in this directory by giving
+
+   make lfinfo
+
+   Like validate, the executable can be moved to a new location if
+   desired.
+
+   To test a LICENSE file, start the lfinfo program - it takes no
+   arguments.
+
+   The first prompt is
+
+   Enter path to LICENSE file:
+     Enter the path to the LICENSE file to test, or just "LICENSE" if the
+     file is in the current directory.
+
+   The remaining prompts are analogous to the prompts in validate.
+   Here are two example sessions:
+
+   Enter path to LICENSE file: ./LICENSE
+   Enter program code [0]: 3
+   Enter host [none specified]: kipling
+   Enter IP address [0.0.0.0]: 192.168.1.16
+   License expires: Never
+   User limit: None
+   Enter 'q' or ^C anytime to quit.
+   Enter program code [3]: ^C
+
+   Enter path to LICENSE file: ./LICENSE
+   Enter program code [0]: 3
+   Enter host [none specified]: mickeymouse
+   Enter IP address [0.0.0.0]: 192.168.1.16
+   Authorization check failed:
+     Host mickeymouse is not licensed to run this binary.
+   Enter 'q' or ^C anytime to quit.
+   Enter program code [3]: ^C
+

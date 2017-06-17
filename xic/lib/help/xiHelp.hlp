@@ -1,0 +1,203 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiHelp.hlp,v 1.13 2013/12/17 02:13:41 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiHelp.hlp
+!!TITLE
+xiHelp.hlp
+!!HTML
+
+!!SUBTOPICS
+xic:helpmenu
+xic:about
+xic:multw
+xic:notes
+xic:logs
+xic:dblog
+
+
+!! 062313
+!!KEYWORD
+xic:helpmenu
+!!TITLE
+Help Menu
+!!HTML
+    The commands in the <b>Help Menu</b> provide documentation and
+    help to <i>Xic</i> users.
+
+    <p>
+    The commands found in the <b>Help Menu</b> are summarized in the
+    table below.  The table provides the internal name for the
+    command, and a brief description.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Help Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:help"><b>Help</b></a></td> <td><tt>help</tt></td>
+      <td><b>Help Viewer</b></td> <td>Show help, enter help mode</td></tr>
+    <tr><td><a href="xic:multw"><b>Multi-Window</b></a></td>
+      <td><tt>multw</tt></td> <td>&nbsp;</td>
+      <td>Set multi-window help mode</td></tr>
+    <tr><td><a href="xic:about"><b>About</b></a></td> <td><tt>about</tt></td>
+      <td><b>About Panel</b></td> <td>Show version info</td></tr>
+    <tr><td><a href="xic:notes"><b>Release Notes</b></a></td>
+      <td><tt>notes</tt></td> <td><b>Text Editor</b></td>
+      <td>Show release notes</td></tr>
+    <tr><td><a href="xic:logs"><b>Log Files</b></a></td>
+      <td><tt>logs</tt></td> <td><b>File Selection</b></td>
+      <td>Provide access to log files</td></tr>
+    <tr><td><a href="xic:dblog"><b>Logging</b></a></td>
+      <td><tt>dblog</tt></td> <td><b>Logging Options</b></td>
+      <td>Set logging and debugging options</td></tr>
+    </table>
+
+!!SEEALSO
+xic:commands
+
+!! 062313
+!!KEYWORD
+xic:multw
+!!TITLE
+Multi-Window
+!!HTML
+    <b>Keyword</b>: <tt>multw</tt>
+
+    <p>
+    When the <b>Multi-Window Mode</b> button in the <b>Help Menu</b>
+    is set, in <a href="xic:help">help mode</a>, clicking on a menu
+    item or screen object will pop up a new help window, rather than
+    reusing a single existing window.
+
+    <p>
+    This menu item tracks the state of the <a
+    href="HelpMultiWin"><b>HelpMultiWin</b></a> variable.
+
+!!SEEALSO
+xic:helpmenu
+
+!! 062008
+!!KEYWORD
+xic:about
+!!TITLE
+About
+!!HTML
+    <img src="screenshots/about.png" align=right>
+    <b>Keyword</b>: <tt>about</tt>
+
+    <p>
+    The <b>About</b> button in the <b>Help Menu</b> brings up a text
+    window which provides the <i>Xic</i> revision number and legal
+    information.  This window also appears when the key sequence
+    <b>Ctrl-v</b> is entered, with the pointer in a drawing window.
+    <br clear=all>
+
+!!SEEALSO
+xic:helpmenu
+
+!! 062008
+!!KEYWORD
+xic:notes
+!!TITLE
+Release Notes
+!!HTML
+    <b>Keyword</b>: <tt>notes</tt>
+
+    <p>
+    The <b>Release Notes</b> button in the <b>Help Menu</b> brings up
+    a <a href="texteditor">text browser</a> window loaded with the
+    release notes for the current <i>Xic</i> release.
+
+    <p>
+    The release notes are installed by default in the directory
+    <tt>/usr/local/xictools/xic/docs</tt>, and <i>Xic</i>
+    searches this directory for the notes.  <i>Xic</i> can be directed
+    to look in a different directory in two ways.  First, the
+    environment variable <b>XIC_DOCS_DIR</b> can be set to the
+    directory to search.  Second, the variable <a
+    href="DocsDir"><b>DocsDir</b></a> can be set (with the <a
+    href="!set"><b>!set</b></a> command) to the directory to search. 
+    The release notes describe bugs fixed and new features added to
+    <i>Xic</i>, and should be read after a new release is installed. 
+    Also, they serve as supplements to the manual between paintings. 
+    By policy, all updated information contained in the release note
+    is incorporated into the help database for a given release.
+
+!!SEEALSO
+xic:env
+xic:helpmenu
+
+!! 110413
+!!KEYWORD
+xic:logs
+!!TITLE
+Log Files
+!!HTML
+    <b>Keyword</b>: <tt>logs</tt>
+
+    <p>
+    The <b>Log Files</b> button in the <b>Help Menu</b> brings up the
+    <a href="filesel"><b>File Selection</b></a> panel pointing at the
+    directory containing the <a href="logfiles">log files</a>. 
+    "Opening" one of the entries will bring up the <b>File Browser</b>
+    loaded with the selected file.
+
+    <p>
+    The log files are kept in a temporary directory which is created
+    when <i>Xic</i> is started.  On normal exit, this directory is
+    deleted, so if the user wishes to retain one or more of the log
+    files, the files must be copied to a safe place.  If <i>Xic</i>
+    terminates unexpectedly, the directory is retained, and therefor
+    the files are available for post-mortem debugging.
+
+!!SEEALSO
+xic:helpmenu
+
+!! 110613
+!!KEYWORD
+xic:dblog
+!!TITLE
+Logging
+!!HTML
+    <img src="screenshots/logopts.png" align=right>
+    <b>Keyword</b>: <tt>dblog</tt>
+
+    <p>
+    This <b>Logging</b> button in the <b>Help Menu</b> brings up the
+    <b>Logging Options</b> panel, from which various logging and
+    debugging options can be set.  Probably, there is not much here
+    that would be of interest to most users.  Some users may find this
+    useful for diagnosing problems, however.
+
+    <p>
+    The top half of the panel contains a number of check boxes, each
+    with a description.  Checking these boxes enables a debugging mode
+    for the described subsystem or feature.  This may involve
+    additional consistency testing and messages.  By default, these
+    messages will go to the console window, unless a path to a file is
+    entered into the <b>Message file</b> entry area, in which case
+    messages will be saved in that file.
+
+    <p>
+    The bottom half of the panel enables logging output from the
+    indicated subsystems, into the file whose name is given.  These
+    files will be created in the <a href="logfiles">log files</a>
+    area, which is a temporary directory that is removed on normal
+    program exit.  The files in the log files area can be accessed
+    with the <a href="xic:logs"><b>Log Files</b></a> button in the
+    <b>Help Menu</b>.
+
+    <p>
+    This panel can also be brought up with the (undocumented)
+    <b>!debug</b> command.
+
+!!SEEALSO
+xic:helpmenu
+ext:errlog
+

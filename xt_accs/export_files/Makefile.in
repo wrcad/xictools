@@ -1,0 +1,50 @@
+#######################################################################
+# Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.4 2010/09/30 01:29:18 stevew Exp $
+#######################################################################
+
+DATE = @DATE@
+GFX_VERSION = @GFX_VERSION@
+SPICE_VERSION = @SPICE_VERSION@
+DEVLIB_VERSION = @DEVLIB_VERSION@
+XTLSERV_VERSION = @XTLSERV_VERSION@
+ACCS_VERSION = @ACCS_VERSION@
+NTSUFFIX = @NTSUFFIX@
+GRPREF = @GRPREF@
+
+LPATH = .
+
+SUBDIRS = \
+        ginterf \
+        miscutil \
+        xictools_accs
+
+all package::
+	cd xictools_accs; $(MAKE) $@
+
+clean:
+	@for a in $(SUBDIRS); do \
+	    if [ -d $$a ]; then \
+	        (cd $$a; $(MAKE) $@) \
+	    fi; \
+	done
+
+distclean:
+	@for a in $(SUBDIRS); do \
+	    if [ -d $$a ]; then \
+	        (cd $$a; $(MAKE) $@) \
+	    fi; \
+	done
+	-rm -f config.cache config.log config.status Makefile
+
+grclean:
+	cd ginterf/$(GRPREF)interf; $(MAKE) clean
+
+depend:
+	@for a in $(SUBDIRS); do \
+	    if [ -d $$a ]; then \
+	        (cd $$a; $(MAKE) $@) \
+	    fi; \
+	done
+

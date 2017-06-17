@@ -1,0 +1,20 @@
+/* XPM */
+static const char * lspec_xpm[] = {
+"32 12 4 1",
+" 	c none",
+".	c sienna",
+"X	c black",
+"o	c white",
+"             XX        XXXX     ",
+"             XX       XXXXXX    ",
+" oooooooo    XX      XXX   XX   ",
+" oooooooo    XX      XX         ",
+" oo....oo    XX       XXX       ",
+" oo....oo    XX        XXXX     ",
+" oo....oo    XX           XXX   ",
+" oooooooo    XX            XX   ",
+" oooooooo    XX      XX   XXX   ",
+"             XXXXXX   XXXXXX    ",
+"             XXXXXX    XXXX     ",
+"                                "};
+

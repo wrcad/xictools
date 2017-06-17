@@ -1,0 +1,642 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiModify.hlp,v 1.18 2015/12/06 23:39:27 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiModify.hlp
+!!TITLE
+xiModify.hlp
+!!HTML
+
+!!SUBTOPICS
+xic:modifymenu
+xic:undo
+xic:redo
+xic:delet
+xic:eundr
+xic:move
+xic:copy
+xic:strch
+xic:chlyr
+xic:mclcg
+
+
+!! 020113
+!!KEYWORD
+xic:modifymenu
+!!TITLE
+Modify Menu
+!!HTML
+    The <b>Modify Menu</b> contains commands which alter the current
+    design, supplemental to the <a href="sidemenu">side menu</a>. 
+    Most of these commands have keyboard or mouse motion shortcuts, so
+    an experienced user may not often use this menu.
+
+    <p>
+    The table below summarizes the commands that appear in the
+    <b>Modify Menu</b>, including the internal command name and the
+    command function.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Modify Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:undo"><b>Undo</b></a></td> <td><tt>undo</tt></td>
+      <td>none</td> <td>Undo last operation (<b>Tab</b> key)</td></tr>
+    <tr><td><a href="xic:redo"><b>Redo</b></a></td> <td><tt>redo</tt></td>
+      <td>none</td> <td>Redo last undo  (<b>Shift-Tab</b> key)</td></tr>
+    <tr><td><a href="xic:delet"><b>Delete</b></a></td> <td><tt>delet</tt></td>
+      <td>none</td> <td>Delete objects (<b>Delete</b> key)</td></tr>
+    <tr><td><a href="xic:eundr"><b>Erase Under</b></a></td>
+      <td><tt>eundr</tt></td>
+      <td>none</td> <td>Erase under objects</td></tr>
+    <tr><td><a href="xic:move"><b>Move</b></a></td> <td><tt>move</tt></td>
+      <td>none</td> <td>Move objects</td></tr>
+    <tr><td><a href="xic:copy"><b>Copy</b></a></td> <td><tt>copy</tt></td>
+      <td>none</td> <td>Copy objects</td></tr>
+    <tr><td><a href="xic:strch"><b>Stretch</b></a></td> <td><tt>strch</tt></td>
+      <td>none</td> <td>Stretch objects</td></tr>
+    <tr><td><a href="xic:chlyr"><b>Change Layer</b></a></td>
+      <td><tt>chlyr</tt></td>
+      <td>none</td> <td>Move object to new layer</td></tr>
+    <tr><td><a href="xic:mclcg"><b>Set Layer Chg Mode</b></a></td>
+      <td><tt>mclcg</tt></td>
+      <td><b>Layer Change Mode</b></td> <td>Set layer change mode for
+      move/copy</td></tr>
+    </table>
+
+!!SEEALSO
+xic:commands
+
+!! 061908
+!!KEYWORD
+xic:undo
+!!TITLE
+Undo
+!!HTML
+    <b>Keyword</b>: <tt>undo</tt>
+
+    <p>
+    The <b>Undo</b> button in the <b>Modify Menu</b> reverses the
+    operations performed in the current cell.  These operations can be
+    undone as long as the present cell is the current cell.  Undone
+    operations can be redone with the <a
+    href="xic:redo"><b>Redo</b></a> command.  Pressing the <b>Tab</b>
+    key is equivalent to clicking on the <b>Undo</b> button, and
+    <b>Shift-Tab</b> is equivalent to <b>Redo</b>.
+
+    <p>
+    By default, the last 25 operations can be undone.  This can be
+    changed with the variable <a
+    href="UndoListLength"><b>UndoListLength</b></a>, which can be set
+    to a non-negative integer with the <a href="!set"><b>!set</b></a>
+    command.  This sets the number of operations that are remembered. 
+    If set to zero, the list length is unlimited.
+
+    <p>
+    When <i>Xic</i> is waiting for text input to the prompt line, the
+    <b>Undo</b> and <b>Redo</b> commands are disabled.
+
+!!SEEALSO
+xic:modifymenu
+
+!! 061608
+!!KEYWORD
+xic:redo
+!!TITLE
+Redo
+!!HTML
+    <b>Keyword</b>: <tt>redo</tt>
+
+    <p>
+    The <b>Redo</b> button in the <b>Modify Menu</b> will redo the last
+    undone operation performed with <a
+    href="xic:undo"><b>Undo</b></a>.  This can also be accomplished by
+    holding the <b>Shift</b> key and pressing the <b>Tab</b> key. 
+    Each undone operation is added to an internal list for possible
+    redo.  This list is cleared after any database-modifying operation
+    which is not an undo.
+
+    <p>
+    When <i>Xic</i> is waiting for text input to the prompt line, the
+    <b>Undo</b> and <b>Redo</b> commands are disabled.
+
+!!SEEALSO
+xic:modifymenu
+
+!! 061608
+!!KEYWORD
+xic:delet
+!!TITLE
+Delete
+!!HTML
+    <b>Keyword</b>: <tt>delet</tt>
+
+    <p>
+    The <b>Delete</b> button in the <b>Modify Menu</b> may be used to
+    delete the selected objects.  This is redundant, as selected
+    objects can be deleted by pressing the <b>Delete</b> key.
+
+!!SEEALSO
+xic:modifymenu
+
+!! 100412
+!!KEYWORD
+xic:eundr
+!!TITLE
+Erase Under
+!!HTML
+    The <b>Erase Under</b> button in the <b>Modify Menu</b> will erase
+    the intersection area of non-selected objects with selected
+    objects.  The selected objects are not affected.  This allows
+    non-Manhattan holes to be cut in dark areas, for example.  Suppose
+    one needs a circular hole in a ground plane.  Using this command,
+    the task is simple.  One would create the disk on some arbitrary
+    layer where the hole is desired, select it, press <b>Erase
+    Under</b>, then the <b>Delete</b> key to erase the disk object.
+
+!!SEEALSO
+xic:modifymenu
+xic:erase
+
+!! 120615
+!!KEYWORD
+xic:move
+!!TITLE
+Move
+!!HTML
+    <b>Keyword</b>: <tt>move</tt>
+
+    <p>
+    The <b>Move</b> button in the <b>Modify Menu</b> is used to move
+    objects.  This command is redundant, as objects can be moved with
+    a basic <a href="button1">button 1</a> operation.  If objects are
+    previously selected, the group will be moved.  If no object has
+    been selected, the user is requested to select an object to move. 
+    Responding to the prompts, the user points to a reference point,
+    then to a destination point, using either hold and drag, or two
+    clicks.  If either the <b>Shift</b> or <b>Ctrl</b> key is held,
+    the angle of translation is constrained to multiples of 45
+    degrees.  The object is moved such that the reference point falls
+    on the destination point.  The orientation is altered according to
+    the current transformation.
+
+    <p>
+    When the <b>Move</b> command is at the state where objects are
+    selected, and the next button press would initiate the move
+    operation, if either of the <b>Backspace</b> or <b>Delete</b>
+    keys is pressed, the command will revert the state back to
+    selecting objects.  Then, other objects can be selected or
+    selected objects deselected, and the command is ready to go
+    again.  This can be repeated, to build up the set of selections
+    needed.
+
+    <p>
+    At any time, pressing the <a href="xic:desel"><b>Deselect</b></a>
+    button to the left of the <a href="coordline">coordinate
+    readout</a> will revert the command state to the level where
+    objects may be selected to move.
+
+    <p>
+    The <a href="xic:undo">undo</a> and <a href="xic:redo">redo</a>
+    operations (the <b>Tab</b> and <b>Shift-Tab</b> keypreses and
+    <b>Undo</b>/<b>Redo</b> in the <b>Modify Menu</b>) will cycle the
+    command state forward and backward when the command is active. 
+    Thus, the last command operation, such as initiating the move
+    by clicking, can be undone and restarted, or redone if necessary. 
+    If all command operations are undone, additional undo operations
+    will undo previous commands, as when the undo operation is
+    performed outside of a command.  The redo operation will reverse
+    the effect, however when any new modifying operation is started,
+    the redo list is cleared.  Thus, for example, if one undoes a box
+    creation, then starts a move operation, the "redo" capability
+    of the box creation will be lost.
+
+    <p>
+    The substructure of cell instances being moved is highlighted to
+    the depth shown in the main window.  This facilitates alignment
+    with other objects.  One can change the display depth to reveal
+    more or less of the substructure.
+
+    <p>
+    While in a move operation in physical mode, while the objects are
+    ghost-drawn and attached to the pointer, pressing <b>Enter</b>
+    causes the reference point to shift to the lower left corner of
+    the bounding box containing the objects being moved.  Pressing
+    <b>Enter</b> will cycle the reference point through the corners of
+    the bounding box, and back to the original reference location. 
+    Note that this allows objects that have somehow gotten off-grid to
+    be returned to the grid.
+
+    <p>
+    It is possible to change the layer of objects during a move
+    operation.  During the time that objects are ghost drawn and
+    attached to the mouse pointer, if the <a href="layertab">current
+    layer</a> is changed, the objects that are attached can be placed
+    on the new layer.  Subcells are not affected.
+
+    <p>
+    How this is applied depends on the setting of the <a
+    href="LayerChangeMode"><tt>LayerChangeMode</tt></a> variable, or
+    equivalently the settings of the <b>Layer Change Mode</b> pop-up
+    from the <a href="xic:mclcg"><b>Set Layer Chg Mode</b></a>
+    button in the <b>Modify Menu</b>.  The three possible modes are to
+    ignore the layer change, to map objects on the old current layer
+    to the new current layer, or to place all objects on the new
+    current layer.  If the current layer is set back to the previous
+    layer before clicking to locate the new objects, no layers will
+    change.  Note that layer change is only possible for "click-click"
+    mode and not "press-drag".
+
+    <p>
+    Move operations can be also performed through the command line
+    interface with the <a href="!mo"><b>!mo</b></a> command.
+
+!!SEEALSO
+xic:copy
+xic:modifymenu
+xic:xform
+
+!! 120615
+!!KEYWORD
+xic:copy
+!!TITLE
+Copy
+!!HTML
+    <b>Keyword</b>: <tt>copy</tt>
+
+    <p>
+    The <b>Copy</b> button in the <b>Modify Menu</b> is used to copy
+    objects.  In its simplest form, this command is redundant, as
+    copies of an object can be made with a basic <a
+    href="button1">button 1</a> operation.  However, this command has
+    an important and useful feature not available with the basic mouse
+    operations:  it is possible to copy objects from cells other than
+    the one being edited.
+
+    <p>
+    Initially, the user is prompted for a replication count.  This can
+    be any positive integer.  When the copy is performed, the
+    replication specifies the number of copies made, with the
+    translation incremented for each new copy.  Thus, this facilitates
+    creating many equally-spaced structures.
+
+    <p>
+    If objects are previously selected, the group will be copied to
+    new locations.  If no objects have been selected, the user will be
+    asked to select objects to copy.
+
+    <p>
+    Responding to the prompts, the user first clicks on a reference
+    point, then to a destination, using a hold and drag, or two
+    clicks.  If either the <b>Shift</b> or <b>Ctrl</b> key is held,
+    the angle of translation is constrained to multiples of 45
+    degrees.  The copy is produced such that the reference point
+    falls on the destination point.  The orientation of the copied
+    object is altered according to the current transformation. 
+    Multiple copies are made by simply clicking on additional
+    destinations.
+
+    <p>
+    When the <b>Copy</b> command is at the state where objects are
+    selected, and the next button press would initiate the copy
+    operation, if either of the <b>Backspace</b> or <b>Delete</b>
+    keys is pressed, the command will revert the state back to
+    selecting objects.  Then, other objects can be selected or
+    selected objects deselected, and the command is ready to go
+    again.  This can be repeated, to build up the set of selections
+    needed.
+
+    <p>
+    Ordinarily, if a <a href="xic:vport">sub-window</a> is
+    displaying a cell other than the current cell being edited, it
+    is not possible to select objects in that sub-window.  However,
+    while the <b>Copy</b> command is active, if the sub-window has
+    the same electrical/physical mode as the current cell,
+    selections are allowed in the foreign sub-window.
+
+    <p>
+    Selections in a foreign window can be "picked up" just like
+    objects selected in the main window.  Outlines of the selected
+    objects will be attached to the mouse pointer.  They can be copied
+    into the main window or a sub-window displaying the current
+    editing cell by dragging or clicking twice.
+
+    <p>
+    Objects can be selected in various sub-windows and the main
+    window simultaneously.  Selections in sub-windows showing the
+    current cell are in all respects equivalent to the main window. 
+    Use of the <b>Backspace</b> or <b>Delete</b> key method above is
+    necessary to obtain selections in both the main window (and
+    equivalent sub-windows), and sub-windows showing other cells. 
+    When the copy in initiated, only the objects from the cell in
+    the clicked-in window (when objects are picked up) will
+    participate in the copy operation.
+
+    <p>
+    Once objects have been picked up, whether copies have been
+    placed or not, pressing either of the <b>Backspace</b> or
+    <b>Delete</b> keys will revert the command state to the level
+    before the objects were picked up.  The user can then click in
+    another window to pick up that window's selected objects, or in
+    the same window to pick up the previous objects but with a
+    different reference location.
+
+    <p>
+    At any time, pressing the <a href="xic:desel"><b>Deselect</b></a>
+    button to the left of the <a href="coordline">coordinate
+    readout</a> will revert the command state to the level where
+    objects may be selected to copy (in any mode-compatible window).
+
+    <p>
+    The <a href="xic:undo">undo</a> and <a href="xic:redo">redo</a>
+    operations (the <b>Tab</b> and <b>Shift-Tab</b> keypreses and
+    <b>Undo</b>/<b>Redo</b> in the <b>Modify Menu</b>) will cycle the
+    command state forward and backward when the command is active. 
+    Thus, the last command operation, such as initiating the copy
+    by clicking, can be undone and restarted, or redone if necessary. 
+    If all command operations are undone, additional undo operations
+    will undo previous commands, as when the undo operation is
+    performed outside of a command.  The redo operation will reverse
+    the effect, however when any new modifying operation is started,
+    the redo list is cleared.  Thus, for example, if one undoes a box
+    creation, then starts a copy operation, the "redo" capability
+    of the box creation will be lost.
+
+    <p>
+    The substructure of cell instances being copied is highlighted to
+    the depth shown in the main window.  This facilitates alignment
+    with other objects.  One can change the display depth to reveal
+    more or less of the substructure.
+
+    <p>
+    The replication count feature is not available when copying
+    objects from a foreign window, since the reference point is from
+    another cell and is unlikely to be valid in the current cell.  One
+    copy of each selected object is created, at the click location or
+    where dragging terminated, ignoring the replication count.
+
+    <p>
+    While in a copy operation in physical mode, while the objects are
+    ghost-drawn and attached to the pointer, pressing <b>Enter</b>
+    causes the reference point to shift to the lower left corner of
+    the bounding box containing the objects being copied.  Pressing
+    <b>Enter</b> will cycle the reference point through the corners of
+    the bounding box, and back to the original reference location.
+
+    <p>
+    It is possible to change the layer of objects during a copy
+    operation.  During the time that objects are ghost drawn and
+    attached to the mouse pointer, if the <a href="layertab">current
+    layer</a> is changed, the objects that are attached can be placed
+    on the new layer.  Subcells are not affected.
+
+    <p>
+    How this is applied depends on the setting of the <a
+    href="LayerChangeMode"><tt>LayerChangeMode</tt></a> variable, or
+    equivalently the settings of the <b>Layer Change Mode</b> pop-up
+    from the <a href="xic:mclcg"><b>Set Layer Chg Mode</b></a>
+    button in the <b>Modify Menu</b>.  The three possible modes are to
+    ignore the layer change, to map objects on the old current layer
+    to the new current layer, or to place all objects on the new
+    current layer.  If the current layer is set back to the previous
+    layer before clicking to locate the new objects, no layers will
+    change.  Note that layer change is only possible for "click-click"
+    mode and not "press-drag".
+
+    <p>
+    When the <b>Copy</b> command terminates, any selected objects in
+    foreign sub-windows are deselected.
+
+    <p>
+    Copy operations can be also performed through the command line
+    interface with the <a href="!co"><b>!co</b></a> command.
+
+    <p>
+    <b>Example</b>:<br>
+    Suppose that you are editing cell B, and you would like to add a
+    set of complicated polygons that you have already created in cell A.
+
+    <ol>
+    <li>Use the <a href="xic:vport"><b>Viewport</b></a> command in the
+      <a href="xic:view"><b>View Menu</b></a> to bring up a sub-window.
+    <li>Use the <a href="xic:load"><b>Load New</b></a> command in the
+      sub-window <b>View</b> menu to display cell A.
+    <li>Deselect any selected objects and instances.
+    <li>Press the <b>Copy</b> button in the main window <b>Modify Menu</b>,
+     and press <b>Enter</b> at the "Replication count" prompt.
+    <li>Select the desired objects in the sub-window.
+    <li>Click on a selected object in the sub-window, and drag or click
+     again to copy the selected objects into the main window.
+    </ol>
+
+!!SEEALSO
+xic:modifymenu
+xic:move
+xic:xform
+
+!! 012815
+!!KEYWORD
+xic:strch
+!!TITLE
+Stretch
+!!HTML
+    <b>Keyword</b>: <tt>strch</tt>
+
+    <p>
+    The <b>Stretch</b> button in the <b>Modify Menu</b> operates on <a
+    href="xic:polyg">polygons</a>, <a href="xic:wire">wires</a>, <a
+    href="xic:box">boxes</a>, and <a href="xic:label">labels</a>.  It
+    enables moving of polygon and wire vertices, and box and label
+    bounding box corners and sides.  This command is somewhat
+    redundant, as stretching operations can be initiated with basic <a
+    href="button1">button 1</a> manipulation, however the ability to
+    select specific vertices to stretch is available only in the menu
+    version of the command.
+
+    <p>
+    If no geometry has been selected, the user is asked to select
+    objects to stretch.  Otherwise, the stretch will be applied to
+    currently selected objects.
+
+    <p>
+    After objects have been selected, specific vertices can be
+    selected in boxes, polygons, and wires.  The selection of
+    vertices, which is available only in the menu version of the
+    command, is accomplished by holding the <b>Shift</b> key, and
+    clicking over a vertex, or dragging over one or more vertices. 
+    This operation can be repeated.  Selecting a vertex a second time
+    will deselect it.  When a vertex is selected it is marked with a
+    small highlighting box.  When there are selected vertices, all
+    selected vertices can be moved by clicking twice or dragging.  The
+    selected vertices will be translated according to the button-down
+    location and the button up location, or the next button-down
+    location if the pointer didn't move.  While the translation is in
+    progress, the new borders are ghost-drawn.  While moving vertices,
+    holding the <b>Shift</b> key will enable or disable constraining
+    the translation angle to multiples of 45 degrees.  If the
+    <b>Constrain angles to 45 degree multiples</b> check box in the <a
+    href="xic:edset"><b>Editing Setup</b></a> panel from the <b>Edit
+    Menu</b> is checked, <b>Shift</b> will disable the constraint,
+    otherwise the constraint will be enabled.  The <b>Shift</b> key
+    must be up when the button-down occurs which starts the
+    translation operation, and can be pressed before the operation is
+    completed to alter the constraint.
+
+    <p>
+    If a box is selected in the <b>Stretch</b> command, and one or
+    more vertices of the box are selected by holding <b>Shift</b>, the
+    vertices can be moved as for a polygon, and the box is converted
+    to a polygon.
+
+    <p>
+    If no vertices are selected, the stretch operation applies to the
+    nearest vertex of selected wires or polygons, or the nearest
+    corner of a box.  In this mode, boxes are stretched in a mode
+    which preserves their rectangular shape.  The user clicks on or
+    drags to the new location, and the stretch is performed.  If there
+    are several objects selected, then the vertex closest to where the
+    user points is taken as the reference vertex.  This vertex is
+    translated to the new location.  In each of the other objects, the
+    same transformation is applied to the vertex closest to the
+    reference vertex.  Thus, a group of wires, for example, can all be
+    extended at once.  During the operation, the <b>Shift</b> key and
+    the <b>Constrain angles to 45 degree multiples</b> check box in
+    the <b>Editing Setup</b> panel can be used to constrain the
+    stretch angle as described above.
+
+    <p>
+    When the <b>Stretch</b> command is at the state where objects are
+    selected, and the next button press would initiate the stretch
+    operation or select a vertex, if either of the <b>Backspace</b> or
+    <b>Delete</b> keys is pressed, the command will revert the state
+    back to selecting objects.  Then, other objects can be selected or
+    selected objects deselected, and the command is ready to go again. 
+    This can be repeated, to build up the set of selections needed.
+
+    <p>
+    At any time, pressing the <a href="xic:desel"><b>Deselect</b></a>
+    button to the left of the <a href="coordline">coordinate
+    readout</a> will revert the command state to the level where
+    objects may be selected to stretch.
+
+    <p>
+    The <a href="xic:undo">undo</a> and <a href="xic:redo">redo</a>
+    operations (the <b>Tab</b> and <b>Shift-Tab</b> keypreses and
+    <b>Undo</b>/<b>Redo</b> in the <b>Modify Menu</b>) will cycle the
+    command state forward and backward when the command is active. 
+    Thus, the last command operation, such as initiating the stretch
+    by clicking, can be undone and restarted, or redone if necessary. 
+    If all command operations are undone, additional undo operations
+    will undo previous commands, as when the undo operation is
+    performed outside of a command.  The redo operation will reverse
+    the effect, however when any new modifying operation is started,
+    the redo list is cleared.  Thus, for example, if one undoes a box
+    creation, then starts a stretch operation, the "redo" capability
+    of the box creation will be lost.
+
+    <p>
+    The stretch operation works differently on Manhattan polygons than
+    polygons containing nonorthogonal angles.  For non-Manhattan
+    polygons, a single vertex is moved, all others remain fixed.  The
+    stretch operation on Manhattan polygons is similar to the
+    operation as applied to boxes, i.e., the corner and adjacent
+    vertices are changed so as to keep the polygon Manhattan.  A
+    single vertex can be stretched arbitrarily either by selecting the
+    vertex in the <b>Modify Menu</b> <b>Stretch</b> command, or by
+    using the vertex editor in the <a
+    href="xic:polyg"><b>polyg</b></a> command.
+
+    <p>
+    If a wire end vertex is stretched to be coincident with the end
+    vertex of another wire on the same layer with the same width, the
+    wires will be merged, but only if the second wire is not selected.
+
+!!SEEALSO
+xic:modifymenu
+
+!!061608
+!!KEYWORD
+xic:chlyr
+!!TITLE
+Change Layer
+!!HTML
+    <b>Keyword</b>: <tt>chlyr</tt>
+
+    <p>
+    The <b>Change Layer</b> button in the <b>Modify Menu</b> allows
+    the user to change the layer of the selected objects.  All
+    selected objects are moved to the current layer.  Objects must be
+    selected before this command button is pressed.
+
+!!SEEALSO
+button1
+xic:area
+xic:modifymenu
+
+!!101212
+!!KEYWORD
+xic:mclcg
+!!TITLE
+Set Layer Chg Mode
+!!HTML
+    <b>Keyword</b>: <tt>mclcg</tt>
+
+    <p>
+    This button brings up a panel which sets the layer change mode
+    that applies to all move and copy operations, and to the <a
+    href="xic:spin"><b>spin</b></a> command in the physical side menu
+    and similar.  In these commands, when objects being moved or
+    copied are ghost drawn as attached to the mouse pointer, it is
+    possible to change the current layer.  The operation is then
+    completed by clicking at the new location in a drawing window.
+
+    <p>
+    The <b>Layer Change Mode</b> pop-up contains three "radio"
+    buttons, which determine the response to the mid-command layer
+    change.
+
+    <dl>
+    <dt><b>Don't allow layer change</b><dd>
+     The layer change is simply ignored as it relates to the move/copy
+     operation in progress.  This is the default.
+    </dl>
+
+    <dl>
+    <dt><b>Allow layer change for objects on current layer</b><dd>
+     Any of the objects being moved/copied that are on the previous
+     current layer will be moved or copied to the new current layer.
+     Other objects are moved/copied normally.
+    </dl>
+
+    <dl>
+    <dt><b>Allow layer change for all objects</b><dd>
+     All objects will be moved or copied to the new layer.
+    </dl>
+
+    <p>
+    The pop-up sets and tracks the state of the <a
+    href="LayerChangeMode"><tt>LayerChangeMode</tt></a> variable.
+
+    <p>
+    This is a tri-state variable.  If not set, there will be no layer
+    change in these commands.  If set to the string "<tt>all</tt>"
+    (case insensitive), then a layer change will apply to all objects
+    being moved or copied.  If set to anything else, including to
+    nothing (i.e., as a boolean) then only objects on the previous
+    current layer will be changed to the new layer.
+
+!!SEEALSO
+button1
+xic:modifymenu
+xic:copy
+xic:move
+!mo
+!co
+xic:spin
+

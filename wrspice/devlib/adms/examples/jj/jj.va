@@ -1,0 +1,231 @@
+
+/*========================================================================*
+ *                                                                        *
+ *  Whiteley Research Inc, Sunnyvale, CA USA 2016, http://wrcad.com       *
+ *                                                                        *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
+ *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-        *
+ *   INFRINGEMENT.  IN NO EVENT SHALL STEPHEN R. WHITELEY OR WHITELEY     *
+ *   RESEARCH INC. BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,   *
+ *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,   *
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER        *
+ *   DEALINGS IN THE SOFTWARE.                                            *
+ *                                                                        *
+ *   Licensed under the Apache License, Version 2.0 (the "License");      *
+ *   you may not use this file except in compliance with the License.     *
+ *   You may obtain a copy of the License at                              *
+ *                                                                        *
+ *        http://www.apache.org/licenses/LICENSE-2.0                      *
+ *                                                                        *
+ *   Unless required by applicable law or agreed to in writing, software  *
+ *   distributed under the License is distributed on an "AS IS" BASIS,    *
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or      *
+ *   implied. See the License for the specific language governing         *
+ *   permissions and limitations under the License.                       *
+ *                                                                        *
+ *========================================================================*
+ $Id: jj.va,v 1.7 2016/12/01 05:59:29 stevew Exp $
+ *========================================================================*/
+
+// Josephson Junction Model
+// This model is intended for transient analysis only.
+//
+// Version 1.02, Oct 21, 2016
+//   Fix syntax in parameter tsfactor line.
+// Version 1.01, Oct 20, 2016
+//   Lower limit of vshunt changed from 0 to 1uV.
+// Version 1.0, Oct 15, 2016
+//   Added pijj parameter, support for "pi" junctions.
+//   Added tsfactor timestep control parameter.
+// Version 0.9, July 22, 2016
+//   Added rtype and cct parameters.
+//   Added area parameter, equivalent to mfactor.
+//   Added vshunt parameter.
+//   Added phony dc anslysis.
+//   Fixed bug in bound_step expression.
+// Version 0.5, February 14, 2012 (original release)
+//
+// Stephen R. Whiteley          stevew@wrcad.com
+// Whiteley Research Inc.       wrcad.com
+//
+//
+// MODULE: jj (node_plus, node_minus, node_phase)
+// The phase node provides the junction phase (in radians) but should have
+// no other connections.
+//
+//
+// To use the model:
+// 1.  Before compiling, adjust electrical parameters to your target
+//     process.  This is the Hypres 4500A/cm2 process by default.
+// 2.  Load the model into your simulator before use.
+// 3.  Use the "mfactor" or equivalent "area" parameters to set the
+//     desired critical current, which is 1.0mA for mfactor=1.  Changing
+//     mfactor/area scales capacitance and conductances as well as critical
+//     current.
+// 4.  Use vshunt and rtype=0 most conveniently for SFQ circuits, avoids
+//     the need for an external shunt resistor.
+// 5.  You may have to use a small timestep limit (e.g., .01pS) for accuracy,
+//     if bound_step() is not supported by your simulator.
+
+`include "disciplines.vams"
+`include "constants.vams"
+
+
+// Various Hypres foundry processes.
+`define C_PER_A_4500 59.0  // ff/um2
+`define I_PER_A_4500 45.0  // uA/um2
+`define C_PER_A_1000 50.0  // ff/um2
+`define I_PER_A_1000 10.0  // uA/um2
+`define C_PER_A_30   37.0  // ff/um2
+`define I_PER_A_30    0.3  // uA/um2
+
+// Hard-wire for 4500 A/cm2 process.
+`define C_PER_A `C_PER_A_4500
+`define I_PER_A `I_PER_A_4500
+
+`define IcR         1.7  // mV, critical current * normal resistance
+`define Vm          30.0 // mV, critical current * subgap resistance
+
+// Phi0/2pi = hbar over 2 e.
+`define PHI0_2PI    3.291086546e-16
+
+module jj (n1, n2, ph);
+
+// The third node is a phase output, numerically equal to the junction
+// phase.
+inout n1, n2;
+output ph;
+electrical n1, n2, ph;
+branch(n1, n2) bj, bc, br;
+
+// Initial conditions.
+parameter real ic_v     = 0 from [-5.0m:5.0m];  // not used
+parameter real ic_phase = 0 from (-`M_PI:`M_PI);
+
+// PI junction, or not.
+// If the pijj flag is set, the JJ is a "pi" junction, meaning it has
+// an internal ground-state phase of pi rather than 0.  Such junctions
+// have been made using ferromagnetic barrier materials. 
+parameter integer pijj  = 0 from [0:1];
+
+// Factor used in timestep control.  This is similar to the WRspice
+// dphimax parameter, dphimax/pi = tsfactor.  Smaller values might
+// improve accuracy, but at the expense of longer run time.
+parameter real tsfactor = 0.2 from [0.001:1];
+
+// Turn on/off quasiparticle branch and critical current.
+parameter integer rtype = 1 from [0:1];
+parameter integer cct   = 1 from [0:1];
+
+// Scaling factor, both are equivalent.
+parameter real mfactor  = 1.0 from [0.001:1e3];
+parameter real area     = 1.0 from [0.001:1e3];
+
+// Critical current for mfactor=1
+parameter real icrit    = 1.0m;
+
+// Capacitance for mfactor=1.
+parameter real cap      = 1e-12*`C_PER_A/`I_PER_A;
+
+// The gap voltage and spread.
+parameter real vgap     = 2.8m from [2.5m:3.1m];
+parameter real delv     = 0.08m from [0.01m:0.2m];
+
+// The subgap and normal resistances.  If vshunt is given, a fixed
+// shunt is added so that IcReff = vshunt.
+parameter real rsub     = `Vm from [10.0:100.0];
+parameter real rnorm    = `IcR from [1.5:1.9];
+parameter real vshunt   = 0 from [1u:1m];
+
+// The quasiparticle current at the onset of the normal branch, per the
+// critical current.
+parameter real icfct    = 0.7 from [0.5:`M_PI_4];
+
+// Dropback voltage.
+parameter real vdpbak = sqrt(`PHI0_2PI*icrit/cap);
+
+real phi, dv2, avj, i1, i2, vtmp, gshunt, scale;
+
+analog begin
+
+    // The mfactor and area parameters are equivalent.
+    scale = area*mfactor;
+
+    if (analysis("static") != 0)
+        begin
+        // DC analysis, fake it by modeling device as low value resistor.
+        //
+        I(ph) <+ -V(ph);
+        I(br) <+ 1e6*scale*V(br);
+        end
+    else
+        begin
+        // Supercurrent.
+        if (cct == 1)
+            begin
+            phi = idt(V(bj)/`PHI0_2PI, ic_phase);
+            if (pijj != 0)
+                I(bj) <+ -scale*icrit*sin(phi);
+            else
+                I(bj) <+ scale*icrit*sin(phi);
+            end
+
+        // The following will make the phase node look like a voltage
+        // source.  However, some Verilog-A translation systems can't
+        // handle this construct (WRspice handles it properly).  It also
+        // adds a "branch" node to the circuit matrix, which increases
+        // memory use for no good reason.
+        //
+        // V(ph) <+ phi;
+        //
+        // The following is basically equivalent.  This gives our "voltage
+        // source" a 1 ohm internal resistance, and does not increase the
+        // circuit matrix size.
+        //
+        I(ph) <+ phi;
+        I(ph) <+ -V(ph);
+
+        // Geometric capacitance current.
+        I(bc) <+ scale*cap*ddt(V(bc));
+
+        // Quasiparticle current.
+        if (rtype == 1)
+            begin
+            dv2 = delv/2.0;
+            avj = abs(V(br));
+            if (avj <= vgap - dv2)
+                I(br) <+ scale*V(br)/rsub;
+            else if (avj < vgap + dv2)
+                begin
+                i1 = (vgap - dv2)/rsub;
+                i2 = icrit/icfct;
+                I(br) <+ scale*(V(br)/avj)*(i1 + (i2-i1)*(avj -
+                    vgap + dv2)/delv);
+                end
+            else
+                I(br) <+ scale*(V(br)/avj)*(icrit/icfct +
+                    (avj - vgap - dv2)/rnorm);
+            end
+
+        if (vshunt > 0)
+        begin
+            gshunt = (scale*icrit)/vshunt;
+            if (rtype == 1)
+                gshunt = gshunt - 1/rsub;
+            if (gshunt > 0)
+                I(br) <+ gshunt*V(br);
+        end
+
+        // Limit time step.  This is important, as the simulator may have
+        // no other way to recognize the supercurrent and plasma
+        // oscillation and limit the time step accordingly.
+        //
+        vtmp = avj;
+        if (vtmp < vdpbak)
+            vtmp = vdpbak;
+        $bound_step(tsfactor*`PHI0_2PI/vtmp);
+        end
+end
+endmodule
+

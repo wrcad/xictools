@@ -1,0 +1,193 @@
+# Makefile for preparing the KLU plug-in for WRspice.
+# $Id: Makefile.sample,v 1.5 2014/09/27 21:49:18 stevew Exp $
+#
+# Requires Gnu make
+
+# This is the input for generating a Makefile under the XicTools
+# configure script.
+
+#  Obtain SuiteSpice-X.Y.Z.tar.gz from
+#  http://faculty.cse.tamu.edu/davis/suitesparse.html
+#  Set the actual version number here:
+SSVERSION = 4.4.6
+#  run "make unpack"
+#  run "make patch"
+#  run "make", which should create klu_wr.so or equivalent
+#
+# This was prepared from SuiteSparse-4.4.6
+#######################################################################
+
+DATE = @DATE@
+OSNAME = @OSNAME@
+ARCH = @ARCH@
+CC = @CC@
+CFLAGS = -O3 @PIC_OPT@
+LSHFLAG = @LSHFLAG@
+SOEXT = @SOEXT@
+
+SHLIB_TARGET = klu_wr.$(SOEXT)
+
+OFILES_AMD = \
+    AMD/Lib/amd_i_1.o \
+    AMD/Lib/amd_i_2.o \
+    AMD/Lib/amd_i_aat.o \
+    AMD/Lib/amd_i_control.o \
+    AMD/Lib/amd_i_defaults.o \
+    AMD/Lib/amd_i_dump.o \
+    AMD/Lib/amd_i_info.o \
+    AMD/Lib/amd_i_order.o \
+    AMD/Lib/amd_i_post_tree.o \
+    AMD/Lib/amd_i_postorder.o \
+    AMD/Lib/amd_i_preprocess.o \
+    AMD/Lib/amd_i_valid.o \
+    AMD/Lib/amd_l_1.o \
+    AMD/Lib/amd_l_2.o \
+    AMD/Lib/amd_l_aat.o \
+    AMD/Lib/amd_l_control.o \
+    AMD/Lib/amd_l_defaults.o \
+    AMD/Lib/amd_l_dump.o \
+    AMD/Lib/amd_l_info.o \
+    AMD/Lib/amd_l_order.o \
+    AMD/Lib/amd_l_post_tree.o \
+    AMD/Lib/amd_l_postorder.o \
+    AMD/Lib/amd_l_preprocess.o \
+    AMD/Lib/amd_l_valid.o
+
+OFILES_BTF = \
+    BTF/Lib/btf_l_maxtrans.o \
+    BTF/Lib/btf_l_order.o \
+    BTF/Lib/btf_l_strongcomp.o \
+    BTF/Lib/btf_maxtrans.o \
+    BTF/Lib/btf_order.o \
+    BTF/Lib/btf_strongcomp.o
+
+OFILES_COLAMD = \
+    COLAMD/Lib/colamd.o \
+    COLAMD/Lib/colamd_l.o
+
+OFILES_KLU = \
+    KLU/Lib/klu_analyze.o \
+    KLU/Lib/klu_analyze_given.o \
+    KLU/Lib/klu_d.o \
+    KLU/Lib/klu_d_diagnostics.o \
+    KLU/Lib/klu_d_dump.o \
+    KLU/Lib/klu_d_extract.o \
+    KLU/Lib/klu_d_factor.o \
+    KLU/Lib/klu_d_free_numeric.o \
+    KLU/Lib/klu_d_kernel.o \
+    KLU/Lib/klu_d_refactor.o \
+    KLU/Lib/klu_d_scale.o \
+    KLU/Lib/klu_d_solve.o \
+    KLU/Lib/klu_d_sort.o \
+    KLU/Lib/klu_d_tsolve.o \
+    KLU/Lib/klu_ld.o \
+    KLU/Lib/klu_ld_diagnostics.o \
+    KLU/Lib/klu_ld_dump.o \
+    KLU/Lib/klu_ld_extract.o \
+    KLU/Lib/klu_ld_factor.o \
+    KLU/Lib/klu_ld_free_numeric.o \
+    KLU/Lib/klu_ld_kernel.o \
+    KLU/Lib/klu_ld_refactor.o \
+    KLU/Lib/klu_ld_scale.o \
+    KLU/Lib/klu_ld_solve.o \
+    KLU/Lib/klu_ld_sort.o \
+    KLU/Lib/klu_ld_tsolve.o \
+    KLU/Lib/klu_defaults.o \
+    KLU/Lib/klu_free_symbolic.o \
+    KLU/Lib/klu_l.o \
+    KLU/Lib/klu_l_analyze.o \
+    KLU/Lib/klu_l_analyze_given.o \
+    KLU/Lib/klu_l_defaults.o \
+    KLU/Lib/klu_l_diagnostics.o \
+    KLU/Lib/klu_l_dump.o \
+    KLU/Lib/klu_l_extract.o \
+    KLU/Lib/klu_l_factor.o \
+    KLU/Lib/klu_l_free_numeric.o \
+    KLU/Lib/klu_l_free_symbolic.o \
+    KLU/Lib/klu_l_kernel.o \
+    KLU/Lib/klu_l_memory.o \
+    KLU/Lib/klu_l_refactor.o \
+    KLU/Lib/klu_l_scale.o \
+    KLU/Lib/klu_l_solve.o \
+    KLU/Lib/klu_l_sort.o \
+    KLU/Lib/klu_l_tsolve.o \
+    KLU/Lib/klu_ldl.o \
+    KLU/Lib/klu_ldl_diagnostics.o \
+    KLU/Lib/klu_ldl_dump.o \
+    KLU/Lib/klu_ldl_extract.o \
+    KLU/Lib/klu_ldl_factor.o \
+    KLU/Lib/klu_ldl_free_numeric.o \
+    KLU/Lib/klu_ldl_kernel.o \
+    KLU/Lib/klu_ldl_refactor.o \
+    KLU/Lib/klu_ldl_scale.o \
+    KLU/Lib/klu_ldl_solve.o \
+    KLU/Lib/klu_ldl_sort.o \
+    KLU/Lib/klu_ldl_tsolve.o \
+    KLU/Lib/klu_memory.o \
+    KLU/Lib/klu_z.o \
+    KLU/Lib/klu_z_diagnostics.o \
+    KLU/Lib/klu_z_dump.o \
+    KLU/Lib/klu_z_extract.o \
+    KLU/Lib/klu_z_factor.o \
+    KLU/Lib/klu_z_free_numeric.o \
+    KLU/Lib/klu_z_kernel.o \
+    KLU/Lib/klu_z_refactor.o \
+    KLU/Lib/klu_z_scale.o \
+    KLU/Lib/klu_z_solve.o \
+    KLU/Lib/klu_z_sort.o \
+    KLU/Lib/klu_z_tsolve.o \
+    KLU/Lib/klu_zl.o \
+    KLU/Lib/klu_zl_diagnostics.o \
+    KLU/Lib/klu_zl_dump.o \
+    KLU/Lib/klu_zl_extract.o \
+    KLU/Lib/klu_zl_factor.o \
+    KLU/Lib/klu_zl_free_numeric.o \
+    KLU/Lib/klu_zl_kernel.o \
+    KLU/Lib/klu_zl_refactor.o \
+    KLU/Lib/klu_zl_scale.o \
+    KLU/Lib/klu_zl_solve.o \
+    KLU/Lib/klu_zl_sort.o \
+    KLU/Lib/klu_zl_tsolve.o
+
+OFILES_CONFIG = \
+    SuiteSparse_config/SuiteSparse_config.o
+
+$(SHLIB_TARGET): buildlib
+	    $(CC) -o $(SHLIB_TARGET) $(LSHFLAG) \
+ $(OFILES_AMD) $(OFILES_BTF) $(OFILES_COLAMD) $(OFILES_KLU) \
+ SuiteSparse_config/SuiteSparse_config.o;
+	
+unpack:
+	rm -rf AMD BTF COLAMD KLU SuiteSparse_config
+	tar xzf SuiteSparse-$(SSVERSION).tar.gz
+	mv SuiteSparse/AMD .
+	mv SuiteSparse/BTF .
+	mv SuiteSparse/COLAMD .
+	mv SuiteSparse/KLU .
+	mv SuiteSparse/SuiteSparse_config .
+	rm -rf SuiteSparse
+
+patch:
+	patch -p0 < long_dbl_patch
+
+buildlib:
+	if [ ! -d AMD ]; then \
+	    $(MAKE) unpack patch; \
+	fi
+	cd AMD/Lib;  $(MAKE) CFLAGS="$(CFLAGS)"
+	cd BTF/Lib;  $(MAKE) CFLAGS="$(CFLAGS)"
+	cd COLAMD/Lib;  $(MAKE) CFLAGS="$(CFLAGS)"
+	cd KLU/Lib;  $(MAKE) CFLAGS="$(CFLAGS)"
+	cd SuiteSparse_config;  $(MAKE) CFLAGS="$(CFLAGS)" SuiteSparse_config.o
+
+clean:
+	cd AMD;  $(MAKE) distclean
+	cd BTF;  $(MAKE) distclean
+	cd COLAMD;  $(MAKE) distclean
+	cd KLU;  $(MAKE) distclean
+	cd SuiteSparse_config;  $(MAKE) distclean
+
+distclean:
+	rm -rf AMD BTF COLAMD KLU SuiteSparse_config
+	rm -f $(SHLIB_TARGET)
+	rm -f Makefile

@@ -1,0 +1,56 @@
+#######################################################################
+# wrspice/sparse/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.14 2014/02/28 19:44:38 stevew Exp $
+#######################################################################
+
+SPICE_VERSION = @SPICE_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGS_SG@ @UFLAGS@ -DWRSPICE -DUSE_KLU
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGS_SG@ -DWRSPICE -DUSE_KLU
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+
+LIB_TARGET = sparse.a
+
+LPATH = ../../../xt_base
+KPATH = ../../../KLU
+HFILES = spconfig.h spmacros.h
+SP_CCFILES = spbuild.cc spfactor.cc spoutput.cc spsolve.cc sputils.cc
+CCFILES = kluif.cc spspice.cc $(SP_CCFILES)
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil \
+-I$(KPATH)/AMD/Include -I$(KPATH)/BTF/Include -I$(KPATH)/COLAMD/Include \
+-I$(KPATH)/KLU/Include -I$(KPATH)/SuiteSparse_config
+
+$(LIB_TARGET): $(HFILES) $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+$(HFILES) $(SP_CCFILES): $(LPATH)/sparse/$@
+	cp -f $(LPATH)/sparse/$@ .
+
+depend: $(HFILES) $(CCFILES)
+	@echo depending in wrspice/sparse
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm *.o $(LIB_TARGET)
+
+distclean:
+	-rm *.o $(LIB_TARGET) Makefile $(SP_CCFILES)
+
+#######################################################################

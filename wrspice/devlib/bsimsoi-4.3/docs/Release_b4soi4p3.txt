@@ -1,0 +1,55 @@
+Dear BSIMSOI Users,
+ 
+Thank you for your support for the BSIMSOI models. We are releasing BSIMSOIv4.3
+today (Dec 31, 2009).
+
+BSIMSOIv4.3 source code was extensively revised, improved and bug fixed through
+close interactions among the members of a forum devoted to resolve the key
+issues in BSIMSOIv4.2. The forum composed of the following CMC member companies
+ADI, Agilent, Ansoft, Cadence, IBM, SYNOPSYS and UC Berkeley). 
+
+The charge derivative issues in v4.2 and earlier are greatly improved in v4.3,
+thanks to the efforts of IBM, Cadence and SYNOPSYS. A bug in the spice3f5 noise
+evaluation reported to CMC (Q3, 2009) is also resolved, special thanks to ADI.
+Description of other bug fixes and modifications can be found at BSIMSOI
+website (link provided below). We like to thank forum members in general for
+their contributions towards making the BSIMSOIv4.3 code more robust and error
+free. 
+
+We believe the modfications implemented in v4.3 will greatly benefit the users.
+
+Compared with BSIMSOIv4.1 and v4.2, no new features are added in this version.
+
+Bug fixes:
+
+The bug fix and other corrections list is extensive for v4.3. Please refer to
+the link 'BSIMSOI4.3 Bug Fixes' through the following URL for bug fix descriptions.
+   
+
+We welcome everyone to visit our website at: 
+
+http://www-device.eecs.berkeley.edu/~bsimsoi/get.html 
+
+The following resources can be accessed and downloaded:
+
+- Complete list of bugfixes and enhancements 
+- Complete description of bug-fixes with users who reported them 
+- BSIMSOI4.3 source code 
+- BSIMSOI4.3 user manual 
+- BSIMSOI4.3 documentations and 
+- Testing examples  
+
+
+We would like to express our sincere thanks to all the users who gave us
+suggestions. We specially thank those CMC members working closely as forum
+members for improvement of the BSIMSOI code.
+  
+We thank you for your support for BSIMSOI and welcome your feedback on this
+latest release.
+ 
+Sincerely,
+ 
+BSIM Team
+UC Berkeley
+
+

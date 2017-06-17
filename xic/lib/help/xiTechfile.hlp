@@ -1,0 +1,3957 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiTechfile.hlp,v 1.91 2017/03/22 23:39:52 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiTechfile.hlp
+!!TITLE
+xiTechfile.hlp
+!!HTML
+
+!!SUBTOPICS
+techfile
+techfile:comments
+techfile:macros
+techfile:set
+techfile:paths
+techfile:scripts
+techfile:layers
+techfile:layers:misc
+techfile:layers:pres
+techfile:layers:conv
+techfile:layers:ext
+techfile:layers:phys
+techfile:layers:drc
+techfile:stdvia
+techfile:attr
+techfile:attr:snap
+techfile:attr:grid
+techfile:attr:misc
+techfile:attr:color
+techfile:attr:fkey
+techfile:attr:gridreg
+techfile:attr:lpal
+techfile:attr:font
+techfile:attr:vars
+hcopytech
+resourcefile
+
+!!REDIRECT ReadCniTech          techfile#ReadCniTech
+!!REDIRECT LispLogging          techfile#LispLogging
+
+!! 032117
+!!KEYWORD
+techfile
+!!TITLE
+Technology File
+!!HTML
+    The technology file tells <i>Xic</i> all it knows about the layers
+    and display attributes, as well as being a general source of
+    initialization information.  The name of the file is
+    <tt>xic_tech</tt>, and an extension .<i>xxx</i> can be added to
+    the name, so that if <i>Xic</i> is started with the
+    <tt>-T</tt><i>xxx</i> option, the technology file with the
+    extension will be used.  For example, <tt>-Ttrw</tt> would try to
+    read <tt>xic_tech.trw</tt>.
+
+    <p>
+    It is legitimate to start <i>Xic</i> without reading a technology
+    file, by using "<tt>xic -T</tt>".  In this case, new layers will
+    be assigned as needed as cells are read in.  This can be useful
+    for examining an undocumented GDSII file, for example.  Once the
+    layout has been read in, new colors and fill styles can be
+    assigned, and the <a href="xic:updat"><b>Save Tech</b></a> command
+    used to dump an appropriate technology file for the next time.
+
+    <p>
+    The technology file is expected to be found along the library <a
+    href="xicpaths">search path</a>, which can be set with the <a
+    href="xic:env">environment</a> variable <b>XIC_LIB_PATH</b>.  The
+    default path is
+    <blockquote>
+    <tt>( .  /usr/local/xictools/xic/startup)</tt>.
+    </blockquote>
+    The default technology file has been provided by your system
+    administrator.  A personalized version can be generated with the
+    <b>Save Tech</b> command.
+
+    <p>
+    The technology file generally begins with <a
+    href="techfile:comments">comment lines</a> explaining the process
+    that the file supports.  The order of the sections that follow is
+    rather flexible, though the printer driver blocks should appear
+    last.  It is recommended that one follow the ordering described
+    here, which is the order used by <i>Xic</i> when generating a
+    technology file, to be on the safe side.  None of the sections is
+    required to exist.  Technology files for <a
+    href="xicii"><i>XicII</i></a> and <a href="xiv"><i>Xiv</i></a>
+    feature sets are simplified, omitting the sections that apply to
+    unavailable features.
+
+    <p>
+    At the top of the file are <a href="techfile:macros">macro
+    definitions</a> using the <tt>Set</tt> or <tt>Define</tt>
+    keywords, and <a href="techfile:set"><b>!set</b> lines</a> for
+    setting global variables.  The introductory part of the file
+    further consists of optional <a href="techfile:paths">path
+    specifications</a>.  The <a href="techfile:layers">layer
+    blocks</a> follow, which is where the core information about the
+    particular technology resides.  The electrical layers are defined
+    first, followed by <a href="userrules">user-defined design
+    rules</a>, followed by the physical layer definitions.
+
+    <p>
+    The physical layers are followed by the <a
+    href="techfile:stdvia">standard via</a> definitions, then the <a
+    href="ext:deviceblock">device blocks</a>, where physical
+    characteristics for device extraction are given.  These are
+    followed by <a href="techfile:scripts">script function
+    definitions</a>.  Finally, there is a section containing <a
+    href="techfile:attr">display attribute specifiers</a> and other
+    parameters, and the <a href="hcopytech">hard-copy driver</a>
+    parameter blocks.
+
+    <p>
+    Long lines can be continued in the technology file by using backslash
+    continuation.  For example, the following would be read as one line:
+    <blockquote>
+      <tt>This is a line to be continued, the backslash \<br>
+      must be the last character in the line.</tt>
+    </blockquote>
+
+    <p>
+    The technology file has a <a href="techfile:macros">macro
+    facility</a> which can be used to simplify the constructs and to
+    customize the file to a particular variation of the technology.
+
+    <p>
+    <a name="techname"></a>
+    The technology file may contain the following keyword/value pair
+    near the top of the file:
+
+    <dl>
+    <dt><tt>Technology</tt> <i>name</i>
+    <dd>The <i>name</i> can be any character token (no white space
+    allowed) and gives a name to the technology.  This is not directly
+    used by <i>Xic</i>, but the <i>name</i> is placed in the macro
+    name space of the <a href="macro">macro preprocessor</a> used when
+    reading various types of input files, including the device
+    library.  The name is displayed in the <a href="statusline">status
+    line</a>, of the main window, and is part of the information
+    available for output in scripts and elsewhere.
+    </dl>
+
+    <dl>
+    <dt><tt>DeviceLibrary</tt> <i>libname</i>
+    <dd>The <i>libname</i> is the name of a <a href="devlib">device
+    library</a> file which provides device outlines for use in
+    schematics.  If not given, the name defaults to
+    "<tt>device.lib</tt>".  The <i>libname</i> should be a file name,
+    without any directory path.  A file by that name should be found
+    in the library <a href="xicpaths">search path</a> on program
+    startup.
+    </dl>
+
+    <dl>
+    <dt><tt>ModelLibrary</tt> <i>libname</i>
+    <dd>The <i>libname</i> is the name of a <a href="modlib">model
+    library</a> file which provides SPICE models for use in SPICE
+    output.  If not given, the name defaults to "<tt>model.lib</tt>". 
+    A file by that name should be found in the library search path on
+    program startup.
+    </dl>
+
+    <dl>
+    <dt><tt>ModelSubdir</tt> <i>dirname</i>
+    <dd>The <i>dirname</i> is the name of a subdirectory of the
+    directories of the library search path, in which are found SPICE
+    model files.  All directories of this name found in the library
+    path will be searched for SPICE models.  If not given, the name
+    defaults to "<tt>models</tt>".
+    </dl>
+
+    <dl>
+    <dt><a href="ReadDRF"><tt>ReadDRF</tt></a> <i>filename</i><dd>
+    This is part of the <a href="cdscompat">Cadence&#174;
+    compatibility package</a>.  The <i>filename</i> is the name of or
+    path to a file in the format of a Virtuoso display resource file
+    (including those from the Ciranova <a href="pycell">PyCell
+    Studio</a>).  The full path should be given unless the file is in
+    the library <a href="xicpaths">search path</a>.
+    </dl>
+
+    <dl>
+    <dt><a href="ReadCdsTech"><tt>ReadCdsTech</tt></a> <i>filename</i><dd>
+    This is part of the <a href="cdscompat">Cadence&#174;
+    compatibility package</a>.  The <i>filename</i> is the name of or
+    path to a file in the format of a Virtuoso ASCII technology file. 
+    The full path should be given unless the file is in the library <a
+    href="xicpaths">search path</a>.  This provides layer and purpose
+    definitions, rules, constraints, and other technology data.
+    Layers defined in this file will appear in addition to those
+    defined elsewhere.
+    </dl>
+
+!!IFDEF OpenAccess
+    <dl>
+    <dt><a href="ReadOaTech"><tt>ReadOaTech</tt></a> <i>library</i><dd>
+    This will obtain Virtuoso technology information directly from
+    OpenAccess.  The <i>library</i> is an OpenAccess library, listed
+    in the <tt>lib.defs</tt> or <tt>cds.lib</tt> file.  This obtains
+    technology information by use of the OpenAccess <a
+    href="oaplugin">plug-in</a>.  There should be no reason to use
+    both this and <tt>ReadCdsTech</tt>, as they should retrieve the
+    same information.
+    </dl>
+!!ENDIF
+
+    <dl>
+    <dt><a href="ReadCdsLmap"><tt>ReadCdsLmap</tt></a> <i>filename</i>
+    <dd>This is part of the <a href="cdscompat">Cadence&#174;
+    compatibility package</a>.  The <i>filename</i> is a path to a
+    Virtuoso layer-mapping file, which provides GDSII layer/datatype
+    numbers for the layers.  This can be used in addition to, and must
+    be called after, <tt>ReadCdsTech</tt>.  It is used to import the
+    Stream mapping for the layers.
+    </dl>
+
+    <a name="ReadCniTech"></a>
+    <dl>
+    <dt><a href="ReadCniTech"><tt>ReadCniTech</tt></a> <i>filename</i><dd>
+    The <i>filename</i> is the name of or path to a file in the format
+    of a Ciranova (now Synopsys) ASCII technology file.  The full path
+    should be given unless the file is in the library <a
+    href="xicpaths">search path</a>.  This file format is
+    superficially similar to a Virtuoso ASCII technology file, yet
+    sufficiently different that a separate reader is required.
+!!IFDEF OpenAccess
+    The format is documented in the <a href="pycell">PyCell Studio</a>
+    distribution from Synopsys, and example files are provided.
+!!ELSE
+    The format is documented in the PyCell Studio distribution from
+    Synopsys.
+!!ENDIF
+
+    <p>
+    When setting up a technology file for the PyCell Studio or
+    something similar using Ciranova technology,
+    it may be necessary to use this keyword more than once, if the
+    technology is described in more than one file.  It is also necessary
+    to use the <tt>ReadDRF</tt> keyword to read display resource files.
+
+    <p>
+    For example, here is a skeletal technology file for the Ciranova
+    130nm model process in the PyCell Studio, which is installed under
+    <tt>/usr/local/ciranova</tt>.
+    <blockquote>
+    <tt>Set cni130 = /usr/local/ciranova/tech/cni130</tt><br>
+    <tt>ReadDRF $(cni130)/santanaDisplay/SantanaDisplay.drf</tt><br>
+    <tt>ReadCniTech $(cni130)/santanaTech/Santana.tech</tt><br>
+    <tt>ReadCniTech $(cni130)/santanaDisplay/SantanaDisplay.tech</tt>
+    </blockquote>
+    </dl>
+
+    <p>
+    The ability to read the Lisp/Skill file format used by Virtuoso
+    is provided by an internal <a href="lisp">Lisp parser</a>.  The
+    parser is available to run general scripts through the
+    <a href="!lisp"><b>!lisp</b></a> command, though this has limited
+    utility at present.
+
+    <p>
+    In the technology file, is is sometimes useful to enable debugging
+    output from the Lisp parser.  The following keyword enables this.
+
+    <a hame="LispLogging"></a>
+    <dl>
+    <dt><tt>LispLogging</tt> [<tt>y/n</tt>]<dd>
+    If this boolean keyword is set in the technology file, a <a
+    href="xic:logs">log file</a> will be generated when the Lisp
+    parser is used.  This can be used to track down issues when
+    parsing Virtuoso-style input files.  Asserting this keyword is
+    equivalent to setting the Lisp logging in the
+    <href="xic:dblog"><b>Logging Options</b></a> panel from the
+    <b>Help Menu</b>, which otherwise can't be done before the
+    technology file is read on program startup.
+
+    <p>
+    The logging output is put into a file named
+    <i>filename</i><tt>-lisp.log</tt> in the logfiles directory.  The
+    <i>filename</i> is the name of the input file being parsed.
+    </dl>
+
+!!SEEALSO
+techfile:obsolete
+xic:updat
+
+!! 032117
+!!KEYWORD
+techfile:comments
+!!TITLE
+Technology File Comments
+!!HTML
+    The technology file recognizes a <tt>Comment</tt> keyword.  These
+    lines have no effect, but are saved and included when the file is
+    written with the <b>Save Tech</b> command.  Thus, notes about the
+    file can be preserved.  An attempt is made to to place the comment
+    in the same relative position during an update.
+
+    <p>
+    Comments can also be included in the technology file after the '#'
+    character or '//' sequence, however these comments will not appear
+    in a file written with the <b>Save Tech</b> command.
+
+    <p>
+    Example:
+      <blockquote><tt>
+      Comment  Technology file Ultra-MOS version 3.5<br>
+      Comment  Version 1.3  March 24, 2002  George H. Frump
+      </tt></blockquote>
+
+!!SEEALSO
+techfile
+
+!! 032613
+!!KEYWORD
+techfile:macros
+!!TITLE
+Technology File Macros
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="techfile:macros#set"><b>The <tt>Set</tt> Keyword:  Variable Substitution</b></a><br>
+    <a href="techfile:macros#eval"><b>The <tt>eval</tt> Keyword:  Expression Evaluation</b></a>
+    </td></tr></table>
+
+    <p>
+    In order to facilitate customization of the technology file to
+    different variations, in particular to support scalable
+    technology, a macro facility is provided, along with an expression
+    evaluator.  Macros can be used to simplify or clarify the
+    constructs used in the technology file, and facilitate portability
+    by effectively customizing the technology file to different
+    environments.
+
+    <p>
+    The macro capability makes use of the generic <a
+    href="macro">macro preprocessor</a> provided in <i>Xic</i>.  The
+    reader should refer to this section for a full description of the
+    preprocessor capabilities.  The preprocessor provides a few
+    predefined macros used for testing (and customizing for) release
+    number, operating system, etc.  The keyword names, which
+    correspond to the generic names as described for the macro
+    preprocessor, are case-insensitive and listed in the following
+    table.
+
+    <blockquote>
+    <table cellpadding=2 border=1 bgcolor="#ffffee">
+    <tr><th>Keyword</th> <th>Function</th></tr>
+    <tr><td><tt>Define</tt></td> <td>Define a macro.</td></tr>
+    <tr><td><tt>If</tt></td> <td>Conditional evaluated test.</td></tr>
+    <tr><td><tt>IfDef</tt></td> <td>Conditional definition test.</td></tr>
+    <tr><td><tt>IfnDef</tt></td> <td>Conditional non-definition test.</td></tr>
+    <tr><td><tt>Else</tt></td> <td>Conditional else clause.</td></tr>
+    <tr><td><tt>Endif</tt></td> <td>Conditional end clause.</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    A macro definition can appear anywhere in the technology file. 
+    Throughout the technology file, each line is macro expanded.  The
+    actual arguments replace the formal arguments (if any) in the
+    substitution text, which replaces the macro reference.  The macro
+    is recognized as a text token.
+
+    <p>
+    Example:
+
+    <blockquote>
+    <pre>
+    Define  mytext(x)  this is rule number x
+    ...
+    MinWidth 2 # mytext(1.2)  
+    </pre>
+    </blockquote>
+
+    <p>
+    The <tt>MinWidth</tt> line expands to
+
+    <blockquote>
+    <tt>MinWidth 2 # this is rule number 1.2</tt>
+    </blockquote>
+
+    <a name="cond"></a>
+    <p>
+    The conditional keywords provide tests which can be used to select
+    which lines of the technology file are actually read, based of the
+    settings of existing macros and/or expression evaluation.  The
+    logic is explained in the description of the generic macro
+    preprocessor.
+
+    <p>
+    Example:
+
+    <blockquote><tt>
+    Define TightRules<br>
+    ...<br>
+    Layer M1<br>
+    IfDef TightRules<br>
+    MinWidth .4<br>
+    Else<br>
+    MinWidth .8<br>
+    Endif<br>
+    </tt></blockquote>
+
+    <p>
+    In the example above, commenting out the <tt>Define</tt> line
+    <blockquote>
+     #Define TightRules
+    </blockquote>
+     reconfigures the technology file.
+
+    <p>
+    When the technology file is updated with the <b>Save Tech</b>
+    command, only the lines that were actually processed are written,
+    i.e., the <tt>IfDef</tt>, etc.  lines and unused blocks are
+    stripped.
+
+    <a name="set"></a>
+    <h2>The <tt>Set</tt> Keyword:  Variable Substitution</h2>
+
+    A different type of macro is defined using the <tt>Set</tt>
+    keyword, where the words following are parsed into three tokens
+    <blockquote>
+    <tt>Set</tt> <i>name</i> <tt>=</tt> <i>value</i>
+    </blockquote>
+
+    This type of macro is referred to by
+
+    <blockquote>
+    <tt>$(</tt><i>name</i><tt>)</tt>
+    </blockquote>
+
+    which is replaced by <i>value</i> as the file is read.  If the
+    <i>name</i> has not been assigned in a <tt>Set</tt> line, but an
+    environment variable by that name is found, the substitution will
+    be made from the value of the environment variable.  Otherwise,
+    the variable must be set before being referenced, meaning that the
+    <tt>Set</tt> line must appear before the first reference in the
+    technology file.
+
+    <p>
+    Neither the <i>name</i> or <i>value</i> tokens can contain a
+    carriage return, though they can contain embedded white space.  In
+    either case, the beginning and end of the token is the first and
+    last non-white character.  Substitution is performed recursively. 
+    The two types of macro can be mixed, though the <tt>Set</tt> line
+    is not expanded for <tt>Define</tt>'ed macros.  Other lines are
+    first expanded for <tt>Define</tt>'ed macros, then for
+    <tt>Set</tt> macros.
+
+    <p>
+    The <tt>Set</tt> keyword should not be confused with the <a
+    href="techfile:set"><b>!set</b></a> command, which can also appear
+    in the technology file.
+
+    <a name="eval"></a>
+    <h2>The <tt>eval</tt> Keyword: Expression Evaluation</h2>
+
+    <p>
+    An expression involving integers or floating point numbers can
+    be evaluated as the file is read, with the result inserted into
+    the line at the place of evaluation.  This facilitates, for
+    example, the use of design rules based on the <i>lambda</i>
+    concept.  In this type of rule set, design rules are specified
+    in terms of a minimum dimension <i>lambda</i>.  The
+    <i>lambda</i> may vary between different process
+    implementations.  In the technology file, <i>lambda</i> is
+    defined as a macro, and inputs to the design rule
+    specifications is evaluated in terms of <i>lambda</i>.
+
+    <p>
+    The syntax for expression evaluation is
+    <tt>eval(</tt><i>expression</i><tt>)</tt>.  This construct can
+    occur anywhere in the text, although it makes sense only where a
+    number is expected.  The result of the evaluation is substituted
+    into the text replacing the <tt>eval</tt> construct, before that
+    line of the technology file is interpreted.  The expression is
+    interpreted by the parser otherwise used for interpreting command
+    <a href="xicscript">scripts</a>, and the full complement of
+    operations and functions is available.  Macros are expanded before
+    the expression is parsed.
+
+    <p>
+    Example:
+
+      <blockquote><tt>
+      Set lambda = .6<br>
+      ...<br>
+      <br>
+      PhysLayer BASE<br>
+      MinWidth eval(2*$(lambda))  #Min width of BASE layer is 2*lambda
+      </tt></blockquote>
+
+    <p>
+    In this example, the parameter <tt>lambda</tt> is defined to ".6"
+    with the <tt>Set</tt> keyword.  Elsewhere in the file, design rules
+    can be specified as functions of <tt>lambda</tt> using the
+    <tt>eval</tt> construct, as shown.
+
+    <p>
+    Example:
+
+      <blockquote><tt>
+      Set lambda = .6<br>
+      Define L(x) eval($(lambda)*x)<br>
+      ...<br>
+      <br>
+      PhysLayer BASE<br>
+      MinWidth L(2)  #Min width of BASE layer is L(2)
+      </tt></blockquote>
+
+    <p>
+    In this example, the macro <tt>L(x)</tt> is used to hide the call
+    to the evaluation function, simplifying syntax.
+
+    <p>
+    If the technology file is updated using the <b>Save Tech</b>
+    command button, only the macros used in the design rule keywords
+    will be preserved in their original macro form in the new file. 
+    Elsewhere, the written lines will contain the expanded quantity. 
+    All of the <tt>Set</tt> and <tt>Define</tt> lines will be
+    preserved.  Thus, the use of macros should be restricted to the
+    design rule keywords, unless the user is willing to hand edit the
+    new files produced with the <b>Save Tech</b> command.
+
+!!SEEALSO
+techfile
+
+!! 021615
+!!KEYWORD
+techfile:set
+!!TITLE
+Technology File Global Variables
+!!HTML
+
+    Also typically appearing near the top of the technology file are
+    the <b>!set</b> commands.
+    <blockquote>
+    <tt>!set</tt> <i>arguments</i>
+    </blockquote>
+    Unlike the <a href="techfile:macros#set"><tt>Set</tt></a> keyword,
+    this directive assigns variables as if the keyboard <a
+    href="!set"><b>!set</b></a> command, as used interactively from
+    the prompt line, had been given.  The <i>arguments</i> are exactly
+    as they would appear on the prompt line.  Thus, the command
+    attributes that are controlled with the <b>!set</b> command can be
+    specified in the technology file.  The technology file is read
+    after the <tt>.xicinit</tt> and before the <tt>.xicstart</tt> <a
+    href="initfiles">initialization file</a>, which are other options
+    for executing the <b>!set</b> command at program startup.
+
+    <p>
+    This form is appropriate for variables that are defined by the
+    user.  Variables that are known to <i>Xic</i> can presently be set
+    <a href="techfile:attr:vars">as keywords</a>, though the form
+    described here can be used as well.
+
+    <p>
+    When a new technology file is written with the <a
+    href="xic:updat"><b>Save Tech</b></a> command, all <b>!set</b>
+    lines from the original technology file (if any) are written as a
+    block, but commented out.  This is followed by another block
+    containing all of the currently defined variables, except for
+    those known to <i>Xic</i> that can be set as keywords.  These
+    include the path variables, and are written as keyword definitions
+    elsewhere in the file.  The present listing will contain variables
+    defined by the user.  These lines are active.  The user can edit
+    these blocks as necessary.
+
+    <p>
+    The <a href="!attrvars"><b>!attrvars</b></a> command generates a
+    listing of the variables that can be set as technology file
+    keywords.
+
+
+!!SEEALSO
+techfile
+techfile:macros
+
+!! 062109
+!!KEYWORD
+techfile:paths
+!!TITLE
+Technology File Path Definitions
+!!HTML
+
+    There are four search paths that may be specified.  In each case,
+    the path specification consists of a keyword, followed by the
+    path.  The format of the path is described in the section
+    detailing the <i>Xic</i> <a href="xicpaths">search paths</a>.
+
+    <p>
+    In the path defaults below, if the <a
+    href="XT_PREFIX"><b>XT_PREFIX</b></a> environment variable is
+    defined, its value will replace "<tt>/usr/local</tt>".
+
+    <dl>
+    <dt><tt>Path</tt> <i>path</i>
+    <dd>The <tt>Path</tt> keyword specifies the path to design data
+    files:  native cell, archive, and <a href="libraries">library</a>
+    files.  The current directory "." should generally be listed first in
+    this path.  The design data path can also be set in the environment
+    with the <a href="XIC_SYM_PATH"><b>XIC_SYM_PATH</b></a> variable. 
+    A specification in the technology file will override a
+    specification in the environment.<br>
+    Default: <tt>( . )</tt>
+    </dl>
+
+    <dl>
+    <dt><tt>LibPath</tt> <i>path</i>
+    <dd>The <tt>LibPath</tt> keyword specifies the path to the startup
+    files, including the <a href="devlib">device library</a> (default
+    name "<tt>device.lib</tt>"), and the <a href="modlib">model
+    library</a> (default name "<tt>model.lib</tt>").  This path can
+    also be set with the environment variable <a
+    href="XIC_LIB_PATH"><b>XIC_LIB_PATH</b></a>, and a specification
+    in the technology file will override an environment specification. 
+    Unlike other search paths, the current directory is always checked
+    first when looking for files in this path, as if '.' was the first
+    component.<br>
+    Default: <tt>( .  /usr/local/xictools/xic/startup )</tt>
+    </dl>
+
+    <dl>
+    <dt><tt>HlpPath</tt> <i>path</i>
+    <dd>The <tt>HlpPath</tt> lists directories containing database
+    files for the <a href="helpsys">help system</a>.  These files have
+    names with suffix <tt>.hlp</tt>, and it is possible for users to
+    create <a href="helpfiles">customized help files</a> for their own
+    purposes.  The help path can also be specified with the
+    environment variable <a
+    href="XIC_HLP_PATH"><b>XIC_HLP_PATH</b></a>, which will be
+    overridden by a specification in the technology file.<br>
+    Default: <tt>( /usr/local/xictools/xic/help )</tt>
+    </dl>
+
+    <dl>
+    <dt><tt>ScriptPath</tt> <i>path</i>
+    <dd>The <tt>ScriptPath</tt> contains directories where <i>Xic</i>
+    searches for user generated command scripts.  The script files
+    have names with suffix "<tt>.scr</tt>", except for the library
+    script which is named "<tt>library</tt>".  This path can also be
+    set with the environment variable <a
+    href="XIC_SCR_PATH"><b>XIC_SCR_PATH</b></a>, which will be
+    overridden by a specification in the technology file.<br>
+    Default: <tt>( /usr/local/xictools/xic/scripts )</tt>
+    </dl>
+
+    <p>
+    Note that the <b>XIC_LIB_PATH</b> variable can be used to define
+    the location of the technology file, and then redefined in the
+    technology file to provide alternate locations for the device and
+    model library files.
+
+    <p>
+    The path keywords, and all other keywords, are interpreted without
+    case sensitivity when the technology file is read.
+
+!!SEEALSO
+techfile
+
+!! 033112
+!!KEYWORD
+techfile:scripts
+!!TITLE
+Technology File Scripts
+!!HTML
+    Scripts can be included in the technology file.  These scripts can
+    appear as buttons in the <a href="xic:usermenu"><b>User
+    Menu</b></a>, as with other scripts, or they can be "run once"
+    scripts.  This feature is useful for including simple
+    technology-specific commands, such as those that create special
+    extraction layers or physical features.  Scripts defined in the
+    technology file, however, can not be loaded into the debugger. 
+
+    <p>
+    A script is included in the technology file as follows.  The
+    <tt>Script</tt> keyword is followed by the text which will
+    appear in the command button.  If the button text contains white
+    space, it must be quoted, e.g.,
+
+    <blockquote>
+    <tt>Script "My Cell Counter"</tt>
+    </blockquote>
+
+    The lines of the script follow, and the script text must be
+    terminated with the keyword "<tt>EndScript</tt>" on a separate
+    line.
+
+    <blockquote>
+    <tt>Script</tt> <i>menu_label</i><br>
+    <i>script text</i><br>
+    ...<br>
+    <tt>EndScript</tt>
+    </blockquote>
+
+    If the line
+    <blockquote>
+    <tt>RunScript</tt>
+    </blockquote>
+    appears anywhere after the <tt>Script</tt> line and before
+    <tt>EndScript</tt>, the script is taken as a "run once" script. 
+    It will not be added to the <b>User Menu</b>.  Instead, it will be
+    executed after the technology file has been read, then discarded. 
+    Any number of scripts can be treated this way, they execute in
+    order of appearance in the technology file.
+
+    <p>
+    Scripts defined in the technology file have lower priority than
+    other scripts in the event of a menu label text clash.  Thus,
+    technology file scripts will be "hidden" by other scripts with the
+    same menu label, should any exist.
+
+!!SEEALSO
+techfile
+xicscript
+
+!!REDIRECT MapLayer             techfile:layers#MapLayer
+!!REDIRECT DefineLayer          techfile:layers#DefineLayer
+!!REDIRECT DefinePurpose        techfile:layers#DefinePurpose
+!!REDIRECT ElecLayer            techfile:layers#ElecLayer
+!!REDIRECT PhysLayer            techfile:layers#PhysLayer
+!!REDIRECT LayerName            techfile:layers#PhysLayer
+!!REDIRECT DerivedLayer         techfile:layers#DerivedLayer
+
+!! 032117
+!!KEYWORD
+techfile:layers
+!!TITLE
+Technology File Layer Blocks
+!!HTML
+    <a name="MapLayer>"</a>
+    <i>Xic</i> maintains a table of layer aliases, which can be used
+    instead of the actual layer name where a layer entry is required. 
+    This follows the Virtuoso "<tt>techParams</tt>" definitions where
+    the value is a layer name.  The alias name is intended to be a
+    generic name such as "<tt>active_layer</tt>", or
+    "<tt>nwell_layer</tt>", which can be used in <a
+    href="ext:device_block">device blocks</a> and elsewhere to provide
+    a degree of process independence.  Further, some of these names
+    may be specific to Virtuoso, and be handled in special ways.  The
+    only example of this at present is handling of
+    "<tt>active_layer</tt>".
+
+    <p>
+    Each line of the layer alias list takes the following form.
+    <blockquote>
+    <tt>MapLayer</tt> <i>alias</i> <i>layer_name</i>
+    </blockquote>
+    The <i>layer_name</i> must be resolvable as an <i>Xic</i>
+    layer.
+
+    <dl>
+    <tt>active_layer</tt> alias handling<dd>
+    If a layer alias named "<tt>active_layer</tt>" is given, as is at
+    least one of the alias names "<tt>ngate_layer</tt>" and
+    "<tt>pgate_layer</tt>", and the <tt>active_layer</tt> does not
+    have a <a href="Conductor"><tt>Conductor Exclude</tt></a>
+    directive, one will be created.  The excluded area is logically
+    <tt>ngate_layer|pgate_layer</tt>.  This supports correct
+    MOS device recognition when technology data are obtained
+    exclusively from Virtuoso.
+    </dl>
+
+    <p>
+    <a name="DefineLayer"></a>
+    <a name="DefinePurpose"></a>
+    The component layer names and numbers, and purpose names and
+    numbers, are specified in optional tables.  These tables must
+    appear before any <i>Xic</i> layer definitions.  A layer name or
+    purpose name used by an <i>Xic</i> layer that is not found in a
+    table will be created, and assigned a number by <i>Xic</i>.  The
+    tables ensure a strict and repeatable correspondence between names
+    and numbers, which may be necessary for compatibility with other
+    tools.
+
+    <p>
+    The tables consist of lines in the following form:
+    <blockquote>
+    <tt>DefineLayer</tt> <i>layer_name</i> <i>layer_number</i><br>
+    <tt>DefinePurpose</tt> <i>purpose_name</i> <i>purpose_number</i>
+    </blockquote>
+
+    <p>
+    Name strings may contain alphanumeric characters plus the dollar
+    sign ('<tt>$</tt>') and underscore ('<tt>_</tt>').  The numbers
+    can be any value representable with 32-bits, except that -1 is
+    reserved.  Be aware that other tools may define ranges of values
+    that are reserved for internal use.
+
+    <p>
+    Following the layer and purpose tables, if any, <i>Xic</i> layers
+    may be defined.  There are separate definitions of layers used in
+    electrical (schematic) mode, and in physical mode (for layouts). 
+    <i>Xic</i> maintains a standard set of electrical layers, in a
+    standard order.  These will be created if the definitions do not
+    appear in the technology file (or no technology file is read). 
+    The SCED layer, which is the electrically-active wiring layer, is
+    always first.  The user can modify the presentation attributes,
+    and add layers as desired.  For physical mode, there are no such
+    layers, all layers must be defined in some manner.
+
+    <p>
+    The separation of electrical and physical layers is a bit of an
+    anachronism, and in current <i>Xic</i> releases a user-defined
+    layer can actually exist in both electrical and physical layer
+    tables.  This accommodates technologies imported from other tools,
+    such as Cadence Virtuoso, where no such distinction is made.
+
+    <p>
+    Each layer definition starts with the keyword <tt>PhysLayer</tt>
+    for physical layers or <tt>ElecLayer</tt> for electrical layers,
+    followed by a <a href="layername">name</a>.  Both of these
+    keywords have synonyms (listed below) for backwards compatibility. 
+    The name should be a valid layer name, though an attempt is made
+    to use invalid names if possible by editing out unacceptable
+    characters.
+
+    <p>
+    Layer blocks appear in a contiguous section in the technology
+    file, and in physical mode will appear in the layer table in the
+    order given.  In electrical mode, reordering may be applied, as
+    there are some internal assumptions.
+
+    <p>
+    A layer block is terminated by the start of another layer block,
+    or by a keyword which would logically end per-layer parsing.
+
+    <a name=ElecLayer></a>
+    <dl>
+    <dt><tt>ElecLayer</tt> <i>name</i>
+    <dd>This keyword specifies the beginning of the layer block for
+    the electrical layer <i>name</i>.  The keyword
+    <tt>ElecLayerName</tt> is a synonym.
+    </dl>
+
+    <a name=PhysLayer></a>
+    <dl>
+    <dt><tt>PhysLayer</tt> <i>name</i>
+    <dd>This keyword specifies the beginning of the layer block for
+    the physical layer <i>name</i>.  Layers will appear in the
+    physical mode layer table in the order given.  The keywords
+    <tt>PhysLayerName</tt>, <tt>Layer</tt>, and <tt>LayerName</tt> are
+    all synonyms for this keyword.
+    </dl>
+
+    <a name=DerivedLayer></a>
+    <dl>
+    <dt><tt>DerivedLayer</tt> <i>name</i> [<tt>join|split|splitv</tt>]
+      <i>expression</i>
+    <dd>
+    This line provides a definition of a <a href="drvlayer">derived
+    layer</a>.  Derived layers represent an expression of other
+    layers, derived and normal physical, which can be referenced in <a
+    href="layer_exp">layer expressions</a>.  Derived layers were
+    introduced in support of the <a href="drcrules">design rule</a>
+    checking system, but can be accessed for other purposes through a
+    script function <a href="funcs:geom1:drvlyr">interface</a>.
+
+    <p>
+    This will add a derived layer to the database, under the name
+    given in the first token.  The remainder of the line is the layer
+    expression.  The expression is not parsed until evaluation time.
+
+    <p>
+    When the derived layer is evaluated, the geometry can appear as an
+    assemblage of trapezoids if either of the <tt>split</tt> or
+    <tt>splitv</tt> keywords is given, or alternatively as a minimal
+    number of complex polygons if the <tt>join</tt> keyword is given
+    instead.  If <tt>splitv</tt> is given, a vertical orientation is
+    favored for the decomposition, whereas similarly <tt>split</tt>
+    will produce a decomposition favoring a horizontal orientation. 
+    The default is the joined form if none of these optional keywords
+    is given, except when simply copying from another layer in which
+    case the default is to copy objects without change.  The keyword
+    "<tt>splith</tt>" is a synonym for "<tt>split</tt>".
+    </dl>
+
+    <p>
+    These lines begin a layer block description, and any of the
+    keywords which can apply to physical layers can be used in the
+    derived layer blocks, though the definitions may be useless. 
+    Layer block keywords that are significant are listed below.
+
+    <ol>
+    <li> Design rules.  These rules will be evaluated while doing
+    design rule checking.  As further described in the in the <a
+    href="drcrules">DRC description</a>, there are some types of tests
+    that require use of derived layers.
+
+    <li>When a new normal layer is created as a copy of a derived
+    layer, which can be done with the <a
+    href="!layer"><b>!layer</b></a> command, or with the <a
+    href="xic:lexpr"><b>Layer Expression Evaluation</b></a> panel from
+    the <b>Edit Menu</b>, or with the <a
+    href="Layer"><tt>Layer</tt></a> script function, the new layer
+    will inherit the attributes of the derived layer.  This includes
+    color, fill pattern, GDSII mpping, and other flags and properties. 
+    This gives purpose to the definitions provided in the derived
+    layer block.
+    </ol>
+    </dl>
+
+    <p>
+    The topics from the table below categorize and describe the fairly
+    lengthly list of per-layer keywords.  All of the keywords are
+    optional, and can appear under an electrical or physical layer,
+    unless stated otherwise.  Many of these keywords can be programmed
+    from within <i>Xic</i> with the <a href="xic:lpedt"><b>Tech
+    Parameter Editor</b></a> from the <b>Attributes Menu</b>.  Other
+    panels from the <b>Attributes Menu</b> allow setting colors, fill
+    patterns, etc.  which correspond to values from keywords.
+
+    <p>
+    In the syntax descriptions, the italicized quantities represent
+    data the needs to be provided.  The "<tt>y</tt>|<tt>n</tt>" symbol
+    implies that one of '<tt>y</tt>' or '<tt>n</tt>' can follow the
+    keyword.  Actually, '<tt>0</tt>' (zero), or any word that begins
+    with the letters or sequence (case insensitive) '<tt>n</tt>',
+    '<tt>f</tt>', '<tt>of</tt>' is taken as a false value.  Anything
+    else, including no following text, is taken as true ('<tt>y</tt>'
+    is always redundant).
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th colspan=2>Layer Block Keywords</th></tr>
+    <tr><th><a href="techfile:layers:misc">Misc. Attributes</a></th>
+      <td>Various non-visual attributes.</td></tr>
+    <tr><th><a href="techfile:layers:pres">Presentation</a></th>
+      <td>Keywords that control the visual representation of objects
+      on the layer.</td></tr>
+    <tr><th><a href="techfile:layers:conv">Conversion</a></th>
+      <td>Keywords for file conversion, mostly for GDSII layer
+      mapping.</td></tr>
+    <tr><th><a href="techfile:layers:ext">Extraction</a></th>
+      <td>Keywords for support of the extraction system.</td></tr>
+    <tr><th><a href="techfile:layers:phys">Physical Properties</a></th>
+      <td>Keywords to set material or electrical parameters.</td></tr>
+    <tr><th><a href="techfile:layers:drc">Design Rules</a></th>
+      <td>Design rule specifications (<i>Xic</i> only).</td></tr>
+    </table>
+
+!!REDIRECT LppName              techfile:layers:misc#LppName
+!!REDIRECT Description          techfile:layers:misc#Description
+!!REDIRECT NoSelect             techfile:layers:misc#NoSelect
+!!REDIRECT NoMerge              techfile:layers:misc#NoMerge
+!!REDIRECT WireActive           techfile:layers:misc#WireActive
+!!REDIRECT Symbolic             techfile:layers:misc#Symbolic
+!!REDIRECT Invalid              techfile:layers:misc#Invalid
+
+!! 070114
+!!KEYWORD
+techfile:layers:misc
+!!TITLE
+Technology File Layer Block Keywords:  Misc. Attributes
+!!HTML
+    These miscellaneous keywords apply bits of information to the
+    layer, which affects behavior in situations described.
+
+    <a name=LppName></a>
+    <dl>
+    <dt><tt>LppName</tt> <i>name</i>
+    <dd>This provides an optional alias for the layer/purpose pair
+    that represents the <i>Xic</i> layer name.  The <i>Xic</i> layer
+    can be accessed by this alias, in addition to the normal name.  If
+    no non-space characters are found after the keyword, the statement
+    is ignored.  Any character is allowed in the alias name, but
+    leading and training white space is removed, and inclusion of some
+    characters, for example a colon ('<tt>:</tt>'), can definitely
+    cause trouble.
+    </dl>
+
+    <a name=Description></a>
+    <dl>
+    <dt><tt>Description</tt> <i>description_string</i>
+    <dd>This will set the description field of the current layer.  If
+    no non-space characters are found after the keyword, the statement
+    is ignored.  Leading and training white space is removed from the
+    description string.
+    </dl>
+
+    <a name="NoSelect"></a>
+    <dl>
+    <dt><tt>NoSelect</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>If this keyword appears, and any following argument indicates
+    true, objects on the layer can not be selected.  The selectability
+    status of the layers can be changed from the <a
+    href="layertab">layer table</a>.
+    </dl>
+
+    <a name="NoMerge"></a>
+    <dl>
+    <dt><tt>NoMerge</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>This keyword indicates that automatic merging of objects is
+    suppressed on the layer.  This overrides any merging enabled by
+    the <b>Merge new boxes and polys with existing boxes/polys</b> and
+    <b>Clip and merge new boxes only, not polys</b> check boxes in the
+    <a href="xic:edset"><b>Editing Setup</b></a> panel from the
+    <b>Edit Menu</b>, and the <b>Clip and merge overlapping boxes</b>
+    button in the <a href="xic:rdprm"><b>Set Import Parameters</b></a>
+    panel from the <b>Convert Menu</b>, and the corresponding variables.
+    </dl>
+
+    <a name="WireActive"></a>
+    <dl>
+    <dt><tt>WireActive</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>If this keyword appears, and any following argument indicates
+    true, wires on the layer will be considered for wire connectivity
+    in schematics.  This flag is always set implicitly in the
+    <tt>SCED</tt> layer.  The Cadence compatibility system may create
+    a layer named <tt>wire</tt> with purpose <tt>drawing</tt> which
+    will have this flag set.
+    </dl>
+
+    <a name="Symbolic"></a>
+    <dl>
+    <dt><tt>Symbolic</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>This keyword indicates that the layer will not be shown in the
+    display produced by the <a href="xic:csect"><b>Cross
+    Section</b></a> command (in the <b>View Menu</b>).  Otherwise, it
+    doesn't have any purpose in <i>Xic</i>, but might be useful to the
+    user as a flag to indicate a non-physical layer.
+    </dl>
+
+    <a name="Invalid"></a>
+    <dl>
+    <dt><tt>Invalid</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>If this keyword appears, and any following argument indicates
+    true, the layer will not appear in the layer table, but will exist
+    internally and resolve any references to the layer in a design. 
+    Such layers are invisible, as the redisplay involves cycling
+    through layers in the layer table.
+
+    <p>
+    This is for compatibility with Cadence Virtuoso, whose layer
+    presentation attributes include a <tt>Valid</tt> flag.  When
+    reading a Virtuoso technology file, if a layer is invisible, not
+    selectable, and is invalid, the <i>Xic</i> <tt>Invalid</tt> flag
+    will be set.
+    </dl>
+
+!!SEEALSO
+techfile:layers
+
+!!REDIRECT RGB                  techfile:layers:pres#RGB
+!!REDIRECT Filled               techfile:layers:pres#Filled
+!!REDIRECT Invisible            techfile:layers:pres#Invisible
+!!REDIRECT Blink                techfile:layers:pres#Blink
+!!REDIRECT NoInstView           techfile:layers:pres#NoInstView
+!!REDIRECT WireWidth            techfile:layers:pres#WireWidth
+!!REDIRECT CrossThick           techfile:layers:pres#CrossThick
+
+!! 120314
+!!KEYWORD
+techfile:layers:pres
+!!TITLE
+Technology File Layer Block Keywords:  Presentation
+!!HTML
+    These keywords impact the appearance of objects on the layer
+    on-screen and in prints.
+
+    <a name=RGB></a>
+    <dl>
+    <dt><tt>RGB</tt> <i>colorspec</i>
+    <dd>This keyword will set the color used to render objects on
+    the layer.  on-screen.  The <i>colorspec</i> string is the name
+    of a color or an RGB triple:
+    <ul>
+    <li>The name of a color.  The recognized names can be listed from
+       the <a href"xic:color"><b>Set Color</b></a> pop-up in the
+       <b>Attributes</b> menu with the <b>Colors</b> button.
+
+    <li>Three space-separated numbers, each 0-255, representing the
+       red, green, and blue intensity.  E.g., "196 240 235".
+
+    <li>Other forms recognized by the <tt>XParseColor</tt> C library
+       function, including "<tt>#RRRRGGGGBBBB</tt>" and
+       "<tt>rgb:RRRR/GGGG/BBBB</tt>".  Here, <tt>R</tt>, <tt>G</tt>,
+       and <tt>B</tt> are single hexadecimal digits.
+    </ul>
+    If the color is given as a name, the color will be converted to
+    its RGB values if the file is updated.  If no <tt>RGB</tt> keyword
+    is given for a layer, <i>Xic</i> will assign a random color.  The
+    <tt>RGB</tt> keyword is allowed in the mini-layer blocks found in
+    the print driver specifications.
+    </dl>
+
+    <a name=Filled></a>
+    <dl>
+    <dt><tt>Filled</tt> [<tt>y</tt>[...]]
+    <dt><tt>Filled</tt> <tt>n</tt>[...] [<tt>o, f, c</tt>]
+    <dt><tt>Filled</tt> <i>bit_data</i> [<tt>o, y, c</tt>]
+    <dd>This keyword sets the fill and outline style used to render
+    objects on the layer.  The tokens (other than <i>bit_data</i>) can
+    be words starting with the indicated letters, or just the
+    letters themselves, e.g., "<tt>n</tt>", "<tt>no</tt>", and
+    "<tt>none</tt>", are equivalent.  This is case-insensitive.
+
+    <p>
+    If no tokens follow the keyword, or the first token starts with
+    '<tt>y</tt>', solid fill will be used.  Additional tokens on the
+    line will be ignored.
+
+    <p>
+    If the first token starts with '<tt>n</tt>', no fill pattern
+    (empty fill) will be used.  In this case, there are three outline
+    styles available:
+
+    <ol>
+    <li>A thin solid line boundary.
+    <li>A thin dashed line boundary.
+    <li>A thick solid line boundary for Manhattan boxes and polygons,
+    and a thin solid line boundary for other objects.
+    </ol>
+
+    <p>
+    There is also the "cut" attribute, where diagonal lines are drawn
+    over boxes, forming an X.  This applies to boxes only, not wires
+    or polygons, even though they may be rendered as four-sided
+    rectangular figures.
+
+    <p>
+    Any text that follows the word that started with '<tt>n</tt>' is
+    examined for the presence of the characters '<tt>o</tt>',
+    '<tt>f</tt>', and '<tt>c</tt>'.  These can be found as individual
+    letters or parts of words, for example "<tt>outline cut</tt>" and
+    "<tt>oc</tt>" and "<tt>o c</tt>" are all equivalent.  In addition,
+    this is all case-insensitive.
+
+    <p>
+    If neither '<tt>o</tt>' or '<tt>f</tt>' is found, a thin solid
+    outline (style 1) is used.  If '<tt>o</tt>' is found but not
+    '<tt>f</tt>', a thin dashed line (style 2) is used.  If
+    '<tt>f</tt>' is found, with or without '<tt>o</tt>', then a thick
+    solid line is used for edge segments of Manhattan objects, and a
+    thin solid line is used for non-Manhattan objects (style 3).
+
+    <p>
+    In any case, if '<tt>c</tt>' is found, the "cut" attribute is
+    applied.  If '<tt>o</tt>' is also found but not '<tt>f</tt>', the
+    diagonals are shown as dashed lines, the same as the boundary. 
+    Otherwise, the diagonals are always thin solid lines.
+
+    <p>
+    The form on the third line is used to specify a stipple pattern
+    to use for fill.  <i>Xic</i> supports any stipple map size with
+    the x and y dimensions in the range of 2-32.  However, <i>Xic</i>
+    releases prior to 3.2.25 supported only 8x8, 8x16, 16x8, and 16x16
+    maps.  The format described here is generally not backwards
+    compatible with these releases.
+
+    <p>
+    Maps can be read as hex numbers, or as ASCII tokens, but not in
+    the same line.  When <i>Xic</i> writes a technology file, the
+    default is to use the ASCII token format, which actually renders
+    the map in a crude way.  This format is best illustrated by an
+    example:
+
+    <blockquote>
+    <pre>
+    Filled \
+    &nbsp;&nbsp;|   ..   |  (0x18) \
+    &nbsp;&nbsp;|  ....  |  (0x3c) \
+    &nbsp;&nbsp;| ...... |  (0x7e) \
+    &nbsp;&nbsp;|...  ...|  (0xe7) \
+    &nbsp;&nbsp;|...  ...|  (0xe7) \
+    &nbsp;&nbsp;| ...... |  (0x7e) \
+    &nbsp;&nbsp;|  ....  |  (0x3c) \
+    &nbsp;&nbsp;|   ..   |  (0x18) outline
+    </pre>
+    </blockquote>
+
+    The points to note here are the following.
+    <ol>
+    <li>Line continuation is used so that the map is visible to a
+    human reader.  This is not required in general.
+
+    <li>Each line of the map contains space and non-space characters,
+    surrounded by '|' characters.  Although a period is used here, any
+    non-space printing character will work.
+
+    <li>Each of these must contain the same number of characters, this
+    number being in the range 2-32.  This sets the width of the map.
+
+    <li>The number of these constructs found in the line sets the height
+    of the map.  This must be in the range 2-32.
+
+    <li>The map data parser ignores anything enclosed in parentheses.
+    Above, the equivalent hex number for the data pattern is provided,
+    but is ignored by the parser.
+    </ol>
+
+    <p>
+    An equivalent form using hex data is
+
+    <blockquote>
+    [<tt>x=</tt><i>width</i>] [<tt>y=</tt><i>height</i>] <i>hex_number</i>
+      <i>hex_number</i> ...
+    </blockquote>
+
+    The <i>width</i> and <i>height</i> are decimal numbers in the range
+    2-32.  The number of hex digits that follow must match the <i>height</i>.
+
+    <p>
+    The width and height specifications can be omitted, in which case the
+    format reverts to the pre-3.2.25 expectation.  The hex numbers must be
+    one of
+    <ul>
+    <li>8 2-digit hex numbers that specify an 8x8 map.
+    <li>16 2-digit hex numbers that specify an 8x16 map.
+    <li>8 4-digit hex numbers that specify a 16x8 map.
+    <li>16 4-digit hex numbers that specify a 16x16 map.
+    </ul>
+
+    <p>
+    Additional text on the line is examined for the '<tt>o</tt>',
+    '<tt>f</tt>', and '<tt>c</tt>' characters as described above for
+    the no-fill case.  With a fill pattern, the interpretation is
+    slightly different, as there is no dashed line outline available
+    in this case.  If neither '<tt>o</tt>' or '<tt>f</tt>' appear, the
+    pattern will not be outlined.  If '<tt>o</tt>' appears without
+    '<tt>f</tt>', a thin solid outline will be used.  If '<tt>f</tt>'
+    appears, edges of boxes and Manhattan polygons will be thick.  The
+    '<tt>c</tt>' will draw diagonals on boxes.  For historical
+    reasons, the character '<tt>y</tt>' is treated the same as
+    '<tt>o</tt>'.
+  
+    <p>
+    If the boolean variable <a
+    href="TechNoPrintPatMap"><tt>TechNoPrintPatMap</tt></a> is set
+    when <i>Xic</i> writes a technology file, then the hex form will
+    be used to specify fill patterns.  Otherwise, the ASCII form is
+    used.
+
+    <p>
+    Here are a few more example fill specifications:
+    <blockquote><tt>
+    Filled y<br>
+    Filled no fat<br>
+    Filled cc aa cc aa cc aa cc aa outline
+    </tt></blockquote>
+
+    In electrical mode, the SCED layer defaults to solid fill, and
+    other layers default to empty fill with a thin outline.  All
+    layers default to empty fill with a thin outline in physical mode. 
+    The <tt>Filled</tt> keyword is allowed in the mini-layer blocks
+    found in the print driver specifications.
+    </dl>
+
+    <a name="Invisible"></a>
+    <dl>
+    <dt><tt>Invisible</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>If this keyword appears, and any following argument indicates
+    true, the layer will not be visible, though it will appear in the
+    layer table, where the visibility status can be changed.
+
+    <p>
+    The <tt>Invisible</tt> keyword is allowed in the mini-layer blocks
+    found in the print driver specifications.  This is the only place
+    where use of the <tt>y</tt>|<tt>n</tt> argument may be needed, in
+    particular if <tt>Invisible</tt> is specified in the main layer
+    block, <tt>Invisible n</tt> may be used in the driver block to
+    make the layer visible in print driver output.
+    </dl>
+
+    <a name="Blink"></a>
+    <dl>
+    <dt><tt>Blink</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>If this keyword appears, the layer color will oscillate
+    between two shades with a 0.5 second period.  This is only
+    supported in pseudo-color (usually 256 colors) graphics
+    mode.<br>
+    Default: not blinking
+    </dl>
+
+    <a name="NoInstView"></a>
+    <dl>
+    <dt><tt>NoInstView</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>If this keyword appears, and any following argument indicates
+    true, objects on the layer will not be shown in electrical
+    instances of the containing cell.  However they will appear when
+    the cell is the current cell.  This is ignored in physical node.
+    </dl>
+
+    <a name="WireWidth"></a>
+    <dl>
+    <dt><tt>WireWidth</tt> <i>width</i>
+    <dd>This keyword can appear in physical layer fields.  The
+    width is a floating point number which sets the default wire
+    width to that value in microns.  This value will be used when
+    wires are created in <i>Xic</i>.<br>
+    Default: 0
+    </dl>
+
+    <a name="CrossThick"></a>
+    <dl>
+    <dt><tt>CrossThick</tt> <i>thickness</i>
+    <dd>
+    This keyword, which can be applied to physical layers only, sets
+    the layer thickness as rendered in the <a
+    href="xic:csect"><b>Cross Section</b></a> command in the <b>View
+    Menu</b>.  The <i>thickness</i> is given in microns.
+    </dl>
+
+!!SEEALSO
+techfile:layers
+
+!!REDIRECT StreamData           techfile:layers:conv#StreamData
+!!REDIRECT StreamIn             techfile:layers:conv#StreamIn
+!!REDIRECT StreamOut            techfile:layers:conv#StreamOut
+!!REDIRECT NoDrcDatatype        techfile:layers:conv#NoDrcDatatype
+
+!! 070114
+!!KEYWORD
+techfile:layers:conv
+!!TITLE
+Technology File Layer Block Keywords:  Conversion
+!!HTML
+    The following keywords set the <a href="gdslayer">layer
+    mapping</a> for GDSII and OASIS format input and output.  These
+    can be programmed from within <i>Xic</i> with the <a
+    href="xic:lpedt"><b>Tech Parameter Editor</b></a> in the <a
+    href="xic:attrmenu"><b>Attributes Menu</b></a>.
+
+    <a name="StreamData"></a>
+    <dl>
+    <dt><tt>StreamData</tt> <i>layernum datatype</i>
+    <dd>This keyword is deprecated, and can be read but is not
+    generated by <i>Xic</i>.  The <i>layernum</i> and <i>datatype</i>
+    are the layer mapping used when converting to and from GDSII
+    format.  The layer must be in the range 0 through 65535, and the
+    datatype can take values -1 through 65535.  Values larger than 255
+    are outside of the GDSII specification, but are sometimes used
+    anyway although files containing such data may not be generally
+    portable.  If -1 is given as the datatype, all GDSII datatypes
+    will be mapped to the present <i>Xic</i> layer, and datatype 0
+    will be used for output.  Otherwise, the layer and datatype in a
+    GDSII file must match those given for successful mapping to the
+    <i>Xic</i> layer.  Note that often the end of range values are
+    reserved in other CAD environments, and that some releases of the
+    GDSII format support only 64 layers and datatypes.  The datatype
+    is used by <i>Xic</i> only in conjunction with the
+    <tt>NoDrcDatatype</tt> keyword, and is otherwise typically set to
+    0.  This keyword has been superseded by <tt>StreamIn</tt> and
+    <tt>StreamOut</tt>.
+    </dl>
+
+    <a name="StreamIn"></a>
+    <dl>
+    <dt><b>StreamIn</b> <i>layer_list</i> [, <i>datatype_list</i>]<dd>
+    This keyword specifies a set of layer/datatype combinations that
+    will map to the present <i>Xic</i> layer when reading GDSII and
+    OASIS files.  Any number of such lines can be present.  The
+    <i>layer_list</i> is a space-separated list of tokens, each of
+    which is either a GDSII layer number ("32") or a range of numbers
+    ("35-41").  The <i>datatype_list</i> is similarly constructed, and
+    is optional.  The numbers in either list can range from 0 to
+    65535, though numbers larger than 255 are outside of the GDSII
+    specification (but sometimes used anyway).  If a
+    <i>datatype_list</i> appears, it is separated from the
+    <i>layer_list</i> with a comma.  The line specifies that each of
+    the datatypes listed on each of the GDSII layers listed will be
+    converted to the present <i>Xic</i> layer.  If the datatype list
+    is absent, it defaults to "0-65535".  For example,
+    <blockquote>
+      <tt>StreamIn 5 7 8 21-30, 0 20-63</tt>
+    </blockquote>
+    specifies that datatypes 0 and 20-63 on GDSII layers 5, 7, 8, and
+    21-30 will be mapped to the present <i>Xic</i> layer as a GDSII or
+    OASIS file is read.  Note that GDSII layers cam be mapped to more
+    than one <i>Xic</i> layer.  In this case, the geometry will be
+    created on each of the <i>Xic</i> layers mapped to.
+
+    <p>
+    It is possible for more than one <i>Xic</i> layer to map from a
+    given GDSII layer/datatype.  If the <a
+    href="MultiMapOk"><b>MultiMapOk</b></a> variable is set, then
+    multiple objects will be created when a GDSII or OASIS file is
+    read, one on each matching <i>Xic</i> layer.  If this variable is
+    not set, only the first mapping will be used, which will be the
+    lowest matching layer found in the layer table.
+    </dl>
+
+    <a name="StreamOut"></a>
+    <dl>
+    <dt><b>StreamOut</b> <i>out_layer</i> [<i>out_datatype</i>]<dd>
+    This line specifies a layer/datatype combination to be used when
+    generating GDSII and OASIS files for the present <i>Xic</i> layer. 
+    One of these should appear for each <i>Xic</i> layer.  The
+    <i>out_layer</i> and <i>out_datatype</i> can be in the range
+    0-65535, though numbers larger than 255 are outside of the GDSII
+    specification but are sometimes used anyway.  Be aware that use of
+    numbers larger than 255 may render the file non-portable.  Note
+    that often the end of range values are reserved in other CAD
+    environments, and that some releases of the GDSII format support
+    only 64 layers and datatypes.  The default datatype, if not given,
+    is 0.
+
+    <p>
+    If there are more than one <b>StreamOut</b> lines given for a
+    layer, and the <a href="MultiMapOk"><b>MultiMapOk</b></a> variable
+    is set, the objects will be added to the GDSII or OASIS file on
+    each of the GDSII layers/datatypes specified.  If the variable is
+    not set, only the first <tt>StreamOut</tt> specification will be
+    used.
+
+    <p>
+    There is no default for this keyword.
+    </dl>
+
+    <a name="NoDrcDatatype"></a>
+    <dl>
+    <dt><b>NoDrcDatatype</b> <i>datatype</i><dd>
+    If this keyword is given, then any object that has the given
+    datatype will be ignored during <a href="xic:drcmenu">DRC</a>.  On
+    output, objects that have their DRC <a href="xic:sflag">skip
+    flags</a> set will be written with this datatype, and not the
+    default datatype given in the <b>StreamOut</b> line.  The given
+    datatype should appear in the input mapping for the layer.
+    </dl>
+
+!!SEEALSO
+techfile:layers
+
+!!REDIRECT Conductor            techfile:layers:ext#Conductor
+!!REDIRECT Routing              techfile:layers:ext#Routing
+!!REDIRECT GroundPlane          techfile:layers:ext#GroundPlane
+!!REDIRECT GroundPlaneDark      techfile:layers:ext#GroundPlane
+!!REDIRECT GroundPlaneClear     techfile:layers:ext#GroundPlaneClear
+!!REDIRECT TermDefault          techfile:layers:ext#GroundPlaneClear
+!!REDIRECT MultiNet             techfile:layers:ext#GroundPlaneClear
+!!REDIRECT Via                  techfile:layers:ext#Via
+!!REDIRECT Dielectric           techfile:layers:ext#Dielectric
+!!REDIRECT Contact              techfile:layers:ext#Contact
+!!REDIRECT DarkField            techfile:layers:ext#DarkField
+
+!!REDIRECT CONDUCTOR            techfile:layers:ext#Conductor
+!!REDIRECT ROUTING              techfile:layers:ext#Routing
+!!REDIRECT GROUNDPLANE          techfile:layers:ext#GroundPlane
+!!REDIRECT GROUNDPLANEDARK      techfile:layers:ext#GroundPlane
+!!REDIRECT GROUNDPLANECLEAR     techfile:layers:ext#GroundPlaneClear
+!!REDIRECT TERMDEFAULT          techfile:layers:ext#GroundPlaneClear
+!!REDIRECT MULTINET             techfile:layers:ext#GroundPlaneClear
+!!REDIRECT VIA                  techfile:layers:ext#Via
+!!REDIRECT DIELECTRIC           techfile:layers:ext#Dielectric
+!!REDIRECT CONTACT              techfile:layers:ext#Contact
+!!REDIRECT DARKFIELD            techfile:layers:ext#DarkField
+
+!! 062016
+!!KEYWORD
+techfile:layers:ext
+!!TITLE
+Technology File Layer Block Keywords:  Extraction
+!!HTML
+    This section describes the keyword entries which appear in layer
+    blocks categorize the purpose of the layer for extraction.  These
+    define the conductor layers which are involved in grouping,
+    identify vias between conductors, etc.  These keywords can appear
+    only in physical layer fields.
+
+    <p>
+    All of these settings can be entered with the <a
+    href="xic:lpedt"><b>Edit Tech Params</b></a> command in the <a
+    href="xic:attrmenu"><b>Attributes Menu</b></a> and then written to
+    disk with the <a href="xic:updat"><b>Save Tech</b></a> command in
+    the <b>Attributes Menu</b>, or be entered with a text editor
+    directly into the technology file.
+
+    <p>
+    Some of the keywords below use <a href="layer_exp">layer
+    expressions</a>.  A layer expression in its simplest form is a
+    layer name.  More generally, it consists of an expression
+    involving layer names, the intersection operator (<tt>&</tt>), the
+    union operator (<tt>|</tt>), and the inversion operator
+    (<tt>!</tt>).  Parentheses can be used to enforce precedence. 
+    These are the same type of expressions as used in the DRC tests. 
+    The expression is "true" at points where the expression would
+    return opacity.
+
+    <a name="Conductor"></a>
+    <dl>
+    <dt><tt>Conductor [Exclude</tt> <i>expression</i><tt>]</tt>
+    <dd>This keyword indicates that the present layer is to be
+    included in conductor net grouping.  If the keyword
+    "<tt>Exclude</tt>" and a following <a href="layer_exp">layer
+    expression</a> are given, the regions of the current layer under
+    which the expression is true are clipped out for grouping
+    purposes.  For example, in CMOS technology a transistor is formed
+    by a strip of CAA (active area) bisected by a CPG (polysilicon)
+    gate.  If "<tt>Conductor Exclude CPG</tt>" is given in the CAA
+    layer block, the two pieces of CAA will be given separate group
+    numbers, which is necessary to keep the transistor source and
+    drain separate.
+    </dl>
+
+    <a name="Routing"></a>
+    <dl>
+    <dt><tt>Routing</tt> [<i>route params</i>]
+    <dd>This keyword implies that the layer is a conductor used for
+    connecting between cells.  The <tt>Conductor</tt> keyword is
+    implied, so that the <tt>Conductor</tt> keyword does not also have
+    to be supplied, unless there is an <tt>Exclude</tt> directive. 
+    Only layers with the <tt>Routing</tt> keyword given will be
+    considered by the extraction system for connecting between cells,
+    and cell formal terminals will only be assigned to
+    <tt>Routing</tt> layers.  This is not absolute, however.  The
+    extraction system will place formal terminals on
+    <tt>Conductor</tt> layers under some circumstances, if necessary.
+
+    <p>
+    Optionally, routing parameter definitions may follow the keyword. 
+    These provide information to a third-party auto-route system, The
+    parameters are saved in the <i>Xic</i> technology database, and
+    are used when writing a technology file, but are not otherwise
+    used directly by <i>Xic</i>.  The recognized routing parameter
+    definitions are listed below.  These can appear in any order. 
+    These parameters will be parsed and set when reading the
+    technology file, but can also be set when reading Cadence
+    <a href="ReadCdsTech">ASCII technology files<a>.
+
+    <dl>
+    <dt><tt>dir=H|V|X|Y</tt>[...]<dd>
+    This sets the preferred direction of routes on the layer.  The
+    "<tt>dir=</tt>" is literal, and is followed by a letter or word,
+    only the first letter of which is significant.  If the first letter
+    is <tt>H</tt> or <tt>X</tt> (case insensitive), the route direction
+    is horizontal.  If the letter is <tt>V</tt> or <tt>Y</tt>, also
+    case insensitive) the routing direction is vertical.  Otherwise,
+    an error ensues.
+    </dl>
+
+    <dl>
+    <dt><tt>p</tt>[<tt>itch</tt>]<tt>=</tt><i>px</i>[<tt>,</tt><i>py</i>]<dd>
+    This provides the values for the route pitch.  Only the first letter
+    of the "<tt>pitch</tt>" keyword need be present.  This is followed by
+    an equal sign ("<tt>=</tt>"), and one or two real numbers.  The
+    numbers are pitch values in microns.  If there are two numbers, the
+    first is the horizontal pitch, the second vertical, separated by a
+    comma.  Two numbers are required only if the horizontal and vertical
+    pitch values differ.
+    </dl>
+
+    <dl>
+    <dt><tt>o</tt>[<tt>ffset</tt>]<tt>=</tt><i>ox</i>[<tt>,</tt><i>oy</i>]<dd>
+    This provides values for the route offset, and is parsed the same
+    way as the pitch.  The values are real numbers giving the offset
+    in microns.  The second number can be omitted if it is the same as
+    the first.  The offset is the routing grid origin relative to the
+    cell origin.
+    </dl>
+
+    <dl>
+    <dt><tt>w</tt>[<tt>idth</tt>]<tt>=</tt><i>w</i><dd>
+    This specifies the line width, in microns, used for routing. 
+    Presently, only one number is accepted, implying that horizontal
+    and vertical routes have the same width.
+    </dl>
+
+    <dl>
+    <dt><tt>maxd</tt>[<tt>ist</tt>]<tt>=</tt><i>d</i><dd>
+    This provides a maximum route length, in microns.  A router may
+    use this value to limit route lengths.
+    </dl>
+    </dl>
+
+    <a name="GroundPlane"></a>
+    <dl>
+    <dt><tt>GroundPlane [Global]</tt>
+    <dt><tt>GroundPlaneDark [Global]</tt> (alias)
+    <dd>This keyword indicates that the present layer is to be treated
+    as a clear-field <a href="ext:gplane">ground plane</a>.  The layer
+    is given the <tt>Conductor</tt> attribute.  If the keyword
+    "<tt>Global</tt>" appears, then every object on the layer will be
+    assigned to the ground group 0.  This would be appropriate if the
+    layer represents a diffusion rather than a metallic ground plane. 
+    The default is to treat this level as a normal conductor, except
+    that when this layer is grouped in the top-level cell, the group
+    with the largest area is assigned to the ground group.
+
+    <p>
+    If "<tt>Global</tt>" is given, the <a
+    href="GroundPlaneGlobal"><b>GroundPlaneGlobal</b></a> variable,
+    which activates the mode, will be set.
+
+    <p>
+    Only one of the ground plane keywords can appear in the technology
+    file.  Conductor group 0 is used only if a ground plane has been
+    specified.  The ground plane layer can be referenced in
+    <tt>Via</tt> and <tt>Contact</tt> lines just as any
+    <tt>Conductor</tt>.
+    </dl>
+
+    <a name="GroundPlaneClear"></a>
+    <dl>
+    <dt><tt>GroundPlaneClear [MultiNet [0|1|2]]</tt>
+    <dt><tt>TermDefault [MultiNet [0|1|2]]</tt> (alias)
+    <dd>This keyword indicates that the present layer is to be treated
+    as a dark-field ground plane.  These keywords imply
+    <tt>DarkField</tt>.  Giving <tt>GroundPlane</tt> (or
+    <tt>GroundPlaneDark</tt>) and <tt>DarkField</tt> is equivalent to
+    <tt>GroundPlaneClear</tt> without <tt>MultiNet</tt>.
+
+    <p>
+    Only one of the ground plane keywords can appear in the technology
+    file.  Conductor group 0 is used only if a ground plane has been
+    specified.
+
+    <p>
+    Without the <tt>MultiNet</tt> keyword, connections to this layer
+    (as specified with the <tt>Via</tt> and <tt>Contact</tt>
+    keywords), where this layer does <i>not</i> appear, are considered
+    as connections to ground (group 0).  Although this approach may
+    work for simple cells, it can lead to trouble.  Suppose that an
+    island of ground plane metal is used as part of the metalization
+    for the chip pads.  This would appear as a hole in the displayed
+    representation of the ground plane layer.  Then each pad will be
+    extracted as shorted to ground!
+
+    <p>
+    There is provision for more intelligent handling of the
+    <tt>GroundPlaneClear</tt> layer, allowing the layer to be included
+    in paths and groups.  If the <tt>MultiNet</tt> keyword appears,
+    the inverse of the layer is computed, and that (temporary) layer
+    is used in the grouping.  However, it can take quite a lot of
+    behind-the-scenes computation if the <tt>GroundPlaneClear</tt>
+    layer has complex patterning.  Inversion is also done if the <a
+    href="!set"><b>!set</b></a> variable <a
+    href="GroundPlaneMulti"><b>GroundPlaneMulti</b></a> is given (note: 
+    this variable was formerly named <tt>HandleTermDefault</tt>).  The
+    temporary layer is treated as a clear-field ground plane, and all
+    references to the ground plane will be applied to the temporary
+    layer during grouping and extraction.
+
+    <p>
+    The name of the internal layer created is "<tt>$GPI</tt>".  By
+    default, this layer is invisible.  It should not be directly
+    edited by the user.  The inverse layer is an internal layer and is
+    never written to a file during conversion or a save.  During
+    extraction the <tt>GroundPlaneClear</tt> layer is ignored, and the
+    inverse, which is a <tt>Conductor</tt>, is used to establish
+    connectivity.
+
+    <p>
+    To establish connectivity for the commands in the <a
+    href="xic:extmenu"><b>Extract Menu</b></a>, the inverse layer is
+    created according to one of the algorithms described below.  An
+    optional integer 0-2 may follow the <tt>MultiNet</tt> keyword,
+    which indicates the algorithm used for inversion.  The algorithm
+    can also be selected by setting the variable <a
+    href="GroundPlaneMethod"><b>GroundPlaneMethod</b></a> to an
+    integer in the same range, with the <b>!set</b> command.
+
+    <dl>
+    <dt>0<dd>
+    The inverted layer is created for each cell in the hierarchy by
+    computing
+    <blockquote>
+    <tt>$GPI = !<i>GP</i> & !$$</tt>
+    </blockquote>
+    i.e., for each cell the ground plane is inverted and the areas
+    over subcells are removed (recall that "<tt>$$</tt>" is a
+    pseudo-layer representing subcell boundaries).  This is the
+    default.
+
+    <dt>1<dd>
+    The inverted layer is created only in the top cell in the
+    hierarchy, and is the inverse of a flat representation of the
+    ground plane layer from all cells in the hierarchy.  The
+    extraction algorithm will add virtual contacts from this layer to
+    the appropriate places in the subcells.
+
+    <dt>2<dd>
+    The inverted layer is created in each cell of the hierarchy by
+    creating a flat inverse of all of the ground plane found in the
+    cell or lower in the hierarchy.
+    </dl>
+
+    <p>
+    The default (0) method is the most efficient computationally, but
+    the method will probably fail if sibling subcells overlap.  In
+    general, it is good practice to avoid cell overlap.
+
+    <p>
+    Method 1 will work if subcells overlap.  However, since there is
+    no local ground plane in the subcells, generating a netlist while
+    in a <a href="xic:push"><b>Push</b></a> will not yield correct
+    results.
+
+    <p>
+    Method 2 is the least efficient computationally, but each cell has
+    a local ground plane.
+    </dl>
+
+    <a name="Via"></a>
+    <dl>
+    <dt><tt>Via</tt> <i>layer1 layer2</i> [<i>expression</i>]
+    <dd>This keyword indicates that the present layer may provide
+    connection points between wire nets on <i>layer1</i> and
+    <i>layer2</i>.  The <i>layer1</i> and <i>layer2</i> are names of
+    layers each of which have the <tt>Conductor</tt>,
+    <tt>Routing</tt>, or one of the ground plane keywords specified. 
+    In extraction, it is assumed that the via is formed by dark area
+    on the present layer, and vias are completely covered by
+    <i>layer1</i> and <i>layer2</i>.  A connection is indicated if the
+    <i>expression</i> (which is a <a href="layer_exp">layer
+    expresion</a>) is true at any point within the via.
+    The <tt>Via</tt> keyword implicitly assigns "<tt>DarkField</tt>".
+    The recognition logic is as follows:
+
+    <p>
+    <b>for each</b> <i>region</i> of the <b>Via</b> layer {<br>
+    &nbsp;&nbsp;<b>if</b> (there exists an object on <i>layer1</i> that
+     overlaps <i>region</i>)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<b>if</b> (there exists an object on <i>layer2</i>
+     that overlaps <i>region</i>)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>if</b> (there is no
+     <i>expression</i>, <b>or</b> the area where <i>expression</i> is true
+     in<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+     <i>region</i> is nonzero)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>then</b>
+     the via indicates a connection between the two objects<br>
+    }
+
+    <p>
+    If the <i>expression</i> is not given, it is always taken as "true".
+
+    <p>
+    Examples:
+    <blockquote><tt>
+    Via M1 M2 !RES
+    </tt></blockquote>
+    A via is indicated if part of the via object on the present layer
+    which is being evaluated is not covered by objects on RES.
+
+    <blockquote><tt>
+    Via M1 M2 I2
+    </tt></blockquote>
+    A via is indicated if the via object on the present layer is
+    partially or completely covered with I2.
+
+    <blockquote><tt>
+    Via M1 M2 (!I2)&(!RES)
+    </tt></blockquote>
+    A via is indicated if part of the via object is not covered by I2
+    or by RES.
+    </dl>
+
+    <a name="Dielectric"></a>
+    <dl>
+    <dt><tt>Dielectric</tt>
+    <dd>This keyword is intended to specify an explicit capacitor
+    dielectric, which is different from a <tt>Via</tt> layer.  A layer
+    can not have both keywords.  This is primarily to support the
+    capacitance extraction <a href="fcinterf">interface</a>.  A
+    <tt>Dielectric</tt> layer is assumed to be clear-field, unlike
+    <tt>Via</tt> layers, though the <tt>DarkField</tt> keyword can
+    also be applied.  Also unlike <tt>Via</tt> layers,
+    <tt>Dielectric</tt> layers are not assumed to be planarizing by
+    default.
+    </dl>
+
+    <p>
+    <a name="Contact"></a>
+    <dl>
+    <dt>Contact <i>layer</i> [<i>expression</i>]
+    <dd>This keyword specifies that the present layer may be in
+    contact with <i>layer</i>, which has the <tt>Conductor</tt>
+    attribute, and is to be grouped accordingly in the wire net
+    extraction.  The <i>expression</i> (which is a layer expression),
+    if given, must be true in the overlap region between the object
+    and the objects on <i>layer</i> for contact to be established.
+
+    <p>
+    The purpose is to account for a contact metalization which is
+    applied over the normal wiring layers, which may itself be used
+    for making connections.  The <tt>Contact</tt> keyword implies
+    <tt>Conductor</tt>.  The <tt>Contact</tt> keyword should be given
+    in the layer block of the contact metal layer.  It is not
+    necessary (or desirable) to include a reciprocal <tt>Contact</tt>
+    specification in the referenced layer's block.
+    </dl>
+
+    <p>
+    <a name="DarkField"></a>
+    <dl>
+    <dt>DarkField
+    <dd>This keyword indicates that the layer polarity on the chip is
+    the reverse of that shown on-screen.  This is usually the case for
+    via layers, for example, which are rendered as small squares to
+    indicate the contact location, which is actually a hole in an
+    insulating layer.  At present, the only command that uses this
+    keyword is the <a href="xic:csect"><b>Cross Section</b></a>
+    command in the <a href="xic:viewmenu"><b>View Menu</b></a>. 
+    Layers with the keyword applied will be shown as on-chip in the
+    cross sectional view.  This keyword is implicitly assigned by both
+    <tt>Via</tt> and <tt>GroundPlaneClear</tt>.
+
+    <p>
+    The keyword has a secondary effect if used in conjunction with the
+    <tt>GroundPlane</tt> (or the equivalent <tt>GroundPlaneDark</tt>)
+    keyword.  The combination is equivalent to
+    <tt>GroundPlaneClear</tt>.
+    </dl>
+
+!!SEEALSO
+techfile:layers
+
+!!REDIRECT Planarize            techfile:layers:phys#Planarize
+!!REDIRECT Thickness            techfile:layers:phys#Thickness
+!!REDIRECT Rho                  techfile:layers:phys#Sigma
+!!REDIRECT Sigma                techfile:layers:phys#Sigma
+!!REDIRECT Rsh                  techfile:layers:phys#Rsh
+!!REDIRECT EpsRel               techfile:layers:phys#EpsRel
+!!REDIRECT Capacitance          techfile:layers:phys#Capacitance
+!!REDIRECT Cap                  techfile:layers:phys#Capacitance
+!!REDIRECT Lambda               techfile:layers:phys#Lambda
+!!REDIRECT Tline                techfile:layers:phys#Tline
+!!REDIRECT Antenna              techfile:layers:phys#Antenna
+
+!!REDIRECT PLANARIZE            techfile:layers:phys#DarkField
+!!REDIRECT THICKNESS            techfile:layers:phys#Thickness
+!!REDIRECT RHO                  techfile:layers:phys#Sigma
+!!REDIRECT SIGMA                techfile:layers:phys#Sigma
+!!REDIRECT RSH                  techfile:layers:phys#Rsh
+!!REDIRECT EPSREL               techfile:layers:phys#EpsRel
+!!REDIRECT CAPACITANCE          techfile:layers:phys#Capacitance
+!!REDIRECT CAP                  techfile:layers:phys#Capacitance
+!!REDIRECT LAMBDA               techfile:layers:phys#Lambda
+!!REDIRECT TLINE                techfile:layers:phys#Tline
+!!REDIRECT ANTENNA              techfile:layers:phys#Antenna
+
+!! 090714
+!!KEYWORD
+techfile:layers:phys
+!!TITLE
+Technology File Layer Block Keywords:  Physical Properties
+!!HTML
+    The following keywords can appear only in physical layer fields,
+    and they mostly specify physical material properties, or
+    electrical parameters, used in various ways by the extraction
+    system.
+
+    <p>
+    Many of these parameters are redundant or incompatible with each
+    other.  Warning messages may be issued when incompatibilities are
+    detected, however unused information is usually simply ignored and
+    does no real harm.  In particular, there are two basic groups,
+    those keywords that apply to condcutors, and those that apply to
+    insulators.  Mixing these parameters on the same layer will likely
+    generate a warning.
+
+    <p>
+    All of these settings can be entered with the <a
+    href="xic:lpedt"><b>Edit Tech Params</b></a> command in the <a
+    href="xic:attrmenu"><b>Attributes Menu</b></a> and then written to
+    disk with the <a href="xic:updat"><b>Save Tech</b></a> command in
+    the <b>Attributes Menu</b>, or be entered with a text editor
+    directly into the technology file.
+
+    <a name="Planarize"></a>
+    <dl>
+    <dt><tt>Planarize</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>This specifies whether or not a layer is planarizing.  This is
+    used by the three-dimensional layer sequence <a
+    href="xic:ldb3d">generator</a> when creating layer sequences for
+    the <a href="fcinterf">capacitance extraction</a> interface.  The
+    <tt>Planarize</tt> keyword can be applied to prevent planarization
+    of layers that are planarized by default, or to force planarizing
+    of layers that don't normally have this property.  See the
+    description of the sequence generator for a description of
+    planarization, and which layers are planarized by default.
+    </dl>
+
+    <a name="Thickness"></a>
+    <dl>
+    <dt><tt>Thickness</tt> <i>thickness</i>
+    <dd>This keyword supplies the film thickness of the corresponding
+    deposited film.  The <i>thickness</i> is given in microns.  This
+    can be given to any physical layer.
+    </dl>
+
+    <a name="Sigma"></a>
+    At most one of the following two keywords (<tt>Rho</tt> and
+    <tt>Sigma</tt>) should be used.
+
+    <dl>
+    <dt><tt>Rho</tt> <i>resistivity</i>
+    <dd>This keyword supplies the resistivity, in MKS units
+    (ohm-meters), of the corresponding conducting film.  If
+    <tt>Rsh</tt> (below) and <tt>Thickness</tt> are both given, then
+    the resistivity is already available and this keyword is
+    redundant.  Supplying this keyword overrides the
+    <tt>Rsh</tt>*<tt>Thickness</tt> value for the resistivity, when
+    resistivity is used explicitly in the extraction system (in the <a
+    href="fhinterf">inductance/resistance extraction interface</a>).
+    </dl>
+
+    <dl>
+    <dt><tt>Sigma</tt> <i>conductivity</i>
+    <dd>This keyword supplies the conductivity, in MKS units
+    (Si/meter), of the corresponding conducting film.  This is
+    converted to resistivity (1.0/<i>conductivity</i>) internally,
+    i.e., it is equivalent to giving <tt>Rho</tt>.
+    </dl>
+
+    <a name="Rsh"></a>
+    <dl>
+    <dt><tt>Rsh</tt> <i>ohms_per_square</i>
+    <dd>The single parameter is a floating point number giving the
+    ohms per square value of the conducting material.  This is used in
+    computation of the resistance value of resistor devices.  If
+    <tt>Rho</tt> or <tt>Sigma</tt> is given, and also <tt>Thickness</tt>,
+    then the sheet resistance is already available and this keyword is
+    redundant.  Supplying this keyword overrides the
+    <tt>Rho</tt>/<tt>Thickness</tt> value for sheet resistance.
+    </dl>
+
+    <a name="EpsRel"></a>
+    <dl>
+    <dt><tt>EpsRel</tt> <i>diel_constant</i>
+    <dd>This keyword supplies the relative dielectric constant of
+    insulating layers.
+    </dl>
+
+    <a name="Capacitance"></a>
+    <dl>
+    <dt><tt>Capacitance</tt> <i>units_per_sqmicron</i>
+       [<i>units_per_micron</i>]
+    <dd>This enables computation of the capacitance of a conductor
+    group on the present conducting layer.  The first parameter is a
+    floating point number giving capacitance per square micron.  The
+    optional second parameter (default 0) is the edge capacitance, per
+    micron.  The extracted capacitance is the conductor group area
+    multiplied by the first parameter, plus the conductor group
+    perimeter length multiplied by the second parameter, if given. 
+    The capacitance for each wire net is computed during extraction,
+    and will be printed (if enabled) in the physical netlist output
+    file.
+
+    <p>
+    The keyword "<tt>Cap</tt>" is accepted as an alias for
+    "<tt>Capacitance</tt>".
+    </dl>
+
+    <a name="Lambda"></a>
+    <dl>
+    <dt><tt>Lambda</tt> <i>pene_depth</i>
+    <dd>This keyword specifies the London penetration depth of
+    superconducting conductors, in microns.  When <tt>Lambda</tt> is
+    given, <tt>Rho/Sigma</tt> (if given) represents the conductivity
+    due to unpaired electrons from the two-fluid model.
+    </dl>
+
+    <a name="Tline"></a>
+    <dl>
+    <dt><tt>Tline</tt> <i>grnd_plane_layer</i> [<i>diel_height</i>
+      <i>diel_const</i>]
+    <dd>This keyword will enable use of a microstrip model which
+    computes transmission line parameters.  A microstripline geometry
+    is assumed, with an object on the present layer forming a strip
+    over an infinite ground plane layer, separated by a homogeneous
+    dielectric of constant thickness.  No account is taken of "real"
+    geometry, except for the dimensions of the strip on the present
+    layer.
+
+    <p>
+    The first argument is the name of a layer assumed as the ground
+    plane.  Both the present layer and the ground plane layer must be
+    conductors and have <tt>Thickness</tt> and, if superconductors,
+    <tt>Lambda</tt> defined.  Non-superconductors are treated as perfect
+    conductors.
+
+    <p>
+    The second argument is the assumed height, in microns, of the
+    intervening dielectric.  The third argument is the relative
+    dielectric constant.  If either or both of these arguments is
+    missing or given as "0" (zero), then <i>Xic</i> will search for a
+    layer with the <a href="Via"><tt>Via</tt></a> keyword set that
+    contains the present and the ground plane layers, and obtain the
+    missing values from that layer.
+
+    </dl>
+
+    <a name="Antenna"></a>
+    <dl>
+    <dt><tt>Antenna</tt> <i>float_value</i>
+    <dd>
+    This keyword applies to the <a href="!antenna"><b>!antenna</b></a>
+    command, and is meaningful on conducting layers.  The
+    <i>float_value</i> is a threshold antenna ratio, as explained for
+    the <b>!antenna</b> command.  The value is effectively passed to
+    that command as a default for the layer.
+    </dl>
+
+!!SEEALSO
+techfile:layers
+
+!! 090814
+!!KEYWORD
+techfile:layers:drc
+!!TITLE
+Technology File Layer Block Keywords:  Design Rules
+!!HTML
+    <p>
+    The layer block may contain design rule specifications, which
+    begin with a keyword.  These keywords can appear only in physical
+    layer blocks.  See the description of the <a
+    href="drcrules">design rules</a> for information regarding these
+    keywords.  The rules can be programmed from within <i>Xic</i> with
+    the <a href="xic:dredt"><b>Design Rule Editor</b></a>.  These
+    keywords are not recognized in the <a
+    href="xicii"><i>XicII</i></a> and <a href="xiv"><i>Xiv</i></a>
+    feature sets.
+
+!!SEEALSO
+techfile
+
+!! 031815
+!!KEYWORD
+techfile:stdvia
+!!TITLE
+Technology File Standard Via Definitions
+!!HTML
+    <i>Xic</i> provides support for OpenAccess/Virtuoso-style <a
+    href="stdvia">standard vias</a>.  These definitions are imported
+    from a Virtuoso ASCII technology file when the <a
+    href="ReadCdsTech"><tt>ReadCdsTech</tt></a> is used to source a
+    Cadence technology database, if any <tt>standardViaDefs</tt> nodes
+    exist.  They will be written to and read from the <i>Xic</i>
+    technology file using syntax described in this section.
+
+    <p>
+    Standard via definitions will be written following the derived
+    layers when a new technology file is being created.  This is the
+    recommended location when hand editing a technology file.  The
+    definitions are required to follow the layer definition blocks of
+    any layers used, but otherwise location in the technology file is
+    flexible.
+
+    <p>
+    The syntax for a standard via definition is as follows.
+
+    <blockquote>
+    <tt>StandardVia</tt> <i>viaName layer1 layer2 cutLayer cutWidth
+      cutHeight cutRows cutCols cutSpace_x cutSpace_y
+      layer1Enc_x layer1Enc_y layer2Enc_x layer2Enc_y
+      layer1Off_x layer1Off_y layer2Off_x layer2Off_y
+      originOff_x originOff_y</i> [<i>implant1 imp1Enc_x imp1Enc_y</i>
+      [<i>implant2 imp2Enc_x imp2Enc_y</i>]]
+    </blockquote>
+
+    The terms correspond to the options shown in the <a
+    href="xic:crvia"><b>Via Creation</b></a> panel from the <b>Edit
+    Menu</b>, and their effects are described in that section.  The
+    definition must appear on a single logical line, but backslash
+    line continuation can be employed to break the line for improved
+    human readability.
+
+    <p>
+    The line must begin with the <tt>StandardVia</tt> keyword.  The
+    remaining tokens are as follows.  All of the numerical values can
+    be altered by the user before placement, the values provided in
+    the definition are the initial defaults.  The layer names,
+    however, can not be changed subsequently.  All dimensions are in
+    microns.
+
+    <dl>
+    <dt><i>viaName</i><dd>
+    This is a unique name for the standard via, and can be any text
+    word that can be used as a cell name.  One convention is to
+    use the layer names of the twe conductors, top conductor first,
+    separated by an underscore (e.g., "<tt>M2_M1</tt>").
+    </dl>
+
+    <dl>
+    <dt><i>layer1 layer2 cutlayer</i><dd>
+    The three tokens that follow are the names of the bottom
+    conductor, the top conductor, and the via layer, in that order. 
+    These layers must have been already defined in the technology
+    file.
+    </dl>
+
+    <dl>
+    <dt><i>cutWidth cutHeight</i><dd>
+    These are floating-point numbers giving the size of the cut in
+    microns.  The cut is always rectangular.
+    </dl>
+
+    <dl>
+    <dt><i>cutRows cutCols</i><dd>
+    These are integers not less than 1, which indicate that the cut
+    should be arrayed according to the numbers of rows and colums
+    given.  These are both usually 1 in a standard via definition,
+    representing a minimum via.  The user can array the cuts when
+    necessary from the <b>Via Creation</b> panel.
+    </dl>
+
+    <dl>
+    <dt><i>cutSpace_x cutSpace_y</i><dd>
+    These apply when the cut is arrayed, and provide the edge-to-edge
+    space between cuts in the x and y direction.  This is usually
+    a minimum value given by a design rule.
+    </dl>
+
+    <dl>
+    <dt><i>layer1Enc_x layer1Enc_y layer2Enc_x layer2Enc_y</i><dd>
+    These four dimensions provide the enclosure distance for the
+    bottom (layer1) and top conductor rectangles relative to the cut. 
+    The enclosure is the distance that the metal rectangle extends
+    outside of the cut area.  This is usually a minimum value given by
+    a design rule.
+    </dl>
+
+    <dl>
+    <dt><i>layer1Off_x layer1Off_y layer2Off_x layer2Off_y</i><dd>
+    These four dimensions provide offsets for the center of the two
+    conductor rectangles relative to the center of the cut.  These
+    values are unlikely to be other than zero.
+    </dl>
+
+    <dl>
+    <dt><i>originOff_x originOff_y</i><dd>
+    These coordinates provide the origin of the sub-master cell
+    relative to the center of the cut array.  It is the location that
+    corresponds to the mouse pointer when a new via instance is
+    placed.  These are unlikely to be other than zero.
+    </dl>
+
+    All of the terms mentioned thus far are required.  The remaining
+    terms are optional.
+
+    <dt><i>implant1 imp1Enc_x imp1Enc_y</i><dd>
+    This is the name of a layer followed by two dimensions.  If found,
+    an additional rectangle of <i>implant1</i> is centered over the
+    <i>layer1</i> (bottom conductor) rectangle.  The enclosure values
+    specify the distance the implant extends outside of the conductor,
+    in the x and y directions.
+    </dl>
+
+    <dt><i>implant2 imp2Enc_x imp2Enc_y</i><dd>
+    These may follow an <i>implant1</i> group only.  This is the name
+    of a layer followed by two dimensions.  If found, an additional
+    rectangle of <i>implant2</i> is centered over the <i>layer2</i>
+    (top conductor) rectangle.  The enclosure values specify the
+    distance the implant extends outside of the conductor, in the x
+    and y directions.
+    </dl>
+
+    Standard via definitions successfully read from the technology
+    file will be saved internally, and the definitions can be accessed
+    from the <b>Via Creation</b> panel.  The panel allows the default
+    values to be overridden, and new vias to be created and placed. 
+    If no stantard via definitions were successfully read, the panel
+    is unavailable and the <b>Create Via</b> button in the <b>Edit
+    Menu</b> is grayed.
+
+!!SEEALSO
+techfile
+techfile:layers
+
+!! 021615
+!!KEYWORD
+techfile:attr
+!!TITLE
+Technology File Attributes
+!!HTML
+    <p>
+    The keywords described below appear (by convention) after the layer
+    specifications, and control various global attributes of
+    <i>Xic</i>.  These are broken down into categories, which are
+    presented in the order in which they will be written to a new
+    technology file created by <i>Xic</i>.  Actual order in the file
+    is unimportant.  The categories are:
+    <br clear=all>
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th><a href="techfile:attr:grid">Grid Presentation</a></th>
+      <td>Display options for the grid, which can be adjusted from
+      within <i>Xic</i> in the <b>Style</b> page of the <a
+      href="xic:grid"><b>Grid Setup</b></a> panel.</td></tr>
+
+    <tr><th><a href="techfile:attr:misc">Misc. Presentation</a></th>
+      <td>Other general display attributes that correspond to the
+      entries in the <b>Main Window</b> sub-menu of
+      the <b>Attributes Menu</b>.</td></tr>
+
+    <tr><th><a href="techfile:attr:color">Attribute Colors</a></th>
+      <td>Colors used for background, highlighting, etc.</td></tr>
+
+    <tr><th><a href="techfile:attr:snap">Grid and Edge Snapping</a></th>
+      <td>Parameters for grid spacing and edge snapping, which can be
+      adjusted from within <i>Xic</i> in the <b>Snapping</b> page of
+      the <a href="xic:grid"><b>Grid Setup</b></a> panel.</td></tr>
+
+    <tr><th><a href="techfile:attr:fkey">Function Key Assignments</a></th>
+      <td>Command mapping to keyboard function keys.</td></tr>
+
+    <tr><th><a href="techfile:attr:gridreg">Grid Registers</a></th>
+      <td>Saved grid register contents.</td></tr>
+
+    <tr><th><a href="techfile:attr:lpal">Layer Palette Registers</a></th>
+      <td>Saved palette register contents.</td></tr>
+
+    <tr><th><a href="techfile:attr:font">Font Assignments</a></th>
+      <td>Fonts used by the graphical user interface.</td></tr>
+
+    <tr><th><a href="techfile:attr:vars">Keyword Variables</a></th>
+      <td>Variable initialization as keywords.</td></tr>
+    </table>
+
+    <p>
+    Keywords listed in the first three categories (<b>Grid
+    Presentation</b>, <b>Misc.  Presentation</b>, and <b>Attribute
+    Colors</b> can also appear in <a href="hcopytech">print driver</a>
+    blocks, in which case they are in effect when printing with that
+    driver.
+
+    <p>
+    In the syntax descriptions, the italicized quantities represent
+    data the needs to be provided.  The "<tt>y</tt>|<tt>n</tt>" symbol
+    implies that one of '<tt>y</tt>' or '<tt>n</tt>' can follow the
+    keyword.  Actually, '<tt>0</tt>' (zero), or any word that begins
+    with the letters or sequence (case insensitive) '<tt>n</tt>',
+    '<tt>f</tt>', '<tt>of</tt>' is taken as a false value.  Anything
+    else, including no following text, is taken as true ('<tt>y</tt>'
+    is always redundant).
+
+!!SEEALSO
+techfile
+techfile:layers
+
+!!REDIRECT Axes                 techfile:attr:grid#Axes
+!! !!REDIRECT ShowGrid             techfile:attr:grid#ShowGrid
+!!REDIRECT ElecShowGrid         techfile:attr:grid#ElecShowGrid
+!!REDIRECT PhysShowGrid         techfile:attr:grid#PhysShowGrid
+!!REDIRECT GridOnBottom         techfile:attr:grid#GridOnBottom
+!!REDIRECT ElecGridOnBottom     techfile:attr:grid#ElecGridOnBottom
+!!REDIRECT PhysGridOnBottom     techfile:attr:grid#PhysGridOnBottom
+!!REDIRECT GridStyle            techfile:attr:grid#GridStyle
+!!REDIRECT ElecGridStyle        techfile:attr:grid#ElecGridStyle
+!!REDIRECT PhysGridStyle        techfile:attr:grid#PhysGridStyle
+!!REDIRECT CoarseGridMult       techfile:attr:grid#CoarseGridMult
+!!REDIRECT ElecCoarseGridMult   techfile:attr:grid#ElecCoarseGridMult
+!!REDIRECT PhysCoarseGridMult   techfile:attr:grid#PhysCoarseGridMult
+
+!! 021415
+!!KEYWORD
+techfile:attr:grid
+!!TITLE
+Technology File Attributes:  Grid Presentation
+!!HTML
+    These keywords define the appearance of the axes and grid shown in
+    the drawing windows on program startup.  Within <i>Xic</i>, 
+    the presentation can be modified from the <b>Style</b> page or the
+    <a href="xic:grid"><b>Grid Setup</b></a> panels associated with
+    the drawing windows.  The parameters given in the technology file
+    apply to the main window, which are inherited by <a
+    href="xic:vport">sub-windows</a> when created.  The parameters can
+    subsequently be changed with the panel on a per-window basis.
+
+    <p>
+    For the main drawing window, the <b>Main Window</b> sub-menu of
+    the <b>Attributes Menu</b> provides the <b>Set Grid</b> button,
+    which brings up the <b>Grid Setup</b> panel.  <a
+    href="xic:vport">Sub-windows</a> have the <b>Grid Setup</b> panel
+    available from the <b>Attributes</b> menu in the sub-window.
+    Pressing <b>Ctrl-g</b> while a drawing window has focus will also
+    bring up the panel.
+
+    <p>
+    The keywords described in this section can also appear within <a
+    href="hcopytech">print driver</a> blocks.  If they appear in a
+    print driver block, the attribute will apply on-screen when that
+    driver is active in printing mode, and in the printer output.
+
+    <a name="Axes"></a>
+    <dl>
+    <dt><tt>Axes [Plain | Mark | None]</tt>
+    <dd>This determines the presentation style for the axes in
+    physical mode.  The default is <tt>Mark</tt>, where the origin is
+    marked with a small box.  If <tt>Plain</tt> is given, the axes are
+    simple lines.  If <tt>None</tt> is given, the axes will not be
+    drawn.
+    </dl>
+
+    <a name="ShowGrid"></a>
+    <dl>
+    <dt><tt>ShowGrid</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>This determines whether or not the grid will be shown by default,
+    and applies to both physical and electrical modes.<br>
+    Default: <tt>y</tt>
+    </dl>
+
+    <a name="ElecShowGrid"></a>
+    <a name="PhysShowGrid"></a>
+    <dl>
+    <dt><tt>ElecShowGrid</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dt><tt>PhysShowGrid</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>These keywords allow the grid display to be set independently for
+    the two modes.  The last <tt>ShowGrid</tt> directive will have precedence
+    for a given mode.
+    </dl>
+
+    <a name="GridOnBottom"></a>
+    <dl>
+    <dt><tt>GridOnBottom</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>This keyword determines whether the grid is shown on top of or
+    below the rendered objects.<br>
+    Default: <tt>y</tt>
+    </dl>
+
+    <a name="ElecGridOnBottom"></a>
+    <a name="PhysGridOnBottom"></a>
+    <dl>
+    <dt><tt>ElecGridOnBottom</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dt><tt>PhysGridOnBottom</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>These keywords allow the grid to be displayed above or below
+    the rendered objects independently for the two modes.  The last
+    <tt>GridOnBottom</tt> directive will have precedence for a given
+    mode.
+    </dl>
+
+    <a name="GridStyle"></a>
+    <dl>
+    <dt><tt>GridStyle</tt> <i>style</i> [<i>xsize</i>] 
+    <dd>This sets the style of grid to use in both electrical and
+    physical modes.  The <i>style</i> is a decimal or hex (with
+    "<tt>0x</tt>" prefix) integer whose binary pattern is used to
+    replicate the grid lines.  A value of 0 indicates a point grid,
+    and -1 indicates solid grid lines.  Other values are taken as a
+    line pattern that is periodically reproduced.  From the MSB, the
+    pattern starts with the first set bit, and continues through the
+    LSB.<br>
+
+    <p>
+    If the <i>style</i> value is 0, for a "dots" grid, a second
+    integer will be read if present.  This value can be 0-6, and
+    represents the number of pixels to light up around the central
+    pixel in the four compass directions.  The "dots" can appear as
+    brighter dots or small crosses, as set by this integer.
+    This integer is ignored if <i>style</i> is nonzero, and is taken
+    as 0 if absent.<br>
+    Default: 0xcc (hex)
+    </dl>
+
+    <a name="ElecGridStyle"></a>
+    <a name="PhysGridStyle"></a>
+    <dl>
+    <dt><tt>ElecGridStyle</tt> <i>style</i>
+    <dt><tt>PhysGridStyle</tt> <i>style</i>
+    <dd>These keywords allow the grid style to be set independently
+    for electrical and physical modes.  The last <tt>GridStyle</tt>
+    directive has precedence for a given mode.
+    </dl>
+
+    <a name="CoarseGridMult"></a>
+    <dl>
+    <dt><tt>CoarseGridMult</tt> <i>num</i>
+    <dd>This can be set to an integer 1-50, and specifies that coarse
+    grid lines will appear every <i>num</i> fine grid lines.  With
+    value 1, the grid will use the coarse grid color only.  This
+    applies in both electrical and physical modes.<br>
+    Default: 5
+    </dl>
+
+    <a name="ElecCoarseGridMult"></a>
+    <a name="PhysCoarseGridMult"></a>
+    <dl>
+    <dt><tt>ElecCoarseGridMult</tt> <i>num</i>
+    <dt><tt>PhysCoarseGridMult</tt> <i>num</i>
+    <dd>These provide the coarse grid multiplier independently for the
+    two modes.  The last <tt>CoarseGridMult</tt> directive seen for a
+    given mode has precedence.
+    </dl>
+
+!!SEEALSO
+techfile:attr
+
+!! !!REDIRECT Expand               techfile:attr:misc#Expand
+!!REDIRECT ElecExpand           techfile:attr:misc#ElecExpand
+!!REDIRECT PhysExpand           techfile:attr:misc#PhysExpand
+!!REDIRECT DisplayAllText       techfile:attr:misc#DisplayAllText
+!!REDIRECT ElecDisplayAllText   techfile:attr:misc#ElecDisplayAllText
+!!REDIRECT PhysDisplayAllText   techfile:attr:misc#PhysDisplayAllText
+!!REDIRECT ShowPhysProps        techfile:attr:misc#ShowPhysProps
+!!REDIRECT LabelAllInstances    techfile:attr:misc#LabelAllInstances
+!!REDIRECT ElecLabelAllInstances techfile:attr:misc#ElecLabelAllInstances
+!!REDIRECT PhysLabelAllInstances techfile:attr:misc#PhysLabelAllInstances
+!!REDIRECT ShowContext          techfile:attr:misc#ShowContext
+!!REDIRECT ElecShowContext      techfile:attr:misc#ElecShowContext
+!!REDIRECT PhysShowContext      techfile:attr:misc#PhysShowContext
+!!REDIRECT ShowTinyBB           techfile:attr:misc#ShowTinyBB
+!!REDIRECT ElecShowTinyBB       techfile:attr:misc#ElecShowTinyBB
+!!REDIRECT PhysShowTinyBB       techfile:attr:misc#PhysShowTinyBB
+
+!! 021415
+!!KEYWORD
+techfile:attr:misc
+!!TITLE
+Technology File Attributes:  Misc. Presentation
+!!HTML
+    These keywords set initial values for a number of display
+    attributes.  These generally apply to all drawing windows, but the
+    values can be reset on a per-window basis within <i>Xic</i>.  For
+    the main window, most have corresponding toggle buttons in the
+    <b>Main Window</b> sub-menu of the <b>Attributes Menu</b>.  In <a
+    href="xic:vport">sub-windows</a>, the buttons are located within
+    the <b>Attributes</b> menu itself.
+
+    <p>
+    The keywords described in this section can also appear within <a
+    href="hcopytech">print driver</a> blocks.  If they appear in a
+    print driver block, the setting will apply on-screen when that
+    driver is active in printing mode, and in the printer output.
+
+    <a name="Expand"></a>
+    <dl>
+    <dt><tt>Expand</tt> <i>num</i>
+    <dd>This keyword sets the initial expansion level for subcells,
+    for both electrical and physical modes.  If zero, no subcells are
+    expanded.  If -1, all subcells will be shown expanded.  A positive
+    integer indicates that subcells up to that depth will be shown
+    expanded.<br>
+    Default: 0
+
+    <p>
+    In <i>Xic</i>, the <a href="xic:expnd"><b>Expand</b></a> pop-up
+    controls expansion level, on a per-window basis.  This panel is
+    available from the <b>Expand</b> button in the main and sub-window
+    <b>View</b> menus.
+    </dl>
+
+    <a name="ElecExpand"></a>
+    <a name="PhysExpand"></a>
+    <dl>
+    <dt><tt>ElecExpand</tt> <i>num</i>
+    <dt><tt>PhysExpand</tt> <i>num</i>
+    <dd>
+    These forms allow the expansion level for electrical and physical
+    modes to be set separately.
+    </dl>
+
+    <a name="DisplayAllText"></a>
+    <dl>
+    <dt><tt>DisplayAllText</tt> <i>num</i>
+    <dd>This keyword sets whether label text is displayed or not, for
+    both electrical and physical modes.  If <i>num</i> is 0, labels
+    will not be displayed.  If 1 (actually, any number not 0 or 2),
+    labels will be displayed in "legible" orientation.  If 2, labels
+    will be shown in true orientation, i.e., rotated and mirrored as
+    placed and transformed along with the containing instance.<br>
+    Default: <tt>1</tt>
+
+    <p>
+    The <a href="xic:labls"><b>Show Labels</b></a> and <a
+    href="xic:larot"><b>Label True Orient</b></a> buttons in the
+    <b>Main Window</b> sub-menu of the <b>Attributes Menu</b> and in
+    the <b>Attributes</b> menu of sub-windows control these settings.
+    </dl>
+
+    <a name="ElecDisplayAllText"></a>
+    <a name="PhysDisplayAllText"></a>
+    <dl>
+    <dt><tt>ElecDisplayAllText</tt> <i>num</i>
+    <dt><tt>PhysDisplayAllText</tt> <i>num</i>
+    <dd>
+    These forms allow the display of label text for electrical and
+    physical modes to be set separately.
+    </dl>
+
+    <a name="ShowPhysProps"></a>
+    <dl>
+    <dt><tt>ShowPhysProps</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>This keyword sets whether physical property strings are displayed
+    in physical mode.<br>
+    Default: <tt>n</tt>
+
+    <p>
+    The <a href="xic:props"><b>Show Phys Properties</b></a> button in
+    the <b>Main Window</b> sub-menu of the <b>Attributes Menu</b> and
+    in the <b>Attributes</b> menu of sub-windows controls this
+    setting.
+    </dl>
+
+    <a name="LabelAllInstances"></a>
+    <dl>
+    <dt><tt>LabelAllInstances</tt> <i>num</i>
+    <dd>This keyword sets whether unexpanded instances are labeled or
+    not, for both electrical and physical modes.  If <i>num</i> is 0,
+    instances will not be labeled.  If 1, instances will be labeled,
+    with the label appearing either in horizontal or vertical
+    orientation, whichever provides the best fit into the cell
+    bounding box.  If 2, the cell name is rotated and mirrored along
+    with the cell.<br>
+    Default: 1
+
+    <p>
+    The <a href="xic:cnams"><b>Show Cell Names</b></a> and <a
+    href="xic:cnrot"><b>Cell Name True Orient</b></a> buttons in the
+    <b>Main Window</b> sub-menu of the <b>Attributes Menu</b> and in
+    the <b>Attributes</b> menu of sub-windows control these settings.
+    </dl>
+
+    <a name="ElecLabelAllInstances"></a>
+    <a name="PhysLabelAllInstances"></a>
+    <dl>
+    <dt><tt>ElecLabelAllInstances</tt> <i>num</i>
+    <dt><tt>PhysLabelAllInstances</tt> <i>num</i>
+    <dd>
+    These forms allow the display of unexpanded instance text for
+    electrical and physical modes to be set separately.
+    </dl>
+
+    <a name="ShowContext"></a>
+    <dl>
+    <dt><tt>ShowContext</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>When given `<tt>y</tt>', the context surrounding a subcell is
+    shown during a sub-edit initiated with the <a
+    href="xic:push"><b>Push</b></a> command in the <b>Cell Menu</b>. 
+    This applies to both electrical and physical modes.<br>
+    Default: <tt>y</tt>
+
+    <p>
+    The <a href="xic:cntxt"><b>Show Context in Push</b></a> button in
+    the <b>Main Window</b> sub-menu of the <b>Attributes Menu</b> and
+    in the <b>Attributes</b> menu of sub-windows controls this
+    setting.
+    </dl>
+
+    <a name="ElecShowContext"></a>
+    <a name="PhysShowContext"></a>
+    <dl>
+    <dt><tt>PhysShowContext</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dt><tt>ElecShowContext</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>These forms allow the display of editing context for electrical
+    and physical modes to be set separately.
+    </dl>
+
+    <a name="ShowTinyBB"></a>
+    <dl>
+    <dt><tt>ShowTinyBB</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>If ``<tt>y</tt>' is given, tiny subcells will be represented
+    by their bounding box.  Otherwise, these subcells will not be
+    shown.  The size threshold is given by the <a
+    href="CellThreshold"><b>CellThreshold</b></a> variable, set with
+    the <b>!set</b> command.  This applies to both electrical and
+    physical modes.<br>
+    Default: <tt>y</tt>
+
+    <p>
+    The <a href="xic:tinyb"><b>Subthreshold Boxes</b></a> button in
+    the <b>Main Window</b> sub-menu of the <b>Attributes Menu</b> and
+    in the <b>Attributes</b> menu of sub-windows controls this
+    setting.
+    </dl>
+
+    <a name="ElecShowTinyBB"></a>
+    <a name="PhysShowTinyBB"></a>
+    <dl>
+    <dt><tt>ElecShowTinyBB</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dt><tt>PhysShowTinyBB</tt> [<tt>y</tt>|<tt>n</tt>]
+    <dd>These forms allow the tiny subcell rendering for electrical and
+    physical modes to be set separately.
+    </dl>
+
+!!SEEALSO
+techfile:attr
+
+!! 070214
+!!KEYWORD
+techfile:attr:color
+!!TITLE
+Technology File Attributes:  Attribute Colors
+!!HTML
+    The following keywords set colors used on-screen and in printer
+    output.  All of these keywords take a <i>colorspec</i> string as
+    the argument list.  This is the name of a color or an RGB triple:
+
+    <ul>
+    <li>The name of a color.  The recognized names can be listed from
+    the <a href"xic:color"><b>Set Color</b></a> pop-up in the
+    <b>Attributes</b> menu with the <b>Colors</b> button.
+
+    <li>Three space-separated numbers, each 0-255, representing the
+    red, green, and blue intensity.  E.g., "196 240 235".
+
+    <li>Other forms recognized by the <tt>XParseColor</tt> C library
+    function, including "<tt>#RRRRGGGGBBBB</tt>" and
+    "<tt>rgb:RRRR/GGGG/BBBB</tt>".  Here, <tt>R</tt>, <tt>G</tt>, and
+    <tt>B</tt> are single hexadecimal digits.
+    </ul>
+
+    <p>
+    Following the general pattern for the technology file keywords,
+    the keyword form without the ``Phys'' or ``Elec'' prefix sets the
+    color for both modes.  The mode-specific keywords set the color
+    only for that mode.
+
+    <p>
+    A single internal data structure maintains all attribute
+    (non-layer) colors.  All attribute colors can be set from the <a
+    href="xic:color"><b>Color Selection</b></a> panel provided by the
+    <b>Set Color</b> button in the <b>Attributes Menu</b>.  Attribute
+    colors can also be changed with the <a
+    href="!setcolor"><b>!setcolor</b></a> command.  In Unix/Linux,
+    colors can be initialized from a <a href="resourcefile">resource
+    file</a>, as well as from the technology file.
+
+    <p>
+    When <i>Xic</i> starts, the colors are set to default values. 
+    Then, any colors found in a resource file are updated.  Then, some
+    of the colors may be modified in the technology file.  Finally,
+    the colors may be changed in a <a
+    href="initfiles"><tt>.xicstart</tt> file</a>.
+
+    <p>
+    Below is the list of attribute colors, the defaults, and techfile
+    keywords and aliases.  The <tt>SelectColor</tt>1/2 set the
+    blinking highlighting used for selected objects.  Setting both to
+    the same color stops the blinking.  The <tt>MarkerColor</tt> is
+    used for electrical-mode terminal marks.  The <b>Plot Mark</b>
+    colors are used only for the plot point indicators, and match the
+    colors defined for plots in <i>WRspice</i>.
+
+    <p>
+    The <b>Prompt Line Colors</b> apply to the <a
+    href="promptline">prompt line</a>, <a href="statusline">status
+    area</a>, <a href="coordline">coordinate readout</a>, and main
+    window <a href="keyspresd">keys-pressed area</a>.  The
+    <tt>PromptBackgroundColor</tt> controls the common background
+    color, except when the prompt line is in editing mode.  The other
+    colors are self-explanatory, with the
+    <tt>PromptHighlightingColor</tt> being the color used for <a
+    href="hypertext">hypertext</a> entries (mostly for electrical
+    mode).
+
+    <p>
+    The <b>Special GUI Colors</b> are miscellaneous colors used for
+    highlighting and other purposes in the graphical user interface.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Variable</th> <th>Use</th></tr>
+    <tr><td><tt>GUIcolorSel</tt></td>
+      <td><b>Cell Hierarchy Digests</b>, <b>File Selection</b>, etc.</td></tr>
+    <tr><td><tt>GUIcolorNo</tt></td>
+      <td><b>Empty Cells</b>, <b>Modified Cells</b>,
+      <b>Set Cell Flags</b></td></tr>
+    <tr><td><tt>GUIcolorYes</tt></td>
+      <td><b>Empty Cells</b>, <b>Modified Cells</b>,
+      <b>Set Cell Flags</b></td></tr>
+    <tr><td><tt>GUIcolorHl1</tt></td>
+      <td><b>Script Debugger</b>, <b>Design Rule Editor</b>,
+      <b>Property Editor</b></td></tr>
+    <tr><td><tt>GUIcolorHl2</tt></td>
+      <td><b>Modified Cells</b>, <b>Property Editor</b>,
+      <b>Cell Property Editor</b></td></tr>
+    <tr><td><tt>GUIcolorHl3</tt></td>
+      <td><b>Modified Cells</b></td></tr>
+    <tr><td><tt>GUIcolorHl4</tt></td>
+      <td><b>Design Rule Editor</b>, <b>Tech Parameter Editor</b>,<br>
+      <b>Property Editor</b>, <b>Cell Property Editor</b></td></tr>
+    <tr><td><tt>GUIcolorDvBg</tt></td>
+      <td>Pictorial device menu background</td></tr>
+    <tr><td><tt>GUIcolorDvFg</tt></td>
+      <td>Pictorial device menu foreground</td></tr>
+    <tr><td><tt>GUIcolorDvHl</tt></td>
+      <td>Pictorial device menu highlight</td></tr>
+    <tr><td><tt>GUIcolorDvSl</tt></td>
+      <td>Pictorial device menu selection</td></tr>
+    </table>
+
+    <p>
+    The <b>Attribute Colors</b> listed in the first block in the table
+    below can also be specified in printer driver blocks.  In this
+    case, the color will apply when that driver is selected in print
+    mode, both on-screen and in the hard-copy output generated by the
+    driver.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Keyword<br>Alias</th><th>Default</th></tr>
+    <tr><th colspan=2>Attribute Colors</th></tr>
+    <tr><td><tt>Background</tt></td><td>black</td></tr>
+    <tr><td><tt>ElecBackground</tt></td><td><tt>Background</tt></td></tr>
+    <tr><td><tt>PhysBackground</tt></td><td><tt>Background</tt></td></tr>
+    <tr><td><tt>GhostColor</tt></td><td>white</td></tr>
+    <tr><td><tt>ElecGhostColor</tt></td><td><tt>GhostColor</tt></td></tr>
+    <tr><td><tt>PhysGhostColor</tt></td><td><tt>GhostColor</tt></td></tr>
+    <tr><td><tt>HighlightingColor<br>Highlighting</tt></td><td>white</td></tr>
+    <tr><td><tt>ElecHighlightingColor<br>ElecHighlighting</tt></td>
+     <td><tt>HighlightingColor</tt></td></tr>
+    <tr><td><tt>PhysHighlightingColor<br>PhysHighlighting</tt></td>
+     <td><tt>HighlightingColor</tt></td></tr>
+    <tr><td><tt>SelectColor1</td><td>white</td></tr>
+    <tr><td><tt>ElecSelectColor1</tt></td><td><tt>SelectColor1</tt></td></tr>
+    <tr><td><tt>PhysSelectColor1</tt></td><td><tt>SelectColor1</tt></td></tr>
+    <tr><td><tt>SelectColor2</tt></td><td>pink</td></tr>
+    <tr><td><tt>ElecSelectColor2</tt></td><td><tt>SelectColor2</tt></td></tr>
+    <tr><td><tt>PhysSelectColor2</tt></td><td><tt>SelectColor2</tt></td></tr>
+    <tr><td><tt>MarkerColor</tt></td><td>yellow</td></tr>
+    <tr><td><tt>ElecMarkerColor</tt></td><td><tt>MarkerColor</tt></td></tr>
+    <tr><td><tt>PhysMarkerColor</tt></td><td><tt>MarkerColor</tt></td></tr>
+    <tr><td><tt>InstanceBBColor<br>InstanceBB<br>InstanceBox</tt></td>
+     <td>turquoise</td></tr>
+    <tr><td><tt>ElecInstanceBBColor<br>ElecInstanceBB<br>ElecInstanceBox</tt></td>
+     <td><tt>InstanceBBColor</tt></td></tr>
+    <tr><td><tt>PhysInstanceBBColor<br>PhysInstanceBB<br>PhysInstanceBox</tt></td>
+     <td><tt>InstanceBBColor</tt></td></tr>
+    <tr><td><tt>InstanceNameColor<br>InstanceName</td><td>pink</tt></td></tr>
+    <tr><td><tt>ElecInstanceNameColor<br>ElecInstanceName</tt></td>
+     <td><tt>InstanceNameColor</tt></td></tr>
+    <tr><td><tt>PhysInstanceNameColor<br>PhysInstanceName</tt></td>
+     <td><tt>InstanceNameColor</tt></td></tr>
+    <tr><td><tt>InstanceSizeColor<br>InstanceSize</td><td>salmon</tt></td></tr>
+    <tr><td><tt>CoarseGridColor<br>CoarseGrid</td><td>skyblue</tt></td></tr>
+    <tr><td><tt>ElecCoarseGridColor<br>ElecCoarseGrid</tt></td>
+     <td><tt>CoarseGridColor</tt></td></tr>
+    <tr><td><tt>PhysCoarseGridColor<br>PhysCoarseGrid</tt></td>
+     <td><tt>CoarseGridColor</tt></td></tr>
+    <tr><td><tt>FineGridColor<br>FineGrid</tt></td><td>royalblue</td></tr>
+    <tr><td><tt>ElecFineGridColor<br>ElecFineGrid</tt></td>
+     <td><tt>FineGridColor</tt></td></tr>
+    <tr><td><tt>PhysFineGridColor<br>PhysFineGrid</tt></td>
+     <td><tt>FineGridColor</tt></td></tr>
+
+    <tr><th colspan=2>Prompt Line Colors</th></tr>
+    <tr><td><tt>PromptTextColor<br>PromptText</tt></td><td>sienna</td></tr>
+    <tr><td><tt>PromptEditTextColor<br>PromptEditText</tt></td><td>black</td></tr>
+    <tr><td><tt>PromptHighlightColor<br>PromptHighlight</tt></td><td>red</td></tr>
+    <tr><td><tt>PromptCursorColor<br>PromptCursor</tt></td><td>blue</td></tr>
+    <tr><td><tt>PromptBackgroundColor<br>PromptBackground</tt></td>
+     <td>gray92</td></tr>
+    <tr><td><tt>PromptEditBackgColor<br>PromptEditBackg<br>
+     PromptEditBackground</tt></td><td>gray96</td></tr>
+    <tr><td><tt>PromptEditFocusBackgColor<br>PromptEditFocusBackg<br>
+     PromptEditFocusBackground</tt></td><td>gray100</td></tr>
+
+    <tr><th colspan=2>Plot Mark Colors</th></tr>
+    <tr><td><tt>Color2</tt></td><td>red</td></tr>
+    <tr><td><tt>Color3</tt></td><td>lime green</td></tr>
+    <tr><td><tt>Color4</tt></td><td>blue</td></tr>
+    <tr><td><tt>Color5</tt></td><td>orange</td></tr>
+    <tr><td><tt>Color6</tt></td><td>magenta</td></tr>
+    <tr><td><tt>Color7</tt></td><td>turquoise</td></tr>
+    <tr><td><tt>Color8</tt></td><td>sienna</td></tr>
+    <tr><td><tt>Color9</tt></td><td>gray</td></tr>
+    <tr><td><tt>Color10</tt></td><td>hot pink</td></tr>
+    <tr><td><tt>Color11</tt></td><td>slate blue</td></tr>
+    <tr><td><tt>Color12</tt></td><td>spring green</td></tr>
+    <tr><td><tt>Color13</tt></td><td>cadet blue</td></tr>
+    <tr><td><tt>Color14</tt></td><td>pink</td></tr>
+    <tr><td><tt>Color15</tt></td><td>indian red</td></tr>
+    <tr><td><tt>Color16</tt></td><td>chartreuse</td></tr>
+    <tr><td><tt>Color17</tt></td><td>khaki</td></tr>
+    <tr><td><tt>Color18</tt></td><td>dark salmon</td></tr>
+    <tr><td><tt>Color19</tt></td><td>rosy brown</td></tr>
+
+    <tr><th colspan=2>Special GUI Colors</th></tr>
+    <tr><td><tt>GUIcolorSel</tt></td><td>#e1e1ff</td></tr>
+    <tr><td><tt>GUIcolorNo</tt></td><td>red</td></tr>
+    <tr><td><tt>GUIcolorYes</tt></td><td>green3</td></tr>
+    <tr><td><tt>GUIcolorHl1</tt></td><td>red</td></tr>
+    <tr><td><tt>GUIcolorHl2</tt></td><td>darkblue</td></tr>
+    <tr><td><tt>GUIcolorHl3</tt></td><td>darkviolet</td></tr>
+    <tr><td><tt>GUIcolorHl4</tt></td><td>sienna</td></tr>
+    <tr><td><tt>GUIcolorDvBg</tt></td><td>gray90</td></tr>
+    <tr><td><tt>GUIcolorDvFg</tt></td><td>black</td></tr>
+    <tr><td><tt>GUIcolorDvFg</tt></td><td>blue</td></tr>
+    <tr><td><tt>GUIcolorDvFg</tt></td><td>gray80</td></tr>
+    </table>
+
+!!SEEALSO
+techfile:attr
+
+!!REDIRECT MfgGrid              techfile:attr:snap#MfgGrid
+!!REDIRECT SnapGridSpacing      techfile:attr:snap#SnapGridSpacing
+!!REDIRECT SnapPerGrid          techfile:attr:snap#SnapPerGrid
+!!REDIRECT GridPerSnap          techfile:attr:snap#GridPerSnap
+!!REDIRECT EdgeSnapping         techfile:attr:snap#EdgeSnapping
+!!REDIRECT RulerEdgeSnapping    techfile:attr:snap#RulerEdgeSnapping
+!!REDIRECT RulerSnapToGrid      techfile:attr:snap#RulerSnapToGrid
+
+!! 100916
+!!KEYWORD
+techfile:attr:snap
+!!TITLE
+Technology File Attributes:  Grid and Edge Snapping
+!!HTML
+    These keywords define the grid and edge snapping parameters. 
+    These can be reset from within <i>Xic</i> from the <b>Snapping</b>
+    page of the <a href="xic:grid"><b>Grid Setup</b></a> panels
+    associated with the drawing windows.  The parameters given in the
+    technology file apply to the main window, which are inherited by
+    <a href="xic:vport">sub-windows</a> when created.  The parameters
+    can subsequently be changed with the panel on a per-window basis.
+
+    <p>
+    For the main drawing window, the <b>Main Window</b> sub-menu of
+    the <b>Attributes Menu</b> provides the <b>Set Grid</b> button,
+    which brings up the <b>Grid Setup</b> panel.  <a
+    href="xic:vport">Sub-windows</a> have the <b>Grid Setup</b> panel
+    available from the <b>Attributes</b> menu in the sub-window.
+    Pressing <b>Ctrl-g</b> while a drawing window has focus will also
+    bring up the panel.
+
+    <a name="MfgGrid"></a>
+    <dl>
+    <dt><tt>MfgGrid</tt> <i>delta</i>
+    <dd>If set nonzero, the actual <tt>SnapGridSpacing</tt> used will
+    be constrained to be a multiple of this value.  This applies in
+    physical mode only.
+
+    <p>
+    This can be considered to be the "pixel" size of the mask.  The <a
+    href="SpotSize"><b>SpotSize</b></a> variable is related, see this
+    topic for more information.
+    </dl>
+
+    <a name="SnapGridSpacing"></a>
+    <dl>
+    <dt><tt>SnapGridSpacing</tt> <i>spacing</i>
+    <dd>The <i>spacing</i> is a floating point number which represents
+    the spacing, in microns, between snap points.  This applies to
+    physical mode only.<br>
+    Default: 1.0 microns
+
+    <p>
+    The electrical grid is set to spacing value 1.0 with unit snap per
+    grid on program startup, which can't be changed from the
+    technology file.  The electrical grid can be changed within
+    <i>Xic</i> from the <a href="xic:grid"><b>Grid Parameters</b></a>
+    pop-up, in the unusual circumstance that non-default values are
+    needed.
+    </dl>
+
+    <a name="SnapPerGrid"></a>
+    <a name="GridPerSnap"></a>
+    <dl>
+    <dt><tt>SnapPerGrid</tt> <i>num</i><br>
+      <tt>GridPerSnap</tt> <i>num</i>
+    <dd>At most one of these keywords should be given.  The <i>num</i>
+    is an integer 1-10.  These apply to physical mode only.
+
+    <p>
+    If <tt>SnapPerGrid</tt> is given, then the fine grid lines will be
+    spaced <i>num</i><tt>*SnapGridSpacing</tt> apart.  If
+    <tt>GridPerSnap</tt> is given, fine grid lines will appear at
+    <tt>SnapGridSpacing/</tt><i>num</i> intervals.<br>
+    Default: 1
+    </dl>
+
+    <a name="EdgeSnapping"></a>
+    <dl>
+    <dt><tt>EdgeSnapping</tt> [<tt>none</tt>|<tt>some</tt>|<tt>all</tt>]
+      [<tt>+</tt>|<tt>-off_grid</tt>] [<tt>+</tt>|<tt>-non_manh</tt>]
+      [<tt>+</tt>|<tt>-edge_of_wire</tt>] <tt>[+</tt>|<tt>-path_of_wire</tt>]
+    <dd>
+    This keyword sets the initial state of the controls of the <b>Edge
+    Snapping</b> group in the <b>Snapping</b> page of the main window
+    <b>Grid Setup</b> panel.  All fields are optional, with the effective
+    default being
+
+    <blockquote>
+    <tt>EdgeSnapping some -off_grid -non_manh +edge_of_wires
+      -path_of_wires</tt>
+    </blockquote>
+
+    Only the first letter of the keywords is needed, and recognition is
+    case-insensitive.
+
+    <p>
+    The first word specifies when edge snapping is enabled:
+    <blockquote>
+    <table border=0 cellspacing=4>
+    <tr><td><tt>none</tt></td> <td>not enabled</td></tr>
+    <tr><td><tt>some</tt></td> <td>enabled in some commands (the
+       default)</td></tr>
+    <tr><td><tt>all </tt></td> <td>always enabled</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The remaining items are flags that must start with a <tt>+</tt> or
+    <tt>-</tt> character.  The <tt>+</tt> turns the option on, the
+    <tt>-</tt> turns the option off.  These have obvious
+    correspondence to the check boxes in the <b>Edge Snapping</b>
+    control group in the <a href="xic:grid"><b>Grid Setup</b></a>
+    panel, and set the initial state of the check boxes for the main
+    window.
+    </dl>
+
+    <a name="RulerEdgeSnapping"></a>
+    <dl>
+    <dt><tt>RulerEdgeSnapping</tt> [<tt>none</tt>|<tt>some</tt>|<tt>all</tt>]
+      [<tt>+</tt>|<tt>-off_grid</tt>] [<tt>+</tt>|<tt>-non_manh</tt>]
+      [<tt>+</tt>|<tt>-edge_of_wire</tt>] <tt>[+</tt>|<tt>-path_of_wire</tt>]
+    <dd>
+    This keyword uses the same syntax as the <tt>EdgeSnapping</tt>
+    keyword, and species the initial edge snapping mode when the <a
+    href="xic:ruler"><b>Rulers</b></a> command in the <b>View Menu</b>
+    is in effect.  This command has its own settings, with the default
+    being that all flags are enabled.
+    </dl>
+
+    <a name="RulerSnapToGrid"></a>
+    <dl>
+    <dt><tt>RulerSnapToGrid</tt> [<tt>y</tt>|<tt>n</tt>]<dd>
+    This boolean keyword specifies the initial state of grid snapping
+    in the <a href="xic:ruler"><b>Rulers</b></a> command in the
+    <b>View Menu</b>.  In the command, the mode can be toggled by
+    presing the period ('<tt>.</tt>') key.  By default, grid snapping
+    is asserted.
+    </dl>
+
+!!SEEALSO
+techfile:attr
+
+!!REDIRECT F1key                techfile:attr:fkey
+
+!! 070214
+!!KEYWORD
+techfile:attr:fkey
+!!TITLE
+Technology File Attributes:  Function Keys
+!!HTML
+    It is possible to map the keyboard function keys to <i>Xic</i>
+    operations.  The function key assignments are sensitive to the
+    <b>Shift</b>, <b>Control</b>, and <b>Alt</b> keys.  This means
+    that a function key (<b>F1</b> - <b>F12</b>) press can have
+    different effects depending on the state of these keys.
+
+    <dl>
+    <dt><tt>F</tt><i>N</i><tt>Key</tt> <i>text</i>
+    <dd>The <i>N</i> is an integer in the range 1-12, to correspond to
+    the <b>F1</b> - <b>F12</b> function keys found on most keyboards.
+
+    The <i>text</i> has the form
+    <blockquote>
+    [<tt>&#60;</tt><i>tok</i><tt>></tt>] <i>cmd</i>
+    [<tt>&#60;</tt><i>tok</i><tt>></tt> <i>cmd</i>] ...
+    </blockquote>
+
+    <p>
+    Each <i>tok</i> is a combination of the letters <tt>s</tt>,
+    <tt>c</tt>, and <tt>a</tt>.  The presence of the letters indicates
+    that <b>Shift</b>, <b>Control</b> and <b>Alt</b> are pressed,
+    respectively.  The <i>tok</i> is surrounded by angle brackets.
+
+    <p>
+    Examples:
+    <dl>
+    <dt><tt>&#60;s></tt><dd>
+    The <b>Shift</b> key is pressed, <b>Control</b> and <b>Alt</b> are
+    not pressed.
+    <dt><tt>&#60;ca></tt><dd>
+    The <b>Control</b> and <b>Alt</b> keys are pressed, the
+    <b>Shift</b> key is not pressed.
+    </dl>
+
+    <p>
+    These tokens are followed by a <i>cmd</i>, which is a command.  If
+    the command starts with '<tt>!</tt>', the remainder is treated as
+    a <a href="keybang">"bang" command</a>.  Otherwise, the text is
+    the five-character (or fewer) command keyword associated with GUI
+    command buttons.  If the <i>cmd</i> contains white space, it must
+    be quoted.
+
+    <p>
+    The command keywords are displayed in the pop-up "tooltip" which
+    appears when the mouse pointer is positioned over a command
+    button, after a short delay.  This is the internal name for the
+    command, which is generally a short mnemonic of five characters or
+    fewer.  The keywords are also generally provided in the help
+    system topic describing the command.  In the <b>User Menu</b>, for
+    user scripts, the name which appears on the menu button is the
+    appropriate name to use.
+
+    <p>
+    The first <i>tok</i> is generally absent, and the <i>cmd</i>
+    applies to the function key with no modifiers pressed.
+
+    Example:
+    <blockquote>
+    <tt>F1Key box &#60;s> "!exec /path/to/myscript.scr" &#60;c> !!Clear(0)
+    &#60;sca> polyg</tt>
+    </blockquote>
+
+    <p>
+    The terms are:
+    <dl>
+    <dt><tt>F1Key</tt><dd>
+    We're setting the <b>F1</b> key in this example.
+    <dt><tt>box</tt><dd>
+    This indicates that when <b>F1</b> is pressed without pressing a
+    modifier key, the "<tt>box</tt>" command from the side menu will be
+    started.
+
+    <dt><tt>&#60;s> "!exec /path/to/myscript.scr"</tt><dd>
+    This specifies that when <b>Shift-F1</b> is pressed, the script in
+    the <tt>myscript.scr</tt> file will be executed, using the <a
+    href="!exec"><b>!exec</b></a> bang command.  Since the command
+    contains a space character, it is quoted.
+
+    <dt><tt>&#60;c> !!Clear(0)</tt><dd>
+    This specifies that when <b>Control-F1</b> is pressed, the <a
+    href="Clear"><tt>Clear()</tt></a> script function is called with
+    argument 0.  This will clear the database.  Note that the
+    single/double exclamation point syntax is the same as is accepted
+    on the command line.
+
+    <dt><tt>&#60;sca> polyg</tt><dd>
+    When <b>Shift</b>, <b>Control</b>, and <b>Alt</b> are pressed
+    along with <b>F1</b>, the "<tt>polyg</tt>" polygon creation
+    command from the side menu is started.
+    </dl>
+
+    The menu containing the named button must be active (not grayed)
+    for the function key to have effect.  The mappings are completely
+    defined by the user - there are no defaults.  Pressing an unmapped
+    function key has no effect on <i>Xic</i>.  Be aware that the
+    window manager in use, and the GTK toolkit, may map functions
+    keys, and this may have higher priority than the mapping assigned
+    here.  The use of the <b>Alt</b> key is generally not a good idea,
+    as it is commonly assigned for other purposes.  Sometimes, an
+    assignment will simply be ignored for some reason.  For example,
+    on one system <b>Control-F1</b> is never returned, but
+    <b>Control</b> works fine with other function keys.
+    </dl>
+
+!!SEEALSO
+techfile:attr
+
+!!REDIRECT ElecGridReg          techfile:attr:gridreg
+!!REDIRECT PhysGridReg          techfile:attr:gridreg
+
+!! 070214
+!!KEYWORD
+techfile:attr:gridreg
+!!TITLE
+Technology File Attributes:  Grid Registers
+!!HTML
+    The grid registers from the <a href="xic:grid"><b>Grid
+    Setup</b></a> pop-up are saved in the technology file if they
+    contain a non-default grid.
+
+    <dl>
+    <dt><tt>ElecGridReg</tt><i>N</i> <i>spec</i><br>
+    <dt><tt>PhysGridReg</tt><i>N</i> <i>spec</i><dd>
+    The <i>N</i> is an integer value in the range 1-7.  Each register
+    index can store both a physical and electrical grid specification.
+    The specifications define the contents of the grid registers,
+    available in the <a href="xic:grid"><b>Grid Setup</b></a> panel
+    and elsewhere.
+
+    <p>
+    The <i>spec</i> string has the form:
+    <blockquote>
+    <i>snapspace</i> <i>snapval</i> <i>linestyle</i> [<i>xsize</i>]
+     [<tt>-a</tt> <i>axes</i>] [<tt>-d</tt> <i>dsp</i>]
+     [<tt>-t</tt> <i>ontop</i>] [<tt>-m</tt> <i>cmult</i>]
+    </blockquote>
+
+    The first three tokens are mandatory, and must appear in the order
+    shown.
+ 
+    <dl>
+    <dt><i>snapspace</i> (real number)<dd>
+    The spacing between snap points, in microns.
+
+    <dt><i>snapval</i> (integer, -10 through 10 excluding 0)<dd>
+    If the value is positive, it sets the number of snap points per
+    fine grid line.  For example, a value of 3 would indicate that a
+    fine grid line is drawn at every third snap point.  If negative,
+    this sets the number of fine grid lines per snap interval.  In
+    this case, a value of three indicates that fine grid lines appear
+    at snap points and at the 1/3 and 2/3 proportional distances
+    within the snap interval.
+
+    <dt><i>linestyle</i> (integer)<dd>
+    This is the line style code.  The value is 0 for a dot grid,
+    otherwise the bit pattern represents the line dashes, as for the
+    <a href="GridStyle"><tt>GridStyle</tt></a> keyword.
+    </dl>
+
+    The remaining tokens are optional, and can follow the first three in any
+    order.  
+
+    <dl>
+    <dt><i>xsize</i> (integer 0-6)<dd>
+    If the <i>linestyle</i> code is 0 (for a dot grid), then a fourth
+    number can appear.  This is an integer 0-6 which indicates the
+    number of pixels in the four orthogonal directions to extend the
+    dot into a cross.
+
+    <dt><tt>-a</tt> <i>axes</i> (integer 0-2)<dd>
+    This sets the axes presentation mode in physical mode.  If 0, axes
+    aren't shown.  If 1, plain axes are shown, and if 2, axes are
+    shown and the origin decorated.
+
+    <dt><tt>-d</tt> <i>dsp</i> (boolean)<dd>
+    This sets whether the grid is displayed or not.  The <i>dsp</i>
+    token can be about any alphanumeric token that by convention
+    indicates true or false.
+
+    <dt><tt>-t</tt> <i>ontop</i> (boolean)<dd>
+    This sets whether the grid is displayed after all geometry ("on
+    top") or before geometry.  The <i>ontop</i> token can be about
+    any alphanumeric token that by convention indicates true or false.
+
+    <dt><tt>-m</tt> <i>cmult</i> (integer 1-50)<dd>
+    This sets the number of fine grid lines per coarse grid line.
+    </dl>
+    For backward compatibility, "<tt>GridReg</tt>" is accepted as
+    "<tt>PhysGridReg</tt>".
+    </dl>
+
+!!SEEALSO
+techfile:attr
+
+!!REDIRECT ElecLayerPalette     techfile:attr:lpal
+!!REDIRECT PhysLayerPalette     techfile:attr:lpal
+
+!! 070214
+!!KEYWORD
+techfile:attr:lpal
+!!TITLE
+Technology File Attributes:  Layer Palette Registers
+!!HTML
+    The palette registers from the <a href="xic:lpal"><b>Layer
+    Palette</b></a> are saved to and assigned from the technology file.
+
+    <dl>
+    <dt><tt>ElecLayerPalette</tt><i>N</i> <i>layer_list</i><br>
+    <dt><tt>PhysLayerPalette</tt><i>N</i> <i>layer_list</i><dd>
+    The <i>N</i> is an integer value in the range 1-7 that specifies a
+    register number.  The <i>layer_list</i> is a list of layer names
+    separated by white space.  There are separate entries for
+    electrical and physical mode for each register number.  The list
+    provides the layer names and ordering of the layers in the "user"
+    part of the layer palette.
+    </dl>
+
+!!SEEALSO
+techfile:attr
+
+!! 070214
+!!KEYWORD
+techfile:attr:font
+!!TITLE
+Technology File Attributes:  Font Assignments
+!!HTML
+    The keywords described below set the fonts used in various places
+    in <i>Xic</i>.  These correspond to the fonts settable from the
+    <b>Font Selection</b> pop-up from the <a href="xic:font"><b>Set
+    Font</b></a> button in the <b>Attributes Menu</b>.
+
+    <p>
+    Since the font string format varies between the operating systems
+    and graphical interfaces supported by <i>Xic</i>, provision is
+    made for separate font specifications for each supported
+    variation, thus making the technology file more portable between
+    different versions of <i>Xic</i>.
+
+    <p>
+    There are six fonts that may be set, and four sets of
+    corresponding keywords, specific to different systems.  The four
+    sets correspond to a suffix character added to the font keyword. 
+
+    <dl>
+    <dt><tt>Font1 - Font6</tt> <i>name_of_font</i><dd>
+    These keywords will be read and (if possible) applied by any
+    version of <i>Xic</i>.  Although there is an attempt at
+    portability, the <i>name_of_font</i> should apply to the release
+    of <i>Xic</i> in use.  A mismatch will not cause errors, but the
+    font may not be as expected, or a default may be used.  These
+    keywords are mostly for backwards compatibility, and are never
+    written to a new technology file created with the <a
+    href="xic:updat"><b>Save Tech</b></a> button in the <b>Attributes
+    Menu</b>.  Rather, the system-specific keywords below will be
+    written.
+    </dl>
+
+    <dl>
+    <dt><tt>Font1P - Font6P</tt> <i>name_of_font</i><dd>
+    These fonts apply to the releases that use the GTK-2 (Pango) font
+    system.  At the 4.0 release level, all <i>XicTools</i> programs
+    use this graphical toolkit, and will use these keywords.
+    </dl>
+
+    <dl>
+    <dt><tt>Font1X - Font6X</tt> <i>name_of_font</i><dd>
+    These keywords apply to non-current releases (FreeBSD7, Linux2, OS
+    X) that use the GTK-1 X-windows font system.  The
+    <i>name_of_font</i> is the X Logical Font Descriptor for a font
+    available on the user's system, or an alias.  These font
+    specifications are ignored in GTK-2 (all current) releases.
+    </dl>
+
+    <dl>
+    <dt><tt>Font1W - Font6W</tt> <i>name_of_font</i><dd>
+    These keywords apply only to the non-current Microsoft Windows
+    release, which used native Win32 for the graphical interface. 
+    There is really no syntactical difference between these and
+    Pango (<tt>P</tt>) specifications, and (current) GTK-2 releases
+    will accept (but not write) these.
+    </dl>
+
+    <p>
+    If a font is specified more than once in the technology file, such
+    as with duplicate or equivalent keywords, the last specification
+    read will take precedence.
+
+    <p>
+    When a new technology file is written, only the keywords for
+    non-default fonts in use will actually be written in the file.
+
+    <p>
+    The index number of the keyword indicates the following fonts:
+ 
+    <dl>
+    <dt><tt>1</tt> (Fixed Pitch Text Window Font)<dd>
+    This sets the font used in pop-up multi-line text windows other
+    than the text editor/file browser, such as the <a
+    href="xic:files"><b>Files Listing</b></a> and <a
+    href="xic:cells"><b>Cells Listing</b></a>, where the names are
+    formatted into columns.<br>
+    Defaults:<br>
+    Unix/Linux: <tt>Monospace 9</tt><br>
+    Windows: <tt>Lucida Console 9</tt>
+    </dl>
+ 
+    <dl>
+    <dt><tt>2</tt> (Proportional Text Window Font)<dd>
+    This sets the font used in pop-up multi-line text windows other
+    than the text editor/file browser, where text is not formatted,
+    such as the <a href="xic:info"><b>Info</b></a> and error message
+    pop-ups.<br>
+    Defaults:<br>
+    Unix/Linux: <tt>Sans 9</tt><br>
+    Windows: <tt>Sans 9</tt>
+    </dl>
+ 
+    <dl>
+    <dt><tt>3</tt> (Fixed Pitch Drawing Window Font)<dd>
+    This is the font used in the <a href="coordline">coordinate
+    readout</a>, the <a href="statusline">status line</a>, <a
+    href="layertab">layer table</a>, and the <a
+    href="promptline">prompt line</a>.  It is not the font used to
+    render label text in the drawing windows, which is a vector font
+    generated by <a href="xic:label">other means</a>.<br>
+    Defaults:<br>
+    Unix/Linux: <tt>Monospace 9</tt><br>
+    Windows: <tt>Lucida Console 9</tt>
+    </dl>
+ 
+    <dl>
+    <dt><tt>4</tt> (Text Editor Font)<dd>
+    This is the font used in the <a href="texteditor"><b>Text
+    Editor</b></a> and <b>File Browser</b> pop-ups.<br>
+    Defaults:<br>
+    Unix/Linux: <tt>Monospace 9</tt><br>
+    Windows: <tt>Lucida Console 9</tt><br>
+    </dl>
+ 
+    <dl>
+    <dt><tt>5</tt> (HTML Viewer Proportional Font)<dd>
+    This is the base font used for proportional text in the HTML
+    viewer (<a href="helpsys">help windows</a>).  If set, this will
+    override the font set in the <a
+    href="mozyrcfile"><tt>.mozyrc</tt></a> file, if any.<br>
+    Defaults:<br>
+    Unix/Linux: <tt>Sans 9</tt><br>
+    Windows: <tt>Sans 9</tt>
+    </dl>
+ 
+    <dl>
+    <dt><tt>6</tt> (HTML Viewer Fixed Pitch Font)<dd>
+    This is the base fixed-pitch font used by the HTML viewer.  If
+    set, this will override the font set in the <tt>.mozyrc</tt> file,
+    if any.<br>
+    Defaults:<br>
+    Unix/Linux: <tt>Monospace 9</tt><br>
+    Windows: <tt>Lucida Console 9</tt>
+    </dl>
+
+    <p>
+    The platform-specific font keywords were added in release 3.1.6. 
+    Older technology files will use only the <tt>Font1 - Font6</tt>
+    keywords.  It may be be best to comment these out when importing a
+    technology file developed for another platform, or to modify the
+    <tt>Font</tt> keywords to the appropriate flavor with a text
+    editor.
+ 
+    <p>
+    Fonts can be set within <i>Xic</i> with the <a
+    href="xic:font"><b>Set Font</b></a> command in the <b>Attributes
+    Menu</b>.
+
+!!SEEALSO
+techfile:attr
+
+!! 021615
+!!KEYWORD
+techfile:attr:vars
+!!TITLE
+Technology File Attributes:  Variable Setting as Keywords
+!!HTML
+    In addition to the keywords described in the previous sections,
+    most of the <a href="variables">variables</a> that are known to
+    <i>Xic</i> can be set as keywords.  These variables control
+    various aspects of <i>Xic</i>, including the states of most of the
+    controls in the various pop-up panels.  When a technology file is
+    <a href="xic:updat">written</a>, variables that participate in
+    this protocol and are set will contribute a corresponding line to
+    the attributes section of the new technology file.
+
+    <p>
+    Most variables participate in the protocol.  A few do not, for one
+    reason or another, and it is unlikely that these will be missed. 
+    The <a href="!attrvars"><b>!attrvars</b></a> command will produce
+    a list of the variables that participate, the user can check this
+    if necessary.
+
+    <p>
+    When a new technology file is being written, variables that are
+    set will generate content.  There is no "default", and the options
+    in the <b>Write Tech File</b> panel that alter the treatment of
+    "default definitions" have no effect on these lines.
+
+    <p>
+    The same variables can also be set with the <a
+    href="techfile:set"><tt>!set</tt></a> lines.  If a variable is set
+    multiple times by any means, the last one seen will have
+    precedence.  The variables that participate in the protocol but
+    are set with the <tt>!set</tt> line will not be remembered as
+    having been set.  When a technology file is written, the
+    remembered variables are given <tt>!set</tt> lines in the new
+    file.  This is not necessary for variables that participate in the
+    protocol.
+
+    <p>
+    Variables are logically divided into classes.  Boolean variables
+    are switches that are either set (usually to an empty string) or
+    not set.  Other variables we refer to as "string" variables.  They
+    are set to an arbitrary text string, when set at all.
+
+    <p>
+    In the technology file, booleans take the form
+    <blockquote>
+    <i>VariableName</i> [<tt>y</tt>|<tt>n</tt>]
+    </blockquote>
+    which is the same syntax as for boolean keywords.  The
+    "<tt>y</tt>|<tt>n</tt>" symbol implies that one of '<tt>y</tt>' or
+    '<tt>n</tt>' can follow the keyword.  Actually, '<tt>0</tt>'
+    (zero), or any word that begins with the letters or sequence (case
+    insensitive) '<tt>n</tt>', '<tt>f</tt>', '<tt>of</tt>' is taken as
+    a false value.  Anything else, including no following text, is
+    taken as true ('<tt>y</tt>' is always redundant).  If the second
+    token indicates affirmative, then the variable will be set.  If
+    the second token is negative, no action is taken.
+
+    <p>
+    String variables take the form
+    <blockquote>
+    <i>VariableName</i> <i>arbitrary text</i>
+    </blockquote>
+    where the variable will be assigned the <i>arbitrary text</i>, with
+    leading and training white space stripped.
+
+    <p>
+    The <b>!attrvars</b> command lists the variables that are boolean
+    and string separately, so the user can check this list if unsure of
+    the variable type.
+
+    <p>
+    The <i>VariableName</i> in this context is recognized as a known
+    variable name without case sensitivity.  In every other context,
+    variable names are case-sensitive.  Since this syntax applies
+    only to internal variable names, there is no conflict as there
+    are no such variables that differ only in case.
+
+!!SEEALSO
+techfile:attr
+
+!!REDIRECT DefaultDriver        hcopytech#DefaultDriver
+!!REDIRECT ElecDefaultDriver    hcopytech#ElecDefaultDriver
+!!REDIRECT PhysDefaultDriver    hcopytech#PhysDefaultDriver
+!!REDIRECT HPGLfilled           hcopytech#HPGLfilled
+!!REDIRECT XfigFilled           hcopytech#XfigFilled
+!!REDIRECT HardCopyDevice       hcopytech#HardCopyDevice
+!!REDIRECT HardCopyLegend       hcopytech#HardCopyLegend
+!!REDIRECT HardCopyOrient       hcopytech#HardCopyOrient
+!!REDIRECT HardCopyCommand      hcopytech#HardCopyCommand
+!!REDIRECT HardCopyResol        hcopytech#HardCopyResol
+!!REDIRECT HardCopyDefResol     hcopytech#HardCopyDefResol
+!!REDIRECT HardCopyDefHeight    hcopytech#HardCopyDefB
+!!REDIRECT HardCopyDefWidth     hcopytech#HardCopyDefB
+!!REDIRECT HardCopyDefXoff      hcopytech#HardCopyDefB
+!!REDIRECT HardCopyDefYoff      hcopytech#HardCopyDefB
+!!REDIRECT HardCopyMinHeight    hcopytech#HardCopyMinB
+!!REDIRECT HardCopyMinWidth     hcopytech#HardCopyMinB
+!!REDIRECT HardCopyMinXoff      hcopytech#HardCopyMinB
+!!REDIRECT HardCopyMinYoff      hcopytech#HardCopyMinB
+!!REDIRECT HardCopyMaxHeight    hcopytech#HardCopyMaxB
+!!REDIRECT HardCopyMaxWidth     hcopytech#HardCopyMaxB
+!!REDIRECT HardCopyMaxXoff      hcopytech#HardCopyMaxB
+!!REDIRECT HardCopyMaxYoff      hcopytech#HardCopyMaxB
+
+!! 071010
+!!KEYWORD
+hcopytech
+!!TITLE
+Hardcopy Driver Parameters
+!!HTML
+    By default, all hardcopy drivers available within the program are
+    made available to the user through the <b>Format</b> menu in the
+    <a href="hcopypanel"><b>Print Control Panel</b></a>.  Drivers can
+    be disabled, so they don't appear in the <b>Format</b> menu, by
+    adding the "<tt>off</tt>" keyword to the "<tt>HardCopyDevice</tt>"
+    line, which begins the block of lines describing the driver
+    defaults.  The driver blocks are found near the end of the
+    technology file, and are written in their entirety when the <a
+    href="xic:updat"><b>Save Tech</b></a> command is used to generate
+    a technology file.  It is not an error for a driver block to be
+    absent; internal defaults will be used.
+
+    <p>
+    The following keyword(s) may be used outside of the driver blocks
+    to set the default print driver.
+
+    <a name="DefaultDriver"></a>
+    <dl>
+    <dt><tt>DefaultDriver</tt> <i>driver_name</i>
+    <dd>This keyword sets the default print driver to use in both
+    electrical and physical modes.  When the <b>Print Control Panel</b>
+    initially appears, the <b>Format</b> menu will have this driver
+    selected.  The <i>driver_name</i> is one of the driver names as
+    listed in the <a href="HardCopyDevice"><tt>HardCopyDevice</tt></a>
+    keyword description.  The keyword <tt>AltDriver</tt> is recognized
+    as a synonym for this keyword.
+    </dl>
+
+    <a name="ElecDefaultDriver"></a>
+    <dl>
+    <dt><tt>ElecDefaultDriver</tt> <i>driver_name</i>
+    <dd>Similar to <tt>DefaultDriver</tt>, but sets the default to use
+    in electrical mode only.  The keyword <tt>AltElecDriver</tt> is a
+    synonym.
+    </dl>
+
+    <a name="PhysDefaultDriver"></a>
+    <dl>
+    <dt><tt>PhysDefaultDriver</tt> <i>driver_name</i>
+    <dd>Similar to <tt>DefaultDriver</tt>, but sets the default to use
+    in physical mode only.  The keyword <tt>AltPhysDriver</tt> is a
+    synonym.
+    </dl>
+
+    <p>
+    A driver block begins with a <tt>HardCopyDevice</tt> line naming
+    the driver, and ends with the next <tt>HardCopyDevice</tt> line or
+    end of file.  In addition to the <tt>HardCopy...</tt> keywords
+    that specify driver defaults, any of the keywords described in the
+    <a href="techfile:attr#pattr"><b>Presentation Attributes</b></a>
+    and <a href="techfile:attr#color"><b>Attribute Colors</b></a>
+    categories of the <a href="techfile:attr"><b>Technology File
+    Attributes</b></a> section can be used.  The attribute or color
+    will then apply while in print mode and the driver is selected,
+    both on-screen and in the driver output.  The keyword formats are
+    exactly as described in these subsections.  If not given in a
+    driver block, the driver will use the attribute or color values
+    set in the main part of the technology file, or the program
+    defaults if no value is specified.
+
+    <p>
+    Layer colors, fill, and visibility can be set on a per-layer
+    basis for the driver, by including a "mini-layer block".  This is
+    a truncated version of the layer blocks described in <a
+    href="techfile:layers"><b>Technology File Layer Blocks</b></a>. 
+    The only keywords which are accepted in a mini-layer block are
+    <tt>RGB</tt> (to set the color), <tt>Filled</tt> (to set the fill
+    pattern or outline style, and <tt>Invisible</tt> (to set
+    visibility).  However, there are two additional special keywords
+    that may be included in specific drivers:
+
+    <a name="HPGLfilled"></a>
+    <dl>
+    <dt><tt>HPGLfilled</tt> <i>filltype</i> [ <i>option1 option2</i> ]
+    <dd>This keyword is recognized and used only by the HP-GL
+    hard-copy driver ("hpgl_line_sraw_color"), and is used to specify
+    a fill pattern for the layer (electrical or physical).  The
+    parameters are those appropriate for the <tt>FT</tt> HPGL
+    directive, as documented in <i>The HP-GL2 and HP RTL Reference
+    Guide:  A Handbook for Program Developers</i> from
+    Hewlett-Packard, (ISBN 0-201-63325-6) pages 127-129.  This is
+    summarized below:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr>
+     <th>filltype</th>
+     <th>description</th>
+     <th>option1</th>
+     <th>option2</th>
+    </tr>
+    <tr>
+     <td>1</td>
+     <td>solid, bidirectional</td>
+     <td>ignored</td>
+     <td>ignored</td>
+    </tr>
+    <tr>
+     <td>2</td>
+     <td>solid, unidirectional</td>
+     <td>ignored</td>
+     <td>ignored</td>
+    </tr>
+    <tr>
+     <td>3</td>
+     <td>hatched, parallel lines</td>
+     <td>line spacing</td>
+     <td>line angle</td>
+    </tr>
+    <tr>
+     <td>4</td>
+     <td>crosshatched</td>
+     <td>line spacing</td>
+     <td>line angle</td>
+    </tr>
+    <tr>
+     <td>10</td>
+     <td>shadings</td>
+     <td>shading level</td>
+     <td>ignored</td>
+    </tr>
+    <tr>
+     <td>11</td>
+     <td>not supported</td>
+     <td>ignored</td>
+     <td>ignored</td>
+    </tr>
+    </table>
+
+    <p>
+    There are 1016 dots per inch and angles are in degrees.  Shading
+    level is 0-100.  If the <tt>HPGLfilled</tt> keyword is supplied
+    for a layer and the <i>filltype</i> and options (if given) are
+    valid, that fill will be used with the layer in HPGL output. 
+    There is presently no way to assign the layer color.
+
+    <p>
+    This parameter must be added to the technology file with a text
+    editor.  The default is no fill.  Note that the fill patterns
+    set on the screen in hard copy mode are not used by the HP-GL
+    driver.
+    </dl>
+
+    <a name="XfigFilled"></a>
+    <dl>
+    <dt><tt>XfigFilled</tt> <i>filltype</i>
+    <dd>This keyword is recognized and used only by the <tt>xfig</tt>
+    hard copy driver ("xfig_line_draw_color"), and allows setting the
+    fill patterns for the layer (electrical or physical).  The
+    <i>filltype</i> is an integer 1-56, which selects one of
+    <tt>xfig</tt>'s internal fill patterns.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td><td>No fill</td></tr>
+    <tr><td>...</td><td>shades</td></tr>
+    <tr><td>20</td><td>Full saturation of the color</td></tr>
+    <tr><td>...</td><td>tints</td></tr>
+    <tr><td>40</td><td>White</td></tr>
+    <tr><td>41</td><td>30 degree left diagonal pattern</td></tr>
+    <tr><td>42</td><td>30 degree right diagonal pattern</td></tr>
+    <tr><td>43</td><td>30 degree crosshatch</td></tr>
+    <tr><td>44</td><td>45 degree left diagonal pattern</td></tr>
+    <tr><td>45</td><td>45 degree right diagonal pattern</td></tr>
+    <tr><td>46</td><td>45 degree crosshatch</td></tr>
+    <tr><td>47</td><td>Bricks</td></tr>
+    <tr><td>48</td><td>Circles</td></tr>
+    <tr><td>49</td><td>Horizontal lines</td></tr>
+    <tr><td>50</td><td>Vertical lines</td></tr>
+    <tr><td>51</td><td>Crosshatch</td></tr>
+    <tr><td>52</td><td>Fish scales</td></tr>
+    <tr><td>53</td><td>Small fish scales</td></tr>
+    <tr><td>54</td><td>Octagons</td></tr>
+    <tr><td>55</td><td>Horizontal "tire treads"</td></tr>
+    <tr><td>56</td><td>Vertical "tire treads"</td></tr>
+    </table>
+
+    <p>
+    Values 1 to 19 are "shades" of the color, from darker to lighter,
+    a shade is defined as the color mixed with black.  Values from 21
+    to 39 are "tints" of the color from the color to white, a tint is
+    defined as the color mixed with white.  The <tt>XfigFilled</tt>
+    parameter must be added to the technology file with a text editor. 
+    The default is no fill.  Note that the fill patterns set on the
+    screen in hard copy mode are not used by the <tt>xfig</tt> driver.
+    </dl>
+
+    <p>
+    As for regular layer blocks, a mini-layer block starts with a
+    <tt>PhysLayer</tt> or <tt>ElecLayer</tt> keyword, or one of the
+    aliases.  The layer name given must be the name of a layer
+    supplied in one of the regular layer blocks.  A mini-layer block
+    terminates when a new mini-layer block starts, or at the end of
+    the driver block.  The block order, and order with respect to
+    other keywords, is arbitrary.
+
+    <p>
+    The other keywords of the driver block are described below.
+
+    <a name="HardCopyDevice"></a>
+    <dl>
+    <dt><tt>HardCopyDevice</tt> <i>device_name</i> [off]
+    <dd>This line begins the driver block, and the keywords that
+    follow apply to the <i>device_name</i> driver.  The names are
+    internally recognized strings:
+    <blockquote><tt>
+        hp_laser_pcl<br>
+        hpgl_line_draw_color<br>
+        postscript_bitmap<br>
+        postscript_bitmap_encoded<br>
+        postscript_bitmap_color<br>
+        postscript_bitmap_color_encoded<br>
+        postscript_line_draw<br>
+        postscript_line_draw_color<br>
+        windows_native<br>
+        xfig_line_draw_color<br>
+        image<br>
+    </tt></blockquote>
+    If the "<tt>off</tt>" keyword is given ("<tt>disable</tt>" and
+    "<tt>n</tt>" are synonyms), the driver is disabled, and will not
+    appear in the <b>Format</b> menu of the <b>Print Control
+    Panel</b>.
+    </dl>
+
+    <a name="HardCopyLegend"></a>
+    <dl>
+    <dt><tt>HardCopyLegend</tt> <i>n</i>
+    <dd>
+    This keyword sets the default status of the <b>Legend</b> button
+    in the <b>Print Control Panel</b> when the driver is active. 
+    Values can be 0, 1, or 2:
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td><td><b>Legend</b> button is off</td></tr>
+    <tr><td>1</td><td><b>Legend</b> button is on</td></tr>
+    <tr><td>2</td><td><b>Legend</b> button is grayed and inactive</td></tr>
+    </table>
+    </dl>
+
+    <a name="HardCopyOrient"></a>
+    <dl>
+    <dt><tt>HardCopyOrient</tt> <i>n</i>
+    <dd>
+    This keyword sets the default status of the <b>Portrait</b>,
+    <b>Landscape</b>, and <b>Best Fit</b> buttons in the <b>Print
+    Control Panel</b> while the driver is active.  Values are 0-3:
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>bit 0 set</td><td><b>Landscape</b> on, <b>Portrait</b> off
+     </td></tr>
+    <tr><td>bit 0 unset</td><td><b>Landscape</b> off, <b>Portrait</b> on
+     </td></tr>
+    <tr><td>bit 1 set</td><td><b>Best Fit</b> button on</td></tr>
+    <tr><td>bit 1 unset</td><td><b>Best Fit</b> button off</td></tr>
+    </table>
+    </dl>
+
+    <a name="HardCopyCommand"></a>
+    <dl>
+    <dt><tt>HardCopyCommand</tt> <i>command string</i>
+    <dd>Specifies the command to use to queue the plot.  This will be
+    shown in the command text box of the <b>Print Control Panel</b>. 
+    The characters "%s" will be replaced with the name of the
+    temporary file, all other characters are passed verbatim.  If "%s"
+    does not appear in the string, the file name will be appended to
+    the string, separated by a space character.  This keyword is
+    ignored under Microsoft Windows.
+    </dl>
+
+    <a name="HardCopyResol"></a>
+    <dl>
+    <dt><tt>HardCopyResol</tt> <i>list_of_integers</i>
+    <dd>This sets the resolutions supported by the driver, in dots per
+      inch.
+    </dl>
+
+    <a name="HardCopyDefResol"></a>
+    <dl>
+    <dt><tt>HardCopyDefResol</tt> <i>integer</i>
+    <dd>This has meaning only to drivers that have selectable
+    resolutions.  The value following this keyword is a zero-based
+    index into the list of resolutions as given with the
+    <tt>HardCopyResol</tt> keyword, and indicates the default
+    resolution which will be selected in the <b>Print Control
+    Panel</b> for the driver.
+
+    <p>
+    Example:
+    <blockquote><tt>
+    HardCopyDevice postscript_line_draw<br>
+    HardCopyResol 72 75 100 150 200 300 400<br>
+    HardCopyDefResol 2<br>
+    </tt></blockquote>
+
+    This will select 100 as the resolution for the
+    <tt>postscript_line_draw</tt> driver when the <b>Print Control
+    Panel</b> first appears.  The resolution can be changed with the
+    menu.
+    </dl>
+
+    <a name="HardCopyDefB"></a>
+    <dl>
+    <dt><tt>HardCopyDefHeight</tt> <i>float_number</i>
+    <dt><tt>HardCopyDefWidth</tt> <i>float_number</i>
+    <dt><tt>HardCopyDefXoff</tt> <i>float_number</i>
+    <dt><tt>HardCopyDefYoff</tt> <i>float_number</i>
+    <dd>These set the default image size and location, and are in
+    inches, unless followed by the letter 'c' which denotes
+    centimeters.  The <tt>Yoff</tt> number may be interpreted as a top
+    or bottom margin, depending upon the driver.  The dimensions are
+    in all cases relative to the portrait orientation of the page.  If
+    the width or height is set to zero (but not both) the driver will
+    assume auto-width or auto-hight mode, where the width or height is
+    set to the minimum necessary to render the object.
+    </dl>
+
+    <a name="HardCopyMinB"></a>
+    <dl>
+    <dt><tt>HardCopyMinHeight</tt> <i>float_number</i>
+    <dt><tt>HardCopyMinWidth</tt> <i>float_number</i>
+    <dt><tt>HardCopyMinXoff</tt> <i>float_number</i>
+    <dt><tt>HardCopyMinYoff</tt> <i>float_number</i>
+    <dd>These set the minimum accepted values for the parameters.
+    </dl>
+
+    <a name="HardCopyMaxB"></a>
+    <dl>
+    <dt><tt>HardCopyMaxHeight</tt> <i>float_number</i>
+    <dt><tt>HardCopyMaxWidth</tt> <i>float_number</i>
+    <dt><tt>HardCopyMaxXoff</tt> <i>float_number</i>
+    <dt><tt>HardCopyMaxYoff</tt> <i>float_number</i>
+    <dd>These set the maximum accepted values for the parameters.
+    </dl>
+
+!!SEEALSO
+techfile
+
+!! 090814
+!!KEYWORD
+resourcefile
+!!TITLE
+Resource File
+!!HTML
+    One can use the resource-setting capability of the X-Windows
+    system to set attribute colors.  This applies when running under
+    the X-Windows system, which is presently true for all releases
+    except those for Microsoft Windows.  However, this is archaic and
+    not really recommended.
+
+    <p>
+    One can create an X resource file for <i>Xic</i>.  This is a file
+    that should be created in the user's home directory, with a name
+    that is the executable program name with the first letter
+    capitalized, i.e., <tt>Xic</tt>.  The file contains lines in the
+    following form:
+
+    <blockquote><tt>
+    xic.HighlightingColor: green<br>
+    xic.MarkerColor: blue
+    </tt></blockquote>
+
+    or generally
+    <blockquote>
+    <tt>xic.</tt><i>resourcename</i>: <i>colorspec</i>
+    </blockquote>
+
+    <p>
+    The <i>resourcename</i> is a keyword from the list of <a
+    href="techfile:attr#color">attribute colors</a>.  Note that the
+    keyword must be used, not an alias.  The aliases are recognized in
+    the technology file and <a href="!setcolor"><b>!setcolor</b></a>
+    command.  The <i>colorspec</i> string is the name of a color or an
+    RGB triple:
+
+    <ul>
+    <li>The name of a color.  The recognized names can be listed from
+    the <a href"xic:color"><b>Set Color</b></a> pop-up in the
+    <b>Attributes</b> menu with the <b>Colors</b> button.
+
+    <li>Three space-separated numbers, each 0-255, representing the
+    red, green, and blue intensity.  E.g., "196 240 235".
+
+    <li>Other forms recognized by the <tt>XParseColor</tt> C library
+    function, including "<tt>#RRRRGGGGBBBB</tt>" and
+    "<tt>rgb:RRRR/GGGG/BBBB</tt>".  Here, <tt>R</tt>, <tt>G</tt>, and
+    <tt>B</tt> are single hexadecimal digits.
+    </ul>
+
+!!SEEALSO
+techfile:attr
+
+!! not in manual
+!!KEYWORD
+techfile:obsolete
+!!TITLE
+Obsolete Keywords, Updating Legacy Techfiles
+!!HTML
+    Prior ro release 3.2.11, there were "<tt>Alt</tt>" versions of
+    many technology file keywords, which were active during print mode
+    only (for any driver).  In release 3.2.11, the system was changed
+    so that attributes could be set on a per-driver basis, by
+    including the regular keyword within the driver block.  The
+    "<tt>Alt</tt>" keywords are presently obsolete.
+
+    <p>
+    The presence of these keywords in legacy technology files will do
+    no harm, but will generate warning messages when the technology
+    file is read.  There is no common print-mode attribute set, so the
+    attributes in force in print mode will not be the same as in
+    earlier releases.
+
+    <p>
+    A legacy technology file can be fairly easily updated by hand,
+    using a text editor.  Search the file for "<tt>Alt</tt>".  The
+    obsolete keywords are listed in the tables below.  Following each
+    table are instructions for dealing with those keywords.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee" align="left">
+    <tr><th colspan=2>Obsolete Color Keywords</th></tr)
+    <tr><th>Keyword<br>Alias</th></tr>
+    <tr><td><tt>AltBackground</tt></td></tr>
+    <tr><td><tt>AltElecBackground<br>
+      ElecAltBackground</tt></td></tr>
+    <tr><td><tt>AltPhysBackground<br>
+      PhysAltBackground</tt></td></tr>
+    <tr><td><tt>AltFineGridColor<br>AltFineGrid</tt></td></tr>
+    <tr><td><tt>AltElecFineGridColor<br>AltElecFineGrid<br>ElecAltFineGrid<br>
+      ElecAltFineGridColor</tt></td></tr>
+    <tr><td><tt>AltPhysFineGridColor<br>AltPhysFineGrid<br>PhysAltFineGrid<br>
+      PhysAltFineGridColor</tt></td></tr>
+    <tr><td><tt>AltCoarseGridColor<br>AltCoarseGrid</tt></td></tr>
+    <tr><td><tt>AltElecCoarseGridColor<br>AltElecCoarseGrid<br>ElecAltCoarseGrid<br>
+      ElecAltCoarseGridColor</tt></td></tr>
+    <tr><td><tt>AltPhysCoarseGridColor<br>AltPhysCoarseGrid<br>PhysAltCoarseGrid<br>
+      PhysAltCoarseGridColor</tt></td></td></tr>
+    </table>
+
+    &nbsp;&nbsp;
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th colspan=2>Obsolete Attribute Keywords</th></tr)
+    <tr><th>Keyword<br>Alias</th></tr>
+    <tr><td><tt>AltAxes</tt></td></tr>
+    <tr><td><tt>AltGridSpacing</tt></td></tr>
+    <tr><td><tt>AltPhysGridSpacing<br>
+      PhysAltGridSpacing</tt></td></tr>
+    <tr><td><tt>AltElecGridSpacing<br>
+      ElecAltGridSpacing</tt></td></tr>
+    <tr><td><tt>AltShowGrid</tt></td></tr>
+    <tr><td><tt>AltElecShowGrid<br>
+      ElecAltShowGrid</tt></td></tr>
+    <tr><td><tt>AltPhysShowGrid<br>
+      PhysAltShowGrid</tt></td></tr>
+    <tr><td><tt>AltGridOnBottom</tt></td></tr>
+    <tr><td><tt>AltElecGridOnBottom<br>
+      ElecAltGridOnBottom</tt></td></tr>
+    <tr><td><tt>AltPhysGridOnBottom<br>
+      PhysAltGridOnBottom</tt></td></tr>
+    <tr><td><tt>AltGridStyle</tt></td></tr>
+    <tr><td><tt>AltElecGridStyle<br>
+      ElecAltGridStyle</tt></td></tr>
+    <tr><td><tt>AltPhysGridStyle<br>
+      PhysAltGridStyle</tt></td></tr>
+    </table><br clear="all">
+
+    <p>
+    These are the obsolete color and attribute keywords.  Move the line
+    into the print driver blocks that you use, and wish to have that
+    attribute or color in force.  Delete the "<tt>Alt</tt>" part of
+    the keyword.  The driver blocks are found near the end of the
+    file.  The new lines can be placed at the end of the block.
+
+    <p>
+    Exceptions are the GridSpacing keywords, these should be deleted
+    as they are not recognized in print blocks.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Obsolete Layer Block Keywords</th></tr)
+    <tr><th>Keyword</th></tr>
+    <tr><td><tt>AltRGB</tt></td></tr)
+    <tr><td><tt>AltFilled</tt></td></tr)
+    <tr><td><tt>AltInvisible</tt></td></tr)
+    <tr><td><tt>HPGLfilled</tt></td></tr)
+    <tr><td><tt>XfigFilled</tt></td></tr)
+    </table>
+
+    <p>
+    These are keywords that may be found in the layer blocks.  If the
+    "<tt>Alt</tt>" keyword was found in a layer block, it must be
+    included in a "mini-layer block" in the driver block for each
+    driver where the attribute should be in force.  This means that it
+    must follow a layer definition line in the driver block, that may
+    have to be added as well.  These are lines like "<tt>LayerName
+    FOO</tt>" or "<tt>ElecLayer SCED</tt>".
+
+    <p>
+    For example, suppose that the "<tt>LayerName FOO</tt>" block
+    contains an <tt>AltRGB</tt> line and an <tt>AltFilled</tt> line. 
+    Copy the "<tt>LayerName FOO</tt>" line to the desired layer
+    blocks.  Follow these with the <tt>AltRGB</tt> and
+    <tt>AltFilled</tt> lines, with the "<tt>Alt</tt>" removed (so just
+    "<tt>RGB</tt>" and "<tt>Filled</tt>"), and remove these lines from
+    the original layer block.
+
+    <p>
+    The <tt>HPGLfilled</tt> and <tt>XfigFilled</tt> keywords, if found
+    in the main layer blocks, should be moved into a mini-layer block
+    in the HPGL and Xfig drivers (respectively) only.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Obsolete Driver Block Keywords</th></tr)
+    <tr><th>Keyword</th></tr>
+    <tr><td><tt>NoAlt</tt></td></tr)
+    </table>
+
+    <p>
+    The <tt>NoAlt</tt> keyword, if found in driver blocks, should be
+    deleted.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th colspan=2>Deprecated Keywords</th></tr)
+    <tr><th>Old Keyword</th> <th>New Keyword</th></tr>
+    <tr><td><tt>LayerName</tt></td> <td><tt>PhysLayer</tt></td></tr>
+    <tr><td><tt>AltDriver</tt></td> <td><tt>DefaultDriver</tt></td></tr>
+    <tr><td><tt>AltElecDriver</tt></td> <td><tt>ElecDefaultDriver</tt></td></tr>
+    <tr><td><tt>ElecAltDriver</tt></td> <td><tt>ElecDefaultDriver</tt></td></tr>
+    <tr><td><tt>AltPhysDriver</tt></td> <td><tt>PhysDefaultDriver</tt></td></tr>
+    <tr><td><tt>PhysAltDriver</tt></td> <td><tt>PhysDefaultDriver</tt></td></tr>
+    </table>
+
+    <p>
+    Finally, there are a few keywords whose name has changed.  The old
+    name is still recognized, so updating is optional, but it is
+    recommended that these be changed to the new name.
+

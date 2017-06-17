@@ -1,0 +1,33 @@
+$Id: README,v 1.1 2015/02/23 16:57:14 stevew Exp $
+
+This is a simple linear inductor model.  For technical reasons,
+inductor-type "branch" devices were not supported in the original ADMS
+scripts.  Support has been added for linear inductors.  There may be
+issues with inductors that have dependency on terminal voltages as
+branch derivatives are not yet handled in the Jacobian framework in
+the scripts.  However, nonlinear inductors with dependence only on the
+branch current should be ok.
+
+To build:
+
+0.  Make sure that the admst-2.3.0-wr package is installed on your
+system.  This is available from the free software area of wrcad.com. 
+The package has important improvements and bug fixes, and is required
+for building modules for WRspice.  Use of another adms distribution
+will cause trouble.
+
+1.  If you are reading this from the WRspice installation area, copy
+this directory to a personal work area, and work from there.  Below,
+"this directory" implies the copied directory (with its files and
+any sub-directories).
+
+2.  The Makefile has been provided.  Have a look at the top part of
+the file where the configuration variables are set, and read the
+comments.  Make any desired changes.
+
+3.  Type "make".  This will create and compile the C++ files, eventually
+producing the loadable module named "ind.so" ("ind.dylib" in OS X).
+
+4.  Use the devload command or -m command-line option in WRspice to
+load the module.  You will then be able to run the examples.
+

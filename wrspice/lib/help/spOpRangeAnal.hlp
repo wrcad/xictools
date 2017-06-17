@@ -1,0 +1,1046 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spOpRangeAnal.hlp,v 1.9 2015/11/03 05:24:27 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spOpRangeAnal.hlp
+!!TITLE
+spOpRangeAnal.hlp
+!!HTML 
+
+!!SUBTOPICS
+marganal
+oprng_analysis
+oprngfile 
+monte
+echof
+optimize
+
+
+!! margin.tex 012709
+!!KEYWORD
+marganal
+!!TITLE
+Circuit Margin Analysis
+!!HTML
+    <i>WRspice</i> has provision for automated operating range and
+    Monte Carlo analysis.  Both types of analysis perform repeated
+    simulation runs with varying parameters, and record whether or not
+    the circuit "worked" with that parameter set.  Writing the code
+    that tests whether the circuit is functioning properly or not is
+    probably the major challenge in applying these analyses.  It is
+    usually helpful to have a thorough understanding of how the
+    circuit behaves before performing margin analysis.  The margin
+    analysis is one of the later steps in circuit design.
+
+    <p>
+    Both types of margin analysis can use a file format which contains
+    the SPICE deck plus executable statements.  There are actually two
+    formats recognized, one for compatibility with the JSPICE3
+    program, and a new format particular to <i>WRspice</i>.  Use of
+    one of these formats is the most straightforward method of
+    initiating margin analysis, however there are short-cuts and hooks
+    for more advanced users.  The scripting capability is a powerful
+    tool, and in general allows much tedium to be automated.
+
+!!SUBTOPICS
+oprng_analysis
+monte
+optimize
+
+!! margin.tex 041911
+!!KEYWORD
+oprng_analysis
+!!TITLE
+Operating Range Analysis
+!!HTML 
+    In operating range analysis, a suitably configured source file
+    containing a circuit description is evaluated over a two
+    dimensional area of parameter space, producing an output file
+    describing a true/false result at each evaluated point.  The
+    algorithm and implementation are designed to be as efficient as
+    possible to speed execution.  Results can be viewed graphically
+    during or after simulation.
+
+    <p>
+    As with conventional circuit and command files, operating range
+    analysis files can be sourced by simply typing in the file name. 
+    If the file name happens to conflict with a <i>WRspice</i>
+    command, then the file can be input with the <a
+    href="source"><b>source</b></a> command by typing
+    <blockquote>
+    <tt>source</tt> <i>filename</i>
+    </blockquote>
+    In <a href="batchmode">batch mode</a>, the operating range
+    analysis is performed immediately.  Otherwise, actual operating
+    range analysis is performed with the <a
+    href="check"><b>check</b></a> command.  In batch mode, the
+    <b>check</b> command is run automatically, if the file has certain
+    properties to be described.
+
+    <p>
+    In order to initiate margin analysis with the <b>check</b>
+    command, the current circuit must be from a margin analysis file,
+    or have appropriate bound codeblocks.  Every circuit suitable for
+    margin analysis must have a control block which contains a shell
+    routine which will evaluate the circuit variables and establish
+    whether or not the operation is correct.  If operation is
+    incorrect, a vector named "<tt>checkFAIL</tt>" must be set to a
+    non-zero value.  These control statements can be supplied in the
+    circuit file in a block initiated with a <tt>.control</tt> line
+    and ending with a <tt>.endc</tt> line, or through another file
+    added as a codeblock and bound to the "controls" of the circuit,
+    through use of the <a href="codeblock"><b>codeblock</b></a>
+    command.
+
+    <p>
+    A second block of statements, the "header" or "exec" block, is
+    typically required, though it is not an error if none is provided. 
+    This block provides initializing statements, and is executed at
+    the start of operating range analysis, or at the start of each
+    trial in <a href="monte">Monte Carlo</a> analysis.  This block can
+    be provided in the circuit file within an <tt>.exec</tt> and an
+    <tt>.endc</tt> line, or can be a bound codeblock, bound to the
+    "execs" of the circuit.
+
+    <p>
+    Monte Carlo analysis files differ from operating range files only
+    in the header or <tt>.exec</tt> lines (or header codeblock). 
+    During Monte Carlo analysis, the header block is executed before
+    every simulation so that variables can be updated.  In operating
+    range analysis variables are initialized by the header block only
+    once, at the start of analysis.
+
+    <p>
+    If the circuit has a line with the characters <tt>.monte</tt>,
+    then Monte Carlo analysis is assumed, and the -m option to the
+    <b>check</b> command is unnecessary.  Similarly, a <tt>.checkall</tt>
+    line will imply the checking of all points in operating range
+    analysis, making the -a option to the <b>check</b> command unnecessary. 
+    A line containing the characters <tt>.check</tt> will indicate
+    (the default) operating range analysis.  One of these lines must
+    appear if the file is to be analyzed in batch mode.  These lines
+    also suppress the automatic execution of the <tt>.exec</tt> lines
+    and the <tt>.control</tt> lines as the file is sourced (the
+    <tt>.exec</tt> lines are actually executed, but no vectors are
+    saved, to enable correct shell variable expansion).  A line
+    containing the string <tt>.noexec</tt> appearing in the circuit
+    file will have the same effect.
+
+    <p>
+    There are a number of vectors with defined names which control
+    operating range and Monte Carlo analysis.  In addition, there are
+    relevant shell variables.  The vectors created for use in an
+    analysis run are assigned to a plot structure created for the
+    analysis.  This plot becomes the current plot after the analysis
+    starts.  These vectors are usually set in the header
+    (<tt>.exec</tt>) block, unless the defaults are used.  They can
+    also be set by hand, or under the control of another script, if
+    the current plot is the <tt>constants</tt> plot, before starting
+    the analysis.  The pre-named vectors are as follows:
+
+    <dl>
+    <dt><tt>checkPNTS</tt> (real, length >= 1)<dd>
+    These are the points of the scale variable (e.g., <tt>time</tt> in
+    transient analysis) at which the pass/fail test is applied.  If a
+    fail is encountered, the simulation is stopped and the next trial
+    started.  If not specified, the pass/fail test is applied after
+    the trial is finished.  The <tt>checkPNTS</tt> vector is usually
+    set in the header to a list of values with the <a
+    href="compose"><b>compose</b></a> command.
+    </dl>
+
+    <dl>
+    <dt><tt>checkVAL1</tt> (real, length 1)<dd>
+    This is the initial central value of the first parameter to be
+    varied during operating range analysis.  It is not used in Monte
+    Carlo analysis.
+    </dl>
+
+    <dl>
+    <dt><tt>checkDEL1</tt> (real, length 1)<dd>
+    The first central value will be incremented or decremented by this
+    value between trials in operating range analysis.  It is not used
+    in Monte Carlo analysis.
+    </dl>
+
+    <dl>
+    <dt><tt>checkSTP1</tt> (integer, length 1)<dd>
+    This is the number of trials above and below the central value. 
+    In Monte Carlo analysis, it partially specifies the number of
+    simulation runs to perform, and specifies the X-axis of the visual
+    array used to monitor progress (with the <a
+    href="mplot"><b>mplot</b></a> command).  In operating range
+    analysis, the default is zero.  In Monte Carlo analysis, the
+    default is 3.
+    </dl>
+
+    <dl>
+    <dt><tt>checkVAL2 checkDEL2 checkSTP2</tt><dd>
+    These are as above, but relate to the second parameter to be
+    varied in the circuit in operating range analysis.  In Monte Carlo
+    analysis, only <tt>checkSTP2</tt> is used, in a manner analogous
+    to <tt>checkSTP1</tt>.  The total number of simulations in Monte
+    Carlo analysis is (2*<tt>checkSTP1</tt> + 1)*(2*<tt>checkSTP2</tt>
+    + 1), the same as would be checked in operating range analysis. 
+    The <tt>checkSTP2</tt> variable sets the number of cells in the
+    Y-axis of the plot produced by <b>mplot</b>.
+    </dl>
+
+    <dl>
+    <dt><tt>checkFAIL</tt>  (integer, length 1, 0 or nonzero)<dd>
+    This is the global pass/fail flag, which is set after each trial,
+    nonzero indicates failure.  This variable is used in both
+    operating range and Monte Carlo analysis.  This variable is set by
+    the code which evaluates the pass/fail criteria.
+    </dl>
+
+    <dl>
+    <dt><tt>opmin1, opmax1</tt> (real, length >= 1)<dd>
+    The operating range analysis can be directed to find the operating
+    range extrema of the first parameter for each value of the second
+    parameter.  These vectors contain the values found, and are
+    automatically generated if the range finding feature is enabled. 
+    They are not generated in Monte Carlo analysis.
+    </dl>
+
+    <dl>
+    <dt><tt>opmin2, opmax2</tt> (real, length >= 1)<dd>
+    The operating range analysis can be directed to find the operating
+    range extrema of the second parameter for each value of the first
+    parameter.  These vectors contain the values found, and are
+    automatically generated if the range finding feature is enabled. 
+    They are not generated in Monte Carlo analysis.
+    </dl>
+
+    <dl>
+    <dt><tt>range, r_scale</tt> (real, length >= 1)<dd>
+    If the range finder was active, these vectors are automatically
+    created and added to the plot.  The <tt>range</tt> vector and its
+    scale <tt>r_scale</tt> contain all of the extrema data, formatted
+    in such a way that the path is the contour of the boundary of the
+    pass region.  The <a href="plot"><b>plot</b></a> command can be
+    used to display this contour by entering "<tt>plot range</tt>".
+    </dl>
+
+    <dl>
+    <dt><tt>value</tt> (real, length variable)<dd>
+    This vector can be used to pass trial values to the circuit,
+    otherwise shell variables are used.  This pertains to operating
+    range and Monte Carlo analysis.  The name of this vector can be
+    redefined by setting a shell variable named "value" to a new name.
+    </dl>
+
+    <dl>
+    <dt><tt>checkN1, checkN2</tt> (integer, length 1)<dd>
+    These are the indices into the value array of the two parameters
+    being varied in operating range analysis.  The other entries are
+    fixed.  These vectors are not used if shell variables pass the
+    trial values to the circuit, and are not used in Monte Carlo
+    analysis.
+
+    <p>
+    The name of these vectors can be redefined by setting a shell
+    variable of the same name ("checkN1" or "checkN2").  The value of
+    this variable, if a non-numeric string token, is taken as the name
+    of a vector containing the index.  If the variable is set to a
+    positive integer, that integer will be taken as the index, and no
+    vector is used.
+    </dl>
+
+    The shell variables are:
+
+    <dl>
+    <dt><tt>checkiterate</tt> (shell variable, integer 0-10)<dd>
+    This is the binary search depth used in finding operating range
+    extrema.  If not set or set to zero, the search is skipped.  The
+    binary search is used to find the exact values of the operating
+    region boundary, and has no relevance to the usual set of
+    pass/fail outputs generated with the <b>check</b> command.  If
+    nonzero, during operating range analysis and not in all-points
+    mode, the extrema for each row and column are found, and saved in
+    the <tt>opmin1</tt>, <tt>opmax1</tt>, <tt>opmin2</tt>, and
+    <tt>opmax2</tt> vectors, which are then used to generate the
+    <tt>range</tt> and <tt>r_scale</tt> vectors described above. 
+
+    <p>
+    If both of the input vectors <tt>checkSTP1</tt> and
+    <tt>checkSTP2</tt> are unset or set to zero, the range finder
+    behaves somewhat differently.  In this case, if the all-points
+    mode is active, and the file is using an input "value" vector
+    rather than shell variables for alterable parameters, then the
+    range of each of these parameters is determined.  A masking
+    facility allows some of these inputs to be skipped.  If the
+    all-points mode is not set, the range for the two variables is
+    found.  The range finder is described in more detail below.  The
+    range finder is not used in Monte Carlo analysis, and the
+    <tt>checkiterate</tt> variable is ignored in that case.
+    </dl>
+
+    <dl>
+    <dt><tt>value1, value2</tt><dd>
+    The <tt>value1</tt> and <tt>value2</tt> variables are set to the
+    current trial values to be used in the circuit (parameters 1 and
+    2).  The SPICE deck should reference these variables (as
+    <tt>$value1</tt> and <tt>$value2</tt>) as the parameters to vary. 
+    Alternatively, the vector <tt>value</tt> array can be used for
+    this purpose.  These variables can be used in Monte Carlo
+    analysis, but are not set implicitly.
+    </dl>
+
+    <p>
+    If any of the shell variables <tt>value1</tt>, <tt>value2</tt>, or
+    a <i>shell</i> variable named "value" are set to a string, then
+    the shell variable or vector named in the string will have the
+    same function as the assigned-to variable.  For example, if in the
+    header one has "<tt>set value1 = C1</tt>", then the variable
+    reference <tt>$C1</tt> would be used in the file to introduce
+    variations, rather than <tt>$value1</tt>.  Similarly, if we have
+    issued "<tt>set value = myvec</tt>", the vector <tt>myvec</tt>
+    would contain values to vary (using the pointer vectors
+    <tt>checkN1</tt> and <tt>checkN2</tt>), and a reference would have
+    the form <tt>$&myvec[$&checkN1]</tt>).  Note that the alternate
+    variables are not automatically defined before the circuit is
+    parsed, so that they should be set to some value in the header. 
+    The default <tt>$value1</tt> and <tt>$value2</tt> are predefined
+    to zero.
+
+    <p>
+    The "checkN1" and "checkN2" names can also be set as a shell
+    variable, the value of which if a positive integer will supply the
+    index, or if a string token will redefine the name of the vector
+    which provides the index.
+
+    <p>
+    The <tt>checkVAL1</tt>, <tt>checkDEL1</tt>, etc.  vectors to be
+    used must be defined and properly initialized, either in the deck
+    or directly from the shell, before analysis.
+
+    <p>
+    The operating range analysis sets the shell variables
+    <tt>value1</tt> and <tt>value2</tt> to the variables being varied. 
+    In addition, vector variables can be set.  This is needed for
+    scripts such as optimization where the parameter to be varied is
+    required to be under program control.  If a vector called
+    <tt>value</tt> is defined, and a vector called <tt>checkN1</tt> is
+    defined, and <tt>checkN1</tt> >= 0 and <tt>checkN1</tt> &#60 the
+    length of value, then <tt>value[checkN1]</tt> is set to
+    <tt>$value1</tt>.  Similarly, if a vector called <tt>value</tt> is
+    defined, and a vector called <tt>checkN2</tt> is defined, and
+    <tt>checkN2</tt> >= 0 and <tt>checkN2</tt> &#60 the length of value,
+    then <tt>value[checkN2]</tt> is set to <tt>$value2</tt>.  Thus,
+    instead of invoking <tt>$value1</tt> and <tt>$value2</tt> in the
+    SPICE text, one can instead invoke <tt>$&value[$&checkN1]</tt>,
+    <tt>$&value[$&checkN2]</tt>, where we have previously defined the
+    vectors <tt>value</tt>, <tt>checkN1</tt>, <tt>checkN2</tt>.  Thus,
+    the file could have a number of parameters set to
+    <tt>$&value[0]</tt>, <tt>$&value[1]</tt>, ...  .  If
+    <tt>checkN1</tt> is set to 2, for example, <tt>$&value[2]</tt>
+    would be varied as parameter 1.  The unreferenced values would be
+    fixed at predefined entries.  As mentioned above, the "value1",
+    "value2", "value", "checkN1", and "checkN2" names can be redefined
+    by assigning the name of a new variable to the shell variable name
+    being reassigned, using the <a href="set"><b>set</b></a> command.
+
+    <p>
+    There are a number of ways to introduce the trial variations into
+    the circuit.  Of these, we have explicitly identified shell
+    variable and vector substitution.  Below is a review of these
+    methods.
+
+    <ol>
+    <li>Perhaps the most direct method is to include the forms
+    <tt>$value1</tt> and <tt>$value2</tt> (if two dimensional) for
+    substitution in the current circuit.  The variables will be
+    replaced by the appropriate numerical values before each trial, as
+    for shell variable substitution.
+
+    <p>
+    <li>If a variable named "<tt>value1</tt>" is set to a string token
+    with the <a href="set"><b>set</b></a> command, then a variable of
+    the same name as the string token will hold the trial values,
+    instead of <tt>value1</tt>.  The same applies to <tt>value2</tt>. 
+    Thus, for example, if the circuit contains expansion forms of the
+    variables <tt>foo1</tt> and <tt>foo2</tt> (i.e., <tt>$foo1</tt>
+    and <tt>$foo2</tt>), one could perform an analysis using these
+    variables by giving
+
+    <blockquote>
+      <tt>set value1 = foo1 value2 = foo2<br>
+    </blockquote>
+
+    <p>
+    <li>The method above allows the SPICE <a
+    href="options">options</a> to be set.  These are the built-in
+    keywords, which can be set with the <b>set</b> command or in a
+    <tt>.options</tt> line in an input file, which control or provide
+    parameters to the simulation.
+
+    <p>
+    The most important example is temperature, using the <tt>temp</tt>
+    option.  To include temperaure as one of the parameters to vary,
+    one could provide, for example
+
+    <blockquote>
+      <tt>set value1=temp<br>
+    </blockquote>
+
+    <p>
+    <li>If there are existing vectors named "<tt>checkN1</tt>" and (if
+    two dimensions) "<tt>checkN2</tt>" that contain integer values,
+    and the variable named "<tt>value</tt>" is set to the name of an
+    existing vector (or a vector named "<tt>value</tt>" exists), then
+    the vector components indexed by <tt>checkN1</tt> and
+    <tt>checkN2</tt> will hold trial values, if within the size of the
+    vector.  For example:
+
+    <blockquote>
+      <tt>let vec[10] = 0<br>
+      let checkN1 = 5 checkN2 = 6<br>
+      set value = vec<br>
+    </blockquote>
+
+    <p>
+    The first line creates a vector named "<tt>vec</tt>" of size
+    sufficient to contain the indices.  The iterated values will be
+    placed in <tt>vec[5]</tt> and <tt>vec[6]</tt>.  The circuit should
+    reference these values, either through shell substitution (e.g.,
+    <tt>$&vec[5]</tt>) or directly as vectors.
+
+    <p>
+    Alternatively, a variable named "<tt>checkN1</tt>" can be set.  If
+    the value of this variable is an integer, that integer will be
+    used as the index.  If the variable is a name token, then the
+    index will be supplied by a vector of the given name.  The same
+    applies to <tt>checkN2</tt>.  The following example illustrates
+    these alternatives:
+
+    <blockquote>
+      <tt>let vec[10] = 0<br>
+      set checkN1 = 5<br>
+      let foo = 6<br>
+      set checkN2 = foo<br>
+    </blockquote>
+
+    <p>
+    <li>Given that it is possible to set a vector as if a variable,
+    by using the <b>set</b> command with the syntax
+
+    <blockquote>
+      <tt>set &</tt><i>vector</i> <tt>=</tt> <i>value</i>
+    </blockquote>
+
+    <p>
+    it is possible to place trial values into vectors during analysis. 
+    The form above is equivalent to
+
+    <blockquote>
+      <tt>let</tt> <i>vector</i> <tt>=</tt> <i>value</i>
+    </blockquote>
+
+    <p>
+    Note, however, that the '<tt>&</tt>' character has special
+    significance to the <i>WRspice</i> shell, so when this form if
+    given on the command line the ampersand should be quoted, e.g., by
+    preceding it with a backslash.
+
+    <p>
+    Thus, suppose that the circuit depends on a vector named
+    <tt>delta</tt>.  One can set up trial substitution using this
+    vector as
+
+    <blockquote>
+      <tt>set value1 = '&delta'<br>
+    </blockquote>
+
+    <p>
+    <li>The construct above can be extended to "special" vectors,
+    which enable device and model parameters to be set ahead of the
+    next analysis.  These special vectors have the form
+
+    <blockquote>
+      <tt>@</tt><i>devname</i><tt>[</tt><i>param</i><tt>]</tt>
+    </blockquote>
+
+    where <i>devname</i> is the name of a device or model in the
+    circuit, and <i>param</i> is one of the parameter keywords for the
+    device or model.  These keywords can be listed with the <a
+    href=show><b>show</b></a> command.
+
+    <p>
+    For example, if the circuit contains a MOS device <tt>m1</tt> one
+    might have
+
+    <blockquote>
+      <tt>set value1 = '&@m1[w]'<br>
+    </blockquote>
+
+    This will perform the analysis while setting the <tt>m1</tt>
+    <tt>w</tt> (device width) parameter as parameter 1.
+    </ol>
+
+    <p>
+    The range is constructed by row, where columns represent different
+    values for <tt>value1</tt>.  A second pass fills in concave
+    contours in column order, thus the same pattern should be obtained
+    independently of the parameter ordering.  Patterns with islands or
+    reentrancy may not be displayed correctly.  The only way to make
+    the algorithm completely foolproof is to check every point, which
+    is achieved by giving the <tt>-a</tt> option to the <b>check</b>
+    command, or by using <tt>.checkall</tt>.
+
+    <p>
+    During the analysis, a binary search can be employed to determine
+    the actual values of the edges of the operating region.  This
+    feature is enabled by setting the shell variable
+    <tt>checkiterate</tt> to some value between 1 and 10.  This is the
+    depth of the binary search used to find the endpoint.  A binary
+    search will be performed during conventional operating range
+    analysis only, and is skipped (other than in the exception noted
+    below) if in all-points mode (<tt>-a</tt> flag or
+    <tt>.checkall</tt> line given).  The search is skipped if there
+    are no pass points in the row or column.  The computed values are
+    stored in the <tt>opmin1</tt>, etc.  vectors, where the zeroth
+    element corresponds to the lowest value of the fixed parameter. 
+    For example, <tt>opmin1[0]</tt> is the minimum value of parameter
+    1 when parameter 2 is value2 - steps2*delta2.  Entries of these
+    vectors corresponding to points that were not found are zero.
+
+    <p>
+    The value to set for the <tt>checkiterate</tt> variable is a
+    trade-off between accuracy and execution time.  If the boundary is
+    found within the parameter range defined by the input vectors (and
+    as plotted with the <b>mplot</b> command), the error is bounded by
+    <i>delta</i>/2<sup>n</sup>, where <i>delta</i> is the appropriate
+    <tt>checkDEL1</tt> or <tt>checkDEL2</tt> value, and n is the
+    <tt>checkiterate</tt> value.  If the extremum is found outside of
+    the given parameter space, the error may be
+    <i>val</i>/2<sup>n</sup>, where <i>val</i> is the value at edge of
+    the parameter space nearest the solution.
+
+    <p>
+    After an operating range analysis with range finding is complete,
+    two new vectors, <tt>range</tt> and <tt>r_scale</tt>, are created
+    from the <tt>opmin1</tt>, etc.  vectors and added to the current
+    plot.  These vectors incorporate all of the nonzero entries in
+    such a way that they form a path describing the boundary of the
+    operating region, with <tt>range</tt> containing Y-data and
+    <tt>r_scale</tt> containing X-data.  This contour can be displayed
+    by plotting the range vector with the <b>plot</b> command.
+
+    <p>
+    The algorithm used the evaluate a row is shown below.  This is the
+    normal algorithm; if the <tt>-a</tt> flag is given to the
+    <b>check</b> command, or a <tt>.checkall</tt> line was found in
+    the file, the points are simply stepped through, and no binary
+    searching is done.
+
+    <pre>
+    for each value2 value {
+    &#32;   start at left
+    &#32;   value1 = central1 - delta1 * nsteps1
+    &#32;   loop {
+    &#32;       analyze
+    &#32;       record point
+    &#32;       if (pass) break
+    &#32;       value1 = value1 + delta1
+    &#32;       if (value1 > central1 + delta1 * nsteps1) break
+    &#32;   }
+    &#32;   if (pass)
+    &#32;       do binary search for lower extremum
+    &#32;   start at right
+    &#32;   value1 = central1 + delta1 * nsteps1
+    &#32;   loop {
+    &#32;       analyze
+    &#32;       record point
+    &#32;       if (pass) break
+    &#32;       value1 = value1 - delta1
+    &#32;       if (value1 &#60; central1 - delta1 * nsteps1) break
+    &#32;   }
+    &#32;   if (pass)
+    &#32;       do binary search for upper extremum
+    }
+    </pre>
+
+    <p>
+    If both <tt>checkSTP1</tt> and <tt>checkSTP2</tt> are zero or not
+    defined, the range finder can have an additional operating mode. 
+    This mode is made active if the all-points mode is active
+    (<tt>-a</tt> option or <tt>.checkall</tt> given), and a vector is
+    being used to supply trial values, rather than shell variables. 
+    If a vector named "value" is defined, or a vector defined whose
+    name is assigned to the shell variable named "value", the range of
+    each of the components can be computed.  Note that the vector can
+    have arbitrarily many entries, and each of these ranges can be
+    found.  The range finding can be skipped for certain entries by
+    defining a mask vector.  This is a vector with the same length as
+    the "value" vector, and the same name as the <tt>value</tt> vector
+    but suffixed with "<tt>_mask</tt>" as in "<tt>value_mask</tt>". 
+    Each non-zero entry in the mask signifies that the corresponding
+    variable in the <tt>value</tt> array will <i>not</i> be tested for
+    range.  Additionally, any entry in the <tt>value</tt> vector which
+    is zero will not be tested.  If no mask vector is defined, the
+    range will be computed for all nonzero entries.  The results are
+    placed, somewhat arbitrarily, in the <tt>opmin1</tt> and
+    <tt>opmax1</tt> vectors, which will have lengths equal to that of
+    the value <tt>vector</tt>.  Skipped entries will be zero.  No
+    <tt>range</tt> vector will be produced, since it is not relevant
+    in this mode.
+
+    <p>
+    If not in all-points mode, the range will be computed for the
+    shell variables.  The <tt>opmin1</tt>, etc.  will contain the
+    maximum and minimum values (length 1).  The <tt>range</tt> vector
+    will contain the four points found.  Note that the central value
+    must be a pass point in either of these modes, or the range
+    finding is skipped.  There is no output file produced when both
+    <tt>checkSTP1</tt> and <tt>checkSTP2</tt> are zero or undefined.
+
+    <p>
+    One can keep track of the progress of the analysis in two ways. 
+    <i>WRspice</i> will print the analysis point on the screen, plus
+    indicate whether the circuit failed or passed at the point, if the
+    <tt>-v</tt> option is given to the <b>check</b> command.  Shell
+    <b>echo</b> commands can be used in the executable blocks to
+    provide more information on screen, and echoed output is printed
+    whether or not <tt>-v</tt> is given.  The second method uses the
+    <a href="mplot"><b>mplot</b></a> command, which graphically
+    records the pass/fail points.  If "<tt>mplot -on</tt>" is given
+    before the analysis, the results are plotted as simulation
+    proceeds.
+
+    <p>
+    During operating range analysis, a file named
+    <i>basename</i>.<tt>d</tt><i>xx</i> is created in the current
+    directory, where <i>basename</i> is the base name of the input
+    file, and <i>xx</i> is 00-99, set automatically to avoid
+    clobbering existing files.  The output file name is stored in the
+    <a href="mplot_cur"><tt>mplot_cur</tt></a> shell variable.
+
+    <p>
+    There is a special <a href="echof"><b>echof</b></a> command that
+    allows text to be printed in the output file.  The <b>echof</b>
+    command is used exactly as the <a href="echo"><b>echo</b></a>
+    command.  If there is no output file open, the command returns
+    with no action.  The <b>echof</b> command can be used in either
+    <tt>.control</tt> or <tt>.exec</tt> blocks in the input file.
+
+!!SUBTOPICS
+oprngfile
+!!SEEALSO
+analyses
+marganal
+
+!! margin.tex 040110
+!!KEYWORD
+oprngfile 
+!!TITLE
+Operating Range Input File Format
+!!HTML  
+    There are two recognized file formats which can be used as input
+    for <a href="oprng_analysis">operating range</a> analysis.  One,
+    the "old format", is retained for compatibility with an older
+    version of SPICE.  <i>WRspice</i> recognizes a second "new format"
+    which is more consistent with standard <i>WRspice</i> input file
+    organization.  In both cases, the input file which specifies
+    operating range analysis consists of three sections:
+
+    <p>
+    <ol>
+    <li>an initializing header</br>
+    <li>a body of control statements</br>
+    <li>the circuit description
+    </ol>
+
+    <p>
+    In the old format, the file must begin with a line containing only
+    the string
+    <blockquote>
+      <tt>.check</tt>
+    </blockquote>
+    which is followed by shell commands.  The header block in the old
+    format is terminated with a line containing only the string
+    <blockquote>
+      <tt>.control</tt>
+    </blockquote>
+    which also begins the control statement block.
+
+    <p>
+    In the new format, the first line of the file is taken to be a
+    title line and is otherwise ignored, consistent with other types
+    of input files for <i>WRspice</i>.  The header statements are found within
+    a block which starts with a line containing only the string
+    <blockquote>
+      <tt>.exec</tt>
+    </blockquote>
+    and ends with a line containing only the string
+    <blockquote>
+      <tt>.endc</tt>
+    </blockquote>
+    in other words, a standard <a href=".exec"><tt>.exec</tt></a>
+    block.  The comment prefix "*@" can also be used to enter header
+    block text.  The new format file for margin analysis should also
+    contain a line with only the string
+    <blockquote>
+      <tt>.check</tt>
+    </blockquote>
+    somewhere in the text.  Unlike the old format, the ordering of the
+    <tt>.exec</tt> block and the <tt>.check</tt> line is unimportant.
+
+    <p>
+    The lines in the header block initialize internally defined
+    variables.  The variables are those described as user-set,
+    including the <tt>checkiterate</tt> shell variable.  Variables
+    which are not used (such as those for variable 2 in a one
+    dimensional case) can be ignored.
+
+    <p>
+    An example header is given below:
+
+    <p>
+    <pre></pre>
+    Old format:
+    <pre>
+      .check
+      compose checkPNTS values 50p 100p 150p 200p
+      checkVAL1 = 12
+      checkDEL1 = .5
+      checkSTP1 = 5
+      checkVAL2 = .5
+      checkDEL2 = .1
+      checkSTP2 = 2
+    </pre>
+
+    New format:
+    <pre>
+      * Title for this file
+      .check
+      .exec
+      compose checkPNTS values 50p 100p 150p 200p
+      checkVAL1 = 12
+      checkDEL1 = .5
+      checkSTP1 = 5
+      checkVAL2 = .5
+      checkDEL2 = .1
+      checkSTP2 = 2
+      .endc
+    </pre>
+
+    <p>
+    The variables <tt>checkFAIL</tt>, <tt>checkSTP1</tt>, and
+    <tt>checkSTP2</tt> are integers.  The other variables are real,
+    except for <tt>checkPNTS</tt> which is a real vector.
+
+    <p>
+    The header block can also be supplied as a bound codeblock.  This
+    is accomplished, for example, with the command
+    <blockquote>
+      <tt>codeblock -abe</tt> <i>filename</i>
+    </blockquote>
+    where <i>filename</i> is the name of a file which contains the
+    statements to be used in the header block.  If an <tt>exec</tt>
+    codeblock is bound to the circuit, the bound block is executed
+    rather than any locally specified header block.
+
+    <p>
+    The control statement block is almost identical in the old and new
+    formats.  In the old format, the control block immediately follows
+    the header block, though in the new format this is not necessary. 
+    The control statements are evaluated at each of the
+    <tt>checkPNTS</tt>, and set the <tt>checkFAIL</tt> flag if the logic
+    determines that the circuit run has failed.
+
+    <p>
+    This control block begins with a line containing only the string
+    <blockquote>
+      <tt>.control</tt>
+    </blockquote>
+    and ends with a line containing only
+    <blockquote>
+      <tt>.endc</tt>
+    </blockquote>
+    i.e., the standard form for a <i>WRspice</i> control block.
+
+    <p>
+    The enclosed lines are <i>WRspice</i> script statements that perform a
+    logical comparison of circuit variables and set the <tt>checkFAIL</tt>
+    variable accordingly.
+
+    <p>
+    The control block can also be supplied as a bound codeblock.  This
+    is accomplished, for example, with the command
+    <blockquote>
+      <tt>codeblock -ab</tt> <i>filename</i>
+    </blockquote>
+    where <i>filename</i> is the name of a file which contains the
+    statements to be used in the control block.  If a control
+    codeblock is bound to the circuit, the bound block is executed
+    rather than any locally specified control block.
+
+    <p>
+    In the old format, the circuit description starts immediately
+    after the end of the control block, with the title line.  In the
+    new format, the title line is the first line of the file, and the
+    circuit description is by definition what is left after removing
+    the <tt>.exec</tt> and <tt>.control</tt> blocks.
+
+    <p>
+    This circuit description section of the file consists of
+    conventional <i>WRspice</i> format circuit description lines.  The
+    parameters to be varied are replaced with <tt>$value1</tt> and
+    <tt>$value2</tt>.  Alternatively, one can define a vector called
+    value, and unit length vectors <tt>checkN1</tt> and
+    <tt>checkN2</tt>.  Then, the parameters to be varied can be
+    replaced with <tt>$&value[$&checkN1]</tt> and
+    <tt>$&value[$&checkN2]</tt>.  During analysis, the
+    <tt>$value1</tt> and <tt>$value2</tt> (and the value vector
+    entries, if used) are replaced with the current values of the
+    variables.
+
+    <p>
+    Note that in the circuit description, it is often useful to use the
+    concatenation character % to add a suffix.  For examples, the file
+    line might be
+    <blockquote>
+      <tt>v1 0 1 pulse (0 5m 10p ...)</tt>
+    </blockquote>
+    where we want to vary the "5m".  If the value of <tt>$value1</tt> is 5, one
+    could replace this line with
+    <blockquote>
+      <tt>v1 0 1 pulse (0 $value1%m 10p ...)</tt>
+    </blockquote>
+
+    <p>
+    Without the %, the variable substitution would fail. 
+    Alternatively, one could set <tt>$value1</tt> to 5e-3, and not use
+    the "m" suffix in the file.
+
+    <p>
+    The concatenation character can be set to a different character
+    with the <a href="var_catchar"><tt>var_catchar</tt></a> variable. 
+    If this variable is set to a string consisting of a single
+    punctuation character, then that character becomes the
+    concatenation character.
+
+!!SEEALSO
+expressions
+
+!! margin.tex 012709
+!!KEYWORD
+monte
+!!TITLE
+Monte Carlo Analysis
+!!HTML
+    <i>WRspice</i> has a built-in facility for performing Monte Carlo
+    analysis, where one or more circuit variables are set according to
+    a random distribution, and the circuit analyzed for functionality. 
+    The file format and operation is very similar to <a
+    href="oprng_analysis">operating range analysis</a>.
+
+    <p>
+    As in operating range analysis, a complete input file consists of
+    three sections:  a header, an executable script analyzing
+    operation, and the circuit deck.  Unlike operating range analysis,
+    however, the header block is executed before every simulation run,
+    so that circuit variables may be changed (not just initialized) in
+    the header.  As in operating range analysis, an "old format" and a
+    "new format" are recognized.  These formats are identical in Monte
+    Carlo analysis, except that instead of a line containing the string
+    <tt>.check</tt>, Monte Carlo files contain the keyword
+    <tt>.monte</tt>.  This must be the first line of the file in the
+    old format, but can appear anywhere in a new format file.  If both
+    keywords appear in the file (not a good idea), then Monte Carlo
+    analysis is assumed.
+
+    <p>
+    As with conventional circuit and command files, Monte Carlo
+    analysis files can be sourced by simply typing in the file name. 
+    If the file name happens to conflict with a command, then the file
+    can be input with the <a href="source"><b>source</b></a> command. 
+    If not in batch mode, the analysis is initiated with the <a
+    href="check"><b>check</b></a> command, otherwise the analysis is
+    performed immediately.
+
+    <p>
+    Monte Carlo analysis is enforced by supplying the <tt>-m</tt>
+    option to the <b>check</b> command, which initiates analysis.  The
+    <tt>-m</tt> option is only necessary if the input file does not
+    contain a <tt>.monte</tt> line.  If the <tt>-r</tt> option is
+    given, the simulations will be parceled out to remote servers,
+    allowing parallelism in computation.
+
+    <p>
+    Output from a Monte Carlo run is saved in a file with base name
+    that of the circuit, with a suffix "<tt>.m</tt><i>xx</i>", where
+    <ii>xx</i> is a sequentially assigned number so as to make the
+    file name unique.  The output file name is stored in the <a
+    href="mplot_cur"><tt>mplot_cur</tt></a> shell variable.
+
+    <p>
+    The number of runs performed in Monte Carlo analysis is set by the
+    <tt>checkSTP1</tt> and <tt>checkSTP2</tt> variables, as in
+    operating range analysis.  The number of points will be
+    (2*<tt>checkSTP1</tt> + 1)*(2*<tt>checkSTP2</tt> + 1).  If the
+    values are not given, they default to 3 (49 points).
+
+    <p>
+    In Monte Carlo analysis, the header block is executed before each
+    simulation.  In the header block, shell variables and vectors may
+    be set for each new trial.  These variables and vectors can be
+    used in the SPICE text to modify circuit parameters.  The names of
+    the variables used, and whether to use vectors or variables, is up
+    to the user (variables are a little more efficient).  Monte Carlo
+    analysis does not use predefined names for parameter data. 
+    Typically, the <a href="gauss"><tt>gauss</tt></a> function is
+    used to specify a random value for the variables in the header
+    block. 
+
+    <p>
+    It is possible to use <a href=".param"><tt>.param</tt></a> defines
+    to introduce random values in Monte Carlo analysis, as well as
+    shell variables and vectors.  Parameters defined in
+    <tt>.param</tt> lines are recomputed at the start of each trial,
+    before the <tt>.exec</tt> block is evaluated.  Random values can
+    be set by calling the random number generation functions (<a
+    href="unif"><tt>unif</tt></a>, <a href="aunif"><tt>aunif</tt></a>,
+    <a href="gauss"><tt>gauss</tt></a>, <a
+    href="agauss"><tt>agauss</tt></a>, <a
+    href="limit"><tt>limit</tt></a>).
+ 
+    <p>
+    Parameters are visible in the <tt>.exec</tt> block if the
+    <tt>.exec</tt> block is defined in the same file as the circuit
+    (directly or through an <a href=".include"><tt>.include</tt></a>). 
+    Parameters are <b>not</b> visible in the <tt>.control</tt> block. 
+    Parameters are not visible in <a href="codeblock">bound
+    codeblocks</a>.
+
+    <p>
+    There is a special <a href="echof"><b>echof</b></a> command that
+    allows text to be printed in the output file.  This is the means
+    by which the trial values are recorded, as there is no default
+    recording mechanism.  The file by default records only the success
+    or failure of each run.  The <b>echof</b> command is used exactly
+    as the <a href="echo"><b>echo</b></a> command.  If there is no
+    output file open, the command returns with no action.  The
+    <b>echof</b> command can be used in either <tt>.control</tt> or
+    <tt>.exec</tt> blocks in the input file.
+
+    <p>
+    Monte Carlo results can be viewed during analysis ar afterward
+    with the <a href="mplot">mplot</a> command.  Giving "<tt>mplot
+    -on</tt>" will display results while simulating, as in operating
+    range analysis.  The display consists of 2*<tt>checkSTP1</tt> + 1
+    X 2*<tt>checkSTP2</tt> + 1 squares, as in operating range
+    analysis, with each square indicating pass or fail.  In Monte
+    Carlo analysis, the squares are simply filled in in sequence, and
+    their placement has nothing to do with the actual circuit values.
+
+!!SEEALSO
+analyses
+marganal
+
+!! margin.tex 012709
+!!KEYWORD
+optimize
+!!TITLE
+Circuit Margin Optimization
+!!HTML 
+    There are three scripts which implement a margin optimization
+    algorithm used by Clark Hamilton at NIST.  These files (kept in
+    the scripts directory) are <tt>optimize</tt>, <tt>margins</tt>,
+    and <tt>merit</tt>.  The main script is <tt>optimize</tt>, which
+    is invoked with the name of the file to be optimized as an
+    argument.
+
+    <p>
+    This facility is for advanced users.  The present status of the
+    scripts is unknown, and it is possible that they may require
+    modification before use.  They are provided as an example of how
+    the <i>WRspice</i> scripting facility can be employed for
+    optimization.
+
+    <p>
+    An example input file, which defines and initializes various
+    variables and vectors as well as providing a circuit to optimize,
+    is shown below.  To perform optimization, one gives
+    "<tt>optimize</tt> <i>filename</i>".
+
+    <p>
+    <pre>
+    .check
+    set checkiterate = 3
+    let checkN1 = 0
+    compose checkPNTS values 1n 2n
+    let value[19] = 0
+    let flags[19] = 0
+    let flags[0] = 1
+    let value[0] = .8
+    .control
+    if (TIME >= checkPNTS[0])
+    &#32   checkFAIL = 0
+    &#32   if ((abs(v(1)) > 1.5) or (abs(v(1)) &#60 .5))
+    &#32       checkFAIL = 1
+    &#32   endif
+    endif
+    .endc
+    optimization test
+    i1 0 1 pulse(0 1 0 1n)
+    r1 1 0 $&value[0]
+    .tran .01n 1.1n
+    .end
+    </pre>
+
+    <p>
+    This is the simplest way to input the file, alternatively one
+    could set the shell variables and vectors externally and/or use a
+    bound codeblock for pass/fail evaluation.
+
+    <p>
+    The <tt>margins</tt> script, called by <tt>optimize</tt> calls the
+    <a href="check"><b>check</b></a> command.  The variable
+    <tt>checkiterate</tt> must be set to a nonzero value up to 10. 
+    This is the binary search depth for finding the operating range.
+
+    <p>
+    The vectors <tt>checkN1</tt> and <tt>value</tt> must be defined,
+    <tt>checkN1</tt> is the index into the value array of the variable
+    being adjusted.  It is altered by the scripts, but it and
+    <tt>value</tt> must be defined before the script is input or in
+    the header as shown.
+
+    <p>
+    The vector <tt>checkPNTS</tt> is the array of points where
+    analysis is performed.  Note that due to some strangeness, at
+    least two entries must exist.
+
+    <p>
+    The <tt>value</tt> array is initialized to the starting values. 
+    The <tt>flags</tt> vector contains 1 for each entry in the array
+    which is to be varied, the others are treated as constants.
+
+    <p>
+    The lengths of the vectors <tt>value</tt> and <tt>flags</tt> is
+    20, which is assumed in the optimization script.
+
+    <p>
+    After the analysis is complete, the <tt>value</tt> array will
+    contain the optimized values.  Two other arrays, <tt>lower</tt>
+    and <tt>upper</tt>, are created, and contain the lower and upper
+    limit for each value index.
+
+    <p>
+    The scripts provided can be customized by the user for more
+    specific applications, or used as templates for different types of
+    analysis.  It is recommended that such scripts be defined as <a
+    href="codeblock">codeblocks</a> to speed execution.
+
+!!SEEALSO
+marganal
+

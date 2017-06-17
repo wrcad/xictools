@@ -1,0 +1,35 @@
+UFSOI (Ver. 7.5) / July 2003
+****************************
+
+This directory contains Type-I API code for the UFSOI-7.5 MOSFET models
+(including UFPDB-2.5), glue code for UFSOI implementation in Spice3e2, 
+and Spice3e2 source code including the UFSOI interface. The directory 
+also contains documentation on the UFSOI models and the API interface, 
+and UFSOI/Spice3e2 simulation examples. Note also the University of 
+Florida COPYRIGHT statement. 
+
+Instructions for building Spice3e2/UFSOI are in spice3e2.glue/README.
+The make and configuration files contained herein were written for
+compiling and building on the Solaris system at the University of
+Florida (tec.ufl.edu). Minor changes (e.g., in library paths) will
+have to be made for building on another system. See spice3e2/readme.solaris 
+for guidance in making the needed changes.   <--------------------------------NOTE!
+
+-------------------------------------------------
+Jerry G. Fossum
+Professor
+ 
+SOI Group
+Department of Electrical and Computer Engineering
+University of Florida
+541 New Engineering Building
+P.O. Box 116130
+Gainesville, FL  32611-6130
+ 
+352-392-4921 (tel)
+352-392-8381 (fax)
+ 
+fossum@tec.ufl.edu
+http://www.soi.tec.ufl.edu
+-------------------------------------------------
+

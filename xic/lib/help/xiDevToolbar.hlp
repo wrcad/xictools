@@ -1,0 +1,784 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiDevToolbar.hlp,v 1.14 2015/03/05 04:16:45 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiDevToolbar.hlp
+!!TITLE
+xiDevToolbar.hlp
+!!HTML
+
+!!SUBTOPICS
+dev:gnd
+dev:gnde
+dev:tbar
+dev:tbus
+dev:res
+dev:cap
+dev:ind
+dev:mut
+dev:isrc
+dev:vsrc
+dev:vp
+dev:dio
+dev:jj
+dev:npn
+dev:pnp
+dev:njf
+dev:pjf
+dev:nmos1
+dev:pmos1
+dev:nmos
+dev:pmos
+dev:nmes
+dev:pmes
+dev:tra
+dev:ltra
+dev:urc
+dev:vccs
+dev:vcvs
+dev:cccs
+dev:ccvs
+dev:sw
+dev:csw
+dev:opamp
+
+
+!! 042611
+!!KEYWORD
+dev:gnd
+!!TITLE
+Ground Device
+!!HTML
+    The <b>gnd</b> device is used to connect to node 0, which is
+    always taken as the reference (ground) node in SPICE.  This can be
+    placed in the main circuit and subcircuits.
+
+    <p>
+    The device library may contain multiple, functionally identical
+    "ground" devices, that differ only visually.  In the library, any
+    device that has no <a href="prpty:name"><b>name</b></a> property
+    and exactly one <a href="prpty:node"><b>node</b></a> property is
+    taken as a ground device.
+
+!!SEEALSO
+xic:devs
+
+!! 042611
+!!KEYWORD
+dev:gnde
+!!TITLE
+Alternative Ground Device
+!!HTML
+    The <b>gnde</b> device is used to connect to node 0, which is
+    always taken as the reference (ground) node in SPICE.  This can
+    be placed in the main circuit and subcircuits.  This is
+    functionally equivalent to the <a href="dev:gnd"><b>gnd</b></a>
+    device, but differs visually.
+
+!!SEEALSO
+xic:devs
+
+!! 062013
+!!KEYWORD
+dev:tbar dev:tblk dev:ttri dev:txbox
+!!TITLE
+Terminal Device
+!!HTML
+    The <b>tbar</b>, <b>tblk</b>, <b>ttri</b>, and <b>txbox</b> are
+    "terminal devices" from the default device library.  These devices
+    behave identically, and differ only in appearance.  Each device
+    has an associated label (with text defaulting to the device name)
+    which can be changed by the user by selecting the label and
+    pressing the <a href="xic:label"><b>label</b></a> button in the
+    side menu.  The label will supply a name, which will be applied to
+    a connected net.  All nets connected to a terminal device with the
+    same name are taken as being connected together.
+
+    <p>
+    This will not tie nets between the main circuit and subcircuits,
+    or between subcircuits, unless the terminal name is also a <a
+    href="globname">global</a> net name.  If not global, the scope is
+    within the cell only.
+
+    <p>
+    Internally, the device will reconfigure itself as a scalar or
+    multi-contact device according to the label.  Older <i>Xic</i>
+    releases provided a <b>tbus</b> terminal, which is no longer
+    compatible.
+
+    <p>
+    The name applied to a net via a terminal device is handled
+    identically to a name obtained from a <a href="wirelabel">wire
+    label</a>.
+    
+!!SEEALSO
+xic:devs
+.global
+xic:nodmp
+elec:netname
+
+!! 062013
+!!KEYWORD
+dev:tbus
+!!TITLE
+Bus Terminal Device
+!!HTML
+    The <b>tbus</b> terminal device was provided as a bus terminal
+    in older <i>Xic</i> releases.  It is no longer compatible or
+    supported, and must be replaced by a <a href="dev:tbar">current
+    terminal device</a> in legacy schematics.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:res
+!!TITLE
+Resistor Device
+!!HTML
+    The <b>res</b> device is a two-terminal <a
+    href="res">resistor</a>.  Typically, a <a
+    href="prpty:value"><b>value</b></a> property is added to specify
+    resistance.  Alternatively, a <a
+    href="prpty:model"><b>model</b></a> property can be added to
+    specify a resistor model.  If a <b>model</b> property is assigned,
+    then a <a href="prpty:param"><b>param</b></a> property can be used
+    to supply the geometric or other parameters.
+
+    <p>
+    The '+' symbol in the representation accesses a <a
+    href="prpty:branch"><b>branch</b></a> property that returns a
+    hypertext expression consisting of the voltage across the resistor
+    divided by the resistance in ohms, yielding the current through
+    the resistor.  The 'O' that follows the resistance is the 'ohms'
+    unit specifier, and <i>not</i> an extra zero.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:cap
+!!TITLE
+Capacitor Device
+!!HTML
+    The <b>cap</b> device is a two-terminal <a
+    href="cap">capacitor</a>.  Typically, a <a
+    href="prpty:value"><b>value</b></a> property is added to specify
+    capacitance.  Alternatively, a <a
+    href="prpty:model"><b>model</b></a> property can be added to
+    specify a capacitor model.  If a <b>model</b> property is
+    assigned, then a <a href="prpty:param"><b>param</b></a> property
+    can be used to supply the geometric parameters.  In either case,
+    the <b>param</b> property can be used to provide initial
+    conditions.
+
+    <p>
+    The '+' symbol in the representation accesses a <a
+    href="prpty:branch"><b>branch</b></a> property that returns a
+    hypertext expression consisting of the capacitance value times the
+    time-derivative of the voltage across the capacitor, yielding the
+    capacitor current.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:ind
+!!TITLE
+Inductor Device
+!!HTML
+    The <b>ind</b> device is a two-terminal <a
+    href="ind">inductor</a>.  A <a href="prpty:value"><b>value</b></a>
+    property should be added to specify inductance.  A <a
+    href="prpty:param"><b>param</b></a> property can be used to
+    provide initial conditions.
+
+    <p>
+    The '+' symbol in the representation accesses a <a
+    href="prpty:branch"><b>branch</b></a> property that returns a
+    hypertext link to the inductor current vector.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:mut
+!!TITLE
+Mutual Inductor
+!!HTML
+    The <b>mut</b> device provides support for <a href="mut">mutual
+    inductors</a>.  The <b>mut</b> device is never placed.  When the
+    <b>mut</b> device is selected in the device menu, rather than
+    selecting a device for placement as do the other selections, a
+    command mode is entered which allows existing inductors to be
+    selected into mutual inductor pairs.
+
+    <p>
+    When the <b>mut</b> device is selected, an existing pair of
+    coupled inductors (if any have been defined) is shown highlighted,
+    and the SPICE coupling factor printed.  The arrow keys cycle
+    through the internal list of coupled inductor pairs, or a pair may
+    be selected by clicking on one of the inductors or the coefficient
+    label with button 1.  At any time, pressing the '<b>a</b>' key
+    will allow addition of a mutual inductor pair.  The same effect is
+    obtained by clicking on a non-mutual inductor with button 1.  The
+    user is asked to click on the two coupled inductors (if '<b>a</b>'
+    entered or there are no existing mutual inductors), or the second
+    inductor (if the user clicked on an inductor), and then to enter
+    the coupling factor.  The coupling factor can be any string, so as
+    to allow shell variable expansion in <i>WRspice</i>, but if it
+    parses as a number it must be in the range between -1 and 1. 
+
+    <p>
+    Pressing the '<b>d</b>' key will delete the mutual inductance
+    specification for the two inductors currently shown.
+
+    <p>
+    Pressing the '<b>k</b>' key will prompt for a new value of the
+    coupling factor for the mutual inductors shown, as will clicking
+    on the coefficient label in a drawing window.  When entering the
+    coefficient string, one can enter either the form
+    <i>name</i>=<i>coef_string</i>, or simply the coefficient string. 
+    In the first case, the <i>name</i> will provide an alternate fixed
+    name for the mutual inductor in SPICE output.  This can be any
+    alphanumeric name, but should start with 'k' or 'K' for SPICE.  If
+    no name is given, <i>Xic</i> will assign a name consisting of
+    <tt>K</tt> followed by a unique index integer.
+
+    <p>
+    One can also change the coefficient string and/or name with the <a
+    href="xic:label"><b>label</b></a> button in the side menu.  Again,
+    the label text can have either of the forms described above.
+
+    <p>
+    Pressing the <b>Esc</b> key terminates this (and every) command. 
+    One can back out of the operation if necessary with <b>Tab</b>
+    (undo), as usual.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:isrc
+!!TITLE
+Current Source
+!!HTML
+    The <b>isrc</b> device is a general <a href="isrc">current
+    source</a>.  A <a href="prpty:value"><b>value</b></a> and/or <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify the value, function, or other parameters required by the
+    source.
+
+    <p>
+    The arrow head in the representation accesses a <a
+    href="prpty:branch"><b>branch</b></a> property that returns a
+    hypertext link to the current in the form
+    "<tt>@</tt><i>name</i><tt>[c]</tt>".  A <a
+    href=".save"><tt>.save</tt></a> line for this vector is
+    automatically added to the SPICE output.
+
+!!SEEALSO
+xic:devs
+
+!! 042611
+!!KEYWORD
+dev:vsrc
+!!TITLE
+Voltage Source
+!!HTML
+    The <b>vsrc</b> device is a general <a href="vsrc">voltage
+    source</a>.  A <a href="prpty:value"><b>value</b></a> and/or <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify the value, function, or other parameters required by the
+    source.
+   
+    <p>
+    The '+' symbol in the representation accesses a <a
+    href="prpty:branch"><b>branch</b></a> property that returns a
+    hypertext link to the current vector when clicked on.
+
+!!SEEALSO
+xic:devs
+
+!! 042611
+!!KEYWORD
+dev:vp
+!!TITLE
+Current Meter
+!!HTML
+    In SPICE, voltage sources are often used as "current meters", as
+    the current through a voltage source is saved with the simulation
+    result vectors, and can be plotted or printed.  The <b>vp</b>
+    device is actually a voltage source (identical to a <b>vsrc</b>
+    device) however the symbol size is tiny, so that it can be more
+    easily added to an existing schematic for use as a current meter. 
+    The symbol contains a hot spot in the representation that accesses
+    a <a href="prpty:branch"><b>branch</b></a> property that returns a
+    hypertext link to the current vector when clicked on.
+
+!! 062908
+!!KEYWORD
+dev:dio
+!!TITLE
+Junction Diode
+!!HTML
+    The <b>dio</b> device is a <a href="dio">junction diode</a>.  A <a
+    href="prpty:model"><b>model</b></a> property should be added to
+    specify a diode model.  A <a href="prpty:param"><b>param</b></a>
+    property can be added to specify additional parameters.
+
+    <p>
+    The diode contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:jj
+!!TITLE
+Josephson Junction
+!!HTML
+    The <b>jj</b> device is a <a href="jj">Josephson junction</a>.  A
+    <a href="prpty:model"><b>model</b></a> property should be added to
+    specify a Josephson junction model.  A <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify additional parameters. 
+
+    <p>
+    The '+' symbol in the representation accesses the phase node of
+    the Josephson junction.  The "voltage" on this node is equal to
+    the junction phase, in radians.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:npn
+!!TITLE
+NPN Bipolar Transistor
+!!HTML
+    The <b>npn</b> device is an npn <a href="bjt">bipolar
+    transistor</a>.  A <a href="prpty:model"><b>model</b></a> property
+    should be added to specify a bipolar transistor model.  A <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify additional parameters.
+
+    <p>
+    The bipolar transistor contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:pnp
+!!TITLE
+PNP Bipolar Transistor
+!!HTML
+    The <b>pnp</b> device is a pnp <a href="bjt">bipolar
+    transistor</a>.  A <a href="prpty:model"><b>model</b></a> property
+    should be added to specify a bipolar transistor model.  A <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify additional parameters.
+
+    <p>
+    The bipolar transistor contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:njf
+!!TITLE
+N-Channel Junction FET
+!!HTML
+    The <b>njf</b> device is an n-channel <a href="jfet">junction
+    field-effect transistor</a>.  A <a
+    href="prpty:model"><b>model</b></a> property should be added to
+    specify a JFET model.  A <a href="prpty:param"><b>param</b></a>
+    property can be added to specify additional parameters.
+
+    <p>
+    The JFET contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:pjf
+!!TITLE
+P-Channel Junction FET
+!!HTML
+    The <b>pjf</b> device is a p-channel <a href="jfet">junction
+    field-effect transistor</a>.  A <a
+    href="prpty:model"><b>model</b></a> property should be added to
+    specify a JFET model.  A <a href="prpty:param"><b>param</b></a>
+    property can be added to specify additional parameters.
+
+    <p>
+    The JFET contains no hidden targets.
+
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:nmos1
+!!TITLE
+N-Channel MOSFET, 4 Nodes
+!!HTML
+    The <b>nmos1</b> device is a 4-terminal n-channel <a
+    href="mos">MOSFET</a> (drain, gate, source, bulk).  A <a
+    href="prpty:model"><b>model</b></a> property should be added to
+    specify a MOS model, suitable for 4-terminal devices.  Some of the
+    MOS models provided in <i>WRspice</i>, for SOI devices, use more
+    than four terminals and will not work with this device.  It is
+    left as an exercise for the user to create a modified device
+    suitable for use with these models.  A <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify additional parameters.
+
+    <p>  
+    This device contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 021604
+!!KEYWORD
+dev:pmos1
+!!TITLE
+P-Channel MOSFET, 4 Nodes
+!!HTML
+    The <b>pmos1</b> device is a 4-terminal p-channel <a
+    href="mos">MOSFET</a> (drain, gate, source, bulk).  A <a
+    href="prpty:model"><b>model</b></a> property should be added to
+    specify a MOS model, suitable for 4-terminal devices.  Some of the
+    MOS models provided in <i>WRspice</i>, for SOI devices, use more
+    than four terminals and will not work with this device.  It is
+    left as an exercise for the user to create a modified device
+    suitable for use with these models.  A <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify additional parameters.
+ 
+    <p>
+    This device contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 042611
+!!KEYWORD
+dev:nmos
+!!TITLE
+N-Channel MOSFET, 3 Nodes
+!!HTML
+    The <b>nmos</b> device is an n-channel <a href="mos">MOSFET</a>
+    variation that contains three visible nodes (drain, gate,
+    source).  The bulk node is connected to an internal global node
+    named "NSUB".  To use this device, the circuit should contain a
+    voltage source tied to a <a href="dev:tbar">terminal</a> device
+    with label "NSUB" to provide substrate bias to all devices of
+    this type.  This simplifies the schematic by hiding the substrate
+    connection to each transistor.
+
+    <p>
+    A <a href="prpty:model"><b>model</b></a> property should be added
+    to specify a MOS model, suitable for 4-terminal devices.  Some of
+    the MOS models provided in <i>WRspice</i>, for SOI devices, use
+    more than four terminals and will not work with this device.  It
+    is left as an exercise for the user to create a modified device
+    suitable for use with these models.  A <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify additional parameters.
+
+    <p> 
+    This device contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 042611
+!!KEYWORD
+dev:pmos
+!!TITLE
+P-Channel MOSFET, 3 Nodes
+!!HTML
+    The <b>pmos</b> device is a p-channel <a href="mos">MOSFET</a>
+    variation that contains three visible nodes (drain, gate,
+    source).  The bulk node is connected to an internal global node
+    named "PSUB".  To use this device, the circuit should contain a
+    voltage source tied to a <a href="dev:tbar">terminal</a> device
+    with label "PSUB" to provide substrate bias to all devices of
+    this type.  This simplifies the schematic by hiding the substrate
+    connection to each transistor.
+
+    <p>
+    A <a href="prpty:model"><b>model</b></a> property should be added
+    to specify a MOS model, suitable for 4-terminal devices.  Some of
+    the MOS models provided in <i>WRspice</i>, for SOI devices, use
+    more than four terminals and will not work with this device.  It
+    is left as an exercise for the user to create a modified device
+    suitable for use with these models.  A <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify additional parameters.
+
+    <p>
+    This device contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:nmes
+!!TITLE
+N-Channel MESFET
+!!HTML
+    The <b>nmes</b> device is an n-channel <a href="mes">MESFET</a>. 
+    A <a href="prpty:model"><b>model</b></a> property should be added
+    to specify a MESFET model.  A <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify additional parameters.
+
+    <p>
+    The MESFET contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:pmes
+!!TITLE
+P-Channel MESFET
+!!HTML
+    The <b>pmes</b> device is a p-channel <a href="mes">MESFET</a>.  A
+    <a href="prpty:model"><b>model</b></a> property should be added to
+    specify a MESFET model.  A <a href="prpty:param"><b>param</b></a>
+    property can be added to specify additional parameters.
+
+    <p>
+    The MESFET contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:tra
+!!TITLE
+Transmission Line
+!!HTML
+    The <b>tra</b> device is a general <a href="tra">transmission
+    line</a>.  In <i>WRspice</i>, this can be lossy or lossless, and
+    may access a model.  In other versions of SPICE, this is a
+    lossless line with no model.  A <a
+    href="prpty:model"><b>model</b></a> property can be added to
+    specify a transmission line model.  A <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify additional parameters.
+
+    <p>  
+    The transmission line contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+dev:ltra
+
+!! 062908
+!!KEYWORD
+dev:ltra
+!!TITLE
+Transmission Line (LTRA compatibility)
+!!HTML
+    The <b>ltra</b> device is a general <a href="ltra">transmission
+    line</a>.  In <i>WRspice</i>, this can be lossy or lossless, and
+    is basically the same as the <a href="dev:tra"><b>tra</b></a>
+    device, but defaults to a convolution approach if lossy.  In other
+    versions of SPICE, this is a lossy line that requires a model.  A
+    <a href="prpty:model"><b>model</b></a> property can be added to
+    specify a transmission line model.  A <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify additional parameters.
+
+    <p>
+    The transmission line contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:urc
+!!TITLE
+Uniform RC Line
+!!HTML
+    The <b>urc</b> device is a lumped-approximation <a href="urc">RC
+    line</a>.  A <a href="prpty:model"><b>model</b></a> property
+    should be added to specify a urc model.  A <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify additional parameters. 
+
+    <p>
+    The <b>urc</b> line contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:vccs
+!!TITLE
+Voltage-Controlled Current Source
+!!HTML
+    The <b>vccs</b> device is a voltage-controlled dependent <a
+    href="vccs">current source</a>.  A <a
+    href="prpty:value"><b>value</b></a> and/or <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify the gain, or other parameters required by the dependent
+    source.  Since all four nodes are specified, the two-node variants
+    supported by <i>WRspice</i> are not supported by this device.
+
+    <p>
+    The VCCS contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:vcvs
+!!TITLE
+Voltage-Controlled Voltage Source
+!!HTML
+    The <b>vcvs</b> device is a voltage-controlled dependent <a
+    href="vcvs">voltage source</a>.  A <a
+    href="prpty:value"><b>value</b></a> and/or <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify the gain, or other parameters required by the dependent
+    source.  Since all four nodes are specified, the two-node variants
+    supported by <i>WRspice</i> are not supported by this device.
+
+    <p>
+    The VCVS contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 030415
+!!KEYWORD
+dev:cccs
+!!TITLE
+Current-Controlled Current Source
+!!HTML
+    The <b>cccs</b> device is a current-controlled dependent <a
+    href="cccs">current source</a>.  A <a
+    href="prpty:devref"><b>devref</b></a> property can be used to
+    specify the name of the controlling voltage source or inductor in
+    the common case.  A <a href="prpty:value"><b>value</b></a> and/or
+    <a href="prpty:param"><b>param</b></a> property should be added to
+    specify gain, or other parameters required by the dependent
+    source.  This device supports all of the variants supported in
+    <i>WRspice</i>.
+
+    <p>
+    The CCCS contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 030415
+!!KEYWORD
+dev:ccvs
+!!TITLE
+Current-Controlled Voltage Source
+!!HTML
+    The <b>ccvs</b> is a current-controlled dependent <a
+    href="ccvs">voltage source</a>.  A <a
+    href="prpty:devref"><b>devref</b></a> property can be used to
+    specify the name of the controlling voltage source or inductor in
+    the common case.  A <a href="prpty:value"><b>value</b></a> and/or
+    <a href="prpty:param"><b>param</b></a> property should be added to
+    specify gain, or other parameters required by the dependent
+    source.  This device supports all of the variants supported in
+    <i>WRspice</i>.
+
+    <p>
+    The CCVS contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:sw
+!!TITLE
+Voltage-Controlled Switch
+!!HTML
+    The <b>sw</b> device is a voltage-controlled <a
+    href="sw">switch</a>.  A <a href="prpty:model"><b>model</b></a>
+    property should be added to specify a switch model.  A <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify additional parameters.
+
+    <p>
+    This device contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 030415
+!!KEYWORD
+dev:csw
+!!TITLE
+Current-Controlled Switch
+!!HTML
+    The <b>csw</b> device is a current-controlled <a
+    href="csw">switch</a>.  A <a href="prpty:devref"><b>devref</b></a>
+    property must be used to specify the name of the controlling
+    voltage source or inductor.  A <a
+    href="prpty:model"><b>model</b></a> property should be added to
+    specify the switch model.  A <a
+    href="prpty:param"><b>param</b></a> property can be added to
+    specify additional parameters.
+
+    <p>
+    This device contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+
+!! 062908
+!!KEYWORD
+dev:opamp
+!!TITLE
+Example Opamp Macro
+!!HTML
+    The <b>opamp</b> device is an example "black box" device that
+    expands into a subcircuit.  It has a predefined <b>model</b>
+    parameter which gives the subcircuit name (which is resolved in
+    the model library).  No properties are required.
+    
+    <p>
+    This device contains no hidden targets.
+
+!!SEEALSO
+xic:devs
+

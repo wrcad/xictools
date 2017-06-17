@@ -1,0 +1,26 @@
+The report in the postscript file UFSOI.PARAM_EVAL.ps describes
+the process-based methodologies for evaluation of the UFSOI-4.5
+NFD and FD model parameters. (The UFSOI-7.5 models can be 
+calibrated via the methodologies described, with some adjustments.) 
+It is essential that these methodologies be used. Use of more-global 
+optimization methods with little link to the device structures can 
+lead to nonphysical parameters which invalidate the models. 
+
+-------------------------------------------------
+Jerry G. Fossum
+Professor
+ 
+SOI Group
+Department of Electrical and Computer Engineering
+University of Florida
+541 New Engineering Building
+P.O. Box 116130
+Gainesville, FL  32611-6130
+ 
+352-392-4921 (tel)
+352-392-8381 (fax)
+ 
+fossum@tec.ufl.edu
+http://www.soi.tec.ufl.edu
+-------------------------------------------------
+

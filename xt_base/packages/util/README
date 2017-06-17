@@ -1,0 +1,32 @@
+
+fetch_action
+    method = post handler for the fetch form, calls fetchdist.
+
+fetchdist
+    Local use only, assembles new release packages for upload.
+
+fetchnew
+    Fetch script from www.wrcad.com, for uploading.
+
+wr_filename
+    print distrib file name, args: program osname version
+
+wr_install
+    For export (direct from web site).  User must use this to install
+    programs, for SafeInstall feature.
+
+    Also used as installation script for internal install command. 
+    copied to startup directories.
+
+wrspice_files
+    master source for wrspice distribution file list
+
+xic_files
+    master source for xic distribution file list
+
+xicii_files
+    master source for xicii distribution file list
+
+xiv_files
+    master source for xiv distribution file list
+

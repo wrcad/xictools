@@ -1,0 +1,184 @@
+
+Very Preliminary
+Don't change any code yet!
+
+The CD object is no longer a global object created within CD.  The
+user must now instantiate the CD object in external code.  This allows
+multiple CD objects to coexist in the same program, and allows the
+user to create and destroy the object locally only when needed.
+
+To create the database, one must include cd.h, and call the
+constructor for the sCD object (this takes no arguments) as for any
+C++ object.  The user must keep a pointer to the object to pass to
+some of the related functions.
+
+Although multiple CD objects can now coexist in the program, at
+present all function calls and methods involving the created objects
+can take only the objects from the same CD.  Mixing objects will
+likely cause misbehavior or worse.
+
+Memory Management
+-----------------
+
+Some of the objects created in CD are memory managed by CD.  Some others
+are memory managed withing the CD library but are global.  Others use
+the system memory management.
+
+The following objects are memory managed by the instantiated sCD class:
+
+RTelem
+CDo
+CDpo
+CDw
+CDla
+CDc
+CDs
+CDm
+CDsym
+sk_info
+ntel_t
+tflist_t
+sLibRef
+
+Although not normally allocated by the user, these structs must be
+allocated with a special "new" syntax:
+
+    new(sCD&) object;
+
+Thus, to create a CDo, for example:
+
+    sCD CD;
+    CDo *odesc = new(CD) CDo(...)
+
+Use of the standard operator new will produce a runtime error message
+and return a memory error.
+
+The normal delete syntax is still used to destroy these objects.
+
+The following objects are memory managed within the CD library:
+
+CDol
+CDcl
+Zlist
+Ylist
+YlistR
+Blist
+BYlist
+SymTabEnt
+BBox
+
+The standard operator new/delete syntax must be used to create these
+objects.  The fact that these objects are managed in CD means that
+you can not use delete on objects created using a cast from malloc or
+similar.
+
+Other objects created in CD not listed above use the standard memory
+management provided by the C++ library.
+
+Keeping Track of Database Pointer
+---------------------------------
+
+Since there is no longer a global CD object, sub-objects created in a
+CD instantiation need to obtain a needed CD pointer by other means.
+
+Many of the functions and methods in the library now have prototypes
+that include an additional sCD* argument.  These are too numerous to
+list here, but when updating old code, most of the error messages will
+be due to this.  In all cases the new sCD* argument appears at the
+left of the argument list.  This is a pointer to the CD instantiation
+under which the calling object was created.
+
+Many of the objects used in CD have an additional "owner" field which
+is automatically filled in with the owning CD.  This includes the
+larger structs used for file io, sLcx, CDl, and others.  This field is
+set in the constructor, and is generally public but should never be
+changed by the user.
+
+The objects that are memory managed by the CD object (CDo, etc) have a
+method "sCD *findCD()" which returns a pointer to the CD managing
+them.  As these structs must be as tiny as possible for efficiency, it
+is not possible to add a pointer field.  The findCD() method will
+search the existing CD instantiations for the memory block containing
+the object, and return the corresponding CD pointer.  This can be very
+expensive if there is more than one CD instantiated, but is fast if
+only one CD is instantiated since the search can be skipped.
+
+Updating Existing Code
+----------------------
+
+Existing code linked to CD will have to be updated to use the new
+version.
+
+First, the global CD pointer will have to be declared in a common
+header file.  A line like
+
+    extern sCD CD;
+
+which used to be in cd.h must now be provided in the user's header
+file.
+
+In the program main or elsewhere, the CD object must be instantiated,
+since this is no longer done in the CD library.  In some source file,
+in global scope, add
+
+    sCD CD;
+
+This will create a global sCD class in CD on program startup, which
+used to be done within the CD library.
+
+Then, build the application.  The compiler will generate errors for
+bad function prototypes.  The user must go through these and typically
+add an "&CD" argument to the method calls.
+
+Finally, if user code creates objects that are memory managed by CD
+(CDo, etc), the "new" must be replaced with "new(CD)".  The existing
+syntax will not give a compiler warning or error, but there will be
+runtime errors if the change is not made.
+
+However, shch lines may fail anyway due to a change:  The constructors
+for CDo, CDpo, CDw, CDla, CDc now require at least one argument, a
+layer descriptor.  Note that the layer descriptor (CDl) has an "owner"
+field that points to the owning CD.  So, code like
+
+    CDo *newo = new CDo;
+    newo->oLdesc = ld;
+
+could be changed to
+
+    CDo *newo = new(*ld->owner) CDo(ld);
+
+------------------------------------------------------------------------------
+
+The CDo, etc structs have factory functions in sCD, which can be called
+instead of the "placement new".  The following are equivalent:
+
+    CDo *od = new(CD) CDo(ldesc, BB);
+    CDo *od = CD.new_CDo(ldesc, BB);
+
+The factory function name is new_NAME  where NAME is the struct name.  The
+argument list is generally the same as the object constructor arg list,
+except if sCD* is an argument, it is skipped.
+
+The CDs and CDsym objects have a method sCD* owner() which returns the
+owning sCD.  These are more efficient than calling the findCD() method.
+
+Summary of how to get the sCD from various objects:
+
+Note that except for CDl, each has a FindCD() method, the listed way
+is the fastest.
+
+CDl::owner
+RTelem::findCD()
+CDo::oLdesc->owner
+CDpo::oLdesc->owner
+CDw::oLdesc->owner
+CDla::oLdesc->owner
+CDc::oLdesc->owner
+CDs::owner()
+CDm::findCD()
+CDsym::owner()
+sk_info::findCD()
+ntel_t::findCD()
+tflist_t::findCD()
+sLibRef::findCD()
+

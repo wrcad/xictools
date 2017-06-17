@@ -1,0 +1,37 @@
+/* XPM */
+static const char *wr_xpm[] = {
+/* width height ncolors chars_per_pixel */
+"30 20 2 1",
+/* colors */
+" 	c none",
+".	c blue",
+/* pixels */
+"                              ",
+"                              ",
+"   ..             ......      ",
+"  ...      .      ........    ",
+"  ....     ..    ..........   ",
+"   ...     ..    ...  .....   ",
+"   ....   ....   ...    ...   ",
+"    ....  ....  ....    ...   ",
+"    ....  ..... ...........   ",
+"     .......... ...........   ",
+"     .....................    ",
+"      ...... ...........      ",
+"      .....  .....  ....      ",
+"       ....   ....   ....     ",
+"       ....   ....   .....    ",
+"        ..     ...    .....   ",
+"        ..      .      ....   ",
+"         .      .       ..    ",
+"                              ",
+"                              "};
+
+/*
+    This has bad jaggies.  ImageMagick was used to create a better
+    looking icon.  Start with tm.gif in ImageMagick "display",
+    apply blur with default parameters, then apply sharpen with
+    default parameters.  Write out as 30x20 xpm file.  Hand edit to
+    set transparent colors, etc.
+*/
+

@@ -1,0 +1,34 @@
+
+module vend ( coin, clock, reset, newspaper );
+input  [1:0] coin;
+input  clock, reset;
+output newspaper;
+    wire \PRES_STATE[1] , n289, n300, n301, n302, \PRES_STATE243[1] , 
+					n303, n304, \PRES_STATE[0] , n290, n291, n292, n293, n294, 
+					n295, n296, n297, n298, n299, \PRES_STATE243[0] ;
+    PDFF \PRES_STATE_reg[1]  ( .clk(clock), .d(\PRES_STATE243[1] ), 
+										.clrbar( 1'b1), .prebar(1'b1), .q(\PRES_STATE[1] ) );
+    PDFF \PRES_STATE_reg[0]  ( .clk(clock), .d(\PRES_STATE243[0] ), 
+										.clrbar( 1'b1), .prebar(1'b1), .q(\PRES_STATE[0] ) );
+    VOR U119 ( .in0(n292), .in1(n295), .out(n302) );
+    VAND U118 ( .in0(\PRES_STATE[0] ), .in1(\PRES_STATE[1] ), .out(newspaper)
+         );
+    VNAND U117 ( .in0(n300), .in1(n301), .out(n291) );
+    VNOR U116 ( .in0(n298), .in1(coin[0]), .out(n299) );
+    VNOR U115 ( .in0(reset), .in1(newspaper), .out(n289) );
+    VNOT U128 ( .in(\PRES_STATE[1] ), .out(n298) );
+    VAND U114 ( .in0(n297), .in1(n298), .out(n296) );
+    VNOT U127 ( .in(\PRES_STATE[0] ), .out(n295) );
+    VAND U113 ( .in0(n295), .in1(n292), .out(n294) );
+    VNOT U126 ( .in(coin[1]), .out(n293) );
+    VNAND U112 ( .in0(coin[0]), .in1(n293), .out(n292) );
+    VNAND U125 ( .in0(n294), .in1(n303), .out(n300) );
+    VNOR U111 ( .in0(n291), .in1(reset), .out(\PRES_STATE243[0] ) );
+    VNAND U124 ( .in0(\PRES_STATE[0] ), .in1(n304), .out(n301) );
+    VAND U110 ( .in0(n289), .in1(n290), .out(\PRES_STATE243[1] ) );
+    VNAND U123 ( .in0(n292), .in1(n298), .out(n304) );
+    VNAND U122 ( .in0(n299), .in1(coin[1]), .out(n303) );
+    VNAND U121 ( .in0(n296), .in1(n302), .out(n290) );
+    VOR U120 ( .in0(n293), .in1(coin[0]), .out(n297) );
+endmodule
+

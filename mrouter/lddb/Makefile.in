@@ -1,0 +1,70 @@
+#######################################################################
+# lddb/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.4 2017/02/18 02:32:05 stevew Exp $
+#######################################################################
+
+DATE = @DATE@
+
+LD_VERSION = `../version`
+LD_VERS_H = ../include/ld_vers.h
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGS@ @NO_IGNORED_QUALIFIERS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGS@ @NEEDINT64@
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+PIC_OPT = @PIC_OPT@
+SOEXT = @SOEXT@
+LSHFLAG = @LSHFLAG@
+OSNAME = @OSNAME@
+
+LIB_TARGET = liblddb.a
+HFILES =
+CCFILES = \
+  lddb.cc \
+  ld_cmds.cc \
+  ld_def_in.cc \
+  ld_def_out.cc \
+  ld_diag.cc \
+  ld_hash.cc \
+  ld_lef_in.cc \
+  ld_lef_out.cc
+CCOBJS = $(CCFILES:.cc=.o)
+
+# Last two are redundant, so make depend works before lef/def are built.
+INCLUDE = -I../include -I../lef/include -I../def/include \
+  -I../lef/lef -I../def/def
+
+all: $(LIB_TARGET)
+
+$(LIB_TARGET): $(LD_VERS_H) $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+$(LD_VERS_H):
+	@echo "// Automatically generated, don't edit!" > $(LD_VERS_H)
+	@echo "#define LD_VERSION \"$(LD_VERSION)\"" >> $(LD_VERS_H)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(PIC_OPT) $(INCLUDE) -c $*.cc
+
+depend: $(LD_VERS_H)
+	@echo depending in lddb
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm $(LD_VERS_H) *.o $(LIB_TARGET)
+
+distclean:
+	-rm $(LD_VERS_H) *.o $(LIB_TARGET) Makefile
+
+#######################################################################

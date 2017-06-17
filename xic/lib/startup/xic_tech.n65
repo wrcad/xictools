@@ -1,0 +1,20 @@
+# Xic technology file for TSMC N65 process
+# $Id: xic_tech.n65,v 1.1 2013/03/02 20:17:52 stevew Exp $
+#
+# This illustrates a skeletal Xic technology file based on Virtuoso
+# technology files found in a commercial PDK.  Something like this
+# will work with just about any standard PDK.
+
+# Set this to the actual path to your PDK.
+#
+Set PDK = /usr/local/cad/TSMC/CMN65GP/PDK
+
+# Equivalents to these files may be in a different location in
+# your PDK!  You may need to hunt around for the correct paths.
+#
+ReadDRF $(PDK)/display.drf
+ReadCdsTech $(PDK)/techfile
+ReadCdsLmap $(PDK)/tsmcN65/tsmcN65.layermap
+
+SnapGridSpacing .01
+

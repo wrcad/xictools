@@ -1,0 +1,99 @@
+
+Dear BSIM3 users,
+
+Thank you for your support of BSIM3. We are releasing the BSIM3v3.2
+code today.
+
+Many enhancements to BSIM3v3.1 were requested by Compact Model Council
+(CMC) (www.eia.org/eig/CMC) or proposed by UCB BSIM team and discussed
+at 9/97 and 12/97 CMC meetings. BSIM3v3.2 was developed to incorporate
+these enhancements. The beta code of BSIM3v3.2 was sent to the CMC
+member companies on Feb. 20, 1998. The test results were discussed at
+5/98 CMC meeting and via email. BSIM3v3.2 final release incorporated
+those changes and bug fixes as requested from the 5/98 CMC meeting.
+ 
+BSIM3v3.2 has the following enhancements and improvements relative
+to BSIM3v3.1:
+
+  (1)  An original and accurate charge thickness capacitance model 
+       considering the finite charge layer thickness (quantum effects).
+       This model is smooth, continuous and very accurate through all 
+       regions of operations.
+
+  (2)  Improved modeling of C-V characteristics at the weak to strong
+       inversion transition.
+
+  (3)  Adding the Tox dependence into the threshold voltage (Vth) model.
+
+  (4)  Adding the flat-band voltage (Vfb) as a new model parameter.
+
+  (5)  Improved substrate current scalability with channel length.
+
+  (6)  Restructuring of the non-quasi-static (NQS) model, addition of
+       NQS into the pole-zero analysis and fixing bugs in NQS codes.
+
+  (7)  Adding temperature dependence into the diode junction capacitance.
+
+  (8)  DC diode model now supporting a resistance-free diode and current-
+       limiting feature.
+
+  (9)  Option of using the inversion charge of capMod 0, 1, 2 or 3 to 
+       evaluate the BSIM3 thermal noise.
+
+  (10) Elimination of the small negative capacitance of Cgs and Cgd in 
+       the accumulation-depletion regions.
+
+  (11) Introducing a separate set of channel-width and length dependence
+       parameters (Llc, Lwc, Lwlc, Wlc, Wwc and Wwlc) to calculate Weff 
+       and Leff for the C-V model for better fitting of the capacitance data.
+
+  (12) Adding parameter checking to avoid bad values for certain parameters.
+
+  (13) Bug fixes.
+
+
+Since the release of BSIM3v3.1 in Dec. 1996 , we have received a lot of
+feedback and input from many users. We would like to thank Keith Green,
+Tom Vrotsos, Britt Brooks and Doug Weiser at TI, Min-Chie Jeng at Cadence,
+Joe Watts and Cal Bittner at IBM, Bob Daniels and Wenliang Zhang at Avant!,
+David Newmark and Bhaskar Gadepally at Motorola, Zhihong Liu and Chune-Sin
+Yeh at BTA, Paul Humphries and Seamus Power at Analog Devices, Mishel
+Matloubian and Sally Liu at Rockwell, Bernd Lemaitre at Siemens, Ping-Chin
+Yeh and Dick Dowell at HP, Shiuh-Wuu Lee, Santanu Chaudhuri and Ling-Chu 
+Chien at Intel, Larry Yu and Judy An at AMD, Peter Lee at Hitachi, Toshiyuki
+Saito at NEC, Richard Taylor at NSC and Patti Rusher at EIA for their 
+valuable comments and suggestions. We have considered all the comments 
+carefully and acted on nearly all of them in the development of BSIM3v3.2.
+
+I want to give special acknowledgements to Dr. Keeth Green, Chairman of the 
+Technical Issue Subcommittee of CMC; Britt Brooks, chair of CMC, and Bhaskar 
+Gadepally, former co-chair of CMC, and Dr. Min-Chie Jeng for their guidance and
+support. Dr. Weidong Liu was the principal developer of BSIM3v3.2; graduate 
+student Xiaodong Jin was co-developer. Graduate student Yachin King provided 
+the quantum mechanic analysis basis for the innovative charge thickness 
+capacitance model, which is a significant step forward from the charge sheet 
+model. Graduate student James Chen built and maintained the attractive BSIM3
+web site. BSIM3 research is partially supported by SRC, CMC and Rockwell.
+
+BSIM3v3.2 source code can be downloaded from the BSIM3 web site 
+(www-device.eecs.berkeley.edu/~bsim3). A detailed description of the difference 
+between BSIM3v3.2 and BSIM3v3.1 can also be found there. The user manual and 
+standard test results will be available in July. Your feedback is always
+welcome and may be sent to Dr. Weidong Liu (liuwd@fermi.eecs.berkeley.edu).
+
+Sincerely,
+
+Chenming Hu         June 16, 1998
+=====================================================
+Professor Chenming Hu
+Dept. of Electrical Engineering and Computer Sciences
+University of California, Berkeley
+Berkeley, CA 94720
+=====================================================
+
+Technical contact:
+Dr. Weidong Liu: liuwd@fermi.eecs.berkeley.edu
+
+Visit BSIM3 web site: www-device.EECS.Berkeley.EDU/~bsim3
+and CMC web site: www.eia.org/eig/CMC
+

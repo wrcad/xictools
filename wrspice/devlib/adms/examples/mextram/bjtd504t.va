@@ -1,0 +1,38 @@
+`include "frontdef.inc" 
+`define  SELFHEATING
+ 
+module bjtd504tva (c, b, e, dt); 
+  
+  // External ports  
+     inout c, b, e, dt; 
+  
+     electrical e, b, c; 
+     electrical dt; 
+  
+  // Internal nodes  
+     electrical e1, b1, b2, c1, c2, c3, c4; 
+     electrical noi; // For correlated noise implementation 
+ 
+`include "parameters.inc"
+`include "variables.inc"
+`include "opvars.inc"
+
+analog begin 
+  
+`ifdef insideADMS 
+   @(initial_model) begin 
+`else 
+   @(initial_step or initial_step("static")) begin  
+`endif   
+   
+`include "initialize.inc"     
+
+   end // initial_step   
+
+`include "tscaling.inc"
+`include "evaluate.inc"
+`include "opinfo.inc"
+  
+end  // analog                                                         
+endmodule                     
+

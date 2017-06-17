@@ -1,0 +1,294 @@
+#! /bin/sh
+# $Id: wrspice_files,v 1.37 2016/09/29 00:25:03 stevew Exp $
+
+bin="\
+multidec \
+proc2mod \
+printtoraw \
+wrspice \
+wrspiced"
+
+examples="\
+README \
+bjtnoise.cir \
+bsim1tst.cir \
+bsim2tst.cir \
+bsim430-benchmarks.tar.gz \
+bsim465-benchmarks.tar.gz \
+bsoi43-benchmarks.tar.gz \
+diffpair.cir \
+diodisto.cir \
+diotemp.cir \
+ex8.cir \
+exjjintr.cir \
+exjjiv.cir \
+fftdemo.cir \
+hypres.models \
+intr.sced \
+intr.xic \
+jjcntr.cir \
+jjloop.cir \
+jjloop1.cir \
+jjloop2.cir \
+jjmc.cir \
+jjmc1.cir \
+jjoprng.cir \
+jjpulse.cir \
+jjseries.note \
+ltra_1.cir \
+ltra_2.cir \
+ltra_3.cir \
+mixdisto.cir \
+mos6inv.cir \
+mosamp2.cir \
+mosmem.cir \
+mvtltest.cir \
+noise.cir \
+prbs.cir \
+precision.cir \
+process.mod \
+process.pro \
+pz2.cir \
+pzt.cir \
+rc.cir \
+rca3040.cir \
+resnoise.cir \
+rtlinv.cir \
+schmitt.cir \
+senstest.cir \
+sfq.cir \
+shutop.cir \
+shuttle.cir \
+shuttlea.cir \
+simplepz.cir \
+tab.cir \
+trapcheck.cir \
+wrspice_ipc_demo.tar.gz"
+
+help="\
+FileSel.hlp \
+Hardcopy.hlp \
+HelpSys.hlp \
+PlotPanel.hlp \
+TextEditor.hlp \
+TMsmall.gif \
+blockdiag.gif \
+flow.gif \
+powerlogo.gif \
+spAnalysis.hlp \
+spCmdLine.hlp \
+spCommands.hlp \
+spElements.hlp \
+spExamples.hlp \
+spExpressions.hlp \
+spInput.hlp \
+spMain.hlp \
+spModels.hlp \
+spOpRangeAnal.hlp \
+spOptions.hlp \
+spPlot.hlp \
+spRusage.hlp \
+spSemicond.hlp \
+spSetup.hlp \
+spShell.hlp \
+spSources.hlp \
+spToolbar.hlp \
+spVariables.hlp \
+spVars_cmds.hlp \
+spVars_debug.hlp \
+spVars_plot.hlp \
+spVars_shell.hlp \
+spVars_sim.hlp \
+wr.xpm \
+wrbannermain.gif"
+
+help_screenshots="\
+circuits.png \
+colors.png \
+commands1.png \
+commands10.png \
+commands11.png \
+commands12.png \
+commands2.png \
+commands3.png \
+commands4.png \
+commands5.png \
+commands6.png \
+commands7.png \
+commands8.png \
+commands9.png \
+debug.png \
+email.png \
+filelist.png \
+filesel.png \
+font.png \
+help.png \
+mplot.png \
+plotopts1.png \
+plotopts2.png \
+plotopts3.png \
+plotopts4.png \
+plotopts5.png \
+plots.png \
+print.png \
+shell.png \
+simopts1.png \
+simopts2.png \
+simopts3.png \
+simopts4.png \
+simopts5.png \
+simopts6.png \
+simopts7.png \
+texted.png \
+toolbar.png \
+trace.png \
+variables.png \
+vectors.png"
+
+icons="\
+README \
+wrspice_16x16.xpm \
+wrspice_32x32.xpm \
+wrspice_48x48.xpm"
+
+scripts="\
+margins \
+merit \
+optimize \
+setplot"
+
+startup="\
+news \
+wr_install \
+wrspice_mesg \
+wrspiceinit"
+
+docs=README
+
+admst="\
+adms.implicit.xml \
+device.xml \
+wrspiceMODULE.cc.xml \
+wrspiceMODULEacld.cc.xml \
+wrspiceMODULEaski.cc.xml \
+wrspiceMODULEaskm.cc.xml \
+wrspiceMODULEdefs.h.xml \
+wrspiceMODULEload.cc.xml \
+wrspiceMODULEnois.cc.xml \
+wrspiceMODULEpzld.cc.xml \
+wrspiceMODULEset.cc.xml \
+wrspiceMODULEseti.cc.xml \
+wrspiceMODULEsetm.cc.xml \
+wrspiceMODULEtemp.cc.xml \
+wrspiceMODULEtopo.cc.xml \
+wrspiceMODULEtrun.cc.xml \
+wrspiceVersion.xml"
+
+devincl="\
+acdefs.h \
+circuit.h \
+dctdefs.h \
+device.h \
+distdefs.h \
+errors.h \
+gencurrent.h \
+ifdata.h \
+inpline.h \
+input.h \
+noisdefs.h"
+
+vlmods=""
+
+dkexdirs="\
+bsim6 \
+bsim6.1 \
+bsimcmg \
+bsoi44 \
+bsoi45 \
+cap \
+ekv \
+hicum0 \
+hicum2 \
+ind \
+jj \
+mextram \
+psp102 \
+psp103"
+
+case $1 in
+admst)
+    echo $admst;;
+vlmods)
+    echo $vlmods;;
+bin)
+    echo $bin;;
+devincl)
+    echo $devincl;;
+dkexdirs)
+    echo $dkexdirs;;
+docs)
+    echo $docs;;
+examples)
+    echo $examples;;
+help)
+    echo $help;;
+help_screenshots)
+    echo $help_screenshots;;
+icons)
+    echo $icons;;
+scripts)
+    echo $scripts;;
+startup)
+    echo $startup;;
+klu)
+    case x$2 in
+    xDarwin*)
+        KLU_PLUGIN=klu_wr.dylib;;
+    xDebian | xLinux* | xFreeBSD*)
+        KLU_PLUGIN=klu_wr.so;;
+    xWin*)
+        KLU_PLUGIN=klu_wr.dll;;
+    esac
+    echo $KLU_PLUGIN;;
+soext)
+    case x$2 in
+    xDarwin*)
+        echo dylib;;
+    xDebian | xLinux* | xFreeBSD*)
+        echo so;;
+    xWin*)
+        echo dll;;
+    esac;;
+modname)
+    case x$2 in
+    xbsim6)
+        echo bsim6;;
+    xbsim6.1)
+        echo bsim6;;
+    xbsimcmg)
+        echo bsimcmg;;
+    xbsoi44)
+        echo bsoi44;;
+    xbsoi45)
+        echo bsoi45;;
+    xcap)
+        echo cap;;
+    xekv)
+        echo ekv26;;
+    xhicum0)
+        echo hicum0;;
+    xhicum2)
+        echo hicum2;;
+    xind)
+        echo ind;;
+    xjj)
+        echo jj;;
+    xmextram)
+        echo bjt504;;
+    xpsp102)
+        echo psp102;;
+    xpsp103)
+        echo psp103;;
+    esac;;
+esac
+

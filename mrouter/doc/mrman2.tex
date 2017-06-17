@@ -1,0 +1,652 @@
+% -----------------------------------------------------------------------------
+% MRouter Manual file: mrman2.tex
+% Stephen R. Whiteley, Whiteley Research Inc., Sunnyvale CA
+% No copyright, open-source
+% $Id: mrman2.tex,v 1.5 2017/02/17 23:23:01 stevew Exp $
+% -----------------------------------------------------------------------------
+
+\chapter{Command Interface}
+
+The {\MRouter} has a built-in set of command handlers that implement a
+basic command-line interface.  Scripts can be produced by writing the
+commands in a file, one command per line.  The scripts can be used for
+router setup, and initiation and control of routing jobs.  Script files
+can read other script files to arbitrary depth.
+
+The command processing is implemented hierarchically.  At lowest level
+are the database commands, which are impolemented in the database class.
+Command processing for the router class will pass through unresolved
+operations to the database command processor.  Finally, when using
+the {\MRouter} plug-in, an application's command processing can
+pass through unresolved operations to the {\MRouter} command processing.
+This allows the application to provide its own commands, or modified
+versions of the {\MRouter} commands.  For example, the {\Xic} program
+adds commands to display the physical layout, and to move technology
+information to and from the {\MRouter}.
+
+The {\it Qrouter} has built-in TCL/TK support, and a comparable
+command interface.  This support is not directly available in the
+{\MRouter} presently.  However, the command interface provided can be
+wrapped into TCL/TK, Python, or other script language functions, per
+the user's preference.  Direct support for common languages such as
+TCL/TK and Python may be added in future releases.
+
+\section{The database commands}
+
+These are the commands handled by the database, and are available
+from an instance of the database class.  They are also available from
+the router class, as a fallback.
+
+\subsection{Database commands: {\vt reset}}
+\index{reset command}
+
+{\bf Syntax:} {\vt reset}
+
+This command takes no further arguments.  It clears the database, and
+resets database parameter settings to default values.
+
+\subsection{Database commands: {\vt set}}
+\index{set command}
+
+{\bf Syntax:} {\vt set} [{\it paramname} [{\it value\/}]]
+
+The {\vt set} command is used to set or query values for parameters used by the
+database and router.  If no further arguments are given, a list of the parameters
+and their present values is printed.  If a parameter name is given but
+no value, that parameter name and its current value (or its default) will be printed. 
+Otherwise, the parameter whose name is given will be set to the given
+value.
+
+The known parameters are as follows.
+\begin{description}
+
+\item{\vt debug}
+The {\it value} is a hex number whose bits are flags that turn on
+various debugging options.  Presently undocumented.
+
+\item{\vt verbose}\\
+This sets or displays the verbosity level for messages emitted by the
+database and router.  If no {\it value} is given, the present
+verbosity level is printed.  This is an integer in the range 0--4,
+where 4 is the most verbose.  The {\it value} should otherwise be an
+integer in this range.  The default verbosity is 0.
+
+\item{\vt global}\\
+Up to six ``global'' nets can be specified.  These are usually power
+or ground nets, to be treated specially by the router.  Values are
+space-separated net names, which when specified are added to the
+internal list of global nets incrementally.  That is, multiple calls
+can be made to define the global nets, or equivalently all of the
+global nets can be listed for a single call.  The internal list can
+be cleared with {\vt set clear global}.  If no net names are given,
+the current global net name list is printed.
+
+\item{\vt vdd}\\
+This is for {\it Qrouter} compatibility, for setting the name of the
+power net.  This is actually equivalent to {\vt global}.
+
+\item{\vt gnd}\\
+This is for {\it Qrouter} compatibility, for setting the name of the
+ground net.  This is actually equivalent to {\vt global}.
+
+\item{layers}\\
+The {\it value} is an integer that represents the number o layers
+that the router will use.  This can be set to a number less than or
+equal to the number of layers that have been defined (from LEF or
+technology input).  For example, if given a value 4, only the first 4
+routing layers defined will be used by the router.  If no number is
+given, the number of layers that the router would use is printed.
+
+\item{\vt maxnets}\\
+The {\it value} is the maximum number of nets allowed in a design. 
+This can be set to limit the number of nets accepted for routing by
+the router.  Jobs with too many nets will be rejected.  If no number
+is given, the current maximum is printed.
+
+\item{\vt lefresol}\\
+The {\it value} is the LEF resolution, as is normally provided in a
+LEF file.  Acceptable values (from the LEF specification) are 100,
+200, 400, 800, 1000, 2000, 4000, 8000, 10000, 20000.  The internal
+coordinates use this many points per micron.  The resolution is 100
+if not otherwise given.  If not given, the current value is printed. 
+Otherwise, the resolution may be set to the value given, however once
+the LEF resolution is set, whether by LEF file or this keyword, it
+can not be changed except by resetting the database.
+
+\item{\vt mfggrid}\\
+The {\it value} is the manufacturing grid usually obtained from a LEF
+file.  It is provided as a real number in microns.  The value must be
+exactly representable in the LEF resolution, and will quantize
+coordinate values.  The {\it value} can be 0, in which case no
+manufacturing grid will be used, which is the default.  If no {\it
+value} is given, the present manufacturing grid, in microns, is
+printed.
+
+\item{\vt definresol}\\
+The {\it value} is the resolution as normally read from a DEF file. 
+Acceptable values are as listed for {\vt lefresol}, and furthermore
+the value must exactly divide the {\vt lefresol}.  The resolution is
+100 if not otherwise given.  If not given, the current value is
+printed.  Otherwise, the resolution may be set to the value given,
+however once the DEF input resolution is set, whether by DEF file or
+this keyword, it can not be changed except by resetting the database.
+
+\item{\vt defoutresol}\\
+The {\it value} is the resolution used when writing DEF files with
+{\vt write def}, which defaults to the {\vt definresol}.  Setting to
+0 clears the overriding.  If no {\it value}is given, the present DEF
+output resolution override is printed.
+
+\item{\vt netorder}\\
+The {\it value} can be set to one of the following integer values. 
+It controls the order in which nets are routed.
+\begin{description}
+]item{0}\\
+Use the default ordering, where nets with the most taps are routed
+first.
+\item{1}\\
+Use alternate ordering, where the nets with the largest minimum box
+containing taps are routed first.
+\item{2}\\
+Retain the ordering as nets were defined.
+\end{description}
+If no {\it value} is given, the present ordering enumerator is
+printed.
+
+\item{\vt passes}\\
+The {\it value} is an integer that is the maximum number of attempted
+passes of the route search algorithm, where the routing constraints
+(maximum cost and route area mask) are relaxed on each pass.  The
+default number of passes is 10.  With no {\it value}, the maximum
+number of passes is printed.  Otherwise, a positive integer is
+expected for the {\it value}.
+
+\item{\vt increments}\\
+The {\it value} is a list of positive integers, each giving the
+incremental halo width in the routing mask for the corresponding
+routing pass.  The mask is used to limit the area where a route can
+be implemented.  On each pass, this area is expanded by the
+corresponding {\vt increments} value.  The final increments value is
+used for any subsequent passes.  The default is effectively the
+single integer ``1'', so that the masking area is bloated by one
+channel on each pass.  If no integers are given, the internal list of
+increments is printed.
+
+\item{\vt via\_stack}\\
+The {\it value} sets the maximum number of vias that may be stacked
+directly on top of each other at a single point.  A {\it value} of
+``{\vt none}'' or ``{\vt 0}'' or ``{\vt 1}'' will disallow stacked
+vias.  A {\it value} of ``{\vt all}'' will allow all vias to be
+stacked (which is the default).  Otherwise, the {\it value} should be
+an integer less than or equal to the number of via layers.
+
+\item{\vt via\_pattern}\\
+If vias are not square, then they are placed in a checkerboard
+pattern, with every other via rotated 90 degrees.  If inverted, the
+rotation is swapped relative to the grid positions used in the
+non-inverted case.  If the {\it value} is 0 or a word starting with
+``{\vt n}'', the pattern is not inverted.  If the {\it value} is
+nonzero or a word starting with ``{\vt i}'', the pattern is inverted.
+\end{description}
+
+\subsection{Database commands: {\vt setcost}}
+\index{setcost command}
+
+{\bf Syntax:} {\vt setcost} [{\it paramname} [{\it value\/}]]
+
+This is similar to the {\vt set} command, but is exclusively for the
+cost parameters used to optimize routing.  Advanced users and
+experimenters may appreciate the ability to access these parameters. 
+The cost parameters are the following.  For most of these, only the
+first character is checked.  If the first character is `{\vt c}', the
+second character is also checked.
+
+\begin{description}
+\item{\vt segcost}\\
+Add description.
+The default is 1.
+
+\item{\vt viacost}\\
+Add description.
+The default is 5.
+
+\item{\vt jogcost}\\
+Add description.
+The default is 10.
+
+\item{\vt xvercost} or {\vt crossovercost}\\
+Add description.
+The default is 4.
+
+\item{\vt blockcost}\\
+Add description.
+The default is 25.
+
+\item{\vt offsetcost}\\
+Add description.
+The default is 50.
+
+\item{\vt conflictcost}\\
+Add description.
+The default is 50.
+\end{description}
+
+\subsection{Database commands: {\vt unset}}
+\index{unset command}
+
+{\bf Syntax:} {\vt unset} {\it keyword} [{\it keyword} ...]
+
+The arguments are the keywords that are accepted by the {\bf set} or
+{\bf setcost} commands.  At least one must be given, but any number
+can appear in the argument list.  For each keyword, the default
+values are set, undoing any {\bf set} operation.
+
+
+\subsection{Database commands: {\vt ignore}}
+\index{ignore command}
+
+{\bf Syntax:} {\vt ignore} [{\it netname} ...] [{\vt -u} [{\vt all}]]
+ [{\it netname} ...]
+
+The database contains a list of net names that will be ignored by the
+router.  The list is maintained by this command.
+
+With no options, The entire list or names of ignored nets is printed. 
+Otherwise, the arguments consist of net names or the special token
+{\vt -u}.  Net names given before or without {\vt -u} will be added to
+the ignored net list (if not already present).  Net names given after
+{\vt -u} will be removed from the ignore net list, if found.
+
+A special case is when the special keyword ``{\vt all}'' follows {\vt
+-u}.  In this case, the entire list is cleared.  This is not undoable
+so proceed with caution.
+
+\subsection{Database commands: {\vt critical}}
+\index{critical command}
+
+{\bf Syntax:} {\vt critical} [{\it netname} ...] [{\vt -u} [{\vt all}]]
+ [{\it netname} ...]
+
+The database contains a list of net names that will be considered
+critical by the router.  Such nets will be afforded higher priority by
+the router.  The list is maintained by this command.  With no options,
+The entire list or names of critical nets is printed.
+
+With no options, The entire list or names of ignored nets is printed. 
+Otherwise, the arguments consist of net names or the special token
+{\vt -u}.  Net names given before or without {\vt -u} will be added to
+the critical net list (if not already present).  Net names given after
+{\vt -u} will be removed from the critical net list, if found.
+
+A special case is when the special keyword ``{\vt all}'' follows {\vt
+-u}.  In this case, the entire list is cleared.  This is not undoable
+so proceed with caution.
+
+\subsection{Database commands: {\vt obstruction}}
+\index{obstruction command}
+
+{\bf Syntax:} {\vt obstruction} [{\vt -u}] [{\it layer}] [{\vt all}]
+   [{\it L} {\it B} {\it R} {\it T\/}]
+
+The database contains a list of rectangular areas for each routing
+layer that are given to the router as obstructions.  These are
+user-defined areas where routes are not allowed to intersect.  The
+obstruction list is maintained by this command.
+
+If no arguments appear, the current list of user-defined obstructions
+is printed.  If the {\vt -u} option is given, the command will
+potentially remove obstructions from the list, otherwise obstructions
+will be added (if an identical obstruction is not already present). 
+The {\it layer} can be either the name of a routing layer, or its
+1-based index number.
+
+The special keyword {\vt all} can appear only when {\vt -u} is given.
+When it appears, if a {\it layer} was given, all obstructions on that
+layer will be removed from the list.  If no {\it layer} is given,
+then the entire obstruction list is cleared.
+
+Otherwise, if a {\it layer} is given, but the coordinates are omitted,
+a list of the obstructions on the given layer is printed.  If the box
+coordinates are included (given in microns), the indicated rectangle
+is added to the list if {\vt -u} was not given, or removed from the
+list (if it exists) if {\vt -u} was given.
+
+\subsection{Database commands: {\vt layer}}
+\index{layer command}
+
+{\bf Syntax:} {\vt layer} [{\it layer} [{\it option\/}] [{\it args\/}]]
+
+This command sets or queries some basic parameters of routing layers. 
+If no arguments are given, a listing of the routing layers with their
+present parameter values is printed.
+
+The first argument is a layer name or 1-based routing layer index.  If
+only this is given, the parameters for the given layer are printed.
+
+The {\it option} that may follow indicates the parameter.  It can be
+one of the following.
+
+\begin{description}
+\item{\vt -n}\\
+This indicates the layer name.  If a word follows, the layer will be
+given this name.  If no word follows, the present layer name will be
+printed.
+
+\item{\vt -l}\\
+This indicates the user layer number.  This may indicate the GDSII
+layer number.  It is a user parameter and not used by the router.  It
+must be a non-negative integer if given.  If a number follows, it will
+be assigned, otherwise the present value is printed.
+
+\item{\vt -t}\\
+This indicates the user type number.  This may indicate the GDSII
+datatype number.  It is a user parameter and not used by the router. 
+It must be a non-negative integer if given.  If a number follows, it
+will be assigned, otherwise the present value is printed.
+
+\item{\vt -w}\\
+This indicates the default wire width used for routing, in microns. 
+It must be a positive number.  If a number follows, it will be
+assigned, otherwise the current value is printed.
+
+\item{\vt -p}\\
+This indicates the pitch of the routing, meaning the wire width plus
+minimum spacing between wires.  This must be a positive value larger
+than the wire width.  If a number follows, it will be assigned,
+otherwise the current value is printed.
+
+\item{\vt -d}\\
+This indicates the preferred route direction, which can be horizontal
+of vertical.  If a word follows, the first character of which is `{\vt
+h}' or `{\vt v}', the direction is set.  Otherwise, the current
+direction is printed.
+\end{description}
+
+\subsection{Database commands: {\vt newlayer}}
+\index{newlayer command}
+
+{\bf Syntax:} {\vt !mr newlayer} {\it name}
+
+This creates a new layer with the given name and appends it to the
+layers list.  The {\bf layer} command can then be used to fill in the
+routing parameters.
+
+\subsection{Database commands: {\vt boundary}}
+\index{boundary command}
+
+{\bf Syntax:} {\vt boundary} [{\it L} {\it B} {\it R} {\it T\/}]
+
+This sets or prints the bounding box of the routed area in microns. 
+This is ordinarily set from the cell and technology data.
+
+\subsection{Database commands: {\vt read}}
+\index{read command}
+
+{\bf Syntax:} {\vt read} {\it source} [{\it filename\/}]
+
+This command will read a file into the database.  The {\it source}
+keyord must be one of the following.
+\begin{description}
+\item{\vt config}\\
+This will read a configuration file in the format used by the {\it
+Qrouter} from which {\MRouter} was derived.  If no {\it filename} is
+given, the name ``{\vt route.config}'' is assumed.  If given, the {\it
+filename} should be a path to a Qrouter-style config file.  This
+functionality is deprecated and may be removed at some point.
+
+\item{\vt script}\\
+A script is a text file containing commands, as described in this
+section, one per line.  The {\it filename} should be a path to such a
+file.  The file will be read, and the commands executed in order,
+unless a fatal error occurs, which terminates execution.  Calls to
+read scripts can recurse to any depth.
+
+\item{\vt lef}\\
+The {\it filename} should be a path to a file in the Cadence LEF
+format (Layout Exchange Format).  This is an industry-standard format
+used to provide routing information about the standard cells to be
+used by the router.  This includes technology information about the
+routing layers (e.g., routing direction, pitch, width), and/or
+definitions of the standard cells including size information and
+terminal locations.  It may also provide definitions for the standard
+vias defined for the process.
+
+\item{\vt def}\\
+The {\it filename} should be a path to a file in the Cadence DEF
+format (Design Exchange Format).  This is an industry-standard format
+used to pass netlist information.  This will include placement
+locations and orientations of the cell instances used in the design,
+plus a list of nets which define the circuit.  The DEF file provides
+the nets in abstract form, the router implements these nets in
+physical form.
+\end{description}
+
+\subsection{Database commands: {\vt write}}
+\index{write command}
+
+{\bf Syntax:} {\vt write} {\it target} [{\it filename\/}]
+
+The {\vt write} command will create a file.  The {\it target} can be
+one of the following.
+\begin{description}
+\item{\vt lef}\\
+The {\it filename} is the name of a LEF file to write.  The file will
+contain the technology and standard-cell information found in the
+database.
+
+\item{\vt def}\\
+The {\it filename} is the name of a DEF file to write.  The file will
+contain the components, pins, and nets as saved in the database.
+\end{description}
+
+\subsection{Database commands: {\vt append}}
+\index{append command}
+
+{\bf Syntax:} {\vt append} {\it deffile1} {\it deffile2}
+
+This will copy the DEF file {\it deffile1}, while adding the physical
+routing information, to {\it deffile2}.  This is pretty much the same
+as the {\it Qrouter} output method.  The {\it deffile1} must be the
+original input DEF file, or contain the same instance placements and
+abstract routes.  When the router is run, the physical routes are
+written back to the database, where they can be used to update the
+original source as described.
+
+
+\section{The router commands}
+
+When called through the router object, the list of available commands
+is a superset of the database commands listed in the previous section.
+The {\vt read script} command is overloaded to handle scripts containing
+router commands.
+
+\subsection{Router commands: {\vt reset}}
+\index{reset command}
+
+{\bf Syntax:} {\vt reset} [{\vt all}]
+
+This overrides the database command of the same name.  If the ``{\vt
+all}'' argument is given, the router and database are both reset to a
+pristine state.  If {\vt all} is not given, only the router is reset,
+database information is retained.  In this context, {\vt true}, {\vt
+yes}, and {\vt 1} (one) are synonyms for {\vt all}, case insensitive,
+and only the leading character is actually read.
+
+
+\subsection{Router commands: {\vt stage1}}
+\index{stage1 command}
+
+{\bf Syntax:} {\vt stage1} [{\it options\/}]
+
+Execute stage1 routing.  This works through the entire netlist,
+routing as much as possible but not doing any rip-up and re-route. 
+Nets that fail to route are put in the failed nets list.  The number
+of failed routes is printed.
+
+The following options are understood.
+\begin{description}
+\item{\vt -d}\\
+Draw the area being searched in real-time.  This slows down the
+algorithm and is intended only for diagnostic use.  {\bf Not
+implemented.}
+
+\item{\vt -s}\\
+Single-step stage one, i.e., do one route per call, incrementally.
+
+\item{\vt -m}[ ]{\it value}\\
+The {\it value} follows the option character with or without
+intervening white space.  It can be an integer 0 or larger, and will
+set the search mask size.  It can also be set to one of the following
+keywords, where only the first character is significant.
+\begin{description}
+\item{\vt n}[{\vt one}]\\
+Don't limit the search area.
+\item{\vt a}[{\vt uto}]\\
+Select the mask automatically.
+\item{\vt b}[{\vt box}]\\
+Use the net bounding box as a mask.
+\end{description}
+
+\item{\vt -f}\\
+Force a terminal to be routable.
+
+\item{\it netname}\\
+Route the named net only.
+\end{description}
+
+\subsection{Router commands: {\vt stage2}}
+\index{stage2 command}
+
+{\bf Syntax:} {\vt stage2} [{\it options\/}]
+
+Execute stage2 routing.  This stage works through the failed nets
+list, routing with collisions, and then ripping up the colliding nets
+and appending them to the failed nets list.
+
+The number of failed nets remaining is printed on exit.
+
+The following options are understood.
+\begin{description}
+\item{\vt -d}\\
+Draw the area being searched in real-time.  This slows down the
+algorithm and is intended only for diagnostic use.  {\bf Not
+implemented.}
+
+\item{\vt -s}\\
+Single-step stage two, i.e., do one route per call, incrementally.
+
+\item{\vt -m}[ ]{\it value}\\
+The {\it value} follows the option character with or without
+intervening white space.  It can be an integer 0 or larger, and will
+set the search mask size.  It can also be set to one of the following
+keywords, where only the first character is significant.
+\begin{description}
+\item{\vt n}[{\vt one}]\\
+Don't limit the search area.
+\item{\vt a}[{\vt uto}]\\
+Select the mask automatically.
+\item{\vt b}[{\vt box}]\\
+Use the net bounding box as a mask.
+\end{description}
+
+\item{\vt -f}\\
+Force a terminal to be routable.
+
+\item{\vt -l} {\it N}\\
+Fail route if the solution collides with more than {\it N} nets.
+
+\item{\vt -t} {\it N}\\
+Keep trying {\it N} additional times.
+
+\item{\it netname}\\
+Route the named net only.
+\end{description}
+
+\subsection{Router commands: {\vt stage3}}
+\index{stage3 command}
+
+{\bf Syntax:} {\vt stage3} [{\it options\/}]
+
+Execute stage3 routing.  This works through the entire netlist,
+ripping up each route in turn and re-routing it.  The number of failed
+nets remaining is printed on exit.
+
+The following options are understood.
+\begin{description}
+\item{\vt -d}\\
+Draw the area being searched in real-time.  This slows down the
+algorithm and is intended only for diagnostic use.  {\bf Not
+implemented.}
+
+\item{\vt -s}\\
+Single-step stage three, i.e., do one route per call, incrementally.
+
+\item{\vt -m}[ ]{\it value}\\
+The {\it value} follows the option character with or without
+intervening white space.  It can be an integer 0 or larger, and will
+set the search mask size.  It can also be set to one of the following
+keywords, where only the first character is significant.
+\begin{description}
+\item{\vt n}[{\vt one}]\\
+Don't limit the search area.
+\item{\vt a}[{\vt uto}]\\
+Select the mask automatically.
+\item{\vt b}[{\vt box}]\\
+Use the net bounding box as a mask.
+\end{description}
+
+\item{\vt -f}\\
+Force a terminal to be routable.
+
+\item{\vt -l} {\it N}\\
+Fail route if the solution collides with more than {\it N} nets.
+
+\item{\vt -t} {\it N}\\
+Keep trying {\it N} additional times.
+
+\item{\it netname}\\
+Route the named net only.
+\end{description}
+
+\subsection{Router commands: {\vt ripup}}
+\index{ripup command}
+
+{\bf Syntax:} {\vt ripup} [{\vt -a} {\vt |} {\it netmname} ...]
+
+Rip up (remove all physical routing information from) a net or nets,
+or all nets in the design.  If {\vt -a} is specified, all nets
+will be ripped up.  Otherwise, the arguments are names of nets to
+rip up.
+
+\subsection{Router commands: {\vt failed}}
+\index{failed command}
+
+{\bf Syntax:} {\vt failed} [{\it option\/}]
+
+The default operation, i.e., with no argument given, is to print the
+number of nets currently in the failed nets list.  Otherwise, one of
+the following options may be given.
+\begin{description}
+\item{\vt -a}\\
+Move all nets to the failed net list, ordered by the standard metric.
+\item{\vt -u}\\
+Move all nets to the failed nets list, as originally ordered.
+\item{\vt -p}\\
+Print a list of failed net names.
+\end{description}
+
+\subsection{Router commands: {\vt congest}}
+\index{congest command}
+
+{\bf Syntax:} {\vt congest} [{\vt -n} {\it N\/}] [{\it filename\/}]
+
+This command will compute and print a congestion value for each cell
+instance.  The values are print in sorted order, highest congestion
+to lowest.  By default, all instances are listed, if the {\vt -n}
+option is given, only the highest {\it N} instances are listed ({\it
+N} being a positive integer).  If a {\it filename} is given, output
+goes to that file, otherwise output goes to the standard output. 
+This command is intended to identify highly congested parts of a
+layout, which may benefit from additional fill in a subsequent
+routing run.
+

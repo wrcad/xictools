@@ -1,0 +1,2882 @@
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiFileFormat.hlp,v 1.75 2017/03/22 22:27:07 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiFileFormat.hlp
+!!TITLE
+xiFileFormat.hlp
+!!HTML
+
+!!SUBTOPICS
+filefmts
+symfilefmt
+cgxformat
+oasis
+libraries
+devlib
+modlib
+vectorfont
+labelflags
+
+
+!! not in manual
+!!KEYWORD
+filefmts
+!!TITLE
+<i>Xic</i> File Formats
+!!HTML
+    The subtopics describe the various file formats used by
+    <i>Xic</i>.
+
+!!SUBTOPICS
+devlib
+libraries
+modlib
+resourcefile
+spiceinput
+spiceline
+symfilefmt
+techfile
+xic:keymp
+xic:macro
+vectorfont
+
+!!REDIRECT CIF          symfilefmt#ciffmt
+!!REDIRECT GDSII        symfilefmt#gdsfmt
+!!REDIRECT native       symfilefmt#xiccell
+
+!! 022816
+!!KEYWORD
+symfilefmt
+!!TITLE
+Design Data File Formats
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="symfilefmt#gdsfmt"><b>GDSII Format and Extensions</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="symfilefmt#physprop"><b>Physical Mode Cell Properties</b><br>
+    <a href="symfilefmt#ciffmt"><b>The CIF File Format</b></a><br>
+    <a href="symfilefmt#cifext"><b>CIF Format Extensions</b></a><br>
+    <a href="symfilefmt#xiccell"><b>Native Cell File Format</b></a>
+    </td></tr></table>
+
+    <p>
+    This section describes the extensions to the CIF and GDSII formats
+    used by <i>Xic</i>.  The CGX file format, designed to be a more
+    efficient replacement for GDSII and released into the public
+    domain by Whiteley Research Inc., is described in a <a
+    href="cgxformat">separate section</a>.  The extensions are
+    designed to accommodate the electrical information and certain
+    properties.  When strict conformance to the standard format is
+    required, such as when exporting physical layouts to a mask
+    vendor, the <a href="xic:exprt#strip"><b>Strip For Export</b></a>
+    button in the <a href="xic:exprt"><b>Export Control</b></a>
+    panel should be used to strip out all extensions, leaving only the
+    physical layout.
+
+    <p>
+    The GDSII (Stream) format is owned by Cadence, Inc., and is
+    described in documentation available from Cadence (specifically
+    the <u>Design Data Translators Reference</u>, which is updated
+    periodically), which may be available on the internet.
+
+    <p>
+    In <i>Xic</i>, cell names are not limited in length.  The cell
+    names can contain any characters valid in a file name with the
+    exception of ';', which is reserved in the CIF-like syntax used
+    for native cell files.  For portability, it is recommended that
+    cell names use only the GDSII allowed characters, which are the
+    alpha-numerics plus '_', '$', and '?'.  In older GDSII
+    specifications (release 3), cell names were limited to 32
+    characters, so it may be wise to observe this limit in <i>Xic</i>.
+
+    <p>
+    Archive files created by <i>Xic</i> generally consist of two
+    records, the first containing the physical information, and the
+    second containing electrical information.  If there is no
+    electrical information, the second block is not written.  Each
+    block is an individual representation of the archive file type,
+    i.e., they each parse as a complete "file".  GDSII files written
+    in this manner are generally portable to other CAD systems (format
+    extensions appear in the electrical block only), as reading will
+    terminate at the end of the physical block, and the following
+    electrical block will be ignored.  However, in specific instances
+    where this proves not to be true, the <b>Strip For Export</b>
+    button, which eliminates the electrical block, should be used.
+
+    <p>
+    The same comments apply to OASIS and CGX formats, however CGX is
+    not known to be supported by other CAD vendors at this time.
+
+    <p>
+    CIF files use extensions unique to <i>Xic</i>, so will likely not
+    be portable to other CAD systems unless <b>Strip For Export</b> is
+    used.  These extensions are described below.
+
+!! 022916
+    <a name="gdsfmt"></a>
+    <h2>GDSII Format and Extensions</h2>
+
+    The GDSII format provides a compact, binary representation of a
+    design hierarchy.  Though the standard format is intended for
+    physical data, minor extensions are used by <i>Xic</i> to allow
+    storage of the electrical information as well.
+
+    <p>
+    A GDSII file consists of a sequence of data blocks.  The first
+    four bytes of the block provide the block type and size.  Integers
+    and floating point numbers have defined representations in GDSII,
+    so conversion is necessary from most machine representations. 
+    This section will describe the extensions only.
+
+    <p>
+    A GDSII file can be decomposed into an ASCII representation with
+    the <a href="xic:convt"><b>Format Conversion</b></a> panel found
+    in the <b>Convert Menu</b>.  The resulting file prints out the
+    characteristics of each block, plus the block offset within the
+    file and messages indicating extensions and errors.  A file in
+    this format can be reconverted to GDSII.  Generally, there is a
+    one to one correspondence between items in the text representation
+    and blocks in the GDSII file, thus one can learn much about the
+    structure of the GDSII file by examining the text representation.
+
+    <p>
+    When the <b>Strip For Export</b> button in the <b>Export
+    Control</b> panel is active, GDSII files produced from this panel
+    adhere to the strict GDSII standard and contain only physical
+    data.  Otherwise the file produced will contain extensions.  Such
+    files are not guaranteed to be readable by other software (but
+    they generally are).
+
+    <p>
+    The file with extensions contains two concatenated GDSII record
+    sets.  The first contains the physical data.  The physical records
+    are zero padded to the next 2Kb block boundary, at which point the
+    electrical records begin.  Beyond this arrangement the extensions
+    are as follows:
+
+    <ol>
+    <li>The data size limitation on attribute strings is increased and
+      the total size of attribute lists is unconstrained.  Attribute
+      strings can be up to 16Kb in length.
+    <li>Attribute records can appear ahead of cell definitions, thus
+     giving properties to cell definitions.  This violates the
+     standard GDSII record sequencing.
+    </ol>
+
+    <p>
+    Both of these extensions are necessary to accommodate to
+    properties found in the electrical design data, and are used in
+    the electrical part of the file only.
+
+!! 022916
+    <a name="physprop"></a>
+    <h3>Physical Mode Cell Properties</h3>
+
+    Certain features, such as <a href="xic:pcells">parameterized
+    cells</a>, require cell properties in physical mode.  Cell
+    properties are also used to save the grid/snap values in the
+    top-level cell, and can be added by the user to support other
+    applications.
+    
+    <p>
+    The GDSII format has no provision for storing properties of cell
+    definitions.  In electrical mode, <i>Xic</i> uses the format
+    extension mentioned above.  We can't use extensions in physical
+    mode, since that would make the files non-portable, so we have to
+    fake it.
+
+    <p>
+    In releases prior to 2.5.66, the cell properties were saved in a
+    dummy label.  This label was written on layer/datatype 0/0 at the
+    origin, and was given the text string "<tt>CELL PROPERTIES</tt>". 
+    Physical cells with properties would have this label added in
+    GDSII output.  When reading in the GDSII file, the label would be
+    stripped, and the properties from the label object would be
+    applied to the containing cell.
+
+    <p>
+    However, when using direct conversions from the <a
+    href="xic:convt"><b>Format Conversion</b></a> panel from the <a
+    href="xic:cvrtmenu"><b>Convert Menu</b></a>, the file would be
+    converted as-is, so that if converting to <i>Xic</i> native cell
+    files (for example), the converted cells would contain the
+    "<tt>CELL PROPERTIES</tt>" labels and would <b>not</b> have the
+    properties set.
+
+    <p>
+    Release 2.5.66 and later no longer create a "<tt>CELL
+    PROPERTIES</tt>" label.  Instead, a "SNAPNODE" record with a PLEX
+    number <tt>0xffffff</tt> is created, at the origin on layer 0 with
+    nodetype 0.  This is an obscure data type that is more likely to
+    be invisible in the GDSII database.  Unlike a label, it should not
+    be visible in most other readers.
+
+    <p>
+    The current release reader will still process the "<tt>CELL
+    PROPERTIES</tt>" label if found, for backwards compatibility.  In
+    addition, it will also process these labels, and the SNAPNODE
+    records, when doing direct conversions, so that the properties are
+    assigned correctly in this case.
+
+    <p>
+    Neither construct is/was added to the output file if the
+    <a href="StripForExport"><b>StripForExport</b></a> button or
+    variable is active.
+
+    <p>
+    <b><font color=red>COMPATIBILITY WARNING</font></b><br>
+    <i>Xic</i> releases prior to 2.5.66 will not process cell
+    properties in GDSII files created with this release and
+    subsequent.  Physical mode cell properties are used by <i>Xic</i>
+    to implement parameterized cells, to save the grid parameters used
+    in the top-level cell, and can be added by the user for third-party
+    purposes.  Loss of cell properties will cause parameterized cells
+    to lose the parameterization feature, but still behave as normal
+    cells.  Loss of the grid parameters may require the user to reset
+    these manually.  Files read with older versions will generate
+    "<tt>unsupported record type PLEX</tt>" warnings in the log file
+    if any of the new-style records are encountered.
+
+!! 101212
+    <a name="ciffmt"></a>
+    <h2>The CIF File Format</h2>
+
+    The Cal (Tech) Intermediate Format (CIF) was developed at Cal Tech
+    in the earliest days of design automation.  The format, such as it
+    is (there are many dialects), is public domain.  Though possibly
+    still used in educational and research environments, it is unusual
+    in current commercial IC engineering.
+
+    <p>
+    The format used in native cell files and the device library
+    file is an extension of the CIF file format.  Through extension,
+    this format is robust enough to meet the needs of <i>Xic</i> while
+    retaining the syntactic simplicity of the original format.  This
+    section outlines the basic syntax of CIF, while the next section
+    will provide details about the extensions used by <i>Xic</i>.
+
+    <p>
+    In CIF, "lines" are terminated with semicolons.  The line feed and
+    carriage return characters are taken as white space and ignored,
+    and may not even be present, so the "lines" are actually logical
+    only.
+
+    <p>
+    Comments in CIF are enclosed in parentheses.  Comments are ignored
+    in CIF, however <i>Xic</i> uses special comment lines for various
+    purposes, as will be seen in the next section.
+    <blockquote>
+    <tt>(This is an example comment);</tt>
+    </blockquote>
+    Note that this (and all) CIF lines must be terminated with ';'.
+
+    <p>
+    The first one or two non-whitespace characters of a line (i.e.,
+    following ';') are used as a command key.  In strict CIF, this key
+    is a letter, though numbers have been adopted as widely-used
+    extensions.
+
+    <p>
+    Historically, in CIF the word "symbol" has been used to refer to
+    what in current terminology is referred to as a cell.  When
+    describing CIF, the terms "symbol" and "cell" are used as
+    synonyms.
+
+    <p>
+    The <tt>DS</tt> (define symbol) directive begins a symbol (cell)
+    definition.
+    <blockquote>
+    <tt>DS</tt> <i>symnum A B</i>;
+    </blockquote>
+    In strict CIF, symbols do not have names, but are referenced by
+    symbol number.  The assigned symbol number (an integer) follows
+    <tt>DS</tt>.  The remaining two parameters are for scaling.  Each
+    coordinate in the symbol is scaled by <i>A</i>/<i>B</i>.  The use
+    of two integers rather than a single floating point value was once
+    considered a speed optimization.  <i>Xic</i> never uses the
+    <i>symnum</i> or scaling factors in native files:
+    <blockquote>
+    <tt>DS 0 1 1;</tt>
+    </blockquote>
+
+    <p>
+    The definition of a symbol is terminated with a <tt>DF</tt> line,
+    <blockquote>
+    <tt>DF;</tt>
+    </blockquote>
+
+    <p>
+    Within the symbol definition, there are layer directives, followed
+    by geometry specifications, and subcell calls.  A layer directive
+    consists of a line with the form
+    <blockquote>
+    <tt>L</tt> <i>layername</i>;
+    </blockquote>
+    where <i>layername</i> is a name for a layer.  In traditional CIF,
+    the <i>layername</i> is an alphanumeric text token of four
+    characters or fewer.  All geometry which follows a layer
+    declaration will be assigned to that layer, until the next layer
+    declaration.
+
+    <p>
+    There are three types of CIF geometric objects used by <i>Xic</i>: 
+    boxes, polygons, and wires.  Boxes have the form
+    <blockquote>
+    <tt>B</tt> <i>width height x y</i> [<i>rx ry</i>];
+    </blockquote>
+    where the first two parameters are the box width and height, and
+    the second two parameters are the coordinates of the midpoint of
+    the box.  The last two parameters are optional, and indicate a
+    rotation.  The two numbers define a vector with respect to the
+    origin, and the angle represents the angle by which the box should
+    be rotated.  <i>Xic</i> never uses the rotation parameters for
+    boxes.  Non-Manhattan rotated boxes are converted to polygons.
+
+    <p>
+    Ordinarily, boxes are rendered according to the attributes of the
+    layer on which the box is defined.  In <i>Xic</i> electrical mode,
+    boxes on the SCED layer use that attribute, however boxes on other
+    layers are rendered as a dotted outline with no fill.  The SCED
+    layer defaults to solid fill, other layers default to empty fill. 
+    All physical layers default to empty fill.
+
+    <p>
+    Polygons are specified with <tt>P</tt> followed by x-y coordinate
+    pairs.  The first and last coordinates must be the same,
+    indicating closure of the polygon.
+    <blockquote>
+    <tt>P</tt> <i>x0 y0 x1 y1 ... xN yN x0 y0</i>;
+    </blockquote>
+    The polygon is rendered using the fill attributes of the layer on
+    which the polygon is defined.  There should be at least four pairs
+    of coordinates defined for a polygon.
+
+    <p>
+    Wires are fixed-width paths.  A wire is specified with <tt>W</tt>
+    followed by the width, which is followed by x-y coordinate pairs
+    representing the path.
+    <blockquote>
+    <tt>W</tt> <i>width x0 y0 x1 y1 ... xN yN</i>;
+    </blockquote>
+    In electrical mode, the basic line primitive is a zero width wire. 
+    In physical mode, wires are defined with finite width as a
+    physical necessity.  The coordinates will form the vertices of the
+    path.  A wire can technically consist of a single vertex, which
+    will be rendered as a box with the width of the wire.  This
+    construct is disallowed in <i>Xic</i>, and should be avoided. 
+    Wires are rendered with the fill attribute of the layer on which
+    the wire is defined.
+
+    <p>
+    A symbol call (subcell) is indicated with a <tt>C</tt>, followed
+    by the symbol number, followed by a transformation specification. 
+    The transformation if made up of components representing
+    translation, rotation, and reflection.  Translation is indicated
+    by <tt>T</tt> followed by the translation:
+    <blockquote>
+    <tt>T</tt> <i>x y</i>
+    </blockquote>
+    Rotation is specified by <tt>R</tt>, followed by two numbers which
+    represent a vector with respect to the origin, the angle of which
+    is the angle of rotation.  Many parsers recognize only orthogonal
+    rotations.  <i>Xic</i> recognizes angles that are multiples of 45
+    degrees.
+    <blockquote>
+    <tt>R</tt> <i>rx ry</i>
+    </blockquote>
+    Mirroring about the y-axis is specified with
+    <blockquote>
+    MX
+    </blockquote>
+    and about the x-axis with
+    <blockquote>
+    MY
+    </blockquote>
+
+    <p>
+    The transformation specification is a concatenation of these
+    directives, which are evaluated in sequence to obtain the
+    coordinate mapping from the cell coordinates in the symbol being
+    instantiated to the cell coordinates of the parent of the
+    instance.  The overall syntax is
+    <blockquote>
+    <tt>C</tt> <i>symnum transform</i>;
+    </blockquote>
+    where an example would be
+    <blockquote>
+    <tt>C 0 R 1 0 T -1000 0;</tt>
+    </blockquote>
+
+    <p>
+    The parsing is terminated with an end directive:
+    <blockquote>
+    End
+    </blockquote>
+    This line need not be terminated with a semicolon.
+
+    <p>
+    The base coordinate system specified for CIF uses 100 units per
+    micron.
+
+!! 032017
+    <a name="cifext"></a>
+    <h2>CIF Format Extensions</h2>
+
+    There have been numerous extensions to the CIF syntax used to
+    enhance the capabilities of the original format.  Some of these
+    extensions have been accepted widely and have become essentially
+    part of the standard.  <i>Xic</i> uses these extensions, plus some
+    further extensions, in native format files and in files converted
+    to CIF without the <b>Strip For Export</b> button active.  These
+    extensions to the basic CIF syntax are enumerated below.  Unless
+    stated otherwise, the extension is applied identically in native
+    cell files and CIF output.
+
+    <p>
+    When writing a cell hierarchy in CIF format, when the top-level
+    cell is known, the writer will add a transform-less symbol call of
+    the top-level symbol just before the final <tt>End</tt> line. 
+    Thus, the two final lines look like
+    <blockquote>
+    <tt>C</tt> <i>top_cell_number</i><tt>;</tt><br>
+    <tt>End</tt>
+    </blockquote>
+    MOSIS specifically requires this.  If the top level cell is
+    unknown, which is true when translating directly from another
+    format, this is skipped.  <i>Xic</i> does not require or use this
+    line.
+
+    <ol>
+    <li>Layer names can be arbitrarily long in CIF files generated or
+    read by <i>Xic</i>, there is no four-character limit as in
+    traditional CIF.  In order to produce traditional CIF output,
+    layer names should follow the traditional CIF limitation.  Unlike
+    some extensions, there is no provision for enforcing traditional
+    CIF output, when layer names are arbitrary.  Prior to release 4.0,
+    <i>Xic</i> used CIF-style layer names.
+
+    <p>
+    <li>If a semicolon is preceded by a backslash character, the
+    reader will strip the backslash and propagate the semicolon as an
+    ordinary character, and <b>not</b> as a record terminator.  Thus,
+    label and property strings may contain semicolons if they are
+    "hidden" with a backslash.
+
+    <p>
+    <li>Comment, label, and property strings can be arbitrarily long. 
+    Other interpreters, and older releases of <i>Xic</i>, may limit
+    these lengths.  Beware that the GDSII and CGX file formats have a
+    64KB record size limit and cannot accommodate strings that would
+    overrun this limit (see the <a
+    href="GdsTruncateLongStrings"><b>GdsTruncateLongStrings</b></a>
+    variable).
+
+    <p>
+    <li>The <tt>DS</tt> (define symbol) line is always followed by a
+    cell name extension line of the form
+    <blockquote>
+    <tt>9</tt> <i>symbol_name</i>;
+    </blockquote>
+    This extension is widely used, and is a standard means for
+    including the symbol names within the CIF framework.
+
+    <p>
+    In native cell files, however, the DS line is <i>preceded</i> by
+    the symbol name line.
+
+    <p>
+    <li>In <i>Xic</i> releases prior to 3.0.0, the symbol number part of
+    an instance call was set to 0, i.e., the call sequence was always
+    <blockquote>
+    <tt>C 0 ...;</tt>
+    </blockquote>
+    when cell name extensions were used.  Since cell names were
+    provided through the extensions, the cell numbering is unneeded. 
+    In current releases, the cell numbering is retained and will
+    appear in the instance calls, in all CIF output.
+
+    <p>
+    <li>In CIF, the name of the cell being instantiated may precede the
+    "<tt>C ...</tt>" (symbol call) line, using the same format as
+    associated with the <tt>DS</tt> line, i.e.
+    <blockquote>
+    <tt>9</tt> <i>master_name</i>;<br>
+    <tt>C</tt> <i>N</i> <tt>...;</tt>
+    </blockquote>
+    This is redundant in CIF, since the master name can be obtained
+    from the symbol number.  It is required in native cell files, as
+    there is no symbol numbering.
+
+    <p>
+    In native cell files only, instead of a cell name, the string can
+    contain two words separated by white space.  The first word is
+    a path to an <a href="xic:fsaf">archive</a>
+!!IFDEF OpenAccess
+    file, <a href="xic:libs">library</a>, or the name of an <a
+    href="xic:oalib">OpenAccess library</a>.
+!!ELSE
+    or href="xic:libs">library</a> file.
+!!ENDIF
+    The second token would be the cell or library reference name.  If
+    the first word is a path to an archive file, the cell name is
+    optional if the file contains only one top-level cell, this cell
+    would be understood.  When the cell is read into <i>Xic</i>, the
+    master and its hierarchy will be read from the specified source.
+
+    <p>
+    For example:
+    <blockquote>
+    <tt>9</tt> <tt>/path/to/directory/containing/myfile.gds mycell</tt>;<br>
+    <tt>C 0 ...;</tt><br>
+    </blockquote>
+
+    <p>
+    If a native cell with instance calls in this form is saved as a
+    native cell, the instance calls will retain this special form.
+
+    <p>
+    Cell files that contain instance calls of this form can be
+    produced in a couple of ways.  One would first read the target
+    archive cell into <i>Xic</i>, then create a new cell, and place
+    one or more instances of the target cell.  One can then write the
+    new cell to disk as a native cell, and modify the instance calls
+    with a text editor.  Alternatively, one can use the rename
+    function of the <a href="xic:cells"><b>Cells Listing</b></a> panel
+    to change the name of the target cell to the two words as would
+    appear in the instance call, i.e., for example the full path to
+    the source file name followed by the cell name, separated by
+    space.  The rename will accept this form.  Then write the current
+    cell to a native cell file.  There will be no need for text
+    editing in this case.  After doing this, however, you have a cell
+    in memory with a bizarre name, best to clear the database or
+    restart <i>Xic</i>.
+
+    <p>
+    <li>Labels are specified with a unique syntax:
+    <blockquote>
+    <tt>94 &#60&#60</tt><i>label string</i><tt>>></tt> <i>x y flags width
+     height</i>;
+    </blockquote>
+    This is a further extension of a widely-used extension for labels,
+    which does not have the <i>flags</i>, <i>width</i>, or
+    <i>height</i> fields and the delimiters around the label.  The
+    original extension also required that the string contain no white
+    space.
+
+    <p>
+    The <i>width</i> and <i>height</i> are the dimensions of the
+    untransformed bounding box of the label.  The label will be
+    stretched to fill this area.  The label is surrounded by
+    <tt>&#60&#60 >></tt>.  The <i>x</i> and <i>y</i> are the reference
+    coordinates, which by default is the lower left corner of the
+    bounding box.  The <i>flags</i> entry specifies transformations
+    applied to the label at the reference point, and other <a
+    href="labelflags">rendering information</a>.
+
+    <p>
+    <li>Cells and instances can be preceded by properties of the
+    general form
+    <blockquote>
+    <tt>5</tt> <i>prop_num prop_string</i>;
+    </blockquote>
+    The property number <i>prop_num</i> is an arbitrary integer.  The
+    property string begins with the first non-space character
+    following the integer, and ends with the semicolon (the semicolon
+    is not included).  The string can contain any alphanumeric,
+    punctuation or white space but not ';' for obvious reasons.  There
+    are a number of properties used by <i>Xic</i>, particularly in
+    electrical mode.  This extension is widely used.
+    </ol>
+
+    <p>
+    <i>Xic</i> writes the electrical information in a second symbol
+    definition which immediately follows the physical cell definition
+    in native files, but after the terminating token of the physical
+    cell.  Similarly, when <i>Xic</i> writes a CIF file without the
+    <b>Strip For Export</b> function active, the electrical CIF
+    representation immediately follows the physical CIF data, after
+    the termination token.
+
+    <p>
+    In <i>Xic</i> releases prior to 3.0.0, the cell terminator was the
+    single character <tt>E</tt>.  This was used in both native cell
+    files and unstripped CIF.  In the present release, the cell
+    terminator is always "<tt>End</tt>" in CIF, "<tt>E</tt>" in
+    native cell files.
+
+    <p>
+    Whether or not these extensions are used when writing CIF output
+    is controlled by a set of flags, which can be individually set
+    from the <b>CIF</b> page of the <a href="xic:exprt"><b>Export
+    Control</b></a> panel.  Actually, there are two banks of these
+    flags, one bank is used when <b>Strip For Export</b> is set, the
+    other bank is used when <b>Strip for Export</b> is unset.  In the
+    case of <b>Strip For Export</b> set, the flags all default to 0,
+    so no extensions are used.  In the case of <b>Strip For Export</b>
+    unset, the flags all default to 1, so all extensions are used.
+ 
+    <p>
+    The user can set these flags individually through the <b>Extension
+    Flags</b> menu in the <b>CIF</b> page of the <b>Export Control</b>
+    panel.  The bank of flags being set is determined by the state of
+    the <b>Strip For Export</b> button and variable.
+
+    <p>
+    The flags in the menu have the following effects.
+ 
+    <dl>
+    <dt><b>scale extension</b><dd>
+    Traditional CIF has a fixed resolution of 100 units per micron.
+    This extension will add a comment of the form
+    <blockquote>
+        <tt>(RESOLUTION</tt> <i>nnn</i><tt>);</tt>
+    </blockquote>
+    near the top of the file, and use <i>nnn</i> as the file
+    resolution.  The CIF reader must check for this comment and scale
+    numerical values accordingly.
+
+    <p>
+    <i>Xic</i> normally uses <a href="xicdb#units">internal units</a>
+    in unstripped CIF and native files, signaled with the addition of
+    a comment line ahead of the first symbol definition something
+    like:
+    <blockquote>
+    <tt>(RESOLUTION 1000);</tt>
+    </blockquote>
+    <i>Xic</i> will look for this comment, and interpret the
+    coordinates accordingly.  If no comment is found, the CIF default
+    of 100 units per micron is assumed.  <i>Xic</i> will always use
+    internal units when writing a CIF file when this extension is enabled,
+    and 100 units otherwise.
+    </dl>
+
+    <dl>
+    <dt><b>cell properties</b><dd>
+    Properties may be applied to cell definitions, ahead of the
+    <tt>DS</tt>.
+    </dl>
+
+    <dl>
+    <dt><b>inst name comment</b><dd>
+    Comments of form
+    <blockquote>
+      <tt>(SymbolCall</tt> <i>cellname</i><tt>);</tt>
+    </blockquote>
+    are added ahead of instance '<tt>C</tt>' calls.
+    </dl>
+
+    <dl>
+    <dt><b>inst name extension</b><dd>
+    Text in the form
+    <blockquote>
+       <tt>9</tt> <i>cellname</i><tt>;</tt>
+    </blockquote>
+    is added ahead of instance '<tt>C</tt>' calls.
+    </dl>
+
+    <dl>
+    <dt><b>inst magn extension</b><dd>
+    Cell instance '<tt>C</tt>' calls can be preceded by a
+    magnification extension of the form
+    <blockquote>
+       <tt>1 Magnify</tt> <i>magn</i><tt>;</tt>
+    </blockquote>
+    where <i>magn</i> is a magnification factor.  All internal
+    structure of the cell will be scaled by the given factor, which is
+    a floating point number greater than zero.  This extension will
+    appear in physical cell descriptions only.  It is unique to
+    <i>Xic</i>.
+    </dl>
+
+    <dl>
+    <dt><b>inst array extension</b><dd>
+    Cell instance '<tt>C</tt>' calls can be preceded by an array
+    extension of the form
+    <blockquote>
+        <tt>1 Array</tt> <i>nx dx ny dy</i><tt>;</tt>
+    </blockquote>
+    where <i>nx</i> and <i>ny</i> are the number of cells to array in
+    the x and y directions, and <i>dx</i> and <i>dy</i> are the
+    spacing between cells.  This extension was used in earlier CAD
+    programs.
+    </dl>
+
+    <dl>
+    <dt><b>inst bound extension</b><dd>
+    Cell instance '<tt>C</tt>' calls can be preceded by a bounding box
+    extension of the form
+    <blockquote>
+        <tt>1 Bound</tt> <i>left bottom right top</i><tt>;</tt>
+    </blockquote>
+    The <i>left</i>, <i>bottom</i>, <i>right</i>, <i>top</i> are the
+    coordinates of the parent cell defining the bounding box of the
+    subcell.  This extension is not currently used, though it is
+    written into the files.  It is unique to <i>Xic</i>.
+    </dl>
+
+    <dl>
+    <dt><b>inst properties</b><dd>
+    Properties may be added ahead ahead of instance '<tt>C</tt>' calls.
+    </dl>
+
+    <dl>
+    <dt><b>obj properties</b><dd>
+    Properties may be added ahead of <tt>B</tt> (boxes), <tt>P</tt>
+    (polygons), and <tt>W</tt> (wires).
+    </dl>
+
+    <dl>
+    <dt><b>wire extension</b><dd>
+    The end style of wires is not part of traditional CIF.  In this
+    extension, text of the form
+    <blockquote>
+        <tt>1 7033 PATHTYPE</tt> <i>n</i><tt>;</tt>
+    </blockquote>
+    may be added ahead of wires to specify an end style.  The values
+    of <i>n</i> are 0 (flush ends), 1 (rounded ends), or 2 (extended
+    ends, the default).
+
+    <p>
+    This extension was used in <i>Xic</i> prior to 2.5.23.  It has
+    been superseded by <b>wire extension new</b>, which will have
+    precedence if both extensions are enabled.
+    </dl>
+
+    <dl>
+    <dt><b>wire extension new</b><dd>
+    This overrides <b>wire extension</b>, wires include an end-style
+    designation:
+    <blockquote>
+    <tt>W0 | W1 | W2</tt>  <i>width</i> <i>x-y data</i><tt>;</tt>
+    </blockquote>
+    The end style of wires is not part of traditional CIF.  In this
+    extension, the wire end style 0-2 immediately follows the
+    '<tt>W</tt>', with the rest of the line as in traditional CIF. 
+    The end style is the same as the GDSII path type:  0 for flush
+    ends, 1 for rounded ends, and 2 for extended square ends.
+
+    <p>
+    This extension was introduced in release 2.5.23.  Older releases
+    of <i>Xic</i> are not compatible with this extension.
+    </dl>
+
+    <dl>
+    <dt><b>text extension</b><dd>
+    Label string text is enclosed in <tt>&#60&#60 >></tt>, and may
+    include white space.  Without this extension, white space
+    characters in the label text will be replaced with underscores. 
+    In both cases, semicolons are replaced with underscores.  This
+    extension applies with any of the label format choices.
+    </dl>
+
+!! 072510
+    <a name="xiccell"></a>
+    <h2>Native Cell File Format</h2>
+
+    Native cell files use a modified <a href="CIF">CIF</a> format,
+    which includes a number of format <a
+    href="symfilefmt#cifext">extensions</a>.  Each file can contain
+    two cell definitions:  one for physical geometry, and the second
+    for electrical (schematic) data.  The physical information is
+    found first.  The electrical cell definition is optional, it may
+    be absent or empty.  An empty physical cell definition is created
+    if there is no physical information, thus all native cell files
+    produced by <i>Xic</i> will contain a physical cell definition. 
+    The parser will also recognize schematic files from the
+    <b>Jspice3</b> program, which have a similar format, but no
+    physical cell definition.
+
+    <p>
+    The basic file layout is shown below.
+
+    <blockquote>
+      <tt>(Symbol</tt> <i>symbol_name</i><tt>);</tt><br>
+      <tt>(</tt><i>RCS_ID</i><tt>);</tt><br>
+      <tt>(PHYSICAL);</tt><br>
+      <tt>(RESOLUTION 1000);</tt><br>
+      <tt>9</tt> <i>symbol_name</i><tt>;</tt><br>
+      <tt>DS 0 1 1;</tt><br>
+      <i>physical data ...</i><br>
+      <tt>DF;</tt><br>
+      <tt>E</tt><br>
+      <tt>(ELECTRICAL);</tt><br>
+      <tt>(RESOLUTION 1000);</tt><br>
+      <tt>9</tt> <i>symbol_name</i><tt>;</tt><br>
+      <tt>DS 0 1 1;</tt><br>
+      <i>electrical data ...</i><br>
+      <tt>DF;</tt><br>
+      <tt>E</tt><br>
+      <i>SPICE listing</i>
+    </blockquote>
+
+    <p>
+    The first line is a mandatory CIF comment giving the symbol (cell)
+    name.  The second line is an optional comment providing an ID
+    field to be used with the RCS/CVS code control programs.  These
+    programs are used to manage large projects with multiple
+    designers.  Other comment lines may follow, in particular a
+    comment line containing the creating program version and creation
+    date is added bu <i>Xic</i>.  The next line is a CIF comment
+    containing the word "PHYSICAL".  This indicates that the following
+    cell definition contains physical data.  If this line is not
+    found, some time consuming tests are performed to figure out what
+    exactly is in the file.
+
+    <p>
+    An optional <tt>(RESOLUTION 1000);</tt> comment line follows. 
+    This indicates that coordinates in the physical part of the file
+    use 1000 units per micron.  If this line is not present, 100 units
+    per micron is assumed.  This was the default for early versions of
+    <i>Xic</i>, and follows from the implicit CIF assumption.  The use
+    of resolutions other than 100 represents an extension of the CIF
+    syntax.
+
+    <p>
+    The integer following "<tt>RESOLUTION</tt>" can be 100 or any of
+    the values supported for the <a
+    href="DatabaseResolution"><b>DatabaseResolution</b></a> variable,
+    for the physical cell.  For the electrical cell, only the values
+    100 and 1000 are allowed.
+
+    <p>
+    The electrical part of the file is optional, and starts with a CIF
+    comment containing the word "ELECTRICAL", followed by the
+    resolution comment and the electrical cell description.  Either
+    cell description can be empty, i.e., a <tt>DS 0 1 1;</tt> line
+    followed by <tt>DF;</tt> and <tt>E</tt>.  Finally, if the cell was
+    written in schematic mode an is a top-level cell (containing no
+    terminal nodes) a SPICE listing of the circuit is added to the
+    bottom of the cell file.  Such files can be read directly into the
+    <i>WRspice</i> program for simulation.  The SPICE listing has no
+    relevance to <i>Xic</i>.
+
+    <p>
+    In release 3.1.5 and later, the terminating line of a native cell
+    file can have "<tt>n</tt>" or "<tt>nd</tt>" (case insensitive)
+    following the "<tt>E</tt>", as in normal CIF.  In earlier
+    releases, anything after "<tt>E</tt>" would cause a syntax error.
+
+    <p>
+    The format of the Physical cell data adheres to the extended CIF
+    described in the preceding sections.  Electrical cell descriptions
+    use the same extensions, however the array extension never
+    appears, as arrays are not available in electrical mode.  The
+    major difference in the files is the large number of properties
+    assigned in electrical mode.
+
+!!SEEALSO
+prptyspec
+filefmts
+
+!! 061713
+!!KEYWORD
+cgxformat CGX
+!!TITLE
+CGX File Format
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="cgxformat#ident"><b>CGX Format Identifier</b></a><br>
+    <a href="cgxformat#dtypes"><b>CGX Data Types</b></a><br>
+    <a href="cgxformat#records"><b>CGX Data Records</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="cgxformat#library"><b>LIBRARY record</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="cgxformat#struct"><b>STRUCT record</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="cgxformat#cprpty"><b>CPRPTY record</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="cgxformat#property"><b>PROPERTY record</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="cgxformat#layer"><b>LAYER record</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="cgxformat#box"><b>BOX record</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="cgxformat#poly"><b>POLY record</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="cgxformat#wire"><b>WIRE record</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="cgxformat#text"><b>TEXT record</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="cgxformat#sref"><b>SREF record</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="cgxformat#endlib"><b>ENDLIB record</b></a>
+    </td></tr></table>
+
+    <p>
+    The Computer Graphics eXchange (CGX) format is a simple binary
+    data format somewhat similar to GDSII, but designed to be more
+    compact.  Like GDSII, files consist of a sequential list of
+    variable-length records.  It has simplified record structure, but
+    extensions in data flexibility.  If is more compact than GDSII and
+    is more efficient to read and write.
+
+    <p>
+    The advantages of CGX are smaller files and faster read/write than
+    GDSII.  This format was developed by Whiteley Research Inc., but
+    is hereby placed in the public domain without restriction.
+
+    <p>
+    The file extension is "<tt>.cgx</tt>".  Gzipped files
+    ("<tt>.cgx.gz</tt>") are supported.  <i>Xic</i> will automatically
+    identify this file type, and can read, write, and convert to
+    <i>Xic</i> files just as GDSII.
+
+    <a name="ident"></a>
+    <h2>CGX Format Identifier</h2>
+
+    The first three bytes of a CGX file are 'c', 'g', and 'x'.  The
+    fourth byte is an integer format level.  A parser designed to
+    handle a certain level will accept that level and any value lower. 
+    Presently, the only existing level is 0, thus this byte should be
+    set to 0.
+
+    <a name="dtypes"></a>
+    <h2>CGX Data Types</h2>
+
+    CGX uses the same long (4-byte) and short (2-byte) integer formats
+    as GDSII, and the same 8-byte floating point format.  These are
+    the only numerical data types defined.
+
+    <p>
+    A date is stored as 8 bytes, as shown in the following table. 
+    These are the same numerical fields as used in GDSII, though the
+    format is different (bytes are used where possible, rather than
+    shorts).  The third column gives the value in terms of the members
+    of the <tt>tm</tt> structure from the C library.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>short</td> <td>year</td>  <td><tt>tm_year + 1900</tt></td></tr>
+    <tr><td>byte</td> <td>month</td>  <td><tt>tm_mon + 1</tt></td></tr>
+    <tr><td>byte</td> <td>day</td>    <td><tt>tm_mday</tt></td></tr>
+    <tr><td>byte</td> <td>hour</td>   <td><tt>tm_hour</tt></td></tr>
+    <tr><td>byte</td> <td>minute</td> <td><tt>tm_min</tt></td></tr>
+    <tr><td>byte</td> <td>second</td> <td><tt>tm_sec</tt></td></tr>
+    <tr><td>byte</td> <td>0</td>      <td>&nbsp;</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Strings are stored in the same manner as in GDSII.  The null
+    terminator in not written, however a null byte will be added to
+    strings of odd length, so that record sizes are always even.
+
+    <a name="records"></a>
+    <h2>CGX Data Records</h2>
+
+    The four-byte file header is followed by any number of data
+    records, the last of which signals the end of data.  There are 11
+    defined record types.  Each record begins with a 4-byte header:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>short</td> <td><tt>recsize</tt></td></tr>
+    <tr><td>byte </td> <td><tt>rectype</tt></td></tr>
+    <tr><td>byte </td> <td><tt>flags</tt></td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The <tt>recsize</tt> field is a short unsigned integer giving the
+    total record size, including the header.  Thus, as in GDSII,
+    records are limited to 64K bytes in length.  The record size will
+    always be an even number.  The <tt>rectype</tt> byte is set to a
+    small integer to define the type of record.  The <tt>flags</tt>
+    byte is used in some of the record types, otherwise it is ignored.
+
+    <p>
+    The defined record types are given in the table below.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th><tt>rectype</tt></th> <th>name</th></tr>
+    <tr><td>0</td> <td><b>LIBRARY</b></td></tr>
+    <tr><td>1</td> <td><b>STRUCT</b></td></tr>
+    <tr><td>2</td> <td><b>CPRPTY</b></td></tr>
+    <tr><td>3</td> <td><b>PROPERTY</b></td></tr>
+    <tr><td>4</td> <td><b>LAYER</b></td></tr>
+    <tr><td>5</td> <td><b>BOX</b></td></tr>
+    <tr><td>6</td> <td><b>POLY</b></td></tr>
+    <tr><td>7</td> <td><b>WIRE</b></td></tr>
+    <tr><td>8</td> <td><b>TEXT</b></td></tr>
+    <tr><td>9</td> <td><b>SREF</b></td></tr>
+    <tr><td>10</td> <td><b>ENDLIB</b></td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    It is allowable to define additional record types for local or
+    proprietary purposes.  If a parser encounters an unknown record
+    type, it may skip over the record, ignoring it.
+
+    <a name="library"></a>
+    <h4>LIBRARY record</h4>
+
+    The <b>LIBRARY</b> record should be the first data record in the
+    file, and can appear once only.
+
+    <p>
+    The <tt>flags</tt> byte of the record header can be used for a
+    version number, which identifies in some way the remaining data in
+    the file.
+
+    <p>
+    The <b>LIBRARY</b> record contains the following fields:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>bytes</th> <th>field name</th> <th>purpose</th></tr>
+    <tr><td>8</td> <td><i>munit</i></td> <td>machine units</td></tr>
+    <tr><td>8</td> <td><i>uunit</i></td> <td>user units</td></tr>
+    <tr><td>8</td> <td><i>cdate</i></td> <td>library creation date</td></tr>
+    <tr><td>8</td> <td><i>mdate</i></td> <td>library modification
+     date</td></tr>
+    <tr><td>?</td> <td><i>libname</i></td> <td>library name string</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The first two fields are double-precision numbers that define the
+    scale factors for the data in the file.  These are interpreted in
+    the same way as the similar fields in the header of a GDSII file.
+
+    <p>
+    The second two fields represent creation and modification dates
+    for the file content.
+
+    <p>
+    A name string for the library follows.  Strings are null-byte
+    terminated, and an additional null byte is added if necessary so
+    that the total length is even.
+
+    <a name="struct"></a>
+    <h4>STRUCT record</h4>
+
+    The <b>STRUCT</b> record opens a cell structure.  Records that
+    follow will be assigned to that cell, until another <b>STRUCT</b>
+    record is seen.
+
+    <p>
+    The header <tt>flags</tt> byte is not used.
+
+    <p>
+    The <b>STRUCT</b> record contains the following fields:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>bytes</th> <th>field name</th> <th>purpose</th></tr>
+    <tr><td>8</td> <td><i>cdate</i></td> <td>creation date</td></tr>
+    <tr><td>8</td> <td><i>mdate</i></td> <td>modification date</td></tr>
+    <tr><td>?</td> <td><i>strname</i></td> <td>structure name string</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The first two fields provide creation and modification dates for
+    the structure.  These are followed by a string giving a name for
+    the structure.  This name should be unique in the file.
+
+    <a name="cprpty"></a>
+    <h4>CPRPTY record</h4>
+
+    Zero or more <b>CPRPTY</b> records can appear following a
+    <b>STRUCT</b> record.  These are properties that are applied to
+    the cell.
+
+    <p>
+    The header <tt>flags</tt> byte is not used.
+
+    <p>
+    The <b>CPRPTY</b> record contains the following fields:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>bytes</th> <th>field name</th> <th>purpose</th></tr>
+    <tr><td>4</td> <td><i>number</i></td> <td>property number</td></tr>
+    <tr><td>?</td> <td><i>string</i></td> <td>property string</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Any number or string is allowed.
+
+    <a name="property"></a>
+    <h4>PROPERTY record</h4>
+
+    Zero or more <b>PROPERTY</b> records can appear ahead of
+    <b>BOX</b>, <b>POLY</b>, <b>WIRE</b>, <b>TEXT</b>, and <b>SREF</b>
+    records.  It assigns a property to the object that follows.
+
+    <p>
+    The header <tt>flags</tt> byte is not used.
+
+    <p>
+    The <b>PROPERTY</b> record contains the following fields:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>bytes</th> <th>field name</th> <th>purpose</th></tr>
+    <tr><td>4</td> <td><i>number</i></td> <td>property number</td></tr>
+    <tr><td>?</td> <td><i>string</i></td> <td>property string</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Any number or string is allowed.
+
+    <a name="layer"></a>
+    <h4>LAYER record</h4>
+
+    A <b>LAYER</b> record can appear after a <b>STRUCT</b>, and must
+    appear before any of <b>BOX</b>, <b>POLY</b>, <b>WIRE</b>,
+    <b>TEXT</b> in the <b>STRUCT</b>.  The layer context will persist
+    until the next <b>LAYER</b> or <b>STRUCT</b> record.
+
+    <p>
+    The header <tt>flags</tt> byte is not used.
+
+    <p>
+    The <b>LAYER</b> record contains the following fields:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>bytes</th> <th>field name</th> <th>purpose</th></tr>
+    <tr><td>2</td> <td><i>number</i></td>   <td>layer number</td></tr>
+    <tr><td>2</td> <td><i>datatype</i></td> <td>data type</td></tr>
+    <tr><td>?</td> <td>[<i>lname</i>]</td>  <td>optional layer name</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The layer number and data type are sufficient, and have the same
+    interpretation as in GDSII.  Alternatively or in addition, a
+    string giving a layer name can be supplied.
+
+    <a name="box"></a>
+    <h4>BOX record</h4>
+
+    A <b>BOX</b> record can appear after a <b>LAYER</b> record has
+    been issued.  The <b>BOX</b> record defines one or more
+    rectangular data objects.
+
+    <p>
+    The header <tt>flags</tt> byte is not used.
+
+    <p>
+    The <b>BOX</b> record contains the following fields:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>bytes</th> <th>field name</th> <th>purpose</th></tr>
+    <tr><td>4</td> <td><i>left</i></td>    <td>left value</td></tr>
+    <tr><td>4</td> <td><i>bottom</i></td>  <td>bottom value</td></tr>
+    <tr><td>4</td> <td><i>right</i></td>   <td>right value</td></tr>
+    <tr><td>4</td> <td><i>top</i></td>     <td>top value</td></tr>
+    <tr><td>?</td> <td>[<i>repeat</i>]</td><td>repeat for multiple
+     boxes</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The first four integers define a box, and a record can contain
+    multiple box definitions (four integers per box).  Each box is
+    given the properties currently in effect, and is assigned to the
+    layer currently in effect.
+
+    <a name="poly"></a>
+    <h4>POLY record</h4>
+
+    A <b>POLY</b> record can appear after a <b>LAYER</b> record has
+    been issued.  The <b>POLY</b> record defines a polygon object.
+
+    <p>
+    The header <tt>flags</tt> byte is not used.
+
+    <p>
+    The <b>POLY</b> record contains the following fields:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>bytes</th> <th>field name</th> <th>purpose</th></tr>
+    <tr><td>?</td> <td><i>xy</i></td> <td>coordinate pairs, path must be
+     closed</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Coordinates use four-byte integers.  The first and last coordinate
+    pair (x-y values) must be the same.  There must be at least four
+    coordinate pairs.
+
+    <a name="wire"></a>
+    <h4>WIRE record</h4>
+
+    A <b>WIRE</b> record can appear after a <b>LAYER</b> record has
+    been issued.  A <b>WIRE</b> record specifies a single wire (path)
+    data object.
+
+    <p>
+    The header <tt>flags</tt> field contains a value in the range 0-2
+    which sets the end style of the wire:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td> <td>flush ends</td></tr>
+    <tr><td>1</td> <td>rounded ends</td></tr>
+    <tr><td>2</td> <td>extended square ends</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    This is the same as the pathtype in GDSII.
+
+    <p>
+    The <b>WIRE</b> record contains the following fields:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>bytes</th> <th>field name</th> <th>purpose</th></tr>
+    <tr><td>4</td> <td><i>width</i></td> <td>path width</td></tr>
+    <tr><td>?</td> <td><i>xy</i></td> <td>coordinate pairs (1 pair or
+     more)</td></tr>
+    </table>
+    </blockquote>
+
+    <a name="text"></a>
+    <h4>TEXT record</h4>
+
+    A <b>TEXT</b> record can appear after a <b>LAYER</b> record has
+    been issued.  A <b>TEXT</b> record specifies a non-physical text
+    object.
+
+    <p>
+    The header <tt>flags</tt> byte is an orientation code:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>bits 0-1</td> <td>rotate the text about the anchor<br>
+          00 no rotation<br>
+          01 90 degrees<br>
+          10 180 degrees<br>
+          11 270 degrees</td></tr>
+    <tr><td>bit 2</td> <td>mirror y after rotation</td></tr>
+    <tr><td>bit 3</td> <td>shift rotations to 45, 135, 225, 315
+     degrees</td></tr>
+    <tr><td>bits 4-5</td> <td>horizontal justification, 00 left,
+     01 center, 10,11 right</td></tr>
+    <tr><td>bits 6-7</td> <td>vertical justification, 00 bottom,
+     01 center, 10,11 top</td></tr>
+    </table>
+    </blockquote>
+    Note that this is identical to the lowest byte of the <i>Xic</i>
+    <a href="labelflags">label flags</a>.
+
+    <p>
+    The <b>TEXT</b> record contains the following fields:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>bytes</th> <th>field name</th> <th>purpose</th></tr>
+    <tr><td>4</td> <td><i>x</i></td>    <td>x position</td></tr>
+    <tr><td>4</td> <td><i>y</i></td>    <td>y position</td></tr>
+    <tr><td>4</td> <td><i>width</i></td><td>field width</td></tr>
+    <tr><td>?</td> <td><i>label</i></td><td>label text</td></tr>
+    <tr><td>1</td> <td><i>flags</i></td><td>additional flags</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The <i>width</i> gives the physical equivalent width of the text. 
+    The height is determined by the font used for rendering.
+
+    <p>
+    In order to accommodate additional flags, a flags byte is "hidden"
+    behind the label text.  The flags byte follows the null byte that
+    terminates the text string.  A null byte may be added following
+    the flags byte to make the total byte count even.  The flag bits
+    are:
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><tt>SHOW</tt></td> <td>0x1</td></tr>
+    <tr><td><tt>HIDE</tt></td> <td>0x2</td></tr>
+    <tr><td><tt>TLEV</tt></td> <td>0x4</td></tr>
+    <tr><td><tt>LIML</tt></td> <td>0x8</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    These flags are described with the <a
+    href="XprpXform"><tt>XprpXform</tt></a> pseudo-property.
+    
+    <a name="sref"></a>
+    <h4>SREF record</h4>
+
+    The <b>SREF</b> record describes an instance, or an array of
+    instances. 
+
+    <p>
+    The header <tt>flags</tt> byte can have any of the following bits
+    set.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>ANGLE   </th><td> 0x1</td></tr>
+    <tr><th>MAGN    </th><td> 0x2</td></tr>
+    <tr><th>REFLECT </th><td> 0x4</td></tr>
+    <tr><th>ARRAY   </th><td> 0x8</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The <b>SREF</b> record contains the following fields:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>bytes</th> <th>field name</th> <th>purpose</th></tr>
+    <tr><td>4</td> <td><i>x</i></td>     <td>x coordinate</td></tr>
+    <tr><td>4</td> <td><i>y</i></td>     <td>y coordinate</td></tr>
+    <tr><td>8</td> <td><i>angle</i></td> <td>rotation angle,
+     if <b>ANGLE</b> flag only</td></tr>
+    <tr><td>8</td> <td><i>magnif</i></td><td>magnification,
+     if <b>MAGN</b> flag only</td></tr>
+    <tr><td>4</td> <td><i>cols</i></td>  <td>array columns,
+     if <b>ARRAY</b> flag only</td></tr>
+    <tr><td>4</td> <td><i>rows</i></td>  <td>array rows,
+     if <b>ARRAY</b> flag only</td></tr>
+    <tr><td>16</td> <td><i>xy</i>[4]</td><td>aref points (like GDSII),
+     if <b>ARRAY</b> flag only</td></tr>
+    <tr><td>?</td> <td><i>sname</i></td> <td>referenced structure
+     name</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    If the <b>ANGLE</b> flag is set, the cell is to be rotated by an
+    angle, in degrees, found in the record.  If the <b>MAGN</b> bit is
+    set, the cell is scaled by a value found in the record.  If the
+    <b>REFLECT</b> bit is set, the instance will be reflected about
+    the x-axis, as in GDSII.  If the <b>ARRAY</b> bit is set, the
+    instance is arrayed, as in GDSII, where x, y, and xy give the
+    three orientation points, as in a GDSII AREF record.  Unless the
+    corresponding bit is set, the corresponding data are not in the
+    record.
+  
+    <a name="endlib"></a>
+    <h4>ENDLIB record</h4>
+
+    The <b>ENDLIB</b> record must be the last record of the file.  It
+    contains no data.
+
+!!SEEALSO
+filefmts
+
+!! 022916
+!!KEYWORD
+oasis OASIS
+!!TITLE
+OASIS Support
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="oasis#support"><b>OASIS Support in <i>Xic</i></b></a><br>
+    <a href="oasis#char"><b>Characteristics of OASIS Output From <i>Xic</i></b></a><br>
+    <a href="oasis#req"><b>Requirements And Limitations for Reading OASIS</b></a>
+    </td></tr></table>
+
+    <p>
+    As integrated circuit mask layouts inexorably increase in
+    complexity, the fundamental limitations of the industry standard
+    GDSII file format have become a bottleneck.  A major weakness of
+    the GDSII format is inefficient data representation, which leads
+    to very large files.  File sizes of tens of gigabytes are not
+    uncommon, leading to difficulties in transmission, data integrity,
+    and consumption of hardware resources.
+
+    <p>
+    The Open Artwork System Interchange Standard (OASIS) was designed
+    by the <a href="http://www.semi.org">SEMI</a> consortium as a
+    modern alternative to the GDSII standard.  A <a
+    href="http://wrcad.com/oasis/oasis-3626-042303-draft.pdf">draft
+    specification</a> (SEMI Document 3626 2003/04/23) of the OASIS
+    format standard was circulated, and subsequently adopted with very
+    minor changes (SEMI P39-1105).  The final standard document is
+    available from the SEMI organization.
+
+    <p>
+    The main objective of the OASIS standard is efficient
+    representation of mask layout geometry, both in hierarchical and
+    flat representations.  The format makes use of a number of
+    techniques to this end.
+
+    <ul>
+    <li>A compact variable-size integer representation is used.  Along
+    with heavy use of offsets, one and two byte integers can be used
+    extensively in place of the larger fixed-size integers used in
+    other formats.
+
+    <p>
+    <li>Extensive use of modal variables greatly reduces repeated
+    information.
+
+    <p>
+    <li>String and name referencing by number eliminates repetition of
+    these data.
+
+    <p>
+    <li>A flags byte indicates the presence or absence of certain data
+    fields in most records, so that unused or unset values do not need
+    to be included in the stream.
+
+    <p>
+    <li>Special compact representations for trapezoids and other
+    common features save space.
+
+    <p>
+    <li>An encoding mechanism for repetitions can be used to
+    consolidate arrays of objects.
+
+    <p>
+    <li>A data compression mechanism is supported.
+    </ul>
+
+    <p>
+    As a "typical" example, the sizes in the table below illustrate
+    the space-saving capability of the OASIS format.  This lists the
+    size of a GDSII file, and the size of the resulting OASIS file as
+    converted with <i>Xic</i> with the main available options.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>File</th> <th>Size (bytes)</th></tr>
+    <tr><td>GDSII file</td>       <td>7669760</td></tr>
+    <tr><td>oasis, basic</td>     <td>1643804</td></tr>
+    <tr><td>plus repetitions</td> <td>1153071</td></tr>
+    <tr><td>plus name tables</td> <td>1067157</td></tr>
+    <tr><td>plus compression</td>  <td>816225</td></tr>
+    </table>
+    </blockquote>
+
+    <a name="support"></a>
+    <h2>OASIS Support in <i>Xic</i></h2>
+
+    <i>Xic</i> was the first (to our knowledge) commercial
+    implementation of the OASIS format.  Some limited tools have been
+    made available from Mentor Graphics (GDSII/OASIS translator), and
+    SoftJin (GDSII/OASIS translator and text mode converters).  We
+    recommend <tt>anuvad</tt> from SoftJin (<a
+    href="http://www.softjin.com/html/anuvad.htm">http://www.softjin.com/html/anuvad.htm</a>),
+    which has been our "reference" in establishing portability.
+
+    <p>
+    This capability was designed from the draft SEMI-3626 document, but
+    has incorporated changes from the final specification.
+
+    <p>
+    This section describes the OASIS capabilities in <i>Xic</i>.  The
+    present status of OASIS support in <i>Xic</i> is complete, the
+    bottom line being
+    <ol>
+    <li><i>Xic</i> can read any spec-conforming OASIS file.
+    <li>OASIS output from <i>Xic</i> is readable by any other
+        spec-conforming tool.
+    <li>Exceptions to the above are <b>bugs</b>, please report!
+    </ol>
+
+    <p>
+    OASIS is one of the supported <a href="xic:fsaf">archive
+    formats</a>, along with GDSII, CIF, and <a
+    href="/cgx.html">CGX</a>.  CGX (Computer Graphics eXchange) format
+    is another "improved" GDSII developed and placed in the public
+    domain by Whiteley Research.  The archive formats have the
+    following capabilities in <i>Xic</i>:
+
+    <ul>
+    <li>Files can be read directly into <i>Xic</i>, either using the
+    <a href="xic:open"><b>Open</b></a> command, or with similar
+    buttons and functions in <i>Xic</i>.
+
+    <p>
+    <li>Files can be converted directly to another (or the same)
+    archive format, or to <i>Xic</i> native cell files, from the <a
+    href="xic:convt"><b>Format Conversion</b></a> function in the <a
+    href="xic:cvrtmenu"><b>Convert Menu</b></a>.  While converting,
+    scaling, windowing (clipped or not) and flattening can be
+    employed.  There is also provision for selecting the layers to
+    convert.
+
+    <p>
+    <li><i>Xic</i> can output a hierarchy in memory to any of the
+    archive formats.  The default format is the format of origin, if
+    any.
+
+    <p>
+    <li>The random access of cells from the file, such as with the
+    <b>Contents</b> function of the <a href="xic:files"><b>Files
+    Listing</b></a> or the library access mechanism applies to all
+    archive formats.
+
+    <p>
+    <li>The <a href="xic:hier">Cell Hierarchy Digest</a> (CHD) and <a
+    href="xic:geom">Cell Geometry Digest</a> (CGD) features, which
+    facilitate working with very large files (too large to fit into
+    the main memory database) apply to all archive formats.
+
+    <p>
+    <li>The script function that splits a file spatially into pieces,
+    <a href="ChdWriteSplit"><tt>ChdWriteSplit</tt></a> applies to all
+    archive formats for both input and output.
+    </ul>
+
+    <a name="char"></a>
+    <h2>Characteristics of OASIS Output From <i>Xic</i></h2>
+
+    The basic OASIS file generated by <i>Xic</i> has the
+    characteristics listed below.
+
+    <ul>
+    <li>By default, all strings are saved locally as strings, i.e., no
+    indirection is used, so there are no &#60;name> records.  This can
+    be changed with the <a
+    href="OasWriteNameTab"><b>OasWriteNameTab</b></a> variable which
+    is connected to <b>Use string tables</b> check boxes in the <a
+    href="xic:convt"><b>Format Conversion</b></a> and <a
+    href="xic:exprt"><b>Export Control</b></a> panels.
+
+    <p>
+    <li>By default, no REPETITION records are generated for
+    &#60;geometry> records.  If the <a
+    href="OasWriteRep"><b>OasWriteRep</b></a> variable or the
+    corresponding check box is set, REPETITION record types may be
+    generated.  This option attempts to recognize arrays of identical
+    objects when writing OASIS files.
+
+    <p>
+    <li>By default, three and four-sided polygons will be written as
+    TRAPEZOID or CTRAPEZOID records, however this can be disabled with
+    the <a href="OasWriteNoTrapezoids"><b>OasWriteNoTrapezoids</b></a>
+    variable.
+
+    <p>
+    <li>By default, wires (paths) will retain that data type. 
+    However, rectangular two-vertex paths will be converted to a more
+    compact rectangle representation if <a
+    href="OasWriteWireToBox"><b>OasWriteWireToBox</b></a> is set.
+
+    <p>
+    <li>The following record types are not generated by <i>Xic</i>: 
+    CIRCLE, XNAME, XELEMENT, XGEOMETRY.
+
+    <p>
+    <li> When writing OASIS files with <a
+    href="StripForExport"><b>StripForExport</b></a> set, i.e., writing
+    physical data only, and when using string tables, the offset table
+    is placed in the END record.  With <b>StripForExport</b> not set,
+    in general we write two sequential OASIS databases into the file,
+    the first for physical data, the second for electrical.  This is a
+    <i>Xic</i>-specific extension.  In this case, string tables are
+    used in the physical part only, and the offset table is placed in
+    the START record.  PAD records are added to avoid overwriting data
+    since this is a non-sequential operation.  In all cases,
+    strict-mode tables are used.
+
+    <p>
+    Note:  If a design contains physical data only, the electrical records
+    are absent, so that the file becomes conventional.  Even if electrical
+    records are present, the reader will probably ignore them (as does
+    <tt>anuvad-0.2</tt>).  However, when exporting physical data, for
+    portability <b>StripForExport</b> should always be set.
+
+    <p>
+    The string tables themselves are written just ahead of the END
+    record in all cases (when tables are used).
+
+    <p>
+    <li>OASIS files generated by <i>Xic</i> release 3.2.2 and later
+    have a file property named "XIC_SOURCE", with no content.  This
+    identifies the file as originating from <i>Xic</i> or a derivative.
+
+    <p>
+    <li>All integer values are 32-bit limited, except for values that
+    represent offsets into the file, which may be 64-bit.
+
+    <p>
+    <li>The OASIS format does not provide a native code to indicate a
+    rounded-end wire.  For wires that have rounded ends, i.e., that
+    originated as GDSII PATHTYPE=1, the half-width extension is
+    specified, and the PATH record is given an empty (info byte = 0x4)
+    property named "XIC_ROUNDED_END".
+
+    <p>
+    <li>The OASIS format does not provide codes for TEXT element
+    presentation.  In <i>Xic</i>, these are used for on-screen labels,
+    and are treated by <i>Xic</i> as any other database object, but
+    they will not appear on the mask layout.  Thus, at least for
+    <i>Xic</i> internal use, TEXT presentation attributes are
+    important.  They are stored in a property applied to TEXT records
+    named "XIC_LABEL".  The XIC_LABEL property contains two unsigned
+    integers.  The first is the width of the label, in database units. 
+    The second is the <a href="labelflags">label flags</a> word used
+    by <i>Xic</i> which specifies many presentation attributes.
+
+    <p>
+    <li>OASIS text labels can contain only printable ASCII characters
+    and the space character, thus some trickery is used to support
+    multi-line labels.  In OASIS files generated from <i>Xic</i>, the
+    following non-printing characters are replaced with the indicated
+    character sequence when encountered in label text:
+    <blockquote>
+    <table border=0>
+    <tr><td><tt>0xa</tt> (line feed)</td> <td><tt>"\n"</tt></td></tr>
+    <tr><td><tt>0xd</tt> (carriage return)</td> <td><tt>"\r"</tt></td></tr>
+    <tr><td><tt>0x9</tt> (tab)</td> <td><tt>"\t"</tt></td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The OASIS reader will perform the reverse conversion, if the
+    XIC_SOURCE property is found in the file, meaning that it was
+    written by <i>Xic</i>.
+
+    <p>
+    <li>All other properties, which might be given to CELL or
+    &#60;geometry> records, are named "XIC_PROPERTY" and consist of
+    concatenated number/string pairs.  <i>Xic</i> uses properties
+    indexed by a number, with string-type data, so that the
+    XIC_PROPERTY consists of the list of properties as known to
+    <i>Xic</i> for that cell or object.
+    </ul>
+
+    <p>
+    There are several options in <i>Xic</i> that modify OASIS
+    input/output.  Many of these can be controlled by check boxes in
+    the <b>OASIS</b> page in the <a href="xic:exprt"><b>Export
+    Control</b></a> and <a href="xic:convt"><b>Format
+    Conversion</b></a> panels from the <a
+    href="xic:cvrtmenu"><b>Convert Menu</b></a>, which reflect the
+    status of the variables (which can also be set with the
+    <b>!set</b> command or equivalent). 
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th colspan=2><a href="!set:cvimport">Convert Menu - Input and ASCII Output</a></th></tr>
+    <tr><td><b>OasReadNoChecksum</b></td><td>Ignore checksum in OASIS input file</td></tr>
+    <tr><td><b>OasPrintNoWrap</b></td><td>Use one line per record in OASIS ASCII output</td></tr>
+    <tr><td><b>OasPrintOffset</b></td><td>Add file offsets to OASIS ASCII output</td></tr>
+
+    <tr><th colspan=2><a href="!set:cvexport">Convert Menu - Output</a></th></tr>
+    <tr><td><b>OasWriteCompressed</b></td><td>Compress records in OASIS output</td></tr>
+    <tr><td><b>OasWriteNameTab</b></td><td>Use string table referencing in OASIS output</td></tr>
+    <tr><td><b>OasWriteRep</b></td><td>Try to combine similar objects in OASIS output</td></tr>
+    <tr><td><b>OasWriteChecksum</b></td><td>Compute and add checksum to OASIS output</td></tr>
+    <tr><td><b>OasWriteNoTrapezoids</b></td><td>Don't convert polys to trapezoids</td></tr>
+    <tr><td><b>OasWriteWireToBox</b></td><td>Convert wires to boxes when possible</td></tr>
+    <tr><td><b>OasWriteNoGCDcheck</b></td><td>Don't look for common divisors in repetitions</td></tr>
+    <tr><td><b>OasWriteUseFastSort</b></td><td>Use faster but less effective sorting</td></tr>
+    <tr><td><b>OasWriteNoXicTextPrps</b></td><td>Don't write certain text properties</td></tr>
+    </table>
+    </blockquote>
+
+    <a name="req"></a>
+    <h2>Requirements And Limitations for Reading OASIS</h2>
+
+    <i>Xic</i> can very likely read any OASIS file that meets the
+    published specification.  Exceptions should be reported as bugs!
+
+    <ul>
+    <li>
+    Properties are ignored, unless the name matches one of those
+    understood by <i>Xic</i> (see above).  The file properties set an
+    internal variable but otherwise do nothing.
+
+    <p>
+    <li>
+    The XNAME, XELEMENT, and XGEOMETRY records are ignored.
+
+    <p>
+    <li>
+    The CIRCLE record will create a polygon object approximating a circle,
+    with the number of sides using the internal variable in <i>Xic</i>.
+
+    <p>
+    <li>
+    The TRAPEZOID and CTRAPEZOID records will create a polygon object.
+
+    <p>
+    <li>The REPETITION records found in PLACEMENT records will define a
+    cell array if possible (i.e., represents a periodic Manhattan
+    configuration), otherwise individual cell instances will be created
+    and replicated.  In &#60;geometry> records, any REPETITION is
+    accepted, but the repetition is decomposed and separate objects are
+    created in memory.
+    </ul>
+
+!!SEEALSO
+filefmts
+
+!! 041215
+!!KEYWORD
+libraries
+!!TITLE
+Library Files
+!!HTML
+    <b>jump to</b> <a href="libraries#examp"><b>Example Library File</b></a>
+
+    <p>
+    Library files are <i>Xic</i> input files which contain references
+    to cells, other libraries, or cell definitions.  The format of a
+    library file is as follows:
+
+    <blockquote>
+    (<tt>Library</tt> <i>libname</i>);<br>
+    <tt>#</tt> <i>any comments</i><br>
+    <br>
+    <tt>#</tt> <i>optional keywords to implement conditional flow</i><br>
+    <tt>Define</tt> [<tt>eval</tt>] <i>name</i> [<i>value</i>]<br>
+    <tt>If</tt> <i>expression</i><br>
+    <tt>IfDef</tt> <i>name</i><br>
+    <tt>IfnDef</tt> <i>name</i><br>
+    <tt>Else</tt><br>
+    <tt>Endif</tt><br>
+    <br>
+    <tt>Property</tt> <i>number string</i><br>
+    ...<br>
+    <tt>Alias</tt> <i>alias refname</i><br>
+    ...<br>
+    <tt>Reference</tt> <i>name path</i> [<i>cellname</i>]<br>
+    ...<br>
+    <tt>Directory</tt> <i>path</i><br>
+    ...<br>
+    <tt>(Symbol</tt> <i>symname</i><tt>);</tt><br>
+    <i>symbol definition</i><br>
+    <tt>E</tt><br>
+    ...
+    </blockquote>
+
+    <p>
+    The first line must begin with "<tt>(Library</tt> ", which
+    designates a library file to <i>Xic</i>.  The <i>libname</i> on
+    this line following <tt>Library</tt> is ignored, but by convention
+    is the library file name.  Within the file are three kinds of data
+    fields:  properties, references, and cells.  Any line starting
+    with a pound sign ('#') is taken as a comment and ignored.  Blank
+    lines are ignored.
+
+    <p>
+    It is recommended that library files be given a "<tt>.lib</tt>"
+    extension.  This is not a strict requirement, except that the
+    listing of libraries from the search path provided in the <a
+    href="xic:libs"><b>Libraries List</b></a> button in the <a
+    href="xic:filemenu"><b>File Menu</b></a> will contain only files
+    with this extension.
+
+    <p>
+    All library files (including the device library) support a limited
+    macro capability.  The macro capability makes use of the generic
+    <a href="macro">macro preprocessor</a> provided in <i>Xic</i>. 
+    The reader should refer to this section for a full description of
+    the preprocessor capabilities.  The preprocessor provides a few
+    predefined macros used for testing (and customizing for) release
+    number, operating system, etc.  The keyword names, which
+    correspond to the generic names as described for the macro
+    preprocessor, are case-insensitive and listed in the following
+    table.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Keyword</th> <th>Function</th></tr>
+    <tr><td><tt>Define</tt></td> <td>Define a macro.</td></tr>
+    <tr><td><tt>If</tt></td> <td>Conditional evaluated test.</td></tr>
+    <tr><td><tt>IfDef</tt></td> <td>Conditional definition test.</td></tr>
+    <tr><td><tt>IfnDef</tt></td> <td>Conditional non-definition test.</td></tr>
+    <tr><td><tt>Else</tt></td> <td>Conditional else clause.</td></tr>
+    <tr><td><tt>Endif</tt></td> <td>Conditional end clause.</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    These can be used to conditionally determine which parts of the
+    file are actually loaded when the library is read.  Presently,
+    there is no macro expansion or text substitution in lines of text
+    in the library, the macros simply implement flow control. 
+    Otherwise, they work the same as similar keywords in the <a
+    href="techfile:macros">technology file</a> and in <a
+    href="scr:preproc">scripts</a>, and are reminiscent of the
+    preprocessor directives in the C/C++ programming language.
+
+    <p>
+    Properties are used in the <a href="devlib">device library</a>
+    file (which is a special library file which must exist in order to
+    use electrical mode), and are described in the description of the
+    device library file format.
+
+    <p>
+    Aliases provide alternative names by which data records can be
+    obtained from the library.  In particular, for the device
+    library, this facilitates accessing library devices under
+    alternative names.  For example, in older device libraries, the
+    terminal device was named "<tt>vcc</tt>", while the present name
+    of a similar terminal is "<tt>tbar</tt>".  The addition of
+
+    <blockquote>
+    <tt>Alias vcc tbar</tt>
+    </blockquote>
+
+    will satisfy references to the <tt>vcc</tt> terminal device in
+    older designs.
+
+    <p>
+    References associate a name with a cell, or another library.  For
+    a cell, <i>name</i> (above) is the name by which the cell will be
+    added to the database when opened, and the name that will appear
+    in selection listings.  The <i>path</i> is a path to the file
+    containing the cell, which can be native (Xic), or a path to an <a
+    href="xic:fsaf">archive file</a> containing the cell.  If the path
+    contains white space characters, it should be single or double
+    quoted.
+
+    <p>
+    Aliases may be used to provide alternative names.
+
+    <p>
+    If the path points to an archive file, the <i>cellname</i>
+    argument can be set to the name of the cell in the file.  Note
+    that this does not have to be the same as <i>name</i>.  Opening
+    <i>name</i> will open the cell referenced and add it to the
+    database as <i>name</i>.  Any subcells that have references in the
+    same library file will be opened under the library reference name. 
+    All other cell name <a href="cellname">aliasing</a> is suppressed,
+    except for <a href="AutoRename">AutoRename</a>.
+
+    <p>
+    If <i>cellname</i> is not given, opening a reference to an archive
+    file with multiple cells will cause a pop-up to appear, allowing
+    the user to choose which cell to open.  In this case, the cell
+    will be opened under its own name.
+ 
+    <p>
+    If <i>path</i> points to another library file, then
+    <i>cellname</i>, if given, indicates which reference in the
+    library to open, i.e., it should be one of the <i>name</i>s in the
+    referenced library.  In this case, the cell will be opened as
+    <i>name</i> in the original library.  If <i>cellname</i> is not
+    given, a pop-up will appear allowing the user to choose which
+    library element in the referenced library to open.  A cell
+    selected in this way will be opened as <i>name</i> in the
+    referenced library.  Thus the <tt>Reference</tt> keyword provides
+    a means for multiple-level indirection through the library files.
+
+    <p>
+    The <tt>Directory</tt> keyword is followed by a full path to a
+    directory.  Every layout or library file found in the directory is
+    logically added as a <tt>Reference</tt>, but with no
+    <i>cellname</i> given.  This keyword provides an easy way to
+    reference a collection of cell files, for example.
+
+    <p>
+    Cells can be defined within libraries by including the
+    native-format body in the library file.  The first line of the
+    cell must start with "<tt>(Symbol</tt> ".  The symbol text should
+    contain both the electrical and physical blocks.  The cells in the
+    device library file are special in that they contain only an
+    electrical block, so are not representative.  Cells can be added
+    to a library with a text editor, by copying from native cell
+    files.  The name of the cell is actually given by the lines with
+    format like "<tt>9</tt> <i>symbolname</i>;" and the
+    <i>symbolname</i> in the "<tt>(Symbol</tt>
+    <i>symbolname</i><tt>);</tt>" is actually ignored.  The user need
+    not concern themselves with details of the format, it is
+    sufficient to simply copy the entire <i>Xic</i> cell file into the
+    library, however any trailing SPICE listing should be excluded,
+    including the "<tt>* Generated by Xic</tt>..." line.
+
+    <a name="examp"></a>
+    <h2>Example Library File</h2>
+
+    The example below uses the <tt>Reference</tt> directive only, which
+    is common.  It illustrates some of the types of references that are
+    possible.
+
+    <p>
+    <pre>
+    (Library demo.lib);
+    
+    # simple reference to native cell
+    Reference acell            /usr/.../xic_cells/acell
+
+    # simple reference to native cell, with name change
+    Reference buffer           /usr/.../xic_cells/cell32
+
+    # browsable reference to a GDSII file
+    Reference gdsfile.gds      /usr/.../gdsfile.gds
+
+    # reference to cell in GDSII file, with name change
+    Reference mux8_1           /usr/.../gdsfile.gds      MUX
+    
+    # reference to cell in CIF file
+    Reference and5             /usr/.../ciffile.cif      and5
+
+    # browsable reference to another library
+    Reference stdcells_25.lib  /usr/.../stdcells_25.lib
+
+    # indirect references to cells in another library
+    Reference orgate_25        /usr/.../stdcells_25.lib  orgate
+    Reference andgate_25       /usr/.../stdcells_25.lib  andgate
+
+    # Reference to all layout files and libraries found in a directory
+    Directory                  /home/joe/devices
+    </pre>
+
+!!SEEALSO
+fileorg
+filefmts
+
+!!REDIRECT SpiceDotSave         devlib#SpiceDotSave
+!!REDIRECT DefaultNode          devlib#DefaultNode
+!!REDIRECT DeviceKey            devlib#DeviceKey
+!!REDIRECT DeviceKeyV2          devlib#DeviceKeyV2
+
+!! 041715
+!!KEYWORD
+devlib
+!!TITLE
+Device Library file
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="devlib#gprop"><b>Device Library Global Properties</b></a><br>
+    <a href="devlib#alias"><b>Device Library Aliases</b></a><br>
+    <a href="devlib#devices"><b>Device Library Devices</b></a>
+    </td></tr></table>
+
+    <p>
+    The device library file is a special <a href="libraries">library
+    file</a> which contains all of the information required to render
+    and otherwise support the devices available in the electrical mode
+    of <i>Xic</i>.  It is expected to be found along the library <a
+    href="xicpaths">search path</a>.  The search is always performed
+    in the current directory first, whether or not this is indicated
+    by the search path.  The default name for this file is
+    "<tt>device.lib</tt>", however this name can be changed with the
+    <tt>DeviceLibrary</tt> keyword in the <a
+    href="techfile">technology file</a>.  Only one device library is
+    used, and the first file found in the search path with a matching
+    name is read.
+
+    <p>
+    In present <i>Xic</i> releases, devices are not required to be
+    supplied in the device library, however only devices referenced in
+    the library will appear in the device selection menus.  When
+    loading a design produced in Virtuoso, for example, the schematic
+    symbols are imported as cells which function as devices, but are
+    not automatically included in any device library.  As long as
+    <i>Xic</i> can find these device cells when the layout file is
+    loaded, all is well.  This is automatic if the device cells are
+    kept in the layout files, which is true by default.  However, the
+    device cells can be added to the device library in various ways,
+    as described below.  This has the following advantages:
+
+    <ol>
+    <li>The devices are available in the <a href="xic:devs">device
+    menus</a> available from the side menu in electrical mode.  This
+    facilitates use of the device in other designs.
+
+    <li>The devices are no longer included in the layout files,
+    reducing their size.  However, the library must be provided along
+    with the files when exporting the design.
+    </ol>
+
+    <p>
+    Devices can be either primitive devices as used by SPICE, or
+    subcircuit macros.  If the device represents a subcircuit macro,
+    the name of the subcircuit is given as a <a
+    href="prpty:model"><b>model</b> property</a>, and that subcircuit
+    must exist in one of the <a href="modlib">model library</a> files. 
+    For example, a device named "opamp" could be added to the device
+    library file.  Then the user would set the <tt>model</tt> property
+    to something like "ua741" which would have a subcircuit definition
+    somewhere in the model library files (perhaps in a directory
+    containing SPICE models obtained from a semiconductor
+    manufacturer).
+
+    <p>
+    There are four classes of device that may appear in the device
+    library file.  The first class consists of basic elements such as
+    resistors, capacitors, and semiconductor devices which have
+    physical implementations in a layout and are known elements in
+    SPICE.  The second class consists of voltage and current sources,
+    which are known elements in SPICE but do not have physical
+    equivalents in a layout.  The third class applies to macros,
+    which expand to a subcircuit in SPICE.  These may or may not have
+    an actual physical embodiment.  The fourth class are terminals,
+    which are used in the electrical schematic to provide
+    connections.  These are not used in SPICE, but are used to
+    establish connectivity when producing SPICE input.  They have no
+    direct physical implementation, but imply physical connections.
+
+    <p>
+    The first line of the file must be in the form
+    <blockquote>
+      (<tt>Library</tt> <i>filename</i>);</tt>
+    </blockquote>
+    This is the signature used in all library files.
+
+    <p>
+    Comment lines, which are ignored when the file is parsed, begin
+    with the '#' character, and can appear anywhere outside of the
+    device definitions except on the first line.  Lines containing
+    only white space are ignored.
+
+    <a name="gprop"></a>
+    <h2>Device Library Global Properties</h2>
+
+    <p>
+    The device library file handles "global properties".  These
+    properties appear at the beginning of the file, after the initial
+    line but before the definitions.  The syntax is
+    <blockquote>
+      <tt>Property</tt> <i>identifier string</i>
+    </blockquote>
+    where <tt>Property</tt> appears literally, <i>identifier</i> is a
+    keyword or equivalent integer as described below, and the rest of
+    the line constitutes the <i>string</i>.  There can be any number
+    of these lines.
+
+    The following properties are recognized:
+
+    <a name="SpiceDotSave"></a>
+    <dl>
+    <dt><b>SpiceDotSave</b><dd>
+    This property is identified by the keyword "<tt>SpiceDotSave</tt>"
+    or by the integer 20.
+
+    <p>
+    The <i>string</i> consists of a SPICE key letter for a device
+    (such as '<tt>R</tt>' for a resistor), followed by the name of a
+    parameter known to SPICE for that device.  While a SPICE deck is
+    being created, and if this property was given, each device in the
+    circuit that is keyed by that letter will trigger the addition of
+    a line in the SPICE file in the form
+    <blockquote>
+    <tt>.save @</tt><i>name</i>[<i>param</i>]
+    </blockquote>
+    The <i>name</i> is the name of the device, and the <i>param</i> is
+    the parameter name given in the property.  This construct forms a
+    vector name which the directive ensures will be saved during
+    simulation, and thus be available for output.  This is the means
+    by which device parameter data are made available <i>by
+    default</i> in SPICE runs initiated from SPICE output generated by
+    <i>Xic</i>.  <i>WRspice</i> and other SPICE3-derivative simulators
+    will recognize this form, however only <i>WRspice</i> will
+    actually save the vector in interactive mode.  SPICE3 ignores
+    <tt>.save</tt> lines, except in batch mode.
+
+    <p>
+    This property is used in the supplied <tt>device.lib</tt> file,
+    for current sources and the "<tt>c</tt>" (current) parameter.  The
+    <b>branch</b> property for current sources references
+    "<tt>@</tt><i>name</i><tt>[c]</tt>", so that it is important to
+    ensure that this vector is saved.  Thus, the appropriate global
+    property is
+    <blockquote>
+      <tt>Property SpiceDotSave I c</tt><br>
+      or equivalently<br>
+      <tt>Property 20 I c</tt><br>
+    </blockquote>
+    This will produce lines in the SPICE output like
+    <blockquote>
+      <tt>.save @isource[c]</tt>
+    </blockquote>
+    for a current source named <tt>isource</tt>.
+    </dl>
+
+    <a name="DefaultNode"></a>
+    <dl>
+    <dt><b>DefaultNode</b><dd>
+    This property is identified by the keyword "<tt>DefaultNode</tt>"
+    or by the integer 21.
+
+    <p>
+    This property is used for providing a default node name for the
+    last node listed in a SPICE output device line.  This allows the
+    use of a three-node MOS device, with the substrate node connected
+    automatically.  The feature is enabled by adding the following
+    property line at the top of the device library file:
+
+    <blockquote>
+      <tt>Property DefaultNode</tt> <i>device_name num_nodes node_name</i><br>
+      or equivalently<br>
+      <tt>Property 21</tt> <i>device_name num_nodes node_name</i><br>
+    </blockquote>
+
+    The parameters are:
+    <table border=0>
+    <tr><td><i>device_name</i></td>
+     <td>name of device (e.g., <tt>nmos</tt>)</tr></td>
+    <tr><td><i>num_nodes</i></td>
+     <td>number of nodes expected by SPICE</tr></td>
+    <tr><td><i>node_name</i></td>
+     <td>name of node to be added</tr></td>
+    </table>
+
+    <p>
+    For example,
+
+    <blockquote>
+      <tt>Property DefaultNode nmos 4 NSUB</tt>
+    </blockquote>
+  
+    <p>
+    A <tt>Property</tt> line should be added for each device which has
+    a default node.  The respective device descriptions in the
+    device library file should also be modified to remove the
+    substrate mode.  The supplied <tt>device.lib</tt> file contains
+    MOS models with this feature included, and also standard models.
+  
+    <p>
+    Using the example above, a SPICE output deck will contain lines like
+
+    <blockquote>
+      <tt>M1 1 2 3 NSUB</tt> ...
+    </blockquote>
+
+    Also, there will be a line added at the top of the deck:
+
+    <blockquote>
+      <tt>.global NSUB</tt>
+    </blockquote>
+
+    This line tells <i>WRspice</i> to not modify this node during
+    subcircuit expansion.  The user must explicitly add a connection
+    to the global node, usually to a voltage source.  This is
+    accomplished in <i>Xic</i> by placing a terminal device, and
+    modifying the terminal name to the node name (NSUB).
+    </dl>
+
+    <a name="devlib:DeviceKey"></a>
+    <dl>
+    <dt><b>DeviceKey</b><dd>
+    This property is identified by the keyword "<tt>DeviceKey</tt>"
+    or by the integer 22.
+
+    <p>
+    <font color=red>
+    Although still recognized, this property is obsolete and should not
+    be used.  The <b>DeviceKeyV2</b> property syould be used instead.
+    </font>
+
+    <p>
+    There is an internal table of mappings from letters to devices, in
+    accordance with the definitions and traditions of SPICE.  For
+    example, '<tt>r</tt>' (case insensitive) maps to a resistor
+    device.  It is possible to define new device keys, overriding the
+    defaults.  It is also possible to define multi-letter keys.
+
+    <p>
+    These keys apply when <i>Xic</i> reads a SPICE file and maps
+    devices to those found in the <tt>device.lib</tt> file.
+
+    <p>
+    The format for the property specification is
+    <blockquote>
+    <tt>Property DeviceKey</tt> <i>prefix opt val nnodes nname pname</i><br>
+    or equivalently<br>
+    <tt>Property 22</tt> <i>prefix opt val nnodes nname pname</i>
+    </blockquote>
+
+    <dl>
+    <dt><i>prefix</i><dd>
+    This is a short (usually single-character) device identification prefix,
+    the first character if which must be a letter.
+    <dt><i>opt</i><dd>
+    This is a binary value, the token can be <tt>0</tt>, <tt>no</tt>, or
+    <tt>off</tt> if unset, or <tt>1</tt>, <tt>yes</tt>, or <tt>on</tt> if
+    set.  If set, then the presence of the last connection node of the
+    device is optional (such as for a BJT, which has an optional substrate
+    node).
+    <dt><i>val</i><dd>
+    This is a binary value as above.  If set, text following the nodes
+    is saved in a <b>value</b> property and the <b>model</b> property
+    is unset, as for voltage/current source devices.
+    <dt><i>nnodes</i><dd>
+    An integer giving the number of device nodes, including the optional
+    node if any.
+    <dt><i>nname</i><dd>
+    The device name, or the n-type device, in the library.
+    <dt><i>pname</i><dd>
+    If this is not 0 or missing, it is the name of the p-type library
+    device.
+    </dl>
+    </dl>
+
+    <a name="devlib:DeviceKeyV2"></a>
+    <dl>
+    <dt><b>DeviceKeyV2</b><dd>
+    This property is identified by the keyword "<tt>DeviceKeyV2</tt>"
+    or by the integer 23.
+
+    <p>
+    This is an extended version of the now-obsolete <b>DeviceKey</b>
+    property that supports current-controlled sources and switch, and
+    will allow any number of optional nodes.  The older format is still
+    recognized, but can not be used to create standard keys for these
+    devices.
+
+    <p>
+    The format for the property specification is
+    <blockquote>
+    <tt>Property DeviceKeyV2</tt> <i>prefix min max devs val nnodes nname
+    pname</i><br>
+    or equivalently<br>
+    <tt>Property 23</tt> <i>prefix min max devs val nnodes nname pname</i>
+    </blockquote>
+
+    <dl>
+    <dt><i>prefix</i><dd>
+    This is a short (usually single-character) device identification prefix,
+    the first character if which must be a letter.
+    <dt><i>min</i><dd>
+    This is the minimum number of nodes used by the device.
+    <dt><i>max</i><dd>
+    This is the maximum number of nodes used by the device.  The difference
+    from the <i>min</i> is the number of optional nodes.
+    <dt><i>devs</i><dd>
+    This is the number of device reference names, which is one for
+    current-controlled sources and switch.
+    <dt><i>val</i><dd>
+    This is a binary value, the token can be <tt>0</tt>, <tt>no</tt>,
+    or <tt>off</tt> if unset, or <tt>1</tt>, <tt>yes</tt>, or
+    <tt>on</tt> if set.  If set, text following the nodes is saved in
+    a <b>value</b> property and the <b>model</b> property is unset, as
+    for voltage/current source devices.
+    <dt><i>nname</i><dd>
+    The device name, or the n-type device, in the library.
+    <dt><i>pname</i><dd>
+    If this is not 0 or missing, it is the name of the p-type library
+    device.
+    </dl>
+
+    <p>
+    The internal table provides the following defaults.
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th><i>prefix</i></th><th><i>min</i></th><th><i>max</i></th>
+        <th><i>devs</i></th><th><i>val</i></th>
+        <th><i>nname</i></th><th><i>pname</i></th></tr>
+    <tr><td><tt>a</tt></td> <td>2</td> <td>2</tt> <td>0</td>
+        <td>true</td> <td><tt>vsrc</tt></td> <td>0</td></tr>
+    <tr><td><tt>b</tt></td> <td>2</td> <td>3</tt> <td>0</td>
+        <td>false</td> <td><tt>jj</tt></td> <td>0</td></tr>
+    <tr><td><tt>c</tt></td> <td>2</td> <td>2</tt> <td>0</td>
+        <td>false</td> <td><tt>cap</tt></td> <td>0</td></tr>
+    <tr><td><tt>d</tt></td> <td>2</td> <td>2</tt> <td>0</td>
+        <td>false</td> <td><tt>dio</tt></td> <td>0</td></tr>
+    <tr><td><tt>e</tt></td> <td>4</td> <td>4</tt> <td>0</td>
+        <td>true</td> <td><tt>vcvs</tt></td> <td>0</td></tr>
+    <tr><td><tt>f</tt></td> <td>2</td> <td>2</tt> <td>1</td>
+        <td>true</td> <td><tt>cccs</tt></td> <td>0</td></tr>
+    <tr><td><tt>g</tt></td> <td>4</td> <td>4</tt> <td>0</td>
+        <td>true</td> <td><tt>vccs</tt></td> <td>0</td></tr>
+    <tr><td><tt>h</tt></td> <td>2</td> <td>2</tt> <td>1</td>
+        <td>true</td> <td><tt>ccvs</tt></td> <td>0</td></tr>
+    <tr><td><tt>i</tt></td> <td>2</td> <td>2</tt> <td>0</td>
+        <td>true</td> <td><tt>isrc</tt></td> <td>0</td></tr>
+    <tr><td><tt>j</tt></td> <td>3</td> <td>3</tt> <td>0</td>
+        <td>false</td> <td><tt>njf</tt></td> <td><tt>pjf</tt></td></tr>
+    <tr><td><tt>k</tt></td> <td>0</td> <td>0</tt> <td>2</td>
+        <td>false</td> <td>0</td> <td>0</td></tr>
+    <tr><td><tt>l</tt></td> <td>4</td> <td>4</tt> <td>0</td>
+        <td>false</td> <td><tt>ind</tt></td> <td>0</td></tr>
+    <tr><td><tt>m</tt></td> <td>4</td> <td>4</tt> <td>0</td>
+        <td>false</td> <td><tt>nmos</tt></td> <td><tt>pmos</tt></td></tr>
+    <tr><td><tt>n</tt></td> <td>0</td> <td>0</tt> <td>0</td>
+        <td>false</td> <td>0</td> <td>0</td></tr>
+    <tr><td><tt>o</tt></td> <td>4</td> <td>4</tt> <td>0</td>
+        <td>false</td> <td><tt>ltra</tt></td> <td>0</td></tr>
+    <tr><td><tt>p</tt></td> <td>0</td> <td>0</tt> <td>0</td>
+        <td>false</td> <td>0</td> <td>0</td></tr>
+    <tr><td><tt>q</tt></td> <td>3</td> <td>4</tt> <td>0</td>
+        <td>false</td> <td><tt>npn</tt></td> <td><tt>pnp</tt></td></tr>
+    <tr><td><tt>r</tt></td> <td>2</td> <td>2</tt> <td>0</td>
+        <td>false</td> <td><tt>res</tt></td> <td>0</td></tr>
+    <tr><td><tt>s</tt></td> <td>4</td> <td>4</tt> <td>0</td>
+        <td>false</td> <td><tt>sw</tt></td> <td>0</td></tr>
+    <tr><td><tt>t</tt></td> <td>4</td> <td>4</tt> <td>0</td>
+        <td>false</td> <td><tt>tra</tt></td> <td>0</td></tr>
+    <tr><td><tt>u</tt></td> <td>4</td> <td>4</tt> <td>0</td>
+        <td>false</td> <td><tt>urc</tt></td> <td>0</td></tr>
+    <tr><td><tt>v</tt></td> <td>2</td> <td>2</tt> <td>0</td>
+        <td>true</td> <td><tt>vsrc</tt></td> <td>0</td></tr>
+    <tr><td><tt>w</tt></td> <td>2</td> <td>2</tt> <td>1</td>
+        <td>false</td> <td><tt>csw</tt></td> <td>0</td></tr>
+    <tr><td><tt>x</tt></td> <td>0</td> <td>0</tt> <td>0</td>
+        <td>false</td> <td>0</td> <td>0</td></tr>
+    <tr><td><tt>y</tt></td> <td>0</td> <td>0</tt> <td>0</td>
+        <td>false</td> <td>0</td> <td>0</td></tr>
+    <tr><td><tt>z</tt></td> <td>3</td> <td>3</tt> <td>0</td>
+        <td>false</td> <td><tt>nmes</tt></td> <td><tt>pmes</tt></td></tr>
+    </table>
+
+    <p>
+    The user working with MOS technology may need to understand and
+    set this property for "<tt>m</tt>" (MOS) devices.  For LVS, is is
+    required that the electrical and physical MOS devices assume the
+    same number of nodes.  The device library provides a choice of
+    three-terminal (<b>nmos</b>, <b>pmos</b>) and four-terminal
+    (<b>nmos1</b>, <b>pmos1</b>) devices.  Although either type of
+    device can be placed in a schematic that is used for simulation,
+    for comparison to the physical layout consistency is required with
+    the MOS device extraction templates defined in the technology file
+    <a href="ext:deviceblock"><b>Device</b> blocks</a>.
+
+    <p>
+    For consistency, there are two choices:
+    <ol>
+    <li>The technology defines a three-terminal "nmos" device, and the
+    schematics exclusively use the <b>nmos</b> schematic symbol
+    (similar for pmos).  In this case, substrate/well connectivity is
+    simply ignored in comparisons.
+
+    <li>The technology file defines a four-terminal "nmos1" device,
+    and the schematics use the <b>nmos1</b> schematic symbol (similar
+    for pmos).  In this case, the substrate/well connection at each
+    transistor is included in the connectivity comparison.
+    </ol>
+
+    <p>
+    Three and four terminal devices of the same sex can not be mixed
+    in physical extraction, however they can be different for p and n
+    devices.  For example, in a process where only the pmos devices
+    reside in a defined "tub", it might be convenient to use
+    three-terminal nmos devices, and four terminal pmos devices.  In
+    this case, the technology file should define extraction devices
+    for a three-terminal "nmos", and four terminal "pmos1".  The
+    standard <tt>device.lib</tt> file should include the line
+
+    <blockquote>
+    <tt>Property DeviceKeyV2 m 4 4 0 false nmos pmos1</tt>
+    </blockquote>
+
+    and the user should remember to use the three-terminal <b>nmos</b>
+    and four-terminal <b>pmos1</b> library devices exclusively in
+    schematics that will be used with physical data.
+
+    <p>
+    The <a href="!devkeys"><b>!devkeys</b></a> command dumps the current
+    keys to the console window, which can be useful for debugging this
+    capability.
+    </dl>
+
+    <a name="alias"></a>
+    <h2>Device Library Aliases</h2>
+
+    The device library may use the <tt>Alias</tt> keyword
+
+    <blockquote>
+    <tt>Alias</tt> <i>alias</i> <i>libcellname</i>
+    </blockquote>
+
+    to define alternate names for devices contained in the library. 
+    The alternate names can be used equivalently when referencing
+    devices from the library.  Aliases, however, will <b>not</b>
+    appear in the <a href="xic:devs">device menu</a> displayed from
+    the electrical side menu in <i>Xic</i>.
+
+    <p>
+    The <tt>device.lib</tt> file distributed with <i>Xic</i> provides
+    aliases to terminal devices whose names have been changed from
+    those used in earlier <i>Xic</i> releases, thus providing
+    backward compatibility.  The device names were changed in release
+    3.2.22.
+
+    <table border=0 cellspacing=6>
+    <tr><th>old name</th> <tr>current name</th></tr>
+    <tr><td><tt>vcc</tt></td> <td><tt>tbar</tt></td></tr>
+    <tr><td><tt>vbus</tt></td> <td><tt>tbus</tt></td></tr>
+    </table>
+
+    <a name="devices"></a>
+    <h3>Device Library Devices</h3>
+
+    A device is simply an electrical cell definition.  It is
+    distinguished as a device by the presence and values of certain
+    properties.  Devices have no subcells or sub-devices, they must
+    contain only geometry.  They can not contain physical data.
+
+    <p>
+    The supplied <tt>device.lib</tt> file contains a collection or
+    rather plain looking generic device models that correspond to the
+    devices supported by SPICE.  Additional devices are often created
+    when a layout is <a href="cdsimport'>imported</a> from Cadence
+    Virtuoso.  These correspond to the schematic symbols of devices
+    used in Virtuoso schematics.  Devices can be created by the user
+    through use of the <a href="xic:sadev"><b>Save As Device</b></a>
+    button in the <b>File Menu</b>.  These can be used to supplement
+    or replace devices provided in the default library.
+
+    <p>
+    Device definitions as native cell definitions, whether inline in
+    the <tt>device.lib</tt> file, or in separate files, may or may not
+    have an empty <a href="symfilefmt#xicfile">physical part</a>. 
+    This is in contrast with normal cells, where a physical part is
+    required.  In releases prior to 4.1.12, inline cell definitions
+    could not have an empty physical block, but in a cell file the
+    empty physical block was required.
+
+    <p>
+    Devices can be referenced in three ways:
+    <ol>
+    <li>By using the <tt>Reference</tt> keyword to reference 
+    a cell containing the device definition.
+
+    <li>By using the <tt>Directory</tt> keyword to reference a
+    directory that contains device definitions.  This is particularly
+    useful as a way to include a user's special devices.  One can
+    "install" the device by simply copying it into a directory.
+
+    <li>By including the device definition in the library file as an
+    inline cell definition.  This is the format used in the supplied
+    <tt>device.lib</tt> file.  In early <i>Xic</i> releases, this was
+    the only way to define devices.
+    </ol>
+
+    <p>
+    The native syntax for device definitions, as used in the supplied
+    <tt>device.lib</tt> file, is described below.  This is the same
+    CIF-like file format as used in <a href="symfilefmt">native cell
+    files</a>.  The syntax as described applies to native-format
+    device cell files as well as devices inlined into the
+    <tt>device.lib</tt> file.  However, for stand-alone cell
+    descriptions, other file formats can be used.
+
+    <p>
+    In these cells, there is no physical representation, however an
+    empty physical representation can appear.  The default resolution
+    is 100 units per micron (as in CIF and native cell files), however
+    the <tt>(RESOLUTION 1000);</tt> comment can appear, which
+    indicates 1000 units per micron, as in ordinary cells.  Each
+    device entry has the following format:
+
+    <blockquote>
+      <tt>(Symbol</tt> <i>symname</i><tt>);</tt><br>
+      <tt>5</tt> <i>property</i><br>
+      <tt>5 ...</tt><br>
+      <tt>9</tt> <i>symname</i>;<br>
+      <tt>DS 0 1 1;</tt><br>
+      <tt>L SCED;</tt><br>
+      <i>geometry</i> ...<br>
+      <i>more layers/geometry</i> ...<br>
+      <tt>DF;</tt><br>
+      <tt>E</tt><br>
+    </blockquote>
+
+    <p>
+    The first line is a CIF comment stating the device name, e.g., for
+    a capacitor one might have
+    <blockquote>
+    <tt>(Symbol cap);</tt>
+    </blockquote>
+    This line signals the beginning of a device definition to the
+    function that automatically updates the device library file after
+    a device is <a href="devedit">edited</a>, so must appear as shown
+    for that feature to work correctly.
+
+    <p>
+    This is followed by property specification lines, which begin with
+    the number '<tt>5</tt>', and a cell name definition, which begins
+    with the number '<tt>9</tt>'; The property lines can occur in any
+    order.  Technically, the property lines are optional, however the
+    name line is mandatory.  All lines in the symbol specification
+    parts of the file must end with a semicolon (;), except for the
+    symbol termination line "<tt>E</tt>".  While the device is being
+    parsed, the ';' is actually taken to be the line terminator, so
+    that logical lines can span several printed lines.
+
+    <p>
+    The name line begins with '<tt>9</tt>' in the first column,
+    followed by the symbol name (space separated), and ending with a
+    semicolon (without space).  This line actually defines the name of
+    the device, as known to <i>Xic</i>.  The property lines define the
+    device terminals and other parameters through the property
+    mechanism.  Each line begins with '<tt>5</tt>' in the first
+    column, followed by the property number, followed by other data,
+    and finally terminated with a semicolon.  Refer to the <a
+    href="prptyspec">properties</a> description for information about
+    properties and their syntax.  If the device represents a
+    subcircuit macro, the <b>name</b> property must be keyed with the
+    character '<tt>x</tt>' or '<tt>X</tt>'.
+
+    <p>
+    After the property lines comes a CIF define symbol directive:
+    <blockquote><tt>
+      DS 0 1 1;
+    </tt></blockquote>
+
+    <p>
+    The next line is a directive to use the SCED layer, which is the
+    active layer in the drawing:
+    <blockquote><tt>
+      L SCED;
+    </tt></blockquote>
+
+    <p>
+    The drawing in the cell should be on this layer to visually match
+    the other elements, however there is no real requirement for this. 
+    There are additional layers in the default technology which can be
+    used, typically for highlighting.  The geometry used in a device
+    has no electrical significance, i.e., no connectivity, and exists
+    for visual purposes only.
+
+    <p>
+    The devices in the supplied <tt>device.lib</tt> file use 100 units
+    per internal "micron" for historical reasons.  Be advised that if
+    a <tt>(RESOLUTION 1000);</tt> line appears at the top of the
+    device definition, 1000 units will be assumed for the device. 
+    Devices that are edited by <i>Xic</i> or added through <i>Xic</i>
+    editing will use 1000 units.
+
+    <p>
+    After the geometry comes the CIF directive to end symbol definition:
+    <blockquote><tt>
+      DF;
+    </tt></blockquote>
+
+    <p>
+    The last line of the device definition contains the single character
+    <blockquote><tt>
+      E
+    </tt></blockquote>
+    which indicates the end of the device symbol definition.  Note that
+    in this case there is no terminating semicolon.
+
+    <p>
+    As an example, here is the default library entry for a resistor:
+
+    <blockquote><tt>
+    # resistor<br>
+    (Symbol res);<br>
+    5 10 -1 0 0 0 + 0 0 0;<br>
+    5 10 -1 1 0 -1000 - 0 0 0;<br>
+    5 11 R 0;<br>
+    5 15 -100 -100 0 -1 "<v>/<value>O";<br>
+    9 res;<br>
+    DS 0 1 1;<br>
+    L SCED;<br>
+    W 0 0 -1000 0 -750 -100 -700 100 -600 -100 -500 100 -400 -100 -300 0
+     -250 0 0;<br>
+    L ETC1;<br>
+    W 0 -100 -75 -100 -125;<br>
+    W 0 -125 -100 -75 -100;<br>
+    DF;<br>
+    E
+    </tt></blockquote>
+
+    <p>
+    The property lines (lines beginning with `5') represent two node
+    definitions, a name, and a branch, in that order.  The 'W' line
+    (wire) following the SCED layer declaration represents the path
+    used to render the resistor schematic symbol.  The other two 'W'
+    lines, following the ETC1 layer declaration, represents a '+' mark
+    used to distinguish the positive end of the resistor, and the
+    target upon which the user clicks to obtain the resistor current,
+    in conjunction with the <b>branch</b> property.
+
+    <p>
+    The device library file can be viewed or edited from within
+    <i>Xic</i> through the <a href="xic:open"><b>Open</b></a> command. 
+    If "device.lib" (or the actual file name) is given in response to
+    the cell-to-edit prompt, a text editing window displaying the file
+    appears.  Actually, the current device library file is first
+    copied to the current directory (if it is not already there), and
+    the copy is opened for editing.  After saving changes and quitting
+    the text editor, the internal device database is rebuilt from the
+    device library file in the current directory.
+
+    <p>
+    Devices from the library can also be <a href="devedit">edited</a>
+    graphically, and devices added, from within <i>Xic</i>.
+
+    <p>
+    The terminal device is a special non-physical object used for
+    tying different parts of the circuit together without a wire, and
+    for assigning node names.  The library can contain multiple,
+    functionally equivalent terminal devices under various names,
+    each possibly with a different visual style.  The name label of a
+    terminal device defaults to the device name, but can be changed
+    by editing the label text once placed.  It is important that the
+    <b>name</b> property of the device begin with the character
+    '<tt>@</tt>'.
+
+    <p>
+    In the library, any device that has no <b>name</b> property and
+    exactly one <b>node</b> property will be taken as a ground
+    terminal device.  A terminal device will also have exactly one
+    <b>node</b> property, but must have a <b>name</b> property with a
+    name string starting with the '<tt>@</tt>' character.
+
+!!SEEALSO
+devedit
+xic:devs
+filefmts
+
+!! 102208
+!!KEYWORD
+modlib
+!!TITLE
+Model Library file
+!!HTML
+    <b>jump to</b> <a href="modlib#bin"><b>MOS Model Spatial Binning</b></a>
+
+    <p>
+    Devices such as transistors require model specification for
+    generation of SPICE simulation input.  <i>Xic</i> has a mechanism
+    for handling large numbers of device models, while at the same
+    time providing interactive editing capability.  Models for devices
+    (<tt>.model</tt> lines) and subcircuits (<tt>.subckt</tt> lines)
+    are read from a model library file found along the library <a
+    href="xicpaths">search path</a>, and from files found in
+    particular subdirectories of the directories in the path.
+
+    <p>
+    The first model library file found in the search path is searched
+    for models and subcircuits, as are any files found in
+    subdirectories with a specified name.  The default name for the
+    model library file is "<tt>model.lib</tt>", however another name
+    can be specified in the <a href="techfile">technology file</a>
+    with the <b>ModelLibrary</b> keyword.  The default name for
+    subdirectories to search for device models is "<tt>models</tt>",
+    and this name can be changed in the technology file with the
+    <b>ModelSubdirs</b> keyword.
+
+    <p>
+    In the search, the current directory is always searched first,
+    whether or not this is actually specified in the search path. 
+    Only the first model library file is read, which allows the user
+    to override a system model library file with a custom version. 
+    All files found in <tt>models</tt> subdirectories will be
+    searched.  The names of the files found in <tt>models</tt>
+    subdirectories are unimportant, but files existing in these
+    directories should contain SPICE models, though it is not an error
+    if no models or subcircuits are found in a file.
+
+    <p>
+    As with the device library file, the model library file can be
+    edited using the <a href="xic:open"><b>Open</b></a> command in
+    <i>Xic</i>.  One simply enters the name (e.g.,
+    "<tt>model.lib</tt>") when prompted for the cell name to edit.  A
+    text editing window appears.  If the file was not found in the
+    current directory, it is copied to the current directory. 
+    Otherwise, the file in the current directory is copied to a file
+    with the same name but with a "<tt>.bak</tt>" extension.  When
+    editing is complete and changes saved, the model database is
+    rebuilt, using the model library file in the current directory.
+
+    <p>
+    The "<tt>models</tt>" subdirectories might be used with large
+    collections of files provided by semiconductor manufacturers. 
+    Typically, the package supplied from the manufacturer contains a
+    number of files, each describing a device sold by the
+    manufacturer.  In most cases, all that is required to make these
+    models available to <i>Xic</i> is to move the files into a
+    <tt>models</tt> subdirectory of a directory in the library path. 
+    All of these files found will be added to the database.
+
+    <p>
+    The format is that of SPICE, where the first line of each model
+    starts with <a href=".model"><tt>.model</tt></a> (case
+    insensitive), and the text for that model is assumed to extend to
+    the next <tt>.model</tt> or <tt>.subckt</tt> line or end of file.
+
+    <p>
+    Subcircuits as well as models are are tabulated.  A subcircuit
+    begins with <tt>.subckt</tt>, and ends on a line starting with
+    <tt>.ends</tt>.  Models and subcircuits defined within a
+    subcircuit are not accessible as separate library references.
+
+    <p>
+    Any line which begins with '<tt>#</tt>' or '<tt>*</tt>' is treated
+    as a comment and ignored.
+
+    <p>
+    The text of any of the files in the <tt>models</tt> subdirectories
+    must not change while <i>Xic</i> is active.  If the text changes
+    after the time that <i>Xic</i> caches the file offsets to the
+    models, the model text that <i>Xic</i> will extract from the file
+    will very likely be bogus.  If the model library file is edited
+    with the <b>Open</b> command and saved, all offset tables are
+    updated.
+
+    <a name="bin"></a>
+    <h2>MOS Model Spatial Binning</h2>
+
+    When <i>Xic</i> generates a SPICE netlist, it automatically
+    includes the text of the required models.  For MOS devices, i.e.,
+    devices keyed by the letter '<tt>m</tt>', a spatial binning model
+    selection scheme is available.  This same binning mode is
+    available for MOS devices in <i>WRspice</i>.  When running
+    <i>WRspice</i> from <i>Xic</i>, the SPICE text is composed by
+    <i>Xic</i>, so the it is usually necessary to resolve the spatial
+    binning within <i>Xic</i>.
+
+    <p>
+    Complete information is available in the description of the
+    <i>WRspice</i> <a href="mosmodel">MOS model</a>.
+
+    <p>
+    The <tt>L</tt> and <tt>W</tt> parameters values found in the MOS
+    device <a href="prpty:param"><b>param</b></a> property are used to
+    key different models.  The <a href="prpty:model"><b>model</b></a>
+    property specifies the basename of the model.  The variations are
+    found in the model library under the basename suffixed with
+    "<tt>.1</tt>", "<tt>.2</tt>", etc.  Each of these models may
+    contain parameters <tt>LMIN</tt>, <tt>LMAX</tt>, <tt>WMIN</tt>,
+    <tt>WMAX</tt> which specify the parameter window for the model. 
+    The model with the window containing the device
+    <tt>L</tt>/<tt>W</tt> is the one chosen.  If a model is missing
+    one of the min/max parameter sets, it will match any value of the
+    parameter.
+
+!!SEEALSO
+filefmts
+
+!! 062908
+!!KEYWORD
+vectorfont
+!!TITLE
+Label Font File Format
+!!HTML
+    The font used to render text labels in drawing windows is a vector
+    font for scalability.  The character maps have internal defaults,
+    which should be suitable in most cases, however these can be
+    overridden by external definitions from a file.  One can dump the
+    current set of character maps to a file with the <b>Dump Vector
+    Font</b> button in the <a href="xic:font">font setting</a> panel
+    available in the <b>Attributes Menu</b>.  Character maps from this
+    file can be modified and placed in a file named "<tt>xic_font</tt>"
+    in the library <a href="xicpaths">search path</a>, in which
+    case they will override the internal definitions when producing
+    label text.
+
+    <p>
+    The same default character maps are also used by default for the
+    vector font in the <a href="xic:logo"><b>logo</b></a> command, for
+    producing physical characters with wire elements.  These too can
+    be overridden by definitions from a file.  The <b>Dump Vector
+    Font</b> button in the setup panel of the <a
+    href="xic:logo"><b>logo</b></a> command can be used to dump the
+    current set of character maps to a file.  Character maps from this
+    file can be modified and placed in a file named
+    "<tt>xic_logofont</tt>" in the library <a
+    href="xicpaths">search path</a>, in which case they will
+    override the internal definitions when producing vector-based
+    characters in the <b>logo</b> command.
+
+    <p>
+    The generated font file consists of vector specifications for the
+    characters "!" through "~" in the ASCII chart.  The user's file
+    need not contain all characters, missing characters will use the
+    internal default definitions.
+
+    <p>
+    The file consists of character specifications of the form
+    described below.  The first line of the specification defines the
+    character.  This is followed by one or more path vertex lists
+    which define the "strokes" of the character.  These are followed
+    by a couple of numerical entries which affect placement.  For
+    example, the entry for the default exclamation point (!) appears
+    as:
+ 
+    <blockquote><tt>
+    character !<br>
+    path 4,2 4,7<br>
+    path 4,9 4,10<br>
+    width 2<br>
+    offset 4<br>
+    </tt></blockquote>
+
+    <p>
+    The coordinate system has its origin in the upper left corner. 
+    The size is limited to 256 X 256, but the basic cell size used by
+    the default set is 7 X 14.  The y values increase downward, and x
+    values increase to the right.  Row and column numbering begin with
+    0, and negative values are not permitted.
+
+    <p>
+    Only the first character of the leading keyword is necessary, and
+    this is case insensitive.  The first line of the block defines the
+    character.  The order of the following lines is unimportant.  Each
+    <tt>path</tt> is a sequence of coordinates which render a part of
+    the character.  The <tt>width</tt> is the horizontal space
+    provided for the character, which should include trailing space,
+    typically one column.  The <tt>offset</tt> is the column which is
+    placed at the end of the preceding character.  Row and column
+    numbering begin with 0.
+
+!!SEEALSO
+xic:label
+filefmts
+
+!! 022713
+!!KEYWORD
+labelflags
+!!TITLE
+Label Flags
+!!HTML
+    Internally, every <i>Xic</i> text label object has a set of flags
+    which control presentation and other attributes of the label.  The
+    flags are visible in the label specifications in native cell files
+    and default <a href="symfilefmt#cifext">extended CIF</a> files. 
+    It is also used with script functions (<a
+    href="GetLabelFlags"><tt>GetLabelFlags</tt></a>, <a
+    href="SetLabelFlags"><tt>SetLabelFlags</tt></a>, <a
+    href="Label"><tt>Label</tt></a>, <a href="LabelH"><tt>
+    LabelH</tt></a>) and the <a
+    href="XprpXform"><tt>XprpXform</tt></a> pseudo-property.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Bits</th> <th>Hex</th> <th>Effect</th></tr>
+    <tr><td>0-1</td> <td>0003</td> <td>text rotation angle</td></tr>
+    <tr><td>&nbsp;</td> <td>0000</td> <td>no rotation</td></tr>
+    <tr><td>&nbsp;</td> <td>0001</td> <td>90 degrees</td></tr>
+    <tr><td>&nbsp;</td> <td>0002</td> <td>180 degrees</td></tr>
+    <tr><td>&nbsp;</td> <td>0003</td> <td>270 degrees</td></tr>
+    <tr><td>2</td>   <td>0004</td> <td>mirror Y after rotation</td></tr>
+    <tr><td>3</td>   <td>0008</td> <td>mirror X after rotation and mirror
+     Y</td></tr>
+    <tr><td>4</td>   <td>0010</td> <td>shift rotations to 45, 135, 225,
+     315 degrees</td></tr>
+    <tr><td>5-6</td> <td>0060</td> <td>horizontal justification</td></tr>
+    <tr><td>&nbsp;</td> <td>0000</td> <td>left justification</td></tr>
+    <tr><td>&nbsp;</td> <td>0020</td> <td>center horizontal
+     justification</td></tr>
+    <tr><td>&nbsp;</td> <td>0040</td> <td>right justification</td></tr>
+    <tr><td>&nbsp;</td> <td>0060</td> <td>right justification</td></tr>
+    <tr><td>7-8</td> <td>0180</td> <td>vertical justification</td></tr>
+    <tr><td>&nbsp;</td> <td>0000</td> <td>bottom justification</td></tr>
+    <tr><td>&nbsp;</td> <td>0080</td> <td>center vertical
+     justification</td></tr>
+    <tr><td>&nbsp;</td> <td>0100</td> <td>top justification</td></tr>
+    <tr><td>&nbsp;</td> <td>0180</td> <td>top justification</td></tr>
+    <tr><td>9-10</td> <td>0600</td> <td>font selection (unused)</td></tr>
+    <tr><td>11</td> <td>0800</td> <td>unused, reserved</td></tr>
+    <tr><td>12</td> <td>1000</td> <td>show text</td></tr>
+    <tr><td>13</td> <td>2000</td> <td>hide text</td></tr>
+    <tr><td>14</td> <td>4000</td> <td>show only when container is current
+     cell</td></tr>
+    <tr><td>15</td> <td>8000</td> <td>limit number of lines displayed</td></tr>
+    </table>
+    </blockquote>
+
+    See the discussion of the <a href="XprpXform"><tt>XprpXform</tt></a>
+    pseudo-property for more information on the effects of these flags.
+
+!!SEEALSO
+xic:label
+

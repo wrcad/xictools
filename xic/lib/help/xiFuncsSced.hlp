@@ -1,0 +1,417 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiFuncsSced.hlp,v 1.17 2016/06/08 03:58:43 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiFuncsSced.hlp
+!!TITLE
+xiFuncsSced.hlp
+!!HTML
+
+!!SUBTOPICS
+funcs:sced
+funcs:sced:io
+funcs:sced:nodes
+funcs:sced:symbl
+
+
+!! Output Generation
+!!REDIRECT Connect              funcs:sced:io#Connect
+!!REDIRECT ToSpice              funcs:sced:io#ToSpice
+
+!! Electrical Nodes
+!!REDIRECT IncludeNoPhys        funcs:sced:nodes#IncludeNoPhys
+!!REDIRECT GetNumberNodes       funcs:sced:nodes#GetNumberNodes
+!!REDIRECT SetNodeName          funcs:sced:nodes#SetNodeName
+!!REDIRECT GetNodeName          funcs:sced:nodes#GetNodeName
+!!REDIRECT GetNodeNumber        funcs:sced:nodes#GetNodeNumber
+!!REDIRECT GetNodeGroup         funcs:sced:nodes#GetNodeGroup
+!!REDIRECT ListNodePins         funcs:sced:nodes#ListNodePins
+!!REDIRECT ListNodeContacts     funcs:sced:nodes#ListNodeContacts
+!!REDIRECT GetNodeContactInstance funcs:sced:nodes#GetNodeContactInstance
+!!REDIRECT ListNodePinNames     funcs:sced:nodes#ListNodePinNames
+!!REDIRECT ListNodeContactNames funcs:sced:nodes#ListNodeContactNames
+
+!! Symbolic Mode
+!!REDIRECT IsShowSymbolic       funcs:sced:symbl#IsShowSymbolic
+!!REDIRECT ShowSymbolic         funcs:sced:symbl#ShowSymbolic
+!!REDIRECT SetSymbolicFast      funcs:sced:symbl#SetSymbolicFast
+!!REDIRECT MakeSymbolic         funcs:sced:symbl#MakeSymbolic
+
+!!KEYWORD
+funcs:sced
+!!TITLE
+Schematic Editor Functions
+!!HTML
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+
+    <!-- 060616 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:sced:io">Output Generation</a></th></tr>
+
+    <tr><td><a href="funcs:sced:io#Connect">
+     <tt>Connect</tt>(<i>for_spice</i>)</a>
+     </td><td>Internally process the schematic</td></tr>
+    <tr><td><a href="funcs:sced:io#ToSpice">
+     <tt>ToSpice</tt>(<i>spicefile</i>)</a>
+     </td><td>Write SPICE file</td></tr>
+
+    <!-- 060616 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:sced:nodes">Electrical Nodes</a></th></tr>
+
+    <tr><td><a href="funcs:sced:nodes#IncludeNoPhys">
+     <tt>IncludeNoPhys</tt>(<i>flag</i>)</a>
+     </td><td>Set nophys property usage</td></tr>
+    <tr><td><a href="funcs:sced:nodes#GetNumberNodes">
+     <tt>GetNumberNodes</tt>()</a>
+     </td><td>Return number of nodes in circuit</td></tr>
+    <tr><td><a href="funcs:sced:nodes#SetNodeName">
+     <tt>SetNodeName</tt>(<i>node</i>, <i>name</i>)</a>
+     </td><td>Set text name for node</td></tr>
+    <tr><td><a href="funcs:sced:nodes#GetNodeName">
+     <tt>GetNodeName</tt>(<i>node</i>)</a>
+     </td><td>Return text name for node</td></tr>
+    <tr><td><a href="funcs:sced:nodes#GetNodeNumber">
+     <tt>GetNodeNumber</tt>(<i>name</i>)</a>
+     </td><td>Return node number for named node</td></tr>
+    <tr><td><a href="funcs:sced:nodes#GetNodeGroup">
+     <tt>GetNodeGroup</tt>(<i>node</i>)</a>
+     </td><td>Return corresponding group for node</td></tr>
+    <tr><td><a href="funcs:sced:nodes#ListNodePins">
+     <tt>ListNodePins</tt>(<i>node</i>)</a>
+     </td><td>Return list of connected cell contact terminals</td></tr>
+    <tr><td><a href="funcs:sced:nodes#ListNodeContacts">
+     <tt>ListNodeContacts</tt>(<i>node</i>)</a>
+     </td><td>Return list of connected instance terminals</td></tr>
+    <tr><td><a href="funcs:sced:nodes#GetNodeContactInstance">
+     <tt>GetNodeContactInstance</tt>(<i>terminal_handle</i>)</a>
+     </td><td>Return handle to instance providing contact</td></tr>
+    <tr><td><a href="funcs:sced:nodes#ListNodePinNames">
+     <tt>ListNodePinNames</tt>(<i>node</i>)</a>
+     </td><td>Return list of connected cell contact terminal names</td></tr>
+    <tr><td><a href="funcs:sced:nodes#ListNodeContactNames">
+     <tt>ListNodeContactNames</tt>(<i>node</i>)</a>
+     </td><td>Return list of connected instance terminal names</td></tr>
+
+    <!-- 030115 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:sced:symbl">Symbolic Mode</a></th></tr>
+
+    <tr><td><a href="funcs:sced:symbl#IsShowSymbolic">
+     <tt>IsShowSymbolic</tt>()</a>
+     </td><td>True if current cell displayed symbolically in main
+     window</td></tr>
+    <tr><td><a href="funcs:sced:symbl#ShowSymbolic">
+     <tt>ShowSymbolic</tt>(<i>show</i>)</a>
+     </td><td>Turn on/off symbolic display</td></tr>
+    <tr><td><a href="funcs:sced:symbl#SetSymbolicFast">
+     <tt>SetSymbolicFast</tt>(<i>symb</i>)</a>
+     </td><td>Set symbolic mode of current cell, no display update</td></tr>
+    <tr><td><a href="funcs:sced:symbl#MakeSymbolic">
+     <tt>MakeSymbolic</tt>()</a>
+     </td><td>Create simple symbolic representation</td></tr>
+
+    </table>
+
+!!SEEALSO
+scr:iffuncs
+
+!!KEYWORD
+funcs:sced:io
+!!TITLE
+Output Generation
+!!HTML
+    <!-- 060616 -->
+    <a name="Connect"></a>
+    <dl>
+    <dt><b>(int) <tt>Connect</tt>(<i>for_spice</i>)</b>
+    <dd><br>
+    This function establishes the circuit connectivity for the current
+    hierarchy.  If the boolean <i>for_spice</i> is false, then devices
+    with the <a href="prpty:nophys"><b>nophys</b></a> property set are
+    ignored, and the netlist will have the "shorted" <b>nophys</b>
+    devices shorted out.  This is appropriate for LVS and other
+    extraction system operations.
+
+    <p>
+    If <i>for_spice</i> is true, the <b>nophys</b> devices are
+    included, and not shorted.  This applies when generating output
+    for SPICE simulation.
+
+    The function returns 1 on success, 0 otherwise.  If the schematic
+    is already processed and current, the function will return
+    immediately.  The schematic is implicitly processed before most
+    internal operations that make use of the schematic, so it is
+    unlikely that the user will need to call this function.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ToSpice"></a>
+    <dl>
+    <dt><b>(int) <tt>ToSpice</tt>(<i>spicefile</i>)</b>
+    <dd><br>This function will dump a SPICE file from the current cell to a
+    file of the given name.  If the argument is null or an empty
+    string, the name will be that of the current cell with a
+    "<tt>.cir</tt>" suffix.  Any existing file of the same name will
+    be moved, and given a "<tt>.bak</tt>" extension.  The return value
+    is 1 on success, 0 otherwise.
+    </dl>
+
+!!SEEALSO
+funcs:sced
+
+!!KEYWORD
+funcs:sced:nodes
+!!TITLE
+Electrical Nodes
+!!HTML
+    <!-- 011210 -->
+    <a name="IncludeNoPhys"></a>
+    <dl>
+    <dt><b>(int) <tt>IncludeNoPhys</tt>(<i>flag</i>)</b>
+    <dd><br>
+    This sets an internal mode which applies to the other functions in
+    this group.  If the boolean <i>flag</i> argument is nonzero,
+    devices with the <a href="xic:lvs#nophys"><b>nophys</b></a>
+    property set will be considered when generating the connectivity
+    and node mapping structures.  This has relevance when a device has
+    the shorted option to <b>nophys</b> set, as such devices will be
+    considered as normal devices with the flag set.  If the flag is
+    unset, these devices will be taken as short circuits, which of
+    course alters the node assignments.
+
+    <p>
+    Internally, the extraction functions always take these devices as
+    shorted, and they are otherwise ignored.  When generating a SPICE
+    file during simulation or with other commands in the side menu,
+    these devices are included as normal devices.  The present state
+    of the netlist data structures will reflect the state of the last
+    operation.
+
+    <p>
+    Setting this flag will cause rebuilding of the data structures to
+    the requested state if necessary when one of the functions in this
+    section is called.  This persists until some other function, such
+    as an extraction or SPICE listing function is called, at which
+    time the internal state of the flag may change.  Thus, this
+    function may need to be called repeatedly ahead of the functions
+    in this section.
+
+    <p>
+    The return value is the previous value of the internal flag.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetNumberNodes"></a>
+    <dl>
+    <dt><b>(int) <tt>GetNumberNodes</tt>()</b>
+    <dd><br>Return the size of the internal node map.  The internal node
+    numbers range from 0 up to but not including this value.  The
+    return value is 0 on error or if the cell is empty.
+    </dl>
+    <hr>
+
+    <!-- 050809 -->
+    <a name="SetNodeName"></a>
+    <dl>
+    <dt><b>(int) <tt>SetNodeName</tt>(<i>node</i>, <i>name</i>)</b>
+    <dd><br>This function associates the string <i>name</i> with the node
+    number given in the first argument.  This affects the electrical
+    database, and is equivalent to setting a node name with the <a
+    href="xic:nodmp">node mapping</a> facility available in the side
+    menu in electrical mode.  Netlist output will use the given string
+    name rather than a default name, however if the existing default
+    name matches a global node name, the user-supplied name will be
+    ignored.  If the name given is null or empty, any existing given
+    name is deleted, and netlist output will use the internal default. 
+    The function returns 1 on success, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 050809 -->
+    <a name="GetNodeName"></a>
+    <dl>
+    <dt><b>(string) <tt>GetNodeName</tt>(<i>node</i>)</b>
+    <dd><br>This function returns a string name for the given node
+    number.  If a name has been given for that node, the name is
+    returned, otherwise an internally generated default name is
+    returned.  If the operation fails, a null string is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetNodeNumber"></a>
+    <dl>
+    <dt><b>(int) <tt>GetNodeNumber</tt>(<i>name</i>)</b>
+    <dd><br>This function returns the node number corresponding to the
+    name string passed as an argument.  If no mapping to the string is
+    found, -1 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetNodeGroup"></a>
+    <dl>
+    <dt><b>(int) <tt>GetNodeGroup</tt>(<i>node</i>)</b>
+    <dd><br>This function returns the group index in the physical cell
+    that corresponds to the given node number.  On error, -1 is
+    returned.
+    </dl>
+    <hr>
+
+    <!-- 060616 -->
+    <a name="ListNodePins"></a>
+    <dl>
+    <dt><b>(terminal_handle) <tt>ListNodePins</tt>(<i>node</i>)</b>
+    <dd><br>
+    Note:  This and <tt>ListNodeContacts</tt> replace
+    <tt>ListNodeTerminals</tt>, which was removed in 4.2.12.
+
+    <p>
+    Return a handle to the list of cell connection terminals bound to
+    the internal node number supplied as the argument.  There probably
+    will be at most one such connection.
+    </dl>
+    <hr>
+
+    <!-- 060616 -->
+    <a name="ListNodeContacts"></a>
+    <dl>
+    <dt><b>(terminal_handle) <tt>ListNodeContacts</tt>(<i>node</i>)</b>
+    <dd><br>
+    Note:  This and <tt>ListNodePins</tt> replace
+    <tt>ListNodeTerminals</tt>, which was removed in 4.2.12.
+
+    <p>
+    Return a handle to a list of device and subcircuit connection
+    terminals bound to the specified node.
+    </dl>
+    <hr>
+
+    <!-- 060616 -->
+    <a name="GetNodeContactInstance"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>GetNodeContactInstance</tt>(<i>terminal_handle</i>)</b>
+    <dd><br>
+    For a handle to an instance contact, such as returned from
+    <tt>ListNodeContacts</tt>, this function will return a handle to
+    the device or subcircuit instance that provides the contact.
+    </dl>
+    <hr>
+
+    <!-- 060616 -->
+    <a name="ListNodePinNames"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListNodePinNames</tt>(<i>node</i>)</b>
+    <dd><br>
+    Note:  This and <tt>ListNodeContactNames</tt> replace
+    <tt>ListNodeTerminalNames</tt>, which was removed in 4.2.12.
+
+    <p>
+    Return a list of cell connection terminal names that connect to
+    the given node.  There is likely at most one cell connection per
+    node.
+    </dl>
+    <hr>
+
+    <!-- 060616 -->
+    <a name="ListNodeContactNames"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListNodeContactNames</tt>(<i>node</i>)</b>
+    <dd><br>
+    Note:  This and <tt>ListNodePinNames</tt> replace
+    <tt>ListNodeTerminalNames</tt>, which was removed in 4.2.12.
+
+    <p>
+    Return a list of device and subcircuit contact names that connect
+    to the given node.
+    </dl>
+
+!!SEEALSO
+funcs:sced
+
+!!KEYWORD
+funcs:sced:symbl
+!!TITLE
+Symbolic Mode
+!!HTML
+    <!-- 030115 -->
+    <a name="IsShowSymbolic"></a>
+    <dl>
+    <dt><b>(int) <tt>IsShowSymbolic</tt>()</b>
+    <dd><br>
+    This function will return 1 if the current cell is being displayed
+    in symbolic form in the main window, 0 otherwise.  The return is
+    always 0 in physical mode.
+    </dl>
+    <hr>
+
+    <!-- 030115 -->
+    <a name="ShowSymbolic"></a>
+    <dl>
+    <dt><b>(int) <tt>ShowSymbolic</tt>(<i>show</i>)</b>
+    <dd><br>
+    This will set symbolic mode of the current cell, and display the
+    symbolic representation, if possible, in the main window.  The
+    effect is similar to the effect of pressing or un-pressing the <a
+    href="xic:symbl"><b>symbl</b></a> button in the electrical side
+    menu.  The function call must be made in electrical display mode. 
+    When symbolic mode is asserted, by passing a boolean true
+    argument, the current cell will be displayed in symbolic mode,
+    unless the <a href="xic:nosym"><b>No Top Symbolic</b></a> button
+    in the <b>Main Window</b> sub-menu of the <b>Attributes Menu</b>
+    is pressed.  The return value is 1 on success, 0 if some error
+    occurred, with an error message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 030115 -->
+    <a name="SetSymbolicFast"></a>
+    <dl>
+    <dt><b>(int) <tt>SetSymbolicFast</tt>(<i>symb</i>)</b>
+    <dd><br>
+    This will enable or disable symbolic mode of the current cell.  It
+    differs from <tt>ShowSymbolic</tt> in two ways.  First, it applies
+    only to cells with a symbolic representation, meaning that it has
+    a symbolic form which may or may not be visible.  Second, it will
+    change the status of a flag in the cell, but there will be no
+    updating of the screen or other internal things (such as undo
+    logging).  The caller must reset to the original state before a
+    screen redisplay or any major operation.  This is much faster than
+    calling <tt>ShowSymbolic</tt>, and can be used when making quick
+    changes to a cell.
+
+    <p>
+    The return value is 1 if the current cell was previously actively
+    symbolic, 0 otherwise.  In physical mode the return value is
+    always 0 and the function has no effect.
+    </dl>
+    <hr>
+
+    <!-- 113009 -->
+    <a name="MakeSymbolic"></a>
+    <dl>
+    <dt><b>(int) <tt>MakeSymbolic</tt>()</b>
+    <dd><br>
+    This will create a very simple symbolic representation of the
+    electrical view of the current cell, consisting of a box with a
+    name label, and wire stubs containing the terminals.  Any existing
+    symbolic representation will be overwritten (but the operation can
+    be undone).  In electrical mode, symbolic mode will be asserted.
+
+    <p>
+    On success, 1 is returned, 0 otherwise.
+    </dl>
+
+!!SEEALSO
+funcs:sced
+

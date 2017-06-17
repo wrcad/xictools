@@ -1,0 +1,56 @@
+--- bsim6.va.orig	2014-03-02 12:37:33.268263209 -0800
++++ bsim6.va	2014-03-03 14:13:16.294258824 -0800
+@@ -39,6 +39,14 @@
+ //     ___Professor in Graduate School _______
+ // ********************************************************
+ 
++// Modifications by Steve Whiteley, Whiteley Research Inc., wrcad.com
++// Search for "SRW" to find mods.
++// 1. Avoid computation of ni, compute phib directly.  This avoids
++//    lexp underflow at low temperature (< -200C) which causes complete
++//    I-V failure.  With the mod, one can see MOS-like I-V curves at
++//    T=-270, though simulation of anything real fails with numerical
++//    faults and/or nonconvergence (so more work to do!).
++
+ 
+ 
+ // ********************************************************
+@@ -1401,7 +1409,9 @@
+ // Common Variables
+ real T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12;
+ real Tb;
+-real epssi, epsox, ni, Weff, Leff, Wact, Lact, Weffcj, Eg, Eg0;
++//SRW +
++real epssi, epsox, Weff, Leff, Wact, Lact, Weffcj, Eg, Eg0;
++//SRW real epssi, epsox, ni, Weff, Leff, Wact, Lact, Weffcj, Eg, Eg0;
+ real dLIV, dWIV, dLCV, dWCV, dWJ, Cox, epsratio;
+ real Vdb_noswap, Vsb_noswap, Vgs_noswap, Vgd_noswap;
+ real sigvds, vfb, vgfb, vgfbCV, Vbsx, Vfbsdr;
+@@ -2127,9 +2137,12 @@
+ 	Eg = BG0SUB - TBGASUB * DevTemp * DevTemp / (DevTemp + TBGBSUB);
+ 	Eg0 = BG0SUB - TBGASUB * Tnom * Tnom / (Tnom + TBGBSUB);
+ 
+-	T1 = (DevTemp / Tnom) * sqrt(DevTemp / Tnom);
+-	ni = NI0SUB * T1 * lexp(Eg / (2.0 * Vtm0) - Eg / (2.0 * Vtm));
+-	phib = ln(NDEP_i / ni);
++//SRW +
++	T1 = TRatio * sqrt(TRatio);
++	phib = ln(NDEP_i/(NI0SUB*T1)) - Eg/(2.0*Vtm0) + Eg/(2.0*Vtm);
++//SRW	T1 = (DevTemp / Tnom) * sqrt(DevTemp / Tnom);
++//SRW	ni = NI0SUB * T1 * lexp(Eg / (2.0 * Vtm0) - Eg / (2.0 * Vtm));
++//SRW	phib = ln(NDEP_i / ni);
+ 	
+ 	if(NGATE_i > 0)
+ 		Vfbsdr = Vt *lln(NGATE_i/NSD_i) + VFBSDOFF;
+@@ -3258,7 +3271,10 @@
+ 	vfb = VFBCV_i * inv_Vt;
+ 	vgfbCV = vg - vfb;
+ 
+-	phib = ln(NDEPCV_i / ni);
++//SRW +
++	T1 = TRatio * sqrt(TRatio);
++	phib = ln(NDEPCV_i/(NI0SUB*T1)) - Eg/(2.0*Vtm0) + Eg/(2.0*Vtm);
++//SRW	phib = ln(NDEPCV_i / ni);
+ 	//Normalized body factor
+ 	gam = sqrt(2.0 * `q * epssi*NDEPCV_i * inv_Vt)/Cox;
+ 	inv_gam = 1.0/gam;

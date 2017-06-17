@@ -1,0 +1,72 @@
+* difpair ckt - simple differential pair
+
+*.width in=72
+.opt acct list node lvlcod=2
+*.tf v(5) vin
+*.dc vin -0.25 0.25 0.005
+*.ac dec 10 1 10ghz
+*.tran 5ns 500ns
+vin 1 100 0 ac 1
+vin1 100 0 sin(0 0.1 5meg)
+vcc 8 0 12
+vee 9 0 -12
+q1 4 2 6 qnl
+q2 5 3 6 qnl
+rs1 1 2 1k
+rs2 3 0 1k
+rc1 4 8 10k
+rc2 5 8 10k
+q3 6 7 9 qnl
+q4 7 7 9 qnl
+rbias 7 8 20k
+.model qnl npn(bf=80 rb=100 ccs=2pf tf=0.3ns tr=6ns cje=3pf cjc=2pf
++   va=50)
+.print dc v(4) v(5)
+.plot dc v(5)
+.print ac vm(5) vp(5)
+.plot ac vm(5) vp(5)
+.print tran v(4) v(5)
+.plot tran v(5)
+.end
+
+.control
+# Print the quiescent transfer parameters.
+tf v(5) vin
+print tranfunc Zo(5) vin#Zi
+
+# Plot the transfer parameters with vin swept.
+tf v(5) vin dc vin -0.25 0.25 0.005
+plot tranfunc Zo(5) vin#Zi ysep
+
+# Perform DC sweep analysis, plot output.
+dc vin -0.25 0.25 0.005
+plot v(5)
+
+# Perform AC analysis, plot output.
+ac dec 10 1 10ghz
+plot vm(5) vp(5)
+
+# Perform AC analysis, plot output as the input offset is swept.
+ac dec 10 1 10ghz dc vin -0.25 0.25 0.05
+plot vm(5) vp(5)
+
+# Plot the AC transfer parameters.
+tf v(5) vin ac dec 10 1 10ghz
+plot tranfunc Zo(5) vin#Zi ysep
+
+# Plot the AC transfer parameters as the input offset is swept.
+tf v(5) vin ac dec 10 1 10ghz dc vin -0.25 0.25 0.05
+plot tranfunc Zo(5) vin#Zi ysep
+
+# Perform transient analysis.
+tran 5ns 500ns
+plot v(5)
+
+# Perform transient analysis as the input offset is swept.
+#tran 5ns 500ns dc vin -0.25 0.25 0.05
+#sweep rc2,r 5k 15k 1k tran 5ns 500ns
+tran 5ns 500ns dc rc2[r] 5k 15k 1k
+plot v(5)
+
+edit
+.endc

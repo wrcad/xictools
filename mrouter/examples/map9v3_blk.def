@@ -1,0 +1,32 @@
+VERSION 5.6 ;
+DESIGN map9v3 ;
+UNITS DISTANCE MICRONS 100 ;
+
+# This provides a list of "user-supplied" obstructions found in the
+# Qrouter config file.
+
+BLOCKAGES 10 ;
+   - LAYER metal4
+     RECT ( 24240 100 ) ( 24640 18300 ) ;
+   - LAYER metal4
+     RECT ( -640 100 ) ( 80 18300 ) ;
+   - LAYER metal2
+     RECT ( 24240 100 ) ( 24640 18300 ) ;
+   - LAYER metal2
+     RECT ( -640 100 ) ( 80 18300 ) ;
+   - LAYER metal3
+     RECT ( 80 -600 ) ( 24240 100 ) ;
+   - LAYER metal3
+     RECT ( 80 18300 ) ( 24240 18600 ) ;
+   - LAYER metal1
+     RECT ( 24240 -600 ) ( 24640 18600 ) ;
+   - LAYER metal1
+     RECT ( -640 -600 ) ( 80 18600 ) ;
+   - LAYER metal1
+     RECT ( -640 -600 ) ( 24640 100 ) ;
+   - LAYER metal1
+     RECT ( -640 18300 ) ( 24640 18600 ) ;
+END BLOCKAGES
+
+END DESIGN
+

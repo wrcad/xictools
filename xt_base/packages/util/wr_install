@@ -1,0 +1,418 @@
+#! /bin/sh
+#
+# wr_install - script to install Whiteley Research software products
+# SAFE INSTALL version for Gen-4 (not availaable in Microsoft Windows)
+#
+# Copyright (C) Whiteley Research Inc., 2015, all rights reserved
+# $Id: wr_install,v 1.28 2015/09/18 03:19:34 stevew Exp $
+
+# Usage: wr_install [-t] distrib_file ...
+# The arguments are distribution files as obtained from the Whiteley
+# Research web site.  DO NOT CHANGE THE NAMES OF THESE FILES!
+# If "-t" is given, files that follow won't be installed, but the
+# commands that would be executed are printed.
+
+# The script is also called by xic and wrspice when doing updates
+# through the programs:  wr_install -upd distrib_file prefix
+
+# The following DOES NOT apply to Microsort Windows releases, which
+# are installed via exe files and there is no automatic "safe
+# install".
+
+# This implements "safe install", where the previous release is
+# retained in its entirety, and can be reverted to easily if there is
+# a problem with the new release.  Of course, such a thing could
+# never, ever, happen, except when it does!  The script will recognize
+# an old-style installation, and convert to the safe install
+# configuration transparently.
+
+# BE FOREWARNED:  New Xic and WRspice distributions put the
+# executables, for example for xic, in xictools/xic/bin and NOT in
+# xictools/bin, as was true in earlier releases.  The new executables
+# won't be visible in the shell search path!  The maintainer should do
+# one of
+#   A. change the shell search path to include the new locations, 
+#   B. symbolically link the executables into xictools/bin
+#   C. add a wrapper shell script in xictools/bin
+# In all cases, the executable referenced should be under the "xic/bin"
+# (for example) symbolic link and NOT under xic.current/bin or
+# xic-version/bin (see below).
+
+# Here's the safe install logic, for example for xic.  The present
+# release is saved under xic.current, and the previous release under
+# xic-version (where version is the release number, e.g. 4.1.15), both
+# under /usr/local/xictools (by default).  The xic.current directory
+# is symbolically linked as xic in the same directory.
+
+# When updating, this script will remove the link to xic, copy
+# xic.current to xic, then move xic.current to xic-version.  Then it
+# will perform the update using the native tool, such as rpm, and move
+# xic to xic.current, and finally create the symbolic link from
+# xic.current as xic.
+
+# If there is a problem with the new release, the maintainer can
+# delete the link from xic.current to xic, and recreate the link, but
+# from xic-version.  Then you're back to running the previous release,
+# completely as it was.
+
+# Note that the previous installed releases will all be saved as
+# xic-version, and can be reverted to if needed.  The user can delete
+# these old releases when they are no longer of potential value.  The
+# release in xic.current is registered with the system package
+# database and should only be uninstalled using this script, or using
+# the same logic, for example:
+#   rm xic; mv xic.current xic; rpm -e `rpm -qa | grep xic`
+
+#=======================================================================
+
+PATH=$PATH:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+
+usage()
+{
+    echo
+    echo Usage:  wr_install [-t] distrib_file ...
+    echo
+    echo The arguments are distribution files as obtained from the
+    echo Whiteley Research web site.
+    echo
+    echo DO NOT CHANGE THE NAMES OF THESE FILES!
+    echo
+    echo If -t is given, files that follow won\'t be installed, but
+    echo the commands that would be executed are printed.
+    echo
+    echo This is the SAFE INSTALL version for Gen-4, see the script
+    echo comments for info.
+    echo
+}
+
+# Return the (filled in as needed) full path for $1.
+#
+fullpath()
+{
+    echo $(cd $(dirname "$1") && pwd -P)/$(basename "$1")
+}
+
+# Do the installation, removing old installation(s) first when possible.
+# arguments: distfile prefix
+#
+do_update()
+{
+    distfile=$1
+    prefix=$2
+    nodo=$3
+
+    dfb=`basename $distfile`
+    tmpifs="$IFS"
+    IFS="-"
+    set $dfb
+    progname=$1
+    osname=$2
+    vers=$3
+    IFS="."
+    set $vers
+    release_lev=$1
+    IFS=$tmpifs
+
+    if [ x$release_lev != x4 ]; then
+        echo Generation $release_lev is no longer supported.
+        return 127
+    fi
+
+    case $osname in
+    Darwin*)
+        pkg=$distfile
+        if [ x$pkg = x ]; then
+            echo "Error: no file name given!"
+            return 127
+        fi
+        if [ $prefix != /usr/local ]; then \
+            echo "Xictools packages for OS X are not relocatable."
+            return 127
+        fi
+        ppkg=`fullpath $pkg`
+        sudo installer -pkg "$ppkg" -target /
+        ;;
+    Linux*)
+        # Check for alien/dpkg, as for Ubuntu/Debian.  If found, see
+        # if the user wants to use alien for install.  Debian packages
+        # are no longer being distributed in Gen 4.
+
+        has_alien=no
+        command -v alien >/dev/null 2>&1
+        if [ $? = 0 ]; then
+            has_alien=yes
+        fi
+        has_dpkg=no
+        command -v dpkg >/dev/null 2>&1
+        if [ $? = 0 ]; then
+            has_dpkg=yes
+        fi
+        use_alien=no;
+        if [ $has_alien = yes -a $has_dpkg = yes ]; then
+            while [ 1 = 1 ]; do
+                echo -n "Install using \"alien -ick $distfile\" [y/n]? "
+                read resp
+                if [ x$resp = xy -o x$resp = xyes ]; then
+                    use_alien=yes;
+                    break;
+                elif [ x$resp = xn -o x$resp = xno ]; then
+                    break;
+                else
+                    echo Next time answer y or n.
+                fi
+            done;
+        fi
+
+        if [ $use_alien = yes ]; then
+            if [ $prefix != /usr/local ]; then
+                echo Debian packages are not relocatable, can install under
+                echo /usr/local only.
+                return 127
+            fi
+            echo alien -ick $distfile
+            if [ x$nodo != xyes ]; then
+                alien -ick $distfile
+            fi
+        elif [ $prefix = /usr/local ]; then
+            echo rpm -U --replacepkgs --replacefiles --nodeps $distfile
+            if [ x$nodo != xyes ]; then
+                rpm -U --replacepkgs --replacefiles --nodeps $distfile
+            fi
+        else
+            echo rpm -U --replacepkgs --replacefiles --nodeps --relocate /usr/local=$prefix $distfile
+            if [ x$nodo != xyes ]; then
+                rpm -U --replacepkgs --replacefiles --nodeps --relocate /usr/local=$prefix $distfile
+            fi
+        fi
+        ;;
+    *)
+        echo "do_update: unknown token $osname"
+        return 1
+        ;;
+    esac
+
+    ret=$?
+    if [ $ret = 0 ]; then
+        echo Installation of $progname-$osname-$vers done, no errors returned.
+    else
+        echo Installation of $progname-$osname-$vers FAILED.
+    fi
+    return $ret
+}
+
+safe_install()
+{
+    distfile=$1
+    prefix=$2
+    nodo=$3
+
+    dfb=`basename $distfile`
+    tmpifs="$IFS"
+    IFS="-"
+    set $dfb
+    prog=$1
+    vers=$3
+    IFS=$tmpifs
+
+    if [ $prog != xic -a $prog != wrspice ]; then
+        do_update $distfile $prefix $nodo
+        ret=$?
+    else
+        if [ x$nodo != xyes ]; then
+            if [ -h $prefix/xictools/$prog ]; then
+                rm $prefix/xictools/$prog
+                if [ -d $prefix/xictools/$prog.current ]; then
+                    curver=`$prefix/xictools/$prog.current/bin/$prog --v`
+                    set $curver
+                    curver=$1
+                    rm -rf $prefix/xictools/$prog-$curver
+                    cp -pr $prefix/xictools/$prog.current \
+ $prefix/xictools/$prog-$curver
+                    mv $prefix/xictools/$prog.current $prefix/xictools/$prog
+                fi
+            else
+                if [ -d $prefix/xictools/$prog ]; then
+                    curver=`$prefix/xictools/bin/$prog --v`
+                    set $curver
+                    curver=$1
+                    ddir=$prefix/xictools/$prog-$curver
+                    rm -rf $ddir
+                    cp -pr $prefix/xictools/$prog $ddir
+                    if [ ! -d $ddir/bin ]; then
+                        mkdir $ddir/bin
+                        if [ $prog = xic ]; then
+                            cp $prefix/xictools/bin/wrdecode $ddir/bin
+                            cp $prefix/xictools/bin/wrencode $ddir/bin
+                            cp $prefix/xictools/bin/wrsetpass $ddir/bin
+                            cp $prefix/xictools/bin/xic $ddir/bin
+                        elif [ $prog = wrspice ]; then
+                            cp $prefix/xictools/bin/multidec $ddir/bin
+                            cp $prefix/xictools/bin/proc2mod $ddir/bin
+                            cp $prefix/xictools/bin/printtoraw $ddir/bin
+                            cp $prefix/xictools/bin/wrspice $ddir/bin
+                            cp $prefix/xictools/bin/wrspiced $ddir/bin
+                        fi
+                    fi
+                fi
+            fi
+
+            do_update $distfile $prefix $nodo
+            ret=$?
+
+            mv $prefix/xictools/$prog $prefix/xictools/$prog.current
+            ln -s $prefix/xictools/$prog.current $prefix/xictools/$prog
+        else
+            if [ -h $prefix/xictools/$prog ]; then
+                echo rm $prefix/xictools/$prog
+                if [ -d $prefix/xictools/$prog.current ]; then
+                    curver=`$prefix/xictools/$prog.current/bin/$prog --v`
+                    set $curver
+                    curver=$1
+                    echo rm -rf $prefix/xictools/$prog-$curver
+                    echo cp -pr $prefix/xictools/$prog.current \
+ $prefix/xictools/$prog-$curver
+                    echo mv $prefix/xictools/$prog.current $prefix/xictools/$prog
+                fi
+            else
+                if [ -d $prefix/xictools/$prog ]; then
+                    curver=`$prefix/xictools/bin/$prog --v`
+                    set $curver
+                    curver=$1
+                    ddir=$prefix/xictools/$prog-$curver
+                    echo rm -rf $ddir
+                    echo cp -pr $prefix/xictools/$prog $ddir
+                    if [ ! -d $ddir/bin ]; then
+                        echo mkdir $ddir/bin
+                        if [ $prog = xic ]; then
+                            echo cp $prefix/xictools/bin/wrdecode $ddir/bin
+                            echo cp $prefix/xictools/bin/wrencode $ddir/bin
+                            echo cp $prefix/xictools/bin/wrsetpass $ddir/bin
+                            echo cp $prefix/xictools/bin/xic $ddir/bin
+                        elif [ $prog = wrspice ]; then
+                            echo cp $prefix/xictools/bin/multidec $ddir/bin
+                            echo cp $prefix/xictools/bin/proc2mod $ddir/bin
+                            echo cp $prefix/xictools/bin/printtoraw $ddir/bin
+                            echo cp $prefix/xictools/bin/wrspice $ddir/bin
+                            echo cp $prefix/xictools/bin/wrspiced $ddir/bin
+                        fi
+                    fi
+                fi
+            fi
+
+            do_update $distfile $prefix $nodo
+            ret=$?
+
+            echo mv $prefix/xictools/$prog $prefix/xictools/$prog.current
+            echo ln -s $prefix/xictools/$prog.current $prefix/xictools/$prog
+        fi
+    fi
+    return $ret
+}
+
+nodo=no
+
+if [ x$1 = x-upd ]; then
+    # Called from Xic or WRspice when updating.
+    # wr_install -upd distfile prefix
+
+    distfile=$2
+    prefix=$3
+
+    if [ x$prefix = x ]; then
+        echo "Too few arguments given."
+        echo
+        echo "Press Enter to continue."
+        read aa
+        exit 127
+    fi
+
+
+    safe_install $distfile $prefix $nodo
+    ret=$?
+
+    echo
+    echo "Press Enter to continue."
+    read aa
+    exit $ret
+fi
+
+if [ $# = 0 ]; then
+    usage
+    exit 1
+fi
+
+args=$*
+for fname in $args; do
+    xx=`echo $fname| grep 'exe$'`
+    if [ x$xx != x ]; then
+        break
+    fi
+done
+
+if [ x$xx != x ]; then
+    # Windows
+    for fname in $args; do
+        if [ $fname = "-t" ]; then
+            nodo=yes
+            continue
+        fi
+        if [ ! -f $fname ]; then
+            echo File not found:  $fname
+            exit 1
+        fi
+        echo $fname
+        if [ $nodo != yes ]; then
+            $fname
+        fi
+    done
+    exit 0
+fi
+
+if [ `uname` = "Darwin" ]; then
+    # Apple packages aren't relocatable
+    prefix=/usr/local
+else
+    prefix=$XT_PREFIX
+    if [ x"$prefix" = x ]; then
+        prefix=/usr/local
+    fi
+    while [ 1 = 1 ]; do
+        printf "Distributions will be installed under\n  $prefix\nIs this \
+OK [y/n]? "
+        read resp
+        if [ x"$resp" = xn -o x"$resp" = xno ]; then 
+            printf "Enter prefix to use instead of\n  $prefix\n> "
+            read prefix
+            continue
+        elif [ x"$resp" = xy -o x"$resp" = xyes ]; then
+            break
+        else
+            echo Next time answer y or n.
+        fi
+    done
+fi
+
+if [ `whoami` != root -a $1 != "-t" ]; then
+    if [ `uname` = "Darwin" ]; then
+        echo "You're not root, give your password if asked, continuing.";
+    else
+        printf "You're not root, uninstall/install may fail.  Continue [y/n]? "
+        read rcheck
+        if [ x$rcheck != xy -a x$rcheck != xyes ]; then
+            exit 0
+        fi
+    fi
+fi
+
+for fname in $args; do
+    if [ $fname = "-t" ]; then
+        nodo=yes
+        continue
+    fi
+    if [ ! -f $fname ]; then
+        echo File not found:  $fname
+        exit 1
+    fi
+    safe_install $fname $prefix $nodo
+done
+

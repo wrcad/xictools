@@ -1,0 +1,153 @@
+# This script provides a graphical interface to internal search path
+# variables otherwise manipulated with the !set command.
+# $Id: paths.scr,v 1.1 2014/09/26 01:59:19 stevew Exp $
+
+#ifndef SUBMIT
+
+# Create a temporary HTML file containing the form to use for graphical
+# input.  The form elements are initialized to the current values of the
+# variables.  Once the file is created, load it into the HTML viewer and
+# exit.
+
+fname = TempFile("xp")
+fd = Open(fname, "w")
+if (fd <= 0)
+    ErrorMsg("Error: can't open temporary file.")
+    Exit()
+end
+WriteLine("<html>\n", fd)
+WriteLine("<body bgcolor=\"#e8e8f0\">\n", fd)
+
+WriteLine("<h2><a href=\"!set:paths\">Paths and Directories</a></h2>\n", fd)
+
+WriteLine("This form provides a graphical interface to the path \
+<a href=\"!set:variables\">variables</a> normally set with the \
+<a href=\"!set\"><b>!set</b></a> command or in the technology file.  Changes \
+become effective when you press the <b>Apply</b> button at the bottom of the \
+form.\n", fd)
+WriteLine("<form method=\"post\" action=\"action_local_xic THIS_SCRIPT\">\n", fd)
+WriteLine("\n", fd)
+
+WriteLine("<table border=\"0\" align=\"left\">\n", fd)
+WriteLine("<tr><td><b>Path</b>\n", fd)
+WriteLine("<td><input type=\"text\" size=\"60\" name=\"Path\" value=\"", fd)
+str = Get(Path)
+# Have to substitute for quote chars.
+j = 0
+while (str[j] != 0)
+    if (str[j] == '"')
+        WriteLine("&quot;", fd)
+    else
+        WriteChar(str[j], fd)
+    end
+    j++
+end
+WriteLine("\"><br>\n", fd)
+
+#### LibPath
+WriteLine("<tr><td><b>LibPath</b>\n", fd)
+WriteLine("<td><input type=\"text\" size=\"60\" name=\"LibPath\" value=\"", fd)
+str = Get(LibPath)
+# Have to substitute for quote chars.
+j = 0
+while (str[j] != 0)
+    if (str[j] == '"')
+        WriteLine("&quot;", fd)
+    else
+        WriteChar(str[j], fd)
+    end
+    j++
+end
+WriteLine("\"><br>\n", fd)
+
+#### HelpPath
+WriteLine("<tr><td><b>HelpPath</b>\n", fd)
+WriteLine("<td><input type=\"text\" size=\"60\" name=\"HelpPath\" value=\"", fd)
+str = Get(HelpPath)
+# Have to substitute for quote chars.
+j = 0
+while (str[j] != 0)
+    if (str[j] == '"')
+        WriteLine("&quot;", fd)
+    else
+        WriteChar(str[j], fd)
+    end
+    j++
+end
+WriteLine("\"><br>\n", fd)
+
+#### ScriptPath
+WriteLine("<tr><td><b>ScriptPath</b>\n", fd)
+WriteLine("<td><input type=\"text\" size=\"60\" name=\"ScriptPath\" value=\"", fd)
+str = Get(ScriptPath)
+# Have to substitute for quote chars.
+j = 0
+while (str[j] != 0)
+    if (str[j] == '"')
+        WriteLine("&quot;", fd)
+    else
+        WriteChar(str[j], fd)
+    end
+    j++
+end
+WriteLine("\"><br>\n", fd)
+
+#### DocsDir
+WriteLine("<tr><td><b>DocsDir</b>\n", fd)
+WriteLine("<td><input type=\"text\" size=\"60\" name=\"DocsDir\" value=\"", fd)
+str = Get(DocsDir)
+if (str == 0)
+    str = ""
+end
+# Have to substitute for quote chars.
+j = 0
+while (str[j] != 0)
+    if (str[j] == '"')
+        WriteLine("&quot;", fd)
+    else
+        WriteChar(str[j], fd)
+    end
+    j++
+end
+WriteLine("\"><br>\n", fd)
+WriteLine("</table><br clear=all>\n", fd)
+
+WriteLine("\n<p>\n", fd)
+WriteLine("<hr>\n", fd);
+
+WriteLine("<input type=\"submit\" value=\"Apply\">\n", fd)
+WriteLine("<input type=\"reset\">\n", fd)
+WriteLine("</form>\n", fd)
+WriteLine("</body>\n", fd)
+WriteLine("</html>\n", fd)
+
+Close(fd)
+cmd = "help " + fname
+TextCmd(cmd)
+Exit()
+
+#endif
+
+# The part of the script below processes the returns from the form elements.
+# If a form element was active, set the corresponding variable, or unset it
+# if the form element was inactive.  Note that there is little in the way
+# of sanity checking.
+
+if Defined(Path)
+    Set("Path", Path)
+end
+if Defined(LibPath)
+    Set("LibPath", LibPath)
+end
+if Defined(HelpPath)
+    Set("HelpPath", HelpPath)
+end
+if Defined(ScriptPath)
+    Set("ScriptPath", ScriptPath)
+end
+if Defined(DocsDir)
+    Set("DocsDir", DocsDir)
+else
+    Unset("DocsDir")
+end
+

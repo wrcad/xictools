@@ -1,0 +1,57 @@
+* Josephson Interferometer demo
+*
+* This is a symmetric two junction interferometer.
+* The interferometer is evaluated while looping over gate bias,
+* illustrating use of the WRspice loop command.
+*
+* the squid loop
+b1 1 0 100 jj1
+b2 3 0 101 jj1
+l1 1 2 2pH
+l2 2 3 2pH
+*
+* the coupled control line
+l3 4 5 2pH
+l4 5 0 2pH
+k1 l1 l3 .98
+k2 l2 l4 .98
+*
+* damping resistance
+rd1 1 0 .50
+rd2 3 0 .50
+*rd1 1 0 2
+*rd2 3 0 2
+*
+* gate power supply
+rg 2 10 50
+*vg 10 0 pulse(0 80m 0p 20p)
+vg 10 0 pulse(0 $value1%m 0p 20p)
+*
+* source power supply
+rc 4 11 50
+vc 11 0 pulse(0 25m 0 200p)
+*vc 11 0 pulse(0 25.4m 50p 2p 2p)
+*
+.tran 1p 200p
+*
+* Type "run", then "plot v(11) v(3)" to display the control
+* voltage and gate voltage.
+*
+* We have a single vortex transition.
+* The plot is multi-dimensional, with each dimension shown in a
+* different color.  Each dimension corresponds to a different gate
+* bias level.  Click the "D" icon in the plot to show/hide the
+* dimension indices.  Clicking in the indices will show/hide the trace
+* for that index.
+*
+*Nb 2500 A/cm2   area = 40 square microns
+.model jj1 jj(rtype=1,cct=1,icon=10m,vg=2.8m,delv=0.08m,
++ icrit=1m,r0=30,rn=1.647059,cap=1.548944p)
+.end
+
+.control
+loop 75 83 2
+#run
+plot v(1)
+edit
+.endc

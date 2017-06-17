@@ -1,0 +1,13 @@
+#! /bin/sh
+# $1 : the full path to the installation package
+# $2 : the full path to the installation destination
+# $3 : the mountpoint of the destination volume
+# $4 : the root directory for the current System folder
+
+prefix=$2
+
+echo See the README file in $prefix/xictools/license
+echo for server configuration and startup information.  A valid
+echo LICENSE file must exist in that directory for the server
+echo to operate.
+

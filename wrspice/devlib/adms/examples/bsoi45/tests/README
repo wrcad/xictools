@@ -1,0 +1,20 @@
+
+The .wrs files were created for WRspice.  The modelcard files were also
+modified for WRspice for illustration, to provide the level value, but
+this is not required.
+
+The Hspice (.sp) files don't work in WRspice, primarily due to the
+device call with key letter 'x' instead of 'm'.
+
+The ring_osc example dies with timestep too small.
+
+Other files give results, some with parameter range warnings.
+
+Instructions:
+
+Start WRspice in interactive mode.
+
+Use the devload command (or similar) to load the bsoi45 module.
+
+Run the .wrs files - they run automatically when sourced.
+

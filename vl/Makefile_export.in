@@ -1,0 +1,85 @@
+# Makefile.in for vl
+# $Id: Makefile_export.in,v 1.3 2009/01/14 02:33:50 stevew Exp $
+
+# Below are the recognized CFLAGS defines.  The configure script
+# defines some or all of these in VL_DEFS.
+#
+# -DHAVE_GETTIMEOFDAY   | library has gettimeofday()
+# -DHAVE_TIMES          | library has times()
+# -DHAVE_VSNPRINTF      | library has vsnprintf()
+
+VERSION = XXVERSIONXX
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGS@ @VL_DEFS@ @UFLAGS@
+YACC = @YACC@
+LEX = @LEX@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGS@ @VL_DEFS@
+INSTALL = @INSTALL@
+INSTALL_USER = @INSTALL_USER@
+STDCLIB = @STDCLIB@
+AR = @AR@
+RANLIB = @RANLIB@
+NTSUFFIX = @NTSUFFIX@
+FILTER = @FILTER@
+
+CCFILES = vl_data.cc vl_expr.cc vl_gate.cc vl_obj.cc vl_parse.cc vl_print.cc \
+  vl_sim.cc vl_st.cc vl_sys.cc randval.cc
+OTHERS = verilog.l verilog.y vl_defs.h vl_list.h vl_st.h vl_types.h main.cc \
+  Makefile.in configure.in README
+COBJS = verilog_yacc.o verilog_lex.o $(CCFILES:.cc=.o)
+LIB_TARGET = libvlog.a
+INCLUDE = -I.
+
+all: $(LIB_TARGET) vl
+
+vl: $(COBJS) main.o
+	$(CXX) -o $@ main.o $(COBJS) -lm;
+
+$(LIB_TARGET): $(COBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(COBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) -c $(CFLAGS) $(INCLUDE) -DVL_VERSION=\"$(VERSION)\" $*.cc
+
+clean::
+	-rm -f *.o *.a vl vl.exe
+
+distclean::
+	-rm -f *.o *.a vl vl.exe
+	-rm -f verilog_yacc.cc verilog_yacc.h verilog_lex.cc
+	-rm -f config.cache config.h config.log config.status Makefile
+
+# yacc/lex rules
+verilog_yacc.cc verilog_yacc.h: verilog.y vl_defs.h vl_list.h vl_st.h \
+    vl_types.h
+	$(YACC) -d verilog.y
+	@if [ -f verilog.tab.c ]; then \
+	    mv -f verilog.tab.c verilog_yacc.cc; \
+	    mv -f verilog.tab.h verilog_yacc.h; \
+	else \
+	    mv -f y.tab.c verilog_yacc.cc; \
+	    mv -f y.tab.h verilog_yacc.h; \
+	fi
+
+verilog_lex.cc: verilog.l verilog_yacc.h vl_defs.h vl_list.h vl_st.h vl_types.h
+	$(LEX) verilog.l
+	@mv -f lex.yy.c verilog_lex.cc
+
+depend::
+	@echo depending in vl
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) main.cc $(CCFILES) \
+  $(FILTER) >> Makefile; \
+	fi
+
+install: vl
+	$(INSTALL) -s -c -m 0755 $(INSTALL_USER) vl /usr/local/bin
+
+#######################################################################

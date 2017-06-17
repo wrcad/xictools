@@ -1,0 +1,1117 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spElements.hlp,v 1.21 2016/10/16 19:25:43 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spElements.hlp
+!!TITLE
+spElements.hlp
+!!HTML 
+
+!!SUBTOPICS
+elements
+passive
+cap
+ind
+mut
+res
+sw
+tra
+urc
+jj
+
+
+!! elements.tex 012509
+!!KEYWORD
+elements
+!!TITLE
+Circuit Elements
+!!HTML 
+    Each element in the circuit is specified by an element line that
+    contains the element name, the circuit nodes to which the element
+    is connected, and the values of the parameters that determine the
+    electrical characteristics of the element.  The first letter of
+    the element name specifies the element type (case insensitive). 
+    For example, a resistor name must begin with the letter
+    '<tt>R</tt>' or '<tt>r</tt>' and can contain one or more
+    characters.  Hence, <tt>R</tt>, <tt>r1</tt>, <tt>Rse</tt>,
+    <tt>ROUT</tt>, and <tt>r3ac2zY</tt> are valid resistor names.
+
+    <p>
+    In the descriptions that follow, data fields that are enclosed in
+    square brackets ([ ]) are optional.  All indicated punctuation
+    (parentheses, equal signs, etc.) is optional and merely indicate
+    the presence of any delimiter.  A consistent style such as that
+    shown here will make the input easier to understand.  With respect
+    to branch voltages and currents, <i>WRspice</i> uniformly uses the
+    associated reference convention (current flows in the direction of
+    voltage drop).
+
+    <p>
+    The circuit cannot contain a loop of voltage sources.  If a dc <a
+    href=".op">operating point</a> analysis is performed, which is
+    true for all analysis except for <a href=".tran">transient
+    analysis</a> with the <tt>uic</tt> (use initial conditions) flag
+    set, the circuit can not contain a loop of voltage sources and/or
+    inductors and cannot contain a cutset of current sources and/or
+    capacitors.  In transient analysis with the <tt>uic</tt> flag set
+    (which is always the case when Josephson junctions are present),
+    inductor/voltage source loops are allowed, as are
+    capacitor/current source cut sets.  However, parallel voltage
+    sources and series current sources are not accepted.  It is not
+    strictly necessary that each node in the circuit have a dc path to
+    ground with the <tt>uic</tt> flag given, however convergence
+    problems may result.  It is sometimes necessary to add a large
+    valued resistor to ground in these cases.  In general, nodes
+    should have at least two connections.
+
+    <p>
+    This and the following sections describe the devices available in
+    the standard device library linked into <i>WRspice</i>.  The
+    device library contains the element and model code for each
+    device, as well as the parser for the element specification lines.
+
+    <p>
+    Most of the code for the device library (with the exception of
+    restricted third-party semiconductor models) is available upon
+    request from Whiteley Research Inc.  In theory, users can build
+    their own, customized device library for use with <i>WRspice</i>. 
+    In this case, devices can be added to or deleted from the library,
+    or modified.  Contact Whiteley Research for more information.
+
+    <p>
+    This format for most device lines, including the key letters,
+    number of nodes, etc., is standard for the SPICE input language,
+    but is set entirely by the code in the device library, and hence
+    can be abridged in a custom device library.  The descriptions
+    below pertain to the standard library. 
+
+    <p>
+    The following is a complete listing of circuit elements available
+    in the standard <i>WRspice</i> library, and the key letter (the
+    first letter of the device name).
+ 
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th colspan=2><a href="passive">Passive Elements</a></th></tr>
+    <tr><td><a href="cap">Capacitor</a></td>
+      <td><tt>c</tt></td></tr>
+    <tr><td><a href="ind">Inductor</a></td>
+      <td><tt>l</tt></td></tr>
+    <tr><td><a href="mut">Mutual Inductor</a></td>
+      <td><tt>k</tt></td></tr>
+    <tr><td><a href="res">Resistor</a></td>
+      <td><tt>r</tt></td></tr>
+    <tr><td><a href="csw">Current-Controlled Switch</a></td>
+      <td><tt>w</tt></td></tr>
+    <tr><td><a href="sw">Voltage-Controlled Switch</a></td>
+      <td><tt>s</tt></td></tr>
+    <tr><td><a href="tra">General Transmission Line</a></td>
+      <td><tt>t</tt></td></tr>
+    <tr><td><a href="ltra">Lossy Transmission Line</a></td>
+      <td><tt>o</tt></td></tr>
+    <tr><td><a href="urc">Uniform RC Line</a></td>
+      <td><tt>u</tt></td></tr>
+
+    <tr><th colspan=2>Voltage and Current Sources</th></tr>
+    <tr><td><a href="src">General Voltage Source</a></td>
+      <td><tt>v</tt></td></tr>
+    <tr><td><a href="src">General Current Source</a></td>
+      <td><tt>i</tt></td></tr>
+    <tr><td><a href="src">Arbitrary Source</a></td>
+      <td><tt>a</tt></td></tr>
+    <tr><td><a href="vccs">Voltage-Controlled Current Source</a></td>
+      <td><tt>g</tt></td></tr>
+    <tr><td><a href="vcvs">Voltage-Controlled Voltage Source</a></td>
+      <td><tt>e</tt></td></tr>
+    <tr><td><a href="cccs">Current-Controlled Current Source</a></td>
+      <td><tt>f</tt></td></tr>
+    <tr><td><a href="ccvs">Current-Controlled Voltage Source</a></td>
+      <td><tt>h</tt></td></tr>
+
+    <tr><th colspan=2><a href="semicond">Semiconductor Devices</a></th></tr>
+    <tr><td><a href="dio">Junction Diode</a></td>
+      <td><tt>d</tt></td></tr>
+    <tr><td><a href="bjt">Bipolar Junction Transistor</a></td>
+      <td><tt>q</tt></td></tr>
+    <tr><td><a href="jfet">Junction Field-Effect Transistor</a></td>
+      <td><tt>j</tt></td></tr>
+    <tr><td><a href="mes">MESFET</a></td>
+      <td><tt>z</tt></td></tr>
+    <tr><td><a href="mos">MOSFET</a></td>
+      <td><tt>m</tt></td></tr>
+
+    <tr><th colspan=2>Superconductor Devices</th></tr>
+    <tr><td><a href="jj">Josephson Junction</a></td>
+      <td><tt>b</tt></td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The models for the semiconductor and some other devices require
+    many parameter values.  Often, many devices in a circuit are
+    defined by the same set of device model parameters.  For these
+    reasons, a set of device model parameters is defined on a separate
+    <a href=".model"><tt>.model</tt></a> line and assigned a unique
+    model name.  The device element lines in <i>WRspice</i> then refer
+    to the model name.  This scheme alleviates the need to specify all
+    of the model parameters on each device element line.
+
+    <p>
+    The <a href="show"><b>show</b></a> command with the <tt>-D</tt>
+    option is useful for printing a list of the parameters names that
+    can be used on a device instance line.  Only the parameters not
+    listed as "<tt>RO</tt>" (read-only) can be specified on the line.
+
+!!SEEALSO
+spinput
+
+!! not in manual
+!!KEYWORD
+passive
+!!TITLE
+Passive Elements
+!!HTML
+    The following passive elements are available in <i>WRspice</i>.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Device</th> <th>Name</th> <th>Key</th></tr>
+    <tr><td><a href="cap">Capacitor</a></td>
+      <td><tt>cap</tt></td> <td><tt>c</tt></td></tr>
+    <tr><td><a href="ind">Inductor</a></td>
+      <td><tt>ind</tt></td> <td><tt>l</tt></td></tr>
+    <tr><td><a href="mut">Mutual Inductor</a></td>
+      <td><tt>mut</tt></td> <td><tt>k</tt></td></tr>
+    <tr><td><a href="res">Resistor</a></td>
+      <td><tt>res</tt></td> <td><tt>r</tt></td></tr>
+    <tr><td><a href="csw">Current-Controlled Switch</a></td>
+      <td><tt>csw</tt></td> <td><tt>w</tt></td></tr>
+    <tr><td><a href="sw">Voltage-Controlled Switch</a></td>
+      <td><tt>sw</tt></td> <td><tt>s</tt></td></tr>
+    <tr><td><a href="tra">General Transmission Line</a></td>
+      <td><tt>tra</tt></td> <td><tt>t</tt></td></tr>
+    <tr><td><a href="ltra">Lossy Transmission Line</a></td>
+      <td><tt>ltra</tt></td> <td><tt>o</tt></td></tr>
+    <tr><td><a href="urc">Uniform RC Line</a></td>
+      <td><tt>urc</tt></td> <td><tt>u</tt></td></tr>
+    </table>
+    </blockquote>
+
+!!SEEALSO
+elements
+
+!! elements.tex 011715
+!!KEYWORD
+cap
+!!TITLE
+Capacitors
+!!HTML 
+    General forms:
+    <blockquote>
+    <tt>c</tt><i>name</i> <i>n+ n-</i>
+     [<i>value</i> | <i>modname</i>] [<tt>c=</tt><i>expr</i>]
+     [<tt>ic=</tt><i>val</i>]
+     [<tt>temp=</tt><i>temp</i>]
+     [<tt>tc1=</tt><i>tcoeff1</i>] [<tt>tc2=</tt><i>tcoeff2</i>]
+     [<tt>l=</tt><i>length</i>] [<tt>w=</tt><i>width</i>]<br><br>
+    <tt>c</tt><i>name</i> <i>n+ n-</i> <tt>poly</tt> <i>c0</i>
+    [<i>c1</i> ...] [<tt>ic=</tt><i>val</i>]
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote><tt>
+        cload 2 10 10p<br>
+        cmod 3 7 cmodel l=10U w=1u
+    </tt></blockquote>
+
+    <p>
+    The capacitance value can be specified as a bare number, if it is
+    the first parameter following the node list.  This token can also
+    be a <a href="capmodel">capacitor model</a> name.  The parameters
+    that can follow are:
+
+    <dl>
+    <dt><tt>c=</tt><i>expr</i><dd>
+    This can also be given as "<tt>cap=</tt><i>expr</i>", or
+    "<tt>capacitance=</tt><i>expr</i>", where <i>expr</i> is an <a
+    href="devexpr">expression</a> yielding the capacitance in farads. 
+    This is the partial derivative of charge with respect to voltage,
+    possibly as a function of other circuit variables.  This form is
+    applicable when the first token following the node list is not a
+    capacitance value or model name.  It also applies when a model is
+    given, it overrides the geometric capacitance value.
+
+    <p>
+    This is the default keyword, so actually the parameter name and
+    equals sign are optional, a bare expression is acceptable.
+    </dl>
+
+    <dl>
+    <dt><tt>ic=</tt><i>val</i><dd>
+    The optional initial condition <i>val</i> is the initial (time
+    zero) voltage across the capacitor.  The initial condition (if
+    any) applies only when the <tt>uic</tt> option is specified in <a
+    href=".tran">transient analysis</a>.
+    </dl>
+
+    <dl>
+    <dt><tt>temp=</tt><i>temp</i><dd>
+    The <i>temp</i> is the Celsius operating temperature of the capacitor,
+    for use by the temperature coefficient parameters.
+    </dl>
+
+    <dl>
+    <dt><tt>tc1=</tt><i>tcoeff1</i><dd>
+    The first-order temperature coefficient.  This will override the
+    first-order coefficient found in a model, if given.
+    </dl>
+
+    <dl>
+    <dt><tt>tc2=</tt><i>tcoeff2</i><dd>
+    The second-order temperature coefficient.  This will override the
+    second-order coefficient found in a model, if given.
+    </dl>
+
+    <dl>
+    <dt><tt>l=</tt><i>length</i><dd>
+    The length of the capacitor.  This applies only when a model is
+    given, which will compute the capacitance from geometry.
+    </dl>
+
+    <dl>
+    <dt><tt>w=</tt><i>width</i><dd>
+    The width of the capacitor.  This applies only when a model is
+    given, which will compute the capacitance from geometry.
+    </dl>
+
+    <p>
+    The second form allows specification of a polynomial capacitance,
+    which will take the form
+    <blockquote>
+    Capacitance = <tt>c0</tt> + <tt>c1</tt>&middot;<i>v</i> +
+      <tt>c2</tt>&middot;<i>v</i><sup>2</sup> ...
+    </blockquote>
+
+    where <i>v</i> is the voltage difference between the positive and
+    negative element nodes.  There is no built-in limit to the number
+    of terms.
+
+    <p>
+    The <i>n+</i> and <i>n-</i> are the positive and negative element
+    nodes, respectively, and <i>value</i> is the capacitance for a
+    constant valued capacitor.  Alternatively, a capacitor model
+    <i>modname</i> can be specified which allows for the calculation of
+    the actual capacitance value from strictly geometric information
+    and the specifications of the process.  If <i>value</i> is
+    specified, it defines the capacitance.  If <i>modname</i> is
+    specified, then the capacitance is calculated from the process
+    information in the model <i>modname</i> and the given
+    <i>length</i> and <i>width</i>.  If <i>value</i> is not specified,
+    then <i>modname</i> and <i>length</i> must be specified.  If
+    <i>width</i> is not specified, then it will be taken from the
+    default width given in the model.  Either <i>value</i> or
+    <i>modname</i>, <i>length</i>, and <i>width</i> may be specified,
+    but not both sets.  See the <a href="capmodel">capacitor model</a>
+    description for more information.
+ 
+!!SEEALSO
+passive
+
+!! elements.tex 011715
+!!KEYWORD
+ind
+!!TITLE
+Inductors
+!!HTML 
+    General forms:
+    <blockquote>
+    <tt>l</tt><i>name</i> <i>n+ n-</i> [<tt>ind=</tt>]<i>expr</i>
+    [<tt>ic=</tt><i>val</i>]<br><br>
+    <tt>l</tt><i>name</i> <i>n+ n-</i> <tt>poly</tt> <i>c0</i>
+    [<i>c1</i> ...] [<tt>ic=</tt><i>val</i>]
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote><tt>
+        llink 42 69 1uH<br>
+        lshunt 23 51 10u ic=15.7mA
+    </tt></blockquote>
+
+    <p>
+    The <i>n+</i> and <i>n-</i> are the positive and negative element
+    nodes, respectively.  The <i>expr</i> is an <a
+    href="devexpr">expression</a> yielding the inductance in henries. 
+    This is the partial derivative of flux with respect to branch
+    current, possibly as a function of other circuit variables.  The
+    keyword can alse be given as "<tt>inductance</tt>", or may be
+    omitted since this is the default parameter.  Note that the
+    expression can depend on the branch current, in which case the
+    device is nonlinear.
+
+    <p>
+    The second form allows specification of a polynomial inductance,
+    which will take the form
+    <blockquote>
+    Inductance = <tt>c0</tt> + <tt>c1</tt>&middot;<i>i</i> +
+      <tt>c2</tt>&middot;<i>i</i><sup>2</sup> ...
+    </blockquote>
+
+    where <i>i</i> is the current flowing through the device from the
+    positive to the negative element nodes.  There is no built-in
+    limit to the number of terms.
+
+    <p>
+    The (optional) initial condition is the initial (time-zero) value
+    of inductor current (in Amps) that flows from <i>n+</i>, through
+    the inductor, to <i>n-</i>.  The initial condition (if any)
+    applies only when the <tt>uic</tt> option is specified in <a
+    href=".tran">transient analysis</a>.
+ 
+!!SEEALSO
+mut
+passive
+
+!! elements.tex 011715
+!!KEYWORD
+mut
+!!TITLE
+Coupled (Mutual) Inductors
+!!HTML 
+    General form:
+    <blockquote>
+        <tt>k</tt><i>name</i> <i>inductor1</i> <i>inductor2</i> <i>value</i>
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote><tt>
+        k43 laa lbb 0.999<br>
+        kxfrmr l1 l2 0.87
+    </tt></blockquote>
+
+    <p>
+    The <i>inductor1</i> and <i>inductor2</i> are the names of the two
+    coupled inductors found elsewhere in the circuit, and <i>value</i>
+    is the coefficient of coupling, K, which must be greater than 0
+    and less than or equal to 1.  Using the "dot" convention, one
+    would have a dot on the first node of each inductor.
+
+    <p>
+    This formulation applies when the referenced inductors are linear.
+    The model is probably not exactly correct in the case of nonlinear
+    inductors, but results may be close enough in some applications.
+    In general, use of <tt>mut</tt> with nonlinear inductors is not
+    recommended but allowed.
+ 
+!!SEEALSO
+ind
+passive
+
+!! elements.tex 091714
+!!KEYWORD
+res
+!!TITLE
+Resistors
+!!HTML 
+    General forms:
+    <blockquote>
+    <tt>r</tt><i>name</i> <i>n1 n2</i>
+     [<i>value</i> | <i>modname</i>] [<tt>r=</tt><i>expr</i>]
+     [<tt>temp=</tt><i>temp</i>]
+     [<tt>tc1=</tt><i>tcoeff1</i>] [<tt>tc2=</tt><i>tcoeff2</i>]
+     [<tt>l=</tt><i>length</i>] [<tt>w=</tt><i>width</i>]
+     [<tt>noise</tt>=<i>mult</i>]<br><br>
+    <tt>r</tt><i>name</i> <i>n+ n-</i> <tt>poly</tt> <i>c0</i>
+    [<i>c1</i> ...]
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote><tt>
+        rload 2 10 10k<br>
+        rmod 3 7 rmodel l=10u w=1u
+    </tt></blockquote>
+
+    <p>
+    The nominal-temperature resistance value can be specified as a
+    bare number, if it is the first parameter following the node list. 
+    This token can also be a <a href="resmodel">resistor model</a>
+    name.  The parameters that can follow are:
+
+    <dl>
+    <dt><tt>r=</tt><i>expr</i><dd>
+    This can also be given as "<tt>res=</tt><i>expr</i>", or
+    "<tt>resistance=</tt><i>expr</i>", where <i>expr</i> is an <a
+    href="devexpr">expression</a> giving the nominal-temperature
+    device voltage divided by device current ("large signal"
+    resistance) in ohms, possibly as a function of other variables. 
+    This form is applicable when the first token following the node
+    list is not a resistance value or model name.  It also applies
+    when a model is given, it overrides the geometric resistance
+    value.
+    </dl>
+
+    <dl>
+    <dt><tt>temp=</tt><i>temp</i><dd>
+    The <i>temp</i> is the Celsius operating temperature of the resistor,
+    for use by the temperature coefficient parameters.
+    </dl>
+
+    <dl>
+    <dt><tt>tc1=</tt><i>tcoeff1</i><dd>
+    The first-order temperature coefficient.  This will override the
+    first-order coefficient found in a model, if given.  The keyword
+    "<tt>tc</tt>" is an alias for "<tt>tc1</tt>".
+    </dl>
+
+    <dl>
+    <dt><tt>tc2=</tt><i>tcoeff2</i><dd>
+    The second-order temperature coefficient.  This will override the
+    second-order coefficient found in a model, if given.
+    </dl>
+
+    <dl>
+    <dt><tt>l=</tt><i>length</i><dd>
+    The length of the resistor.  This applies only when a model is
+    given, which will compute the resistance from geometry.
+    </dl>
+
+    <dl>
+    <dt><tt>w=</tt><i>width</i><dd>
+    The width of the resistor.  This applies only when a model is
+    given, which will compute the resistance from geometry.
+    </dl>
+
+    <dl>
+    <dt><tt>noise=</tt><i>mult</i><dd>
+    The <i>mult</i> is a real number which will multiply the linear
+    conductance used in the noise equations.  Probably the major use
+    is to give <tt>noise=0.0</tt> to temporarily remove a resistor
+    from a circuit noise analysis.
+    </dl>
+
+    <p>
+    The second form allows specification of a polynomial resistance,
+    which will take the form
+    <blockquote>
+    Resistance = <tt>c0</tt> + <tt>c1</tt>&middot;<i>v</i> +
+      <tt>c2</tt>&middot;<i>v</i><sup>2</sup> ...
+    </blockquote>
+
+    where <i>v</i> is the voltage difference between the positive and
+    negative element nodes.  There is no built-in limit to the number
+    of terms.
+
+    <p>
+    The <i>n1</i> and <i>n2</i> are the two element nodes, and
+    <i>value</i> is the resistance, for a constant value resistor.  A
+    resistor model <i>modname</i> can alternatively be specified and
+    allows the calculation of the actual resistance value from
+    strictly geometric information and the specifications of the
+    process.  If <i>value</i> is specified after <i>modname</i>, it
+    overrides the geometric information (if any) and defines the
+    nominal-temperature resistance.  If <i>modname</i> is specified,
+    then the resistance may be calculated from the process information
+    in the model <i>modname</i> and the given <i>length</i> and
+    <i>width</i>.  In any case, the resulting value will be
+    adjusted for the operating temperature <i>temp</i> if that is
+    specified, using correction factors given.  If <i>value</i> is not
+    specified, then <i>modname</i> and <i>length</i> must be
+    specified.  If <i>width</i> is not specified, then it will be
+    taken from the default width given in the model.  See the <a
+    href="resmodel">resistor model</a> description for more
+    information.
+
+    <p>
+    If the resistance can not be determined from the provided
+    parameters, a fatal error results.  This behavior is different
+    from traditional Berkeley SPICE, which provides a default value of
+    1K.
+ 
+!!SEEALSO
+passive
+
+!! elements.tex 012509
+!!KEYWORD
+sw csw
+!!TITLE
+Switches
+!!HTML 
+    General form:
+    <blockquote>
+        <tt>s</tt><i>name</i> <i>n+ n- nc+ nc- model</i> [<tt>on | off</tt>]<br>
+        <tt>w</tt><i>name</i> <i>n+ n- vnam model</i> [<tt>on | off</tt>]
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote><tt>
+        s1 1 2 3 4 switch1 on<br>
+        s2 5 6 3 0 sm2 off<br>
+        switch1 1 2 10 0 smodel1<br>
+        w1 1 2 vclock switchmod1<br>
+        w2 3 0 vramp sm1 on<br>
+        wreset 5 6 vclck lossyswitch off<br>
+    </tt></blockquote>
+
+    <p>
+    Nodes <i>n+</i> and <i>n-</i> are the nodes between which the
+    switch terminals are connected.  The <i>model</i> name is
+    mandatory while the initial conditions are optional.  For the
+    voltage controlled switch, nodes <i>nc+</i> and <i>nc-</i> are the
+    positive and negative controlling nodes respectively.  For the
+    current controlled switch, the controlling current is that through
+    the voltage source or inductor <i>vnam</i>.  The direction of
+    positive controlling current flow is from the positive node,
+    through the source or inductor, to the negative node.  See the <a
+    href="swmodel">switch model</a> description for more information.
+ 
+!!SEEALSO
+passive
+
+!! elements.tex 101516
+!!KEYWORD
+tra ltra
+!!TITLE
+Transmission Lines (General)
+!!HTML 
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="tra#level"><b>Model Level</b></a><br>
+    <a href="tra#elec"><b>Electrical Characteristics</b></a><br>
+    <a href="tra#init"><b>Initial Conditions</b></a><br>
+    <a href="tra#timestep"><b>Timestep and Breakpoint Control</b></a><br>
+    <a href="tra#hist"><b>History List</b></a>
+    </td></tr></table>
+
+    <p>
+    In <i>WRspice</i>, the transmission line element represents a
+    general lossless or lossy transmission line.  There are actually
+    three historical models unified in the <i>WRspice</i> model:  the
+    SPICE3 lossless transmission line, the SPICE3 lossy (LTRA)
+    transmission line convolution approach of <a
+    href="refs#roy">Roychowdhury and Pederson</a>, and the Pade
+    approximation lossy line approach of <a href="refs#lin">Lin and
+    Kuh</a>.
+    <br clear=all>
+
+    <p>
+    General form:
+    <blockquote>
+        <tt>t</tt><i>name</i> <i>n1 n2 n3 n4</i> [<i>model</i>]
+          [<i>param=value</i> ...]<br>
+        <tt>o</tt><i>name</i> <i>n1 n2 n3 n4</i> [<i>model</i>]
+          <i>param=value</i> ...
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote><tt>
+        t1 1 0 2 0 z0=50 td=10ns<br>
+        tw 1 0 2 0 z0=50 f=1ghz nl=.1<br>
+        tx 1 0 4 0 l=9.13E-9 c=3.65E-12 len=24<br>
+        oy 2 0 4 0 level=2 l=100pH c=5pf r=1.5 len=12<br>
+        oz 2 0 4 0 level=2 tranmod len=12
+    </tt></blockquote>
+
+    <p>
+    The device line is keyed by the letters '<tt>t</tt>' and
+    '<tt>o</tt>' equivalently, as above.  In SPICE3, '<tt>o</tt>'
+    calls the lossy convolution model, but this is not necessarily the
+    case in <i>WSRspice</i>.  One can enforce use of the convolution
+    model by using "<tt>level=2</tt>" in the device or model line, the
+    default ("<tt>level=1</tt>") is the Pade approximation model.  In
+    the lossless case, the <tt>level</tt> parameter has no effect.
+
+    <p>
+    Above, <i>n1</i> and <i>n2</i> are the nodes at port 1; <i>n3</i>
+    and <i>n4</i> are the nodes at port 2.  Note that this element
+    models only one propagating mode.  If all four nodes are distinct
+    in the actual circuit, then two modes may be excited.  To simulate
+    such a situation, two transmission line elements are required.
+
+    <p>
+    There is a fairly lengthly list of parameters which can be applied
+    in the device line, or in a <a href="ltramodel">model</a>.  If a
+    model is referenced in the element line, the element defaults to
+    the parameters specified in the model, though any of these
+    parameters can be overridden for the element if given new values
+    in the element line.
+
+    <a name="level"></a>
+    <h2>Model Level</h2>
+
+    <dl><dt><tt>level</tt><dd>
+    This parameter can take values 1 (the default if not given) or 2.
+    The level indicates the treatment of a lossy element, and has no
+    effect if the transmission line is lossless.
+
+    <p>
+    Level 1 handles arbitrary RLCG configurations using the Pade
+    approximation approach.  A Pade approximation is used as a
+    rational function approximation to the transfer function in the
+    Laplace domain, which has a trivial inverse transformation to the
+    time domain.  Further, separability avoids the need to perform a
+    complex convolution at each time point.  The model is very fast
+    and accurate enough for most purposes.
+
+    <p>
+    Level 2 handles RLC configurations using a full numerical
+    convolution, equivalent to the LTRA model.  It does not allow a G
+    element, and is much slower than the Pade approximation approach,
+    however it may be more accurate.  Level 2 supports the following
+    types of lines:  RLC (uniform transmission line with series loss
+    only), RC (uniform RC line), LC (lossless transmission line), and
+    RG (distributed series resistance and parallel conductance only).
+    </dl>
+
+    <a name="elec"></a>
+    <h2>Electrical Characteristics</h2>
+
+    <dl><dt><tt>len</tt> or <tt>length</tt><dd>
+    This provides the physical length of the transmission line in arbitrary
+    units, though the units must match the per-length unit in the element
+    values discussed below.  If not given, the value is taken as unity,
+    unless it is implicitly defined by other parameters.
+    </dl>
+
+    <dl><dt><tt>l</tt><dd>
+    This parameter provides the series inductance per unit length of
+    the line.  The default is 0.
+    </dl>
+
+    <dl><dt><tt>c</tt><dd>
+    This parameter provides the shunt capacitance per unit length of
+    the line.  The default is 0.
+    </dl>
+
+    <dl><dt><tt>r</tt><dd>
+    This parameter provides the series resistance per unit length of
+    the line.  The default is 0.
+    </dl>
+
+    <dl><dt><tt>g</tt><dd>
+    This parameter provides the shunt conductance per unit length of
+    the line.  The default is 0.  With level 2, this cannot be nonzero
+    if <tt>l</tt> or <tt>c</tt> is given, i.e., only <tt>r</tt> can be
+    nonzero if <tt>g</tt> is nonzero for level = 2, as in the SPICE3
+    LTRA model.
+    </dl>
+
+    <dl><dt><tt>z0</tt> or <tt>zo</tt><dd>
+    This is the line (lossless) characteristic impedance in ohms, given by
+    <blockquote>
+    Z<sub>0</sub> = sqrt(<i>L</i>/<i>C</i>)<br>
+    </blockquote>
+    </dl>
+
+    <dl><dt><tt>td</tt> or <tt>delay</tt><dd>
+    This is the (lossless) phase delay of the line in seconds,
+    given by
+    <blockquote>
+    T<sub>d</sub> = <i>Length</i>&#183sqrt(<i>LC</i>)
+    </blockquote>
+    </dl>
+
+    <dl><dt><tt>nl</tt><dd>
+    This is the normalized line length at a particular frequency
+    <i>f</i>, which must also be specified (see below).  This is an
+    alternative means for setting the line delay, where
+    <blockquote>
+    T<sub>d</sub> = <i>nl</i>/<i>f</i>
+    </blockquote>
+    It is an error to give both <tt>td</tt> and <tt>nl</tt>.
+    </dl>
+
+    <dl><dt><tt>f</tt><dd>
+    This is the frequency at which the normalized line length (above) is
+    representative.
+    </dl>
+
+    <p>
+    To model a line with nonzero series inductance and shunt
+    capacitance, a complete but non-conflicting subset of the
+    parameters <tt>l</tt>, <tt>c</tt>, <tt>z0</tt>, <tt>td</tt>,
+    <tt>len</tt>, <tt>f</tt>, and <tt>nl</tt> must be provided.  The
+    <tt>td</tt> parameter is the line delay in seconds, and the
+    <tt>z0</tt> parameter is the impedance in ohms, for the lossless
+    case.  Specifying these two parameters is sufficient to completely
+    specify a lossless line, or the reactive elements of a lossy line. 
+    Alternatively, one could specify <tt>l</tt> (inductance per
+    length), <tt>c</tt> (capacitance per length) and <tt>len</tt>
+    (line length).  If <tt>len</tt> is not specified in either case,
+    the length defaults to unity.  The delay can also be specified
+    through the <tt>f</tt> (frequency) and <tt>nl</tt> (normalized
+    length) parameters, where the delay would be set to <tt>nl/f</tt>. 
+    It is an error to specify both <tt>td</tt> and <tt>f</tt>,
+    <tt>nl</tt>.  If <tt>td</tt> is specified, or both <tt>f</tt> and
+    <tt>nl</tt> are specified, along with parameters which yield
+    internally the L and C values, then the length is determined
+    internally by
+
+    <blockquote>
+    <i>length</i> = T<sub>d</sub>/sqrt(<i>LC</i>)
+    </blockquote>
+
+    One can specify <tt>z0</tt> and <tt>l</tt>, for example, which
+    determines C.  Unlike the SPICE3 (and SPICE2) lossless line
+    devices, the delay must be specified through the parameters; there
+    is no default.
+
+    <a name="init"></a>
+    <h2>Initial Conditions</h2>
+
+    <dl><dt><tt>v1</tt>, <tt>i1</tt>, <tt>v2</tt>, <tt>i2</tt><dd>
+    The (optional) initial condition specification consists of the
+    voltage and current at each of the transmission line ports.  The
+    initial conditions (if any) apply only when the <tt>uic</tt>
+    option is specified in <a href=".tran">transient analysis</a>.
+    </dl>
+
+    <a name="timestep"></a>
+    <h2>Timestep and Breakpoint Control</h2>
+
+    <p>
+    Internally, the transmission line models store a table of past
+    values of the currents and voltages at the terminals, which become
+    excitations after the delay time.  As excitations, these signals
+    can cause errors or nonconvergence if their rate of change is too
+    large.  These errors are reduced or eliminated by two mechanisms:
+    time step truncation and breakpoint setting.  Time step truncation
+    occurs if the excitation derivative exceeds a certain threshold. 
+    A breakpoint which occurs at this time will also be rescheduled to
+    one delay-time later.  Breakpoints are set by the independent
+    voltage and current sources at times where a slope change occurs,
+    in piecewise linear outputs.  At a breakpoint, the internal time
+    step is cut and integration order reduced to accommodate the change
+    in input accurately.
+
+    <p>
+    <dl><dt><tt>truncdontcut</tt><dd>
+    If this flag is given, no complicated timestep cutting will be
+    done.  In the <tt>level=1</tt> (Pade) case for a lossy line, there
+    is an initial timestep limiting employed in all cases, to
+    <tt>slopetol*</tt><i>tau</i>, where <i>tau</i> is an internal time
+    constant of the model.  This limiting is usually sufficient, and
+    provides the fastest simulation, and therefor
+    <tt>truncdontcut</tt> is the default in this case.
+
+    </dl>
+    <dl><dt><tt>truncsl</tt><dd>
+    If this flag is given, the device will use a slope-test timestep
+    cutting algorithm.  This is the default in the lossless case,
+    for any level.
+    </dl>
+
+    <dl><dt><tt>slopetol</tt><dd>
+    When using the slope-test timestep cutting algorithm, this is the
+    fraction used in the slope test.  The default is 0.1.  This
+    parameter is also used in the <tt>level=1</tt> pre-cutting for
+    lossy lines, described above.
+    </dl>
+
+    <dl><dt><tt>trunclte</tt><dd>
+    This applies to <tt>level=2</tt> (full convolution) only.  When
+    this flag is given, a local truncation error method is used for
+    timestep control.  This is the default for lossy lines with
+    <tt>level=2</tt>.
+    </dl>
+
+    <dl><dt><tt>truncnr</tt><dd>
+    This applies to <tt>level=2</tt> only.  When this flag is given, a
+    Newton-Raphson iterative method is used for timestep control.
+    </dl>
+
+    <p>
+    If no timestep control keywords are given, the defaults are the
+    following:
+
+    <blockquote>
+    <table cellpadding=2 border=1 bgcolor="#ffffee">
+    <tr><td>Lossless case, any level</td> <td><tt>truncsl</tt></td></tr>
+    <tr><td>Level=1 (Pade)</td> <td><tt>truncdontcut</tt></td></tr>
+    <tr><td>Level=2 (convolution)</td> <td><tt>trunclte</tt></td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Only one of the trunc flags should be given.  The latter two apply
+    only to a lossy line with <tt>level=2</tt>, and if given in a
+    different case the default timestep control is applied.
+
+    <p>
+    The slope algorithm computes the difference between the quadratic
+    extrapolation from the last three and the linear extrapolation
+    from the last two time points, and uses this difference formula to
+    determine the time when this error is equal to <tt>slopetol</tt>
+    multiplied by the maximum absolute value of the signal at the
+    three time points.
+
+    <p>
+    When using <tt>level=2</tt>, there are two alternative timestep control
+    options.  If the <tt>trunclte</tt> flag is given, the timestep is
+    reduced by one half if the computed local truncation error is
+    larger than an error tolerance, which is given by
+    <blockquote>
+      tol = <i>trtol</i>&#183(<i>reltol</i>&#183(abs(input1) +
+        abs(input2)) + <i>abstol</i>
+    </blockquote>
+    where <i>trtol</i>, <i>reltol</i> and <i>abstol</i> are the values
+    of the SPICE options <a href="trtol"><tt>trtol</tt></a>, <a
+    href="reltol"><tt>reltol</tt></a> and <a
+    href="abstol"><tt>abstol</tt></a>, and <i>input1</i> and
+    <i>input2</i> are the internally stored excitations.  If the
+    <tt>truncnr</tt> flag is given, a timestep is computed based on
+    limiting the local truncation error to the tolerance given above. 
+
+    <p>
+    The handling of breakpoints is controlled by the following flags:
+     
+    <dl><dt><tt>nobreaks</tt><dd>
+    When this flag is given, there will be no breakpoint rescheduling.
+    </dl>
+    <dl><dt><tt>allbreaks</tt><dd>
+    When this flag is give, all breakpoints are rescheduled.
+    </dl>
+    <dl><dt><tt>testbreaks</tt><dd>
+    When this flag is given, which is the default, a test is applied
+    and only breakpoints that pass this test are rescheduled.
+    </dl>
+    <dl><dt><tt>rel</tt><dd>
+    When testing breakpoints, this is the relative tolerance value.
+    The default is .001.
+    </dl>
+    <dl><dt><tt>abs</tt><dd>
+    When testing breakpoints, this is the absolute tolerance value.
+    The default is 1e-12.
+    </dl>
+
+    <p>
+    The breakpoint setting is controlled by the three flags
+    <tt>nobreaks</tt>, <tt>allbreaks</tt>, and <tt>testbreaks</tt>. 
+    Only one should be given, and the default is <tt>testbreaks</tt>. 
+    If <tt>nobreaks</tt> is set, breakpoints will not be rescheduled. 
+    If <tt>allbreaks</tt> is set, all breakpoints will be rescheduled
+    to the break time plus the delay time.  The default
+    <tt>testbreaks</tt> will reschedule a breakpoint if a slope test
+    is passed.  This slope test makes use of the <tt>rel</tt> and
+    <tt>abs</tt> parameters.  The slopes at the last two time points
+    are computed.  The breakpoint is rescheduled if
+    <blockquote>
+      abs(<i>d1</i>-<i>d2</i>) > max(.01&#183<tt>rel</tt>&#183<i>vmax</i>,
+        <tt>abs</tt>)/<i>dt</i>
+    </blockquote>
+    where <i>d1</i> and <i>d2</i> are the two slopes.  The parameters
+    <tt>rel</tt> and <tt>abs</tt> default to 1e-3 and 1e-12,
+    respectively.  The <i>dt</i> parameter is the sum of the last two
+    time deltas, and <i>vmax</i> is a running peak detect function
+    representing the maximum voltage applied to the line.  Note that
+    these are different defaults (and a different algorithm) from the
+    parameters of the same name used in the SPICE3 transmission line
+    models.
+
+    <p>
+    In most cases, the defaults for the timestep and breakpoint
+    controls are sufficient.  Excessive setting of breakpoints and
+    timestep truncation increases execution time, while insufficient
+    control can produce errors.  An alternative approach is to limit
+    the maximum internal timestep used with the <a
+    href=".tran"><tt>.tran</tt></a> line, which can provide highly
+    accurate results for comparison when experimenting with the
+    control parameters.
+
+    <a name="hist"></a>
+    <h2>History List</h2>
+
+    <dl><dt><tt>lininterp</tt><dd>
+    If this flag is set, linear interpolation is used to obtain the
+    present value of signals in the history list.
+    </dl>
+    <dl><dt><tt>quadinterp</tt><dd>
+    If this flag is set, which is the default, quadratic interpolation
+    is used to obtain the present value of signals in the history
+    list.
+    </dl>
+    <dl><dt><tt>compactrel</tt><dd>
+    This is the relative tolerance used in history list compaction for
+    <tt>level=2</tt>.  The default value is the same as the <i>WRspice</i>
+    default relative tolerance (<a href="reltol"><tt>reltol</tt></a>
+    variable).
+    </dl>
+    <dl><dt><tt>compactabs</tt><dd>
+    This is the absolute tolerance used in history list compaction for
+    <tt>level=2</tt>.  The default value is the same as the <i>WRspice</i>
+    default absolute tolerance (<a href="abstol"><tt>abstol</tt></a>
+    variable).
+    </dl>
+
+    <p>
+    The flag <tt>lininterp</tt>, when specified, will use linear
+    interpolation instead of the default quadratic interpolation for
+    calculating delayed signals.
+
+    <p>
+    The parameters <tt>compactrel</tt> and <tt>compactabs</tt> control
+    the compaction of the past history of values stored for
+    convolution when using <tt>level=2</tt>.  Larger values of these
+    lower accuracy but usually increase simulation speed.  These are
+    to be used with the <a
+    href="trytocompact"><tt>trytocompact</tt></a> option, described in
+    the <a href=".options"><tt>.options</tt></a> section.
+
+    <p>
+    See the description of the transmission line <a
+    href="ltramodel">model</a> for more information.
+
+!!SEEALSO
+multidec
+passive
+urc
+
+!! elements.tex 012509
+!!KEYWORD
+urc
+!!TITLE
+Uniform RC Line
+!!HTML 
+    General form:
+    <blockquote>
+        <tt>u</tt><i>name</i> <i>n1 n2 n3 modname</i> <tt>l=</tt><i>len</i>
+            [<tt>n=</tt><i>lumps</i>]
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote><tt>
+        u1 1 2 0 urcmod l=50u<br>
+        urc2 1 12 2 umodl L=1mil n=6
+    </tt></blockquote>
+
+    <p>
+    The <i>n1</i> and <i>n2</i> are the two element nodes the RC line
+    connects, while <i>n3</i> is the node to which the capacitances
+    are connected.  The <i>modname</i> is the model name, <i>len</i>
+    is the length of the RC line in meters, and <i>lumps</i>, if
+    specified, is the number of lumped segments to use in modeling the
+    RC line.  If not specified, the value will be computed as
+    <blockquote>
+      <i>N</i> =
+      log(2pi*<i>fRC</i>*((<i>k</i>-1)/<i>k</i>)<sup>2</sup>)/log(<i>k</i>)
+    </blockquote>
+    where <i>N</i> is the number of lumps, <i>k</i> is the
+    proportionality factor, <i>R</i> and <i>C</i> are the total values
+    for the length, and <i>f</i> is the maximum frequency.  See the
+    description of the uniform RC line <a href="urcmodel">model</a>
+    for more information.
+ 
+!!SEEALSO
+passive
+tra
+
+!! elements.tex 101516
+!!KEYWORD
+jj
+!!TITLE
+Josephson Junctions
+!!HTML
+    General form:
+    <blockquote>
+        <tt>b</tt><i>name</i> <i>n+ n-</i> [<i>np</i>] [<i>modname</i>]
+          [<i>parameters</i> ...]
+     </blockquote>
+
+    <p>
+    Parameters:<br>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Parameter Name</th> <th>Description</th></tr>
+    <tr><td><tt>pijj=1|0</tt></td> <td>
+      Whether the device is a "pi" junction.</td></tr>
+    <tr><td><tt>area=</tt><i>val</i></td> <td>
+      Scale factor that multiplies all currents and other values,
+      effectively modifying the junction area.</td></tr>
+    <tr><td><tt>mfactor=</tt><i>val</i></td> <td>
+      Alias for <tt>area</tt>.</td></tr>
+    <tr><td><tt>ic=</tt><i>vj</i>,<i>phi</i></td> <td>
+      The initial junction voltage and phase (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>vj=</tt><i>vj</i></td> <td>
+      The initial junction voltage (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>ic_v=</tt><i>vj</i></td> <td>
+      Alias for <tt>vj</tt>.</td></tr>
+    <tr><td><tt>phi=</tt><i>phi</i></td> <td>
+      The initial junction phase (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>ic_phase=</tt><i>phi</i></td> <td>
+      Alias for <tt>phi</tt>.</td></tr>
+    <tr><td><tt>control=</tt><i>name</i></td> <td>
+      Controlling voltage source or inductor name.</td></tr>
+    </table>
+
+    <p>
+    Example:
+    <blockquote><tt>
+        b1 1 0 10 jj1 area=2<br>
+        bxx 2 0 type1 control=l3<br>
+        b2 4 5 ybco phi=1.57
+    </tt></blockquote>
+
+    <p>
+    The <i>n+</i> and <i>n-</i> are the positive and negative element
+    nodes, respectively.  These are followed by an optional phase
+    node.  The phase node, if specified, generally should have no
+    other connections in the circuit, but the voltage of this node
+    gives the phase of the junction in radians.  The <i>modname</i> is
+    the name of the Josephson junction model.  If no model is
+    specified, then a default model is used (see the description of
+    the <a href="jjmodel">Josephson model</a> for the default values). 
+    Other (optional) parameters follow in any order.  The initial
+    phase (in radians) and voltage of the junction can be specified
+    either as a vector or independently.  If not specified, the
+    initial junction voltage and phase are taken to be zero. 
+    Transient analysis of circuits containing Josephson junctions
+    always starts from initial conditions.  The junction area
+    (effectively the number of devices in parallel) can be specified
+    with the <tt>area</tt> parameter.  The control current source can
+    be specified with the <tt>control</tt> variable.  The <i>name</i>
+    in the control specification represents the name of either a
+    voltage source or inductor which appears elsewhere in the circuit. 
+    The <tt>control</tt> parameter is only needed if critical current
+    modulation is part of the circuit operation, and is only relevant
+    to Josephson junction model types that support critical current
+    modulation.
+
+    <p>
+    If the <tt>pijj</tt> parameter is given and set to a nonzero
+    integer value, the device instance will behave as a "pi" junction. 
+    This type of junction has a ground state with phase &pi; rather
+    than 0.  The value given on the device line (if any) overrides
+    the value given in the model.
+
+    <p>
+    When Josephson junctions are present in the circuit, only <a
+    href=".tran">transient analysis</a> may be performed, and the
+    transient <tt>uic</tt> parameter will be set implicitly.  The time
+    step is determined by junction phase change by default, in
+    accordance with the setting of the <a
+    href="dphimax"><tt>dphimax</tt></a> option variable.  If the
+    variable <a href="nojjtp"><tt>nojjtp</tt></a> is set, the
+    truncation error timestep predictor is used as is the case when
+    Josephson junctions are not present.
+
+    <p>
+    See the Josephson junction <a href="jjmodel">model description</a>
+    for more information.
+
+!!SEEALSO
+elements
+

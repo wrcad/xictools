@@ -1,0 +1,55 @@
+#######################################################################
+# xic/geom/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.15 2015/10/11 19:35:45 stevew Exp $
+#######################################################################
+
+GFX_VERSION = @GFX_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGS_SG@ @NEEDINT64@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGS_SG@ @NEEDINT64@
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+
+LIB_TARGET = geom.a
+
+LPATH = ../../../xt_base
+HFILES =
+CCFILES = \
+  geo.cc geo_3d.cc geo_arcpath.cc geo_box.cc geo_dist.cc geo_edge.cc \
+  geo_efinder.cc geo_grid.cc geo_line.cc geo_lineclip.cc geo_linedb.cc \
+  geo_memmgr.cc geo_path.cc geo_point.cc geo_poly.cc geo_polylist.cc \
+  geo_polyobj.cc geo_ptozl.cc geo_rtree.cc geo_tospot.cc geo_wire.cc \
+  geo_ylist.cc geo_zdb.cc geo_zgroup.cc geo_zlfuncs.cc geo_zlist.cc \
+  geo_zoid.cc geo_zoidclip.cc
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+depend:
+	@echo depending in xic/geom
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm *.o $(LIB_TARGET)
+
+distclean:
+	-rm *.o $(LIB_TARGET) Makefile
+
+#######################################################################

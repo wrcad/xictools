@@ -1,0 +1,20 @@
+/* XPM */
+static const char * desel_xpm[] = {
+"24 12 4 1",
+" 	c none",
+".	c sienna",
+"X	c black",
+"o	c white",
+"                        ",
+"                        ",
+" oooooooo               ",
+" oooooooo  X    ......  ",
+" oo....oo   X   .  . .  ",
+" oo....oo   XX  . .  .  ",
+" oo....oo   X   ..  ..  ",
+" oooooooo  X    ......  ",
+" oooooooo               ",
+"                        ",
+"                        ",
+"                        "};
+

@@ -1,0 +1,415 @@
+#######################################################################
+# wrspice/bin/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 2.143 2015/12/08 04:28:06 stevew Exp $
+#######################################################################
+
+DATE = @DATE@
+SPICE_VERSION = @SPICE_VERSION@
+DEVLIB_VERSION = @DEVLIB_VERSION@
+
+# NOTE: "make depend" builds the symbolic links, which must be done
+# before programs can be built.
+
+prefix = @prefix@
+CXX = @CXX@
+CC = @CC@
+LINKCC = @LINKCC@
+CFLAGS = @CFLAGSG@ @DYNAMIC_LIBS@ @TOOLKITCFLAGS@ @UFLAGS@ -DWRSPICE
+LFLAGS = @LFLAGS@ @TOOLKITLFLAGS@ @UFLAGS@
+PIC_OPT = @PIC_OPT@
+LSHFLAG = @LSHFLAG@
+CURSES = @CURSES@
+LIBS = $(APPLIBS) $(CURSES) @LIBS@ @TOOLKITLIBS@ @EXTRALIBS@
+STDCLIB = @STDCLIB@
+SLIBS = @SLIBS@
+OSNAME = @OSNAME@
+ARCH = @ARCH@
+DIST_SUFFIX = @DIST_SUFFIX@
+GRPREF = @GRPREF@
+TOOLKIT = @TOOLKIT@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ @TOOLKITCFLAGS@ -DWRSPICE
+INSTALL = @INSTALL@
+NTSUFFIX = @NTSUFFIX@
+FILTER = @FILTER@
+MALLOC = @MALLOC@
+NTREGEX = @NTREGEX@
+#DEVLIB_SHARED = @DEVLIB_SHARED_FILE@
+DEVLIB_STATIC = @DEVLIB_STATIC_FILE@
+DEVLIB_CALL = @DEVLIB_CALL@
+SOEXT = @SOEXT@
+DLL_SPICE_PROG = @DLL_SPICE_PROG@
+NODLL_SPICE_PROG = @NODLL_SPICE_PROG@
+TOOLROOT = @TOOLROOT@
+WINPTHREADFIX = @WINPTHREADFIX@
+
+TKTOOLS = @TKTOOLS@
+PSLIBS = @PSLIBS@
+
+XIC_PROG = xic
+SPICE_PROG = wrspice
+BUG_ADDR = wrspice@wrcad.com
+ANALYSES = op dc tf ac tran pz disto noise sense
+SPICE_HOST =
+SPICED_LOG = /tmp/$(SPICE_PROG)d.log
+DEFAULT_EDITOR = xeditor
+ASCII_RAWFILE = 1
+OPT_CHAR = -
+SPICE_NOTICE =
+
+INSTALL_BIN    = $(INSTALL) -s -c -m 0755
+INSTALL_SCRIPT = $(INSTALL) -c -m 0755
+INSTALL_LIB    = $(INSTALL) -c -m 0644
+INSTALL_LIB_RO = $(INSTALL) -c -m 0444
+
+LPATH = ../../xt_base
+GRAPHICS = $(LPATH)/ginterf/ginterf.a
+MISCUTIL = $(LPATH)/miscutil/miscutil.a
+SECURE = ../../secure/secure.a
+VERILOG = ../../vl/libvlog.a
+WDEMODIR = wrspice_ipc_demo
+
+CCFILES = $(SPICE_PROG).cc $(SPICE_PROG)d.cc multidec.cc \
+    proc2mod.cc printtoraw.cc
+INCLUDE = -I../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil \
+    -I../../secure -I$(LPATH)/malloc
+
+# order is important for link
+LIBDIRS1 = ../src/cp/cp.a ../src/fte/fte.a
+LIBDIRS2 = ../src/analysis/analysis.a ../src/inp/inp.a ../src/ckt/ckt.a \
+  ../src/sparse/sparse.a ../src/plot/plot.a ../src/$(GRPREF)wrs/$(GRPREF)wrs.a \
+  $(GRAPHICS) $(MISCUTIL) ../src/misc/misc.a
+SUBDIR_LIBS =../src/cp/cp.a ../src/fte/fte.a \
+  ../src/$(GRPREF)wrs/$(GRPREF)wrs.a ../src/analysis/analysis.a \
+  ../src/inp/inp.a ../src/ckt/ckt.a ../src/sparse/sparse.a ../src/plot/plot.a \
+  ../src/misc/misc.a
+SUBDIRS =../src/cp ../src/fte ../src/$(GRPREF)wrs ../src/analysis ../src/inp \
+  ../src/ckt ../src/sparse ../src/plot ../src/misc
+APPLIBS = $(LIBDIRS1) $(DEVLIB_CALL) $(SECURE) $(LIBDIRS2) \
+  $(VERILOG) $(NTREGEX)
+
+#######################################################################
+####### Executable targets ############################################
+
+SPICE_TARGETS = $(SPICE_PROG) $(SPICE_PROG)d multidec proc2mod printtoraw
+all: $(SPICE_TARGETS) wdemo
+
+#--------------------
+# The first two targets are for Windows, create wrspice with
+# everything in a DLL, so that we can link plugins against the DLL.
+
+$(DLL_SPICE_PROG): main.cc $(SPICE_PROG).dll
+	$(CC) -o $(SPICE_PROG) main.cc ../src/gtkwrs/resource.o -L. \
+  -l$(SPICE_PROG)
+
+$(SPICE_PROG).dll: $(DEVLIB_CALL) $(SPICE_PROG).o $(LIBDIRS1) $(SECURE) \
+  $(LIBDIRS2) $(VERILOG) $(MALLOC)
+	@echo $@: dynamic link
+	@$(LINKCC) $(LSHFLAG) -o $(SPICE_PROG).dll $(LFLAGS) $(SPICE_PROG).o \
+  $(LIBS) $(MALLOC) $(STDCLIB)
+
+#--------------------
+
+$(NODLL_SPICE_PROG): $(DEVLIB_CALL) $(SPICE_PROG).o $(LIBDIRS1) $(SECURE) \
+  $(LIBDIRS2) $(VERILOG) $(MALLOC)
+	@echo $@: dynamic link
+	@$(LINKCC) -o $(SPICE_PROG) $(LFLAGS) $(SPICE_PROG).o \
+  $(LIBS) $(MALLOC) $(STDCLIB) $(PSLIBS)
+
+$(SPICE_PROG)d: $(SPICE_PROG)d.o Makefile $(MISCUTIL)
+	@echo $@: dynamic link
+	@$(LINKCC) -o $(SPICE_PROG)d $(LFLAGS) $(SPICE_PROG)d.o $(MISCUTIL) \
+  $(SLIBS) $(STDCLIB) $(WINPTHREADFIX)
+
+multidec: multidec.o ../src/sparse/sparse.a ../src/misc/misc.a Makefile
+	@echo $@: dynamic link
+	@$(LINKCC) -o multidec multidec.o ../src/sparse/sparse.a \
+  ../src/misc/misc.a $(CURSES) $(STDCLIB) -lm $(WINPTHREADFIX)
+
+proc2mod: proc2mod.o ../src/cp/cp.a ../src/inp/inp.a ../src/misc/misc.a \
+  Makefile
+	@echo $@: dynamic link
+	@$(LINKCC) -o proc2mod proc2mod.o ../src/cp/cp.a ../src/inp/inp.a \
+  ../src/misc/misc.a $(STDCLIB) -lm $(WINPTHREADFIX)
+
+printtoraw: printtoraw.o $(MISCUTIL)
+	@echo $@: dynamic link
+	@$(LINKCC) -o printtoraw printtoraw.o $(MISCUTIL) $(STDCLIB) \
+  $(WINPTHREADFIX)
+
+#######################################################################
+####### Recursively generate libraries ################################
+
+$(DEVLIB_CALL)::
+	cd $(@D); $(MAKE)
+
+$(SUBDIR_LIBS)::
+	cd $(@D); $(MAKE)
+
+$(GRAPHICS)::
+	cd $(@D); $(MAKE)
+
+$(MISCUTIL)::
+	cd $(@D); $(MAKE)
+	if [ x$(NTREGEX) != x ]; then \
+	    cd $(LPATH)/miscutil/libregex; $(MAKE); \
+	fi
+
+$(VERILOG)::
+	cd $(@D); $(MAKE)
+
+$(SECURE)::
+	cd $(@D); $(MAKE)
+
+#######################################################################
+####### Object file targets ###########################################
+
+$(SPICE_PROG).o: $(SPICE_PROG).cc Makefile
+	$(CXX) $(CFLAGS) $(INCLUDE) -c \
+  -DBDCODE="\"`date +%m%d%y-%H%M%S`"\" \
+  -DPREFIX="\"$(prefix)\"" \
+  -DOSNAME="\"$(OSNAME)\"" \
+  -DARCH="\"$(ARCH)\"" \
+  -DDIST_SUFFIX="\"$(DIST_SUFFIX)\"" \
+  -DTOOLS_ROOT="\"$(TOOLROOT)\"" \
+  -DSPICE_VERSION="\"$(SPICE_VERSION)\"" \
+  -DDEVLIB_VERSION="\"$(DEVLIB_VERSION)\"" \
+  -DSPICE_BUILD_DATE="\"$(DATE)\"" \
+  -DSPICE_PROG=\"$(SPICE_PROG)\" \
+  -DGFX_PROG="\"$(XIC_PROG)\"" \
+  -DBUG_ADDR=\"$(BUG_ADDR)\" \
+  -DSPICE_NEWS=\"news\" \
+  -DSPICE_EDITOR=\"xeditor\" \
+  -DSPICE_OPTCHAR="\"$(OPT_CHAR)\"" \
+  -DSPICE_ASCIIRAWFILE="\"$(ASCII_RAWFILE)\"" \
+  -DSPICE_HOST="\"$(SPICE_HOST)\"" \
+  -DSPICE_DAEMONLOG="\"$(SPICED_LOG)\"" \
+  -DSPICE_NOTICE="\"$(SPICE_NOTICE)\"" \
+  -DAN_`echo $(ANALYSES) |sed -e "s/ / -DAN_/g"` $*.cc
+
+$(SPICE_PROG)d.o: $(SPICE_PROG)d.cc
+	$(CXX) $(CFLAGS) $(INCLUDE) -c \
+  -DPREFIX="\"$(prefix)\"" \
+  -DTOOLS_ROOT="\"$(TOOLROOT)\"" \
+  -DSPICE_DAEMONLOG="\"$(SPICED_LOG)\"" \
+  -DSPICE_PROG="\"$(SPICE_PROG)\"" \
+  $(SPICE_PROG)d.cc
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+.c.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.c
+
+.PHONY: $(MALLOC)
+
+$(MALLOC)::
+	cd $(@D); $(MAKE)
+
+#######################################################################
+####### Dependencies ##################################################
+# note: mingw requires explicit return from cd
+
+depend:
+	@for a in ../include $(SUBDIRS) ../devlib; do \
+	    (dir=`pwd`; cd $$a; $(MAKE) depend; cd $$dir) \
+	done
+	@echo depending in wrspice/bin
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+#######################################################################
+####### Clean up ######################################################
+# note: mingw requires explicit return from cd
+
+eclean:
+	-rm -f $(SPICE_PROG)$(NTSUFFIX) multidec$(NTSUFFIX) \
+          printtoraw$(NTSUFFIX) proc2mod$(NTSUFFIX) $(SPICE_PROG)d$(NTSUFFIX)
+
+clean:
+	-@for a in $(SUBDIRS) ../devlib; do \
+	    (dir=`pwd`; cd $$a; $(MAKE) clean; cd $$dir) \
+	done
+	-@for a in $(SPICE_TARGETS; do \
+	    rm -f $$a$(NTSUFFIX); \
+	done
+	-rm -f *.o $(WDEMODIR).tar.gz
+
+distclean:
+	-@for a in $(SUBDIRS) ../include ../lib ../devlib ../packages; do \
+	    (dir=`pwd`; cd $$a; $(MAKE) distclean; cd $$dir) \
+	done
+	-@for a in $(SPICE_TARGETS; do \
+	    rm -f $$a$(NTSUFFIX); \
+	done
+	-rm -f *.o $(WDEMODIR).tar.gz Makefile
+
+#######################################################################
+####### Install into another location #################################
+
+# Create the wrspice_ipc_demo source code tarball, copy to the WRspice
+# examples directory.  This is included in the WRspice distribution.
+
+wdemo wrspice_ipc_demo:
+	if [ -d $(WDEMODIR) ]; then \
+	    rm -rf $(WDEMODIR); \
+	fi;
+	cp -pfr ../wrspice_ipc_demo $(WDEMODIR)
+	$(LPATH)/util/mvdir $(LPATH)/miscutil $(WDEMODIR)/miscutil
+	cp -pf $(LPATH)/configure.in $(WDEMODIR)
+	cp -pf $(LPATH)/configure $(WDEMODIR)
+	cp -pf ../../xic/src/sced/sced_spiceipc.cc $(WDEMODIR)
+	cp -pf ../../xic/include/sced_spiceipc.h $(WDEMODIR)
+	cp -pf wrspiced.cc $(WDEMODIR)
+	cp -pf ../version $(WDEMODIR)
+	tar czf $(WDEMODIR).tar.gz $(WDEMODIR)
+	rm -rf $(WDEMODIR)
+	cp -f $(WDEMODIR).tar.gz ../lib/examples
+	@echo
+	@echo "Export source created in $(WDEMODIR).tar.gz"
+	@echo
+
+INSTALL_PREFIX ?= $(prefix)
+destn = $(INSTALL_PREFIX)/$(TOOLROOT)/$(SPICE_PROG)
+
+install: install_test install_clean install_bin install_help install_icons \
+ install_startup install_scripts install_examples install_docs
+
+install_bin:        $(destn)/bin
+install_help:       $(destn)/help
+install_icons:      $(destn)/icons
+install_startup:    $(destn)/startup
+install_scripts:    $(destn)/scripts
+install_examples:   $(destn)/examples
+install_docs:       $(destn)/docs
+install_devkit:     $(destn)/devkit
+
+install_test::
+	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
+	    echo "No!  Use pagkage to install!"; \
+	    exit 1; \
+	fi
+
+install_clean::
+	-@rm -rf $(destn)
+
+$(destn)/bin::
+	@$(LPATH)/util/mkdirpth $@
+	@for aa in $(SPICE_TARGETS); do \
+	    $(INSTALL_BIN) $$aa$(NTSUFFIX) $@; \
+	done
+	@if [ $(DLL_SPICE_PROG) = $(SPICE_PROG) ]; then \
+	    $(INSTALL_BIN) $(SPICE_PROG).dll $@; \
+	fi
+
+$(destn)/icons::
+	@$(LPATH)/util/mkdirpth $@
+	icons=`../packages/util/wrspice_files icons`; \
+        for a in $$icons; do \
+	    $(INSTALL_LIB) ../lib/icons/$$a $@; \
+	done
+
+$(destn)/help::
+	cd ../lib/help; $(MAKE)
+	@$(LPATH)/util/mkdirpth $@ $@/screenshots
+	help=`../packages/util/wrspice_files help`; \
+	for a in $$help; do \
+	    $(INSTALL_LIB) ../lib/help/$$a $@; \
+	done
+	helpss=`../packages/util/wrspice_files help_screenshots`; \
+        for a in $$helpss; do \
+	    $(INSTALL_LIB) ../lib/help/screenshots/$$a $@/screenshots; \
+	done
+
+$(destn)/startup::
+	cd ../lib/startup; $(MAKE)
+	@$(LPATH)/util/mkdirpth $@
+	startup=`../packages/util/wrspice_files startup`; \
+	for a in $$startup; do \
+	    $(INSTALL_LIB) ../lib/startup/$$a $@; \
+	done
+	klulib=`../packages/util/wrspice_files klu $(OSNAME)`; \
+	if [ -f ../../KLU/$$klulib ]; then \
+	    $(INSTALL_SCRIPT) ../../KLU/$$klulib $@; \
+	fi
+	$(LPATH)/util/mkdirpth $@/devices;
+	$(INSTALL_LIB) ../lib/startup/devices/README $@/devices;
+	for a in $(VLOGMODS); do \
+	    $(INSTALL_LIB) ../devlib/adms/examples/$$a/$$a.$(SOEXT) $@/devices; \
+	done;
+
+$(destn)/scripts::
+	@$(LPATH)/util/mkdirpth $@
+	scripts=`../packages/util/wrspice_files scripts`; \
+	for a in $$scripts; do \
+	    $(INSTALL_LIB) ../lib/scripts/$$a $@; \
+	done
+
+$(destn)/examples::
+	@$(LPATH)/util/mkdirpth $@
+	examples=`../packages/util/wrspice_files examples`; \
+	for a in $$examples; do \
+	    $(INSTALL_LIB) ../lib/examples/$$a $@; \
+	done
+
+$(destn)/docs::
+	@$(LPATH)/util/mkdirpth $@
+	docs=`../packages/util/wrspice_files docs`; \
+	for a in $$docs; do \
+	    cp ../lib/docs/$$a $@; \
+	done
+	IFS="."; \
+	tmp=$(SPICE_VERSION); \
+	set -- $$tmp; \
+	cp ../lib/docs/wrs$$1.$$2 $@
+
+$(destn)/devkit::
+	@$(LPATH)/util/mkdirpth $@/admst
+	@$(LPATH)/util/mkdirpth $@/include
+	$(INSTALL_LIB) ../devlib/adms/Makefile $@;
+	$(INSTALL_LIB) ../devlib/adms/README $@;
+	$(INSTALL_LIB) ../devlib/adms/README.adms $@;
+	admst=`../packages/util/wrspice_files admst`; \
+	for a in $$admst; do \
+	    $(INSTALL_LIB) ../devlib/adms/admst/$$a $@/admst; \
+	done
+	incl=`../packages/util/wrspice_files devincl`; \
+	for a in $$incl; do \
+	    $(INSTALL_LIB) ../devlib/include/$$a $@/include; \
+	done
+	efiles=`cat ../packages/util/adms_examples`; \
+	edirs=""; last=""; \
+	for a in $$efiles; do tifs=$$IFS; IFS=/; set $$a; IFS=$$tifs; \
+	    if [ x$$2 != x -a x$$2 != x$$last -a x$$2 != xREADME -a \
+	            x$$2 != xMakefile ]; then \
+	        last=$$2; edirs="$$edirs $$2"; \
+	    fi; \
+	done; \
+	for a in $$edirs; do \
+	    $(LPATH)/util/mkdirpth $@/examples/$$a/tests; \
+	done; \
+	for a in $$efiles; do \
+	    $(INSTALL_LIB) ../devlib/adms/$$a $@/`dirname $$a`; \
+        done; \
+	for a in $$edirs; do \
+	    cat ../devlib/adms/examples/$$a/Makefile | sed -e \
+  "s%^ADMST = .*%ADMST = /usr/local/xictools/wrspice/devkit/admst%" \
+  -e "s%^DLL_LOC = .*%DLL_LOC = /usr/local/xictools/bin%" > \
+  $@/examples/$$a/Makefile; \
+	    mkdir $@/examples/$$a/module_dist; \
+	    cp ../devlib/adms/examples/$$a/*.$(SOEXT) $@/examples/$$a/module_dist; \
+	done;
+
+package::
+	$(MAKE) all
+	(export PATH=`pwd`:$$PATH; cd ../devlib/adms/examples; \
+  $(MAKE) realclean; $(MAKE))
+	-rm -rf ../packages/root
+	mkdir ../packages/root
+	$(MAKE) INSTALL_PREFIX=../packages/root$(prefix) install
+	$(MAKE) INSTALL_PREFIX=../packages/root$(prefix) install_devkit
+	cd ../packages; make $(SPICE_PROG)-$(OSNAME)
+
+#######################################################################

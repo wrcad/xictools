@@ -1,0 +1,120 @@
+
+Dear BSIMSOI development team,
+
+In the course of experimenting with the bsimsoi-4.3 model, I have
+discovered a couple of issues, one in the Spice3f5 code, and one in
+the bsimsoi-4.x code.
+
+Issue 1:  Convergence testing result ignored in Spice3.
+
+I describe this here only as background to the SOI model issue.
+
+In Spice3f5, at least my release has the NEWCONV preprocessor symbol
+defined, which causes Spice3 to call all of the device-specific
+convergence test functions as part of convergence testing.  This is
+indeed done (adding to overhead) however the result is lost.
+
+The device-specific convergence test functions, when a fail is
+detected, will increment the CKTnoncon variable and return OK (zero).
+
+ if (convergence_error_detected) {
+     ckt->CKTnoncon++;
+     return (OK);
+  }
+
+However, the caller assumes that the return value is an error count or
+flag (in niconv.c):
+
+  ckt->CKTnoncon = NIconvTest(ckt)
+
+The ckt->CKTnoncon parameter is therefor assigned 0, whether or not
+non-convergence was detected in a device.
+
+One can fix this in niconv.c:
+
+#ifdef NEWCONV
+ 
+/* SRW XXX bug fixed here:  CKTconvTest always returns 0, increments
+   CKTnoncon if non-vonvergence.
+
+    i = CKTconvTest(ckt);
+    if (i)
+        ckt->CKTtroubleNode = 0;
+    return(i);
+*/
+    CKTconvTest(ckt);
+    ckt->CKTtroubleNode = 0;
+    return(ckt->CKTnoncon);
+                    
+#else /* NEWCONV */
+    return(0);
+#endif /* NEWCONV */
+
+This restores the intended program logic, but may reveal previously
+hidden issues with the device models.
+
+Issue 2:  BSIMSOI 4.x poor convergence.
+
+With the change above, the bsimsoi-4.x models become far less robust
+for transient analysis.  Very simple circuits, such as inv_tr.sp in
+the benchmarks, require tens of thousands of iterations, or terminate
+with a "timestep too small" message.
+
+There are several ways to at least superficially "fix" the problem.  I
+would appreciate any guidance on this.
+
+1.  Undefine the global NEWCONV in Spice3f5.  This would affect all
+    devices.
+
+2.  Define NOBYPASS in the b4soild.c file.
+
+    One observation is that the convergence test fails even when
+    bypassing.  Disabling bypassing seems to solve the convergence
+    issue, but of course one loses the speed-up.
+
+    One can do this in Spice3 with "set bypass=0", bypassing is on
+    by default.  Here's some comparative rusage output for two runs
+    of the inv_tr.sp benchmark:
+
+    (bypassing enabled, default condition)
+    Total iterations = 25224
+    Transient iterations = 25207
+    Circuit Equations = 10
+    Transient timepoints = 5959
+    Accepted timepoints = 4486
+    Rejected timepoints = 1473
+    Total Analysis Time = 0.347891
+
+    (bypassing disabled via "set bypass=0")
+    Total iterations = 253
+    Transient iterations = 236
+    Circuit Equations = 10
+    Transient timepoints = 83
+    Accepted timepoints = 79
+    Rejected timepoints = 4
+    Total Analysis Time = 0.013455
+
+3.  Comment out the second (cbhat) test in b4soicvtest.c.
+
+    This is the test that is causing trouble.  Is this equation
+    correct?  Maybe there should be another corresponding constraint
+    added to the bypass test code in b4soild.c?
+
+4.  Modify b4soicvtest.c to just return without testing, and locally
+    undefine NEWCONV in b4soild.c.
+
+Perhaps this can be addressed in the next release, or if there is a
+recommended way to resolve this, I would appreciate seeing it.
+
+Thanks for your great work with the bsim/bsimsoi models over the years.
+
+Regards,
+
+Steve Whiteley
+Whiteley Research Inc. (www.wrcad.com)
+456 Flora Vista Ave.
+Sunnyvale, CA 94086
+408 735-8973
+408 245-4033 (fax)
+stevew@wrcad.com
+

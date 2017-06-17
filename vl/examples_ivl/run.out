@@ -1,0 +1,5560 @@
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/addsr.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.10A.v
+saw event
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.11A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.11B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.12A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.12B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.12C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.1A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.1B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.1C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.1D.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.1E.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.1F.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.1G.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.1H.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.1I.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.1J.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.1K.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.2A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.2B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.2C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.2D.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.2E.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.2F.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.2G.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.2H.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.2I.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.3A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.3B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.3C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.3D.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.3E.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.3F.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.3G.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.3H.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.3J.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.4A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.4B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.4C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.4D.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.4E.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.4F.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.4G.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.4H.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.4I.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.5A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.5B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.5C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.5D.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.5E.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.5F.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.6A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.6B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.6C.v
+Entering case at time=                   0 value1=xxxx
+default:                    2
+Leaving case at time=                   2
+Entering case at time=                   2 value1=xxxx
+default:                    4
+Leaving case at time=                   4
+Entering case at time=                   4 value1=0000
+case0000: at time=                   7
+check == 0000:at time=                   8 value2=0
+Leaving case at time=                  10
+Entering case at time=                  10 value1=00z1
+case00z1: at time=                  13
+check == 0001:at time=                  14 value2=1
+Leaving case at time=                  16
+Entering case at time=                  16 value1=0100
+case100: at time=                  19
+check == 0010:at time=                  20 value2=2
+Leaving case at time=                  22
+Entering case at time=                  22 value1=0100
+case100: at time=                  25
+Leaving case at time=                  28
+Entering case at time=                  28 value1=0100
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.6D.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.7A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.7B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.7C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.7D.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.8A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.9A.v
+value = 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.9C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/always3.1.9D.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/assign3.2A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/assign3.2B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/assign3.2C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/assign3.2D.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/assign3.2E.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/assign_delay.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/assign_deq.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/assign_ge.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/assign_le.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/assign_mem1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/assign_mem2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/assign_nb1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/assign_neq.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/bitwidth.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/bitwidth2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/bnot.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/bufif.v
+0 ad=0000000000000000xxxxxxxxxxxxxxxx
+10 ad=10101010101010101010101010101010
+31 ad=00000000000000001010101010101010
+Wrote aaaaaaaa, got 0000aaaa
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/case3.8A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/case3.8B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/case3.8C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/case3.8D.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/casex3.9A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/casex3.9B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/casex3.9C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/casex3.9D.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/casex3.9E.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/casez3.10A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/casez3.10B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/casez3.10C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/casez3.10D.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/casez3.10E.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/comp1000.v
+r0 =  16'b0011110100100100
+r1 =  25'b0000000000000000000000000
+r2 =  28'b0000000000000000000000000100
+r3 =  4'b1011
+r4 =  22'b0000000100000100010101
+r5 =  31'b0000000000000000000000000000000
+r6 =  2'b00
+r7 =  22'b0000000xxxxxxxxxxxxxxx
+r8 =  17'b0000000000000000x
+r9 =  17'b00000000000000001
+r10 =  11'b01010110011
+r11 =  30'b000000000000000000000111101001
+r12 =  30'b000000000000000000000000000100
+r13 =  28'b0000000000000011111101101111
+r14 =  9'b000100101
+r15 =  12'b000000000000
+r16 =  7'b1100110
+r17 =  24'b000000000000010100001011
+r18 =  28'b0000000000000000001111110011
+r19 =  32'b00000000000000000111111110111111
+r20 =  1'b1
+r21 =  9'b000000000
+r22 =  15'b000000000xxxxxx
+r23 =  4'b0101
+r24 =  13'b1010010001000
+r25 =  32'b00000000000000000000100101010110
+r26 =  26'b00000000000000000000000001
+r27 =  15'b000000000000001
+r28 =  26'b00000000000000110010010100
+r29 =  25'b0000000000000x0xx00xx0xx0
+r30 =  32'b00000000000000000000000000000000
+r31 =  2'b10
+r32 =  31'b0000000000000000000000000000000
+r33 =  28'b0000000000000100010101110110
+r34 =  17'b000000000000000xx
+r35 =  13'b1100101001100
+r36 =  4'b0001
+r37 =  30'b000000000000000000000000000000
+r38 =  7'b0011100
+r39 =  9'b111101001
+r40 =  24'b000000000110110010111011
+r41 =  32'b00000000000000000100100000100101
+r42 =  11'b10111000111
+r43 =  29'b0000000000000000000000000000x
+r44 =  26'b00000000000000000000000000
+r45 =  13'b0000000000001
+r46 =  15'b000000000000001
+r47 =  27'b000000000000100101111111111
+r48 =  18'b000100001000001001
+r49 =  30'b000000000000000000000000000001
+r50 =  19'b0000111010100000010
+r51 =  2'b00
+r52 =  23'b00000000000011000101100
+r53 =  24'b000000000110011001010000
+r54 =  3'b111
+r55 =  28'b0000000000000000000000000001
+r56 =  9'b101111011
+r57 =  10'b1111111111
+r58 =  21'b00000000000000000000x
+r59 =  32'b00000000000000000000101111000010
+r60 =  22'b0000000000000000000001
+r61 =  17'b00000000000000001
+r62 =  13'b0010010101011
+r63 =  15'b000000000000001
+r64 =  23'b00000000100110111110000
+r65 =  22'b0000000100110001001110
+r66 =  27'b000000000000100000011010010
+r67 =  24'b000000000111010100010110
+r68 =  18'b000000001010010110
+r69 =  12'b000000000001
+r70 =  25'b0000000000011101111000000
+r71 =  22'b0000000110110010110101
+r72 =  24'b000000000110110011111111
+r73 =  21'b000000101111100000000
+r74 =  16'b0100100100011001
+r75 =  15'b100111011001010
+r76 =  6'b011110
+r77 =  29'b00000000000000000000000000000
+r78 =  18'b000100011001100001
+r79 =  21'b000000110111111110101
+r80 =  6'b000000
+r81 =  27'b000000000000000001000101100
+r82 =  31'b0000000000000000100000000010000
+r83 =  7'b0100100
+r84 =  14'b10110010010010
+r85 =  21'b000000011110110110110
+r86 =  3'bxxx
+r87 =  15'b111011111111111
+r88 =  29'b00000000000000100011110110000
+r89 =  26'b00000000000000000000000000
+r90 =  20'b00000000000000000000
+r91 =  3'b100
+r92 =  3'b011
+r93 =  8'b10111000
+r94 =  22'b0000000101111100000000
+r95 =  6'b110111
+r96 =  24'b111111111111111111111111
+r97 =  6'b000001
+r98 =  25'b0000000000110001110100010
+r99 =  7'b0111011
+r100 =  1'b1
+r101 =  9'b000000001
+r102 =  24'b000000000000000000000001
+r103 =  30'b000000000000000000000000000000
+r104 =  17'b00000101010101010
+r105 =  17'b00000000000000001
+r106 =  25'b0000000000000000000000000
+r107 =  20'b00000000000000000000
+r108 =  4'b0010
+r109 =  11'b00000010000
+r110 =  18'b000000000000000000
+r111 =  26'b00000010110101010010100000
+r112 =  3'b000
+r113 =  15'b011111011010010
+r114 =  32'b00000000000000000101110010110111
+r115 =  15'b111111110101100
+r116 =  5'b00011
+r117 =  1'b1
+r118 =  16'b0000000000000000
+r119 =  28'b0000000000000011101101101000
+r120 =  10'b0110001101
+r121 =  18'b000000010110111011
+r122 =  24'b000000000110001011101100
+r123 =  26'bxxxxxxxxxxxxxxxxxxxxxxxxxx
+r124 =  1'b0
+r125 =  30'b000000000000000001011110000111
+r126 =  28'b0000000000000000000000010101
+r127 =  8'b10110110
+r128 =  1'b0
+r129 =  13'b0100110011000
+r130 =  12'b000000000001
+r131 =  24'b000000000011111101010101
+r132 =  17'b00000000000000000
+r133 =  21'b000000000000000000001
+r134 =  3'b000
+r135 =  1'b0
+r136 =  2'b00
+r137 =  20'b00000100100100100110
+r138 =  8'b0000000x
+r139 =  12'b110011101110
+r140 =  18'b000000000000001001
+r141 =  24'b000000000100110111110000
+r142 =  14'b11100111001000
+r143 =  10'b0100010101
+r144 =  9'b101001111
+r145 =  25'b0000000000000000000000001
+r146 =  22'b0000000001110000000111
+r147 =  25'b0000000000111010100000010
+r148 =  29'b00000000000000000000000000001
+r149 =  28'b0000000000000000000000000000
+r150 =  9'b000000000
+r151 =  5'b00010
+r152 =  16'b0000000000000000
+r153 =  16'b0000000000000001
+r154 =  1'b0
+r155 =  3'b100
+r156 =  15'b000110111001010
+r157 =  18'b000000000000000000
+r158 =  31'b0000000000000000000000000000000
+r159 =  21'b000000111100010000111
+r160 =  19'b0000000100000000010
+r161 =  11'b00001000011
+r162 =  20'b00000000000000000001
+r163 =  11'b00000000000
+r164 =  2'b10
+r165 =  15'b111001100001000
+r166 =  27'b000000000000000000000000000
+r167 =  31'b0000000000000000001000001110000
+r168 =  12'b001011001101
+r169 =  30'b000000000000000000000000000000
+r170 =  27'b000000000000000000000000000
+r171 =  22'b0000000001100101010010
+r172 =  17'b00000000000000001
+r173 =  4'b0010
+r174 =  8'b00000001
+r175 =  4'b0100
+r176 =  23'b00000000110110010110101
+r177 =  27'b000000000000001100001111101
+r178 =  32'b00000000000000000000000000000100
+r179 =  6'b111010
+r180 =  22'b0000000011011111111011
+r181 =  6'b000000
+r182 =  16'b0101100101111110
+r183 =  8'b11111110
+r184 =  15'b000000000000000
+r185 =  21'b000000000000000000001
+r186 =  14'b00000000000000
+r187 =  30'b000000000000000000000000000000
+r188 =  14'b01101011110101
+r189 =  6'b100010
+r190 =  31'b000000000000000000000000000000x
+r191 =  13'b1000100000011
+r192 =  14'b00000000000010
+r193 =  32'b00011111111111111010111111111000
+r194 =  17'b00000110100001100
+r195 =  2'bxx
+r196 =  19'b0000011000011000011
+r197 =  24'b000000000000101000000001
+r198 =  32'b00000000000000000000000000000000
+r199 =  23'b00000000000100110010010
+r200 =  15'b000000000000001
+r201 =  14'b0000000000000x
+r202 =  19'b0000101100100100010
+r203 =  19'b0000010111101100001
+r204 =  32'b00000000000000000101110001000100
+r205 =  15'b000000000000000
+r206 =  30'b000000000000000000000000000001
+r207 =  9'b000000010
+r208 =  15'b000000000000001
+r209 =  19'b000000000000000000x
+r210 =  31'b1111111111111111111111111111111
+r211 =  22'b0000000101010011000100
+r212 =  16'b0000000000000000
+r213 =  30'b000000000000000000000000000000
+r214 =  3'bxxx
+r215 =  5'b11101
+r216 =  6'b000001
+r217 =  1'b0
+r218 =  1'b1
+r219 =  13'b0111010010001
+r220 =  30'b000000000000000000000000000001
+r221 =  24'b000000000000000000000001
+r222 =  27'b000000000000000000000110001
+r223 =  15'b000000001100010
+r224 =  17'b00000000000000000
+r225 =  11'b01111001010
+r226 =  2'b00
+r227 =  27'b00000000000000000000000000x
+r228 =  5'b01011
+r229 =  16'b0000000000010011
+r230 =  17'b00000000000000000
+r231 =  10'b1111110010
+r232 =  11'b10011011000
+r233 =  5'b11100
+r234 =  16'b000000000000000x
+r235 =  3'b001
+r236 =  32'b00000000000000000000000000000000
+r237 =  24'b000000000000000011101011
+r238 =  16'b0000000000000000
+r239 =  25'b0000000000000000000000000
+r240 =  14'b10110111100101
+r241 =  2'b01
+r242 =  19'b0000000000000000001
+r243 =  9'b011101011
+r244 =  11'b00100100100
+r245 =  5'b00000
+r246 =  3'b100
+r247 =  30'b000000000000000100110001001110
+r248 =  22'b0000000001101011110101
+r249 =  19'b0000000000000000001
+r250 =  24'b000000000011100101101010
+r251 =  14'b10001010101110
+r252 =  31'b000000000000000000000000000000x
+r253 =  9'b000000001
+r254 =  20'b00000100110101100110
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/comp1001.v
+r0 =  19'b0000010111011101100
+r1 =  32'b00000000000000000001010110000100
+r2 =  24'b000000000100011111100101
+r3 =  2'b11
+r4 =  18'b00000000000000000x
+r5 =  18'b000000000011101001
+r6 =  1'b1
+r7 =  11'b00111010011
+r8 =  23'b00000000000000000000000
+r9 =  18'b000000000000000001
+r10 =  30'b000000000000000101010111011111
+r11 =  22'b0000000000000000001101
+r12 =  8'b10101011
+r13 =  8'b10101011
+r14 =  19'b0000000000000000000
+r15 =  26'b00000000000000000000000001
+r16 =  5'b00000
+r17 =  25'b0000000000000000000000000
+r18 =  2'b00
+r19 =  10'b1011010001
+r20 =  13'b0000000110000
+r21 =  6'b111100
+r22 =  4'b0100
+r23 =  21'b000000000000000000001
+r24 =  26'b00000000000000000000000001
+r25 =  12'b011100110010
+r26 =  20'b00xxxxxxxxxxxxxxxxxx
+r27 =  6'b000000
+r28 =  2'b11
+r29 =  3'b110
+r30 =  3'b011
+r31 =  3'bxxx
+r32 =  23'b00000000111011010100111
+r33 =  1'b0
+r34 =  2'b11
+r35 =  15'b010000100001010
+r36 =  6'b000000
+r37 =  22'b0000000110100101101001
+r38 =  30'b000000000000000000100010111011
+r39 =  10'b0010111101
+r40 =  26'b00000000000000110001000010
+r41 =  15'b000000000000000
+r42 =  29'b00000000000000000111100010101
+r43 =  14'bxxxxxxxxxxxxxx
+r44 =  24'b000000000000000000000001
+r45 =  22'b0000000000000000000001
+r46 =  4'b0010
+r47 =  18'b000000000000000000
+r48 =  2'b00
+r49 =  14'b00000000000001
+r50 =  19'b0000000000000000000
+r51 =  9'b000000001
+r52 =  22'b0000000101001111010100
+r53 =  25'b0000000000000001100100111
+r54 =  5'b00010
+r55 =  2'b01
+r56 =  14'b00001110011010
+r57 =  20'b00000000000000000001
+r58 =  18'b000000000000000000
+r59 =  8'b01100100
+r60 =  32'b00000000000000000110100110010110
+r61 =  24'b000000000010111101000000
+r62 =  15'b000111110011000
+r63 =  1'b1
+r64 =  29'b11111111111111101111011001101
+r65 =  25'b000000000000000000000000x
+r66 =  10'b000000000x
+r67 =  16'b0000000000000001
+r68 =  20'b00000000000000000001
+r69 =  9'b000000001
+r70 =  17'b00000000000000001
+r71 =  21'b000000101001000011111
+r72 =  14'b00000000000001
+r73 =  20'b00000000000000000001
+r74 =  10'b1001100100
+r75 =  10'b0000000000
+r76 =  18'b000000000000000001
+r77 =  3'b001
+r78 =  27'b000000000000000000000010000
+r79 =  6'b000000
+r80 =  1'b0
+r81 =  26'b000000000000000000000000xx
+r82 =  1'b1
+r83 =  28'b0000000000000000000000000000
+r84 =  24'b000000000000011110011110
+r85 =  28'b0000000000000000000000000001
+r86 =  27'b000000000000000000000000001
+r87 =  27'b000000000000000000000000000
+r88 =  19'b0000000000000000001
+r89 =  5'b11000
+r90 =  30'b000000000000000010101001001111
+r91 =  14'b00110111010110
+r92 =  6'b110000
+r93 =  13'b1100011111000
+r94 =  32'b00000000000000000000000000000001
+r95 =  27'b000000000000111010100100000
+r96 =  5'b11100
+r97 =  10'b0000000000
+r98 =  16'b0100100110101110
+r99 =  5'b0000x
+r100 =  27'b000000000000000000000000001
+r101 =  12'b011011101101
+r102 =  26'b00000000000000000000000000
+r103 =  12'b000000000000
+r104 =  20'b0xxxxxxxxxxxxxxxxxxx
+r105 =  32'b00000000000000000100011001111001
+r106 =  5'b00101
+r107 =  10'b0000001001
+r108 =  22'b0000000111010010001010
+r109 =  15'b110000101111001
+r110 =  23'b00000000001010110010011
+r111 =  22'b0000000000101110111000
+r112 =  1'b1
+r113 =  31'b0000000000000000110110000100111
+r114 =  14'b11001100110001
+r115 =  3'b100
+r116 =  21'b000000000010000010110
+r117 =  15'b010001000010011
+r118 =  6'b000011
+r119 =  32'b00000000000000000000100010101100
+r120 =  10'b1110100011
+r121 =  29'b00000000000000011100000100111
+r122 =  24'b000000000100011011011101
+r123 =  23'b00000000100001101001100
+r124 =  23'b00000000110010010010111
+r125 =  2'b0x
+r126 =  23'b00000000101110110110001
+r127 =  16'b0100111010110111
+r128 =  14'b00011001111001
+r129 =  18'b000000000000000000
+r130 =  19'b0000001001000010110
+r131 =  14'b00000000001100
+r132 =  28'b0000000000000001111101100010
+r133 =  30'b000000000000000000000001100111
+r134 =  24'b000000000000000000000000
+r135 =  14'b01100011111110
+r136 =  12'b001001111111
+r137 =  20'b00000010110110111110
+r138 =  14'b00000000000001
+r139 =  13'b0000000000001
+r140 =  3'b000
+r141 =  28'b0000000000000000001100110111
+r142 =  25'b0000000000110011101101100
+r143 =  1'b0
+r144 =  3'b000
+r145 =  27'b000000000000000011110001100
+r146 =  24'b000000000000000000000000
+r147 =  29'b00000000000000111100111001110
+r148 =  10'b0011111100
+r149 =  17'b00011011001000011
+r150 =  8'b11001000
+r151 =  16'b0000000000000001
+r152 =  19'b0000001101011100110
+r153 =  29'b00000000000000111010100100000
+r154 =  32'b00000000000000000011110000001010
+r155 =  4'b0000
+r156 =  17'b00011000111100011
+r157 =  22'b0000000000000000000001
+r158 =  20'b00000000000000000001
+r159 =  1'b1
+r160 =  25'b000000000000000000000000x
+r161 =  18'b000000000000000000
+r162 =  20'b00000000000000000001
+r163 =  10'b0101111101
+r164 =  23'b00000000000000000000001
+r165 =  1'b1
+r166 =  13'b0000000000001
+r167 =  29'b00000000000000010110110100101
+r168 =  22'b0000000000000000000000
+r169 =  16'b0001000111101010
+r170 =  5'b00100
+r171 =  20'b00000110110101000100
+r172 =  26'b00000000000000000000000000
+r173 =  8'b01001011
+r174 =  1'b0
+r175 =  8'b01101000
+r176 =  7'b0000010
+r177 =  14'b00111000010000
+r178 =  32'b0000000000000000000000000000000x
+r179 =  11'b00000000111
+r180 =  26'b00000000000000000000000001
+r181 =  4'b0001
+r182 =  31'b0000000000000000000000000000000
+r183 =  12'b000000000001
+r184 =  13'b0000000000000
+r185 =  5'b00110
+r186 =  21'b00000001110111001100x
+r187 =  21'b000000011110011101010
+r188 =  22'b0000000000000000000001
+r189 =  10'b0011111001
+r190 =  23'b00000000000000000000xxx
+r191 =  14'b00000010101111
+r192 =  6'b111001
+r193 =  9'b000000000
+r194 =  19'b0000100010110000001
+r195 =  26'b00000000001000010000010101
+r196 =  12'b000000000001
+r197 =  19'bxxxxxxxxxxxxxxxxxxx
+r198 =  23'b00000000000000000000001
+r199 =  22'b0000000101010111110001
+r200 =  17'b00000001111101001
+r201 =  19'b0000000011011110100
+r202 =  9'b000000000
+r203 =  31'b0000000000000000000010111010010
+r204 =  27'b000000000000000000000000001
+r205 =  20'b00000000000000000000
+r206 =  14'b00100110101110
+r207 =  11'b01001001000
+r208 =  13'b0000000000001
+r209 =  26'b00000000000001011110100011
+r210 =  6'b011011
+r211 =  13'b0100110101110
+r212 =  4'b1001
+r213 =  6'b000001
+r214 =  12'b000000000000
+r215 =  20'b00000000000000000000
+r216 =  25'b0000000000110100101000011
+r217 =  20'b00xxxxxxxxxxxxxxxxxx
+r218 =  24'b000000000011110110010010
+r219 =  10'b0000010110
+r220 =  4'b0110
+r221 =  30'b000000000000000000000000000000
+r222 =  31'b000000000000000000000000000000x
+r223 =  23'b00000000000110101010010
+r224 =  20'b00000011101110110111
+r225 =  25'b0000000000000111100101000
+r226 =  16'b0001000000000100
+r227 =  30'b000000000000000000000000001010
+r228 =  26'b00000000000000000010101010
+r229 =  21'b000000000000000000000
+r230 =  22'b0000000000111101111000
+r231 =  28'b0000000000000000000000000000
+r232 =  30'b000000000000000000000000000001
+r233 =  31'b0000000000000000000101100001110
+r234 =  27'b000000000000100011011011101
+r235 =  14'b00000000000000
+r236 =  6'b110100
+r237 =  32'b00000000000000000000000000000000
+r238 =  1'b0
+r239 =  10'b1101111100
+r240 =  20'b00000101110101110111
+r241 =  29'b00000000000000000110111010100
+r242 =  9'b001111100
+r243 =  3'b001
+r244 =  7'b0000000
+r245 =  23'b00000000000101010110100
+r246 =  15'b000000000000001
+r247 =  7'b0000001
+r248 =  23'b00000000000000000000001
+r249 =  11'b10000111010
+r250 =  9'b101110111
+r251 =  3'b001
+r252 =  27'b000000000000101111101101000
+r253 =  18'b000110010010011110
+r254 =  13'b0000011111011
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/con_tri.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/cond_band.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/cond_wide.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/constadd.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/constmult.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/contrib8.1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/contrib8.2.v
+* Warning: implicit declaration of c.
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/contrib8.3.v
+* Error: instance of MUX_REG_8x8 with no master.
+* Error: no master found for MUX_REG_8x8.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/contrib8.4.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/contrib8.5.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/cprop.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/deassign3.4A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/decl_assign1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/define1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/defparam.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/defparam3.5.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/delay.v
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/delay_assign_nb.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/deposit.v
+* Warning: unknown system command $deposit, ignored.
+* Warning: unknown system command $deposit, ignored.
+* Warning: unknown system command $deposit, ignored.
+* Warning: unknown system command $deposit, ignored.
+* Warning: unknown system command $deposit, ignored.
+* Warning: unknown system command $deposit, ignored.
+* Warning: unknown system command $deposit, ignored.
+* Warning: unknown system command $deposit, ignored.
+xxxx x 0 0
+xxxx x 0 0
+FAILED
+xxxx x 0 0
+xxxx x 0 0
+xxxx x 0 0
+xxxx x 0 0
+xxxx x 0 0
+xxxx x 0 0
+xxxx x 0 0
+xxxx x 0 0
+xxxx x 0 0
+xxxx x 0 0
+0/0
+FAILED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/deposit_wire.v
+* Warning: unknown system command $deposit, ignored.
+* Warning: unknown system command $deposit, ignored.
+FAILED -- test after deposit is 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/dff1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/disable3.6A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/disable3.6B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/disp_dec.v
+4'bxxxx = x
+4'bzzxx = x
+4'bzzzz = x
+4'b00zz = x
+4'b0000 = 0
+4'b0011 = 3
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/dotinid.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/drive_strength.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/drive_strength1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/drive_strength2.v
+1 0 1
+0 0 1
+1 0 1
+0 0 1
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/eeq.v
+zx10 zx10 ===1 !==0
+1x10 zx10 ===0 !==1
+xz10 zx10 ===0 !==1
+xz01 zx10 ===0 !==1
+0000 0000 ===1 !==0
+1111 1111 ===1 !==0
+xxxx xxxx ===1 !==0
+zzzz zzzz ===1 !==0
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/else1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/else2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/else3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/event3.15.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/event_list.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/event_list2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/fdisplay1.v
+message to stdout (from $display)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/fdisplay2.v
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/fdisplay3.v
+expect compile or runtime error from bad $fdisplay args:
+* Warning: implicit declaration of fdisplay3.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/fopen1.v
+fp = 00000000000000000000000000001000 
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/fopen2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/for3.16A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/force3.17A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/force3.17B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/force3.17C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/fork3.19A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/fork3.19B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/format.v
+>16<
+>  16<
+>010<
+> 010<
+16, 16
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/function1.v
+0008 = sum(0003, 0005)
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/function2.v
+op1 = deadbeef
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/function3.11B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/function3.11C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/function3.11D.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/function3.11E.v
+* Error: syntax error: (line: 30, file: ivltests/function3.11E.v) token: 'foo2', .
+* Error: yacc token: 'foo2'.
+* Error: unexpected token 'foo2' seen in module 'test'.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/function3.11F.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/function3.v
+a=0001, b=0011, line=00110000, got1=10, got2=10
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/function4.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/function_exp.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ga_and.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ga_mod.v
+* Error: syntax error: (line: 44, file: ivltests/ga_mod.v) token: '[', .
+* Error: yacc token: '['.
+* Error: unexpected token '[' seen in module 'main'.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ga_mod1.v
+* Error: syntax error: (line: 40, file: ivltests/ga_mod1.v) token: '[', .
+* Error: yacc token: '['.
+* Error: unexpected token '[' seen in module 'main'.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ga_nand.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ga_nor.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ga_or.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ga_xnor.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ga_xor.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/galan.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/hello.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/hello1.v
+Hello, World.
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/hierspace.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/idiv1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/idiv2.v
+13 % 3 = 1
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ifdef1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ifdef2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ifdef3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ifdef4.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/include1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/include2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/include3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/inertdly.v
+FAILED - a propagated pulse and shouldn't 
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/initmod.v
+0 x 0 x : xxxx : x x x x : xxxx : x x x x
+1 0 0 1 : 0x0x : 0 x 0 x : 0x0x : 0 x 0 x
+0 1 1 1 : 1001 : 1 0 0 1 : 1001 : 1 0 0 1
+1 0 1 0 : 0111 : 0 1 1 1 : 0111 : 0 1 1 1
+0 1 0 0 : 1010 : 1 0 1 0 : 1010 : 1 0 1 0
+1 0 0 1 : 0100 : 0 1 0 0 : 0100 : 0 1 0 0
+0 1 1 1 : 1001 : 1 0 0 1 : 1001 : 1 0 0 1
+1 0 1 0 : 0111 : 0 1 1 1 : 0111 : 0 1 1 1
+0 1 0 0 : 1010 : 1 0 1 0 : 1010 : 1 0 1 0
+1 0 0 1 : 0100 : 0 1 0 0 : 0100 : 0 1 0 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/initmod2.v
+z z x 1 x x x : x 1 1 : x z
+z z x 1 x x x : x 1 1 : x z
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/inout.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/integer1lt.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/integer2le.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/integer3gt.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/integer4ge.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/integer5.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/land2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/land3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/lh_catadd.v
+PASSED {carry,sum} === 1,0100
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/lh_varindx.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/lh_varindx2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/lh_varindx3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/lh_varindx4.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/lh_varindx5.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/m16a.v
+* Error: no top module!.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/m16x16.v
+* Error: no top module!.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/m16x16_beh.v
+* Error: no top module!.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/mangle.v
+* Warning: implicit declaration of abc.
+* Warning: implicit declaration of \cde .
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/mangle_1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/mcl2.v
+0 0 0000
+1 0 0028
+2 0 0050
+3 0 0078
+4 0 00a0
+5 0 00c8
+6 0 00f0
+7 0 0118
+8 0 0140
+9 0 0168
+a 0 0190
+b 0 01b8
+c 0 01e0
+d 0 0208
+e 0 0230
+f 0 0258
+0 1 005f
+1 1 0087
+2 1 00af
+3 1 00d7
+4 1 00ff
+5 1 0127
+6 1 014f
+7 1 0177
+8 1 019f
+9 1 01c7
+a 1 01ef
+b 1 0217
+c 1 023f
+d 1 0267
+e 1 028f
+f 1 02b7
+0 2 00be
+1 2 00e6
+2 2 010e
+3 2 0136
+4 2 015e
+5 2 0186
+6 2 01ae
+7 2 01d6
+8 2 01fe
+9 2 0226
+a 2 024e
+b 2 0276
+c 2 029e
+d 2 02c6
+e 2 02ee
+f 2 0316
+0 3 011d
+1 3 0145
+2 3 016d
+3 3 0195
+4 3 01bd
+5 3 01e5
+6 3 020d
+7 3 0235
+8 3 025d
+9 3 0285
+a 3 02ad
+b 3 02d5
+c 3 02fd
+d 3 0325
+e 3 034d
+f 3 0375
+0 4 017c
+1 4 01a4
+2 4 01cc
+3 4 01f4
+4 4 021c
+5 4 0244
+6 4 026c
+7 4 0294
+8 4 02bc
+9 4 02e4
+a 4 030c
+b 4 0334
+c 4 035c
+d 4 0384
+e 4 03ac
+f 4 03d4
+0 5 01db
+1 5 0203
+2 5 022b
+3 5 0253
+4 5 027b
+5 5 02a3
+6 5 02cb
+7 5 02f3
+8 5 031b
+9 5 0343
+a 5 036b
+b 5 0393
+c 5 03bb
+d 5 03e3
+e 5 040b
+f 5 0433
+0 6 023a
+1 6 0262
+2 6 028a
+3 6 02b2
+4 6 02da
+5 6 0302
+6 6 032a
+7 6 0352
+8 6 037a
+9 6 03a2
+a 6 03ca
+b 6 03f2
+c 6 041a
+d 6 0442
+e 6 046a
+f 6 0492
+0 7 0299
+1 7 02c1
+2 7 02e9
+3 7 0311
+4 7 0339
+5 7 0361
+6 7 0389
+7 7 03b1
+8 7 03d9
+9 7 0401
+a 7 0429
+b 7 0451
+c 7 0479
+d 7 04a1
+e 7 04c9
+f 7 04f1
+0 8 02f8
+1 8 0320
+2 8 0348
+3 8 0370
+4 8 0398
+5 8 03c0
+6 8 03e8
+7 8 0410
+8 8 0438
+9 8 0460
+a 8 0488
+b 8 04b0
+c 8 04d8
+d 8 0500
+e 8 0528
+f 8 0550
+0 9 0357
+1 9 037f
+2 9 03a7
+3 9 03cf
+4 9 03f7
+5 9 041f
+6 9 0447
+7 9 046f
+8 9 0497
+9 9 04bf
+a 9 04e7
+b 9 050f
+c 9 0537
+d 9 055f
+e 9 0587
+f 9 05af
+0 a 03b6
+1 a 03de
+2 a 0406
+3 a 042e
+4 a 0456
+5 a 047e
+6 a 04a6
+7 a 04ce
+8 a 04f6
+9 a 051e
+a a 0546
+b a 056e
+c a 0596
+d a 05be
+e a 05e6
+f a 060e
+0 b 0415
+1 b 043d
+2 b 0465
+3 b 048d
+4 b 04b5
+5 b 04dd
+6 b 0505
+7 b 052d
+8 b 0555
+9 b 057d
+a b 05a5
+b b 05cd
+c b 05f5
+d b 061d
+e b 0645
+f b 066d
+0 c 0474
+1 c 049c
+2 c 04c4
+3 c 04ec
+4 c 0514
+5 c 053c
+6 c 0564
+7 c 058c
+8 c 05b4
+9 c 05dc
+a c 0604
+b c 062c
+c c 0654
+d c 067c
+e c 06a4
+f c 06cc
+0 d 04d3
+1 d 04fb
+2 d 0523
+3 d 054b
+4 d 0573
+5 d 059b
+6 d 05c3
+7 d 05eb
+8 d 0613
+9 d 063b
+a d 0663
+b d 068b
+c d 06b3
+d d 06db
+e d 0703
+f d 072b
+0 e 0532
+1 e 055a
+2 e 0582
+3 e 05aa
+4 e 05d2
+5 e 05fa
+6 e 0622
+7 e 064a
+8 e 0672
+9 e 069a
+a e 06c2
+b e 06ea
+c e 0712
+d e 073a
+e e 0762
+f e 078a
+0 f 0591
+1 f 05b9
+2 f 05e1
+3 f 0609
+4 f 0631
+5 f 0659
+6 f 0681
+7 f 06a9
+8 f 06d1
+9 f 06f9
+a f 0721
+b f 0749
+c f 0771
+d f 0799
+e f 07c1
+f f 07e9
+0 0 0000
+1 0 0028
+2 0 0050
+3 0 0078
+4 0 00a0
+5 0 00c8
+6 0 00f0
+7 0 0118
+8 0 0140
+9 0 0168
+a 0 0190
+b 0 01b8
+c 0 01e0
+d 0 0208
+e 0 0230
+f 0 0258
+0 1 005f
+1 1 0087
+2 1 00af
+3 1 00d7
+4 1 00ff
+5 1 0127
+6 1 014f
+7 1 0177
+8 1 019f
+9 1 01c7
+a 1 01ef
+b 1 0217
+c 1 023f
+d 1 0267
+e 1 028f
+f 1 02b7
+0 2 00be
+1 2 00e6
+2 2 010e
+3 2 0136
+4 2 015e
+5 2 0186
+6 2 01ae
+7 2 01d6
+8 2 01fe
+9 2 0226
+a 2 024e
+b 2 0276
+c 2 029e
+d 2 02c6
+e 2 02ee
+f 2 0316
+0 3 011d
+1 3 0145
+2 3 016d
+3 3 0195
+4 3 01bd
+5 3 01e5
+6 3 020d
+7 3 0235
+8 3 025d
+9 3 0285
+a 3 02ad
+b 3 02d5
+c 3 02fd
+d 3 0325
+e 3 034d
+f 3 0375
+0 4 017c
+1 4 01a4
+2 4 01cc
+3 4 01f4
+4 4 021c
+5 4 0244
+6 4 026c
+7 4 0294
+8 4 02bc
+9 4 02e4
+a 4 030c
+b 4 0334
+c 4 035c
+d 4 0384
+e 4 03ac
+f 4 03d4
+0 5 01db
+1 5 0203
+2 5 022b
+3 5 0253
+4 5 027b
+5 5 02a3
+6 5 02cb
+7 5 02f3
+8 5 031b
+9 5 0343
+a 5 036b
+b 5 0393
+c 5 03bb
+d 5 03e3
+e 5 040b
+f 5 0433
+0 6 023a
+1 6 0262
+2 6 028a
+3 6 02b2
+4 6 02da
+5 6 0302
+6 6 032a
+7 6 0352
+8 6 037a
+9 6 03a2
+a 6 03ca
+b 6 03f2
+c 6 041a
+d 6 0442
+e 6 046a
+f 6 0492
+0 7 0299
+1 7 02c1
+2 7 02e9
+3 7 0311
+4 7 0339
+5 7 0361
+6 7 0389
+7 7 03b1
+8 7 03d9
+9 7 0401
+a 7 0429
+b 7 0451
+c 7 0479
+d 7 04a1
+e 7 04c9
+f 7 04f1
+0 8 02f8
+1 8 0320
+2 8 0348
+3 8 0370
+4 8 0398
+5 8 03c0
+6 8 03e8
+7 8 0410
+8 8 0438
+9 8 0460
+a 8 0488
+b 8 04b0
+c 8 04d8
+d 8 0500
+e 8 0528
+f 8 0550
+0 9 0357
+1 9 037f
+2 9 03a7
+3 9 03cf
+4 9 03f7
+5 9 041f
+6 9 0447
+7 9 046f
+8 9 0497
+9 9 04bf
+a 9 04e7
+b 9 050f
+c 9 0537
+d 9 055f
+e 9 0587
+f 9 05af
+0 a 03b6
+1 a 03de
+2 a 0406
+3 a 042e
+4 a 0456
+5 a 047e
+6 a 04a6
+7 a 04ce
+8 a 04f6
+9 a 051e
+a a 0546
+b a 056e
+c a 0596
+d a 05be
+e a 05e6
+f a 060e
+0 b 0415
+1 b 043d
+2 b 0465
+3 b 048d
+4 b 04b5
+5 b 04dd
+6 b 0505
+7 b 052d
+8 b 0555
+9 b 057d
+a b 05a5
+b b 05cd
+c b 05f5
+d b 061d
+e b 0645
+f b 066d
+0 c 0474
+1 c 049c
+2 c 04c4
+3 c 04ec
+4 c 0514
+5 c 053c
+6 c 0564
+7 c 058c
+8 c 05b4
+9 c 05dc
+a c 0604
+b c 062c
+c c 0654
+d c 067c
+e c 06a4
+f c 06cc
+0 d 04d3
+1 d 04fb
+2 d 0523
+3 d 054b
+4 d 0573
+5 d 059b
+6 d 05c3
+7 d 05eb
+8 d 0613
+9 d 063b
+a d 0663
+b d 068b
+c d 06b3
+d d 06db
+e d 0703
+f d 072b
+0 e 0532
+1 e 055a
+2 e 0582
+3 e 05aa
+4 e 05d2
+5 e 05fa
+6 e 0622
+7 e 064a
+8 e 0672
+9 e 069a
+a e 06c2
+b e 06ea
+c e 0712
+d e 073a
+e e 0762
+f e 078a
+0 f 0591
+1 f 05b9
+2 f 05e1
+3 f 0609
+4 f 0631
+5 f 0659
+6 f 0681
+7 f 06a9
+8 f 06d1
+9 f 06f9
+a f 0721
+b f 0749
+c f 0771
+d f 0799
+e f 07c1
+f f 07e9
+0 0 0000
+1 0 0028
+2 0 0050
+3 0 0078
+4 0 00a0
+5 0 00c8
+6 0 00f0
+7 0 0118
+8 0 0140
+9 0 0168
+a 0 0190
+b 0 01b8
+c 0 01e0
+d 0 0208
+e 0 0230
+f 0 0258
+0 1 005f
+1 1 0087
+2 1 00af
+3 1 00d7
+4 1 00ff
+5 1 0127
+6 1 014f
+7 1 0177
+8 1 019f
+9 1 01c7
+a 1 01ef
+b 1 0217
+c 1 023f
+d 1 0267
+e 1 028f
+f 1 02b7
+0 2 00be
+1 2 00e6
+2 2 010e
+3 2 0136
+4 2 015e
+5 2 0186
+6 2 01ae
+7 2 01d6
+8 2 01fe
+9 2 0226
+a 2 024e
+b 2 0276
+c 2 029e
+d 2 02c6
+e 2 02ee
+f 2 0316
+0 3 011d
+1 3 0145
+2 3 016d
+3 3 0195
+4 3 01bd
+5 3 01e5
+6 3 020d
+7 3 0235
+8 3 025d
+9 3 0285
+a 3 02ad
+b 3 02d5
+c 3 02fd
+d 3 0325
+e 3 034d
+f 3 0375
+0 4 017c
+1 4 01a4
+2 4 01cc
+3 4 01f4
+4 4 021c
+5 4 0244
+6 4 026c
+7 4 0294
+8 4 02bc
+9 4 02e4
+a 4 030c
+b 4 0334
+c 4 035c
+d 4 0384
+e 4 03ac
+f 4 03d4
+0 5 01db
+1 5 0203
+2 5 022b
+3 5 0253
+4 5 027b
+5 5 02a3
+6 5 02cb
+7 5 02f3
+8 5 031b
+9 5 0343
+a 5 036b
+b 5 0393
+c 5 03bb
+d 5 03e3
+e 5 040b
+f 5 0433
+0 6 023a
+1 6 0262
+2 6 028a
+3 6 02b2
+4 6 02da
+5 6 0302
+6 6 032a
+7 6 0352
+8 6 037a
+9 6 03a2
+a 6 03ca
+b 6 03f2
+c 6 041a
+d 6 0442
+e 6 046a
+f 6 0492
+0 7 0299
+1 7 02c1
+2 7 02e9
+3 7 0311
+4 7 0339
+5 7 0361
+6 7 0389
+7 7 03b1
+8 7 03d9
+9 7 0401
+a 7 0429
+b 7 0451
+c 7 0479
+d 7 04a1
+e 7 04c9
+f 7 04f1
+0 8 02f8
+1 8 0320
+2 8 0348
+3 8 0370
+4 8 0398
+5 8 03c0
+6 8 03e8
+7 8 0410
+8 8 0438
+9 8 0460
+a 8 0488
+b 8 04b0
+c 8 04d8
+d 8 0500
+e 8 0528
+f 8 0550
+0 9 0357
+1 9 037f
+2 9 03a7
+3 9 03cf
+4 9 03f7
+5 9 041f
+6 9 0447
+7 9 046f
+8 9 0497
+9 9 04bf
+a 9 04e7
+b 9 050f
+c 9 0537
+d 9 055f
+e 9 0587
+f 9 05af
+0 a 03b6
+1 a 03de
+2 a 0406
+3 a 042e
+4 a 0456
+5 a 047e
+6 a 04a6
+7 a 04ce
+8 a 04f6
+9 a 051e
+a a 0546
+b a 056e
+c a 0596
+d a 05be
+e a 05e6
+f a 060e
+0 b 0415
+1 b 043d
+2 b 0465
+3 b 048d
+4 b 04b5
+5 b 04dd
+6 b 0505
+7 b 052d
+8 b 0555
+9 b 057d
+a b 05a5
+b b 05cd
+c b 05f5
+d b 061d
+e b 0645
+f b 066d
+0 c 0474
+1 c 049c
+2 c 04c4
+3 c 04ec
+4 c 0514
+5 c 053c
+6 c 0564
+7 c 058c
+8 c 05b4
+9 c 05dc
+a c 0604
+b c 062c
+c c 0654
+d c 067c
+e c 06a4
+f c 06cc
+0 d 04d3
+1 d 04fb
+2 d 0523
+3 d 054b
+4 d 0573
+5 d 059b
+6 d 05c3
+7 d 05eb
+8 d 0613
+9 d 063b
+a d 0663
+b d 068b
+c d 06b3
+d d 06db
+e d 0703
+f d 072b
+0 e 0532
+1 e 055a
+2 e 0582
+3 e 05aa
+4 e 05d2
+5 e 05fa
+6 e 0622
+7 e 064a
+8 e 0672
+9 e 069a
+a e 06c2
+b e 06ea
+c e 0712
+d e 073a
+e e 0762
+f e 078a
+0 f 0591
+1 f 05b9
+2 f 05e1
+3 f 0609
+4 f 0631
+5 f 0659
+6 f 0681
+7 f 06a9
+8 f 06d1
+9 f 06f9
+a f 0721
+b f 0749
+c f 0771
+d f 0799
+e f 07c1
+f f 07e9
+0 0 0000
+1 0 0028
+2 0 0050
+3 0 0078
+4 0 00a0
+5 0 00c8
+6 0 00f0
+7 0 0118
+8 0 0140
+9 0 0168
+a 0 0190
+b 0 01b8
+c 0 01e0
+d 0 0208
+e 0 0230
+f 0 0258
+0 1 005f
+1 1 0087
+2 1 00af
+3 1 00d7
+4 1 00ff
+5 1 0127
+6 1 014f
+7 1 0177
+8 1 019f
+9 1 01c7
+a 1 01ef
+b 1 0217
+c 1 023f
+d 1 0267
+e 1 028f
+f 1 02b7
+0 2 00be
+1 2 00e6
+2 2 010e
+3 2 0136
+4 2 015e
+5 2 0186
+6 2 01ae
+7 2 01d6
+8 2 01fe
+9 2 0226
+a 2 024e
+b 2 0276
+c 2 029e
+d 2 02c6
+e 2 02ee
+f 2 0316
+0 3 011d
+1 3 0145
+2 3 016d
+3 3 0195
+4 3 01bd
+5 3 01e5
+6 3 020d
+7 3 0235
+8 3 025d
+9 3 0285
+a 3 02ad
+b 3 02d5
+c 3 02fd
+d 3 0325
+e 3 034d
+f 3 0375
+0 4 017c
+1 4 01a4
+2 4 01cc
+3 4 01f4
+4 4 021c
+5 4 0244
+6 4 026c
+7 4 0294
+8 4 02bc
+9 4 02e4
+a 4 030c
+b 4 0334
+c 4 035c
+d 4 0384
+e 4 03ac
+f 4 03d4
+0 5 01db
+1 5 0203
+2 5 022b
+3 5 0253
+4 5 027b
+5 5 02a3
+6 5 02cb
+7 5 02f3
+8 5 031b
+9 5 0343
+a 5 036b
+b 5 0393
+c 5 03bb
+d 5 03e3
+e 5 040b
+f 5 0433
+0 6 023a
+1 6 0262
+2 6 028a
+3 6 02b2
+4 6 02da
+5 6 0302
+6 6 032a
+7 6 0352
+8 6 037a
+9 6 03a2
+a 6 03ca
+b 6 03f2
+c 6 041a
+d 6 0442
+e 6 046a
+f 6 0492
+0 7 0299
+1 7 02c1
+2 7 02e9
+3 7 0311
+4 7 0339
+5 7 0361
+6 7 0389
+7 7 03b1
+8 7 03d9
+9 7 0401
+a 7 0429
+b 7 0451
+c 7 0479
+d 7 04a1
+e 7 04c9
+f 7 04f1
+0 8 02f8
+1 8 0320
+2 8 0348
+3 8 0370
+4 8 0398
+5 8 03c0
+6 8 03e8
+7 8 0410
+8 8 0438
+9 8 0460
+a 8 0488
+b 8 04b0
+c 8 04d8
+d 8 0500
+e 8 0528
+f 8 0550
+0 9 0357
+1 9 037f
+2 9 03a7
+3 9 03cf
+4 9 03f7
+5 9 041f
+6 9 0447
+7 9 046f
+8 9 0497
+9 9 04bf
+a 9 04e7
+b 9 050f
+c 9 0537
+d 9 055f
+e 9 0587
+f 9 05af
+0 a 03b6
+1 a 03de
+2 a 0406
+3 a 042e
+4 a 0456
+5 a 047e
+6 a 04a6
+7 a 04ce
+8 a 04f6
+9 a 051e
+a a 0546
+b a 056e
+c a 0596
+d a 05be
+e a 05e6
+f a 060e
+0 b 0415
+1 b 043d
+2 b 0465
+3 b 048d
+4 b 04b5
+5 b 04dd
+6 b 0505
+7 b 052d
+8 b 0555
+9 b 057d
+a b 05a5
+b b 05cd
+c b 05f5
+d b 061d
+e b 0645
+f b 066d
+0 c 0474
+1 c 049c
+2 c 04c4
+3 c 04ec
+4 c 0514
+5 c 053c
+6 c 0564
+7 c 058c
+8 c 05b4
+9 c 05dc
+a c 0604
+b c 062c
+c c 0654
+d c 067c
+e c 06a4
+f c 06cc
+0 d 04d3
+1 d 04fb
+2 d 0523
+3 d 054b
+4 d 0573
+5 d 059b
+6 d 05c3
+7 d 05eb
+8 d 0613
+9 d 063b
+a d 0663
+b d 068b
+c d 06b3
+d d 06db
+e d 0703
+f d 072b
+0 e 0532
+1 e 055a
+2 e 0582
+3 e 05aa
+4 e 05d2
+5 e 05fa
+6 e 0622
+7 e 064a
+8 e 0672
+9 e 069a
+a e 06c2
+b e 06ea
+c e 0712
+d e 073a
+e e 0762
+f e 078a
+0 f 0591
+1 f 05b9
+2 f 05e1
+3 f 0609
+4 f 0631
+5 f 0659
+6 f 0681
+7 f 06a9
+8 f 06d1
+9 f 06f9
+a f 0721
+b f 0749
+c f 0771
+d f 0799
+e f 07c1
+f f 07e9
+0 0 0000
+1 0 0028
+2 0 0050
+3 0 0078
+4 0 00a0
+5 0 00c8
+6 0 00f0
+7 0 0118
+8 0 0140
+9 0 0168
+a 0 0190
+b 0 01b8
+c 0 01e0
+d 0 0208
+e 0 0230
+f 0 0258
+0 1 005f
+1 1 0087
+2 1 00af
+3 1 00d7
+4 1 00ff
+5 1 0127
+6 1 014f
+7 1 0177
+8 1 019f
+9 1 01c7
+a 1 01ef
+b 1 0217
+c 1 023f
+d 1 0267
+e 1 028f
+f 1 02b7
+0 2 00be
+1 2 00e6
+2 2 010e
+3 2 0136
+4 2 015e
+5 2 0186
+6 2 01ae
+7 2 01d6
+8 2 01fe
+9 2 0226
+a 2 024e
+b 2 0276
+c 2 029e
+d 2 02c6
+e 2 02ee
+f 2 0316
+0 3 011d
+1 3 0145
+2 3 016d
+3 3 0195
+4 3 01bd
+5 3 01e5
+6 3 020d
+7 3 0235
+8 3 025d
+9 3 0285
+a 3 02ad
+b 3 02d5
+c 3 02fd
+d 3 0325
+e 3 034d
+f 3 0375
+0 4 017c
+1 4 01a4
+2 4 01cc
+3 4 01f4
+4 4 021c
+5 4 0244
+6 4 026c
+7 4 0294
+8 4 02bc
+9 4 02e4
+a 4 030c
+b 4 0334
+c 4 035c
+d 4 0384
+e 4 03ac
+f 4 03d4
+0 5 01db
+1 5 0203
+2 5 022b
+3 5 0253
+4 5 027b
+5 5 02a3
+6 5 02cb
+7 5 02f3
+8 5 031b
+9 5 0343
+a 5 036b
+b 5 0393
+c 5 03bb
+d 5 03e3
+e 5 040b
+f 5 0433
+0 6 023a
+1 6 0262
+2 6 028a
+3 6 02b2
+4 6 02da
+5 6 0302
+6 6 032a
+7 6 0352
+8 6 037a
+9 6 03a2
+a 6 03ca
+b 6 03f2
+c 6 041a
+d 6 0442
+e 6 046a
+f 6 0492
+0 7 0299
+1 7 02c1
+2 7 02e9
+3 7 0311
+4 7 0339
+5 7 0361
+6 7 0389
+7 7 03b1
+8 7 03d9
+9 7 0401
+a 7 0429
+b 7 0451
+c 7 0479
+d 7 04a1
+e 7 04c9
+f 7 04f1
+0 8 02f8
+1 8 0320
+2 8 0348
+3 8 0370
+4 8 0398
+5 8 03c0
+6 8 03e8
+7 8 0410
+8 8 0438
+9 8 0460
+a 8 0488
+b 8 04b0
+c 8 04d8
+d 8 0500
+e 8 0528
+f 8 0550
+0 9 0357
+1 9 037f
+2 9 03a7
+3 9 03cf
+4 9 03f7
+5 9 041f
+6 9 0447
+7 9 046f
+8 9 0497
+9 9 04bf
+a 9 04e7
+b 9 050f
+c 9 0537
+d 9 055f
+e 9 0587
+f 9 05af
+0 a 03b6
+1 a 03de
+2 a 0406
+3 a 042e
+4 a 0456
+5 a 047e
+6 a 04a6
+7 a 04ce
+8 a 04f6
+9 a 051e
+a a 0546
+b a 056e
+c a 0596
+d a 05be
+e a 05e6
+f a 060e
+0 b 0415
+1 b 043d
+2 b 0465
+3 b 048d
+4 b 04b5
+5 b 04dd
+6 b 0505
+7 b 052d
+8 b 0555
+9 b 057d
+a b 05a5
+b b 05cd
+c b 05f5
+d b 061d
+e b 0645
+f b 066d
+0 c 0474
+1 c 049c
+2 c 04c4
+3 c 04ec
+4 c 0514
+5 c 053c
+6 c 0564
+7 c 058c
+8 c 05b4
+9 c 05dc
+a c 0604
+b c 062c
+c c 0654
+d c 067c
+e c 06a4
+f c 06cc
+0 d 04d3
+1 d 04fb
+2 d 0523
+3 d 054b
+4 d 0573
+5 d 059b
+6 d 05c3
+7 d 05eb
+8 d 0613
+9 d 063b
+a d 0663
+b d 068b
+c d 06b3
+d d 06db
+e d 0703
+f d 072b
+0 e 0532
+1 e 055a
+2 e 0582
+3 e 05aa
+4 e 05d2
+5 e 05fa
+6 e 0622
+7 e 064a
+8 e 0672
+9 e 069a
+a e 06c2
+b e 06ea
+c e 0712
+d e 073a
+e e 0762
+f e 078a
+0 f 0591
+1 f 05b9
+2 f 05e1
+3 f 0609
+4 f 0631
+5 f 0659
+6 f 0681
+7 f 06a9
+8 f 06d1
+9 f 06f9
+a f 0721
+b f 0749
+c f 0771
+d f 0799
+e f 07c1
+f f 07e9
+0 0 0000
+1 0 0028
+2 0 0050
+3 0 0078
+4 0 00a0
+5 0 00c8
+6 0 00f0
+7 0 0118
+8 0 0140
+9 0 0168
+a 0 0190
+b 0 01b8
+c 0 01e0
+d 0 0208
+e 0 0230
+f 0 0258
+0 1 005f
+1 1 0087
+2 1 00af
+3 1 00d7
+4 1 00ff
+5 1 0127
+6 1 014f
+7 1 0177
+8 1 019f
+9 1 01c7
+a 1 01ef
+b 1 0217
+c 1 023f
+d 1 0267
+e 1 028f
+f 1 02b7
+0 2 00be
+1 2 00e6
+2 2 010e
+3 2 0136
+4 2 015e
+5 2 0186
+6 2 01ae
+7 2 01d6
+8 2 01fe
+9 2 0226
+a 2 024e
+b 2 0276
+c 2 029e
+d 2 02c6
+e 2 02ee
+f 2 0316
+0 3 011d
+1 3 0145
+2 3 016d
+3 3 0195
+4 3 01bd
+5 3 01e5
+6 3 020d
+7 3 0235
+8 3 025d
+9 3 0285
+a 3 02ad
+b 3 02d5
+c 3 02fd
+d 3 0325
+e 3 034d
+f 3 0375
+0 4 017c
+1 4 01a4
+2 4 01cc
+3 4 01f4
+4 4 021c
+5 4 0244
+6 4 026c
+7 4 0294
+8 4 02bc
+9 4 02e4
+a 4 030c
+b 4 0334
+c 4 035c
+d 4 0384
+e 4 03ac
+f 4 03d4
+0 5 01db
+1 5 0203
+2 5 022b
+3 5 0253
+4 5 027b
+5 5 02a3
+6 5 02cb
+7 5 02f3
+8 5 031b
+9 5 0343
+a 5 036b
+b 5 0393
+c 5 03bb
+d 5 03e3
+e 5 040b
+f 5 0433
+0 6 023a
+1 6 0262
+2 6 028a
+3 6 02b2
+4 6 02da
+5 6 0302
+6 6 032a
+7 6 0352
+8 6 037a
+9 6 03a2
+a 6 03ca
+b 6 03f2
+c 6 041a
+d 6 0442
+e 6 046a
+f 6 0492
+0 7 0299
+1 7 02c1
+2 7 02e9
+3 7 0311
+4 7 0339
+5 7 0361
+6 7 0389
+7 7 03b1
+8 7 03d9
+9 7 0401
+a 7 0429
+b 7 0451
+c 7 0479
+d 7 04a1
+e 7 04c9
+f 7 04f1
+0 8 02f8
+1 8 0320
+2 8 0348
+3 8 0370
+4 8 0398
+5 8 03c0
+6 8 03e8
+7 8 0410
+8 8 0438
+9 8 0460
+a 8 0488
+b 8 04b0
+c 8 04d8
+d 8 0500
+e 8 0528
+f 8 0550
+0 9 0357
+1 9 037f
+2 9 03a7
+3 9 03cf
+4 9 03f7
+5 9 041f
+6 9 0447
+7 9 046f
+8 9 0497
+9 9 04bf
+a 9 04e7
+b 9 050f
+c 9 0537
+d 9 055f
+e 9 0587
+f 9 05af
+0 a 03b6
+1 a 03de
+2 a 0406
+3 a 042e
+4 a 0456
+5 a 047e
+6 a 04a6
+7 a 04ce
+8 a 04f6
+9 a 051e
+a a 0546
+b a 056e
+c a 0596
+d a 05be
+e a 05e6
+f a 060e
+0 b 0415
+1 b 043d
+2 b 0465
+3 b 048d
+4 b 04b5
+5 b 04dd
+6 b 0505
+7 b 052d
+8 b 0555
+9 b 057d
+a b 05a5
+b b 05cd
+c b 05f5
+d b 061d
+e b 0645
+f b 066d
+0 c 0474
+1 c 049c
+2 c 04c4
+3 c 04ec
+4 c 0514
+5 c 053c
+6 c 0564
+7 c 058c
+8 c 05b4
+9 c 05dc
+a c 0604
+b c 062c
+c c 0654
+d c 067c
+e c 06a4
+f c 06cc
+0 d 04d3
+1 d 04fb
+2 d 0523
+3 d 054b
+4 d 0573
+5 d 059b
+6 d 05c3
+7 d 05eb
+8 d 0613
+9 d 063b
+a d 0663
+b d 068b
+c d 06b3
+d d 06db
+e d 0703
+f d 072b
+0 e 0532
+1 e 055a
+2 e 0582
+3 e 05aa
+4 e 05d2
+5 e 05fa
+6 e 0622
+7 e 064a
+8 e 0672
+9 e 069a
+a e 06c2
+b e 06ea
+c e 0712
+d e 073a
+e e 0762
+f e 078a
+0 f 0591
+1 f 05b9
+2 f 05e1
+3 f 0609
+4 f 0631
+5 f 0659
+6 f 0681
+7 f 06a9
+8 f 06d1
+9 f 06f9
+a f 0721
+b f 0749
+c f 0771
+d f 0799
+e f 07c1
+f f 07e9
+0 0 0000
+1 0 0028
+2 0 0050
+3 0 0078
+4 0 00a0
+5 0 00c8
+6 0 00f0
+7 0 0118
+8 0 0140
+9 0 0168
+a 0 0190
+b 0 01b8
+c 0 01e0
+d 0 0208
+e 0 0230
+f 0 0258
+0 1 005f
+1 1 0087
+2 1 00af
+3 1 00d7
+4 1 00ff
+5 1 0127
+6 1 014f
+7 1 0177
+8 1 019f
+9 1 01c7
+a 1 01ef
+b 1 0217
+c 1 023f
+d 1 0267
+e 1 028f
+f 1 02b7
+0 2 00be
+1 2 00e6
+2 2 010e
+3 2 0136
+4 2 015e
+5 2 0186
+6 2 01ae
+7 2 01d6
+8 2 01fe
+9 2 0226
+a 2 024e
+b 2 0276
+c 2 029e
+d 2 02c6
+e 2 02ee
+f 2 0316
+0 3 011d
+1 3 0145
+2 3 016d
+3 3 0195
+4 3 01bd
+5 3 01e5
+6 3 020d
+7 3 0235
+8 3 025d
+9 3 0285
+a 3 02ad
+b 3 02d5
+c 3 02fd
+d 3 0325
+e 3 034d
+f 3 0375
+0 4 017c
+1 4 01a4
+2 4 01cc
+3 4 01f4
+4 4 021c
+5 4 0244
+6 4 026c
+7 4 0294
+8 4 02bc
+9 4 02e4
+a 4 030c
+b 4 0334
+c 4 035c
+d 4 0384
+e 4 03ac
+f 4 03d4
+0 5 01db
+1 5 0203
+2 5 022b
+3 5 0253
+4 5 027b
+5 5 02a3
+6 5 02cb
+7 5 02f3
+8 5 031b
+9 5 0343
+a 5 036b
+b 5 0393
+c 5 03bb
+d 5 03e3
+e 5 040b
+f 5 0433
+0 6 023a
+1 6 0262
+2 6 028a
+3 6 02b2
+4 6 02da
+5 6 0302
+6 6 032a
+7 6 0352
+8 6 037a
+9 6 03a2
+a 6 03ca
+b 6 03f2
+c 6 041a
+d 6 0442
+e 6 046a
+f 6 0492
+0 7 0299
+1 7 02c1
+2 7 02e9
+3 7 0311
+4 7 0339
+5 7 0361
+6 7 0389
+7 7 03b1
+8 7 03d9
+9 7 0401
+a 7 0429
+b 7 0451
+c 7 0479
+d 7 04a1
+e 7 04c9
+f 7 04f1
+0 8 02f8
+1 8 0320
+2 8 0348
+3 8 0370
+4 8 0398
+5 8 03c0
+6 8 03e8
+7 8 0410
+8 8 0438
+9 8 0460
+a 8 0488
+b 8 04b0
+c 8 04d8
+d 8 0500
+e 8 0528
+f 8 0550
+0 9 0357
+1 9 037f
+2 9 03a7
+3 9 03cf
+4 9 03f7
+5 9 041f
+6 9 0447
+7 9 046f
+8 9 0497
+9 9 04bf
+a 9 04e7
+b 9 050f
+c 9 0537
+d 9 055f
+e 9 0587
+f 9 05af
+0 a 03b6
+1 a 03de
+2 a 0406
+3 a 042e
+4 a 0456
+5 a 047e
+6 a 04a6
+7 a 04ce
+8 a 04f6
+9 a 051e
+a a 0546
+b a 056e
+c a 0596
+d a 05be
+e a 05e6
+f a 060e
+0 b 0415
+1 b 043d
+2 b 0465
+3 b 048d
+4 b 04b5
+5 b 04dd
+6 b 0505
+7 b 052d
+8 b 0555
+9 b 057d
+a b 05a5
+b b 05cd
+c b 05f5
+d b 061d
+e b 0645
+f b 066d
+0 c 0474
+1 c 049c
+2 c 04c4
+3 c 04ec
+4 c 0514
+5 c 053c
+6 c 0564
+7 c 058c
+8 c 05b4
+9 c 05dc
+a c 0604
+b c 062c
+c c 0654
+d c 067c
+e c 06a4
+f c 06cc
+0 d 04d3
+1 d 04fb
+2 d 0523
+3 d 054b
+4 d 0573
+5 d 059b
+6 d 05c3
+7 d 05eb
+8 d 0613
+9 d 063b
+a d 0663
+b d 068b
+c d 06b3
+d d 06db
+e d 0703
+f d 072b
+0 e 0532
+1 e 055a
+2 e 0582
+3 e 05aa
+4 e 05d2
+5 e 05fa
+6 e 0622
+7 e 064a
+8 e 0672
+9 e 069a
+a e 06c2
+b e 06ea
+c e 0712
+d e 073a
+e e 0762
+f e 078a
+0 f 0591
+1 f 05b9
+2 f 05e1
+3 f 0609
+4 f 0631
+5 f 0659
+6 f 0681
+7 f 06a9
+8 f 06d1
+9 f 06f9
+a f 0721
+b f 0749
+c f 0771
+d f 0799
+e f 07c1
+f f 07e9
+0 0 0000
+1 0 0028
+2 0 0050
+3 0 0078
+4 0 00a0
+5 0 00c8
+6 0 00f0
+7 0 0118
+8 0 0140
+9 0 0168
+a 0 0190
+b 0 01b8
+c 0 01e0
+d 0 0208
+e 0 0230
+f 0 0258
+0 1 005f
+1 1 0087
+2 1 00af
+3 1 00d7
+4 1 00ff
+5 1 0127
+6 1 014f
+7 1 0177
+8 1 019f
+9 1 01c7
+a 1 01ef
+b 1 0217
+c 1 023f
+d 1 0267
+e 1 028f
+f 1 02b7
+0 2 00be
+1 2 00e6
+2 2 010e
+3 2 0136
+4 2 015e
+5 2 0186
+6 2 01ae
+7 2 01d6
+8 2 01fe
+9 2 0226
+a 2 024e
+b 2 0276
+c 2 029e
+d 2 02c6
+e 2 02ee
+f 2 0316
+0 3 011d
+1 3 0145
+2 3 016d
+3 3 0195
+4 3 01bd
+5 3 01e5
+6 3 020d
+7 3 0235
+8 3 025d
+9 3 0285
+a 3 02ad
+b 3 02d5
+c 3 02fd
+d 3 0325
+e 3 034d
+f 3 0375
+0 4 017c
+1 4 01a4
+2 4 01cc
+3 4 01f4
+4 4 021c
+5 4 0244
+6 4 026c
+7 4 0294
+8 4 02bc
+9 4 02e4
+a 4 030c
+b 4 0334
+c 4 035c
+d 4 0384
+e 4 03ac
+f 4 03d4
+0 5 01db
+1 5 0203
+2 5 022b
+3 5 0253
+4 5 027b
+5 5 02a3
+6 5 02cb
+7 5 02f3
+8 5 031b
+9 5 0343
+a 5 036b
+b 5 0393
+c 5 03bb
+d 5 03e3
+e 5 040b
+f 5 0433
+0 6 023a
+1 6 0262
+2 6 028a
+3 6 02b2
+4 6 02da
+5 6 0302
+6 6 032a
+7 6 0352
+8 6 037a
+9 6 03a2
+a 6 03ca
+b 6 03f2
+c 6 041a
+d 6 0442
+e 6 046a
+f 6 0492
+0 7 0299
+1 7 02c1
+2 7 02e9
+3 7 0311
+4 7 0339
+5 7 0361
+6 7 0389
+7 7 03b1
+8 7 03d9
+9 7 0401
+a 7 0429
+b 7 0451
+c 7 0479
+d 7 04a1
+e 7 04c9
+f 7 04f1
+0 8 02f8
+1 8 0320
+2 8 0348
+3 8 0370
+4 8 0398
+5 8 03c0
+6 8 03e8
+7 8 0410
+8 8 0438
+9 8 0460
+a 8 0488
+b 8 04b0
+c 8 04d8
+d 8 0500
+e 8 0528
+f 8 0550
+0 9 0357
+1 9 037f
+2 9 03a7
+3 9 03cf
+4 9 03f7
+5 9 041f
+6 9 0447
+7 9 046f
+8 9 0497
+9 9 04bf
+a 9 04e7
+b 9 050f
+c 9 0537
+d 9 055f
+e 9 0587
+f 9 05af
+0 a 03b6
+1 a 03de
+2 a 0406
+3 a 042e
+4 a 0456
+5 a 047e
+6 a 04a6
+7 a 04ce
+8 a 04f6
+9 a 051e
+a a 0546
+b a 056e
+c a 0596
+d a 05be
+e a 05e6
+f a 060e
+0 b 0415
+1 b 043d
+2 b 0465
+3 b 048d
+4 b 04b5
+5 b 04dd
+6 b 0505
+7 b 052d
+8 b 0555
+9 b 057d
+a b 05a5
+b b 05cd
+c b 05f5
+d b 061d
+e b 0645
+f b 066d
+0 c 0474
+1 c 049c
+2 c 04c4
+3 c 04ec
+4 c 0514
+5 c 053c
+6 c 0564
+7 c 058c
+8 c 05b4
+9 c 05dc
+a c 0604
+b c 062c
+c c 0654
+d c 067c
+e c 06a4
+f c 06cc
+0 d 04d3
+1 d 04fb
+2 d 0523
+3 d 054b
+4 d 0573
+5 d 059b
+6 d 05c3
+7 d 05eb
+8 d 0613
+9 d 063b
+a d 0663
+b d 068b
+c d 06b3
+d d 06db
+e d 0703
+f d 072b
+0 e 0532
+1 e 055a
+2 e 0582
+3 e 05aa
+4 e 05d2
+5 e 05fa
+6 e 0622
+7 e 064a
+8 e 0672
+9 e 069a
+a e 06c2
+b e 06ea
+c e 0712
+d e 073a
+e e 0762
+f e 078a
+0 f 0591
+1 f 05b9
+2 f 05e1
+3 f 0609
+4 f 0631
+5 f 0659
+6 f 0681
+7 f 06a9
+8 f 06d1
+9 f 06f9
+a f 0721
+b f 0749
+c f 0771
+d f 0799
+e f 07c1
+f f 07e9
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/mem1.v
+mem[0] = 000100
+mem[1] = xxxxxx
+mem[2] = xxxxxx
+mem[3] = xxxxxx
+mem[4] = xxxxxx
+mem[5] = xxxxxx
+mem[6] = xxxxxx
+mem[7] = xxxxxx
+mem[8] = xxxxxx
+mem[9] = xxxxxx
+mem[10] = xxxxxx
+mem[11] = xxxxxx
+mem[12] = xxxxxx
+mem[13] = xxxxxx
+mem[14] = xxxxxx
+mem[15] = xxxxxx
+0 000100
+1 xxxxxx
+2 xxxxxx
+3 xxxxxx
+4 xxxxxx
+5 xxxxxx
+6 xxxxxx
+7 xxxxxx
+8 xxxxxx
+9 xxxxxx
+10 xxxxxx
+11 xxxxxx
+12 xxxxxx
+13 xxxxxx
+14 xxxxxx
+15 xxxxxx
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/meminit.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/meminit2.v
+FAILED -- mem[0] == 00000000000000000000000000000000
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/modparam.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/module3.12A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/module3.12B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/module3.12C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/modulus.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/modulus2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/mult1.v
+FAILED - Mult 2*x wire assign failed - is 0xxxxxxxx
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/mult16.v
+a = 00004567, b = 23c6, yout = 00000000
+a = 00008ace, b = 11e3, yout = 00000000
+a = 0001159c, b = 08f1, yout = 00008ace
+a = 00022b38, b = 0478, yout = 0001a06a
+a = 00045670, b = 023c, yout = 0001a06a
+a = 0008ace0, b = 011e, yout = 0001a06a
+a = 001159c0, b = 008f, yout = 0001a06a
+a = 0022b380, b = 0047, yout = 0012fa2a
+a = 00456700, b = 0023, yout = 0035adaa
+a = 008ace00, b = 0011, yout = 007b14aa
+a = 01159c00, b = 0008, yout = 0105e2aa
+a = 022b3800, b = 0004, yout = 0105e2aa
+a = 04567000, b = 0002, yout = 0105e2aa
+a = 08ace000, b = 0001, yout = 0105e2aa
+17767 * 9158 = 09b2c2aa, Reality = 9b2c2aa
+a = 00009869, b = 4873, yout = 00000000
+a = 000130d2, b = 2439, yout = 00009869
+a = 000261a4, b = 121c, yout = 0001c93b
+a = 0004c348, b = 090e, yout = 0001c93b
+a = 00098690, b = 0487, yout = 0001c93b
+a = 00130d20, b = 0243, yout = 000b4fcb
+a = 00261a40, b = 0121, yout = 001e5ceb
+a = 004c3480, b = 0090, yout = 0044772b
+a = 00986900, b = 0048, yout = 0044772b
+a = 0130d200, b = 0024, yout = 0044772b
+a = 0261a400, b = 0012, yout = 0044772b
+a = 04c34800, b = 0009, yout = 0044772b
+a = 09869000, b = 0004, yout = 0507bf2b
+a = 130d2000, b = 0002, yout = 0507bf2b
+a = 261a4000, b = 0001, yout = 0507bf2b
+39017 * 18547 = 2b21ff2b, Reality = 2b21ff2b
+a = 0000dc51, b = 5cff, yout = 00000000
+a = 0001b8a2, b = 2e7f, yout = 0000dc51
+a = 00037144, b = 173f, yout = 000294f3
+a = 0006e288, b = 0b9f, yout = 00060637
+a = 000dc510, b = 05cf, yout = 000ce8bf
+a = 001b8a20, b = 02e7, yout = 001aadcf
+a = 00371440, b = 0173, yout = 003637ef
+a = 006e2880, b = 00b9, yout = 006d4c2f
+a = 00dc5100, b = 005c, yout = 00db74af
+a = 01b8a200, b = 002e, yout = 00db74af
+a = 03714400, b = 0017, yout = 00db74af
+a = 06e28800, b = 000b, yout = 044cb8af
+a = 0dc51000, b = 0005, yout = 0b2f40af
+a = 1b8a2000, b = 0002, yout = 18f450af
+a = 37144000, b = 0001, yout = 18f450af
+56401 * 23807 = 500890af, Reality = 500890af
+a = 0000944a, b = 58ec, yout = 00000000
+a = 00012894, b = 2c76, yout = 00000000
+a = 00025128, b = 163b, yout = 00000000
+a = 0004a250, b = 0b1d, yout = 00025128
+a = 000944a0, b = 058e, yout = 0006f378
+a = 00128940, b = 02c7, yout = 0006f378
+a = 00251280, b = 0163, yout = 00197cb8
+a = 004a2500, b = 00b1, yout = 003e8f38
+a = 00944a00, b = 0058, yout = 0088b438
+a = 01289400, b = 002c, yout = 0088b438
+a = 02512800, b = 0016, yout = 0088b438
+a = 04a25000, b = 000b, yout = 0088b438
+a = 0944a000, b = 0005, yout = 052b0438
+a = 12894000, b = 0002, yout = 0e6fa438
+a = 25128000, b = 0001, yout = 0e6fa438
+37962 * 22764 = 33822438, Reality = 33822438
+a = 00001f29, b = 7ccd, yout = 00000000
+a = 00003e52, b = 3e66, yout = 00001f29
+a = 00007ca4, b = 1f33, yout = 00001f29
+a = 0000f948, b = 0f99, yout = 00009bcd
+a = 0001f290, b = 07cc, yout = 00019515
+a = 0003e520, b = 03e6, yout = 00019515
+a = 0007ca40, b = 01f3, yout = 00019515
+a = 000f9480, b = 00f9, yout = 00095f55
+a = 001f2900, b = 007c, yout = 0018f3d5
+a = 003e5200, b = 003e, yout = 0018f3d5
+a = 007ca400, b = 001f, yout = 0018f3d5
+a = 00f94800, b = 000f, yout = 009597d5
+a = 01f29000, b = 0007, yout = 018edfd5
+a = 03e52000, b = 0003, yout = 03816fd5
+a = 07ca4000, b = 0001, yout = 07668fd5
+7977 * 31949 = 0f30cfd5, Reality = f30cfd5
+a = 000058ba, b = d7ab, yout = 00000000
+a = 0000b174, b = 6bd5, yout = 000058ba
+a = 000162e8, b = 35ea, yout = 00010a2e
+a = 0002c5d0, b = 1af5, yout = 00010a2e
+a = 00058ba0, b = 0d7a, yout = 0003cffe
+a = 000b1740, b = 06bd, yout = 0003cffe
+a = 00162e80, b = 035e, yout = 000ee73e
+a = 002c5d00, b = 01af, yout = 000ee73e
+a = 0058ba00, b = 00d7, yout = 003b443e
+a = 00b17400, b = 006b, yout = 0093fe3e
+a = 0162e800, b = 0035, yout = 0145723e
+a = 02c5d000, b = 001a, yout = 02a85a3e
+a = 058ba000, b = 000d, yout = 02a85a3e
+a = 0b174000, b = 0006, yout = 0833fa3e
+a = 162e8000, b = 0003, yout = 0833fa3e
+a = 2c5d0000, b = 0001, yout = 1e627a3e
+22714 * 55211 = 4abf7a3e, Reality = 4abf7a3e
+a = 000041f2, b = 1efb, yout = 00000000
+a = 000083e4, b = 0f7d, yout = 000041f2
+a = 000107c8, b = 07be, yout = 0000c5d6
+a = 00020f90, b = 03df, yout = 0000c5d6
+a = 00041f20, b = 01ef, yout = 0002d566
+a = 00083e40, b = 00f7, yout = 0006f486
+a = 00107c80, b = 007b, yout = 000f32c6
+a = 0020f900, b = 003d, yout = 001faf46
+a = 0041f200, b = 001e, yout = 0040a846
+a = 0083e400, b = 000f, yout = 0040a846
+a = 0107c800, b = 0007, yout = 00c48c46
+a = 020f9000, b = 0003, yout = 01cc5446
+a = 041f2000, b = 0001, yout = 03dbe446
+16882 * 7931 = 07fb0446, Reality = 7fb0446
+a = 0000a9e3, b = e146, yout = 00000000
+a = 000153c6, b = 70a3, yout = 00000000
+a = 0002a78c, b = 3851, yout = 000153c6
+a = 00054f18, b = 1c28, yout = 0003fb52
+a = 000a9e30, b = 0e14, yout = 0003fb52
+a = 00153c60, b = 070a, yout = 0003fb52
+a = 002a78c0, b = 0385, yout = 0003fb52
+a = 0054f180, b = 01c2, yout = 002e7412
+a = 00a9e300, b = 00e1, yout = 002e7412
+a = 0153c600, b = 0070, yout = 00d85712
+a = 02a78c00, b = 0038, yout = 00d85712
+a = 054f1800, b = 001c, yout = 00d85712
+a = 0a9e3000, b = 000e, yout = 00d85712
+a = 153c6000, b = 0007, yout = 00d85712
+a = 2a78c000, b = 0003, yout = 1614b712
+a = 54f18000, b = 0001, yout = 408d7712
+43491 * 57670 = 957ef712, Reality = 957ef712
+a = 0000007c, b = 62c2, yout = 00000000
+a = 000000f8, b = 3161, yout = 00000000
+a = 000001f0, b = 18b0, yout = 000000f8
+a = 000003e0, b = 0c58, yout = 000000f8
+a = 000007c0, b = 062c, yout = 000000f8
+a = 00000f80, b = 0316, yout = 000000f8
+a = 00001f00, b = 018b, yout = 000000f8
+a = 00003e00, b = 00c5, yout = 00001ff8
+a = 00007c00, b = 0062, yout = 00005df8
+a = 0000f800, b = 0031, yout = 00005df8
+a = 0001f000, b = 0018, yout = 000155f8
+a = 0003e000, b = 000c, yout = 000155f8
+a = 0007c000, b = 0006, yout = 000155f8
+a = 000f8000, b = 0003, yout = 000155f8
+a = 001f0000, b = 0001, yout = 0010d5f8
+124 * 25282 = 002fd5f8, Reality = 2fd5f8
+a = 00000854, b = 27f8, yout = 00000000
+a = 000010a8, b = 13fc, yout = 00000000
+a = 00002150, b = 09fe, yout = 00000000
+a = 000042a0, b = 04ff, yout = 00000000
+a = 00008540, b = 027f, yout = 000042a0
+a = 00010a80, b = 013f, yout = 0000c7e0
+a = 00021500, b = 009f, yout = 0001d260
+a = 00042a00, b = 004f, yout = 0003e760
+a = 00085400, b = 0027, yout = 00081160
+a = 0010a800, b = 0013, yout = 00106560
+a = 00215000, b = 0009, yout = 00210d60
+a = 0042a000, b = 0004, yout = 00425d60
+a = 00854000, b = 0002, yout = 00425d60
+a = 010a8000, b = 0001, yout = 00425d60
+2132 * 10232 = 014cdd60, Reality = 14cdd60
+a = 0000231b, b = 0001, yout = 00000000
+8987 * 1 = 0000231b, Reality = 231b
+a = 00000001, b = e9e8, yout = 00000000
+a = 00000002, b = 74f4, yout = 00000000
+a = 00000004, b = 3a7a, yout = 00000000
+a = 00000008, b = 1d3d, yout = 00000000
+a = 00000010, b = 0e9e, yout = 00000008
+a = 00000020, b = 074f, yout = 00000008
+a = 00000040, b = 03a7, yout = 00000028
+a = 00000080, b = 01d3, yout = 00000068
+a = 00000100, b = 00e9, yout = 000000e8
+a = 00000200, b = 0074, yout = 000001e8
+a = 00000400, b = 003a, yout = 000001e8
+a = 00000800, b = 001d, yout = 000001e8
+a = 00001000, b = 000e, yout = 000009e8
+a = 00002000, b = 0007, yout = 000009e8
+a = 00004000, b = 0003, yout = 000029e8
+a = 00008000, b = 0001, yout = 000069e8
+1 * 59880 = 0000e9e8, Reality = e9e8
+52711 * 0 = 00000000, Reality = 0
+a = 00000000, b = 438d, yout = 00000000
+a = 00000000, b = 21c6, yout = 00000000
+a = 00000000, b = 10e3, yout = 00000000
+a = 00000000, b = 0871, yout = 00000000
+a = 00000000, b = 0438, yout = 00000000
+a = 00000000, b = 021c, yout = 00000000
+a = 00000000, b = 010e, yout = 00000000
+a = 00000000, b = 0087, yout = 00000000
+a = 00000000, b = 0043, yout = 00000000
+a = 00000000, b = 0021, yout = 00000000
+a = 00000000, b = 0010, yout = 00000000
+a = 00000000, b = 0008, yout = 00000000
+a = 00000000, b = 0004, yout = 00000000
+a = 00000000, b = 0002, yout = 00000000
+a = 00000000, b = 0001, yout = 00000000
+0 * 17293 = 00000000, Reality = 0
+Done.  0 Errors
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/muxtest.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/nblkorder.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/param_add.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/param_and.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/param_and2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/param_band.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/param_binv.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/param_bor.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/param_concat.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/param_eq3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/param_expr.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/param_mod.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/param_string.v
+990
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/param_tern.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/param_test1.v
+* Error: no top module!.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/param_test2.v
+foo = 0000000000000000000000000000000000000000ffffffff
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/param_times.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/pca1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/port-test2.v
+00000001
+00000010
+00000100
+00001000
+00010000
+00100000
+01000000
+10000000
+port_3 PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/port-test3.v
+* Error: in module instance fm, actual connection to port 1 is not a net.
+* Error: in module instance fm, formal connection to port 2 is not a net.
+* Error: in module instance fm, actual connection to port 3 is not a net.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/posedge.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ptest001.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ptest002.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ptest003.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ptest004.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ptest005.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ptest006.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ptest007.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ptest008.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ptest009.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ptest010.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ptest011.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/pullupdown.v
+Testing drivers with value 00
+Testing drivers with value 01
+Testing drivers with value 02
+Testing drivers with value 03
+Testing drivers with value 04
+Testing drivers with value 05
+Testing drivers with value 06
+Testing drivers with value 07
+Testing drivers with value 08
+Testing drivers with value 09
+Testing drivers with value 0a
+Testing drivers with value 0b
+Testing drivers with value 0c
+Testing drivers with value 0d
+Testing drivers with value 0e
+Testing drivers with value 0f
+Testing drivers with value 10
+Testing drivers with value 11
+Testing drivers with value 12
+Testing drivers with value 13
+Testing drivers with value 14
+Testing drivers with value 15
+Testing drivers with value 16
+Testing drivers with value 17
+Testing drivers with value 18
+Testing drivers with value 19
+Testing drivers with value 1a
+Testing drivers with value 1b
+Testing drivers with value 1c
+Testing drivers with value 1d
+Testing drivers with value 1e
+Testing drivers with value 1f
+Testing drivers with value 20
+Testing drivers with value 21
+Testing drivers with value 22
+Testing drivers with value 23
+Testing drivers with value 24
+Testing drivers with value 25
+Testing drivers with value 26
+Testing drivers with value 27
+Testing drivers with value 28
+Testing drivers with value 29
+Testing drivers with value 2a
+Testing drivers with value 2b
+Testing drivers with value 2c
+Testing drivers with value 2d
+Testing drivers with value 2e
+Testing drivers with value 2f
+Testing drivers with value 30
+Testing drivers with value 31
+Testing drivers with value 32
+Testing drivers with value 33
+Testing drivers with value 34
+Testing drivers with value 35
+Testing drivers with value 36
+Testing drivers with value 37
+Testing drivers with value 38
+Testing drivers with value 39
+Testing drivers with value 3a
+Testing drivers with value 3b
+Testing drivers with value 3c
+Testing drivers with value 3d
+Testing drivers with value 3e
+Testing drivers with value 3f
+Testing drivers with value 40
+Testing drivers with value 41
+Testing drivers with value 42
+Testing drivers with value 43
+Testing drivers with value 44
+Testing drivers with value 45
+Testing drivers with value 46
+Testing drivers with value 47
+Testing drivers with value 48
+Testing drivers with value 49
+Testing drivers with value 4a
+Testing drivers with value 4b
+Testing drivers with value 4c
+Testing drivers with value 4d
+Testing drivers with value 4e
+Testing drivers with value 4f
+Testing drivers with value 50
+Testing drivers with value 51
+Testing drivers with value 52
+Testing drivers with value 53
+Testing drivers with value 54
+Testing drivers with value 55
+Testing drivers with value 56
+Testing drivers with value 57
+Testing drivers with value 58
+Testing drivers with value 59
+Testing drivers with value 5a
+Testing drivers with value 5b
+Testing drivers with value 5c
+Testing drivers with value 5d
+Testing drivers with value 5e
+Testing drivers with value 5f
+Testing drivers with value 60
+Testing drivers with value 61
+Testing drivers with value 62
+Testing drivers with value 63
+Testing drivers with value 64
+Testing drivers with value 65
+Testing drivers with value 66
+Testing drivers with value 67
+Testing drivers with value 68
+Testing drivers with value 69
+Testing drivers with value 6a
+Testing drivers with value 6b
+Testing drivers with value 6c
+Testing drivers with value 6d
+Testing drivers with value 6e
+Testing drivers with value 6f
+Testing drivers with value 70
+Testing drivers with value 71
+Testing drivers with value 72
+Testing drivers with value 73
+Testing drivers with value 74
+Testing drivers with value 75
+Testing drivers with value 76
+Testing drivers with value 77
+Testing drivers with value 78
+Testing drivers with value 79
+Testing drivers with value 7a
+Testing drivers with value 7b
+Testing drivers with value 7c
+Testing drivers with value 7d
+Testing drivers with value 7e
+Testing drivers with value 7f
+Testing drivers with value 80
+Testing drivers with value 81
+Testing drivers with value 82
+Testing drivers with value 83
+Testing drivers with value 84
+Testing drivers with value 85
+Testing drivers with value 86
+Testing drivers with value 87
+Testing drivers with value 88
+Testing drivers with value 89
+Testing drivers with value 8a
+Testing drivers with value 8b
+Testing drivers with value 8c
+Testing drivers with value 8d
+Testing drivers with value 8e
+Testing drivers with value 8f
+Testing drivers with value 90
+Testing drivers with value 91
+Testing drivers with value 92
+Testing drivers with value 93
+Testing drivers with value 94
+Testing drivers with value 95
+Testing drivers with value 96
+Testing drivers with value 97
+Testing drivers with value 98
+Testing drivers with value 99
+Testing drivers with value 9a
+Testing drivers with value 9b
+Testing drivers with value 9c
+Testing drivers with value 9d
+Testing drivers with value 9e
+Testing drivers with value 9f
+Testing drivers with value a0
+Testing drivers with value a1
+Testing drivers with value a2
+Testing drivers with value a3
+Testing drivers with value a4
+Testing drivers with value a5
+Testing drivers with value a6
+Testing drivers with value a7
+Testing drivers with value a8
+Testing drivers with value a9
+Testing drivers with value aa
+Testing drivers with value ab
+Testing drivers with value ac
+Testing drivers with value ad
+Testing drivers with value ae
+Testing drivers with value af
+Testing drivers with value b0
+Testing drivers with value b1
+Testing drivers with value b2
+Testing drivers with value b3
+Testing drivers with value b4
+Testing drivers with value b5
+Testing drivers with value b6
+Testing drivers with value b7
+Testing drivers with value b8
+Testing drivers with value b9
+Testing drivers with value ba
+Testing drivers with value bb
+Testing drivers with value bc
+Testing drivers with value bd
+Testing drivers with value be
+Testing drivers with value bf
+Testing drivers with value c0
+Testing drivers with value c1
+Testing drivers with value c2
+Testing drivers with value c3
+Testing drivers with value c4
+Testing drivers with value c5
+Testing drivers with value c6
+Testing drivers with value c7
+Testing drivers with value c8
+Testing drivers with value c9
+Testing drivers with value ca
+Testing drivers with value cb
+Testing drivers with value cc
+Testing drivers with value cd
+Testing drivers with value ce
+Testing drivers with value cf
+Testing drivers with value d0
+Testing drivers with value d1
+Testing drivers with value d2
+Testing drivers with value d3
+Testing drivers with value d4
+Testing drivers with value d5
+Testing drivers with value d6
+Testing drivers with value d7
+Testing drivers with value d8
+Testing drivers with value d9
+Testing drivers with value da
+Testing drivers with value db
+Testing drivers with value dc
+Testing drivers with value dd
+Testing drivers with value de
+Testing drivers with value df
+Testing drivers with value e0
+Testing drivers with value e1
+Testing drivers with value e2
+Testing drivers with value e3
+Testing drivers with value e4
+Testing drivers with value e5
+Testing drivers with value e6
+Testing drivers with value e7
+Testing drivers with value e8
+Testing drivers with value e9
+Testing drivers with value ea
+Testing drivers with value eb
+Testing drivers with value ec
+Testing drivers with value ed
+Testing drivers with value ee
+Testing drivers with value ef
+Testing drivers with value f0
+Testing drivers with value f1
+Testing drivers with value f2
+Testing drivers with value f3
+Testing drivers with value f4
+Testing drivers with value f5
+Testing drivers with value f6
+Testing drivers with value f7
+Testing drivers with value f8
+Testing drivers with value f9
+Testing drivers with value fa
+Testing drivers with value fb
+Testing drivers with value fc
+Testing drivers with value fd
+Testing drivers with value fe
+Testing drivers with value ff
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/pullupdown2.v
+* Error: (internal) gate not initialized.
+* Error: (internal) gate not initialized.
+* Error: (internal) gate not initialized.
+* Error: (internal) gate not initialized.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/pullupdown3.v
+* Error: (internal) gate not initialized.
+* Error: (internal) gate not initialized.
+* Error: (internal) gate not initialized.
+* Error: (internal) gate not initialized.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/qmark.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/qmark1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/qmark3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/qmark5.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/qmark6.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ram16x1.v
+r1[0] == 0
+r1[1] == 1
+r1[2] == 0
+r1[3] == 1
+r1[4] == 0
+r1[5] == 1
+r1[6] == 0
+r1[7] == 1
+r1[8] == 0
+r1[9] == 1
+r1[a] == 0
+r1[b] == 1
+r1[c] == 0
+r1[d] == 1
+r1[e] == 0
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/range1.v
+
+<< BEGIN >>
+<< END  >>
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/range2.v
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/readmemb1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/readmemb2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/readmemb3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/readmemh1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/readmemh2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/readmemh3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/readmemh4.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/readmemh5.v
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/repeat1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/rop.v
+ & 3'b10z === 0
+ | 3'b10z === 1
+ ^ 3'b10z === x
+~& 3'b10z === 1
+~| 3'b10z === 0
+~^ 3'b10z === x
+ & 3'b0xz === 0
+ | 3'b0xz === x
+ ^ 3'b0xz === x
+~& 3'b0xz === 1
+~| 3'b0xz === x
+~^ 3'b0xz === x
+ & 3'b1xz === x
+ | 3'b1xz === 1
+ ^ 3'b1xz === x
+~& 3'b1xz === x
+~| 3'b1xz === 0
+~^ 3'b1xz === x
+ & 3'b000 === 0
+ | 3'b000 === 0
+ ^ 3'b000 === 0
+~& 3'b000 === 1
+~| 3'b000 === 1
+~^ 3'b000 === 1
+ & 3'b111 === 1
+ | 3'b111 === 1
+ ^ 3'b111 === 1
+~& 3'b111 === 0
+~| 3'b111 === 0
+~^ 3'b111 === 0
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/rptconcat.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/schedule.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/scope1.v
+* Warning: implicit declaration of fake.
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/scope2.v
+* Warning: implicit declaration of q.
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/scope3.v
+* Error: recursive instantiation of module a.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_always1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_always2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_always3.v
+time=5, c=0, r=0, reg=x
+time=10, c=0, r=1, reg=0
+time=15, c=0, r=0, reg=0
+time=20, c=1, r=0, reg=1
+time=25, c=0, r=0, reg=1
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_array.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_assign.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_dsbl.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_force.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_function1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_function2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_function3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_function4.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_function5.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_instmod1.v
+time 3 r=1, c0=0, c1=0, o0=0,o1=0
+time 3 r=0, c0=0, c1=0, o0=0,o1=0
+saw a clk at 5, out is 1
+time 7 r=0, c0=1, c1=0, o0=1,o1=0
+saw a clk at 7, out is 1
+time 9 r=0, c0=1, c1=1, o0=1,o1=1
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_instmod2.v
+time 3 r=1, c0=0, c1=0, o0=0,o1=0
+time 3 r=0, c0=0, c1=0, o0=0,o1=0
+time 7 r=0, c0=1, c1=0, o0=1,o1=0
+time 9 r=0, c0=1, c1=1, o0=1,o1=1
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_int.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_lvalconcat.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_lvalconcat2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_param1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_param2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_release.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_stmt002.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_task1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_task2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/shellho1.v
+Running first test.
+PASS! top.memory.memory[0] set correctly.
+top.memory.memory[0] = f
+
+Running second test.
+top.memory.memory[1] = f
+PASS! top.memory.memory[1] set correctly.
+top.memory.memory[1] = f
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/shift_pad.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/signed1.v
+* Error: syntax error: (line: 26, file: ivltests/signed1.v) token: 'vala', .
+* Error: yacc token: 'vala'.
+* Error: unexpected token 'vala' seen in module 'main'.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/signed2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/signed3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/signed4.v
+* Error: syntax error: (line: 25, file: ivltests/signed4.v) token: 'y', .
+* Error: yacc token: 'y'.
+* Error: unexpected token 'y' seen in module 'signed1'.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/signed5.v
+* Warning: unknown system command $signed, ignored.
+* Warning: unknown system command $signed, ignored.
+* Warning: unknown system command $signed, ignored.
+* Warning: unknown system command $signed, ignored.
+* Warning: unknown system command $signed, ignored.
+* Warning: unknown system command $signed, ignored.
+* Warning: unknown system command $signed, ignored.
+* Warning: unknown system command $signed, ignored.
+FAILED -- $signed(1100) === 00000000000000000000000000000000
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/specify1.v
+* Error: syntax error: (line: 14, file: ivltests/specify1.v) token: '`celldefine', .
+* Error: yacc token: '`celldefine'.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/specify_01.v
+* Error: syntax error: (line: 13, file: ivltests/specify_01.v) token: '=>', .
+* Error: yacc token: '=>'.
+* Error: unexpected token '=>' seen in module 'dff'.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/stask_parm1.v
+~i = 1
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/stask_parm2.v
+{a, b} == 00000000
+{a, b} == 00000001
+{a, b} == 00000010
+{a, b} == 00000011
+{a, b} == 00000100
+{a, b} == 00000101
+{a, b} == 00000110
+{a, b} == 00000111
+{a, b} == 00001000
+{a, b} == 00001001
+{a, b} == 00001010
+{a, b} == 00001011
+{a, b} == 00001100
+{a, b} == 00001101
+{a, b} == 00001110
+{a, b} == 00010000
+{a, b} == 00010001
+{a, b} == 00010010
+{a, b} == 00010011
+{a, b} == 00010100
+{a, b} == 00010101
+{a, b} == 00010110
+{a, b} == 00010111
+{a, b} == 00011000
+{a, b} == 00011001
+{a, b} == 00011010
+{a, b} == 00011011
+{a, b} == 00011100
+{a, b} == 00011101
+{a, b} == 00011110
+{a, b} == 00100000
+{a, b} == 00100001
+{a, b} == 00100010
+{a, b} == 00100011
+{a, b} == 00100100
+{a, b} == 00100101
+{a, b} == 00100110
+{a, b} == 00100111
+{a, b} == 00101000
+{a, b} == 00101001
+{a, b} == 00101010
+{a, b} == 00101011
+{a, b} == 00101100
+{a, b} == 00101101
+{a, b} == 00101110
+{a, b} == 00110000
+{a, b} == 00110001
+{a, b} == 00110010
+{a, b} == 00110011
+{a, b} == 00110100
+{a, b} == 00110101
+{a, b} == 00110110
+{a, b} == 00110111
+{a, b} == 00111000
+{a, b} == 00111001
+{a, b} == 00111010
+{a, b} == 00111011
+{a, b} == 00111100
+{a, b} == 00111101
+{a, b} == 00111110
+{a, b} == 01000000
+{a, b} == 01000001
+{a, b} == 01000010
+{a, b} == 01000011
+{a, b} == 01000100
+{a, b} == 01000101
+{a, b} == 01000110
+{a, b} == 01000111
+{a, b} == 01001000
+{a, b} == 01001001
+{a, b} == 01001010
+{a, b} == 01001011
+{a, b} == 01001100
+{a, b} == 01001101
+{a, b} == 01001110
+{a, b} == 01010000
+{a, b} == 01010001
+{a, b} == 01010010
+{a, b} == 01010011
+{a, b} == 01010100
+{a, b} == 01010101
+{a, b} == 01010110
+{a, b} == 01010111
+{a, b} == 01011000
+{a, b} == 01011001
+{a, b} == 01011010
+{a, b} == 01011011
+{a, b} == 01011100
+{a, b} == 01011101
+{a, b} == 01011110
+{a, b} == 01100000
+{a, b} == 01100001
+{a, b} == 01100010
+{a, b} == 01100011
+{a, b} == 01100100
+{a, b} == 01100101
+{a, b} == 01100110
+{a, b} == 01100111
+{a, b} == 01101000
+{a, b} == 01101001
+{a, b} == 01101010
+{a, b} == 01101011
+{a, b} == 01101100
+{a, b} == 01101101
+{a, b} == 01101110
+{a, b} == 01110000
+{a, b} == 01110001
+{a, b} == 01110010
+{a, b} == 01110011
+{a, b} == 01110100
+{a, b} == 01110101
+{a, b} == 01110110
+{a, b} == 01110111
+{a, b} == 01111000
+{a, b} == 01111001
+{a, b} == 01111010
+{a, b} == 01111011
+{a, b} == 01111100
+{a, b} == 01111101
+{a, b} == 01111110
+{a, b} == 10000000
+{a, b} == 10000001
+{a, b} == 10000010
+{a, b} == 10000011
+{a, b} == 10000100
+{a, b} == 10000101
+{a, b} == 10000110
+{a, b} == 10000111
+{a, b} == 10001000
+{a, b} == 10001001
+{a, b} == 10001010
+{a, b} == 10001011
+{a, b} == 10001100
+{a, b} == 10001101
+{a, b} == 10001110
+{a, b} == 10010000
+{a, b} == 10010001
+{a, b} == 10010010
+{a, b} == 10010011
+{a, b} == 10010100
+{a, b} == 10010101
+{a, b} == 10010110
+{a, b} == 10010111
+{a, b} == 10011000
+{a, b} == 10011001
+{a, b} == 10011010
+{a, b} == 10011011
+{a, b} == 10011100
+{a, b} == 10011101
+{a, b} == 10011110
+{a, b} == 10100000
+{a, b} == 10100001
+{a, b} == 10100010
+{a, b} == 10100011
+{a, b} == 10100100
+{a, b} == 10100101
+{a, b} == 10100110
+{a, b} == 10100111
+{a, b} == 10101000
+{a, b} == 10101001
+{a, b} == 10101010
+{a, b} == 10101011
+{a, b} == 10101100
+{a, b} == 10101101
+{a, b} == 10101110
+{a, b} == 10110000
+{a, b} == 10110001
+{a, b} == 10110010
+{a, b} == 10110011
+{a, b} == 10110100
+{a, b} == 10110101
+{a, b} == 10110110
+{a, b} == 10110111
+{a, b} == 10111000
+{a, b} == 10111001
+{a, b} == 10111010
+{a, b} == 10111011
+{a, b} == 10111100
+{a, b} == 10111101
+{a, b} == 10111110
+{a, b} == 11000000
+{a, b} == 11000001
+{a, b} == 11000010
+{a, b} == 11000011
+{a, b} == 11000100
+{a, b} == 11000101
+{a, b} == 11000110
+{a, b} == 11000111
+{a, b} == 11001000
+{a, b} == 11001001
+{a, b} == 11001010
+{a, b} == 11001011
+{a, b} == 11001100
+{a, b} == 11001101
+{a, b} == 11001110
+{a, b} == 11010000
+{a, b} == 11010001
+{a, b} == 11010010
+{a, b} == 11010011
+{a, b} == 11010100
+{a, b} == 11010101
+{a, b} == 11010110
+{a, b} == 11010111
+{a, b} == 11011000
+{a, b} == 11011001
+{a, b} == 11011010
+{a, b} == 11011011
+{a, b} == 11011100
+{a, b} == 11011101
+{a, b} == 11011110
+{a, b} == 11100000
+{a, b} == 11100001
+{a, b} == 11100010
+{a, b} == 11100011
+{a, b} == 11100100
+{a, b} == 11100101
+{a, b} == 11100110
+{a, b} == 11100111
+{a, b} == 11101000
+{a, b} == 11101001
+{a, b} == 11101010
+{a, b} == 11101011
+{a, b} == 11101100
+{a, b} == 11101101
+{a, b} == 11101110
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/string1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/string2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/string3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/supply1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/supply2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/talu.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task-scope.v
+R=00000001
+R=00000010
+R=00000011
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task3.14A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task3.14B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task3.14C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task3.14D.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task3.14E.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task3.14F.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_bypath.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_inpad.v
+x=00000200
+x=00000004
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_iotypes.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_mem.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_noop.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_noop2.v
+* Error: no top module!.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_omemw.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_omemw2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_omemw3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_scope.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/tern1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/tern2.v
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/test_bufif0.v
+PASSED: bufif0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/test_bufif1.v
+PASSED: bufif1
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/test_mos_strength_reduction.v
+* Warning: implicit declaration of n0.
+* Warning: implicit declaration of p0.
+* Error: gate rn1 has non-bitfield terminal 2.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/test_nmos.v
+PASSED: nmos
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/test_notif0.v
+PASSED: notif0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/test_notif1.v
+PASSED: notif1
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/test_pmos.v
+PASSED: pmos
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/test_rnmos.v
+PASSED: rnmos
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/test_rpmos.v
+PASSED: rpmos
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/time1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/time2.v
+time =                    0, clock = 0
+time =                   10, clock = 1
+ edge ! time =                   10, count = 1
+time =                   20, clock = 2
+time =                   30, clock = 3
+ edge ! time =                   30, count = 2
+time =                   40, clock = 4
+time =                   50, clock = 5
+ edge ! time =                   50, count = 3
+time =                   60, clock = 6
+time =                   70, clock = 7
+ edge ! time =                   70, count = 4
+time =                   80, clock = 8
+time =                   90, clock = 9
+ edge ! time =                   90, count = 5
+time =                  100, clock = a
+ edge ! time =                  110, count = 6
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/time3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/time4.v
+FAILED -- t == 0000000000000000000000000000000000000000000000000000000000000000
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/time5.v
+3 set out1 == 1
+4 set out2 == 1
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/time6.v
+34 set out1 == 1
+36 set out2 == 1
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/time7.v
+
+<< BEGIN >>
+@                    1 - no count
+@                    2 - no count
+@                    3 - no count
+@                    4 - no count
+@                    5 - no count
+@                    6 - no count
+@                    7 - no count
+@                    8 - no count
+@                    9 - no count
+@                   10 - no count
+@                   11 - no count
+@                   12 - no count
+@                   13 - no count
+@                   14 - no count
+@                   15 - no count
+@                   16 - no count
+@                   17 - no count
+@                   18 - no count
+@                   19 - no count
+@                   20 - no count
+@                   21 - no count
+@                   22 - no count
+@                   23 - no count
+@                   24 - no count
+@                   25 - Got ONE
+@                   26 - no count
+@                   27 - no count
+@                   28 - no count
+@                   29 - Got ONE
+@                   30 - no count
+@                   31 - no count
+@                   32 - no count
+@                   33 - no count
+@                   34 - no count
+@                   35 - no count
+@                   36 - no count
+@                   37 - no count
+@                   38 - no count
+@                   39 - no count
+@                   40 - no count
+@                   41 - no count
+@                   42 - no count
+@                   43 - no count
+@                   44 - no count
+
+<< END  >>
+OK
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/time8.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/timescale1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/tri0.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/tri0b.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/tri1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/udp_bufg.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/udp_jkff.v
+cp=0 j=x k=x s=x r=x  q=x
+cp=0 j=x k=x s=1 r=0  q=1
+cp=0 j=x k=x s=0 r=0  q=1
+cp=0 j=x k=x s=x r=0  q=1
+cp=0 j=x k=x s=0 r=0  q=1
+cp=0 j=x k=x s=0 r=1  q=0
+cp=0 j=x k=x s=0 r=0  q=0
+cp=0 j=x k=x s=x r=0  q=x
+cp=0 j=x k=x s=0 r=0  q=x
+cp=0 j=x k=x s=1 r=0  q=1
+cp=0 j=x k=x s=1 r=1  q=x
+cp=0 j=x k=x s=0 r=1  q=0
+cp=0 j=x k=x s=0 r=0  q=0
+cp=0 j=x k=x s=0 r=1  q=0
+cp=0 j=x k=x s=1 r=1  q=x
+cp=0 j=x k=x s=0 r=1  q=0
+cp=0 j=x k=x s=0 r=0  q=0
+cp=0 j=0 k=0 s=0 r=0  q=0
+cp=1 j=0 k=0 s=0 r=0  q=0
+cp=0 j=0 k=1 s=0 r=0  q=0
+cp=1 j=0 k=1 s=0 r=0  q=0
+cp=0 j=1 k=1 s=0 r=0  q=0
+cp=1 j=1 k=1 s=0 r=0  q=1
+cp=0 j=1 k=1 s=0 r=0  q=1
+cp=1 j=1 k=1 s=0 r=0  q=0
+cp=0 j=0 k=0 s=0 r=0  q=0
+cp=x j=0 k=0 s=0 r=0  q=0
+cp=0 j=1 k=0 s=0 r=0  q=0
+cp=1 j=1 k=0 s=0 r=0  q=1
+cp=x j=1 k=0 s=0 r=0  q=1
+cp=1 j=1 k=0 s=0 r=0  q=1
+cp=0 j=1 k=0 s=0 r=0  q=1
+cp=x j=1 k=0 s=0 r=0  q=1
+cp=0 j=0 k=1 s=0 r=0  q=1
+cp=x j=0 k=1 s=0 r=0  q=x
+cp=1 j=0 k=1 s=0 r=0  q=x
+cp=0 j=1 k=1 s=0 r=0  q=x
+cp=1 j=1 k=1 s=0 r=0  q=x
+cp=0 j=0 k=1 s=0 r=0  q=x
+cp=1 j=0 k=1 s=0 r=0  q=0
+cp=x j=1 k=1 s=0 r=0  q=0
+cp=1 j=1 k=1 s=0 r=0  q=x
+cp=0 j=1 k=0 s=0 r=0  q=x
+cp=1 j=1 k=0 s=0 r=0  q=1
+cp=0 j=0 k=0 s=0 r=0  q=1
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/udp_x.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/unary_and.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/unary_lnot1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/unary_lnot2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/unary_nand.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/unary_nor.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/unary_or.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/unary_xnor1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/unary_xnor2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/unary_xor.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/vardly.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/varlsfht.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/varlsfht1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/varlsfht2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/varlshft.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/varlshft1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/varrshft.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/varrshft1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/varrshft2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/vcd1.v
+* Warning: implicit declaration of na1_out.
+* Warning: implicit declaration of na2_out.
+* Warning: implicit declaration of na3_out.
+* Warning: implicit declaration of out.
+* Warning: formal arg out in module instance myckt is not declared
+input/output/inout, assuming inout.
+0 xor 0 = 0
+1 xor 0 = 1
+1 xor 1 = 0
+0 xor 1 = 1
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/vector.v
+foo40=       1
+               foo04=       1
+                              foo51=       1
+                                             foo15=       1
+foo40=       2
+               foo04=       2
+                              foo51=       2
+                                             foo15=       2
+foo40=       3
+               foo04=       3
+                              foo51=       3
+                                             foo15=       3
+foo40=       4
+               foo04=       4
+                              foo51=       4
+                                             foo15=       4
+foo40=       5
+               foo04=       5
+                              foo51=       5
+                                             foo15=       5
+foo40=       6
+               foo04=       6
+                              foo51=       6
+                                             foo15=       6
+foo40=       7
+               foo04=       7
+                              foo51=       7
+                                             foo15=       7
+foo40=       8
+               foo04=       8
+                              foo51=       8
+                                             foo15=       8
+foo40=       9
+               foo04=       9
+                              foo51=       9
+                                             foo15=       9
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/wait1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/width.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/wildsense.v
+* Error: syntax error: (line: 31, file: ivltests/wildsense.v) token: '*', .
+* Error: yacc token: '*'.
+* Error: unexpected token '*' seen in module 'test'.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/wireadd1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/wireeq.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/wirege.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/wireland.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/wirele.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/wiremod1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/wiresl.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/wiresl2.v
+out=01
+out=02
+out=04
+out=08
+out=10
+out=20
+out=40
+out=80
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/wiresr.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/wiresub1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/wirexor1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/xnor_test.v
+TEST PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/z1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/z2.v
+PASSED

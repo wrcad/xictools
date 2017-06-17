@@ -1,0 +1,22 @@
+# Common environment setup for QA Makefiles
+# $Id: make.config.sample,v 1.1 2014/04/03 18:06:57 stevew Exp $
+
+# This file should be copied to "make.config" in this directory, which
+# is customized to the user's installation.
+
+# This is the shared library suffix for the operating system, should be
+# one of
+# Linux:        so
+# OS X:         dylib
+# Windows:      dll
+#
+soext       = so
+
+# Path to the module build directory tree, as copied from the WRspice
+# installation area.
+#
+vabuild     = $(HOME)/devkit/adms/examples
+
+# Path to the WRspice executable.
+#
+wrspice     = /usr/local/xictools/bin/wrspice

@@ -1,0 +1,58 @@
+#######################################################################
+# xic/extract/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 5.73 2015/02/17 05:56:33 stevew Exp $
+#######################################################################
+
+GFX_VERSION = @GFX_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @NEEDINT64@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @NEEDINT64@
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+
+LIB_TARGET = extract.a
+
+LPATH = ../../../xt_base
+HFILES =
+CCFILES = \
+  ext.cc ext_antenna.cc ext_connect.cc ext_device.cc ext_devsel.cc \
+  ext_duality.cc ext_dump.cc ext_ep_comp.cc ext_errlog.cc \
+  ext_extract.cc ext_fc.cc ext_fh.cc ext_fxjob.cc ext_fxunits.cc \
+  ext_ghost.cc ext_gnsel.cc ext_gplane.cc ext_group.cc ext_grpgen.cc \
+  ext_menu.cc ext_mosgate.cc ext_net_dump.cc ext_netname.cc \
+  ext_nets.cc ext_out_elec.cc ext_out_lvs.cc ext_out_phys.cc \
+  ext_path.cc ext_pathfinder.cc ext_pathres.cc ext_rlsolver.cc \
+  ext_tech.cc ext_techif.cc ext_term.cc ext_txtcmds.cc \
+  ext_variables.cc ext_view.cc funcs_extract.cc
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+depend:
+	@echo depending in xic/extract
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+            $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm *.o $(LIB_TARGET)
+
+distclean:
+	-rm *.o $(LIB_TARGET) Makefile
+
+#######################################################################

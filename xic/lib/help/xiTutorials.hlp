@@ -1,0 +1,1538 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiTutorials.hlp,v 1.85 2017/03/22 22:27:07 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiTutorials.hlp
+!!TITLE
+xiTutorials.hlp
+!!HTML
+
+!!SUBTOPICS
+xictop
+captour
+menutour
+usingxic
+cdssim
+
+
+!! 040713
+!!KEYWORD
+xictop
+!!TITLE
+<i>Xic</i> Graphical Editor Overview
+!!HTML
+    <i>Xic</i> is a dual-mode graphical editing tool.  In the physical
+    editing mode, <i>Xic</i> is a hierarchical mask layout editor,
+    with interactive and batch mode design rule checking, arbitrary
+    angle polygon and wire support, netlist and parameter value
+    extraction, and many more advanced features.  In electrical layout
+    mode, <i>Xic</i> serves as a hierarchical electrical schematic
+    editor and schematic capture front end for SPICE.  In the
+    <i>XicTools</i> environment, circuit simulation can be performed
+    and results analyzed from within <i>Xic</i>, through an
+    interprocess communication channel established to the companion
+    <i>WRspice</i> program.
+
+    <p>
+    Arrayed along the top of the main window is a toolbar containing
+    drop-down menu selectors.  Below the menu bar is a tool bar
+    containing buttons and other controls, including the <a
+    href="coordline">coordinate readout</a> area to the right.  To
+    the left of the main window is an array of additional command
+    buttons.  These <a href="xic:commands">menu commands</a> control
+    the operation of <i>Xic</i>.  The <a href="mainwindow">main
+    drawing window</a> occupies the largest section of the main
+    window.  The main drawing window supports <a href="dragdrop">drag
+    and drop</a> as a drop receiver for files.  To the left of the
+    main drawing window is the <a href="layertab">layer menu</a>,
+    which displays a listing of the layers used in the process.  The
+    layers, and their attributes, are specified in a <a
+    href="techfile">technology file</a> read by <i>Xic</i> at program
+    startup.
+
+    <p>
+    Just below the main drawing window is the <a
+    href="promptline">prompt line</a>, which provides a channel for
+    text-mode interaction with the program.  In the same row, below
+    the buttons in the side menu is the <a href="keyspresd">key press
+    buffer</a> area, which records characters typed into the graphics
+    window.  It is invisible until characters are typed.  The typed
+    characters are interpreted as command accelerators.  Below the
+    prompt line, at the bottom of the main window, is a <a
+    href="statusline">status line</a> which provides information about
+    the current program operating state.
+
+    <p>
+    The <a href="xic:mail"><b>WR</b> button</a>, in the upper left
+    corner of the main window, brings up a mail client which can be
+    used to send messages and files via internet mail.  It is
+    preloaded with the address of the technical support group at
+    Whiteley Research.
+
+    <p>
+    Despite the array of features, <i>Xic</i> is intended to be
+    straightforward and intuitive to use, and <i>Xic</i> has extensive
+    on-line documentation available through a context-sensitive <a
+    href="helpsys">help system</a>.  This help system can easily be
+    augmented and customized by the user, so that the user's design
+    rules and tips, and other technical information can be made
+    available from within <i>Xic</i>.
+
+    <p>
+    <i>Xic</i> includes a native <a href="xicscript">script
+    execution</a> facility, with <a href="plugins">plug-in</a> support
+    for <a href="pyplugin">Python</a> and <a
+    href="tclplugin">Tcl/Tk</a>.  These languages will be available if
+    installed on the user's computer.  The native scripting language
+    is a straightforward but powerful C-like language with a rich
+    library of primitives for controlling the operation of <i>Xic</i>. 
+    Scripting can be used for automation, for <a
+    href="xic:pcells">parameterized cells</a> and <a
+    href="execlabel">executable labels</a>, and to implement
+    user-defined commands.  These commands may appear as buttons in
+    the <a href="xic:usermenu"><b>User Menu</b></a>.
+
+    <p>
+    One application of the user scripts is to provide simple, menu
+    based commands for creating geometrical objects, devices, or
+    parameterized device structures for use in circuit layout. 
+    Further uses for this capability are limited only by the user's
+    imagination.
+
+    <p>
+    <i>Xic</i> can execute scripts in batch and server modes, allowing
+    geometrical manipulations to be performed in a background or
+    non-local environment.  As a server, <i>Xic</i> can serve as the
+    workhorse back-end for web-based or turn-key third-party products
+    or services, or in-house custom applications.
+
+!!IFDEF OpenAccess
+    <p>
+    <i>Xic</i> provides access to the OpenAccess database via a <a
+    href="oaplugin">plug-in</a>.  It can utilize the OpenAccess
+    database provided with Cadence Virtuoso, or Synopsys/Ciranova <a
+    href="pycell">PyCell Studio</a>, and others.  <i>Xic</i> has some
+    limited <a href="cdscompat">compatibility</a> with Cadence
+    Virtuoso:  <i>Xic</i> can directly read Cadence technology and
+    display resource files, and can read layout and some schematic and
+    schematic symbol views.
+!!ENDIF
+
+    <p>
+    Default schematic editing support is provided for a wide variety
+    of devices, even Josephson junctions.  Additional devices and
+    subcircuits can easily be added by the user, or changes can be
+    made to existing devices, by editing a single text file. 
+    <i>Xic</i> also provides a high-powered model library search
+    engine compatible with any SPICE format model or subcircuit
+    library files, such as those provided by semiconductor
+    manufacturers.
+
+    <p>
+    <a href="xic:hcopy">Hard copy</a> support is available for a
+    variety of printers and file formats, including Postscript (mono
+    and color), HPGL, and HP laser.
+
+    <p>
+    <i>Xic</i> provides support for several <a href="xic:fsaf">archive
+    layout file formats</a>, plus native input and output.  Data input
+    in a given format will remain in that format, unless explicitly
+    converted.
+
+    <p>
+    <i>Xic</i> produces <a href="symfilefmt">data files</a> which
+    contain both electrical and physical data, though one of these two
+    data areas may be empty.  The file format used can be one of:
+    <ul>
+    <li>The native format, in which each cell of a design is written
+    to an independent ASCII file.
+    <li>An extension of GDSII, a binary format where the entire design
+    can be written to a single file.
+    <li>The newer and more compact OASIS format, which is a replacement
+    for GDSII.
+    <li>An extension of CIF, a multi-cell format, somewhat archaic,
+    but an ASCII format so human-readable.
+    <li>The CGX file format, developed by Whiteley Research.
+!!IFDEF OpenAccess
+    <li>OpenAccess, a third-party database used by Cadence and others.
+!!ENDIF
+    </ul>
+    <i>Xic</i> will read any of these file types automatically, and
+    save any editing changes in the same file type unless instructed
+    otherwise. 
+
+    <p>
+    Built-in <a href="xic:cvrtmenu">converters</a> can be used to
+    convert between the various file formats.  It is possible to
+    "strip" the output, providing a physical-data file completely
+    compatible with the industry standard file formats, for
+    portability of mask layout information.  It is also possible to
+    read and write a "text-mode" version of GDSII files, which can be
+    used to repair corrupted or misbehaving GDSII databases.
+
+    <p>
+    <i>Xic</i> provides a powerful facility for translating between
+    supported layout file formats, while potentially modifying the
+    data.  Possible modifications include layer filtering and
+    aliasing, cell name global modification and aliasing, flattening,
+    and spatial filtering to a rectangular area with or without
+    clipping, cell replacement, and more.  These operations can be
+    applied to very large files, as a unique technique minimizes
+    memory use.
+
+    <p>
+    In physical mode, <a href="xic:drcmenu">design rule checking</a> can
+    be performed as each new object is created of modified.  Batch
+    mode checking is also available, either in the foreground, or as a
+    background child process.  The philosophy of <i>Xic</i> is that it
+    is never in the user's best interest to "cheat" in the enforcement
+    of design rules, yet there may be times when a given rule is not
+    appropriate, and a modified rule should be used.  Following this
+    philosophy, the user is given complete control over the design
+    rules, which can be edited, disabled, or rules added
+    interactively.  The user can initiate batch mode design rule
+    checking over a given area or over a complete cell.  Design rule
+    checking is performed over a pseudo-flat internal representation
+    of the layout, so that physical rules are checked without any
+    constraint based upon which subcells contain the geometry.
+
+    <p>
+    <i>Xic</i> has provision for netlist and parameter <a
+    href="xic:extmenu">extraction</a>.  The netlist obtained from the
+    physical layout, plus extracted physical device parameters, can be
+    used to generate a SPICE output file, and even a schematic. 
+    Automated layout vs.~schematic (LVS) testing is provided.
+
+!! 010615
+!!KEYWORD
+captour
+!!TITLE  
+A Quick Tour of <i>Xic</i> Capabilities
+!!HTML 
+    <table cellpadding=2 border=1 bgcolor="#ffffee" width=100%><tr><td>
+    <h2>Contents</h2>
+    <ul>
+    <li><a href="captour#history"><b>History of <i>Xic</i></b></a>
+    <li><a href="captour#general"><b>General</b></a>
+    <li><a href="captour#led"><b>Layout Editing</b></a>
+    <li><a href="captour#io"><b>Input/Output</b></a>
+    <li><a href="captour#drc"><b>Design Rule Checking</b></a>
+    <li><a href="captour#electrical"><b>Electrical Mode</b></a>
+    <li><a href="captour#extract"><b>Extraction</b></a>
+    <li><a href="captour#automate"><b>Automation</b></a>
+    <li><a href="captour#help"><b>The Help System</b></a>
+    </ul>
+    </td></tr></table>
+
+    <a name=history"></a>
+    <h2>History of <i>Xic</i></h2>
+
+    The precursor to <i>Xic</i> was the Kic layout editor, a very
+    simple no-frills layout editor developed at Berkeley in the
+    1980's.  In the late 1980s, the author needed a layout editor to
+    support contract development and research efforts in
+    superconductive electronics, and adopted Kic, run under something
+    called a "DOS extender" (to support 32-bit applications) on an
+    early and very expensive i386 computer.  This required extensive
+    modification to Kic, mostly to support the PC graphics.  Kic is
+    still <a href="http://wrcad.com/freestuff.html">available</a>
+    as free software on the Whiteley Research web site.
+
+    <p>
+    After Unix became available for 386/486 PCs in the form of the <a
+    href="http://www.freebsd.org">FreeBSD</a> operating system, DOS
+    and direct-write graphics became history.  <i>Xic</i> became a
+    separate program in late 1995, initially using the X-window system
+    (Xt) user interface toolkit.  Over the following years, <i>Xic</i>
+    became a full-time development effort, and the extraction, DRC,
+    and other subsystems were added.  Although to this day faint
+    similarities to Kic exist, internally the code has been replaced
+    by several iterations of more modern code, and the database and
+    other systems were replaced with improved implementations.
+
+    <p>
+    Eventually, <i>Xic</i> underwent a complete rewrite into C++ (from
+    C) to improve maintainability and organization.  The GTK toolkit
+    was adopted for the user interface.
+
+    <p>
+    Whiteley Research Inc.  was founded in 1996 to market <i>Xic</i>,
+    and the companion <i>WRspice</i> program.  Since then, <i>Xic</i>
+    has continued to develop, as new users brought forward new ideas
+    and requirements.
+
+    <a name="general"></a>
+    <h2>General</h2>
+
+    <i>Xic</i> provides a <a href="menutour">menu</a> of buttons along
+    the side (the "side menu"), and s number of drop-down menus along
+    the top of the <a href="mainwindow">main window</a>.  <i>Xic</i>
+    responds to <a href="keyboard">key presses</a> in various ways,
+    and provides an <a href="promptline">input/output text area</a>
+    just below the main window.  Key presses are interpreted as <a
+    href="xic:macro">macros</a>, special commands, menu command
+    accelerators, or as <a href="keybang">'!' commands</a>.  Several
+    control sequences directly initiate certain operations, for
+    example <b>Ctrl-r</b> will redraw the window and <b>Ctrl-g</b>
+    will prompt for grid parameters.  Other control sequences will
+    trigger menu commands as <a href="accelerator">accelerators</a>,
+    and typing the unique prefix of the command name (as shown in the
+    tool tip which appears as the mouse pointer hovers over a menu
+    entry) will trigger menu commands.  If '!' is pressed, the rest of
+    the sequence (until <b>Enter</b> is pressed) is taken as an
+    internal or Unix shell command.  If '?' is pressed, the rest of
+    the sequence (until <b>Enter</b> is pressed) is taken as a help
+    database keyword.
+
+    <a name="help"></a>
+    <h2>The Help System</h2>
+
+    <i>Xic</i> contains a comprehensive HTML-based on-line <a
+    href="helpsys">help system</a>.  The help viewer can also function
+    as a web browser, providing access to internet resources.  The
+    viewer can serve as an input device for scripts, i.e., the window
+    would contain a form which provides parameters to a script.  The
+    help database can be augmented by the user, allowing local
+    information to be easily accessed.
+
+    <p>
+    <i>Xic</i> is internet aware, and can actually open design files
+    served by a remote HTTP or FTP host.  Files can also be opened in
+    response to clicking on links in the help viewer.
+
+    <h2>Cadence Virtuoso and OpenAccess Compatibility</h2>
+
+!!IFDEF OpenAccess
+    <i>Xic</i> can read and write design data to an <a
+    href="oaplugin">OpenAccess</a> database, but OpenAccess is not
+    required.  <i>Xic</i> can read and use ASCII technology and DRF
+    files intended for <a href="cdscompat">Cadence Virtuoso</a> and
+    other similar tools, as provided by chip foundries.  <i>Xic</i>
+    can read schematic, symbol, and layout views produced by Cadence,
+    and to varying degrees, obtain a working, simulatable cell
+    hierarchy.  Presently, it is not possible to write back schematic
+    information to Cadence without corruption.
+
+    <p>
+    <i>Xic</i> supports Ciranova/Synopsys portable Python-based <a
+    href="pycell">parameterized cells</a>, and provides support for
+    abutment and stretch handles in <a href="pcell">native
+    parameterized cells</a>.
+!!ELSE
+    <i>Xic</i> can read and use ASCII technology and DRF
+    files intended for <a href="cdscompat">Cadence Virtuoso</a> and
+    other similar tools, as provided by chip foundries.
+
+    <p>
+    OpenAccess support is presently not available.  Such support would
+    allow access to an OpenAccess database, such as used with
+    Virtuoso.  This support, once available.  has been removed for
+    legal/financial reasons, but could be reinstated if there is
+    sufficient demand.  Contact Whiteley Research for more
+    information.
+!!ENDIF
+
+    <a name="led"></a>
+    <h2>Layout Editing</h2>
+
+    First and foremost, <i>Xic</i> is an <a href="physedit">editor</a>
+    for integrated circuit mask layouts.  Although, in large measure,
+    the notion of mask layout from manual polygon placement has
+    disappeared in modern electronics, having been replaced by
+    automated cell place and route, there are still many instances
+    where layout viewing and editing are essential.  <i>Xic</i> is
+    designed the make this task efficient and straightforward.
+
+    <p>
+    <i>Xic</i> makes use of a proprietary database technology which
+    provides extremely fast access to spatially-keyed data.  The
+    database technology has changed several times over the life of the
+    program, and the current database, though invisible to users, is
+    an important achievement.
+
+    <p>
+    <i>Xic</i> has a complete set of features for creating, moving,
+    transforming, and modifying geometrical features and subcells,
+    with complete undo/redo capability.  Most of these features are
+    accessed from the <a href="sidemenu">side menu</a>, and from the
+    <a href="xic:editmenu"><b>Edit Menu</b></a> and <a
+    href="xic:modifymenu"><b>Modify Menu</b></a>.  Basic <a
+    href="mouse">mouse operations</a> allow selection, and moving,
+    copying, or stretching selected objects.  The ability to create <a
+    href="xic:logo">physical text</a> or crude images (e.g., for
+    company logos) is built in.
+
+    <p>
+    <i>Xic</i> operates on a cell hierarchy, and has commands to push
+    and pop the editing context through the hierarchy, and to flatten
+    the hierarchy to arbitrary depth.
+
+    <p>
+    Some releases of <i>Xic</i> are 32-bit applications, and as such
+    have an inherent memory limitation of about 3Gb.  <i>Xic</i> has
+    internal memory management which is designed to use as much
+    available virtual memory as possible.  On a system with sufficient
+    memory, 2-3 GB files can be read in for editing directly.  In
+    <i>Xic</i> releases compiled for 64-bits, there is no such memory
+    limitation.
+
+    <a name="io"></a>
+    <h2>Input/Output</h2>
+
+    The technology-specific information used by <i>Xic</i> is
+    maintained in a single human-readable file.  Most of the
+    parameters set by the <a href="techfile">technology file</a> can
+    be set or reset from within <i>Xic</i>, and an updated technology
+    file can be <a href="xic:updat">easily generated</a>.
+
+    <p>
+    <i>Xic</i> can <a href="xic:fsaf">read or write</a> files in
+    several formats.  These include
+
+    <dl>
+    <dt>GDSII<dd>
+        The industry-standard binary data format.
+
+    <dt>OASIS<dd>
+        A new standard intended to replace GDSII and is far more
+        compact.
+
+    <dt>CIF<dd>
+        An ancient ASCII data format, still in use occasionally.
+
+    <dt><a href="cgxformat">CGX</a><dd>
+        A more compact replacement for GDSII developed by Whiteley
+        Research (and placed in the public domain).  It still uses
+        fixed-sized integers, so is not nearly as compact as OASIS,
+        but is simple to generate and parse.
+
+    <dt>Native<dd>
+        A CIF-like cell-per-file format.
+
+!!IFDEF OpenAccess
+    <dt>OpenAccess<dd>
+        If present, <i>Xic</i> can read and write to an OpenAccess
+        database, including the databases provided with Cadence
+        Virtuoso and Ciranova PyCell Studio.
+!!ENDIF
+    </dl>
+
+    <p>
+    Any files in these formats can be read directly into <i>Xic</i>,
+    whether or not the current technology matches.  In fact, it is
+    possible (and sometimes desirable) to start <i>Xic</i> with no
+    technology file.  As the file is read, <i>Xic</i> will add layers
+    as necessary to represent the file.  After changing <a
+    href="xic:color">layer colors</a> and <a href="xic:fill">fill
+    patterns</a> as desired, a new technology file can be <a
+    href="xic:updat">dumped</a>.
+
+    <p>
+    Files can be read into the <i>Xic</i> database, and later written
+    to disk in any of these formats.  The default is to write in the
+    same format as the original file.
+
+    <p>
+    In addition, <a href="xic:convt">format conversions</a> can be
+    applied directly, bypassing the database load.  While converting,
+    windowing operations (clipping), scaling, or flattening can be
+    applied.  Since <i>Xic</i> uses 64-bit file offsets, the direct
+    conversions can be applied to huge files, even with 32-bit
+    <i>Xic</i> binaries and modest memory.
+
+    <a name="drc"></a>
+    <h2>Design Rule Checking</h2>
+
+    <i>Xic</i> has a built-in <a href="xic:drcmenu">design rule
+    checking</a> engine, based on rules provided in the technology
+    file or <a href="xic:dredt">interactively</a> in <i>Xic</i>.  Both
+    <a href="xic:intr">interactive</a> (performed after every geometry
+    modification) and <a href="xic:check">batch-mode</a> checking
+    (foreground or background) is supported, in all or a portion of
+    the layout.
+
+    <p>
+    Errors are reported in a log file, and indicators added on-screen. 
+    Clicking on the indicator can provide a <a
+    href="xic:next">close-up</a> view of the error and <a
+    href="xic:query">explanatory text</a>.
+
+    <p>
+    There is a <a href="xic:dredt">rule editor</a> that gives the user
+    complete control over the rules and parameters in use.  Although a
+    fairly complete set of <a href="drcrules">built-in</a> tests is
+    provided, <a href="userrules">user-defined</a> tests allow more
+    specialized tests to be performed.  Special layers and <a
+    href="xic:sflag">flags</a> allow objects and regions to be ignored
+    during testing.
+
+    <a name="electrical"></a>
+    <h2>Electrical Mode</h2>
+
+    When <i>Xic</i> is in electrical mode (selectable under the <a
+    href="xic:viewmenu"><b>View Menu</b></a>) the main window is set
+    up for schematic editing.  A user-configurable palette of <a
+    href="xic:devs">devices</a> is available for placement.  Devices
+    are <a href="elecedit">placed</a>, wired together, and <a
+    href="xic:prpty">properties</a> added to provide device
+    parameters.  Once a schematic is complete, it can be <a
+    href="xic:deck">dumped</a> as a SPICE file, or simulation can be
+    performed interactively through the companion <i>WRspice</i>
+    program.  Performing a simulation is as easy as clicking the <a
+    href="xic:run"><b>run</b></a> button, then, when complete, the <a
+    href="xic:plot"><b>plot</b></a> button can be pressed, then
+    clicking on nodes in the circuit diagram will display simulation
+    plots.  Plots can also be <a href="xic:iplot">created while
+    simulating</a>, and are updated as the simulation progresses.
+
+    <p>
+    There are provisions for providing <a href="xic:nodmp">arbitrary
+    names</a> for nodes and devices in the circuit.  The default is
+    for <i>Xic</i> to define the names in most cases.  There is a <a
+    href="xic:symbl">symbolic</a> representation capability, enabling
+    a subcircuit to have a special symbol, instead of a schematic,
+    when used as a subcell.
+
+    <p>
+    <i>Xic</i> provides <a href="elec:vecinst">vectorized instance
+    placements</a>, and a complete <a href="elec:connect">net
+    expression capability</a> for multi-conductor wire net definition.
+
+    <p>
+    Electrical-mode data is "tied" to the physical mode data, and
+    saved in the same file.  This requires some <a
+    href="symfilefmt">extensions</a> to be employed in the files. 
+    These extensions are 1) usually ignored by other programs, and 2)
+    can be easily <a href="xic:exprt#strip">stripped out</a> to ensure
+    portability of physical data.
+
+    <a name="extract"></a>
+    <h2>Extraction</h2>
+
+    The commands in the <a href="xic:extmenu"><b>Extract Menu</b></a>
+    deal with the electrical/physical association defined for a cell,
+    i.e., the electrical schematic and the physical layout.
+
+    <p>
+    It is not always necessary to enter the schematic by hand.  A
+    schematic can be produced from a <a href="xic:sourc">SPICE
+    file</a>, or from the <a href="xic:exset">physical layout</a>. 
+    The resulting schematic is perhaps not too useful from a
+    human-readability standpoint, but is valid nonetheless.  The user
+    of course has the option to rearrange things and make other
+    changes to promote readability and aesthetics.
+
+    <p>
+    There are provisions to update the schematic from the physical
+    layout, either <a href="xic:exset">globally</a> or <a
+    href="xic:dvsel">per-device</a>.  It is possible to dump a <a
+    href="xic:pnet">netlist</a> file or SPICE file created directly
+    from the physical layout.
+
+    <p>
+    There is provision for <a href="xic:lvs">LVS</a> (layout vs. 
+    schematic) analysis.
+
+    <p>
+    The parameters that control extraction, and device definitions for
+    extraction, generally appear in the technology file.  These can be
+    created or modified from within <i>Xic</i> through the technology
+    parameter <a href="xic:lpedt">editor</a> window.
+
+    <a name="automate"></a>
+    <h2>Automation</h2>
+
+    <i>Xic</i> contains a just-in-time compiler for a powerful
+    built-in <a href="xicscript">scripting language</a>.  The native
+    language is C-like, though a <a href="lisp">Lisp-like variant</a>
+    is also supported.  There is also interoperability with the
+    popular <a href="pyplugin">Python</a> and <a
+    href="tclplugin">Tcl/Tk</a> scripting languages.
+
+    <p>
+    A lengthly and expanding set of <a href="scr:iffuncs">interface
+    functions</a> allow <i>Xic</i> to be controlled by the scripts,
+    and a very efficient computational geometry engine allows database
+    manipulation.
+
+    <p>
+    <i>Xic</i> even supports a <a href="xic:server">server mode</a>,
+    whereby <i>Xic</i> does not use graphics, and instead becomes a
+    "daemon", listening for job requests.  Other applications can use
+    the server for geometrical and other manipulations.  A similar
+    <a href="xic:batch">batch mode</a>, where <i>Xic</i> again does not
+    use graphics but instead executes a script and exits, is also
+    available.
+
+    <p>
+    The user's scripts can appear as command buttons in the <a
+    href="xic:usermenu"><b>User Menu</b></a>, allowing custom operations
+    to be easily accessible in normal operation.
+
+    <p>
+    The script language is used elsewhere, for example in <a
+    href="userrules">user-defined design rule</a> tests, and in <a
+    href="xic:label#execlabel">executable labels</a>.  An executable
+    label is a text object in a design that when clicked-on will
+    perform some operation.  Scripts are also used in <a
+    href="xic:pcells">template (parameterized) cells</a>, which enable
+    on-the-fly generation of subcells based on an arbitrary set of
+    parameters.
+
+!!SEEALSO
+xicdb
+
+!! 022916
+!!KEYWORD
+menutour
+!!TITLE
+A Quick Tour of the <i>Xic</i> Menus
+!!HTML
+    <a href="sidemenu"><h3>Side Button Menu</h3></a>
+
+    Buttons arrayed along the side of the main window control the
+    generation of objects - rectangles, polygons, wires (fixed-width
+    paths), arcs, and rounded objects.  Other buttons enable setting
+    related defaults, such as wire end style and width, and the number
+    of vertices used in "round" objects.  Additional buttons control
+    operations such as erase/yank/put, xor, clipping, and rotating. 
+    In electrical mode, this menu changes to provide buttons for
+    adding connection terminals, controlling the node-naming, and
+    managing the simulation interface to the companion <i>WRspice</i>
+    program.
+
+    <a href="topbuttons"><h3>Top Button Menu</h3></a>
+
+    There are a few buttons arrayed horizontally above the main
+    drawing window, along with the <a href="coordline">coordinates</a>
+    display.  These are associated with the <a href="layertab">layer
+    table</a> and selection control.
+
+    <p>
+    The drop-down menus arrayed along the top of the main window
+    control additional features.
+
+    <p>
+    In addition, there are a number of special <a href="keybang">'!'
+    commands</a> that are entered by typing the command name.  These
+    control or enable additional features that are not as frequently
+    used.
+
+    <p>
+    Finally, there is a rather sophisticated <a
+    href="xicscript">scripting interface</a> with a large collection
+    of <a href="scr:iffuncs">built-in functions</a>, which enables
+    the user to create automation scripts.  These scripts can be
+    initiated from the <b>User Menu</b>.
+
+    <a href="xic:filemenu"><h3>File Menu</h3></a>
+
+    The <b>File Menu</b> provides commands to open, save, and list
+    files, cells, and other things.  This menu also contains the
+    printer interface.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>File Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:fsel"><b>File Select</b></a></td>
+      <td><tt>fsel</tt></td>
+      <td><b>File Selection</b></td> <td>Open file</td></tr>
+    <tr><td><a href="xic:open"><b>Open</b></a></td> <td><tt>open</tt></td>
+      <td>none</td> <td>Open new cell or file</td></tr>
+    <tr><td><a href="xic:sv"><b>Save</b></a></td> <td><tt>sv</tt></td>
+      <td><b>Modified Cells</b></td> <td>Save modified cells</td></tr>
+    <tr><td><a href="xic:save"><b>Save As</b></a></td> <td><tt>save</tt></td>
+      <td>none</td> <td>Save file, rename</td></tr>
+    <tr><td><a href="xic:sadev"><b>Save As Device</b></a></td>
+      <td><tt>sadev</tt></td> <td><b>Device Parameters</b></td> <td>Electrical
+      mode only, apply defaults and save device</td></tr>
+    <tr><td><a href="xic:hcopy"><b>Print</b></a></td> <td><tt>hcopy</tt></td>
+      <td><b>Print Control Panel</b></td> <td>Hard copy plot</td></tr>
+    <tr><td><a href="xic:files"><b>Files List</b></a></td>
+      <td><tt>files</tt></td>
+      <td><b>Path Files Listing</b></td> <td>List search path files</td></tr>
+    <tr><td><a href="xic:hier"><b>Hierarchy Digests</b></a></td>
+      <td><tt>hier</tt></td>
+      <td><b>Cell Hierarchy Digests</b></td>
+      <td>List of Cell Hierarchy Digests</td></tr>
+    <tr><td><a href="xic:geom"><b>Geometry Digests</b></a></td>
+      <td><tt>geom</tt></td>
+      <td><b>Cell Geometry Digests</b></td>
+      <td>List of Cell Geometry Digests</td></tr>
+    <tr><td><a href="xic:libs"><b>Libraries List</b></a></td>
+      <td><tt>libs</tt></td>
+      <td><b>Libraries</b></td> <td>List libraries</td></tr>
+!!IFDEF OpenAccess
+    <tr><td><a href="xic:oalib"><b>OpenAccess Libs</b></a></td>
+      <td><tt>oalib</tt></td>
+      <td><b>OpenAccess Libraries</b></td>
+      <td>List OA libraries (with OA only)</td></tr>
+!!ENDIF
+    <tr><td><a href="xic:quit"><b>Quit</b></a></td> <td><tt>quit</tt></td>
+      <td>none</td> <td>Exit <i>Xic</i></td></tr>
+    </table>
+
+    <a href="xic:cellmenu"><h3>Cell Menu</h3></a>
+
+    The <b>Cell Menu</b> contains command buttons to change the current
+    cell, and to get information about cells in memory.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Cell Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:push"><b>Push</b></a></td> <td><tt>push</tt></td>
+      <td>none</td> <td>Make subcell the current cell</td></tr>
+    <tr><td><a href="xic:pop"><b>Pop</b></a></td> <td><tt>pop</tt></td>
+      <td>none</td> <td>Make parent cell the current cell</td></tr>
+    <tr><td><a href="xic:stabs"><b>Symbol Tables</b></a></td>
+      <td><tt>stabs</tt></td>
+      <td><b>Symbol Tables</b></td> <td>List of cell symbol tables</td></tr>
+    <tr><td><a href="xic:cells"><b>Cells List</b></a></td>
+      <td><tt>cells</tt></td>
+      <td><b>Cells Listing</b></td> <td>List cells in memory</td></tr>
+    <tr><td><a href="xic:tree"><b>Show Tree</b></a></td>
+      <td><tt>tree</tt></td>
+      <td><b>Cell Hierarchy Tree</b></td> <td>Display cell hierarchy</td></tr>
+    </table>
+
+    <a href="xic:editmenu"><h3>Edit Menu</h3></a>
+
+    The <b>Edit Menu</b> contains commands which provide panels for
+    cell placement and property editing, and other features.
+       
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Edit Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:cedit"><b>Enable Editing</b></a></td>
+      <td><tt>cedit</tt></td> <td>none</td>
+      <td>Enable/disable editing mode for current cell</td></tr>
+    <tr><td><a href="xic:edset"><b>Setup</b></a></td>
+      <td><tt>edset</tt></td> <td>Editing Setup</td>
+      <td>Show <b>Editing Setup</b> panel</td></tr>
+    <tr><td><a href="xic:crcel"><b>Create Cell</b></a></td>
+      <td><tt>crcel</tt></td>
+      <td>none</td> <td>Create new cell</td></tr>
+    <tr><td><a href="xic:crvia"><b>Create Via</b></a></td>
+      <td><tt>crvia</tt></td>
+      <td>none</td> <td>Create a standard via</td></tr>
+    <tr><td><a href="xic:flatn"><b>Flatten</b></a></td> <td><tt>flatn</tt></td>
+      <td><b>Flatten Hierarchy</b></td> <td>Flatten hierarchy</td></tr>
+    <tr><td><a href="xic:join"><b>Join/Split</b></a></td> <td><tt>join</tt></td>
+      <td><b>Join or Split Objects</b></td>
+      <td>Control join/split operations</td></tr>
+    <tr><td><a href="xic:lexpr"><b>Layer Expression</b></a></td>
+      <td><tt>lexpr</tt></td>
+      <td><b>Evaluate Layer Expression</b></td>
+      <td>Control layer expression evaluation</td></tr>
+    <tr><td><a href="xic:prpty"><b>Properties</b></a></td>
+      <td><tt>prpty</tt></td>
+      <td><b>Property Editor</b></td> <td>Edit properties</td></tr>
+    <tr><td><a href="xic:cprop"><b>Cell Properties</b></a></td>
+      <td><tt>cprop</tt></td> <td><b>Cell Property Editor</b></td>
+      <td>Edit cell properties</td></tr>
+    </table>
+
+    <a href="xic:modifymenu"><h3>Modify Menu</h3></a>
+
+    The <b>Modify Menu</b> contains supplements the side menu with commands
+    to undo/redo operations, and move, copy, and delete objects.
+    Most of these commands have a faster keyboard equivalent.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Modify Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:undo"><b>Undo</b></a></td> <td><tt>undo</tt></td>
+      <td>none</td> <td>Undo last operation (<b>Tab</b> key)</td></tr>
+    <tr><td><a href="xic:redo"><b>Redo</b></a></td> <td><tt>redo</tt></td>
+      <td>none</td> <td>Redo last undo  (<b>Shift-Tab</b> key)</td></tr>
+    <tr><td><a href="xic:delet"><b>Delete</b></a></td> <td><tt>delet</tt></td>
+      <td>none</td> <td>Delete objects (<b>Delete</b> key)</td></tr>
+    <tr><td><a href="xic:eundr"><b>Erase Under</b></a></td>
+      <td><tt>eundr</tt></td>
+      <td>none</td> <td>Erase under objects</td></tr>
+    <tr><td><a href="xic:move"><b>Move</b></a></td> <td><tt>move</tt></td>
+      <td>none</td> <td>Move objects</td></tr>
+    <tr><td><a href="xic:copy"><b>Copy</b></a></td> <td><tt>copy</tt></td>
+      <td>none</td> <td>Copy objects</td></tr>
+    <tr><td><a href="xic:strch"><b>Stretch</b></a></td> <td><tt>strch</tt></td>
+      <td>none</td> <td>Stretch objects</td></tr>
+    <tr><td><a href="xic:chlyr"><b>Change Layer</b></a></td>
+      <td><tt>chlyr</tt></td>
+      <td>none</td> <td>Move object to new layer</td></tr>
+    <tr><td><a href="xic:mclcg"><b>Set Layer Chg Mode</b></a></td>
+      <td><tt>mclcg</tt></td>
+      <td><b>Layer Change Mode</b></td> <td>Set layer change mode for
+      move/copy</td></tr>
+    </table>
+
+    <a href="xic:viewmenu"><h3>View Menu</h3></a>
+
+    The <b>View Menu</b> contains commands which affect the
+    presentation of the current design, including the selection of
+    physical and electrical (schematic) modes.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>View Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:view"><b>View</b></a></td> <td><tt>view</tt></td>
+      <td>none</td> <td>Set view in window</td></tr>
+    <tr><td><a href="xic:phys"><b>Physical</b></a> or
+      <a href="xic:sced"><b>Electrical</b></a></td> <td><tt>phys</tt> or
+      <tt>sced</tt></td> <td>none</td> <td>Switch mode</td></tr>
+    <tr><td><a href="xic:expnd"><b>Expand</b></a></td> <td><tt>expnd</tt></td>
+      <td><b>Expand</b></td> <td>Show detail in window</td></tr>
+    <tr><td><a href="xic:zoom"><b>Zoom</b></a></td> <td><tt>zoom</tt></td>
+      <td>dialog</td> <td>Change window scale</td></tr>
+    <tr><td><a href="xic:vport"><b>Viewport</b></a></td> <td><tt>vport</tt></td>
+      <td>sub-window</td> <td>New drawing window</td></tr>
+    <tr><td><a href="xic:peek"><b>Peek</b></a></td> <td><tt>peek</tt></td>
+      <td>none</td> <td>Show layers in area</td></tr>
+    <tr><td><a href="xic:csect"><b>Cross Section</b></a></td>
+      <td><tt>csect</tt></td>
+      <td>sub-window</td> <td>Show layers in cross-section</td></tr>
+    <tr><td><a href="xic:ruler"><b>Rulers</b></a></td> <td><tt>ruler</tt></td>
+      <td>none</td> <td>Add transient gradations</td></tr>
+    <tr><td><a href="xic:info"><b>Info</b></a></td> <td><tt>info</tt></td>
+      <td><b>Info</b></td> <td>Show cell/object parameters</td></tr>
+    <tr><td><a href="xic:alloc"><b>Allocation</b></a></td>
+      <td><tt>alloc</tt></td>
+      <td><b>Memory Monitor</b></td> <td>Show memory statistics</td></tr>
+    </table>
+
+    <a href="xic:attrmenu"><h3>Attributes Menu</h3></a>
+
+    The <b>Attributes Menu</b> provides commands which affect the
+    presentation of the design, such as the colors used.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Attributes Menu</caption>
+    <tr><th>Label</th> <th>Name</th>
+      <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:updat"><b>Save Tech</b></a></td>
+      <td><tt>updat</tt></td> <td>none</td>
+      <td>Save technology file</td></tr>
+    <tr><td><a href="xic:keymp"><b>Key Map</b></a></td>
+      <td><tt>keymp</tt></td> <td>none</td>
+      <td>Create keyboard mapping file</td></tr>
+    <tr><td><a href="xic:macro"><b>Define Macro</b></a></td>
+      <td><tt>macro</tt></td> <td>none</td>
+      <td>Define a keyboard macro</td></tr>
+    <tr><td><a href="xic:attrsubmenu"><b>Main Window</b></a></td>
+      <td>&nbsp;</td> <td>Attributes sub-menu</td>
+      <td>Set main window attributes</td></tr>
+    <tr><td><a href="xic:attr"><b>Set Attributes</b></a></td>
+      <td><tt>attr</tt></td> <td><b>Window Attributes</b></td>
+      <td>Set misc. attributes for drawing windows</td></tr>
+    <tr><td><a href="xic:dots"><b>Connection Dots</b></a></td>
+      <td><tt>dots</tt></td> <td><b>Connection Points</b></td>
+      <td>Show connection dots in schematics</td></tr>
+    <tr><td><a href="xic:font"><b>Set Font</b></a></td>
+      <td><tt>font</tt></td> <td><b>Font Selection</b></td>
+      <td>Set text fonts used</td></tr>
+    <tr><td><a href="xic:color"><b>Set Color</b></a></td>
+      <td><tt>color</tt></td> <td><b>Color Selection</b></td>
+      <td>Set layer and other colors</td></tr>
+    <tr><td><a href="xic:fill"><b>Set Fill</b></a></td>
+      <td><tt>fill</tt></td> <td><b>Fill Pattern Editor</b></td>
+      <td>Set layer fill patterns</td></tr>
+    <tr><td><a href="xic:edlyr"><b>Edit Layers</b></a></td>
+      <td><tt>edlyr</tt></td> <td><b>Layer Editor</b></td>
+      <td>Add or remove layers</td></tr>
+    <tr><td><a href="xic:lpedt"><b>Edit Tech Params</b></a></td>
+      <td><tt>lpedt</tt></td> <td><b>Tech Parameter Editor</b></td>
+      <td>Edit technology parameters</td></tr>
+    </table>
+
+    <a href="xic:cvrtmenu"><h3>Convert Menu</h3></a>
+
+    The <b>Convert Menu</b> provides commands for importing and
+    exporting designs to various non-native file formats, and for
+    converting between file formats.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Convert Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:exprt"><b>Export Cell Data</b></a></td>
+      <td><tt>exprt</tt></td> <td><b>Export Control</b></td>
+      <td>Create a cell data file</td></tr>
+    <tr><td><a href="xic:imprt"><b>Import Cell Data</b></a></td>
+      <td><tt>imprt</tt></td> <td><b>Import Control</b></td>
+      <td>Read a cell data file</td></tr>
+    <tr><td><a href="xic:convt"><b>Format Conversion</b></a></td>
+      <td><tt>convt</tt></td> <td><b>Format Conversion</b></td>
+      <td>Direct file-to-file format conversions</td></tr>
+    <tr><td><a href="xic:assem"><b>Assemble Layout</b></a></td>
+      <td><tt>assem</tt></td> <td><b>Layout File Merge Tool</b></td>
+      <td>Merge layout data</td></tr>
+    <tr><td><a href="xic:diff"><b>Compare Layouts</b></a></td>
+      <td><tt>diff</tt></td> <td><b>Compare Layouts</b></td>
+      <td>Find differences between layouts</td></tr>
+    <tr><td><a href="xic:cut"><b>Cut and Export</b></a></td>
+      <td><tt>cut</tt></td> <td><b>Export Control</b></td>
+      <td>Write out part of a layout</td></tr>
+    <tr><td><a href="xic:txted"><b>Text Editor</b></a></td>
+      <td><tt>txted</tt></td>
+      <td><b>Text Editor</b></td> <td>Text edit cell file</td></tr>
+    </table>
+
+    <a href="xic:drcmenu"><h3>DRC Menu</h3></a>
+
+    The <b>DRC Menu</b> contains commands associated with design rule
+    checking.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>DRC Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:limit"><b>Setup</b></a></td>
+      <td><tt>limit</tt></td> <td><b>DRC Parameter Setup</b></td>
+      <td>Set limits and other parameters</td></tr>
+    <tr><td><a href="xic:sflag"><b>Set Skip Flags</b></a></td>
+      <td><tt>sflag</tt></td>
+      <td>none</td> <td>Set skip flags</td></tr>
+    <tr><td><a href="xic:intr"><b>Enable Interactive</b></a></td>
+      <td><tt>intr</tt></td>
+      <td>none</td> <td>Set interactive DRC</td></tr>
+    <tr><td><a href="xic:nopop"><b>No Pop Up Errors</b></a></td>
+      <td><tt>nopop</tt></td>
+      <td>none</td> <td>No interactive errors list</td></tr>
+    <tr><td><a href="xic:check"><b>Batch Check</b></a></td>
+      <td><tt>check</tt></td> <td><b>DRC Run Control</b></td>
+      <td>Initiate DRC run</td></tr>
+    <tr><td><a href="xic:point"><b>Check In Region</b></a></td>
+      <td><tt>point</tt></td> <td>none</td>
+      <td>Test rules in region</td></tr>
+    <tr><td><a href="xic:clear"><b>Clear Errors</b></a></td>
+      <td><tt>clear</tt></td>
+      <td>none</td> <td>Erase error indicators</td></tr>
+    <tr><td><a href="xic:query"><b>Query Errors</b></a></td>
+      <td><tt>query</tt></td> <td>none</td> <td>Print error messages</td></tr>
+    <tr><td><a href="xic:erdmp"><b>Dump Error File</b></a></td>
+      <td><tt>erdmp</tt></td> <td>none</td> <td>Dump errors to file</td></tr>
+    <tr><td><a href="xic:erupd"><b>Update Highlighting</b></a></td>
+      <td><tt>erupd</tt></td> <td>none</td> <td>Update highlighting from
+      file</td></tr>
+    <tr><td><a href="xic:next"><b>Show Errors</b></a></td>
+      <td><tt>next</tt></td> <td>sub-window</td>
+      <td>Sequentially display errors from file</td></tr>
+    <tr><td><a href="xic:erlyr"><b>Create Layer</b></a></td>
+      <td><tt>erlyr</tt></td> <td>none</td> <td>Write highlight error
+       regions to objects on layer</td></tr>
+    <tr><td><a href="xic:dredt"><b>Edit Rules</b></a></td>
+      <td><tt>dredt</tt></td> <td><b>Design Rule Editor</b></td>
+      <td>Edit rules for layers</td></tr>
+    </table>
+
+    <a href="xic:extmenu"><h3>Extract Menu</h3></a>
+
+    The <b>Extract Menu</b> provides commands associated with the
+    extraction of electrical information and netlists from the
+    physical layout, and layout versus schematic checking.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Extract Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:excfg"><b>Setup</b></a></td>
+      <td><tt>excfg</tt></td> <td><b>Extraction Setup</b></td>
+      <td>Set up and control extraction</td></tr>
+    <tr><td><a href="xic:exsel"><b>Net Selections</b></a></td>
+      <td><tt>exsel</tt></td>
+      <td><b>Path Selection Control</b></td> <td>Select groups, nodes, paths</td></tr>
+    <tr><td><a href="xic:dvsel"><b>Device Selections</b></a></td>
+      <td><tt>dvsel</tt></td>
+      <td><b>Show/Select Devices</b></td> <td>Select and highlight devices</td></tr>
+    <tr><td><a href="xic:sourc"><b>Source SPICE</b></a></td>
+      <td><tt>sourc</tt></td>
+      <td><b>Source SPICE File</b></td> <td>Update from SPICE file</td></tr>
+    <tr><td><a href="xic:exset"><b>Source Physical</b></a></td>
+      <td><tt>exset</tt></td> <td><b>Source Physical</b></td>
+      <td>Update electrical from physical</td></tr>
+    <tr><td><a href="xic:pnet"><b>Dump Phys Netlist</b></a></td>
+      <td><tt>pnet</tt></td> <td><b>Dump Phys Netlist</b></td>
+      <td>Save physical netlist</td></tr>
+    <tr><td><a href="xic:enet"><b>Dump Elec Netlist</b></a></td>
+      <td><tt>enet</tt></td> <td><b>Dump Elec Netlist</b></td>
+      <td>Save electrical netlist</td></tr>
+    <tr><td><a href="xic:lvs"><b>Dump LVS</b></a></td> <td><tt>lvs</tt></td>
+      <td><b>Dump LVS</b></td>
+      <td>Save physical/electrical comparison</td></tr>
+    <tr><td><a href="xic:exc"><b>Extract C</b></a></td>
+      <td><tt>exc</tt></td> <td><b>Cap Extraction</b></td>
+      <td>Extract capacitance using Fast[er]Cap</td></tr>
+    <tr><td><a href="xic:exlr"><b>Extract LR</b></a></td>
+      <td><tt>exlr</tt></td> <td><b>LR Extraction</b></td>
+      <td>Extract L/R using FastHenry</td></tr>
+    </table>
+
+    <a href="xic:usermenu"><h3>User Menu</h3></a>
+
+    The <b>User Menu</b> contains the script debugger, and the buttons
+    that correspond to user-generated scripts.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>User Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:debug"><b>Debugger</b></a></td> <td><tt>debug</tt></td>
+      <td><b>Script Debugger</b></td> <td>Debug scripts</td></tr>
+    <tr><td><a href="xic:hash"><b>Rehash</b></a></td> <td><tt>hash</tt></td>
+      <td>none</td> <td>Rebuild <b>User Menu</b></td></tr>
+    <tr><td>others</td> <td> - </td> <td> - </td>
+      <td>User scripts and menus</td></tr>
+    </table>
+
+!! 022816
+!!KEYWORD
+usingxic
+!!TITLE
+Using <i>Xic</i>
+!!HTML
+    <i>Xic</i> has two basic operating modes:  physical and
+    electrical.  In physical mode, one is editing the geometry of the
+    mask patterns on the multiple layers used in the photomasks to
+    manufacture the circuit.  In electrical mode, one is editing an
+    electrical schematic of the circuit or subcircuit represented by
+    the cell.  The schematic is used for documentation, and also for
+    performing simulation of the circuit to verify performance.  The
+    schematic and layout can be interlinked to provide consistency
+    verification.  This is the purpose of the functions in the <a
+    href="xic:extmenu"><b>Extract Menu</b></a>.
+
+    <p>
+    A full design database typically consists of a hierarchy of cells. 
+    The top level or main cell usually depicts the entire chip. 
+    Subcells represent the bond pads, annotation, and major circuit
+    blocks.  The circuit blocks in turn have subcells representing
+    more primitive circuit blocks, down to the gate level and below.
+
+    <p>
+    In <i>Xic</i>, one can edit any of these cells and their subcells
+    at any depth in the hierarchy, as both physical layout and
+    electrical schematic.  The use of a hierarchical database is far
+    more efficient and convenient than a flat database.  The designer
+    is encouraged to make liberal use of subcells rather than
+    designing single, highly complex cells.
+
+    <p>
+    When a design is complete, i.e., when all electrical simulations
+    and physical design rule checks have been performed, the physical
+    part of the database can be submitted for processing.  The exact
+    mechanism varies with organization, but the physical-only (<a
+    href="xic:exprt#strip"><b>Strip For Export</b></a> button in the
+    <b>Export Control</b> panel from the <a
+    href="xic:cvrtmenu"><b>Convert Menu</b></a> active) GDSII, OASIS and
+    CIF outputs provided by <i>Xic</i> are portable to any mask
+    fabrication facility or foundry.
+
+    <p>
+    The user can switch between physical and electrical modes at any
+    time, by pressing the <b>Electrical</b> or <b>Physical</b> button
+    (whichever appears) in the <a href="xic:viewmenu"><b>View
+    Menu</b></a>.  Sub-windows, brought up with the <a
+    href="xic:vport"><b>Viewport</b></a> button in the <b>View
+    Menu</b>, are individually switchable between schematic and
+    physical views.  The <a href="sidemenu">side menus</a> differ
+    somewhat between the two modes, and some menu commands operate a
+    little differently.
+
+    <p>
+    The subtopics provide an introduction to using <i>Xic</i> in
+    electrical and physical modes.  The new user should read these
+    sections, and practice using <i>Xic</i> while reading the help
+    text for the various commands.
+
+!!SUBTOPICS
+physedit
+elecedit
+
+!!IFDEF OpenAccess
+!! not in manual
+!!KEYWORD
+cdssim
+!!TITLE
+Simulating Schematics from Cadence Virtuoso Designs
+!!HTML
+    Assume that we have a hierarchical circuit schematic in a Cadence
+    Virtuoso environment.  We would like to access this schematic, at
+    any level, for simulation in <i>WRspice</i>.  Can this be done?
+
+    <p>
+    The answer is yes, very probably.  There are actually different
+    ways to do this,
+
+    <ol>
+    <li>Use the <i>WRspice</i> Virtuoso Integration Kit to add
+    <i>WRspice</i> as a simulator choice in the Cadence Analog Design
+    Environment (ADE).  The Interface Kit is under development,
+    Contact Whiteley Research for more information.
+
+    <p>
+    <li>Use another simulator interface, such as Hspice, to generate a
+    SPICE file.  Possibly with some modification, the file may be used
+    in <i>WRspice</i>.
+
+    <p>
+    <li>Use <i>Xic</i> to create a native electrical cell file
+    containing an instance of a cell defined in Virtuoso.  The cell
+    would also contain sources for stimulus and power, and any extra
+    components needed for a working circuit.  One can then use the
+    interface to <i>WRspice</i> from <i>Xic</i> to provide an
+    interactive simulation environment.
+    </ol>
+
+    <p>
+    This note will focus on the third method, which avoids use of the
+    Cadence ADE entirely.  Reasons to take this approach might include
+    the following:
+
+    <ul>
+    <li>Unavailability of the ADE and/or supported simulator, possibly
+    due to their expense.
+
+    <p>
+    <li>Personal preference.  The style of the
+    <i>Xic</i>/<i>WRspice</i> simulation environment, and the
+    flexibility, may appeal to some users over the ADE.
+
+    <p>
+    <li>Device availability.  If the user requires Josephson
+    junctions, or has developed Verilog device models using
+    <i>WRspice</i>, it is not assured that another simulator will do
+    the job.
+    </ul>
+
+    <h4>Prerequisites</h4>
+
+    <ul>
+    <li>One must have <i>Xic</i> and <i>WRspice</i> up and running. 
+    <i>WRspice</i> is required to perform simulation, but this note
+    will focus on accessing Virtuoso from <i>Xic</i>.
+
+    <p>
+    <li>The Cadence design is assumed to have been developed under
+    some kind of process design kit (PDK).  The kit must provide SPICE
+    models for active devices used in the design.  In particular,
+    Hspice models can generally be used directly in <i>WRspice</i>. 
+    The user will need to know the location of the model file(s), and
+    the access mechanism.  This may be documented in the file itself,
+    or in some other PDK document.
+
+    <p>
+    <li>The Cadence and <i>Xic</i> installations should be visible in
+    the file system of the same machine.
+
+    <p>
+    <li>The Cadence installation must use the OpenAccess database
+    (i.e., be release 6.1.x).
+
+    <p>
+    <li>The operating system must be Linux.
+    </ul>
+
+    <h4>Hooking to the OpenAccess Database</h4>
+
+    The OpenAccess <a href="oaplugin">plug-in</a> can provide a
+    connection to the Cadence OpenAccess database, as described <a
+    href="cdsconnect">here</a>.
+
+    <p>
+    It is recommended that initially one create a new directory for
+    working with <i>Xic</i> accessing OpenAccess.  The user should copy
+    their <tt>cds.lib</tt> file to this directory.  The file can be edited
+    to remove any Cadence libraries that the user will not need for this
+    application, or to add any others as required.  The libraries will
+    appear in the <a href="xic:oalib"><b>OpenAccess Libraries</b></a>
+    panel, which is obtained from the <b>OpenAccess Libs</b> button in the
+    <b>File Menu</b>.  This button will only appear when <i>Xic</i> is
+    connected to an OpenAccess library.
+
+    <h4>Setting up Xic: Technology and Startup Files</h4>
+
+    The next step is to set up the <i>Xic</i> technology file that will
+    match the cell data that will be read from OpenAccess.  This will be
+    done by creating a skeletal technology file which imports data from
+    the process design kit (PDK) which was used for the design.  Below is
+    an example, using a TSMC PDK.  This file can be found in the
+    installation startup directory as <tt>xic_tech.n65</tt>.
+
+    <p>
+    <blockquote>
+    <pre>
+    # Xic technology file for TSMC N65 process
+    # $Id: xiTutorials.hlp,v 1.85 2017/03/22 22:27:07 stevew Exp $
+    #
+    # This illustrates a skeletal Xic technology file based on Virtuoso
+    # technology files found in a commercial PDK.  Something like this
+    # will work with just about any standard PDK.
+
+    # Set this to the actual path to your PDK.
+    #
+    Set PDK = /usr/local/cad/TSMC/CMN65GP/PDK
+
+    # Equivalents to these files may be in a different location in
+    # your PDK!  You may need to hunt around for the correct paths.
+    #
+    ReadDRF $(PDK)/display.drf
+    ReadCdsTech $(PDK)/techfile
+    ReadCdsLmap $(PDK)/tsmcN65/tsmcN65.layermap
+
+    SnapGridSpacing .01
+    </pre>
+    </blockquote>
+
+    There are three types of file that are loaded.  Each is in a
+    format specific to Cadence Virtuoso, but readable by <i>Xic</i>.
+
+    <dl>
+    <dt><tt>display.drf</tt><dd>
+    This is the display resource file.  It identifies colors, fill
+    patterns, and other screen attributes used when drawing layouts
+    and schematics.  The name may be different in your installation,
+    though the "<tt>.drf</tt>" extension is likely to appear.  The
+    format is described in Cadence documentation.
+
+    <p>
+    <dt><tt>techfile</tt><dd>
+    This is an ASCII technology file, which contains information about
+    the various layers, constraints and rules, and other technology
+    information.  The file can have an arbitrary name and would be
+    identified by its content.  The content and format are documented
+    by Cadence.
+
+    <p>
+    <dt><tt>tsmcN65.layermap</tt><dd>
+    This file assigns GDSII layer and datatype numbers to
+    layer/purpose pairs used in the technology.  It is an ASCII file,
+    containing four columns.  The top few lines of the TSMC example
+    are
+
+    <p>
+    <blockquote>
+    <pre>
+    #Layer Name     Layer Purpose  Layer Stream Number  Datatype Stream Number
+
+    ref            drawing        0                    0
+    DNW            drawing        1                    0
+    PW             drawing        2                    0
+    NW             drawing        3                    0
+    ...
+    </pre>
+    </blockquote>
+
+    You may need to hunt around to find this file, but it should
+    exist, as it is required for generating GDSII and OASIS layout
+    files.
+    </dl>
+
+    <p>
+    Note that in addition to reading in the three files, the
+    technology file can contain normal initialization of the hundreds
+    of variables that affect <i>Xic</i> operation, should there be a
+    need.  In the sample tech file above, the grid snap spacing is
+    set to a more appropriate value than the default 1 micron, for
+    example.
+
+    <p>
+    Once <i>Xic</i> is started with the technology file, the user
+    should recognize the layers in the layer table as being familiar
+    from Virtuoso.  One can dump a new technology file using the <a
+    href="xic:updat"><b>Save Tech</b></a> button in the <b>Attributes
+    Menu</b>.  The new file will contain all tech information locally
+    and not read PDK files.  This has the advantage of not requiring
+    access to the PDK.
+
+    <p>
+    There is an additional bit of initialization that can be set up,
+    and that is setting up the Cadence libraries we intend to use
+    to have "open" status on startup.  By default, no OpenAccess
+    libraries are open.  A library must be open for its contents to
+    be read.  We can open libraries by hand through the <b>OpenAccess
+    Libraries</b> panel, but that becomes a chore.
+
+    <p>
+    Additionally, if you are interested in electrical data only, one
+    can avoid loading the physical layout data.  This makes cell
+    loading a bit quicker, and avoids any errors generated while
+    loading physical data, such as from incompatible pcells.  We can
+    make this the default by setting the <a
+    href="OaUseOnly"><b>OaUseOnly</b></a> variable to
+    "<tt>Electrical</tt>".
+
+    <p>
+    One easy way to perform this initialization is to add a "run once"
+    script to the technology file.  For eample, suppose that we have
+    two Cadence libraries, named "<tt>chip1b</tt>" and
+    "<tt>chip4b</tt>" that contain cells that we want to simulate. 
+    One can add the following lines to the technology file:
+
+    <p>
+    <blockquote>
+    <pre>
+    Script "oalibs"
+    OaOpenLibrary("chip1b")
+    OaOpenLibrary("chip4b")
+    Set("OaUseOnly", "Electrical")
+    RunScript
+    EndScript
+    </pre>
+    </blockquote>
+
+    <p>
+    This is a <a href="xicscript">script</a> that is <a
+    href="techfile:scripts"executed</a> once only when the techology
+    file is read.  The block opens with the keyword "<tt>Script</tt>"
+    which is followed by a name, which is ignored in this case. 
+    Executable statements follow, terminated by keywords
+    "<tt>RunScript<tt>" (run once on readin) and "<tt>EndScript</tt>"
+    (end of script definition).  The two calls to <a
+    href="OaOpenLibrary"><tt>OaOpenLibrary</tt></a> accomplish opening
+    the libraries, and the <a href="Set"><tt>Set</tt></a> call sets
+    the variable which sets the default OpenAccess read mode to
+    electrical-only.
+
+    <p>
+    This initialization could have also been done in a separate <a
+    href="initfiles">startup file</a>.  The variable can also be set in
+    the technology file using the following syntax, outside of the
+    script block:
+
+    <blockquote>
+    <tt>OaUseOnly Electrical</tt>
+    </blockquote>
+    or
+    <blockquote>
+    <tt>!set OaUseOnly Electrical</tt>
+    </blockquote>
+
+    In <i>Xic</i>, there are generally multiple ways to accomplish
+    something!
+
+    <h4>Checking the Library Interface</h4>
+
+    <p>
+    One should test that the Cadence libraries are indeed accessible. 
+    From the <b>OpenAccess Libraries</b> panel, select a library in
+    the listing.  If the library is not already open, click on the
+    closed folder icon in the selected listing, and note that it
+    changes to an open folder.  This "opens" the library, meaning that
+    it can be accessed in <i>Xic</i>.
+
+    <p>
+    With a library selected, click on the <b>Contents</b> button in
+    the panel.  A window will appear that lists the cell names found
+    in the library.  Click on a name in the <b>Contents</b> window to
+    select it, and note that the <b>Open</b> button at the bottom of
+    this window becomes un-greyed.  Click the <b>Open</b> button.
+
+    <p>
+    The cell should appear in the <i>Xic</i> main window, but this
+    will be empty if showing physical mode and only electrical data
+    were read.  Switch to electrical mode in this case.  If there are
+    any errors during the read, message windows will appear. 
+    Hopefully in this case the user can figure out the problem given
+    the message text.  If not, Whiteley Research technical support
+    may be able to help.
+
+    <h4>Creating a Top-Level Cell For Simulation</h4>
+
+    Now we can get down to business.  The idea is to create a "test
+    bed" of sources, loads, and whatever else is needed to exercise a
+    circuit.  We will then add an instance of the circuit we wish to
+    simulate (from OpenAccess), and connect it.  Finally, we will add
+    <a href="spicetext">spicetext</a> labels to insert various things
+    into the SPICE text, which may include parameter definitions,
+    references to models, options, etc.  We don't need to follow any
+    particular order, in fact it may be advantageous to place the
+    OpenAccess instance first.
+
+    <p>
+    In electrical mode, open a new cell.  One might use the same name
+    as the OpenAccess cell, but with "<tt>_test</tt> appended.  Placing
+    the OpenAccess cell instance can be accomplished in two ways.  It is
+    required that the OpenAccess library that provides the cell must be
+    "open", as we have discussed earlier.  However, if this cell calls
+    subcells from a different OpenAccess library, that library need not
+    be open.  References from one OpenAccess cell to another do not
+    follow open/closed, this only applies when calling OpenAccess from
+    <i>Xic</i>.
+
+    <p>
+    One way to place an OpenAccess instance is to use the standard
+    <a href="xic:place"><b>place</b></a> command as initiated by the side
+    menu button.  When giving the name of the cell, enter the library name.
+    followed by space, then the cell name.  Press the <b>Place</b> button
+    and click to locate the instance.  The instance will use the colors
+    and appear as it does (more or less) in Virtuoso.
+
+    <p>
+    One can also initiate placement from the <b>Contents</b> listing
+    from the <b>OpenAccess Libraries</b> panel.  Click on the desired
+    cell name in the listing, then clicj the <b>Place</b> button at
+    the bottom of the listing.
+
+    <p>
+    The sources and other components are added and assigned values in
+    the usual way.  It is assumed that the user is familiar with <a
+    href="elecedit">this process</a> so it won't be described here. 
+    The OpenAccess instance is wired to the other components in the
+    usual way.  The "hot spot" in the terminals will be indicated when
+    the mouse pointer hovers over it.  Wires are required to contact
+    the hot spots, or connection will not be made.
+
+    <p>
+    The trickiest part is adding the text needed for supplemental
+    purposes in the SPICE output.  This is inserted using <a
+    href="spicetext">spicetext</a> labels, which are labels created on
+    the SPTX layer.  Text from labels on this layer is inserted
+    verbatim into the SPICE deck.  There can be any number of these
+    labels, the strings are ordered according to label location, top
+    to bottom and left to right.
+
+    <p>
+    The first time this is done, it may be a bit of work.  However
+    these labels can be copied into new cells for future simulations
+    that use the same technology, simplifying things.
+
+    <p>
+    <img src="screenshots/oasim.png">
+
+    <p>
+    The figure shows an example cell schematic.  The Virtuoso cell is
+    near the center.  Various voltage sources are set to provide
+    signals and bias as appropriate for the cell.  The violet text
+    labels are the hypertext labels.  The labels will be described
+    below.
+
+    <p>
+    We have mentioned previously that the PDK is expected to provide
+    SPICE models for the devices available in the technology.  One
+    must locate these models in the PDK source, and understand how
+    they are accessed, and determine which models are needed.  The
+    device models, if intended for Hspice, will generally work in
+    <i>WRspice</i> as well, at least for standard components such as
+    resistors, capacitors, and mosfets.  In the case of the TSMC PDK,
+    all models are contained in one rather large file.  In other PDKs,
+    the device models are separated into separate files, each
+    providing models for a certain device type or "corner".  In the
+    TSMC case, the devices are accessed via <tt>.lib</tt> lines,
+    whereas <tt>.include</tt> lines may be more appropriate for
+    separated model files.
+
+    <p>
+    The semiconductor models are generally provided for "typical"
+    parameter values (TT) plus the four "corners": fast, fast (FF),
+    fast, slow (FS), slow, fast (SF), and slow, slow (SS).  These
+    track the N and P type device parameter worst-case variations.
+
+    <p>
+    Thus, one of our labels would be something like
+
+    <blockquote>
+    <tt>.lib h /usr/local/cad/.../modelfile.l TT_lvt
+    </blockquote>
+
+    The 'h' modifier should be used when importing model text using
+    <tt>.lib</tt> and <tt>.include</tt>.  This tells <i>WRspice</i> to
+    expect Hspice syntax.  The name of the model file, and the name of
+    the target, depend on the actual PDK.  In the TSMC PDK,
+    <tt>TT_lvt</tt> is the target for "typical low-threshold MOS"
+    devices.  In the case here, there are four <tt>.lib</tt> lines,
+    bringing in MOS, resistors, and two types of capacitors.
+
+    <p>
+    The lazy approach is to load all models, however this may take too
+    much time and memory.  It is probably better to invest the time to
+    figure out exactly what needs to be included, and include only
+    those components.
+
+    <p>
+    Other spicetext labels specify <tt>.param</tt> and
+    <tt>.options</tt> lines, and a <tt>.measure</tt> line.  These are
+    given as needed, as in any <i>Xic</i> schematic.
+
+    <p>
+    Finally, there is the important requirement of connecting global
+    nets.  In this design, we happen to know that there are two global
+    nets defined:  <tt>gnd!</tt> and <tt>vdd!</tt>.  In Virtuoso and
+    in <i>Xic</i> net names that end with '!' (exclamation point) are
+    global.
+
+    <p>
+    In release 4.2.11 and later, all global nets are automatically
+    declared in SPICE output in a <tt>.global</tt> line.  In earlier
+    releases, this line would have to be added explicitly by the user,
+    in our case
+
+    <blockquote>
+    <tt>.global gnd! vdd!
+    </blockquote>
+
+    This would be added as a spicetext label.  In present <i>Xic</i>
+    releases such labels will generate redundant <tt>.global</tt>
+    lines, and unless backward compatibility to older <i>Xic</i>
+    releases is desired, such labels, if found, should be deleted.
+
+    <p>
+    Second, the global nets need to be explicitly connected to
+    something.  If this isn't done, the subcircuit would not be
+    powered or grounded!  In this case, the two global nets represent
+    ground and the Vdd supply.  Other circuits may have additional
+    global nets, that would have to be dealt with similarly.
+
+    <p>
+    Terminals, with given names being the global names, are added to
+    the schematic so that the global net is explicitly connected to
+    something.  There is one commandment, required by internal
+    considerations:
+
+    <blockquote>
+    <b>Thou shalt not tie two global nodes together directly, lest thy
+    simulation shall fail.</b>
+    </blockquote>
+
+    In cases where a bridge between global nets is required, a voltage
+    source set to DC 0 volts should be used.
+
+    <p>
+    In the present case, the connections are made in the lower right
+    corner of the figure.  A <tt>vdd!</tt> terminal is connected
+    directly to another terminal with name <tt>vdd</tt>, which has
+    been defined elsewhere in the drawing.  It is possible to tie the
+    global net to any non-global net in this manner, however this will
+    fail if both nets are global.
+
+    <p>
+    In the case of the ground, we tie a <tt>gnd!</tt> terminal device,
+    through a zero-voltage source, to a ground terminal.  The voltage
+    source is necessary, as both the <tt>gnd!</tt> and <tt>0</tt>
+    nets are global.
+
+    <p>
+    Once all setup is complete, the circuit can be simulated, in the
+    same way as any other circuit.  Generally, one will have to fiddle
+    a bit before it works.  Here, you may get undefined model messages
+    and the like, which means that another model library reference is
+    needed.
+
+    <p>
+    Results are <a href="xic:plot">plotted</a> in the normal way, with
+    <b>Ctrl</b>+<b>Shift</b> clicking on the subcircuit instance to
+    bring up a <a href="hyproxy">proxy</a> schematic where internal
+    plot points can be defined.
+
+!!ENDIF
+

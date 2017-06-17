@@ -1,0 +1,983 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  $Id: wrspiceMODULEdefs.h.xml,v 1.50 2016/09/26 01:46:49 stevew Exp $
+
+  Modified for use with WRspice, Whiteley Research Inc. (wrcad.com).
+  See the original header below for terms and conditions of use.
+-->
+
+<!--
+  Written by Laurent Lemaitre - r29173@users.sourceforge.net
+  Documentation:
+    http://sourceforge.net/docman/display_doc.php?docid=18993&group_id=84289
+  Target Interface: ngspice
+  Supported by adms-1.x.x
+  This file is used by adms - http://sourceforge.net/projects/mot-adms.
+  adms is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+  adms is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  You should have received a copy of the GNU General Public License
+  along with adms; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+
+<!DOCTYPE admst SYSTEM "admst.dtd">
+<admst version="2.3.0"
+  xmlns:admst="http://mot-adms.sourceforge.net/xml-files/admst">
+
+<!-- ---------------------------------------------------------------------- -->
+<!--
+  Create the declarations for analog functions.
+-->
+<admst:template match="analogfunctionH">
+  <admst:for-each select="/module/analogfunction">
+    <admst:value-of select="name"/>
+    <admst:variable name="function" select="%s"/>
+    <admst:text format="\n// analog function: $(function)\n"/>
+    <admst:text format="%(vtype(.)) $function("/>
+    <admst:join select="variable[input='yes']" separator=", ">
+      <admst:value-of select="name"/>
+      <admst:text format="%(vtype(.)) %s"/>
+    </admst:join>
+    <admst:text format=");\n"/>
+    <admst:text format="%(vtype(.)) d_$(function)("/>
+    <admst:join select="variable[input='yes']" separator=", ">
+      <admst:value-of select="name"/>
+      <admst:text format="%(vtype(.)) %s"/>
+    </admst:join>
+    <admst:text format=", "/>
+    <admst:join select="variable[input='yes']" separator=", ">
+      <admst:value-of select="name"/>
+      <admst:text format="%(vtype(.)) d_%s"/>
+    </admst:join>
+    <admst:text format=");\n"/>
+  </admst:for-each>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<!--
+  Core callback template for the findfunc template.  Behavior is set
+  with the $findwhat variable.
+-->
+<admst:template match="dofunc">
+  <admst:choose>
+    <admst:when test="[name='idt' and $findwhat='xdt']">
+      <admst:text format="#define STATE_idt_%(unique_id)"/>
+      <admst:text format=" GENstate+%(incrementer(.)/value)\n"/>
+      <admst:apply-templates select="." match="incrementer"/>
+    </admst:when>
+    <admst:when test="[name='ddt' and $findwhat='xdt' and $DDTFUNC!='legacy']">
+      <admst:text format="#define STATE_ddt_%(unique_id)"/>
+      <admst:text format=" GENstate+%(incrementer(.)/value)\n"/>
+      <admst:apply-templates select="." match="incrementer"/>
+    </admst:when>
+    <admst:when test="[name='\$rdist_uniform' and $findwhat='xdt']">
+      <admst:text format="#define STATE_uniform_%(unique_id)"/>
+      <admst:text format=" GENstate+%(incrementer(.)/value)\n"/>
+      <admst:apply-templates select="." match="incrementer"/>
+      <admst:apply-templates select="." match="incrementer"/>
+      <admst:apply-templates select="." match="incrementer"/>
+    </admst:when>
+    <admst:when test="[name='\$rdist_normal' and $findwhat='xdt']">
+      <admst:text format="#define STATE_normal_%(unique_id)"/>
+      <admst:text format=" GENstate+%(incrementer(.)/value)\n"/>
+      <admst:apply-templates select="." match="incrementer"/>
+      <admst:apply-templates select="." match="incrementer"/>
+      <admst:apply-templates select="." match="incrementer"/>
+    </admst:when>
+    <admst:when test="[name='\$rdist_exponential' and $findwhat='xdt']">
+      <admst:text format="#define STATE_exponential_%(unique_id)"/>
+      <admst:text format=" GENstate+%(incrementer(.)/value)\n"/>
+      <admst:apply-templates select="." match="incrementer"/>
+      <admst:apply-templates select="." match="incrementer"/>
+      <admst:apply-templates select="." match="incrementer"/>
+    </admst:when>
+    <admst:when test="[name='\$rdist_poisson' and $findwhat='xdt']">
+      <admst:text format="#define STATE_poisson_%(unique_id)"/>
+      <admst:text format=" GENstate+%(incrementer(.)/value)\n"/>
+      <admst:apply-templates select="." match="incrementer"/>
+      <admst:apply-templates select="." match="incrementer"/>
+      <admst:apply-templates select="." match="incrementer"/>
+    </admst:when>
+    <admst:when test="[name='\$rdist_chi_square' and $findwhat='xdt']">
+      <admst:text format="#define STATE_chi_square_%(unique_id)"/>
+      <admst:text format=" GENstate+%(incrementer(.)/value)\n"/>
+      <admst:apply-templates select="." match="incrementer"/>
+      <admst:apply-templates select="." match="incrementer"/>
+      <admst:apply-templates select="." match="incrementer"/>
+    </admst:when>
+    <admst:when test="[name='\$rdist_t' and $findwhat='xdt']">
+      <admst:text format="#define STATE_t_%(unique_id)"/>
+      <admst:text format=" GENstate+%(incrementer(.)/value)\n"/>
+      <admst:apply-templates select="." match="incrementer"/>
+      <admst:apply-templates select="." match="incrementer"/>
+      <admst:apply-templates select="." match="incrementer"/>
+    </admst:when>
+    <admst:when test="[name='\$rdist_erlang' and $findwhat='xdt']">
+      <admst:text format="#define STATE_erlang_%(unique_id)"/>
+      <admst:text format=" GENstate+%(incrementer(.)/value)\n"/>
+      <admst:apply-templates select="." match="incrementer"/>
+      <admst:apply-templates select="." match="incrementer"/>
+      <admst:apply-templates select="." match="incrementer"/>
+    </admst:when>
+    <admst:when test="[name='limexp' and $findwhat='limexp']">
+      <admst:text format="$(indent)double limexp_value%(unique_id);\n"/>
+    </admst:when>
+    <admst:when test="[name='\$limexp' and $findwhat='limexp']">
+      <admst:text format="$(indent)double limexp_value%(unique_id);\n"/>
+    </admst:when>
+  </admst:choose>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<!--
+  The main math package.
+-->
+<admst:template match="c:math_h">
+#ifndef M_LN10
+#define M_LN10      2.30258509299404568402  /* log e10 */
+#endif
+
+namespace {
+    // Arity 1 functions.
+    struct mfunc_t
+    {
+        double arg;     // function argument
+        double val;     // function value
+        double dx;      // d/dx value
+        double dxx;     // d2/dx2 value
+    };
+
+    struct mfunc_fabs_t : public mfunc_t
+    {
+        mfunc_fabs_t(double x)  { arg=x; val=fabs(arg); }
+        void d_fabs()           { dx=(arg>=0?1.0:-1.0); dxx=0.0; }
+    };
+
+    struct mfunc_acos_t : public mfunc_t
+    {
+        mfunc_acos_t(double x)  { arg=x; val=acos(arg); }
+        void d_acos()           { double t=1.0-arg*arg; dx=-1.0/sqrt(t);
+                                  dxx=arg*dx/t; }
+    };
+
+    struct mfunc_acosh_t : public mfunc_t
+    {
+        mfunc_acosh_t(double x) { arg=x; val=acosh(arg); }
+        void d_acosh()          { double t=arg*arg-1.0; dx=1.0/sqrt(t);
+                                  dxx=-arg*dx/t; }
+    };
+
+    struct mfunc_asin_t : public mfunc_t
+    {
+        mfunc_asin_t(double x)  { arg=x; val=asin(arg); }
+        void d_asin()           { double t=1.0-arg*arg; dx=1.0/sqrt(t);
+                                  dxx=arg*dx/t; }
+    };
+
+    struct mfunc_asinh_t : public mfunc_t
+    {
+        mfunc_asinh_t(double x) { arg=x; val=asinh(arg); }
+        void d_asinh()          { double t=arg*arg+1.0; dx=1.0/sqrt(t);
+                                  dxx=-arg*dx/t; }
+    };
+
+    struct mfunc_atan_t : public mfunc_t
+    {
+        mfunc_atan_t(double x)  { arg=x; val=atan(arg); }
+        void d_atan()           { double t=1.0+arg*arg; dx=1.0/t;
+                                  dxx=-2.0*arg*dx*dx; }
+    };
+
+    struct mfunc_atanh_t : public mfunc_t
+    {
+        mfunc_atanh_t(double x)  { arg=x; val=atanh(arg); }
+        void d_atanh()           { double t=1.0-arg*arg; dx=1.0/t;
+                                  dxx=2.0*arg*dx*dx; }
+    };
+
+    struct mfunc_cos_t : public mfunc_t
+    {
+        mfunc_cos_t(double x)   { arg=x; val=cos(arg); }
+        void d_cos()            { dx=-sin(arg); dxx=-val; }
+    };
+
+    struct mfunc_cosh_t : public mfunc_t
+    {
+        mfunc_cosh_t(double x)  { arg=x; val=cosh(arg); }
+        void d_cosh()           { dx=sinh(arg); dxx=val; }
+    };
+
+    struct mfunc_exp_t : public mfunc_t
+    {
+        mfunc_exp_t(double x)   { arg=x; val=exp(arg); }
+        void d_exp()            { dx=val; dxx=val; }
+    };
+
+    struct mfunc_limexp_t : public mfunc_t
+    {
+        mfunc_limexp_t(double x){ arg=x; }
+        void d_limexp() { dx=val; dxx=val; }
+    };
+
+    struct mfunc_logE_t : public mfunc_t
+    {
+        mfunc_logE_t(double x)  { arg=x; val=log(arg); }
+        void d_logE()           { dx=1.0/arg; dxx=-dx*dx; }
+    };
+
+    struct mfunc_log10_t : public mfunc_t
+    {
+        mfunc_log10_t(double x) { arg=x; val=log10(arg); }
+        void d_log10()  { dx=1.0/M_LN10/arg; dxx=-dx/arg; }
+    };
+
+    struct mfunc_sin_t : public mfunc_t
+    {
+        mfunc_sin_t(double x)   { arg=x; val=sin(arg); }
+        void d_sin()            { dx=cos(arg); dxx=-val; }
+    };
+
+    struct mfunc_sinh_t : public mfunc_t
+    {
+        mfunc_sinh_t(double x)  { arg=x; val=sinh(arg); }
+        void d_sinh()           { dx=cosh(arg); dxx=val; }
+    };
+
+    struct mfunc_sqrt_t : public mfunc_t
+    {
+        mfunc_sqrt_t(double x)  { arg=x; val=sqrt(arg); }
+        void d_sqrt()           { dx=0.5/val; dxx=-0.5*dx/arg; }
+    };
+
+    struct mfunc_tan_t : public mfunc_t
+    {
+        mfunc_tan_t(double x)   { arg=x; val=tan(arg); }
+        void d_tan()            { double t = cos(arg); dx=1.0/(t*t);
+                                  dxx=2.0*dx*val; }
+    };
+
+    struct mfunc_tanh_t : public mfunc_t
+    {
+        mfunc_tanh_t(double x)  { arg=x; val=tanh(arg); }
+        void d_tanh()           { double t = cosh(arg); dx=1.0/(t*t);
+                                  dxx=-2.0*dx*val; }
+    };
+
+    // Arity 2 functions.
+    struct mfunc2_t
+    {
+        double argx;    // x argument (first)
+        double argy;    // y argument (second)
+        double val;     // function value
+        double dx;      // d/dx value
+        double dy;      // d/dy value
+        double dxx;     // d2/dx2 value
+        double dxy;     // d2/dxdy value
+        double dyy;     // d2/dy2 value
+    };
+
+    struct mfunc2_add_t : public mfunc2_t
+    {
+        mfunc2_add_t(double x, double y)
+                            { argx=x; argy=y; val=argx+argy; }
+        void dyy_add()      { dx=1.0; dy=1.0; dxx=0.0; dxy=0.0; dyy=0.0; }
+        void dyn_add()      { dx=1.0; }
+        void dny_add()      { dy=1.0; }
+    };
+
+    struct mfunc2_atan2_t : public mfunc2_t
+    {
+        mfunc2_atan2_t(double x, double y)
+                            { argx=x; argy=y; val=atan2(argx,argy); }
+        void dyy_atan2()    { double t = argx*argx + argy*argy;
+                              dx=-argy/t; dy=argx/t;
+                              dxx=2*argx*argy/t; dyy=-dxx;
+                              dxy=(argy*argy - argx*argx)/(t*t); }
+        void dyn_atan2()    { dx=-argy/(argx*argx + argy*argy); }
+        void dny_atan2()    { dy= argx/(argx*argx + argy*argy); }
+    };
+
+    struct mfunc2_div_t : public mfunc2_t
+    {
+        mfunc2_div_t(double x, double y)
+                            { argx=x; argy=y; val=argx/argy; }
+        void dyy_div()      { dx=1.0/argy; dy=-val/argy; dxx=0.0; dxy=-dx*dx;
+                              dyy=-2.0*val*dxy; }
+        void dyn_div()      { dx=1.0/argy; }
+        void dny_div()      { dy=-val/argy; }
+    };
+
+    struct mfunc2_hypot_t : public mfunc2_t
+    {
+        mfunc2_hypot_t(double x, double y)
+                            { argx=x; argy=y; val=sqrt(argx*argx + argy*argy); }
+        void dyy_hypot()    { double xsq=argx*argx, ysq=argy*argy;
+                              double d=xsq+ysq; d *= val;
+                              if (val!=0.0) {
+                                dx=argx/val; dy=argy/val; dxx=ysq/d;
+                                dxy=-argx*argy/d; dyy=xsq/d;
+                              } else {
+                                dx=0.0; dy=0.0; dxx=0.0;
+                                dxy=0.0; dyy=0.0; } }
+        void dyn_hypot()    { dx=argx/val; }
+        void dny_hypot()    { dy=argy/val; }
+    };
+
+    struct mfunc2_max_t : public mfunc2_t
+    {
+        mfunc2_max_t(double x, double y)
+                            { argx=x; argy=y; val=argx>argy?argx:argy; }
+        void dyy_max()      { dx=argx>argy?1.0:0.0; dy=argx>argy?0.0:1.0;
+                              dxx=0.0; dxy=0.0; dyy=0.0; }
+        void dyn_max()      { dx=argx>argy?1.0:0.0; }
+        void dny_max()      { dy=argx>argy?0.0:1.0; }
+    };
+
+    struct mfunc2_min_t : public mfunc2_t
+    {
+        mfunc2_min_t(double x, double y)
+                            { argx=x; argy=y; val=argx&lt;argy?argx:argy; }
+        void dyy_min()      { dx=argx&lt;argy?1.0:0.0; dy=argx&lt;argy?0.0:1.0;
+                              dxx=0.0; dxy=0.0; dyy=0.0; }
+        void dyn_min()      { dx=argx&lt;argy?1.0:0.0; }
+        void dny_min()      { dy=argx&lt;argy?0.0:1.0; }
+    };
+
+    struct mfunc2_mult_t : public mfunc2_t
+    {
+        mfunc2_mult_t(double x, double y)
+                            { argx=x; argy=y; val=argx*argy; }
+        void dyy_mult()     { dx=argy; dy=argx; dxx=0.0; dxy=1.0; dyy=0.0; }
+        void dyn_mult()     { dx=argy; }
+        void dny_mult()     { dy=argx; }
+    };
+
+    struct mfunc2_pow_t : public mfunc2_t
+    {
+        mfunc2_pow_t(double x, double y)
+                            { argx=x; argy=y; val=pow(argx,argy); }
+        void dyy_pow()      { if (argx!=0.0) {
+                                dx=val*argy/argx; dy=val*log(argx);
+                                dxx=dx*(argy-1.0)/argx; dxy=(val+argy*dy)/argx;
+                                dyy=dy*log(argx);
+                              } else {
+                                dx=0.0; dy=0.0; dxx=0.0; dxy=0.0; dyy=0.0; } }
+        void dyn_pow()      { if (argx!=0.0) dx=val*argy/argx;
+                              else dx=0.0; }
+        void dny_pow()      { if (argx!=0.0) dy=val*log(argx);
+                              else dy=0.0; }
+    };
+}
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<!--
+  Math package for analog functions.
+-->
+<admst:template match="c:af:math_h">
+  <admst:text format="\n"/>
+inline double _fabs(double arg)            { return fabs(arg); }
+inline double _d0_fabs(double arg)         { return arg>=0?1.0:-1.0; }
+inline double _acos(double arg)            { return acos(arg); }
+inline double _d0_acos(double arg)         { return -1.0/sqrt(1-arg*arg); }
+inline double _acosh(double arg)           { return acosh(arg); }
+inline double _d0_acosh(double arg)        { return 1.0/sqrt(arg*arg-1); }
+inline double _asin(double arg)            { return asin(arg); }
+inline double _d0_asin(double arg)         { return 1.0/sqrt(1-arg*arg); }
+inline double _asinh(double arg)           { return asinh(arg); }
+inline double _d0_asinh(double arg)        { return 1.0/sqrt(arg*arg+1); }
+inline double _atan(double arg)            { return atan(arg); }
+inline double _d0_atan(double arg)         { return 1.0/(1+arg*arg); }
+inline double _atanh(double arg)           { return atanh(arg); }
+inline double _d0_atanh(double arg)        { return 1.0/(1-arg*arg); }
+inline double _cos(double arg)             { return cos(arg); }
+inline double _d0_cos(double arg)          { return -sin(arg); }
+inline double _cosh(double arg)            { return cosh(arg); }
+inline double _d0_cosh(double arg)         { return sinh(arg); }
+inline double _exp(double arg)             { return exp(arg); }
+inline double _d0_exp(double arg)          { return exp(arg); }
+inline double _logE(double arg)            { return log(arg); }
+inline double _d0_logE(double arg)         { return 1.0/arg; }
+inline double _log10(double arg)           { return log10(arg); }
+inline double _d0_log10(double arg)        { return 1.0/M_LN10/arg; }
+inline double _sin(double arg)             { return sin(arg); }
+inline double _d0_sin(double arg)          { return cos(arg); }
+inline double _sinh(double arg)            { return sinh(arg); }
+inline double _d0_sinh(double arg)         { return cosh(arg); }
+inline double _sqrt(double arg)            { return sqrt(arg); }
+inline double _d0_sqrt(double arg)         { return 0.5/sqrt(arg); }
+inline double _tan(double arg)             { return tan(arg); }
+inline double _d0_tan(double arg)          { return 1.0/cos(arg)/cos(arg); }
+inline double _tanh(double arg)            { return tanh(arg); }
+inline double _d0_tanh(double arg)         { return 1.0/cosh(arg)/cosh(arg); }
+
+inline double _add(double x,double y)      { return x+y; }
+inline double _d0_add(double,double)       { return 1.0; }
+inline double _d1_add(double,double)       { return 1.0; }
+inline double _div(double x,double y)      { return x/y; }
+inline double _d0_div(double,double y)     { return 1.0/y; }
+inline double _d1_div(double x,double y)   { return -x/(y*y); }
+inline double _hypot(double x,double y)    { return sqrt(x*x+y*y); }
+inline double _d0_hypot(double x,double y) { return x/sqrt(x*x+y*y); }
+inline double _d1_hypot(double x,double y) { return y/sqrt(x*x+y*y); }
+inline double _max(double x,double y)      { return x>y?x:y; }
+inline double _d0_max(double x,double y)   { return x>y?1.0:0.0; }
+inline double _d1_max(double x,double y)   { return x>y?0.0:1.0; }
+inline double _min(double x,double y)      { return x&lt;y?x:y; }
+inline double _d0_min(double x,double y)   { return x&lt;y?1.0:0.0; }
+inline double _d1_min(double x,double y)   { return x&lt;y?0.0:1.0; }
+inline double _mult(double x,double y)     { return x*y; }
+inline double _d0_mult(double,double y)    { return y; }
+inline double _d1_mult(double x,double)    { return x; }
+inline double _pow(double x,double y)      { return pow(x,y); }
+inline double _d0_pow(double x,double y)   { return x==0.0?0.0:(y/x)*pow(x,y); }
+inline double _d1_pow(double x,double y)   { return x==0.0?0.0:log(x)*pow(x,y); }
+
+#define _limexp(arg)    _exp(arg)
+#define _d_limexp(arg)  _d_exp(arg)
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<admst:template match="module_defs_h">
+
+  <admst:text format="\n#ifndef $(moduc)DEFS_H\n"/>
+  <admst:text format="#define $(moduc)DEFS_H\n"/>
+
+  <admst:text format="\n#include &quot;device.h&quot;\n"/>
+  <admst:if test="[$package_header='yes']">
+    <admst:text format="#include &quot;$(modlc)extra.h&quot;\n"/>
+  </admst:if>
+
+  <admst:text format="\nnamespace adms$(moduc) {\n"/>
+  <admst:if test="[not(nilled(analogfunction))]">
+    <admst:apply-templates select="/module" match="analogfunctionH"/>
+  </admst:if>
+
+  <admst:text format="\nstruct s$(moduc)model;\n"/>
+  <admst:text format="struct s$(moduc)instance;\n"/>
+
+  <admst:text format="\nstruct $(moduc)dev : public IFdevice\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)$(moduc)dev();\n"/>
+
+  <admst:text format="\n$(indent)sGENmodel *newModl();\n"/>
+  <admst:text format="$(indent)sGENinstance *newInst();\n"/>
+  <admst:text format="$(indent)int destroy(sGENmodel**);\n"/>
+  <admst:text format="$(indent)int delInst(sGENmodel*, IFuid, sGENinstance*);\n"/>
+  <admst:text format="$(indent)int delModl(sGENmodel**, IFuid, sGENmodel*);\n"/>
+
+  <admst:text format="\n$(indent)void parse(int, sCKT*, sLine*);\n"/>
+  <admst:text format="$(indent)// int loadTest(sGENinstance*, sCKT*);\n"/>
+  <admst:text format="$(indent)int load(sGENinstance*, sCKT*);\n"/>
+  <admst:text format="$(indent)int setup(sGENmodel*, sCKT*, int*);\n"/>
+  <admst:text format="$(indent)int unsetup(sGENmodel*, sCKT*);\n"/>
+  <admst:text format="$(indent)int resetup(sGENmodel*, sCKT*);\n"/>
+  <admst:text format="$(indent)int temperature(sGENmodel*, sCKT*);\n"/>
+  <admst:text format="$(indent)// int getic(sGENmodel*, sCKT*);\n"/>
+  <admst:text format="$(indent)// int accept(sCKT*, sGENmodel*);\n"/>
+  <admst:text format="$(indent)int trunc(sGENmodel*, sCKT*, double*);\n"/>
+  <admst:text format="$(indent)// int convTest(sGENmodel*, sCKT*);\n"/>
+
+  <admst:text format="\n$(indent)void backup(sGENmodel*, DEV_BKMODE);\n"/>
+
+  <admst:text format="\n$(indent)int setInst(int, IFdata*, sGENinstance*);\n"/>
+  <admst:text format="$(indent)int setModl(int, IFdata*, sGENmodel*);\n"/>
+  <admst:text format="$(indent)int askInst(const sCKT*, const sGENinstance*, int, IFdata*);\n"/>
+  <admst:text format="$(indent)int askModl(const sGENmodel*, int, IFdata*);\n"/>
+  <admst:text format="\n$(indent)// int findBranch(sCKT*, sGENmodel*, IFuid);\n"/>
+
+  <admst:text format="\n$(indent)int acLoad(sGENmodel*, sCKT*);\n"/>
+  <admst:text format="$(indent)int pzLoad(sGENmodel*, sCKT*, IFcomplex*);\n"/>
+  <admst:text format="$(indent)// int disto(int, sGENmodel*, sCKT*);\n"/>
+  <admst:text format="$(indent)int noise(int, int, sGENmodel*, sCKT*, sNdata*, double*);\n"/>
+  <admst:text format="private:\n"/>
+  <admst:text format="$(indent)int topology(sCKT*, s$(moduc)model*, s$(moduc)instance*);\n"/>
+  <admst:text format="};\n"/>
+
+  <admst:text format="\n\nstruct s$(moduc)instance : public sGENinstance\n"/>
+  <admst:text format="{\n"/>
+
+<!-- XXX -->
+  <admst:text format="$(indent)s$(moduc)instance()\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent){\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)memset(this, 0, sizeof(s$(moduc)instance));\n"/>
+  <admst:text format="$(indent)GENnumNodes = %(count(node[location='external']));\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+
+  <admst:text format="$(indent)~s$(moduc)instance() { delete [] (char*)$(moduc)backing; }\n\n"/>
+  <admst:text format="$(indent)s$(moduc)instance *next()\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent){ return ((s$(moduc)instance*)GENnextInstance); }\n\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)void backup(DEV_BKMODE bkm)\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent){\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)if (bkm == DEV_SAVE) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)if (!$(moduc)backing)\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)$(moduc)backing = new char[sizeof(s$(moduc)instance)];\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)memcpy($(moduc)backing, this, sizeof(s$(moduc)instance));\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="$(indent)else if (bkm == DEV_RESTORE) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)if ($(moduc)backing)\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)memcpy(this, $(moduc)backing, sizeof(s$(moduc)instance));\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="$(indent)else {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)// DEV_CLEAR\n"/>
+  <admst:text format="$(indent)delete [] (char*)$(moduc)backing;\n"/>
+  <admst:text format="$(indent)$(moduc)backing = 0;\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)int resolve_ties();\n"/>
+
+  <admst:text format="\n$(indent)// The nodes MUST come first.\n"/>
+  <admst:for-each select="node[grounded='no']">
+    <admst:text format="$(indent)int %(name)_Node;"/>
+    <admst:variable name="info" value=""/>
+    <admst:for-each select="attribute">
+      <admst:if test="[name='info' or name='desc']">
+        <admst:if test="[$info!='']">
+          <admst:variable name="info" value="$info "/>
+        </admst:if>
+        <admst:variable name="info" value="$info%(value)"/>
+      </admst:if>
+    </admst:for-each>
+    <admst:if test="[$info!='']">
+      <admst:text format="  // $info"/>
+    </admst:if>
+    <admst:text format="\n"/>
+  </admst:for-each>
+  <admst:for-each select="$curprobes">
+    <admst:variable name="pname" string="%(branch/pnode/name)probe"/>
+    <admst:text format="$(indent)int $(pname)_Node;\n"/>
+  </admst:for-each>
+  <admst:for-each select="$branches">
+    <admst:variable name="pname" path="branch/pnode/name"/>
+    <admst:variable name="nname" path="branch/nnode/name"/>
+    <admst:variable name="bname" value="$(pname)_$(nname)_Branch"/>
+    <admst:text format="$(indent)int $(bname);\n"/>
+  </admst:for-each>
+  <admst:for-each select="$curprobes">
+    <admst:variable name="pname" path="branch/pnode/name"/>
+    <admst:variable name="bname" value="$(pname)_$(pname)_Branch"/>
+    <admst:text format="$(indent)int $(bname);\n"/>
+  </admst:for-each>
+
+  <!-- Instance Parameters -->
+  <admst:if test="variable[parametertype='instance' and input='yes']">
+    <admst:text format="\n$(indent)// Instance parameters.\n"/>
+    <admst:for-each select="variable[parametertype='instance' and
+        input='yes']">
+      <admst:value-of select="name"/>
+      <admst:text format="$(indent)%(vtype(.)) %s;\n"/>
+    </admst:for-each>
+    <admst:text format="\n"/>
+    <admst:for-each
+        select="variable[parametertype='instance' and input='yes']">
+      <admst:value-of select="name"/>
+      <admst:text format="$(indent)unsigned %s_Given:1;\n"/>
+    </admst:for-each>
+  </admst:if>
+
+  <!-- Instance Variables -->
+  <admst:if test="[
+      count(variable[input='no' and (scope='global_instance' or
+        (parametertype='instance' and not(nilled(attribute))))])!=0 or
+      count($instance_vars)!=0]">
+    <admst:text format="\n$(indent)// Variables\n"/>
+    <admst:for-each select="variable[input='no' and (scope='global_instance' or
+        (parametertype='instance' and not(nilled(attribute))))]">
+      <admst:text format="$(indent)%(vtype(.)) %(name);\n"/>
+    </admst:for-each>
+    <admst:if test="$instance_vars">
+      <admst:for-each select="$instance_vars">
+        <admst:text format="$(indent)%(vtype(.)) %(name);\n"/>
+      </admst:for-each>
+    </admst:if>
+  </admst:if>
+  <admst:text format="$(indent)void *$(moduc)backing;\n"/>
+
+  <!-- Noise -->
+  <admst:if test="[count($fnoise/item)!=0 or count($tnoise/item)!=0 or
+      count($wnoise/item)!=0]">
+    <admst:text format="\n$(indent)// Noise\n"/>
+    <admst:for-each select="$fnoise/item">
+      <admst:text format="$(indent)double fpnoise%(index($fnoise/item,.));\n"/>
+      <admst:text format="$(indent)double fenoise%(index($fnoise/item,.));\n"/>
+    </admst:for-each>
+    <admst:text select="$tnoise/item"
+      format="$(indent)double tnoise%(index($tnoise/item,.));\n"/>
+    <admst:text select="$wnoise/item"
+      format="$(indent)double wnoise%(index($wnoise/item,.));\n"/>
+    <admst:text format="#define $(moduc)NSRCS %(count($noinames)+1)\n"/>
+    <admst:text format="$(indent)double NOISEvar[NSTATVARS][$(moduc)NSRCS];\n"/>
+  </admst:if>
+
+  <admst:if test="[$LIMPRED='yes']">
+    <!-- These are post-limited or predicted node voltages. -->
+    <admst:text format="\n$(indent)// Limiting and prediction.\n"/>
+    <admst:for-each select="node[grounded='no']">
+      <admst:text format="$(indent)double LIMPRED_%(name);\n"/>
+    </admst:for-each>
+  </admst:if>
+
+  <!-- Add limexp state entries, if any limexp/$limexp calls. -->
+  <admst:variable name="findwhat" value="limexp"/>
+  <admst:for-each select="analog/code/item">
+    <admst:apply-templates select="." match="findfunc"/>
+  </admst:for-each>
+
+  <admst:text format="\n$(indent)// Pointers to sparse matrix.\n"/>
+  <admst:for-each select="jacobian">
+    <admst:value-of select="column/name"/>
+    <admst:value-of select="row/name"/>
+    <admst:text format="$(indent)double *PTR_J_%s_%s;\n"/>
+  </admst:for-each>
+  <admst:for-each select="$branches">
+    <admst:variable name="pname" path="branch/pnode/name"/>
+    <admst:variable name="nname" path="branch/nnode/name"/>
+    <admst:variable name="bname" value="$(pname)_$(nname)_Branch"/>
+    <admst:if test="branch/pnode[grounded='no']">
+      <admst:text format="$(indent)double *PTR_$(bname)_PB;\n"/>
+      <admst:text format="$(indent)double *PTR_$(bname)_BP;\n"/>
+    </admst:if>
+    <admst:if test="branch/nnode[grounded='no']">
+      <admst:text format="$(indent)double *PTR_$(bname)_NB;\n"/>
+      <admst:text format="$(indent)double *PTR_$(bname)_BN;\n"/>
+    </admst:if>
+    <!-- BrBr pointer, inductor devices need this. -->
+    <admst:text format="$(indent)double *PTR_$(bname)_BB;\n"/>
+  </admst:for-each>
+  <admst:for-each select="$curprobes">
+    <admst:variable name="pname" path="branch/pnode/name"/>
+    <admst:variable name="bname" value="$(pname)_$(pname)_Branch"/>
+    <admst:text format="$(indent)double *PTR_$(bname)_PB;\n"/>
+    <admst:text format="$(indent)double *PTR_$(bname)_BP;\n"/>
+    <admst:text format="$(indent)double *PTR_$(bname)_NB;\n"/>
+    <admst:text format="$(indent)double *PTR_$(bname)_BN;\n"/>
+  </admst:for-each>
+
+  <!--
+    First find and list the required flags for optional and internal
+    nodes.  These are set in the topology method.
+  -->
+  <admst:text format="\n"/>
+  <admst:for-each select="node[attribute[name='optional']/value='yes']">
+    <admst:text format="$(indent)bool %(name)_Node_required;\n"/>
+  </admst:for-each>
+  <admst:for-each select="node[grounded='no' and location='internal']">
+    <admst:text format="$(indent)bool %(name)_Node_required;\n"/>
+  </admst:for-each>
+
+  <!--
+    List the required flags for the jacobian.  These are set in the
+    topology method.
+  -->
+  <admst:for-each select="jacobian">
+    <admst:value-of select="column/name"/>
+    <admst:value-of select="row/name"/>
+    <admst:text format="$(indent)bool PTR_J_%s_%s_required;\n"/>
+  </admst:for-each>
+
+  <!--
+    List the required flags for the branch nodes.  These are set in
+    the topology method.
+  -->
+  <admst:for-each select="$branches">
+    <admst:variable name="pname" path="branch/pnode/name"/>
+    <admst:variable name="nname" path="branch/nnode/name"/>
+    <admst:variable name="bname" value="$(pname)_$(nname)_Branch"/>
+    <admst:if test="branch/pnode[grounded='no']">
+      <admst:text format="$(indent)bool PTR_$(bname)_P_required;\n"/>
+    </admst:if>
+    <admst:if test="branch/nnode[grounded='no']">
+      <admst:text format="$(indent)bool PTR_$(bname)_N_required;\n"/>
+    </admst:if>
+    <!-- For inductors. -->
+    <admst:text format="$(indent)bool PTR_$(bname)_BB_required;\n"/>
+  </admst:for-each>
+
+  <!--
+    List the connected and internal flags for the optional ports.
+    These are set at run-time for optional ports that are given a circuit
+    node by SPICE (i.e., they are connected to the circuit), and are
+    returned in $port_connected calls.
+  -->
+  <admst:for-each select="node[attribute[name='optional']/value='yes']">
+    <admst:text format="$(indent)bool %(name)_Node_connected;\n"/>
+  </admst:for-each>
+
+  <!--
+    List the created flags of optional and internal nodes.  These are
+    set if model code creates a node.  We have to be careful and allow
+    for the possibility that internal nodes can set to other external
+    or internal node numbers.  We need to know who actually created a
+    node in the unsetup method.
+  -->
+  <admst:for-each select="node[attribute[name='optional']/value='yes']">
+    <admst:text format="$(indent)bool %(name)_Node_created;\n"/>
+  </admst:for-each>
+  <admst:for-each select="node[grounded='no' and location='internal']">
+    <admst:text format="$(indent)bool %(name)_Node_created;\n"/>
+  </admst:for-each>
+
+  <!--
+    Add a flag for each contribution that may be collapsed.  The topology
+    method will set these flags if the nodes are actually collapsed.
+  -->
+  <admst:for-each select="$collapsable">
+    <admst:variable name="pnode" path="branch/pnode"/>
+    <admst:variable name="nnode" path="branch/nnode"/>
+    <admst:variable name="pname" path="$pnode/name"/>
+    <admst:variable name="nname" path="$nnode/name"/>
+    <admst:text format="$(indent)bool $(pname)_$(nname)_collapsed;\n"/>
+  </admst:for-each>
+
+  <admst:text format="\n"/>
+  <admst:for-each select="jacobian">
+    <admst:variable name="row" value="%(row/name)"/>
+    <admst:variable name="col" value="%(column/name)"/>
+    <admst:if test="[static='yes']">
+      <admst:text format="$(indent)double JSVAL_$(row)_$(col);\n"/>
+    </admst:if>
+    <admst:if test="[dynamic='yes']">
+      <admst:text format="$(indent)double JDVAL_$(row)_$(col);\n"/>
+    </admst:if>
+    <!-- OBSOLETE
+    <admst:choose>
+      <admst:when test="[$DDTFUNC='twopass']">
+        <admst:text format="$(indent)double JSVAL_$(row)_$(col);\n"/>
+        <admst:text format="$(indent)double JDVAL_$(row)_$(col);\n"/>
+      </admst:when>
+      <admst:otherwise>
+        <admst:if test="[static='yes']">
+          <admst:text format="$(indent)double JSVAL_$(row)_$(col);\n"/>
+        </admst:if>
+        <admst:if test="[dynamic='yes']">
+          <admst:text format="$(indent)double JDVAL_$(row)_$(col);\n"/>
+        </admst:if>
+      </admst:otherwise>
+    </admst:choose>
+    -->
+  </admst:for-each>
+
+  <!-- Branches aren't in Jacobian, needed for inductor-type devices. -->
+  <admst:for-each select="$branches">
+    <admst:variable name="pname" path="branch/pnode/name"/>
+    <admst:variable name="nname" path="branch/nnode/name"/>
+    <admst:variable name="bname" value="$(pname)_$(nname)_Branch"/>
+    <admst:text format="$(indent)double JDVAL_$(bname)_BB;\n"/>
+  </admst:for-each>
+  <admst:text format="};\n"/>
+
+  <!-- Add defines for instance state variables -->
+  <admst:text format="\n// Indices into state table for this device.\n"/>
+  <admst:if test="[$LIMPRED='yes']">
+    <!--
+       Save an entry for each node.  This will be used for limiting
+       and predicting.
+    -->
+    <admst:for-each select="node[grounded='no']">
+      <admst:text format="#define STATE_%(name)"/>
+      <admst:text format=" GENstate+%(incrementer(.)/value)\n"/>
+    </admst:for-each>
+  </admst:if>
+  <admst:if test="[$DDTFUNC='legacy']">
+    <admst:for-each select="source[dynamic='yes']">
+      <admst:value-of select="branch/nnode/name"/>
+      <admst:value-of select="branch/pnode/name"/>
+      <admst:text format="#define STATE_%s_%s"/>
+      <admst:text format=" GENstate+%(incrementer(.)/value)\n"/>
+      <admst:apply-templates select="." match="incrementer"/>
+    </admst:for-each>
+  </admst:if>
+  <!-- Add ddt/idt state entries, if any ddt/idt calls. -->
+  <admst:variable name="findwhat" value="xdt"/>
+  <admst:for-each select="analog/code/item">
+    <admst:apply-templates select="." match="findfunc"/>
+  </admst:for-each>
+  <admst:text format="#define $(moduc)_NUM_STATES %(incrementer(.)/value)\n"/>
+
+  <admst:text format="\n\nstruct s$(moduc)model : public sGENmodel\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)s$(moduc)model() { memset(this, 0, sizeof(s$(moduc)model)); }\n"/>
+  <admst:text format="$(indent)s$(moduc)model *next() { return ((s$(moduc)model*)GENnextModel); }\n"/>
+  <admst:text format="$(indent)s$(moduc)instance *inst() { return ((s$(moduc)instance*)GENinstances); }\n"/>
+
+  <!--
+    Model Parameters.
+    In the case of the "unified" instance (i.e., all parameters are
+    instance parameters) the model parameters are the same as the
+    instance parameters.  Each parameter has an element and a "Given"
+    flag.  These will initialize the instances.
+  -->
+  <admst:choose>
+    <admst:when test="[$unified='yes']">
+      <admst:if test="variable[parametertype='instance' and input='yes']">
+        <admst:text format="\n$(indent)// Model parameters.\n"/>
+        <admst:for-each
+            select="variable[parametertype='instance' and input='yes']">
+          <admst:value-of select="name"/>
+          <admst:text format="$(indent)%(vtype(.)) %s;\n"/>
+        </admst:for-each>
+        <admst:text format="\n"/>
+        <admst:for-each
+            select="variable[parametertype='instance' and input='yes']">
+          <admst:value-of select="name"/>
+          <admst:text format="$(indent)unsigned %s_Given:1;\n"/>
+        </admst:for-each>
+      </admst:if>
+    </admst:when>
+    <admst:otherwise>
+      <admst:if test="variable[parametertype='model' and input='yes']">
+        <admst:text format="\n$(indent)// Model parameters\n"/>
+        <admst:for-each
+             select="variable[parametertype='model' and input='yes']">
+          <admst:value-of select="name"/>
+          <admst:text format="$(indent)%(vtype(.)) %s;\n"/>
+        </admst:for-each>
+        <admst:text format="\n"/>
+        <admst:for-each
+            select="variable[parametertype='model' and input='yes']">
+          <admst:value-of select="name"/>
+          <admst:text format="$(indent)unsigned %s_Given:1;"/>
+          <admst:text format="\n"/>
+        </admst:for-each>
+      </admst:if>
+    </admst:otherwise>
+  </admst:choose>
+
+  <!-- Model Variables -->
+  <admst:if test="[
+      count(variable[input='no' and (scope='global_model' or
+        (parametertype='model' and not(nilled(attribute))))])!=0 or
+      count($model_vars)!=0]">
+    <admst:text format="\n$(indent)// Variables\n"/>
+    <admst:for-each select="variable[input='no' and (scope='global_model' or
+        (parametertype='model' and not(nilled(attribute))))]">
+      <admst:text format="$(indent)%(vtype(.)) %(name);\n"/>
+    </admst:for-each>
+    <admst:if test="$model_vars">
+      <admst:for-each select="$model_vars">
+        <admst:text format="$(indent)%(vtype(.)) %(name);\n"/>
+      </admst:for-each>
+    </admst:if>
+  </admst:if>
+
+  <admst:text format="};\n"/>
+
+  <admst:text format="\n} // namespace adms$(moduc)\n"/>
+  <admst:text format="using namespace adms$(moduc);\n"/>
+
+  <admst:variable name="qual" string="_INST_"/>
+  <admst:if test="[$unified='yes']">
+    <admst:variable name="qual" string="_"/>
+  </admst:if>
+  <admst:text format="\nenum e_$(modlc)_instance\n"/>
+  <admst:text format="{\n"/>
+  <admst:for-each select="variable[parametertype='instance' and
+      (input='yes' or not(nilled(attribute)))]">
+    <admst:value-of select="name"/>
+    <admst:text format="$(indent)$(moduc)$(qual)%s,\n"/>
+  </admst:for-each>
+  <!-- add the nodes -->
+  <admst:for-each select="node[grounded='no']">
+    <admst:text format="$(indent)$(moduc)$(qual)NODE_%(name),\n"/>
+  </admst:for-each>
+  <!-- add the branches -->
+  <admst:for-each select="$branches">
+    <admst:variable name="pname" path="branch/pnode/name"/>
+    <admst:variable name="nname" path="branch/nnode/name"/>
+    <admst:text format="$(indent)$(moduc)$(qual)BRN_$(pname)_$(nname),\n"/>
+  </admst:for-each>
+  <admst:text format="$(indent)$(moduc)$(qual)LAST_ENUM\n"/>
+  <admst:text format="};\n"/>
+
+  <!--
+    In unified mode, the loop below will be empty except for ouptut
+    variables that were explicitly given a type="model" attribute.
+  -->
+  <admst:if test="[count(variable[parametertype='model' and
+      (input='yes' or not(nilled(attribute)))])>0]">
+    <admst:text format="\nenum e_$(modlc)_model\n"/>
+    <admst:text format="{\n"/>
+    <admst:text format="$(indent)$(moduc)_MOD_FIRST_ENUM=$(moduc)$(qual)LAST_ENUM,\n"/>
+    <admst:for-each select="variable[parametertype='model' and
+        (input='yes' or not(nilled(attribute)))]">
+      <admst:value-of select="name"/>
+      <admst:text format="$(indent)$(moduc)_MOD_%s,\n"/>
+    </admst:for-each>
+    <admst:text format="$(indent)$(moduc)_MOD_LAST_ENUM\n"/>
+    <admst:text format="};\n"/>
+  </admst:if>
+
+  <admst:text format="\n\n"/>
+  <admst:text format="#define _WRspice_simulatorSubversion $(package_minor)\n"/>
+  <admst:text format="#define _WRspice_simulatorVersion    $(package_major)\n"/>
+
+  <admst:apply-templates select="." match="c:math_h"/>
+  <admst:apply-templates select="." match="c:af:math_h"/>
+
+  <admst:text format="\n\n"/>
+  <admst:text format="#define max     SPMAX\n"/>
+  <admst:text format="#define min     SPMIN\n"/>
+  <admst:text format="#define logE    log\n"/>
+
+  <admst:if test="[$emit_defines='yes']">
+  <admst:text format="\n\n"/>
+  <admst:text format="#define _STATIC\n"/>
+  <admst:text format="#define _DYNAMIC\n"/>
+  <admst:text format="#define _DERIVATE\n"/>
+  <admst:text format="#define _DDX\n"/>
+  <admst:text format="#define _DERIVATEFORDDX\n"/>
+  <admst:text format="#define _DERIVATE2\n"/>
+  </admst:if>
+
+  <admst:text format="\n#endif\n\n"/>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------- -->
+
+<admst:variable name="findwhat" value=""/>
+<admst:for-each select="/module">
+  <admst:apply-templates select="." match="init:translation"/>
+  <admst:open file="$(modlc)defs.h">
+    <admst:value-of select="/simulator/package_string"/>
+    <admst:text format="// Interface: %s\n"/>
+    <admst:value-of select="/simulator/currentdate"/>
+    <admst:value-of select="/simulator/fullname"/>
+    <admst:text format="// Created by: %s - %s\n"/>
+    <admst:apply-templates select="." match="init:variables"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:apply-templates select="." match="module_defs_h"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+  </admst:open>
+  <admst:message format="$(modlc)defs.h: file created\n"/>
+</admst:for-each>
+
+</admst>
+

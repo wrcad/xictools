@@ -1,0 +1,66 @@
+#######################################################################
+# wrspice/gtkwrs/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 2.58 2012/09/17 04:52:08 stevew Exp $
+#######################################################################
+
+SPICE_VERSION = @SPICE_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @TOOLKITCFLAGS@ @UFLAGS@ -DWRSPICE
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @TOOLKITCFLAGS@ -DWRSPICE
+WINDRES = @WINDRES@
+AR = @AR@
+LD = @LD@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+INCLUDE = $(APPINCL) @TOOLKITINC@
+RESOURCE = @RESOURCE@
+
+LIB_TARGET = gtkwrs.a
+
+LPATH = ../../../xt_base
+HFILES = gtktoolb.h
+CCFILES = gtkcmds.cc gtkcolor.cc gtkdebug.cc gtkfte.cc gtkpldef.cc \
+  gtkplot.cc gtkshell.cc gtksim.cc gtktoolb.cc
+CCOBJS = $(CCFILES:.cc=.o) $(RESOURCE)
+APPINCL = -I. -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil \
+    -I$(LPATH)/ginterf/gtkinterf
+
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+depend:
+	@echo depending in wrspice/gtkwrs
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm *.o $(LIB_TARGET)
+
+distclean:
+	-rm *.o $(LIB_TARGET) Makefile
+
+resource.o: resource.cc wrs.rc
+	vers=$(SPICE_VERSION); \
+	IFS="$$IFS."; \
+	set $$vers; \
+	$(WINDRES) -DWRSPICE_RESOURCE -DWRS_BIN_VERSION="0,$$1,$$2,$$3" \
+ -DWRS_FILE_VERSION=\\\"$$1.$$2.$$3\\\" \
+ -DWRS_PROG_VERSION=\\\"Xic-$$1.$$2.$$3\\\"  wrs.rc resource_temp.o
+	$(CC) -c -o restmp.o resource.cc
+	$(LD) -r -o resource.o resource_temp.o restmp.o
+	rm -f resource_temp.o restmp.o
+
+#######################################################################

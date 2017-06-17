@@ -1,0 +1,13 @@
+
+Loadable object modules found in this directory will be read into WRspice
+on startup.  This will apply to all users.
+
+Loadable module files in this directory must have one of the following
+extensions, depending on the operating system:
+Unix, Linux:    .so
+OS X:           .dylib
+Windows:        .dll
+
+Users can load modules at startup on an individual basis by using the
+devload command in their .wrspiceinit file.
+

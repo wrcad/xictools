@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  $Id: wrspiceMODULEtrun.cc.xml,v 1.11 2012/02/06 07:15:17 stevew Exp $
+
+  Modified for use with WRspice, Whiteley Research Inc. (wrcad.com).
+  See the original header below for terms and conditions of use.
+-->
+
+<!--
+  Written by Laurent Lemaitre - r29173@users.sourceforge.net
+  Documentation:
+    http://sourceforge.net/docman/display_doc.php?docid=18993&group_id=84289
+  Target Interface: ngspice
+  Supported by adms-1.x.x
+  This file is used by adms - http://sourceforge.net/projects/mot-adms.
+  adms is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+  adms is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  You should have received a copy of the GNU General Public License
+  along with adms; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+
+<!DOCTYPE admst SYSTEM "admst.dtd">
+<admst version="2.3.0" xmlns:admst="http://mot-adms.sourceforge.net/xml-files/admst">
+
+<!-- ---------------------------------------------------------------------- -->
+<!--
+  Core callback template for the findfunc template.
+-->
+<admst:template match="dofunc">
+  <admst:text test="[name='ddt']"
+    format="$(indent)ckt->terr(inst->STATE_ddt_%(unique_id), timeStep);\n"/>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<admst:template match="module_trun_cc">
+
+  <admst:text format="\n#include &quot;$(modlc)defs.h&quot;\n"/>
+
+  <admst:text format="\n\nint\n"/>
+  <admst:text format="$(moduc)dev::trunc(sGENmodel *genmod, sCKT *ckt, double *timeStep)\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)s$(moduc)model *model = (s$(moduc)model*)genmod;\n"/>
+  <admst:text format="$(indent)for ( ; model; model = model->next()) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)s$(moduc)instance *inst = model->inst();\n"/>
+  <admst:text format="$(indent)for ( ; inst; inst = inst->next()) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+ 
+  <admst:text format="\n$(indent)// Call ckt->terr for each dynamic variable.\n"/>
+  <admst:choose>
+    <admst:when test="[$DDTFUNC!='legacy']">
+      <admst:apply-templates select="analog/code" match="findfunc"/>
+    </admst:when>
+    <admst:otherwise>
+      <admst:for-each select="source[dynamic='yes']">
+        <admst:value-of select="branch/nnode/name"/>
+        <admst:value-of select="branch/pnode/name"/>
+        <admst:text format="$(indent)ckt->terr(inst->STATE_%s_%s, timeStep);\n"/>
+      </admst:for-each>
+    </admst:otherwise>
+  </admst:choose>
+
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)} \n"/>
+  <admst:text format="$(indent)return (OK);\n"/>
+
+  <admst:text format="}\n\n"/>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------- -->
+
+<admst:for-each select="/module">
+  <admst:apply-templates select="." match="init:translation"/>
+  <admst:open file="$(modlc)trun.cc">
+    <admst:value-of select="/simulator/package_string"/>
+    <admst:text format="// Interface: %s\n"/>
+    <admst:value-of select="/simulator/currentdate"/>
+    <admst:value-of select="/simulator/fullname"/>
+    <admst:text format="// Created by: %s - %s\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:apply-templates select="." match="module_trun_cc"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+  </admst:open>
+  <admst:message format="$(modlc)trunc.c: file created\n"/>
+</admst:for-each>
+
+</admst>
+

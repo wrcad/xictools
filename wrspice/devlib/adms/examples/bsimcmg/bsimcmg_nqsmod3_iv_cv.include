@@ -1,0 +1,204 @@
+// ********************************************************
+// **** BSIM-CMG 107.0.0 released by Navid, Juan, and Sriramkumar on 07/12/2013 ****/
+// *  BSIM Common Multi-Gate Model Equations (Verilog-A)
+// ********************************************************
+//
+// ********************************************************
+// * Copyright 2012 Regents of the University of California. 
+// * All rights reserved.
+// *
+// * Project Director: Prof. Chenming Hu.
+// * Authors: Sriramkumar V., Navid Paydavosi, Juan Duarte, Darsen Lu, 
+// *          Chung-Hsun Lin, Mohan Dunga, Shijing Yao,
+// *          Ali Niknejad, Chenming Hu
+// ********************************************************
+// ********************************************************
+// *   NONDISCLOSURE STATEMENT
+// Software is distributed as is, completely without warranty or service
+// support. The University of California and its employees are not liable
+// for the condition or performance of the software.
+// The University of California owns the copyright and grants users a perpetual,
+// irrevocable, worldwide, non-exclusive, royalty-free license with 
+// respect to the software as set forth below.
+// The University of California hereby disclaims all implied warranties.
+// The University of California grants the users the right to modify, copy,
+// and redistribute the software and documentation, both within the user's
+// organization and externally, subject to the following restrictions
+// 1. The users agree not to charge for the University of California code
+// itself but may charge for additions, extensions, or support.
+// 2. In any product based on the software, the users agree to acknowledge
+// the University of California that developed the software. This
+// acknowledgment shall appear in the product documentation.
+// 3. The users agree to obey all U.S. Government restrictions governing
+// redistribution or export of the software.
+// 4. The users agree to reproduce any copyright notice which appears on
+// the software on any copy or modification of such made available
+// to others
+// Agreed to on __Sept. 11, 2012_________________
+// By: ___University of California, Berkeley____ 
+//     ___Chenming Hu_____________________ 
+//     ___Professor in Graduate School _______
+// ********************************************************
+
+// ***** Segment 1 *****
+qil  =  qis;
+qir  =  V(q1);
+`include "bsimcmg_compute_nqsmod3_segment.include"
+ids1     =  NFINtotal * ids * NSEG;
+qd1      =  NFINtotal * qd / NSEG;
+qg1      =  NFINtotal * qg / NSEG;
+
+// ***** Segment 2 *****
+qil  =  V(q1);
+qir  =  V(q2);
+`include "bsimcmg_compute_nqsmod3_segment.include"
+ids2     =  NFINtotal * ids * NSEG;
+qd2      =  NFINtotal * qd / NSEG;
+qg2      =  NFINtotal * qg / NSEG;
+
+// ***** Segment 3 *****
+qil  =  V(q2);
+qir  =  V(q3);
+`include "bsimcmg_compute_nqsmod3_segment.include"
+ids3     =  NFINtotal * ids * NSEG;
+qd3      =  NFINtotal * qd / NSEG;
+qg3      =  NFINtotal * qg / NSEG;
+
+if(NSEG == 4) begin
+	// ***** Last Segment 4 *****
+	qil  =  V(q3);
+	qir  =  qid;
+	`include "bsimcmg_compute_nqsmod3_segment.include"
+	ids4     =  NFINtotal * ids * NSEG;
+	qd4      =  NFINtotal * qd / NSEG;
+	qg4      =  NFINtotal * qg / NSEG;
+	idsN =  ids4;
+	
+end else begin	
+	// ***** Segment 4 *****
+	qil  =  V(q3);
+	qir  =  V(q4);
+	`include "bsimcmg_compute_nqsmod3_segment.include"
+	ids4     =  NFINtotal * ids * NSEG;
+	qd4      =  NFINtotal * qd / NSEG;
+	qg4      =  NFINtotal * qg / NSEG;
+	
+	if(NSEG ==5) begin
+		
+		// ***** Last Segment 5 *****
+		qil  =  V(q4);
+		qir  =  qid;
+		`include "bsimcmg_compute_nqsmod3_segment.include"
+		ids5     =  NFINtotal * ids * NSEG;
+		qd5      =  NFINtotal * qd / NSEG;
+		qg5      =  NFINtotal * qg / NSEG;
+		idsN =  ids5;
+		
+	end else begin
+		
+		// ***** Segment 5 *****
+		qil  =  V(q4);
+		qir  =  V(q5);
+		`include "bsimcmg_compute_nqsmod3_segment.include"
+		ids5     =  NFINtotal * ids * NSEG;
+		qd5      =  NFINtotal * qd / NSEG;
+		qg5      =  NFINtotal * qg / NSEG;
+		
+		if(NSEG == 6) begin
+			// *****  Last Segment 6 *****
+			qil  =  V(q5);
+			qir  =  qid;
+			`include "bsimcmg_compute_nqsmod3_segment.include"
+			ids6     =  NFINtotal * ids * NSEG;
+			qd6      =  NFINtotal * qd / NSEG;
+			qg6      =  NFINtotal * qg / NSEG;
+			idsN =  ids6;
+			
+		end else begin
+			
+			// ***** Segment 6 *****
+			qil  =  V(q5);
+			qir  =  V(q6);
+			`include "bsimcmg_compute_nqsmod3_segment.include"
+			ids6     =  NFINtotal * ids * NSEG;
+			qd6      =  NFINtotal * qd / NSEG;
+			qg6      =  NFINtotal * qg / NSEG;
+			
+			if(NSEG ==7) begin
+				
+				// *****  Last Segment 7 *****
+				qil  =  V(q6);
+				qir  =  qid;
+				`include "bsimcmg_compute_nqsmod3_segment.include"
+				ids7     =  NFINtotal * ids * NSEG;
+				qd7      =  NFINtotal * qd / NSEG;
+				qg7      =  NFINtotal * qg / NSEG;
+				idsN =  ids7;
+				
+			end else begin
+				
+				// ***** Segment 7 *****
+				qil  =  V(q6);
+				qir  =  V(q7);
+				`include "bsimcmg_compute_nqsmod3_segment.include"
+				ids7     =  NFINtotal * ids * NSEG;
+				qd7      =  NFINtotal * qd / NSEG;
+				qg7      =  NFINtotal * qg / NSEG;
+				
+				if(NSEG ==8) begin
+					
+					// *****  Last Segment 8 *****
+					qil  =  V(q7);
+					qir  =  qid;
+					`include "bsimcmg_compute_nqsmod3_segment.include"
+					ids8     =  NFINtotal * ids * NSEG;
+					qd8      =  NFINtotal * qd / NSEG;
+					qg8      =  NFINtotal * qg / NSEG;		
+					idsN =  ids8;
+					
+				end else begin
+					
+					// ***** Segment 8 *****
+					qil  =  V(q7);
+					qir  =  V(q8);
+					`include "bsimcmg_compute_nqsmod3_segment.include"
+					ids8     =  NFINtotal * ids * NSEG;
+					qd8      =  NFINtotal * qd / NSEG;
+					qg8      =  NFINtotal * qg / NSEG;
+					
+					if(NSEG == 9) begin
+						
+						// ***** Last Segment 9 *****
+						qil  =  V(q8);
+						qir  =  qid;
+						`include "bsimcmg_compute_nqsmod3_segment.include"
+						ids9     =  NFINtotal * ids * NSEG;
+						qd9      =  NFINtotal * qd / NSEG;
+						qg9      =  NFINtotal * qg / NSEG;
+						idsN =  ids9;
+						
+					end else begin
+						
+						// ***** Segment 9 *****
+						qil  =  V(q8);
+						qir  =  V(q9);
+						`include "bsimcmg_compute_nqsmod3_segment.include"
+						ids9     =  NFINtotal * ids * NSEG;
+						qd9      =  NFINtotal * qd / NSEG;
+						qg9      =  NFINtotal * qg / NSEG;
+						
+						//***** Last Segment 10 *****
+						qil  =  V(q9);
+						qir  =  qid;
+						`include "bsimcmg_compute_nqsmod3_segment.include"
+						ids10      =  NFINtotal * ids * NSEG;
+						qd10       =  NFINtotal * qd / NSEG;
+						qg10       =  NFINtotal * qg / NSEG;
+						idsN =  ids10;
+					end
+				end
+			end
+		end
+	end
+end				
+

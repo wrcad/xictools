@@ -1,0 +1,226 @@
+
+/*========================================================================*
+ *                                                                        *
+ *  XICTOOLS Integrated Circuit Design System                             *
+ *  Copyright (c) 2007 Whiteley Research Inc, all rights reserved.        *
+ *                                                                        *
+ *  WHITELEY RESEARCH INCORPORATED PROPRIETARY SOFTWARE                   *
+ *                                                                        *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
+ *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-        *
+ *   INFRINGEMENT.  IN NO EVENT SHALL WHITELEY RESEARCH INCORPORATED      *
+ *   OR STEPHEN R. WHITELEY BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER     *
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,      *
+ *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE       *
+ *   USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
+ *                                                                        *
+ *========================================================================*
+ *                                                                        *
+ * XIC Integrated Circuit Layout and Schematic Editor                     *
+ *                                                                        *
+ *========================================================================*
+ $Id: gtksim.cc,v 5.25 2016/02/05 03:50:36 stevew Exp $
+ *========================================================================*/
+
+#include "main.h"
+#include "sced.h"
+#include "sced_spiceipc.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include <signal.h>
+
+
+//-----------------------------------------------------------------------------
+// Popup for monitoring asynchronous simulation runs
+//
+
+namespace {
+    namespace gtksim {
+        struct sSim
+        {
+            sSim();
+
+            void control(SpType);
+
+        private:
+            static int sp_down_timer(void*);
+            static void sp_cancel_proc(GtkWidget*, void*);
+            static void sp_pause_proc(GtkWidget*, void*);
+            static void sp_destroy_proc(GtkWidget*, void*);
+
+            SpType sp_status;
+            GtkWidget *sp_shell;
+        };
+
+        sSim Sim;
+    }
+}
+
+using namespace gtksim;
+
+
+// data set:
+// popup            "label"             label
+//
+void
+cSced::PopUpSim(SpType status)
+{
+    if (!GRX || !mainBag())
+        return;
+    Sim.control(status);
+}
+// End of cSced functions.
+
+
+sSim::sSim()
+{
+    sp_status = SpNil;
+    sp_shell = 0;
+}
+
+
+void
+sSim::control(SpType status)
+{
+    const char *msg;
+    switch (status) {
+    case SpNil:
+    default:
+        if (sp_shell)
+            gtk_widget_hide(sp_shell);
+        sp_status = SpNil;
+        return;
+    case SpBusy:
+        msg = "Running...";
+        sp_status = SpBusy;
+        break;
+    case SpPause:
+        msg = "Paused";
+        sp_status = SpPause;
+        GRX->AddTimer(2000, sp_down_timer, 0);
+        break;
+    case SpDone:
+        msg = "Analysis Complete";
+        sp_status = SpDone;
+        GRX->AddTimer(2000, sp_down_timer, 0);
+        break;
+    case SpError:
+        msg = "Error: connection broken";
+        sp_status = SpError;
+        break;
+    }
+    if (sp_shell) {
+        GtkWidget *label = (GtkWidget*)gtk_object_get_data(
+            GTK_OBJECT(sp_shell), "label");
+        if (label) {
+            gtk_label_set_text(GTK_LABEL(label), msg);
+            if (!GTK_WIDGET_MAPPED(sp_shell)) {
+                GRX->SetPopupLocation(GRloc(LW_LL), sp_shell,
+                    mainBag()->Viewport());
+                gtk_widget_show(sp_shell);
+            }
+        }
+        return;
+    }
+    main_bag *w = mainBag();
+    GtkWidget *popup = gtk_NewPopup(w, "SPICE Run", sp_destroy_proc, 0);
+    gtk_window_set_resizable(GTK_WINDOW(popup), false);
+    gtk_widget_set_usize(popup, 200, -1);
+
+    GtkWidget *form = gtk_table_new(1, 3, false);
+    gtk_widget_show(form);
+    gtk_container_add(GTK_CONTAINER(popup), form);
+
+    GtkWidget *label = gtk_label_new(msg);
+    gtk_widget_show(label);
+    GtkWidget *frame = gtk_frame_new(0);
+    gtk_widget_show(frame);
+    gtk_container_add(GTK_CONTAINER(frame), label);
+    gtk_object_set_data(GTK_OBJECT(popup), "label", label);
+
+    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 0, 1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+
+    GtkWidget *sep = gtk_hseparator_new();
+    gtk_widget_show(sep);
+    gtk_table_attach(GTK_TABLE(form), sep, 0, 1, 1, 2,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+
+    GtkWidget *hbox = gtk_hbox_new(false, 2);
+    gtk_widget_show(hbox);
+
+    GtkWidget *button = gtk_button_new_with_label("Pause");
+    gtk_widget_set_name(button, "Pause");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(sp_pause_proc), w);
+    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
+
+    button = gtk_button_new_with_label("Dismiss");
+    gtk_widget_set_name(button, "Dismiss");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(sp_cancel_proc), w);
+    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
+
+    gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 2, 3,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    gtk_window_set_focus(GTK_WINDOW(popup), button);
+
+    sp_shell = popup;
+    gtk_window_set_transient_for(GTK_WINDOW(popup), GTK_WINDOW(w->Shell()));
+    GRX->SetPopupLocation(GRloc(LW_LL), popup, w->Viewport());
+    gtk_widget_show(popup);
+}
+
+
+// Static function.
+// Make the popup go away after an interval.
+//
+int
+sSim::sp_down_timer(void*)
+{
+    if (Sim.sp_shell)
+        gtk_widget_hide(Sim.sp_shell);
+    return (false);
+}
+
+
+// Static function.
+// Pop down the Spice popup.
+//
+void
+sSim::sp_cancel_proc(GtkWidget*, void*)
+{
+    if (Sim.sp_shell)
+        gtk_widget_hide(Sim.sp_shell);
+}
+
+
+// Static function.
+// Tell the simulator to pause, if an analysis is in progress.
+//
+void
+sSim::sp_pause_proc(GtkWidget*, void*)
+{
+    SCD()->spif()->InterruptSpice();
+}
+
+
+// Static function.
+// Destroy the Spice popup
+//
+void
+sSim::sp_destroy_proc(GtkWidget*, void*)
+{
+    if (Sim.sp_shell) {
+        gtk_widget_destroy(Sim.sp_shell);
+        Sim.sp_shell = 0;
+        Sim.sp_status = SpNil;
+    }
+}
+

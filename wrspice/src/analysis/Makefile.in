@@ -1,0 +1,57 @@
+#######################################################################
+# wrspice/analysis/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 2.60 2015/08/05 03:46:48 stevew Exp $
+#######################################################################
+
+SPICE_VERSION = @SPICE_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGS_SG@ @UFLAGS@ -DWRSPICE
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGS_SG@ -DWRSPICE
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+
+LIB_TARGET = analysis.a
+
+LPATH = ../../../xt_base
+HFILES =
+CCFILES = \
+  acan.cc acaskq.cc acprms.cc acprse.cc acsetp.cc dcoan.cc dcoaskq.cc \
+  dcoprse.cc dcosetp.cc dctan.cc dctaskq.cc dctprms.cc dctprse.cc \
+  dctsetp.cc distan.cc distaskq.cc distfns.cc distker.cc distprse.cc \
+  distsetp.cc noian.cc noiaskq.cc noiprse.cc noisetp.cc optaskq.cc \
+  optprse.cc optsetp.cc pzan.cc pzaskq.cc pzld.cc pzprse.cc pzsetp.cc \
+  pzstr.cc sensan.cc sensaskq.cc sensprse.cc senssetp.cc sensgen.cc \
+  stataskq.cc statsetp.cc task.cc tfan.cc tfaskq.cc tfprse.cc \
+  tfsetp.cc tranan.cc tranaskq.cc tranprse.cc transetp.cc
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+depend:
+	@echo depending in wrspice/analysis
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm *.o $(LIB_TARGET)
+
+distclean:
+	-rm *.o $(LIB_TARGET) Makefile
+
+#######################################################################

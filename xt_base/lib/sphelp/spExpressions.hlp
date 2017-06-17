@@ -1,0 +1,2347 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spExpressions.hlp,v 1.39 2016/03/15 00:06:40 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spExpressions.hlp
+!!TITLE
+spExpressions.hlp
+!!HTML 
+
+!!SUBTOPICS
+plotvec
+expressions
+constants
+operators
+mathfuncs
+statfuncs
+explists
+setandlet
+
+!!REDIRECT temper       plotvec#temper
+!!REDIRECT specialvec   plotvec#special
+
+!! useriface.tex 121215
+!!KEYWORD
+plotvec
+!!TITLE
+Plots and Vectors
+!!HTML 
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="plotvec#vecs"><b>Vector Characteristics</b></a><br>
+    <a href="plotvec#crtvec"><b>Vector Creation and Assignment</b></a><br>
+    <a href="plotvec#analvec"><b>Analysis Vectors and Access Mapping</b></a><br>
+    <a href="plotvec#special"><b>Special Vectors</b></a>
+    </td></tr></table>
+
+    <p>
+    <i>WRspice</i> data are in the form of vectors, which are lists of
+    numbers that may represent, e.g., time, voltage, or any typed or
+    untyped set of values.  Vectors of length one are termed
+    "scalars".  During a simulation, each of the circuit variables,
+    plus a scale vector, are filled with data from the simulation. 
+    For example, in transient analysis, the scale vector (named
+    "<tt>time</tt>") will contain the time values where output is
+    generated, and each node and other circuit variables will have a
+    corresponding vector of the same length as the scale, containing
+    the values for the scale points.
+
+    <p>
+    For each simulation, the resulting vectors are contained in a
+    "plot", which is a container data structure for vectors.  The plot
+    is given a name (such as "tran2"), and appended to a list
+    containing other previously-generated plots.  If an input file
+    contains an <a href=".exec"><tt>.exec</tt></a> block in which
+    vectors are created, a special "exec" plot will be created to hold
+    these.  There is also an internally generated plot named <a
+    href="constants"><tt>constants</tt></a> which contains various
+    scalars set to constant values.  The <tt>constants</tt> plot can
+    not be deleted, thus the internal plot list is never empty.
+
+    <p>
+    When a plot data file is read into <i>WRspice</i> with the <a
+    href="load"><b>load</b></a> command, a plot containing vectors is
+    produced, as if an analysis had been run.
+
+    <p>
+    When a new plot is created by an analysis or with the <b>load</b>
+    command, it becomes the "current plot".  The current plot
+    represents a context, where the existing vectors can be accessed
+    by their name, and new vectors created, for example with the <a
+    href="let"><b>let</b></a> command, will (by default) be added to
+    the current plot.
+
+    <p>
+    The "current plot" is usually the last plot produced by an
+    analysis run, or the <tt>constants</tt> plot if no analyses have
+    been run or rawfiles loaded.  The current plot can be changed with
+    the <a href="setplot"><b>setplot</b></a> command, or with the <a
+    href="plotspanel"><b>Plots</b></a> panel from the <b>Tools</b>
+    menu.  A vector from the current plot or the <tt>constants</tt>
+    plot can be referenced by name.  A vector from any plot can be
+    referenced with the notation
+    <blockquote>
+    <i>plotname</i>.<i>vecname</i>
+    </blockquote>
+    where <i>plotname</i> is the name of the plot or an alias, and
+    <i>vecname</i> is the vector name.
+
+    <p>
+    The default separation character is a period, however this can be
+    changed by setting the variable <a
+    href="plot_catchar"><tt>plot_catchar</tt></a>.  If this variable is
+    set to a string consisting of a single punctuation character, that
+    character becomes the separator.  We will continue to use a period
+    in the examples, but be aware that other options exist.
+
+    <p>
+    The <i>plotname</i> can also be a numerical index.  Plots are
+    saved in the order created, and as listed by the <b>setplot</b>
+    command without arguments, and in the <b>Plots</b> tool.  The
+    numerical forms below are equivalent to the Berkeley SPICE3
+    syntax.  These cause trouble in <i>WRspice</i>, however, since
+    they are often misinterpreted as numbers, and typically require
+    double quoting when used as arguments to commands.  <i>WRspice</i>
+    has an equivalent set of alias keywords which do not require
+    special treatment.
+
+    <p>
+    Below is a list of the special alias keywords and constructs which can
+    be given as the <i>plotname</i>, in addition to the actual name of the
+    plot to reference.  Below, <i>N</i> is an unsigned integer.
+
+    <dl>
+    <dt><tt>curplot</tt><dd>
+    This is an alias for the name of the current plot.  Use of this
+    keyword may seem redundant, but it has an important use to be
+    explained below.
+    </dl>
+
+    <dl>
+    <dt>-<i>N</i><dd>
+    Use the <i>N</i>'th plot back from the current plot.  <i>N</i>
+    must be 1 or larger.  For example, "<tt>-1.v(1)</tt>" will
+    reference <tt>v(1)</tt> in the previous plot.  It is likely that
+    this form must be double-quoted to avoid misinterpretation as a
+    number.
+    </dl>
+
+    <dl>
+    <dt><tt>prev</tt>[<i>N</i>]<dd>
+    This is very similar functionally to the form above, but does not
+    cause parse errors.  The square brackets above are <b>not</b>
+    literal, but indicate that the integer is optional.  If missing,
+    <i>N</i>=1 is implied.  With <i>N</i>=0, the current plot is
+    indicated (equivalent to <tt>curplot</tt>).
+    </dl>
+
+    <dl>
+    <dt>+<i>N</i><dd>
+    This goes in the reverse direction, indicating a plot later in the
+    list than the current plot.  It is likely that this form must be
+    double-quoted to avoid misinterpretation as a number.
+    </dl>
+
+    <dl>
+    <dt><tt>next</tt>[<i>N</i>]<dd>
+    This is very similar functionally to the form above, but does not
+    cause parse errors.  The square brackets above are <b>not</b>
+    literal, but indicate that the integer is optional.  If missing,
+    <i>N</i>=1 is implied.  With <i>N</i>=0, the current plot is
+    indicated (equivalent to <tt>curplot</tt>).
+    </dl>
+
+    <dl>
+    <dt><i>N</i><dd>
+    An integer without <tt>+</tt> or <tt>-</tt> indicates an absolute
+    index into the plot list, zero-based.  The value 0 will always
+    indicate the "constants" plot, which is the first plot created (on
+    program startup).  It is likely that this form must be
+    double-quoted to avoid misinterpretation as a number.
+    </dl>
+
+    <dl>
+    <dt><tt>plot</tt>[<i>N</i>]<dd>
+    This is very similar functionally to the form above, but does not
+    cause parse errors.  The square brackets above are <b>not</b>
+    literal, but indicate that the integer is optional.  If missing,
+    <i>N</i>=0 is implied, which will specify the <tt>constants</tt>
+    plot.
+    </dl>
+
+    <p>
+    When using the <i>plotname</i>.<i>vecname</i> construct,
+    internally the vector and its scale are copied into the current
+    plot as temporary vectors.  If you do "<tt>plot -1.v(1)</tt>" (for
+    example) it may be surprising to find that the plot title, etc. 
+    are from the current plot, and not the source plot.
+
+    <p>
+    When a script is run, the current plot when the script starts is
+    taken as the "context plot" which will be used to resolve
+    references to vectors in the script, after searching the current
+    plot (if different).  Suppose that we have a script that defines a
+    loop counter vector, then runs a loop that performs an analysis. 
+    If we didn't save and search the context plot, the loop counter
+    vector would not be accessible after the analysis is run, since
+    the analysis will set a new current plot.
+
+    <p>
+    One should keep this behavior in mind, as it can sometimes cause
+    surprises.  For example, consider the script fragment
+
+    <blockquote><tt>
+    run<br>
+    let foo = i(vds)<br>
+    plot foo</tt>
+    </blockquote>
+
+    <p>
+    Now suppose that the context plot contains a vector named
+    "<tt>foo</tt>".  Instead of creating a new vector in the current
+    plot, the "<tt>foo</tt>" vector in the context plot will be used,
+    probably meaning that the scale in the displayed plot is
+    incorrect.
+
+    <p>
+    To enforce the desired behavior, the second line above should be
+    changed to
+    <blockquote><tt>
+    let curplot.foo = i(vds)</tt>
+    </blockquote>
+
+    <p>
+    Script authors should be in the habit of using this form when
+    creating vectors, when there is any possibility of a name clash
+    with the context plot.
+
+    <a name="vecs"></a>
+    <h2>Vector Characteristics</h2>
+
+    Vectors posses a dimensionality.  A scalar is a vector of the
+    lowest dimensionality.  Most vectors are one-dimensional lists of
+    numbers.  Certain types of analysis produce multidimensional
+    vectors, which are analogous to arrays.  This dimensionality is
+    indicated when the vectors are listed with the <a
+    href="display"><b>display</b></a> command or the <a
+    href="let"><b>let</b></a> command without arguments.  Plotting a
+    multidimensional vector will produce a family of traces.  Elements
+    and sub-dimensional vectors are specified with multiple square
+    brackets, with the bracket on the right having the lowest
+    dimensionality.
+
+    <p>
+    For example, one might issue the following command:
+    <blockquote>
+    <tt>.ac dec 10 1Hz 1Mhz dc v1 0 2 .1 v2 4.5 5.5 .25</tt>
+    </blockquote>
+    which will perform an ac analysis with the dc sources <tt>v1</tt>
+    and <tt>v2</tt> stepped through the ranges 0 - 2 step .1 for
+    <tt>v1</tt>, 4.5 - 5.5 step .25 for <tt>v2</tt>.  The resulting
+    output vectors will have dimensions [5,21,61], i.e., 5 values for
+    <tt>v2</tt>, 21 for <tt>v1</tt>, and 61 for the ac analysis. 
+    Typing "<tt>plot v(1)</tt>" (for example) would plot all 21*5
+    analyses on the same scale (this would not be too useful). 
+    However, one can plot subranges by entering, for example,
+    "<tt>plot v(1)[1]</tt>" which would plot the results for
+    <tt>v2</tt> = 4.75, or "<tt>plot v(1)[1][2]</tt>" for <tt>v2</tt>
+    = 4.75, <tt>v1</tt> = .2, etc.  Range specifications also work,
+    for example "<tt>plot v(1)[2][0,2]</tt>" plots the values for
+    <tt>v2</tt> = 5, <tt>v1</tt> = 0, .1, .2.  The memory space
+    required to hold the multidimensional plot data can grow quite
+    large, so one should be reasonable.
+
+    <p>
+    Vectors have an indexing that begins with 0, and an index, or
+    range of indices, can be specified in square brackets following
+    the vector name, for each dimension.  The notation
+    [<i>lower</i><tt>,</tt><i>upper</i>], where <i>lower</i> and
+    <i>upper</i> are integers, denotes the range of elements between
+    <i>lower</i> and <i>upper</i>.  The notation [<i>num</i>] denotes
+    the <i>num</i>'th element.  If <i>upper</i> is less than
+    <i>lower</i>, the order of the elements is reversed.
+
+    <p>
+    Vectors typically have defined units.  The units are carried
+    through a computation, and simplified when the result is
+    generated.  Presently, the system can not handle fractional
+    powers.  The units of a vector can be set with the <a
+    href="settype"><b>settype</b></a> command.
+
+    <a name="crtvec"></a>
+    <h2>Vector Creation and Assignment</h2>
+
+    <p>
+    Using the <a href="let"><b>let</b></a> command, a vector may be
+    assigned the values of a vector already defined, or a
+    floating-point number (a real scalar), or a comma separated pair
+    of numbers (a complex scalar).  A number may be written in any
+    format acceptable to SPICE2, such as <tt>14.6Meg</tt> or
+    <tt>-1.231e-4</tt>.  Note that one can use either scientific
+    notation or one of the abbreviations like MEG or G (case
+    insensitive), but not both.  As with SPICE2, a number may have
+    trailing alphabetic characters after it, which can indicate the
+    units.  If the vector being assigned to does not exist, it will be
+    created.
+
+    <p>
+    The <a href="compose"><b>compose</b></a> command can also be used
+    to create vectors, and is useful for creating vectors with
+    multiple points that follow some relationship, such as linear or
+    logarithmic.
+
+    <p>
+    Newly-created vectors are added to the current plot, unless a
+    <i>plotname</i> field is specified as part of the vector reference
+    name.  For example, entering
+    <blockquote>
+    <tt>let constants.myvec = 2</tt>
+    </blockquote>
+    will assign a vector <tt>myvec</tt> in the <tt>constants</tt> plot
+    the value 2.0.  Entering
+    <blockquote>
+    <tt>let myvec = constants.const_e</tt>
+    </blockquote>
+    will assign a vector <tt>myvec</tt> in the current plot the values
+    of the vector <tt>const_e</tt> in the <tt>constants</tt> plot.  The
+    <b>let</b> command without arguments will print a listing of
+    vectors in the current plot.
+
+    <p>
+    Recent <i>WRspice</i> releases also allow vectors to be assigned a
+    value with the <a href="set"><b>set</b></a> command.  The syntax
+    in this case is
+
+    <blockquote>
+      <tt>set &</tt><i>vector</i> <tt>=</tt> <i>value</i>
+    </blockquote>
+
+    which is equivalent to
+
+    <blockquote>
+      <tt>let</tt> <i>vector</i> <tt>=</tt> <i>value</i>
+    </blockquote>
+
+    <p>
+    When entering this form from the <i>WRspice</i> command line, the
+    '<tt>&</tt>' character must be hidden from the shell, perhaps most
+    conveniently be preceding it with a backslash.  The <i>value</i>
+    must be numeric, and a value must be given, unlike normal usage of
+    the <b>set</b> command which can set a variable as a boolean by
+    omitting the right side of the assignment.
+
+    <a name="analvec"></a>
+    <h2>Analysis Vectors and Access Mapping</h2>
+
+    The vectors actually produced during analysis depend on
+    the type of analysis, but the most common output is the node
+    voltage.  Node voltages are denoted by vectors of the form
+    <tt>v</tt>(<i>N</i>), where <i>N</i> is a name representing the
+    node.  Although the notation looks like a function call, the
+    construct actually refers to a vector, and may be used in
+    expressions whenever a vector is syntactically expected.  Another
+    common form is <i>name</i><tt>#branch</tt>, which represents the
+    "branch" current through voltage sources and inductors.  The SPICE
+    algorithm adds a term to the matrix for these elements, which
+    represents the current flowing through the device.  As there is a
+    specific matrix element for the current for these devices, the
+    value is available as an output variable.  The <i>name</i> is the
+    name of the voltage source or inductor.
+
+    <p>
+    For compatibility with SPICE2, several mappings and equivalences
+    are provided.  When referencing node voltages, one can reference a
+    node by name (e.g.  <tt>v(6)</tt> or <tt>v(input)</tt>).  These
+    are string names of the produced vectors.  In addition, one can
+    use the SPICE2 form for the argument inside the parentheses of the
+    node voltage construct.  This is (<i>node1</i>
+    [<tt>,</tt><i>node2</i>]), where if both <i>node1</i> and
+    <i>node2</i> are given, the vector represents the voltage
+    difference between nodes <i>node1</i> and <i>node2</i>.  For
+    example, <tt>v(1,2)</tt> is equivalent to <tt>v(1) - v(2)</tt>. 
+    The <tt>v()</tt> construct in the case of two arguments is like a
+    function.
+
+    <p>
+    Additionally, the construct <tt>i</tt>(<i>name</i>) is internally
+    mapped to <i>name</i><tt>#branch</tt>, and the two notations can
+    be used interchangeably.  The <i>name</i> is the name of a voltage
+    source or inductor.
+
+    <p>
+    Additional mappings familiar from SPICE2 are also recognized in
+    <i>WRspice</i>.  In addition to <tt>v</tt> and <tt>i</tt>, the
+    following are recognized for node voltages.  These are most useful
+    for complex vectors as are produced in ac analysis.
+
+    <dl>
+    <dt><tt>vm</tt><dd>
+    This computes the magnitude, by mapping to the <tt>mag</tt> vector
+    function.  The following forms are equivalent:
+    <blockquote>
+    <tt>vm(a) = mag(v(a))</tt><br>
+    <tt>vm(a,b) = mag(v(a) - v(b))</tt>
+    </blockquote>
+    </dl>
+
+    <dl>
+    <dt><tt>vp</tt><dd>
+    This computes the phase, by mapping to the <tt>ph</tt> vector
+    function.  The following forms are equivalent:
+    <blockquote>
+    <tt>vp(a) = ph(v(a))</tt><br>
+    <tt>vp(a,b) = ph(v(a) - v(b))</tt>
+    </blockquote>
+    </dl>
+
+    <dl>
+    <dt><tt>vr</tt><dd>
+    This computes the real part, by mapping to the <tt>re</tt> vector
+    function.  The following forms are equivalent:
+    <blockquote>
+    <tt>vr(a) = re(v(a))</tt><br>
+    <tt>vr(a,b) = re(v(a) - v(b))</tt>
+    </blockquote>
+    </dl>
+
+    <dl>
+    <dt><tt>vi</tt><dd>
+    This computes the imaginary part, by mapping to the <tt>im</tt> vector
+    function.  The following forms are equivalent:
+    <blockquote>
+    <tt>vi(a) = im(v(a))</tt><br>
+    <tt>vi(a,b) = im(v(a) - v(b))</tt>
+    </blockquote>
+    </dl>
+
+    <dl>
+    <dt><tt>vdb</tt><dd>
+    This computes the decibel value (20*log10), by mapping to the
+    <tt>db</tt> vector function.  The following forms are equivalent:
+    <blockquote>
+    <tt>vdb(a) = db(v(a))</tt><br>
+    <tt>vdb(a,b) = db(v(a) - v(b))</tt>
+    </blockquote>
+    </dl>
+
+    Similar constructs are available for the current vectors of
+    voltage sources and inductors.  In these constructs, the single
+    argument is always the name of a "branch" device, either a voltage
+    source or inductor.
+
+    <dl>
+    <dt><tt>img</tt><dd>
+    This computes the magnitude, by mapping to the <tt>mag</tt> vector
+    function.  The following forms are equivalent:
+    <blockquote>
+    <tt>img(vx) = mag(vx#branch)</tt>
+    </blockquote>
+    Note that this name differs from the SPICE2 <tt>"im"</tt> to avoid
+    a clash with the <tt>im()</tt> vector function in <i>WRspice</i>.
+    </dl>
+
+    <dl>
+    <dt><tt>ip</tt><dd>
+    This computes the phase, by mapping to the <tt>ph</tt> vector
+    function.  The following forms are equivalent:
+    <blockquote>
+    <tt>ip(vx) = ph(vx#branch)</tt>
+    </blockquote>
+    </dl>
+
+    <dl>
+    <dt><tt>ir</tt><dd>
+    This computes the real part, by mapping to the <tt>re</tt> vector
+    function.  The following forms are equivalent:
+    <blockquote>
+    <tt>ir(vx) = re(vx#branch)</tt>
+    </blockquote>
+    </dl>
+
+    <dl>
+    <dt><tt>ii</tt><dd>
+    This computes the imaginary part, by mapping to the <tt>im</tt> vector
+    function.  The following forms are equivalent:
+    <blockquote>
+    <tt>ii(vx) = im(vx#branch)</tt>
+    </blockquote>
+    </dl>
+
+    <dl>
+    <dt><tt>idb</tt><dd>
+    This computes the decibel value (20*log10), by mapping to the
+    <tt>db</tt> vector function.  The following forms are equivalent:
+    <blockquote>
+    <tt>vdb(vx) = db(vx#branch)</tt>
+    </blockquote>
+    </dl>
+
+    <p>
+    There is one additional mapping available,
+    <tt>p(</tt><i>devname</i><tt>)</tt>, which returns the
+    instantaneous power of a device <i>devname</i>.  This can be
+    applied to any device that has a readable "<tt>p</tt>" parameter
+    defined, which is true for most devices.  The <a
+    href="show"><b>show</b></a> command can be used to list available
+    device parameters.  This is particularly useful for sources, as it
+    returns the power supplied to the circuit.  For non-dissipative
+    elements, it represents the stored power.
+
+    <p>
+    This is a mapping to the special vector
+    <tt>@</tt><i>devname</i><tt>[p]</tt> (see below).  Thus, the
+    special vector data must be available for this form to be used
+    successfully, meaning that in analysis, as with other special
+    vectors representing device parameters, the vector must be
+    explicitly saved with the <a href="save"><b>save</b></a> command
+    or in a <a href=".save"><tt>.save</tt></a> line.  However, if this
+    form is used in a <a href=".measure"><tt>.measure</tt></a> line,
+    the needed vector will be saved automatically.  This is also true
+    if the form is used in one of the "debugs" as listed with the <a
+    href="status"><b>status</b></a> command.
+
+    <a name="special"></a>
+    <h2>Special Vectors</h2>
+
+    Most simply, vector names can be any alphanumeric word that starts
+    with an alpha character.  Vector names may also be of the form
+    <i>string</i>(<i>something</i>), if the <i>string</i> is not the
+    name of a built-in or user-defined function.
+
+    <a name="temper"></a>
+    <p>
+    There is one vector named "<tt>temper</tt>" that is always
+    available, though not saved in any plot.  This is the current
+    temperature assumed by the program, in Celsius.
+
+    <p>
+    In <i>WRspice</i>, a vector name beginning with the '<tt>@</tt>'
+    symbol is a "special" vector, and is considered to be a reference
+    to an internal device or model parameter, or a circuit parameter. 
+    If the vector name is of the form
+    <tt>@</tt><i>name</i>[<i>param</i>], this denotes the parameter
+    <i>param</i> of the device or model named <i>name</i>.  Of course,
+    there must be a device or model with that name defined for the
+    current circuit and <i>param</i> must be a valid parameter name
+    for that device or model type.  See the documentation or use the
+    <a href="show"><b>show</b></a> command for a listing of the
+    parameters available.
+
+    <p>
+    If the variable <a href="spec_catchar"><tt>spec_catchar</tt></a>
+    is set to a string consisting of a single punctuation character,
+    then that character will identify a special vector, instead of
+    '<tt>@</tt>'.  The descriptions below use '<tt>@</tt>', but in
+    actuality this character can be respecified by the user.
+
+    <p>
+    If the vector name is of the form <tt>@</tt><i>param</i>, this
+    refers to a parameter of the circuit with the name <i>param</i>. 
+    The parameters obtained in this manner are those from the table
+    below defined on a <a href=".options"><tt>.options</tt></a> line
+    in the current circuit, those defined on a <a
+    href=".param"><tt>.param</tt></a> line in a current circuit, and
+    the keywords of the <a href="rusage"><b>rusage</b></a> command,
+    sought in that order.  These vectors may be used as arguments to
+    commands and functions which take vector arguments.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <th colspan=3>Option Special Vectors</th></tr>
+    <th>Reals</th> <th>Integers</th> <th>Flags</th></tr>
+    <tr><td><tt>@abstol</tt></td> <td><tt>@bypass</tt></td> <td><tt>@gminfirst</tt></td></tr>
+    <tr><td><tt>@chgtol</tt></td> <td><tt>@gminsteps</tt></td> <td><tt>@jjaccel</tt></td></tr>
+    <tr><td><tt>@defad</tt></td> <td><tt>@interplev</tt></td> <td><tt>@noiter</tt></td></tr>
+    <tr><td><tt>@defas</tt></td> <td><tt>@itl1</tt></td> <td><tt>@nojjtp</tt></td></tr>
+    <tr><td><tt>@defl</tt></td> <td><tt>@itl2</tt></td> <td><tt>@noopiter</tt></td></tr>
+    <tr><td><tt>@defw</tt></td> <td><tt>@itl2gmin</tt></td> <td><tt>@notrapcheck</tt></td></tr>
+    <tr><td><tt>@dphimax</tt></td> <td><tt>@itl2src</tt></td> <td><tt>@noklu</tt></td></tr>
+    <tr><td><tt>@gmin</tt></td> <td><tt>@itl4</tt></td> <td><tt>@nomatsort</tt></td></tr>
+    <tr><td><tt>@minbreak</tt></td><td><tt>@maxord</tt></td> <td><tt>@noadjoint</tt></td></tr>
+    <tr><td><tt>@pivrel</tt></td> <td><tt>@srcsteps</tt></td> <td><tt>@oldlimit</tt></td></tr>
+    <tr><td><tt>@pivtol</tt></td> <td>&nbsp;</td> <td><tt>@spice3</tt></td></tr>
+    <tr><td><tt>@reltol</tt></td> <td>&nbsp;</td> <td><tt>@trytocompact</tt></td></tr>
+    <tr><td><tt>@temp</tt></td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
+    <tr><td><tt>@tnom</tt></td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
+    <tr><td><tt>@trapratio</tt></td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
+    <tr><td><tt>@trtol</tt></td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
+    <tr><td><tt>@vntol</tt></td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
+    <tr><td><tt>@xmu</tt></td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
+    </table>
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <th colspan=2>Rusage Special Vectors</th></tr>
+    <th>Reals</th> <th>Integers</th></tr>
+    <tr><td><tt>@elapsed</tt></td>       <td><tt>@accept</tt></td></tr>
+    <tr><td><tt>@loadtime</tt></td>      <td><tt>@equations</tt></td></tr>
+    <tr><td><tt>@lutime</tt></td>        <td><tt>@fillin</tt></td></tr>
+    <tr><td><tt>@reordertime</tt></td>   <td><tt>@matsize</tt></td></tr>
+    <tr><td><tt>@solvetime</tt></td>     <td><tt>@nonzero</tt></td></tr>
+    <tr><td><tt>@space</tt></td>         <td><tt>@rejected</tt></td></tr>
+    <tr><td><tt>@time</tt></td>          <td><tt>@totiter</tt></td></tr>
+    <tr><td><tt>@tranlutime</tt></td>    <td><tt>@trancuriters</tt></td></tr>
+    <tr><td><tt>@transolvetime</tt></td> <td><tt>@traniter</tt></td></tr>
+    <tr><td><tt>@trantime</tt></td>      <td><tt>@tranpoints</tt></td></tr>
+    <tr><td>&nbsp;</td>                  <td><tt>@tranitercut</tt></td></tr>
+    <tr><td>&nbsp;</td>                  <td><tt>@trantrapcut</tt></td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The special vectors that correspond to device and model parameters
+    in the current circuit can be assigned.  Other special vectors are
+    read-only.  When a special vector is assigned, the effect is
+    similar to the <a href="alter"><b>alter</b></a> command.  Actual
+    assignment is deferred until the next analysis run of the current
+    circuit, and assignment applies to that run only.  The assignment
+    must be repeated if needed for additional runs.
+
+!!SUBTOPICS
+constants
+
+!!SEEALSO
+expressions
+plot
+print
+setandlet
+
+!!REDIRECT boltz        constants
+!!REDIRECT const_c      constants
+!!REDIRECT const_e      constants
+!!REDIRECT echarge      constants
+!!REDIRECT false        constants
+!!REDIRECT const_j      constants
+!!REDIRECT kelvin       constants
+!!REDIRECT no           constants
+!!REDIRECT phi0         constants
+!!REDIRECT pi           constants
+!!REDIRECT planck       constants
+!!REDIRECT true         constants
+!!REDIRECT yes          constants
+
+!! useriface.tex 040110
+!!KEYWORD
+constants
+!!TITLE
+Constants
+!!HTML 
+    The following values are defined in a plot named
+    "<tt>constants</tt>".  This is the default plot if no rawfile has
+    been loaded and no simulation has been run.  These constants are
+    visible no matter what the current plot is, but they are
+    overridden by a vector with the same name in the current plot. 
+    The <tt>constants</tt> plot can not be deleted, and its vectors
+    are read-only.  The values are in MKS units.
+ 
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><tt>boltz</tt></td>
+     <td>Boltzmann's constant (1.38062e-23 joules/degree kelvin)</td></tr>
+    <tr><td><tt>const_c</tt></td>
+     <td>The speed of light (2.997925e8 meters/second)</td></tr>
+    <tr><td><tt>const_e</tt></td>
+     <td>The base of natural logarithms (2.71828182844590452353)</td></tr>
+    <tr><td><tt>echarge</tt></td>
+     <td>The charge on an electron (1.60218e-19 coulombs)</td></tr>
+    <tr><td><tt>false</tt></td>
+     <td>False value (0)</td></tr>
+    <tr><td><tt>const_j</tt></td>
+     <td>The square root of -1, can be expressed as (0,1)</td></tr>
+    <tr><td><tt>kelvin</tt></td>
+     <td>Absolute 0 in Centigrade (-273.15 degrees)</td></tr>
+    <tr><td><tt>no</tt></td>
+     <td>False value (0)</td></tr>
+    <tr><td><tt>phi0</tt></a></td>
+     <td>Value of the flux quantum (2.06783e-15 webers)</td></tr>
+    <tr><td><tt>pi</tt></a></td>
+     <td>Value of pi (3.14159265358979323846)</td></tr>
+    <tr><td><tt>planck</tt></td>
+     <td>Planck's constant (6.62607e-34 joule-seconds)</td></tr>
+    <tr><td><tt>true</tt></td>
+     <td>Truth value (1)</td></tr>
+    <tr><td><tt>yes</tt></td>
+     <td>Truth value (1)</td></tr>
+    </table>
+    </blockquote>
+
+!!SEEALSO
+plotvec
+expressions
+
+!!KEYWORD
+expressions
+!!TITLE
+Vector Expressions
+!!HTML 
+    An expression is an algebraic combination of already defined <a
+    href="plotvec">vectors</a>, scalars (a scalar is a vector of
+    length 1), <a href="constants">constants</a>, <a
+    href="operators">operators</a>, and <a
+    href="mathfuncs">functions</a>.  Some examples of expressions are:
+
+    <blockquote><tt>
+         cos(time) + db(v(3))<br>
+         sin(cos(log(10)))<br>
+         TIME*rnd(v(9)) - 15*cos(vin#branch)^7.9e5<br>
+         not ((ac3.freq[32] & tran1.time[10]) gt 3)<br>
+    </tt></blockquote>
+
+    <p>
+    One should note that there are two math subsystems in
+    <i>WRspice</i>, the vector system described here, and a <a
+    href="devexpr">second system</a> for processing equations found in
+    device descriptions during simulation.  Although the expressions
+    are syntactically similar, there are important differences that
+    must be taken into account, and one should refer to the
+    appropriate documentation for the type of expression.
+
+    <p>
+    Vector expressions can contain calls to the built-in <a
+    href="tranfuncs">tran functions</a> ordinarily used in
+    voltage/current source specifications in transient analysis. 
+    These functions are the <tt>pulse</tt>, <tt>pwl</tt>, etc,.  If
+    assigned to a vector, the vector will have a length equal to the
+    current scale (e.g., the time values of the last transient
+    analysis plot), and be filled in with values just as if the
+    analysis was run with the given source specification.  For example
+    <blockquote>
+        (run tran .1n 10n)<br>
+        <tt>let a = pulse(0 1 1n 1n)</tt>
+    </blockquote>
+    Vector <tt>a</tt> will have length 101 and contain the pulse values.
+
+    <p>
+    There are three such functions, <tt>sin</tt>, <tt>exp</tt>, and
+    <tt>gauss</tt>, that have the same names as math functions.  The
+    math functions always return data of the same length as the
+    argument(s), and take 1 arg for <tt>sin</tt>, <tt>exp</tt> and 2
+    for <tt>gauss</tt>.  When one of these names is encountered in an
+    expression, <i>WRspice</i> counts the arguments.  If the number of
+    arguments is 1 for <tt>sin</tt>/<tt>exp</tt> or 1 or 2 for
+    <tt>gauss</tt>, the math function is called, otherwise the tran
+    function is called.  It may be necessary to give the
+    <tt>gauss</tt> function a phony additional argument to force
+    calling the tran function.
+ 
+    <p>
+    Vectors can be evaluated by the <a href="variablesub">shell
+    parser</a> by adding the prefix <tt>$&</tt> to the vector's name. 
+    This is useful, for example, when the value of a vector needs to
+    be passed to the shell's <a href="echo">echo</a> command, or in
+    circuit description files where vectors are to be evaluated by the
+    shell as the file is read.  Similar to the shell constructs,
+    <tt>$?&</tt><i>word</i> expands to 1 if <i>word</i> is a defined
+    vector, 0 otherwise.  Also <tt>$#&</tt><i>word</i> expands to the
+    length of <i>word</i> if <i>word</i> is a defined vector, or 0 if
+    not found.  Additionally, the notation
+    <tt>$&</tt>(<i>expression</i>) is replaced by the value of the
+    vector expression.  A range specification can be added, for
+    example <tt>echo $&(a+1)[2]</tt> prints the third entry in
+    <tt>a+1</tt>, or 0 if out of range.  If white space exists in the
+    <tt>$&(...)</tt> construct, it probably should be quoted. 
+    Finally, the shell recognizes the construct
+    <tt>$&v($</tt><i>something</i><tt>)</tt> as a reference to a SPICE
+    node voltage, so that one can index node voltages as <tt>echo
+    $&v($&i)</tt>, for example.  A range specification can be added,
+    which can contain shell variables.  This is true for both vectors
+    (<tt>$&</tt> prefix) and variables.
+
+!!SUBTOPICS
+explists
+hs_functions
+mathfuncs
+operators
+
+
+!!REDIRECT plus         operators#plus
+!!REDIRECT minus        operators#minus
+!!REDIRECT times        operators#times
+!!REDIRECT divide       operators#divide
+!!REDIRECT mod          operators#mod
+!!REDIRECT power        operators#power
+!!REDIRECT and          operators#and
+!!REDIRECT or           operators#or
+!!REDIRECT not          operators#not
+!!REDIRECT gt           operators#gt
+!!REDIRECT ge           operators#ge
+!!REDIRECT lt           operators#lt
+!!REDIRECT le           operators#le
+!!REDIRECT ne           operators#ne
+!!REDIRECT eq           operators#eq
+!!REDIRECT comma        operators#comma
+!!REDIRECT index        operators#index
+!!REDIRECT ran          operators#ran
+
+!! useriface.tex 012309
+!!KEYWORD
+operators
+!!TITLE
+Operators
+!!HTML
+    The operations available in vector expressions are listed below. 
+    They all take two operands, except for unary minus and logical
+    negation.
+ 
+    <a name="plus"></a>
+    <dl>
+    <dt><b>addition operator</b>: <tt>+</tt><dd>
+    Add the two operands.
+    </dl>
+
+    <a name="minus"></a>
+    <dl>
+    <dt><b>subtraction and negation operator</b>:  <tt>-</tt><dd>
+    Evaluates to the first argument minus the second, and also may be
+    used as unary minus.
+    </dl>
+
+    <a name="times"></a>
+    <dl>
+    <dt><b>multiply operator</b>: <tt>*</tt><dd>
+    Multiply the two operands.
+    </dl>
+
+    <a name="divide"></a>
+    <dl>
+    <dt><b>divide operator</b>: <tt>/</tt><dd>
+    The first operand divided by the second.
+    </dl>
+
+    <a name="mod"></a>
+    <dl>
+    <dt><b>modulo operator</b>: <tt>%</tt><dd>
+    This operates in the manner of the C <tt>fmod</tt> function,
+    returning the remainder.  That is, for <tt>x % y</tt>, the value
+    of <tt>x-i*y</tt> is returned for some integer <tt>i</tt> such
+    that the result has the same sign of <tt>x</tt> and magnitude less
+    than the magnitude of <tt>y</tt>.  An error is indicated if
+    <tt>y</tt> is zero.  If <tt>x</tt> or <tt>y</tt> is complex, the
+    magnitudes are used in the division.
+    </dl>
+
+    <a name="power"></a>
+    <dl>
+    <dt><b>power operator</b>: <tt>^</tt> or <tt>**</tt><dd>
+    Evaluates to the first operand raised to the power of the second. 
+    </dl>
+
+    <a name="and"></a>
+    <dl>
+    <dt><b>and operator</b>: <tt>&</tt> or <tt>&&</tt> or <tt>and</tt><dd>
+    Evaluates to 1 if both operands are non-zero, 0 otherwise.
+    </dl>
+
+    <a name="or"></a>
+    <dl>
+    <dt><b>or operator</b>: <tt>|</tt> or <tt>||</tt> or <tt>or</tt><dd>
+    Evaluates to 1 if either of the two operands is nonzero, 0 otherwise.
+    </dl>
+
+    <a name="not"></a>
+    <dl>
+    <dt><b>not operator</b>: <tt>~</tt> or <tt>!</tt> or <tt>not</tt><dd>
+    Evaluates to 1 if the operand is 0, 0 otherwise.
+    </dl>
+
+    <a name="gt"></a>
+    <dl>
+    <dt><b>greater-than operator</b>: <tt>></tt> or <tt>gt</tt><dd>
+    Evaluates to 1 if the first operand is greater than the second, 0
+    otherwise.
+    </dl>
+
+    <a name="ge"></a>
+    <dl>
+    <dt><b>greater-than-or-equal operator</b>: <tt>>=</tt> or <tt>ge</tt><dd>
+    Evaluates to 1 if the first operand is greater than or equal to
+    the second, 0 otherwise.
+    </dl>
+
+    <a name="lt"></a>
+    <dl>
+    <dt><b>less-than operator</b>: <tt>&#60;</tt> or <tt>lt</tt><dd>
+    Evaluates to 1 if the first argument is less than the second, 0
+    otherwise.
+    </dl>
+
+    <a name="le"></a>
+    <dl>
+    <dt><b>less-than-or-equal operator</b>: <tt>&#60;=</tt> or <tt>le</tt><dd>
+    Evaluates to 1 if the first argument is less than or equal to the
+    second, 0 otherwise.
+    </dl>
+
+    <a name="ne"></a>
+    <dl>
+    <dt><b>not-equal operator</b>: <tt>&#60;></tt> or <tt>!=</tt> or
+      <tt>ne</tt><dd>
+    Evaluates to 1 if the two operands are not equal, 0 otherwise.
+    </dl>
+
+    <a name="eq"></a>
+    <dl>
+    <dt><b>equal operator</b>: <tt>=</tt> or <tt>==</tt> or <tt>eq</tt><dd>
+    Evaluates to 1 if both operands are equal, 0 otherwise.
+    </dl>
+
+    <a name="ternary">
+    <dl>
+    <dt><b>ternary conditional operator</b>:
+      <i>expr</i> <tt>?</tt> <i>expr1</i> <tt>:</tt> <i>expr2</i><dd>
+    If <i>expr</i> evaluates nonzero (true), the result of the evaluation
+    of <i>expr1</i> is returned.  Otherwise, the result of evaluating
+    <i>expr2</i> is returned.  For Example:
+    <blockquote>
+        <tt>let v = (a == 2) ? v(1) : v(2)</tt>
+    </blockquote>
+    This will set <tt>v</tt> to <tt>v(1)</tt> if vector <tt>a</tt> is
+    equal to 2, <tt>v</tt> to <tt>v(2)</tt> otherwise.
+    </dl>
+
+    <a name="comma"></a>
+    <dl>
+    <dt><b>comma operator</b>: <tt>,</tt><dd>
+    The notation <i>a</i>,<i>b</i> refers to the complex number with
+    real part <i>a</i> and imaginary part <i>b</i>.  Such a
+    construction may not be used in the argument list to a macro
+    function, however, since commas are used to separate the arguments
+    and parentheses may be ignored.  The expression <i>a</i> +
+    <tt>j</tt>(<i>b</i>) is equivalent.  The comma does <i>not</i>
+    behave as an operation (return a value) as it does in C.
+    </dl>
+
+    The logical operations are <tt>&</tt> (and), <tt>|</tt> (or),
+    <tt>~</tt> (not), and their synonyms.  A nonzero operand is
+    considered "true".  The relational operations are <tt>&#60;</tt>,
+    <tt>></tt>, <tt>&#60;=</tt>, <tt>>=</tt>, <tt>=</tt>, and
+    <tt>&#60;></tt> (not equal), and their synonyms.  If used in an
+    algebraic expression they work like they would in C, producing
+    values of 0 or 1.  The synonyms are useful when <tt>&#60;</tt> and
+    <tt>></tt> might be confused with IO redirection (which is almost
+    always).
+
+    <dl>
+    <dt><b>expression terminator</b>: <tt>;</tt><dd>
+    The expression parser will terminate an expression at a semicolon. 
+    This can be used to enforce tokenization of <a
+    href="explists">expression lists</a>, however it will also
+    terminate command parsing if surrounded by white space.
+    </dl>
+
+    <p>
+    <a name="index"></a>
+    Vectors may be indexed by
+    <i>value</i>[<i>index</i>] or <i>value</i>[<i>low,high</i>].
+
+    <p>
+    The first notation refers to the <i>index</i>'th element of
+    <i>value</i>.  The second notation refers to all of the elements
+    of <i>value</i> which fall between the <i>high</i>'th and the
+    <i>low</i>'th element, inclusive.  If <i>high</i> is less than
+    <i>low</i>, the order of the elements in the result is reversed. 
+    Note that a complex index will have the same effect as using the
+    real part for the lower value and the imaginary part for the
+    upper, since this is the way the parser reads this expression. 
+    Multi-dimensional vectors are referenced as
+    Vec[<i>ind</i>N][<i>ind</i>N-1]...[<i>ind</i>0], where each of the
+    <i>ind</i>I can be a range, or single value.  The range must be
+    within the vector's spanning space.  If fewer than the vector's
+    dimensions are specified, the resulting object is a
+    sub-dimensional vector.
+
+    <p>
+    <a name="ran"></a>
+    Finally, there is the ran operator:
+    <i>value1</i>[[<i>value2</i>]] or <i>value</i>[[<i>low</i>,<i>high</i>]].
+ 
+    <p>
+    The first notation refers to all the elements of <i>value1</i> for
+    which the element of the corresponding scale equals <i>value2</i>. 
+    The second notation refers to all of the elements of <i>value</i>
+    for which the corresponding elements of the scale fall between
+    <i>high</i> and <i>low</i>, inclusive.  If <i>high</i> is less
+    than <i>low</i>, the order of the elements in the result is
+    reversed.
+
+!!SEEALSO
+expressions
+
+!! These clash in Xic
+!!IFNDEF Xic
+!!REDIRECT abs          mathfuncs#abs
+!!REDIRECT acos         mathfuncs#acos
+!!REDIRECT acosh        mathfuncs#acosh
+!!REDIRECT asin         mathfuncs#asin
+!!REDIRECT asinh        mathfuncs#asinh
+!!REDIRECT atan         mathfuncs#atan
+!!REDIRECT atanh        mathfuncs#atanh
+!!REDIRECT cbrt         mathfuncs#cbrt
+!!REDIRECT ceil         mathfuncs#ceil
+!!REDIRECT cos          mathfuncs#cos
+!!REDIRECT cosh         mathfuncs#cosh
+!!REDIRECT erf          mathfuncs#erf
+!!REDIRECT erfc         mathfuncs#erfc
+!!REDIRECT exp          mathfuncs#exp
+!!REDIRECT floor        mathfuncs#floor
+!!REDIRECT imag         mathfuncs#im
+!!REDIRECT int          mathfuncs#int
+!!REDIRECT j0           mathfuncs#j0
+!!REDIRECT j1           mathfuncs#j1
+!!REDIRECT jn           mathfuncs#jn
+!!REDIRECT ln           mathfuncs#ln
+!!REDIRECT log          mathfuncs#log
+!!REDIRECT log10        mathfuncs#log10
+!!REDIRECT mag          mathfuncs#mag
+!!REDIRECT real         mathfuncs#re
+!!REDIRECT sgn          mathfuncs#sgn
+!!REDIRECT sin          mathfuncs#sin
+!!REDIRECT sinh         mathfuncs#sinh
+!!REDIRECT sqrt         mathfuncs#sqrt
+!!REDIRECT tan          mathfuncs#tan
+!!REDIRECT tanh         mathfuncs#tanh
+!!REDIRECT y0           mathfuncs#y0
+!!REDIRECT y1           mathfuncs#y1
+!!REDIRECT yn           mathfuncs#yn
+!!ENDIF
+
+!!REDIRECT db           mathfuncs#db
+!!REDIRECT deriv        mathfuncs#deriv
+!!REDIRECT fft          mathfuncs#fft
+!!REDIRECT gamma        mathfuncs#gamma
+!!REDIRECT ifft         mathfuncs#ifft
+!!REDIRECT im           mathfuncs#im
+!!REDIRECT integ        mathfuncs#integ
+!!REDIRECT interpolate  mathfuncs#interpolate
+!!REDIRECT j            mathfuncs#j
+!!REDIRECT length       mathfuncs#length
+!!REDIRECT mean         mathfuncs#mean
+!!REDIRECT norm         mathfuncs#norm
+!!REDIRECT ph           mathfuncs#ph
+!!REDIRECT pos          mathfuncs#pos
+!!REDIRECT re           mathfuncs#re
+!!REDIRECT rms          mathfuncs#rms
+!!REDIRECT sum          mathfuncs#sum
+!!REDIRECT unitvec      mathfuncs#unitvec
+!!REDIRECT vector       mathfuncs#vector
+
+!! useriface.tex 021416
+!!KEYWORD
+mathfuncs
+!!TITLE
+Math Functions
+!!HTML 
+    There are a number of built-in math functions which take and
+    return vectors.  Generally, these functions operate on the
+    supplied vector term-by-term, returning a vector of the same
+    length as that given.
+
+    <p>
+    The pre-defined functions available are listed below.  In general,
+    all operations and functions will work on either real or complex
+    values, providing complex data output when necessary.
+
+    <p>
+    In addition, there are statistical <a href="statfuncs">random
+    number sources</a>, and a number of <a
+    href="hs_functions">compatibility functions</a>
+    to support <a href="hspicesim">HSPICE</a> extensions available.
+
+    <p>
+    It should be noted that the mathematics subsystem used to evaluate
+    expressions in voltage/current <a href="src">sources</a> is
+    completely different.  In that subsystem, functions take real
+    valued scalars as input.  Although many of the same functions are
+    available in both systems, the correspondence is not absolute.
+ 
+    <a name="abs"></a>
+    <dl>
+    <dt><b>abs function</b>: <tt>abs</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the absolute value of the
+    corresponding point of <i>vector</i>.  This is the same as the
+    <a href="mag"><tt>mag</tt></a> function.
+    </dl>
+
+    <a name="acos"></a>
+    <dl>
+    <dt><b>acos function</b>: <tt>acos</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the arc-cosine of the
+    corresponding point of <i>vector</i>.  This and all trig functions
+    operate with radians unless the <a href="units"><tt>units</tt></a>
+    variable is set to "<tt>degrees</tt>".
+    </dl>
+
+    <a name="acosh"></a>
+    <dl>
+    <dt><b>acosh function</b>: <tt>acosh</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the arc-hyperbolic cosine of
+    the corresponding point of <i>vector</i>.  This and all trig
+    functions operate with radians unless the <a
+    href="units"><tt>units</tt></a> variable is set to
+    "<tt>degrees</tt>".
+    </dl>
+
+    <a name="asin"></a>
+    <dl>
+    <dt><b>asin function</b>:  <tt>asin</tt>(<i>vector</i>)<dd> Each
+    point of the returned vector is the arc-sin of the corresponding
+    point of <i>vector</i>.  This and all trig functions operate with
+    radians unless the <a href="units"><tt>units</tt></a> variable is
+    set to "<tt>degrees</tt>".
+    </dl>
+
+    <a name="asinh"></a>
+    <dl>
+    <dt><b>asinh function</b>: <tt>asinh</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the arc-hyperbolic sin of the
+    corresponding point of <i>vector</i>.  This and all trig functions
+    operate with radians unless the <a href="units"><tt>units</tt></a>
+    variable is set to "<tt>degrees</tt>".
+    </dl>
+
+    <a name="atan"></a>
+    <dl>
+    <dt><b>atan function</b>:  <tt>atan</tt>(<i>vector</i>)<dd> Each
+    point of the returned vector is the arc-tangent of the
+    corresponding point of <i>vector</i>.  This and all trig functions
+    operate with radians unless the <a href="units"><tt>units</tt></a>
+    variable is set to "<tt>degrees</tt>".
+    </dl>
+
+    <a name="atanh"></a>
+    <dl>
+    <dt><b>atanh function</b>: <tt>atanh</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the arc-hyperbolic tangent of
+    the corresponding point of <i>vector</i>.  This and all trig
+    functions operate with radians unless the <a
+    href="units"><tt>units</tt></a> variable is set to
+    "<tt>degrees</tt>".
+    </dl>
+
+    <a name="cbrt"></a>
+    <dl>
+    <dt><b>cbrt function</b>: <tt>cbrt</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the cube root of the
+    corresponding point of <i>vector</i>.
+    </dl>
+
+    <a name="ceil"></a>
+    <dl>
+    <dt><b>ceil function</b>: <tt>ceil</tt>(<i>vector</i>)<dd>
+    This function returns the smallest integer greater than or equal to
+    the argument, in the manner of the C function of the same name. 
+    If the argument is complex, the operation is performed on both
+    components, with the result being complex.  This operation is
+    performed at each point in the given <i>vector</i>.
+    </dl>
+
+    <a name="cos"></a>
+    <dl>
+    <dt><b>cos function</b>: <tt>cos</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the cosine of the
+    corresponding point of <i>vector</i>.  This and all trig functions
+    operate with radians unless the <a href="units"><tt>units</tt></a>
+    variable is set to "<tt>degrees</tt>".
+    </dl>
+
+    <a name="cosh"></a>
+    <dl>
+    <dt><b>cosh function</b>: <tt>cosh</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the hyperbolic cosine of the
+    corresponding point of <i>vector</i>.  This and all trig functions
+    operate with radians unless the <a href="units"><tt>units</tt></a>
+    variable is set to "<tt>degrees</tt>".
+    </dl>
+
+    <a name="db"></a>
+    <dl>
+    <dt><b>db function</b>: <tt>db</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the decibel value <tt>(20 *
+    log10(mag))</tt> of the corresponding point of <i>vector</i>.
+    </dl>
+
+    <a name="deriv"></a>
+    <dl>
+    <dt><b>deriv function</b>: <tt>deriv</tt>(<i>vector</i>)<dd>
+    This calculates the derivative of the given <i>vector</i>, using
+    numeric differentiation by interpolating a polynomial.  However,
+    it may be prone to numerical errors, particularly with iterated
+    differentiation.  The implementation only calculates the
+    derivative with respect to the real component of that vector's
+    scale.  The polynomial degree used for differentiation can be
+    specified with the <a href="dpolydegree"><tt>dpolydegree</tt></a>
+    variable.  If <tt>dpolydegree</tt> is unset, the value taken is 2
+    (quadratic).  The valid range is 0-7.
+    </dl>
+
+    <a name="erf"></a>
+    <dl>
+    <dt><b>erf function</b>: <tt>erf</tt>(<i>vector</i>)<dd>
+    Each point of the real returned vector is the error function of the
+    corresponding real point of <i>vector</i>.
+    Unlike most of the functions, this function operates only on the
+    real part of a complex argument, and always returns a real valued
+    result.
+    </dl>
+
+    <a name="erfc"></a>
+    <dl>
+    <dt><b>erfc function</b>: <tt>erfc</tt>(<i>vector</i>)<dd>
+    Each point of the real returned vector is the complementary error
+    function of the corresponding real point of <i>vector</i>.
+    Unlike most of the functions, this function operates only on the
+    real part of a complex argument, and always returns a real valued
+    result.
+    </dl>
+
+    <a name="exp"></a>
+    <dl>
+    <dt><b>exp function</b>: <tt>exp</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the exponentiation (e<sup>x</sup>)
+    of the corresponding point of <i>vector</i>.
+    </dl>
+
+    <a name="fft"></a>
+    <dl>
+    <dt><b>fft function</b>: <tt>fft</tt>(<i>vector</i>)<dd>
+    The <tt>fft</tt> function returns the Fourier transform of
+    <i>vector</i>, using the present scale of <i>vector</i>.  The
+    scale should be linear and monotonic.  The length is zero-padded
+    to the next binary power.  Only the real values are considered in
+    the transform, so that the negative frequency terms are the
+    complex conjugates of the positive frequency terms.  The negative
+    frequency terms are not included in the (complex) vector returned. 
+    A scale for the returned vector is also generated and linked to
+    the returned vector.
+    </dl>
+
+    <a name="floor"></a>
+    <dl>
+    <dt><b>floor function</b>: <tt>floor</tt>(<i>vector</i>)<dd>
+    This function returns the largest integer less than or equal to the
+    argument, in the manner of the C function of the same name.  If
+    the argument is complex, the operation is performed on both
+    components, with the result being complex.  The operation is
+    performed at each point of the argument.
+    </dl>
+
+    <a name="gamma"></a>
+    <dl>
+    <dt><b>gamma function</b>: <tt>gamma</tt>(<i>vector</i>)<dd>
+    This function returns the gamma value of the real argument (or the
+    real part of a complex argument), returning real data.
+    </dl>
+
+    <a name="ifft"></a>
+    <dl>
+    <dt><b>ifft function</b>: <tt>ifft</tt>(<i>vector</i>)<dd>
+    The <tt>ifft</tt> function returns the inverse Fourier transform
+    of <i>vector</i>, using the present scale of <i>vector</i>.  The
+    scale should be linear and monotonically increasing, starting at 0. 
+    Negative frequency terms are assumed to be complex conjugates of
+    the positive frequency terms.  The length is zero-padded to the
+    next binary power.  A scale for the returned vector is also
+    generated and linked to the returned vector.  The returned vector
+    is always real.
+    </dl>
+
+    <a name="im"></a>
+    <dl>
+    <dt><b>im function</b>: <tt>im</tt>(<i>vector</i>)<dd>
+    Each point of the real returned vector is the imaginary part of
+    the corresponding point of the given <i>vector</i>.  This function
+    can also be called as "<tt>imag</tt>".
+    </dl>
+
+    <a name="int"></a>
+    <dl>
+    <dt><b>int function</b>: <tt>int</tt>(<i>vector</i>)<dd>
+    The returned value is the nearest integer to the argument, in the
+    manner of the C <tt>rint</tt> function.  If the argument is
+    complex, the operation is performed on each component with the
+    result being complex.  The operation is performed at each point in
+    the argument.
+    </dl>
+
+    <a name="integ"></a>
+    <dl>
+    <dt><b>integ function</b>: <tt>integ</tt>(<i>vector</i>)<dd>
+    The return value is the (trapezoidal) integral of <i>vector</i>
+    with respect to <i>vector</i>'s scale (which must exist).
+    </dl>
+
+    <a name="interpolate"></a>
+    <dl>
+    <dt><b>interpolate function</b>: <tt>interpolate</tt>(<i>vector</i>)<dd>
+    This function takes its data and interpolates it onto a grid which
+    is determined by the default scale of the currently active plot. 
+    The degree is determined by the <a
+    href="polydegree"><tt>polydegree</tt></a> variable.  This is
+    useful if the argument belongs to a plot which is not the current
+    one.  Some restrictions are that the current scale, the
+    <i>vector</i>'s scale, and the argument must be real, and that
+    either both scales must be strictly increasing or strictly
+    decreasing if they differ.
+
+    <p>
+    This function is used when operating on vectors from different
+    plots, where the scale may differ.  For example, the x-increment
+    may be different, or the points may correspond to internal time
+    points from transient analysis rather than the user time points. 
+    Without interpolation, operations are generally term-by-term,
+    padding when necessary.  This result is probably not useful if
+    the scales are different.
+
+    <p>
+    For example, the correct way to print the difference between a
+    vector in the current plot and a vector from another plot with a
+    different scale would be
+    <blockquote>
+    <tt>print v(2) - interpolate(tran2.v(2))</tt>
+    </blockquote>
+    </dl>
+
+    <a name="j"></a>
+    <dl>
+    <dt><b>j function</b>: <tt>j</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the corresponding point of
+    <i>vector</i> multiplied by the square root of -1.
+    </dl>
+
+    <a name="j0"></a>
+    <dl>
+    <dt><b>j0 function</b>: <tt>j0</tt>(<i>vector</i>)<dd>
+    Each point of the real returned vector is the Bessel order 0
+    function of the corresponding real point of <i>vector</i>.  Unlike
+    most of the functions, this function operates only on the real
+    part of a complex argument, and always returns a real valued
+    result.
+    </dl>
+
+    <a name="j1"></a>
+    <dl>
+    <dt><b>j1 function</b>: <tt>j1</tt>(<i>vector</i>)<dd>
+    Each point of the real returned vector is the Bessel order 1
+    function of the corresponding real point of <i>vector</i>.  Unlike
+    most of the functions, this function operates only on the real
+    part of a complex argument, and always returns a real valued
+    result.
+    </dl>
+
+    <a name="jn"></a>
+    <dl>
+    <dt><b>jn function</b>: <tt>jn</tt>(<i>vector</i>)<dd>
+    Each point of the real returned vector is the Bessel order
+    <i>n</i> function of the corresponding real point of
+    <i>vector</i>, with <i>n</i> the truncated integer value of the
+    imaginary part of <i>vector</i>.
+
+    <p>
+    Recall that for most math function, comma argument separators
+    are interpreted as the comma operator
+    <blockquote>
+    <tt>a,b = (a + j*b)</tt>
+    </blockquote>
+    which resolves to a single complex value.  Thus, since scalars are
+    extended to vectors by replicating the value, on calling this
+    function as, for example, "<tt>jn(v,3)</tt>" where <tt>v</tt> is
+    a real vector, the return will be <tt>j3(v)</tt> for each element
+    of <tt>v</tt>.
+
+    <p>
+    If <i>vector</i> is real, the effective value of <i>n</i> is 0.
+    </dl>
+
+    <a name="length"></a>
+    <dl>
+    <dt><b>length function</b>: <tt>length</tt>(<i>vector</i>)<dd>
+    This function returns the scalar length of <i>vector</i>.
+    </dl>
+
+    <a name="ln"></a>
+    <dl>
+    <dt><b>ln function</b>: <tt>ln</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the natural logarithm of the
+    corresponding point of <i>vector</i>.
+    </dl>
+
+    <a name="log"></a>
+    <dl>
+    <dt><b>log function</b>: <tt>log</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the natural logarithm of the
+    corresponding point of <i>vector</i> (same as <tt>ln</tt>).
+
+    <p>
+    <b>Warning:</b> in releases prior to 3.2.15, the <tt>log</tt>
+    function returned the base-10 logarithm (as in Berkeley SPICE3). 
+    This was changed in 3.2.15 for compatibility with device
+    simulation models intended for <a href="hspicesim">HSPICE</a>.
+    </dl>
+
+    <a name="log10"></a>
+    <dl>
+    <dt><b>log10 function</b>: <tt>log10</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the base-10 logarithm of the
+    corresponding point of <i>vector</i>.
+    </dl>
+
+    <a name="mag"></a>
+    <dl>
+    <dt><b>mag function</b>: <tt>mag</tt>(<i>vector</i>)<dd>
+    Each point of the real returned vector is the magnitude of the
+    corresponding point of <i>vector</i>.
+    </dl>
+
+    <a name="mean"></a>
+    <dl>
+    <dt><b>mean function</b>: <tt>mean</tt>(<i>vector</i>)<dd>
+    This function returns the (scalar) mean value of the elements in
+    the argument.
+    </dl>
+
+    <a name="norm"></a>
+    <dl>
+    <dt><b>norm function</b>: <tt>norm</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the corresponding point of
+    the given vector multiplied by the magnitude of the inverse of the
+    largest value in the given vector.  The returned vector is
+    therefor normalized to 1 (i.e, the largest magnitude of any
+    component will be 1).
+    </dl>
+
+    <a name="ph"></a>
+    <dl>
+    <dt><b>ph function</b>: <tt>ph</tt>(<i>vector</i>)<dd>
+    Each point of the real returned vector is the phase of the
+    corresponding point of <i>vector</i>, expressed in radians.
+    </dl>
+
+    <a name="pos"></a>
+    <dl>
+    <dt><b>pos function</b>: <tt>pos</tt>(<i>vector</i>)<dd>
+    This function returns a real vector which is 1 if the
+    corresponding element of the argument has a non-zero real part,
+    and 0 otherwise.
+    </dl>
+
+    <a name="re"></a>
+    <dl>
+    <dt><b>re function</b>: <tt>re</tt>(<i>vector</i>)<dd>
+    Each point of the real returned vector is the real part of the
+    corresponding point of <i>vector</i>.  The function can also be
+    called as "<tt>real</tt>".
+    </dl>
+
+    <a name="rms"></a>
+    <dl>
+    <dt><b>rms function</b>: <tt>rms</tt>(<i>vector</i>)<dd>
+    This function integrates the magnitude-squared of <i>vector</i>
+    over the <i>vector</i>'s scale (using trapezoidal integration),
+    divides by the scale range, and returns the square root of this
+    result.  If the <i>vector</i> has no scale, the square root of the
+    sum of the squares of the elements is returned.
+    </dl>
+
+    <a name="sgn"></a>
+    <dl>
+    <dt><b>sgn function</b>: <tt>sgn</tt>(<i>vector</i>)<dd>
+    Each value of the output vector is 1, 0, or -1 according to
+    whether the corresponding value of the input vector is larger than
+    0, equal to zero, or less than 0.  The vector can be complex or
+    real.
+    </dl>
+
+    <a name="sin"></a>
+    <dl>
+    <dt><b>sin function</b>: <tt>sin</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the sine of the corresponding
+    point of <i>vector</i>.  This and all trig functions operate with
+    radians unless the <a href="units"><tt>units</tt></a> variable is
+    set to "<tt>degrees</tt>".
+    </dl>
+
+    <a name="sinh"></a>
+    <dl>
+    <dt><b>sinh function</b>: <tt>sinh</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the hyperbolic sine of the
+    corresponding point of <i>vector</i>.  This and all trig functions
+    operate with radians unless the <a href="units"><tt>units</tt></a>
+    variable is set to "<tt>degrees</tt>".
+    </dl>
+
+    <a name="sqrt"></a>
+    <dl>
+    <dt><b>sqrt function</b>: <tt>sqrt</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the square root of the
+    corresponding point of <i>vector</i>.
+    </dl>
+
+    <a name="sum"></a>
+    <dl>
+    <dt><b>sum function</b>: <tt>sum</tt>(<i>vector</i>)<dd>
+    This function returns the (scalar) sum of the elements of
+    <i>vector</i>.
+    </dl>
+
+    <a name="tan"></a>
+    <dl>
+    <dt><b>tan function</b>: <tt>tan</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the tangent of the
+    corresponding point of <i>vector</i>.  This and all trig functions
+    operate with radians unless the <a href="units"><tt>units</tt></a>
+    variable is set to "<tt>degrees</tt>".
+    </dl>
+
+    <a name="tanh"></a>
+    <dl>
+    <dt><b>tanh function</b>: <tt>tanh</tt>(<i>vector</i>)<dd>
+    Each point of the returned vector is the hyperbolic tangent of the
+    corresponding point of <i>vector</i>.  This and all trig functions
+    operate with radians unless the <a href="units"><tt>units</tt></a>
+    variable is set to "<tt>degrees</tt>".
+    </dl>
+
+    <a name="unitvec"></a>
+    <dl>
+    <dt><b>unitvec function</b>: <tt>unitvec</tt>(<i>vector</i>)<dd>
+    This function returns a vector consisting of all 1's, with length
+    equal to the magnitude of the first component of its argument.
+    </dl>
+
+    <a name="vector"></a>
+    <dl>
+    <dt><b>vector function</b>: <tt>vector</tt>(<i>vector</i>)<dd>
+    This function returns a vector consisting of the integers from 0
+    up to the magnitude of the first component of its argument.
+    </dl>
+
+    <a name="y0"></a>
+    <dl>
+    <dt><b>y0 function</b>: <tt>y0</tt>(<i>vector</i>)<dd>
+    Each point of the real returned vector is the Neumann order 0
+    function of the corresponding real point of <i>vector</i>.  Unlike
+    most of the functions, this function operates only on the real
+    part of a complex argument, and always returns a real valued
+    result.
+    </dl>
+
+    <a name="y1"></a>
+    <dl>
+    <dt><b>y1 function</b>: <tt>y1</tt>(<i>vector</i>)<dd>
+    Each point of the real returned vector is the Neumann order 1
+    function of the corresponding real point of <i>vector</i>.  Unlike
+    most of the functions, this function operates only on the real
+    part of a complex argument, and always returns a real valued
+    result.
+    </dl>
+
+    <a name="yn"></a>
+    <dl>
+    <dt><b>yn function</b>: <tt>yn</tt>(<i>vector</i>)<dd>
+    Each point of the real returned vector is the Neumann order
+    <i>n</i> function of the corresponding real point of
+    <i>vector</i>, with <i>n</i> the truncated integer value of
+    the imaginary part.
+
+    <p>
+    Recall that for most math function, comma argument separators
+    are interpreted as the comma operator
+    <blockquote>
+    <tt>a,b = (a + j*b)</tt>
+    </blockquote>
+    which resolves to a single complex value.  Thus, since scalars are
+    extended to vectors by replicating the value, on calling this
+    function as, for example, "<tt>yn(v,3)</tt>" where <tt>v</tt> is
+    a real vector, the return will be <tt>y3(v)</tt> for each element
+    of <tt>v</tt>.
+
+    <p>
+    If <i>vector</i> is real, the effective value of <i>n</i> is 0.
+    </dl>
+
+!!SEEALSO
+expressions
+
+!!REDIRECT beta         statfuncs#beta
+!!REDIRECT binomial     statfuncs#binomial
+!!REDIRECT chisq        statfuncs#chisq
+!!REDIRECT erlang       statfuncs#erlang
+!!REDIRECT exponential  statfuncs#exponential
+!!REDIRECT ogauss       statfuncs#ogauss
+!!REDIRECT poisson      statfuncs#poisson
+!!REDIRECT rnd          statfuncs#rnd
+!!REDIRECT tdist        statfuncs#tdist
+
+!! useriface.tex 032715
+!!KEYWORD
+statfuncs
+!!TITLE
+Statistical Functions
+!!HTML 
+    These functions generate random values, in accord with different
+    statistical distribution properties.  Each relies on the
+!!IFDEF WRspice
+    <a href="seed"><b>seed</b></a>
+!!ELSE
+    <a href="wrs_seed"><b>seed</b></a>
+!!ENDIF
+    command to seed the internal random number generator which is
+    common to all random sources.  Each distribution is defined by one
+    or two parameters.  For distributions that take a single
+    parameter, if passed a complex vector, the result will be a
+    complex vector, using separately the distribution parameters in
+    the real and imaginary parts.  For distributions that require two
+    parameters, the return vector is always real, and the complex
+    vector given will supply the two parameters as the real and
+    imaginary parts.  If a real vector is given, a default value will
+    be used for the second parameter.
+
+    <p>
+    Note that it is not likely that one would use different values for
+    different indices of the given vector.  If all indices have the
+    same value, then the return would contain a number of samples from
+    the same distribution, which is what is almost always needed.
+
+    <p>
+    Perhaps most of the time the functions will be called with scalar
+    values.  With these and other functions, bear in mind that the
+    syntactic element expected as an argument is a "single" number,
+    which can be real or complex.  When complex, it has the form
+    "<i>a</i>, <i>b</i>" which looks like two numbers.  The take-away
+    is that any of these functions can be called as
+    <i>func</i>(<i>a</i>), or <i>func</i>(<i>a</i>, <i>b</i>) where
+    <i>a</i> and <i>b</i> are scalars.  The return depends on the
+    function.
+
+    <p>
+    The user is expected to know the properties of these distributions
+    and when to apply them.  There is much information about these
+    distributions available on-line, and in Knuth.
+
+    <a name="beta"></a>
+    <dl>
+    <dt><b>beta function</b>: <tt>beta</tt>(<i>vector</i>)<dd>
+    The beta distribution is defined by two positive real values
+    <tt>a</tt> and <tt>b</tt>.  These are taken term by term as the
+    real and imaginary parts of <i>vector</i> when complex.  When
+    real, the <tt>b</tt> will use the default value 1.0.
+    </dl>
+
+    <a name="binomial"></a>
+    <dl>
+    <dt><b>binomial function</b>: <tt>binomial</tt>(<i>vector</i>)<dd>
+    The binomial distribution is defined by a positive real value
+    <tt>p</tt> and positive integer <tt>n</tt>.  These are taken term
+    by term as the real and imaginary parts of <i>vector</i> when
+    complex.  The imaginary value is truncated to form the integer. 
+    When <i>vector</i> is real, the <tt>n</tt> will use the default
+    value 1.
+    </dl>
+
+    <a name="chisq"></a>
+    <dl>
+    <dt><b>chisq function</b>: <tt>chisq</tt>(<i>vector</i>)<dd>
+    The chi-square distribution is defined by a positive real
+    degrees-of-freedom value.  This is taken from <i>vector</i>
+    term-by-term.  If <i>vector</i> is real, the return is also real. 
+    If <i>vector</i> is complex, the return is also complex, with
+    separate results for the real and imaginary parts, obtained using
+    the real and imaginary parts of <i>vector</i>.
+    </dl>
+
+    <a name="erlang"></a>
+    <dl>
+    <dt><b>erlang function</b>: <tt>erlang</tt>(<i>vector</i>)<dd>
+    The Erlang distribution is defined by two positive real values
+    <tt>k</tt> and <tt>mean</tt>.  These are taken term by term as the
+    real and imaginary parts of <i>vector</i> when complex.  When
+    real, the <tt>mean</tt> will use the default value 10.0.  The return
+    is a real vector of the same length as <i>vector</i>.
+    </dl>
+
+    <a name="exponential"></a>
+    <dl>
+    <dt><b>exponential function</b>: <tt>exponential</tt>(<i>vector</i>)<dd>
+    The exponential distribution is defined by a positive real mean
+    value.  This is taken from <i>vector</i> term-by-term.  If
+    <i>vector</i> is real, the return is also real.  If <i>vector</i>
+    is complex, the return is also complex, with separate results for
+    the real and imaginary parts, obtained using the real and
+    imaginary parts of <i>vector</i>.
+    </dl>
+
+    <a name="ogauss"></a>
+    <dl>
+    <dt><b>ogauss function</b>: <tt>ogauss</tt>(<i>vector</i>)<dd>
+    This function returns a real vector which contains normally
+    distributed random values.  The standard deviation and mean are
+    set by the corresponding real and imaginary coefficients of
+    <i>vector</i> term-by-term, and the mean is zero if <i>vector</i>
+    is real.
+    </dl>
+
+    <a name="poisson"></a>
+    <dl>
+    <dt><b>poisson function</b>: <tt>poisson</tt>(<i>vector</i>)<dd>
+    The Poisson distribution is defined by a positive real mean value. 
+    This is taken from <i>vector</i> term-by-term.  If <i>vector</i>
+    is real, the return is also real.  If <i>vector</i> is complex,
+    the return is also complex, with separate results for the real and
+    imaginary parts, obtained using the real and imaginary parts of
+    <i>vector</i>.
+    </dl>
+
+    <a name="rnd"></a>
+    <dl>
+    <dt><b>rnd function</b>: <tt>rnd</tt>(<i>vector</i>)<dd>
+    This function returns a vector which contains uniformly
+    distributed random values between 0 and the corresponding element
+    of <i>vector</i>.  If <i>vector</i> is complex then the return is
+    also complex, with the real and imaginary values within the range
+    set by the corresponding entries in <i>vector</i>.
+    </dl>
+
+    <a name="tdist"></a>
+    <dl>
+    <dt><b>tdist function</b>: <tt>tdist</tt>(<i>vector</i>)<dd>
+    The student's T distribution is defined by a positive real
+    degrees-of-freedom value.  This is taken from <i>vector</i>
+    term-by-term.  If <i>vector</i> is real, the return is also real. 
+    If <i>vector</i> is complex, the return is also complex, with
+    separate results for the real and imaginary parts, obtained using
+    the real and imaginary parts of <i>vector</i>.
+    </dl>
+
+!!SEEALSO
+expressions
+mathfuncs
+hs_functions
+
+!! Clashes in Xic
+!!IFNDEF Xic
+!!REDIRECT gauss        hs_functions#gauss
+!!REDIRECT pow          hs_functions#pow
+!!ENDIF
+
+!!REDIRECT unif         hs_functions#unif
+!!REDIRECT aunif        hs_functions#aunif
+!!REDIRECT agauss       hs_functions#agauss
+!!REDIRECT limit        hs_functions#limit
+!!REDIRECT pwr          hs_functions#pwr
+!!REDIRECT sign         hs_functions#sign
+
+!! useriface.tex 012609
+!!KEYWORD
+hs_functions
+!!TITLE
+Compatibility Functions
+!!HTML 
+    These functions support compatibility with <a
+    href="hspicesim">HSPICE</a>.
+
+    <p>
+    These functions differ from other <a href="mathfuncs">math
+    functions</a> in that they take multiple comma-separated
+    arguments, Other math functions internally accept a single
+    argument, but if there are multiple comma-separated terms, they
+    will be collapsed into a single argument through evaluation of the
+    comma operator
+    <blockquote>
+        a,b = (a + j*b)
+    </blockquote>
+    which yields a complex value.  This will not be true in the
+    functions listed below - the comma really means separate arguments
+    in this case.
+
+    <p>
+    The first group of functions are equivalent to the HSPICE Monte
+    Carlo functions that are called in <tt>.param</tt> lines in
+    HSPICE.  In <i>WRspice</i>, these are regular math functions.
+
+    <p>
+    These functions will return mean values unless enabled.  They are
+    enabled while in <a href="monte">Monte Carlo analysis</a>, or if
+    the <a href="random"><tt>random</tt></a> variable is set, either
+    from the command line or from a <a
+    href=".options"><tt>.options</tt></a> line in a circuit file.
+
+    <a name="unif"></a>
+    <dl>
+    <dt><b>unif function</b>: <tt>unif</tt>(<i>nom</i>, <i>rvar</i>)<dd>
+    Uniform relative random value function.
+    
+    <p>
+    This returns a vector the same length as <i>nom</i>, complex or
+    real as <i>nom</i>.  If the length of <i>rvar</i> is less than the
+    length of <i>nom</i>, <i>rvar</i> is extended by replicating the
+    highest index value of <i>rvar</i>.
+
+    <p>
+    If we are not running <a href="monte">Monte Carlo analysis</a>,
+    and the <a href="random"><tt>random</tt></a> variable is not set,
+    the return vector is the same as <i>nom</i> (no random values are
+    generated).  Otherwise the return vector contains uniformly
+    distributed random values, each in the range [<i>nom</i> -
+    <i>nom</i>*<i>rvar</i>, <i>nom</i> + <i>nom</i>*<i>rvar</i>]
+    term-by-term.
+
+    <p>
+    Below, <tt>random</tt> is a pseudo-function that returns a
+    random number between -1 and 1.
+
+    <dl>
+    <dt>If <i>nom</i> is complex and <i>var</i> is complex:<dd>
+      <tt>out[i].real = nom[i].real*(1 + random()*rvar[i].real)</tt><br>
+      <tt>out[i].imag = nom[i].imag*(1 + random()*rvar[i].imag)</tt>
+
+    <dt>If <i>nom</i> is complex and <i>var</i> is real:<dd>
+      <tt>out[i].real = nom[i].real*(1 + random()*rvar[i])</tt><br>
+      <tt>out[i].imag = nom[i].imag*(1 + random()*rvar[i])</tt>
+
+    <dt>If <i>nom</i> is real and <i>var</i> is complex:<dd>
+      <tt>out[i] = nom[i].real*(1 + random()*rvar[i].real)</tt>
+
+    <dt>If <i>nom</i> is real and <i>var</i> is real:</dd>
+      <tt>out[i] = nom[i]*(1 + random()*rvar[i])</tt>
+    </dl>
+    </dl>
+
+    <a name="aunif"></a>
+    <dl>
+    <dt><b>aunif function</b>: <tt>aunif</tt>(<i>nom</i>, <i>var</i>)<dd>
+    Uniform absolute random value function.
+
+    <p>
+    This returns a vector the same length as <i>nom</i>, complex or
+    real as <i>nom</i>.  If the length of <i>var</i> is less than the
+    length of <i>nom</i>, <i>var</i> is extended by replicating the
+    highest index value of <i>var</i>.
+
+    <p>
+    If we are not running <a href="monte">Monte Carlo analysis</a>,
+    and the <a href="random"><tt>random</tt></a> variable is not set,
+    the return vector is the same as <i>nom</i> (no random values are
+    generated).  Otherwise The return vector contains uniformly
+    distributed random values, each in the range [<i>nom</i> -
+    <i>var</i>, <i>nom</i> + <i>var</i>] term-by-term.
+
+    <p>
+    Below, <tt>random</tt> is a pseudo-function that returns a
+    random number between -1 and 1.
+
+    <dl>
+    <dt>If <i>nom</i> is complex and <i>var</i> is complex:<dd>
+      <tt>out[i].real = nom[i].real + random()*var[i].real</tt><br>
+      <tt>out[i].imag = nom[i].imag + random()*var[i].imag</tt>
+
+    <dt>If <i>nom</i> is complex and <i>var</i> is real:<dd>
+      <tt>out[i].real = nom[i].real + random()*var[i]</tt><br>
+      <tt>out[i].imag = nom[i].imag + random()*var[i]</tt>
+
+    <dt>If <i>nom</i> is real and <i>var</i> is complex:<dd>
+      <tt>out[i] = nom[i].real + random()*var[i].real</tt>
+
+    <dt>If <i>nom</i> is real and <i>var</i> is real:<dd>
+      <tt>out[i] = nom[i] + random()*var[i]</tt>
+    </dl>
+    </dl>
+
+    <a name="gauss"></a>
+    <dl>
+    <dt><b>gauss function</b>: <tt>gauss</tt>(<i>nom</i>, <i>rvar</i>,
+      <i>sigma</i>)<dd>
+    Gaussian relative random number generator.
+
+    <p>
+    This returns a vector the same length as <i>nom</i>, complex or
+    real as <i>nom</i>.  If the length of <i>rvar</i> is less than the
+    length of <i>nom</i>, <i>rvar</i> is extended by replicating the
+    highest index value of <i>rvar</i>.  Only the zeroth (real)
+    component of <i>sigma</i> is used.
+
+    <p>
+    If fewer than three arguments are given, this reverts to the
+    original <i>WRspice</i> <tt>gauss</tt> function (now called <a
+    href="ogauss"><tt>ogauss</tt></a>).
+
+    <p>
+    If we are not running <a href="monte">Monte Carlo analysis</a>,
+    and the <a href="random"><tt>random</tt></a> variable is not set,
+    the return vector is the same as <i>nom</i> (no random values are
+    generated).  Otherwise the return vector contains
+    gaussian-distributed random values.  The (scalar) <i>sigma</i>
+    value gives the specified sigma of the <i>rvar</i> data, generally
+    1 or 3.
+
+    <p>
+    Below, the pseudo-function <tt>gauss</tt> returns a gaussian
+    random number with zero mean and unit standard deviation.
+
+    <dl>
+    <dt>If <i>nom</i> is complex and <i>var</i> is complex:<dd>
+      <tt>out[i].real = nom[i].real*(1 + gauss()*rvar[i].real/sigma)</tt><br>
+      <tt>out[i].imag = nom[i].imag*(1 + gauss()*rvar[i].imag/sigma)</tt>
+
+    <dt>If <i>nom</i> is complex and <i>var</i> is real:<dd>
+      <tt>out[i].real = nom[i].real*(1 + gauss()*rvar[i]/sigma)</tt><br>
+      <tt>out[i].imag = nom[i].imag*(1 + gauss()*rvar[i]/sigma)</tt>
+
+    <dt>If <i>nom</i> is real and <i>var</i> is complex:<dd>
+      <tt>out[i] = nom[i].real*(1 + gauss()*rvar[i].real/sigma)</tt>
+
+    <dt>If <i>nom</i> is real and <i>var</i> is real:<dd>
+      <tt>out[i] = nom[i]*(1 + gauss()*rvar[i]/sigma)</tt>
+    </dl>
+    </dl>
+
+    <a name="agauss"></a>
+    <dl>
+    <dt><b>agauss function</b>: <tt>agauss</tt>(<i>nom</i>, <i>var</i>,
+      <i>sigma</i>)<dd>
+    Gaussian absolute random number generator.
+
+    <p>
+    This returns a vector the same length as <i>nom</i>, complex or
+    real as <i>nom</i>.  If the length of <i>var</i> is less than the
+    length of <i>nom</i>, <i>var</i> is extended by replicating the
+    highest index value of <i>var</i>.  Only the zeroth (real)
+    component of <i>sigma</i> is used.
+
+    <p>
+    If we are not running <a href="monte">Monte Carlo analysis</a>,
+    and the <a href="random"><tt>random</tt></a> variable is not set,
+    the return vector is the same as <i>nom</i> (no random values are
+    generated).  Otherwise the return vector contains
+    gaussian-distributed random values.  The (scalar) <i>sigma</i>
+    value gives the specified sigma of the var data, generally 1 or 3.
+
+    <p>
+    Below, the pseudo-function <tt>gauss</tt> returns a gaussian
+    random number with zero mean and unit standard deviation.
+
+    <dl>
+    <dt>If <i>nom</i> is complex and <i>var</i> is complex:<dd>
+      <tt>out[i].real = nom[i].real + gauss()*var[i].real/sigma</tt><br>
+      <tt>out[i].imag = nom[i].imag + gauss()*var[i].imag/sigma</tt>
+
+    <dt>If <i>nom</i> is complex and <i>var</i> is real:<dd>
+      <tt>out[i].real = nom[i].real + gauss()*var[i]/sigma</tt><br>
+      <tt>out[i].imag = nom[i].imag + gauss()*var[i]/sigma</tt>
+
+    <dt>If <i>nom</i> is real and <i>var</i> is complex:<dd>
+      <tt>out[i] = nom[i].real + gauss()*var[i].real/sigma</tt>
+
+    <dt>If <i>nom</i> is real and <i>var</i> is real:<dd>
+      <tt>out[i] = nom[i] + gauss()*var[i]/sigma</tt>
+    </dl>
+    </dl>
+
+    <a name="limit"></a>
+    <dl>
+    <dt><b>limit function</b>: <tt>limit</tt>(<i>nom</i>, <i>var</i>)<dd>
+    Random limit function.
+
+    <p>
+    This returns a vector the same length as <i>nom</i>, complex or
+    real as <i>nom</i>.  If the length of <i>var</i> is less than the
+    length of <i>nom</i>, <i>var</i> is extended by replicating the
+    highest index value of <i>var</i>.
+
+    <p>
+    If we are not running <a href="monte">Monte Carlo analysis</a>,
+    and the <a href="random"><tt>random</tt></a> variable is not set,
+    the return vector is the same as <i>nom</i> (no random values are
+    generated).  Otherwise the return vector contains either
+    <i>nom</i> + <i>var</i> or <i>nom</i> - <i>var</i> determined
+    randomly, term-by-term.
+
+    <dl>
+    <dt>If <i>nom</i> is complex and <i>var</i> is complex:<dd>
+      <tt>out[i].real = nom[i].real +/- var[i].real</tt> randomly<br>
+      <tt>out[i].imag = nom[i].imag +/- var[i].imag</tt> randomly
+
+    <dt>If <i>nom</i> is complex and <i>var</i> is real:<dd>
+      <tt>out[i].real = nom[i].real +/- var[i]</tt> randomly<br>
+      <tt>out[i].imag = nom[i].imag +/- var[i]</tt> randomly
+
+    <dt>If <i>nom</i> is real and <i>var</i> is complex:<dd>
+      <tt>out[i] = nom[i].real +/- var[i].real</tt> randomly
+
+    <dt>If <i>nom</i> is real and <i>var</i> is real:<dd>
+      <tt>out[i] = nom[i] +/- var[i]</tt> randomly
+    </dl>
+    </dl>
+
+    <p>
+    The remaining functions are for HSPICE compatibility, but are not
+    exclusive to the HSPICE Monte Carlo analysis.  These also have
+    multiple arguments.
+
+    <a name="pow"></a>
+    <dl>
+    <dt><b>pow function</b>: <tt>pow</tt>(<i>x</i>, <i>y</i>)<dd>
+    This returns a real or complex vector the same length as <i>x</i>. 
+    If the length of <i>y</i> is less than the length of <i>x</i>,
+    <i>y</i> is extended by replicating the highest index value of
+    <i>y</i>.
+
+    <p>
+    This returns a vector containing <tt>x^y</tt> computed using
+    complex values, term-by-term, however if <i>y</i> is real, is is
+    truncated to an integer value.
+
+    <dl>
+    <dt>If <i>x</i> is complex and <i>y</i> is complex:<dd>
+      <tt>out = x^y</tt> (same as <tt>^</tt> operator)
+
+    <dt>If <i>x</i> is complex and <i>y</i> is real:<dd>
+      <tt>out = x^(int)y</tt> (same as <tt>^</tt> operator, but <i>y</i>
+        is truncated to integer)
+
+    <dt>If <i>x</i> is real and <i>y</i> is complex:<dd>
+      <tt>out = x^y</tt>   (same as <tt>^</tt> operator)
+
+    <dt>If <i>x</i> is real and <i>y</i> is real:<dd>
+      <tt>out = x^(int)y</tt> (same as <tt>^</tt> operator, but <i>y</i>
+        is truncated to integer)
+    </dl>
+    </dl>
+
+    <a name="pwr"></a>
+    <dl>
+    <dt><b>pwr function</b>: <tt>pwr</tt>(<i>x</i>, <i>y</i>)<dd>
+    This returns a real vector the same length as <i>x</i>.  If the
+    length of <i>y</i> is less than the length of <i>x</i>, <i>y</i>
+    is extended by replicating the highest index value of <i>y</i>.
+
+    <dl>
+    <dt>If <i>x</i> is complex and <i>y</i> is complex:<dd>
+      <tt>out[i] = (sign of x[i].real)(mag(x[i]) ^ y[i].real)</tt>
+
+    <dt>If <i>x</i> is complex and <i>y</i> is real:<dd>
+      <tt>out[i] = (sign of x[i].real)(mag(x[i]) ^ y[i])</tt>
+
+    <dt>If <i>x</i> is real and <i>y</i> is complex:<dd>
+      <tt>out[i] = (sign of x[i].real)(abs(x[i]) ^ y[i].real)</tt>
+
+    <dt>If <i>x</i> is real and <i>y</i> is real:<dd>
+      <tt>out[i] = (sign of x[i])(abs(x[i]) ^ y[i])</tt>
+    </dl>
+    </dl>
+
+    <a name="sign"></a>
+    <dl>
+    <dt><b>sign function</b>: <tt>sign</tt>(<i>x</i>, <i>y</i>)<dd>
+    This returns a vector the same length as <i>x</i>, complex or real
+    as <i>x</i>.  If the length of <i>y</i> is less than the length of
+    <i>x</i>, <i>y</i> is extended by replicating the highest index
+    value of <i>y</i>.
+
+    <dl>
+    <dt>If <i>x</i> is complex and <i>y</i> is complex:<dd>
+      <tt>out[i].real = (sign of y[i].real)abs(x[i].real)</tt><br>
+      <tt>out[i].imag = (sign of y[i].imag)abs(x[i].imag)</tt>
+
+    <dt>If <i>x</i> is complex and <i>y</i> is real:<dd>
+      <tt>out[i].real = (sign of y[i])abs(x[i].real)</tt><br>
+      <tt>out[i].imag = (sign of y[i])abs(x[i].imag)</tt>
+
+    <dt>If <i>x</i> is real and <i>y</i> is complex:<dd>
+      <tt>out[i] = (sign of y[i].real)abs(x[i])</tt>
+
+    <dt>If <i>x</i> is real and <i>y</i> is real:<dd>
+      <tt>out[i] = (sign of y[i])abs(x[i])</tt>
+    </dl>
+    </dl>
+
+!!SEEALSO
+expressions
+mathfuncs
+statfuncs
+
+!! useriface.tex 012609
+!!KEYWORD
+explists
+!!TITLE
+Expression Lists
+!!HTML
+    Some commands, such as <a href="print"><b>print</b></a> and <a
+    href="plot"><b>plot</b></a>, take expression lists as arguments. 
+    In the simplest form, an expression list is a space-separated list
+    of vectors.  In the general form, an expression list is a sequence
+    of expressions involving vectors.  The parsing is context
+    dependent, i.e., white space does not necessarily terminate an
+    expression.  This leads to ambiguities.  For example, the command
+    <blockquote>
+    <tt>plot v(2) -v(3)</tt>
+    </blockquote>
+    can be interpreted as two vectors, or as a single vector representing
+    the difference.  <i>WRspice</i> will assume the latter.
+
+    <p>
+    There are several ways to ensure that the former interpretation prevails.
+    Double quotes may be used to separate the tokens, but white space must
+    precede the leading quote mark:
+    <blockquote>
+    <tt>plot v(2) "-v(3)"</tt>
+    </blockquote>
+    Parentheses can also be used to enforce precedence, with white space
+    ahead of the opening paren, as:
+    <blockquote>
+    <tt>plot v(2) (-v(3))</tt>
+    </blockquote>
+    In addition, the expression termination character, a semicolon,
+    can be used.  This must be hidden from the shell, for example
+    with a backslash:
+    <blockquote>
+    <tt>plot v(2)\; -v(3)</tt>
+    </blockquote>
+
+    <p>
+    There are situations where the name of a vector is so strange that
+    it can't be accessed in the usual way.  For example, if a
+    list-type special variable is saved with the <a
+    href="save"><b>save</b></a> command, the plot may contain a vector with a
+    name like "<tt>@b1[ic,0]</tt>".  To access this vector, one can't
+    simply type the name, since the name is an expression which will
+    actually lead to an evaluation error.  One has to fool the
+    expression parser into taking the name as a string.  This will
+    happen if the name is not the lead in a token and the name is
+    double quoted.  If the name is the leading part of a token, it
+    should be backslash-double-double quoted.
+
+    <p>
+    To use the double quotes to enforce string interpretation, one
+    should have, for example,
+    <blockquote>
+    <tt>plot v(2) \""@b1[ic,0]"\"</tt>
+    </blockquote>
+    The extra set of quotes is needed only if the string is at the start 
+    of a token, thus 
+    <blockquote>
+    <tt>plot 2*"@b1[ic,0]"</tt>
+    </blockquote>
+    is ok.  This may be a bit confusing, but this feature is seldom
+    used, and a bit of experimentation will illustrate the behavior.
+
+    <p>
+    These commands can accept the <i>plotname</i>.<i>vecname</i>
+    notation, where either field may be the wildcard "<t>all</tt>". 
+    If the plotname is <tt>all</tt>, matching vectors from all plots
+    are specified, and if the vector name is <tt>all</tt>, all vectors
+    in the specified plots are referenced.  The <tt>constants</tt>
+    plot is never matched by a plot wildcard.  Note that you may not
+    use binary operations on expressions involving wildcards - it is
+    not obvious what "<tt>all + all</tt>" should denote, for instance.
+
+!! useriface.tex 041611
+!!KEYWORD
+setandlet
+!!TITLE
+Set and Let
+!!HTML 
+    Novice <i>WRspice</i> users are often confused by the different
+    interpretations of shell variables and vectors.  Any variable can
+    be defined with the <a href="set"><b>set</b></a> command, and
+    undefined with <a href="unset"><b>unset</b></a>.  If defined, the
+    value of the variable is the string, if given.  For example, if
+    <blockquote><tt>
+         set a = 10*2
+    </tt></blockquote>
+    is entered, the value of <tt>a</tt> (obtained as <tt>$a</tt>) is
+    the string "<tt>10*2</tt>" and <i>not</i> the integer 20.
+
+    <p>
+    Some internally used variables have boolean values, such as 
+    <blockquote><tt>
+         set unixcom
+    </tt></blockquote>
+    which if set causes certain modes or functions to be active.
+
+    <p>
+    Vectors, however, always have numeric values, and can be created
+    with <a href="let"><b>let</b></a> and <a
+    href="compose"><b>compose</b></a>, and deleted with <a
+    href="unlet"><b>unlet</b></a>.  If one enters
+    <blockquote>
+         <tt>let a = 10*2</tt>, or more simply<br>
+         <tt>a = 10*2</tt>
+    </blockquote>
+    The value of the vector <tt>a</tt> is 20.  Note that the "<tt>let</tt>"
+    is generally optional when assigning vectors.
+
+    <p>
+    At the risk of adding confusion, it should be noted that in recent
+    <i>WRspice</i> releases, the <b>set</b> command can also be used
+    to assign values to vectors.  The syntax
+
+    <blockquote>
+      <tt>set &</tt><i>vector</i> <tt>=</tt> <i>value</i>
+    </blockquote>
+
+    is equivalent to
+
+    <blockquote>
+      <tt>let</tt> <i>vector</i> <tt>=</tt> <i>value</i>
+    </blockquote>
+
+    <p>
+    Vectors can be set to shell variables, in which case they take on
+    the interpreted numerical values.  For example,
+    <blockquote><tt>
+         set a=10*2<br>
+         b = $a
+    </tt></blockquote>
+    would assign the string "<tt>10*2</tt>" to the shell variable
+    <tt>a</tt>, but the vector <tt>b</tt> would contain the value 20.
+
+    <p>
+    The inputs to most commands are vectors, however some commands,
+    such as <a href="echo"><b>echo</b></a> substitute for shell
+    variables.
+    For example,
+    <blockquote><tt>
+         set a = "foo"<br>
+         set b = "bar"<br>
+         echo $a$b
+    </tt></blockquote>
+    would print "<tt>foobar</tt>".
+
+    <p>
+    Shell variables are expanded by <b>echo</b>, and in <i>WRspice</i>
+    input when sourced.  If the value of a vector is needed in shell
+    expansion, then the special prefix "<tt>$&</tt>" should be added. 
+    This tells the shell interpreter that the following symbol is a
+    vector, to be replaced by its value.  For example,
+    <blockquote><tt>
+         let a = 2.0e-2<br>
+         echo $&a
+    </tt></blockquote>
+    will print "<tt>2.00000e-2</tt>".  However
+    <blockquote><tt>
+         let a = 2.0e-2<br>
+         echo $a
+    </tt></blockquote>
+    would give an error message (unless a is also a shell variable),
+    and
+    <blockquote><tt>
+         let a = 2.0e-2<br>
+         echo a
+    </tt></blockquote>
+    would print "<tt>a</tt>".
+
+    <p>
+    Double quotes will cause multiple tokens to be taken as one, for
+    example
+    <blockquote><tt>
+         set a = "a string"
+    </tt></blockquote>
+    will set a accordingly, whereas
+    <blockquote><tt>
+         set a = a string
+    </tt></blockquote>
+    will set shell variable <tt>a</tt> to "<tt>a</tt>" and shell
+    variable <tt>string</tt> to boolean true.
+
+    <p>
+    Single quotes do about the same thing, but suppress shell variable
+    expansion.  For example:
+    <blockquote><tt>
+         set a = foo<br>
+         set b = bar<br>
+         echo $a $b
+    </tt></blockquote>
+    and
+    <blockquote><tt>
+         set a = foo<br>
+         set b = bar<br>
+         echo "$a $b"
+    </tt></blockquote>
+    would print "<tt>foo bar</tt>", whereas
+    <blockquote><tt>
+         set a = foo<br>
+         set b = bar<br>
+         echo '$a $b'
+    </tt></blockquote>
+    would print "<tt>$a $b</tt>".
+
+    <p>
+    In the present version, <tt>$</tt> can not be nested.  For example,
+    <blockquote><tt>
+         set a = foo<br>
+         set b = bar<br>
+         set c = '$a$b'<br>
+         echo $c
+    </tt></blockquote>
+    prints "<tt>$a$b</tt>", not "<tt>foobar</tt>".  However,
+    <blockquote><tt>
+         set a = foo<br>
+         set b = bar<br>
+         set c = $a$b<br>
+         echo $c
+    </tt></blockquote>
+    does print "<tt>foobar</tt>" (the value of <tt>c</tt>).
+
+    <p>
+    Shell variables that are lists are referenced with zero-based
+    index, for example
+    <blockquote><tt>
+         set a = ( aa bb cc )<br>
+         echo $a[1]
+    </tt></blockquote>
+    prints "<tt>bb</tt>".
+
+    <p>
+    Actually, what can be in the brackets is [<i>lo</i>-<i>hi</i>],
+    where <i>lo</i> defaults to 0 and <i>hi</i> defaults to the length
+    - 1.  If <i>lo</i> > <i>hi</i>, the list is reversed.
+
+    If the reference is to a vector, as in
+    <blockquote><tt>
+         compose a values .1 .2 .3<br>
+         echo $&a[1]
+    </tt></blockquote>
+    the index is also zero-based, so "<tt>2.0000e-1</tt>" is printed.
+
+    <p>
+    The [] subscripting is interpreted a little differently by the
+    shell and by the vector parser.  If a variable starts with
+    <tt>$</tt>, as in <tt>$&value[]</tt>, the <tt>[]</tt> is
+    interpreted by the shell parser.  In this case, the terms inside
+    <tt>[]</tt> must be interpreted as shell variables, with the
+    (optional) <i>low</i>-<i>high</i> notation.  In a vector
+    expression, i.e., one using <tt>value[]</tt>, the terms inside
+    <tt>[]</tt> will be interpreted as vector expressions, with the
+    optional <i>low</i><tt>,</tt><i>high</i> notation.  Thus,
+    <blockquote><tt>
+         if (value[index] = 0)
+    </tt></blockquote>
+    is perfectly legal for vectors <tt>value</tt> and <tt>index</tt>. 
+    Also, equivalently,
+    <blockquote><tt>
+         if ($&value[$&index] = 0)
+    </tt></blockquote>
+    is also ok, though not as efficient.  However
+    <blockquote><tt>
+         if ($&value1[index] = 0)
+    </tt></blockquote>
+    is an error, as the shell parser does not know that <tt>index</tt>
+    is a vector.
+
+    <p>
+    Shell variables can be used freely in vector expressions, however
+    one must keep in mind how the variables are interpreted.  During
+    parsing, the shell variables are evaluated, and their values put
+    back into the expression as constants.  Then the expression is
+    evaluated as a vector expression. 
+
+!!SEEALSO
+expressions
+

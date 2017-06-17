@@ -1,0 +1,81 @@
+vl-1.6 11/8/14
+
+Misc. tweaks for portability to ever-changing Linux distributions. 
+In particular, vl now build on openSuse 13.1.
+
+vl-1.5 1/11/09
+
+Misc. tweaks to avoid compiler warnings with newer (e.g., gcc-4.2.1)
+compilers.  Fix symbol name clash in yacc file.
+
+--------------------------------------------------------------------------
+vl-1.4 3/3/08
+
+Fixed some compiler issues that prevented successful builds with recent
+gcc releases, affects at least Cygwin and Mingw.
+1) Added explicit 'this' pointers in template methods in vl_list.h.
+2) Added '#include <unistd.h>' in verilog.l.
+3) Fixed a number of deprecated const/non-const string assignments to
+   silence compiler warnings.
+4) Changes to avoid reusing previously defined symbol names to silence
+   compiler warnings.
+5) Changes to support embedding in WRspice program.
+6) Other misc. fixes to avoid compiler warnings.
+
+Otherwise, no changes to program logic or capability.
+
+--------------------------------------------------------------------------
+vl-1.3  4/28/03
+
+Updated the program files to conform to the requirements of gcc-3.x. 
+Previous releases would not build with this compiler, having been
+developed using gcc-2.95.3.  Since Red Hat 8.x and later use gcc-3.x,
+this lack of compatibility was a problem.
+
+Thank you to the users who sent patches for the update to gcc-3
+compatibility, and apologies for the delay in getting this problem
+repaired.
+
+--------------------------------------------------------------------------
+vl-1.2  8/9/02
+
+Updates to the configuration system.
+
+New command line option: -v
+If given, the parser will be more verbose in emitting warning messages
+about questionable constructs in the input.  This is largely unimplemented
+at present.
+
+Previously, if a function was defined with no type or range specifier,
+the return type would default to integer, and there would be no
+warning or error message.  In the present release, the return type
+defaults to register [1:0], and if the -v command line option is
+given, a warning message is shown.
+
+--------------------------------------------------------------------------
+vl-1.1  4/8/02
+
+Fixed syntax in vcd file:  was printing "[a,b]", now correctly prints
+"[a:b]".
+
+Intra-assignment delay control (a = #d b) and event controlled
+assignments (a = @(...) b) were (incorrectly) non-blocking.
+
+Fixed a used-after-free problem that caused random segmentation
+faults.
+
+In case statements, a 'default' clause with no statement body would
+crash the program.
+
+Garbage collection for va_var type is now finer grained, reducing
+memory use.
+
+Fixed misc. core leaks and other small problems.
+
+Thanks for reports from:
+ Anirban Banerjee
+ Tony Bybell
+ Art Low
+
+--------------------------------------------------------------------------
+Initial release: vl-1.0  1/7/02

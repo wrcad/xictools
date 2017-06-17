@@ -1,0 +1,56 @@
+#! /bin/sh
+
+# This script tags the current Xic release, using release and revision
+# obtained from the version script.  Run this as a last operation when
+# creating a new distribution.
+
+# $Id: tag_xic,v 1.2 2008/10/02 21:09:25 stevew Exp $
+
+version=`../version xic`
+if [ x$version = x ]; then
+    echo "Can't find version!"
+    exit
+fi
+
+tifs=$IFS
+IFS="."
+set $version
+IFS=$tifs
+
+f1=$1
+f2=$2
+
+tifs=$IFS
+IFS=".-"
+set $3
+IFS=$tifs
+
+f3=$1
+rev=$2
+
+if [ x$rev = x ]; then
+    tag=xic-$f1-$f2-$f3
+    num=$f1$f2`printf %02d $f3`0
+else
+    tag=xic-$f1-$f2-$f3-$rev
+    num=$f1$f2`printf %02d $f3`$rev
+fi
+
+echo -n "Tag is $tag, ok? "
+read resp
+if [ x$resp != xy -a x$resp != xyes ]; then
+   echo Aborting
+   exit
+fi
+
+echo "#define CVS_RELEASE_TAG \"$tag\"" > /tmp/reltag.h
+echo "#define CD_RELEASE_NUM $num" >> /tmp/reltag.h
+diff -q /tmp/reltag.h xic/include/reltag.h
+if [ $? != 0 ]; then
+    cp -f /tmp/reltag.h xic/include/reltag.h
+fi
+unlink /tmp/reltag.h
+
+cvs commit -m "new release" xic/include/reltag.h
+
+cvs rtag -F $tag xicexp

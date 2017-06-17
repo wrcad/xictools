@@ -1,0 +1,95 @@
+(Symbol cappc);
+($Id: cappc,v 1.2 2014/10/08 20:56:14 stevew Exp $);
+(PHYSICAL);
+(RESOLUTION 1000);
+5 7199 (||text||)
+#  Capacitor PCell demo with gripable sides (native cell version)
+
+# paramerters
+# left          Left side x-coordinate.
+# bottom        Bottom side y-coordinate.
+# right         Right side x-coordinate.
+# top           Top side y-coordinate.
+# foo           Not used.
+
+# First check the parameter values.  Returning any non-zero
+# value is a failure indication to Xic.  Xic will pop up the
+# error messages given in the AddError functions executed,
+# if a nonzero value is returned.
+
+if (left < -20 | left > -1)
+    AddError("Parameter left is out of range [-20 - -1].")
+    return 1
+end
+if (bottom < -20 | bottom > -1)
+    AddError("Parameter bottom is out of range [-20 - -1].")
+    return 1
+end
+if (right < 1 | right > 20)
+    AddError("Parameter right is out of range [1 - 20].")
+    return 1
+end
+if (top < 1 | top > 20)
+    AddError("Parameter top is out of range [1 - 20].")
+    return 1
+end
+
+# Create some layers, and the geometry on these layers,  In the real
+# world layers from an actual process would be used here.
+NewCurLayer("M1")
+Box(left, bottom, right, top)
+NewCurLayer("D1")
+Box(left-0.5, bottom-0.5, right+0.5, top+0.5)
+NewCurLayer("M2")
+h = BoxH(left, bottom, right, top)
+
+# Add the properties which create grips on the capacitor edges.  When
+# the cell is shown expanded and is selected, and the size on-screen
+# is large enough, a douple-line outline will appear.  This can be
+# dragged to change the capacitor size.  Note that this only "sticks"
+# at values allowed by the constraints given below.
+
+if (h != 0)
+    PrptyAdd(h, 7195, "name:xx0(||sc||) stretchType:absolute,\
+      direction:EAST_WEST, parameter:left, minVal:-1000.0, maxVal:-1.0,\
+      location:CENTER_LEFT, userScale:-1.0, userSnap:0.1, key:None")
+    PrptyAdd(h, 7195, "name:xx1(||sc||) stretchType:absolute,\
+      direction:NORTH_SOUTH, parameter:bottom, minVal:-1000.0, maxVal:-1.0,\
+      location:LOWER_CENTER, userScale:-1.0, userSnap:0.1, key:None")
+    PrptyAdd(h, 7195, "name:xx2(||sc||) stretchType:absolute,\
+      direction:EAST_WEST, parameter:right, minVal:1.0, maxVal:25.0,\
+      location:CENTER_RIGHT, userScale:1.0, userSnap:0.1, key:None")
+    PrptyAdd(h, 7195, "name:xx3(||sc||) stretchType:absolute,\
+      direction:NORTH_SOUTH, parameter:top, minVal:1.0, maxVal:25.0,\
+      location:UPPER_CENTER, userScale:1.0, userSnap:0.1, key:None")
+end
+
+# Some invented values, these should really come from layer technology
+# definitions.
+afactor = 0.1   // .1 pF per sq. micron
+pfactor = 0.001 // .001 pf per micron
+
+# Compute the capacitance, and create a label displaying the value.
+area = (right - left)*(top - bottom)
+perim = 2*(right + top - left - bottom)
+cap = area*afactor + perim*pfactor
+label_str = ToFormat("%gpF", cap)
+Justify(1, 1)
+Label(label_str, 0, 0)
+;
+( The constraints below are contrived to illustrate different possibilites.
+  For left,     a simple range constraint.
+  For bottom,   a number of allowed values is given.
+  For right,    stepwise from 1 - 20 on 0.1 increments.
+  For top,      stepwise from 1 - 20 on 1.0 increments.
+  For foo,      (not used) from 1u to 20u in 0.1u increments.
+);
+5 7198 left=-5:range(-20,-1),
+  bottom=-5:choice([-1,-2,-5,-10,-20]),
+  right=5:numericstep(0.1,1,20,10,None),
+  top=5:step(1,2,20),
+  foo=5u:numericstep(.1,1,10);
+9 cappc;
+DS 0 1 1;
+DF;
+E

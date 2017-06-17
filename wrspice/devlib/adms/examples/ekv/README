@@ -1,0 +1,38 @@
+$Id: README,v 1.4 2014/04/22 19:34:09 stevew Exp $
+
+This is the EKV-2.6 MOS model Verilog-A code, as distributed with
+ngspice-23.  Documentation and newer versions may be available from
+the EKV developers at Ecole Polytechnique (http://ekv.epfl.ch).
+
+This should be equivalent to the EKV-2.6 model built into WRspice,
+which is provided as C-code.  This has not been tested.
+
+This model is not recommended, as apparently there is no availability
+of model source code, test circuits, or QA data without begging from
+the authors.
+
+A pre-built module is available in the "module_dist" directory.
+
+To build:
+
+0.  Make sure that the admst-2.3.0-wr package is installed on your
+system.  This is available from the free software area of wrcad.com. 
+The package has important improvements and bug fixes, and is required
+for building modules for WRspice.  Use of another adms distribution
+will cause trouble.
+
+1.  If you are reading this from the WRspice installation area, copy
+this directory to a personal work area, and work from there.  Below,
+"this directory" implies the copied directory (with its files and
+any sub-directories).
+
+2.  The Makefile has been provided.  Have a look at the top part of
+the file where the configuration variables are set, and read the
+comments.  Make any desired changes.
+
+3.  Type "make".  This will create and compile the C++ files, eventually
+producing the loadable module named "ekv.so" ("ekv.dylib" in OS X).
+
+4.  Use the devload command or -m command-line option in WRspice to
+load the module.  You will then be able to run the examples.
+

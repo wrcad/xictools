@@ -1,0 +1,114 @@
+
+# This is the startup file which sets defaults for the mozy web browser
+# and the Xic/WRspice HTML viewer.  It should be installed as ".mozyrc"
+# in the user's home directory, should the user wish to change the
+# defaults.
+
+# --- DISPLAY ATTRIBUTES -------------------------------------------------
+
+# Background color used for pages that don't have a <body> tag,
+# such as help text (default #e8e8f0)
+DefaultBgColor #e8e8f0
+
+# Background image URL to use for pages that don't have a <body> tag
+# (no default)
+#DefaultBgImage /some/dir/pretty_picture.jpg
+
+# Text color to use for pages that don't have a <body> tag
+# (default black)
+DefaultFgText black
+
+# Color to use for links in pages without a <body> tag
+# (default blue)
+DefaultFgLink blue
+
+# How to handle images:
+#  0 Don't display images that require downloading
+#  1 Download images when encountered in document
+#  2 Download images after document is displayed
+#  3 Display images progressively after document is displayed (the default)
+ImageLoadMode 3
+
+# How to underline anchors when underlining is enabled
+#  0 No underline
+#  1 Single solid underline (default)
+#  2 Double solid underline
+#  3 Single dashed underline
+#  4 Double dashed underline
+AnchorUnderline 1
+
+# If this is set to one anchors are shown as buttons.  If set to zero
+# (the default), anchors use the underlining style
+AnchorButtons 0
+
+# If set to one (the default) anchors will be highlighted when the pointer
+# passes over them.  If zero, there will be no highlighting
+AnchorHighlight 1
+
+# The default font families.  This is the XLFD family name with "-size"
+# appended.  Defaults:  adobe-times-normal-p-14   misc-fixed-normal-c-14
+FontFamily adobe-times-normal-p-14
+FixedFontFamily misc-fixed-normal-*-14
+
+# If set to one, animations are frozen.  If zero (the default) animations
+# will be shown normally
+FreezeAnimations 0
+
+# --- COMMUNICATIONS -----------------------------------------------------
+
+# Time in seconds allowed for a response from a message (0 for no timeout,
+# to 600, default 15)
+Timeout 15
+
+# Number of times to retry a message after a timeout (0 to 10, default 4)
+Retries 4
+
+# The port number used for HTTP communications (1 to 65536, default 80)
+HTTP_Port 80
+
+# The port number used for FTP communications (1 to 65536, default 21)
+FTP_Port 21
+
+# --- GENERAL ------------------------------------------------------------
+
+# Number of cache files to save (2 to 4096, default 64)
+CacheSize 64
+
+# Set to one to disable disk cache, 0 (the default) enables cache
+NoCache 0
+
+# Set to one to disable sending and receiving cookies
+NoCookies 0
+
+# The Alias line(s) implement a directory path aliasing feature for
+# local file paths.  These will be applied to file paths in local URLs
+# and image source paths.  For example, suppose we have
+#   Alias /images /home/joeblow/pics
+# If the source HTML ontains a line like
+#   <img src=/images/mypic.gif ...>
+# then mozy will look for the image /home/joeblow/pics/mypic.gif.  In
+# general, if a local file path is prefixed with the first token of an
+# Alias line, this path is internally mapped to a path where the
+# second token is substituted.
+#
+#Alias /prefix  /some/other/directory
+
+# --- DEBUGGING ----------------------------------------------------------
+
+# Set this to one to print extended status messages on terminal screen
+# (default 0)
+DebugMode 0
+
+# Set this to one to print transaction headers to terminal screen
+# (default 0)
+PrintTransact 0
+
+# Debugging mode for images
+#  0 Disable debugging mode (the default)
+#  1 Load local images after document is displayed
+#  2 Display local images progressively after document is displayed
+LocalImageTestMode 0
+
+# Issue warnings about bad HTML syntax to terminal (1) or not (0, the default)
+BadHTMLwarnings 0
+

@@ -1,0 +1,159 @@
+
+---------------------------------------------------------------------------
+
+                    The VL Verilog parser/simulator
+
+                Copyright (C) Whiteley Research Inc. 2001
+                           www.wrcad.com
+
+---------------------------------------------------------------------------
+$Id: README,v 1.5 2009/01/13 21:26:05 stevew Exp $
+---------------------------------------------------------------------------
+ *                                                                        *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
+ *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-        *
+ *   INFRINGEMENT.  IN NO EVENT SHALL STEPHEN R. WHITELEY BE LIABLE       *
+ *   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION      *
+ *   OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN           *
+ *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN         *
+ *   THE SOFTWARE.                                                        *
+ *                                                                        *
+ * This software is available for non-commercial use under the terms of   *
+ * the GNU General Public License as published by the Free Software       *
+ * Foundation; either version 2 of the License, or (at your option) any   *
+ * later version.                                                         *
+ *                                                                        *
+ * A commercial license is available to those wishing to use this         *
+ * library or a derivative work for commercial purposes.  Contact         *
+ * Whiteley Research Inc., 456 Flora Vista Ave., Sunnyvale, CA 94086.     *
+ * This provision will be enforced to the fullest extent possible under   *
+ * law.                                                                   *
+ *                                                                        *
+ * You should have received a copy of the GNU General Public License      *
+ * along with this program; if not, write to the Free Software            *
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.              *
+
+This directory contains the source code for vl, a parser/simulator for
+Verilog.  This is equivalent to the Verilog parser/simulator included
+in the WRspice product from Whiteley Research Inc.  (www.wrcad.com),
+but provided here in stand-alone form under GPL.
+
+=========================================
+| Feedback and bug reports should go to:
+|
+| Steve Whiteley
+| Whiteley Research Inc.
+| stevew@wrcad.com
+=========================================
+
+This is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your
+option) any later version.
+
+This library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Library General Public License for more details.
+
+You should have received a copy of the GNU Library General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+-------------------------------------------------------------------------
+* History
+-------------------------------------------------------------------------
+
+This project grew out of the need to incorporate a minimal set of
+Verilog capability into the circuit simulator WRspice (www.wrcad.com)
+for mixed-mode simulations and instrumentation.
+
+The starting point was the vl2mv program developed at Berkeley by
+Szu-Tsung Cheng, Robert K. Brayton, Gary York.
+site: ic.eecs.berkeley.edu (this may be old)
+
+This provided a fairly complete parser for Verilog input.
+
+The rest of the code, which implements the simulator, was written by
+Steve Whiteley (stevew@wrcad.com).
+
+-------------------------------------------------------------------------
+*  Running vl
+-------------------------------------------------------------------------
+
+The vl program is a command line driven parser/simulator without
+graphics.  It is invoked as follows:
+
+    vl [-v] [-p] [-d###] file1.v ... fileN.v
+
+All of the given files are read and the totality is parsed as a
+single Verilog description.
+
+If -v is given, the parser will be more verbose in emitting warnings. 
+If -p is given, the Verilog description is printed, and no simulating
+takes place.  The printed version is reconstructed from the internal
+data structures, and is primarily useful for debugging the parser, but
+can also be used for formatting ugly input (though the output won't
+win the Pretty Code award).
+
+Various debugging options are enabled with -d###, where ### is a
+number in C-style hex (0xnnnn), octal (0nnn), or decimal format.  The
+following bits activate various debugging output:
+
+  1    print action before evaluation
+  2    print variable assignment
+  4    not used
+  8    not used
+  16   print time slot action list before evaluation
+  32   print some things about the description
+  64   dump module info
+  128  print yacc parser trace
+
+The parser/simulator handles most Verilog constructs and features. 
+The following are presently not supported.
+
+* Specify blocks.  They are parsed and regurgitated, but ignored during
+  simulation.
+
+* No PLI/VPI/ACC/TF functions.
+
+* Arrayed module instances.
+
+* Signed registers (the "signed" keyword, $signed system task).
+
+There can be arbitrarily many $monitor and $fmonitor tasks active.  In
+other simulators, only one is allowed.  The $monitor_on/$monitor_off
+tasks turn all monitors on/off, and similar for the $fmonitors.
+
+The examples directories provide a number of example Verilog input
+files lifted from the vbs distribution and elsewhere.  The vbs program
+(www.flex.com/~jching) is another free Verilog simulator.  The output
+of vl basically agrees with vbs-1.3.7, give or take some lines of
+monitor output since the two programs make different assumptions about
+when to print.
+
+Variables of type integer and time are true numeric objects and not
+registers.  They are initialized to 0.  Some other simulators use
+bit fields for these types, which can take x and z values.
+
+--> Bug reports are most welcome!
+Please, if possible, send a Verilog file that illustrates the problem.
+
+<stevew@wrcad.com>
+
+-------------------------------------------------------------------------
+*  Compilation and Installation
+-------------------------------------------------------------------------
+
+This program requires flex or lex, and bison or yacc.  It is written
+in C++, and probably requires gcc to build.
+
+1) Type "./configure".  This builds the Makefile for your system.
+
+2) Type "make depend".  This adds dependencies to the makefile.
+
+3) Type "make".  The program should build without errors.
+
+4) Type "make install" as root to install vl into /usr/local/bin.
+

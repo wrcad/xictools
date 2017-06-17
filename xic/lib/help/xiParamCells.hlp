@@ -1,0 +1,2137 @@
+
+!!  --------------------------------------------------------------- !! 
+Xic/WRspice Help System Database !!  $Id:  xiParamCells.hlp,v 1.6
+2013/02/26 05:04:48 stevew Exp $ !!  Copyright (C) Whiteley Research
+Inc.  2013.  All Rights Reserved !! 
+---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiParamCells.hlp
+!!TITLE
+xiParamCells.hlp
+!!HTML
+
+!!SUBTOPICS
+xic:pcells
+constraints
+xic:pcparams
+pc_stretch
+pc_abut
+pycell
+stdvia
+
+!!REDIRECT prpty:pc_name        xic:pcells#pc_name
+!!REDIRECT prpty:pc_params      xic:pcells#pc_params
+!!REDIRECT prpty:pc_script      xic:pcells#pc_script
+
+!! 032017
+!!KEYWORD
+xic:pcells pcell pcells
+!!TITLE
+Parameterized Cells
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="xic:pcells#intro"><b>How PCells Work</b></a><br>
+    <a href="xic:pcells#status"><b>PCell History and Status</b></a><br>
+    <a href="xic:pcells#native"><b><i>Xic</i> Native PCells</b></a><br>
+    <a href="xic:pcells#create"><b>Creation of a Native Parameterized Cell</b></a><br>
+    <a href="xic:pcells#inst"><b>Adding an Instance of a Parameterized Cell</b></a><br>
+    <a href="xic:pcells#instchange"><b>Changing the Parameters of an Instance</b></a><br>
+    <a href="xic:pcells#submchange"><b>Changing the Parameters of a Sub-Master</b></a>
+    </td></tr></table>
+
+    <p>
+    Parameterized cells, or "pcells" (or sometimes called "template
+    cells") are cells which in addition to possible fixed geometry,
+    contain an executable program that creates geometry according to
+    one or more parameters supplied to the cell.  The cell is
+    instantiated for given sets of parameters, so that instances may
+    have layouts that differ.  Parameterized cells are often used to
+    represent devices such as MOSFETS that may come in many shapes and
+    flavors.  The MOSFET parameters select the size and other
+    properties of each instantiation.  As an alternative, in a process
+    design kit one might find hundreds of fixed-cells with different
+    permutations of size and other parameters.  A single parameterized
+    cell that replaces the collection of fixed cells can streamline
+    the design process, provide greater flexibility, and reduce
+    errors.
+
+    <p>
+!!IFDEF OpenAccess
+    The full and <a href="xicii"><i>XicII</i></a> feature sets have
+    support for native and OpenAccess-based portable pcells, as well
+    as the ability to work with the Cadence Virtuoso Express PCells
+    feature.  The <a href="xiv"><i>Xiv</i></a> feature set does not
+    support pcells.
+
+    <p>
+    There is an ongoing effort to strengthen the parameterized
+    cell capabilities in <i>Xic</i>.  The effort includes
+    <ul>
+    <li>Providing support for languages other than the native script
+    language.  In particular, the Python language appears to be the
+    choice for "open" pcells, i.e., pcells which can be used in tools
+    from different vendors.
+
+    <li>Provide commonality and support for Ciranova open pcells and
+    standards.
+
+    <li>Provide commonality and support for the OpenAcces pcell
+    framework.
+    </ul>
+!!ELSE
+    The full and <a href="xicii"><i>XicII</i></a> feature sets have
+    support for native pcells.  The <a href="xiv"><i>Xiv</i></a>
+    feature set does not support pcells.
+
+    <p>
+    Unfortunately, at the present time legal and financial
+    constraints set by the controlling organization prevent use of
+    OpenAccess in <i>Xic</i>.  With OpenAccess, support for portable
+    pcells, and the ability to work with the Cadence Virtuoso Express
+    PCells feature, could be provided.  Please contact Whiteley
+    Research if support for OpenAccess would be of use to you.  With
+    sufficient demand, the decision to drop OpenAccess support may be
+    revisited.
+!!ENDIF
+
+    <a name="intro"></a>
+    <h2>How PCells Work</h2>
+
+    <p>
+    <b>Definitions</b>
+    <dl>
+    <dt>pcell<dd>
+    A "parameterized cell" or "template cell".  This is a cell containing
+    an executable component, which acts on a set of one or more parameters.
+    When placed in a layout, the cell constructs itself according to the
+    parameters given while instantiating.
+    </dl>
+
+    <dl>
+    <dt>super-master<dd>
+    A pcell in memory.
+    </dl>
+
+    <dl>
+    <dt>sub-master<dd>
+    A master cell created from a super-master and a given parameter set.
+    Instances of the sub-master are actually placed into the layout.
+    A pcell itself is never placed in a layout.
+    </dl>
+
+    <p>
+    All pcells "work" as follows.  The pcell is supplied as a cell
+    file to the design system, which understands the file syntax. 
+    Within the design system, an in-memory object called a
+    "super-master" is created, which is an in-memory representation of
+    the pcell.  This element contains a list of parameter names, and
+    for each parameter a default value and acceptable range.  The
+    element also provides, by some means, a program or script that can
+    be executed from the design system.
+
+    <p>
+    When a user wishes to place an instance of a pcell, the pcell is
+    selected from a menu, which causes the pcell file to be read from
+    disk and a super-master created in memory.  The user will then
+    specify the parameter values to the cell to instantiate.  This is
+    usually done with a pop-up form, where the user can enter values
+    for the various parameters, all of which have defaults.  When this
+    entry is complete, the design system will execute the pcell script
+    with the entered parameter values.  The result will be creation of
+    a cell in memory containing geometry created by the script in
+    accord with the parameters.  This cell is called a "sub-master". 
+    It is a normal cell is every respect, though it has properties
+    that link it to the original pcell super-master.  Instances of
+    this sub-master are created where the user specifies.  A separate
+    sub-master will be created for every differing parameter set that
+    the user provides.  Each instance of a sub-master contains
+    properties that contain the parameter set used for instantiation,
+    and the name of the original pcell.
+
+    <p>
+    A design containing pcells can be saved in two ways.  For a local
+    save, for use in the same design environment, the super- and
+    sub-masters in memory are discarded (or the sub-masters may be
+    cached).  When the design is read in again, the instances provide
+    the location of the pcell and the parameter set, which are used to
+    recreate the sub-masters.  If instead the design is being sent to
+    another environment, one which perhaps does not handle the pcells,
+    the sub-masters can be written to disk as ordinary cells.  The
+    resulting hierarchy will be normal and portable.  In <i>Xic</i>,
+    sub-masters can be included in saved archive files when the <a
+    href="PCellKeepSubMasters"><b>PCellKeepSubMasters</b></a> variable
+    or equivalently the check box in the <a href="xic:exprt"><b>Export
+    Control</b></a> panel is set, or when the <a
+    href="StripForExport"><b>StripForExport</b></a> variable or
+    equivalent check box in the same panel is set.  If a cell is read
+    from a file and is recognized as a pcell sub-master, the PCKEEP <a
+    href="cellflags">cell flag</a> will be set.  This will cause the
+    cell to be written to output, whether or not writing of pcell
+    sub-masters is enabled.
+
+    <a name="status"></a>
+    <h2>PCell History and Status</h2>
+
+    <p>
+    Historically, the pcell concept was developed for the Cadence
+    Virtuoso layout editor, and supported pcells used the Skill
+    language which is the scripting language of the Virtuoso system.
+    This remains the dominant type of pcell around, due to the
+    ubiquity of Cadence installations.  However, the Skill language
+    is not available outside of the Cadence environment, so these
+    pcells are not portable to other tools.
+
+    <p>
+    The OpenAccess project addressed the pcell portability problem by
+    providing a standardized interface for pcells, with the execution
+    being carried out through a "plug-in" that a vendor, or user, may
+    supply.  A pcell, in concept, can be created to use any suitable
+    programming language, provided that the tool used to instantiate
+    the pcell is capable of executing that language.  With OpenAccess,
+    the portability problem is reduced to obtaining a plug-in for the
+    pcell language.
+
+    <p>
+    There are example plug-ins distributed with OpenAccess that handle
+    Tcl and C++.  Unfortunately, the Skill language is not available
+    for general use outside of the Cadence environment.  It is not
+    really attractive anyway, as it was developed back in the
+    prehistoric days when Lisp ws "cool", and abominations like EDIF
+    seemed important.  There are far better languages, such as Python,
+    available today.
+
+    <p>
+    The concept of portable pcells was championed by a company called
+    Ciranova, that supplied an OpenAccess plug-in for Python.  They
+    released this, along with companion applications for Python pcell
+    ("PyCell") development, examples, and precompiled OpenAccess and
+    Python libraries as a free "PyCell Studio" download.  Ciranova was
+    subsequently bought by Synopsys, but the PyCell Studio remains
+    available and apparently is still under development.  An industry
+    group, <a href="https://www.iplnow.com">IPLnow.com</a> which
+    includes TSMC and other foundries and some tool vendors, is
+    pushing the cause of "interoperable" PDK libraries based on
+    portable pcells.
+
+!!IFDEF OpenAccess
+    <p>
+    <i>Xic</i> is intended to be fully compatible with the PyCell Studio
+    and PyCells, through the OpenAccess interface <a
+    href="oaplugin">plug-in</a>.  In addition, <i>Xic</i> without
+    OpenAccess provides support for Python pcells, and the Ciranova
+    protocols for stretch handles and abutment.  However, Ciranova
+    provides a number of library modules and functions as part of its
+    Python implementation that are not present without the Ciranova
+    plug-in and OpenAccess.
+
+    <p>
+    <i>Xic</i> with OpenAccess has some limited capability with
+    Skill-based pcells through the Virtuoso <a
+    href="cdsconnect#exprpc">Express PCells</a> feature.  This allows
+    export is pre-instantiated cached sub-masters of pcells, but not
+    the pcells themselves.  This capability is provided through the
+    same OpenAccess plug-in technology mentioned above, but in this
+    case if the parameter set does not have a pre-built sub-master in
+    cache, the instantiation will fail.
+
+    <p>
+    The <a href="!rmpcprops"><b>!rmpcprops</b></a> command will remove
+    the properties that make pcells special throughout the hierarchy
+    of the current cell.  This operation is not undoable, and renders
+    the hierarchy henceforth free of any pcell history.  The user may
+    wish to do this to hierarchies imported from Virtuoso, as the
+    Skill pcells can not be evaluated in the <i>Xic</i> environment. 
+    In this case, retaining the pcell identities may be pointless, and
+    in fact this may cause trouble, for example when writing output
+    pcell sub-masters are not written unless the user overrides the
+    default (e.g., by checking the box in the <a
+    href="xic:exprt"><b>Export Control</b></a> panel).
+!!ELSE
+    Currently, support for OpenAccess pcells is not available. 
+    OpenAccess support can easily be provided by paying what amounts
+    to a commercial use fee.  Users who may need this feature are
+    encouraged to lobby Whiteley Research Inc.
+!!ENDIF
+
+    <a name="native"></a>
+    <h2><i>Xic</i> Native PCells</h2>
+
+    <i>Xic</i> supports pcells using the native <a
+    href="xicscript">scripting language</a>, plus <a
+    href="pyplugin">Python</a> or <a href="tclplugin">Tcl</a> if the
+    respective <a href="plugins">plug-ins</a> are loaded. 
+    Parameterized cells are supported only in physical mode.  This
+    section will describe how to create and use native pcells in
+    <i>Xic</i>.
+!!IFDEF OpenAccess
+    By "native", execution within <i>Xic</i> rather than through
+    OpenAccess is meant.  As will be seen, native pcells can be saved
+    in OpenAccess, too, and they are still native.
+!!ENDIF
+
+    <p>
+    There are several example native pcells provided in the examples
+    directory of the <i>Xic</i> installation.  These provide samples
+    of the syntax used in the property strings and other aspects, with
+    comments, and their study should facilitate understanding how to
+    write native pcells.
+
+    <p>
+    A native pcell can be saved in any format supported by <i>Xic</i>,
+    with certain limitations to be described.  Probably, the native
+    cell format is the most convenient.  These can be easily edited
+    with a text editor, which the advanced developer is likely to do
+    on occasion.
+
+    <p>
+    A pcell can have any name that is compatible with <i>Xic</i>. 
+    Earlier releases of <i>Xic</i> required that a pcell name have a
+    literal "<tt>XXX</tt>" suffix.  This is no longer the case, but if
+    the <tt>XXX</tt> is present, it will be stripped in sub-master
+    names and replaced with a unique identifying code for the
+    parameter set.  Otherwise, the code is appended to the pcell name.
+
+    <p>
+    Super- and sub-master cells, and sub-master instances, differ
+    from normal cells and instances by the presence of a few special
+    properties.  These are:
+
+    <a name="pc_name"></a>
+    <dl>
+    <dt><b>pc_name</b> property, number 7197<dd>
+    This property is assigned by <i>Xic</i> to pcell sub-masters and
+    their instances.  It provides the name of the pcell from which the
+    sub-master or instance was derived.
+    </dl>
+
+    <a name="pc_params"></a>
+    <dl>
+    <dt><b>pc_params</b> property, number 7198<dd>
+    This property is assigned by the user to pcells, and contains the
+    default parameter set.  It will be assigned by <i>Xic</i> to
+    sub-masters and instances, and contains the parameter set that was
+    used to create the sub-master.
+
+    <p>
+    The string of the <b>pc_params</b> property has the form
+    <blockquote>
+    [<i>typechar</i>:]<i>name</i>[<tt>=</tt>]<i>value</i>[:<i>constraint</i>]
+      [[<tt>,</tt>] ...]  
+    </blockquote>
+
+    The string consists of a series of <i>name</i> and <i>value</i>
+    tokens.  The <i>name</i>s can not contain white space or
+    punctuation.  Ahead of the <i>name</i> is a type specification
+    character if the value is not string type.  In native pcells, all
+    parameters are (for this purpose) string type, so the type
+    specifier will never appear.  However, the syntax used may be
+    extended in future, so it is documented in the table below.  All
+    types except for string type will have a specifier.
+!!IFDEF OpenAccess
+    These <b>will</b> appear in property strings obtained from
+    OpenAccess for non-native pcells.
+!!ENDIF
+
+    <blockquote>
+    <table border=0>
+    <tr><td><tt>b</tt></td> <td>boolean</td></tr>
+    <tr><td><tt>i</tt></td> <td>integer<td></tr>
+    <tr><td><tt>t</tt></td> <td>time value</td></tr>
+    <tr><td><tt>f</tt></td> <td>32-bit float</td></tr>
+    <tr><td><tt>d</tt></td> <td>64-bit float</td></tr>
+    </table>
+    </blockquote>
+    
+    Each of the <i>name</i> tokens is the name of a parameter that can
+    be applied to the pcell.  These will become names of variables in
+    the script, so that these names should not be defined or used in
+    the script text in a conflicting way.
+
+    <p>
+    Every <i>name</i> should have a <i>value</i>, an "empty" value is
+    specified as an empty string (<tt>""</tt>).  The <i>value</i> is
+    separated from the <i>name</i> by white space, a comma, or an
+    equal sign.  The <i>values</i> are taken as default values for the
+    parameters, and can be numeric values or strings.  A <i>value</i>
+    that contains white space, commas, or colons should be quoted. 
+    The value string can also be an executable code fragment using
+    only parameters already defined (to the left) and constants, for
+    example
+
+    <blockquote>
+    <tt>param1=2,param2="param1 + 1"</tt>
+    </blockquote>
+
+    This form, however, can not be used with constraints (see below). 
+    It can also only appear in super-master <b>pc_params</b>
+    properties.  the <b>pc_params</b> strings of sub-masters and
+    instances must have constant values.
+
+    <p>
+    The quoting behavior is a bit complicated, so as to support Python
+    and native languages.  If the <i>value</i> is quoted with
+    double-quote marks, the double quote marks will be stripped, and
+    the parameter will take the enclosed characters.  However, if a
+    backslash character ('\') appears ahead of the first double quote,
+    the double quote marks will be retained.  In the native language,
+    this will ensure that the parameter is string-type.
+
+    <p>
+    For example
+    <blockquote>
+    <tt>myvar="123"</tt>
+    </blockquote>
+    The parameter (variable) <tt>myvar</tt> will be assigned the value
+    123, causing it to become scalar-type.  On the other hand
+    <blockquote>
+    <tt>myvar=\"123"</tt>
+    </blockquote>
+    will assign <tt>"123"</tt> to <tt>myvar</tt> (including the
+    quotes) thus <tt>myvar</tt> will be string-type.  In general, if
+    the <i>value</i> is to be taken as a string constant in the
+    native language, a backslash should be placed ahead of the first
+    double quote mark.
+
+    <p>
+    If the <i>value</i> is quoted with single-quote marks, the
+    single-quote marks are retained, along with the characters between
+    them.  This is for Python support.  However, if the second
+    character is a double-quote mark, the single-quote marks will be
+    stripped, leaving the double-quoted result.  This is an alternative
+    and somewhat deprecated way to specify a string constant in the
+    native language.
+    <blockquote>
+    <tt>mystring='"a string constant"'
+    </blockquote>
+
+    <p>
+    In any case, when the parser is searching for the ending quote
+    mark (single or double), if the mark is found but it is preceded
+    by a backslash, both characters are taken verbatim and the search
+    continues.  Thus, the backslash can be used to hide quote marks
+    of the same type in the string.
+    
+    <p>
+    If the <i>value</i> is a constant (not an executable fragment),
+    the <i>value</i> can be followed by an optional <a
+    href="constraint">constraint</a> specification, separated from the
+    <i>value</i> by a colon (no white space is allowed around the
+    colon).  Constraints define the scceptable values for the
+    parameter, using a syntax described elsewhere.  The constraints
+    appear only in <b>pc_params</b> properties of super-masters, and
+    are not copied to <b>pc_params</b> properties of sub-masters and
+    instances.
+
+    <p>
+    The parameter string is logically converted to a series of
+    assignment statements which are executed before the script.  For
+    example, the parameter string
+    <blockquote>
+    <tt>param1=1.0,name=\"my template",param2="param1 * 2"</tt>
+    </blockquote>
+    would map to the following logical script lines
+    <blockquote><tt>
+    param1 = 1.0<br>
+    name = "my template"<br>
+    param2 = param1 * 2
+    </tt></blockquote>
+    </dl>
+
+    <a name="pc_script"></a>
+    <dl>
+    <dt><b>pc_script</b> property, number 7199<dd>
+    This property is assigned by the user to a pcell, and appears only
+    in the super-master.  It contains the script, or a path to a
+    script, which is executed when the pcell is instantiated.
+
+    <p>
+    The <b>pc_script</b> property text is in the form
+    <blockquote>
+     [<tt>@LANG</tt> <i>langtok</i>] <tt>@READ</tt> <i>path</i>
+     [<tt>@MD5</tt> <i>digest</i>] | script text
+    </blockquote>
+ 
+    <p>
+    The <tt>@LANG</tt>, <tt>@READ</tt>, and <tt>@MD5</tt> tokens are
+    literal.  The <i>langtok</i> may be one of (case insensitive)
+
+    <blockquote>
+    <table border=0>
+    <tr><td><tt>n</tt>[<tt>ative</tt>]</td> <td>native script, the
+      default</td></tr>
+    <tr><td><tt>p</tt>[<tt>ython</tt>]</td> <td>python script</td></tr>
+    <tr><td><tt>t</tt>[<tt>cl</tt>]</td> <td>tcl script</td></tr>
+    </table>
+    </blockquote>
+ 
+    <p>
+    The <i>path</i> token must appear if <tt>@READ</tt> is given.
+    If <tt>@READ</tt> is not given, any remaining text is taken as
+    literal executable script text.
+
+    <p>
+    The <i>path</i> is to a file containing the executable text, and
+    should be quoted if it contains white space.  If the <i>path</i>
+    is not rooted, it will be searched for in a directory <a
+    href="xicpaths">search path</a> set in the <a
+    href="PCellScriptPath"><b>PCellScriptPath</b></a> variable.
+
+    <p>
+    When a path is given, one can also apply the <tt>@MD5</tt>
+    <i>digest</i> clause.  The <i>digest</i> is that for the script
+    file, and can be obtained from the <a href="!md5"><b>!md5</b></a>
+    command, or the <a href="Md5Digest"><tt>Md5Digest</tt></a> script
+    function, or from the command
+    <blockquote>
+    <tt>openssl dgst -md5</tt> <i>filepath</i>
+    </blockquote>
+    on most Linux systems.  If given, the script file digest must
+    match the digest given, or the script will not be executed.  This
+    will ensure that only the "correct" script file is used.
+    </dl>
+
+    <p>
+    Previous versions of <i>Xic</i> required that the script actually
+    appear in the <b>pc_script</b> property string.  This can still be
+    done, and may be convenient for many pcells, particularly very
+    simple ones.  However, one may encounter a portability issue
+    caused by string length limitations of the GDSII and CGX formats
+    due to their maximum record length of 64KB.  The native cell
+    format, the CIF format as extended by Whiteley Research, and the
+    OASIS format have no built-in string length
+!!IFDEF OpenAccess
+    limit, nor does OpenAccess.
+!!ELSE
+    limit.
+!!ENDIF
+
+    <p>
+    When using separate script files, for portability it may be best
+    to <b>not</b> provide a full path to the script in the
+    <b>pc_script</b> property string, but give the file name only and
+    use the search path variable.  Then, the scripts can be kept in
+    different locations at different <i>Xic</i> installations, and
+    pcells will still be portable provided the <b>PCellScriptPath</b>
+    is set (probably from an <a href="initfiles">initialization
+    file</a>).  The <tt>MD5</tt> digest keying can ensure that the
+    script file found via the search path is correct, or it will
+    not execute.
+
+    <p>
+    The script, whether in a separate file or not, is basically
+    conventional, and uses the native object creation functions to
+    build up the geometry, presumably using the parameter values as
+    input.  The example native pcells provided with the <i>Xic</i>
+    distributions in the examples directory illustrate how the script
+    is incorporated.
+
+    <p>
+    One aspect of importance is the script return value, which will
+    tell the calling program whether or not script evaluation
+    succeeded.  If evaluation fails, <i>Xic</i> can gracefully "clean
+    up" by destroying partially completed sub-masters, and any
+    corresponding instance placements, and alerting the user to the
+    error.
+
+    <p>
+    The script should return 0 (zero) on success, which is the default
+    if no explicit return value is specified.  Any nonzero return
+    value indicates faliure.  The mechanics of setting the return value
+    differs between the supported languages, and is described below. 
+    In every case, just before a nonzero value is returned, the <a
+    href="AddError"><tt>AddError</tt></a> function should be called
+    with a message explaining the error.
+
+    <dl>
+    <dt>Native<dd>
+    The <tt>return</tt> keyword, followed by a value, will terminate
+    the scrpt and return the value.  For example, here is a snippet
+    that checks the value of a parameter named "<tt>top</tt>" and
+    fails if it is out of range:
+
+    <blockquote>
+    <tt>if (top &#60; 1 | top > 20)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;AddError("Parameter top is out of range [1 - 20].")<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+    end</tt>
+    </blockquote>
+
+    <p>
+    Actually, if the value following <tt>return</tt> is omitted, the
+    return value is 1, so just a bare "<tt>return</tt>" will signal
+    the error condition.  If the end of execution is reached and no
+    <tt>return</tt> keyword is encountered, the value returned is 0
+    (success).  If the script is terminated with the <tt>Halt</tt> or
+    <tt>Exit</tt> functions, the return value is 0.  If the script is
+    halted by an internal error, the return value is -1.  If the
+    script is halted due to an interrupt signal, the return value is
+    1.
+    </dl>
+
+    <dl>
+    <dt>Python<dd>
+    The recommended way to induce an error exit in a Python script is
+    to call "<tt>sys.exit</tt>" with a nonzero argument.  The example
+    above translated to Python will read:
+
+    <blockquote>
+    <tt>if (top &#60; 1 or top > 20):<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;xic.AddError("Parameter top is out of range [1 - 20].")<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;sys.exit(1)</tt>
+    </blockquote>
+
+    <p>
+    Errors detected by the Python interpreter are passed back as
+    nonzero exit returns.
+    </dl>
+
+    <dl>
+    <dt>Tcl<dd>
+    The recommended way to induce an error exit from a Tcl script is
+    to call "<tt>return -code error</tt>".  The example above
+    translated to Tcl will read:
+
+    <blockquote>
+    <tt>if {$top &#60; 1 || $top > 20} {<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;AddError {"Parameter top is out of range [1 - 20]."}<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;return -code error<br>
+    }</tt>
+    </blockquote>
+
+    <p>
+    Errors detected by the Tcl interpreter are passed back as nonzero exit
+    returns.
+    </dl>
+
+    <p>
+    To summarize, a pcell is never itself instantiated.  When one
+    places an instance of a pcell, the following steps occur:
+
+    <ol> <li>The pcell is read into memory as a "super-master" if it
+    is not already there.
+
+    <li>The user enters the parameter values.
+
+    <li>The database is searched for another cell derived from the
+    same pcell with the same parameter values, i.e., an equivalent
+    sub-master.  If one is found, a new instance is created and given
+    <b>pc_name</b> and <b>pc_params</b> properties copied from the
+    sub-master, and we're done.
+
+    <li>Otherwise, the script is executed, in the context of a new,
+    empty cell whose name consists of the pcell name suffixed by a
+    unique identifier.  This is the sub-master cell.  It is given a
+    <b>pc_name</b> property to identify the pcell, and a
+    <b>pc_params</b> property to list the parameters used.  The new
+    sub-master is instantiated and the instance given the same two
+    properties, and we're done.
+    </ol>
+
+    <p>
+    Once the instance is placed, it behaves in all respects as a
+    normal cell.  It has a "master" derived from the pcell as a
+    sub-master, and a unique sub-master exists for each unique
+    parameter set.  Writing the hierarchy, including the sub-masters,
+    to an archive produces a perfectly normal file.  However, by
+    default the sub-masters are <b>not</b> written to output, instead
+    they are expected to be recreated from the pcell when needed.  The
+    pcells (super-masters) are <b>never</b> included in the output
+    file, since they are not directly instantiated in the hierarchy. 
+    Thus, when exporting, the pcell should be supplied separately, if
+    needed.  If sub-masters are included in the archive, then the
+    pcell is not needed, unless further parameter changes are
+    required.  In <i>Xic</i>, sub-masters can be included in saved
+    archive files when the <a
+    href="PCellKeepSubMasters"><b>PCellKeepSubMasters</b></a> variable
+    or equivalently the check box in the <a href="xic:exprt"><b>Export
+    Control</b></a> panel is set, or when the <a
+    href="StripForExport"><b>StripForExport</b></a> variable or
+    equivalent check box in the same panel is set.
+
+    <a name="create"></a>
+    <h2>Creation of a Native Parameterized Cell</h2>
+
+    To create a native pcell, one can follow this procedure:
+
+    <dl>
+    <dt><b>Write the script</b><dd>
+    Write a script that creates the geometry desired, in response
+    to a set of variables that will become the parameters.  The script
+    can be authored as any other script.  It should be thoroughly
+    debugged before committing it to a parameterized cell.
+
+    <p>
+    It is recommended that the top of the script contain a comment
+    listing the parameters and their purposes, and explicit tests of
+    the values that will abort the script (returning nonzero) if a
+    value is out of range or otherwise not acceptable.  Any nonzero
+    return should have a call to <tt>AddError</tt> explaining the
+    error.  This text will be included in the system error reporting.
+    </dl>
+
+    <dl>
+    <dt><b>Create the parameterized cell</b><dd>
+    Use the <a href="xic:open"><b>Open</b></a> command to edit a new
+    cell which will become the pcell.  Add any fixed geometry to the
+    cell that is necessary.  This can be done at any time.  Keep this
+    cell as the current cell and add the properties listed below.
+    </dl>
+
+    <dl>
+    <dt><b>Add the pc_script property</b><dd>
+    Bring up the <a href="xic:cprop"><b>Cell Property Editor</b></a>. 
+    Press <b>Add</b>, which brings up a pop-up menu, and select <a
+    href="prpty:pc_script"><b>pc_script</b></a> in the pop-up menu. 
+    This will prompt for the property string on the prompt line.
+
+    <p>
+    At this point we need to decide whether to incorporate the script
+    into the property string itself, or to keep the script in a separate
+    file.  One consideration is that GDSII and CGX files have 16-bit record
+    lengths, which will limit the lengths of property strings.  In the
+    present <i>Xic</i> release, CIF and native string lengths, and
+    OASIS string lengths, are unlimited.
+!!IFDEF OpenAccess
+    There is also no limit when storing the cell in OpenAccess.
+!!ENDIF
+
+    <p>
+    First, assume that the script is to be stored in the property
+    string.  We will use the "long text" feature to facilitate entering
+    the script.
+    </dl>
+
+    <dl>
+    <dt><b>Enter property text with script</b><dd>
+    Press the "<b>L</b>" button to the left of the prompt line. 
+    This brings up the <a href="texteditor"><b>Text Editor</b></a>
+    pop-up.  If the script text is Python or Tcl, a <tt>@LANG</tt>
+    specification must appear first.  Type one of the following
+    into the editor window.  For Python
+    <blockquote>
+    <tt>@LANG Python</tt>
+    </blockquote>
+    or if Tcl
+    <blockquote>
+    <tt>@LANG Tcl</tt>
+    </blockquote>
+    Neither is needed for native script language.
+
+    <p>
+    The next step is to import the script text.  This is presumed to
+    exist in a file, though for very simple scripts an advanced user
+    can type it in.  For the script in a file, one can use the
+    <b>Read</b> button of the text editor (in the <b>File</b> menu) to
+    read in the script file.  Then perform any last minute editing,
+    such as removal of the variable declarations that would be
+    redundant with the parameters.
+
+    <p>
+    Press the <b>Save</b> button in the <b>File</b> menu of the text
+    editor.  The text editor will disappear, and the script will have
+    been saved in the <b>pc_script</b> property of the current cell.
+    </dl>
+
+    <dl>
+    <dt><b>Enter property text without script</b><dd>
+    One can use the "long text" text editor feature, or simply type
+    into the prompt line.  Without the script, there generally isn't
+    much to type.
+
+    <p>
+    First, if the script text is Python or Tcl, one must enter a
+    <tt>@LANG</tt> specifier as explained above.  If needed, just
+    type in the two tokens.  Next, enter a <tt>@READ</tt> directive
+    in the form
+    <blockquote>
+    <tt>@READ</tt> <i>path</i>
+    </blockquote>
+    where <i>path</i> is a path to the file containing the script. 
+    This can be an absolute path, however it may be more convenient to
+    just specify the file name, and set the <a
+    href="PCellScriptPath"><b>PCellScriptPath</b></a> variable to a
+    directory where pcell script files are kept.  Then, the location
+    can change without one having to edit the property string.  This
+    completes text entry.  Exit the text editor as above if it is
+    being used, or press <b>Enter</b> to terminate text entry into the
+    prompt line.  The text is saved in the <b>pc_script</b> property
+    of the current cell.
+
+    <p>
+    Optionally, one can append a directive of the form
+    <blockquote>
+    <tt>@MD5</tt> <i>digest</i>
+    </blockquote>
+    The <i>digest</i> is the 32-character string obtained from the <a
+    href="!md5"><b>!md5</b></a> command for the script file.  When
+    included, the script will not execute unless the script file has a
+    matching MD5 digest, which ensures that the script file accessed
+    is the correct one and hasn't been modified.
+    </dl>
+
+    <dl>
+    <dt><b>Add a pc_params property</b><dd>
+    Next, we program the pcell's parameters and default values by
+    adding a <a href="prpty:pc_params"><b>pc_params</b></a> property. 
+    In the <b>Cell Property Editor</b>, press <b>Add</b>, then select
+    <b>pc_params</b> in the pop-up menu.
+
+    <p>
+    Again, one can use the "long text" editor, or type directly into
+    the prompt line.  For long parameter lists, the editor would be
+    preferred.  Enter the parameter list in the format described for
+    this property string.  If using the editor, any combination of
+    multiple lines and/or multiple specifications per line can be
+    used.  A parameter specification consists of a parameter name
+    followed by '<tt>=</tt>' and its value, optionally followed by a
+    colon and a <a href="constraint">constraint</a> string.  There
+    must be no white space around the colon that delimits the
+    constraint string, but the constraint string itself may contain
+    white space, which is ignored.
+
+    <p>
+    Save the text if using the text editor, or press <b>Enter</b> if
+    using the prompt line, when done.
+    </dl>
+
+    <dl>
+    <dt><b>Add additional properties</b><dd>
+    There are other properties that may be required, to support <a
+    href="pc_stretch">stretch handles</a> (draggable edges) and <a
+    href="pc_abut">auto-abutment</a> protocols.  Text is added as for
+    the properties we've described.  This may be a second pass, after
+    getting the basic cell working.
+    </dl>
+
+    <p>
+    Save the current cell to disk, the native format is probably
+    most convenient.  Congratulations, you have yourself a pcell!
+
+    <a name="inst"></a>
+    <h2>Adding an Instance of a Parameterized Cell</h2>
+
+    Adding a pcell to the current layout is the same procedure,
+    whether the pcell is native, or not.  One adds an instance of a
+    pcell like one would add an instance of any other cell.  If a
+    native pcell, the cell file name can be given to the <b>New</b>
+    text entry pop-up of the <a href="xic:place"><b>Cell Placement
+    Control</b></a> panel brought up with the <b>place</b> button in
+    the side menu.
+
+!!IFDEF OpenAccess
+    <p>
+    Pcells saved in OpenAccess can be instantiated with the
+    <b>Place</b> button in the <b>Contents</b> listing window from the
+    <a href="xic:oalib"><b>OpenAccess Libraries</b></a> pop-up from
+    the <b>File Menu</b>.  These cells are also available through the
+    <b>Cell Placement Control</b> panel.  In the text input pop-up from
+    the <b>New</b> button, enter the OpenAccess library name that
+    contains the desired pcell, followed by space, then the pcell
+    name.
+!!ENDIF
+
+    <p>
+    When cell placement becomes active, by pressing the <b>Place</b>
+    button the <b>Cell Placement Control</b> panel, the <a
+    href="xic:pcparams"><b>Parameters</b></a> pop-up appears.  This
+    pop-up displays a text entry area for every parameter, loaded with
+    the default value.  The user can enter the values desired.
+
+    <p>
+    In addition, a double-line box is ghost-drawn and attached to the
+    mouse pointer.  This figure does <b>not</b> represent the actual
+    size of the instance, in fact it illustrates that the instance
+    size is unknown.  The instance size will not be known until the
+    parameter set is used to create or identify the corresponding
+    sub-master cell.  This will happen when the user clicks in the
+    drawing window to place an instance.  Better, the <b>Apply</b>
+    button in the <b>Parameters</b> pop-up can be pressed, which will
+    create a sub-master without instance placement.  The box attached
+    to the mouse pointer will now be formed with a single line, and
+    will have the actual size.
+
+    <p>
+    As with a normal cell, instances are placed where the user clicks. 
+    Note that the <b>Parameters</b> pop-up remains visible while
+    instances are being placed.  The parameters can be changed, and
+    the <b>Apply</b> button pressed, to change the type of
+    instantiation to be subsequently placed.  Note that the subsequent
+    instances will use the new parameter values, pressing <b>Apply</b>
+    merely updates the bounding box attached to the mouse pointer.
+
+    <a name="instchange"></a>
+    <h2>Changing the Parameters of an Instance</h2>
+
+    Once a pcell has been instantiated, the instance can be changed to
+    represent a new set of parameter values <b>if</b> the pcell
+    is available.  Thus, when a design is exported to another
+    site that may wish to modify the cell parameters, the pcells must
+    be exported as well.  The pcells are <b>not</b>
+    automatically added to GDSII files or the other file formats. 
+    They can be supplied as <i>Xic</i> cells, in addition to the
+    GDSII or other output.  Further, <i>Xic</i> native pcells are
+    <b>not</b> directly portable to other design systems, they are
+    known to <i>Xic</i> only.
+
+    <p>
+    One possible way to maintain native pcells is to place them
+    in a <a href="libraries">library</a>.
+
+    <p>
+    Assuming that the pcell is available, one can change the
+    parameters of an existing pcell instance with the following
+    procedure.  First, <a href="selection">select</a> the pcell instance
+    to modify.  Then, while holding down the <b>Ctrl</b> key, click on
+    the selected pcell.  The <a
+    href="xic:pcparams"><b>Parameters</b></a> panel will appear.  One
+    can now change parameter values as needed, and press <b>Apply</b>
+    to reparameterize the instance.
+
+    <p>
+    Less conveniently, the <b>pc_params</b> property can be edited
+    with the <a href="xic:prpty"><b>Property Editor</b></a> with the
+    same effect.  Bring up the <b>Property Editor</b> with the
+    <b>Properties</b> button in the <b>Edit Menu</b>.  With the editor
+    active, click on a pcell instance.  The instance will be marked,
+    and its properties listed.  Among the listed properties will be
+    the <b>pc_params</b>.  Click on this entry in the listing window,
+    the text will show as selected.  Then, press the <b>Edit</b>
+    button in the <b>Property Editor</b>, which will bring up our old
+    friend the <b>Parameters</b> panel.  Adjust the parameters, then
+    press <b>Apply</b>.  The new parameter set will be applied to the
+    marked instance.
+
+    <a name="submchange"></a>
+    <h2>Changing the Parameters of a Sub-Master</h2>
+
+    One can change all of the instances that use a particular
+    parameter set to a new parameter set by changing the parameters of
+    the sub-master cell of the instances.  The original pcell must be
+    accessible, as for changing individual instances.  The procedure
+    is to edit the parameters of a sub-master, which will have the
+    effect of reparameterizing all of its instances.
+
+    <p>
+    A quick way to do this is to select an instance of the sub-master
+    to be edited, and press the <a href="xic:push"><b>Push</b></a>
+    button in the <b>Cells Menu</b>.  The editing context will be
+    pushed to the sub-master.  The sub-master can also be selected for
+    editing from the <a href="xic:cells"><b>Cells Listing</b></a>
+    pop-up, or by giving its name in the <a
+    href="xic:open"><b>Open</b></a> command.
+
+    <p>
+    With the sub-master as the current cell, bring up the <a
+    href="xic:cprop"><b>Cell Property Editor</b></a> with the <b>Cell
+    Properties</b> button in the <b>Edit Menu</b>.  The listing of
+    properties will include a line for the <b>pc_params</b> property. 
+    Select the property by clicking on it, then press the <b>Edit</b>
+    button.  Again, the <b>Parameters</b> pop-up will appear.  One
+    should modify the parameters desired, then press <b>Apply</b>. 
+    The new parameter set will then apply to the instance pushed into,
+    and all other instances of the same sub-master.  Use the
+    <b>Pop</b> button in the <b>Cells Menu</b> to return to the
+    original editing context if <b>Push</b> was used.
+    
+!!SEEALSO
+xic:pcparams
+pc_stretch
+pc_abut
+
+!! 102214
+!!KEYWORD
+constraint
+!!TITLE
+Parameter Constraints
+!!HTML
+    Constraints are described by text strings included in the <a
+    href="prpty:pc_params"><b>pc_params</b></a> property contained in
+    the super-master cell.  Constraints do not appear in the
+    sub-master or instance properties.
+!!IFDEF OpenAccess
+    Constraint support is also provided for Ciranove/Python
+    OpenAccess pcells, though the constraint strings are provided by
+    another method internally as there are no corresponding
+    super-master <i>Xic</i> cells.
+!!ENDIF
+
+    <p>
+    In <i>Xic</i>, constraints are mainly handled in the <a
+    href="xic:pcparams"><b>Parameters</b></a> panel, which is where
+    parameter setting is primarily handled.  The constraints may
+    affect the type of input widget for the parameter.  It will not be
+    possible to set a value for the parameter that is not allowed by
+    the associated constraint.
+
+    <p>
+    The constraint strings follow closely the Ciranova format.  Each
+    is in the form of a Python function call, with a set of arguments
+    that define the constraint.  The arguments can be either
+    positional or named.  For example, the <tt>range</tt> constraint
+    has the following template:
+
+    <blockquote>
+    <tt>range(</tt><i>low</i>,<i>high</i>,<i>resolution</i>=<tt>None</tt>,<i>action</i>=<tt>REJECT)</tt>
+    </blockquote>
+
+    The two final arguments have defaults, and are therefor optional. 
+    Arguments can be given positionally, or as an assignment using the
+    argument name keyword.  The following forms are equivalent:
+
+    <blockquote>
+    <tt>range(0,10)</tt><br>
+    <tt>range(high=10,low=0)
+    </blockquote>
+
+    The first line follows the argument order of the template.  The
+    second line does not, but supplies the argument name explicitly. 
+    Arguments can appear in any order if the name is given.  An
+    argument list can use both positional and explicit assignment. 
+    Note that the <i>resolution</i> and <i>action</i> arguments are
+    not given in either example, so that the defaults will be used.
+
+    <p>
+    All keywords are case-insensitive.
+
+    <p>
+    Each constraint type contains an <i>action</i> argument, which can
+    be set to one of the literal enumerators <tt>REJECT</tt>,
+    <tt>ACCEPT</tt>, or <tt>USE_DEFAULT</tt>.  This specifies what
+    happens when an attempt is made to set the parameter to a value not
+    allowed by the constraint.  The <tt>REJECT</tt> option (the
+    default) will simply fail, causing the command that initiated the
+    operation to also fail.  The <tt>ACCEPT</tt> action will accept
+    the new parameter value, basically ignoring the constraint.  The
+    <tt>USE_DEFAULT</tt> option is intended to reset the parameter to
+    the default value when the constraint test fails, but this is not
+    implemented in <i>Xic</i>, <tt>REJECT</tt> will be done instead. 
+
+    <p>
+    The enumeration value <tt>None</tt> can be given to most
+    arguments.  This usually means to ignore the argument, and skip
+    any test that would use the argument.  For example, a range
+    constraint may give a <i>high</i> value of <tt>None</tt>, meaning
+    that the parameter value can be arbitrarily large.
+
+    <p>
+    The available constraint types are as follows.
+
+    <dl>
+    <dt><tt>choice</tt><dd>
+    The <tt>choice</tt> constraint restricts the parameter to a number
+    of alternatives.  These alternatives can be numbers or strings, as
+    appropriate for the parameter data type.  The keyword
+    "<tt>choiceConstraint</tt>" is a (case-insensitive) synonym.  The
+    template is
+
+    <blockquote>
+    <tt>choice(</tt><i>choices</i>,<i>action</i>=<tt>REJECT)</tt>
+    </blockquote>
+
+    where the <i>choices</i> argument is a list in the form
+
+    <blockquote>
+    <tt>[</tt><i>element</i>,<i>element</i>...<tt>]</tt>
+    </blockquote>
+
+    The square brackets are literal, <i>elements</i> are numbers or
+    strings (single or double-quoted) which are separated by commas.
+
+    <p>
+    Examples:<br>
+    <tt>choice([1,2,4,8])</tt><br>
+    <tt>choice(["red","green","blue"])</tt>
+
+    <p>
+    The first line restricts the numeric parameter to the values
+    listed.  The second line would restrict a string parameter to the
+    strings listed.  Note that if the script is Python, single quotes
+    must be used instead of double quotes.  Single or double quotes
+    can be used with native scripts.
+    </dl>
+
+    <dl>
+    <dt><tt>range</tt><dd>
+    The <tt>ramge</tt> constraint restricts a numerical parameter to a
+    range of values.  The keyword "<tt>rangeConstraint</tt>"
+    (case-insensitive) is a synonym.  The template is
+
+    <blockquote>
+    <tt>range(</tt><i>low</i>,<i>high</i>,<i>resolution</i>=<tt>None</tt>,<i>action</i>=<tt>REJECT)</tt>
+    </blockquote>
+
+    The <i>low</i> and <i>high</i> are numerical endpoints of the
+    range.  Either can be the enumeration value <tt>None</tt>, which
+    skips testing against that endpoint.  For example,
+
+    <blockquote>
+    <tt>range(0,None)
+    </blockquote>
+
+    simply indicates that the value must be zero or larger.
+
+    <p>
+    The numerical values passed for <i>low</i> and <i>high</i> must be
+    consistent with the language used for the script.  In particular,
+    Python requires a standard integer or floating-point format.  The
+    native language allows SPICE-type numbers (e.g., 1.2K), hex
+    numbers with a "<tt>0x</tt>" prefix (e.g., <tt>0xff00</tt>) and
+    character constants (e.g., <tt>'\n'</tt>) in addition.
+
+    <p>
+    The <i>resolution</i> argument is used in the <a
+    href="xic:pcparams"><b>Parameters</b></a> panel to set the number
+    of <a href="xic:pcparams#resol">digits</a> to include following a
+    decimal point.
+    </dl>
+
+    <dl>
+    <dt><tt>step</tt><dd>
+    The <tt>step</tt> constraint limits the numerical parameter value
+    to multiples of a given delta between a starting and ending value. 
+    The keyword "<tt>stepConstraint</tt>" (case-insensitive) is a
+    synonym.  The template is
+
+    <blockquote>
+    <tt>step(</tt><i>step</i>,<i>start</i>=<tt>0</tt>,<i>limit</i>=<tt>None</tt>,<i>resolution</i>=<tt>None</tt>,<i>action</i>=<tt>REJECT)</tt>
+    </blockquote>
+
+    The parameter must be numeric.  If the <i>step</i> value is 0 or
+    <tt>None</tt>, the constraint acts the same as the <tt>range</tt>
+    constraint, with <i>start</i> and <i>limit</i> providing the low
+    and high values, respectively.
+
+    <p>
+    Otherwise, the allowed values are given by
+
+    <blockquote>
+    <i>start</i> <tt>+ N*</tt><i>step</i>
+    </blockquote>
+
+    where <tt>N</tt> is a non-negative integer, and the value of the
+    expression is within the range terminated by <i>limit</i>, if
+    <i>limit</i> is not <tt>None</tt>.  Note that <i>step</i> can be
+    negative, in which case the parameter value must be greater than
+    or equal to <i>limit</i>.
+
+    <p>
+    The <i>resolution</i> is treated as in the <tt>range</tt>
+    constraint.
+    </dl>
+
+    <dl>
+    <dt><tt>numericStep</tt><dd>
+    This is very much like the <tt>step</tt> constraint, but is
+    intended for use with string variables used for numeric input to
+    support SPICE-like multipliers.  This is needed for script
+    languages that don't handle numbers in this format.  Since the
+    native script language understands this number format directly, it
+    is not clear that the <tt>numericStep</tt> constraint will ever be
+    needed in pcells with native scripts.  The keyword
+    "<tt>numericStepConstraint</tt>" is a synonym.  The template is
+
+    <blockquote>
+    <tt>step(</tt><i>step</i>,<i>start</i>=<tt>0</tt>,<i>limit</i>=<tt>None</tt>,<i>resolution</i>=<tt>None</tt>,<i>scaleFactor</i>=<tt>'u'</tt>,<i>action</i>=<tt>REJECT)</tt>
+    </blockquote>
+
+    The arguments are the same as for the <tt>step</tt> constraint,
+    with the addition of <i>scaleFactor</i>.  The <i>scaleFactor</i>
+    is a string set to one of the scaling suffixes from the table
+    below:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>suffix</th> <th>multiplier</th> <th>name</th></tr>
+    <tr><td><tt>a</tt></td> <td><tt>1e-18</tt></td> <td><tt>atto</tt></td></tr>
+    <tr><td><tt>f</tt></td> <td><tt>1e-15</tt></td> <td><tt>femto</tt></td></tr>
+    <tr><td><tt>p</tt></td> <td><tt>1e-12</tt></td> <td><tt>pico</tt></td></tr>
+    <tr><td><tt>n</tt></td> <td><tt>1e-9</tt></td> <td><tt>nano</tt></td></tr>
+    <tr><td><tt>u</tt></td> <td><tt>1e-6</tt></td> <td><tt>micro</tt></td></tr>
+    <tr><td><tt>m</tt></td> <td><tt>1e-3</tt></td> <td><tt>milli</tt></td></tr>
+    <tr><td><tt>mil</tt></td> <td><tt>25.4</tt></td> <td><tt>mil</tt></td></tr>
+    <tr><td><tt>k</tt></td> <td><tt>1e3</tt></td> <td><tt>kilo</tt></td></tr>
+    <tr><td><tt>meg</tt></td> <td><tt>1e6</tt></td> <td><tt>mega</tt></td></tr>
+    <tr><td><tt>g</tt></td> <td><tt>1e9</tt></td> <td><tt>giga</tt></td></tr>
+    <tr><td><tt>t</tt></td> <td><tt>1e12</tt></td> <td><tt>tera</tt></td></tr>
+    </table>
+    </blockquote>
+
+    The scale fastor is case-insensitive.  If the <i>scaleFactor</i>
+    is assigned the value <tt>None</tt>, no scale fastor is assumed,
+    and the constraint is basically identical to <tt>step</tt>.  If a
+    scale factor is given, numbers given for <i>step</i>,
+    <i>start</i>, and <i>limit</i> are internally multiplied by the
+    scale factor, before comparison to the parameter value.
+
+!! 020615
+!!KEYWORD
+xic:pcparams
+!!TITLE
+Parameters Panel:  Set PCell Parameters
+!!HTML
+    <img src="screenshots/params.png" align=right>
+    The <b>Parameters</b> panel appears when it is necessary to
+    provide parameters for a <a href="xic:pcells">parameterized
+    cell</a> (pcell) instantiation.  These situations include
+
+    <ul>
+    <li>During placement of pcell instances with the <a
+    href="xic:place"><b>Cell Placement Control</b></a> panel from the
+    <b>place</b> button in the side menu.
+
+    <li>While editing a <a href="prpty:pc_params"><b>pc_params</b></a>
+    instance property with the <a href="xic:prpty"><b>Property
+    Editor</b></a>, which is obtained with the <b>Properties</b>
+    button in the <b>Edit Menu</b>.
+
+    <li>If the user clicks with <a href="button1">button 1</a> and the
+    <b>Ctrl</b> key held on a selected pcell instance, The
+    <b>Parameters</b> panel will appear.  The user can reparameterize
+    the instance.
+
+    <li>While editing the <b>pc_params</b> property of the current
+    cell with the <a href="xic:cprop"><b>Cell Property Editor</b></a>,
+    which is obtained with the <b>Cell Properties</b> button in the
+    <b>Edit Menu</b>.
+
+    <li>If one opens a non-native pcell for editing, the
+    <b>Parameters</b> panel will appear.  In this case, the label on
+    the leftmost button is "<b>Open</b>" rather than "<b>Apply</b>". 
+    Entering parameters then pressing <b>Open</b> will create or find
+    the sub-master for the parameter set, and make it the current
+    cell.  This will not happen with native pcells, which can be
+    edited directly in <i>Xic</i>.
+    </ul>
+
+    <p>
+    The <b>Parameters</b> panel provides an entry area for each pcell
+    parameter.  In cases where there more parameters than will fit
+    within the window, a scroll bar will appear, allowing the user to
+    scroll the parameter listing.  The listing order of the parameters
+    is as provided by the pcell.
+
+    <p>
+    The type of entry widget shown in the panel depends on the data type
+    of the parameter, and the parameter <a href="constraint">constraint</a>
+    specification.  The constraint string, if any, is obtained from the
+    <a href="prpty:pc_params"><b>pc_params</b></a> property of the pcell
+    super-master.  The following logic is used:
+
+    <ul>
+    <li>If the parameter is boolean, any constraint is ignored, and a
+    check box is created.
+
+    <li>If the parameter has a <tt>choice</tt> constraint, a drop-down
+    menu containing the given choices is created.  The choices can be
+    numeric or string values.
+
+    <li>If the parameter has a <tt>range</tt> or <tt>step</tt>
+    constraint, a numeric entry "spin" button is created.  The numbers
+    displayed in the text area follow the constraint, i.e., the range is
+    limited, and the step value (if any) is enforced.  The up/down
+    arrows add or subtract a step value.  Further, the floating-point
+    precision used for the number will follow the <i>resolution</i>
+    value of the constraint.  This is described below.
+
+    <li>If the parameter has a <tt>numericStep</tt> constraint, the
+    set-up is very similar to the <tt>step</tt> constraint, but an
+    additional label will appear showing the <i>scaleFactor</i>, if
+    any.  This scale factor is logically appeaded to the number that
+    appears in the entry area.
+
+    <li>If there is no constraint, a simple text-entry area is created.
+    </ul>
+
+    <a name="resol"></a>
+    For numeric entries, the constraint <i>resolution</i> value will
+    set the number of digits that follow the decimal point in the
+    display.  For the default value of <tt>None</tt>, or if less than
+    1.0, the number of digits will be based on the current database
+    resolution, as set at program startup with the <a
+    href="DatabaseResolution"><b>DatabaseResolution</b></a> variable. 
+    If the resolution is the default value of 1000, three digits will
+    be used (<tt>1.235</tt>), otherwise four (<tt>1.2345</tt>).
+
+    <p>
+    Otherwise, the number of digits following the decimal will be set
+    by the following logic:
+    <blockquote><tt>
+    if (resol > 1e5)  num = 6<br>
+    else if (resol > 1e4)  num = 5<br>
+    else if (resol > 1e3)  num = 4<br>
+    else if (resol > 1e2)  num = 3<br>
+    else if (resol > 1e1)  num = 2<br>
+    else if (resol > 1e0)  num = 1<br>
+    else num = 0</tt>
+    </blockquote>
+
+    Note that giving a <i>resolution</i> of 1.0 will set the number of
+    digits to zero, indicating integer values only (no decimal point is
+    shown in this case).
+
+    <p>
+    The panel logic differs somewhat depending on the context.  When
+    editing an existing property, with the <b>Property Editor</b> or
+    <b>Cell Property Editor</b>, the <b>Parameters</b> panel is
+    "modal", meaning that the rest of <i>Xic</i> is inactive while the
+    panel is visible.  The user is expected to enter the appropriate
+    parameter data and either press <b>Apply</b> which will accept the
+    new parameter set, or <b>Dismiss</b>, which will abort the current
+    parameter edit.  In both cases, the <b>Parameters</b> panel will
+    disappear, and <i>Xic</i> will return to normal status.
+    The <b>Reset</b> button will revert all parameter settings
+    in the panel to the initial settings when the panel was created,
+    i.e., the values from the existing property string.
+
+    <p>
+    When placing instances, on the other hand, the <b>Parameters</b>
+    panel is not modal.  The parameters can be changed at any time,
+    and the changed parameter set will apply when new instances are
+    created, whether or not <b>Apply</b> is pressed.  Pressing
+    <b>Apply</b> will create or find the existing sub-master for the
+    parameter set, from which the instance bounding box is obtained
+    and used in the ghost-highlighting during instance creation.  The
+    <b>Dismiss</b> button will remove the panel, but the instance
+    placement will continue.  The <b>Reset</b> button will reset all
+    parameter values displayed in the panel to the defaults provided
+    in the pcell.
+
+    <p>
+    When opening a foreign pcell, the <b>Parameters</b> panel is
+    non-model, and nothing happens unless/until <b>Open</b> is
+    pressed.  Pressing <b>Open</b> will create a new sub-master if
+    necessary for the parameters as set, and make the sub-master the
+    current cell for editing.  Editing the sub-master is generally not
+    a great idea, unless the user understands the issues.  Changing
+    the <b>pc_params</b> property, though, is a valid way to modify
+    all instances of the master.  Other changes to the sub-master will
+    be lost, unless the sub-master is saved, possibly with the <a
+    href="PCellKeepSubMasters"><b>PCellKeepSubMasters</b></a> variable
+    set.  Pressing <b>Dismiss</b> simply retires the panel.  Pressing
+    <b>Reset</b> returns all parameter values shown in the panel to
+    the pcell default values.
+
+!!REDIRECT prpty:grip           pc_stretch#grip
+
+!! 102314
+!!KEYWORD
+pc_stretch
+!!TITLE
+PCell Stretch Handles
+!!HTML
+    <i>Xic</i> supports the protocol for stretch handles defined by
+    Ciranova.  This provides support for stretch handles defined
+    in PyCells, but also allows use of stretch handles in native
+    pcells.
+
+    <p>
+    A stretch handle is a graphical item that can be moved with the
+    mouse pointer, where the motion causes a change in a parameter
+    value.  Usually, the object is associated with a parameterized
+    cell instantiation, and motion causes remastering of the instance
+    to a new sub-master created with the new parameter.  For example,
+    stretch handles might be used to graphically change the gate length
+    and width of a MOSFET pcell instance, if the corresponding pcell
+    supports the protocol.
+
+    <p>
+    Stretch handles are visible and activated only when the containing
+    instance is shown large enough on-screen, to avoid
+    false-triggering.  The size threshold can be set from the <a
+    href="xic:pcctl"><b>PCell Control</b></a> panel from the <b>Edit
+    Menu</b>, or equivalently with the <a
+    href="PCellGripInstSize"><b>PCellGripInstSize</b></a> variable.
+
+    <p>
+    In <i>Xic</i>, when editing a sub-master containing stretch
+    handles, the handles are visible as well, and can be moved.  This
+    will change the parameterization of the sub-master, and all of its
+    instances.  This is equivalent to modifying the <a
+    href="pc_params"><b>pc_params</b></a> property with the <a
+    href="xic:cprop"><b>Cell Property Editor</b></a> from the <b>Edit
+    Menu</b>.
+
+    <p>
+    If the <b>Hide and disable stretch handles</b> check box in the <a
+    href="xic:pcctl"><b>PCell Control</b></a> panel from the <b>Edit
+    Menu</b> is checked, or equivalently if the <a
+    href="PCellHideGrips"><b>PCellHideGrips</b></a> variable is set,
+    all stretch handles will be invisible and disabled.
+
+    <p>
+    Adding stretch handles to a pcell amounts to adding box objects
+    with the <b>grip</b> property applied.  The <b>grip</b> property
+    provides the setup information.
+
+    <p>
+    There are example capacitor pcells that use stretch handles that
+    can be found in the examples directory of the <i>Xic</i> program
+    distribution area.  These demonstrate use of stretch handles and
+    illustrate the property syntax.
+
+    <a name="grip"></a>
+    <dl>
+    <dt><b>grip</b> property, number 7195<dd>
+    This property is very similar to the Ciranova <tt>pycStretch</tt>
+    property, used to implement stretch handles.  The property has
+    meaning when applied to physical-mode boxes only.  The property
+    string has the following format:
+
+    <blockquote>
+    <tt>name:</tt><i>val</i><tt>; stretchType:</tt><i>val</i><tt>,
+    direction:</tt><i>val</i><tt>, parameter:</tt><i>val</i><tt>,
+    minVal:</tt><i>val</i><tt>, maxVal:</tt><i>val</i><tt>,
+    location:</tt><i>val</i><tt>, userScale:</tt><i>val</i><tt>,
+    userSnap:</tt><i>val</i><tt>, key:</tt><i>val</i>
+    </blockquote>
+
+    <p>
+    The terms have precisely the same names and interpretation as the
+    <tt>pycStretch</tt> property described in the <i>Ciranova PyCell
+    EDA Tool Integration Guidelines</i> document provided with the
+    Ciranova PyCell Studio package (now available from Synopsys). 
+    However, there are some differences.
+
+    <ol>
+    <li>Ciranova does not allow white space within the string.  In
+    <i>Xic</i>, white space can appear between the terms as shown
+    above.
+
+    <li>The semicolon following the name and the commas are optional,
+    the terms can be white-space separated.
+
+    <li>In both cases a property string can contain multiple grip
+    specifications.  Ciranova separates the specifications by white
+    space.  In <i>Xic</i>, a new specification is started whenever a
+    keyword is repeated.
+
+    <li>Ciranova requires that all keywords be provided in each
+    specification, except for the name, which can be omitted for names
+    with varying <tt>key</tt> strings.  In <i>Xic</i>, when parsing
+    multiple specifications, previous values of the various parameters
+    are retained, so only changed values need be given.
+
+    <li><i>Xic</i> keyword matching is case-insensitive.
+    </ol>
+
+    The terms have the following significance.
+    <dl>
+    <dt><tt>name</tt><dd>
+    A name for the stretch handle, which should be a unique string
+    token within the pcell.
+
+    <dt><tt>stretchType</tt><dd>
+    Set to one of the keywords "<tt>relative</tt>" or
+    "<tt>absolute</tt>".  Per Ciranova, if <tt>relative</tt>, the
+    increment is measured relative to the center of the rectangle,
+    while <tt>absolute</tt> is the increment measured according to the
+    absolute X and Y directions.  This parameter is ignored in
+    <i>Xic</i>, since the explanation does not seem to make sense.
+
+    <dt><tt>direction</tt><dd>
+    Set to one of the keywords "<tt>NORTH_SOUTH</tt>" or
+    "<tt>EAST_WEST</tt>", specifying the translation direction of the
+    stretch handle.
+
+    <dt><tt>parameter</tt><dd>
+    The name of the pcell parameter that is modified by the stretch
+    handle.
+
+    <dt><tt>minVal</tt><dd>
+    A numerical value giving the minimum value of the parameter being
+    modified.  SPICE-style scaling suffix values and units, e.g.,
+    <tt>1K</tt>, <tt>100nM</tt>, are acceptable, units are ignored.
+
+    <dt><tt>maxVal</tt><dd>
+    A numerical value giving the maximum value of the parameter being
+    modified.
+
+    <dt><tt>location</tt><dd>
+    This specifies the location point for the graphical stretch handle
+    on the layout rectangle.  The value must be one of
+    "<tt>Location.CENTER_LEFT</tt>", "<tt>Location.LOWER_CENTER</tt>",
+    "<tt>Location.CENTER_RIGHT</tt>",
+    "<tt>Location.UPPER_CENTER</tt>", which specify the left, bottom,
+    right, and top sides.
+
+    <dt><tt>userScale</tt><dd>
+    This is a real number scale factor used to multiply the change in
+    parameter value.
+
+    <dt><tt>userSnap</tt><dd>
+    The real number resolution value which should be used for snapping
+    the parameter value, i.e., the reported parameter value will be an
+    integer multiple of the <tt>userSnap</tt>.
+
+    <dt><tt>key</tt><dd>
+    The name used as a key to specify values for multi-valued
+    parameters, and should be "<tt>None</tt>" for ordinary parameters. 
+    Multi-valued parameters are not supported in <i>Xic</i>.
+    </dl>
+    </dl>
+
+    <p>
+    In <i>Xic</i>, stretch handles are available only in physical mode.
+    They are visible in selected, expanded instances only.  A stretch
+    handle is represented as a double-line highlighting of one of the
+    four edges of the rectangle to which the <b>grip</b> property is
+    applied.
+
+    <p>
+    The user can drag the highlighted edge in a direction normal to
+    the edge over a range set in the property.  The edge is
+    ghost-drawn and attached to the mouse pointer during the move. 
+    Unlike some other move operations in <i>Xic</i>, only dragging is
+    allowed, clicking on a grip will do nothing special.  If the
+    associated parameter has a <a href="constraint">constraint</a>
+    string defined, the highlighting will be visible only for allowed
+    values of the parameter.
+
+!!SEEALSO
+pc_abut
+xic:pcells
+
+!!REDIRECT prpty:ab_class       pc_abut#ab_class
+!!REDIRECT prpty:ab_rules       pc_abut#ab_rules
+!!REDIRECT prpty:ab_directs     pc_abut#ab_directs
+!!REDIRECT prpty:ab_shapename   pc_abut#ab_shapename
+!!REDIRECT prpty:ab_pinsize     pc_abut#ab_pinsize
+!!REDIRECT prpty:ab_inst        pc_abut#ab_inst
+!!REDIRECT prpty:ab_prior       pc_abut#ab_prior
+!!REDIRECT prpty:ab_copy        pc_abut#ab_copy
+
+!! 102614
+!!KEYWORD
+pc_abut
+!!TITLE
+PCell Abutment
+!!HTML
+    Auto-abutment is most commonly used in MOS transistor pcells.  If
+    one overlays two compatible transistor instances, the two instances
+    reconfigure themselves into a dual-gate configuration, eliminating
+    redundant geometry.
+
+    <p>
+    At this time, the only available example pcell that implements
+    auto-abutment is the Nmos2 pcell in the IPL_cni130 library
+    supplied with the Synopsys (Ciranova) <a href="pycell">PyCell
+    Studio</a> download.  This is an OpenAccess Python portable pcell
+    which is part if the IPL (<a
+    href="https://www.iplnow.com">IPLnow.com</a>) library of
+    open-source portable pcells.
+
+!!IFDEF OpenAccess
+    <p>
+    The following procedure illustrates auto-abutment.
+    <ol>
+    <li>Download and install the Synopsys PyCell Studio package.  This
+    is free from Synopsys, but requires registration and a password
+    mailback.  Versions are available for Linux and Windows, though the
+    Windows version is not currently supported in <i>Xic</i>.
+
+    <p>
+    <li>Start <i>Xic</i> in an <a
+    href="pycell#connect">environment</a> that will load the
+    OpenAccess libraries and Python from the PyStudio.  Use "<tt>-Tcni</tt>"
+    to reference the appropriate technology file.  Edit an empty cell.
+
+    <p>
+    <li>Select the <a href="xic:oalib"><b>OpenAccess Libs</b></a> button
+    in the <b>File Menu</b>, which will bring up the libraries list.
+
+    <p>
+    <li>Select the <tt>IPL_cni130</tt> library by clicking on the name.
+    Then press the <b>Contents</b> button.  A new listing window will
+    appear.
+
+    <p>
+    <li>Scroll down in the new window and click on the <tt>Nmos2</tt>
+    entry.
+
+    <p>
+    <li>Then click the <b>Place</b> button in the bottom-right corner
+    of the same window.  The <a href="xic:place"><b>Cell Placement
+    Control</b></a> panel will appear.  Press the <b>Place</b> button
+    in this panel.
+
+    <p>
+    <li>The <a href="xic:pcparams">Parameters</a> panel will appear,
+    and the cell placement icon will be attached to the mouse pointer. 
+    Click twice in a drawing window to place two instances of the
+    cell, far enough apart that they don't overlap.  Press <b>Esc</b>
+    to exit placement mode.
+
+    <p>
+    <li>Use the <a href="xic:expnd"><b>Expand</b></a> feature from the
+    <b>View Menu</b> to set the display depth so that the instance
+    content will be shown.
+
+    <p>
+    <li>Now for the fun part.  Pop down any pop-up windows or
+    otherwise move them out of the way.  Select one of the cell
+    instances, and move it over the other, so that the right contact
+    area of one touches the left contact area of the other.  Both
+    instances will reconfigure themselves, and the overlapped contact
+    will be gone!  The structure represents a dual-gate transistor.
+
+    <p>
+    <li>Move one of the instances well away from the other.  Note that
+    they revert to their original form.
+
+    <p>
+    <li>
+    Click the <a href="xic:pcctl"><b>PCell Control</b></a> button in
+    the <b>Edit Menu</b>.  In the panel that appears, select <b>Mode 2
+    (with contact)</b> for <b>Auto-abutment mode</b>.
+
+    <p>
+    <li>As before, move one of the instances so that the contacts
+    overlap.  In this case, note that one of the instances retains the
+    contact.  This mode inplements trasistors with a shared contact.
+    </ol>
+!!ELSE
+    <p>
+    Unfortunately, this requires OpenAccess to obtain, so is not
+    currently available.  Support for auto-abutment, as decribed in
+    Ciranova documentation, is implemented within <i>Xic</i>.  An
+    example native abutting pcell will be provided at some point.
+!!ENDIF
+
+    <p>
+    The abutment protocol adheres as closely as possible to the
+    description from the <tt>eda_tool_integration.pdf</tt> document
+    supplied with the PyCell Studio.  There is one very significant
+    difference, in that Synopsys incorporates the logic into a
+    separate non-visual pcell, which is created transiently to handle
+    abutment events.  In <i>Xic</i>, the logic is built into the
+    program.  Thus, auto-abutment can be used in native language and
+    Tcl pcells in <i>Xic</i>, as well as Python pcells.  In
+    <i>Xic</i>, the internal logic handles abutment events, the
+    separate pcell is not used.
+
+    <p>
+    Auto-abutment is enabled in a cell through application of a number
+    of object properties that define aspects of the abutment.  These are
+    applied to objects created in the sub-master (or inherited from the
+    super-master).  The <i>Xic</i> properties as described below correspond
+    to the properties described for abutment in PyCells, with generally
+    identical syntax.
+
+    <a name="ab_class"></a>
+    <dl>
+    <dt><b>ab_class</b><dd>
+    This is equivalent to the Ciranova <tt>pycAbutClass</tt> property. 
+    It is applied to pin shapes to specify that two pin shapes from
+    different cells can be abutted.  Only pins with the same
+    <b>ab_class</b> property string can trigger auto-abutment.
+    </dl>
+    
+    <a name="ab_rules"></a>
+    <dl>
+    <dt><b>ab_rules</b><dd>
+    This is equivalent to the Ciranova <tt>pycAbutRules</tt> property. 
+    The property is applied to each pin shape that can be abutted, and
+    the string specifies how the pcell parameters are modified for
+    different abutment modes.
+    </dl>
+
+    <a name="ab_directs"></a>
+    <dl>
+    <dt><b>ab_directs</b><dd>
+    This is equivalent to the Ciranova <tt>pycAbutDirects</tt> property. 
+    The property is applied to each pin shape that can be abutted, and
+    the string contains a comma-separated list of one or more of the
+    string tokens <tt>left</tt>, <tt>bottom</tt>, <tt>right</tt>, and
+    <tt>top</tt>.  These specify the valid abutment directions.
+    </dl>
+
+    <a name="ab_shapename"></a>
+    <dl>
+    <dt><b>ab_shapename</b><dd>
+    This is equivalent to the Ciranova <tt>pycAbutShapeName</tt>
+    property.  This property is assigned by the pcell developer to
+    each pin shape which can be abutted.  It assigns a unique name to
+    the shape.
+    </dl>
+
+    <a name="ab_pinsize"></a>
+    <dl>
+    <dt><b>ab_pinsize</b><dd>
+    This is equivalent to the Ciranova <tt>pycAbutPinSize</tt>
+    The property is applied to each pin shape which can be abutted,
+    and supplies an orientation-independent width parameter.
+    </dl>
+
+    <a name="ab_inst"></a>
+    <dl>
+    <dt><b>ab_inst</b><dd>
+    This property is applied to instances of abutable cells, and contains
+    an instance name.  <i>Xic</i> normally does not generate or use
+    instance names.
+    </dl>
+
+    <a name="ab_prior"></a>
+    <dl>
+    <dt><b>ab_prior</b><dd>
+    This property of a pcell instance indicates that the instance is
+    abutted, and this property contains pre-abutment parameter values
+    for use in reverting abutment.
+    </dl>
+
+    <a name="ab_copy"></a>
+    <dl>
+    <dt><b>ab_copy</b><dd>
+    This property is applied to instances with <b>ab_prior</b>
+    properties that have just been copied.  This will allow parameter
+    reversion of the copy without touching the partner of the
+    original.
+    </dl>
+
+!!SEEALSO
+pc_stretch
+xic:pcells
+
+!!IFDEF OpenAccess
+!! 022513
+!!KEYWORD
+pycell pycells
+!!TITLE
+Synopsys (Ciranova) PyCell Studio
+!!HTML
+    <b>jump to</b> <a href="pycell#connect"><b>Connecting to PyCell
+    Studio</b></a>
+
+    <p>
+    Most parameterized cells (pcells) have been written in the Cadence
+    Virtuoso environment, using the proprietary Skill scripting
+    language found only in that environment.  These pcells can only be
+    used in a Virtuoso environment.
+
+    <p>
+    Ciranova, Inc., now owned by Synopsys, developed and championed
+    the idea of portable pcells, pcells that would have published
+    interfaces and use a common programming language, that could work
+    in any design environment.  The company provides a free <a
+    href="http://www.synopsys.com/Tools/Implementation/CustomImplementation/Pages/pycell-studio.aspx">
+    downloadable</a> "PyCell Studio" design kit.  The concept is made
+    possible by the use of OpenAccess, which has a well-defined
+    framework for pcell support, is well documented, and source code is
+    published.  Cadence Virtuoso and most modern tools use OpenAccess.
+
+    <p>
+    Though OpenAccess provides support for pcell interfacing and
+    management, actual execution of the pcell script is exported to
+    external code supplied as a plug-in.  The plug-in provides an
+    interface to the language interpreter or compiler and other things
+    required to execute the script.  This plug-in is supplied by the
+    system vendor or user.  For example, in a Virtuoso installation, a
+    Skill plug-in is provided.  OpenAccess comes with example plug-ins
+    for Tcl and C++.
+
+    <p>
+    Ciranova developed a Python plug-in for OpenAccess, with a set of
+    interface functions for creating geometry and related purposes
+    within OpenAccess.  Python is a very popular, modern, open source
+    scripting language.  It is present on any standard Linux system,
+    and is available for most other operating systems.  Ciranova calls
+    portable Python-based pcells that use the Ciranova plug-in
+    "PyCells".
+
+    <p>
+    The PyCell Studio design kit contains tools for viewing, testing, and
+    creating PyCells.  An example library of PyCells is provided,
+    complete with technology and display resource files.  It also
+    provides OpenAccess and Python, so the package is quite complete. 
+    There is comprehensive documentation and tutorials.
+
+    <p>
+    Though Ciranova has been bought by Synopsys, the PyCell Studio remains
+    available and apparently is still under development.  An industry
+    group, <a href="https://www.iplnow.com">IPLnow.com</a> which
+    includes TSMC and other foundries and some tool vendors, is
+    pushing the cause of "interoperable" PDK libraries based on
+    portable pcells.
+
+    <p>
+    Whiteley Research fully supports this effort, and <i>Xic</i>
+    will be interoperable with the PyCell Studio design kit and PyCells
+    as much as possible.
+
+    <a name="connect"></a>
+    <h2>Connecting to PyCell Studio</h2>
+
+    This section describes how <i>Xic</i> can directly interface to
+    the PyCell Studio example library and technology.  PyCells
+    from the library, or authored by the user, can be instantiated
+    in <i>Xic</i> cells.
+
+    <p>
+    It will be assumed in this discussion that the PyCell Studio has
+    been <a
+    href="http://www.synopsys.com/Tools/Implementation/CustomImplementation/Pages/pycell-studio.aspx">
+    downloaded</a> from Synopsys, and installed on your system, which
+    also has <i>Xic</i> installed.  The PyCell Studio works with Red
+    Hat Enterprise Linux releases 5 and 6 (and equivalent).  You must
+    choose the same word size (32 or 64 bits) as your <i>Xic</i>
+    installation.  The installation location for PyCell Studio is
+    selected by the user, and we will refer to this location as
+    "<tt>$CNI_ROOT</tt>".  For example, <tt>$CNI_ROOT</tt> might be
+    <tt>/usr/local/ciranova</tt>.
+
+    <p>
+    Although your system will almost certainly have Python installed,
+    it appears necessary to use the Python provided with the Studio. 
+    In Red Hat EL6, the Ciranova and stock Python version numbers are
+    the same, but the libraries are apparently built with different
+    options, and attempts at using the stock Python have failed
+    (perhaps Synopsys will fix this?).  You can, however, use your own
+    OpenAccess installation if you have one and it is reasonably
+    recent.  You can probably also use OpenAccess from Cadence.
+
+    <p>
+    The first step is to make sure that the PyCell Studio installation
+    is correct by following the steps in the
+    <tt>$CNI_ROOT/quickstart/README.txt</tt> file.
+
+    <p>
+    Part of this procedure (step 3) is to source one of the startup
+    files provided.  This step sets the value of several environment
+    variables, and forces the system to find the Ciranova Python
+    instead of a local Python.  It also installs the OpenAccess
+    plug-in for Python.  The user can customize this script if
+    desired.  It is necessary to source this file, or otherwise setup
+    the environment as per the file, before starting <i>Xic</i>. 
+    After finishing, you will want to revert the environment to the
+    previous state.  Unfortunately, this is difficult.  You may kill
+    the window and start a new one.
+
+    <p>
+    A better way to run <i>Xic</i> in the Ciranova environment would be
+    to write a script such as the following.  Call it "<tt>xic.cni</tt>".
+
+    <pre>
+    #! /bin/sh
+
+    CNI_ROOT=/usr/local/ciranova
+    source $CNI_ROOT/quickstart/bashrc; xic -Tcni $*
+    </pre>
+
+    The <tt>CNI_ROOT</tt> line should be changed to the actual
+    Ciranova installation location.  After creating the file, make it
+    executable with
+    <blockquote>
+    <tt>chmod 755 xic.cni</tt>
+    </blockquote>
+
+    Then, to run <i>Xic</i> in the Ciranova environment, just run this
+    script instead.  Since it runs in a sub-shell, the environment
+    of the main shell is not corrupted.  Any command line arguments
+    are passed through.
+    
+    <p>
+    Note that above <i>Xic</i> is started with a "<tt>-Tcni</tt>"
+    option, which specifies to use the <tt>xic_tech.cni</tt> example
+    technology file provided with <i>Xic</i>.  This uses the <a
+    href="ReadDRF"><tt>ReadDRF</tt></a> and <a
+    href="ReadCniTech"><tt>ReadCniTech</tt></a> directives to read
+    display resource and technology files from the Ciranova
+    installation.  However, Ciranova provides a number of technology
+    files, any you may want to try them.  You will probably want to
+    copy the <tt>xic_tech.cni</tt> file to your local directory, so
+    that it can be edited easily.
+
+    <p>
+    Finally, you will need to set up your OpenAccess <tt>lib.defs</tt>
+    to include the Ciranova libraries.  The <tt>lib.defs</tt> file is
+    a listing of the OpenAccess libraries available, very similar to the
+    <tt>cds.lib</tt> file in Cadence.  If no <tt>lib.defs</tt> file exists
+    in the current directory, using a text editor create the file with
+    a single line
+    <blockquote>
+    <tt>INCLUDE</tt> <i>path/to/ciranova</i><tt>/quickstart/lib.defs</tt>
+    </blockquote>
+    The <i>path/to/ciranova</i> is the installation location, what we have
+    called <tt>$CNI_ROOT</tt>.  If there already is a <tt>lib.defs</tt>
+    file, the line above should be added.
+
+    <p>
+    Once setup is complete, we can test it.
+    <ol>
+    <li><tt>prompt>  ./xic.cni</tt><br>
+    <i>Xic</i> should start, and the "Using OpenAccess" and "Using
+    Python" messages should appear in the console.  The layer table
+    will show perhaps unfamiliar layers, these have been obtained from
+    the Ciranova technology file.  There shouldn't be any error or
+    warning message pop-ups.
+
+    <p>
+    <li>Switch the editing context to a new, empty cell, if the current
+    cell is not empty or is otherwise of value.
+
+    <p>
+    <li>Click the <b>OpenAccess Libs</b> button in the <b>File Menu</b>,
+    which will exist if OpenAccess is connected (the "Using OpenAccess" message
+    appeared).  This will bring up the
+    <a href="xic:oalib"><b>OpenAccess Libraries</b></a> panel.  The
+    following libraries will be listed.
+    <blockquote>
+    <tt>IPL_cni130</tt><br>
+    <tt>cnVPcellLib</tt>
+    </blockquote>
+
+    <p>
+    <li>Click on the <tt>IPL_cni130</tt> line to select it, and press
+    the <b>Contents</b> button.  The <b>Listing</b> panel should
+    appear, loaded up with names.
+
+    <p>
+    <li>In the <b>Contents</b>, find the <tt>Nmos2</tt> entry, and
+    click on it to select it.
+
+    <p>
+    <li>Press the <b>Place</b> button in the <b>Contents</b> listing. 
+    The <a href="xic:place"><b>Cell Placement Control</b></a> panel
+    will appear.  Press the <b>Place</b> button in this panel, and the
+    <a href="xic:pcparams"><b>Parameters</b></a> pop-up will appear. 
+    There will be a double-line box "attached" to the mouse pointer.
+
+    <p>
+    <li>Have a quick look at the <b>Parameters</b> panel.  These are
+    the pcell parameters that can be set.  Feel free to enter some new
+    values.  The documentation for the <tt>Nmos2</tt> pcell will
+    explain what the parameters are, though a few, such as
+    <tt>fingers</tt>, <tt>l</tt>, and <tt>w</tt>, are obvious.
+
+    <p>
+    <li>Click anywhere in the drawing window to place an instance. 
+    You should expand the view to show the instance content, press
+    <b>Ctrl-x</b> for this.  You can place more instances, perhaps
+    with different parameters set.  Press the <b>Esc</b> key when
+    done.
+
+    <p>
+    <li>Click on one of the instances to select it.  Note that some of
+    the sides of certain features are highlighted.  These are <a
+    href="pc_stretch">stretch handles</a> that can be dragged, to
+    change the size of the feature.  Try dragging a handle and note
+    the effect.
+
+    <p>
+    <li>Place a second instance of <tt>Nmos2</tt> so that it doesn't
+    overlap the first.
+
+    <p>
+    <li>Move the second instance, place it so that one of the S/D
+    contacts overlaps a contact of the first instance.  Note that the
+    overlapping contact has disappeared in both instances.  This is <a
+    href="pc_abut">auto-abutment</a>.  the two instances can be
+    repositioned so as to exactly share the common edge, which
+    implements a dual-gate transistor.
+
+    <p>
+    <li>Press the <b>PCell Control</b> button in the <b>Edit Menu</b>,
+    which will display the <a href="xic:pcctl"><b>PCell Control</b></a>
+    pop-up.  In the pop-up, change the <b>Auto-abutment mode</b> to
+    <b>Mode 2 (with contact)</b>.
+
+    <p>
+    <li>Move one of the cell instances well away from the other, note
+    that both instances revert to the original form.  Now drag and
+    drop one of the instances over the other so that they share a
+    contact, as before.  This time, however, note that a common
+    contact is retained.
+    </ol>
+
+    This should be enough to get started, have fun!
+
+!!SEEALSO
+xic:pcells
+!!ENDIF
+
+!! 022816
+!!KEYWORD
+stdvia
+!!TITLE
+Standard Vias
+!!HTML
+    <i>Xic</i> provides a feature for creating and managing via
+    objects used to connect between conducting layers in physical
+    layouts.  Although ordinary cells or cut-layer objects can be used
+    for this purpose, use of standard vias offers some important
+    advantages in many designs.
+
+    <ul>
+    <li>The vias can contain the structure necessary so that proper
+    use automatically satisfies design rule constraints.
+
+    <li>The vias are designed to allow a zero <a
+    href="ViaSearchDepth">search depth</a> for extraction, speeding
+    this process.
+
+    <li>The creation of the "sub-master" cells that implement the vias
+    is handled transparently by the system, removing the often large number
+    of ordinary via cells from the cell listings.  The via cells are no
+    longer written in output, reducing file size and complexity.
+
+    <li>The vias are easily created from the <a
+    href="xic:crvia"><b>Via Creation</b></a> panel in the <b>Edit
+    Menu</b> and can be placed immediately, which is quick and
+    efficient.
+    </ul>
+
+    In order for this feature to be available, one or more <a
+    href="techfile:stdvia">standard vias definitions</a> must appear
+    in the technology file.  These will also be imported from a
+    Cadence Virtuoso ASCII technology file if the <a
+    href="ReadCdsTech"><tt>ReadCdsTech</tt></a> keyword is used, and
+    the Cadence database contains <tt>standardViaDefs</tt> definitions. 
+    The implementation of standard vias in <i>Xic</i> closely follows
+    the implementation in OpenAccess, and tools such as Virtuoso that
+    use OpenAccess.
+
+    <p>
+    The standard vias that are defined in the technology provide the
+    default definitions for a via structure.  Although commonly instantiated
+    directly, more commonly variations are implemented.  There are a number
+    of parameters that define the via, and these can be changed by the user
+    to produce a variant most suitable in the context where it will be used.
+    For example, the cut can be arrayed when lower contact resistance is
+    required.
+
+    <p>
+    The mechanism is similar to a <a href="xic:pcells">parameterized
+    cell</a> (pcell).  The standard vias defined in the technology can
+    be considered as the super-masters.  When a via of a certain
+    configuration is requested, a "sub-master" cell for that
+    configuration is created in memory, if it hasn't been created
+    previously.  The instances of the via will reference that
+    sub-master.  Like pcells, the masters are not written to disk. 
+    Instead, when a file containing via placements is read, the via
+    sub-masters are created in memory as needed.
+
+    <p>
+    An exception is when shipping a layout to another system, such as
+    to a mask vendor.  The <a href="xic:exprt"><b>Export
+    Control</b></a> panel from the <b>Convert Menu</b> is used for
+    this purpose.  If the <b>Strip For Export</b> check box is checked
+    or equivalently if the <a
+    href="StripForExport"><b>StripForExport</b></a> variable is set,
+    which should be true in this situation, the via (and pcell)
+    sub-masters are included in the layout file.  The foreign system
+    will see these as ordinary cells.  The <b>Include standard via
+    cell sub-masters</b> check box or equivalently the <a
+    href="ViaKeepSubMasters"><b>ViaKeepSubMasters</b></a> variable
+    will likewise cause inclusion of the via sub-masters in output
+    when set.
+
+    <p>
+    A standard via definition provides values for a number of
+    parameters.  Of these, the numerical values can be changed by the
+    user to form a variant.  The layers involved are immutable.  Each
+    standard via definition has a unique name assigned in the
+    technology.  This name can be any text which is suitable as a cell
+    name.  One convention is to use the layer names of the two
+    conductors, top layer first, separated by an underscore, e.g.,
+    "<tt>M2_M1</tt>".  The parameters and their effects are described
+    with the <a href="xic:crvia"><b>Via Creation</b></a> panel, from
+    which the parameters can be set, and variants created and placed.
+
+    <a name="prpty"></a>
+    <h4>The Standard Via Property String</h4>
+
+    The <b>stdvia</b> property (number 7160) is applied to standard
+    via instances and sub-masters.
+!!IFDEF OpenAccess
+    The OpenAccess translator will transparently convert these to the
+    corresponding OpenAccess forms when writing to OpenAccess, and
+    <i>vice-versa</i>.
+!!ENDIF
+    A string with very similar format to the property string is used
+    by the <a href="OpenViaSubMaster"><tt>OpenViaSubMaster</tt></a>
+    script function.  The property string syntax is described here.
+
+    <p>
+    There are actually two formats, that will be referred to as the
+    old and new formats.  The old format uses OpenAccess keywords and
+    is friendly for humans, the new format uses a code and is more
+    compact.  <i>Xic</i> will always write the new format, but will
+    read either format.
+
+    <p>
+    The property string consists of one or more space-separated text
+    tokens.  In either case, the first token is the name of the
+    standard via, as given in the definition in the technology file. 
+    The remaining terms represent the numerical parameters that are
+    different from the defaults given in the standard via definition. 
+    There need not be any additional tokens, in which case the via has
+    all default values.  More commonly, tokens follow the via name
+    that provide alternate values.
+
+    <p>
+    In the old format, a token takes one of the forms
+    <blockquote>
+    <i>keyword</i><tt>:</tt><i>value</i><br>
+    <i>keyword</i><tt>:</tt><i>value</i><tt>,</tt><i>value</i>
+    </blockquote>
+    The <i>value</i> indicates an integer representing a dimension
+    in internal units.
+
+    <p>
+    The new format assigns each numeric value a lower-case letter.
+    A token consists of the letter, followed immediately by the
+    numeric value in nanometers.  The number is printed in a format
+    which removes trailing zeros and decimal points.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>new format key letter(s)</th> <th>old format keyword</th></tr>
+    <tr><td><tt>a</tt></td>   <td><tt>CutWidth</tt></td></tr>
+    <tr><td><tt>b</tt></td>   <td><tt>CutHeight</tt></td></tr>
+    <tr><td><tt>c</tt></td>   <td><tt>CutRows</tt></td></tr>
+    <tr><td><tt>d</tt></td>   <td><tt>CutColumns</tt></td></tr>
+    <tr><td><tt>e,f</tt></td> <td><tt>CutSpacing</tt></td></tr>
+    <tr><td><tt>g,h</tt></td> <td><tt>Layer1Enc</tt></td></tr>
+    <tr><td><tt>i,j</tt></td> <td><tt>Layer1Off</tt></td></tr>
+    <tr><td><tt>k,l</tt></td> <td><tt>Layer2End</tt></td></tr>
+    <tr><td><tt>m,n</tt></td> <td><tt>Layer2Off</tt></td></tr>
+    <tr><td><tt>o,p</tt></td> <td><tt>OriginOff</tt></td></tr>
+    <tr><td><tt>q,r</tt></td> <td><tt>Implant1Enc</tt></td></tr>
+    <tr><td><tt>s,t</tt></td> <td><tt>Implant2Enc</tt></td></tr>
+    </table>
+    </blockquote>
+
+    The new and old formats can <b>not</b> be mixed, all tokens must
+    follow one format or the other.  The cases with two letters
+    correspond to the keywords with two values, and the values
+    represent dimensions in the X and Y directions.
+
+    <p>
+    Examples:
+    <blockquote>
+    <tt>M2_M1 CutRows:2 CutColumns:2 Layer1Enc:40,60</tt><br>
+    <tt>M2_M1 c2 d2 h60</tt>
+    </blockquote>
+
+    <p>
+    The two strings are equivalent if 1) the database resolution is
+    1000 so that the internal unit is nanomenters, and 2) the
+    default layer 1 enclosure in the X direction is 40nm.
+
+    <p>
+    When a sub-master is created, it is given a cell name that is
+    the same as a new format property string with the space stripped
+    out, and the characters '-' (minus) and '.' (period) replaced
+    by 'm' and 'p', respectively.
+
+    <p>
+    The <a href="OpenViaSubMaster"><tt>OpenViaSubMaster</tt></a>
+    script function takes a string in almost the same format,
+    the only difference is that the via name token is not present.
+    Effectively, the via name is passed as the first argument, and the
+    rest of the string (if anything) is passed as the second argument.
+    Either new or old format is acceptable.
+

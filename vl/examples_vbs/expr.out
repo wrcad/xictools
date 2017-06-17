@@ -1,0 +1,154 @@
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_add.v
+03 06 (0x3 0x6)
+0a 10 (0xa 0x10)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_andand.v
+34 && 12 (Ok)
+a && 0 (Ok)
+234 && a (Ok)
+a && a (Ok)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_concat.v
+05d b3 (0x5d 0xb3)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_eqeq.v
+123 == 123 (Ok)
+a == 0 (Ok)
+2 == a (Ok)
+a == a (Ok)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_eqeqeq.v
+1x01 === 1x01 (Ok)
+a === 1x0x_1x0x (Ok)
+1x0x_1x0x === a (Ok)
+a === a (Ok)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_grteq.v
+123 >= 123 (Ok)
+a >= 0 (Ok)
+2 >= a (Ok)
+a >= a (Ok)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_grtthan.v
+123 > 123 (Ok)
+a > 0 (Ok)
+2 > a (Ok)
+a > a (Ok)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_invert.v
+05 fa (0x05 0xfa)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_leseq.v
+123 <= 123 (Ok)
+a <= 0 (Ok)
+2 <= a (Ok)
+a <= a (Ok)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_lesthan.v
+123 < 123 (Ok)
+a < 0 (Ok)
+2 < a (Ok)
+a < a (Ok)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_logand.v
+aa 0a (0xaa 0x0a)
+02 02 (0x02 0x02)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_logor.v
+aa eb (0xaa 0xeb)
+ef ef (0xef 0xef)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_logxor.v
+aa 5b (0xaa 0x5b)
+5f 04 (0x5f 0x04)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_lshift.v
+04 30 (0x04 0x30)
+c0 00 (0xc0 0x00)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_mintypmax.v
+6 (min=1, typ(default)=6, max=14)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_not.v
+00 01 (0x00 0x01)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_noteq.v
+123 != 123 (Ok)
+a != 0 (Ok)
+2 != a (Ok)
+a != a (Ok)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_noteqeq.v
+1x01 !== 1x01 (Ok)
+a !== 1x0x_1x0x (Ok)
+1x0x_1x0x !== a (Ok)
+a !== a (Ok)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_oror.v
+0 || 0 (Ok)
+a || 0 (Ok)
+234 || a (Ok)
+a || a (Ok)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_qstr.v
+61 0062 (0x61 0x62)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_rshift.v
+00 04 (0x00 0x04)
+01 00 (0x01 0x00)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_sub.v
+01 09 (0x1 0x9)
+06 fd (0x6 0xfd)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+expr_ternary.v
+01110100 (0111_0100)
+10010110 (1001_0110)
+xxx101x0 (xxx1_01x0)

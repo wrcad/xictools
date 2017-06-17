@@ -1,0 +1,146 @@
+$Id: README,v 1.15 2017/02/16 00:10:43 stevew Exp $
+
+MRouter Open-Source Maze Routing Plug-in Library and Application
+----------------------------------------------------------------
+
+Contact:  Stephen Whiteley, Whiteley Research Inc.,
+          stevew at wrcad dot com
+
+This is "MRouter" which began life as Qrouter from
+opencircuitdesign.com.
+
+The original source code was converted from C to C++, and relevant
+parts imported and modified to implement two classes:
+
+1. A database class (cLDDB).  This caches technology and routing
+   information.  It can read and write technology and route
+   information in LEF and DEF formats, using the Cadence LEF/DEF tool
+   kits instead of the stand-alone readers from Qrouter.  Eventially
+   this may link directly to OpenAccess.
+
+2. The maze router (cMRouter).
+   This contains the router itself.  It is tightly coupled to the
+   database through the cLDDBif interface.  Originally the router class
+   was derived from the database, the components are now modular.
+
+The two classes are exported as a plug-in library, intended to be used
+with a third-party application.  The Xic program from Whiteley
+Research (wrcad.com) has a developing interface to the MRouter
+plug-in.  That program will provide full control of the routing
+operations, visualization, etc.
+
+The MRouter can also operate stand-alone by linking to a main
+function, much like the Qrouter.
+
+The Tcl/Tk support found in the Qrouter is gone in MRouter, a perhaps
+temporary casualty of the porting.  However, a set of command handler
+functions is now provided, which can be wrapped into scripting languages
+such as Tcl and Python.  The objective is to provide an abstract command
+interface than can be adapted to any language.  The internal graphical
+interface is also not available at present.
+
+Building MRouter
+
+run "configure", then type "make".  This will, on a good day,
+1.  Unpack the LEF/DEF tool kits and apply patches.
+2.  Create a Makefile with dependencies in the lddb and mrouter
+    subdirectories.
+3.  Compile the code in the lef/def/lddb/mrouter subdirectories.
+
+As root, type "make install".  This will install the MRouter under
+/usr/local/mrouter.  The directory will contain the mr stand-alone
+binary, the libmrouter plug-in shared library (which can also be
+linked at compile time in the normal way), examples, and
+documentation.
+
+You should have success on CentOS/RedHat 5/6/7, OpenSuse 13.1/2, OS X,
+Windows with Cygwin or MinGW, as I run those.  Other Linux
+distributions will probably work, please report problems.
+
+"make test" will route the map9v3 Qflow example found in the test
+subdirectory.
+
+Q.  What is a plug-in library?
+A.  A plug-in library is a shared library internally configured so
+    that all functions are easily accessible when the library is
+    loaded at run time using dlopen (or LoadLibrary in Windows).  This
+    can be done in C++ but not in C, by using interface classes and
+    inheritance.
+
+A plug-in provides the following advantages:
+1.  It is not required for an application to run.  If the application
+    successfully loads the plug-in, then the application can configure
+    itself to use the features, but if the plug-in is not found, those
+    features are simply not available.  With an ordinary shared library,
+    the library must exist or the application will not run.
+
+2.  It is my opinion that A closed-source application can load and use
+    a GPL "free" plug-in without GPL-infecting the application.  This
+    is different from a normal shared library, in which case the
+    distributed binary can be argued is a "derivative work" of the
+    shared library (the program won't run without it), and therefor
+    the entire application is under GPL.  For a plug-in, the linking
+    takes place at run-time, at the user's site, initiated by the
+    user.  The "derivative work" is therefor produced by the user,
+    which is unambiguously within the user's rights.
+
+This is very early in the development and many things are lacking,
+including documentation.  This is an open-source project and feedback
+and help would be appreciated.
+
+
+Changes
+
+1.0.0
+Initial release.
+
+1.0.1
+Sync with qrouter-1.3.57.
+Update configure.in to be more portable.
+Lots of new debugging output available.
+
+1.0.2
+Change internal data storage type from double to "lefu_t" (integer). 
+This avoids comparison ambiguity due to numerical noise, uses less
+memory, and may be faster.
+Use of new mrNodeInfo struct with per-point allocation and memory
+management uses less memory.
+
+1.1.0
+Fixed bug in ripupNet in mr_maze.cc that caused stage2 to fail for
+openMSP430.
+
+This is the first publicly available release.  The minor release
+number is set to 1, this will represent the "interface level" and will
+change when exported header definitions change.  Applications should
+not load a plug-in with different release level.
+(Never actually released.)
+
+1.1.1           01/15/2017  (initial public release)
+Physical net data from DEF input is now dealt with properly, including
+SPECIALNETS.  There is a new dbPath data struct which describes a list
+of physical routes, now hung on the dbNet after routing or when
+reading DEF.
+
+A separate array is now used for the nets after reordering, preserving
+the original order.  The order of SPECIALNETS may now be different than
+Qrouter, even with compatibility option set.
+
+There is now provision for up to 6 "global" nets (i.e., vdd, gnd,
+etc).  The original vdd/gnd handling has been updated.
+
+The net->netnum is now basically an offset into an array, making finding
+net by netnum trivial.
+
+New "increments" variable.  This is a list of positive integers, which
+gives the mask halo width for each pass.  Previously, each pass halo has
+a fixed width of one.
+
+New stack class and test for duplicate entries eliminates transient
+memory bloat during routing.
+
+New elapsed time and internal memory use diagnostics.
+
+Now use unsigned short for routing grid storage, saves memory.
+
+New hash table class used for finding of gates/nets/pins by name.

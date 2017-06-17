@@ -1,0 +1,100 @@
+* MVTL gate margin analysis\n\n\
+To run, give these commands to WRspice after sourcing this file:\n\
+    mplot -on\n\
+    check
+*
+*
+.check
+.exec
+# Compute margins of an MVTL gate
+# This is an example of an operating range analysis input file
+#
+checkFAIL = 0
+compose checkPNTS values 95p 105p 195p 205p 295p 305p
+# above two lines are required in header, the rest are optional
+#
+# central value of first variable, number of evaluation steps above and
+# below, step delta:
+checkVAL1 = .38
+checkSTP1 = 5
+checkDEL1 = .02
+#
+# same thing for second variable
+checkVAL2 = 3
+checkSTP2 = 6
+checkDEL2 = .5
+#
+# end of header
+.endc
+
+.control
+#
+# The following code is evaluated just after the time variable exceeds
+# each one of the checkPNTS
+#
+if time > checkPNTS[0]
+    if time < checkPNTS[1]
+        checkFAIL = 0
+        if abs(v(1)) > .5e-3
+            checkFAIL = 1
+        end
+        echo tp1
+    end
+end
+if time > checkPNTS[1]
+    if time < checkPNTS[2]
+        checkFAIL = 0
+        echo tp2
+    end
+end
+if time > checkPNTS[2]
+    if time < checkPNTS[3]
+        checkFAIL = 0
+        if abs(v(1)) < 2.2e-3
+            checkFAIL = 1
+        end
+        echo tp3
+    end
+end
+if time > checkPNTS[3]
+    if time < checkPNTS[4]
+        checkFAIL = 0
+        echo tp4
+    end
+end
+if time > checkPNTS[4]
+    if time < checkPNTS[5]
+        checkFAIL = 0
+        if abs(v(1)) > .5e-3
+            checkFAIL = 1
+        end
+        echo tp5
+    end
+end
+.endc
+
+*margin analysis on MVTL or gate
+.tran .5p .35n uic
+Igate 0 8 pulse(0 $value1%m 50p 25p 25p 25p 100p)
+Vinput 7 0 pulse(0 $value2%m 115p 25p 25p 25p)
+B1 3 13 20 jj1 area=1
+B2 4 13 20 jj1 area=3
+B3 3 6 20 jj1 area=1
+L1 11 1 4.0PH
+L2 1 12 1.3PH
+LX1 2 5 9PH
+LX2 5 14 3PH
+LPG 13 0 1PH
+LPI 14 6 5PH
+LP1 3 11 0.5PH
+LP2 4 12 0.2PH
+K1 L1 LX1 0.5
+K2 L2 LX2 0.5
+RI 6 0 1
+RD 3 4 2
+RIN1 7 2 15
+RP 8 1 60
+rout1 1 0 15
+.model jj1 jj(Icrit=0.12m,cap=.324p,delv=0.01m,vg=2.8m)
+.END
+

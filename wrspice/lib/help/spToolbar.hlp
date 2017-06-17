@@ -1,0 +1,1275 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spToolbar.hlp,v 1.18 2016/05/15 17:52:53 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spToolbar.hlp
+!!TITLE
+spToolbar.hlp
+!!HTML 
+
+!!SUBTOPICS
+graphics
+toolbar
+fontspanel
+filespanel
+circuitspanel
+plotspanel
+plotopts
+colors
+vectorspanel
+variablespanel
+shellopts
+simopts
+cmdopts
+tracepanel
+dbgopts
+
+
+!! useriface.tex 050414
+!!KEYWORD
+graphics
+!!TITLE
+Graphical Interface
+!!HTML
+    When the <b>DISPLAY</b> variable is found in the <a
+    href="environment">environment</a> upon program startup,
+    <i>WRspice</i> assumes that a graphical (X-window) server is
+    available, and will enable its graphical components.  If this
+    initialization fails, <i>WRspice</i> will terminate.  If the
+    <b>DISPLAY</b> variable is not set, and the <a
+    href="-d"><tt>-d</tt></a> option is not used to specify the
+    display, or the <a href="-dnone"><tt>-dnone</tt></a> command line
+    option is given, then <i>WRspice</i> will run in text-only mode. 
+    In this mode, the core functionality is available, but not the
+    graphical niceties such as plotting (other than the infamous crude
+    line-printer plots of yore).  Under Microsoft Windows, graphics is
+    (of course) always available.
+
+!!REFERENCES
+toolbar
+graphcmds
+
+!!REDIRECT dragdrop     toolbar#dragdrop
+!!REDIRECT wrbtn        toolbar#wrbtn
+!!REDIRECT toolsmenu    toolbar#toolsmenu
+
+!! useriface.tex 121515
+!!KEYWORD
+toolbar toolcontrol
+!!TITLE
+Tool Control Window
+!!HTML
+    <img src=screenshots/toolbar.png align=right>
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="toolbar#dragdrop"><b>Drag and Drop</b></a><br>
+    <a href="toolbar#wrbtn"><b>WR Button</b></a><br>
+    <a href="toolbar#runstop"><b>Run/Stop Buttons</b></a><br>
+    <a href="toolbar#filemenu"><b>File Menu</b></a><br>
+    <a href="toolbar#editmenu"><b>Edit Menu</b></a><br>
+    <a href="toolbar#toolsmenu"><b>Tools Menu</b></a><br>
+    <a href="toolbar#helpmenu"><b>Help Menu</b></a>
+    </td></tr></table>
+
+    When a graphical interface is available, <i>WRspice</i> by default
+    provides a small <b>Tool Control</b> window which provides menus
+    for controlling <i>WRspice</i>, and a display containing a
+    tabulation of memory statistics.  The menus contain buttons which
+    bring up graphical screens, from which much most of <i>WRspice</i>
+    can be controlled in a (perhaps) more user-friendly fashion.  The
+    locations of the pop-ups and their active/inactive status at
+    program startup can be preset by the user.
+
+    <p>
+    When running <i>WRspice</i> through the <i>Xic</i> program, by
+    default the tool control window will appear when connection to
+    <i>WRspice</i> has been established.  The <i>Xic</i> variable
+    <b>NoSpiceTools</b> can be set, before the connection is
+    established, to prevent the tool control window from appearing.
+
+    <p>
+    The text area lists the following quantities, though some may not
+    be listed if the operating system does not provide this
+    information.  The listing is updated every few seconds.  The first
+    line of text shows the current running status of <i>WRspice</i>: 
+    idle, running, or stopped.  Also shown on this line is the elapsed
+    wall-clock time from the last status change.  The time format is
+    hours:minutes:seconds.  The seconds entry has two decimal places
+    (resolution is .01 second).  The hours field is not included if
+    zero.  The <b>user</b> and <b>system</b> lines are similar, but
+    display the total user cpu time used by the process, and the total
+    system cpu time, respectively.  The user time generally includes
+    input/output processing time, where the system time is pure cpu
+    usage.  The <b>data size</b> entry displays the total allocated
+    memory in Kb used by the program.  This is only the memory
+    allocated by the program for data, and does not include additional
+    memory overhead reported by programs such as <tt>top</tt> and
+    <tt>ps</tt>.  This size is limited to the <b>program limit</b>,
+    which is given in the following line.  This limit can be changed
+    with the <a href="maxdata"><tt>maxdata</tt></a> variable.  The
+    final <b>system limit</b> line displays the maximum memory
+    available from the system for the process.
+
+    <a name="dragdrop"></a>
+    <h3>Drag and Drop</h3>
+
+    <i>WRspice</i> supports the xdnd and Motif drag and drop
+    protocols.  One is able to drag files from many file manager
+    programs into the <b>Tool Control</b> window of <i>WRspice</i> or
+    the main window of <i>Xic</i>, and that file will be loaded into
+    the program.  The <a href="filemgr">File Selection</a> and <a
+    href="filespanel">Files Listing</a> pop-ups participate in the
+    protocols as sources and receivers.  The <a href="xeditor">text
+    editor</a> and <a href="mailclient">mail</a> popups are drag
+    receivers.
+
+    <p>
+    The file must be a standard file on the same machine.  If it is
+    from a tar file, or on a different machine, first drag it to the
+    desktop or to a directory, then into <i>WRspice</i>.  (Note:  The
+    Gnome gmc file manager allows one to view the contents of tar
+    files, etc.  as a "virtual file system".  Window Maker and
+    Enlightenment window managers, at least, are drag/drop aware.)
+
+    <a name="wrbtn"></a>
+    <h3>WR Button</h3>
+
+    In the upper left of the <b>Tool Control</b> window is the <b>WR
+    button</b>, which contains the Whiteley Research corporate logo. 
+    Pressing this button brings up a <a href="mailclient">mail
+    client</a>, pre-loaded with the address of the Whiteley
+    Research support staff.  The text field containing the address, as
+    well as the subject, can be changed.  This can be used to send
+    questions and bug reports to Whiteley Research, or to send
+    messages or data files to colleagues.
+
+    <a name="runstop"></a>
+    <h3>Run/Stop Buttons</h3>
+
+    To the right of the <b>WR</b> button are the <b>Run</b> (green
+    arrow) and <b>Stop</b> (red X) buttons.  Pressing the <b>Run</b>
+    button is equivalent to giving the <a href="run"><tt>run</tt></a>
+    command on the command line, without arguments.  Pressing the
+    <b>Stop</b> button issues an interrupt signal that will pause a
+    simulation in progress, the same as if the user typed
+    <b>Ctrl-C</b> in the console window.
+
+    To the right of the buttons is a menu bar with four entries: 
+    <b>File</b>, <b>Edit</b>, <b>Tools</b>, and <b>Help</b>.  Pressing
+    the mouse button 1 on these entries brings up a drop-down menu
+    containing various commands.
+
+    <a name="filemenu"></a>
+    <h3>File Menu</h3>
+
+    The <b>File</b> menu contains commands for manipulating disk
+    files.
+
+    <dl>
+    <dt><b>File Select</b>
+    <dd>Bring up a <a href="filemgr">file manager</a> panel.  This
+    panel allows files and directories to be created, deleted, and
+    renamed, or read into <i>WRspice</i>.
+    </dl>
+
+    <dl>
+    <dt><b>Source</b>
+    <dd>This button creates a dialog, soliciting a file to input into
+    <i>WRspice</i>, as with the <a href="source"><b>source</b></a>
+    command.  When the dialog is active, the <b>Tool Control</b> text
+    window is active as a <a href="dragdrop">drag receiver</a>, so
+    that file names can be dragged and dropped from compatible windows
+    (such as the file manager), and the file name will be loaded into
+    the dialog.
+    </dl>
+
+    <dl>
+    <dt><b>Load</b>
+    <dd>This button is similar in operation to the <b>Source</b>
+    button, however the file is expected to be a <a
+    href="rawfilefmt">rawfile</a> which is the native plot-file
+    format, or a Common Simulation Data Format (CSDF) file.  Like the
+    <b>Source</b> dialog, the <b>Load</b> dialog supports drag and
+    drop protocols through the text area of the <b>Tool Control</b>
+    window.  The file is read and data are made available for
+    analysis, similar to the <a href="load"><b>load</b></a> command.
+    </dl>
+
+    <dl>
+    <dt><b>Update Tools</b>
+    <dd>The <b>Update Tools</b> button will save the current tool
+    configuration, and the next time <i>WRspice</i> is started, the
+    same tools will be available, in the same locations on-screen. 
+    The tools are available in the <b>Tools</b> menu to be described.
+
+    <p>
+    Initialization of the graphical interface can be directed from the
+    system <a href="startup_files">init file</a> <tt>wrspiceinit</tt>
+    found in the startup directory, or more appropriately from the
+    user's startup files (<tt>.wrspiceinit</tt> files) as found in the
+    current or user's home directory.  Only the file in the home
+    directory can be automatically updated from within <i>WRspice</i>. 
+    A special command <a href="tbsetup"><b>tbsetup</b></a>, which is
+    only recognized in these files, performs the initialization.  The
+    <b>tbsetup</b> function takes a long, messy command line, however
+    fortunately the user has an easy way to automatically add this
+    line, using the <b>Update Tools</b> command.  This action is
+    also available from the command line <a
+    href="update"><b>update</b></a> command.
+
+    <p>
+    The <b>Update Tools</b> and <b>update</b> commands will create or
+    update a <tt>.wrspiceinit</tt> file in the user's home
+    directory.  If the home directory can't be determined, the current
+    directory will be used.
+    </dl>
+
+    <dl>
+    <dt><b>Update WRspice</b>
+    <dd>The <b>Update WRspice</b> button will initiate a dialog on the
+    command line to download a program update distribution file, and
+    possibly install it over the present installation. 
+    Downloading/installation is only possible if a newer distribution
+    exists on the Whiteley Research web site, and only if a current
+    <tt>.wrpasswd</tt> file exists in the user's home directory,
+    through use of the <a href="passwd"><b>passwd</b></a> command.
+
+    <p>
+    This button calls the <a href="wrupdate"><b>wrupdate</b></a>
+    command (without arguments).  The command-line <b>wrupdate</b>
+    command provides a little more flexibility, such as the ability to
+    download releases for other than the current "operating system"
+    name.  In either case, one can install the new release and
+    continue running the present program, but subsequently starting
+    <i>WRspice</i> will invoke the new version.  The present executable
+    is still available as "<tt>wrspice.old</tt>".
+
+    <p>
+    The computer must have http access to the internet for successful
+    use of this functionality.
+    </dl>
+
+    <dl>
+    <dt><b>Quit</b>
+    <dd>The <b>Quit</b> button will terminate the <i>WRspice</i>
+    session, after confirmation if there is unsaved work.  This can
+    also be accomplished with the <tt>quit</tt> or <tt>exit</tt>
+    command line functions.
+    </dl>
+
+    <a name="editmenu"></a>
+    <h3>Edit Menu</h3>
+
+    The <b>Edit</b> menu contains commands used to modify input files.
+
+    <dl>
+    <dt><b>Text Editor</b>
+    <dd>This button brings up a <a href="xeditor">text editor</a>,
+    similar to the <tt>edit</tt> command.  The default text editor is
+    <a href="xeditor">xeditor</a>, but the user can specify a
+    different editor with the <b>EDITOR</b> or <b>SPICE_EDITOR</b> <a
+    href="environment">environment</a> variables, or with the <a
+    href="editor"><tt>editor</tt></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Xic</b>
+    <dd>This button launches the <i>Xic</i> program, if it is
+    available.
+    </dl>
+
+    <p>
+    For schematic capture, the <i>Xic</i> program must be installed. 
+    When either editor is started, the currently loaded circuit, if
+    any, and if it has graphical information in the case of
+    <i>Xic</i>, is loaded into the editor.  The simulation process can
+    be initiated and controlled through <i>Xic</i>.  The internal text
+    editor has a <b>Source</b> button, which allows the modified
+    circuit to be passed directly back to <i>WRspice</i> for
+    simulation.  If another editor is used, changes will have to be
+    saved to disk and sourced from <i>WRspice</i>.
+
+    <a name="toolsmenu"></a>
+    <h3>Tools Menu</h3>
+
+    The <b>Tools</b> menu contains a configurable collection of
+    command buttons which initiate pop-ups which control or display
+    various aspects or <i>WRspice</i>.  Each of these pop-ups is a
+    graphical short cut to a collection of command line commands. 
+    Many users prefer the point-and-click interface to the command
+    line, though some do not.  With <i>WRspice</i>, the user has a
+    choice.  The command functions available in the <b>Tools</b> menu
+    are listed below, in the order found in the menu.
+
+    <dl>
+    <dt><b>Fonts</b><dd>
+    This brings up the <a href="fontspanel"><b>Font Selection</b></a>
+    panel that allows selection of the font used in the text areas of
+    the various tools, and in <a href="plotpanel">plot windows</a>
+    used for displaying simulation results.
+    </dl>
+
+    <dl>
+    <dt><b>Files</b><dd>
+    Pop up the <a href="filespanel"><b>Path Files Listing</b></a>
+    panel which displays a list of the files found along the <a
+    href="sourcepath"><tt>sourcepath</tt></a>.  Files can be sourced
+    or edited through this panel.
+    </dl>
+
+    <dl>
+    <dt><b>Circuits</b><dd>
+    Bring up the <a href="circuitspanel"><b>Circuits</b></a> panel
+    listing the circuits that are currently in memory.  The panel
+    provides capabilities for choosing the current circuit and
+    deleting circuits from memory.
+    </dl>
+
+    <dl>
+    <dt><b>Plots</b><dd>
+    Bring up the <a href="plotspanel"><b>Plots</b></a> panel which
+    displays a list of the plots in memory.  The panel provides
+    capabilities for selecting the current plot, and for deleting
+    plots.
+    </dl>
+
+    <dl>
+    <dt><b>Plot Opts</b><dd>
+    Bring up the <a href="plotopts"><b>Plot Options</b></a> panel to
+    control the myriad of variables associated with plotting.
+    </dl>
+
+    <dl>
+    <dt><b>Colors</b><dd>
+    Bring up the <a href="colors"><b>Plot Colors</b></a> panel to set
+    the colors used in the plots.
+    </dl>
+
+    <dl>
+    <dt><b>Vectors</b><dd>
+    Pop up the <a href="vectorspanel"><b>Vectors</b></a> panel listing
+    the vectors in the current plot.  The panel provides an interface
+    for plotting or printing these vectors.
+    </dl>
+
+    <dl>
+    <dt><b>Variables</b><dd>
+    Pop up the <a href="variablespanel"><b>Variables</b></a> panel
+    displaying the <a href="spshell">shell</a> variables currently
+    set.
+    </dl>
+
+    <dl>
+    <dt><b>Shell</b><dd>
+    Bring up the <a href="shellopts"><b>Shell Options</b></a> panel
+    used to control the default settings associated with the
+    <i>WRspice</i> shell.
+    </dl>
+
+    <dl>
+    <dt><b>Sim Opts</b><dd>
+    Pop up the <a href="simopts"><b>Simulation Options</b></a> panel
+    used to modify the variables which affect circuit simulation.
+    </dl>
+
+    <dl>
+    <dt><b>Commands</b><dd>
+    Bring up the <a href="cmdopts"><b>Command Options</b></a> panel to
+    customize the variables associated with the various commands.
+    </dl>
+
+    <dl>
+    <dt><b>Trace</b><dd>
+    Pop up the <a href="tracepanel"><b>Trace</b></a> which lists the
+    "debugs" currently in effect.  The "debugs" are directives to
+    interactively plot, or trace variables during simulation, or to
+    pause the simulation when a condition is met.  The panel provides
+    capability for deactivating or deleting "debugs".
+    </dl>
+
+    <dl>
+    <dt><b>Debug</b><dd>
+    Bring up the <a href="dbgopts"><b>Debug Options</b></a> panel used
+    to control the debugging modes of <i>WRspice</i>.
+    </dl>
+
+    <a name="helpmenu"></a>
+    <h3>Help Menu</h3>
+
+    The <b>Help</b> menu provides entry into the <a
+    href="helpsys">help system</a>, and provides access to other
+    information.  The buttons found in this menu are listed below.
+
+    <dl>
+    <dt><b>Help</b><dd>
+    Bring up the help viewer loaded with the top-level page.  The help
+    system provides an extensive cross-referenced HTML database, and
+    contains the latest information on <i>WRspice</i> features.
+    </dl>
+
+    <dl>
+    <dt><b>About</b><dd>
+    Bring up a text window with the current <i>WRspice</i> version
+    number, copyright, and legal disclaimer.
+    </dl>
+
+    <dl>
+    <dt><b>Notes</b><dd>
+    Bring up a text browser loaded with the release notes for the
+    current release of <i>WRspice</i>.  The release notes provide
+    detailed information about changes in the present release, and
+    serve as a supplement to the manual.  Changes and new features
+    should also have been incorporated into the help database.
+    </dl>
+
+!!SEEALSO
+plot
+textentry
+graphics
+
+!! useriface.tex 012709
+!!KEYWORD
+fontspanel
+!!TITLE
+The Fonts Tool
+!!HTML
+    <img src=screenshots/font.png align=right>
+    This panel, available from the <b>Fonts</b> button of the
+    <b>Tools</b> menu of the <a href="toolbar"><b>Tool Control</b></a>
+    window, allows selection of the fonts used in the graphical
+    interface.  A drop-down menu provides selection of the various
+    font targets.  Pressing the <b>Apply</b> button will immediately
+    apply the selected font to all visible windows which use the font.
+
+    <p>
+    The drop-down font targets list contains the following entries:
+
+    <dl>
+    <dt><b>Fixed Pitch Text Window Font</b><dd>
+    This sets the font used in pop-up multi-line text windows, such as
+    the <a href="filespanel"><b>Files Listing</b></a> and others,
+    where the names are formatted into columns.
+    </dl>
+
+    <dl>
+    <dt><b>Proportional Text Window Font</b><dd>
+    This sets the font used in pop-up multi-line text windows where
+    text is not formatted, such as the error message pop-up.
+    </dl>
+
+    <dl>
+    <dt><b>Fixed Pitch Drawing Window Font</b><dd>
+    This is the font used in the <a href="plotpanel">plot windows</a>
+    and in the <b>Tool Control</b> window.
+    </dl>
+
+    <dl>
+    <dt><b>Text Editor Font</b><dd>
+    This is the font used in the <a href="xeditor"><b>Text
+    Editor</b></a> pop-up.
+    </dl>
+
+!!IFNDEF Windows
+    <dl>
+    <dt><b>HTML Viewer Proportional Font</b><dd>
+    This is the base font used for proportional text in the HTML
+    viewer (<a href="helpsys">help windows</a>).
+    </dl>
+
+    <dl>
+    <dt><b>HTML Viewer Fixed Pitch Font</b><dd>
+    This is the base fixed-pitch font used by the HTML viewer.
+    </dl>
+!!ENDIF
+
+    <p>
+    The <b>Font</b> button in the <b>Options</b> menu of the <a
+    href="xeditor">Text Editor</a> brings up a similar panel, as does
+    the <b>Font</b> button in ther <b>Options</b> menu of the help
+    viewer.
+
+    <p>
+    These fonts can be set in the <tt>.wrspiceinit</tt> <a
+    href="startup_files">startup file</a> by giving <a
+    href="setfont"><b>setfont</b></a> commands.  These are inserted
+    automatically when the <b>Update Tools</b> button in the <b>File</b>
+    menu is pressed, or an <href="update"><b>update</b></a> command is
+    given.
+
+!!SEEALSO
+graphics
+
+!! useriface.tex 012709
+!!KEYWORD
+filespanel
+!!TITLE
+The Files Tool
+!!HTML
+    <img src=screenshots/filelist.png align=right>
+    This panel is available from the <b>Files</b> button in the
+    <b>Tools</b> menu of the <a href="toolbar"><b>Tool Control</b></a>
+    window.  It provides a listing of the files found in each
+    directory of the <a href="sourcepath"><tt>sourcepath</tt></a>
+    search path.  The <tt>sourcepath</tt> is a list of directories
+    that are searched for circuit description files, if a file name is
+    given to <i>WRspice</i> without a path prefix.
+
+    <p>
+    The panel contains a drop-down menu which has an entry for each
+    directory in the search path.  The main text area lists the files
+    found in the currently selected directory.
+
+    <p>
+    A file from the list can be selected by clicking with mouse button
+    1 on the text.  The text can be deselected by clicking in the text
+    window away from any text.  The file listing participates in <a
+    href="dragdrop">drag and drop</a> protocols as a source and
+    receiver.
+
+    <p>
+    The following buttons are provided:
+
+    <p>
+    <dl>
+    <dt><b>Edit</b>
+    <dd>If a file is selected, bring up a text editor with the file
+    loaded as with the <a href="edit"><b>edit</b></a> command.  If no
+    file is selected, the button becomes active, and the user can
+    click on a file in the text window to edit it.
+    </dl>
+
+    <dl>
+    <dt><b>Source</b>
+    <dd>If a file is selected, source it as with the <a
+    href="source"><b>source</b></a> command.  If no file is selected,
+    the button becomes active, and the user can click on a file in the
+    text window to source it.
+    </dl>
+
+    <dl>
+    <dt><b>Help</b>
+    <dd>Bring up help on this panel.
+    </dl>
+
+    <dl>
+    <dt><b>Dismiss</b>
+    <dd>Remove the files panel from the screen.
+    </dl>
+
+!!SEEALSO
+graphics
+
+!! useriface.tex 012709
+!!KEYWORD
+circuitspanel
+!!TITLE
+The Circuits Tool
+!!HTML
+    <img src=screenshots/circuits.png align=right>
+    This panel is available from the <b>Circuits</b> button in the
+    <b>Tools</b> menu of the <a href="toolbar"><b>Tool Control</b></a>
+    window.  It provides a listing of the circuits currently in
+    memory.  A circuit description can be read from a file with the <a
+    href="source"><b>source</b></a> command.  If the user clicks on
+    the text of one of the listed circuits, that circuit becomes the
+    current circuit, i.e., the circuit which will simulate with the <a
+    href="run"><b>run</b></a> command.  The panel contains the
+    following buttons:
+
+    <p>
+    <dl>
+    <dt><b>Delete Current</b>
+    <dd>Delete the current circuit from memory.
+    </dl>
+
+    <dl>
+    <dt><b>Help</b>
+    <dd>Bring up help on this panel.
+    </dl>
+
+    <dl>
+    <dt><b>Dismiss</b>
+    <dd>Remove the circuits listing from the screen.
+    </dl>
+
+!!SEEALSO
+free
+graphics
+setcirc
+
+!! useriface.tex 012709
+!!KEYWORD
+plotspanel
+!!TITLE
+The Plots Tool
+!!HTML
+    <img src=screenshots/plots.png align=right>
+    This panel is available from the <b>Plots</b> button in the
+    <b>Tools</b> menu of the <a href="toolbar"><b>Tool Control</b></a>
+    window.  It provides a listing of the plots currently in memory. 
+    A plot is a collection of output data vectors generated during a
+    simulation run.  In addition, there is always the <a
+    href="constants"><tt>constants</tt></a> plot, which contains some
+    useful physical constants.  A plot from the list can be selected
+    as the current plot by clicking on the text in the list.  The
+    current plot is used to resolve vector names in expressions given
+    to commands and elsewhere.  The panel contains the following
+    buttons:
+
+    <p>
+    <dl>
+    <dt><b>New Plot</b>
+    <dd>This creates an empty plot structure, and makes it the
+    current plot.
+    </dl>
+
+    <dl>
+    <dt><b>Delete Current</b>
+    <dd>Delete the current plot from memory.
+    </dl>
+
+    <dl>
+    <dt><b>Help</b>
+    <dd>Bring up help on this panel.
+    </dl>
+
+    <dl>
+    <dt><b>Dismiss</b>
+    <dd>Remove the plots panel from the screen.
+    </dl>
+
+!!SEEALSO
+destroy
+free
+graphics
+setplot
+
+!! useriface.tex 051114
+!!KEYWORD
+plotopts
+!!TITLE
+Plot Options
+!!HTML
+    The <b>Plot Options</b> panel is obtained from the <b>Plot
+    Opts</b> button in the <a href="toolsmenu"><b>Tools</b></a> menu
+    of the <a href="toolbar"><b>Tool Control</b></a> window.  The
+    panel can control the values of internal variables related to
+    plotting.  These variables can also be set with the <a
+    href="set"><b>set</b></a> command, though the panel may provide a
+    more convenient interface.
+
+    <p>
+    Pressing the <b>Help</b> button pops up a window containing a
+    listing of the variables which can be set with the panel. 
+    Clicking on a word in the listing will bring up the help viewer
+    with a description of that variable.
+
+    <p>
+    The panel is organized into multiple pages, with each page
+    containing the variables in a particular category.  These will be
+    listed below.
+
+    <p>
+    Each variable has its own "box" in the panel.  This box contains a
+    <b>Set</b> button, and optionally a <b>Def</b> button and a text
+    input area.  The text input area can take several forms, depending
+    on the type of variable:  string, integer, or real.  Boolean
+    variables have only the <b>Set</b> button.  Text can be entered
+    into the area, or in some cases the up/down arrows to the right of
+    the text area can be clicked to adjust the text.
+
+    <p>
+    When the <b>Set</b> button is active, the variable is set to the
+    value shown in the text area (if any), and the text area is
+    frozen, i.e., can't be edited.  The text area can be changed only
+    with the <b>Set</b> button inactive, in which case the value in
+    the text area is arbitrary.  The value is only known to
+    <i>WRspice</i> when the <b>Set</b> button is active, in which case
+    the variable should appear in the listing brought up by the
+    <b>Variables</b> button in the <b>Tools</b> menu in the <b>Tool
+    Control</b> window.
+
+    <p>
+    The <b>Def</b> button will enter the default value for the
+    variable into the text area.  This button becomes active if the
+    text area is modified.
+
+    <h3>The plot1 Page</h3>
+
+    <img src=screenshots/plotopts1.png align=right>
+    This page contains entries which control the appearance of plots
+    shown on-screen.
+    <br clear=all>
+
+    <h3>The plot2 Page</h3>
+
+    <img src=screenshots/plotopts2.png align=right>
+    This page contains additional entries which control the appearance
+    of plots shown on-screen.
+    <br clear=all>
+
+    <h3>The asciiplot Page</h3>
+
+    <img src=screenshots/plotopts3.png align=right>
+    This page sets variables associated with the <a
+    href="asciiplot"><b>asciiplot</b></a> command, which generates a
+    text-mode "plot" of output variables.  This is not often used
+    currently, but provides a nostalgic link to the days of line
+    printers and punched cards.
+    <br clear=all>
+
+    <h3>The hardcopy Page</h3>
+
+    <img src=screenshots/plotopts4.png align=right>
+    This provides a number of entries which relate to the <a
+    href="hardcopy"><b>hardcopy</b></a> command and <a
+    href="hcopypanel">graphics printing</a> in general.
+    <br clear=all>
+
+    <h3>The xgraph Page</h3>
+
+    <img src=screenshots/plotopts5.png align=right>
+    This provides settings for the interface to the <tt>xgraph</tt>
+    program, which was once used for simulation output plotting in
+    Berkeley SPICE.
+    <br clear=all>
+
+!!SEEALSO
+graphics
+
+!! useriface.tex 051114
+!!KEYWORD
+colors
+!!TITLE
+Plot Colors
+!!HTML
+    The <b>Plot Colors</b> panel is obtained from the <b>Colors</b>
+    button in the <a href="toolsmenu"><b>Tools</b></a> menu of the <a
+    href="toolbar"><b>Tool Control</b></a> window.  The panel can
+    control the values of internal variables used to define colors
+    used in plotting.  These variables can also be set with the <a
+    href="set"><b>set</b></a> command, though the panel may provide a
+    more convenient interface.
+
+    <p>
+    Pressing the <b>Help</b> button pops up a window containing a
+    listing of the variables which can be set with the panel. 
+    Clicking on a word in the listing will bring up the help viewer
+    with a description of that variable.
+
+    <p>
+    Each variable has its own "box" in the panel.  This box contains a
+    <b>Set</b> button, and optionally a <b>Def</b> button and a text
+    input area.  The text input area can take several forms, depending
+    on the type of variable:  string, integer, or real.  Boolean
+    variables have only the <b>Set</b> button.  Text can be entered
+    into the area, or in some cases the up/down arrows to the right of
+    the text area can be clicked to adjust the text.
+
+    <p>
+    When the <b>Set</b> button is active, the variable is set to the
+    value shown in the text area (if any), and the text area is
+    frozen, i.e., can't be edited.  The text area can be changed only
+    with the <b>Set</b> button inactive, in which case the value in
+    the text area is arbitrary.  The value is only known to
+    <i>WRspice</i> when the <b>Set</b> button is active, in which case
+    the variable should appear in the listing brought up by the
+    <b>Variables</b> button in the <b>Tools</b> menu in the <b>Tool
+    Control</b> window.
+
+    <p>
+    The <b>Def</b> button will enter the default value for the
+    variable into the text area.  This button becomes active if the
+    text area is modified.
+
+!!SEEALSO
+graphics
+
+!! useriface.tex 030412
+!!KEYWORD
+vectorspanel
+!!TITLE
+The Vectors Tool
+!!HTML
+    <img src=screenshots/vectors.png align=right>
+    This panel is available from the <b>Vectors</b> button in the
+    <b>Tools</b> menu of the <a href="toolbar"><b>Tool Control</b></a>
+    window.  It provides a listing of the vectors in the current plot. 
+    The current plot can be selected with the <a
+    href="plotspanel">Plots</a> button in the <b>Tools</b> menu.
+
+    <p>
+    A vector can be selected by clicking on the text, and selection is
+    indicated by a '>' symbol in the first column.  Any number of
+    vectors can be selected.  Click on the vector entry a second time
+    to deselect it.  The selected vectors are used by the buttons
+    described below.
+
+    <p>
+    <dl>
+    <dt><b>Help</b>
+    <dd>Bring up help on this panel.
+    </dl>
+
+    <dl>
+    <dt><b>Desel All</b>
+    <dd>Deselect all selected vectors.
+    </dl>
+
+    <dl>
+    <dt><b>Print</b>
+    <dd>Print the values of the selected vectors in the console
+        window, as with the <a href="print"><b>print</b></a>
+        command.
+    </dl>
+
+    <dl>
+    <dt><b>Plot</b>
+    <dd>Plot the values of the selected vectors,  as with the
+        <a href="plot"><b>plot</b></a> command.
+    </dl>
+
+    <dl>
+    <dt><b>Delete</b>
+    <dd>Delete the selected vectors from the plot.
+    </dl>
+
+    <dl>
+    <dt><b>Dismiss</b>
+    <dd>Remove the vectors panel from the screen.
+    </dl>
+
+!!SEEALSO
+graphics
+print
+plot
+unlet
+
+!! useriface.tex 012709
+!!KEYWORD
+variablespanel
+!!TITLE
+The Variables Tool
+!!HTML
+    <img src=screenshots/variables.png align=right>
+    This panel is available from the <b>Variables</b> button in the
+    <b>Tools</b> menu of the <a href="toolbar"><b>Tool Control</b></a>
+    window.  It provides a listing of the variables currently set in
+    the shell., either with the <a href="set"><b>set</b></a> command
+    or by other means.  The format of the listing is the same as that
+    used by the <b>set</b> command without arguments.  The following
+    buttons are available:
+
+    <p>
+    <dl>
+    <dt><b>Help</b>
+    <dd>Bring up help on this panel.
+    </dl>
+
+    <dl>
+    <dt><b>Dismiss</b>
+    <dd>Remove the variables panel from the screen.
+    </dl>
+
+!!SEEALSO
+graphics
+spshell
+unset
+usrset
+
+!! useriface.tex 051114
+!!KEYWORD
+shellopts
+!!TITLE
+Shell Options
+!!HTML
+    The <b>Shell Options</b> panel is obtained from the <b>Shell</b>
+    button in the <a href="toolsmenu"><b>Tools</b></a> menu of the <a
+    href="toolbar"><b>Tool Control</b></a> window.  The panel can
+    control the values of internal variables used to define behavior
+    of the <i>WRspice</i> shell.  The shell is similar to the UNIX
+    C-shell, and many of the variable names may be familiar from that
+    context.  These variables can also be set with the <a
+    href="set"><b>set</b></a> command, though the panel may provide a
+    more convenient interface.
+
+    <p>
+    <img src=screenshots/shell.png align=right>
+    Pressing the <b>Help</b> button pops up a window containing a
+    listing of the variables which can be set with the panel. 
+    Clicking on a word in the listing will bring up the help viewer
+    with a description of that variable.
+
+    <p>
+    Each variable has its own "box" in the panel.  This box contains a
+    <b>Set</b> button, and optionally a <b>Def</b> button and a text
+    input area.  The text input area can take several forms, depending
+    on the type of variable:  string, integer, or real.  Boolean
+    variables have only the <b>Set</b> button.  Text can be entered
+    into the area, or in some cases the up/down arrows to the right of
+    the text area can be clicked to adjust the text.
+
+    <p>
+    When the <b>Set</b> button is active, the variable is set to the
+    value shown in the text area (if any), and the text area is
+    frozen, i.e., can't be edited.  The text area can be changed only
+    with the <b>Set</b> button inactive, in which case the value in
+    the text area is arbitrary.  The value is only known to
+    <i>WRspice</i> when the <b>Set</b> button is active, in which case
+    the variable should appear in the listing brought up by the
+    <b>Variables</b> button in the <b>Tools</b> menu in the <b>Tool
+    Control</b> window.
+
+    <p>
+    The <b>Def</b> button will enter the default value for the
+    variable into the text area.  This button becomes active if the
+    text area is modified.
+
+!!SEEALSO
+graphics
+
+!! useriface.tex 051114
+!!KEYWORD
+simopts
+!!TITLE
+Simulation Options
+!!HTML
+    The <b>Simulation Options</b> panel is obtained from the <b>Sim
+    Opts</b> button in the <a href="toolsmenu"><b>Tools</b></a> menu
+    of the <a href="toolbar"><b>Tool Control</b></a> window.  The
+    panel can control the values of internal variables used to define
+    parameters used while simulating.  These variables can also be set
+    with the <a href="set"><b>set</b></a> command, though the panel
+    may provide a more convenient interface.  They are also commonly
+    set in <a href=".options"><tt>.options</tt></a> lines in SPICE
+    input files.
+
+    <p>
+    Pressing the <b>Help</b> button pops up a window containing a
+    listing of the variables which can be set with the panel. 
+    Clicking on a word in the listing will bring up the help viewer
+    with a description of that variable.
+
+    <p>
+    The panel is organized into multiple pages, with each page
+    containing the variables in a particular category.  These will be
+    listed below.
+
+    <p>
+    Each variable has its own "box" in the panel.  This box contains a
+    <b>Set</b> button, and optionally a <b>Def</b> button and a text
+    input area.  The text input area can take several forms, depending
+    on the type of variable:  string, integer, or real.  Boolean
+    variables have only the <b>Set</b> button.  Text can be entered
+    into the area, or in some cases the up/down arrows to the right of
+    the text area can be clicked to adjust the text.
+
+    <p>
+    When the <b>Set</b> button is active, the variable is set to the
+    value shown in the text area (if any), and the text area is
+    frozen, i.e., can't be edited.  The text area can be changed only
+    with the <b>Set</b> button inactive, in which case the value in
+    the text area is arbitrary.  The value is only known to
+    <i>WRspice</i> when the <b>Set</b> button is active, in which case
+    the variable should appear in the listing brought up by the
+    <b>Variables</b> button in the <b>Tools</b> menu in the <b>Tool
+    Control</b> window.
+
+    <p>
+    The <b>Def</b> button will enter the default value for the
+    variable into the text area.  This button becomes active if the
+    text area is modified.
+
+    <h3>The General Page</h3>
+
+    <img src=screenshots/simopts1.png align=right>
+    This page contains entries for some common simulation settings.
+    <br clear=all>
+
+    <h3>The Timestep Page</h3>
+
+    <img src=screenshots/simopts2.png align=right>
+    This page privides a number of entries that control or affect the
+    timestep prediction in transient analysis, including the
+    integration method.
+    <br clear=all>
+
+    <h3>The Tolerance Page</h3>
+
+    <img src=screenshots/simopts3.png align=right>
+    The entries provided on this page set the precision required for
+    convergence in simulation.
+    <br clear=all>
+
+    <h3>The Convergence Page</h3>
+
+    <img src=screenshots/simopts4.png align=right>
+    This page provides entries which control convergence iteration limits
+    and similar, including setting the algorithm for initial dc operating
+    point computation.
+    <br clear=all>
+
+    <h3>The Devices Page</h3>
+
+    <img src=screenshots/simopts5.png align=right>
+    The <b>Devices</b> page provides some settings which affect particular
+    device types or models.
+    <br clear=all>
+
+    <h3>The Temperature Page</h3>
+
+    <img src=screenshots/simopts6.png align=right>
+    The two global temperature parameters can be set from this page.
+    <br clear=all>
+
+    <h3>The Parser Page</h3>
+
+    <img src=screenshots/simopts7.png align=right>
+    This page provides controls which affect parsing of circuit
+    descriptions.
+    <br clear=all>
+
+!!SEEALSO
+graphics
+
+!! useriface.tex 051516
+!!KEYWORD
+cmdopts
+!!TITLE
+Command Options
+!!HTML
+    The <b>Command Options</b> panel is obtained from the
+    <b>Commands</b> button in the <a href="toolsmenu"><b>Tools</b></a>
+    menu of the <a href="toolbar"><b>Tool Control</b></a> window.  The
+    panel can control the values of internal variables used to define
+    behavior of <i>WRspice</i> commands.  These variables can also be
+    set with the <a href="set"><b>set</b></a> command, though the
+    panel may provide a more convenient interface.
+
+    <p>
+    Pressing the <b>Help</b> button pops up a window containing a
+    listing of the variables which can be set with the panel. 
+    Clicking on a word in the listing will bring up the help viewer
+    with a description of that variable.
+
+    <p>
+    The panel is organized into multiple pages, with each page
+    containing the variables in a particular category.  These will be
+    listed below.
+
+    <p>
+    Each variable has its own "box" in the panel.  This box contains a
+    <b>Set</b> button, and optionally a <b>Def</b> button and a text
+    input area.  The text input area can take several forms, depending
+    on the type of variable:  string, integer, or real.  Boolean
+    variables have only the <b>Set</b> button.  Text can be entered
+    into the area, or in some cases the up/down arrows to the right of
+    the text area can be clicked to adjust the text.
+
+    <p>
+    When the <b>Set</b> button is active, the variable is set to the
+    value shown in the text area (if any), and the text area is
+    frozen, i.e., can't be edited.  The text area can be changed only
+    with the <b>Set</b> button inactive, in which case the value in
+    the text area is arbitrary.  The value is only known to
+    <i>WRspice</i> when the <b>Set</b> button is active, in which case
+    the variable should appear in the listing brought up by the
+    <b>Variables</b> button in the <b>Tools</b> menu in the <b>Tool
+    Control</b> window.
+
+    <p>
+    The <b>Def</b> button will enter the default value for the
+    variable into the text area.  This button becomes active if the
+    text area is modified.
+
+    <h3>The General Page</h3>
+
+    <img src=screenshots/commands1.png align=right>
+    This page contains entries for variables that are general in nature,
+    affecting more than one command.
+    <br clear=all>
+
+    <h3>The aspice Page</h3>
+
+    <img src=screenshots/commands2.png align=right>
+    This page contains variables that apply to the <a
+    href="aspice"><b>aspice</b></a> command, which initiates
+    asynchronous <i>WRspice</i> runs.
+    <br clear=all>
+
+    <h3>The check Page</h3>
+
+    <img src=screenshots/commands3.png align=right>
+    This page applies to the <a href="check"><b>check</b></a> command,
+    which initiates Monte Carlo and operating range analysis.
+    <br clear=all>
+
+    <h3>The diff Page</h3>
+
+    <img src=screenshots/commands4.png align=right>
+    The entries in this page affect the <a href="diff"><b>diff</b></a>
+    command, which compares simulation output data.
+    <br clear=all>
+
+    <h3>The edit Page</h3>
+
+    <img src=screenshots/commands5.png align=right>
+    This page applies to the <a href="edit"><b>edit</b></a> command
+    and related, which edit circuit input for <i>WRspice</b>.
+    <br clear=all>
+
+    <h3>The fourier Page</h3>
+
+    <img src=screenshots/commands6.png align=right>
+    The variables set by entries in this page affect the <a
+    href=:fourier"><b>fourier</b></a> command, and other commands
+    which perform Fourier analysis.
+    <br clear=all>
+
+    <h3>The help Page</h3>
+
+    <img src=screenshots/commands7.png align=right>
+    These entries apply to the <a href="helpsys">help system</a>.
+    <br clear=all>
+
+    <h3>The print Page</h3>
+
+    <img src=screenshots/commands8.png align=right>
+    This page provides entries which apply to the <a
+    href="print"><b>print</b></a> command.  The <b>print</b> command
+    is used to print simulation results or other vector data.
+    <br clear=all>
+
+    <h3>The rawfile Page</h3>
+
+    <img src=screenshots/commands9.png align=right>
+    These entries apply to the <a href="rawfile"><b>rawfile</b></a>
+    command, and plot data output in general.
+    <br clear=all>
+
+    <h3>The rspice Page</h3>
+
+    <img src=screenshots/commands10.png align=right>
+    This page contains entries which apply to the <a
+    href="rspice"><b>rspice</b></a> command, which initiates
+    <i>WRspice</i> runs on a remote system.
+    <br clear=all>
+
+    <h3>The source Page</h3>
+
+    <img src=screenshots/commands11.png align=right>
+    This page contains entries which apply to the <a
+    href="source"><b>source</b></a> command, which is used (perhaps
+    implicitly) to load circuit files for simulation.
+    <br clear=all>
+
+    <h3>The write Page</h3>
+
+    <img src=screenshots/commands12.png align=right>
+    These entries apply to the <a href="write"><b>write</b></a>
+    command, which is used to save simulation data to a file.
+    <br clear=all>
+
+!!SEEALSO
+graphics
+
+!! useriface.tex 012709
+!!KEYWORD
+tracepanel
+!!TITLE
+The Trace Tool
+!!HTML
+    <img src=screenshots/trace.png align=right>
+    This panel is available from the <b>Trace</b> button in the
+    <b>Tools</b> menu of the <a href="toolbar"><b>Tool Control</b></a>
+    window.  It provides a listing of the "debugs" (i.e., traces,
+    breakpoints, interactive plots) currently in effect.  These
+    "debugs" are set with the <a href="save"><b>save</b></a>, <a
+    href="stop"><b>stop</b></a>, <a href="trace"><b>trace</b></a>, and
+    <a href="iplot"><b>iplot</b></a> commands.
+
+    <p>
+    A debug can be made inactive by clicking on the text in the list,
+    in which case an 'I' appears in the first column.  Click on the
+    text a second time to restore activation.  Inactive debugs are
+    ignored during simulation.  The following buttons are available:
+
+    <p>
+    <dl>
+    <dt><b>Help</b>
+    <dd>Bring up help on this panel.
+    </dl>
+
+    <dl>
+    <dt><b>Delete Inactive</b>
+    <dd>Delete the debugs selected as inactive, i.e., those listed with
+    "I" in the first column.
+    </dl>
+
+    <dl>
+    <dt><b>Dismiss</b>
+    <dd>Remove the trace panel from the screen.
+    </dl>
+
+!!SEEALSO
+graphics
+status
+delete
+
+!! useriface.tex 051114
+!!KEYWORD
+dbgopts
+!!TITLE
+Debug Options
+!!HTML
+    The <b>Debug Options</b> panel is obtained from the <b>Debug</b>
+    button in the <a href="toolsmenu"><b>Tools</b></a> menu of the <a
+    href="toolbar"><b>Tool Control</b></a> window.  The panel can
+    control the values of internal variables used to enable extra
+    printing and tracing, used when trying to diagnose problems. 
+    These variables can also be set with the <a
+    href="set"><b>set</b></a> command, though the panel may provide a
+    more convenient interface.
+
+    <p>
+    <img src=screenshots/debug.png align=right>
+    Pressing the <b>Help</b> button pops up a window containing a
+    listing of the variables which can be set with the panel. 
+    Clicking on a word in the listing will bring up the help viewer
+    with a description of that variable.
+
+    <p>
+    Each variable has its own "box" in the panel.  This box contains a
+    <b>Set</b> button, and optionally a <b>Def</b> button and a text
+    input area.  The text input area can take several forms, depending
+    on the type of variable:  string, integer, or real.  Boolean
+    variables have only the <b>Set</b> button.  Text can be entered
+    into the area, or in some cases the up/down arrows to the right of
+    the text area can be clicked to adjust the text.
+
+    <p>
+    When the <b>Set</b> button is active, the variable is set to the
+    value shown in the text area (if any), and the text area is
+    frozen, i.e., can't be edited.  The text area can be changed only
+    with the <b>Set</b> button inactive, in which case the value in
+    the text area is arbitrary.  The value is only known to
+    <i>WRspice</i> when the <b>Set</b> button is active, in which case
+    the variable should appear in the listing brought up by the
+    <b>Variables</b> button in the <b>Tools</b> menu in the <b>Tool
+    Control</b> window.
+
+    <p>
+    The <b>Def</b> button will enter the default value for the
+    variable into the text area.  This button becomes active if the
+    text area is modified.
+
+!!SEEALSO
+graphics
+

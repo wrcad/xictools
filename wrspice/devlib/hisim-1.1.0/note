@@ -1,0 +1,139 @@
+
+Dear Sirs,
+
+I am testing your HiSIM1.1.0 model in WRspice (www.wrcad.com) and hope
+to eventually provide it to users in a future release.  This looks
+like a very useful model and you should be commended for your efforts.
+
+WRspice is a C++ program, and the process of importing a new model
+involves converting the various spice3 functions into methods of a
+class for the new device.  This is fairly straightforward but there is
+always a possibility of error.  The first problem I encountered was
+that I could not find any simple test circuits for the model.  It
+would be very useful if you could provide on your download site some
+simple example spice files along with print output, so that users can
+test their model installation and make sure that the results are
+correct.  If you know of a source of test spice files for hisim, I
+would appreciate knowing the location.
+
+I found that I was able to run several tests by using the default
+model parameters, i.e., giving no model parameters other than level=60
+and version=110/100.
+
+When running a very simple circuit containing one MOS device, the
+first time the circuit is run, it failed with the message
+
+   "*** warning(HiSIM): FP-exception (PART-1)"
+
+This happened for any type of analysis, and only on the first run. 
+Subsequent runs seem to work ok.  It would also run ok on the
+first try if version=110 was given, i.e., this seems to be specific
+to 1.0.0.  I traced the problem as follows:
+
+The problem originates in the hsm1eval1_0.c file.
+
+The variable FMD_dVds defined on line 498 is uninitialized.
+
+This variable would be initialized on line 2634, however for the
+parameters given, this block is skipped due to the branch taken at
+line 2560.
+
+At line 3113, FMD_dVds is used in the assignment to rp1_dVds.
+
+At line 3125, rp1_dVds is used in the assignment to Ids_dVds.
+
+At line 3915, Ids_dVds is assigned to Ids_dVdse.
+
+At line 4322, Ids_dVdse is assigned to pOT->gds;
+
+At line 4482, pOT->gds is used in the assignment to T1.
+
+T1 fails the test at line 4484.
+
+Apparently, what is happening is that on the first run, the
+unitialized value of FMD_dVds happens to be NaN, which propogates
+through the other assignments causing the failure at line 4484.  In
+subsequent runs, the value is apparently something other than NaN. 
+The assigment in line 3113
+
+    rp1_dVds = FMD_dVds * sIN.rpock1 ;
+
+succeeds (sIN.rpock1 = 0), and everything is correct.
+
+I fixed the problem by adding a block that initializes all of the
+variables the are mentioned in gcc "used before set" warnings to zero,
+which is probably overkill.
+
+Another thing I noticed is that some more complicated files would fail
+in transient analysis with a "timestep too small" error.  Perhaps this
+would go away if I used different model parameters.  I traced this
+problem to the situation where two MOS devices are in series (source
+to drain).  In this situation, the voltage on the source/drain node is
+not well defined, and does not converge in the analysis.  I found that
+adding a small capacitance of 1fF to the circuit file, between this
+node and ground, most often fixed the problem.  The same circuit
+simulates without modification with bsim3/4 and other models, so
+perhaps some modification can be made to hisim to make it less
+susceptible to this problem.  An example of a file that shows this
+effect (at least in WRspice) is below.
+
+
+Thanks for your efforts.  The model obviously represents a lot of hard
+work.
+
+
+Regards,
+
+Steve Whiteley
+Whiteley Research Inc.
+456 Flora Vista Ave.
+Sunnyvale, CA 94086
+408 735-8973
+408 245-4033
+
+-----------------------------------------------------------
+* One Bit Comparator. Takes Two Inputs (A and B), and returns Two Ouputs - 
+* node 8 - (high when two signals are equal) and node 9 (high when A is
+* Larger Then B).  Transient Analysis
+
+*circuit description
+
+M1 Anot A Vdd Vdd  PMOS w=3.6u l=1.2u
+M2 Anot A 0 0 NMOS w=1.8u l=1.2u
+M3 Bnot B Vdd Vdd  PMOS w=3.6u l=1.2u
+M4 Bnot B 0 0 NMOS w=1.8u l=1.2u
+M5 AorBnot 0 Vdd Vdd PMOS w=1.8u l=3.6u
+M6 AorBnot B 1 0 NMOS w=1.8u l=1.2u
+M7 1 Anot 0 0 NMOS w=1.8u l=1.2u
+M8 Lnot 0 Vdd Vdd PMOS w=1.8u l=3.6u
+M9 Lnot Bnot 2 0 NMOS w=1.8u l=1.2u
+M10 2 A 0 0 NMOS w=1.8u l=1.2u
+M11 Qnot 0 Vdd Vdd PMOS w=3.6u l=3.6u
+M12 Qnot AorBnot 3 0 NMOS w=1.8u l=1.2u
+M13 3 Lnot 0 0 NMOS w=1.8u l=1.2u
+MQLO 8 Qnot Vdd Vdd  PMOS w=3.6u l=1.2u
+MQL1 8 Qnot 0 0 NMOS w=1.8u l=1.2u
+MLTO 9 Lnot Vdd Vdd  PMOS w=3.6u l=1.2u
+MLT1 9 Lnot 0 0 NMOS w=1.8u l=1.2u
+CQ Qnot 0 30f
+CL Lnot 0 10f
+
+* Added for HiSIM convergence
+cx1 2 0 1f
+cx2 1 0 1f
+
+Vdd Vdd 0 5
+Va A 0  pulse 0 5 10ns .1ns .1ns 15ns 30ns
+*Va A 0 pulse(0 5 1n 50n)
+Vb B 0 0
+
+.model nmos nmos level=60 version=110
+.model pmos pmos level=60 version=110
+
+* transient analysis
+.tran 1ns 60ns
+.option post
+.print tran A B v(9) v(8) 
+
+.END
+

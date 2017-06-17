@@ -1,0 +1,33 @@
+Dear BSIM Users,
+
+Thank you very much for your support of the BSIM models. We 
+would like to announce that two bugs in the thermal noise 
+model and the flicker noise model have been fixed in BSIM3. 
+The new release is BSIM3v3.2.4. 
+
+With these two fixes, the Rds noise is now included in the 
+thermal noise model. Unified flicker noise is smoothed out 
+from the linear region to saturation region. These two bug 
+fixes were first introduced in BSIM4.0.0 and have been 
+thoroughly tested. The flicker noise bug fix will likely 
+necessitate re-extraction of the parameters for the unified 
+flicker noise model. 
+
+Detailed bugs and their fixes, the BSIM3v3.2.4 source code, 
+and the technical note can be downloaded at:
+http://www-device.eecs.berkeley.edu/~bsim3/get.html
+
+We welcome your feedback.
+
+Sincerely,
+
+Jane
+=============================================================
+Dr.Xuemei(Jane) Xi
+BSIM group
+Dept. of Electrical Engineering and Computer Sciences
+University of California, Berkeley, CA, 94720
+Email: JaneXi@eecs.berkeley.edu
+=============================================================
+
+

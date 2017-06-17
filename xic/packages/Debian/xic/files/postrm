@@ -1,0 +1,16 @@
+#! /bin/sh
+
+prefix=/usr/local
+
+libdir=$prefix/xictools/xic
+version=@VERSION@
+tifs=$IFS
+IFS="."
+set -- $version
+IFS=$tifs
+relnote=xic$1.$2
+
+if [ -f $libdir/docs/$relnote.tmp ]; then
+    mv -f $libdir/docs/$relnote.tmp $libdir/docs/$relnote
+fi
+

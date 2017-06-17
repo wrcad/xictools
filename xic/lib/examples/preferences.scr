@@ -1,0 +1,1460 @@
+# This script provides a graphical interface to internal variables
+# otherwise manipulated with the !set command.
+# Xic 2.5.64 8/09/06
+# $Id: preferences.scr,v 1.1 2014/09/26 01:59:14 stevew Exp $
+
+#----------------------------------------------------------------------------
+# This script provides an interface for setting Xic variables, and was
+# in the default User Menu for quite a long while.  It has been
+# removed since there are too many variables to conveniently list, and
+# all of the important ones already have a graphical method of setting. 
+# Some of the variables manipulated by this script are no longer
+# meaningful to Xic.  So, this has been decommissioned, but retained
+# as an example of how to use forms and set variables in scripts.
+#----------------------------------------------------------------------------
+
+#ifndef SUBMIT
+
+# Create a temporary HTML file containing the form to use for graphical
+# input.  The form elements are initialized to the current values of the
+# variables.  Once the file is created, load it into the HTML viewer and
+# exit.
+
+fname = TempFile("xp")
+fd = Open(fname, "w")
+if (fd <= 0)
+    ErrorMsg("Error: can't open temporary file.")
+    Exit()
+end
+WriteLine("<html>\n", fd)
+WriteLine("<body bgcolor=\"#e8e8f0\">\n", fd)
+WriteLine("This form provides a graphical interface to many of the internal \
+<a href=\"!set:variables\">variables</a> normally set with the \
+<a href=\"!set\"><b>!set</b></a> command.  Changes \
+become effective when you press the <b>Apply</b> button at the bottom of the \
+form.\n", fd)
+WriteLine("<form method=\"post\" action=\"action_local_xic THIS_SCRIPT\">\n", fd)
+WriteLine("\n", fd)
+
+
+############################
+# Paths and Directories
+############################
+WriteLine("<h1><a href=\"!set:paths\">Paths and Directories</a></h1>\n", fd)
+
+WriteLine("<table border=\"0\" align=\"left\">\n", fd)
+WriteLine("<tr><td><b>Path</b>\n", fd)
+WriteLine("<td><input type=\"text\" size=\"60\" name=\"Path\" value=\"", fd)
+str = Get(Path)
+# Have to substitute for quote chars.
+j = 0
+while (str[j] != 0)
+    if (str[j] == '"')
+        WriteLine("&quot;", fd)
+    else
+        WriteChar(str[j], fd)
+    end
+    j++
+end
+WriteLine("\"><br>\n", fd)
+
+#### LibPath
+WriteLine("<tr><td><b>LibPath</b>\n", fd)
+WriteLine("<td><input type=\"text\" size=\"60\" name=\"LibPath\" value=\"", fd)
+str = Get(LibPath)
+# Have to substitute for quote chars.
+j = 0
+while (str[j] != 0)
+    if (str[j] == '"')
+        WriteLine("&quot;", fd)
+    else
+        WriteChar(str[j], fd)
+    end
+    j++
+end
+WriteLine("\"><br>\n", fd)
+
+#### HelpPath
+WriteLine("<tr><td><b>HelpPath</b>\n", fd)
+WriteLine("<td><input type=\"text\" size=\"60\" name=\"HelpPath\" value=\"", fd)
+str = Get(HelpPath)
+# Have to substitute for quote chars.
+j = 0
+while (str[j] != 0)
+    if (str[j] == '"')
+        WriteLine("&quot;", fd)
+    else
+        WriteChar(str[j], fd)
+    end
+    j++
+end
+WriteLine("\"><br>\n", fd)
+
+#### ScriptPath
+WriteLine("<tr><td><b>ScriptPath</b>\n", fd)
+WriteLine("<td><input type=\"text\" size=\"60\" name=\"ScriptPath\" value=\"", fd)
+str = Get(ScriptPath)
+# Have to substitute for quote chars.
+j = 0
+while (str[j] != 0)
+    if (str[j] == '"')
+        WriteLine("&quot;", fd)
+    else
+        WriteChar(str[j], fd)
+    end
+    j++
+end
+WriteLine("\"><br>\n", fd)
+
+#### DocsDir
+WriteLine("<tr><td><b>DocsDir</b>\n", fd)
+WriteLine("<td><input type=\"text\" size=\"60\" name=\"DocsDir\" value=\"", fd)
+str = Get(DocsDir)
+if (str == 0)
+    str = ""
+end
+# Have to substitute for quote chars.
+j = 0
+while (str[j] != 0)
+    if (str[j] == '"')
+        WriteLine("&quot;", fd)
+    else
+        WriteChar(str[j], fd)
+    end
+    j++
+end
+WriteLine("\"><br>\n", fd)
+
+#### TeePrompt
+WriteLine("<tr><td><b>TeePrompt</b>\n", fd)
+WriteLine("<td><input type=\"text\" size=\"40\" name=\"TeePrompt\" value=\"", fd)
+str = Get(TeePrompt)
+if (str == 0)
+    str = ""
+end
+# Have to substitute for quote chars.
+j = 0
+while (str[j] != 0)
+    if (str[j] == '"')
+        WriteLine("&quot;", fd)
+    else
+        WriteChar(str[j], fd)
+    end
+    j++
+end
+WriteLine("\"><br>\n", fd)
+WriteLine("</table><br clear=all>\n", fd)
+
+WriteLine("\n<p>\n", fd)
+
+
+############################
+# General Visual
+############################
+WriteLine("<h1><a href=\"!set:generalvis\">General Visual</a></h1>\n", fd)
+WriteLine("<table border=0>\n", fd)
+
+#### LayerTable
+WriteLine("<tr><td><b>LayerTable</b></td><td>\n", fd)
+WriteLine("<select name=\"LayerTable\" size=\"1\">\n", fd)
+str = Get(LayerTable)
+WriteLine("<option value=\"unset\">unset\n", fd)
+if (str != 0 & Strcmp(str, "tiny") == 0)
+    WriteLine("<option selected value=\"tiny\">tiny\n", fd)
+else
+    WriteLine("<option value=\"tiny\">tiny\n", fd)
+end
+if (str != 0 & Strcmp(str, "compact") == 0)
+    WriteLine("<option selected value=\"compact\">compact\n", fd)
+else
+    WriteLine("<option value=\"compact\">compact\n", fd)
+end
+WriteLine("</select></td></tr>\n", fd)
+
+#### CellThreshold
+WriteLine("<tr><td><b>CellThreshold</b></td><td>\n", fd)
+WriteLine("<input type=\"text\" name=\"CellThreshold\" value=\"", fd)
+str = Get(CellThreshold)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"></td></tr>\n", fd)
+
+#### MaxPrpLabelLen
+WriteLine("<tr><td><b>MaxPrpLabelLen</b></td><td>\n", fd)
+WriteLine("<input type=\"text\" name=\"MaxPrpLabelLen\" value=\"", fd)
+str = Get(MaxPrpLabelLen)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"></td></tr>\n", fd)
+WriteLine("</table>\n", fd)
+
+#### FullWinCursor
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(FullWinCursor) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"FullWinCursor\" value=\"FullWinCursor\"><b>FullWinCursor</b><br>\n", fd)
+
+WriteLine("\n<p>\n", fd)
+
+
+############################
+# '!' Commands
+############################
+WriteLine("<h1><a href=\"!set:bangcmds\">`!' Commands</a></h1>\n", fd)
+
+#### JoinMaxPolyVerts
+WriteLine("<table border=0>\n", fd)
+WriteLine("<tr><td><b>JoinMaxPolyVerts</b></td><td>\n", fd)
+WriteLine("<input type=\"text\" size=\"6\" name=\"JoinMaxPolyVerts\" value=\"", fd)
+str = Get(JoinMaxPolyVerts)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"></td></tr>\n", fd)
+
+#### JoinMaxPolyGroup
+WriteLine("<tr><td><b>JoinMaxPolyGroup</b></td><td>\n", fd)
+WriteLine("<input type=\"text\" size=\"6\" name=\"JoinMaxPolyGroup\" value=\"", fd)
+str = Get(JoinMaxPolyGroup)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"></td></tr>\n", fd)
+
+#### JoinMaxPolyQueue
+WriteLine("<tr><td><b>JoinMaxPolyQueue</b></td><td>\n", fd)
+WriteLine("<input type=\"text\" size=\"6\" name=\"JoinMaxPolyQueue\" value=\"", fd)
+str = Get(JoinMaxPolyQueue)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"></td></tr>\n", fd)
+
+#### JoinBreakClean
+WriteLine("<tr><td colspan=2>\n", fd)
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(JoinBreakClean) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"JoinBreakClean\" value=\"JoinBreakClean\"><b>JoinBreakClean</b><br>\n", fd)
+WriteLine("</td></tr>\n", fd)
+
+#### Shell
+WriteLine("<tr><td><b>Shell</b></td><td>\n", fd)
+WriteLine("<input type=\"text\" size=\"60\" name=\"Shell\" value=\"", fd)
+str = Get(Shell)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"></td></tr>\n", fd)
+
+#### LayerPartSize
+WriteLine("<tr><td><b>LayerPartSize</b></td><td>\n", fd)
+WriteLine("<input type=\"text\" name=\"LayerPartSize\" value=\"", fd)
+str = Get(LayerPartSize)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"></td></tr>\n", fd)
+
+#### SpotSize
+WriteLine("<tr><td><b>SpotSize</b></td><td>\n", fd)
+WriteLine("<input type=\"text\" name=\"SpotSize\" value=\"", fd)
+str = Get(SpotSize)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"></td></tr>\n", fd)
+
+WriteLine("</table><br>\n", fd)
+WriteLine("\n<p>\n", fd)
+
+############################
+# Selections
+############################
+WriteLine("<h1><a href=\"!set:selections\">Selections</a></h1>\n", fd)
+WriteLine("<table border=0>\n", fd)
+
+#### SelectTime
+WriteLine("<tr><td><b>SelectTime</b></td><td>\n", fd)
+WriteLine("<input type=\"text\" name=\"SelectTime\" value=\"", fd)
+str = Get(SelectTime)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"></td></tr>\n", fd)
+WriteLine("</table>\n", fd)
+
+#### NoAltSelection
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(NoAltSelection) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoAltSelection\" value=\"NoAltSelection\"><b>NoAltSelection</b><br>\n", fd)
+WriteLine("\n<p>\n", fd)
+
+############################
+# Side Menu
+############################
+WriteLine("<h1><a href=\"!set:sidemenu\">Side Menu</a></h1>\n", fd)
+
+#### LogoEndStyle
+WriteLine("<b>LogoEndStyle</b>\n", fd)
+WriteLine("<select name=\"LogoEndStyle\" size=\"1\">\n", fd)
+WriteLine("<option value=\"round\">round\n", fd)
+str = Get(LogoEndStyle)
+if (str != 0 & !Strcmp(str, "0"))
+    WriteLine("<option selected value=\"flush\">flush\n", fd)
+else
+    WriteLine("<option value=\"flush\">flush\n", fd)
+end
+if (str != 0 & !Strcmp(str, "2"))
+    WriteLine("<option selected value=\"extend\">extend\n", fd)
+else
+    WriteLine("<option value=\"extend\">extend\n", fd)
+end
+WriteLine("</select><br>\n", fd)
+
+#### LogoPathWidth
+WriteLine("<b>LogoPathWidth</b>\n", fd)
+WriteLine("<input type=\"text\" size=10 name=\"LogoPathWidth\" value=\"", fd)
+str = Get(LogoPathWidth)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"><br>\n", fd)
+
+#### LogoManhattan
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(LogoManhattan) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"LogoManhattan\" value=\"LogoManhattan\"><b>LogoManhattan</b><br>\n", fd)
+
+#### LogoPretty
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(LogoPretty) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"LogoPretty\" value=\"LogoPretty\"><b>LogoPretty</b><br>\n", fd)
+
+#### LogoPrettyFont
+WriteLine("<b>LogoPrettyFont</b>\n", fd)
+WriteLine("<input type=\"text\" size=60 name=\"LogoPrettyFont\" value=\"", fd)
+str = Get(LogoPrettyFont)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"><br>\n", fd)
+
+#### LogoToFile
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(LogoToFile) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"LogoToFile\" value=\"LogoToFile\"><b>LogoToFile</b><br>\n", fd)
+
+#### NoMergeBoxes
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(NoMergeBoxes) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoMergeBoxes\" value=\"NoMergeBoxes\"><b>NoMergeBoxes</b><br>\n", fd)
+
+#### NoConstrainRound
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(NoConstrainRound) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoConstrainRound\" value=\"NoConstrainRound\"><b>NoConstrainRound</b><br>\n", fd)
+
+#### PictorialDevs
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(PictorialDevs) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"PictorialDevs\" value=\"PictorialDevs\"><b>PictorialDevs</b><br>\n", fd)
+
+WriteLine("\n<p>\n", fd)
+
+
+############################
+# SPICE Interface
+############################
+WriteLine("<h1><a href=\"!set:spice\">SPICE Interface</a></h1>\n", fd)
+
+#### NoAsyncSpice
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(NoAsyncSpice) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoAsyncSpice\" value=\"NoAsyncSpice\"><b>NoAsyncSpice</b><br>\n", fd)
+
+#### SpiceListAll
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(SpiceListAll) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"SpiceListAll\" value=\"SpiceListAll\"><b>SpiceListAll</b><br>\n", fd)
+
+#### CheckSolitary
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(CheckSolitary) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"CheckSolitary\" value=\"CheckSolitary\"><b>CheckSolitary</b><br>\n", fd)
+
+#### NoSpiceTools
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(NoSpiceTools) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoSpiceTools\" value=\"NoSpiceTools\"><b>NoSpiceTools</b><br>\n", fd)
+
+#### SpiceAlias
+WriteLine("<table border=\"0\" align=\"left\">\n", fd)
+WriteLine("<tr><td><b>SpiceAlias</b>\n", fd)
+WriteLine("<td><input type=\"text\" name=\"SpiceAlias\" value=\"", fd)
+str = Get(SpiceAlias)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"><br>\n", fd)
+
+#### SpiceHost
+WriteLine("<tr><td><b>SpiceHost</b>\n", fd)
+WriteLine("<td><input type=\"text\" name=\"SpiceHost\" value=\"", fd)
+str = Get(SpiceHost)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"><br>\n", fd)
+
+#### SpiceProg
+WriteLine("<tr><td><b>SpiceProg</b>\n", fd)
+WriteLine("<td><input type=\"text\" name=\"SpiceProg\" value=\"", fd)
+str = Get(SpiceProg)
+if (str == 0)
+    str = ""
+end
+# Have to substitute for quote chars.
+j = 0
+while (str[j] != 0)
+    if (str[j] == '"')
+        WriteLine("&quot;", fd)
+    else
+        WriteChar(str[j], fd)
+    end
+    j++
+end
+WriteLine("\"><br>\n", fd)
+
+#### SpiceExecDir
+WriteLine("<tr><td><b>SpiceExecDir</b>\n", fd)
+WriteLine("<td><input type=\"text\" name=\"SpiceExecDir\" value=\"", fd)
+str = Get(SpiceExecDir)
+if (str == 0)
+    str = ""
+end
+# Have to substitute for quote chars.
+j = 0
+while (str[j] != 0)
+    if (str[j] == '"')
+        WriteLine("&quot;", fd)
+    else
+        WriteChar(str[j], fd)
+    end
+    j++
+end
+WriteLine("\"><br>\n", fd)
+
+#### SpiceExecName
+WriteLine("<tr><td><b>SpiceExecName</b>\n", fd)
+WriteLine("<td><input type=\"text\" name=\"SpiceExecName\" value=\"", fd)
+str = Get(SpiceExecName)
+if (str == 0)
+    str = ""
+end
+# Have to substitute for quote chars.
+j = 0
+while (str[j] != 0)
+    if (str[j] == '"')
+        WriteLine("&quot;", fd)
+    else
+        WriteChar(str[j], fd)
+    end
+    j++
+end
+WriteLine("\"><br>\n", fd)
+WriteLine("</table><br clear=all>\n", fd)
+
+WriteLine("\n<p>\n", fd)
+
+
+############################
+# File Menu - Printing
+############################
+WriteLine("<h1><a href=\"!set:hardcopy\">File Menu - Printing</a></h1>\n", fd)
+
+#### NoDriverLabels
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(NoDriverLabels) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoDriverLabels\" value=\"NoDriverLabels\"><b>NoDriverLabels</b><br>\n", fd)
+
+#### PSlineWidth
+WriteLine("<b>PSlineWidth</b>\n", fd)
+WriteLine("<input type=\"text\" name=\"PSlineWidth\" value=\"", fd)
+str = Get(PSlineWidth)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"><br>\n", fd)
+
+WriteLine("\n<p>\n", fd)
+
+
+############################
+# Edit Menu
+############################
+WriteLine("<h1><a href=\"!set:edit\">Edit Menu</a></h1>\n", fd)
+
+#### NoReadExclusive
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(NoReadExclusive) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoReadExclusive\" value=\"NoReadExclusive\"><b>NoReadExclusive</b><br>\n", fd)
+
+#### AddToBack
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(AddToBack) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"AddToBack\" value=\"AddToBack\"><b>AddToBack</b><br>\n", fd)
+
+#### NoWireWidthMag
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(NoWireWidthMag) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoWireWidthMag\" value=\"NoWireWidthMag\"><b>NoWireWidthMag</b><br>\n", fd)
+
+#### MasterMenuLength
+WriteLine("<table border=\"0\" align=\"left\">\n", fd)
+WriteLine("<tr><td><b>MasterMenuLength</b>\n", fd)
+WriteLine("<td><input type=\"text\" name=\"MasterMenuLength\" value=\"", fd)
+str = Get(MasterMenuLength)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"><br>\n", fd)
+
+#### UndoListlength
+WriteLine("<tr><td><b>UndoListLength</b>\n", fd)
+WriteLine("<td><input type=\"text\" name=\"UndoListLength\" value=\"", fd)
+str = Get(UndoListLength)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"><br>\n", fd)
+WriteLine("</table><br clear=all>\n", fd)
+
+WriteLine("\n<p>\n", fd)
+
+
+############################
+# View Menu
+############################
+WriteLine("<h1><a href=\"!set:view\">View Menu</a></h1>\n", fd)
+
+#### InfoInternal
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(InfoInternal) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"InfoInternal\" value=\"InfoInternal\"><b>InfoInternal</b><br>\n", fd)
+
+#### LockMode
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(LockMode) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"LockMode\" value=\"LockMode\"><b>LockMode</b><br>\n", fd)
+
+#### RulerSnapToGrid
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(RulerSnapToGrid) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"RulerSnapToGrid\" value=\"RulerSnapToGrid\"><b>RulerSnapToGrid</b><br>\n", fd)
+
+#### PeekSleepMsec
+WriteLine("<table border=\"0\" align=\"left\">\n", fd)
+WriteLine("<tr><td><b>PeekSleepMsec</b>\n", fd)
+WriteLine("<td><input type=\"text\" name=\"PeekSleepMsec\" value=\"", fd)
+str = Get(PeekSleepMsec)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"><br>\n", fd)
+
+#### XSectThickness
+WriteLine("<tr><td><b>XSectThickness</b>\n", fd)
+WriteLine("<td><input type=\"text\" name=\"XSectThickness\" value=\"", fd)
+str = Get(XSectThickness)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"><br>\n", fd)
+WriteLine("</table><br clear=all>\n", fd)
+
+WriteLine("\n<p>\n", fd)
+
+
+############################
+# Attributes Menu
+############################
+WriteLine("<h1><a href=\"!set:attri\">Attributes Menu</a></h1>\n", fd)
+
+#### EraseBehindTerms
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(EraseBehindProps) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"EraseBehindProps\" value=\"EraseBehindProps\"><b>EraseBehindProps</b><br>\n", fd)
+
+#### PhysPropTextSize
+WriteLine("<b>PhysPropTextSize</b>\n", fd)
+WriteLine("<input type=\"text\" name=\"PhysPropTextSize\" value=\"", fd)
+str = Get(PhysPropTextSize)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"><br>\n", fd)
+
+WriteLine("\n<p>\n", fd)
+
+
+############################
+# Convert Menu
+############################
+WriteLine("<h1><a href=\"!set:cvgen\">Convert Menu</a></h1>\n", fd)
+
+#### NoPopUpLog
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(NoPopUpLog) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoPopUpLog\" value=\"NoPopUpLog\"><b>NoPopUpLog</b><br>\n", fd)
+
+#### NumToTxtCells
+WriteLine("<b>NumToTxtCells</b>\n", fd)
+WriteLine("<input type=\"text\" name=\"NumToTxtCells\" value=\"", fd)
+str = Get(NumToTxtCells)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"><br>\n", fd)
+
+WriteLine("\n<p>\n", fd)
+
+
+############################
+# Extract Menu
+############################
+WriteLine("<h1><a href=\"!set:extrc\">Extract Menu</a></h1>\n", fd)
+
+#### EraseBehindTerms
+WriteLine("<table border=0>\n", fd)
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(EraseBehindTerms) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"EraseBehindTerms\" value=\"EraseBehindTerms\"><b>EraseBehindTerms</b></td></tr>\n", fd)
+
+#### TermTextSize
+WriteLine("<tr><td><b>TermTextSize</b></td><td>\n", fd)
+WriteLine("<input type=\"text\" name=\"TermTextSize\" value=\"", fd)
+str = Get(TermTextSize)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"></td></tr>\n", fd)
+
+#### TermMarkSize
+WriteLine("<tr><td><b>TermMarkSize</b></td><td>\n", fd)
+WriteLine("<input type=\"text\" name=\"TermMarkSize\" value=\"", fd)
+str = Get(TermMarkSize)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"></td></tr>\n", fd)
+
+#### LayerSearchUp
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(LayerSearchUp) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"LayerSearchUp\" value=\"LayerSearchUp\"><b>LayerSearchUp</b></td></tr>\n", fd)
+
+#### FlattenPrefix
+WriteLine("<tr><td><b>FlattenPrefix</b></td><td>\n", fd)
+WriteLine("<input type=\"text\" name=\"FlattenPrefix\" value=\"", fd)
+str = Get(FlattenPrefix)
+if (str == 0)
+    str = ""
+end
+WriteLine(str, fd)
+WriteLine("\"></td></tr>\n", fd)
+
+#### GroundPlaneMulti
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(GroundPlaneMulti) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"GroundPlaneMulti\" value=\"GroundPlaneMulti\"><b>GroundPlaneMulti</b></td></tr>\n", fd)
+
+#### GroundPlaneMethod
+WriteLine("<tr><td><b>GroundPlaneMethod</b></td><td>\n", fd)
+WriteLine("<select name=\"GroundPlaneMethod\" size=\"1\">\n", fd)
+str = Get(GroundPlaneMethod)
+if (str != 0 & !Strcmp(str, "0"))
+    WriteLine("<option selected value=\"0\">0\n", fd)
+else
+    WriteLine("<option value=\"0\">0\n", fd)
+end
+if (str != 0 & !Strcmp(str, "1"))
+    WriteLine("<option selected value=\"1\">1\n", fd)
+else
+    WriteLine("<option value=\"1\">1\n", fd)
+end
+if (str != 0 & !Strcmp(str, "2"))
+    WriteLine("<option selected value=\"2\">2\n", fd)
+else
+    WriteLine("<option value=\"2\">2\n", fd)
+end
+WriteLine("</select></td></tr>\n", fd)
+
+#### NoMergeParallel
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(NoMergeParallel) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoMergeParallel\" value=\"NoMergeParallel\"><b>NoMergeParallel</b></td></tr>\n", fd)
+
+#### NoMergeSeries
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(NoMergeSeries) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoMergeSeries\" value=\"NoMergeSeries\"><b>NoMergeSeries</b></td></tr>\n", fd)
+
+#### NoMeasure
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(NoMeasure) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoMeasure\" value=\"NoMeasure\"><b>NoMeasure</b></td></tr>\n", fd)
+
+#### QpathGroundPlane
+WriteLine("<tr><td><b>QpathGroundPlane</b></td><td>\n", fd)
+WriteLine("<select name=\"QpathGroundPlane\" size=\"1\">\n", fd)
+str = Get(QpathGroundPlane)
+if (str != 0 & !Strcmp(str, "0"))
+    WriteLine("<option selected value=\"0\">0\n", fd)
+else
+    WriteLine("<option value=\"0\">0\n", fd)
+end
+if (str != 0 & !Strcmp(str, "1"))
+    WriteLine("<option selected value=\"1\">1\n", fd)
+else
+    WriteLine("<option value=\"1\">1\n", fd)
+end
+if (str != 0 & !Strcmp(str, "2"))
+    WriteLine("<option selected value=\"2\">2\n", fd)
+else
+    WriteLine("<option value=\"2\">2\n", fd)
+end
+WriteLine("</select></td></tr>\n", fd)
+
+#### NoEnet
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(NoEnet) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoEnet\" value=\"NoEnet\"><b>NoEnet</b></td></tr>\n", fd)
+
+#### EnetSpice
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(EnetSpice) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"EnetSpice\" value=\"EnetSpice\"><b>EnetSpice</b></td></tr>\n", fd)
+
+#### EnetBottomUp
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(EnetBottomUp) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"EnetBottomUp\" value=\"EnetBottomUp\"><b>EnetBottomUp</b></td></tr>\n", fd)
+
+#### NoPnet
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(NoPnet) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoPnet\" value=\"NoPnet\"><b>NoPnet</b></td></tr>\n", fd)
+
+#### NoPnetDevs
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(NoPnetDevs) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoPnetDevs\" value=\"NoPnetDevs\"><b>NoPnetDevs</b></td></tr>\n", fd)
+
+#### NoPnetSpice
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(NoPnetSpice) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoPnetSpice\" value=\"NoPnetSpice\"><b>NoPnetSpice</b></td></tr>\n", fd)
+
+#### PnetBottomUp
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(PnetBottomUp) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"PnetBottomUp\" value=\"PnetBottomUp\"><b>PnetBottomUp</b></td></tr>\n", fd)
+
+#### PnetShowGeometry
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(PnetShowGeometry) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"PnetShowGeometry\" value=\"PnetShowGeometry\"><b>PnetShowGeometry</b></td></tr>\n", fd)
+
+#### PnetIncludeWireCap
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(PnetIncludeWireCap) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"PnetIncludeWireCap\" value=\"PnetIncludeWireCap\"><b>PnetIncludeWireCap</b></td></tr>\n", fd)
+
+#### PnetListAll
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(PnetListAll) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"PnetListAll\" value=\"PnetListAll\"><b>PnetListAll</b></td></tr>\n", fd)
+
+#### SourceAllDevs
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(SourceAllDevs) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"SourceAllDevs\" value=\"SourceAllDevs\"><b>SourceAllDevs</b></td></tr>\n", fd)
+
+#### SourceCreate
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(SourceCreate) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"SourceCreate\" value=\"SourceCreate\"><b>SourceCreate</b></td></tr>\n", fd)
+
+#### SourceClear
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(SourceClear) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"SourceClear\" value=\"SourceClear\"><b>SourceClear</b></td></tr>\n", fd)
+
+#### NoExsetAllDevs
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(NoExsetAllDevs) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoExsetAllDevs\" value=\"NoExsetAllDevs\"><b>NoExsetAllDevs</b></td></tr>\n", fd)
+
+#### NoExsetCreate
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(NoExsetCreate) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoExsetCreate\" value=\"NoExsetCreate\"><b>NoExsetCreate</b></td></tr>\n", fd)
+
+#### ExsetClear
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(ExsetClear) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"ExsetClear\" value=\"ExsetClear\"><b>ExsetClear</b></td></tr>\n", fd)
+
+#### ExsetIncludeWireCap
+WriteLine("<tr><td colspan=2><input type=\"checkbox\" ", fd)
+if (Get(ExsetIncludeWireCap) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"ExsetIncludeWireCap\" value=\"ExsetIncludeWireCap\"><b>ExsetIncludeWireCap</b></td></tr>\n", fd)
+
+WriteLine("\n<p>\n", fd)
+WriteLine("</table><br>\n", fd)
+
+
+############################
+# Help System
+############################
+WriteLine("<h1><a href=\"!set:help\">Help System</a></h1>\n", fd)
+
+#### HelpMultiWin
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(HelpMultiWin) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"HelpMultiWin\" value=\"HelpMultiWin\"><b>HelpMultiWin</b><br>\n", fd)
+
+#### NoHelpDefault
+WriteLine("<input type=\"checkbox\" ", fd)
+if (Get(NoHelpDefault) != 0)
+    WriteLine("checked ", fd)
+end
+WriteLine("name=\"NoHelpDefault\" value=\"NoHelpDefault\"><b>NoHelpDefault</b><br>\n", fd)
+
+WriteLine("\n<p>\n", fd)
+WriteLine("<hr>\n", fd);
+
+WriteLine("<input type=\"submit\" value=\"Apply\">\n", fd)
+WriteLine("<input type=\"reset\">\n", fd)
+WriteLine("</form>\n", fd)
+WriteLine("</body>\n", fd)
+WriteLine("</html>\n", fd)
+
+Close(fd)
+cmd = "help " + fname
+TextCmd(cmd)
+Exit()
+
+#endif
+
+# The part of the script below processes the returns from the form elements.
+# If a form element was active, set the corresponding variable, or unset it
+# if the form element was inactive.  Note that there is little in the way
+# of sanity checking.
+
+############################
+# Paths and Directories
+############################
+if Defined(Path)
+    Set("Path", Path)
+end
+if Defined(LibPath)
+    Set("LibPath", LibPath)
+end
+if Defined(HelpPath)
+    Set("HelpPath", HelpPath)
+end
+if Defined(ScriptPath)
+    Set("ScriptPath", ScriptPath)
+end
+if Defined(DocsDir)
+    Set("DocsDir", DocsDir)
+else
+    Unset("DocsDir")
+end
+if Defined(TeePrompt)
+    Set("TeePrompt", TeePrompt)
+else
+    Unset("TeePrompt")
+end
+
+
+############################
+# General Visual
+############################
+if (Defined(LayerTable) & (!Strcmp(LayerTable, "tiny") | !Strcmp(LayerTable, "compact")))
+    Set("LayerTable", LayerTable)
+else
+    Unset("LayerTable")
+end
+if Defined(CellThreshold)
+    Set("CellThreshold", CellThreshold)
+else
+    Unset("CellThreshold")
+end
+if Defined(MaxPrpLabelLen)
+    Set("MaxPrpLabelLen", MaxPrpLabelLen)
+else
+    Unset("MaxPrpLabelLen")
+end
+if Defined(FullWinCursor)
+    Set("FullWinCursor", "")
+else
+    Unset("FullWinCursor")
+end
+
+
+############################
+# '!' Commands
+############################
+if Defined(JoinMaxPolyVerts)
+    Set("JoinMaxPolyVerts", JoinMaxPolyVerts)
+else
+    Unset("JoinMaxPolyVerts")
+end
+if Defined(JoinMaxPolyGroup)
+    Set("JoinMaxPolyGroup", JoinMaxPolyGroup)
+else
+    Unset("JoinMaxPolyGroup")
+end
+if Defined(JoinMaxPolyQueue)
+    Set("JoinMaxPolyQueue", JoinMaxPolyQueue)
+else
+    Unset("JoinMaxPolyQueue")
+end
+if Defined(JoinBreakClean)
+    Set("JoinBreakClean", "")
+else
+    Unset("JoinBreakClean")
+end
+if Defined(Shell)
+    Set("Shell", Shell)
+else
+    Unset("Shell")
+end
+if Defined(LayerPartSize)
+    Set("LayerPartSize", LayerPartSize)
+else
+    Unset("LayerPartSize")
+end
+if Defined(SpotSize)
+    Set("SpotSize", SpotSize)
+else
+    Unset("SpotSize")
+end
+
+############################
+# Selections
+############################
+if Defined(SelectTime)
+    Set("SelectTime", SelectTime)
+else
+    Unset("SelectTime")
+end
+if Defined(NoAltSelection)
+    Set("NoAltSelection", "")
+else
+    Unset("NoAltSelection")
+end
+
+############################
+# Side Menu
+############################
+if Defined(LogoEndStyle)
+    if (!Strcmp(LogoEndStyle, "flush"))
+        Set("LogoEndStyle", "0")
+    elif (!Strcmp(LogoEndStyle, "extend"))
+        Set("LogoEndStyle", "2")
+    else
+        Unset("LogoEndStyle")
+    end
+else
+    Unset("LogoEndStyle")
+end
+if Defined(LogoPathWidth)
+    Set("LogoPathWidth", LogoPathWidth)
+else
+    Unset("LogoPathWidth")
+end
+if Defined(LogoManhattan)
+    Set(LogoManhattan, "")
+else
+    Unset(LogoManhattan)
+end
+if Defined(LogoPretty)
+    Set(LogoPretty, "")
+else
+    Unset(LogoPretty)
+end
+if Defined(LogoPrettyFont)
+    Set("LogoPrettyFont", LogoPrettyFont)
+else
+    Unset("LogoPrettyFont")
+end
+if Defined(LogoToFile)
+    Set(LogoToFile, "")
+else
+    Unset(LogoToFile)
+end
+if Defined(NoMergeBoxes)
+    Set(NoMergeBoxes, "")
+else
+    Unset(NoMergeBoxes)
+end
+if Defined(NoConstrainRound)
+    Set(NoConstrainRound, "")
+else
+    Unset(NoConstrainRound)
+end
+if Defined(PictorialDevs)
+    Set("PictorialDevs", "")
+else
+    Unset("PictorialDevs")
+end
+
+
+############################
+# SPICE Interface
+############################
+if Defined(NoAsyncSpice)
+    Set(NoAsyncSpice, "")
+else
+    Unset(NoAsyncSpice)
+end
+if Defined(SpiceListAll)
+    Set(SpiceListAll, "")
+else
+    Unset(SpiceListAll)
+end
+if Defined(CheckSolitary)
+    Set(CheckSolitary, "")
+else
+    Unset(CheckSolitary)
+end
+if Defined(SpiceAlias)
+    Set("SpiceAlias", SpiceAlias)
+else
+    Unset("SpiceAlias")
+end
+if Defined(SpiceHost)
+    Set("SpiceHost", SpiceHost)
+else
+    Unset("SpiceHost")
+end
+if Defined(SpiceProg)
+    Set("SpiceProg", SpiceProg)
+else
+    Unset("SpiceProg")
+end
+if Defined(SpiceExecDir)
+    Set("SpiceExecDir", SpiceExecDir)
+else
+    Unset("SpiceExecDir")
+end
+if Defined(SpiceExecName)
+    Set("SpiceExecName", SpiceExecName)
+else
+    Unset("SpiceExecName")
+end
+if Defined(NoSpiceTools)
+    Set(NoSpiceTools, "")
+else
+    Unset(NoSpiceTools)
+end
+
+
+############################
+# File Menu - Printing
+############################
+if Defined(NoDriverLabels)
+    Set(NoDriverLabels, "")
+else
+    Unset(NoDriverLabels)
+end
+if Defined(PSlineWidth)
+    Set("PSlineWidth", PSlineWidth)
+else
+    Unset("PSlineWidth")
+end
+
+
+############################
+# Edit Menu
+############################
+if Defined(NoReadExclusive)
+    Set(NoReadExclusive, "")
+else
+    Unset(NoReadExclusive)
+end
+if Defined(AddToBack)
+    Set(AddToBack, "")
+else
+    Unset(AddToBack)
+end
+if Defined(NoWireWidthMag)
+    Set(NoWireWidthMag, "")
+else
+    Unset(NoWireWidthMag)
+end
+if Defined(MasterMenuLength)
+    Set("MasterMenuLength", MasterMenuLength)
+else
+    Unset("MasterMenuLength")
+end
+if Defined(UndoListLength)
+    Set("UndoListLength", UndoListLength)
+else
+    Unset("UndoListLength")
+end
+
+
+############################
+# View Menu
+############################
+if Defined(InfoInternal)
+    Set(InfoInternal, "")
+else
+    Unset(InfoInternal)
+end
+if Defined(RulerSnapToGrid)
+    Set("RulerSnapToGrid", "")
+else
+    Unset("RulerSnapToGrid")
+end
+if Defined(LockMode)
+    Set("LockMode", "")
+else
+    Unset("LockMode")
+end
+if Defined(PeekSleepMsec)
+    Set("PeekSleepMsec", PeekSleepMsec)
+else
+    Unset("PeekSleepMsec")
+end
+if Defined(XSectThickness)
+    Set("XSectThickness", XSectThickness)
+else
+    Unset("XSectThickness")
+end
+
+
+############################
+# Attributes Menu
+############################
+if Defined(EraseBehindProps)
+    Set(EraseBehindProps, "")
+else
+    Unset(EraseBehindProps)
+end
+if Defined(PhysPropTextSize)
+    Set("PhysPropTextSize", PhysPropTextSize)
+else
+    Unset("PhysPropTextSize")
+end
+
+
+############################
+# Convert Menu
+############################
+if Defined(NoPopUpLog)
+    Set("NoPopUpLog", "")
+else
+    Unset("NoPopUpLog")
+end
+if Defined(NumToTxtCells)
+    Set("NumToTxtCells", NumToTxtCells)
+else
+    Unset("NumToTxtCells")
+end
+
+
+############################
+# Extract Menu
+############################
+if Defined(EraseBehindTerms)
+    Set(EraseBehindTerms, "")
+else
+    Unset(EraseBehindTerms)
+end
+if Defined(TermTextSize)
+    Set("TermTextSize", TermTextSize)
+else
+    Unset("TermTextSize")
+end
+if Defined(TermMarkSize)
+    Set("TermMarkSize", TermMarkSize)
+else
+    Unset("TermMarkSize")
+end
+if Defined(LayerSearchUp)
+    Set(LayerSearchUp, "")
+else
+    Unset(LayerSearchUp)
+end
+if Defined(FlattenPrefix)
+    Set("FlattenPrefix", FlattenPrefix)
+else
+    Unset("FlattenPrefix")
+end
+if Defined(GroundPlaneMulti)
+    Set(GroundPlaneMulti, "")
+else
+    Unset(GroundPlaneMulti)
+end
+if Defined(GroundPlaneMethod)
+    if (!Strcmp(GroundPlaneMethod, "0"))
+        Unset("GroundPlaneMethod")
+    elif (!Strcmp(GroundPlaneMethod, "1"))
+        Set("GroundPlaneMethod", "1")
+    elif (!Strcmp(GroundPlaneMethod, "2"))
+        Set("GroundPlaneMethod", "2")
+    else
+        Unset("GroundPlaneMethod")
+    end
+else
+    Unset("GroundPlaneMethod")
+end
+if Defined(NoMergeParallel)
+    Set(NoMergeParallel, "")
+else
+    Unset(NoMergeParallel)
+end
+if Defined(NoMergeSeries)
+    Set(NoMergeSeries, "")
+else
+    Unset(NoMergeSeries)
+end
+if Defined(NoMeasure)
+    Set(NoMeasure, "")
+else
+    Unset(NoMeasure)
+end
+if Defined(QpathGroundPlane)
+    if (!Strcmp(QpathGroundPlane, "0"))
+        Unset("QpathGroundPlane")
+    elif (!Strcmp(QpathGroundPlane, "1"))
+        Set("QpathGroundPlane", "1")
+    elif (!Strcmp(QpathGroundPlane, "2"))
+        Set("QpathGroundPlane", "2")
+    else
+        Unset("QpathGroundPlane")
+    end
+else
+    Unset("QpathGroundPlane")
+end
+if Defined(NoEnet)
+    Set(NoEnet, "")
+else
+    Unset(NoEnet)
+end
+if Defined(EnetSpice)
+    Set(EnetSpice, "")
+else
+    Unset(EnetSpice)
+end
+if Defined(EnetBottomUp)
+    Set(EnetBottomUp, "")
+else
+    Unset(EnetBottomUp)
+end
+if Defined(NoPnet)
+    Set(NoPnet, "")
+else
+    Unset(NoPnet)
+end
+if Defined(NoPnetDevs)
+    Set(NoPnetDevs, "")
+else
+    Unset(NoPnetDevs)
+end
+if Defined(NoPnetSpice)
+    Set(NoPnetSpice, "")
+else
+    Unset(NoPnetSpice)
+end
+if Defined(PnetBottomUp)
+    Set(PnetBottomUp, "")
+else
+    Unset(PnetBottomUp)
+end
+if Defined(PnetShowGeometry)
+    Set(PnetShowGeometry, "")
+else
+    Unset(PnetShowGeometry)
+end
+if Defined(PnetIncludeWireCap)
+    Set(PnetIncludeWireCap, "")
+else
+    Unset(PnetIncludeWireCap)
+end
+if Defined(PnetListAll)
+    Set(PnetListAll, "")
+else
+    Unset(PnetListAll)
+end
+if Defined(SourceAllDevs)
+    Set(SourceAllDevs, "")
+else
+    Unset(SourceAllDevs)
+end
+if Defined(SourceCreate)
+    Set(SourceCreate, "")
+else
+    Unset(SourceCreate)
+end
+if Defined(SourceClear)
+    Set(SourceClear, "")
+else
+    Unset(SourceClear)
+end
+if Defined(NoExsetAllDevs)
+    Set(NoExsetAllDevs, "")
+else
+    Unset(NoExsetAllDevs)
+end
+if Defined(NoExsetCreate)
+    Set(NoExsetCreate, "")
+else
+    Unset(NoExsetCreate)
+end
+if Defined(ExsetClear)
+    Set(ExsetClear, "")
+else
+    Unset(ExsetClear)
+end
+if Defined(ExsetIncludeWireCap)
+    Set(ExsetIncludeWireCap, "")
+else
+    Unset(ExsetIncludeWireCap)
+end
+
+
+############################
+# Help System
+############################
+if Defined(HelpMultiWin)
+    Set(HelpMultiWin, "")
+else
+    Unset(HelpMultiWin)
+end
+if Defined(NoHelpDefault)
+    Set(NoHelpDefault, "")
+else
+    Unset(NoHelpDefault)
+end
+

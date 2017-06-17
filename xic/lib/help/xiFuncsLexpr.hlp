@@ -1,0 +1,1779 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiFuncsLexpr.hlp,v 1.31 2015/07/19 20:05:36 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiFuncsLexpr.hlp
+!!TITLE
+xiFuncsLexpr.hlp
+!!HTML
+
+!!SUBTOPICS
+funcs:lexpr
+funcs:lexpr:zoid
+funcs:lexpr:oper
+funcs:lexpr:spt
+funcs:lexpr:db
+funcs:lexpr:ntab
+
+
+!! Trapezoid Lists and Layer Expressions
+!!REDIRECT SetZref              funcs:lexpr:zoid#SetZref
+!!REDIRECT GetZref              funcs:lexpr:zoid#GetZref
+!!REDIRECT GetZrefBB            funcs:lexpr:zoid#GetZrefBB
+!!REDIRECT AdvanceZref          funcs:lexpr:zoid#AdvanceZref
+!!REDIRECT Zhead                funcs:lexpr:zoid#Zhead
+!!REDIRECT Zvalues              funcs:lexpr:zoid#Zvalues
+!!REDIRECT Zlength              funcs:lexpr:zoid#Zlength
+!!REDIRECT Zarea                funcs:lexpr:zoid#Zarea
+!!REDIRECT GetZlist             funcs:lexpr:zoid#GetZlist
+!!REDIRECT GetSqZlist           funcs:lexpr:zoid#GetSqZlist
+!!REDIRECT TransformZ           funcs:lexpr:zoid#TransformZ
+!!REDIRECT BloatZ               funcs:lexpr:zoid#BloatZ
+!!REDIRECT ExtentZ              funcs:lexpr:zoid#ExtentZ
+!!REDIRECT EdgesZ               funcs:lexpr:zoid#EdgesZ
+!!REDIRECT ManhattanizeZ        funcs:lexpr:zoid#ManhattanizeZ
+!!REDIRECT RepartitionZ         funcs:lexpr:zoid#RepartitionZ
+!!REDIRECT BoxZ                 funcs:lexpr:zoid#BoxZ
+!!REDIRECT ZoidZ                funcs:lexpr:zoid#ZoidZ
+!!REDIRECT ObjectZ              funcs:lexpr:zoid#ObjectZ
+!!REDIRECT ParseLayerExpr       funcs:lexpr:zoid#ParseLayerExpr
+!!REDIRECT EvalLayerExpr        funcs:lexpr:zoid#EvalLayerExpr
+!!REDIRECT TestCoverageFull     funcs:lexpr:zoid#TestCoverageFull
+!!REDIRECT TestCoveragePartial  funcs:lexpr:zoid#TestCoveragePartial
+!!REDIRECT TestCoverageNone     funcs:lexpr:zoid#TestCoverageNone
+!!REDIRECT TestCoverage         funcs:lexpr:zoid#TestCoverage
+!!REDIRECT ZtoObjects           funcs:lexpr:zoid#ZtoObjects
+!!REDIRECT ZtoTempLayer         funcs:lexpr:zoid#ZtoTempLayer
+!!REDIRECT ClearTempLayer       funcs:lexpr:zoid#ClearTempLayer
+!!REDIRECT ZtoFile              funcs:lexpr:zoid#ZtoFile
+!!REDIRECT ZfromFile            funcs:lexpr:zoid#ZfromFile
+!!REDIRECT ReadZfile            funcs:lexpr:zoid#ReadZfile
+!!REDIRECT ChdGetZlist          funcs:lexpr:zoid#ChdGetZlist
+
+!! Operations
+!!REDIRECT Filt                 funcs:lexpr:oper#Filt
+!!REDIRECT GeomAnd              funcs:lexpr:oper#GeomAnd
+!!REDIRECT GeomAndNot           funcs:lexpr:oper#GeomAndNot
+!!REDIRECT GeomCat              funcs:lexpr:oper#GeomCat
+!!REDIRECT GeomNot              funcs:lexpr:oper#GeomNot
+!!REDIRECT GeomOr               funcs:lexpr:oper#GeomOr
+!!REDIRECT GeomXor              funcs:lexpr:oper#GeomXor
+
+!! Spatial Parameter Tables
+!!REDIRECT ReadSPtable          funcs:lexpr:spt#ReadSPtable
+!!REDIRECT NewSPtable           funcs:lexpr:spt#NewSPtable
+!!REDIRECT WriteSPtable         funcs:lexpr:spt#WriteSPtable
+!!REDIRECT ClearSPtable         funcs:lexpr:spt#ClearSPtable
+!!REDIRECT FindSPtable          funcs:lexpr:spt#FindSPtable
+!!REDIRECT GetSPdata            funcs:lexpr:spt#GetSPdata
+!!REDIRECT SetSPdata            funcs:lexpr:spt#SetSPdata
+
+!! Polymorphic Flat Database
+!!REDIRECT ChdOpenOdb           funcs:lexpr:db#ChdOpenOdb
+!!REDIRECT ChdOpenZdb           funcs:lexpr:db#ChdOpenZdb
+!!REDIRECT ChdOpenZbdb          funcs:lexpr:db#ChdOpenZbdb
+!!REDIRECT GetObjectsOdb        funcs:lexpr:db#GetObjectsOdb
+!!REDIRECT ListLayersDb         funcs:lexpr:db#ListLayersDb
+!!REDIRECT GetZlistDb           funcs:lexpr:db#GetZlistDb
+!!REDIRECT GetZlistZbdb         funcs:lexpr:db#GetZlistZbdb
+!!REDIRECT DestroyDb            funcs:lexpr:db#DestroyDb
+!!REDIRECT ShowDb               funcs:lexpr:db#ShowDb
+
+!! Named String Tables
+!!REDIRECT FindNameTable        funcs:lexpr:ntab#FindNameTable
+!!REDIRECT RemoveNameTable      funcs:lexpr:ntab#RemoveNameTable
+!!REDIRECT ListNameTables       funcs:lexpr:ntab#ListNameTables
+!!REDIRECT ClearNameTables      funcs:lexpr:ntab#ClearNameTables
+!!REDIRECT AddNameToTable       funcs:lexpr:ntab#AddNameToTable
+!!REDIRECT RemoveNameFromTable  funcs:lexpr:ntab#RemoveNameFromTable
+!!REDIRECT FindNameInTable      funcs:lexpr:ntab#FindNameInTable
+!!REDIRECT ListNamesInTable     funcs:lexpr:ntab#ListNamesInTable
+
+!!KEYWORD
+funcs:lexpr
+!!TITLE
+Computational Geometry and Layer Expressions
+!!HTML
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+
+    <!-- 071415 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:lexpr:zoid">Trapezoid Lists and Layer
+        Expressions</a></th></tr>
+
+    <tr><td><a href="funcs:lexpr:zoid#SetZref">
+     <tt>SetZref</tt>(<i>arg</i>)</a>
+     </td><td>Set background clipping zoidlist</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#GetZref">
+     <tt>GetZref</tt>()</a>
+     </td><td>Return background clipping zoidlist</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#GetZrefBB">
+     <tt>GetZrefBB</tt>(<i>array</i>)</a>
+     </td><td>Return background clipping zoidlist bounding box</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#AdvanceZref">
+     <tt>AdvanceZref</tt>(<i>clear</i>, <i>array</i>)</a>
+     </td><td>Establish or advance grid clipping area</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#Zhead">
+     <tt>Zhead</tt>(<i>zoidlist</i>)</a>
+     </td><td>Extract and return leading trapezoid</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#Zvalues">
+     <tt>Zvalues</tt>(<i>zoidlist</i>, <i>array</i>)</a>
+     </td><td>Extract parameters of leading trapezoid</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#Zlength">
+     <tt>Zlength</tt>(<i>zoidlist</i>)</a>
+     </td><td>Return number of trapezoids in list</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#Zarea">
+     <tt>Zarea</tt>(<i>zoidlist</i>)</a>
+     </td><td>Return total area of trapezoids in list</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#GetZlist">
+     <tt>GetZlist</tt>(<i>layersrc</i>, <i>depth</i>)</a>
+     </td><td>Create zoidlist from cell</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#GetSqZlist">
+     <tt>GetSqZlist</tt>(<i>layername</i>)</a>
+     </td><td>Create zoidlist from selected objects</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#TransformZ">
+     <tt>TransformZ</tt>(<i>zoidlist</i>, <i>refx</i>, <i>refy</i>,
+     <i>newx</i>, <i>newy</i>)</a>
+     </td><td>Apply a transformation to a zoidlist</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#BloatZ">
+     <tt>BloatZ</tt>(<i>dimen</i>, <i>zoidlist</i>, <i>mode</i>)</a>
+     </td><td>Bloat a zoidlist</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#ExtentZ">
+     <tt>ExtentZ</tt>(<i>zoidlist</i>)</a>
+     </td><td>Find the bounding box of a zoidlist</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#EdgesZ">
+     <tt>EdgesZ</tt>(<i>dimen</i>, <i>zoidlist</i>, <i>mode</i>)</a>
+     </td><td>Create an edge zoidlist</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#ManhattanizeZ">
+     <tt>ManhattanizeZ</tt>(<i>dimen</i>, <i>zoidlist</i>, <i>mode</i>)</a>
+     </td><td>Manhattanize a zoidlist</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#RepartitionZ">
+     <tt>RepartitionZ</tt>(<i>zoidlist</i>)</a>
+     </td><td>Canonicalize for horizontal split</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#BoxZ">
+     <tt>BoxZ</tt>(<i>l</i>, <i>b</i>, <i>r</i>, <i>t</i>)</a>
+     </td><td>Create zoidlist from box</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#ZoidZ">
+     <tt>ZoidZ</tt>(<i>xll</i>, <i>xlr</i>, <i>yl</i>, <i>xul</i>, <i>xur</i>,
+     <i>yu</i>)</a>
+     </td><td>Create zoidlist from trapezoid</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#ObjectZ">
+     <tt>ObjectZ</tt>(<i>object_handle</i>, <i>all</i>)</a>
+     </td><td>Create zoidlist from object(s)</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#ParseLayerExpr">
+     <tt>ParseLayerExpr</tt>(<i>string</i>)</a>
+     </td><td>Create layer_expr from string</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#EvalLayerExpr">
+     <tt>EvalLayerExpr</tt>(<i>layer_expr</i>, <i>zoidlist</i>, <i>depth</i>,
+     <i>isclear</i>)</a>
+     </td><td>Evaluate layer expression in zoidlist</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#TestCoverageFull">
+     <tt>TestCoverageFull</tt>(<i>layer_expr</i>, <i>zoidlist</i>,
+     <i>minsize</i>)</a> </td><td>Test layer expression for full
+     coverage of zoidlist</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#TestCoveragePartial">
+     <tt>TestCoveragePartial</tt>(<i>layer_expr</i>, <i>zoidlist</i>,
+     <i>minsize</i>)</a> </td><td>Test layer expression for partial
+     coverage of zoidlist</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#TestCoverageNone">
+     <tt>TestCoverageNone</tt>(<i>layer_expr</i>, <i>zoidlist</i>,
+     <i>minsize</i>)</a> </td><td>Test layer expression for no
+     coverage of zoidlist</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#TestCoverage">
+     <tt>TestCoverage</tt>(<i>layer_expr</i>, <i>zoidlist</i>,
+     <i>testfull</i>)</a> </td><td>Test layer expression in zoidlist</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#ZtoObjects">
+     <tt>ZtoObjects</tt>(<i>zoidlist</i>, <i>lname</i>, <i>join</i>,
+     <i>to_dbase</i>)</a>
+     </td><td>Create objects from zoidlist</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#ZtoTempLayer">
+     <tt>ZtoTempLayer</tt>(<i>longname</i>, <i>zoidlist</i>, <i>join</i>)</a>
+     </td><td>Put objects from zoidlist in layer</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#ClearTempLayer">
+     <tt>ClearTempLayer</tt>(<i>longname</i>)</a>
+     </td><td>Clear objects in layer</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#ZtoFile">
+     <tt>ZtoFile</tt>(<i>filename</i>, <i>zoidlist</i>, <i>ascii</i>)</a>
+     </td><td>Save trapezoid list in file</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#ZfromFile">
+     <tt>ZfromFile</tt>(<i>filename</i>)</a>
+     </td><td>Extract trapezoid list from file</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#ReadZfile">
+     <tt>ReadZfile</tt>(<i>filename</i>)</a>
+     </td><td>Read trapezoids from file into current cell</td></tr>
+    <tr><td><a href="funcs:lexpr:zoid#ChdGetZlist">
+     <tt>ChdGetZlist</tt>(<i>chd_name</i>, <i>cellname</i>, <i>scale</i>,
+     <i>array</i>, <i>clip</i>, <i>all</i>)</a>
+     </td><td>Extract trapezoid list through CHD</td></tr>
+
+    <!-- 110213 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:lexpr:oper">Operations</a></th></tr>
+
+    <tr><td><a href="funcs:lexpr:oper#Filt">
+     <tt>Filt</tt>(<i>zoids</i>, <i>lexpr</i>)</a>
+     </td><td>Trapezoid filtering</td></tr>
+    <tr><td><a href="funcs:lexpr:oper#GeomAnd">
+     <tt>GeomAnd</tt>(<i>zoids1</i> [, <i>zoids2</i>])</a>
+     </td><td>Geometrical AND function</td></tr>
+    <tr><td><a href="funcs:lexpr:oper#GeomAndNot">
+     <tt>GeomAndNot</tt>(<i>zoids1</i>, <i>zoids2</i>)</a>
+     </td><td>Clip second list from first</td></tr>
+    <tr><td><a href="funcs:lexpr:oper#GeomCat">
+     <tt>GeomCat</tt>(<i>zoids1</i>, ...)</a>
+     </td><td>Concatenate zoidlists</td></tr>
+    <tr><td><a href="funcs:lexpr:oper#GeomNot">
+     <tt>GeomNot</tt>(<i>zoids1</i>)</a>
+     </td><td>Invert zoidlist</td></tr>
+    <tr><td><a href="funcs:lexpr:oper#GeomOr">
+     <tt>GeomOr</tt>(<i>zoids1</i>, ...)</a>
+     </td><td>Merge zoidlists</td></tr>
+    <tr><td><a href="funcs:lexpr:oper#GeomXor">
+     <tt>GeomXor</tt>(<i>zoids1</i> [, <i>zoids2</i>])</a>
+     </td><td>Exclusive-Or zoidlists</td></tr>
+
+    <!-- 010509 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:lexpr:spt">Spatial Parameter Tables</a></th></tr>
+
+    <tr><td><a href="funcs:lexpr:spt#ReadSPtable">
+     <tt>ReadSPtable</tt>(<i>filename</i>)</a>
+     </td><td>Create or replace a table</td></tr>
+    <tr><td><a href="funcs:lexpr:spt#NewSPtable">
+     <tt>NewSPtable</tt>(<i>name</i>, <i>x0</i>, <i>dx</i>, <i>nx</i>,
+     <i>y0</i>, <i>dy</i>, <i>ny</i>)</a>
+     </td><td>Create a table</td></tr>
+    <tr><td><a href="funcs:lexpr:spt#WriteSPtable">
+     <tt>WriteSPtable</tt>(<i>name</i>, <i>filename</i>)</a>
+     </td><td>Write a table to a file</td></tr>
+    <tr><td><a href="funcs:lexpr:spt#ClearSPtable">
+     <tt>ClearSPtable</tt>(<i>name</i>)</a>
+     </td><td>Destroy a table</td></tr>
+    <tr><td><a href="funcs:lexpr:spt#FindSPtable">
+     <tt>FindSPtable</tt>(<i>name</i>, <i>array</i>)</a>
+     </td><td>Find a table</td></tr>
+    <tr><td><a href="funcs:lexpr:spt#GetSPdata">
+     <tt>GetSPdata</tt>(<i>name</i>, <i>x</i>, <i>y</i>)</a>
+     </td><td>Obtain value from table</td></tr>
+    <tr><td><a href="funcs:lexpr:spt#SetSPdata">
+     <tt>SetSPdata</tt>(<i>name</i>, <i>x</i>, <i>y</i>, <i>value</i>)</a>
+     </td><td>Set table value</td></tr>
+
+    <!-- 010509 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:lexpr:db">Polymorphic Flat Database</a></th></tr>
+
+    <tr><td><a href="funcs:lexpr:db#ChdOpenOdb">
+     <tt>ChdOpenOdb</tt>(<i>chd_name</i>, <i>scale</i>, <i>cellname</i>,
+     <i>array</i>, <i>clip</i>, <i>dbname</i>)</a>
+     </td><td>Open a flat object database</td></tr>
+    <tr><td><a href="funcs:lexpr:db#ChdOpenZdb">
+     <tt>ChdOpenZdb</tt>(<i>chd_name</i>, <i>scale</i>, <i>cellname</i>,
+     <i>array</i>, <i>clip</i>, <i>dbname</i>)</a>
+     </td><td>Open a flat trapezoid database</td></tr>
+    <tr><td><a href="funcs:lexpr:db#ChdOpenZbdb">
+     <tt>ChdOpenZbdb</tt>(<i>chd_name</i>, <i>scale</i>, <i>cellname</i>,
+     <i>array</i>, <i>dbname</i>, <i>dx</i>, <i>dy</i>, <i>bx</i>,
+     <i>by</i>)</a>
+     </td><td>Open a binned flat trapezoid database</td></tr>
+    <tr><td><a href="funcs:lexpr:db#GetObjectsOdb">
+     <tt>GetObjectsOdb</tt>(<i>dbname</i>, <i>layer_list</i>, <i>array</i>)</a>
+     </td><td>Read objects from database</td></tr>
+    <tr><td><a href="funcs:lexpr:db#ListLayersDb">
+     <tt>ListLayersDb</tt>(<i>dbname</i>)</a>
+     </td><td>List the layers used in the database</td></tr>
+    <tr><td><a href="funcs:lexpr:db#GetZlistDb">
+     <tt>GetZlistDb</tt>(<i>dbname</i>, <i>layer_name</i>, <i>zoidlist</i>)</a>
+     </td><td>Read trapezoids from database</td></tr>
+    <tr><td><a href="funcs:lexpr:db#GetZlistZbdb">
+     <tt>GetZlistZbdb</tt>(<i>dbname</i>, <i>layer_name</i>, <i>nx</i>,
+     <i>ny</i>)</a>
+     </td><td>Read trapezoids from ZBDB database</td></tr>
+    <tr><td><a href="funcs:lexpr:db#DestroyDb">
+     <tt>DestroyDb</tt>(<i>dbname</i>)</a>
+     </td><td>Destroy a database</td></tr>
+    <tr><td><a href="funcs:lexpr:db#ShowDb">
+     <tt>ShowDb</tt>(<i>dbname</i>, <i>array</i>)</a>
+     </td><td>Display database region</td></tr>
+
+    <!-- 020109 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:lexpr:ntab">Named String Tables</a></th></tr>
+
+    <tr><td><a href="funcs:lexpr:ntab#FindNameTable">
+     <tt>FindNameTable</tt>(<i>tabname</i>, <i>create</i>)</a>
+     </td><td>Verify existence of or create named string table</td></tr>
+    <tr><td><a href="funcs:lexpr:ntab#RemoveNameTable">
+     <tt>RemoveNameTable</tt>(<i>tabname</i>)</a>
+     </td><td>Destroy named string table</td></tr>
+    <tr><td><a href="funcs:lexpr:ntab#ListNameTables">
+     <tt>ListNameTables</tt>()</a>
+     </td><td>List existing named string tables</td></tr>
+    <tr><td><a href="funcs:lexpr:ntab#ClearNameTables">
+     <tt>ClearNameTables</tt>()</a>
+     </td><td>Destroy all named string tables</td></tr>
+    <tr><td><a href="funcs:lexpr:ntab#AddNameToTable">
+     <tt>AddNameToTable</tt>(<i>tabname</i>, <i>name</i>, <i>value</i>)</a>
+     </td><td>Add name/value to named string table</td></tr>
+    <tr><td><a href="funcs:lexpr:ntab#RemoveNameFromTable">
+     <tt>RemoveNameFromTable</tt>(<i>tabname</i>, <i>name</i>)</a>
+     </td><td>Remove name from named string table</td></tr>
+    <tr><td><a href="funcs:lexpr:ntab#FindNameInTable">
+     <tt>FindNameInTable</tt>(<i>tabname</i>, <i>name</i>)</a>
+     </td><td>Return value for name in named string table</td></tr>
+    <tr><td><a href="funcs:lexpr:ntab#ListNamesInTable">
+     <tt>ListNamesInTable</tt>(<i>tabname</i>)</a>
+     </td><td>Return list of names in named string table</td></tr>
+
+    </table>
+
+!!SEEALSO
+scr:iffuncs
+
+!!KEYWORD
+funcs:lexpr:zoid
+!!TITLE
+Trapezoid Lists and Layer Expressions
+!!HTML
+
+    For the functions described below, a "zoidlist" argument can
+    actually have the following data types:
+    
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><b>zoidlist</b></td>  <td>Obviously</td></tr>
+    <tr><td><b>integer zero</b></td> <td>Implies an empty zoidlist</td></tr>
+    <tr><td><b>integer nonzero</b></td> <td>Implies the reference zoidlist</td></tr>
+    <tr><td><b>string</b></td> <td>The string is parsed as a layer expression,
+      which is evaluated, and the result used</td></tr>
+    <tr><td><b>layer_expr</b></td> <td>evaluate layer expression, use
+       result</td></tr>
+    </table>
+    <hr>
+
+    <p>
+    <!-- 010509 -->
+    <a name="SetZref"></a>
+    <dl>
+    <dt><b>(int) <tt>SetZref</tt>(<i>arg</i>)</b>
+    <dd><br>This function sets the reference zoidlist.  The reference
+    zoidlist represents the current "background" needed by some
+    functions and operators which manipulate zoidlists.  For example,
+    when a zoidlist is polarity inverted, the reference zoidlist
+    specifies the boundary of the inversion, i.e., the inverse of an
+    empty zoidlist would be the reference zoidlist.
+
+    <p>
+    The reference zoidlist can be set from various types of object
+    passed as the <i>arg</i>.  This can be a zoidlist, or an object
+    handle, or an array of size 4 or larger, which contains rectangle
+    coordinates in microns in order left, bottom, right, top.  The
+    argument can also be the constant 0, in which case the reference
+    zoid list will be the boundary of the physical current cell, or a
+    large "infinity" box if there is no current cell.  This is the
+    default if no reference zoid list is given.
+
+    <p>
+    This function will return 1 and fails only if the argument is not
+    an appropriate type.
+    </dl>
+    <hr>
+
+    <!-- 103104 -->
+    <a name="GetZref"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>GetZref</tt>()</b>
+    <dd><br>
+    This function returns the current reference zoidlist, which will
+    be empty if no reference area has been set with <tt>SetZref</tt>
+    or otherwise.
+    </dl>
+    <hr>
+
+    <!-- 010509 -->
+    <a name="GetZrefBB"></a>
+    <dl>
+    <dt><b>(int) <tt>GetZrefBB</tt>(<i>array</i>)</b>
+    <dd><br>
+    This will return the bounding box of the reference zoidlist, as
+    returned from <tt>GetZref</tt>.  If the reference zoidlist is
+    empty, the bounding box of the current cell is returned.  The
+    coordinates are in microns, in order left, bottom, right, top.  On
+    success, the function returns 1.  If there is no reference
+    zoidlist or current cell, 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 010509 -->
+    <a name="AdvanceZref"></a>
+    <dl>
+    <dt><b>(int) <tt>AdvanceZref</tt>(<i>clear</i>, <i>array</i>)</b>
+    <dd><br>
+    This function allows iteration over a given area by establishing a
+    grid over the area and incrementally setting the reference area
+    (see <a href="SetZref"><tt>SetZref</tt></a>) to elements of the
+    grid.  The grid is aligned from the lower-left corner of the given
+    area and iteration advances right and up.  The reference area is
+    set to the intersection of the grid element area and the given
+    area.  The size of the square grid elements is given by the <a
+    href="PartitionSize"><b>PartitionSize</b></a> variable, or
+    defaults to 100 microns if this variable is not set. 
+
+    <p>
+    The second argument is an array of size 4 or larger, or 0.  If 0,
+    the given area is taken to be the bounding box of the current
+    cell.  Otherwise, the array elements define the given rectangular
+    area, in microns, in order left, bottom, right, top.
+
+    <p>
+    With the boolean first argument set to zero, the function will set
+    the reference area to the first (lower left) or next grid element
+    intersection area and return 1.  The function will return zero
+    when it advances past the last grid element that overlaps the
+    given area, at which time the reference area is returned to the
+    default value.  Thus, this function can be used in a loop to limit
+    the computation area for each iteration, for large cells that
+    would be inefficient to process in one step.
+
+    <p>
+    If the first argument is nonzero, the internal state is cleared. 
+    This should be called if the iteration is not complete and one
+    wishes to start a new loop.
+    </dl>
+    <hr>
+
+    <!-- 103104 -->
+    <a name="Zhead"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>Zhead</tt>(<i>zoidlist</i>)</b>
+    <dd><br>
+    This function will remove the first trapezoid from the passed
+    trapezoid list, and return it as a new list.  If the passed list
+    is empty, the returned list will be empty.  If the passed list  
+    contains a single trapezoid, it will become empty.
+    </dl>
+    <hr>
+
+    <!-- 103104 -->
+    <a name="Zvalues"></a>
+    <dl>
+    <dt><b>(int) <tt>Zvalues</tt>(<i>zoidlist</i>, <i>array</i>)</b>
+    <dd><br>
+    This function will return the coordinates of the first trapezoid
+    in the list in the array, which must have size 6 or larger.  The
+    order of the values is
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td> <td>x lower-left</td></tr>
+    <tr><td>1</td> <td>x lower-right</td></tr>
+    <tr><td>2</td> <td>y lower</td></tr>
+    <tr><td>3</td> <td>x upper-left</td></tr>
+    <tr><td>4</td> <td>x upper-right</td></tr>
+    <tr><td>5</td> <td>y upper</td></tr>
+    </table>
+
+    <p>
+    On success, 1 is returned.  If the passed trapezoid list is
+    empty, the return value is 0 and the array is untouched.
+    </dl>
+    <hr>
+
+    <!-- 103104 -->
+    <a name="Zlength"></a>
+    <dl>
+    <dt><b>(int) <tt>Zlength</tt>(<i>zoidlist</i>)</b>
+    <dd><br>
+    This function returns the number of trapezoids contained in the
+    list passed as an argument.
+    </dl>
+    <hr>
+
+    <!-- 032405 -->
+    <a name="Zarea"></a>
+    <dl>
+    <dt><b>(real) <tt>Zarea</tt>(<i>zoidlist</i>)</b>
+    <dd><br>
+    This function returns the total area of the trapezoids contained
+    in the list passed as an argument, in square microns.  This does
+    not account for overlapping trapezoids, call <a
+    href="GeomOr"><tt>GeomOr</tt></a> first if overlapping trapezoids
+    are present (lists returned from the script functions have already
+    been clipped/merged unless otherwise noted).
+    </dl>
+    <hr>
+
+    <!-- 071915 -->
+    <a name="GetZlist"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>GetZlist</tt>(<i>layersrc</i>, <i>depth</i>)</b>
+    <dd><br>
+    This function returns a zoidlist from the layer source given in
+    the first argument, which is a string in the form
+    <blockquote>
+    <i>lname</i>[<tt>.</tt><i>stname</i>][<tt>.</tt><i>cname</i>]
+    </blockquote>
+    Any of <i>lname</i>, <i>stname</i>, <i>cname</i> can be
+    double-quoted, which must be true if the token contains the
+    separation char '<tt>.</tt>'.  The <i>stname</i> is the name of a
+    <a href="xic:stab">symbol table</a>, the <i>cname</i> is tha name
+    of a cell found in the symbol table.  If there are only two
+    fields, the second field is <i>cname</i>, and the current symbol
+    table is understood.  If no <i>cname</i> is given, the current
+    cell is understood.
+
+    <p>
+    The returned list is clipped to the current reference area (see <a
+    href="SetZref"><tt>SetZref</tt></a>).  The second argument is the
+    hierarchy depth to search, which can be a non-negative integer or
+    a string starting with '<tt>a</tt>' to indicate "<tt>all</tt>". 
+    If not called in physical mode, an empty list is returned.
+
+    <p>
+    The layer specification can also be given in the form 
+    <blockquote>
+    <i>lname</i><tt>.@</tt><i>dbname</i>
+    </blockquote>
+    where <i>dbname</i> is the name of a <a
+    href="funcs:lexpr:db">saved database</a>.  Operation will be
+    similar to the <a href="GetZlistDb"><tt>GetZlistDb</tt></a> script
+    function.
+    </dl>
+    <hr>
+
+    <!-- 111709 -->
+    <a name="GetSqZlist"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>GetSqZlist</tt>(<i>layername</i>)</b>
+    <dd><br>
+    This function returns a trapezoid list derived from objects in the
+    selection queue on the layer whose name is passed as the argument. 
+    Labels are ignored, as are subcells unless the layer name is the
+    special name "$$", in which case the subcell bounding boxes are
+    returned.
+
+    <p>
+    This function can be called successfully only in physical mode.
+    </dl>
+
+    <!-- 072606 -->
+    <a name="TransformZ"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>TransformZ</tt>(<i>zoidlist</i>, <i>refx</i>,
+      <i>refy</i>, <i>newx</i>, <i>newy</i>)</b>
+    <dd><br>
+    Return a transformed copy of the passed trapezoid list.  The
+    transform should have been set previously with <a
+    href="SetTransform"><tt>SetTransform</tt></a> or equivalent.  The
+    original list is not touched and can be closed if no longer
+    needed.  The function internally converts each input trapezoid to
+    a polygon, applies the transformation to the polygon coordinates,
+    then decomposes the polygons into a new trapezoid list, which is
+    returned.
+
+    <p>
+    The remaining arguments are "reference" and "new" coordinates,
+    which provide for translations.  The reference point is the point
+    about which rotations and mirroring are performed, and is
+    translated to the new location, if different.
+    </dl>
+    <hr>
+
+    <!-- 100408 -->
+    <a name="BloatZ"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>BloatZ</tt>(<i>dimen</i>, <i>zoidlist</i>,
+     <i>mode</i>)</b>
+    <dd><br>This function returns a new zoidlist which is a bloated
+    version of the zoidlist passed as an argument (similar to the <a
+    href="!bloat"><b>!bloat</b></a> command).  Edges will be pushed
+    outward or pulled inward by <i>dimen</i> (positive values push
+    outward).  The <i>dimen</i> is given in microns.
+
+    <p>
+    The third argument is an integer that specifies the algorithm to
+    use for bloating.  Giving zero specifies the default algorithm. 
+    See the description of the <a href="!bloat"><b>!bloat</b></a>
+    command for documentation of the algorithms available.
+    </dl>
+    <hr>
+
+    <!-- 010715 -->
+    <a name="ExtentZ"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>ExtentZ</tt>(<i>zoidlist</i>)</b>
+    <dd><br>
+    This will return a zoidlist with at most one component:  a
+    rectangle giving the bounding box of the list given as an
+    argument.  If the passed list is null, the return is a null list.
+    </dl>
+    <hr>
+
+    <!-- 100408 -->
+    <a name="EdgesZ"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>EdgesZ</tt>(<i>dimen</i>, <i>zoidlist</i>,
+      <i>mode</i>)</b>
+    <dd><br>
+    This returns a list of zoids that in some way describe edges in the
+    zoid list passed.  The <i>dimen</i> is given in microns.
+
+    <p>
+    The <i>mode</i> is an integer which specifies the algorithm to use
+    to define the edges.  The values 0-3 are equivalent to the
+    <tt>BloatZ</tt> function returning edges only, with the four
+    corner fill-in modes.
+
+    <p>
+    <dl>
+    <dt><b>mode 0</b><dd>
+    Provides an edge template as from the <tt>BloatZ</tt> function
+    with corner fill-in mode 0 (rounded corners).
+    </dl>
+
+    <dl>
+    <dt><b>mode 1</b><dd>
+    Provides an edge template as from the <tt>BloatZ</tt> function
+    with corner fill-in mode 1 (flat corners).
+    </dl>
+
+    <dl>
+    <dt><b>mode 2</b><dd>
+    Provides an edge template as from the <tt>BloatZ</tt> function
+    with corner fill-in mode 2 (projected corners).
+    </dl>
+
+    <dl>
+    <dt><b>mode 3</b><dd>
+    Provides an edge template as from the <tt>BloatZ</tt> function
+    with corner fill-in mode 3 (no corner fill).
+    </dl>
+
+    <dl>
+    <dt><b>mode 4</b><dd>
+    The zoid list is logically merged into distinct polygons, and a
+    "halo" extending outside of the polygon by width <i>dimen</i>
+    (positive value taken) is constructed.  The trapezoids describing
+    the halo are returned.
+    </dl>
+
+    <dl>
+    <dt><b>mode 5</b><dd>
+    The zoid list is logically merged into distinct polygons, and a
+    wire object is constructed using each polygon vertex list.  The
+    wire width is twice the <i>dimen</i> value passed.  The trapezoid
+    list representing the wire area is returned.  This may fail and
+    give strange shapes if the dimensions of a polygon are smaller
+    than half the wire width.
+    </dl>
+
+    <dl>
+    <dt><b>mode 6</b><dd>
+    For each zoid in the <i>zoidlist</i> argument, a new zoid is
+    constructed from each edge that covers the area within +/-
+    <i>dimen</i> normal to the edge.  The list of new zoids is
+    returned.
+    </dl>
+    </dl>
+    <hr>
+
+    <!-- 100408 -->
+    <a name="ManhattanizeZ"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>ManhattanizeZ</tt>(<i>dimen</i>,
+      <i>zoidlist</i>, <i>mode</i>)</b>
+    <dd><br>This function returns a new zoidlist which is a Manhattan
+    approximation of the zoidlist passed as an argument (similar to
+    the <a href="!manh"><b>!manh</b></a> command).  The first argument
+    is the minimum rectangle width or height in microns used to
+    approximate non-Manhattan pieces.  The third argument is a boolean
+    which specifies which of the two algorithms to employ.  These
+    algorithms are described with the <b>!manh</b> command, though in
+    this function there is no reassembly into polygons.
+
+    <p>
+    All of the returned trapezoids are rectangles.  The function will
+    fail if the argument is smaller than 0.01.
+    </dl>
+    <hr>
+
+    <!-- 091306 -->
+    <a name="RepartitionZ"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>RepartitionZ</tt>(<i>zoidlist</i>)</b>
+    <dd><br>
+    This is a rather obscure function that conditions a list of
+    trapezoids so that the area covered will be constructed with
+    trapezoids that are as long (horizontally) as possible.
+    Logically, this is what would happen if the initial trapezoid list
+    was converted to distinct polygons, then split back into
+    trapezoids.
+    </dl>
+    <hr>
+
+    <p>
+    <!-- 030204 -->
+    <a name="BoxZ"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>BoxZ</tt>(<i>l</i>, <i>b</i>, <i>r</i>, <i>t</i>)</b>
+    <dd><br>This function returns a zoidlist containing a single trapezoid
+    which represents the box given in the arguments.  The given
+    coordinates are in microns.  This function never fails.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="ZoidZ"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>ZoidZ</tt>(<i>xll</i>, <i>xlr</i>, <i>yl</i>,
+     <i>xul</i>, <i>xur</i>, <i>yu</i>)</b>
+    <dd><br>This function returns a zoidlist containing a single horizontal
+    trapezoid which represents the horizontal trapezoid given in the
+    arguments.  The six numbers must represent a non-degenerate figure
+    or the function will fail.  The given coordinates are in microns.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="ObjectZ"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>ObjectZ</tt>(<i>object_handle</i>, <i>all</i>)</b>
+    <dd><br>This function returns a zoidlist which is generated by
+    fracturing the outlines of the objects in the
+    <i>object_handle</i>.  If <i>all</i> is 0, only the first object
+    in the list is used.  If <i>all</i> is nonzero, all objects in the
+    list are used.  This function will fail if the first argument is
+    not a handle to an object list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="ParseLayerExpr"></a>
+    <dl>
+    <dt><b>(layer_expr) <tt>ParseLayerExpr</tt>(<i>string</i>)</b>
+    <dd><br>This function returns a variable which contains a parse tree
+    for a layer expression contained in the string passed as an
+    argument.  The resulting variable is used to rapidly evaluate the
+    layer expression.  The return value can not be assigned or
+    otherwise manipulated, and can only be passed to functions that
+    expect this variable type.  The function will fail on a parse
+    error in the layer expression.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="EvalLayerExpr"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>EvalLayerExpr</tt>(<i>layer_expr</i>,
+      <i>zoidlist</i>, <i>depth</i>, <i>isclear</i>)</b>
+    <dd><br>This function evaluates the layer expression passed as the
+    first argument.  The first argument can be a string containing the
+    layer expression, or a return from <tt>ParseLayerExpr</tt>. 
+    If the second argument is nonzero, it is taken as a reference
+    zoidlist.  If 0, the current reference zoidlist (as set with
+    <tt>SetZref</tt>) will be used.  The third argument is the depth
+    into the cell hierarchy to process.  This can be an integer, with
+    0 representing the current cell only, or a string starting with
+    '<tt>a</tt>' to indicate use of all levels of the hierarchy.  If
+    <i>isclear</i> is 0, the returned zoidlist will represent all
+    areas within the reference where the layer expression is "true". 
+    if <i>isclear</i> is nonzero, the complement regions will be
+    returned.  The function will fail on a parse or evaluation error.
+    </dl>
+    <hr>
+
+    <!-- 071415 -->
+    <a name="TestCoverageFull"></a>
+    <dl>
+    <dt><b>(int) <tt>TestCoverageFull</tt>(<i>layer_expr</i>, <i>zoidlist</i>,
+      <i>minsize</i>)</b>
+    <dd><br>
+    This function will return an integer value indicating the coverage
+    of the layer expression given in the first argument over the
+    regions described in the second argument.  The first argument can
+    be a string containing a layer expression, or a return from <a
+    href="ParseLayerExpression:><tt>ParseLayerExpression</tt></a>.  If
+    the second argument is 0, the current reference zoidlist as set
+    with <a href="SetZref"><tt>SetZref</tt></a> is assumed.  This
+    defaults to tha area of the current cell.
+
+    <p>
+    The third argument is an integer which gives the minimum dimension
+    in internal units of trapezoids which will be considered in the
+    result.  Sub-dimensional trapezoids are ignored.  This minimizes
+    false-positive tests due to "slivers" caused by clipping errors in
+    non-Manhattan geometry.  If the geomentry is known to be
+    Manhattan, 0 can be used.  If 45's only, 2 is recommended,
+    otherwise 4.  Negative values are taken as zero.
+
+    <p>
+    The function tests each dark-area trapezoid from the layer
+    expression against the reference zoid list.  It will return
+    immediately on the first such zoid that is not fully covered by
+    the reference zoid list.
+
+    <p>
+    The return value is 0 if there was only one trapezoid from the
+    layer expression, and it did not overlap the reference zoid list. 
+    Otherwise, if all layer expression trapezoids were covered by the
+    reference zoid list, 2 is returned, or 1 if not.  Note that 1 will
+    be returned if there is no intersection and more than one layer
+    expression trapezoid.  Use <tt>TestCoveragePartial</tt> to fully
+    distinguish the not-full case.  The present function is most
+    efficient for determining when the layer expression dark area is
+    or is not fully covered.
+    </dl>
+    <hr>
+
+    <!-- 071415 -->
+    <a name="TestCoveragePartial"></a>
+    <dl>
+    <dt><b>(int) <tt>TestCoveragePartial</tt>(<i>layer_expr</i>,
+      <i>zoidlist</i>, <i>minsize</i>)</b>
+    <dd><br>
+    This function will return an integer value indicating the coverage
+    of the layer expression given in the first argument over the
+    regions described in the second argument.  The first argument can
+    be a string containing a layer expression, or a return from <a
+    href="ParseLayerExpression:><tt>ParseLayerExpression</tt></a>.  If
+    the second argument is 0, the current reference zoidlist as set
+    with <a href="SetZref"><tt>SetZref</tt></a> is assumed.  This
+    defaults to tha area of the current cell.
+
+    <p>
+    The third argument is an integer which gives the minimum dimension
+    in internal units of trapezoids which will be considered in the
+    result.  Sub-dimensional trapezoids are ignored.  This minimizes
+    false-positive tests due to "slivers" caused by clipping errors in
+    non-Manhattan geometry.  If the geomentry is known to be Manhattan,
+    0 can be used.  If 45's only, 2 is recommended, otherwise 4.
+    Negative values are taken as zero.
+
+    <p>
+    The function tests each dark-area trapezoid from the layer
+    expression against the reference zoid list.  It will return
+    immediately on the first such zoid that is partially covered by the
+    reference zoid list, of after finding both a fully covered zoid and
+    a fully uncovered zoid.
+
+    <p>
+    The return value is 0 if there is no dark area from the layer
+    expression that intersects the reference zoid list, 2 if the layer
+    expression dark area falls entirely in the reference zoid list,
+    and 1 if coverage is partial.  This test is a bit expensive but
+    provides definitive results,
+    </dl>
+    <hr>
+
+    <!-- 071415 -->
+    <a name="TestCoverageNone"></a>
+    <dl>
+    <dt><b>(int) <tt>TestCoverageNone</tt>(<i>layer_expr</i>, <i>zoidlist</i>,
+      <i>minsize</i>)</b>
+    <dd><br>
+    This function will return an integer value indicating the coverage
+    of the layer expression given in the first argument over the
+    regions described in the second argument.  The first argument can
+    be a string containing a layer expression, or a return from <a
+    href="ParseLayerExpression:><tt>ParseLayerExpression</tt></a>.  If
+    the second argument is 0, the current reference zoidlist as set
+    with <a href="SetZref"><tt>SetZref</tt></a> is assumed.  This
+    defaults to tha area of the current cell.
+
+    <p>
+    The third argument is an integer which gives the minimum dimension
+    in internal units of trapezoids which will be considered in the
+    result.  Sub-dimensional trapezoids are ignored.  This minimizes
+    false-positive tests due to "slivers" caused by clipping errors in
+    non-Manhattan geometry.  If the geomentry is known to be
+    Manhattan, 0 can be used.  If 45's only, 2 is recommended,
+    otherwise 4.  Negative values are taken as zero.
+
+    <p>
+    The function tests each dark-area trapezoid from the layer
+    expression against the reference zoid list.  It will return
+    immediately on the first such zoid that is not completely
+    uncovered by the reference zoid list.
+
+    <p>
+    The return value is 0 if there is no dark area from the layer
+    expression that intersects the reference zoid list, 1 otherwise. 
+    This test is most efficient when determining whether or not the
+    layer expression dark area intersects the reference list.
+    </dl>
+    <hr>
+
+    <!-- 071415 -->
+    <a name="TestCoverage"></a>
+    <dl>
+    <dt><b>(int) <tt>TestCoverage</tt>(<i>layer_expr</i>, <i>zoidlist</i>,
+      <i>testfull</i>)</b>
+    <dd><br>
+    This function is deprecated and should not be used in new scripts. 
+    The <tt>TestCoverageFull</tt>, <tt>TestCoveragePartial</tt>, and
+    <tt>TestCoverageNone</tt> functions are replacements.
+
+    <p>
+    When the boolean <i>testfull</i> is true, this function is
+    identical to <tt>TestCoveragePartial</tt> with a <i>minsize</i>
+    value of 4.  When <i>testfull</i> is false, this function is
+    equivalent to <tt>TestCoverageNone</tt> again with a
+    <i>minsize</i> of 4.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="ZtoObjects"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>ZtoObjects</tt>(<i>zoidlist</i>,
+      <i>lname</i>, <i>join</i>, <i>to_dbase</i>)</b>
+    <dd><br>This function will create a list of objects from a zoidlist. 
+    The objects will be created on the layer whose name is given in
+    the second argument, which will be created if it does not already
+    exist.  If this argument is 0, the current layer will be used.  If
+    the <i>join</i> argument is nonzero, the objects created will
+    comprise a minimal set of polygons that enclose all of the
+    trapezoids.  If the <i>join</i> argument is 0, the objects will be
+    have the same geometry as the individual trapezoids.  If the
+    <i>to_dbase</i> argument is nonzero, the new objects will be added
+    to the database.  Otherwise, the new objects will be "copies" that
+    can be manipulated with other functions that accept object copies,
+    but they will not appear in the database.  The function will fail
+    if not called in physical mode, or the layer could not be created.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="ZtoTempLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>ZtoTempLayer</tt>(<i>longname</i>, <i>zoidlist</i>,
+      <i>join</i>)</b>
+    <dd><br>This function creates a temporary layer using <i>longname</i>,
+    and adds the content of the <i>zoidlist</i> to the new layer, in
+    the current cell.  If the temporary layer for <i>longname</i>
+    exists, it will be used, with existing geometry untouched.  If
+    <i>join</i> is nonzero, the zoidlist will be added as a minimal
+    set of polygons, otherwise each zoid will be added as a box or
+    polygon.  The function returns 1 on success, 0 otherwise.  This
+    works in physical mode only.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="ClearTempLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>ClearTempLayer</tt>(<i>longname</i>)</b>
+    <dd><br>This function will clear all of the objects in the current
+    cell from the given layer, without saving them in the undo list. 
+    If successful, 1 is returned, otherwise 0 is returned.  This works
+    in physical mode only.
+    </dl>
+    <hr>
+
+    <!-- 121708 -->
+    <a name="ZtoFile"></a>
+    <dl>
+    <dt><b>(int) <tt>ZtoFile</tt>(<i>filename</i>, <i>zoidlist</i>,
+      <i>ascii</i>)</b>
+    <dd><br>
+    Save the zoidlist in a file, whose name is given in the first
+    argument.  The zoidlist can be recovered with <tt>ZfromFile</tt>. 
+    There are two file formats available.  If the boolean argument
+    <i>ascii</i> is nonzero, a human-readable ASCII text file is
+    produced.  Each line contains the six numbers that describe a
+    trapezoid, using the following C-style format string:
+    <blockquote>
+    <tt>yl=%d yu=%d ll=%d ul=%d lr=%d ur=%d</tt>
+    </blockquote>
+    The numbers are integer values in <a href="xicdb#units">internal
+    units</a>, usually 1000 units per micron).
+
+    <p>
+    If the <i>ascii</i> argument is zero, the file is in OASIS format,
+    using a single dummy cell (named "zoidlist") and layer ("0100"),
+    and uses only TRAPEZOID and CTRAPEZOID geometry records.  The
+    OASIS representation is more compact and is the appropriate choice
+    for very large trapezoid collections.
+
+    <p>
+    The function returns 1 if successful, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 103104 -->
+    <a name="ZfromFile"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>ZfromFile</tt>(<i>filename</i>)</b>
+    <dd><br>
+    Read the file, which was (probably) produced by <tt>ZtoFile</tt>,
+    and return the list of trapezoids it contains.  Both file formats
+    can be read by this function.
+
+    <p>
+    If an error occurs in reading or an interrupt is received, this
+    function will fail (halting the script).  Otherwise a zoidlist
+    will always be returned, but the list may be empty.
+    </dl>
+    <hr>
+
+    <!-- 012711 -->
+    <a name="ReadZfile"></a>
+    <dl>
+    <dt><b>(int) <tt>ReadZfile</tt>(<i>filename</i>)</b>
+    <dd><br>
+    This will read a trapezoid list file whose name is specified as
+    the required string argument.  This is an ASCII file consisting of
+    two types of lines:
+
+    <ol>
+    <li>Trapezoid lines, in the ASCII format used by <tt>ZfromFile</tt> and
+    produced by <tt>ZtoFile</tt>, i.e., in the format:
+    <blockquote>
+       <tt>yl=%d yu=%d ll=%d ul=%d lr=%d ur=%d</tt>
+    </blockquote>
+
+    <p>
+    <li>Layer designation lines in the form:
+    <blockquote>
+       <tt>L</tt> <i>layer_name</i>
+    </blockquote>
+    The <i>layer_name</i> should be an <i>Xic</i>-style name for a
+    layer, the layer will be created if it does not exist.
+    </ol>
+
+    <p>
+    When a layer designation line is encountered, the trapezoids
+    that have been read since the file start or last layer
+    designator are written into the current cell on the specified
+    layer.  Thus, each block of trapezoid lines must be followed by
+    a layer designation line for the trapezoids to be recognized.
+
+    <p>
+    However, if the file contains no layer designation lines, all
+    trapezoids will be added to the current cell on the current
+    layer.
+
+    <p>
+    Lines that are not recognized as one of these two forms are
+    ignored.
+
+    <p>
+    This function always returns 1.  The function will fail if the
+    file can not be opened.
+    </dl>
+    <hr>
+
+    <!-- 082809 -->
+    <a name="ChdGetZlist"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>ChdGetZlist</tt>(<i>chd_name</i>, <i>cellname</i>,
+     <i>scale</i>, <i>array</i>, <i>clip</i>, <i>all</i>)</b>
+    <dd><br>
+    This function will create and return a trapezoid list created from
+    objects read through the <a href="xic:hier">Cell Hierarchy
+    Digest</a> (CHD) whose access name is given in the first argument.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features
+    that apply during a call to this function.  An overall
+    transformation can be set with <a
+    href="ChdSetFlatReadTransform"><tt>ChdSetFlatReadTransform</tt></a>,
+    in which case the area given applies in the "root" coordinates.
+
+    <p>
+    The <i>cellname</i>, if nonzero, must be the cell name after any
+    <a href="cellname">aliasing</a> that was in force when the CHD was
+    created.  If <i>cellname</i> is passed 0, the default cell for the
+    CHD is understood.  This is a cell name configured into the CHD,
+    or the first top-level cell found in the archive file.
+
+    <p>
+    The <i>scale</i> factor will be applied to all coordinates.  The
+    accepted range is 0.001 - 1000.0.
+
+    <p>
+    If the <i>array</i> argument is passed 0, no windowing will be
+    used.  Otherwise the array should have four components which
+    specify a rectangle, in microns, in the coordinates of
+    <i>cellname</i>.  The values are
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><i>array</i><tt>[0]</tt></td>  <td>X left</td></tr>
+    <tr><td><i>array</i><tt>[1]</tt></td>  <td>Y bottom</td></tr>
+    <tr><td><i>array</i><tt>[2]</tt></td>  <td>X right</td></tr>
+    <tr><td><i>array</i><tt>[3]</tt></td>  <td>Y top</td></tr>
+    </table>
+    If an array is given, only the objects and subcells needed to
+    render the window will be processed.
+
+    <p>
+    If the boolean value <i>clip</i> is nonzero and an array is given,
+    trapezoids will be clipped to the window.  Otherwise no clipping
+    is done.
+
+    <p>
+    If the boolean variable <i>all</i> is nonzero, the objects in the
+    hierarchy under <i>cellname</i> will be transformed and added to
+    the trapezoid list, i.e., the list will be a flat representation
+    of the entire hierarchy.  Otherwise, only objects in
+    <i>cellname</i> are processed.
+    </dl>
+
+!!SEEALSO
+funcs:lexpr
+
+!!KEYWORD
+funcs:lexpr:oper
+!!TITLE
+Operations
+!!HTML
+
+    <!-- 110213 -->
+    <a name="Filt"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>Filt</tt>(<i>zoids</i>, <i>lexpr</i>)</b>
+    <dd><br>
+    This function is rather specialized.  First, the trapezoids passed
+    by the handle in the first argument are separated into groups of
+    mutually-connected trapezoids.  Each group is like a wire net.  We
+    throw out the groups that do not intersect with nonzero area the
+    dark area implied by the layer expression second argument.  The
+    return value is a handle to a list of the trapezoids that remain.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GeomAnd"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>GeomAnd</tt>(<i>zoids1</i> [, <i>zoids2</i>])</b>
+    <dd><br>This function takes either one or two arguments, each of which
+    is taken as a zoidlist after possible conversion as described in
+    the text for this section.  If one argument is given, the return
+    is a zoidlist consisting of the intersection regions between zoids
+    in the argument list.  If two arguments are given, the return is a
+    list of intersecting regions between the two argument lists.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GeomAndNot"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>GeomAndNot</tt>(<i>zoids1</i>, <i>zoids2</i>)</b>
+    <dd><br>This function takes two arguments, each of which is taken as a
+    zoidlist after possible conversion as described in the text for
+    this section.  The return is a list of regions covered by the
+    first list that are not covered by the second.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GeomCat"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>GeomCat</tt>(<i>zoids1</i>, ...)</b>
+    <dd><br>This function takes one or more arguments, each of which is
+    taken as a zoidlist after possible conversion as described in the
+    text for this section.  The return is a list of all regions from
+    each of the arguments.  There is no attempt to clip or merge the
+    returned list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GeomNot"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>GeomNot</tt>(<i>zoids</i>)</b>
+    <dd><br>This function takes one argument, which is taken as a zoidlist
+    after possible conversion as described in the text for this
+    section.  The return is a list of zoids representing the areas of
+    the reference area not covered by the argument list.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GeomOr"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>GeomOr</tt>(<i>zoids1</i>, ...)</b>
+    <dd><br>This function takes one or more arguments, each of which is
+    taken as a zoidlist after possible conversion as described in the
+    text for this section.  The return is a list of all regions from
+    each of the arguments, merged and clipped so that no elements
+    overlap.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GeomXor"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>GeomXor</tt>(<i>zoids1</i> [, <i>zoids2</i>])</b>
+    <dd><br>This function takes one or two arguments, each of which is
+    taken as a zoidlist after possible conversion as described in the
+    text for this section.  If one argument is given, the return is a
+    list of areas where one and only one zoid from the argument has
+    coverage (note that this is not exclusive-or, in spite of the
+    function name).  If two arguments are given, the return is the
+    exclusive-or of the two lists, i.e., the areas covered by either
+    list but not both.
+    </dl>
+
+!!SEEALSO
+funcs:lexpr
+
+!!KEYWORD
+funcs:lexpr:spt
+!!TITLE
+Spatial Parameter Tables
+!!HTML
+
+    <!-- 100508 -->
+    <a name="ReadSPtable"></a>
+    <dl>
+    <dt><b>(int) <tt>ReadSPtable</tt>(<i>filename</i>)</b>
+    <dd><br>
+    This function reads a specification file for a spatial parameter
+    table.  A spatial parameter table is a two-dimensional array of
+    floating point values, which can be accessed via x-y coordinate
+    pairs.  The user can define any number of such tables, each of
+    which is given a unique identifying keyword.  Tables remain
+    defined until explicitly destroyed, or until <a
+    href="ClearAll"><tt>ClearAll</tt></a> is called.
+
+    <p>
+    The tables are input through a file, which uses the following
+    format:
+
+    <blockquote>
+    <i>keyword X DX NX Y DY NY</i><br>
+    <i>X Y value</i><br>
+    <tt>...</tt>
+    </blockquote>
+
+    <p>
+    Blank lines and lines that begin with punctuation are ignored.
+    There is one "header" line with the following entries:
+    <dl>
+    <dt><i>keyword</i><dd>
+     Arbitrary word for identification.  An existing
+     database with the same identifier will be replaced.
+    <dt><i>X</i><dd>
+     Reference coordinate in microns.
+    <dt><i>DX</i><dd>
+     Grid spacing in X direction, in microns, must be > 0.
+    <dt><i>NX</i><dd>
+     Number of grid cells in X direction, must be > 0.
+    <dt><i>Y</i><dd>
+     Reference coordinate in microns.
+    <dt><i>DY</i><dd>
+     Grid spacing in Y direction, in microns, must be > 0.
+    <dt><i>NY</i><dd>
+     Number of grid cells in Y direction, must be > 0.
+    </dl>
+
+    <p>
+    The header line is followed by data lines that supply a value to
+    the cells.  The <i>X</i>,<i>Y</i> given in microns specifies the
+    cell.  A second access to a cell will simply overwrite the data
+    value for that cell.  Unwritten cells will have a zero value.
+
+    <p>
+    The function returns 1 on success, 0 otherwise with an error
+    message available from the <a
+    href="GetError"><tt>GetError</tt></a> function.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="NewSPtable"></a>
+    <dl>
+    <dt><b>(int) <tt>NewSPtable</tt>(<i>name</i>, <i>x0</i>, <i>dx</i>,
+     <i>nx</i>, <i>y0</i>, <i>dy</i>, <i>ny</i>)</b>
+    <dd><br>
+    This will create a new, empty spatial parameter table in memory,
+    replacing any existing table with the same name.  The first
+    argument is a string giving a short name for the table.  The table
+    origin is at <i>x0</i>, <i>y0</i> (in microns).  The unit cell
+    size is given by <i>dx</i>, <i>dy</i> in microns, and the number
+    of cells along x and y is <i>nx</i>, <i>ny</i>.
+
+    <p>
+    The function returns 1 on success, 0 otherwise, with a message
+    available from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="WriteSPtable"></a>
+    <dl>
+    <dt><b>(int) <tt>WriteSPtable</tt>(<i>name</i>, <i>filename</i>)</b>
+    <dd><br>
+    This will write the named spatial parameter table to a file.  The
+    return value is 1 on success, 0 otherwise, with an error message
+    available from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 060905 -->
+    <a name="ClearSPtable"></a>
+    <dl>
+    <dt><b>(int) <tt>ClearSPtable</tt>(<i>name</i>)</b>
+    <dd><br>
+    This will destroy the spatial parameter table whose keyword
+    matches the string given.  If a numeric 0 (<tt>NULL</tt>) or a
+    null string is passed, all spatial parameter tables will be
+    destroyed.  The return value is the number of tables destroyed.
+    </dl>
+    <hr>
+
+    <!-- 010509 -->
+    <a name="FindSPtable"></a>
+    <dl>
+    <dt><b>(int) <tt>FindSPtable</tt>(<i>name</i>, <i>array</i>)</b>
+    <dd><br>
+    This function returns 1 if a spatial parameter table with the
+    given name exists in memory, 0 otherwise.  The <i>array</i> is an
+    array of size 6 or larger, or the constant 0.  If an array name is
+    passed, and the named table exists, the array is filled in with
+    the following table parameters:
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><i>array</i><tt>[0]</tt></td> <td>origin x in microns</td></tr>
+    <tr><td><i>array</i><tt>[1]</tt></td> <td>x spacing in microns</td></tr>
+    <tr><td><i>array</i><tt>[2]</tt></td> <td>row size</td></tr>
+    <tr><td><i>array</i><tt>[3]</tt></td> <td>origin y in microns</td></tr>
+    <tr><td><i>array</i><tt>[4]</tt></td> <td>y spacing in microns</td></tr>
+    <tr><td><i>array</i><tt>[5]</tt></td> <td>column size</td></tr>
+    </table>
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="GetSPdata"></a>
+    <dl>
+    <dt><b>(real) <tt>GetSPdata</tt>(<i>name</i>, <i>x</i>, <i>y</i>)</b>
+    <dd><br>
+    This function returns the value from the spatial parameter table
+    keyed by <i>name</i>, at coordinate <i>x</i>,<i>y</i> given in
+    microns.  If <i>x</i>,<i>y</i> is out of range, 0 is returned. 
+    The function fails (halts execution) if the table can't be found.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="SetSPdata"></a>
+    <dl>
+    <dt><b>(int) <tt>SetSPdata</tt>(<i>name</i>, <i>x</i>, <i>y</i>,
+      <i>value</i>)</b>
+    <dd><br>
+    This function will set the data cell corresponding to
+    <i>x</i>,<i>y</i> (in microns) of the named spatial parameter
+    table to the <i>value</i>.  The return value is 1 if successful, 0
+    if <i>x</i>,<i>y</i> is out of range, or some other error occurs. 
+    The function fails (halts execution) if the table can't be found.
+    </dl>
+
+!!SEEALSO
+funcs:lexpr
+
+!!KEYWORD
+funcs:lexpr:db
+!!TITLE
+Polymorphic Flat Database
+!!HTML
+
+    <!-- 100508 -->
+    These functions are related to creating and using "special"
+    databases.  A special database is a spatially sorted container for
+    objects or trapezoids (not cell instances or cells), with varying
+    internal formats.  The following script functions expose this
+    functionality.
+    <hr>
+
+    <!-- 082809 -->
+    <a name="ChdOpenOdb"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdOpenOdb</tt>(<i>chd_name</i>, <i>scale</i>,
+      <i>cellname</i>, <i>array</i>, <i>clip</i>, <i>dbname</i>)</b>
+    <dd><br>
+    This function will create a "special database" of the objects read
+    through the <a href="xic:hier">Cell Hierarchy Digest</a> (CHD) whose
+    access name is passed as the first argument.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features
+    that apply during a call to this function.  An overall
+    transformation can be set with <a
+    href="ChdSetFlatReadTransform"><tt>ChdSetFlatReadTransform</tt></a>,
+    in which case the area given applies in the "root" coordinates.
+
+    <p>
+    The <i>scale</i> factor will be applied to all coordinates.  The
+    accepted range is 0.001 - 1000.0.
+
+    <p>
+    The <i>cellname</i>, if nonzero, must be the cell name after any
+    <a href="cellname">aliasing</a> that was in force when the CHD was
+    created.  If <i>cellname</i> is passed 0, the default cell for the
+    CHD is understood.  This is a cell name configured into the CHD,
+    or the first top-level cell found in the archive file.
+
+    <p>
+    The <i>array</i>, if not 0, is an array of four values or larger
+    giving a rectangular area of <i>cellname</i> to read.  The values
+    are in microns, in order L,B,R,T.  If zero, the entire cell
+    bounding box is understood.  If the boolean value <i>clip</i> is
+    nonzero, objects will be clipped to the array, if given.  The
+    <i>dbname</i> is a string which names the database.  This can be
+    any short name string.  The database can be retrieved or cleared
+    using this name.
+
+    <p>
+    The return value is 1 on success, 0 otherwise, with an error
+    message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 082809 -->
+    <a name="ChdOpenZdb"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdOpenZdb</tt>(<i>chd_name</i>, <i>scale</i>,
+      <i>cellname</i>, <i>array</i>, <i>clip</i>, <i>dbname</i>)</b>
+    <dd><br>
+    This function will create a "special database" of the trapezoid
+    representations of objects read through the <a
+    href="xic:hier">Cell Hierarchy Digest</a> (CHD) whose access name
+    is passed as the first argument.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features
+    that apply during a call to this function.  An overall
+    transformation can be set with <a
+    href="ChdSetFlatReadTransform"><tt>ChdSetFlatReadTransform</tt></a>,
+    in which case the area given applies in the "root" coordinates.
+
+    <p>
+    The <i>scale</i> factor will be applied to all coordinates.  The
+    accepted range is 0.001 - 1000.0.
+
+    <p>
+    The <i>cellname</i>, if nonzero, must be the cell name after any
+    <a href="cellname">aliasing</a> that was in force when the CHD was
+    created.  If <i>cellname</i> is passed 0, the default cell for the
+    CHD is understood.  This is a cell name configured into the CHD,
+    or the first top-level cell found in the archive file.
+
+    <p>
+    The <i>array</i>, if not 0, is an array of four values or larger
+    giving a rectangular area of <i>cellname</i> to read.  The values
+    are in microns, in order L,B,R,T.  If zero, the entire cell
+    bounding box is understood.  If the boolean value <i>clip</i> is
+    nonzero, trapezoids will be clipped to the array, if given.  The
+    <i>dbname</i> is a string which names the database.  This can be
+    any short name string.  The database can be retrieved or cleared
+    using this name.
+
+    <p>
+    The return value is 1 on success, 0 otherwise, with an error
+    message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 082809 -->
+    <a name="ChdOpenZbdb"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdOpenZbdb</tt>(<i>chd_name</i>, <i>scale</i>,
+      <i>cellname</i>, <i>array</i>, <i>dbname</i>, <i>dx</i>, <i>dy</i>,
+      <i>bx</i>, <i>by</i>)</b>
+    <dd><br>
+    This function will create a "special database" of the trapezoid
+    representations of objects read through the <a
+    href="xic:hier">Cell Hierarchy Digest</a> (CHD) whose access name
+    is passed as the first argument.  This will open a database
+    similar to <tt>ChdOpenZdb</tt>, however the trapezoids will be
+    saved in binned lists.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features
+    that apply during a call to this function.  An overall
+    transformation can be set with <a
+    href="ChdSetFlatReadTransform"><tt>ChdSetFlatReadTransform</tt></a>,
+    in which case the area given applies in the "root" coordinates.
+
+    <p>
+    The <i>scale</i> factor will be applied to all coordinates.  The
+    accepted range is 0.001 - 1000.0.
+
+    <p>
+    The <i>cellname</i>, if nonzero, must be the cell name after any
+    <a href="cellname">aliasing</a> that was in force when the CHD was
+    created.  If <i>cellname</i> is passed 0, the default cell for the
+    CHD is understood.  This is a cell name configured into the CHD,
+    or the first top-level cell found in the archive file.
+
+    <p>
+    The <i>array</i>, if not 0, is an array of four values or larger
+    giving a rectangular area of <i>cellname</i> to read.  The values
+    are in microns, in order L,B,R,T.  If zero, the entire cell
+    bounding box is understood.  The <i>dbname</i> is a string which
+    names the database.  This can be any short name string.  The
+    database can be retrieved or cleared using this name.
+
+    <p>
+    The <i>dx</i>, <i>dy</i> are the grid spacing values for the bins,
+    in microns.  These values must be positive.  The <i>bx</i>,
+    <i>by</i> are non-negative overlap bloat values for the bins.  The
+    actual bins are bloated by these values in the x and y directions. 
+    The trapezoids will be clipped to the bins.
+
+    <p>
+    The return value is 1 on success, 0 otherwise, with an error
+    message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="GetObjectsOdb"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>GetObjectsOdb</tt>(<i>dbname</i>,
+      <i>layer_list</i>, <i>array</i>)</b>
+    <dd><br>
+    This returns a handle to a list of objects, extracted from a named
+    database created with <tt>ChdOpenOdb</tt>.  The first argument is
+    a database name string as given to <tt>ChdOpenOdb</tt>.  This
+    function will work only with databases produced by that function. 
+
+    <p>
+    The second argument is a string containing a space-separated list
+    of layer names, or 0.  Objects for each of the given layers will
+    be obtained.  Objects on the same layer will be grouped together,
+    with groups ordered as in the <i>layer_list</i>.  If this argument
+    is 0, all layers will be used, ordered bottom-up as in the layer
+    table.
+
+    <p>
+    The third argument is an array, as passed to <tt>ChdOpenOdb</tt>,
+    or 0.  If 0, all objects for the specified layers in the database
+    will be retrieved.  Otherwise, only those objects with bounding
+    boxes that overlap the array rectangle with nonzero area will be
+    retrieved.  The objects retrieved are copies of the database
+    objects, which are not affected.
+    </dl>
+    <hr>
+
+    <!-- 010509 -->
+    <a name="ListLayersDb"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListLayersDb</tt>(<i>dbname</i>)</b>
+    <dd><br>
+    This function returns a handle to a list of layer name strings,
+    naming the layers used in the database.  It applies to all of the
+    database types.  On error, a scalar 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 071915 -->
+    <a name="GetZlistDb"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>GetZlistDb</tt>(<i>dbname</i>, <i>layer_name</i>,
+      <i>zoidlist</i>)</b>
+    <dd><br>
+    This returns a zoidlist associated with a layer, extracted from a
+    named database created with <tt>ChdOpenOdb</tt>,
+    <tt>ChdOpenZdb</tt>, or <tt>ChdOpenZbdb</tt>.  The first argument is
+    a database name string as given to <tt>ChdOpenOdb</tt> or
+    equivalent.  The second argument is the associated layer name. 
+
+    <p>
+    The third argument is the reference trapezoid list.  If the
+    database was opened with <tt>ChdOpenOdb</tt> or <tt>ChdOpenZdb</tt>,
+    the returned zoidlist will be clipped to the reference list.  If
+    the database was opened with <tt>ChdOpenZbdb</tt>, the trapezoids
+    for the bin containing the center of the first trapezoid in the
+    reference list will be returned.  In all cases, the returned
+    trapezoids are copies, the database is not affected.
+
+    <p>
+    See also the <a href="GetZlist"><tt>GetZlist</tt></a> function, which
+    can work similarly.
+    </dl>
+    <hr>
+
+    <!-- 010509 -->
+    <a name="GetZlistZbdb"></a>
+    <dl>
+    <dt><b>(zoidlist) <tt>GetZlistZbdb</tt>(<i>dbname</i>, <i>layer_name</i>,
+      <i>nx</i>, <i>ny</i>)</b>
+    <dd><br>
+    Return the zoidlist for the given bin and layer.  This applies
+    only to databases opened with <tt>ChdOpenZbdb</tt>.  The 0,0 bin is
+    in the lower left corner. 
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="DestroyDb"></a>
+    <dl>
+    <dt><b>(int) <tt>DestroyDb</tt>(<i>dbname</i>)</b>
+    <dd><br>
+    This function will free and clear the special database named in
+    the argument.  This is the database name as given to
+    <tt>ChdOpenOdb</tt> or equivalent.  If the argument is 0, then all
+    special databases will be freed and cleared.  This function always
+    returns 1.
+    </dl>
+    <hr>
+
+    <!-- 100408 -->
+    <!-- This function is actually in the main2 module -->
+    <a name="ShowDb"></a>
+    <dl>
+    <dt><b>(int) <tt>ShowDb</tt>(<i>dbname</i>, <i>array</i>)</b>
+    <dd><br>
+    This function will pop up a window displaying the area given in
+    the array of the special database named in <i>dbname</i>.  The
+    array argument is in the same format as passed to
+    <tt>ChdOpenOdb</tt> or equivalent.  If passed 0, the bounding box
+    containing all objects in the database is understood.  The return
+    value is the window number of the new window (1-4) or -1 if an
+    error occurred.
+    </dl>
+
+!!SEEALSO
+funcs:lexpr
+
+
+!!KEYWORD
+funcs:lexpr:ntab
+!!TITLE
+Named String Tables
+!!HTML
+
+    <!-- 020109 -->
+    This interface provides general purpose string hash tables.  The
+    hash tables are useful for saving and retrieving a string-keyed
+    integer value, and for detecting or preventing the occurrence of
+    duplicate strings in a list.  The hash tables are persistent until
+    explicitly freed, i.e., they remain in memory after a script
+    completes (if not destroyed), and can be invoked by subsequent
+    scripts.  Each hash table is accessed by an arbitrary
+    user-supplied name, and there is no limit on the number of tables
+    that can be created.
+    <hr>
+
+    <!-- 020109 -->
+    <a name="FindNameTable"></a>
+    <dl>
+    <dt><b>(int) <tt>FindNameTable</tt>(<i>tabname</i>, <i>create</i>)</b>
+    <dd><br>
+    This function will create or verify the existence of a named
+    string hash table.  The named tables are available for use in
+    scripts, for associating a string with an integer and for
+    efficiently ensuring uniqueness in a collection of strings.  The
+    named tables persist until explicitly destroyed.
+
+    <p>
+    The <i>tabname</i> is an arbitrary name token used to access a
+    named hash table.  This function returns 1 if the named hash table
+    exists, 0 otherwise.  If the boolean argument <i>create</i> is
+    nonzero, if the named table does not exist, it will be created,
+    and 1 returned.
+    </dl>
+    <hr>
+
+    <!-- 020109 -->
+    <a name="RemoveNameTable"></a>
+    <dl>
+    <dt><b>(int) <tt>RemoveNameTable</tt>(<i>tabname</i>)</b>
+    <dd><br>
+    This function will destroy a named hash table, as created with
+    <tt>FindNameTable</tt> in create mode.  It the table exists, it
+    will be destroyed, and 1 is returned.  If the given name does not
+    match an existing table, 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 020109 -->
+    <a name="ListNameTables"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListNameTables</tt>()</b>
+    <dd><br>
+    This function returns a handle to a list of names of named hash
+    tables currently in memory.
+    </dl>
+    <hr>
+
+    <!-- 020109 -->
+    <a name="ClearNameTables"></a>
+    <dl>
+    <dt><b>(int) <tt>ClearNameTables</tt>()</b>
+    <dd><br>
+    This functions destroys all named hash tables in memory.
+    </dl>
+    <hr>
+
+    <!-- 020109 -->
+    <a name="AddNameToTable"></a>
+    <dl>
+    <dt><b>(int) <tt>AddNameToTable</tt>(<i>tabname</i>, <i>name</i>,
+      <i>value</i>)</b>
+    <dd><br>
+    This will add a string and associated integer to a named hash
+    table.  The hash table whose name is given as the first argument
+    must exist in memory, as created with <tt>FindNameTable</tt> in
+    create mode.  The <i>name</i> can be any non-null and non-empty
+    string.  The <i>value</i> can be any integer, however, the value
+    -1 is reserved for internal use as a "not in table" indication.
+
+    <p>
+    If <i>name</i> is inserted into the table, 1 is returned.  If
+    <i>name</i> already exists in the table, or the table does not
+    exist, 0 is returned.  The <i>value</i> is ignored if the
+    <i>name</i> already exists in the table, the existing value is not
+    updated.
+    </dl>
+    <hr>
+
+    <!-- 020109 -->
+    <a name="RemoveNameFromTable"></a>
+    <dl>
+    <dt><b>(int) <tt>RemoveNameFromTable</tt>(<i>tabname</i>, <i>name</i>)</b>
+    <dd><br>
+    This will remove the <i>name</i> string from the named hash table
+    whose name is given as the first argument.  If the <i>name</i>
+    string is found and removed, 1 is returned.  Otherwise, 0 is
+    returned.
+    </dl>
+    <hr>
+
+    <!-- 020109 -->
+    <a name="FindNameInTable"></a>
+    <dl>
+    <dt><b>(int) <tt>FindNameInTable</tt>(<i>tabname</i>, <i>name</i>)</b>
+    <dd><br>
+    This function will return the data value saved with the
+    <i>name</i> string in the table whose name is given as the first
+    argument.  If the table is not found, or the <i>name</i> string is
+    not found, -1 is returned.  Otherwise the returned value is that
+    supplied to <tt>AddNameToTable</tt> for the <i>name</i> string. 
+    Note that it is a bad idea to use -1 as a data value.
+    </dl>
+    <hr>
+
+    <!-- 020109 -->
+    <a name="ListNamesInTable"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListNamesInTable</tt>(<i>tabname</i>)</b>
+    <dd><br>
+    This function returns a handle to a list of the strings saved in
+    the hash table whose name is supplied as the first argument.
+    </dl>
+
+!!SEEALSO
+funcs:lexpr
+

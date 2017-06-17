@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  $Id: wrspiceMODULEacld.cc.xml,v 1.12 2015/02/20 05:06:09 stevew Exp $
+
+  Modified for use with WRspice, Whiteley Research Inc. (wrcad.com).
+  See the original header below for terms and conditions of use.
+-->
+
+<!--
+  Written by Laurent Lemaitre - r29173@users.sourceforge.net
+  Documentation:
+    http://sourceforge.net/docman/display_doc.php?docid=18993&group_id=84289
+  Target Interface: ngspice
+  Supported by adms-1.x.x
+  This file is used by adms - http://sourceforge.net/projects/mot-adms.
+  adms is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+  adms is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  You should have received a copy of the GNU General Public License
+  along with adms; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+
+<!DOCTYPE admst SYSTEM "admst.dtd">
+<admst version="2.3.0" xmlns:admst="http://mot-adms.sourceforge.net/xml-files/admst">
+
+<!-- ---------------------------------------------------------------------- -->
+<admst:template match="module_acld_cc">
+
+  <admst:text format="\n#include &quot;$(modlc)defs.h&quot;\n"/>
+
+  <admst:text format="\n\nint\n"/>
+  <admst:text format="$(moduc)dev::acLoad(sGENmodel *genmod, sCKT *ckt)\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)double omega = ckt->CKTomega;\n"/>
+  <admst:text format="$(indent)s$(moduc)model *model = (s$(moduc)model*)genmod;\n"/>
+  <admst:text format="$(indent)for ( ; model; model = model->next()) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)s$(moduc)instance *inst = model->inst();\n"/>
+  <admst:text format="$(indent)for ( ; inst; inst = inst->next()) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+
+  <!-- Load the constant matrix elements for the probes. -->
+  <admst:if test="[count($curprobes)!=0]">
+    <admst:text format="\n"/>
+    <admst:for-each select="$curprobes">
+      <admst:variable name="pname" path="branch/pnode/name"/>
+      <admst:text format="$(indent)(*inst->PTR_$(pname)_$(pname)_Branch_PB) += 1.0;\n"/>
+      <admst:text format="$(indent)(*inst->PTR_$(pname)_$(pname)_Branch_BP) += 1.0;\n"/>
+      <admst:text format="$(indent)(*inst->PTR_$(pname)_$(pname)_Branch_NB) -= 1.0;\n"/>
+      <admst:text format="$(indent)(*inst->PTR_$(pname)_$(pname)_Branch_BN) -= 1.0;\n"/>
+    </admst:for-each>
+  </admst:if>
+
+  <!-- Load the constant matrix elements potential contributions. -->
+  <admst:for-each select="contribution">
+    <admst:if test="[lhs/nature=lhs/discipline/potential]">
+      <admst:variable name="collapsed"
+        value="%(attribute[name='collapsed']/value)"/>
+      <admst:choose>
+        <admst:when test="[$collapsed='p0']"/>
+        <admst:when test="[$collapsed='pn']"/>
+        <admst:when test="[$collapsed='np']"/>
+        <admst:when test="[$collapsed='defer']"/>
+        <admst:otherwise>
+          <admst:variable name="srcpnode" path="lhs/branch/pnode"/>
+          <admst:variable name="srcnnode" path="lhs/branch/nnode"/>
+          <admst:variable name="srcpname" path="$srcpnode/name"/>
+          <admst:variable name="srcnname" path="$srcnnode/name"/>
+          <admst:variable name="bname" value="$(srcpname)_$(srcnname)_Branch"/>
+          <admst:choose>
+            <admst:when test="$srcnnode[grounded='yes']">
+              <admst:text format="$(indent)if (inst->PTR_$(bname)_P_required &amp;&amp; inst->$(srcpname)_Node > 0) {\n"/>
+              <admst:apply-templates select="." match="push_indent"/>
+            </admst:when>
+            <admst:otherwise>
+              <admst:text format="$(indent)if ((inst->PTR_$(bname)_P_required ||\n"/>
+              <admst:apply-templates select="." match="push_indent"/>
+              <admst:apply-templates select="." match="push_indent"/>
+              <admst:text format="$(indent)inst->PTR_$(bname)_N_required) &amp;&amp;\n"/>
+              <admst:text format="$(indent)inst->$(srcpname)_Node >= 0 &amp;&amp; inst->$(srcnname)_Node >= 0 &amp;&amp;\n"/>
+              <admst:text format="$(indent)inst->$(srcpname)_Node != inst->$(srcnname)_Node) {\n"/>
+              <admst:apply-templates select="." match="pop_indent"/>
+            </admst:otherwise>
+          </admst:choose>
+          <admst:text format="$(indent)*(inst->PTR_$(srcpname)_$(srcnname)_Branch_PB) += 1.0;\n"/>
+          <admst:text format="$(indent)*(inst->PTR_$(srcpname)_$(srcnname)_Branch_BP) += 1.0;\n"/>
+          <admst:if test="$srcnnode[grounded='no']">
+            <admst:text format="$(indent)*(inst->PTR_$(srcpname)_$(srcnname)_Branch_NB) -= 1.0;\n"/>
+            <admst:text format="$(indent)*(inst->PTR_$(srcpname)_$(srcnname)_Branch_BN) -= 1.0;\n"/>
+          </admst:if>
+          <admst:text format="$(indent)if (inst->PTR_$(srcpname)_$(srcnname)_Branch_BB_required) {\n"/>
+          <admst:apply-templates select="." match="push_indent"/>
+          <admst:text format="$(indent)*(inst->PTR_$(srcpname)_$(srcnname)_Branch_BB + 1) -= omega*inst->JDVAL_$(srcpname)_$(srcnname)_Branch_BB;\n"/>
+          <admst:apply-templates select="." match="pop_indent"/>
+          <admst:text format="$(indent)}\n"/>
+          <admst:apply-templates select="." match="pop_indent"/>
+          <admst:text format="$(indent)}\n"/>
+        </admst:otherwise>
+      </admst:choose>
+    </admst:if>
+  </admst:for-each>
+
+  <!-- Load the Jacopian terms. -->
+  <admst:for-each select="jacobian[static='yes']">
+    <admst:value-of select="column/name"/>
+    <admst:value-of select="row/name"/>
+    <admst:value-of select="column/name"/>
+    <admst:value-of select="row/name"/>
+    <admst:value-of select="column/name"/>
+    <admst:value-of select="row/name"/>
+    <admst:text format="$(indent)if (inst->PTR_J_%s_%s_required)\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)*(inst->PTR_J_%s_%s) += inst->JSVAL_%s_%s;\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+  </admst:for-each>
+  <admst:for-each select="jacobian[dynamic='yes']">
+    <admst:value-of select="column/name"/>
+    <admst:value-of select="row/name"/>
+    <admst:value-of select="column/name"/>
+    <admst:value-of select="row/name"/>
+    <admst:value-of select="column/name"/>
+    <admst:value-of select="row/name"/>
+    <admst:text format="$(indent)if (inst->PTR_J_%s_%s_required)\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)*(inst->PTR_J_%s_%s+1) += omega*inst->JDVAL_%s_%s;\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+  </admst:for-each>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="$(indent)return (OK);\n"/>
+
+  <admst:text format="}\n\n"/>
+
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------- -->
+
+<admst:for-each select="/module">
+  <admst:apply-templates select="." match="init:translation"/>
+  <admst:open file="$(modlc)acld.cc">
+    <admst:value-of select="/simulator/package_string"/>
+    <admst:text format="// Interface: %s\n"/>
+    <admst:value-of select="/simulator/currentdate"/>
+    <admst:value-of select="/simulator/fullname"/>
+    <admst:text format="// Created by: %s - %s\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:apply-templates select="." match="module_acld_cc"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+  </admst:open>
+  <admst:message format="$(modlc)acld.cc: file created\n"/>
+</admst:for-each>
+
+</admst>
+

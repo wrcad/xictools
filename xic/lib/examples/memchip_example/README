@@ -1,0 +1,283 @@
+README: memchip_example
+($Id: README,v 1.3 2014/01/24 16:59:41 stevew Exp $)
+
+
+This directory contains two chip designs, that were actually fabbed
+and tested.  Each is a 64K memory, designed to work at 4K, in a hybrid
+superconductor/semiconductor system using Josephson junction circuits
+as sense amplifiers, and CMOS comparator circuits to amplify the low
+voltages found in Josephson circuits to CMOS levels.  The only
+difference between the two chips is the comparator circuit, there are
+two different types being tested. 
+
+The two files chip1.tar.gz and chip4.tar.gz should be un-tarred in the
+user's work space.  This will expand into directories chip1 and chip4,
+which contain the designs as native-format cells.  The top-level cells
+are
+
+  chip1/chip1b_top
+  chip4/chip4b_top
+
+The dummy-fill has been stripped.
+
+The designs were imported directly from a Cadence Virtuoso 6.1.4
+database using the OpenAccess plug-in.
+
+A basic goal of Gen 4 Xic was to be able to extract and verify these
+chips, without having to modify the chips or otherwise intervene. 
+This required a lot of new capability in Xic, including
+
+  - Broader definition of what constitutes a "device", to
+    accommodate pcells.
+  - Support for wire labels to apply names to nets, both in
+    schematics and layouts.
+  - Support for vectored instance placements in schematics.
+  - Support for vector and bundle nets in schematics, and net
+    expressions and net tapping.
+  - Support for differences in cell hierarchy between the schematic
+    and layout in extraction.
+  - Automatic identification of permutable cell terminals.
+  - Dealing with split nets.
+
+Notes, Observations, and Examples
+
+The supplied xic_tech.demo file provides an example technology
+database suitable for use with the example files.  It is not meant to
+implement a "real" process.
+
+1. Example 1 - LVS a whole chip.
+
+Load one of the chils into Xic with a command like
+ "xic -Tdemo chip1/chip1b_top"
+
+Feel free to look around.  At the top level, you will see bond pads,
+and the dense memory array in the center.  Just above the array is a
+strip where the JJ-to-CMOS translation circuits reside.  This is not
+fully populated.
+
+Just for fun, we will time the LVS operation.  Type the following
+command into Xic:
+  timedbg y
+
+Then, press the Dump LVS button in the Extract Menu.  This brings up
+the LVS panel.  In this panel, select "all" in the Depth to process
+menu, and press Go.  Go get a cup of coffee and check your email, the
+operations will take few minutes.  On completion, a pop-up will appear
+informing that the chip passed LVS, but with differences in extracted
+parameters compared with those in the schematic.  This is an
+unfortunate result that the imported schematic was not back-annotated
+with correct parameters from extraction while in Cadence.  A second
+window will have appeared, informing that there is a misspelled "!gdn"
+label which mismatches the "!gnd" name of another label on the same
+net.
+
+Here are the times I get for chip 4 on a pretty decent Centos 6 64-bit
+machine:
+
+grouping          :  calls=1     real=34.242   user=34.200   system=0.000  
+extract_devs      :  calls=186   real=1.263    user=1.266    system=0.000  
+connect_to_subs   :  calls=186   real=21.748   user=20.947   system=0.765  
+connect_btwn_subs :  calls=186   real=307.803  user=296.802  system=10.606 
+other_stuff       :  calls=186   real=5.489    user=5.480    system=0.002  
+direct_contact    :  calls=14216127 real=35.010   user=33.031   system=1.915  
+layer_contact     :  calls=14034772 real=3.080    user=1.296    system=1.892  
+via_contact       :  calls=14034772 real=82.482   user=80.377   system=1.971  
+connect_total     :  calls=186   real=336.303  user=324.495  system=11.373 
+first_pass        :  calls=193   real=15.868   user=15.520   system=0.303  
+first_pass_solve  :  calls=81    real=4.680    user=4.623    system=0.023  
+first_pass_misc   :  calls=81    real=0.004    user=0.006    system=0.000  
+second_pass       :  calls=288   real=0.256    user=0.256    system=0.000  
+measure_devices   :  calls=19162 real=0.527    user=0.493    system=0.006  
+duality_total     :  calls=1     real=16.145   user=15.777   system=0.303  
+
+The entire operation time is grouping + connect_total + duality_total,
+or 34 + 336 + 16 = 386 seconds, or 6.4 minutes.
+
+Have a look at the LVS comparison results.  This might be about as
+exciting as reading the phone book, but it provides all of the
+connectivity and device/subcircuit extraction info in detail.
+
+2.  Vectored Instances and Wires
+
+In Gen 4, devices and subcircuits in a schematic can be "vectorized",
+meaning that a single symbol represents multiple physical instances.
+Each scalar contact terminal of the unvectored instance becomes a
+vectored (bus) contact.
+
+A cell that nicely illustrates the utility of vectored instances is
+a shift register cell named "sr_4b_zlz".  This cell exists in both
+chip designs.
+
+In electrical mode, make this cell the current cell.  If you have
+already read in the hierarchy, just type "op sr_4b_zlz" to view this
+cell, or use the Cells Listing panel from the Cell Menu, or load the
+cell from disk.  You will see the symbolic representation, consisting
+of a box containing lines for clock, data, and 11 outputs do<0>
+through do<10>.
+
+Un-press the symbl button in the electrical side menu, this is
+currently shown as active (AND gate symbol icon).  This will display
+the cell schematic in the main window.  Note now simple the schematic
+appears, with a single D flip-flop and three wires.  But, the
+simplicity is deceiving (which can be a curse or a feature).  Note the
+yellow name label of the D-FF instance:  X0<10:0> The angle brackets
+are subscripting delimiters, and the name string indicates that the
+instance is vectorized, with individual components named X0<10>,
+X0<9>, ..., X0<0>.  In Xic, angle brackets (< >), square brackets ([
+]), and curly brackets ({ }), are interpreted as equivalent
+subscripting characters. 
+
+Consider the wires attached to the DIN and DOUT terminals of the
+vectored D-FF.  Both have bound labels, a new feature in Gen 4.  The
+labels not only name the connected net, but specify the number of
+conductors and imply the bit names.  There are three types of wires in
+Xic:  scalars, vectors, and bundles.  Scalars correspond to a single
+conductor.  Vectors correspond to an array of conductors, with the
+same base name but each conductor hqs a unique index number.  These
+use the same syntax as the vectored instance.  A bundle is a
+comma-separated list of scalars and vectors, representing a collection
+of conductors in the order given.
+
+The wire connected to DIN is a bundle:  din,do<10:1>.  The first
+conductor is a scalar named "din", the remaining conductors are the
+array elements do<10> through do<1>.  There are 11 conductors, which
+match the 11 DIN inputs to the vectored D-FF.
+
+The wire connected to DOUT is an array:  do<10:0>.  It too has 11
+conductors matching the individual instance pins of the instance
+array.  The do<N> conductors with matching N represent the same scalar
+connection within the schematic.  In particular, do<1> in the DIN
+bundle is the same as the do<1> in the DOUT vector.  Thus, the 11
+components of the vectored D-FF are connected in "series" as one would
+expect in a shift register.
+
+Be sure to press the sybml button button again before leaving. 
+Flipping over to physical mode shows the 11 identical stages.
+
+3.  Split Nets
+
+A split net is a logical single net that in the physical cell consists
+of two or more disjoint physical conductor groups.  When the cell is
+instantiated, metal from outside of the cell connects the disjoint
+conductor groups together.  Really, if the net is split into two
+pieces, for example, each piece should have its own cell contact
+terminal, and be shown this way in the schematic.  However, it is
+common to be lazy about this, and expect that the extraction and
+verification tool will sort it all out.
+
+As the first example, load the cell chip4/latch44c_demo.  This cell is
+not itself used in the memory, but is a modified copy of the latch44c
+cell used in the chip4 JJ-to-CMOS level translator.  Specifically,
+along the bottom edge are a number of labels.  These are net labels,
+each with a text label nearby with string "label added".
+
+This cell has split nets.  We are going to illustrate how to handle
+split nets in the top-level cell.  In order to pass LVS, there are two
+requirements.
+
+  1.  The MergeMatchingNamed variable must be set.  This can be
+      accomplished with the "Merge groups with matching net names"
+      check box in the "Net and Cell Config" page of the Extraction
+      Setup panel from the Extract Menu.  Checking the box sets
+      the variable.
+
+  2.  Each piece of a split net must have a name that matches the
+      other pieces.  Most commonly, a name is applied by creating a
+      net label.  These are the labels that have been added to the
+      demo cell:  two labels that identify two pieces of "clk", two
+      labels that identify two pieces of "clkb", and a single label
+      that identifies the second piece of "vddsa" (the other piece is
+      already labeled).  Net labels are created as normal labels, but
+      must use the "pin" purpose, and the reference point (the mouse
+      cursor location relative to the label during placement) must be
+      over the object.  For example, the "clk" line is on M5.  One
+      must find the "M5:pin" layer and make this the current layer,
+      then create and place the layer over the M5 line.
+
+By default, these two conditions are met.  The MergeMatchingNamed
+variable is set in the demo technology file, and the labels have been
+added to the demo cell.  LVS will pass.  After unsetting the variable
+or removing labels, LVS will fail.
+
+As a second example, we will look at what happens when a cell
+containing split nets is used as a subcell, but the top-level cell
+does not contain split nets.  This is actually a very different
+situation, the difference being that it is possible to resolve the
+split nets by considering connections to the instance.  We do not
+need to add information by creating labels in this case.
+
+Load the cell chip4/cmp_top44 (you can probably just type "op
+chip4/cmp_top44").  This contains the latch44c cell as a subcell. 
+This is the same cell as our last demo, but without the added labels.
+
+In order to handle split nets in subcircuits, the MergePhysContacts
+variable must be set.  This enables the logic which detects and
+resolves this type of situation, but this adds a bit of overhead so is
+optional.  The variable can be set with the "Logically merge physical
+contacts for split net handling" check box in the "Misc Config" page
+of the Extraction Setup panel from the Extract Menu.  The variable has
+been set in the demo technology file.
+
+Thus, LVS will pass.  Now load the latch44c cell.  Press the Setup
+button in the Extract Menu to show the Extraction Setup panel.  Press
+the Clear Extraction button in the bottom of the panel, which will
+cause recomputation when we run LVS on this cell again.  Then run LVS. 
+LVS will fail, since at the top level there is insufficient
+information to resolve the split nets, labels must be added as in the
+first demo.
+
+4.  Capacitance Extraction
+
+Here's a simple example of capacitance extraction using the RLC
+Extraction panel from the Extract menu.  We will extract the
+capacitance of an interdigitated capacitor structure.
+
+We'll assume that you have FasterCap from FasFieldSolvers.com
+installed.  This is an updated version of the venerable FastCap
+capacitance extraction program, available as a commercial product for
+Linux and Windows (sorry, no Mac version).  Demos are easily available
+from the web site.  This has a huge advantage over regular FastCap in
+that is auto-refines, avoiding the ugly process of manual refinement.
+
+Load the cell named chip1/cap2p1 or chip4/cap2p1a.  This is a
+capacitor structure using layers M4, M5, and M6.  The Cross Section
+feature from the View Menu might be useful to view the structure. 
+This will show a side view along a line between two mouse clicks.  The
+side view displays the metal and insulator layers approximately how
+they would appear on-chip.
+
+The technology file is already set up for capacitance extraction, so
+there is no setup required for this demo, except to provide the path
+to the FasterCap executable.
+
+Press the Extract RLC button in the Extract Menu, which will display
+the RLC Extraction panel.  This controls the interface to FasterCap,
+or to the open-source FastCap program, and also the FastHenry program
+for inductance extraction.  Free versions of these programs are
+available on the Whiteley Research web site and also from
+FastFieldSolvers.com, which also provides commercial versions.
+
+In the General page of the panel, enter the full path to the program
+executable in the Path to FastCap text entry.  A line can be added to
+the technology file to set this permanently.
+
+Next, select everything in the cell.  Then press Save Selections in
+the panel.  This saves the selected geometry in the interface
+database, At the bottom of the panel, the number of objects saved will
+be shown,
+
+Now, click on the Partition tab in the panel, which will show a new
+page of controls.  This is the great aspect of FasterCap, all one has
+to do here is press the NO FastCap Partitioning button.  With regular
+FastCap, one would need to set up the initial partitioning, and refine
+it iteratively, a time consuming task.
+
+After pressing NO FastCap Partitioning (assuming FasterCap), press the
+Run tab in the panel.  Click the Run FastCap button.  FasterCap will
+start to run in the background.  The Running Jobs at the bottom of the
+panel will indicate that the job is running.  When the job completes,
+a window will appear with the results.  In this simple example, there
+is only one capacitance, of about 2.3fF.  In general, a capacitance
+matrix is computed, which provides the mutual capacitance between each
+pair of conductors.
+

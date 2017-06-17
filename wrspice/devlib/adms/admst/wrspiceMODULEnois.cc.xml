@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  $Id: wrspiceMODULEnois.cc.xml,v 1.16 2015/08/23 20:34:39 stevew Exp $
+
+  Modified for use with WRspice, Whiteley Research Inc. (wrcad.com).
+  See the original header below for terms and conditions of use.
+-->
+
+<!--
+  Written by Laurent Lemaitre - r29173@users.sourceforge.net
+  Documentation:
+    http://sourceforge.net/docman/display_doc.php?docid=18993&group_id=84289
+  Target Interface: ngspice
+  Supported by adms-1.x.x
+  This file is used by adms - http://sourceforge.net/projects/mot-adms.
+  adms is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+  adms is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  You should have received a copy of the GNU General Public License
+  along with adms; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+
+<!DOCTYPE admst SYSTEM "admst.dtd">
+<admst version="2.3.0"
+  xmlns:admst="http://mot-adms.sourceforge.net/xml-files/admst">
+
+<!-- ---------------------------------------------------------------------- -->
+<admst:template match="module_nois_stub_cc">
+  <admst:text format="\n#include &quot;$(modlc)defs.h&quot;\n"/>
+  <admst:text format="#include &quot;noisdefs.h&quot;\n"/>
+
+  <admst:text format="\n\nint\n"/>
+  <admst:text format="$(moduc)dev::noise(int, int, sGENmodel*, sCKT*,"/>
+  <admst:text format=" sNdata*, double*)\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)return (OK);\n"/>
+  <admst:text format="}\n\n"/>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<admst:template match="nodename">
+  <admst:choose>
+    <admst:when test="[grounded='yes']">
+      <admst:return name="value" value="0"/>
+    </admst:when>
+    <admst:otherwise>
+      <admst:return name="value" value="inst->%(name)_Node"/>
+    </admst:otherwise>
+  </admst:choose>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<admst:template match="module_nois_cc">
+
+  <admst:text format="\n#include &lt;stdio.h&gt;\n"/>
+  <admst:text format="#include &quot;$(modlc)defs.h&quot;\n"/>
+  <admst:text format="#include &quot;noisdefs.h&quot;\n"/>
+
+  <admst:text format="\n"/>
+  <admst:choose>
+    <admst:when test="[$added_m='yes' and
+        count(/module/variable[name='m' and parametertype='instance'
+        and input='yes'])!=0]">
+#define M(v) inst->m*(v)
+    </admst:when>
+    <admst:otherwise>
+#define M(v) v
+    </admst:otherwise>
+  </admst:choose>
+  <admst:text format="\n"/>
+
+  <admst:text format="\nnamespace {\n"/>
+  <admst:text
+    format="$(indent)const char *$(moduc)nNames[$(moduc)NSRCS] = {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:for-each select="$noinames">
+    <admst:text format="$(indent)%(.),\n"/>
+  </admst:for-each>
+  <admst:text format="$(indent)&quot;&quot;\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)};\n"/>
+
+  <admst:text format="\n$(indent)inline double gain(sCKT *ckt, int n1, int n2)\n"/>
+  <admst:text format="$(indent){\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)double re = *(ckt->CKTrhs + n1) - *(ckt->CKTrhs + n2);\n"/>
+  <admst:text format="$(indent)double im = *(ckt->CKTirhs + n1) - *(ckt->CKTirhs + n2);\n"/>
+  <admst:text format="$(indent)return (re*re + im*im);\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="}\n"/>
+
+  <admst:text format="\n\nint\n"/>
+  <admst:text format="$(moduc)dev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,\n"/>
+  <admst:text format="$(indent)sNdata *data, double *OnDens)\n"/>
+  <admst:text format="{\n"/>
+
+  <admst:text format="$(indent)char nbuf[N_MXVLNTH];\n"/>
+  <admst:text format="$(indent)double noisDens[$(moduc)NSRCS];\n"/>
+  <admst:text format="$(indent)double lnNdens[$(moduc)NSRCS];\n"/>
+  <admst:text format="\n"/>
+
+  <admst:text format="$(indent)ckt->CKTrhs[0] = 0.0;\n"/>
+  <admst:text format="$(indent)s$(moduc)model *firstModel = (s$(moduc)model*) genmod;\n"/>
+  <admst:text format="$(indent)s$(moduc)model *model;\n"/>
+  <admst:text format="$(indent)for (model = firstModel; model; model = model->next()) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)s$(moduc)instance *inst = model->inst();\n"/>
+  <admst:text format="$(indent)for ( ; inst; inst = inst->next()) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)switch (operation) {\n"/>
+
+  <admst:text format="$(indent)case N_OPEN:\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)if (((sNOISEAN*)ckt->CKTcurJob)->NStpsSm != 0) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)switch (mode) {\n"/>
+
+  <admst:text format="$(indent)case N_DENS:\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)for (int i=0; i < $(moduc)NSRCS; i++) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)sprintf(nbuf, &quot;onoise.%%s.%%s&quot;, (const char*)inst->GENname, $(moduc)nNames[i]);\n"/>
+  <admst:text format="$(indent)Realloc(&data->namelist, data->numPlots+1, data->numPlots);\n"/>
+  <admst:text format="$(indent)ckt->newUid(&data->namelist[data->numPlots++], 0, nbuf, UID_OTHER);\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="$(indent)break;\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+
+  <admst:text format="$(indent)case INT_NOIZ:\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)for (int i=0; i < $(moduc)NSRCS; i++) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)sprintf(nbuf, &quot;onoise_total.%%s.%%s&quot;, (const char*)inst->GENname, $(moduc)nNames[i]);\n"/>
+  <admst:text format="$(indent)Realloc(&data->namelist, data->numPlots+2, data->numPlots);\n"/>
+  <admst:text format="$(indent)ckt->newUid(&data->namelist[data->numPlots++], 0, nbuf, UID_OTHER);\n"/>
+  <admst:text format="$(indent)sprintf(nbuf, &quot;inoise_total.%%s.%%s&quot;, (const char*)inst->GENname, $(moduc)nNames[i]);\n"/>
+  <admst:text format="$(indent)ckt->newUid(&data->namelist[data->numPlots++], 0, nbuf, UID_OTHER);\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="$(indent)break;\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="$(indent)break;\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+
+  <admst:text format="$(indent)case N_CALC:\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)switch (mode) {\n"/>
+  <admst:text format="$(indent)case N_DENS:\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+
+  <admst:text format="$(indent)memset(noisDens, 0, $(moduc)NSRCS*sizeof(double));\n"/>
+  <admst:text format="$(indent)memset(lnNdens, 0, $(moduc)NSRCS*sizeof(double));\n"/>
+  <admst:for-each select="$wnoise/item">
+    <admst:variable name="nn" value="%(rhs/tree/arguments[2]/value)"/>
+    <admst:variable name="ix" value="%(index($noinames,$noinames[value=$nn]))"/>
+    <admst:text format="$(indent)noisDens[$ix] +=\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)M(inst->wnoise%(position(.)-1))*gain(ckt,"/>
+    <admst:text
+      format=" %(nodename(lhs/branch/pnode)/value), %(nodename(lhs/branch/nnode)/value));\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+  </admst:for-each>
+  <admst:for-each select="$tnoise/item">
+    <admst:variable name="nn" value="%(rhs/tree/arguments[2]/value)"/>
+    <admst:variable name="ix" value="%(index($noinames,$noinames[value=$nn]))"/>
+    <admst:text format="$(indent)noisDens[$ix] +=\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)M(inst->tnoise%(position(.)-1))*gain(ckt,"/>
+    <admst:text
+      format=" %(nodename(lhs/branch/pnode)/value), %(nodename(lhs/branch/nnode)/value));\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+  </admst:for-each>
+  <admst:for-each select="$fnoise/item">
+    <admst:variable name="nn" value="%(rhs/tree/arguments[3]/value)"/>
+    <admst:variable name="ix" value="%(index($noinames,$noinames[value=$nn]))"/>
+    <admst:text format="$(indent)noisDens[$ix] +=\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:text format="$(indent)M(inst->fpnoise%(position(.)-1))*gain(ckt,"/>
+    <admst:text
+      format=" %(nodename(lhs/branch/pnode)/value), %(nodename(lhs/branch/nnode)/value))/\n"/>
+    <admst:text format="$(indent)pow(data->freq, inst->fenoise%(position(.)-1));\n"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+  </admst:for-each>
+
+  <admst:text format="\n"/>
+  <admst:text format="$(indent)for (int i = 0; i &lt; $(moduc)NSRCS-1; i++)\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)noisDens[$(moduc)NSRCS-1] += noisDens[i];\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)for (int i = 0; i &lt; $(moduc)NSRCS; i++)\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)lnNdens[i] = log(SPMAX(noisDens[i], N_MINLOG));\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)*OnDens += noisDens[$(moduc)NSRCS-1];\n"/>
+
+  <admst:text format="\n"/>
+  <admst:text format="$(indent)if (data->delFreq == 0.0) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)for (int i = 0; i &lt; $(moduc)NSRCS; i++) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)inst->NOISEvar[LNLSTDENS][i] = lnNdens[i];\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="$(indent)if (data->freq == ((sNOISEAN*)ckt->CKTcurJob)->JOBac.fstart()) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)for (int i = 0; i < $(moduc)NSRCS; i++) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)inst->NOISEvar[OUTNOIZ][i] = 0.0;\n"/>
+  <admst:text format="$(indent)inst->NOISEvar[INNOIZ][i] = 0.0;\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="$(indent)else {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)for (int i = 0; i < $(moduc)NSRCS-1; i++) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)double tO = data->integrate(noisDens[i], lnNdens[i],\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)inst->NOISEvar[LNLSTDENS][i]);\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)double tI = data->integrate(\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)noisDens[i]*data->GainSqInv, lnNdens[i] + data->lnGainInv,\n"/>
+  <admst:text format="$(indent)inst->NOISEvar[LNLSTDENS][i] + data->lnGainInv);\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)inst->NOISEvar[LNLSTDENS][i] = lnNdens[i];\n"/>
+  <admst:text format="$(indent)data->outNoiz += tO;\n"/>
+  <admst:text format="$(indent)data->inNoise += tI;\n"/>
+  <admst:text format="$(indent)if (((sNOISEAN*)ckt->CKTcurJob)->NStpsSm != 0) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)inst->NOISEvar[OUTNOIZ][i] += tO;\n"/>
+  <admst:text format="$(indent)inst->NOISEvar[OUTNOIZ][$(moduc)NSRCS-1] += tO;\n"/>
+  <admst:text format="$(indent)inst->NOISEvar[INNOIZ][i] += tI;\n"/>
+  <admst:text format="$(indent)inst->NOISEvar[INNOIZ][$(moduc)NSRCS-1] += tI;\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+
+  <admst:text format="$(indent)if (data->prtSummary) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)for (int i = 0; i &lt; $(moduc)NSRCS; i++) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)data->outpVector[data->outNumber++] =\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)noisDens[i];\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+
+  <admst:text format="$(indent)break;\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)case INT_NOIZ:\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+
+  <admst:text format="$(indent)if (((sNOISEAN*)ckt->CKTcurJob)->NStpsSm != 0) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)for (int i = 0; i &lt; $(moduc)NSRCS; i++) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)data->outpVector[data->outNumber++] =\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)inst->NOISEvar[OUTNOIZ][i];\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)data->outpVector[data->outNumber++] =\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)inst->NOISEvar[INNOIZ][i];\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="$(indent)break;\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="$(indent)break;\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)case N_CLOSE:\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)return (OK);\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="$(indent)return (OK);\n"/>
+
+  <admst:text format="}\n\n"/>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------- -->
+
+<admst:for-each select="/module">
+  <admst:apply-templates select="." match="init:translation"/>
+  <admst:open file="$(modlc)nois.cc">
+    <admst:value-of select="/simulator/package_string"/>
+    <admst:text format="// Interface: %s\n"/>
+    <admst:value-of select="/simulator/currentdate"/>
+    <admst:value-of select="/simulator/fullname"/>
+    <admst:text format="// created by: %s - %s\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:choose>
+      <admst:when test="[count($noinames)=0]">
+        <admst:apply-templates select="." match="module_nois_stub_cc"/>
+      </admst:when>
+      <admst:otherwise>
+        <admst:apply-templates select="." match="module_nois_cc"/>
+      </admst:otherwise>
+    </admst:choose>
+    <admst:apply-templates select="." match="pop_indent"/>
+  </admst:open>
+  <admst:message format="$(modlc)nois.cc: file created\n"/>
+</admst:for-each>
+
+</admst>
+

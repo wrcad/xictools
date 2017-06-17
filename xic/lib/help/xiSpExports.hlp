@@ -1,0 +1,706 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiSpExports.hlp,v 1.5 2014/07/20 21:47:29 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiSpExports.hlp
+!!TITLE
+xiSpExports.hlp
+!!HTML 
+
+!!SUBTOPICS
+ac
+dc
+disto
+noise
+op
+pz
+sens
+tf
+tran
+asciiplot
+check
+compose
+define
+display
+echo
+let
+load
+plot
+print
+reset
+resume
+rusage
+save
+wrs_seed
+set
+setplot
+settype
+show
+stop
+unlet
+unset
+graphics
+spanalysis
+batchmode
+monte
+oprng_analysis
+oprngfile
+options
+spshell
+variablesub
+abstol 
+dphimax 
+dpolydegree 
+gmin 
+nojjtp 
+maxdata
+noshellopts
+polydegree
+reltol 
+steptype
+temp 
+tnom 
+trtol 
+trytocompact
+units
+width
+ex6
+proc2mod
+refs
+
+!!IFNDEF WRspice
+
+!!KEYWORD
+ac
+!!TITLE
+ac command
+!!HTML 
+    command: <tt>ac</tt> <i>ac_args</i>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>ac</b> command.
+
+!!KEYWORD
+dc
+!!TITLE
+dc command
+!!HTML 
+    command: <tt>dc</tt> <i>dc_args</i>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>dc</b> command.
+
+!!KEYWORD
+disto
+!!TITLE
+disto command
+!!HTML 
+    command: <tt>disto</tt> <i>disto_args</i>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>disto</b> command.
+
+!!KEYWORD
+noise
+!!TITLE
+noise command
+!!HTML 
+    command: <tt>noise</tt> <i>noise_args</i>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>noise</b> command.
+
+!!KEYWORD
+op
+!!TITLE
+op command
+!!HTML 
+    command: <tt>op</tt>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>op</b> command.
+
+!!KEYWORD
+pz
+!!TITLE
+pz command
+!!HTML 
+    command: <tt>pz</tt> <i>pz_args</i>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>pz</b> command.
+
+!!KEYWORD
+sens
+!!TITLE
+sens command
+!!HTML 
+    command: <tt>sens</tt> <i>sens_args</i>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>sens</b> command.
+
+!!KEYWORD
+tf
+!!TITLE
+tf command
+!!HTML 
+    command: <tt>tf</tt> <i>tf_args</i>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>tf</b> command.
+
+!!KEYWORD
+tran
+!!TITLE
+tran command
+!!HTML 
+    command: <tt>tran</tt> <i>tran_args</i>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>tran</b> command.
+
+!!KEYWORD
+asciiplot
+!!TITLE
+asciiplot command
+!!HTML 
+    command: <tt>asciiplot</tt> <i>plotargs</i>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>asciiplot</b> command.
+
+!!KEYWORD
+check
+!!TITLE
+check command
+!!HTML 
+    command: <tt>check [-v][-a][-m][-r][-c][-f][-s][-k][-h]</tt>
+        [<i>analysis spec</i>]
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>check</b> command.
+
+!!KEYWORD
+compose
+!!TITLE
+compose command
+!!HTML 
+    command: 
+    <blockquote>
+       <tt>compose</tt> <i>vecname</i>
+                  <i>param</i> = <i>value</i> [...]<br>
+       <tt>compose</tt> <i>vecname</i> values <i>value</i> [...]
+    </blockquote>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>compose</b> command.
+
+!!KEYWORD
+define
+!!TITLE
+define command
+!!HTML 
+    command: <tt>define</tt> <i>function(arg, ...) expression</i>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>define</b> command.
+
+!!KEYWORD
+display
+!!TITLE
+display command
+!!HTML 
+    command: <tt>display</tt> [<i>vecname</i>] ...
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>display</b> command.
+ 
+!!KEYWORD
+echo
+!!TITLE
+echo command
+!!HTML 
+    command: <tt>echo</tt> [<tt>-n</tt>] [<i>stuff</i> ...]
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>echo</b> command.
+ 
+!!KEYWORD
+let
+!!TITLE
+let command
+!!HTML 
+    command: <tt>let</tt> [<i>vecname</i> [= <i>expr</i>]]
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>let</b> command.
+
+!!KEYWORD
+load
+!!TITLE
+load command
+!!HTML 
+    command: <tt>load</tt> <i>filename</i> [...]
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>load</b> command.
+
+!!KEYWORD
+plot
+!!TITLE
+plot command
+!!HTML 
+    command: <tt>plot</tt> [<i>expr</i>...] [<tt>vs</tt> <i>x-expr</i>]
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>plot</b> command.
+
+!!KEYWORD
+print
+!!TITLE
+print command
+!!HTML 
+    command: <tt>print</tt> [<tt>col</tt>] [<tt>line</tt>] [<i>expr</i>] ...
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>print</b> command.
+
+!!KEYWORD
+reset
+!!TITLE
+reset command
+!!HTML 
+    command: <tt>reset</tt>
+ 
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>reset</b> command.
+ 
+!!KEYWORD
+resume
+!!TITLE
+resume command
+!!HTML 
+    command: <tt>resume</tt>
+ 
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>resume</b> command.
+ 
+!!KEYWORD
+rusage
+!!TITLE
+rusage command
+!!HTML 
+    command: <tt>rusage</tt> [<tt>all</tt>] [<i>resource</i> ...]
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>rusage</b> command.
+
+!!KEYWORD
+save
+!!TITLE
+save command
+!!HTML 
+    command: <tt>save</tt> [<tt>all</tt>] [<i>nodename</i> ...]
+
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>save</b> command.
+
+!!KEYWORD
+wrs_seed
+!!TITLE
+seed command
+!!HTML 
+    command: <tt>seed</tt> [<i>seed_integer</i>]
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>seed</b> command.
+
+!!KEYWORD
+set
+!!TITLE
+set command
+!!HTML 
+    command: <tt>set</tt> [<i>varname</i> [= <i>value</i>]] [...]
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>set</b> command.
+
+!!KEYWORD
+setplot
+!!TITLE
+setplot command
+!!HTML 
+    command: <tt>setplot</tt> [<i>plotname</i>]
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>setplot</b> command.
+
+!!KEYWORD
+settype
+!!TITLE
+settype command
+!!HTML 
+    command: <tt>settype</tt> [<i>type</i>] [<i>vector</i> ...]
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>settype</b> command.
+
+!!KEYWORD
+show
+!!TITLE
+show command
+!!HTML 
+    command: <tt>show</tt> [<tt>-r|-o|-d|-m|-D[M]|-M</tt>]
+         [<i>args</i>] [, <i>parmlist</i>]
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>show</b> command.
+
+!!KEYWORD
+stop
+!!TITLE
+stop command
+!!HTML 
+    command: <tt>stop</tt> [<tt>before|at|after</tt> <i>num</i>]
+        [<tt>when</tt> <i>expr1 op expr</i>] [...]
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>stop</b> command.
+
+!!KEYWORD
+unlet
+!!TITLE
+unlet command
+!!HTML 
+    command: <tt>unlet</tt> <i>vecname</i> [...]
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>unlet</b> command.
+
+!!KEYWORD
+unset
+!!TITLE
+unset command
+!!HTML 
+    command: <tt>unset</tt> [<i>varname</i> ...]
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>unset</b> command.
+
+!!KEYWORD
+graphics
+!!TITLE
+Graphical Interface
+!!HTML 
+    See the <i>WRspice</i> documentation for information about
+    the graphical interface.
+
+!!KEYWORD
+spanalysis
+!!TITLE
+SPICE Analysis Types
+!!HTML 
+    See the <i>WRspice</i> documentation for information about
+    the types of analysis available.
+
+!!KEYWORD
+batchmode
+!!TITLE
+batch mode
+!!HTML 
+    See the <i>WRspice</i> documentation for a description of
+    batch mode.
+
+!!KEYWORD
+monte
+!!TITLE
+Monte Carlo Analysis
+!!HTML
+    See the <i>WRspice</i> documentation for a description of
+    Monte Carlo analysis.
+
+!!KEYWORD
+oprng_analysis
+!!TITLE
+Operating Range Analysis
+!!HTML 
+    See the <i>WRspice</i> documentation for a description of
+    operating range analysis.
+
+!!KEYWORD
+oprngfile
+!!TITLE
+Operating Range Input File Format
+!!HTML 
+    See the <i>WRspice</i> documentation for a description of
+    operating range analysis.
+
+!!KEYWORD
+options
+!!TITLE
+SPICE Options
+!!HTML 
+    See the <i>WRspice</i> documentation for a description of
+    the SPICE options.
+
+!!KEYWORD
+spshell
+!!TITLE
+Shell Features
+!!HTML 
+    See the <i>WRspice</i> documentation for a description of
+    the <i>WRspice</i> shell.
+
+!!KEYWORD
+variablesub
+!!TITLE
+Variable Substitution
+!!HTML 
+    See the <i>WRspice</i> documentation for a description of
+    variable substitution.
+
+!!KEYWORD
+abstol 
+!!TITLE
+abstol variable
+!!HTML 
+    real variable: <tt>abstol</tt>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>abstol</b> variable.
+
+!!KEYWORD
+dphimax 
+!!TITLE
+dphimax variable
+!!HTML 
+    real variable: <tt>dphimax</tt>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>dphimax</b> variable.
+
+!!KEYWORD
+dpolydegree 
+!!TITLE
+dpolydegree variable
+!!HTML 
+    integer variable: <tt>dpolydegree</tt>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>dpolydegree</b> variable.
+
+!!KEYWORD
+gmin 
+!!TITLE
+gmin variable
+!!HTML 
+    real variable: <tt>gmin</tt>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>gmin</b> variable.
+
+!!KEYWORD
+nojjtp 
+!!TITLE
+nojjtp variable
+!!HTML 
+    boolean variable: <tt>nojjtp</tt>
+ 
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>nojjtp</b> variable.
+
+!!KEYWORD
+maxdata
+!!TITLE
+maxdata variable
+!!HTML 
+    real variable: <tt>maxdata</tt>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>maxdata</b> variable.
+ 
+!!KEYWORD
+noshellopts
+!!TITLE
+noshellopts variable
+!!HTML 
+    boolean variable: <tt>noshellopts</tt>
+ 
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>noshellopts</b> variable.
+
+!!KEYWORD
+polydegree
+!!TITLE
+polydegree variable
+!!HTML 
+    integer variable: <tt>polydegree</tt>
+ 
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>polydegree</b> variable.
+
+!!KEYWORD
+reltol 
+!!TITLE
+reltol variable
+!!HTML 
+    real variable: <tt>reltol</tt>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>reltol</b> variable.
+
+!!KEYWORD
+steptype
+!!TITLE
+steptype variable
+!!HTML 
+    string variable: <tt>steptype</tt>
+ 
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>steptype</b> variable.
+
+!!KEYWORD
+temp 
+!!TITLE
+temp variable
+!!HTML 
+    real variable: <tt>temp</tt>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>temp</b> variable.
+
+!!KEYWORD
+tnom 
+!!TITLE
+tnom variable
+!!HTML 
+    real variable: <tt>tnom</tt>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>tnom</b> variable.
+
+!!KEYWORD
+trtol 
+!!TITLE
+trtol variable
+!!HTML 
+    real variable: <tt>trtol</tt>
+
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>trtol</b> variable.
+
+!!KEYWORD
+trytocompact
+!!TITLE
+trytocompact variable
+!!HTML 
+    boolean variable: <tt>trytocompact</tt>
+ 
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>trytocompact</b> variable.
+
+!!KEYWORD
+units
+!!TITLE
+units variable
+!!HTML 
+    string variable: <tt>units</tt>
+ 
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>units</b> variable.
+
+!!KEYWORD
+width
+!!TITLE
+width variable
+!!HTML 
+    integer variable: <tt>width</tt>
+ 
+    <p>
+    See the <i>WRspice</i> documentation for a description of the
+    <b>width</b> variable.
+
+!!KEYWORD
+ex6 ex8
+!!TITLE
+Examples
+!!HTML 
+    See the <i>WRspice</i> documentation for examples.
+
+!!KEYWORD
+proc2mod
+!!TITLE
+proc2mod Utility
+!!HTML 
+    See the <i>WRspice</i> documentation for information about the
+    <tt>proc2mod</tt> utility.
+
+!!KEYWORD
+refs park szeto cheng parker jewett
+!!TITLE
+References
+!!HTML 
+    <a name="roy"></a>
+    <a name="lin"></a>
+    <a name="statz1"></a>
+    <a name="pierret"></a>
+    <a name="sheu"></a>
+    <a name="vlad"></a>
+    See the <i>WRspice</i> documentation for references.
+
+!!ENDIF
+

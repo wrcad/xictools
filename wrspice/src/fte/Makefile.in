@@ -1,0 +1,63 @@
+#######################################################################
+# wrspice/fte/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 2.70 2015/11/19 04:49:03 stevew Exp $
+#######################################################################
+
+SPICE_VERSION = @SPICE_VERSION@
+DEVLIB_VERSION = @DEVLIB_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @UFLAGS@ -DWRSPICE
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ -DWRSPICE
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+TKTOOLS = @TKTOOLS@
+PSINCL = @PSINCL@
+
+LIB_TARGET = fte.a
+
+LPATH = ../../../xt_base
+HFILES =
+CCFILES = \
+  aspice.cc breakp.cc check.cc circuit.cc cmath1.cc cmath2.cc \
+  compose.cc csdffile.cc datavec.cc define.cc device.cc diff.cc \
+  dotcards.cc error.cc evaluate.cc initialize.cc inpcom.cc \
+  interface.cc interp.cc keywords.cc linear.cc measure.cc misccoms.cc \
+  output.cc paramsub.cc parse.cc postcoms.cc prntfile.cc psffile.cc \
+  rawfile.cc resource.cc simulate.cc source.cc spvariable.cc \
+  subexpand.cc sweep.cc trnames.cc types.cc vectors.cc
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil \
+  -I$(LPATH)/malloc $(PSINCL)
+
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+paramsub.cc: $(LPATH)/spnumber/paramsub.cc
+	cp -f $(LPATH)/spnumber/paramsub.cc .
+
+depend: paramsub.cc
+	@echo depending in wrspice/fte
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm *.o $(LIB_TARGET)
+
+distclean:
+	-rm *.o $(LIB_TARGET) Makefile paramsub.cc
+
+#######################################################################

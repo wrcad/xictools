@@ -1,0 +1,473 @@
+# This file provides scripts for example user-generated netlist
+# formats from Xic.
+# $Id: xic_format_lib,v 1.5 2016/07/07 21:48:44 stevew Exp $
+
+# This is an example script for printing physical netlists in Cadence DEF
+# (Design Exchange Format) format.
+
+PhysFormat DEF
+    Print("# Xic-GENERATION.MAJOR.MINOR", OSNAME, "Whiteley Research Inc.")
+    Print("#", DateString())
+    Print("VERSION 5.6 ;")
+    Print("DESIGN ", _cellname, ";")
+    if (_techname)
+        Print("TECHNOLOGY", _techname, ";")
+    end
+
+    # If the Manufacturing grid is set, use its inverse as the DEF scale.
+    # Otherwise, use 100.  All lengths in the file are expressed in units
+    # of one micron divided by the scale.
+
+    mfg = GetMfgGrid();
+    if (mfg > .001)
+        def_units = 1/mfg;
+    else
+        def_units = 100
+    end
+    Print("UNITS DISTANCE MICRONS", def_units, ";")
+    Print("")
+
+    # COMPONENTS
+    # List all cell instances identified by the extraction system. 
+    # This will generally skip wire-only cells.  We ignore devices
+    # here, assuming that devices are found only in subcells.
+    #
+    # The index number used to form the instance names are in database
+    # order, zero based for each distinct master.  Database order
+    # means that the sequence is based on the placement location of
+    # the master origin, increasing top to bottom, secondarily left to
+    # right.
+    #
+    # In DEF, the placement location is always the lower-left corner
+    # of the instance bounding box, and this location is independent
+    # of the orientation.  This is a bit different than the scheme
+    # used in Xic, where the placement position coresponds to the
+    # master origin.  The GetPscTransform function computes the
+    # necessary correction factors, along with the DEF orientation
+    # code.
+
+    vals[1]
+    hsub = ListPhysSubckts(0, -1, 0, 0, 0, 0)
+    nsub = HandleContent(hsub)
+    Print("COMPONENTS", nsub, ";")
+    while (hsub)
+        name = GetPscName(hsub)
+        if (name)
+            iname = GetPscInstName(hsub)
+            if (GetPscLoc(hsub, vals))
+                x = vals[0];
+                y = vals[1];
+                orient = GetPscTransform(hsub, 1, vals)
+                if (orient)
+                    x = x - vals[0];
+                    y = y - vals[1];
+                    x = rint(x * def_units);
+                    y = rint(y * def_units);
+                    Print("-", iname, name, "+ PLACED (", x, y, ")", \
+ orient, ";")
+                end
+            end
+        end
+        hsub++
+    end
+    Print("END COMPONENTS")
+    Print("")
+
+    ngroups = GetNumberGroups();
+
+    # PINS
+    # Look through all groups and list current cell connection
+    # locations.  Include a layer and dummy connector implementation.
+
+    cnt = 0
+    pcnt = 0
+    while (cnt < ngroups)
+        thandle = ListGroupPhysTerminals(cnt)
+        pcnt = pcnt + HandleContent(thandle)
+        Close(thandle)
+        cnt++
+    end
+    cnt = 0
+    if (pcnt > 0)
+        Print("PINS", pcnt, ";")
+        while (cnt < ngroups)
+            name = GetGroupName(cnt)
+            if (!name)
+                name = "N" + ToString(cnt+1)
+            end
+            thandle = ListGroupPhysTerminals(cnt)
+            if (HandleContent(thandle))
+                while (thandle)
+                    Print("-", GetTerminalName(thandle), "+ NET", name)
+                    lname = GetPhysTerminalLayer(thandle);
+                    if (lname)
+                        Print("+ LAYER", lname, "( 0, 0 ) ( 1 1 )")
+                    end
+                    if (GetPhysTerminalLoc(thandle, vals))
+                        x = rint(vals[0] * def_units)
+                        y = rint(vals[1] * def_units)
+                        Print("+ PLACED (", x, y, ") N")
+                    end
+                    Print(";")
+                    thandle++
+                end
+            end
+            cnt++
+        end
+        Print("END PINS")
+        Print("")
+    end
+
+    # NETS
+    # Finally, print out the nets.  Use the net name where one has been
+    # assigned (nets containing pins), otherwise name the net "N" followed
+    # by the group number.
+
+    cnt = 0
+    Print("NETS", ngroups, ";")
+    while (cnt < ngroups)
+        name = GetGroupName(cnt)
+        if (!name)
+            name = "N" + ToString(cnt+1)
+        end
+        Print("-", name)
+
+        # Ignore devices for now (assume that there aren't any).
+        # dhandle = ListGroupDevContacts(cnt)
+        # if (HandleContent(dhandle))
+        #     SetIndent(2)
+        #     while (dhandle)
+        #         mname = GetPdevContactDevName(dhandle)
+        #         ix = GetPdevContactDevIndex(dhandle)
+        #         iname = mname + "_" + ToString(ix)
+        #         Print("(", iname, GetPdevContactName(dhandle), ")")
+        #         dhandle++
+        #     end
+        #     SetIndent(0)
+        # end
+
+        shandle = ListGroupSubcContacts(cnt)
+        if (HandleContent(shandle))
+            SetIndent(2)
+            while (shandle)
+                if (!IsPscContactIgnorable(shandle) | _list_all)
+                    iname = GetPscContactSubcInstName(shandle) 
+                    Print("(", iname, GetPscContactName(shandle), ")")
+                end
+                shandle++
+            end
+            SetIndent(0)
+        end
+        Print(";")
+        cnt++
+    end
+    Print("END NETS")
+    Print("")
+
+    if (_show_geom)
+
+        # Dump a SPECIALNETS section listing all of the physical
+        # objects on routing layers in each net, plus vias.  The vias
+        # have been smashed into the net, so the cut rectangle and end
+        # caps will appear in the stream, however these are filtered
+        # out.  The standard vias provide this geometry.
+        #
+        # TO-DO: Move min-width wires and standard vias into the NETS
+        # section.
+
+        nsp = 0
+        cnt = 0
+        while (cnt < ngroups)
+            if (CountGroupObjects(cnt) > 0)
+                nsp++
+            end
+            cnt++
+        end
+        if (nsp > 0) {
+            Print("SPECIALNETS", nsp, ";")
+            cnt = 0
+            ary[3]
+            while (cnt < ngroups)
+                if (CountGroupObjects(cnt) > 0)
+                    name = GetGroupName(cnt)
+                    if (!name)
+                        name = "N" + ToString(cnt+1)
+                    end
+                    Print("-", name, "+ ROUTED")
+                    hobjs = ListGroupObjects(cnt)
+                    while (hobjs)
+                        tp = GetObjectType(hobjs)
+                        if (tp == "b")
+                            # If the object came from a via cell, the
+                            # MergeDeleted (0x1) flag will be set. 
+                            # Skip these, objects since they are
+                            # provided by the via instance.
+
+                            if (AndBits(GetObjectFlags(hobjs), 0x1) == 0)
+                                lyr = GetObjectLayer(hobjs)
+                                if (IsLayerRouting(lyr))
+                                    GetObjectBB(hobjs, ary)
+                                    Print("  + RECT", lyr, "(", \
+ rint(ary[0]*def_units), rint(ary[1]*def_units), ") (", \
+ rint(ary[2]*def_units), rint(ary[3]*def_units), ")")
+                                end
+                            end
+                        elif (tp == "p")
+                            lyr = GetObjectLayer(hobjs)
+                            if (IsLayerRouting(lyr))
+                                nv = GetObjectCoords(hobjs, ary)
+                                Print("  + POLYGON", lyr)
+                                cp = 0
+                                while (cp < nv)
+                                    Print("    (", rint(ary[2*cp]*def_units), \
+ rint(ary[2*cp+1]*def_units), ")")
+                                    cp++
+                                end
+                            end
+                        elif (tp == "w")
+                            lyr = GetObjectLayer(hobjs)
+                            if (IsLayerRouting(lyr))
+                                lw = GetWireWidth(hobjs)
+                                nv = GetObjectCoords(hobjs, ary)
+                                Print("  + NEW", lyr, rint(lw*def_units))
+                                cp = 0
+                                while (cp < nv)
+                                    Print("    (", rint(ary[2*cp]*def_units), \
+ rint(ary[2*cp+1]*def_units), ")")
+                                    cp++
+                                end
+                            end
+                        end
+                        hobjs++
+                    end
+                    hobjs = ListGroupVias(cnt)
+                    while (hobjs)
+                        nm = GetInstanceMaster(hobjs);
+                        GetInstanceXformA(hobjs, ary)
+                        Print("  + VIA", nm, "(", rint(ary[2]*def_units), \
+ rint(ary[3]*def_units), ")")
+                        hobjs++
+                    end
+                    Print(";")
+                end
+                cnt++
+            end
+            Print("END SPECIALNETS")
+        end
+    end
+    Print("END DESIGN")
+    Print("#----------------------------------------------------------------")
+EndScript
+
+# This is the original example script for printing physical netlists. 
+
+PhysFormat phys-example
+    Print("This cell is", _cellname)
+    ngroups = GetNumberGroups();
+    Print("There are", ngroups, "groups")
+    gcnt = 0
+    while (gcnt < ngroups)
+        SetIndent(4)
+        Print("Group", gcnt)
+        name = GetGroupName(gcnt)
+        if (name)
+            Print("Name:", name)
+        end
+        thandle = ListGroupTerminals(gcnt)
+        if (HandleContent(thandle))
+            Print("Formal Terminals:")
+            SetIndent(8)
+            while (thandle)
+                Print(GetTerminalName(thandle))
+                thandle++
+            end
+            SetIndent(4)
+        end
+        dhandle = ListGroupDevContacts(gcnt)
+        if (HandleContent(dhandle))
+            Print("Device Contacts:")
+            SetIndent(8)
+            while (dhandle)
+                Print(GetPdevContactDevName(dhandle), \
+                    GetPdevContactDevIndex(dhandle), \
+                    GetPdevContactName(dhandle))
+                dhandle++
+            end
+            SetIndent(4)
+        end
+        shandle = ListGroupSubcContacts(gcnt)
+        if (HandleContent(shandle))
+            Print("Subcircuit Contacts:")
+            SetIndent(8)
+            while (shandle)
+                if (!IsPscContactIgnorable(shandle) | _list_all)
+                    Print(GetPscContactSubcName(shandle), \
+                        GetPscContactSubcIndex(shandle), \
+                        GetPscContactName(shandle))
+                end
+                shandle++
+            end
+            SetIndent(4)
+        end
+        gcnt++
+    end
+    SetIndent(0)
+    Print("----------------------------------------------------------------")
+EndScript
+
+ElecFormat "DEF"
+    # This prints output in Cadence DEF format, based only on
+    # information contained in the schematic.
+
+    # Make sure that the schematic has been processed.  This builds
+    # the internal connectivity structure.
+    Connect(FALSE)
+
+    Print("# Xic-GENERATION.MAJOR.MINOR", OSNAME, "Whiteley Research Inc.")
+    Print("#", DateString())
+    Print("VERSION 5.6 ;")
+    Print("DESIGN ", _cellname, ";")
+    if (_techname)
+        Print("TECHNOLOGY", _techname, ";")
+    end
+    Print("UNITS DISTANCE MICRONS", 100, ";")
+    Print("")
+
+    # COMPONENTS
+
+    # Output a listing of instances used in the design.  There are two
+    # instance naming conventions available for subcircuits, here we
+    # choose the "Alt" name, which is the master name, followed by an
+    # underscore, followed by a unique index integer for that master. 
+    # The other name choice would be SPICE-stype "X" followed by an
+    # index number, uniqe among all instances.
+
+    # Note that we include library devices here, similar to
+    # subcircuits.
+
+    thandle = ListElecInstances();
+    cnt = 0;
+    while (thandle)
+        # We're only interested in subcircuit, macro, and device
+        # instance types.
+        itype = GetInstanceType(thandle)
+        if (itype == "s" | itype == "m" | itype == "d")
+            cnt++
+        end
+        thandle++
+    end
+    if (cnt > 0)
+        Print("COMPONENTS", cnt, ";")
+        SetIndent(2)
+        thandle = ListElecInstances();
+        while (thandle)
+            itype = GetInstanceType(thandle)
+            if (itype == "s" | itype == "m" | itype == "d")
+                iname = GetInstanceAltName(thandle)
+                mname = GetInstanceMaster(thandle)
+                Print("-", iname, mname, ";")
+            end
+            thandle++
+        end
+        SetIndent(0)
+        Print("END COMPONENTS")
+        Print()
+    end
+    nnodes = GetNumberNodes();
+
+    # PINS
+
+    # Print a list of the cell connection terminals.
+
+    thandle = ListTerminals()
+    cnt = HandleContent(thandle)
+    if (cnt > 0)
+        Print("PINS", cnt, ";")
+        SetIndent(2)
+        while (thandle)
+            name = GetTerminalName(thandle)
+            Print("-", name, "+ NET", name, ";")
+            thandle++
+        end
+        SetIndent(0)
+        Print("END PINS")
+        Print()
+    end
+
+    # NETS
+
+    # Print a listing of the nets, and the device and subcircuit
+    # terminals connected to each net.
+
+    Print("NETS", nnodes, ";")
+    ncnt = 0
+    while (ncnt < nnodes)
+        name = GetNodeName(ncnt)
+        SetIndent(2)
+        Print("-", name)
+
+        thandle = ListNodeContacts(ncnt)
+        if (HandleContent(thandle))
+            SetIndent(4)
+            while (thandle)
+                ihdl = GetNodeContactInstance(thandle);
+                itype = GetInstanceType(ihdl)
+                if (itype == "s" | itype == "m" | itype == "d")
+                    # The terminal name is the SPICE instance name,
+                    # followed by the name of the terminal in the
+                    # master.  Here we strip the instance name.
+                    iname = GetInstanceName(ihdl)
+                    n = Strlen(iname)
+                    termname = GetTerminalName(thandle) + n
+                    if (itype == "d")
+                        iname = GetInstanceName(ihdl)
+                    else
+                        iname = GetInstanceAltName(ihdl)
+                    end
+                    Print("(", iname, termname, ")")
+                end
+                Close(ihdl);
+                thandle++
+            end
+            SetIndent(2)
+        end
+        Print(";")
+        SetIndent(0)
+        ncnt++
+    end
+    Print("END NETS")
+    Print("")
+    Print("END DESIGN")
+    Print("#----------------------------------------------------------------")
+EndScript
+
+# This is the original example script for printing electrical netlists.
+
+ElecFormat "elec-example"
+    Print("This cell is", _cellname)
+    nnodes = GetNumberNodes();
+    Print("There are", nnodes, "nodes")
+    ncnt = 0
+    while (ncnt < nnodes)
+        thandle = ListNodeContacts(ncnt)
+        if (HandleContent(thandle))
+            SetIndent(4)
+            Print("Node:", ncnt, "Name:", GetNodeName(ncnt))
+            Print("Terminals:")
+            SetIndent(8)
+            while (thandle)
+                Print(GetTerminalName(thandle))
+                thandle++
+            end
+            SetIndent(4)
+        end
+        ncnt++
+    end
+    SetIndent(0)
+    Print("----------------------------------------------------------------")
+EndScript
+
+# This is an example script for printing LVS output
+#LvsFormat lvs-example
+#    Print(_cellname)
+#EndScript

@@ -1,0 +1,6 @@
+
+Verilog-A code changes, search for "XXX".
+
+In Common103_macrodefs.include, added a "insideADMS" conditional to
+define the P() macro.  This is needed to specify the instance
+parameters.  Everything was nicely set up, just had to turn it on!

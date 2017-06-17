@@ -1,0 +1,32 @@
+
+MRouter Manual Build System
+$Id: README.build,v 1.2 2016/11/15 04:25:41 stevew Exp $
+
+This directory contains the Latex source for the MRouter manual.  The
+manual can be built from the Makefile, in various formats.  To use
+this, you must have LaTex installed, plus dvips for PostScript, dvipdf
+for PDF, Latex2HTML for HTML, plus a couple of packages that may or
+may not be installed with the standard Latex.  Probably, if you
+install something like TeTex, you get all that you need (but maybe not
+Latex2HTML).
+
+Assume that you have all the right stuff installed.  The way to create
+the manual is to give the following commands
+
+make
+make
+make index
+make
+make pdf
+make ps
+make html
+
+Yes, you need to run make twice at first, since setting up the
+references is a two-step process.  The third line extracts the index,
+and the third "make" appends the index to the document, and produces
+the final DVI file.  The final three lines are optional, depending on
+what output formats, besides DVI, you want to produce.  The PostScript
+output is gzipped, you may need to un-gzip it for some uses.  The HTML
+output is a tar.gz file that contains a directory full of html files. 
+The file "index.html" is the top node.
+

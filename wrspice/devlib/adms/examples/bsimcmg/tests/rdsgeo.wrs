@@ -1,0 +1,84 @@
+*Sample netlist for BSIM-MG
+* Geometry-dependent Rds
+
+*.option abstol=1e-6 reltol=1e-6 post ingold
+.temp 27
+
+*.hdl "bsimcmg.va"
+
+.model nmos2 bsimcmg
++ DEVTYPE=1
++ RGEOMOD=1
++ HEPI=15n
++ CRATIO=0.5
++ DELTAPRSD=12.42n
+* + LDG=12n
++ RHOC=1.0p
++ LSP=15n
++ HFIN=30n
++ NSD=2.0e+26
++ LINT = 0
+
+.model pmos2 bsimcmg
++ DEVTYPE=0
++ RGEOMOD=1
++ HEPI=15n
++ CRATIO=0.5
++ DELTAPRSD=12.42n
+* + LDG=12n
++ RHOC=1.0p
++ LSP=15n
++ HFIN=30n
++ NSD=2.0e+26
++ LINT = 0
+
+.param fp = 45n
+
+* --- Voltage Sources ---
+vds supply  0 dc=0
+vgs gate  0 dc=0
+vbs bulk  0 dc=0
+
+* --- Transistor ---
+*Xn1 supply gate 0 bulk nmos2 TFIN=15n L=30n NFIN=10 FPITCH=fp SDTERM=0 LRSD=20n
+*Xn2 supply gate 0 bulk nmos2 TFIN=15n L=30n NFIN=10 FPITCH=fp SDTERM=0 LRSD=40n
+*Xn3 supply gate 0 bulk nmos2 TFIN=15n L=30n NFIN=10 FPITCH=fp SDTERM=0 LRSD=60n
+*Xn4 supply gate 0 bulk nmos2 TFIN=15n L=30n NFIN=10 FPITCH=fp SDTERM=0 LRSD=80n
+*Xp1 supply gate 0 bulk pmos2 TFIN=15n L=30n NFIN=10 FPITCH=fp SDTERM=0 LRSD=20n
+*Xp2 supply gate 0 bulk pmos2 TFIN=15n L=30n NFIN=10 FPITCH=fp SDTERM=0 LRSD=40n
+*Xp3 supply gate 0 bulk pmos2 TFIN=15n L=30n NFIN=10 FPITCH=fp SDTERM=0 LRSD=60n
+*Xp4 supply gate 0 bulk pmos2 TFIN=15n L=30n NFIN=10 FPITCH=fp SDTERM=0 LRSD=80n
+mn1 supply gate 0 bulk nmos2 TFIN=15n L=30n NFIN=10 FPITCH=fp SDTERM=0 LRSD=20n
+mn2 supply gate 0 bulk nmos2 TFIN=15n L=30n NFIN=10 FPITCH=fp SDTERM=0 LRSD=40n
+mn3 supply gate 0 bulk nmos2 TFIN=15n L=30n NFIN=10 FPITCH=fp SDTERM=0 LRSD=60n
+mn4 supply gate 0 bulk nmos2 TFIN=15n L=30n NFIN=10 FPITCH=fp SDTERM=0 LRSD=80n
+mp1 supply gate 0 bulk pmos2 TFIN=15n L=30n NFIN=10 FPITCH=fp SDTERM=0 LRSD=20n
+mp2 supply gate 0 bulk pmos2 TFIN=15n L=30n NFIN=10 FPITCH=fp SDTERM=0 LRSD=40n
+mp3 supply gate 0 bulk pmos2 TFIN=15n L=30n NFIN=10 FPITCH=fp SDTERM=0 LRSD=60n
+mp4 supply gate 0 bulk pmos2 TFIN=15n L=30n NFIN=10 FPITCH=fp SDTERM=0 LRSD=80n
+
+* --- DC Analysis ---
+.dc vgs 0.0 1.0 2.0
+*.print dc Xn1:RSGEO Xn2:RSGEO Xn3:RSGEO Xn4:RSGEO
+*.print dc Xp1:RSGEO Xp2:RSGEO Xp3:RSGEO Xp4:RSGEO
+
+*.alter 
+*.param fp=90n
+
+.control
+load -c5 rdsgeo.lis
+run
+echo FPITCH = 45n
+show mn{1,2,3,4}, RSGEO
+print prev.column_1[0] prev.column_2[0] prev.column_3[0] prev.column_4[0]
+show mp{1,2,3,4}, RSGEO
+print prev.column_1[1] prev.column_2[1] prev.column_3[1] prev.column_4[1]
+alter mn{1,2,3,4} mp{1,2,3,4}, FPITCH=90n
+run
+echo FPITCH = 90n
+show mn{1,2,3,4}, RSGEO
+print prev2.column_1[2] prev2.column_2[2] prev2.column_3[2] prev2.column_4[2]
+show mp{1,2,3,4}, RSGEO
+print prev2.column_1[3] prev2.column_2[3] prev2.column_3[3] prev2.column_4[3]
+.endc
+.end

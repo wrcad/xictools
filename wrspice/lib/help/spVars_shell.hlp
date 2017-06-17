@@ -1,0 +1,332 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spVars_shell.hlp,v 1.16 2015/11/11 19:58:45 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spVars_shell.hlp
+!!TITLE
+spVars_shell.hlp
+!!HTML 
+
+!!SUBTOPICS
+shell_vars
+
+
+!!REDIRECT argc         shell_vars#argc
+!!REDIRECT argv         shell_vars#argv
+!!REDIRECT cktvars      shell_vars#cktvars
+!!REDIRECT height       shell_vars#height
+!!REDIRECT historyvar   shell_vars#history
+!!REDIRECT ignoreeof    shell_vars#ignoreeof
+!!REDIRECT noaskquit    shell_vars#noaskquit
+!!REDIRECT nocc         shell_vars#nocc
+!!REDIRECT noclobber    shell_vars#noclobber
+!!REDIRECT noedit       shell_vars#noedit
+!!REDIRECT noerrwin     shell_vars#noerrwin
+!!REDIRECT noglob       shell_vars#noglob
+!!REDIRECT nomoremode   shell_vars#nomoremode
+!!REDIRECT nonomatch    shell_vars#nonomatch
+!!REDIRECT nosort       shell_vars#nosort
+!!REDIRECT prompt       shell_vars#prompt
+!!REDIRECT sourcepath   shell_vars#sourcepath
+!!REDIRECT unixcom      shell_vars#unixcom
+!!REDIRECT width        shell_vars#width
+!!REDIRECT wmfocusfix   shell_vars#wmfocusfix
+
+!! variables.tex 110815
+!!KEYWORD
+shell_vars
+!!TITLE
+Shell Option Variables
+!!HTML
+    These variables control behavior of the <i>WRspice</i> shell. 
+    Most of these variables can be set indirectly from the <a
+    href="shellopts"><b>Shell Options</b></a> tool from the
+    <b>Shell</b> button in the <a href="toolsmenu"><b>Tools</b></a>
+    menu of the <a href="toolbar"><b>Tool Control</b></a> window.
+
+    <p>
+    <a name="argc"></a>
+    <dl>
+    <dt><tt>argc</tt><dd>
+    This read-only variable is set to the number of arguments used to
+    invoke the currently executing script, including the script name.
+    This can be referenced from within scripts only.
+    </dl>
+
+    <a name="argv"></a>
+    <dl>
+    <dt><tt>argv</tt><dd>
+    This is a read-only list of tokens from the invoking line of the
+    currently executing script, including the script name.  This can
+    be referred to within scripts only.
+    </dl>
+
+    <a name="cktvars"></a>
+    <dl>
+    <dt><tt>cktvars</tt><dd>
+    When this boolean variable is set with the <a
+    href="set"><b>set</b></a> command or the <b>Shell</b> tool
+    (<i>not</i> in a SPICE <tt>.options</tt> line), variables set in
+    the <tt>.options</tt> line of the current circuit will be treated
+    the same as variables set with the <b>set</b> command.
+
+    <p>
+    With this variable unset, the legacy behavior is maintained, i.e.,
+    variables set in <tt>.options</tt> will work in variable
+    substitution, but will be ignored in most commands.
+
+    <p>
+    In releases prior to 2.2.61, when a variable is set in a
+    <tt>.options</tt> line, it becomes visible almost like it was set
+    with the <b>set</b> command, when the circuit containing the
+    <tt>.options</tt> line is the current circuit.  In the variables
+    listing (<b>set</b> command without arguments or the
+    <b>Variables</b> tool), these have a '+' in the first column. 
+    However, they are not part of the normal variable database, and
+    they only "work" in special cases.  For example, they will work in
+    variable substitution, but won't affect the defaults in most
+    commands, such as the <b>plot</b> command.  If the same variable
+    is also set with <b>set</b>, the <b>set</b> definition will have
+    precedence.  The variables set with <tt>.options</tt> can't be
+    unset, except by changing the current circuit.
+
+    <p>
+    This was confusing to the user.  If a <tt>.options</tt> line
+    contains an assignment for a plot-specific variable (for example),
+    the variable will appear to be active when listed, but it will
+    have no effect on the <b>plot</b> command.
+
+    <p>
+    It can be argued that making the circuit variables behave the same
+    as those set with the <b>set</b> command would be an improvement. 
+    In this case, variables listed in the <b>set</b> or
+    <b>Variables</b> tool listing will always have effect, and one can
+    set any variable in the <tt>.options</tt> line, and have it always
+    "work".
+
+    <p>
+    On the other hand, circuit variables can't be unset, so a variable
+    in the current circuit would always have effect, desired or not. 
+    Also, changing present behavior would possibly adversely affect
+    existing users who expect the current behavior, and this change
+    might break existing scripts.
+
+    <p>
+    The <tt>cktvars</tt> variable gives the user control over how to
+    handle the circuit variables.
+    </dl>
+
+    <a name="height"></a>
+    <dl>
+    <dt><tt>height</tt><dd>
+    This variable sets the number of lines assumed in a page to use
+    when printing output to a file.  It will also be used for standard
+    output if for some reason <i>WRspice</i> cannot determine the size
+    of the terminal window (or has no terminal window).  If not set,
+    66 lines will be assumed.
+    </dl>
+
+    <a name="historyvar"></a>
+    <dl>
+    <dt><tt>history</tt><dd>
+    The <tt>history</tt> variable sets the number of commands saved in
+    the history list.  The default is 1000.
+    </dl>
+
+    <a name="ignoreeof"></a>
+    <dl>
+    <dt><tt>ignoreeof</tt><dd>
+    If this boolean variable is set, the <tt>EOF</tt> character
+    (<b>Ctrl-D</b>) is ignored in file input.  If not set, an
+    <tt>EOF</tt> character will terminate the input.  When typed as
+    keyboard input, <b>Ctrl-D</b> prints a list of completion matches,
+    if command completion is in use.
+    </dl>
+
+    <a name="noaskquit"></a>
+    <dl>
+    <dt><tt>noaskquit</tt><dd>
+    If this variable is set, <i>WRspice</i> will skip the exit
+    confirmation prompting it there are simulations in progress or
+    unsaved data when a <a href="quit"><b>quit</b></a> command has
+    been given.
+    </dl>
+
+    <a name="nocc"></a>
+    <dl>
+    <dt><tt>nocc</tt><dd>
+    If this boolean variable is set, <a href="ccom">command
+    completion</a> will be disabled.
+    </dl>
+
+    <a name="noclobber"></a>
+    <dl>
+    <dt><tt>noclobber</tt><dd>
+    If this boolean variable is set, files will not be overwritten
+    with input/output redirection.
+    </dl>
+
+    <a name="noedit"></a>
+    <dl>
+    <dt><tt>noedit</tt><dd>
+    By default, <a href="editing">command line editing</a> is enabled
+    in interactive mode, which means that <i>WRspice</i> takes control
+    of the low level functions of the terminal window.  This can be
+    defeated if <tt>noedit</tt> is set.  If the terminal window
+    doesn't work properly with the editor, it is recommended that
+    "<tt>set noedit</tt>" appear in the <tt>.wrspiceinit</tt> file. 
+    Note that the command completion character is <b>Tab</b> when
+    editing is on, and <b>Esc</b> otherwise.
+
+    <p>
+    This variable is ignored under Microsoft Windows.  The editing is
+    always enabled in that case.
+    </dl>
+
+    <a name="noerrwin"></a>
+    <dl>
+    <dt><tt>noerrwin</tt><dd>
+    In interactive mode, error messages are generally printed in a
+    separate pop-up window.  When this variable is set, error messages
+    will appear in the console window instead.  This variable is
+    automatically set when <i>WRspice</i> is started in JSPICE3
+    emulation mode (<tt>-j</tt> <a href="-j">command line option</a>
+    given).
+    </dl>
+
+    <a name="noglob"></a>
+    <dl>
+    <dt><tt>noglob</tt><dd>
+    If this boolean variable is set, global pattern matching using the
+    characters <tt>*</tt>, <tt>?</tt>, <tt>[</tt>, and <tt>]</tt> is
+    disabled.  This variable is set by default, since <tt>*</tt> is
+    often used in algebraic expressions.
+    </dl>
+
+    <a name="nomoremode"></a>
+    <dl>
+    <dt><tt>nomoremode</tt><dd>
+    If <tt>nomoremode</tt> is not set, whenever a large amount of text
+    is being printed to the screen (e.g., from the <a
+    href="print"><b>print</b></a> or <a
+    href="asciiplot"><b>asciiplot</b></a> commands), the output will
+    be stopped every screenful and will continue when a character is
+    typed.  The following characters have special meaning:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>q</th><td align="left">Discard the rest of the output</td></tr>
+    <tr><th>c</th><td align="left">Print the rest of the output without
+      pausing</td></tr>
+    <tr><th>?</th><td align="left">Print a help message</td></tr>
+    </table></br>
+
+    <p>
+    If <tt>nomoremode</tt> is set, all output will be printed without
+    pauses.
+    </dl>
+
+    <a name="nonomatch"></a>
+    <dl>
+    <dt><tt>nonomatch</tt><dd>
+    If set, and <a href="noglob"><tt>noglob</tt></a> is unset and a
+    global expression cannot be matched, the global characters will be
+    used literally.  If not set, lack of a match produces an error.
+    </dl>
+
+    <a name="nosort"></a>
+    <dl>
+    <dt><tt>nosort</tt><dd>
+    If this boolean is set, lists of output are not sorted
+    alphabetically.
+    </dl>
+
+    <a name="prompt"></a>
+    <dl>
+    <dt><tt>prompt</tt><dd>
+    This variable contains a string to use as the command prompt.  In
+    this string, the character `!' is replaced by the event number,
+    and '<tt>-p</tt>' is replaced with the current directory.  If the
+    program is reading lines which form a part of a control block, the
+    prompt becomes a set of '>' characters, one for each level of
+    control structure.  The default prompt is "<tt>$program !  ->
+    </tt>".
+    </dl>
+
+    <a name="sourcepath"></a>
+    <dl>
+    <dt><tt>sourcepath</tt><dd>
+    This <a href="variablesub">list variable</a> contains directories
+    to search for command scripts or input files.  A list variable in
+    <i>WRspice</i> takes the form of a list of words, surrounded by
+    space-separated parentheses, for example
+    <blockquote>
+    <tt>( /path/to/dir1 /path/to/dir2 "/usr/bill/my files" )</tt>
+    </blockquote>
+    If a directory path contains white space, it should be quoted,
+    as above.
+    </dl>
+
+    <a name="unixcom"></a>
+    <dl>
+    <dt><tt>unixcom</tt><dd>
+    When this boolean is set, <i>WRspice</i> will attempt to execute
+    unrecognized commands as operating system commands.
+    </dl>
+
+    <a name="width"></a>
+    <dl>
+    <dt><tt>width</tt><dd>
+    This variable sets the number of columns assumed in printed
+    output, when output is being directed to a file.  This will also
+    be used for standard output if for some reason <i>WRspice</i>
+    cannot determine the width of the terminal window (or has no
+    terminal window).  If not set, 80 columns will be assumed.
+    </dl>
+
+    <a name="wmfocusfix"></a>
+    <dl>
+    <dt><tt>wmfocusfix</tt><dd>
+    When <i>WRspice</i> starts in interactive graphical mode from a
+    terminal window, the <a href="toolbar"><b>Tool Control</b></a>
+    window will appear above other windows, and the keyboard focus
+    should stay with the terminal window.  Similarly, when the user
+    types a command such as a plot command that brings up another
+    window, the new window should appear above existing windows, and
+    the terminal window should retain the keyboard focus.
+
+    <p>
+    Unfortunately, not all window managers are cooperative, or know
+    the protocols.  By setting this variable, a slightly more
+    brute-force approach is taken to keep the terminal window from
+    losing focus.  This may fix the problem, but in some cases this
+    may have side-effects, such as causing pop-up windows to appear
+    below existing windows.  Anyway, if the terminal window loses
+    focus when another window pops up, and the user finds this
+    annoying, then setting this boolean variable in the <a
+    href="startup_files"><tt>.wrspiceinit</tt></a> file might fix the
+    problem.
+    </dl>
+
+    <a name="nototop"></a>
+    <dl>
+    <dt><tt>nototop</tt><dd>
+    Ordinarily, the window manager is asked to raise new windows to
+    the top.  If this boolean variable is set, that will not happen. 
+    This will probably be needed when using a Windows PC X-server to
+    run <i>WRspice</i>.  In Windows, it is not possible to revert the
+    "window on top" property, so that if this variable is not set,
+    plot windows and some others will always be shown on top of other
+    windows.
+    </dl>
+
+!!SEEALSO
+variables
+

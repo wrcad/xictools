@@ -1,0 +1,43 @@
+$Id: README,v 1.4 2014/04/22 19:34:09 stevew Exp $
+
+This is the PSP102 MOS model Verilog-A code.  Documentation and newer
+versions may be available from the developers at NXP
+(http://www.nxp.com/models/mos-models/model-psp.html) or Arizona State
+University (http://pspmodel.asu.edu).
+
+Verilog-A code changes, search for "XXX":
+In Common102_macrodefs.include, added a "insideADMS" conditional to
+define the P() macro.  This is needed to specify the instance
+parameters.  Everything was nicely set up, just had to turn it on!
+
+Full QA data are available in the separate QA download file.  WRspice
+agreement with QA data is outstanding.
+
+A pre-built module is available in the "module_dist" directory.
+
+To build:
+
+0.  Make sure that the admst-2.3.0-wr package is installed on your
+system.  This is available from the free software area of wrcad.com. 
+The package has important improvements and bug fixes, and is required
+for building modules for WRspice.  Use of another adms distribution
+will cause trouble.
+
+1.  If you are reading this from the WRspice installation area, copy
+this directory to a personal work area, and work from there.  Below,
+"this directory" implies the copied directory (with its files and
+any sub-directories).
+
+2.  The Makefile has been provided.  Have a look at the top part of
+the file where the configuration variables are set, and read the
+comments.  Make any desired changes.
+
+3.  Type "make".  This will create and compile the C++ files, eventually
+producing the loadable module named "psp102.so" ("psp102.dylib" in OS X).
+
+Note: there are several variations of the psp102 model which can be
+built.
+
+4.  Use the devload command or -m command-line option in WRspice to
+load the module.  You will then be able to run the examples.
+

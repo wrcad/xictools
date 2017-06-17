@@ -1,0 +1,794 @@
+
+/*========================================================================*
+ *                                                                        *
+ *  XICTOOLS Integrated Circuit Design System                             *
+ *  Copyright (c) 2005 Whiteley Research Inc, all rights reserved.        *
+ *                                                                        *
+ *                                                                        *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
+ *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-        *
+ *   INFRINGEMENT.  IN NO EVENT SHALL STEPHEN R. WHITELEY BE LIABLE       *
+ *   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION      *
+ *   OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN           *
+ *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN         *
+ *   THE SOFTWARE.                                                        *
+ *                                                                        *
+ * This library is available for non-commercial use under the terms of    *
+ * the GNU Library General Public License as published by the Free        *
+ * Software Foundation; either version 2 of the License, or (at your      *
+ * option) any later version.                                             *
+ *                                                                        *
+ * A commercial license is available to those wishing to use this         *
+ * library or a derivative work for commercial purposes.  Contact         *
+ * Whiteley Research Inc., 456 Flora Vista Ave., Sunnyvale, CA 94086.     *
+ * This provision will be enforced to the fullest extent possible under   *
+ * law.                                                                   *
+ *                                                                        *
+ * This library is distributed in the hope that it will be useful,        *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
+ * Library General Public License for more details.                       *
+ *                                                                        *
+ * You should have received a copy of the GNU Library General Public      *
+ * License along with this library; if not, write to the Free             *
+ * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.     *
+ *========================================================================*
+ *                                                                        *
+ * GtkInterf Graphical Interface Library                                  *
+ *                                                                        *
+ *========================================================================*
+ $Id: gtkmcol.cc,v 2.30 2016/02/05 03:50:31 stevew Exp $
+ *========================================================================*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+#include "gtkinterf.h"
+#include "gtkmcol.h"
+#include "gtkfont.h"
+#include "gtkutil.h"
+#include "pathlist.h"
+#include "filestat.h"
+
+
+// Popup to display a list.  title is the title label text, callback
+// is called with the word pointed to when the user points in the
+// window, and 0 when the popup is destroyed.
+//
+// The list is column-formatted, and a text widget is used for the
+// display.  If buttons is given, it is a 0-terminated list of
+// auxiliary toggle button button names.
+//
+GRmcolPopup *
+gtk_bag::PopUpMultiCol(stringlist *symlist, const char *title,
+    void (*callback)(const char*, void*), void *arg,
+    const char **buttons, int pgsize, bool no_dd)
+{
+    static int mcol_count;
+
+    if (!(void*)this)
+        return (0);
+
+    GTKmcolPopup *mcol = new GTKmcolPopup(this, symlist, title,
+        buttons, pgsize, arg);
+    mcol->register_callback(callback);
+    mcol->set_no_dragdrop(no_dd);
+
+    gtk_window_set_transient_for(GTK_WINDOW(mcol->Shell()),
+        GTK_WINDOW(wb_shell));
+    int x, y;
+    GRX->ComputePopupLocation(GRloc(), mcol->Shell(), wb_shell, &x, &y);
+    x += mcol_count*50 - 150;
+    y += mcol_count*50 - 150;
+    mcol_count++;
+    if (mcol_count == 6)
+        mcol_count = 0;
+    gtk_widget_set_uposition(mcol->Shell(), x, y);
+
+    mcol->set_visible(true);
+    return (mcol);
+}
+
+
+namespace {
+    // DND support.  The string is actually two strings separated by
+    // a newline.  The TWOSTRING atom is local, so we can handle this
+    // properly.
+    GtkTargetEntry target_table[] = {
+      { (char*)"TWOSTRING",  0, 0 },
+      { (char*)"STRING",     0, 1 },
+      { (char*)"text/plain", 0, 2 }
+    };
+    guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
+}
+
+
+GTKmcolPopup::GTKmcolPopup(gtk_bag *owner, stringlist *symlist,
+    const char *title, const char **buttons, int pgsize, void *arg)
+{
+    p_parent = owner;
+    p_cb_arg = arg;
+    mc_pagesel = 0;
+    for (int i = 0; i < MC_MAXBTNS; i++)
+        mc_buttons[i] = 0;
+    mc_save_pop = 0;
+    mc_msg_pop = 0;
+    mc_strings = symlist->dup();
+    mc_strings->sort();
+
+    mc_alloc_width = 0;
+    mc_drag_x = mc_drag_y = 0;
+    mc_page = 0;
+
+    mc_pagesize = pgsize;
+    if (mc_pagesize <= 0)
+        mc_pagesize = DEF_LIST_MAX_PER_PAGE;
+    else if (mc_pagesize < 100)
+        mc_pagesize = 100;
+    else if (mc_pagesize > 50000)
+        mc_pagesize = 50000;
+
+    mc_btnmask = 0;
+    mc_start = 0;
+    mc_end = 0;
+    mc_dragging = false;
+
+    if (owner)
+        owner->MonitorAdd(this);
+
+    wb_shell = gtk_NewPopup(owner, "Listing", mc_quit_proc, this);
+    gtk_window_set_default_size(GTK_WINDOW(wb_shell), 350, 250);
+
+    GtkWidget *form = gtk_table_new(1, 3, false);
+    gtk_widget_show(form);
+    gtk_container_add(GTK_CONTAINER(wb_shell), form);
+
+    // Title label.
+    //
+    GtkWidget *label = gtk_label_new(title);
+    gtk_widget_show(label);
+
+    GtkWidget *frame = gtk_frame_new(0);
+    gtk_widget_show(frame);
+    gtk_container_add(GTK_CONTAINER(frame), label);
+
+    gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 0, 1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+
+    // Scrolled text area.
+    //
+    GtkWidget *contr;
+    text_scrollable_new(&contr, &wb_textarea, FNT_FIXED);
+
+    gtk_widget_add_events(wb_textarea, GDK_BUTTON_PRESS_MASK);
+    gtk_signal_connect(GTK_OBJECT(wb_textarea), "button-press-event",
+        GTK_SIGNAL_FUNC(mc_btn_proc), this);
+    gtk_signal_connect(GTK_OBJECT(wb_textarea), "button-release-event",
+        GTK_SIGNAL_FUNC(mc_btn_release_proc), this);
+    gtk_signal_connect(GTK_OBJECT(wb_textarea), "motion-notify-event",
+        GTK_SIGNAL_FUNC(mc_motion_proc), this);
+    gtk_signal_connect(GTK_OBJECT(wb_textarea), "drag-data-get",
+        GTK_SIGNAL_FUNC(mc_source_drag_data_get), this);
+    gtk_signal_connect(GTK_OBJECT(wb_textarea), "map-event",
+        GTK_SIGNAL_FUNC(mc_map_hdlr), this);
+    gtk_signal_connect_after(GTK_OBJECT(wb_textarea), "realize",
+        GTK_SIGNAL_FUNC(text_realize_proc), this);
+
+    // this callback formats the text
+    gtk_signal_connect_after(GTK_OBJECT(wb_textarea), "size-allocate",
+        GTK_SIGNAL_FUNC(mc_resize_proc), this);
+
+    // drop handler needs this
+    gtk_object_set_data(GTK_OBJECT(wb_textarea), "label", label);
+
+    GtkTextBuffer *textbuf =
+        gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
+    const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
+    gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr, NULL);
+    gtk_table_attach(GTK_TABLE(form), contr, 0, 1, 1, 2,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 0);
+
+    GtkWidget *hbox = gtk_hbox_new(false, 2);
+    gtk_widget_show(hbox);
+
+    GtkWidget*button = gtk_toggle_button_new_with_label("Save Text ");
+    gtk_widget_set_name(button, "Save");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(mc_save_btn_hdlr), this);
+    gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
+
+    mc_pagesel = gtk_option_menu_new();
+    gtk_box_pack_start(GTK_BOX(hbox), mc_pagesel, false, false, 0);
+
+    // Dismiss button.
+    //
+    button = gtk_button_new_with_label("Dismiss");
+    gtk_widget_set_name(button, "Dismiss");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(mc_quit_proc), this);
+    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
+
+    if (buttons) {
+        for (int i = 0; i < MC_MAXBTNS && buttons[i]; i++) {
+            button = gtk_button_new_with_label(buttons[i]);
+            gtk_widget_set_name(button, buttons[i]);
+            gtk_widget_set_sensitive(button, false);
+            gtk_widget_show(button);
+            gtk_signal_connect(GTK_OBJECT(button), "clicked",
+                GTK_SIGNAL_FUNC(mc_action_proc), this);
+            gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
+            mc_buttons[i] = button;
+        }
+    }
+
+    gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, 2, 3,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    gtk_window_set_focus(GTK_WINDOW(wb_shell), button);
+
+    relist();
+}
+
+
+GTKmcolPopup::~GTKmcolPopup()
+{
+    if (p_parent) {
+        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        if (owner)
+            owner->MonitorRemove(this);
+    }
+    if (p_callback)
+        (*p_callback)(0, p_cb_arg);
+    if (mc_save_pop)
+        mc_save_pop->popdown();
+    if (mc_msg_pop)
+        mc_msg_pop->popdown();
+    if (p_usrptr)
+        *p_usrptr = 0;
+    if (p_caller)
+        GRX->Deselect(p_caller);
+    mc_strings->free();
+
+    gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
+        GTK_SIGNAL_FUNC(mc_quit_proc), this);
+}
+
+
+// GRpopup override
+//
+void
+GTKmcolPopup::popdown()
+{
+    if (p_parent) {
+        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        if (!owner || !owner->MonitorActive(this))
+            return;
+    }
+    delete this;
+}
+
+
+// GRmcolPopup override
+//
+void
+GTKmcolPopup::update(stringlist *symlist, const char *title)
+{
+    if (p_parent) {
+        gtk_bag *owner = dynamic_cast<gtk_bag*>(p_parent);
+        if (!owner || !owner->MonitorActive(this))
+            return;
+    }
+
+    mc_strings->free();
+    mc_strings = symlist->dup();
+    mc_strings->sort();
+
+    mc_page = 0;
+    relist();
+
+    if (title) {
+        GtkWidget *label = (GtkWidget*)
+            gtk_object_get_data(GTK_OBJECT(wb_textarea), "label");
+        if (label)
+            gtk_label_set_text(GTK_LABEL(label), title);
+    }
+}
+
+
+// GRmcolPopup override
+//
+// Return the selected text, null if no selection.
+//
+char *
+GTKmcolPopup::get_selection()
+{
+    if (mc_end != mc_start)
+        return (text_get_chars(wb_textarea, mc_start, mc_end));
+    return (0);
+}
+
+
+// GRmcolPopup override
+//
+// Set sensitivity of optional buttons.
+// Bit == 0:  button always insensitive
+// Bit == 1:  button sensitive when selection.
+//
+void
+GTKmcolPopup::set_button_sens(int mask)
+{
+    int bm = 1;
+    mc_btnmask = ~mask;
+    bool has_sel = (mc_end != mc_start);
+    for (int i = 0; i < MC_MAXBTNS && mc_buttons[i]; i++) {
+        gtk_widget_set_sensitive(mc_buttons[i], (bm & mask) && has_sel);
+        bm <<= 1;
+    }
+}
+
+
+// Handle the relisting, the display is paged.
+//
+void
+GTKmcolPopup::relist()
+{
+    int min = mc_page * mc_pagesize;
+    int max = min + mc_pagesize;
+
+    stringlist *s0 = 0, *se = 0;
+    int cnt = 0;
+    for (stringlist *s = mc_strings; s; s = s->next) {
+        if (cnt >= min && cnt < max) {
+            if (!s0)
+                se = s0 = new stringlist(lstring::copy(s->string), 0);
+            else {
+                se->next = new stringlist(lstring::copy(s->string), 0);
+                se = se->next;
+            }
+        }
+        cnt++;
+    }
+
+    if (cnt <= mc_pagesize)
+        gtk_widget_hide(mc_pagesel);
+    else {
+        char buf[128];
+        GtkWidget *menu = gtk_menu_new();
+        gtk_widget_show(menu);
+        for (int i = 0; i*mc_pagesize < cnt; i++) {
+            int tmpmax = (i+1)*mc_pagesize;
+            if (tmpmax > cnt)
+                tmpmax = cnt;
+            sprintf(buf, "%d - %d", i*mc_pagesize + 1, tmpmax);
+            GtkWidget *mi = gtk_menu_item_new_with_label(buf);
+            gtk_widget_show(mi);
+            gtk_object_set_data(GTK_OBJECT(mi), "menuent", (void*)(long)i);
+            gtk_signal_connect(GTK_OBJECT(mi), "activate",
+                GTK_SIGNAL_FUNC(mc_menu_proc), this);
+            gtk_menu_append(GTK_MENU(menu), mi);
+        }
+        gtk_option_menu_remove_menu(GTK_OPTION_MENU(mc_pagesel));
+        gtk_option_menu_set_menu(GTK_OPTION_MENU(mc_pagesel), menu);
+        gtk_option_menu_set_history(GTK_OPTION_MENU(mc_pagesel), mc_page);
+        gtk_widget_show(mc_pagesel);
+    }
+
+    int cols = (wb_textarea->allocation.width - 4)/
+        GTKfont::stringWidth(wb_textarea, 0);
+    char *s = s0->col_format(cols);
+    s0->free();
+    text_set_chars(wb_textarea, s);
+    delete [] s;
+}
+
+
+// Reformat the listing when window size changes.
+//
+void
+GTKmcolPopup::resize_handler(int width)
+{
+    if (wb_textarea && wb_textarea->window && mc_strings) {
+        if (width > 0 && width != mc_alloc_width) {
+            mc_alloc_width = width;
+            relist();
+        }
+    }
+}
+
+
+// Handle button presses in the text area.
+//
+int
+GTKmcolPopup::button_handler(int x0, int y0)
+{
+    if (!wb_textarea)
+        return (false);
+    int x = x0;
+    int y = y0;
+
+    select_range(0, 0);
+    char *string = text_get_chars(wb_textarea, 0, -1);
+    gtk_text_view_window_to_buffer_coords(GTK_TEXT_VIEW(wb_textarea),
+        GTK_TEXT_WINDOW_WIDGET, x, y, &x, &y);
+    GtkTextIter ihere, iline;
+    gtk_text_view_get_iter_at_location(GTK_TEXT_VIEW(wb_textarea), &ihere,
+        x, y);
+    gtk_text_view_get_line_at_y(GTK_TEXT_VIEW(wb_textarea), &iline, y, 0);
+    x = gtk_text_iter_get_offset(&ihere) - gtk_text_iter_get_offset(&iline);
+    char *line_start = string + gtk_text_iter_get_offset(&iline);
+
+    int start = 0;
+    for ( ; start < x; start++) {
+        if (line_start[start] == '\n' || line_start[start] == 0) {
+            // pointing to right of line end
+            delete [] string;
+            return (true);
+        }
+    }
+    if (isspace(line_start[start])) {
+        // pointing at white space
+        delete [] string;
+        return (true);
+    }
+    int end = start;
+    while (start > 0 && !isspace(line_start[start]))
+        start--;
+    if (isspace(line_start[start]))
+        start++;
+    while (line_start[end] && !isspace(line_start[end]))
+        end++;
+
+    char buf[256];
+    char *t = buf;
+    for (int i = start; i < end; i++)
+        *t++ = line_start[i];
+    *t = 0;
+
+    t = buf;
+
+    // The top level cells are listed with an '*'.
+    // Modified cells are listed  with a '+'.
+    while (*t == '+' || *t == '*') {
+        start++;
+        t++;
+    }
+
+    start += (line_start - string);
+    end += (line_start - string);
+    delete [] string;
+
+    if (start == end)
+        return (true);
+    select_range(start, end);
+
+    if (p_callback)
+        (*p_callback)(t, p_cb_arg);
+
+    mc_drag_x = x0;
+    mc_drag_y = y0;
+    mc_dragging = true;
+
+    return (true);
+}
+
+
+// Select the chars in the range, start=end deselects existing.  In
+// GTK-1, selecting gives blue inverse, which turns gray if
+// unselected, retaining an indication for the buttons.  GTK-2
+// doesn't do this automatically so we provide something similar here.
+//
+void
+GTKmcolPopup::select_range(int start, int end)
+{
+    GtkTextBuffer *textbuf =
+        gtk_text_view_get_buffer(GTK_TEXT_VIEW(wb_textarea));
+    GtkTextIter istart, iend;
+    if (mc_end != mc_start) {
+        gtk_text_buffer_get_iter_at_offset(textbuf, &istart, mc_start);
+        gtk_text_buffer_get_iter_at_offset(textbuf, &iend, mc_end);
+        gtk_text_buffer_remove_tag_by_name(textbuf, "primary", &istart, &iend);
+    }
+    text_select_range(wb_textarea, start, end);
+    if (end != start) {
+        gtk_text_buffer_get_iter_at_offset(textbuf, &istart, start);
+        gtk_text_buffer_get_iter_at_offset(textbuf, &iend, end);
+        gtk_text_buffer_apply_tag_by_name(textbuf, "primary", &istart, &iend);
+    }
+    mc_start = start;
+    mc_end = end;
+    if (start == end) {
+        for (int i = 0; i < MC_MAXBTNS && mc_buttons[i]; i++)
+            gtk_widget_set_sensitive(mc_buttons[i], false);
+    }
+    else {
+        int bm = 1;
+        for (int i = 0; i < MC_MAXBTNS && mc_buttons[i]; i++) {
+            gtk_widget_set_sensitive(mc_buttons[i], bm & ~mc_btnmask);
+            bm <<= 1;
+        }
+    }
+}
+
+
+// Private static GTK signal handler.
+//
+void
+GTKmcolPopup::mc_menu_proc(GtkWidget *widget, void *client_data)
+{
+    GTKmcolPopup *mcol = static_cast<GTKmcolPopup*>(client_data);
+    if (mcol) {
+        long i = (long)gtk_object_get_data(GTK_OBJECT(widget), "menuent");
+        if (mcol->mc_page != i) {
+            mcol->mc_page = i;
+            mcol->relist();
+        }
+    }
+}
+
+
+// Private static GTK signal handler.
+// Handle the auxilliary buttons: call the callback with '/' followed by
+// button text.
+//
+void
+GTKmcolPopup::mc_action_proc(GtkWidget *widget, void *client_data)
+{
+    GTKmcolPopup *mcol = static_cast<GTKmcolPopup*>(client_data);
+    const char *wname = gtk_widget_get_name(widget);
+    if (mcol && wname && mcol->p_callback) {
+        char *tmp = new char[strlen(wname) + 2];
+        tmp[0] = '/';
+        strcpy(tmp+1, wname);
+        (*mcol->p_callback)(tmp, mcol->p_cb_arg);
+        delete [] tmp;
+    }
+}
+
+
+// Private static GTK signal handler.
+//
+void
+GTKmcolPopup::mc_quit_proc(GtkWidget*, void *client_data)
+{
+    GTKmcolPopup *mcol = static_cast<GTKmcolPopup*>(client_data);
+    if (mcol)
+        mcol->popdown();
+}
+
+
+// Private static GTK signal handler.
+// Required by GTK2, load the text now that we know the size of the
+// window (GRmulticol only).
+//
+int
+GTKmcolPopup::mc_map_hdlr(GtkWidget*, GdkEvent*, void *client_data)
+{
+    GTKmcolPopup *mcol = static_cast<GTKmcolPopup*>(client_data);
+    if (mcol && mcol->wb_textarea)
+        mcol->resize_handler(mcol->wb_textarea->allocation.width);
+    return (false);
+}
+
+
+// Private static GTK signal handler.
+// Window resize callback.
+//
+void
+GTKmcolPopup::mc_resize_proc(GtkWidget*, GtkAllocation *alloc,
+    void *client_data)
+{
+    GTKmcolPopup *mcol = static_cast<GTKmcolPopup*>(client_data);
+    if (mcol)
+        mcol->resize_handler(alloc->width);
+}
+
+
+// Private static GTK signal handler.
+// Button press callback.
+//
+int
+GTKmcolPopup::mc_btn_proc(GtkWidget*, GdkEvent *event, void *client_data)
+{
+    if (event->type != GDK_BUTTON_PRESS)
+        return (true);
+    if (event->button.button != 1)
+        return (true);
+    GTKmcolPopup *mcol = static_cast<GTKmcolPopup*>(client_data);
+    if (mcol) {
+        int x = (int)event->button.x;
+        int y = (int)event->button.y;
+        return (mcol->button_handler(x, y));
+    }
+    return (false);
+}
+
+
+// Private static GTK signal handler.
+//
+int
+GTKmcolPopup::mc_btn_release_proc(GtkWidget*, GdkEvent *event,
+    void *client_data)
+{
+    if (event->button.button != 1)
+        return (true);
+    GTKmcolPopup *mcol = static_cast<GTKmcolPopup*>(client_data);
+    if (mcol)
+        mcol->mc_dragging = false;
+    return (true);
+}
+
+
+// Private static GTK signal handler.
+// Start the drag, after a selection, if the pointer moves.
+//
+int
+GTKmcolPopup::mc_motion_proc(GtkWidget *widget, GdkEvent *event, void *arg)
+{
+    GTKmcolPopup *mcol = static_cast<GTKmcolPopup*>(arg);
+    if (mcol && !mcol->p_no_dd) {
+        if (mcol->mc_dragging) {
+#if GTK_CHECK_VERSION(2,12,0)
+            if (event->motion.is_hint)
+                gdk_event_request_motions((GdkEventMotion*)event);
+            (void)widget;
+#else
+            // Strange voodoo to "turn on" motion events, that are
+            // otherwise suppressed since GDK_POINTER_MOTION_HINT_MASK
+            // is set.  See GdkEventMask doc.
+            gdk_window_get_pointer(widget->window, 0, 0, 0);
+#endif
+            if ((abs((int)event->motion.x - mcol->mc_drag_x) > 4 ||
+                    abs((int)event->motion.y - mcol->mc_drag_y) > 4)) {
+                mcol->mc_dragging = false;
+                GtkTargetList *targets =
+                    gtk_target_list_new(target_table, n_targets);
+                GdkDragContext *context = gtk_drag_begin(mcol->wb_textarea,
+                    targets, (GdkDragAction)GDK_ACTION_COPY, 1, event);
+                gtk_drag_set_icon_default(context);
+                return (true);
+            }
+        }
+    }
+    return (false);
+}
+
+
+// Private static GTK signal handler.
+// Set the drag data to the selected file path
+//
+void
+GTKmcolPopup::mc_source_drag_data_get(GtkWidget *widget, GdkDragContext*,
+    GtkSelectionData *selection_data, guint, guint, gpointer)
+{
+    if (GTK_IS_TEXT_VIEW(widget)) {
+        // stop text view native handler
+        gtk_signal_emit_stop_by_name(GTK_OBJECT(widget), "drag-data-get");
+    }
+
+    GtkWidget *label = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(widget),
+        "label");
+    char *s = text_get_selection(widget);
+    if (!s)
+        return;
+
+    if (selection_data->target == gdk_atom_intern("TWOSTRING", true)) {
+        // We use a newline to separate the file and cell names, the
+        // drop receiver must handle this.
+
+        char *ltext = 0;
+        if (label)
+            gtk_label_get(GTK_LABEL(label), &ltext);
+        if (ltext) {
+            char *t = strchr(ltext, '\n');
+            if (t)
+                ltext = t+1;
+        }
+
+        char *t = new char[strlen(s) + strlen(ltext) + 2];
+        strcpy(t, ltext);
+        strcat(t, "\n");
+        strcat(t, s);
+        delete [] s;
+        gtk_selection_data_set(selection_data, selection_data->target,
+            8, (unsigned char*)t, strlen(t) + 1);
+        delete [] t;
+    }
+    else {
+        // Plain text format, just pass the listing text.
+        gtk_selection_data_set(selection_data, selection_data->target,
+            8, (unsigned char*)s, strlen(s) + 1);
+        delete [] s;
+    }
+}
+
+
+// Private static GTK signal handler.
+// Handle Save Text button presses.
+//
+void
+GTKmcolPopup::mc_save_btn_hdlr(GtkWidget *widget, void *arg)
+{
+    if (GRX->GetStatus(widget)) {
+        GTKmcolPopup *mcp = (GTKmcolPopup*)arg;
+        if (mcp->mc_save_pop)
+            return;
+        mcp->mc_save_pop = new GTKledPopup(0,
+            "Enter path to file for saved text:", "", 200, false, 0, arg);
+        mcp->mc_save_pop->register_caller(widget, false, true);
+        mcp->mc_save_pop->register_callback(
+            (GRledPopup::GRledCallback)&mcp->mc_save_cb);
+        mcp->mc_save_pop->register_usrptr((void**)&mcp->mc_save_pop);
+
+        gtk_window_set_transient_for(GTK_WINDOW(mcp->mc_save_pop->pw_shell),
+            GTK_WINDOW(mcp->wb_shell));
+        GRX->SetPopupLocation(GRloc(), mcp->mc_save_pop->pw_shell,
+            mcp->wb_shell);
+        mcp->mc_save_pop->set_visible(true);
+    }
+}
+
+
+// Private static handler.
+// Callback for the save file name pop-up.
+//
+ESret
+GTKmcolPopup::mc_save_cb(const char *string, void *arg)
+{
+    GTKmcolPopup *mcp = (GTKmcolPopup*)arg;
+    if (string) {
+        if (!filestat::create_bak(string)) {
+            mcp->mc_save_pop->update(
+                "Error backing up existing file, try again", 0);
+            return (ESTR_IGN);
+        }
+        FILE *fp = fopen(string, "w");
+        if (!fp) {
+            mcp->mc_save_pop->update("Error opening file, try again", 0);
+            return (ESTR_IGN);
+        }
+        char *txt = text_get_chars(mcp->wb_textarea, 0, -1);
+        if (txt) {
+            unsigned int len = strlen(txt);
+            if (len) {
+                if (fwrite(txt, 1, len, fp) != len) {
+                    mcp->mc_save_pop->update("Write failed, try again", 0);
+                    delete [] txt;
+                    fclose(fp);
+                    return (ESTR_IGN);
+                }
+            }
+            delete [] txt;
+        }
+        fclose(fp);
+
+        if (mcp->mc_msg_pop)
+            mcp->mc_msg_pop->popdown();
+        mcp->mc_msg_pop = new GTKmsgPopup(0, "Text saved in file.", false);
+        mcp->mc_msg_pop->register_usrptr((void**)&mcp->mc_msg_pop);
+        gtk_window_set_transient_for(GTK_WINDOW(mcp->mc_msg_pop->pw_shell),
+            GTK_WINDOW(mcp->wb_shell));
+        GRX->SetPopupLocation(GRloc(), mcp->mc_msg_pop->pw_shell,
+            mcp->wb_shell);
+        mcp->mc_msg_pop->set_visible(true);
+        gtk_timeout_add(2000, mc_timeout, mcp);
+    }
+    return (ESTR_DN);
+}
+
+
+int
+GTKmcolPopup::mc_timeout(void *arg)
+{
+    GTKmcolPopup *mcp = (GTKmcolPopup*)arg;
+    if (mcp->mc_msg_pop)
+        mcp->mc_msg_pop->popdown();
+    return (0);
+}
+

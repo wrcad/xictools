@@ -1,0 +1,86 @@
+
+# yank.scr 1.1 2/9/2010  Whiteley Research Inc.
+#
+# This script allows the user to copy geometry, from all levels of
+# the cell hierarchy, from a rectangular area to a new cell in
+# memory.  The user clicks twice to define the area to yank.  All
+# geometry will be clipped to this rectangle, and copied to a new
+# cell, the name of which is prompted for.
+
+# Make sure we're in physical mode.
+if (CurMode(0) != 0)
+   ShowPrompt("This command operates in physical mode only!")
+   Halt()
+end
+
+ShowPrompt("Click twice to define area to yank.")
+
+# Grab the mouse button presses that define the rectangle.  Draw a
+# ghost box while waiting for the second click.
+pointAry[3]
+if (Point(pointAry) == 0)
+    ShowPrompt("Aborted.")
+    Halt()
+end
+ShowGhost(7)
+if (Point(pointAry+2) == 0)
+    ShowPrompt("Aborted.")
+    Halt()
+end
+ShowGhost(0)
+
+# Obtain a new cell name, make sure that a cell of the same name
+# does not exist in memory.
+cname = AskString("Enter name of cell to create: ", 0)
+while (1)
+    if (cname == 0 | cname[0] == 0)
+        ShowPrompt("Aborted.")
+        Halt()
+    end
+    if (IsCellInMem(cname) != 0)
+        cname = AskString("Name is in use, try another: ", 0)
+        continue
+    end
+    break
+end
+
+# Set the clipping reference to the supplied rectangle.
+zref = BoxZ(pointAry[0], pointAry[1], pointAry[2], pointAry[3])
+SetZref(zref)
+
+# We need to switch between cells, so save the current cell name.
+curCell = CurCellName()
+
+# Freeze the display so it won't be distracting.
+FreezeDisplay(TRUE)
+
+# Open the new cell.  This will open a cell of the same name from
+# the search path, so clear the geometry to make sure we start with
+# an empty cell.  Then switch back to the present cell.
+if (Edit(cname, 0) != 1)
+    Edit(curCell, 0)
+    ShowPrompt("Failed to open new cell, name conflict?")
+    Halt()
+end
+ClearCell(FALSE, 0)
+Edit(curCell, 0)
+
+# Loop through all layers and extract a trapezoid list representing
+# the geometry from each layer.  If geometry is found, switch to the
+# new cell and create objects from the trapezoid list.
+hLayers = LayerHandle(FALSE)
+while (hLayers)
+    lname = ListContent(hLayers)
+    z1 = GetZlist(lname, "a")
+    if (z1)
+        Edit(cname, 0)
+        ZtoObjects(z1, lname, TRUE, TRUE)
+        Edit(curCell, 0)
+    end
+    hLayers++
+end
+
+# Un-freeze the display, we're done.
+FreezeDisplay(FALSE)
+ShowPrompt("Done, geometry saved in cell", cname)
+

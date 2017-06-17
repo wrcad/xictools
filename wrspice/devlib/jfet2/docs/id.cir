@@ -1,0 +1,14 @@
+* jfet2 test
+
+j1 2 1 0 j1
+vgs 1 0
+vds 2 0
+
+.dc vds 0 3.0 0.05 vgs -2 0 0.5
+
+.model j1 njf level=2
+
+.control
+run
+plot -i(vds)
+.endc

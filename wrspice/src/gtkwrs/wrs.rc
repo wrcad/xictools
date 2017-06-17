@@ -1,0 +1,59 @@
+
+/*========================================================================*
+ *                                                                        *
+ *  XICTOOLS Integrated Circuit Design System                             *
+ *  Copyright (c) 1996 Whiteley Research Inc, all rights reserved.        *
+ *                                                                        *
+ *                                                                        *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
+ *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-        *
+ *   INFRINGEMENT.  IN NO EVENT SHALL STEPHEN R. WHITELEY BE LIABLE       *
+ *   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION      *
+ *   OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN           *
+ *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN         *
+ *   THE SOFTWARE.                                                        *
+ *                                                                        *
+ *========================================================================*
+ *                                                                        *
+ * XIC Integrated Circuit Layout and Schematic Editor                     *
+ *                                                                        *
+ *========================================================================*
+ $Id: wrs.rc,v 1.1 2013/12/14 22:19:16 stevew Exp $
+ *========================================================================*/
+
+// LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+LANGUAGE 0x09,0x01
+
+// Main icon
+//
+1 ICON DISCARDABLE "bitmaps/spice.ico"
+
+// Version Info
+//
+1 VERSIONINFO
+FILEVERSION WRS_BIN_VERSION
+PRODUCTVERSION WRS_BIN_VERSION
+// FILEOS VOS__WINDOWS32
+FILEOS 4
+// FILETYPE VFT_APP
+FILETYPE 1
+FILESUBTYPE 0
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "04090000"
+        BEGIN
+            VALUE "CompanyName", "Whiteley Research Inc."
+            VALUE "FileDescription", "Electronic Circuit Simulator"
+            VALUE "FileVersion", WRS_FILE_VERSION
+            VALUE "InternalName", "wrspice"
+            VALUE "LegalCopyright", "Copyright \251 2013 Whiteley Research Inc."
+            VALUE "OriginalFilename", "wrspice.exe"
+            VALUE "ProductName", "WRspice"
+            VALUE "ProductVersion", WRS_PROG_VERSION
+            VALUE "Code", "0"
+        END
+    END
+END
+

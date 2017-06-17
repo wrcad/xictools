@@ -1,0 +1,87 @@
+
+Script Plug-In Kit
+
+This directory contains the files needed to build shared libraries of
+functions that can be called in Xic scripts.  This is a means through
+which third-party C/C++ libraries can be integrated into the Xic
+scripting system.
+
+Authoring and building the shared libraries requies modest C/C++
+programming experience.  The interface is written in C++, but can
+link to other files and libraries written in C or other languages.
+
+In this directory, note the presence of:
+1.  A file named "template.cc".  This is an example plug-in that
+    contains script functions, which illustrates the infrastructure
+    and interface.  This is a model and starting point for the type of
+    file you will be creating.
+
+2.  A Makefile which controls the build process.  The user will need
+    to customize this to their needs.  As it is, typing "make" to a
+    shell prompt will build a template.so/dll/dylib file (the suffix
+    differs between operating systems).
+
+3.  There are several header files that are used in template.cc to
+    define interfaces and data structures, and to provide some useful
+    utility functions.
+
+4.  The test.scr script calls the function defined in template.cc,
+    as an example.
+
+The code files are heavily commented, and in this commentary provides
+the usage documentation.  This file provides an overview.
+
+Getting Started
+
+The first thing to do is to copy this directory and all files to your
+personal directory, as you will need to edit the files.  You should
+work from your personal copy, and not from the site-wide installation
+location.
+
+You machine will need the usual development programs installed;
+a C/C++ compiler (usually gcc), linker, make program, etc.  THis is
+usually true by default in Linux.  In OS X, you will need to install
+xcode and the command-line tools from the Apple Store.  On Windows,
+you should install some version of MinGW.
+
+From your copy if this directory, type "make" at the shell prompt
+in a terminal window.  This will build the demo module.  If the
+operation fails, you will need to troubleshoot your toolchain and
+install/update whatever is necessary.
+
+The "plug in" is actually a shared library, and is produced by the
+standard compiler and linker switches that produce shared libraries.
+By default, the plug-in is given the file extension that is standard
+for the shared libraries on the operating system: .so for Linux,
+.dll for Windows, or .dylib for Apple.  This is not required, and
+the plug-in can actually have any file name.
+
+After giving the "make" command, verify that the  shared library
+file exists in the current directory.  The name will be template.so
+in Linux, template.dylib in OS X. or template.dll in Windows.
+
+Next, we will load the plug-in into xic, and call the function it
+contains.  From the current directory, start Xic.  Any (or no)
+technology file can be used.
+
+The !ldshared command in Xic can be used to load the plugin.  Type
+!ldshared followed by the name of the plug-in file into the prompt
+line.  A message will indicate that the plugin has been loaded.
+Note:  you may need to add "./" ahead of the shared library file,
+e.g., "!ldshared ./template.so".
+
+The test,scr script in the current directory will call the new script
+function that we defined in the plug-in.  To run test.scr, type the
+following into the plompt line:
+
+!exec ./test.scr
+
+Some text, as generated in the template.cc file in the function
+definition, will appear in the terminal window from which Xic was
+launched.
+
+Once the system is seen to be working correctly, the user can start
+building their own plug-ins and script functions.  You should look at
+the source files and read the comments.  This should provide
+sufficient information,
+

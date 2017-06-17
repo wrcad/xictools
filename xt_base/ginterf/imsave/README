@@ -1,0 +1,90 @@
+
+-------------------------------------------------------------------------------
+                               I M S A V E
+                                   1.0
+-------------------------------------------------------------------------------
+
+This work is derived from IMLIB-1.9.8
+
+    This software is Copyright (C) 1998 By The Rasterman (Carsten
+    Haitzler).  I accept no responsability for anything this software
+    may or may not do to your system - you use it completely at your own
+    risk.  This software comes under the LGPL and GPL licences.  The
+    library itself is LGPL (all software in Imlib and gdk_imlib
+    directories) see the COPYING and COPYING.LIB files for full legal
+    details.
+
+-------------------------------------------------------------------------------
+
+The IMSAVE library performs one function only; it provides a simple
+method of dumping the contents of a window to a file in various
+formats.  Most of IMSAVE came directly from Imlib, and all of the file
+formats supported in Imlib are available in IMSAVE.  Unlike Imlib,
+IMSAVE compiles and works under Micro$oft Windows (mingw compiler, but
+should be portable to more evil compilers with little effort).
+
+To use, simply create an Image class as follows
+
+  Image *im = create_image_from_drawable(window, x, y, w, h);
+
+The window is a GdkWindow or GdkPixmap in Unix/Linux, or an HDC under
+that other operating system.  Then assuming im is not nil (which
+(guess what) indicates a failure,
+
+  im->save_image(filename, save_info);
+
+will dump a file from the window contents.  As in Imlib, the kind of
+file is determined from the extension of the file name:  jpg, ps, png,
+etc.  The second argument is usually 0, but otherwise allows some
+defaults to be changed.  Finally,
+
+  delete im;
+
+to clean up.  Simple huh?
+
+Further questions can be resolved by reading the source code.  Note
+that this is really just a shell around a lot of other stuff: 
+libjpeg, libpng, and libtiff in particular.
+
+Version 1.4 New Feature
+
+Previous releases of the library assumed that the various helper
+functions (convert from ImageMagick, the netpbm functions, cjpeg and
+djpeg) were located in /usr/local/bin.  Now, the programs will be
+looked for along a search path.  The search path (a colon-delimited
+list of directories) can be provided in the environment variable
+IMSAVE_PATH.  If not set, the internal path is
+"/usr/local/bin:/usr/X11R6/bin".
+
+------------ S. R. Whiteley <stevew@wrcad.com> 2/5/01 -------------------------
+
+
+Some notes on porting libjpeg, libpng, libtiff to Windows/mingw.  I
+have not tested the libraries extensively.  The comments below apply
+to simply getting the libraries to build under mingw.
+
+LIBJPEG:
+  distribution:
+    jpeg-6b  (as jpegsrc-v6b.tar.gz)
+
+  This one is easy, it compiled without modification.
+
+LIBPNG:  This requires yet another library: libz.
+  distributions:
+    zlib-1.1.3
+    libpng-1.0.8
+    
+  Use script/makefile.std as the makefile, and tweek the defines, such
+  as setting CC=gcc.  No changes were required to libz.
+
+LIBTIFF:  This provides some minor challenges.
+  distribution:
+    tiff-v3.4
+
+  The config.guess script is old, and does not return anything useful
+  under mingw.  Fix this by simply copying in the config.guess from
+  libjpeg.
+  More serious is lack of a getopt() which breaks the compile of
+  mkg3states.c.  You will have to recode this to avoid using getopt. 
+  Once done, the package compiled successfully.
+ 

@@ -1,0 +1,160 @@
+#! /bin/sh
+
+# $Id: update,v 1.4 2012/09/16 16:49:58 stevew Exp $
+# Script: update
+# Usage: update <progname>
+# Adjunct for updating the distribution repository.
+#
+# Procedure:
+# Copy the xxx_release file to xxx_release.new, update the
+#   new file to new release number.
+# Run update xxx, where xxx is the program name.
+# Move xxx_release.new to xxx_release.
+#
+# This calls fetchnew to perform the file transfers.
+
+get_namelist()
+{
+    prog=$1
+    while true; do
+        read v
+        if [ x"$v" = x ]; then
+            break
+        fi;
+        echo $v | grep -q ^#
+        if [ $? -ne 0 ]; then
+            st1="$st1 $v";
+        fi
+    done < ${prog}_release
+
+    while true; do
+        read v
+        if [ x"$v" = x ]; then
+            break
+        fi;
+        echo $v | grep -q ^#
+        if [ $? -ne 0 ]; then
+            st2="$st2 $v";
+        fi
+    done < ${prog}_release.new
+
+    st1="$st1 END"
+    st2="$st2 END"
+    while true; do
+        set $st1
+        o1=$1
+        if [ $o1 = END ]; then
+            break;
+        fi
+        o2=$2
+        o3=$3
+        o4=$4
+        o5=$5
+        shift 5
+        st1="$*"
+
+        set $st2
+        n1=$1
+        if [ $n1 = END ]; then
+            break;
+        fi
+        n2=$2
+        n3=$3
+        n4=$4
+        n5=$5
+        shift 5
+        st2="$*"
+
+#        if [ $o1 = $n1 -a $o2 != $n2 ]; then
+        if [ $o1 = $n1 ]; then
+            newr="$newr $o1"
+        fi
+    done
+    echo $newr
+}
+
+clear_old()
+{
+    prog=$1
+    while true; do
+        read v
+        if [ x"$v" = x ]; then
+            break
+        fi;
+        st1="$st1 $v";
+    done < ${prog}_release
+
+    while true; do
+        read v
+        if [ x"$v" = x ]; then
+            break
+        fi;
+        st2="$st2 $v";
+    done < ${prog}_release.new
+
+    st1="$st1 END"
+    st2="$st2 END"
+    while true; do
+        set $st1
+        o1=$1
+        if [ $o1 = END ]; then
+            break;
+        fi
+        o2=$2
+        o3=$3
+        o4=$4
+        o5=$5
+        shift 5
+        st1="$*"
+
+        set $st2
+        n1=$1
+        if [ $n1 = END ]; then
+            break;
+        fi
+        n2=$2
+        n3=$3
+        n4=$4
+        n5=$5
+        shift 5
+        st2="$*"
+
+#        if [ $o1 = $n1 -a $o2 != $n2 -a $o5 = $n5 ]; then
+        if [ $o1 = $n1 -a $o5 = $n5 ]; then
+            tifs=$IFS
+            IFS="_"
+            set $o1
+            IFS=$tifs
+            o1x=$1
+            fn=xictools/$o1/$o5/$prog-$o1x-$o2*
+            for a in $fn; do
+                if [ -f $a ]; then
+                    echo -n "delete $a ? "
+                    read yn
+                    if [ x"$yn" = xy ]; then
+                        rm -f $a
+                    fi
+                fi
+            done
+        fi
+    done
+}
+
+which=$1
+if [ -z $which ]; then
+    echo Usage: update progname
+    exit
+fi
+oses=`get_namelist $which`
+if [ -z "$oses" ]; then
+    echo Nothing found to update.
+    exit
+fi
+echo "Updating: $oses"
+clear_old $which
+echo -n  "execute ./fetchnew $which \"$oses\" ? "
+read yn
+if [ x"$yn" = xy ]; then
+    ./fetchnew $which "$oses"
+fi
+

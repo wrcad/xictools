@@ -1,0 +1,225 @@
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_allev.v
+0:  a = 0, b = 0, c = 0
+1:  a = 1, b = 3, c = 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_allexpr.v
+d = 12 (12)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_bases.v
+numbers are 16 bits wide (a=0xabcd, b=43981...
+a abcd 43981 125715 1010101111001101 (not specified)
+a abcd      43981  125715 1010101111001101 (3/10/7/16)
+b abcd 43981 125715 1010101111001101 (not specified)
+b abcd      43981  125715 1010101111001101 (3/10/7/16)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_bit.v
+a=1000(1000)
+a=0100(0100)
+a=0010(0010)
+a=0001(0001)
+a=1000(1000)
+a=0100(0100)
+a=0010(0010)
+a=0001(0001)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_comment.v
+Passed the comment test!
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_counter.v
+0:  0
+5:  1
+7:  2
+9:  3
+11:  4
+13:  5
+15:  6
+17:  7
+23:  6
+25:  5
+27:  4
+29:  3
+31:  2
+33:  1
+35:  0
+37:  15
+39:  14
+41:  13
+43:  12
+45:  11
+47:  10
+49:  9
+51:  8
+53:  7
+55:  6
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_cport.v
+0: x,y = 0,1
+1: x,y = 0,0
+Expected output:
+0: x,y = 0,1
+1: x,y = 0,0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_dae.v
+0:  a = x
+0:  b = x
+1:  a = 0
+4:  a = 1
+4:  b = 1
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_delayedloop.v
+1:  Starting loop.
+1:  First line in loop.
+2:  Second line in loop.
+2:  Third line in loop.
+2:  First line in loop.
+3:  Second line in loop.
+3:  Third line in loop.
+3:  First line in loop.
+4:  Second line in loop.
+4:  Third line in loop.
+4:  First line in loop.
+5:  Second line in loop.
+5:  Third line in loop.
+5:  First line in loop.
+6:  Second line in loop.
+6:  Third line in loop.
+7:  Ending loop.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_dividev1.v
+Finished at 71:  7 / 2 = 3(1,0)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_dividev2.v
+Finished at 69:  7 / 2 = 3(0,1)
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_fifo.v
+* Error: no top module!.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_inflp.v
+0:  a = 0, b = 0, c = 1
+1:  a = 1, b = 1, c = 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_lpevctl.v
+time=20, clk=1
+time=40, clk=1
+time=60, clk=1
+time=80, clk=1
+time=100, clk=1
+time=120, clk=1
+time=140, clk=1
+time=160, clk=1
+time=180, clk=1
+time=200, clk=1
+time=220, clk=1
+time=240, clk=1
+time=260, clk=1
+time=280, clk=1
+time=300, clk=1
+time=320, clk=1
+time=340, clk=1
+time=360, clk=1
+time=380, clk=1
+time=400, clk=1
+time=420, clk=1
+time=440, clk=1
+time=460, clk=1
+time=480, clk=1
+time=500, clk=1
+time=520, clk=1
+time=540, clk=1
+time=560, clk=1
+time=580, clk=1
+time=600, clk=1
+time=620, clk=1
+time=640, clk=1
+time=660, clk=1
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_monitor.v
+            a  b  c
+0:  strobe             0, 0, 0
+0:  monitor 0, 0, 0
+1:  monitor 0, 1, 1
+3:  monitor 1, 0, 1
+4:  monitor 0, 0, 1
+5:  monitor 1, 1, 0
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_multv1.v
+Finished at 69:  14 * 13 = 182
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_multv2.v
+Finished at 69:  14 * 13 = 182
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_nds.v
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_nested.v
+1:  Delayed 1 time unit.
+2:  Delayed 2 time unit.
+3:  Delayed 3 time unit.
+4:  Delayed 4 time unit.
+5:  Delayed 5 time unit.
+6:  Delayed 6 time unit.
+7:  Delayed 7 time unit.
+8:  Delayed 8 time unit.
+9:  Delayed 9 time unit.
+10:  Delayed 10 time unit.
+11:  Delayed 11 time unit.
+12:  Delayed 12 time unit.
+13:  Delayed 13 time unit.
+14:  Delayed 14 time unit.
+15:  Delayed 15 time unit.
+16:  Delayed 16 time unit.
+17:  Delayed 17 time unit.
+18:  Delayed 18 time unit.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+x_range.v
+a=00010000(000 10 000) b=00001000(000 01 000)
+c=00001000(000 01 000) d=00010000(000 10 000)
+d=00001000 (000 01 000)
+d=01001000 (010 01 000)
+d=01001010 (010 01 010)
+c=0101 (0101), b=0100 (0100)
+c=1 (1), b=1 (1)
+b=00001000 (0000_1000) c=00001000 (0000_1000) d=00010000 (0001_0000)
+d[6:2] = b[1:3](000) + c[6:2](00010)
+d=00001000 (0000_1000)
+b=00001000 (0000_1000)

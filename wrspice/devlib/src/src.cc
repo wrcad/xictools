@@ -1,0 +1,226 @@
+
+/*========================================================================*
+ *                                                                        *
+ *  XICTOOLS Integrated Circuit Design System                             *
+ *  Copyright (c) 1996 Whiteley Research Inc, all rights reserved.        *
+ *                                                                        *
+ *                                                                        *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
+ *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-        *
+ *   INFRINGEMENT.  IN NO EVENT SHALL STEPHEN R. WHITELEY BE LIABLE       *
+ *   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION      *
+ *   OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN           *
+ *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN         *
+ *   THE SOFTWARE.                                                        *
+ *                                                                        *
+ *========================================================================*
+ *                                                                        *
+ * Device Library                                                         *
+ *                                                                        *
+ *========================================================================*
+ $Id: src.cc,v 2.23 2016/09/26 01:48:25 stevew Exp $
+ *========================================================================*/
+
+/***************************************************************************
+JSPICE3 adaptation of Spice3f2 - Copyright (c) Stephen R. Whiteley 1992
+Copyright 1990 Regents of the University of California.  All rights reserved.
+Authors: 1985 Thomas L. Quarles
+         1987 Kanwar Jit Singh
+         1993 Stephen R. Whiteley
+****************************************************************************/
+
+#include "srcdefs.h"
+#include "input.h"
+#include <string.h>
+
+
+namespace {
+
+IFparm SRCpTable[] = {
+IP("i",                 SRC_I,              IF_PARSETREE,
+                "Current source"),
+IP("v",                 SRC_V,              IF_PARSETREE,
+                "Voltage source"),
+IO("type",              SRC_DEP,            IF_INTEGER,
+                "Type of dependency"),
+IO("dc",                SRC_DC,             IF_REAL|IF_PRINCIPAL,
+                "D.C. source value"),
+IO("ac",                SRC_AC,             IF_TABLEVEC,
+                "AC magnitude, phase vector or table"),
+IO("acmag",             SRC_AC_MAG,         IF_REAL|IF_PRINCIPAL|IF_AC_ONLY,
+                "A.C. Magnitude"),
+IO("acphase",           SRC_AC_PHASE,       IF_REAL|IF_AC_ONLY,
+                "A.C. Phase"),
+OP("acreal",            SRC_AC_REAL,        IF_REAL,
+                "AC real part"),
+OP("acimag",            SRC_AC_IMAG,        IF_REAL,
+                "AC imaginary part"),
+IO("function",          SRC_FUNC,           IF_PARSETREE,
+                "Function specification"),
+IO("cur",               SRC_FUNC,           IF_PARSETREE,
+                "Function specification (current"),
+IO("vol",               SRC_FUNC,           IF_PARSETREE,
+                "Function specification (voltage"),
+IO("distof1",           SRC_D_F1,           IF_REALVEC,
+                "Freq. f1 for distortion"),
+IO("distof2",           SRC_D_F2,           IF_REALVEC,
+                "Freq. f2 for distortion"),
+IO("gain",              SRC_GAIN,           IF_REAL,
+                "Transfer gain of source"),
+IO("control",           SRC_CONTROL,        IF_INSTANCE,
+                "Name of controlling source"),
+OP("vs",                SRC_VOLTAGE,        IF_REAL|IF_VOLT,
+                "Voltage of source"),
+OP("c",                 SRC_CURRENT,        IF_REAL|IF_AMP|IF_USEALL,
+                "Current through source"),
+OP("p",                 SRC_POWER,          IF_REAL|IF_POWR,
+                "Instantaneous power"),
+OP("pos_node",          SRC_POS_NODE,       IF_INTEGER,
+                "Node 1 number"),
+OP("neg_node",          SRC_NEG_NODE,       IF_INTEGER,
+                "Node 2 number"),
+OP("cont_p_node",       SRC_CONT_P_NODE,    IF_INTEGER,
+                "Control node 1 number"),
+OP("cont_n_node",       SRC_CONT_N_NODE,    IF_INTEGER,
+                "Control node 2 number"),
+OP("branch",            SRC_BR_NODE,        IF_INTEGER,
+                "Voltage source branch equation number")
+};
+
+// no model parameters
+
+const char *SRCnames1[] = {
+    "src+",
+    "src-",
+};
+
+const char *SRCnames2[] = {
+    "src+",
+    "src-",
+    "srcC+",
+    "srcC-"
+};
+
+// The sources require special node handling due to the function and poly
+// keywords, which terminate node lists of e/f/g/h devices.  The exported
+// function below takes care of this
+//
+IFkeys SRCkeys[] = {
+    IFkeys( 'a', SRCnames1, 2, 2, 0 ),
+    IFkeys( 'v', SRCnames1, 2, 2, 0 ),
+    IFkeys( 'i', SRCnames1, 2, 2, 0 ),
+    IFkeys( 'e', SRCnames2, 4, 4, 0 ),
+    IFkeys( 'f', SRCnames1, 2, 2, 1 ),
+    IFkeys( 'g', SRCnames2, 4, 4, 0 ),
+    IFkeys( 'h', SRCnames1, 2, 2, 1 )
+};
+
+} // namespace
+
+
+SRCdev::SRCdev()
+{
+    dv_name = "Source";
+    dv_description = "General source model ";
+
+    dv_numKeys = NUMELEMS(SRCkeys);
+    dv_keys = SRCkeys;
+
+    dv_levels[0] = 0;
+    dv_modelKeys = 0;
+
+    dv_numInstanceParms = NUMELEMS(SRCpTable);
+    dv_instanceParms = SRCpTable;
+
+    dv_numModelParms = 0;
+    dv_modelParms = 0;
+
+    dv_flags = 0;
+};
+
+
+sGENmodel *
+SRCdev::newModl()
+{
+    return (new sSRCmodel);
+}
+
+
+sGENinstance *
+SRCdev::newInst()
+{
+    return (new sSRCinstance);
+}
+
+
+int
+SRCdev::destroy(sGENmodel **model)
+{
+    return (IFdevice::destroy<sSRCmodel, sSRCinstance>(model));
+}
+
+
+int
+SRCdev::delInst(sGENmodel *model, IFuid dname, sGENinstance *fast)
+{
+    return (IFdevice::delInst<sSRCmodel, sSRCinstance>(model, dname, fast));
+}
+
+
+int
+SRCdev::delModl(sGENmodel **model, IFuid modname, sGENmodel *modfast)
+{
+    return (IFdevice::delModl<sSRCmodel, sSRCinstance>(model, modname,
+        modfast));
+}
+
+
+// Setup the tran parameters for any tran function nodes.
+//
+void
+SRCdev::initTran(sGENmodel *modp, double step, double finaltime)
+{
+    for (sSRCmodel *model = (sSRCmodel*)modp; model; model = model->next()) {
+        for (sSRCinstance *inst = (sSRCinstance*)model->GENinstances;
+                inst; inst = inst->next()) {
+            if (inst->SRCtree)
+                inst->SRCtree->initTran(step, finaltime);
+        }
+    }
+}
+
+
+// Below is hugely GCC-specific.  The __WRMODULE__ and __WRVERSION__ tokens are
+// defined in the Makefile and passed with -D when compiling.
+
+#define STR(x) #x
+#define STRINGIFY(x) STR(x)
+#define MCAT(x, y) x ## y
+#define MODNAME(x, y) MCAT(x, y)
+
+// Module initializer.  Sets locations in the main app to some
+// identifying strings.
+//
+__attribute__((constructor)) static void initializer()
+{
+    extern const char *WRS_ModuleName, *WRS_ModuleVersion;
+
+    WRS_ModuleName = STRINGIFY(__WRMODULE__);
+    WRS_ModuleVersion = STRINGIFY(__WRVERSION__);
+}
+
+
+// Device constructor function.  This should be the only globally
+// visible symbol in the module.  The function name expands to the
+// module name with trailing _c.
+// 
+extern "C" {
+    void
+    MODNAME(__WRMODULE__, _c)(IFdevice **d, int *cnt)
+    {
+        *d = new SRCdev;
+        (*cnt)++;
+    }
+}
+

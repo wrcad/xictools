@@ -1,0 +1,3167 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiMain.hlp,v 1.121 2017/03/22 07:30:08 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!HEADER
+    <table border=1 width=100% cellpadding=0 cellspacing=0>
+    <tr><td bgcolor=white><img src=wrbannermain.gif width=300 align=middle>
+    <font face=utopia color=royalblue size=5>
+    &nbsp;&nbsp;<i>Xic</i> Help System</font></td></tr>
+    <tr><td bgcolor=white height=40>
+    <font face=utopia color="#dd0000" size=5>&nbsp;&nbsp;%TITLE%</font></td></tr>
+    </table><p>
+
+!!FOOTER
+    <p><hr><font size=3 face=utopia color=darkblue>
+    &#169; Whiteley Research Inc. 2016, All Rights Reserved.</font>
+
+!!TAGTEXT
+    <table border=1 width=100% cellpadding=0 cellspacing=0>
+    <tr><td bgcolor=white height=30>
+    <font face=utopia color="#dd0000" size=4>&nbsp;&nbsp;
+    Supplemental Information From %TAG% Help System</font></td></tr>
+    </table><p>
+
+!!MAINTAG Xic
+
+!!KEYWORD
+xiMain.hlp
+!!TITLE
+xiMain.hlp
+!!HTML
+
+!!SUBTOPICS
+xic
+xicii
+xiv
+xic:manual
+mosis
+xic:area
+quickref
+xic:commands
+promptline
+quoting
+keyspresd
+accelerator
+keyboard
+keyescape
+keytab
+keydelet
+keyarrow
+key+-
+keyhome
+keypage
+keyfunc
+keyctrla
+keyctrlc
+keyctrle
+keyctrlg
+keyctrlk
+keyctrln
+keyctrlp
+keyctrlr
+keyctrlu
+keyctrlv
+keyctrlx
+keyctrlz
+mouse
+button1
+button2
+button3
+noopbutton
+mousewheel
+xic:mail
+topbuttons
+xic:lsrch
+xic:ltvis
+xic:lpal
+xic:setcl
+xic:selcp
+xic:desel
+xic:rdraw
+coordline
+mainwindow
+subwindow
+dragdrop
+statusline
+wrencode
+wrsetpass
+
+
+!! not in manual
+!!KEYWORD
+xic xicinfo xic:help
+!!TITLE
+help
+!!HTML
+    <table border=0 width=100%>
+    <tr><td align=center>
+    <font face=helvetica color="#000090">
+    <b>456 Flora Vista Avenue, Sunnyvale CA 94086</b>
+    </font>
+    <table border=0 width=80%>
+     <tr><td align=left>
+     <font face=helvetica color="#000090">
+     (408) 735-8973
+     </font>
+     </td><td align=right>
+     <font face=helvetica color="#000090">
+     (408) 245-4033 (fax)
+     </font>
+     </td></tr>
+     <tr><td align=left>
+     <font face=helvetica>
+     <a href="http://wrcad.com">wrcad.com</a>
+     </font>
+     </td><td align=right>
+     <font face=helvetica>
+     <a href="mailto:support@wrcad.com">support@wrcad.com</a></tr>
+     </font>
+     </td></tr>
+     </table>
+    </td></tr>
+    </table>
+
+    <p>
+    <center>
+    <h3>Welcome to the <i>Xic</i> <a href="helpsys">help system</a></h3>
+    </center>
+
+!!IFDEF XicII
+    <i>Xic</i> is currently running with the EDITOR feature set, which
+    corresponds to the <a href="xicii"><i>XicII</i></a> virtual
+    product.  Be advised that there are features described in this
+    database that are not available with the current feature set.
+!!ENDIF
+!!IFDEF Xiv
+    <i>Xic</i> is currently running with the VIEWER feature set, which
+    corresponds to the <a href="xiv"><i>Xiv</i></a> virtual product. 
+    Be advised that there are features described in this database that
+    are not available with the current feature set.
+!!ENDIF
+
+    <p>
+    When started with the <b>Help</b> button in the <a
+    href="xic:helpmenu"><b>Help Menu</b></a>, "help mode" is active,
+    and pressing the various menu buttons will bring up the help text
+    describing that command.  Information about screen objects can be
+    obtained by clicking on them with the first (left) mouse button. 
+    One can exit help mode by pressing the <b>Esc</b> key while the
+    pointer is in the main window.  The help window will remain
+    visible and links in the text can be followed, but menu buttons
+    will have their normal functions.  Note that when pressing
+    <b>Esc</b> while in help mode, the <b>Mode</b> indicator in the <a
+    href="statusline">status line</a> will revert to "Idle" from "HELP".
+
+    <p>
+    Pressing the <b>Quit</b> button in the <b>File</b> menu of the
+    help window will delete the window and also exit help mode if
+    active.
+
+    <p>
+    While help mode is active, one can execute a menu command
+    normally, by holding the <b>Shift</b> key while clicking on the
+    command button.
+
+    <p>
+    The <a href="!help"><b>!help</b></a> command, given in the <a
+    href="promptline">prompt line</a>, will also bring up a help
+    window, but will not enter help mode.  The help window can be used
+    as a general-purpose viewer for text, html, and image files and
+    URLs.
+
+!!    <p>
+!!    <h4><a href="xic40"><i>Xic</i>-4.0 changes</a></h4>
+
+    <h4>Feature Sets</h4>
+    <a href="xicii">The EDITOR Feature Set (<i>XicII</i>)</a><br>
+    <a href="xiv">The VIEWER Feature Set (<i>Xiv</i>)</a>
+
+    <h4>Introduction and <i>Xic</i> Overview</h4>
+    <a href="xictop"><i>Xic</i> Graphical Editor Overview</a><br>
+    <a href="xic:graphics">Graphics Support and Requirements</a><br>
+    <a href="mswindows">Microsoft Windows Notes</a><br>
+    <a href="captour">A Quick Tour of <i>Xic</i> Capabilities</a><br>
+    <a href="xicdb">Database Overview</a><br>
+    <a href="menutour">A Quick Tour of the <i>Xic</i> Menus</a><br>
+    <a href="quickref">Quick Reference:  Keys and Mouse Buttons</a>
+
+    <h4>Using <i>Xic</i></h4>
+    <a href="usingxic">Using <i>Xic</i></a><br>
+    <a href="xic:cmdline">Command Line Options</a><br>
+    <a href="xic:env">Environment Variables</a><br>
+    <a href="xic:paths"><i>Xic</i> Search Paths</a><br>
+    <a href="initfiles">Initialization Files</a><br>
+    <a href="initops">Initial Operations</a><br>
+    <a href="logfiles">Log Files and Error Reporting</a><br>
+    <a href="fileorg">Cell Organization and Libraries</a><br>
+    <a href="keyboard">Keyboard Commands</a><br>
+    <a href="mouse">Pointing Device</a><br>
+    <a href="xic:commands">Command Menus</a><br>
+    <a href="xic:drcmenu">Design Rule Checking</a><br>
+    <a href="xic:extmenu">Extraction and Verification</a><br>
+    <a href="xicscript"><i>Xic</i> Scripts</a>
+
+    <h4>Advanced Topics</h4>
+    <a href="xic:batch">Batch Mode</a><br>
+    <a href="xic:server">Server Mode</a><br>
+    <a href="xic:pcells">Template (Parameterized) Cells</a><br>
+    <a href="cdscompat">Cadence&#174; Compatibility Features</a><br>
+    <a href="cdssim">Simulating Virtuoso Schematics</a>
+
+    <h4>Reference</h4>
+    <a href="filefmts"><i>Xic</i> File Formats</a><br>
+    <a href="!set:variables"><i>Xic</i> Variables</a><br>
+    <a href="keybang">Keyboard '!' Commands</a><br>
+    <a href="scr:iffuncs">Script Interface Functions</a><br>
+    <a href="http://wrcad.com/xic_docs">
+      <i>Xic</i> Release Notes Archive</a><br>
+    <a href="http://wrcad.com/manual/xicmanual4">
+      <i>Xic</i> Reference Manual</a><br>
+    <a href="mosis">MOSIS SCMOS Design Rules</a>
+
+!! 090814
+!!KEYWORD
+xicii
+!!TITLE
+The EDITOR Feature Set
+!!HTML
+    This feature set corresponds to the <i>XicII</i> virtual product. 
+    This was once a stand-alone layout editor product.  Currently, the
+    same functionality is provided via running <i>Xic</i> with the
+    EDITOR feature set, which is set during license authentication.
+
+    <p>
+    If the full <i>Xic</i> feature set is licensed, one can force
+    running with the EDITOR feature set by setting the environment
+    variable <tt>FORCE_XICII</tt> before starting the <i>Xic</i>
+    program.
+
+    <p>
+    This feature set restricts the functionality to physical layout
+    editing.  This provides a low-cost alternative for users that do
+    not require the full functionality of <i>Xic</i>.  We will
+    continue to use "<i>XicII</i>" to refer to <i>Xic</i> running with
+    this feature set.
+
+    <p>
+    In order to streamline support and maintenance, the documentation
+    tree, i.e., the manual, help database, and release notes, is
+    common to all feature sets.  This is a slight disadvantage to
+    users of restricted feature sets, as the documentation contains
+    descriptions of disabled features, which may lead to confusion. 
+    However, this greatly simplifies maintaining the documentation
+    which translates into lower cost to the customer, and also
+    provides information to users about the potential functionality
+    available by upgrading to a non-restricted license.
+
+    <p>
+    This document will list the differences and features that are
+    unavailable in the <i>XicII</i> virtual product.
+
+    <ol>
+    <p>
+    <li><b>Technology File</b><br>
+    Parts of the technology file that relate to features that are not
+    available in <i>XicII</i> are ignored, but will generate warning
+    messages.  In the example technology files, these features are
+    enclosed in macro-tested blocks to avoid the warnings.  The syntax
+    is
+
+    <blockquote>
+    <tt>If FEATURESET == "FULL"</tt><br>
+    <tt>...</tt><br>
+    <tt>EndIf</tt>
+    </blockquote>
+    The right side of the conditional can take these values:
+    <dl>
+    <dt><tt>"FULL"<dd>
+    All features enabled.
+    <dt><tt>"EDITOR"<dd>
+    Layout editing feature set (<i>XicII</i>)
+    <dt><tt>"VIEWER"</tt><dd>
+    Layout viewing feature set (<i>Xiv</i>)
+    </dl>
+
+    <p>
+    <li><b>No Design Rule Checking</b><br>
+    <i>XicII</i> does not have DRC support, consequently there is no
+    <b>DRC Menu</b> in <i>XicII</i>.
+
+    <p>
+    <li><b>No Electrical Mode</b><br>
+    <i>XicII</i> is a physical layout tool only.  There is no
+    schematic entry, and no SPICE capability.
+    There is no <b>Electrical</b> or <b>Physical</b> button in the
+    <b>View Menu</b>.
+
+    <p>
+    <li><b>No Extraction</b><br>
+    <i>XicII</i> has no extraction capability and no <b>Extract
+    Menu</b>.
+
+    <p>
+    <li><b>No Batch or Server Modes</b><br>
+    The background processing capability is not available in
+    <i>XicII</i>.
+
+    <p>
+    <li><b>'!' Commands</b><br>
+    The '!' commands in <i>XicII</i> are identical to those in
+    <i>Xic</i>, however '!' commands in <i>XicII</i> which relate to
+    unavailable features will not be recognized.
+    </ol>
+
+!! 090814
+!!KEYWORD
+xiv
+!!TITLE
+The VIEWER Feature Set
+!!HTML
+    This feature set corresponds to the <i>Xiv</i> virtual product. 
+    This was once a stand-alone layout viewer product.  Currently, the
+    same functionality is provided via running <i>Xic</i> with the
+    VIEWER feature set, which is set during license authentication.
+
+    <p>
+    If the full <i>Xic</i> feature set or the EDITOR feature set is
+    licensed, one can force running with the VIEWER feature set by
+    setting the environment variable <tt>FORCE_XIV</tt> before
+    starting the <i>Xic</i> program.
+
+    <p>
+    This feature set restricts the functionality to physical layout
+    viewing.  This provides a low-cost alternative for users that do
+    not require the full functionality of <i>Xic</i>.  We will
+    continue to use "<i>Xiv</i>" to refer to <i>Xic</i> running with
+    this feature set.
+
+    <p>
+    In order to streamline support and maintenance, the documentation
+    tree, i.e., the manual, help database, and release notes, is
+    common to all feature sets.  This is a slight disadvantage to
+    users of restricted feature sets, as the documentation contains
+    descriptions of disabled features, which may lead to confusion. 
+    However, this greatly simplifies maintaining the documentation
+    which translates into lower cost to the customer, and also
+    provides information to users about the potential functionality
+    available by upgrading to a non-restricted license.
+
+    <p>
+    This document will list the differences and features that are
+    unavailable in the <i>Xiv</i> virtual product.
+
+    <ol>
+    <p>
+    <li><b>Technology File</b><br>
+    Parts of the technology file that relate to features that are not
+    available in <i>Xiv</i> are ignored, but will generate warning
+    messages.  In the example technology files, these features are
+    enclosed in macro-tested blocks to avoid the warnings.  The syntax
+    is
+
+    <blockquote>
+    <tt>If FEATURESET == "FULL"</tt><br>
+    <tt>...</tt><br>
+    <tt>EndIf</tt>
+    </blockquote>
+    The right side of the conditional can take these values:
+    <dl>
+    <dt><tt>"FULL"<dd>
+    All features enabled.
+    <dt><tt>"EDITOR"<dd>
+    Layout editing feature set (<i>XicII</i>)
+    <dt><tt>"VIEWER"</tt><dd>
+    Layout viewing feature set (<i>Xiv</i>)
+    </dl>
+
+    <p>
+    <li><b>No Editing</b><br>
+    All cells are treated as read-only.  The menus that relate to
+    changing the layout (<b>Edit</b>  and <b>Modify</b>) are absent.
+
+    <p>
+    <li><b>No Design Rule Checking</b><br>
+    <i>Xiv</i> does not have DRC support, consequently the
+    <b>DRC Menu</b> is absent.
+
+    <p>
+    <li><b>No Electrical Mode</b><br>
+    <i>Xiv</i> is a physical layout viewing tool only.  There is no
+    schematic entry, and no SPICE capability.  There is no
+    <b>Electrical</b> or <b>Physical</b> button in the <b>View
+    Menu</b>.
+
+    <p>
+    <li><b>No Extraction</b><br>
+    <i>Xiv</i> has no extraction capability and no <b>Extract Menu</b>.
+
+    <p>
+    <li><b>No User Menu</b><br>
+    Scripting is not available.
+
+    <p>
+    <li><b>No Batch or Server Modes</b><br>
+    The background processing capability is not available in <i>Xiv</i>.
+
+    <p>
+    <li><b>'!' Commands</b><br>
+    The '!' commands in <i>Xiv</i> are identical to those in
+    <i>Xic</i>, however '!' commands in <i>Xiv</i> which relate to
+    unavailable features will not be recognized.
+    </ol>
+
+!! not in manual
+!!KEYWORD
+mosis
+!!TITLE
+MOSIS SCMOS Design Rules
+!!HTML
+    The generic MOSIS design rules are currently available as a PDF
+    document at (use link for downloading, <b>Shift-click</b> in Mozy)
+    <a href="http://www.mosis.com/files/scmos/scmos.pdf">
+    <tt>www.mosis.com/files/scmps/scmos.pdf</tt></a>.
+
+    <p>
+    The <tt>xic_tech.scmos</tt> example technology file is based on
+    these rules.  Although it is apparently possible to use these
+    rules with some Mosis processes, most vendors provide customized
+    technology descriptions and design rules as part of the process
+    design kit (PDK) provided by the foundry.  <i>Xic</i> is
+    compatible with <a href="cdscompat">Cadence Virtuoso</a>
+    technology, display resource, and layer mapping files, so that use
+    of the Mosis rules is no longer common.
+
+!! not in manual
+!!KEYWORD
+xic:area
+!!TITLE
+Area Selection
+!!HTML
+    Outside of any command, or in commands where a selection operation
+    is expected, pressing and holding <a href="button1">button 1</a>
+    (left) and moving the pointer will display a rectangle which
+    defines a region for area selection.  Objects which overlap this
+    region will have their selection status toggled when button 1 is
+    released.
+
+!!SEEALSO
+xic:desel
+xic:select
+xic:selcp
+
+!! not in manual
+!!KEYWORD
+quickref
+!!TITLE
+Quick Reference
+!!HTML
+    The tables below provide a summary of the basic mouse and keyboard
+    operations.  Follow the links for detailed information.
+
+    <h2><a href="mouse">Mouse Operations</a></h2>
+
+    <h4><a href="button1">Button 1 (left)</a><\h4>
+
+    <ul>
+    <li>General GUI operations: button pressing, etc.
+    <li>Drawing Window operations
+      <ul>
+      <li>Selections
+        <ul>
+        <li>Click on objects to select/deselect.
+        <li>Drag over objects to select/deselect.
+        </ul>
+      <li>Move/copy selected objects
+        <ul>
+        <li>Press and hold briefly to "pick up" objects, press
+          <b>Space Bar</b> to toggle move or copy, click again to
+          complete operation.
+        <li>Objects can be dragged, or you can click twice.
+        </ul>
+      <li><b>Shift</b>-click on selected objects: initiate move/copy (no
+        need to hold down briefly).
+      <li><b>Ctrl</b>-click on selected subcell instance
+        <ul>
+        <li>For ordinary cells, this will bring up the <a
+          href="xic:prpty"><b>Property Editor</b></a> panel.
+        <li>For parameterized cells, this will bring the <a
+          href="xic:pcparams"><b>Parameters</b></a> pop-up to allow
+          reparameterization.
+        </ul>
+      <li>Ctrl-click on selected objects (not subcells) to
+        begin a stretch operation.
+      <li>Shift+Ctrl</b> click on a cell instance.  Pop up a
+        <a href="xic:vport">sub-window</a> containing the master of
+        the instance clicked-on.  In electrical mode, the sub-window
+        will serve as a <a href="xic:proxy">hypertext proxy</a> for
+        the main window.
+      <li><b>Shift+Ctrl+Alt</b>-click is a "No Op", updates coordinate
+        display only.
+      </ul>
+
+    <li>Layer Table operations
+      <ul>
+      <li>Click a layer entry to select it (make it the current layer).
+      <li><b>Shift</b>-click a layer entry will toggle visibility
+        of the layer.
+      <li><b>Ctrl</b>-click a layer entry will toggle selectability
+        of the layer.
+      </ul>
+    </ul>
+
+    <h4><a href="button2">Button 2 (middle)</a></h4>
+
+    <ul>
+    <li>Drawing Window operations
+      <ul>
+      <li>Click in drawing window, this will redraw with clicked
+        point at center.
+      <li>Drag in same drawing window: will redraw with press location
+        shown at release location.
+      <li>Drag between windows showing the same cell:  the button up
+        window will be redrawn with the button down location shown at the
+        button up location.
+      </ul>
+    <li>Layer Table operations
+      <ul>
+      <li>Click on a layer icon to toggle visibility of the layer.
+      <li>Click on the layer name to toggle selectability of the layer.
+      </ul>
+    </ul>
+
+    <h4><a href="button3">Button 3 (right)</a></h4>
+
+    <ul>
+    <li>Drawing Window operations
+      <ul>
+      <li>Drag or click twice in the same window:  zoom-in operation. 
+        The down/up or two click locations define a rectangular area
+        that is expanded to fill the window.
+      <li>Drag or click twice in the same window, but press
+        <b>Shift</b> or <b>Ctrl</b> during the button-up or second
+        click:  reference area definition.  A small dotted-outline box
+        defined by the two points is shown.  Click with button 3 again
+        in the same window to zoom out or in.  The area in the dotted
+        box will be expanded or shrunk to fill a new box defined by
+        the subsequent press and initial press locations.  If the
+        subsequent click is in a different window, that window will
+        show the dotted box area.
+      <li>With <b>Ctrl</b> or <b>Shift</b> held during the initial
+        press, button 3 performs pan operations as described for
+        button 2.
+      </ul>
+    <li>Layer Table operations
+      <ul>
+      <li>Press and hold over a layer, all layers with the same color will
+        blink in the main drawing window.
+      </ul>
+    </ul>
+
+    <h4>Mouse Wheel</h4>
+
+    <ul>
+    <li>General
+      <ul>
+      <li>Scroll Up and down.  This will work for any window with a
+        scrollbar.
+      </ul>
+    <li>Drawing Window operations
+      <ul>
+      <li>Scroll Up and down.
+      <li><b>Shift</b>-wheel:  scroll right/left.
+      <li><b>Ctrl</b>-wheel:  zoomin/out.
+      </ul>
+    </ul>
+
+    <h2><a href="keyboard">Keyboard</a><h2>
+
+    <--! this same table is used in 'keyboard' -->
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><a href="keybang"><b>!</b></td>
+      <td>Enter text-mode command</td></tr>
+    <tr><td><a href="keyquest"><b>?</b></td>
+      <td>Enter help keyword, URL, or path to image or HTML file</td></tr>
+    <tr><td><a href="keyescape"><b>Esc</b></td>
+      <td>Exit current command, or deselect selections</td></tr>
+    <tr><td><a href="keytab"><b>Tab</b></td>
+      <td>Undo operation</td></tr>
+    <tr><td><a href="keytab"><b>Shift-Tab</b></a></td>
+      <td>Redo last undone operation</td></tr>
+    <tr><td><a href="keydelet"><b>Delete</b></td>
+      <td>Delete selected objects</td></tr>
+    <tr><td><a href="keyarrow"><b>Arrow Keys</b></td>
+      <td>Pan</td></tr>
+    <tr><td><a href="keyarrow"><b>Shift-Arrow Keys</b></td>
+      <td>Fine pan</td></tr>
+    <tr><td><a href="keyarrow"><b>Ctrl-Arrow Keys</b></td>
+      <td>Cycle rotation (left/right) and mirror transformations
+      (up/down)</td></tr>
+    <tr><td><a href="keyarrow"><b>Shift-Ctrl-Arrow Keys</b></td>
+      <td>Cycle views (left/right), subcell expansion (up/down)</td></tr>
+    <tr><td><a href="key+-"><b>Numeric +</b></td>
+      <td>Zoom in, expand by 2</td></tr>
+    <tr><td><a href="key+-"><b>Shift-Numeric +</b></td>
+      <td>Zoom in by 10 percent</td></tr>
+    <tr><td><a href="key+-"><b>Numeric -</b></td>
+      <td>Zoom out, shrink by 2</td></tr>
+    <tr><td><a href="key+-"><b>Shift-Numeric -</b></td>
+      <td>Zoom out by 10 percent</td></tr>
+    <tr><td><a href="keyhome"><b>Home</b></td>
+      <td>Center full view cell</td></tr>
+    <tr><td><a href="keypage"><b>Page Down</b></td>
+      <td>Show next DRC error in <a href="xic:next"><b>Show
+      Errors</b></a> command</td></tr>
+    <tr><td><a href="keypage"><b>Page Up</b></td>
+      <td>Show previous DRC error in <a href="xic:next"><b>Show
+      Errors</b></a> command</td></tr>
+    <tr><td><a href="keyctrla"><b>Ctrl-a</b></td>
+      <td>Select associated labels</td></tr>
+    <tr><td><a href="keyctrlc"><b>Ctrl-c</b></td>
+      <td>Interrupt</td></tr>
+    <tr><td><a href="keyctrle"><b>Ctrl-e</b></td>
+      <td>Enter coordinate</td></tr>
+    <tr><td><a href="keyctrlg"><b>Ctrl-g</b></td>
+      <td>Change grid</td></tr>
+    <tr><td><a href="keyctrlk"><b>Ctrl-k</b></td>
+      <td>Delete-to-end when editing</td></tr>
+    <tr><td><a href="keyctrln"><b>Ctrl-n</b></td>
+      <td>Save view</td></tr>
+    <tr><td><a href="keyctrlp"><b>Ctrl-p</b></td>
+      <td>Deselect associated labels</td></tr>
+    <tr><td><a href="keyctrlr"><b>Ctrl-r</b></td>
+      <td>Redraw window</td></tr>
+    <tr><td><a href="keyctrlu"><b>Ctrl-u</b></td>
+      <td>Clear input buffer</td></tr>
+    <tr><td><a href="keyctrlv"><b>Ctrl-v</b></td>
+      <td>Print program version</td></tr>
+    <tr><td><a href="keyctrlx"><b>Ctrl-x</b></td>
+      <td>Expand cells</td></tr>
+    <tr><td><a href="keyctrlz"><b>Ctrl-z</b></td>
+      <td>Iconify</td></tr>
+    </table>
+    </blockquote>
+
+!!SEEALSO
+keyfunc
+promptline
+keyspresd
+accelerator
+mainwindow
+dragdrop
+textentry
+xic:keymp
+xic:macro
+xic:view
+
+
+!! 032413
+!!KEYWORD
+xic:commands
+!!TITLE
+Command Menus
+!!HTML
+    The figure shows a view of the <i>Xic</i> graphical user
+    interface.  There is generally a single large window present when
+    <i>Xic</i> first starts.  The window can be repositioned, and the
+    size of the window can be adjusted through the window manager
+    methods.
+
+    <p>
+    <img src="mainwin.png">
+
+    <p>
+    The column of buttons along the left is the <a
+    href="sidemenu">side menu</a> and is visible when the current cell
+    is being edited.  To the right is the scrollable <a
+    href="layertab">layer table</a>, which displays the layers
+    supported by the process.  If the <a
+    href="XIC_MENU_RIGHT"><tt>XIC_MENU_RIGHT</tt></a> variable is set
+    in the <a href="xic:env">environment</a> when <i>Xic</i> starts,
+    the layer table and side menu will be located along the right of
+    the window.  If the <a
+    href="XIC_HORIZ_BUTTONS"><tt>XIC_HORIZ_BUTTONS</tt></a>
+    environment variable is set, the "side menu" buttons will actually
+    be arrayed across the top of the window.  The side menu is only
+    displayed when editing.  The layer table may also be invisible, as
+    the user has this option.
+
+    <p>
+    The <a href="topbuttons">top menu</a> contains buttons and other
+    controls and displays, located near the top of the window, below
+    the main menu bar.  The <a href="promptline">prompt line</a>,
+    where the user interacts textually, is just below the main drawing
+    window.  To the left of this is the <a href="keyspresd">keys
+    pressed</a> area.  Below this is the <a href="statusline">status
+    line</a>, which displays information about the program state.
+
+    <p>
+    <i>Xic</i> has eleven drop-down menus, arrayed in a menu bar which
+    extends across the top of the main application window.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><a href="xic:filemenu"><b>File Menu</b></a></td>
+        <td>Commands to open, save, and list files and cells.  This menu
+        also contains the printer interface.</td></tr>
+    <tr><td><a href="xic:cellmenu"><b>Cell Menu</b></a></td>
+        <td>Commands to access and manipulate the database of cells in
+        memory.</td></tr>
+    <tr><td><a href="xic:editmenu"><b>Edit Menu</b></a></td>
+        <td>Commands which are used to modify the current design.</td></tr>
+    <tr><td><a href="xic:modifymenu"><b>Modify Menu</b></a></td>
+        <td>Supplemental commands for layout modification.</td></tr>
+    <tr><td><a href="xic:viewmenu"><b>View Menu</b></a></td>
+        <td>Commands which affect the presentation of the
+        current design, including the selection of physical and
+        electrical (schematic) modes.</td></tr>
+    <tr><td><a href="xic:attrmenu"><b>Attributes Menu</b></a></td>
+        <td>Commands which affect the presentation of the design,
+        such as the colors used.</td></tr>
+    <tr><td><a href="xic:cvrtmenu"><b>Convert Menu</b></a></td>
+        <td>Commands for importing and exporting designs to various
+        non-native file formats.</td></tr>
+    <tr><td><a href="xic:drcmenu"><b>DRC Menu</b></a></td>
+        <td>Commands associated with design rule checking.</td></tr>
+    <tr><td><a href="xic:extmenu"><b>Extract Menu</b></a></td>
+        <td>Commands associated with the extraction of electrical
+        information and netlists from the physical layout, and
+        layout versus schematic checking.</td></tr>
+    <tr><td><a href="xic:usermenu"><b>User Menu</b></a></td>
+        <td>The script debugger, and the buttons that correspond
+        to user-generated scripts.</td></tr>
+    <tr><td><a href="xic:helpmenu"><b>Help Menu</b></a></td>
+        <td>Documentation and the entry into the help system.</td></tr>
+    </table>
+
+    <p>
+    If the mouse button is stationary over a menu button for a second
+    or two, a "tooltip" will appear.  This is a transient window that
+    contains a sentence describing the function of the command.  This
+    also provides the internal name for the command.  Every command
+    has an internal name of five characters or fewer.  This name can
+    be used as a keyboard <a href="accelerator">accelerator</a>, and
+    as back-door input to the <a href="helpsys">help system</a>.  The
+    help keyword for the command is "<tt>xic:</tt>" followed by the
+    command name, for example "<tt>xic:prpty</tt>".  Typing a question
+    mark ('<tt>?</tt>') into <i>Xic</i> followed by the keyword will
+    display the help text for the command.
+
+!!REDIRECT hypertext    promptline#hypertext
+!!REDIRECT hyproxy      promptline#hyproxy
+
+!! 022316
+!!KEYWORD
+promptline
+!!TITLE
+Prompt Line
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="promptline#editing"><b>Prompt Line Editing</b></a><br>
+    <a href="promptline#hypertext"><b>Hypertext</b></a><br>
+    <a href="promptline#hyproxy"><b>Proxy Windows</b></a><br>
+    </td></tr></table>
+
+    <p>
+    The prompt line is a single-line dialog box just below the main
+    drawing window.  Messages and prompts are displayed in this area,
+    as well as textual input to <i>Xic</i>.
+
+    <p>
+    The prompt line has two operating modes.  In the normal mode, text
+    is read-only.  Messages appear on the prompt line to provide
+    information and feedback in many commands.  This is "non-editing"
+    mode.
+
+    <p>
+    In non-editing mode, text can be selected by dragging with <a
+    href="button1">button 1</a> held down.  Selected text is available
+    for export to other windows, as the <a href="clipboard">primary
+    selection</a>.
+
+    <p>
+    The prompt line can handle more text than is visible in the
+    display area.  If a string is longer than the display area,
+    initially the rightmost part of the message string will be shown. 
+    Clicking in the prompt area with button 1 near the left border
+    will show the start of the string.  Clicking in the prompt area
+    near the right border will show the end of the string.  Clicking
+    in the interior of the prompt area will show the middle part of
+    the string, proportionate to click location.
+
+    <a name="editing"></a>
+    <h2>Prompt Line Editing</h2>
+
+    Some commands will convert the prompt line to editing mode.  In
+    this mode, the background color changes, and text typed by the
+    user will appear in the prompt line window.  Keys pressed when the
+    main window has focus are directed to the prompt line.
+
+    <p>
+    When editing, the behavior is slightly different depending on
+    whether the mouse pointer is over the prompt line area, or not. 
+    This is (or should be) true whether or not the window manager is
+    click-to-focus or focus-follows-mouse.  When the mouse pointer is
+    over the prompt line, which gives the prompt line complete focus,
+    the prompt line background color may be different from when the
+    pointer is elsewhere.  When the pointer is elsewhere, but the main
+    window has focus, key presses are still sent to the prompt line,
+    but there are a few keys, such as the arrow keys, which will
+    operate on the drawing window rather than the prompt line.
+
+    <p>
+    When prompt line editing starts, the mouse pointer is "warped" to
+    the left edge of the prompt line, providing full focus
+    automatically.  With the mouse pointer over the prompt line:
+
+    <ol>
+    <li>The <b>Numeric Keypad +</b> and <b>Numeric Keypad -</b> keys
+    will send a normal <tt>+</tt> or <tt>-</tt> character and not
+    zoom the drawing window display.
+
+    <li>The arrow keys will move the prompt line text cursor, or
+    perform some other operation specifically for text editing,
+    depending on the command.  These will not pan the display.
+    </ol>
+
+    <p>
+    With the mouse pointer not over the prompt line, the keys
+    mentioned will have their normal zoom and pan functionality.  In
+    text edit mode, key bindings from the table below are available,
+    provisionally for the arrow keys as explained.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th colspan=2>Prompt Line Editor Bindings</th></tr>
+    <tr><td><b>Ctrl-a</b></td>
+     <td>Move cursor to beginning of line</td></tr>
+    <tr><td><b>Ctrl-e</b></td>
+     <td>Move cursor to end of line</td></tr>
+    <tr><td><b>Ctrl-k</b></td>
+     <td>Delete to end of line</td></tr>
+    <tr><td><b>Ctrl-p</b></td>
+     <td>Paste primary selection at cursor</td></tr>
+    <tr><td><b>Ctrl-u</b></td>
+     <td>Delete current line</td></tr>
+    <tr><td><b>Ctrl-v</b></td>
+     <td>Paste clipboard at cursor</td></tr>
+    <tr><td><b>Left</b></td>
+     <td>Move cursor left one character</td></tr>
+    <tr><td><b>Right</b></td>
+     <td>Move cursor right one character</td></tr>
+    <tr><td><b>Page Down</b></td>
+     <td>Move cursor right by half a line, scroll if necessary</td></tr>
+    <tr><td><b>Page Up</b></td>
+     <td>Move cursor left by half a line, scroll if necessary</td></tr>
+    <tr><td><b>Backspace</b></td>
+     <td>Delete previous character</td></tr>
+    <tr><td><b>Delete</b></td>
+     <td>Delete next character</td></tr>
+    <tr><td><b>Esc</b></td>
+     <td>Exit editing, abort operation</td></tr>
+    <tr><td><b>Enter</b></td>
+     <td>Terminate editing</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The <b>Backspace</b> key deletes the character or hypertext
+    reference to the left of the cursor and moves the cursor to the
+    left, and <b>Delete</b> deletes the object at the cursor. 
+    <b>Ctrl-u</b> deletes the entire line.  <b>Ctrl-k</b> will delete
+    the character at the cursor and all characters to the right. 
+    <b>Ctrl-a</b> and <b>Ctrl-e</b> move the cursor to the beginning
+    or end of the line, respectively.  The line will scroll to the
+    left or right if longer that the available space, when the cursor
+    hits the left and right boundaries.  The <b>Esc</b> key exits edit
+    mode, discarding the input.  The <b>Enter</b> key exits edit mode,
+    saving the input.  The cursor can be at any position when
+    <b>Enter</b> is pressed.
+
+    <p>
+    Double-clicking with <a href="button1">button 1</a> in the prompt
+    line area will effectively send an <b>Enter</b> character,
+    terminating editing.  Note that a double click requires two rapid
+    clicks, if too slow two single-click events will occur.
+
+    <p>
+    Special characters can be entered using the Unicode escape
+    <b>Ctrl-u</b>.  The sequence starts by pressing <b>Ctrl-u</b>,
+    then entering hex digits representing the character code, and is
+    terminated with a space character or <b>Enter</b>.  The Unicode
+    coding can be obtained from tables provided on the internet, or
+    from applications such as KCharSelect which is part of the KDE
+    desktop.  These are generally expressed as "<tt>U + xxxx</tt>"
+    where the <tt>xxxx</tt> is a hex number.  It is the hex number
+    that should be entered following <b>Ctrl-u</b>.  For example, the
+    code for &pi; (pi) is <tt>03c0</tt>.  Note that special characters
+    can also be selected and copied, or in some cases dragged and
+    dropped, from another window.
+
+    <p>
+    There is no limit on the number of characters in the string, which
+    can be much longer than the display space.  The <b>Page Down</b>
+    and <b>Page Up</b> keys move the cursor to the right or left
+    (respectively) by half the number of characters displayable in the
+    prompt area, and will scroll if necessary to keep the cursor
+    visible.
+
+    <p>
+    The <b>Ctrl-p</b> and <b>Ctrl-v</b> keys <a href="textentry">paste
+    text</a> from the primary selection and clipboard, respectively,
+    at the cursor.  Under Windows, these actions are identical, text
+    is obtained from the Windows clipboard.  Under Unix/Linux,
+    clicking with <a href="button2">button 2</a> will also paste the
+    primary selection, and <a href="button3">button 3</a> will also
+    paste the clipboard.  The primary selection is generally the most
+    recently selected text in any window, the clipboard contains text
+    that was explicitly saved via an operation in a text entry
+    window.
+
+    <p>
+    While in editing mode, the <a href="keyspresd">keypress
+    display</a> to the left of the prompt line is replaced with two or
+    three buttons.  The <b>R</b> and <b>S</b> buttons, which are
+    always present when the prompt line is in editing mode, provide
+    access to five general-purpose registers for text, plus a register
+    for the "last" text.  Both buttons produce a drop-down menu
+    containing register numbers.  If a selection in made in the
+    <b>S</b> menu, the text currently in the prompt area is saved to
+    the register whose number was selected.  Any previous content is
+    overwritten.  If a selection is made in the <b>R</b> menu, text
+    saved in the register whose number is selected will replace the
+    text in the prompt area.  The saved text can contain hypertext
+    entries (see below).
+
+    <p>
+    In some contexts, a third ("<b>L</b>") button appears.  This
+    provides access to the "long text" capability, which allows
+    multiple lines of text to be entered by providing access to a text
+    editor window.
+
+    <p>
+    When editing mode is exited, the buttons disappear and are
+    replaced with the keys pressed display.  If <b>Enter</b> was
+    pressed to terminate editing mode, the text is automatically saved
+    in register 0, and will be available from the <b>R</b> menu the
+    next time editing mode is entered.
+
+    <p>
+    For some property strings, if a line of text that is longer than
+    256 characters is opened for editing on the prompt line, the <a
+    href="texteditor"><b>Text Editor</b></a> will appear, loaded with
+    the text.  The text will be saved as a <a href="longtext">"long
+    text"</a> item.
+
+    <p>
+    These features are described in more detail in the description of
+    the <a href="xic:label"><b>label</b></a> command.
+
+    <p>
+    Non-printing characters in the text will be displayed using
+    special symbols, which can be edited (in edit mode) as normal
+    characters.  The non-printing character most likely to appear (and
+    the only one that probably should appear) corresponds to the line
+    termination character.  These cause a line break when the text is
+    displayed as a label on-screen, and can be entered while in
+    editing mode with <b>Shift-Enter</b>.  In Windows, these are shown
+    as a paragraph symbol, while in Unix/Linux a "v/t" (vertical tab)
+    glyph is used.  Other characters will show as a black dot in
+    Windows, or a "strange" character in Unix/Linux.
+
+    <p>
+    The prompt line participates in the drop protocol for files. 
+    Files dropped on the prompt line in normal mode have the same
+    effect as files dropped in the main drawing window - the file will
+    be taken as layout input and displayed in the drawing window.
+
+    <p>
+    When in text editing mode, files dropped in a drawing window or
+    the prompt line will not be displayed, rather the full path to the
+    file is inserted into the text line at the cursor.  This means
+    that when responding to a prompt to open a file, the <b>File
+    Selection</b> pop-up from the <a href="xic:fsel"><b>File
+    Select</b></a> button in the <a href="xic:filemenu"><b>File
+    Menu</b></a> can be used to find the file.  The file can then be
+    dragged into the main window or the prompt line window and
+    dropped, and the name will appear on the prompt line.  Also while
+    the prompt line is in editing mode, pressing the <b>Open</b>
+    (green octagon) button or the <b>Open</b> menu entry of the
+    <b>File Selection</b> pop-up will load the selected file path into
+    the prompt line rather than opening the cell for editing.  In most
+    situations where <i>Xic</i> prompts for a file path via the prompt
+    line, a simplified version of the <b>File Selection</b> pop-up
+    will appear while editing is active.
+
+    <a name=hypertext"></a>
+    <h2>Hypertext</h2>
+
+    <i>Xic</i> contains a "hypertext" capability, which is active in
+    electrical mode.  By default, the names of circuit nodes and
+    devices are internally assigned, implying that the name of a
+    particular device or node name of a particular wire net might not
+    be well defined.  This poses a problem when one wishes to identify
+    a specific device or wire net by name.  The hypertext feature
+    addresses this issue, as do the <a href="xic:nodmp">node name
+    mapping</a> and <b>name</b> property assignment features.
+
+    <p>
+    This is necessary, for example, when setting <a
+    href="properties">device properties</a> which reference other
+    devices or nodes.  The device names and node numbers may change,
+    thus property text could become invalid if it were static. 
+    Instead, internally, strings are stored as data structures which
+    reference pure text as well as devices and nodes by internal
+    reference.  Thus, these hypertext strings are always valid.
+
+    <p>
+    One creates a hypertext reference by clicking on the schematic
+    while text input is being solicited in the prompt area.  The
+    returned data can be a node reference, a device branch reference,
+    or a device name.  The string, as currently defined, is inserted
+    into the displayed text in the prompt area in color.  Note that
+    one can only delete the whole item with the <b>Delete</b> and
+    <b>Backspace</b> keys, the hypertext references are treated as
+    single items.
+
+    <p>
+    One will encounter hypertext when using the prompt line editor as
+    itemized below.  In these cases, one could type in the text,
+    however if due to future modifications that text changes, the
+    present text would be wrong.  If is therefor advantageous to use
+    hypertext, by, e.g., clicking on a device in a drawing window
+    rather than typing its name.
+
+    <ul>
+    <li>When creating text for properties applied to electrical
+    devices and circuits, for referencing other devices and nets in a
+    name-independent manner.  This applies when adding or editing
+    properties from the <b>Property Editor</b> provided by the <a
+    href="xic:prpty"><b>Properties</b></a> button in the <b>Edit
+    Menu</b>, and when subsequently editing the label text (and
+    underlying property) using the <a
+    href="xic:label"><b>label</b></a> button in the side menu.
+
+    <p>
+    <li>When creating <a href="xic:label">labels</a> that require
+    reference to devices or nodes, such as using <a
+    href="spicetext">spicetext</a> labels to add such things as
+    <tt>.measure</tt> lines.
+
+    <p>
+    When creating a label, clicking on a connection point in the
+    drawing, for example, will enter a hypertext link to the node into
+    the label.  The hypertext is shown in a different color in the
+    prompt line.  The label will always display the correct name for
+    the node, should the name subsequently change.  This is the means
+    by which node labels can be added to the drawing.
+
+    <p>
+    <li>When selecting nodes and branches to <a
+    href="xic:plot">plot</a>, after simulation.  The reference points
+    selected by clicking are all hypertext.
+    </ul>
+
+    <p>
+    There are three types of reference that can be defined by clicking
+    in a schematic.
+
+    <ol>
+    <li> Node Reference<br>
+    If the user clicks over a wire or on a contact point of a device
+    or subcircuit, a node reference is established.  The colored
+    hypertext entered into the prompt line as a response is of the
+    SPICE form "<tt>V(<i>name</i>)</tt>", where <i>name</i> is the
+    node name, which is an integer by default.  The string, when
+    printed or shown as a label, will always show the correct name for
+    the node selected.
+
+    <p>
+    <li> "Hidden" Target<br>
+    Some devices have a "hidden" target, which is usually shown as a
+    '+' symbol as part of the device schematic representation.  The
+    hidden targets are defined in the device definition in the <a
+    href="devlib">device library</a> file, so that the meaning and
+    location may differ.  In the default device library, most
+    two-terminal devices have such a point, which generally returns a
+    branch node or function which specifies the current through the
+    device.  For Josephson junctions, the target represents the
+    junction phase.  Clicking on this point in a drawing window will
+    insert the corresponding reference.
+
+    <p>
+    <li> Name Reference<br>
+    Clicking within the bounding box of a device or subcircuit, but
+    not over a node or hidden target, will insert a name reference. 
+    The returned text is the name of the instance, as derived from the
+    <b>name</b> property attached to the device or subcircuit.  This
+    can be applied by the user, to give the device a fixed name.  If
+    no <b>name</b> property is applied by the user, <i>Xic</i> will
+    generate one with an internally generated name.
+    </ol>
+
+    <p>
+    The node references and hidden targets are also the sensitive
+    points when using the <a href="xic:plot"><b>plot</b></a> and <a
+    href="xic:iplot"><b>iplot</b></a> commands.
+
+    <p>
+    Note that these targets are active at any level of the hierarchy. 
+    However, they are generally not selectable unless the containing
+    subcell is shown expanded as a schematic.  If a subcircuit is
+    shown as a symbol, one can still select internal points for
+    hypertext references by using a proxy window.  This is described
+    in the next section.
+
+    <p>
+    This feature can be used to set up specialized SPICE output. 
+    Suppose one wishes to use a <tt>.save</tt> line in <i>WRspice</i>. 
+    A <a href="spicetext">spicetext</a> label can be created, where
+    the nodes to be included in the save are inserted in the label by
+    clicking on the drawing.  The resulting <tt>.save</tt> line will
+    always save the clicked-on nodes, whether or not the actual node
+    names change.
+
+    <p>
+    For another example, suppose one needs to apply a functional
+    dependence to a voltage source in the circuit to the voltage of
+    some node.  One would accomplish this with the following
+    procedure.
+    <ol>
+    <li>Open the <a href="xic:prpty"><b>Property Editor</b></a> and
+    use the <b>Add</b> menu to initiate addition of a <b>value</b>
+    property.
+    <li>In the prompt line, type the equation representing the
+    desired functional dependence, and whenever the node voltage text
+    is needed, click on that node in a drawing window.
+    <li>Press <b>Enter</b> to complete the operation.
+    </ol>
+
+    <p>
+    The equation should appear in the property label near the voltage
+    source.  This could be, for example, "<tt>2*v(4) + v(5)</tt>", if
+    default node names are used.  Later, after modifying the circuit,
+    one might notice that the label now reads "2*v(6) + v(8)".  The
+    internal node numbering has changed due to the modification, but
+    the source still references the correct circuit nodes.  This would
+    not be the case if ordinary text was used for the equation string.
+
+    <a name="hyproxy"></a>
+    <h2>Proxy Windows</h2>
+
+    If one presses the <b>Ctrl</b> and <b>Shift</b> keys while
+    clicking with <a href="button1">button 1</a> on a subcell, a <a
+    href="xic:vport">sub-window</a> will appear, containing the
+    content of the subcell.  This works in electrical and physical
+    mode, while the prompt line editor is active and not.
+
+    <p>
+    In electrical mode, the sub-window will display the master as a
+    schematic, whether or not it is set to display symbolically.  The
+    sub-window, in this case has the important feature that it is a
+    proxy for the main window for hypertext.  When using the prompt
+    line editor, clicking in the sub-window can add hypertext
+    references to the prompt line, just like clicking in the main
+    window.
+
+    <p>
+    One can also hold <b>Ctrl</b> and <b>Shift</b> and click on an
+    instance in a proxy window, which will produce a new proxy window
+    showing the master of the clicked-on instance.  One can repeat the
+    procedure to any depth, however at present there are only four
+    sub-windows available, and windows will be reused if the depth
+    exceeds four.
+
+    <p>
+    When a sub-window is active as a proxy, a label is displayed in
+    the window menu bar.  This will give the "proxy path" which
+    consists of one or more subcircuit names, separated by periods. 
+    These are the subcircuits clicked on, up to the top level.  The
+    sub-window otherwise behaves normally, and one can switch to view
+    another cell, or go to physical mode.  The proxy label will
+    disappear, and the sub-window will no longer act as a proxy.  If
+    one returns to viewing the original cell, the label and capability
+    will return.
+
+!!SEEALSO
+keyboard
+quoting
+
+!! 102208
+!!KEYWORD
+quoting
+!!TITLE
+Quoting
+!!HTML
+    When giving input to <i>Xic</i>, single and double quotes can be
+    used to "hide" characters, such as space characters, that
+    <i>Xic</i> would otherwise interpret incorrectly.  <i>Xic</i> will
+    generally strip the outermost quotes before processing, so
+    inner-level quotes will be retained (quote marks of different
+    types nest).  A quote mark which is preceded by a backslash will
+    be treated as an ordinary character.
+
+    <p>
+    As an example, consider the prompt of the <a
+    href="xic:open"><b>Open</b></a> command.  The command prompt
+    expects one or two tokens.  The first token is the name of a file
+    to open.  The second token, if given, is the name of the cell to
+    edit if the first token names a multi-cell file such as a GDSII
+    file.  Suppose that your file is in a directory named "<tt>Xic
+    Files</tt>".  Without the quoting mechanism, there is an obvious
+    problem.  To edit the file, one enters, for example (each of these
+    would work),
+
+    <blockquote><tt>
+    "Xic Files"/my_design.gds<br>
+    "Xic Files/my_design.gds"<br>
+    Xic" "Files/my_design.gds
+    </tt></blockquote>
+
+    <p>
+    The double quotes make each of these strings appear to <i>Xic</i>
+    as a single word.
+
+!!SEEALSO
+promptline
+
+!! 032513
+!!KEYWORD
+keyspresd
+!!TITLE
+Keypress Buffer
+!!HTML
+    To the left of the <a href="promptline">prompt line</a> is the key
+    press buffer area.  This area displays the last five keys typed
+    into the main drawing window.  in the keypress buffer.  The
+    keypress buffer remembers up to 16 characters, though only the
+    last five are shown.  It is cleared when <b>Esc</b> or
+    <b>Ctrl-u</b> is typed.  If the key sequence in the buffer
+    uniquely prefixes a menu command, the command name is displayed,
+    and the command is executed.  The command names are a short
+    mnemonic, displayed in the "tooltip" that appears when the pointer
+    rests over a command or menu button.
+
+    <p>
+    Most commands have at most five characters in their command name,
+    the exceptions are the scripts in the <a href="xic:usermenu"><b>User
+    Menu</b></a>.  For these, the menu text is the same as the command
+    name, and it may take more than five characters to uniquely define
+    the command.
+
+    <p>
+    The keypress buffer can be forced to literally match menu items by
+    typing <b>Enter</b>.  Consider the two entries in the <b>User
+    Menu</b>:  <tt>spiral</tt> and <tt>spiralform</tt>.  Typing
+    "spiral" does nothing, as this is a prefix of both entries.  In
+    order to run spiral by typing the command prefix, type "spiral"
+    then <b>Enter</b>.  This works for any menu commands where one
+    entire command is a prefix of another.
+
+    <p>
+    When the <a href="promptline">prompt line</a> is in editing mode,
+    i.e., a command is active that requires user text input, the keys
+    display is replaced by buttons associated with the editing
+    function.  The key press display returns when editing mode is
+    exited.
+
+    <p>
+    Each drawing window (main window and the sub-windows produced with
+    the <a href="xic:vport"><b>Viewport</b></a> button in the <b>View
+    Menu</b>) has its own keypress buffer, and matching commands will
+    apply to the window into which the text was typed, if applicable. 
+    In sub-windows, the key press buffer displays in the menu bar
+    area, to the right.
+
+!!SEEALSO
+keyboard
+
+!! 011014
+!!KEYWORD
+accelerator
+!!TITLE
+Menu Selection and Accelerators
+!!HTML
+    <p>
+    Menus from the main menu bar are displayed when the left mouse
+    button (button 1) is pressed over a menu bar entry.  The drop-down
+    listing of entries will appear.  A selection can be made by
+    releasing the mouse button over the item to be selected. 
+    Alternatively, clicking the mouse button will also cause the menu
+    to appear, and clicking over the menu will select the item under
+    the pointer, and retire the menu.  While the menu is visible,
+    key presses are "grabbed" by the menu, and so will not be sent to
+    other windows or applications.  While a menu is visible, the up
+    and down arrow keys will cycle through the menu entries,
+    highlighting each in sequence.  Pressing <b>Enter</b> will "press"
+    the highlighted entry.  The entries in the side menu are mostly
+    toggle buttons, which are activated by clicking with mouse button
+    1.
+
+    <p>
+    Commands can also be executed by typing an accelerator while the
+    mouse pointer is in a drawing window.  Commands can be exited by
+    selecting another command in most cases, or by pressing the
+    <b>Esc</b> key.  Some commands are switches which remain in effect
+    until selected again.
+
+    <p>
+    There are multiple accelerator functions available.
+
+    <ol>
+    <li><b>Alt</b>-<i>char</i> brings up the menu keyed by <i>char</i>
+    where <i>char</i> is the character that is underlined in the name
+    in the menu bar.  If this is followed by a character underlined in
+    one of the menu entries, that function is invoked.  For example,
+    typing <tt>Alt-f</tt> (Press and hold <b>Alt</b>, press <b>f</b>,
+    release <b>Alt</b>, press <b>p</b>) engages the <b>Print</b>
+    command in the <b>File Menu</b>. 
+
+    <p>
+    <li>If the menu entry has something in the second column, that is
+    also an accelerator.  For example, in the <b>File Menu</b>, the
+    <b>Quit</b> entry has "<b>Ctrl-q</b>" listed in the second column. 
+    This indicates that pressing <b>Ctrl-q</b> will invoke the
+    <b>Quit</b> command.  The menu doesn't have to be visible.
+
+    <p>
+    Under Unix/Linux, the menu accelerators can be changed
+    interactively.  Click on a menu to open it, then move the pointer
+    over one of the entries (it will be highlighted).  Pressing
+    <b>Shift</b>, <b>Ctrl</b> or <b>Alt</b> key along with another key
+    will add that accelerator to the menu entry, or change an existing
+    accelerator.  With the menu invisible, entering that key
+    combination will "press" the assigned button, unless the
+    combination happens to be used elsewhere for another purpose (it
+    must be unique in the menus, at least).  Under Windows, the menu
+    accelerators can not be changed.
+
+    <p>
+    <li>Every command has a name, shown in the tooltip bubble that
+    appears after the pointer is stationary over the button for a
+    second or two.  Typing the first few characters of this name will
+    trigger that command.  Only the characters required to uniquely
+    specify the command name among all commands currently is scope are
+    required.  When activated, the name of the command is printed in
+    the key press buffer window.  For example, "<tt>pus</tt>" triggers
+    <b>Push</b>.
+
+    <p>
+    <li>One can define macros for keypress combinations with the <a
+    href="xic:macro"><b>Define Macro</b></a> command in the <a
+    href="xic:attrmenu"><b>Attributes Menu</b></a>.
+    </ol>
+
+!!SEEALSO
+xic:commands
+
+!! 082710
+!!KEYWORD
+keyboard
+!!TITLE
+Keyboard Commands
+!!HTML
+    The main window must have the keyboard focus in order for
+    <i>Xic</i> to receive keyboard input.  Under some window managers,
+    including under Windows, the frame of the main window can be
+    clicked on to give that window the focus, and the focus will
+    remain with that window regardless of the location of the pointer. 
+    In other cases, the pointer must be in the main window in order to
+    give the main window the focus.
+
+    <p>
+    If a command is active that is prompting for input, the keystrokes
+    will appear on the <a href="promptline">prompt line</a>, the <a
+    href="keyspresd">key press display</a> will be replaced with
+    buttons, and the prompt line background will appear in a lighter
+    color.  See the description of <a
+    href="promptline#editing">promptline editing</a> for a listing of
+    the key bindings that are in force while in editing mode.
+
+    <p>
+    If not in editing mode, the characters will be added to the buffer
+    displayed in the keys area.  After each character is added to the
+    buffer, the buffer is compared with all menu command names, and if
+    the buffer uniquely matches the first characters of a menu button
+    name, that button will be activated.  Only a few characters can be
+    saved in the buffer, and after the buffer is full, keystrokes will
+    be ignored.  The buffer can be cleared with <b>Ctrl-u</b> (hold
+    the <b>Ctrl</b> key and press <b>u</b>).  The buffer is also
+    cleared after each command match, although the display will show
+    the full name of the command.  The <b>Backspace</b> key will
+    delete the last character entered.  There are other <a
+    href="accelerator">accelerators</a> for most menu commands.
+
+    <!-- 092908 -->
+
+    <p>
+    The '!' character will switch the prompt line to editing mode to
+    solicit one of the text-mode commands.  The '?' character will
+    switch the prompt line to editing mode to obtain a help keyword or
+    directive.  There are many other keys with special significance to
+    <i>Xic</i>, summarized in the table below.  These keys should be
+    memorized by the user, as there is no alternative way to invoke
+    their function.
+
+    <--! this same table is used in 'quickref' -->
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><a href="keybang"><b>!</b></td>
+      <td>Enter text-mode command</td></tr>
+    <tr><td><a href="keyquest"><b>?</b></td>
+      <td>Enter help keyword, URL, or path to image or HTML file</td></tr>
+    <tr><td><a href="keyescape"><b>Esc</b></td>
+      <td>Exit current command, or deselect selections</td></tr>
+    <tr><td><a href="keytab"><b>Tab</b></td>
+      <td>Undo operation</td></tr>
+    <tr><td><a href="keytab"><b>Shift-Tab</b></a></td>
+      <td>Redo last undone operation</td></tr>
+    <tr><td><a href="keydelet"><b>Delete</b></td>
+      <td>Delete selected objects</td></tr>
+    <tr><td><a href="keyarrow"><b>Arrow Keys</b></td>
+      <td>Pan</td></tr>
+    <tr><td><a href="keyarrow"><b>Shift-Arrow Keys</b></td>
+      <td>Fine pan</td></tr>
+    <tr><td><a href="keyarrow"><b>Ctrl-Arrow Keys</b></td>
+      <td>Cycle rotation (left/right) and mirror transformations
+      (up/down)</td></tr>
+    <tr><td><a href="keyarrow"><b>Shift-Ctrl-Arrow Keys</b></td>
+      <td>Cycle views (left/right), subcell expansion (up/down)</td></tr>
+    <tr><td><a href="key+-"><b>Numeric +</b></td>
+      <td>Zoom in, expand by 2</td></tr>
+    <tr><td><a href="key+-"><b>Shift-Numeric +</b></td>
+      <td>Zoom in by 10 percent</td></tr>
+    <tr><td><a href="key+-"><b>Numeric -</b></td>
+      <td>Zoom out, shrink by 2</td></tr>
+    <tr><td><a href="key+-"><b>Shift-Numeric -</b></td>
+      <td>Zoom out by 10 percent</td></tr>
+    <tr><td><a href="keyhome"><b>Home</b></td>
+      <td>Center full view cell</td></tr>
+    <tr><td><a href="keypage"><b>Page Down</b></td>
+      <td>Show next DRC error in <a href="xic:next"><b>Show
+      Errors</b></a> command</td></tr>
+    <tr><td><a href="keypage"><b>Page Up</b></td>
+      <td>Show previous DRC error in <a href="xic:next"><b>Show
+      Errors</b></a> command</td></tr>
+    <tr><td><a href="keyctrla"><b>Ctrl-a</b></td>
+      <td>Select associated labels</td></tr>
+    <tr><td><a href="keyctrlc"><b>Ctrl-c</b></td>
+      <td>Interrupt</td></tr>
+    <tr><td><a href="keyctrle"><b>Ctrl-e</b></td>
+      <td>Enter coordinate</td></tr>
+    <tr><td><a href="keyctrlg"><b>Ctrl-g</b></td>
+      <td>Change grid</td></tr>
+    <tr><td><a href="keyctrlk"><b>Ctrl-k</b></td>
+      <td>Delete-to-end when editing</td></tr>
+    <tr><td><a href="keyctrln"><b>Ctrl-n</b></td>
+      <td>Save view</td></tr>
+    <tr><td><a href="keyctrlp"><b>Ctrl-p</b></td>
+      <td>Deselect associated labels</td></tr>
+    <tr><td><a href="keyctrlr"><b>Ctrl-r</b></td>
+      <td>Redraw window</td></tr>
+    <tr><td><a href="keyctrlu"><b>Ctrl-u</b></td>
+      <td>Clear input buffer</td></tr>
+    <tr><td><a href="keyctrlv"><b>Ctrl-v</b></td>
+      <td>Print program version</td></tr>
+    <tr><td><a href="keyctrlx"><b>Ctrl-x</b></td>
+      <td>Expand cells</td></tr>
+    <tr><td><a href="keyctrlz"><b>Ctrl-z</b></td>
+      <td>Iconify</td></tr>
+    </table>
+    </blockquote>
+
+!!SUBTOPICS
+keyfunc
+keyspresd
+promptline
+textentry
+xic:keymp
+xic:macro
+xic:view
+
+!! 012016
+!!KEYWORD
+keyquest
+!!TITLE
+Keyboard '?' Help Directives
+!!HTML
+    Just as the '!' character switches the prompt line to editing mode
+    to accept a <a href="keybang">command</a>, the '?' character will
+    switch to editing mode, to accept a "help directive".
+
+    <p>
+    A "help directive" can be one of the following:
+    <ul>
+    <li>A help system keyword, so "? <i>keyword</i>" is the same as
+      "<tt>!help</tt> <i>keyword</i>", i.e., a shortcut to the <a
+      href="!help"><b>!help</b></a> command.  If no <i>keyword</i> is
+      given, and the program is in a command mode, meaning that the
+      <b>Mode</b> entry in the <a href="statusline">status line</a> is
+      something other than "<tt>MAIN</tt>", then the help shown will
+      apply to the current mode.  Otherwise, the default help topic is
+      shown, as for "<tt>!help</tt>" without arguments.
+
+    <li>A general URL or path to a compatible local file.  The help
+      window will display the file or URL, if possible.  In
+      particular, image files can be displayed this way.  A URL must
+      be complete, including the "<tt>http://</tt>" prefix.  Most web
+      sites use style sheets and other constructs not handled by the
+      simple rendering engine in the viewer window, so it is not great
+      for general web-surfing, but it may be good enough for some
+      purposes.
+
+    <li>One of the single character directives.  These apply only
+      after '?', and print information that is not from the help
+      system, but derived from internal tables.  These are given in the
+      table below.
+    </ul>
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Character</th>  <th>Result</th></tr>
+    <tr><td><b>!, b, B</b></td>
+      <td>Giving exactly one of these characters will print a listing
+      of the '!' <a href="keybang">commands</a> that are available in
+      the program.</td></tr>
+    <tr><td><b>v, V</b></td>
+      <td>Giving exactly one of these characters will print a
+      listing of the variable names that have significance within
+      the program.  Variables are listed whether or not the variable
+      is actually set.</td></tr>
+    <tr><td><b>s, S</b></td>
+      <td>Giving exactly one of these characters will print a list of
+      variables that are currently set, the same as the <a
+      href="!set"><b>!set</b></a> command without arguments.</td></tr>
+    <tr><td><b>f, F</b></td>
+      <td>Giving exactly one of these characters will print a list of
+      all of the internal script <a href="scr:iffuncs">interface
+      functions</a> available within the program.</td></tr>
+    </table>
+
+    <p>
+    Each listing will provide the listed items as colored links.
+    Clicking on the links will pop up help about the item.
+
+    <p>
+    The <i>Xic</i> program is modular, and the <a
+    href="xicii"><i>XicII</i></a> and <a href="xiv"><i>Xiv</i></a>
+    virtual programs are effectively <i>Xic</i> with only a subset of
+    modules.  The listings provide definitive summaries of the
+    functions and variables actually available in the feature set, in
+    case this is not clear from the documentation.
+
+!!SEEALSO
+keyboard
+
+!! 012016
+!!KEYWORD
+keyescape
+!!TITLE
+Esc
+!!HTML
+    The <b>Esc</b> (Escape) key terminates any command and clears the
+    key press buffer.  Many commands can also be terminated by
+    pressing the command button a second time, or by selecting a new
+    command.  After pressing <b>Esc</b>, the mode listed in the status
+    area should be "<tt>MAIN</tt>".
+
+    <p>
+    If pressed in idle mode, all selected objects will be deselected.
+
+!!SEEALSO
+keyboard
+
+!! 072808
+!!KEYWORD
+keytab
+!!TITLE
+Tab
+!!HTML
+    The <b>Tab</b> key performs an <a href="xic:undo"><b>Undo</b></a>
+    command, which will undo the last operation, and has the same
+    effect as pressing the <b>Undo</b> button in the <b>Modify Menu</b>. 
+    Pressing the <b>Shift</b> key along with the <b>Tab</b> key will
+    instead redo the last undone operation, which is the same as
+    pressing the <a href="xic:redo"><b>Redo</b></a> button in the
+    <b>Modify Menu</b>.
+
+!!SEEALSO
+keyboard
+
+!! 072808
+!!KEYWORD
+keydelet
+!!TITLE
+Delete
+!!HTML
+    Pressing the <b>Delete</b> key will delete any objects currently
+    selected.  Objects in a drawing can be selected with <a
+    href="button1">button 1</a> operations.  This has the same effect
+    as the <a href="xic:delet"><b>Delete</b></a> button in the <a
+    href="xic:modifymenu"><b>Modify Menu</b></a>.  If the <a
+    href="xic:ruler"><b>Rulers</b></a> button in the <a
+    href="xic:viewmenu"><b>View Menu</b></a> is active, the
+    <b>Delete</b> key will delete rulers and not other objects.
+
+!!SEEALSO
+keyboard
+
+!! 020715
+!!KEYWORD
+keyarrow
+!!TITLE
+Arrow Keys
+!!HTML
+    Without the <b>Ctrl</b> or <b>Shift</b> keys pressed, the arrow
+    keys will pan the display in the drawing window which contains the
+    pointer by one-half screen in the direction of the arrow.  If
+    <b>Shift</b> (but not <b>Ctrl</b>) is held while pressing the
+    arrow keys, the display will instead pan by ten percent.  Panning
+    can also be performed with the middle mouse button (<a
+    href="button2">button 2</a>), and with the <a
+    href="mousewheel">mouse wheel</a>.
+
+    <p>
+    Holding <b>Ctrl</b> (but not <b>Shift</b>) while pressing the left
+    and right arrow keys will cycle the current rotation setting,
+    otherwise set with the <a href="xic:xform"><b>xform</b></a>
+    command in the side menu.  This affects moved and copied objects
+    and new instances.
+
+    <p>
+    Holding <b>Ctrl</b> (but not <b>Shift</b>)while pressing the up
+    arrow key will toggle the current <b>Reflect Y</b> state of the
+    <b>Current Transform</b>.
+
+    <p>
+    Holding <b>Ctrl</b> (but not <b>Shift</b>) while pressing the down
+    arrow key will toggle the current <b>Reflect X</b> state of the
+    <b>Current Transform</b>.
+
+    <p>
+    Holding both <b>Shift</b> and <b>Ctrl</b> while pressing the left
+    or right arrow keys will cycle through the previous views in the
+    window which has keyboard focus.  This is similar to the
+    <b>prev</b> and <b>next</b> menu commands in the <a
+    href="xic:view"><b>View</b></a> command of the <a
+    href="xic:viewmenu"><b>View Menu</b></a>.  The last five views of
+    a cell are saved.
+
+    <p>
+    Holding both <b>Shift</b> and <b>Ctrl</b> while pressing the up or
+    down arrow keys will increment or decrement the subcell expansion
+    depth, as if giving a '+' or '-' to the <a
+    href="xic:expnd"><b>Expand</b></a> pop-up, affecting the drawing
+    window that has the keyboard focus.
+
+    <p>
+    The arrow keys may have special functions in individual commands,
+    which override the behavior above.  This is noted in the
+    descriptions of the commands.
+
+!!SEEALSO
+keyboard
+xic:rotat
+
+!! 072808
+!!KEYWORD
+key+-
+!!TITLE
+Numeric + And -
+!!HTML
+    The + and - keys in the numeric keypad area will zoom the display
+    in or out by a factor of two respectively, in the drawing window
+    where the pointer was located at the time of the key press.  The
+    action is similar to the <a href="xic:zoom"><b>Zoom</b></a>
+    command in the <a href="xic:viewmenu"><b>View Menu</b></a>, and
+    the <a href="button3">button 3</a> operations.  On some systems,
+    these keys must be defined using the mapping facility provided by
+    the <a href="xic:keymp"><b>Key Map</b></a> button in the <a
+    href="xic:attrmenu"><b>Attributes Menu</b></a>.
+
+    <p>
+    If the <b>Shift</b> key is held while pressing the numeric keypad
+    +/- keys, the zoomin/zoomout factor is reduced to 10%.
+
+!!SEEALSO
+keyboard
+
+!! 072808
+!!KEYWORD
+keyhome
+!!TITLE
+Home
+!!HTML
+    Pressing the <b>Home</b> key will center and fully display the
+    current cell, in the window where the pointer was located at the
+    time of the key press.  This can also be done with the <a
+    href="xic:view"><b>View</b></a> command.  On some systems, this
+    key must be mapped with the <a href="xic:keymp"><b>Key Map</b></a>
+    command in the <a href="xic:attrmenu"><b>Attributes Menu</b></a> in
+    order for this functionality to be available.
+
+!!SEEALSO
+keyboard
+
+!! 072808
+!!KEYWORD
+keypage
+!!TITLE
+Page Up and Page Down
+!!HTML
+    The <b>Page Up</b> and <b>Page Down</b> keys are used with the <a
+    href="xic:next"><b>Show Errors</b></a> command in the <a
+    href="xic:drcmenu"><b>DRC Menu</b></a>.  <b>Page Down</b> will show
+    the first and subsequent errors.  <b>Page Up</b> will show the
+    previous error(s).  Pressing <b>Ctrl-f</b> will have a similar
+    effect to <b>Page Down</b>, and either <b>Ctrl-b</b> or
+    <b>Ctrl-p</b> will simulate a <b>Page Up</b> press.  On some
+    systems, the <b>Page Up</b> and <b>Page Down</b> keys must be
+    mapped using the <a href="xic:keymp"><b>Key Map</b></a> command in
+    the <a href="xic:attrmenu"><b>Attributes Menu</b></a>.
+
+!!SEEALSO
+keyboard
+
+!! 072808
+!!KEYWORD
+keyfunc
+!!TITLE
+Function Keys
+!!HTML
+    The keyboard function keys, usually labeled F1 - F12, can be
+    mapped by the user to provide an alternate means of pressing
+    buttons in the menus.  The mappings are added to the <a
+    href="techfile">technology file</a> with a text editor.  These
+    mappings are completely up to the user to define, and no default
+    mapping is installed (though the supplied technology file contains
+    a mapping).
+
+!!SEEALSO
+keyboard
+
+!! 013113
+!!KEYWORD
+keyctrla
+!!TITLE
+Ctrl-a
+!!HTML
+    In electrical mode, outside of any command, pressing <b>Ctrl-a</b>
+    will cause the associated labels of any selected device or wire to
+    also become selected.  If labels are selected, then pressing
+    <b>Ctrl-a</b> will cause their associated device or wire to also
+    become selected.  The associated labels can be deselected by
+    pressing <b>Ctrl-p</b>.  This is useful for determining which
+    labels are associated with a given device or wire, and
+    <i>vice-versa</i>.
+
+    <p>
+    When entering text to the <a href="promptline">prompt area</a>,
+    <b>Ctrl-a</b> will move the cursor to the beginning of the line.
+
+!!SEEALSO
+keyboard
+keyctrlp
+
+!! 010715
+!!KEYWORD
+keyctrlc
+!!TITLE
+Ctrl-c
+!!HTML
+    This key sends an interrupt signal to <i>Xic</i>.  When an
+    interrupt is received, and <i>Xic</i> is performing a lengthly
+    operation, the user is generally given the option of aborting the
+    operation.  This occurs within the <a href="xic:drcmenu">DRC</a> and
+    <a href="xic:extmenu">Extraction</a> functions, and geometrical
+    commands such as <a href="!join"><b>!join</b></a> and <a
+    href="!layer"><b>!layer</b></a>, as well as file reading and
+    writing.  If an interrupt is received while drawing to the screen,
+    the drawing immediately terminates, without user confirmation. 
+    Script execution is also terminated immediately.
+
+    <p>
+    Under Microsoft Windows, pressing the <b>Pause/Break</b> key also
+    sends an interrupt signal if <i>Xic</i> has the keyboard focus.
+
+    <p>
+    When the "wait" cursor is active when the mouse pointer is in a
+    drawing window, <i>Xic</i> is "busy".  When busy, <i>Xic</i> locks
+    out all key press events except for <b>Ctrl-c</b>, and most mouse
+    button events.  If a locked-out event is received, a pop-up will
+    appear that informs the user that <i>Xic</i> is busy and to use
+    <b>Ctrl-c</b> to abort the operation.  This pop-up will disappear
+    after three seconds (trying to destroy it with the mouse won't
+    work).
+
+    <p>
+    When <i>Xic</i> is busy and <b>Ctrl-c</b> is pressed, the
+    operation may be paused, and the user is asked (on the prompt
+    line) whether to abort or continue.  While waiting for input, most
+    buttons are desensitized.  Those that are not are the <a
+    href="xic:helpmenu"><b>Help Menu</b></a>, <a
+    href="xic:alloc"><b>View/Allocation</b></a>, and <a
+    href="xic:freez"><b>Attributes/Main Window/Freeze</b></a>.  Thus,
+    these features are available during the pause.
+
+    <p>
+    All other events are dispatched normally while busy, so that
+    visual updates should happen fairly quickly.  Unlike early
+    releases, there is no attempt to save unhandled events and handle
+    them later.
+
+!! 072808
+!!KEYWORD
+keyctrle
+!!TITLE
+Ctrl-e
+!!HTML
+    Pressing <b>Ctrl-e</b> prompts the user for a coordinate pair,
+    which is then used in a point operation, just as if the user had
+    clicked with <a href="button1">button 1</a> at that location. 
+    When entering coordinates using <b>Ctrl-e</b>, the coordinate is
+    not moved to the nearest <a href="xic:grid">snap point</a> as it
+    would have been if entered with the mouse.  Thus, off-grid points
+    can be entered, and the user must bear this in mind.
+
+    <p>
+    When editing a string on the <a href="promptline">prompt line</a>,
+    <b>Ctrl-e</b> will move the cursor to the end of the string.
+
+!!SEEALSO
+keyboard
+
+!! 101312
+!!KEYWORD
+keyctrlg
+!!TITLE
+Ctrl-g
+!!HTML
+    Pressing <b>Ctrl-g</b> brings up the <a href="xic:grid"><b>Grid
+    Setup</b></a> panel.  This can be used to alter the grid displayed
+    in the drawing window that had the keyboard focus.  This is
+    effectively an accelerator for the <b>Set Grid</b> button in the
+    <b>Main Window</b> sub-menu of the <b>Attributes Menu</b>, or the
+    <b>Set Grid</b> button in the <b>Attributes</b> menu of <a
+    href="xic:vport">sub-windows</a>.
+
+!!SEEALSO
+keyboard
+
+!! 102208
+!!KEYWORD
+keyctrlk
+!!TITLE
+Ctrl-k
+!!HTML
+    When entering text to the <a href="promptline">prompt area</a>,
+    <b>Ctrl-k</b> will delete-to-end.  The character over the cursor
+    and all characters to the right will be deleted.
+
+!!SEEALSO
+keyboard
+
+!! 072808
+!!KEYWORD
+keyctrln
+!!TITLE
+Ctrl-n
+!!HTML
+    The view in a window can be saved at any time by pressing
+    <b>Ctrl-n</b>.  The view is assigned a letter, which allows it to
+    be recalled with the <a href="xic:view"><b>View</b></a> command. 
+    Up to five views can be saved per window, and these are assigned
+    letters A-E in order.  The view can also be restored by pressing
+    <b>Ctrl-Shift-a</b> through <b>Ctrl-Shift-e</b>.
+
+!!SEEALSO
+keyboard
+
+!! 072808
+!!KEYWORD
+keyctrlp
+!!TITLE
+Ctrl-p
+!!HTML
+    In electrical mode, outside of any command, pressing <b>Ctrl-a</b>
+    will cause the associated labels of any selected device to also
+    become selected.  The associated labels can be deselected by
+    pressing <b>Ctrl-p</b>.  This is sometimes useful for determining
+    which labels are associated with a given device.
+
+    <p>
+    Pressing <b>Ctrl-p</b> is equivalent to pressing the <b>Page
+    Up</b> key when the DRC <a href="xic:next"><b>Show Errors</b></a>
+    command is active.
+
+!!SEEALSO
+keyboard
+keyctrla
+
+!! 072808
+!!KEYWORD
+keyctrlr
+!!TITLE
+Ctrl-r
+!!HTML
+    Pressing <b>Ctrl-r</b> redraws the window which contained the pointer
+    when <b>Ctrl-r</b> was pressed.
+
+!!SEEALSO
+keyboard
+
+!! 102208
+!!KEYWORD
+keyctrlu
+!!TITLE
+Ctrl-u
+!!HTML
+    When entering text to the <a href="promptline">prompt area</a>,
+    pressing <b>Ctrl-u</b> will delete all characters from the input
+    buffer.
+
+!!SEEALSO
+keyboard
+
+!! 072808
+!!KEYWORD
+keyctrlv
+!!TITLE
+Ctrl-v
+!!HTML
+    Pressing <b>Ctrl-v</b> will bring up a window containing the
+    <i>Xic</i> version number and copyright information.
+
+!!SEEALSO
+keyboard
+
+!! 072808
+!!KEYWORD
+keyctrlx
+!!TITLE
+Ctrl-x
+!!HTML
+    Pressing <b>Ctrl-x</b> will bring up a the <b>Expansion
+    Control</b> panel, the same as the <a
+    href="xic:expnd"><b>Expand</b></a> command in the <a
+    href="xic:viewmenu"><b>View Menu</b></a>.
+
+!!SEEALSO
+keyboard
+
+!! 072808
+!!KEYWORD
+keyctrlz
+!!TITLE
+Ctrl-z
+!!HTML
+    Pressing <b>Ctrl-z</b> with the pointer in a drawing window will
+    iconify <i>Xic</i>.  <b>Ctrl-z</b> in the controlling terminal
+    window will retain the usual shell job control function.
+
+!!SEEALSO
+keyboard
+
+!! 012214
+!!KEYWORD
+mouse
+!!TITLE
+Pointing Device
+!!HTML
+    <i>Xic</i> is most efficiently used with a three-button mouse,
+    trackball, or other input device.  The three buttons are normally
+    numbered from the left, with the mouse pointing upward.  This
+    manual will refer to buttons by their number according to this
+    convention.
+
+    <p>
+    A two-button mouse, as commonly used with PC hardware, does not
+    provide button 2 (the "middle" button).  Although a three-button
+    pointing device is recommended, in current <i>Xic</i> releases the
+    important button 2 operations can be simulated using button 1 or
+    3, while holding a modifier key.  Thus, for many users, a
+    two-button mouse should be entirely adequate.
+
+    <p>
+    In short, <a href="button1">button 1</a> is used for basic point
+    and click operations and menu selections.  The middle button, <a
+    href="button2">button 2</a>, is used for pan operations in drawing
+    windows, and the right button, <a href="button3">button 3</a>, is
+    used for zooming in the drawing windows.
+
+    <p>
+    In addition, drawing windows respond to <a href="mousewheel">mouse
+    wheel</a> events.  The basic action is vertical scrolling, however
+    if <b>Shift</b> is held, the window will scroll horizontally.  If
+    <b>Ctrl</b> is held (which overrides <b>Shift</b>) the display
+    will zoom in or out.  The mouse wheel sensitivity can be changed
+    with the <a href="MouseWheel"><tt>MouseWheel</tt></a> variable.  A
+    mouse wheel will also provide scrolling capability in text windows
+    and the help viewer on most systems.
+
+!!REDIRECT selection    button1#selection
+
+!! 022316
+!!KEYWORD
+button1
+!!TITLE
+Left Mouse Button
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="button1#selection"><b>Basic Selection Operation</b></a><br>
+    <a href="button1#movecopy"><b>Basic Move/Copy Operation</b></a><br>
+    <a href="button1#stretch"><b>Basic Stretch Operation</b></a><br>
+    <a href="button1#notes"><b>Additional Notes</b></a>
+    </td></tr></table>
+
+    <p>
+    Button 1 (the left button) is used for point operations in the
+    drawing windows, and for activating command buttons and sliders in
+    menus and pop-ups.  In most cases, a "point operation" can be
+    effected in two ways:  click twice, or hold and drag.  If the
+    pointer does not move too much as button 1 is pressed and
+    released, a single point is defined, and most commands will prompt
+    the user to point a second time to complete the operation.  If
+    button 1 is held while the pointer moves, upon release the
+    operation is completed, using the press and release coordinates. 
+    A rectangle defining the two positions is typically ghost-drawn
+    while the point operation is in progress.
+
+    <p>
+    The delay interval which is used to differentiate a "click" from a
+    "hold" or "drag" can be adjusted by setting the <a
+    href="SelectTime"><b>SelectTime</b></a> variable with the <a
+    href="!set"><b>!set</b></a> command.  The default value is 250
+    milliseconds, and the adjustable range is 100-1000 milliseconds. 
+    Some users may find that setting the delay to a larger value
+    improves the ability to differentiate between the operations
+    described below.
+
+    <p>
+    Outside of any command, button 1 performs selection, move/copy,
+    and stretch operations.  The <b>Shift</b> and <b>Ctrl</b> keys act
+    as modifiers for the button 1 presses.  The following sections
+    describe the normal operations.
+
+    <p>
+    If <b>Shift</b>, <b>Ctrl</b>, and <b>Alt</b> are all held while
+    button 1 is pressed, a "no-operation" (<a
+    href="noopbutton">button4</a>) press is simulated.  This performs
+    no action, but updates the <a href="coordline">coordinate
+    readout</a> window.
+
+    <p>
+    If <b>Shift</b> and <b>Ctrl</b> are both held while clicking on a
+    physical cell instance or electrical subcircuit, a <a
+    href="xic:vport">sub-window</a> will appear containing the
+    contents of the subcell or subcircuit.  In electrical mode, the
+    new window will display the subcell schematic, and be a <a
+    href="xic:proxy">proxy</a> for the main window for hypertext,
+    including plot reference points.  Clicking in the sub-window will
+    assign hypertext reference points, as if one clicked in the main
+    window.  This is how one can get hypertext references of assign
+    plot points from a cell that is shown as an instance symbolically.
+
+    <p>
+    Clicking on a selected non-pcell instance with only the
+    <b>Ctrl</b> key held will bring up the <a
+    href="xic:prpty"><b>Property Editor</b></a> panel, with the
+    clicked-on instance as the current object.  If the instance is a
+    <a href="xic:pcells">pcell</a> instantiation, the <a
+    href="xic:pcparams"><b>Parameters</b></a> panel appears, allowing
+    the user to reparameterize the instance.
+
+    <a name="selection"></a>
+    <h2>Basic Selection Operation</h2>
+
+    If neither of the <b>Shift</b> and <b>Ctrl</b> keys is pressed,
+    clicking on an object will toggle its selected status.  Objects
+    which are selected are drawn with a blinking boundary.  These
+    objects are acted on by many of the button commands, so that
+    object selection in an important part of <i>Xic</i> operation. 
+    The number of selected objects, if any, is displayed in the <a
+    href="statusline">status area</a> below the layer table.  This
+    information is useful, as selected objects can be off-screen,
+    leading to unintended consequences.
+
+    <p>
+    The default selection operation is described here.  The selection
+    behavior can be modified from the <b>Selection Control Panel</b>
+    brought up by the <a href="xic:selcp"><b>selcp</b></a> button in
+    the <a href="topbuttons">top button menu</a>.  Only objects on
+    layers that are both visible and selectable (as shown in the <a
+    href="layertab">layer table</a>) can be selected.
+
+    <p>
+    Clicking on a single object will toggle the selection status of
+    the object.  If the point where the object was clicked is also
+    over a subcell, the object and not the subcell will be selected or
+    deselected; subcells are affected only if there is no other
+    geometry at the selection point. 
+
+    <p>
+    It is impossible to select an object or subcell with mouse
+    operations whose boundary is completely invisible in all display
+    windows.  Such objects can be deselected, however.
+
+    <p>
+    When clicking on an intersecting point of several objects, there
+    are two types of logic available.  In the default logic, when
+    clicking on the intersection area of several unselected objects,
+    only one of the objects is selected, and repeatedly clicking in
+    the same spot will selected a different object, deselecting the
+    previous selection if any.  Thus, one can cycle through the
+    candidates and select only the one of interest.  If two or more of
+    the objects are already selected, only one of the selected objects
+    will be deselected, and no new object will be selected.  If
+    exactly one object is selected, it will be deselected, and the
+    "next" object will be selected.  If there is no "next" object,
+    then there will be no new selection.  The "next" object is subject
+    to the ordering of layers in the layer table (top to bottom) and
+    database ordering (sorted descending in the Y value and ascending
+    in the X value of the upper left corner of the object's bounding
+    box).
+
+    <p>
+    In the "legacy" logic, which was used in releases through 2.5.63,
+    clicking on an intersecting point of several unselected objects
+    will select them all.  However, clicking on the intersection area
+    of several selected objects will <i>not</i> deselect them all. 
+    The logic in this case is similar to the default logic.  If more
+    that one object is selected, only one of the objects will be
+    deselected per click in an intersecting area.  When only one of
+    the objects remains selected, the next click will deselect the
+    selected object, and select the other objects.
+
+    <p>
+    If the variable <a href="NoAltSelection"><b>NoAltSelection</b></a>
+    is set, <i>Xic</i> will use the legacy logic.
+
+    <p>
+    Clicking (<i>not</i> dragging) on an empty part of the drawing
+    will deselect the single object at the head of the selection list,
+    if any, which is the object most recently selected.  This applies
+    when no command is active, not when selections are performed within
+    commands.
+
+    <p>
+    If neither of the <b>Shift</b> or <b>Ctrl</b> keys is pressed, and
+    button 1 is pressed, dragged, and released, the selection status
+    of objects that intersect the defined rectangle is toggled.  This
+    is an "area select".  Unlike clicking (or "point select"), the
+    selection status of all affected objects is toggled by an area
+    select.  During the drag, the rectangle defined for the area
+    select is ghost drawn.  In area select, qualifying instances are
+    always selected or deselected, whether or not other geometry is
+    present.
+
+    <p>
+    In either point or area select, if the instance bounding box is
+    not visible in the window, the instance will not be selected,
+    which may prevent accidents.
+
+    <p>
+    In electrical mode with point selection, objects are acted upon
+    hierarchically.  Wires have the highest precedence, followed by
+    labels, instances, and boxes.  Only the clicked-on objects with
+    the highest precedence are acted upon, if there are multiple
+    objects clicked on.  For example, clicking on a wire over a
+    subcircuit will select or deselect the wire, but ignore the
+    subcircuit.  With area selection, all qualifying objects will be
+    acted upon.
+
+    <p>
+    When the selection operation is completed, the status of the
+    modifier keys determines how the chosen objects are processed.  If
+    neither of <b>Shift</b> or <b>Ctrl</b> is pressed, the action is
+    as described.  if <b>Shift</b> is pressed (but not <b>Ctrl</b>),
+    any unselected objects are selected.  If <b>Ctrl</b> is pressed
+    (but not <b>Shift</b>) any selected objects are deselected.  If
+    both <b>Shift</b> and <b>Ctrl</b> are held, the selection status
+    of each object is reversed.  This is the default for area
+    selections, but not point selections.
+
+    <p>
+    The <a href="xic:desel"><b>desel</b></a> button can be used to
+    deselect all selected objects.  This acts on all selected objects,
+    whether or not they are on the current layer.  The <a
+    href="!select"><b>!select</b></a> command is another mechanism
+    whereby objects can be selected.
+
+    <a name="movecopy"></a>
+    <h2>Basic Move/Copy Operation</h2>
+
+    Objects must first be selected in order to be moved or copied. 
+    These operations are short-cuts to the <a
+    href="xic:move"><b>Move</b></a> and <a
+    href="xic:copy"><b>Copy</b></a> commands in the <a
+    href="xic:modifymenu"><b>Modify Menu</b></a>.  There are also <a
+    href="!mo"><b>!mo</b></a> (move) and <a href="!co"><b>!co</b></a>
+    (copy) commands available for text-mode input from the prompt
+    line.
+
+    <p>
+    If the <b>Shift</b> key is down when the user presses button 1,
+    and the pointer is over a selected object, then a move/copy
+    operation on all of the selected objects is initiated. 
+    Alternatively, pressing button 1 with no keys pressed over a
+    selected object and holding, motionless for a brief period, will
+    similarly initiate a move/copy operation.  In the first case, if
+    the user releases button 1 immediately (clicks) then the outlines
+    of the selected objects are "attached" to the pointer and the
+    move/copy operation will complete when the user clicks a second
+    time.  Alternatively, the user can drag the pointer (with button 1
+    still pressed), and the release event will complete the operation. 
+    In the second case, the pointer must remain motionless with button
+    1 down for a brief period.  The user can release button 1, at
+    which point the objects are attached to the pointer, and complete
+    the operation with a second button 1 press.  Alternatively, the
+    user can begin to drag, and complete the operation by releasing
+    button 1.  The brief period of inactivity, or the fact that the
+    <b>Shift</b> key is pressed, signals the start of a move/copy
+    operation.
+
+    <p>
+    Pressing the <b>SpaceBar</b> toggles whether the operation is in
+    move or copy mode.  The last state is remembered in the next
+    operation.  A message in the prompt area indicates the current
+    mode, which will apply when the operation completes.
+
+    <p>
+    When in copy mode, a replication count will be read from the <a
+    href="keyspresd">keypress buffer</a> of the current window when
+    the copy is performed.  This is an integer, entered by typing into
+    the window.  If not found or out of the range 1-100000, a single
+    copy is made.  Otherwise, multiple copies will be created, at
+    multiples of the translation distance.
+
+    <p>
+    Also in copy mode, when clicking twice rather than dragging, the
+    object being copied remains "attached" to the mouse pointer, so
+    that additional copies can be placed by simply clicking.  Pressing
+    <b>Esc</b> will terminate this mode.
+
+    <p>
+    If the <b>Shift</b> key is down when the operation is completed,
+    the angle of translation is constrained to be multiples of 45
+    degrees.  This constraint is visible during the move/copy by
+    observing the behavior or the ghost-drawn outlines as the pointer
+    moves.  This is often useful for making sure that the new location
+    is horizontally, vertically, or diagonally aligned with the
+    original location.
+
+    <p>
+    If the <b>Enter</b> is pressed during a move, when the objects
+    being moved are ghost-drawn and attached to the pointer, the
+    reference point of the object becomes the lower left corner of the
+    bounding box of the objects.  Pressing <b>Enter</b> will cycle the
+    reference point through the corners of the bounding box, and back
+    to the original reference location.  Note that this allows objects
+    that have somehow gotten off-grid to be returned to the grid.
+
+    <p>
+    It is possible to change the layer of objects during a move/copy
+    operation.  During the time that objects are ghost drawn and
+    attached to the mouse pointer, if the <a href="layertab">current
+    layer</a> is changed, the objects that are attached can be placed
+    on the new layer.  Subcells are not affected.
+
+    How this is applied depends on the setting of the <a
+    href="LayerChangeMode"><tt>LayerChangeMode</tt></a> variable, or
+    equivalently the settings of the <b>Layer Change Mode</b> pop-up
+    from the <a href="xic:mclcg"><b>Set Layer Chg Mode</b></a>
+    button in the <b>Modify Menu</b>.  The possible actions are to
+    ignore the layer change, place objects originating from the old
+    current layer on the new layer, or to place all new objects on the
+    new layer.  If the current layer is set back to the previous layer
+    before clicking to locate the new objects, no layers will change. 
+    Note that layer change is only possible for "click-click" mode and
+    not "press-drag".
+
+    <a name="stretch"></a>
+    <h2>Basic Stretch Operation</h2>
+
+    Objects must first be selected in order to be stretched.  The
+    basic stretch operation described here is also available from the
+    <a href="xic:strch"><b>Stretch</b></a> command in the <b>Modify
+    Menu</b>, but that command provides additional features, such as
+    vertex selection, not available from the basic operation. 
+    Stretching operations are also available for polygons in the <a
+    href="xic:polyg"><b>polyg</b></a> command, and for wires in the <a
+    href="xic:wire"><b>wire</b></a> command.
+
+    <p>
+    Clicking on a selected object with the <b>Ctrl</b> key pressed
+    initiates a stretch.  If the <b>Shift</b> key is also held, an
+    actual stretch command is initialted, as if the <b>Stretch</b>
+    button in the <b>Modify</b> menu was pressed.  The mode changes to
+    the stretch command, which can be terminated by pressing the
+    <b>Esc</b> key.  The command allows use of vertex selection to
+    mark and move several polygon vertices in tandem, a feature not
+    available in the simple stretch operation to be described, which
+    in initiated if the <b>Shift</b> key is not also pressed.
+
+    <p>
+    Any object other than subcells can be stretched, but the effect of
+    the stretch differs on the various objects.  <a
+    href="xic:box">Boxes</a> and <a href="xic:label">labels</a> are
+    stretched in such a way as to maintain a rectangular shape.  That
+    is, if a corner is stretched, the adjacent vertices are also moved
+    in order to keep the internal angles 90 degrees.
+
+    <p>
+    The stretch operation works differently on Manhattan polygons than
+    polygons containing nonorthogonal angles.  For non-Manhattan
+    polygons, a single vertex is moved, all others remain fixed.  The
+    stretch operation on Manhattan polygons is similar to the
+    operation as applied to boxes, i.e., the corner and adjacent
+    vertices are changed so as to keep the polygon Manhattan.  A
+    single vertex can be stretched arbitrarily either by selecting the
+    vertex in the <b>Stretch</b> command in the <b>Modify Menu</b>, or
+    by using the vertex editor in the <a
+    href="xic:polyg"><b>polyg</b></a> command.
+
+    <p>
+    If the <b>Ctrl</b> key is pressed when the user presses button 1,
+    and the pointer is over a selected object that is not a subcell, a
+    stretch operation will be initiated.  The operation is performed
+    on all selected objects, and the new outlines are ghost drawn.  As
+    for move/copy, the operation can be performed by clicking twice,
+    or by dragging and releasing button 1.  For selected polygons and
+    wires, the vertex nearest the button 1 press location, for each
+    object, is moved.  For boxes and labels, the corner closest to the
+    button down location is moved.
+
+    <p>
+    If the <b>Shift</b> key is pressed when the stretch is completed,
+    the angle of translation is constrained to multiples of 45
+    degrees.  This can be seen in the behavior of the ghost drawn
+    outlines while the pointer moves, with and without the
+    <b>Shift</b> key pressed.  At this stage, the <b>Ctrl</b> key is
+    ignored.
+
+    <a name="notes"></a>
+    <h2>Additional Notes</h2>
+
+    <p>
+    Pressing the <b>Esc</b> key will terminate these operations while
+    in progress.  The <b>Tab</b> and <b>Shift-Tab</b> keys will undo
+    and redo the operation, respectively.  These operations sound
+    complex when described in print, but become quite natural in
+    practice.  The user should spend a few minutes learning these
+    operations.
+
+    <p>
+    In the <a href="layertab">layer menu</a>, button 1 selects the
+    current layer, as indicated by the highlight box drawn around the
+    entry.  If the <b>Shift</b> or <b>Ctrl</b> key is pressed while
+    clicking with button 1 in the layer menu, the action is identical
+    to a <a href="button2">button 2</a> press, i.e., the layer
+    visibility status is changed.  This is advantageous for users with
+    a two-button pointing device, on which button 2 is usually absent.
+
+    <p>
+    Many of the pop-up windows can be moved by pressing button 1 while
+    the pointer in on the background or a label object in the pop-up. 
+    While button 1 is held, the outline of the pop-up is ghost-drawn
+    and attached to the pointer.  The pop-up is moved to the new
+    location when button 1 is released.
+
+!!SEEALSO
+mouse
+
+!! 060109
+!!KEYWORD
+button2
+!!TITLE
+Middle Mouse Button
+!!HTML
+    Button 2 a is usually the center button on a three-button pointing
+    device.  On two-button mice, the right button is typically button
+    3, and button 2 is missing.  On some systems, pressing buttons 1
+    and 3 simultaneously will simulate a button 2 press.  <i>Xic</i>
+    provides alternative ways to perform the button 2 operations, so
+    that a two-button pointing device can be used, but is a tiny bit
+    less efficient.
+
+    <p>
+    If button 2 is clicked in a drawing window, the window is redrawn
+    with the click location centered in the window.  If instead button
+    2 is pressed and the pointer moved to a new location before
+    release, the window is redrawn with the press location moved to
+    the release location.  If there are multiple windows open, only
+    the window under the release will be redrawn.  Thus, for example
+    to change the view in a <a href="xic:vport">sub-window</a>, press
+    and hold button 2 while pointing at the desired feature in the
+    main (or another) window, then release button 2 while pointing in
+    the sub-window.  The sub-window will show the pointed-to objects at
+    the release location.
+
+    <p>
+    The same action will be initiated if button 3 is pressed while
+    either the <b>Shift</b> or <b>Ctrl</b> key is held down.  The key
+    state when button 3 is released does not matter.
+
+    <p>
+    In the <a href="layertab">layer menu</a>, button 2 will switch the
+    visibility of layers, as indicated by the sample box.  Clicking
+    button 2 on the individual layers toggles their visibility. 
+    Clicking button 2 on the small box icon to the far right of the
+    layer menu will toggle visibility of all layers.  All layers will
+    be set to visible or invisible according to whether a majority of
+    layers were originally invisible or visible, respectively.
+
+    <p>
+    The behavior is a little different between physical and electrical
+    modes.  In physical mode, the screen will not be redrawn
+    automatically, unless the <b>Shift</b> key is held during the
+    button 2 press, but can be redrawn by clicking button 2 in the
+    center of the drawing window, or by pressing the </b>Ctrl-r</b>
+    key combination.
+
+    <p>
+    In electrical mode, the screen is automatically redrawn.  The SCED
+    (drawing) layer is always visible.  Instead of the visibility of
+    this layer being toggled, the fill setting is toggled between
+    solid and empty fill.
+
+    <p>
+    The same behavior is obtained by holding <b>Shift</b> or
+    <b>Ctrl</b> while clicking with <a href="button1">button 1</a> in
+    the layer menu.  If <b>Shift</b> is held, the screen will be
+    redrawn automatically while in physical mode.
+
+!!SEEALSO
+mouse
+
+!! 022215
+!!KEYWORD
+button3
+!!TITLE
+Right Mouse Button
+!!HTML
+    Button 3 performs a zoom operation.  Draagging or clicking twice
+    defines diagonal corners of a rectangle to zoom into.  The window
+    will then display the contents of this area (after compensating
+    for aspect ratio). 
+
+    <p>
+    If the same operation is done, but <b>Ctrl</b> or <b>Shift</b> is
+    pressed during the drag button-up or the second mouse click,
+    operation is different.  In this case, the area is marked by a
+    dotted highlighting box, and a subsequent button 3 press will
+    complete the operation.  A press in the same window will cause the
+    area defined by the first and second points to be shrunk by the
+    ratio of the diagonals of the rectangles defined by point 1, point
+    2 and point 1, point 3.  To zoom in a lot, point 2 is much closer
+    to point 1 than point 3 is to point 1.  Alternatively, a button 3
+    press in a different window will display the boxed area of the
+    first window in the second window.
+
+    <p>
+    If <b>Shift</b> or <b>Ctrl</b> is held down before the initial
+    button 3 press in a drawing window, a pan operation will be
+    initiated instead of the zoom, the same as if button 2 was
+    pressed.
+
+    <p>
+    In the <a href="layertab">layer menu</a>, button 3 enables layer
+    blinking, if neither of <b>Shift</b> or <b>Ctrl</b> is pressed. 
+    Pressing and holding button 3 over a layer entry in the layer
+    table will cause that layer to blink periodically in the drawing
+    windows, while button 3 remains pressed.  Layers that happen to
+    have the same color as the selected blinking layer will also
+    blink, since the operation is sensitive only to the layer color.
+
+    <p>
+    In combination with <b>Shift</b> and <b>Ctrl</b>, clicking with
+    button 3 on a layer entry provides a shortcut:
+    <ul>
+    <li><b>Ctrl</b>-button 3 will set the current layer to the
+    clicked-on layer, and bring up the <a href="xic:color"><b>Color
+    Selection</b></a> panel, loaded with that layer's color.
+
+    <li><b>Shift</b>-button 3 will set the current layer to the
+    clicked-on layer, and bring up the <a href="xic:fill"><b>Fill
+    Pattern Editor</b></a> loaded with that layers pattern.
+
+    <li><b>Ctrl-Shift</b>-button 3 will set the current layer to the
+    clicked-on layer, and bring up the <a href="xic:lpedt"><b>Tech
+    Parameter Editor</b></a> targeted to the layer.
+    </ul>
+
+!!SEEALSO
+mouse
+xic:zoom
+
+!! 020715
+!!KEYWORD
+noopbutton
+!!TITLE
+Fourth Mouse Button - Mouse Wheel
+!!HTML
+    Support is provided for a fourth button for those pointing devices
+    which have four buttons.  Pressing button 4 does nothing except
+    update the <a href="coordline">coordinates</a> displayed
+    on-screen.  No action is performed.  This can be simulated by
+    holding the <b>Ctrl</b>, <b>Shift</b>, and <b>Alt</b> keys while
+    pressing button 1.
+
+!!SEEALSO
+mouse
+
+!! 020715
+!!KEYWORD
+mousewheel
+!!TITLE
+Mouse Wheel
+!!HTML
+    The GTK user interface provides support for mouse wheels.  Any
+    window that has scroll bars can be scrolled by moving the pointer
+    <i>over a scroll bar</i> and turning the mouse wheel.  The drawing
+    windows, most text windows and help viewer windows respond to the
+    mouse wheel by scrolling when the pointer is in the window, as
+    well as over a scroll bar (if any).  In drawing windows, scrolling
+    will be horizontal if <b>Shift</b> is held, and if <b>Ctrl</b> is
+    held (which overrides <b>Shift</b>), the display will zoom in or
+    out instead.  The mouse wheel sensitivity can be changed with the
+    <a href="MouseWheel"><tt>MouseWheel</tt></a> variable.
+
+!!SEEALSO
+mouse
+
+!! 111515
+!!KEYWORD
+xic:mail
+!!TITLE
+WR Button, Send Email
+!!HTML
+    <img src="wr.xpm">
+    <b>Keyword</b>: <tt>mail</tt>
+
+    <p>
+    The <b>WR</b> button is located in the upper left corner
+    of the <i>Xic</i> main window.  Pressing this button brings up a
+    <a href="mailclient">mail client</a> window.  The mail client can
+    be used to send mail to any email address, though when the panel
+    appears, it is pre-loaded with the address of Whiteley Research
+    technical support.  The text field containing the address, as well
+    as the subject, can be changed.
+
+!!SEEALSO
+topbuttons
+
+!! 020615
+!!KEYWORD
+topbuttons
+!!TITLE
+Top Button Menu
+!!HTML
+    The top button menu extends along the top of the <i>Xic</i> main
+    window, just below the main menu bar.  This contains a number of
+    buttons and other controls.  In left-to-right order, these are
+    described briefly below.
+
+    <dl>
+    <dt>The <a href="xic:lsrch"><b>lsearch</b></a> button and entry: find
+     layer and set current<dd>
+    The text entry displays the name of the current layer.  This entry
+    area and the adjacent button with the blue triangle icon can
+    perform a layer search by (partial) name.  Matching layers become
+    the current layer.
+    </dl>
+
+    <dl>
+    <dt>The <a href="xic:ltvis"><b>ltvis</b></a> button: show/hide layer
+     table<dd>
+    This button toggles visibility of the <a href="layertab">layer
+    table</a>.
+    </dl>
+
+    <dl>
+    <dt>The <a href="xic:lpal"><b>lpal</b></a> button: show/hide layer
+     palette<dd>
+    This button controls visibility of the layer palette.
+    </dl>
+
+    <dl>
+    <dt>The <a href="xic:setcl"><b>setcl</b></a> button: set current
+     layer form clicked-on object<dd>
+    Pressing this button, then clicking on an object in a drawing
+    window will set the current layer to the layer of the object.
+    </dl>
+
+    <dl>
+    <dt>The <a href="xic:selcp"><b>selcp</b></a> button: show/hide selection
+     control panel<dd>
+    This button controls the visibility of the <b>Selection
+    Control</b> panel.
+    </dl>
+
+    <dl>
+    <dt>The <a href="xic:desel"><b>desel</b></a> button: deselect all
+     objects<dd>
+    Pressing this button will deselect all currently selected objects.
+    </dl>
+
+    <dl>
+    <dt>The <a href="xic:rdraw"><b>rdraw</b></a> button: redraw 
+     windows<dd>
+    Pressing this button will redraw the main window, and all
+    sub-windows showing the same display mode (electrical or
+    physical) as the main window.
+    </dl>
+
+    <dl>
+    <dt>The <a href="coordline">coordinates readout</a><dd>
+    This window displays the coordinates of the mouse pointer.
+    </dl>
+
+!! 100312
+!!KEYWORD
+xic:lsrch
+!!TITLE
+The lsrch Button and Entry: Find Layer and Set Current
+!!HTML
+    <b>Keyword</b>: <tt>lsrch</tt>
+
+    <p>
+    Just above the <a href="layertab">layer table</a>, at the far left
+    of the <a href="topbuttons">top button menu</a>, is a text entry
+    area, with a button containing a blue triangle icon to the left. 
+    The name of the current layer is displayed in this area.  This can
+    be used to find layers by name.  One can enter the first few
+    characters of a layer name into the text area, then press the
+    button to the left.  The button icon will change to two triangles,
+    and the layer table will scroll to the first matching layer found
+    (if any), as the current layer.  Clicking the button a second and
+    subsequent time will scroll to the next and later matches.  Though
+    the text in the entry area will take on the selected layer name,
+    the search string is retained internally as long as the
+    two-triangle icon is displayed on the button.  This will revert to
+    the single triangle after a few seconds if not clicked.  When
+    using the <i>layer</i><tt>:</tt><i>purpose</i> form, both the
+    layer and purpose strings are handled independently, and both can
+    contain just the first few characters of the actual layer and
+    purpose names.
+
+!!SEEALSO
+topbuttons
+xic:mail
+
+!! 100312
+!!KEYWORD
+xic:ltvis
+!!TITLE
+The ltvis Button: Show/Hide Layer Table
+!!HTML
+    <img src="ltvis.xpm">
+    <b>Keyword</b>: <tt>ltvis</tt>
+
+    <p>
+    The <b>ltvis</b> button in the <a href="topbuttons">top button
+    menu</a> toggles display of the <a href="layertab">layer
+    table</a>.  As the layer table occupies significant screen area,
+    it is sometimes useful to get rid of it to enable a larger main
+    drawing window.
+
+    <p>
+    Much of the functionality of the layer table is found in the <a
+    href="xic:lpal">layer palette</a> which in some ways is like a
+    "mini layer table" containing only a few chosen layers.  Even
+    without the palette, one can switch the current layer using the <a
+    href="xic:lsrch">layer search</a> capability, or the <a
+    href="xic:setcl"><b>setcl</b></a> button, both found in the <a
+    href="topbuttons">top button menu</a>.
+
+!!SEEALSO
+topbuttons
+
+!! 022916
+!!KEYWORD
+xic:lpal
+!!TITLE
+The lpal Button: Show/Hide Layer Palette
+!!HTML
+    <img src="lpal.xpm">
+    <b>Keyword</b>: <tt>lpal</tt>
+
+    <p>
+    <img src="screenshots/lpal.png" align=right>
+    The <b>lpal</b> button in the <a href="topbuttons">top button
+    menu</a> will bring up the layer palette.  The layer palette is an
+    adjunct to the <a href="layertab">layer table</a> which provides a
+    means for quick access to a few "important" layers, and prints
+    information about layers.  This is particularly useful when
+    working with technologies containing a large number of layers, to
+    avoid hunting through the layer table.  When the mouse pointer
+    hovers over a layer indicator in the layer table or in the
+    palette, information about that layer is printed in the top part
+    of the palette.
+
+    The layer palette consists of three logical sections.  The top
+    section is a text area that displays information about the layer
+    currently or was last under the mouse pointer.  The user can move
+    the pointer over the layer icons in the layer table or the
+    palette, and the palette will display the information.  The
+    information printed includes the <a
+    href="techfile:layers">alias</a> and description of the layer, and
+    the GDSII mapping layer/datatype numbers.
+
+    <p>
+    In the lower section, there are four rows of locations for layer
+    indicators.  The indicators in this section can be dragged and
+    clicked on in the same manner and same functionality as layers in
+    the layer table.  The top row contains layer indicators for the
+    last five choices of current layer.  This row is automatically
+    updated whenever the user selects a current layer by any means. 
+
+    <p>
+    The three rows below can be filled by the user, by
+    dragging/dropping layers from the layer table, or from the top row
+    in the palette.  Layers in these rows can be dragged/dropped
+    within the rows to change the listing order.  A layer indicator
+    can be removed from these rows by pressing the <b>Remove</b>
+    button at the top of the panel, then clicking on a layer indicator
+    in this area.  The indicator will disappear, and the <b>Remove</b>
+    button will become unselected.
+
+    <p>
+    In order to conserve space, only the index number of the layer in
+    the layer table is shown with the layer sample box in the layer
+    palette.  The layer's name and other information can be obtained
+    by hovering over the indicator with the mouse pointer.
+
+    <p>
+    The palette layers can be saved in one of seven registers and
+    restored later, with the <b>Save</b> and <b>Restore</b> buttons. 
+    There are separate registers for physical and electrical modes, so
+    that the same register number can be used in each mode.  The
+    current palette is saved when the palette is dismissed, and
+    restored when the palette is popped up again.
+
+    <p>
+    These registers are saved in a technology file created with the <a
+    href="xic:updat"><b>Save Tech</b></a> button in the <b>Attributes
+    Menu</b>.  The corresponding technology file <a
+    href="PhysLayerPalette">keywords</a> are
+    <tt>PhysLayerPalette1</tt> - <tt>PhysLayerPalette7</tt> and
+    <tt>ElecLayerPalette1</tt> - <tt>ElecLayerPalette7</tt>.  Each
+    keyword can be set to a space-separated list of layer names,
+    representing the content and order of the layers in the register.
+
+!!SEEALSO
+topbuttons
+
+!! 062313
+!!KEYWORD
+xic:setcl
+!!TITLE
+The setcl Button: Set Current Layer from Clicked-On Object
+!!HTML
+    <img src="setcl.xpm">
+    <b>Keyword</b>: <tt>setcl</tt>
+
+    <p>
+    The <b>setcl</b> button in the <a href="topbuttons">top button
+    menu</a> allows setting the current layer by clicking on objects
+    in a drawing window.  The user must first press the <b>setcl</b>
+    button, then click on an object in a drawing window.  The current
+    layer will be reset to the layer of that object.  Without changing
+    the mouse pointer location, clicking will cycle through other
+    layers of objects that were under the original click location. 
+    Additional clicks must come within a short period of time, or the
+    command will exit first.
+
+!!SEEALSO
+topbuttons
+
+!! 100412
+!!KEYWORD
+xic:selcp
+!!TITLE
+The selcp Button: Show/Hide Selection Control Panel
+!!HTML
+    <img src="selcp.xpm">
+    <b>Keyword</b>: <tt>selcp</tt>
+
+    <p>
+    The <b>selcp</b> button in the <a href="topbuttons">top button
+    menu</a> displays the <b>Selection Control Panel</b> which
+    provides a number of mode switches which control object selection.
+
+    <p>
+    There are three "radio button" groups.  The <b>Pointer Mode</b>
+    group sets the mode for selections initiated with <a
+    href="button1">button 1</a> while outside of commands.  There are
+    three choices:
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><b>Normal</b></td><td>Standard select/modify behavior</td></tr>
+    <tr><td><b>Select</b></td><td>Allow selections only</td></tr>
+    <tr><td><b>Modify</b></td><td>Allow move/copy/stretch on selected
+     objects only</td></tr>
+    </table>
+
+    <p>
+    The <b>Area Mode</b> group provides three modes for <a
+    href="xic:area">area</a> (drag-over) selections.
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><b>Normal</b></td><td>Standard area selection behavior,
+      objects are chosen if the object touches but does not completely
+      cover the selection area</td></tr>
+    <tr><td><b>Enclosed</b></td><td>Chosen objects must exist completely
+      within the selection area</td></tr>
+    <tr><td><b>All</b></td><td>Any object that touches the selection
+      box is chosen</td></tr>
+    </table>
+  
+    <p>
+    The <b>Selections</b> group modifies how chosen objects are
+    processed.
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><b>Normal</b></td><td>Standard behavior</td></tr>
+    <tr><td><b>Toggle</b></td><td>Reverse the selected/deselected status
+      of all chosen objects</td></tr>
+    <tr><td><b>Add</b></td><td>Select all unselected objects chosen</td></tr>
+    <tr><td><b>Remove</b></td><td>Deselect all selected objects chosen</td></tr>
+    </table>
+
+    <p>
+    While selecting, and the <b>Selections</b> group is <b>Normal</b>,
+    during completion of the selection operation, the modifier keys
+    are recognized:
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><b>Shift</b></td><td>Select all unselected objects chosen</td></tr>
+    <tr><td><b>Ctrl</b></td><td>Deselect all selected objects chosen</td></tr>
+    <tr><td><b>Shift-Ctrl</b></td><td>Reverse the selected/deselected
+     status of all objects chosen</td></tr>
+    </table>
+
+    <p>
+    Thus, the <b>Toggle</b>/<b>Add</b>/<b>Remove</b> modes can be
+    established transiently with the modifier keys.  For area
+    selection, the normal operation is to toggle the selections.  For
+    a point select (mouse click), if more than one underlying object
+    is selected, one of the selected objects is deselected, and there
+    is no new selection.
+
+    <p>
+    The <b>Objects</b> group specifies the type of objects that can be
+    selected and deselected with mouse operations.  The buttons are
+    labeled <b>Cells</b>, <b>Boxes</b>, <b>Polys</b>, <b>Wires</b>,
+    and <b>Labels</b>.  These buttons control whether or not the
+    indicated type of object can be selected or deselected with the
+    mouse.  This is useful, for example, when one needs to select
+    cells that are covered by geometric objects, since the geometric
+    objects will always be selected with a mouse click, and not the
+    cells.
+
+    <a name="searchup"></a>
+    <p>
+    Normally, when scanning through the database for objects that are
+    within the selection area, layers are searched from logical top to
+    bottom.  The logical top layer is the last layer listed in the
+    layer table (i.e., at the bottom).  Thus, in some modes objects on
+    upper layers will be selected preferentially over objects on lower
+    layers.  If the <b>Search Up</b> button is active, this ordering
+    is reversed, layers are searched from logical bottom to top, or
+    top to bottom as listed in the layer table.
+
+    <p>
+    In the extraction system, the search order will affect the default
+    association of terminals to layers.  It also applies to the
+    operations in the <a href="xic:exsel"><b>Path Selection
+    Control</b></a> panel.
+
+!!SEEALSO
+topbuttons
+
+!! 101212
+!!KEYWORD
+xic:desel
+!!TITLE
+The desel Button: Deselect Objects
+!!HTML
+    <img src="desel.xpm">
+    <b>Keyword</b>: <tt>desel</tt>
+      
+    <p>
+    Pressing the <b>desel</b> button will deselect all of the
+    currently <a href="button1">selected objects</a>.  Individual or
+    groups of objects can be deselected by selecting them a second
+    time with the mouse.  When not in a command mode, pressing the
+    <b>Esc</b> key will also deselect all selected objects.
+
+!!SEEALSO
+topbuttons
+
+!! 020615
+!!KEYWORD
+xic:rdraw
+!!TITLE
+The rdraw Button: Redraw Windows
+!!HTML
+    <img src="rdraw.xpm">
+    <b>Keyword</b>: <tt>rdraw</tt>
+      
+    <p>
+    Pressing this button will redraw the main window, and any
+    sub-windows that are showing the same display mode (electrical or
+    physical).  The drawing window with keyboard focus can also be
+    redrawn by typing <b>Ctrl-r</b>.  Clicking with button 2 near the
+    center of the window is yet another way to force a redraw.  After
+    most operations, the windows are automatically redrawn, so forcing
+    a redraw is not often needed.  Exceptions are when changing layer
+    colors and fill patterns.
+
+!!SEEALSO
+topbuttons
+
+!! 101212
+!!KEYWORD
+coordline
+!!TITLE
+Coordinates Display
+!!HTML
+    Just above the <i>Xic</i> main drawing window is an area
+    where pointer coordinates are printed.  The coordinates are given
+    in microns, relative to the internal coordinate system.  In
+    physical mode, the origin is indicated on-screen.  The first row
+    in the coordinate display is the current location of the pointer. 
+    The second row is the location of the last button press event. 
+    The third row is the delta between the current position and the
+    last button press event.
+
+!!SEEALSO
+topbuttons
+
+!! 021812
+!!KEYWORD
+mainwindow
+!!TITLE
+Main Drawing Window
+!!HTML
+    The main drawing window occupies the largest section of the
+    visible user interface.  This is the primary presentation and work
+    area for editing.  The main drawing window supports <a
+    href="dragdrop">drag and drop</a> as a drop receiver for files.
+
+    <p>
+    Drawing windows respond to a number of button operations and key
+    presses to pan and zoom.  See the sections on button and key
+    operations for a complete description.  In addition, drawing
+    windows respond to mouse wheel events.  The basic action is
+    vertical scrolling, however if <b>Shift</b> is held, the window
+    will scroll horizontally.  If <b>Ctrl</b> is held (which overrides
+    <b>Shift</b>) the display will zoom in or out.  The mouse wheel
+    sensitivity can be changed with the <a
+    href="MouseWheel"><tt>MouseWheel</tt></a> variable.
+
+!!SEEALSO
+button1
+button2
+button3
+noopbbutton
+keyboard
+keyspresd
+
+!! not in manual
+!!KEYWORD
+subwindow
+!!TITLE
+Sub-Window
+!!HTML
+    This is a sub-window created with the <a
+    href="xic:vport"><b>Viewport</b></a> command.  It behaves like the
+    main window in most respects, but is independently configurable
+    with regard to size, magnification, grid parameters, and other
+    attributes.
+
+!!SEEALSO
+mainwindow
+
+!! 020715
+!!KEYWORD
+dragdrop
+!!TITLE
+Drag and Drop
+!!HTML
+    <i>Xic</i> supports standard drag and drop protocols.  One is able
+    to drag files from many file manager programs into the main window
+    of <i>Xic</i>, and that file will be loaded into <i>Xic</i>.  The
+    <a href="filesel"><b>File Selection</b></a> panel from the <b>File
+    Select</b> button in the <b>File Menu</b>, and the <a
+    href="xic:files"><b>Files Listing</b></a> pop-up from the <b>Files
+    List</b> button in the <b>File Menu</b>, participate in the
+    protocols as sources and receivers.  The <a href="texteditor">text
+    editor</a> and <a href="mailclient">mail</a> pop-ups are drop
+    receivers.  While in text editing mode, the <a
+    href="promptline">prompt line</a> is a drop receiver, and drops in
+    the main window are redirected to the prompt line when editing
+    mode is active.  Most of the pop-ups in <i>Xic</i> which solicit a
+    text string are also drop receivers.
+
+    <p>
+    The file must be a standard file on the same machine.  If it is
+    from a tar file, or on a different machine, first drag it to the
+    desktop or to a directory, then into <i>Xic</i>.  The Gnome gmc
+    file manager allows one to view the contents of tar files, etc. 
+    as a "virtual file system".  Window Maker and Enlightenment window
+    managers, at least, are drag/drop aware.
+
+    <p>
+    Most of the listing pop-ups in <i>Xic</i> are drag sources, i.e.,
+    one can drag the name from the listing and drop it in a drawing
+    window.
+
+    <p>
+    When a window is displaying cells from a Cell Hierarchy Digest
+    (CHD), meaning that the <b>Display</b> button in the <a
+    href="xic:hier"><b>Cell Hierarchy Digests</b></a> panel is
+    engaged, the dropped cell name must match a cell name in the CHD. 
+    If not, an error message will appear.  Otherwise, the display will
+    switch to the dropped cell as the root.  Changing the display root
+    does <i>not</i> change the <a href="xic:chdconfig">default cell</a>
+    of the CHD.  In this mode, nothing new is brought into program
+    memory.
+
+    <p>
+    In normal display mode, the window will open the cell or file
+    dropped.  The dropped object can be of various types, depending on
+    the source:  file names, cell names from memory, cell names from a
+    CHD, and library references are all possible.  If the dropped
+    object does not suggest an unambiguous cell, a pop-up will appear
+    requesting that the user make a selection from a given listing. 
+    This may happen, for example, when a dropped file name contains
+    more than one top-level cell, or the dropped name is a library
+    containing multiple references.
+
+    <p>
+    A dropped file name will cause the file to be read into memory,
+    and the top-level cell will be displayed.  A cell name from a CHD
+    will cause the cell and its hierarchy to be extracted from the
+    CHD's source and loaded into memory, and the given cell will be
+    displayed.  Library references that point to a cell will likewise
+    be brought into memory, and the referenced cell will be displayed. 
+    A cell name will simply display that cell, which if not already in
+    memory, will be opened through the library and search path
+    mechanism, or created internally as an empty cell if unresolved.
+
+    <p>
+    If dropped into the main drawing window, the displayed cell
+    becomes the current cell for editing and selections.  If dropped
+    in a <a href="xic:vport">sub-window</a>, the cell will be
+    displayed, but can not be edited if it is different from the
+    current cell (the cell shown in the main drawing window).
+
+!!SEEALSO
+mainwindow
+
+!! 012016
+!!KEYWORD
+statusline
+!!TITLE
+Status Display
+!!HTML
+    The status area is located below the <a href="promptline">prompt
+    line</a>.  This area provides information about current program
+    modes.  It displays the technology name from the technology file,
+    if any, the current cell name, the <a href="xic:grid">grid</a>
+    spacing, the snap number if not 1, the number of objects selected
+    if any, and the level of subedit in a <a
+    href="xic:push"><b>Push</b></a>, if in a subedit.  Also displayed
+    is a mode keyword, or "<tt>MAIN</tt>", and a code representing the
+    <a href="xic:xform">current transform</a> if set.  If the current
+    cell has been modified and not saved to disk, "<tt>Mod</tt>" will
+    appear in the status area in colored text.  If the current cell
+    has the IMMUTABLE <a href="xic:cells#flags">flag</a> set,
+    "<tt>RO</tt>" (for "read only") will appear.  If the physical grid
+    origin is not 0,0 (set with the <a
+    href="PhysGridOrigin"><b>PhysGridOrigin</b></a> variable),
+    "<tt>PhGridOffs</tt>" will be displayed in colored text.
+
+    <p>
+    Dragging over text in the status display with button 1 held down
+    will select the text.  Clicking on a word with button 1 will
+    select the word.  Selected text is available for <a
+    href="textentry">export</a> to other windows, as the primary
+    selection in Unix/Linux, or from the clipboard in Windows.  Under
+    Windows, the selection is copied to the Windows clipboard
+    automatically.
+
+!!SEEALSO
+promptline
+xic:commands
+
+!!KEYWORD
+wrencode wrdecode
+!!TITLE
+Encryption Accessories
+!!HTML
+    The <i>Xic</i> distribution provides the following utilities for
+    encryption/decryption of files.  Although the primary purpose is
+    to support the <a href="scr:crypt">encryption</a> of <i>Xic</i>
+    scripts, their utility is general.
+
+    <p>
+    The utilities are:
+    <blockquote>
+    <tt>wrencode</tt> <i>file</i> [<i>files</i> ...]<br>
+    <tt>wrdecode</tt> <i>file</i> [<i>files</i> ...]
+    </blockquote>
+
+    <p>
+    Both programs take as arguments lists of files to encode or
+    decode.  At least one file must be specified.
+
+    <p>
+    The <tt>wrencode</tt> program will prompt the user for a password,
+    and for a repetition of the password.  The files on the command
+    line will be encrypted using this password.
+
+    <p>
+    The <tt>wrdecode</tt> program will prompt once for a password, and
+    will decrypt the files listed in the command line which have been
+    encrypted with this password.  They are not touched otherwise.
+
+    <p>
+    <b>WARNING</b>:  since the encryption is done in-place, be sure to
+    save a non-encrypted backup of the files, in case the password is
+    lost.
+
+    <p>
+    The encryption/decryption should be portable between all systems
+    that can run these two utilities.
+
+!!KEYWORD
+wrsetpass
+!!TITLE
+Default Password Setting Utility
+!!HTML
+    This utility is for use with <i>Xic</i>, and will alter the
+    program binary executable to include a user-specified default
+    password.  The default password is used for reading
+    <a href="scr:crypt">encrypted</a> scripts.
+
+    <p>
+    Usage:
+    <blockquote>
+    <tt>wrsetpass</tt> <i>path_to_executable</i>
+    </blockquote>
+
+    <p>
+    This utility will reset the default password in the <i>Xic</i>
+    binary file image whose path is given as an argument.  The program
+    will prompt for a new password, then modify the <i>Xic</i> program
+    file.  Note that you must have write permission for the <i>Xic</i>
+    executable (which likely means that you must be root).
+
+    <p>
+    Note that for security the actual password is not saved in the
+    <i>Xic</i> executable file, only an encrypted version.
+

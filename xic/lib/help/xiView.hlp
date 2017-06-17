@@ -1,0 +1,1256 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiView.hlp,v 1.61 2015/02/22 21:51:30 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiView.hlp
+!!TITLE
+xiView.hlp
+!!HTML
+
+!!SUBTOPICS
+xic:viewmenu
+xic:view
+xic:phys
+xic:sced
+xic:expnd
+xic:zoom
+xic:vport
+xic:peek
+xic:ldb3d
+xic:csect
+xic:ruler
+xic:info
+xic:alloc
+xic:wdump
+xic:lshow
+xic:swap
+xic:load
+xic:cancl
+
+
+!! 061608
+!!KEYWORD
+xic:viewmenu
+!!TITLE
+View Menu
+!!HTML
+    The <b>View Menu</b> contains commands which alter the view shown
+    in the drawing windows.
+
+    <p>
+    The table below lists the commands found in the <b>View Menu</b>.  The
+    internal command name is listed, as is the command function.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>View Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:view"><b>View</b></a></td> <td><tt>view</tt></td>
+      <td>none</td> <td>Set view in window</td></tr>
+    <tr><td><a href="xic:phys"><b>Physical</b></a> or
+      <a href="xic:sced"><b>Electrical</b></a></td> <td><tt>phys</tt> or
+      <tt>sced</tt></td> <td>none</td> <td>Switch mode</td></tr>
+    <tr><td><a href="xic:expnd"><b>Expand</b></a></td> <td><tt>expnd</tt></td>
+      <td><b>Expand</b></td> <td>Show detail in window</td></tr>
+    <tr><td><a href="xic:zoom"><b>Zoom</b></a></td> <td><tt>zoom</tt></td>
+      <td>dialog</td> <td>Change window scale</td></tr>
+    <tr><td><a href="xic:vport"><b>Viewport</b></a></td> <td><tt>vport</tt></td>
+      <td>sub-window</td> <td>New drawing window</td></tr>
+    <tr><td><a href="xic:peek"><b>Peek</b></a></td> <td><tt>peek</tt></td>
+      <td>none</td> <td>Show layers in area</td></tr>
+    <tr><td><a href="xic:csect"><b>Cross Section</b></a></td>
+      <td><tt>csect</tt></td>
+      <td>sub-window</td> <td>Show layers in cross-section</td></tr>
+    <tr><td><a href="xic:ruler"><b>Rulers</b></a></td> <td><tt>ruler</tt></td>
+      <td>none</td> <td>Add transient gradations</td></tr>
+    <tr><td><a href="xic:info"><b>Info</b></a></td> <td><tt>info</tt></td>
+      <td><b>Info</b></td> <td>Show cell/object parameters</td></tr>
+    <tr><td><a href="xic:alloc"><b>Allocation</b></a></td>
+      <td><tt>alloc</tt></td>
+      <td><b>Memory Monitor</b></td> <td>Show memory statistics</td></tr>
+    </table>
+
+!!SEEALSO
+xic:commands
+
+!! 061608
+!!KEYWORD
+xic:view
+!!TITLE
+View
+!!HTML
+    <b>Keyword</b>: <tt>view</tt>
+
+    <p>
+    The <b>View</b> button in the <b>View Menu</b>, and the
+    <b>View</b> menu of <a href="xic:vport">sub-windows</a>, produces a
+    drop-down menu of view choices for the associated window.  For
+    each window, the last five views are saved in a list.  In
+    addition, up to five views can be saved by pressing <b>Ctrl-n</b>. 
+    These are assigned names consisting of the letters A-E.  The drop
+    down menu entries are:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th align="left"><tt>full</tt></th>
+        <td>center full view of cell</td></tr>
+    <tr><th align="left"><tt>prev</tt></th>
+        <td>cycle view backwards</td></tr>
+    <tr><th align="left"><tt>next</tt></th>
+        <td>cycle view forwards</td></tr>
+    <tr><th align="left"><tt>A-E</tt></th>
+        <td>if view saved with <b>Ctrl-n</b>, set selected view</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    If the <b>View</b> command is "pressed" by a key sequence, the
+    center full view is shown (same as for the <b>Home</b> key).
+
+    <p>
+    The view list is cleared whenever a new cell is displayed, or whenever
+    the mode is changed for the window.
+
+    <p>
+    <b>Ctrl-Shift-Right</b> arrow and <b>Ctrl-Shift-Up</b> arrow are
+    accelerators for <b>prev</b>, <b>Ctrl-Shift-Left</b> arrow and
+    <b>Ctrl-Shift-Down</b> arrow are accelerators for <b>next</b>, and
+    <b>Ctrl-Shift-a</b> through <b>Ctrl-Shift-e</b> are accelerators
+    for <b>A</b> through <b>E</b>.
+
+!!SEEALSO
+keyarrow
+xic:viewmenu
+
+!! 062109
+!!KEYWORD
+xic:phys
+!!TITLE
+Physical
+!!HTML 
+    <b>Keyword</b>: <tt>phys</tt>
+
+    <p>
+    This <b>Physical</b> button in the <b>View Menu</b>, and the
+    <b>View</b> menu of <a href="xic:vport">sub-windows</a>, available
+    only when the window is displaying electrical mode, changes the
+    display from electrical (schematic) mode to physical mode.  In the
+    main menu, this places <i>Xic</i> into an editing mode appropriate
+    for physical representation.  In the sub-windows, the
+    <b>Physical</b> button changes the view only.  Editing can not be
+    performed in a sub-window whose mode is not that of the main
+    window.
+
+    <p>
+    While in a <a href="xic:push"><b>Push</b></a>, the cell
+    currently being edited remains the current cell, but becomes
+    top-level (i.e., not in a <b>Push</b>) in the new mode.  If the
+    original mode is returned to without editing a different cell, the
+    <b>Push</b> stack is retained.  If a new cell is edited in the new
+    mode, through a <b>Push</b> or otherwise, the original <b>Push</b>
+    context is lost.  This context is also lost if the <b>Clear</b>
+    function in the <a href="xic:cells"><b>Cells Listing</b></a> panel
+    is invoked.
+
+    <p>
+    The present display mode can be made immutable, with certain
+    side-effects, by setting the variable <a
+    href="LockMode"><b>LockMode</b></a>.
+
+!!SEEALSO
+xic:viewmenu
+
+!! 062109
+!!KEYWORD
+xic:sced
+!!TITLE
+Electrical
+!!HTML
+    <b>Keyword</b>: <tt>sced</tt>
+
+    <p>
+    The <b>Electrical</b> button in the <b>View Menu</b>, and the
+    <b>View</b> menu of <a href="xic:vport">sub-windows</a>, available
+    only when the window is displaying physical mode, changes the
+    display from physical to electrical (schematic) mode.  In the main
+    menu, this places <i>Xic</i> into an editing mode appropriate for
+    electrical representation.  In the <a
+    href="xic:vport">sub-windows</a>, the <b>Electrical</b> button
+    changes the view only.  Editing can not be performed in a
+    sub-window whose mode is not that of the main window.
+
+    <p>
+    While in a <a href="xic:push"><b>Push</b></a>, the cell
+    currently being edited remains the current cell, but becomes
+    top-level (i.e., not in a <b>Push</b>) in the new mode.  If the
+    original mode is returned to without editing a different cell, the
+    <b>Push</b> stack is retained.  If a new cell is edited in the new
+    mode, through a <b>Push</b> or otherwise, the original <b>Push</b>
+    context is lost.  This context is also lost if the <b>Clear</b>
+    function in the <a href="cellsspanel"><b>Cells Listing</b></a>
+    panel is invoked.
+
+    <p>
+    The present display mode can be made immutable, with certain
+    side-effects, by setting the variable <a
+    href="LockMode"><b>LockMode</b></a>.
+
+!!SEEALSO
+xic:viewmenu
+
+!! 061608
+!!KEYWORD
+xic:expnd
+!!TITLE
+Expand
+!!HTML
+    <img src="screenshots/expand.png" align=right>
+
+    <b>jump to</b> <a href="xic:expnd#peek"><b>Peek Mode</b></a>
+
+    <p>
+    <b>Keyword</b>: <tt>expnd</tt>
+
+    <p>
+    The <b>Expand</b> button in the <b>View Menu</b>, and the
+    <b>View</b> menu of <a href="xic:vport">sub-windows</a>, brings up
+    the <b>Expand</b> pop-up, which controls the expansion of subcells
+    in the window.  All geometry is shown in an expanded cell, whereas
+    only the bounding box and possibly a name label are shown in the
+    unexpanded state.  If the cell happens to be an array, the
+    bounding box in the unexpanded state is shown as a dashed line. 
+    Ordinary instances have a solid line bounding box.
+
+    <p>
+    After pressing <b>Expand</b>, the pop-up appears.  The pop-up
+    contains a text entry area, a number of buttons which push
+    specific text into the entry area, an <b>Apply</b> button, a
+    <b>Dismiss</b> button, and a <b>Help</b> button.  When the pop-up
+    first appears, it is given the keyboard focus.  Under most (if not
+    all) window managers, one should be able to type into the text
+    entry area immediately.  Pressing the <b>Enter</b> key is
+    equivalent to pressing the <b>Apply</b> button.  Thus, one can
+    quickly change the expansion status entirely with the keyboard
+    accelerators (the change will apply to the window containing the
+    pointer).
+
+    <p>
+    For example, the default keypress mapping applies <a
+    href="keyctrlx">Ctrl-x</a> to the <b>Expand</b> button, so typing
+
+    <dl>
+    <dt><b>Ctrl-x 0 Enter</b><dd>
+    will set the expansion level to 0, and
+    <dt><b>Ctrl-x a Enter</b><dd>
+    will set the expansion level to "all".
+    </dl>
+  
+    <p>
+    The functions of the symbols which are recognized in the text
+    string will be described below.  The buttons which push text into
+    the entry area avoid the need for typing.  These are:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><b>+</b></td><td>
+      set to '+' (there can be multiple +'s added)</td></tr>
+    <tr><td><b>-</b></td><td>
+      set to '-' (there can be multiple -'s added)</td></tr>
+    <tr><td><b>All</b></td><td>
+      set to 'all'</td></tr>
+    <tr><td><b>0-5</b></td><td>
+      set to '0' - '5'</td></tr>
+    <tr><td><b>Peek Mode</b></td><td>
+      set to 'p' (available from main window only)</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Pressing the <b>Apply</b> button will pass the expansion string to
+    the internal expansion control function.
+
+    <p>
+    The characters which are recognized in the string are the letters
+    <tt>a</tt>, <tt>n</tt> for "all" and "none", one or more + or -
+    symbols (not mixed) which will increment or decrement the
+    hierarchy depth of expansion, a + or - followed by an integer,
+    which will increase or decrease the level by that integer, or
+    simply an integer, which will set the hierarchy depth to that
+    integer.  Setting the hierarchy depth to zero is the same as
+    "none".  All subcells up to the hierarchy depth are shown
+    expanded.
+
+    <p>
+    Each drawing window has its own expansion parameters and
+    <b>Expand</b> button.  When a sub-window is created, it inherits
+    the expansion status of the main window.  The expansion depth
+    entered applies only to that window.
+
+    <a name="peek"></a>
+    <h2>Peek Mode</h2>
+
+    If the <b>Expand</b> button from the <b>View Menu</b> is selected,
+    there is an additional feature available:  peek mode, which is
+    entered by returning "<tt>p</tt>".  This should not be confused
+    with the <a href="xic:peek"><b>Peek</b></a> command in the <b>View
+    Menu</b>.  In peek mode, the expanded status of individual cells
+    and subcells can be set by clicking or dragging with button 1. 
+    Only cells below the current expansion depth are affected, i.e.,
+    those that are normally displayed as unexpanded.  Thus, peek mode
+    has no effect if the expansion depth is set to "all".  Clicking on
+    an unexpanded cell, or dragging such that the cell is enclosed
+    within the drag rectangle, will cause that cell to be shown as
+    expanded (to one level) in the window where the button down event
+    occurred.  The process can be repeated to expose cells arbitrarily
+    deep in the hierarchy.  If the <b>Shift</b> key is held during the
+    pointing operation, previously expanded cells are unexpanded. 
+    This applies only to cells below the expansion depth.  Note that
+    unlike a standard selection operation, in peek mode one can
+    address subcells below the first hierarchy level, so long as the
+    parent cell is shown expanded.
+
+    <p>
+    Peek mode works by setting a flag in the instance descriptor of a
+    subcell.  Instance descriptors are stored in the parent cell. 
+    Suppose that a design contains multiple instances of cell B, each
+    of which contains a left and right instance of cell A.  In peek
+    mode, for example, if the left instance of A is made to be
+    expanded in an instance of B (which of course is also expanded),
+    this expansion of A will appear in all instances of B which are
+    expanded, not just the one clicked on.  This is a consequence of
+    the hierarchical nature of the database, where each instance of B
+    represents the contents of B, which includes the instance of A
+    with the flag set.
+
+    <p>
+    In peek mode, the operation applies to any window in which the
+    pointer was located when button one was pressed.  The result will
+    be consistent with the expansion depth of the particular window. 
+    While in peek mode, certain keyboard commands can be applied,
+    which will affect the window where the pointer was located when
+    the key press occurred.  The + and - keys increment and decrement
+    the expansion depth, a number key will set the expansion depth,
+    <b>a</b> will set the depth to "all", and <b>n</b> will set the
+    depth to "none", as will <b>0</b> (zero).  Each window has
+    independent expansion parameters.  Setting the expansion depth to
+    zero by pressing <b>0</b> or <b>n</b> will clear the peek mode
+    display flags.  Otherwise, the expansion depth and the peek mode
+    display of cells are independent.
+
+    <p>
+    In electrical mode, <a href="xic:symbl">symbolic cells</a> can be
+    shown as expanded, with a miniature rendition of the actual
+    circuit inside the symbolic bounding box area, while in peek mode. 
+    Click on the symbolic cell to expand, <b>Shift</b>-click to
+    unexpand.  Wires connecting the circuit connections to the symbol
+    terminals are added.  This rendition is for visual purposes only. 
+    If a subcell placed in symbolic mode is later changed to
+    non-symbolic mode, the view of the parent cell is likely to look
+    horrid, since the subcircuits will probably overlap.  The peek
+    mode feature allows viewing of the underlying circuit without this
+    problem.
+
+    <p>
+    The expansion status of a given subcell in a window is retained
+    after exiting peek mode, and after canceling a sub-window.  Setting
+    the expansion to "none" clears all expansion in peek
+    mode.
+
+!!SEEALSO
+xic:attr
+xic:viewmenu
+
+!! 032213
+!!KEYWORD
+xic:zoom
+!!TITLE
+Zoom
+!!HTML
+    <b>Keyword</b>: <tt>zoom</tt>
+    <img src="screenshots/zoom.png" align=right>
+
+    <p>
+    Pressing the <b>Zoom</b> button in the <b>View Menu</b> or the
+    <b>View</b> menu of <a href="xic:vport">sub-windows</a> brings up
+    the <b>Set Display Window</b> pop-up.  This pop-up can change the
+    scale (zoom) the window, or set a new display region.
+
+    <p>
+    To change the scale, enter a factor into the <b>Zoom Factor</b>
+    entry area, and press the associated <b>Apply</b> button.  Factors
+    greater that 1.0 will zoom out.
+
+    <p>
+    Alternatively, one can enter the center x and y values and width
+    (all in microns) of a new region to display.  The coordinates are
+    relative to the origin of the displayed cell.  The width is the
+    displayed width of the region to be displayed in the window, the
+    displayed height will depend on the drawing window's aspect ratio. 
+    Pressing the associated <b>Apply</b> button will redisplay the new
+    location.
+
+    <p>
+    The windowing parameter entries are pre-loaded with the current
+    window parameters, and track any changes made when the pop-up is
+    visible.
+
+    <p>
+    <a href="button3">Button 3</a> (the right mouse button) can also
+    be used to zoom, as can the numeric keypad + and - keys which zoom
+    in and out by a factor of two, or by ten percent if <b>Shift</b>
+    is also held.
+
+    <p>
+    In the case where the panel is brought by from a sub-window that
+    is displaying a <a href="xic:csect">cross-section</a>, there are
+    additional controls that allow adjustment of the vertical scaling
+    used in the cross section display.
+
+    <p>
+    This control group has its own <b>Apply</b> button.  The <b>Auto
+    Y-Scale</b> check box disables the automatic vertical scaling when
+    set.  The automatic scaling maintains full view of the entire
+    layer stack independent of the zoom factor.  The <b>Y-Scale</b>
+    entry allows a vertical scale factor to be entered, for use when
+    displaying the cross section.  When the <b>Apply</b> button is
+    pressed, the cross-section is redrawn with the settings given. 
+    The <a href="XSectNoAutoY"><b>XSectNoAutoY</b></a> variable will
+    be set or unset to reflect the state of the check box.  The <a
+    href="XSectYScale"><b>XSectYScale</b></a> variable will be set to
+    the scale factor if it is other than unity.
+
+!!SEEALSO
+xic:viewmenu
+
+!! 053110
+!!KEYWORD
+xic:vport
+!!TITLE
+Sub-Windows
+!!HTML
+    <img src="screenshots/vport.png" align=right>
+    <b>Keyword</b>: <tt>vport</tt>
+
+    <p>
+    The <b>Viewport</b> button in the <b>View Menu</b> brings up a
+    sub-window, which is a display window similar to the main drawing
+    window.  The user is requested to point at the diagonal endpoints
+    of the region to be displayed in the sub-window.  Each viewport
+    contains a menu of attribute buttons which apply to that window
+    only.  In particular, the sub-window can display cells in either
+    electrical or physical mode, however editing operations are only
+    possible if the sub-window mode and cell match those of the main
+    window.
+
+    <p>
+    The sub-window has a set of menus which control attributes which
+    can be set on a per-window basis.  When the cursor is in a
+    sub-window, characters entered are delivered to that sub-window, and
+    an unambiguous sequence match will select a sub-window button. 
+    Matches are looked for in the sub-window menu, the main menu, and
+    any pop-up menus, in that order.
+
+    <p>
+    The <b>View</b> menu button commands are mostly analogous to the
+    commands found in the main <b>View Menu</b>, however there are a
+    few entries in the <b>View</b> menu that have no analogs in the
+    main menu.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption><b>Sub-Window View Menu</b> (additional)</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:wdump"><b>Dump To File</b></a></td>
+      <td><tt>wdump</tt></td>
+      <td>text entry</td> <td>Dump window to image file</td></tr>
+    <tr><td><a href="xic:lshow"><b>Show Location</b></a></td>
+      <td><tt>lshow</tt></td>
+      <td>none</td> <td>Show position in main window</td></tr>
+    <tr><td><a href="xic:swap"><b>Swap With Main</b></a></td>
+      <td><tt>swap</tt></td>
+      <td>none</td> <td>Swap contents with main window</td></tr>
+    <tr><td><a href="xic:load"><b>Load New</b></a></td>
+      <td><tt>load</tt></td>
+      <td>none</td> <td>Load cell or file for viewing</td></tr>
+    </table>
+
+    <p>
+    The <b>Attributes</b> menu is identical to the <b>Main Window</b>
+    sub-menu found in the main <b>Attributes Menu</b>.  The functions
+    are the same but apply to the sub-window only.  When a new
+    sub-window appears, it inherits the current attribute settings of
+    the main window.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption><b>Sub-Window Attributes Menu</b></caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:freez"><b>Freeze Display</b></a></td>
+      <td><tt>freez</tt></td> <td>none</td>
+      <td>Suppress redisplay</td></tr>
+    <tr><td><a href="xic:cntxt"><b>Show Context in Push</b></a></td>
+      <td><tt>cntxt</tt></td> <td>none</td>
+      <td>Show context in subedit</td></tr>
+    <tr><td><a href="xic:props"><b>Show Phys Properties</b></a></td>
+      <td><tt>props</tt></td> <td>none</td>
+      <td>Show physical properties</td></tr>
+    <tr><td><a href="xic:labls"><b>Show Labels</b></a></td>
+      <td><tt>labls</tt></td> <td>none</td>
+      <td>Show labels</td></tr>
+    <tr><td><a href="xic:larot"><b>Label True Orient</b></a></td>
+      <td><tt>larot</tt></td> <td>none</td>
+      <td>Show labels transformed</td></tr>
+    <tr><td><a href="xic:cnams"><b>Show Cell Names</b></a></td>
+      <td><tt>cnams</tt></td> <td>none</td>
+      <td>Show cell names</td></tr>
+    <tr><td><a href="xic:cnrot"><b>Cell Name True Orient</b></a></td>
+      <td><tt>cnrot</tt></td> <td>none</td>
+      <td>Show cell names transformed</td></tr>
+    <tr><td><a href="xic:nouxp"><b>Don't Show Unexpanded</b></a></td>
+      <td><tt>nouxp</tt></td> <td>none</td>
+      <td>Don't show unexpanded subcells</td></tr>
+    <tr><td><a href="xic:objs"><b>Objects Shown</b></a></td>
+      <td><tt>objs</tt></td> <td>none</td>
+      <td>Object display control</td></tr>
+    <tr><td><a href="xic:tinyb"><b>Subthreshold Boxes</b></a></td>
+      <td><tt>tinyb</tt></td> <td>none</td>
+      <td>Show outline of subthreshold cells</td></tr>
+    <tr><td><a href="xic:grid"><b>Set Grid</b></a></td>
+      <td><tt>grid</tt></td> <td><b>Grid Parameters</b></td>
+      <td>Set grid parameters</td></tr>
+    </table>
+
+    <p>
+    If a cell shown in a sub-window is the cell shown in the main
+    window, with the same mode (physical or electrical), then all
+    editing operations will work in the sub-window as well as the main
+    window.  The sub-window will display all highlighting, terminals,
+    and other special markings.  If the sub-window shows a different
+    cell, then in that window selections and editing are not
+    possible, and no highlighting or special markings are shown.
+
+    <p>
+    When the <b>Viewport</b> command is used to create a new
+    sub-window, the sub-window will initially show the same cell as the
+    main window.
+
+    <p>
+    The sub-windows are sensitive as drop-receivers from the file
+    manager and other listing pop-ups.  File or cell names can be
+    dragged from the listing pop-up and dropped in a sub-window, which
+    will cause that cell/file to be opened and displayed in the
+    window.
+
+!!SEEALSO
+xic:viewmenu
+xic:attrmenu
+
+!! 061608
+!!KEYWORD
+xic:peek
+!!TITLE
+Peek
+!!HTML 
+    <b>Keyword</b>: <tt>peek</tt>
+
+    <p>
+    The <b>Peek</b> button in the <b>View Menu</b> asks the user to
+    define a rectangular area with pointer clicks or drag, and then
+    redisplays the area slowly so that underlying layers can be seen. 
+    It also prints the names of layers found (only physical objects
+    are considered, not labels).  The delay, which defaults to .4
+    second per existing layer, can be reset with the <a
+    href="PeekSleepMsec"><b>PeekSleepMsec</b></a> variable, which can
+    be set to the delay time in milliseconds.
+
+!!SEEALSO
+xic:viewmenu
+
+
+!! 102114
+!!KEYWORD
+xic:ldb3d
+!!TITLE
+Three-Dimensional Layer Sequence Generator
+!!HTML
+    <i>Xic</i> contains functionality to generate sequenced
+    three-dimensional layer stack representations of layout geometry. 
+    This capability is employed by the <a href="xic:csect"><b>Cross
+    Section</b></a> command in the <b>View Menu</b> which displays the
+    layout in cross-section, and in the interface to external <a
+    href="fcinterf">capacitance</a> and <a
+    href="fhinterf">inductance</a> extraction programs.
+
+    <p>
+    In order to use this functionality, the appropriate keywords
+    must have been applied to the layers.  Most of the setup parallels
+    that required for the <a href="ext:setup">extraction system</a>.
+
+    <p>
+    Layers that participate must satisfy the following constraints.
+    <ul>
+    <li>The layer must <b>not</b> have the <a
+    href="Symbolic"><tt>Symbolic</tt></a> technology file keyword
+    given.
+    <li>The layer must be visible in the <a href="layertab">layer
+    table</a>.
+    <li>The layer must have a nonzero thickness applied with the
+    <a href="Thickness"><tt>Thickness</tt></a> technology file keyword.
+    <li>The layer must be a conductor or an insulator.  A conductor
+    layer has one of the following:
+    <ol>
+    <li>The <a href="Conductor"><tt>Conductor</tt></a> keyword is
+    given, explicitly or implicitly if one of the
+    <a href="Routing"><tt>Routing</tt></a>,
+    <a href="GroundPlane"><tt>GroundPlane</tt><a>,
+    <a href="GroundPlaneClear"><tt>GroundPlaneClear</tt><a>,
+    <a href="Contact"><tt>Contact</tt><a>, or their aliases is given.
+    <li>Any of the <a href="Rsh"><tt>Rsh</tt></a>, <a
+    href="Rho"><tt>Rho</tt></a>, <a href="Sigma"><tt>Sigma</tt></a>,
+    or <a href="Lambda"><tt>Lambda</tt></a> keywords is given with a
+    positive value.
+    </ol>
+    An insulating layer has either the <a href="Via"><tt>Via</tt></a>
+    or <a href="Dielectric"><tt>Dielectric</tt></a> keyword given,
+    and also the <a href="EpsRel"><tt>EpsRel</tt></a> keyword given
+    with a value of 1.0 or larger.
+    </ul>
+
+    <p>
+    The technology file keywords are normally applied in <a
+    href="techfile:layers">layer blocks</a> of the technology file,
+    but can be applied from within <i>Xic</i> as well.  The <a
+    href="xic:lpedt"><b>Tech Parameter Editor</b></a> from the <b>Edit
+    Tech Params</b> button in the <b>Attributes Menu</b> allows
+    editing of the associated keywords.
+
+    <p>
+    The polarity of the layer will be obtained from the keywords
+    applied to the layer.  The layer will be considered dark field if
+    any of the <tt>DarkField</tt>, <tt>Via</tt>, or
+    <tt>GroundPlaneClear</tt> keywords are given to the layer.  In
+    this database, each layer represents the true presence of physical
+    material which is the inverse of the normal presentation if the
+    layer is dark field.  For example, a via showing as a small
+    colored square in a normal layout window is actually a hole in an
+    otherwise continuous insulating film.  The layer represented in
+    this database will contain shapes representing the areas where the
+    physical film is present.  This can be seen in the <b>Cross
+    Section</b> displays, where the dark field layers will be
+    displayed with the inverse polarity from normal drawing windows.
+
+    <p>
+    All layers can be set to planarize, or not.  If a layer is not
+    planarizing, it conforms to the underlying topology, which is
+    translated exactly to the top surface of the layer.  If the layer
+    is planarizing, representing the layer three-dimensionally is
+    accomplished as follows.  Initially, the shapes on each layer are
+    decomposed into a non-overlapping collection of trapezoids.
+
+    <ol>
+    <li>Consider the non-planarized representation of the layer, which
+    is composed of trapezoids in the X-Y plane (parallel to the
+    substrate), each with an elevation (distance from the substrate in
+    the Z direction) and constant thickness.  Each trapezoid
+    represents an area of the layer material at constant elevation. 
+    Sort through the trapezoids, and find the bottom surface value
+    with the highest elevation.
+
+    <p>
+    <li>From the maximum lower surface elevation, set the "plane"
+    value for the layer.  Set the top elevation of all trapezoids to
+    the plane value plus the film thickness value.  All trapezoids
+    will have the same top elevation, but in general will have
+    differing bottom elevation.  The actual film thickness varies, but
+    is equal to or greater than the thickness value of the layer.
+    </ol>
+
+    <p>
+    Thus, for a planarizing layer, the top surface of the layer will
+    be a plane at the highest point on the top surface of the layer
+    below plus the layer thickness.  The bottom surface of the layer
+    will conform to the top surface of the layer below by filling in
+    where material of the layer below is not present.
+
+    <p>
+    By default, all <tt>Conductor</tt> (and the rest of the keywords
+    that imply <tt>Conductor</tt>) and <tt>Via</tt> layers are
+    planarizing.  This is normal for a modern metal stack in a
+    semiconductor process.  The <tt>Dielectric</tt> layers, and
+    conductor layers that don't have <tt>Conductor</tt> applied
+    implicitly or explicitly, but therefor must have <tt>Rho</tt> or
+    <tt>Rsh</tt> applied, are not planarizing by default.
+
+    <p>
+    However, if the <a href="NoPlanarize"><b>NoPlanarize</b></a>
+    variable is set, or the global technology file attribute of the
+    same name is given, by default no layers will be planarizing.
+
+    <p>
+    There is a technology file layer block keyword which provides
+    planarization control for each layer.  It overrides
+    defaults and state of the <b>NoPlanarize</b> variable.
+
+    <dl>
+    <dt><tt>Planarize</tt> [<tt>y</tt>|<tt>n</tt>]<dd>
+    This specifies whether or not a layer is "planarizing".  The
+    <tt>Planarize</tt> keyword can be applied to prevent planarization
+    of layers that are planarized by default, or to force planarizing
+    of layers that don't normally have this property.
+    </dl>
+
+    <p>
+    The database is not intended for large collections of objects, and
+    processing time is near quadratic in the number of database
+    trapezoids.  By default, the total trapezoid count is limited to
+    10000.  Attempts to exceed the limit will fail, causing the
+    command using the database to also fail, with an appropriate error
+    message.
+
+    <p>
+    The limit can be modified with the <a
+    href="Db3ZoidLimit"><b>Db3ZoidLimit</b></a> variable.  This
+    variable can be set to an integer 1000 or larger to reset the
+    limit.  If not set, the limit of 10000 applies.
+
+    <a name="seq"></a>
+    <h2>Layer Sequencing</h2>
+     
+    By default, all conducting and insulating layers are assumed to
+    stack in layer table order, starting at the substrate.  We
+    therefor ignore the upper and lower conductor references in
+    <tt>Via</tt> layers.  Any layer order is acceptable, there is no
+    constraint regarding adjacency of layer types, but of course the
+    layer table order must match the physical order.
+
+    <p>
+    However, we allow for the case that <tt>Via</tt> layers are out of
+    sequence in the layer table.  They will be moved to the correct
+    position in the stacking order used by the database.  Since
+    layers are rendered bottom-up in drawing windows, having a
+    <tt>Via</tt> layer positioned above the referenced top conductor
+    in the layer table would cause the via to be drawn on top of the
+    metal, probably enhancing visibility.  The correct sequence, of
+    course, would place the <tt>Via</tt> layer below the top
+    referenced conductor.
+
+    <p>
+    The <a href="LayerReorderMode"><b>LayerReorderMode</b></a>
+    variable can be set to allow <tt>Via</tt> layer repositioning. 
+    The variable is set to an integer in the range 0-2.
+
+    <dl>
+    <dt>0<dd>
+    No repositioning is done, the same as if the variable is not set.
+    </dl>
+
+    <dl>
+    <dt>1<dd>
+    Consider the via references.  A layer can have multiple
+    <tt>Via</tt> keywords, each specifying a pair of conducting layers
+    which are to be connected through a hole in this layer.  For each
+    pair, we identify the bottom conductor by its position in the
+    layer table relative to the other referenced conductor.  For each
+    of the bottom conductors, we find the one that is highest in layer
+    table order, and move the <tt>Via</tt> layer to just above this
+    layer.
+    </dl>
+
+    <dl>
+    <dt>2<dd>
+    Similarly, we identify the lowest of the upper conductors, and move
+    the <tt>Via</tt> layer to just below this layer.
+    </dl>
+
+    Once the layers are recognized and sequenced, a three-dimensional
+    representation of the layers found within a specified area is
+    constructed.  This representation is then available for such
+    useful things as displaying a cross section, or building up an
+    input file for a parameter extraction program.
+
+!! 070314
+!!KEYWORD
+xic:csect
+!!TITLE
+Cross Section
+!!HTML
+    <b>Keyword</b>: <tt>csect</tt>
+
+    <p>
+    The <b>Cross Section</b> button in the <b>View Menu</b> brings up
+    a special <a href="xic:vport">sub-window</a> which displays a
+    cross sectional (side) view of the layers under an arbitrary line. 
+    After pressing the command button, the user is asked to define a
+    line, which can be done by clicking twice or dragging.  If the
+    line covers any geometry (which may be implied by dark-field
+    layers), a sub-window showing the cross sectional view will
+    appear.  The process can be repeated.  Pressing the <b>Esc</b> key
+    will exit the command.
+
+    <p>
+    All geometry under the line will be shown, without regard to cell
+    hierarchy.
+
+    <p>
+    If the <b>Constrain angles to 45 degree multiples</b> check box in
+    the <a href="xic:edset"><b>Editing Setup</b></a> panel from the
+    <b>Edit Menu</b> is checked, the angle is constrained to multiples
+    of 45 degrees.  If not checked, the angle is unconstrained, but
+    snaps to multiples of 45 degrees when the angle is close.  In
+    either case, pressing the <b>Ctrl</b> key removes the constraint.
+
+    <p>
+    The endpoints initially do not snap to grid points.  The period
+    ('.') key toggles snapping to grid of the endpoints, when defined
+    with the mouse or other pointing device.
+
+    <p>
+    The endpoints are saved in persistent storage, and the previous
+    cross section can be repeated by pressing <b>Enter</b> while the
+    command is active, even if the command terminated after the last
+    cross section was displayed.  One can experiment with different
+    thicknesses or planarizing behavior of the layers, and easily
+    compare cross sections from the same line, using this feature.  If
+    the current cell has changed, the stored endpoints will have no
+    effect.
+
+    <p>
+    The display makes use of the three-dimensional layer sequencing
+    <a "href="xic:ldb3d">database</a> to build up a three-dimensional
+    representation of the geometry along the line.  This requires
+    that the layers are appropriately set up in the technology file.
+    There are few defaults, and this command will not work without
+    proper setup.
+
+    <p>
+    The layer thickness shown can be set with the <a
+    href="CrossThick"><tt>CrossThick</tt></a> technology file keyword. 
+    This can be applied in the physical layer blocks of the technology
+    file, or can be set or edited from the <b>Tech Parameter
+    Editor</b>.
+
+    <p>
+    If <tt>CrossThick</tt> is not set, the displayed thickness will be
+    taken from the <a href="Thickness"><tt>Thickness</tt></a>
+    parameter, which must be set to a nonzero value in any case.  This
+    is the physical film thickness.  In cases where this is too thick
+    or thin for convenient viewing in cross-section, the
+    <tt>CrossThick</tt> keyword can be set to provide an overriding
+    thickness used in the display.
+
+    <p>
+    The layer shown in the cross section is always true polarity,
+    showing where the material will exist on the substrate.  This is
+    the inverse of the normal drawing windows when the layer is dark
+    field.  A via, for example, which appears as a colored square in
+    the main window, should appear as a hole in cross section, since
+    the painted area actually represents lack of insulating material. 
+    This is a "dark field" layer.
+
+    <p>
+    By default, the display uses <b>Auto Y-Scale</b> mode, where the
+    total displayed thickness of the layer stack is a little less than
+    the display window height.  This scaling is used for any
+    magnification, which of course has the usual effect in the
+    horizontal direction.
+
+    <p>
+    The Y-scale can be manipulated by the panel brought up from the
+    <b>Zoom</b> button in the <b>View</b> menu of the cross-section
+    display window.  In this configuration, the <a
+    href="xic:zoom"><b>Set Display Window</b></a> panel has a set of
+    controls for adjusting the Y-scale.  The <b>Auto Y-Scale</b> check
+    box sets whether of not the automatic scaling is used.  This
+    corresponds to the <a href="XSectNoAutoY"><b>XSectNoAutoY</b></a>
+    variable.
+
+    <p>
+    The <b>Y-Scale</b> entry area allows a scale factor to be entered. 
+    In <b>Auto Y-Scale</b> mode, this will change the displayed layer
+    stack height relative to the window height.  Otherwise, this will
+    be a constant linear scale factor applied in the Y direction.
+
+    <p>
+    Note that the grid lines will be shown taking into account the
+    current Y scale, and the cells will therefor not, in general, be
+    square.  The scaling is also accounted for in the gradations
+    computed for <a href="xic:ruler">rulers</a> that may be applied to
+    the cross-section window.
+
+!!SEEALSO
+xic:viewmenu
+ext:setup
+
+!! 012815
+!!KEYWORD
+xic:ruler
+!!TITLE
+Rulers
+!!HTML
+    <b>Keyword</b>: <tt>ruler</tt>
+
+    <p>
+    The <b>Rulers</b> button in the <b>View Menu</b> provides a
+    facility for creating rulers.  Rulers, available in physical mode,
+    are visible calibrated gradations which indicate physical distance
+    in microns.  Rulers are often convenient for measuring distances,
+    and in hard copy plots to indicate the size scale.
+
+    <p>
+    When the <b>Rulers</b> button is on, rulers can be created by
+    clicking twice at the endpoints of the ruler, or by pressing and
+    dragging, where the ruler will extend from the press and release
+    points.  The ruler will only be visible in the window where the
+    first button press occurred, and only rulers in the main window
+    will be visible in hard copies.  Rulers can be created in any
+    physical-mode window, including <a
+    href="xic:csect">cross-section</a> and <a href="xic:hier">cell
+    hierarchy digest</a> displays.
+
+    <p>
+    The computed distance between endpoints of the ruler is printed in
+    the prompt area after a ruler is created.  This can be used to
+    accurately measure the distance between two points.
+
+    <p>
+    Rulers remain visible until another cell is edited, or until
+    deleted.  The rulers in effect for a certain cell are remembered,
+    so that upon returning to a previously edited cell, the rulers
+    previously in effect will be visible.
+
+    <p>
+    Presently, rulers exist only in memory, and are not saved to
+    disk with cell data.
+
+    <p>
+    Rulers can be deleted, while the <b>Rulers</b> button is on, by
+    pressing the <b>Delete</b> or <b>Tab</b> (undo) keys, and are
+    deleted in reverse order of creation, but only in the window that
+    has keyboard focus.  Rulers associated with the current cell can
+    be deleted at any time with the <a href="!dr"><b>!dr</b></a>
+    command.
+
+    <p>
+    When a ruler is being created, the ghost-drawn vector which
+    appears when creating a ruler indicates the side which will have
+    the gradations.  The side with the gradations can be toggled by
+    pressing the '/' or '\' keys.
+
+    <p>
+    If <b>Shift</b> is pressed during completion of a ruler, the
+    endpoint will be the start point of a new ruler, and the
+    calibration in the new ruler will be an extension of that in the
+    current ruler.  Thus rulers can be "chained" around an object to
+    measure the periphery.
+
+    <p>
+    If the <b>Constrain angles to 45 degree multiples</b> check box in
+    the <a href="xic:edset"><b>Editing Setup</b></a> panel from the
+    <b>Edit Menu</b> is checked, the angle is constrained to multiples
+    of 45 degrees.  If not checked, the angle is unconstrained, but
+    snaps to multiples of 45 degrees when the angle is close.  In
+    either case, pressing the <b>Ctrl</b> key removes the constraint.
+
+    <p>
+    By default, the tiny snap-box near the mouse pointer, where ruler
+    endpoints can be placed, is constrained to the current snap grid,
+    as is true elsewhere in <i>Xic</i>.  The period ('.') key toggles
+    snapping to grid points while in the <b>Rulers</b> command.  When
+    not snapping, the snap box follows the mouse pointer, allowing
+    per-pixel resolution.
+
+    <p>
+    Additionally, if the window shows a normal layout (not CHD or
+    cross section) the endpoints will by default snap to nearby edges
+    and vertices.  This is the same edge snapping as is controlled
+    from the <b>Edge Snapping</b> group in the <b>Snapping</b> page of
+    the <a href="xic:grid"><b>Grid Setup</b></a> panel (pressing
+    <b>Ctrl-g</b> will produce this panel).  However, the
+    <b>Rulers</b> command has its own defaults, which are active while
+    the <b>Rulers</b> command is active.  The default is to allow
+    off-grid locations, and non-Manhattan edges, and to snap to both
+    edges and the path (central spine) of wires.  Any of these
+    settings can be changed, and edge snapping disabled, from the
+    <b>Grid Setup</b> panel.  Changes will apply only in the
+    <b>Rulers</b> command.  Edge snapping applies whether or not grid
+    snapping is enabled.
+
+!!SEEALSO
+xic:viewmenu
+
+!! 100312
+!!KEYWORD
+xic:info
+!!TITLE
+Info
+!!HTML
+    <img src="screenshots/info.png" align=right>
+    <b>Keyword</b>: <tt>info</tt>
+
+    <p>
+    The <b>Info</b> button in the <b>View Menu</b> brings up an
+    <b>Info</b> window, which can display information about the
+    current cell or any visible object.  This command can also
+    facilitate pushing the editing context to specific locations
+    within the hierarchy.
+
+    <p>
+    Alternatively, if any objects are selected when the command is
+    given, information about all selected objects can be dumped to a
+    file.  When the command is entered, if there are selected objects,
+    the user is prompted whether to dump the info to a file.  If
+    '<tt>y</tt>' is given to the prompt, the user is asked for a file
+    name, and is given the option of viewing the file when the dump is
+    complete.
+
+    <p>
+    If there is no prompt, or '<tt>n</tt>' is given at the prompt, any
+    selected objects become deselected, and "info mode" becomes
+    active.  Objects and unexpanded subcells can be clicked on, and
+    information about an object will be displayed in the text window
+    that will appear.  The chosen object will be highlighted in the
+    display.
+
+    <p>
+    Although the clicking/highlighting operation is superficially
+    similar to normal selection, in fact there are important
+    differences.  However, the <a href="layertab">layer selectability</a>
+    and <a href="xic:selcp">object type selectability flags</a> for
+    normal selections are observed.
+
+    <ol>
+    <li>Any object or unexpanded subcell visible in the drawing window
+    can be chosen, at any depth in the cell hierarchy.  In normal
+    selection, only objects and subcells of the current cell can be
+    selected.  The "selection" mechanism tracks the <a
+    href="xic:expnd">expansion depth</a> of the display window,
+    including <a href="xic:expnd#peek">peek mode</a> if active.  Any
+    object that is visible, or any subcell that is shown as
+    unexpanded, can be chosen by clicking on the object in the window.
+
+    <li>Only one object or unexpanded subcell can be highlighted at a
+    time.  This is the item whose information is shown in the window. 
+    To highlight a different object at the same location, click
+    multiple times.  A different object will be highlighted on each
+    click.
+    </ol>
+
+    <p>
+    The information shown in the window will include the name of the
+    cell that contains the chosen object, and a "back trace" of
+    containing subcells in the hierarchy up to the current cell. 
+    Thus, one can easily determine the cell which "owns" an object in
+    the display.
+
+    <p>
+    While an object is selected, pressing <b>Enter</b> will toggle
+    selection of all or other objects in the cell containing the
+    original selected object.  The objects selected will respect the
+    settings of layer-specific selection mode, and object type
+    selectability, as set in the <b>Selection Control Panel</b>.  In
+    this state, the text in the <b>Info</b> window will describe the
+    instance containing the selected objects.  Pressing <b>Enter</b>
+    again will revert to the previous state.  This is useful for
+    determining which objects belong to a particular cell instance.
+
+    <p>
+    When an object is highlighted, initiating the <a
+    href="xic:push"><b>Push</b></a> command in the <b>Cell Menu</b>
+    will push the editing context to the cell containing the chosen
+    object.  That is, the current cell becomes the cell containing the
+    object, in the context of the instance in the chosen location. 
+    The objects in this cell can then be edited.  The <a
+    href="xic:pop"><b>Pop</b></a> command in the <b>Cell Menu</b> can
+    be used to pop the editing context back up the hierarchy to the
+    original current cell.  This can be a useful way to navigate
+    through a complex hierarchy, while editing a layout.
+
+    <p>
+    If the <b>Shift</b> key is pressed while clicking anywhere in a
+    drawing window showing the current cell, or if the click occurs
+    outside of the current cell bounding box, information about the
+    current cell is shown, rather than information about a chosen
+    object.
+
+    <p>
+    If the user clicks in a <a href="xic:vport">sub-window</a> that is
+    displaying a cell that is not the current cell, information about
+    the cell will be shown.  It is not possible to select objects in
+    this case.
+
+    <p>
+    The information shown in the text window contains items such
+    as the object type and bounding box, as well as details specific
+    to the type of object.  For objects not in the current cell,
+    coordinates are usually shown relative to the object's containing
+    cell, as well as those reflected to the current cell.
+
+    <p>
+    By default, dimensions are given in microns.  If the variable <a
+    href="InfoInternal"><b>InfoInternal</b></a> is set (with the <a
+    href="!set"><b>!set</b></a> command) then dimensions are given in
+    <a href="xicdb#units">internal units</a> (usually 1000 units per
+    micron).
+
+    <p>
+    The text window contains two buttons.  The <b>Dismiss</b> button
+    removes the pop-up and exits info mode.  The <b>Activate</b>
+    button, which is initially active, can be used to exit and reenter
+    info mode, while the pop-up remains visible.
+
+    <p>
+    When applied to polygons, the <b>Info</b> command performs
+    reentrancy tests, and a message is added if the condition is
+    found, i.e., if the polygon can not be rendered unambiguously.
+
+    <p>
+    Similarly, when applied to wires, the wire is checked for certain
+    properties that might cause trouble.  See the description of the
+    <a href="!wirecheck"><b>!wirecheck</b></a> command for a
+    description of the flag keywords that might appear in the info
+    text.
+
+    <p>
+    The <b>Info</b> pop-up is also made visible by the <b>Info</b>
+    button in the <a href="xic:cells"><b>Cells Listing</b></a> panel
+    brought up by the <b>Cells List</b> button in the <b>Cell
+    Menu</b>.  When this button is used, previously selected objects
+    are ignored, and there is no provision for dumping to a file.  The
+    <b>Info</b> window will provide information on cells selected in
+    the cells listing, or on objects selected in the drawing windows.
+
+!!SEEALSO
+xic:viewmenu
+
+!! 061608
+!!KEYWORD
+xic:alloc
+!!TITLE
+Memory Monitor
+!!HTML
+    <b>Keyword</b>: <tt>alloc</tt>
+
+    <p>
+    Pressing the <b>Allocation</b> button in the <b>View Menu</b>
+    brings up the <b>Memory Monitor</b> pop-up.  This displays the
+    number of cells in memory, the total dynamic memory in use by the
+    program, and system limits on dynamic memory.  While visible, the
+    pop-up is refreshed every few seconds.
+
+    <p>
+    The maximum memory that can be used by the program before a fault
+    occurs is not well defined, and may be much less that the limits,
+    depending on what other programs are running, the actual size of
+    the swap space, and other factors.  The limits are either system
+    defaults, or values set with the limits(1) shell command
+    (Unix/Linux).  The "hard" and "soft" values are those returned by
+    the system call, and have different interpretations under
+    different Unix versions.
+
+!!SEEALSO
+xic:viewmenu
+
+!! 021410
+!!KEYWORD
+xic:wdump
+!!TITLE
+Dump To File
+!!HTML
+    <b>Keyword</b>: <tt>wdump</tt>
+
+    <p>
+    The <b>Dump To File</b> button in the <b>View</b> menu of <a
+    href="xic:vport">sub-windows</a> will dump the contents of the
+    window to a disk file.  When pressed, a file name will be
+    solicited, and the contents of the sub-window will be dumped to the
+    file.  The filename extension determines the file type:  jpg,
+    tiff, png, etc.  This provides a mechanism for obtaining printable
+    output from the <a href="xic:csect"><b>Cross Section</b></a>
+    views.  The dumped bitmap will be the same size as the window.
+
+    <p>
+    This feature makes use of the <tt>imsave</tt> system, which is
+    also used in the <a href="hcopyfmt#image">Image</a> print driver. 
+    See that topic for additional information.
+
+!!SEEALSO
+xic:vport
+
+!! 061608
+!!KEYWORD
+xic:lshow
+!!TITLE
+Show Location
+!!HTML 
+    <b>Keyword</b>: <tt>lshow</tt>
+
+    <p>
+    When the <b>Show Location</b> button in the <a
+    href="xic:vport">sub-window</a> <b>View</b> menu is active,
+    and both the sub-window and the main window are in physical mode
+    and displaying the same cell, an outline box is drawn in the main
+    window around the area displayed in the sub-window.  This indicates
+    the position of the sub-window display, assuming that the sub-window
+    is showing a zoomed-in part of the display in the main window.
+
+!!SEEALSO
+xic:vport
+
+!! 061608
+!!KEYWORD
+xic:swap
+!!TITLE
+Swap With Main
+!!HTML
+    <b>Keyword</b>: <tt>swap</tt>
+
+    <p>
+    The <b>Swap With Main</b> button in the <a
+    href="xic:vport">sub-window</a> <b>View</b> menu will swap the
+    cells, display modes, and views between the sub-window and the main
+    window.  This has the effect of making the cell displayed in the
+    sub-window the current cell, allowing it to be modified.
+
+!!SEEALSO
+xic:vport
+
+!! 102208
+!!KEYWORD
+xic:load
+!!TITLE
+Load New
+!!HTML
+    <b>Keyword</b>: <tt>load</tt>
+
+    <p>
+    The <b>Load New</b> button in the <a
+    href="xic:vport">sub-window</a> <b>View</b> menu will prompt for a
+    new cell or file to display in the window.  The command will
+    prompt the user for a file/cell name, in the manner of the <a
+    href="xic:open"><b>Open</b></a> command.  The given file/cell will
+    be opened for display in the sub-window.
+
+!!SEEALSO
+xic:vport
+
+!! not in manual
+!!KEYWORD
+xic:cancl
+!!TITLE
+Quit
+!!HTML
+    <b>Keyword</b>: <tt>cancl</tt>
+
+    <p>
+    The <b>Quit</b> button in the <b>View</b> menu of <a
+    href="xic:vport">sub-windows</a> will dismiss the sub-window.
+
+!!SEEALSO
+xic:vport
+

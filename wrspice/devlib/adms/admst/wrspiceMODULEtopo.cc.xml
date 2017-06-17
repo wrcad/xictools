@@ -1,0 +1,586 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  $Id: wrspiceMODULEtopo.cc.xml,v 1.38 2015/06/19 04:15:49 stevew Exp $
+
+  Modified for use with WRspice, Whiteley Research Inc. (wrcad.com).
+  See the original header below for terms and conditions of use.
+-->
+
+<!--
+  Written by Laurent Lemaitre - r29173@users.sourceforge.net
+  Documentation:
+    http://sourceforge.net/docman/display_doc.php?docid=18993&group_id=84289
+  Target Interface: ngspice
+  Supported by adms-1.x.x
+  This file is used by adms - http://sourceforge.net/projects/mot-adms.
+  adms is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+  adms is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  You should have received a copy of the GNU General Public License
+  along with adms; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+
+<!DOCTYPE admst SYSTEM "admst.dtd">
+<admst version="2.3.0"
+  xmlns:admst="http://mot-adms.sourceforge.net/xml-files/admst">
+
+<!-- ---------------------------------------------------------------------- -->
+<admst:template match="evaluatetopology">
+  <admst:choose>
+    <admst:when test="[datatypename='callfunction']"/>
+    <admst:when test="[datatypename='whileloop']">
+      <admst:apply-templates select="whileblock" match="evaluatetopology"/>
+      <admst:apply-templates select="while" match="evaluatetopology"/>
+    </admst:when>
+    <admst:when test="[datatypename='forloop']">
+      <admst:apply-templates select="forblock" match="evaluatetopology"/>
+    </admst:when>
+    <admst:when test="[datatypename='conditional']">
+      <admst:if test="if[nilled(variable[OPdependent='yes'])]">
+        <admst:apply-templates select="if" match="evaluatetopology"/>
+        <admst:choose>
+          <admst:when test="if/math[dependency='constant']">
+            <admst:if test="if/tree[datatypename='mapply_binary']">
+              <admst:variable name="noparens" value="yes"/>
+            </admst:if>
+            <admst:value-of select="if/tree/adms/datatypename"/>
+            <admst:apply-templates select="if/tree" match="%s"/>
+            <admst:text format="$(indent)if ($e) {\n"/>
+            <admst:variable name="noparens" value="no"/>
+            <admst:apply-templates select="." match="push_indent"/>
+            <admst:apply-templates select="then" match="evaluatetopology"/>
+            <admst:apply-templates select="." match="pop_indent"/>
+            <admst:text format="$(indent)}\n"/>
+            <admst:if test="[exists(else)]">
+              <admst:text format="$(indent)else {\n"/>
+              <admst:apply-templates select="." match="push_indent"/>
+              <admst:apply-templates select="else" match="evaluatetopology"/>
+              <admst:apply-templates select="." match="pop_indent"/>
+              <admst:text format="$(indent)}\n"/>
+            </admst:if>
+          </admst:when>
+          <admst:otherwise>
+            <admst:apply-templates select="then" match="evaluatetopology"/>
+            <admst:apply-templates select="else" match="evaluatetopology"/>
+          </admst:otherwise>
+        </admst:choose>
+      </admst:if>
+    </admst:when>
+    <admst:when test="adms[datatypename='case']">
+      <admst:if test="case[nilled(variable[OPdependent='yes'])]">
+        <admst:apply-templates select="case" match="evaluatetopology"/>
+        <admst:choose>
+          <admst:when test="case/math[dependency='constant']">
+            <admst:text format="$(indent)switch (%(e(case/tree))) {\n"/>
+            <admst:for-each select="caseitem">
+              <admst:if test="[defaultcase='no']">
+                <admst:for-each select="condition">
+                  <admst:apply-templates select="." match="%(datatypename)"/>
+                  <admst:text format="$(indent)case $e:\n"/>
+                </admst:for-each>
+                <admst:apply-templates select="." match="push_indent"/>
+                <admst:apply-templates select="code" match="evaluatetopology"
+                  required="yes"/>
+                <admst:text format="$(indent)break;\n"/>
+                <admst:apply-templates select="." match="pop_indent"/>
+              </admst:if>
+              <admst:if test="[defaultcase='yes']">
+                <admst:text format="$(indent)default:\n"/>
+                <admst:apply-templates select="." match="push_indent"/>
+                <admst:apply-templates select="code" match="evaluatetopology"
+                  required="yes"/>
+                <admst:text format="$(indent)break;\n"/>
+                <admst:apply-templates select="." match="pop_indent"/>
+              </admst:if>
+            </admst:for-each>
+            <admst:text format="$(indent)}\n"/>
+          </admst:when>
+          <admst:otherwise>
+            <admst:for-each select="caseitem">
+              <admst:for-each select="condition">
+                <admst:apply-templates select="." match="evaluatetopology"/>
+              </admst:for-each>
+              <admst:apply-templates select="code" match="evaluatetopology"/>
+            </admst:for-each>
+          </admst:otherwise>
+        </admst:choose>
+      </admst:if>
+    </admst:when>
+    <admst:when test="[datatypename='contribution']">
+      <admst:if test="lhs[discipline/potential=nature]">
+        <!-- V() <+ = ... -->
+        <admst:variable name="contribution" select="%(.)"/>
+        <admst:variable name="srcpnode" path="lhs/branch/pnode"/>
+        <admst:variable name="srcnnode" path="lhs/branch/nnode"/>
+        <admst:variable name="srcpname" path="$srcpnode/name"/>
+        <admst:variable name="srcnname" path="$srcnnode/name"/>
+        <admst:variable name="collapsed"
+          value="%(attribute[name='collapsed']/value)"/>
+        <admst:choose>
+          <admst:when test="[$collapsed='p0']">
+            <admst:text format="$(indent)inst->$(srcpname)_Node = 0;"/>
+            <admst:text format=" // node collapsed\n"/>
+            <admst:text format="$(indent)inst->$(srcpname)_$(srcnname)_collapsed = true;\n"/>
+          </admst:when>
+          <admst:when test="[$collapsed='pn']">
+            <admst:text format="$(indent)inst->$(srcpname)_Node ="/>
+            <admst:text format=" inst->$(srcnname)_Node; // node collapsed\n"/>
+            <admst:text format="$(indent)inst->$(srcpname)_$(srcnname)_collapsed = true;\n"/>
+          </admst:when>
+          <admst:when test="[$collapsed='np']">
+            <admst:text format="$(indent)inst->$(srcnname)_Node ="/>
+            <admst:text format=" inst->$(srcpname)_Node; // node collapsed\n"/>
+            <admst:text format="$(indent)inst->$(srcpname)_$(srcnname)_collapsed = true;\n"/>
+          </admst:when>
+          <admst:when test="[$collapsed='defer']">
+            <admst:push into="$ties" select="."/>
+            <admst:text format="$(indent)// $srcpname, $srcnname collapsed\n"/>
+            <admst:text format="$(indent)inst->$(srcpname)_$(srcnname)_collapsed = true;\n"/>
+          </admst:when>
+          <admst:otherwise>
+            <!--
+              Handle internal/optional nodes.
+            -->
+            <admst:if test="[$srcpnode/location='internal' or
+                $srcpnode/attribute[name='optional']/value='yes' or
+                $srcnnode/location='internal' or
+                $srcnnode/attribute[name='optional']/value='yes']">
+              <admst:text
+                format="$(indent)_load_branch_P($srcpname, $srcnname);\n"/>
+              <admst:apply-templates select="$srcpnode" match="check_node"/>
+              <admst:if test="$srcnnode[grounded='no']">
+                <admst:text
+                  format="$(indent)_load_branch_N($srcpname, $srcnname);\n"/>
+                <admst:apply-templates select="$srcnnode" match="check_node"/>
+              </admst:if>
+              <admst:choose>
+                <admst:when test="$contribution[static='yes']">
+                  <admst:text
+  format="$(indent)_load_branch_static_residual($srcpname, $srcnname, 0.0);\n"/>
+                </admst:when>
+                <admst:when test="$contribution[dynamic='yes']">
+                  <admst:text
+  format="$(indent)_load_branch_dynamic_residual($srcpname, $srcnname, 0.0);\n"/>
+                </admst:when>
+                <admst:when test="$contribution[whitenoise='yes']">
+                  <admst:text
+  format="$(indent)_load_branch_whitenoise_residual($srcpname, $srcnname, 0.0);\n"/>
+                </admst:when>
+                <admst:when test="$contribution[flickernoise='yes']">
+                  <admst:text
+  format="$(indent)_load_branch_flickernoise_residual($srcpname, $srcnname, 0.0);\n"/>
+                </admst:when>
+              </admst:choose>
+            </admst:if>
+            <!--
+              Handle an external node that is forced to ground.
+            -->
+            <admst:if test="[$srcpnode/location='external' and
+                $srcpnode/attribute[name='optional']/value='no']">
+              <admst:if test="$srcnnode[grounded='yes']">
+                <admst:text
+                  format="$(indent)_load_branch_P($srcpname, $srcnname);\n"/>
+              </admst:if>
+            </admst:if>
+            <admst:if test="[$srcnnode/location='external' and
+                $srcnnode/attribute[name='optional']/value='no']">
+              <admst:if test="$srcpnode[grounded='yes']">
+                <admst:text
+                  format="$(indent)_load_branch_N($srcpname, $srcnname);\n"/>
+              </admst:if>
+            </admst:if>
+
+            <!-- Support for inductor/voltage source "branch" devices -->
+            <admst:if test="[$srcpnode/location='external' and
+                $srcpnode/attribute[name='optional']/value='no' and
+                $srcnnode/location='external' and
+                $srcnnode/attribute[name='optional']/value='no']">
+              <admst:variable name="bname" value="$(srcpname)_$(srcnname)_Branch"/>
+              <admst:choose>
+                <admst:when test="$srcnnode[grounded='yes']">
+                  <admst:text
+  format="$(indent)if (inst->$(srcpname)_Node > 0) {\n"/>
+                  <admst:apply-templates select="." match="push_indent"/>
+                </admst:when>
+                <admst:otherwise>
+                  <admst:text
+  format="$(indent)if (inst->$(srcpname)_Node >= 0 &amp;&amp; "/>
+                  <admst:text
+  format="inst->$(srcnname)_Node >= 0 &amp;&amp;\n"/>
+                  <admst:apply-templates select="." match="push_indent"/>
+                  <admst:apply-templates select="." match="push_indent"/>
+                  <admst:text
+  format="$(indent)inst->$(srcpname)_Node != inst->$(srcnname)_Node) {\n"/>
+                  <admst:apply-templates select="." match="pop_indent"/>
+                </admst:otherwise>
+              </admst:choose>
+              <admst:text
+  format="$(indent)_load_branch_P($srcpname, $srcnname);\n"/>
+              <admst:if test="$srcnnode[grounded='no']">
+                <admst:text
+  format="$(indent)_load_branch_N($srcpname, $srcnname);\n"/>
+              </admst:if>
+              <admst:choose>
+                <admst:when test="$contribution[static='yes']">
+                  <admst:text
+  format="$(indent)_load_branch_static_residual($srcpname, $srcnname, 0.0);\n"/>
+                </admst:when>
+                <admst:when test="$contribution[dynamic='yes']">
+                  <admst:text
+  format="$(indent)_load_branch_dynamic_residual($srcpname, $srcnname, 0.0);\n"/>
+                </admst:when>
+                <admst:when test="$contribution[whitenoise='yes']">
+                  <admst:text
+  format="$(indent)_load_branch_whitenoise_residual($srcpname, $srcnname, 0.0);\n"/>
+                </admst:when>
+                <admst:when test="$contribution[flickernoise='yes']">
+                  <admst:text
+  format="$(indent)_load_branch_flickernoise_residual($srcpname, $srcnname, 0.0);\n"/>
+                </admst:when>
+              </admst:choose>
+              <admst:apply-templates select="." match="pop_indent"/>
+              <admst:text format="$(indent)}\n"/>
+            </admst:if>
+          </admst:otherwise>
+        </admst:choose>
+      </admst:if>
+      <admst:if test="lhs[discipline/flow=nature]">
+        <!-- I() <+ = ... -->
+        <admst:variable name="contribution" select="%(.)"/>
+        <admst:variable name="psource" select="%(lhs/branch/pnode)"/>
+        <admst:variable name="nsource" select="%(lhs/branch/nnode)"/>
+        <admst:for-each select="rhs/probe">
+          <admst:variable name="pprobe" select="%(branch/pnode)"/>
+          <admst:variable name="nprobe" select="%(branch/nnode)"/>
+
+          <!--
+            Test to make sure that the elements are actually in the
+            Jacobian.  If the branches are independent, the cross terms
+            will be missing, so referencing is not good.
+            ----- currently not used
+          <admst:variable name="injac" value="no"/>
+          <admst:for-each select="jacobian">
+            <admst:variable name="row" value="%(row/name)"/>
+            <admst:variable name="col" value="%(column/name)"/>
+            <admst:if test="[($col=$nprobe/name or $col=$pprobe/name) and
+                ($row=$psource/name or $row=$nsource/name)]">
+              <admst:variable name="injac" value="yes"/>
+            </admst:if>
+          </admst:for-each>
+
+          <admst:if test="[$injac='yes']">
+          -->
+            <admst:choose>
+                <admst:when test="$contribution[static='yes']">
+                  <admst:text format="$(indent)static_"/>
+                </admst:when>
+                <admst:when test="$contribution[dynamic='yes']">
+                  <admst:text format="$(indent)dynamic_"/>
+                </admst:when>
+              <admst:when test="$contribution[whitenoise='yes']">
+                <admst:text format="$(indent)whitenoise_"/>
+              </admst:when>
+              <admst:when test="$contribution[flickernoise='yes']">
+                <admst:text format="$(indent)flickernoise_"/>
+              </admst:when>
+            </admst:choose>
+            <admst:choose>
+              <admst:when test="[($nprobe/grounded='no') and
+                  ($nsource/grounded='no')]">
+                <admst:text
+  format="jacobian4(%($psource/name), %($nsource/name), %($pprobe/name), %($nprobe/name))\n"/>
+                <admst:apply-templates select="$psource" match="check_node"/>
+                <admst:apply-templates select="$nsource" match="check_node"/>
+                <admst:apply-templates select="$pprobe" match="check_node"/>
+                <admst:apply-templates select="$nprobe" match="check_node"/>
+              </admst:when>
+              <admst:when test="[($nprobe/grounded='no') and
+                  ($nsource/grounded='yes')]">
+                <admst:text
+  format="jacobian2p(%($psource/name), %($pprobe/name), %($nprobe/name))\n"/>
+                <admst:apply-templates select="$psource" match="check_node"/>
+                <admst:apply-templates select="$pprobe" match="check_node"/>
+                <admst:apply-templates select="$nprobe" match="check_node"/>
+              </admst:when>
+              <admst:when test="[$nsource/grounded='no']">
+                <admst:text
+  format="jacobian2s(%($psource/name), %($nsource/name), %($pprobe/name))\n"/>
+                <admst:apply-templates select="$psource" match="check_node"/>
+                <admst:apply-templates select="$nsource" match="check_node"/>
+                <admst:apply-templates select="$pprobe" match="check_node"/>
+              </admst:when>
+              <admst:when test="[$nsource/grounded='yes']">
+                <admst:text
+  format="jacobian1(%($psource/name), %($pprobe/name))\n"/>
+                <admst:apply-templates select="$psource" match="check_node"/>
+                <admst:apply-templates select="$pprobe" match="check_node"/>
+              </admst:when>
+            </admst:choose>
+          <!-- </admst:if> -->
+        </admst:for-each>
+      </admst:if>
+    </admst:when>
+    <admst:when test="[datatypename='assignment']">
+      <admst:if test="[(lhs/insource='yes') and (lhs/OPdependent='no')]">
+        <admst:if test="rhs[nilled(variable[OPdependent='yes'])]">
+          <admst:apply-templates select="lhs" match="variable"/>
+          <admst:text format="$(indent)$e"/>
+          <admst:value-of select="rhs/tree/adms/datatypename"/>
+          <admst:apply-templates select="rhs/tree" match="%s"/>
+          <admst:text format=" = $e;\n"/>
+        </admst:if>
+      </admst:if>
+    </admst:when>
+    <admst:when test="[datatypename='block']">
+      <admst:if test="[count(variable)!=0 or ../datatypename='forloop']">
+        <admst:text format="$(indent){ // blockname=%(name)\n"/>
+        <admst:apply-templates select="." match="push_indent"/>
+        <admst:if test="[../datatypename='forloop']">
+          <admst:if test="../initial/lhs/variable[scope='local' and
+              insource='yes' and OPdependent='no']">
+            <admst:text
+  format="$(indent)%(e(../initial/lhs/variable))=%(e(../initial/rhs/tree));\n"/>
+          </admst:if>
+        </admst:if>
+        <admst:for-each select="variable">
+          <!-- initialize to zero -->
+          <admst:choose>
+            <admst:when test="[type='real']">
+              <admst:text format="$(indent)%(vtype(.)) %(name) = 0.0;\n"/>
+            </admst:when>
+            <admst:otherwise>
+              <admst:text format="$(indent)%(vtype(.)) %(name) = 0;\n"/>
+            </admst:otherwise>
+          </admst:choose>
+        </admst:for-each>
+      </admst:if>
+      <admst:apply-templates select="item" match="evaluatetopology"/>
+      <admst:if test="[count(variable)!=0 or ../datatypename='forloop']">
+        <admst:apply-templates select="." match="pop_indent"/>
+        <admst:text format="$(indent)}\n"/>
+      </admst:if>
+    </admst:when>
+    <admst:when test="[datatypename='expression']"/>
+    <admst:when test="[datatypename='probe']"/>
+    <admst:when test="[datatypename='variable']"/>
+    <admst:when test="[datatypename='mapply_unary']"/>
+    <admst:when test="[datatypename='mapply_binary']"/>
+    <admst:when test="[datatypename='mapply_ternary']"/>
+    <admst:when test="[datatypename='function']"/>
+    <admst:when test="[datatypename='number']"/>
+    <admst:when test="[datatypename='string']"/>
+    <admst:when test="[datatypename='nilled']"/>
+    <admst:when test="[datatypename='blockvariable']"/>
+    <admst:otherwise>
+      <admst:fatal
+        format="evaluatetopology: unhandled datatype %(datatypename).\n"/>
+    </admst:otherwise>
+  </admst:choose>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<admst:template match="check_node">
+  <admst:if test="[location='internal' or
+      attribute[name='optional']/value='yes']">
+    <admst:text format="$(indent)inst->%(name)_Node_required = true;\n"/>
+  </admst:if>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<admst:template match="module_topo_cc">
+
+  <admst:text format="\n#include &quot;$(modlc)defs.h&quot;\n"/>
+
+#define NP(p) 0.0
+#define BP(p,n) (NP(p) - NP(n))
+#define ddx(a,b) 0
+
+#define jacobian(a,b) inst->PTR_J_##a##_##b##_required = true;
+
+#define BR(p,n) jacobian(p, n)
+
+#define static_jacobian1(p, r) \\
+    jacobian(p, r)
+
+#define static_jacobian2s(p, q, r) \\
+    jacobian(p, r) \\
+    jacobian(q, r)
+
+#define static_jacobian2p(p, r, s) \\
+    jacobian(p, r) \\
+    jacobian(p, s)
+
+#define static_jacobian4(p, q, r, s) \\
+    jacobian(p, r) \\
+    jacobian(p, s) \\
+    jacobian(q, r) \\
+    jacobian(q, s)
+
+#define _load_branch_P(p, n)\\
+    inst->PTR_##p##_##n##_Branch_P_required = true;
+
+#define _load_branch_N(p, n)\\
+    inst->PTR_##p##_##n##_Branch_N_required = true;
+
+#define _load_branch_static_residual(p, n, x) \\
+    inst->PTR_##p##_##n##_Branch_BB_required = true;
+
+#define _load_branch_dynamic_residual(p, n, x) \\
+    inst->PTR_##p##_##n##_Branch_BB_required = true;
+
+#define _load_branch_whitenoise_residual(p, n, x)
+#define _load_branch_flickernoise_residual(p, n, x)
+
+#define dynamic_jacobian1(p, r) \\
+    jacobian(p, r)
+
+#define dynamic_jacobian2s(p, q, r) \\
+    jacobian(p, r) \\
+    jacobian(q, r)
+
+#define dynamic_jacobian2p(p, r, s) \\
+    jacobian(p, r) \\
+    jacobian(p, s)
+
+#define dynamic_jacobian4(p, q, r, s) \\
+    jacobian(p, r) \\
+    jacobian(p, s) \\
+    jacobian(q, r) \\
+    jacobian(q, s)
+
+#define whitenoise_jacobian4(p, q, r, s)
+#define whitenoise_jacobian2s(p, q, r)
+#define whitenoise_jacobian2p(p, r, s)
+#define whitenoise_jacobian1(p)
+#define flickernoise_jacobian4(p, q, r, s)
+#define flickernoise_jacobian2s(p, q, r)
+#define flickernoise_jacobian2p(p, r, s)
+#define flickernoise_jacobian1(p)
+
+#define limexp(x) exp(x)
+
+  <admst:text format="\n\nint\n"/>
+  <admst:text format="$(moduc)dev::topology(sCKT *ckt, s$(moduc)model *model, s$(moduc)instance *inst)\n"/>
+  <admst:text format="{\n"/>
+
+  <!-- May need the model vars here too. -->
+  <admst:for-each select="$model_local_vars">
+    <admst:if test="[scope='local' and insource='yes' and OPdependent='no']">
+      <!-- initialize to zero -->
+      <admst:choose>
+        <admst:when test="[type='real']">
+          <admst:text format="$(indent)%(vtype(.)) %(name) = 0.0;\n"/>
+        </admst:when>
+        <admst:otherwise>
+          <admst:text format="$(indent)%(vtype(.)) %(name) = 0;\n"/>
+        </admst:otherwise>
+      </admst:choose>
+    </admst:if>
+  </admst:for-each>
+  <admst:for-each select="$instance_local_vars">
+    <admst:if test="[scope='local' and insource='yes' and OPdependent='no']">
+      <!-- initialize to zero -->
+      <admst:choose>
+        <admst:when test="[type='real']">
+          <admst:text format="$(indent)%(vtype(.)) %(name) = 0.0;\n"/>
+        </admst:when>
+        <admst:otherwise>
+          <admst:text format="$(indent)%(vtype(.)) %(name) = 0;\n"/>
+        </admst:otherwise>
+      </admst:choose>
+    </admst:if>
+  </admst:for-each>
+  <admst:text format="\n"/>
+
+  <admst:text format="\n"/>
+  <admst:for-each select="analog/code[datatypename='block']/item">
+    <admst:if test="[(datatypename!='block') or (datatypename='block' and
+         name!='initial_model' and name!='initializeModel' and
+         name!='initial_instance' and name!='initializeInstance')]">
+      <admst:apply-templates select="." match="evaluatetopology"/>
+    </admst:if>
+  </admst:for-each>
+  <admst:text format="$(indent)return (OK);\n"/>
+  <admst:text format="}\n\n"/>
+
+  <!--
+    Create the resolve_ties instance method.  This is called multiple
+    times when internal nodes are beieng allocated in the setup
+    method, after each required node is created.  It takes care of
+    nodes that should be tied together (collapsed).
+  -->
+  <admst:text format="\n\nint\n"/>
+  <admst:text format="s$(moduc)instance::resolve_ties()\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)int count = 0;\n"/>
+  <admst:for-each select="$ties">
+    <admst:variable name="srcpnode" path="lhs/branch/pnode"/>
+    <admst:variable name="srcnnode" path="lhs/branch/nnode"/>
+    <admst:variable name="srcpname" path="$srcpnode/name"/>
+    <admst:variable name="srcnname" path="$srcnnode/name"/>
+    <admst:text format="$(indent)if ($(srcpname)_$(srcnname)_collapsed) {\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:choose>
+      <admst:when test="$srcnnode[grounded='yes']">
+        <admst:text format="$(indent)if ($(srcpname)_Node < 0) {\n"/>
+        <admst:apply-templates select="." match="push_indent"/>
+        <admst:text format="$(indent)$(srcpname)_Node = 0;\n"/>
+        <admst:text format="$(indent)count++;\n"/>
+        <admst:apply-templates select="." match="pop_indent"/>
+        <admst:text format="$(indent)}\n"/>
+      </admst:when>
+      <admst:otherwise>
+        <admst:text format="$(indent)if ($(srcpname)_Node >= 0 &amp;&amp;"/>
+        <admst:text format=" $(srcnname)_Node < 0) {\n"/>
+        <admst:apply-templates select="." match="push_indent"/>
+        <admst:text format="$(indent)$(srcnname)_Node = $(srcpname)_Node;\n"/>
+        <admst:text format="$(indent)count++;\n"/>
+        <admst:apply-templates select="." match="pop_indent"/>
+        <admst:text format="$(indent)}\n"/>
+        <admst:text format="$(indent)if ($(srcpname)_Node < 0 &amp;&amp;"/>
+        <admst:text format=" $(srcnname)_Node >= 0) {\n"/>
+        <admst:apply-templates select="." match="push_indent"/>
+        <admst:text format="$(indent)$(srcpname)_Node = $(srcnname)_Node;\n"/>
+        <admst:text format="$(indent)count++;\n"/>
+        <admst:apply-templates select="." match="pop_indent"/>
+        <admst:text format="$(indent)}\n"/>
+      </admst:otherwise>
+    </admst:choose>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:text format="$(indent)}\n"/>
+  </admst:for-each>
+  <admst:text format="$(indent)return (count);\n"/>
+  <admst:text format="}\n"/>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------- -->
+
+<admst:variable name="ties"/>
+<admst:for-each select="/module">
+  <admst:apply-templates select="." match="init:translation"/>
+  <admst:open file="$(modlc)topo.cc">
+    <admst:value-of select="/simulator/package_string"/>
+    <admst:text format="// Interface: %s\n"/>
+    <admst:value-of select="/simulator/currentdate"/>
+    <admst:value-of select="/simulator/fullname"/>
+    <admst:text format="// Created by: %s - %s\n"/>
+    <admst:variable name="SkipProbe" value="yes"/>
+    <admst:apply-templates select="." match="init:variables"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:apply-templates select="." match="module_topo_cc"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+    <admst:variable name="SkipProbe" value="no"/>
+  </admst:open>
+  <admst:message format="$(modlc)topo.cc: file created\n"/>
+</admst:for-each>
+
+</admst>
+

@@ -1,0 +1,5 @@
+#! /bin/sh
+
+for t in x_*.v; do
+    vl $t
+done

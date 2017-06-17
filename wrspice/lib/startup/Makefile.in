@@ -1,0 +1,26 @@
+# lib/wrspice/startup/Makefile
+# $Id: Makefile,v 1.6 2015/09/16 00:13:22 stevew Exp $
+
+SOEXT = @SOEXT@
+
+FILES = wr_install foo
+LPATH = ../../../xt_base
+KPATH = ../../../KLU
+
+dummy: $(FILES)
+
+wr_install: $(LPATH)/packages/util/$@
+	cp -f $(LPATH)/packages/util/$@ .
+
+foo::
+	if [ -f $(KPATH)/klu_wr.$(SOEXT) ]; then \
+	    $(MAKE) klu_wr.$(SOEXT); \
+	fi
+
+klu_wr.$(SOEXT): $(KPATH)/klu_wr.$(SOEXT)
+	cp $(KPATH)/klu_wr.$(SOEXT) .
+
+clean:
+
+distclean:
+	rm -f wr_install klu_wr.$(SOEXT) Makefile

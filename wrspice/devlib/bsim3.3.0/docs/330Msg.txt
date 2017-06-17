@@ -1,0 +1,38 @@
+Dear BSIM Users,
+ 
+Thank you for your support of the BSIM models. We are releasing BSIM3v3.3.0 
+version  today (July 29, 2005). 
+ 
+Compared with BSIM3v3.2.4, the following new features are added in this version.
+ 
+1. A Spectre thermal noise model with the noise coefficient varying smoothly 
+between 4 to 8/3 when device moves from linear region to saturation region;
+ 
+2. A BSIM4 ACNQS model that enbles the NQS effect in AC simulations;
+ 
+3. A new parameter LINTNOI introducing an offset to the length reduction 
+parameter(Lint)  to improve the accuracy of the flicker noise model;  
+ 
+In addition, two bug fixes are implemented in this version. With the capacitance 
+bug fix, the transcapacitance CGG for CAPMOD=3 is now smooth from subthreshold 
+region to strong inversion with no negative value. (This bug fix has previously been 
+introduced in BSIM4.5.0 beta version). 
+ 
+The new version is backward compatible with BSIM3v3.2.4, meaning existing 
+model cards may be used. 
+ 
+BSIM3v3.3.0 source code, user manual, new enhancement document and testing 
+examples can  be downloaded at: http://www-device.eecs.berkeley.edu/~bsim3/get.html
+ 
+We thank TI for providing parts of the new codes and performaing evaluation for the 
+new release. We thank Dr. Keith Green, Dr. David Zweidinger, Dr. Claude R. Cirba, 
+Dr. Joe Watts, for their guidance and technical support. We would also like to express 
+our sincere thanks to all the other users who provided their input.  
+ 
+We thank you for your support for BSIM and welcome your feedback on this latest version 
+of BSIM3.
+ 
+Sincerely,
+ 
+BSIM Team
+UC Berkeley

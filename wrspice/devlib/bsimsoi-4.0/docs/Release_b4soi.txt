@@ -1,0 +1,70 @@
+Dear BSIM Users,
+ 
+Thank you for your support of the BSIM models. We are releasing BSIMSOI4.0 model 
+today (November 30, 2005). 
+
+BSIMSOI4.0 addresses several new issues in modeling sub-0.13 micron CMOS/SOI 
+high-speed and RF circuit simulation. The plans and progress of the development 
+were presented and discussed at several Compact Model Council (CMC) meetings in 
+2004 ~ 2005 period. Many inputs from those meetings were incorporated into the model. 
+BSIMSOI4.0 is fully backward compatible with its previous 3.X version.
+
+BSIMSOI4.0 has the following major improvements and additions over BSIMSOI3.2:  
+
+1. A scalable stress effect model for process induced stress effect, device 
+performance becoming thus a function of the active area geometry and the location  
+of the device in the active area;
+
+2. Asymmetric current/capacitance model S/D diode and asymmetric S/D resistance;
+
+3. Improved GIDL model with BSIM4 GIDL compatibility; 
+
+4. Noise model Improvements;
+ 1) Improved width/length dependence on flicker noise
+ 2) SPICE2 thermal noise model is introduced as TNOIMOD=2 with parameter NTNOI that 
+adjusts the magnitude of the noise density
+ 3) Body contact resistance induced thermal noise
+ 4) Thermal noise induced by the body resistance network
+ 5) Shot noises induced by Ibs and Ibd separated
+
+5. A two resistance body resistance network introduced for RF simulation;
+
+6. Threshold voltage model enhancement;
+ 1) Long channel DIBL effect model added
+ 2) Channel-length dependence of body effect improved
+
+7. Drain induced threshold shift(DITS) model  introduced in output conductance;
+
+8. Improved model accuracy in moderate inversion region with BSIM4 compatible Vgsteff;
+
+9. Multi-finger device with instance parameter NF;
+
+10. A new instance parameter AGBCPD to improve gate current for body contact;
+
+11. A new instance parameter DELVTO representing threshold voltage variation;
+
+12. FRBODY is both  instance/model parameter;
+
+13. Updated BSIMSOI4.0 manual.
+
+In addition, eleven bug fixes are implemented in this version.
+
+The BSIMSOI4.0 source code, user's manual, enhancement document, benchmark simulation 
+result and bug report can be downloaded at 
+http://www-device.eecs.berkeley.edu/~bsimsoi/get.html. 
+
+We have been helped by the input from many users, especially the CMC member companies 
+and their representatives. We would particularly like to thank Josef Watts, Keith Green, 
+Ke-Wei Su, Richard Williams, Weidong Liu, Min-Chie Jeng, Judy An, Jung-Suk Goo, 
+Myung-hee Na, Jean-Paul Malzac, Ben Gu, Jean Remy for their invaluable input and test 
+effort. 
+
+We would like to acknowledge the data and support provided by the following companies:  
+IBM, TSMC, AMD, STMicroelectronics, Synopsys, Cadence, Silvaco, Freescale. 
+
+We thank you for your support to BSIM and welcome your feedback on this model.
+
+Sincerely,
+
+BSIM group 
+UC Berkeley

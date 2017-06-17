@@ -1,0 +1,128 @@
+
+                   Installing and Using Icons
+                  Whiteley Research Inc. 2/4/09
+
+Icons are used by the window management system to decorate references
+to an application in menus, toolbars, and the desktop.  An icon also
+typically appears in the window frames of the application's windows. 
+If no icons are found for the application, default icons are generally
+used.
+
+Under Windows, icons are built into the programs, and there is no user
+configuration required.  The remainder of this note relates to the
+Unix/Linux releases.  It is not necessary to do any configuration,
+except for aesthetic reasons, or if you want to access the programs
+through menus or desktop icons.
+
+Icons are image files of particular sizes, typically 16x16, 32x32, and
+48x48 pixels.  Under Windows, a ".ico" file has all needed icons
+packaged together, using a Windows-specific format.  Under Unix/Linux
+and OS X, icons can use any supported image format.
+
+This directory contains three bitmap files for use as program icons. 
+The format is XPM, which is a text-based format supported by most if
+not all window systems.  If necessary, the convert utility from
+ImageMagick (or some other utility) can be used to convert these to
+another format, such as PNG.
+
+Using these is very dependent on the window management software, so
+one may have to consult local documentation.
+
+The GTK2 program releases transmit "xic" or "wrspice" as the base name
+for the icon files.  GNOME and probably KDE look for this.  This is
+true for releases 3.1.0 and later, earlier releases did not have this
+parameter set, and will probably not show an icon in the window frame
+under GNOME or KDE.
+
+Below are some perhaps sketchy installation notes for a few selected
+environments.
+
+
+1. GNOME, on Red Hat Enterprise Linux 5.x
+
+The following procedure will allow a user to use the icons.  It is also
+possible to set this up system-wide (consult the documentation).
+
+In your home directory, create a directory tree using names as below
+
+.icons/
+  gnome/
+    48x48/
+      apps/
+    32x32/
+      apps/
+    16x16/
+      apps/
+
+Copy the xic_48x48.xpm file to .icons/gnome/48x48/apps as "xic.xpm". 
+Copy the other files similarly, under the correct size directory.  The
+new files must all be named "xic.xpm" or "wrspice.xpm".
+
+This should be sufficient for the programs to have their own icons in
+the window frames.
+
+To add the programs to the Applications menu:
+
+In your home directory, create the directory tree
+
+.local/
+  share/
+    applications/
+
+In .local/share/applications, create a file named "xic.desktop" that
+looks something like this (some lines require modification):
+
+[Desktop Entry]
+Categories=Application;
+Comment=The Xic Graphical Editor
+Comment[en_US]=The Xic Graphical Editor
+Encoding=UTF-8
+Exec=/usr/local/xictools/bin/xic
+GenericName[en_US]=
+Icon=/home/stevew/.icons/gnome/48x48/apps/xic.xpm
+Name=Xic
+Name[en_US]=Xic
+Terminal=true
+Type=Application
+Version=1.0
+
+Add similar files for WRspice, XicII, Xiv as desired.  The XicII and
+Xiv programs also use the "xic.xpm" icon, WRspice uses "wrspice.xpm".
+
+Note: "Terminal=true" should be given for all programs, this provides
+a console window.
+
+Then, in the Applications menu, there will be a selection "Other" that
+will contain Xic and WRspice, etc., (with the icons showing).
+
+You can also put copies of these files in your Desktop directory
+to get Xic/WRspice icon launchers on your desktop.
+
+
+2. WindowMaker window manager (FreeBSD or elsewhere)
+
+for WindowMaker, add to $HOME/GNUstep/Defaults/WMWindowAttributes
+
+  xic.Xic = {
+    Icon = "/usr/local/xictools/xic/icons/xic_48x48.xpm";
+  };
+  wrspice.Wrspice = {
+    Icon = "/usr/local/xictools/wrspice/icons/wrspice_48x48.xpm";
+  };
+  and similar for other programs.  The paths should be the actual paths
+  to the icon files on your machine.
+
+
+3. The icwwm window manager (FreeBSD or elsewhere)
+
+Copy the icons into the directory ~/.icewm/icons
+
+In ~/.icewm/winoptions, add
+
+xic.icon: xic
+xicii.icon: xic
+xiv.icon: xic
+wrspice.icon: wrspice
+
+In custom menus, etc., refer to the icon as "xic" or "wrspice".
+

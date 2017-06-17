@@ -1,0 +1,19 @@
+
+This directory contains a collection of example WRspice input files.
+
+This includes most if not all of the example files distributed with
+Berkeley Spice3f5.
+
+Most files will initiate analysis when sourced, the margin analysis
+files will specify the initiation command that the user must type.
+
+Many of the files user WRspice-specific constructs, and are intended
+to be run in interactive mode in WRspice.  They will generally require
+modification for use with other simulators, if they can be ported
+at all.
+
+The wrspice_ipc_demo.tar.gz file contains source code for building
+an application which demonstrates the interprocess communication (IPC)
+capablity of WRspice.  Advanced users can write programs that call
+WRspice on the local or remote systems.
+

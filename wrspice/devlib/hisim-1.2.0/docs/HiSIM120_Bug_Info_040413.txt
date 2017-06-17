@@ -1,0 +1,618 @@
+************************************************************
+   HiSIM 1.2.0 Bug Information                Apr/13/2004
+************************************************************
+
+   Revision History of this Note
+
+   Apr/25/2003:  original (No.1-3)
+   May/14/2003:  1st rev. (No.4-17)
+   May/26/2003:  2nd rev. (No.18)
+   Sep/11/2003:  3rd rev. (No.19-20)
+   Sep/24/2003:  4th rev. (No.21-29)
+   Oct/10/2003:  5th rev. (No.30)
+   Nov/10/2003:  6th rev. (No.31)
+   Nov/14/2003:  7th rev. (No.31-33)
+   Dec/10/2003:  8th rev. (No.34-58)
+   Mar/23/2004:  9th rev. (No.59-60)
+   Apr/13/2004: 10th rev. (No.61)
+
+************************************************************
+
+   This note includes bug informations and modifications
+   in the source code of HiSIM1.2.0. These informations
+   are reported by R.Peuvergne, B.Sheu, L.Weiss, R.Farouk
+   and B.P.Hu.
+
+   These bugs will be fixed in the next web-release version.
+
+*************
+ SOURCE CODE
+*************
+   ****************************
+   No.1
+   FILE:    hsm1eval120.c
+   LINE:    3713
+   STATUS:  E0 = 10.0 ;
+   CORRECT: Move to LINE3696.
+   COMMENT: There is a similar bug in
+            hsm1eval112.c and hsm1eval02.c.
+
+   ****************************
+   No.2
+   FILE:    hsm1set.c
+   LINE:    307-308
+   STATUS:  here->HSM1_weff = here->HSM1_w - 2.0e0 * model->HSM1_xpolyd - 2.0e0 * model->HSM1_xld ;
+            here->HSM1_leff = here->HSM1_l - 2.0e0 * model->HSM1_xdiffd - 2.0e0 * model->HSM1_xwd ;
+   CORRECT: here->HSM1_weff = here->HSM1_w + 2.0e0 * model->HSM1_xdiffd - 2.0e0 * model->HSM1_xwd ;
+            here->HSM1_leff = here->HSM1_l + 2.0e0 * model->HSM1_xpolyd - 2.0e0 * model->HSM1_xld ;
+
+   ****************************
+   No.3
+   FILE:    hsm1eval120.c
+   LINE:    651
+   STATUS:  empty
+   INSERTION: sIN.xdiffd *= C_m2cm ;
+
+   ****************************
+   No.4
+   FILE:    hsm1ld.c
+   LINE:    331-332
+   STATUS:  cgbhat = here->HSM1_igb + here->HSM1_gigbg * delvgd
+              - here->HSM1_gigbd * delvds + here->HSM1_gigbb * delvbd;
+   CORRECT: cgbhat = Igbtot + here->HSM1_gigbg * delvgd
+              - here->HSM1_gigbs * delvds + here->HSM1_gigbb * delvbd;
+
+   ****************************
+   No.5
+   FILE:    hsm1ld.c
+   LINE:    334-335
+   STATUS:  cgshat = Igstot + here->HSM1_gigsg * delvgd
+              - here->HSM1_gigsd * delvds + here->HSM1_gigsb * delvbd;
+   CORRECT: cgshat = Igstot + here->HSM1_gigsg * delvgd
+              - here->HSM1_gigss * delvds + here->HSM1_gigsb * delvbd;
+
+   ****************************
+   No.6
+   FILE:    hsm1ld.c
+   LINE:    337-338
+   STATUS:  cgdhat = Igdtot + here->HSM1_gigdg * delvgd
+                - here->HSM1_gigsd * delvds + here->HSM1_gigdb * delvbd;
+   CORRECT: cgdhat = Igdtot + here->HSM1_gigdg * delvgd
+                - here->HSM1_gigds * delvds + here->HSM1_gigdb * delvbd;
+
+   ****************************
+   No.7
+   FILE:    hsm1ld.c
+   LINE:    1263-1265
+   STATUS:  Istoteq = model->HSM1_type *
+                (here->HSM1_igs - here->HSM1_gigsg * vgd
+               + here->HSM1_gigsd * vds - here->HSM1_gigsb * vbd);
+   CORRECT: Istoteq = model->HSM1_type * 
+                (here->HSM1_igs - here->HSM1_gigsg * vgd
+               + here->HSM1_gigss * vds - here->HSM1_gigsb * vbd);
+
+   ****************************
+   No.8
+   FILE:    hsm1ld.c
+   LINE:    1271-1273
+   STATUS:  Idtoteq = model->HSM1_type *
+                (here->HSM1_igd - here->HSM1_gigdg * vgd
+               + here->HSM1_gigdd * vds - here->HSM1_gigdb * vbd);
+   CORRECT: Idtoteq = model->HSM1_type *
+                (here->HSM1_igd - here->HSM1_gigdg * vgd
+               + here->HSM1_gigds * vds - here->HSM1_gigdb * vbd);
+
+   ****************************
+   No.9
+   FILE:    hsm1eval120.c
+   LINE:    736
+   STATUS:  clasical
+   CORRECT: classical
+   COMMENT: There is a similar typo error in
+            hsm1eval112.c and hsm1eval02.c.
+
+   ****************************
+   No.10
+   FILE:    hsm1pzld.c
+   LINE:    121-122
+   STATUS:  gIbtotd = here->HSM1_gigbs;
+            gIbtots = here->HSM1_gigbd;
+   CORRECT: gIbtotd = here->HSM1_gigbd;
+            gIbtots = here->HSM1_gigbs;
+
+   ****************************
+   No.11
+   FILE:    hsm1pzld.c
+   LINE:    126-127
+   STATUS:  gIstotd = here->HSM1_gigss;
+            gIstots = here->HSM1_gigsd;
+   CORRECT: gIstotd = here->HSM1_gigsd;
+            gIstots = here->HSM1_gigss;
+
+   ****************************
+   No.12
+   FILE:    hsm1pzld.c
+   LINE:    131-132
+   STATUS:  gIdtotd = here->HSM1_gigds;
+            gIdtots = here->HSM1_gigdd;
+   CORRECT: gIdtotd = here->HSM1_gigdd;
+            gIdtots = here->HSM1_gigds;
+
+   ****************************
+   No.13
+   FILE:    hsm1acld.c
+   LINE:    123-124
+   STATUS:  gIbtotd = here->HSM1_gigbs;
+            gIbtots = here->HSM1_gigbd;
+   CORRECT: gIbtotd = here->HSM1_gigbd;
+            gIbtots = here->HSM1_gigbs;
+
+   ****************************
+   No.14
+   FILE:    hsm1acld.c
+   LINE:    128-129
+   STATUS:  gIstotd = here->HSM1_gigss;
+            gIstots = here->HSM1_gigsd;
+   CORRECT: gIstotd = here->HSM1_gigsd;
+            gIstots = here->HSM1_gigss;
+
+   ****************************
+   No.15
+   FILE:    hsm1acld.c
+   LINE:    133-134
+   STATUS:  gIdtotd = here->HSM1_gigds;
+            gIdtots = here->HSM1_gigdd;
+   CORRECT: gIdtotd = here->HSM1_gigdd;
+            gIdtots = here->HSM1_gigds;
+
+   ****************************
+   No.16
+   FILE:    hsm1eval120.c
+   LINE:    409
+   STATUS:  double  Qn0 ;
+   CORRECT: double  Qn0 = 0.0e0 ;
+   COMMENT: There is a similar bug in
+            hsm1eval112.c and hsm1eval02.c.
+
+   ****************************
+   No.17
+   FILE:    hsm1eval120.c
+   LINE:    246-247
+   STATUS:  double  Pds ;
+            double  Pds_dVbs , Pds_dVds , Pds_dVgs ;
+   CORRECT: double  Pds = 0.0 ;
+            double  Pds_dVbs = 0.0 , Pds_dVds = 0.0 , Pds_dVgs = 0.0 ;
+   COMMENT: There is a similar bug in
+            hsm1eval112.c and hsm1eval02.c.
+
+   ****************************
+   No.18
+   FILE:    hsm1eval120.c
+   LINE:    2804 (empty)
+   INSERTION: FMD_dVds = 0.0 ;
+
+   ****************************
+   No.19
+   FILE:    hsm1ld.c
+   LINE:    930-931
+   STATUS:  #ifndef NEWCONV
+                    }
+   CORRECT:         }
+            #ifndef NEWCONV
+
+   ****************************
+   No.20
+   FILE:    hsm1ld.c
+   LINE:    970
+   STATUS:  }
+   CORRECT: eliminate
+
+   ****************************
+   No.21
+   FILE:    hsm1eval120.c
+   LINE:    3239 
+   STATUS:  empty
+   INSERTION: if ( T1 < 0.0 ) { T1 = 0.0 ; T1_dVd = 0.0 ; }
+
+   ****************************
+   No.22
+   FILE:    hsm1eval120.c
+   LINE:    527
+   STATUS:  double  DJ , DJI , DJIP ;
+   CORRECT: double  DJ , DJI = 1.0 , DJIP ;
+
+   ****************************
+   No.23
+   FILE:    hsm1eval120.c
+   LINE:    3473-3480
+   STATUS:  sq1sti = sqrt(beta * (Psti - Vbs) - 1.0e0 +costi1 * expsti) ;
+            sq1sti_dVbs = 0.50e0 * (beta * (Psti_dVbs - 1.0e0) 
+                 + costi1 * beta * Psti_dVbs * expsti) / sq1sti ;
+            sq1sti_dVds = 0.50e0 * (beta * Psti_dVds 
+                 + costi1 * beta * Psti_dVds * expsti) / sq1sti ;
+            sq1sti_dVgs = 0.50e0 * (beta * Psti_dVgs  
+                 + costi1 * beta * Psti_dVgs * expsti) / sq1sti ;
+   INSERTION: T1 = beta * (Psti - Vbs) - 1.0 +costi1 * expsti ;
+              if ( T1 > 0.0 ) {
+                 sq1sti = sqrt( T1 ) ;
+                 sq1sti_dVbs = 0.5 * (beta * (Psti_dVbs - 1.0) 
+                      + costi1 * beta * Psti_dVbs * expsti) / sq1sti ;
+                 sq1sti_dVds = 0.5 * (beta * Psti_dVds 
+                      + costi1 * beta * Psti_dVds * expsti) / sq1sti ;
+                 sq1sti_dVgs = 0.5 * (beta * Psti_dVgs  
+                      + costi1 * beta * Psti_dVgs * expsti) / sq1sti ;
+              } else {
+                 sq1sti = sq1sti_dVbs = sq1sti_dVds = sq1sti_dVgs = 0.0 ;
+              }
+
+   ****************************
+   No.24
+   FILE:    hsm1eval120.c
+   LINE:    3482-3486
+   STATUS:  sq2sti = sqrt(beta * (Psti - Vbs) - 1.0e0) ;
+            sq2sti_dVbs = 0.50e0 * beta *(Psti_dVbs - 1.0e0) / sq2sti ;
+            sq2sti_dVds = 0.50e0 * beta *Psti_dVds / sq2sti ;
+            sq2sti_dVgs = 0.50e0 * beta *Psti_dVgs / sq2sti ;
+   INSERTION: T1 = beta * (Psti - Vbs) - 1.0 ;
+              if ( T1 > 0.0 ) {
+                 sq2sti = sqrt( T1 ) ;
+                 sq2sti_dVbs = 0.5 * beta * (Psti_dVbs - 1.0) / sq2sti ;
+                 sq2sti_dVds = 0.5 * beta * Psti_dVds / sq2sti ;
+                 sq2sti_dVgs = 0.5 * beta * Psti_dVgs / sq2sti ;
+              } else {
+                 sq2sti = sq2sti_dVbs = sq2sti_dVds = sq2sti_dVgs = 0.0 ;
+              }
+
+   ****************************
+   No.25
+   FILE:    hsm1eval120.c
+   LINE:    4711
+   STATUS:  T4 = 1.0E0/(T1+T2)/(T3+T2)+2.0E0*NFalp*Ey*Mu/(T3-T1)
+                *log((T3+T2)/(T1+T2))+NFalp*Ey*Mu*NFalp*Ey*Mu ;
+   CORRECT: if (T3 != T1 ){
+                T4 = 1.0/(T1+T2)/(T3+T2)+2.0*NFalp*Ey*Mu/(T3-T1)
+                    *log((T3+T2)/(T1+T2))+NFalp*Ey*Mu*NFalp*Ey*Mu ;
+            } else {
+                T4 = 1.0/(T1+T2)/(T3+T2)+2.0*NFalp*Ey*Mu/(T1+T2)
+                    +NFalp*Ey*Mu*NFalp*Ey*Mu ;
+            }
+
+   ****************************
+   No.26
+   FILE:    hsm1eval120.c
+   LINE:    602 (empty)
+   INSERTION: double  Nsubb ;
+
+   ****************************
+   No.27
+   FILE:    hsm1eval120.c
+   LINE:    711
+   STATUS:  }
+   INSERTION: Nsubb = 2.0 * sIN.nsubp
+                     - ( sIN.nsubp - sIN.nsubc ) * Leff / sIN.lp - sIN.nsubc ;
+              }
+
+   ****************************
+   No.28
+   FILE:    hsm1eval120.c
+   LINE:    1136
+   STATUS:  Vthp = Pb20 + Vfb + Qb0 * Cox_inv ;
+   MODIFICATION: if( Leff > sIN.lp ){
+                         Vthp = Pb20 + Vfb + Qb0 * Cox_inv ;
+                 } else {
+                         Vthp = Pb20 + Vfb + Qb0 * Cox_inv
+                               + log ( Nsubb / sIN.nsubc ) / beta ;
+                 }
+
+   ****************************
+   No.29
+   FILE:    hsm1eval120.c
+   LINE:    3978
+   STATUS:  Vthp = Pb20 + Vfb + Qb0 * CoxP_inv ;
+   MODIFICATION: if( Leff > sIN.lp ){
+                         Vthp = Pb20 + Vfb + Qb0 * CoxP_inv ;
+                 } else {
+                         Vthp = Pb20 + Vfb + Qb0 * CoxP_inv
+                               + log ( Nsubb / sIN.nsubc ) / beta ;
+                 }
+
+   ****************************
+   No.30
+   FILE:    hsm1eval120.c
+   LINE:    5313-5314, 5316, 5318
+   STATUS:  pOT->cgdb   += Cgdo + (-1) * Cqyd ;
+            pOT->cgsb   += Cgso + (-1) * Cqys ;
+            pOT->cdgb   += - Qgod_dVgse - Cf + Cqyg ;
+            pOT->cdsb   += Qgod_dVbse + Qgod_dVdse + Qgod_dVgse + Cqys ;
+   CORRECT: pOT->cgdb   += Cgdo + Cqyd ;
+            pOT->cgsb   += Cgso + Cqys ;
+            pOT->cdgb   += - Qgod_dVgse - Cf - Cqyg ;
+            pOT->cdsb   += Qgod_dVbse + Qgod_dVdse + Qgod_dVgse - Cqys ;
+   COMMENT: There are similar bugs in hsm1eval112.c.
+
+   ****************************
+   No.31
+   FILE:    hsm1eval120.c
+   LINE:    3510
+   STATUS:  ( 1.0e0 - exp( - beta * Vgs ))) / ( Leff - Lred )
+   CORRECT: ( 1.0e0 - exp( - beta * Vds ))) / ( Leff - Lred )
+   COMMENT: There are similar bugs in hsm1eval112.c.
+
+   ****************************
+   No.32
+   FILE:    hsm1set.c
+   LINE:    252
+   STATUS:  if (model->HSM1_version == 101) model->HSM1_gidl1 = 5.0e-3 ;
+   CORRECT: if (model->HSM1_version == 102) model->HSM1_gidl1 = 5.0e-3 ;
+
+   ****************************
+   No.33
+   FILE:    hsm1set.c
+   LINE:    259
+   STATUS:  if (model->HSM1_version == 101) model->HSM1_gleak1 = 0.01e6 ;
+   CORRECT: if (model->HSM1_version == 102) model->HSM1_gleak1 = 0.01e6 ;
+
+   ****************************
+   No.34
+   FILE:    hsm1eval120.c
+   LINE:    159-161
+   STATUS:  double  cn_ik53 =  2.6864599830664019e-1 ;
+            double  cn_ik54 = -6.1399531828413338e-2 ;
+            double  cn_ik55 =  5.3528499428744690e-3 ;
+   CORRECT: eliminate
+   COMMENT: unused variables
+
+   ****************************
+   No.35
+   FILE:    hsm1eval120.c
+   LINE:    177
+   STATUS:  double  Vz_dlt = 5.0e-3 ;
+   CORRECT: eliminate
+   COMMENT: unused variable
+
+   ****************************
+   No.36
+   FILE:    hsm1eval120.c
+   LINE:    258
+   STATUS:  double  Xi0p32_dVbs , Xi0p32_dVds , Xi0p32_dVgs ;
+   CORRECT: eliminate
+   COMMENT: unused variables
+
+   ****************************
+   No.37
+   FILE:    hsm1eval120.c
+   LINE:    2007-2009, 
+   STATUS:  Xi0p32_dVbs = 1.5e0 * Xi0_dVbs * Xi0p12 ;
+            Xi0p32_dVds = 1.5e0 * Xi0_dVds * Xi0p12 ;
+            Xi0p32_dVgs = 1.5e0 * Xi0_dVgs * Xi0p12 ;
+   CORRECT: eliminate
+
+   ****************************
+   No.38
+   FILE:    hsm1eval120.c
+   LINE:    2083-2085
+   STATUS:  Xi0p32_dVbs = 1.5e0 * Xi0_dVbs * Xi0p12 ;
+            Xi0p32_dVds = 1.5e0 * Xi0_dVds * Xi0p12 ;
+            Xi0p32_dVgs = 1.5e0 * Xi0_dVgs * Xi0p12 ;
+   CORRECT: eliminate
+
+   ****************************
+   No.39
+   FILE:    hsm1eval120.c
+   LINE:    272
+   STATUS:  double  Vbsd_dVbs , Vbsd_dVds ;
+   CORRECT: eliminate
+   COMMENT: unused variables
+
+   ****************************
+   No.40
+   FILE:    hsm1eval120.c
+   LINE:    1107-1108
+   STATUS:  Vbsd_dVbs = 0.75 * Vbsz_dVbs ;
+            Vbsd_dVds = 0.75 * Vbsz_dVds ;
+   CORRECT: eliminate
+
+   ****************************
+   No.41
+   FILE:    hsm1eval120.c
+   LINE:    273
+   STATUS:  double  Vzadd , Vzadd_dVds , Vzadd_dVsd , Vzadd_dA ;
+   CORRECT: double  Vzadd , Vzadd_dVds , Vzadd_dVsd ;
+   COMMENT: unused variable is eliminated.
+
+   ****************************
+   No.42
+   FILE:    hsm1eval120.c
+   LINE:    274
+   STATUS:  double  VzaddA , VzaddA_dVds ;
+   CORRECT: eliminate
+   COMMENT: unused variables
+
+   ****************************
+   No.43
+   FILE:    hsm1eval120.c
+   LINE:    366
+   STATUS:  double  user1 , user2 , user3 , user4 ;
+   CORRECT: eliminate
+   COMMENT: unused variables
+
+   ****************************
+   No.44
+   FILE:    hsm1eval120.c
+   LINE:    370
+   STATUS:  double  Leff , Leff_inv ;
+   CORRECT: double  Leff ;
+   COMMENT: unused variable is eliminated.
+
+   ****************************
+   No.45
+   FILE:    hsm1eval120.c
+   LINE:    699
+   STATUS:  Leff_inv    = 1.0e0 / Leff ;
+   CORRECT: eliminate
+
+   ****************************
+   No.46
+   FILE:    hsm1eval120.c
+   LINE:    419-426
+   STATUS:  double  Fid2 ;
+            double  Fid2_dVbs , Fid2_dVds , Fid2_dVgs ;
+            double  Fid3 ;
+            double  Fid3_dVbs , Fid3_dVds , Fid3_dVgs ;
+            double  Fid4 ;
+            double  Fid4_dVbs , Fid4_dVds , Fid4_dVgs ;
+            double  Fid5 ;
+            double  Fid5_dVbs , Fid5_dVds , Fid5_dVgs ;
+   CORRECT: eliminate
+   COMMENT: unused variables
+
+   ****************************
+   No.47
+   FILE:    hsm1eval120.c
+   LINE:    489-490
+   STATUS:  double  yned , yned2 ;
+            double  yned_dVbs , yned_dVds , yned_dVgs ;
+   CORRECT: eliminate
+   COMMENT: unused variables
+
+   ****************************
+   No.48
+   FILE:    hsm1eval120.c
+   LINE:    491
+   STATUS:  double  Lov , Lov2 , Lov23 ;
+   CORRECT: double  Lov , Lov2 ;
+   COMMENT: unused variable is eliminated.
+
+   ****************************
+   No.49
+   FILE:    hsm1eval120.c
+   LINE:    492
+   STATUS:  double  Ndsat , Gjnp ;
+   CORRECT: eliminate
+   COMMENT: unused variables
+
+   ****************************
+   No.50
+   FILE:    hsm1eval120.c
+   LINE:    518
+   STATUS:  double  NFalp , NFtrp , Freq , Cit , Nflic ;
+   CORRECT: double  NFalp , NFtrp , Cit , Nflic ;
+   COMMENT: unused variable is eliminated.
+
+   ****************************
+   No.51
+   FILE:    hsm1eval120.c
+   LINE:    572
+   STATUS:  double  Cox0 ;
+   CORRECT: eliminate
+   COMMENT: unused variable
+
+   ****************************
+   No.52
+   FILE:    hsm1eval120.c
+   LINE:    737
+   STATUS:  Cox0 = c_eox / sIN.tox ;
+   CORRECT: eliminate
+
+   ****************************
+   No.53
+   FILE:    hsm1eval120.c
+   LINE:    582, 585-590, 593-597
+   STATUS:  double  T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13 ;
+            double  T1_dVb , T1_dVd , T1_dVs ,T1_dVg ;
+            double  T2_dVb , T2_dVd , T2_dVs , T2_dVg ;
+            double  T3_dVb , T3_dVd , T3_dVs , T3_dVg ;
+            double  T4_dVb , T4_dVd , T4_dVs , T4_dVg ;
+            double  T5_dVb , T5_dVd , T5_dVs , T5_dVg ;
+            double  T6_dVb , T6_dVd , T6_dVs , T6_dVg ;
+            double  T9_dVb , T9_dVd , T9_dVs , T9_dVg ;
+            double  T10_dVb , T10_dVd , T10_dVs , T10_dVg ;
+            double  T11_dVb , T11_dVd , T11_dVs , T11_dVg ;
+            double  T12_dVb , T12_dVd , T12_dVs , T12_dVg ;
+            double  T13_dVb , T13_dVd , T13_dVs , T13_dVg ;
+   CORRECT: double  T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T13 ;
+            double  T1_dVb , T1_dVd , T1_dVg ;
+            double  T2_dVb , T2_dVd , T2_dVg ;
+            double  T3_dVb , T3_dVd , T3_dVg ;
+            double  T4_dVb , T4_dVd , T4_dVs ;
+            double  T5_dVd , T5_dVs , T5_dVg ;
+            double  T9_dVd , T9_dVs , T9_dVg ;
+            double  T10_dVd , T10_dVs , T10_dVg ;
+            double  T11_dVd , T11_dVs , T11_dVg ;
+            double  T13_dVd , T13_dVs , T13_dVg ;
+   COMMENT: unused variables are eliminated.
+
+   ****************************
+   No.54
+   FILE:    hsm1eval120.c
+   LINE:    505
+   STATUS:  double  qy_dlt ;
+   CORRECT: eliminate
+   COMMENT: unused variable
+
+   ****************************
+   No.55
+   FILE:    hsm1acld.c
+   LINE:    230
+   STATUS:  *(here->HSM1SPsPtr) -= gspr - gIstots;
+   CORRECT: *(here->HSM1SPsPtr) -= gspr ;
+
+   ****************************
+   No.56
+   FILE:    hsm1acld.c
+   LINE:    215
+   STATUS:  *(here->HSM1SPspPtr) += gspr + gds + gbs + FwdSum + gbspsp;
+   CORRECT: *(here->HSM1SPspPtr) += gspr + gds + gbs + FwdSum + gbspsp - gIstots ;
+
+   ****************************
+   No.57
+   FILE:    hsm1acld.c
+   LINE:    224
+   STATUS:  *(here->HSM1DPdPtr) += gdpr - gIdtotd;
+   CORRECT: *(here->HSM1DPdPtr) -= gdpr ;
+
+   ****************************
+   No.58
+   FILE:    hsm1acld.c
+   LINE:    214
+   STATUS:  *(here->HSM1DPdpPtr) += gdpr + gds + gbd + RevSum + gbdpdp;
+   CORRECT: *(here->HSM1DPdpPtr) += gdpr + gds + gbd + RevSum + gbdpdp - gIdtotd ;
+
+   ****************************
+   No.59
+   FILE:    hsm1eval120.c
+   LINE:    5323-5324
+   STATUS:  if ( pOT->cgdb > -1e-27 ) { pOT->cgdb = 0e0 ; }
+            if ( pOT->cgsb > -1e-27 ) { pOT->cgsb = 0e0 ; }
+   CORRECT: eliminate
+
+   ****************************
+   No.60
+   FILE:    hsm1eval120.c
+   LINE:    5293-5297
+   STATUS:  Qy = ( ( Ps0 + Vds  - T1 ) / sIN.xqy ) * T2 ;
+            Cqyd = ( ( Ps0_dVds + 1.0e0 - T1_dVd ) / sIN.xqy ) * T2 ;
+            if ( Cqyd < 0.0e0 ) Cqyd = 0.0 ;
+            Cqyg = ( ( Ps0_dVgs  - T1_dVg ) / sIN.xqy ) * T2 ;
+            Cqyb = ( ( Ps0_dVbs  - T1_dVb ) / sIN.xqy ) * T2 ;
+   CORRECT: Qy = - ( ( Ps0 + Vds  - T1 ) / sIN.xqy ) * T2 ;
+            Cqyd = - ( ( Ps0_dVds + 1.0e0 - T1_dVd ) / sIN.xqy ) * T2 ;
+            if ( Cqyd > 0.0e0 ) Cqyd = 0.0 ;
+            Cqyg = - ( ( Ps0_dVgs  - T1_dVg ) / sIN.xqy ) * T2 ;
+            Cqyb = - ( ( Ps0_dVbs  - T1_dVb ) / sIN.xqy ) * T2 ;
+
+   ****************************
+   No.61
+   FILE:    hsm1eval120.c
+   LINE:    1327, 4144
+   STATUS:  T1 = sIN.pgd1 ;
+   CORRECT: T1 = sIN.pgd1 * Nsub / sIN.nsubc ;
+
+   ****************************
+
+   Feel free to let us know bug reports and suggestions
+   on HiSIM. Please mail to morikawa@starc.or.jp
+
+   Sincerely,
+   STARC Physical Design Gr.
+

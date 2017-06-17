@@ -1,0 +1,34 @@
+* Josephson junction quasiparticle modulation demo
+*
+* The rtype=4 option of the Josephson model causes the gap potential
+* to scale with the external "control current" absolute value.  For
+* unit control current (1 Amp) or larger, the full potential is used,
+* otherwise it scales linearly to zero.  The transfer function is defined
+* externally with controlled sources, as below.  The approximation
+* Vg = Vg0*(1-t^4) is pretty good, except near t = 1 (T = Tc, t = T/Tc).
+* The actual transfer function is left to the user - in the example below,
+* the ambient temperature is 7K, Tc = 9.2K, and 1mv of "input" causes 1K
+* temperature shift.
+*
+* For amusement, change cct=1 to cct=0 below.  This runs much more quickly
+* as critical current is set to zero.
+*
+b1 1 0 jj1 control=v2
+v1 2 0 pulse(0 35m 10p 10p)
+r1 2 1 100
+*
+v2 3 0
+g1 3 0 4 0 function 1-((1000*x+7)/9.2)^4
+v4 4 0 pulse(-1m 1m 10p 10p 10p 20p 60p)
+*
+*Nb 1000A/cm2  area = 30 square microns
+.model jj1 jj(rtype=4,cct=1,icon=10m,vg=2.8m,delv=.1m,
++ icrit=0.3m,r0=100,rn=5.4902,cap=1.14195p)
+.tran 1p 500p uic
+* type "run", then plot v(1) and v(4) to see the gap shift and input
+
+.control
+run
+plot v(1) v(4) ysep
+edit
+.endc

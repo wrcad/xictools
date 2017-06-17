@@ -1,0 +1,2222 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiStartup.hlp,v 1.57 2017/03/22 07:30:08 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiStartup.hlp
+!!TITLE
+xiStartup.hlp
+!!HTML
+
+!!SUBTOPICS
+xic:graphics
+macosx
+mswindows
+xic:cmdline
+xic:env
+initfiles
+initops
+logfiles
+
+
+!! 110613
+!!KEYWORD
+xic:graphics
+!!TITLE
+Graphics Support and Requirements
+!!HTML
+    Starting with Generation 4, <i>Xic</i> and all other Whiteley
+    Research products use the <a href="http://www.gtk.org">GTK-2</a>
+    graphical user interface toolkit exclusively.  The toolkit must be
+    provided by the user's installation.  This is almost certain to be
+    the case under Linux, as GTK is a default part of virtually all
+    Linux distributions.  In FreeBSD, it will have to be installed
+    from the ports or packages collection, if it wasn't automatically
+    installed from the distribution DVD.  For Windows, a complete
+    GTK-2 installation package is available from Whiteley Research,
+    which is a self-extracting <tt>.exe</tt> version of the zip
+    distribution provided from <tt>www.gtk.org</tt>.  One of these
+    packages must now be installed on a Windows host.  Similarly,
+    GTK-2 must be installed on the Mac.  This makes use of the
+    X-window system, which also must be installed and running on the
+    Mac.  Although there is a version of GTK-2 that uses the native
+    Quartz screen interface instead of X-windows, it has very serious
+    flaws and is unusable at present.
+
+    <p>
+    The Win32 graphical interface previously used under Windows is now
+    retired, as is the GTK-1 interface used in some earlier releases.
+    Thus, all present releases will have precisely the same graphical
+    interface, which will greatly simplify documentation, maintenance,
+    and future development.
+
+    <p>
+    The GTK-2 toolkit handles the interface to the screen, window
+    manager, keyboard, and mouse.  It is not likely that there will
+    be serious incompatibilities.
+
+!!SEEALSO
+macosx
+mswindows
+
+!! 022514
+!!KEYWORD
+macosx mac osx
+!!TITLE
+Apple OS X Notes
+!!HTML
+    In OS X, lurking beneath the pretty graphics is a complete Unix
+    operating system based on FreeBSD, including support for
+    X-windows.  Most of the open-source software developed for
+    Linux/FreeBSD has been ported to OS X, so for the Unix fans (like
+    me), the operating system can look like Unix with a great
+    graphical interface that also runs Macintosh applications. 
+    Overall, OS X is a very impressive desktop/laptop operating
+    system.
+
+    <p>
+    All Generation 4 OS X distributions require OS X 10.9 (Mavericks)
+    or later.  Unfortunately, it is not possible to support earlier OS
+    X releases at this time.  However, the upgrade to 10.9 is free and
+    was accomplished smoothly over the internet at Whiteley Research.
+
+    <p>
+    The Whiteley Research programs presently require that the
+    X-windows server be running, as X is used for graphics.  Unlike in
+    some earlier OS X releases, it is not installed automatically in
+    Mavericks.  The Apple-sponsored X-server is called "XQuartz" and
+    is available for download from the project web site (google
+    "XQuartz download").
+
+    <p>
+    Operation and behavior should be identical to the Unix/Linux
+    versions of the programs.  These are 64-bit binaries.
+
+    <h2>Installation</h2>
+
+    <p>
+    The package distribution files are "flat" Apple package files. 
+    This is a different format from the release files for Generation
+    3, which were tarred/gzipped Apple package directories.  As an
+    alternative to using <tt>wr_install</tt>, one can use Apple's
+    installer (click on the listing icon in the Finder).
+
+    <p>
+    The installation procedure is pretty much the same as under
+    Unix/Linux.  As under Unix/Linux (but not Windows) the
+    <i>Xic</i> and <i>WRspice</i> programs can make use
+    of a separate license server, and all of the workgroup
+    configuration options apply.  Similarly, due to the X-Windows
+    support, graphical operation from remote OS X systems is possible,
+    unlike under Windows.
+
+    <p>
+    There are two differences from the Linux releases.
+    <ol>
+    <li>The programs use the GTK-2 graphical interface toolkit for
+    display, which is supplied in a separate
+    "<tt>gtk2-bundle-x11</tt>" distribution file.  As in Windows, the
+    bundle supplies all of the libraries and supporting files needed,
+    as they are not native to OS X.  The user will need to download
+    and install the bundle package.  Once installed, it should rarely
+    if ever need to be upgraded.  The bundle can be installed with the
+    <tt>wr_install</tt> script, or with Apple's installer, the same as
+    the program distribution files.
+
+    <li>The program installation location can not be changed.  The
+    programs will be installed under <tt>/usr/local/xictools</tt>, and
+    the bundle is installed under <tt>/usr/local/gtk2-bundle-x11</tt>.
+    </ol>
+
+    <p>
+    The user must have root permission to install the programs.  If a
+    root password has been defined, the user can use "<tt>su</tt>" to
+    become root as in Unix/Linux.  Otherwise, there is a
+    "<tt>sudo</tt>" command that can be issued which provides
+    temporary root privileges to certain pre-designated users.  From a
+    command line, one can use <tt>sudo</tt> to execute commands that
+    require root privileges.  The user is asked for their password,
+    and the command is executed if the password is accepted.
+
+    <p>
+    The <tt>sudo</tt> command is built into the <tt>wr_install</tt>
+    script, so that users should not need to become root explicitly to
+    perform updates.  To edit configuration files in the installation,
+    root access is needed.  The <tt>sudo</tt> command can be used to
+    start the license server, if running the server is necessary.
+
+    <h2>Un-Installation</h2>
+
+    The OS X package system does not provide an uninstall function,
+    and overall is quite a bit less capable than the package
+    management systems in supported Unix/Linux systems.  In release
+    4.0.7 and later, when a new release is installed, the preinstall
+    script will explicitly clear all of the files of an existing
+    package if found, as is done by the installer on other systems. 
+    In earlier releases, a new release would simply overwrite the
+    existing release.
+
+    <p>
+    To uninstall, the files must be removed manually.  This is easy,
+    as all files are installed under <tt>/usr/local/xictools</tt>. 
+    One should also clear the package "receipt" from the OS X database
+    with the terminal command
+    <blockquote>
+    <tt>pkgutil --forget</tt> <i>packagename</i>
+    </blockquote>
+    if the program is being removed permanently.  The
+    <i>packagename</i> is the name of the package as known to Apple,
+    which is in a form like "<tt>XicTools.Xic.4</tt>".  All of the
+    Whiteley Research installed packages can be listed by name with
+    the terminal command
+    <blockquote>
+    <tt>pkgutil --pkgs | grep XicTools</tt>
+    </blockquote>
+    This will provide the Apple package names.
+
+    <h2>Running the Applications</h2>
+
+    It is assumed that the user will be initiating the applications
+    from a terminal window, as under Unix/Linux.  The directories
+    containing the program binaries (<tt>/usr/local/xictools/bin</tt>)
+    and the bundle programs (<tt>/usr/local/gtk2-bundle-x11/bin</tt>)
+    should be in the shell search path.  Then, all executables will be
+    found by name.  Operation is the same as under Unix/Linux.
+
+    <p>
+    The X-Windows server must be running for successful execution of
+    the programs that use graphics.  In OS X Mavericks the Apple
+    "XQuartz" X-server will start automatically when needed (remember
+    that this must be downloaded, as it is not installed automatically
+    in Mavericks), however this causes the initial program startup
+    time to be rather long.
+
+    <h2>MacBook Keyboard Mapping Issues</h2>
+
+    The Darwin64 releases work great on a MacBook Pro, however there
+    are some keyboard mapping issues.  Keys which have normal
+    significance to <i>Xic</i>, such as <b>Home</b>, <b>Page Up</b>
+    and <b>Page Down</b>, and the numeric keypad plus and minus keys
+    are nowhere to be found.  Yet, all functionality is present, but
+    maps to alternative key combinations.  One can run the <a
+    href="xic:keymp"><b>Key Map</b></a> command in the <b>Attributes
+    Menu</b> if another mapping is needed.
+
+    <p>
+    The table below describes the default mapping.
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>MacBook Pro</th>  <th>Normal keyboard</th></tr>
+    <tr><th>Delete</th> <td><b>Backspace</b><br>
+      The key labeled "<b>Delete</b>" actually sends a backspace
+      character.</td></tr>
+    <tr><th>fn-Delete</th> <td><b>Delete</b><br>
+      Press the <b>fn</b> key with <b>Delete</b> to get a real delete
+      character.</td></tr>
+    <tr><th>fn-Left</th> <td><b>Home</b><br>
+      Press the <b>fn</b> key with the left arrow for the
+      center-full-view function in <i>Xic</i>.</td></tr>
+    <tr><th>fn-Up</th> <td><b>Page Up</b><br>
+      Press the <b>fn</b> key with up arrow to get a page up code,
+      used in <i>Xic</i> for displaying DRC errors.</td></tr>
+    <tr><th>fn-Down</th> <td><b>Page Down</b><br>
+      Press the <b>fn</b> key with down arrow to get a page down
+      code, used in <i>Xic</i> for displaying DRC errors.</td></tr>
+
+    <tr><td colspan=2>
+      <b>These mappings are set in Apple releases only.</td></tr>
+    <tr><th>fn-Enter</th> <td><b>KeyPad Enter</b><br>
+      Press the <b>fn</b> key with <b>Enter</b> to get the numeric
+      keypad enter code.  This is mapped to the zoom-in action, as for
+      <b>Numeric Plus</b>.</td></tr>
+    <tr><th>fn-Right</th> <td><b>End</b><br>
+      Press the <b>fn</b> key with the right arrow to get the end key
+      code.  This is mapped to the zoom-out action, as for <b>Numeric
+      Minus</b>.</td></tr>
+    </table>
+
+    <p>
+    Note that if you use a "normal" keyboard with your Apple computer,
+    the two new mappings will be in addition to the normmal mappings.
+
+    <p>
+    The "secondary press" mentioned in Apple documents is button 3
+    (the right mouse button on a three-button mouse).  You should
+    probably change the track-pad settings in the <b>Preferences</b>
+    to enable this.  There is no button 2 (middle mouse button). 
+    You'll have to live without it, or get a three-button pointing
+    device.
+
+    <h4>The Alt Key Issue</h4>
+
+    The MacBook Pro and probably other Mac machines lack a compatible
+    <b>Alt</b> key.  This <b>Alt</b> key is used in <i>Xic</i> as a
+    menu accelerator, and for a button-press modifier.  It is
+    reasonable to live without it, but there is a fix.
+
+    <p>
+    The following fix works on my MacBook Pro.  Create a file in your
+    home directory named "<tt>.Xmodmap</tt>" containing the following
+    two lines:
+
+    <blockquote><tt>
+    keycode 66 = Alt_L<br>
+    add mod1 = Alt_L
+    </tt></blockquote>
+
+    <p>
+    This will map the left "option" button to <b>Alt</b>.  The right
+    option button will still do the normal Mac thing, i.e., send
+    alternate character keycodes.
+
+    <p>
+    However, this depends on the left option key returning scan code
+    66, which may not be true on different hardware.  The <tt>xev</tt>
+    program can be used to find the actual scan code.
+
+    <p>
+    This will apply to all X applications, and the mapping will be
+    recorded when the X server starts.  You can also give the command
+    <blockquote>
+    <tt>xmodmap -e "keycode 66 = Alt_L" -e "add mod1 = Alt_L"</tt>
+    </blockquote>
+    which will re-map the keys for the current X session.
+
+!! 020514
+!!KEYWORD
+mswindows
+!!TITLE
+Microsoft Windows Notes
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="mswindows#setup"><b>Installation and Setup</b></a><br>
+    <a href="mswindows#general"><b>General Notes</b></a><br>
+    <a href="mswindows#env"><b>Setting Environment Variables</b></a><br>
+    </td></tr></table>
+
+    <p>
+    This topic contains notes relevant to the Microsoft Windows
+    release of the <i>XicTools</i>.
+
+    <a name="setup"></a>
+    <h3>Installation and Setup</h3>
+
+    In order to license a Windows host, two pieces of information are
+    needed:
+    <ul>
+    <li>The machine's host name
+    <li>The Windows Product ID
+    </ul>
+
+    <p>
+    The recommended way to retrieve this information is to download
+    the <tt>licinfo.exe</tt> program from the <a
+    href="http://wrcad.com"<tt>wrcad.com</tt></a> web site.  When run,
+    this program generates a file named "<tt>XtLicenseInfo</tt>" which
+    should be emailed to Whiteley Research.  A pop-up window displays
+    the information, and indicates success or failure.
+
+    <p>
+    The distributions are available from the <tt>wrcad.com</tt> web
+    site, along with the distributions for Linux and OS X.  The
+    distributions come in self-extracting <tt>.exe</tt> files.  Simply
+    run the files to do the installation.  The programs can later be
+    uninstalled, either from the <b>Control Panel</b> or by clicking
+    the <b>Uninstall</b> icons in the <b>XicTools</b> program group in
+    the <b>Start</b> menu.
+
+    <p>
+    The same process can be used to install updated releases - it is
+    not necessary to uninstall first.  A more convenient way to keep
+    current is to set up automatic update checking.  For this, you
+    need to have a "home" directory.  The procedure is discussed
+    below.  Then, the <a href="!passwd"><b>!passwd</b></a> command in
+    <i>Xic</i> or the <b>password</b> command in <i>WRspice</i> can be
+    run, and the user/password to the distribution repository entered. 
+    This will produce a file "<tt>.wrpasswd</tt>" in the home
+    directory, used to authenticate with the web server at
+    <tt>wrcad.com</tt>.  When this is set up, the programs will check
+    for updates on startup.  If an update is available, the user is
+    asked (separately) whether to download the update distribution
+    file, and whether to install it.  The actual installation will
+    start when the user exits the program.
+
+    <p>
+    Before an update, any configuration files in the installation that
+    have been customized should be saved as they may be overwritten.
+
+    <p>
+    <table border=0 bgcolor="#ffeeee" cellpadding=3><tr><td>
+    WARNING<br>
+    The programs use an entry in the Windows Registry to find their
+    startup files, license, etc.  This entry is created by the
+    installer program.
+    </td></tr></table>
+
+    Thus
+    <ol>
+    <li>The correct way to move an existing installation to another
+    location is to uninstall the program, and reinstall to the new location
+    using the standard distribution file.  If you just move the files to
+    a new location, the Registry won't be updated and the program won't
+    run correctly.
+
+    <li>You can not simply copy files from another machine when
+    creating a new installation.  The files must be installed through
+    the distribution files, or the Registry entry won't be set.
+    </ol>
+
+    The Registry entry used (by the <tt>inno</tt> installer program) is
+    (for example)
+    <blockquote>
+    <tt>HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\Xic-4is1</tt>
+    </blockquote>
+    The Windows <tt>regedit</tt> utility can be used to repair the
+    Registry if necessary.  The Windows <tt>reg</tt> utility can also
+    be used to query and modify the Registry from the command line.
+
+    <p>
+    The programs are installed by default under <tt>C:\usr\local</tt>,
+    which can be specified to the program installer.  The installation
+    directories will be created if necessary.  All of the programs
+    will install under a directory named "<tt>xictools</tt>" under the
+    prefix, (for example, <i>Xic</i> files would be installed by
+    default in <tt>C:\usr\local\xictools\xic</tt>).  The structure of
+    the tree is exactly that as under Linux, which simplifies
+    compatibility.  It is recommended that the default installation
+    location be used, if possible.
+
+    <p>
+    The Generation 4 programs all use the GTK-2 toolkit for the user
+    interface.  The DLLs and other support files for this toolkit are
+    in the <tt>gtk2-bundle</tt> distribution file.  This must be
+    installed, by executing the file, in the same manner as the
+    program distribution files.  You will only need to do this once,
+    or at least very infrequently.  The default location is under
+    <tt>C:\usr\local\gtk2-bundle</tt>.
+
+    <p>
+    <table border=0 bgcolor="#ffeeee" cellpadding=3><tr><td>
+    IMPORTANT!<br>
+    The installation prefix given to the installer for all programs,
+    and the gtk2-bundle, <b>must</b> be the same.
+    </td></tr></table>
+
+    <p>
+    By default, the actual binary executable is run from a script
+    (<tt>.bat</tt>) file, which is installed in the same directory as
+    the executables, which by default is
+    <tt>C:\usr\local\xictools\bin</tt>.  The script takes care of
+    properly specifying the path to the DLLs provided by the
+    gtk2-bundle.
+
+    <p>
+    A program group named <tt>XicTools</tt> is created in the
+    <tt>Start</tt> menu (or equivalent), from which the programs can
+    be started.  The programs can also be started from a command line,
+    in either a Windows <b>Command Prompt</b> window or a Cygwin shell
+    window.  One will need to type the full path to the bat file
+    (e.g., type "<tt>C:\usr\local\xictools\bin\xic</tt>" to start
+    <i>Xic</i>).  There are two ways to avoid having to type the whole
+    path:
+
+    <ol>
+    <li>Add the directory to your search path.  This is the
+    <tt>PATH</tt> variable in the environment.  This can be set in
+    your <b>Command Prompt</b> window by giving a command like
+    <blockquote>
+        <tt>PATH=%PATH%;c:\usr\local\xictools\bin</tt>
+    </blockquote>
+    or the <tt>PATH</tt> can be set from the <b>Control Panel</b> (the
+    procedure is described below for Windows 8).
+
+    <li>The <tt>bat</tt> files can be copied from the installation
+    location into a directory that is already in the search path, or
+    to the current directory.
+    </ol>
+
+    <p>
+    Note that if you know your way around Windows <tt>bat</tt>
+    scripts, you can avoid the installation location requirement in
+    the warning above.
+
+    <p>
+    <table border=0 bgcolor="#ffeeee" cellpadding=3><tr><td>
+    WARNING<br>
+    In early alpha test releases, it was suggested that the
+    <tt>gtk2-bundle/bin</tt> be added to the system <tt>PATH</tt>. 
+    This is a very bad idea, since this may have an adverse effect on
+    other programs.  Unless you really know what you are doing, the
+    <tt>gtk2-bundle/bin</tt> directory should never appear in a global
+    search path.
+    </td></tr></table>
+
+    <a name="general"></a>
+    <h3>General Notes</h3>
+
+    The <i>XicTools</i> for Windows are supported on Windows XP and
+    later.  The programs retain the "look and feel" of the Unix/Linux
+    versions as much as possible, given the constraints of the Windows
+    operating system.
+
+    <p>
+    Starting with Generation 4, the programs use the GTK-2 graphical
+    interface toolkit, as used by the other releases.  The native
+    Win32 interface is gone.  The GTK-2 libraries are supplied in a
+    separate installation module.  Installation is mandatory, but the
+    libraries are quite static so will not require much attention
+    after the initial installation.
+
+    <p>
+    Most basic features are available under Windows.  Some of the more
+    advanced features are not.
+
+    <p>
+    <ul>
+    <li>There is presently no support for the Tcl/Tk or Python script
+    language plug-ins.
+!!IFDEF OpenAccess
+    There is also no support for the OpenAccess plug-in.
+!!ENDIF
+
+    <p>
+    <li>There is no automatic provision for remote running of the
+    programs as with the X window system in Linux.
+
+    <p>
+    <li>Under Unix/Linux, when the program crashes (of course, a very
+    rare occurrence!), the <tt>gdb</tt> debugger is called to generate
+    a stack trace, which is emailed to Whiteley Research for analysis. 
+    Since it is rare to find <tt>gdb</tt> on a Windows system, an
+    alternative is built in.  This produces a file named
+    <i>progname</i>.<tt>stackdump</tt>, which is emailed (if possible)
+    to Whiteley Research.
+
+    <p>
+    <li>Windows does not provide a reliable interface for internet
+    mail, so the email clients and crash-dump report in the
+    <i>XicTools</i> may not work.  The mail in <i>XicTools</i> works
+    by passing the message to a Windows interface called "MAPI", which
+    in turn relies on another installed program to actually send the
+    mail.
+
+    <p>
+    To get this working in Windows 8, I had to download and install
+    something called "live mail" from Microsoft, which eventually
+    worked.  This app supports MAPI, apparently the Windows 8 Mail app
+    does not(?).  The Windows 8 app also does not work with POP3
+    servers, solidifying my disrespect.
+
+    <p>
+    <li>The <i>XicTools</i> programs can use a separate license server
+       daemon under Unix/Linux.  Under Windows, no license server is
+       used, as the authentication is built into the programs.
+    </ul>
+
+    <p>
+    The "environment variables" mentioned in the
+    <i>Xic</i>/<i>WRspice</i> documentation are available, and can be
+    set in a <b>Command Prompt</b> window with the "<tt>set</tt>"
+    command before starting the programs, or from the <b>System</b>
+    entry in the <b>Control Panel</b> (or wherever this capability
+    lives in your version of Windows).  Only the latter method works
+    if the programs are started from an icon or menu.
+
+    <p>
+    Directory path names used by the programs can use either '/' or
+    '\' as the directory separator character, interchangeably.  The
+    path can also contain a drive specifier.
+
+    <p>
+    The path variables used by <i>Xic</i> that contain lists of
+    directory paths must use either a space or ';' (semicolon) as a
+    separator.  Under Unix, the separation characters are space and
+    ':' (colon).
+
+    <p>
+    The text files used by the programs can have either DOS or Unix
+    line termination.  Text files produced by the programs under
+    Windows will use the DOS format, which is expected in Windows.
+
+    <p>
+    Under Windows, where the concept of a "home directory" is somewhat
+    tenuous, the programs will look for environment variables,
+    particularly <a href="HOME"><b>HOME</b></a>, and if found
+    interpret the value as a path to the home directory.  This is true
+    when programs look for startup files.  When the program is started
+    from an icon or shortcut, and the start directory is not
+    explicitly set in the icon properties (it defaults to
+    <tt>C:/</tt>), the current directory will be the home directory,
+    rather than <tt>C:/</tt>.
+
+    <p>
+    Those used to a Unix environment are encouraged to download and
+    install the Cygwin tools.  These include most of your favorite
+    Unix commands, plus a complete compiler toolchain for application
+    development.  In particular, the bash shell is quite useful, as it
+    provides a "DOS box" that responds to Unix shell commands, and
+    from which one can execute shell scripts.  The tools can be
+    downloaded as individual modules.
+
+    <p>
+    If it is needed and does not exist, <i>Xic</i> and <i>WRspice</i>
+    will create a <tt>\tmp</tt> directory on the current drive.  This
+    will contain temporary files, used by the programs.  These should
+    be removed automatically when the programs terminate, but if not
+    the files can be safely deleted if <i>Xic</i> and <i>WRspice</i>
+    are not running.
+
+    <a name="env"></a>
+    <h3>Setting Environment Variables</h3>
+
+    By running Cygwin, the setting of environment variables and
+    similar becomes very familiar to a Linux user.  In particular,
+    running <i>Xic</i> from a Cygwin bash-shell window emulates pretty
+    well the Linux experience.  This is a recommended approach for
+    those familiar with Unix/Linux.
+
+    <p>
+    Otherwise, environment variables can be set manually in a
+    <b>Command Prompt</b> window from which the programs are run.  The
+    <tt>bat</tt> files can be modified and "<tt>set</tt>" lines added,
+    as an option to avoid manual setting of variables that should
+    always be in force.  Another option is to set the system default
+    environment variables.  Be aware that all other programs will see
+    the variables.  Setting the system environment variables is
+    probably something to avoid if possible.  If you insist, here is
+    the procedure for Windows 8.1.  Other supported Windows releases
+    are probably not horribly different.
+
+    <ol>
+    <li>Go to the infamous <b>Start</b> page, click on the circle with
+    down arrow icon near the bottom-left corner.  This shifts to the
+    <b>Apps</b> page.
+
+    <li>Find the <b>Control Panel</b>, it is listed on the <b>Apps</b>
+    page under <b>Windwos System</b>.  You can use the search tool if
+    necessary.  Eventually, you'll find the icon, then click it to
+    bring up the <b>Control Panel</b>.
+
+    <li>Click <b>System and Security</b>.  The display will change to a
+    new set of choices.
+
+    <li>Click <b>System</b>.
+
+    <li>Click <b>Advanced system settings</b> along the left.  This
+    brings up a <b>System Properties</b> window.
+
+    <li>Click the <b>Environment Variables</b> button near the bottom
+    of the <b>Advanced</b> page (this page should be shown initially).
+    </ol>
+
+    There are a couple of things one may want to do here, as examples.
+
+    <ol>
+    <li>Add the <i>XicTools</i> <tt>bin</tt> directory to the system
+      search path.<br><br>
+    Scroll the lower <b>System variables</b> window to find the
+    <tt>Path</tt> entry.  Click on this to select it.  Click the
+    <b>Edit...</b> button below, which brings up a text entry window. 
+    In the <b>Variable value</b> window, scroll all the way to the
+    right, and add, for example (use the actual path if different on
+    your system)
+    <blockquote>
+    <tt>;c:\usr\local\xictools\bin</tt>
+    </blockquote>
+    Check the spelling, and make sure there is no white space, and
+    that the character before the '<tt>c</tt>' is a semicolon, and
+    the character that follows the '<tt>c</tt>' is a colon.  Then
+    click the <b>OK</b> button.
+
+    <li>Add a <tt>HOME</tt> variable to define a "home directory".<br><br>
+
+    Press the <b>New...</b> button below the UPPER listing window (not
+    the one you just used).  This brings up a text entry as we saw
+    before.  Enter <tt>HOME</tt> for <b>Variable name</b>, For
+    <b>Variable value</b>, enter a path to some directory which you
+    want to be your "working" directory, where <i>Xic</i> and
+    <i>WRspice</i> will look for startup files, license files, etc. 
+    Enter the full path to this directory.  Check spelling, Click
+    <b>OK</b>.
+    </ol>
+
+    Finalle, click the <b>OK</b> button at the bottom of the window,
+    we're done.
+
+    <p>
+    When a program is started from an icon, an icon property specifies
+    the directory where the program logically starts from.  This is
+    the apparent current directory seen by the user when running the
+    program.  By default, this is usually sonething like
+    "<tt>C:\</tt>", which is not a good choice.  The user should have
+    a directory dedicated for this, and the following procedure can be
+    used to cause the programs started from an icon to start in this
+    directory.
+
+    <ol>
+    <li>Go to the <b>Start</b> page, click on the circle with down
+    arrow icon near the bottom-left corner.  This shifts to the <b>Apps</b>
+    page.
+
+    <li>Find the <b>XicTools</b> program group.  There should be
+    entries for the programs that you have installed.
+
+    <li>For each program:<br>
+      <ol>
+      <li>Click on the program icon with the RIGHT mouse button.  An icon
+      banner along the bottom of the screen will appear.
+
+      <li>Click on <b>Open File Location</b>.  This brings up a listing
+      showing the <b>XicTools</b> programs.
+
+      <li>Above the list, find the <b>Properties</b> icon and click
+      it.  This brings up a multi-page <b>Properties</b> pop-up.
+
+      <li>In the <b>Shortcut</b> page, change the entry in the
+      <b>Start in</b> entry area to a full directory path to the
+      directory where the program should start.  This might be the
+      same directory that you used for the <tt>HOME</tt> environment
+      variable. 
+
+      <li>Then click the <b>Apply</b> button, and click <b>OK</b> if there
+      is a confirmation pop-up.
+      </ol>
+    </ol>
+
+    This applies to the icon in the <b>Apps</b> page.  Other icons
+    can be set similarly.
+
+!!SEEALSO xic:graphics
+
+!!REDIRECT -B                   xic:cmdline#-B
+!!REDIRECT -C                   xic:cmdline#-C
+!!REDIRECT -C1                  xic:cmdline#-C1
+!!REDIRECT -E                   xic:cmdline#-E
+!!REDIRECT -F                   xic:cmdline#-F
+!!REDIRECT -G                   xic:cmdline#-G
+!!REDIRECT -H                   xic:cmdline#-H
+!!REDIRECT -K                   xic:cmdline#-K
+!!REDIRECT -L                   xic:cmdline#-L
+!!REDIRECT -R                   xic:cmdline#-R
+!!REDIRECT -S                   xic:cmdline#-S
+!!REDIRECT -T                   xic:cmdline#-T
+
+!! 030413
+!!KEYWORD
+xic:cmdline
+!!TITLE
+Command Line Options
+!!HTML
+    The following syntax applies when <i>Xic</i> is invoked from the
+    command line.  Arguments not recognized as options are expected to
+    be files containing layout information in supported formats.  The
+    first such file (if any) will be loaded into the editor. 
+    Subsequent files can be loaded sequentially with the <a
+    href="xic:open"><b>Open</b></a> command.
+    <blockquote>
+    <tt>xic</tt> [<tt>-F</tt> <i>filetool_args</i>] | [
+      [<tt>-B</tt><i>batch_opt</i> | <tt>-S</tt>[<i>port</i>]
+      [<tt>-C</tt> | <tt>-C1</tt>] [<tt>-E</tt>]
+      [<tt>-G</tt><i>geometry_spec</i>]
+      [<tt>-H</tt><i>directory_path</i>]
+      [<tt>-K</tt><i>password</i>] [<tt>-L</tt><i>serverhost</i>[:<i>port</i>]]
+      [<tt>-R</tt><i>prefix_path</i>]
+      [<tt>-T</tt>[<i>extension</i>]]
+      [<i>toolkit_options</i>] [<i>filename</i> ...] ]</tt>
+    </blockquote>
+
+    <i>Xic</i> will accept command line options common to applications
+    designed around the GTK user interface toolkit.  In addition,
+    there are a few command line options used exclusively by
+    <i>Xic</i>.  Options are keyed by a hyphen (-), and can not be
+    grouped.  Above, the square brackets indicate that the
+    specification is optional (which applies to all arguments), and
+    the '|' symbol is a logical "OR" operator indicating that one may
+    specify one of the surrounding forms.
+
+    <dl>
+    <dt>"Undocumented" options: <tt>--v</tt>, <tt>--vv</tt> and
+      <tt>--vb</tt><dd>
+    If <i>Xic</i> is given one of these options, and no other options,
+    <i>Xic</i> will print some text on the standard output and exit. 
+    Note that there are two hyphens in these options.  For
+    <tt>--v</tt> <i>Xic</i> will print the version followed by the
+    distribution name, for example "<tt>3.2.5 LinuxRHEL5</tt>".  For
+    <tt>--vv</tt>, <i>Xic</i> will print the CVS release tag, for
+    example "<tt>xic-3-2-5</tt>".  For <tt>--vb</tt>, <i>Xic</i> will
+    print the build date string.
+    </dl>
+
+    <a name="-B"></a>
+    <dl>
+    <dt><tt>-B</tt><i>batch_opt</i><dd>
+    <i>Xic</i> supports a <a href="xic:batch">batch mode</a> of
+     operation, where <i>Xic</i> will run a script or perform certain
+    commands without graphics.  The form for this option is one of
+    <blockquote>
+      <tt>-B</tt><i>scriptfile</i>[<tt>,</tt><i>args</i>...]<br>
+      <tt>-B-</tt><i>command</i>[<tt>@</tt><i>arguments</i>]<br>
+    </blockquote>
+    </dl>
+
+    <a name="-C"></a>
+    <a name="-C1"></a>
+    <p>
+    The <tt>-C</tt> and <tt>-C1</tt> options apply only to
+    "pseudo-color" displays.  These are displays with "8-bits" or "256
+    colors", found on older workstations.  By default, <i>Xic</i> uses
+    a large percentage of the system colormap.  If there are
+    insufficient colormap entries available, <i>Xic</i> will create
+    its own virtual colormap, which is loaded when an <i>Xic</i>
+    window has the keyboard focus.  A problem is that some X terminals
+    and emulators apparently do not support virtual colormaps, or do
+    so improperly.  Also, the use of a virtual colormap can be
+    annoying.  For these reasons, the <tt>-C</tt> and
+    <tt>-C1</tt>options have been provided to limit colormap usage,
+    and avoid creation of a virtual colormap.
+
+    <p>
+    <dl>
+    <dt><tt>-C</tt><dd>
+    This option applies only in pseudo-color visual modes.  The
+    <tt>-C</tt> option, if given, will prevent <i>Xic</i> from
+    allocating private colors from the system colormap.  Instead, it
+    will use cells shared with other applications.  The colormap usage
+    can be dramatically reduced by this option.  The cost is 1) the
+    colors may not be quite "right" if the colormap is already heavily
+    used by other applications, 2) there is no blinking, 3) the colors
+    can not be changed, and 4) highlighting may be difficult to see,
+    as for the <tt>-C1</tt> option.  A second copy of <i>Xic</i>
+    running with the same technology file as the first will use no
+    additional colormap space.  A virtual colormap is never produced
+    if the <tt>-C</tt> option is given.  This option is recommended
+    primarily for users who want to run multiple copies of <i>Xic</i>
+    without the virtual colormap.
+    </dl>
+
+    <dl>
+    <dt><tt>-C1</tt><dd>
+    This option applies only in pseudo-color visual modes.  The
+    <tt>-C1</tt> option saves colormap space by directing <i>Xic</i>
+    to allocate single-plane cells.  By default, and if sufficient
+    colormap space is available, <i>Xic</i> will allocate "dual-plane"
+    color cells for the layer rendering colors.  These cells contain
+    two pixel values, one representing the color, and one which is
+    white.  The white pixel is addressed during highlighting, and
+    having one white pixel per layer ensures that the exclusive-or
+    drawing mode always produces white highlighting.
+
+    <p>
+    Single-plane color cells use half the colormap space of dual plane
+    cells.  However, the exclusive-or highlighting is only guaranteed
+    to be white over the background, and the highlighting can take any
+    color over the layers.  This can sometimes be difficult to see.
+    </dl>
+
+    <a name="-E"></a>
+    <dl>
+    <dt><tt>-E</tt><dd>
+    The <tt>-E</tt> option signals <i>Xic</i> to start in electrical
+    mode.  The default is to start in physical mode.
+    </dl>
+
+    <a name="-F"></a>
+    <dl>
+    <dt><tt>-F</tt><dd>
+    This option must be the first given, and arguments that follow
+    must be appropriate for the <a
+    href="filetool"><i>FileTool</i></a> utility.  The program will
+    behave as the command-line <i>FileTool</i> program, which can
+    perform various manipulations and diagnostics on layout files.
+
+    <p>
+    If the <tt>xic</tt>, <tt>xicii</tt>, or <tt>xiv</tt> binary
+    executable files (or Windows <tt>.exe</tt> equivalents) are
+    copied or linked under the name "<tt>filetool</tt>"
+    ("<tt>filetool.exe</tt>" under Windows), the new program will
+    behave as a <i>FileTool</i> when invoked.
+    </dl>
+
+    <a name="-G"></a>
+    <dl>
+    <dt><tt>-G</tt><i>geometry_spec</i><dd>
+    The <i>geometry_spec</i> is an X-style window geometry
+    specification, which allows the main window size and position to
+    be specified.  There is no space between <tt>-G</tt> and the
+    specification.  The command line specification will override the
+    <a href="XIC_GEOMETRY"><tt>XIC_GEOMETRY</tt></a> variable.  The
+    format of the <i>geometry_spec</i> is described with the
+    environment variable.
+    </dl>
+
+    <a name="-H"></a>
+    <dl>
+    <dt><tt>-H</tt><i>directory_path</i><dd>
+    Giving this option will cause <i>Xic</i> to start in
+    <i>directory_path</i> as the current working directory.  Note that
+    there is no space between the 'H' and the directory path.
+    </dl>
+
+    <a name="-K"></a>
+    <dl>
+    <dt><tt>-K</tt><i>password</i><dd>
+    The password used to enable use of <a href="scr:crypt">encrypted
+    scripts</a> can be given to <i>Xic</i> on the command line with
+    this option.  Note that there is no
+    space between the "<tt>-K</tt>" and the password.
+    As the password can contain almost any character, if the password
+    contains characters which could be misinterpreted by the shell,
+    the password should be quoted, e.g., <tt>-K</tt>'<i>password</i>'.
+
+    <p>
+    If no password is given to <i>Xic</i> with the <tt>-K</tt> option,
+    a default password is effective.  The default password has a key
+    that is compiled into the executable file, which can be changed
+    with the <a href="wrsetpass"><tt>wrsetpass</tt></a> utility.  The
+    "factory" default password is
+    <blockquote>
+    <b>Default password</b>: <tt>qwerty</tt>
+    </blockquote>
+    The password set with the <tt>-K</tt> option overrides the default
+    password.  The password can also be set with the <a
+    href="funcs:main1:script#SetKey"><tt>SetKey</tt></a> script function.
+
+    <p>
+    If the <tt>.xicinit</tt> or <tt>.xicstart</tt> file, or the <a
+    href="scr:library">function library</a> file, or a script run from
+    <a href="xic:batch">batch mode</a> is encrypted, the encryption
+    password must be given to <i>Xic</i> with the <tt>-K</tt> option,
+    or be the default password.  As the password can be changed with
+    the <tt>SetKey</tt> script function, <b>User Menu</b> scripts can
+    in principle use different passwords, which must be set before the
+    script is executed.
+    </dl>
+
+    <a name="-L"></a>
+    <dl>
+    <dt><tt>-L</tt><i>serverhost</i>[:<i>port</i>]<dd>
+    This supplies the host name of the machine running the license
+    server, and optionally specifies the port number.  Note that there
+    is no space after -L.  If given, this will override the server
+    host supplied by other means.
+
+    <p>
+    Below is the logic hierarchy for setting the license server host,
+    each method will override those listed lower.  See the
+    documentation for the <tt>xtlserv</tt> (license server) program
+    for more information.
+
+    <blockquote>
+    -L<i>serverhost</i>[:<i>port</i>]<br>
+    <a href="XTLSERVER"><b>XTLSERVER</b></a> in environment<br>
+    <a href="license.host"><tt>license.host</tt></a> file<br>
+    <tt>xtlserver</tt> in <tt>/etc/hosts</tt><br>
+    name of local machine
+    </blockquote>
+    </dl>
+
+    <a name="-R"></a>
+    <dl>
+    <dt><tt>-R</tt><i>prefix_path</i><dd>
+    If given, the <i>prefix_path</i> internally replaces
+    "<tt>/usr/local</tt>" when <i>Xic</i> composes directory paths to
+    search for startup files.  This will override the value of the <a
+    href="XT_PREFIX"><b>XT_PREFIX</b></a> environment variable.  This
+    is one method of specifying to <i>Xic</i> the startup file
+    location, if the distribution was installed in a non-default
+    location.  Under Windows, the installation location is saved in
+    the registry and is available to <i>Xic</i>, so <i>Xic</i> should
+    be able to find its startup files without this option.
+    </dl>
+
+    <a name="-S"></a>
+    <dl>
+    <dt><tt>-S</tt>[<i>port</i>]<dd>
+    If the <tt>-S</tt> option is given, <i>Xic</i> will run in <a
+    href="xic:server">server mode</a>.  In this mode, <i>Xic</i> runs
+    in the background as a daemon process, serving requests through a
+    communications port.  This option can be immediately followed (no
+    space) by a port number to use for connections.
+    </dl>
+
+    <a name="-T"></a>
+    <dl>
+    <dt><tt>-T</tt>[<i>extension</i>]<dd>
+    The <tt>-T</tt><i>extension</i> option is used to designate a
+    particular <a href="techfile">technology file</a>, which is a file
+    used by <i>Xic</i> to initialize itself to a particular
+    manufacturing process and set of user preferences.  The technology
+    file has a name of the form <tt>xic_tech</tt> or
+    <tt>xic_tech.</tt><i>extension</i>, the base name is always
+    "xic_tech", but there may be an arbitrary extension (characters
+    other than '.' following '.').  If no <tt>-T</tt> option is given,
+    then the <tt>xic_tech</tt> file is used.  Otherwise, the
+    <i>extension</i> given in the option will signal <i>Xic</i> to use
+    the technology file with the same extension.  Note that it is
+    allowable to start <i>Xic</i> without any technology file, which
+    is the effect of giving just the <tt>-T</tt> without any
+    extension.  Note that there must not be any space between the
+    <tt>T</tt> and the extension.
+    </dl>
+
+    <p>
+    The graphical interface accepts the following options.  These
+    options are not processed by <i>Xic</i>, but are intercepted by
+    the graphics subsystem and affect the interface to the X-window
+    system.  The multiple forms are equivalent.
+
+    <p>
+    <dl>
+    <dt><tt>-d</tt> <i>dispname</i><br>
+    <tt>-display</tt> <i>dispname</i><br>
+    <tt>--display</tt> <i>dispname</i><dd>
+    This option specifies the name of the X display to use.  The
+    <i>dispname</i> is in the form
+    <blockquote>
+     <tt>[<i>host</i>]:<i>server</i>[.<i>screen</i>]</tt>
+    </blockquote>
+    The <i>host</i> is the host name of the physical display,
+    <i>server</i> specifies the display server number, and
+    <i>screen</i> specifies the screen number.  Either or both of the
+    <i>host</i> and <i>screen</i> elements to the display
+    specification can be omitted.  If <i>host</i> is omitted, the
+    local display is assumed.  If <i>screen</i> is omitted, screen 0
+    is assumed (and the period is unnecessary).  The colon and
+    (display) <i>server</i> are necessary in all cases.  If no display
+    is specified on the command line, the display is set to the value
+    of the <tt>DISPLAY</tt> environment variable.
+    </dl>
+
+    <dl>
+    <dt><tt>-name</tt> <i>appname</i><br>
+    <tt>--name</tt> <i>appname</i><dd>
+    This option provides an alternative name to the application, as
+    known to the X window system.  The application name is used by X
+    to apply resource specifications.
+    </dl>
+
+    <dl>
+    <dt><tt>--class</tt> <i>classname</i><dd>
+    This option provides an alternative class name to the
+    application, as known to the X window system.  The application
+    class name is used by X to apply resource specifications.
+    </dl>
+
+    <dl>
+    <dt><tt>-synchronous</tt><br>
+    <tt>--sync</tt><dd>
+    This option indicates that requests to the X server should be sent
+    synchronously, instead of asynchronously.  Since the X system
+    normally buffers requests to the server, errors do not necessarily
+    get reported immediately after they occur.  This option turns off
+    the buffering so that the application can be debugged more easily. 
+    It should never be used with a working program.
+    </dl>
+
+    <dl>
+    <dt><tt>--no-xshm</tt><dd>
+    In releases running under the X-Window system (Unix/Linux),
+    <i>Xic</i> will use the MIT-SHM shared memory extension if the X
+    server supports this extension, and the server is running on the
+    local machine.  This allows image data to be transferred to the X
+    server via shared memory, which is faster than the normal X socket
+    interface.  Screen updates may be faster as a result.
+
+    <p>
+    Giving the option <tt>--no-xshm</tt> on the command line will
+    prevent use of this extension, if for some reason this is
+    necessary.
+    </dl>
+
+    <p>
+    Any words found in the command line that are not recognized as
+    options will be interpreted as files to load into <i>Xic</i> for
+    editing.  The files will be loaded in order of their appearance,
+    with the first file loaded at startup, and the other files loaded
+    in response to an <a href="xic:open"><b>Open</b></a> command.
+
+!!REDIRECT CYGWIN_BIN           xic:env#CYGWIN_BIN
+!!REDIRECT XT_AUTH_MODE         xic:env#XT_AUTH_MODE
+!!REDIRECT XT_LICENSE_PATH      xic:env#XT_LICENSE_PATH
+!!REDIRECT XTLSERVER            xic:env#XTLSERVER
+!!REDIRECT XT_PREFIX            xic:env#XT_PREFIX
+!!REDIRECT XTNETDEBUG           xic:env#XTNETDEBUG
+!!REDIRECT XT_LOCAL_MALLOC      xic:env#XT_LOCAL_MALLOC
+!!REDIRECT XT_SYSTEM_MALLOC     xic:env#XT_SYSTEM_MALLOC
+
+!!REDIRECT FORCE_XICII          xic:env#FORCE_XICII
+!!REDIRECT FORCE_XIV            xic:env#FORCE_XIV
+!!REDIRECT XIC_HOME             xic:env#XIC_HOME
+!!REDIRECT XIC_GEOMETRY         xic:env#XIC_GEOMETRY
+!!REDIRECT XIC_TMP_DIR          xic:env#XIC_TMP_DIR
+!!REDIRECT TMPDIR               xic:env#TMPDIR
+!!REDIRECT XIC_LOGDIR           xic:env#XIC_LOGDIR
+!!REDIRECT XIC_MENU_RIGHT       xic:env#XIC_MENU_RIGHT
+!!REDIRECT XIC_HORIZ_BUTTONS    xic:env#XIC_HORIZ_BUTTONS
+!!REDIRECT XIC_PLUGIN_DBG       xic:env#XIC_PLUGIN_DBG
+!!REDIRECT XIC_START_DIR        xic:env#XIC_START_DIR
+!!REDIRECT HOME                 xic:env#HOME
+!!REDIRECT XIC_EXIT_CMD         xic:env#XIC_EXIT_CMD
+!!REDIRECT XIC_SYM_PATH         xic:env#XIC_SYM_PATH
+!!REDIRECT XIC_LIB_PATH         xic:env#XIC_LIB_PATH
+!!REDIRECT XIC_HLP_PATH         xic:env#XIC_HLP_PATH
+!!REDIRECT XIC_SCR_PATH         xic:env#XIC_SCR_PATH
+!!REDIRECT XIC_DOCS_DIR         xic:env#XIC_DOCS_DIR
+!!REDIRECT XIC_OASO_PATH        xic:env#XIC_OASO_PATH
+!!REDIRECT XIC_PYSO_PATH        xic:env#XIC_PYSO_PATH
+!!REDIRECT XIC_TCLSO_PATH       xic:env#XIC_TCLSO_PATH
+!!REDIRECT XIC_LIBRARY_PATH     xic:env#XIC_LIBRARY_PATH
+!!REDIRECT XICNOMAIL            xic:env#XICNOMAIL
+!!REDIRECT XTNOMAIL             xic:env#XTNOMAIL
+!!REDIRECT SPICE_HOST           xic:env#SPICE_HOST
+!!REDIRECT SPICE_EXEC_DIR       xic:env#SPICE_EXEC_DIR
+!!REDIRECT SPICE_EXEC_NAME      xic:env#SPICE_EXEC_NAME
+!!REDIRECT IMSAVE_PATH          xic:env#IMSAVE_PATH
+
+!! 092615
+!!KEYWORD
+xic:env
+!!TITLE
+Environment Variables
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="xic:env#linux"><b>Unix/Linux</b></a><br>
+    <a href="xic:env#msw"><b>Microsoft Windows</b></a><br>
+    <a href="xic:env#xtenv"><b><i>XicTools</i> Environment Variables</b></a><br>
+    <a href="xic:env#xicenv"><b><i>Xic</i> Environment Variables</b></a>
+    </td></tr></table>
+
+    <p>
+    Environment variables are keyword/value pairs that are made
+    available to an application by the command shell or operating
+    system.  The value of an environment variable is a text string,
+    which may be empty.  Environment variables can be set by the user
+    to control various defaults in <i>Xic</i>.
+    <br clear=all>
+
+    <a name="linux"></a>
+    <h2>Unix/Linux</h2>
+
+    Environment variables are maintained by the user's command shell. 
+    It is often convenient to set environment variables in a shell
+    startup file such as <tt>.cshrc</tt> or <tt>.login</tt> for the
+    C-shell or <tt>.profile</tt> for the Bourne shell.  These files
+    reside in the user's home directory.  See the manual page for your
+    shell for more information.
+
+    <p>
+    For the C-shell, the command that sets an environment variable is
+    <blockquote>
+        <tt>setenv</tt> <i>variable_name</i> [<i>value</i>]
+    </blockquote>
+    For example,
+    <blockquote>
+        <tt>setenv XT_DUMMY "hello world!"</tt>
+    </blockquote>
+    Note that if the value contains white space, it should be quoted. 
+    Note also that it is not necessary to have a value, in which case
+    the variable acts as a boolean (set or not set).
+
+    <p>
+    In the C-shell, one can use <tt>setenv</tt> without arguments, or
+    <tt>printenv</tt>, to list all of the environment variables
+    currently set.
+
+    <p>
+    For a modern Bourne-type shell, such as <tt>bash</tt>, the
+    corresponding command is
+    <blockquote>
+        <tt>export</tt> <i>variable_name</i>[=<i>value</i>]
+    </blockquote>
+    In this type of shell one can list the variables currently set by
+    giving the <tt>set</tt> command with no arguments.
+
+    <a name="msw"></a>
+    <h2>Microsoft Windows</h2>
+
+    Under Windows, environment variables can be set in a DOS box with
+    the <tt>set</tt> command before starting the program from the
+    command line, or in the <tt>AUTOEXEC.BAT</tt> file, or from the
+    <b>System</b> entry in the <b>Control Panel</b>.  Only the latter
+    two methods work if the programs are started from an icon.  If
+    using a Cygwin bash-box, environment variables can be set in the
+    startup file as under Unix.
+
+    <a name="xtenv"></a>
+    <h2><i>XicTools</i> Environment Variables</h2>
+
+    The following environment variables are used by all
+    <i>XicTools</i> programs.
+
+    <a name="CYGWIN_BIN"></a>
+    <dl>
+    <dt><b>CYGWIN_BIN</b>
+    <dd>
+    This variable applies only when running under Microsoft Windows,
+    and Cygwin is installed.  Cygwin is Linux-like environment and
+    tool set which is a very useful adjunct to Windows.  In
+    particular, it provides a bash shell with standard Linux commands,
+    and an X server, among many installable features.
+
+    <p>
+    <i>XicTools</i> programs will in some cases, such as when popping
+    up a shell window, look for a Cygwin program.  If the Cygwin
+    program binaries (<tt>.exe</tt> files) are located in
+    <tt>/bin</tt> or <tt>/cygwin/bin</tt> on the current disk
+    drive, they will be found automatically.  Otherwise, this variable
+    can be set to the Windows path, including a drive letter if
+    necessary, to the directory containing the Cygwin binaries.  This
+    is not necessarily the path one perceives from within Cygwin,
+    since the <i>XicTools</i> programs do not know about the Cygwin
+    mount points or symbolic links.  The path is the one that would be
+    seen from a DOS box, with forward or reverse slash directory
+    separators.
+    </dl>
+
+    <a name="XT_AUTH_MODE"></a>
+    <dl>
+    <dt><b>XT_AUTH_MODE</b>
+    <dd>
+    By default, Unix/Linux versions of <i>Xic</i> and <i>WRspice</i>
+    use authorization provided by an external license server, possibly
+    hosted on a different machine.  On the other hand, the Windows
+    versions use built-in local authentication.  Both the external
+    license server and the programs not using the license server make
+    use of a file named "<tt>LICENSE</tt>" provided by Whiteley
+    Research, Inc., which provides authorization to run on the host
+    computer.
+
+    <p>
+    Whether to use a license server or local authentication can be set
+    with the environment variable <b>XT_AUTH_MODE</b>.  This variable
+    has meaning if set to one of the keywords "<tt>Server</tt>" or
+    "<tt>Local</tt>".  If set to "<tt>Server</tt>" on a Windows
+    system, <i>Xic</i> and <i>WRspice</i> can by authenticated from a
+    license server.  If set to "<tt>Local</tt>" on a Linux/OS X
+    system, <i>Xic</i> and <i>WRspice</i> will be self-validating.
+
+    <p>
+    <i>Xic</i> and/or <i>WRspice</i> users on a single licensed
+    workstation may prefer to set the environment variable in their
+    shell startup file and not use the external license server.
+
+    <p>
+    When the programs look for the LICENSE file in "<tt>Local</tt>"
+    mode, if the file is not found in the startup or license
+    directories, the programs will look in the home and current
+    directories, in that order, unless <b>XT_LICENSE_PATH</b> is
+    also set.
+    </dl>
+
+    <a name="XT_LICENSE_PATH"></a>
+    <dl>
+    <dt><b>XT_LICENSE_PATH</b>
+    <dd>
+    When using local validation (i.e., not using the license server)
+    <b>XT_LICENSE_PATH</b> can be set to the full path to the license
+    file.  Only this file will be used - the regular search is
+    suppressed.
+    </dl>
+
+    <a name="XTLSERVER"></a>
+    <dl>
+    <dt><b>XTLSERVER</b>
+    <dd>
+    This provides the host name of the host running the license server
+    needed to validate the application.  It is in a format
+    understandable to the local name server.  The host name can
+    optionally be suffixed by "<tt>:</tt><i>port</i>", where
+    <i>port</i> is the port number in use by the server.  There should
+    be no space around the colon when using this form.
+    </dl>
+
+    <a name="XT_PREFIX"></a>
+    <dl>
+    <dt><b>XT_PREFIX</b>
+    <dd>
+    All of the <i>XicTools</i> programs respond to the
+    <b>XT_PREFIX</b> environment variable.  When the tools are
+    installed in a non-standard location, i.e., other than
+    <tt>/usr/local</tt>, this can be set to the directory prefix which
+    effectively replaces "<tt>/usr/local</tt>", and the programs will
+    be able to access the installation library files without further
+    directives.  The <i>Xic</i> <a href="-R"><tt>-R</tt></a> command
+    line option can also be used for this purpose.  This should not be
+    needed under Windows, as the Registry provides the default paths.
+    </dl>
+
+    <a name="XTNETDEBUG"></a>
+    <dl>
+    <dt><b>XTNETDEBUG</b>
+    <dd>
+    If the variable <b>XTNETDEBUG</b> is defined, <i>Xic</i> and
+    <i>WRspice</i> will echo interprocess messages sent and received
+    to the console.  In server mode, <i>Xic</i> will not go into the
+    background, but will remain in the foreground, printing status
+    messages while servicing requests.
+    </dl>
+
+    <a name="XT_LOCAL_MALLOC"></a>
+    <dl>
+    <dt><b>XT_LOCAL_MALLOC</b>
+    <dd>
+    Linux and FreeBSD releases can use an included local memory
+    allocation package.  In earlier <i>Xic</i> releases, this
+    allocator, rather than the allocator provided by the operating
+    system, was used by default.  In 32-bit releases, the local
+    allocator was often able to allocate more memory than the
+    allocators provided by the operating system.  It also provided
+    custom error reporting and statistics.
+
+    <p>
+    This feature is now disabled, as in modern operating systems there
+    is dubious benefit, and it can produce stability problems in some
+    cases.  However, if this variable is set in the environment when
+    <i>Xic</i> is started, the local allocator will be used.  The
+    interested user is encouraged to experiment.
+    </dl>
+
+    <a name="XT_SYSTEM_MALLOC"></a>
+    <dl>
+    <dt><b>XT_SYSTEM_MALLOC</b>
+    <dd>
+    This variable was once used to disable the internal local memory
+    allocator, which in earlier releases was enabled by default.
+    Currently, this variable is ignored.
+    </dl>
+
+    <a name="xicenv"></a>
+    <h2><i>Xic</i> Environment Variables</h2>
+
+    The following paragraphs describe the environment variables which
+    are relevant to <i>Xic</i>.
+
+    <a name="FORCE_XICII"></a>
+    <dl>
+    <dt><b>FORCE_XICII</b>
+    <dd>
+    If this variable is set when <i>Xic</i> starts, the program will
+    run as <i>XicII</i>.  This enables those with a full <i>Xic</i>
+    license to run as <i>XicII</i>, for whatever reason.  One can
+    create an "<tt>xicii</tt>" program with the following shell
+    script:
+
+    <blockquote><tt>
+    #! /bin/sh<br><br>
+    FORCE_XICII=1 xic $*
+    </tt></blockquote>
+    </dl>
+
+    <a name="FORCE_XIV"></a>
+    <dl>
+    <dt><b>FORCE_XIV</b>
+    <dd>
+    If this variable is set when <i>Xic</i> starts, the program will
+    run as <i>Xiv</i>.  This enables those with a full <i>Xic</i>
+    license to run as <i>Xiv</i>, for whatever reason.  One can create
+    an "<tt>xiv</tt>" program with the following shell script:
+
+    <blockquote><tt>
+    #! /bin/sh<br><br>
+    FORCE_XIV=1 xic $*
+    </tt></blockquote>
+    </dl>
+
+    <a name="XIC_HOME"></a>
+    <dl>
+    <dt><b>XIC_HOME</b>
+    <dd>
+    This environment variable applies only to the <i>Xic</i> program. 
+    If found in the environment when <i>Xic</i> starts, it is expected
+    to contain a path to the <i>Xic</i> installation area or equivalent, which
+    defaults to "<tt>/usr/local/xictools/xic</tt>".  This overrides <a
+    href="XT_PFREFIX"><b>XT_PREFIX</b></a> if that environment
+    variable is also found.
+
+    <p>
+    There is an important subtlety when using this variable.  Although
+    it allows <i>Xic</i> to find its startup files anywhere, only the
+    directory structure implied by <b>XT_PREFIX</b>, that is, for
+    <i>Xic</i>,
+    <blockquote>
+    <tt>$XT_PREFIX/xictools/xic</tt>
+    </blockquote>
+    is compatible with the program installation script.  The variable
+    is perhaps useful for pointing <i>Xic</i> toward a secondary set
+    of startup files, perhaps heavily customized by the user, which
+    may reside in an arbitrary location.
+    </dl>
+
+    <a name="XIC_GEOMETRY"></a>
+    <dl>
+    <dt><b>XIC_GEOMETRY</b>
+    <dd>
+    This can be set to an X-style geometry string, to specify the
+    default size and position of the <i>Xic</i> main window.
+
+    <p>
+    If the geometry has been specified, <i>Xic</i> will use it to
+    position and size the main window (if the window manager permits
+    this).  The geometry specification, used to define window size and
+    position, is a string in the form
+    <blockquote>
+    <i>width</i><tt>x</tt><i>height</i>+<i>xoff</i>+<i>yoff</i>
+    </blockquote>
+    where <i>width</i>, <i>height</i>, <i>xoff</i>, and <i>yoff</i>
+    are numbers representing screen pixels.  The "<tt>x</tt>" or
+    "<tt>X</tt>" between the <i>width</i> and <i>height</i> is
+    literal.  A plus sign '+' or minus sign '-' must appear ahead of
+    <i>xoff</i> and <i>yoff</i>.
+
+    <dl>
+    <dt>+<i>xoff</i><dd>
+    The left edge of the window is to be placed <i>xoff</i> pixels in
+    from the left edge of the screen.
+    </dl>
+
+    <dl>
+    <dt>-<i>xoff</i><dd>
+    The right edge of the window is to be placed <i>xoff</i> pixels in
+    from the right edge of the screen.
+    </dl>
+
+    <dl>
+    <dt>+<i>yoff</i><dd>
+    The top edge of the window is to be <i>yoff</i> pixels below the
+    top edge of the screen.
+    </dl>
+
+    <dl>
+    <dt>-<i>yoff</i><dd>
+    The bottom edge of the window is to be <i>yoff</i> pixels above
+    the bottom edge of the screen.
+    </dl>
+    </dl>
+
+    <a name="XIC_TMP_DIR"></a>
+    <a name="TMPDIR"></a>
+    <dl>
+    <dt><b>XIC_TMP_DIR</b>, <b>TMPDIR</b>
+    <dd>
+    By default, <i>Xic</i> uses the directory <tt>/tmp</tt> for
+    temporary files.  In some installations, this directory may be too
+    small to accommodate the large files needed by <i>Xic</i>, for
+    example when producing hardcopy plots.  An alternative directory
+    for temporary files can be specified with the <b>XIC_TMP_DIR</b>
+    environment variable (which has precedence) or with the
+    <b>TMPDIR</b> variable, which is a Unix standard.  One of these
+    should be set to a path to a directory to use for temporary files,
+    if necessary.
+    </dl>
+
+    <a name="XIC_LOGDIR"></a>
+    <dl>
+    <dt><b>XIC_LOGDIR</b>
+    <dd>
+    The variable <b>XIC_LOGDIR</b> can be set to a path to a
+    directory which will be used to store certain <a
+    href="logfiles">log files</a> produced while <i>Xic</i> is
+    running.  The location used for the log files is the first defined
+    of <b>XIC_LOGDIR</b>, <b>XIC_TMP_DIR</b>, <b>TMPDIR</b>, or
+    <tt>/tmp</tt> if none of these variables is defined.  The log
+    files are removed on normal exit.
+    </dl>
+
+    <a name="XIC_MENU_RIGHT"></a>
+    <dl>
+    <dt><b>XIC_MENU_RIGHT</b>
+    <dd>
+    If the variable <b>XIC_MENU_RIGHT</b> is defined in the
+    environment, <i>Xic</i> will place the side menu and layer table
+    to the right of the main window.  The default to to place the menu
+    at the left. 
+    </dl>
+
+    <a name="XIC_HORIZ_BUTTONS"></a>
+    <dl>
+    <dt><b>XIC_HORIZ_BUTTONS</b><dd>
+    If this variable is set in the environment when <i>Xic</i> starts,
+    the buttons in the <a href="sidemenu">side menu</a> will be
+    arrayed horizontally across the top of the main window instead.
+    </dl>
+
+    <a name="XIC_PLUGIN_DBG"></a>
+    <dl>
+    <dt><b>XIC_PLUGIN_DBG</b><dd>
+    If this variable is set in the environment when <i>Xic</i> starts,
+    error messages concerning <a href="plugins">plug-in</a> loading
+    will be printed in the console window.  Without this set,
+    <i>Xic</i> will simply silently not load a plug-in if an error
+    occurs.  These diagnostic messages can help identify why the
+    plug-in is not being loaded, and are instrumental in tracking down
+    problems when the user expects success.
+    </dl>
+
+    <a name="XIC_START_DIR"></a>
+    <a name="HOME"></a>
+    <dl>
+    <dt><b>XIC_START_DIR</b>, <b>HOME</b>
+    <dd>
+    Under Windows, the user's "home" directory is determined by
+    looking at environment variables.  The first one found to be set
+    is assumed to contain a path to the user's home directory.  First,
+    <b>XIC_START_DIR</b> is checked.  This is <i>Xic</i> (and family)
+    specific, and would be set previously by the user.  If not found,
+    <b>HOME</b> is checked.  This can be set by environments such as
+    Cygwin, when starting in a Cygwin shell window, or may be set by
+    other environments or by the user.  If not found, the
+    <b>HOMEDIR</b> and <b>HOMEPATH</b> variables, if both are found,
+    are concatenated to yield the home directory path.  In the
+    unlikely event that these are not set, the <b>USERPROFILE</b>
+    variable is checked, and if all else fails, "<tt>C:/</tt>" is
+    assumed.  The <b>HOMEDIR</b>/<b>HOMEPATH</b> and
+    <b>USERPROFILE</b> variables are set by Windows, at least in
+    recent Windows versions.
+
+    <p>
+    Under other operating systems, the home directory is well-defined
+    and is obtained from operating system calls.
+
+    <p>
+    Under Windows, if <i>Xic</i> finds itself in the <tt>C:\</tt>
+    directory on startup, it will change the working directory to the
+    home directory.  This is the default when starting from the
+    Windows <b>Start Menu</b> or otherwise from an icon, unless the
+    icon property is changed.
+    </dl>
+
+    <a name="XIC_EXIT_CMD"></a>
+    <dl>
+    <dt><b>XIC_EXIT_CMD</b>
+    <dd>
+    If the environment variable <b>XIC_EXIT_CMD</b> is set to a command
+    string, that command will be executed when <i>Xic</i> exits.  If the
+    command string contains spaces, the command should be quoted.  For
+    example, using
+
+    <blockquote>
+      <tt>setenv XIC_EXIT_CMD "/usr/games/fortune -o"</tt>
+    </blockquote>
+
+    may print a rude limerick on some installations.  This feature may
+    have less frivolous uses, however.
+    </dl>
+
+    <a name="XIC_SYM_PATH"></a>
+    <a name="XIC_LIB_PATH"></a>
+    <a name="XIC_HLP_PATH"></a>
+    <a name="XIC_SCR_PATH"></a>
+    <dl>
+    <dt><b>XIC_SYM_PATH</b>, <b>XIC_LIB_PATH</b>, <b>XIC_HLP_PATH</b>,
+      <b>XIC_SCR_PATH</b>
+    <dd>
+    There are four additional environment variables used to specify
+    locations where <i>Xic</i> is to look for certain types of files. 
+    These variables are <b>XIC_SYM_PATH</b>, <b>XIC_LIB_PATH</b>,
+    <b>XIC_HLP_PATH</b>, and <b>XIC_SCR_PATH</b>.  See the paragraphs
+    on the <i>Xic</i> <a href="xicpaths">search paths</a> for more
+    information.
+
+    <p>
+    The internal default values for the paths assume that the
+    installation location is the standard place under
+    <tt>/usr/local</tt>, or if the <b>XT_PREFIX</b> variable is set,
+    that value will be taken instead of "<tt>/usr/local</tt>".
+    </dl>
+
+    <a name="XIC_DOCS_DIR"></a>
+    <dl>
+    <dt><b>XIC_DOCS_DIR</b>
+    <dd>
+    The environment variable <b>XIC_DOCS_DIR</b> can be set to an
+    alternate location for the archive of release notes.  This
+    location is searched in the <a href="xic:notes"><b>Release
+    Notes</b></a> command in the <a href="xic:helpmenu"><b>Help
+    Menu</b></a>.  The default location is
+    <tt>/usr/local/xictools/xic/docs</tt>, or, if <b>XT_PREFIX</b>
+    is set, its value will replace <tt>/usr/local</tt>.
+    </dl>
+
+!!IFDEF OpenAccess
+    <a name="XIC_OASO_PATH"></a>
+    <dl>
+    <dt><b>XIC_OASO_PATH</b><dd>
+    Plugins are normally found in the <tt>plugins</tt> directory in the
+    installation area, which by default is
+    <blockquote>
+    <tt>/usr/local/xictools/xic/plugins</tt>
+    </blockquote>
+    This variable can be set to the full path to the OpenAccess
+    plug-in, which <i>Xic</i> will attempt to load on program startup
+    instead of looking in the default location.
+    </dl>
+!!ENDIF
+
+    <a name="XIC_PYSO_PATH"></a>
+    <dl>
+    <dt><b>XIC_PYSO_PATH</b><dd>
+    Plugins are normally found in the <tt>plugins</tt> directory in the
+    installation area, which by default is
+    <blockquote>
+    <tt>/usr/local/xictools/xic/plugins</tt>
+    </blockquote>
+    This variable can be set to the full path to the Python
+    plug-in, which <i>Xic</i> will attempt to load on program startup
+    instead of looking in the default location.
+    </dl>
+
+    <a name="XIC_TCLSO_PATH"></a>
+    <dl>
+    <dt><b>XIC_TCLSO_PATH</b><dd>
+    Plugins are normally found in the <tt>plugins</tt> directory in the
+    installation area, which by default is
+    <blockquote>
+    <tt>/usr/local/xictools/xic/plugins</tt>
+    </blockquote>
+    This variable can be set to the full path to the TclTk or Tcl-only
+    plug-in, which <i>Xic</i> will attempt to load on program startup
+    instead of looking in the default location.
+    </dl>
+
+    <a name="XIC_LIBRARY_PATH"></a>
+    <dl>
+    <dt><b>XIC_LIBRARY_PATH</b><dd>
+    This applies to Linux and OS X only.  If set, the value will be
+    prepended to the <tt>LD_LIBRARY_PATH</tt> in the <i>Xic</i>
+    process.  This can be used to point to installed libraries needed
+    for plugins,
+!!IFDEF OpenAccess
+    for example the OpenAccess libraries,
+!!ENDIF
+    without having to set <tt>LD_LIBRARY_PATH</tt> in the
+    environment.  This is basically equivalent to setting
+    <tt>LD_LIBRARY_PATH</tt> in a wrapper script, but avoids the need
+    for the script.
+    </dl>
+
+    <a name="XICNOMAIL"></a>
+    <dl>
+    <dt><b>XICNOMAIL</b>
+    <dd>
+    If the variable <b>XICNOMAIL</b> is set, no mail will be sent
+    during a <a href="logfiles#panic">crash</a>.  If a fatal error is
+    encountered, a file named "<tt>gdbout</tt>" is created in the
+    current directory, which contains a stack backtrace from the stack
+    frame of the error.  Despite the name, the file is generated
+    internally on all platforms, and no longer makes use of the
+    <tt>gdb</tt> program.
+
+    <p>
+    By default, this file will be emailed to Whiteley Research for
+    analysis.  However, the emailing can be suppressed by setting this
+    variable in the environment.  The <tt>gdbout</tt> file is produced
+    in any case, and would be very useful to Whiteley Research for
+    fixing program bugs.
+    </dl>
+
+    <a name="XTNOMAIL"></a>
+    <dl>
+    <dt><b>XTNOMAIL</b>
+    <dd>
+    This has the same effect as <b>XICNOMAIL</b> but also prevents
+    email from the <i>WRspice</i> program.
+    </dl>
+
+    <a name="SPICE_HOST"></a>
+    <a name="SPICE_EXEC_DIR"></a>
+    <a name="SPICE_EXEC_NAME"></a>
+    <dl>
+    <dt><b>SPICE_HOST</b>, <b>SPICE_EXEC_DIR</b>, <b>SPICE_EXEC_NAME</b>
+    <dd>
+    When connecting to SPICE in the <a href="xic:run"><b>run</b></a>
+    command, the <b>SPICE_HOST</b> variable is used to set the name of
+    a remote SPICE host which provides SPICE service.  The name can
+    optionally be followed by a colon and a port number, if a
+    non-default port is used by the SPICE server.  The
+    <b>SPICE_EXEC_DIR</b> environment variable provides the directory
+    which contains the <tt>wrspice</tt> executable, which may need to
+    be identified to <i>Xic</i> if it is other than
+    <tt>/usr/local/bin</tt>.  The <b>SPICE_EXEC_NAME</b> environment
+    variable can be used to provide an alternate name for the
+    <tt>wrspice</tt> executable, if it has been changed.  The default
+    is, of course, "<tt>wrspice</tt>".  Each or these environment
+    variables can be overridden by a corresponding internal <a
+    href="!set:spice">variable</a>, which can be set with the <a
+    href="!set"><b>!set</b></a> command.
+    </dl>
+
+    <a name="IMSAVE_PATH"></a>
+    <dl>
+    <dt><b>IMSAVE_PATH</b>
+    <dd>
+    The printing interface includes a driver for generating image
+    files in various formats.  A few formats are handled internally,
+    however vastly more are available through other software that may
+    be available on the system.  The driver can usually locate these
+    programs by looking in standard places, however, if the programs
+    exist but can't be located, this variable can be set to a
+    colon-separated list of directories to search for the executables. 
+    This applies to Unix/Linux/OS X only.  See the description of the
+    <a href="hcopyfmt#image">Image</a> print driver for more
+    information.
+    </dl>
+
+
+!!REDIRECT license.host         initfiles#license.host
+!!REDIRECT .xicinit             initfiles#.xicinit
+!!REDIRECT xic_font             initfiles#xic_font
+!!REDIRECT xic_logofont         initfiles#xic_logofont
+!!REDIRECT .xicmacros           initfiles#.xicmacros
+!!REDIRECT .xicstart            initfiles#.xicstart
+!!REDIRECT xic_mesg             initfiles#xic_mesg
+!!REDIRECT xic_stipples         initfiles#xic_stipples
+!!REDIRECT .wrpasswd            initfiles#.wrpasswd
+
+!! 092614
+!!KEYWORD
+initfiles
+!!TITLE
+Initialization Files
+!!HTML
+    When <i>Xic</i> is started, a number of files are read.  This
+    section describes these files, and the order of access.  None of
+    these files is required to exist.  In addition, there are a few
+    more files used to maintain state for certain <a
+    href="initops">startup operations</a>.
+
+    <p>
+    On installation, a default configuration is provided for
+    <i>Xic</i>.  The user will need to reconfigure <i>Xic</i> for
+    their requirements.  This reconfiguration is accomplished
+    primarily by editing a custom technology file, which <i>Xic</i>
+    reads on startup, and also by possibly setting some of the <a
+    href="xic:env">environment variables</a> before starting
+    <i>Xic</i>.  These variables can be set in the user's shell
+    startup file, as appropriate for the user's operating system.
+
+    <p>
+    The default technology file, plus several other files needed, are
+    placed in a system-wide location on installation, usually
+    <tt>/usr/local/xictools/xic/startup</tt>, which is included in
+    the <a href="xicpaths">library path</a>.  This directory is
+    typically set to be read-only, thus the user must establish an
+    alternative location in their own directory tree for customized
+    startup files, and add this to the library path to the left of or
+    instead of the default location.  The default technology file
+    provided with <i>Xic</i> is for generic MOSIS scalable CMOS.
+
+    <a name="license.host"></a>
+    <dl>
+    <dt><tt>license.host</tt> file<dd>
+    When using a license server on a remote machine, it is necessary
+    to provide the name of this machine or <i>Xic</i> can not run. 
+    One way to do this is to create a <tt>license.host</tt> file in
+    the startup directory, e.g.
+    <tt>/usr/local/xictools/xic/startup</tt>.  The
+    <tt>license.host</tt> file consists of a single line of text,
+    giving the host name of the license server machine.  The host
+    name can optionally be suffixed with "<tt>:</tt><i>port</i>", where
+    <i>port</i> is the port number in use by the license server.  This
+    is required if for some reason the license server is not running
+    on the default port.
+    </dl>
+
+    <dl>
+    <dt>X resource file<dd>
+    As the program starts and the graphics is initialized, the X
+    window system may access various files for <a
+    href="resourcefile">resource</a> resetting.  See the X
+    documentation for details.  The attribute (non-layer) colors used
+    in <i>Xic</i> can be set through the resource mechanism, but
+    one must take care that these are not reset in the technology
+    file.
+    </dl>
+
+    <a name=".xicinit"></a>
+    <dl>
+    <dt><tt>.xicinit</tt> file<dd>
+    Next, an "<tt>.xicinit</tt>" initialization script, if present,
+    will be read and executed.  The user may create this file, it is
+    not present by default.  The initialization script uses exactly
+    the same format as other <a href="xicscript">script files</a>, as
+    are normally found along the script <a href="xicpaths">search
+    path</a>.  The script can set user preferences or otherwise modify
+    <i>Xic</i>.  Since this file is read before other files, it can be
+    used to set the search paths used to find other startup files, in
+    particular the <a href="techfile"> technology file</a>.  The base
+    name for the script is <tt>.xicinit</tt>, and the same extension
+    as the technology files can be present.
+
+    <p>
+    If, for example, <i>Xic</i> is started with an extension
+    <tt>.ext</tt> (<tt>-Text</tt> given on the command line),
+    <i>Xic</i> will look for files <tt>./.xicinit.ext</tt> and
+    <tt>$HOME/.xicinit.ext</tt>, then <tt>./.xicinit</tt> and
+    <tt>$HOME/.xicinit</tt>, in that order, where <a
+    href="HOME"><tt>$HOME</tt></a> indicates the user's home
+    directory.  The first file found will be executed.  If <i>Xic</i>
+    is started without a technology file extension, only the script
+    files without an extension will be executed.
+    </dl>
+
+    <dl>
+    <dt>Technology file<dd>
+    If a <a href="techfile">technology file</a> is being used,
+    <i>Xic</i> will read the file at this point, before reading the
+    user's script and macro files (below).
+
+    <p>
+    The technology file contains all of the information <i>Xic</i>
+    needs for physical and electrical layout, extraction, and design
+    rule checking, plus information on hard copy support, printer
+    commands, and the like.  It also provides values for a number of
+    presentation attributes including the colors used on-screen.
+
+    <p>
+    The <a href="xic:updat"><b>Save Tech</b></a> button in the
+    <b>Attributes Menu</b> creates an updated copy of the technology
+    file in the current directory.  Most of the changes to an existing
+    technology file can be performed from within <i>Xic</i>, though
+    some text editing may be required on occasion.
+    </dl>
+
+    <a name=".xicstart"></a>
+    <dl>
+    <dt><tt>.xicstart</tt> file<dd>
+    Next, an initialization script, if present, will be read and
+    executed.  This file can be created by the user, it is not present
+    by default.  The initialization script uses exactly the same
+    format as other <a href="xicscript">script files</a>, as are
+    normally found along the script <a href="xicpaths">search
+    path</a>.  The script can set user preferences or otherwise modify
+    <i>Xic</i>, and, unlike the similar "<tt>.xicinit</tt>" file,
+    performs these commands after the <a href="techfile"> technology
+    file</a> has been read.  The base name for the script is
+    <tt>.xicstart</tt>, and the same extension as the technology files
+    can be present. 
+
+    <p>
+    If, for example, <i>Xic</i> is started with an extension
+    <tt>.ext</tt> (<tt>-Text</tt> given on the command line),
+    <i>Xic</i> will look for the files <tt>./.xicstart.ext</tt> and
+    <tt>$HOME/.xicstart.ext</tt>, and then <tt>./.xicstart</tt> and
+    <tt>$HOME/.xicstart</tt>, in that order, where <a
+    href="HOME"><tt>$HOME</tt></a> indicates the user's home
+    directory.  The first file found will be executed.  If <i>Xic</i>
+    is started without a technology file extension, only the script
+    files without an extension will be executed.
+    </dl>
+
+    <a name="xic_stipples"></a>
+    <dl>
+    <dt><tt>xic_stipples</tt> file<dd>
+    The <tt>xic_stipples</tt> file is read, which initializes the
+    default fill pattern registers in the <a href="xic:fill">fill
+    pattern editor</a> in the <b>Attributes Menu</b>.  Like the device
+    and model libraries, the technology file, font files, etc., the
+    library <a href="xicpaths">search path</a> is used to locate this
+    file.  A default stipple file is provided, and new files can be
+    obtained from the <b>Dump Defs</b> button in the <a
+    href="xic:fill"><b>Fill Pattern Editor</b></a>.
+    </dl>
+
+    <a name=".xicmacros"></a>
+    <dl>
+    <dt><tt>.xicmacros</tt> file<dd>
+    Next, <i>Xic</i> will attempt to read a file with the base name
+    "<tt>.xicmacros</tt>", and the same extension as the technology
+    files can be present.  This file does not exist by default, but is
+    created if the user defines macro definitions which are mapped to
+    key presses, as generated by the <b>Key Map</b> command in the <a
+    href="xic:attrmenu"><b>Attributes Menu</b></a>.  The
+    <tt>.xicmacros</tt> file is rarely if ever directly edited by the
+    user.
+
+    <p>
+    If, for example, <i>Xic</i> is started with an extension
+    "<tt>.ext</tt>" ("<tt>-Text</tt>" given on the command line),
+    <i>Xic</i> will look for files "<tt>./.xicmacros.ext</tt>" and
+    "<tt>$HOME/.xicmacros.ext</tt>", then "<tt>./.xicmacros</tt>" and
+    "<tt>$HOME/.xicmacros</tt>", in that order, where <a
+    href="HOME"><tt>$HOME</tt></a> indicates the user's home
+    directory.  The first file found will be read.  If <i>Xic</i> is
+    started without a technology file extension, only the script files
+    without an extension will be read. 
+    </dl>
+
+    <a name="xic_font"></a>
+    <dl>
+    <dt><tt>xic_font</tt> file<dd>
+    If a file named "<tt>xic_font</tt>" is found in the library search
+    path, the file is read to obtain the vector text font used for
+    on-screen label text.  This file is created by the user from the
+    <b>Dump Vector Font</b> button in the <a href="xic:font"><b>Font
+    Selection</b></a> panel, and is subsequently editing to the
+    user's requirements.  The default font is hard-coded internally.
+    </dl>
+
+    <a name="xic_logofont"></a>
+    <dl>
+    <dt><tt>xic_logofont</tt> file<dd>
+    If a file named "<tt>xic_logofont</tt>" is found in the library
+    search path, the file is read to obtain the text font used for the
+    <a href="xic:logo"><b>logo</b></a> (physical text) command.  This
+    file is created by the user from the <b>Dump Vector Font</b>
+    button in the <b>Logo Font Setup</b> panel, and is subsequently
+    editing to the user's requirements.  The default font is
+    hard-coded internally.
+    </dl>
+
+    <a name="xic_mesg"></a>
+    <dl>
+    <dt><tt>xic_mesg</tt> file<dd>
+    This is a text file providing the legal disclaimer.  It once
+    supplied text for the <b>About</b> window, but is no longer used
+    for that purpose.
+    </dl>
+
+    <dl>
+    <dt>Device libraries<dd>
+    As needed, <i>Xic</i> will also read the <a href="devlib">device
+    library</a> file, search and map the device models and help files,
+    and open the first command line file for editing.  The device
+    library file supplies the device templates used in electrical
+    mode.  The model files provide SPICE models used for generating
+    SPICE output.  These files are read the first time access is
+    required.  Defaults are provided for these files, but the user
+    will very likely need custom device and model library files.
+    </dl>
+
+    <a name=".wrpasswd"></a>
+    <dl>
+    <dt><tt>.wrpasswd</tt> file<dd>
+    The <tt>.wrpasswd</tt> file is created in the user's home
+    directory with the <a href="!passwd"><b>!passwd</b></a> command. 
+    It is an encrypted file that contains the user name and password
+    to the distribution repository.  The user name and password are
+    provided by Whiteley Research upon program or maintenance
+    extension purchase, and are required to gain access to the
+    distribution site for program updates.  This file is common to all
+    Whiteley Research products.
+
+    <p>
+    If the file exists, <i>Xic</i> will check for program updates on
+    startup, and alert the user if an update is available.  This is
+    also required to use the <a href="!update"><b>!update</b></a>
+    command.  The user will also be alerted if the password has
+    expired.
+    </dl>
+    
+!! 092615
+!!KEYWORD
+initops
+!!TITLE
+Initial Operations
+!!HTML
+    When <i>Xic</i> starts, the following operations are generally
+    performed.
+
+    <ol>
+    <li>If configured, the program will check for the availability of
+    software updates.  A pop-up message will notify the user if an
+    update is available.  These can be downloaded and installed with
+    the <a href="!update"><b>!update</b></a> command.  The <a
+    href="!passwd"><b>!passwd</b></a> command is used to enable this
+    feature, The username and password to the Whiteley Research
+    software repository should be given, and the command will create a
+    <tt>.wrpasswd</tt> file in the user's home directory.  This will
+    enable update checking in both <i>Xic</i> and <i>WRspice</i>.
+
+    <p>
+    <li>The program will check the <tt>wrcad.com</tt> web site for a
+    message file.  If a file is found, and the user has not seen it,
+    the message text will be shown in a pop-up window.  This is a
+    means of providing users with bug reports or other information
+    which could be important.
+
+    <p>
+    The record of the message is saved in the <tt>.wr_cache</tt>
+    directory in the user's home directory.  There are two files:
+    <dl>
+    <dt><tt>xic_current_mesg</tt><dd>
+    The is the current message text.
+    <dt><tt>xic_current_mesg_digest</tt><dd>
+    This is a checksum of the current message.
+    </dl>
+
+    <p>
+    The program will compare the checksum of the message to the
+    checksum on <tt>wrcad.com</tt>.  If a message is found at
+    <tt>wrcad.com</tt>, and there is no checksum or a different
+    checksum in the user's home directory, the message is downloaded
+    and shown, and the user's files are updated.  Thus, the user will
+    only see the message once, but can find a copy of the message in
+    their <tt>.wr_cache</tt> directory.  Note that there is only one
+    message file, future messages overwrite the files.
+
+    <p>
+    <li>If a new <i>Xic</i> release is run for the first time, the
+    release notes will appear in a pop-up window, as if the <a
+    href="xic:notes"><b>Notes</b></a> button in the <b>Help</b> menu
+    was pressed.  There is a file in the user's <tt>.wr_cache</tt>
+    directory named <tt>xic_current_release</tt> that contains a
+    release number.  If, when <i>Xic</i> starts, this file is missing
+    or the release number is not current, <i>Xic</i> will show the
+    release notes and update the file.  If the release numbers match,
+    there is no action.
+    </ol>
+
+    <p>
+    If the <a href="NoCheckUpdate"><b>NoCheckUpdate</b></a> variable
+    is set (from an <a href="initfiles">initialization file</a>) then
+    there will be no communications with <tt>wrcad.com</tt>, so the
+    checking for updates and a message will be skipped.  This should
+    be set if the user doesn't have internet access, for example, to
+    avoid the delays caused by lack of access and subsequent
+    connection timeout.
+
+!! 051115
+!!KEYWORD
+logfiles
+!!TITLE
+Log Files and Error Reporting
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="logfiles#logs"><b>Log Files</b></a><br>
+    <a href="logfiles#panic"><b>Abnormal Termination Logging</b></a>
+    </td></tr></table>
+
+    <p>
+    There are several methods by which error and warning messages are
+    presented to the user.  In many commands, particularly those that
+    use input from the <a href="promptline">prompt line</a>, the
+    prompt line is used to print messages informing the user of
+    incorrect input, and general command status.  These messages are
+    intended to direct the user toward correct usage of the command.
+
+    <p>
+    More serious errors are reported in a pop-up window.  There are two
+    types of messages:  those that are logged, and those that aren't.
+    If a message is logged, it is assigned a unique sequence number, and is
+    saved in the <tt>xic_error.log</tt> file discussed below.
+
+    <p>
+    The same pop-up window is generally used for both types of message.
+    Most error and warning messages are logged.  A few messages are
+    unlogged, these generally report an immediate command failure due to
+    some condition such as lack of a current cell, or something such as
+    a help keyword not found message which is probably not worth logging.
+
+    <p>
+    The text window presenting an unlogged message will contain only that
+    message.  One of the disadvantages of unlogged messages is if several
+    are emitted, only the most recent is shown in the window, the others
+    are lost.  This is unlikely to happen in current <i>Xic</i> releases.
+
+    <p>
+    The text window will display the sequence number and text of an
+    emitted logged message, and some number (currently hard-coded as
+    20) of the previously emitted messages.  One can scroll through
+    the list to find previously emitted messages, which unlike in the
+    unlogged case still exist.
+
+    <p>
+    <img src="screenshots/error.png" align=right>
+
+    The error message window contains two buttons in addition to the
+    <b>Dismiss</b> button.
+
+    <dl>
+    <dt><b>Save Text</b><dd>
+    This allows the user to save the text shown in the pop-up to a file.
+    This may be useful for documenting errors seen for bug reporting, and
+    for other purposes.
+    </dl>
+
+    <dl>
+    <dt><b>Show Error Log</b><dd>
+    This button will bring up a file browser window loaded with the
+    <tt>xic_error.log</tt> file.  This allows the user to browse all
+    errors, in sequence.  This can be used to revisit old errors that
+    have scrolled off the end of the list in the pop-up error window.
+    </dl>
+
+    <a name="logs"></a>
+    <h2>Log Files</h2>
+
+    While <i>Xic</i> is running, various log files are produced. 
+    These files contain a record of operations and errors, which may
+    be useful for debugging purposes.  Ordinarily, though, many of the
+    log files are rarely used, and these files are stored in a
+    temporary directory which is removed when <i>Xic</i> exits
+    normally.  Other log files, such as DRC error reports, are saved
+    in the current directory and are not removed on exit.
+
+    <p>
+    Below is a listing of the log files that are saved in a temporary
+    directory.  The files in this directory can be browsed from within
+    <i>Xic</i> with the <a href="xic:logs"><b>Log Files</b></a> button
+    in the <b>Help Menu</b>.  In addition, a button in the error
+    pop-up allows the <tt>xic_error.log</tt> to be viewed.
+
+    <p>
+    The <a href="xic:dblog"><b>Logging Options</b></a> panel from the
+    <b>Logging</b> button in the <b>Help Menu</b> selects whether or
+    not certain operations are logged, such as those done during
+    extraction.  This will optionally produce additional log files not
+    listed below.
+
+    <dl>
+    <dt><tt>xic_run.log</tt><dd>
+    This file contains a listing of key press/release and mouse button
+    press/release events, in a format which can be understood as <a
+    href="xicscript">script</a> instructions.  Although presently this
+    feature in incomplete, the instructions can be used to "play back"
+    the current session by executing the log file as a script.  The
+    file is limited in size to about 100Kb, at which point the file is
+    given a "<tt>.0</tt>" extension and a new file is started.  If
+    <i>Xic</i> should ever crash or otherwise misbehave, the current
+    <tt>xic_run.log</tt> should be included with the bug report sent
+    to Whiteley Research.  This will greatly help in tracking down the
+    problem.
+    </dl>
+
+    <dl>
+    <dt><tt>xic_error.log</tt><dd>
+    This file contains a list of error messages generated during the
+    session.  The previous 20 errors are displayed in the error pop-up
+    window in <i>Xic</i>, but the <tt>xic_error.log</tt> file retains a
+    complete record.  This file may also be of use in diagnosing
+    problems within <i>Xic</i>, and should be included with the bug
+    report if it contains an entry relevant to the problem.
+    </dl>
+
+    <dl>
+    <dt><tt>xic_mem_errors.log</tt><dd>
+    This file, used under Unix/Linux only, is generated or appended to
+    if memory corruption is detected.  If this file exists when
+    <i>Xic</i> exits, it will be emailed to Whiteley Research (by
+    default).  However, if either <a
+    href="XICNOMAIL"><b>XICNOMAIL</b></a> or <a
+    href="XTNOMAIL"><b>XTNOMAIL</b></a> is set in the environment, the
+    file will instead be moved to the current directory, and a message
+    will be printed requesting that the user mail it to Whiteley
+    Research.  Memory corruption should never occur, and this file
+    contains stack trace information that will help identify the
+    problem.
+    </dl>
+
+    <dl>
+    <dt><tt>read_cgx.log</tt><br>
+    <dt><tt>read_cif.log</tt><br>
+    <dt><tt>read_gds.log</tt><br>
+    <dt><tt>read_oas.log</tt><br>
+    <dt><tt>read_native.log</tt><dd>
+    These files contain messages emitted when a file is read into <i>Xic</i>
+    for editing.  The file name generated depends on the type of file read.
+    </dl>
+
+    <dl>
+    <dt><tt>write_cgx.log</tt><br>
+    <dt><tt>write_cif.log</tt><br>
+    <dt><tt>write_gds.log</tt><br>
+    <dt><tt>write_oas.log</tt><dd>
+    <dt><tt>write_native.log</tt><dd>
+    These files contain messages emitted when a file is written to disk.
+    The file name generated depends on the type of file written.
+    </dl>
+
+    <dl>
+    <dt><tt>convert_cgx.log</tt><br>
+    <dt><tt>convert_cif.log</tt><br>
+    <dt><tt>convert_gds.log</tt><br>
+    <dt><tt>convert_oas.log</tt><dd>
+    <dt><tt>convert_native.log</tt><dd>
+    These files contain messages emitted when a file is converted
+    directly to another format through the commands in the <a
+    href="xic:cvrtmenu"><b>Convert Menu</b></a>.
+    </dl>
+
+    <p>
+    The size of the log files that grow progressively as <i>Xic</i> is
+    running are size-limited to about 100Kb.  If the file exceeds this
+    size, the file is moved to the same name with a "<tt>.0</tt>"
+    extension, and the original log file is reopened.  Thus, a maximum
+    of 200Kb per log of information is retained.
+
+    <p>
+    The environment variable <a
+    href="XIC_LOGDIR"><b>XIC_LOGDIR</b></a> can be set to an existing
+    directory that will be used to store the log files.  The log files
+    will be placed in a directory
+    <blockquote>
+    <i>logdir</i>/<tt>xic</tt>.<i>pid</i>
+    </blockquote>
+    where <i>logdir</i> is the first defined of the environment
+    variables <b>XIC_LOGDIR</b>, <a
+    href="XIC_TMP_DIR"><b>XIC_TMP_DIR</b></a>, <b>TMPDIR</b>, or
+    defaults to "<tt>/tmp</tt>".  The <i>pid</i> is the process id of
+    the <i>Xic</i> process.  This directory is created when <i>Xic</i>
+    starts, and is deleted when <i>Xic</i> terminates normally.  If
+    <i>Xic</i> terminates abnormally, the log files will still be
+    around for inspection.  If a user needs to look at a log file
+    after running <i>Xic</i>, the file must be copied to another
+    location before exiting <i>Xic</i>.  The <a href="xic:logs"><b>Log
+    Files</b></a> button in the <b>Help Menu</b> can be used to access
+    logfiles from within <i>Xic</i>.
+
+    <p>
+    This mechanism lets multiple copies of <i>Xic</i> run on the same
+    machine from any directory, and minimizes the pollution of the
+    file system and in particular the current directory with a lot of
+    generally unused log files.
+
+    <a name="panic"></a>
+    <h2>Abnormal Termination Logging</h2>
+
+    If <i>Xic</i> experiences an internal memory referencing error,
+    <i>Xic</i> will terminate.  Such occurrences should be rare to
+    nonexistent, however this is the ideal and generally not the
+    reality.  During a "panic", the following will happen:
+
+    <ul>
+    <li>A subdirectory will be created in the current directory, with
+    the name "<tt>panic</tt>.<i>pid</i>", where <i>pid</i> is the
+    process id number of the running program.
+
+    <li>All cells in memory that have the modified flag set will be
+    written into this directory.  The files will be in the original
+    file format.  Cells created in <i>Xic</i> and never saved will be
+    saved in native format.  Although it can not be guaranteed that
+    these files are not corrupted by whatever error occurred,
+    generally they are clean and accurately reflect unsaved work. 
+    After a thorough check, they can be copied out of the panic
+    directory and reused.
+
+    <p>
+    <li>A file named "<tt>xic_panic.log</tt>" is created in the
+    current directory.  This contains the log messages emitted while
+    the modified cells are being dumped, and other information.
+    <p>
+    <li>The log files that are normally removed after normal exit are
+    retained.  The location of the log files is given in the
+    <tt>xic_panic.log</tt> file.
+    <p>
+    <li>Unless either of the environment variables <a
+    href="XICNOMAIL"><b>XICNOMAIL</b></a> or <a
+    href="XTNOMAIL"><b>XTNOMAIL</b></a> is set, a stack trace is
+    emailed to Whiteley Research, which will be analyzed to resolve
+    the cause of the fault, and if possible the problem will be fixed
+    in the next <i>Xic</i> release.  The file that is emailed is named
+    "<tt>gdbout</tt>".  The file will be created in the current
+    directory.
+    </ul>
+

@@ -1,0 +1,1626 @@
+xic-3.2.25 4/2/2012
+
+
+I'm still not ready to release the OpenAccess plug-in, but it is
+getting closer.  This release adds some additional Cadence
+compatibility features in anticipation.
+
+
+Changes and New Features
+------------------------
+
+* The script language now accepts  a ? b : c  conditionals.
+    Updated help keywords: scr:control
+
+  In this syntax, a, b, and c are expressions.  If expression a evaluates
+  to "true", the result is b, otherwise c.  Thus a line like
+
+    x = a ? b : c
+
+  if equivaluet to
+
+    if (a)
+      x = b
+    else
+      x = c
+    end
+
+  The "true" condition depends on the data type, for example
+    - a nonzero numeric value.  This includes the result of a 
+      conditional expression when the condition is satisfied.
+    - an active handle
+    - a non-empty zoidlist (a layer expression is evaluated to obtain
+      the resulting zoid list)
+    - a non-null string
+
+* Update to the licensing system for Apple.
+
+  The license system can now use the Apple machine serial number as
+  the key.
+
+  There is a new maclicinfo program available on the web site that
+  produces an XtLicenseInfo file, similar to the Windows licinfo.exe
+  program.
+
+  This is optional, as the IP adress and ethernet address can still be
+  used as keys.  However BOTH of these can change when logged on to
+  different wireless networks, and a key change will disable the
+  licensing.  For a laptop expecially, using the serial number is
+  recommended.
+
+  Apple users can switch to this type of license on request.
+
+* Huge increase in Cadence Virtuoso compatibility.
+    Updated help keywords: ReadCds
+
+  Use of the ReadCds keyword in the technology file to read in
+  a Virtuoso 6.x (OpenAccess) ascii technology file now provides
+  (assuming that this is in the file)
+
+  - Extraction technology keywords such as Conductor, Via, etc.  (as
+    available from 5.x files) but additionally, electrical/physical
+    data such as Thickness, resistivity, and capacitance parameters.
+
+  - Design rules are generated from the "constraint groups".
+
+  This will provide a much more complete starting point from the
+  technology files provided with a foundry kit.  However, this still
+  may be incomplete.  For example, dielectric thicknesses are absent
+  from the TSMC technology file I'm using.
+
+* New support for stipple map sizes and revised Fill Pattern Editor.
+    Updated help keywords: cdscompat techfile:layers xic:fill
+      !set:variables TechNoPrintPatMap
+
+  Xic can now handle fill pattern (stipple) maps for any size with
+  either dimension being in the range 2-32.  Previously, maps were
+  limited to 8x8, 8x16, 16x8, and 16x16.
+
+  The format used to print these maps in the technology file is new,
+  and is not backward compatible.  The new printing format actually
+  displays a rendition of the map using periods.  However, there
+  is a new variable that can achieve backward compatibility:
+
+  New variable: TechNoPrintPatMap (boolean)
+
+  When set, stipple maps in technology file layer definitions are
+  printed using hex numbers only, and not an ascii map representation
+  which is the default.  This format is compatible with earlier releases
+  of Xic for map sizes 8x8, 8x16, 16x8, and 16x16.
+
+  The Fill Pattern Editer pop-up mas been extensively modified to
+  support the new map sizes.  It is now paged, so that the pixel
+  editing screen is large enough to reasonably edit 32x32 maps.
+
+* New "cut" layer presentation attribute.
+    Updated help keywords: xic:fill techfile:layers
+
+  If the new "cut" attribute is applied to a layer, boxes (only) on the
+  layer will have diagonal lines drawn, forming an X over the box.
+
+  The Fill Pattern Editor has a new button to enable this option when
+  a fill pattern is copied to a layer.
+
+  In the technology file, if the letter 'c' or 'C' appears after the
+  fill specification, the cut attribute will be applied.
+
+  Of course, this option is pointless when a solid fill is used.
+
+* Major upgrade to the DRC system.
+    Updated help keywords: drcrule ReadCds
+
+  This is mostly to support design rules imported through a Virtuoso
+  technology file, though they are (or will be) available through
+  Xic technology files as well through new format extensions.
+
+  This is ongoing - many of the switches and features are parsed and
+  saved in rules, but as yet are not implemented.  In particular,
+  spacing maps, same-net spacing, "enclosure" and "opposite" tests
+  will be implemented in future releases.
+
+  The new rule syntax is summarized below.
+
+  NoHoles [Region spec] [MinArea area] string
+
+    The MinArea clause is new, this allows holes smaller than the
+    given area to be flagged as errors.
+
+  MaxWidth [Region spec] dimen string
+
+    This is a completely new rule.  This limits the maximum size of
+    objects.
+
+  MinWidth [Region spec] dimen [Diagonal dimen] string
+
+    The Diagonal clause is new.  This provides an alternate width
+    value to use for non-Manhattan edges.
+
+  MinSpace [Region spec] dimen [Diagonal dimen] [SameNet dimen] string
+
+    The Diagonal clause is new.  This provides an alternate spacing
+    value to use for non-Manhattan edges.
+
+    The SameNet clause is also new, it provides a value for use
+    between objects on the same net (not implemented yet).
+
+    This rule will eventually handle a spacing table, that will
+    provide values based on object size.
+
+  MinSpaceTo [Region spec] target dimen [Diagonal dimen] string
+
+    The Diagonal clause is new.  This provides an alternate spacing
+    value to use for non-Manhattan edges.
+
+  MinSpaceFrom [Region spec] target dimen [Enclosed dimen]
+    [Opposite dimen dimen] string
+
+    The new Enclosed and Opposite clauses are recognized but not
+    yet implemented.
+
+* New design rule editing panels.
+    Updated help keywords: xic:dredt xic:ruleedit
+
+  When editing or creating a design rule from the Design Rule Editor
+  panel, a new pop-up appears that provides customized entry areas for
+  the various design rules.  Previously, rules were entered by
+  responding to prompts from the prompt line.  The new panels allow
+  input of the new keywords mentioned earlier, and provide an improved
+  interface.
+
+* New script function to read "technology file" lines.
+    Updated help keywords: TechParseLine
+
+  There is a new script function:
+
+    (int) TechParseLine(line)
+
+  which will read and process a string as if a line from the
+  technology file.
+  
+  There are new scripts added to the example technology files that
+  provide a couple of new commands in the User Menu:
+
+  elecwhite
+    Switch to a black-on-white color scheme in schematics.
+
+  elecblack
+    Switch to the default white-on-black color scheme in schematics.
+
+  These use the TechParseLine function to switch layer and attribute
+  colors.  The white-background can be made the default if the
+  "WhiteSchem" parameter definition is uncommented in the example
+  technology files.
+
+* New run-once technology file scripts.
+    Updated help keywords: techfile:scripts
+
+  If a script that is defined in the technology contains the line
+
+    RunScript
+
+  anywhere after the "Script name" line and before the "EndScript"
+  line, the script will not be added to the User Menu.  Instead, it
+  will be executed after the technology file has been read, then
+  discarded.  Any number of scripts can be treated this way, they
+  execute in order of appearance in the tech file.
+
+* New Width and Height pseudo-properties.
+    Updated help keywords: properties#pseudoprops
+
+  These are property numbers 7216 and 7217 respectively.  These can be
+  given to any physical-mode object, but not to cell instances.  The
+  object will be scaled to the given width or height.
+
+* Extraction system - new NoMerge property
+    Updated help keywords: prptyspec xic:prpty deviceblock
+
+  The NoMerge property can be applied to physical boxes, polygons, and
+  wires with the Property Editor.  If this property is found on any
+  object used to recognize a device body, that device will never be
+  merged with similar devices.  This is relevant when merging is
+  enabled for the device, it prevents both parallel and series
+  merging.
+
+  In physical mode, the Add button of the Property Editor now presents
+  a menu containing "NoMerge" and "other".  The "other" selection
+  allows arbitrary properties to be added.
+
+* Update to the RLC extraction (FastCap/FastHenry) interface.
+    Updated help keywords: fxpanel fxinterf variables !set:fcfh
+
+  o There are two new switches:
+
+    1.  It is now possible to generate the original FastCap input
+        format, to support programs that use the legacy FastCap input,
+        such as FasterCap and FastCap2 from fastfieldsolvers.com.
+
+        The original format requires multiple input files, perhaps
+        quite a few.  The geometry files will be created in the same
+        directory as the ".lst" file.  When using this option to dump
+        FastCap input files, it is recommended that a new directory
+        be created to hold the new files, for convenience and to avoid
+        files from different jobs clobbering one another.
+
+        This is tied to a new boolean variable named FcOldFormat.
+
+    2.  It is now possible to avoid all partitioning in Xic, including
+        the "default" partitioning, before dumping FastCap input.
+        The FasterCap program does its own partitioning, and any
+        partitioning done in Xic is at best redundant.
+
+        This is tied to a new boolean variable named FcNoPart.
+
+  o The RCL Extraction panel has been reconfigured to be more compact
+    and less complex-looking, and to incorporate the new features. 
+    All of the previous controls can be found in the General,
+    Partition, and Run pages.  There are new entries to set the
+    program paths from the pop-up.
+
+  o Non-Manhattan geometry is now directly supported for FastCap (but
+    not FastHenry).  FastCap partition facets can be trapezoidal or
+    triangular.  The "FxMinRectSize" variable name is now
+    "FhMinRectSize" since it currently applies only to FastHenry.
+
+  o New treatment for conductor edges.  Previously, the vertical
+    sides of conductor edges were not being included in the data
+    file (this was a bug).  With modern metallization stacks, where
+    the thickness may be twice the strip width, treatment of these
+    edges is important.  Currently, there is no "partition editor"
+    for the side panels, but the default partitioning is as follows: 
+    "FcThinEdge" strips along the top and bottom, limited in length to
+    FcEdgeMax.  The area in the middle is partitioned using the
+    smaller of FcEdgeMax and FcPartMax.
+
+  o Sub-windows now show the partitioning when the partition editor is
+    running.  Previously, this was only visible in the main window.
+    Also, pressing the Home key while the partition editor is running
+    will show a full view of the current cell as usual,  but space
+    is left to display the FxPlaneBloat dielectric partitioning that
+    may extend outside of the cell boundary.
+
+  o There is a new log file produced when layers are sequenced for use
+    in the FastCap/FastHenry interface.  This is shown if there is an
+    error detected, or can be viewed with the Log Files button in the
+    Help Menu.  The file name is "fch_sequence.log".
+
+
+Bugs Fixed
+----------
+
+* Improved the paging display of the Cells Listing panel, no longer
+  jumps back to first page after copying a cell.  The page display is
+  enabled only when there are more than 5000 cells to display.
+
+* The window scroll position in a text window under Microsoft Windows
+  should remain the same after the text is updated.
+
+* Updateed the copyright notice date in the program startup banner and
+  elsewhere.
+
+* Attribute colors that were set to default values were never written
+  to a new technology file, ignoring the directive to not omit these
+  in the Write Tech File pop-up.
+
+* The ghost-drawing of lines and boxes when the mouse was dragged over
+  the pixel editing window in the Fill Pattern Editor was not working
+  under Microsoft Windows.
+
+* Conductor sides were not being included in generated FastCap input,
+  impacting accuracy.
+
+* Under Windows, giving the help system a keyword that starts with a
+  letter followed by a colon (like a file path with a drive
+  specifier) would fail.  This was causing the example Preferences
+  script to fail.
+
+* Fixed an issue with the Darwin64 release which prevented the Peek
+  command in the View Menu from working.
+
+
+-------------------------------------------------------------------------------
+xic-3.2.24 3/4/2012
+
+Sorry, but the "huge new feature" mentioned last time is still in the
+future.  This will be OpenAccess compatibility, i.e., the (eventual)
+ability to share data directly with Cadence Virtuoso and other tools.
+
+The present release provides some cleanup of the extraction system.
+
+
+Changes and New Features
+------------------------
+
+* New property for extraction flattening.
+    Updated help keywords: FlattenPrefix xic:cprop prptyspec xic:extmenu
+      xic:rlext
+
+  During extraction, simple cells that contain only wire or perhaps
+  a device and have no corresponding electrical cell, are flattened
+  into their parent cells for extraction purposes.  The names of such
+  cells, or a common prefix of the names, was added to the list kept
+  in the FlattenPrefix variable.  The user would have to set this
+  variable before extraction.
+
+  This was cumbersome, to say the least.  There is now a much better
+  method, that does not use the FlattenPrefix variable.  One can set a
+  property of the cells that should be flattened with the Cell
+  Property Editor.  There is a new "Flatten" entry in the Add menu. 
+  Adding this property is equivalent to adding the cell to the
+  FlattenPrefix list, but is persistent after the cell is saved.
+
+  The Flatten property, which can be applied to physical cells only,
+  has the reserved number 7151.
+
+* Major update to the schematic creation from a SPICE file feature.
+    Updated help keywords: xic:sourc
+
+  Many more SPICE syntax elements are handled now.
+
+  1. Nested subcircuits and in-subcircuit model definitions are now
+     handled properly.  Previously, these would be added to a global
+     flat namespace, so that name collisions could occur without
+     warning.  Now, name changes are automatic to preserve identity.
+
+  2. All model definitions found in the file are written to a new file
+     named cellname_models.inc, where cellname is the name of the top
+     cell.  A ".include" spicetext label is created in the top level
+     schematic that brings in this file.  Previously, .model lines
+     were simply ignored.
+
+  3. All "dotcards" that are not otherwise handled are now written as
+     spicetext labels in the top-level schematic.
+
+  4. Various bug fixes were applied, for example continuation line
+     handling was omitting space between lines.
+
+* Updates to the LVS system.
+    Updated help keywords: xic:lvs
+
+  LVS now reports four levels of success:
+
+  CLEAN
+      Everything was measurable and matched.
+
+  PASSED - AMBIGUITY
+      There were device parameters which could not be compared, but
+      all comparisons that were done matched.
+
+      In the electrical schematic, if component values are
+      parameterized (i.e., use a token defined in a .param line or
+      similar), or perhaps use WRspice shell expansion, the value was
+      unavailable.  In earlier releases, a value was available only if
+      it was a numeric constant.  Xic now provides limited parameter
+      substitution during LVS (see below).
+
+  PASSED - PARAM DIFFS
+      There were device parameters that differ outside of the
+      tolerence between electrical and physical.  So actually, only
+      the circuit topological check passed.
+
+  FAILED
+      Differences in circuit topology were detected.
+
+  The parameter database and substitution code was imported from
+  WRspice for use during LVS and elsewhere.  However, not all
+  capability can be provided.
+
+  1. Parameters given in subcircuit call lines are ignored in LVS,
+     making LVS meaningless if these are given in the schematic.
+     Parameterized instances must be remastered to unique master cells
+     for the current LVS system.
+
+  2. There is presently no support for macros defined in .param
+     lines.  However, single-quoted expressions are fully supported,
+     all math operations and all relevant functions are available.
+
+  Parameter expansion works as follows:
+
+  1. When an LVS run starts, the parameters defined in the top-level
+     cell as param properties, and all parameters defined in .param
+     lines found in labels on the SPTX layer in the top level cell,
+     are placed in a table.
+
+     In addition, the labels on the SPTX layer are searched for
+     .option lines, and these lines are searched for a parhier option,
+     and if found, its setting is saved.  This option can be set to
+     one of "global" (the default if not found) or "local".
+
+  2. When comparing devices in the top-level cell, the parameter
+     table is used to parameter substute the value and param property
+     strings.  The resulting string should provide numerical values
+     for comparison to the extracted physical values.
+
+  3. When comparing in a subcell/subcircuit, the subcircuit param
+     properties and .param labels are tabulated as for the top-level
+     cell.  This is merged with the top-level table, and is used to
+     expand the param and value property strings of devices in the
+     cell.
+
+     If the parhier option was found, and it was set to Local, then
+     parameters defined in the subcircuit table will override
+     conflicting definitions in the top level table.  If parhier
+     wasn't found or was set to Global, the reverse is true -
+     top-level definitions will override conflicting definitions in
+     the subcell.
+
+* New command: !calc expression
+    Updated help keywords: keybang !calc
+
+  This command started out as a debugging aid for the new parameter
+  handling code, but is actually pretty useful.
+
+  The expression is a math expression involving constants, parameter
+  names, and the usual math operations and functions as provided in
+  WRspice.  This is separate from the script expression parser, but
+  rather similar in operation (the two may merge some day).  The new
+  expression handler accepts the a ? b : c construct, which is one
+  difference.
+
+  As described above, before an expression is evaluated, the parameter
+  definitions are extracted from the electrical current cell, and the
+  parameter names can be used in the expression.
+
+
+Bugs Fixed
+----------
+
+* The special color used for devices with the NoPhys property in
+  schematics was not being shown consistently.
+
+* Fixed a bug in the Flatten command where inductor devices were
+  assumed to exist in at most one mutual inductor pair.  They can, of
+  course, exist in more than one.
+
+* Fixed a problem in the SPICE number parser that caused trouble in
+  LVS value comparison (numbers weren't being recognized).
+
+* The SPICE output from the Dump Elec Netlist command in the Extract
+  Menu now omits devices with the NoPhys property set.
+
+
+-------------------------------------------------------------------------------
+xic-3.2.23 2/28/2012
+
+  WARNING:  If your scripts use the log() function, attention is
+  needed, since log() now returns the natural log rather than the base
+  10 log.  You can replace log() with log10() calls (recommended) or
+  set the LogIsLog10 variable (temporary fix) to ensure that the
+  script runs correctly.
+
+  New feature:
+  Changes to the documentation will now be reported in these notes.
+  Each topic has an "Update" line listing the help keywords where
+  new or modified text can be found.  If no Update line, the change
+  required no modification to the documentation.
+
+  It has been a long time since the last update, sorry about that.
+  The next release will have a huge new feature, more soon.
+
+
+Changes and New Features
+------------------------
+
+* Miscellaneous graphical user interface changes
+
+  - Mouse wheel support in drawing windows.
+      Update: variables mainwindow buttons noopbutton MouseWheel
+
+  The mouse wheel now scrolls drawing windows up/down.  If Shift is
+  held, scrolling is right/left.  If Ctrl is held (overrides Shift),
+  the mouse wheel zooms out or in.
+
+    New variable: MouseWheel (string)
+
+  The string consists of two space-separated floating-point numbers,
+  each in the range of 0 - 0.5.  The first is the pan factor, the
+  second is the zoom factor.  The default is 0.1 0.1.  Larger numbers
+  increase the effect per mouse wheel click.  If either number is set
+  to 0, that effect (pan or zoom) is suppressed.  To turn off mouse
+  wheel support in drawing windows, give "0 0".
+
+  - Default cursor switched to arrow.
+      Update: xic:cursr
+
+  The default cursor has been changed to an arrow, which seems more
+  precise than the cross cursor.  The Set Cursor panel (from the
+  Attributes menu) now provides a choice of cursors.  The choices
+  include the system default cursor (which is probably the same as the
+  left arrow), cross cursor, left and right arrows.  Under Windows,
+  there is no right arrow, so an up arrow is used instead (ugly and
+  useless).  Also, the default cross cursor for Windows 7 service pack
+  1 is huge and ugly, but can be switched for a better looking cross
+  cursor through the selections in the System Preferences panel.
+
+  - New buttons to clear/reset current transform.
+      Update: xic:xform, xic:itbtn, xic:ltbtn, xictop
+
+  There are two new buttons in the top-left corner of the main window
+  next to the WR button.  The first "IT" button clears the current
+  transform.  The second "LT" button returns the transform to the last
+  value.
+
+  - New logic in display of Symbolic vs. Schematic cells.
+      Update: prptyspec xic:prpty xic:symbl
+
+  Whether an electrical cell instance is displayed as a symbol or as a
+  schematic can now be controlled on a per-instance basis.  It is now
+  possible, for example, to have instance placements of the same
+  master cell, some of which display as a symbol, and some of which
+  display as a schematic, in the same containing cell.  The schematic
+  representation is desirable as it lets its contents be available for
+  probing after simulation, whereas the use of symbols simplifies the
+  schematics.
+
+  There is a "new" property of electrical cell instances which will
+  suppress the display of the instance symbolically.  This is actually
+  the SYMBOLIC property, which previously was applied only to cells
+  (not cell instances).  When applied to an instance, it has the effect
+  (as a switch) of ignoring the symbolic representation when it is
+  instantiated.  From the user's viewpoint, this looks like a separate
+  property.
+
+  The Properties Editor now contains a "NoSymb" entry in the Add menu.
+  When this is added to an electrical cell instance, the instance will
+  always display as a schematic, whether or not its master cell has an
+  active symbolic representation.
+
+  This new logic has a number of consequences, since the new instance
+  flag, the No Top Symbolic setting in the Attributes menu, and
+  symbolic mode of the current cell all interact in a complicated way. 
+  For example, if the top cell is symbolic and in a Push, attempting
+  to unset No Top Symbolic will now generate a warning message and not
+  succeed, as it couldn't as the cell currently being pushed into would
+  not be visible at the top level.
+
+  - Change to the Flatten command.
+      Update: xic:flatn
+
+  It is no longer possible to flatten symbolic instances.  These are
+  now considered atomic, like library devices.  If you must flatten
+  such an instance, add a NoSymb property with the Property Editor
+  first, or otherwise force it to display non-symbolically.  Note that
+  you are adding the schematic to the top level, the symbol has no
+  relevance and will be discarded.
+
+  - New drawing window font in Linux releases.
+
+  Anti-aliased fonts are hard to read and ugly with white on black. 
+  The default drawing window font was switched to MiscFixed 11, which
+  is not anti-aliased and looks much better.
+
+  - Sub-window Load button now has default cell name.
+
+  The default cell name is the cell currently being displayed in the
+  sub-window.  This is not particularly useful, but the behavior is
+  now the same as the Open button in the main window.
+
+  - Ghost-drawing symbolic instances.
+
+  When a symbolic instance is ghost-drawn and attached to the mouse
+  pointer, such as during a move operation, the symbol is drawn, rather
+  than the enclosing box.
+
+  Similarly, when symbolic instances are selected, the symbol will be
+  shown as blinking, rather than an outline bounding box.
+
+  - Default mark shown in all windows.
+
+  The little white box that marks the present cursor snap location is
+  now shown in any drawing window that has the focus.  Previously, is
+  was shown only in windows displaying the same cell as the main
+  window.
+
+  - Print panel confirmation when overwriting files.
+
+  From the Print panel, when writing print data to a file, if the new
+  file would overwrite an existing file, a message pops up informing
+  the user, and the operation is not done.  The user can press the
+  Print button again to overwrite the file, or can change the file name
+  to avoid overwriting.  Previously, a file would be overwritten without
+  notice.
+
+* Command and mode changes
+
+  - Update to the label command.
+      Update: xic:label
+
+  This applies when updating the text of a single label.  The label
+  text is no longer immediately updated after pressing Enter. 
+  Instead, the new text is attached to the mouse pointer, where it can
+  be resized, transformed, etc., as when placing new labels.  Click
+  anywhere in the drawing window or press Enter, and the original
+  label will be updated.
+
+  - New variable:  PixelDelta
+      Update: !set:generalvis PixelDelta
+
+  This sets the distance, in screen pixels, the mouse pointer has to be
+  from a certain point, to "find" that point with a button click.  That
+  is, when clicking on something, this is now close the pointer must be
+  to the feature.  The default is three pixels.
+
+  - WRspice interface protocol update
+      Update: !set:variables !set:spice
+
+  There are two new variables:
+
+  SpiceSubcCatmode  (string, "wrspice" or "spice3")
+    This will set the subcircuit expansion algorithm used by
+    WRspice during simulation.
+
+  SpiceSubcCatchar  (string, single printable character)
+    This will set the concatenation character used in subcircuit
+    expansion by WRspice during simulation.
+
+  Both of these effect the internally-generated node and other names
+  found in subcircuits.  Please refer to the WRspice-3.2.15 release
+  notes or documentation for a full description of the WRspice
+  subc_catmode and subc_catchar variables and their effects.
+
+  When running WRspice from Xic, there should not be compatibility
+  issues, as Xic will automatically recognize the capabilities of the
+  connected WRspice and compensate accordingly - as long as the
+  hypertext facility is used to define node names.  This is true when
+  point-and-click is used to generate node, branch, and device names. 
+  However, subcircuit reference names that for some reason are entered
+  by hand may need to be updated, or a .options line added as a
+  spicetext label, or the variables above may be set to enforce
+  backward compatibility.
+
+  The WRspice IPC interface protocol was updated to transmit the
+  SpiceSubcCatchar and SpiceSubcCatmode (to set the separation
+  character and algrithm used for subcircuit expansion).  However,
+  these will be overridden if the connected WRspice does not support
+  these, i.e., is old).
+
+  - New options in !fileinfo command
+      Update: ChdInfo
+
+  There are new option flags for the !fileinfo command and FileInfo,
+  ChdInfo script functions.
+
+  instcnts   Print the total number of cell instantiations found in the
+             hierarchy.  Arrays are expanded, i.e., each element of an
+             array counts as an instance placement.
+
+  instcntsp  As above but print totals for each masster.
+
+  These are not done by default (when no flags are set).
+
+  Updated the existing depth counts to:
+    1. consistently count array elements (like instcnts)
+    2. print the total instance count (same as instcnts total)
+
+  - Fixes to the plot command selection logic
+      Update: xic:plot
+
+    1.  Labels (only) can be selected in this command.  This avoids
+        having to explicitly exit the plot command to change a label.
+
+    2.  It is possible to get a hypertext device or subcircuit name by
+        clicking on a device or subcircuit away from node or branch
+        points, with the Shift key held.
+
+  - Connection dots display change
+      Update: xic:plot
+
+  In the "normal" dots mode, a connection dot will appear at cell
+  contact points that occur over an internal (non-endpoint) vertex of
+  a wire.  In instances, this will mark the coontact point, and also
+  ensure that a dot is shown at this location, as one likely wouldn't
+  be shown otherwise, due to the logic used.
+
+* Miscellaneous updates
+
+  - Gzipped OASIS files.
+      Update: xic:fsaf
+
+  This is not "really" documented, but gzip-compressed OASIS files can
+  now be read directly into Xic.  Unlike for GDSII files, this is not
+  really supported, and it is not possible to write gzipped OASIS
+  output from Xic.  Better to use the compression provided in the
+  OASIS format.
+
+  - More sane error recovery in template cells.
+
+  If the script fails in a template cell instantiation, the template
+  master in memory is now destroyed, and no instance is created.
+  Previously, the template master was retained in memory, only to
+  cause trouble later.
+
+  - The "log" math function is now natural log.
+      Update: !set:scripts scr:mathfuncs log10 LogIsLog10
+
+  By default, the log() math function now returns the natural log, in
+  prior releases it returned the base-10 log.  There is a new function
+  log10 which always returns the base-10 log.  The change is for
+  compatibility with WRspice (and Hspice).
+
+  New variable:  LogIsLog10  (boolean)
+
+  If this new boolean variable is set, the log math function reverts
+  to returning the base-10 log.
+
+  - Update to pseudo-properties, script functions
+      Update: funcs:geom1:objbh properties#pseudoprops
+
+  Internally, pseudo-properties can now be applied in electrical mode,
+  and to "object copies" in memory.  They can also be applied to
+  objects when the owning cell is not the current cell.  Target
+  objects have the following restrictions:
+
+    boxes:     no restrictions
+    polygons:  no restrictions
+    wires:     can't modify electrical wires on active (SCED) layer
+    labels:    no restrictions
+    instances: can't modify electrical instances
+
+  This affects the "Set..." functions in the "Object Management by
+  Handles" group, which can now accept a wider range of input.
+
+  - Updated script functions
+      Update: funcs:main1 CurCellBB CellBB
+
+    Updated for symbolic representation handling.
+
+  - Some improvements when importing a schematic from a SPICE file.
+      Update: DeviceKey xic:sourc
+
+    1) Can now avoid importing the .model lines in most cases.
+    2) New consistency test between MOS devices defined in the tech
+       file and those used in the device.lib file.  These must have
+       the same number of assumed nodes or LVS will fail.
+
+* Improved Cadence compatibility features
+
+  - Improved stipple map handling when reading a Cadence design resource
+    file.
+      Update: cdscompat
+
+  Cadence can use arbitrary stipple map sizes, Xic requires sizes that
+  are multiples of 8 bytes.  When there is an incompatibility, the
+  pattern won't be exactly right, but Xic will now make an attempt to
+  adapt to most pattern maps, rather than skipping the pattern map
+  conversion as before.
+
+  - New Xic technology file keyword: ReadCdsLmap filename
+      Update: techfile cdscompat ReadCds ReadCdsLmap
+
+  This allows reading of a Virtuoso layer mapping file, which provides
+  GDSII layer/datatype numbers for the layers.  This can be used in
+  addition to, and must be called after, ReadCds.  It is used to
+  import the Stream mapping for the layers.
+
+
+Bugs Fixed
+----------
+
+* Bug fixed in OASIS reader, wire end extensions weren't being scaled.
+
+* Bug fixed in GDSII reader, paththpe 4 extensions are now initialized
+  to 0.
+
+* The Info command no longer recurses into library devices.
+
+* Fixed a problem with click-to-focus (Apple OS-X) and the Run button. 
+  The main window really didn't have the keyboard focus, though it
+  appeared to, unless the pointer moved across main drawing window,
+  however briefly.  Typed characters would not appear on the prompt
+  line unless the mouse cursor was brought over the main window.
+
+* The !select command was completely broken.
+
+* Adding a Tmpl Params property would cause a memory corruption
+  error.  In Windows, this would crash the program.
+
+* (Windows only) Fixed a strange crashing bug in the text editor
+  pop-up.  This would crash the current release, but did not seem
+  to affect earlier releases.
+
+* Fixed a bug in the macro processing, for macro-maps using Ctrl or
+  Shift.  For example, suppose Ctrl-Z is mapped to something. 
+  Previously, the macro would be executed when both Ctrl and z are up. 
+  Now, the macro is executed when z is pressed with Ctrl pressed. 
+  Previously, the logic could get confused, and the macro would never
+  be executed.  Worse:  1) the macro would never work again, and 2)
+  internally, there would be an infinite loop trying to execute the
+  macro, making the program slower (but it would still run
+  reasonably).
+
+  The logic was due to the desire to start the macro command when no
+  key presses are active.  This will no longer be true, in the example
+  both z and Ctrl will be pressed when the macro starts executing.
+
+* Fixed used-after-free bug in selection system.
+
+* Bringing up the Print panel in electrical mode whould sometimes
+  cause the device menu to appear.
+
+* The Print panel should now correctly remember the last format
+  selected.
+
+* In the Swap With Main operation from a subwindow, the subwindow
+  was not being redrawn.
+
+* Symbolic instances would lose their electrical connections after the
+  following procedure: 1) switch edit context to subcell master 2)
+  unset the side menu "symbl" button.  Switch back to previous cell,
+  realize "oops, I forgot to reset the symbolic mode" because the
+  instances are showing expanded 3) switch back to the master and
+  press the "symbl" button.  Switch back to the original cell.  The
+  netlist is now corrupted, and can only be fixed by moving the affected
+  subcells out of place, then back into place.  Specifically, inline
+  vertices in cell wires that previously made contact to the subcell
+  terminals are now gone.
+
+  This has been fixed two ways: 1) this is checked for and repaired
+  whenever a new electrical cell is opened, 2) after changing the
+  symbolic status of a cell, the parent cells of all instantiations
+  are fixed.
+
+* Fixed a crashing problem in the solver used when measuring lime
+  resistance.
+
+
+-------------------------------------------------------------------------------
+xic-3.2.22 5/26/2011
+
+Changes and New Features
+------------------------
+
+* User interface changes.
+
+  - DOTS button moved.
+  The dots command button in the electrical side menu is gone, the
+  same function now resides in the new Connection Dots button in the
+  Attributes Menu (in Xic only).  This enables access to the command
+  button when not in electrical mode, but sub-windows may be showing
+  electrical data.
+
+  - New SPCMD button in its place.
+  The side menu dots button is now the "spcmd" button.  The function
+  is identical to the !spcmd command (which still exists).  Pressing
+  the button will prompt on the prompt line for a command to send to
+  WRspice.  A connection will be established if one does not exist. 
+  The command should be known to WRspice, however commands that
+  require a response (such as "setplot") won't do the right thing as
+  there will not be a response prompt.  The line is not interactive.
+
+  - Saved Analysis strings, and command checking.
+  When using the run command from the side menu, when prompting for an
+  analysis command, the last six unique analysis commands entered are
+  now available and can be cycled through with the up and down arrow
+  keys.
+
+  Furthermore, the first word in the analysis string is now checked,
+  and only words from the following list will be accepted:
+
+        ac     loop   run    tran
+        check  noise  send
+        dc     op     sens
+        disto  pz     tf
+
+  The "send" keyword is new.  If given, the circuit will be sent to
+  WRspice and sourced, but no analysis is run.  Other commands can be
+  sent to WRspice with the spcmd button.
+
+* Update to Device Menu and device.lib file.
+
+  There are now three styles of Device Menu from which to choose.  The
+  new default style contains a menu bar with four entries:  Devices,
+  Sources, Macros, and Terminals.  Each brings up a sub-menu
+  containing names of library "devices", that fall in each category.
+  A button on the menu allows cycling through the other styles: the
+  alphabetized drop-down menus and pictorial menu of previous releases.
+
+  The PictorialDevs variable is no longer recognized.  The replacement is
+  the DevMenuStyle variable, which can be set to an integer 0-2.  If 0 or
+  unset, the new layout is used.  If 1, the alphabetized variation is used,
+  and 2 specifies the pictorial menu.  This variable tracks the style of
+  the menu, and resets the style when set.
+
+  Device Library changes
+
+  The following new devices were added:
+
+  tblk
+    This is a new terminal device that behaves identically to the
+    existing terminal device.  The only difference is appearance.
+
+  gnde
+    This is a new ground terminal that is functionally identical to
+    the existing ground terminal.  The only difference is appearance.
+
+  vp
+    This is a tiny dummy voltage source intended for use as a current
+    meter.
+
+  The following devices have had their names changed:
+
+  vcc -> tbar
+    The 'vcc' terminal device is now called 'tbar'.  It is
+    functionally identical to the 'tblk' terminal but visually uses a
+    "bar" instead of a "block" in the reprsentation.
+
+  vbus -> tbus
+    The bus terminal name now begins with 't' for consistency with the
+    other terminals.
+
+  So how can we change terminal names without breaking all existing
+  designs?
+
+  New library keyword:  Alias alias_name existing_name
+
+  The Alias keyword will map an alias name to one of the existing
+  name keywords in the library.  The present device.lib file contains
+ 
+    Alias vcc tbar
+    Alias vbus tbus
+
+  Thus, existing designs will find the correct terminals in the library.
+
+  NEW DESIGNS WILL NOT BE BACKWARDS COMPATIBLE, however it would not
+  be hard to read them into an old release.  One can hand edit an old
+  device.lib file:  copy the vcc device block, and change "vcc" to
+  "tbar" in the copied text.
+
+  Xic no longer hard-codes device names expected to be found in the
+  device library.  The one exception is for the Source command, where
+  Xic will place ground and terminal devices, and needs to know their
+  names.  Xic will guess "gnd" for ground, and "tbar" or "vcc" for the
+  terminals (whichever is found in the library).  The user can specify
+  these names with two new variables:
+
+    SourceTermDevName
+    SourceGndDevName
+
+  These variables can be assigned by the user to specify the names of
+  terminal devices to use in the Source command.  The names must be
+  found in the device library and have appropriate properties.
+
+  These properties are:
+  Any library device with no name property and exactly one node property 
+  will be taken as a ground terminal.
+
+  A terminal device must have a name property, with a name that begins
+  with the '@' character.  It must also contain a single node property.
+
+  A bus terminal has a name property with a name that begins with '#',
+  and must have a param property.  It must not have a node property.
+
+* Update to the logo (side menu) command.
+
+  Elements were added to the Logo Font Setup pop-up which allows the
+  user to specify a fixed "pixel" size for fonts and images.  In this
+  mode, the arrow keys pan the display windows and do not alter
+  "pixel" size.  This is tied to a new variable
+
+    LogoPixelSize (positive real <= 100.0)
+
+  which, when set, fixes the pixel size at the given value.
+
+  The "pixelization" works better on anti-aliased fonts now.
+
+* Technology file updates
+
+  Provided technology files now have an optional white-background
+  theme for schematics.  This tends to look better when images are
+  exported for figures in presentations, and some users may prefer
+  this style generally.  To enable, the "Define WhiteSchem" line can
+  be uncommented in the file. 
+
+
+Bugs Fixed
+----------
+
+* The Swap With Main feature in sub windows would erase the saved plot
+  strings in electrical cells.  E.g.  plot something, press Swap With
+  Main twice in an electrical sub-window to swap and put back, then
+  the plot command would display an empty plot line.
+
+* The Clear(0) script function now updates sub-window displays.
+
+* Repaired save logic.  Load a GDSII file, and modify a subcell.  Load
+  in a native cell file that overwrites the top-level cell from the
+  GDSII file.  Then exit the program, there would be no prompt to save
+  the modified subcell.  Modified archive cells that are no longer in
+  an archive hierarchy now get saved as native cells by default.
+
+* Native cell files could get their internal save path fouled up,
+  causing an error when attempting to save them.  E.g., load a GDSII
+  file from another directory, then load a native cell from the
+  current directory whose name conflicts with a cell from the GDSII
+  file in memory.  Elect to overwrite.  The native cell would have a
+  bogus save path, consisting of the path to the GDSII file with a
+  directory separator and the cell name appended.
+
+* The logic used for PARAM properties of subcells was too "smart". 
+  For subcells, instance and cell PARAM properties are logically
+  distinct, and changing one should not affect the other.
+
+  Previously, if a cell with a PARAM property was placed, each new
+  instance would have a copy of that property applied.  This is no
+  longer true for subcircuits, but remains true for library devices.
+
+  Previously, if a master PARAM property was added, modified, or
+  deleted, the change was reflected to all instances of the master. 
+  Adding a cell PARAM property would cause the property to be copied
+  to all instances, deleteing a cell PARAM property would cause
+  deletion of instance PARAM properties.  Modifying a cell PARAM
+  property would modify all instance properties with text that matches
+  the old cell property.
+
+  Now, subcircuit instance properties are untouched, library device
+  PARAM properties are updated as described.
+
+* Fixed some problems with electrical subcell terminal logic.  It was
+  possible for these terminals to lose their connection to a
+  subcircuit wire, causing the circuit connectivity to fail for no
+  visually obvious reason.
+
+  example 1:
+  Create a horizontal wire, and place a subcircuit terminal (with the
+  side menu subct function) at the right end of the wire.  Now make
+  another wire, starting at the terminal location, horizontally
+  extending to the right.  The two wires would merge, losing the
+  vertex under the terminal, disconnecting the terminal.
+
+  example 2:
+  Create a horizontal wire.  Create a vertical wire with one endpoint
+  on the horizontal wire, but not on a horizintal wire endpoint.  Add
+  a subcircuit terminal to the other end of the vertical wire.  Move
+  the terminal to the other end of the vertical wire (over the
+  horizontal wire).  Delete the vertical wire.  This would remove the
+  vertex under the terminal, leaving the terminal disconnected.
+
+  These and similar cases should no longer disconnect terminals.  When
+  a new cell is read, terminals will now automatically create vertices
+  if needed, repairing old cells that might have this problem.
+
+* When creating electrical wires, it was possible to create spurious
+  vertices in other wires at vertices of the new wire, if new wire
+  creation was aborted with Esc or the wire command otherwise
+  terminated.  The extra vertices would generally do no harm.
+
+* Tweeks and fixes for the PostScript print formatting from the Print
+  pop-up in Help viewer windows.  May give better looking results now.
+
+* Stipple patterns read through the Lisp parser (when reading a Cadence
+  DRF file) were getting munged.
+
+* Modified the WRspice interface to not freeze Xic while WRspice is
+  dumping copious debugging messages to the console.
+
+* Additional fixes in electrical mode to maintain connectivity and dot
+  placement when subcell terminals are added or moved, in particular
+  while editing a subcell using Push.
+
+* The iplot button in the electrical mode side menu is now unset after
+  switching to physical mode and back.
+
+* The area readout for Josephson junctions in the Hypres technology
+  file was updated to the current process, the readout was being
+  normalized for an older process and was incorrect.
+
+* The "pretty font" feature of the logo side-menu command was corrupting
+  the graphical interface (X-windows only).
+
+* A new message now informs the user when a specified XPM file can not
+  be found while in the logo command.
+
+
+-------------------------------------------------------------------------------
+xic-3.2.21 4/13/2011
+
+Changes and New Features
+------------------------
+
+* New feature: redirect files.
+
+  Redirect files are a new adjunct to the search path mechanism for
+  finding files from Xic.  These are files, created by the user, that
+  tell Xic about additional locations to search for files.
+
+  These files must be named "xt_redirect", and are text files with the
+  following format and properties:
+    - Lines that start with '#' or contain only white space are ignored.
+    - Each line otherwise contains one or more directory paths, separated
+      by white space.  If a directory path contains white space or other
+      problematic characters, it should be double-quoted (i.e., with '"').
+    - Multiple directories can be provided on a single line, or in
+      different lines.
+    - Paths that are not rooted are taken as relative to the directory
+      containing the redirect file.
+    - Paths that do not point to an actual directory are silently
+      ignored.
+
+  When searching a directory, the directories found in a redirect file
+  are also searched, in order, after the current directory.  The
+  search is recursive, so that arbitrarily deep hierarchies can be
+  searched.
+
+  With redirect files, only the top directory of a hierarchy needs to
+  be included in the search path (or given explicitly).  This can be
+  very convenient for organizing collections of native cell files, for
+  example.
+
+  The Path Files Listing panel from the File Menu will list files
+  found in the redirect files, as well as from the search path.
+
+* Enhancements to CHD and CGD listing panels (from File Menu).
+
+  In the CHD and CGD listings, the full path to the source file is no
+  longer shown, only the terminal file name.  This leaves room for
+  some additional useful information.  The full file path can be
+  obtained with a button press.
+
+  The new middle column in the CHD listing will show the name of a
+  linked CGD, if any.  The right column lists the source file name and
+  default top-level cell.  There is a new button in the top button row
+  labeled "?".  This provides "quick info" about the CHD, including
+  the full path to the source file.  The same information can be
+  obtained from the Info button, but this is much more extensive and
+  may take some time to compute.  The quick info is instantaneous.
+
+  The CGD listing now contains a middle column labeled "Type, Linked". 
+  This column will contain "Mem", "File", or "Rem" indicating the
+  geometry storage type of the CGD.  This will be followed by "yes" if
+  the CGD is linked to a CHD.  An asterisk '*' will follow "yes" if
+  the CGD will be destroyed when unlinked from its CHD.  The Info
+  button will provide more info about the CGD, including the full path
+  to the source file (if any).
+
+* Enhancement of general-purpose text windows.
+
+  The general-purpose text windows used to display errors, messages,
+  and content listings now contain a "Save Text" button.  When
+  pressed, the user will be queried for a file name, and the text
+  shown in the window will be saved in that file.
+
+  The same applies to the Cells Listing panel from the Cells Menu.
+
+* Enhancement of erase command.
+
+  The erase command, from the side menu, has been enhanced, and
+  changed to avoid a logic flaw.
+
+  The enhancememt is that, like the Copy command in the Modify Menu,
+  the Yank mode of the erase command now works from "foreign" drawing
+  windows.  These are sub-windows that are displaying a different cell
+  than the main window, but both windows must be in physical mode. 
+  The foreign window is never erased, but the structure that would be
+  erased is added to the yank buffer.  Thus, one can quickly copy a
+  rectangular area of geometry from another cell into the current
+  cell, by yanking with erase and placing with the put command (below
+  erase in the side menu).
+
+  The logic flaw was that the Ctrl key was used for two conflicting
+  functions:
+
+  1) Holding the Ctrl key would enable "clip" mode, where the erase is
+     done outside of the specified rectangle, rather than inside.
+  2) Holding the Ctrl key while clicking on a subcell would indicate to
+     use the subcell boundary as the erase boundary.
+
+  The function 1) above no longer applies.  Instead, the SpaceBar now
+  toggles between "erase mode" (erase inside rectangle) and "clip mode"
+  (erase outside the rectangle).  This applies when yanking: the geometry
+  that would be erased is added to the yank buffer.
+
+  Holding the Shift key enables yanking only, as before.
+
+  The function 2) still applies, and the cell bounding box will "erase"
+  or "clip" according to the current mode.  Previously, one could "clip"
+  only.
+
+* Key mapping improvements.
+
+  The key mapping functionality from the Key Map button in the
+  Attributes Menu had some issues.  This command generates a file,
+  which is intended to specify the key mapping in future runs.  The
+  host name is part of the file name, and if the host name changes,
+  the file can't be found.
+
+  On my MacBook Pro, when connected to a network, the hostname is
+  "macbook.local", but when not connected to a network, it is
+  "macbook.localdomain", thus the problem.
+
+  Additionally, when running Xic remotely via ssh with X forwarding,
+  the hostname would always be "localhost" which is not very useful.
+
+  The hostname part of the file name is now generated in a manner
+  appropriate for ssh, and if there is a final component that begins
+  with ".local", it is stripped off.
+
+  When attempting to read the file, if no file under the new name is
+  found, a file with the old name will be used, so this shouldn't
+  break exsiting setups.
+
+* Label command enhancements.
+
+  The math that controls the label text size has been improved.  It
+  should now always be possible to exactly match existing label font
+  sizes when creating new labels, with the arrow keys.  Using the
+  arrow keys to change label size is now exactly reversible. 
+  Previously, label sizes were basically unconstrained, and size
+  matching could only be approximate.
+
+  When editing text in the prompt line, when applicable, clicking on
+  an existing text label in a drawing window will load the label text
+  into the prompt line at the cursor position.  Hypertext entries in
+  the label will be preserved.  If the existing label is a "long text"
+  label, the long text attribute will be lost, unless the prompt line
+  is empty before clicking on the label.
+
+* New feature involving box creation and erase.
+
+  The box, erase, and xor side menu commands participate in a new
+  protocol that is handy on occasion.
+
+  Suppose that you want to erase an area, and you have zoomed in and
+  clicked to define the anchor, then zoomed out or panned and clicked
+  to finish the operation.  Oops, the box command was active, not
+  erase.  Previously, one would press Tab to undo the unwanted new
+  box, press the erase button, then repeat the operations that define
+  the rectangle.
+
+  Now, the anchor point is remembered, when switching directly between
+  these three commands, and the command being exited is in the state
+  where the anchor point is defined, and the ghost box is being
+  displayed.  In the example above, undo the unwanted box, press the
+  erase button, and the erase command will have the same anchor point
+  and will be showing the ghost box, so clicking once will finish the
+  erase operation.
+
+  Note that one needs to press the command button to switch commands. 
+  If Esc is pressed, or a non-participating command is entered, the
+  anchor point will be lost.
+
+* Polygon and wire vertex editor enhancement.
+
+  While in the poly or wire command (side menu), with no object in the
+  process of being created, it is now possible to change the selected
+  state of poly or wire objects, thus displaying vertices and allowing
+  vertex editing.
+
+  With the command active and no object being constructed, pressing
+  the Enter key will cause the next button 1 operation to
+  select/deselect poly or wire objects.  This can be repeated
+  arbitrarily.  When one of these objects is selected, the vertices
+  are marked, and vertex editing is possible.
+
+  Previously, one would have to exit the command, change the selected
+  state, then reenter the command in order to edit the vertices of
+  another object.
+
+
+Bugs Fixed
+----------
+
+* The Copy command from the Modify Menu now creates an internal cell
+  structure when entered, and the current cell has none.  This allows
+  copying objects from a another cell into an "empty" cell.
+
+* In the Layer Editor pop-up (from the Attributes Menu), the text
+  entry now has the initial focus.
+
+* It was impossible to add a layer to the layer table with the Layer
+  Editor panel if the layer table is empty.
+
+* In the Select Group/Node function from Net Selections in the Extract
+  Menu, clicking in an electrical window with No Top Symbolic set
+  wasn't working.  Now, clicking on a wire or terminal will select
+  that node, and the corresponding physical conductor group.
+
+* The Path Files Listing panel (from the File Menu) would initially
+  appear blank, until the window was resized or otherwise redrawn.
+
+* In electrical mode, dots will now be created in the master when a
+  new subcircuit is added and dots are being shown.
+
+* Fixed a bug that could crash the program when overwriting the
+  current cell while reading input from a file.
+
+* Fixed a sort-of bug.  When using the file open/save commands that
+  pop-up a version of the file selector above the prompt line, one
+  would find in some cases entering a space would terminate the
+  string, as if Enter were pressed.  What happens is that the file
+  selector takes the focus, but echos characters to the main window,
+  so one doesn't notice that the main window has lost focus.  However
+  a space is not echoed, instead it "presses" the load button of the
+  pop-up, which terminates input.  The file selector now reverts focus
+  to the main window when it pops up.
+
+* Duplicate entries in the model.lib file would cause a memory warning
+  (or worse).
+
+* Fixed some issues with the xic_keymap file, which is generated by
+  the Key Map command in the Attributes Menu, and is used to map
+  keyboard keys to basic Xic functions.  The actual file name is
+  constructed using the user's display host name, which could change
+  due to variations in networking environment.  The file name is now
+  created understanding ssh connections, and any final host name
+  component that starts with ".local" is stripped off.  This helps
+  avoid situations where Xic won't read the mapping file due to a
+  change in network status, which effectively changes the host name,
+  and allows mapping more effectively when using ssh.
+
+* Erasing electrical mode plot marks was sometimes difficult unless
+  zoomed in.  This should work better now.
+
+* The interprocess communication channel to WRspice would hang Xic on
+  certain errors, one of which was having an empty plot command
+  string.
+
+* Having a backslash character as the last character in a command sent
+  to WRspice would cause trouble in WRspice.  If found in a plot
+  command line, Xic might fault.  This has been fixed in the latest
+  WRspice.  A backslash character is syntatically incorrect in this
+  context.
+
+* Previously, the Create Cell command in the Edit Menu would allow
+  bound property labels to be copied into the new cell, and if the
+  cell replaces selected geometry, the existing labels would be
+  deleted.  This is not desirable.  Now, bound property labels will
+  not be included unless the owning object is included, and all bound
+  labels of an owning object will be included, whether selected or
+  not.
+
+* The Creaate Cell command now updates the listing in the Cells
+  Listing and Tree listing from the Cells Menu.
+
+* When an electrical terminal is added to a cell, a vertex is now
+  automatically added to wires in cells that contain an instance of
+  the cell and contact the terminal location.
+
+* If dots were visible in an electrical cell, and the cell name is
+  changed (for example, with the Rename button in the Cells Listing
+  panel), the dots would not go away unless the renamed cell is saved
+  and reopened.
+
+* When copying objects from a foreign drawing window, the copy would
+  fail if the source and destination coordinates in the respective
+  cells were the same.
+
+* Inline vertex detection in non-Manhattan polygon edges was improved.
+
+
+-------------------------------------------------------------------------------
+xic-3.2.20 2/22/2011
+
+Changes and New Features
+------------------------
+
+* New command:  !ssh [hostname]
+
+  This command will pop up a terminal window that will contain an ssh
+  login process to a remote host.  If the hostname is not given with
+  the command, it will be prompted for.
+
+  The "hostname" can actually contain additional ssh options if
+  needed, and the name of the host can be in the form user@host, which
+  allows logging in as user.
+
+  The ssh process will establish X forwarding to the remote system,
+  and will automatically set the SpiceHostDisplay variable if
+  authentication is achieved before a time out.  This facilitates
+  using WRspice on the remote system to perform simulations in
+  electrical mode, from the run button.  The remote system must have a
+  wrspiced daemon running, and the SpiceHost variable should be set to
+  the remote host name.  The X forwarding provided by the !ssh shell
+  takes care of display string setting and permissions.  The !ssh
+  shell must remain active while WRspice is in use, as exiting the
+  shell will break the connection to WRspice graphics.
+
+  See the description of the SpiceHostDisplay variable for more
+  information.
+
+  This command will work under Windows, if Cygwin is installed, along
+  with the Cygwin OpenSSH package.  The ssh program will be found if
+  it resides in /bin or /cygwin/bin on the current disk, or if the
+  CYGWIN_BIN environment variable is set to the path to the directory
+  that contains the ssh.exe binary.  This is the Windows path, not the
+  path within Cygwin.  Xic is not a Cygwin program, and knows nothing
+  about Cygwin mount points or symbolic links.
+
+* Shell command update
+
+  A new command, !shell [command], duplicates the functionality
+  of the '!' shell command, i.e.,
+
+  !shell command
+
+  is the same as
+
+  !command
+
+  provided that !command is not the same as an Xic command.  The use
+  of !shell removes the ambiguity.  If there is no command, i.e.,
+  just giving "!" or "!shell" brings up an interactive shell window.
+
+  Under Windows, it is possible to open a Cygwin bash shell window
+  instead of a brain-dead "DOS box", if Cygwin is installed.  If the
+  Shell variable or SHELL environment variable (in that precedence)
+  contains the Windows path to the bash.exe file, a bash window will
+  be used.  If neither is given, and bash.exe resides in /bin or
+  /cygwin/bin on the durrent disk drive, or the CYGWIN_BIN environment
+  variable is set to the Windows path to the directory containing
+  bash.exe, a bash shell will be used.  Only if bash.exe is not found,
+  or one of the variables specifically invokes "cmd", will a DOS box
+  be used.
+
+* New variable:  SpiceHostDisplay
+
+  This variable can be set to the X display string to use on a remote
+  host for running WRspice from a wrspiced daemon, from Xic in
+  electrical mode.  It is intended to facilitate use of ssh X
+  forwarding to take care of setting up permission for the remote host
+  to draw on the local display.
+
+  The variable is set automatically from the !ssh command.
+
+  When using a remote host, this specifies the X display string to
+  use, which is needed for running graphics.  If not set, a display
+  name will be created as follows:  If the local DISPLAY variable is
+  something like ":0.0", the remote display name will be
+  "localhostname:0.0".  If the local DISPLAY variable is already in
+  the form "localhostname:0.0", this is passed verbatim.
+
+  One can use ssh transport for the X connection on the remote system
+  as follows.  Use "ssh -X" to open a shell on the remote machine. 
+  Type "echo $DISPLAY" into this window, it will print something like
+  "localhost:10.0".  Use this value for SpiceHostDisplay.  The !ssh
+  command will set the variable automatically.  The shell must remain
+  open while running WRspice, exiting the shell will close the X
+  connection.
+
+  This will work under Windows, if Cygwin is installed, along with the
+  OpenSSH package (for the ssh command) and the Cygwin X server.
+  One weirdness: use "ssh -Y" instead of "ssh -X".  The -Y option, which
+  applies to recent ssh versions, is similar to -X, but overcomes stronger
+  security checks included in recent ssh implementations.  This seems to
+  be necessary when using the Cygwin X server.
+  
+  Background
+
+  In legacy X-window systems, the display name would typically be in
+  the form hostname:0.0, where the hostname could be (and usually is)
+  missing.  A remote system will draw to the local display if the
+  local hostname was used in the display name, and the local X server
+  permissions were set (with xauth/xhost) to allow access.  Typically,
+  the user would log in to a remote system with telnet or ssh, set the
+  DISPLAY variable, perhaps give "xhost +" on the local machine, then
+  run X programs.
+
+  This method has been largely superseded by use of "X forwarding" in
+  ssh.  This is often automatic, or may require the '-X' or '-Y'
+  option in the ssh command line.  In this case, after using ssh to
+  log in to the remote machine, the DISPLAY variable is automatically
+  set to display on the local machine.  X applications "just work",
+  with no need to fool with the DISPLAY variable, or permissions.
+
+  The present Xic remote access code does not know about the ssh
+  protocol, so we have to fake it in some cases.  In most cases the
+  older method will still work.
+
+  The ssh protocol works by setting up a dummy display, with a name
+  something like "localhost:10.0", which in actuality connects back to
+  the local display.  Depending on how many ssh connections are
+  currently in force, the "10" could be "11", "12", etc.
+
+  In the present case, if we want to use ssh for X transmission, the
+  display name must match an existing ssh display name on the remote
+  system that maps back to the local display.
+
+  If there is an existing ssh connection to the remote machine, the
+  associated DISPLAY can be used.  If there is no existing ssh
+  connection, one can be established, and that used.  E.g., from the
+  ssh window, type "echo $DISPLAY" and use the value printed.
+
+  The display name provided by the SpiceHostDisplay variable will
+  override the assumed display name created internally with the local
+  host name.
+
+* Updates to the WRspice interprocess-communication interface.
+
+  1) The input/output channel is now asynchronous, which means that
+     console output generated by WRspice that is not expected by Xic
+     will be printed in the Xic console window immediately.
+
+     Consider the Print button in the Vectors tool.  Previously,
+     selecting a vector and pressing Print would appear to do nothing,
+     however the output would appear the next time Xic issued a read
+     request to WRspice for some other purpose.  With the asynchronous
+     interface, the print text appears immediately, as one would
+     expect.
+
+  2) The interface can now specify a display name to use on the remote
+     host, through the SpiceHostDisplay variable.  This allows the use
+     of ssh X forwarding.
+
+  3) The interface should be more robust with respect to unexpected
+     connection loss.
+
+  4) Numerous small bug fixes and improvements.
+
+* The wrspiced program was updated (from WRspice-3.2.11).
+
+  Killing the wrspiced daemon will now kill all wrspice process
+  being managed by the daemon.
+
+  This will clear any "zombie" wrspice processes, that are not in
+  use due to some failure, but are still using system resources.
+
+* Some notes on using wrspiced and firewall issues.
+
+  The wrspiced program uses port 6114 to establish a connection, and a
+  temporary (machine assigned) port for other communication.  If
+  either port is blocked by a firewall, it is not possible to use
+  wrspiced.
+
+  Future versions may use ssh tunneling to avoid this problem, but for
+  now, a firewall must be disabled, or the ports enabled.  In Red Hat 5,
+  this is simple, but requires a root password.
+
+  The Red Hat 5 procedure is:
+  1) Press the System/Administration/Security Level and Firewall menu
+     button.
+  2) Give the root password if asked.
+  3) Click on the triangle by "Other Ports" in the pop-up that appears.
+  4) Using the Add button, add the following entries:
+     6114
+     32768-61000
+  5) Press Apply and confirm.
+
+  This should be done on both the local and wrspiced host systems, if
+  both are using the firewall.  The wrspiced program should now operate
+  correctly.
+
+  Red Hat 3 is not so nice.  There is a similar "Security Level"
+  pop-up, but it doesn't allow ports to be entered.  It looks like the
+  iptables config file needs to be modified by hand.  If the machines
+  are connected via ethernet, make sure that the ethernet device is
+  "trusted" (check the box), or wrspiced won't work, even with the
+  firewall disabled.
+
+* The device.lib file was modified slightly.
+
+  The default model for the Josephson junction device is now "jj3",
+  consistent with the current Hypres foundry process.
+
+
+Bugs Fixed
+----------
+
+* Fixed a non-initialization bug in SPICE IPC init function.  This
+  caused faults in the WRspice ipc demo, but apparently was innocuous
+  in Xic.
+
+* The Print button in the WRspice Vectors tool was not working when
+  WRspice was running from Xic.  In general, text emitted from WRspice
+  that was not requested from Xic would not appear until Xic actually
+  requested text from WRspice (i.e., the interface was synchronous).
+
+* Fixed a bug in SPICE IPC:  Too much text data from !spcmd (e.g., a
+  large ascii plot) would freeze the interface.
+
+* When Xic was run from WRspice, the simulation interface wasn't
+  working right.  Xic would start its own WRspice instead of using the
+  parent WRspice.  Other releases would not establish a connection to
+  any simulator.
+
+* The Box, Polygon, etc.  script functions no longer fail when
+  attempting to write into an empty cell that has not yet been
+  instantiated.
+
+* Fixed some GTK warnings issued from the Modified Cells pop-up.
+
+* Fixed the spiral.scr and spiralform.scr scripts to work in XicII. 
+  They were failing due to function calls to the nonexistant (in
+  Gen-3) DRC subsystem.
+
+
+-------------------------------------------------------------------------------
+See the xic3.2-0-19 file in the installation docs directory for
+earlier release notes.
+

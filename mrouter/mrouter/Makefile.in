@@ -1,0 +1,86 @@
+#######################################################################
+# mrouter/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.22 2017/02/18 02:32:07 stevew Exp $
+#######################################################################
+
+DATE = @DATE@
+
+MR_VERSION = `../version`
+MR_VERS_H = ../include/mr_vers.h
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGS@ @NO_IGNORED_QUALIFIERS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGS@ @NEEDINT64@
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+PIC_OPT = @PIC_OPT@
+SOEXT = @SOEXT@
+LSHFLAG = @LSHFLAG@
+OSNAME = @OSNAME@
+EXESUFFIX = @EXESUFFIX@
+
+LIB_TARGET = libmrouter.$(SOEXT)
+HFILES =
+CCFILES = \
+  mr_cmds.cc \
+  mr_config.cc \
+  mr_maze.cc \
+  mr_node.cc \
+  mr_route.cc \
+  mrouter.cc
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I../include -I../lef/include -I../def/include
+
+LDDBLIB = ../lddb/liblddb.a
+
+all: $(LDDBLIB) $(LIB_TARGET) mrouter
+
+$(LIB_TARGET): $(MR_VERS_H) $(LDDBLIB) $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	@echo Linking plug-in
+	@$(CXX) $(LSHFLAG) -o $(LIB_TARGET) $(CCOBJS) \
+  ../lddb/lddb.o -L../lddb -llddb -L../lef/lib -llef -L../def/lib -ldef
+# NOTE: Windows needs the explicit inclusion of lddb.o above or
+# GetProcAdress fails to find export names.
+
+$(LDDBLIB)::
+	cd ../lddb; $(MAKE)
+
+mrouter: $(MR_VERS_H) ../lddb/liblddb.a main.cc $(CCOBJS)
+	@echo Linking mrouter
+	@$(CXX) $(CFLAGS) $(INCLUDE) -o mrouter main.cc $(CCOBJS) \
+  -L../lddb -llddb -L../lef/lib -llef -L../def/lib -ldef
+
+$(MR_VERS_H):
+	@echo "// Automatically generated, don't edit!" > $(MR_VERS_H)
+	@echo "#define MR_VERSION \"$(MR_VERSION)\"" >> $(MR_VERS_H)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(PIC_OPT) $(INCLUDE) -c $*.cc
+
+depend: $(MR_VERS_H)
+	cd ../lddb; $(MAKE) depend
+	@echo depending in mrouter
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-cd ../lddb; $(MAKE) clean
+	-rm $(MR_VERS_H) *.o $(LIB_TARGET) mrouter$(EXESUFFIX)
+
+distclean:
+	-cd ../lddb; $(MAKE) distclean
+	-cd test; $(MAKE) distclean
+	-rm $(MR_VERS_H) *.o $(LIB_TARGET) Makefile mrouter$(EXESUFFIX)
+
+test: mrouter
+	cd test; $(MAKE) test1
+
+#######################################################################

@@ -1,0 +1,129 @@
+# Example script to produce a spiral on the current layer
+# This version illustrates HTML form input
+
+#ifndef SUBMIT
+TextCmd("help spform.html")
+Exit()
+#endif
+
+if Defined(opmenu)
+    num = ToReal(opmenu)
+else
+    ShowPrompt("number of turns unknown")
+    Exit()
+end
+
+if Defined(pwidth)
+    width = ToReal(pwidth)
+    if (width < 0)
+        ShowPrompt("Bad input (< 0) for width: ", width)
+        Exit()
+    end
+else
+    ShowPrompt("width unknown")
+    Exit()
+end
+
+if Defined(rad1)
+    rmin = ToReal(rad1)
+    if (rmin < width/2)
+        ShowPrompt("Bad input (< width/2) for min radius: ", rmin)
+        Exit()
+    end
+else
+    ShowPrompt("radius unknown")
+    Exit()
+end
+
+if Defined(pitch)
+    spa = ToReal(pitch)
+    if (spa < width)
+        ShowPrompt("Bad input (< width) for pitch: ", pitch)
+        Exit()
+    end
+else
+    ShowPrompt("pitch unknown")
+    Exit()
+end
+
+if Defined(radioset)
+    nums = ToReal(radioset)
+else
+    ShowPrompt("number of sides unknown")
+    Exit()
+end
+
+# initialize
+width = width/2
+dth = 2*pi/nums
+n = nums*num + 1
+i = 0
+theta = 0
+
+# there is an internal limit of 2000 polygon vertices
+nverts = 2*n + 1
+if (nverts > 2000)
+    ShowPrompt("Sorry, resulting polygon would have too many vertices.")
+    Exit()
+end
+
+# allocate array, size 2*nverts
+array[4000] = 0
+
+l = 4*n
+j = 0
+
+# fill in the array
+while (i < n)
+    r = rmin + theta*spa/(2*pi)
+    x = (r-width)*cos(theta)
+    y = (r-width)*sin(theta)
+    array[j] = x
+    array[j+1] = y
+    x = (r+width)*cos(theta)
+    y = (r+width)*sin(theta)
+    array[l-j-2] = x
+    array[l-j-1] = y
+    j = j + 2
+    i = i + 1
+    theta = theta + dth
+end
+
+# close the path, necessary for polygon
+array[l] = array[0]
+array[l+1] = array[1]
+
+# get the location for the spiral and transform array
+ShowPrompt("Point to locate center of spiral");
+xy[2]
+PushGhost(array, nverts)
+ShowGhost(8)
+if !Point(xy)
+    Exit()
+end
+ShowGhost(0)
+PopGhost()
+
+i = 0
+j = 0
+while (i < nverts)
+    array[j] = array[j] + xy[0]
+    array[j+1] = array[j+1] + xy[1]
+    i = i + 1
+    j = j + 2
+end
+
+# create the polygon
+#ifdef Xic
+drc = DRCstate(0)
+#endif
+Polygon(nverts, array)
+Commit()
+#ifdef Xic
+DRCstate(drc)
+ShowPrompt("Info: spiral not drc'ed.  Drc takes a long time for these objects.")
+#else
+ShowPrompt("Done.")
+#endif
+
+#done

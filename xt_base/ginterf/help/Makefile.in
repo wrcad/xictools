@@ -1,0 +1,59 @@
+#=========================================================================
+
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@
+FILTER = @FILTER@
+
+HFILES = \
+    help_cache.h \
+    help_context.h \
+    help_defs.h \
+    help_startup.h \
+    help_topic.h
+
+CCFILES = \
+    help_cache.cc \
+    help_context.cc \
+    help_images.cc \
+    help_read.cc \
+    help_startup.cc \
+    help_topic.cc
+
+CCOBJS = $(CCFILES:.cc=.o)
+LIBOBJS = $(CCOBJS)
+INCLUDE = -I. -I.. -I../../miscutil
+
+stamp: $(LIBOBJS)
+	touch stamp
+
+.cc.o:
+	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
+
+files::
+	@echo [ $(CCFILES) $(HFILES) Makefile.in ]
+
+subdirs::
+	@echo ]
+
+clean:
+	-@rm -f $(CCOBJS) stamp
+
+distclean: clean
+	-@rm -f Makefile
+
+depend:
+	@echo depending in help
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+install::
+
+uninstall::
+
+#######################################################################

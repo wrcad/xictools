@@ -1,0 +1,37 @@
+# cgdtest.scr
+# $Id: cgdtest.scr,v 1.5 2013/11/18 19:31:08 stevew Exp $
+
+# This example will open a Cell Geometry Digest from a layout file,
+# then traverse all of the info in the CGD.  It will print, in the
+# console window, a list of the cells, layers in each cell, and a code
+# letter for each object found (b=box, p=polygon, w=wire).
+#
+# From Xic running in this directory, to run type:  !exec ./cgdtest.scr
+# Warning: this can generate lots of output.
+
+filename = PopUpInput("Enter layout file path:", 0, 0, FALSE)
+# filename = "/usr/local/xictools/xic/examples/chip.gds"
+# filename = "/usr/local/xictools/xic/examples/tut11a.gds"
+
+cgdname = OpenCellGeomDigest(0, filename, 0)
+Print(cgdname)
+
+hcells = CgdContents(cgdname, 0, 0)
+while (hcells)
+    cname = ListContent(hcells)
+    Print(cname)
+    hlayers = CgdContents(cgdname, cname, 0)
+    while (hlayers)
+        lname = ListContent(hlayers)
+        Print("    ", lname)
+        hgs = CgdOpenGeomStream(cgdname, cname, lname)
+        while (hgm = GsReadObject(hgs))
+            Print("      ", GetObjectType(hgm))
+            Close(hgm)
+        end
+        Close(hgs)
+        hlayers++
+    end
+    hcells++
+end
+

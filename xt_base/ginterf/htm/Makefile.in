@@ -1,0 +1,112 @@
+#=========================================================================
+# Makefile for htm HTML parser/viewer widget toolkit-independent code
+# Steve Whiteley, stevew@wrcad.com
+# Happy hacking!
+# $Id: Makefile.in,v 1.15 2014/07/19 23:12:58 stevew Exp $
+
+HTM_VERSION = 0.1
+
+# Below are the recognized CFLAGS defines.  These should be set
+# appropriately in a config.h file, or can be added to the CFLAGS.
+#
+# -DHAVE_LIBZ           | libz (compression) available
+# -DHAVE_LIBPNG         | libpng (PNG images) available
+# -DHAVE_LIBJPEG        | libjpeg (JPEG images) available
+
+prefix = @prefix@
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @UFLAGS@ -DHTM_VERSION=\"$(HTM_VERSION)\"
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ -DHTM_VERSION=\"$(HTM_VERSION)\"
+FILTER = @FILTER@
+INCLUDE = -I. -I.. -I../../miscutil @IMG_INCLUDES@
+
+HFILES = \
+    htm_bitmaps.h \
+    htm_callback.h \
+    htm_escape.h \
+    htm_font.h \
+    htm_form.h \
+    htm_format.h \
+    htm_frame.h \
+    htm_hashtab.h \
+    htm_image.h \
+    htm_layout.h \
+    htm_lzw.h \
+    htm_parser.h \
+    htm_plc.h \
+    htm_string.h \
+    htm_table.h \
+    htm_tag.h \
+    htm_widget.h
+
+CCFILES = \
+    gif_decode.cc \
+    htm_BM.cc \
+    htm_FLG.cc \
+    htm_GIF.cc \
+    htm_GIFplc.cc \
+    htm_JPEG.cc \
+    htm_JPEGplc.cc \
+    htm_PNG.cc \
+    htm_PPM.cc \
+    htm_TIFF.cc \
+    htm_XPM.cc \
+    htm_callback.cc \
+    htm_color.cc \
+    htm_error.cc \
+    htm_event.cc \
+    htm_font.cc \
+    htm_form.cc \
+    htm_format.cc \
+    htm_format_cx.cc \
+    htm_frame.cc \
+    htm_image.cc \
+    htm_imagemap.cc \
+    htm_layout.cc \
+    htm_lzw.cc \
+    htm_paint.cc \
+    htm_parser.cc \
+    htm_plc.cc \
+    htm_public.cc \
+    htm_quantize.cc \
+    htm_string.cc \
+    htm_table.cc \
+    htm_tag.cc \
+    htm_text.cc \
+    htm_widget.cc
+
+CCOBJS = $(CCFILES:.cc=.o)
+LIBOBJS = $(CCOBJS)
+
+stamp: $(LIBOBJS)
+	touch stamp
+
+.cc.o:
+	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
+
+files::
+	@echo [ $(CCFILES) $(HFILES) Makefile.in ]
+
+subdirs::
+	@echo ]
+
+clean::
+	-@rm -f $(CCOBJS) stamp
+
+distclean::
+	-@rm -f $(CCOBJS) stamp
+	-@rm -f Makefile
+
+depend:
+	@echo depending in htm
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+install:
+
+uninstall::
+
+######################################################################

@@ -1,0 +1,8086 @@
+
+# Tech file for memory chip demo, 11/11/13.
+#
+# Whiteley Research Inc. customer confidential, redistribution is
+# prohibited.
+
+# This is an example only, any similarity to an actual existing fab
+# process is coincidence, do not use for other than experimenting!
+
+
+# current !Set variable status
+!Set DefLabelHeight 0.1
+!Set FcEdgeMax 0.1
+!Set FcPartMax 0.1
+!Set FcPath /usr/local/FasterCap/FasterCap
+!Set FcThinEdge 0.01
+!Set FxPlaneBloat 0.4
+!Set GlobalExclude PM
+!Set KeepShortedDevs
+!Set MergeMatchingNamed
+!Set MergePhysContacts
+
+
+# Path ( . )
+# LibPath ( . /usr/local/xictools/xic/startup )
+# HelpPath ( /usr/local/xictools/xic/xic/help
+# ScriptPath ( /usr/local/xictools/xic/scripts )
+
+
+DefineLayer ref                    0
+DefineLayer DNW                    1
+DefineLayer PW                     2
+DefineLayer NW                     3
+DefineLayer PM                     5
+DefineLayer OD                     6
+DefineLayer PDIFF                  7
+DefineLayer NDIFF                  8
+DefineLayer CLDD                   9
+DefineLayer P3                     10
+DefineLayer NT_N                   11
+DefineLayer VTL_N                  12
+DefineLayer VTL_P                  13
+DefineLayer OD_33                  15
+DefineLayer OD_18                  16
+DefineLayer PO                     17
+DefineLayer OD_25                  18
+DefineLayer N10V                   19
+DefineLayer P10V                   20
+DefineLayer VTDN                   22
+DefineLayer PV_P                   23
+DefineLayer PV_N                   24
+DefineLayer PP                     25
+DefineLayer NP                     26
+DefineLayer OD1T                   27
+DefineLayer SOI_MKR                28
+DefineLayer RPO                    29
+DefineLayer CO                     30
+DefineLayer M1                     31
+DefineLayer M2                     32
+DefineLayer M3                     33
+DefineLayer M4                     34
+DefineLayer M5                     35
+DefineLayer M6                     36
+DefineLayer M7                     37
+DefineLayer M8                     38
+DefineLayer M9                     39
+DefineLayer M10                    40
+DefineLayer M11                    41
+DefineLayer M12                    42
+DefineLayer M13                    43
+DefineLayer M14                    44
+DefineLayer DSDDMY                 45
+DefineLayer POFUSE                 46
+DefineLayer REDUNDMY               47
+DefineLayer REDUNDM                47
+DefineLayer HVTSRM                 48
+DefineLayer RODMY                  49
+DefineLayer SRM                    50
+DefineLayer VIA1                   51
+DefineLayer VIA2                   52
+DefineLayer VIA3                   53
+DefineLayer VIA4                   54
+DefineLayer VIA5                   55
+DefineLayer VIA6                   56
+DefineLayer VIA7                   57
+DefineLayer VIA8                   58
+DefineLayer VIA9                   59
+DefineLayer VIA10                  60
+DefineLayer VIA11                  61
+DefineLayer VIA12                  62
+DefineLayer VIA13                  63
+DefineLayer ESD2DMY                65
+DefineLayer ESD3                   66
+DefineLayer VTH_N                  67
+DefineLayer VTH_P                  68
+DefineLayer COW                    69
+DefineLayer HRI                    70
+DefineLayer HVII                   71
+DefineLayer HVNW                   72
+DefineLayer AP                     74
+DefineLayer PDK                    75
+DefineLayer CB                     76
+DefineLayer CTM                    77
+DefineLayer CAP1TDMY               78
+DefineLayer CAP1TDM                78
+DefineLayer SRM_LOP                79
+DefineLayer RFDMY                  80
+DefineLayer SAN                    81
+DefineLayer MW                     82
+DefineLayer FLGT                   83
+DefineLayer MPOL                   84
+DefineLayer RV                     85
+DefineLayer CB2                    86
+DefineLayer CTMDMY                 87
+DefineLayer CBM                    88
+DefineLayer SOISUB                 89
+DefineLayer DCO                    90
+DefineLayer DMEXCL                 91
+DefineLayer VAR                    92
+DefineLayer INDDMY                 93
+DefineLayer ESD1DMY                94
+DefineLayer FW                     95
+DefineLayer HVPW                   96
+DefineLayer TOPMCON                97
+DefineLayer CSRDMY                 98
+DefineLayer ODBLK                  99
+DefineLayer POBLK                  100
+DefineLayer SNCT                   101
+DefineLayer CROWN                  102
+DefineLayer IP                     103
+DefineLayer MOMDMY                 104
+DefineLayer CBD                    105
+DefineLayer PMDMY                  106
+DefineLayer OVERLAP                107
+DefineLayer RAM1TDMY               108
+DefineLayer RAM1TDM                108
+DefineLayer LMARK                  109
+DefineLayer BJTDMY                 110
+DefineLayer PSUB2                  111
+DefineLayer HOTWL                  112
+DefineLayer SEALRING               113
+DefineLayer SEALRIN                113
+DefineLayer NWDMY                  114
+DefineLayer RPDMY                  115
+DefineLayer RMDMY                  116
+DefineLayer RH                     117
+DefineLayer OD_DECAP               118
+DefineLayer OD_DEC                 118
+DefineLayer DIODMY                 119
+DefineLayer RHRI                   120
+DefineLayer SRAMDMY                121
+DefineLayer SDI                    122
+DefineLayer DPDMY                  123
+DefineLayer LOGO                   125
+DefineLayer WBDMY                  126
+DefineLayer boundary               127
+DefineLayer IO_buffer              128
+DefineLayer RFPADDMY               129
+DefineLayer RFPADDM                129
+DefineLayer LUPWDMY                130
+DefineLayer TSV                    131
+DefineLayer FFCDMY                 132
+DefineLayer CU_PPI                 142
+DefineLayer HIA_DUMMY              143
+DefineLayer EDRAM_DECAP            148
+DefineLayer LVBJTDMY               149
+DefineLayer EMIDMY                 150
+DefineLayer VTUL_N                 151
+DefineLayer VTUL_P                 152
+DefineLayer VIAEXCL                153
+DefineLayer FLASH                  154
+DefineLayer COEXCL                 159
+DefineLayer CDUDMY                 165
+DefineLayer MR                     166
+DefineLayer VDDDMY                 167
+DefineLayer VSSDMY                 168
+DefineLayer UBM                    170
+DefineLayer LVSDMY                 171
+DefineLayer ESDIMP                 172
+DefineLayer UHVT_N                 173
+DefineLayer UHVT_P                 174
+DefineLayer ex_R_rule              175
+DefineLayer EDRAM                  176
+DefineLayer SNA                    177
+DefineLayer SBDDMY                 181
+DefineLayer R_rule                 182
+DefineLayer FET                    183
+DefineLayer VTNCEL                 184
+DefineLayer VTPCEL                 185
+DefineLayer HVD                    186
+DefineLayer SOI                    187
+DefineLayer LDDBLK                 188
+DefineLayer HV                     189
+DefineLayer REMOVAL                190
+DefineLayer DFMEXCL                191
+DefineLayer POS                    192
+DefineLayer CO2                    193
+DefineLayer Unrouted               200
+DefineLayer Row                    201
+DefineLayer Group                  202
+DefineLayer Cannotoccupy           203
+DefineLayer Canplace               204
+DefineLayer hardFence              205
+DefineLayer softFence              206
+DefineLayer y0                     207
+DefineLayer y1                     208
+DefineLayer y2                     209
+DefineLayer y3                     210
+DefineLayer y4                     211
+DefineLayer y5                     212
+DefineLayer y6                     213
+DefineLayer y7                     214
+DefineLayer y8                     215
+DefineLayer y9                     216
+DefineLayer designFlow             217
+DefineLayer stretch                218
+DefineLayer edgeLayer              219
+DefineLayer changedLayer           220
+DefineLayer unset                  221
+DefineLayer unknown                222
+DefineLayer spike                  223
+DefineLayer hiz                    224
+DefineLayer resist                 225
+DefineLayer drive                  226
+DefineLayer supply                 227
+DefineLayer wire                   228
+DefineLayer pin                    229
+DefineLayer text                   230
+DefineLayer device                 231
+DefineLayer border                 232
+DefineLayer snap                   233
+DefineLayer align                  234
+DefineLayer prBoundary             235
+DefineLayer instance               236
+DefineLayer annotate               237
+DefineLayer marker                 238
+DefineLayer select                 239
+DefineLayer winActiveBanner        240
+DefineLayer winAttentionText       241
+DefineLayer winBackground          242
+DefineLayer winBorder              243
+DefineLayer winBottomShadow        244
+DefineLayer winButton              245
+DefineLayer winError               246
+DefineLayer winForeground          247
+DefineLayer winInactiveBanner      248
+DefineLayer winText                249
+DefineLayer winTopShadow           250
+DefineLayer grid                   251
+DefineLayer axis                   252
+DefineLayer hilite                 253
+DefineLayer background             254
+DefineLayer CM1                    300
+DefineLayer CV1                    301
+DefineLayer CM2                    302
+DefineLayer CV2                    303
+DefineLayer CM3                    304
+DefineLayer CV3                    305
+DefineLayer CM4                    306
+DefineLayer CV4                    307
+DefineLayer CM5                    308
+DefineLayer CV5                    309
+DefineLayer CM6                    310
+DefineLayer D1                     311
+
+DefinePurpose BSL                      15
+DefinePurpose BSD                      16
+DefinePurpose BSP                      17
+DefinePurpose guideline                18
+DefinePurpose gdl                      18
+DefinePurpose NW                       25
+DefinePurpose nwl                      25
+DefinePurpose NWDNW                    26
+DefinePurpose dnw                      26
+DefinePurpose PWDNW                    27
+DefinePurpose twl                      27
+DefinePurpose NTN                      28
+DefinePurpose NWSTI                    29
+DefinePurpose rad                      30
+DefinePurpose MIM3T                    34
+DefinePurpose MM3                      34
+DefinePurpose DMYCAS65                 35
+DefinePurpose DMC                      35
+DefinePurpose timer                    36
+DefinePurpose tim                      36
+DefinePurpose DMYLD65                  37
+DefinePurpose DML                      37
+DefinePurpose plus4                    38
+DefinePurpose pl4                      38
+DefinePurpose plus5                    39
+DefinePurpose pl5                      39
+DefinePurpose dpsrm                    40
+DefinePurpose dps                      40
+DefinePurpose drawingo                 41
+DefinePurpose dro                      41
+DefinePurpose drawingp                 42
+DefinePurpose drp                      42
+DefinePurpose plus1                    43
+DefinePurpose pl1                      43
+DefinePurpose plus2                    44
+DefinePurpose pl2                      44
+DefinePurpose plus3                    45
+DefinePurpose pl3                      45
+DefinePurpose NLDDV                    46
+DefinePurpose NLV                      46
+DefinePurpose PLDDV                    47
+DefinePurpose PLV                      47
+DefinePurpose NLDDH                    48
+DefinePurpose NLH                      48
+DefinePurpose PLDDH                    49
+DefinePurpose PLH                      49
+DefinePurpose L01S                     50
+DefinePurpose LOS                      50
+DefinePurpose NILD                     51
+DefinePurpose NLD                      51
+DefinePurpose PILD                     52
+DefinePurpose PLD                      52
+DefinePurpose Ncap_NTN                 53
+DefinePurpose NCP                      53
+DefinePurpose analog                   54
+DefinePurpose ana                      54
+DefinePurpose recommend                55
+DefinePurpose rec                      55
+DefinePurpose require                  56
+DefinePurpose req                      56
+DefinePurpose periphery_g              57
+DefinePurpose ppg                      57
+DefinePurpose odummy                   58
+DefinePurpose odm                      58
+DefinePurpose al                       59
+DefinePurpose src                      60
+DefinePurpose n_a                      61
+DefinePurpose n_b                      62
+DefinePurpose p_a                      63
+DefinePurpose p_b                      64
+DefinePurpose gated                    66
+DefinePurpose gtd                      66
+DefinePurpose soibt                    67
+DefinePurpose sbt                      67
+DefinePurpose decap                    68
+DefinePurpose dcp                      68
+DefinePurpose vpfc                     69
+DefinePurpose vpc                      69
+DefinePurpose ndop                     70
+DefinePurpose ndp                      70
+DefinePurpose pdop                     71
+DefinePurpose pdp                      71
+DefinePurpose ovrdrv                   72
+DefinePurpose ovr                      72
+DefinePurpose udrdrv                   73
+DefinePurpose udr                      73
+DefinePurpose prob                     75
+DefinePurpose prb                      75
+DefinePurpose periphery                82
+DefinePurpose pph                      82
+DefinePurpose test0                    83
+DefinePurpose te0                      83
+DefinePurpose test1                    84
+DefinePurpose te1                      84
+DefinePurpose test2                    85
+DefinePurpose te2                      85
+DefinePurpose test3                    86
+DefinePurpose te3                      86
+DefinePurpose test4                    87
+DefinePurpose te4                      87
+DefinePurpose test5                    88
+DefinePurpose te5                      88
+DefinePurpose test6                    89
+DefinePurpose te6                      89
+DefinePurpose test7                    90
+DefinePurpose te7                      90
+DefinePurpose test8                    91
+DefinePurpose te8                      91
+DefinePurpose test9                    92
+DefinePurpose te9                      92
+DefinePurpose testa                    93
+DefinePurpose tea                      93
+DefinePurpose dummya                   94
+DefinePurpose dma                      94
+DefinePurpose dummyb                   95
+DefinePurpose dmb                      95
+DefinePurpose dummyc                   96
+DefinePurpose dummyd                   97
+DefinePurpose dmd                      97
+DefinePurpose dummye                   98
+DefinePurpose dme                      98
+DefinePurpose dummyf                   99
+DefinePurpose dmf                      99
+DefinePurpose drawinga                 100
+DefinePurpose dra                      100
+DefinePurpose drawingb                 101
+DefinePurpose drb                      101
+DefinePurpose drawingc                 102
+DefinePurpose drc                      102
+DefinePurpose drawingd                 103
+DefinePurpose drd                      103
+DefinePurpose drawinge                 104
+DefinePurpose dre                      104
+DefinePurpose rule1                    105
+DefinePurpose ru1                      105
+DefinePurpose drawingf                 106
+DefinePurpose drf                      106
+DefinePurpose drawingh                 107
+DefinePurpose drh                      107
+DefinePurpose lvs                      109
+DefinePurpose allsram                  110
+DefinePurpose asm                      110
+DefinePurpose waive                    111
+DefinePurpose wai                      111
+DefinePurpose passgate                 112
+DefinePurpose psg                      112
+DefinePurpose col                      113
+DefinePurpose row                      114
+DefinePurpose dummy1                   115
+DefinePurpose dm1                      115
+DefinePurpose dummy2                   116
+DefinePurpose dm2                      116
+DefinePurpose dummy3                   117
+DefinePurpose dm3                      117
+DefinePurpose dummy4                   118
+DefinePurpose dm4                      118
+DefinePurpose dummy5                   119
+DefinePurpose dm5                      119
+DefinePurpose dummy6                   120
+DefinePurpose dm6                      120
+DefinePurpose dummy7                   121
+DefinePurpose dm7                      121
+DefinePurpose dummy8                   122
+DefinePurpose dm8                      122
+DefinePurpose dummy9                   123
+DefinePurpose dm9                      123
+DefinePurpose drain                    124
+DefinePurpose drn                      124
+DefinePurpose cvss_sram                125
+DefinePurpose csm                      125
+DefinePurpose dummy                    127
+DefinePurpose dm                       127
+DefinePurpose warning                  234
+DefinePurpose tool1                    235
+DefinePurpose tool0                    236
+DefinePurpose label                    237
+DefinePurpose flight                   238
+DefinePurpose error                    239
+DefinePurpose annotate                 240
+DefinePurpose drawing1                 241
+DefinePurpose drawing2                 242
+DefinePurpose drawing3                 243
+DefinePurpose drawing4                 244
+DefinePurpose drawing5                 245
+DefinePurpose drawing6                 246
+DefinePurpose drawing7                 247
+DefinePurpose drawing8                 248
+DefinePurpose drawing9                 249
+DefinePurpose boundary                 250
+DefinePurpose pin                      251
+DefinePurpose net                      253
+DefinePurpose cell                     254
+DefinePurpose all                      255
+DefinePurpose grid                     300
+DefinePurpose blockage                 301
+
+#------------------------------------------------------------------------------
+# Electrical Layers
+
+ElecLayer SCED
+StreamOut 1 0
+RGB 225 225 225
+Filled y
+
+ElecLayer ETC1
+StreamOut 2 0
+RGB 125 225 225
+Filled n
+
+ElecLayer ETC2
+StreamOut 3 0
+RGB 225 225 125
+Filled n
+
+ElecLayer NAME
+StreamOut 4 0
+RGB 255 230 175
+Filled n
+
+ElecLayer MODL
+StreamOut 5 0
+RGB 175 225 175
+Filled n
+
+ElecLayer VALU
+StreamOut 6 0
+RGB 255 225 225
+Filled n
+
+ElecLayer PARM
+StreamOut 7 0
+RGB 200 175 225
+Filled n
+
+ElecLayer NODE
+StreamOut 8 0
+RGB 255 255 225
+Filled n
+
+ElecLayer SPTX
+StreamOut 10 0
+RGB 255 134 170
+Filled n
+
+ElecLayer text
+StreamIn 127, 0
+StreamOut 127 0
+RGB 255 255 255
+Filled n
+
+ElecLayer instance
+RGB 255 0 0
+Filled n
+NoInstView
+
+ElecLayer instance:label
+RGB 217 204 0
+Filled n
+
+ElecLayer device
+RGB 0 204 102
+Filled n
+
+ElecLayer device:drawing1
+RGB 0 204 102
+Filled y
+
+ElecLayer device:drawing2
+RGB 0 204 102
+Filled n outline
+
+ElecLayer device:annotate
+RGB 255 255 0
+Filled n
+
+ElecLayer device:label
+RGB 0 204 102
+Filled n
+
+ElecLayer wire
+RGB 204 204 217
+Filled y
+WireActive
+
+ElecLayer wire:label
+RGB 204 204 217
+Filled y
+
+ElecLayer wire:flight
+RGB 255 0 0
+Filled n outline
+
+ElecLayer pin
+RGB 255 0 0
+Filled y
+
+ElecLayer pin:annotate
+RGB 255 0 0
+Filled n
+
+ElecLayer pin:label
+RGB 255 0 0
+Filled n
+
+ElecLayer annotate
+RGB 255 128 0
+Filled n
+
+ElecLayer annotate:drawing1
+RGB 255 191 242
+Filled n
+
+ElecLayer annotate:drawing2
+RGB 0 255 0
+Filled n
+
+ElecLayer annotate:drawing3
+RGB 0 230 230
+Filled n
+
+ElecLayer annotate:drawing4
+RGB 255 255 0
+Filled n
+
+ElecLayer annotate:drawing5
+RGB 255 255 255
+Filled n
+
+ElecLayer annotate:drawing6
+RGB 217 230 255
+Filled n
+
+ElecLayer annotate:drawing7
+RGB 255 0 0
+Filled n
+
+ElecLayer annotate:drawing8
+RGB 255 230 191
+Filled n
+
+ElecLayer annotate:drawing9
+RGB 0 204 102
+Filled n
+
+ElecLayer text:drawing1
+RGB 255 255 255
+Filled n outline
+
+ElecLayer text:drawing2
+RGB 255 255 255
+Filled y
+
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Physical Layers
+
+PhysLayer ref
+StreamIn 0, 0
+StreamOut 0 0
+RGB 255 0 0
+Filled n
+
+PhysLayer DNW
+StreamIn 1, 0
+StreamOut 1 0
+RGB 255 230 191
+Filled n
+
+PhysLayer PW
+StreamIn 2, 0
+StreamOut 2 0
+RGB 255 255 204
+Filled n outline
+
+PhysLayer NW
+StreamIn 3, 0
+StreamOut 3 0
+RGB 255 255 204
+Filled n fat
+Rsh 300
+
+PhysLayer OD
+StreamIn 6, 0
+StreamOut 6 0
+RGB 255 0 0
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) outline
+Conductor Exclude PO|RPDMY
+Rsh 14
+
+PhysLayer PDIFF
+StreamIn 7, 0
+StreamOut 7 0
+RGB 255 0 0
+Filled \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer NDIFF
+StreamIn 8, 0
+StreamOut 8 0
+RGB 255 128 0
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer OD_18
+StreamIn 16, 0
+StreamOut 16 0
+RGB 115 115 115
+Filled \
+  |          |  (0x0) \
+  |  .       |  (0x4) \
+  |  .       |  (0x4) \
+  |  .       |  (0x4) \
+  |.....     |  (0x1f) \
+  |  .       |  (0x4) \
+  |  .       |  (0x4) \
+  |  .       |  (0x4) \
+  |          |  (0x0) \
+  |       .  |  (0x80) \
+  |       .  |  (0x80) \
+  |       .  |  (0x80) \
+  |     .....|  (0x3e0) \
+  |       .  |  (0x80) \
+  |       .  |  (0x80) \
+  |       .  |  (0x80) outline
+
+PhysLayer OD_25
+StreamIn 18, 0
+StreamOut 18 0
+RGB 115 115 115
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer OD_33
+StreamIn 15, 0
+StreamOut 15 0
+RGB 115 115 115
+Filled \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer OD_DECAP
+StreamIn 118, 0
+StreamOut 118 0
+RGB 115 115 115
+Filled \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer PO
+StreamIn 17, 0
+StreamOut 17 0
+RGB 0 0 255
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+Conductor Exclude RPDMY
+Routing
+Thickness 0.1000
+Rsh 14
+Capacitance 0.005 0.01
+
+PhysLayer PO:rule1
+StreamIn 17, 51
+StreamOut 17 51
+RGB 255 128 0
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer VTH_N
+StreamIn 67, 0
+StreamOut 67 0
+RGB 0 204 102
+Filled n fat
+
+PhysLayer VTH_P
+StreamIn 68, 0
+StreamOut 68 0
+RGB 255 255 0
+Filled n outline
+
+PhysLayer VTL_N
+StreamIn 12, 0
+StreamOut 12 0
+RGB 0 0 255
+Filled n fat
+
+PhysLayer VTL_P
+StreamIn 13, 0
+StreamOut 13 0
+RGB 204 204 217
+Filled n fat
+
+PhysLayer NT_N
+StreamIn 11, 0
+StreamOut 11 0
+RGB 204 204 217
+Filled n outline
+
+PhysLayer NT_N:Ncap_NTN
+StreamIn 11, 20
+StreamOut 11 20
+RGB 255 230 191
+Filled n outline
+
+PhysLayer PP
+StreamIn 25, 0
+StreamOut 25 0
+RGB 255 0 255
+Filled n
+
+PhysLayer NP
+StreamIn 26, 0
+StreamOut 26 0
+RGB 204 204 217
+Filled n
+
+PhysLayer ESD3
+StreamIn 147, 0
+StreamOut 147 0
+RGB 51 51 153
+Filled n
+
+PhysLayer ESD3:drawing1
+StreamIn 147, 1
+StreamOut 147 1
+RGB 51 51 153
+Filled n
+
+PhysLayer LOGO
+StreamIn 158, 0
+StreamOut 158 0
+RGB 153 0 230
+Filled \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer WBDMY
+StreamIn 157, 0
+StreamOut 157 0
+RGB 255 255 0
+Filled \
+  |.               |  (0x1) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer RFPADDMY
+StreamIn 129, 0
+StreamOut 129 0
+RGB 0 230 230
+Filled \
+  |.               |  (0x1) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer RFPADDMY:drawing1
+StreamIn 129, 1
+StreamOut 129 1
+RGB 0 230 230
+Filled \
+  |.               |  (0x1) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer RFPADDMY:drawing2
+StreamIn 129, 2
+StreamOut 129 2
+RGB 0 230 230
+Filled \
+  |.               |  (0x1) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer RFPADDMY:drawing3
+StreamIn 129, 3
+StreamOut 129 3
+RGB 0 230 230
+Filled \
+  |.               |  (0x1) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer LUPWDMY:drawing1
+StreamIn 255, 1
+StreamOut 255 1
+RGB 0 0 255
+Filled n fat
+
+PhysLayer N10V
+StreamIn 19, 0
+StreamOut 19 0
+RGB 204 204 217
+Filled n outline
+
+PhysLayer P10V
+StreamIn 20, 0
+StreamOut 20 0
+RGB 255 0 255
+Filled n outline
+
+PhysLayer RPO
+StreamIn 29, 0
+StreamOut 29 0
+RGB 38 140 107
+Filled n
+
+PhysLayer CO
+StreamIn 30, 0
+StreamOut 30 0
+RGB 0 204 102
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+Via PO M1
+Via OD M1
+Thickness 0.1900
+EpsRel 4.2
+
+PhysLayer CO2
+StreamIn 100, 0
+StreamOut 100 0
+RGB 255 255 0
+Filled n cut
+
+PhysLayer M1
+StreamIn 31, 0
+StreamOut 31 0
+RGB 0 230 230
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+Routing
+Thickness 0.1800
+Rsh .08
+Capacitance 0.005 0.01
+
+PhysLayer M1:BSL
+StreamIn 31, 100
+StreamOut 31 100
+RGB 255 0 0
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) outline
+
+PhysLayer M1:BSD
+StreamIn 31, 101
+StreamOut 31 101
+RGB 255 255 0
+Filled \
+  |.               |  (0x1) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M1:BSP
+StreamIn 131, 100
+StreamOut 131 100
+RGB 0 0 255
+Filled y
+
+PhysLayer VIA1
+StreamIn 51, 0
+StreamOut 51 0
+RGB 255 255 0
+Filled n cut
+Via M1 M2
+Thickness 0.0950
+EpsRel 2.9
+
+PhysLayer M2
+StreamIn 32, 0
+StreamOut 32 0
+RGB 217 204 0
+Filled \
+  |              .|  (0x4000) \
+  |               |  (0x0) \
+  |            .  |  (0x1000) \
+  |               |  (0x0) \
+  |          .    |  (0x400) \
+  |               |  (0x0) \
+  |        .      |  (0x100) \
+  |               |  (0x0) \
+  |      .        |  (0x40) \
+  |               |  (0x0) \
+  |    .          |  (0x10) \
+  |               |  (0x0) \
+  |  .            |  (0x4) \
+  |               |  (0x0) \
+  |.              |  (0x1) outline
+Routing
+Thickness 0.2200
+Rsh .08
+Capacitance 0.003 0.007
+
+PhysLayer VIA2
+StreamIn 52, 0
+StreamOut 52 0
+RGB 255 255 0
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) outline
+Via M2 M3
+Thickness 0.0950
+EpsRel 2.9
+
+PhysLayer M3
+StreamIn 33, 0
+StreamOut 33 0
+RGB 38 140 107
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+Routing
+Thickness 0.2200
+Rsh 0.8
+Capacitance 0.002 0.005
+
+PhysLayer VIA3
+StreamIn 53, 0
+StreamOut 53 0
+RGB 153 0 230
+Filled \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) outline
+Via M3 M4
+Thickness 0.0950
+EpsRel 2.9
+
+PhysLayer M4
+StreamIn 34, 0
+StreamOut 34 0
+RGB 140 140 166
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+Routing
+Thickness 0.2200
+Rsh 0.8
+Capacitance 0.0015 0.005
+
+PhysLayer VIA4
+StreamIn 54, 0
+StreamOut 54 0
+RGB 255 255 255
+Filled \
+  |              |  (0x0) \
+  |   .          |  (0x8) \
+  |  . .         |  (0x14) \
+  | .   .        |  (0x22) \
+  |.......       |  (0x7f) \
+  |              |  (0x0) \
+  |          .   |  (0x400) \
+  |         . .  |  (0xa00) \
+  |        .   . |  (0x1100) \
+  |       .......|  (0x3f80) outline
+Via M4 M5
+Thickness 0.0950
+EpsRel 2.9
+
+PhysLayer M5
+StreamIn 35, 0
+StreamOut 35 0
+RGB 189 204 204
+Filled \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+Routing
+Thickness 0.2200
+Rsh 0.8
+Capacitance 0.001 0.005
+
+PhysLayer VIA5
+StreamIn 55, 0
+StreamOut 55 0
+RGB 255 255 204
+Filled \
+  |   .   .   .   .|  (0x8888) \
+  |  .   .   .   . |  (0x4444) \
+  | .   .   .   .  |  (0x2222) \
+  |.   .   .   .   |  (0x1111) \
+  |   .   .   .   .|  (0x8888) \
+  |  .   .   .   . |  (0x4444) \
+  | .   .   .   .  |  (0x2222) \
+  |.   .   .   .   |  (0x1111) \
+  |   .   .   .   .|  (0x8888) \
+  |  .   .   .   . |  (0x4444) \
+  | .   .   .   .  |  (0x2222) \
+  |.   .   .   .   |  (0x1111) \
+  |   .   .   .   .|  (0x8888) \
+  |  .   .   .   . |  (0x4444) \
+  | .   .   .   .  |  (0x2222) \
+  |.   .   .   .   |  (0x1111) outline
+Via M5 M6
+Thickness 0.0950
+EpsRel 2.9
+
+PhysLayer M6
+StreamIn 36, 0
+StreamOut 36 0
+RGB 255 230 191
+Filled \
+  |.              |  (0x1) \
+  | .             |  (0x2) \
+  |  .            |  (0x4) \
+  |   .           |  (0x8) \
+  |    .          |  (0x10) \
+  |     .         |  (0x20) \
+  |      .        |  (0x40) \
+  |       .       |  (0x80) \
+  |        .      |  (0x100) \
+  |         .     |  (0x200) \
+  |          .    |  (0x400) \
+  |           .   |  (0x800) \
+  |            .  |  (0x1000) \
+  |             . |  (0x2000) \
+  |              .|  (0x4000) outline
+Routing
+Thickness 0.2200
+Rsh 0.8
+Capacitance 0.001 0.005
+
+PhysLayer VIA6
+StreamIn 56, 0
+StreamOut 56 0
+RGB 217 204 0
+Filled n cut
+Via M6 M7
+Thickness 0.0950
+EpsRel 2.9
+
+PhysLayer M7
+StreamIn 37, 0
+StreamOut 37 0
+RGB 0 255 0
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+Routing
+Thickness 0.2200
+Rsh 0.8
+Capacitance 0.001 0.005
+
+PhysLayer VIA7
+StreamIn 57, 40
+StreamOut 57 40
+RGB 255 230 191
+Filled \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) outline
+Via M7 M8
+Thickness 0.6100
+EpsRel 4.2
+
+PhysLayer M8
+StreamIn 38, 40
+StreamOut 38 40
+RGB 255 255 204
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+Routing
+Thickness 0.9000
+Rsh 0.02
+Capacitance 0.003 0.006
+
+PhysLayer VIA8
+StreamIn 58, 40
+StreamOut 58 40
+RGB 217 204 0
+Filled \
+  |.              |  (0x1) \
+  | .             |  (0x2) \
+  |  .            |  (0x4) \
+  |   .           |  (0x8) \
+  |    .          |  (0x10) \
+  |     .         |  (0x20) \
+  |      .        |  (0x40) \
+  |       .       |  (0x80) \
+  |        .      |  (0x100) \
+  |         .     |  (0x200) \
+  |          .    |  (0x400) \
+  |           .   |  (0x800) \
+  |            .  |  (0x1000) \
+  |             . |  (0x2000) \
+  |              .|  (0x4000) outline
+Via M8 M9
+Thickness 0.6100
+EpsRel 4.2
+
+PhysLayer M9
+StreamIn 39, 40
+StreamOut 39 40
+RGB 0 255 0
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) outline
+Routing
+Thickness 0.9000
+Rsh 0.02
+Capacitance 0.002 0.006
+
+PhysLayer VIA9
+StreamIn 59, 40
+StreamOut 59 40
+RGB 0 230 230
+Filled \
+  |.              |  (0x1) \
+  | .             |  (0x2) \
+  |  .            |  (0x4) \
+  |   .           |  (0x8) \
+  |    .          |  (0x10) \
+  |     .         |  (0x20) \
+  |      .        |  (0x40) \
+  |       .       |  (0x80) \
+  |        .      |  (0x100) \
+  |         .     |  (0x200) \
+  |          .    |  (0x400) \
+  |           .   |  (0x800) \
+  |            .  |  (0x1000) \
+  |             . |  (0x2000) \
+  |              .|  (0x4000) outline
+Via M9 M10
+
+PhysLayer M10
+StreamIn 40, 40
+StreamOut 40 40
+RGB 38 140 107
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) outline
+Conductor
+
+PhysLayer M1:dummy
+StreamIn 31, 1
+StreamOut 31 1
+RGB 0 230 230
+Filled n fat cut
+
+PhysLayer M1:odummy
+StreamIn 31, 7
+StreamOut 31 7
+RGB 0 230 230
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M2:dummy
+StreamIn 32, 1
+StreamOut 32 1
+RGB 217 204 0
+Filled n fat cut
+
+PhysLayer M2:odummy
+StreamIn 32, 7
+StreamOut 32 7
+RGB 217 204 0
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M3:dummy
+StreamIn 33, 1
+StreamOut 33 1
+RGB 38 140 107
+Filled n fat cut
+
+PhysLayer M3:odummy
+StreamIn 33, 7
+StreamOut 33 7
+RGB 38 140 107
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M4:dummy
+StreamIn 34, 1
+StreamOut 34 1
+RGB 140 140 166
+Filled n fat cut
+
+PhysLayer M4:odummy
+StreamIn 34, 7
+StreamOut 34 7
+RGB 140 140 166
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M5:dummy
+StreamIn 35, 1
+StreamOut 35 1
+RGB 189 204 204
+Filled n fat cut
+
+PhysLayer M5:odummy
+StreamIn 35, 7
+StreamOut 35 7
+RGB 189 204 204
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M6:dummy
+StreamIn 36, 1
+StreamOut 36 1
+RGB 255 230 191
+Filled n fat cut
+
+PhysLayer M6:odummy
+StreamIn 36, 7
+StreamOut 36 7
+RGB 255 230 191
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M7:dummy
+StreamIn 37, 1
+StreamOut 37 1
+RGB 0 255 0
+Filled n fat cut
+
+PhysLayer M7:odummy
+StreamIn 37, 7
+StreamOut 37 7
+RGB 0 255 0
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M8:dummy
+StreamIn 38, 41
+StreamOut 38 41
+RGB 255 255 204
+Filled n fat cut
+
+PhysLayer M9:dummy
+StreamIn 39, 41
+StreamOut 39 41
+RGB 0 255 0
+Filled n fat cut
+
+PhysLayer M10:dummy
+StreamIn 40, 41
+StreamOut 40 41
+RGB 0 230 230
+Filled n fat cut
+
+PhysLayer CB
+StreamIn 76, 0
+StreamOut 76 0
+RGB 255 128 0
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer CB2
+StreamIn 86, 0
+StreamOut 86 0
+RGB 255 255 0
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer CB2:BSL
+StreamIn 86, 100
+StreamOut 86 100
+RGB 255 255 0
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer AP
+StreamIn 74, 0
+StreamOut 74 0
+RGB 204 204 217
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+Routing
+
+PhysLayer AP:drawing1
+StreamIn 74, 10
+StreamOut 74 10
+RGB 255 0 255
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer AP:dummy
+StreamIn 74, 1
+StreamOut 74 1
+RGB 217 204 0
+Filled n fat cut
+
+PhysLayer AP:pin
+StreamIn 126, 0
+StreamOut 126 0
+RGB 204 204 217
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer AP:BSL
+StreamIn 74, 100
+StreamOut 74 100
+RGB 0 0 255
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer AP:BSP
+StreamIn 74, 102
+StreamOut 74 102
+RGB 0 204 102
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer PM
+StreamIn 5, 0
+StreamOut 5 0
+RGB 255 255 255
+Filled n
+
+PhysLayer PM:drawing1
+StreamIn 5, 1
+StreamOut 5 1
+RGB 255 0 255
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer PM:drawing2
+StreamIn 5, 2
+StreamOut 5 2
+RGB 0 255 0
+Filled \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer FW
+StreamIn 95, 0
+StreamOut 95 0
+RGB 255 0 255
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer FW:al
+StreamIn 95, 20
+StreamOut 95 20
+RGB 0 255 0
+Filled \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer POFUSE
+StreamIn 156, 0
+StreamOut 156 0
+RGB 255 0 255
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer POFUSE:drawing1
+StreamIn 156, 1
+StreamOut 156 1
+RGB 0 0 255
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer PMDMY
+StreamIn 106, 0
+StreamOut 106 0
+RGB 0 0 255
+Filled n
+
+PhysLayer LMARK
+StreamIn 109, 0
+StreamOut 109 0
+RGB 255 255 255
+Filled n
+
+PhysLayer SEALRING
+StreamIn 162, 0
+StreamOut 162 0
+RGB 217 204 0
+Filled n
+
+PhysLayer SEALRING:drawing2
+StreamIn 162, 2
+StreamOut 162 2
+RGB 217 204 0
+Filled n
+
+PhysLayer CSRDMY
+StreamIn 166, 0
+StreamOut 166 0
+RGB 0 0 255
+Filled n
+
+PhysLayer RV
+StreamIn 85, 0
+StreamOut 85 0
+RGB 38 140 107
+Filled n cut
+Via M9 AP
+
+PhysLayer RV:BSL
+StreamIn 85, 100
+StreamOut 85 100
+RGB 38 140 107
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer CBD
+StreamIn 169, 0
+StreamOut 169 0
+RGB 0 255 0
+Filled n
+
+PhysLayer CBD:BSL
+StreamIn 169, 100
+StreamOut 169 100
+RGB 0 255 0
+Filled \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer UBM
+StreamIn 170, 0
+StreamOut 170 0
+RGB 204 204 217
+Filled \
+  |.               |  (0x1) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer UBM:BSL
+StreamIn 170, 100
+StreamOut 170 100
+RGB 204 204 217
+Filled \
+  |.               |  (0x1) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer UBM:pin
+StreamIn 125, 0
+StreamOut 125 0
+RGB 204 204 217
+Filled \
+  |.               |  (0x1) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer IP
+StreamIn 63, 63
+StreamOut 63 63
+RGB 204 204 217
+Filled \
+  |.               |  (0x1) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer CAP1TDMY
+StreamIn 78, 0
+StreamOut 78 0
+RGB 0 204 102
+Filled n
+
+PhysLayer HRI
+StreamIn 70, 0
+StreamOut 70 0
+RGB 255 0 255
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer COW
+StreamIn 69, 0
+StreamOut 69 0
+RGB 255 0 255
+Filled \
+  |              |  (0x0) \
+  |   .          |  (0x8) \
+  |  . .         |  (0x14) \
+  | .   .        |  (0x22) \
+  |.......       |  (0x7f) \
+  |              |  (0x0) \
+  |          .   |  (0x400) \
+  |         . .  |  (0xa00) \
+  |        .   . |  (0x1100) \
+  |       .......|  (0x3f80) outline
+
+PhysLayer CTM
+StreamIn 77, 0
+StreamOut 77 0
+RGB 153 0 230
+Filled \
+  |              |  (0x0) \
+  |   .          |  (0x8) \
+  |  . .         |  (0x14) \
+  | .   .        |  (0x22) \
+  |.......       |  (0x7f) \
+  |              |  (0x0) \
+  |          .   |  (0x400) \
+  |         . .  |  (0xa00) \
+  |        .   . |  (0x1100) \
+  |       .......|  (0x3f80) outline
+
+PhysLayer SAN
+StreamIn 81, 0
+StreamOut 81 0
+RGB 255 0 0
+Filled \
+  |              |  (0x0) \
+  |   .          |  (0x8) \
+  |  . .         |  (0x14) \
+  | .   .        |  (0x22) \
+  |.......       |  (0x7f) \
+  |              |  (0x0) \
+  |          .   |  (0x400) \
+  |         . .  |  (0xa00) \
+  |        .   . |  (0x1100) \
+  |       .......|  (0x3f80) outline
+
+PhysLayer CBM
+StreamIn 88, 0
+StreamOut 88 0
+RGB 255 128 0
+Filled \
+  |              |  (0x0) \
+  |   .          |  (0x8) \
+  |  . .         |  (0x14) \
+  | .   .        |  (0x22) \
+  |.......       |  (0x7f) \
+  |              |  (0x0) \
+  |          .   |  (0x400) \
+  |         . .  |  (0xa00) \
+  |        .   . |  (0x1100) \
+  |       .......|  (0x3f80) outline
+
+PhysLayer OD:drain
+StreamIn 6, 3
+StreamOut 6 3
+RGB 255 0 0
+Filled \
+  |          |  (0x0) \
+  |  .       |  (0x4) \
+  |  .       |  (0x4) \
+  |  .       |  (0x4) \
+  |.....     |  (0x1f) \
+  |  .       |  (0x4) \
+  |  .       |  (0x4) \
+  |  .       |  (0x4) \
+  |          |  (0x0) \
+  |       .  |  (0x80) \
+  |       .  |  (0x80) \
+  |       .  |  (0x80) \
+  |     .....|  (0x3e0) \
+  |       .  |  (0x80) \
+  |       .  |  (0x80) \
+  |       .  |  (0x80) outline
+
+PhysLayer OD_25:ovrdrv
+StreamIn 18, 3
+StreamOut 18 3
+RGB 255 0 0
+Filled n
+
+PhysLayer OD_25:udrdrv
+StreamIn 18, 4
+StreamOut 18 4
+RGB 0 0 255
+Filled n
+
+PhysLayer SOI_MKR:gated
+StreamIn 28, 0
+StreamOut 28 0
+RGB 0 204 102
+Filled \
+  |              |  (0x0) \
+  |   .          |  (0x8) \
+  |  . .         |  (0x14) \
+  | .   .        |  (0x22) \
+  |.......       |  (0x7f) \
+  |              |  (0x0) \
+  |          .   |  (0x400) \
+  |         . .  |  (0xa00) \
+  |        .   . |  (0x1100) \
+  |       .......|  (0x3f80) outline
+
+PhysLayer SOI_MKR:soibt
+StreamIn 28, 1
+StreamOut 28 1
+RGB 0 204 102
+Filled \
+  |.               |  (0x1) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer SOI_MKR:decap
+StreamIn 28, 2
+StreamOut 28 2
+RGB 0 204 102
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer SOI_MKR:vpfc
+StreamIn 28, 11
+StreamOut 28 11
+RGB 255 0 0
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer OD:drawing2
+StreamIn 6, 2
+StreamOut 6 2
+RGB 255 255 204
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer PO:drawing2
+StreamIn 17, 2
+StreamOut 17 2
+RGB 38 140 107
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer SOISUB
+StreamIn 89, 0
+StreamOut 89 0
+RGB 204 204 217
+Filled n fat
+
+PhysLayer SOI:ndop
+StreamIn 187, 1
+StreamOut 187 1
+RGB 204 204 217
+Filled n outline
+
+PhysLayer SOI:pdop
+StreamIn 187, 2
+StreamOut 187 2
+RGB 255 0 255
+Filled n outline
+
+PhysLayer SOI:NLDDV
+StreamIn 187, 3
+StreamOut 187 3
+RGB 204 204 217
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer SOI:PLDDV
+StreamIn 187, 4
+StreamOut 187 4
+RGB 204 204 217
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer SOI:NLDDH
+StreamIn 187, 5
+StreamOut 187 5
+RGB 255 255 255
+Filled n
+
+PhysLayer SOI:PLDDH
+StreamIn 187, 6
+StreamOut 187 6
+RGB 255 0 255
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer FET:src
+StreamIn 183, 0
+StreamOut 183 0
+RGB 204 204 217
+Filled y
+
+PhysLayer FET:n_a
+StreamIn 183, 1
+StreamOut 183 1
+RGB 204 204 217
+Filled n
+
+PhysLayer FET:n_b
+StreamIn 183, 2
+StreamOut 183 2
+RGB 204 204 217
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer FET:p_a
+StreamIn 183, 3
+StreamOut 183 3
+RGB 255 0 255
+Filled n
+
+PhysLayer FET:p_b
+StreamIn 183, 4
+StreamOut 183 4
+RGB 255 0 255
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer FET:L01S
+StreamIn 183, 5
+StreamOut 183 5
+RGB 255 0 255
+Filled \
+  |.               |  (0x1) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer FET:NILD
+StreamIn 183, 6
+StreamOut 183 6
+RGB 255 0 255
+Filled n fat
+
+PhysLayer FET:PILD
+StreamIn 183, 7
+StreamOut 183 7
+RGB 255 0 255
+Filled n outline
+
+PhysLayer VTNCEL
+StreamIn 184, 0
+StreamOut 184 0
+RGB 204 204 217
+Filled n
+
+PhysLayer VTPCEL
+StreamIn 185, 0
+StreamOut 185 0
+RGB 255 0 255
+Filled n
+
+PhysLayer SRM_LOP:dpsrm
+StreamIn 80, 0
+StreamOut 80 0
+RGB 255 230 191
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer SRM_LOP:dummy1
+StreamIn 80, 11
+StreamOut 80 11
+RGB 0 230 230
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer DCO
+StreamIn 90, 0
+StreamOut 90 0
+RGB 255 128 0
+Filled n
+
+PhysLayer SRAMDMY:waive
+StreamIn 186, 0
+StreamOut 186 0
+RGB 0 0 255
+Filled n
+
+PhysLayer SRAMDMY:passgate
+StreamIn 186, 1
+StreamOut 186 1
+RGB 255 0 0
+Filled n
+
+PhysLayer SRAMDMY:allsram
+StreamIn 186, 2
+StreamOut 186 2
+RGB 255 230 191
+Filled n
+
+PhysLayer SRAMDMY:cvss_sram
+StreamIn 186, 3
+StreamOut 186 3
+RGB 255 191 242
+Filled n
+
+PhysLayer SRAMDMY:periphery
+StreamIn 186, 4
+StreamOut 186 4
+RGB 255 0 255
+Filled n
+
+PhysLayer SRAMDMY:periphery_g
+StreamIn 186, 5
+StreamOut 186 5
+RGB 255 0 255
+Filled n
+
+PhysLayer SRAMDMY:timer
+StreamIn 186, 6
+StreamOut 186 6
+RGB 204 204 217
+Filled n
+
+PhysLayer FLASH
+StreamIn 154, 0
+StreamOut 154 0
+RGB 0 255 0
+Filled n
+
+PhysLayer MW
+StreamIn 154, 1
+StreamOut 154 1
+RGB 255 255 204
+Filled n fat
+
+PhysLayer FLGT
+StreamIn 154, 2
+StreamOut 154 2
+RGB 255 128 0
+Filled y
+
+PhysLayer MPOL
+StreamIn 154, 3
+StreamOut 154 3
+RGB 0 0 255
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer HVII
+StreamIn 154, 4
+StreamOut 154 4
+RGB 0 0 255
+Filled n
+
+PhysLayer HVNW
+StreamIn 154, 5
+StreamOut 154 5
+RGB 255 0 0
+Filled n fat
+
+PhysLayer HVPW
+StreamIn 154, 6
+StreamOut 154 6
+RGB 255 128 0
+Filled n fat
+
+PhysLayer TOPMCON
+StreamIn 154, 7
+StreamOut 154 7
+RGB 0 255 0
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) outline
+
+PhysLayer HVNW:drawing1
+StreamIn 154, 51
+StreamOut 154 51
+RGB 255 0 0
+Filled n fat
+
+PhysLayer HVPW:drawing1
+StreamIn 154, 52
+StreamOut 154 52
+RGB 255 128 0
+Filled n fat
+
+PhysLayer MW:drawing1
+StreamIn 154, 53
+StreamOut 154 53
+RGB 255 255 204
+Filled n fat
+
+PhysLayer FLASH:drawing1
+StreamIn 154, 54
+StreamOut 154 54
+RGB 0 230 230
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer FLASH:drawing2
+StreamIn 154, 55
+StreamOut 154 55
+RGB 255 255 255
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer FLASH:drawing3
+StreamIn 154, 56
+StreamOut 154 56
+RGB 204 204 217
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer FLASH:drawing4
+StreamIn 154, 57
+StreamOut 154 57
+RGB 0 230 230
+Filled n cut
+
+PhysLayer FLASH:drawing5
+StreamIn 154, 58
+StreamOut 154 58
+RGB 255 255 204
+Filled \
+  |              .|  (0x4000) \
+  |               |  (0x0) \
+  |            .  |  (0x1000) \
+  |               |  (0x0) \
+  |          .    |  (0x400) \
+  |               |  (0x0) \
+  |        .      |  (0x100) \
+  |               |  (0x0) \
+  |      .        |  (0x40) \
+  |               |  (0x0) \
+  |    .          |  (0x10) \
+  |               |  (0x0) \
+  |  .            |  (0x4) \
+  |               |  (0x0) \
+  |.              |  (0x1) outline
+
+PhysLayer FLASH:drawing6
+StreamIn 154, 59
+StreamOut 154 59
+RGB 140 140 166
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer FLASH:drawing7
+StreamIn 154, 60
+StreamOut 154 60
+RGB 0 204 102
+Filled \
+  |              |  (0x0) \
+  |   .          |  (0x8) \
+  |  . .         |  (0x14) \
+  | .   .        |  (0x22) \
+  |.......       |  (0x7f) \
+  |              |  (0x0) \
+  |          .   |  (0x400) \
+  |         . .  |  (0xa00) \
+  |        .   . |  (0x1100) \
+  |       .......|  (0x3f80) outline
+
+PhysLayer FLASH:drawing8
+StreamIn 154, 61
+StreamOut 154 61
+RGB 255 0 255
+Filled n fat
+
+PhysLayer FLASH:drawing9
+StreamIn 154, 62
+StreamOut 154 62
+RGB 255 255 0
+Filled n cut
+
+PhysLayer FLASH:drawinga
+StreamIn 154, 63
+StreamOut 154 63
+RGB 255 255 0
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer FLASH:drawingb
+StreamIn 154, 64
+StreamOut 154 64
+RGB 204 204 217
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer FLASH:drawingc
+StreamIn 154, 65
+StreamOut 154 65
+RGB 255 255 0
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer FLASH:drawingd
+StreamIn 154, 66
+StreamOut 154 66
+RGB 0 0 255
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer OD1T
+StreamIn 27, 0
+StreamOut 27 0
+RGB 255 0 255
+Filled \
+  |.               |  (0x1) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer OD1T:dummy1
+StreamIn 27, 1
+StreamOut 27 1
+RGB 255 255 0
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer OD1T:dummy2
+StreamIn 27, 2
+StreamOut 27 2
+RGB 0 204 102
+Filled \
+  |              |  (0x0) \
+  |   .          |  (0x8) \
+  |  . .         |  (0x14) \
+  | .   .        |  (0x22) \
+  |.......       |  (0x7f) \
+  |              |  (0x0) \
+  |          .   |  (0x400) \
+  |         . .  |  (0xa00) \
+  |        .   . |  (0x1100) \
+  |       .......|  (0x3f80) outline
+
+PhysLayer OD1T:dummy3
+StreamIn 27, 3
+StreamOut 27 3
+RGB 255 0 255
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer OD1T:dummy4
+StreamIn 27, 4
+StreamOut 27 4
+RGB 204 204 217
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer OD1T:dummy5
+StreamIn 27, 5
+StreamOut 27 5
+RGB 38 140 107
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer OD1T:dummy6
+StreamIn 27, 6
+StreamOut 27 6
+RGB 255 255 0
+Filled n cut
+
+PhysLayer OD1T:dummy7
+StreamIn 27, 7
+StreamOut 27 7
+RGB 255 255 255
+Filled n cut
+
+PhysLayer OD1T:dummy8
+StreamIn 27, 8
+StreamOut 27 8
+RGB 0 230 230
+Filled n cut
+
+PhysLayer CLDD
+StreamIn 92, 0
+StreamOut 92 0
+RGB 255 255 255
+Filled n
+
+PhysLayer EDRAM_DECAP
+StreamIn 92, 1
+StreamOut 92 1
+RGB 255 255 0
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer SNCT
+StreamIn 101, 0
+StreamOut 101 0
+RGB 255 255 204
+Filled \
+  |              .|  (0x4000) \
+  |               |  (0x0) \
+  |            .  |  (0x1000) \
+  |               |  (0x0) \
+  |          .    |  (0x400) \
+  |               |  (0x0) \
+  |        .      |  (0x100) \
+  |               |  (0x0) \
+  |      .        |  (0x40) \
+  |               |  (0x0) \
+  |    .          |  (0x10) \
+  |               |  (0x0) \
+  |  .            |  (0x4) \
+  |               |  (0x0) \
+  |.              |  (0x1) outline
+
+PhysLayer CROWN
+StreamIn 102, 0
+StreamOut 102 0
+RGB 0 255 0
+Filled \
+  |              .|  (0x4000) \
+  |               |  (0x0) \
+  |            .  |  (0x1000) \
+  |               |  (0x0) \
+  |          .    |  (0x400) \
+  |               |  (0x0) \
+  |        .      |  (0x100) \
+  |               |  (0x0) \
+  |      .        |  (0x40) \
+  |               |  (0x0) \
+  |    .          |  (0x10) \
+  |               |  (0x0) \
+  |  .            |  (0x4) \
+  |               |  (0x0) \
+  |.              |  (0x1) outline
+
+PhysLayer P3
+StreamIn 103, 0
+StreamOut 103 0
+RGB 0 255 0
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer RAM1TDMY
+StreamIn 160, 0
+StreamOut 160 0
+RGB 0 0 255
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |   ...          |  (0x38) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer RODMY
+StreamIn 49, 0
+StreamOut 49 0
+RGB 217 204 0
+Filled n
+
+PhysLayer SRM
+StreamIn 50, 0
+StreamOut 50 0
+RGB 255 230 191
+Filled n
+
+PhysLayer SRM:test0
+StreamIn 50, 10
+StreamOut 50 10
+RGB 38 140 107
+Filled n
+
+PhysLayer SRM:test1
+StreamIn 50, 11
+StreamOut 50 11
+RGB 38 140 107
+Filled n
+
+PhysLayer SRM:test2
+StreamIn 50, 12
+StreamOut 50 12
+RGB 38 140 107
+Filled n
+
+PhysLayer SRM:test3
+StreamIn 50, 13
+StreamOut 50 13
+RGB 38 140 107
+Filled n
+
+PhysLayer SRM:test4
+StreamIn 50, 14
+StreamOut 50 14
+RGB 38 140 107
+Filled n
+
+PhysLayer SRM:test5
+StreamIn 50, 15
+StreamOut 50 15
+RGB 38 140 107
+Filled n
+
+PhysLayer SRM:test6
+StreamIn 50, 16
+StreamOut 50 16
+RGB 38 140 107
+Filled n
+
+PhysLayer SRM:test7
+StreamIn 50, 17
+StreamOut 50 17
+RGB 38 140 107
+Filled n
+
+PhysLayer HVTSRM
+StreamIn 48, 0
+StreamOut 48 0
+RGB 38 140 107
+Filled n
+
+PhysLayer REDUNDMY:col
+StreamIn 47, 1
+StreamOut 47 1
+RGB 255 255 0
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer REDUNDMY:row
+StreamIn 47, 2
+StreamOut 47 2
+RGB 255 230 191
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer OVERLAP
+StreamIn 107, 0
+StreamOut 107 0
+RGB 255 128 0
+Filled n
+
+PhysLayer prBoundary
+StreamIn 108, 0
+StreamOut 108 0
+RGB 153 0 230
+Filled n
+
+PhysLayer BJTDMY
+StreamIn 110, 0
+StreamOut 110 0
+RGB 0 204 102
+Filled \
+  |              |  (0x0) \
+  |   .          |  (0x8) \
+  |  . .         |  (0x14) \
+  | .   .        |  (0x22) \
+  |.......       |  (0x7f) \
+  |              |  (0x0) \
+  |          .   |  (0x400) \
+  |         . .  |  (0xa00) \
+  |        .   . |  (0x1100) \
+  |       .......|  (0x3f80) outline
+
+PhysLayer BJTDMY:drawing1
+StreamIn 110, 1
+StreamOut 110 1
+RGB 255 255 0
+Filled n cut
+
+PhysLayer LVBJTDMY:dummy2
+StreamIn 208, 11
+StreamOut 208 11
+RGB 0 0 255
+Filled n
+
+PhysLayer EMIDMY:dummy3
+StreamIn 208, 12
+StreamOut 208 12
+RGB 255 255 255
+Filled n cut
+
+PhysLayer PSUB2
+StreamIn 111, 0
+StreamOut 111 0
+RGB 255 255 255
+Filled n cut
+
+PhysLayer HOTWL
+StreamIn 112, 0
+StreamOut 112 0
+RGB 255 128 0
+Filled n cut
+
+PhysLayer NWDMY
+StreamIn 114, 0
+StreamOut 114 0
+RGB 255 255 255
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer NWDMY:lvs
+StreamIn 114, 1
+StreamOut 114 1
+RGB 255 128 0
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer RPDMY
+StreamIn 115, 0
+StreamOut 115 0
+RGB 204 204 204
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer RPDMY:lvs
+StreamIn 115, 1
+StreamOut 115 1
+RGB 255 191 242
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer RMDMY:drawing1
+StreamIn 116, 1
+StreamOut 116 1
+RGB 0 230 230
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer RMDMY:drawing2
+StreamIn 116, 2
+StreamOut 116 2
+RGB 217 204 0
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer RMDMY:drawing3
+StreamIn 116, 3
+StreamOut 116 3
+RGB 38 140 107
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer RMDMY:drawing4
+StreamIn 116, 4
+StreamOut 116 4
+RGB 140 140 166
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer RMDMY:drawing5
+StreamIn 116, 5
+StreamOut 116 5
+RGB 189 204 204
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer RMDMY:drawing6
+StreamIn 116, 6
+StreamOut 116 6
+RGB 255 230 191
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer RMDMY:drawing7
+StreamIn 116, 7
+StreamOut 116 7
+RGB 0 255 0
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer RMDMY:drawing8
+StreamIn 116, 8
+StreamOut 116 8
+RGB 255 255 204
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer RMDMY:drawing9
+StreamIn 116, 9
+StreamOut 116 9
+RGB 199 199 199
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer RMDMY:drawinga
+StreamIn 116, 10
+StreamOut 116 10
+RGB 255 128 0
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer RMDMY:drawingh
+StreamIn 116, 16
+StreamOut 116 16
+RGB 217 204 0
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer RH
+StreamIn 117, 0
+StreamOut 117 0
+RGB 255 191 242
+Filled \
+  |          |  (0x0) \
+  |  .       |  (0x4) \
+  |  .       |  (0x4) \
+  |  .       |  (0x4) \
+  |.....     |  (0x1f) \
+  |  .       |  (0x4) \
+  |  .       |  (0x4) \
+  |  .       |  (0x4) \
+  |          |  (0x0) \
+  |       .  |  (0x80) \
+  |       .  |  (0x80) \
+  |       .  |  (0x80) \
+  |     .....|  (0x3e0) \
+  |       .  |  (0x80) \
+  |       .  |  (0x80) \
+  |       .  |  (0x80) outline
+
+PhysLayer DIODMY
+StreamIn 119, 0
+StreamOut 119 0
+RGB 255 255 255
+Filled n
+
+PhysLayer DIODMY:dummya
+StreamIn 255, 3
+StreamOut 255 3
+RGB 255 255 255
+Filled n
+
+PhysLayer RHRI
+StreamIn 120, 0
+StreamOut 120 0
+RGB 255 255 255
+Filled n
+
+PhysLayer SDI
+StreamIn 122, 0
+StreamOut 122 0
+RGB 255 255 255
+Filled n
+
+PhysLayer DPDMY
+StreamIn 123, 0
+StreamOut 123 0
+RGB 51 51 153
+Filled n
+
+PhysLayer text
+StreamIn 127, 0
+StreamOut 127 0
+RGB 255 255 255
+Filled n
+
+PhysLayer M1:pin
+StreamIn 131, 0
+StreamOut 131 0
+RGB 0 230 230
+Filled n fat cut
+
+PhysLayer M2:pin
+StreamIn 132, 0
+StreamOut 132 0
+RGB 217 204 0
+Filled n fat cut
+
+PhysLayer M3:pin
+StreamIn 133, 0
+StreamOut 133 0
+RGB 38 140 107
+Filled n fat cut
+
+PhysLayer M4:pin
+StreamIn 134, 0
+StreamOut 134 0
+RGB 140 140 166
+Filled n fat cut
+
+PhysLayer M5:pin
+StreamIn 135, 0
+StreamOut 135 0
+RGB 189 204 204
+Filled n fat cut
+
+PhysLayer M6:pin
+StreamIn 136, 0
+StreamOut 136 0
+RGB 255 230 191
+Filled n fat cut
+
+PhysLayer M7:pin
+StreamIn 137, 0
+StreamOut 137 0
+RGB 0 255 0
+Filled n fat cut
+
+PhysLayer M8:pin
+StreamIn 138, 0
+StreamOut 138 0
+RGB 255 255 204
+Filled n fat cut
+
+PhysLayer M9:pin
+StreamIn 139, 0
+StreamOut 139 0
+RGB 0 255 0
+Filled n fat cut
+
+PhysLayer M10:pin
+StreamIn 140, 0
+StreamOut 140 0
+RGB 255 128 0
+Filled n fat cut
+
+PhysLayer NW:pin
+RGB 255 255 204
+Filled n fat
+
+PhysLayer NW:boundary
+RGB 255 255 204
+Filled n fat
+
+PhysLayer NW:net
+RGB 255 255 204
+Filled n fat
+
+PhysLayer OD:pin
+StreamIn 6, 6
+StreamOut 6 6
+RGB 255 0 0
+Filled n fat cut
+
+PhysLayer OD:boundary
+StreamIn 142, 2
+StreamOut 142 2
+RGB 0 230 230
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer OD:net
+StreamIn 142, 150
+StreamOut 142 150
+RGB 0 230 230
+Filled n cut
+
+PhysLayer PO:pin
+StreamIn 149, 0
+StreamOut 149 0
+RGB 0 0 255
+Filled n fat cut
+
+PhysLayer PO:boundary
+StreamIn 142, 1
+StreamOut 142 1
+RGB 255 255 0
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer PO:net
+StreamIn 149, 83
+StreamOut 149 83
+RGB 255 255 0
+Filled n cut
+
+PhysLayer PO:lvs
+StreamIn 149, 1
+StreamOut 149 1
+RGB 38 140 107
+Filled n fat cut
+
+PhysLayer AP:boundary
+StreamIn 142, 9
+StreamOut 142 9
+RGB 0 204 102
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer AP:net
+StreamIn 142, 167
+StreamOut 142 167
+RGB 0 204 102
+Filled n cut
+
+PhysLayer RV:boundary
+StreamIn 142, 10
+StreamOut 142 10
+RGB 0 255 0
+Filled y
+
+PhysLayer RV:pin
+StreamIn 142, 63
+StreamOut 142 63
+RGB 255 255 255
+Filled n
+
+PhysLayer RV:net
+StreamIn 142, 168
+StreamOut 142 168
+RGB 255 255 255
+Filled n
+
+PhysLayer CU_PPI:pin
+StreamIn 142, 64
+StreamOut 142 64
+RGB 0 230 230
+Filled n
+
+PhysLayer OD:dummy
+StreamIn 6, 1
+StreamOut 6 1
+RGB 255 0 0
+Filled n fat cut
+
+PhysLayer PO:dummy
+StreamIn 17, 1
+StreamOut 17 1
+RGB 0 0 255
+Filled n fat cut
+
+PhysLayer marker:error
+StreamIn 163, 0
+StreamOut 163 0
+RGB 255 255 255
+Filled n cut
+
+PhysLayer marker:warning
+StreamIn 164, 0
+StreamOut 164 0
+RGB 255 255 0
+Filled n cut
+
+PhysLayer prBoundary:label
+RGB 153 0 230
+Filled n
+
+PhysLayer prBoundary:boundary
+RGB 153 0 230
+Filled n outline
+
+PhysLayer M1:net
+StreamIn 131, 83
+StreamOut 131 83
+RGB 0 230 230
+Filled n cut
+
+PhysLayer M2:net
+StreamIn 132, 83
+StreamOut 132 83
+RGB 255 255 0
+Filled n cut
+
+PhysLayer M3:net
+StreamIn 133, 83
+StreamOut 133 83
+RGB 0 204 102
+Filled n cut
+
+PhysLayer M4:net
+StreamIn 134, 83
+StreamOut 134 83
+RGB 0 230 230
+Filled n cut
+
+PhysLayer M5:net
+StreamIn 135, 83
+StreamOut 135 83
+RGB 255 255 255
+Filled n cut
+
+PhysLayer M6:net
+StreamIn 136, 83
+StreamOut 136 83
+RGB 255 255 255
+Filled n cut
+
+PhysLayer M7:net
+StreamIn 137, 83
+StreamOut 137 83
+RGB 255 255 255
+Filled n cut
+
+PhysLayer M8:net
+StreamIn 138, 83
+StreamOut 138 83
+RGB 255 255 255
+Filled n cut
+
+PhysLayer M9:net
+StreamIn 139, 83
+StreamOut 139 83
+RGB 255 255 255
+Filled n cut
+
+PhysLayer M10:net
+StreamIn 140, 83
+StreamOut 140 83
+RGB 255 255 255
+Filled n cut
+
+PhysLayer M1:boundary
+StreamIn 171, 0
+StreamOut 171 0
+RGB 0 230 230
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M2:boundary
+StreamIn 172, 0
+StreamOut 172 0
+RGB 255 255 0
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M3:boundary
+StreamIn 173, 0
+StreamOut 173 0
+RGB 0 204 102
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M4:boundary
+StreamIn 174, 0
+StreamOut 174 0
+RGB 0 230 230
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M5:boundary
+StreamIn 175, 0
+StreamOut 175 0
+RGB 255 255 255
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M6:boundary
+StreamIn 176, 0
+StreamOut 176 0
+RGB 255 255 255
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M7:boundary
+StreamIn 177, 0
+StreamOut 177 0
+RGB 255 255 255
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M8:boundary
+StreamIn 178, 0
+StreamOut 178 0
+RGB 255 255 255
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M9:boundary
+StreamIn 179, 0
+StreamOut 179 0
+RGB 255 255 255
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M10:boundary
+StreamIn 180, 0
+StreamOut 180 0
+RGB 255 255 255
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer CO:net
+StreamIn 142, 155
+StreamOut 142 155
+RGB 0 255 0
+Filled n cut
+
+PhysLayer CO:pin
+StreamIn 142, 51
+StreamOut 142 51
+RGB 255 255 255
+Filled n
+
+PhysLayer VIA1:net
+StreamIn 142, 156
+StreamOut 142 156
+RGB 255 0 255
+Filled n cut
+
+PhysLayer VIA2:net
+StreamIn 142, 157
+StreamOut 142 157
+RGB 255 255 0
+Filled n cut
+
+PhysLayer VIA3:net
+StreamIn 142, 158
+StreamOut 142 158
+RGB 0 0 255
+Filled n cut
+
+PhysLayer VIA4:net
+StreamIn 142, 159
+StreamOut 142 159
+RGB 255 255 255
+Filled n cut
+
+PhysLayer VIA5:net
+StreamIn 142, 160
+StreamOut 142 160
+RGB 255 255 255
+Filled n cut
+
+PhysLayer VIA6:net
+StreamIn 142, 161
+StreamOut 142 161
+RGB 255 255 255
+Filled n cut
+
+PhysLayer VIA7:net
+StreamIn 142, 162
+StreamOut 142 162
+RGB 255 255 255
+Filled n cut
+
+PhysLayer VIA8:net
+StreamIn 142, 163
+StreamOut 142 163
+RGB 255 255 255
+Filled n cut
+
+PhysLayer VIA9:net
+StreamIn 142, 164
+StreamOut 142 164
+RGB 255 255 255
+Filled n cut
+
+PhysLayer VIA1:pin
+StreamIn 142, 52
+StreamOut 142 52
+RGB 255 255 255
+Filled n
+
+PhysLayer VIA2:pin
+StreamIn 142, 53
+StreamOut 142 53
+RGB 255 255 255
+Filled n
+
+PhysLayer VIA3:pin
+StreamIn 142, 54
+StreamOut 142 54
+RGB 255 255 255
+Filled n
+
+PhysLayer VIA4:pin
+StreamIn 142, 55
+StreamOut 142 55
+RGB 255 255 255
+Filled n
+
+PhysLayer VIA5:pin
+StreamIn 142, 56
+StreamOut 142 56
+RGB 255 255 255
+Filled n
+
+PhysLayer VIA6:pin
+StreamIn 142, 57
+StreamOut 142 57
+RGB 255 255 255
+Filled n
+
+PhysLayer VIA7:pin
+StreamIn 142, 58
+StreamOut 142 58
+RGB 255 255 255
+Filled n
+
+PhysLayer VIA8:pin
+StreamIn 142, 59
+StreamOut 142 59
+RGB 255 255 255
+Filled n
+
+PhysLayer VIA9:pin
+StreamIn 142, 60
+StreamOut 142 60
+RGB 255 255 255
+Filled n
+
+PhysLayer CO:boundary
+StreamIn 142, 11
+StreamOut 142 11
+RGB 0 255 0
+Filled y
+
+PhysLayer VIA1:boundary
+StreamIn 191, 0
+StreamOut 191 0
+RGB 255 0 255
+Filled y
+
+PhysLayer VIA2:boundary
+StreamIn 192, 0
+StreamOut 192 0
+RGB 255 255 0
+Filled y
+
+PhysLayer VIA3:boundary
+StreamIn 193, 0
+StreamOut 193 0
+RGB 0 0 255
+Filled y
+
+PhysLayer VIA4:boundary
+StreamIn 194, 0
+StreamOut 194 0
+RGB 255 255 255
+Filled n
+
+PhysLayer VIA5:boundary
+StreamIn 195, 0
+StreamOut 195 0
+RGB 255 255 255
+Filled n
+
+PhysLayer VIA6:boundary
+StreamIn 196, 0
+StreamOut 196 0
+RGB 255 255 255
+Filled n
+
+PhysLayer VIA7:boundary
+StreamIn 197, 0
+StreamOut 197 0
+RGB 255 255 255
+Filled n
+
+PhysLayer VIA8:boundary
+StreamIn 198, 0
+StreamOut 198 0
+RGB 255 255 255
+Filled n
+
+PhysLayer VIA9:boundary
+StreamIn 199, 0
+StreamOut 199 0
+RGB 255 255 255
+Filled n
+
+PhysLayer VTUL_N
+StreamIn 151, 0
+StreamOut 151 0
+RGB 0 0 255
+Filled n fat
+
+PhysLayer VTUL_P
+StreamIn 152, 0
+StreamOut 152 0
+RGB 204 204 217
+Filled n fat
+
+PhysLayer boundary
+RGB 255 0 0
+Filled n outline
+
+PhysLayer instance
+RGB 255 0 0
+Filled n
+NoInstView
+
+PhysLayer instance:label
+RGB 217 204 0
+Filled n
+
+PhysLayer hilite
+RGB 255 255 255
+Filled n
+
+PhysLayer hilite:drawing1
+RGB 255 0 255
+Filled n
+
+PhysLayer hilite:drawing2
+RGB 255 230 191
+Filled n
+
+PhysLayer hilite:drawing3
+RGB 0 230 230
+Filled n
+
+PhysLayer hilite:drawing4
+RGB 255 128 0
+Filled n
+
+PhysLayer hilite:drawing5
+RGB 0 255 0
+Filled n
+
+PhysLayer hilite:drawing6
+RGB 255 128 0
+Filled n
+
+PhysLayer hilite:drawing7
+RGB 255 255 204
+Filled n
+
+PhysLayer hilite:drawing8
+RGB 255 0 255
+Filled n
+
+PhysLayer hilite:drawing9
+RGB 255 191 242
+Filled n
+
+PhysLayer y0
+RGB 199 199 199
+Filled n outline
+
+PhysLayer y1
+RGB 191 64 38
+Filled n outline
+
+PhysLayer y2
+RGB 255 0 0
+Filled n outline
+
+PhysLayer y3
+RGB 255 191 242
+Filled n outline
+
+PhysLayer y4
+RGB 255 128 0
+Filled n outline
+
+PhysLayer y5
+RGB 0 204 102
+Filled n outline
+
+PhysLayer y6
+RGB 0 0 255
+Filled n outline
+
+PhysLayer y7
+RGB 153 0 230
+Filled n outline
+
+PhysLayer y8
+RGB 217 204 0
+Filled n outline
+
+PhysLayer y9
+RGB 217 230 255
+Filled n outline
+
+PhysLayer grid
+RGB 255 255 255
+Filled n
+
+PhysLayer grid:drawing1
+RGB 255 255 255
+Filled n
+
+PhysLayer axis
+RGB 255 255 255
+Filled n
+
+PhysLayer border
+RGB 255 230 191
+Filled n
+
+PhysLayer align
+RGB 255 230 191
+Filled n
+
+PhysLayer device
+RGB 0 204 102
+Filled n
+
+PhysLayer device:drawing1
+RGB 0 204 102
+Filled y
+
+PhysLayer device:drawing2
+RGB 0 204 102
+Filled n outline
+
+PhysLayer device:annotate
+RGB 255 255 0
+Filled n
+
+PhysLayer device:label
+RGB 0 204 102
+Filled n
+
+PhysLayer wire
+RGB 204 204 217
+Filled y
+WireActive
+
+PhysLayer wire:label
+RGB 204 204 217
+Filled y
+
+PhysLayer wire:flight
+RGB 255 0 0
+Filled n outline
+
+PhysLayer select
+RGB 255 230 191
+Filled n
+
+PhysLayer drive
+RGB 0 0 255
+Filled n
+
+PhysLayer hiz
+RGB 255 128 0
+Filled n
+
+PhysLayer pin
+RGB 255 0 0
+Filled y
+
+PhysLayer pin:annotate
+RGB 255 0 0
+Filled n
+
+PhysLayer pin:label
+RGB 255 0 0
+Filled n
+
+PhysLayer resist
+RGB 0 230 230
+Filled n
+
+PhysLayer spike
+RGB 153 0 230
+Filled n
+
+PhysLayer supply
+RGB 0 255 0
+Filled n
+
+PhysLayer unknown
+RGB 255 255 0
+Filled n
+
+PhysLayer unset
+RGB 38 140 107
+Filled n
+
+PhysLayer annotate
+RGB 255 128 0
+Filled n
+
+PhysLayer designFlow
+RGB 0 204 102
+Filled y
+
+PhysLayer annotate:drawing1
+RGB 255 191 242
+Filled n
+
+PhysLayer designFlow:drawing1
+RGB 255 0 0
+Filled y
+
+PhysLayer annotate:drawing2
+RGB 0 255 0
+Filled n
+
+PhysLayer designFlow:drawing2
+RGB 153 0 230
+Filled y
+
+PhysLayer annotate:drawing3
+RGB 0 230 230
+Filled n
+
+PhysLayer designFlow:drawing3
+RGB 255 191 242
+Filled y
+
+PhysLayer annotate:drawing4
+RGB 255 255 0
+Filled n
+
+PhysLayer designFlow:drawing4
+RGB 0 0 0
+Filled y
+
+PhysLayer annotate:drawing5
+RGB 255 255 255
+Filled n
+
+PhysLayer designFlow:drawing5
+RGB 217 230 255
+Filled y
+
+PhysLayer annotate:drawing6
+RGB 217 230 255
+Filled n
+
+PhysLayer designFlow:drawing6
+RGB 255 230 191
+Filled y
+
+PhysLayer annotate:drawing7
+RGB 255 0 0
+Filled n
+
+PhysLayer designFlow:drawing7
+RGB 0 230 230
+Filled y
+
+PhysLayer annotate:drawing8
+RGB 255 230 191
+Filled n
+
+PhysLayer designFlow:drawing8
+RGB 51 51 153
+Filled y
+
+PhysLayer annotate:drawing9
+RGB 0 204 102
+Filled n
+
+PhysLayer designFlow:drawing9
+RGB 255 128 0
+Filled y
+
+PhysLayer edgeLayer
+RGB 199 199 199
+Filled n
+
+PhysLayer edgeLayer:pin
+RGB 255 255 0
+Filled n
+
+PhysLayer changedLayer:tool0
+RGB 255 0 0
+Filled n
+
+PhysLayer changedLayer:tool1
+RGB 255 255 0
+Filled n
+
+PhysLayer snap
+RGB 255 255 0
+Filled n
+
+PhysLayer stretch
+RGB 255 255 0
+Filled n
+
+PhysLayer Row
+RGB 0 230 230
+Filled n
+
+PhysLayer Row:label
+RGB 0 230 230
+Filled n
+
+PhysLayer Group
+RGB 0 204 102
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer Group:label
+RGB 0 204 102
+Filled n
+
+PhysLayer Cannotoccupy
+RGB 255 0 0
+Filled n fat cut
+
+PhysLayer Cannotoccupy:boundary
+RGB 255 0 0
+Filled n fat
+
+PhysLayer Canplace
+RGB 0 230 230
+Filled n
+
+PhysLayer background
+RGB 0 0 0
+Filled y
+
+PhysLayer text:drawing1
+RGB 255 255 255
+Filled n outline
+
+PhysLayer text:drawing2
+RGB 255 255 255
+Filled y
+
+PhysLayer Unrouted
+RGB 199 199 199
+Filled n outline
+
+PhysLayer Unrouted:drawing1
+RGB 191 64 38
+Filled n outline
+
+PhysLayer Unrouted:drawing2
+RGB 255 0 0
+Filled n outline
+
+PhysLayer Unrouted:drawing3
+RGB 255 191 242
+Filled n outline
+
+PhysLayer Unrouted:drawing4
+RGB 255 128 0
+Filled n outline
+
+PhysLayer Unrouted:drawing5
+RGB 0 204 102
+Filled n outline
+
+PhysLayer Unrouted:drawing6
+RGB 0 0 255
+Filled n outline
+
+PhysLayer Unrouted:drawing7
+RGB 153 0 230
+Filled n outline
+
+PhysLayer Unrouted:drawing8
+RGB 217 204 0
+Filled n outline
+
+PhysLayer Unrouted:drawing9
+RGB 217 230 255
+Filled n outline
+
+PhysLayer hardFence
+RGB 255 0 0
+Filled n
+
+PhysLayer softFence
+RGB 255 255 0
+Filled n
+
+PhysLayer INDDMY
+StreamIn 144, 0
+StreamOut 144 0
+RGB 255 255 0
+Filled n
+
+PhysLayer INDDMY:drawing1
+StreamIn 144, 1
+StreamOut 144 1
+RGB 255 255 204
+Filled n
+
+PhysLayer INDDMY:drawing2
+StreamIn 144, 2
+StreamOut 144 2
+RGB 0 255 0
+Filled n
+
+PhysLayer INDDMY:drawing3
+StreamIn 144, 3
+StreamOut 144 3
+RGB 255 255 0
+Filled n
+
+PhysLayer INDDMY:drawing4
+StreamIn 144, 4
+StreamOut 144 4
+RGB 255 255 204
+Filled n
+
+PhysLayer INDDMY:drawing5
+StreamIn 144, 5
+StreamOut 144 5
+RGB 0 255 0
+Filled n
+
+PhysLayer INDDMY:drawing6
+StreamIn 144, 6
+StreamOut 144 6
+RGB 255 255 0
+Filled n
+
+PhysLayer INDDMY:drawing7
+StreamIn 144, 7
+StreamOut 144 7
+RGB 255 255 204
+Filled n
+
+PhysLayer INDDMY:drawing8
+StreamIn 144, 8
+StreamOut 144 8
+RGB 0 255 0
+Filled n
+
+PhysLayer INDDMY:drawing9
+StreamIn 144, 9
+StreamOut 144 9
+RGB 255 255 0
+Filled n
+
+PhysLayer INDDMY:drawinga
+StreamIn 144, 10
+StreamOut 144 10
+RGB 255 255 204
+Filled n
+
+PhysLayer INDDMY:drawingb
+StreamIn 144, 11
+StreamOut 144 11
+RGB 0 255 0
+Filled n
+
+PhysLayer INDDMY:drawingc
+StreamIn 144, 12
+StreamOut 144 12
+RGB 255 255 0
+Filled n
+
+PhysLayer INDDMY:drawingd
+StreamIn 144, 13
+StreamOut 144 13
+RGB 255 255 204
+Filled n
+
+PhysLayer INDDMY:drawinge
+StreamIn 144, 14
+StreamOut 144 14
+RGB 0 255 0
+Filled n
+
+PhysLayer INDDMY:rad
+StreamIn 144, 30
+StreamOut 144 30
+RGB 0 204 242
+Filled n
+
+PhysLayer INDDMY:dummy1
+StreamIn 144, 31
+StreamOut 144 31
+RGB 94 0 230
+Filled n
+
+PhysLayer INDDMY:dummy2
+StreamIn 144, 32
+StreamOut 144 32
+RGB 0 230 230
+Filled n
+
+PhysLayer INDDMY:dummy3
+StreamIn 144, 33
+StreamOut 144 33
+RGB 0 255 0
+Filled n
+
+PhysLayer INDDMY:dummy4
+StreamIn 144, 34
+StreamOut 144 34
+RGB 255 255 0
+Filled n
+
+PhysLayer INDDMY:dummy5
+StreamIn 144, 35
+StreamOut 144 35
+RGB 153 0 230
+Filled n
+
+PhysLayer ESD1DMY
+StreamIn 145, 0
+StreamOut 145 0
+RGB 153 0 230
+Filled n
+
+PhysLayer ESD2DMY
+StreamIn 146, 0
+StreamOut 146 0
+RGB 0 230 230
+Filled n
+
+PhysLayer ESDIMP
+StreamIn 189, 0
+StreamOut 189 0
+RGB 51 51 153
+Filled n
+
+PhysLayer CTMDMY
+StreamIn 148, 0
+StreamOut 148 0
+RGB 0 204 102
+Filled n
+
+PhysLayer CTMDMY:drawing1
+StreamIn 148, 10
+StreamOut 148 10
+RGB 0 204 102
+Filled n
+
+PhysLayer CTMDMY:MIM3T
+StreamIn 148, 21
+StreamOut 148 21
+RGB 153 0 230
+Filled n
+
+PhysLayer CTMDMY:dummy1
+StreamIn 148, 115
+StreamOut 148 115
+RGB 153 0 230
+Filled n
+
+PhysLayer CTMDMY:dummy2
+StreamIn 148, 120
+StreamOut 148 120
+RGB 255 0 0
+Filled n fat cut
+
+PhysLayer CTMDMY:dummy3
+StreamIn 148, 110
+StreamOut 148 110
+RGB 255 255 0
+Filled n
+
+PhysLayer LVSDMY:dummy1
+StreamIn 208, 1
+StreamOut 208 1
+RGB 255 0 255
+Filled n fat
+
+PhysLayer CDUDMY
+StreamIn 165, 0
+StreamOut 165 0
+RGB 0 204 102
+Filled n
+
+PhysLayer CDUDMY:dummy1
+StreamIn 165, 1
+StreamOut 165 1
+RGB 255 255 0
+Filled n
+
+PhysLayer DMEXCL:dummy1
+StreamIn 150, 1
+StreamOut 150 1
+RGB 255 128 0
+Filled n
+
+PhysLayer DMEXCL:dummy2
+StreamIn 150, 2
+StreamOut 150 2
+RGB 255 128 0
+Filled n
+
+PhysLayer DMEXCL:dummy3
+StreamIn 150, 3
+StreamOut 150 3
+RGB 255 128 0
+Filled n
+
+PhysLayer DMEXCL:dummy4
+StreamIn 150, 4
+StreamOut 150 4
+RGB 255 128 0
+Filled n
+
+PhysLayer DMEXCL:dummy5
+StreamIn 150, 5
+StreamOut 150 5
+RGB 255 128 0
+Filled n
+
+PhysLayer DMEXCL:dummy6
+StreamIn 150, 6
+StreamOut 150 6
+RGB 255 128 0
+Filled n
+
+PhysLayer DMEXCL:dummy7
+StreamIn 150, 7
+StreamOut 150 7
+RGB 255 128 0
+Filled n
+
+PhysLayer DMEXCL:dummy8
+StreamIn 150, 8
+StreamOut 150 8
+RGB 255 128 0
+Filled n
+
+PhysLayer DMEXCL:dummy9
+StreamIn 150, 9
+StreamOut 150 9
+RGB 255 128 0
+Filled n
+
+PhysLayer DMEXCL:dummya
+StreamIn 150, 10
+StreamOut 150 10
+RGB 255 128 0
+Filled n
+
+PhysLayer ODBLK:dummy
+StreamIn 150, 20
+StreamOut 150 20
+RGB 255 128 0
+Filled n
+
+PhysLayer POBLK:dummy
+StreamIn 150, 21
+StreamOut 150 21
+RGB 255 128 0
+Filled n
+
+PhysLayer DMEXCL:dummyf
+StreamIn 150, 22
+StreamOut 150 22
+RGB 255 128 0
+Filled n
+
+PhysLayer RFDMY
+StreamIn 161, 0
+StreamOut 161 0
+RGB 255 255 255
+Filled n
+
+PhysLayer RFDMY:drawing2
+StreamIn 161, 2
+StreamOut 161 2
+RGB 255 191 242
+Filled n
+
+PhysLayer RFDMY:drawing3
+StreamIn 161, 3
+StreamOut 161 3
+RGB 255 191 242
+Filled n outline
+
+PhysLayer RFDMY:drawing4
+StreamIn 161, 4
+StreamOut 161 4
+RGB 255 255 204
+Filled n fat cut
+
+PhysLayer RFDMY:drawing1
+StreamIn 161, 10
+StreamOut 161 10
+RGB 255 255 204
+Filled n fat cut
+
+PhysLayer COEXCL:dummy
+StreamIn 153, 0
+StreamOut 153 0
+RGB 94 0 230
+Filled n
+
+PhysLayer VIAEXCL:dummy1
+StreamIn 153, 1
+StreamOut 153 1
+RGB 94 0 230
+Filled n
+
+PhysLayer VIAEXCL:dummy2
+StreamIn 153, 2
+StreamOut 153 2
+RGB 94 0 230
+Filled n
+
+PhysLayer VIAEXCL:dummy3
+StreamIn 153, 3
+StreamOut 153 3
+RGB 94 0 230
+Filled n
+
+PhysLayer VIAEXCL:dummy4
+StreamIn 153, 4
+StreamOut 153 4
+RGB 94 0 230
+Filled n
+
+PhysLayer VIAEXCL:dummy5
+StreamIn 153, 5
+StreamOut 153 5
+RGB 94 0 230
+Filled n
+
+PhysLayer VIAEXCL:dummy6
+StreamIn 153, 6
+StreamOut 153 6
+RGB 94 0 230
+Filled n
+
+PhysLayer VIAEXCL:dummy7
+StreamIn 153, 7
+StreamOut 153 7
+RGB 94 0 230
+Filled n
+
+PhysLayer VIAEXCL:dummy8
+StreamIn 153, 8
+StreamOut 153 8
+RGB 94 0 230
+Filled n
+
+PhysLayer VIAEXCL:dummy9
+StreamIn 153, 9
+StreamOut 153 9
+RGB 94 0 230
+Filled n
+
+PhysLayer DFMEXCL
+StreamIn 153, 20
+StreamOut 153 20
+RGB 94 0 230
+Filled n
+
+PhysLayer VAR
+StreamIn 143, 0
+StreamOut 143 0
+RGB 255 255 0
+Filled n
+
+PhysLayer DSDDMY:drawing1
+StreamIn 130, 1
+StreamOut 130 1
+RGB 0 230 230
+Filled n outline
+
+PhysLayer DSDDMY:drawing2
+StreamIn 130, 2
+StreamOut 130 2
+RGB 217 204 0
+Filled n outline
+
+PhysLayer DSDDMY:drawing3
+StreamIn 130, 3
+StreamOut 130 3
+RGB 38 140 107
+Filled n outline
+
+PhysLayer DSDDMY:drawing4
+StreamIn 130, 4
+StreamOut 130 4
+RGB 140 140 166
+Filled n outline
+
+PhysLayer DSDDMY:drawing5
+StreamIn 130, 5
+StreamOut 130 5
+RGB 189 204 204
+Filled n outline
+
+PhysLayer DSDDMY:drawing6
+StreamIn 130, 6
+StreamOut 130 6
+RGB 255 230 191
+Filled n outline
+
+PhysLayer DSDDMY:drawing7
+StreamIn 130, 7
+StreamOut 130 7
+RGB 0 255 0
+Filled n outline
+
+PhysLayer DSDDMY:drawing8
+StreamIn 130, 8
+StreamOut 130 8
+RGB 255 255 204
+Filled n outline
+
+PhysLayer DSDDMY:drawing9
+StreamIn 130, 9
+StreamOut 130 9
+RGB 199 199 199
+Filled n outline
+
+PhysLayer DSDDMY:test0
+StreamIn 130, 10
+StreamOut 130 10
+RGB 199 199 199
+Filled n outline
+
+PhysLayer DSDDMY:test1
+StreamIn 130, 11
+StreamOut 130 11
+RGB 199 199 199
+Filled n outline
+
+PhysLayer DSDDMY:test2
+StreamIn 130, 12
+StreamOut 130 12
+RGB 199 199 199
+Filled n outline
+
+PhysLayer DSDDMY:test3
+StreamIn 130, 13
+StreamOut 130 13
+RGB 199 199 199
+Filled n outline
+
+PhysLayer DSDDMY:test4
+StreamIn 130, 14
+StreamOut 130 14
+RGB 199 199 199
+Filled n outline
+
+PhysLayer DSDDMY:test5
+StreamIn 130, 15
+StreamOut 130 15
+RGB 199 199 199
+Filled n outline
+
+PhysLayer DSDDMY:test6
+StreamIn 130, 16
+StreamOut 130 16
+RGB 199 199 199
+Filled n outline
+
+PhysLayer DSDDMY:test7
+StreamIn 130, 17
+StreamOut 130 17
+RGB 199 199 199
+Filled n outline
+
+PhysLayer DSDDMY:test8
+StreamIn 130, 18
+StreamOut 130 18
+RGB 199 199 199
+Filled n outline
+
+PhysLayer DSDDMY:test9
+StreamIn 130, 19
+StreamOut 130 19
+RGB 199 199 199
+Filled n outline
+
+PhysLayer MOMDMY
+StreamIn 155, 0
+StreamOut 155 0
+RGB 0 204 242
+Filled n
+
+PhysLayer MOMDMY:drawing1
+StreamIn 155, 1
+StreamOut 155 1
+RGB 255 0 0
+Filled n
+
+PhysLayer MOMDMY:drawing2
+StreamIn 155, 2
+StreamOut 155 2
+RGB 255 230 191
+Filled n
+
+PhysLayer MOMDMY:drawing3
+StreamIn 155, 3
+StreamOut 155 3
+RGB 0 230 230
+Filled n
+
+PhysLayer MOMDMY:drawing4
+StreamIn 155, 4
+StreamOut 155 4
+RGB 255 128 0
+Filled n
+
+PhysLayer MOMDMY:drawing5
+StreamIn 155, 5
+StreamOut 155 5
+RGB 0 255 0
+Filled n
+
+PhysLayer MOMDMY:drawing6
+StreamIn 155, 6
+StreamOut 155 6
+RGB 255 255 204
+Filled n
+
+PhysLayer MOMDMY:drawing7
+StreamIn 155, 7
+StreamOut 155 7
+RGB 255 191 242
+Filled n
+
+PhysLayer MOMDMY:drawing8
+StreamIn 155, 8
+StreamOut 155 8
+RGB 0 230 230
+Filled n outline
+
+PhysLayer MOMDMY:drawing9
+StreamIn 155, 9
+StreamOut 155 9
+RGB 217 204 0
+Filled n outline
+
+PhysLayer MOMDMY:drawinga
+StreamIn 155, 10
+StreamOut 155 10
+RGB 38 140 107
+Filled n outline
+
+PhysLayer MOMDMY:dummy1
+StreamIn 155, 20
+StreamOut 155 20
+RGB 140 140 166
+Filled n outline
+
+PhysLayer MOMDMY:dummy2
+StreamIn 155, 21
+StreamOut 155 21
+RGB 189 204 204
+Filled n outline
+
+PhysLayer MOMDMY:dummy3
+StreamIn 155, 22
+StreamOut 155 22
+RGB 0 204 242
+Filled n
+
+PhysLayer MOMDMY:dummy4
+StreamIn 155, 23
+StreamOut 155 23
+RGB 255 0 0
+Filled n
+
+PhysLayer MOMDMY:dummy5
+StreamIn 155, 24
+StreamOut 155 24
+RGB 255 230 191
+Filled n
+
+PhysLayer MOMDMY:dummy6
+StreamIn 155, 25
+StreamOut 155 25
+RGB 255 128 0
+Filled n
+
+PhysLayer PDK
+StreamIn 75, 0
+StreamOut 75 0
+RGB 153 0 230
+Filled n outline
+
+PhysLayer PDK:net
+RGB 153 0 230
+Filled n outline
+
+PhysLayer PDK:boundary
+RGB 153 0 230
+Filled n outline
+
+PhysLayer PDK:pin
+RGB 153 0 230
+Filled n outline
+
+PhysLayer M1:prob
+StreamIn 75, 1
+StreamOut 75 1
+RGB 0 230 230
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M2:prob
+StreamIn 75, 2
+StreamOut 75 2
+RGB 217 204 0
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M3:prob
+StreamIn 75, 3
+StreamOut 75 3
+RGB 38 140 107
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M4:prob
+StreamIn 75, 4
+StreamOut 75 4
+RGB 140 140 166
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M5:prob
+StreamIn 75, 5
+StreamOut 75 5
+RGB 189 204 204
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M6:prob
+StreamIn 75, 6
+StreamOut 75 6
+RGB 255 230 191
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M7:prob
+StreamIn 75, 7
+StreamOut 75 7
+RGB 0 255 0
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M8:prob
+StreamIn 75, 8
+StreamOut 75 8
+RGB 255 255 204
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M9:prob
+StreamIn 75, 9
+StreamOut 75 9
+RGB 0 255 0
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer M10:prob
+StreamIn 75, 10
+StreamOut 75 10
+RGB 0 230 230
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer AP:prob
+StreamIn 75, 16
+StreamOut 75 16
+RGB 217 204 0
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer OD:test1
+StreamIn 6, 11
+StreamOut 6 11
+RGB 255 0 0
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) outline
+
+PhysLayer OD:test2
+StreamIn 6, 12
+StreamOut 6 12
+RGB 255 0 0
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) outline
+
+PhysLayer OD:test3
+StreamIn 6, 13
+StreamOut 6 13
+RGB 255 0 0
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) \
+  |.   .   .   .   |  (0x1111) \
+  | .   .   .   .  |  (0x2222) \
+  |  .   .   .   . |  (0x4444) \
+  |   .   .   .   .|  (0x8888) outline
+
+PhysLayer PO:test1
+StreamIn 17, 11
+StreamOut 17 11
+RGB 0 0 255
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer PO:test2
+StreamIn 17, 12
+StreamOut 17 12
+RGB 0 0 255
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer PO:test3
+StreamIn 17, 13
+StreamOut 17 13
+RGB 0 0 255
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer CO:test1
+StreamIn 30, 11
+StreamOut 30 11
+RGB 0 204 102
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer CO:test2
+StreamIn 30, 12
+StreamOut 30 12
+RGB 0 204 102
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer CO:test3
+StreamIn 30, 13
+StreamOut 30 13
+RGB 0 204 102
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+
+PhysLayer REMOVAL:drawing1
+StreamIn 124, 1
+StreamOut 124 1
+RGB 38 140 107
+Filled n
+
+PhysLayer REMOVAL:drawing2
+StreamIn 124, 2
+StreamOut 124 2
+RGB 38 140 107
+Filled n
+
+PhysLayer REMOVAL:drawing3
+StreamIn 124, 3
+StreamOut 124 3
+RGB 38 140 107
+Filled n
+
+PhysLayer REMOVAL:drawing4
+StreamIn 124, 4
+StreamOut 124 4
+RGB 38 140 107
+Filled n
+
+PhysLayer REMOVAL:drawing5
+StreamIn 124, 5
+StreamOut 124 5
+RGB 38 140 107
+Filled n
+
+PhysLayer REMOVAL:drawing6
+StreamIn 124, 6
+StreamOut 124 6
+RGB 38 140 107
+Filled n
+
+PhysLayer REMOVAL:drawing7
+StreamIn 124, 7
+StreamOut 124 7
+RGB 38 140 107
+Filled n
+
+PhysLayer REMOVAL:drawingo
+StreamIn 124, 20
+StreamOut 124 20
+RGB 38 140 107
+Filled n
+
+PhysLayer REMOVAL:drawingp
+StreamIn 124, 21
+StreamOut 124 21
+RGB 38 140 107
+Filled n
+
+PhysLayer LDDBLK
+StreamIn 104, 0
+StreamOut 104 0
+RGB 255 128 0
+Filled n
+
+PhysLayer EDRAM
+StreamIn 104, 1
+StreamOut 104 1
+RGB 255 255 0
+Filled n
+
+PhysLayer POS:plus1
+StreamIn 254, 1
+StreamOut 254 1
+RGB 0 230 230
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer POS:plus2
+StreamIn 254, 2
+StreamOut 254 2
+RGB 217 204 0
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer POS:plus3
+StreamIn 254, 3
+StreamOut 254 3
+RGB 38 140 107
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer POS:plus4
+StreamIn 254, 4
+StreamOut 254 4
+RGB 0 0 255
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer POS:plus5
+StreamIn 254, 5
+StreamOut 254 5
+RGB 191 64 38
+Filled \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) \
+  |.   .  .   .|  (0x891) \
+  |            |  (0x0) \
+  |.   .  .   .|  (0x891) \
+  |  .      .  |  (0x204) outline
+
+PhysLayer R_rule:guideline
+StreamIn 182, 4
+StreamOut 182 4
+RGB 0 204 102
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer R_rule:require
+StreamIn 182, 1
+StreamOut 182 1
+RGB 255 0 0
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer R_rule:recommend
+StreamIn 182, 2
+StreamOut 182 2
+RGB 255 191 242
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer R_rule:analog
+StreamIn 182, 3
+StreamOut 182 3
+RGB 255 128 0
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer R_rule:dummy1
+StreamIn 182, 41
+StreamOut 182 41
+RGB 255 0 0
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer TSV
+StreamIn 251, 0
+StreamOut 251 0
+RGB 255 0 0
+Filled n fat cut
+
+PhysLayer TSV:pin
+StreamIn 251, 1
+StreamOut 251 1
+RGB 255 255 0
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer TSV:dummy
+StreamIn 251, 2
+StreamOut 251 2
+RGB 0 204 102
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer FFCDMY:drawing2
+StreamIn 255, 2
+StreamOut 255 2
+RGB 255 0 0
+Filled n fat cut
+
+PhysLayer ex_R_rule:guideline
+StreamIn 182, 14
+StreamOut 182 14
+RGB 0 204 102
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer ex_R_rule:require
+StreamIn 182, 11
+StreamOut 182 11
+RGB 255 0 0
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer ex_R_rule:recommend
+StreamIn 182, 12
+StreamOut 182 12
+RGB 255 191 242
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer ex_R_rule:analog
+StreamIn 182, 13
+StreamOut 182 13
+RGB 255 128 0
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer HVD
+StreamIn 91, 0
+StreamOut 91 0
+RGB 255 0 255
+Filled n fat
+
+PhysLayer HVD:n_a
+StreamIn 91, 1
+StreamOut 91 1
+RGB 204 204 217
+Filled n outline
+
+PhysLayer HVD:p_a
+StreamIn 91, 2
+StreamOut 91 2
+RGB 255 0 255
+Filled n outline
+
+PhysLayer HVD:n_b
+StreamIn 91, 3
+StreamOut 91 3
+RGB 0 0 255
+Filled n outline
+
+PhysLayer HV:DMYLD65
+StreamIn 189, 31
+StreamOut 189 31
+RGB 0 230 230
+Filled n fat cut
+
+PhysLayer HV:DMYCAS65
+StreamIn 189, 32
+StreamOut 189 32
+RGB 255 255 204
+Filled n fat
+
+PhysLayer VTDN
+StreamIn 66, 0
+StreamOut 66 0
+RGB 255 230 191
+Filled n fat
+
+PhysLayer PV_P
+StreamIn 71, 0
+StreamOut 71 0
+RGB 255 128 0
+Filled n
+
+PhysLayer PV_N
+StreamIn 72, 0
+StreamOut 72 0
+RGB 255 230 191
+Filled n
+
+PhysLayer UHVT_N
+StreamIn 93, 0
+StreamOut 93 0
+RGB 0 0 255
+Filled n fat
+
+PhysLayer UHVT_P
+StreamIn 94, 0
+StreamOut 94 0
+RGB 204 204 217
+Filled n fat
+
+PhysLayer IO_buffer:dummy
+StreamIn 128, 0
+StreamOut 128 0
+RGB 217 204 0
+Filled n fat cut
+
+PhysLayer MR:drawing1
+StreamIn 204, 1
+StreamOut 204 1
+RGB 255 128 0
+Filled n
+
+PhysLayer MR:drawing2
+StreamIn 204, 2
+StreamOut 204 2
+RGB 255 128 0
+Filled n
+
+PhysLayer MR:drawing3
+StreamIn 204, 3
+StreamOut 204 3
+RGB 255 128 0
+Filled n
+
+PhysLayer MR:dummy1
+StreamIn 204, 4
+StreamOut 204 4
+RGB 255 128 0
+Filled n
+
+PhysLayer MR:dummy2
+StreamIn 204, 5
+StreamOut 204 5
+RGB 255 128 0
+Filled n
+
+PhysLayer MR:dummy3
+StreamIn 204, 6
+StreamOut 204 6
+RGB 255 128 0
+Filled n
+
+PhysLayer MR:dummy4
+StreamIn 204, 7
+StreamOut 204 7
+RGB 255 128 0
+Filled n
+
+PhysLayer MR:dummy5
+StreamIn 204, 8
+StreamOut 204 8
+RGB 255 128 0
+Filled n
+
+PhysLayer MR:dummy6
+StreamIn 204, 9
+StreamOut 204 9
+RGB 255 128 0
+Filled n
+
+PhysLayer HIA_DUMMY
+StreamIn 168, 0
+StreamOut 168 0
+RGB 255 0 0
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer SBDDMY
+StreamIn 113, 0
+StreamOut 113 0
+RGB 0 0 255
+Filled n
+
+PhysLayer VDDDMY
+StreamIn 255, 4
+StreamOut 255 4
+RGB 255 255 0
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer VSSDMY
+StreamIn 255, 5
+StreamOut 255 5
+RGB 0 204 102
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+
+PhysLayer SNA:NW
+RGB 255 191 242
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer SNA:NWDNW
+RGB 255 191 242
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer SNA:PWDNW
+RGB 255 191 242
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer SNA:NTN
+RGB 255 191 242
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer SNA:NWSTI
+RGB 255 191 242
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+
+PhysLayer CM1
+RGB 217 87 184
+Filled n
+
+PhysLayer CV1
+RGB 204 217 87
+Filled n
+
+PhysLayer CM2
+RGB 87 217 210
+Filled n
+
+PhysLayer CV2
+RGB 191 87 217
+Filled n
+
+PhysLayer CM3
+RGB 217 171 87
+Filled n
+
+PhysLayer CV3
+RGB 87 217 152
+Filled n
+
+PhysLayer CM4
+RGB 132 87 217
+Filled n
+
+PhysLayer CV4
+RGB 217 113 87
+Filled n
+
+PhysLayer CM5
+RGB 87 217 93
+Filled n
+
+PhysLayer CV5
+RGB 87 100 217
+Filled n
+
+PhysLayer CM6
+RGB 217 87 119
+Filled n
+
+PhysLayer D1
+RGB 139 217 87
+Filled n
+
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Invalid Layers
+
+PhysLayer VAR:drawingb
+StreamIn 143, 11
+StreamOut 143 11
+RGB 255 255 0
+Filled n
+Invalid
+
+PhysLayer VAR:drawing3
+StreamIn 143, 3
+StreamOut 143 3
+RGB 255 255 0
+Filled n
+Invalid
+
+PhysLayer VAR:drawing2
+StreamIn 143, 2
+StreamOut 143 2
+RGB 255 255 0
+Filled n
+Invalid
+
+PhysLayer VAR:drawing1
+StreamIn 143, 1
+StreamOut 143 1
+RGB 255 255 0
+Filled n
+Invalid
+
+PhysLayer RV:blockage
+RGB 38 140 107
+Filled n cut
+Invalid
+
+PhysLayer RV:grid
+RGB 38 140 107
+Filled n cut
+Invalid
+
+PhysLayer AP:blockage
+RGB 204 204 217
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer AP:grid
+RGB 204 204 217
+Filled \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer M10:blockage
+RGB 38 140 107
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer M10:grid
+RGB 38 140 107
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer VIA9:blockage
+RGB 0 230 230
+Filled \
+  |.              |  (0x1) \
+  | .             |  (0x2) \
+  |  .            |  (0x4) \
+  |   .           |  (0x8) \
+  |    .          |  (0x10) \
+  |     .         |  (0x20) \
+  |      .        |  (0x40) \
+  |       .       |  (0x80) \
+  |        .      |  (0x100) \
+  |         .     |  (0x200) \
+  |          .    |  (0x400) \
+  |           .   |  (0x800) \
+  |            .  |  (0x1000) \
+  |             . |  (0x2000) \
+  |              .|  (0x4000) outline
+Invalid
+
+PhysLayer VIA9:grid
+RGB 0 230 230
+Filled \
+  |.              |  (0x1) \
+  | .             |  (0x2) \
+  |  .            |  (0x4) \
+  |   .           |  (0x8) \
+  |    .          |  (0x10) \
+  |     .         |  (0x20) \
+  |      .        |  (0x40) \
+  |       .       |  (0x80) \
+  |        .      |  (0x100) \
+  |         .     |  (0x200) \
+  |          .    |  (0x400) \
+  |           .   |  (0x800) \
+  |            .  |  (0x1000) \
+  |             . |  (0x2000) \
+  |              .|  (0x4000) outline
+Invalid
+
+PhysLayer M9:blockage
+RGB 0 255 0
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer M9:grid
+RGB 0 255 0
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer VIA8:blockage
+RGB 217 204 0
+Filled \
+  |.              |  (0x1) \
+  | .             |  (0x2) \
+  |  .            |  (0x4) \
+  |   .           |  (0x8) \
+  |    .          |  (0x10) \
+  |     .         |  (0x20) \
+  |      .        |  (0x40) \
+  |       .       |  (0x80) \
+  |        .      |  (0x100) \
+  |         .     |  (0x200) \
+  |          .    |  (0x400) \
+  |           .   |  (0x800) \
+  |            .  |  (0x1000) \
+  |             . |  (0x2000) \
+  |              .|  (0x4000) outline
+Invalid
+
+PhysLayer VIA8:grid
+RGB 217 204 0
+Filled \
+  |.              |  (0x1) \
+  | .             |  (0x2) \
+  |  .            |  (0x4) \
+  |   .           |  (0x8) \
+  |    .          |  (0x10) \
+  |     .         |  (0x20) \
+  |      .        |  (0x40) \
+  |       .       |  (0x80) \
+  |        .      |  (0x100) \
+  |         .     |  (0x200) \
+  |          .    |  (0x400) \
+  |           .   |  (0x800) \
+  |            .  |  (0x1000) \
+  |             . |  (0x2000) \
+  |              .|  (0x4000) outline
+Invalid
+
+PhysLayer M8:blockage
+RGB 255 255 204
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+Invalid
+
+PhysLayer M8:grid
+RGB 255 255 204
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+Invalid
+
+PhysLayer VIA7:blockage
+RGB 255 230 191
+Filled \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) outline
+Invalid
+
+PhysLayer VIA7:grid
+RGB 255 230 191
+Filled \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) outline
+Invalid
+
+PhysLayer M7:blockage
+RGB 0 255 0
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer M7:grid
+RGB 0 255 0
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer VIA6:blockage
+RGB 217 204 0
+Filled n cut
+Invalid
+
+PhysLayer VIA6:grid
+RGB 217 204 0
+Filled n cut
+Invalid
+
+PhysLayer M6:blockage
+RGB 255 230 191
+Filled \
+  |.              |  (0x1) \
+  | .             |  (0x2) \
+  |  .            |  (0x4) \
+  |   .           |  (0x8) \
+  |    .          |  (0x10) \
+  |     .         |  (0x20) \
+  |      .        |  (0x40) \
+  |       .       |  (0x80) \
+  |        .      |  (0x100) \
+  |         .     |  (0x200) \
+  |          .    |  (0x400) \
+  |           .   |  (0x800) \
+  |            .  |  (0x1000) \
+  |             . |  (0x2000) \
+  |              .|  (0x4000) outline
+Invalid
+
+PhysLayer M6:grid
+RGB 255 230 191
+Filled \
+  |.              |  (0x1) \
+  | .             |  (0x2) \
+  |  .            |  (0x4) \
+  |   .           |  (0x8) \
+  |    .          |  (0x10) \
+  |     .         |  (0x20) \
+  |      .        |  (0x40) \
+  |       .       |  (0x80) \
+  |        .      |  (0x100) \
+  |         .     |  (0x200) \
+  |          .    |  (0x400) \
+  |           .   |  (0x800) \
+  |            .  |  (0x1000) \
+  |             . |  (0x2000) \
+  |              .|  (0x4000) outline
+Invalid
+
+PhysLayer VIA5:blockage
+RGB 255 255 204
+Filled \
+  |   .   .   .   .|  (0x8888) \
+  |  .   .   .   . |  (0x4444) \
+  | .   .   .   .  |  (0x2222) \
+  |.   .   .   .   |  (0x1111) \
+  |   .   .   .   .|  (0x8888) \
+  |  .   .   .   . |  (0x4444) \
+  | .   .   .   .  |  (0x2222) \
+  |.   .   .   .   |  (0x1111) \
+  |   .   .   .   .|  (0x8888) \
+  |  .   .   .   . |  (0x4444) \
+  | .   .   .   .  |  (0x2222) \
+  |.   .   .   .   |  (0x1111) \
+  |   .   .   .   .|  (0x8888) \
+  |  .   .   .   . |  (0x4444) \
+  | .   .   .   .  |  (0x2222) \
+  |.   .   .   .   |  (0x1111) outline
+Invalid
+
+PhysLayer VIA5:grid
+RGB 255 255 204
+Filled \
+  |   .   .   .   .|  (0x8888) \
+  |  .   .   .   . |  (0x4444) \
+  | .   .   .   .  |  (0x2222) \
+  |.   .   .   .   |  (0x1111) \
+  |   .   .   .   .|  (0x8888) \
+  |  .   .   .   . |  (0x4444) \
+  | .   .   .   .  |  (0x2222) \
+  |.   .   .   .   |  (0x1111) \
+  |   .   .   .   .|  (0x8888) \
+  |  .   .   .   . |  (0x4444) \
+  | .   .   .   .  |  (0x2222) \
+  |.   .   .   .   |  (0x1111) \
+  |   .   .   .   .|  (0x8888) \
+  |  .   .   .   . |  (0x4444) \
+  | .   .   .   .  |  (0x2222) \
+  |.   .   .   .   |  (0x1111) outline
+Invalid
+
+PhysLayer M5:blockage
+RGB 189 204 204
+Filled \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer M5:grid
+RGB 189 204 204
+Filled \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) \
+  |. . . . . . . . |  (0x5555) \
+  |                |  (0x0) \
+  | . . . . . . . .|  (0xaaaa) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer VIA4:blockage
+RGB 255 255 255
+Filled \
+  |              |  (0x0) \
+  |   .          |  (0x8) \
+  |  . .         |  (0x14) \
+  | .   .        |  (0x22) \
+  |.......       |  (0x7f) \
+  |              |  (0x0) \
+  |          .   |  (0x400) \
+  |         . .  |  (0xa00) \
+  |        .   . |  (0x1100) \
+  |       .......|  (0x3f80) outline
+Invalid
+
+PhysLayer VIA4:grid
+RGB 255 255 255
+Filled \
+  |              |  (0x0) \
+  |   .          |  (0x8) \
+  |  . .         |  (0x14) \
+  | .   .        |  (0x22) \
+  |.......       |  (0x7f) \
+  |              |  (0x0) \
+  |          .   |  (0x400) \
+  |         . .  |  (0xa00) \
+  |        .   . |  (0x1100) \
+  |       .......|  (0x3f80) outline
+Invalid
+
+PhysLayer M4:blockage
+RGB 140 140 166
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer M4:grid
+RGB 140 140 166
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer VIA3:blockage
+RGB 153 0 230
+Filled \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) outline
+Invalid
+
+PhysLayer VIA3:grid
+RGB 153 0 230
+Filled \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) \
+  |  .   .   .   . |  (0x4444) outline
+Invalid
+
+PhysLayer M3:blockage
+RGB 38 140 107
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer M3:grid
+RGB 38 140 107
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer VIA2:blockage
+RGB 255 255 0
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer VIA2:grid
+RGB 255 255 0
+Filled \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |................|  (0xffff) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer M2:blockage
+RGB 217 204 0
+Filled \
+  |              .|  (0x4000) \
+  |               |  (0x0) \
+  |            .  |  (0x1000) \
+  |               |  (0x0) \
+  |          .    |  (0x400) \
+  |               |  (0x0) \
+  |        .      |  (0x100) \
+  |               |  (0x0) \
+  |      .        |  (0x40) \
+  |               |  (0x0) \
+  |    .          |  (0x10) \
+  |               |  (0x0) \
+  |  .            |  (0x4) \
+  |               |  (0x0) \
+  |.              |  (0x1) outline
+Invalid
+
+PhysLayer M2:grid
+RGB 217 204 0
+Filled \
+  |              .|  (0x4000) \
+  |               |  (0x0) \
+  |            .  |  (0x1000) \
+  |               |  (0x0) \
+  |          .    |  (0x400) \
+  |               |  (0x0) \
+  |        .      |  (0x100) \
+  |               |  (0x0) \
+  |      .        |  (0x40) \
+  |               |  (0x0) \
+  |    .          |  (0x10) \
+  |               |  (0x0) \
+  |  .            |  (0x4) \
+  |               |  (0x0) \
+  |.              |  (0x1) outline
+Invalid
+
+PhysLayer VIA1:blockage
+RGB 255 255 0
+Filled n cut
+Invalid
+
+PhysLayer VIA1:grid
+RGB 255 255 0
+Filled n cut
+Invalid
+
+PhysLayer M1:blockage
+RGB 0 230 230
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer M1:grid
+RGB 0 230 230
+Filled \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  |                |  (0x0) \
+  | .   .   .   .  |  (0x2222) \
+  |                |  (0x0) \
+  |                |  (0x0) outline
+Invalid
+
+PhysLayer CO:blockage
+RGB 0 204 102
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+Invalid
+
+PhysLayer CO:grid
+RGB 0 204 102
+Filled \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) \
+  |.   .   .   .   |  (0x1111) \
+  | . . . . . . . .|  (0xaaaa) \
+  |  .   .   .   . |  (0x4444) \
+  | . . . . . . . .|  (0xaaaa) outline
+Invalid
+
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Standard Via Definitions
+
+StandardVia M10_M9           M9         M10        VIA9 0.36 0.36\
+    1 1 0.34 0.34\
+    0.08 0.08    0.08 0.08    0 0          0 0          0 0         
+StandardVia AP_M9            M9         AP         RV 3 3\
+    1 1 3 3\
+    1.5 1.5      1.5 1.5      0 0          0 0          0 0         
+StandardVia M9_M8            M8         M9         VIA8 0.36 0.36\
+    1 1 0.34 0.34\
+    0.08 0.08    0.08 0.08    0 0          0 0          0 0         
+StandardVia M8_M7            M7         M8         VIA7 0.36 0.36\
+    1 1 0.34 0.34\
+    0.08 0.08    0.08 0.08    0 0          0 0          0 0         
+StandardVia M7_M6            M6         M7         VIA6 0.1 0.1\
+    1 1 0.1 0.1\
+    0.04 0.04    0.04 0.04    0 0          0 0          0 0         
+StandardVia M6_M5            M5         M6         VIA5 0.1 0.1\
+    1 1 0.1 0.1\
+    0.04 0.04    0.04 0.04    0 0          0 0          0 0         
+StandardVia M5_M4            M4         M5         VIA4 0.1 0.1\
+    1 1 0.1 0.1\
+    0.04 0.04    0.04 0.04    0 0          0 0          0 0         
+StandardVia M4_M3            M3         M4         VIA3 0.1 0.1\
+    1 1 0.1 0.1\
+    0.04 0.04    0.04 0.04    0 0          0 0          0 0         
+StandardVia M3_M2            M2         M3         VIA2 0.1 0.1\
+    1 1 0.1 0.1\
+    0.04 0.04    0.04 0.04    0 0          0 0          0 0         
+StandardVia M2_M1            M1         M2         VIA1 0.1 0.1\
+    1 1 0.1 0.1\
+    0.04 0.04    0.04 0.04    0 0          0 0          0 0         
+StandardVia M1_PO            PO         M1         CO 0.09 0.09\
+    1 1 0.11 0.11\
+    0.04 0.04    0.04 0.04    0 0          0 0          0 0         
+StandardVia M1_NPO           PO         M1         CO 0.09 0.09\
+    1 1 0.11 0.11\
+    0.04 0.04    0.04 0.04    0 0          0 0          0 0         \
+    NP                  0.15 0.15
+StandardVia M1_PPO           PO         M1         CO 0.09 0.09\
+    1 1 0.11 0.11\
+    0.04 0.04    0.04 0.04    0 0          0 0          0 0         \
+    PP                  0.15 0.15
+StandardVia M1_OD            OD         M1         CO 0.09 0.09\
+    1 1 0.11 0.11\
+    0.03 0.03    0.04 0.04    0 0          0 0          0 0         
+StandardVia M1_NOD           OD         M1         CO 0.09 0.09\
+    1 1 0.11 0.11\
+    0.03 0.03    0.04 0.04    0 0          0 0          0 0         \
+    NP                  0.02 0.02
+StandardVia M1_POD           OD         M1         CO 0.09 0.09\
+    1 1 0.11 0.11\
+    0.03 0.03    0.04 0.04    0 0          0 0          0 0         \
+    PP                  0.02 0.02
+StandardVia M1_NW            OD         M1         CO 0.09 0.09\
+    1 1 0.11 0.11\
+    0.03 0.03    0.04 0.04    0 0          0 0          0 0         \
+    NP                  0.02 0.02
+StandardVia M1_SUB           OD         M1         CO 0.09 0.09\
+    1 1 0.11 0.11\
+    0.03 0.03    0.04 0.04    0 0          0 0          0 0         \
+    PP                  0.02 0.02
+
+#------------------------------------------------------------------------------
+# Device Blocks
+
+Device
+Name mimcap
+Prefix C
+Body (CTM&CBM)&CTMDMY
+Contact PLUS M8 filt(M8&CTM, "VIA7")
+Contact MINUS M8 filt(M8&(CBM-CTM), "VIA7")
+Depth 1
+Bloat 2
+End
+
+Device
+Name nch
+Prefix M
+Body ((((PO&OD)-NW)-VTL_N)-VTH_N)-CDUDMY
+Contact s OD OD&(NP-PO)
+Contact d OD OD&(NP-PO)
+Contact g PO OD&PO
+BulkContact b defer gnd! 1 M1 (((M1&OD)&CO)&PP)-NW
+Permute d s
+Depth 1
+Bloat 0.01
+Merge
+Measure Length BodyMinDimen*1e-06
+Measure Width (BodyArea/BodyMinDimen)*1e-06
+Measure AS CArea.0.OD*1e-12
+Measure AD CArea.1.OD*1e-12
+Measure PS CPerim.0.OD*1e-06
+Measure PD CPerim.1.OD*1e-06
+Measure Fingers Sections
+LVS Length l
+LVS Width 'm*w'
+#LVS AS 'm*as'
+#LVS AD 'm*ad'
+#LVS PS 'm*ps'
+#LVS PD 'm*pd'
+#LVS Fingers 'm*nf'
+Spice %n% %c%d %c%g %c%s %c%b %model% %param%
+Cmput NMOS device %n%, Length: %me%Length  Width: %me%Width  AS: %me%AS PS: %me%PS  AD: %me%AD  PD: %me%PD
+Model modn
+Param l=%me%Length w=%me%Width ad=%me%AD pd=%me%PD as=%me%AS ps=%me%PS
+End
+
+Device
+Name nch_hvt
+Prefix M
+Body (VTH_N&PO)&OD
+Contact s OD OD&(NP-PO)
+Contact d OD OD&(NP-PO)
+Contact g PO OD&PO
+BulkContact b defer gnd! 1 M1 (((M1&OD)&CO)&PP)-NW
+Permute d s
+Depth 1
+Bloat 0.01
+Merge
+Measure Length BodyMinDimen*1e-06
+Measure Width (BodyArea/BodyMinDimen)*1e-06
+Measure AS CArea.0.OD*1e-12
+Measure AD CArea.1.OD*1e-12
+Measure PS CPerim.0.OD*1e-06
+Measure PD CPerim.1.OD*1e-06
+Measure Fingers Sections
+LVS Length l
+LVS Width 'm*w'
+#LVS AS 'm*as'
+#LVS AD 'm*ad'
+#LVS PS 'm*ps'
+#LVS PD 'm*pd'
+#LVS Fingers 'm*nf'
+Spice %n% %c%d %c%g %c%s %c%b %model% %param%
+Cmput NMOS device %n%, Length: %me%Length  Width: %me%Width  AS: %me%AS PS: %me%PS  AD: %me%AD  PD: %me%PD
+Model modn
+Param l=%me%Length w=%me%Width ad=%me%AD pd=%me%PD as=%me%AS ps=%me%PS
+End
+
+Device
+Name nch_lvt
+Prefix M
+Body (VTL_N&PO)&OD
+Contact s OD OD&(NP-PO)
+Contact d OD OD&(NP-PO)
+Contact g PO OD&PO
+BulkContact b defer gnd! 1 M1 (((M1&OD)&CO)&PP)-NW
+Permute d s
+Depth 1
+Bloat 0.01
+Merge
+Measure Length BodyMinDimen*1e-06
+Measure Width (BodyArea/BodyMinDimen)*1e-06
+Measure AS CArea.0.OD*1e-12
+Measure AD CArea.1.OD*1e-12
+Measure PS CPerim.0.OD*1e-06
+Measure PD CPerim.1.OD*1e-06
+Measure Fingers Sections
+LVS Length l
+LVS Width 'm*w'
+#LVS AS 'm*as'
+#LVS AD 'm*ad'
+#LVS PS 'm*ps'
+#LVS PD 'm*pd'
+#LVS Fingers 'm*nf'
+Spice %n% %c%d %c%g %c%s %c%b %model% %param%
+Cmput NMOS device %n%, Length: %me%Length  Width: %me%Width  AS: %me%AS PS: %me%PS  AD: %me%AD  PD: %me%PD
+Model modn
+Param l=%me%Length w=%me%Width ad=%me%AD pd=%me%PD as=%me%AS ps=%me%PS
+End
+
+Device
+Name ndio
+Prefix d
+Body (NP&OD)&(DIODMY-NW)
+Contact MINUS OD (NP&OD)&DIODMY
+Contact PLUS OD OD&PP
+Depth 1
+Bloat 0.2
+Merge
+End
+
+Device
+Name nmoscap
+Prefix C
+Body (((VAR&NW)&OD)&PO)&NP
+Contact PLUS M1 filt(M1&(PO-OD), "CO")
+Contact MINUS M1 filt(M1&OD, "CO")
+Depth 1
+Bloat 0.35
+End
+
+Device
+Name pcapacitor
+Prefix C
+Body (MOMDMY:drawing4&MOMDMY:drawing5)&MOMDMY:drawing6
+Contact PLUS m4 m4&m4:pin
+Contact MINUS m4 m4&m4:pin
+Permute PLUS MINUS
+Bloat 0.1
+Merge
+Value c=2.1fF
+End
+
+Device
+Name pch
+Prefix M
+Body ((((PO&OD)&NW)-VTL_P)-VTH_P)-VAR
+Contact s OD OD&(PP-PO)
+Contact d OD OD&(PP-PO)
+Contact g PO OD&PO
+BulkContact b 2 M1 (((M1&OD)&CO)&NW)&NP
+Permute d s
+Depth 1
+Bloat 0.01
+Merge
+Measure Length BodyMinDimen*1e-06
+Measure Width (BodyArea/BodyMinDimen)*1e-06
+Measure AS CArea.0.OD*1e-12
+Measure AD CArea.1.OD*1e-12
+Measure PS CPerim.0.OD*1e-06
+Measure PD CPerim.1.OD*1e-06
+Measure Fingers Sections
+LVS Length l
+LVS Width 'm*w'
+#LVS AS 'm*as'
+#LVS AD 'm*ad'
+#LVS PS 'm*ps'
+#LVS PD 'm*pd'
+#LVS Fingers 'm*nf'
+Spice %n% %c%d %c%g %c%s %c%b %model% %param%
+Cmput PMOS device %n%, Length: %me%Length  Width: %me%Width  AS: %me%AS PS: %me%PS  AD: %me%AD  PD: %me%PD
+Model modn
+Param l=%me%Length w=%me%Width ad=%me%AD pd=%me%PD as=%me%AS ps=%me%PS
+End
+
+Device
+Name pch_lvt
+Prefix M
+Body (VTL_P&PO)&OD
+Contact s OD OD&(PP-PO)
+Contact d OD OD&(PP-PO)
+Contact g PO OD&PO
+BulkContact b 2 M1 (((M1&OD)&CO)&NW)&NP
+Permute d s
+Depth 1
+Bloat 0.01
+Merge
+Measure Length BodyMinDimen*1e-06
+Measure Width (BodyArea/BodyMinDimen)*1e-06
+Measure AS CArea.0.OD*1e-12
+Measure AD CArea.1.OD*1e-12
+Measure PS CPerim.0.OD*1e-06
+Measure PD CPerim.1.OD*1e-06
+Measure Fingers Sections
+LVS Length l
+LVS Width 'm*w'
+#LVS AS 'm*as'
+#LVS AD 'm*ad'
+#LVS PS 'm*ps'
+#LVS PD 'm*pd'
+#LVS Fingers 'm*nf'
+Spice %n% %c%d %c%g %c%s %c%b %model% %param%
+Cmput PMOS device %n%, Length: %me%Length  Width: %me%Width  AS: %me%AS PS: %me%PS  AD: %me%AD  PD: %me%PD
+Model modn
+Param l=%me%Length w=%me%Width ad=%me%AD pd=%me%PD as=%me%AS ps=%me%PS
+End
+
+Device
+Name pdio
+Prefix d
+Body ((NW&PP)&OD)&DIODMY
+Contact PLUS OD ((NW&PP)&OD)&DIODMY
+Contact MINUS OD (NW&NP)&OD
+Depth 1
+Bloat 0.2
+Merge
+End
+
+Device
+Name rnod
+Prefix R
+Body (RPDMY&OD)&NP
+Contact PLUS M1 filt(M1&OD, "CO")
+Contact MINUS M1 filt(M1&OD, "CO")
+Permute PLUS MINUS
+Depth 1
+Bloat 0.35
+End
+
+Device
+Name rnpolywo
+Prefix R
+Body (((RPDMY&RH)&RPO)&NP)&PO
+Contact PLUS M1 filt(M1&PO, "CO")
+Contact MINUS M1 filt(M1&PO, "CO")
+Permute PLUS MINUS
+Depth 1
+Bloat 0.35
+End
+
+Device
+Name rppoly
+Prefix R
+Body (RPDMY&PO)&(PP-RPO)
+Contact PLUS M1 filt(M1&PO, "CO")
+Contact MINUS M1 filt(M1&PO, "CO")
+Permute PLUS MINUS
+Depth 1
+Bloat 0.35
+End
+
+Device
+Name rppolywo
+Prefix R
+Body (((RPDMY&RH)&RPO)&PP)&PO
+Contact PLUS M1 filt(M1&PO, "CO")
+Contact MINUS M1 filt(M1&PO, "CO")
+Permute PLUS MINUS
+Depth 1
+Bloat 0.35
+End
+
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Misc. Parameters and Attributes
+
+MfgGrid 0.0050
+HighlightingColor green
+
+# Misc., Extraction and DRC parameters follow.
+# End of global attributes.
+
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Print Driver Blocks
+
+DefaultDriver postscript_line_draw
+
+HardCopyDevice postscript_line_draw
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 0
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.8
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+
+HardCopyDevice postscript_line_draw_color
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 0
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.8
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+
+HardCopyDevice postscript_bitmap
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 0
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.9
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+
+HardCopyDevice postscript_bitmap_encoded
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 0
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.9
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+
+HardCopyDevice postscript_bitmap_color
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 0
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.9
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+
+HardCopyDevice postscript_bitmap_color_encoded
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 0
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.9
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+
+HardCopyDevice hpgl_line_draw_color
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.8
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+
+HardCopyDevice hp_laser_pcl
+HardCopyResol 75 100 150 300
+HardCopyDefResol 2
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.8
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 16.5
+HardCopyMaxHeight 16.5
+HardCopyMaxXoff 15
+HardCopyMaxYoff 15
+
+HardCopyDevice xfig_line_draw_color
+HardCopyLegend 0
+HardCopyOrient 2
+HardCopyDefWidth 4
+HardCopyDefHeight 4
+HardCopyDefXoff 0
+HardCopyDefYoff 0
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+
+HardCopyDevice image
+HardCopyResol 100 200
+HardCopyDefResol 0
+HardCopyLegend 0
+HardCopyOrient 2
+HardCopyDefWidth 4
+HardCopyDefHeight 4
+HardCopyDefXoff 0
+HardCopyDefYoff 0
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 16.5
+HardCopyMaxHeight 16.5
+HardCopyMaxXoff 15
+HardCopyMaxYoff 15
+
+#------------------------------------------------------------------------------
+# End of file
+

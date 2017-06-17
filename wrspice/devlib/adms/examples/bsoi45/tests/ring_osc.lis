@@ -1,0 +1,359 @@
+ ****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+  Copyright (C) 2012 Synopsys, Inc. All Rights Reserved.                        
+  Unpublished-rights reserved under US copyright laws.
+  This program is protected by law and is subject to the
+  terms and conditions of the license agreement from Synopsys.
+  Use of this program is your acceptance to be bound by the
+  license agreement. HSPICE is the trademark of Synopsys, Inc.
+  Input File: ring_osc.sp                                                       
+  Command line options: -hdlpath ../code -i ring_osc.sp -o ring_osc
+ lic:  
+ lic: FLEXlm: v10.8 
+ lic: USER:   navidp               HOSTNAME: bwrcrdsl-2.EECS.Berkeley.EDU 
+ lic: HOSTID:                      PID:      26701 
+ lic: Using FLEXlm license file: 
+ lic: 1701@sunv40z-1.eecs.berkeley.edu 
+ lic: Checkout 1 hspice 
+ lic: License/Maintenance for hspice will expire on 19-dec-2013/2013.03 
+ lic: 1(in_use)/50(total) FLOATING license(s) on SERVER sunv40z-1.eecs.berkeley.
+ lic:   
+ Init: read install configuration file: /tools/synopsys/hspice/G-2012.06/hspice/meta.cfg
+ Loading pVA library ring_osc.pvadir/pvaRTL_linux.so...
+
+ **warning**  pivtol too large
+ ** reset to half minimum value of (gmindc,gmin)
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ * 51 stage ring-osc.
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 xinv1.                          inv25              1.00 
+        2 xinv2.                          inv25              1.00 
+        3 xinv5.                          inv1               1.00 
+        4 xinv11.                         inv1               1.00 
+        5 xinv1.xinv1.                    inv5               1.00 
+        6 xinv1.xinv2.                    inv5               1.00 
+        7 xinv1.xinv3.                    inv5               1.00 
+        8 xinv1.xinv4.                    inv5               1.00 
+        9 xinv1.xinv5.                    inv5               1.00 
+       10 xinv2.xinv1.                    inv5               1.00 
+       11 xinv2.xinv2.                    inv5               1.00 
+       12 xinv2.xinv3.                    inv5               1.00 
+       13 xinv2.xinv4.                    inv5               1.00 
+       14 xinv2.xinv5.                    inv5               1.00 
+       15 xinv5.xn1.                      bsimsoi(va)        1.00 
+       16 xinv5.xp1.                      bsimsoi(va)        1.00 
+       17 xinv11.xn1.                     bsimsoi(va)        1.00 
+       18 xinv11.xp1.                     bsimsoi(va)        1.00 
+       19 xinv1.xinv1.xinv1.              inv1               1.00 
+       20 xinv1.xinv1.xinv2.              inv1               1.00 
+       21 xinv1.xinv1.xinv3.              inv1               1.00 
+       22 xinv1.xinv1.xinv4.              inv1               1.00 
+       23 xinv1.xinv1.xinv5.              inv1               1.00 
+       24 xinv1.xinv2.xinv1.              inv1               1.00 
+       25 xinv1.xinv2.xinv2.              inv1               1.00 
+       26 xinv1.xinv2.xinv3.              inv1               1.00 
+       27 xinv1.xinv2.xinv4.              inv1               1.00 
+       28 xinv1.xinv2.xinv5.              inv1               1.00 
+       29 xinv1.xinv3.xinv1.              inv1               1.00 
+       30 xinv1.xinv3.xinv2.              inv1               1.00 
+       31 xinv1.xinv3.xinv3.              inv1               1.00 
+       32 xinv1.xinv3.xinv4.              inv1               1.00 
+       33 xinv1.xinv3.xinv5.              inv1               1.00 
+       34 xinv1.xinv4.xinv1.              inv1               1.00 
+       35 xinv1.xinv4.xinv2.              inv1               1.00 
+       36 xinv1.xinv4.xinv3.              inv1               1.00 
+       37 xinv1.xinv4.xinv4.              inv1               1.00 
+       38 xinv1.xinv4.xinv5.              inv1               1.00 
+       39 xinv1.xinv5.xinv1.              inv1               1.00 
+       40 xinv1.xinv5.xinv2.              inv1               1.00 
+       41 xinv1.xinv5.xinv3.              inv1               1.00 
+       42 xinv1.xinv5.xinv4.              inv1               1.00 
+       43 xinv1.xinv5.xinv5.              inv1               1.00 
+       44 xinv2.xinv1.xinv1.              inv1               1.00 
+       45 xinv2.xinv1.xinv2.              inv1               1.00 
+       46 xinv2.xinv1.xinv3.              inv1               1.00 
+       47 xinv2.xinv1.xinv4.              inv1               1.00 
+       48 xinv2.xinv1.xinv5.              inv1               1.00 
+       49 xinv2.xinv2.xinv1.              inv1               1.00 
+       50 xinv2.xinv2.xinv2.              inv1               1.00 
+       51 xinv2.xinv2.xinv3.              inv1               1.00 
+       52 xinv2.xinv2.xinv4.              inv1               1.00 
+       53 xinv2.xinv2.xinv5.              inv1               1.00 
+       54 xinv2.xinv3.xinv1.              inv1               1.00 
+       55 xinv2.xinv3.xinv2.              inv1               1.00 
+       56 xinv2.xinv3.xinv3.              inv1               1.00 
+       57 xinv2.xinv3.xinv4.              inv1               1.00 
+       58 xinv2.xinv3.xinv5.              inv1               1.00 
+       59 xinv2.xinv4.xinv1.              inv1               1.00 
+       60 xinv2.xinv4.xinv2.              inv1               1.00 
+       61 xinv2.xinv4.xinv3.              inv1               1.00 
+       62 xinv2.xinv4.xinv4.              inv1               1.00 
+       63 xinv2.xinv4.xinv5.              inv1               1.00 
+       64 xinv2.xinv5.xinv1.              inv1               1.00 
+       65 xinv2.xinv5.xinv2.              inv1               1.00 
+       66 xinv2.xinv5.xinv3.              inv1               1.00 
+       67 xinv2.xinv5.xinv4.              inv1               1.00 
+       68 xinv2.xinv5.xinv5.              inv1               1.00 
+       69 xinv1.xinv1.xinv1.xn1.          bsimsoi(va)        1.00 
+       70 xinv1.xinv1.xinv1.xp1.          bsimsoi(va)        1.00 
+       71 xinv1.xinv1.xinv2.xn1.          bsimsoi(va)        1.00 
+       72 xinv1.xinv1.xinv2.xp1.          bsimsoi(va)        1.00 
+       73 xinv1.xinv1.xinv3.xn1.          bsimsoi(va)        1.00 
+       74 xinv1.xinv1.xinv3.xp1.          bsimsoi(va)        1.00 
+       75 xinv1.xinv1.xinv4.xn1.          bsimsoi(va)        1.00 
+       76 xinv1.xinv1.xinv4.xp1.          bsimsoi(va)        1.00 
+       77 xinv1.xinv1.xinv5.xn1.          bsimsoi(va)        1.00 
+       78 xinv1.xinv1.xinv5.xp1.          bsimsoi(va)        1.00 
+       79 xinv1.xinv2.xinv1.xn1.          bsimsoi(va)        1.00 
+       80 xinv1.xinv2.xinv1.xp1.          bsimsoi(va)        1.00 
+       81 xinv1.xinv2.xinv2.xn1.          bsimsoi(va)        1.00 
+       82 xinv1.xinv2.xinv2.xp1.          bsimsoi(va)        1.00 
+       83 xinv1.xinv2.xinv3.xn1.          bsimsoi(va)        1.00 
+       84 xinv1.xinv2.xinv3.xp1.          bsimsoi(va)        1.00 
+       85 xinv1.xinv2.xinv4.xn1.          bsimsoi(va)        1.00 
+       86 xinv1.xinv2.xinv4.xp1.          bsimsoi(va)        1.00 
+       87 xinv1.xinv2.xinv5.xn1.          bsimsoi(va)        1.00 
+       88 xinv1.xinv2.xinv5.xp1.          bsimsoi(va)        1.00 
+       89 xinv1.xinv3.xinv1.xn1.          bsimsoi(va)        1.00 
+       90 xinv1.xinv3.xinv1.xp1.          bsimsoi(va)        1.00 
+       91 xinv1.xinv3.xinv2.xn1.          bsimsoi(va)        1.00 
+       92 xinv1.xinv3.xinv2.xp1.          bsimsoi(va)        1.00 
+       93 xinv1.xinv3.xinv3.xn1.          bsimsoi(va)        1.00 
+       94 xinv1.xinv3.xinv3.xp1.          bsimsoi(va)        1.00 
+       95 xinv1.xinv3.xinv4.xn1.          bsimsoi(va)        1.00 
+       96 xinv1.xinv3.xinv4.xp1.          bsimsoi(va)        1.00 
+       97 xinv1.xinv3.xinv5.xn1.          bsimsoi(va)        1.00 
+       98 xinv1.xinv3.xinv5.xp1.          bsimsoi(va)        1.00 
+       99 xinv1.xinv4.xinv1.xn1.          bsimsoi(va)        1.00 
+      100 xinv1.xinv4.xinv1.xp1.          bsimsoi(va)        1.00 
+      101 xinv1.xinv4.xinv2.xn1.          bsimsoi(va)        1.00 
+      102 xinv1.xinv4.xinv2.xp1.          bsimsoi(va)        1.00 
+      103 xinv1.xinv4.xinv3.xn1.          bsimsoi(va)        1.00 
+      104 xinv1.xinv4.xinv3.xp1.          bsimsoi(va)        1.00 
+      105 xinv1.xinv4.xinv4.xn1.          bsimsoi(va)        1.00 
+      106 xinv1.xinv4.xinv4.xp1.          bsimsoi(va)        1.00 
+      107 xinv1.xinv4.xinv5.xn1.          bsimsoi(va)        1.00 
+      108 xinv1.xinv4.xinv5.xp1.          bsimsoi(va)        1.00 
+      109 xinv1.xinv5.xinv1.xn1.          bsimsoi(va)        1.00 
+      110 xinv1.xinv5.xinv1.xp1.          bsimsoi(va)        1.00 
+      111 xinv1.xinv5.xinv2.xn1.          bsimsoi(va)        1.00 
+      112 xinv1.xinv5.xinv2.xp1.          bsimsoi(va)        1.00 
+      113 xinv1.xinv5.xinv3.xn1.          bsimsoi(va)        1.00 
+      114 xinv1.xinv5.xinv3.xp1.          bsimsoi(va)        1.00 
+      115 xinv1.xinv5.xinv4.xn1.          bsimsoi(va)        1.00 
+      116 xinv1.xinv5.xinv4.xp1.          bsimsoi(va)        1.00 
+      117 xinv1.xinv5.xinv5.xn1.          bsimsoi(va)        1.00 
+      118 xinv1.xinv5.xinv5.xp1.          bsimsoi(va)        1.00 
+      119 xinv2.xinv1.xinv1.xn1.          bsimsoi(va)        1.00 
+      120 xinv2.xinv1.xinv1.xp1.          bsimsoi(va)        1.00 
+      121 xinv2.xinv1.xinv2.xn1.          bsimsoi(va)        1.00 
+      122 xinv2.xinv1.xinv2.xp1.          bsimsoi(va)        1.00 
+      123 xinv2.xinv1.xinv3.xn1.          bsimsoi(va)        1.00 
+      124 xinv2.xinv1.xinv3.xp1.          bsimsoi(va)        1.00 
+      125 xinv2.xinv1.xinv4.xn1.          bsimsoi(va)        1.00 
+      126 xinv2.xinv1.xinv4.xp1.          bsimsoi(va)        1.00 
+      127 xinv2.xinv1.xinv5.xn1.          bsimsoi(va)        1.00 
+      128 xinv2.xinv1.xinv5.xp1.          bsimsoi(va)        1.00 
+      129 xinv2.xinv2.xinv1.xn1.          bsimsoi(va)        1.00 
+      130 xinv2.xinv2.xinv1.xp1.          bsimsoi(va)        1.00 
+      131 xinv2.xinv2.xinv2.xn1.          bsimsoi(va)        1.00 
+      132 xinv2.xinv2.xinv2.xp1.          bsimsoi(va)        1.00 
+      133 xinv2.xinv2.xinv3.xn1.          bsimsoi(va)        1.00 
+      134 xinv2.xinv2.xinv3.xp1.          bsimsoi(va)        1.00 
+      135 xinv2.xinv2.xinv4.xn1.          bsimsoi(va)        1.00 
+      136 xinv2.xinv2.xinv4.xp1.          bsimsoi(va)        1.00 
+      137 xinv2.xinv2.xinv5.xn1.          bsimsoi(va)        1.00 
+      138 xinv2.xinv2.xinv5.xp1.          bsimsoi(va)        1.00 
+      139 xinv2.xinv3.xinv1.xn1.          bsimsoi(va)        1.00 
+      140 xinv2.xinv3.xinv1.xp1.          bsimsoi(va)        1.00 
+      141 xinv2.xinv3.xinv2.xn1.          bsimsoi(va)        1.00 
+      142 xinv2.xinv3.xinv2.xp1.          bsimsoi(va)        1.00 
+      143 xinv2.xinv3.xinv3.xn1.          bsimsoi(va)        1.00 
+      144 xinv2.xinv3.xinv3.xp1.          bsimsoi(va)        1.00 
+      145 xinv2.xinv3.xinv4.xn1.          bsimsoi(va)        1.00 
+      146 xinv2.xinv3.xinv4.xp1.          bsimsoi(va)        1.00 
+      147 xinv2.xinv3.xinv5.xn1.          bsimsoi(va)        1.00 
+      148 xinv2.xinv3.xinv5.xp1.          bsimsoi(va)        1.00 
+      149 xinv2.xinv4.xinv1.xn1.          bsimsoi(va)        1.00 
+      150 xinv2.xinv4.xinv1.xp1.          bsimsoi(va)        1.00 
+      151 xinv2.xinv4.xinv2.xn1.          bsimsoi(va)        1.00 
+      152 xinv2.xinv4.xinv2.xp1.          bsimsoi(va)        1.00 
+      153 xinv2.xinv4.xinv3.xn1.          bsimsoi(va)        1.00 
+      154 xinv2.xinv4.xinv3.xp1.          bsimsoi(va)        1.00 
+      155 xinv2.xinv4.xinv4.xn1.          bsimsoi(va)        1.00 
+      156 xinv2.xinv4.xinv4.xp1.          bsimsoi(va)        1.00 
+      157 xinv2.xinv4.xinv5.xn1.          bsimsoi(va)        1.00 
+      158 xinv2.xinv4.xinv5.xp1.          bsimsoi(va)        1.00 
+      159 xinv2.xinv5.xinv1.xn1.          bsimsoi(va)        1.00 
+      160 xinv2.xinv5.xinv1.xp1.          bsimsoi(va)        1.00 
+      161 xinv2.xinv5.xinv2.xn1.          bsimsoi(va)        1.00 
+      162 xinv2.xinv5.xinv2.xp1.          bsimsoi(va)        1.00 
+      163 xinv2.xinv5.xinv3.xn1.          bsimsoi(va)        1.00 
+      164 xinv2.xinv5.xinv3.xp1.          bsimsoi(va)        1.00 
+      165 xinv2.xinv5.xinv4.xn1.          bsimsoi(va)        1.00 
+      166 xinv2.xinv5.xinv4.xp1.          bsimsoi(va)        1.00 
+      167 xinv2.xinv5.xinv5.xn1.          bsimsoi(va)        1.00 
+      168 xinv2.xinv5.xinv5.xp1.          bsimsoi(va)        1.00 
+  **warning** (ring_osc.sp:10) pulse vdd period too small, reset to    2.000000
+  **warning** (ring_osc.sp:9) pulse vin period too small, reset to    2.000000
+ **info** *pvaI* Creating Verilog-A module 'bsimsoi' for XINV2.XINV5.XINV5.XP1
+
+ **info** *pvaI* Creating Verilog-A module 'bsimsoi' for XINV2.XINV5.XINV5.XN1
+
+  
+      
+ *****************************************************************
+ ******  option summary
+ ******
+ runlvl  = 3         bypass  = 2         
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ * 51 stage ring-osc.
+
+  ******  operating point information tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is voltage   simulation time is     0.     
+      node    =voltage        node    =voltage        node    =voltage
+
+ +  0:buf     = -11.4539n   0:dd      =   0.        0:in      =   1.8059 
+ +  0:out     =-194.1005m   0:out25   =   0.        0:out50   =-403.8884n
+ +  0:ss      =   0.        0:sub     =   0.        1:1       =-2.846e-23
+ +  1:2       =   0.        1:3       =   0.        1:4       =   0.     
+ +  2:1       =   0.        2:2       =   0.        2:3       =   0.     
+ +  2:4       =   0.        5:1       =  30.0141n   5:2       =  31.8266f
+ +  5:3       =-8.418e-20   5:4       =-1.670e-19   6:1       =-2.429e-27
+ +  6:2       =   0.        6:3       =   0.        6:4       =   0.     
+ +  7:1       =   0.        7:2       =   0.        7:3       =   0.     
+ +  7:4       =   0.        8:1       =   0.        8:2       =   0.     
+ +  8:3       =   0.        8:4       =   0.        9:1       =   0.     
+ +  9:2       =   0.        9:3       =   0.        9:4       =   0.     
+ + 10:1       =   0.       10:2       =   0.       10:3       =   0.     
+ + 10:4       =   0.       11:1       =   0.       11:2       =   0.     
+ + 11:3       =   0.       11:4       =   0.       12:1       =   0.     
+ + 12:2       =   0.       12:3       =   0.       12:4       =   0.     
+ + 13:1       =   0.       13:2       =   0.       13:3       =   0.     
+ + 13:4       =   0.       14:1       =-4.180e-27  14:2       =-1.230e-22
+ + 14:3       =  -2.2229a  14:4       =-428.9788f
+
+ ******  
+ * 51 stage ring-osc.
+
+  ******  transient analysis tnom=  25.000 temp=  25.000 *****
+x
+
+        time    voltage      voltage    
+                   out25        out50   
+    0.            0.           0.       
+  200.00000p    141.1542m    127.5801m  
+  400.00000p    286.0139m    273.7582m  
+  600.00000p    455.4021m    457.5144m  
+  800.00000p    628.7110m    647.9576m  
+    1.00000n     25.8850m      1.4754   
+    1.20000n     20.9790u      1.4999   
+    1.40000n      0.           1.5000   
+    1.60000n      0.           1.5000   
+    1.80000n      0.           1.5000   
+    2.00000n      0.           1.5000   
+    2.20000n      0.           1.5000   
+    2.40000n      0.           1.5000   
+    2.60000n      0.           1.5000   
+    2.80000n      0.           1.5000   
+    3.00000n      0.           1.5000   
+    3.20000n      0.           1.5000   
+    3.40000n      0.           1.5000   
+    3.60000n      0.           1.5000   
+    3.80000n    652.6134m      1.5000   
+    4.00000n      1.4997       1.5000   
+    4.20000n      1.5000       1.5000   
+    4.40000n      1.5000       1.5803   
+    4.60000n      1.5000       4.3194m  
+    4.80000n      1.5000       8.2201u  
+    5.00000n      1.5004       2.6278u  
+    5.20000n     27.0306m    -13.3174u  
+    5.40000n     37.0259u    633.4401n  
+    5.60000n      0.           2.8232u  
+    5.80000n      0.           1.4811   
+    6.00000n      0.           1.4998   
+    6.20000n      0.           1.5000   
+    6.40000n      8.9702m      1.5000   
+    6.60000n      1.4993       1.5000   
+    6.80000n      1.5000       1.5000   
+    7.00000n      1.5000       1.5020   
+    7.20000n      1.5000       8.6142m  
+    7.40000n      1.5000      18.5491u  
+    7.60000n      1.5000       2.5655u  
+    7.80000n    101.0252m      2.4438u  
+    8.00000n    138.2865u      1.4847u  
+    8.20000n    713.3228n   -581.5142n  
+    8.40000n    510.4217n      1.2913   
+    8.60000n    509.9251n      1.4993   
+    8.80000n    509.8107n      1.5000   
+    9.00000n    275.0786u      1.5000   
+    9.20000n      1.4957       1.5000   
+    9.40000n      1.5000       1.5000   
+    9.60000n      1.5000       1.5000   
+    9.80000n      1.5000      82.7779m  
+   10.00000n      1.5000     158.7508u  
+y
+-----------------------------------------------
+
+          ***** job concluded
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ * 51 stage ring-osc.
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+  
+  
+ ******  Machine Information  ******
+ CPU:
+ model name	: Intel(R) Xeon(R) CPU           E5645  @ 2.40GHz
+ cpu MHz	: 2395.000
+  
+ OS:
+ Linux version 2.6.32-358.18.1.el6.x86_64 (mockbuild@x86-003.build.bos.redhat.com) (gcc version 4.4.7 20120313 (Red Hat 4.4.7-3) (GCC) ) #1 SMP Fri Aug 2 17:04:38 EDT 2013
+
+
+  ******  HSPICE Threads Information  ******
+
+  Command Line Threads Count :     1
+  Available CPU Count        :    24
+  Actual Threads Count       :     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =    1097 # elements   =     109
+  # resistors   =       0 # capacitors =       1 # inductors   =       0
+  # mutual_inds =       0 # vccs       =       0 # vcvs        =       0
+  # cccs        =       0 # ccvs       =       0 # volt_srcs   =       4
+  # curr_srcs   =       0 # diodes     =       0 # bjts        =       0
+  # jfets       =       0 # mosfets    =       0 # U elements  =       0
+  # T elements  =       0 # W elements =       0 # B elements  =       0
+  # S elements  =       0 # P elements =       0 # va device   =     104
+  # vector_srcs =       0 # N elements =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.39           1          66
+  transient         50.77          51        9724         963 rev=         3
+  readin             0.05
+  errchk             0.19
+  setup              0.06
+  output             0.00
+
+
+           peak memory used        120.55 megabytes
+           total cpu time           51.45 seconds
+           total elapsed time       52.64 seconds
+           job started at     12:48:19 11/06/2013
+           job ended   at     12:49:11 11/06/2013
+
+
+ lic: Release hspice token(s) 
+ lic: total license checkout elapse time:        0.22(s)

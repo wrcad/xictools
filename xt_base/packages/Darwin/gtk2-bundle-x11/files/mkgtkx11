@@ -1,0 +1,192 @@
+#! /bin/bash
+
+# mkgtkx11
+# $Id: mkgtkx11,v 1.3 2014/02/16 20:22:45 stevew Exp $
+
+# This script copies what is needed from the gtk2 macport for run-time
+# gtk-2 support package for X11.  The dylibs seem be provide a minimal
+# and complete set.  The stuff in share/etc/bin is a best guess, much
+# of it may not be needed.  Hopefully nothing was overlooked...
+#
+# To set up the source, see the MacPorts manual.  Install macports
+# from source with a /usr/local/gtk2-bundle-x11 prefix.  Then
+#   sudo port install gtk2
+# Note that for testing the bundle that is the result of this script,
+# you will have to swap it in on /usr/local/gtk2-bundle-x11.
+
+sdir=/usr/local/gtk2-bundle-x11
+ndir="contents/gtk2-bundle-x11"
+rm -rf $ndir
+mkdir -p $ndir
+
+libs="\
+libasprintf \
+libatk-1 \
+libcairo \
+libcairo-gobject \
+libcairo-script-interpreter \
+libexpat \
+libffi \
+libfontconfig \
+libfreetype \
+libgailutil \
+libgdk_pixbuf-2 \
+libgdk-x11-2 \
+libgio-2 \
+libglib-2 \
+libgmodule-2 \
+libgobject-2 \
+libgraphite2 \
+libgthread-2 \
+libgtk-x11-2 \
+libharfbuzz \
+libiconv \
+libintl \
+libjpeg \
+libpango-1 \
+libpangocairo-1 \
+libpangoft2-1 \
+libpixman-1 \
+libpng16 \
+libtiff \
+libX11-xcb \
+libX11 \
+libXau \
+libXcomposite \
+libXcursor \
+libXdamage \
+libXdmcp \
+libXext \
+libXfixes \
+libXft \
+libXi \
+libXinerama \
+libXrandr \
+libXrender \
+libxcb \
+libxcb-render \
+libz"
+
+mkdir $ndir/lib
+for a in $libs; do
+    cp -R $sdir/lib/${a}*.dylib $ndir/lib
+done
+
+libdirs="\
+cairo \
+gdk-pixbuf-2.0 \
+glib-2.0 \
+gtk-2.0 \
+pango \
+terminfo"
+
+# girepository-1.0
+# gobject-introspection
+# gettext
+# engines
+
+for a in $libdirs; do
+    cp -R $sdir/lib/${a} $ndir/lib
+done
+
+exes="\
+bmp2tiff \
+cairo-sphinx \
+cairo-trace \
+cjpeg \
+djpeg \
+envsubst \
+fc-cache \
+fc-cat \
+fc-list \
+fc-match \
+fc-pattern \
+fc-query \
+fc-scan \
+fc-validate \
+freetype-config \
+gdbus \
+gdbus-codegen \
+gdk-pixbuf-csource \
+gdk-pixbuf-pixdata \
+gdk-pixbuf-query-loaders \
+gettext \
+gettext.sh \
+gettextize \
+gif2tiff \
+gio-querymodules \
+glib-compile-resources \
+glib-compile-schemas \
+glib-genmarshal \
+glib-gettextize \
+glib-mkenums \
+gobject-query \
+gtk-builder-convert \
+gtk-demo \
+gtk-query-immodules-2.0 \
+gtk-update-icon-cache \
+libpng-config \
+libpng16-config \
+ngettext \
+pango-querymodules \
+pango-view \
+pkg-config \
+png-fix-itxt \
+pngfix \
+ppm2tiff \
+ras2tiff \
+raw2tiff \
+rdjpgcom \
+rgb2ycbcr \
+tiff2bw \
+tiff2pdf \
+tiff2ps \
+tiff2rgba \
+tiffcmp \
+tiffcp \
+tiffcrop \
+tiffdither \
+tiffdump \
+tiffinfo \
+tiffmedian \
+tiffset \
+tiffsplit \
+wrjpgcom \
+xgettext \
+xmlcatalog \
+xmlcatmgr \
+xmllint \
+xmlwf"
+
+mkdir $ndir/bin
+for a in $exes; do
+    cp $sdir/bin/${a} $ndir/bin
+done
+
+etc="\
+fonts \
+gtk-2.0 \
+pango"
+
+mkdir $ndir/etc
+for a in $etc; do
+    cp -R $sdir/etc/${a} $ndir/etc
+done
+
+share="\
+fontconfig \
+gettext \
+glib-2.0 \
+graphite2 \
+gtk-2.0 \
+locale \
+pkgconfig \
+terminfo \
+themes \
+xcb"
+
+mkdir $ndir/share
+for a in $share; do
+    cp -R $sdir/share/${a} $ndir/share
+done
+

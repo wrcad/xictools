@@ -1,0 +1,118 @@
+Rawfile Format
+
+The ascii format consists of lines or sets of lines introduced by a keyword. The Title and Date lines
+should be the first in the file and should occur only once. There may be any number of plots in the
+file, each one beginning with the Plotname, Flags, No. Variables, No. Points, Variables, and Values
+lines. Command and Option lines are optional and may occur anywhere between the Plotname and
+Values lines. Note that after the Variables keyword there must be numvars "declarations" of
+outputs, and after the Values keyword, there must be numpoints lines, each consisting of numvars
+values. (If this is confusing just create an ascii rawfile with WRspice and look at it...) 
+
+Line name       Description
+Title           An arbitrary string describing the circuit
+Date            A free-format date string
+Plotname        A string describing the analysis type*
+Flags           Currently, either complex or real
+No. Variables   The number of variables (numvars)
+No. Points      The number of points (numpoints)
+Command         An arbitrary WRspice command
+Option          WRspice variables
+Variables       A number of variable lines (see below)
+Values          A number of data lines (see below)
+
+* See the description for the deftype command. 
+
+Any text on a Command line is executed when the file is loaded as if it were typed as a command.
+By default, WRspice puts a version command into every rawfile it creates. 
+
+Text on a Option line is parsed as if it were the arguments to a WRspice set command. The variables
+set are then available normally, except that they are read only and are associated with the plot (see
+the WRspice documentation). 
+
+A variable line looks like number name typename [ parm=value ] .... The numbers are irrelevant, the
+name is the name by which this quantity will be referred to by WRspice, the typename may either a
+pre-defined type or one defined with the deftype command, and the parm's are listed below. 
+
+Predefined Types
+
+Name           Description            Spice2 Numeric Code
+
+notype         Dimensionless value    0
+time           Time                   1
+frequency      Frequency              2
+voltage        Voltage                3
+Current        Current                4
+output-noise   Spice2 .noise result   5
+input-noise    Spice2 .noise result   6
+HD2            Spice2 .disto result   7
+HD3            Spice2 .disto result   8
+DIM2           Spice2 .disto result   9
+SIM2           Spice2 .disto result   10
+DIM3           Spice2 .disto result   11
+pole           Spice3 pz result       12
+zero           Spice3 pz result       13
+
+Parameters
+
+Name    Description
+
+min     Minimum significant value for this output
+max     Maximum significant value for this output
+color   The name of a color to use for this value
+scale   The name of another output to use as the scale
+grid    The type of grid to use - numeric codes are:
+.          0  Linear grid
+.          1  Log-log grid
+.          2  X-log/Y-linear grid
+.          3  X-linear/Y-log grid
+.          4  Polar grid
+.          5  Smith grid
+plot    The plotting style to use - numeric codes are:
+.          0  Connected points
+.          1  "Comb" style
+.          2  Unconnected points
+dims    The dimensions of this vector - not fully supported
+
+If one of the flags is complex, the points look like r,i where r and i are floating point (in %e format).
+Otherwise they are in %e format. Only one of real and complex should appear. 
+
+The lines are guaranteed to be less than 80 columns wide (unless the plot title or variable names are
+very long, or a large number of variable options are given), so this format is safe to mail between
+systems that enforce 80 character lines. 
+
+The binary format is similar to the ascii format in organization, except that it is not readable (strings
+are NULL terminated instead of newline terminated) and the values are in the machine's double
+precision floating point format instead of in ascii. This makes it much easier to read and write and
+makes the file smaller. 
+
+The circuit title, date, and analysis type name in that order are at the start of the plot, each
+terminated by a NULL byte. Then the flags field (a short, which is 1 for real data and 2 for complex
+data), the number of outputs, and the number of points (both integers) are present. Following this is
+a list of NULL-terminated strings which are command lines. This list is terminated by an extra
+NULL byte. Then come the options, which consist of the name, followed by the type and the value in
+binary. The output "declarations" consist of the name, type code, flags, color, grid type, plot type,
+and dimension information in that order. Next come the values, which are either doubles or pairs of
+doubles in the case of complex data. 
+
+The old format (which is used by Spice2 with the -r option) is as follows: 
+
+Old
+
+Field(s)          Size in Bytes
+
+title             80
+date              8
+time              8
+numoutputs        2
+the integer 4     2
+output names      8 for each output
+types of output   2 for each output
+node index        2 for each output
+plot title        24
+data              numpoints * numoutputs * 8
+
+The data is in the form of double-precision numbers, or pairs of single-precision numbers if the data
+is complex. 
+
+The values recognized for the "types of output" fields are described in the Predefined Values table
+above. 

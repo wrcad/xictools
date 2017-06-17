@@ -1,0 +1,2 @@
+#define CVS_RELEASE_TAG "wrs-4-2-16"
+#define CD_RELEASE_NUM 42160

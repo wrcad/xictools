@@ -1,0 +1,204 @@
+#######################################################################
+# src/xictools_accs/Makefile.in
+#######################################################################
+# $Id: accs_makefile.in,v 1.3 2015/12/11 02:17:31 stevew Exp $
+#######################################################################
+
+ACCS_VERSION = @ACCS_VERSION@
+DATE = @DATE@
+
+prefix = @prefix@
+CXX = @CXX@
+CC = @CC@
+LINKCC = @LINKCC@
+CFLAGS = @CFLAGSG@ @DYNAMIC_LIBS@ @UFLAGS@ -DXICTOOLS
+LFLAGS = @LFLAGS@ @TOOLKITLFLAGS@ @UFLAGS@
+MSLIBS = @MSLIBS@
+LIBS = @LIBS@ @TOOLKITLIBS@ @EXTRALIBS@
+OSNAME = @OSNAME@
+GRPREF = @GRPREF@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ -DXICTOOLS
+RANLIB = @RANLIB@
+STDCLIB = @STDCLIB@
+INSTALL = @INSTALL@
+NTSUFFIX = @NTSUFFIX@
+FILTER = @FILTER@
+NTREGEX = @NTREGEX@
+MOZYRES = @MOZYRES@
+XEDRES = @XEDRES@
+TOOLROOT = @TOOLROOT@
+WINPTHREADFIX = @WINPTHREADFIX@
+
+LPATH = ..
+GRAPHICS = $(LPATH)/ginterf/ginterf.a
+MISCUTIL = $(LPATH)/miscutil/miscutil.a
+INSTALL_BIN    = $(INSTALL) -s -c -m 0755
+INSTALL_SCRIPT = $(INSTALL) -c -m 0755
+INSTALL_LIB    = $(INSTALL) -c -m 0644
+INSTALL_LIB_RO = $(INSTALL) -c -m 0444
+
+CCFILES = mozy.cc xeditor.cc httpget.cc hlp2html.cc hlpsrv.cc fcpp.cc \
+  lstpack.cc lstunpack.cc
+INCLUDE = -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
+WDEMODIR = wrspice_ipc_demo
+ODIR = ./xictools_accs-$(ACCS_VERSION)
+
+#######################################################################
+####### Executable and related targets ################################
+
+ACCESSORIES = mozy xeditor httpget hlpsrv hlp2html fcpp lstpack lstunpack
+
+all:  $(ACCESSORIES)
+
+mozy: mozy.o $(GRAPHICS) $(MISCUTIL) $(MOZYRES) Makefile
+	@echo $@: dynamic link
+	@$(LINKCC) $(NTNOCONS) -o mozy $(LFLAGS) mozy.o $(GRAPHICS) \
+  $(MISCUTIL) $(NTREGEX) $(LIBS) $(MOZYRES) $(STDCLIB)
+
+xeditor: xeditor.o $(GRAPHICS) $(MISCUTIL) $(XEDRES) Makefile
+	@echo $@: dynamic link
+	@$(LINKCC) $(NTNOCONS) -o xeditor $(LFLAGS) xeditor.o $(GRAPHICS) \
+  $(MISCUTIL) $(NTREGEX) $(LIBS) $(XEDRES) $(STDCLIB)
+
+httpget:  httpget.o $(GRAPHICS) $(MISCUTIL)
+	$(LINKCC) -o httpget $(LFLAGS) httpget.o $(GRAPHICS) \
+  $(MISCUTIL) $(LIBS) $(STDCLIB)
+
+hlpsrv: hlpsrv.o $(GRAPHICS) $(MISCUTIL) Makefile
+	@$(LINKCC) -o hlpsrv $(LFLAGS) hlpsrv.o \
+  $(LPATH)/ginterf/help/help_read.o $(LPATH)/ginterf/graphics.o $(MISCUTIL) \
+  $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
+
+hlp2html: hlp2html.o $(GRAPHICS) $(MISCUTIL) Makefile
+	@$(LINKCC) -o hlp2html $(LFLAGS) hlp2html.o \
+  $(LPATH)/ginterf/help/help_read.o $(LPATH)/ginterf/graphics.o $(MISCUTIL) \
+  $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
+
+fcpp: fcpp.cc $(MISCUTIL)
+	$(LINKCC) $(CFLAGS) $(INCLUDE) -o fcpp fcpp.cc $(MISCUTIL) \
+  $(STDCLIB) $(STDCLIB) $(WINPTHREADFIX)
+
+lstpack: lstpack.cc $(MISCUTIL)
+	$(LINKCC) $(CFLAGS) $(INCLUDE) -o lstpack lstpack.cc $(MISCUTIL) \
+  $(STDCLIB) $(STDCLIB) $(WINPTHREADFIX)
+
+lstunpack: lstunpack.cc $(MISCUTIL)
+	$(LINKCC) $(CFLAGS) $(INCLUDE) -o lstunpack lstunpack.cc $(MISCUTIL) \
+  $(STDCLIB) $(STDCLIB) $(WINPTHREADFIX)
+
+
+mozy.o: mozy.cc
+	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \
+  -DVERSION_STR=\"$(ACCS_VERSION)\" $(INCLUDE) -c mozy.cc
+
+xeditor.o: xeditor.cc
+	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \
+  -DVERSION_STR=\"$(ACCS_VERSION)\" $(INCLUDE) -c xeditor.cc
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+#######################################################################
+####### Recursively generate libraries ################################
+
+$(SUBDIR_LIBS)::
+	cd $(@:.a=); $(MAKE)
+
+$(GRAPHICS)::
+	cd $(@D); $(MAKE)
+
+$(MISCUTIL)::
+	cd $(@D); $(MAKE)
+	if [ x$(NTREGEX) != x ]; then \
+	    cd $(LPATH)/miscutil/libregex; $(MAKE); \
+	fi
+
+foo $(MOZYRES) $(XEDRES):
+	cd $(@D); $(MAKE) $(@F)
+
+#######################################################################
+####### Dependencies in this directory ################################
+
+depend::
+	@echo depending in xictools_accs
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+#######################################################################
+####### Clean up ######################################################
+
+eclean::
+	-rm -f mozy$(NTSUFFIX) xeditor$(NTSUFFIX) httpget$(NTSUFFIX) \
+  hlpsrv$(NTSUFFIX) hlp2html$(NTSUFFIX) fcpp$(NTSUFFIX)
+
+clean:: eclean
+	-rm -f *.o $(WDEMODIR).tar.gz $(ODIR).tar.gz
+
+distclean:: eclean
+	-rm -f *.o Makefile $(WDEMODIR).tar.gz $(ODIR).tar.gz
+
+#######################################################################
+####### Installation ##################################################
+
+INSTALL_PREFIX ?= $(prefix)
+dst_lib = $(INSTALL_PREFIX)/$(TOOLROOT)
+dst_bin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
+
+install: install_test install_force
+
+install_force: install_clean install_bin install_startup install_help
+
+install_bin: $(dst_bin)
+install_startup: $(dst_lib)/mozy/startup
+install_help: $(dst_lib)/mozy/help
+
+install_test::
+	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
+	    echo "No!  Use pagkage to install!"; \
+	    exit 1; \
+	fi
+
+install_clean::
+	-@for aa in $(ACCESSORIES); do \
+	    rm -f $(dst_bin)/$$aa$(NTSUFFIX); \
+	done
+
+$(dst_bin)::
+	@$(LPATH)/../util/mkdirpth $@
+	for aa in $(ACCESSORIES); do \
+	    $(INSTALL_BIN) $$aa$(NTSUFFIX) $@; \
+	done
+
+$(dst_lib)/mozy/startup::
+	@$(LPATH)/../util/mkdirpth $@
+	startup=`../packages/util/accs_files startup`; \
+	for a in $$startup; do \
+	    $(INSTALL_LIB) $(LPATH)/../lib/mozy/startup/$$a $@; \
+	done
+
+$(dst_lib)/mozy/help::
+	if [ -f ../../lib/mozy/help/Makefile ]; then \
+	    (cd ../../lib/mozy/help; $(MAKE)); \
+	fi
+	@$(LPATH)/../util/mkdirpth $@
+	help=`../packages/util/accs_files help`; \
+	for a in $$help; do \
+	    $(INSTALL_LIB) $(LPATH)/../lib/mozy/help/$$a $@; \
+	done
+	@$(LPATH)/../util/mkdirpth $@/screenshots
+	ss=`../packages/util/accs_files help_ss`; \
+	for a in $$ss; do \
+	    $(INSTALL_LIB) $(LPATH)/../lib/mozy/help/screenshots/$$a \
+  $@/screenshots; \
+	done
+
+package::
+	$(MAKE) $(ACCESSORIES)
+	-rm -rf $(LPATH)/packages/root$(prefix) $(LPATH)/packages/root/CVS
+	$(MAKE) INSTALL_PREFIX=$(LPATH)/packages/root$(prefix) install
+	cd $(LPATH)/packages; make xt_accs-$(OSNAME)
+
+#######################################################################

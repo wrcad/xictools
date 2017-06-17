@@ -1,0 +1,33 @@
+[Setup]
+
+AppName=gtk2-bundle
+AppVerName=gtk2-bundle-VERSION
+AppVersion=VERSION
+AppPublisher=Whiteley Research Inc.
+AppPublisherURL=http://wrcad.com
+
+OutputBaseFilename=gtk2-bundle-Win32-VERSION-i386
+
+Compression=bzip
+
+DefaultDirName=c:\usr\local
+DefaultGroupName=XicTools
+DirExistsWarning=no
+
+PrivilegesRequired=admin
+
+UninstallFilesDir={app}\gtk2-bundle\uninstall
+
+[Files]
+
+Source: "./gtk2-bundle/*.*"; DestDir: "{app}/gtk2-bundle"; Flags: recursesubdirs ignoreversion
+
+[code]
+
+#include "..\..\files\inno_uninstall"
+
+function InitializeSetup(): Boolean;
+begin
+  Result := True;
+end;
+

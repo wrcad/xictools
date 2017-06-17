@@ -1,0 +1,26 @@
+
+The examples in this directory were obtainied from these sources:
+
+1) The vbs-1.3.7 release.  This is another simulator, written by Jimen
+   Ching <jching@flex.com> and others.  The vbs project web site is
+   www.seul.org.  The vbs code is available from www.flex.com/~jching.
+
+   The shell script files were added.  The results can be compared to
+   the vbs_output file, which contains the corresponding results
+   from vbs.
+
+   files: contrib_*, dec00?_*, expr_*, mi00?_*, stmt00?_*, wt*, x_*
+
+   NOTE: the contrib_mem.v test taks a long time and lots of memory.
+
+2) The "free" Verilog simulator from VeriWell.  This is a commercial
+   simulator evailable as a free evaluation verion.  Do a web search
+   for "veriwell" to find the current distribution point.
+
+   files: minsim.v, sio85.v, vectors.v
+
+   note: the sio85.v simulation seems to loop forever, or at least
+   longer than my patience.
+
+3) Unknown
+   files: ripple.v, counter.v

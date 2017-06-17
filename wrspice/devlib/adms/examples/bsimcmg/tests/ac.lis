@@ -1,0 +1,246 @@
+ ****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+  Copyright (C) 2012 Synopsys, Inc. All Rights Reserved.                        
+  Unpublished-rights reserved under US copyright laws.
+  This program is protected by law and is subject to the
+  terms and conditions of the license agreement from Synopsys.
+  Use of this program is your acceptance to be bound by the
+  license agreement. HSPICE is the trademark of Synopsys, Inc.
+  Input File: ac.sp                                                             
+  Command line options: -hdlpath ../code -i ac.sp -o ac
+ lic:  
+ lic: FLEXlm: v10.8 
+ lic: USER:   navidp               HOSTNAME: intelr900-1.EECS.Berkeley.EDU 
+ lic: HOSTID: 0022197fa591         PID:      25235 
+ lic: Using FLEXlm license file: 
+ lic: 1701@sunv40z-1.eecs.berkeley.edu 
+ lic: Checkout 1 hspice 
+ lic: License/Maintenance for hspice will expire on 19-dec-2013/2013.03 
+ lic: 3(in_use)/50(total) FLOATING license(s) on SERVER sunv40z-1.eecs.berkeley.
+ lic:   
+ Init: read install configuration file: /tools/synopsys/hspice/G-2012.06/hspice/meta.cfg
+ **info** *pvaI* Module (bsimcmg): 4 unexpanded port, 0 init, 2075 behav, 47 contrib, 63/3242 expr(s)
+
+ **info** *pvaI* Resizing DB size for v count = 1
+
+ **info** *pvaI* Resizing DB size for v count = 2
+
+ **info** *pvaI*        Has DIS (ST SB), 4 afCount
+
+ **info** *pvaI*        0 const-G and 0 const-C, Has switch branch.
+
+ **info** *pvaI* Module (bsimcmg): generated 0 flow node(s) during compilation.
+
+ **info** *pvaI* #### Total 697 line-size(s), 63 expr(s), 47 contr(s), 0 init(s), 2075 behav(s), 4 port(s)
+
+ Loading pVA library ac.pvadir/pvaRTL_linux.so...
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *sample netlist for bsim-mg
+
+  ******  circuit name directory
+ circuit number to circuit name directory
+   number circuitname                     definition         multiplier
+        0 main circuit
+        1 x1.                             bsimcmg(va)        1.00 
+ **info** *pvaI* Creating Verilog-A module 'bsimcmg' for X1
+
+  
+      
+ *****************************************************************
+ ******  option summary
+ ******
+ runlvl  = 3         bypass  = 2         
+  Opening plot unit= 15
+ file=ac.pa0                                                                   
+
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *sample netlist for bsim-mg
+
+  ******  operating point information tnom=  25.000 temp=  25.000 *****
+ ***** operating point status is all       simulation time is     0.     
+    node    =voltage      node    =voltage      node    =voltage
+
+ +0:bulk    =   0.      0:gate    =   0.5000  0:supply  =   1.0000 
+ +0:vout    =   0.7368 
+
+
+ **** voltage sources
+
+ subckt                                   
+ element  0:vbs      0:vdd      0:vsig    
+  volts      0.         1.0000     0.5000 
+  current  1.080e-11 -1.316e-04 -3.212e-14
+  power      0.       1.316e-04  1.606e-14
+
+     total voltage source power dissipation=  1.316e-04       watts
+
+
+
+ **** resistors
+
+ subckt             
+ element  0:rl      
+  r value  2.000e+03
+  v drop     0.2632 
+  current  1.316e-04
+  power    3.463e-05
+
+ ******  
+ *sample netlist for bsim-mg
+
+  ******  ac analysis tnom=  25.000 temp=  25.000 *****
+x
+
+        freq    voltage m    volt phase 
+                   vout         vout    
+  1.0000e+03      1.4223     180.0000   
+  1.2589e+03      1.4223     180.0000   
+  1.5848e+03      1.4223     180.0000   
+  1.9952e+03      1.4223     180.0000   
+  2.5118e+03      1.4223     180.0000   
+  3.1622e+03      1.4223     180.0000   
+  3.9810e+03      1.4223     180.0000   
+  5.0118e+03      1.4223     180.0000   
+  6.3095e+03      1.4223     180.0000   
+  7.9432e+03      1.4223     179.9999   
+  1.0000e+04      1.4223     179.9999   
+  1.2589e+04      1.4223     179.9999   
+  1.5848e+04      1.4223     179.9999   
+  1.9952e+04      1.4223     179.9999   
+  2.5118e+04      1.4223     179.9998   
+  3.1622e+04      1.4223     179.9998   
+  3.9810e+04      1.4223     179.9997   
+  5.0118e+04      1.4223     179.9997   
+  6.3095e+04      1.4223     179.9996   
+  7.9432e+04      1.4223     179.9995   
+  1.0000e+05      1.4223     179.9993   
+  1.2589e+05      1.4223     179.9991   
+  1.5848e+05      1.4223     179.9989   
+  1.9952e+05      1.4223     179.9986   
+  2.5118e+05      1.4223     179.9983   
+  3.1622e+05      1.4223     179.9978   
+  3.9810e+05      1.4223     179.9972   
+  5.0118e+05      1.4223     179.9965   
+  6.3095e+05      1.4223     179.9956   
+  7.9432e+05      1.4223     179.9945   
+  1.0000e+06      1.4223     179.9931   
+  1.2589e+06      1.4223     179.9913   
+  1.5848e+06      1.4223     179.9890   
+  1.9952e+06      1.4223     179.9862   
+  2.5118e+06      1.4223     179.9826   
+  3.1622e+06      1.4223     179.9781   
+  3.9810e+06      1.4223     179.9724   
+  5.0118e+06      1.4223     179.9653   
+  6.3095e+06      1.4223     179.9563   
+  7.9432e+06      1.4223     179.9450   
+  1.0000e+07      1.4223     179.9308   
+  1.2589e+07      1.4223     179.9129   
+  1.5848e+07      1.4223     179.8903   
+  1.9952e+07      1.4223     179.8619   
+  2.5118e+07      1.4223     179.8261   
+  3.1622e+07      1.4223     179.7811   
+  3.9810e+07      1.4223     179.7244   
+  5.0118e+07      1.4223     179.6531   
+  6.3095e+07      1.4223     179.5632   
+  7.9432e+07      1.4222     179.4502   
+  1.0000e+08      1.4222     179.3078   
+  1.2589e+08      1.4221     179.1286   
+  1.5848e+08      1.4220     178.9030   
+  1.9952e+08      1.4219     178.6191   
+  2.5118e+08      1.4217     178.2617   
+  3.1622e+08      1.4213     177.8120   
+  3.9810e+08      1.4207     177.2463   
+  5.0118e+08      1.4198     176.5348   
+  6.3095e+08      1.4183     175.6405   
+  7.9432e+08      1.4159     174.5177   
+  1.0000e+09      1.4122     173.1101   
+  1.2589e+09      1.4065     171.3496   
+  1.5848e+09      1.3974     169.1561   
+  1.9952e+09      1.3835     166.4389   
+  2.5118e+09      1.3622     163.1029   
+  3.1622e+09      1.3304     159.0613   
+  3.9810e+09      1.2843     154.2593   
+  5.0118e+09      1.2201     148.7070   
+  6.3095e+09      1.1356     142.5136   
+  7.9432e+09      1.0315     135.9022   
+  1.0000e+10      0.9127     129.1832   
+  1.2589e+10      0.7873     122.6839   
+  1.5848e+10      0.6640     116.6684   
+  1.9952e+10      0.5501     111.2894   
+  2.5118e+10      0.4496     106.5854   
+  3.1622e+10      0.3640     102.5091   
+  3.9810e+10      0.2929      98.9618   
+  5.0118e+10      0.2346      95.8206   
+  6.3095e+10      0.1875      92.9542   
+  7.9432e+10      0.1497      90.2304   
+  1.0000e+11      0.1195      87.5179   
+  1.2589e+11    9.551e-02     84.6852   
+  1.5848e+11    7.648e-02     81.6004   
+  1.9952e+11    6.148e-02     78.1316   
+  2.5118e+11    4.971e-02     74.1537   
+  3.1622e+11    4.055e-02     69.5622   
+  3.9810e+11    3.351e-02     64.2986   
+  5.0118e+11    2.817e-02     58.3845   
+  6.3095e+11    2.420e-02     51.9519   
+  7.9432e+11    2.131e-02     45.2481   
+  1.0000e+12    1.928e-02     38.5948   
+y
+-----------------------------------------------
+
+          ***** job concluded
+1****** HSPICE -- G-2012.06 32-BIT (May 27 2012) RHEL32 ******                  
+ ******  
+ *sample netlist for bsim-mg
+
+  ******  job statistics summary tnom=  25.000 temp=  25.000 *****
+  
+  
+ ******  Machine Information  ******
+ CPU:
+ model name	: Intel(R) Xeon(R) CPU           X7350  @ 2.93GHz
+ cpu MHz	: 2925.869
+  
+ OS:
+ Linux version 2.6.18-348.4.1.el5 (mockbuild@x86-007.build.bos.redhat.com) (gcc version 4.1.2 20080704 (Red Hat 4.1.2-54)) #1 SMP Fri Mar 22 05:41:51 EDT 2013
+
+
+  ******  HSPICE Threads Information  ******
+
+  Command Line Threads Count :     1
+  Available CPU Count        :     8
+  Actual Threads Count       :     1
+
+
+  ******  Circuit Statistics  ******
+  # nodes       =       7 # elements   =       6
+  # resistors   =       1 # capacitors =       1 # inductors   =       0
+  # mutual_inds =       0 # vccs       =       0 # vcvs        =       0
+  # cccs        =       0 # ccvs       =       0 # volt_srcs   =       3
+  # curr_srcs   =       0 # diodes     =       0 # bjts        =       0
+  # jfets       =       0 # mosfets    =       0 # U elements  =       0
+  # T elements  =       0 # W elements =       0 # B elements  =       0
+  # S elements  =       0 # P elements =       0 # va device   =       1
+  # vector_srcs =       0 # N elements =       0
+
+
+  ******  Runtime Statistics (seconds)  ******
+
+  analysis           time    # points   tot. iter  conv.iter
+  op point           0.00           1           6
+  ac analysis        0.01          91          91
+  readin             3.44
+  errchk             0.04
+  setup              0.01
+  output             0.00
+
+
+           peak memory used        117.22 megabytes
+           total cpu time            3.50 seconds
+           total elapsed time       14.00 seconds
+           job started at     15:15:39 07/12/2013
+           job ended   at     15:15:53 07/12/2013
+
+
+ lic: Release hspice token(s) 
+ lic: total license checkout elapse time:        0.22(s)

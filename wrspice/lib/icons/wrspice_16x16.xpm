@@ -1,0 +1,27 @@
+/* XPM */
+static const char *wrs_16x16_xpm[] = {
+/* columns rows colors chars-per-pixel */
+/* "X c #008000", */
+"16 16 4 1",
+"X c none",
+"  c black",
+". c red",
+"o c green",
+/* pixels */
+"ooXXXXXXXXXXXXXX",
+"ooooXXXXXXXXXXXX",
+"XXooooo    XXXXX",
+"XXXXoooo..  XXXX",
+"XXX ooo.... XXXX",
+"XXX .o..... XXXX",
+"XXX .......  XXX",
+"XXX  ....... XXX",
+"XXX  ....... XXX",
+"XXXX  ......  XX",
+"XXXXX  ......  X",
+"XXXXXX  ...... X",
+"XXXXXXX   ....  ",
+"XXXXXXXX   .... ",
+"XXXXXXXXXX   ...",
+"XXXXXXXXXXX     "
+};

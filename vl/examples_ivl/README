@@ -1,0 +1,14 @@
+
+This directory contains the Verilog source files from the test suite for
+ivl (source file: ivl_tests-20010630.tgz).  Ivl is another Verilog simulator
+project, see http://icarus.com.  The test suite is available from
+http://sourceforge.net/projects/ivtest
+
+The ivltests directory contains tons of useful test files.  A very few
+have been modified (use "grep SRW *.v") to fix possible bugs and/or
+add comments.  The run script will run these tests.  The run.out file
+contains sample output from the run script. NOTE: both stdout and stderr
+are directed into run.out.
+
+The contrib directory contains a few more verilog files.  The add32.v
+file seems to have fundamental errors and won't run under vl.

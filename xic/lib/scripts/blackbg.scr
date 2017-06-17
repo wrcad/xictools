@@ -1,0 +1,62 @@
+# This script changes layer and attribute colors for electrical
+# schematics to the default black background, using the default colors
+# from the example tech files.  It reverts the effect of the "whitebg"
+# script.
+#
+# ($Id: blackbg.scr,v 1.2 2012/03/26 22:47:11 stevew Exp $)
+
+if (TechParseLine("ElecLayer SCED RGB 225 225 225") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer ETC1 RGB 125 225 225") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer ETC2 RGB 225 225 125") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer NAME RGB 255 230 175") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer MODL RGB 175 225 175") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer VALU RGB 255 225 225") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer PARM RGB 200 175 225") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer NODE RGB 255 255 225") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer SPTX RGB 225 134 170") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecBackground black") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecGhostColor white") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecHighlightingColor white") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecSelectColor1 white") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecMarkerColor yellow") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecInstanceBBColor turquoise") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecInstanceNameColor salmon") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecCoarseGridColor 255 208 136") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecFineGridColor 0 245 249") == 0)
+    Print(GetError())
+end
+

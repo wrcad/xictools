@@ -1,0 +1,86 @@
+#######################################################################
+# xic/plugins/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.12 2013/11/25 01:01:29 stevew Exp $
+#######################################################################
+
+GFX_VERSION = @GFX_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @OA_CFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @OA_CFLAGS@ @NEEDINT64@
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+PIC_OPT = @PIC_OPT@
+SOEXT = @SOEXT@
+LSHFLAG = @LSHFLAG@
+OSNAME = @OSNAME@
+
+PY_INCLUDE = @PY_INCLUDE@
+PY_LIBS = @PY_LIBS@
+
+TCL_INCLUDE = @TCL_INCLUDE@
+TCL_LIBS = @TCL_LIBS@
+TK_INCLUDE = @TK_INCLUDE@
+TK_LIBS = @TK_LIBS@
+
+LPATH = ../../xt_base
+HFILES =
+CCFILES = \
+  py.cc tcltk.cc
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
+TARGETS : @PY_TARGETS@ tcltk.$(SOEXT) tcl.$(SOEXT)
+
+DARGS = -DOSNAME="\"$(OSNAME)\""
+
+py26.$(SOEXT) : py.o
+	@echo py26.$(SOEXT): linking
+	@$(CXX) $(LSHFLAG) -o py26.$(SOEXT) py.o $(PY_LIBS)
+
+py27.$(SOEXT) : py.o
+	@echo py27.$(SOEXT): linking
+	@$(CXX) $(LSHFLAG) -o py27.$(SOEXT) py.o $(PY_LIBS)
+
+py.o: py.cc
+	$(CXX) $(CFLAGS) $(DARGS) $(PIC_OPT) $(INCLUDE) $(PY_INCLUDE) \
+  -c py.cc
+
+tcltk.$(SOEXT) : tcltk.o
+	@echo tcltk.$(SOEXT): linking
+	@$(CXX) $(LSHFLAG) -o tcltk.$(SOEXT) tcltk.o $(TCL_LIBS) $(TK_LIBS)
+
+tcl.$(SOEXT) : tcl.o
+	@echo tcl.$(SOEXT): linking
+	@$(CXX) $(LSHFLAG) -o tcl.$(SOEXT) tcl.o $(TCL_LIBS)
+
+tcltk.o: tcltk.cc
+	$(CXX) $(CFLAGS) $(DARGS) $(PIC_OPT) $(INCLUDE) $(TCL_INCLUDE) \
+  $(TK_INCLUDE) -c $*.cc
+
+tcl.o: tcltk.cc
+	$(CXX) -o tcl.o $(CFLAGS) $(DARGS) $(PIC_OPT) -DNO_TK $(INCLUDE) \
+ $(TCL_INCLUDE) -c tcltk.cc
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+depend:
+	@echo depending in xic/plugins
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(PY_INCLUDE) $(TCL_INCLUDE) \
+  $(TK_INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm *.o *.$(SOEXT)
+
+distclean:
+	-rm *.o *.$(SOEXT) Makefile
+
+#######################################################################

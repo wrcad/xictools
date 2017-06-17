@@ -1,0 +1,3842 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiConvert.hlp,v 1.109 2017/03/22 07:30:07 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiConvert.hlp
+!!TITLE
+xiConvert.hlp
+!!HTML
+
+!!SUBTOPICS
+xic:cvrtmenu
+cellname
+aliasfile
+layername
+layerchange
+gdslayer
+xic:exprt
+xic:oasadv
+xic:imprt
+windowing
+xic:convt
+asciitext
+xic:assem
+xic:cut
+xic:diff
+xic:prpfilt
+xic:txted
+xic:fsaf
+
+
+!! 120110
+!!KEYWORD
+xic:cvrtmenu
+!!TITLE
+Convert Menu
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="xic:cvrtmenu#compat"><b>Backwards Compatibility Issues</b></a><br>
+    <a href="xic:cvrtmenu#feature"><b>Feature Availability Table</b></a>
+    </td></tr></table>
+
+    <p>
+    In addition to the native cell-per-file format, <b>Xic</b> has
+    interoperability with a number of <a href="xic:fsaf">archive
+    formats</a>.  These file types can be read into <i>Xic</i>
+    directly with the <a href="xic:open"><b>Open</b></a> command, and
+    generated with the <a href="xic:save"><b>Save As</b></a> command. 
+    The <b>Convert Menu</b> provides for setting format-specific
+    conversion parameters, and contains other conversion commands.
+
+    <p>
+    Under 32-bit Unix/Linux, files are opened in 64-bit offset mode. 
+    This enables files larger than 2Gb to be processed.
+
+    <p>
+    Native <i>Xic</i> cells use a CIF-like ASCII format, with one cell
+    per file.  This is the default format used by <i>Xic</i>, but is
+    not particularly efficient with respect to input/output speed and
+    disk space.
+
+!! 111513
+    <a name="compat">
+    <h2>Backwards Compatibility Issues</h2>
+    </a>
+
+    <font size=6 color=red>In general, files produced with this
+    <i>Xic</i> release are <b>NOT</b> compatible with
+    pre-<i>Xic</i>-4.0 releases.</font>
+
+    <p>
+    The native cell files and CIF now accept and generate arbitrarily
+    long layer names.  These are not compatible with traditional CIF,
+    or with older <i>Xic</i> releases.  Older <i>Xic</i> releases will
+    fail to read native cell files, or CIF files, with non-traditional
+    layer names. Traditional CIF layer names contain four characters or
+    fewer.
+
+    <p>
+    Native cell files and CIF files from the 4.0 branch that use
+    traditional CIF layer names should be backward compatible in this
+    respect.
+
+    <p>
+    There is a new syntax used for electrical <a
+    href="prpty:node"><b>node</b></a> property strings.  This will, in
+    general, prevent backwards compatibility of schematic files.  If
+    the <a href="Out32nodes"><b>Out32nodes</b></a> variable is set,
+    files written will use the old node syntax, with loss of some data
+    that is not supported by the older syntax, but files will be
+    readable by older <i>Xic</i> programs.
+
+!! 022916
+
+    <p>
+    The <b>Convert Menu</b> entry brings up a menu containing commands
+    which perform explicit translations and other manipulations and
+    diagnostics.
+
+    <p>
+    The table below lists the commands found in the <b>Convert Menu</b>,
+    and gives the internal name and a brief description.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Convert Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:exprt"><b>Export Cell Data</b></a></td>
+      <td><tt>exprt</tt></td> <td><b>Export Control</b></td>
+      <td>Create a cell data file</td></tr>
+    <tr><td><a href="xic:imprt"><b>Import Cell Data</b></a></td>
+      <td><tt>imprt</tt></td> <td><b>Import Control</b></td>
+      <td>Read a cell data file</td></tr>
+    <tr><td><a href="xic:convt"><b>Format Conversion</b></a></td>
+      <td><tt>convt</tt></td> <td><b>Format Conversion</b></td>
+      <td>Direct file-to-file format conversions</td></tr>
+    <tr><td><a href="xic:assem"><b>Assemble Layout</b></a></td>
+      <td><tt>assem</tt></td> <td><b>Layout File Merge Tool</b></td>
+      <td>Merge layout data</td></tr>
+    <tr><td><a href="xic:diff"><b>Compare Layouts</b></a></td>
+      <td><tt>diff</tt></td> <td><b>Compare Layouts</b></td>
+      <td>Find differences between layouts</td></tr>
+    <tr><td><a href="xic:cut"><b>Cut and Export</b></a></td>
+      <td><tt>cut</tt></td> <td><b>Export Control</b></td>
+      <td>Write out part of a layout</td></tr>
+    <tr><td><a href="xic:txted"><b>Text Editor</b></a></td>
+      <td><tt>txted</tt></td>
+      <td><b>Text Editor</b></td> <td>Text edit cell file</td></tr>
+    </table>
+
+    <p>
+    The <a href="xic:open"><b>Open</b></a> command in the <a
+    href="xic:filemenu"><b>File Menu</b></a> can be used directly to
+    read files in the supported formats for editing.  When a cell is
+    written to disk, it is by default written in the format of origin,
+    though a format change can be coerced in the <a
+    href="xic:save"><b>Save As</b></a> command by supplying a file
+    extension.  Thus, there are alternatives to using many of the
+    commands in the <b>Convert Menu</b>.
+
+    <p>
+    During a conversion, a <a href="logfiles">log file</a> is written
+    by the converters.  This file contains a record of messages
+    emitted during the conversion.  If during a conversion an error or
+    warning message is emitted, a file browsing window containing the
+    log file will appear when the conversion is complete, though this
+    can be suppressed by setting the <a
+    href="NoPopUpLog"><b>NoPopUpLog</b></a> variable.  These
+    messages also appear on the prompt line during the conversion. 
+    The file browser is a read-only version of the <a
+    href="texteditor">text editor</a> window, and has a number of
+    associated keyboard commands, including word searching.
+
+    <p>
+    On GDSII and OASIS input, if there is no specified mapping for a
+    given layer and datatype, an <a href="gdslayer">attempt is
+    made</a> to map to existing <i>Xic</i> layers, and if that fails,
+    a new layer is created.
+
+    <p>
+    When reading CIF, layer names are matched to those defined in the
+    current technology in a case-insensitive mode.  This differs from
+    native and CGX file types, which use case-sensitive matching. 
+    Layers found in the file which do not match any in the technology
+    are created, using default parameters.
+
+    <!-- 022916 -->
+    <a name="feature"></a>
+    <h2>Feature Availability Table</h2>
+
+    The rather complicated table below describes how various features
+    apply to the input and output generation panels and functions.
+
+    <a name="features"></a>
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+
+    <tr><th>Operation From</th> <th>Scaling</th> <th>Layer Filter</th>
+      <th>Cell Name Mapping</th> <th>Windowing</th></tr>
+
+    <tr><th colspan=5 align=center>Windows</th></tr>
+    <tr><td><a href="xic:exprt"><b>Export Control</b></a></td>
+      <td>W</td> <td>&nbsp;</td>  <td>w C,F,P</td>   <td>o F,W,C</td></tr>
+    <tr><td><a href="xic:imprt"><b>Import Control</b></a></td>
+      <td>R</td> <td>Y</td> <td>r A,C,F,P</td> <td>&nbsp;</td></tr>
+    <tr><td><a href="xic:convt"><b>Format Conversion</b></a></td>
+      <td>C</td> <td>Y</td> <td>r C,F,P</td>   <td>c W,C,F,E</td></tr>
+    <tr><td><a href="xic:chdadd"><b>Open Cell Hierarchy</b></a></td>
+      <td>R</td> <td>&nbsp;</td> <td>r C,F,P</td> <td>&nbsp;</td></tr>
+    <tr><td><a href="xic:cgdopen">create CGD</a> <td>C</td> <td>Y</td>
+      <td>r C,F,P</td> <td>c W,C,F,E</td></tr>
+    <tr><td><a href="xic:open"><b>Open</b></a>/<a
+      href="xic:place"></b>Place</b></a>/drag-drop</td> <td>&nbsp;</td>
+      <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
+
+    <tr><th colspan=5 align=center>Script Functions</th></tr>
+    <tr><th colspan=5><a href="funcs:main1:curcell">Current Cell</a></th></tr>
+    <tr><td><a href="Edit"><tt>Edit</tt></td> <td>&nbsp;</td> <td>&nbsp;</td>
+      <td>&nbsp;</td> <td>&nbsp;</td></tr>
+    <tr><td><a href="OpenCell"><tt>OpenCell</tt></td> <td>R</td>
+      <td>Y</td>    <td>r A,C,F,P</td> <td>&nbsp;</td></tr>
+    <tr><td><a href="Save"><tt>Save</tt></td> <td>&nbsp;</td> <td>&nbsp;</td>
+      <td>&nbsp;</td> <td>&nbsp;</td></tr>
+
+    <tr><th colspan=5><a href="funcs:cvrt:cvt">Layout File Format
+      Conversion</a></th></tr>
+    <tr><td><a href="FromArchive"><tt>FromArchive</tt></a></td>
+      <td>C</td> <td>Y</td> <td>r C,F,P</td> <td>c W,C,F,E</td></tr>
+    <tr><td><a href="FromNative"><tt>FromNative</tt></a></td>
+      <td>C</td> <td>Y</td> <td>r C,F,P</td> <td>&nbsp;</td></tr>
+
+    <tr><th colspan=5><a href="funcs:cvrt:exprt">Export Layout
+      File</a></th></tr>
+    <tr><td><a href="SaveCellAsNative"><tt>SaveCellAsNative</tt></td>
+      <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
+    <tr><td><a href="Export"><tt>Export</tt></td> <td>W</td> <td>&nbsp;</td>
+      <td>w C,F,P</td> <td>o F,W,C</td></tr>
+    <tr><td><a href="ToXIC"><tt>ToXIC</tt></td> <td>W</td> <td>&nbsp;</td>
+      <td>w C,F,P</td> <td>o F,W,C</td></tr>
+    <tr><td><a href="ToCGX"><tt>ToCGX</tt></td> <td>W</td> <td>&nbsp;</td>
+      <td>w C,F,P</td> <td>o F,W,C</td></tr>
+    <tr><td><a href="ToCIF"><tt>ToCIF</tt></td> <td>W</td> <td>&nbsp;</td>
+      <td>w C,F,P</td> <td>o F,W,C</td></tr>
+    <tr><td><a href="ToGDS"><tt>ToGDS</tt></td> <td>W</td> <td>&nbsp;</td>
+      <td>w C,F,P</td> <td>o F,W,C</td></tr>
+    <tr><td><a href="ToGdsLibrary"><tt>ToGdsLibrary</tt></td> <td>W</td>
+      <td>&nbsp;</td> <td>w C,F,P</td> <td>o F</td></tr>
+    <tr><td><a href="ToOASIS"><tt>ToOASIS</tt></td> <td>W</td> <td>&nbsp;</td>
+      <td>w C,F,P</td> <td>o F,W,C</td></tr>
+    <tr><td><a href="ToTxt"><tt>ToTxt</tt></td> <td>&nbsp;</td> <td>&nbsp;</td>
+      <td>&nbsp;</td> <td>&nbsp;</td></tr>
+
+    <tr><th colspan=5><a href="funcs:cvrt:chd">Cell Hierarchy
+      Digest</a></th></tr>
+    <tr><td><a href="OpenCellHierDigest"><tt>OpenCellHierDigest</tt></a></td>
+      <td>&nbsp;</td> <td>&nbsp;</td> <td>r C,F,P</td> <td>&nbsp;</td></tr>
+    <tr><td><a href="ChdLoadGeometry"><tt>ChdLoadGeometry</tt></a></td>
+      <td>&nbsp;</td> <td>Y</td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
+    <tr><td><a href="ChdEdit"><tt>ChdEdit</tt></a></td> <td>s</td>
+      <td>Y</td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
+    <tr><td><a href="ChdOpenFlat"><tt>ChdOpenFlat</tt></a></td>
+      <td>s</td> <td>Y</td> <td>&nbsp;</td> <td>w,c</td></tr>
+    <tr><td><a href="ChdWrite"><tt>ChdWrite</tt></a></td>
+      <td>s</td> <td>Y</td> <td>&nbsp;</td> <td>w,c,f,e</td></tr>
+    <tr><td><a href="ChdWriteSplit"><tt>ChdWriteSplit</tt></a></td>
+      <td>&nbsp;</td> <td>Y</td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
+
+    <tr><th colspan=5><a href="funcs:cvrt:asm">Assembly Stream</a></th></tr>
+    <tr><td><a href="StreamSource"><tt>StreamSource</tt></a></td>
+      <td>&nbsp;</td> <td>Y</td> <td>r C,P</td> <td>&nbsp;</td></tr>
+
+    <tr><th colspan=5><a href="funcs:lexpr:zoid">Trapezoid Lists and Layer
+      Expressions</a></th></tr>
+    <tr><td><a href="ChdGetZlist"><tt>ChdGetZlist</tt></a></td>
+      <td>s</td> <td>Y</td> <td>&nbsp;</td> <td>w,c</td></tr>
+
+    <tr><th colspan=5><a href="funcs:lexpr:db">Polymorphic Flat
+      Database</a></th></tr>
+    <tr><td><a href="ChdOpenOdb"><tt>ChdOpenOdb</tt></a></td>
+      <td>s</td> <td>Y</td> <td>&nbsp;</td> <td>w,c</td></tr>
+    <tr><td><a href="ChdOpenZdb"><tt>ChdOpenZdb</tt></a></td>
+      <td>s</td> <td>Y</td> <td>&nbsp;</td> <td>w,c</td></tr>
+    <tr><td><a href="ChdOpenZbdb"><tt>ChdOpenZbdb</tt></a></td>
+      <td>s</td> <td>Y</td> <td>&nbsp;</td> <td>w</td></tr>
+
+    </table>
+    <br>
+
+    <p>
+    Notes:
+    <ul>
+    <li>There are three internal global scale factor registers, which
+    are set in the various windows and with the <a
+    href="SetConvertScale"><tt>SetConvertScale</tt></a> script function. 
+    One scale (R) is for reading, another (W) is for writing, and the
+    third (C) is for format conversion.  This indicator is shown in
+    the <b>Scaling</b> column.  The lower case 's' applies to script
+    functions that take a local scale value.
+
+    <p>
+    <li>The layer filtering and aliasing module is a group of controls
+    that appear in the <b>Format Conversion</b> panel and elsewhere. 
+    These maintain the values in the <a
+    href="LayerList"><b>LayerList</b></a> variable and related.  A 'Y'
+    in the <b>Layer Filter</b> column appears where layer filtering
+    can apply.
+
+    <p>
+    <li>The <b>Cell Name Mapping</b> module is a group of controls
+    that allow cell name aliasing, case changing, etc.  This module
+    appears in the <b>Format Conversion</b> panel and elsewhere.  The
+    state for this module tracks two sets of variables, similar to <a
+    href="InToLower"><b>InToLower</b></a> and <a
+    href="OutToLower"><b>OutToLower</b></a>, depending on whether the
+    panel is controlling input or output.  The code letters in the
+    <b>Cell Name Mapping</b> are:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>r or w</td> <td>Reading or writing variables.</td></tr>
+    <tr><td>A</td> <td>The auto-aliasing feature for cell name clashes
+      is available.</td></tr>
+    <tr><td>C</td> <td>Case conversion is available.</td></tr>
+    <tr><td>F</td> <td>Alias files can be used.</td></tr>
+    <tr><td>P</td> <td>A prefix and/or suffix can be added to cell
+      names.</td></tr>
+    </table>
+
+    <p>
+    <li>The <b>Format Conversion</b> panel and others contain a
+    windowing module, containing controls for entering a rectangle,
+    plus <b>Use Window</b>, <b>Clip</b>, <b>Flatten</b>, and empty
+    cell filtering buttons.  Internally, there are two global register
+    sets for the state of these controls, one for output and one for
+    format conversion (windowing is never used for input).  The <a
+    href="SetConvertFlags"><tt>SetConvertFlags</tt></a> and <a
+    href="SetConvertArea"><tt>SetConvertArea</tt></a> functions can
+    also be used to set the flag states and the windowing area.
+
+    <p>
+    The codes in the <b>Windowing</b> column are:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>c or o</td> <td>Conversion or output values.</td></tr>
+    <tr><td>W</td>      <td>Windowing is available.</td></tr>
+    <tr><td>C</td>      <td>Clipping to the window is possible.</td></tr>
+    <tr><td>F</td>      <td>Flattening is available.</td></tr>
+    <tr><td>E</td>      <td>Empty cell filtering is available.</td></tr>
+    </table>
+ 
+    <p>
+    If flattening (F) is listed first, the other options are only
+    available when flattening.  The option letters are listed in lower
+    case for script functions that take local values as arguments.
+
+!!SEEALSO
+cellname
+layername
+layerchange
+xic:commands
+
+// 022916
+!!KEYWORD
+cellname
+!!TITLE
+Cell Name Mapping
+!!HTML
+    Releases of <i>Xic</i> prior to 3.0.5 allowed white space in cell
+    names.  However, some <i>Xic</i> features, such as selection of
+    cell names in the <a href="xic:cells"><b>Cells Listing</b></a>
+    panel will not work with cell names containing white space, and
+    there are probably many other examples.  Most basic operations
+    will work, though the cell name containing white space will have
+    to be quoted when given in the prompt area and elsewhere.  The use
+    of white space in cell names can lead to trouble and is
+    discouraged.
+
+    <p>
+    In the present release, by default, white space is not permitted
+    in cell names.  When reading archive files, the cell name alias
+    mechanism (described below) is used to convert white space
+    characters found in cell names to underscore characters.  Attempts
+    to open a new cell with a name containing white space will fail. 
+    However, white space is allowed, as in older <i>Xic</i> releases,
+    if the <a href="NoStrictCellnames"><b>NoStrictCellnames</b></a>
+    variable is set.
+
+    <p>
+    There is provision for modifying cell names as archive files are
+    read, written, or format converted.  The <a href="xic:imprt">Import
+    Control</a>, <a href="xic:exprt">Export Control</a>, and <a
+    href="xic:convt">Format Conversion</a> panels available from the <a
+    href="xic:cvrtmenu">Convert Menu</a> each contain a <b>Cell Name
+    Mapping</b> module for controlling modification of cell names
+    during their respective operations.  This module contains the
+    following controls:
+
+    <dl>
+    <dt><b>Auto-Rename</b><dd>
+    This is a choice in the <b>Default when new cells conflict</b>
+    menu in the <b>Setup</b> page of the <a href="xic:imprt"><b>Import
+    Control</b> panel.  Selecting this item sets the state of the <a
+    href="AutoRename"><b>AutoRename</b></a> variable.  When set, cell
+    names that clash with the name of a cell in memory encountered
+    when an archive file is being read into memory will be changed to
+    avoid a clash.
+
+    <p>
+    This will apply to files read with the <a
+    href="xic:open"><b>Open</b></a> command and equivalent, in
+    addition to files opened from the panels and through script
+    functions.
+    </dl>
+
+    <dl>
+    <dt><b>Prefix</b> and <b>Suffix</b> text entries<dd>
+    Text entered into these text areas will be added as a prefix or
+    suffix to cells encountered when reading an archive file.  A
+    limited text substitution mechanism is available.  In the
+    <b>Format Conversion</b> and <b>Import Control</b> panels, these
+    text areas track the <a
+    href="InCellNamePrefix"><b>InCellNamePrefix</b></a> and <a
+    href="InCellNameSuffix"><b>InCellNameSuffix</b></a> variables.  In
+    the <b>Export Control</b> panel, these text areas track the <a
+    href="OutCellNamePrefix"><b>OutCellNamePrefix</b></a> and <a
+    href="OutCellNameSuffix"><b>OutCellNameSuffix</b></a> variables.
+
+    <p>
+    This will apply to files read with the panels and through
+    script functions only.
+    </dl>
+
+    <dl>
+    <dt><b>To Lower</b> and <b>To Upper</b> check boxes<dd>
+    If set, <b>To Lower</b> will convert upper case cell names to
+    lower case, and <b>To Upper</b> will convert lower case cell names
+    to upper.  Mixed case cell names are not affected.  Case
+    conversion is performed before any applied prefix/suffix.  In the
+    <b>Import Control</b> and <b>Format Conversion</b> panels, these
+    buttons track the state of the <a
+    href="InToLower"><b>InToLower</b></a> and <a
+    href="InToUpper"><b>InToUpper</b></a> variables.  In the <b>Export
+    Control</b> panel, these buttons track the state of the <a
+    href="OutToLower"><b>OutToLower</b></a> and <a
+    href="OutToUpper"><b>OutToUpper</b></a> variables.
+
+    <p>
+    This will apply to files read with the panels and through
+    script functions only.
+    </dl>
+
+    <dl>
+    <dt><b>Read Alias</b> and <b>Write Alias</b> check boxes<dd>
+    These buttons control whether an <a href="aliasfile">alias
+    file</a> is read before a file is processed, and updated after
+    processing is complete.  In the <b>Import Control</b> and
+    <b>Format Conversion</b> panels, the buttons track the <a
+    href="InUseAlias"><b>InUseAlias</b></a> variable, and in the
+    <b>Export Control</b> panel, the buttons track the <a
+    href="OutUseAlias"><b>OutUseAlias</b></a> variable.  Aliasing from
+    the alias file is applied before any other name change.
+
+    <p>
+    This will apply to files read with the panels and through
+    script functions only.
+    </dl>
+
+    <dl>
+    <dt>GDSII conformance<dd>
+    When writing GDSII files, cell names will be forced to conform to
+    the GDSII specification.  For format level 3, this limits the cell
+    name length to 32 characters.  The character set is limited to
+    alpha-numerics plus '<tt>?</tt>', '<tt>_</tt>', and '<tt>$</tt>'. 
+    This action is automatic when writing GDSII files and can not be
+    disabled.
+    </dl>
+
+    <dl>
+    <dt>Device Library name clashes<dd>
+    When reading any of the archive formats into memory, if a cell
+    name is encountered which clashes with a library device name, that
+    cell name is modified.  A warning message is added to the
+    conversion log file indicating the change.
+    </dl>
+
+!! 060108
+!!KEYWORD
+aliasfile
+!!TITLE
+Cell Name Alias File
+!!HTML
+    When reading and writing archive files, an alias file may be used
+    or created.  This file controls the renaming of cells between
+    <i>Xic</i> and the archive file.  Use of the alias file is
+    optional, and by default is neither created or used.
+
+    <p>
+    The <a href="InUseAlias"><b>InUseAlias</b></a> variable, if set
+    (with the <a href="!set"><b>!set</b></a> command or equivalent
+    buttons), enables utilization of the alias file when reading from
+    an archive.  Similarly, the <a
+    href="OutUseAlias"><b>OutUseAlias</b></a> variable enables
+    utilization of the alias file when writing to an archive.  These
+    variables have corresponding buttons in the panels found in the <a
+    href="xic:cvrtmenu">Convert Menu</a>.
+
+    <p>
+    If the variable is simply set as a boolean, i.e., to no value, the
+    alias file will be read before a read or write operation, and
+    created or updated if necessary after the operation completes.  If
+    the variable is set to a word starting with 'r' (case
+    insensitive), then the alias file will be read before the
+    operation and used during the operation (if it exists), but will
+    not be created or updated after the operation completes.  If the
+    variable is set to a word starting with 'w' or 's' (case
+    insensitive), the alias file will not be read before an operation,
+    but will be created or updated after the operation completes.
+
+    <p>
+    If enabled, after a read/write operation on an archive file, an
+    alias file may be created, or updated if it already exists.  This
+    file will be created in the same directory as the archive file,
+    where it must remain in order to be found.  The name of the alias
+    file is the same as that of the archive file, with "<tt>.gz</tt>"
+    stripped (if present) and "<tt>.alias</tt>" appended.
+
+    <p>
+    The alias file consists of lines with two tokens:  the first token
+    is a cell name found in the archive file, and the second token is
+    the name of the cell as known to <i>Xic</i>, which will be
+    different from the first token (i.e., cell names that are
+    unchanged do not appear).  The file will be used, if it exists and
+    the operation is enabled, to translate cell names to and from the
+    archive format, as the file is written or read.  The alias file will
+    be written or updated, if necessary and the operation is enabled,
+    after an operation that reads or writes an archive file.  No file
+    is produced unless a name was changed.
+
+    <p>
+    On reading or writing an archive file, a name will potentially change if
+    any of the cell name <a hef="cellname">aliasing</a> features are enabled.
+    This includes enforcement of the GDSII standard for cell names when
+    writing GDSII.  Any name change will be indicated in the log
+    file.  If a name changes, the alias file will be updated, if updating
+    is enabled.  The sense of the substitutions from the alias file is
+    reversed when reading vs. writing.
+
+    <p>
+    It is not an error if no alias file exists.
+
+    <p>
+    When the alias file utilization is enabled, one should be aware
+    that the alias file is controlling cell naming when converting to
+    and from that file, since occasionally this can lead to confusion. 
+    The values in the alias file have precedence over other directives,
+    such as case changes.  For example, suppose that an archive file
+    is created with case mapping applied.  This will produce an alias
+    file, if updating is enabled.  If the case conversion is then
+    turned off, and the write operation repeated to the same file name
+    with alias file reading enabled, the cell names will <i>still</i>
+    be case-converted, due to the alias file.  Similarly, when reading
+    the archive file produced, the cell names will be back-converted
+    by the alias file.  If the translations are no longer wanted, the
+    switches controlling alias file usage should be turned off, or the
+    alias file deleted.
+
+    <p>
+    Note that it is possible for the user to hand edit the alias
+    file to produce an arbitrary cell name mapping.  For example, it
+    might be used to convert all cell names in a design to
+    non-descriptive random strings before sending a design file to
+    another site, to mask the function of the circuitry.
+
+!! 032017
+!!KEYWORD
+layername
+!!TITLE
+Layer Names
+!!HTML
+    <i>Xic</i> follows the Virtuoso/OpenAccess concept of component
+    layers, purposes, and layer-purpose pairs.  Component layers are
+    represented by a name and a number, and are abstract.  Likewise,
+    purposes are an abstraction represented by a name and a number. 
+    An actual <i>Xic</i> layer, which appears in the layer table, is
+    a layer-purpose pair.
+    
+    <p>
+    Every <i>Xic</i> layer has a component layer name and purpose.
+    The name of an <i>Xic</i> layer is given or printed in the form
+    <blockquote>
+    <i>component_layer</i>[<tt>:</tt><i>purpose</i>]
+    </blockquote>
+    If the purpose name is "<tt>drawing</tt>", then it is not printed
+    or given explicitly.  Otherwise, the purpose is separated from
+    the component layer name by a colon ('<tt>:</tt>') character. 
+    Note that when the purpose is <tt>drawing</tt>, the <i>Xic</i>
+    layer name is simply the component layer name, so if the only
+    purpose used is <tt>drawing</tt>, the distinction between
+    component and <i>Xic</i> layer names vanishes.
+
+    <p>
+    Example <i>Xic</i> layer names:
+    <blockquote>
+    <tt>m1</tt>
+    <tt>m1:pin</tt>
+    </blockquote>
+    The first name corresponds to component layer name <tt>m1</tt>
+    and purpose <tt>drawing</tt>.  The second example uses a purpose
+    named "<tt>pin</tt>".
+
+    <p>
+    In <i>Xic</i>, layer names of both types, and purpose names, are
+    always recognized and treated without case-sensitivity.  There is
+    no limit on the length of these names.  Component layer and
+    purpose names can contain alphanumeric characters plus dollar sign
+    ('<tt>$</tt>') and underscore ('<tt>_</tt>').
+
+    <p>
+    All of the component layer and purpose names also have
+    corresponding numbers.  These may be assigned by the user, or
+    assigned internally by <i>Xic</i>.  <i>Xic</i> will maintain the
+    associations, but the numbers are not used by <i>Xic</i>.  They
+    are, however, important for compatibility with other tools such
+    as Virtuoso.
+
+    <p>
+    All <i>Xic</i> layers may be given an alias name.  The layer will
+    be recognized by this name, as well as its normal name. 
+    <i>Xic</i> layers may also contain a description string,
+    presentation attributes such as color and fill pattern, and a host
+    of other flags and properties for use within <i>Xic</i>.
+
+    <p>
+    When working with GDSII and other files that use a numeric
+    layer/datatype combination to designate layers, the layer/datatype
+    combinations can be mapped into arbitrary <i>Xic</i> layers using
+    the <a href="gdslayer">mapping constructs</a>.  If no such mapping
+    is found, a default name will be used.  The default name strings
+    apply to <i>Xic</i> layers that use the default <tt>drawing</tt>
+    purpose.
+
+    <p>
+    When the layer and datatype numbers are in the range 0-255 the
+    default name string takes the form of a four-byte upper case
+    hexadecimal integer.  The two left characters indicate the layer
+    number, zero padded.  Similarly, the two right characters
+    represent the datatype number.  For example, layer 33, datatype 15
+    has the name "<tt>210F</tt>".
+
+    <p>
+    <i>Xic</i> supports layer and datatype numbers in the range
+    0-65535.  Although values larger than 255 are outside of the GDSII
+    specification, they are compatible with the GDSII file format and
+    are used as extensions in some vendor's products.  To represent
+    the case where either value is larger than 255, an eight digit hex
+    number is used.  This is analogous to the four character encoding,
+    but each field uses four characters.
+
+    <p>
+    When providing a layer name of this type to <i>Xic</i>, an
+    alternate "decimal" form can be used.  This is
+    "<i>layer</i>,<i>datatype</i>" where the two integers are
+    separated by a comma (no space).  Thus, "<tt>33,15</tt>" is an
+    equivalent way to specify the layer name for the example above. 
+    This is a convenience for entering layer names into the input
+    fields of files and graphical windows of <i>Xic</i>.  Internally,
+    the layer name is always stored as the hex name.
+
+    <p>
+    In some cases when working with layer/datatype combinations, one
+    of the two fields can be a wildcard.  In the hex format, the hex
+    digits of the appropriate field can be set to "<tt>X</tt>".  In
+    the decimal representation, a single '-' replaces the appropriate
+    digits.  For example, "<tt>0FXX</tt>" and "<tt>15,-</tt>"
+    equivalently specify layer number 15 and any datatype number.
+
+!!SEEALSO
+layer
+layertab
+
+!! 022916
+!!KEYWORD
+layerchange
+!!TITLE
+Layer Filtering and Aliasing
+!!HTML
+    The <a href="xic:imprt">Import Control</a> and <a
+    href="xic:convt">Format Conversion</a> panels have a common module
+    for layer operations.  There is provision for controlling which
+    layers from an input source file are read.  The default action is
+    to read all layers contained in the source file, however this can
+    be changed for physical data only with the <b>Layer List</b>, and
+    the <b>Layers Only</b> and <b>Skip Layers</b> buttons.  Layers can
+    be mapped to other layer names with the layer alias list, when
+    enabled by the <b>Use Layer Alias</b> button.  The layer alias
+    list can be edited with a pop-up editor.
+
+    <p>
+    The module contains the following controls:
+    <dl>
+    <dt><b>Layer List</b> text area<dd>
+    The <b>Layer List</b> can be set to a space-separated list of <a
+    href="layername">layer names</a>.  Each layer name is expected to
+    match an effective layer name in the file being read.  For file
+    types such as GDSII that designate layers with layer/datatype
+    integers, either the hex encoding or decimal form can be used,
+    with wildcarding accepted.  This text area tracks the value of the
+    <a href="LayerList"><b>LayerList</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Layers Only</b> check box<dd>
+    If this box is checked, only the layers listed in the <b>Layer
+    List</b> will be read.  The button tracks the state of the <a
+    href="UseLayerList"><b>UseLayerList</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Skip Layers</b> check box<dd>
+    This box can be checked if the <b>Layers Only</b> box is
+    unchecked, and this also tracks the status of the <a
+    href="UseLayerList"><b>UseLayerList</b></a> variable.  When
+    checked, layers listed in the <b>Layer List</b> will be ignored in
+    input.
+    </dl>
+
+    <dl>
+    <dt><b>Use Layer Aliases</b> check box<dd>
+    When set, the current layer alias list will be applied to layers
+    found in the file.  This button tracks the state of the <a
+    href="UseLayerAlias"><b>UseLayerAlias</b></a> variable.  The alias
+    list tracks the value of the <a
+    href="LayerAlias"><b>LayerAlias</b></a> variable.  Aliases are
+    applied before the <b>Layer List</b> tests.
+    </dl>
+
+    <dl>
+    <dt><b>Edit Layer Aliases</b> button<dd>
+    This button brings up a panel for editing the layer alias list. 
+    This amounts to setting or modifying the value of the
+    <b>Layer Alias</b> variable.
+
+    <p>
+    The panel contains a listing of two columns:  the left column for
+    layer names, and the right column for the alias.  There are three
+    drop-down menus:  <b>File</b>, <b>Edit</b>, and <b>Help</b>.
+
+    <p>
+    The <b>File</b> menu contains entries for saving the layer alias
+    list to a disk file, and for reading in the entries from a disk
+    file.
+
+    <p>
+    The <b>Edit</b> menu contains entries to add, delete, and edit
+    individual aliases, and to select listing layer names in "decimal"
+    form.
+
+    <p>
+    A row in the listing can be selected by clicking on it.  The
+    selected entry is acted on by the <b>Delete</b> and <b>Edit</b>
+    commands.
+
+    <p>
+    The <b>New</b> command brings up a text input pop-up to solicit a
+    name and alias pair (separated by space and/or an equal sign). 
+    Both entries must be valid <a href="layername">layer names</a> or
+    hex encoding.  Either entry can use the decimal or hex notation,
+    or can be a CIF name, as appropriate for the type of file.
+
+    <p>
+    If the <b>Decimal Form</b> menu item is checked, the listing will
+    use the decimal form for layer/datatype entries.  Otherwise, the
+    hex form will be displayed.
+    </dl>
+
+!! 022716
+!!KEYWORD
+gdslayer
+!!TITLE
+GDSII Layer Mapping
+!!HTML
+    The GDSII file format does not use <a href="layername">layer
+    names</a>.  Instead, geometry can exist on a numbered layer and
+    datatype.  Typically, the layer number and datatype can be in
+    the range 0-255, or 0-63 for some older versions of the GDSII
+    specification.  Here, the combination of a GDSII layer number and
+    datatype is referred to as a "specification".
+
+    <p>
+    Although the GDSII file format documentation, which is maintained
+    by Cadence Design Systems, Inc., specifies the 0-255 range for the
+    current GDSII release, the file format uses 16-bit integers to
+    store these values, and other vendors support layer and datatype
+    numbers outside of this range.  <i>Xic</i> release 2.5.67 and
+    later can semi-transparently handle layer and datatype values in
+    the range 0-65535.
+
+    <p>
+    Although this section refers to the GDSII file format, the same
+    mapping logic applies when reading OASIS and CGX files, when a
+    layer/datatype are given.
+
+    <p>
+    When reading a GDSII file, <i>Xic</i> will attempt to map
+    specifications encountered into existing <i>Xic</i> layers.  If
+    that fails, a new <i>Xic</i> layer will be created.  The GDSII
+    mapping for <i>Xic</i> layers is generally assigned in the <a
+    href="techfile:layers:conv">technology file</a> using the
+    <b>StreamIn</b> keyword (for reading) and <b>StreamOut</b> (for
+    writing), or can be specified with the <a href="xic:lpedt"><b>Tech
+    Parameter Editor</b></a> from the <b>Edit Tech Params</b> button
+    in the <b>Attributes Menu</b>.  This is the primary means by which
+    GDSII specifications are interpreted as <i>Xic</i> layers, but
+    this requires <i>a-priori</i> knowledge of the content of the
+    GDSII file.
+
+    <p>
+    This section describes the process <i>Xic</i> uses to map an
+    unknown specification encountered when reading GDSII input, where
+    "unknown" means that no suitable mapping exists in the
+    <b>StreamIn</b> lines of the present <i>Xic</i> layers.
+
+    <p>
+    <i>Xic</i> will first try to identify an existing <i>Xic</i> layer
+    to map to the unknown specification.  The first test is to look
+    for an <i>output</i> mapping (as produced with a <b>StreamOut</b>
+    line) that matches.  If a match is found, an <i>input</i> mapping
+    will be created.  The behavior depends on the setting of the <a
+    href="NoMapDatatypes"><b>NoMapDatatypes</b></a> variable, which
+    reflects the state of the <b>Map all unmapped GDSII datatypes to
+    same Xic layer</b> check box in the <b>Setup</b> page of the <a
+    href="xic:imprt"><b>Import Control</b></a> panel from the
+    <b>Convert Menu</b>.  When this variable is set (directly with the
+    <a href="!set"><b>!set</b></a> command, or by the button), the
+    datatype will be ignored.  The following pseudo-code illustrates
+    the logic:
+
+    <p>
+    <pre>
+    &nbsp;loop through existing Xic layers {
+    &nbsp;  if Xic layer has no GDSII input mapping {
+    &nbsp;    if Xic layer output mapping = GDSII layer {
+    &nbsp;      if NoMapDatatypes set
+    &nbsp;        (use this layer)
+    &nbsp;      else if output mapping datatype = GDSII datatype
+    &nbsp;        (use this layer)
+    &nbsp;    }
+    &nbsp;  }
+    &nbsp;}
+    </pre>
+
+    <p>
+    Each layer/datatype specification has an equivalent hex code.  If
+    the layer and datatype are less than 256, the hex code is of the
+    form <i>LLDD</i>, where the <i>L</i>s are hex digits, zero-padded,
+    which represent the layer number, and the <i>D</i>s similarly
+    represent the datatype.  If either number is larger than 255, the
+    format is <i>LLLLDDDD</i>, which has the same interpretation,
+    e.g., the <i>L</i>s are a four-digit zero-padded hex integer
+    representing the layer number.  If the <b>NoMapDatatypes</b>
+    variable is in effect, the datatype field (the <i>D</i>s) can
+    instead be filled with '<tt>X</tt>' characters.
+
+    <p>
+    The hex values are produced in upper case, but matching is
+    case insensitive.
+    <p>
+
+    If no suitable output mapping is found, <i>Xic</i> will look for
+    layer names or <a href="LongName">long names</a> which match the
+    hex encoding.  If a layer is found with a name or long name
+    matching (case-insensitive) the hex code for the specification,
+    and that layer has no input mapping, an input mapping will be
+    created.  The following pseudo-code illustrates the logic:
+
+    <p>
+    <pre>
+    &nbsp;if NoMapDatatypes set {
+    &nbsp;  if layer and datatype less than 256
+    &nbsp;    hex_code = hhXX
+    &nbsp;  else
+    &nbsp;    hex_code = hhhhXXXX
+    &nbsp;}
+    &nbsp;else {
+    &nbsp;  if layer and datatype less than 256
+    &nbsp;    hex_code = hhhh
+    &nbsp;  else
+    &nbsp;    hex_code = hhhhhhhh
+    &nbsp;}
+    &nbsp;loop through existing Xic layers {
+    &nbsp;  if Xic layer name or long name matches hex_code
+    &nbsp;    (use this layer)
+    &nbsp;}
+    </pre>
+
+    <p>
+    If no existing layer is found that can be mapped to, a new layer
+    will be created.  If the hex code is four characters, the name of
+    the new layer is the same as the hex code.  If the hex code is
+    eight characters, the new name is an internally-generated unique
+    four-character name, and the long name is assigned the hex code. 
+    The layer name in this case is in the form "<i>L???</i>" where
+    <i>???</i> is a sequential decimal zero-padded integer, starting
+    with "<tt>000</tt>".  This mapping is also used in the
+    four-character hex code case, if the hex code conflicts with an
+    existing layer name.
+
+    <p>
+    After the GDSII file has been read, newly created layers will
+    appear in the <a href="layertab">layer menu</a> (they are
+    added above existing layers).  The user can modify <a
+    href="xic:color">colors</a>, <a href="xic:fill">fill patterns</a>,
+    and other attributes for these layers, and dump a new technology
+    file with the <a href="xic:updat"><b>Save Tech</b></a> command.
+
+!!SEEALSO
+techfile
+xic:attrmenu
+xic:cvrtmenu
+
+!! 022916
+!!KEYWORD
+xic:exprt
+!!TITLE
+Export Cell Data
+!!HTML
+    <img src="screenshots/cvout.png" align=right>
+
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="xic:exprt#gdsii"><b>GDSII Settings</b></a><br>
+    <a href="xic:exprt#oasis"><b>OASIS Settings</b></a><br>
+    <a href="xic:exprt#cif"><b>CIF Settings</b></a><br>
+    <a href="xic:exprt#cgx"><b>CGX Settings</b></a>
+    <a href="xic:exprt#write"><b>Exporting Data</b></a>
+    </td></tr></table>
+
+    <p>
+    <b>Keyword</b>: <tt>exprt</tt>
+
+    <p>
+    The <b>Export Cell Data</b> button in the <b>Convert Menu</b>
+    brings up the <b>Export Control</b> panel.  The panel serves two
+    purposes.  First, it allows setting of various parameters and
+    modes which are used globally when writing layout files.  Second,
+    it provides a button with which export of cell data to a disk file
+    can be initiated.
+
+    <p>
+    The top of the panel contains tabbed pages for <b>GDSII</b>,
+    <b>OASIS</b>, <b>CIF</b>, <b>CGX</b>, and <b>Xic cell files</b>. 
+    Clicking the tab exposes the page containing controls appropriate
+    for the format.  The parameters set with this panel always apply
+    when writing layout files of the types indicated.  In particular,
+    the settings apply when the commands in the <b>File Menu</b> are
+    used to save design data, as well as when the <b>Write File</b>
+    button in this panel is used.
+
+    <a name="gdsii"></a>
+    <h2>GDSII Settings</h2>
+
+    <dl>
+    <dt><b>GDSII version number, polygon/wire vertex limit</b><dd>
+    This option menu effectively sets the <a
+    href="GdsOutLevel"><b>GdsOutLevel</b></a> variable.  This
+    determines the release number given in the GDSII file, and also
+    sets limits on the number of vertices allowed in polygon and wire
+    objects included in the file.  If an object in the database has
+    too many vertices, it will be written to the file as multiple
+    objects, which cover the same area.  The default is GDSII format
+    release 7, which allows up to 8000 polygon or path vertices.  It
+    may be necessary to use one of the format release 3 choices if the
+    file is to be read by older software.
+    </dl>
+
+    <dl>
+    <dt><b>Skip layers without Xic to GDSII layer mapping</b><dd>
+    When this button is active, layers without a GDSII <a
+    href="techfile:layers:conv">output mapping</a> will be ignored
+    when producing GDSII or OASIS output, though a warning will appear
+    in the log file.  Otherwise, this is an error which terminates
+    the operation.
+
+    <p>
+    This mode can also be enabled by setting the boolean variable <a
+    href="NoGdsMapOk"><b>NoGdsMapOk</b></a> with the
+    <b>!set</b> command.
+
+    <p>
+    GDSII files can be gzip compressed.  Such files are recognized
+    automatically on input, and can be coerced as output by giving
+    a "<tt>.gz</tt>" suffix to the file name.
+    </dl>
+
+    <dl>
+    <dt><b>Accept but truncate too-long strings</b><dd>
+    The GDSII and CGX formats use a 16-bit integer to store record size,
+    limiting the size of records to 64KB.  This prevents storage of
+    stings longer than this.  By default, an attempt to write such a
+    string to a GDSII or CGX file will generate a fatal error,
+    aborting the operation.  If this check box is set, overrunning
+    strings will be truncated to maximum possible length, and the
+    operation will continue without error.  Warnings will appear in
+    the log file, however.
+
+    <p>
+    The check box tracks the state of the <a
+    href="GdsTruncateLongStrings"><b>GdsTruncateLongStrings</b></a>
+    variable.
+    </dl>
+
+    <dl>
+    <dt><b>Unit Scale</b><dd>
+    This entry area contains a value that will multiply the default
+    values of the "machine unit" and "user unit" parameters which are
+    used in the GDSII file, and all coordinates in the file will be
+    divided by this value.  The default values for these parameters
+    are
+    <blockquote>
+      <table border=0>
+      <tr><td>machine unit:</td> <td>1e-6/<i>resolution</i></td></tr>
+      <tr><td>user unit:</td> <td>1.0/<i>resolution</i></td></tr>
+      </table>
+    </blockquote>
+    where <i>resolution</i> is the internal resolution, which defaults
+    to 1000 per-micron, but can be changed with the <a
+    href="DatabaseResolution"><b>DatabaseResolution</b></a> variable. 
+    It is not likely that the user will need to set this, and unless
+    the user understands the implications it is recommended that the
+    default value (1.0) be used.  This entry area is an interface to
+    the <a href="GdsMunit"><b>GdsMunit</b></a> variable.
+    </dl>
+
+    <a name="oasis"></a>
+    <h2>OASIS Settings</h2>
+
+    <img src="screenshots/cvout2.png" align=right>
+    <dl>
+    <dt><b>Advanced</b><dd>
+    This button brings up the <a href="xic:oasadv"><b>Advanced OASIS
+    Export Parameters</b></a> panel, which allows modification of the
+    more obscure features employed when writing OASIS output.
+    </dl>
+
+    <dl>
+    <dt><b>Skip layers without Xic to GDSII layer mapping</b><dd>
+    This is equivalent to the corresponding button on the GDSII page.
+    </dl>
+
+    <dl>
+    <dt><b>Use compression</b><dd>
+    When active, created OASIS files will use compression.  The
+    contents of each CELL record and name table will be placed in a
+    CBLOCK record, which should reduce file size.  When not active, no
+    compression will be used.
+
+    <p>
+    NOTE:  <b>compressed OASIS files are not compatible between the
+    present release and release 2.5.57 and earlier</b>.  Compressed
+    OASIS files from the present release are compatible with other
+    tools that follow the OASIS specification.
+
+    <p>
+    This mode can also be enabled by setting the boolean variable <a
+    href="OasWriteCompressed"><b>OasWriteCompressed</b></a> with the
+    <b>!set</b> command.
+    </dl>
+
+    <dl>
+    <dt><b>Use string tables</b><dd>
+    When active, all strings including cell names, properties, and
+    labels are saved in indirection tables.  Throughout the file,
+    strings will be referenced by number.  This should reduce file
+    size.  When not active, each string will be saved locally for each
+    reference. 
+
+    <p>
+    This mode can also be enabled by setting the boolean variable <a
+    href="OasWriteNameTab"><b>OasWriteNameTab</b></a> with the
+    <b>!set</b> command.
+    </dl>
+
+    <dl>
+    <dt><b>Find repetitions</b><dd>
+    When active, an attempt is made to identify identical objects that are
+    placed in multiple locations, and use REPETITION records in OASIS output
+    instead of writing multiple object records.  This should reduce file
+    size, but can be compute-intensive.  When not active, no attempt is
+    made to use REPETITION records, except for cell arrays.
+
+    <p>
+    See the description of the <a
+    href="OasWriteRep"><b>OasWriteRep</b></a> variable, which controls
+    the use of REPETITION records in OASIS output.  The <b>Advanced
+    OASIS Export Parameters</b> panel contains an interface for
+    effectively setting the <b>OasWriteRep</b> variable string.  The
+    <b>Find repetitions</b> button will set this variable to the
+    current string, or unset the variable.  With the default
+    parameters, the string is empty.
+    </dl>
+
+    <dl>
+    <dt><b>Write crc checksum</b><dd>
+    When active, a cyclic-redundancy (CRC) checksum is added to OASIS
+    output files (OASIS validation method 1).  When not active, no
+    checksum is added.
+
+    <p>
+    See the description of the <a
+    href="OasWriteChecksum"><b>OasWriteChecksum</b></a> variable,
+    which controls the validation method in OASIS output.  This
+    variable can be set explicitly to use byte-sum checksum validation
+    (OASIS validation method 2).  The check box sets/unsets this
+    variable as a boolean.
+    </dl>
+
+    <a name="cif"></a>
+    <h2>CIF Settings</h2>
+
+    <img src="screenshots/cvout3.png" align=right>
+    <a name="cifoutstyle">
+
+    <dl>
+    <dt><b>Extension Flags</b><dd>
+    This drop-down menu provides access to a number of checkable
+    buttons which correspond to flags which enable various CIF format
+    extensions.  There are two banks of flags, the bank displayed is
+    initially determined by the state of the <b>Strip For Export</b>
+    button in the <a href="xic:exprt"><b>Export Control</b></a> panel,
+    or equivalently the state of the <a
+    href="StripForExport"><b>StripForExport</b></a> variable.  The top
+    entry of the menu indicates this state.  Clicking this entry will
+    switch the menu to display and control the other bank of flags. 
+    The default values for the flags in the <b>Strip For Export</b>
+    inactive case are all set, so all extensions are turned on.  The
+    other bank has all flags unset, so by default no extensions will
+    be used when <b>Strip For Export</b> is set.  However, the status
+    of any of the flags can be toggled with this menu.
+
+    <p>
+    The flag states track the value of the <a
+    href="CifOutExtensions"><b>CifOutExtensions</b></a> variable.
+
+    <p>
+    The format extensions enabled by these flags are described in the
+    <a href="symfilefmt#cifext">CIF format extensions</a>.
+    </dl>
+
+    The lower section of the CIF page contains three option menus
+    which control aspects of the syntax used when writing CIF files. 
+    The three selectable variations are the syntax used for the cell
+    name extension, the interpretation of the "<tt>L</tt>
+    <i>layer</i>;" syntax element, and the syntax used for the label
+    extension.  <i>Xic</i> can handle almost transparently any of
+    these syntax variations, however third-party applications may
+    require a specific variation.
+
+    <p>
+    The selections shown in the menus tracks the value encoded in the
+    <a href="CifOutStyle"><b>CifOutStyle</b></a> variable.  When this
+    variable is unset, the defaults (the first choice in each menu)
+    are used.
+
+    <dl>
+    <dt><b>Last Seen</b><dd>
+    When a CIF file is read into memory, the style of the CIF file is
+    saved internally.  Pressing the <b>Last Seen</b> button will
+    update the three style menus to these saved values, by setting or
+    clearing the <b>CifOutStyle</b> variable.
+    </dl>
+
+    <dl>
+    <dt><b>CIF Cell Name Extensions</b><dd>
+    Cell names were not part of the original CIF syntax specification. 
+    Various extensions have been used to supply cell names in a CIF
+    file.  Each of these extensions consists of command following the
+    "<tt>DS</tt> ...;" command, in the following forms:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>cname_index</th><th>Historic Name</th><th>Format</th></tr>
+    <tr><td>0</td><td> IGS</td><td>    <tt>9</tt> <i>cell_name</i>;</td></tr>
+    <tr><td>1</td><td> Stanford/NCA</td><td> (<i>cell_name</i>);</td></tr>
+    <tr><td>2</td><td> Icarus</td><td> (<tt>9</tt> <i>cell_name</i>);</td></tr>
+    <tr><td>3</td><td> Sif</td><td> (<tt>Name:</tt> <i>cell_name</i>);</td></tr>
+    <tr><td>4</td><td> none</td><td>         no extension used</td></tr>
+    </table>
+
+    <p>
+    In <i>Xic</i>, any of the first four forms (indices 0-3) will be
+    recognized equivalently when reading CIF input.
+    </dl>
+
+    <dl>
+    <dt><b>CIF Layer Specification</b><dd>
+
+    Layers are specified in CIF in a command with syntax
+    <blockquote>
+    <tt>L</tt> <i>token</i>;
+    </blockquote>
+
+    The the <i>token</i> can be interpreted in two ways; as the name
+    of a layer, or as an index into a layer table.  For the second
+    interpretation, the token must of course be an integer.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>layer_index</th><th>  Historic Name</th><th>   Format</th></tr>
+    <tr><td>0</td><td>  none</td><td>  <tt>L</tt> <i>layer_name</i>;</td></tr>
+    <tr><td>1</td><td>  NCA</td><td>   <tt>L</tt> <i>layer_index</i>;</td></tr>
+    </table>
+
+    <p>
+    Of these, the first entry is most common.  <i>Xic</i> can handle
+    both of these interpretations (see
+    <a href="xic:imprt#layerspec"><b>Import Control</b></a>).
+
+    <p>
+    If the indexing is selected for layers, the index will be 1-based,
+    and correspond to the layers, left to right, in the layer table,
+    i.e., the leftmost (lowest) layer in the layer table is designated
+    index 1.
+    </dl>
+
+    <dl>
+    <dt><b>CIF Label Extensions</b><dd>
+
+    Text labels were not part of the original CIF syntax
+    specification, so that various extensions are used to pass label
+    information.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>label_index</th><th>  Historic Name</th><th>   Format</th></tr>
+    <tr><td>0</td><td> Xic</td><td>
+     <tt>94</tt> &#60&#60<i>label</i>>>
+     <i>x y orient_code width height</i>;</td></tr>
+    <tr><td>1</td><td> KIC</td><td>    <tt>94</tt> <i>label x y</i>;</td></tr>
+    <tr><td>2</td><td> NCA</td><td>
+     <tt>92</tt> <i>label x y layer_index</i>;</td></tr>
+    <tr><td>3</td><td> Mextra</td><td>
+     <tt>94</tt> <i>label x y layer_name</i>;</td></tr>
+    <tr><td>4</td><td> none</td><td> no labels used</td></tr>
+    </table>
+
+    <p>
+    Unlike other extensions, the first extension listed above is
+    unique to <i>Xic</i>.  If other formats are used, label size and
+    orientation information will be lost.  When reading CIF input, any
+    of these forms will be accepted.
+    </dl>
+
+    <a name="cgx"></a>
+    <h2>CGX Settings</h2>
+    <img src="screenshots/cvout4.png" align=right>
+
+    This page contains an <b>Accept but truncate too-long strings</b>
+    check box, with purpose and functionality that is identical to
+    the check box in the <b>GDSII</b> page.
+
+    <p>
+    CGX files can be gzip compressed.  Such files are recognized
+    automatically on input, and can be coerced as output by giving
+    a "<tt>.gz</tt>" suffix to the file name.
+
+
+    <a name="write"></a>
+    <h2>Exporting Design Data</h2>
+
+    The remainder of the <b>Export Control</b> panel is used to initiate
+    writing of a design data file to disk.  A number of options are
+    available when writing a file with this panel.  Unlike the
+    settings described above, these settings apply only to files
+    created with this panel.
+
+    <p>
+    The currently selected tab at the top of the panel specifies the
+    output format to use.  Details of the format selections are
+    described below.
+
+    <dl>
+    <dt><b>GDSII</b><dd>
+    This choice will create a GDSII (Stream) file of the current
+    editing cell and its descendents.  Upon pressing <b>Write
+    File</b>, the name of the file for the GDSII output is requested
+    from the user.  The user can add a "<tt>.gz</tt>" extension, or
+    remove the extension if already present, to control whether or not
+    <tt>gzip</tt> compression is used.  The GDSII layer numbers and
+    datatypes are as given in the <a
+    href="techfile:layers:conv">technology file</a>.
+
+    <p>
+    <i>Xic</i> will ensure that cell names included in the GDSII
+    file conform to the standard (upper and lower case, digits, '_',
+    '$', '?' only, up to 32 long in GDSII Release 3).
+
+    <p>
+    All layers that are to be written to the GDSII file should have a
+    GDSII output mapping specified.  This can be added to the <a
+    href="techfile">technology file</a> with a text editor, or
+    interactively with the <a href="xic:lpedt"><b>Edit Tech
+    Params</b></a> button in the <b>Attributes Menu</b>.  By default,
+    a layer needed for output that does not have a mapping will
+    terminate the operation.  However, if the <b>Skip layers without
+    Xic to GDSII layer mapping</b> check bod in the <b>GDSII</b> page
+    of the <b>Export Control</b> panel is checked, or equivalently the
+    variable <b>NoGdsMapOk</b> is set (with the <a
+    href="!set"><b>!set</b></a> command), then such layers will be
+    ignored (producing no output).
+    </dl>
+
+    <dl>
+    <dt><b>OASIS</b><dd>
+    This choice will create an OASIS file of the current editing cell
+    and its descendents.  Upon pressing <b>Write File</b>, he name of
+    the file for the OASIS output is requested from the user.  The
+    layer numbers and datatypes are as given in the <a
+    href="techfile:layers:conv">technology file</a>.  These are the
+    same as for GDSII.
+
+    <p>
+    All layers that are to be written to the OASIS file should have a
+    GDSII output mapping specified.  This can be added to the <a
+    href="techfile">technology file</a> with a text editor, or
+    interactively with the <a href="xic:lpedt"><b>Edit Tech
+    Params</b></a> button in the <b>Attributes Menu</b>.  By default,
+    a layer needed for output that does not have a mapping will
+    terminate the operation.  However, if the <b>Skip layers without
+    Xic to GDSII layer mapping</b> check box in the <b>OASIS</b> page
+    of the <b>Export Control</b></a> panel is checked, or equivalently
+    the variable <b>NoGdsMapOk</b> is set (with the <a
+    href="!set"><b>!set</b></a> command), then such layers will be
+    ignored (producing no output).
+    </dl>
+
+    <dl>
+    <dt><b>CIF</b><dd>
+    With this choice, the current editing cell and its descendents
+    will be written to a CIF file.  Upon pressing <b>Write File</b>,
+    the user is prompted for the name of the file for CIF output.
+
+    <p>
+    The extension syntax used for cell name specification and labels,
+    and whether the layer directives use indexing or names, are
+    settable with the <a href="CifOutStyle"><b>CifOutStyle</b></a>
+    variable and/or the <b>CIF</b> page menus in the <b>Export
+    Control</b> panel.
+    </dl>
+
+    <dl>
+    <dt><b>CGX</b><dd>
+    <p>
+    With this choice, the current editing cell and its descendents
+    will be written to a CGX file.  Upon pressing <b>Write File</b>,
+    the user is prompted for the name of the file for CGX output.  The
+    user can add a "<tt>.gz</tt>" extension, or remove the extension
+    if already present, to control whether or not <tt>gzip</tt>
+    compression is used.
+    </dl>
+
+    <dl>
+    <dt><b>Xic Cell Files</b><dd>
+    This choice will unconditionally write to native-format files the
+    hierarchy of the current editing cell.  It can be used to
+    transform a hierarchy input from a <a href="xic:fsaf">supported
+    archive format</a> file into <i>Xic</i> native format.
+
+    <p>
+    When <b>Write File</b> is pressed, the user is given the option of
+    setting the directory which will receive the created files.  If no
+    directory is given, the files will be created in the current
+    directory.  While the prompt is in effect, a pop-up containing a
+    tree listing of the directory hierarchy rooted in the current
+    directory appears.  The user can select a directory in the
+    listing, or type the directory path on the prompt line.  If a
+    directory path is given and the final directory does not exist, it
+    will be created, if possible.  Pressing <b>Esc</b> will abort the
+    operation.
+
+    <p>
+    After the cell writing is complete, a <a href="libraries">library
+    file</a> will be written in the current directory, given the name
+    of the top-level cell suffixed with "<tt>.lib</tt>".  This file
+    will have references to each of the new files created, with the
+    top-level cell name listed first, and the others listed in
+    alphabetical order.  This library may be placed in the search path
+    to gain access to the new files through the library mechanism, in
+    which case the directory containing the files need not be in the
+    search path.
+    </dl>
+
+    The remaining controls are described below.
+
+    <dl>
+    <dt><b>Cell Name Mapping</b><dd>
+    This group of controls manages the cell name <a
+    href="cellname">aliasing</a> feature.  This does not apply to
+    native cell file output.
+    </dl>
+
+    <p>
+    A subset of the <a href="windowing">windowing</a> operations is
+    available.  From this panel, windowing is only available when
+    flattening.
+
+    <dl>
+    <dt><b>Conversion Scale Factor</b><dd>
+    The <b>Conversion Scale Factor</b> provides an entry area where a
+    scale factor to be applied during the write operation can be
+    entered.  Values of 0.001 through 1000.0 are acceptable.  This
+    will apply to output initiated from this panel only.
+    </dl>
+
+    <a name="invis">
+    <dl>
+    <dt><b>Don't convert invisible layers</b><dd>
+    There are separate check boxes that apply to physical and
+    electrical modes.  When active, only layers that are currently
+    visible, as selected with <a href="button2">button 2</a> in the <a
+    href="layertab">layer table</a>, will be written when writing
+    output using this panel.  This is the method by which certain
+    layers can be eliminated from generated output.  When this button
+    button is not active, all <i>Xic</i> layers will be written.
+
+    <p>
+    This feature can also be enabled by setting the variable <a
+    href="SkipInvisible"><b>SkipInvisible</b></a> with the <b>!set</b>
+    command.
+    </dl>
+
+    <a name="strip">
+    <dl>
+    <dt><b>Strip For Export</b><dd>
+    When the <b>Strip For Export</b> button is active, converted
+    output will contain physical data only, and will contain no
+    <i>Xic</i> extensions.  Further, the <b>Strip For Export</b> check
+    box implicitly enables the same functionality as <b>Include
+    Library Cells</b> (see below), so that the file will not contain
+    unresolved library cell references.  Additionally, parameterized
+    cell and standard via sub-masters will be included in output, as
+    if the corresponding check boxes were also checked.  The <b>Strip
+    For Export</b> box should be checked when creating a file for use
+    in generating photomasks.  Note that the electrical information
+    can never be recovered from a stripped file.
+
+    <p>
+    Within <i>Xic</i>, <a href="xic:fsaf">archive file</a>
+    representations consist of two sequential records in each file. 
+    The first record is the physical information, and the second
+    record contains the electrical information.  These files should be
+    compatible with other CAD systems, as these files are generally
+    expected to have only one record, and consequently the electrical
+    information may be ignored.  However, one should not count on
+    this.  When the <b>Strip For Export</b> button is active,
+    <i>Xic</i> will convert only the physical information when
+    explicitly (i.e., using the operations from the <b>Export
+    Control</b> panel, and not the <a href="xic:sv"><b>Save</b></a>
+    and <a href="xic:save"><b>Save As</b></a> buttons) converting to
+    an <a href="xic:fsaf">archive format</a>.  The <b>Strip For
+    Export</b> setting also applies to the <tt>ToArchive</tt>, script
+    function.  This creates a file which should be an absolutely
+    conventional physical layout file.
+
+    <p>
+    This mode can also be enabled by setting the boolean variable <a
+    href="StripForExport"><b>StripForExport</b></a> with the
+    <b>!set</b> command.  The variable tracks the state of the check box.
+    </dl>
+
+    <dl>
+    <dt><b>Include Library Cells</b><dd>
+    When checked, cells with the LIBRARY <a
+    href="xic:cells#flags">flag</a> set are written to the output
+    file.  Ordinarily, these cells are expected to be resolved through
+    the <a href="xic:libs">library mechanism</a> and are not written
+    to the output file.
+
+    <p>
+    This tracks the state of the <a
+    href="WriteAllCells"><b>WriteAllCells</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Include parameterized cell sub-masters</b><dd>
+    When this check box is checked, output saved to disk files will
+    include <a href="xic:pcells">sub-master</a> cells.  Ordinarily,
+    sub-master cells are not included, as they will be re-created when
+    the file is read.  However, when exporting to a system that does
+    not support the pcells in use, the sub-masters must be written if
+    the file is to have any value.  With the sub-masters present, the
+    cells/instances will look like normal cell placements.
+
+    <p>
+    This applies when writing all output, <b>except</b> when using the
+    <a href="xic:sv"><b>Save</b></a> and <a href="xic:save"><b>Save
+    As</b></a> buttons in the <b>File Menu</b>, and the equivalent
+    text accelerators and including the prompts when exiting the
+    program.  It is also ignored when using the <a
+    href="Save"><tt>Save</tt></a> script function.
+
+!!IFDEF OpenAccess
+    <p>
+    <i>Xic</i> native pcells are only supported in <i>Xic</i>. 
+    OpenAccess-based pcells might be supported by other systems, that
+    is certainly the intent of the Ciranova PyCells.  Even if another
+    system supports the OpenAccess PyCells, it may not have the logic
+    to rebuild the pcells coming from a GDSII or other file source. 
+    In that case one will probably have to ship the OpenAccess library
+    files.
+!!ENDIF
+
+    <p>
+    The <a href="StripForExport"><b>StripForExport</b></a> variable
+    and the equivalent check box will have the same effect when set.
+
+    <p>
+    The <a href="PCellKeepSubMasters"><b>PCellKeepSubMasters</b></a>
+    variable tracks the state of this check box.
+    </dl>
+
+    <dl>
+    <dt><b>Include standard via cell sub-masters</b><dd>
+    When checked, <a href="stdvia">standard via</a> cell sub-masters
+    are included in the output file.  This will be required when
+    sending output to another system, as this implementation is
+    specific to <i>Xic</i>.
+!!IFDEF OpenAccess
+    An exception may be systems that share an OpenAccess database
+    with <i>Xic</i>.  If the cells are written to the OpenAccess
+    database, the standard vias should translate properly, and be
+    recognized by other tools (e.g., Virtuoso) that share the
+    database.
+!!ENDIF
+
+    <p>
+    This applies when writing all output, <b>except</b> when using the
+    <a href="xic:sv"><b>Save</b></a> and <a href="xic:save"><b>Save
+    As</b></a> buttons in the <b>File Menu</b>, and the equivalent
+    text accelerators and including the prompts when exiting the
+    program.  It is also ignored when using the <a
+    href="Save"><tt>Save</tt></a> script function.
+
+    <p>
+    The <a href="StripForExport"><b>StripForExport</b></a> variable
+    and the equivalent check box will have the same effect when set.
+
+    <p>
+    The <a href="ViaKeepSubMasters"><b>ViaKeepSubMasters</b></a>
+    variable tracks the state of this check box.
+    </dl>
+
+    <dl>
+    <dt><b>Consider ALL cells in current symbol table for output</b><dd>
+    When checked, all cells in the current <a href="xic:stabs">symbol
+    table</a>, not just the hierarchy of the current cell, will be
+    output as if they were part of the hierarchy.  The usual filtering
+    of library and sub-master cells is retained.  The resulting file
+    may have multiple top-level cells.
+    </dl>
+
+    <p>
+    The write is actually initiated with the <b>Write File</b>
+    button.  The name of the output file will be prompted for on the
+    prompt line.  The <b>Dismiss</b> button retires the panel.
+
+    <p>
+    Cell files can also be written to disk using the <a
+    href="xic:sv"><b>Save</b></a> and <a href="xic:save"><b>Save
+    As</b></a> commands in the <b>File Menu</b>.  However, if scaling
+    or other options available in this panel are required, the file
+    must be generated from this panel.
+
+    <p>
+    When generating an archive file and an error occurs.  the archive
+    file will normally be deleted.  However, if the variable <a
+    href="KeepBadArchive"><b>KeepBadArchive</b></a> is set (with the
+    <a href="!set"><b>!set</b></a> command) the output file will be
+    given a "<tt>.BAD</tt>" extension and retained.  This file should
+    be considered corrupt, but may be useful for diagnostics.
+
+!!SEEALSO
+xic:cvrtmenu
+
+!! 022816
+!!KEYWORD
+xic:oasadv
+!!TITLE
+Advanced OASIS Export Parameters
+!!HTML
+    <img src="screenshots/oasadv.png" align=right>
+
+    The <b>Advanced OASIS Export Parameters</b> panel is provided from
+    the <b>Advanced</b> button in the <b>OASIS</b> setup page of
+    various panels, including the <a href="xic:exprt"><b>Export
+    Control</b></a> panel, the <a href="xic:convt"><b>Format
+    Conversion</b></a> panel, and the <a href="xic:assem"><b>Layout
+    File Merge Tool</b></a>, all from the <b>Convert menu</b>.  It
+    allows modification of the more arcane parameters used when
+    generating OASIS output.
+
+    <p>
+    <dl>
+    <dt><b>Don't write trapezoid records</b><dd>
+    This check box sets and unsets the <a
+    href="OasWriteNoTrapezoids"><b>OasWriteNoTrapezoids</b></a>
+    variable.  When set, no attempt is made to save three and
+    four-sided polygons in more compact trapezoid records.  Setting
+    this variable will likely increase file size but reduce writing
+    time.
+    </dl>
+
+    <dl>
+    <dt><b>Convert Wire to Box records when possible</b><dd>
+    This check box sets and unsets the <a
+    href="OasWriteWireToBox"><b>OasWriteWireToBox</b></a> variable. 
+    When set, single-segment Manhattan wires will be saved in more
+    compact rectangle records.  This may reduce file size, at the
+    expense of slightly longer writing time and loss of object type
+    integrity.
+    </dl>
+
+    <dl>
+    <dt><b>Convert rounded-end Wire records to Poly records</b><dd>
+    This check box sets and unsets the <a
+    href="OasWriteRndWireToPoly"><b>OasWriteRndWireToPoly</b></a>
+    variable.  When set, rounded-end wires, which don't have native
+    OASIS support and are normally converted to extended-end
+    (Manhattan extension) wires, are instead converted to polygons. 
+    The polygons require more memory than the wires, but preserve
+    exactly the geometric coverage of the original layout, as rendered
+    in <i>Xic</i>.
+    </dl>
+
+    <dl>
+    <dt><b>Skip GCD check</b><dd>
+    This check box sets and unsets the <a
+    href="OasWriteNoGCDcheck"><b>OasWriteNoGCDcheck</b></a> variable. 
+    When set, the OASIS writer will not attempt to divide out a common
+    factor in vertex lists, which is done to reduce file size but can
+    have significant computational overhead.
+    </dl>
+
+    <dl>
+    <dt><b>Use alternate modal sort algorithm</b><dd>
+    This check box sets and unsets the <a
+    href="OasWriteUseFastSort"><b>OasWriteUseFastSort</b></a>
+    variable.  When set, an older, less effective sorting algorithm is
+    used to sequence objects in output to make use of modality.  Use
+    of this algorithm may reduce writing time but will potentially
+    increase file size.
+    </dl>
+
+    <dl>
+    <dt><b>Property masking</b><dd>
+    This menu controls the <a
+    href="OasWritePrptyMask"><b>OasWritePrptyMask</b></a> variable,
+    which can be used to avoid writing certain, or all properties. 
+    This can reduce file size if properties are not needed.  The
+    description of this variable explains this feature in detail.
+    </dl>
+
+    <p>
+    The remaining controls provide an interface for setting the text
+    string for the <a href="OasWriteRep"><b>OasWriteRep</b></a>
+    variable, which is used to control the repetition finder.  Use of
+    the repetition finder is enabled/disabled by the <b>Find
+    repetitions</b> check box in the <b>OASIS</b> page of the <a
+    href="xic:exprt"><b>Export Control</b></a> panel.  The present
+    panel sets the parameters to use when the repetition finder is
+    enabled.
+
+    <p>
+    The repetition finder is a system that will identify identical
+    objects, and attempt to identify periodic sequences of these
+    objects in one and two dimensions.  This can have a huge effect on
+    file size, at the expense of computational overhead.  The controls
+    on this panel can be used to fine-tune the algorithm for a
+    particular data set, producing, e.g., the smallest file, or
+    reducing writing time.
+
+    <p>
+    The description of the <a href="OasWriteRep"<b>OasWriteRep</b></a>
+    variable provides detailed information about the parameters found
+    in the property string, which has the form:
+
+    <blockquote>
+    <b>OasWriteRep</b>: [<i>word</i>] [<tt>d</tt>] [<tt>r</tt>]
+     [<tt>m</tt>=<i>N</i>] [<tt>a</tt>=<i>N</i>] [<tt>x</tt>=<i>N</i>]
+     [<tt>t</tt>=<i>N</i>]
+    </blockquote>
+
+    <p>
+    The <b>Restore Defaults</b> button will
+    reset all controls to the default values.  The <b>Objects</b>
+    check boxes control which object types are processed for
+    repetitions, as for the <i>word</i> in the string.
+
+    <p>
+    The <b>Run minimum</b> is the value passed for the <tt>m</tt>
+    option.  Pressing the <b>None</b> button on this line will instead
+    give the <tt>r</tt> option, and gray out the run and array
+    controls.  The <b>Array minimum</b> provides the value for the
+    <tt>a</tt> option.  The <b>None</b> button on this line will emit
+    "<tt>a=0</tt>" and disable the entry area.  The <b>Max different
+    objects</b> line corresponds to the <tt>x</tt> option.  The <b>Max
+    similar objects</b> line corresponds to the <tt>t</tt> option.  If
+    the <b>None</b> button in this line is pressed, "<tt>t=0</tt>"
+    will be emitted and the entry area is grayed.  Note that these do
+    not emit if the text area contains the default value.
+
+    <p>
+    To actually enable repetitions, the <b>OasWriteRep</b> variable
+    must be set.  This can be set by hand with the <a
+    href="!set"><b>!set</b></a> command or equivalent, in which case
+    the controls above will take the values found in the string. 
+    Setting the <b>Find repetitions</b> check box in the <b>OASIS</b>
+    page of the <b>Export Control</b> panel will also set the
+    variable, to a string created from the state of the controls. 
+    When the variable is set, the listing of set variables brought up
+    with the <b>!set</b> command without arguments can ge used to
+    monitor the property string as the various controls are changed.
+
+!! 030416
+!!KEYWORD
+xic:imprt
+!!TITLE
+Import Control
+!!HTML
+    <b>Keyword</b>: <tt>imprt</tt>
+
+    <p>
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="xic:imprt#setup"><b>The Setup Page</b></a><br>
+    <a href="xic:imprt#read"><b>The Read File Page</b></a><br>
+    </td></tr></table>
+
+    <p>
+    The <b>Import Cell Data</b> button in the <b>Convert Menu</b>
+    brings up the <b>Import Control</b> panel.  The panel has two
+    pages, the first is used to set various parameters that apply
+    globally when reading design data into the <i>Xic</i> internal
+    database.  The second page provides the means to initiate reading
+    data from disk files into <i>Xic</i>.
+
+    <a name=setup></a>
+    <h2>The Setup Page</h2>
+
+    <img src="screenshots/cvin1.png" align=right>
+    This page contains a number of entries which control various
+    defaults and features that apply when reading data files.  These
+    settings always apply when reading, in particular during use of
+    the commands in the <b>File Menu</b>, as well as through use of
+    the <b>Read File</b> page of this panel.
+
+    <dl>
+    <dt><b>PCell evaluation:  Don't eval native</b><dd>
+    Setting this check box will prevent evaluation of native <a
+    href="pcell">pcells</a> when an instance is found while reading
+    file input.  If an archive file contains the sub-masters, it is
+    more efficient to use them rather than recreate them through
+    evaluation.  Note that if sub-masters are not provided, the
+    super-masters for the pcells must be available.
+
+    <p>
+    This check box tracks the state of the <a
+    href="NoEvalNativePCells"><b>NoEvalNativePCells</b></a> variable.
+    </dl>
+
+!!IFDEF OpenAccess
+    <dl>
+    <dt><b>PCell evaluation:  Eval OpenAccess</b><dd>
+    Setting this check box will cause <i>Xic</i> to attempt to
+    evaluate OpenAccess <a href="pcell">pcells</a> when instances are
+    encountered when reading file input.  By default, this is not
+    done, as evaluation is likely to fail, and the exporter has
+    probably included the sub-master cells in the archive.
+
+    <p>
+    This check box tracks the state of the <a
+    href="EvalOaPCells"><b>EvalOaPCells</b></a> variable.
+    </dl>
+!!ENDIF
+
+    <dl>
+    <dt><b>Don't create new layers when reading, abort instead</b><dd>
+    By default, when reading an input file, layers are created if
+    necessary to match layers found in the file.  The new layers are
+    appended to the <a href="layertab">layer table</a>.  If the source
+    is GDSII or another format such as OASIS that provides layer and
+    datatype numbers, the new layer name will be an <a
+    href="gdslayer">encoding</a> of these numbers.
+
+    <p>
+    If this box is checked, new layers will not be created, and
+    encountering a layer in input that is not mappable into an existing
+    <i>Xic</i> layer will be treated as a fatal error.
+
+    <p>
+    The boolean <a href="NoCreateLayer"><tt>NoCreateLayer</tt></a>
+    variable tracks the state of the check box.
+    </dl>
+
+    <dl>
+    <dt><b>Default when new cells conflict</b><dd>
+    This menu determines the default behavior when a cell from a file
+    being read conflicts with the name of a cell already in memory. 
+    There are five choices:  <b>Overwrite All</b>, <b>Overwrite
+    Phys</b>, <b>Overwrite Elec</b>, <b>Overwrite None</b>, and
+    <b>Auto Rename</b>.  If <b>AutoRename</b> is selected, when a name
+    clash with a cell in memory is detected, the cell name of the cell
+    being read is automatically changed to avoid the clash.  A suffix
+    "<tt>$</tt><i>N</i>" is added to the cell name, where <i>N</i> is
+    a small integer, and a warning message is added to the log file. 
+    The <b>Merge Control</b> pop-up will never appear in this mode. 
+    For the other four choices, in graphical mode, when a conflict is
+    detected, the <b>Merge Control</b> pop-up will appear, if enabled. 
+    The initial state of the pop-up will be determined by this menu,
+    but the actions can be modified by the user on a per-cell basis. 
+    If the pop-up does not appear either because it has been
+    suppressed or the program is running in non-graphical (server or
+    batch) mode, the default action will be performed.
+
+    <p>
+    The default cell name conflict behavior can also be set with three
+    boolean variables:  <a href="AutoRename"><b>AutoRename</b></a>, <a
+    href="NoOverwritePhys"><b>NoOverwritePhys</b></a> and <a
+    href="NoOverwriteElec"><b>NoOverwriteElec</b></a>.  If
+    <b>AutoRename</b> is set (with the <b>!set</b> command or
+    otherwise), the other two variables are ignored, and the
+    auto-rename mode is enabled.  If none of these variables is set,
+    then the default action is <b>Overwrite All</b>.
+
+    <p>
+    When a cell is encountered while reading an archive file or native
+    cell into memory with the same name as a cell already in memory,
+    and we are overwriting cells in memory, the new cell will
+    overwrite the existing cell in memory in most cases.  The
+    exception is for existing cells that were read through the <a
+    href="xic:libs">library mechanism</a>.  These cells have the
+    IMMUTABLE (read-only) and LIBRARY <a
+    href="xic:cells#flags">flags</a> set.
+
+    <p>
+    The IMMUTABLE flag has no bearing on whether or not a cell can be
+    overwritten in memory.  The overwritten cell will no longer be
+    IMMUTABLE.  In releases prior to 3.0.11, IMMUTABLE cells would not
+    be overwritten.
+
+    <p>
+    If the existing cell has the LIBRARY flag set, it will be
+    overwritten, unless the <a
+    href="NoOverwriteLibCells"><b>NoOverwriteLibCells</b></a> variable
+    is set.  A warning message will be included in the log file in
+    this case, but the read will be successful, with the result being
+    as if overwriting was not enabled.  If overwritten, the cell will
+    no longer have the LIBRARY flag set.  In releases prior to 3.0.11,
+    LIBRARY cells would always be overwritten, unless IMMUTABLE was
+    also set, which is the default for library cells.
+    </dl>
+
+    <dl>
+    <dt><b>Don't prompt for overwrite instructions</b><dd>
+    In graphical mode, when a cell name clash with a cell already in
+    memory is detected while reading a file, the <b>Merge Control</b>
+    pop-up may appear.  This can be used to change whether or not to
+    overwrite the cell in memory on a per-cell and per-mode basis. 
+    When this button is active, the <b>Merge Control</b> pop-up will
+    not appear, and the overwriting will use the default setting.
+
+    <p>
+    This state can also be enabled by setting the boolean variable <a
+    href="NoAskOverwrite"><b>NoAskOverwrite</b></a> with the
+    <b>!set</b> command.
+    </dl>
+
+    <a name="merge">
+    <dl>
+    <dt><b>Clip and merge overlapping boxes</b><dd>
+    When this button is on, <a href="xic:box">boxes</a> on the same
+    layer are merged together, if possible, as files are being read
+    into the database.  Overlapping boxes are clipped and/or merged. 
+    This applies to box objects only, and not polygons (even
+    rectangular ones) or wires, and applies only for physical mode
+    data.  Electrical mode boxes are never merged.  This tracks the
+    setting of the boolean variable <a
+    href="MergeInput"><b>MergeInput</b></a>, which can (equivalently)
+    be set with the <b>!set</b> command.
+
+    <p>
+    This mode applies when reading input from a layout file only, and
+    is separate and unrelated to the object merging as controlled from
+    the <a href="xic:edset"><b>Editing Setup</b></a> panel from the
+    <b>Edit Menu</b>.  These settings have no effect when reading
+    layout data.
+
+    <p>
+    However, on layers where the <a
+    href="NoMerge"><tt>NoMerge</tt></a> technology file keyword is
+    set, box (or any object) merging is inhibited, in all cases.
+    </dl>
+
+    <dl>
+    <dt><b>Skip testing for badly formed polygons</b><dd>
+    When set, the reentrancy test for polygons is skipped while an
+    input file is being read into the database.  The default behavior
+    is to check each polygon for potentially troublesome geometry
+    specification while the polygon is being created.
+
+    <p>
+    This mode can also be enabled by setting the boolean variable <a
+    href="NoPolyCheck"><b>NoPolyCheck</b></a> with the <b>!set</b>
+    command.
+    </dl>
+
+    <dl>
+    <dt><b>Duplicate item handling</b><dd>
+    When reading data from a layout file, identical objects and
+    subcells placed on top of one another are sometimes found. 
+    Although these generally cause no harm, this is almost always a
+    layout error.  This menu provides three choices of how to handle
+    the situation.  The default action is to print a warning in the
+    log file, but import the duplicate objects into the database.  The
+    <b>Remove Duplicates</b> choice will also issue a warning, but
+    will not add the duplicates to the database.  The third choice
+    suppresses checking for duplicates entirely.
+
+    <p>
+    This menu tracks the status of the <a
+    href="DupCheckMode"><b>DupCheckMode</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Skip testing for empty cells</b><dd>
+    When set, there is no checking for empty cells as an input file is
+    being read into the database, and the pop-up that normally appears
+    when a file is opened for editing or viewing if there are empty
+    cells in the hierarchy is suppressed.  An "empty cell" actually
+    means that both physical and electrical cells of this name either
+    don't exist in the hierarchy, or contain nothing.  It is possible
+    to check for empty cells at any time with the <a
+    href="!empties"><b>!empties</b></a> command.
+
+    <p>
+    This mode can also be enabled by setting the boolean variable <a
+    href="NoCheckEmpties"<b>NoCheckEmpties</b></a> with the
+    <b>!set</b> command.
+    </dl>
+
+    <dl>
+    <dt><b>Skip reading text labels from physical archives</b><dd> When
+    set, text labels will not be read from a layout file when reading
+    physical-mode data.  It is not generally advisable to use this, as
+    text labels, though not physical objects, should be assumed to be
+    present for a purpose.  However, this check box gives the user the
+    flexibility to strip these out.
+
+    <p>
+    Unlike other controls in this panel, this mode applies not only
+    when reading a layout file into the database, but also when
+    reading a file during translation, such as with the <a
+    href="xic:convt"><b>Format Conversion</b></a> panel.
+
+    <p>
+    In <i>Xic</i>, text labels are included when the bounding box of a
+    cell is computed.  If a text label actually determines the
+    boundary of a cell, the bounding box of the cell may report
+    differently from other tools.  The effective size of a text
+    label is not well defined, and other tools will probably make
+    different assumptions about font size, etc., or may not include
+    text labels in bounding box computations.
+
+    <p>
+    The state of this check box tracks the status of the <a
+    href="NoReadLabels"><b>NoReadLabels</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Map all unmapped GDSII datatypes to same Xic layer</b><dd>
+    This setting affects only the creation of new layers when a GDSII
+    or OASIS file is read into the database.  The default behavior is
+    to create a separate new <i>Xic</i> layer for each GDSII
+    layer/datatype encountered that is not mapped in the technology
+    file.  With the variable set, all datatypes on the new GDSII layer
+    are mapped to the same (new) <i>Xic</i> layer.
+
+    <p>
+    This mode can also be enabled by setting the boolean variable <a
+    href="NoMapDatatypes"><b>NoMapDatatypes</b></a> with the <b>!set</b>
+    command.
+    </dl>
+
+    <a name="layerspec">
+    <dl>
+    <dt><b>How to resolve CIF layers</b><dd>
+    This is an option menu which specifies how <i>Xic</i> interprets
+    layer directives in CIF files.
+
+    <p>
+    The layer directive has the syntax
+    <blockquote>
+    <tt>L</tt> <i>token</i>;
+    </blockquote>
+
+    If the <i>token</i> is an integer, it might indicate the name of
+    a layer with the name being the same integer string, or it might
+    be an index into the layer table.  The choices in the menu enforce
+    these two behaviors.
+
+    <p>
+    The default resolution method (<b>Try Both</b>) works as follows: 
+    The parser reads "<tt>L</tt> <i>token</i>;".  If <i>token</i>
+    matches an existing layer name (as string comparison), that layer
+    is accepted.  If there is no matching layer, and the <i>token</i>
+    is an integer in the range of 1 through a maximum number, and
+    there is no leading 0, the token is tested as an index.  if a
+    layer exists with that 1-based index, that layer is chosen.  If
+    the layer still has not been resolved, a new layer is created in
+    the layer table, with the given (numerical) name.
+
+    <p>
+    The option menu gives two additional choices.  The <b>By Name</b>
+    choice will skip the index test.  If the string match fails with
+    all existing layers, a new layer will be created.  If the <b>By
+    Index</b> choice is selected, the layer tokens are assumed to be
+    integers.  The string match test is skipped.  If the index test
+    fails, an error is reported and the operation aborts.  New layers
+    are never created in this mode.  The layer tokens must be positive
+    integers with no leading zeros that have a corresponding layer
+    table entry.
+
+    <p>
+    The <b>CifLayerMode</b> variable corresponds to this set of
+    options, where its value of 0-2 corresponds to the three choices.
+    </dl>
+
+    <a name="read"></a>
+    <h2>The Read File Page</h2>
+
+    <img src="screenshots/cvin2.png" align=right>
+    This page provides a button to initiate reading a design data file
+    into <i>Xic</i>, and various controls which set modes which will
+    apply while reading.
+
+    <dl>
+    <dt><b>Merge Into Current mode</b><dd>
+    This menu provides the option of merging the contents of another
+    cell into the current cell, possibly recursively.  Only the
+    content associated with the present display mode is affected, for
+    example in Electrical mode, only the electrical cells will be
+    affected, the physical cells are untouched.  Part of the
+    motivation for this mode is to facilitate separate development of
+    electrical and physical designs, allowing them to be merged at a
+    later time.
+
+    <p>
+    If <b>No Merge Into Current</b> is the current selection, then
+    merging is turned off.  Reading a cell of the same name as the
+    current cell can either overwrite the current cell or the new cell
+    can be ignored, depending on how name clashes are currently
+    handled (as set in the <b>Setup</b> page of this panel).
+
+    <p>
+    If one of <b>Merge Cell Into Current</b> or <b>Merge Into Current
+    Recursively</b> is selected, and the <b>Read File</b> button is
+    pressed, the following operations will be performed.  The user
+    will be prompted for a file name.  The user can respond with the
+    name of a file, or the name of a cell in memory.
+
+    <p>
+    If the user passes a cell name found in memory, the contents of
+    that cell will be duplicated and added to the current cell.  This
+    completes the command.  Note that there is no difference between
+    the <b>Merge Cell Into Current</b> and <b>Merge Into Current
+    Recursively</b> modes in this case.
+
+    <p>
+    If the file name is found on disk, the file will be opened in a
+    temporary <a href="xic:stabs">symbol table</a>.  If a cell is
+    found in the temporary symbol table that has the same name as the
+    current cell, the contents of that cell will be merged into the
+    current cell.  Otherwise, the user will be prompted for a cell
+    name.  If the user enters a valid cell name, the contents of that
+    cell will be duplicated into the current cell.  If the menu is set
+    to <b>Merge Cell Into Current</b>, the command is done.  The
+    temporary symbol table will be cleared.
+
+    <p>
+    If a recursive merge is selected, the hierarchy of the current
+    cell is traversed.  For each cell in the hierarchy, if a cell with
+    the same name exists in the temporary symbol table, the contents
+    of that cell will be duplicated into its counterpart under the
+    current cell.  Care is taken to handle the details of this
+    recursive merge cleanly.
+
+    <p>
+    There is no undo capability for this command, so be sure to save a
+    copy of the current cell hierarchy before merging, in case of
+    trouble.
+    </dl>
+
+    <dl>
+    <dt><b>Cell Name Mapping</b><dd>
+    This group of controls manages the cell name <a
+    href="cellname">aliasing</a> feature.  The <b>Auto-Rename</b>
+    button found here has the same functionality as the <b>Auto
+    Rename</b> selection in the cell name resolution option menu. 
+    This applies only when reading archive input files, and not native
+    cell files.  The prefix/suffix modifications are applied only in
+    input initiated from this panel or script functions.
+    </dl>
+
+    <p>
+    The <a href="layerchange">layer change module</a> allows layer
+    filtering and/or mapping to be applied during the read operation.
+    This applies when reading physical data only.
+
+    <dl>
+    <dt><b>Conversion Scale Factor</b><dd>
+    The <b>Conversion Scale Factor</b> provides an entry area where a
+    scale factor to be applied during reading can be entered.  Values
+    of 0.001 through 1000.0 are acceptable.  This will apply to input
+    initiated from this panel only.
+    </dl>
+
+    <p>
+    The <b>Read File</b> button will prompt the user for a file to
+    read into <i>Xic</i>, in the manner of the <a
+    href="xic:open"><b>Open</b></a> command.  However for <a
+    href="xic:fsaf">archive files</a> scaling, layer filtering, etc. 
+    may be applied to the cells read from the file through use of this
+    panel and not via the <b>Open</b> command.
+
+!!SEEALSO
+xic:cvrtmenu
+
+!!REDIRECT ecfilt       windowing#ecfilt
+
+!! 022916
+!!KEYWORD
+windowing
+!!TITLE
+Windowing Control
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="windowing#wind"><b>Windowing</b></a><br>
+    <a href="windowing#flat"><b>Flattening</b></a><br>
+    <a href="windowing#ecfilt"><b>Empty Cell Filtering</b></a>
+    </td></tr></table>
+
+    <p>
+    The windowing module is available in the <a
+    href="xic:convt"><b>Format Conversion</b></a> panel and elsewhere,
+    though not all features are available in some contexts.  The
+    module controls whether windowing and/or flattening is done when
+    layout data are being processed.
+
+    <a name="wind"></a>
+    <h2>Windowing</h2>
+
+    <p>
+    The <b>Use Window</b> button controls whether or not a rectangular
+    area is to be used.  If this button is set, only the objects that
+    intersect this area will appear in the output.  For subcells, only
+    the objects that appear within the window for some instance will
+    be converted in the corresponding cell.  The rectangular area can
+    be set with the <b>Left</b>, <b>Bottom</b>, <b>Right</b>, and
+    <b>Top</b> entry areas.  These are coordinates, in microns, in the
+    coordinate system of the top-level cell, <i>after</i> scaling is
+    applied.  Only geometry that overlaps the window area will be
+    included in the file.  However, when viewing the new file,
+    geometry in subcells that also exist outside of the window area
+    will be visible, unless the hierarchy is flattened.
+
+    <p>
+    If the <b>Clip to Window</b> button is active in addition to the
+    <b>Use Window</b> button, objects will be clipped to the given
+    window.  Without clipping, the entire object is retained.  With
+    clipping, the objects will be clipped to the window given.  Again,
+    unless the hierarchy is also flattened, geometry in subcells that
+    also exist outside of the window will be displayed when viewing
+    the new file.
+
+    <p>
+    When clipping, wires that require clipping are converted to
+    polygons.
+
+    <p>
+    There are eight registers available for saving bounding-box
+    parameters.  With the <b>S</b> (store) button, the current values
+    in the four text entry areas that define the rectangle can be
+    saved in one of the registers.  With the <b>R</b> (recall) button,
+    the saved parameters can be retrieved into the text entry areas. 
+    These registers are shared with other pop-ups that used windowing. 
+    The 0 register is used by the <a href="xic:cut"><b>Cut and
+    Export</b></a> command to save the rectangle defined with the mouse,
+    the other registers are not directly used by any command.  The
+    <b>Cut and Export</b> command can be used as a short-cut for
+    entering rectangle data through user of register 0.  Press <b>Cut
+    and Export</b> (in the <b>Convert Menu</b>), drag in a drawing
+    window to define a rectangle, then press <b>Esc</b> to abort the
+    command.  Then, recall register 0.
+
+    <a name="flat"></a>
+    <h2>Flattening</h2>
+
+    <p>
+    If the <b>Flatten Hierarchy</b> button is active, the output file
+    will be a flat representation, i.e., all geometry will appear in
+    the top-level cell, which will have no subcells.
+
+    <a name="ecfilt"></a>
+    <h2>Empty Cell Filtering</h2>
+
+    Occasionally it is important or desirable to remove empty cells
+    from output, particularly when <a href="layerchange">layer
+    filtering</a> is employed.  Layer filtering can produce large
+    numbers of empty cells.  A large number of empty cells will
+    increase file size and may produce inefficiency in downstream
+    processing operations.  Thus, provision for removing empty cells
+    is available from the <b>Empty Cell Filter</b> check box group.
+
+    <p>
+    Empty cell filtering is recursive, in that it eliminates empty
+    cells, and cells that contain only instances of empty cells. 
+    There are two empty cell filtering operations available.
+
+    <ol>
+    <li>The <b>pre-filter</b> uses in-memory per-layer/per-cell
+    statistics gathered during Cell Hierarchy Digest (CHD) creation to
+    identify cells that should be excluded due to layer filtering. 
+    This has relatively low overhead.  The CHD in use must have been
+    <a href="xic:chdadd">created</a> with <b>per-cell and per-layer
+    counts</b> specified, or this filtering is skipped.  If a CHD is
+    implicitly created in processing, i.e., the user is not using a
+    named CHD from the <a href="xic:hier"><b>Cell Hierarchy
+    Digests</b></a> panel, then these counts will be saved
+    automatically.
+
+    <p>
+    This filtering operation is performed entirely in memory and is
+    typically very fast.  However, it identifies only cells that are
+    made empty due to layer filtering.
+
+    <p>
+    <li>The <b>post-filter</b> identifies empty cells by reading the
+    source layout file.  This can be rather time consuming, but
+    applies whether or not layer filtering is being used, and will
+    identify all empty cells.
+    </ol>
+
+    <p>
+    The two check boxes separately enable each of these empty cell
+    filtering operations.  If one doesn't care about empty cells,
+    neither box should be checked.  If one is using layer filtering
+    and just wants a quick pass to remove cells made empty due to
+    layer filtering, <b>pre-filter</b> should be checked.  If one
+    wants to remove all empty cells, both <b>pre-filter</b> and
+    <b>post-filter</b> should be checked.  This will generally provide
+    the fastest operation.  If not using layer filtering, this will be
+    equivalent to checking <b>post-filter</b> only.  When using layer
+    filtering, enabling both filters can be much faster that using
+    post-filtering only.
+
+!! 022916
+!!KEYWORD
+xic:convt
+!!TITLE
+Format Conversion
+!!HTML
+    <img src="screenshots/convert1.png" align=right>
+
+    <b>Keyword</b>: <tt>convt</tt>
+
+    <p>
+    The <b>Format Conversion</b> button in the <b>Convert Menu</b>
+    brings up the <b>Format Conversion</b> panel, which is a front end
+    to a number of direct conversion functions which translate an
+    input file into output of another (or the same) format.  These are
+    direct conversions, i.e., the data are converted directly and do
+    not enter the main <i>Xic</i> database.  This means that there are
+    relaxed memory limitations, so almost arbitrarily large files can
+    be translated.  It is also possible to perform scaling, data
+    windowing or clipping, and hierarchy flattening while translating.
+
+    <p>
+    Conversions can also be performed by reading in a hierarchy and
+    using the explicit output conversion in the <a
+    href="xic:exprt"><b>Export Control</b></a> panel.
+
+    <p>
+    A drop-down menu at the top of the panel selects one of four
+    types of input:
+    <dl>
+    <dt><b>Layout File</b><dd>
+    The source file is a normal layout file in one of the supported <a
+    href="xic:fsaf">archive formats</a>.  The various input file
+    formats are recognized automatically.
+    <dt><b>Cell Hierarchy Digest Name</b><dd>
+    Input will be read through a Cell Hierarchy Digest, as listed in
+    the <a href="xic:hier"><b>Cell Hierarchy Digests</b></a> panel.
+    <dt><b>Cell Hierarchy Digest File</b><dd>
+    Input will be read through a Cell Hierarchy Digest found in a file
+    on disk, as was generated from the <b>Save</b> button in the
+    <b>Cell Hierarchy Digests</b> panel.
+    <dt><b>Native Cell Directory</b><dd>
+    Input will consist of native cell files found in a given
+    directory.  All cells found in the directory that do not have a
+    "<tt>.bak</tt>" file extension or duplicate a device library name,
+    regardless of any hierarchical relationship or lack thereof, will
+    be translated and concatenated into an archive file.
+    </dl>
+
+    <p>
+    When translating CIF files, or from native cell files using
+    <b>Native Cell Directory</b>, four-character CIF-style layer names
+    found in the input must be mapped to layer and datatype numbers
+    when output is in GDSII or OASIS format.  If the layer exists in
+    the layer table and the GDSII <a
+    href="StreamOut"><tt>StreamOut</tt></a> parameter has been set,
+    that mapping will be used.  The <tt>StreamOut</tt> parameter is
+    normally set in the technology file, but can also be set from the
+    <a href="xic:lpedt"><b>Tech Parameter Editor</b></a> from the
+    <b>Edit Tech Params</b> button in the <b>Attributes Menu</b>. 
+    When not mapped via an existing layer in the layer table, if the
+    CIF layer name is a four-digit hex number, it will be interpreted
+    as "LLDD" to obtain the GDSII layer and datatype numbers.  If not
+    in this form, a new layer number and datatype will be internally
+    generated, using the <a
+    href="UnknownGdsLayerBase"><b>UnknownGdsLayerBase</b></a> and <a
+    href="UnknownGdsDatatype"><b>UnknownGdsDatatype</b></a> variables.
+
+    <p>
+    When using <b>Native Cell Directory</b>, the directory can contain
+    an <a href="aliasfile">alias file</a> that can be used to map
+    native cell names to new names in the output.  This file must be
+    named "<tt>aliases.alias</tt>", and is never generated by
+    <i>Xic</i>.  It must be prepared by hand or some other means if
+    needed.  Each line contains the native cell name followed by the
+    name to use in output, separated by white space.  The <b>Read
+    Alias</b> check box in the <b>Format Conversion</b> panel, or
+    (equivalently) the <a href="InUseAlias"><b>InUseAlias</b></a>
+    variable must be set in order for the alias file to have effect.
+
+    <p>
+    The output format is selected through the tabs arrayed below the
+    <b>Input Source</b> buttons.  Each tab, when selected, displays a
+    page that may contain format-specific settings.  These pages are
+    very similar to corresponding pages in the <a
+    href="xic:exprt"><b>Export Control</b></a> panel, and the settings
+    in the two panels track.  The <b>Format Conversion</b> panel
+    provides some additional choices and options, however.  The
+    differences are described below.
+
+    <dl>
+    <dt><b>GDSII</b><dd>
+    The output format is GDSII.  When the <b>Input Source</b> is set
+    to <b>Layout File</b>, this page contains an <b>Input File
+    Type</b> menu.  This menu contains two choices:  <b>archive</b>
+    and <b>gds-text</b>.  The latter choice enables back-conversion to
+    GDSII of the ASCII representation previously generated from a
+    GDSII file using the <b>ASCII Text</b> output format tab.  The
+    <b>archive</b> menu choice should be selected when reading normal
+    layout data.
+
+    <p>
+    The header of a GDSII file optionally contains information about
+    fonts, reference libraries, and other things.  This information is
+    saved in a file named "<tt>gds_header_props</tt>" in the same
+    directory as the output files, when converting to native files
+    only.  The file is subsequently ignored by <i>Xic</i>, as this
+    information is not used by <i>Xic</i>.
+    </dl>
+
+    <dl>
+    <dt><b>OASIS</b><dd>
+    <img src="screenshots/convert2.png" align=right>
+    The output format is OASIS.
+    <br clear=all>
+    </dl>
+
+    <dl>
+    <dt><b>CIF</b><dd>
+    <img src="screenshots/convert3.png" align=right>
+    The output format is CIF.
+    <br clear=all>
+    </dl>
+
+    <dl>
+    <dt><b>CGX</b><dd>
+    <img src="screenshots/convert4.png" align=right>
+    The output format is CGX.
+
+    <p>
+    When translating to CGX format, the multi-box capability of BOX
+    records in CGX is not used.  However, this feature is used when
+    CGX files are written from memory.  Thus, reading a hierarchy into
+    <i>Xic</i> and writing out a CGX file will probably result in a
+    smaller CGX file than using the direct conversion.
+    <br clear=all>
+    </dl>
+
+    <dl>
+    <dt><b>XIC Cell Files</b><dd>
+    <img src="screenshots/convert5.png" align=right>
+    The output will be written to a family of native-format cell files.
+
+    <p>
+    When the selected output format is <b>Xic Cell Files</b>, the
+    input will be converted to a number of native cell files, one
+    for each cell defined in the input.  The same result can be
+    obtained by reading the input file into the database with the <a
+    href="xic:open"><b>Open</b></a> command, and then using the <a
+    href="xic:exprt#toxic"><b>Export Control</b></a> panel to
+    generate the <i>Xic</i> files.
+    <br clear=all>
+    </dl>
+
+    <dl>
+    <dt><b>ASCII Text</b><dd>
+    <img src="screenshots/convert6.png" align=right>
+    The output will be converted to an <a href="gdstext">ASCII
+    text</a> representation of the input file format, for GDSII,
+    OASIS, and CGX input.  This may be useful for debugging
+    problematic layout files.  The ASCII text format produced for
+    GDSII can be back-converted to GDSII through use of the
+    <b>gds-text</b> selection in the <b>Input File Type</b> menu of
+    the <b>GDSII</b> page.  The ASCII representation of OASIS files
+    can be back-converted to OASIS with tools available from Anuvad. 
+    The two check boxes that appear on this page apply when
+    translating OASIS:
+
+    <p>
+    <dl>
+    <dt><b>OASIS text: print offsets</b><dd>
+    This sets/unsets the state of the <a
+    href="OasPrintOffset"><b>OasPrintOffset</b></a> variable, and when
+    active the first token of each printed record contains the offset
+    in the file or containing CBLOCK record.  When not active, offsets
+    are not printed.
+    </dl>
+
+    <dl>
+    <dt><b>OASIS text: no line wrap</b><dd>
+    This sets/unsets the state of the <a
+    href="OasPrintNoWrap"><b>OasPrintNoWrap</b></a> variable,
+    suppressing line breaking when active.  In this case, each record
+    will use a single (possibly very long) line.  When not set, lines
+    are broken and indented.
+    </dl>
+    </dl>
+
+    <p>
+    Note that the <b>Input Source</b> choice will affect the
+    availability of output format tabs, in particular if other than
+    <b>Layout File</b> is selected, the available tabs are
+    <b>GDSII</b>, <b>OASIS</b>, <b>CIF</b>, <b>CGX</b>.
+
+    <p>
+    The <a href="layerchange">layer change module</a> allows layer
+    filtering and/or mapping to be applied during the conversion operation.
+
+    <p>
+    The <b>Cell Name Mapping</b> group of controls manages the cell
+    name <a href="cellname">aliasing</a> feature.
+
+    <p>
+    The <a href="windowing">windowing and flattening</a> group can be
+    used to set up area filtering or hierarchy flattening.
+
+    <p>
+    These may not all be available for every input/output format
+    permutation.  For example, the windowing operations are not
+    available when the input format is <b>Native Cell Directory</b>.
+
+    <p>
+    If windowing, flattening, or empty cell filtering is set, only
+    physical data are converted, i.e., there will be no electrical
+    data in the resulting file.
+
+    <p>
+    <a name="region"></a>
+    When windowing is in use and not flattening, an area filtering
+    operation is applied to subcells.  For each subcell, a bounding
+    box is obtained that contains all of the intersection areas of
+    instances of the subcell that overlap the window area, in the
+    space of the subcell master.  If there is no such overlap area,
+    the subcell will not appear in output.  Otherwise, only objects
+    within the subcell that overlap this bounding box will appear in
+    output.  If clipping is enabled, the overlapping objects will be
+    clipped to the bounding box boundary.
+
+    <p>
+    <img src="write_region.gif"><br>
+
+    <p>
+    In the figure, the two instances of A together "cover" all the
+    objects shown in A.  All of these objects will therefor appear in
+    A in output as shown, whether or not clipping is enabled.  They
+    appear outside of the window boundary, illustrating that the
+    window boundary is not absolute, unless flattening and clipping
+    are employed.
+
+    <p>
+    In the single instance of B, the object shown straddles the window
+    area and will therefor be included in output.  If clipping is
+    enabled, the object within B will be clipped to the window
+    boundary.  The single instance of C overlaps the window area, so
+    will be included in output.  However, since none of its objects
+    appear within the area, the C subcell will be empty in output. 
+    Empty cells will be removed from output if the empty cell
+    filtering option is set.  This will add some computational
+    overhead, and in most cases empty cells are "harmless".
+
+    <p>
+    When the input source is a CHD or saved CHD file, when the user is
+    prompted for the CHD name or file name, the user can supply an
+    optional second argument.  This is the name of a cell in the CHD
+    (including any aliasing applied when the CHD was created) that
+    will be used as the root cell in output.  If no cell name is
+    provided, the top-cell <a href="xic:chdconfig">configured</a> in
+    the CHD will be used.  If no cell is configured, all cells
+    referenced in the CHD will be converted. 
+
+    <p>
+    If the input file contains multiple top-level cells, and no
+    windowing, flattening, or empty cell filtering is employed, files
+    are simply streamed through the converter and all cells are
+    translated, using the specified parameters.  If windowing or
+    similar is employed, a temporary Cell Hierarchy Digest (CHD) is
+    transiently produced in memory, which is used to perform the
+    conversion.  In this case, only the "default" top level cell
+    hierarchy will be converted.  This is the first cell in the file
+    that is not used as a subcell by another cell defined in the file. 
+    Of course, if the input format choice is a <a
+    href="xic:hier">CHD</a>, and the CHD is <a
+    href="xic:chdconfig">configured</a> with a top-level cell, that
+    cell will be used.
+
+    <p>
+    For input file types that support scaling, the conversion scale
+    factor entry area will be active.  A scale factor of .001 - 1000.0
+    can be entered in this area, and will be applied during the
+    translation.  When scaling, only the physical (not electrical)
+    data are scaled.
+
+    <p>
+    The translation is initiated with the <b>Convert</b> button.  The
+    user will be prompted for the name of the input file (or directory
+    if <b>Native Cell Directory</b>), and then the name of the output
+    file, or directory for native files.
+
+    <p>
+    When generating an archive file and an error occurs.  the archive
+    file will normally be deleted.  However, if the variable <a
+    href="KeepBadArchive"><b>KeepBadArchive</b></a> is set (with the
+    <a href="!set"><b>!set</b></a> command) the output file will be
+    given a "<tt>.BAD</tt>" extension and retained.  This file should
+    be considered corrupt, but may be useful for diagnostics.
+
+!!SEEALSO
+xic:cvrtmenu
+
+!! 061308
+!!KEYWORD
+asciitext
+!!TITLE
+Generating ASCII output from layout data
+!!HTML
+    The conversion of GDSII to "gds-text" is a diagnostic tool for
+    converting the data in a (binary) GDSII file into a text form. 
+    Each record of the stream file is parsed and output generated in
+    sequence.  The text file can grow quite large, though a range
+    specification can be given to limit the number of records printed. 
+    The text file is mainly used as a diagnostic for misbehaving GDSII
+    files.  It can be reconverted into a GDSII file, thus, the text
+    representation is in effect another valid file format for
+    layout data.  This facility allows corrupted or otherwise
+    problematic GDSII files to be repaired.
+
+    <p>
+    OASIS files converted to ASCII text use the same ASCII record
+    format as <tt>anuvad-0.2</tt> from <b>SoftJin</b> (<a
+    href="http://www.softjin.com/html/anuvad.htm">
+    http://www.softjin.com/html/anuvad.htm</a>), except for the
+    separator lines that indicate the start of physical and electrical
+    records.  The <tt>anuvad</tt> tool set is free, and contains
+    libraries and programs to convert between GDSII and OASIS formats,
+    and to/from ASCII text representations of those formats.  The
+    boolean variable <a
+    href="OasPrintNoWrap"><b>OasPrintNoWrap</b></a> will suppress line
+    wrapping when set, i.e., each record will occupy one possibly very
+    long text line.  The boolean variable <a
+    href="OasPrintOffset"><b>OasPrintOffset</b></a> will add file
+    offsets to the output when set.  These variables track the
+    settings of the check boxes on the <b>ASCII text</b> output format
+    tab page in the <a href="xic:convt"><b>Format Conversion</b></a>
+    panel.
+
+    <p>
+    When converting to text format, the user will be prompted for an
+    optional range specification string.  If no string is given, the
+    entire archive file will be written as text.  The range
+    specification string is expected to be in the following format.
+
+    <blockquote>
+    [<i>start_offs</i>[<tt>-</tt><i>end_offs</i>]] [<tt>-r</tt>
+      <i>rec_count</i>] [<tt>-c</tt> <i>cell_count</i>]
+    </blockquote>
+
+    <p>
+    The square brackets indicate optional terms.  The meanings are:
+
+    <dl>
+    <dt><i>start_offs</i><dd>
+    An integer, in decimal or "<tt>0x</tt>" hex format (a hex digit
+    preceded by "<tt>0x</tt>").  The printing will begin at the first
+    record with offset greater than or equal to this value.
+    </dl>
+
+    <dl>
+    <dt><i>end_offs</i><dd>
+    An integer in decimal or "<tt>0x</tt>" hex format.  If this value
+    is greater than <i>start_offs</i>, the last record printed is at
+    most the one containing this offset.  If given, this should appear
+    after a '-' character following the <i>start_offs</i>, with no
+    space.
+    </dl>
+
+    <dl>
+    <dt><i>rec_count</i><dd>
+    A positive integer, at most this many records will be printed.
+    </dl>
+
+    <dl>
+    <dt><i>cell_count</i><dd>
+    A non-negative integer, at most the records for this many cell
+    definitions will be printed.  If given as 0, the records from the
+    <i>start_offs</i> to the next cell definition will be printed.
+    </dl>
+
+    <p>
+    Records are printed from the beginning of the file, or the
+    <i>start_offs</i> if given.  Printing continues to the end of the
+    file, or to the first of <i>end_offs</i>, <i>rec_count</i>, or
+    <i>cell_count</i> if any of these have been given.
+
+    <p>
+    Back-conversion of the ASCII output into binary form is unlikely
+    to succeed unless the whole file is written as ASCII.
+
+!! 022916
+!!KEYWORD
+xic:assem
+!!TITLE
+Layout File Merge Tool
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="xic:assem#overview"><b>Overview</b></a><br>
+    <a href="xic:assem#source"><b>The Source Page</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="xic:assem#lfilt"><b>Layer Filtering Module</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="xic:assem#scale"><b>Scaling</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="xic:assem#cname"><b>Cell Name Modification</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="xic:assem#clist"><b>Top-Level Cells List</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="xic:assem#tform"><b>Basic Transformations</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="xic:assem#adv"><b>Advanced Operations</b></a><br>
+    <a href="xic:assem#menus"><b>Merge Tool Menus</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="xic:assem#filemenu"><b>The File Menu</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="xic:assem#optsmenu"><b>The Options Menu</b></a><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="xic:assem#helpmenu"><b>The Help Menu</b></a>
+    </td></tr></table>
+
+    <img src="screenshots/assemble1.png" align=right>
+
+    <p>
+    <b>Keyword</b>: <tt>assem</tt>
+
+    <p>
+    The <b>Layout File Merge Tool</b>, brought up with the
+    <b>Assemble</b> button in the <b>Convert Menu</b>, will extract
+    cell hierarchies from one or more layout files, optionally perform
+    some processing, then add the hierarchies to a single output file. 
+    It is essentially a graphical front-end for the <a
+    href="!assemble"><b>!assemble</b></a> command.  The tool is
+    intended to be highly flexible.  Potential applications include
+    building up reticles for mask generation or combining design
+    output from different development groups into a single file.
+
+    <p>
+    Similar operations can be performed by use of <a
+    href="refcell">reference cells</a>.
+
+    <p>
+    The supported layout <a href="xic:fsaf">file formats</a> for input
+    and output are GDSII, CGX, OASIS, and CIF.  The file format is
+    specified when writing, and is determined automatically when
+    reading.  Any combination of these formats can be used for input
+    and output.
+
+    <p>
+    The data read from the input files can be processed in various
+    ways before writing to output.  Some of these operations are
+    sketched below.
+
+    <br clear=all>
+    <ul>
+    <li>The layers can be filtered, to exclude certain layers, accept
+    only certain layers, or to map certain layers to another layer. 
+    For GDSII and OASIS, the "layer" is actually a layer
+    number/datatype number combination.  Specification of a layer
+    includes wildcarding of the layer or datatype number.
+
+    <li>The names of cells can be modified to add or replace a prefix
+    and/or suffix.
+
+    <li>The data can be transformed by scaling, rotation, translation,
+    and mirroring before placement in the output.
+
+    <li>The data can be filtered to objects that overlay a rectangular
+    window, and may be clipped to the window.
+
+    <li>The hierarchy can be flattened before placement.
+
+    <li>Empty cells can be filtered out of the output.
+    </ul>
+
+    Any combination of these processing operations can be specified.
+
+    <p>
+    The processed hierarchies from the specified input layout files
+    are generally placed in a new top-level cell created in the output
+    file.  The user can choose the name of this cell, and if no
+    name is given, no new top-level cell will be created, and the data
+    from each input will simply be concatenated in the output.
+
+    <p>
+    During the merge, the tool remembers tha names of all cells seen,
+    and will automatically change the names of cells that would clash
+    in the combined file.  Notification of the change will be written
+    to the log file, which is produced during a run.  The logfile is
+    named "<tt>assemble.log</tt>" and is produced in the current
+    directory.
+
+    <a name="overview"></a>
+    <h2>Overview</h2>
+
+    Along the top of the <b>Merge Tool</b> are tabs which make visible
+    separate pages for output and input.  There will always be an
+    output tab, and at least one source tab.  At startup, there is a
+    single source tab, labeled "Source 1".  Each layout file from
+    which files are to be extracted will have a source tab, and it is
+    also possible to use the same archive file in different source
+    pages if necessary.  A new source page can be created with the
+    <b>New Source</b> button in the <a href="#optsmenu"><b>Options</b>
+    menu</a>, and an existing source page can be deleted with the
+    <b>Remove Source</b> button in the same menu. 
+
+    <p>
+    Each source page must be filled in with the appropriate entries
+    before the merge run.  We will return to a description of the
+    fields in the source pages.
+
+    <p>
+    The left-most tab is labeled <b>Output</b>, and when selected will
+    show a page for configuring the overall job output.  The
+    <b>Top-Level Cell Name</b> field may contain the name of a cell
+    that will be created in the output file as a container for the
+    cell hierarchies read from the sources.  This will be the
+    top-level cell in the output file.  The name is arbitrary, but
+    should conform to the standards of the output file format.  If it
+    should clash with another cell being written from a source, that
+    file name will be modified to avoid the clash.
+
+    <p>
+    It is also possible to run a merge without entering a <b>Top-Level
+    Cell Name</b>.  In this case, the hierarchies extracted from the
+    source archives are simply concatenated in the output file.  The
+    output file may then have multiple top-level cells.  Any
+    transformation information except scaling will be ignored, since
+    transformations apply to the placement of the hierarchy in the
+    container top-level cell.
+
+    <p>
+    The <b>Path to New Layout File</b> field is required; it specifies
+    the output file.  The format of the output file produced is
+    determined by the format tab selected at the top of the output
+    page.
+
+    <p>
+    The <b>Create layout File</b> button initiates to merge operation. 
+    It should be pressed when all relevant fields in the <b>Merge Tool</b>
+    have been filled in.  Depending upon the number and size of the
+    files and hardware characteristics, the operation can take seconds
+    to hours.  When started, a progress monitor pop-up appears.  This
+    displays the number of bytes read and written, error and warning
+    messages emitted, and a "working" indication.  An abort button is
+    also provided which can be used to terminate the operation.
+
+    <p>
+    The <b>Dismiss</b> button will exit the <b>Merge Tool</b> program. 
+    Unless the <b>Save</b> button in the <a
+    href="#filemenu"><b>File</b> menu</a> has been used, all entered
+    information will be lost.  The <b>Save</b> button can be used to
+    save the current state of the <b>Merge Tool</b> to a file, which
+    can be read later (with the <b>Recall</b> button) to configure the
+    <b>Merge Tool</b> to the same state as was saved.  The file format
+    is that used as input to the <b>!assemble</b> command, and is
+    described there.  Note that files prepared by hand for use with
+    the <b>!assemble</b> command can be loaded into the <b>Merge
+    Tool</b> with the <b>Recall</b> button.
+
+    <a name="source"></a>
+    <h2>The Source Page</h2>
+
+    <img src="screenshots/assemble2.png" align=right>
+    Each input file has at least one corresponding source page.  Only
+    one page is visible, and it occupies the main part of the <b>Merge
+    Tool</b> display.  The page displayed can be selected by clicking
+    on the <b>Source</b> tabs just below the menu bar.  The entries in
+    the page identify the cells to extract and the processing to be
+    performed.
+
+    <p>
+    The required <b>Path to Source</b> field contains the path to the
+    associated layout file, and the file must be in one of the <a
+    href="xic:fsaf">supported formats</a>.  This entry can also be the
+    access name of a <a href="xic:hier">Cell Hierarchy Digest</a>
+    (CHD) in memory, or a path to a saved CHD file on disk.  In either
+    case, the CHD will then be used to access the content of the
+    associated file.
+
+    <a name="lfilt"></a>
+    <h4>Layer Filtering Module</h4>
+
+    The group of entries below the file path controls layer filtering
+    and aliasing.  These are optional and can be ignored if no layer
+    manipulations are needed.
+
+    <p>
+    The module contains the following controls:
+    <dl>
+    <dt><b>Layer List</b> text area<dd>
+    The <b>Layer List</b> can be set to a space-separated list of <a
+    href="layername">layer names</a>.  Each layer name is expected to
+    match an effective layer name in the file being read.  For file
+    types such as GDSII that designate layers with layer/datatype
+    integers, either the hex encoding or decimal form can be used,
+    with wildcarding accepted.  The <b>Layer List</b> is ignored unless
+    one of the following two check boxes is selected.
+    </dl>
+
+    <dl>
+    <dt><b>Layers Only</b> check box<dd>
+    If this box is checked, only the layers listed in the <b>Layer
+    List</b> will be read from the source.
+    </dl>
+
+    <dl>
+    <dt><b>Skip Layers</b> check box<dd>
+    This box can be checked if the <b>Layers Only</b> box is
+    unchecked.  When checked, layers listed in the <b>Layer List</b>
+    will be ignored in the source.  All layers except those listed
+    will be read.
+    </dl>
+
+    <dl>
+    <dt><b>Layer Aliases</b> text area<dd>
+    This provides a means for converting layers found in input from the
+    source to a different layer when written to output.  The entered text
+    contains zero of more space-separated text tokens in the form
+    <blockquote>
+        <i>oldname</i>=<i>newname</i>
+    </blockquote>
+    The <i>oldname</i> is a layer name consistent with the source format.
+    For GDSII and OASIS, either hex or decimal encoding is accepted.
+    The <i>newname</i> is the destination layer consistent with the
+    output format.  Again, gor GDSII and OASIS either the hex or
+    decimal forms may be used.  There should be no space between
+    the names (or in the names) and the equal sign '=' separator.
+    </dl>
+
+    <a name="scale"></a>
+    <h4>Scaling</h4>
+
+    There are three different scaling entries which may apply.  If
+    there are no cells listed in the <b>Top-Level Cells</b> entry
+    area, then none of the "per cell" settings (to be described)
+    apply, and the value in the <b>Conversion Scale Factor</b> entry
+    area will be used to scale all coordinates read from the source. 
+    The <b>Conversion Scale Factor</b> will be ignored if any cells
+    are listed in the <b>Top-Level Cells</b> area, and scaling values
+    will be obtained from the "per cell" entries.
+
+    <p>
+    The "per cell" entries allow scaling of the cell definitions
+    written to output, and magnification of any instantiations created
+    in a top-level cell in output.
+
+    <dl>
+    <dt><b>Conversion Scale Factor</b> numeric entry area<dd>
+    This provides a scale factor for cell data read from the source
+    when no <b>Top-Level Cells</b> have been given.  This value is
+    ignored otherwise.  This can range from .001 through 1000.0, and
+    is applied to all coordinates of cells being read from the present
+    source.
+    </dl>
+
+    <a name="cname"></a>
+    <h4>Cell Name Modification</h4>
+
+    This group allows systematic changes to the cell names read from
+    the source layout file.  If the source is a CHD, then the cell
+    name modifications described here are performed after any cell
+    modifications configured into the CHD.
+
+    <dl>
+    <dt><b>Prefix</b> and <b>Suffix</b> text entries<dd>
+    Text entered into these text areas will be added as a prefix or
+    suffix to cell names encountered when reading the source file. 
+    The entries are string tokens, containing any alphanumeric
+    characters plus '$', '?', '_'.  String tokens given in this form
+    will be prepended/appended to each cell name read from the source.
+
+    <p>
+    A limited text substitution mechanism is available.  The string
+    tokens can also have the form /<i>str</i>/<i>sub</i>/ which
+    indicates a substitution.  This causes the <i>str</i> if it
+    appears as a prefix/suffix of a cell name to be replaced by
+    <i>sub</i>.  The <i>sub</i> can be empty (i.e., the form is
+    /<i>str</i>//) which can be used to undo the previous addition of
+    a prefix or suffix.  Forms like //<i>sub</i>/ are equivalent to
+    just giving <i>sub</i> as a string.
+    </dl>
+
+    <dl>
+    <dt><b>To Lower</b> and <b>To Upper</b> check boxes<dd>
+    If set, <b>To Lower</b> will convert upper case cell names to
+    lower case, and <b>To Upper</b> will convert lower case cell names
+    to upper.  Mixed case cell names are not affected.  Case
+    conversion is performed before any applied prefix/suffix.
+    </dl>
+
+    <a name="clist"></a>
+    <h4>Top-Level Cells List</h4>
+
+    Each source may have one or more top-level cells specified.  If no
+    top-level cells are specified the default operation will be as
+    follows.  If the source is a layout file, the entire file will be
+    streamed into the output.  If the source is a CHD, the cell
+    hierarchy of the CHD's <a href="xic:chdconfig">default cell</a>
+    will be streamed into the output.  If not explicitly configured,
+    this will be the first top-level cell in the file referenced by
+    the CHD.
+
+    <p>
+    The top-level cell names are names of cells in the source.  If the
+    source is a CHD with cell name modification, the names must
+    include the modification.  These cells, and possibly their
+    hierarchies, will be used in output.  Note that the cells listed
+    are not necessarily top-level in the source, any cell in the
+    source file can be listed.
+
+    <p>
+    Cells are added to the list by use of the <b>New Toplevel</b>
+    button in the <b>Options</b> menu.  Note that the user must
+    generally know the names of the cells in the source to be
+    extracted.  If an empty cell name is given at the prompt, the text
+    "<tt>&#60;default></tt>" will appear in the listing, which will
+    correspond to the default cell of a CHD source or the first
+    top-level cell found in a source file.  Thus, it is possible to
+    access the "top" cell in a source without knowing its name. 
+    Giving a cell makes available the "per cell" operations in the
+    <b>Basic</b> and <b>Advanced</b> pages to the right of the
+    listing.
+
+    <p>
+    One can use the <b>Contents</b> list in the <a
+    href="xic:hier"><b>Cell Hierarchy Digests</b></a> listing to list
+    the cell names, if the source has a corresponding CHD.  Cell names
+    can be dragged directly from the listing panel and dropped in the
+    <b>Top-Level Cells</b> list, bypassing the need to use the <b>New
+    Toplevel</b> menu button.
+
+    <p>
+    Clicking on a cell name in the list will select it, enabling
+    additional "per cell" entries which apply to this cell and its
+    hierarchy.  The selected cell name can be deleted from the list
+    with the <b>Remove Toplevel</b> button in the <b>Options</b> menu.
+
+    <a name="tform"></a>
+    <h4>Basic Transformations</h4>
+
+    If a cell name is selected in the <b>Top-Level Cells</b> listing,
+    the entries in the <b>Basic</b> tab page become enabled.  One may
+    have to click on the "Basic" tab to display the entries.  These
+    control the transformation of the selected cell when instantiated
+    in the top-level cell in the output file.  If there is no
+    top-level cell name given, these entries will be ignored.
+
+    <dl>
+    <dt><b>Placement Name</b> entries<dd>
+    The <b>Placement Name</b> field can be filled in with a new name. 
+    The selected cell will be saved under this name, rather than its
+    real name, in output.  Any name modifications in force will be
+    applied to this name.
+    </dl>
+
+    <dl>
+    <dt><b>Basic</b> transformation entries<dd>
+    This tab page contains entries that control the transformation of
+    the selected cell when instantiated.  The <b>Placement X,Y</b>
+    entries set the translation coordinates in microns.  The origin of
+    the selected cell will be mapped to this location in the output
+    top-level cell.  Additionally, the cell instance can be rotated,
+    mirrored, or magnified.  The <b>Rotation Angle</b> menu provides
+    rotation angle choices:  multiples of 45 degrees.  The
+    <b>Mirror-Y</b> button will invert the Y-coordinates before
+    rotation.  The <b>Magnification</b> entry can change the scaling
+    of the instantiation.
+    </dl>
+
+    <a name="adv"></a>
+    <h4>Advanced Operations</h4>
+
+    When a cell name is selected in the <b>Top-Level Cells</b>
+    listing, the entries in the <b>Advanced</b> tab page become
+    enabled.  These operations apply to the cell data read from the
+    source file for the selected cell, allowing windowing, flattening,
+    and other operations.  These are similar to the <a
+    href="windowing">windowing</a> operations provided in the <a
+    href="xic:convt"><b>Format Conversion</b></a> panel.
+
+    <dl>
+    <dt><b>Use Window</b> check box<dd>
+    Windowing operations are enabled by setting the <b>Use Window</b>
+    check box.  A window is a rectangular area in the selected cell,
+    which is specified (in microns) with the four numerical entry
+    boxes.
+
+    <p>
+    With windowing enabled, only objects and subcells that have
+    nonzero overlap with the window will be written to output.  In
+    subcells, only objects that overlap the window in the context of
+    some instance will be included.  Thus, only the objects in the
+    file needed to represent the window area of the selected cell to
+    all depths below the selected cell will be read from the source.
+    </dl>
+
+    <dl>
+    <dt><b>Clip</b> check box<dd>
+    If in addition the <b>Clip</b> check box is set, the objects will
+    be clipped to the window.  This includes objects in subcells. 
+    Note that this does not guarantee that geometry will not appear
+    outside of the window, since instance geometry may appear anywhere.
+    </dl>
+
+    <dl>
+    <dt><b>Flatten</b> check box<dd>
+    The <b>Flatten</b> button will flatten the hierarchy under the
+    selected cell.  Flattening can be applied with or without
+    windowing.  Along with windowing and clipping, no geometry will
+    extend outside of the window area.
+    </dl>
+
+    <dl>
+    <dt><b>Empty Cell Filter</b><dd>
+    The <b>pre-filt</b> and <b>post-filt</b> check boxes enable the
+    two stages of empty cell filtering, as <a
+    href="ecfilt">described</a> for the <b>Format Conversion</b> panel.
+    </dl>
+
+    <dl>
+    <dt><b>Scale Factor</b> entry<dd>
+    The coordinates in the cell and its hierarchy will be scaled by
+    this factor in output.  This is done logically before any
+    windowing operations.
+    </dl>
+
+    <dl>
+    <dt><b>No Hierarchy</b> check box<dd>
+    If checked, only the cell, and not its subcell hierarchy, will be
+    included in output.  This can lead to unresolved references in the
+    output file.
+    </dl>
+
+    <a name="menus"></a>
+    <h2>Merge Tool Menus</h2>
+
+    The <b>Merge Tool</b> provides three drop-down menus in the menu
+    bar at the top of the interactive display:  <b>File</b>,
+    <b>Options</b>, and <b>Help</b>.  The <b>File</b> menu contains
+    entries related to input/output, and <b>Options</b> contains
+    entries for modification of program operation.  The <b>Help</b>
+    menu provides access to documentation.  This section describes the
+    entries of each menu in detail.
+
+    <p>
+    Some of the menu entries have keyboard accelerators, which are
+    listed in the menu.  Pressing the accelerator key combination has
+    the same effect as pressing the menu button, without the need to
+    display the menu.
+    
+    <a name=filemenu></a>
+    <h4>The File Menu</h4>
+
+    The file menu contains command buttons that deal generally with
+    input/output.
+
+    <dl>
+    <dt><b>File Select</b><dd>
+    The <b>File Select</b> button brings up a <a href="filesel"><b>File
+    Selection</b></a> panel.  This enables the file hierarchy on the
+    user's computer to be searched for files.  Selecting a file by
+    double clicking a name of pressing the green octagon "Go" button
+    will enter the full file path into the <b>Path to Source</b>
+    entry of the current <b>Source</b> page.
+    </dl>
+
+    <dl>
+    <dt><b>Save</b><dd>
+    The <b>Save</b> button will save the current <b>Merge Tool</b>
+    configuration in a file.  The file format is as described for the
+    <a href="!assemble#input"><b>!assemble</b></a> command.  This
+    includes all of the filled-in entries of all pages currently
+    recorded in the tool.  This file can be subsequently read to reset
+    the <b>Merge Tool</b> to the saved status.  The generated file is
+    in a simple ASCII format that can be generated by third-party
+    scripts, etc., by the advanced user.
+
+    <p>
+    Pressing the <b>Save</b> button will pop-up a small dialog asking
+    for a name for the file.  This name can be anything, but it is
+    recommended that a standard extension such as "<tt>.sav</tt>" be
+    used to make these files easily recognized.  Pressing the <b>Save
+    State</b> button on the dialog will generate and save the state
+    file.
+    </dl>
+
+    <dl>
+    <dt><b>Recall</b><dd>
+    The <b>Recall</b> button will read a file previously saved with
+    the <b>Save</b> button, and reconfigure the <b>Merge Tool</b> to
+    the state saved in the <a href="!assemble#input">file</a>.
+
+    <p>
+    Pressing the <b>Recall</b> button will pop up a small dialog
+    asking for the name of the file.  This can be entered directly, or
+    the <b>File Selection</b> panel (from the <b>File Select</b>
+    button) can be used to locate the file.  Once located, the name of
+    the file can be dragged from the <b>File Selection</b> panel and
+    dropped in the dialog.
+
+    <p>
+    Pressing the <b>Recall State</b> button in the dialog will
+    reconfigure the <b>Merge Tool</b> to the state found in the file.  All
+    entries in the tool should be as saved.
+    </dl>
+
+    <a name=optsmenu></a>
+    <h4>The Options Menu</h4>
+
+    The <b>Options</b> menu contains buttons that enable making
+    certain entries into the <b>Merge Tool</b> forms, and otherwise
+    induce changes in configuration.
+
+    <dl>
+    <dt><b>Reset</b><dd>
+    Pressing this button will reset the configuration of the <b>Merge
+    Tool</b> to the startup (empty) configuration.  All existing
+    entries will be lost.
+    </dl>
+
+    <dl>
+    <dt><b>New Source</b><dd>
+    Each input file from which cells are to be extracted, termed a
+    "Source", has a separate page in the <b>Merge Tool</b> display.  At
+    startup, there is one empty source page, which is specified as
+    "Source 1" in the tab at the top of the display.  The <b>New
+    Source</b> button will create a new empty source page, with a new
+    tab with a unique name.  The new page will become the visible
+    page.  Other source pages can be selected by clicking on the tabs.
+    Each source page must be filled in with the appropriate entries
+    before a merge can be performed.
+    </dl>
+
+    <dl>
+    <dt><b>Remove Source</b><dd>
+    Pressing this button will irretrievably delete the currently visible
+    source page, if it is not the initial "Source 1" page.  The page and
+    its tab and contents will disappear.
+    </dl>
+
+    <dl>
+    <dt><b>New Toplevel</b><dd>
+    This will add the name of a top level cell to the <b>Top-Level
+    Cells</b> list of the current page.  These are cells that
+    represent the top level of hierarchies to be extracted from the
+    archive file named in the <b>Path to Source</b> entry on the same
+    page.  The names in the list must match an actual cell name found
+    in the file.  These are "top-level" in the extraction sense and
+    need not be top-level in the overall cell hierarchy of the file. 
+    The list can contain the same name multiple times if multiple
+    instances of the cell are needed in output.
+
+    <p>
+    Note that the user must have knowledge of the names of the cells
+    used in the file.  The names specified must be the actual names
+    found in the file, and do not reflect name changes that might be
+    applied during processing.
+    </dl>
+
+    <dl>
+    <dt><b>Remove Toplevel</b><dd>
+    This will remove the highlighted entry in the <b>Top-Level Cells</b>
+    list, if an entry is highlighted.  An entry is highlighted by clicking
+    on it with the mouse.  When an entry is removed, it will not appear
+    in the output.
+    </dl>
+
+    <a name=helpmenu></a>
+    <h4>The Help Menu</h4>
+
+    The <b>Help</b> menu provides access to <b>Merge Tool</b> on-line
+    documentation.
+
+    <dl>
+    <dt><b>Help</b><dd>
+    This brings up the help system.
+    </dl>
+
+!!SEEALSO
+xic:cvrtmenu
+
+!! 022916
+!!KEYWORD
+xic:cut
+!!TITLE
+Cut and Export
+!!HTML
+    <b>Keyword</b>: <tt>cut</tt>
+
+    <p>
+    The <b>Cut and Export</b> button in the <b>Convert Menu</b>
+    enables the user to define a rectangular area in a displayed
+    layout, and export the flattened geometry in the area to a file. 
+    This can be useful for grabbing features of interest from the
+    layout for documentation purposes or otherwise.
+
+    <p>
+    The user clicks twice or drags in a drawing window, to define a
+    rectangle.  The rectangle is automatically stored in register 0,
+    of the eight rectangle registers that are available in pop-ups
+    that use rectangle entry.  Thus, pop-ups such as the <a
+    href="xic:cvrtmenu"><b>Format Conversion</b></a> panel, can load
+    this rectangle by pressing the <b>R</b> button to the left of the
+    window entry area, and selecting <b>Reg 0</b>.
+ 
+    <p>
+    After the rectangle is defined, the <a href="xic:exprt"><b>Export
+    Control</b></a> pop-up appears, preconfigured with the
+    rectangle, and set for flattening, windowing, and clipping.  The
+    user may choose an output format and make any other desired
+    changes, then press <b>Write File</b>.  This will cause prompting
+    for the name of the output file, which will be created if the user
+    provides a valid name and no errors occur.
+
+!!SEEALSO
+xic:cvrtmenu
+
+!! 120110
+!!KEYWORD
+xic:diff
+!!TITLE
+Compare Layouts
+!!HTML
+    <img src="screenshots/compare1.png" align=right>
+
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="xic:diff#cmpage"><b>Comparison Mode Pages</b></a><br>
+    <a href="xic:diff#prop"><b>Property List Comparison</b></a>
+    </td></tr></table>
+
+    <p>
+    <b>Keyword</b>: <tt>diff</tt>
+
+    <p>
+    The <b>Compare Layouts</b> button in the <b>Convert Menu</b>
+    brings up the <b>Compare Layouts</b> panel.  This is a graphical
+    front-end for the <a href="!compare"><b>!compare</b></a> command,
+    used to compare the contents of cells and hierarchies.
+
+    <p>
+    There are three different comparison modes, which can be selected
+    with the notebook tabs at the top of the panel.  The <b>Per-Cell
+    Objects</b> mode will compare objects directly:  box-to-box,
+    poly-to-poly, etc.  A difference will be recorded if an object
+    does not have an identical counterpart in the other cell.  In this
+    mode only, there is provision for comparing the properties of the
+    cells, objects and instances.  In other modes, properties are
+    ignored.
+
+    <br clear=all>
+    <p>
+    <img src="screenshots/compare2.png" align=right>
+    The <b>Per-Cell Geometry</b> mode will first convert the geometry
+    to trapezoids, then compare the coverage of the trapezoid lists. 
+    Only differences in the actual dark-area will be reported.  Both
+    of these modes apply only to the geometry within a cell.
+
+    <br clear=all>
+    <p>
+    <img src="screenshots/compare3.png" align=right>
+    The third mode, <b>Flat Geometry</b>, will compare the geometry
+    after (logically) flattening the hierarchy.  More detail will be
+    provided below.
+
+    <p>
+    The lower half of the panel provides input areas for parameters
+    that are used in any mode.  The top two groups provide the sources
+    to be compared.  The <b>Source</b> entries can contain the name of
+    a layout file in any of the <a href="xic:fsaf">supported
+    formats</a>, or the name of a <a href="xic:hier">Cell Hierarchy
+    Digest</a> (CHD) in memory.  If left blank, the source is taken as
+    the main database.  Both <b>Source</b> entries may be blank in
+    <b>Per-Cell Objects</b> mode, in order to compare cells in memory
+    (in the current symbol table).  The second <b>Source</b> entry can
+    be left empty in any but the <b>Flat Geometry</b> mode, in which
+    case the cells to compare must exist in memory, in the current
+    symbol table.  The top (left pointing) <b>Source</b> is the
+    "reference" when the list of cells to compare is generated, so
+    there is an asymmetry that should be kept in mind, which will be
+    further discussed below.
+
+    <p>
+    If a file name is given as a source, a temporary CHD is created
+    for use during the comparison, and is destroyed when the operation
+    completes.  Thus, when doing repeated comparisons, it is more
+    efficient to create a CHD first, and reference this CHD for
+    comparisons.
+
+    <p>
+    The actual list of cells to compare is generated from entries in
+    the <b>Cells</b> and <b>Equiv</b> entry areas by logic to be
+    described.  These entry areas, if not blank, should contain
+    space-separated cell names.
+
+    <p>
+    In many cases, there is only one list of cells to compare, and
+    each cell is sought in both sources.  If a cell is found in one
+    source and not the other, this will appear in the log file, but is
+    not considered to be an error.  The cells list in this case is
+    always given in the <b>Cells</b> entry.
+
+    <p>
+    If an <b>Equiv</b> list is given, there must be exactly the same
+    number of entries given in the <b>Cells</b> list.  The cells in
+    the two lists will be compared term-by-term, in order.  This is
+    how one can compare cells with differing names.  In all other
+    cases, the <b>Equiv</b> list should be left blank.  It is an error
+    if <b>Equiv</b> entries are given with <b>Cells</b> blank, or if
+    the list lengths differ.  However, the <b>Equiv</b> list is
+    ignored if in a per-cell comparison mode and <b>Recurse Into
+    Hierarchy</b> is checked.
+
+    <p>
+    The interpretation of a blank <b>Cells</b> list depends on the
+    comparison mode.  If in flat comparison mode, or in a per-cell
+    mode and the <b>Recurse Into Hierarchy</b> button is set, then the
+    assumed cell list contains only the default cell from the top
+    (left pointing) source.  If this was a CHD name, the default cell
+    is the one <a href="xic:chdconfig">configured</a> into the CHD, or
+    the first top-level cell found in the source file.  In the other
+    cases, a blank <b>Cells</b> list is interpreted as all cells found
+    in the top (left pointing) source.
+
+    <p>
+    In the special case that neither a left or right source is
+    specified, then the <b>Cells</b> and <b>Equiv</b> lists can not be
+    empty, and the names are cells in memory to compare.
+
+    <p>
+    In the per-cell modes with <b>Recurse Into Hierarchy</b> set,
+    each entry in the <b>Cells</b> list is hierarchically expanded to
+    a full list of the cells under the given cell, and these names are
+    merged into a new list that contains no duplicates.  If no
+    <b>Cells</b> list was given, per the discussion above, the cell
+    list is effectively the hierarchy of the default cell from the
+    first source.
+
+    <p>
+    Below the source groups is a provision for layer-filtering.  This
+    is active when one of <b>Layers Only</b> or <b>Skip Layers</b> is
+    pressed.  The list contains space-separated layer names.  With
+    <b>Layers Only</b> active, only objects on the listed layers will
+    be compared.  With the <b>Skip Layers</b> button pressed (which
+    deactivates <b>Layers Only</b> and vice-versa), only layers
+    <b>not</b> listed will be considered.  If neither button pressed,
+    or if the layer list is empty, all layers will be considered.
+
+    <p>
+    During comparison, differences are recorded in an output file.  By
+    default, geometric differences are saved in a CIF-like format,
+    providing lists of objects that appear in one cell but not the
+    other.  If the <b>Differ Only</b> check box is active, the
+    geometric information is not written to the file, only the
+    information that the cells differ.
+
+    <p>
+    The maximum number of differences that are recorded can be set
+    with the <b>Maximum Differences</b> input area.  If 0, then there
+    is no limit.  Otherwise, when the limit is reached, the comparison
+    will terminate.  It is usually advisable to set a limit, as an
+    error in the source specification can potentially produce enormous
+    output.
+
+    <p>
+    Pressing the <b>Go</b> button initiates comparison.  When the job
+    finishes, the user is given the option of viewing the log file. 
+    The log file is always named <tt>diff.log</tt> and is created in
+    the current directory.  An existing file of the same name is moved
+    to a new name with a <tt>.bak</tt> extension added.  The <a
+    href="!diffcells"><b>!diffcells</b></a> command can be used to
+    create cells from the log file for visualizing the differences.
+
+    <p>
+    The <b>Dismiss</b> button retires the panel.  All entries are
+    persistent, meaning that the panel will contain the same entered
+    content the next time it appears.
+
+    <a name="cmpage"></a>
+    <h2>Comparison Mode Pages</h2>
+
+    The comparison mode can be selected by clicking on the tabs at the
+    top of the panel.  Both of the per-cell modes contain <b>Recurse
+    Into Hierarchy</b> and <b>Expand Array</b> buttons.  The
+    <b>Recurse Into Hierarchy</b> check box indicates that the cell to
+    compare is to be taken as the top of a hierarchy, and this and all
+    descendent cells should be compared.  If not set, only the named
+    cell is compared.
+
+    <p>
+    The <b>Expand Arrays</b> button applies when cell instances are
+    being checked.  When set, instance arrays are logically converted
+    to individual placements before comparison.  This avoids flagging
+    differences that are due only to whether instances are arrayed or
+    not, or whether that arraying is the same.  This is useful when
+    comparing OASIS files to GDSII files, for example, where the OASIS
+    repetition finder may have been used.
+
+    <p>
+    Electrical cells can be compared using the <b>Per-Cell Objects</b>
+    mode only.  The mode to compare is selected on the page, which may
+    be different from the current mode of the program.
+
+    <p>
+    When using <b>Per-Cell Objects</b>, one may select which type of
+    objects to compare.  Objects types that are not active are
+    ignored.  By default, text labels are ignored and all other
+    objects are compared.  A difference is indicated if a tested
+    object does not have an identical counterpart in the other cell. 
+
+    <p>
+    Comparison of labels can lead to false differences when comparing
+    cells read from different file formats, since label bounding boxes
+    are not well defined across file format conversion.
+
+    <p>
+    The <b>Per-Cell Objects</b> page contains a <b>Box to Wire/Poly
+    Check</b> check box.  With this mode selected, a two-vertex wire
+    or four-vertex polygon that is rendered as a Manhattan rectangle
+    will match a rectangle object with the same dimensions.  Thus,
+    files that have had these features converted to boxes to save
+    space can be directly compared, without a lot of spurious entries
+    in output.
+
+    <p>
+    The <b>Ignore Duplicates</b> check box in the <b>Per-Cell
+    Objects</b> page sets a mode where if duplicate objects are
+    present in one or both of the files, unmatched duplicates will not
+    be reported if one of the duplicates has a match.  Thus files with
+    duplicates removed can be compared with the original file, and the
+    duplicates will not appear in output as differences.
+
+    <p>
+    In <b>Per-Cell Geometry</b> mode, all boxes, polygons, and wires
+    are included.  Text labels are ignored.  A button provides a
+    choice whether or not to check subcells, which are tested as in
+    the per-cell object mode.
+
+    <p>
+    When using <b>Per-Cell Geometry</b> mode, the geometry is compared
+    within areas of a grid whose size is given by the <a
+    href="PartitionSize"><b>PartitionSize</b></a> variable. 
+    Experimenting with this size can lead to improved speed, depending
+    on the layout density.  The default partition size is 100 microns. 
+    For best performance, this can be increased for low density, or
+    reduced for high density, where "density" refers to the number of
+    trapezoids per area.
+
+    <p>
+    The <b>Flat Geometry</b> mode is somewhat orthogonal to the other
+    modes.  The algorithm uses two levels of gridding to partition the
+    layout into pieces, and directly compares the geometry in each
+    fine grid cell.  This is very similar to the algorithm described
+    for the <a
+    href="ChdIterateOverRegion"><tt>ChdIterateOverRegion</tt></a>
+    script function.
+
+    <p>
+    The fine grid size is entered in microns, the coarse grid size is
+    entered as an integer multiple of the fine grid size.  The flat
+    geometry to render a coarse grid cell is held in memory, but
+    subdivided into the fine grid cells for the comparison.  Using a
+    large coarse grid with a dense layout may trigger memory
+    availability issues, yet using a large coarse grid usually
+    improves speed.  The user should experiment with the parameter
+    values to see what works best with their layouts.  The fine grid
+    can be in the range of 1.0 to 100.0 microns, and the multiplier
+    can be in the range 1 - 100.
+
+    <p>
+    If the <b>Use Window</b> button is active, a rectangle entered
+    into the entries (in microns) can be used to limit the comparison
+    area.  If not active, an area covering the entire bounding box of
+    both cells being compared is used.  The <b>S</b> and <b>R</b>
+    buttons provide access to eight general purpose storage registers
+    for rectangles, as provided in other panels that use rectangle
+    data.
+
+    <a name="prop"></a>
+    <h2>Property List Comparison</h2>
+
+    The <b>Per-Cell Objects</b> mode allows properties to be compared,
+    unlike the other modes.  There are three classes of properties: 
+    structure (cell) properties, cell instance properties, and object
+    properties.
+
+    <p>
+    Whether or not to check properties can be set independently for
+    each type of object.  Properties of a given object type will only
+    be compared when enabled by checking the boxes in the
+    <b>Properties</b> group, plus the <b>Structure Properties</b>
+    check box.  When not checked, the properties of the corresponding
+    object, cell instance, or the structure, will be ignored.
+
+    <p>
+    Property lists of objects and instances are only compared between
+    otherwise identical objects or instances.  Cell structure property
+    lists will be compared whether or not other differences are found,
+    when enabled.
+
+    <p>
+    There are three filters that can be applied, to reduce the number
+    of properties compared.  These correspond to cell properties,
+    instance properties, and object properties.  Further, different
+    filtering is applied when comparing electrical and physical mode
+    data.  The <b>Property Filtering</b> option menu and <b>Setup</b>
+    button control the filtering applied.
+
+    <p>
+    The <b>Default</b> choice of the menu applies default filtering. 
+    With this choice, there is no filtering (all properties
+    considered) when comparing physical mode data.  In electrical
+    mode, the following defaults are applied:
+
+    <dl>
+    <dt>Cell properties<dd>
+    Compare only PARAM, VIRTUAL, NEWMUT, SYMBLC, and NODMAP properties.
+    <dt>Instance properties<dd>
+    Compare only MODEL, VALUE, PARAM, and NOPHYS properties.
+    <dt>Object properties<dd>
+    Ignore all electrical properties of objects.
+    </dl>
+
+    <p>
+    This filtering limits the comparison to properties over which the
+    user has control, and whose differences are likely to indicate an
+    actual design difference.
+
+    <p>
+    The <b>None</b> choice of the menu effectively turns filtering
+    off, for both electrical and physical modes.  This is
+    comprehensive, but for electrical mode a lot of the internal
+    properties, for example NODE properties, will be flagged as
+    differing but may not represent a true difference in the design as
+    the strings may include arbitrary internal assignments for some
+    parameters.
+
+    <p>
+    The third possible menu choice, <b>Custom</b> allows the user to
+    completely specify the filtering behavior.  This is described in a
+    separate <a href="xic:prpfilt">Custom Property Filtering</a>
+    section.  The filtering is specified from the pop-up produced by
+    pressing the <b>Setup</b> button.
+
+    <p>
+    Properties are compared by number and string.  In the output file,
+    property comparison result lines are all in comment form (with
+    '<tt>#</tt>' as the first character) so that they will be ignored
+    if the file is subsequently processed with the <a
+    href="!diffcells"><b>!diffcells</b></a> command.  Property
+    comparison results consist of a string indicating the cell,
+    instance, or object containing the properties.  If an instance or
+    object, this is common to both input sources.  Following this are
+    listings of properties found in one source and not the other. 
+    Properties that are identical in the two sources are not listed.
+
+!!SEEALSO
+xic:cvrtmenu
+
+!! 080410
+!!KEYWORD
+xic:prpfilt
+!!TITLE
+Custom Property Filtering
+!!HTML
+    The <b>Custom Property Filter Setup</b> panel is presented in
+    response to pressing the <b>Setup</b> button in the <b>Per-Cell
+    Objects</b> page of the <a href="xic:diff"><b>Compare
+    Layouts</b></b></a> panel.  The <b>Compare Layouts</b> panel is
+    obtained from the <b>Compare Layouts</b> button in the <b>Convert
+    Menu</b>.
+
+    <p>
+    This panel allows the user to set up the custom property filter
+    strings for the cell, cell instances, and objects, for both
+    electrical and physical mode comparisons.  These filtering
+    definitions are applied when layout comparison is being performed
+    from the <b>Compare Layouts</b> panel in <b>Per-Cell Objects</b>
+    mode, with the <b>Property Filtering</b> menu set to <b>Custom</b>
+    and property checking enabled.  The filtering also applies when
+    using the <a href="!compare"><b>!compare</b></a> command, when
+    neither of the <tt>-f</tt> or <tt>-g</tt> options is given, and
+    the <tt>-u</tt> option is given and property checking is enabled.
+
+    <p>
+    The six entry areas correspond to six variables, which can
+    (equivalently) be set directly.  These <a
+    href="!set:prpfilt">variables</a> are
+    <blockquote>
+    <b>PhysPrpFltCell</b><br>
+    <b>PhysPrpFltInst</b><br>
+    <b>PhysPrpFltObj</b><br>
+    <b>ElecPrpFltCell</b><br>
+    <b>ElecPrpFltInst</b><br>
+    <b>ElecPrpFltObj</b>
+    </blockquote>
+
+    <p>
+    If the entry area is empty, the corresponding variable is unset,
+    and the default filtering will be applied.  Otherwise, the string
+    determines the filtering applied.
+
+    <p>
+    The strings consist of space and/or comma-separated lists of
+    numbers or equivalent names.  The names are simply mnemonics to
+    the electrical properties, and are:
+    <blockquote>
+    <table border=0>
+    <tr><th>name</th> <th>value</th></tr>
+    <tr><td><tt>model</td>    <td>1</td></tr>
+    <tr><td><tt>value</td>    <td>2</td></tr>
+    <tr><td><tt>param</td>    <td>3</td></tr>
+    <tr><td><tt>other</td>    <td>4</td></tr>
+    <tr><td><tt>nophys</td>   <td>5</td></tr>
+    <tr><td><tt>virtual</td>  <td>6</td></tr>
+    <tr><td><tt>bnode</td>    <td>9</td></tr>
+    <tr><td><tt>node</td>     <td>10</td></tr>
+    <tr><td><tt>name</td>     <td>11</td></tr>
+    <tr><td><tt>labloc</td>   <td>12</td></tr>
+    <tr><td><tt>mut</td>      <td>13</td></tr>
+    <tr><td><tt>newmut</td>   <td>14</td></tr>
+    <tr><td><tt>branch</td>   <td>15</td></tr>
+    <tr><td><tt>labrf</td>    <td>16</td></tr>
+    <tr><td><tt>mutlrf</td>   <td>17</td></tr>
+    <tr><td><tt>symblc</td>   <td>18</td></tr>
+    <tr><td><tt>nodmap</td>   <td>19</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Use of numbers and equivalent names is arbitrary and they can be
+    mixed.  Names will be recognized if at least the leading two
+    characters are given, with enough additional characters so as to
+    uniquely prefix one of the names in the list above.  Names that
+    are not recognized are silently ignored.
+
+    <p>
+    Specifying a list as described indicates that only the listed
+    properties will be considered.  However, it is possible to invert
+    this logic.
+
+    <p>
+    If the first character in the string is '<tt>s</tt>', and the
+    second character is not '<tt>y</tt>' (to avoid a clash with
+    "<tt>symblc</tt>"), then the properties in the list that follows
+    will be skipped, i.e., only properties not in the list will be
+    considered.  If the leading '<tt>s</tt>' is recognized as the
+    "skip" indicator, all alphabetic characters up to the first
+    delimiter or number will be stripped before parsing the list.
+
+    <p>
+    The recognition of names and the skip indicator are
+    case-insensitive.
+
+    <p>
+    For example, the following specifications are all equivalent:
+    <blockquote>
+    <tt>s1,2,3</tt><br>
+    <tt>skip1,2,3</tt><br>
+    <tt>skip,1,2,3</tt><br>
+    <tt>skip 1 2 3</tt><br>
+    <tt>skip,model,value,param</tt>
+    </blockquote>
+
+    <p>
+    An empty entry area will trigger default filtering and is
+    <b>not</b> an empty filter (blocking all).  To provide an empty
+    list, which blocks all properties from comparison, simply insert a
+    character that is not recognized as a property number or
+    '<tt>s</tt>'.  Just about anything will do, one choice would be
+    '<tt>-</tt>'.  This will have the intended effect of setting up a
+    filter with no elements, which will not match any values.
+
+    <p>
+    There is one more subtlety that may be encountered.  In graphical
+    mode, it is not possible to set the variables as booleans, i.e.,
+    to nothing.  The graphical system will immediately unset the
+    variable if this is attempted.  However, in non-graphics mode, this
+    won't happen, and the variables will take the null assignment.  In
+    this case, the corresponding filter will block all, rather than
+    reverting to the default filter.
+
+!!SEEALSO
+xic:cvrtmenu
+xic:diff
+!compare
+
+!! 061308
+!!KEYWORD
+xic:txted
+!!TITLE
+Text Editor
+!!HTML
+    <img src="screenshots/texted.png" align=right>
+
+    <b>Keyword</b>: <tt>txted</tt>
+
+    <p>
+    The <b>Text Editor</b> button in the <b>Convert Menu</b> brings up
+    a <a href="texteditor">text editor</a> loaded with the text of the
+    file containing the current editing cell.  This is only available
+    for the ASCII text files:  native and CIF.
+
+!!SEEALSO
+xic:cvrtmenu
+
+!! 021912
+!!KEYWORD
+xic:fsaf
+!!TITLE
+Supported Archive File Formats
+!!HTML
+    In addition to the native cell-per-file format, <i>Xic</i> supports
+    a number of archive formats, which can contain one or more cell
+    descriptions.
+
+    <dl>
+    <dt><b>GDSII</b><dd>
+    The <b>GDSII</b> (Stream) format is an industry-standard binary
+    file format for cell hierarchies and libraries.  <i>Xic</i> can
+    read Format Release 3-7 files, and write either Format Release 7
+    or Format Release 3 (which is readable on systems supporting
+    Format Release 3-7).  GDSII files that have been compressed with
+    the GNU <tt>gzip</tt> program or equivalent can be read directly,
+    and similarly compressed GDSII output can be generated by
+    <i>Xic</i>.
+
+    <p>
+    The GDSII directives absolute magnification, absolute angle, and
+    absolute path width are not supported in <i>Xic</i>.  If found
+    in input, the values
+    are taken as relative, and a warning is issued.  These are not
+    supported by other file formats in a portable way, and should be
+    considered obsolete.
+    </dl>
+
+    <dl>
+    <dt><b>CGX</b><dd>
+    The <b>CGX</b> (Computer Graphics eXchange) format is a
+    public-domain binary archive <a href="cgxformat">format</a>
+    developed by Whiteley Research Inc.  Similar in structure to
+    GDSII, the advantages are more efficient data representation for
+    reduced file size and ease of parsing for faster read/write. 
+    Although presently available only in Whiteley Research products,
+    it is anticipated that the format will eventually be supported by
+    other vendors.  CGX files that have been compressed with the GNU
+    <tt>gzip</tt> program or equivalent can be read directly, and
+    similarly compressed CGX output can be generated by <i>Xic</i>.
+    </dl>
+
+    <dl>
+    <dt><b>OASIS</b><dd>
+    The Open Artwork System Interchange Standard (<b>OASIS</b>) is a
+    new standard for mask layout data being developed by the SEMI
+    organization.  This is a binary format which features more compact
+    representation and thus smaller files than GDSII.
+
+    <p>
+    More information is available <a href="oasis">here</a> and from <a
+    href="http://wrcad.com/oasis/"><tt>wrcad.com/oasis</tt></a>.
+
+    <p>
+    The present status of OASIS support in <i>Xic</i> is complete:
+    <ol>
+    <li><i>Xic</i> can read any spec-conforming OASIS file.
+    <li>OASIS output from <i>Xic</i> is readable by any other
+        spec-conforming tool.
+    <li>Exceptions to the above are *bugs*, please report!
+    </ol>
+
+    <p>
+    Although it is "not documented", <i>Xic</i> can directly read
+    OASIS files that have been compressed with the <tt>gzip</tt>
+    program or equivalent.  Unlike for GDSII files, this is not really
+    supported, and it is not possible to write gzipped OASIS output
+    from <i>Xic</i>.  It is preferable to use the compression provided
+    in the OASIS format.
+    </dl>
+
+    <dl>
+    <dt><b>CIF</b><dd>
+    The <b>CIF</b> format, though a bit archaic, is still popular. 
+    <i>Xic</i> supports a number of selectable dialects and
+    extensions.
+
+    <p>
+    If the input file is in CIF format, and symbol (cell) names are
+    not provided (i.e., no symbol name extension is found), the
+    generated symbol names will be "<tt>Symbol</tt><i>N</i>", where
+    <i>N</i> is the integer symbol number given in the CIF file.
+    </dl>
+

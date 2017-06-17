@@ -1,0 +1,12 @@
+
+# yank.scr 1.0 2/25/2006  Whiteley Research Inc.
+#
+# Toggle whether or not to use the full window cursor.  This simply
+# toggles whether or not the variable "FullWinCursor" is set.  This
+# variable is recognized in release xic-2.5.61 and later.
+
+if (Get("FullWinCursor") == 0)
+   Set("FullWinCursor", "")
+else
+   Unset("FullWinCursor")
+end

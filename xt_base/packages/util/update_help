@@ -1,0 +1,68 @@
+#
+# Update the distribution files.
+#
+# (c) Whiteley Research Inc. 2011
+# $Id: update_help,v 1.2 2012/02/08 20:10:00 stevew Exp $
+#
+# Usage: update_help "programs..."
+
+progs=$1
+login=stevew
+help_destdir=/home/webadmin/wrcad.com/html/restricted/helplib
+destdir=/home/webadmin/wrcad.com/html/restricted
+libdir=/usr1/stevew/src/xictools/lib
+srcdir=/usr1/stevew/export/xictools
+srcpfx=/usr1/stevew/src/
+
+xic_notes=xic3.2
+wrs_notes=wrs3.2
+
+home=`addr`
+echo Connecting to $home
+
+# Refresh the help database.
+# argument: collection_name
+#
+fetch_help()
+{
+    case $1 in
+    xic)
+        echo "Updating xic help"
+        /usr/bin/rsync -e ssh -aC \
+          stevew@`addr`:$srcpfx/xictools/lib/xic/help $help_destdir/xic
+        /usr/bin/rsync -e ssh -t \
+          stevew@`addr`:$srcpfx/xictools/lib/xic/help/sp*.hlp \
+          $help_destdir/xic/help
+        ;;
+    wrspice)
+        echo "Updating wrspice help"
+        /usr/bin/rsync -e ssh -aC \
+          stevew@`addr`:$srcpfx/xictools/lib/wrspice/help \
+          $help_destdir/wrspice
+        ;;
+    *)
+        echo "unknown collection"
+        ;;
+    esac
+}
+
+for p in $progs; do
+    if [ $p = xic ]; then
+        fname=$xic_notes
+        echo Updating $fname
+        newloc=$destdir/xictools/docs/xic_release_notes/$fname
+        rsync --rsh=ssh $login@$home:$libdir/$p/docs/$fname $newloc
+        fetch_help xic
+    elif [ $p = wrspice ]; then
+        fname=$wrs_notes
+        echo Updating $fname
+        newloc=$destdir/xictools/docs/wrspice_release_notes/$fname
+        rsync --rsh=ssh $login@$home:$libdir/$p/docs/$fname $newloc
+        fetch_help wrspice
+    fi
+done
+
+newf=/home/webadmin/wrcad.com/html/restricted/xictools/wr_install
+echo Updating $newf
+rsync --rsh=ssh $login@$home:$srcdir/wr_install $newf
+

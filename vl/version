@@ -1,0 +1,23 @@
+#! /bin/sh
+#
+# This is where the release numbers are set.
+#
+
+release="4"
+tools_version="4.2"
+vl_version="1.6"
+
+if [ z$1 != "z" ]; then
+    case $1 in
+    release)
+        echo $release
+        ;;
+    tools)
+        echo $tools_version
+        ;;
+    vl)
+        echo $vl_version
+        ;;
+    esac
+fi
+

@@ -1,0 +1,20 @@
+#######################################################################
+# devlib/include/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 2.11 2016/09/26 01:48:09 stevew Exp $
+#######################################################################
+
+DEVLIB_VERSION = @DEVLIB_VERSION@
+DATE = @DATE@
+
+HFILES = gencurrent.h
+SPHFILES = circuit.h device.h acdefs.h dctdefs.h distdefs.h noisdefs.h \
+    errors.h ifdata.h inpline.h input.h
+
+depend: $(SPHFILES)
+
+$(SPHFILES): ../../include/$@
+	cp -fp ../../include/$@ .
+
+distclean::
+	rm -f $(SPHFILES) Makefile

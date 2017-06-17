@@ -1,0 +1,32 @@
+VERSION 5.6 ;
+DESIGN openMSP430 ;
+UNITS DISTANCE MICRONS 100 ;
+
+# This provides a list of "user-supplied" obstructions found in the
+# Qrouter config file.
+
+BLOCKAGES 10 ;
+   - LAYER metal4
+     RECT ( 214320 100 ) ( 214720 158300 ) ;
+   - LAYER metal4
+     RECT ( -640 100 ) ( 80 158300 ) ;
+   - LAYER metal2
+     RECT ( 214320 100 ) ( 214720 158300 ) ;
+   - LAYER metal2
+     RECT ( -640 100 ) ( 80 158300 ) ;
+   - LAYER metal3
+     RECT ( 80 -600 ) ( 214320 100 ) ;
+   - LAYER metal3
+     RECT ( 80 158300 ) ( 214320 158600 ) ;
+   - LAYER metal1
+     RECT ( 214320 -600 ) ( 214720 158600 ) ;
+   - LAYER metal1
+     RECT ( -640 -600 ) ( 80 158600 ) ;
+   - LAYER metal1
+     RECT ( -640 -600 ) ( 214720 100 ) ;
+   - LAYER metal1
+     RECT ( -640 158300 ) ( 214720 158600 ) ;
+END BLOCKAGES
+
+END DESIGN
+

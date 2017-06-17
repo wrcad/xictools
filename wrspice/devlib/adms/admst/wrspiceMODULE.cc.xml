@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  $Id: wrspiceMODULE.cc.xml,v 1.30 2016/09/26 18:54:38 stevew Exp $
+
+  Modified for use with WRspice, Whiteley Research Inc. (wrcad.com).
+  See the original header below for terms and conditions of use.
+-->
+
+<!--
+  Written by Laurent Lemaitre - r29173@users.sourceforge.net
+  Documentation:
+    http://sourceforge.net/docman/display_doc.php?docid=18993&group_id=84289
+  Target Interface: ngspice
+  Supported by adms-1.x.x
+  This file is used by adms - http://sourceforge.net/projects/mot-adms.
+  adms is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+  adms is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  You should have received a copy of the GNU General Public License
+  along with adms; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+-->
+
+<!DOCTYPE admst SYSTEM "admst.dtd">
+<admst version="2.3.0"
+  xmlns:admst="http://mot-adms.sourceforge.net/xml-files/admst">
+
+<!-- ---------------------------------------------------------------------- -->
+<admst:template match="analogfunctionC">
+  <admst:for-each select="/module/analogfunction">
+    <admst:value-of select="."/>
+    <admst:variable name="globalanalogfunction" select="%p"/>
+    <admst:value-of select="name"/>
+    <admst:variable name="function" select="%s"/>
+    <admst:text format="\n\n// analog function: $(function)\n"/>
+    <admst:text format="%(vtype(.)) $function("/>
+    <admst:join select="variable[input='yes']" separator=", ">
+      <admst:value-of select="name"/>
+      <admst:text format="%(vtype(.)) %s"/>
+    </admst:join>
+    <admst:text format=")\n{\n"/>
+    <admst:text format="$(indent)double $function=0.0;\n"/>
+    <admst:for-each select="variable[input='no' and output='no']">
+      <admst:value-of select="name"/>
+      <admst:text format="$(indent)%(vtype(.)) %s"/>
+      <admst:if test="[type='integer']">=0</admst:if>
+      <admst:if test="[type='real']">=0.0</admst:if>
+      <admst:text format=";\n"/>
+    </admst:for-each>
+    <admst:apply-templates select="tree" match="af:print">
+      <admst:value-of select="returned('x')/value"/>
+      <admst:text format="%s"/>
+    </admst:apply-templates>
+    <admst:text format="\n$(indent)return $function;\n"/>
+    <admst:text format="}\n"/>
+
+    <admst:text format="\n\ndouble d_$(function)("/>
+    <admst:join select="variable[input='yes']" separator=", ">
+      <admst:value-of select="name"/>
+      <admst:text format="%(vtype(.)) %s"/>
+    </admst:join>
+    <admst:text format=", "/>
+    <admst:join select="variable[input='yes']" separator=", ">
+      <admst:value-of select="name"/>
+      <admst:text format="%(vtype(.)) d_%s"/>
+    </admst:join>
+    <admst:text format=")\n{\n"/>
+    <admst:for-each select="$globalanalogfunction/variable[input='yes']">
+      <admst:value-of select="name"/>
+      <admst:variable name="ddx" select="%s"/>
+      <admst:text format="$(indent)double $(function)_$(ddx)=0.0;\n"/>
+    </admst:for-each>
+    <admst:for-each select="variable[input='no' and output='no']">
+      <admst:value-of select="name"/>
+      <admst:variable name="name" select="%s"/>
+      <admst:text format="$(indent)%(vtype(.)) $(name)"/>
+      <admst:if test="[type='integer']">=0</admst:if>
+      <admst:if test="[type='real']">=0.0</admst:if>
+      <admst:text format=";\n"/>
+      <admst:for-each select="$globalanalogfunction/variable[input='yes']">
+        <admst:value-of select="name"/>
+        <admst:variable name="ddx" select="%s"/>
+        <admst:text format="$(indent)%(vtype(.)) $(name)_$(ddx)"/>
+        <admst:if test="[type='integer']">=0</admst:if>
+        <admst:if test="[type='real']">=0.0</admst:if>
+        <admst:text format=";\n"/>
+      </admst:for-each>
+    </admst:for-each>
+    <admst:apply-templates select="tree" match="af:print:derivate">
+      <admst:value-of select="returned('x')/value"/>
+      <admst:text format="%s"/>
+    </admst:apply-templates>
+    <admst:text format="\n$(indent)return "/>
+    <admst:join select="$globalanalogfunction/variable[input='yes']"
+        separator="+">
+      <admst:value-of select="name"/>
+      <admst:value-of select="name"/>
+      <admst:text format="$(function)_%s*d_%s"/>
+    </admst:join>
+    <admst:text format=";\n"/>
+    <admst:text format="}"/>
+  </admst:for-each>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<admst:template match="module_cc">
+
+  <admst:text format="\n#include &quot;$(modlc)defs.h&quot;\n"/>
+  <admst:text format="\n\nnamespace {\n"/>
+
+  <admst:variable name="qual" string="_INST_"/>
+  <admst:if test="[$unified='yes']">
+    <admst:variable name="qual" string="_"/>
+  </admst:if>
+
+  <admst:text format="\nIFparm $(moduc)pTable[] = {\n"/>
+  <!--
+    Parameters have input='yes' if they are given in parameter
+    declarations.  We also accept any variable that has attributes
+    given, taken as output variables.
+  -->
+  <admst:join select="variable[parametertype='instance' and
+      (input='yes' or not(nilled(attribute)))]" separator=",\n">
+    <admst:variable name="io" string="IO"/>
+    <admst:if test="[input!='yes']">
+      <admst:variable name="io" string="OP"/>
+    </admst:if>
+    <admst:choose>
+      <admst:when test="[type='real']">
+        <admst:text
+  format="$(indent)$io(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_REAL"/>
+      </admst:when>
+      <admst:when test="[type='integer']">
+        <admst:text
+  format="$(indent)$io(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_INTEGER"/>
+      </admst:when>
+      <admst:otherwise>
+        <admst:fatal
+          format="module_cc: unsupported parameter type 'string'.\n"/>
+      </admst:otherwise>
+    </admst:choose>
+    <!-- We take any non-adms attributes as info text. -->
+    <admst:variable name="info" value=""/>
+    <admst:for-each select="attribute">
+      <admst:if test="[name!='type' and name!='ask']">
+        <admst:if test="[$info!='']">
+          <admst:variable name="info" value="$info "/>
+        </admst:if>
+        <admst:variable name="info" value="$info%(value)"/>
+      </admst:if>
+    </admst:for-each>
+    <admst:if test="[$info='']">
+      <admst:variable name="info" value="%(name)"/>
+    </admst:if>
+    <admst:text format=", &quot;$info&quot;)"/>
+  </admst:join>
+  <!-- add the nodes -->
+  <admst:if test="variable[parametertype='instance' and
+      (input='yes' or not(nilled(attribute)))]">
+    <admst:text format=",\n"/>
+  </admst:if>
+  <admst:for-each select="node[grounded='no']">
+    <admst:text format="$(indent)OP(&quot;node_%(name)&quot;,"/>
+    <admst:text format=" $(moduc)$(qual)NODE_%(name), IF_INTEGER,"/>
+    <admst:text format=" &quot;%(name) node&quot;),\n"/>
+  </admst:for-each>
+  <!-- add the branches -->
+  <admst:for-each select="$branches">
+    <admst:variable name="pname" path="branch/pnode/name"/>
+    <admst:variable name="nname" path="branch/nnode/name"/>
+    <admst:text format="$(indent)OP(&quot;branch_$(pname)_$(nname)&quot;,"/>
+    <admst:text format=" $(moduc)$(qual)BRN_$(pname)_$(nname), IF_INTEGER,"/>
+    <admst:text format=" &quot;$(pname)_$(nname) branch&quot;),\n"/>
+  </admst:for-each>
+  <admst:text format="};\n"/>
+
+  <admst:text format="\nIFparm $(moduc)mPTable[] = {\n"/>
+  <admst:if test="[$unified='yes']">
+    <!--
+      In the case of the "unified" instance (i.e., all parameters are
+      instance parameters) the model parameters are the same as the
+      instance parameters.  Setting a "model parameter" will pass
+      through to the instances.
+    -->
+    <admst:join select="variable[parametertype='instance' and input='yes']"
+        separator=",\n">
+      <admst:choose>
+        <admst:when test="[type='real']">
+          <admst:text
+  format="$(indent)IO(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_REAL"/>
+        </admst:when>
+        <admst:when test="[type='integer']">
+          <admst:text
+  format="$(indent)IO(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_INTEGER"/>
+        </admst:when>
+        <admst:otherwise>
+          <admst:fatal
+            format="module_cc: unsupported parameter type 'string'.\n"/>
+        </admst:otherwise>
+      </admst:choose>
+      <!-- We take any non-adms attributes as info text. -->
+      <admst:variable name="info" value=""/>
+      <admst:for-each select="attribute">
+        <admst:if test="[name!='type' and name!='ask']">
+          <admst:if test="[$info!='']">
+            <admst:variable name="info" value="$info "/>
+          </admst:if>
+          <admst:variable name="info" value="$info%(value)"/>
+        </admst:if>
+      </admst:for-each>
+      <admst:if test="[$info='']">
+        <admst:variable name="info" value="%(name)"/>
+      </admst:if>
+      <admst:text format=", &quot;$info&quot;)"/>
+    </admst:join>
+    <admst:if test="[count(variable[parametertype='model' and
+        (input='yes' or not(nilled(attribute)))])>0]">
+      <admst:text format=",\n"/>
+    </admst:if>
+  </admst:if>
+  <!--
+    Parameters and output variables.
+    In unified mode, the loop below will be empty except for output
+    variables that were explicitly given a type="model" attribute.
+  -->
+  <admst:variable name="qual" string="_MOD_"/>
+  <admst:join select="variable[parametertype='model' and
+      (input='yes' or not(nilled(attribute)))]" separator=",\n">
+    <admst:variable name="io" string="IO"/>
+    <admst:if test="[input!='yes']">
+      <admst:variable name="io" string="OP"/>
+    </admst:if>
+    <admst:choose>
+      <admst:when test="[type='real']">
+        <admst:text
+  format="$(indent)$io(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_REAL"/>
+      </admst:when>
+      <admst:when test="[type='integer']">
+        <admst:text
+  format="$(indent)$io(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_INTEGER"/>
+      </admst:when>
+      <admst:otherwise>
+        <admst:fatal
+      format="module_cc: unsupported parameter type 'string'.\n"/>
+      </admst:otherwise>
+    </admst:choose>
+    <!-- We take any non-adms attributes as info text. -->
+    <admst:variable name="info" value=""/>
+    <admst:for-each select="attribute">
+      <admst:if test="[name!='type' and name!='ask']">
+        <admst:if test="[$info!='']">
+          <admst:variable name="info" value="$info "/>
+        </admst:if>
+        <admst:variable name="info" value="$info%(value)"/>
+      </admst:if>
+    </admst:for-each>
+    <admst:if test="[$info='']">
+      <admst:variable name="info" value="%(name)"/>
+    </admst:if>
+    <admst:text format=", &quot;$info&quot;)"/>
+  </admst:join>
+  <admst:text format="\n};\n"/>
+
+  <admst:text format="\nconst char *$(moduc)names[] = {\n"/>
+  <admst:join select="node[location='external']" separator=",\n">
+    <admst:choose>
+      <admst:when test="attribute[name='name']">
+        <admst:for-each select="attribute[name='name']">
+          <admst:value-of select="value"/>
+        </admst:for-each>
+      </admst:when>
+      <admst:otherwise>
+        <admst:value-of select="name"/>
+      </admst:otherwise>
+    </admst:choose>
+    <admst:text format="$(indent)&quot;%s&quot;"/>
+  </admst:join>
+  <admst:text format="\n};\n"/>
+
+  <admst:text format="\nconst char *$(moduc)modNames[] = {\n"/>
+  <admst:choose>
+    <admst:when test="[$package_devkey='j']">
+      <admst:text format="$(indent)&quot;njf&quot;,\n"/>
+      <admst:text format="$(indent)&quot;pjf&quot;,\n"/>
+    </admst:when>
+    <admst:when test="[$package_devkey='m']">
+      <admst:text format="$(indent)&quot;nmos&quot;,\n"/>
+      <admst:text format="$(indent)&quot;pmos&quot;,\n"/>
+    </admst:when>
+    <admst:when test="[$package_devkey='q']">
+      <admst:text format="$(indent)&quot;npn&quot;,\n"/>
+      <admst:text format="$(indent)&quot;pnp&quot;,\n"/>
+    </admst:when>
+    <admst:when test="[$package_devkey='z']">
+      <admst:text format="$(indent)&quot;nmf&quot;,\n"/>
+      <admst:text format="$(indent)&quot;pmf&quot;,\n"/>
+    </admst:when>
+    <admst:otherwise>
+      <admst:text format="$(indent)&quot;$package_devkey&quot;,\n"/>
+    </admst:otherwise>
+  </admst:choose>
+  <admst:text format="$(indent)0\n"/>
+  <admst:text format="};\n"/>
+
+  <admst:text format="\nIFkeys $(moduc)keys[] = {\n"/>
+  <admst:text format="$(indent)IFkeys( '$package_devkey', $(moduc)names, "/>
+  <admst:variable name="maxports" value="%(count(node[location='external']))"/>
+  <!-- note that this actually evaluates the math -->
+  <admst:variable name="minports" value="%(count(node[location='external'])-
+    count(node[attribute[name='optional']/value='yes']))"/>
+  <admst:text format="$minports, $maxports, 0 )\n"/>
+  <admst:text format="};\n"/>
+
+  <admst:text format="\n} // namespace\n"/>
+
+  <!-- the analog functions -->
+  <admst:if test="[not(nilled(analogfunction))]">
+    <admst:text format="\nnamespace adms$(moduc) {\n"/>
+    <admst:apply-templates select="/module" match="analogfunctionC"/>
+    <admst:text format="\n} // namespace\n"/>
+  </admst:if>
+
+  <admst:text format="\n\n$(moduc)dev::$(moduc)dev()\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)dv_name = &quot;$(moduc)&quot;;\n"/>
+  <admst:value-of select="/simulator/package_string"/>
+  <admst:value-of select="/simulator/fullname"/>
+  <admst:text format="$(indent)dv_description = &quot;%s translation of $(module) for %s&quot;;\n\n"/>
+  <admst:text format="$(indent)dv_module = &quot;$(package_modelname)&quot;;\n\n"/>
+
+  <admst:text format="$(indent)dv_numKeys = NUMELEMS($(moduc)keys);\n"/>
+  <admst:text format="$(indent)dv_keys = $(moduc)keys;\n\n"/>
+
+  <admst:text format="$(indent)dv_levels[0] = $package_level;\n"/>
+  <admst:text format="$(indent)dv_levels[1] = 0;\n"/>
+  <admst:text format="$(indent)dv_modelKeys = $(moduc)modNames;\n\n"/>
+
+  <admst:text format="$(indent)dv_numInstanceParms = NUMELEMS($(moduc)pTable);\n"/>
+  <admst:text format="$(indent)dv_instanceParms = $(moduc)pTable;\n\n"/>
+
+  <admst:text format="$(indent)dv_numModelParms = NUMELEMS($(moduc)mPTable);\n"/>
+  <admst:text format="$(indent)dv_modelParms = $(moduc)mPTable;\n\n"/>
+
+  <admst:text format="$(indent)dv_flags = DV_VLAMS"/>
+  <admst:if test="[count(source[dynamic='yes'])>0]">
+    <admst:text format=" | DV_TRUNC"/>
+  </admst:if>
+  <admst:choose>
+    <admst:when test="[$(package_flags)!='' and $(package_flags)!='@FLAGS@']">
+      <admst:text format=" | $(package_flags);\n"/>
+    </admst:when>
+    <admst:otherwise>
+      <admst:text format=";\n"/>
+    </admst:otherwise>
+  </admst:choose>
+
+  <admst:text format="};\n"/>
+
+  <admst:text format="\n\nsGENmodel *\n"/>
+  <admst:text format="$(moduc)dev::newModl()\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)return (new s$(moduc)model);\n"/>
+  <admst:text format="}\n"/>
+
+  <admst:text format="\n\nsGENinstance *\n"/>
+  <admst:text format="$(moduc)dev::newInst()\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)return (new s$(moduc)instance);\n"/>
+  <admst:text format="}\n"/>
+
+  <admst:text format="\n\nint\n"/>
+  <admst:text format="$(moduc)dev::destroy(sGENmodel **model)\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)return (IFdevice::destroy&lt;s$(moduc)model, s$(moduc)instance>(model));\n"/>
+  <admst:text format="}\n"/>
+
+  <admst:text format="\n\nint\n"/>
+  <admst:text format="$(moduc)dev::delInst(sGENmodel *model, IFuid dname, sGENinstance *fast)\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)return (IFdevice::delInst&lt;s$(moduc)model, s$(moduc)instance>(model,\n"/>
+  <admst:text format="$(indent)$(indent)dname, fast));\n"/>
+  <admst:text format="}\n"/>
+
+  <admst:text format="\n\nint\n"/>
+  <admst:text format="$(moduc)dev::delModl(sGENmodel **model, IFuid modname, sGENmodel *modfast)\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)return (IFdevice::delModl&lt;s$(moduc)model, s$(moduc)instance>(model,\n"/>
+  <admst:text format="$(indent)$(indent)modname, modfast));\n"/>
+  <admst:text format="}\n"/>
+
+  <admst:text format="\n\nvoid\n"/>
+  <admst:text format="$(moduc)dev::parse(int type, sCKT *ckt, sLine *current)\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)DEV.parse(ckt, current, type, dv_keys->minTerms, dv_keys->maxTerms,\n"/>
+  <admst:text format="$(indent)$(indent)true, 0);\n"/>
+  <admst:text format="}\n"/>
+
+  <admst:text format="\n\nvoid\n"/>
+  <admst:text format="$(moduc)dev::backup(sGENmodel *mp, DEV_BKMODE m)\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)while (mp) {\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)for (sGENinstance *ip = mp->GENinstances; ip; ip = ip->GENnextInstance)\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)((s$(moduc)instance*)ip)->backup(m);\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)mp = mp->GENnextModel;\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="}\n\n"/>
+
+  <admst:text format="\n\n// Below is hugely GCC-specific.  The __WRMODULE__ and __WRVERSION__\n"/>
+  <admst:text format="// tokens are defined in the Makefile and passed with -D when compiling.\n"/>
+  <admst:text format="\n"/>
+  <admst:text format="#define STR(x) #x\n"/>
+  <admst:text format="#define STRINGIFY(x) STR(x)\n"/>
+  <admst:text format="#define MCAT(x, y) x ## y\n"/>
+  <admst:text format="#define MODNAME(x, y) MCAT(x, y)\n"/>
+  <admst:text format="\n"/>
+  <admst:text format="// Module initializer.  Sets locations in the main app to some\n"/>
+  <admst:text format="// identifying strings.\n"/>
+  <admst:text format="//\n"/>
+  <admst:text format="__attribute__((constructor)) static void initializer()\n"/>
+  <admst:text format="{\n"/>
+  <admst:text format="$(indent)extern const char *WRS_ModuleName, *WRS_ModuleVersion;\n"/>
+  <admst:text format="\n"/>
+  <admst:text format="$(indent)WRS_ModuleName = STRINGIFY(__WRMODULE__);\n"/>
+  <admst:text format="$(indent)WRS_ModuleVersion = STRINGIFY(__WRVERSION__);\n"/>
+  <admst:text format="}\n"/>
+
+  <admst:text format="\n\n// Device constructor function.  This should be the only globally\n"/>
+  <admst:text format="// visible symbol in the module.  The function name expands to the\n"/>
+  <admst:text format="// module name with trailing _c.\n"/>
+  <admst:text format="//\n"/>
+  <admst:text format="extern &quot;C&quot; {\n"/>
+  <admst:text format="$(indent)void\n"/>
+  <admst:text format="$(indent)MODNAME(__WRMODULE__, _c)(IFdevice **d, int *cnt)\n"/>
+  <admst:text format="$(indent){\n"/>
+  <admst:apply-templates select="." match="push_indent"/>
+  <admst:text format="$(indent)*d = new $(moduc)dev;\n"/>
+  <admst:text format="$(indent)(*cnt)++;\n"/>
+  <admst:apply-templates select="." match="pop_indent"/>
+  <admst:text format="$(indent)}\n"/>
+  <admst:text format="}\n\n"/>
+
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------- -->
+
+<admst:variable name="globalanalogfunction"/>
+<admst:for-each select="/module">
+  <admst:apply-templates select="." match="init:translation"/>
+  <admst:open file="$(modlc).cc">
+    <admst:value-of select="/simulator/package_string"/>
+    <admst:text format="// Interface: %s\n"/>
+    <admst:value-of select="/simulator/currentdate"/>
+    <admst:value-of select="/simulator/fullname"/>
+    <admst:text format="// Created by: %s - %s\n"/>
+    <admst:apply-templates select="." match="push_indent"/>
+    <admst:apply-templates select="." match="module_cc"/>
+    <admst:apply-templates select="." match="pop_indent"/>
+  </admst:open>
+  <admst:message format="$(modlc).cc: file created\n"/>
+</admst:for-each>
+
+</admst>
+

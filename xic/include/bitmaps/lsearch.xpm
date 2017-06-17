@@ -1,0 +1,20 @@
+/* XPM */
+static const char * lsearch_xpm[] = {
+"16 12 4 1",
+" 	c none",
+".	c blue",
+"X	c black",
+"o	c white",
+"    o           ",
+"    .o          ",
+"    ..o         ",
+"    ...o        ",
+"    ....o       ",
+"    .....o      ",
+"    ....X       ",
+"    ...X        ",
+"    ..X         ",
+"    .X          ",
+"    X           ",
+"                "};
+

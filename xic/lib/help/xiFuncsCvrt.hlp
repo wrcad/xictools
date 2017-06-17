@@ -1,0 +1,4170 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiFuncsCvrt.hlp,v 1.58 2016/03/01 04:47:03 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiFuncsCvrt.hlp
+!!TITLE
+xiFuncsCvrt.hlp
+!!HTML
+
+!!SUBTOPICS
+funcs:cvrt
+funcs:cvrt:lalias
+funcs:cvrt:cnmap
+funcs:cvrt:ctab
+funcs:cvrt:wnd
+funcs:cvrt:scale
+funcs:cvrt:wrflg
+funcs:cvrt:rdflg
+funcs:cvrt:cvt
+funcs:cvrt:exprt
+funcs:cvrt:chd
+funcs:cvrt:cgd
+funcs:cvrt:asm
+
+
+!! Layer Conversion Aliasing
+!!REDIRECT ReadLayerCvAliases   funcs:cvrt:lalias#ReadLayerCvAliases
+!!REDIRECT DumpLayerCvAliases   funcs:cvrt:lalias#DumpLayerCvAliases
+!!REDIRECT ClearLayerCvAliases  funcs:cvrt:lalias#ClearLayerCvAliases
+!!REDIRECT AddLayerCvAlias      funcs:cvrt:lalias#AddLayerCvAlias
+!!REDIRECT RemoveLayerCvAlias   funcs:cvrt:lalias#RemoveLayerCvAlias
+!!REDIRECT GetLayerCvAlias      funcs:cvrt:lalias#GetLayerCvAlias
+
+!! Cell Name Mapping
+!!REDIRECT SetMapToLower        funcs:cvrt:cnmap#SetMapToLower
+!!REDIRECT SetMapToUpper        funcs:cvrt:cnmap#SetMapToUpper
+
+!! Cell Table
+!!REDIRECT CellTabAdd           funcs:cvrt:ctab#CellTabAdd
+!!REDIRECT CellTabCheck         funcs:cvrt:ctab#CellTabCheck
+!!REDIRECT CellTabRemove        funcs:cvrt:ctab#CellTabRemove
+!!REDIRECT CellTabList          funcs:cvrt:ctab#CellTabList
+!!REDIRECT CellTabClear         funcs:cvrt:ctab#CellTabClear
+
+!! Windowing and Flattening
+!!REDIRECT SetConvertFlags      funcs:cvrt:wnd#SetConvertFlags
+!!REDIRECT SetConvertArea       funcs:cvrt:wnd#SetConvertArea
+
+!! Scale Factor
+!!REDIRECT SetConvertScale      funcs:cvrt:scale#SetConvertScale
+
+!! Export Flags
+!!REDIRECT SetStripForExport    funcs:cvrt:wrflg#SetStripForExport
+!!REDIRECT SetSkipInvisLayers   funcs:cvrt:wrflg#SetSkipInvisLayers
+
+!! Import Flags
+!!REDIRECT SetMergeInRead       funcs:cvrt:rdflg#SetMergeInRead
+
+!! Layout File Format Conversion
+!!REDIRECT FromArchive          funcs:cvrt:cvt#FromArchive
+!!REDIRECT FromTxt              funcs:cvrt:cvt#FromTxt
+!!REDIRECT FromNative           funcs:cvrt:cvt#FromNative
+
+!! Export Layout File
+!!REDIRECT SaveCellAsNative     funcs:cvrt:exprt#SaveCellAsNative
+!!REDIRECT Export               funcs:cvrt:exprt#Export
+!!REDIRECT ToXIC                funcs:cvrt:exprt#ToXIC
+!!REDIRECT ToCGX                funcs:cvrt:exprt#ToCGX
+!!REDIRECT ToCIF                funcs:cvrt:exprt#ToCIF
+!!REDIRECT ToGDS                funcs:cvrt:exprt#ToGDS
+!!REDIRECT ToGdsLibrary         funcs:cvrt:exprt#ToGdsLibrary
+!!REDIRECT ToOASIS              funcs:cvrt:exprt#ToOASIS
+!!REDIRECT ToTxt                funcs:cvrt:exprt#ToTxt
+
+!! Cell Hierarchy Digest
+!!REDIRECT FileInfo             funcs:cvrt:chd#FileInfo
+!!REDIRECT OpenCellHierDigest   funcs:cvrt:chd#OpenCellHierDigest
+!!REDIRECT WriteCellHierDigest  funcs:cvrt:chd#WriteCellHierDigest
+!!REDIRECT ReadCellHierDigest   funcs:cvrt:chd#ReadCellHierDigest
+!!REDIRECT ChdList              funcs:cvrt:chd#ChdList
+!!REDIRECT ChdChangeName        funcs:cvrt:chd#ChdChangeName
+!!REDIRECT ChdIsValid           funcs:cvrt:chd#ChdIsValid
+!!REDIRECT ChdDestroy           funcs:cvrt:chd#ChdDestroy
+!!REDIRECT ChdInfo              funcs:cvrt:chd#ChdInfo
+!!REDIRECT ChdFileName          funcs:cvrt:chd#ChdFileName
+!!REDIRECT ChdFileType          funcs:cvrt:chd#ChdFileType
+!!REDIRECT ChdTopCells          funcs:cvrt:chd#ChdTopCells
+!!REDIRECT ChdListCells         funcs:cvrt:chd#ChdListCells
+!!REDIRECT ChdLayers            funcs:cvrt:chd#ChdLayers
+!!REDIRECT ChdInfoMode          funcs:cvrt:chd#ChdInfoMode
+!!REDIRECT ChdInfoLayers        funcs:cvrt:chd#ChdInfoLayers
+!!REDIRECT ChdInfoCells         funcs:cvrt:chd#ChdInfoCells
+!!REDIRECT ChdInfoCounts        funcs:cvrt:chd#ChdInfoCounts
+!!REDIRECT ChdCellBB            funcs:cvrt:chd#ChdCellBB
+!!REDIRECT ChdSetDefCellName    funcs:cvrt:chd#ChdSetDefCellName
+!!REDIRECT ChdDefCellName       funcs:cvrt:chd#ChdDefCellName
+!!REDIRECT ChdLoadGeometry      funcs:cvrt:chd#ChdLoadGeometry
+!!REDIRECT ChdLinkCgd           funcs:cvrt:chd#ChdLinkCgd
+!!REDIRECT ChdGetGeomName       funcs:cvrt:chd#ChdGetGeomName
+!!REDIRECT ChdClearGeometry     funcs:cvrt:chd#ChdClearGeometry
+!!REDIRECT ChdSetSkipFlag       funcs:cvrt:chd#ChdSetSkipFlag
+!!REDIRECT ChdClearSkipFlags    funcs:cvrt:chd#ChdClearSkipFlags
+!!REDIRECT ChdCompare           funcs:cvrt:chd#ChdCompare
+!!REDIRECT ChdCompareFlat       funcs:cvrt:chd#ChdCompareFlat
+!!REDIRECT ChdEdit              funcs:cvrt:chd#ChdEdit
+!!REDIRECT ChdOpenFlat          funcs:cvrt:chd#ChdOpenFlat
+!!REDIRECT ChdSetFlatReadTransform funcs:cvrt:chd#ChdSetFlatReadTransform
+!!REDIRECT ChdEstFlatMemoryUse  funcs:cvrt:chd#ChdEstFlatMemoryUse
+!!REDIRECT ChdWrite             funcs:cvrt:chd#ChdWrite
+!!REDIRECT ChdWriteSplit        funcs:cvrt:chd#ChdWriteSplit
+!!REDIRECT ChdCreateReferenceCell funcs:cvrt:chd#ChdCreateReferenceCell
+!!REDIRECT ChdLoadCell          funcs:cvrt:chd#ChdLoadCell
+!!REDIRECT ChdIterateOverRegion funcs:cvrt:chd#ChdIterateOverRegion
+!!REDIRECT ChdWriteDensityMaps  funcs:cvrt:chd#ChdWriteDensityMaps
+
+!! Cell Geometry Digest
+!!REDIRECT OpenCellGeomDigest   funcs:cvrt:cgd#OpenCellGeomDigest
+!!REDIRECT NewCellGeomDigest    funcs:cvrt:cgd#NewCellGeomDigest
+!!REDIRECT WriteCellGeomDigest  funcs:cvrt:cgd#WriteCellGeomDigest
+!!REDIRECT CgdList              funcs:cvrt:cgd#CgdList
+!!REDIRECT CgdChangeName        funcs:cvrt:cgd#CgdChangeName
+!!REDIRECT CgdIsValid           funcs:cvrt:cgd#CgdIsValid
+!!REDIRECT CgdDestroy           funcs:cvrt:cgd#CgdDestroy
+!!REDIRECT CgdIsValidCell       funcs:cvrt:cgd#CgdIsValidCell
+!!REDIRECT CgdIsValidLayer      funcs:cvrt:cgd#CgdIsValidLayer
+!!REDIRECT CgdRemoveCell        funcs:cvrt:cgd#CgdRemoveCell
+!!REDIRECT CgdIsCellRemoved     funcs:cvrt:cgd#CgdIsCellRemoved
+!!REDIRECT CgdRemoveLayer       funcs:cvrt:cgd#CgdRemoveLayer
+!!REDIRECT CgdAddCells          funcs:cvrt:cgd#CgdAddCells
+!!REDIRECT CgdContents          funcs:cvrt:cgd#CgdContents
+!!REDIRECT CgdOpenGeomStream    funcs:cvrt:cgd#CgdOpenGeomStream
+!!REDIRECT GsReadObject         funcs:cvrt:cgd#GsReadObject
+!!REDIRECT GsDumpOasisText      funcs:cvrt:cgd#GsDumpOasisText
+
+!! Assembly Stream
+!!REDIRECT StreamOpen           funcs:cvrt:asm#StreamOpen
+!!REDIRECT StreamTopCell        funcs:cvrt:asm#StreamTopCell
+!!REDIRECT StreamSource         funcs:cvrt:asm#StreamSource
+!!REDIRECT StreamInstance       funcs:cvrt:asm#StreamInstance
+!!REDIRECT StreamRun            funcs:cvrt:asm#StreamRun
+
+!!KEYWORD
+funcs:cvrt
+!!TITLE
+Layout File Input/Output Functions
+!!HTML
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+
+    <!-- 101412 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:cvrt:lalias">Layer Conversion Aliasing</a></th></tr>
+
+    <tr><td><a href="funcs:cvrt:lalias#ReadLayerCvAliases">
+     <tt>ReadLayerCvAliases</tt>(<i>handle_or_filename</i>)</a>
+     </td><td>Read file containing layer conversion aliases</td></tr>
+    <tr><td><a href="funcs:cvrt:lalias#DumpLayerCvAliases">
+     <tt>DumpLayerCvAliases</tt>(<i>handle_or_filename</i>)</a>
+     </td><td>Dump file containing layer conversion aliases</td></tr>
+    <tr><td><a href="funcs:cvrt:lalias#ClearLayerCvAliases">
+     <tt>ClearLayerCvAliases</tt>()</a>
+     </td><td>Delete all layer conversion aliases</td></tr>
+    <tr><td><a href="funcs:cvrt:lalias#AddLayerCvAlias">
+     <tt>AddLayerCvAlias</tt>(<i>lname</i>, <i>new_lname</i>)</a>
+     </td><td>Add layer conversion alias to table</td></tr>
+    <tr><td><a href="funcs:cvrt:lalias#RemoveLayerCvAlias">
+     <tt>RemoveLayerCvAlias</tt>(<i>lname</i>)</a>
+     </td><td>Remove layer conversion alias from table</td></tr>
+    <tr><td><a href="funcs:cvrt:lalias#GetLayerCvAlias">
+     <tt>GetLayerCvAlias</tt>(<i>lname</i>)</a>
+     </td><td>Return conversion alias for layer name</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:cvrt:cnmap">Cell Name Mapping</a></th></tr>
+
+    <tr><td><a href="funcs:cvrt:cnmap#SetMapToLower">
+     <tt>SetMapToLower</tt>(<i>state</i>, <i>rw</i>)</a>
+     </td><td>Set cell name case conversion</td></tr>
+    <tr><td><a href="funcs:cvrt:cnmap#SetMapToUpper">
+     <tt>SetMapToUpper</tt>(<i>state</i>, <i>rw</i>)</a>
+     </td><td>Set cell name case conversion</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:cvrt:ctab">Cell Table</a></th></tr>
+
+    <tr><td><a href="funcs:cvrt:ctab#CellTabAdd">
+     <tt>CellTabAdd</tt>(<i>cellname</i>, <i>expand</i>)</a>
+     </td><td>Add cell(s) to cell table</td></tr>
+    <tr><td><a href="funcs:cvrt:ctab#CellTabCheck">
+     <tt>CellTabCheck</tt>(<i>cellname</i>)</a>
+     </td><td>Return true if name is in cell table</td></tr>
+    <tr><td><a href="funcs:cvrt:ctab#CellTabRemove">
+     <tt>CellTabRemove</tt>(<i>cellname</i>)</a>
+     </td><td>Remove name from cell table</td></tr>
+    <tr><td><a href="funcs:cvrt:ctab#CellTabList">
+     <tt>CellTabList</tt>()</a>
+     </td><td>List names in cell table</td></tr>
+    <tr><td><a href="funcs:cvrt:ctab#CellTabClear">
+     <tt>CellTabClear</tt>()</a>
+     </td><td>Clear all names from cell table</td></tr>
+
+    <!-- 120110 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:cvrt:wnd">Windowing and Flattening</a></th></tr>
+
+    <tr><td><a href="funcs:cvrt:wnd#SetConvertFlags">
+     <tt>SetConvertFlags</tt>(<i>use_window</i>, <i>clip</i>,
+     <i>flatten</i>, <i>ecf_level</i>, <i>rw</i>)</a>
+     </td><td>Set modes for format translation or output</td></tr>
+    <tr><td><a href="funcs:cvrt:wnd#SetConvertArea">
+     <tt>SetConvertArea</tt>(<i>l</i>, <i>b</i>, <i>r</i>, <i>t</i>,
+     <i>rw</i>)</a>
+     </td><td>Set filter/clipping area for translation or output</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:cvrt:scale">Scale Factor</a></th></tr>
+
+    <tr><td><a href="funcs:cvrt:scale#SetConvertScale">
+     <tt>SetConvertScale</tt>(<i>scale</i>, <i>which</i>)</a>
+     </td><td>Set scale factor for import/export</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:cvrt:wrflg">Export Flags</a></th></tr>
+
+    <tr><td><a href="funcs:cvrt:wrflg#SetStripForExport">
+     <tt>SetStripForExport</tt>(<i>state</i>)</a>
+     </td><td>Set flag to write physical data only</td></tr>
+    <tr><td><a href="funcs:cvrt:wrflg#SetSkipInvisLayers">
+     <tt>SetSkipInvisLayers</tt>(<i>code</i>)</a>
+     </td><td>Set code to skip invisible layers in output</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:cvrt:rdflg">Import Flags</a></th></tr>
+
+    <tr><td><a href="funcs:cvrt:rdflg#SetMergeInRead">
+     <tt>SetMergeInRead</tt>(<i>state</i>)</a>
+     </td><td>Enable box and wire merging in input</td></tr>
+
+    <!-- 072710 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:cvrt:cvt">Layout File Format Conversion</a></th></tr>
+
+    <tr><td><a href="funcs:cvrt:cvt#FromArchive">
+     <tt>FromArchive</tt>(<i>file_or_chd</i>, <i>destination</i>)</a>
+     </td><td>Translate archive file to another format</td></tr>
+    <tr><td><a href="funcs:cvrt:cvt#FromTxt">
+     <tt>FromTxt</tt>(<i>text_file</i>, <i>gds_file</i>)</a>
+     </td><td>Create GDSII file from GDSII text</td></tr>
+    <tr><td><a href="funcs:cvrt:cvt#FromNative">
+     <tt>FromNative</tt>(<i>dir_path</i>, <i>archive_file</i>)</a>
+     </td><td>Translate native cell files to archive</td></tr>
+
+    <!-- 071915 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:cvrt:exprt">Export Layout File</a></th></tr>
+
+    <tr><td><a href="funcs:cvrt:exprt#SaveCellAsNative">
+     <tt>SaveCellAsNative</tt>(<i>cellname</i>, <i>directory</i>)</a>
+     </td><td>Write a native cell file in the directory</td></tr>
+    <tr><td><a href="funcs:cvrt:exprt#Export">
+     <tt>Export</tt>(<i>filepath</i>, <i>allcells</i>)</a>
+     </td><td>Write data to disk</td></tr>
+    <tr><td><a href="funcs:cvrt:exprt#ToXIC">
+     <tt>ToXIC</tt>(<i>destination_dir</i>)</a>
+     </td><td>Write <i>Xic</i> files</td></tr>
+    <tr><td><a href="funcs:cvrt:exprt#ToCGX">
+     <tt>ToCGX</tt>(<i>cgx_name</i>)</a>
+     </td><td>Write CGX file</td></tr>
+    <tr><td><a href="funcs:cvrt:exprt#ToCIF">
+     <tt>ToCIF</tt>(<i>cif_name</i>)</a>
+     </td><td>Write CIF file</td></tr>
+    <tr><td><a href="funcs:cvrt:exprt#ToGDS">
+     <tt>ToGDS</tt>(<i>gds_name</i>)</a>
+     </td><td>Write GDSII file</td></tr>
+    <tr><td><a href="funcs:cvrt:exprt#ToGdsLibrary">
+     <tt>ToGdsLibrary</tt>(<i>gds_name</i>, <i>cellname_list</i>)</a>
+     </td><td>Write GDSII library file</td></tr>
+    <tr><td><a href="funcs:cvrt:exprt#ToOASIS">
+     <tt>ToOASIS</tt>(<i>oas_name</i>)</a>
+     </td><td>Write OASIS file</td></tr>
+    <tr><td><a href="funcs:cvrt:exprt#ToTxt">
+     <tt>ToTxt</tt>(<i>archive_file</i>, <i>text_file</i>, <i>cmdargs</i>)</a>
+     </td><td>Write text-mode GDSII/CGX/OASIS file</td></tr>
+
+    <!-- 030113 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:cvrt:chd">Cell Hierarchy Digest</a></th></tr>
+
+    <tr><td><a href="funcs:cvrt:chd#FileInfo">
+     <tt>FileInfo</tt>(<i>filename</i>, <i>handle_or_filename</i>,
+     <i>flags</i>)</a>
+     </td><td>Obtain info about archive file</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#OpenCellHierDigest">
+     <tt>OpenCellHierDigest</tt>(<i>filename</i>, <i>info_saved</i>)</a>
+     </td><td>Create new CHD</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#WriteCellHierDigest">
+     <tt>WriteCellHierDigest</tt>(<i>chd_name</i>, <i>filename</i>,
+     <i>incl_geom</i>, <i>no_compr</i>)</a>
+     </td><td>Write CHD to file</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ReadCellHierDigest">
+     <tt>ReadCellHierDigest</tt>(<i>filename</i>, <i>cgd_type</i>)</a>
+     </td><td>Obtain CHD from file</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdList">
+     <tt>ChdList</tt>()</a>
+     </td><td>Return a list of CHD access names</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdChangeName">
+     <tt>ChdChangeName</tt>(<i>old_chd_name</i>, <i>new_chd_name</i>)</a>
+     </td><td>Change the access name of a CHD</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdIsValid">
+     <tt>ChdIsValid</tt>(<i>chd_name</i>)</a>
+     </td><td>Return true if named CHD exists</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdDestroy">
+     <tt>ChdDestroy</tt>(<i>chd_name</i>)</a>
+     </td><td>Destroy the CHD</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdInfo">
+     <tt>ChdInfo</tt>(<i>chd_name</i>, <i>handle_or_filename</i>,
+     <i>flags</i>)</a>
+     </td><td>Obtain CHD information</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdFileName">
+     <tt>ChdFileName</tt>(<i>chd_name</i>)</a>
+     </td><td>Obtain archive file name</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdFileType">
+     <tt>ChdFileType</tt>(<i>chd_name</i>)</a>
+     </td><td>Obtain archive file format</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdTopCells">
+     <tt>ChdTopCells</tt>(<i>chd_name</i>)</a>
+     </td><td>Obtain archive top-level cell names</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdListCells">
+     <tt>ChdListCells</tt>(<i>chd_name</i>, <i>cellname</i>, <i>mode</i>,
+     <i>all</i>)</a>
+     </td><td>Obtain list of cell names</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdLayers">
+     <tt>ChdLayers</tt>(<i>chd_name</i>)</a>
+     </td><td>Obtain layers used in archive</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdInfoMode">
+     <tt>ChdInfoMode</tt>(<i>chd_name</i>)</a>
+     </td><td>Return saved info mode</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdInfoLayers">
+     <tt>ChdInfoLayers</tt>(<i>chd_name</i>, <i>cellname</i>)</a>
+     </td><td>Return saved layer info</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdInfoCells">
+     <tt>ChdInfoCells</tt>(<i>chd_name</i>)</a>
+     </td><td>Return saved cell names</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdInfoCounts">
+     <tt>ChdInfoCounts</tt>(<i>chd_name</i>, <i>cellname</i>,
+     <i>layername</i>, <i>array</i>)</a>
+     </td><td>Return saved statistics</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdCellBB">
+     <tt>ChdCellBB</tt>(<i>chd_name</i>, <i>cellname</i>, <i>array</i>)</a>
+     </td><td>Obtain cell bounding box</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdSetDefCellName">
+     <tt>ChdSetDefCellName</tt>(<i>chd_name</i>, <i>cellname</i>)</a>
+     </td><td>Configure default cell name</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdDefCellName">
+     <tt>ChdDefCellName</tt>(<i>chd_name</i>)</a>
+     </td><td>Obtain default cell name</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdLoadGeometry">
+     <tt>ChdLoadGeometry</tt>(<i>chd_name</i>)</a>
+     </td><td>Create and link to a new Cell Geometry Digest</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdLinkCgd">
+     <tt>ChdLinkCgd</tt>(<i>chd_name</i>, <i>cgd_name</i>)</a>
+     </td><td>Link or unlink a CGD to the CHD</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdGetGeomName">
+     <tt>ChdGetGeomName</tt>(<i>chd_name</i>)</a>
+     </td><td>Return name of attached Cell Geometry Digest</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdClearGeometry">
+     <tt>ChdClearGeometry</tt>(<i>chd_name</i>)</a>
+     </td><td>Unlink attached Cell Geometry Digest</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdSetSkipFlag">
+     <tt>ChdSetSkipFlag</tt>(<i>chd_name</i>, <i>cellname</i>, <i>skip</i>)</a>
+     </td><td>Set or clear skip flag</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdClearSkipFlags">
+     <tt>ChdClearSkipFlags</tt>(<i>chd_name</i>)</a>
+     </td><td>Clear all skip flags</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdCompare">
+     <tt>ChdCompare</tt>(<i>chd_name1</i>, <i>cname1</i>, <i>chd_name2</i>,
+     <i>cname2</i>, <i>layer_list</i>, <i>skip_layers</i>, <i>maxdiffs</i>,
+     <i>obj_types</i>, <i>geometric</i>, <i>array</i>)</a>
+     </td><td>Compare objects in cells</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdCompareFlat">
+     <tt>ChdCompareFlat</tt>(<i>chd_name1</i>, <i>cname1</i>, <i>chd_name2</i>,
+     <i>cname2</i>, <i>layer_list</i>, <i>skip_layers</i>, <i>maxdiffs</i>,
+     <i>area</i>, <i>coarse_mult</i>, <i>find_grid</i>, <i>array</i>)</a>
+     </td><td>Compare objects in flat cell hierarchies</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdEdit">
+     <tt>ChdEdit</tt>(<i>chd_name</i>, <i>scale</i>, <i>cellname</i>)</a>
+     </td><td>Open cell for editing</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdOpenFlat">
+     <tt>ChdOpenFlat</tt>(<i>chd_name</i>, <i>scale</i>, <i>cellname</i>,
+     <i>arary</i>, <i>clip</i>)</a>
+     </td><td>Read a flattened hierarchy into memory</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdSetFlatReadTransform">
+     <tt>ChdSetFlatReadTransform</tt>(<i>tfstring</i>, <i>x</i>, <i>y</i>)</a>
+     </td><td>Set a transform for flat reading</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdEstFlatMemoryUse">
+     <tt>ChdEstFlatMemoryUse</tt>(<i>chd_name</i>, <i>cellname</i>,
+     <i>array</i>, <i>counts_array</i>)</a>
+     </td><td>Estimate memory required for flat read</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdWrite">
+     <tt>ChdWrite</tt>(<i>chd_name</i>, <i>scale</i>, <i>cellname</i>,
+     <i>arary</i>, <i>clip</i>, <i>all</i>, <i>flatten</i>, <i>ecf_level</i>,
+     <i>outfile</i>)</a>
+     </td><td>Write cells to file</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdWriteSplit">
+     <tt>ChdWriteSplit</tt>(<i>chd_name</i>, <i>cellname</i>, <i>basename</i>,
+     <i>array</i>, <i>regions_or_gridsize</i>, <i>numregions_or_bloatval</i>,
+     <i>maxdepth</i>, <i>scale</i>, <i>flags</i>)</a>
+     </td><td>Write to flat files</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdCreateReferenceCell">
+     <tt>ChdCreateReferenceCell</tt>(<i>chd_name</i>, <i>cellname</i>)</a>
+     </td><td>Create a reference cell in memory</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdLoadCell">
+     <tt>ChdLoadCell</tt>(<i>chd_name</i>, <i>cellname</i>)</a>
+     </td><td>Load cell in memory, reference subcells</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdIterateOverRegion">
+     <tt>ChdIterateOverRegion</tt>(<i>chd_name</i>, <i>cellname</i>,
+     <i>funcname</i>, <i>array</i>, <i>coarse_mult</i>, <i>fine_grid</i>,
+     <i>bloat_val</i>)</a>
+     </td><td>Iterate over grid, call callback function</td></tr>
+    <tr><td><a href="funcs:cvrt:chd#ChdWriteDensityMaps">
+     <tt>ChdWriteDensityMaps</tt>(<i>chd_name</i>, <i>cellname</i>,
+     <i>array</i>, <i>coarse_mult</i>, <i>fine_grid</i>, <i>bloat</i>,
+     <i>save</i>)</a>
+     </td><td>Iterate over grid, compute density</td></tr>
+
+    <!-- 012111 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:cvrt:cgd">Cell Geometry Digest</a></th></tr>
+
+    <tr><td><a href="funcs:cvrt:cgd#OpenCellGeomDigest">
+     <tt>OpenCellGeomDigest</tt>(<i>idname</i>, <i>string</i>, <i>type</i>)</a>
+     </td><td>Create new CGD</td></tr>
+    <tr><td><a href="funcs:cvrt:cgd#NewCellGeomDigest">
+     <tt>NewCellGeomDigest</tt>()</a>
+     </td><td>Create new empty CGD</td></tr>
+    <tr><td><a href="funcs:cvrt:cgd#WriteCellGeomDigest">
+     <tt>WriteCellGeomDigest</tt>(<i>cgd_name</i>, <i>filename</i>)</a>
+     </td><td>Write CGD to file</td></tr>
+    <tr><td><a href="funcs:cvrt:cgd#CgdList">
+     <tt>CgdList</tt>()</a>
+     </td><td>Return a list of CGD access names</td></tr>
+    <tr><td><a href="funcs:cvrt:cgd#CgdChangeName">
+     <tt>CgdChangeName</tt>(<i>old_cgd_name</i>, <i>new_cgd_name</i>)</a>
+     </td><td>Change the access name of a CGD</td></tr>
+    <tr><td><a href="funcs:cvrt:cgd#CgdIsValid">
+     <tt>CgdIsValid</tt>(<i>cgd_name</i>)</a>
+     </td><td>Return true if named CGD exists</td></tr>
+    <tr><td><a href="funcs:cvrt:cgd#CgdDestroy">
+     <tt>CgdDestroy</tt>(<i>cgd_name</i>)</a>
+     </td><td>Destroy the CGD</td></tr>
+    <tr><td><a href="funcs:cvrt:cgd#CgdIsValidCell">
+     <tt>CgdIsValidCell</tt>(<i>cgd_name</i>, <i>cellname</i>)</a>
+     </td><td>Return true if cell is found in CGD</td></tr>
+    <tr><td><a href="funcs:cvrt:cgd#CgdIsValidLayer">
+     <tt>CgdIsValidLayer</tt>(<i>cgd_name</i>, <i>cellname</i>,
+     <i>layername</i>)</a>
+     </td><td>Return true if cell containing layer is found in CGD</td></tr>
+    <tr><td><a href="funcs:cvrt:cgd#CgdRemoveCell">
+     <tt>CgdRemoveCell</tt>(<i>cgd_name</i>, <i>cellname</i>)</a>
+     </td><td>Remove a cell from the CGD</td></tr>
+    <tr><td><a href="funcs:cvrt:cgd#CgdIsCellRemoved">
+     <tt>CgdRemoveCell</tt>(<i>cgd_name</i>, <i>cellname</i>)</a>
+     </td><td>Return true if the cell was removed from the CGD</td></tr>
+    <tr><td><a href="funcs:cvrt:cgd#CgdRemoveLayer">
+     <tt>CgdRemoveLayer</tt>(<i>cgd_name</i>, <i>cellname</i>,
+     <i>layername</i>)</a>
+     </td><td>Remove layer data from a cell in the CGD</td></tr>
+    <tr><td><a href="funcs:cvrt:cgd#CgdAddCells">
+     <tt>CgdAddCells</tt>(<i>cgd_name</i>, <i>chd_name</i>,
+     <i>cells_list</i>)</a>
+     </td><td>Add cells to the CGD</td></tr>
+    <tr><td><a href="funcs:cvrt:cgd#CgdContents">
+     <tt>CgdContents</tt>(<i>cgd_name</i>, <i>cellname</i>,
+       <i>layername</i>)</a>
+     </td><td>List contents of CGD</td></tr>
+    <tr><td><a href="funcs:cvrt:cgd#CgdOpenGeomStream">
+     <tt>CgdOpenGeomStream</tt>(<i>cgd_name</i>, <i>cellname</i>,
+       <i>layername</i>)</a>
+     </td><td>Open geometry stream from CGD</td></tr>
+    <tr><td><a href="funcs:cvrt:cgd#GsReadObject">
+     <tt>GsReadObject</tt>(<i>gs_handle</i>)</a>
+     </td><td>Read geometry from a geometry stream</td></tr>
+    <tr><td><a href="funcs:cvrt:cgd#GsDumpOasisText">
+     <tt>GsDumpOasisText</tt>(<i>gs_handle</i>)</a>
+     </td><td>Dump OASIS ASCII text representation to console</td></tr>
+
+    <!-- 120110 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:cvrt:asm">Assembly Stream</a></th></tr>
+
+    <tr><td><a href="funcs:cvrt:asm#StreamOpen">
+     <tt>StreamOpen</tt>(<i>outfile</i>)</a>
+     </td><td>Open an assembly stream</td></tr>
+    <tr><td><a href="funcs:cvrt:asm#StreamTopCell">
+     <tt>StreamTopCell</tt>(<i>stream_handle</i>, <i>cellname</i>)</a>
+     </td><td>Define a top-level cell in the stream</td></tr>
+    <tr><td><a href="funcs:cvrt:asm#StreamSource">
+     <tt>StreamSource</tt>(<i>stream_handle</i>, <i>file_or_chd</i>,
+     <i>scale</i>, <i>layer_filter</i>, <i>name_change</i>)</a>
+     </td><td>Register a source archive for streaming</td></tr>
+    <tr><td><a href="funcs:cvrt:asm#StreamInstance">
+     <tt>StreamInstance</tt>(<i>stream_handle</i>, <i>cellname</i>, <i>x</i>,
+     <i>y</i>, <i>my</i>, <i>rot</i>, <i>magn</i>, <i>scale</i>,
+     <i>no_hier</i>, <i>ecf_level</i>, <i>flatten</i>, <i>array</i>,
+     <i>clip</i>)</a>
+     </td><td>Add an instance conversion spec to a source</td></tr>
+    <tr><td><a href="funcs:cvrt:asm#StreamRun">
+     <tt>StreamRun</tt>(<i>stream_handle</i>)</a>
+     </td><td>Initiate streaming to output</td></tr>
+
+    </table>
+
+!!SEEALSO
+scr:iffuncs
+
+!!KEYWORD
+funcs:cvrt:lalias
+!!TITLE
+Layer Conversion Aliasing
+!!HTML
+    <!-- 101412 -->
+    There is provision for a layer aliasing mechanism which is applied
+    when a layout file is read.  This capability is exported through an
+    interface consisting of the <a
+    href="UseLayerAlias"><b>UseLayerAlias</b></a> and <a
+    href="LayerAlias"><b>LayerAlias</b></a> variables, and the script
+    functions described below.
+
+    <p>
+    This is different from the <a href="LppName"><tt>LppName</tt></a>
+    aliasing which applies to <i>Xic</i> layers, and is built into the
+    layer database.  The conversion aliases apply only while a layout
+    file is being read.
+    <hr>
+
+    <!-- 101412 -->
+    <a name="ReadLayerCvAliases"></a>
+    <dl>
+    <dt><b>(int) <tt>ReadLayerCvAliases</tt>(<i>handle_or_filename</i>)</b>
+    <dd><br>
+    The argument can be either a string giving a file name, or a file
+    handle as returned from the <a href="Open"><tt>Open</tt></a>
+    function or equivalent (opened for reading).  This function will
+    read layer aliases, adding the definitions to the layer alias
+    table.  The format consists of lines of the form
+    <blockquote>
+      <i>name</i>=<i>newname</i>
+    </blockquote>
+    where both <i>name</i> and <i>newname</i> are four-character
+    CIF-type layer names, and there is one definition per line.  Lines
+    with a syntax error or bad layer name are silently ignored.  When
+    the layer alias table is active, layers read from an input file
+    will be substituted, i.e., if a layer named <i>name</i> is read,
+    it will be replaced with <i>newname</i>.  For data formats that
+    use layer number and datatype numbers, such as GDSII, the layer
+    names should be in the form of a four or eight-byte hex number,
+    using upper case, where the left bytes represent the hex value of
+    the layer number, zero padded, and the right bytes represent the
+    zero padded datatype number.  The eight-byte form should be used
+    if the layer or datatype is larger than 255.  Alternatively, the
+    decimal form L,D is accepted for layer tokens, where the decimal
+    layer and datatype numbers are separated by a comma with no space.
+
+    <p>
+    The function returns 1 on success, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 101412 -->
+    <a name="DumpLayerCvAliases"></a>
+    <dl>
+    <dt><b>(int) <tt>DumpLayerCvAliases</tt>(<i>handle_or_filename</i>)</b>
+    <dd><br>
+    The argument can be either a string giving a file name, or a file
+    handle as returned from the <a href="Open"><tt>Open</tt></a>
+    function or equivalent (opened for writing).  This function will
+    dump the layer alias table.  The format consists of lines of the
+    form
+    <blockquote>
+      <i>name</i>=<i>newname</i>
+    </blockquote>
+    with one definition per line, where <i>name</i> and <i>newname</i>
+    are CIF-type four character layer names, with <i>newname</i> being
+    the replacement.  The function returns 1 on success, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 101412 -->
+    <a name="ClearLayerCvAliases"></a>
+    <dl>
+    <dt><b>(int) <tt>ClearLayerCvAliases</tt>()</b>
+    <dd><br>
+    This function will remove all entries in the layer alias table.
+    The function always returns 1.
+    </dl>
+    <hr>
+
+    <!-- 101412 -->
+    <a name="AddLayerCvAlias"></a>
+    <dl>
+    <dt><b>(int) <tt>AddLayerCvAlias</tt>(<i>lname</i>, <i>new_lname</i>)</b>
+    <dd><br>
+    This function will add the layer name string <i>new_lname</i> as
+    an alias for the layer name string <i>lname</i> to the layer alias
+    table.  If an error occurs, or an alias for <i>lname</i> already
+    exists in the table (it will not be replaced) the function returns
+    0.  The function otherwise returns 1.
+    </dl>
+    <hr>
+
+    <!-- 101412 -->
+    <a name="RemoveLayerCvAlias"></a>
+    <dl>
+    <dt><b>(int) <tt>RemoveLayerCvAlias</tt>(<i>lname</i>)</b>
+    <dd><br>
+    This function removes any alias for <i>lname</i> from the layer alias
+    table.  The function always returns 1.
+    </dl>
+    <hr>
+
+    <!-- 101412 -->
+    <a name="GetLayerCvAlias"></a>
+    <dl>
+    <dt><b>(string) <tt>GetLayerCvAlias</tt>(<i>lname</i>)</b>
+    <dd><br>
+    This function returns a string containing the alias for the passed
+    layer name string, obtained from the layer alias table.  If no
+    alias exists for <i>lname</i>, a null string is returned.
+    </dl>
+
+!!SEEALSO
+funcs:cvrt
+
+!!KEYWORD
+funcs:cvrt:cnmap
+!!TITLE
+Cell Name Mapping
+!!HTML
+
+    <!-- 100108 -->
+    <a name="SetMapToLower"></a>
+    <dl>
+    <dt><b>(int) <tt>SetMapToLower</tt>(<i>state</i>, <i>rw</i>)</b>
+    <dd><br>
+    This function sets a flag which causes upper case cell names to be
+    mapped to lower case when reading, writing, or format converting
+    archive files.  The first argument is a boolean value which if
+    nonzero indicates case conversion will be applied, and if zero
+    case conversion will be disabled.
+
+    <p>
+    The second argument is a boolean value that if zero indicates that
+    case conversion will be applied when reading or format converting
+    archive files, and nonzero will apply case conversion when writing
+    an archive file from memory.
+
+    <p>
+    Within <i>Xic</i>, this flag can also be set from the panels
+    available from the <b>Convert Menu</b>.  The internal effect is to
+    set or clear the <a href="InToLower"><b>InToLower</b></a> or <a
+    href="OutToLower"><b>OutToLower</b></a> variables.  The return
+    value is the previous setting of the variable.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="SetMapToUpper"></a>
+    <dl>
+    <dt><b>(int) <tt>SetMapToUpper</tt>(<i>state</i>, <i>rw</i>)</b>
+    <dd><br>
+    This function sets a flag which causes lower case cell names to be
+    mapped to upper case when reading, writing, or format converting
+    archive files.  The first argument is a boolean value which if
+    nonzero indicates case conversion will be applied, and if zero
+    case conversion will be disabled.
+
+    <p>
+    The second argument is a boolean value that if zero indicates that
+    case conversion will be applied when reading or format converting
+    archive files, and nonzero will apply case conversion when writing
+    an archive file from memory.
+
+    <p>
+    Within <i>Xic</i>, this flag can also be set from the panels
+    available from the <b>Convert Menu</b>.  The internal effect is to
+    set or clear the <a href="InToUpper"><b>InToUpper</b></a> or <a
+    href="OutToUpper"><b>OutToUpper</b></a> variables.  The return
+    value is the previous setting of the variable.
+    </dl>
+
+!!SEEALSO
+funcs:cvrt
+
+!!KEYWORD
+funcs:cvrt:ctab
+!!TITLE
+Cell Table
+!!HTML
+    <!-- 100108 -->
+    <a name="CellTabAdd"></a>
+    <dl>
+    <dt><b>(int) <tt>CellTabAdd</tt>(<i>cellname</i>, <i>expand</i>)</b>
+    <dd><br>
+    This function is used to add cell names to the <a
+    href="xic:overtab">cell table</a> for the current <a
+    href="xic:stabs">symbol table</a>.  The <i>cellname</i> must match
+    a name in the global string table, which includes all cells read
+    into memory or referenced by a CHD in memory.
+
+    <p>
+    If the boolean argument <i>expand</i> is nonzero, and the name
+    matches a cell in the main database, the cell and all of the cells
+    in its hierarchy will be added to the table, otherwise only the
+    named cell will be added.  It is not an error to add the same cell
+    more than once, duplicates will be ignored.
+
+    <p>
+    If the <a href="UseCellTab"><b>UseCellTab</b></a> variable is set,
+    when a <a href="xic:hier">Cell Hierarchy Digest</a> (CHD) is used
+    to process a cell hierarchy for anything other than reading cells
+    into the main database, cells listed in the cell table will
+    override cells of the same name in the CHD.  Thus, for example,
+    one can substitute modified versions of cells as a layout file is
+    being written.
+
+    <p>
+    The return value is 1 if all goes well, 0 if the table is not
+    initialized or the cell is not found.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="CellTabCheck"></a>
+    <dl>
+    <dt><b>(int) <tt>CellTabCheck</tt>(<i>cellname</i>)</b>
+    <dd><br>
+    This function returns 1 if <i>cellname</i> is in the current <a
+    href="xic:overtab">cell table</a>.  If the <i>cellname</i> is
+    valid but <i>cellname</i> is not in the table, 0 is returned.  If
+    the cellname is invalid (not a known cell name) or the cell table
+    is uninitialized, the return value is -1.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="CellTabRemove"></a>
+    <dl>
+    <dt><b>(int) <tt>CellTabRemove</tt>(<i>cellname</i>)</b>
+    <dd><br>
+    If <i>cellname</i> is found in the current <a
+    href="xic:overtab">cell table</a>, it will be removed.  If the
+    name was found in the table and removed, the return value is 1,
+    otherwise the function returns 0.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="CellTabList"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>CellTabList</tt>()</b>
+    <dd><br>
+    This function returns a handle to a list of cell name strings
+    obtained from the current <a href="xic:overtab">cell table</a>. 
+    If the table is empty, a scalar 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="CellTabClear"></a>
+    <dl>
+    <dt><b>(int) <tt>CellTabClear</tt>()</b>
+    <dd><br>
+    This function will clear the current <a href="xic:overtab">cell
+    table</a>.  The function always returns 1.
+    </dl>
+    <hr>
+
+!!SEEALSO
+funcs:cvrt
+
+!!KEYWORD
+funcs:cvrt:wnd
+!!TITLE
+Windowing and Flattening
+!!HTML
+    <!-- 022916 -->
+    <a name="SetConvertFlags"></a>
+    <dl>
+    <dt><b>(int) <tt>SetConvertFlags</tt>(<i>use_window</i>, <i>clip</i>,
+     <i>flatten</i>, <i>ecf_level</i>, <i>rw</i>)</b>
+    <dd><br>This function sets the status of flags used in format
+    conversions and when writing output.  The first three arguments
+    correspond to the <b>Use Window</b>, <b>Clip to Window</b>, and
+    <b>Flatten Hierarchy</b> buttons in the <a
+    href="xic:convt"><b>Format Conversion</b></a> panel and similar.  A
+    nonzero integer value will set the flag, 0 will reset the flag.
+
+    <p>
+    The <i>ecf_level</i> is an integer 0-3 which sets the empty cell
+    filtering level, as <a href="ecfilt">described</a> for the
+    <b>Format Conversion</b> panel.  The values are
+
+    <table border=0>
+    <tr><td>0</td> <td>No empty cell filtering.</td></tr>
+    <tr><td>1</td> <td>Apply pre- and post-filtering.</td></tr>
+    <tr><td>2</td> <td>Apply pre-filtering only.</td></tr>
+    <tr><td>3</td> <td>Apply post-filtering only.</td></tr>
+    </table>
+
+    <p>
+    The <i>rw</i> argument is a boolean value that if zero indicates
+    that the flags will be applied when converting archive files, as
+    if set from the <b>Format Conversion</b> panel, and also apply to
+    the <a href="FromArchive"><tt>FromArchive</tt></a> script
+    function.  With <i>rw</i> nonzero, the flags apply when writing
+    output with the <a href="xic:exprt"><b>Export Control</b></a>
+    panel, or when using the <a
+    href="funcs:cvrt:exprt"><tt>Export</tt></a> and
+    <tt>To</tt><i>XXX</i> script functions.  In this case, the
+    <i>no_empties</i> flag is ignored, and the windowing is ignored
+    except when flattening.
+
+    <p>
+    The data window can be set with the <a
+    href="SetConvertArea"><tt>SetConvertArea</tt></a> script function. 
+    To apply clipping, both the <i>use_window</i> and <i>clip</i>
+    flags must be set.
+
+    <p>
+    This function returns the previous value of the internal variable
+    that contains the flags.  The two ecf filter bits encode the
+    filtering level as above.  The bits are:
+    <table border=0>
+    <tr><td><i>flatten</i></td>       <td><tt>0x1</tt></td></tr>
+    <tr><td><i>use_window</i></td>    <td><tt>0x2</tt></td></tr>
+    <tr><td><i>clip</i></td>          <td><tt>0x4</tt></td></tr>
+    <tr><td><i>ecf level0</i></td>    <td><tt>0x8</tt></td></tr>
+    <tr><td><i>ecf level1</i></td>    <td><tt>0x10</tt></td></tr>
+    </table>
+    </dl>
+    <hr>
+
+    <!-- 022916 -->
+    <a name="SetConvertArea"></a>
+    <dl>
+    <dt><b>(int) <tt>SetConvertArea</tt>(<i>l</i>, <i>b</i>, <i>r</i>,
+      <i>t</i>, <i>rw</i>)</b>
+    <dd><br>This function sets the rectangular window used to filter or
+    clip objects during format conversions or file writing.  The first
+    four arguments are the window coordinates in microns, in the
+    coordinate system of the top level cell, after scaling (if any).
+
+    <p>
+    The <i>rw</i> argument is a boolean value that if zero indicates
+    that the values will be applied when converting archive files, as
+    if set from the <a href="xic:convt"><b>Format Conversion</b></a>
+    panel, and also apply when using the <a
+    href="FromArchive"><tt>FromArchive</tt></a> script function.  With
+    <i>rw</i> nonzero, the values apply when writing output with the
+    <a href="xic:exprt"><b>Export Control</b></a> panel, or when using
+    the <a href="funcs:cvrt:exprt"><tt>Export</tt></a> and
+    <tt>To</tt><i>XXX</i> script functions.  In this case, windowing
+    is ignored except when flattening.
+
+    <p>
+    Use of the window can be enabled with the <a
+    href="SetConvertFlags"><tt>SetConvertFlags</tt></a> script
+    function.
+
+    <p>
+    The function always returns 1.
+    </dl>
+
+!!SEEALSO
+funcs:cvrt
+
+!!KEYWORD
+funcs:cvrt:scale
+!!TITLE
+Scale Factor
+!!HTML
+
+    <!-- 022916 -->
+    <a name="SetConvertScale"></a>
+    <dl>
+    <dt><b>(real) <tt>SetConvertScale</tt>(<i>scale</i>, <i>which</i>)</b>
+    <dd><br>This sets the scale used for conversions.  There are three
+    such scales, and the one to set is specified by the second
+    argument, which is an integer 0-2. 
+    <dl><dt><i>which</i> = 0<dd>
+    Set the scale used when converting an archive file directly to
+    another format with the <a
+    href="FromArchive"><tt>FromArchive</tt></a> script function or
+    similar, or with the <a href="xic:convt"><b>Format Conversion</b></a>
+    panel. 
+    </dl>
+    <dl>
+    <dt><i>which</i> = 1<dd>
+    Set the scale used when writing a file with the <a
+    href="funcs:cvrt:exprt"><tt>Export</tt></a> and
+    <tt>To<i>XXX</i></tt> script functions or similar or the <a
+    href="xic:exprt"><b>Export Control</b></a> panel. 
+    </dl>
+    <dl>
+    <dt><i>which</i> = 2 <dd>
+    Set the scale used when reading a file into <i>Xic</i> with the <a
+    href="Edit"><tt>Edit</tt></a> or <a
+    href="OpenCell"><tt>OpenCell</tt></a> functions or similar, or
+    from the <a href="xic:imprt"><b>Import Control</b></a> panel in
+    <i>Xic</i>. 
+    </dl>
+
+    Script functions that read, write, or convert archive file data
+    will in general make use of one of these scale factors, however
+    if the function takes a scale value as an argument, that value
+    will be used rather than the values set with this function.
+
+    <p>
+    The scale argument is a real value in the inclusive range 0.001 -
+    1000.0.  The return value is the previous scale value. 
+    </dl>
+
+!!SEEALSO
+funcs:cvrt
+
+!!KEYWORD
+funcs:cvrt:wrflg
+!!TITLE
+Export Flags
+!!HTML
+    <!-- 022816 -->
+    <a name="SetStripForExport"></a>
+    <dl>
+    <dt><b>(int) <tt>SetStripForExport</tt>(<i>state</i>)</b>
+    <dd><br>This function sets the state of the <b>Strip For Export</b>
+    flag.  When set, output from the conversion functions will contain
+    physical information only.  This should be applied when generating
+    output for mask fabrication.  See the <a
+    href="xic:exprt"><b>Export Control</b></a> panel description
+    for more information.  If the integer argument is nonzero, the
+    state will be set active.  The return value is the previous state
+    of the flag.
+    </dl>
+    <hr>
+
+    <!-- 022816 -->
+    <a name="SetSkipInvisLayers"></a>
+    <dl>
+    <dt><b>(int) <tt>SetSkipInvisLayers</tt>(<i>code</i>)</b>
+    <dd><br>This function sets the variable which controls how invisible
+    layers are treated by the output conversion functions.  Layer
+    visibility is set by clicking in the layer table with mouse button
+    2, or through the <tt>SetLayerVisible</tt> script function.  If
+    <i>code</i> is 0 or negative, invisible layers will be converted. 
+    If <i>code</i> is 1, invisible physical layers will not be
+    converted.  If <i>code</i> is 2, invisible electrical layers will
+    not be converted.  if <i>code</i> is 3 or larger, both electrical
+    and physical invisible layers will not be converted.  The return
+    value is the previous code, which represents the state of the <a
+    href="SkipInvisible"><b>SkipInvisible</b></a> variable, and the
+    check boxes in the <a href="xic:exprt"><b>Export Control</b></a>
+    panel.
+    </dl>
+
+!!SEEALSO
+funcs:cvrt
+
+!!KEYWORD
+funcs:cvrt:rdflg
+!!TITLE
+Import Flags
+!!HTML
+    <!-- 022816 -->
+    <a name="SetMergeInRead"></a>
+    <dl>
+    <dt><b>(int) <tt>SetMergeInRead</tt>(<i>state</i>)</b>
+    <dd><br>This function controls the setting of an internal flag which
+    enables merging of boxes and coincident objects while a file is
+    being read.  This flag is set from within <i>Xic</i> in the <a
+    href="xic:imprt"><b>Import Control</b></a> panel.  If the integer
+    argument is nonzero, the flag will be set.  The return value is
+    the previous state of the flag.
+    </dl>
+
+!!SEEALSO
+funcs:cvrt
+
+!!KEYWORD
+funcs:cvrt:cvt
+!!TITLE
+Layout File Format Conversion
+!!HTML
+    <!-- 100308 -->
+    <a name="FromArchive"></a>
+    <dl>
+    <dt><b>(int) <tt>FromArchive</tt>(<i>file_or_chd</i>,
+      <i>destination</i>)</b>
+    <dd><br>
+    This function will read an archive (GDSII, CIF, CGX, or OASIS)
+    file and translate the contents to another format.  The
+    <i>file_or_chd</i> argument is a string giving a path to the
+    source archive file, or the name of a <a href="xic:hier">Cell
+    Hierarchy Digest</a> (CHD) in memory.
+
+    <p>
+    The type of file written is implied by the <i>destination</i>.  If
+    the <i>destination</i> is null or empty, native cell files will be
+    created in the current directory.  If the <i>destination</i> is
+    the name of an existing directory, native cell files will be
+    created in that directory.  Otherwise, the extension of the
+    <i>destination</i> determines the file type:
+    <table border=0 cellpadding=2>
+    <tr><td>CGX</td>     <td><tt>.cgx</tt></td></tr>
+    <tr><td>CIF</td>     <td><tt>.cif</tt></td></tr>
+    <tr><td>GDSII</td>   <td><tt>.gds, .str, .strm, .stream</tt></td></tr>
+    <tr><td>OASIS</td>   <td><tt>.oas</tt></td></tr>
+    </table>
+    Only these extensions are recognized, however CGX and GDSII allow
+    an additional <tt>.gz</tt> which will imply compression.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features that
+    apply during a call to this function.
+
+    <p>
+    The value 1 is returned on success, 0 otherwise, with possibly an
+    error message available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="FromTxt"></a>
+    <dl>
+    <dt><b>(int) <tt>FromTxt</tt>(<i>text_file</i>, <i>gds_file</i>)</b>
+    <dd><br>This function will translate a text file in the format
+    produced by the <tt>ToTxt</tt> function into a GDSII format
+    file.  This is useful after text mode editing has been performed
+    on the file, to repair corruption or incompatibilities.  If
+    <i>gds_file</i> is null or empty, the name is generated from the
+    <i>text_file</i> and given a "<tt>.gds</tt>" suffix.
+    </dl>
+    <hr>
+
+    <!-- 072710 -->
+    <a name="FromNative"></a>
+    <dl>
+    <dt><b>(int) <tt>FromNative</tt>(<i>dir_path</i>, <i>archive_file</i>)</b>
+    <dd><br>
+    This function will translate native cell files found in the
+    directory given in <i>dir_path</i> into an archive file given in
+    the second argument.  The format of the archive file produced is
+    determined by the file extension provided, as for the <a
+    href="FromArchive"><tt>FromArchive</tt></a> function.  All native
+    cell files found in the directory, except those with a
+    "<tt>.bak</tt>" extension or whose name is the same as a device
+    library symbol, are translated and concatenated, independently of
+    any hierarchical relationship between the cells.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the
+    features that apply during a call to this function.  The supported
+    manipulations are cell name aliasing, layer filtering, and
+    scaling.  Windowing manipulations and flattening are not
+    supported.  If a file named "<tt>aliases.alias</tt>" exists in the
+    <i>dir_path</i>, it will be used as an input alias list for
+    conversion.  Each line consists of a native cell name followed by
+    an alias to be used in the archive file, separated by white space.
+
+    <p>
+    The value 1 is returned on success, 0 otherwise, with possibly an
+    error message available from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+
+!!SEEALSO
+funcs:cvrt
+
+!!KEYWORD
+funcs:cvrt:exprt
+!!TITLE
+Export Layout File
+!!HTML
+
+    <!-- 100108 -->
+    <a name="SaveCellAsNative"></a>
+    <dl>
+    <dt><b>(int) <tt>SaveCellAsNative</tt>(<i>cellname</i>,
+      <i>directory</i>)</b>
+    <dd><br>Save the cell named in the first (string) argument, which must
+    exist in the current symbol table, to a native format file in the
+    <i>directory</i>.  If the directory string is null or empty (or 0
+    is passed for this argument), the cell is saved in the current
+    directory.
+
+   <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features that
+    apply during a call to this function.
+
+    <p>
+    This functions returns 1 on success, 0 otherwise, with an error
+    message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 022816 -->
+    <a name="Export"></a>
+    <dl>
+    <dt><b>(int) <tt>Export</tt>(<i>filepath</i>, <i>allcells</i>)</b>
+    <dd><br>
+    This function exports design data to a disk file (or files).  It
+    can perform the same operations as the <tt>To</tt><i>XXX</i>
+    functions also described in this section.  The type of file
+    produced is set by the extension found on the <i>filepath</i>
+    string.  Recognized extensions are
+
+    <blockquote>
+    <table border=0 cellpadding=2>
+    <tr><td>native</td>  <td><tt>.xic</tt></td></tr>
+    <tr><td>CGX</td>     <td><tt>.cgx</tt></td></tr>
+    <tr><td>CIF</td>     <td><tt>.cif</tt></td></tr>
+    <tr><td>GDSII</td>   <td><tt>.gds, .str, .strm, .stream</tt></td></tr>
+    <tr><td>OASIS</td>   <td><tt>.oas</tt></td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Only these extensions are recognized, however CGX and GDSII allow
+    an additional "<tt>.gz</tt>" which will imply compression.  For
+    native cell file output, the <i>filepath</i> must provide a path
+    to an existing directory.  If none of the other formats is
+    matched, and the <i>filepath</i> exists as a directory, then
+    native cell files will be written to that directory. 
+    Alternatively, if the <i>filepath</i> has a "<tt>.xic</tt>"
+    extension, and the <i>filepath</i> with the <tt>.xic</tt> stripped
+    is an existing directory, or the <i>filepath</i> including the
+    <tt>.xic</tt> is an existing directory (checked in this order),
+    again native cell files will be written to that directory.
+
+    <p>
+    The second argument is a boolean.  If false, then the current cell
+    hierarchy is written to output.  If true, all cells found in the
+    current <a href="xic:stabs">symbol table</a> will be written to
+    output.  In either case, by default cells that are sub-masters or
+    library cells are not written unless the controlling variables are
+    set, as from the <a href="xic:exprt"><b>Export Control</b></a>
+    panel.  The other controls for windowing, flattening, scaling, and
+    cell name mapping found in this panel apply as well, as do their
+    underlying variables.  These flags and values can also be set with
+    the <a href="SetConvertFlags"><tt>SetConvertFlags</tt></a>, <a
+    href="SetConvertArea"><tt>SetConvertArea</tt></a>, and <a
+    href="SetConvertScale"><tt>SetConvertScale</tt></a> functions, and
+    others that apply to output generation.  When writing all files,
+    any windowing or flattening in force is ignored.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the
+    features that apply during a call to this function.
+
+    <p>
+    The function return 1 on success, 0 otherwise with an error message
+    available from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="ToXIC"></a>
+    <dl>
+    <dt><b>(int) <tt>ToXIC</tt>(<i>destination_dir</i>)</b>
+    <dd><br>The <tt>ToXIC</tt> function will write the current cell
+    hierarchy to disk files in native format, no questions asked.  The
+    argument is the directory where the <i>Xic</i> files will be
+    created.  If this argument is a null or empty string or zero, the
+    <i>Xic</i> files will be created in the current directory.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features that
+    apply during a call to this function.
+
+    <p>
+    This functions returns 1 on success, 0 otherwise, with an error
+    message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 062109 -->
+    <a name="ToCGX"></a>
+    <dl>
+    <dt><b>(int) <tt>ToCGX</tt>(<i>cgx_name</i>)</b>
+    <dd><br>This function will write the current cell hierarchy to a CGX
+    format file on disk.  The argument is the name of the CGX file to
+    create.  If the <i>cgx_name</i> is null or an empty string, the
+    name used will be the top level cell name suffixed with
+    "<tt>.cgx</tt>".
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features that
+    apply during a call to this function.
+
+    <p>
+    This functions returns 1 on success, 0 otherwise, with an error
+    message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 062109 -->
+    <a name="ToCIF"></a>
+    <dl>
+    <dt><b>(int) <tt>ToCIF</tt>(<i>cif_name</i>)</b>
+    <dd><br>This function will write the current cell hierarchy to a CIF
+    format file on disk.  The argument is the name of the CIF file to
+    create.  If the <i>cif_name</i> is null or an empty string, the
+    name used will be the top level cell name suffixed with
+    "<tt>.cif</tt>".
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features that
+    apply during a call to this function.
+
+    <p>
+    This functions returns 1 on success, 0 otherwise, with an error
+    message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 062109 -->
+    <a name="ToGDS"></a>
+    <dl>
+    <dt><b>(int) <tt>ToGDS</tt>(<i>gds_name</i>)</b>
+    <dd><br>This function will write the current cell hierarchy to a GDSII
+    format file on disk.  The argument is the name of the GDSII file
+    to create.  If the <i>gds_name</i> is null or an empty string, the
+    name used will be the top level cell name suffixed with
+    "<tt>.gds</tt>".
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features that
+    apply during a call to this function.
+
+    <p>
+    This functions returns 1 on success, 0 otherwise, with an error
+    message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 062109 -->
+    <a name="ToGdsLibrary"></a>
+    <dl>
+    <dt><b>(int) <tt>ToGdsLibrary</tt>(<i>gds_name</i>,
+      <i>cellname_list</i>)</b>
+    <dd><br>This function will create a GDSII file from a list of
+    cells in memory.  The first argument is the name of the GDSII file
+    to create.  The second argument is a string consisting of
+    space-separated cell names.  The cells must be in memory, in the
+    current symbol table.  Both arguments must provide values as there
+    are no defaults.  The GDSII file will contain the hierarchy under
+    each cell given, but any cell is added once only.  The resulting
+    file will in general contain multiple top-level cells.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features that
+    apply during a call to this function.
+
+    <p>
+    This functions returns 1 on success, 0 otherwise, with an error
+    message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 062109 -->
+    <a name="ToOASIS"></a>
+    <dl>
+    <dt><b>(int) <tt>ToOASIS</tt>(<i>oas_name</i>)</b>
+    <dd><br>This function will write the current cell hierarchy to an
+    OASIS format file on disk.  The argument is the name of the OASIS
+    file to create.  If the <i>oas_name</i> is null or an empty
+    string, the name used will be the top level cell name suffixed
+    with "<tt>.oas</tt>".
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features that
+    apply during a call to this function.
+
+    <p>
+    This functions returns 1 on success, 0 otherwise, with an error
+    message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="ToTxt"></a>
+    <dl>
+    <dt><b>(int) <tt>ToTxt</tt>(<i>archive_file</i>, <i>text_file</i>,
+     <i>cmdargs</i>)</b>
+    <dd><br>This function will create an ASCII text file <i>text_file</i>
+    from the contents of the archive file.  The human-readable text
+    file is useful for diagnostics.  If <i>text_file</i> is null or
+    empty, the name is derived from the <i>archive_file</i> and given
+    a "<tt>.txt</tt>" extension.  No output is produced for CIF, since
+    these are already in readable format.
+
+    <p>
+    The third argument is a string, which can be passed to specify the
+    range of the conversion.  If this argument is passed 0, or the
+    string is null or empty, the entire archive file will be
+    converted.  The string is in the form
+  
+    <blockquote>
+    [<i>start_offs</i>[-<i>end_offs</i>]] [-r <i>rec_count</i>]
+      [-c <i>cell_count</i>]
+    </blockquote>
+
+    <p>
+    The square brackets indicate optional terms.  The meanings are
+  
+    <dl>
+    <dt><i>start_offs</i><dd>
+    An integer, in decimal or "<tt>0x</tt>" hex format (a hex integer
+    preceded by "<tt>0x</tt>").  The printing will begin at the first
+    record with offset greater than or equal to this value.
+    </dl>
+
+    <dl>
+    <dt><i>end_offs</i><dd>
+    An integer in decimal or "<tt>0x</tt>" hex format.  If this value
+    is greater than <i>start_offs</i>, the last record printed is at
+    most the one containing this offset.  If given, this should appear
+    after a '-' character following the <i>start_offs</i>, with no
+    space.
+    </dl>
+
+    <dl>
+    <dt><i>rec_count</i><dd>
+    A positive integer, at most this many records will be printed.
+    </dl>
+
+    <dl>
+    <dt><i>cell_count</i><dd>
+    A non-negative integer, at most the records for this many cell
+    definitions will be printed.  If given as 0, the records from the
+    <i>start_offs</i> to the next cell definition will be printed.
+    </dl>
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features that
+    apply during a call to this function.
+
+    <p>
+    The function returns 1 on success, 0 otherwise with an error
+    message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+!!SEEALSO
+funcs:cvrt
+
+!!KEYWORD
+funcs:cvrt:chd
+!!TITLE
+Cell Hierarchy Digest
+!!HTML
+    <!-- 100108 -->
+    The <a href="xic:hier">Cell Hierarchy Digest</a> (CHD) is a data
+    structure for saving a description of a cell hierarchy in compact
+    form.  The CHD can be used to access data in the original file,
+    without having to load the file, in an efficient manner.  This
+    capability is accessible from a set of script functions described
+    below.  This capability applies to physical data only.
+
+    <!-- 120110 -->
+    <a name="FileInfo"></a>
+    <dl>
+    <dt><b>(string) <tt>FileInfo</tt>(<i>filename</i>, <i>handle_or_filename</i>,
+      <i>flags</i>)</b>
+    <dd><br>
+    This function provides information about the archive file given by
+    the first argument.  If the second argument is a string giving the
+    name of a file, output will go to that file.  If the second
+    argument is a handle returned from the <a
+    href="Open"><tt>Open</tt></a> function or similar (opened for
+    writing), output goes to the handle stream.  In either case, the
+    return value is a null string.  If the second argument is a scalar
+    0, the output will be in the form of a string which is returned.
+
+    <p>
+    The third argument is an integer or string which determines the
+    type of information to return.  If an integer, the bits are flags
+    that control the possible data fields and printing modes.  The
+    string form is a space or comma-separated list of text tokens or
+    hex integers.  The hex numbers or equivalent values for the text
+    tokens are or'ed together to form the flags integer.
+
+    <p>
+    This is really just a convenience wrapper around the <a
+    href="ChdInfo"><tt>ChdInfo</tt></a> function.  See the description
+    of that function for a description of the flags.  In this
+    function, the following keyword flags will show as follows:
+
+    <dl>
+    <dt><tt>alias</tt><dd>
+    No aliasing is applied. 
+    <dt><tt>flags</tt><dd>
+    The flags will always be 0. 
+    </dl>
+
+    <p>
+    On error, a null string is returned, with an error message likely
+    available from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="OpenCellHierDigest"></a>
+    <dl>
+    <dt><b>(chd_name) <tt>OpenCellHierDigest</tt>(<i>filename</i>,
+    <i>info_saved</i>)</b>
+    <dd><br>
+    This function returns an access name to a new Cell Hierarchy
+    Digest (CHD), obtained from the archive file given as the
+    argument.  The new CHD will be listed in the <a
+    href="xic:hier"><b>Cell Hierarchy Digests</b></a> panel, and the
+    access name is used by other functions to access the CHD.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features
+    that apply during a call to this function.  In particular, the
+    names of cells saved in the CHD reflect any <a
+    href="cellname">aliasing</a> that was in force at the time the
+    CHD was created.
+
+    <p>
+    The file is opened from the library search path, if a full path is
+    not provided.  The CHD is a data structure that provides
+    information about the hierarchy in compact form, and does not use
+    that main database.  The second argument is an integer that
+    determines the level of statistical information about the
+    hierarchy saved.  This info is available from the <tt>ChdInfo</tt>
+    function and by other means.  The values can be:
+  
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td> <td>No information is saved.</td></tr>
+    <tr><td>1</td> <td>Only total object counts are saved
+      (default).</td></tr>
+    <tr><td>2</td> <td>Object totals are saved per layer.</td></tr>
+    <tr><td>3</td> <td>Object totals are saved per cell.</td></tr>
+    <tr><td>4</td> <td>Objects counts are saved per cell and per
+      layer.</td></tr>
+    </table>
+    </blockquote>
+    The larger the value, the more memory is required, so it is best
+    to only save information that will be used.
+
+    <p>
+    If the <a
+    href="ChdEstFlatMemoryUse"><tt>ChdEstFlatMemoryUse</tt></a>
+    function will be called from the new CHD, the per-cell totals
+    <i>must</i> be specified (value 3 or 4) or the estimate will be
+    wildly inaccurate.
+
+    <p>
+    The CHD refers to physical information only.  On error, a null
+    string is returned, and an error message may be available with the
+    <a href="GetError"><tt>GetError</tt></a> function.
+    </dl>
+    <hr>
+
+    <!-- 012111 -->
+    <a name="WriteCellHierDigest"></a>
+    <dl>
+    <dt><b>(int) <tt>WriteCellHierDigest</tt>(<i>chd_name</i>,
+      <i>filename</i>, <i>incl_geom</i>, <i>no_compr</i>)</b>
+    <dd><br>
+    This function will write a disk file representation of the <a
+    href="xic:hier">Cell Hierarchy Digest</a> (CHD) associated with
+    the access name given as the first argument, into the file whose
+    name is given as the second argument.  Subsequently, the file can
+    be read with <tt>ReadCellHierDigest</tt> to recreate the CHD. 
+    The file has no other use and the format is not documented.
+  
+    <p>
+    The CHD (and thus the file) contains offsets onto the target
+    archive, as well as the archive location.  There is no checksum or
+    other protection currently, so it is up to the user to make sure
+    that the target archive is not moved or modified while the CHD
+    is potentially or actually in use.
+  
+    <p>
+    If the boolean argument <i>incl_geom</i> is true, and the CHD has
+    a linked CGD (as from <a
+    href="ChdLinkCgd"><tt>ChdLinkCgd</tt></a>), then geometry records
+    will be written to the file as well.  When the file is read, a new
+    CGD will be created and linked to the new CHD.  Presently, the
+    linked CGD must have memory or file type, as described for <a
+    href="OpenCellHierDigest"><tt>OpenCellGeomDigest</tt></a>.
+
+    <p>
+    The boolean argument <i>no_compr</i>, if true, will skip use of
+    compression of the CHD records.  This is unnecessary and not
+    recommended, unless compatibility with <i>Xic</i> releases earlier
+    than 3.2.17, which did not support compression, is needed.
+
+    <p>
+    The function returns 1 if the file was written successfully, 0
+    otherwise, with an error message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 012211 -->
+    <a name="ReadCellHierDigest"></a>
+    <dl>
+    <dt><b>(string) <tt>ReadCellHierDigest</tt>(<i>filename</i>,
+      <i>cgd_type</i>)</b>
+    <dd><br>
+    This function returns an access name to a new Cell Hierarchy
+    Digest (CHD) created from the file whose name is passed as an
+    argument.  The file must have been created with
+    <a href="WriteCellHierDigest"><tt>WriteCellHierDigest</tt></a>, or
+    with the <b>Save</b> button in
+    the <a href="xic:hier"><b>Cell Hierarchy Digests</b></a> panel. 
+
+    <p>
+    If the file was written with geometry records included, a new Cell
+    Geometry Digest (CGD) may also be created (with an internally
+    generated access name), and linked to the new CHD.  If the integer
+    argument <i>cgd_type</i> is 0, a "memory" CGD will be created,
+    which has the compressed geometry data stored in memory.  If
+    <i>cgd_type</i> is 1, a "file" CGD will be created, which will use
+    offsets to obtain geometry from the CHD file when needed.  If
+    <i>cgd_type</i> is any other value, or the file does not contain
+    geometry records, no CGD will be produced.
+
+    <p>
+    On error, a null string is returned, with an error message
+    probably available from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="ChdList"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ChdList</tt>()</b>
+    <dd><br>
+    This function returns a handle to a list of access strings to Cell
+    Hierarchy Digests that are currently in memory.  The function
+    never fails, though the handle may reference an empty list.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="ChdChangeName"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdChangeName</tt>(<i>old_chd_name</i>,
+      <i>new_chd_name</i>)</b>
+    <dd><br>
+    This function allows the user to change the access name of an
+    existing <a href="xic:hier">Cell Hierarchy Digest</a> (CHD) to a
+    user-supplied name.  The new name must not already be in use by
+    another CHD.
+
+    <p>
+    The first argument is the access name of an existing CHD, the
+    second argument is the new access name, with which the CHD will
+    subsequently be accessed.  This name can be any text string, but
+    can not be null. 
+
+    <p>
+    The function returns 1 on success, 0 otherwise, with an error
+    message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="ChdIsValid"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdIsValid</tt>(<i>chd_name</i>)</b>
+    <dd><br>
+    This function returns one if the string argument is an access name
+    of a <a href="xic:hier">Cell Hierarchy Digest</a> currently in
+    memory, zero otherwise.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="ChdDestroy"></a>
+    <dl>
+    <dt><b>(string) <tt>ChdDestroy</tt>(<i>chd_name</i>)</b>
+    <dd><br>
+    If the string argument is an access name of a <a
+    href="xic:hier">Cell Hierarchy Digest</a> (CHD) currently in
+    memory, the CHD will be destroyed and its memory freed.  One is
+    returned on success, zero otherwise, with an error message likely
+    available with <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 021912 -->
+    <a name="ChdInfo"></a>
+    <dl>
+    <dt><b>(string) <tt>ChdInfo</tt>(<i>chd_name</i>, <i>handle_or_filename</i>,
+      <i>flags</i>)</b>
+    <dd><br>
+    This function provides information about the archive file
+    represented by the <a href="xic:hier">Cell Hierarchy Digest</a>
+    (CHD) whose access name is given as the first argument.  If the
+    second argument is a string giving the name of a file, output will
+    go to that file.  If the second argument is a handle returned from
+    the <a href="Open"><tt>Open</tt></a> function or similar (opened
+    for writing), output goes to the handle stream.  In either case,
+    the return value is a null string.  If the second argument is a
+    scalar 0, the output will be in the form of a string which is
+    returned.
+
+    <p>
+    The third argument is an integer or string which determines the
+    type of information to return.  If an integer, the bits are flags
+    that control the possible data fields and printing modes.  The
+    string form is a space or comma-separated list of text tokens
+    (from the list below, case insensitive) or hex integers.  The hex
+    numbers or equivalent values for the text tokens are or'ed
+    together to form the flags integer.
+
+    <p>
+    If this argument is 0, all flags except for <tt>allcells</tt>,
+    <tt>instances</tt>, <tt>flags</tt>, <tt>instcnts</tt> and
+    <tt>instcntsp</tt> are implied.  Thus, the sometimes very lengthly
+    cells/instances listing is skipped by default.  To obtain all
+    available information, pass <tt>-1</tt> or <tt>all</tt> as the
+    flags value.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Keyword</th> <th>Value</th> <th>Description</th></tr>
+    <tr><td><tt>filename</tt></td> <td><tt>0x1</tt></td>
+      <td>File name.</td></tr>
+    <tr><td><tt>filetype</tt></td> <td><tt>0x2</tt></td>
+      <td>File type ("<tt>CIF</tt>", "<tt>CGX</tt>",
+      "<tt>GDSII</tt>", or "<tt>OASIS</tt>").</td></tr>
+    <tr><td><tt>unit</tt></td> <td><tt>0x4</tt></td>
+      <td>File unit in meters (e.g., GDSII M-UNIT).</td></tr>
+    <tr><td><tt>alias</tt></td> <td><tt>0x8</tt></td>
+      <td>Applied cell name aliasing modes.</td></tr>
+
+    <tr><td><tt>reccounts</tt></td> <td><tt>0x10</tt></td>
+      <td>Table of record type counts (file format dependent).</td></tr>
+    <tr><td><tt>objcounts</tt></td> <td><tt>0x20</tt></td>
+      <td>Table of object counts.</td></tr>
+    <tr><td><tt>depthcnts</tt></td> <td><tt> 0x40</tt></td>
+      <td>Tabulate the number of cell instances at each
+      hierarchy level.</td></tr>
+    <tr><td><tt>estsize</tt></td> <td><tt>0x80</tt></td>
+      <td>Print estimated memory needed to read file into <i>Xic</i>.</td></tr>
+
+    <tr><td><tt>estchdsize</tt></td> <td><tt>0x100</tt></td>
+      <td>Print size of data structure used to provide info.</td></tr>
+    <tr><td><tt>layers</tt></td> <td><tt>0x200</tt></td>
+      <td>List of layer names found, as for
+      <tt>ChdLayers</tt> function.</td></tr>
+    <tr><td><tt>unresolved</tt></td> <td><tt> 0x400</tt></td>
+      <td>List any cells that are referenced but not defined
+      in the file.</td></tr>
+    <tr><td><tt>topcells</tt></td> <td><tt>0x800</tt></td>
+      <td>Top-level cells.</td></tr>
+
+    <tr><td><tt>allcells</tt></td> <td><tt>0x1000</tt></td>
+      <td>All cells.</td></tr>
+    <tr><td><tt>offsort</tt></td> <td><tt>0x2000</tt></td>
+      <td>Sort cells by offset in archive file.</td></tr>
+    <tr><td><tt>offset</tt></td> <td><tt>0x4000</tt></td>
+      <td>Print offsets of cell definitions in archive file.</td></tr>
+    <tr><td><tt>instances</tt></td> <td><tt>0x8000</tt></td>
+      <td>List instances with cells.</td></tr>
+
+    <tr><td><tt>bbs</tt></td> <td><tt>0x10000</tt></td>
+      <td>List bounding boxes with cells, and attributes with
+      instances.</td></tr>
+    <tr><td><tt>flags</tt></td> <td><tt>0x20000</tt></td>
+      <td>Unused.</td></tr>
+    <tr><td><tt>instcnts</tt></td> <td><tt>0x40000</tt></td>
+      <td>Count cell instances and report totals.</td></tr>
+    <tr><td><tt>instcntsp</tt></td> <td><tt>0x80000</tt></td>
+      <td>Count cell instances and report totals per master.</td></tr>
+
+    <tr><td><tt>all</tt></td> <td><tt> -1</tt></td>
+      <td>Set all flags.</td></tr>
+    </table>
+
+    <p>
+    The information provided by these flags is more fully described
+    below.
+
+    <dl>
+    <dt><tt>filename</tt><dd>
+    Print the name of the archive file for which the information
+    applies.
+    </dl>
+
+    <dl>
+    <dt><tt>filetype</tt><dd>
+    Print a string giving the format of the archive file:  one of
+    "<tt>CIF</tt>", "<tt>CGX</tt>", "<tt>GDSII</tt>", or
+    "<tt>OASIS</tt>".
+    </dl>
+
+    <dl>
+    <dt><tt>unit</tt><dd>
+    This is a file parameter giving the value of one unit in meters.
+    In GDSII files, this is obtained from the M-UNIT record.  The value
+    is typically 1e-9, which means that a coordinate value of 1000
+    corresponds to one micron.
+
+    </dl>
+
+    <dl>
+    <dt><tt>alias</tt><dd>
+    Print a string giving the cell name aliasing modes that were in
+    effect when the CHD was created.
+    </dl>
+
+    <dl>
+    <dt><tt>reccounts</tt><dd>
+    Print a table of the counts for record types found in the archive. 
+    This is format-dependent.
+    </dl>
+
+    <dl>
+    <dt><tt>objcounts</tt><dd>
+    Print a table of object counts found in the archive file.  The table
+    contains the following keywords, each followed by a number.
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Keyword</th> <th>Description</th></tr>
+    <tr><td><tt>Records</tt></td> <td>Total record count</td></tr>
+    <tr><td><tt>Cells</tt></td> <td>Number of cell definitions</td></tr>
+    <tr><td><tt>Boxes</tt></td> <td>Number of rectangles</td></tr>
+    <tr><td><tt>Polygons</tt></td> <td>Number of polygons</td></tr>
+    <tr><td><tt>Wires</tt></td> <td>Number of wire paths</td></tr>
+    <tr><td><tt>Avg Verts</tt></td> <td>Average vertex count per poly or
+      wire</td></tr>
+    <tr><td><tt>Labels</tt></td> <td>Number of (non-physical) labels</td></tr>
+    <tr><td><tt>Srefs</tt></td> <td>Number of non-arrayed instances</td></tr>
+    <tr><td><tt>Arefs</tt></td> <td>Number of arrayed instances</td></tr>
+    </table>
+
+    <p>
+    If the <a href="xic:chdadd">per-layer counts</a> option was set
+    when the CHD was created, additional lines will display the object
+    counts as above, broken out per-layer.
+    </dl>
+
+    <dl>
+    <dt><tt>depthcnts</tt><dd>
+    A table of the number of cell instantiations at each hierarchy
+    level is printed, for each top-level cell found in the file.  The
+    count for depth 0 is 1 (the top-level cell), the count at depth 1
+    is the number of subcells of the top-level cell, depth 2 is the
+    number of subcells of these subcells, etc.  Arrays are expanded,
+    with each element counting as an instance placement.  A total is
+    printed, the same value that would be obtained from the
+    <tt>instcnts</tt> flag.
+    </dl>
+
+    <dl>
+    <dt><tt>estsize</tt><dd>
+    This flag will enable printing of the estimated memory required to
+    read the entire file into <i>Xic</i>.  The system must be able to
+    provide at least this much memory for a read to succeed.
+    </dl>
+
+    <dl>
+    <dt><tt>estchdsize</tt><dd>
+    Print an estimate of the memory required by the present CHD.
+
+    <p>
+    By default, a compression mechanism is used to reduce the data
+    storage needed for instance lists.  The <a
+    href="NoCompressContext"><b>NoCompressContext</b></a> variable, if
+    set, will turn off use of compression.  If compression is used,
+    the <tt>extchdsize</tt> field will include compression statistics. 
+    The "ratio" is the space actually used to the space used if not
+    compressed.
+    </dl>
+
+    <dl>
+    <dt><tt>layers</tt><dd>
+    Print a list of the layer names encountered in the archive, as for
+    the <a href="ChdLayers"><tt>ChdLayers</tt></a> function.
+    </dl>
+
+    <dl>
+    <dt><tt>unresolved</tt><dd>
+    This will list cells that are referenced but not defined in the
+    file.  These will also be listed if <tt>allcells</tt> is given.
+    </dl>
+
+    <dl>
+    <dt><tt>topcells</tt><dd>
+    List the top-level cells, i.e., the cells in the file that are not
+    used as a subcell by another cell in the file.  If
+    <tt>allcells</tt> is also given, only the names are listed,
+    otherwise the cells are listed including the <tt>offset</tt>,
+    <tt>instances</tt>, <tt>bbs</tt>, and <tt>flags</tt> fields if
+    these flags are set.  The list will be sorted as per
+    <tt>offsort</tt>.
+    </dl>
+
+    <dl>
+    <dt><tt>allcells</tt><dd>
+    All cells found in the file are listed by name, including the
+    <tt>offset</tt>, <tt>instances</tt>, <tt>bbs</tt>, and
+    <tt>flags</tt> fields if these flags are also given.  The list
+    will be sorted as per <tt>offsort</tt>.
+    </dl>
+
+    The following flags apply only if at least one of
+    <tt>topcells</tt> or <tt>allcells</tt> is given.
+
+    <dl>
+    <dt><tt>offsort</tt><dd>
+    If this flag is set, the cells will be listed in ascending order
+    of the file offset, i.e., in the order in which the cell
+    definitions appear in the archive file.  If not set, cells are
+    listed alphabetically.
+    </dl>
+
+    <dl>
+    <dt><tt>offset</tt><dd>
+    When set, the cell name is followed by the offset of the cell
+    definition record in the archive file.  This is given as a decimal
+    number enclosed in square brackets.
+    </dl>
+
+    <dl>
+    <dt><tt>instances</tt><dd>
+    For each cell, the subcells used in the cell are listed.  The subcell
+    names are indented and listed below the cell name.
+    </dl>
+
+    <dl>
+    <dt><tt>bbs</tt><dd>
+    For each cell the bounding box is shown, in L,B R,T form.  For
+    subcells, the position, transformation, and array parameters are
+    shown.  Coordinates are given in microns.  The subcell
+    transformation and array parameters are represented by a
+    concatenation of the following tokens, which follow the subcell
+    reference position.  These are similar to the transformation
+    tokens found in CIF, and have the same meanings.
+
+    <table border=0 cellpadding=2>
+    <tr><td><tt>MY</tt></td> <td>Mirror about the x-axis.</td></tr>
+    <tr><td><tt>R</tt><i>i</i>,<i>j</i></td>  <td>Rotate by an angle
+      given by the vector <i>i</i>,<i>j</i>.</td></tr>
+    <tr><tt>M</tt><i>mag</i></td> <td>Magnify by <i>mag</i>.</td></tr>
+    <tr><tt>A</tt><i>nx</i>,<i>ny</i>,<i>dx</i>,<i>dy</i></td> <td>Specifies
+      an array, <i>nx</i> x <i>ny</i> with spacings <i>dx</i>,
+      <i>dy</i>.</td></tr>
+    </table>
+
+    Note:  for technical reasons, the cell bounding boxes in CHDs do
+    <i>not</i> include empty cells, unlike the bounding boxes computed
+    in the main database, which will include the placement location
+    points.
+    </dl>
+
+    <dl>
+    <dt><tt>flags</tt><dd>
+    This is currently unused and ignored.
+    </dl>
+
+    <dl>
+    <dt><tt>instcnts</tt><dd>
+    Print the total number of cell instantiations found in the
+    hierarchy.  Arrays are expanded, i.e., each element of an array
+    counts as an instance placement.
+    </dl>
+
+    <dl>
+    <dt><tt>instcntsp</tt><dd>
+    Similar to <tt>instcnts</tt>, but print the total instantiations
+    for each master cell.
+    </dl>
+
+    <dl>
+    <dt><tt>all</tt><dd>
+    This enables all flags.
+    </dl>
+
+    <p>
+    On error, a null string is returned, with an error message likely
+    available from <a href="GetError"><tt>GetError</tt></a>.
+
+    <p>
+    This function is similar to the <b>!fileinfo</b> command and to
+    the <a href="FileInfo"><tt>FileInfo</tt></a> script function.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="ChdFileName"></a>
+    <dl>
+    <dt><b>(string) <tt>ChdFileName</tt>(<i>chd_name</i>)</b>
+    <dd><br>
+    This function returns a string containing the full pathname of the
+    file associated with the <a href="xic:hier">Cell Hierarchy
+    Digest</a> (CHD) whose access name was given in the argument.  A
+    null string is returned on error, with an error message likely
+    available from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="ChdFileType"></a>
+    <dl>
+    <dt><b>(string) <tt>ChdFileType</tt>(<i>chd_name</i>)</b>
+    <dd><br>
+    This function returns a string containing the file format of the
+    file associated with the <a href="xic:hier">Cell Hierarchy
+    Digest</a> (CHD) whose access name was given in the argument.  A
+    null string is returned on error, with an error message likely
+    available from <a href="GetError"><tt>GetError</tt></a>.  Other
+    possible returns are "<tt>CIF</tt>", "<tt>GDSII</tt>",
+    "<tt>CGX</tt>", and "<tt>OASIS</tt>".
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="ChdTopCells"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ChdTopCells</tt>(<i>chd_name</i>)</b>
+    <dd><br>
+    This function returns a handle to a list of strings that contain
+    the top-level cell names in the <a href="xic:hier">Cell Hierarchy
+    Digest</a> (CHD) whose access name was given in the argument
+    (physical cells only).  The top-level cells are those not used as
+    a subcell by another cell in the CHD.  A scalar zero is returned
+    on error, with an error message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 022209 -->
+    <a name="ChdListCells"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ChdListCells</tt>(<i>chd_name</i>,
+    <i>cellname</i>, <i>mode</i>, <i>all</i>)</b>
+    <dd><br>
+    This function returns a handle to a list of cellnames from among
+    those found in the CHD, whose access name is given as the first
+    argument.  There are two basic modes, depending on whether the
+    boolean argument <i>all</i> is true or not.
+
+    <p>
+    If <i>all</i> is true, the <i>cellname</i> argument is ignored,
+    and the list will consist of all cells found in the CHD.  If the
+    integer <i>mode</i> argument is 0, all physical cell names are
+    listed.  If <i>mode</i> is 1, all electrical cell names will be
+    returned.  If any other value, the listing will contain all
+    physical and electrical cell names, with no duplicates.
+
+    <p>
+    If <i>all</i> is false, the listing will contain the names of all
+    cells under the hierarchy of the cell named in the <i>cellname</i>
+    argument (including <i>cellname</i>).  If <i>cellname</i> is 0,
+    empty, or null, the default cell for the CHD is assumed, i.e., the
+    cell which has been <a href="xic:chdconfig">configured</a>, or the
+    first top-level cell found.  The <i>mode</i> argument is 0 for
+    physical cells, nonzero for electrical cells (there is no merging
+    of lists in this case).
+
+    <p>
+    On error, a scalar 0 is returned, and a message may be available
+    from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="ChdLayers"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ChdLayers</tt>(<i>chd_name</i>)</b>
+    <dd><br>
+    This function returns a handle to a list of strings that contain
+    the names of layers used in the file represented by the <a
+    href="xic:hier">Cell Hierarchy Digest</a> whose access name is
+    passed as the argument (physical cells only).  For file formats
+    that use a layer/datatype, the names are four-byte hex integers,
+    where the left two bytes are the zero-padded hex value of the
+    layer number, and the right two bytes are the zero-padded value of
+    the datatype number.  This applies for GDSII/OASIS files that
+    follow the standard convention that layer and datatype numbers are
+    0-255.  If either number is larger than 255, the layer "name" will
+    consist of eight hex bytes, the left four for layer number, the
+    right four for datatype.
+
+    <p>
+    The layers listing is available only if the CHD was created with
+    info available, i.e., <a
+    href="OpenCellHierDigest"><tt>OpenCellHierDigest</tt></a> was
+    called with the <i>info_saved</i> argument set to a value other
+    than 0.
+
+    <p>
+    Each unique combination or layer name is listed.  A scalar zero is
+    returned on error, in which case an error message may be available
+    from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 041010 -->
+    <a name="ChdInfoMode"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdInfoMode</tt>(<i>chd_name</i>)</b>
+    <dd><br>
+    This function returns the saved info mode of the Cell Hierarchy
+    Digest whose access name is passed as the argument.  This is the
+    <i>info_saved</i> value passed to <a
+    href="OpenCellHierDigest"><tt>OpenCellHierDigest</tt></a>.  The
+    values are:
+
+    <table border=0>
+    <tr><td>0</td> <td>no information is saved.</td></tr>
+    <tr><td>1</td> <td>only total object counts are saved.</td></tr>
+    <tr><td>2</td> <td>object totals are saved per layer.</td></tr>
+    <tr><td>3</td> <td>object totals are saved per cell.</td></tr>
+    <tr><td>4</td> <td>objects counts are saved per cell and per
+      layer.</td></tr>
+    </table>
+
+    <p>
+    If the CHD name is not resolved, the return value is -1, with an
+    error message available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 041010 -->
+    <a name="ChdInfoLayers"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ChdInfolayers</tt>(<i>chd_name</i>,
+      <i>cellname</i>)</b>
+    <dd><br>
+    This is identical to the <tt>ChdLayers</tt> function when the
+    <i>cellname</i> is 0, null, or empty.  If the CHD was created with
+    <a href="OpenCellHierDigest"><tt>OpenCellHierDigest</tt></a> with
+    the <i>info_saved</i> argument set to 4 (per-cell and per-layer
+    info saved), then a <i>cellname</i> string can be passed.  In this
+    case, the return is a handle to a list of layers used in the named
+    cell.  A scalar 0 is returned on error, with an error message
+    probably available from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 041010 -->
+    <a name="ChdInfoCells"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ChdInfoCells</tt>(<i>chd_name</i>)</b>
+    <dd><br>
+    If the CHD whose access name is given as the argument was created
+    with <a href="OpenCellHierDigest"><tt>OpenCellHierDigest</tt></a>
+    with the <i>info_saved</i> argument set to 3 (per-cell data saved)
+    or 4 (per-cell and per-layer data saved), then this function will
+    return a handle to a list of cell names from the source file.  On
+    error, a scalar 0 is returned, with an error message probably
+    available from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 041010 -->
+    <a name="ChdInfoCounts"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdInfoCounts</tt>(<i>chd_name</i>, <i>cellname</i>,
+      <i>layername</i>, <i>array</i>)</b>
+    <dd><br>
+    This function will return object count statistics in the
+    <i>array</i>, which must have size 4 or larger.  The counts are
+    obtained when the CHD, whose access name is given as the first
+    argument, was created.  The types of counts available depend on
+    the <i>info_saved</i> value passed to <a
+    href="OpenCellHierDigest"><tt>OpenCellHierDigest</tt></a> when the
+    CHD was created.
+
+    <p>
+    The array is filled in as follows:
+    <blockquote>
+    <table border=0>
+    <tr><td><i>array</i>[0]</td> <td>Box count.</td></tr>
+    <tr><td><i>array</i>[1]</td> <td>Polygon count.</td></tr>
+    <tr><td><i>array</i>[2]</td> <td>Wire count.</td></tr>
+    <tr><td><i>array</i>[3]</td> <td>Vertex count (polygons plus
+      wires).</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The following counts are available for the various
+    <i>info_saved</i> modes.
+
+    <dl>
+    <dt><i>info_saved</i> = 0<dd>
+    No information is available.
+    </dl>
+
+    <dl>
+    <dt><i>info_saved</i> = 1<dd>
+    Both <i>cellname</i> and <i>layername</i> arguments are ignored,
+    the return provides file totals.
+    </dl>
+
+    <dl>
+    <dt><i>info_saved</i> = 2<dd>
+    The <i>cellname</i> argument is ignored.  If <i>layername</i> is
+    0, null, or empty, the return provides file totals.  Otherwise,
+    the return provides totals for <i>layername</i>, if found.
+    </dl>
+
+    <dl>
+    <dt><i>info_saved</i> = 3<dd>
+    The <i>layername</i> argument is ignored.  If <i>cellname</i> is
+    0, null, or empty, the return represents file totals.  Otherwise,
+    the return provides totals for <i>cellname</i>, if found.
+    </dl>
+
+    <dl>
+    <dt><i>info_saved</i> = 4<dd>
+    If both arguments are 0, null, or empty, the return represents
+    file totals.  If <i>cellname</i> is 0, null, or empty, the return
+    represents totals for the layer given.  If <i>layername</i> is 0,
+    null, or empty, the return provides totals for the cell name
+    given.  If both names are given, the return provides totals for
+    the given layer in the given cell.
+    </dl>
+
+    <p>
+    If a cell or layer is not found, or data are not available for
+    some reason, or an error occurs, the return value is 0, and an
+    error message may be available from <a
+    href="GetError"><tt>GetError</tt></a>.  Otherwise, the return
+    value is 1, and the array is filled in.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="ChdCellBB"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdCellBB</tt>(<i>chd_name</i>, <i>cellname</i>,
+      <i>array</i>)</b>
+    <dd><br>
+    This returns the bounding box of the named cell.  The
+    <i>cellname</i> is a string giving the name of a physical cell
+    found in the <a href="xic:hier">Cell Hierarchy Digest</a> (CHD)
+    whose access name is given in the first argument.
+
+    <p>
+    The <i>cellname</i>, if nonzero, must be the cell name after any
+    <a href="cellname">aliasing</a> that was in force when the CHD was
+    created.  If <i>cellname</i> is passed 0, the default cell for the
+    CHD is understood.  This is a cell name configured into the CHD,
+    or the first top-level cell found in the archive file.
+
+    <p>
+    The values are returned in the <i>array</i>, which must have size
+    4 or larger.  the order is l,b,r,t.  One is returned on success,
+    zero otherwise, with an error message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+
+    <p>
+    The cell bounding boxes for geometry are computed
+    as the file is read, so that if the <a
+    href="NoReadLabels"><b>NoReadLabels</b></a> variable is set during
+    the read, i.e., when <a
+    href="OpenCellHierDigest"><tt>OpenCellHierDigest</tt></a> is
+    called, text labels will not contribute to the bounding box
+    computation. 
+    </dl>
+    <hr>
+
+    <!-- 062209 -->
+    <a name="ChdSetDefCellName"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdSetDefCellName</tt>(<i>chd_name</i>,
+     <i>cellname</i>)</b>
+    <dd><br>
+    This will set or unset the configuration of a default cell name in
+    the <a href="xic:hier">Cell Hierarchy Digest</a> whose access name
+    is given in the first argument.
+
+    <p>
+    If the <i>cellname</i> argument in not 0 or null, it must be a
+    cell name after any <a href="cellname">aliasing</a> that was in
+    force when the CHD was created, that exists in the CHD.  This will
+    set the default cell name for the CHD which will be used
+    subsequently by the CHD whenever a cell name is not otherwise
+    specified.  The current default cell name is returned from the
+    <tt>ChdDefCellName</tt> function.  If <i>cellname</i> is 0 or
+    null, the default cell name is unconfigured.  In this case, the
+    CHD will use the first top-level cell found (lowest offset on the
+    archive file).  A top-level cell is one that is not used as a
+    subcell by any other cell in the CHD.
+
+    <p>
+    One is returned on success, zero otherwise, with an error message
+    likely available with <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 062209 -->
+    <a name="ChdDefCellName"></a>
+    <dl>
+    <dt><b>(string) <tt>ChdDefCellName</tt>(<i>chd_name</i>)</b>
+    <dd><br>
+    This will return the default cell name of the <a
+    href="xic:hier">Cell Hierarchy Digest</a> whose access name is
+    given in the argument.  This will be the cell name configured
+    (with <tt>ChdSetDefCellName</tt>), or if no cell name is
+    configured the return will be the name of the first top-level cell
+    found (lowest offset on the archive file).  A top-level cell is
+    one that is not used as a subcell by any other cell in the CHD.
+
+    <p>
+    On error, a null string is returned, with an error message likely
+    available from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 012111 -->
+    <a name="ChdLoadGeometry"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdLoadGeometry</tt>(<i>chd_name</i>)</b>
+    <dd><br>
+    This function will read the geometry from the original layout file
+    from the <a href="xic:hier">Cell Hierarchy Digest</a> (CHD) whose
+    access name is given in the argument into a new <a
+    href="xic:geom">Cell Geometry Digest</a> (CGD) in memory, and
+    configures the CHD to link to the new CGD for use when reading. 
+    The new CGD is given an internally-generated access name, and will
+    store all geometry data in memory.  The new CGD will be destroyed
+    when unlinked.
+
+    <p>
+    This is a convenience function, one can explicitly create a CGD
+    (with <a
+    href="OpenCellGeomDigest"><tt>OpenCellGeomDigest</tt></a>) and
+    link it to the CHD (with <a
+    href="ChdLinkCgd"><tt>ChdLinkCgd</tt></a>) if extended features
+    are needed.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features that
+    apply during a call to this function.
+
+    <p>
+    The return value is 1 on success, 0 otherwise, with an error
+    message likely available from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 012111 -->
+    <a name="ChdLinkCgd"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdLinkCgd</tt>(<i>chd_name</i>, <i>cgd_name</i>)</b>
+    <dd><br>
+    This function links or unlinks a <a href="xic:geom">Cell Geometry
+    Digest</a> (CGD) whose access name is given as the second
+    argument, to the <a href="xic:hier">Cell Hierarchy Digest</a>
+    (CHD) whose access name is given as the first argument.  With a
+    CGD linked, when the CHD is used to access geometry data, the data
+    will be obtained from the CGD, if it exists in the CGD, and from
+    the original layout file if not provided by the CGD.  The CGD is a
+    "geometry cache" which resides in memory.
+
+    <p>
+    If the <i>cgd_name</i> is null or empty (0 can be passed for this
+    argument) any CGD linked to the CHD will be unlinked.  If the CGD
+    was created specifically to link with the CHD, such as with <a
+    href="ChdLoadGeometry"><tt>ChdLoadGeometry</tt></a>, it will be
+    freed from memory, otherwise it will be retained.
+
+    <p>
+    This function returns 1 on success, 0 otherwise with an error
+    message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="ChdGetGeomName"></a>
+    <dl>
+    <dt><b>(string) <tt>ChdGetGeomName</tt>(<i>chd_name</i>)</b>
+    <dd><br>
+    The string argument is an access name for a <a
+    href="xic:hier">Cell Hierarchy Digest</a> (CHD) in memory.  If the
+    CHD exists and has an associated <a href="xic:geom">Cell Geometry
+    Digest</a> (CGD) linked (e.g., <tt>ChdLoadGeometry</tt> was
+    called), this function returns the access name of the CGD.  If the
+    CHD is not found or not configured with a CGD, a null string is
+    returned.
+    </dl>
+    <hr>
+
+    <!-- 012111 -->
+    <a name="ChdClearGeometry"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdClearGeometry</tt>(<i>chd_name</i>)</b>
+    <dd><br>
+    This function will clear the link to the Cell Geometry Digest
+    within the Cell Hierarchy Digest.  If a CGD was linked, and it was
+    created explicitly for linking into the CHD as in <a
+    href="ChdLoadGeometry"><tt>ChdLoadGeometry</tt></a>, the CGD will be
+    freed, otherwise it will be retained.  The return value is 1 if
+    the CHD was found, 0 otherwise, with a message available from <a
+    href="GetError"><tt>GetError</tt></a>.
+  
+    <p>
+    This function is identical to <a
+    href="ChdLinkCgd"><tt>ChdLinkCgd</tt></a> with a null second
+    argument.
+    </dl>
+    <hr>
+
+    <!-- 040409 -->
+    <a name="ChdSetSkipFlag"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdSetSkipFlag</tt>(<i>chd_name</i>, <i>cellname</i>,
+      <i>skip</i>)</b>
+    <dd><br>
+    This will set/unset the skip flag in the <a href="xic:hier">Cell
+    Hierarchy Digest</a> (CHD) whose access name is given in the first
+    argument for the cell named in <i>cellname</i> (physical only).
+
+    <p>
+    The <i>cellname</i>, if nonzero, must be the cell name after any
+    <a href="cellname">aliasing</a> that was in force when the CHD was
+    created.  If <i>cellname</i> is passed 0, the default cell for the
+    CHD is understood.  This is a cell name configured into the CHD,
+    or the first top-level cell found in the archive file.
+
+    <p>
+    With the skip flag set, the cell is ignored in the CHD, i.e., the
+    cell and its instances will not be included in output or when
+    reading into memory when the CHD is used to access layout data. 
+    The last argument is a boolean value:  0 to unset the skip flag,
+    nonzero to set it.  The return value is 1 if a flag was altered, 0
+    otherwise, with an error message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 040409 -->
+    <a name="ChdClearSkipFlags"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdClearSkipFlags</tt>(<i>chd_name</i>)</b>
+    <dd><br>
+    This will clear the skip flags for all cells in the Cell Hierarchy
+    Digest whose access name is given in the argument.  The skip flags
+    are set with <tt>SetSkipFlag</tt>.  The return value is 1 on
+    success, 0 otherwise, with an error message likely available with
+    <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 022209 -->
+    <a name="ChdCompare"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdCompare</tt>(<i>chd_name1</i>, <i>cname1</i>,
+      <i>chd_name2</i>, <i>cname2</i>, <i>layer_list</i>, <i>skip_layers</i>,
+      <i>maxdiffs</i>, <i>obj_types</i>, <i>geometric</i>, <i>array</i>)</b>
+    <dd><br>
+    This will compare the contents of two cells, somewhat similar to
+    the <a href="!compare"><b>!compare</b></a> command and the <a
+    href="xic:diff"><b>Compare Layouts</b></a> operation in the
+    <b>Convert Menu</b>.  However, only one cell pair is compared,
+    taking account only of features within the cells.  The <a
+    href="ChdCompareFlat"><tt>ChdCompareFlat</tt></a> function is
+    similar, but flattens geometry before comparison.
+
+    <p>
+    When comparing subcells, arrays will be expanded into individual
+    instances before comparison, avoiding false differences between
+    arrayed and unarrayed equivalents.  The returned handles (if any)
+    contain differences, as lists of object copies.  Properties are
+    ignored.
+
+    <p>
+    The arguments are:
+    <dl>
+    <dt><i>chd_name1</i><dd>
+      Access name of a <a href="xic:hier">Cell Hierarchy Digest</a>
+      (CHD) in memory.
+    </dl>
+    <dl>
+    <dt><i>cname1</i><dd>
+      Name of cell in <i>chd_name1</i> to compare, if null (0 passed)
+      the default cell in <i>chd_name1</i> is used.
+    </dl>
+    <dl>
+    <dt><i>chd_name2</i><dd>
+      If not null or empty (one can pass 0 for this argument), the name
+      of another CHD.
+    </dl>
+    <dl>
+    <dt><i>cname2</i><dd>
+      Name of cell in the second CHD, or in memory, to compare.  If
+      null, or 0 is passed, and a second CHD was specified, the second
+      CHD's default cell is understood.  Otherwise, the name will be
+      assumed the same as <i>cname1</i>.
+    </dl>
+    <dl>
+    <dt><i>layer_list</i><dd>
+      String of space-separated layer names, or zero which implies all
+      layers.
+    </dl>
+    <dl>
+    <dt><i>skip_layers</i><dd>
+      If this boolean value is nonzero and a <i>layer_list</i> was
+      given, the layers in the list will be skipped.  Otherwise, only
+      the layers in the list will be compared (all layers if
+      <i>layer_list</i> is passed zero).
+    </dl>
+    <dl>
+    <dt><i>maxdiffs</i><dd>
+      The function will return after recording this many differences. 
+      If 0 or negative, there is no limit.
+    </dl>
+    <dl>
+    <dt><i>obj_types</i><dd>
+      String consisting of the characters <tt>c,b,p,w,l</tt>, which
+      determines objects to consider (subcells, boxes, polygons,
+      wires, and labels), or zero.  If zero, "<tt>cbpw</tt>" is the
+      default, i.e., labels are ignored.  If the geometric argument is
+      nonzero, all but '<tt>c</tt>' will be ignored, and boxes,
+      polygons, and wires will be compared.
+    </dl>
+    <dl>
+    <dt><i>geometric</i><dd>
+      If this boolean value is nonzero, a geometric comparison will be
+      performed, otherwise objects are compared directly.
+    </dl>
+    <dl>
+    <dt><i>array</i><dd>
+      This is a two-element or larger array, or zero.  If an array is
+      passed, upon return the elements are handles to lists of box,
+      polygon, and wire object copies (labels and subcells are not
+      returned):  <i>array</i>[0] contains a list of objects in
+      <i>chd_name1</i> and not in <i>chd_name2</i>, and
+      <i>array</i>[1] contains objects in <i>chd_name2</i> and not in
+      <i>chd_name1</i>.  The <a href="H"><tt>H</tt></a> function must
+      be used on the array elements to access the handles.  If the
+      argument is passed zero, no object lists are returned.
+    </dl>
+
+    <p>
+    The cells for the current mode (electrical or physical) are
+    compared.  The scalar return can take the following values:
+    <table border=0 valign=top cellpadding=2>
+    <tr><td>-1</td> <td>An error occurred, with a message possibly available
+      from the <a href="GetError"><tt>GetError</tt></a> function.</td></tr>
+    <tr><td>0</td> <td>Successful comparison, no differences found.</td></tr>
+    <tr><td>1</td> <td>Successful comparison, differences found.</td></tr>
+    <tr><td>2</td> <td>The cell was not found in <i>chd_name1</i>.</td></tr>
+    <tr><td>3</td> <td>The cell was not found in <i>chd_name2</i> or memory.</td></tr>
+    <tr><td>4</td> <td>The cell was not found in either source.</td></tr>
+    </table>
+    </dl>
+    <hr>
+
+    <!-- 022209 -->
+    <a name="ChdCompareFlat"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdCompareFlat</tt>(<i>chd_name1</i>, <i>cname1</i>,
+      <i>chd_name2</i>, <i>cname2</i>, <i>layer_list</i>, <i>skip_layers</i>,
+      <i>maxdiffs</i>, <i>area</i>, <i>coarse_mult</i>, <i>fine_grid</i>,
+      <i>array</i>)</b>
+    <dd><br>
+    This will compare the contents of two hierarchies, using a flat
+    geometry model similar to the flat options of the <a
+    href="!compare"><b>!compare</b></a> command and the <a
+    href="xic:diff"><b>Compare Layouts</b></a> operation in the
+    <b>Convert Menu</b>.  The <a
+    href="ChdCompare"><tt>ChdCompare</tt></a> function is similar, but
+    does not flatten.
+
+    <p>
+    The returned handles (if any) contain the differences, as lists of
+    objects.  Properties are ignored.
+
+    The arguments are:
+    <dl>
+    <dt><i>chd_name1</i><dd>
+      Access name of a <a href="xic:hier">Cell Hierarchy Digest</a>
+      (CHD) in memory.
+    </dl>
+    <dl>
+    <dt><i>cname1</i><dd>
+      Name of cell in <i>chd_name1</i> to compare, if null (0 passed)
+      the default cell in <i>chd_name1</i> is used.
+    </dl>
+    <dl>
+    <dt><i>chd_name2</i><dd>
+      Access name of another CHD in memory.  This argument can not be
+      null as in <tt>ChdCompare</tt>, flat comparison to memory cells
+      is unavailable.
+    </dl>
+    <dl>
+    <dt><i>cname2</i><dd>
+      Name of cell in the second CHD to compare.  If null, or 0 is
+      passed, the second CHD's default cell is understood.
+    </dl>
+    <dl>
+    <dt><i>layer_list</i><dd>
+      String of space-separated layer names, or zero which implies all
+      layers.
+    </dl>
+    <dl>
+    <dt><i>skip_layers</i><dd>
+      If this boolean value is nonzero and a <i>layer_list</i> was
+      given, the layers in the list will be skipped.  Otherwise, only
+      the layers in the list will be compared (all layers if
+      <i>layer_list</i> is passed zero).
+    </dl>
+    <dl>
+    <dt><i>maxdiffs</i><dd>
+      The function will return after recording this many differences. 
+      If 0 or negative, there is no limit.
+    </dl>
+    <dl>
+    <dt><i>area</i><dd>
+      This argument can be an array of size 4 or larger, or 0.  If an
+      array, it contains a rectangle description in order L,B,R,T in
+      microns, which specifies the area to compare.  If 0 is passed,
+      the area compared will contain the two hierarchies entirely.
+    </dl>
+    <dl>
+    <dt><i>coarse_mult</i><dd>
+      The comparison is performed in the manner described for the <a
+      href="ChdIterateOverRegion"><tt>ChdIterateOverRegion</tt></a>
+      function, using a fine grid and a coarse grid.  This argument
+      specifies the size of the coarse grid in multiples of the fine
+      grid size.  All of the geometry needed for a coarse grid cell is
+      brought into memory at once, so this size should be consistent
+      with memory availability and layout feature density.  Values of
+      1-100 are accepted for this argument, with 20 a reasonable
+      initial choice.
+    </dl>
+    <dl>
+    <dt><i>fine_grid</i><dd>
+      Comparison is made within a fine grid cell.  The optimum fine
+      grid size depends on factors including layout feature density
+      and memory availability.  Larger sizes usually run faster, but
+      may require excessive memory.  The value is given in microns,
+      with the acceptable range being 1.0 - 100.0 microns.  A
+      reasonable initial choice is 20.0, but experimentation can often
+      yield better performance.
+    </dl>
+    <dl>
+    <dt><i>array</i><dd>
+      This is a two-element or larger array, or zero.  If an array is
+      passed, upon return the elements are handles to lists of box,
+      polygon, and wire object copies (labels and subcells are not
+      returned):  <i>array</i>[0] contains a list of objects in
+      <i>chd_name1</i> and not in <i>chd_name2</i>, and
+      <i>array</i>[1] contains objects in <i>chd_name2</i> and not in
+      <i>chd_name1</i>.  The <a href="H"><tt>H</tt></a> function must
+      be used on the array elements to access the handles.  If the
+      argument is passed zero, no object lists are returned.
+    </dl>
+
+    <p>
+    The cells for the physical mode are compared, it is not possible
+    to compare electrical cells in flat mode.  The return value is an
+    integer, -1 on error (with a message likely available from <a
+    href="GetError"><tt>GetError</tt></a>), 0 if no differences were
+    seen, or positive giving the number of differences seen.
+    </dl>
+    <hr>
+
+    <!-- 062209 -->
+    <a name="ChdEdit"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdEdit</tt>(<i>chd_name</i>, <i>scale</i>,
+     <i>cellname</i>)</b>
+    <dd><br>
+    This will read the given cell and its descendents into memory and
+    open the cell for editing, similar to the <a
+    href="Edit"><tt>Edit</tt></a> function, however the layout data
+    will be accessed through the <a href="xic:hier">Cell Hierarchy
+    Digest</a> whose access name is given in the first argument.  The
+    return value takes the same values as the <tt>Edit</tt> function
+    return. 
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features that
+    apply during a call to this function.
+
+    <p>
+    The <i>scale</i> will multiply all coordinates in cells opened, and
+    can be in the range 0.001 - 1000.0.
+
+    <p>
+    The <i>cellname</i>, if nonzero, must be the cell name after any
+    <a href="cellname">aliasing</a> that was in force when the CHD was
+    created.  If <i>cellname</i> is passed 0, the default cell for the
+    CHD is understood.  This is a cell name configured into the CHD,
+    or the first top-level cell found in the archive file.
+    </dl>
+    <hr>
+
+    <!-- 062209 -->
+    <a name="ChdOpenFlat"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdOpenFlat</tt>(<i>chd_name</i>, <i>scale</i>,
+      <i>cellname</i>, <i>array</i>, <i>clip</i>)</b>
+    <dd><br>
+    This will read the cell named in the <i>cellname</i> string and
+    its subcells into memory, creating a flat cell with the same name. 
+    The <a href="xic:hier">Cell Hierarchy Digest</a> (CHD) whose
+    access name is given in the first argument is used to obtain the
+    layout data.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features that
+    apply during a call to this function.  Text labels are ignored.
+
+    <p>
+    The <i>cellname</i>, if nonzero, must be the cell name after any
+    <a href="cellname">aliasing</a> that was in force when the CHD was
+    created.  If <i>cellname</i> is passed 0, the default cell for the
+    CHD is understood.  This is a cell name configured into the CHD,
+    or the first top-level cell found in the archive file.
+
+    <p>
+    If the cell already exists in memory, it will be overwritten.
+
+    <p>
+    The <i>scale</i> will multiply all coordinates read, and can be in
+    the range 0.001 - 1000.0.
+
+    <p>
+    If the <i>array</i> argument is passed 0, no windowing will be
+    used.  Otherwise the array should have four components which
+    specify a rectangle, in microns, in the coordinates of
+    <i>cellname</i>.  The values are
+    <table border=0 cellpadding=2>
+    <tr><td><i>array</i><tt>[0]</tt></td>  <td>X left</td></tr>
+    <tr><td><i>array</i><tt>[1]</tt></td>  <td>Y bottom</td></tr>
+    <tr><td><i>array</i><tt>[2]</tt></td>  <td>X right</td></tr>
+    <tr><td><i>array</i><tt>[3]</tt></td>  <td>Y top</td></tr>
+    </table>
+    If an array is given, only the objects and subcells needed to
+    render the window will be read.
+
+    <p>
+    If the boolean value <i>clip</i> is nonzero and an array is given,
+    objects will be clipped to the window.  Otherwise no clipping is
+    done.
+
+    <p>
+    Before calling <tt>ChdOpenFlat</tt>, the memory use can be estimated
+    by calling the <a
+    href="ChdEstFlatMemoryUse"><tt>ChdEstFlatMemoryUse</tt></a>
+    function.  An overall transformation can be set with
+    <tt>ChdSetFlatReadTransform</tt>, in which case the area given
+    applies in the "root" coordinates.
+
+    <p>
+    The return value is 1 on success, 0 on error, or -1 if an
+    interrupt was received.  In the case of an error return, an error
+    message may be available through <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="ChdSetFlatReadTransform"></a>
+    <dl>
+    <dt><b>(real) <tt>ChdSetFlatReadTransform</tt>(<i>tfstring</i>, <i>x</i>,
+      <i>y</i>)</b>
+    <dd><br>
+    This rather arcane function will set up a transformation which
+    will be used during calls to the following functions:
+    <blockquote>
+    <a href="ChdOpenFlat"><tt>ChdOpenFlat</tt></a><br>
+    <a href="ChdWriteSplit"><tt>ChdWriteSplit</tt></a><br>
+    <a href="ChdGetZlist"><tt>ChdGetZlist</tt></a><br>
+    <a href="ChdOpenOdb"><tt>ChdOpenOdb</tt></a><br>
+    <a href="ChdOpenZdb"><tt>ChdOpenZdb</tt></a><br>
+    <a href="ChdOpenZbdb"><tt>ChdOpenZbdb</tt></a>
+    </blockquote>
+
+    <p>
+    The transform will be applied to all of the objects read through
+    the CHD with these functions.  Why might this function be used? 
+    Consider the following:  suppose we have a CHD describing a cell
+    hierarchy, the top-level cell of which is to be instantiated under
+    another cell we'll call "root", with a given transformation.  We
+    would like to consider the objects from the CHD from the
+    perspective of the "root" cell.  This function would be called to
+    set the transformation, then one of the flat read functions would
+    be called and the returned objects accumulated.  The returned
+    objects will have coordinates relative to the "root" cell, rather
+    than relative to the top-level cell of the CHD.
+
+    <p>
+    The <i>tfstring</i> describes the rotation and mirroring part of
+    the transformation.  It is either one of the special tokens to be
+    described, or a sequence of the following tokens:
+
+    <dl>
+    <dt><tt>MX</tt><dd>
+    Flip the X axis.
+    <dt><tt>MY</tt><dd>
+    Flip the Y axis.
+    <dt><tt>R</tt><i>nnn</i><dd>
+    Rotate by <i>nnn</i> degrees.  The <i>nnn</i> must be one of 0, 45,
+    90, 135, 180, 225, 270, 315.
+    </dl>
+
+    <p>
+    White space can appear between tokens.  The operations are
+    performed in order.  Note that, e.g., "<tt>MXR90</tt>" is very
+    different from "<tt>R90MX</tt>".
+
+    <p>
+    Alternatively, the <i>tfstring</i> can contain a single "Lef/Def"
+    token as listed below.  The second column is the equivalent string
+    using the syntax previously described.
+    <blockquote>
+    <table border=0 cellpadding=2>
+    <tr><td><tt>N</tt></td> <td>null or empty or <tt>R0</tt></td></tr>
+    <tr><td><tt>S</tt></td> <td><tt>R180</tt></td></tr>
+    <tr><td><tt>W</tt></td> <td><tt>R90</tt></td></tr>
+    <tr><td><tt>E</tt></td> <td><tt>R270</tt></td></tr>
+    <tr><td><tt>FN</tt></td> <td><tt>MX</tt></td></tr>
+    <tr><td><tt>FS</tt></td> <td><tt>MY</tt></td></tr>
+    <tr><td><tt>FW</tt></td> <td><tt>MYR90</tt></td></tr>
+    <tr><td><tt>FE</tt></td> <td><tt>MXR90</tt></td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The <i>x</i> and <i>y</i> are the translation part of the
+    transformation.  These are coordinates, given in microns.
+
+    <p>
+    If <i>tfstring</i> is null or empty, no rotations or mirroring
+    will be used.
+
+    <p>
+    The function returns 1 on success, 0 if the <i>tfstring</i>
+    contains an error.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="ChdEstFlatMemoryUse"></a>
+    <dl>
+    <dt><b>(real) <tt>ChdEstFlatMemoryUse</tt>(<i>chd_name</i>, <i>cellname</i>,
+      <i>array</i>, <i>counts_array</i>)</b>
+    <dd><br>
+    This function will return an estimate of the memory required to
+    perform a <a href="ChdOpenFlat"><tt>ChdOpenFlat</tt></a> call. 
+    The first argument is the access name of an existing <a
+    href="xic:hier">Cell Hierarchy Digest</a> that was created with
+    per-cell object counts saved (e.g., a call to <a
+    href="OpenCellHierDigest"><tt>OpenCellHierDigest</tt></a> with the
+    <i>info_saved</i> argument set to 3 or 4).
+
+    <p>
+    The <i>cellname</i>, if nonzero, must be the cell name after any
+    <a href="cellname">aliasing</a> that was in force when the CHD was
+    created.  If <i>cellname</i> is passed 0, the default cell for the
+    CHD is understood.  This is a cell name configured into the CHD,
+    or the first top-level cell found in the archive file.
+
+    <p>
+    The third argument is an array of size four or larger that
+    contains the rectangular area as passed to the <tt>ChdOpenFlat</tt>
+    call.  The components are
+    <blockquote>
+    <table border=0 cellpadding=2>
+    <tr><td><i>array</i>[0]</td> <td>X left</td></tr>
+    <tr><td><i>array</i>[1]</td> <td>Y bottom</td></tr>
+    <tr><td><i>array</i>[2]</td> <td>X right</td></tr>
+    <tr><td><i>array</i>[3]</td> <td>Y top</td></tr>
+    </table>
+    </blockquote>
+    This argument can also be zero to indicate that the full area of
+    the top level cell is to be considered.
+
+    <p>
+    The final argument is also an array of size four or larger, or
+    zero.  If an array is passed, and the function succeeds, the
+    components are filled with the following values:
+    <blockquote>
+    <table border=0 cellpadding=2>
+    <tr><td><i>counts_array</i>[0]</td> <td>estimated total box
+      count</td></tr>
+    <tr><td><i>counts_array</i>[1]</td> <td>estimated total polygon
+      count</td></tr>
+    <tr><td><i>counts_array</i>[2]</td> <td>estimated total wire
+      count</td></tr>
+    <tr><td><i>counts_array</i>[3]</td> <td>estimated total vertex
+      count</td></tr>
+    </table>
+    </blockquote>
+    These are counts of objects that would be saved in the top-level
+    cell during the <tt>ChdOpenFlat</tt> call.  These are estimates,
+    based on area normalization, and do not include any clipping or
+    merging.  The vertex count is an estimate of the total number of
+    polygon and wire vertices.
+
+    <p>
+    The return value is an estimate, in megabytes, of the incremental
+    memory required to perform the <tt>ChdOpenFlat</tt> call.  This does
+    not include normal overhead.
+    </dl>
+    <hr>
+
+    <!-- 022916 -->
+    <a name="ChdWrite"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdWrite</tt>(<i>chd_name</i>, <i>scale</i>,
+      <i>cellname</i>, <i>array</i>, <i>clip</i>, <i>all</i>, <i>flatten</i>,
+      <i>ecf_level</i>, <i>outfile</i>)</b>
+    <dd><br>
+    This will write the cell named in the <i>cellname</i> string to
+    the output file given in <i>outfile</i>, using the <a
+    href="xic:hier">Cell Hierarchy Digest</a> whose access name is
+    given in the first argument to obtain layout data.
+
+    <p>
+    If the <i>outfile</i> is null or empty, the geometry will be
+    "written" as cells in the main database, hierarchically if
+    <i>all</i> is true.  This allows windowing to be applied when
+    converting a hierarchy, which will attempt to convert only objects
+    and cells needed to render the window area.  This has the
+    potential to hopelessly scramble your in-memory design data so be
+    careful.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features that
+    apply during a call to this function.
+
+    <p>
+    The <i>cellname</i>, if nonzero, must be the cell name after any
+    <a href="cellname">aliasing</a> that was in force when the CHD was
+    created.  If <i>cellname</i> is passed 0, the default cell for the
+    CHD is understood.  This is a cell name configured into the CHD,
+    or the first top-level cell found in the archive file.
+
+    <p>
+    If the boolean argument <i>all</i> is nonzero, the hierarchy under
+    the cell is written, otherwise only the named cell is written.  If
+    the <i>outfile</i> is null or empty, native cell files will be
+    created in the current directory.  If the <i>outfile</i> is the
+    name of an existing directory, native cell files will be created
+    in that directory.  Otherwise, the extension of the <i>outfile</i>
+    determines the file type:
+
+    <table border=0 cellpadding=2>
+    <tr><td>CGX</td>     <td><tt>.cgx</tt></td></tr>
+    <tr><td>CIF</td>     <td><tt>.cif</tt></td></tr>
+    <tr><td>GDSII</td>   <td><tt>.gds, .str, .strm, .stream</tt></td></tr>
+    <tr><td>OASIS</td>   <td><tt>.oas</tt></td></tr>
+    </table>
+    Only these extensions are recognized, however CGX and GDSII allow
+    an additional <tt>.gz</tt> which will imply compression.
+
+    <p>
+    The <i>scale</i> will multiply all coordinates read, and can be in
+    the range 0.001 - 1000.0.
+
+    <p>
+    If the <i>array</i> argument is passed 0, no windowing will be
+    used.  Otherwise the array should have four components which
+    specify a rectangle, in microns, in the coordinates of
+    <i>cellname</i>.  The values are
+    <table border=0 cellpadding=2>
+    <tr><td><i>array</i><tt>[0]</tt></td>  <td>X left</td></tr>
+    <tr><td><i>array</i><tt>[1]</tt></td>  <td>Y bottom</td></tr>
+    <tr><td><i>array</i><tt>[2]</tt></td>  <td>X right</td></tr>
+    <tr><td><i>array</i><tt>[3]</tt></td>  <td>Y top</td></tr>
+    </table>
+    If an array is given, only the objects and subcells needed to
+    render the window will be written.
+
+    <p>
+    If the boolean value <i>clip</i> is nonzero and an array is given,
+    objects will be clipped to the window.  Otherwise no clipping is
+    done.
+
+    <p>
+    If the boolean value <i>all</i> is nonzero, the hierarchy under
+    <i>cellname</i> is written, otherwise not.  If windowing is
+    applied, this applies only to <i>cellname</i>, and not subcells.
+
+    <p>
+    If the boolean variable <i>flatten</i> is nonzero, the objects in
+    the hierarchy under <i>cellname</i> will be written into
+    <i>cellname</i>, i.e., flattened.  The <i>all</i> argument is
+    ignored in this case.  Otherwise, no flattening is done.
+
+    <p>
+    The <i>ecf_level</i> is an integer 0-3 which sets the empty cell
+    filtering level, as <a href="ecfilt">described</a> for the
+    <b>Format Conversion</b> panel.  The values are
+
+    <table border=0>
+    <tr><td>0</td> <td>No empty cell filtering.</td></tr>
+    <tr><td>1</td> <td>Apply pre- and post-filtering.</td></tr>
+    <tr><td>2</td> <td>Apply pre-filtering only.</td></tr>
+    <tr><td>3</td> <td>Apply post-filtering only.</td></tr>
+    </table>
+
+    <p>
+    The return value is 1 on success, 0 on error, or -1 if an
+    interrupt was received.  In the case of an error return, an error
+    message may be available through <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 022916 -->
+    <a name="ChdWriteSplit"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdWriteSplit</tt>(<i>chd_name</i>, <i>cellname</i>,
+     <i>basename</i>, <i>array</i>, <i>regions_or_gridsize</i>,
+     <i>numregions_or_bloatval</i>, <i>maxdepth</i>, <i>scale</i>,
+     <i>flags</i>)</b>
+    <dd><br>
+    This function will read the geometry data through the <a
+    href="xic:heir">Cell Hierarchy Digest</a> (CHD) whose name is
+    given as the first argument, into a collection of files
+    representing rectangular regions of the top-level cell.  Each
+    output file contains only the cells and geometry necessary to
+    represent the region.  The regions can be specified as a list of
+    rectangles, or as a grid.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features
+    that apply during a call to this function.
+
+    <dl>
+    <dt><i>cellname</i><dd>
+    The <i>cellname</i>, if nonzero, must be the cell name after any
+    aliasing that was in force when the CHD was created.  If
+    <i>cellname</i> is passed 0, the default cell for the CHD is
+    understood.  This is a cell name <a
+    href="xic:chdconfig">configured</a> into the CHD, or the first
+    top-level cell found in the archive file.
+    </dl>
+
+    <dl>
+    <dt><i>basename</i><dd>
+    The <i>basename</i> is a cell path name in the form
+    <blockquote>
+    [/<i>path</i>/<i>to</i>/]<i>basename</i>.<i>ext</i>,
+    </blockquote>
+    where the extension <i>ext</i> gives the type of file to create. 
+    One of the following extensions must be provided:
+    <blockquote>
+    <table border=0>
+    <tr><td>CGX output</td> <td><tt>.cgx</tt></td></tr>
+    <tr><td>CIF output</td> <td><tt>.cif</tt></td></tr>
+    <tr><td>GDSII output</td> <td><tt>.gds, .str, .strm, .stream</tt></td></tr>
+    <tr><td>OASIS output</td> <td><tt>.oas, .oasis</tt></td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    A "<tt>.gz</tt>" second extension is allowed following CGX and
+    GDSII extensions in which case the files will be compressed using
+    the <tt>gzip</tt> format.
+
+    <p>
+    When writing a list of regions, the output files will be named in
+    the form <i>basename_N</i><tt>.</tt><i>ext</i>, where the
+    <tt>.</tt><i>ext</i> is the extension supplied, and <i>N</i> is a
+    0-based index of the region, ordered as given.  When writing a
+    grid, the output files will be named in the form form
+    <i>basename_X_Y</i><<tt>.</tt><i>ext</i>, where the
+    <tt>.</tt><i>ext</i> is the extension supplied, and
+    <i>X</i>,<i>Y</i> are integer indices representing the grid cell
+    (origin is the lower-left corner).  If a directory path is
+    prepended to the <i>basename</i>, the files will be found in that
+    directory (which must exist, it will not be created).
+    </dl>
+
+    <dl>
+    <dt><i>array</i><dd>
+    The <i>array</i> argument can be 0, or the name of an array of
+    size four or larger that contains a rectangle specification, in
+    microns, in order L,B,R,T.  If given, the rectangle should
+    intersect the bounding box of the top-level cell
+    (<i>cellname</i>).  Only cells and geometry within this area
+    will be written to output.  If 0 is passed, the entire bounding
+    box of the top cell is understood.
+
+    <p>
+    When writing grid files, the origin of the grid, before bloating,
+    is at the lower-left corner of the area to be output.
+    </dl>
+
+    <dl>
+    <dt><i>regions_or_gridsize</i><dd>
+    This argument can be an array, or a scalar value.  If an array,
+    the array consists of one or more rectangular area specifications,
+    in order L,B,R,T in microns.  These are the regions that will be
+    written to output files.
+
+    If this argument is a number, it represents the size of a square
+    grid cell, in microns.
+    </dl>
+
+    <dl>
+    <dt><i>bloatval</i><dd>
+    If an array was passed as the previous argument, then this
+    argument is an integer giving the number of regions in the array
+    to be written.  The size of the array is at least four times the
+    number of regions. 
+
+    <p>
+    If instead a grid value was given in the previous argument,
+    then this argument provides a bloating value.  The grid cells will
+    be bloated by this value (in microns) if the value is nonzero.  A
+    positive value pushes out the grid cell edges by the value given,
+    a negative value does the reverse. 
+    </dl>
+
+    <dl>
+    <dt><i>maxdepth</i><dd>
+    This integer value applies only when flattening, and sets the
+    maximum hierarchy depth for include in output.  If 0, only objects
+    in the top-level cell will be included,
+    </dl>
+
+    <dl>
+    <dt><i>scale</i><dd>
+    This is a scale factor which will be applied to all output.  The
+    <i>gridsize</i>, <i>bloatval</i>, and <i>array</i> coordinates are
+    the sizes found in output, and are independent of the scale
+    factor.  The valid range is 0.001 - 1000.0.
+    </dl>
+
+    <dl>
+    <dt><i>flags</i><dd>
+    This argument is a <b>string</b> consisting of specific letters,
+    the presence of which sets one of several available modes.  These are
+    <blockquote>
+    <table border=0>
+    <tr><td><tt>p</tt></td> <td>parallel</td></tr>
+    <tr><td><tt>f</tt></td> <td>flatten</td></tr>
+    <tr><td><tt>c</tt></td> <td>clip</td></tr>
+    <tr><td><tt>n</tt>[<i>N</i>]</td> <td>empty cell filtering</td></tr>
+    <tr><td><tt>m</tt></td> <td>map names</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The character recognition is case-insensitive.  A null or empty
+    string indicates no flags set.
+
+    <dl>
+    <dt><tt>p</tt><dd>
+    If <tt>p</tt> is given, a parallel writing algorithm is used. 
+    Otherwise, the output files are generated in sequence.  The files
+    should be identical from either writing mode.  The parallel mode
+    may be a little faster, but requires more internal memory.  When
+    writing in parallel, the user may encounter system limitations on
+    the number of file descriptors open simultaneously.
+    </dl>
+
+    <dl>
+    <dt><tt>f</tt><dd>
+    If <tt>f</tt> is given, the output will be flattened.  When
+    flattening, an overall transformation can be set with <a
+    href="ChdSetFlatReadTransform"><tt>ChdSetFlatReadTransform</tt></a>,
+    in which case the given area description would apply in the "root"
+    coordinates.
+
+    <p>
+    If not given, the output files will be hierarchical, but only the
+    subcells needed to render the grid cell area, each containing
+    only the geometry needed, will be written.
+    </dl>
+
+    <dl>
+    <dt><tt>c</tt><dd>
+    If <tt>c</tt> is given, objects will be clipped at the grid cell
+    boundaries.  This also applies to objects in subcells, when not
+    flattening.
+    </dl>
+
+    <dl>
+    <dt><tt>n</tt>[<i>N</i>]<dd>
+    The '<tt>n</tt>' can optionally be followed by an integer 0-3.  If
+    no integer follows, '3' is understood.  This sets the empty cell
+    filtering level as <a href="ecfilt">described</a> for the
+    <b>Format Conversion</b> panel.  The values are
+
+    <table border=0>
+    <tr><td>0</td> <td>No empty cell filtering (no operation).</td></tr>
+    <tr><td>1</td> <td>Apply pre- and post-filtering.</td></tr>
+    <tr><td>2</td> <td>Apply pre-filtering only.</td></tr>
+    <tr><td>3</td> <td>Apply post-filtering only.</td></tr>
+    </table>
+    </dl>
+
+    <dl>
+    <dt><tt>m</tt><dd>
+    If <tt>m</tt> is given, and <tt>f</tt> is also given (flattening),
+    the top-level cell names in the output files will be modified so
+    as to be unique in the collection.  A suffix "_<i>N</i>" is added
+    to the cell name, where <i>N</i> is a grid cell or region index. 
+    The index is 0 for the lower-left grid cell, and is incremented in
+    the sweep order left to right, bottom to top.  If writing regions,
+    the index is 0-based, in the order of the regions given. 
+    Furthermore, a native cell file is written, named
+    "<i>basename</i>_root", which calls each of the output files. 
+    Loading this file will load the entire output collection, memory
+    limits permitting.
+    </dl>
+    </dl>
+
+    <p>
+    The function returns 1 on success, 0 otherwise, with an error
+    message likely available from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100408 -->
+    <a name="ChdCreateReferenceCell"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdCreateReferenceCell</tt>(<i>chd_name</i>,
+     <i>cellname</i>)</b>
+    <dd><br>This function will create a <a href="refcell">reference
+    cell</a> in memory.  A reference cell is a special cell that
+    references a cell hierarchy in an archive file, but does not have
+    its own content.  Reference cells can be instantiated during
+    editing like any other cell, but their content is not visible. 
+    When a reference cell is written to disk as part of a cell
+    hierarchy, the hierarchy of the reference cell is extracted from
+    its source and streamed into the output.
+
+    <p>
+    The first argument is a string giving the name of a <a
+    href="xic:hier">Cell Hierarchy Digest</a> (CHD) already in memory. 
+    The second argument is the name of a cell in the CHD, which must
+    include aliasing if aliasing was applied when the CHD was created. 
+    This will also be the name of the reference cell.  A cell with
+    this name should not already exist in current symbol table.
+
+    <p>
+    Although the CHD is required for reference cell creation, it is
+    not required when the reference cell is written, but will be used
+    if present.  The archive file associated with the CHD should not
+    be moved or altered before the reference cell is written to disk.
+
+    <p>
+    A value 0 is returned on error, with a message probably available
+    from <a href="GetError"><tt>GetError</tt></a>.  The value 1 is
+    returned on success.
+    </dl>
+    <hr>
+
+    <!-- 100408 -->
+    <a name="ChdLoadCell"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdLoadCell</tt>(<i>chd_name</i>, <i>cellname</i>)</b>
+    <dd><br>This function will load a cell into the main editing
+    database, and subcells of the cell will be loaded as <a
+    href="refcell">reference cells</a>.  This allows the cell to be
+    edited, without loading the hierarchy into memory.  When written
+    to disk as part of a hierarchy, the cell hierarchies of the
+    reference cells will be extracted from the input source and
+    streamed to output.
+
+    <p>
+    The first argument is a string giving the name of a <a
+    href="xic:hier">Cell Hierarchy Digest</a> (CHD) already in memory. 
+    The second argument is the name of a cell in the CHD, which must
+    include aliasing if aliasing was applied when the CHD was created. 
+    This cell will be read into memory.  Any subcells used by the cell
+    will be created in memory as reference cells, which a special
+    cells which have no content but point to a source for their
+    content.
+
+    <p>
+    Although the CHD is required for reference cell creation, it is
+    not required when the reference cell is written, but will be used
+    if present.  The archive file associated with the CHD should not
+    be touched before the reference cell is written to disk.
+
+    <p>
+    A value 0 is returned on error, with a message probably available
+    from <a href="GetError"><tt>GetError</tt></a>.  The value 1 is
+    returned on success.
+    </dl>
+    <hr>
+
+    <!-- 030113 -->
+    <a name="ChdIterateOverRegion"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdIterateOverRegion</tt>(<i>chd_name</i>,
+      <i>cellname</i>, <i>funcname</i>, <i>array</i>, <i>coarse_mult</i>,
+      <i>fine_grid</i>, <i>bloat_val</i>)</b>
+    <dd><br>
+    This function is an interface to a system which creates a logical
+    rectangular grid over a cell hierarchy, then iterates over the
+    partitions in the grid, performing some action on the logically flattened
+    geometry.
+
+    <p>
+    A <a href="xic:hier">Cell Hierarchy Digest</a> (CHD) is used to
+    obtain the flattened geometry, with or without the assistance of a
+    <a href="xic:geom">Cell Geometry Digest</a> (CGD).  There are
+    actually two levels of gridding:  the coarse grid, and the fine
+    grid.  The area of interest is first logically partitioned into
+    the coarse grid.  For each cell of the coarse grid, a "ZBDB" <a
+    href="funcs:lexpr:db">special database</a> is created, using the
+    fine grid.  For example, one might choose 400x400 microns for the
+    coarse grid, and 20x20 microns for the fine grid.  Thus, geometry
+    access is in 400x400 "chunks".  The geometry is extracted,
+    flattened, and split into separate trapezoid lists for each fine
+    grid area, for each layer.
+
+    <p>
+    As each fine grid cell is visited, a user-supplied <a
+    href="scr:functions">script function</a> is called.  The
+    operations performed are completely up to the user, and the
+    framework is intended to be as flexible as possible.  As an
+    example, one might extract geometric parameters such as density,
+    minimum line width and spacing, for use by a process analysis
+    tool.  Scalar parameters can be conveniently saved in <a
+    href="funcs:lexpr:spt">spatial parameter tables</a> (SPTs).
+
+    <p>
+    The first argument is the access name of a CHD in memory.  The
+    second argument is the top-level cell from the CHD, or if passed
+    0, the CHD's default cell will be used.
+
+    <p>
+    The third argument is the name of a user-supplied script function
+    which will implement the user's calculations.  The function should
+    already be in memory before <tt>ChdIterateOverRegion</tt> is
+    called.  This function is described in more detail below.
+
+    <p>
+    The <i>array</i> argument can be 0, in which case the area of
+    interest is the entire top-level cell.  Otherwise, the argument
+    should be an array of size four or larger containing the
+    rectangular area of interest, in order L,B,R,T in microns.  The
+    coarse and find grid origin is at the lower left corner of the
+    area of interest.
+
+    <p>
+    The <i>fine_grid</i> argument is the size of the fine grid (which
+    is square) in microns.  The <i>coarse_mult</i> is an integer
+    representing the size of the coarse grid, in <i>fine_grid</i> quanta.
+
+    <p>
+    The <i>bloat_val</i> argument specifies an amount, in microns,
+    that the grid cells (both coarse and fine) should be expanded when
+    returning geometry.  Geometry is clipped to the bloated grid. 
+    Thus, it is possible to have some overlap in the geometry returned
+    from adjacent grid cells.  This value can be negative, in which
+    case grid cells will effectively shrink.
+
+    <p>
+    The callback function has the following prototype.
+    <blockquote>
+    (int) <tt>callback</tt>(<i>db_name</i>, <i>j</i>, <i>i</i>,
+    <i>spt_x</i>, <i>spt_y</i>, <i>data</i>, <i>cell_name</i>,
+    <i>chd_name</i>)
+    </blockquote>
+    The function definition must start with the <i>db_name</i> and
+    include the arguments in the order shown, but unused arguments to
+    the right of the last needed argument can be omitted.
+
+    <dl>
+    <dt><i>db_name</i> (string)<dd>
+    The access name of the <a href="ChdOpenZbdb">ZBDB</a> database
+    containing geometry.
+    </dl>
+
+    <dl>
+    <dt><i>j</i> (integer)<dd>
+    The X index of the current fine grid cell.
+    </dl>
+
+    <dl>
+    <dt><i>i</i> (integer)<dd>
+    The Y index of the current fine grid cell.
+    </dl>
+
+    <dl>
+    <dt><i>spt_x</i> (real)<dd>
+    The X coordinate value in microns of the current grid cell in a <a
+    href="funcs:lexpr:spt">spatial parameter table</a>:<br>
+    <i>coarse_grid_cell_left</i> + <i>j</i>*<i>fine_grid_size</i> +
+    <i>fine_grid_size</i><tt>/2</tt>
+    </dl>
+
+    <dl>
+    <dt><i>spt_y</i> (real)<dd>
+    The Y coordinate value in microns of the current grid cell in a
+     spatial parameter table:<br>
+    <i>coarse_grid_cell_bottom</i> + <i>i</i>*<i>fine_grid_size</i> +
+    <i>fine_grid_size</i><tt>/2</tt>
+    </dl>
+
+    <dl>
+    <dt><i>data</i> (real array)<dd>
+    An array containing miscellaneous parameters, described below.
+    </dl>
+
+    <dl>
+    <dt><i>cell_name</i> (string)<dd>
+    The name of the top-level cell.
+    </dl>
+
+    <dl>
+    <dt><i>chd_name</i> (string)<dd>
+    The access name of the CHD.
+    </dl>
+
+    The <i>data</i> argument is an array that contains the following
+    parameters.
+
+    <table border=0>
+    <tr><th>index</th> <th>description</th></tr>
+    <tr><td>0</td>
+      <td>The spatial parameter table column size.</td></tr>
+    <tr><td>1</td>
+      <td>The spatial parameter table row size.</td></tr>
+    <tr><td>2</td>
+      <td>The fine grid period in microns.</td></tr>
+    <tr><td>3</td>
+      <td>The coarse grid period in microns.</td></tr>
+    <tr><td>4</td>
+      <td>The amount of grid cell expansion in microns.</td></tr>
+    <tr><td>5</td>
+      <td>Area of interest left in microns.</td></tr>
+    <tr><td>6</td>
+      <td>Area of interest bottom in microns.</td></tr>
+    <tr><td>7</td>
+      <td>Area of interest right in microns.</td></tr>
+    <tr><td>8</td>
+      <td>Area of interest top in microns.</td></tr>
+    <tr><td>9</td>
+      <td>Coarse grid cell left in microns.</td></tr>
+    <tr><td>10</td>
+      <td>Coarse grid cell bottom in microns.</td></tr>
+    <tr><td>11</td>
+      <td>Coarse grid cell right in microns.</td></tr>
+    <tr><td>12</td>
+      <td>Coarse grid cell top in microns.</td></tr>
+    <tr><td>13</td>
+      <td>Fine grid cell left in microns.</td></tr>
+    <tr><td>14</td>
+      <td>Fine grid cell bottom in microns.</td></tr>
+    <tr><td>15</td>
+      <td>Fine grid cell right in microns.</td></tr>
+    <tr><td>16</td>
+      <td>Fine grid cell top in microns.</td></tr>
+    </table>
+
+    The trapezoid data for the grid cells can be accessed, from within the
+    callback function, with the <a
+    href="GetZlistZbdb"><tt>GetZlistZbdb</tt></a> function.
+    <blockquote>
+    <tt>GetZlistZbdb</tt>(<i>db_name</i>, <i>layer_lname</i>, <i>j</i>,
+    <i>i</i>)
+    </blockquote>
+
+    <p>
+    Example:<br>
+    Here is a function that simply prints out the fine grid indices,
+    and the number of trapezoids in the grid location on a layer named
+    "<tt>M1</tt>".
+
+    <blockquote>
+    <tt>function myfunc(dbname, j, i)</tt><br>
+    <tt>&nbsp;&nbsp;zlist = GetZlistZbdb(dbname, "M1", j, i)</tt><br>
+    <tt>&nbsp;&nbsp;Print("Location", j, i, "contains", Zlength(zlist),
+     "zoids on M1")</tt><br>
+    <tt>endfunc</tt>
+    </blockquote>
+
+    <p>
+    If the function returns a nonzero value, the operation will abort. 
+    If there is no explicit return statement, the return value is 0.
+    <blockquote>
+    <tt>if (</tt><i>some error</i><tt>)</tt><br>
+    <tt>&nbsp;&nbsp;return 1</tt><br>
+    <tt>end</tt>
+    </blockquote>
+
+    <p>
+    If all goes well, <tt>ChdIterateOverRegion</tt> returns 1,
+    otherwise 0 is returned, with an error message possibly available
+    from <a href="GetError"><tt>GetError</tt></a>.
+
+    <p>
+    This function is intended for OEM users, customization is
+    possible.  Contact Whiteley Research for more information.
+    </dl>
+    <hr>
+
+    <!-- 030113 -->
+    <a name="ChdWriteDensityMaps"></a>
+    <dl>
+    <dt><b>(int) <tt>ChdWriteDensityMaps</tt>(<i>chd_name</i>,
+      <i>cellname</i>, <i>array</i>, <i>coarse_mult</i>,
+      <i>fine_grid</i>, <i>bloat</i>, <i>save</i>)</b>
+    <dd><br>
+    This function uses the same framework as <a
+    href="ChdIterateOverRegion"><tt>ChdIterateOverRegion</tt></a>, but
+    is hard-coded to extract density values only.  The
+    <i>chd_name</i>, <i>cellname</i>, <i>array</i>,
+    <i>coarse_mult</i>, <i>fine_grid</i>, and <i>bloat</i> arguments
+    are as described for that function.
+
+    <p>
+    When called, the function will iterate over the given area, and
+    compute the fraction of dark area for each layer in a fine grid
+    cell, saving the values in a <a href="funcs:lexpr:spt">spatial
+    parameter table</a> (SPT).  The access names of these SPTs are in
+    the form <i>cellname</i>.<i>layername</i>, where <i>cellname</i>
+    is the name of the top-level cell being processed.  The
+    <i>layername</i> is the name of the layer, possibly in hex format
+    as used <a href="layername">elsewhere</a>.
+
+    <p>
+    If the boolean <i>save</i> argument is nonzero, the SPTs will be
+    retained in memory after the function returns.  Otherwise, the
+    SPTs will be dumped to files in the current directory, and
+    destroyed.  The file names are the same as the SPT names, with a
+    "<tt>.spt</tt>" extension added.  These files can be read with <a
+    href="ReadSPtable"><tt>ReadSPtable</tt></a>, and are in the format
+    described for that function, with the "reference coordinates" the
+    central points of the fine grid cells.
+
+    <p>
+    If all goes well, <tt>ChdWriteDensityMaps</tt> returns 1,
+    otherwise 0 is returned, with an error message possibly available
+    from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+
+!!SEEALSO
+funcs:cvrt
+
+!!KEYWORD
+funcs:cvrt:cgd
+!!TITLE
+Cell Geometry Digest
+!!HTML
+    <!-- 012111 -->
+    <a name="OpenCellGeomDigest"></a>
+    <dl>
+    <dt><b>(string) <tt>OpenCellGeomDigest</tt>(<i>idname</i>,
+      <i>string</i>, <i>type</i>)</b>
+    <dd><br>
+    This function returns an access name to a new Cell Geometry Digest
+    (CGD) which is created in memory.  A CGD is a data structure that
+    provides access to cell geometry saved in compact form, and does
+    not use the main cell database.  The CGD refers to physical data
+    only.  The new CGD will be listed in the <a
+    href="xic:geom"><b>Cell Geometry Digests</b></a> panel, and the
+    access name is used by other functions to access the CGD.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features
+    that apply during a call to this function.  In particular, the
+    names of cells saved in the CGD reflect any <a
+    href="cellname">aliasing</a> that was in force at the time the
+    CGD was created.
+
+    <p>
+    The first argument is a specified access name (which will be
+    returned on success).  This name can not be in use, meaning that
+    the name can not access an existing CGD which is currently linked
+    to a CHD.  If there is a name match to an unlinked CGD, the new
+    CGD will replace the old (which is destroyed).  This argument can
+    be passed 0 or an empty string.  If a null or empty string is
+    passed, a new access name will be generated and assigned.
+
+    <p>
+    The third argument is an integer 0-2 which specifies the type of
+    CGD to create.  The second (<i>string</i>) argument depends on
+    what type of CGD is being created.
+
+    <dl>
+    <dt>Type 0 (actually, <i>type</i> not 1 or 2)<dd>
+    This will create a "memory" CGD, where all geometry data will be
+    stored in memory, in highly-compressed form.  This provides the
+    most efficient access, but very large databases may exceed memory
+    limitations.
+
+    <p>
+    In this mode, the <i>string</i> argument can be one of the
+    following:
+    <ol>
+    <li>A layout (archive) file.  The file will be read and the
+    geometry extracted.
+    <li>The access name of a Cell Hierarchy Digest (CHD) in memory.
+    The CHD will be used to read the geometry from the file it
+    references.
+    <li>A saved CHD file.  The file will be read, and a new CHD will
+    be created in memory.  This CHD will be used to read the geometry
+    from the file referenced.
+    <li>A saved CGD file name.  The file will be read into an
+    in-memory CGD.
+    </ol>
+
+    <p>
+    Files are opened from the library search path, if a full path is
+    not provided.
+    </dl>
+
+    <dl>
+    <dt>Type 1<dd>
+    This will create a "file" CGD, where geometry data are stored in a
+    CGD file on disk, and geometry is retrieved when needed via saved
+    file offsets.  This uses less memory, but is not quite as fast as
+    saving geometry data in memory.  It is generally much faster than
+    reading geometry from the original layout file since 1) the data
+    are highly compressed, and 2) the objects are pre-sorted by layer.
+
+    <p>
+    In this mode, the <i>string</i> is a path to a saved CGD file, or
+    to a saved CHD file that contains geometry records.  The in-memory
+    CGD will access this file.  The file is opened from the library
+    search path, if a full path is not provided.
+    </dl>
+
+    <dl>
+    <dt>Type 2<dd>
+    This will create a stub CGD which obtains geometry information
+    from a remote host which is running <i>Xic</i> in server mode. 
+    The server must have a CGD in memory, from which data are
+    obtained.
+
+    <p>
+    In this mode, the <i>string</i> must be in the format
+    <blockquote>
+    <i>hostname</i>[<tt>:</tt><i>port</i>]<tt>/</tt><i>idname</i>
+    </blockquote>
+
+    The [...] indicates "optional" and is not literal.  The
+    <i>hostname</i> is the network name of the machine running the
+    server.  If the server is using a non-default port number, the
+    same port number should be provided after the host name, separated
+    by a colon.  Following the hostname or port is the access name on
+    the server of the CGD to access, separated by a forward slash. 
+    The entire string should contain no white space.
+    </dl>
+
+    <p>
+    On error, a null string is returned, and an error message may be
+    available with the <a href="GetError"><tt>GetError</tt></a>
+    function.
+    </dl>
+    <hr>
+
+    <!-- 030209 -->
+    <a name="NewCellGeomDigest"></a>
+    <dl>
+    <dt><b>(string) <tt>NewCellGeomDigest</tt>()</b>
+    <dd><br>
+    This function creates a new, empty <a href="xic:geom">Cell
+    Geometry Digest</a>, and returns the access name.  The <a
+    href="CgdAddCells"><tt>CgdAddCells</tt></a> function can be used
+    to add cell geometry.
+    </dl>
+    <hr>
+
+    <!-- 012111 -->
+    <a name="WriteCellGeomDigest"></a>
+    <dl>
+    <dt><b>(int) <tt>WriteCellGeomDigest</tt>(<i>cgd_name</i>,
+      <i>filename</i>)</b>
+    <dd><br>
+    This function will write a disk file representation of the <a
+    href="xic:geom">Cell Geometry Digest</a> (CGD) associated with the
+    access name given as the first argument, into the file whose name
+    is given as the second argument.  Subsequently, the file can be
+    read with <a
+    href="OpenCellGeomDigest"><tt>OpenCellGeomDigest</tt></a> to
+    recreate the CGD.  The file has no other use and the format is not
+    documented.
+  
+    <p>
+    The function returns 1 if the file was written successfully, 0
+    otherwise, with an error message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="CgdList"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>CgdList</tt>()</b>
+    <dd><br>
+    This function returns a handle to a list of access strings to Cell
+    Geometry Digests that are currently in memory.  The function never  
+    fails, though the handle may reference an empty list.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="CgdChangeName"></a>
+    <dl>
+    <dt><b>(int) <tt>CgdChangeName</tt>(<i>old_cgd_name</i>,
+      <i>new_cgd_name</i>)</b>
+    <dd><br>
+    This function allows the user to change the access name of an
+    existing <a href="xic:geom">Cell Geometry Digest</a> (CGD) to a
+    user-supplied name.  The new name must not already be in use by
+    another CGD.
+
+    <p>
+    The first argument is the access name of an existing CGD, the
+    second argument is the new access name, with which the CGD will
+    subsequently be accessed.  This name can be any text string, but
+    can not be null. 
+
+    <p>
+    The function returns 1 on success, 0 otherwise, with an error
+    message likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="CgdIsValid"></a>
+    <dl>
+    <dt><b>(int) <tt>CgdIsValid</tt>(<i>cgd_name</i>)</b>
+    <dd><br>
+    This function returns one if the string argument is an access name
+    of a <a href="xic:geom">Cell Geometry Digest</a> currently in
+    memory, zero otherwise.
+    </dl>
+    <hr>
+
+    <!-- 012111 -->
+    <a name="CgdDestroy"></a>
+    <dl>
+    <dt><b>(int) <tt>CgdDestroy</tt>(<i>cgd_name</i>)</b>
+    <dd><br>
+    The string argument is the access name of a <a href="xic:geom">Cell
+    Geometry Digest</a> (CGD) currently in memory.  If the CGD is not
+    currently linked to a Cell Hierarchy Digest (CHD), then the CGD
+    will be destroyed and its memory freed.  One is returned on
+    success, zero otherwise, with an error message likely available
+    with <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 030209 -->
+    <a name="CgdIsValidCell"></a>
+    <dl>
+    <dt><b>(int) <tt>CgdIsValidCell</tt>(<i>cgd_name</i>, <i>cellname</i>)</b>
+    <dd><br>
+    This function will return 1 if a <a href="xic:geom">Cell Geometry
+    Digest</a> (CGD) with an access name given as the first argument
+    exists and contains data for the cell whose name is given as the
+    second argument.  Otherwise, 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030209 -->
+    <a name="CgdIsValidLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>CgdIsValidLayer</tt>(<i>cgd_name</i>, <i>cellname</i>,
+     <i>layername</i>)</b>
+    <dd><br>
+    This function returns 1 if the <i>cgd_name</i> is an access name
+    of a <a href="xic:geom">Cell Geometry Digest</a> (CGD) in memory,
+    which contains a cell <i>cellname</i> that has data for layer
+    <i>layername</i>.  Otherwise, 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 012111 -->
+    <a name="CgdRemoveCell"></a>
+    <dl>
+    <dt><b>(int) <tt>CgdRemoveCell</tt>(<i>cgd_name</i>, <i>cellname</i>)</b>
+    <dd><br>
+    This function will remove and destroy the data for the cell
+    <i>cellname</i> from the <a href="xic:geom">Cell Geometry
+    Digest</a> (CGD) with access name <i>cgd_name</i>.  This applies
+    to all CGD types, as described for <a
+    href="OpenCellGeomDigest"><tt>OpenCellGeomDigest</tt></a>.  If the
+    CGD is accessing geometry from a remote server, the cell data are
+    removed from the server.
+
+    <p>
+    The names of cells that have been removed are retained, and can be
+    checked with <a
+    href="CgdIsCellRemoved"><tt>CgdIsCellRemoved</tt></a>.
+
+    <p>
+    If the CGD is found and it contains <i>cellname</i>, the cell data
+    are destroyed and the function returns 1.  Otherwise, 0 is
+    returned, with an error message available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 012111 -->
+    <a name="CgdIsCellRemoved"></a>
+    <dl>
+    <dt><b>(int) <tt>CgdIsCellRemoved</tt>(<i>cgd_name</i>,
+      <i>cellname</i>)</b>
+    <dd><br>
+    This function returns 1 if a CGD is found with access name as
+    given in <i>cgd_name</i>, and the <i>cellname</i> is the name of a
+    cell that has been removed from the CGD, for example with <a
+    href="CgdRemoveCell"><tt>CgdRemoveCell</tt></a>.  Otherwise, the
+    return value is 0.
+    </dl>
+    <hr>
+
+    <!-- 012111 -->
+    <a name="CgdRemoveLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>CgdRemoveLayer</tt>(<i>cgd_name</i>, <i>cellname</i>,
+     <i>layername</i>)</b>
+    <dd><br>
+    If the <a href="xic:geom">Cell Geometry Digest</a> (CGD) exists,
+    and contains data for a cell <i>cellname</i> that contains data
+    for <i>layername</i>, the <i>layername</i> data will be deleted
+    from the <i>cellname</i> record, and the function returns 1. 
+    Otherwise, 0 is returned, with an error message likely available
+    from <a href="GetError"><tt>GetError</tt></a>.
+
+    <p>
+    This applies to memory and file type CGDs, as described for <a
+    href="OpenCellGeomDigest"><tt>OpenCellGeomDigest</tt></a>.  The
+    data, if found, are freed, and (unlike <tt>CgdRemoveCell</tt>) no
+    record of removed layers is retained.  This actually reduces
+    memory use only for memory type CGDs.
+    </dl>
+    <hr>
+
+    <!-- 012111 -->
+    <a name="CgdAddCells"></a>
+    <dl>
+    <dt><b>(int) <tt>CgdAddCells</tt>(<i>cgd_name</i>, <i>chd_name</i>,
+     <i>cells_list</i>)</b>
+    <dd><br>
+    This function will add a list of cells to the <a
+    href="xic:geom">Cell Geometry Digest</a> (CGD) whose access name
+    is given as the first argument.  The cells will be read using the
+    <a href="xic:hier">Cell Hierarchy Digest</a> (CHD) whose access
+    name is given as the second argument.
+
+    <p>
+    This, and the <a href="CgdRemoveCell"><tt>CgdRemoveCell</tt></a>
+    function can be used to implement a cache for cell data.  When a
+    CHD is used for access, and a CGD has been linked to the CHD, the
+    CHD will read geometry information for cells in the CGD from the
+    CGD, and cells not found in the CGD will be read from the layout
+    file.  Thus, if memory is tight, one can put only the heavily-used
+    cells into the CGD, instead of all cells.
+
+    <p>
+    If the CGD already contains data for a cell to add, the data will
+    be overwritten with the new cell data.
+
+    <p>
+    For the <i>cells_list</i> argument, one can pass either a handle
+    to a list of strings that contain cell names, or a string
+    containing space-separated cell names.  If a cell named in the
+    list is not found in the CHD, it will be silently ignored.
+
+    <p>
+    This applies to memory and file type CGDs, as described for <a
+    href="OpenCekkGeomDigest"><tt>OpenCellGeomDigest</tt></a>.  The
+    geometry records are saved in memory, whether or not the CGD is
+    file type.  Individual records set the access method, so it is
+    possible to have mixed file access and memory access records in
+    the same CGD.
+
+    <p>
+    On success, 1 is returned.  If an error occurs, 0 is returned, and
+    a message may be available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="CgdContents"></a>
+    <dl>
+    <dt><b>(int) <tt>CgdContents</tt>(<i>cgd_name</i>, <i>cellname</i>,
+      <i>layername</i>)</b>
+    <dd><br>
+    This function returns content listings from the <a
+    href="xic:geom">Cell Geometry Digest</a> (CGD) whose access name
+    is given in the first argument.  The remaining string arguments
+    give the cell name and layer name to query.  Either or both of
+    these arguments can be null (passed 0).
+
+    <p>
+    If the <i>cellname</i> is null, a handle to a list if strings
+    giving the cell names in the CGD is returned.  otherwise, the
+    <i>cellname</i> must be a cell name from the CGD.
+
+    <p>
+    If <i>layername</i> is null, the return value is handle to a list
+    of <a href="layername">layer name strings</a> for layers used in
+    <i>cellname</i>.  If <i>layername</i> is not null, it should be
+    one of the layer names contained in the <i>cellname</i>.
+
+    <p>
+    The return value when both <i>cellname</i> and <i>layername</i>
+    are non-null is a handle to a list of two strings.  The first
+    string gives the integer number of bytes of compressed geometry
+    for the cell/layer.  The second string gives the size of the
+    geometry string after decompression.  The compressed size can be 0,
+    in which case compression was not used as the block is too small
+    for compression to be effective.
+
+    <p>
+    If the arguments are unresolved, the return value is a scalar 0.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="CgdOpenGeomStream"></a>
+    <dl>
+    <dt><b>(gs_handle) <tt>CgdOpenGeomStream</tt>(<i>cgd_name</i>,
+      <i>cellname</i>, <i>layername</i>)</b>
+    <dd><br>
+    This function creates a handle to an iterator for decompressing
+    the geometry in a <a href="xic:geom">Cell Geometry Digest</a>
+    (CGD).  The first argument is the access name of the CGD.  The
+    second argument is the name of one of the cells contained in the
+    CGD.  The third argument is the name of a layer used by the cell. 
+    The cells and layers in the CGD can be listed with
+    <tt>CgdContents</tt>.
+
+    <p>
+    The return value is a handle to an incremental reader, loaded with
+    the compressed geometry for the cell and layer.  This can be
+    passed to <tt>GsReadObject</tt> to obtain the geometrical objects.
+
+    <p>
+    The <a href="Close"><tt>Close</tt></a> function can be used to
+    destroy the reader.  It will be closed automatically if
+    <tt>GsReadObject</tt> iterates through all objects contained in
+    the stream.
+
+    <p>
+    A scalar 0 is returned if the arguments are not resolved.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="GsReadObject"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>GsReadObject</tt>(<i>gs_handle</i>)</b>
+    <dd><br>
+    This function takes the handle created with
+    <tt>CgdOpenGeomStream</tt> and returns an object handle which
+    points to a single object.  A different object will be returned
+    with each call until all objects have been returned, at which time
+    the geometry stream handle is closed.  Further calls will return a
+    scalar 0.
+
+    The <a href="ConvertReply"><tt>ConvertReply</tt></a> function can
+    also return a handle for use by this function.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="GsDumpOasisText"></a>
+    <dl>
+    <dt><b>(int) <tt>GsDumpOasisText</tt>(<i>gs_handle</i>)</b>
+    <dd><br>
+    This function will dump the geometry stream in OASIS <a
+    href="asciitext">ASCII text</a> representation to the console
+    window (standard output).  The handle is freed.  This may be
+    useful for debugging.
+    </dl>
+
+!!SEEALSO
+funcs:cvrt
+
+!!KEYWORD
+funcs:cvrt:asm
+!!TITLE
+Assembly Stream
+!!HTML
+
+    <!-- 033009 -->
+    These functions implement a functionality similar to the <a
+    href="!assemble"><b>!assemble</b></a> command.
+    <hr>
+
+    <!-- 033009 -->
+    <a name="StreamOpen"></a>
+    <dl>
+    <dt><b>(stream_handle) <tt>StreamOpen</tt>(<i>outfile</i>)</b>
+    <dd><br>
+    Open an assembly stream to the file <i>outfile</i>.  The file
+    format that will be used is obtained from the extension of the
+    name given, which must be one of
+    <table border=0 cellpadding=2>
+    <tr><td>CGX</td>     <td><tt>.cgx</tt></td></tr>
+    <tr><td>CIF</td>     <td><tt>.cif</tt></td></tr>
+    <tr><td>GDSII</td>   <td><tt>.gds, .str, .strm, .stream</tt></td></tr>
+    <tr><td>OASIS</td>   <td><tt>.oas</tt></td></tr>
+    </table>
+
+    <p>
+    If successful, a handle to the stream control structure is
+    returned, which can be passed to other functions which require
+    this data type.  A scalar zero is returned on error.  The returned
+    handle is used to implement processing of archive data similar to
+    the <b>!assemble</b> command.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="StreamTopCell"></a>
+    <dl>
+    <dt><b>(int) <tt>StreamTopCell</tt>(<i>stream_handle</i>,
+      <i>cellname</i>)</b>
+    <dd><br>
+    Define the name of a top-level cell that will be created in the
+    output stream.  At most one definition is possible in a stream.
+    If successful 1 is returned, otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 033009 -->
+    <a name="StreamSource"></a>
+    <dl>
+    <dt><b>(int) <tt>StreamSource</tt>(<i>stream_handle</i>,
+     <i>file_or_chd</i>, <i>scale</i>, <i>layer_filter</i>,
+     <i>name_change</i>)</b>
+    <dd><br>
+    This function will add a source specification to a stream.  The
+    specification can refer to either an archive file, or to a <a
+    href="xic:hier">Cell Hierarchy Digest</a> (CHD).  Upon successful
+    return, the source will be queued for writing to the stream
+    (initiated with <tt>StreamRun</tt>).  Arguments set various modes
+    and conditions that will apply during the write.
+
+    <p>
+    This function specifies the equivalent of a Source Block as
+    described for the <a href="!assemble"><b>!assemble</b></a>
+    command.  The <tt>StreamInstance</tt> function is used to add
+    "Placement Blocks".
+
+    <p>
+    <dl>
+    <dt><i>stream_handle</i><dd>
+     Handle to the stream object.
+    </dl>
+
+    <dl>
+    <dt><i>file_or_chd</i><dd>
+    This argument can be either a string giving a path to an archive
+    file, or the access name of a Cell Hierarchy Digest in memory.
+    </dl>
+
+    <dl>
+    <dt><i>scale</i><dd>
+    This is a scaling factor which applies only when streaming the
+    entire file, which will occur if no instances are specified for
+    the source with the <tt>StreamInstance</tt> function.  It is ignored
+    if an instance is specified.  When used, all coordinates read from
+    the source file will be multiplied by the factor, which can be in
+    the range 0.001 - 1000.0.
+    </dl>
+
+    <dl>
+    <dt><i>layer_filter</i><dd>
+    This is a switch integer that enables or disables use of the <a
+    href="layerchange">layer filtering and aliasing</a> capability. 
+    If 0, no layer filtering or aliasing will be done.  If nonzero,
+    layer filtering and aliasing will be be performed when reading
+    from the source, according to the present values of the variables
+    listed below.  These values are saved, so that the variables can
+    subsequently change.
+    <blockquote>
+    <a href="LayerList"><tt>LayerList</tt></a><br>
+    <a href="UseLayerList"><tt>UseLayerList</tt></a><br>
+    <a href="LayerAlias"><tt>LayerAlias</tt></a><br>
+    <a href="UseLayerAlias"><tt>UseLayerAlias</tt></a>
+    </blockquote>
+  
+    <p>
+    If needed, these variables should be set to the desired values
+    before calling this function, then reset to the previous values
+    after the call.  This can be done with the <a
+    href="Get"><tt>Get</tt></a> and <a href="Set"><tt>Set</tt></a>
+    functions.
+    </dl>
+
+    <dl>
+    <dt><i>name_change</i><dd>
+    This is a switch integer that enables or disables use of the <a
+    href="cellname">Cell Name Mapping</a> capability.  If 0, no cell
+    name changes are done, except that if a name clash is detected, a
+    new name will be supplied, similar to the auto-aliasing feature. 
+    If nonzero, cell name mapping will be performed when the source is
+    read according to the present values of the variables listed
+    below.  These values are saved, so that the variables can
+    subsequently change.
+    <blockquote>
+    <a href="InCellNamePrefix"><tt>InCellNamePrefix</tt></a><br>
+    <a href="InCellNameSuffix"><tt>InCellNameSuffix</tt></a><br>
+    <a href="InToLower"><tt>InToLower</tt></a><br>
+    <a href="InToUpper"><tt>InToUpper</tt></a>
+    </blockquote>
+
+    <p>
+    If needed, these variables should be set to the desired values
+    before calling this function, then reset to the previous values
+    after the call.  This can be done with the <tt>Get</tt> and
+    <tt>Set</tt> functions.
+    </dl>
+
+    The function returns one on success, zero otherwise with an error
+    message probably available through <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 022916 -->
+    <a name="StreamInstance"></a>
+    <dl>
+    <dt><b>(int) <tt>StreamInstance</tt>(<i>stream_handle</i>, <i>cellname</i>,
+     <i>x</i>, <i>y</i>, <i>my</i>, <i>rot</i>, <i>magn</i>, <i>scale</i>,
+     <i>no_hier</i>, <i>ecf_level</i>, <i>flatten</i>, <i>array</i>,
+     <i>clip</i>)</b>
+    <dd><br>
+    This function will add a placement name to the most recently added
+    source file (using <tt>StreamSource</tt>).  A source must have
+    been specified before this function can be called successfully. 
+    This function specifies the equivalent of a Placement Block as
+    described for the <a href="!assemble"><b>!assemble</b></a> command.
+
+    <p>
+    The <i>cellname</i> must match the name of a cell found in the
+    source, including any aliasing in effect.  There are two
+    consequences of calling this function:  the named cell and
+    possibly its subcell hierarchy will be written to output, and if a
+    top cell was specified (with <tt>StreamTopCell</tt>), an instance
+    of the named cell will be placed in the top cell.  The placement
+    is governed by the <i>x</i>, <i>y</i>, <i>my</i>, <i>ang</i>, and
+    <i>magn</i> arguments, which are ignored if there is no top cell.
+
+    <p>
+    The <i>x</i>,<i>y</i> are the translation coordinates of the cell
+    origin.  The <i>my</i> is a flag indicating Y-reflection before
+    rotation.  The <i>ang</i> is the rotation angle, in degrees, and
+    must be a multiple of 45 degrees.  The <i>magn</i> is the
+    magnification factor for the placement.  These apply to the
+    instantiation only, and have no effect on the cell definitions.
+
+    <p>
+    The remaining arguments affect the cell definitions that are
+    created in the output file.
+
+    <dl>
+    <dt><i>scale</i><dd>
+      This is a scale factor by which all coordinates are scaled in
+      cell definition output, and is a real number in the range 0.001 -
+      1000.0.  This is different from the <i>magn</i> factor, which
+      applies only to the instance placement.
+    </dl>
+
+    <dl>
+    <dt><i>no_hier</i><dd>
+      This is a boolean value that when nonzero indicates that only the
+      named cell, and not its hierarchy, is written to output.  This can
+      cause the output file to have unresolved references.
+    </dl>
+
+    <dl>
+    <dt><i>ecf_level</i><dd>
+    This is an integer 0-3 which specifies the empty cell filtering
+    level as <a href="ecfilt">described</a> for the <b>Format
+    Conversion</b> panel.  The values are
+
+    <table border=0>
+    <tr><td>0</td> <td>No empty cell filtering.</td></tr>
+    <tr><td>1</td> <td>Apply pre- and post-filtering.</td></tr>
+    <tr><td>2</td> <td>Apply pre-filtering only.</td></tr>
+    <tr><td>3</td> <td>Apply post-filtering only.</td></tr>
+    </table>
+    </dl>
+
+    <dl>
+    <dt><i>flatten</i><dd>
+      If the boolean variable <i>flatten</i> is nonzero, the objects
+      in the hierarchy under <i>cellname</i> will be created in
+      <i>cellname</i>, thus only one cell, containing all geometry,
+      will be written.
+    </dl>
+
+    <dl>
+    <dt><i>array</i><dd>
+      If the <i>array</i> argument is passed 0, no windowing will be
+      used.  Otherwise the <i>array</i> should have four components
+      which specify a rectangle, in microns, in the coordinates of
+      <i>cellname</i>.  The values are
+
+      <p>
+      <table border=0>
+      <tr><td><i>array</i><tt>[0]</tt></td> <td>X left</td></tr>
+      <tr><td><i>array</i><tt>[1]</tt></td> <td>Y bottom</td></tr>
+      <tr><td><i>array</i><tt>[2]</tt></td> <td>X right</td></tr>
+      <tr><td><i>array</i><tt>[3]</tt></td> <td>Y top</td></tr>
+      </table>
+
+      <p>
+      If an <i>array</i> is given, only the objects and subcells
+      needed to render the window will be written.
+    </dl>
+
+    <dl>
+    <dt><i>clip</i><dd>
+      If the boolean value <i>clip</i> is nonzero and an <i>array</i>
+      is given, objects will be clipped to the window.  Otherwise no
+      clipping is done.
+    </dl>
+
+    The function returns one on success, zero otherwise with an error
+    message probably available through <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100108 -->
+    <a name="StreamRun"></a>
+    <dl>
+    <dt><b>(int) <tt>StreamRun</tt>(<i>stream_handle</i>)</b>
+    <dd><br>
+    This function will initiate the writing from the sources
+    previously specified with <tt>SteamSource</tt> into the output
+    file.  The real work is done here.  The function returns one on
+    success, zero otherwise with an error message probably available
+    through <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+
+!!SEEALSO
+funcs:cvrt
+

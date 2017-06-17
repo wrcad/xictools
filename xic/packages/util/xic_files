@@ -1,0 +1,400 @@
+#! /bin/sh
+# $Id: xic_files,v 1.71 2017/03/22 23:39:55 stevew Exp $
+
+# Echo the files found in the Xic distribution.
+
+bin="\
+wrdecode \
+wrencode \
+wrsetpass \
+xic"
+
+examples="\
+amd2901.gds.gz \
+cgdtest.scr \
+cgdtest1.scr \
+chip.gds \
+density.scr \
+density1.scr \
+density2.scr \
+diffpair \
+extest.gds \
+fixvia.scr \
+hyt.gds \
+jj_cmos_if.tar.gz \
+ma1 \
+ma2 \
+mosamp \
+netcgdtest.scr \
+preferences.scr \
+README \
+rsfq_lib.tar.gz \
+spiral1.scr \
+tkdemo.tk \
+tut11a.gds \
+vec_examp1 \
+vec_examp2 \
+xclient.cc \
+xclient.scr"
+
+examples_pcells="\
+cappc \
+cappy \
+captcl1 \
+captcl2 \
+README \
+spiral \
+spiralpc.scr"
+
+examples_memchip_example="\
+chip1.tar.gz \
+chip4.tar.gz \
+README \
+xic_tech.demo"
+
+help="\
+FileSel.hlp \
+Hardcopy.hlp \
+HelpSys.hlp \
+TextEditor.hlp \
+TMsmall.gif \
+accessories.hlp \
+anynooverlap.gif \
+anyoverlap.gif \
+arc.xpm \
+bloat.gif \
+box.xpm \
+break.xpm \
+cpos33.png \
+deck.xpm \
+devmeas.gif \
+desel.xpm \
+devs.xpm \
+donut.xpm \
+erase.xpm \
+ifoverlap.gif \
+indx.gif \
+iplot.xpm \
+label.xpm \
+layer.xpm \
+logo.xpm \
+ltpal.xpm \
+ltsty.xpm \
+lspec.xpm \
+mainwin.png \
+minedgelength.gif \
+minnooverlap.gif \
+minoverlap.gif \
+minspace.gif \
+minspacefrom.gif \
+minspaceto.gif \
+minwidth.gif \
+nodmp.xpm \
+nooverlap.gif \
+overlap.gif \
+partoverlap.gif \
+place.xpm \
+plot.xpm \
+polyg.xpm \
+powerlogo.gif \
+put.xpm \
+rdraw.xpm \
+round.xpm \
+run.xpm \
+shapes.xpm \
+sides.xpm \
+spcmd.xpm \
+spAnalysis.hlp \
+spElements.hlp \
+spExpressions.hlp \
+spInput.hlp \
+spModels.hlp \
+spSemicond.hlp \
+spSources.hlp \
+spform.html \
+spin.xpm \
+style.xpm \
+subct.xpm \
+symbl.xpm \
+terms.xpm \
+viatest.gif \
+wire.xpm \
+wr.xpm \
+wrbannermain.gif \
+write_region.gif \
+xiAttributes.hlp \
+xiBangcmds.hlp \
+xiCadence.hlp \
+xiCell.hlp \
+xiCommands.hlp \
+xiConvert.hlp \
+xiDRC.hlp \
+xiDevToolbar.hlp \
+xiEdit.hlp \
+xiElectrical.hlp \
+xiExtract.hlp \
+xiExtractRLC.hlp \
+xiFile.hlp \
+xiFileFormat.hlp \
+xiFileTool.hlp \
+xiFuncs.hlp \
+xiFuncsCvrt.hlp \
+xiFuncsDrc.hlp \
+xiFuncsExt.hlp \
+xiFuncsGeom1.hlp \
+xiFuncsGeom2.hlp \
+xiFuncsLexpr.hlp \
+xiFuncsMain1.hlp \
+xiFuncsMain2.hlp \
+xiFuncsMain3.hlp \
+xiFuncsSced.hlp \
+xiHelp.hlp \
+xiLayerExp.hlp \
+xiLayers.hlp \
+xiMain.hlp \
+xiModify.hlp \
+xiNew40.hlp \
+xiParamCells.hlp \
+xiPaths.hlp \
+xiPhysical.hlp \
+xiPlugins.hlp \
+xiProperties.hlp \
+xiScript.hlp \
+xiServer.hlp \
+xiSpExports.hlp \
+xiStartup.hlp \
+xiTechfile.hlp \
+xiTutorials.hlp \
+xiUser.hlp \
+xiVariables.hlp \
+xiView.hlp \
+xform.xpm \
+xor.xpm"
+
+help_screenshots="\
+about.png \
+assemble1.png \
+assemble2.png \
+cellslist.png \
+cex1.png \
+cex2.png \
+cex3.png \
+cfilter.png \
+cflags.png \
+cgdopen1.png \
+cgdopen2.png \
+cgdopen3.png \
+cgds.png \
+chdconfig.png \
+chdopen1.png \
+chdopen2.png \
+chds.png \
+clisting1.png \
+clisting2.png \
+clisting3.png \
+clisting4.png \
+clrlist.png \
+color.png \
+compare1.png \
+compare2.png \
+compare3.png \
+convert1.png \
+convert2.png \
+convert3.png \
+convert4.png \
+convert5.png \
+convert6.png \
+cprpty.png \
+ctablist.png \
+curtrans.png \
+cvin1.png \
+cvin2.png \
+cvout.png \
+cvout1.png \
+cvout2.png \
+cvout3.png \
+cvout4.png \
+debug.png \
+devedit.png \
+devs1.png \
+devs2.png \
+devs3.png \
+devsel.png \
+dots.png \
+drcdef.png \
+drceditprms.png \
+drcrun1.png \
+drcrun2.png \
+drp_connected.png \
+drp_exist.png \
+drp_maxarea.png \
+drp_maxwidth.png \
+drp_minarea.png \
+drp_minedgelength.png \
+drp_minnooverlap.png \
+drp_minoverlap.png \
+drp_minspace.png \
+drp_minspacefrom.png \
+drp_minspaceto.png \
+drp_minwidth.png \
+drp_noholes.png \
+drp_overlap.png \
+dumpel.png \
+dumplvs.png \
+dumpph.png \
+edlayer.png \
+edsetup.png \
+email.png \
+error.png \
+expand.png \
+exsetup1.png \
+exsetup2.png \
+exsetup3.png \
+exsetup4.png \
+filelist.png \
+filesel.png \
+fill1.png \
+fill2.png \
+flatten.png \
+font.png \
+grid1.png \
+grid2.png \
+help.png \
+info.png \
+joinsplit.png \
+lchgmode.png \
+lexpr.png \
+libraries.png \
+logo.png \
+logopts.png \
+lpal.png \
+lrex1.png \
+lrex2.png \
+lrex3.png \
+ltab.png \
+merge.png \
+modcells.png \
+nodemap.png \
+oadefs.png \
+oalibraries.png \
+oasadv.png \
+oatech.png \
+params.png \
+pathsel.png \
+pccontrol.png \
+place.png \
+print.png \
+prpty.png \
+prptyinfo.png \
+sourceph.png \
+sourcesp.png \
+stabs.png \
+tech.png \
+techeditprms.png \
+tedit1.png \
+tedit2.png \
+tedit3.png \
+texted.png \
+tree.png \
+vport.png \
+winattr1.png \
+winattr2.png \
+winattr3.png \
+winattr4.png \
+winattr5.png \
+xicel.png \
+xicph.png \
+zoom.png"
+
+icons="\
+README \
+xic_16x16.xpm \
+xic_32x32.xpm \
+xic_48x48.xpm"
+
+startup="\
+README \
+device.lib \
+device_templates \
+model.lib \
+wr_install \
+xic_format_lib \
+xic_mesg \
+xic_stipples \
+xic_tech.cni \
+xic_tech.hyp \
+xic_tech.n65 \
+xic_tech.scmos"
+
+default_theme="gtkrc README"
+
+scripts="\
+blackbg.scr \
+fullcursor.scr \
+paths.scr \
+spiral.scr \
+spiralform.scr \
+whitebg.scr \
+yank.scr"
+
+scrkit="\
+Makefile \
+README \
+miscmath.h \
+scrkit.h \
+si_args.h \
+si_if_variable.h \
+si_scrfunc.h \
+template.cc \
+test.scr"
+
+docs="\
+README"
+
+case $1 in
+bin)
+    echo $bin;;
+default_theme)
+    echo $default_theme;;
+docs)
+    echo $docs;;
+examples)
+    echo $examples;;
+examples_pcells)
+    echo $examples_pcells;;
+examples_memchip_example)
+    echo $examples_memchip_example;;
+examples_memchip_example_chip1)
+    echo $examples_memchip_example_chip1;;
+examples_memchip_example_chip4)
+    echo $examples_memchip_example_chip4;;
+help)
+    echo $help;;
+help_screenshots)
+    echo $help_screenshots;;
+icons)
+    echo $icons;;
+scripts)
+    echo $scripts;;
+scrkit)
+    echo $scrkit;;
+startup)
+    echo $startup;;
+plugins)
+    case $2 in
+    Darwin*)
+        echo "py26.dylib tcl.dylib tcltk.dylib";;
+    LinuxRHEL3|LinuxRHEL3_64|LinuxRHEL5|LinuxRHEL5_64|LinuxRHEL6_64)
+        echo "py26.so tcl.so tcltk.so";;
+    LinuxRHEL7_64)
+        echo "py27.so tcl.so tcltk.so";;
+    FreeBSD*)
+        echo "py27.so tcl.so tcltk.so";;
+    esac;;
+oaplugin)
+    case $2 in
+#    Linux*)
+#        echo "oa.so";;
+    esac;;
+esac
+

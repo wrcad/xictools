@@ -1,0 +1,86 @@
+#######################################################################
+# src/gtkinterf/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.28 2014/02/15 18:40:33 stevew Exp $
+#######################################################################
+
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @TOOLKITCFLAGS@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @TOOLKITCFLAGS@
+FILTER = @FILTER@
+INCLUDE = -I. -I.. -I../../miscutil @TOOLKITINC@
+
+LPATH = ../..
+HFILES = \
+    gtkedit.h \
+    gtkfile.h \
+    gtkfont.h \
+    gtkhcopy.h \
+    gtkhelp.h \
+    gtkinterf.h \
+    gtklist.h \
+    gtkmcol.h \
+    gtkpfiles.h \
+    gtksearch.h \
+    gtkspinbtn.h \
+    gtkutil.h \
+    gtkviewer.h \
+    gtkx11.h \
+    mswdraw.h \
+    mswpdev.h
+
+CCFILES = \
+    gtkedit.cc \
+    gtkfile.cc \
+    gtkfont.cc \
+    gtkhcopy.cc \
+    gtkhelp.cc \
+    gtkhttpmon.cc \
+    gtkinterf.cc \
+    gtklist.cc \
+    gtkmcol.cc \
+    gtkpfiles.cc \
+    gtksearch.cc \
+    gtkspinbtn.cc \
+    gtkutil.cc \
+    gtkviewer.cc \
+    gtkxdraw.cc \
+    mswdraw.cc \
+    mswpdev.cc
+
+CCOBJS = $(CCFILES:.cc=.o)
+LIBOBJS = $(CCOBJS)
+
+stamp: $(LIBOBJS)
+	touch stamp
+
+.cc.o:
+	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
+
+files::
+	@echo [ $(CCFILES) $(HFILES) Makefile.in ]
+
+subdirs::
+	@echo ]
+
+clean:
+	-@rm -f $(CCOBJS) stamp
+
+distclean: clean
+	-@rm -f Makefile
+
+depend:
+	@echo depending in gtkinterf
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+install:
+
+uninstall:
+
+#######################################################################

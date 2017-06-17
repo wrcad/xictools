@@ -1,0 +1,43 @@
+$Id: README,v 1.5 2014/04/22 19:34:09 stevew Exp $
+
+This is the HICUM2 BJT model Verilog-A code.  Documentation and newer
+versions may be available from the developers at TU Dresden
+(http://www.iee.et.tu-dresden.de/iee/eb/hic_new/hic_intro.html).
+
+Unlike the hicum0 model, this along with QA data are available
+directly via download from the developer's web site.
+
+Beware that his model generates floating-point exceptions, requiring
+the use of ".options fpemode=1" in many circuits.  One can also
+undefine CALC_OP in the source file, which avoids executing the block
+where the problems occur, but prevents calculation of internal data
+for export.
+
+Complete QA results are available for this model in the separate QA
+download.
+
+A pre-built module is available in the "module_dist" directory.
+
+To build:
+
+0.  Make sure that the admst-2.3.0-wr package is installed on your
+system.  This is available from the free software area of wrcad.com. 
+The package has important improvements and bug fixes, and is required
+for building modules for WRspice.  Use of another adms distribution
+will cause trouble.
+
+1.  If you are reading this from the WRspice installation area, copy
+this directory to a personal work area, and work from there.  Below,
+"this directory" implies the copied directory (with its files and
+any sub-directories).
+
+2.  The Makefile has been provided.  Have a look at the top part of
+the file where the configuration variables are set, and read the
+comments.  Make any desired changes.
+
+3.  Type "make".  This will create and compile the C++ files, eventually
+producing the loadable module named "hicum2.so" ("hicum0.dylib" in OS X).
+
+4.  Use the devload command or -m command-line option in WRspice to
+load the module.  You will then be able to run the examples.
+

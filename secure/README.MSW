@@ -1,0 +1,53 @@
+
+#######################################################################
+#
+# Microsoft Windows Licensing for XicTools
+# Whiteley Research Inc. 4/14/2002
+#
+#######################################################################
+
+In order to run Xic and/or WRspice, a LICENSE file must be obtained
+from Whiteley Research Inc.
+
+How to obtain and install the LICENSE file
+------------------------------------------
+
+1) Your Windows computer must have networking installed and set up, at
+   least to the point of supporting the TCP service.  This can be
+   enabled through the "Network" icon in the Control Panel.
+
+2) Obtain the "licinfo.exe" program from one of the Whiteley Research
+   web sites (www.wrcad.com/www.srware.com).  Running this program
+   will cause a pop-up to appear which indicates success or failure,
+   and gives the machine's host name and product id.  The same
+   information is saved in a file named "XtLicenseInfo" which you
+   should email to license@wrcad.com.  The LICENSE file, which is
+   required to run the XicTools programs will be provided by return
+   email.
+
+3) The LICENSE file will be sent as an attachment to an email message. 
+   Your mail program should decode this into a file named "LICENSE" or
+   "LICENSE.dat".  If for some reason some other extension is given to
+   the file, it must be removed or changed to ".dat" by hand.  The
+   "real" name of the file is "LICENSE", but "LICENSE.dat" is accepted
+   since some versions of Outlook Express insist on adding the ".dat".
+
+4) The LICENSE file should be moved to this directory, i.e.
+   c:\usr\local\lib\xictools\license
+   If you have just one of Xic or WRspice, the LICENSE file will also
+   be found in the startup directory:
+   c:\usr\local\lib\xictools\{xic,wrspice}\startup
+   if you feel like being different.
+   If you installed the programs in some other location, use the
+   corresponding actual location and not the examples above.
+
+5) You should be able to start Xic and/or WRspice at this point.
+
+There is a license server now available for use with Windows. 
+Operation is about the same as under Linux and OS X, see the README
+file from the license server distribution for setup and operation
+instructions.
+
+You MUST have "XT_AUTH_MODE=Server" in the environment, as the Windows
+programs assume local authorization (no license server) by default.
+

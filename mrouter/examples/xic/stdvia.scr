@@ -1,0 +1,66 @@
+# $Id;$
+
+# This script reads the standard via descriptions from a file named
+# "stdvias" into the Xic technology database.  The stdvias file, found
+# in the current directory, should contain StandardVia lines in the
+# same format used in the technology file.
+
+
+function readline(fd)
+#
+# Return the next logical line from file pointer fd.  This handles
+# backslash line continuation, and '#' comments, and skips leading
+# space and empty lines.  A null string is returned on end-of-file.
+#
+    string = ""
+    while 1
+        s = ReadLine(1024, fd)
+        if (s == 0)
+            return s
+        end
+        if (string != "")
+            n = Strlen(string)
+            string[n-1] = 0
+            string = string + s
+        else
+            string = Strdup(s)
+        end
+        n = Strlen(string)
+        c = string[n-1]
+        if (c == '\\')
+            continue
+        end
+        spcnt = 0;
+        while (string[spcnt] == ' ')
+            spcnt++
+        end
+        if (string[spcnt] == '#' | string[spcnt] == 0)
+            string = ""
+            continue
+        end
+        s = Strdup(string + spcnt)
+        return s
+    end
+endfunc
+
+
+fd = Open("stdvias", "r")
+if (fd)
+    numv = 0
+    while 1
+        s = readline(fd)
+        if (s == 0)
+            break
+        end
+        if (TechParseLine(s) == 0)
+            ErrorMsg(GetError())
+        else
+            numv++
+        end
+    end
+    Close(fd)
+    ShowPrompt("Done,", numv, "standard vias read.")
+else
+    ShowPrompt("No \"stdvias\" file found.")
+end
+

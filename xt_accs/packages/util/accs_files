@@ -1,0 +1,42 @@
+#! /bin/sh
+
+bin="\
+mozy \
+xeditor \
+httpget \
+hlp2html \
+hlpsrv \
+fcpp \
+lstpack \
+lstunpack"
+
+startup="\
+README"
+
+help="\
+FileSel.hlp \
+Hardcopy.hlp \
+HelpSys.hlp \
+accessories.hlp \
+TextEditor.hlp \
+TMsmall.gif \
+wrbannermain.gif"
+
+help_ss="\
+email.png \
+filesel.png \
+help.png \
+print.png \
+texted.png"
+
+case $1 in
+bin)
+    echo $bin;;
+startup)
+    echo $startup;;
+help)
+    echo $help;;
+help_ss)
+    echo $help_ss;;
+esac
+

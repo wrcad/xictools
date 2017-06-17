@@ -1,0 +1,2760 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spMain.hlp,v 1.44 2016/10/16 19:25:43 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!HEADER
+    <table border=1 width=100% cellpadding=0 cellspacing=0>
+    <tr><td bgcolor=white><img src=wrbannermain.gif width=300 align=left>
+!!IFDEF Windows
+    <font face=utopia color=royalblue size=4>
+!!ELSE
+    <font face=utopia color=royalblue size=5>
+!!ENDIF
+    <br>&nbsp;&nbsp;<i>WRspice</i> Help</font></td></tr>
+    <tr><td bgcolor=white height=40>
+    <font face=utopia color="#dd0000" size=5>&nbsp;&nbsp;%TITLE%</font></td></tr>
+    </table><p>
+
+!!FOOTER
+    <p><hr><font size=3 face=utopia color=darkblue>
+    &#169; Whiteley Research Inc. 2016, All Rights Reserved.</font>
+
+!!MAINTAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spMain.hlp
+!!TITLE
+spMain.hlp
+!!HTML 
+
+!!SUBTOPICS
+wrspice
+wrs:manual
+sphistory
+spice
+spanalysis
+spthreads
+convergence
+memory
+spcontrol
+sppost
+spintr
+batchmode
+loadable
+refs
+rawfilefmt
+utilities
+multidec
+printtoraw
+proc2mod
+wrspiced
+
+
+!!KEYWORD
+wrspice wrspice_top_topic
+!!TITLE
+Help
+!!HTML 
+    <table border=0 width=100%>
+    <tr><td align=center>
+    <font face=helvetica color="#000090">
+    <b>456 Flora Vista Avenue, Sunnyvale CA 94086</b>
+    </font>
+    <table border=0 width=80%>
+     <tr><td align=left>
+     <font face=helvetica color="#000090">
+     (408) 735-8973
+     </font>
+     </td><td align=right>
+     <font face=helvetica color="#000090">
+     (408) 245-4033 (fax)
+     </font>
+     </td></tr>
+     <tr><td align=left>
+     <font face=helvetica>
+     <a href="http://wrcad.com">wrcad.com</a>
+     </font>
+     </td><td align=right>
+     <font face=helvetica>
+     <a href="mailto:support@wrcad.com">support@wrcad.com</a></tr>
+     </font>
+     </td></tr>
+     </table>
+    </td></tr>
+    </table>
+
+    <p>
+    <center>
+    <h3>Welcome to the <i>WRspice</i> <a href="helpsys">help system</a></h3>
+    </center>
+
+    <h4>Introduction and <i>WRspice</i> Overview</h4>
+    <a href="sphistory">SPICE History</a><br>
+    <a href="spice"><i>WRspice</i> Overview</a><br>
+    <a href="sparse">Sparse Matrix Package</a><br>
+    <a href="spthreads">Multi-Threading</a><br>
+    <a href="memory">Virtual Memory Usage</a><br>
+
+    <h4><i>WRspice</i> Setup and Configuration</h4>
+    <a href="setup">Installation and Setup</a><br>
+    <a href="environment">Environment Variables</a><br>
+    <a href="arguments">Command Line Arguments</a><br>
+    <a href="startup_ops">Startup Operations</a><br>
+    <a href="startup_files">Initialization Files</a><br>
+
+    <h4>Using <i>WRspice</i></h4>
+    <a href="toolbar">Tool Control Window</a><br>
+    <a href="spshell">Shell Features</a><br>
+    <a href="commands">Builtt-in Commands</a><br>
+    <a href="plotvec">Plots and Vectors</a><br>
+    <a href="expressions">Vector Expressions</a><br>
+    <a href="batchmode">Scripts and Batch Mode</a><br>
+    <a href="options">SPICE Options</a><br>
+    <a href="variables">Variables</a><br>
+    <a href="convergence">Convergence</a><br>
+
+    <h4><i>WRspice</i> Input Format</h4>
+    <a href="spinput">Circuit Input Format</a><br>
+    <a href="analyses">Analysis Types</a><br>
+
+    <h4>Reference</h4>
+    <a href="examples">Circuit Examples</a><br>
+    <a href="rawfilefmt">Rawfile Format</a><br>
+    <a href="refs">References</a><br>
+    <a href="utilities">Utility Programs</a><br>
+    <a href="http://wrcad.com/wrs_docs">
+      <i>WRspice</i> Release Notes Archive</a><br>
+    <a href="http://wrcad.com/manual/wrsmanual4">
+      <i>WRspice</i> Reference Manual</a><br>
+
+!!REDIRECT      hspicesim       sphistory#hspice
+
+!! intro.tex 031416
+!!KEYWORD
+sphistory
+!!TITLE
+SPICE history
+!!HTML 
+    In the early days of radio, before the term "electronics" came
+    into use, experimenters and scientists (engineers designed bridges
+    then) built circuits on whatever could be found that was
+    appropriate.  To the dismay of otherwise supportive wives and
+    mothers, one popular substrate was the wooden breadboard found in
+    most kitchens.  The breadboard could be used to secure the tube
+    sockets and other appendages through use of screws.  Thus, the
+    term "breadboard" as a substrate for the building of electronic
+    circuits was born.
+
+    <p>
+    Breadboards, in one form or another, were used for the
+    construction of all electronic prototype circuits until the
+    integrated circuit was invented in 1957.  Even well afterward, the
+    integrated circuit was only another component on the breadboard. 
+    A new circuit could be easily (well, in principle) debugged,
+    modified, enhanced, or otherwise engineered toward perfection, as
+    all points of the circuit were accessible for testing and
+    measurement.
+
+    <p>
+    After it became possible to put more than a small number of
+    devices on an integrated circuit chip, design of such chips became
+    quite challenging.  Obviously there was no opportunity to solder
+    in new components, or even probe the internal connections.  The
+    circuit had to be perfect as designed, or it wouldn't work
+    properly.  This is almost never the case for any but the simplest
+    design for any but those engineers with godlike intelligence (or
+    luck).  Clearly new tools and methods were needed.
+
+    <p>
+    The rescue came in the early 1970's with the distribution of a
+    computer program called SPICE (Simulation Program for Integrated
+    Circuit Engineering), developed at the University of California,
+    Berkeley.  SPICE was a big (for its day) Fortran computer program,
+    requiring the power of a mainframe computer.  A circuit was
+    described in a certain syntax, which was punched into IBM computer
+    cards.  The terminology this inspired persists to this day, as a
+    line of SPICE input is often referred to as a "card", and a
+    complete circuit description as a "deck".  In the bad old days,
+    the engineer would laboriously punch the cards, deliver them to
+    the Computer Center, and receive the line printer output a few
+    hours later.  It would generally take several iterations before
+    the first page of output would not say "Run Aborted...".  Old-time
+    engineers abhorred this activity, which seemed suitable for office
+    wimps and students only.  After a few years, and the advent of
+    Tektronix direct view storage terminals, SPICE became the
+    preeminent means of designing not just integrated circuits, but
+    the old-fashioned kind as well.
+
+    <p>
+    SPICE is the progenitor of most circuit simulators currently in
+    use.  As the source code was available for next to nothing, major
+    organizations customized it for their own needs, and smoothed over
+    some of the rougher edges.  It remains a numerically intensive
+    program which can tax even the largest of today's computers.
+
+    <p>
+    Looking back, one can identify several important milestones in the
+    accessibility of computer power to the technically inclined
+    masses.  The first example was the ability to run the BASIC
+    programming language on a desktop computer, introduced in the late
+    1970's with the Tektronix 4051.  This 8-bit machine with a
+    built-in direct view storage tube for the first time allowed
+    engineers and scientists to have directly applicable computer
+    power at their desk or laboratory bench.  Also at about this time,
+    the UNIX operating system running on a VAX minicomputer became
+    popular, largely supplanting the ahead-of-their-time desktop
+    computers.  The VAX, although it was a mainframe, was very cost
+    effective as compared to the competition, and UNIX was a much more
+    desirable operating system for scientific and engineering purposes
+    than others available.  As with the 4051, it allowed computer
+    accessibility at the point of need, through use of a terminal. 
+    Although one could compile and run SPICE on a VAX, it would tend
+    to radically hog the VAX's resources, bringing the system to an
+    annoying unresponsive state.  As a consequence, many system
+    managers forbade the use of SPICE on their machines, thus SPICE
+    users were still faced with interfacing to the company CDC or IBM
+    or Cray, and the attendant CPU time charges and batch mode
+    operation.  This situation persisted until the advent of the UNIX
+    workstation in the early 1980's.
+
+    <p>
+    The original workstations were able to run SPICE, however the
+    execution speed was quite slow by modern standards.  Still, they
+    were often faster than a heavily loaded central mainframe, and
+    although expensive, were cost effective over time as compared to
+    CPU charges for a mainframe.  Many more engineers were able to
+    take advantage of the convenience of running their simulations on
+    local workstations, but due to the expense of the early
+    workstations, the vast majority still had to slug it out with the
+    mainframe.
+
+    <p>
+    In the early 1980's, the IBM personal computer came on the scene,
+    and the real computer revolution was at hand.  However, these
+    micros had severe limitations which prevented them from even
+    loading a program as large as SPICE, thus they offered no solution
+    to engineers and scientists needing major number crunching
+    ability.  They did, however, provide the ability to run BASIC
+    (thanks to Bill Gates), thus the personal computer began to
+    displace the VAX in many instances, which had in turn displaced
+    the earliest desktop BASIC machines.  As the number of machines
+    grew, and thanks to the ingenuity and manufacturing skills
+    resident in the Far East, the cost of these desktop computers
+    dropped rapidly.  Intel, designer and purveyor of the
+    microprocessor which was at the heart of the IBM compatible PC,
+    made tons of money, which it wisely reinvested in newer and more
+    capable models.  However, the original operating system, DOS,
+    which ran universally on PC's, was designed for and significantly
+    incorporated the limitations of the earliest microprocessors used
+    in PC's.  These limitations have echos even today in certain
+    Microsoft products.
+
+    <p>
+    Thus, it was not with a bang but with a whimper that the first
+    inexpensive desktop computers which were capable of running SPICE
+    and similar applications appeared.  The Intel 386 microprocessor
+    made this possible.  Unlike its predecessors, the 386 was a true
+    32 bit architecture, more powerful than a room full of VAX
+    hardware.  It could easily sit on a desk, and cost, even in the
+    early days, less than ten thousand dollars for a fully equipped
+    system.  Alas, however, the 386 PC was like a Ferrari which was
+    deliberately equipped to emulate a Volkswagen.  In order for the
+    386 to be compatible with its relatively brain-dead predecessors,
+    Intel included an emulation mode in the instruction set.  In this
+    mode, called "real mode" by Intel, the 386 would behave as a
+    somewhat faster version of earlier microprocessors, and thus be
+    compatible with DOS, and all of the software written for DOS.  So
+    thorough was the emulation that even though the 386 could access 4
+    gigabits of memory directly, it was prevented from doing so under
+    DOS, so that games and other archaic programs which could possibly
+    make use of the memory address wrap around at 1 megabyte would
+    perform as on earlier chips.  To this day under DOS, the 386 and
+    its descendants operate in this emulation mode, leaving the
+    high-power native mode unused.
+
+    <p>
+    Intel assumed that a software vendor, meaning Microsoft, would
+    soon produce a successor to DOS that would unleash the full power
+    of its new chips.  Alas, Microsoft responded by ignoring this
+    potential in its own products, and appeared unsupportive of the
+    exploitation of this power by other software vendors.  The size of
+    the DOS market evidently influenced this business decision. 
+    However, thankfully, a few small companies saw the potential.  The
+    first was Phar Lap, which by working directly with Intel delivered
+    a product known as a DOS extender.  Intel and Phar Lap, and
+    others, created a specification under which extended DOS
+    applications could coexist with regular DOS programs to a large
+    extent.  The DOS extender allowed programs of arbitrary size to be
+    compiled and executed in the 32-bit native mode, which Intel
+    termed "protected mode".  The term derives from the memory mapping
+    which allows all applications to have their own address space, and
+    not clobber one another as they can under DOS.  At last, with this
+    product and the right compiler, it was possible to run SPICE on a
+    desktop PC, without worrying about the memory limitations of DOS.
+
+    <p>
+    Microsoft eventually began to exploit some aspects of protected
+    mode in the Windows product, however, Windows was completely
+    incompatible with extended DOS software at the time.  Microsoft's
+    objective was to influence developers of large applications to
+    port to Windows, for which they made available a $500.00 software
+    development kit.  Unfortunately Windows at that time had a memory
+    management system which most judged inadequate for applications
+    such as SPICE, plus the support for earlier versions of the Intel
+    microprocessors in Windows added rather severe performance
+    penalties.  Thus, in spite of the lack of Windows compatibility,
+    the DOS extender market greatly expanded, and several large
+    commercial applications made use of this technology.  DOS
+    extenders were eventually being included with many advanced
+    compilers for "free".
+
+    <p>
+    The DOS extenders extended the life span of DOS, however many
+    limitations remained.  One such limitation was the lack of
+    multi-tasking.  Although some products such as Quarterdeck's
+    DesqView provided some crude multitasking, clearly the time had
+    arrived that a completely new operating system was in order. 
+    These new operating systems began arriving in 1992.  Vendors of
+    advanced workstations, such as Sun and Next, released versions of
+    their UNIX-derived operating systems for Intel machines.  IBM
+    introduced OS2 2.0, which was a 32-bit version of the OS2
+    operating system.  Microsoft released the NT operating system,
+    the first version of Windows that "really" used protected
+    mode.
+
+    <p>
+    The contender that will probably most interest engineers and
+    scientists is UNIX.  This operating system has a multi-decade
+    history of use and improvement, with features and performance
+    other operating systems are striving to emulate.  Proprietary
+    operating systems based on UNIX are available from several
+    vendors, unfortunately, the cost, still quite high due to the
+    licensing fee extracted by the copyright holder, is a deterrent. 
+    However, UNIX clones, which operate the same but use
+    non-copyrighted software, are now widely available.  The most
+    popular of these are Linux and FreeBSD, both of which are
+    available on the Internet, and on CD for a small fee.  Both
+    provide the advanced user with a state-of-the-art operating
+    system, capable of running the plethora of applications available
+    on the Internet.  Linux has become quite popular with the general
+    technically-inclined public, while FreeBSD has found a large niche
+    as an Internet server, due to its reliability and speed.  The
+    running of massive applications on a desktop computer (or even a
+    laptop) is now a reality.  A properly equipped Intel-compatible
+    computer running FreeBSD can be considered in every respect a
+    "Unix workstation".
+
+    <p>
+    The original Fortran version of SPICE became widespread in the
+    industry, and the creators of SPICE dispersed and went on to new
+    projects.  As SPICE became more widely used on modern hardware,
+    its age began to show.  Thus, the Berkeley groups set about to
+    rewrite SPICE in a modern programming language (C), and added new
+    features and functionality.  The result was SPICE3.  Unlike the
+    previous versions of SPICE, SPICE3 was designed for interactive
+    use.  Furthermore, there were built-in features for plotting
+    output on-screen, as well as enhanced control over the run in
+    progress.  SPICE3 has to date not received the widespread
+    acceptance of its predecessor, mainly because is lacks the long
+    history of use.  Early releases did have bugs, and certain
+    features were lacking.  The new code, being written in a
+    structured form, is relatively easy to modify, thus SPICE3 should
+    become a standard in time, however it is also competing with
+    commercial versions of SPICE with many of the same features.  The
+    original SPICE is still being shipped "as is", and although it is
+    robust and stable, there are parts of the code that seemingly
+    nobody understands.
+
+    <p>
+    In the early 1980's, IBM had a large project to introduce a
+    computer based on Josephson junction logic.  IBM used internal
+    software to model these circuits, as SPICE was not designed to
+    support Josephson junctions.  To provide a generally available
+    software simulation tool for the analysis of Josephson circuits,
+    the Cryoelectronics group at Berkeley modified SPICE to include
+    Josephson junctions.  This version of SPICE, JSPICE, was
+    distributed by the Cryoelectronics group to the handful of
+    interested researchers.  It quickly became the dominant tool for
+    the simulation of these circuits (outside of IBM).
+
+    <p>
+    However, being based in SPICE, there were many aspects of the
+    program which could stand improvement.  Making these improvements
+    would entail a complete rewriting of the SPICE code, a rather
+    formidable task with the Fortran source.  Nevertheless, this was
+    done in large measure for internal use at Hypres, a small company
+    engaged in superconductive electronics.  The Hyspice program
+    contained a numerical core written in C, which was supported by
+    much of the original SPICE Fortran.  The algorithms were modified
+    to increase execution speed, while providing full support (rather
+    than a tacked on appendage) for Josephson junctions.  The
+    execution speed for Josephson circuits increased by about a factor
+    of 3-5 over the older JSPICE.  Hyspice, however, was basically a
+    batch mode program similar to JSPICE, although it was designed to
+    work with a graphics post-processor, which was a separate
+    application.
+
+    <p>
+    While entering a consulting and contract design practice, the
+    author of Hyspice required a simulation tool in order to pursue
+    design activities.  Hyspice was proprietary to a former employer,
+    and was obsolete anyway.  JSPICE was even more obsolete.  Thus,
+    the author decided to modify SPICE3 to incorporate a Josephson
+    model.  Further modifications were anticipated so as to provide
+    uncompromising capability and flexibility in the simulation of
+    circuits using Josephson devices (without affecting the ability to
+    simulate conventional circuits).  The resulting program, named
+    JSPICE3, also had to be compatible with the author's 386 computer,
+    yet be portable to other computers and operating systems should
+    the need arise.  JSPICE3 evolved for several years.  Along the
+    way, new features were added, including a schematic capture
+    front-end.  The program, still available from Whiteley Research
+    Inc., currently runs on most UNIX platforms, and is still being
+    used in several industrial and educational facilities.
+
+    <p>
+    The author, once again getting restless, founded Whiteley Research
+    Inc., in Sunnyvale, CA in 1996.  The company was to develop a new
+    successor to JSPICE3, and other tools for schematic capture and
+    mask layout editing.  After about one solid year of development,
+    the <i>XicTools</i> toolset was announced.  The electrical circuit
+    simulator, part of the core of the <i>XicTools</i> and known as
+    <i>WRspice</i>, is a descendent of the JSPICE3 program, and
+    maintains full compatibility.  The new program was migrated to the
+    C++ programming language, for improved maintainability. 
+    Compatibility with the older SPICE program was improved, as
+    support for certain capabilities in SPICE, such as the POLY
+    directive, that were missing from SPICE3 were incorporated in
+    <i>WRspice</i>.  <i>WRspice</i> is more network-aware than its
+    predecessors, and in fact can control the dispatching of jobs to
+    remote machines, so that repetitive operations, such as Monte
+    Carlo analysis, can exploit all of the machines in the user's
+    workgroup in parallel.  Incidently, Monte Carlo analysis is a new
+    feature, too.  Most of <i>WRspice</i> can be controlled
+    graphically using point-and-click, yet is prompt-line compatible
+    with its predecessors.
+
+    <a name="hspice"></a>
+    <h4>HSPICE</h4>
+
+    Probably the most popular industrial-strength SPICE simulator is
+    HSPICE &#174; from Synopsys, Inc.  Although "next generation"
+    simulators from several vendors offer greater simulation speed and
+    support larger circuits, the variety and completeness of HSPICE
+    device models, algorithm flexibility, and usage history have made
+    HSPICE a target simulator for most if not all process design kits
+    provided by foundry services.  <i>WRspice</i> has evolved to
+    incorporate some of the features of HSPICE, such as support for
+    parameters and single-quoted expressions, and device model
+    extensions, to enable compatibility with these design kits. 
+    Further, when there is a conflict between HSPICE and Berkeley
+    SPICE defaults, such as in the assumed temperature, <i>WRspice</i>
+    has adopted the HSPICE conventions.  This is to conform to
+    industry standards and current user expectations.  Though derived
+    from Berkeley Spice3, <i>WRspice</i> seeks to emulate HSPICE
+    behavior as much as possible.
+
+    <p>
+    However, there are some rather fundamental differences, for example:
+    <ol>
+    <li><i>WRspice</i> is designed for interactive use and contains an
+    integrated graphical package, HSPICE is batch-mode only and a
+    separate plotting program is required.
+    <li>Not being interactive, HSPICE has no notion of a shell, or
+    shell expansion.  The default treatment of the dollar-sign
+    character is therefor very different.
+    </ol>
+
+!!SEEALSO
+spice
+
+!! intro.tex 012609
+!!KEYWORD
+spice
+!!TITLE
+<i>WRspice</i> Overview
+!!HTML 
+    <i>WRspice</i> is a general-purpose circuit simulation program
+    based on the venerable Berkeley SPICE (Simulation Program for
+    Integrated Circuit Engineering).  Although completely compatible
+    with modern implementations of Berkeley SPICE, and partially
+    compatible with many commercial extensions, <i>WRspice</i> is an
+    entirely new simulator written in the C++ programming language for
+    ease of development and maintenance with high performance. 
+    <i>WRspice</i> includes a built-in Verilog parser/simulator for
+    mixed analog/digital simulations.  Verilog is a popular IEEE
+    standard hardware description language used to model digital logic
+    circuits.
+
+    <p>
+    The overall structure of {\WRspice} is shown below.  The core of
+    the program is the numerical analysis kernel, which actually
+    solves the nonlinear circuit equations.  This engine is controlled
+    by a large block of logic, which in turn is controlled through
+    interaction with the keyboard and mouse, or under control of a
+    script file, or even under the control of another program. 
+    Repeated analyses, or analyses dependent upon the outcome of
+    simulating variables, can be set up through use of control
+    language scripts.  Input can be entered as description files, or
+    graphically from a schematic representation.  Output can be
+    plotted on the screen, with powerful ability to manipulate and
+    transform the data.  The basic user interface is very similar to a
+    UNIX shell, with automatic command completion, a history
+    mechanism, and other features known to UNIX users.
+
+    <p>
+    <img src="blockdiag.gif">
+
+    <p>
+    <i>WRspice</i> uses the same basic algorithm to solve the
+    nonlinear circuit equations as the original version of SPICE. 
+    This is a modified nodal analysis, where a matrix <b>A</b> is
+    determined, and a solution vector <b>X</b> is obtained from an
+    excitation vector <b>B</b> by inverting the expression <b>AX</b> =
+    <b>B</b>.  In <i>WRspice</i>, the coefficients of <b>X</b> are
+    node voltages, and branch currents of voltage sources and
+    inductors.  The coefficients of <b>B</b> are independent source
+    currents, plus terms which are added during the linearization
+    process.  The coefficients of <b>A</b> are the small-signal
+    admittance parameters of each device, plus factors which relate
+    branch currents to other circuit currents.
+
+    <p>
+    When the input description is submitted, <i>WRspice</i> sets the
+    coefficients of the <b>A</b> matrix corresponding to each device
+    in the circuit.  The <b>B</b> vector is also defined from
+    knowledge of the source values.  The solution vector <b>X</b> is
+    then obtained through an in-place LU decomposition of <b>A</b>. 
+    If all circuit elements are linear, then <b>X</b> represents the
+    output vector at the initial time point.  However, in general, the
+    circuits contain nonlinear elements, and <b>X</b> at this point
+    can be considered only an approximation to the correct solution. 
+    This is because the <b>A</b> matrix contains only first order
+    terms, and approximations of the contributions of higher order
+    terms have been added to the <b>B</b> vector.  Initially, these
+    "predictor" terms represent an educated guess, however after
+    solving for <b>X</b>, one can obtain more accurate estimates. 
+    These better estimates are then incorporated into a new <b>B</b>
+    vector, a new <b>A</b> matrix is obtained, and the LU solution
+    repeated.  This iterative process continues until the predictor
+    terms converge to a stable value within an error tolerance.  This
+    process is known as Newton's method.
+
+    <p>
+    A transient analysis solves the equation set at increments of time
+    over the range specified by the user.  The time increment is
+    determined by an algorithm which predicts the maximum allowable
+    time step given past behavior.  Clearly, to simulate as rapidly as
+    possible, the number of time steps and iterations should be
+    minimized.  There are a number of variables which can be set in
+    <i>WRspice</i> which affect this behavior, and it is difficult to
+    generalize from one circuit to another which are the best
+    conditions.  For example, one can lengthen the average time step,
+    however this will generally require more iterations at each time
+    step, which may lead to slower execution time.  Also, one can
+    reduce the number of iterations by increasing the error tolerance,
+    however this may result in excessive errors in the output.
+
+    <p>
+    The figure below shows a flow diagram of the solution algorithm
+    for transient analysis.<br>
+
+    <p>
+    <img src="flow.gif">
+
+    <p>
+    Some distributions of <i>WRspice</i> separate the device models
+    from the program, placing them into a dynamically linked library,
+    which is loaded at run-time.  In some cases, the user has control
+    of this library and can add or delete devices at will.  All
+    device-related information in this manual pertains to the library
+    supplied by Whiteley Research Inc.  with the <i>WRspice</i>
+    product.  Local system administrators should be consulted for
+    information on locally-added devices.
+
+    <p>
+    The default device library contains the devices familiar from
+    SPICE2 and SPICE3, including resistors, capacitors, inductors,
+    mutual inductors, independent and dependent voltage and current
+    sources, lossy and lossless transmission lines, switches, and the
+    five most common semiconductor devices:  diodes, BJTs, JFETs,
+    MESFETs, and MOSFETs, plus Josephson junctions, similar to the RSJ
+    model first included in SPICE2 by Jewett.  The original device
+    models from SPICE3 are provided, along with a number of
+    third-party models, particularly for MOS transistors.
+
+    <p>
+    <i>WRspice</i> is based on JSPICE3, which in turn was derived from
+    SPICE3F4, which developed from SPICE2G.6.  While <i>WRspice</i> is
+    being developed to include new features, it will continue to
+    support those capabilities and models which remain in extensive
+    use in the SPICE community.
+
+    <p>
+    <i>WRspice</i> is part of the <i>XicTools</i> design system from
+    Whiteley Research, Inc.  These tools are designed to be modular,
+    yet interactive.  In particular, <i>WRspice</i> will work
+    seamlessly with the <i>Xic</i> graphical front-end for schematic
+    capture, if the <i>Xic</i> program is present.  Otherwise
+    <i>WRspice</i> can be utilized in a stand-alone mode.  From the
+    <i>Xic</i> graphical editor, <i>WRspice</i> can be called upon to
+    perform simulations, if <i>WRspice</i> is present.  In this case,
+    since it is used in a background mode, the <i>WRspice</i> binary
+    can exist on a remote machine.
+
+    <p>
+    <img src="powerlogo.gif" align="left">
+    The <i>XicTools</i> package has been developed primarily under
+    BSD-4.4 Unix (FreeBSD, <a
+    href="http://www.freebsd.org"><tt>www.freebsd.org</tt></a>), which
+    is the reference operating system.  The tools have been ported to
+    many other UNIX-type operating systems, including Linux, Sun
+    Solaris and SunOS 4.1.x, HPUX, and DEC Alpha-OSF.  The tools are
+    also now available for Microsoft Windows.
+
+    <p>
+    Unix/Linux releases of <i>WRspice</i> use the <a
+    href="http://www.gtk.org">GTK</a> toolkit running on the X window
+    system for the graphical user interface.  If X is not available,
+    or if the user so chooses, <i>WRspice</i> will run without
+    graphics (other than crude ASCII-mode plots).
+
+!!SUBTOPICS
+spanalysis
+spthreads
+sparse
+spcontrol
+sppost
+spinput
+spintr
+
+!!HTML 
+!! useriface.tex 062515
+!!KEYWORD
+sparse klu
+!!TITLE
+Sparse Matrix Package
+!!HTML 
+    The core of a SPICE simulator is the set of functions that set up,
+    factor, and solve the circuit equations.  The circuit equations
+    form a matrix, whose elements, for most circuits, are mostly zero. 
+    This type of matrix is deemed "sparse".  The speed with which the
+    matrix can be filled, factored, and solved has a major impact on
+    simulation speed.
+
+    <p>
+    Historically, <i>WRspice</i> has used a derivative of the
+    venerable Sparse package written by Ken Kundert at Berkeley for
+    sparse matrix processing.  The package has been modified for
+    improved performance, specifically by sorting the matrix elements
+    into an order which maximizes memory locality and minimizes
+    page-swapping and cache misses.  The original C-language package
+    was also translated into a set of C++ classes, improving
+    maintainability and easing the integration of enhancements.
+
+    <p>
+    Although the Sparse package provides solid performance, newer
+    algorithms have become available in recent years which, in some or
+    most cases, provide better performance.  The KLU package, written
+    by Tim Davis at the University of Florida, is one such example. 
+    This package is distributed under a GNU license, which prevents
+    direct incorporation into a proprietary commercial application
+    such as <i>WRspice</i>, however commercial applications may use
+    the package as a shared library.
+
+    <p>
+    <i>WRspice</i> distributions provide KLU in the form of a
+    "plug-in".  A plug-in is a shared library that is loaded directly
+    by the application at run-time, rather than relying on the system
+    loader.  By using the plug-in, the application can still run
+    properly whether or not the plug-in is available.  If loading was
+    performed by the system as for a normal shared library,
+    <i>WRspice</i> would not run unless the plug-in is accessible.
+
+    <p>
+    The KLU plug-in is installed in the <tt>startup</tt> directory in
+    the <i>WRspice</i> installation area.  Thus, for normal
+    installations, it should always be accessible.  By default,
+    <i>WRspice</i> will load and use KLU for spares matrix processing,
+    overriding the Sparse package.  However, it is possible to direct
+    <i>WRspice</i> to use Sparse rather than KLU if desired.
+
+    <p>
+    For large post-extraction mixed-mode CMOS circuits used for
+    benchmarking, the KLU package provides a 2-3 times improvement in
+    simulation speed over Sparse.  These circuits contain hundreds of
+    transistors, and thousands of resistors and capacitors.  For less
+    complex circuits, the speed advantage may be smaller, and in some
+    cases KLU may actually be slower.  KLU was observed to be slower
+    in rather simple circuits containing Josephson junctions.  Users
+    are encouraged to use the <a href="rusage"><b>rusage</b></a>
+    command and determine which package provides the best performance
+    on their circuits.
+
+    <p>
+    The following option variables control the sparse matrix handling. 
+    The first two can be set from the <b>General</b> page of the
+    <b>Simulation Options</b> tool.  The <tt>useadjoint</tt> variable
+    can be set from the <b>Devices</b> page of the <b>Simulation
+    Options</b> tool.  The <b>Simulation Options</b> tool is obtained
+    from the <b>Sim Opts</b> button in the <b>Tools</b> menu of the
+    <i>WRspice</i> <a href="toolbar"><b>Tool Control</b></a> window. 
+    The variables can also be set with the <a
+    href="set"><b>set</b></a> command, or in a <a
+    href=".options"><tt>.options</tt></a> line in SPICE input.
+
+    <dl>
+    <dt><tt>noklu</tt><dd>
+      When this boolean variable is set, KLU will not be used for
+      sparse matrix calculations.  Otherwise, if the KLU plug-in is
+      available, KLU will be used by default.  The KLU plug-in is
+      provided with all <i>WRspice</i> distributions, and is installed
+      in the startup directory.
+    </dl>
+
+    <dl>
+    <dt><tt>nomatsort</tt><dd>
+      When using Sparse (i.e., KLU is unavailable or disabled), this
+      boolean variable when set will prevent using element sorting to
+      improve speed.  This corresponds to the legacy <i>WRspice</i>
+      sparse code.  It may be interesting for comparison purposes, but
+      setting this variable will slow simulation of most circuits. 
+      This variable has no effect if KLU is being used.
+    </dl>
+
+    <dl>
+    <dt><tt>useadjoint</tt><dd>
+      Most of the BSIM device models in <i>WRspice</i> have added code
+      that builds an adjoint matrix which is used to accurately
+      compute device currents.  The computed currents are not used in
+      the device models, but are available as simulation outputs. 
+      This has a small performance overhead so is not enabled by
+      default, but will be enabled by setting this variable.  Without
+      this, it may not be possible to obtain device currents during
+      the simulation, using the <tt>@</tt><i>device</i>[<i>param</i>]
+      "pseudo-vector".  This applies whether KLU or Sparse is used for
+      matrix operations.
+    </dl>
+
+!! intro.tex 012609
+!!KEYWORD
+spanalysis
+!!TITLE
+Types of Analysis
+!!HTML 
+    Like its predecessors, <i>WRspice</i> supports various forms of
+    nonlinear dc, nonlinear transient, and linear ac <a
+    href="analyses">analyses</a>.
+
+    <dl>
+    <dt><a href=".dc">DC Analysis</a><dd>
+    The dc analysis portion of <i>WRspice</i> determines the dc
+    operating point of the circuit with inductors shorted and
+    capacitors opened.  A dc analysis is automatically performed prior
+    to a transient analysis to determine the transient initial
+    conditions, and prior to an ac small-signal analysis to determine
+    the linearized, small-signal models for nonlinear devices.  The dc
+    analysis can also be used to generate dc transfer curves:  a
+    specified independent voltage or current source is stepped over a
+    user-specified range and the dc output variables are stored for
+    each sequential source value.  In <i>WRspice</i>, dc analysis can
+    be combined with other analysis types to generate a family of
+    analysis results representing data from each point of the dc
+    analysis.  The dc analysis is not available if Josephson junctions
+    are present in the circuit.
+    </dl>
+
+    <dl>
+    <dt><a href=".ac">AC Analysis</a><dd>
+    The ac small-signal portion of <i>WRspice</i> computes the ac
+    output variables as a function of frequency.  The program first
+    computes the dc operating point of the circuit and determines
+    linearized, small-signal models for all of the nonlinear devices
+    in the circuit.  The resultant linear circuit is then analyzed
+    over a user-specified range of frequencies.  The desired output of
+    an ac small-signal analysis is usually a transfer function
+    (voltage gain, transimpedance, etc).  If the circuit has only one
+    ac input, it is convenient to set that input to unity and zero
+    phase, so that output variables have the same value as the
+    transfer function of the output variable with respect to the
+    input.  The ac analysis can be combined with a dc sweep so that ac
+    analysis is performed at each point over a range of bias
+    conditions.  The ac analysis is not available on circuits
+    containing Josephson junctions.
+    </dl>
+
+    <dl>
+    <dt><a href=".tran">Transient Analysis</a><dd>
+    The transient analysis portion of <i>WRspice</i> computes the
+    transient output variables as a function of time over a
+    user-specified time interval.  The initial conditions can be
+    automatically determined by a dc analysis.  All sources which are
+    not time dependent (for example, power supplies) are set to their
+    dc value.  If Josephson junctions are present, or if the
+    <tt>uic</tt> option is given, initial conditions are assumed at
+    the start of analysis rather than the result of the dc operating
+    point analysis.  With Josephson junctions, all sources should
+    start with zero output.  Transient analysis can be combined with a
+    dc sweep so that the transient simulation is performed at each
+    point over a range of bias conditions.
+    </dl>
+
+    <dl>
+    <dt><a href=".tf">Transfer Function Analysis</a><dd>
+    The transfer analysis portion of <i>WRspice</i> computes the dc or
+    ac small signal transfer function, input impedance, and output
+    impedance of a network.  For ac analysis, the dc operating point
+    is automatically determined through an operating point analysis. 
+    The transfer analysis can be combined with a dc sweep so that the
+    transfer function is computed at each point over a range of bias
+    conditions.
+    </dl>
+
+    <dl>
+    <dt><a href=".pz">Pole-Zero Analysis</a><dd>
+    The pole-zero analysis portion of <i>WRspice</i> computes the
+    poles and/or zeros in the small-signal ac transfer function.  The
+    program first computes the dc operating point and then determines
+    the linearized, small-signal models for all the nonlinear devices
+    in the circuit.  This circuit is then used to find the poles and
+    zeros.  Two types of transfer functions are allowed:  one of the
+    form
+    <blockquote>
+    (<i>output_voltage</i>)/(<i>input_voltage</i>)
+    </blockquote>
+    and the other of the form
+    <blockquote>
+    (<i>output_voltage</i>)/(<i>input_current</i>)
+    </blockquote>
+    These two types of transfer functions cover all the cases and one
+    can find the poles/zeros of functions like input/output impedance
+    and voltage gain.  The pole-zero analysis works with resistors,
+    capacitors, inductors, linear-controlled sources, independent
+    sources, BJTs, MOSFETs, JFETs and diodes.  Transmission lines and
+    Josephson junctions are not supported.
+    </dl>
+
+    <dl>
+    <dt><a href=".disto">Distortion Analysis</a><dd>
+    The distortion analysis portion of <i>WRspice</i> computes
+    steady-state harmonic and intermodulation products for small input
+    signal magnitudes.  If signals of a single frequency are specified
+    as the input to the circuit, the complex values of the second and
+    third harmonics are determined at every point in the circuit.  If
+    there are signals of two frequencies input to the circuit, the
+    analysis finds the complex values of the circuit variables at the
+    sum and difference of the input frequencies, and at the difference
+    of the smaller frequency from the second harmonic of the larger
+    frequency.  Distortion analysis can be combined with a dc sweep so
+    that distortion is analyzed at each point over a range of bias
+    conditions.
+
+    <p>
+    Distortion analysis is supported for the following nonlinear
+    devices:  diodes, bipolar transistors, JFETs, MOS1-4, MESFETs. 
+    All linear devices are automatically supported by distortion
+    analysis.  If there are switches present in the circuit, the
+    analysis continues to be accurate provided the switches do not
+    change state under the small excitations used for distortion
+    analysis.
+    </dl>
+
+    <dl>
+    <dt><a href=".sens">Sensitivity Analysis</a><dd>
+    <i>WRspice</i> will calculate either the DC operating-point
+    sensitivity or the AC small-signal sensitivity of an output
+    variable with respect to all circuit variables, including model
+    parameters.  <i>WRspice</i> calculates the difference in an output
+    variable (either a node voltage or a branch current) by perturbing
+    each parameter of each device independently.  Since the method is
+    a numerical approximation, the results may demonstrate
+    second-order effects in highly sensitive parameters, or may fail
+    to show very low but non-zero sensitivity.  Further, since each
+    variable is perturbed by a small fraction of its value,
+    zero-valued parameters are not analyzed (this has the benefit of
+    reducing what is usually a very large amount of data). 
+    Sensitivity analysis can be combined with a dc sweep so that
+    sensitivity can be analyzed at each point over a range of bias
+    conditions.
+    </dl>
+
+    <dl>
+    <dt><a href=".noise">Noise Analysis</a><dd>
+    The noise analysis portion of <i>WRspice</i> performs analysis of
+    device-generated noise for the given circuit.  When provided with
+    an input source and an output node, the analysis calculates the
+    noise contributions of each device (and each noise generator
+    within the device) to the output node voltage.  It also calculates
+    the level of input noise from the specified input source to
+    generate the equivalent output noise.  This is done for every
+    frequency point in a specified range --- the calculated value of
+    the noise corresponds to the spectral density of the circuit
+    variable viewed as a stationary Gaussian stochastic process. 
+    Noise analysis can be combined with a dc sweep so that noise can
+    be computed at each point over a range of bias conditions.
+
+    <p>
+    After calculating the spectral densities, noise analysis
+    integrates these values over the specified frequency range to
+    arrive at the total noise voltage/current (over this frequency
+    range).  This calculated value corresponds to the variance of the
+    circuit variable viewed as a stationary Gaussian process.
+    </dl>
+
+    <dl>
+    <dt><a href="oprng_analysis">Operating Range Analysis</a><dd>
+    <i>WRspice</i> has an integrated two-dimensional operating range
+    analysis capability.  The operating range analysis mode is used in
+    conjunction with the other analysis types, such as transient or
+    ac.  A suitably configured source file and circuit description is
+    evaluated over a one or two dimensional area of parameter space,
+    producing (optionally) an output file describing the results at
+    each evaluated point, or vectors giving the minimum and maximum
+    values of the varying parameters for operation.  Results can be
+    viewed graphically during or after simulation.
+    </dl>
+
+    <dl>
+    <dt><a href="monte">Monte Carlo Analysis</a><dd>
+    <i>WRspice</i> has a built-in facility for performing Monte Carlo
+    analysis, where one or more circuit variables are set according to
+    a random distribution, and the circuit analyzed for functionality. 
+    The file format and operation is very similar to operating range
+    analysis.
+    </dl>
+
+    <dl>
+    <dt><a href="loop">Automated Looping</a><dd>
+    In <i>WRspice</i>, any analysis can be automatically repeated
+    while stepping over a one or two dimensional area of parameter
+    space.  Any circuit parameter may be varied.
+    </dl>
+
+!!SUBTOPICS
+convergence
+memory
+!!SEEALSO
+spice
+spthreads
+
+!! intro.tex 051016
+!!KEYWORD
+spthreads
+!!TITLE
+Multi-threading
+!!HTML 
+    <i>WRspice</i> can use multi-threading to accelerate certain types
+    of analyses.  This capability is not present in the original
+    Berkeley SPICE and most derivatives, and allows <i>WRspice</i> to
+    take advantage of the presence of multiple processor cores
+    provided in modern microprocessor chips.  Multi-threading allows
+    different cores to work on the same simulation job in parallel.
+
+    <p>
+    Multi-threading in <i>WRspice</i> is a new feature currently being
+    incorporated.  It should be considered somewhat experimental at
+    this point.  Users are encouraged to try it and share their
+    observations (and report bugs!).  Multi-threading does <b>not</b>
+    guarantee a faster run, as it has its own overhead that must be
+    overcome to reduce overall run time.  Experience will provide
+    insight into which types of circuits and analyses benefit from
+    multi-threading and which do not, and what related threading
+    parmeter values, such of the number of threads to reserve, give
+    the best results on a given machine.
+
+    <p>
+    All supported operating systems provide multi-threading, however
+    parallel runs require multiple cores or CPUs.  Many Intel
+    processors provide two instruction queues (threads) per core, so
+    that the number of available hardware threads is twice the number
+    of cores.
+
+    <h2>Multi-threaded loading</h2>
+
+    Transient analysis has been cited as an algorithm not suitable for
+    parallelization.  This is due to the analysis being inherently
+    sequential; previous results are required before a new calculation
+    can be performed.  However, there is one point where
+    parallelization can logically be employed; the load operation.
+
+    <p>
+    In dc and transient analysis, the load operation is performed
+    before each iteration.  During the load operation, the
+    device-specific code is run using the previous iteration results,
+    and the circuit matrix and right-hand side (rhs) vectors are
+    loaded with the computed values.  As the ordering of devices is
+    unimportant, different threads can be called upon to perform the
+    load operation for different devices, in parallel.  The matrix and
+    rhs loading operations are engineered to be atomic, so that
+    different threads do not interfere with one another while
+    accessing these common resources.
+
+    <p>
+    The loading operation dominates the simulation time in many
+    circuits, particularly when complex device models such as BSIM are
+    used.  These circuits benefit most from multi-threaded loading. 
+
+    <p>
+    When enabled, multi-threaded loading is used in dc analysis,
+    including operating point analysis and when finding the operating
+    point ahead of ac small-signal analysis, and transient analysis. 
+    By default, multi-threaded loading is disabled.  It is enabled by
+    setting the <a href="loadthrds"><tt>loadthrds</tt></a> variable to
+    an integer value 1 or larger.  This can be done in a <a
+    href=".options"><tt>.options</tt></a> line in the SPICE deck, or
+    interactively from the command line using the <a
+    href="set"><b>set</b></a> command, or graphically from the
+    <b>General</b> page of the <a href="simopts"><b>Simulation
+    Options</b></a> panel from the <b>Tools</b> menu.
+
+    <p>
+    The <tt>loadthrds</tt> variable sets the number of helper threads
+    that will be created to assist the main thread in evaluating
+    device code.  If 0 or not set, no helper threads are used.
+
+    <p>
+    Multiple threads will not necessarily make simulations run faster
+    and in fact can have the opposite effect.  The latter is sadly
+    true in Josephson circuits tested thus far.  The problem is that
+    multi-threading adds a small amount of overhead, and the load
+    function may be called hundreds of thousands of times in these
+    simulations.  The model calculation for JJs runs very quickly, and
+    the overhead becomes significant.  The same is true for other
+    simple devices.  Work to improve this situation is ongoing.
+
+    <p>
+    On the other hand, if there is a lot of computation in the device
+    model, this will dominate the overhead and we see shorter load
+    times.  This is true for BSIM MOS models, in circuits with more
+    than about 20 transistors.  Such simulations can run 2-3 times
+    faster than a single thread.  One should experiment with the value
+    of the <tt>loadthrds</tt> variable.  Most likely for best
+    performance, the value plus the main thread should equal the
+    number of available hardware threads, which is usually twice the
+    number of available CPU cores.
+
+    <h2>Multi-threaded looping</h2>
+
+    A second potentially profitable use of multiple threads is when
+    performing parameter sweeps, i.e. performing repeated simulations
+    of a circuit while varying one or more parameters.  These
+    simulations can be done in any order, as long as the computed
+    results are saved in a well-defined sequence.  Thus, multiple
+    threads can be called upon to run the simulations concurrently.
+
+    <p>
+    In <i>WRspice</i> there are several ways to initiate this type of
+    repeated analysis.
+
+    <dl>
+    <dt><a href="multidc">chained dc analysis</a><dd>
+    Most analysis specifications in <i>WRspice</i> can be followed by
+    a dc sweep specification.  In <i>WRspice</i>, a <a href=".dc">dc
+    sweep</a> is a one or two-dimensional sweep of <b>any</b> ciruit
+    paramter, which is far more powerful than the original SPICE dc
+    sweep which allowed only source outputs to be varied.  In this
+    "chained dc" analysis, the basic analysis is performed at each
+    point in parameter space of the sweep.  The result will be a
+    family of multi-dimensional vectors, one dimension per parameter
+    set.  Multi-threading is supported in this type of analysis.
+    </dl>
+
+    <dl>
+    <dt>the <a href="sweep"><b>sweep</b></a> command<dd>
+    The <b>loop</b> command is an interactive command that
+    automatically sets one or two shell variables to points in a
+    range, and initiates an arbitrary analysis at each point.  At each
+    point, a circuit object is created from the shell-expanded SPICE
+    input, which will reflect the state of the shell variables.  The
+    specified analysis is then performed.
+
+    <p>
+    Unlike the chained dc analysis, the sweep can be run over any
+    command, in particular a user's script.  However, internally the
+    command runs at the shell level and has a lot of overhead, so the
+    chained dc analysis would be preferable for speed when possible.
+    At present, the <b>sweep</b> command is not multi-threaded.
+    </dl>
+
+    <dl>
+    <dt><a href="monte">Monte-Carlo</a> analysis<dd>
+    In Monte-Carlo analysis, repeated simulations are performed using
+    a circuit object generated for each trial, where parameter values
+    have been randomly generated according to a probability
+    distribution.  The simulation run is analyzed by pass/fail logic,
+    and only this result is typically saved.
+    At present, Monte Carlo analysis is not multi-threaded.
+    </dl>
+
+    <p>
+    As mentioned, at present only the chained-dc analysis can be
+    multi-threaded.  This is accomplished by setting the <a
+    href="loopthrds"><tt>loopthrds</b></a> variable to a positive
+    integer.  This can be done in a <a
+    href=".options"><tt>.options</tt></a> line in the SPICE deck, or
+    interactively from the command line using the <a
+    href="set"><b>set</b></a> command, or graphically from the
+    <b>General</b> page of the <a href="simopts"><b>Simulation
+    Options</b></a> panel from the <b>Tools</b> menu.
+
+    <p>
+    Multiple threads will be used automatically in a chained dc
+    analysis if:
+
+    <ol>
+    <li>The <tt>loopthrds</tt> variable is set to an integer 1 or larger.
+    This option variable indicates the number of "helper" threads to
+    use.  It can be set to an integer in the range 0 through 31, with
+    0 being the same as not set (single threading).  The "best" value
+    can be found experimentally, but the value plus the main thread
+    probably equals twice the number of available CPU cores.
+
+    <p>
+    <li>The analysis specification supports multi-threading.  Presently
+    the following analyses can be multi-threaded:
+    <blockquote>
+    <a href=".tran"><b>tran</b></a>, without scrolling, segmenting, and
+    with the <a href="steptype"><tt>nousertp</tt></a> mode not set.<br>
+    <a href=".ac"><b>ac</b></a><br>
+    <a href=".tf"><b>tf</b></a>
+    </blockquote>
+    </ol>
+
+    <p>
+    Multi-threading in the <b>sweep</b> command and Monte Carlo
+    analysis is not yet available, but will be provided (it is hoped)
+    in a future release.  These analyses require a rebuild of the
+    circuit object for each trial, requiring that the entire input
+    parser be thread safe.  This is because shell variables are used
+    to pass parameters, requiring a re-parse of the circuit deck to
+    create a modified internal circuit representation.  In chained dc
+    analysis, the same circuit object is re-used multiple times.
+
+    <p>
+    The <tt>loopthrds</tt> and <tt>loadthrds</tt> can be used together.
+    One should experiment to find the fastest settings.
+
+!!SEEALSO
+spice
+spanalysis
+
+!! intro.tex 021212
+!!KEYWORD
+convergence
+!!TITLE
+Convergence
+!!HTML 
+    Both dc and transient solutions are obtained by an iterative
+    process which is terminated when both of the following conditions
+    hold:
+
+    <ol>
+    <li>The nonlinear branch currents converge to within a tolerance of
+        0.1 percent or 1 picoamp (1.0E-12 Amp), whichever is larger.
+
+    <p>
+    <li>The node voltages converge to within a tolerance of 0.1 percent
+        or 1 microvolt (1.0E-6 Volt), whichever is larger.
+    </ol>
+
+    <p>
+    Although the algorithm used in <i>WRspice</i> has been found to be
+    very reliable, in some cases it will fail to converge to a
+    solution.  When this failure occurs, the program will terminate
+    the job.
+
+    <p>
+    Failure to converge in dc analysis is usually due to an error in
+    specifying circuit connections, element values, or model parameter
+    values.  Regenerative switching circuits or circuits with positive
+    feedback probably will not converge in the <a href=".dc">dc
+    analysis</a> unless the OFF option is used for some of the devices
+    in the feedback path, or the <a
+    href=".nodeset"><tt>.nodeset</tt></a> line is used to force the
+    circuit to converge to the desired state.
+
+    <p>
+    See the section describing <a href=".op>operating point
+    analysis</a> for a detailed description of the algorithms
+    and information on convergence issues.
+
+!!SEEALSO
+spanalysis
+reltol
+abstol
+vntol
+ 
+!! intro.tex 012609
+!!KEYWORD
+memory
+!!TITLE
+Virtual Memory Usage
+!!HTML 
+    <i>WRspice</i> runs can consume quite a bit of virtual memory, and
+    it is possible to exceed machine limits on many systems.  The main
+    consumer of memory is the data arrays from simulation runs.  Each
+    point is a double precision number requiring 8 bytes.  Typically,
+    all nodes and branch currents are saved, though this can be
+    changed with the <a href="save"><b>save</b></a> command.  One set
+    of values is retained for each output increment.  For example, a
+    circuit with 100 saved vectors running <tt>tran 1p 1n</tt>
+    requires roughly 8 X 100 X 1000 bytes per run.  This is allocated
+    to the plot structure.  By default, all plots are saved, so memory
+    usage increases with each run.
+
+    <p>
+    The maximum memory that can be used for plot data storage for a
+    single run is set by the <a href="maxdata"><tt>maxdata</tt></a>
+    variable.  The <b>Tool Control</b> window displays memory
+    statistics, and can be used to keep track of memory in use.
+
+    <p>
+    The vectors are copied when a plot is produced (including <a
+    href="iplot">iplots</a>), thus this additional memory must be
+    available for plots to be displayed.  In addition, iplots with a
+    large number of data points (more than about 10000) can noticeably
+    slow the simulation run. 
+
+    <p>
+    The <a href="free"><b>free</b></a> and <a
+    href="destroy"><b>destroy</b></a> commands can be used to delete
+    existing plots, making the memory available for other purposes. 
+    The <a href="rusage"><b>rusage</b></a> command displays memory
+    usage and memory limits.  Note that once <i>WRspice</i> obtains
+    memory from the operating system, on many systems this memory is
+    never returned.  Thus, the <b>free</b> command can make more
+    memory available for <i>WRspice</i>, but not for other programs
+    which may also be running.
+
+    <p>
+    Exceeding virtual memory limits is not in general a fatal error,
+    depending on when the error occurs.  Plots and iplots allocate all
+    memory needed at the beginning of the operation, so an out of
+    memory condition will usually abort the operation and return the
+    command prompt.  It is possible, though, for further errors to be
+    generated by a memory failure which may cause a segmentation
+    fault.
+
+!!SEEALSO
+spanalysis
+
+!! intro.tex 012609
+!!KEYWORD
+spcontrol
+!!TITLE
+Program Control
+!!HTML 
+    <i>WRspice</i> is intended for use as an interactive tool, though
+    various batch-mode features are supported.  Circuit input is
+    provided in the form of files which are loaded into
+    <i>WRspice</i>.  These files can be generated by the user with a
+    text editor, or be generated by a graphical editor program such as
+    <i>Xic</i>.  Once loaded into <i>WRspice</i>, a circuit is subject
+    to the many types of analysis and post-processing operations
+    available through <i>WRspice</i> commands.  These commands can be
+    given interactively through the text-mode interface provided by
+    <i>WRspice</i>, or in many cases through graphical operations.
+
+    <p>
+    The most common way directives are provided to <i>WRspice</i> is
+    through the text-mode command line interface.  The command line
+    interface behaves very much like a UNIX shell, through which
+    commands are entered, variables set, and output is printed.  The
+    shell provides most of the mechanisms familiar from UNIX shells,
+    including aliasing, history substitution, and command completion.
+
+    <p>
+    The <a href="spshell">command shell</a> is normally established on
+    the input terminal or terminal emulation window from which
+    <i>WRspice</i> was executed.  <i>WRspice</i> takes control of this
+    terminal, that is, all input typed will be directed to
+    <i>WRspice</i>, however the operating system job control commands
+    can be used to place <i>WRspice</i> in the background.
+
+    <p>
+    The <i>WRspice</i> shell provides a command language, which
+    enables scripts containing commands to be executed.  Writing
+    scripts enables automation of repetitive or complicated tasks. 
+    Control commands can be added to circuit files, and in fact a
+    unified input processing system handles both type of input.  Input
+    files are loaded into <i>WRspice</i> with the <a
+    href="source"><b>source</b></a> command.  The "<tt>source</tt>" is
+    in fact optional.  If the file name does not conflict with the
+    name of a <i>WRspice</i> command, simply typing the name of the
+    file will perform the <b>source</b> operation.
+
+    <p>
+    When graphics is available, <i>WRspice</i> provides a small <a
+    href="toolbar"><b>Tool Control</b></a> window which contains
+    menus.  The menus contain buttons which in turn bring up graphical
+    tools which control most of <i>WRspice</i>.  All of the operations
+    of these tools have analogous command line commands, though many
+    users find the graphical interface preferable.
+
+    <p>
+    <i>WRspice</i> contains a complete HTML-based <a
+    href="helpsys">help system</a>, available with the <b>help</b>
+    command.  The help windows provide an extensively cross-linked
+    reference on the various commands and features.  In addition, the
+    help windows can be used to view arbitrary HTML content on the
+    Internet or on the user's local machine.
+
+!!SEEALSO
+spice
+
+!! intro.tex 012609
+!!KEYWORD
+sppost
+!!TITLE
+Post-Processing and Run Control
+!!HTML 
+    <i>WRspice</i> in interactive mode provides a powerful <a
+    href="plot">plotting capability</a> for simulation output.  Plots
+    can be generated <a href="iplot">on the fly</a> while simulating,
+    or after simulation is complete.  The command language provides
+    interactive data manipulation and generation capability on output
+    prior to plotting.  Any number of plots can be shown on-screen at
+    a given time, and traces can be copied between plot windows via
+    mouse operations for easy comparison.
+
+    <p>
+    A <a href="trace"><b>trace</b></a> command allows the value of
+    expressions involving circuit variables to be printed as
+    simulation progresses.  Simulation can be paused by typing the
+    interrupt character (<b>Ctrl-C</b>), and can be resumed later. 
+    Simulation can also be paused after a certain number of data
+    points, or when a logical expression involving circuit variables
+    becomes true.
+
+    <p>
+    The <a href="verilog">Verilog</a> capability can be used to
+    provide automata for control and monitoring of a circuit during
+    simulation.  Verilog modules are defined within the circuit
+    description, and are evaluated as simulation (transient analysis
+    only) progresses.  This is clearly useful for mixed analog/digital
+    systems, but has additional utility for implementing event or
+    error counters, etc., for output statistical analysis.
+
+    <p>
+    <i>WRspice</i> provides a <a href=".measure">measurement</a>
+    capability for providing timing or other information from a
+    circuit simulation.  Any number of measurements can be included in
+    a circuit description.  This can be particularly useful in
+    optimization scripts.
+
+    <p>
+    All of this capability is tied together in the <i>WRspice</i> <a
+    href="spshell">shell</a>, which provides command processing in
+    interactive mode, but also provides a scripting capability. 
+    Scripts can be written to automate complicated analyses and data
+    manipulation.  All circuit output data, device and circuit
+    parameters, and shell variables and vectors are available in a
+    rich programming environment.
+
+!!SEEALSO
+spice
+
+!! intro.tex 012609
+!!KEYWORD
+spintr
+!!TITLE
+Introduction to Interactive Simulation
+!!HTML 
+    <i>WRspice</i> is an interactive circuit simulation program.  One
+    can find details about preparing <i>WRspice</i> input files <a
+    href="spinput">elsewhere</a>, this section assumes some
+    familiarity with this syntax, which is basically that of SPICE2. 
+    This section is intended to be a quick introduction to the use of
+    <i>WRspice</i>, and its capabilities.
+ 
+    <p>
+    If <i>Xic</i> is being run, circuits can be entered graphically,
+    making the command line interface described here somewhat
+    unnecessary (there are users, however, who prefer the command line
+    interface).  However, in order to use the full spectrum of
+    capabilities, the command line interface is required.
+
+    <p>
+    To start <i>WRspice</i>, one can type
+    <blockquote>
+    <tt>wrspice</tt> <i>input_file</i>
+    </blockquote>
+    where <i>input_file</i> is the name of the <i>WRspice</i> circuit
+    description file to run.  Alternately, one can simply type
+    <blockquote>
+    <tt>wrspice</tt>
+    </blockquote>
+    in which case <i>WRspice</i> will start up without loading a
+    circuit.  A new circuit description file can be loaded into
+    <i>WRspice</i> by typing the command
+    <blockquote>
+    <tt>source</tt> <i>input_file</i>
+    </blockquote>
+    If the name <i>input_file</i> is different from any internal or
+    external <i>WRspice</i> commands, the <a
+    href="source"><b>source</b></a> command can be eliminated, and the
+    <i>WRspice</i> input file is loaded simply by typing the file name
+    at the command prompt.  The file is parsed into an internal
+    circuit representation, which is held in memory until explicitly
+    deleted.  The list of circuits is shown in the panel brought up by
+    the <b>Circuits</b> button in the <b>Tools</b> menu of the <a
+    href="toolbar"><b>Tool Control</b></a> window.  One can switch
+    the ``current circuit'' with the <a
+    href="setcirc"><b>setcirc</b></a> command.
+
+    <p>
+    When <i>WRspice</i> starts, it normally displays a <b>Tool
+    Control</b> window containing command menus.  The menu buttons
+    bring up panels which control and display information.  Most of
+    the typed commands have analogues within the display panels. 
+    These panels can be arranged on the screen, and the configuration
+    saved, so that when <i>WRspice</i> is started subsequently, the
+    user's screen arrangement will be presented.
+
+    <p>
+    In addition, <i>WRspice</i> "takes over" the text window from
+    which it was launched.  The command interface is very much like a
+    <a href="spshell">shell</a>, and in fact it can be configured to
+    run <a href="unixcom">operating system commands</a> in a manner
+    very similar to the C-shell.
+
+    <p>
+    If there are any analysis lines in the input file and the user
+    wishes to run the analyses as given there, one simply enters
+    <blockquote>
+    <tt>run</tt>
+    </blockquote>
+    <i>WRspice</i> will run the requested analyses and will prompt the
+    user again when finished and the output data are available.  If
+    the user wishes to perform an analysis that is not specified by a
+    line in the input file, one can type the analysis line just as it
+    would appear in the input file, without the dot.  For example, the
+    command
+    <blockquote>
+    <tt>ac lin 20 0.99 1.01</tt>
+    </blockquote>
+    will initiate an ac analysis with 20 frequency values between 0.99
+    and 1.01.
+
+    <p>
+    After the analysis is complete and the <i>WRspice</i> prompt is
+    displayed, the values of the nodes are available.  Similarly, one
+    can load the results from previous <i>WRspice</i> sessions using
+    the <a href="load"><b>load</b></a> command.  In either case, to
+    plot the voltage on nodes 4 and 5, for example, one could then
+    issue the command
+    <blockquote>
+    <tt>plot v(4) v(5)</tt>
+    </blockquote>
+    To display a list of the circuit variables available for plotting,
+    type <a href="display"><b>display</b></a> at the command prompt. 
+    The output data items displayed are <a
+    href="plotvec">vectors</a>, with a length generally equal to
+    the number of analysis or output points in the simulation.
+
+    <p>
+    To plot vectors with the <a href="plot"><b>plot</b></a> package,
+    one types
+    <blockquote>
+    <tt>plot</tt> <i>varlist</i>
+    </blockquote>
+    where <i>varlist</i> is a list of outputs (such as <tt>v(3)</tt>)
+    or expressions (such as <tt>v(3)*time</tt>).  <i>WRspice</i> will
+    plot a graph of the outputs on the screen.  When finished
+    plotting, <i>WRspice</i> will issue a prompt.  Under windowing
+    systems such as X, the plot will be drawn in a newly created
+    window somewhere on the screen.  This window will remain open
+    until explicitly dismissed by the user, however the execution
+    returns to <i>WRspice</i> immediately, so that any number of plots
+    can be on-screen simultaneously.
+
+    <p>
+    One can also specify combinations of outputs and functions of them, as in
+    <blockquote>
+    <tt>plot v(1) + 2 * v(2)</tt>
+    </blockquote>
+    or
+    <blockquote>
+    <tt>plot log(v(1)) sin(cos(v(2)))</tt>
+    </blockquote>
+    Notice that the vector name <tt>v(1)</tt> is not a function, but
+    rather denotes the voltage at the node named 1.  One can use most
+    algebraic functions, including trig functions, <tt>log</tt> -
+    (base 10), <tt>ln</tt> - (base e), and functions such as
+    <tt>mag</tt>, the magnitude of the complex number,
+    <tt>phase</tt>, the phase, <tt>real</tt>, the real part, and
+    <tt>imag</tt>, the imaginary part.  These all operate on real or
+    complex values.  A complete list of functions and operations
+    available can be found <a href="mathfuncs">here</a>.  Generally,
+    any command which expects a vector as an argument will accept an
+    expression.
+
+    <p>
+    The notation
+    <blockquote>
+    <tt>plot</tt> <i>something</i> <tt>vs</tt> <i>something_else</i>
+    </blockquote>
+    means to plot <i>something</i> with <i>something_else</i> on the
+    X-axis.
+
+    <p>
+    The plot style can be modified through buttons and features found
+    on the <a href="plotpanel">plot window</a>.  These and other
+    features can have default behavior changed through setting of <a
+    href="spshell">shell</a> variables.  Shell variables are set with
+    the <a href="set"><b>set</b></a> command from the command line,
+    and any alphanumeric variable can be set to a value or a string. 
+    There are a number of such variables that are predefined to affect
+    plotting.  These can also be altered graphically from the panel
+    brought up by the <b>Plot Opts</b> button in the <b>Tools</b>
+    menu.  The panel brought up by the <b>Variables</b> button in the
+    <b>Tools</b> menu shows a listing of the shell variables currently
+    set.
+
+    <p>
+    For example, one can modify the <b>plot</b> command to plot a
+    subset of the data available.  The command
+    <blockquote>
+    <tt>set ylimit = "1 2"<br>
+    plot v(1) v(2)</tt>
+    </blockquote>
+    will plot the two vectors when the values are between 1 and 2, and
+    <blockquote>
+    <tt>set xlimit = "1 2"<br>
+    plot v(1) v(2)</tt>
+    </blockquote>
+    will plot them when the scale (time or frequency) is between 1 and 2.
+    The variables will remain set until they are unset, using
+    <blockquote>
+    <tt>unset xlimit ylimit</tt>
+    </blockquote>
+    or the corresponding buttons in the <b>Plot Options</b> panel are
+    made inactive.
+
+    <p>
+    The command
+    <blockquote>
+    <tt>set xcompress 5<br>
+    plot v(1) v(2)</tt>
+    </blockquote>
+    plots only every fifth point, and
+    <blockquote>
+    <tt>unset xcompress<br>
+    set xindices 20 30<br>
+    plot v(1) v(2)</tt>
+    </blockquote>
+    plots the values between the 20th time point and the 30th.  Any of
+    these variables may be used together, and they are also available
+    in the <b>asciiplot</b> command (which produces an ASCII
+    representation for use with text-only printers).
+
+    <p>
+    Typing <a href="let"><b>let</b></a> without arguments is
+    synonymous with the <b>display</b> command.  The <b>let</b>
+    command is different from the <b>set</b> command, which sets
+    non-vector shell variables, which may control various aspects of
+    <i>WRspice</i> operation.  The <b>let</b> command is used to
+    assign a new vector, for example
+    <blockquote>
+    <tt>let aa = v(1)</tt>
+    </blockquote>
+    will assign a new vector <tt>aa</tt> with all components equal to
+    <tt>v(1)</tt>.  If no arguments are given, a listing of output
+    vectors from the most recent simulation is shown.  This listing is
+    also shown in the panel brought up by the <b>Vectors</b> button in
+    the <b>Tools</b> menu.
+
+    <p>
+    One can print the values of vectors with the <a
+    href="print"><b>print</b></a> command:
+    <blockquote>
+    <tt>print time</tt>
+    </blockquote>
+    The command
+    <blockquote>
+    <tt>print all</tt>
+    </blockquote>
+    will print the values of all the data available.  Incidentally,
+    one can also use the keyword <tt>all</tt> with any of the other
+    commands that take vector names, like <b>plot</b>.  There are also
+    alias and history mechanisms available, and a <b>shell</b>
+    command, which passes its arguments to the operating system shell,
+    or starts a subshell.
+
+    <p>
+    If the user wishes to <a href="write">save the output</a> values
+    in a data file known as a rawfile, one can then type
+    <blockquote>
+    <tt>write</tt> <i>filename</i> v(4) v(5)</tt>
+    </blockquote>
+    to put the values of <tt>v(4)</tt>, and <tt>v(5)</tt> into
+    <i>filename</i>.  If the user wishes to save everything, one can
+    type
+    <blockquote>
+    <tt>write</tt> <i>filename</i>
+    </blockquote>
+
+    <p>
+    There are also many commands for tracing the analysis - one can
+    print the values at a node for each time point or cause
+    <i>WRspice</i> to stop whenever a value gets to a certain point. 
+    Relevant commands include <a href="stop"><b>stop</b></a>, <a
+    href="trace"><b>trace</b></a>, and <a href="step"><b>step</b></a>. 
+    A listing of these commands that are currently in force is
+    available in the panel brought up with the <b>Trace</b> button in
+    the <b>Tools</b> menu.
+
+    <p>
+    After the user is done with the values obtained from the
+    simulation run, one can change the circuit and re-run the
+    analysis.  If it is desired to edit the circuit itself, one can
+    use the command <a href="edit"><b>edit</b></a> - it will bring up
+    an internal <a href="xeditor">text editor</a> (or a favorite
+    external editor) and allow changes to the circuit in whatever way
+    is necessary, and then when the editor is exited, <i>WRspice</i>
+    can re-load the circuit and be ready to run it again.  Under UNIX
+    with X windows, a default internal editor is provided.  This
+    editor is also available as the <b>xeditor</b> command from the
+    UNIX shell.  Also, one can give another analysis (<b>ac</b>,
+    <b>dc</b>, <b>tran</b>, ...) command after the first one
+    completes.  If the analysis is not finished, i.e.  the user typed
+    an interrupt (<b>Ctrl-C</b>), or the run stopped under the
+    <b>stop</b> command, then one must type <a
+    href="reset"><b>reset</b></a> in order to re-run an analysis from
+    the beginning.
+
+    <p>
+    Each separate analysis that is performed will create one or more
+    sets of values.  Such a set of values is called a plot - if
+    several analyses have been performed, and the user wishes to
+    switch from the results of one to the results of another, the <a
+    href="setplot"><b>setplot</b></a> command will inform the user as
+    to which analysis results are available and let the user choose
+    one.  The plots are displayed in the panel brought up by the
+    <b>Plots</b> button in the <b>Tools</b> menu.
+
+    <p>
+    To see what other commands are available type <b>Ctrl-D</b> in
+    <i>WRspice</i>.  For information about a particular command, type
+    <tt>help</tt> <i>command</i>, where <i>command</i> is one of those
+    listed by <b>Ctrl-D</b>.  This introduction should be enough to
+    get started.
+
+    <p>
+    Here is a sample <i>WRspice</i> run:
+    <blockquote>
+    <tt>csh% wrspice</tt><br>
+    <tt>wrspice 10 -> source xtal.in</tt><br>
+    <tt>Circuit: crystal filter</tt><br>
+    <br>
+    <tt>wrspice 11 -> listing</tt><br>
+    <blockquote>
+    (listing of the circuit is printed)
+    </blockquote>
+    <br>
+    <tt>wrspice 12 -> run</tt><br>
+    <tt>wrspice 15 -> display</tt><br>
+    <tt>Here are the vectors currently active:</tt><br>
+    <pre>
+    Title: crystal filter
+    Plotname: AC analysis curves.
+    Date: Thu Sep 26 12:16:34 PDT 1985
+
+    &#32;FREQ    : frequency (complex, 20 long) [scale]
+    &#32;V(4)    : voltage (complex, 20 long)
+    &#32;V(6)    : voltage (complex, 20 long)
+    &#32;V(5)    : voltage (complex, 20 long)
+    </pre>
+    <blockquote>
+    (and so on...)
+    </blockquote>
+    <br>
+    <tt>wrspice 16 -> plot v(4)</tt><br>
+    <blockquote>
+    (plot takes place)
+    </blockquote>
+    <br>
+    <tt>wrspice 17 -> write outfile freq v(4)</tt><br>
+    <tt>wrspice 18 -> ac lin 30 1 2</tt><br>
+    <tt>wrspice 19 -> display</tt><br>
+    <tt>Here are the vectors currently active:</tt><br>
+    <br>
+    <pre>
+    Title: crystal filter
+    Plotname: AC analysis curves.
+    Date: Thu Sep 26 12:16:34 PDT 1985
+    
+    &#32; FREQ    : frequency (complex, 30 long) [scale]
+    &#32; V(4)    : voltage (complex, 30 long)
+    &#32; V(6)    : voltage (complex, 30 long)
+    &#32; V(5)    : voltage (complex, 30 long)
+    </pre>
+    <blockquote>
+    (and so on...)
+    </blockquote>
+    <br>
+    <tt>wrspice 20 -> print v(4) > tempfile</tt><br>
+    <blockquote>
+    (print to tempfile takes place)
+    </blockquote>
+    <br>
+    <tt>wrspice 21 -> shell lpr tempfile</tt><br>
+    <blockquote>
+    (a printout is made of the results)
+    </blockquote>
+    <br>
+    <tt>wrspice 22 -> load testh</tt><br>
+    <pre>
+    Title:  SPICE 3-C raw output test heading
+    Name:  Transient analysis.
+    Date:  08/19/84 03:17:11
+    </pre>
+    <br>
+    <tt>wrspice 23 -> display</tt><br>
+    <tt>Here are the variables currently active:</tt><br>
+    <br>
+    <pre>
+    Title: SPICE 3-C raw output test heading
+    Plotname: Transient analysis.
+    Date: Sun Dec 1 11:18:25 PST 1985
+
+    &#32; TIME    : time (real, 152 long) [scale]
+    &#32; v(1)    : voltage (real, 152 long)
+    &#32; v(2)    : voltage (real, 152 long)
+    &#32; v(3)    : voltage (real, 152 long)
+    &#32; v(4)    : voltage (real, 152 long)
+    &#32; v(5)    : voltage (real, 152 long)
+    </pre>
+    <br>
+    <tt>wrspice 24 -> print v(1)</tt><br>
+    <blockquote>
+    (prints v(1) values)
+    </blockquote>
+    <br>
+    <tt>wrspice 25 -> plot v(1)</tt>
+    <blockquote>
+    (plot takes place)
+    </blockquote>
+    <br>
+    <tt>wrspice 26 -> let xxx = log(v(1))</tt><br>
+    <tt>wrspice 27 -> plot xxx</tt><br>
+    <blockquote>
+    (plot takes place)
+    </blockquote>
+    <br>
+    <tt>wrspice 28 -> plot v(1) v(2) v(3) + 1 vs TIME * 2</tt><br>
+    <blockquote>
+    (plot takes place)
+    </blockquote>
+    <br>
+    <tt>wrspice 30 -> asciiplot v(1) v(2) TIME + 2 > File</tt><br>
+    <tt>wrspice 31 -> shell lpr File</tt><br>
+    <blockquote>
+    (Pick up ASCII plot ...)
+    </blockquote>
+    <br>
+    <tt>wrspice 33 -> quit</tt><br>
+    <tt>Warning: the following plot hasn't been saved:</tt><br>
+    <tt>    crystal filter, AC analysis curves.</tt><br>
+    <br>
+    <tt>Are you sure you want to quit? y</tt><br>
+    <br>
+    <tt>csh%</tt><br>
+    </blockquote>
+
+    <p>
+    Note that <i>WRspice</i> will issue a warning if there is work in
+    progress that has not been saved.
+
+!!SEEALSO
+spice
+
+
+!! useriface.tex 080812
+!!KEYWORD
+batchmode
+!!TITLE
+Batch Mode
+!!HTML 
+    Although <i>WRspice</i> is intended to be an interactive program,
+    batch mode, similar to SPICE2, is supported.  If <i>WRspice</i> is
+    invoked with the <a href="-b"><tt>-b</tt></a> command line option,
+    it will process the input circuit files in batch mode.  The files
+    are input on the command line, and if no files are listed, the
+    standard input is read.  Most of the control lines recognized by
+    SPICE2 will be handled, including <a
+    href=".plot"><tt>.plot</tt></a>, <a
+    href=".print"><tt>.print</tt></a>, and <a
+    href=".four"><tt>.four</tt></a>.  These lines are more or less
+    ignored in interactive mode, but provide the traditional SPICE2
+    behavior in batch mode.
+
+    <p>
+    For normal analysis, output is sent to the standard output, in the
+    form of ASCII plots and print output as directed by
+    <tt>.plot</tt>/<tt>.print</tt> lines, plus additional information
+    about the run, somewhat similar to SPICE2 but less verbose by
+    default.  The batch mode output format and content can be
+    controlled with the option keywords described in <a
+    href="batch_vars">Batch Mode Option Variables</a>.  If the input
+    file is a margin or operating range analysis file, a result file
+    will be produced (as in interactive mode), however there will be
+    little or no standard output other than printing from <a
+    href="echo"><b>echo</b></a> commands within the analysis scripts.
+
+    <p>
+    If the <a href="-r"><tt>-r</tt></a> command line option is used
+    (<tt>-r</tt> <i>filename</i>), a plot data file will be produced. 
+    This will also be true if specified with the <a
+    href="post"><tt>post</tt><a> option in the circuit description.
+
+    <p>
+    Batch node is non-graphical, and plots produced from
+    <tt>.plot</tt> lines use the line printer format of ancient times. 
+    Saving output in a rawfile or CSDF file for later viewing with
+    graphical <i>WRspice</i> or another viewing program is
+    recommended.
+
+    <p>
+    The input files provided may have <a
+    href=".newjob"><tt>.newjob</tt></a> lines, which logically divide
+    the input into two or more separate circuit decks.  Each circuit
+    deck is processed in order.  This is one way to run multiple
+    simulations in a single batch job.
+
+    <p>
+    There is also a "server" mode which is similar to batch mode,
+    which is invoked with the <a href="-s"><tt>-s</tt></a> command
+    line option.  This is intended for use in remote SPICE runs. 
+    Input is taken only from the standard input, and output is
+    exclusively to the standard output.  The output is either in
+    rawfile or margin analysis format, and inappropriate command line
+    options such as <a href="-r"><tt>-r</tt></a>, <a
+    href="-b"><tt>-b</tt></a> are ignored.  There is probably no
+    reason for a user to invoke this mode directly.
+
+    <h2>Scripts and Batch Mode</a>
+
+    <a href="script">Scripts</a> can be written to automate a large
+    number of runs on a circuit, saving the output in a sequence of
+    rawfiles.  Typically this may be done in the background, using
+    <i>WRspice</i> in batch mode.  This section addresses some of the
+    subtleties of using scripts in batch mode.
+
+    <p>
+    Any script, or circuit file containing a script, can be sourced by
+    <i>WRspice</i> when started in batch mode (<tt>-b</tt> option
+    given).  However, the batch mode behavior will not be evident
+    unless 1) the sourced file (and any inclusions) contains a circuit
+    description, and 2) no analysis command is run on the circuit from
+    a <tt>.control</tt> block in the same file (plus inclusions). 
+    That is, after executing the <tt>.control</tt> lines, if
+    <i>WRspice</i> finds that an analysis has already been run, such
+    as from a <b>tran</b> command in the <tt>.control</tt> block,
+    <i>WRspice</i> will simply exit rather than run the circuit again
+    in batch mode.  Here, by "batch mode", we mean the usual plots,
+    prints, and other data output that would occur for a pure circuit
+    file.  When the circuit was run from the <tt>.control</tt> block,
+    all of this output is absent, and <tt>.plot</tt>, <tt>.print</tt>
+    and similar lines are ignored as in interactive mode.
+
+    <p>
+    If the input file contains a circuit description, recall that an
+    <tt>.exec</tt> block in the same (logical) file will be executed
+    before the circuit is parsed, and therefor can be used to set
+    shell variables which can affect the circuit.  For example:
+    <blockquote><tt>
+    * RC Test<br>
+    <br>
+    R1 1 0 1k<br>
+    c1 1 0 $cval<br>
+    i1 0 1 pulse 0 1m 10p 10p<br>
+    .plot tran v(1)<br>
+    .tran 10n 1u<br>
+    <br>
+    .exec<br>
+    set cval="1n"<br>
+    .endc
+    </tt></blockquote>
+
+    <p>
+    The circuit will run in batch mode, with the capacitance value
+    provided from the <tt>.exec</tt> script.  This example is trivial,
+    but conceptually the <tt>.exec</tt> script can be far more
+    elaborate, configuring the circuit according to an external data
+    file, for example.
+
+    <p>
+    Often, it is more convenient to provide our own analysis control
+    in the input file.  For example, add a trivial <tt>.control</tt>
+    block to the example above.
+    <blockquote><tt>
+    * RC Test<br>
+    <br>
+    R1 1 0 1k<br>
+    c1 1 0 $cval<br>
+    i1 0 1 pulse 0 1m 10p 10p<br>
+    .plot tran v(1)<br>
+    .tran 10n 1u<br>
+    <br>
+    .exec<br>
+    set cval="1n"<br>
+    .endc<br>
+    .control<br>
+    run<br>
+    .endc
+    </tt></blockquote>
+
+    <p>
+    When run with the <tt>-b</tt> option, there is no "batch mode"
+    output.  Further, if the <tt>-r</tt> option was used to generate a
+    plot data file, the file would not be created.  The presence of an
+    analysis command ("<tt>run</tt>") in the <tt>.control</tt> block
+    inhibits the "batch mode" behavior.  The analysis was run, but we
+    forgot to save any data.  One must add an explicit <a
+    href="write"><b>write</b></a> command to save vectors to a file
+    for later review.  One could also add <a
+    href="print"><b>print</b></a> and <a href="plot"><b>plot</b></a>
+    commands.  Since there is no graphics, the <b>plot</b> command
+    reverts to the <a href="asciiplot"><b>asciiplot</b></a> as used in
+    batch mode output, so is not of much value.  Note that the
+    <b>plot</b> command and <tt>.plot</tt> control line have similar
+    but different syntax, one should avoid confusing the two.
+
+    <p>
+    Again, our example is trivial, but the <tt>.control</tt> block can
+    implement complex procedures and run sequences, provide
+    post-simulation data manipulation, and perform other tasks.
+
+    <p>
+    At the start of every analysis command execution, the circuit is
+    reset, meaning that the input is re-parsed.  This will not happen
+    with the first analysis command found in a <tt>.control</tt>
+    block, as the circuit is already effectively in the reset state. 
+    However, on subsequent analysis commands, the <tt>.exec</tt> block
+    will be re-executed, and the circuit will be re-parsed.  Chances
+    are, if we are running more than one simulation, we would like to
+    change the parameter value.  Consider the example:
+    <blockquote><tt>
+    * RC Test<br>
+    <br>
+    R1 1 0 1k<br>
+    c1 1 0 $cval<br>
+    i1 0 1 pulse 0 1m 10p 10p<br>
+    .tran 10n 1u<br>
+    <br>
+    .exec<br>
+    if $?cval = 0<br>
+    &nbsp;&nbsp;set cval="1n"<br>
+    endif<br>
+    .endc<br>
+    .control<br>
+    run<br>
+    write out1n.csdf<br>
+    set cval="2n"<br>
+    run<br>
+    write out2n.csdf<br>
+    .endc
+    </tt></blockquote>
+
+    <p>
+    We are now running two transient analyses, with different
+    capacitance values.  The first change is within the <tt>.exec</tt>
+    block.  The <b>set</b> command will be applied only if the
+    <tt>cval</tt> variable is unset, i.e., it will be set once only,
+    when the file is first read.  Instead, ahead of the second
+    <b>run</b> command in the <tt>.control</tt> block, we use the
+    <b>set</b> command to provide a new value for <tt>cval</tt>.  This
+    will update the circuit as the circuit is re-parsed in the second
+    <b>run</b> command.  Without the change to the <tt>.exec</tt>
+    block, the evaluation of the <tt>.exec</tt> block in the second
+    <b>run</b> command would override our new <tt>cval</tt> value.
+
+!! useriface.tex 050215
+!!KEYWORD
+loadable veriloga
+!!TITLE
+Loadable Device Modules
+!!HTML
+    It is possible to load device models into <i>WRspice</i> at run
+    time, through use of "loadable device modules".  These are
+    dynamically loaded libraries containing the device model
+    description in a form which can be read into a running
+    <i>WRspice</i> process.  This capability opens up some interesting
+    possibilities for future versions of <i>WRspice</i> in how new
+    device models are distributed.  It also gives the user, at least
+    in principle, the ability to generate and use custom device models
+    in <i>WRspice</i>.
+
+    <p>
+    Initial support for this important new feature is available in all
+    releases.  Microsoft support required partitioning of the
+    <tt>wrspice.exe</tt> executable into separate <tt>exe</tt> and
+    <tt>dll</tt> files, which is true of <i>WRspice</i> release 4.1.5
+    and later.  Support for user-generated loadable device models
+    under Windows is available by request, contact <b>Whiteley
+    Research</b> for more information (technically advanced users
+    only, please).
+
+    <p>
+    Loadable device modules are specific to a particular release
+    number of <i>WRspice</i>, and to the operating system.  Since the
+    interface may change, user-created loadable modules need to be
+    rebuilt for new releases of <i>WRspice</i>.  This will be relaxed
+    in future releases, when the interface stabilizes.
+
+    <p>
+    Loadable device modules can be loaded into <i>WRspice</i> in two
+    ways.
+
+    <ol>
+    <li>On startup, <i>WRspice</i> will look for loadable modules in
+    the directories listed in the <a
+    href="modpath"><tt>modpath</tt></a> variable, or, if that variable
+    is not set, in the <tt>devices</tt> directory under the
+    <tt>startup</tt> directory (i.e.,
+    <tt>/usr/local/xictools/wrspice/startup/devices</tt> if installed
+    in the default location).  Modules found will be loaded
+    automatically by default.
+
+    <p>
+    If either of the <a href="-m"><tt>-m</tt></a> 
+    or <a href="-mnone"><tt>-mnone</tt></a> command line options is given,
+    or if the <a href="nomodload"><tt>nomodload</tt></a> variable is
+    set in the <a href="startup_files"><tt>.wrspiceinit</tt></a> file,
+    the automatic device loading will not be done.
+
+    <li>The <a href="devload"><b>devload</b></a> command can be used to
+    load a module from the command prompt or from a script.  The
+    syntax is
+    <blockquote>
+      <tt>devload</tt> [<i>path_to_loadable_module</i>]
+    </blockquote>
+
+    The argument can also be a directory containing loadable modules,
+    all of which would be loaded by the command.
+
+    <p>
+    The "<tt>devload all</tt>" command will load all known modules,
+    as when <i>WRspice</i> starts.
+
+    <p>
+    If no argument is given, a list of the presently loaded modules
+    is printed.
+    </ol>
+
+    <p>
+    Once a module is loaded, it can't presently be unloaded.  The file
+    can be re-loaded, however, so if a module is modified and rebuilt,
+    it can be loaded again to update the running <i>WRspice</i>.
+
+    <p>
+    There are two ways to reference a loaded device model.
+    <ol>
+    <li>By traditional SPICE model level and name.<br>
+    There are traditional model names in SPICE, which often provide
+    differentiation of device polarity.  These are names like "<tt>npn</tt>"
+    and "<tt>pnp</tt>" for a BJT device, and "<tt>nmos</tt>" and "<tt>pmos</tt>"
+    for MOSFETs.  The SPICE input file will include lines like
+    <blockquote>
+    <tt>.model mynpn npn level=N ...</tt><br>
+    <tt>.model nch nmos level=M ...</tt>
+    </blockquote>
+    Every device model must have a unique <tt>level</tt> value (an
+    integer) for its type.  If a module is loaded that has a
+    conflicting level, a warning is issued.  If the conflict is with a
+    built-in model, the built-in model will always have precedence,
+    and the loaded model will not be accessible by level.
+
+    <li>By model name.<br>
+    Every loadable module has a given model name.  Further, device
+    models of dual-polarity devices have a parameter that sets the
+    device polarity.  This is defined in the model code, but most
+    models have standardized on a parameter named "<tt>type</tt>"
+    which is set to 1 for n-type and -1 for p-type.
+
+    <p>
+    The model can be referenced by name, for example
+    <blockquote>
+    <tt>.model mynpn hicum2 type=1 ...</tt><br>
+    <tt>.model nch bsim6 type=1 ...</tt>
+    </blockquote>
+    This requires that the model name be unique.  <i>WRspice</i>
+    presently does not check for a unique name, as it is also
+    legitimate to use the level parameter in addition.  The user will
+    have to be careful.
+    </ol>
+
+    <p>
+    The <tt>devkit</tt> directory in the <i>WRspice</i> installation
+    location (<tt>/usr/local/xictools/wrspice</tt> is the
+    default) will provide the tools needed to build loadable device
+    modules.
+
+    <p>
+    The present release provides support for building loadable modules
+    from Verilog-A model source.  Many new compact device models have
+    been released in this format, as it is (theoretically) portable to
+    all simulators.  Most commercial simulators now have this
+    capability.
+
+    <p>
+    The <tt>devkit/README</tt> file provides instructions on how to
+    build a module, and there are several examples.  Pre-built modules
+    are provided.  These can be loaded into <i>WRspice</i> and used.
+
+    <p>
+    To build modules from Verilog-A source, the Whiteley Research
+    version of the open-source <tt>adms-2.3.0</tt> package must be
+    installed on the system.  This is available from the free software
+    repository
+    on <a
+    href="http://wrcad.com/freestuff.html"><tt>wrcad.com</tt></a>. 
+    This release contains enhancements and bug fixes, and should be
+    used in preference to other versions of this software.  You will
+    need to be able to build this package, meaning that you will need
+    to have <tt>gcc/g++</tt>, <tt>make</tt>, and other standard tools
+    for program development available.  For OS X, this means that the
+    XCode package must be downloaded from Apple and installed.
+
+    <p>
+    Under Microsoft Windows, the <tt>adms</tt> package can be built
+    with Cygwin (<a
+    href="http://www.cygwin.com"><tt>http://www.cygwin.com</tt></a>). 
+    MinGW-w64 (<a
+    href="http://sourceforge.net/projects/mingw-w64">
+    <tt>http://sourceforge.net/projects/mingw-w64</tt></a>) is
+    reecommended for compiling the modules (in 32-bit mode).
+
+!!SEEALSO
+devls
+
+!!REDIRECT vlad         refs#vlad
+!!REDIRECT sheu         refs#sheu
+!!REDIRECT pierret      refs#pierret
+!!REDIRECT jeng         refs#jeng
+!!REDIRECT park         refs#park
+!!REDIRECT szeto        refs#szeto
+!!REDIRECT parker       refs#parker
+!!REDIRECT cheng        refs#cheng
+!!REDIRECT saleh        refs#saleh
+!!REDIRECT statz1       refs#statz1
+!!REDIRECT statz2       refs#statz2
+!!REDIRECT jewett       refs#jewett
+!!REDIRECT whiteley     refs#whiteley
+!!REDIRECT roy          refs#roy
+!!REDIRECT lin          refs#roy
+
+!! bib.tex.tex 041415
+!!KEYWORD
+refs
+!!TITLE
+References
+!!HTML 
+    <blockquote>
+    <ol>
+    <li> <a name="vlad"></a>
+    A. Vladimirescu and  S.  Liu,  "The  Simulation  of  MOS
+    Integrated  Circuits  Using SPICE2", ERL Memo No. ERL M80/7,
+    Electronics Research Laboratory, University  of  California,
+    Berkeley, Oct. 1980.
+
+    <p>
+    <li> <a name="sheu"></a>
+    B. J. Sheu, D. L. Scharfetter, and  P.  K.  Ko,  "SPICE2
+    Implementation of BSIM" ERL Memo No. ERL M85/42, Electronics
+    Research Laboratory, University of California, Berkeley, May
+    1985.
+
+    <p>
+    <li> <a name="pierret"></a>
+    J. R. Pierret, "A MOS Parameter Extraction  Program  for
+    the  BSIM Model" ERL Memo Nos. ERL M84/99 and M84/100,
+    Electronics  Research  Laboratory,  University  of   California,
+    Berkeley, Nov. 1984.
+
+    <p>
+    <li> <a name="jeng"></a>
+    Min-Chie Jeng, "Design and Modeling of Deep-Submicrometer
+    MOSFETs", ERL Memo Nos.  ERL M84/99 and ERL M90/90, Electronics
+    Research Laboratory, University of California, Berkeley, October
+    1990.
+
+    <p>
+    <li> <a name="park"></a>
+    Soyeon Park, "Analysis and SPICE implementation of High
+    Temperature Effects on MOSFET", Master's Thesis, University of
+    California, Berkeley, December 1986.
+
+    <p>
+    <li> <a name="szeto"></a>
+    Clement Szeto, "Simulator of Temperature effects in MOSFETs
+    (STEIM)", Master's Thesis, University of California, Berkeley, May
+    1988.
+
+    <p>
+    <li> <a name="parker"></a>
+    A.  E.  Parker and D.  J.  Skellern, "An Improved FET Model
+    for Computer Simulators", IEEE Trans.  CAD, vol.  9, no.5, pp. 
+    551-553, May 1990.
+
+    <p>
+    <li> <a name="cheng"></a>
+    Y.  Cheng, M.  Chan, K.  Hui, M-C Jeng, Z.  Liu, J.  Huang, K. 
+    Chen, J.  Chen, R.  Tu, P.  Ko and C.  Hu, "BSIM3v3 Manual",
+    Department of Electrical Engineering and Computer Sciences,
+    University of California, Berkeley, 1996.
+
+    <p>
+    <li> <a name="saleh"></a>
+    R.  Saleh and A.  Yang, Editors, "Simulation and Modeling,
+    IEEE Circuits and Devices", vol.  8, no.  3, pp.  7-8 and 49, May
+    1992.
+
+    <p>
+    <li> <a name="statz1"></a>
+    H. Statz et al.,"GaAs FET Device and  Circuit  Simulation
+    in  SPICE", Internal memorandum, Raytheon Research Division,
+    Lexington, Mass., 1985.
+
+    <p>
+    <li> <a name="statz2"></a>
+    H.  Statz et al., "GaAs FET Device and Circuit Simulation in
+    SPICE", IEEE Transactions on Electron Devices, Vol.  34, Number 2,
+    February 1987 pp.  160-169.
+
+    <p>
+    <li> <a name="jewett"></a>
+    R.  E.  Jewett, "Josephson Junctions in SPICE2G5", ERL Memo,
+    Electronics Research Laboratory, University of California,
+    Berkeley, 1982. 
+
+    <p>
+    <li> <a name="whiteley"></a>
+    S.  R.  Whiteley, "Josephson Junctions in SPICE3", IEEE Trans. 
+    Magn., vol.  27, no.  2, pp.  2902-2905, March 1991. 
+
+    <p>
+    <li> <a name="roy"></a>
+    J. S.  Roychowdhury and D. O.  Pederson, "Efficient Transient
+    Simulation of Lossy Interconnect", Proc.  DAC, pp. 740-745, 1991.
+
+    <p>
+    <li> <a name="lin"></a>
+    Shen Lin and Ernest S. Kuh, "Transient Simulation of Lossy
+    Interconnect", Proc. DAC, pp 81-86, 1992.
+
+    <p>
+    <li> <a name="jeffery"></a>
+    M. Jeffery, P. Y. Xie, S. R. Whiteley, and T. Van Duzer,
+    "Monte Carlo and thermal noise analysis of ultra-high-speed high
+    temperature superconductor digital circuits,"
+    IEEE Trans. Applied Superconductivity,
+    vol. 9, no. 2, pt. 3, pp. 4095-4098, June 1999.
+    </ol>
+    </blockquote>
+ 
+!! appendix.tex 012409
+!!KEYWORD
+rawfilefmt
+!!TITLE
+Rawfile Format
+!!HTML 
+    Rawfiles produced and read by <i>WRspice</i> have either an ASCII
+    or a binary format.  ASCII format is the preferred format for
+    general use, as it is hardware independent and easy to modify,
+    though the binary format is the most economical in terms of space
+    and speed of access.
+
+    <p>
+    The ASCII format consists of lines or sets of lines introduced by
+    a keyword.  The <tt>Title</tt> and <tt>Date</tt> lines should be
+    the first in the file and should occur only once.  There may be
+    any number of plots in the file, each one beginning with the
+    <tt>Plotname</tt>, <tt>Flags</tt>, <tt>No.  Variables</tt>,
+    <tt>No.  Points</tt>, <tt>Variables</tt>, and <tt>Values</tt>
+    lines.  The <tt>Command</tt> and <tt>Option</tt> lines are
+    optional and may occur anywhere between the <tt>Plotname</tt> and
+    <tt>Values</tt> lines.  Note that after the <tt>Variables</tt>
+    keyword there must be <i>numvars</i> "declarations" of outputs,
+    and after the <tt>Values</tt> keyword, there must be
+    <i>numpoints</i> lines, each consisting of <i>numvars</i> values. 
+    To clarify this discussion, one should create an ASCII rawfile
+    with <i>WRspice</i> and examine it.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Line name</th> <th>Description</th></tr>
+    <tr><td><tt>Title</tt></td>
+     <td>An arbitrary string describing the circuit</td></tr>
+    <tr><td><tt>Date</tt></td>
+     <td>A free-format date string</td></tr>
+    <tr><td><tt>Plotname</tt></td>
+     <td>A string describing the analysis type</td></tr>
+    <tr><td><tt>Flags</tt></td>
+     <td>Either "<tt>complex</tt>" or "<tt>real</tt>"</td></tr>
+    <tr><td><tt>No. Variables</tt></td>
+     <td>The number of variables (numvars)</td></tr>
+    <tr><td><tt>No. Points</tt></td>
+     <td>The number of points (numpoints)</td></tr>
+    <tr><td><tt>Command</tt></td>
+     <td>An arbitrary <i>WRspice</i> command</td></tr>
+    <tr><td><tt>Option</tt></td>
+     <td><i>WRspice</i> variables</td></tr>
+    <tr><td><tt>Variables</tt></td>
+     <td>A number of variable lines (see below)</td></tr>
+    <tr><td><tt>Values</tt></td>
+     <td>A number of data lines (see below)</td></tr>
+    </table>
+
+    <p>
+    Any text on a <tt>Command</tt> line is executed when the file is
+    loaded as if it were typed as a command.  By default,
+    <i>WRspice</i> puts a <a href="version"><b>version</b></a> command
+    into every rawfile it creates.
+
+    <p>
+    Text on an <tt>Option</tt> line is parsed as if it were the
+    arguments to a <i>WRspice</i> <a href="set"><b>set</b></a>
+    command.  The variables set are then available normally, except
+    that they are read-only and are associated with the plot.
+
+    <p>
+    A <tt>Variable</tt> line looks like
+    <blockquote>
+    "<i>number name typename</i> [ <i>parm=value</i> ] ..."
+    </blockquote>
+    The <i>number</i> field is ignored by <tt>WRspice</tt>.  The
+    <i>name</i> is the name by which this quantity will be referenced
+    in <i>WRspice</i>.  The <i>typename</i> may be either a
+    pre-defined type from the table below, or one defined with the <a
+    href="deftype"><b>deftype</b></a> command.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Predefined Types</caption>
+    <tr><th><tt>Name</tt></th> <th>Description</th> <th>SPICE2 Numeric Code</th></tr>
+    <tr><td><tt>notype</tt></td> <td>Dimensionless value</td> <td>0</td></tr>
+    <tr><td><tt>time</tt></td> <td>Time</td> <td>1</td></tr>
+    <tr><td><tt>frequency</tt></td> <td>Frequency</td> <td>2</td></tr>
+    <tr><td><tt>voltage</tt></td> <td>Voltage</td> <td>3</td></tr>
+    <tr><td><tt>current</tt></td> <td>Current</td> <td>4</td></tr>
+    <tr><td><tt>output-noise</tt></td> <td>SPICE2 .noise result</td> <td>5</td></tr>
+    <tr><td><tt>input-noise</tt></td> <td>SPICE2 .noise result</td> <td>6</td></tr>
+    <tr><td><tt>HD2</tt></td> <td>SPICE2 .disto result</td> <td>7</td></tr>
+    <tr><td><tt>HD3</tt></td> <td>SPICE2 .disto result</td> <td>8</td></tr>
+    <tr><td><tt>DIM2</tt></td> <td>SPICE2 .disto result</td> <td>9</td></tr>
+    <tr><td><tt>SIM2</tt></td> <td>SPICE2 .disto result</td> <td>10</td></tr>
+    <tr><td><tt>DIM3</tt></td> <td>SPICE2 .disto result</td> <td>11</td></tr>
+    <tr><td><tt>pole</tt></td> <td>SPICE3 pz result</td> <td>12</td></tr>
+    <tr><td><tt>zero</tt></td> <td>SPICE3 pz result</td>  <td>13</td></tr>
+    </table>
+
+    <p>
+    The (optiona) <i>parm</i> keywords and values follow.  The known
+    parameter names are listed in the table below.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption><b>Parameters</b></caption>
+    <tr><th>Name</th>  <th>Description</th></tr>
+    <tr><td><tt>min</tt></td>
+     <td>Minimum significant value for this output</td></tr>
+    <tr><td><tt>max</tt></td>
+     <td>Maximum significant value for this output</td></tr>
+    <tr><td><tt>color</tt></td>
+     <td>The name of a color to use for this value</td></tr>
+    <tr><td><tt>scale</tt></td>
+     <td>The name of another output to use as the scale</td></tr>
+    <tr><td><tt>grid</tt></td>
+     <td>The type of grid to use - numeric codes are:<br>
+      0  Linear grid<br>
+      1  Log-log grid<br>
+      2  X-log/Y-linear grid<br>
+      3  X-linear/Y-log grid<br>
+      4  Polar grid<br>
+      5  Smith grid</td></tr>
+    <tr><td><tt>plot</tt></td>
+     <td>The plotting style to use - numeric codes are:<br>
+      0  Connected points<br>
+      1  "Comb" style<br>
+      2  Unconnected points</td></tr>
+    <tr><td><tt>dims</tt></td>
+     <td>The dimensions of this vector - not fully supported</td></tr>
+    </table>
+
+    <p>
+    If the flags value is <tt>complex</tt>, the points look like
+    <i>r</i>,<i>i</i> where <i>r</i> and <i>i</i> are exponential
+    floating point format.  Otherwise they are real numbers in
+    exponential format.  Only one of <tt>real</tt> and
+    <tt>complex</tt> should appear.
+
+    <p>
+    The lines are guaranteed to be less than 80 columns wide, unless
+    the plot title or variable names are very long, or a large number
+    of variable options are given.
+
+    <p>
+    The binary format is similar to the ASCII format in organization,
+    except that it is not text-mode.  Strings are NULL terminated
+    instead of newline terminated, and the values are in the machine's
+    double precision floating point format instead of in ASCII.  This
+    makes the file easier to read and write and reduces file size, but
+    the binary format is not portable between machines with different
+    floating point formats.
+
+    <p>
+    The circuit title, date, and analysis type name in that order are
+    at the start of the plot, each terminated by a NULL byte.  Then
+    the flags field (a short, which is 1 for real data and 2 for
+    complex data), the number of outputs, and the number of points
+    (both integers) are present.  Following this is a list of
+    NULL-terminated strings which are command lines.  This list is
+    terminated by an extra NULL byte.  Then come the options, which
+    consist of the name, followed by the type and the value in binary. 
+    The output "declarations" consist of the name, type code, flags,
+    color, grid type, plot type, and dimension information in that
+    order.  Next come the values, which are either doubles or pairs of
+    doubles in the case of complex data.
+
+    <p>
+    The "old" binary format, which is used by SPICE2, is not accepted
+    by <i>WRspice</i>, however the format is given below should it be
+    necessary to write a translator.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption><b>SPICE2 Binary Rawfile  Format</b></caption>
+    <tr><th>Field(s)</th>      <th>Size in Bytes</th></tr>
+    <tr><td><tt>title          </tt></td> <td>80</td></tr>
+    <tr><td><tt>date           </tt></td> <td>8</td></tr>
+    <tr><td><tt>time           </tt></td> <td>8</td></tr>
+    <tr><td><tt>numoutputs     </tt></td> <td>2</td></tr>
+    <tr><td><tt>the integer 4  </tt></td> <td>2</td></tr>
+    <tr><td><tt>output names   </tt></td> <td>8 for each output</td></tr>
+    <tr><td><tt>types of output</tt></td> <td>2 for each output</td></tr>
+    <tr><td><tt>node index     </tt></td> <td>2 for each output</td></tr>
+    <tr><td><tt>plot title     </tt></td> <td>24</td></tr>
+    <tr><td><tt>data     </tt></td> <td>numpoints * numoutputs * 8</td></tr>
+    </table>
+
+    <p>
+    The data are in the form of double-precision numbers, or pairs of
+    single-precision numbers if the data are complex.
+
+    <p>
+    The values recognized for the "types of output" fields are listed
+    in the data types (top) table above as the "SPICE2 Numeric Code".
+
+!!SEEALSO
+nopadding
+filetype
+rawfileprec
+
+!! utilities.tex 012609
+!!KEYWORD
+utilities
+!!TITLE
+Utility Programs
+!!HTML
+    The <i>WRspice</i> distribution provides a few supplemental
+    utility and accessory programs.
+
+!!SUBTOPICS
+multidec
+printtoraw
+proc2mod
+wrspiced
+
+!! utilities.tex 012609
+!!KEYWORD
+multidec
+!!TITLE
+The <tt>multidec</tt> Utility: Coupled Lossy Transmission Lines
+!!HTML     
+    The standalone program <tt>multidec</tt> produces a subcircuit for
+    multiconductor lossy transmission lines in terms of uncoupled
+    (single) simple lossy lines.  This decomposition is valid only if
+    the following hold:
+
+    <ol>
+    <li>The electrical parameters (R, G, Cs, Cm, Ls, Lm) of all wires
+    are identical and independent of frequency.
+    <li>Each line is coupled only to its (maximum 2) nearest neighbors.
+    </ol>
+    The subcircuit is sent to the standard output and is intended to
+    be included in an input file.
+
+    <p>
+    The command-line options for <tt>multidec</tt> are as follows:
+
+    <blockquote>
+     <tt>-l</tt>&#60self-inductance Ls><br>
+     <tt>-c</tt>&#60self-capacitance Cs><br>
+     <tt>-r</tt>&#60series-resistance R><br>
+     <tt>-g</tt>&#60parallel-conductance G><br>
+     <tt>-k</tt>&#60coeff.-of-inductive-coupling K> <br>
+     <tt>-x</tt>&#60mutual-capacitance Cm><br>
+     <tt>-o</tt>&#60subckt-name><br>
+     <tt>-n</tt>&#60number-of-conductors><br>
+     <tt>-L</tt>&#60length>
+    </blockquote>
+
+    <p>
+    The inductive coupling coefficient K is the ratio of Lm
+    to Ls. Values for -l, -c, -o, -n and -L must be specified.
+
+    <p>
+    Example:
+    <blockquote>
+    <tt>multidec -n4 -l9e-9 -c20e-12 -r5.3 -x5e-12 -k0.7 -otest -L5.4</tt>
+    </blockquote>
+
+    <p>
+    This utility was written by <a href="refs#roy">J.S. 
+    Roychowdhury</a> for use with the lossy transmission line model.
+ 
+!!SEEALSO
+ltra
+ltramodel
+utilities
+
+!! utilities.tex 012609
+!!KEYWORD
+printtoraw
+!!TITLE
+The <tt>printtoraw</tt> Utility: Print to Rawfile Conversion
+!!HTML
+    The <tt>printtoraw</tt> program is a stand-alone utility provided
+    with the <i>WRspice</i> distribution.  This converts the data in
+    files produced by the <a href="print"><b>print</b></a> command
+    using output <a href="io">redirection</a> into the <a
+    href="rawfilefmt">rawfile</a> format, which can be plotted.  This
+    works only for print files in the standard columnar form.
+
+    <blockquote>
+    Usage: <tt>printtoraw</tt> [<i>printfile</i>]
+    </blockquote>
+
+    <p>
+    The argument, if given, is assumed to be a path to a file that was
+    produced by the <i>WRspice</i> <b>print</b> command through
+    redirection.  If no argument is given, the standard input is read. 
+    The data are converted to rawfile format and dumped to the
+    standard output.
+
+    <p>
+    Example:
+    <blockquote>
+    <tt>
+    wrspice> run<br>
+    wrspice> print v(1) v(2) v(3) > myfile<br>
+    wrspice> quit<br>
+    <br>
+    bash> printtoraw myfile > myfile.raw<br>
+    <br>
+    wrspice> load myfile.raw<br>
+    wrspice> plot all<br>
+    </tt></blockquote>
+
+!!SEEALSO
+utilities
+
+!! utilities.tex 012609
+!!KEYWORD
+proc2mod
+!!TITLE
+The <tt>proc2mod</tt> Utility: BSIM1 Model Generation
+!!HTML
+    This utility, provided with SPICE3, produces a set of <a
+    href="mosmodel#bsim">BSIM1</a> models from process-dependent data
+    provided in a "process" file.  An example process (<tt>.pro</tt>)
+    file is provided with the <i>WRspice</i> examples.  This utility
+    was written by <a href="refs#pierret">J.  Pierret</a>, and the
+    reference presumably provides more information.
+
+!!SEEALSO
+utilities
+
+!! utilities.tex 021811
+!!KEYWORD
+wrspiced
+!!TITLE
+The <tt>wrspiced</tt> Daemon: Remote SPICE Controller
+!!HTML
+    <i>WRspice</i> can be accessed and run from a remote system for
+    asynchronous simulation runs, for assistance in computationally
+    intensive tasks such as Monte Carlo analysis, and as a simulator
+    for the <i>Xic</i> graphical editor.  This is made possible
+    through a daemon (background) process which controls
+    <i>WRspice</i> on the remote machine.  The daemon has the
+    executable name "<tt>wrspiced</tt>", and should be running on the
+    remote machine.  This can be initiated in the system startup
+    procedure, or manually.  Generally, any user can start
+    <tt>wrspiced</tt>, but only one daemon can be running on the host
+    computer.
+
+    <p>
+    The <tt>wrspiced</tt> program is part of the <i>WRspice</i>
+    distribution, and is installed in the same directory as the
+    <tt>wrspice</tt> executable.  The daemon manages the queue of
+    submitted jobs and responses, and maintains the communications
+    port.  The <tt>wrspiced</tt> daemon will establish itself on a
+    port, and wait for client messages.
+
+    <h3>SPICE Server Configuration</h3>
+
+    There is little or no configuration required to run
+    <tt>wrspiced</tt>, but there are a few basic prerequisites.  Our
+    assumption is that <i>WRspice</i> is installed on a
+    network-reachable remote computer (the "SPICE server"), and we
+    wish to submit jobs to this <i>WRspice</i> from within <i>Xic</i>,
+    or from within <i>WRspice</i> running on local computers (the
+    "clients").
+
+    <p>
+    The SPICE server must have <i>WRspice</i> installed, and
+    <i>WRspice</i> must be licensed to run on the server.  As a
+    prerequisite, <i>WRspice</i> should operate on the SPICE server
+    host in the normal way.
+
+    <p>
+    Historically, <tt>wrspiced</tt> has used the service name
+    "<tt>spice</tt>" and port number 3004.  Releases 3.2.8 and later
+    use the service name "<tt>wrspice</tt>" instead of
+    "<tt>spice</tt>", and use port number 6114 by default.  The port
+    6114 is registered with IANA for this service.
+
+    <p>
+    The system services database is represented by the contents of the
+    file <tt>/etc/services</tt> in simple installations.  If using
+    NIS, then the system will get its services information from
+    elsewhere.  A system administrator can add service names and port
+    assignments to this database.  The <tt>wrspiced</tt> program does
+    not require this.
+
+    <h3>Starting the Daemon</h3>
+
+    The <tt>wrspiced</tt> program command line has the following form:
+
+    <blockquote>
+    <tt>wrspiced</tt> [<tt>-fg</tt>] [<tt>-l</tt> <i>logfile</i>]
+      [<tt>-p</tt> <i>program</i>] [<tt>-m</tt> <i>maxjobs</i>]
+      [<tt>-t</tt> <i>port</i>]
+    </blockquote>
+
+    There are five optional arguments.
+    <dl>
+    <dt><tt>-fg</tt>
+    <dd>If given, the <tt>wrspiced</tt> program will remain in the
+    foreground (i.e., not become a "daemon"), but will service
+    requests normally.  This may be useful for debugging purposes.
+    </dl>
+
+    <dl>
+    <dt><tt>-l</tt> <i>logfile</i>
+    <dd>The <i>logfile</i> is a path to a file that will receive
+    status messages from <tt>wrspiced</tt>.  The default is the value
+    of the <b>SPICE_DAEMONLOG</b> <a
+    href="environment">environment</a> variable if set when the
+    program is started, or <tt>/tmp/wrspiced.log</tt>.
+    </dl>
+
+    <dl>
+    <dt><tt>-p</tt> <i>program</i>
+    <dd>This specifies the <tt>WRspice</tt> program to run, in case
+    for some reason the <tt>wrspice</tt> binary has been renamed, or
+    <tt>wrspice</tt> is not in the expected location.  This overrides
+    the values of the <b>SPICE_PATH</b> and <b>SPICE_EXEC_DIR</b> <a
+    href="environment">environment</a> variables, which can also be
+    used to set the path to the binary.  The default is
+    "<tt>/usr/local/xictools/bin/wrspice</tt>".
+    </dl>
+
+    <dl>
+    <dt><tt>-m</tt> <i>maxjobs</i>
+    <dd>This sets the maximum number of jobs that the server will
+    allow to be running at the same time.  The default is 5.
+    </dl>
+
+    <dl>
+    <dt><tt>-t</tt> <i>port</i>
+    <dd>This sets the port to be used by the daemon, and overrides any
+    port set in the services database.  Clients must use the same port
+    number to connect to the SPICE server.
+    </dl>
+
+    <p>
+    The daemon is started by simply typing the command.  If a machine
+    is to operate continuously as a SPICE server, it is recommended
+    that the <tt>wrspiced</tt> daemon be started in the system
+    initialization scripts.  The daemon will run until explicitly
+    killed by a signal, or the machine is halted.  When the
+    <tt>wrspiced</tt> process terminates, any <i>WRspice</i> processes
+    under management will also be killed.  The daemon can be
+    terminated, by the process owner, by giving the command "<tt>ps aux
+    | grep wrspiced</tt>" and noting the process id (pid) number of the
+    running <tt>wrspiced</tt> process, and then issuing "<tt>kill</tt>
+    <i>pid</i>" using this pid number.
+
+    <p>
+    It may be necessary to become root before starting
+    <tt>wrspiced</tt>, as on some systems connection to the port will
+    otherwise be refused due to permission requirements.  Starting by
+    root is also required if the log file is to be written to a
+    directory such as <tt>/var/log</tt> that requires root permission
+    for writing.
+
+    <h3>Client Configuration</h3>
+
+    The port number used by the client must be the same as that used
+    for the server.  As for the server, if not supplied the port
+    number will be resolved if possible in the services database
+    (e.g., the <tt>/etc/services</tt> file), and will revert to a
+    default if not found.
+
+    <p>
+    In <i>Xic</i> and <i>WRspice</i>, the port number to use can be
+    specified with the host name, by appending the number following a colon,
+    i.e.,
+    <blockquote>
+    <i>hostname</i>[:<i>port</i>]
+    </blockquote>
+
+    <p>
+    A <i>WRspice</i> server can receive jobs from <i>Xic</i>, and from
+    <i>WRspice</i> (<a href="rspice"><b>rspice</b></a> command).  Both
+    programs have means by which the SPICE server can be specified
+    from within the program.  One means common to both programs is
+    through use of the <b>SPICE_HOST</b> <a
+    href="environment">environment</a> variable.  The variable should
+    be set to the host name of the SPICE server, as resolvable by the
+    client, followed by the optional colon and port number.  When set,
+    <i>Xic</i> will by default use this server for SPICE jobs
+    initiated with the <b>Run</b> button in the side menu, and
+    <i>WRspice</i> will use this host in the <b>rspice</b> command. 
+    In a situation where the SPICE server provides the only SPICE
+    available, the <b>SPICE_HOST</b> variable should be set in the
+    user's shell startup script.  In <i>WRspice</i> the <a
+    href="rhost"><tt>rhost</tt></a> shell variable and the <a
+    href="rhostcom"><b>rhost</b></a> command can also be used to
+    specify the remote host, and these override any value set in the
+    environment.
+
+    <p>
+    Note:  In <i>Xic</i>, when <i>WRspice</i> connects, a message is
+    printed in the terminal window similar to
+    <blockquote>
+    <tt>Stream established to wrspice://chaucer, port 4573.</tt>
+    </blockquote>
+    The "port" in this case is <i>not</i> the <tt>wrspiced</tt> port
+    discussed above, but is a transient port created for the process.
+
+!!SEEALSO
+utilities
+

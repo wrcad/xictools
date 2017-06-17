@@ -1,0 +1,350 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spRusage.hlp,v 1.11 2015/08/23 19:54:44 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spRusage.hlp
+!!TITLE
+spRusage.hlp
+!!HTML 
+
+!!SUBTOPICS
+rusage
+stats
+
+
+!!REDIRECT accept       rusage#accept
+!!REDIRECT cvchktime    rusage#cvchktime
+!!REDIRECT elapsed      rusage#elapsed
+!!REDIRECT equations    rusage#equations
+!!REDIRECT faults       rusage#faults
+!!REDIRECT fillin       rusage#fillin
+!!REDIRECT involcxswitch rusage#involcxswitch
+!!REDIRECT loadtime     rusage#loadtime
+!!# conflict #!!REDIRECT loadthrds      rusage#loadthrds
+!!# conflict #!!REDIRECT loopthrds      rusage#loopthrds
+!!REDIRECT lutime       rusage#lutime
+!!REDIRECT matsize      rusage#matsize
+!!REDIRECT nonzero      rusage#nonzero
+!!REDIRECT pagefaults   rusage#pagefaults
+!!REDIRECT rejected     rusage#rejected
+!!REDIRECT reordertime  rusage#reordertime
+!!REDIRECT solvetime    rusage#solvetime
+!!REDIRECT space        rusage#space
+!!REDIRECT time         rusage#time
+!!REDIRECT totaltime    rusage#totaltime
+!!REDIRECT totiter      rusage#totiter
+!!REDIRECT trancuriters rusage#trancuriters
+!!REDIRECT traniter     rusage#traniter
+!!REDIRECT tranitercut  rusage#tranitercut
+!!REDIRECT tranlutime   rusage#tranlutime
+!!REDIRECT tranouttime  rusage#tranouttime
+!!REDIRECT tranpoints   rusage#tranpoints
+!!REDIRECT transolvetime rusage#transolvetime
+!!REDIRECT trantime     rusage#trantime
+!!REDIRECT trantrapcut  rusage#trantrapcut
+!!REDIRECT trantstime   rusage#trantstime
+!!REDIRECT volcxswitch  rusage#volcxswitch
+
+!! commands.tex 082315
+!!KEYWORD
+rusage
+!!TITLE
+rusage command
+!!HTML 
+    command: <tt>rusage</tt> [<tt>all</tt>] [<i>resource</i> ...]
+
+    <p>
+    The <b>rusage</b> command is used to obtain information about the
+    consumption of system resources and other statistics during the
+    <i>WRspice</i> session.  If any resource keywords are given, only
+    those resources are printed.  All resources are printed if the
+    keyword <tt>all</tt> is given.  With no arguments, only total time
+    and space usage are printed.  The <a href="show"><b>show</b></a>
+    command can also be used to obtain resource statistics.  The
+    recognized keywords are listed below.
+
+    <p>
+    The <a href="stats"><b>stats</b></a> command is almost identical
+    to <b>rusage</b>, and accepts the same keywords.  The difference
+    is that <b>stats</b> given without arguments will print all
+    run statistics.
+ 
+    <p>
+    <a name="accept"></a>
+    <dl>
+    <dt><tt>accept</tt><dd>
+    This keyword prints the number of accepted time points in the last
+    transient analysis.
+    </dl>
+ 
+    <a name="cvchktime"></a>
+    <dl>
+    <dt><tt>cvchktime</tt><dd>
+    Print the time spent checking for convergence in the most recent
+    dc or transient analysis (including operating point).
+    </dl>
+
+    <a name="elapsed"></a>
+    <dl>
+    <dt><tt>elapsed</tt><dd>
+    This keyword prints the total amount of time that has elapsed
+    since the last call of the <b>rusage</b> or <a
+    href="stats"><b>stats</b></a> command with the <tt>elapsed</tt>
+    keyword (explicit, or implied with "<tt>all</tt>"), or to the
+    program start time.
+    </dl>
+
+    <a name="equations"></a>
+    <dl>
+    <dt><tt>equations</tt><dd>
+    Print the number of nodes in the current circuit, including
+    internally generated nodes.  This includes the ground node so is
+    one larger than the matrix size.
+    </dl>
+
+    <a name="faults"></a>
+    <dl>
+    <dt><tt>faults</tt><dd>
+    This keyword prints the number of page faults and conterxt
+    switches seen by the program thus far.  See also <a
+    href="pagefaults"><tt>pagefaults</tt></a>, <a
+    href="involcxswitch"><tt>involcxswitch</tt></a>, and <a
+    href="volcxswitch"><tt>volcxswitch</tt></a> for the values that
+    occurred during the last analysis.
+    </dl>
+
+    <a name="fillin"></a>
+    <dl>
+    <dt><tt>fillin</tt><dd>
+    Print the number of fillins generated during matrix reordering and
+    factoring.  This is not available from KLU.
+    </dl>
+
+    <a name="involcxswitch"></a>
+    <dl>
+    <dt><tt>involcxswitch</tt><dd>
+    This provides the number of involuntary context switches seen
+    during the last analysis.  If multiple threads are being used,
+    this is the total for all threads.
+    </dl>
+
+    <a name="loadtime"></a>
+    <dl>
+    <dt><tt>loadtime</tt><dd>
+    If given, print the time spent loading the matrix in the last
+    simulation run.  This includes the time spent in computation of
+    device characteristics.
+    </dl>
+
+    <a name="loadthrds"></a>
+    <dl>
+    <dt><tt>loadthrds</tt><dd>
+    Report the number of <a href="spthreads">threads</a> used for
+    device evaluation and matrix loading during the most recent dc
+    (including operating point) or transient analysis.  This would be
+    at most the value of the <a
+    href="loadthrds"><tt>loadthrds</tt></a> option variable in effect
+    during the analysis, but is the number of threads actually used.
+    </dl>
+
+    <a name="loopthrds"></a>
+    <dl>
+    <dt><tt>loopthrds</tt><dd>
+    Report the number of <a href="spthreads">threads</a> in use for
+    repetitive analysis in the most recent analysis run.  This would
+    be at most the value of the <a
+    href="loopthrds"><tt>loopthrds</tt></a> option variable in effect
+    during the analysis, but is the number of threads actually used.
+    </dl>
+
+    <a name="lutime"></a>
+    <dl>
+    <dt><tt>lutime</tt><dd>
+    The <tt>lutime</tt> keyword will print the time spent in LU
+    factorization of the matrix during the last simulation run.
+    </dl>
+
+    <a name="matsize"></a>
+    <dl>
+    <dt><tt>matsize</tt><dd>
+    Print the size of the circuit matrix.
+    </dl>
+
+    <a name="nonzero"></a>
+    <dl>
+    <dt><tt>nonzero</tt><dd>
+    Print the number of nonzero matrix elements.
+    </dl>
+
+    <a name="pagefaults"></a>
+    <dl>
+    <dt><tt>pagefaults</tt><dd>
+    Report the number of page faults seen during the most recent
+    analysis.
+    </dl>
+
+    <a name="rejected"></a>
+    <dl>
+    <dt><tt>rejected</tt><dd>
+    This keyword prints the number of rejected time points in the last
+    transient analysis.
+    </dl>
+
+    <a name="reordertime"></a>
+    <dl>
+    <dt><tt>reordertime</tt><dd>
+    Print the time spent reordering the matrix for numerical stability in
+    the most recent simulation.
+    </dl>
+
+    <a name="solvetime"></a>
+    <dl>
+    <dt><tt>solvetime</tt><dd>
+    This will print the time spent solving the matrix equations, after
+    LU decomposition, in the last simulation run.
+    </dl>
+
+    <a name="space"></a>
+    <dl>
+    <dt><tt>space</tt><dd>
+    This keyword will print the memory presently in use by
+    <i>WRspice</i>.
+    </dl>
+
+    <a name="time"></a>
+    <dl>
+    <dt><tt>time</tt><dd>
+    This keyword will print the time used by the last simulation run.
+    </dl>
+
+    <a name="totaltime"></a>
+    <dl>
+    <dt><tt>totaltime</tt><dd>
+    If this keyword is given, the total time used in the present
+    session will be printed.
+    </dl>
+
+    <a name="totiter"></a>
+    <dl>
+    <dt><tt>totiter</tt><dd>
+    This keyword prints the total number of Newton iterations used in
+    the last analysis.
+    </dl>
+
+    <a name="trancuriters"></a>
+    <dl>
+    <dt><tt>trancuriters</tt><dd>
+    This prints the number of Newton iterations used in the most recent
+    transient analysis time point evaluation.
+    </dl>
+
+    <a name="traniter"></a>
+    <dl>
+    <dt><tt>traniter</tt><dd>
+    The <tt>traniter</tt> keyword will print the number of iterations
+    used in the last transient analysis.  This does not include
+    iterations used in the operating point calculation, unlike
+    <tt>totiter</tt> which includes these iterations.
+    </dl>
+
+    <a name="tranitercut"></a>
+    <dl>
+    <dt><tt>tranitercut</tt><dd>
+    The number if times that the most recent transient analysis had a
+    time step cut by iteration count.  If the <a
+    href="itl4"><tt>itl4</tt></a> limit is reached when attempting
+    convergence at a transient time point, the timestep is cut and
+    convergence is reattempted.
+    </dl>
+
+    <a name="tranlutime"></a>
+    <dl>
+    <dt><tt>tranlutime</tt><dd>
+    The time spent LU factoring the matrix in the most recent transient
+    analysis, not including the dc operating point calculation.
+    </dl>
+
+    <a name="tranouttime"></a>
+    <dl>
+    <dt><tt>tranouttime</tt><dd>
+    Print the time spent saving output in the most recent transient
+    analysis.
+    </dl>
+
+    <a name="tranpoints"></a>
+    <dl>
+    <dt><tt>tranpoints</tt><dd>
+    This keyword prints the number of internal time steps used in the
+    last transient analysis.
+    </dl>
+
+    <a name="transolvetime"></a>
+    <dl>
+    <dt><tt>transolvetime</tt><dd>
+    This keyword prints the matrix solution time required by the last
+    transient analysis, not including the operating point calculation.
+    </dl>
+
+    <a name="trantime"></a>
+    <dl>
+    <dt><tt>trantime</tt><dd>
+    This keyword will print the total time spent in transient analysis
+    in the last transient analysis, not including the operating point
+    calculation.
+    </dl>
+
+    <a name="trantrapcut"></a>
+    <dl>
+    <dt><tt>trantrapcut</tt><dd>
+    This is the number of times in the most recent transient analysis
+    that a timestep was cut due to the trapcheck algorithm.  This may
+    occur when the <a href="trapcheck"><tt>trapcheck</tt></a> variable
+    is set, which enables a test to detect numerical problems in
+    trapezoidal integration.
+    </dl>
+
+    <a name="trantstime"></a>
+    <dl>
+    <dt><tt>trantstime</tt><dd>
+    Report the time spent computing the next timestep in the most
+    recent transient analysis.
+    </dl>
+
+    <a name="volcxswitch"></a>
+    <dl>
+    <dt><tt>volcxswitch</tt><dd>
+    This provides the number of voluntary context switches seen
+    during the last analysis.  If multiple threads are being used,
+    this is the total for all threads.
+    </dl>
+ 
+!!SEEALSO
+misccmds
+
+
+!! commands.tex 062515
+!!KEYWORD
+stats
+!!TITLE
+stats command
+!!HTML 
+    command: <tt>stats</tt> [<tt>all</tt>] [<i>resource</i> ...]
+
+    <p>
+    This is basically identical to the <a
+    href="rusage"><b>rusage</b></a> command, and accepts the same
+    arguments as described for that command.  The difference is that
+    when given without an argument, all run statistics are printed. 
+    This is the same as "<tt>rusage all</tt>" with the
+    <tt>totaltime</tt>, <tt>elapsed</tt>, <tt>space</tt>, and
+    <tt>faults</tt> fields omitted.
+ 
+!!SEEALSO
+misccmds

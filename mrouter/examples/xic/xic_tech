@@ -1,0 +1,1458 @@
+Comment Technology file for MOSIS scalable CMOS
+# $Id: xic_tech,v 1.2 2017/01/24 01:26:45 stevew Exp $
+
+# This is an example tech file based on MOSIS SCMOS.
+#
+# WARNING:  This is an example only, and is not based on a real
+# process.  The file can be used as a starting point to craft a tech
+# file appropriate For a particular MOSIS process.  The MOSIS SCMOS
+# process has a number of options and variations that are not
+# accounted for here.  The design rules have not been completely
+# implemented and tested.
+#
+# See http://www.mosis.com/Technical/Designrules/scmos
+# for a full description of the MOSIS SCMOS processing options.
+
+Comment  1/23/17 CV2, CM3 GDS layers weren't right, fixed.
+Comment  6/21/16 Added PIN:PIN layer for Oklahoma State CMOS std. cells.
+Comment  5/26/16 CPG Routing -> Conductor
+Comment  5/19/16 CM3 Conductor -> Routing
+Comment  9/9/14 Updated for 4.0.9 (test FEATURESET).
+Comment  7/5/12 LongName -> LppName, removed PhysSnapping, for 3.3.x.
+Comment  3/12/12 Added elecwhite/black scripts, these need 3.2.25 or later.
+Comment  7/6/10 Update to remove/replace "Alt" keywords for 3.2.11.
+Comment  This file is NOT compatible with releases before 3.2.11.
+
+Technology scmos
+Define SUBM
+
+!Set FlattenPrefix $$
+
+# Enable the following to set the PIN layer to support the Oklahoma
+# State open-source CMOS standard cell libraries.  Labels on the PIN
+# layer will set the name of the coincident net.
+!Set PinLayer PIN:PIN
+
+# Use lambda units in all design rules.  Change the definition below
+# to the actual lambda in microns.
+Set lambda = 1.0
+Define L(x) eval($(lambda)*x)
+Define A(x) eval($(lambda)*$(lambda)*x*x)
+
+# When defined, schematics will use a white background.  This looks
+# better when exported for figures in presentations, etc., and some
+# users might prefer it generally.  Uncomment to use.
+# Define WhiteSchem
+
+# The search paths can be defined here
+#Path ( . ) 
+#LibPath ( . /usr/local/xictools/xic/startup ) 
+#HelpPath ( /usr/local/xictools/xic/help ) 
+#ScriptPath ( /usr/local/xictools/xic/scripts ) 
+
+If FEATURESET == "FULL"
+#------------------------------------------------------------------------------
+# Electrical Layers
+
+ElecLayer SCED
+Description Active wiring layer
+StreamOut 1 0
+IfDef WhiteSchem
+RGB 0 0 0
+Else
+RGB 225 225 225
+Endif
+Filled y
+
+ElecLayer ETC1
+Description General drawing layer
+StreamOut 2 0
+IfDef WhiteSchem
+RGB 105 195 195
+Else
+RGB 125 225 225
+Endif
+Filled n
+
+ElecLayer ETC2
+Description General drawing layer
+StreamOut 3 0
+IfDef WhiteSchem
+RGB 170 125 105
+Else
+RGB 225 225 125
+Endif
+Filled n
+
+ElecLayer NAME
+Description Name property label
+StreamOut 4 0
+IfDef WhiteSchem
+RGB 185 155 90
+Else
+RGB 255 230 175
+Endif
+Filled n
+
+ElecLayer MODL
+Description Model property label
+StreamOut 5 0
+IfDef WhiteSchem
+RGB 85 215 80
+Else
+RGB 175 225 175
+Endif
+Filled n
+
+ElecLayer VALU
+Description Value property label
+StreamOut 6 0
+IfDef WhiteSchem
+RGB 210 70 65
+Else
+RGB 255 225 225
+Endif
+Filled n
+
+ElecLayer PARM
+Description Param property label
+StreamOut 7 0
+IfDef WhiteSchem
+RGB 225 95 215
+Else
+RGB 200 175 225
+Endif
+Filled n
+
+ElecLayer NODE
+Description Node property label
+StreamOut 8 0
+IfDef WhiteSchem
+RGB 175 175 155
+Else
+RGB 255 255 225
+Endif
+Filled n
+
+ElecLayer SPTX
+Description Active label layer
+StreamOut 10 0
+IfDef WhiteSchem
+RGB 0 135 15
+Else
+RGB 225 134 170
+Endif
+Filled n
+
+#------------------------------------------------------------------------------
+Endif
+
+#------------------------------------------------------------------------------
+# Physical Layers
+
+PhysLayer CWN
+LppName N_WELL
+StreamIn 42, 0-255
+StreamOut 42 0
+RGB 137 124 120
+Filled 00 7e 7e 66 66 7e 7e 00 outline
+If FEATURESET == "FULL"
+IfDef SUBM
+MinWidth L(12) #1.1 CWN minimum width L(12)
+MinSpace L(18) #1.2 CWN minimum space L(18)
+Else
+MinWidth L(10) #1.1 CWN minimum width L(10)
+MinSpace L(9) #1.2 CWN minimum space L(9)
+Endif
+#1.3 CWN minimum space from CWN at same potential L(6)
+NoOverlap CWP #1.4 minimum spacing between wells of different type 0
+Endif
+
+PhysLayer CWP
+LppName P_WELL
+StreamIn 41, 0-255
+StreamOut 41 0
+RGB 46 132 22
+Filled 00 7e 7e 66 66 7e 7e 00 outline
+If FEATURESET == "FULL"
+IfDef SUBM
+MinWidth L(12) #1.1 CWP minimum width L(12)
+MinSpace L(18) #1.2 CWP minimum space L(18)
+Else
+MinWidth L(10) #1.1 CWP minimum width L(10)
+MinSpace L(9) #1.2 CWP minimum space L(9)
+Endif
+Endif
+
+PhysLayer CWC
+LppName CAP_WELL
+StreamIn 59, 0-255
+StreamOut 59 0
+If FEATURESET == "FULL"
+IfDef SUBM
+MinWidth L(12) #17.1 CWC minimum width L(12)
+MinSpace L(18) #17.2 CWC minimum space L(18)
+MinSpaceTo CWN L(18) #17.2 CWC minimum space to CWN L(18)
+MinSpaceTo CWP L(18) #17.2 CWC minimum space to CWP L(18)
+MinSpaceTo CAA L(6) #17.3 CWC minimum space to CAA L(6)
+Else
+MinWidth L(10) #17.1 CWC minimum width L(10)
+MinSpace L(9) #17.2 CWC minimum space L(9)
+MinSpaceTo CWN L(9) #17.2 CWC minimum space to CWN L(9)
+MinSpaceTo CWP L(9) #17.2 CWC minimum space to CWP L(9)
+MinSpaceTo CAA L(5) #17.3 CWC minimum space to CAA L(5)
+Endif
+#17.4 in CAA
+Endif
+
+PhysLayer CAA
+LppName ACTIVE
+StreamIn 43, 0-255
+StreamOut 43 0
+RGB 254 255 1
+Filled 01 82 44 28 10 28 44 82 outline
+Conductor Exclude CPG
+If FEATURESET == "FULL"
+MinWidth L(3) #2.1 CAA minimum width L(3)
+MinSpace L(3) #2.2 CAA minimum space L(3)
+#Note: 17.4 must catch CAA overlapping CWC edge
+IfDef SUBM
+MinSpaceFrom Region CSN CWP L(6) #2.3 S/D to CWP well edge L(6)
+MinSpaceFrom Region CSP CWN L(6) #2.3 S/D to CWN well edge L(6)
+MinSpaceFrom Region CWC CWC L(6) #17.4 CWC minimum from CAA edge L(6)
+Else
+MinSpaceFrom Region CSN CWP L(5) #2.3 S/D to CWP well edge L(5)
+MinSpaceFrom Region CSP CWN L(5) #2.3 S/D to CWN well edge L(5)
+MinSpaceFrom Region CWC CWC L(5) #17.4 CWC minimum from CAA edge L(5)
+Endif
+MinSpaceFrom Region CSP CWP L(3) #2.4 contact to CWP well edge L(3)
+MinSpaceFrom Region CSN CWN L(3) #2.4 contact to CWN well edge L(3)
+IfOverlap CTA #24.6 CAA is either entirely inside or outside CTA
+Endif
+
+PhysLayer CTA
+LppName THICK_ACTIVE
+StreamIn 60, 0-255
+StreamOut 60 0
+If FEATURESET == "FULL"
+MinWidth L(4) #24.1 CTA minimum width L(4)
+MinSpace L(4) #24.2 CTA minimum space L(4)
+MinNoOverlap CAA L(4) #24.3 minimum CAA overlap L(4)
+MinSpaceTo CAA L(4) #24.4 minimum space to CAA L(4)
+MinWidth Region CPG&CAA L(3) #24.5 minimum poly width in CTA gate L(3)
+Endif
+
+IfnDef SUBM
+PhysLayer CBA
+LppName PBASE
+StreamIn 58, 0-255
+StreamOut 58 0
+
+PhysLayer CPC
+LppName POLY_CAP1
+StreamIn 28, 0-255
+StreamOut 28 0
+If FEATURESET == "FULL"
+MinWidth L(8) #23.1 CPC minimum width L(8)
+MinSpace L(4) #23.2 CPC minimum space L(4)
+MinSpaceTo CAA L(8) #23.3 CPC minimum space to CAA L(8)
+MinSpaceFrom CPG L(3) #23.4 CPC minimum extension from CPG L(3)
+MinNoOverlap CCC L(2) #23.5 CPC overlap around contact L(2)
+MinNoOverlap CPG L(2) #23.6 CPG overlap around cap contact L(2)
+MinSpaceTo Region CCC CPG L(2) #23.7 CPC contact to CPG L(2)
+MinSpaceTo CM1 L(4) #23.8 minimum space to CM1 L(4)
+MinSpaceTo CM2 L(2) #23.9 minimum space to CM2 L(2)
+Endif
+Endif
+
+PhysLayer CPG
+LppName POLY
+StreamIn 46, 0-255
+StreamOut 46 0
+RGB 255 85 82
+Filled 18 3c 7e e7 e7 7e 3c 18 outline
+WireWidth L(2)
+CrossThick 0.1
+Thickness 0.1
+Conductor
+If FEATURESET == "FULL"
+MinWidth L(2) #3.1 CPG minimum width L(2)
+IfDef SUBM
+MinSpace L(3) #3.2 CPG minimum space L(3)
+Else
+MinSpace L(2) #3.2 CPG minimum space L(2)
+Endif
+MinNoOverlap CAA L(2) #3.3 CPG minimum gate extension from CAA L(2)
+MinSpaceFrom CAA L(3) #3.4 CAA minimum extension from CPG L(3)
+MinSpaceTo CAA L(1) #3.5 CPG minimum space to CAA L(1)
+Endif
+
+PhysLayer CSB
+LppName SILICIDE_BLOCK
+StreamIn 29, 0-255
+StreamOut 29 0
+If FEATURESET == "FULL"
+MinWidth L(4) #20.1 CSB minimum width L(4)
+MinSpace L(4) #20.2 CSB minimum space L(4)
+NoOverlap CCC #20.3 No contacts on CSB
+MinSpaceTo CCC L(2) #20.3 CBS minimum space to contact L(2)
+MinSpaceTo CAA L(2) #20.4 CBS minimum space to CAA L(2)
+MinSpaceTo CPG L(2) #20.5 CBS minimum space to CPG L(2)
+#20.6
+MinWidth Region CPG L(5) #20.7 minimum CPG width over CSB L(5)
+MinSpace Region CPG L(7) #20.8 minimum CPG space over CSB L(7)
+MinNoOverlap CPG L(2) #20.9 CSB minimum extension from CPG L(2)
+MinNoOverlap CAA L(2) #20.9 CSB minimum extension from CAA L(2)
+MinSpaceFrom CPG L(3) #20.10 minimum CPG extension from CSB L(3)
+MinSpaceFrom CAA L(3) #20.10 minimum CAA extension from CSB L(3)
+IfDef SUBM
+MinSpaceTo Region CAA CPG L(5) #20.11 minimum space to poly in active L(5)
+Else
+MinSpaceTo Region CAA CPG L(3) #20.11 minimum space to poly in active L(3)
+Endif
+Endif
+
+PhysLayer CSN
+LppName N_PLUS_SELECT
+StreamIn 45, 0-255
+StreamOut 45 0
+RGB 61 211 186
+Filled 40 20 10 08 04 02 01 80 outline
+If FEATURESET == "FULL"
+MinWidth L(2) #4.4 CSN minimum width L(2)
+MinSpace L(2) #4.4 CSN minimum space L(2)
+#4.4 CSN/CSP can be coincident but must not overlap
+MinSpaceTo CPG L(3) #4.1 CSN minimum space to CPG L(3)
+MinNoOverlap CAA L(2) #4.2 CSN minimum extension from CAA L(2)
+MinNoOverlap CCA L(1) #4.3 CSN minimum extension from CCA L(1)
+MinNoOverlap CCC L(1) #4.3 CSN minimum extension from CCC L(1)
+MinSpaceTo CCA L(1) #4.3 CSN minimum space to CCA L(1)
+MinSpaceTo CCC L(1) #4.3 CSN minimum space to CCC L(1)
+Endif
+
+PhysLayer CSP
+LppName P_PLUS_SELECT
+StreamIn 44, 0-255
+StreamOut 44 0
+RGB 255 170 174
+Filled 40 20 10 08 04 02 01 80 outline
+If FEATURESET == "FULL"
+MinWidth L(2) #4.4 CSP minimum width L(2)
+MinSpace L(2) #4.4 CSP minimum space L(2)
+#4.4 CSN/CSP can be coincident but must not overlap
+MinSpaceTo CPG L(3) #4.1 CSP minimum space to CPG L(3)
+MinNoOverlap CAA L(2) #4.2 CSP minimum extension from CAA L(2)
+MinNoOverlap CCA L(1) #4.3 CSP minimum extension from CCA L(1)
+MinNoOverlap CCC L(1) #4.3 CSP minimum extension from CCC L(1)
+MinSpaceTo CCA L(1) #4.3 CSP minimum space to CCA L(1)
+MinSpaceTo CCC L(1) #4.3 CSP minimum space to CCC L(1)
+Endif
+
+PhysLayer CEL
+LppName POLY2
+StreamIn 56, 0-255
+StreamOut 56 0
+IfDef SUBM
+WireWidth L(7)
+Else
+WireWidth L(3)
+Endif
+If FEATURESET == "FULL"
+IfDef SUBM
+MinWidth L(7) #11.1 CEL minimum width L(7)
+MinSpaceFrom CPG L(5) #11.3 CEL minimum CPG overlap L(5)
+MinSpaceTo CCC L(6) #11.5 CEL minimum space to CCC L(6)
+MinSpaceTo CCP L(6) #11.5 CEL minimum space to CCP L(6)
+Else
+MinWidth L(3) #11.1 CEL minimum width L(3)
+MinSpaceFrom CPG L(2) #11.3 CEL minimum CPG overlap L(2)
+MinSpaceTo CCC L(3) #11.5 CEL minimum space to CCC L(3)
+MinSpaceTo CCP L(3) #11.5 CEL minimum space to CCP L(3)
+Endif
+MinSpace L(3) #11.2 CEL minimum spacing L(3)
+MinSpaceTo CAA L(2) #11.4 CEL minimum space to CAA L(2)
+MinSpaceTo CWP L(2) #11.4 CEL minimum space to CWP L(2)
+MinSpaceTo CWN L(2) #11.4 CEL minimum space to CWN L(2)
+MinSpaceTo CWC L(2) #11.4 CEL minimum space to CWC L(2)
+#11.6 minimum space to unrelated metal L(2)
+Endif
+
+PhysLayer CHR
+LppName HI_RES_IMPLANT
+StreamIn 34, 0-255
+StreamOut 34 0
+If FEATURESET == "FULL"
+MinWidth L(4) #27.1 CHR minimum width L(4)
+MinSpace L(4) #27.2 CHR minimum space L(4)
+NoOverlap CCC #27.3 CHR no contacts (CCC) allowed inside CHR
+NoOverlap CCP #27.3 CHR no contacts (CCP) allowed inside CHR
+NoOverlap CCA #27.3 CHR no contacts (CCA) allowed inside CHR
+MinSpaceTo CCC L(2) #27.3 minimum space to contact (CCC) L(2)
+MinSpaceTo CCP L(2) #27.3 minimum space to contact (CCP) L(2)
+MinSpaceTo CCA L(2) #27.3 minimum space to contact (CCA) L(2)
+MinSpaceTo CAA L(2) #27.4 minimum space to CAA L(2)
+MinSpaceTo CEL L(2) #27.5 minimum space to CEL L(2)
+#27.6 Resistor is poly2 inside HR; poly2 ends stick out for contacts,
+# the entire resistor must be outside well and over field
+MinWidth Region CEL L(5) #27.7 CHR minimum CEL width in resistor L(5)
+MinSpace Region CEL L(7) #27.8 CHR minimum spacing of CEL resistors L(7)
+MinNoOverlap CEL L(2) #27.9 CHR minimum overlap of CEL L(2)
+Endif
+
+PhysLayer CCC
+LppName CONTACT
+StreamIn 25, 0-255
+StreamOut 25 0
+RGB 253 253 65
+Filled y
+Via CPG CM1
+Via CAA CM1
+If FEATURESET == "FULL"
+MinWidth L(2)  #5.1, 6.1 Contact exact size L(2) X L(2)
+MaxArea A(2)   #5.1, 6.1 Contact exact size L(2) X L(2)
+MinSpaceFrom CPG L(1.5) #5.2 Contact minimum from CPG edge L(1.5)
+MinSpaceFrom CAA L(1.5) #6.2 Contact minimum from CAA edge L(1.5)
+IfDef SUBM
+MinSpace L(3) #5.3, 6.3 Contact minimum space L(3)
+Else
+MinSpace L(2) #5.3, 6.3 Contact minimum space L(2)
+Endif
+MinSpaceTo CAA L(2) #5.4 Contact minimum space to CAA L(2)
+MinSpaceTo CPG L(2) #6.4 Contact minimum space to CPG L(2)
+Overlap CPG|CAA #5.2, 6.2 CCC over CPG or CAA
+Endif
+
+PhysLayer CCP
+LppName POLY_CONTACT
+StreamIn 47, 0-255
+StreamOut 47 0
+RGB 233 151 218
+Filled y
+CrossThick 0.2
+Thickness 0.2
+EpsRel 3.8
+Via CPG CM1 
+If FEATURESET == "FULL"
+MinWidth L(2)  #5.1 CCP exact size L(2) X L(2)
+MaxArea A(2)   #5.1 CCP exact size L(2) X L(2)
+MinSpaceFrom CPG L(1.5) #5.2 CCP minimum from CPG edge L(1.5)
+IfDef SUBM
+MinSpace L(3) #5.3 CCP minimum space L(3)
+Else
+MinSpace L(2) #5.3 CCP minimum space L(2)
+Endif
+MinSpaceTo CAA L(2) #5.4 CCP minimum space to CAA L(2)
+Overlap CPG #6.2 CCP over CPG
+Endif
+
+PhysLayer CCA
+LppName ACTIVE_CONTACT
+StreamIn 48, 0-255
+StreamOut 48 0
+RGB 253 253 65
+Filled y
+Via CAA CM1 
+If FEATURESET == "FULL"
+MinWidth L(2)  #6.1 CCA exact size L(2) X L(2)
+MaxArea A(2)   #6.1 CCA exact size L(2) X L(2)
+MinSpaceFrom CAA L(1.5) #6.2 CCA minimum from CAA edge L(1.5)
+IfDef SUBM
+MinSpace L(3) #6.3 CCA minimum space L(3)
+Else
+MinSpace L(2) #6.3 CCA minimum space L(2)
+Endif
+MinSpaceTo CPG L(2) #6.4 CCA minimum space to CPG L(2)
+Overlap CAA #6.2 CCA over CAA
+Endif
+
+PhysLayer CCE
+LppName POLY2_CONTACT
+StreamIn 55, 0-255
+StreamOut 55 0
+If FEATURESET == "FULL"
+MinWidth L(2)  #13.1 CCE exact size L(2) X L(2)
+MaxArea A(2)   #13.1 CCE exact size L(2) X L(2)
+IfDef SUBM
+MinSpace L(3) #13.2 CCE minimum space L(3)
+Else
+MinSpace L(2) #13.2 CCE minimum space L(2)
+Endif
+MinSpaceFrom Region CPG CEL L(3) #13.3 CCA minimum CEL overlap on capacitor L(3)
+MinSpaceFrom CEL L(2) #13.4 CCA minimum CEL overlap L(2)
+MinSpaceTo CPG L(3) #13.5 CCE minimum space to CPG L(3)
+MinSpaceTo CAA L(3) #13.5 CCE minimum space to CAA L(3)
+Endif
+
+PhysLayer CM1
+LppName METAL1
+StreamIn 49, 0-255
+StreamOut 49 0
+RGB 0 174 253
+Filled aa 55 aa 55 aa 55 aa 55 outline
+WireWidth L(3)
+CrossThick 0.4
+Thickness 0.4
+Routing
+If FEATURESET == "FULL"
+MinWidth L(3) #7.1 CM1 minimum width L(3)
+IfDef SUBM
+MinSpace L(3) #7.2 CM1 minimum space L(3)
+Else
+MinSpace L(2) #7.2 CM1 minimum space L(2)
+Endif
+MinNoOverlap CCA L(1) #7.3 CM1 minimum extension from CCA L(1)
+MinNoOverlap CCP L(1) #7.3 CM1 minimum extension from CCP L(1)
+MinNoOverlap CCC L(1) #7.3 CM1 minimum extension from CCC L(1)
+MinNoOverlap CCE L(1) #7.3 CM1 minimum extension from CCE L(1)
+MinNoOverlap CV1 L(1) #7.3 CM1 minimum extension from CV1 L(1)
+#7.4 Minimum spacing when either metal line is wider than 10 lambda
+Endif
+
+PhysLayer CV1
+LppName VIA
+StreamIn 50, 0-255
+StreamOut 50 0
+RGB 240 218 181
+Filled y
+CrossThick 0.6
+Thickness 0.6
+EpsRel 3.8
+Via CM1 CM2 
+If FEATURESET == "FULL"
+MinWidth L(2) #8.1 CV1 exact size L(2) X L(2)
+MaxArea A(2)  #8.1 CV1 exact size L(2) X L(2)
+MinSpace L(3) #8.2 CV1 minimum space L(3)
+MinSpaceFrom CM1 L(1) #8.3 CV1 minimum from edge of CM1 L(1)
+MinSpaceTo CCC L(2) #8.4 CV1 minimum space to contact (CCC) L(2)
+MinSpaceTo CCA L(2) #8.4 CV1 minimum space to contact (CCA) L(2)
+MinSpaceTo CCC L(2) #8.4 CV1 minimum space to contact (CCP) L(2)
+MinSpaceTo CAA L(2) #8.5 CV1 minimum space to CAA L(2)
+MinSpaceTo CPG L(2) #8.5 CV1 minimum space to CPG L(2)
+Endif
+
+PhysLayer CM2
+LppName METAL2
+StreamIn 51, 0-255
+StreamOut 51 0
+RGB 205 0 205
+Filled 2a 15 8a 45 a2 51 a8 54 outline
+WireWidth L(3)
+CrossThick 0.6
+Thickness 0.6
+Routing
+If FEATURESET == "FULL"
+MinWidth L(3) #9.1 CM2 minimum width L(3)
+MinSpace L(4) #9.2.a CM2 minimum space L(4)
+MinNoOverlap CV1 L(1) #9.3 CM2 minimum extension from CV1 L(1)
+#9.4 Minimum spacing when either metal line is wider than 10 lambda
+Endif
+
+PhysLayer CV2
+LppName VIA2
+StreamIn 61, 0-255
+StreamOut 61 0
+RGB 185 156 159
+Filled y
+Thickness 0.6
+Via CM3 CM2 
+If FEATURESET == "FULL"
+MinWidth L(2) #14.1 CV2 exact size L(2) X L(2)
+MaxArea A(2)  #14.1 CV2 exact size L(2) X L(2)
+MinSpace L(3) #14.2 CV2 minimum space L(3)
+MinSpaceFrom CM2 L(1) #14.3 CV2 minimum to CM2 edge L(1)
+MinSpaceTo CV1 L(2) #14.4 CV2 minimum space to CV1 L(2)
+Overlap CM2&CM3 #14.3, 15.3 CV2 over CM2 and CM3
+Endif
+
+PhysLayer CM3
+LppName METAL3
+StreamIn 62, 0-255
+StreamOut 62 0
+RGB 231 247 236
+Filled 88 44 02 11 88 40 22 11 outline
+WireWidth L(3)
+Thickness 0.6
+Routing
+If FEATURESET == "FULL"
+MinWidth L(3) #15.1 CM3 minimum width L(3)
+MinSpace L(3) #15.2 CM3 minimum space L(3)
+MinNoOverlap CV2 L(2) #15.3 minimum extension from CV2 L(2)
+#15.4 Minimum spacing when either metal line is wider than 10 lambda
+Endif
+
+PhysLayer CV3
+LppName VIA3
+StreamIn 30, 0-255
+StreamOut 30 0
+Filled y
+Thickness 0.6
+Via CM4 CM3 
+If FEATURESET == "FULL"
+MinWidth L(2) #21.1 CV3 exact size L(2) X L(2)
+MaxArea A(2)  #21.1 CV3 exact size L(2) X L(2)
+MinSpace L(4) #21.2 CV3 minimum space L(4)
+MinSpaceFrom CM3 L(1) #21.3 CV3 minimum to CM3 edge L(1)
+Overlap CM3&CM4 #21.3, 22.3 CV3 over CM3 and CM4
+Endif
+
+PhysLayer CM4
+LppName METAL4
+StreamIn 31, 0-255
+StreamOut 31 0
+WireWidth L(6)
+Thickness 0.6
+Routing
+If FEATURESET == "FULL"
+MinWidth L(6) #22.1 CM4 minimum width L(6)
+MinSpace L(6) #22.2 CM4 minimum space L(6)
+MinNoOverlap CV3 L(2) #22.3 CM4 minimum extension from CV3 L(2)
+#22.4 Minimum spacing when either metal line is wider than 10 lambda
+Endif
+
+PhysLayer CTM
+LppName CAP_TOP_METAL
+StreamIn 35, 0-255
+StreamOut 35 0
+
+PhysLayer CV4
+LppName VIA4
+StreamIn 32, 0-255
+Filled y
+StreamOut 32 0
+Thickness 0.6
+VIA CM4 CM5
+If FEATURESET == "FULL"
+MinWidth L(2) #25.1 CV4 exact size L(2) X L(2)
+MaxArea A(2)  #25.1 CV4 exact size L(2) X L(2)
+MinSpace L(3) #25.2 CV4 minimum space L(3)
+MinSpaceFrom CM4 L(1) #25.3 CV4 minimum to CM4 edge L(1)
+Overlap CM4&CM5 #25.3, 26.3 CV4 over CM4 and CM5
+Endif
+
+PhysLayer CM5
+LppName METAL5
+StreamIn 33, 0-255
+StreamOut 33 0
+WireWidth L(4)
+Thickness 0.6
+Routing
+If FEATURESET == "FULL"
+MinWidth L(4) #26.1 CM5 minimum width L(4)
+MinSpace L(4) #26.2 CM5 minimum width L(4)
+MinNoOverlap VIA4 L(1) #26.3 CM5 minimum extension from VIA4 L(1)
+#26.4 Minimum spacing when either metal line is wider than 10 lambda
+Endif
+
+IfDef SUBM
+PhysLayer CV5
+LppName VIA5
+StreamIn 36, 0-255
+StreamOut 36 0
+Filled y
+Thickness 0.6
+VIA CM5 CM6
+If FEATURESET == "FULL"
+MinWidth L(3) #29.1 CV5 exact size L(3) X L(3)
+MaxArea A(3)  #29.1 CV5 exact size L(3) X L(3)
+MinSpace L(4) #29.2 CV5 minimum space L(4)
+MinSpaceFrom CM5 L(1) #29.3 CV5 minimum to CM5 edge L(1)
+Overlap CM5&CM6 #29.3, 30.3 CV5 over CM5 and CM6
+Endif
+
+PhysLayer CM6
+LppName METAL6
+StreamIn 37, 0-255
+StreamOut 37 0
+WireWidth L(5)
+Thickness 0.6
+Routing
+If FEATURESET == "FULL"
+MinWidth L(5) #30.1 CM6 minimum width L(5)
+MinSpace L(5) #30.2 CM6 minimum width L(5)
+MinNoOverlap VIA5 L(1) #30.3 CM6 minimum extension from VIA5 L(1)
+#30.4 Minimum spacing when either metal line is wider than 10 lambda
+Endif
+
+PhysLayer CDNW
+LppName DEEP_N_WELL
+StreamIn 38, 0-255
+StreamOut 38 0
+If FEATURESET == "FULL"
+MinWidth L(30) #31.1 CDNW minimum width L(30)
+MinSpace L(50) #31.2 CDNW minimum space l(50)
+MinNoOverlap CWN L(15) #31.3 mminimum extension CWN L(15)
+Endif
+Endif
+
+PhysLayer COG
+LppName GLASS
+StreamIn 52, 0-255
+StreamOut 52 0
+RGB 255 250 107
+Filled n
+CrossThick 1.0
+Thickness 1.0
+EpsRel 3.2
+If FEATURESET == "FULL"
+MinWidth Region XP L(60) #10.1 COG minimum pad width L(60)
+MinWidth L(20) #10.2 COG minimum probe pad width L(20)
+MinSpaceFrom CM1 L(6) #10.3 metal (CM1) extension minimum from COG L(6)
+MinSpaceFrom CM2 L(6) #10.3 metal (CM2) extension minimum from COG L(6)
+MinSpaceFrom CM3 L(6) #10.3 metal (CM3) extension minimum from COG L(6)
+MinSpaceFrom CM4 L(6) #10.3 metal (CM4) extension minimum from COG L(6)
+MinSpaceFrom CM5 L(6) #10.3 metal (CM5) extension minimum from COG L(6)
+#10.4 Minimum pad spacing to unrelated metal L(30)
+#10.5 Minimum pad spacing to active, poly or poly2 L(15)
+Endif
+
+PhysLayer XP
+LppName PADS
+StreamIn 26, 0-255
+StreamOut 26 0
+
+PhysLayer NDRC
+LppName NO_DRC
+StreamIn 21, 0-255
+StreamOut 21 0
+RGB 175 175 175
+Filled n
+
+PhysLayer PIN:PIN
+StreamIn 109, 0-255
+StreamOut 109 0
+RGB 225 255 225
+Filled n
+
+#------------------------------------------------------------------------------
+
+If FEATURESET == "FULL"
+#------------------------------------------------------------------------------
+# Device Blocks
+
+Device
+Name nmos
+Prefix Mn_
+Body (CAA&CPG)&CSN
+Contact s CAA CAA&(!CPG)
+Contact d CAA CAA&(!CPG)
+Contact g CPG CAA&CPG
+Permute d s
+Bloat 0.1
+Merge
+Measure Length BodyMinDimen*1e-6 4
+Measure Width (BodyArea/BodyMinDimen)*1e-6 4
+Measure AS CArea.0.CAA * 1e-12 4
+Measure AD CArea.1.CAA * 1e-12 4
+Measure PS CPerim.0.CAA * 1e-6 4
+Measure PD CPerim.1.CAA * 1e-6 4
+LVS Length l
+LVS Width w
+LVS AS as
+LVS AD ad
+LVS PS ps
+LVS PD pd
+Spice %n% %c%d %c%g %c%s NSUB %model% %initc%
+Cmput NMOS device %n%, Length: %me%Length  Width: %me%Width  AS: %me%AS \
+PS: %me%PS  AD: %me%AD  PD: %me%PD
+Model nmos
+Param l=%me%Length w=%me%Width ad=%me%AD pd=%me%PD as=%me%AS ps=%me%PS
+End
+
+Device
+Name pmos
+Prefix Mp_
+Body (CAA&CPG)&CSP
+Contact s CAA CAA&(!CPG)
+Contact d CAA CAA&(!CPG)
+Contact g CPG CAA&CPG
+Permute d s
+Bloat 0.1
+Merge
+Measure Length BodyMinDimen*1e-6 4
+Measure Width (BodyArea/BodyMinDimen)*1e-6 4
+Measure AS CArea.0.CAA * 1e-12 4
+Measure AD CArea.1.CAA * 1e-12 4
+Measure PS CPerim.0.CAA * 1e-6 4
+Measure PD CPerim.1.CAA * 1e-6 4
+LVS Length l
+LVS Width w
+LVS AS as
+LVS AD ad
+LVS PS ps
+LVS PD pd
+Spice %n% %c%d %c%g %c%s PSUB %model% %initc%
+Cmput PMOS device %n%, Length: %me%Length  Width: %me%Width  AS: %me%AS \
+PS: %me%PS  AD: %me%AD  PD: %me%PD
+Model pmos
+Param l=%me%Length w=%me%Width ad=%me%AD pd=%me%PD as=%me%AS ps=%me%PS
+End
+
+#------------------------------------------------------------------------------
+Endif
+
+#------------------------------------------------------------------------------
+# Script Definitions
+# In Xic, these appear in the User Menu.  They are still available in XicII
+# through the !exec command, for example type "!exec xstr" (without quotes)
+# to run the xstr script.
+
+Script elecwhite
+# Set the colors for white background in electrical mode, as if
+# WhiteSchem was active.
+if (TechParseLine("ElecLayer SCED RGB 0 0 0") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer ETC1 RGB 105 195 195") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer ETC2 RGB 170 125 105") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer NAME RGB 185 155 90") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer MODL RGB 85 215 80") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer VALU RGB 210 70 65") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer PARM RGB 225 95 215") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer NODE RGB 175 175 155") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer SPTX RGB 0 135 15") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecBackground 243 243 243") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecGhostColor 1 1 1") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecHighlightingColor 1 1 1") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecSelectColor1 109 255 105") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecMarkerColor 191 188 40") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecInstanceBBColor 50 175 163") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecInstanceNameColor 214 161 170") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecCoarseGridColor 28 23 15") == 0)
+    Print(GetError())
+end
+if (TechParseLine("PhysCoarseGridColor 0 215 215") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecFineGridColor 0 157 160") == 0)
+    Print(GetError())
+end
+if (TechParseLine("PhysFineGridColor 0 0 207") == 0)
+    Print(GetError())
+end
+EndScript
+
+Script elecblack
+# Set the colors for black background in electrical mode, as if
+# WhiteSchem was inactive.
+if (TechParseLine("ElecLayer SCED RGB 225 225 225") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer ETC1 RGB 125 225 225") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer ETC2 RGB 225 225 125") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer NAME RGB 255 230 175") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer MODL RGB 175 225 175") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer VALU RGB 255 225 225") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer PARM RGB 200 175 225") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer NODE RGB 255 255 225") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer SPTX RGB 225 134 170") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecBackground black") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecGhostColor white") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecHighlightingColor white") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecSelectColor1 white") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecMarkerColor yellow") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecInstanceBBColor turquoise") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecInstanceNameColor salmon") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecCoarseGridColor 255 208 136") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecFineGridColor 0 245 249") == 0)
+    Print(GetError())
+end
+EndScript
+
+Script xstr
+str = PrintString(L(2))
+glen = AskReal("Gate length? ", str)
+p1[2]
+p2[2]
+ShowPrompt("Click to anchor transistor")
+if !Point(p1)
+    Exit()
+end
+ShowPrompt("Click to finish")
+ShowGhost(7)
+if !Point(p2)
+    Exit()
+end
+ShowGhost(0)
+ovl = L(3)
+ext = L(2)
+cl = GetCurLayer();
+if (abs(p1[0] - p2[0]) > abs(p1[1] - p2[1]))
+    x1 = p1[0]
+    x2 = p2[0]
+    if (x1 > x2)
+        x3 = x1 + ext
+        x4 = x2 - ext
+    else
+        x3 = x1 - ext
+        x4 = x2 + ext
+    end
+    y1 = p1[1]
+    if (p2[1] > p1[1])
+        y2 = y1 + glen
+        y3 = y1 - ovl
+        y4 = y1 + glen + ovl
+    else
+        y2 = y1 - glen
+        y3 = y1 + ovl
+        y4 = y1 - glen - ovl
+    end
+    SetCurLayer("CPG")
+    Box(x3, y1, x4, y2)
+    SetCurLayer("CAA")
+    Box(x1, y3, x2, y4)
+else
+    y1 = p1[1]
+    y2 = p2[1]
+    if (y1 > y2)
+        y3 = y1 + ext
+        y4 = y2 - ext
+    else
+        y3 = y1 - ext
+        y4 = y2 + ext
+    end
+    x1 = p1[0]
+    if (p2[0] > p1[0])
+        x2 = x1 + glen
+        x3 = x1 - ovl
+        x4 = x1 + glen + ovl
+    else
+        x2 = x1 - glen
+        x3 = x1 + ovl
+        x4 = x1 - glen - ovl
+    end
+    SetCurLayer("CPG")
+    Box(x1, y3, x2, y4)
+    SetCurLayer("CAA")
+    Box(x3, y1, x4, y2)
+end
+Commit()
+SetCurLayer(cl)
+EndScript
+
+Script via_mfs
+ShowPrompt("Click to place (lower left)")
+PushGhostBox(-L(1), -L(1), L(3), L(3))
+PushGhostBox(0, 0, L(2), L(2))
+UseTransform(1, 0, 0)
+cl = GetCurLayer();
+while (1)
+    ShowGhost(8)
+    a[2]
+    if !Point(a)
+        ShowPrompt("")
+        SetCurLayer(cl)
+        Exit()
+    end
+    ShowGhost(0);
+    UseTransform(1, a[0], a[1])
+    SetCurLayer("CM1")
+    Box(-L(1), -L(1), L(3), L(3))
+    SetCurLayer("CV1")
+    Box(0, 0, L(2), L(2))
+    SetCurLayer("CM2")
+    Box(-L(1), -L(1), L(3), L(3))
+    SetCurLayer(cl)
+    Commit()
+end
+EndScript
+
+Script via_mfa
+ShowPrompt("Click to place (lower left)")
+PushGhostBox(-L(1.5), -L(1.5), L(3.5), L(3.5))
+PushGhostBox(0, 0, L(2), L(2))
+PushGhostBox(-L(1), -L(1), L(3), L(3))
+UseTransform(1, 0, 0)
+cl = GetCurLayer();
+while (1)
+    ShowGhost(8)
+    a[2]
+    if !Point(a)
+        ShowPrompt("")
+        SetCurLayer(cl)
+        Exit()
+    end
+    ShowGhost(0);
+    UseTransform(1, a[0], a[1])
+    cl = GetCurLayer();
+    SetCurLayer("CAA")
+    Box(-L(1.5), -L(1.5), L(3.5), L(3.5))
+    SetCurLayer("CCA")
+    Box(0, 0, L(2), L(2))
+    SetCurLayer("CM1")
+    Box(-L(1), -L(1), L(3), L(3))
+    SetCurLayer(cl)
+    Commit()
+end
+EndScript
+
+Script via_mfp
+ShowPrompt("Click to place (lower left)")
+PushGhostBox(-L(1.5), -L(1.5), L(3.5), L(3.5))
+PushGhostBox(0, 0, L(2), L(2))
+PushGhostBox(-L(1), -L(1), L(3), L(3))
+UseTransform(1, 0, 0)
+cl = GetCurLayer();
+while (1)
+    ShowGhost(8)
+    a[2]
+    if !Point(a)
+        ShowPrompt("")
+        SetCurLayer(cl)
+        Exit()
+    end
+    ShowGhost(0);
+    UseTransform(1, a[0], a[1])
+    cl = GetCurLayer();
+    SetCurLayer("CPG")
+    Box(-L(1.5), -L(1.5), L(3.5), L(3.5))
+    SetCurLayer("CCP")
+    Box(0, 0, L(2), L(2))
+    SetCurLayer("CM1")
+    Box(-L(1), -L(1), L(3), L(3))
+    SetCurLayer(cl)
+    Commit()
+end
+EndScript
+
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Misc. Parameters and Attributes
+
+GridOnBottom y
+IfDef WhiteSchem
+ElecBackground 243 243 243
+ElecGhostColor 1 1 1
+ElecHighlightingColor 1 1 1
+ElecSelectColor1 109 255 105
+ElecMarkerColor 191 188 40
+ElecInstanceBBColor 50 175 163
+ElecInstanceNameColor 214 161 170
+ElecCoarseGridColor 28 23 15
+PhysCoarseGridColor 0 215 215
+ElecFineGridColor 0 157 160
+PhysFineGridColor 0 0 207
+Else
+ElecCoarseGridColor 255 208 136
+PhysCoarseGridColor 0 215 215
+ElecFineGridColor 0 245 249
+PhysFineGridColor 0 0 207
+Endif
+
+# Function Key Assignments
+F1Key box
+F2Key wire
+F3Key polyg
+F4Key label
+F5Key open
+F6Key cells
+F7Key prpty
+F8Key desel
+
+# Misc., Extraction and DRC parameters follow.
+RoundFlashSides 40
+# End of global attributes.
+
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Print Driver Blocks
+
+PhysDefaultDriver postscript_bitmap
+ElecDefaultDriver postscript_line_draw
+
+HardCopyDevice postscript_line_draw
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 3
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.8
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+ShowGrid n
+GridOnBottom y
+PhysLayer CWN
+Filled n
+PhysLayer CWP
+Filled n
+PhysLayer CAA
+Filled n
+PhysLayer CPG
+Filled n
+PhysLayer CSN
+Filled n
+PhysLayer CSP
+Filled n
+PhysLayer CCC
+Filled n outline
+PhysLayer CCP
+Filled n outline
+PhysLayer CCA
+Filled n outline
+PhysLayer CM1
+Filled n
+PhysLayer CV1
+Filled n outline
+PhysLayer CM2
+Filled n
+PhysLayer CV2
+Filled n outline
+PhysLayer CM3
+Filled n
+PhysLayer CV3
+Filled n outline
+PhysLayer CV4
+Filled n outline
+PhysLayer CV5
+Filled n outline
+
+HardCopyDevice postscript_line_draw_color
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 3
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.8
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+ShowGrid n
+GridOnBottom y
+PhysLayer CWN
+Filled n
+PhysLayer CWP
+Filled n
+PhysLayer CAA
+Filled n
+PhysLayer CPG
+Filled n
+PhysLayer CSN
+Filled n
+PhysLayer CSP
+Filled n
+PhysLayer CCC
+Filled n outline
+PhysLayer CCP
+Filled n outline
+PhysLayer CCA
+Filled n outline
+PhysLayer CM1
+Filled n
+PhysLayer CV1
+Filled n outline
+PhysLayer CM2
+Filled n
+PhysLayer CV2
+Filled n outline
+PhysLayer CM3
+Filled n
+PhysLayer CV3
+Filled n outline
+PhysLayer CV4
+Filled n outline
+PhysLayer CV5
+Filled n outline
+
+HardCopyDevice postscript_bitmap
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 3
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.9
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+ShowGrid n
+GridOnBottom y
+
+HardCopyDevice postscript_bitmap_encoded
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 3
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.9
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+ShowGrid n
+GridOnBottom y
+
+HardCopyDevice postscript_bitmap_color
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 3
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.9
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+ShowGrid n
+GridOnBottom y
+
+HardCopyDevice postscript_bitmap_color_encoded
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 3
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.9
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+ShowGrid n
+GridOnBottom y
+
+HardCopyDevice hpgl_line_draw_color
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.8
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+ShowGrid n
+GridOnBottom y
+PhysLayer CWN
+Filled n
+PhysLayer CWP
+Filled n
+PhysLayer CAA
+Filled n
+PhysLayer CPG
+Filled n
+PhysLayer CSN
+Filled n
+PhysLayer CSP
+Filled n
+PhysLayer CCC
+Filled n outline
+PhysLayer CCP
+Filled n outline
+PhysLayer CCA
+Filled n outline
+PhysLayer CM1
+Filled n
+PhysLayer CV1
+Filled n outline
+PhysLayer CM2
+Filled n
+PhysLayer CV2
+Filled n outline
+PhysLayer CM3
+Filled n
+PhysLayer CV3
+Filled n outline
+PhysLayer CV4
+Filled n outline
+PhysLayer CV5
+Filled n outline
+
+HardCopyDevice hp_laser_pcl
+HardCopyResol 75 100 150 300
+HardCopyDefResol 2
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.8
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 16.5
+HardCopyMaxHeight 16.5
+HardCopyMaxXoff 15
+HardCopyMaxYoff 15
+ShowGrid n
+GridOnBottom y
+
+HardCopyDevice xfig_line_draw_color
+HardCopyLegend 0
+HardCopyOrient 2
+HardCopyDefWidth 4
+HardCopyDefHeight 4
+HardCopyDefXoff 0
+HardCopyDefYoff 0
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+ShowGrid n
+GridOnBottom y
+PhysLayer CWN
+Filled n
+PhysLayer CWP
+Filled n
+PhysLayer CAA
+Filled n
+PhysLayer CPG
+Filled n
+PhysLayer CSN
+Filled n
+PhysLayer CSP
+Filled n
+PhysLayer CCC
+Filled n outline
+PhysLayer CCP
+Filled n outline
+PhysLayer CCA
+Filled n outline
+PhysLayer CM1
+Filled n
+PhysLayer CV1
+Filled n outline
+PhysLayer CM2
+Filled n
+PhysLayer CV2
+Filled n outline
+PhysLayer CM3
+Filled n
+PhysLayer CV3
+Filled n outline
+PhysLayer CV4
+Filled n outline
+PhysLayer CV5
+Filled n outline
+
+HardCopyDevice image
+HardCopyResol 100 200
+HardCopyDefResol 0
+HardCopyLegend 0
+HardCopyOrient 2
+HardCopyDefWidth 4
+HardCopyDefHeight 4
+HardCopyDefXoff 0
+HardCopyDefYoff 0
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 16.5
+HardCopyMaxHeight 16.5
+HardCopyMaxXoff 15
+HardCopyMaxYoff 15
+
+#------------------------------------------------------------------------------
+# End of file
+

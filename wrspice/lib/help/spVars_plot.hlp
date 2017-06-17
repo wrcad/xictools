@@ -1,0 +1,805 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spVars_plot.hlp,v 1.16 2016/08/09 03:46:12 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spVars_plot.hlp
+!!TITLE
+spVars_plot.hlp
+!!HTML 
+
+!!SUBTOPICS
+plot_vars
+
+
+!!REDIRECT color        plot_vars#color
+!!REDIRECT colorN       plot_vars#color
+!!REDIRECT combplot     plot_vars#combplot
+!!REDIRECT curanalysis  plot_vars#curanalysis
+!!REDIRECT curplot      plot_vars#curplot
+!!REDIRECT curplotdate  plot_vars#curplotdate
+!!REDIRECT curplotname  plot_vars#curplotname
+!!REDIRECT curplottitle plot_vars#curplottitle
+!!REDIRECT gridsize     plot_vars#gridsize
+!!REDIRECT gridstyle    plot_vars#gridstyle
+!!REDIRECT group        plot_vars#group
+!!REDIRECT hcopycommand plot_vars#hcopycommand
+!!REDIRECT hcopydriver  plot_vars#hcopydriver
+!!REDIRECT hcopyheight  plot_vars#hcopyheight
+!!REDIRECT hcopylandscape plot_vars#hcopylandscape
+!!REDIRECT hcopyresol   plot_vars#hcopyresol
+!!REDIRECT hcopyrmdelay plot_vars#hcopyrmdelay
+!!REDIRECT hcopywidth   plot_vars#hcopywidth
+!!REDIRECT hcopyxoff    plot_vars#hcopyxoff
+!!REDIRECT hcopyyoff    plot_vars#hcopyyoff
+!!REDIRECT lingrid      plot_vars#lingrid
+!!REDIRECT linplot      plot_vars#linplot
+!!REDIRECT loglog       plot_vars#loglog
+!!REDIRECT multi        plot_vars#multi
+!!REDIRECT nobreak      plot_vars#nobreak
+!!REDIRECT noasciiplotvalue plot_vars#noasciiplotvalue
+!!REDIRECT nogrid       plot_vars#nogrid
+!!REDIRECT nointerp     plot_vars#nointerp
+!!REDIRECT noplotlogo   plot_vars#noplotlogo
+!!REDIRECT plotgeom     plot_vars#plotgeom
+!!REDIRECT plotposn     plot_vars#plotposn
+!!REDIRECT plotposnN    plot_vars#plotposn
+!!REDIRECT plots        plot_vars#plots
+!!REDIRECT plotstyle    plot_vars#plotstyle
+!!REDIRECT pointchars   plot_vars#pointchars
+!!REDIRECT pointplot    plot_vars#pointplot
+!!REDIRECT polar        plot_vars#polar
+!!REDIRECT polydegree   plot_vars#polydegree
+!!REDIRECT polysteps    plot_vars#polysteps
+!!REDIRECT scaletype    plot_vars#scaletype
+!!REDIRECT single       plot_vars#single
+!!REDIRECT smith        plot_vars#smith
+!!REDIRECT smithgrid    plot_vars#smithgrid
+!!REDIRECT ticmarks     plot_vars#ticmarks
+!!REDIRECT title        plot_vars#title
+!!REDIRECT xcompress    plot_vars#xcompress
+!!REDIRECT xdelta       plot_vars#xdelta
+!!REDIRECT xglinewidth  plot_vars#xglinewidth
+!!REDIRECT xgmarkers    plot_vars#xgmarkers
+!!REDIRECT xindices     plot_vars#xindices
+!!REDIRECT xlabel       plot_vars#xlabel
+!!REDIRECT xlimit       plot_vars#xlimit
+!!REDIRECT xlog         plot_vars#xlog
+!!REDIRECT ydelta       plot_vars#ydelta
+!!REDIRECT ylabel       plot_vars#ylabel
+!!REDIRECT ylimit       plot_vars#ylimit
+!!REDIRECT ylog         plot_vars#ylog
+!!REDIRECT ysep         plot_vars#ysep
+
+!! variables.tex 080816
+!!KEYWORD
+plot_vars
+!!TITLE
+Plotting Variables
+!!HTML
+    These variables control the numerous plotting modes and
+    capabilities of the <a href="plot"><b>plot</b></a>, <a
+    href="hardcopy"><b>hardcopy</b></a>, <a
+    href="xgraph"><b>xgraph</b></a>, and <a
+    href="asciiplot"><b>asciiplot</b></a> commands.  Most of these
+    variables can be set indirectly from the <a
+    href="plotopts"><b>Plot Options</b></a> panel and the <a
+    href="colors"><b>Colors</b></a> panel in the <a
+    href="toolsmenu"><b>Tools</b></a> menu of the <a
+    href="toolbar"><b>Tool Control</b></a> window.
+
+    <p>
+    <a name="color"></a>
+    <dl>
+    <dt><tt>color</tt><i>N</i><dd>
+    If a variable with the name "<tt>color</tt><i>N</i>" (<i>N</i>
+    1-19) is set to the name of a color the <i>N</i>'th value used in
+    a window will have this color.  The value of <tt>color0</tt>
+    denotes the background color and <tt>color1</tt> denotes the grid
+    and text color.  The color names recognized are those found in the
+    <tt>rgb.txt</tt> file in the X-window system library.  These
+    mappings are built into <i>WRspice</i> and apply whether or not X
+    is being run.  The colors can also be set using the panel brought
+    up by the <b>Colors</b> button in the <b>Tools</b> menu, and can
+    be set through the <a href="startup_files">X-resource
+    mechanism</a> and the <a href="setrdb"><b>setrdb</b></a> command.
+
+    <p>
+    The "name" for a color can be given in HTML-style notation: 
+    <tt>#</tt><i>rrggbb</i>, where <i>rr</i>, <i>gg</i>, <i>bb</i> are
+    the hex values for the red, green and blue component of the color.
+    </dl>
+
+    <a name="combplot"></a>
+    <dl>
+    <dt><tt>combplot</tt><dd>
+    This is a keyword of the <a
+    href="plotstyle"><tt>plotstyle</tt></a> variable, or can be set as
+    a boolean.  It directs the use of a comb plot (histogram) instead
+    of connected points.  Each point is connected to the bottom of the
+    plot area by a line.
+    </dl>
+
+    <a name="curanalysis"></a>
+    <dl>
+    <dt><tt>curanalysis</tt><dd>
+    This read-only variable is set to the name of the analysis when
+    analysis starts, and retains the value until a new analysis
+    starts.  Possible values are
+    <blockquote>
+    <tt>ac dc op tran tf noise disto sens</tt>, or not set.
+    </blockquote>
+    This can be used in a <a href=".postrun"><tt>.postrun</tt></a>
+    block to make actions specific to analysis type.
+
+    <p>
+    Example
+    <blockquote><tt>
+    .postrun<br>
+    strcmp("tran", $curanalysis)<br>
+    if ($? = 0)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;print v(1) v(2) > tranout.prn<br>
+    end<br>
+    .endc<br></tt>
+    </blockquote>
+
+    <a name="curplot"></a>
+    <dl>
+    <dt><tt>curplot</tt><dd>
+    This variable holds the name of the current plot.  It can be set
+    to another plot name (as listed in the <a
+    href="plots"><tt>plots</tt></a> variable), which will become the
+    current plot.  This variable can also be set to "<tt>new</tt>", in
+    which case a new, empty plot is created and becomes the current
+    plot.
+    </dl>
+
+    <a name="curplotdate"></a>
+    <dl>
+    <dt><tt>curplotdate</tt><dd>
+    This read-only variable contains the creation date of the current
+    plot.
+    </dl>
+
+    <a name="curplotname"></a>
+    <dl>
+    <dt><tt>curplotname</tt><dd>
+    This read-only variable contains a description of the type of
+    simulation which produced the current plot.  Note that this is not
+    the name used by the <a href="setplot"><b>setplot</b></a> command,
+    but rather a description of the type of simulation done.
+    </dl>
+
+    <a name="curplottitle"></a>
+    <dl>
+    <dt><tt>curplottitle</tt><dd>
+    This read only variable contains the title of the circuit
+    associated with the current plot.
+    </dl>
+
+    <a name="gridsize"></a>
+    <dl>
+    <dt><tt>gridsize</tt><dd>
+    If this variable is set to an integer greater than zero and less
+    than or equal to 10000, this number will be used as the number of
+    equally spaced points to use for the X-axis when plotting in the
+    <a href="plot"><b>plot</b></a> command.  The plot data will be
+    interpolated to these linearly spaced points, and the use of this
+    variable makes sense only when the raw data are not equally
+    spaced, as from transient analysis with the <a
+    href="steptype"><tt>steptype</tt></a> variable set to
+    <tt>nousertp</tt>.  Otherwise the current scale will be used
+    (which may not have equally spaced points).  If the current scale
+    isn't strictly monotonic, then this option will have no effect. 
+    The degree of the interpolation is given by the variable <a
+    href="polydegree"><tt>polydegree</tt></a>.
+    </dl>
+
+    <a name="gridstyle"></a>
+    <dl>
+    <dt><tt>gridstyle</tt><dd>
+    This variable is used to determine the style of grid used by the
+    commands <a href="plot"><b>plot</b></a>, <a
+    href="hardcopy"><b>hardcopy</b></a>, and <a
+    href="asciiplot"><b>asciiplot</b></a>.  It can be set to one of
+    the following values:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th align="left"><a href="lingrid"><tt>lingrid</tt></a></th>
+      <td>Use a linear grid</td></tr>
+    <tr><th align="left"><a href="loglog"><tt>loglog</tt></a></th>
+      <td>Use a log scales for both axes</td></tr>
+    <tr><th align="left"><a href="xlog"><tt>xlog</tt></a></th>
+      <td>Use a log scale for the X axis</td></tr>
+    <tr><th align="left"><a href="ylog"><tt>ylog</tt></a></th>
+      <td>Use a log scale for the Y axis</td></tr>
+    <tr><th align="left"><a href="polar"><tt>polar</tt></a></th>
+      <td>Use a polar grid</td></tr>
+    <tr><th align="left"><a href="smith"><tt>smith</tt></a></th>
+      <td>Transform data and use a Smith grid</td></tr>
+    <tr><th align="left"><a href="smithgrid"><tt>smithgrid</tt></a></th>
+      <td>Use a Smith grid</td></tr>
+    </table>
+    </dl>
+
+    <p>
+    <a name="group"></a>
+    <dl>
+    <dt><tt>group</tt><dd>
+    This is a keyword of the <a
+    href="scaletype"><tt>scaletype</tt></a> variable, or can be set as
+    a boolean.  It indicates the use of common scales for three
+    categories of data:  voltages, currents, and anything else.  Each
+    group will have its own Y-scale.
+    </dl>
+
+    <a name="hcopycommand"></a>
+    <dl>
+    <dt><tt>hcopycommand</tt><dd>
+    This variable specifies the operating system command which the <a
+    href="hardcopy"><b>hardcopy</b></a> command will use to send a job
+    to the printer.  If the string contains the characters
+    "<tt>%s</tt>", those characters will be replaced by the name of
+    the file being used to store the plot data, otherwise the file
+    name will be appended to the end of the string, separated by a
+    space character.  This allows reference to the file in the middle
+    of the string.  For example, suppose that your site has some
+    strange printer, but that there is a filter which converts
+    PostScript to a format recognized by that printer.  The command
+    string might be "<tt>myfilt &#60;%s |lpr -Pstrange_printer</tt>". 
+    Note that double quotes must be used in the set command since the
+    string contains space:
+    <blockquote><tt>
+    set hcopycommand = "myfilt &#60;%s |lpr -Pstrange_printer".
+    </tt></blockquote>
+    </dl>
+
+    <a name="hcopydriver"></a>
+    <dl>
+    <dt><tt>hcopydriver</tt><dd>
+    This variable specifies the default driver to use in the <a
+    href="hardcopy"><b>hardcopy</b></a> command.  The variable should
+    be set to one of the following keywords:
+ 
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th align="left"><tt>hp_laser_pcl</tt></th>
+       <td>mono HP laser</td></tr>
+    <tr><th align="left"><tt>hpgl_line_draw_color</tt></th>
+       <td>color HPGL</td></tr>
+    <tr><th align="left"><tt>postscript_bitmap</tt></th>
+       <td>mono PostScript</td></tr>
+    <tr><th align="left"><tt>postscript_bitmap_encoded</tt></th>
+       <td>mono PostScript, compressed</td></tr>
+    <tr><th align="left"><tt>postscript_bitmap_color</tt></th>
+       <td>color PostScript</td></tr>
+    <tr><th align="left"><tt>postscript_bitmap_color_encoded</tt></th>
+       <td>color PostScript, compressed</td></tr>
+    <tr><th align="left"><tt>postscript_line_draw</tt></th>
+       <td>mono PostScript, vector draw</td></tr>
+    <tr><th align="left"><tt>postscript_line_draw_color</tt></th>
+       <td>color PostScript</td></tr>
+    <tr><th align="left"><tt>windows_native</tt></th>
+       <td>Microsoft Windows native</td></tr>
+    <tr><th align="left"><tt>image</tt></th>
+       <td>tiff, gif, jpeg, png, etc. images</td></tr>
+    <tr><th align="left"><tt>xfig_line_draw_color</tt></th>
+       <td>format for the <tt>xfig</tt> program</td></tr>
+    </table>
+
+    <p>
+    These drivers correspond to the drivers available in the <a
+    href="hcopyfmt">format menu</a> of the <a
+    href="hcopypanel">Print</a> panel from the <a
+    href="plotpanel">plot windows</a>.
+
+    <p>
+    For PostScript, the line draw drivers are most appropriate for
+    SPICE plots.  The bitmap formats will work, but are less efficient
+    for simple line drawings.
+
+    <p>
+    If this variable is set to one of these formats, <b>Print</b>
+    panels from new plot windows will have this format set initially. 
+    Otherwise, the initial format will be the first item in the format
+    menu, or the last format selected from any plot window.
+    </dl>
+
+    <a name="hcopyheight"></a>
+    <dl>
+    <dt><tt>hcopyheight</tt><dd>
+    This variable sets the default height of the image on the page, as
+    measured in portrait orientation, used by the <a
+    href="hardcopy"><b>hardcopy</b></a> command.  It is specified as a
+    floating point number representing inches, unless followed by "cm"
+    (without space) which indicates centimeters.  The default is
+    typically 10.5 inches, but this is driver dependent.
+    </dl>
+
+    <a name="hcopylandscape"></a>
+    <dl>
+    <dt><tt>hcopylandscape</tt><dd>
+    This boolean variable, used by the <a
+    href="hardcopy"><b>hardcopy</b></a> command, will cause plots to
+    be printed in landscape orientation when set.
+    </dl>
+
+    <a name="hcopyresol"></a>
+    <dl>
+    <dt><tt>hcopyresol</tt><dd>
+    This variable sets the default resolution used by the driver to
+    generate hardcopy data in the <a
+    href="hardcopy"><b>hardcopy</b></a> command.  In almost all cases,
+    the default resolution which is achieved by not setting this
+    variable is the best choice.  One case where this may not be true
+    is with the <tt>hp_laser_pcl</tt> driver, where the choices are
+    75, 100, 150, and 300 (default 150).
+    </dl>
+
+    <a name="hcopyrmdelay"></a>
+    <dl>
+    <dt><tt>hcopyrmdelay</tt><dd>
+    When a plot or page is printed, a temporary file is produced in a
+    system directory (<tt>/tmp</tt> by default), and by default this
+    file is not removed.  There does not appear to be a portable way
+    to know when a print job is finished, or to know whether the print
+    spooler requires the existence of the file to be printed after the
+    job is queued, thus the default action is to not perform any
+    cleanup.
+
+    <p>
+    If this variable is set to an integer value larger than 0, it will
+    specify that a temporary print file is to be deleted this many
+    minutes after creation.
+
+    <p>
+    The <tt>at</tt> command, available on all Unix/Linux/OS X
+    platforms (but not Windows) is used to schedule deletion, which
+    will occur whether or not <i>WRspice</i> is still running.  For
+    this to work, the user must have permission to use <tt>at</tt>. 
+    See "<tt>man at</tt>" for more information.
+
+    <p>
+    This variable can also be set from the <b>hardcopy</b> page in the
+    <b>Plot Options</b> tool from the <b>Tools</b> menu of the <a
+    href="toolbar"><b>Tool Control</b></a> window, in Unix/Linux/OS X
+    releases.
+    </dl>
+
+    <a name="hcopywidth"></a>
+    <dl>
+    <dt><tt>hcopywidth</tt><dd>
+    This variable sets the default width of the image on the page, as
+    measured in portrait orientation, used by the <a
+    href="hardcopy"><b>hardcopy</b></a> command.  It is specified as a
+    floating point number representing inches, unless followed by "cm"
+    (without space) which indicates centimeters.  The default is
+    typically 8.0 inches, but this is driver dependent.
+    </dl>
+
+    <a name="hcopyxoff"></a>
+    <dl>
+    <dt><tt>hcopyxoff</tt><dd>
+    This variable sets the distance of the image from the left edge of
+    the page, viewed in portrait orientation, used by the <a
+    href="hardcopy"><b>hardcopy</b></a> command.  It is specified as a
+    floating point number representing inches, unless followed by "cm"
+    (without space) which indicates centimeters.  The default is
+    typically 0.25 inches, but this is driver dependent.
+    </dl>
+
+    <a name="hcopyyoff"></a>
+    <dl>
+    <dt><tt>hcopyyoff</tt><dd>
+    This variable sets the vertical position of the image on the page,
+    viewed in portrait orientation, used by the <a
+    href="hardcopy"><b>hardcopy</b></a> command.  Some drivers measure
+    this distance from the top of the page, others from the bottom. 
+    This is a consequence of the internal coordinate systems used by
+    the drivers, and the lack of assumption of a particular page size. 
+    The offset is specified as a floating point number representing
+    inches, unless followed by "cm" (without space) which indicates
+    centimeters.  The default is typically 0.25 inches, but this is
+    driver dependent.
+    </dl>
+
+    <a name="lingrid"></a>
+    <dl>
+    <dt><tt>lingrid</tt><dd>
+    This is a keyword of the <a
+    href="gridstyle"><tt>gridstyle</tt></a> variable, or can be set as
+    a boolean.  It specifies use of a linear grid.  This is the
+    default grid type.
+    </dl>
+
+    <a name="linplot"></a>
+    <dl>
+    <dt><tt>linplot</tt><dd>
+    This is a keyword of the <a
+    href="plotstyle"><tt>plotstyle</tt></a> variable, or can be set as
+    a boolean.  It specifies the display of plot data as points
+    connected by lines.  This is the default.
+    </dl>
+
+    <a name="loglog"></a>
+    <dl>
+    <dt><tt>loglog</tt><dd>
+    This is a keyword of the <a
+    href="gridstyle"><tt>gridstyle</tt></a> variable, or can be set as
+    a boolean.  It specifies use of a log-log grid.
+    </dl>
+
+    <p>
+    <a name="multi"></a>
+    <dl>
+    <dt><tt>multi</tt><dd>
+    This is a keyword of the <a
+    href="scaletype"><tt>scaletype</tt></a> variable, or can be set as
+    a boolean.  It indicates the use of separate Y-scales for each
+    trace of the plot (the default).
+    </dl>
+
+    <a name="nobreak"></a>
+    <dl>
+    <dt><tt>nobreak</tt><dd>
+    If set, suppress page breaks when doing an <a
+    href="asciiplot"><b>asciiplot</b></a>.  The <a
+    href="nopage"><tt>nopage</tt></a> variable is similar, but
+    suppresses page breaks in both the <b>asciiplot</b> and
+    <b>print</b> commands.
+    </dl>
+
+    <a name="noasciiplotvalue"></a>
+    <dl>
+    <dt><tt>noasciiplotvalue</tt><dd>
+    If set, suppress printing the value of the first variable plotted
+    with <a href="asciiplot"><b>asciiplot</b></a> on the left side of
+    the graph.
+    </dl>
+
+    <a name="nogrid"></a>
+    <dl>
+    <dt><tt>nogrid</tt><dd>
+    Setting this boolean variable specifies plotting without use of a
+    grid.  The data will be plotted with only the border lines at the
+    bottom and left sides of the plotting area.
+    </dl>
+
+    <a name="nointerp"></a>
+    <dl>
+    <dt><tt>nointerp</tt><dd>
+    This variable is used only by the <a
+    href="asciiplot"><b>asciiplot</b></a> command.  Normally
+    <b>asciiplot</b> interpolates data onto a linear scale before
+    plotting it.  If this option is given this won't be done - each
+    line will correspond to one data point as generated by the
+    simulation.  Since data are already linearized unless from a
+    transient analysis with <a href="steptype"><tt>steptype</tt></a>
+    set to <tt>nousertp</tt>, setting this variable will avoid a
+    redundant linearization.
+    </dl>
+
+    <a name="noplotlogo"></a>
+    <dl>
+    <dt><tt>noplotlogo</tt><dd>
+    When set, the <i>WRspice</i> logo is not shown in plots and
+    hard-copies.
+    </dl>
+
+    <a name="plotgeom"></a>
+    <dl>
+    <dt><tt>plotgeom</tt><dd>
+    This variable sets the size of subsequently created plot windows. 
+    It can be set as a string "<i>wid hei</i>" or as a list ( <i>wid
+    hei</i> ).  The <i>wid</i> and <i>hei</i> are the width and height
+    in pixels.
+ 
+    <p>
+    For Microsoft Windows, the default (when <tt>plotgeom</tt> is
+    unset) width and height are 500, 300 and these apply to the whole
+    window.  Due to Microsoft's silly and unnecessary conversion to
+    "dialog units", the actual pixel size may be slightly different.
+
+    <p>
+    For others, the default width and height are 400, 300 and these
+    apply to the plotting area only.
+ 
+    <p>
+    The acceptable numbers for the width and height are 100-2000.  In
+    the string form, a non-numeric character can separate the two
+    numbers, e.g., "<tt>300x400</tt>" is ok.
+    </dl>
+
+    <a name="plotposn"></a>
+    <dl>
+    <dt><tt>plotposn</tt><i>N</i><dd>
+    This variable can be used to set the screen position of the <i>N</i>'th
+    plot window.  It can be specified as a list, as
+    <blockquote>
+    <tt>set plotposn0 = ( 100 200 )</tt>
+    </blockquote>
+    or as a string, as in
+    <blockquote>
+    <tt>set plotposn2 = "150 250"</tt>.
+    </blockquote>
+    The <i>N</i> can range from 0 - 15.  If not set, the plots are
+    positioned by an internal algorithm.
+    </dl>
+
+    <a name="plots"></a>
+    <dl>
+    <dt><tt>plots</tt><dd>
+    This list variable is read-only, and contains the names of the
+    plots available.  The variable <a
+    href="curplot"><tt>curplot</tt></a> may be set to any of these, or
+    to the word "new", in which case a new, empty plot is created.
+    </dl>
+
+    <a name="plotstyle"></a>
+    <dl>
+    <dt><tt>plotstyle</tt><dd>
+    This variable is used to determine the plot style in the commands
+    <a href="plot"><b>plot</b></a>, <a
+    href="hardcopy"><b>hardcopy</b></a>, and <a
+    href="asciiplot"><b>asciiplot</b></a>.  Its value may be one of:
+ 
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th align="left"><a href="linplot"><tt>linplot</tt></a></th>
+       <td>Connect points with line segments</td></tr>
+    <tr><th align="left"><a href="combplot"><tt>combplot</tt></a></th>
+       <td>Connect each point to the X-axis</td></tr>
+    <tr><th align="left"><a href="pointplot"><tt>pointplot</tt></a></th>
+       <td>Plot each point as a discrete glyph</td></tr>
+    </table>
+    </dl>
+
+    <a name="pointchars"></a>
+    <dl>
+    <dt><tt>pointchars</tt><dd>
+    If this variable is set as a boolean, alpha characters will be
+    used as glyphs for point plots (i.e., the <a
+    href="pointplot"><tt>pointplot</tt></a> mode is active) in a <a
+    href="plot"><b>plot</b></a> command.  If set to a string, the
+    characters in this string are used to plot successive data values. 
+    The default is "oxabcdefhgijklmnpqrstuvwyz".
+    </dl>
+
+    <a name="pointplot"></a>
+    <dl>
+    <dt><tt>pointplot</tt><dd>
+    This is a keyword of the <a
+    href="plotstyle"><tt>plotstyle</tt></a> variable, or can be set as
+    a boolean.  This will cause data to be plotted as unconnected
+    points.  Each successive expression is plotted with a different
+    glyph to mark the points.  The glyphs default to an internally
+    generated set, however alpha characters can be used if the
+    variable <a href="pointchars"><tt>pointchars</tt></a> is set.
+    </dl>
+
+    <a name="polar"></a>
+    <dl>
+    <dt><tt>polar</tt><dd>
+    This is a keyword of the <a
+    href="gridstyle"><tt>gridstyle</tt></a> variable, or can be set as
+    a boolean.  It specifies use of a polar grid instead of a
+    rectangular grid.
+    </dl>
+
+    <a name="polydegree"></a>
+    <dl>
+    <dt><tt>polydegree</tt><dd>
+    This variable determines the degree of the polynomial that is fit
+    to points when a <a href="plot"><b>plot</b></a> is done.  If it is
+    not set or set to 1, then the points are connected by lines.  If
+    it is greater than 1, then a polynomial curve is fit to the
+    points.  If the value of <tt>polydegree</tt> is <i>n</i>, then for
+    each <i>n</i> + 1 adjacent points, a <i>n</i>th degree curve is
+    fit.  If this is not possible (due to the fact that the points
+    aren't monotonic), the curve is rotated 90 degrees and another
+    attempt is made.  If is is still unsuccessful, <i>n</i> is
+    decreased by 1 and the process is repeated.  Thus four points in
+    the shape of a diamond may be fit with quadratics to approximate a
+    circle (although it's not clear that this situation comes up often
+    in circuit simulation).  The variable <a
+    href="gridsize"><tt>gridsize</tt></a> determines the size of the
+    grid on which the curve is fit if the data are monotonic.  If the
+    <tt>gridsize</tt> variable is zero or not set, or the scale is
+    non-monotonic, no polynomial fitting is done.
+    </dl>
+
+    <a name="polysteps"></a>
+    <dl>
+    <dt><tt>polysteps</tt><dd>
+    This variable sets the number of intermediate points to plot
+    between each actual point used for interpolation.  If not set, 10
+    points are used.
+    </dl>
+
+    <a name="scaletype"></a>
+    <dl>
+    <dt><tt>scaletype</tt><dd>
+    This variable is used to determine the treatment of the Y-axis
+    scaling used in displaying the curves in the <b>plot</b> command. 
+    Its value may be one of:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th align="left"><a href="multi"><tt>multi</tt></a></th>
+       <td>Use separate Y-scales for each trace (the default)</td></tr>
+    <tr><th align="left"><a href="single"><tt>single</tt></a></th>
+       <td>Use common Y-scale for all traces</td></tr>
+    <tr><th align="left"><a href="group"><tt>group</tt></a></th>
+       <td>Use same scale for voltages, currents, and others</td></tr>
+    </table>
+    </dl>
+
+    <p>
+    <a name="single"></a>
+    <dl>
+    <dt><tt>single</tt><dd>
+    This is a keyword of the <a
+    href="scaletype"><tt>scaletype</tt></a> variable, or can be set as
+    a boolean.  It indicates the use of a common Y-scale for all
+    traces in the plot.
+    </dl>
+
+    <a name="smith"></a>
+    <dl>
+    <dt><tt>smith</tt><dd>
+    This is a keyword of the <a
+    href="gridstyle"><tt>gridstyle</tt></a> variable, or can be set as
+    a boolean.  It specifies use of a Smith grid instead of a
+    rectangular or polar grid, and an implicit transformation of the
+    data into the "reflection coefficient" space through the relation
+    <tt>S = (z - 1)/(z + 1)</tt>, where <tt>z</tt> is the complex
+    input data.
+    </dl>
+
+    <a name="smithgrid"></a>
+    <dl>
+    <dt><tt>smithgrid</tt><dd>
+    This is a keyword of the <a
+    href="gridstyle"><tt>gridstyle</tt></a> variable, or can be set as
+    a boolean.  It specifies use of a Smith grid instead of a
+    rectangular or polar grid, and plots the data directly, without
+    transformation.  The data must fall within the unit circle in the
+    complex plane to be visible.
+    </dl>
+
+    <a name="ticmarks"></a>
+    <dl>
+    <dt><tt>ticmarks</tt><dd>
+    If this variable is set as a boolean, then an 'x' will be printed
+    every ten points for each curve plotted.  This variable may also
+    be set to a number, which is the number of points between each tic
+    mark.  If interpolation is used for plotting, the ticmarks feature
+    is disabled.
+    </dl>
+
+    <a name="title"></a>
+    <dl>
+    <dt><tt>title</tt><dd>
+    This variable provides a string to use as the title printed in the
+    plot.  If not specified, the title is taken as the name of the
+    current plot.
+    </dl>
+
+    <a name="xcompress"></a>
+    <dl>
+    <dt><tt>xcompress</tt><dd>
+    This variable can be set to an integer <i>value</i>.  It specifies
+    that we plot only one out of every <i>value</i> points in each of
+    the vectors.
+    </dl>
+
+    <a name="xdelta"></a>
+    <dl>
+    <dt><tt>xdelta</tt><dd>
+    This value is used as the spacing between grid lines on the
+    x-axis, if set.
+    </dl>
+
+    <a name="xglinewidth"></a>
+    <dl>
+    <dt><tt>xglinewidth</tt><dd>
+    This variable specifies the line width in pixels to use in <a
+    href="xgraph"><b>xgraph</b></a> plots.  If not set, a minimum line
+    width is used.
+    </dl>
+
+    <a name="xgmarkers"></a>
+    <dl>
+    <dt><tt>xgmarkers</tt><dd>
+    If set, <a href="xgraph"><b>xgraph</b></a> point plots will use
+    cross marks, otherwise big pixels are used.
+    </dl>
+
+    <a name="xindices"></a>
+    <dl>
+    <dt><tt>xindices</tt><dd>
+    This variable can be set as a list "( <i>lower</i> <i>upper</i> )"
+    or as a string "<i>lower</i> <i>upper</i>", where <i>lower</i> and
+    <i>upper</i> are integers.  Only data points with indices between
+    lower and upper are plotted.  The value of <i>upper</i> must be
+    greater or equal to <i>lower</i>.
+    </dl>
+
+    <a name="xlabel"></a>
+    <dl>
+    <dt><tt>xlabel</tt><dd>
+    This variable provides a string to be used as the label for the
+    x-axis.  If not set, the name of the scale vector is used.
+    </dl>
+
+    <a name="xlimit"></a>
+    <dl>
+    <dt><tt>xlimit</tt><dd>
+    This variable can be set as a list "( <i>lower</i> <i>upper</i> )"
+    or as a string "<i>lower</i> <i>upper</i>", where <i>lower</i> and
+    <i>upper</i> are reals.  The plot area in the x-direction is
+    restricted to lie between <i>lower</i> and <i>upper</i>.  The area
+    actually used may be somewhat larger to provide nicely spaced grid
+    lines, however.
+    </dl>
+
+    <a name="xlog"></a>
+    <dl>
+    <dt><tt>xlog</tt><dd>
+    This is a keyword of the <a
+    href="gridstyle"><tt>gridstyle</tt></a> variable, or can be set as
+    a boolean.  It specifies use of a log scale for the x-axis and a
+    linear scale for the y-axis.
+    </dl>
+
+    <a name="ydelta"></a>
+    <dl>
+    <dt><tt>ydelta</tt><dd>
+    This value is used as the spacing between grid lines on the
+    y-axis, if set.
+    </dl>
+
+    <a name="ylabel"></a>
+    <dl>
+    <dt><tt>ylabel</tt><dd>
+    This variable provides a string to be used as the label for the
+    y-axis.  If not set, no label is printed.
+    </dl>
+
+    <a name="ylimit"></a>
+    <dl>
+    <dt><tt>ylimit</tt><dd>
+    This variable can be set as a list "( <i>lower</i> <i>upper</i> )"
+    or as a string "<i>lower</i> <i>upper</i>", where <i>lower</i> and
+    <i>upper</i> are reals.  Setting this variable will limit the plot
+    area in the y-direction to lie between <i>lower</i> and
+    <i>upper</i>.  It may be expanded slightly to allow for nicely
+    spaced grid lines.
+    </dl>
+
+    <a name="ylog"></a>
+    <dl>
+    <dt><tt>yog</tt><dd>
+    This is a keyword of the <a
+    href="gridstyle"><tt>gridstyle</tt></a> variable, or can be set as
+    a boolean.  It specifies use of a log scale for the y-axis and a
+    linear scale for the x-axis.
+    </dl>
+
+    <a name="ysep"></a>
+    <dl>
+    <dt><tt>ysep</tt><dd>
+    If this boolean is set, the traces will be provided with their own
+    portion of the vertical axis, so as to not overlap.  Otherwise,
+    each trace may occupy the entire vertical range on the plot.
+    </dl>
+
+!!SEEALSO
+variables
+

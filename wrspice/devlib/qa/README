@@ -1,0 +1,38 @@
+
+This is the top-level directory of the Compact Modeling Council (CMC)
+QA system for WRspice.  This allows WRspice to run the model QA
+scripts and compare results to a standard.
+
+The lib directory contains slightly hacked CMC scripts, as provided by
+the CMC.  The wrspice.pm file is the interface to WRspice, and is
+hereby contributed for general use with the CMC scripts.
+
+The files directory contains a prototype Makefile, and a configuration
+file.
+
+The user should copy make.config.sample to make,config in the same
+directory, and edit make.config for the user's enviromnemt.
+
+The other directories contain files that are provided by the model
+developers, possibly hacked a bit to fit into the current framework.
+
+We assume familiarity with the CMC scripts here, the user can find
+documentation on the CMC web site.
+
+Basically, from the lowest-level directories, type "make wrspice" to
+run the tests, "make clean" to clean up.  The Makefile, and the qaSpec
+file, can be edited as needed.
+
+Output from the runs is saved in out.wrspice-xxx files.  These files
+generally correspond to:
+
+KLU  matrix solver, double precision:           out.wrspice
+Sparse matrix solver, double precision:         out.wrspice-nk
+KLU matrix solver, extended precision:          out.wrspice-ep
+Sparse matrix solver, extended precision:       out.wrspice-nkep
+
+The four files should be identical for a (IMHO) well-crafted model.
+Naturally, they diverge markedly for some models.
+
+There are NOTES and README files scattered around with more
+information and observations.

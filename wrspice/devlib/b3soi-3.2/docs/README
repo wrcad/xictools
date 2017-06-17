@@ -1,0 +1,34 @@
+Dear BSIMSOI Users:
+
+We are releasing our BSIMSOI3.2 model today. In this version, several new
+features are included:
+
+1. The model selector, SoiMod, now is both an instance and model
+parameter. SoiMod will determine the operation of BSIMSOI. SoiMod=0 is for
+PD device, SoiMod=2 is for ideal FD device; SoiMod=1 is for FD device with
+floating body; as SoiMod=3, the model will select the operation mode for
+users.
+
+2. Model parameter TOXM is introduced to take into account TOX dependence 
+in model parameters K1 and K2 hence to improve the scalability of Vth model 
+over Tox.
+
+3. Model parameter NOFF is introduced to improve moderate inversion 
+transcapacitance model accuracy. These two parameter enhancements are compatible
+to BSIM3/4.
+
+4. Improved flicker noise model and thermal noise model compatible with
+BSIM4 have been implemented. Gate tunneling induced shot noise and
+thermal noise due to gate electrode resistance are also included.
+
+The BSIMSOI3.2 source code, user's manual, and bug report can be
+downloaded at http://www-device.eecs.berkeley.edu/~bsimsoi
+
+Thank you for your support of the BSIMSOI model. We'll continue to
+research new refinements to the existing model to support the progress of
+the SOI CMOS technology.
+
+
+Sincerely,
+BSIM Team
+UC Berkeley

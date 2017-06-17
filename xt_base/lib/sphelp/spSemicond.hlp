@@ -1,0 +1,461 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spSemicond.hlp,v 1.9 2013/12/14 04:28:39 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spSemicond.hlp
+!!TITLE
+spSemicond.hlp
+!!HTML 
+
+!!SUBTOPICS
+semicond
+dio
+bjt
+jfet
+mes
+mos
+
+
+!! elements.tex 012609
+!!KEYWORD
+semicond
+!!TITLE
+Semiconductor Devices
+!!HTML 
+    The standard <i>WRspice</i> device library contains models for the
+    semiconductor devices listed in the table below.  Each of these
+    devices references a corresponding model supplied on a <a
+    href=".model"><tt>.model</tt></a> line.  The model supplies most
+    of the parameters that specify device behavior.  If a
+    corresponding model is not found, usually a warning is issued and
+    a default model is used.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Device</th> <th>Name</th> <th>Key</th></tr>
+    <tr><td><a href="dio">Junction Diode</a></td>
+      <td><tt>dio</tt></td> <td><tt>d</tt></td></tr>
+    <tr><td><a href="bjt">Bipolar Junction Transistor</a></td>
+      <td><tt>bjt</tt></td> <td><tt>q</tt></td></tr>
+    <tr><td><a href="jfet">Junction Field-Effect Transistor</a></td>
+      <td><tt>jfet</tt></td> <td><tt>j</tt></td></tr>
+    <tr><td><a href="mes">MESFET</a></td>
+      <td><tt>mes</tt></td> <td><tt>z</tt></td></tr>
+    <tr><td><a href="mos">MOSFET</a></td>
+      <td><tt>mos</tt></td> <td><tt>m</tt></td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Each device element line contains the device name, the nodes to
+    which the device is connected, and the <a href=".model">device
+    model</a> name.  In addition, other optional parameters may be
+    specified for some devices:  geometric factors and an initial
+    condition.
+
+    <p>
+    The area factor used on the device lines determines the number of
+    equivalent parallel devices of a specified model.  The affected
+    parameters are marked with an asterisk under the heading 'area' in
+    the model descriptions.  Several geometric factors associated with
+    the channel and the drain and source diffusions can be specified
+    on the MOSFET device line.
+
+    <p>
+    Two different forms of initial conditions may be specified for
+    some devices.  The first form is included to improve the dc
+    convergence for circuits that contain more than one stable state. 
+    If a device is specified <tt>off</tt>, the dc operating point is
+    determined with the device internal terminal voltages (not the
+    external node voltages!) for that device set to zero.  This
+    effectively makes the device an open circuit.  After convergence
+    is obtained, the program continues to iterate to obtain the exact
+    value for the terminal voltages.  If a circuit has more than one
+    dc stable state, the <tt>off</tt> option can be used to force the
+    solution to correspond to a desired state.  If a device is
+    specified <tt>off</tt> when in reality the device is conducting,
+    the program will still obtain the correct solution (assuming the
+    solutions converge) but more iterations will be required since the
+    program must independently converge to two separate solutions. 
+    The <a href=".nodeset"><tt>.nodeset</tt></a> line serves a similar
+    purpose as the <tt>off</tt> option.  The <tt>.nodeset</tt>
+    directive is easier to apply and is the preferred means to aid
+    convergence in this situation.
+
+    <p>
+    The second form of initial condition is specified for use with
+    the <a href=".tran">transient analysis</a>.  These are true
+    initial conditions as opposed to the convergence aids above.  See
+    also the description of the <a href=".ic"><tt>.ic</tt></a> line
+    and the <tt>.tran</tt> line for a detailed explanation of initial
+    conditions.
+ 
+!!SUBTOPICS
+elements
+
+!! elements.tex 012609
+!!KEYWORD
+dio
+!!TITLE
+Junction Diodes
+!!HTML 
+    General form:
+    <blockquote>
+    <tt>d</tt><i>name</i> <i>n+ n- modname</i> [<i>parameters</i> ... ]
+    </blockquote>
+
+    <p>
+    Parameters:<br>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Parameter Name</th> <th>Description</th></tr>
+    <tr><td><tt>off</tt></td> <td>
+      Device is initially nonconducting, for circuit convergence
+      assistance.</td></tr>
+    <tr><td><tt>ic=</tt><i>vj</i></td> <td>
+      The initial junction voltage (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>area=</tt><i>val</i></td> <td>
+      Scale factor that multiplies all currents and other values,
+      effectively modifying the diode area.</td></tr>
+    <tr><td><tt>m=</tt><i>val</i></td> <td>
+      Device multiplicity factor, similar to <tt>area</tt>.</td></tr>
+    <tr><td><tt>pj=<tt><i>val</i></td> <td>
+      Perimeter scale factor for sidewall.</td></tr>
+    <tr><td><tt>temp=</tt><i>val</i></td> <td>
+      Device operating temperature, degrees Celsius.</td></tr>
+    <tr><td><tt>dtemp=</tt><i>val</i></td> <td>
+      Device operating temperature difference from circuit operating
+      temperature.  This is overruled if <tt>temp</tt> is also given.</td></tr>
+    </table>
+
+    <p>
+    Examples:
+    <blockquote><tt>
+        dbridge 2 10 diode1<br>
+        dclmp 3 7 dmod 3.0 ic=0.2
+    </tt></blockquote>
+
+    <p>
+    The <i>n+</i> and <i>n-</i> are the positive and negative nodes,
+    respectively.  The parameter <i>modname</i> is the model name,
+    <tt>area</tt> specifies the area factor, <tt>temp</tt> specifies
+    the operating temperature, and <tt>off</tt> indicates an
+    (optional) starting condition on the device for dc analysis.  If
+    the area factor is omitted, a value of 1.0 is assumed.  The
+    (optional) initial condition specification using
+    <tt>ic=</tt><i>vd</i> is intended for use with the <tt>uic</tt>
+    option in <a href=".tran">transient analysis</a>, when a transient
+    analysis is desired starting from other than the quiescent
+    operating point.  The <a href=".ic"><tt>.ic</tt></a> line provides
+    another way to set transient initial conditions.
+ 
+    <p>
+    See the description of the <a href="diomodel">diode model</a> for
+    more information.
+
+!!SEEALSO
+semicond
+
+!! elements.tex 012609
+!!KEYWORD
+bjt npn pnp
+!!TITLE
+Bipolar Junction Transistors
+!!HTML 
+    General form:
+    <blockquote>
+    <tt>q</tt><i>name</i> <i>nc nb ne</i> [<i>ns</i>] <i>modname</i>
+     [<i>parameters</i> ...]
+    </blockquote>
+
+    <p>
+    Parameters:<br>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Parameter Name</th> <th>Description</th></tr>
+    <tr><td><tt>off</tt></td> <td>
+      Device is initially nonconducting, for circuit convergence
+      assistance.</td></tr>
+    <tr><td><tt>area=</tt><i>val</i></td> <td>
+      Scale factor that multiplies all currents and other values,
+      effectively modifying the BJT area.</td></tr>
+    <tr><td><tt>ic=</tt><i>vbe</i>,<i>vce</i></td> <td>
+      The initial voltages (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>icvbe=</tt><i>vbe</i></td> <td>
+      The initial <tt>vbe</tt> (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>icvce=</tt><i>vce</i></td> <td>
+      The initial <tt>vce</tt> (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>temp=</tt><i>val</i></td> <td>
+      Device operating temperature, degrees Celsius.</td></tr>
+    </table>
+
+    <p>
+    Examples:
+    <blockquote><tt>
+        q23 10 24 13 qmod ic=0.6,5.0<br>
+        q50a 11 26 4 20 mod1
+    </tt></blockquote>
+
+    <p>
+    The <i>nc</i>, <i>nb</i>, and <i>ne</i> are the collector, base,
+    and emitter nodes, respectively, and <i>ns</i> is the (optional)
+    substrate node.  If unspecified, ground is used.  The
+    <i>modname</i> is the model name, <tt>area</tt> specifies the area
+    factor, <tt>temp</tt> specifies the operating temperature, and
+    <tt>off</tt> indicates an initial condition on the device for the
+    dc analysis.  If the area factor is omitted, a value of 1.0 is
+    assumed.  The initial conditions specified using <tt>ic</tt> or
+    alternatively <tt>icvbe</tt> and <tt>icvce</tt> are intended for
+    use with the <tt>uic</tt> option in <a href=".tran">transient
+    analysis</a>, when a transient analysis is desired starting from
+    other than the quiescent operating point.  The <a
+    href=".ic"><tt>.ic</tt></a> line provides another way to set
+    transient initial conditions.
+
+    <p>
+    More information can be found in the description of the <a
+    href="bjtmodel">bjt model</a>.
+ 
+!!SEEALSO
+semicond
+
+!! elements.tex 012609
+!!KEYWORD
+jfet njf pjf
+!!TITLE
+Junction Field-Effect Transistors
+!!HTML 
+    General form:
+    <blockquote>
+    <tt>j</tt><i>name</i> <i>nd ng ns modname</i> [<i>parameters</i> ...]
+    </blockquote>
+
+    <p>
+    Parameters:<br>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Parameter Name</th> <th>Description</th></tr>
+    <tr><td><tt>off</tt></td> <td>
+      Device is initially nonconducting, for circuit convergence
+      assistance.</td></tr>
+    <tr><td><tt>area=</tt><i>val</i></td> <td>
+      Scale factor that multiplies all currents and other values,
+      effectively modifying the JFET area.</td></tr>
+    <tr><td><tt>ic=</tt><i>vds</i>,<i>vgs</i></td> <td>
+      The initial voltages (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>icvds=</tt><i>vds</i></td> <td>
+      The initial <tt>vds</tt> (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>icvgs=</tt><i>vgs</i></td> <td>
+      The initial <tt>vgs</tt> (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>temp=</tt><i>val</i></td> <td>
+      Device operating temperature, degrees Celsius.</td></tr>
+    </table>
+
+    <p>
+    Example:
+    <blockquote>
+        <tt>j1 7 2 3 jm1 off</tt><br>
+        <tt>j43 10 4 1 jmod2 area=2</tt>
+    </blockquote>
+
+    <p>
+    The <i>nd</i>, <i>ng</i>, and <i>ns</i> are the drain, gate, and
+    source nodes, respectively.  The <i>modname</i> is the model name,
+    <tt>area</tt> specifies the area factor, <tt>temp</tt> specifies
+    the operating temperature, and <tt>off</tt> indicates an initial
+    condition on the device for dc analysis.  If the area factor is
+    omitted, a value of 1.0 is assumed.  The initial conditions
+    specified using <tt>ic</tt> or alternatively <tt>icvds</tt> and
+    <tt>icvgs</tt> are intended for use with the <tt>uic</tt> option
+    in <a href=".tran">transient analysis</a>, when a transient
+    analysis is desired starting from other than the quiescent
+    operating point.  The <a href=".ic"><tt>.ic</tt></a> line provides
+    another way to set transient initial conditions.
+ 
+    <p>
+    More information can be found in the description of the <a
+    href="jfetmodel">jfet model</a>.
+
+!!SEEALSO
+semicond
+
+!! elements.tex 012609
+!!KEYWORD
+mes nmes pmes
+!!TITLE
+MESFET's
+!!HTML 
+    General form:
+    <blockquote>
+    <tt>z</tt><i>name</i> <i>nd ng ns modname</i> [<i>parameters</i> ...]
+    </blockquote>
+
+    <p>
+    Parameters:<br>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Parameter Name</th> <th>Description</th></tr>
+    <tr><td><tt>off</tt></td> <td>
+      Device is initially nonconducting, for circuit convergence
+      assistance.</td></tr>
+    <tr><td><tt>area=</tt><i>val</i></td> <td>
+      Scale factor that multiplies all currents and other values,
+      effectively modifying the MESFET area.</td></tr>
+    <tr><td><tt>ic=</tt><i>vds</i>,<i>vgs</i></td> <td>
+      The initial voltages (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>icvds=</tt><i>vds</i></td> <td>
+      The initial <tt>vds</tt> (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>icvgs=</tt><i>vgs</i></td> <td>
+      The initial <tt>vgs</tt> (initial condition) for transient
+      analysis.</td></tr>
+    </table>
+
+    <p>
+    Example:
+    <blockquote><tt>
+        z1 7 2 3 zm1 ofF<br>
+        zout 21 4 16 zmod1 area=5
+    </tt></blockquote>
+
+    <p>
+    The <i>nd</i>, <i>ng</i>, and <i>ns</i> are the drain, gate, and
+    source nodes, respectively.  The <i>modname</i> is the model name,
+    <tt>area</tt> specifies the area factor, and <tt>off</tt>
+    indicates an initial condition on the device for dc analysis.  If
+    the area factor is omitted, a value of 1.0 is assumed.  The
+    initial condition specified using <tt>ic</tt> or alternatively
+    <tt>icvds</tt> and <tt>icvgs</tt> are intended for use with the
+    <tt>uic</tt> option in <a href=".tran">transient analysis</a>,
+    when a transient analysis is desired starting from other than the
+    quiescent operating point.  The <a href=".ic"><tt>.ic</tt></a>
+    line provides another way to set transient initial conditions.
+ 
+    <p>
+    More information can be found in the description of the <a
+    href="mesmodel">mes model</a>.
+
+!!SEEALSO
+semicond
+
+!! elements.tex 012609
+!!KEYWORD
+mos nmos pmos
+!!TITLE
+MOSFET's
+!!HTML 
+    General form:
+    <blockquote>
+    <tt>m</tt><i>name</i> <i>nd ng ns nb modname</i> [<i>parameters</i> ...]
+    </blockquote>
+
+    <p>
+    Parameters:<br>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Parameter Name</th> <th>Description</th></tr>
+    <tr><td><tt>off</tt></td> <td>
+      Device is initially nonconducting, for circuit convergence
+      assistance.</td></tr>
+    <tr><td><tt>m=</tt><i>factor</i></td> <td>
+      Device multiplicity factor.</td></tr>
+    <tr><td><tt>l=</tt><i>val</i></td> <td>
+      Channel length in meters.</td></tr>
+    <tr><td><tt>w=</tt><i>val</i></td> <td>
+      Channel width in meters.</td></tr>
+    <tr><td><tt>ad=</tt><i>val</i></td> <td>
+      Drain diffusion area in square meters.</td></tr>
+    <tr><td><tt>as=</tt><i>val</i></td> <td>
+      Source diffusion area in square meters.</td></tr>
+    <tr><td><tt>pd=</tt><i>val</i></td> <td>
+      Drain junction perimeter in meters.</td></tr>
+    <tr><td><tt>ps=</tt><i>val</i></td> <td>
+      Source junction perimeter in meters.</td></tr>
+    <tr><td><tt>nrd=</tt><i>val</i></td> <td>
+      Drain equivalent squares for resistance.</td></tr>
+    <tr><td><tt>nrs=</tt><i>val</i></td> <td>
+      Source equivalent squares for resistance.</td></tr>
+    <tr><td><tt>ic=</tt><i>vds</i>,<i>vgs</i>,<i>vbs</i></td> <td>
+      The initial voltages (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>icvds=</tt><i>vds</i></td> <td>
+      The initial <tt>vds</tt> (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>icvgs=</tt><i>vgs</i></td> <td>
+      The initial <tt>vgs</tt> (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>icvbs=</tt><i>vbs</i></td> <td>
+      The initial <tt>vbs</tt> (initial condition) for transient
+      analysis.</td></tr>
+    <tr><td><tt>temp=</tt><i>val</i></td> <td>
+      Device operating temperature, degrees Celsius.</td></tr>
+    </table>
+
+    <p>
+    Examples:
+    <blockquote><tt>
+        m1 24 2 0 20 type1<br>
+        m31 2 17 6 10 modm l=5u w=2u<br>
+        m1 2 9 3 0 mod1 l=10u w=5u ad=100p as=100p pd=40u ps=40u<br>
+    </tt></blockquote>
+
+    <p>
+    The parameters listed above are representative of the SPICE3 MOS
+    models, but except for '<tt>m</tt>' are fairly universal.  Some
+    third-party MOS models may have additional nodes and parameters. 
+    Consult the model documentation for the full listing.
+
+    <p>
+    The <i>nd</i>, <i>ng</i>, <i>ns</i>, and <i>nb</i> are the drain,
+    gate, source, and bulk (substrate) nodes, respectively.  The
+    <i>modname</i> is the model name, <tt>l</tt> and <tt>w</tt>
+    specify the channel length and width in meters, and <tt>ad</tt>
+    and <tt>as</tt> specify the areas of the drain and source
+    diffusions in sq-meters.  Note that the suffix `u' specifies
+    microns (1E-6 m) and 'p' sq-microns (1E-12 sq-m).  If any of
+    <tt>l</tt>, <tt>w</tt>, <tt>ad</tt>, or <tt>as</tt> are not
+    specified, default values are used.  The use of defaults
+    simplifies input file preparation, as well as the editing required
+    if device geometries are to be changed.  The <tt>pd</tt> and
+    <tt>ps</tt> specify the perimeters of the drain and source
+    junctions in meters, <tt>nrd</tt> and <tt>nrs</tt> designate the
+    equivalent number of squares of the drain and source diffusions;
+    these values multiply the sheet resistance <tt>rsh</tt> specified
+    on the <tt>.model</tt> line for an accurate representation of the
+    parasitic series drain and source resistance of each transistor. 
+    The <tt>pd</tt> and <tt>ps</tt> default to 0.0 while <tt>nrd</tt>
+    and <tt>nrs</tt> default to 1.0.  The parameter <tt>off</tt>
+    indicates an initial condition on the device for dc analysis.  The
+    initial conditions specified using <tt>ic</tt> or alternatively
+    <tt>icvds</tt>, <tt>icvgs</tt> and <tt>icvbs</tt> are intended for
+    use with the <tt>uic</tt> option in <a href=".tran">transient
+    analysis</a>, when a transient analysis is desired starting from
+    other than the quiescent operating point.  The <a
+    href=".ic"><tt>.ic</tt></a> line provides another way to set
+    transient initial conditions.
+
+    <p>
+    MOS devices using model levels 1-3 accept a real parameter
+    "<tt>m</tt>" which scales all the instance capacitances, areas,
+    and currents by the given <i>factor</i>.  This can be used as a
+    short-cut for modeling multiple devices, e.g., <tt>m = 2</tt> is
+    equivalent to two identical devices in parallel.  This is not
+    available for most of the more complicated and third-party models.
+ 
+    <p>
+    More information can be found in the description of the <a
+    href="mosmodel">mos models</a>.
+
+!!SEEALSO
+semicond
+

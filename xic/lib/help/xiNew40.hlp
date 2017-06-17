@@ -1,0 +1,1868 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiNew40.hlp,v 1.24 2017/03/28 22:23:16 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2013.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiNew40.hlp
+!!TITLE
+xiNew40.hlp
+!!HTML
+
+!!SUBTOPICS
+xic40
+
+!!REDIRECT LayerTable       xic40#LayerTable
+!!REDIRECT TclLibrary       xic40#TclLibrary
+!!REDIRECT TkLibrary        xic40#TkLibrary
+!!REDIRECT RgbTxtPath       xic40:RgbTxtPath
+!!REDIRECT MaxPrpLabelLen   LabelMaxLen
+!!REDIRECT GridSpacing      xic40:tech_unsup
+!!REDIRECT ElecGridSpacing  xic40:tech_unsup
+!!REDIRECT PhysGridSpacing  xic40:tech_unsup
+!!REDIRECT ElecSnapping     xic40:tech_unsup
+!!REDIRECT ReadCds          xic40:ReadCds
+!!REDIRECT ReadCDS          xic40:ReadCds
+!!REDIRECT PlaceTemplateArgs xic40:PlaceSetPCellParams
+
+!!KEYWORD
+xic40
+!!TITLE
+Xic 4.0 Changes and New Features
+!!HTML
+
+    <h2>Welcome to <i>Xic</i> Generation 4!</h2>
+
+    This is the latest, and most full-featured, branch of the
+    <i>Xic</i> design system.  A few of the new features found in this
+    branch are
+    <ul>
+!!IFDEF OpenAccess
+    <li>Plug-in OpenAccess support and compatibility.
+!!ENDIF
+    <li>Plug-in language support for Python and Tcl/Tk.
+    <li>Expanded  parameterized cell support.
+    <li>Support for arbitrary layer names, and purposes, and a new layer
+    table format.
+    </ul>
+
+    <p>
+    This document lists the changes from the previous <i>Xic</i>-3.2
+    branch.  This is probably incomplete, as so much new capability
+    has been added that some things may have avoided mention here.
+
+    <p>
+    <table border=0 cellpadding=4>
+    <tr><th colspan=2>Screen shots, click on image for full size</th></tr>
+    <tr><th>Physical</th> <th>Electrical</th></tr>
+<!-- This doesn't work when served via wrcad.com.
+    <tr><td><a href="screenshots/xicph.png">
+        <img src="screenshots/xicph.png" width=300></a></td>
+      <td><a href="screenshots/xicel.png">
+        <img src="screenshots/xicel.png" width=300></a></td></tr>
+-->
+    <tr><td><a href="http://wrcad.com/ss40ph.html">
+        <img src="screenshots/xicph.png" width=300></a></td>
+      <td><a href="http://wrcad.com/ss40el.html">
+        <img src="screenshots/xicel.png" width=300></a></td></tr>
+    </table>
+
+    <table cellpadding=2 border=1 bgcolor="#ffffee" width=100%><tr><td>
+    <h2>Contents</h2>
+    <ul>
+    <li><a href="xic40#distrib"><b>Distribution Changes</b></a>
+    <li><a href="xic40#compat"><b>Backwards Compatibility Issues</b></a>
+!!IFDEF OpenAccess
+    <li><a href="xic40#oa"><b>New OpenAccess Support</b></a>
+!!ENDIF
+    <li><a href="xic40#lang"><b>New Language Support</b></a>
+    <li><a href="xic40#pcell"><b>Enhanced Parameterized Cell Capabilities</b></a>
+    <li><a href="xic40#layers"><b>New Model for Layers</b></a>
+    <li><a href="xic40#cif"><b>Changes to CIF/Native File Syntax</b></a>
+    <li><a href="xic40#tech"><b>Technology File Changes</b></a>
+    <li><a href="xic40#modif"><b>Edit and Modify Menu Changes</b></a>
+    <li><a href="xic40#ext"><b>Extraction Menu Changes</b></a>
+    <li><a href="xic40#prpty"><b>Property Changes</b></a>
+    <li><a href="xic40#elec"><b>Schematic (Electrical Mode) Changes</b></a>
+    <li><a href="xic40#fio"><b>File I/O Command Changes</b></a>
+    <li><a href="xic40#attri"><b>Attributes Menu Changes</b></a>
+    <li><a href="xic40#misc"><b>Miscellaneous Command Changes</b></a>
+    <li><a href="xic40#bang"><b>Text Command Changes</b></a>
+    <li><a href="xic40#mschg"><b>Miscellaneous Small Changes and New Features</b></a>
+    <li><a href="xic40#vars"><b>New and Changed Variables</b></a>
+    <li><a href="xic40#env"><b>New Environment Variables</b></a>
+    <li><a href="xic40#script"><b>Script Function Changes</b></a>
+    </ul>
+    </td></tr></table><br>
+
+    <a name="distrib">
+    <h2>Distribution Changes</h2>
+    </a>
+
+    <p>
+    The separate distributions for the <i>Xiv</i> and <i>XicII</i>
+    programs are gone.  These are now "virtual products" that
+    correspond to feature sets enabled in <i>Xic</i>.  If you run
+    <i>Xiv</i> or <i>XicII</i>, simply install the 4.0.9 or later
+    <i>Xic</i> distribution file, and run with your present license
+    file.  The "editor" feature set (XicII) now includes the <b>User
+    Menu</b> and full scripting support.
+
+    <p>
+    The programs are now installed under <tt>/usr/local/xictools</tt>
+    by default.  Thus, they can co-exist with older releases, which
+    are installed under <tt>/usr/local/share/xictools</tt>.
+
+    <p>
+    In non-Windows releases, there is a new "<tt>plugins</tt>"
+    directory in the installation area (e.g.,
+    <tt>/usr/local/xictools/xic/plugins</tt>).  These hold the <a
+    href="plugins">plug-ins</a> that make available
+!!IFDEF OpenAccess
+ OpenAccess,
+!!ENDIF
+    Python, and Tcl/Tk support.  These features are not available under
+    Microsoft windows.  Plug-ins are a new <i>Xic</i>-4 feature.
+
+    <p>
+    All releases now use the same graphical user interface, <a
+    href="http://www.gtk.org">GTK-2</a>, which is native to Linux.  A
+    separate GTK-2 package must now be installed under Windows, OS X,
+    and FreeBSD.  This installation will be needed once-only and the
+    procedure will be made as painless as possible.
+
+    <p>
+    This will further improve commonality of features and interface
+    across platforms, and greatly simplify maintenance and
+    development.  The parallel Win32 GUI, which represents countless
+    hours of development using Microsoft's unbelievably terrible
+    software, is history.  The GTK-2 port to Windows is now complete
+    and stable enough for use.
+
+    <p>
+    In OS X, X11 is still required.  There is a GTK-2 porting effort
+    to native OS X, but thus far there are too many flaws for use with
+    products.
+
+    <p>
+    The present distributions listed below will change availability
+    status with 4.0 as listed.  Support in the 3.2 branch (bug fix
+    releases only) will continue.
+
+    <dl>
+    <dt><b>FreeBSD</b><dd>
+    We like this operating system, and it is perfect for CAD, but
+    nobody uses it so it will be terminated.
+    <dt><b>Debian</b><dd>
+    No more Debian distributions, but the installer can use the
+    <tt>alien</tt> program with <tt>rpm</tt> files.  If <tt>alien</tt>
+    and <tt>dpkg</tt> are both found, the installer will prompt
+    whether to use them instead of the <tt>rpm</tt> program.
+    <dt><b>Linux2</b><dd>
+    Obsolete static-link using GTK-1.2, to be terminated.
+    <dt><b>LinuxRHEL3</b>, <b>LunuxRHEL3_64</b><dd>
+    Red Hat EL3/4 has reached end of life, will be terminated.
+    </dl>
+
+    <p>
+    The official standard operating system, used for development, is
+    <a href="http://www.centos.org">CentOS 6.x</a>, x84_64.  The
+    available distributions are:
+    <table cellpadding=2 border=1 bgcolor="#ffffee">
+    <tr><th>Distrib Name</th> <th>Notes</th></tr>
+    <tr><td>LinuxRHEL6_64</td> <td> No plans to support 32-bit.</td></tr>
+    <tr><td>LinuxRHEL5_64</td> <td>&nbsp;</td></tr>
+    <tr><td>LinuxRHEL5</td> <td>&nbsp;</td></tr>
+!!IDDEF OpenAccess
+    <tr><td>Darwin64</td> <td>No OpenAccess support.</td></tr>
+!!ELSE
+    <tr><td>Darwin64</td> <td></td></tr>
+!!ENDIF
+    <tr><td>Windows</td> <td>No plug-in support.</td></tr>
+    </table>
+
+    <p>
+    The Darwin64 releases are now prepared on OS X 10.9 Mavericks, and
+    are unlikely to work on earlier operating system releases.  The 10.9
+    upgrade is free from Apple as a download, and upgrading here from
+    10.6 went smoothly and (so far) without ill effect.
+
+    <p>
+    <b>The X-quartz X windows server must be obtained from Apple and
+    installed in Mavericks</b>, as it is not part of the base package.
+
+    <p>
+    The Generation 4 releases require that the MacPorts GTK-2
+    libraries be installed.  As this is being written, the mechanism
+    for providing this is being worked out.
+
+    <p>
+    With the older Xic releases, there is a cosmetic flaw rendering
+    push-button icons in X-quartz.  They look funny and ugly and are
+    barely recognizable, but the problem is only cosmetic and the
+    programs seem to work properly.  This is due to an incompatibility
+    between the old GTK-1 graphical code and X-quartz.  It is not
+    present when using GTK-2 so is not a problem in Generation 4.
+    
+    <p>
+    The Generation 4 Windows releases now also use the GTK-2 graphical
+    interface.  The old Win32 interface, source of countless hours of
+    frustration in development, is gone.  The Windows programs are now
+    virtually identical to the programs on the other platforms, and I
+    only have to maintain one version of the graphical interface.
+
+    <p>
+    The GTK-2 libraries are provided in a separate package, which is
+    available along with the programs and must be installed before the
+    programs can be used.  This is (more or less) a one-time
+    operation.
+
+    <a name="compat">
+    <h2>Backwards Compatibility Issues</h2>
+    </a>
+
+    <font size=6 color=red>In general, files produced with this
+    release are <b>NOT</b> compatible with earlier <i>Xic</i>
+    releases.</font>
+
+    <p>
+    The native cell files and CIF now accept and generate arbitrarily
+    long layer names.  These are not compatible with traditional CIF,
+    or with older <i>Xic</i> releases.  Older <i>Xic</i> releases will
+    fail to read native cell files, or CIF files, with non-traditional
+    layer names. Traditional CIF layer names contain four characters or
+    fewer.
+
+    <p>
+    Native cell files and CIF files from the 4.0 branch that use
+    traditional CIF layer names should be backward compatible in this
+    respect.
+
+    <p>
+    There is a new syntax used for electrical <a
+    href="prpty:node"><b>node</b></a> property strings.  This will, in
+    general, prevent backwards compatibility of schematic files.  If
+    the <a href="Out32nodes"><b>Out32nodes</b></a> variable is set,
+    files written will use the old node syntax, with loss of some data
+    that is not supported by the older syntax, but files will be
+    readable by older <i>Xic</i> programs.
+
+
+!!IFDEF OpenAccess
+    <a name="oa">
+    <h2>OpenAccess Support</h2>
+    </a>
+
+    <a href="oaplugin">OpenAccess</a> is a database for CAD/EDA data
+    used by a number of tools, including Cadence Virtuoso.  The use of
+    a common database helps integrate tools from different vendors
+    into a seamless process flow (at least in theory).  Through the
+    plug-in, <i>Xic</i> can now access an existing OpenAccess
+    database, which can be part of a Cadence installation or provided
+    by another tool, or installed directly from downloaded files.
+
+    <p>
+    When the OpenAccess plug-in is loaded, <i>Xic</i> will be
+    configured for compatibility with the OpenAccess database found. 
+    In particular, the <b>OpenAccess Libs</b> button will appear in
+    the <b>File Menu</b>, which will bring up the <a
+    href="xic:oalib"><b>OpenAccess Libraries</b></a> listing panel,
+    through which the OpenAccess libraries can be accessed.
+!!ENDIF
+
+    <a name="lang">
+    <h2>Language Support</h2>
+    </a>
+
+    Language support is now provided via <a
+    href="plugins">plug-ins</a>.  Plug-ins are currently available for
+    <a href="pyplugin">Python</a>, <a href="tclplugin">TclTk</a>, and
+    Tcl without Tk.
+
+    <p>
+    The entire set of built-in interface functions is available in
+    both languages, however, not all data types are supported.
+
+
+    <a name="pcell">
+    <h2>Enhanced Parameterized Cell Capabilities</h2>
+    </a>
+
+    <p>
+    There is an ongoing effort to strengthen the <a
+    href="xic:pcells">parameterized cell</a> capabilities in
+    <i>Xic</i>.  The effort includes
+!!IFDEF OpenAccess
+    <ul>
+    <li>Providing support for languages other than the native script
+    language.  In particular, the Python language appears to be the
+    choice for "open" pcells, i.e., pcells which can be used in tools
+    from different vendors.
+
+    <li>Provide commonality and support for Ciranova open pcells
+    (PyCells) and standards.
+
+    <li>Provide commonality and support for the OpenAccess pcell
+    framework.
+    </ul>
+!!ELSE
+    providing support for languages other than the native script
+    language.  In particular, the Python language appears to be the
+    choice for "open" pcells, i.e., pcells which can be used in tools
+    from different vendors.
+!!ENDIF
+
+    <p>
+    This initial release of the <i>Xic</i>-4 branch contains a number
+    of new features.
+
+    <dl>
+    <dt><b>Parameters pop-up</b><dd>
+    There is a new <a href="xic:pcparams"><b>Parameters</b></a> panel
+    for entering pcell parameters.  This panel appears when placing
+    pcells, and at other times.  It contains entry areas for each of
+    the pcell's parameters, and is used to configure an instantiation
+    to a given parameter set.
+    </dl>
+
+    <dl>
+    <dt><b>PCell Control</b> panel<dd>
+    The new <a href="xic:pcctl"><b>PCell Control</b></a> panel is
+    obtained from the new <b>PCell Control</b> button in the <b>Edit
+    Menu</b>.  This allows setting various pcell options.
+    </dl>
+
+    <dl>
+    <dt><b>External scripts</b><dd>
+    The script can now be kept is a separate file from the pcell.
+    A script can therefor be arbitrarily long and not be constrained
+    by property record lengths in layout files.
+    </dl>
+
+    <dl>
+    <dt><b>Python and Tcl support</b><dd>
+    Scripts can now be written in Python or Tcl/Tk, as well as the
+    native <i>Xic</i> scripting language.
+    </dl>
+
+!!IFDEF OpenAccess
+    <dl>
+    <dt><b>Ciranova PyCell Studio support</b><dd>
+    <a href="pycell">Ciranova PyCells</a> can be instantiated in
+    <i>Xic</i> cells.
+    </dl>
+!!ENDIF
+
+    <dl>
+    <dt><b>Stretch handle support</b><dd>
+    The Ciranova <a href="pc_stretch">stretch handle</a> protocol is
+    supported in pcells.
+    </dl>
+
+    <dl>
+    <dt><b>Abutment support</b><dd>
+    The Ciranova <a href="pc_abut">abutment</a> protocol is supported
+    in pcells.
+    </dl>
+
+    <dl>
+    <dt><b>General improvements</b><dd>
+    In earlier releases, pcell names were required to have an
+    "<tt>XXX</tt>" suffix.  The suffix will still be recognized and
+    stripped before creating sub-masters, but is no longer required,
+
+    <p>
+    The parameter values are now saved with instances, allowing the
+    sub-master to be recreated if missing, and the super master is
+    available.
+    </dl>
+
+
+    <a name="layers">
+    <h2>New Model for Layers</h2>
+    </a>
+
+    <i>Xic</i> <a href="layers">layers</a> now follow the OpenAccess
+    model for <a href="layername">layer naming</a>.  Each layer has
+    an associated layer name and purpose name.  If no purpose name is
+    given, a default purpose named "drawing" is assumed.
+
+    <p>
+    In <b>OpenAccess</b>, there is no distinction between physical and
+    electrical layers.  <i>Xic</i> has been updated to support this. 
+    Any layer can appear in both modes, though this makes no sense for
+    any but non-physical annotation layers.
+
+    Layers have new attributes corresponding to the following
+    technology file keywords, which can appear in layer blocks.
+    <blockquote>
+    <a href="Invalid"><tt>Invalid</tt></a><br>
+    <a href="LppName"><tt>LppName</tt></a><br>
+    <a href="NoInstView"><tt>NoInstView</tt></a><br>
+    <a href="NoSelect"><tt>NoSelect</tt></a><br>
+    <a href="WireActive"><tt>WireActive</tt></a><br>
+    </blockquote>
+
+    <p>
+    The "Layer Specific Selections" mode no longer exists.  Instead,
+    there is provision to toggle the selectability of all layers
+    except for the current layer.  Turning off the selectability of
+    all layers but the current layer is equivalent to the old Layer
+    Specific mode.  However, the user can now change the selectability
+    of individual layers.
+
+    <p>
+    Previously, there was special handling of the SCED layer when
+    making boxes, polygons, and other features.  The feature would
+    actually be created on another layer, if the SCED layer is
+    current.  This is no longer true, there is no longer any special
+    handling.
+
+    <p>
+    Electrical Virtuoso reserved layers are automatically GDSII mapped
+    and unmapped when reading/writing GDSII and OASIS.
+    </dl>
+
+    <dl>
+    <dt><b>New Layer Table</b><dd>
+    The <a href="layertab">layer table</a> now scrolls vertically to
+    the left of the main drawing window.  The "grip" that separates
+    the layer table from the main drawing window can be dragged to
+    change the layer table width.
+
+    <p>
+    Above the layer table and main drawing window is the <a
+    href="topbuttons">top button menu</a> which contains a line of
+    layer-related controls.  This provides a search capability for the
+    layer table, means for setting the current layer and for toggling
+    the visibility of the layer table, and other features.  For
+    example, the new <a href="xic:setcl"><b>setcl</b></a> button
+    allows the current layer to be set by clicking on an object in a
+    drawing window, the current layer will be set to the object's
+    layer.
+    </dl>
+
+    <dl>
+    <dt><b>Enhanced Layer Palette</b><dd>
+    The <a href="xic:lpal"><b>lpal</b></a> button in the top button
+    menu will bring up the layer palette.  As in previous releases,
+    the layer palette is meant as a container for a few layers
+    currently in use, to avoid hunting through the layer table.  It
+    also provides information about layers.  When the mouse pointer is
+    over a layer indicator in the layer table or in the palette,
+    information about that layer is printed.
+
+    <p>
+    There is a new save/restore feature for the palette layers.  The
+    palette layers can be saved in one of seven registers and restored
+    later, with the <b>Save</b> and <b>Restore</b> buttons.  The
+    current palette is saved when the palette is dismissed, and
+    restored when the palette is popped up again.  The registers can
+    be restored from or saved to the <a
+    href="PhysLayerPalette">technology file</a>.
+    </dl>
+
+
+    <a name="cif">
+    <h2>Changes to CIF/Native File Syntax</h2>
+    </a>
+
+    To accommodate new capabilities, the <a
+    href="symfilefmt#cifext">file format</a> used in native cell files
+    and CIF files has been extended.  Be aware that if used, the
+    extensions will affect portability to older versions of
+    <i>Xic</i>, and to other tools in the case of CIF.
+
+    <dl>
+    <dt><b>Support for long layer names</b><dd>
+    The CIF reader/writer will now accept or write arbitrarily long
+    layer names.  Traditional CIF limits the length of layer names to
+    four characters.  Thus, CIF files produced by <i>Xic</i> may not
+    be portable if layer names exceed four characters.  When working
+    with CIF, one is expected to use appropriate CIF layer names in
+    the technology file.  Layer names are now also arbitrarily long
+    and case-insensitive in native cell files.
+    </dl>
+
+    <dl>
+    <dt><b>Dummy symbol call in CIF files</b><dd>
+    CIF files now contain a transform-less top-level call to the top
+    level symbol.  That is, a line like
+    <blockquote>
+    <tt>C</tt> <i>top_cell_number</i><tt>;</tt>
+    </blockquote>
+    is added just before the <tt>End</tt> line.  MOSIS specifically
+    requires this.  If the top level cell is unknown, which is true
+    when translating directly from another format, this is skipped. 
+    <i>Xic</i> does not require or use this line.
+    </dl>
+
+    <dl>
+    <dt><b>Colon and semicolon escaping</b><dd>
+    New features require more care in handling colons and semicolons. 
+    Colons, now, are common in layer names.  The colon is also used as
+    the line termination character in symbolic cell descriptions, so a
+    potential problem lurks.
+
+    <p>
+    In property and label strings, semicolons will (now) be read
+    literally if preceded by backslash, the backslash is stripped. 
+    Semicolons are now generated in output preceded by backslashes. 
+    Previously, a semicolon would stop parsing of the record, so
+    semicolons could not appear in these strings.
+    </dl>
+
+
+    <a name="tech">
+    <h2>Technology File Changes</h2>
+    </a>
+
+    <dl>
+    <dt><b>Variable expansion changes</b><dd>
+    In text, forms like <tt>$(var)</tt> are now substituted if
+    <tt>var</tt> names an environment variable.  The <a
+    href="techfile:macros"><tt>Set</tt></a> keyword will override the
+    environment if both are defined for the same name.
+
+    <p>
+    The expansion is now performed recursively.
+    </dl>
+
+    <a name="tech_unsup"></a>
+    <dl>
+    <dt><b>Changes to grid/snap parameter specification</b><dd>
+    The <a href="techfile:attr#pattr">parameters</a> used to set the
+    grid have changed.  The following technology file keywords are no
+    longer accepted:
+    <blockquote>
+    <tt>GridSpacing</tt><br>
+    <tt>ElecGridSpacing</tt><br>
+    <tt>PhysGridSpacing</tt><br>
+    <tt>ElecSnapping</tt></tt>
+    </blockquote>
+
+    <p>
+    There is now a spacing number, and, as before, a snap number.  The
+    relevant new technology file keywords are
+
+    <dl>
+    <dt><a href="SnapGridSpacing"><tt>SnapGridSpacing</tt></a>
+     <i>spacing</i><dd>
+    This is the spacing, in microns, between snap points.  This
+    applies to physical mode only.  The default is 1.0 micron.
+
+    <dt><a href="SnapPerGrid"><tt>SnapPerGrid</tt></a> <i>num</i>
+    <dt><a href="GridPerSnap"><tt>GridPerSnap</tt></a> <i>num</i><dd>
+    At most one of these keywords should be given.  The <i>num</i> is
+    an integer 1-10.  These apply to Physical mode only.
+
+    <p>
+    If <tt>SnapPerGrid</tt> is given, then the fine grid lines will be
+    spaced <i>num</i>*<tt>SnapGridSpacing</tt> apart.
+
+    <p>
+    If <tt>GridPerSnap</tt> is given, fine grid lines will appear at
+    <tt>SnapGridSpacing</tt>/<i>num</i> intervals.
+
+    <p>
+    The default is one grid per snap.
+    </dl>
+
+    <p>
+    The existing keywords <tt>Snapping</tt> and <tt>PhysSnapping</tt>
+    are deprecated but retained for now.  Both are equivalent
+    (<tt>ElecSnapping</tt> is no longer accepted).  The integer value
+    can be in the range 1-10, in which case this is equivalent to
+    <tt>SnapPerGrid</tt>, or the negative of this corresponding to
+    <tt>GridPerSnap</tt>.
+
+    <p>
+    The electrical grid is set to <tt>SnapGridSpacing</tt> 1.0 with
+    unit snap per grid on program startup, and can't be changed from
+    the technology file.  The electrical grid can be changed within
+    <i>Xic</i> from the <b>Grid Parameters</b> pop-up, in the unusual
+    circumstance that non-default values are needed.
+
+    <p>
+    These replace the two deleted keywords above.  In addition, there
+    are new keywords:
+
+    <dl>
+    <dt><a href="MfgGrid"><tt>MfgGrid</tt></a> <i>val</i><dd>
+    If set nonzero, the <tt>SnapGridSpacing</tt> will be constrained
+    to be a multiple of this value.  This applies to physical mode
+    only.
+    </dl>
+
+    <dl>
+    <dt><a href="CoarseGridMult"><tt>CoarseGridMult</tt></a> <i>num</i>
+    <dt><a href="ElecCoarseGridMult"><tt>ElecCoarseGridMult</tt></a>
+      <i>num</i>
+    <dt><a href="PhysCoarseGridMult"><tt>PhysCoarseGridMult</tt></a>
+      <i>num</i><dd>
+    This can be set to an integer 1-50, and specifies that coarse grid
+    lines will appear every <i>num</i> fine grid lines.  With value 1,
+    the grid will use the coarse grid color only.  The <tt>Elec</tt>
+    and <tt>Phys</tt> prefixes set the value for the display mode. 
+    Without the prefix, both modes will used the given value.  The
+    default is 5.
+    </dl>
+
+    <p>
+    The <a href="techfile:attr#gridreg">grid registers</a> now save
+    all parameters, i.e. including axes style, show, display-on-top,
+    and coarse multiple.  There is an expanded string syntax used in
+    the tech file, associated with the grid registers.  There are now
+    separate registers for each index for electrical and physical
+    modes.  Register index 0 is used internally and is no longer
+    directly accessible.
+    </dl>
+
+    <dl>
+    <dt><b>New capability for function key assignments</b><dd>
+    <a href="techfile:attr#fkey">Function keys assignments</a> are now
+    sensitive to the state of the <b>Shift</b>, <b>Ctrl</b>, and
+    <b>Alt</b> keys.  Thus, for example, one can program different
+    commands for the F1 key, with and without <b>Shift</b> pressed.
+    </dl>
+
+    <dl>
+    <dt><b>New layer and purpose tables</b><dd>
+    Before the layer lists in the technology file, there now may exist
+    layer and purpose name tables.  These are specified using the <a
+    href="DefineLayer"><tt>Define Layer</tt></a> and <a
+    href="DefinePurpose"><tt>Define Purpose</tt><a> keywords.  These
+    tables are optional, but are created when a new technology file is
+    written.  The tables associate a layer or purpose name with a
+    number.  If a name is defined that is not found is a table, then
+    the corresponding number will be assigned by <i>Xic</i>.  Using
+    the table ensures that the corresponding number is always the
+    given value, which
+!!IFDEF OpenAccess
+    is important for interoperability with OpenAccess tools.
+!!ELSE
+    may be important for compatibility with other tools.
+!!ENDIF
+
+    <p>
+    The formats are
+    <blockquote>
+    <tt>DefineLayer</tt> <i>layer_name</i>  <i>layer_number</i><br>
+    <tt>DefinePurpose</tt> <i>purpose_name</i> <i>purpose_number</i>
+    </blockquote>
+    Any number of these lines may appear.  These must appear before
+    the layer listings in the technology file.
+    </dl>
+
+    <dl>
+    <dt><b>Layer block keyword changes</b><dd>
+    The <a href="techfile:layers">layer definition blocks</a> begin
+    with one of the equivalent keywords <tt>Layer</tt>,
+    <tt>LayerName</tt>, <tt>PhysLayer</tt>, <tt>PhysLayerName</tt> for
+    physical layers, or <tt>ElecLayer</tt>, <tt>ElecLayerName</tt> for
+    electrical layers.  This is followed by the name for the layer in
+    the form
+    <blockquote>
+    <i>layername</i>[<tt>:</tt><i>purposename</i>]
+    </blockquote>
+    The <i>layername</i> and <i>purposename</i> are names from the
+    tables, or if not found in the tables, they will be logically
+    added and corresponding numbers assigned.  If the colon and
+    purpose name are omitted, the default "drawing" purpose is
+    understood.
+
+    <p>
+    The following keywords are new.
+
+    <dl>
+    <dt><a href="Invalid"><tt>Invalid</tt></a><dd>
+    The layer will not appear in the layer table, but will still
+    resolve a call to the layer when reading input.
+    </dl>
+
+    <dl>
+    <dt><a href="LppName"><tt>LppName</tt></a><dd>
+    This allows definition of an alias name for the layer/purpose
+    pair.  The <i>Xic</i> layer can then be referenced by either its
+    normal <i>layername</i><tt>:</tt><i>purposename</i> or by the
+    alias.
+
+    <p>
+    The existing <tt>LongName</tt> keyword is, for now, a synonym for
+    <tt>LppName</tt>.  The <tt>LongName</tt> keyword is deprecated, as
+    a "long name" alias is no longer needed as layer names are now not
+    limited in length.
+    </dl>
+
+    <dl>
+    <dt><a href="NoInstView"><tt>NoInstView</tt></a><dd>
+    There is a new layer flag and corresponding technology file layer
+    block keyword <tt>NoInstView</tt>.  When given, objects on the
+    layer won't show in instances of the containing cell, they will
+    appear only when the cell is the top-level cell.
+    </dl>
+
+    <dl>
+    <dt><a href="NoSelect"><tt>NoSelect</tt></a><dd>
+    The selectability of layers can now be specified.  Layers are
+    selectable by default, but if made unselectable, objects on the
+    layer are not selectable with mouse operations.  If the
+    <tt>NoSelect</tt> keyword is given, the layer will be not
+    selectable by default.  The <tt>NoSelect</tt> parameter was added
+    to the <a href="xic:lpedt"><b>Tech Parameter Editor</b></a>
+    keyword list.
+    </dl>
+
+    <dl>
+    <dt><a href="WireActive"><tt>WireActive</tt></a><dd>
+    There can now be more than one "electrically active" wiring layer
+    (like the SCED layer) in schematics.  When set, wires on the layer
+    will be considered for wire connectivity in schematics.  These
+    layers can exist anywhere in the layer table, not just in the
+    lowest position as was the case previously.  This flag is always
+    set implicitly in the <tt>SCED</tt> layer.  The Cadence
+    compatibility system may create a layer named <tt>wire</tt> with
+    drawing purpose which will have this flag set.
+    </dl>
+    </dl>
+
+    <a name="ReadCds"></a>
+    <dl>
+    <dt><b>Cadence compatibility change, Ciranova addition</b><dd>
+    The following technology file keyword has been removed.
+    <blockquote>
+    <tt>ReadCds</tt>
+    </blockquote>
+    It has been replaced by separate read functions for the Virtuoso
+    DRF and ASCII technology files.
+    <blockquote>
+    <a href="ReadDRF"><tt>ReadDRF</tt></a>
+      (for display resource (DRF) files)<br>
+    <a href="ReadCdsTech"><tt>ReadCdsTech</tt></a>
+      (for Virtuoso ASCII technology files)
+    </blockquote>
+
+    <p>
+    A read function for <a href="pycell">Ciranova</a> ASCII technology
+    files has been added.
+    <blockquote>
+    <a href="ReadCniTech"><tt>ReadCniTech</tt></a>
+      (for Ciranova ASCII technology files)
+    </blockquote>
+    </dl>
+
+
+    <a name="modif">
+    <h2>Edit and Modify Menu Changes</h2>
+    </a>
+
+    <dl>
+    <dt><a href="xic:place"><b>Cell Placement Control</b></a> panel
+    changes<dd>
+    There was an update to the <b>Cell Placement Control</b> panel. 
+    One can now modify array parameters of existing cell instances. 
+    This can now be done with the <b>Replace</b> button in the <b>Cell
+    Placement Control</b> panel.
+
+    <p>
+    The <b>Use Array</b> and <b>Replace</b> buttons now co-exist. 
+    When active, the replacement cell is arrayed according to the
+    place panel.  When not active, the existing array params are kept. 
+    Note that it is now possible to replace an instance with another
+    instance of the same cell, but with different array parameters.
+    </dl>
+
+    The move and copy operations, and spin/rotate operation, share a
+    common setting to enable moving an object to a new layer.  This is
+    controlled by the new <a
+    href="LayerChangeMode"><b>LayerChangeMode</b></a> variable,
+    which is controlled by a new pop-up which is produced from the new
+    <a href="xic:mclcg"><b>Set Layer Chg Mode</b></a> button in the
+    <b>Modify Menu</b>.
+
+    <p>
+    If the <tt>LayerChangeMode</tt> variable is unset, changing the
+    current layer during these operations has no effect.  If the
+    variable is set to "<tt>all</tt>", then after a layer change
+    during the operation, all new objects are placed on the new
+    current layer.  If <tt>LayerChangeMode</tt> is set to anything
+    else (e.g., to nothing, as a boolean), only objects that would
+    have been created on the old current layer will be created on the
+    new current layer.
+
+    <p>
+    This applies to all commands which perform a move copy, or rotate
+    an object.  During the operation, when objects are "attached" to
+    the mouse pointer, clicking on a layer in the layer table or
+    otherwise changing the current layer will trigger a layer change
+    operation when the user clicks to place the object.  The default
+    is to ignore the layer change, but this can be changed as
+    described.
+
+
+    <a name="ext">
+    <h2>Extraction Menu Changes</h2>
+    </a>
+
+    <dl>
+    <dt><b>Huge update to grouping/extraction/association algorithms</b><dd>
+    The extraction system is much more powerful.  It can extract and
+    run LVS on an example 64K memory chip in about 10 minutes,
+    comparable to Mentor Calibre.  That design is a direct input from
+    a Virtuoso library, complete with split nets, schematic/layout
+    hierarchy differences, permuted gate input connections, and other
+    issues that required new logic in the extraction system. 
+    Approximately the past year of development focused on the goal of
+    being able to extract and verify this chip.
+    </dl>
+
+    <dl>
+    <dt><b>Simplified Extract Menu</b><dd>
+    The <a href="xic:extmenu"><b>Extract Menu</b></a> has been
+    simplified.  There is an <a href="xic:excfg"><b>Extraction
+    Setup</b></a> panel available from a new <b>Setup</b> button in
+    the <b>Extract Menu</b>.  The new panel is paged, with pages that
+    replace the old <b>Misc.  Extraction Settings</b> and <b>Device
+    Extraction Settings</b> panels.
+
+    <p>
+    The following buttons have been removed from the <b>Extract
+    Menu</b>, and their functionality is now found in the <b>Views and
+    Operations</b> page of the <b>Extraction Setup</b> panel, along
+    with some new capability.
+
+    <blockquote>
+    <tt>Extraction View<br>
+    Show Groups<br>
+    Show Nodes<br>
+    Show Terminals<br>
+    Edit Terminals<br>
+    Find Terminals</tt>
+    </blockquote>
+    As noted, there is a new <b>Setup</b> menu button, and the <b>Misc
+    Config</b> button has been removed.
+    </dl>
+
+    <dl>
+    <dt><b>Enhanced terminal editing</b><dd>
+    The <b>Edit Terminals</b> command, available from the <b>Extraction
+    Setup</b> panel, hs been improved.  The is now undo/redo  support,
+    and a more comprehensive terminal editing panel.
+    </dl>
+
+    <dl>
+    <dt><b>Support for FasterCap from <a
+      href="http://www.fastfieldsolvers.com">FastFieldSolvers.com</a></b>
+    <dd>
+    The <a href="xic:exc">capacitance extraction</a> interface now better
+    supports non-Whiteley Research versions of these programs.  In
+    particular, it supports FasterCap, which among numerous desirable
+    features offers internal mesh refinement.
+    </dl>
+    </dl>
+
+
+    <a name="prpty">
+    <h2>Property Changes</h2>
+    </a>
+
+    <dl>
+    <dt>New line termination restriction in symbolic property syntax<dd>
+    In the <a href="prpty:symbolic"><b>symbolic</b></a> electrical mode
+    cell property (property number 18), the colon terminator now
+    <b>must</b> be followed by a newline character to be considered
+    as a terminator.  Other colons such as the colon in layer names,
+    will be interpreted literally.
+
+    <p>
+    In earlier <i>Xic</i> releases, a colon in this string would act
+    as a record terminator, no matter where it is located.
+    </dl>
+
+    <dl>
+    <dt>Node property string format change<dd>
+    The <a href="prpty:node"><b>node</b></a> property (property number
+    10) supports new functionality (multiple contact points) thus has
+    had a syntax update.  Properties that use the new syntax will not
+    be readable in earlier <i>Xic</i> releases.  If the new variable
+    <a href="Out32nodes"><b>Out32nodes</b></a> is set, node properties
+    will use the 3.2 syntax in output.  This will strip out
+    multi-contact points in symbols, however.
+    </dl>
+
+    <dl>
+    <dt>Additions to the label location property syntax<dd>
+    The electrical-mode label location (<a
+    href="prpty:labloc"><b>labloc</b></a>) property now supports a
+    number of new position codes.
+    </dl>
+
+    <dl>
+    <dt>New <a href="prpty:labref"><b>labref</b></a> property extension<dd>
+    The <b>labref</b> property for labels now supports a syntax
+    extension allowing the label to be bound to the <b>node</b>
+    property of a wire.  The label is used to specify a name for the
+    net containing the wire.
+    </dl>
+
+    <dl>
+    <dt>Extensions to <a href="prpty:labelsize"><b>labelsize</b></a>
+    property, number 7180<dd>
+    The property is added to labels written to GDSII files.  New
+    keywords save additional attributes.
+    </dl>
+
+    <dl>
+    <dt>Properties for pcells (parameterized cells)<dd>
+    <table cellpadding=2 border=1 bgcolor="#ffffee">
+    <tr><th>Property</th> <th>Contents</th> <th>super</th>
+      <th>sub</th> <th>inst</th> <th>objects</th></tr>
+    <tr><td><a href="prpty:pc_name"><b>pc_name</b></a></td>
+      <td>name of super</td>
+      <td>&nbsp;</td> <td>x</td> <td>x</td> <td>&nbsp;</td></tr>
+    <tr><td><a href="prpty:pc_script"><b>pc_script</b></a></td>
+      <td>script text</td>
+      <td>x</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
+    <tr><td><a href="prpty:pc_params"><b>pc_params</b></a></td>
+      <td>parameters</td>
+      <td>x</td> <td>x</td> <td>x</td> <td>&nbsp;</td></tr>
+    <tr><td><a href="prpty:grip"><b>grip</b></a></td>
+      <td>stretch handle desc</td>
+      <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>x</td></tr>
+    <tr><td><a href="prpty:ab_class"><b>ab_class</b></a></td>
+      <td>abutment control</td>
+      <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>x</td></tr>
+    <tr><td><a href="prpty:ab_rules"><b>ab_rules</b></a></td>
+      <td>abutment control</td>
+      <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>x</td></tr>
+    <tr><td><a href="prpty:ab_directs"><b>ab_directs</b></a></td>
+      <td>abutment control</td>
+      <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>x</td></tr>
+    <tr><td><a href="prpty:ab_shapename"><b>ab_shapename</b></a></td>
+      <td>abutment control</td>
+      <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>x</td></tr>
+    <tr><td><a href="prpty:ab_pinsize"><b>ab_pinsize</b></a></td>
+      <td>abutment control</td>
+      <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>x</td></tr>
+    <tr><td><a href="prpty:ab_inst"><b>ab_inst</b></a></td>
+      <td>abutment control</td>
+      <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>x</td></tr>
+    <tr><td><a href="prpty:ab_prior"><b>ab_prior</b></a></td>
+      <td>abutment control</td>
+      <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>x</td></tr>
+    <tr><td><a href="prpty:ab_copy"><b>ab_copy</b></a></td>
+      <td>abutment control</td>
+      <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> <td>x</td></tr>
+    </table>
+    </dl>
+
+
+    <dl>
+    <dt>New <a href="prpty:pc_script"><b>pc_script</b></a> property format<dd>
+    Some of these properties are renamed from previous releases.
+    <table cellpadding=2 border=1 bgcolor="#ffffee">
+    <tr><th>new name</th> <th>old name</th></tr>
+    <tr><td><b>ps_script</b></td> <td><b>Tmpl Script</b></td></tr>
+    <tr><td><b>ps_params</b></td> <td><b>Tmpl Params</b></td></tr>
+    </table>
+
+    <p>
+    The new format allows specification of the script language, and
+    location of the script if it is not in the property string.
+    </dl>
+
+    <dl>
+    <dt><a href="pseudoprops">Pseudo-property</a> syntax enhancement<dd>
+    All available pseudo-properties are now listed in the <a
+    href="xic:prpty"><b>Property Editor</b></a> and are selectable.
+
+    <p>
+    The <a href="XprpWstyle"><b>Wstyle</b> pseudo-property</a> for
+    wires (number 7209) can be set to any word beginning with 'f',
+    'r', 'e' case insensitive, in addition to the constants 0-2.  In
+    the <b>Property Editor</b> listing, the value is now one of
+    "FLUSH", "ROUNDED", "EXTENDED".
+
+    <p>
+    The <a href="XprpXform"><b>Xform</b> pseudo-property</a> for text
+    labels now has a text-mode format in additional to the hex integer
+    values.  There are two new flags, which can only be set with the
+    pseudo-property:<br>
+    <dl>
+    <dt><tt>TLEV</tt><dd>
+    The label will only be visible when the cell is top-level, not in
+    instances of the cell.<br>
+    <dt>LIML</tt><dd>
+    Allow limiting of the number of lines shown, for multi-line labels.
+    </dl>
+
+    <p>
+    The <a href="XprpMagn"><b>Magn</b> pseudo-property</a> for boxes,
+    polygons, wires, and labels no longer does a simple scaling and
+    instead keeps the figure in the present location.  The lower-left
+    corner of boxes, the first vertex in the internal vertex list of
+    polygons and wires, and the reference point of labels, now have
+    fixed location after magnification.
+    </dl>
+
+
+    <a name="elec">
+    <h2>Schematic (Electrical Mode) Changes</h2>
+    </a>
+
+    <dl>
+    <dt>Name label for wire nodes in schematics<dd>
+    It is now possible to bind a <a href="xic:label#wire">label</a> to
+    an electrically-active <a href="xic:wire#label">wire</a> in a
+    schematic.  The label will provide a net name, much like the
+    placement of a named terminal device. 
+
+    <p>
+    To create a bound label for a wire: select the wire, then press the
+    <b>label</b> button in the side menu to enter the label command. 
+    Create and place the label, it will be bound to the selected wire.
+    </dl>
+
+    <dl>
+    <dt><b>Ctrl-a</b> / <b>Ctrl-p</b > now work with associated labels
+    and wires<dd>
+    The <a href="keyctrla"><b>Ctrl-a</b></a> key is useful for
+    identifying which labels are owned by a device, and now
+    vice-versa.  If a property label is selected, <b>Ctrl-a</b> now
+    selects the device or wire associated with the label.  If a wire or
+    device is selected, pressing <b>Ctrl-a</b> selects the labels
+    associated with the selected wire or device.  <a
+    href="keyctrlp"><b>Ctrl-p</b></a> deselects the labels associated
+    with any selected wire or device.
+    </dl>
+
+    <dl>
+    <dt><b>vector instances, net expressions, tapping</b><dd>
+    <i>Xic</i> now supports <a href="elec:netname">net expressions</a>
+    and <a href="elec:vecinst">vectored instances</a> in schematics,
+    using about the same syntax and supporting the same rules as
+    Cadence Virtuoso.  Subscripting can use angle, square, or curly
+    bracket delimiting, equivalently.  Wires can be vectors or
+    bundles, as set by the name label or inferred by contact.  Tap
+    wires can be used, as in Virtuoso.  In fact, the net naming of a
+    Virtuoso schematic should be importable into <i>Xic</i> without
+    change.
+
+    <p>
+    "Bus" connections are handled differently now and older schematics
+    will need to be updated.  There are no longer separate bus terminal
+    devices in the device library.  Terminal devices are now defined by
+    their label, which is a net expression.
+    </dl>
+
+    <dl>
+    <dt>Duplicate terminals and other <b>subct</b> command changes<dd>
+    The <a href="xic:subct"><b>subct</b></a> command in the side menu
+    has changed a bit, with some new capability.
+
+    <p>
+    In symbolic cells in electrical mode, it is now possible to have
+    multiple connection points to the same terminal.  Wires or other
+    objects can make contact at any of these points.  This
+    facilitates, for example, tiling.  If an equivalent connection
+    point appears on either side of the instance, then placing a row
+    of these instances side-by-side will automatically connect this
+    node to all of the instances.  This applies only to the symbolic
+    representation.  In the schematic, each cell terminal has a single
+    connection point.
+
+    <p>
+    Clicking on an existing terminal will no longer delete it. 
+    Instead, clicking on a terminal will select it (attach it to the
+    mouse pointer).  Pressing <b>Delete</b> will delete the selected
+    terminal.  Clicking on another contact point will move the
+    terminal.
+
+    <p>
+    While moving/dragging a terminal, pressing <b>Esc</b> or
+    <b>Backspace</b> will abort the move.
+
+    <p>
+    The user is no longer prompted to provide a terminal name on the
+    prompt line after placing a new terminal, or clicking twice on an
+    existing terminal.  Instead, a new <a href="xic:tedit"><b>Terminal
+    Edit</b></a> pop-up will appear.  The same pop-up is used in the
+    command initiated by the <b>Edit Terminals</b> button in the
+    <b>Setup</b> page of the <a href="xic:excfg"><b>Extraction
+    Setup</b></a> panel, from <b>Setup</b> in the <b>Extract Menu</b>. 
+    A modified version pops up when placing or editing bus terminals.
+
+    <p>
+    The new panel allows setting new properties of terminals,
+    including
+    <ol>
+    <li>The terminal's name.
+    <li>Whether the electrical terminal has a physical equivalent in
+    the layout.
+    <li>The physical layer binding.
+    <li>Whether the terminal is connect-by-name.  This is a new connection
+    method in schematics.
+    <li>Whether the terminal is visible in schematics.  Terminals that
+    are dummy pins for bus connectors can be made invisible to reduce
+    clutter.
+    </ol>
+
+    <p>
+    Bus terminals for cells and subcells now take a name parameter. 
+    This serves as the base name for bit names.  Bit names are
+    recognized in many different formats, for example <tt>foo.1</tt>,
+    <tt>foo[1]</tt>, and <tt>foo&#60;1></tt> are all equivalent.
+    </dl>
+
+    <dl>
+    <dt>Node (net) name assignment changes<dd>
+
+    The facility for providing names to schematic wire nets ("nodes")
+    has been internally revised, and is now integrated with
+    topological extraction.  This means that the name mapping can now
+    be used to alter circuit topology in the schematic by merging
+    disjoint wire nets through association by name.
+
+    <p>
+    The <a href="xic:nodmp"><b>Node (Net) Name Mapping</b></a>
+    (formerly called the <b>Node Mapping Editor</b>) panel has been
+    significantly updated.
+
+    <ul>
+    <li>In previous releases, the user was prevented from using
+    duplicate net names.  In the present release, duplicate names are
+    allowed, and will cause the nets to be merged.  Thus the panel can
+    now be used to make circuit connections (use with care!).
+
+    <li>The panel now recognizes named wires, and will list these in
+    the terminal list window.
+
+    <li>Terminals selected in the terminal list window are now
+    highlighted in schematic (and if extraction is enabled) physical
+    displays.
+
+    <li>The panel can work with the extraction system.  A new <b>Use
+    Extract</b> check box sets this state.  The <b>Click-Select
+    Mode</b> button then brings up the <b>Path Selection Control</b>
+    panel for selecting, with visible indication, nets in both
+    physical and schematic windows.
+
+    <li>A new <b>Find</b> button will pop-up a new window with the
+    currently selected terminal at exact center.  The mode of this
+    window can be changed between physical and schematic, with the
+    terminal centered in either case.
+
+    <li>There is a new search capability.  One can search the nets, or
+    the terminals, by name.  The search input is a regular expression.
+
+    <li>There is a new grip between the two windows, allowing the user
+    to drag the boundary.
+
+    <li>The panel is now brought up from the <b>Find Terminal</b>
+    button in the <a href="xic:excfg"><b>Extraction Setup</b></a>
+    panel in both physical and electrical modes.  It is also
+    accessible, as before, from the side-menu button in electrical
+    mode.
+
+    <li>The panel now uses dedicated pop-ups for input and output,
+    rather than the prompt line.
+    </ol>
+    </dl>
+
+
+    <a name="fio">
+    <h2>File I/O Command Changes</h2>
+    </a>
+
+    <dl>
+    <dt><b>Set Import Parameters</b> pop-up change<dd>
+    In the <a href="xic:imprt"><b>Import Control</b></a> panel,
+    there is a new check box with label
+    <blockquote>
+    <b>Don't create new layers when reading, abort instead</b>
+    </blockquote>
+    This is tied to the new boolean variable
+    <blockquote>
+    <a href="NoCreateLayer"><tt>NoCreateLayer</tt></a>
+    </blockquote>
+
+    <p>
+    When set, when reading an input layout file and a layer is found
+    that can't be mapped to the existing <i>Xic</i> layers, the read
+    will be aborted.  The behavior otherwise is to create new layers
+    as needed.
+    </dl>
+
+
+    <a name="attri">
+    <h2>Attributes Menu Changes</h2>
+    </a>
+
+    <dl>
+    <dt>New <a href="xic:macro"><b>Define Macro</b></a> button<dd> In
+    previous releases, the <b>Key Map</b> button could be used for
+    macro definition or key function mapping.  Now, the macro
+    definition function has been given its own button, and has been
+    removed from <b>Key Map</b>.  The new <a href="xic:keymp"><b>Key
+    Map</b></a> command will produce a mapping file as before, however
+    <i>Xic</i> no longer attempts to read the file on program startup. 
+    The file must be loaded explicitly, with the new <a
+    href="!kmap"><b>!kmap</b></a> command, or the new <a
+    href="ReadKeymap"><tt>ReadKeymap</tt></a> script function.
+    The new approach is more flexible.
+    </dl>
+
+    <dl>
+    <dt><a href="xic:grid"><b>Grid Parameters</b></a> panel changes<dd>
+    The <b>Grid Parameters</b> pop-up was modified for the new
+    grid-related technology file parameters.  A new entry provides a
+    value for the <a
+    href="CoarseGridMult"><tt>CoarseGridMult</tt></a>.
+
+    <p>
+    There are now separate physical and electrical grid registers for
+    each index.  One will automatically save to and recall from the
+    register associated with the window display mode.  The grid
+    registers now save all parameters, i.e. including axes style,
+    show, display-on-top, and coarse multiple.
+
+    <p>
+    There are two new entries in the <b>Recall</b> menu:
+    <dl>
+    <dt><tt>revert</tt><dd>
+    Revert the <b>Set Grid</b> panel to the current window settings.
+    <dt><tt>last appl</tt><dd>
+    Recall the last settings that were applied with the <b>Apply</b>
+    button.
+    </dl>
+
+    <p>
+    <a href="keyctrlg"><b>Ctrl-g</b></a> is now a menu accelerator for
+    the <b>Set Grid</b> button in the <b>Attributes</b>/<b>Main
+    Window</b> main window menu and <b>Attributes</b> sub-window menu. 
+    The redundant prompt line interface command is no longer used. 
+    The <tt>Grid_action</tt> found in keyboard mapping files is now a
+    no-op.
+    </dl>
+
+    <dl>
+    <dt><a href="xic:fill"><b>Fill Pattern Editor</b></a> changes<dd>
+    There were small updates to the <b>Fill Pattern Editor</b>.  There
+    are new buttons in the <b>Pixel Editor</b> to rotate the pixel map
+    by 90 degrees, and to flip the pixel map in X or Y.  The <b>Pixel
+    Editor</b> window is now a drop receiver, which works the same as
+    the <b>Sample</b> window.  The ghost drawing now uses line
+    clipping so that overdrawn ghost lines do not disappear.
+    </dl>
+
+    <dl>
+    <dt><a href="xic:attr"><b>Window Attributes</b></a> panel changes<dd>
+    There are two new controls.  The <b>Hidden label scope</b> menu
+    controls which labels can be hidden, tracking the <a
+    href="LabelHiddenMode"><b>HiddenLabelMode</b></a> variable.  The
+    <b>Label optional displayed line limit</b> entry sets the maximum
+    number of lines to display for labels that follow the protocol. 
+    This tracks the <a href="LabelMaxLines"><b>MaxLabelLines</b></a>
+    variable.
+    </dl>
+
+
+    <a name="misc">
+    <h2>Miscellaneous Command Changes</h2>
+    </a>
+
+    <dl>
+    <dt><a href="helpview"><b>Help Viewer</b></a> changes<dd>
+    The <a href="mozyrcfile"><tt>.mozyrc</tt></a> file is no longer
+    distributed.  To obtain this file, press the new <b>Dump Config</b>
+    button in the help viewer <b>Options</b> menu.
+
+    <p>
+    There is a new <b>Default Colors</b> button in the help window
+    <b>Options</b> menu, which brings up the <b>Default Colors</b>
+    panel.  From this panel, the colors to which the viewer defaults,
+    which are used when displaying help text, can be modified.
+    The default colors have changed a bit from previous releases
+    for aesthetic reasons.
+    </dl>
+
+    <dl>
+    <dt><b>Vertex editor change</b><dd>
+    The vertex editor is used with the <a
+    href="xic:polyg"><b>polyg</b><a> and <a
+    href="xic:wire"><b>wire</b></a> commands from the side menu.  It
+    allows vertices of an existing object to be moved, deleted, or new
+    vertices can be created.
+
+    <p>
+    The operation to delete vertices has changed.  Clicking on a
+    vertex now selects it, rather than deleting it.  Additional
+    vertices can be selected by holding <b>Shift</b> and clicking or
+    dragging.  Selected vertices can be deleted by pressing the
+    <b>Delete</b> key.  Clicking anywhere starts a vertex move
+    operation, which can be aborted by pressing <b>Esc</b> or
+    <b>Backspace</b>.
+    </dl>
+
+    <dl>
+    <dt><a href="xic:csect"><b>Cross Section</b></a> view command
+    (<b>View Menu</b>) changes<dd> This command makes use of a new <a
+    href="xic:ldb3d">3-D layer database</a> and sequence generator. 
+    Layers can be assumed planarizing, or not, arbitrarily.  Unlike in
+    earlier releases, there are no longer layer ordering constraints. 
+    The Y scale can now be adjusted, most easily with the <a
+    href="xic:zoom"><b>Set Display Window</b></a> panel from the
+    <b>Zoom</b> button in the <b>View</b> menu of the cross-section
+    display window.  The panel provides Y-scale adjustment controls. 
+    In particular, one can set <b>Auto Y-Scale</b> so that the layer
+    display always occupies a fixed fraction of the display window no
+    matter what the (horizontal) zoom factor is.  One can also choose
+    an arbitrary fixed proportionality constant, which if unity the
+    display represents "real" dimensions.
+
+    <p>
+    In the display, the grid spacing in the Y direction is modified so
+    as to conform to the Y-scale.  The <a
+    href="xic:ruler"><b>Ruler</b></a> feature now works in
+    cross-section display windows, taking account of the Y-scale.
+
+    <p>
+    New variables:
+    <dl>
+    <dt><a href="XSectNoAutoY"><b>XSectNoAutoY</b></a><dd>
+    When set, turn off the auto Y scaling.
+    <dt><a href="XSectYScale"><b>XSectYScale</b></a><dd>
+    Set the Y scale in the display.
+    </dl>
+    </dl>
+
+
+    <a name="bang">
+    <h2>Text Command Changes</h2>
+    </a>
+
+    <dl>
+    <dt>New command: <a href="!poly45"><b>!poly45</b></a><dd>
+    This will select all polygons in the current cell that have an
+    angle that is not an exact multiple of 45 degrees.
+    </dl>
+
+    <dl>
+    <dt>Changes to the <b>!ltab</b> command<dd>
+    The <a href="!ltab"><b>!ltab</b></a> text command was updated.
+    <ol>
+    <li>Only the keyword characters that make a keyword unique are
+    required.
+    <li>There is a new "<tt>insert</tt>" keyword.
+    <blockquote>
+    <tt>!ltab i</tt>[<tt>nsert</tt>] <i>lname</i> [<i>index</i>]
+    </blockquote>
+    This will insert a layer with the given name <i>lname</i> into the
+    layer table, at a position indicated by the integer <i>index</i>. 
+    </dl>
+
+
+    <a name="mschg">
+    <h2>Miscellaneous Small Changes and New Features</h2>
+    </a>
+
+    <ul>
+    <li>Added line clipping when using XOR mode to draw lines, as is
+    done while ghosting.  This prevents lines, or parts of lines, that
+    are drawn an even number of times from disappearing.
+
+    <li>Clicking on a selected non-pcell instance with <a
+    href="button1">button 1</a> with the <b>Ctrl</b> key held will
+    bring up the <a href="xic:prpty"><b>Property Editor</b></a> with
+    the clicked on instance as the current object.  If the instance is
+    a <a href="xic:pcells">pcell</a> instantiation, the <a
+    href="xic:pcparams"><b>Parameters</b></a> panel appears, allowing
+    the user to reparameterize the instance.
+
+    <li>There is a new predefined <a href="macro">macro</a> PROGROOT
+    which expands to the program installation location (<tt> e.g.,
+    /usr/local/xictools/xic</tt>).  This is available where macros are
+    supported, such as in scripts and the technology file.
+
+    <li>Added a <b>Help</b> button to <a href="xic:sv"><b>Modified
+    Cells</b></a> pop-up.
+
+    <li>In electrical device cells, if there are no <b>model</b> or
+    <b>value</b> properties, the model text now defaults to the cell
+    name.  This is appropriate for electrical symbols from pcells.
+
+    <li>New command line option: <tt>--vb</tt><br>
+    This should be the only option given when used.  If given this
+    option, the program will print its build-date string and exit.
+
+    <li>Changed default values for ghost drawing parameters.
+    <table cellpadding=2 border=1 bgcolor="#ffffee">
+    <tr><th>parameter</th> <th>old value</th> <th>new value</th></tr>
+    <tr><td><tt>MaxGhostObjects</tt></td> <td>400</td> <td>4000</td></tr>
+    <tr><td>limit value</td> <td>5000</td> <td>50000</td></tr>
+    </table>
+
+    <li>Removed the obsolete <b>!sced2xic</b> utility.
+
+    <li>The function that produces a centered full view of a cell in a
+    window now takes account of all window marks, such as terminals,
+    that might extend outside of the cell's bounding box.
+
+    <li>When replacing a label, if the original label has a rotation,
+    the same transform will now be applied to the current transform
+    for the duration of the command.  Previously, the same rotation
+    had to be set by hand.
+
+    <li>"Device" Change<br>
+    Previously, a "device" was defined as a cell read from the <a
+    href="devlib">device library</a> (usually named
+    <tt>device.lib</tt>) file.  This is no longer true, devices can be
+    defined in regular files.  A device is defined by the <a
+    prpty:name"><b>name</b></a> property, specifically if the name
+    string begins with an alphabetic character other then '<tt>x</tt>'
+    or `<tt>X</tt>', a device is indicated.
+    </ul>
+
+
+    <a name="vars">
+    <h2>New and Changed Variables</h2>
+    </a>
+
+    <a name="LayerTable"></a>
+    <dl>
+    <dt><b>LayerTable</b><dd>
+    The <b>LayerTable</b> variable is no longer recognized, as the
+    previous layer table styles no longer apply.
+    </dl>
+
+    <a name="TclLibrary"></a>
+    <dl>
+    <dt><b>TclLibrary</b><dd>
+    The <b>TclLibrary</b> variable is no longer recognized, as the <a
+    href="tclplugin">plug-in</a> resolves the library location.  The
+    <b>LD_LIBRARY_PATH</b> environment variable should be used, if
+    necessary, to provide a path to the Tcl shared library.
+    </dl>
+
+    <a name="TkLibrary"></a>
+    <dl>
+    <dt><b>TkLibrary</b><dd>
+    The <b>TkLibrary</b> variable is no longer recognized, as the <a
+    href="tclplugin">plug-in</a> resolves the library location.  The
+    <b>LD_LIBRARY_PATH</b> environment variable should be used, if
+    necessary, to provide a path to the Tk shared library.
+    </dl>
+
+    <a name="RgbTxtPath"></a>
+    <dl>
+    <dt><b>RgbTxtPath</b><dd>
+    This obsolete and unused variable was removed.  The color listing
+    is built into the program and not obtained from a file.
+    </dl>
+
+    <dl>
+    <dt><a href="ProgramRoot"><b>ProgramRoot</b></a><dd>
+    This new variable is set to the full path to the program's
+    installation area on program startup.
+    </dl>
+
+    <dl>
+    <dt><a href="LayerChangeMode"><b>LayerChangeMode</b></a> (tri-state)<dd>
+    This new variable sets the behavior when the current layer changes
+    during a move or copy operation.  Should objects be placed on the
+    new layer or not?
+    </dl>
+
+    <dl>
+    <dt><a href="LabelMaxLines"><b>MaxLabelLines</b></a>
+      (non-negative integer)<dd>
+    <font color=red>Changed to <b>LabelMaxLines</b> in 4.2.14.</font><br>
+    Label strings may have embedded newline characters so that will
+    display as multiple lines.<br> This sets the maximum number of
+    lines to show in label lines that observe a limit.  By default,
+    these are <b>value</b> and <b>param</b> electrical property labels
+    only.
+    Default 5.
+    </dl>
+
+    <dl>
+    <dt><a href="LabelMaxLen"><b>MaxLabelLen</b></a>
+      (non-negative integer)<dd>
+    <font color=red>Changed to <b>LabelMaxLen</b> in 4.2.14.</font><br>
+    This replaces the removed <b>MaxPrpLabelLen</b> variable and works
+    the same, however this applies to all labels, not just property
+    labels.
+    </dl>
+
+    <dl>
+    <dt><a href="LabelHiddenMode"><b>HiddenLabelMode</b></a> (integer 0-3)<dd>
+    <font color=red>Changed to <b>LabelHiddenMode</b> in 4.2.14.</font><br>
+    By default, all labels participate in a protocol whereby clicking
+    on the label with the <b>Shift</b> key held will "hide" the label,
+    displaying a small glyph instead.  <b>Shift</b>-clicking on the
+    glyph will return to the display of the label text.  This variable
+    limits the labels which will participate in this protocol.  It can
+    be set to an integer 0-3.
+    
+    <blockquote>
+    <table cellpadding=2 border=1 bgcolor="#ffffee">
+    <tr><td>0</td> <td>All labels, the default, same as if not set.</td></tr>
+    <tr><td>1</td> <td>Only electrical-mode labels.</td></tr>
+    <tr><td>2</td> <td>Only electrical-mode bound property labels.</td></tr>
+    <tr><td>3</td> <td>No labels.</td></tr>
+    </table>
+    </blockquote>
+    </dl>
+
+    <dl>
+    <dt><a href="PCellAbutMode"><b>PCellAbutMode</b></a> (integer 0-2)<dd>
+    Set a mode used in auto-abutment.
+    </dl>
+
+    <dl>
+    <dt><a href="PCellHideGrips"><b>PCellHideGrips</b></a> (boolean)<dd>
+    Turn off all stretch handles.
+    </dl>
+
+    <dl>
+    <dt><a href="PCellKeepSubMasters"><b>PCellKeepSubMasters</b></a>
+      (boolean)<dd>
+    Include parameterized cell sub-masters when writing output.
+    </dl>
+
+    <dl>
+    <dt><a href="PCellListSubMasters"><b>PCellListSubMasters</b></a>
+      (boolean)<dd>
+    List parameterized cell sub-masters in the <a
+    href="xic:sv"><b>Modified Cells</b></a> pop up.
+    </dl>
+
+    <dl>
+    <dt><a href="PCellScriptPath"><b>PCellScriptPath</b></a>  (string)<dd>
+    Search path for parameterized cell scripts.
+    </dl>
+
+    <dl>
+    <dt><a href="PCellShowAllWarnings"><b>PCellShowAllWarnings</b></a>
+     (boolean)<dd>
+    Be verbose when evaluating pcell script.
+    </dl>
+
+    <dl>
+    <dt><a href="PCellGripInstSize"><b>PCellGripInstSize</b></a><dd>
+    <b>Value:</b> integer 0-1000.<br>
+    Stretch handles are not shown and inactive if the instance
+    rendering size is too small.  This is to avoid triggering a
+    stretch inadvertently.  By default, the smallest of the instance
+    height/width must be 100 screen pixels or larger to show and
+    activate stretch handles.  This variable can be set to provide a
+    different threshold.
+    </dl>
+
+    <dl>
+    <dt><a href="VerbosePromptline"><b>VerbosePromptline</b></a>
+      (boolean)<dd>
+    When set, lots of messages will be printed on the prompt line
+    during extraction (as in older releases).  Otherwise not much is
+    printed, which may speed things up.  This variable is linked to
+    the <b>Be very verbose on prompt line during extraction</b> check
+    box of the <b>Misc Config</b> page of the <a
+    href="xic:excfg"><b>Extraction Setup</b></a> panel.
+    </dl>
+
+    <dl>
+    <dt><a href="Out32nodes"><b>Out32nodes</b></a> (boolean)<dd>
+    When set, schematic cell data written to files will use the <a
+    href="prpty:node"><b>node</b> property</a> syntax of the 3.2
+    branch of <i>Xic</i>, providing backward compatibility.  This will
+    strip out multi-contact points in symbols, which is not supported
+    by the earlier syntax.
+    </dl>
+
+    <dl>
+    <dt><a href="NoCreateLayer"><b>NoCreateLayer</b></a> (boolean)<dd>
+    When set, when reading an input layout file and a layer is found
+    that can't be mapped to the existing <i>Xic</i> layers, the read
+    will be aborted.  The behavior otherwise is to create new layers
+    as needed.
+    </dl>
+
+    <dl>
+    <dt><a href="GdsTruncateLongStrings"><b>GdsTruncateLongStrings</b></a>
+     (boolean)<dd>
+    If set, attempting to write a string too long for a GDSII record
+    is not a fatal error, the string will be truncated.
+    </dl>
+
+!!IFDEF OpenAccess
+    <b>OpenAccess variables.</b>
+    <dl>
+    <dt><a href="OaLibraryPath"><b>OaLibraryPath</b></a> (string)<dd>
+    Set location for hidden libraries.
+    </dl>
+
+    <dl>
+    <dt><a href="OaDmSystem"><b>OaDmSystem</b></a> (string)<dd>
+    Set design management system.
+    </dl>
+
+    <dl>
+    <dt><a href="OaDefLibrary"><b>OaDefLibrary</b></a> (string)<dd>
+    Default library name.
+    </dl>
+
+    <dl>
+    <dt><a href="OaDefTechLibrary"><b>OaDefTechLibrary</b></a> (string)<dd>
+    Default technology attachment library name.
+    </dl>
+
+    <dl>
+    <dt><a href="OaDumpCdfFiles"><b>OaDumpCdfFiles</b></a> (string)<dd>
+    Dump CDF data to file.
+    </dl>
+!!ENDIF
+
+    <a name="env">
+    <h2>New Environment Variables</h2>
+    </a>
+
+    <dl>
+    <dt>Removed <b>XT_USE_GTK_THEMES</b> environment variable<dd>
+    This applied to GTK-1.2 which is no longer in use.
+    </dl>
+
+    <dl>
+    <dt>New <a href="XIC_HOME"><b>XIC_HOME</b></a> environment
+    variable<dd>
+    If found in the environment when <i>Xic</i> starts, it is expected
+    to contain a path to the <i>Xic</i> installation area or
+    equivalent, which defaults to "<tt>/usr/local/xictools/xic</tt>". 
+    This environment variable applies only to the <i>Xic</i> program. 
+    Similar new variables <b>XICII_HOME</b> and <b>XIV_HOME</b> exist
+    for the other programs.  All of these override the <a
+    href="XT_PREFIX"><b>XT_PREFIX</b></a> variable if also set.
+    </dl>
+
+    <dl>
+    <dt>New <a href="XIC_HORIZ_BUTTONS"><b>XIC_HORIZ_BUTTONS</b></a>
+     environment variable<dd>
+    If this variable is set in the environment when <i>Xic</i> starts,
+    the buttons in the side menu will be arrayed horizontally across
+    the top instead.
+    </dl>
+
+    <dl>
+    <dt>New <a href="XIC_PLUGIN_DBG"><b>XIC_PLUGIN_DBG</b></a>
+     environment variable<dd>
+    Turn on debugging when loading <a href="plugins">plug-ins</a>.
+    </dl>
+
+!!IFDEF OpenAccess
+    <dl>
+    <dt>New <a href="XIC_OASO_PATH"><b>XIC_OASO_PATH</b></a>
+     environment variable<dd>
+    Give alternate path to OpenAccess <a href="oaplugin">plug-in</a>.
+    </dl>
+!!ENDIF
+
+    <dl>
+    <dt>New <a href="XIC_PYSO_PATH"><b>XIC_PYSO_PATH</b></a>
+     environment variable<dd>
+    Give alternate path to Python <a href="pyplugin">plug-in</a>.
+    </dl>
+
+    <dl>
+    <dt>New <a href="XIC_TCLSO_PATH"><b>XIC_TCLSO_PATH</b></a>
+     environment variable<dd>
+    Give alternate path to TclTk or Tcl-only <a href="tclplugin">plug-in</a>.
+    </dl>
+
+
+    <a name="script">
+    <h2>Script Function Changes</h2>
+    </a>
+
+    Below are listed changes to the native script library functions. 
+    This is probably not a complete listing, and there are many
+    additional functions where the description has changed for clarity
+    or completeness.
+
+    <p>
+    New names, added "<tt>Cv</tt>" to these function names to avoid
+    confusion with the LPP alias feature.
+    <blockquote>
+    <table cellpadding=2 border=1 bgcolor="#ffffee">
+    <tr><th>old name (removed)</th> <th>new name</th></tr>
+    <tr><td><tt>ReadLayerAliases</tt></td> <td><a
+      href="ReadLayerCvAliases"><tt>ReadLayerCvAliases</tt></a></td></tr>
+    <tr><td><tt>DumpLayerAliases</tt></td> <td><a
+      href="DumpLayerCvAliases"><tt>DumpLayerCvAliases</tt></a></td></tr>
+    <tr><td><tt>ClearLayerAliases</tt></td> <td><a
+      href="ClearLayerCvAliases"><tt>ClearLayerCvAliases</tt></a></td></tr>
+    <tr><td><tt>AddLayerAlias</tt></td> <td><a
+      href="AddLayerCvAlias"><tt>AddLayerCvAlias</tt></a></td></tr>
+    <tr><td><tt>RemoveLayerAlias</tt></td> <td><a
+      href="RemoveLayerCvAlias"><tt>RemoveLayerCvAlias</tt></a></td></tr>
+    <tr><td><tt>GetLayerAlias</tt></td> <td><a
+      href="GetLayerCvAlias"><tt>GetLayerCvAlias</tt></a></td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Function names changed.
+    <blockquote>
+    <tt>GetLabelXform</tt> is now <a
+    href="GetLabelFlags"><tt>GetLabelFlags</tt></a>.<br>
+    <tt>SetLabelXform</tt> is now <a
+    href="SetLabelFlags"><tt>SetLabelFlags</tt></a>.<br>
+    For now, the old names are still recognized.
+    </blockquote>
+
+    <p>
+    Argument list changed (has a new argument).
+    <blockquote>
+    <a href="ClearAll"><tt>ClearAll</tt></a>
+    </blockquote>
+
+    <a name="PlaceSetPCellParams"></a>
+    <p>
+    New function, replaces the <tt>PlaceTemplateArgs</tt> function which
+    has been removed.
+    <blockquote>
+    <a href="PlaceSetPCellParams"<tt>PlaceSetPCellParams</tt></a>
+    </blockquote>
+
+    <p>
+    Modified description and functionality for pcell support.  Change
+    to function <i>array</i> argument, now accepts nonzero constant.
+    <blockquote>
+    <a href="Place"><tt>Place</tt></a>
+    </blockquote>
+
+    <p>
+    New script functions.
+    <blockquote>
+    <a href="PlaceSetArrayParams"><tt>PlaceSetArrayParams</tt></a>
+    <a href="PushElement"><tt>PushElement</tt></a>
+    </blockquote>
+
+    <p>
+    Argument list changed (new <i>array</i> argument).
+    <blockquote>
+    <a href="Replace"><tt>Replace</tt></a>
+    </blockquote>
+
+    <p>
+    New functions, these return a handle to the new object.
+    <blockquote>
+    <a href="BoxH"><tt>BoxH</tt></a><br>
+    <a href="PolygonH"><tt>PolygonH</tt></a><br>
+    <a href="ArcH"><tt>ArcH</tt></a><br>
+    <a href="WireH"><tt>WireH</tt></a><br>
+    <a href="LabelH"><tt>LabelH</tt></a><br>
+    <a href="PlaceH"><tt>PlaceH</tt></a>
+    </blockquote>
+
+    <p>
+    New script functions for Python and Tcl support.
+    <blockquote>
+    <a href="RunPython"><tt>RunPython</tt></a><br>
+    <a href="RunPythonModFunc"><tt>RunPythonModFunc</tt></a><br>
+    <a href="ResetPython"><tt>ResetPython</tt></a><br>
+    <a href="RunTcl"><tt>RunTcl</tt></a><br>
+    <a href="ResetTcl"><tt>ResetTcl</tt></a><br>
+    <a href="HasGlobalVariable"><tt>HasGlobalVariable</tt></a><br>
+    <a href="GetGlobalVariable"><tt>GetGlobalVariable</tt></a><br>
+    <a href="SetGlobalVariable"><tt>SetGlobalVariable</tt></a>
+    </blockquote>
+
+    <p>
+    The following script functions related to the new grid parameters
+    have been modified, or the descriptions modified, or are new:
+
+    <blockquote>
+    <table cellpadding=2 border=1 bgcolor="#ffffee">
+    <tr><td><a href="SetGrid"><tt>SetGrid</tt></a></td> <td>&nbsp;</td></tr>
+    <tr><td><a href="GetGridInterval"><tt>GetGridInterval</tt></a></td>
+      <td>&nbsp;</td></tr>
+    <tr><td><a href="GetSnapInterval"><tt>GetSnapInterval</tt></a></td>
+      <td>new</td></tr>
+    <tr><td><a href="GetGridSnap"><tt>GetGridSnap</tt></a></td>
+      <td>&nbsp;</td></tr>
+    <tr><td><a href="SetGridCoarseMult"><tt>SetGridCoarseMult</tt></a></td>
+      <td>new</td></tr>
+    <tr><td><a href="GetGridCoarseMult"><tt>GetGridCoarseMult</tt></a></td>
+      <td>new</td></tr>
+    <tr><td><a href="SaveGrid"><tt>SaveGrid</tt></a></td> <td>new</td></tr>
+    <tr><td><a href="RecallGrid"><tt>RecallGrid</tt></a></td>
+      <td>new</td></tr>
+    <tr><td><a href="SetMfgGrid"><tt>SetMfgGrid</tt></a></td> <td>new</td></tr>
+    <tr><td><a href="GetMfgGrid"><tt>GetMfgGrid</tt></a></td> <td>new</td></tr>
+    <tr><td><a href="ClipToGrid"><tt>ClipToGrid</tt></a></td> <td>new</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    There are two new script functions which allow programming of the
+    function key assignments.
+    <blockquote>
+    <a href="TechGetFkeyString"><tt>TechGetFkeyString</tt></a><br>
+    <a href="TechSetFkeyString"><tt>TechSetFkeyString</tt></a>
+    </blockquote>
+
+    <p>
+    These functions have updated property number filtering,
+    descriptions.
+    <blockquote>
+    <a href="PrptyAdd"><tt>PrptyAdd</tt></a><br>
+    <a href="PrptyRemove"><tt>PrptyRemove</tt></a><br>
+    <a href="AddProperty"><tt>AddProperty</tt></a><br>
+    <a href="AddCellProperty"><tt>AddCellProperty</tt></a><br>
+    <a href="RemoveProperty"><tt>RemoveProperty</tt></a><br>
+    <a href="RemoveCellProperty"><tt>RemoveCellProperty</tt></a><br>
+    </blockquote>
+
+    <p>
+    Updated description.
+    <blockquote>
+    <a href="ChdIterateOverRegion"><tt>ChdIterateOverRegion</tt></a><br>
+    </blockquote>
+    Argument added (bloat).
+    <blockquote>
+    <a href="ChdWriteDensityMaps"><tt>ChdWriteDensityMaps</tt></a><br>
+    </blockquote>
+
+    <p>
+    The <a href="funcs:ext:term"><b>Terminals</b></a> functions in the
+    extraction module were updated.
+    <blockquote>
+    <b>Removed</b><br>
+    <tt>ModifyTerminal</tt><br>
+    <tt>GetTerminalLocation</tt><br>
+    <tt>GetTerminalInstance</tt><br>
+    <tt>IsTerminalFormal</tt><br>
+    <tt>GetTerminalVgroup</tt><br>
+    <b>New Functions</b><br>
+    <a href="ListTerminals"><tt>ListTerminals</tt></a><br>
+    <a href="FindTerminal"><tt>FindTerminal</tt></a><br>
+    <a href="CreateTerminal"><tt>CreateTerminal</tt></a><br>
+    <a href="CreatePhysTerminal"><tt>CreatePhysTerminal</tt></a><br>
+    <a href="DestroyTerminal"><tt>DestroyTerminal</tt></a><br>
+    <a href="DestroyPhysTerminal"><tt>DestroyPhysTerminal</tt></a><br>
+    <a href="SetTerminalName"><tt>SetTerminalName</tt></a><br>
+    <a href="SetTerminalType"><tt>SetTerminalType</tt></a><br>
+    <a href="SetTerminalLayer"><tt>SetTerminalLayer</tt></a><br>
+    <a href="SetTerminalFlags"><tt>SetTerminalFlags</tt></a><br>
+    <a href="UnsetTerminalFlags"><tt>UnsetTerminalFlags</tt></a><br>
+    <a href="GetElecTerminalLoc"><tt>GetElecTerminalLoc</tt></a><br>
+    <a href="SetElecTerminalLoc"><tt>SetElecTerminalLoc</tt></a><br>
+    <a href="ClearElecTerminalLoc"><tt>ClearElecTerminalLoc</tt></a><br>
+    <a href="GetPhysTerminalLoc"><tt>GetPhysTerminalLoc</tt></a><br>
+    <a href="SetPhysTerminalLoc"><tt>SetPhysTerminalLoc</tt></a><br>
+    <a href="GetTerminalGroup"><tt>GetTerminalGroup</tt></a>
+    </blockquote>
+

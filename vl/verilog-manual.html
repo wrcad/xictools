@@ -1,0 +1,1665 @@
+<html><head><!-- This document was created from RTF source by rtftohtml version
+2.7.5 --><title>CSCI 320 Computer Architecture Verilog Manual</title></head><body><p>
+<BODY BGCOLOR="FFFFFF" TEXT="000000" LINK="0000FF" VLINK="880000" ALINK="0000FF">
+
+<center><h3>
+CSCI 320 Computer Architecture<BR>
+ Handbook on Verilog HDL<BR></h3>
+Dr. Daniel C. Hyde<BR>
+Computer Science Department<BR>
+Bucknell University<BR>
+Lewisburg, PA 17837<br>
+August 25, 1995<P>
+Updated August 23, 1997
+<p>
+Copyright 1995 Dr. Daniel C. Hyde<p>
+</center>
+
+<a href="manual.pdf">PDF version of Handbook</A> for printing.
+<hr>
+<b>Table of Contents</b><p><ol>
+<li><a href="verilog-manual.html#RTFToC1">1. Introduction</a><ol>
+<li><a href="verilog-manual.html#RTFToC2">1.1 What is Verilog?</a>
+<li><a href="verilog-manual.html#RTFToC3">1.2 What is VeriWell?</a>
+<li><a href="verilog-manual.html#RTFToC4">1.3 Why Use Verilog HDL?</a></ol>
+<li><a href="verilog-manual.html#RTFToC5">2. The Verilog Language</a><ol>
+<li><a href="verilog-manual.html#RTFToC6">2.1 A First Verilog Program</a>
+<li><a href="verilog-manual.html#RTFToC7">2.2 Lexical Conventions</a>
+<li><a href="verilog-manual.html#RTFToC8">2.3 Program Structure</a>
+<li><a href="verilog-manual.html#RTFToC9">2.4 Data Types</a><ol>
+<li><a href="verilog-manual.html#RTFToC10">2.4.1 Physical Data Types</a>
+<li><a href="verilog-manual.html#RTFToC11">2.4.2 Abstract Data Types</a></ol>
+<li><a href="verilog-manual.html#RTFToC12">2.5 Operators</a><ol>
+<li><a href="verilog-manual.html#RTFToC13">2.5.1 Binary Arithmetic Operators</a>
+<li><a href="verilog-manual.html#RTFToC14">2.5.2 Unary Arithmetic Operators</a>
+<li><a href="verilog-manual.html#RTFToC15">2.5.3 Relational Operators</a>
+<li><a href="verilog-manual.html#RTFToC16">2.5.4 Logical Operators</a>
+<li><a href="verilog-manual.html#RTFToC17">2.5.5 Bitwise Operators</a>
+<li><a href="verilog-manual.html#RTFToC18">2.5.6 Unary Reduction Operators</a>
+<li><a href="verilog-manual.html#RTFToC19">2.5.7 Other Operators</a>
+<li><a href="verilog-manual.html#RTFToC20">2.5.8 Operator Precedence</a></ol>
+<li><a href="verilog-manual.html#RTFToC21">2.6 Control Constructs</a><ol>
+<li><a href="verilog-manual.html#RTFToC22">2.6.1 Selection - if and case Statements</a>
+<li><a href="verilog-manual.html#RTFToC23">2.6.2 Repetition - for, while and repeat Statements</a></ol>
+<li><a href="verilog-manual.html#RTFToC24">2.7 Other Statements</a><ol>
+<li><a href="verilog-manual.html#RTFToC25">2.7.1 parameter Statement</a>
+<li><a href="verilog-manual.html#RTFToC26">2.7.2 Continuous Assignment</a>
+<li><a href="verilog-manual.html#RTFToC27">2.7.3 Blocking and Non-blocking Procedural Assignments</a></ol>
+<li><a href="verilog-manual.html#RTFToC28">2.8 Tasks and Functions</a>
+<li><a href="verilog-manual.html#RTFToC29">2.9 Timing Control</a><ol>
+<li><a href="verilog-manual.html#RTFToC30">2.9.1 Delay Control (#)</a>
+<li><a href="verilog-manual.html#RTFToC31">2.9.2 Events</a>
+<li><a href="verilog-manual.html#RTFToC32">2.9.3 wait Statement</a>
+<li><a href="verilog-manual.html#RTFToC32a">2.9.4 fork and join Statements</a>
+</ol>
+
+<li><a href="verilog-manual.html#RTFToC33">2.10 Traffic Light Example</a></ol>
+<li><a href="verilog-manual.html#RTFToC34">3. Using the VeriWell Simulator</a><ol>
+<li><a href="verilog-manual.html#RTFToC35">3.1 Creating the Model File</a>
+<li><a href="verilog-manual.html#RTFToC36">3.2 Starting the Simulator</a>
+<li><a href="verilog-manual.html#RTFToC37">3.3 How to Exit the Simulator?</a>
+<li><a href="verilog-manual.html#RTFToC38">3.4 Simulator Options</a>
+<li><a href="verilog-manual.html#RTFToC39">3.5 Debugging</a></ol>
+<li><a href="verilog-manual.html#RTFToC40">4. System Tasks and Functions</a><ol>
+<li><a href="verilog-manual.html#RTFToC41">4.1 $cleartrace</a>
+<li><a href="verilog-manual.html#RTFToC42">4.2 $display</a>
+<li><a href="verilog-manual.html#RTFToC43">4.3 $finish</a>
+<li><a href="verilog-manual.html#RTFToC44">4.4 $monitor</a>
+<li><a href="verilog-manual.html#RTFToC45">4.5 $scope</a>
+<li><a href="verilog-manual.html#RTFToC46">4.6 $settrace</a>
+<li><a href="verilog-manual.html#RTFToC47">4.7 $showscopes</a>
+<li><a href="verilog-manual.html#RTFToC48">4.8 $showvars</a>
+<li><a href="verilog-manual.html#RTFToC49">4.9 $stop</a>
+<li><a href="verilog-manual.html#RTFToC50">4.10 $time</a></ol>
+<li><a href="verilog-manual.html#RTFToC51">References</a></ol>
+
+<b></b><p>
+<p>
+<b>
+<a name="RTFToC1">1.
+Introduction
+</a></b><p>
+<b></b><p>
+<b></b>	Verilog HDL is a <b>Hardware Description Language (HDL)</b>.  A
+Hardware Description Language is a language used to describe a digital system,
+for example, a computer or a component of a computer.  One may describe a
+digital system at several levels.  For example, an HDL might describe the
+layout of the wires, resistors and transistors on an <b>Integrated Circuit
+(IC)</b> chip, i.&nbsp;e., the <b>switch level</b>.  Or, it might describe the
+logical gates and flip flops in a digital system, i.&nbsp;e., the <b>gate
+level</b>.  An even higher level describes the registers and the transfers of
+vectors of information between registers.  This is called the <b>Register
+Transfer Level (RTL)</b>.  Verilog supports all of these levels.  However, this
+handout focuses on only the portions of Verilog which support the RTL level. <p>
+<p>
+	<b>
+<a name="RTFToC2">1.1
+What is Verilog?
+</a></b><p>
+<p>
+	Verilog is one of the two major Hardware Description Languages (HDL) used by
+hardware designers in industry and academia.  VHDL is the other one.  The
+industry is currently split on which is better.  Many feel that Verilog is
+easier to learn and use than VHDL.  As one hardware designer puts it, "I hope
+the competition uses VHDL."  VHDL was made an IEEE Standard in 1987, and
+Verilog in 1995.  Verilog is very C-like
+and liked by electrical and computer engineers as most learn the C language in
+college.  VHDL is very Ada-like and most engineers have no experience with
+Ada.<p>
+<p>
+	Verilog was introduced in 1985 by Gateway Design System Corporation, now a
+part of Cadence Design Systems, Inc.'s Systems Division.  Until May, 1990, with
+the formation of Open Verilog International (OVI), Verilog HDL was a
+proprietary language of Cadence.  Cadence was motivated to open the language to
+the Public Domain with the expectation that the market for Verilog HDL-related
+software products would grow more rapidly with broader acceptance of the
+language.  Cadence realized that Verilog HDL users wanted other software and
+service companies to embrace the language and develop Verilog-supported design
+tools. <p>
+<p>
+	Verilog HDL allows a hardware designer to describe designs at a high level of
+abstraction such as at the architectural or behavioral level as well as the
+lower implementation levels (i. e. , gate and switch levels) leading to Very
+Large Scale Integration (VLSI) Integrated Circuits (IC) layouts and chip
+fabrication.  A primary use of HDLs is the simulation of designs before the
+designer must commit to fabrication.  This handout does not cover all of
+Verilog HDL but focuses on the use of Verilog HDL at the architectural or
+behavioral levels.  The handout emphasizes design at the Register Transfer
+Level (RTL).<p>
+<p>
+	<b>
+<a name="RTFToC3">1.2
+What is VeriWell?
+</a></b><p>
+<p>
+	VeriWell is a comprehensive implementation of Verilog HDL from Wellspring
+Solutions, Inc.  VeriWell supports the Verilog language as specified by the OVI
+language Reference Manual.  VeriWell was first introduced in December, 1992,
+and was written to be compatible with both the OVI standard and with Cadence's
+Verilog-XL.<p>
+<p>
+ VeriWell is now distributed and sold by SynaptiCAD Inc. For Windows
+ 95/NT, Windows 3.1, Macintosh, SunOS and Linux platforms, SynaptiCAD
+ Inc. offers FREE versions of their VeriWell product available from
+ http://www.syncad.com/ver_down.htm.  The free versions are the same as the
+industrial versions except they are restricted to a maximum of 1000 lines of
+HDL code.<p>
+<p>
+<b></b><p>
+<b></b><p>
+<b>	
+<a name="RTFToC4">1.3
+Why Use Verilog HDL?
+</a></b><p>
+<b></b><p>
+<b></b>	Digital systems are highly complex.  At their most detailed level, they
+may consists of millions of elements, i. e., transistors or logic gates.
+Therefore, for large digital systems, gate-level design is dead.  For many
+decades, logic schematics served as the <i>lingua franca</i> of logic design,
+but not any more.  Today, hardware complexity has grown to such a degree that a
+schematic with logic gates is almost useless as it shows only a web of
+connectivity and not the functionality of design.  Since the 1970s, Computer
+engineers and electrical engineers have moved toward hardware description
+languages (HDLs).  The most prominent modern HDLs in industry are Verilog and
+VHDL.  Verilog is the top HDL used by over 10,000 designers at such hardware
+vendors as Sun Microsystems, Apple Computer and Motorola.  Industrial designers
+like Verilog.  It works.<p>
+<p>
+	The Verilog language provides the digital designer with a means of describing
+a digital system at a wide range of levels of abstraction, and, at the same
+time, provides access to computer-aided design tools to aid in the design
+process at these levels.<p>
+<p>
+	Verilog allows hardware designers to express their design with <b>behavioral
+constructs</b>, deterring the details of implementation to a later stage of
+design in the design.  An abstract representation helps the designer explore
+architectural alternatives through <b>simulations</b> and to detect design
+bottlenecks before detailed design begins.<p>
+<p>
+	Though the behavioral level of Verilog is a high level description of a
+digital system, it is still a precise notation.  Computer-aided-design tools,
+i. e., programs, exist which will "compile" programs in the Verilog notation to
+the level of circuits consisting of logic gates and flip flops.  One could then
+go to the lab and wire up the logical circuits and have a functioning system.
+And, other tools can "compile" programs in Verilog notation to a description of
+the integrated circuit masks for <b>very large scale integration </b>(VLSI).
+Therefore, with the proper automated tools, one can create a VLSI description
+of a design in Verilog and send the VLSI description via electronic mail to a
+<b>silicon foundry </b>in California and receive the integrated chip in a few
+weeks by way of snail mail.  Verilog also allows the designer to specific
+designs at the logical gate level using <b>gate constructs</b> and the
+transistor level using <b>switch constructs</b>.<p>
+<p>
+	Our goal in the course is not to create VLSI chips but to use Verilog to
+precisely describe the <i>functionality</i> of <i>any</i> digital system, for
+example, a computer.  However, a VLSI chip designed by way of Verilog's
+behavioral constructs will be rather slow and be wasteful of chip area.  The
+lower levels in Verilog allow engineers to optimize the logical circuits and
+VLSI layouts to maximize speed and minimize area of the VLSI chip.<p>
+<p>
+<b>
+<a name="RTFToC5">2.
+The Verilog Language
+</a></b><p>
+<p>
+	There is no attempt in this handout to describe the complete Verilog language.
+It describes only the portions of the language needed to allow students to
+explore the architectural aspects of computers.  In fact, this handout covers
+only a small fraction of the language.  For the complete description of the
+Verilog HDL, consult the references at the end of the handout.<p>
+<p>
+	We begin our study of the Verilog language by looking at a simple Verilog
+program.  Looking at the assignment statements, we notice that the language is
+very C-like.  Comments have a C++ flavor, i e., they are shown by "//" to the
+end of the line.  The Verilog language describes a digital system as a set of
+<b>modules</b>, but here we have only a single module called "simple".<p>
+<p>
+	<b>
+<a name="RTFToC6">2.1
+A First Verilog Program
+</a></b><p>
+<p>
+<pre>
+<tt>//By Dan Hyde; August 9, 1995</tt>
+<tt>//A first digital model in Verilog</tt>
+<tt></tt>
+<tt>module simple;</tt>
+<tt>// Simple Register Transfer Level (RTL) example to demo Verilog.</tt>
+<tt>// Register A is incremented by one.  Then first four bits of B is</tt>
+<tt>// set to "not" of the last four bits of A.  C is the "and"</tt>
+<tt>// reduction of the last two bits of A.</tt>
+<tt></tt>
+<tt>//declare registers and flip-flops</tt>
+<tt>reg [0:7] A, B;</tt>
+<tt>reg       C;</tt>
+<tt></tt>
+<tt>// The two "initial"s and "always" will run concurrently</tt>
+<tt>initial begin: stop_at</tt>
+<tt>   // Will stop the execution after 20 simulation units.</tt>
+<tt>   #20; $stop;    </tt>
+<tt>end</tt>
+<tt></tt>
+<tt>// These statements done at simulation time 0 (since no #k)</tt>
+<tt>initial begin: Init</tt>
+<tt>    // Initialize register A.  Other registers have values of "x"</tt>
+<tt>    A = 0;   </tt>
+<tt>  </tt>
+<tt>    // Display a header</tt>
+<tt>    $display("Time   A         B    C");  </tt>
+<tt>            </tt>
+<tt>    // Prints the values anytime a value of A, B or C changes</tt>
+<tt>    $monitor("  %0d %b %b %b", $time, A, B, C);</tt>
+<tt>end</tt>
+<tt></tt>
+<tt>//main_process will loop until simulation is over</tt>
+<tt>always begin: main_process</tt>
+<tt></tt>
+<tt>    // #1 means do after one unit of simulation time</tt>
+<tt>    #1 A = A + 1;</tt>
+<tt>    #1 B[0:3] = ~A[4:7]; // ~ is bitwise "not" operator</tt>
+<tt>    #1 C = &amp;A[6:7];      // bitwise "and" reduction of last 2 bits
+of A</tt>
+<tt>    </tt>
+<tt>end</tt>
+<tt></tt>
+<tt>endmodule</tt>
+</pre>
+<p>
+<tt></tt>	In <tt><b>module simple</b></tt>, we declared <b>A</b> and <b>B</b>
+as 8-bit registers and <b>C</b> a 1-bit register or flip-flop.  Inside of the
+module, the one "<tt><b>always</b></tt>" and two "<tt><b>initial</b></tt>"
+constructs describe three <b>threads of control,</b> i. e., they run at the
+same time or <b>concurrently</b>.  Within the <tt><b>initial</b></tt>
+construct, statements are executed sequentially much like in C or other
+traditional imperative programming languages.  The <tt><b>always</b></tt>
+construct is the same as the <tt><b>initial</b></tt> construct except that it
+loops forever as long as the simulation runs.<p>
+<p>
+	The notation <tt><b>#1</b></tt> means to execute the statement after delay of
+one unit of simulated time.  Therefore, the thread of control caused by the
+first <tt><b>initial</b></tt> construct will delay for 20 time units before
+calling the system task <tt><b>$stop</b></tt> and stop the simulation.<p>
+<p>
+	The <tt><b>$display</b></tt> system task allows the designer to print a
+message much like <tt><b>printf</b></tt> does in the language C.  Every time
+unit that one of the listed variables' value changes, the
+<tt><b>$monitor</b></tt> system task prints a message.  The system function
+<tt><b>$time</b></tt> returns the current value of simulated time.<p>
+<p>
+<tt>	</tt>Below is the output of the VeriWell Simulator:  (See Section 3 on how
+to use the VeriWell simulator.)<p>
+<p>
+<pre>
+<tt>Time   A         B    C</tt>
+<tt>  0 00000000 xxxxxxxx x</tt>
+<tt>  1 00000001 xxxxxxxx x</tt>
+<tt>  2 00000001 1110xxxx x</tt>
+<tt>  3 00000001 1110xxxx 0</tt>
+<tt>  4 00000010 1110xxxx 0</tt>
+<tt>  5 00000010 1101xxxx 0</tt>
+<tt>  7 00000011 1101xxxx 0</tt>
+<tt>  8 00000011 1100xxxx 0</tt>
+<tt>  9 00000011 1100xxxx 1</tt>
+<tt>  10 00000100 1100xxxx 1</tt>
+<tt>  11 00000100 1011xxxx 1</tt>
+<tt>  12 00000100 1011xxxx 0</tt>
+<tt>  13 00000101 1011xxxx 0</tt>
+<tt>  14 00000101 1010xxxx 0</tt>
+<tt>  16 00000110 1010xxxx 0</tt>
+<tt>  17 00000110 1001xxxx 0</tt>
+<tt>  19 00000111 1001xxxx 0</tt>
+<tt>Stop at simulation time 20</tt>
+</pre>
+	You should carefully study the program and its output before going on.  The
+structure of the program is typical of the Verilog programs you will write for
+this course, i. e., an <tt><b>initial</b></tt> construct to specify the length
+of the simulation, another <tt><b>initial</b></tt> construct to initialize
+registers and specify which registers to monitor and an <tt><b>always</b></tt>
+construct for the digital system you are modeling.  Notice that all the
+statements in the second <tt><b>initial</b></tt> are done at time = 0, since
+there are no delay statements, i. e.,<b> #&lt;integer&gt;</b>.<p>
+<p>
+	<b>
+<a name="RTFToC7">2.2
+Lexical Conventions
+</a></b><p>
+<p>
+	The lexical conventions are close to the programming language C++.  Comments
+are designated by <tt><b>//</b></tt> to the end of a line or by
+<tt><b>/*</b></tt> to <tt><b>*/</b></tt><b> </b>across several lines.
+Keywords, e. g., <tt><b>module,</b></tt> are reserved and in all lower case
+letters.  The language is case sensitive, meaning upper and lower case letters
+are different.  Spaces are important in that they delimit tokens in the
+language.<p>
+<p>
+<p>
+	Numbers are specified in the traditional form of a series of digits with or
+without a  sign but also in the following form:<p>
+<pre>
+		&lt;size&gt;&lt;base format&gt;&lt;number&gt;
+</pre>
+where <b>&lt;size&gt;</b> contains <i>decimal</i> digits that specify the size
+of the constant in the number of <i>bits</i>.  The <b>&lt;size&gt;</b> is
+optional.  The <b>&lt;base format&gt;</b> is the single character <b>'</b>
+followed by one of the following characters <b>b</b>, <b>d</b>, <b>o</b> and
+<b>h</b>, which stand for binary, decimal, octal and hex, respectively.  The
+<b>&lt;number&gt;</b> part contains digits which are legal for the <b>&lt;base
+format&gt;</b>.  Some examples:<p>
+<p>
+<pre>
+  <tt>549       // decimal number</tt>
+<tt>  'h 8FF    // hex number</tt>
+<tt>  'o765     // octal number</tt>
+<tt>  4'b11     // 4-bit binary number 0011</tt>
+<tt>  3'b10x    // 3-bit binary number with least 
+            // significant  bit unknown</tt>
+<tt>  5'd3      // 5-bit decimal number</tt>
+<tt>  -4'b11    // 4-bit two's complement of 0011 or 1101</tt>
+</pre>
+<p>
+The <tt><b>&lt;number&gt;</b></tt> part may <i>not </i>contain a sign.  Any
+sign must go on the front.<p>
+<p>
+	A string is a sequence of characters enclosed in double quotes.<p>
+<p>
+<pre>
+		<tt>"this is a string"</tt>
+</pre>
+	Operators are one, two or three characters and are used in expressions.  See
+Section 2.5 for the operators.<p>
+<p>
+	An identifier is specified by a letter or underscore followed by zero or more
+letters, digits, dollar signs and underscores.  Identifiers can be up to 1024
+characters.<p>
+<p>
+	<b>
+<a name="RTFToC8">2.3
+Program Structure
+</a></b><p>
+<p>
+	The Verilog language describes a digital system as a set of modules.  Each of
+these modules has an interface to other modules to describe how they are
+interconnected.  Usually we place one module per file but that is not a
+requirement.  The modules may run concurrently, but usually we have one top
+level module which specifies a closed system containing both test data and
+hardware models.  The top level module invokes instances of other modules.  <p>
+<p>
+	Modules can represent pieces of hardware ranging from simple gates to complete
+systems, e. g., a microprocessor.  Modules can either be specified behaviorally
+or structurally (or a combination of the two).  A <b>behavioral
+specification</b> defines the behavior of a digital system (module) using
+traditional programming language constructs, e. g., <b>if</b>s, assignment
+statements.  A <b>structural specification </b>expresses the behavior of a
+digital system (module) as a hierarchical interconnection of sub modules.  At
+the bottom of the hierarchy the components must be primitives or specified
+behaviorally.  Verilog primitives include gates, e. g., nand, as well as pass
+transistors (switches).<p>
+<p>
+	The structure of a module is the following:<p>
+<pre>
+		<tt>module</tt> &lt;module name&gt; (&lt;port list&gt;);
+		&lt;declares&gt;
+		&lt;module items&gt;
+		<tt>endmodule</tt>
+</pre>
+The <b>&lt;module name&gt;</b> is an identifier that uniquely names the module.
+The <b>&lt;port list&gt;</b> is a list of input, inout and output ports which
+are used to connect to other modules.  The <b>&lt;declares&gt;</b> section
+specifies data objects as registers, memories and wires as wells as procedural
+constructs such as <b>function</b>s and <b>task</b>s.<p>
+<p>
+	The <b>&lt;module items&gt;</b> may be <tt><b>initial</b></tt> constructs,
+<tt><b>always</b></tt> constructs, continuous assignments or instances of
+modules.<p>
+	The semantics of the <b>module</b> construct in Verilog is very
+	different from subroutines, procedures and functions in other
+	languages.  A module is never called!  A module is
+	instantiated at the start of the program and stays around for
+	the life of the program.  A Verilog module instantiation is
+	used to model a hardware circuit where we assume no one
+	unsolders or changes the wiring.  Each time a module is
+	instantiated, we give its instantiation a name.  For example,
+	<b>NAND1</b> and <b>NAND2</b> are the names of instantiations of our
+	<b>NAND</b> gate in the example below. 
+<p>
+	Here is a behavior specification of a module <b>NAND</b>.  The output
+<b>out</b> is the <b>not</b> of the <b>and</b> of the inputs <b>in1</b> and
+<b>in2</b>.<p>
+<pre>
+<tt>// Behavioral Model of a Nand gate</tt>
+<tt>// By Dan Hyde, August 9, 1995</tt>
+<tt>module NAND(in1, in2, out);</tt>
+<tt></tt>
+<tt>  input in1, in2;</tt>
+<tt>  output out;</tt>
+<tt>                 // continuous assign statement</tt>
+<tt>  assign out = ~(in1 &amp; in2);</tt>
+<tt></tt>
+<tt>endmodule</tt>
+</pre>
+	The ports <b>in1</b>, i<b>n2</b> and <b>out</b> are labels on wires.
+The continuous assignment <b>assign</b> continuously watches for changes to
+variables in its right hand side and whenever that happens the right hand side
+is re-evaluated and the result immediately propagated to the left hand side
+(<b>out</b>).<p>
+The continuous assignment statement is used to model <b>combinational
+circuits</b> where the outputs change when one wiggles the input.<p>
+<p>
+	Here is a structural specification of a module <b>AND</b> obtained by
+connecting the output of one <b>NAND</b> to both inputs of another one.<p>
+<pre>
+<tt>module AND(in1, in2, out);</tt>
+<tt>// Structural model of AND gate from two NANDS</tt>
+<tt>  input in1, in2;</tt>
+<tt>  output out;</tt>
+<tt>  wire w1;</tt>
+<tt>                 // two instantiations of the module NAND</tt>
+<tt>  NAND NAND1(in1, in2, w1);</tt>
+<tt>  NAND NAND2(w1, w1, out);</tt>
+<tt></tt>
+<tt>endmodule</tt>
+</pre>
+	This module has two instances of the <b>NAND</b> module called <b>NAND1</b>
+and <b>NAND2</b> connected together by an internal wire <b>w1</b>.<p>
+<p>
+	The general form to invoke an instance of a module is :<p>
+<pre>
+    &lt;module name&gt; &lt;parameter list&gt; &lt;instance name&gt; (&lt;port list&gt;);
+</pre>
+where <b>&lt;parameter list&gt;</b> are values of parameters passed to the
+instance.  An example parameter passed would be the delay for a gate.<p>
+	The following module is a high level module which sets some test data and sets
+up the monitoring of variables.<p>
+<pre>
+<tt>module test_AND;</tt>
+<tt>// High level module to test the two other modules</tt>
+<tt>  reg a, b;</tt>
+<tt>  wire out1, out2;</tt>
+<tt></tt>
+<tt>  initial begin  // Test data</tt>
+<tt>     a = 0;  b = 0;</tt>
+<tt>     #1 a = 1;  </tt>
+<tt>     #1 b = 1;</tt>
+<tt>     #1 a = 0;</tt>
+<tt>  end</tt>
+<tt></tt>
+<tt>  initial begin // Set up monitoring</tt>
+<tt>    $monitor("Time=%0d a=%b b=%b out1=%b out2=%b",</tt>
+<tt>              $time, a, b, out1, out2);</tt>
+<tt>  end</tt>
+<tt>                // Instances of modules AND and NAND</tt>
+<tt>  AND  gate1(a, b, out2);</tt>
+<tt>  NAND gate2(a, b, out1);</tt>
+<tt></tt>
+<tt>endmodule</tt>
+</pre>
+	Notice that we need to hold the values <b>a </b>and b over time.  Therefore,
+we had to use 1-bit registers.  <b>reg</b> variables store the last value that
+was <i>procedurally assigned</i> to them (just like variables in traditional
+imperative programming languages).  <b>wire</b>s have no storage capacity.
+They can be continuously driven, e. g., with a continuous
+<tt><b>assign</b></tt> statement or by the output of a module, or if input
+wires are left unconnected, they get the special value of <b>x</b> for
+unknown.<p>
+<p>
+	Continuous assignments use the keyword <b>assign</b> whereas procedural
+assignments have the form <b>&lt;reg variable&gt; = &lt;expression&gt;</b>
+where the <b>&lt;reg variable&gt;</b> must be a register or memory.  Procedural
+assignment may <i>only</i> appear in <tt><b>initial</b></tt> and
+<tt><b>always</b></tt> constructs.<p>
+<p>
+	The statements in the block of the first <tt><b>initial</b></tt> construct
+will be executed sequentially, some of which are delayed by <b>#1</b>, i. e.,
+one unit of simulated time.  The <tt><b>always</b></tt> construct behaves the
+same as the <tt><b>initial</b></tt>construct except that it loops forever
+(until the simulation stops).  The <tt><b>initial</b></tt> and
+<tt><b>always</b></tt> constructs are used to model <b>sequential logic</b> (i.
+e., <b>finite state automata</b>).  <p>
+<p>
+	Verilog makes an important distinction between procedural assignment and the
+continuous assignment <tt><b>assign</b></tt> .  Procedural assignment changes
+the state of a register, i. e., <i>sequential logic</i>, whereas the continuous
+statement is used to model <b>combinational logic</b>.  Continuous assignments
+drive <tt><b>wire</b></tt> variables and are evaluated and updated whenever an
+input operand changes value.  It is important to understand and remember the
+difference.<p>
+<p>
+	We place all three modules in a file and run the simulator to produce the
+following output.<p>
+<pre>
+<tt>Time=0 a=0 b=0 out1=1 out2=0</tt>
+<tt>Time=1 a=1 b=0 out1=1 out2=0</tt>
+<tt>Time=2 a=1 b=1 out1=0 out2=1</tt>
+<tt>Time=3 a=0 b=1 out1=1 out2=0</tt>
+</pre>	Since the simulator ran out of events, I didn't need to
+explicitly stop 
+the simulation.<p>
+<p>
+ 	<b>
+<a name="RTFToC9">2.4
+Data Types
+</a></b><p>
+<b></b><p>
+<b>	
+<a name="RTFToC10">2.4.1
+Physical Data Types
+</a></b><p>
+<b></b><p>
+<b>	</b>Since the purpose of Verilog HDL is to model digital hardware, the
+primary data types are for modeling registers (<tt><b>reg</b></tt>) and wires
+(<tt><b>wire</b></tt>).  The <tt><b>reg</b></tt> variables store the last value
+that was procedurally assigned to them whereas the <tt><b>wire</b></tt>
+variables represent physical connections between structural entities such as
+gates.  A <tt><b>wire</b></tt> does not store a value.  A <tt><b>wire</b></tt>
+variable is really only a label on a wire.  (Note that the
+<tt><b>wire</b></tt> data type is only one of several <tt><b>net</b></tt> data
+types in Verilog HDL which include "wired and" (<tt><b>wand</b></tt>), "wired or"
+(<tt><b>wor</b></tt>) and "tristate bus" (<tt><b>tri</b></tt>).  This handout is
+restricted to only the <tt><b>wire</b></tt> data type.)<b></b><p>
+<b></b><p>
+<b></b>	The <tt><b>reg</b></tt> and <tt><b>wire</b></tt> data objects may have
+the following possible values:<p>
+<pre>
+		0	logical zero or false
+		1	logical one or true
+		x	unknown logical value
+		z 	high impedance of tristate gate
+</pre>
+	The <tt><b>reg</b></tt> variables are initialized to <tt><b>x</b></tt> at the
+start of the simulation.  Any <tt><b>wire</b></tt> variable not connected to
+something has the <b>x</b> value.<p>
+<p>
+	You may specify the size of a register or wire in the declaration  For
+example, the declarations<p>
+<pre>
+<tt>		reg [0:7] A, B;</tt>
+<tt>		wire [0:3] Dataout;</tt>
+<tt>		reg [7:0] C;</tt>
+</pre>
+specify registers A and <b>B</b> to be 8-bit wide with the most significant bit
+the zeroth bit, whereas the most significant bit of register <b>C</b> is bit
+seven.  The wire <b>Dataout</b> is 4 bits wide.<p>
+<p>
+	The bits in a register or wire can be referenced by the notation
+<b>[&lt;start-bit&gt;:&lt;end-bit&gt;]</b>.<p>
+For example, in the second procedural assignment statement<p>
+<pre>
+<tt>		initial begin: int1</tt>
+<tt>			A = 8'b01011010;</tt>
+<tt>			B = {A[0:3] | A[4:7], 4'b0000};</tt>
+<tt>		end</tt>
+</pre>
+<b>B</b> is set to the first four bits of <b>A</b> bitwise or-ed with the last
+four bits of <b>A</b> and then concatenated with 0000.  <b>B</b> now holds a
+value of 11110000.  The <b>{} </b>brackets means the bits of the two or more
+arguments separated by commas are concatenated together.<p>
+<p>
+An argument may be replicated by specifying a repetition number of the
+form:
+<pre>
+   {repetition_number{exp1, exp2, ... , expn}}
+</pre>
+Here are some examples:
+<pre>
+   C = {2{4'b1011}}; //C assigned the bit vector 8'b10111011
+   C = {{4{A[4]}}, A[4:7]}; // first 4 bits are sign extension
+</pre>
+<p>
+	<u>The range referencing in an expression <b>must </b>have constant expression
+indices</u>.  However, a single bit may be referenced by a variable.  For
+example:<p>
+<pre>
+<tt>  reg [0:7] A, B;</tt>
+<tt>  B = 3;</tt>
+<tt>  A[0: B] = 3'b111; // ILLEGAL - indices MUST be constant!!</tt>
+<tt>  A[B] = 1'b1;      // A single bit reference is LEGAL</tt>
+</pre>
+Why such a strict requirement of constant indices in register
+references?  Since we are describing hardware, we want only expressions which
+are realizable.<p>
+<p>
+	Memories are specified as vectors of registers.  For example,<b> Mem</b> is 1K
+words each 32-bits.<p>
+<pre>
+		<tt>reg [31:0] Mem [0:1023];</tt>
+</pre>
+	The notation <b>Mem[0]</b> references the zeroth word of memory.  The array
+index for memory (register vector) may be a register.  Notice that one can
+<i>not</i> reference a memory at the bit-level in Verilog HDL.  If you want
+a specific range of bits in a word of memory, you <u>must</u> first transfer the data
+in the word to a temporary register.<p>
+<p>
+	<b>
+<a name="RTFToC11">2.4.2
+Abstract Data Types
+</a></b><p>
+<p>
+	In addition to modeling hardware, there are other uses for variables in a
+hardware model.  For example, the designer might want to use an
+<tt><b>integer</b></tt> variable to count the number of times an event occurs.
+For the convenience of the designer, Verilog HDL has several data types which
+do not have a corresponding hardware realization.  These data types include
+<tt><b>integer</b></tt>, <tt><b>real</b></tt> and <tt><b>time</b></tt>.  The
+data types <tt><b>integer</b></tt> and <tt><b>real</b></tt> behave pretty much
+as in other languages, e.&nbsp;g., C.  Be warned that a <tt><b>reg</b></tt>
+variable is unsigned and that an <tt><b>integer</b></tt> variable is a signed
+32-bit integer.  This has important consequences when you subtract.<p>
+<p>
+	<tt><b>time</b></tt> variables hold 64-bit quantities and are used in
+conjunction with the <tt><b>$time</b></tt> system function.  Arrays of
+<tt><b>integer</b></tt> and <tt><b>time</b></tt> variables (but <i>not</i>
+<b>real</b>s) are allowed.  Multiple dimensional arrays are <i>not</i> allowed in
+Verilog HDL.  Some examples:<p>
+<pre>
+<tt>  integer Count;     // simple signed 32-bit integer</tt>
+<tt>  integer K[1:64];   // an array of 64 integers</tt>
+<tt>  time Start, Stop;  // Two 64-bit time variables</tt>
+</pre>
+<b>	
+<a name="RTFToC12">2.5
+Operators
+</a></b><p>
+<b></b><p>
+	<b>
+<a name="RTFToC13">2.5.1
+Binary Arithmetic Operators
+</a></b><p>
+<b></b><p>
+	Binary arithmetic operators operate on two operands.  Register and net
+(wire) operands are treated as unsigned.  However, real and integer operands may be
+signed.  If any bit of an operand is unknown ('<b>x</b>') then the
+result is unknown.<p> 
+<pre>
+<b>   Operator	Name	        Comments	</b>
+<b></b>	+	Addition		
+	-	Subtraction
+	*	Multiplication
+	/	Division	Divide by zero produces an <b>x</b>,
+	                           i. e., unknown.
+	%	Modulus
+</pre>
+	<b>
+<a name="RTFToC14">2.5.2
+Unary Arithmetic Operators
+</a></b><p>
+<pre>
+<b>  Operator	Name	        Comments	</b>
+<b></b>	-	Unary Minus	Changes sign of its operand.
+</pre>
+	<b>
+<a name="RTFToC15">2.5.3
+Relational Operators
+</a></b><p>
+<p>
+Relational operators compare two operands and return a logical value, i. e.,
+TRUE(1) or FALSE(0).  If any bit is unknown, the relation is ambiguous and the
+result is unknown.
+<pre>
+<b>  Operator	Name	               Comments	</b><p>
+<b></b>	&gt;	Greater than
+	&gt;=	Greater than or equal
+	&lt;	Less than
+	&lt;=	Less than or equal
+	==	Logical equality
+	!=	Logical inequality
+</pre>
+<b>	
+<a name="RTFToC16">2.5.4
+Logical Operators
+</a></b><p>
+<b></b><p>
+	Logical operators operate on logical operands and return a logical value, i.
+e., TRUE(1) or FALSE(0).  Used typically in <b>if</b> and <b>while</b>
+statements.  Do not confuse logical operators with the bitwise Boolean
+operators.  For example , ! is a logical NOT and ~ is a bitwise NOT.  The first
+negates, e. g., !(5 == 6) is TRUE.  The second complements the bits, e. g.,
+~{1,0,1,1} is 0100.<p>
+<pre>
+<b>	Operator	Name	Comments	</b>
+<b></b>	!	Logical negation
+	&amp;&amp;	Logical AND
+	||	Logical OR
+</pre>
+
+<b>	
+<a name="RTFToC17">2.5.5
+Bitwise Operators
+</a></b><p>
+<b></b>	<p>
+	Bitwise operators operate on the bits of the operand or operands.  For
+example, the result of 
+A &amp; B is the AND of each corresponding bit of A with B.  Operating on an
+unknown (<b>x</b>) bit results in the expected value.  For example, the AND of
+an <b>x</b> with a FALSE is an FALSE.  The OR of an <b>x</b> with a TRUE is
+a TRUE.<p>
+<pre>
+<b>	Operator	Name	Comments	</b>
+<b></b>	~	 Bitwise negation
+	&amp;	 Bitwise AND
+	|	 Bitwise OR
+	^	 Bitwise XOR
+	~&amp;	 Bitwise NAND
+	~|	 Bitwise NOR
+	~^ or ^~ Equivalence	Bitwise NOT XOR
+</pre>
+	<b>
+<a name="RTFToC18">2.5.6
+Unary Reduction Operators
+</a></b><p>
+<b></b><p>
+	Unary reduction operators produce a single bit result from applying the
+operator to all of the bits of the operand.  For example, <b>&amp;A</b> will
+<b>AND</b> all the bits of <b>A</b>.<p>
+<pre>
+<b>	Operator	Name	Comments	</b>
+<b></b>	&amp;	AND reduction
+	|	OR reduction
+	^	XOR reduction
+	~&amp;	NAND reduction
+	~|	NOR reduction
+	~^	XNOR reduction
+</pre>
+<b>		
+<a name="RTFToC19">2.5.7
+Other Operators
+</a></b><p>
+<b>	</b>The conditional operator operates much like in the language C.<p>
+<pre>
+<b>Operator Name	        Comments	</b>
+===	Case equality	The bitwise comparison includes comparison 
+                        of <b>x</b> and <b>z</b> values.  All bits must match for
+                        equality.  Returns TRUE or FALSE.
+!==	Case inequality	The bitwise comparison includes comparison 
+                        of <b>x</b> and <b>z</b> values.  Any bit difference  
+                        produces inequality.  Returns TRUE or FALSE.
+{ , }	Concatenation	Joins bits together with 2 or more 
+                        comma-separated expressions, e, g. 
+                        {A[0], B[1:7]} concatenates the zeroth bit
+                        of A to bits 1 to 7 of B.
+&lt;&lt;	Shift left	Vacated bit positions are filled with zeros, 
+                        e. g., <b>A = A << 2;</b> shifts A two bits to left with zero fill.
+&gt;&gt;	Shift right	Vacated bit positions are filled with zeros.
+?:	Conditional	Assigns one of two values depending on the 
+                        conditional expression.  E. g., 
+                        <tt>A = C &gt; D ? B+3 : B-2;</tt> 
+                        means if C greater than D, the value of A 
+                        is B+3 otherwise B-2.
+</pre>
+<b>	
+<a name="RTFToC20">2.5.8
+</b><b>Operator Precedence
+</a></b><p>
+<b></b><p>
+	The precedence of operators is shown below.  The top of the table is the
+highest precedence and the bottom is the lowest.  Operators on the same line
+have the same precedence and associate left to right in an expression.
+Parentheses can be used to change the precedence or clarify the situation.  We
+strongly urge you to use parentheses to improve readability.<p>
+
+<center>
+<pre>
+unary operators: <tt>!  &amp;  ~&amp;  |  ~|  ^  ~^  +  - </tt>  (highest precedence)<tt></tt>
+<tt>*  /  %</tt>
+<tt>+  -</tt>
+<tt>&lt;&lt;  &gt;&gt;</tt>
+<tt>&lt;  &lt;=  &gt;  &gt;+</tt>
+<tt>==  !=  ===  ~==</tt>
+<tt>&amp;  ~&amp;  ^  ~^</tt>
+<tt>|  ~|</tt>
+<tt>&amp;&amp;</tt>
+<tt>||</tt>
+<tt>?:</tt>
+</pre>
+</center>
+	<b>
+<a name="RTFToC21">2.6
+Control Constructs
+</a></b><p>
+<p>
+	Verilog HDL has a rich collection of control statements which can used in the
+procedural sections of code, i. e., within an <tt><b>initial</b></tt> or
+<tt><b>always</b></tt> block.  Most of them will be familiar to the programmer
+of traditional programming languages like C.  The main difference is instead of
+C's <b>{&nbsp;}</b> brackets, Verilog HDL uses <tt><b>begin</b></tt> and
+<tt><b>end</b></tt>.  In Verilog, the <b>{ }</b> brackets are used for
+concatenation of bit strings.  Since most users are familiar with C, the
+following subsections typically show only an example of each construct.<p>
+<p>
+	<b>
+<a name="RTFToC22">2.6.1
+Selection - <tt>if</tt> and <tt>case</tt> Statements
+</a></b><p>
+<b></b><p>
+	The <b>if</b> statement is easy to use.<p>
+<pre>
+<tt>    if (A == 4)</tt>
+<tt>       begin</tt>
+<tt>         B = 2;</tt>
+<tt>       end</tt>
+<tt>    else</tt>
+<tt>       begin</tt>
+<tt>         B = 4;</tt>
+<tt>       end</tt>
+</pre>
+<tt></tt>	Unlike the <tt><b>case</b></tt> statement in C, the first
+<b>&lt;value&gt;</b> that matches the value of the <b>&lt;expression&gt;</b> is
+selected and the associated statement is executed then control is transferred
+to after the <tt><b>endcase</b></tt>, i. e., no <tt><b>break</b></tt>
+statements are needed as in C.<p>
+<pre>
+<tt>    case (</tt>&lt;expression&gt;<tt>)</tt>
+<tt>      </tt>&lt;value1&gt;<tt>: </tt>&lt;statement&gt;<tt></tt>
+<tt>      </tt>&lt;value2&gt;<tt>: </tt>&lt;statement&gt;<tt></tt>
+<tt>      default: </tt>&lt;statement&gt;<tt></tt>
+<tt>    endcase</tt>
+</pre>
+	The following example checks a 1-bit signal for its value.<p>
+<pre>
+<tt>    case (sig)</tt>
+<tt>      1'bz: $display("Signal is floating");</tt>
+<tt>      1'bx: $display("Signal is unknown");</tt>
+<tt>      default: $display("Signal is %b", sig);</tt>
+<tt>    endcase</tt>
+</pre>
+	<b>
+<a name="RTFToC23">2.6.2
+Repetition - <tt>for</tt>, <tt>while</tt> and <tt>repeat</tt> Statements
+</a></b><p>
+<p>
+	The <tt><b>for</b></tt> statement is very close to C's <tt><b>for</b></tt>
+statement except that the ++ and -- operators do not exist in Verilog.
+Therefore, we need to use <b>i = i + 1</b>.<p>
+<pre>
+<tt>    for(i = 0; i &lt; 10; i = i + 1)</tt>
+<tt>      begin</tt>
+<tt>        $display("i= %0d", i);</tt>
+<tt>      end</tt>
+</pre>
+	The <tt><b>while</b></tt> statement acts in the normal fashion.<p>
+<pre>
+<tt>    i = 0;</tt>
+<tt>    while(i &lt; 10)</tt>
+<tt>       begin</tt>
+<tt>         $display("i= %0d", i);</tt>
+<tt>         i = i + 1;</tt>
+<tt>       end  </tt>
+</pre>
+	The <tt><b>repeat</b></tt> statement repeats the following block a fixed
+number of times, in this example, five times.<p>
+<pre>
+<tt>    repeat (5)</tt>
+<tt>       begin</tt>
+<tt>         $display("i= %0d", i);</tt>
+<tt>         i = i + 1;</tt>
+<tt>       end</tt>
+</pre>
+<b>	
+<a name="RTFToC24">2.7
+Other Statements
+</a></b><p>
+<b></b><p>
+	<b>
+<a name="RTFToC25">2.7.1
+parameter Statement
+</a></b><p>
+<p>
+	The parameter statement allows the designer to give a constant a name.  Typical
+uses are to specify width of registers and delays.  For example, the following
+allows the designer to parameterized the declarations of a model.<p>
+<pre>
+<tt>		parameter byte_size = 8;</tt>
+<tt></tt>
+<tt>		reg [byte_size - 1:0] A, B;</tt>
+</pre>
+	<b>
+<a name="RTFToC26">2.7.2
+Continuous Assignment
+</a></b><p>
+<b></b><p>
+	Continuous assignments drive <tt><b>wire</b></tt> variables and are evaluated
+and updated whenever an input operand changes value.  The following <b>and</b>s
+the values on the wires <b>in1</b> and <b>in2</b> and drives the wire
+<b>out</b>.  The keyword <tt><b>assign</b></tt> is used to distinguish the
+continuous assignment from the procedural assignment.  See Section 2.3 for more
+discussion on continuous assignment.<p>
+<pre>
+		<tt>assign out = ~(in1 &amp; in2);</tt>
+</pre>
+	<b>
+<a name="RTFToC27">2.7.3
+Blocking and Non-blocking Procedural Assignments
+</a></b><p>
+<b></b><p>
+	The Verilog language has two forms of the procedural assignment statement:
+blocking and non-blocking.  The two are distinguished by the <tt><b>=</b></tt>
+and <tt><b>&lt;=</b></tt> assignment operators.  The blocking assignment
+statement (= operator) acts much like in traditional programming languages.
+The whole statement is done before control passes on to the next statement.
+The non-blocking (&lt;= operator) evaluates all the right-hand sides <i>for the
+current time unit </i>and assigns the left-hand sides at the end of the time
+unit.  For example, the following Verilog program<p>
+<pre>
+<tt>// testing blocking and non-blocking assignment</tt>
+<tt>module blocking;</tt>
+<tt>reg [0:7] A, B;</tt>
+<tt>initial begin: init1</tt>
+<tt>        A = 3;</tt>
+<tt>        #1 A = A + 1;   // blocking procedural assignment</tt>
+<tt>           B = A + 1;</tt>
+<tt>           $display("Blocking:     A= %b B= %b", A, B );</tt>
+<tt></tt>
+<tt>        A = 3;</tt>
+<tt>        #1 A &lt;= A + 1;  // non-blocking procedural assignment</tt>
+<tt>           B &lt;= A + 1;</tt>
+<tt>          </tt>
+<tt>        #1 $display("Non-blocking: A= %b B= %b", A, B ); </tt>
+<tt>end</tt>
+<tt></tt>
+<tt>endmodule</tt>
+</pre>
+<tt></tt>produces the following output:<p>
+<pre>
+<tt>Blocking:     A= 00000100 B= 00000101</tt>
+<tt>Non-blocking: A= 00000100 B= 00000100</tt>
+</pre>
+	The effect is for all the non-blocking assignments to use the old values of
+the variables at the beginning of the current time unit and to assign the
+registers new values at the end of the current time unit.  This reflects how
+register transfers occur in some hardware systems.<p>
+<p>
+	<b>
+<a name="RTFToC28">2.8
+Tasks and Functions
+</a></b><p>
+<p>
+	<b>Tasks</b> are like procedures in other programming languages, e. g., tasks
+may have zero or more arguments and do not return a value.  Functions act like
+function subprograms in other languages.  <u>Except:</u><p>
+<p>
+	1. A Verilog function must execute during one simulation time unit.  That is, no
+time controlling statements, i. e., no delay control (#), no event control
+(<b>@</b>) or <tt><b>wait</b></tt> statements, allowed.  A task may contain
+time controlled statements.<p>
+<p>
+ 	2. A Verilog function can <i>not</i> invoke (call, enable) a task; whereas a
+task may call other tasks and functions.<p>
+<p>
+	The definition of a task is the following:<p>
+<pre>
+  <tt>task</tt> &lt;task name&gt;;<tt> // Notice: no parameter list or ()s</tt>
+    &lt;argument ports&gt;
+    &lt;declarations&gt;
+    &lt;statements&gt;
+  <tt>endtask</tt>
+</pre>
+An invocation of a task is of the following form:<p>
+<pre>
+		&lt;name of task&gt; (&lt;port list&gt;);
+</pre>
+where <b>&lt;port list&gt;</b> is a list of expressions which
+correspond by position to the
+<b>&lt;argument ports&gt;</b> of the definition.  Port arguments in the
+definition may be <tt><b>input</b></tt>, <tt><b>inout</b></tt> or
+<tt><b>output</b></tt>.  Since the <b>&lt;argument ports&gt;</b> in the task
+definition look like declarations, the programmer must be careful in adding
+declares at the beginning of a task.<p>
+<pre>
+<tt>// Testing tasks and functions</tt>
+<tt>// Dan Hyde, Aug 28, 1995</tt>
+<tt>module tasks;</tt>
+<tt></tt>
+<tt>task add;      // task definition</tt>
+<tt> input a, b;   // two input argument ports</tt>
+<tt> output c;     // one output argument port</tt>
+<tt> reg R;        // register declaration</tt>
+<tt> begin</tt>
+<tt>   R = 1;</tt>
+<tt>   if (a == b)</tt>
+<tt>     c = 1 &amp; R;</tt>
+<tt>   else</tt>
+<tt>     c = 0;</tt>
+<tt> end</tt>
+<tt>endtask</tt>
+<tt></tt>
+<tt>initial begin: init1</tt>
+<tt>   reg p;</tt>
+<tt>   add(1, 0, p);  // invocation of task with 3 arguments</tt>
+<tt>   $display("p= %b", p);    </tt>
+<tt>end</tt>
+<tt></tt>
+<tt>endmodule</tt>
+</pre>
+	<tt><b>input</b></tt> and <tt><b>inout</b></tt> parameters are passed by value
+to the task and <tt><b>output</b></tt> and <tt><b>inout </b></tt>parameters are
+passed back to invocation by value on return.  Call by reference is not
+available.<p>
+<p>
+	Allocation of all variables is static.  Therefore, a task may call itself but
+each invocation of the task uses the same storage, i. e., the local variables
+are <i>not</i> pushed on a stack.  Since concurrent threads may invoke the same
+task, the programmer must be aware of the static nature of storage and avoid
+unwanted overwriting of shared storage space.<p>
+<p>
+	The purpose of a function is to return a value that is to be used in an
+expression.  A function definition must contain at least one
+<tt><b>input</b></tt> argument.  The passing of arguments in functions is the
+same as with tasks (see above).  The definition of a function is the
+following:<p>
+<pre>
+<tt>function</tt> &lt;range or type&gt; &lt;function name&gt;;<tt>// Notice: no parameter list or ()s</tt>
+    &lt;argument ports&gt;
+    &lt;declarations&gt;
+    &lt;statements&gt;
+<tt>endfunction</tt>
+</pre>
+where <b>&lt;range or type&gt;</b> is the type of the results passed back to
+the expression where the function was called.  Inside the function, one must
+assign the function name a value.  Below is a function which is similar to the
+task above.<p>
+<pre>
+<tt>// Testing functions</tt>
+<tt>// Dan Hyde, Aug 28, 1995</tt>
+<tt>module functions;</tt>
+<tt></tt>
+<tt>function [1:1] add2; // function definition</tt>
+<tt> input a, b;         // two input argument ports</tt>
+<tt> reg R;              // register declaration</tt>
+<tt> begin</tt>
+<tt>   R = 1;</tt>
+<tt>   if (a == b)</tt>
+<tt>     add2 = 1 &amp; R;</tt>
+<tt>   else</tt>
+<tt>     add2 = 0;</tt>
+<tt> end</tt>
+<tt>endfunction</tt>
+<tt></tt>
+<tt>initial begin: init1</tt>
+<tt>   reg p;</tt>
+<tt>   p = add2(1, 0);  // invocation of function with 2 arguments</tt>
+<tt>   $display("p= %b", p);    </tt>
+<tt>end</tt>
+<tt></tt>
+<tt>endmodule</tt>
+</pre>	<b>
+<a name="RTFToC29">2.9
+Timing Control
+</a></b><p>
+<b></b><p>
+<b></b>	The Verilog language provides two types of explicit timing control over
+when simulation time procedural statements are to occur.  The first type is a
+<b>delay control</b> in which an expression specifies the time duration between
+initially encountering the statement and when the statement actually executes.
+The second type of timing control is the <b>event expression</b>, which allows
+statement execution.  The third subsection describes the <tt><b>wait</b></tt>
+statement which waits for a specific variable to change.<p>
+<p>
+	Verilog is a <b>discrete event time simulator</b>, i. e., events are scheduled
+for discrete times and placed on an ordered-by-time wait queue.  The earliest
+events are at the front of the wait queue and the later events are behind them.
+The simulator removes all the events for the current simulation time and
+processes them.  During the processing, more events may be created and placed
+in the proper place in the queue for later processing.  When all the events of
+the current time have been processed, the simulator advances time and processes
+the next events at the front of the queue.<p>
+<p>
+	If there is no timing control, simulation time does not advance.  Simulated
+time can <i>only</i> progress by one of the following:<p>
+<pre>
+		1. gate or wire delay, if specified.
+<p>
+		2. a delay control, introduced by the # symbol.
+<p>
+		3. an event control, introduced by the <b>@</b> symbol.
+<p>
+		4. the <tt><b>wait</b></tt><b> </b>statement.
+</pre>
+	The order of execution of events in the same clock time may not be
+predictable.<p>
+<p>
+<b></b><p>
+<b>	
+<a name="RTFToC30">2.9.1
+Delay Control (</b>
+</a><b><a name="RTFToC31">#)</b><p>
+<b></b><p>
+<b>	</b>A<b> delay control</b> expression specifies the time duration between
+initially encountering the statement and when the statement actually executes.
+For example:<p>
+<pre>
+		#10 A = A + 1;
+</pre>
+<b></b>specifies to delay 10 time units before executing the procedural
+assignment statement.  The # may be followed by an expression with variables.<p>
+<p>
+<b>	2.9.2 Events
+</a></b><p>
+<b></b><p>
+<b>	</b>The execution of a procedural statement can be triggered with a value
+change on a wire or register, or the occurrence of a named event.  Some
+examples:<p>
+<pre>
+<tt>@r begin	       // controlled by any value change in </tt>
+<tt>  A = B&amp;C;             // the register r</tt>
+<tt>end</tt>
+<tt></tt>
+<tt>@(posedge clock2) A = B&amp;C; // controlled by positive edge of clock2</tt>
+<tt></tt>
+<tt>@(negedge clock3) A = B&amp;C; // controlled by negative edge of clock3</tt>
+<tt></tt>
+<tt>forever @(negedge clock)   // controlled by negative edge</tt>
+<tt>  begin</tt>
+<tt>    A = B&amp;C;</tt>
+<tt>  end</tt>
+</pre>
+	In the forms using <tt><b>posedge</b></tt> and
+<tt><b>negedge,</b></tt> they must be followed by a 1-bit expression, typically
+a clock.  A <tt><b>negedge</b></tt> is detected on the transition from 1 to 0
+(or unknown).  A <tt><b>posedge</b></tt> is detected on the transition from 0
+to 1 (or unknown).<p>
+<p>
+	Verilog also provides features to name an event and then to trigger the
+occurrence of that event.  We must first declare the event:<p>
+<pre>
+		<tt>event event6;</tt>
+</pre>
+To trigger the event, we use the <b>-&gt;</b> symbol :<p>
+<pre>
+<tt>		-&gt; event6;</tt>
+</pre>
+To control a block of code, we use the <tt><b>@</b></tt> symbol as shown:<p>
+<pre>
+<tt>		@(event6)  begin</tt>
+<tt>			&lt;some procedural code&gt;</tt>
+<tt>		end</tt>
+</pre>
+	We assume that the event occurs in one thread of control, i. e., concurrently,
+and the controlled code is in another thread.  Several events may to
+<b>or</b>-ed inside the parentheses.<p>
+<p>
+<b>	
+<a name="RTFToC32">2.9.3
+wait Statement
+</a></b><p>
+<b>	</b><p>
+<b></b>	The <tt><b>wait</b></tt> statement allows a procedural statement or a
+block to be delayed until a condition becomes true.<p>
+<pre>
+<tt>		wait (A == 3)</tt>
+<tt>		begin</tt>
+<tt>		    A = B&amp;C;</tt>
+<tt>		end</tt>
+</pre>
+	The difference between the behavior of a <tt><b>wait</b></tt> statement and an
+event is that the <tt><b>wait</b></tt> statement is <b>level sensitive</b>
+whereas <tt><b>@(posedge clock);</b></tt> is triggered by a <b>signal
+transition</b> or is <b>edge sensitive</b>.<p>
+<p>
+<b>
+<a name="RTFToC32a">2.9.4 fork and join Statements</A></b><p><p>
+	
+	By using the <b>fork</b> and <b>join</b> construct, Verilog
+	allows more than one thread of control inside an <b>initial</b>
+	or <b>always</b> construct. 
+
+	For example, to have three threads of control, you <b>fork</b>
+	the thread into three and merge the three into one with a
+	<b>join</b> as shown: 
+<pre>
+	fork: three //split thread into three; one for each begin-end
+		begin
+			// code for thread 1
+		end
+		begin
+			// code for thread 2
+		end
+		begin
+			// code for thread 3
+		end
+	join       // merge the three threads to one
+</pre>
+Each statement between the <b>fork</b> and <b>join</b>, in this case,
+the three begin-end blocks, is executed concurrently.  After <i>all</i> the
+threads complete, the next statement after the <b>join</b> is
+executed. 
+<P>
+	You must be careful that there is no interference between the
+	different threads.  For example, you can't change a register
+	in two different threads during the same clock period. 
+<P>
+<b>	
+<a name="RTFToC33">2.10
+Traffic Light Example
+</a></b><p>
+<b></b><p>
+<b></b>	To demonstrate tasks as well as events, we will show a hardware model
+of a traffic light.<p>
+<pre>
+<tt>// Digital model of a traffic light</tt>
+<tt>// By Dan Hyde August 10, 1995</tt>
+<tt>module traffic;</tt>
+<tt>parameter on = 1, off = 0, red_tics = 35, </tt>
+<tt>          amber_tics = 3, green_tics = 20;</tt>
+<tt>reg clock, red, amber, green;</tt>
+<tt></tt>
+<tt>// will stop the simulation after 1000 time units</tt>
+<tt>initial begin: stop_at</tt>
+<tt>   #1000; $stop;    </tt>
+<tt>end</tt>
+<tt></tt>
+<tt>// initialize the lights and set up monitoring of registers</tt>
+<tt>initial begin: Init</tt>
+<tt>    red = off; amber = off; green = off;</tt>
+<tt>    $display("                 Time green amber red");  </tt>
+<tt>    $monitor("%3d    %b     %b    %b", $time, green, amber, red);</tt>
+<tt>end</tt>
+<tt></tt>
+<tt>// task to wait for 'tics' positive edge clocks</tt>
+<tt>// before turning light off</tt>
+<tt>task light;</tt>
+<tt>   output color;</tt>
+<tt>   input [31:0] tics;</tt>
+<tt>   begin</tt>
+<tt>      repeat(tics)  // wait to detect tics positive edges on clock</tt>
+<tt>         @(posedge clock);</tt>
+<tt>      color = off;</tt>
+<tt>   end</tt>
+<tt>endtask</tt>
+<tt></tt>
+<tt>// waveform for clock period of 2 time units</tt>
+<tt>always begin: clock_wave</tt>
+<tt>  #1 clock = 0;</tt>
+<tt>  #1 clock = 1;</tt>
+<tt>end</tt>
+<tt></tt>
+<tt>always begin: main_process</tt>
+<tt>   red = on;</tt>
+<tt>   light(red, red_tics);  // call task to wait </tt>
+<tt>   green = on;</tt>
+<tt>   light(green, green_tics);</tt>
+<tt>   amber = on;</tt>
+<tt>   light(amber, amber_tics);</tt>
+<tt>end</tt>
+<tt></tt>
+<tt>endmodule</tt>
+</pre>
+The output of the traffic light simulator is the following:<p>
+<pre>
+<tt>                 Time green amber red</tt>
+<tt>                   0    0     0    1</tt>
+<tt>                  70    1     0    0</tt>
+<tt>                 110    0     1    0</tt>
+<tt>                 116    0     0    1</tt>
+<tt>                 186    1     0    0</tt>
+<tt>                 226    0     1    0</tt>
+<tt>                 232    0     0    1</tt>
+<tt>                 302    1     0    0</tt>
+<tt>                 342    0     1    0</tt>
+<tt>                 348    0     0    1</tt>
+<tt>                 418    1     0    0</tt>
+<tt>                 458    0     1    0</tt>
+<tt>                 464    0     0    1</tt>
+<tt>                 534    1     0    0</tt>
+<tt>                 574    0     1    0</tt>
+<tt>                 580    0     0    1</tt>
+<tt>                 650    1     0    0</tt>
+<tt>                 690    0     1    0</tt>
+<tt>                 696    0     0    1</tt>
+<tt>                 766    1     0    0</tt>
+<tt>                 806    0     1    0</tt>
+<tt>                 812    0     0    1</tt>
+<tt>                 882    1     0    0</tt>
+<tt>                 922    0     1    0</tt>
+<tt>                 928    0     0    1</tt>
+<tt>                 998    1     0    0</tt>
+<tt>Stop at simulation time 1000</tt>
+</pre>
+<b>
+<a name="RTFToC34">3.
+Using the VeriWell Simulator
+</a></b><p>
+<b></b><p>
+<b>	
+<a name="RTFToC35">3.1
+Creating the Model File
+</a></b><p>
+<b></b><p>
+<b>	</b>Enter the Verilog code using your favorite editor.  We recommend that
+you use "<b>.v</b>" as the extension on the source file.<p>
+<p>
+<b>	
+<a name="RTFToC36">3.2
+Starting the </b><b>Simulator
+</a></b><p>
+<b></b><p>
+<b>	</b>VeriWell is run from the UNIX shell window.  Type "veriwell" followed
+by the names of the files containing the models and the options.  The options
+can appear in any order and anywhere on the command line.  For example:<p>
+<pre>
+		host-name% veriwell cpu.v bus.v top.v -s
+</pre>
+This will load each of the files into memory, compile them, and enter
+interactive mode.  Removing the "<b>-s</b>" option would cause the simulation
+to begin immediately.  Options are processed in the order that they appear on
+the command line.  Files are processed in the order that they appear after the
+options are processed.<p>
+<b></b><p>
+<b>	
+<a name="RTFToC37">3.3
+How to Exit the Simulator?
+</a></b><p>
+<b></b><p>
+<b></b>	To exit the simulator, you can type <tt><b>$finish;</b></tt> or press
+<b>Control-d</b>.<p>
+<p>
+	To stop the simulation, you press <b>Control-c</b>.  Executing a
+<tt><b>$stop;</b></tt> system task in the code will also stop the simulation.<p>
+<p>
+	<b>
+<a name="RTFToC38">3.4
+</b><b>Simulator Options
+</a></b><p>
+<b></b><p>
+<b></b>	Commonly used options typed on the command line are shown below.  One
+should consult the <A href="veriwell-users-manual.html"><i>VeriWell User's Guide</i></A> for the others.<p>
+<pre>
+	<tt><b>-i &lt;inputfilename&gt;</b></tt>
+</pre>
+	Specifies a file that contains interactive commands to be executed as soon as
+interactive command mode is entered.  This option should be used with the
+"<b>-s</b>" option.  This can be used to initialize variables and set time
+limits on the simulation.<p>
+<pre>
+	<tt><b>-s</b></tt>
+</pre>
+Causes interactive mode to be entered before the simulation
+begins.<p>
+<pre>
+	<tt><b>-t</b></tt>
+</pre>
+Causes all statements to be traced.  Trace mode may be
+disabled with the <tt><b>$cleartrace</b></tt> system task.<p>
+<p>
+<b>	
+<a name="RTFToC39">3.5
+</b><b>Debugging
+</a>
+Using VeriWell's Interactive Mode</b><p>
+<b></b><p>
+	VeriWell is interactive.  Once invoked, the simulation can be controlled with
+simple commands.  Also, VeriWell accepts any Verilog statement (but new modules
+or declarations cannot be added).<p>
+<p>
+	Interactive mode is entered in one of three ways:<p>
+<p>
+	1). When the "<b>-s</b>" option is used on the command line (or in a command
+file), interactive mode is entered before the simulation begins,<p>
+<p>
+	2). When the simulation encounters the <tt><b>$stop</b></tt> system task, or,
+<p>
+<p>
+	3). When the user types <b>Control-c</b> during simulation (but not during
+compilation).<p>
+<p>
+<b>Interactive Commands</b><p>
+<pre>
+	Continue ('<b>.</b>') [period]
+		Resume execution from the current location.
+
+	Single-step with trace (',') [comma]
+		Execute a single statement and display the trace for that statement.
+
+	Single-step without trace ('<b>;</b>') [semicolon]
+		Execute a single statement without trace.
+
+	Current location ('<b>:</b>') [colon]
+		Display the current location.
+
+	<b>Control-d </b>or<b> $finish;</b>
+		Exit VeriWell simulator.
+</pre>
+Typically, the kinds of Verilog statements executed interactively are used for
+debugging and information-gathering.  <tt><b>$display </b></tt>and
+<tt><b>$showvars</b></tt> can be typed at the interactive prompt to show the
+values of variables.  Notice the complete system task statement must be typed
+including parameters and semicolon.  <tt><b>$scope(&lt;name&gt;);</b></tt> and
+<tt><b>$showscopes;</b></tt> can be typed to traverse the model hierarchy.
+<tt><b>$settrace;</b></tt> and <tt><b>$cleartrace;</b></tt> will enter and exit
+trace mode. Typing "<tt><b>#100; $stop;</b></tt>" will stop the execution after
+100 simulation units.<p>
+<p>
+<b>
+<a name="RTFToC40">4.
+System Tasks and Functions
+</a></b><p>
+<b></b><p>
+	System tasks are not part of the Verilog language but are build-in tasks contained in a library.  A few of the more commonly used one are described
+below.  The Verilog Language Reference Manual has many more.<p>
+<p>
+	<b>
+<a name="RTFToC41">4.1</b>
+<tt><b>$cleartrace
+</a></b></tt><p>
+<p>
+	The <tt><b>$cleartrace</b></tt> system task turns off the trace.  See
+<tt><b>$settrace</b></tt> system task to set the trace.<p>
+<pre>
+		<tt>$cleartrace;</tt>
+</pre>
+	<b>
+<a name="RTFToC42">4.2
+</b><tt><b>$display
+</a></b></tt><p>
+<tt><b></b></tt><p>
+	Displays text to the screen much like the <tt><b>printf</b></tt> statement
+from the language C.  The general form is <p>
+<pre>
+		<tt>$display(</tt>&lt;parameter&gt;, &lt;parameter&gt;, ... &lt;parameter&gt;);<p>
+</pre>
+where <b>&lt;parameter&gt;</b> may be a quoted string, an expression that
+returns a value or a null parameter.  For example, the following displays a
+header.<p>
+<pre>
+<tt>		$display("Registers:   A   B   C");</tt>
+</pre>
+	The special character % indicates that the next character is a format
+specification.  For each % character that appears in the string, a
+corresponding expression must be supplied after the string.  For example, the
+following prints the value of A in binary, octal, decimal and hex.<p>
+<pre>
+		<tt>$display("A=%b binary %o octal %d decimal %h hex",A,A,A,A);</tt>
+</pre>
+<tt></tt>produces the following output<p>
+<pre>
+<tt></tt>A=00001111 binary 017 octal  15 decimal 0f hex<tt></tt>
+</pre>
+<tt></tt>The commonly used format specifiers are<p>
+<pre>
+		<tt>%b </tt>	display in binary format
+		<tt>%c</tt>	display in ASCII character format
+		<tt>%d</tt>	display in decimal format
+		<tt>%h</tt>	display in hex format
+		<tt>%o</tt>	display in octal format
+		<tt>%s</tt>	display in string format
+</pre>
+	A 0 between the % and format specifier allocates the exact number of
+characters required to display the expression result, instead of the
+expression's largest possible value (the default).  For example, this is useful
+for displaying the time as shown by the difference between the following two
+<tt><b>$display</b></tt> statements.<p>
+<pre>
+<tt>		$display("Time = %d", $time);</tt>
+<tt>		$display("Time = %0d", $time);</tt>
+</pre>
+<tt></tt>produces the following output<p>
+<pre>
+<tt>Time =                    1</tt>
+<tt>Time = 1</tt>
+</pre>
+	Escape sequences may be included in a string.  The commonly used escape
+sequences are the following:<p>
+<pre>
+		<tt>\n</tt>	the newline character
+		<tt>\t</tt>	the tab character
+		\\	the <tt>\</tt> character
+		\"	the <tt>" </tt>character
+		<tt>%%</tt>	the percent sign
+</pre>
+	A null parameter produces a single space character in the display.  A null
+parameter is characterized by two adjacent commas in the parameter list.<p>
+<p>
+	Note that <tt><b>$display</b></tt> automatically adds a newline character to
+the end of its output.  See <tt><b>$write</b></tt> in Verilog Language
+Reference Manual if you don't want a newline.<p>
+<p>
+	
+<a name="RTFToC43">4.3
+<tt><b>$finish
+</a></b></tt><p>
+<p>
+	The <tt><b>$finish</b></tt> system task exits the simulator to the host
+operating system.  Don't forget to type the semicolon while in interactive
+mode.<p>
+<pre>
+			$finish;
+</pre>
+	<b>
+<a name="RTFToC44">4.4
+<tt>$monitor
+</a></tt></b><p>
+<p>
+	The <tt><b>$monitor</b></tt> system task provides the ability to monitor and
+display the values of any variable or expression specified as parameters to the
+task.  The parameters are specified in exactly the same manner as the
+<tt><b>$display</b></tt> system task.  When you invoke the
+<tt><b>$monitor</b></tt> task, the simulator sets up a mechanism whereby each
+time a variable or an expression in the parameter list changes value, with the
+exception of <tt><b>$time</b></tt>, the entire parameter list is displayed at
+the end of the time step as if reported by the <tt><b>$display</b></tt> task.
+If two or more parameters change values at the same time, however, only one
+display is produced.  For example, the following will display a line anytime
+one of the registers A, B or C changes.<p>
+<pre>
+ 		<tt>$monitor("  %0d %b %b "%b, $time, A, B, C);</tt>
+</pre>
+	Only one <tt><b>$monitor</b></tt> statement may be active at any one time.
+The monitoring may be turned off and on by the following:<p>
+<pre>
+<tt>		$monitoroff;</tt>
+<tt>  		</tt>&lt;some code&gt;<tt></tt>
+<tt>		$monitoron;</tt>
+</pre>
+	<b>
+<a name="RTFToC45">4.5
+<tt>$scope
+</a></tt></b><p>
+<b><tt></tt></b><p>
+	The <tt><b>$scope</b></tt> system task lets the user assign a particular level
+of hierarchy as the interactive scope for identifying objects.
+<tt><b>$scope</b></tt> is useful during debugging as the user may change the
+scope to inspect the values of variables in different modules, tasks and
+functions.<p>
+<pre>
+		$scope(&lt;name&gt;<tt>);</tt>
+</pre>
+The <b>&lt;name&gt;</b> parameter must be the complete hierarchical name of a
+module, task, function or named block.  See <tt><b>$showscopes</b></tt> system
+task to display the names.<p>
+<p>
+	<b>
+<a name="RTFToC46">4.6</b>
+<tt><b>$settrace
+</a></b></tt><p>
+<p>
+	The <tt><b>$settrace</b></tt> system task enables tracing of simulation
+activity.  The trace consists of various information, including the current
+simulation time, the line number, the file name, module and any results from
+executing the statement.<p>
+<pre>
+		<tt>$settrace;</tt>
+</pre>
+	You can turn off the trace using the <tt><b>$cleartrace</b></tt> system
+task.<p>
+<p>
+	<b>
+<a name="RTFToC47">4.7</b>
+<tt><b>$showscopes
+</a></b></tt><p>
+<p>
+	The <tt><b>$showscopes</b></tt> system task displays a complete lists of all
+the modules, tasks, functions and named blocks that are defined <i>at the
+current scope level.</i><p>
+<pre>
+		<tt>$showscopes;</tt>
+</pre>
+	<b>
+<a name="RTFToC48">4.8</b> <tt><b>$showvars
+</a></b></tt>
+<p>
+	The <tt><b>$showvars</b></tt> system task produces status information for
+register and net (wires) variables, both scalar and vector.  When invoked
+without parameters, <tt><b>$showvars</b></tt> displays the status of all
+variables in the current scope.  When invoked with a list of variables, it
+shows only the status of the specified variables.<p>
+<pre>
+		<tt>$showvars;</tt>
+		<tt>$showvars(</tt>&lt;list of variables&gt;<tt>);</tt>
+</pre>
+	<b>
+<a name="RTFToC49">4.9</b>
+<tt><b>$stop
+</a></b></tt>
+<tt><b></b></tt>
+<tt><b></b>	
+<p>
+</tt>The <tt><b>$stop</b></tt> system task puts the simulator into
+a halt mode, issues an interactive command prompt  and passes control to the
+user.  See Section 3.5 on using VeriWell's interactive mode.<p>
+<pre>
+		<tt>$stop;</tt>
+</pre>
+	<b>
+<a name="RTFToC50">4.10</b>
+<tt><b>$time
+</a></b></tt>
+<p>
+	The <tt><b>$time</b></tt> system function returns the current simulation time
+as a 64-bit integer.  <tt><b>$time</b></tt> must be used in an expression.<p>
+<hr>
+<b>
+<a name="RTFToC51">References</a></b><p>
+<b></b><p>
+1. Cadence Design Systems, Inc., <i>Verilog-XL Reference Manual.</i><p>
+<i></i><p>
+2. Open Verilog International (OVI), <i>Verilog HDL Language Reference Manual
+(LRM)</i>, 15466 Los Gatos Boulevard, Suite 109-071, Los Gatos, CA 95032; Tel:
+(408)353-8899, Fax: (408) 353-8869, Email: OVI@netcom.com, $100.<p>
+<p>
+3. Sternheim, E. , R. Singh, Y. Trivedi, R. Madhaven and W. Stapleton,
+<i>Digital Design and Synthesis with Verilog HDL</i>, published by Automata
+Publishing Co., Cupertino, CA, 1993, ISBN 0-9627488-2-X, $65.<p>
+<p>
+4. Thomas, Donald E., and Philip R. Moorby, <i>The Verilog Hardware Description
+Language</i>, second edition, published by Kluwer Academic Publishers, Norwell
+MA, 1994, ISBN 0-7923-9523-9, $98, includes DOS version of VeriWell simulator
+and programs on diskette.<p>
+<p>
+5. Bhasker, J., A Verilog HDL Primer, Star Galaxy Press, 1058 Treeline Drive, Allentown, PA 18103,
+1997, ISBN 0-9656277-4-8, $60. 
+<P>
+6. Wellspring Solutions, Inc., <A href="veriwell-users-manual.html"><i>VeriWell User's Guide</i> <i>1.2</i></A>, August,
+1994, part of free distribution of VeriWell, available online.<p>
+<p>
+7. World Wide Web Pages:<p>
+	FAQ for comp.lang.verilog - http://www.comit.com/~rajesh/verilog/faq/alt_FAQ.html<p>
+	comp.lang.verilog archives - http://www.siliconlogic.com/Verilog/<p>
+	Cadence Design Systems, Inc. - http://www.cadence.com/<p>
+	Wellspring Solutions, Inc. - ftp://iii.net/pub/pub-site/wellspring<p>
+	Verilog research at Cambridge, England -
+http://www.cl.cam.uk/users/mjcg/Verilog/<p>
+<HR> 
+<ADDRESS>Page maintained by Dan Hyde, hyde@bucknell.edu Last update
+August 23, 1997</ADDRESS>
+
+<HR>
+<A HREF="http://www.bucknell.edu/departments/cs">Back to Computer Science Home Page.</A>
+</body></html>

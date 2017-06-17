@@ -1,0 +1,50 @@
+$Id: README,v 1.3 2014/04/22 19:56:12 stevew Exp $
+
+This is BSIM6.0 Release 05-MAY-2013
+
+The complete package, which includes the PDF manual, is available from
+UC Berkeley:
+
+      http://www-device.eecs.berkeley.edu/bsim/?page=BSIM6
+
+The manual will also probably be available in the "docs" directory of
+the distribution repository at http://wrcad.com (password protected,
+for customers only).
+
+This is a "high priority" model, which will be supported in WRspice to
+the fullest extent possible.  At present, all benchmarks run correctly
+and there are no known issues.  Full QA results are available in a
+separate download.
+
+There is an ongoing attempt to rewrite the model so as to avoid
+numerical trouble at very low temperatures.  The patched version
+and the patch itself are also included.
+
+This *MUST* be built with the adms-2.3.0-wr package obtained from
+wrcad.com, in the "free software" area.
+
+A pre-built module is available in the "module_dist" directory.
+
+To build:
+
+0.  Make sure that the admst-2.3.0-wr package is installed on your
+system.  This is available from the free software area of wrcad.com. 
+The package has important improvements and bug fixes, and is required
+for building modules for WRspice.  Use of another adms distribution
+will cause trouble.
+
+1.  If you are reading this from the WRspice installation area, copy
+this directory to a personal work area, and work from there.  Below,
+"this directory" implies the copied directory (with its files and
+any sub-directories).
+
+2.  The Makefile has been provided.  Have a look at the top part of
+the file where the configuration variables are set, and read the
+comments.  Make any desired changes.
+
+3.  Type "make".  This will create and compile the C++ files, eventually
+producing the loadable module named "bsim6.so" ("bsim6.dylib" in OS X).
+
+4.  Use the devload command or -m command-line option in WRspice to
+load the module.  You will then be able to run the examples.
+

@@ -1,0 +1,6 @@
+
+To rebuild fetch_form.html after modifying fetch_form.sed:
+
+rm fetch_form.html
+cd ..
+make fetch

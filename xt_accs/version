@@ -1,0 +1,22 @@
+#! /bin/sh
+#
+# This is where the release numbers are set.
+#
+
+release="4"
+tools_version="4.2"
+accs_version="4.2.2"
+
+if [ z$1 != "z" ]; then
+    case $1 in
+    release)
+        echo $release
+        ;;
+    tools)
+        echo $tools_version
+        ;;
+    accs | accessories | xt_accs)
+        echo $accs_version
+    esac
+fi
+

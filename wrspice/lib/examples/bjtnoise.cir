@@ -1,0 +1,26 @@
+* BJT Noise Test
+
+vcc 4 0 50
+vin 1 0 ac 1
+
+ccouple 1 2 1
+
+ibias 0 2 100uA
+
+rload 4 3 1k
+
+q1 3 2 0 0 test
+
+.model test npn kf=1e-20 af=1 bf=100 rb=10
+.noise v(3) vin dec 10 10 100k 1
+
+.control
+run
+plot n3:dens
+
+# Print the total integrated noise, from the previous plot (two plots
+# are created during the analysis).
+print -1.n3:tot
+
+edit
+.endc

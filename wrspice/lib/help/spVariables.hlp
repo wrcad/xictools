@@ -1,0 +1,87 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spVariables.hlp,v 1.9 2014/05/11 21:03:26 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spVariables.hlp
+!!TITLE
+spVariables.hlp
+!!HTML 
+
+!!SUBTOPICS
+variables
+
+
+!! variables.tex 050814
+!!KEYWORD
+variables
+!!TITLE
+Variables
+!!HTML 
+    Shell variables can be set from the shell with the <a
+    href="set"><b>set</b></a> command.  Equivalently, most of the
+    variables that have internal meaning to <i>WRspice</i> can be set
+    from variaous panels available in the <b>Tools</b> menu of the <a
+    href="toolbar"><b>Tool Control</b></a> window.  These are the
+    <b>Plot Options</b>, <b>Plot Colors</b>, <b>Shell Options</b>,
+    <b>Simulation Options</b>, <b>Command Options</b> and <b>Debug
+    Options</b> panels.  The <b>Variables</b> panel from the
+    <b>Tools</b> menu will list the variables currently set, as will
+    giving the <b>set</b> command without arguments.
+
+    <p>
+    In addition, shell variables are set which correspond to
+    definitions supplied on the <a
+    href=".options"><tt>.options</tt></a> line of the current circuit,
+    and there are additional shell variables which are set
+    automatically in accord with the current plot.  In the variable
+    listings, a '<tt>+</tt>' symbol is prepended to variables defined
+    from a <tt>.options</tt> line in the current circuit, and a '*'
+    symbol is prepended to those variables defined for the current
+    plot.  These variable definitions will change as the current
+    circuit and current plot change.  Some variables are read-only and
+    may not be changed by the user, though this is not indicated in
+    the listing.
+
+    <p>
+    Before a simulation starts, the options from the <tt>.options</tt>
+    line of the current circuit are merged with any variables of the
+    same name that have been set using the shell.  The default result
+    of the merge is that options that are booleans will be set if set
+    in either case, and those that take values will assume the value
+    set through the shell if conflicting definitions are given.  The
+    merging behavior can be altered by the user, as described in the
+    section listing circuit <a href="options">options</a>.  In
+    general, variables set in the <tt>.options</tt> line are available
+    for expansion in $<i>varname</i> references, but do not otherwise
+    affect the shell.
+
+    <p>
+    While any variable may be set, there are many shell variables that
+    have special meaning to <i>WRspice</i>, which will be described. 
+    Note the difference between a variable and a vector - a variable
+    is manipulated with the commands <b>set</b> and <a
+    href="unset">unset</a>, and may be substituted in a command line
+    with the $<i>varname</i> notation.  A vector is a numerical object
+    that can be manipulated algebraically, printed and plotted, etc.
+
+ 
+!!SUBTOPICS
+shell_vars
+command_vars
+plot_vars
+sim_vars
+syntax_vars
+batch_vars
+unused_vars
+debug_vars
+
+!!SEEALSO
+options
+spshell

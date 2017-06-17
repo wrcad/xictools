@@ -1,0 +1,1339 @@
+WRspice Generation 4 Release Notes
+
+See the release note archive for the beta series (4.1.1 - 4.1.28)
+notes.
+
+Scroll down for notes for the current WRspice release, which follows
+some important general information.
+
+*****************************************************
+IMPORTANT  Mac users!
+
+The Darwin64 release is now generated on El Capitan (10.11), but the
+programs are fully compatible with Yosemite (10.10).  There is a major
+incompatibility between El Capitan and the present GTK which made
+Xic-4.2.2 almost unusable on that platform, as pop-ups would become
+invisible.  A work-around has been applied to Xic-4.2.3 and
+WRspice-4.2.2 and subsequent.
+
+Support for Mavericks has ended.  This is Apple's decision, not mine,
+as the current xcode supports the El Capitan and Yosemite releases
+only.
+
+*****************************************************
+IMPORTANT  (Linux and OS X only)!
+
+You MUST use the wr_install installer script to install the programs. 
+
+This script maintains the new "SafeInstall" logic, which is described
+in detail at http://wrcad.com/installer.html.  The current
+installation is saved in entirety when an update is installed.  The
+system is described in detail in the link, but you should know that
+/usr/local/xictools/xic and /usr/local/xictools/wrspice are now
+symbolic links, which point to directories where the files are
+actually stored.
+
+Program binaries HAVE MOVED!
+
+As a side-effect of the new "SafeInstall" feature, the Xic and WRspice
+program binaries are now installed in /usr/local/xictools/xic/bin and
+/usr/local/xictools/wrspice/bin (default locations) rather than the
+common /usr/local/xictools/bin.  The common location is still used for
+the license server and accessories.  As it is, the Xic and WRspice
+binaries will NOT BE FOUND in your shell search path, without some
+attention.
+
+There are three ways to setup access to the programs through the shell
+search path.
+
+1.  Add the new directories /usr/local/xictools/xic/bin and
+    /usr/local/xictools/wrspice/bin to the search path in your shell
+    startup file.  Use the actual locations if not installed under
+    /usr/local.  Be sure to use the links "xic" and "wrspice" and
+    not the diretories,
+
+2.  You can symbolically link the programs into the common
+    xictools bin.  For example, go to /usr/local/xictools/bin, and
+    give "ln -s ../xic/bin/* ." and similar for WRspice This only
+    needs to be done once, and you won't need to change the shell
+    search path.
+
+3.  You can put shell script wrappers into /usr/local/xictools/bin
+    that call the programs.  This is useful if you need to use
+    LD_LIBRARY_PATH for plugins, or need to set other environment
+    variables.  This is conveniently done in the wrapper.
+
+
+*****************************************************
+Windows Notes:
+
+  WINDOWS USERS SHOULD DO THE FOLLOWING:
+  To avoid rendering problems with tree-view display components.
+  Edit the file c:/usr/local/gtk2-bundle/etc/gtk-2.0/gtkrc
+  Either comment out the line by adding a # character at the beginning,
+  or replace the line with
+
+    gtk-theme-name="MS-Windows"
+
+  This changes the appearance of Xic and WRspice, which may look
+  better to Windows users (I think so).
+
+* DLL issues.
+
+  As of xic-4.2.7, wrspice-4.2.4, and xt_accs-4.2.2, there should no
+  longer be any DLL issues.  You should NOT have the gtk2-bundle/bin
+  in your search path.
+
+  The programs that need the bundle DLLs should be run from the .bat
+  files, i.e., xic.bat, wrspice.bat, and from the accessories
+  mozy.bat, xeditor.bat, and httpget.bat.  These are installed by
+  default in /usr/local/xictools/bin.
+
+  All other programs provided in the distributions can be run from the
+  .exe files and don't need the gtk2-bundle.
+
+  It is no longer necessary to install the distributions all using the
+  same location prefix.  The bat files are now smart enough to figure
+  out where to look in the registry.  That being said, it is still
+  strongly recommended to install everything in the default location.
+
+  Older versions of the programs had a dependence on DLLs found in
+  gtk2-bundle/bin.  In particular libwinpthread-1.dll was required by
+  just about everything.  The best fix is to update your programs.
+  Otherwise, you need to have the needed DLLs in the search path when
+  the program is run.
+
+Cygwin users:
+
+* Cygwin now defaults to a new "mintty" terminal emulator.  This does
+  NOT work AT ALL with WRspice, or any other native Windows
+  application that interacts with the console.  The same applies to
+  xterm and rvxt terminal emulators compiled under Cygwin.  These work
+  better for running Xic, or running WRspice from Xic, where the
+  terminal window is not interactive, but there are subtle problems so
+  this is not recommended.
+
+  WRspice can be run from the old-style native bash box, or a native
+  DOS box.  For example, start a Command Prompt terminal window ("DOS
+  box") from Windows, and give the commands
+    cd c:\cygwin\bin
+    bash --login -i
+  This gives the traditional Cygwin window, suitable for running
+  WRspice.  This can be encapsulated in a bat file that can be run
+  from an icon, there may be a c:/cygwin/Cygwin.bat file in the Cygwin
+  distribution that does exactly this.  If not, create a Cygwin.bat
+  file somewhere with the contents
+    @echo off
+    C:
+    chdir C:\cygwin\bin
+    bash --login -i
+  This assumes that Cygwin in installed in C:\Cygwin, modify the
+  file text appropriately if not.  Create a desktop icon that will
+  run this bat file, and use it to launch Cygwin windows for running
+  native Windows applications including WRspice and Xic.
+
+
+*****************************************************
+*** IMPORTANT WRspice Changes ***
+
+The present WRspice has some differences that can affect simulation
+results relative to earlier releases.
+
+1)  TMAX Limiting to TSTEP
+
+  WRspice now limits the maximum internal time step to the printing time
+  step (Tstep).  This is obtained from the tran line
+
+  .tran Tstep Tstop [Tstart [Tmax]]     (simplified syntax)
+
+  I.e., Tmax now defaults to Tstep.
+
+  This was done to improve results from circuits containing only devices
+  that weakly limit the time step (e.g.  MOSFETs) which otherwise can be
+  ugly and wrong (e.g., ring oscillator results).  This allows users of
+  such devices to get good results without having to set an explicit
+  maximum time step in the tran line.
+
+  However, if the printing time steps are very closely spaced, the
+  simulation time can dramatically increase, since these points are now
+  actually being calculated and not just interpolated.  The user in
+  this situation has several options:
+
+  1.  Accept the longer analysis time as the cost of greater accuracy.
+  2.  Use a larger printing time increment (Tstep).
+  3.  Use the Tmax parameter in the tran line to set a larger limit.
+  4.  Use .options oldsteplim to use the old limit of (Tstop-Tstart)/50.
+
+2)  Josephson Junction DC Operating Point Analysis
+
+  The transient "uic" parameter is no longer virtually applied when
+  Josephson junctions are present.  Instead, a dc operating point
+  calculation is done, with Josephson junctions taken to have a very
+  large conductance.  The operating range analysis is generally
+  required for JJ/semiconductor hybrid circuits, but is most often
+  redundant for purely Josephson circuits.
+
+  This is all transparent to the user, except if the circuit contains
+  inductor loops.  The operating point analysis, and therefor the
+  transient analysis will fail in this case.  This can be remedied by
+  giving the "uic" keyword explicitly in the tran command or .tran
+  line, which causes the transient analysis to start with initial
+  conditions and the operating point calculation is skipped.  Inductor
+  loops are not a problem in this case.
+
+3)  GMAX Resistance Limiting
+
+  Resistor vales are limited to be larger than the reciprocal of the
+  gmax parameter, which by default limits resistors to be 1 micro-ohm
+  or larger.  Resistors of smaller value will be taken as the minimum
+  value, and a warning message will be generated.
+
+  Earlier releases limited the resistor values to 1 pico-ohm or
+  larger, and there was no message if a resistor value was changed.
+
+  Believe it or not, a circuit was submitted where this made a large
+  difference in simulated results, unless gmax was set to the maximum
+  value of 1e12.
+
+4)  Node Name Parameter Expansion
+
+  Node names are no longer parameter expanded (as of 4.1.12) by
+  default.
+
+  I know of at least one old deck where this feature was used.
+
+  If the boolean variable pexnodes is set, then parameter expansion
+  will occur, for backward compatibility.
+
+*****************************************************
+End of general info.
+
+
+===============================================================================
+Current Release
+wrspice-4.2.16  3/28/2017
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Parameter expansion changes.
+
+  Parameters first encountered in an instance call line are now
+  accepted, previously they could only updated previously defined
+  parameters, meaning that they had to be defined at a higher level
+  (usually in the subcircuit definition).
+
+  Device parameter lines are now in some cases expanded slightly
+  differently, to avoid attempting to expand parameter name keywords.
+
+  Example:
+    .subckt tline 1 2 3 4
+    T1 1 2 3 4 l=l c=c len=len
+    .ends tline
+
+    * This can now be called as
+    xt1 1 0 2 0 l=1.5nh c=12ff len=1e-6
+
+    Which expands to
+    T1.xt1 1 0 2 0 l=1.5nh c=12ff len=1e-6
+
+  To summarize:
+  1. Parameters get expanded when defined first in the instance call
+     line.  Previously, one would have to define default values for the
+     "known" parameters on the .subckt line.
+  2. In param=value, the "value" is parameter expanded, not the "param".
+
+* Timestep computation changes.
+
+  The algortithm will no longer cut delta at a breakpoint below 0.1
+  times the previous delta.  Large abrupt reduction of the time step
+  is seen to provoke nonconvergence at times, this may avoid some of
+  that.
+
+  When "jjaccel" is in use, the time delta is now limited to less than
+  or equal to 1/2 the shortest transmission line delay.  Previously,
+  transmission line delays weren't considered for timestep limiting in
+  this mode.  Very short transmission lines can now be supported
+  properly.
+
+* Misc. changes.
+
+  The maximum value of the maxdata variable is now 2e9.  Previously
+  this was 1e15.  The new value avoids possible floating point
+  exceptions when converting the value to integer (which is done
+  internally), and 2TB should be plenty.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed a bug in the time step computation that broke the jjaccel
+  mode.  There may also have been subtle effects in normal
+  simulattion with the internal Josephson junction model in use.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.2.15  2/21/2017
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New PWL feature
+
+  The PWL "tran function" can now get its point list from vectors. 
+  For example
+
+    v1 1 0 pwl(tvals xvals)
+
+  is now valid syntax, with vectors tvals being the time points, and
+  xvals being the corresponding amplitudes.
+
+  This can be particularly useful for very long PWL lists, as a lot
+  of processing can be saved leading to quicker simulations.
+
+  See "help pwl" for the complete story.
+
+* Cadence PSF file format support
+
+  The Red Hat 6 and 7 distributions have support for outputting
+  simulation results in Cadence PSF format, which can be read by the
+  waveform viewer in the Cadence Analog Design Environment (ADE)
+  product.
+
+  See "help write" for more information.
+
+
+BUGS FIXED
+---- -----
+
+* Forms such as the following didn't work:
+
+    .param x=0.6
+    L0 1 2 x*10pH
+
+  Parameter expansion was not being applied correctly to the value
+  token, now fixed.
+
+* Fixed some syntax issues in the jj.va Josephson junction model.
+  The model available directly from the web site was fixed some time
+  ago.
+
+* The compose command now does the right thing with a vector name in
+  the form "plotname.vecname", i.e., it will create  a vector vecname
+  in the plot plotname.  Previously, it would create "plotname.vecname"
+  literally in the current plot.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.2.14  10/15/2016
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Plot window change, buttons 2/3 now affect dimension map.
+
+  In multidimensional plots, clicking anywhere in the dimensions list
+  with button 2 (center mouse button) hides the traces for all
+  dimensions, clicking with button 3 (right mouse button) shows the
+  traces for all dimensions.  Pressing Shift while clicking with
+  button 1 (left or only mouse button) is equivalent to a button 2
+  click.  Pressing Ctrl while clicking with button 1 is equivalent to
+  a button 3 click.
+
+* Josephson junction device updates.
+
+  Both the internal and Verilog-A Josephson junction devices now accept
+  a "pijj" parameter that can be set to one or zero.  If set to one,
+  the device instance becomes a "pi" junction.  Such a junction has a
+  ground-state phase of pi rather than 0.
+
+  The parameter can be given in a model, and/or in the device line,
+  where it has precedence.
+
+  The Verilog-A model has a new "trfactor" parameter, which can be
+  used to control the internal timestep size similar to the dphimax
+  parameter in WRspice.  Setting to smaller values may improve accuracy,
+  but simulations run more slowly.
+
+  The internal model has two new aliases for the initial conditions, for
+  compatibility with the Verilog-A model.
+
+    ic_phase is an alias for phi
+    ic_v     is an alias for vj
+
+
+BUGS FIXED
+---- -----
+
+* AC analysis was broken for lossless transmission lines, unless a model
+  was used that gave capacitance and inductance explicitly.  Lines woul
+  appear to have zero delay.
+
+* In plots, the dimension lists could look a bit strange on some
+  systems due to multiple rendering of anti-aliasing fonts.  This has
+  been fixed.
+
+* The percent done reported in the Tool Control window is now sensible
+  during sweep and chained dc analysis.
+
+* Chained dc analysis with a transmission line caused a segmentation
+  fault.
+
+* In dc sweep analysis, the minimum step size was 1e-8, which is
+  inappropriate since the swept variables can now be arbitrary device
+  parameters.  The new minimum is 1e-7*(stop - start).
+
+
+-------------------------------------------------------------------------------
+wrspice-4.2.13  9/28/2016
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Update to ADMS Makefiles and scripts.
+
+  Verilog users....
+  >>> YOU NEED TO UPDATE the Makefile in your custom devices!!!
+
+  Replace your Makefile with the devkit/Makefile, with your
+  customizations.
+
+  The new Makefile implements s "SyntaxLevel" check which needs to be
+  consistent with the ADMS scripts.
+
+  The new Makefile has a new FLAGS customization.  This can usually be
+  ignored.  However, if you are implementing a device which limits the
+  internal timestep in the manner of a Josephson junction, a flag can
+  be set to tell WRspice that your device should be treated like a
+  Josephson junction for timestep control.  In particular, the jjaccel
+  option will attempt to work with your device.  Your device MUST
+  implement the bound_step limiting as found in the example Verilog JJ
+  model.
+
+* Changed the delmin calculation (again),
+
+  In Berkeley Spice3 and WRspice before 4.2.12, the delmin value
+  defaulted to the larger of tstep*1e-9 and tstop*1e-12.  In 4.2.12,
+  these values were changed to tstep*1e-6 and tstop*1e-9.  Adding the
+  extra 1e3 seemed to help convergence of circuits tested earlier, but
+  caused nonconvergence of another circuit which previously ran ok. 
+  The problem was that this circuit had a long run-time, and the tstop
+  term became too large.
+
+  It seems to me that it is not correct to use tstop since the delmin
+  should be independent of simulation length, so that the second term
+  (involving tstop) has simply been removed.  This fixes the problem
+  and is (hopefully) unlikely to cause problems in other ciruits.
+
+* Replaced the MarkJefferyNoiseMemo.pdf file.
+
+  In the "docs" directory of the distribution archive, Mark Jeffery's
+  noise computation memo has been replaced with a cleaner scan,
+  containing additional material.
+
+* New options for the print command, more control of formatting.
+
+  Various features of the print formatting can now be separately
+  controlled.  These aspects have defaults that can be set with
+  variables, which can be overridden from the format string of the
+  print command itself.
+
+  The new variables are described below.  All are booleans that apply
+  to column mode formatting of the print command.  All have
+  corresponding entries in Print page of Commands tool.
+
+  printautowidth
+    When set, ignore the window width or the setting of the width
+    variable, and use a line width sufficient to include columns for
+    all variables being printed, if possible.  There is a hard limit
+    of 2048 characters in the lines.  Variables that don't fit are
+    printed subsequently, as in the case with printautowidth not set.
+
+  printnoheader (boolean)
+    Don't print the top header, that consists of the plot title,
+    circuit name, data, and a line of "-" characters.  This is normally
+    printed at the top of print output.
+
+  printnoindex (boolean)
+    Don't print the indices, which are otherwise printed in the
+    leftmost output column of each page.
+
+  printnopageheader (boolean)
+    Don't print the page header.  The page header, which consists of
+    the variable names at the top of each column and a line of "-"
+    characters, is otherwise printed at the top of each page of output.
+
+  printnoscale (boolean)
+    Don't print the scale vector in the leftmost data column.  This is
+    otherwise done for each set of variables printed.  The existing
+    "noprintscale" variable is an alias, but deprecated.
+
+  The syntax of the format string to the print command has been extended
+  to allow overriding the states of the switches listed above while
+  printing.
+
+  The format string must be the first argument given to the print
+  command, and must begin with a '/' character.  It contains no space,
+  and is a sequence of the characters and forms shown below.
+
+  [number]
+    The number of figures after the decimal point to print.  If not
+    given, defaults to the value of the numdgt variable, or 6 if this
+    is not set.
+
+  f   If 'f' is found in the string, use fixed-point notation, otherwise
+      use exponential notation.
+
+  The remaining options apply/unapply the switches.
+
+  -   Negate the effect of options that follow.
+  +   Don't negate effect of options that follow.
+  a   Take printautowidth as if set, or not set if negated.
+  b   Take nopage as if set, or not set if negated.
+  h   Take printnoheader as if set, or not set if negated.
+  i   Take printnoindex as if set, or not set if negated.
+  p   Take printnopageheader as if set, or not set if negated.
+  s   Take printnoscale as if set, or not set if negated.
+  n   Alias for "abhips".
+
+  Example
+    print /3f+ahi-ps ...
+
+    Print using a fixed three decimal place format, and as if printautowidth,
+    printnoheader, and printnoindex were set, and printnopageheader
+    and printnoscale were unset.
+
+    print /n ...
+
+    Print the vectors listed, and nothing but the vectors listed. 
+    This is useful when you want to feed a list of numbers to another
+    application.
+
+    print /n-s ...
+
+    As above, but show the scale in the first column,
+
+  Note that the '+' is redundant, unless it is following a '-' in
+  the format string.  The format string always overrides the variables.
+
+
+BUGS FIXED
+---- -----
+
+* Noise macro wrong in example, documentation.
+
+  The noise.cir example, and the documentation, used an incorrect
+  formula for computing the noise amplitude.  They used for bandwidth
+  B = 1/dt, whereas by the sampling theorem (Nyquist) B = 1/(2*dt).
+  The noise.cir example and documentation have been updated.
+
+* Fixed problems with very long (e.g., 50k points) PWL statements.
+
+  1.  There was excessive overhead in processing the PWL arguments,
+  causing an absurdly long startup delay where WRspice seemed
+  unresponsive.  This delay was proportional to the square of the
+  number of PWL points.  This has been fixed:  what used to take half
+  an hour (for 50000 points) now takes perhaps a second.
+
+  2.  The "argument list" of the PWL "function" is represented
+  internally as a very deep parse tree.  A recursive function call
+  based on tree elements would possibly cause a stack overflow and
+  segmentation fault.  This is avoided now.
+
+* Fixed a formatting problem in the print command column mode.  Tabs
+  were used rather crudely to position columns, and this allows
+  placement errors in some cases.  Tabs are no longer found in print
+  output, and placement should be correct always.
+  
+
+-------------------------------------------------------------------------------
+wrspice-4.2.12  8/8/2016
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Internal change to "load" multi-threading (loadthrds variable).
+
+  The internal job-partitioning logic has changed.  The new logic
+  provides improved load balancing and is more efficient.
+
+* New simulation option: rampup=dt
+
+  This option applies to transient analysis.  As for all options,
+  it can be set in a ".options" line, or as a variable with the
+  "set" command.  There is also a corresponding control in the
+  Convergence page of the Simulation Options panel.
+
+  When set, during transient analysis all source values are
+  effectively multiplied by pwl(0 0 dt 1).  That is, all sources
+  ramp up from zero, and assume their normal values at time = dt.
+
+  The dc operating point calculation (if UIC not given) becomes
+  trivial with all sources set to zero.
+
+  This is mostly intended for Josephson junction circuits so constant
+  valued sources can be used without convergence problems.
+
+* Updates to the internal and the Verilog-A Josephson junction models.
+
+  Aliases for model parameter names in the internal model are provided
+  for consistency with the Verilog model.  Both words are equivalent.
+    mfactor for area
+    vgap    for vg
+    rsub    for r0
+    rnorm   for rn
+
+  The Verilog model was updated to fix a bug and add some parameters
+  and aliases.  See the model text in the JJ adms example.
+
+* Changes to improve transient analysis convergence.
+
+  The minimum internal time step is now larger.  This can, perhaps
+  counterintuitively, actually improve convergence.
+
+  Issue:  The matrix elements for reactive terms have the time delta
+  in the denominator, thus these become large for small delta.  when
+  delta becomes too small, the matrix elements may become larger than
+  Gmax, and solutions lose accuracy or won't converge.  On
+  non-convergence, the time delta is cut, making matters worse and
+  leading to a "timestep too small" error and termination of analysis.
+
+  The logic for breakpoint handling was modified slightly, to avoid
+  cutting the time step to a too-small value to hit a breakpoint. 
+  This, along with the larger minimum delta, improves convergence in
+  circuits with a lot of breakpoints, such as those using the gauss
+  noise source, or small delay transmission lines.
+
+* New syntax element:  .postrun block
+
+  In input file:
+  .postrun
+  ( commands )
+  .endc
+
+  This is similar to the .control and .exec blocks, but here the
+  commands are executed when a simulation run terminates normally
+  (i.e., without error or interrupt).  This can be used to dump
+  circuit data to a file, for example, without having to explicitly
+  give commands or write a script.
+
+* New entity:  the global return value
+
+  This is a number that is known in any context within WRspice.  It is
+  set with the new "retval" function, or by the new string comparison
+  functions (see below).
+
+  It is accessed with the construct "$?", where the question mark must
+  be followed by white space or end-of-line.
+
+  This can be used to return a value from scripts, or for other
+  purposes.  It will retain the last value set in any context.
+
+* New string comparison functions
+
+  The basic expression syntax does not handle strings, except as
+  vector names.  This includes the case when parsing conditionals, so
+  that clauses like "if (strcmp(s1, s2) == 0) ..." are not available,
+  as s1 and s2 are taken as vector names and expanded as such before
+  being passed to the function.
+
+  Instead, we use the WRspice shell to perform string comparisons.  The
+  result is saved as the global return value, which, as a number, can be
+  accessed in a conditional expression.  The following string comparison
+  commands are available:
+
+  strcmp str1 str2 
+    Sets $? to a number that is the lexicographic order of str1 and str2,
+    as the C strcmp function.
+
+    Example
+
+    .control
+    set str1="abcd efgh"
+    set str2="bbcd efgh"
+    strcmp "$str1" "$str2"
+    if ($? &#60; 0)
+        echo "$str1" ahead of "$str2"
+    else
+    if ($? = 0)
+        echo strings are the same
+    else
+        echo "$str1" after "$str2"
+    end
+    end
+    .endc    
+
+  strcicmp str1 str2
+    Sets $? to a number that is the lexicographic order of str1 and str2,
+    as the C strcasecmp function (case insensitive comparison).
+
+  strprefix str1 str2
+    Sets $? to 1 if str1 is a prefix of str2, 0 otherwise.
+
+  strciprefix str1 str2
+    Sets $? to 1 if str1 is a case-insensitive prefix of str2, 0 otherwise.
+
+  retval number
+    This command sets $? to the number passed.  This is the only way
+    to set the $? value other than the string comparison commands.  It
+    can be used to pass data from scripts, but care should be taken that
+    it doesn't get reset in the interim.
+
+* New read-only variable: curanalysis (string)
+
+  This is set to the name of the analysis when analysis starts, and
+  retains the value until a new analysis starts.  Possible values are
+
+    ac dc op tran tf noise disto sens, or not set
+
+  This can be used in a .postrun block to make actions specific to
+  analysis type.
+
+  Example
+
+    .postrun
+    strcmp("tran", $curanalysis)
+    if ($? = 0)
+        print v(1) v(2) > tranout.prn
+    end
+    .endc
+
+
+BUGS FIXED
+---- -----
+
+* Fixed a problem that produced "Bad node" errors with multi-threaded
+  loads.
+
+* Revised the transmission line timestep cutting to avoid setting the
+  delta too small, which could cause non-convergence.
+
+* Fixed logic in Debug pop-up for "debug" group buttons.  These buttons
+  weren't being shown as checked when the underlying option was set.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.2.11  5/14/2016
+
+Ugh, sorry.  Somehow none of the documentation updates for the last
+release were included in the distribution files, except for
+LinuxRHEL7_64.  This release simply provides the updated
+documentation, with a small bit of new documentation added.
+
+-------------------------------------------------------------------------------
+wrspice-4.2.10  5/11/2016
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* ADMS/Verilog enhancements.
+
+  There is a new variable "HEADER" set in the example Makefile.  When
+  enabled, it will cause the C++ code to include a user-supplied file. 
+  This facilitates adding code to the module at the C++ level.
+
+  There is a new "cfunc" pseudo-function.  In Verilog, this takes the
+  form
+
+    cfunc("myfunc", arg, ..., arg)
+
+  which maps into the following in the C++ code:
+
+    myfunc(arg, ..., arg)
+
+  Thus, one can call arbitrary functions, in scope in C++, from
+  Verilog.  See the end of the README.adms file for more info.  The
+  user-generated header should provide the prototypes for the
+  functions, and the Makefile should be modified to link the libraries
+  containing the functions into the module.
+
+* New boolean variable: noprtitle.
+
+  When set, the "Circuit: title_line" text is not printed when a circuit
+  file is sourced.
+
+  There is a corresponding check box in the "source" tab in the Command
+  Options tool from the Commands button in the Tools menu.
+
+* Added a new loop example: jjloop2.cir
+
+  Illustrates another type of parameter sweep.
+
+
+BUGS FIXED
+---- -----
+
+* When a vector range (e.g., v(1)[200,400]) was given in the test
+  script in operating range or Monte Carlo analysis, the access was
+  incorrect, with messages like
+
+    Warning: upper limit 200 should be 0.
+
+  This was due to the fact that during the simulation, the vector
+  dimensionality information is incomplete.  A work-around is now
+  provided.
+
+* Fixed seg fault in Apple, which could occur in certain types
+  of analysis, including the sweep command.
+
+* Fixed thread clashing and garbage data when outputting
+  @device[param] vectors from a multi-threaded "chained dc"
+  analysis.
+
+* Fixed a big ugly core leak that caused memory use to rise over time.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.2.9  3/17/2016
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Updates to "tran" functions
+
+  The user should scan the help about these new functions and features
+  for complete information (give command "help tranfuncs").
+
+  -  There is a new AM (amplitude modulation) function, based on
+     the HSPICE function of the same name.
+
+  -  The PWL specification now accepts the R (repetition) and TD
+     (time delay) parameters, as in HSPICE.
+
+  -  The SIN/TSIN function now accepts the PHI (phase delay)
+     parameter as in HSPICE.
+
+  -  There is a new GPULSE function that generates gaussian pulses.  If
+     given an amplitude of zero, this will generate single flux
+     quantum (SFQ) pulses, useful in superconductivity work.  There is
+     a new sfq.cir example file that demonstrates this.
+
+
+BUGS FIXED
+---- -----
+
+* Giving something like ".tran 1p 40" for a transient analysis run
+  would effectively hang the program.  There is now a limit of 1e9 for
+  the number of analysis points accepted in a .tran line or tran
+  command.
+
+* Distortion analysis was not writing data to a plot structure.
+
+* Fixed a strange problem in Pole-Zero analysis.  The values computed
+  were correct, though an error message indicating iteration count
+  overflow was generated.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.2.8  3/10/2016
+
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New POLY support in resistor, capacitor, and inductor devices.
+
+  This uses the same syntax as Hspice, for example
+
+  Rxxx node1 node2 POLY c0 c1 ... cn
+  Cxxx node1 node2 POLY c0 c1 ... cn
+  Lxxx node1 node2 POLY c0 c1 ... cn
+  
+  The capacitance is  C = c0 + c1*v + c2*v^2 ...
+  where v is the voltage across the capacitor.
+
+  The resistance is  R = c0 + c1*v + c2*v^2 ...
+  where v is the voltage across the resistor.
+
+  The inductance is  L = c0 + c1*i + c2*i^2 ...
+  where i is the current through the inductor.
+
+  There is no built-in limit on the number of coefficients.
+
+* Miscellaneous enhancements
+
+  - When reading input, all unresolved subcircuits are now listed, not
+    just the first one found.
+
+  - The subcircuit call subcircuit reference name is now parameter
+    expanded, so that forms like the following will now work:
+
+      .subckt mysub ...
+      ...
+      .ends mysub
+      .param sub=mysub
+      X0 (nodes) sub (params)
+
+  - If a model name can't be resolved, a fatal error now results, i.e.,
+    the simulation will be aborted.  Previously, the ancient Spice3
+    bahavior was followed, where a warning would be printed, but the
+    run would be performed with a "default" model.  The run would be
+    unlikely to be of any value and could cause confusion, so this
+    logic is no longer used.
+
+
+BUGS FIXED
+---- -----
+
+* If WRspice is started without graphics and it tries to show the
+  "broadcast" message, WRspice would crash.  In subsequent runs it
+  will work fine, as it won't try to show the message again.
+
+* Fixed the logic for removing temporary files created from input.  If
+  more than one was used, only the first would be destroyed after the
+  run.
+
+* The default xicpath was set incorrectly except under Windows.  It
+  would have to be set explicitly to launch Xic from WRspice, via
+  the Xic button in the Edit menu uf the Tool Control window.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.2.7  1/30/2016
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Updated KLU sparse matrix solver to version 4.4.6.
+
+  Also added run-time version testing to prevent loading of an
+  incompatible KLU version.  Unfortunately, older versions of WRspice
+  will load the new KLU plug-in if it is found, which will cause
+  simulations to fail and segmentation faults as the interface has
+  changed.  If one needs to run an older version of WRspice after
+  installing this release or newer, there are some options:
+
+  1)  Change the version control "wrspice" link in the installation
+      area (non-Windows only) to point to the old release.  Then,
+      the old KLU plug-in will be found in the default location.
+
+  2)  Use the XT_KLU_PATH environment variable to set the full path
+      to the correct KLU plug-in.
+
+  3)  Set the noklu variable to prevent using KLU.
+
+* Reverted ITL4 default to 20.
+
+  The SPICE option itl4, the transient time-point iteration limit, was
+  set to default to 20.  The default value was 10 previously, to match
+  Berkeley Spice3, but was 20 before that.  The value 20 seems to be a
+  better choice as transient analysis is less likely to fail due to
+  the interation limit being reached.
+
+* New fixed time step mode.
+
+  The steptype variable has a new possible value "fixedstep" or "3". 
+  When this is set, internal time points will be restricted to the
+  transient analysis time step.  There will be no internal time steps
+  smaller of larger, if convergence fails the run will end.  This mode
+  is not expected to be useful except for debugging.
+
+* New handling of initial_step and final_step in ADMS.
+
+  These are now in accord with the Verilog-AMS specification.  More
+  info is in the README.adms file in the devkit.  This is really
+  obscure.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed a potential problem in Windows where it was possible to
+  overrun the size of an array, which might cause faults.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.2.6  12/17/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New data reduction for speed when plotting
+
+  Plotting results from a simulation with 2.5 million data points can
+  take a long time, particularly on my Windows machine where several
+  minutes were required.  A data reduction technique was added to cut
+  down the number of lines drawn, which made a vast improvement,
+  minutes down to seconds.
+
+* The iplot command can now take a "." (period) argument, similar to
+  the plot command.  This will access the variables listed in a ".plot
+  tran" line found in the input file.  Presently, only "tran" plot
+  lines can be accessed in this way.  The ".@N" variation, to access
+  the Nth .plot tran line, works as well.
+
+* Vector listing format change
+
+  Changed the format used when printing vector lists from the let
+  command and the Vectors tool to be more compact and attractive.
+
+
+BUGS FIXED
+---- -----
+
+* When started without graphics, WRspice would crash if it tried to show
+  the release notes, which it will do the first time a new release is
+  run.
+
+* Fixed a bug parsing single-quoted expressions, a spurious error
+  message was generated complaining about an unknown parameter named '
+  (single quote).  This appears to have been harmless.
+
+* Fixed a problem with iplots, the display data update location was
+  wrong in "separate" mode (cosmetic problem only).
+
+* Fixed a bug in plots that could cause a crash when a plot window was
+  deleted while the marker was enabled.
+
+* The "data size" printed in the Tool Control window of Linux releases
+  should now be accurate.  Note that this reports only the allocated
+  data size, and not the total program size as reported by programs
+  such as top and ps.
+
+* Fixed a buffer overrun when interpolating multi-dimensional plot
+  data in the asciiplot command.  This caused the command to fail
+  with a cryptic message.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.2.5  12/12/2015
+
+OOPS - Mante Carlo analysis was broken, fixed in this release.
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Default precision of real variable substitition changed.
+
+  This probably counts as a bug fix, but goes back to Berkeley Spice3. 
+  Real-valued variables would substitute as a form with six
+  significant digits.  This form is hard-coded and not changeable by
+  the user. 
+
+  For example:
+    set foo=1.2345678
+    echo $foo  ==> 1.23457
+  Thus, there was a built-in loss of precision.
+
+  Now, as many as 14 digits are used, which represents the full double
+  precision of the underlying number (numeric variables are stored as
+  numbers, not text strings).  There is now no loss in precision,
+  however you may see the effects in your scripts, as
+  variable-substited values may have more digits presented.
+
+  The above example would now show
+    set foo=1.2345678
+    echo $foo  ==> 1.2345678
+
+  Trailing zeros are omitted when the text representation is created.
+
+* Change to the print command.
+
+  When printing a scalar real value, the print command would use six
+  significant figures, and this was unaffected by the setting of the
+  numdgt variable or a format option.
+
+  Again, this probably counts as a bug fix, but is ancient behavior. 
+  The scalar value print now uses the numdgt variable to specify the
+  default maximum number of digits to the right of a decimal point
+  (trailing zeros omitted), and now responds to the format options
+  "/Nf" and "/Ne" where N is an integer precision and f and e force
+  floating and exponential formats.
+
+* Special "exec" plot is now retained.
+
+  When a circuit file is sourced that contains a .exec block, a
+  special plot is created that is active when the .exec block is
+  evaluated, and while the circuit lines are variable-substituted. 
+  The plot will contain any vectors that are created when the .exec
+  block is evaluated.  Previously, this plot was destroyed once the
+  circuit lines were processed, so it was never directly visible to
+  the user.  However, this could be confusing, as it is not clear what
+  happens to the created vectors, as any subsequent attempt to access
+  them fails.
+
+  Now, this plot is retained if it contains any vectors.
+  Example
+    .exec
+    let foo=1.2345
+    .endc
+    .control
+    print foo
+    .endc
+    v1 1 0 sin(0 1 $&foo%GHz)
+    ...
+
+  This will print the value of vector foo in the present release.  In
+  earlier releases, the "print foo" would genertate a vector not found
+  error.  If the plots are listed, one will see that there is a plot
+  ot type "exec" containing the vector foo.  This plot will be the
+  current plot until an analysis is run, at which point a new plot
+  will be created for the analysis results.
+
+
+BUGS FIXED
+---- -----
+
+* Monte Carlo analysis was broken.
+
+  Sorry, this was stupid.  This probably happened in 4.2.3.  The
+  examples would produce only fail points.
+
+* The find edge and find range with "all" flag set functions of the
+  check command require use of a "values" vector.  This is now checked
+  for and enforced, previously a program crash could occur on certain
+  (unlikely) input.
+  
+
+-------------------------------------------------------------------------------
+wrspice-4.2.4  12/8/2015
+
+
+BUGS FIXED
+---- -----
+
+* Fixed a bug that would crash the program when the command line
+  option -dnone (no graphics) was given and a run attempts to show an
+  iplot or mplot.
+
+* Windows only
+
+  The proc2mod, printtoraw, and multidec programs are now linked to
+  avoid libwinpthread-1.dll dependedce in Windows.  Also, wrspiced
+  was fixed to avoid multiple dependencies.  Previously, these programs
+  required DLLs from gtk2-bundle/bin to be in the search path.  Now,
+  none of these programs require DLLs from the gtk2_bundle.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.2.3  12/2/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New sweep command, swept parameter analysis
+
+  This command is an extended version of the loop command.  The loop
+  command is now an alias for the sweep command.
+
+  Syntax:
+  sweep [pstr1] start1 stop1 step1 [[pstr2] start2 stop2 step2] [analysis]
+
+  The command will repeat a specified analysis while sweeping parameter
+  values in one or two dimensions.  If the text tokens pstr1 and pstr2
+  are not given, operation is identical to the existing loop command,
+  where variables or vectors are set to the swept values as in operating
+  range analysis.
+
+  The pstr1 and pstr2 are lists of device names and parameters in the
+  format of the show command.  Full csh-style global subsitiution is
+  performed on the text, allowing wild-carding.  If the token contains
+  white space, it should be quoted.
+
+  All given parameters will be assigned each range value during the
+  sweep.  If a pstr is given, the variables and vectors otherwise used
+  to pass trial values are not set.  If the specification is
+  two-dimensional, both dimensions must have a pstr, or neither can
+  have a pstr.
+
+  As in the loop command, if there is no analysis given, an analysis
+  will be looked for in the circuit deck.
+
+* DC sweep analysis now allows sweeping device parameters.
+
+  In DC sweep analysis, including the case of dc analysis "chained" to
+  another type of analysis such as ac or tran, arbitrary device
+  parameter values can be swept.  The "source name" in the DC sweep
+  command can have the general form
+
+    devname[param]
+
+  where devname is the name of a device in the circuit, and param
+  is the name of a parameter of that device type (as can be listed
+  with the show command).  The square brackets are literal.
+
+  The square bracket and parameter name can be omitted from source
+  devices and resistors, capacitors, and inductors.  In this case
+  the swept value is understood to be the source voltage or current,
+  or the component value.
+
+  This differs from the sweep command in that no parameter wildcarding
+  is allowed.  The analysis supports multi-threads unlike the sweep
+  command.
+
+* Margin analysis check command now accepts parameters and ranges.
+
+  The check command now accepts arguments similar to the sweep
+  command.  These will override the values assigned in the circuit
+  file through the checkVAL1, etc.  vectors.  If pstrs are given, the
+  indicated device parameters will be varied, and the variables and
+  vectors otherwise used to pass trial values are not set.
+
+  The check command line is the only way at present to pass pstrs 
+  to the analysis.
+
+
+BUGS FIXED
+---- -----
+
+* In operating range analysis, the .exec lines were being executed
+  before every trial, which is incorrect.  They should be executed
+  only once, at the start of analysis.  This would break use of the
+  value vector for passing trial values if the vector was initialized
+  in the .exec block, where it would always be set to the initial
+  value ahead of each trial.  If the vector was not defined in the
+  .exec block, or if the value method is not used, analysis would work
+  ok.  The bug did not affect any of the examples.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.2.2  11/15/2015
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Important announcement about licensing.
+
+  The new license server xtlserv-4.2.1 now fully supports floating
+  licenses.  A floating license will allow running the program on
+  any host, provided that the total number of running processes
+  maintained by the license server is below a limit.
+
+  Although this may be convenient for some installations, it has
+  its drawbacks:
+
+    - Floating licensses will not work for local authentication, and
+      require continuous tcp contact to the license server.
+    - Floating licenses for Linux and Windows will cost the same.
+
+    Heads Up!
+    The Windows product prices will increase to match Linux/OS X
+    prices across the board after the first of the year.
+
+  Customers wishing to experiment with floating licenses should
+  contact Whiteley Research.  Full rollout will occur in the coming
+  weeks.
+
+* Minor improvements/fixes for the MALT optimizer, which is now
+  available in the freeware archive.
+
+  When using "wrspice -j" (jspice3 compatibility mode), the following
+  variables are effectively set:
+
+    noerrwin
+    sub_catmode=jspice3
+    subc_catchar=":"`
+
+  When using "wrspice -dnone", the "No graphics package available"
+  message is now suppressed.
+
+
+BUGS FIXED
+---- -----
+
+* Initialization timing bugs fixed.
+
+  Some initial startup things, such as checking for updates and
+  messages, were being done after the command line files were sourced. 
+  These are now done before.
+
+* The complex sqrt function now returns the principal root.
+
+  If z = sqrt(w), re(z) is always non-negative, and im(z) has the same
+  sign as im(w).  This will also affect returns from acos, acosh,
+  asin, asinh, which call sqrt internally.
+
+* The noerrwin variable wasn't working.
+
+  Setting this will now direct error output to the console and not to
+  the separate error window.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.2.1  9/30/2015
+
+Welcome to the first release of the 4.2 "production" branch.  Notes
+below apply relative to the final beta release 4.1.28.
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New install location and "SafeInstall" installation logic.
+
+  Applies to Linux/OS X only.  See note at the top of this document.
+
+* New messaging feature, and release notes display.
+
+  WRspice will check the wrcad.com web site for a broadcast message on
+  program startup.  If a message is found, and if the message has not
+  been seen before by the current user, the message will be displayed
+  in a pop-up window.  Thus, important information can be relayed to
+  WRspice users.
+
+  When a new release is started for the first time, the release notes
+  file will be displayed.
+
+* New $HOME/.wrproxy file and proxy command.
+
+  WRspice can now access the internet via a proxy, for checking and
+  downloading updates, for general web access through the help system,
+  and for http/ftp access to input files.
+
+  The url of the proxy is saved in the .wrproxy file in the user's
+  home directory.  This will be used by both Xic and WRspice.  The user
+  can create this file with a text editor: it consists of a single line
+  something like "http://proxy.foo.com:80".  The file can also be
+  created/updated from within WRspice with the proxy command.
+
+  The protocol must be http, https is not supported.
+  
+* File access via http, syntax change.
+
+  The httpget utility, which is used internally to transfer files
+  via http and ftp, no longer supports the -u username -p password
+  options.  Instead, the username and password must be encoded into the
+  url in the standard way, as for example "username:password@foo.com".
+  The -p option is now used to set a proxy url.
+
+* New tooltips.
+
+  Added "tooltips" to the main menus and buttons.  These are brief
+  descriptions that appear when the mouse pointer hovers over a
+  button.
+   
+* Change to gmax limiting and resistors.
+
+  The resistor model code now limits the resistance value to be
+  1/gmax, where the gmax parameter defaults to 1e6.  If the limiting
+  is applied, a warning message will be issued.
+
+* In-line '#' comments partially reverted.
+
+  In-line comments in shell commands using the '#' character,
+  for example
+
+    alter I0, dc=0.0021             #Main JTL
+
+  were enabled in 4.1.28;  This turned out to be monumentally
+  stupid, as it breaks things like
+
+    plot v1#branch
+
+  In this release, '#' inline comments are still allowed, but are
+  only triggered when the '#' is preceded by white space.  One can
+  add a backslash ahead of '#' to explicitly prevent a comment
+  interpretation.
+
+
+BUGS FIXED
+---- -----
+
+* Help viewer would fault on password-protected page (like the
+  distribution repository).
+
+* Input data from regular files was incorrectly being copied to a
+  temporary file.  This, probably among other subtle things, prevented
+  the edit command without arguments from opening the circuit file. 
+  It would open the temporary file, which was no longer in use and
+  therefor empty.
+

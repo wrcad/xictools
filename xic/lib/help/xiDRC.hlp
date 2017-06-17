@@ -1,0 +1,2970 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiDRC.hlp,v 1.48 2015/11/03 05:24:31 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiDRC.hlp
+!!TITLE
+xiDRC.hlp
+!!HTML
+
+!!SUBTOPICS
+xic:drcmenu
+drcrules
+spacetab
+userrules
+drc:assign
+xic:limit
+xic:sflag
+xic:intr
+xic:nopop
+xic:check
+xic:point
+xic:clear
+xic:query
+xic:erdmp
+xic:erupd
+xic:next
+xic:erlyr
+xic:dredt
+xic:ruleedit
+
+
+!! 091509
+!!KEYWORD
+xic:drcmenu drc
+!!TITLE
+Design Rule Checking
+!!HTML
+    The <b>DRC Menu</b> contains commands which control checking of <a
+    href="drcrules">design rules</a>.  The menu is accessible only in
+    physical mode, and design rule checking can only be applied in
+    physical mode.  <i>Xic</i> has the capability of checking for
+    design rule violations as any object is created or modified, and
+    for checking regions and cells interactively or in batch mode. 
+    The algorithm fully supports non-Manhattan geometry.  Design rules
+    are provided in the <a href="techfile">technology file</a>, or
+    interactively using the <a href="xic:dredt"><b>Edit Rules</b></a>
+    command.
+
+    <p>
+    The table below lists the commands found in the <b>DRC Menu</b>,
+    and supplies the internal command name and a brief description.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>DRC Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:limit"><b>Setup</b></a></td>
+      <td><tt>limit</tt></td> <td><b>DRC Parameter Setup</b></td>
+      <td>Set limits and other parameters</td></tr>
+    <tr><td><a href="xic:sflag"><b>Set Skip Flags</b></a></td>
+      <td><tt>sflag</tt></td>
+      <td>none</td> <td>Set skip flags</td></tr>
+    <tr><td><a href="xic:intr"><b>Enable Interactive</b></a></td>
+      <td><tt>intr</tt></td>
+      <td>none</td> <td>Set interactive DRC</td></tr>
+    <tr><td><a href="xic:nopop"><b>No Pop Up Errors</b></a></td>
+      <td><tt>nopop</tt></td>
+      <td>none</td> <td>No interactive errors list</td></tr>
+    <tr><td><a href="xic:check"><b>Batch Check</b></a></td>
+      <td><tt>check</tt></td> <td><b>DRC Run Control</b></td>
+      <td>Initiate DRC run</td></tr>
+    <tr><td><a href="xic:point"><b>Check In Region</b></a></td>
+      <td><tt>point</tt></td> <td>none</td>
+      <td>Test rules in region</td></tr>
+    <tr><td><a href="xic:clear"><b>Clear Errors</b></a></td>
+      <td><tt>clear</tt></td>
+      <td>none</td> <td>Erase error indicators</td></tr>
+    <tr><td><a href="xic:query"><b>Query Errors</b></a></td>
+      <td><tt>query</tt></td> <td>none</td> <td>Print error messages</td></tr>
+    <tr><td><a href="xic:erdmp"><b>Dump Error File</b></a></td>
+      <td><tt>erdmp</tt></td> <td>none</td> <td>Dump errors to file</td></tr>
+    <tr><td><a href="xic:erupd"><b>Update Highlighting</b></a></td>
+      <td><tt>erupd</tt></td> <td>none</td> <td>Update highlighting from
+      file</td></tr>
+    <tr><td><a href="xic:next"><b>Show Errors</b></a></td>
+      <td><tt>next</tt></td> <td>sub-window</td>
+      <td>Sequentially display errors from file</td></tr>
+    <tr><td><a href="xic:erlyr"><b>Create Layer</b></a></td>
+      <td><tt>erlyr</tt></td> <td>none</td> <td>Write highlight error
+       regions to objects on layer</td></tr>
+    <tr><td><a href="xic:dredt"><b>Edit Rules</b></a></td>
+      <td><tt>dredt</tt></td> <td><b>Design Rule Editor</b></td>
+      <td>Edit rules for layers</td></tr>
+    </table>
+
+    <p>
+    After a check is performed, violating objects are shown on-screen
+    with the border highlighted, and a highlighting border is drawn
+    around the test region containing the error.  These objects are
+    <i>not</i> removed from the database.  It is up to the user to fix
+    or ignore errors as they are indicated.
+
+    <p>
+    Presently, the indication of a violation is not saved as the cell
+    is written.
+
+    <p>
+    Design rules are specified in the technology file, or with the
+    <b>Design Rule Editor</b> made visible with the <b>Edit Rules</b>
+    button in the <b>DRC Menu</b>.  The rules are specified by a
+    keyword, followed by an optional source region specification,
+    followed by parameters.  In addition to the built-in rule
+    primitives to be described, a capability exists for users to
+    define specialized or more complex tests.
+
+!!SEEALSO
+xic:commands
+
+!!REDIRECT Connected    drcrules#Connected
+!!REDIRECT NoHoles      drcrules#NoHoles
+!!REDIRECT Exist        drcrules#Exist
+!!REDIRECT Overlap      drcrules#Overlap
+!!REDIRECT IfOverlap    drcrules#IfOverlap
+!!REDIRECT NoOverlap    drcrules#NoOverlap
+!!REDIRECT AnyOverlap   drcrules#AnyOverlap
+!!REDIRECT PartOverlap  drcrules#PartOverlap
+!!REDIRECT AnyNoOverlap drcrules#AnyNoOverlap
+!!REDIRECT MinArea      drcrules#MinArea
+!!REDIRECT MaxArea      drcrules#MaxArea
+!!REDIRECT MinEdgeLength drcrules#MinEdgeLength
+!!REDIRECT MaxWidth     drcrules#MaxWidth
+!!REDIRECT MinWidth     drcrules#MinWidth
+!!REDIRECT MinSpace     drcrules#MinSpace
+!!REDIRECT MinSpaceTo   drcrules#MinSpaceTo
+!!REDIRECT MinSpaceFrom drcrules#MinSpaceFrom
+!!REDIRECT MinOverlap   drcrules#MinOverlap
+!!REDIRECT MinNoOverlap drcrules#MinNoOverlap
+
+!!REDIRECT Diagonal     drcrules#MinSpace
+!!REDIRECT SameNet      drcrules#MinSpace
+!!REDIRECT Enclosed     drcrules#MinSpaceFrom
+!!REDIRECT Opposite     drcrules#MinSpaceFrom
+
+!! 010715
+!!KEYWORD
+drcrules
+!!TITLE
+Built-In Design Rules
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="drcrules#glob"><b>Global Rules</b></a><br>
+    <a href="drcrules#area"><b>Area Rules</b></a><br>
+    <a href="drcrules#edge"><b>Edge Rules</b></a>
+    </td></tr></table>
+
+    <p>
+    <i>Xic</i> provides a number of internal rule evaluation
+    functions, to be described in this section.  These should cover
+    basic and common design rules as published for a particular
+    fabrication process.  More complex rules can perhaps be
+    accommodated with the <a href="userrules">user-defined</a> rule
+    capability.
+
+    <p>
+    Design rules are associated with <i>Xic</i> physical and <a
+    href="drvlayer">derived</a> layers.  In the technology file, the
+    rule definitions appear in layer blocks for physical and derived
+    layers.
+
+    <p>
+    The rules, and derived layers, make use of <a
+    href="layer_exp">layer expressions</a>.  A layer expression can be
+    a single layer name, or a more complicated expression involving
+    other normal and derived layer names.  In a rule specification,
+    the expression syntactically represents a single token, though the
+    expression may include white space.  The expression in the
+    specification is parsed as far as possible (white space is
+    ignored), and the rest of the line is taken as further input to
+    the specification.
+
+    <p>
+    The result of the evaluation of a layer expression can be thought
+    of as a set of geometric figures representing areas where the
+    expression is true.  Below are two example rule specifications
+    that use layer expressions.
+
+    <blockquote><tt>
+      Overlap M1 | M2  #layer must be covered by M1 or M2<br>
+      NoOverlap Via&!M1 #layer can't overlap Via without M1
+    </tt></blockquote>
+
+    <p>
+    Where a layer expression can be used, a derived layer can also be
+    used.  The examples above can be expressed alternatively using
+    derived layers.
+
+    <blockquote><tt>
+    DerivedLayer m1orm2 M1 | M2<br>
+    DerivedLayer vianotm1 Via&!M1<br>
+    ...<br>
+    Overlap m1orm2  #layer must be covered by M1 or M2<br>
+    NoOverlap vianotm1 #layer can't overlap Via without M1
+    </tt></blockquote>
+
+    Whether it is "better" to use layer expressions or derived layers
+    in the rules is still a bit open, as derived layers are a new
+    feature.  There may be performance differences, as evaluation is
+    quite different.  In the case of derived layers, all geometry on
+    the derived layers is computed before a DRC run, and cleared after
+    the run.  Thus, during rule evaluation, existing geometry is
+    simply accessed.  When a layer expression is used, the expression
+    is evaluated in test regions while the rule is being evaluated. 
+    Thus, the expression requires evauation, over a tiny area, many
+    times.  It is not clear that one method or the other would be
+    generally faster, users should experiment.  Use of layer
+    expressions may be preferred if memory is constraining, as the
+    amount of memory required to save derived layer geometry may be
+    substantial.
+
+    <p>
+    Use of derived layers may be required for certain types of rules.
+    For example, suppose that we have a constraint:
+
+    <blockquote><tt>
+    (NP or PP) Enclosure of PO 0.15
+    </tt></blockquote>
+
+    What this means is that layers NP or PP must cover layer PO, with
+    0.15 microns distance surrounding PO covered by NP or PP.  This
+    translates directly to the <tt>MinNoOverlap</tt> rule, but applied
+    on the layer combination NP|PP, which can be accomplished with a
+    derived layer.
+
+    <blockquote><tt>
+    DerivedLayer implant NP|PP<br>
+    MinNoOverlap PO 0.15 # (NP or PP) Enclosure of PO 0.15
+    </tt></blockquote>
+
+    <p>
+    Ordinarily, a design rule evaluation proceeds as follows.  All
+    evaluation is performed using a "pseudo-flat" representation of
+    the cell hierarchy, which effectively translates the coordinates
+    of every object in the hierarchy to the space of the top-level
+    cell.  Each object in this space can be tested without having to
+    know which cell in the hierarchy actually contains the object. 
+    The "global" tests, that are not associated with individual
+    objects, such as checking for holes, are done first.  Then, the
+    per-object tests are performed on each object in the pseudo-flat
+    representation.  For each object (box, polygon, or wire), each
+    test listed for the layer of the object is run in sequence.  The
+    per-area tests, which are done first, are applied to the area of
+    the object, and the remaining tests are applied to constructed
+    regions along each edge of the object.
+
+    <p>
+    Below are descriptions of the built-in design rule test functions,
+    and the syntax used to specify the test in a layer block in the
+    technology file.  Each rule line starts with the defining keyword,
+    followed by an optional <tt>Region</tt> expression, required
+    parameters, and an optional explanation string.
+
+    <p>
+    If the <tt>Region</tt> keyword and associated expression are given
+    in the rule specification, the source area becomes those regions
+    where the expression is true, within the boundaries of the object. 
+    The per-area tests are applied to the areas where the expression
+    is true, and the other tests are applied to the edges of these
+    regions.  In simple cases, the <tt>Region</tt> expression is not
+    necessary, but it does provide additional capability for more
+    complex testing.
+
+    <p>
+    Use of <tt>Region</tt> is very similar to defining the rule on a
+    derived layer consisting of the original layer ANDed with the
+    <tt>Region</tt> expression.
+
+    <p>
+    An optional descriptive string can follow the rule specification.
+    This string will be saved and included in violation reports.
+    It is a good idea start the explanation string (if any) with the
+    script comment character '#' to guarantee termination of the
+    preceding expression.  Recall that white space is ignored when
+    parsing the expression.  Most of the time, the parser can
+    recognize the end of the expression, so the comment character is
+    not necessary, but it is possible that the explanation string
+    might start with an operator token such as '*' or a reserved
+    keyword such as "<tt>not</tt>", and the expression parse would
+    fail.
+
+    <p>
+    For certain rules, the description may have multiple components,
+    i.e., it actually consists of multiple strings.  This syntax will
+    be described below for the affected rules, but is amounts to
+    simply double-quoting the individual strings.  When constraints
+    are imported from a Virtuoso ASCII technology file, there are
+    occasions where multiple constraints, each with a description
+    string, map to a single <i>Xic</i> primitive rule.  These strings
+    will be recovered when converting back to Virtuoso format with the
+    <a href="!dumpcds"><b>!dumpcds</b></a> command.
+
+    <p>
+    In the discussion that follows, the following definitions will be
+    used.  An "object" is a physical entity found in the database.  A
+    "figure" is a geometrical shape and an associated layer expression
+    which is true within the shape.  A figure can represent an object
+    and the object's layer, for example, or one of the regions where a
+    layer expression is true, and the layer expression.  The "source"
+    is a set of figures where rule evaluation is to be performed.  If
+    no <tt>Region</tt> is given, the source is simply the figure
+    representing the object's geometry and the object's layer. 
+    Otherwise, the source is the set of figures where the region
+    expression is true within the object.  Two or more figures are
+    "compatible" if they are associated with the same layer
+    expression.
+
+    <a name="glob"></a>
+    <h2>Global Rules</h2>
+
+    The first two rules operate differently from the others, in that
+    they do not operate on a per-object basis, rather they operate on
+    an entire pseudo-flattened layer.  As such, they can be
+    computationally and memory intensive.  These "global" tests are
+    performed before the others, however they are performed only if
+    the area being checked is the entire cell area.
+
+    <a name="Connected"></a>
+    <dl>
+    <dt><b>Connected</b>
+    <dd>Syntax: <tt>Connected [Region</tt> <i>region_expr</i><tt>]</tt>
+        [<i>string</i>]<br>
+
+    <p>
+    If given in the layer block, the layer or region description
+    (which is applied to the whole layer) is tested to see that all
+    figures are mutually connected (touch or overlap).  Disjoint
+    groups of figures are flagged as violations in the top level cell. 
+    The group with the largest area is assumed to be the "correct"
+    group.
+    </dl>
+
+    <a name="NoHoles"></a>
+    <dl>
+    <dt><b>NoHoles</b>
+    <dd>Syntax: <tt>NoHoles</tt> [<tt>Region</tt> <i>region_expr</i>]
+        [<tt>MinArea</tt> <i>area</i>] [<tt>MinWidth</tt> <i>width</i>]
+        [<i>string</i>]<br>
+
+    <p>
+    If given in the layer block, the layer or region description
+    (which is applied to the whole layer) is tested for clear area
+    surrounded by dark area.  Each such area is optionally tested.  If
+    the <tt>MinArea</tt> is given and positive and the clear area is
+    smaller, a violation will be reported.  If the <tt>MinWidth</tt>
+    is given and positive, the clear area must be large enough so that
+    for any edge, a rectangular projection along the edge extending
+    into the interior by the given width will be clear.  If not, a
+    violation will be reported.  If neither of the <tt>MinArea</tt> or
+    <tt>MinWidth</tt> are given, then any such clear area found will
+    be flagged as a violation.
+
+    <p>
+    The <tt>MinArea</tt> and <tt>MinWidth</tt> clauses are set by the
+    <tt>minHoleArea</tt> and <tt>minHoleWidth</tt> constraints when
+    importing Virtuoso technology data.  Each constraint may have a
+    separate reference string.  To keep these distinguishable, the
+    <i>string</i> can actually be three double quoted strings, e.g.,
+    the form is
+
+    <blockquote><tt>
+    "# rule description" "minHoleArea string" "minHoleWidth string"
+    </tt></blockquote>
+
+    This guarantees that the original reference strings are
+    regenerated when the <a href="!dumpcds"><b>!dumpcds</b></a>
+    command is used to generate a Virtuoso technology file.  If a
+    component string doesn't exist, one can use "" (two double-quote
+    marks) as a placeholder.  Strings to the right that don't exist
+    can be skipped entirely.
+    </dl>
+
+    <a name="area"></a>
+    <h2>Area Rules</h2>
+
+    The following are the per-area tests, and are applied to the area
+    of each source figure, for each object in the pseudo-flat
+    representation.
+
+    <a name="Exist"></a>
+    <dl>
+    <dt><b>Exist</b>
+    <dd>Syntax: <tt>Exist</tt> [<i>string</i>]<br>
+
+    <p>
+    This rule will indicate a violation if any dark area is found on
+    the layer containing the rule.  Unlike most if not all other rules,
+    no <tt>Region</tt> specification is allowed.
+
+    <p>
+    The <tt>Exist</tt> rule is intended for <a href="drvlayer">derived
+    layers</a> whose construction would indicate an incorrect
+    combination of other layers (normal and derived).  Layer
+    expressions and derived layers can be used as alternatives to many
+    of the built in rules, and for formulating new rules.  The results
+    are a bit different from the per-object and per-edge
+    iteration of the normal rule evaluation flow.  All violations are
+    found as objects on the derived layer, there is no search limit
+    (e.g., the normal flow may limit reporting to one violation per
+    object, though an object may be associated with multiple
+    violations).  The approach gives the rule-author flexibility.
+    </dl>
+
+    <a name="Overlap"></a>
+    <dl>
+    <dt><b>Overlap</b>
+    <dd>Syntax: <tt>Overlap [Region</tt> <i>region_expr</i><tt>]</tt>
+        <i>expression</i> [<i>string</i>]<br>
+
+    <img src="overlap.gif"><br>
+    This test fails if any source figure is not completely covered by
+    the figures associated with the <i>expression</i>.  In other
+    words, for the situation where no <tt>Region</tt> is given, the
+    <i>expression</i> must evaluate true at every point of every
+    object on the present layer.  This is illustrated in the figure
+    for no <tt>Region</tt> and an expression consisting of a single
+    layer.
+    </dl>
+    
+    <a name="IfOverlap"></a>
+    <dl>
+    <dt><b>IfOverlap</b>
+    <dd>Syntax: <tt>IfOverlap [Region</tt> <i>region_expr</i><tt>]</tt>
+        <i>expression</i> [<i>string</i>]<br>
+
+    <img src="ifoverlap.gif"><br>
+    This test fails if any source figure is partially covered by the
+    figures associated with the <i>expression</i>.  Unlike the
+    <b>Overlap</b> keyword, this test does not fail if there is no
+    intersection.  The <i>expression</i> must be either always true or
+    always false at every point of a source figure, or for every
+    object on the present layer if no <tt>Region</tt> is given.  The
+    figure illustrates use of this keyword, for no <tt>Region</tt> and
+    an expression consisting of a single layer.
+    </dl>
+
+    <a name="NoOverlap"></a>
+    <dl>
+    <dt><b>NoOverlap</b>
+    <dd>Syntax: <tt>NoOverlap [Region</tt> <i>region_expr</i><tt>]</tt>
+        <i>expression</i> [<i>string</i>]<br>
+
+    <img src="nooverlap.gif"><br>
+    This test fails if any source figure has non-zero intersection
+    area with the figures associated with the <i>expression</i>.  The
+    <i>expression</i> must evaluate false at every point of every
+    source figure.  This is illustrated in the figure for no
+    <tt>Region</tt> and an expression consisting of a single layer.
+    </dl>
+
+    <a name="AnyOverlap"></a>
+    <dl>
+    <dt><b>AnyOverlap</b>
+    <dd>Syntax: <tt>AnyOverlap [Region</tt> <i>region_expr</i><tt>]</tt>
+       <i>expression</i> [<i>string</i>]<br>
+
+    <img src="anyoverlap.gif"><br>
+    The <b>AnyOverlap</b> test signals a violation if any source figure
+    has no intersection area with the figures associated with the
+    <i>expression</i>.  This is illustrated in the figure for no
+    <tt>Region</tt> and an expression consisting of a single layer.
+    </dl>
+
+    <a name="PartOverlap"></a>
+    <dl>
+    <dt><b>PartOverlap</b>
+    <dd>Syntax: <tt>PartOverlap [Region</tt> <i>region_expr</i><tt>]</tt>
+       <i>expression</i> [<i>string</i>]<br>
+
+    <img src="partoverlap.gif"><br>
+    The <b>PartOverlap</b> test signals a violation if any source figure
+    is either completely covered or completely uncovered by the
+    figures associated with the <i>expression</i>.  This is
+    illustrated in the figure for no <tt>Region</tt> and an expression
+    consisting of a single layer.
+    </dl>
+
+    <a name="AnyNoOverlap"></a>
+    <dl>
+    <dt><b>AnyNoOverlap</b>
+    <dd>Syntax: <tt>AnyNoOverlap [Region</tt> <i>region_expr</i><tt>]</tt>
+       <i>expression</i> [<i>string</i>]<br>
+
+    <img src="anynooverlap.gif"><br>
+    The <b>AnyNoOverlap</b> test signals a violation if any source figure
+    is completely covered by the figures associated with the
+    <i>expression</i>.  This is illustrated in the figure for no
+    <tt>Region</tt> and an expression consisting of a single layer. 
+    </dl>
+
+    <p>
+    The returns from the various Overlap tests are summarized in the 
+    table below:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>rule</th><th>total coverage</th><th>partial coverage</th>
+        <th>no coverage</th></tr>
+ <tr><td align=left>Overlap</td><td>ok</td><td>error</td><td>error</td></tr>
+ <tr><td align=left>IfOverlap</td><td>ok</td><td>error</td><td>ok</td></tr>  
+ <tr><td align=left>NoOverlap</td><td>error</td><td>error</td><td>ok</td></tr>  
+ <tr><td align=left>AnyOverlap</td><td>ok</td><td>ok</td><td>error</td></tr>
+ <tr><td align=left>PartOverlap</td><td>error</td><td>ok</td><td>error</td></tr>
+ <tr><td align=left>AnyNoOverlap</td><td>error</td><td>ok</td><td>ok</td></tr>  
+    </table>
+    </blockquote>
+
+    <a name="MinArea"></a>
+    <dl>
+    <dt><b>MinArea</b>
+    <dd>Syntax: <tt>MinArea [Region</tt> <i>region_expr</i><tt>]</tt>
+        <i>area</i> [<i>string</i>]<br>
+
+    <p>
+    For each object tested, the neighborhood of the object is searched
+    for mutually touching, source compatible objects.  The area
+    covered by the objects is computed, and this is compared with the
+    given area (which is given in square microns).  If the computed
+    area is less than the test value a DRC violation is indicated.
+
+    <p>
+    When importing Virtuoso technology data, the <tt>minArea</tt>
+    constraint maps directly to this rule.
+    </dl>
+
+    <a name="MaxArea"></a>
+    <dl>
+    <dt><b>MaxArea</b>
+    <dd>Syntax: <tt>MaxArea [Region</tt> <i>region_expr</i><tt>]</tt>
+        <i>area</i> [<i>string</i>]<br>
+
+    <p>
+    The total area of the source figures is compared with the given
+    area (which is given in square microns).  If the area of the
+    figures is greater than the test value a DRC violation is
+    indicated.  The area is measured on a per-object basis, and is the
+    sum if there are multiple figures (due to a region expression). 
+    This does not account for adjacent objects.
+    </dl>
+
+    <a name="edge"></a>
+    <h2>Edge Rules</h2>
+
+    In the discussion to follow, the "source" is the material of the
+    object being checked, either a layer (on which the rule is
+    defined) or a layer expression result if the <tt>Region</tt>
+    specification is given.  The "target" is the set of figures
+    associated with the <i>expression</i> supplied to the rule, for
+    those rules that take an <i>expression</i>.
+
+    <p>
+    The rules described in this section are "edge tests" where the
+    region of interest is generally a small constructed area along an
+    edge.  The test is applied for each applicable edge portion of
+    each source figure.  The constructed area is rectangular, parallel
+    to the source figure edge, and may extend out of the source
+    figure, or into the source figure.  These extend only along the
+    parts of the source figure edge where certain conditions apply, as
+    will be described.  The width of the test area (perpendicular to
+    the figure edge) is the dimension associated with the rule.
+
+    <p>
+    We find the edge portions of a source figure as follows.  We
+    iterate through the edges.  For each edge, we construct a
+    unit-width test area that extends outside of the figure.  We throw
+    out the parts of the edge where the test area intersects "source
+    compatible figures", meaning the same layer or layer expresion as
+    the source.  Thus we throw out the part of the edge which is not
+    really an edge, but a boundary between dark areas of the same type
+    and is therefor not a physical discontinuity.  The resulting edge
+    portion is the starting point for further restrictions that are
+    rule-specific.
+
+    <p>
+    Below is a table which identifies the edge portions identified for
+    the built-in rules, and the test performed.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>rule</th><th>where</th><th>test</th><th>src out</th>
+      <th>trg in</th>  <th>trg out</th></tr>
+    <tr><td><tt>MinEdgeLength</tt></td><td>in</td><td>len</td><td>u</td>
+      <td>c</td><td>c</td></tr>
+    <tr><td><tt>MaxWidth</tt></td>    <td>in</td> <td>snf</td><td>u</td>
+      <td> </td><td> </td></tr>
+    <tr><td><tt>MinWidth</tt></td>    <td>in</td> <td>sf</td> <td>u</td>
+      <td> </td><td> </td></tr>
+    <tr><td><tt>MinSpace</tt></td>    <td>out</td><td>se</td> <td>u</td>
+      <td> </td><td> </td></tr>
+    <tr><td><tt>MinSpaceTo</tt></td>  <td>out</td><td>te</td> <td>u</td>
+      <td>u</td><td>x</td></tr>
+    <tr><td><tt>MinSpaceFrom</tt></td><td>out</td><td>tf</td> <td>u</td>
+      <td>c</td><td>x</td></tr>
+    <tr><td><tt>MinOverlap</tt></td>  <td>in</td> <td>tf</td> <td>u</td>
+      <td>c</td><td>x</td></tr>
+    <tr><td><tt>MinNoOverlap</tt></td><td>in</td> <td>te</td> <td>u</td>
+      <td>u</td><td>x</td></tr>
+    </table>
+
+    <p>
+    The first column specifies the built-in rule name of the "edge"
+    rules.  These will be described in more detail below.  The
+    <b>where</b> column indicates the direction of the constructed
+    test area along a source figure edge, either projecting into the
+    figure or outside of the figure.  The <b>test</b> indicates the
+    type of test to perform in the constructed area.  These are
+
+    <blockquote>
+    <dl>
+    <dt>len<dd>
+    Measure the edge length and compare to given dimension.
+    <dt>snf<dd>
+    The test area is not fully covered by source-compatible material.
+    <dt>sf<dd>
+    The test area is fully covered by source-compatible material.
+    <dt>se<dd>
+    The test area contains no source-compatible material.
+    <dt>tf<dd>
+    The test area is fully covered by target-compatible material.
+    <dt>te<dd>
+    The test area contains no target-compatible material.
+    </dl>
+    </blockquote>
+
+    <p>
+    The three remaining columns indicate the part of the source figure
+    edge that is used to construct the test area.  These indicate the
+    required coverage of the source material just outside the edge,
+    and target material just inside and just outside of the edge.  The
+    possibilities are
+
+    <blockquote>
+    <dl>
+    <dt>c<dd>
+    Covered by the material.
+    <dt>u<dd>
+    Not covered by the material.
+    <dt>x<dd>
+    Doesn't matter.
+    </dl>
+    </blockquote>
+
+    <p>
+    So, for example, for <tt>MinSpaceTo</tt>, we take the part of the
+    edges that are not covered by source just outside of the edge,
+    and not covered by target just inside of the edge.  The test will
+    pass if the constructed area, which extends out of the figure,
+    intersects no target material.
+
+    <p>
+    Each of the "edge" rules recognize two additional keywords:
+    <dl>
+    <dt><tt>Outside</tt> <i>layer_expr</i><dd>
+    This will apply when identifying the part of the edge of a source
+    figure to use when constructing test areas.  The given layer expression
+    must be dark along the edge just outside of the figure, in the parts of
+    the edge to use for the test area.  This provides an additional
+    rather arbitrary constraint on the test area construction which may
+    be of use in some cases.
+    </dl>
+
+    <dl>
+    <dt><tt>Inside</tt> <i>layer_expr</i><dd>
+    This is very similar to the <tt>Outside</tt> constraint, but
+    applies to the side of the edge just inside of the figure.  Only
+    the parts of the edge where the given layer expression is dark
+    just inside of the figure are considered for edges of the test
+    area.
+    </dl>
+
+    For example:
+    <blockquote>
+    "The minimum distance to CO from a NP/PP butt edge over OD is 0.06
+    microns."
+    </blockquote>
+
+    This can be implemented as
+    <blockquote><tt>
+    PhysLayer NP<br>
+    MinSpaceTo Region OD Inside !PP Outside PP CO 0.06<br>
+    PhysLayer PP<br>
+    MinSpaceTo Region OD Inside !NP Outside NP CO 0.06
+    </tt></blockquote>
+
+    The built-in edge rules are described in more detail below.  In each,
+    for simplicity we will use the following as an abbreviation for the
+    syntax elements:
+    <dl>
+    <dt><i>EdgeArgs</i><dd>
+    [<tt>Region</tt> <i>region_expr</i>]
+    [<tt>Inside</tt> <i>inside_expr</i>]
+    [<tt>Outside</tt> <i>outside_expr</i>]
+    </dl>
+
+    <a name="MinEdgeLength"></a>
+    <dl>
+    <dt><b>MinEdgeLength</b>
+    <dd>Syntax: <tt>MinEdgeLength</tt> [<i>EdgeArgs</i>]
+        <i>expression length</i> [<i>string</i>]<br>
+
+    <img src="minedgelength.gif"><br>
+    This test checks the length of the edges where source and target
+    figures intersect.  For each edge of the source figure, the parts
+    of the edge where the <i>expression</i> is true on both sides of
+    the edge are considered.  If the length of the part is less than
+    the given <i>length</i>, a violation is flagged.
+
+    <p>
+    Example:
+    <blockquote>
+    Rule:  "M3 width must be 2u or greater when crossing over M2 edges."
+    </blockquote>
+ 
+    <p>
+    This can be handled in two ways.  The first method is to put the
+    rule in the M2 block:
+ 
+    <p>
+    <pre>
+    Layer M2
+    ...
+    MinEdgeLength M3 2
+    </pre>
+
+    <p>
+    The second approach is to put a slightly different implementation
+    into the M3 block.  This has a problem in that if the M3 is
+    composed of several objects which together provide the minimum
+    edge length, this test will fail since it looks at the objects
+    individually.
+
+    <p>
+    <pre>
+    Layer M3
+    ...
+    MinEdgeLength Region M2 M3 2
+    </pre>
+    </dl>
+
+    <a name="MaxWidth"></a>
+    <dl>
+    <dt><b>MaxWidth</b>
+    <dd>Syntax: <tt>MaxWidth</tt> [<i>EdgeArgs</i>]
+        <i>width_in_microns</i> [<i>string</i>]<br>
+
+    <p>
+    For the parts of each edge of the source that are not coincident
+    or overlapping with source-compatible figures, and the edge length
+    is greater than the given dimension, a rectangle extending
+    normally from the edge into the source figure by the given
+    dimension plus a tiny extra is constructed.  The test fails if
+    this constructed rectangle is completely covered by
+    source-compatible figures.
+
+    <p>
+    The "tiny extra" is one internal unit for Manhattan edges.  An
+    additional "fudge factor" is added for non-Manhattan edges to
+    overcome roundoff error.
+
+    <p>
+    When importing Virtuoso technology data, the <tt>maxWidth</tt>
+    constraint maps directly to this rule.
+    </dl>
+
+    <a name="MinWidth"></a>
+    <dl>
+    <dt><b>MinWidth</b>
+    <dd>Syntax: <tt>MinWidth</tt> [<i>EdgeArgs</i>]
+        <i>width_in_microns</i> [<tt>Diagonal</tt> <i>alt_width</i>]
+        [<i>string</i>]<br>
+
+    <img src="minwidth.gif"><br>
+    For the parts of each edge of the source that are not coincident
+    or overlapping with source-compatible figures, a rectangle
+    extending normally from the edge into the source figure by the
+    given dimension is constructed.  The test fails if this
+    constructed rectangle is not completely covered by
+    source-compatible figures.  Note that the angle formed by two
+    adjacent edges of a figure measured inside of the figure must be
+    90 degrees or larger, i.e., this rule prevents acute angles in
+    polygons.  The figure illustrates the test performed under this
+    keyword, for no <tt>Region</tt>.
+
+    <p>
+    If the <tt>Diagonal</tt> clause is given and the <i>alt_width</i>
+    is positive, the <i>alt_width</i> will be used when the edge being
+    tested is nonorthogonal.
+
+    <p>
+    The <b>MinWidth</b> test also fails if the length of a line
+    defined by the overlap points of two mutually overlapping corners
+    of a source figure and another compatible figure is less than the
+    given dimension, including the condition where corners of the two
+    figures touch but the intersection area is zero.
+
+    <p>
+    When importing Virtuoso technology data, the <tt>minWidth</tt>
+    constraint maps directly to this rule.
+
+    <p>
+    The <tt>Diagonal</tt> clause is set by <tt>minDiagonalWidth</tt>
+    constraint when importing virtuoso technology data.  This may have
+    its own reference string.  To keep this distinguishable, the
+    <i>string</i> can actually be two double-quoted strings, e.g., the
+    form is
+
+    <blockquote><tt>
+    "# rule description" "minDiagonalWidth string"
+    </tt></blockquote>
+
+    This guarantees that the original reference strings are
+    regenerated when the <a href="!dumpcds"><b>!dumpcds</b></a>
+    command is used to generate a Virtuoso technology file.  If a
+    component string doesn't exist, one can use "" (two double-quote
+    marks) as a placeholder.  Strings to the right that don't exist
+    can be skipped entirely.
+    </dl>
+
+    <a name="MinSpace"></a>
+    <dl>
+    <dt><b>MinSpace</b>
+    <dd>Syntax: <tt>MinSpace</tt> [<i>EdgeArgs</i>]
+        <i>space_in_microns</i> | <tt>SpacingTable</tt> <i>table definition</i>
+        [<tt>Diagonal</tt> <i>diag_space</i>]
+        [<tt>SameNet</tt> <i>snet_space</i>] [<i>string</i>]<br>
+
+    <img src="minspace.gif"><br>
+    For the parts of each edge of the source that are not coincident
+    or overlapping with source-compatible figures, a rectangle
+    extending normally from the edge out of the source figure by the
+    given dimension is constructed.  The test fails if the constructed
+    rectangle has nonzero intersection area with source-compatible
+    figures.  Note that the angle formed by two adjacent edges of a
+    figure measured inside the figure must be 90 degrees or greater,
+    i.e., this rule prevents acute notches in polygons, and acute
+    bends in wires.  The figure illustrates the test performed under
+    this keyword, for no <tt>Region</tt>.
+
+    <p>
+    If a <a href="spacetab">spacing table</a> is specified and active,
+    the dimension used is computed from the spacing table, for
+    Manhattan edges.  An inactive table will still supply the default
+    spacing, which is taken as the <i>space_in_microns</i>.
+
+    <p>
+    If the <tt>Diagonal</tt> clause is given with positive
+    <i>diag_space</i>, then the <i>diag_space</i> value will be used
+    when the edge being tested is nonorthogonal.
+
+    <p>
+    The <tt>SameNet</tt> clause is currently not implemented, and its
+    presence has no effect.
+
+    <p>
+    The <b>MinSpace</b> test also fails if the space from a corner of
+    a source figure to another non-touching compatible figure is less than
+    the dimension.
+
+    <p>
+    When importing Virtuoso technology data, the <tt>minSpacing</tt>
+    single-layer constraint maps directly to this rule.
+
+    <p>
+    The <tt>Diagonal</tt> and <tt>SameNet</tt> clauses are set by
+    <tt>minDiagonalSpacing</tt> and <tt>minSameNetSpacing</tt>
+    single-layer constraints when importing virtuoso technology data. 
+    These may have their own reference strings.  To keep these
+    distinguishable, the <i>string</i> can actually be three
+    double-quoted strings, e.g., the form is
+
+    <blockquote><tt>
+    "# rule description" "minDiagonalSpacing string" "minSameNetSpacing string"
+    </tt></blockquote>
+
+    This guarantees that the original reference strings are
+    regenerated when the <a href="!dumpcds"><b>!dumpcds</b></a>
+    command is used to generate a Virtuoso technology file.  If a
+    component string doesn't exist, one can use "" (two double-quote
+    marks) as a placeholder.  Strings to the right that don't exist
+    can be skipped entirely.
+    </dl>
+
+    <a name="MinSpaceTo"></a>
+    <dl>
+    <dt><b>MinSpaceTo</b>
+    <dd>Syntax: <tt>MinSpaceTo</tt> [<i>EdgeArgs</i>]
+        <i>expression</i>
+        <i>space_in_microns</i> | <tt>SpacingTable</tt> <i>table definition</i>
+        [<tt>Diagonal</tt> <i>diag_space</i>]
+        [<tt>SameNet</tt> <i>snet_space</i>] [<i>string</i>]<br>
+
+    <img src="minspaceto.gif"><br>
+    For the parts of each edge of the source that are not coincident
+    or overlapping with source-compatible figures or with target
+    figures which extend into the interior of the source figure, a
+    rectangle extending normally from the edge out of the source
+    figure by the given dimension is constructed.  The test fails if
+    the constructed rectangle has nonzero intersection area with
+    target figures.  Note that overlap of the two figures is never
+    flagged as a <b>MinSpaceTo</b> violation, but touching figures
+    will generate a violation.  The figure illustrates the test
+    performed under this keyword, for no <tt>Region</tt> and an
+    <i>expression</i> consisting of a single layer.
+
+    <p>
+    If a <a href="spacetab">spacing table</a> is specified and active,
+    the dimension used is computed from the spacing table, for
+    Manhattan edges.  An inactive table will still supply the default
+    spacing, which is taken as the <i>space_in_microns</i>.
+
+    <p>
+    If the <tt>Diagonal</tt> clause is given with positive
+    <i>diag_space</i>, then the <i>diag_space</i> value will be used
+    when the edge being tested is nonorthogonal.
+
+    <p>
+    The <tt>SameNet</tt> clause is currently not implemented, and its
+    presence has no effect.
+
+    <p>
+    The <b>MinSpaceTo</b> test also fails if the distance from a
+    corner of the source figure to a non-touching target figure is
+    less than the dimension.  The corner test is skipped if the corner
+    point is on the edge of or internal to another figure compatible
+    with either the source or the <i>expression</i>.
+
+    <p>
+    When importing Virtuoso technology data, the <tt>minSpacing</tt>
+    two-layer constraint maps directly to this rule.
+
+    <p>
+    The <tt>Diagonal</tt> and <tt>SameNet</tt> clauses are set by
+    <tt>minDiagonalSpacing</tt> and <tt>minSameNetSpacing</tt>
+    two-layer constraints when importing virtuoso technology data. 
+    These may have their own reference strings.  To keep these
+    distinguishable, the <i>string</i> can actually be three
+    double-quoted strings, e.g., the form is
+
+    <blockquote><tt>
+    "# rule description" "minDiagonalSpacing string" "minSameNetSpacing string"
+    </tt></blockquote>
+
+    This guarantees that the original reference strings are
+    regenerated when the <a href="!dumpcds"><b>!dumpcds</b></a>
+    command is used to generate a Virtuoso technology file.  If a
+    component string doesn't exist, one can use "" (two double-quote
+    marks) as a placeholder.  Strings to the right that don't exist
+    can be skipped entirely.
+    </dl>
+
+    <a name="MinSpaceFrom"></a>
+    <dl>
+    <dt><b>MinSpaceFrom</b>
+    <dd>Syntax: <tt>MinSpaceFrom</tt> [<i>EdgeArgs</i>]
+        <i>expression dimension_in_microns</i>
+        [<tt>Enclosed</tt> <i>enc_dimen</i>]
+        [<tt>Opposite</tt> <i>dimen1 dimen2</i>] [<i>string</i>]<br>
+
+    <img src="minspacefrom.gif"><br>
+    For the parts of each edge of the source that are not coincident
+    or overlapping with source-compatible figures but are coincident
+    or overlapping with target figures which extend to the interior of
+    the source figure, a rectangle extending normally from the edge
+    out of the source figure by the given dimension is constructed. 
+    The test fails if the constructed rectangle is not completely
+    covered by target figures.  The figure illustrates the test
+    performed under this keyword, for no <tt>Region</tt> and an
+    <i>expression</i> consisting of a single layer.
+
+    <p>
+    If the <tt>Enclosed</tt> keyword is given, it requires that where
+    the source and target intersect, the source is entirely covered by
+    the target, with a spacing greater than or equal to the
+    <i>enc_dimen</i> between outside edges.  This applies only if the
+    source figure is rectangular.  If this clause is used, the
+    <i>dimesnsion_in_microns</i> should be set to zero.
+
+    <p>
+    The <tt>Opposite</tt> clause also requires that if there is
+    intersection, the source must be entirely covered by the target. 
+    This test also applies only when the source shape is rectangular. 
+    Two widths are given following the keyword.  The test passes if
+    two opposite sides of the source rectangle have extension greater
+    than or equal to the larger of the two numbers, and the other two
+    edges have extensions greater than or equal to the smaller
+    dimension.  If the two dimensions are equal, this is equivalent to
+    the <tt>Enclosed</tt> clause.  When the two values are different,
+    there is no corner test performed.  If this clause is given, the
+    <i>dimension_in_microns</i> should be set to zero.
+
+    <p>
+    In either clause, a dimension value of 0.0 can be given, meaning
+    that the source and target can share an edge.
+
+    <p>
+    Without the clauses, this is in many cases redundant with the
+    <tt>MinNoOverlap</tt> test (see below) if applied to the result of
+    the <i>expression</i>, if the <i>expression</i> is simply a layer
+    name.
+
+    <p>
+    The <tt>Enclosed</tt> and <tt>Opposite</tt> clauses are set by
+    <tt>minEnclosure</tt> and <tt>minOppExtension</tt> constraints
+    when importing virtuoso technology data.  These may have their own
+    reference strings.  To keep these distinguishable, the
+    <i>string</i> can actually be three double-quoted strings, e.g.,
+    the form is
+
+    <blockquote><tt>
+    "# rule description" "minEnclosure string" "minOppExtension string"
+    </tt></blockquote>
+
+    This guarantees that the original reference strings are
+    regenerated when the <a href="!dumpcds"><b>!dumpcds</b></a>
+    command is used to generate a Virtuoso technology file.  If a
+    component string doesn't exist, one can use "" (two double-quote
+    marks) as a placeholder.  Strings to the right that don't exist
+    can be skipped entirely.
+    </dl>
+
+    <a name="MinOverlap"></a>
+    <dl>
+    <dt><b>MinOverlap</b>
+    <dd>Syntax: <tt>MinOverlap</tt> [<i>EdgeArgs</i>]
+        <i>expression dimension_in_microns</i> [<i>string</i>]<br>
+
+    <img src="minoverlap.gif"><br>
+    For the parts of each edge of the source that are not coincident
+    or overlapping with source-compatible figures and are coincident
+    or overlapping with target figures which extend into the interior
+    of the source figure, a rectangle extending normally from the edge
+    into the source figure a distance given by the dimension is
+    constructed.  The test fails if the constructed rectangle is not
+    completely covered by target figures.  The figure illustrates the
+    test performed under this keyword, for no <tt>Region</tt> and an
+    <i>expression</i> consisting of a single layer.
+
+    <p>
+    When importing Virtuoso technology data, the <tt>minExtension</tt>
+    constraint maps directly to this rule.
+    </dl>
+
+    <a name="MinNoOverlap"></a>
+    <dl>
+    <dt><b>MinNoOverlap</b>
+    <dd>Syntax: <tt>MinNoOverlap</tt> [<i>EdgeArgs</i>]
+        <i>expression dimension_in_microns</i> [<i>string</i>]<br>
+
+    <img src="minnooverlap.gif"><br>
+    For the parts of each edge of the source that are not coincident
+    or overlapping with source-compatible figures or with target
+    figures which extend into the interior of the source figure, a
+    rectangle extending normally from the edge into the source figure
+    a distance given by the dimension is constructed.  The test fails
+    if the constructed rectangle has nonzero intersection area with
+    target figures.  The figure illustrates the test performed under
+    this keyword, for no <tt>Region</tt> and an <i>expression</i>
+    consisting of a single layer.
+    </dl>
+
+!!SEEALSO
+techfile
+userrules
+xic:drcmenu
+
+!! 120214
+!!KEYWORD
+spacetab
+!!TITLE
+Spacing Tables
+!!HTML
+    The design rule checking system supports one and two-dimensional
+    spacing tables, for use in the <a
+    href="MinSpace"><tt>MinSpace</tt></a> and <a
+    href="MinSpaceTo"><tt>MinSpaceTo</tt></a> rules.  These provide a
+    size-dependent spacing value.
+
+    <p>
+    Spacing tables may be <a href="ReadCdsTech">imported</a> from
+    Cadence Virtuoso ASCII technology files, or may be created and
+    used exclusively within <i>Xic</i>.  The format is the same as the
+    <i>width</i> and <i>width-length</i> spacing tables found in
+    Virtuoso constraint definitions.
+
+    <p>
+    In <i>Xic</i>, spacing tables are not independent objects, but are
+    owned by a <tt>MinSpace</tt> or <tt>MinSpaceTo</tt> design rule. 
+    Each rule of these types can have a spacing table.  The tables are
+    printed when an <i>Xic</i> technology file is generated, as part
+    of the rule specification string.  The rule text is printed using
+    backslash line continuation characters for legibility, as the rule
+    string will be rather long when the table is included.  The same
+    format is used when listing rules in the <a
+    href="xic:dredt"><b>Edit Rules</b></a> window, and in the text
+    editor used to edit the spacing table text from the <a
+    href="xic:ruleedit">rule editor</a> windows for these rules.
+
+    <p>
+    Below is the text for a spacing table, which will be explained
+    as an example.
+
+    <blockquote><tt>
+    SpacingTable 0.0900 2 0x0 11\<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;   0.0050 0.0050 0.0900\<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;   0.2050 0.3850 0.1100\<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;   0.4250 0.3850 0.1100\<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;   0.4250 0.4250 0.1600\<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;   1.5050 0.3850 0.1100\<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;   1.5050 0.4250 0.1600\<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;   1.5050 1.5050 0.5000\<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;   4.5050 0.3850 0.1100\<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;   4.5050 0.4250 0.1600\<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;   4.5050 1.5050 0.5000\<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;   4.5050 4.5050 1.5000\<br>
+    </tt>
+    </blockquote>
+
+    The <tt>SpacingTable</tt> keyword begins the definition.  Note that
+    each line ends with a backslash character.  This "hides" the return
+    character, so that logically the text forms a single line.  One could
+    certainly enter the text as a single line, the hidden line breaks are
+    for readability only.  The kind and number of text tokens that form
+    the definition are well defined, so there is no ambiguity in where
+    the table definition ends, when it is included in a larger string.
+
+    <p>
+    Following the initial keyword are four numeric tokens.  The first
+    is the default spacing in microns, as a floating-point number. 
+    This will apply when the table does not resolve a value.  This
+    should be the same number as the default spacing in the associated
+    design rule, but will override that value if different.
+
+    <p>
+    The second number is the table dimensionality, which is either 1
+    or 2.  The example is a two dimensional table, which is probably
+    most common.  Each row of a two dimensional table contains three
+    numbers, for <i>width</i>, <i>length</i>, and the spacing value. 
+    In a one dimensional table, the <i>length</i> values are not
+    present.
+
+    <p>
+    The third number is a hexadecimal value which is used as a flags
+    byte.  The flags are saved in tables imported from Virtuoso, and
+    represent unhandled features.  The only purpose of these flags is
+    to regurgitate the needed keywords when a Cadence technology file
+    is produced with the <a href="!dumpcds"><b>!dumpcds</b></a>
+    command.  The flags are not documented, but the least significant
+    bit is actually an "ignore" flag used only by <i>Xic</i>.  The
+    main thing to be aware of is that the spacing table will only be
+    active if the flags integer is 0.  If not zero, the table will be
+    carried with the rule, but will not be used in analysis.  The
+    default spacing, given in the first number, will apply in any
+    case.
+
+    <p>
+    The fourth number is a positive integer giving the number of rows
+    in the table.  Each "row" consists of two or three floating-point
+    numbers, for one and two dimensional tables.  The row data
+    follow.
+
+    <p>
+    The first number in each row is the <i>width</i> parameter.  In
+    <i>Xic</i>, this parameter is obtained from the object whose edges
+    are currently being evaluated for <tt>MinSpace</tt> or
+    <tt>MinSpaceTo</tt> violations.  If the object is a rectangle, the
+    <i>width</i> is the smaller of the rectangle width and height.  If
+    the object is a wire, the <i>width</i> is the wire's width.  If
+    the object is a non-rectangular polygon, the <i>width</i> is the
+    smaller of the bounding box width and height.
+
+    <p>
+    In two-dimensional tables, the second parameter (<i>length</i>)
+    is the parallel run length of the two edges normal to the spacing
+    direction being tested.
+
+    <p>
+    The remaining parameter is a spacing value that applies for the
+    given <i>width</i>, and <i>length</i> in two-dimensionsl tables.
+
+    <h4>Spacing Table Evaluation</h4>
+
+    Spacing tables are used only for Manhattan (horizontal or
+    vertical) edges.  Non-Manhattan edges will use the
+    <tt>Diagional</tt> spacing if given, or the default spacing. 
+    There is presently no provision for size-dependent spacing of
+    non-Manhattan edges.
+
+    <p>
+    The <i>minspace</i> dimension will be found in the row where the
+    measured <i>width</i> and <i>length</i> are greater than or equal
+    to the row <i>width</i> and <i>length</i>, with the largest
+    spacing value.  The evaluation is actually iterative, and follows
+    this logic:
+
+    <blockquote>
+    Compute the <i>width</i> parameter knowing the object being tested.<br>
+    Loop over each object edge {<br>
+    <blockquote>
+      Take the initial <i>length</i> to be the total edge length.<br>
+      Evaluate the spacing table, find the initial <i>minspace</i>.<br>
+      Loop {<br>
+      <blockquote>
+        Construct a test region along and outside of the edge being tested,
+        with width given by the <i>minspace</i>.<br>
+        Test this region for the presence of target material.<br>
+        if (none found)
+        <blockquote>
+            Break, edge test is clean.
+        </blockquote>
+        Measure the length of each intersection region and sum.  This
+        provides a new <i>length</i>.<br>
+        Evaluate the spacing table with the new <i>length</i>.<br>
+        if (the new and old <i>minspace</i> are equal)
+        <blockquote>
+            Break, test indicates violation.
+        </blockquote>
+        The new <i>minspace</i> will be smaller, check again.
+      </blockquote>
+      }
+    </blockquote>
+    }
+    </blockquote>
+
+!!SEEALSO
+drcrules
+
+!! 061908
+!!KEYWORD
+userrules
+!!TITLE
+User-Defined Design Rules
+!!HTML
+    This section describes the facility for defining and referencing
+    user-specified design rules.  These allow complex tests to be
+    implemented.  User-defined rules are defined in separate blocks
+    ahead of the physical layer specification blocks in the technology
+    file.  The rules are referenced from the layer blocks.  A user
+    defined rule definition has the following general form:
+
+    <blockquote>
+    <tt>DrcTest</tt> <i>testname arg1 arg2</i> ...<br>
+    <tt>Edge Outside|Inside</tt> <i>expression</i><br>
+    <tt>MinEdge</tt> <i>dimension</i><br>
+    <tt>MaxEdge</tt> <i>dimension</i><br>
+    <tt>Test Outside|Inside</tt> <i>dimension expression</i><br>
+    <tt>TestCornerOverlap</tt> <i>dimension</i><br>
+    <tt>Evaluate</tt> [<i>logical_expression</i>]<br>
+    [ script lines ]<br>
+    <tt>End</tt><br>
+    </blockquote>
+
+    <p>
+    The first line of the block starts with the keyword
+    <tt>DrcTest</tt>.  This is followed by a name for the test, which
+    must be unique among the keywords recognized in the technology
+    file.  This is the name by which the test will be referenced. 
+    Following the name are zero or more argument tokens.  These can be
+    any alphanumeric text strings, which represent parameter names. 
+    These are the formal arguments to the rule, and appear in the
+    lines that follow in the form "<tt>%</tt><i>token</i><tt>%</tt>",
+    which will be replaced by the actual arguments given in the
+    references to the rule.
+
+    <p>
+    The rule is evaluated at each edge of the source.  Each edge is
+    divided into segments, depending on specifications.  For each
+    segment, a rectangle is constructed, extending either into or out
+    of the source figure.  Tests are applied to these regions,
+
+    <p>
+    The <tt>Edge</tt> keyword indicates an edge specification.  There
+    can be zero or more edge specifications.  Following the
+    <tt>Edge</tt> keyword is one of the keywords <tt>Outside</tt> or
+    <tt>Inside</tt> followed by a <a href="layer_exp">layer
+    expression</a>.  When the edge is evaluated the regions of the
+    edge where the expression is true are found, either just inside or
+    just outside of the figure.  The default edge is the set of
+    regions where there is no source figure just outside the edge,
+    which means that there is no source-compatible adjacent figure. 
+    The results from each <tt>Edge</tt> specification are anded
+    together with the default edge to determine the segments where
+    tests are performed.  The expression part of the <tt>Edge</tt>
+    specification can contain argument substitutions.
+
+    <p>
+    For example:
+    <blockquote>
+    <tt>Edge Inside M2</tt>
+    </blockquote>
+    This will include the parts of the figure boundary that 1) do not
+    touch or overlap another figure of the same source (the default
+    edge), and 2) have layer M2 present on the inside side of the
+    boundary.  The default edge is always implicitly included in the
+    conjunction.
+
+    <p>
+    The <tt>MinEdge</tt> and <tt>MaxEdge</tt> lines, which are
+    optional, allow setting limits on the segments used for testing. 
+    If given, an edge segment used for testing would have length
+    greater or equal to the <tt>MinEdge</tt> dimension, and less than
+    or equal to the <tt>MaxEdge</tt> dimension.  The dimensions
+    appearing after the keywords can contain argument substitutions.
+
+    <p>
+    There must be one of more lines given which start with the keyword
+    "<tt>Test</tt>".  These specify the tests which are applied to
+    regions constructed from the edge segments.  Following
+    <tt>Test</tt> is one of the keywords <tt>Outside</tt> or
+    <tt>Inside</tt>, which determines whether the test area extends
+    outside or inside the source figure.  The following token, which
+    can contain an argument substitution, sets the length by which the
+    test area extends out of or into the source figure.  The rest of
+    the line contains a layer expression, which can contain argument
+    substitutions, which is evaluated in the test area.
+
+    <p>
+    The expression will be evaluated within the test area by one of
+    the evaluation functions described below.  If using the most
+    common <tt>DRCuserTest</tt> evaluation function, the test is true
+    if the expression is true somewhere in the test area, meaning that
+    there is a non-zero area where the logical expression would be
+    "dark".
+
+    <p>
+    For example:
+    <blockquote>
+    <tt>Test Outside 0.5 !M2</tt>
+    </blockquote>
+    This test will be "true" if within the rectangle extending out of
+    the figure from the edge by 0.5 microns, there is some point where
+    layer M2 is not present, if using <tt>DRCuserTest</tt>.
+
+    <p>
+    The optional <tt>TestCornerOverlap</tt> test is a special
+    supplemental test when evaluating "<tt>MinWidth</tt>".  This
+    measures the mutual edge or overlap of adjacent compatible
+    figures.  The width of the mutual edge must be greater than the
+    dimension (which can contain argument substitutions).
+
+    <p>
+    The final line, which begins with the keyword <tt>Evaluate</tt>,
+    specifies a logical expression or script.  There are two forms for
+    the <tt>Evaluate</tt> construct.  In the first form, the
+    expression must be cast as an assignment to a variable named
+    "<tt>fail</tt>", and if set true the entire rule fails.  Argument
+    substitutions are allowed in the expression.  The assignment must
+    appear on the same line following <tt>Evaluate</tt>.
+
+    <p>
+    In the second form, there can be no additional text on the line
+    following <tt>Evaluate</tt>.  The following lines contain a
+    script, in the format understood by the <a href="xicscript">script
+    parser</a>.  This is terminated with the keyword
+    <tt>EndScript</tt>.  Argument substitutions are allowed in these
+    lines.  The script can contain any of the constructs described in
+    the manual section on the script parser, with the exception of the
+    "preprocessing" directives; any line with a leading '#' is
+    ignored.  The script should set a variable named "<tt>fail</tt>"
+    to signal a DRC violation.
+
+    <p>
+    There are several functions which can appear in the
+    <tt>Evaluate</tt> lines.  Each of these functions takes a single
+    integer argument.  This is a zero-based integer index
+    corresponding to the <tt>Test</tt> lines, in order of their
+    appearance.  Each function returns a value obtained from the
+    corresponding test.
+
+    <p>
+    The functions currently available are the following:
+
+    <dl>
+    <dt>(int) <tt>DRCuserTest</tt>(<i>index</i>)
+    <dd>The return value is 1 if the test region is not empty, 0
+    otherwise.
+    </dl>
+
+    <dl>
+    <dt>(int) <tt>DRCuserEmpty</tt>(<i>index</i>)
+    <dd>The return value is 1 if the test region is empty, 0
+    otherwise.
+    </dl>
+
+    <dl>
+    <dt>(int) <tt>DRCuserFull</tt>(<i>index</i>)
+    <dd>The return value is 1 if the test region is completely
+    covered, 0 otherwise.
+    </dl>
+
+    <dl>
+    <dt>(zoidlist) <tt>DRCuserZlist</tt>(<i>index</i>)
+    <dd>The return value is a list of trapezoids clipped from the
+    test region.  The list can be used with script functions that
+    operate with this data type.
+    </dl>
+
+    <dl>
+    <dt>(int) <tt>DRCuserEdgeLength</tt>(<i>index</i>)
+    <dd>The return value is the length along the edge of the test
+    region.  This is the value that is filtered by <tt>MinEdge</tt>
+    and <tt>MaxEdge</tt>.  Filtered edges will not be seen by this
+    function.
+    </dl>
+
+    <p>
+    The functions specified are called for each test region for each
+    edge and corner.  The return value can be used to set the
+    <tt>fail</tt> variable.  Once the <tt>fail</tt> variable has been
+    set nonzero, testing of the object terminates for the present
+    rule.
+
+    <p>
+    For example:
+    <blockquote>
+    <tt>Test Outside 0.5 !M2</tt><br>
+    <tt>Test Inside 0.5 !M2</tt><br>
+    <tt>Evaluate fail = DRCuserTest(0) | DRCuserTest(1)</tt>
+    </blockquote>
+    Here, the test fails if M2 does not completely cover the area 0.5
+    microns on either side of the edge.  The arguments to the
+    DRCuserTest function refer to the <tt>Test</tt> lines:  0 is the
+    first <tt>Test</tt> line in the rule, 1 the second, and so on.
+
+    <p>
+    The multi-line variation of the <tt>Evaluate</tt> clause has the
+    form
+    <blockquote>
+    <tt>Evaluate</tt><br>
+    <i>script line</i><br>
+    ...<br>
+    <tt>EndScript</tt>
+    </blockquote>
+
+    <p>
+    Within the script, there are a number of predefined variables
+    available.  With the exception of <tt>fail</tt>, these all start
+    with an underscore.
+
+    <dl>
+    <dt><tt>_ObjType</tt>
+    <dd>The type of object which is undergoing DRC.  Values are 'p',
+    'w', or 'b', for polygons, wires, and boxes.
+    </dl>
+
+    <dl>
+    <dt><tt>_ObjNumEdges</tt>
+    <dd>This is the number of vertices in the figure being tested. 
+    Boxes and wires are converted to polygons for testing, so this
+    makes sense for all objects.  The first and last vertices are the
+    same, and all are counted, so that the number of vertices in a box
+    is five.
+    </dl>
+
+    <dl>
+    <dt><tt>_CurEdge</tt>
+    <dd>This is the zero-based index of the edge or vertex currently
+    being tested.  If the original object is a box, the zeroth vertex
+    is the lower-left corner, and the zeroth edge is the left edge. 
+    For polygons, the zeroth vertex is the first vertex in the
+    polygon's coordinate list, and the zeroth edge extends from this
+    vertex to the next.  This index will cycle through the values from
+    0 to <tt>_ObjNumEdges</tt>-1.  Values may be skipped of there is no
+    testable area at the edge or corner.
+
+    <p>
+    If a test is identified as a "MinWidth" type, i.e., an inside test
+    with the target the same as the source, at most two edges are
+    tested if the figure is a box.
+    </dl>
+
+    <dl>
+    <dt><tt>_CurTest</tt>
+    <dd>This gives the following values:  0 if the test is a standard
+    edge test, 1 if the test if a corner test, and 2 if the test is
+    the CornerOverlap test.
+    </dl>
+
+    <dl>
+    <dt><tt>_CurX1, _CurY1, _CurX2, _CurY2</tt>
+    <dd>These four variables provide the starting and ending
+    coordinates of the edge segment being tested, in microns
+    </dl>
+
+    <p>
+    Variables defined within the script remain in scope forever, they
+    do not change between calls.
+
+    <p>
+    When an object is DRC tested, the <b>Overlap</b> tests, if any,
+    are first applied to the source region.  This is followed by the
+    <b>Area</b> tests, then the edge tests, which include any
+    user-defined tests.  During the edge tests, each edge is evaluated
+    in sequence.  The test may be applied several times for different
+    regions along the edge or not at all, depending on the geometry
+    and the <tt>Edge</tt> specification.
+
+    <p>
+    Edge segments are evaluated in the order crossed by a point
+    following the boundary starting at the first vertex (lower left
+    corner for boxes).  Boxes and wires always have clockwise winding,
+    though polygons can have either clockwise or counterclockwise
+    winding.
+
+    <p>
+    Associated with the edge test are the corner tests.  For a box,
+    the order of tests is given below.  The corner test is applied at
+    each vertex (if indicated by the angle) after the previous
+    adjacent side has been tested.  The test area is a polygonal shape
+    designed to "fill in" gaps between the rectangular areas
+    associated with the sides.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><tt>_CurEdge</tt></td> <td><tt>_CurTest</tt></td>
+     <td>which</td></tr>
+    <tr><td>0</td> <td>0</td> <td>left edge</td></tr>
+    <tr><td>1</td> <td>1</td> <td>upper left corner</td></tr>
+    <tr><td>1</td> <td>0</td> <td>top edge</td></tr>
+    <tr><td>2</td> <td>1</td> <td>upper right corner</td></tr>
+    <tr><td>2</td> <td>0</td> <td>right edge</td></tr>
+    <tr><td>3</td> <td>1</td> <td>lower right corner</td></tr>
+    <tr><td>3</td> <td>0</td> <td>bottom edge</td></tr>
+    <tr><td>0</td> <td>1</td> <td>lower left corner</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    A rule is implemented by adding a reference to the rule in the
+    layer block of a physical layer.  The format is
+
+    <blockquote>
+    <i>testname</i> <tt>[Region</tt> <i>region_expr</i><tt>] [</tt><i>arg1
+        arg2</i></tt> ...] [<i>string</i>]
+    </blockquote>
+
+    <p>
+    The <i>testname</i> is the keyword defined in one of the rule
+    definitions, as described above.  This is followed by an optional
+    source specification, and the actual arguments, which must
+    correspond in number to the rule arguments.  These are followed by
+    an optional <i>string</i>, which is arbitrary explanatory text.
+
+    <p>
+    As initial examples, below are implementations of the built-in
+    rules which involve edge evaluation.
+
+    <p>
+    These are the rule definitions, and by convention they would
+    appear in the technology file after the electrical layer
+    definitions and ahead of the physical layer definitions.
+
+    <blockquote>
+    <pre>
+    # In the first two rules, lyr is the same as the source
+    #
+    DrcTest myMinWidth dim lyr
+    Test Inside %dim% !%lyr%
+    TestCornerOverlap %dim%
+    Evaluate fail = DRCuserTest(0)
+    End
+
+    DrcTest myMinSpace dim lyr
+    Test Outside %dim% %lyr%
+    Evaluate fail = DRCuserTest(0)
+    End
+
+    # In the remaining rules, lyr is different from the source
+    #
+    DrcTest myMinSpaceTo dim lyr
+    Edge Inside !%lyr%
+    Test Outside %dim% %lyr%
+    Evaluate fail = DRCuserTest(0)
+    End
+
+    DrcTest myMinSpaceFrom dim lyr
+    Edge Inside %lyr%
+    Test Outside %dim% !%lyr%
+    Evaluate fail = DRCuserTest(0)
+    End
+
+    DrcTest myMinOverlap dim lyr
+    Edge Inside %lyr%
+    Test Inside %dim% !%lyr%
+    Evaluate fail = DRCuserTest(0)
+    End
+
+    DrcTest myMinNoOverlap dim lyr
+    Edge Inside !%lyr%
+    Test Inside %dim% %lyr%
+    Evaluate fail = DRCuserTest(0)
+    End
+    </pre>
+    </blockquote>
+
+    <p>
+    To implement the rules, references are added to the layer definitions:
+
+    <blockquote>
+    <pre>
+    Layer M1
+    ...
+    myMinWidth  3.0 M1
+    myMinSpace  2.0 M1 
+    myMinSpaceTo 1.0 M2
+    ...
+    </pre>
+    </blockquote>
+
+    <p>
+    Here are a few more complicated rules:
+
+    <p>
+    <b>Rule</b>:  Objects on M3 smaller that 10 microns must be
+    separated by .5 microns or more, objects larger than 10 microns
+    must be separated by .75 microns or more.
+
+    <blockquote>
+    <pre>
+    DrcTest myMinSp1 lyr
+    # Fail if spacing &#60 0.5
+    Test Outside .5 %lyr%
+    Evaluate fail = DRCuserTest(0)
+    End
+
+    DrcTest myMinSp2 lyr
+    # Fail if spacing &#60 0.75 and width >= 10
+    MinEdge 10
+    Test Outside .75 %lyr%
+    Test Inside 10 !%lyr%
+    Evaluate fail = DRCuserTest(0) & !DRCuserTest(1)
+    End
+
+    Layer M3
+    ...
+    myMinSp1 M3
+    myMinSp2 M3
+    ...
+    </pre>
+    </blockquote>
+
+    <p>
+    Note that we did not need to use substitution here, as the rule
+    only applies to M3.
+
+    <p>
+    <b>Rule</b>:  Objects on M3 must be larger than 1 micron, unless
+    over I1 in which case the width must be 1.25 microns.
+
+    <blockquote>
+    <pre>
+    DrcTest myMinW1 lyr
+    # Fail if width &#60 1.0
+    Test Inside 1 !%lyr%
+    TestCornerOverlap 1
+    Evaluate fail = DRCuserTest(0)
+    End
+
+    DrcTest myMinW2 lyr
+    # Fail if width &#60 1.25 and I1 present
+    Test Inside 1.25 !%lyr%
+    Test Inside 1.25 I1
+    TestCornerOverlap 1.25
+    Evaluate fail = DRCuserTest(0) & DRCuserTest(1)
+    End
+
+    Layer M3
+    ...
+    myMinW1 M3
+    myMinW2 M3
+    ...
+    </pre>
+    </blockquote>
+
+    <p>
+    <b>Rule</b>:  The overlap of M1 surrounding Via must be .5 microns
+    or greater.  Only two sides maximum can have an overlap of less
+    than 1 micron, the other sides must have 1 micron of overlap or
+    more.
+
+    <p>
+    In the script below, two arrays are defined, to hold the test
+    results.  We assume that only boxes are used for vias, and ignore
+    the corner tests.  When the final edge (_CurEdge = 3) is reached,
+    the results saved in the arrays are evaluated, and the fail flag
+    is set if an error is indicated.
+
+    <blockquote>
+    <pre>
+    DrcTest vtest
+    Test Outside 1 !M1
+    Test Outside .5 !M1
+    Evaluate
+    tl[4]
+    ts[4]
+    if (_ObjType == 'b' & _CurTest == 0)
+    &#32   tl[_CurEdge] = DRCuserTest(0)
+    &#32   ts[_CurEdge] = DRCuserTest(1)
+    &#32   if (_CurEdge == 3)
+    &#32       if (tl[0] + tl[1] + tl[2] + tl[3] > 2)
+    &#32           fail = 1
+    &#32       end
+    &#32       if (ts[0] + ts[1] + ts[2] + ts[3] > 0)
+    &#32           fail = 1
+    &#32       end
+    &#32   end
+    end
+    EndScript
+    End
+    </pre>
+    </blockquote>
+
+    <p>
+    The test is implemented in the Via layer block.  Just the keyword
+    is needed, since no arguments are passed.
+
+    <blockquote>
+    <pre>
+    Layer Via
+    ...
+    vtest
+    </pre>
+    </blockquote>
+
+!!SEEALSO
+drcrules
+techfile
+xic:drcmenu
+
+!! 061908
+!!KEYWORD
+drc:assign
+!!TITLE
+Assigning Design Rules
+!!HTML
+    Design rules can be added to the technology file by hand with a
+    text editor, or from within <i>Xic</i> using the <a
+    href="xic:dredt"><b>Edit Rules</b></a> pop-up panel in the <b>DRC
+    Menu</b>.  Note that if macros or the <tt>eval</tt> construct are
+    to be used in design rules, the text must be inserted with a text
+    editor, as these constructs are unknown to the <b>Edit Rules</b>
+    pop-up.
+
+    <p>
+    <i>Xic</i> supports a set of design rule primitives which should
+    cover the vast majority of cases encountered in process technology
+    specifications.  In addition, more specialized tests can be
+    developed through use of <a href="userrules">user-defined</a>
+    design rules
+
+    <p>
+    Most simple specifications translate directly into a rule keyword,
+    in particular, the setting of <tt>MinWidth</tt> and
+    <tt>MinSpace</tt> are usually straightforward.  <tt>MinWidth</tt>
+    is generally the smallest feature size allowable on the layer, and
+    <tt>MinSpace</tt> is the smallest gap allowed between features on
+    the layer.  Note that if one feature touches another on the same
+    layer, the tests are applied such that the combined features are
+    measured.  Thus it is legitimate to have subdimensional features,
+    as long as they are directly adjacent to other features so that
+    the combined dimensions satisfy the <tt>MinWidth</tt> test.
+
+    <p>
+    There are six rules which flag overlapping of layers
+    <tt>Overlap</tt>, <tt>IfOverlap</tt>, <tt>NoOverlap</tt>,
+    <tt>AnyOverlap</tt>, <tt>PartOverlap</tt>, and
+    <tt>AnyNoOverlap</tt>.  Of these, the first three are by far the
+    most commonly used.  If objects on layer A should always be
+    over/under layer B, the <tt>Overlap</tt> rule should be added to
+    layer A.  If objects on layer A should never intersect layer B,
+    the <tt>NoOverlap</tt> rule should be applied to layer A.  The
+    case of coincident layer A and B edges of adjacent objects will
+    not produce an error, unless an additional <tt>MinSpaceTo</tt>
+    test is applied.  If objects on layer A should either be entirely
+    covered by layer B, or not intersect layer B at all, the
+    <tt>IfOverlap</tt> rule should be added to layer A.  In this test,
+    if an object on layer A partially intersects layer B, an error is
+    generated.  This is useful for ensuring that a feature does not
+    cross an underlying edge, for example.
+
+    <p>
+    In reciprocal rules, such as <tt>MinSpaceTo</tt>, which specifies
+    the minimum distance between objects on two different layers, it
+    is often questioned whether the rule should be specified in each
+    layer.  The answer is no, although no real harm is done if it is
+    specified in both layers, though both specifications had better
+    provide the same dimension.  In testing of a newly created object
+    (interactive DRC), first the object is tested with respect to
+    rules defined on the object's layer.  If there are no errors, all
+    nearby objects which have a rule target of the object's layer are
+    tested, and any errors are flagged on the new object.  For example
+    if a box on layer A is created too close to a box on layer B, and
+    B contains a <tt>MinSpaceTo</tt> rule with respect to layer A,
+    first the A box is tested (result:  ok) then the B box is tested,
+    (result:  failure due to proximity to A).  The A box is marked and
+    the error region is indicated.  In batch mode testing, only the
+    rules for a given object are evaluated.  Typically, all objects in
+    the region are tested, so the error will be caught.  If there were
+    specifications on each layer, there would be two error messages
+    produced, as two separate but redundant tests would be performed. 
+    In the <tt>MinSpaceTo</tt> test, the condition where edges are
+    coincident is flagged as an error, however if the two objects
+    are actually intersecting with nonzero area, no error is generated
+    from the <tt>MinSpaceTo</tt> test.
+
+    <p>
+    The word "overlap" is confusingly used in two contexts.  In
+    process specifications, the "overlap" is often taken as the width
+    of material surrounding a feature, such as a via.  In the
+    <i>Xic</i> documentation, "overlap" often refers to an area of
+    mutual intersection of two (or more) different layers.  As an
+    important example, a process specification might read "overlap of
+    M1 around VIA 1.0 micron".  This implies that layer M1 must extend
+    1.0 microns or more outside of the VIA feature.  One way to test
+    this condition is with the <tt>MinNoOverlap</tt> keyword as a rule
+    on M1:  "<tt>MinNoOverlap VIA 1.0</tt>".  This specifies that a
+    region along the outside edge of M1 1 micron in width toward the
+    inside of the M1 feature will be checked for the presence of VIA,
+    and an error will occur if any VIA material is found intersecting
+    with this region.  The <tt>MinNoOverlap</tt> test will flag as an
+    error the case where the edges of the two intersecting objects are
+    coincident, however if the VIA area actually encloses M1, no error
+    is generated.  The <tt>Overlap</tt> and <tt>IfOverlap</tt>
+    keywords can be used to detect this circumstance.  Often, the
+    process specification will list such a rule with the interior
+    feature layer (VIA), in which case it makes more sense to use the
+    <tt>MinSpaceFrom</tt> test as in "<tt>MinSpaceFrom M1 1.0</tt>"
+    applied to the VIA layer.  This specifies that a region projecting
+    outward from the VIA feature by 1 micron should be entirely
+    covered by M1.  This is almost equivalent to the
+    <tt>MinNoOverlap</tt> test, however the treatment of the corners
+    is different.  This is illustrated in the figure.
+
+    <p>
+    <img src="viatest.gif">
+
+    <p>
+    In the case of coincident vias, where the order is not important
+    but the concentric spacing must be greater than some value, mutual
+    <tt>MinNoOverlap</tt> rules can exist in each layer.  In the case
+    where one ordering is prohibited, the <tt>Overlap</tt> or
+    <tt>IfOverlap</tt> keywords can be used in the inner layer.  For
+    example, suppose VIA1 and VIA2 can be concentric, but VIA1 must be
+    outside of (larger than) VIA2.  Layer VIA1 would contain a
+    "<tt>MinNoOverlap VIA2</tt>" directive, layer VIA2 would contain
+    an "<tt>IfOverlap VIA1</tt>" directive if VIA2 can exist
+    independently of VIA1, or an "<tt>Overlap VIA1</tt>" directive
+    otherwise.  Then, if VIA2 is larger than VIA1, the partial
+    intersection will trigger an error.
+
+    <p>
+    The <tt>MinOverlap</tt> test is used to determine whether the
+    intersection width of two layers is larger than some minimum.  It
+    is usually used in conjunction with certain types of contacts or
+    vias, to ensure that the contacting area is sufficiently large. 
+    The <tt>MinArea</tt> and <tt>MaxArea</tt> tests are also useful is
+    this regard.  In particular, to test that a via has an exact size
+    (square), a <tt>MinWidth</tt> and a <tt>MaxArea</tt> test are both
+    applied.  A <tt>MinEdgeLength</tt> test is used in the
+    circumstance where the edge-crossing width of a layer is larger
+    than the layer's minimum width.
+
+!!SEEALSO
+xic:drcmenu
+
+!! 021615
+!!KEYWORD
+xic:limit
+!!TITLE
+DRC Setup
+!!HTML
+    <img src="screenshots/drcdef.png" align=right>
+    <b>Keyword</b>: <tt>limit</tt>
+
+    <p>
+    The <b>Setup</b> button in the <b>DRC Menu</b> brings up the
+    <b>DRC Parameter Setup</b> panel, which allows the user to set
+    limits and other parameters used in design rule checking.
+
+    <p>
+    The top third of the panel provides control of layer and rule
+    filtering.  It is sometimes useful to perform design rule checking
+    using only a subset of rules, on only a subset of layers.  It may
+    also be useful at times to skip particular rules or layers.  The
+    user has this flexibility through the entries in this panel.  One
+    also has the ability to inhibit rules individually with the <a
+    href="xic:dredt"><b>Design Rule Editor</b></a> panel from the
+    <b>Edit Rules</b> button in the <b>DRC Menu</b>.
+
+    <p>
+    At the top of the panel are <b>Check listed layers only</b> and
+    <b>Skip listed layers</b> check boxes.  If either is checked (it
+    is not possible to select both) then the text entry area just
+    below the check boxes becomes un-grayed, and the user is expected
+    to enter a list of <a href="layername">layer names</a>, separated
+    by space.  Rules on the listed layers will either be used
+    exclusively or ignored during checking, depending on which of the
+    boxes is checked.
+
+    <p>
+    The layer filtering entries control the status of two variables. 
+    The filtering can also be set up by setting the values of the
+    variables directly.
+
+    <dl>
+    <dt><a href="DrcLayerList"><b>DrcLayerList</b></a><dd>
+    This variable is set to a space-separated list of layer names, as
+    shown in the text entry area.  The variable exists only if there
+    is text shown in the entry area.
+    </dl>
+
+    <dl>
+    <dt><a href="DrcUseLayerList"><b>DrcUseLayerList</b></a><dd>
+    If this variable is not set, then the <b>DrcLayerList</b> variable
+    will be ignored if it exists, and DRC testing will use rules
+    defined on all layers.  If the variable is set to a word that
+    starts with '<tt>n</tt>' (case-insensitive) or just the letter
+    itself, then the <b>DrcLayerList</b> will be used, if it exists,
+    to provide a list of layers whose rules will be skipped during DRC
+    testing.  If <b>DrcUseLayerList</b> is set to something else,
+    including to nothing (set as a boolean), the <b>DrcLayerList</b>,
+    if it exists, will supply a list of layers whose rules will be
+    used during DRC testing.  Rules on unlisted layers will not be
+    tested in this case.
+    </dl>
+
+    Below the layer list entry are <b>Check listed rules only</b> and
+    <b>Skip listed rules</b> check boxes.  These, and the initially
+    grayed text entry area just below, provide an analogous filtering
+    capability based on rule names.  The rule names are the names
+    (keywords) of the <a href="drcrules">built-in tests</a>, or the
+    name assigned to a <a href="userrules">user-defined</a> rule.  If
+    ether box is checked (it is possible to check at most one of the
+    boxes), then the text entry area becomes un-grayed and the user
+    should enter a space-separated list of rule names.  The name
+    matching is case-insensitive.  The listed rules will either be
+    checked exclusively (unlisted rules ignored) or skipped during DRC
+    testing, depending on which box is checked.
+
+    <p>
+    The rule filtering entries control the status of two variables. 
+    Rule filtering can also be set up by setting the values of the
+    variables directly.
+
+    <dl>
+    <dt><a href="DrcRuleList"><b>DrcRuleList</b></a><dd>
+    This variable is set to a space-separated list of rule names, as
+    shown in the text entry area.  The variable exists only if there
+    is text shown in the entry area.
+    </dl>
+
+    <dl>
+    <dt><a href="DrcUseRuleList"><b>DrcUseRuleList</b></a><dd>
+    If this variable is not set, then the <b>DrcRuleList</b> variable
+    will be ignored if it exists, and DRC testing will use all rules
+    that have been defined, and have not been inhibited.  If the
+    variable is set to a word that starts with '<tt>n</tt>'
+    (case-insensitive) or just the letter itself, then the
+    <b>DrcRuleList</b> will be used, if it exists, to provide a list
+    of rules that will be skipped during DRC testing.  If
+    <b>DrcUseRuleList</b> is set to something else, including to
+    nothing (set as a boolean), the <b>DrcRuleList</b>, if it exists,
+    will supply a list of rules that will be used during DRC testing. 
+    Unlisted rules will not be tested in this case.
+    </dl>
+
+    <p>
+    Below the layer and rule filtering group is the limit values
+    group.  These provide numeric limit values that are observed while
+    testing.  Each of these controls has a corresponding <a
+    href="!set:drc">tracking variable</a>.
+
+    <p>
+    The first limit is on the number of violations reported in batch
+    mode checking.  These are runs initiated from the <a
+    href="xic:check"><b>DRC Run Control</b></a> panel obtained from
+    the <b>Batch Check</b> button in the <b>DRC Menu</b>.  If this
+    limit is reached, the checking terminates.  Setting this limit (or
+    any of the limits) to zero will inhibit the limiting.
+
+    <p>
+    The remaining limits pertain to interactive mode (the <a
+    href="xic:intr"><b>Enable Interactive</b></a> button in the <b>DRC
+    Menu</b> is active).  When enabled, these checks are performed
+    after every operation which modifies the physical geometry in the
+    database.  Often, the pause can be quite substantial, and it is
+    preferable to minimize the delay, at the expense of thorough
+    testing.  Testing can be performed at a later time using batch
+    mode.  The interactive time can be limited in two ways:  by
+    limiting the number of objects checked, and by actually setting a
+    time limit.  The checking will also terminate when a maximum error
+    count is reached.  Of course, interactive testing can be switched
+    off entirely with the <b>Enable Interactive</b> button.
+
+    <p>
+    The object count limit specifies the maximum number of objects
+    checked per test cycle.  The time limit, specified in
+    milliseconds, will terminate testing when the time limit is
+    reached.  The error count limit, if nonzero, will terminate
+    testing when the count is reached.
+
+    <p>
+    The final choice is a yes/no as to whether to test subcells that
+    are moved, copied, or placed.  This is often very time consuming,
+    as all objects in the subcell and its descendents are checked.  If
+    the subcell has been checked previously, most of the checking is
+    redundant and can be skipped.
+
+    <p>
+    The remaining buttons allow selection of the violation recording
+    level.  The default is to record only one violation per object.  With
+    many violations, this can cut evaluation time, and may be useful for a
+    first pass.  The second choice outputs a maximum of one violation of
+    each type (i.e., corresponding to each rule name keyword) per
+    object.  The third choice will output all violations found.  This can
+    lead to redundancy, as certain violations may be reported for each
+    <i>edge</i> of the offending object.
+
+!!SEEALSO
+xic:drcmenu
+
+!! 063014
+!!KEYWORD
+xic:sflag
+!!TITLE
+Set Skip Flags
+!!HTML
+    <b>Keyword</b>: <tt>sflag</tt>
+
+    <p>
+    The <b>Set Skip Flags</b> button in the <b>DRC Menu</b> enables
+    the <b>skip DRC</b> flag to be set or cleared on objects in the
+    current cell.  When the flag is set, the object is ignored by the
+    DRC tests.  Note that this can cause other tests to fail, for
+    example if a subdimensional object is adjacent to another object
+    on the same layer with its skip flag set, the error will be
+    reported.  Objects with the skip flag set are shown as selected. 
+    The selected objects can be deselected, or other objects selected,
+    in the usual way.  In any case, the selected status when the
+    command exits will be represented in the objects' skip flags.
+
+    <p>
+    If the layer has the <a
+    href="NoDrcDatatype"><tt>NoDrcDatatype</tt></a> attribute set in
+    the <a href="techfile">technology file</a> or with the <a
+    href="xic:lpedt"><b>Edit Tech Params</b></a> button in the <a
+    href="xic:attrmenu"><b>Attributes Menu</b></a>, objects with the
+    skip flag set will be written with the given datatype rather than
+    the default datatype set in the <b>StreamOut</b> specification, in
+    GDSII and OASIS files.
+
+    <p>
+    Objects which intersect a layer named "NDRC" are also skipped
+    during DRC testing.  Defining an NDRC layer is an easy way to
+    avoid testing logos, process test features, and other objects
+    which would ordinarily produce many errors.
+
+!!SEEALSO
+xic:drcmenu
+
+!! 021815
+!!KEYWORD
+xic:intr
+!!TITLE
+Enable Interactive
+!!HTML
+    <b>Keyword</b>: <tt>intr</tt>
+
+    <p>
+    When the <b>Enable Interactive</b> button in the <b>DRC Menu</b>
+    is active, design rule checking is performed on new objects as
+    created, or objects modified, during editing.  A violating object
+    is marked, and the error highlighted.  A pop-up window explains
+    the violation, unless this has been suppressed with the <a
+    href="xic:nopop"><b>No Pop Up Errors</b></a> button.  The object
+    is included in the database, the user must decide whether to fix
+    of defer the violation.
+
+    <p>
+    This tracks the state of the <a href="Drc"><b>Drc</b></a>
+    variable.
+
+!!SEEALSO
+xic:drcmenu
+
+!! 021815
+!!KEYWORD
+xic:nopop
+!!TITLE
+No Pop Up Errors
+!!HTML
+    <b>Keyword</b>: <tt>nopop</tt>
+
+    <p>
+    When the <b>No Pop Up Erors</b> toggle button in the <b>DRC
+    Menu</b> is active, violations found in <a
+    href="xic:intr">interactive DRC</a> do not cause messages to
+    appear in a pop-up window.  The error indication is still drawn
+    on-screen, however.  The <a href="xic:query"><b>Query
+    Errors</b></a> command can be used to get the error string, or the
+    <a href="xic:erdmp"><b>Dump Error File</b></a> command can be used
+    to obtain a complete report.
+
+    <p>
+    This tracks the state of the <a
+    href="DrcNoPopup"><b>DrcNoPopup</b></a> variable.
+
+!!SEEALSO
+xic:drcmenu
+
+!! 010615
+!!KEYWORD
+xic:check
+!!TITLE
+Batch Check
+!!HTML
+    <img src="screenshots/drcrun1.png" align=right>
+    <b>Keyword</b>: <tt>check</tt>
+
+    <p>
+    The <b>Batch Check</b> button in the <b>DRC Menu</b> provides the
+    <b>DRC Run Control</b> panel.  This panel allows initiation of a
+    batch DRC job, running either in the foreground or background.  By
+    "batch", it is meant that the job is not intended to be
+    interactive.  Such jobs may take a long time to run.
+
+    <p>
+    The panel has two pages, tabbed <b>Run</b> and <b>Jobs</b>.  The
+    <b>Run</b> page is generally of most interest and is the default
+    page.
+
+    <p>
+    The top two entries in the <b>Run</b> page allow a <a
+    href="xic:hier"> Cell Hierarchy Digest</a> (CHD) to specify the
+    source cells for the DRC run.  A CHD is a small database of cell
+    offsets into a large layout file, which allows access to the
+    content of the file without reading it into <i>Xic</i>.  With
+    limited memory, this allows huge files to be accessed, that would
+    otherwise fail to load due to memory limitation.  The first line
+    contains a text entry area into which the user enters the CHD
+    name.  This will be ignored unless the <b>Use</b> button, to the
+    left of the text entry, is pressed.  The second line is optional,
+    and may contain the name of a cell referenced by the CHD.  This
+    will be taken as the top-level cell in design rule checking.  If
+    no entry is given, the default top-level cell of the CHD is used.
+
+    <p>
+    These entry areas mirror the values of the <a
+    href="DrcChdName"><b>DrcChdName</b></a> and <a
+    href="DrcChdCell"><b>DrcChdCell</b></a> variables.  The variables
+    are set when the corresponding entry area contains text, unset
+    otherwise.  The variables can be set directly, however in any case
+    the <b>Use</b> button must be pressed for the values to have any
+    effect during the DRC run.
+
+    <p>
+    In order to gain any memory-saving benefit from using a CHD, a
+    partition grid should generally be used.  This is set in the third
+    row of the <b>Run</b> page.  When the partition grid is enabled,
+    the area to test is divided into a grid of the specified size. 
+    The DRC testing is performed sequentially for each grid area.  In
+    the case of CHD input, only the geometry needed to represent the
+    current grid area is in memory, which should be a small fraction
+    of the geometry of the total test area (if the test area is very
+    small, partitioning is not needed).
+
+    <p>
+    To set up a partition grid, un-press the button with the
+    <b>None</b> label.  This will un-gray the text entry area to the
+    right.  This area should be set to the side length in microns of
+    the square grid cell.  The size should be small enough so that the
+    geometry needed to represent the area will easily fit in memory,
+    but not so small that the overhead inherent in the gridding
+    increases run time appreciably.  The best value is very dependent
+    on the technology, and the user should experiment.
+
+    <p>
+    The partition setting entry and button control, and are controlled
+    by, the <a href="DrcPartitionSize"><b>DrcPartitionSize</b></a>
+    variable.  When this variable is set to a number, that number is
+    taken as the partition grid spacing.  The partition size can be
+    set and the use of partitioning enabled by setting this variable
+    directly.
+
+    <p>
+    The partition grid also applies when the current cell is the
+    target of the design rule checking.  It is not clear at present
+    that the partition grid provides any advantage in this case.  Some
+    operations may be performed faster when gridded as opposed to
+    processing the entire layout, due to scaling properties.  The use
+    of the partition grid provides something for the user to
+    experiment with.
+
+    <p>
+    By default, a DRC test run will test the entire area of the target
+    cell (either the current cell, or the cell implied from the CHD).
+    The group of controls below the <b>Partition grid size</b> entries
+    allows the testing area to be set to an arbitrary rectangular window.
+    Of course, the window coordinates should overlap the cell coordinates,
+    or no testing will be done.
+
+    <a name="set"></a>
+    <p>
+    When the <b>Set</b> button is pressed, a command is active where
+    if the user drags, or clicks twice to define the corners of a rectangle,
+    those values will set the numerical entries on the panel.  This can be
+    used to visually set the test area to an area of interest in the displayed
+    layout.  This works whether or not the window is actually used, i.e.,
+    whether or not the numeric coordinate entry areas are grayed.
+
+    <p>
+    The window will be ignored unless the <b>Use Window</b> check box
+    is checked.  When checked, the numerical coordinate entry areas
+    become un-grayed, and the user can manually enter the window
+    coordinates.
+
+    <p>
+    The <b>Flatten</b> check box is un-grayed only when the <b>Use</b>
+    (use CHD) button is pressed.  When checked, as geometry is being
+    read into memory with the CHD, it will be flattened into a single
+    cell.  Thus, DRC tests will be applied to a flat cell, which can be
+    more efficient than processing a hierarchy.  However, there is
+    overhead in flattening, and the flat representation can take much
+    more memory than a hierarchical representation.  This should
+    generally be employed only when using a partition grid or small
+    window.  The feature is rather experimental and obscure.
+
+    <p>
+    Near the bottom of the <b>Run</b> page are large <b>Check</b> and
+    <b>Check in Background</b> buttons.  These will launch a DRC run
+    in the foreground or background.  The run will observe the other
+    settings in the panel (and in the <a href="xic:limit"><b>DRC
+    Parameter Setup</b></a> panel).
+
+    <p>
+    When a job is started in the foreground with the <b>Check</b>
+    button, the button remains pressed until the job completes.  If
+    the user un-presses the button, the job will be paused, and can be
+    terminated by the user.  The job can also be paused by pressing
+    <b>Ctrl-c</b> when <i>Xic</i> has keyboard focus.  Other
+    operations are locked out while DRC is running.  Violations are
+    recorded in a file named <tt>drcerror.log.</tt><i>cellname</i>
+    which is written in the current directory.  Additionally, if not
+    using a CHD, violating objects are marked, and the error region
+    highlighted.
+
+    <p>
+    <img src="screenshots/drcrun2.png" align=right>
+    <p>
+    When a foreground job is running, <i>Xic</i> is busy and unusable. 
+    When a job is started in the background, however, <i>Xic</i> is
+    available for other tasks.  There can be multiple spawned
+    processes executing concurrently.  A pop-up window will appear
+    alerting the user that a job has completed.
+
+    <p>
+    Unlike the foreground run, violations are not marked on-screen. 
+    The <a href="xic:erupd"><b>Update Highlighting</b></a> button can
+    be used to generate the highlighting after a background run
+    completes.  If the <a href="xic:next"><b>Show Errors</b></a> mode
+    is active, and the current cell is the same as that being checked,
+    when a background job terminates, the error display window is
+    popped down and the mode terminates.
+
+    <p>
+    The spawned process is set to ignore the <tt>SIGHUP</tt> signal,
+    so that the process will continue to run if the user's shell is
+    destroyed and/or the user logs out.  This is the preferred method
+    by which large, batch DRC jobs can be performed.
+
+    <p>
+    This process will create an errors file in the current directory
+    named <tt>drcerror.log.</tt><i>cellname</i><tt>.</tt><i>PID</i>
+    where <i>PID</i> is the process id of the spawned process.
+
+    <p>
+    Under Windows, this works by executing a <a
+    href="xic:batch">batch-mode</a> <i>Xic</i> process in the
+    background.  Presently, this doesn't allow background jobs to use
+    a CHD or partitioning.
+
+    <p>
+    The <b>Jobs</b> page provides a list of background jobs currently
+    running.  Jobs can be selected by clicking on the text.  When a
+    job is selected, the <b>Abort job</b> button becomes un-grayed. 
+    Pressing this button will halt the selected job.  Be aware that
+    there is no confirmation, and it is not possible to restart a job
+    that is halted in this manner.  The spawned process can also be
+    stopped or killed using the job control functionality of the
+    user's shell.
+    <br clear=all>
+
+!!SEEALSO
+xic:drcmenu
+
+!! 061908
+!!KEYWORD
+xic:point
+!!TITLE
+Check In Region
+!!HTML
+    <b>Keyword</b>: <tt>point</tt>
+
+    <p>
+    When the <b>Check In Region</b> button in the <b>DRC Menu</b> is
+    active, design rule checking is performed on objects the user
+    clicks on or drags over.  The method of selecting a region to
+    check is the same as for the <a href="xic:check"><b>Check In
+    Foreground</b></a> command, however the <b>Enter</b> key is
+    ignored.  Violating objects are marked, the error region
+    highlighted, and a pop-up explains the error.  No file is
+    produced.  A maximum of 15 errors is accumulated for each region;
+    the check terminates at this error count.  The <b>Check In
+    Region</b> command remains active until explicitly terminated,
+    unlike the <b>Check In Foreground</b> command.
+
+!!SEEALSO
+xic:drcmenu
+
+!! 061908
+!!KEYWORD
+xic:clear
+!!TITLE
+Clear Errors
+!!HTML
+    <b>Keyword</b>: <tt>clear</tt>
+
+    <p>
+    Pressing the <b>Clear Errors</b> button in the <b>DRC Menu</b>
+    will delete the internal list of error-producing objects, and
+    consequently clear the display of highlighting and error boxes
+    associated with violations.  This does not affect the objects in
+    the database.
+
+!!SEEALSO
+xic:drcmenu
+
+!! 061908
+!!KEYWORD
+xic:query
+!!TITLE
+Query Errors
+!!HTML
+    <b>Keyword</b>: <tt>query</tt>
+
+    <p>
+    When the <b>Query Errors</b> button in the <b>DRC Menu</b> is
+    active, clicking on the highlighted error region (not the object,
+    but the highlighted figure which indicates the location of the
+    error) will display the text of the error message for that error
+    on the prompt line.
+
+!!SEEALSO
+xic:drcmenu
+
+!! 091509
+!!KEYWORD
+xic:erdmp
+!!TITLE
+Dump Error File
+!!HTML
+    <b>Keyword</b>: <tt>erdmp</tt>
+
+    <p>
+    The <b>Dump Error File</b> button in the <b>DRC Menu</b> allows
+    the user to dump a file containing the error records for the
+    currently visible (as highlighting) errors.
+
+    <p>
+    The user is first given the chance to provide the file name, which
+    should begin with "<tt>drcerror.log</tt>" to be recognized as a
+    DRC errors file for subsequent reading into <i>Xic</i>.  After the
+    file is created, the user is given the option to view the file in
+    a <b>File Browser</b> window.  If no file name is given, the file
+    will be written to a temporary file which is erased on program
+    exit.  This may be convenient if the user only wants a quick view
+    of the text.
+
+    <p>
+    Tha <a href="xic:erupd"><b>Update Highlighting</b></a> command
+    button provides the reverse operation, recreating the highlighting
+    from an existing error log file.
+
+!!SEEALSO
+xic:drcmenu
+
+!! 010615
+!!KEYWORD
+xic:erupd
+!!TITLE
+Update Highlighting
+!!HTML
+    <b>Keyword</b>: <tt>erupd</tt>
+
+    <p>
+    The <b>Update Highlighting</b> button in the <b>DRC Menu</b> will
+    delete the internal list of DRC error highlighting indicators, and
+    rebuild the list from a DRC error log file.  The error log file
+    must exist in the current directory, have a file name beginning
+    with "<tt>drcerror.log</tt>", and apply to the current cell.  If
+    there are multiple files found, a listing will appear, allowing
+    the user to make a choice.  After selecting an entry, pressing the
+    <b>Apply</b> button on the list pop-up will continue the
+    operation.
+
+    <p>
+    DRC error files are produced by the batch mode checking operations
+    initiated from the <a href="xic:check"><b>DRC Run Control</b></a>
+    panel.  In the foreground check, the highlighting list is
+    generated along with the file, however no highlighting is produced
+    in background checking, so this command can be used to visualize
+    the errors in that case.  It can also be used to bring back the
+    highlighting that was cleared with the <a
+    href="xic:clear"><b>Clear Errors</b></a> command, if there is a
+    corresponding error log file.
+
+    <p>
+    The <a href="xic:erdmp"><b>Dump Error File</b></a> command
+    performs the reverse operation, creating an error log file from
+    the internal highlighting list.
+
+    <p>
+    The <a href="!errs"><b>!errs</b></a> prompt line command performs
+    the same operations as this button.
+
+!!SEEALSO
+xic:drcmenu
+
+!! 010615
+!!KEYWORD
+xic:next
+!!TITLE
+Show Errors
+!!HTML
+    <b>Keyword</b>: <tt>next</tt>
+
+    <p>
+    After batch rule checking (using the operations initiated from the
+    <a href="xic:check"><b>DRC Run Control</b></a> panel) is
+    performed, or in any case when a compatible DRC error log file is
+    present in the current directory, errors from the file may be
+    graphically viewed sequentially with the <b>Show Errors</b> button
+    in the <b>DRC Menu</b>.
+
+    <p>
+    When the <b>Show Errors</b> button is pressed, if there is only
+    one error log file for the current cell, it is loaded, otherwise a
+    list of files is presented and the user must make a selection,
+    then press the <b>Apply</b> button.  If a file is successfully
+    loaded, the <b>Show Errors</b> button in the menu will be shown
+    active, and a message will appear in the prompt area.  The search
+    for error files extends only to the current directory, and only to
+    files with a name beginning with "<tt>drcerror.log</tt>".  The
+    file must have been generated from a cell with the same name as
+    the current cell.
+
+    <p>
+    This sets a mode where pressing the <b>PageDown</b> key will
+    display the first and subsequent errors in a sub-window.  The
+    <b>PageUp</b> key can be used to view previously displayed errors. 
+    The <b>Ctrl-f</b> key performs the same operation as
+    <b>PageDown</b>, and the <b>Ctrl-b</b> and <b>Ctrl-p</b> keys are
+    equivalent to <b>PageUp</b>.
+
+    <p>
+    The <b>PageDown</b> or <b>Ctrl-f</b> keys can be used to access
+    the errors randomly, by number.  Entering a number followed by
+    <b>PageDown</b> or <b>Ctrl-f</b> will display the corresponding
+    error.  One can also enter <b>+</b> or <b>-</b> ahead of the
+    number, in which case <b>PageDown</b> and <b>Ctrl-f</b> will move
+    backward or forward in the list by the number.
+
+    <p>
+    The functionality is maintained until the <b>Show Errors</b>
+    button is selected a second time, making it inactive, or the
+    sub-window is dismissed.  The mode <i>cannot</i> be exited with
+    the <b>Esc</b> key.  Any command can be executed when the <b>Show
+    Errors</b> button is active, making it possible to interactively
+    fix the errors without leaving <b>Show Errors</b> mode.
+
+    <p>
+    If a DRC background run terminates when the <b>Show Errors</b>
+    mode is active, and the checked cell is the same as the current
+    cell, the error display window will be popped down, and the mode
+    exited.  The mode can be restarted to view the errors from the new
+    file.
+
+    <p>
+    Note that in the sub-window, only the current error is
+    highlighted, whereas in other windows, all errors may be
+    highlighted, if a highlighting list exists.  The highlighting list
+    can be created or rebuilt from the file with the <a
+    href="xic:erupd"><b>Update Highlighting</b></a> button.
+
+    <p>
+    <b>Show Errors</b> mode is terminated if a new cell is opened for
+    editing, including <a href="xic:push"><b>Push</b></a> and <a
+    href="xic:pop"><b>Pop</b></a>, and upon switching to electrical
+    mode.
+
+!!SEEALSO
+xic:drcmenu
+
+!! 091509
+!!KEYWORD
+xic:erlyr
+!!TITLE
+Create Layer
+!!HTML
+    <b>Keyword</b>: <tt>erlyr</tt>
+
+    <p>
+    The <b>Create Layer</b> button in the <b>DRC Menu</b> will create
+    objects on a given layer corresponding to the error regions in the
+    current highlighting list.  These are the actual error regions
+    with solid outline highlighting, and not the "bad" objects which
+    are also marked but with a dashed outline.  This operation can be
+    useful for adding the errors to a design file for subsequent
+    processing, and for other purposes.
+
+    <p>
+    The <a href="xic:erupd"><b>Update Highlighting</b></a> command
+    button can be used to generate a highlighting list from an
+    existing DRC error log file.
+
+    <p>
+    The user is first prompted for a layer name.  Any suitable layer
+    name can be given.  A new layer will be created if the name does
+    not match an existing name.
+
+    <p>
+    The layer will be cleared before the operation starts.  Objects
+    (database polygons and boxes) will be created only in the current
+    cell.
+
+    <p>
+    A second prompt allows the user to provide an integer property
+    value.  If the user supplies a value larger than 0, a property
+    will be applied to each object with the given number, containing a
+    string with the text of the corresponding error message.  The <a
+    href="xic:props"><b>Show Phys Properties</b></a> mode, available
+    from the <b>Main Window</b> sub-menu of the <b>Attributes Menu</b>
+    and the <b>Attributes</b> menu of sub-windows, can be used to
+    display these messages.  If a positive integer is not given, no
+    property will be stored with the new objects.
+
+    <p>
+    The <a href="!errlayer"><b>!errlayer</b></a> prompt line command
+    performs an identical operation.
+
+!!SEEALSO
+xic:drcmenu
+
+!! 040112
+!!KEYWORD
+xic:dredt
+!!TITLE
+Design Rule Editor
+!!HTML
+    <img src="screenshots/drceditprms.png" align=right>
+    <b>Keyword</b>: <tt>dredt</tt>
+
+    <p>
+    The <b>Edit Rules</b> button in the <b>DRC Menu</b> brings up the
+    <b>Design Rule Editor</b> panel.  The editor contains a listing of
+    design rules for the current layer.  The rules for any layer can
+    be displayed by clicking in the <a href="layertab">layer menu</a>
+    and selecting a new layer.  Design rules for the current layer can
+    be added, deleted, modified, or disabled.  The <a
+    href="xic:updat"><b>Save Tech</b></a> command in the <a
+    href="xic:attrmenu"><b>Attributes Menu</b></a> can be used to
+    write a new technology file in the current directory that reflects
+    the changes made.
+
+    <p>
+    The <a href="drcrules">rules</a> are listed one per line, using
+    the same syntax as in the specification in the <a
+    href="techfile">technology file</a>.  Rules are shown after any
+    technology file macros have been expanded, and macros can not be
+    used in new rules entered from the <b>Design Rule Editor</b>
+    panel.  Clicking with button 1 on a rule will cause it to become
+    selected (or deselected if it was already selected).  Selected
+    rules are acted on by the <b>Edit</b>, <b>Delete</b>, and
+    <b>Inhibit</b> commands in the <b>Edit</b> menu of the <b>Design
+    Rule Editor</b> panel.  The selected rule is shown highlighted.
+
+    <p>
+    The <b>Quit</b> button in the <b>Design Rule Editor</b> panel
+    <b>Edit</b> menu retires the rules panel.  This can also be
+    accomplished by pressing the <b>Edit Rules</b> button in the
+    <b>DRC Menu</b> a second time.
+
+    <p>
+    If a rule is selected, pressing the <b>Edit</b> button in the
+    <b>Edit</b> menu will cause the <a href="xic:ruleedit"><b>Design
+    Rule Parameters</b><a> entry panel to appear if not already
+    visible, from which the rule parameters can be modified.  Once
+    parameters are modified, the <b>Apply</b> button will make the
+    changes and update the listing, and dismiss the panel.  The rule
+    most recently edited can be reverted to the previous parameters
+    with the <b>Undo</b> button in the <b>Edit</b> menu of the
+    <b>Design Rule Editor</b> panel.
+
+    <p>
+    If a rule is selected, pressing the <b>Delete</b> button deletes
+    the rule from the current layer.  The most recently deleted rule
+    can be restored with the <b>Undo</b> button.  Deleted rules are
+    really gone, and will not be written to the technology file during
+    update.
+
+    <p>
+    The <b>Inhibit</b> button toggles the inhibited status of the
+    rules.  An inhibited rule is listed with an 'I' in the first
+    column, and is not applied when checking is performed.  It is
+    useful on occasion to temporarily disable a rule.  The <a
+    href="xic:updat"><b>Save Tech</b></a> command will write all rules
+    present to the technology file, inhibited or not.  The inhibited
+    status is active only for the current <i>Xic</i> session.
+
+    <p>
+    If a rule is selected, pressing the <b>Inhibit</b> button will
+    change the inhibited state of the selected rule, and deselect the
+    rule.
+
+    <p>
+    The <b>Undo</b> button undoes the last edit, addition or delete
+    operation.  A second press will redo the undo.
+
+    <p>
+    The <b>Rules</b> menu bar item produces a drop-down menu
+    containing the names of the built-in <a href="drcrules">design
+    rules</a>.  Selecting a button will cause the <a
+    href="xic:ruleedit"><b>Design Rule Parameters</b><a> entry panel
+    to appear if not already visible, from which the rule parameters
+    can be entered.  Once parameters are entered, the <b>Apply</b>
+    button will add the rule and update the listing, and dismiss the
+    panel.  A new rule will replace an existing rule of the same type
+    and target layer.  There is also an entry which allows references
+    to user-defined rules to be created.  If user-defined rules have
+    been defined, the entry produces a sub-menu of the defined rules. 
+    Selecting one allows instantiation on the current layer.
+
+    <p>
+    The <b>Rule Block</b> button produces a drop-down menu containing
+    the names of existing user-defined rules, plus entries <b>New</b>,
+    <b>Delete</b>, and <b>Undelete</b>.  Selecting one of the rule
+    entries brings up a <a href="texteditor">text editor</a> window
+    loaded with the rule block text.  The text can be modified, and
+    when saved the internal rule will be updated.  This will be
+    reflected in the technology file created with the <a
+    href="xic:updat"><b>Save Tech</b></a> button in the <a
+    href="xic:attrmenu"><b>Attributes Menu</b></a>.  Selecting the
+    <b>New</b> entry will open an empty editing window, into which the
+    text of a new rule can be inserted.  Saving the text adds the new
+    rule to the internal list.
+
+    <p>
+    To delete a user-defined rule, press the <b>Delete</b> button in
+    the <b>Rule Block</b> menu, then select a rule from the same menu. 
+    That rule will be removed from the menu.  The rule can be restored
+    with the <b>Undelete</b> menu entry, but only one deletion is
+    remembered.  When a rule block is deleted, all instances of the
+    rule (in the layers) are inhibited, but not deleted.  They are
+    cleared when the internal backup copy of the deleted rule is
+    deleted, which happens on the next rule deletion or when the
+    pop-up is dismissed.  If a rule is undeleted, its instances are
+    uninhibited.
+
+    <p>
+    When a user-defined rule is edited and saved, the instances of the
+    old rule (of the same name) are inhibited, but are not cleared. 
+    The old rule instances are left as an indication of where the
+    previous rule was applied and what arguments it takes.  To apply
+    the new rule, the old instances should be deleted by hand, and a
+    new instance created.  If the inhibited rules are uninhibited from
+    the menu, the old rule will be used, not the new one.  If a
+    technology file is created with the <b>Save Tech</b> command, the
+    inhibited rules will be included, so that it is important to
+    delete these if the call to the new rule is different from the
+    call to the old.
+
+!!SEEALSO
+xic:drcmenu
+
+!! 010815
+!!KEYWORD
+xic:ruleedit
+!!TITLE
+Design Rule Parameters
+!!HTML
+
+    This panel, which is polymorphic and specific for each design rule
+    type, appears when a design rule is edited or a new rule is being
+    created from the <a href="xic:dredt"><b>Design Rule
+    Editor</b></a> panel.  It provides the appropriate entry areas for
+    rule parameters.  If the target rule is changed while the panel
+    is visible, the panel will reconfigure itself to provide the
+    entries for the new rule.
+
+    <p>
+    There are entries that are common to multiple rules.  All rules
+    have an entry labeled "<b>Decsription string</b>", which contains
+    optional arbitrary text which explains the rule or provides a
+    reference.  This text will appear in violation messages.
+    All rules but <tt>Exist</tt> contain an entry labeled "<b>Layer
+    expression to AND with source figures on current layer
+    (optional)</b>".  This is the optional <tt>Region</tt>
+    specification.  In addition, the "edge" rules contain two entries: 
+    "<b>Layer expression to AND at inside edges when forming test
+    areas (optional)</b>" and similar for outside edges.  These can
+    provide values for the optional <tt>Inside</tt> and
+    <tt>Outside</tt> keywords.
+
+    <p>
+    The entry areas for the rules are briefly described below.  See
+    the rule descriptions for more information.
+
+    <dl>
+    <dt><a href="User Defined Rule"><tt>User Defined Rule</tt></a><dd>
+      <dl>
+      <dt><b>User-defined rule arguments (<i>n</i> required)</b><dd>
+      An entry area where the rule arguments are entered, separated by
+      space.  The label prints the number of arguments required for
+      the rule, extra arguments are ignored.
+      </dl>
+    </dl>
+
+    <dl>
+    <dt><a href="Connected"><tt>Connected</tt></a><dd>
+    <img src="screenshots/drp_connected.png" align=right>
+    No additional entries.
+    <br clear=all>
+    </dl>
+
+    <dl>
+    <dt><a href="NoHoles"><tt>NoHoles</tt></a><dd>
+    <img src="screenshots/drp_noholes.png" align=right>
+      <dl>
+      <dt><b>Minimum area (square microns)</b><dd>
+      If larger than 0.0, holes with an area smaller than this value
+      will trigger an error.
+
+      <p>
+      <dt><b>Minimum width (microns)</b><dd>
+      If larger than 0.0, holes with a width less than this value will
+      trigger an error.
+      </dl>
+      If both of these parameters are 0.0, any hole will trigger an error.
+    <br clear=all>
+    </dl>
+
+    <dl>
+    <dt><a href="Exist"><tt>Exist</tt></a><dd>
+    <img src="screenshots/drp_exist.png" align=right>
+    No additional entries.
+    <br clear=all>
+    </dl>
+
+    <dl>
+    <dt><a href="Overlap"><tt>Overlap</tt></a><br>
+    <a href="IfOverlap"><tt>IfOverlap</tt></a><br>
+    <a href="NoOverlap"><tt>NoOverlap</tt></a><br>
+    <a href="AnyOverlap"><tt>AnyOverlap</tt></a><br>
+    <a href="PartOverlap"><tt>PartOverlap</tt></a><br>
+    <a href="AnyNoOverlap"><tt>AnyNoOverlap</tt></a><dd>
+    <img src="screenshots/drp_overlap.png" align=right>
+      <dl>
+      <dt><b>Target layer name or expression</b><dd>
+      This is the name of a layer, or a layer expression, which is the
+      target for the rule.  An entry is mandatory.
+      </dl>
+    <br clear=all>
+    </dl>
+
+    <dl>
+    <dt><a href="MinArea"><tt>MinArea</tt></a><dd>
+    <img src="screenshots/drp_minarea.png" align=right>
+      <dl>
+      <dt><b>Minimum area (square microns)</b><dd>
+      This specifies the minimum area for the rule.
+      </dl>
+    <br clear=all>
+    </dl>
+
+    <dt><a href="MaxArea"><tt>MaxArea</tt></a><dd>
+    <img src="screenshots/drp_maxarea.png" align=right>
+      <dl>
+      <dt><b>Maximum area (square microns)</b><dd>
+      This specifies the maximum area for the rule.
+      </dl>
+    <br clear=all>
+    </dl>
+
+    <dl>
+    <dt><a href="MinEdgeLength"><tt>MinEdgeLength</tt></a><dd>
+    <img src="screenshots/drp_minedgelength.png" align=right>
+      <dl>
+      <dt><b>Target layer name or expression</b><dd>
+      This is the name of a layer, or a layer expression, which is the
+      target for the rule.  An entry is mandatory.
+
+      <p>
+      <dt><b>Minimum edge length (microns)</b><dd>
+      This specifies the minimum edge length for the rule.
+      </dl>
+    <br clear=all>
+    </dl>
+
+    <dl>
+    <dt><a href="MaxWidth"><tt>MaxWidth</tt></a><dd>
+    <img src="screenshots/drp_maxwidth.png" align=right>
+      <dl>
+      <dt><b>Maximum width (microns)</b><dd>
+      This specifies the maximum width for the rule.
+      </dl>
+    <br clear=all>
+    </dl>
+
+    <dl>
+    <dt><a href="MinWidth"><tt>MinWidth</tt></a><dd>
+    <img src="screenshots/drp_minwidth.png" align=right>
+      <dl>
+      <dt><b>Minimum width (microns)</b><dd>
+      This specifies the minimum width for the rule.
+
+      <p>
+      <dt><b>Non-Manhattan "diagonal" width</b><dd>
+      If nonzero, this value will be used instead when the measurement
+      direction is not parallel to the x or y axis.
+      </dl>
+    <br clear=all>
+    </dl>
+
+    <dl>
+    <dt><a href="MinSpace"><tt>MinSpace</tt></a><dd>
+    <img src="screenshots/drp_minspace.png" align=right>
+      <dl>
+      <dt><b>Default minimum spacing (microns)</b><dd>
+      This specifies the default minimum space for the rule.
+
+      <p>
+      <dt><b>Non-Manhattan "diagonal" spacing</b><dd>
+      If nonzero, this value will be used instead when the measurement
+      direction is not parallel to the x or y axis.
+
+      <p>
+      <dt><b>Same-Net spacing</b><dd>
+      If nonzero, this value will be used instead when the measurement
+      is between objects in the same wire net.  <font color=red><b>This is
+      currently not implemented.</b></font>
+
+      <p>
+      <dt><b>Use spacing table</b><dd>
+      When checked, a <a href="spacetab">spacing table</a> will be used.
+      This provides minimum space based on the source width and running
+      parallel overlap length.  The table is consulted for Manhattan
+      edges only.  The table can be created or edited with the
+      <b>Edit Table</b> button, which brings up a text editor window
+      containing any existing table.
+      </dl>
+    <br clear=all>
+    </dl>
+
+    <dl>
+    <dt><a href="MinSpaceTo"><tt>MinSpaceTo</tt></a><dd>
+    <img src="screenshots/drp_minspaceto.png" align=right>
+      <dl>
+      <dt><b>Target layer name or expression</b><dd>
+      This is the name of a layer, or a layer expression, which is the
+      target for the rule.  An entry is mandatory.
+
+      <p>
+      <dt><b>Default minimum spacing (microns)</b><dd>
+      This specifies the default minimum space for the rule.
+
+      <p>
+      <dt><b>Non-Manhattan "diagonal" spacing</b><dd>
+      If nonzero, this value will be used instead when the measurement
+      direction is not parallel to the x or y axis.
+
+      <p>
+      <dt><b>Same-Net spacing</b><dd>
+      If nonzero, this value will be used instead when the measurement
+      is between objects in the same wire net.  <font color=red><b>This is
+      currently not implemented.</b></font>
+
+      <p>
+      <dt><b>Use spacing table</b><dd>
+      When checked, a <a href="spacetab">spacing table</a> will be used.
+      This provides minimum space based on the source width and running
+      parallel overlap length.  The table is consulted for Manhattan
+      edges only.  The table can be created or edited with the
+      <b>Edit Table</b> button, which brings up a text editor window
+      containing any existing table.
+      </dl>
+    <br clear=all>
+    </dl>
+
+    <dl>
+    <dt><a href="MinSpaceFrom"><tt>MinSpaceFrom</tt></a><dd>
+    <img src="screenshots/drp_minspacefrom.png" align=right>
+      <dl>
+      <dt><b>Target layer name or expression</b><dd>
+      This is the name of a layer, or a layer expression, which is the
+      target for the rule.  An entry is mandatory.
+
+      <p>
+      <dt><b>Minimum dimension (microns)</b><dd>
+      This specifies the minimum projection for the rule.
+
+      <p>
+      <dt><b>Dimension when target objects are fully enclosed</b><dd>
+      If nonzero, this value will be used to test objects that
+      are fully surrounded.
+
+      <p>
+      <dt><b>Opposite side dimensions</b><dd>
+      If at least one of the two numbers is nonzero, these will be
+      used to test fully enclosed boxes.  Two opposite sides must be
+      exclosed by at least one value, and the other two sides must be
+      enclosed by at least the other value.
+      </dl>
+    <br clear=all>
+    </dl>
+
+    <dl>
+    <dt><a href="MinOverlap"><tt>MinOverlap</tt></a><dd>
+    <img src="screenshots/drp_minoverlap.png" align=right>
+      <dl>
+      <dt><b>Target layer name or expression</b><dd>
+      This is the name of a layer, or a layer expression, which is the
+      target for the rule.  An entry is mandatory.
+
+      <p>
+      <dt><b>Minimum dimension (microns)</b><dd>
+      This specifies the minimum overlap width for the rule.
+      </dl>
+    <br clear=all>
+    </dl>
+
+    <dl>
+    <dt><a href="MinNoOverlap"><tt>MinNoOverlap</tt></a><dd>
+    <img src="screenshots/drp_minnooverlap.png" align=right>
+      <dl>
+      <dt><b>Target layer name or expression</b><dd>
+      This is the name of a layer, or a layer expression, which is the
+      target for the rule.  An entry is mandatory.
+
+      <p>
+      <dt><b>Minimum dimension (microns)</b><dd>
+      This specifies the minimum projection for the rule.
+      </dl>
+    <br clear=all>
+    </dl>
+
+

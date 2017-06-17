@@ -1,0 +1,39 @@
+************************************************************
+   HiSIM1.2.0 Release Note                   April/9/2003
+************************************************************
+
+Release informations of the HiSIM1.2.0 (April 9, 2003)
+
+HiSIM1.2.0 is the minor revised version of HiSIM1.1.1.
+And we also release the HiSIM1.0.2 and HiSIM1.1.2,
+which are sub-minor revised and bug fixed versions
+for HiSIM1.0.1 and HiSIM1.1.1, respectively.
+
+The main model file name of HiSIM source code is changed to:
+
+   HiSIM1.2.0 (The latest version of HiSIM1.2-series)
+      NEW: hsm1eval120.c
+   HiSIM1.1.2 (The latest version of HiSIM1.1-series)
+      OLD: hsm1eval1_1_1.c
+      REVISED: hsm1eval112.c
+   HiSIM1.0.2 (The latest version of HiSIM1.0-series)
+      OLD: hsm1eval1_0_1.c
+      REVISED: hsm1eval102.c
+
+HiSIM1.2.0 has the following new features:
+
+   * GISL (Gate Induced Source Leakage) current model is
+     implemented.
+   * Gate leakage current model is improved.
+   * New model parameter "PTHROU" is introduced to reproduce
+     the subthreshold characteristics for short-channel devices.
+   * 1/f noise model is improved.
+   * The effective bias Veff is introduced for smoothing
+     conductances at high voltage ranges for Vds, Vgs and Vbs.
+
+If you have any questions or comments on HiSIM1.2.0,
+please send email to masuda.h@starc.or.jp
+
+Sincerely,
+STARC Physical Design Gr.
+

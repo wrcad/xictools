@@ -1,0 +1,25 @@
+%pre
+if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
+    prefix=/usr/local
+else
+    prefix=$RPM_INSTALL_PREFIX
+fi
+
+# Nothiong to do now.
+
+
+%post
+if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
+    prefix=/usr/local
+else
+    prefix=$RPM_INSTALL_PREFIX
+fi
+
+prog=xic
+libdir=$prefix/xictools/$prog
+
+# Link technology file.
+if [ ! -f $libdir/startup/xic_tech ]; then
+    ln -s xic_tech.scmos $libdir/startup/xic_tech
+fi
+

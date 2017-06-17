@@ -1,0 +1,727 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiPhysical.hlp,v 1.7 2016/03/01 04:47:03 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiPhysical.hlp
+!!TITLE
+xiPhysical.hlp
+!!HTML
+
+!!SUBTOPICS
+physedit
+xic:batch
+fileorg
+xicdb
+
+
+!! 020615
+!!KEYWORD
+physedit
+!!TITLE
+Physical Layout Editing
+!!HTML
+
+    In physical mode, one arranges geometrical shapes on the various
+    layers to produce a working circuit.  One can also place subcells,
+    which have been previously created.  The knowledge of what shapes
+    to place, and where, is dependent on the technology in use, and
+    represents the essence of integrated circuit engineering.  The
+    user must be familiar with these fundamentals, as <i>Xic</i> is
+    only a tool for application of this knowledge.
+
+    <p>
+    The basic primitive used by <i>Xic</i> is the box.  Boxes are
+    filled rectangular structures representing an area of opacity on
+    the corresponding mask level.  The <a
+    href="xic:box"><b>box</b></a> button in the <a
+    href="sidemenu">side menu</a>, with the rectangular icon, is used
+    to create boxes.  With the <b>box</b> button active, the user
+    points to the two diagonal corners of the box desired in the
+    drawing window, and a colored box will appear.  The color and fill
+    pattern are set for each layer in the technology file, and can be
+    changed by the user with the <a href="xic:color"><b>Set
+    Color</b></a> and <a href="xic:fill"><b>Set Fill</b></a> buttons
+    in the <a href="xic:attrmenu"><b>Attributes Menu</b></a>.  The layer
+    can be selected by clicking on the desired layer in the <a
+    href="layertab">layer table</a>, which is arrayed near the bottom
+    of the <i>Xic</i> main window.  Note that when boxes created on
+    the same level overlap, they are clipped or merged so as to not
+    actually overlap.  This increases the storage and retrieval
+    efficiency of the database.
+
+    <p>
+    If the created box is too small or otherwise causes a <a
+    href="xic:drcmenu">design rule</a> violation, a message will appear,
+    if <a href="xic:intr">interactive rule checking</a> is active.  By
+    default, all objects are checked for design rule violations when
+    they are added to the database, though this can be set otherwise
+    in the technology file or if the <b>Set Interactive</b> button in
+    the <b>DRC Menu</b> is not active.  Objects that "fail" are
+    actually in the database, and it is the responsibility of the user
+    to correct the error when it is flagged.
+
+    <p>
+    Boxes can be used exclusively to create a working circuit, however
+    other structures are sometimes more convenient.  Wires are
+    fixed-width paths that are often used to make electrical
+    connections.  The <a href="xic:wire"><b>wire</b></a> button in the
+    side menu allows the creation of wires, and the <a
+    href="xic:style">style</a> button can be used to change or set the
+    wire width and end style.  The <b>wire</b> button has a sideways
+    L-shaped icon.  Every layer has a default wire width.  To
+    construct a wire, simply click on the points of the drawing window
+    which correspond to wire vertices, and click the last vertex twice
+    to end the wire.  Note that the wire can zigzag at any angle,
+    however the angles can be fixed to multiples of 45 degrees by
+    setting the <b>Constrain angles to 45 degree multiples</b> check
+    box in the <a href="xic:edset"><b>Editing Setup</b></a> panel from
+    the <b>Edit Menu</b>.  Also note that acute angles will most
+    likely cause a design rule violation message to appear.
+
+    <p>
+    Polygons are constructed in a manner similar to wires, using the
+    <a href="xic:polyg"><b>polyg</b></a> button in the side menu. 
+    This button has a triangle icon.  The polygon is constructed by
+    clicking at each desired vertex location, and is terminated by
+    clicking again on the first vertex.  Polygons can have edges with
+    arbitrary angles, which can be constrained to multiples of 45
+    degrees with the <b>Constrain angles to 45 degree multiples</b>
+    check box in the <b>Editing Setup</b> panel.  Again, acute angles
+    are likely to cause design rule violations.  Polygons are most
+    useful for constructing rounded or off-angle shapes used in high
+    frequency circuits.  It is also slightly more efficient to use
+    polygons rather than a collection of boxes.
+
+    <p>
+    With none of the geometry-creating buttons active, <a
+    href="button1">clicking on</a> an object can cause it to be
+    "selected".  Only objects on layers that are selectable, as shown
+    in the <a href="layertab">layer table</a>, can be selected.  A
+    selected object will be outlined with a flashing highlight. 
+    Selected objects are used by many of the other commands.  An
+    object can be deselected by clicking on it a second time.  The
+    status window below prompt line will indicate the number of
+    objects selected.  Multiple objects can be selected at once by
+    pressing and holding button 1, dragging the pointer, and
+    releasing.  A ghost-drawn rectangle will appear during this
+    operation.  Objects which overlap this rectangle will be selected
+    (or deselected if already selected).  All selected objects can be
+    deselected with the <a href="xic:desel"><b>desel</b></a> button in
+    the <a href="topbuttons">top button menu</a> (above the main
+    drawing window).
+
+    <p>
+    Once selected, an object can be deleted, either by pressing the
+    <b>Delete</b> key, or by pressing the <a
+    href="xic:delet"><b>Delete</b></a> button in the <a
+    href="xic:modifymenu"><b>Modify Menu</b></a>.  The objects will
+    disappear from the screen, and the database.
+
+    <p>
+    Almost any operation which modifies the database can be undone
+    with the <a href="xic:undo"><b>Undo</b></a> button in the <b>Modify
+    Menu</b>, which is equivalent to pressing the <b>Tab</b> key.  The
+    last 25 operation are saved, and can be undone.  The <a
+    href="xic:redo"><b>Redo</b></a> button, or equivalently
+    <b>Shift-Tab</b> will redo the last undo.  All of the undone
+    operations are saved in the redo list, however the redo list is
+    cleared after each new operation that is not an undo.
+
+    <p>
+    The <a href="xic:strch"><b>Stretch</b></a> button in the <b>Modify
+    Menu</b> is used to modify the shapes or sizes of boxes, polygons,
+    wires, and labels.  By pointing at the edge or corner of a box,
+    one can move that edge or corner to a new location.  Similarly,
+    polygon and wire vertices can be moved.  Polygons and wires can
+    also be modified with the vertex editor built into the <a
+    href="xic:polyg"><b>polyg</b></a> and <a
+    href="xic:wire"><b>wire</b></a> command buttons.  If a polygon or
+    wire is selected before pressing the corresponding command button,
+    the vertices of the selected object will be marked.  The selected
+    vertices can be deleted or moved, and new vertices added.
+
+    <p>
+    The <a href="xic:erase"><b>erase</b></a> button in the side menu
+    has an icon consisting of a box with a corner missing.  This
+    button is used to delete parts of objects.  One clicks twice, or
+    presses and drags, to define a rectangle, which is ghost-drawn
+    during the operation.  This rectangular area will be cleared of
+    fill from any box, polygon, or wire.  Wires may not be entirely
+    erased, as they are only cut at points where the central path
+    crosses the erase box boundary.
+
+    <p>
+    The user may have already designed one or more cells using
+    <i>Xic</i>, which are then available for use as subcells in the
+    present layout.  Subcells are called and placed with the <a
+    href="xic:place"><b>place</b></a> command button in the side menu. 
+    After pressing the <b>place</b> button, the <b>Cell Placement
+    Control</b> pop-up will appear, which allows the user to select a
+    cell to place from cells that have been placed previously, or to
+    enter a new cell name to place.  The cell name can be dragged from
+    the <a href="xic:fsel"><b>File Selection</b></a> panel or from the
+    <b>List</b> pop-ups in the <a href="xic:filemenu"><b>File
+    Menu</b></a>.  In addition, the <b>List</b> pop-ups contain a
+    <b>Place</b> button which will also set the name of the current
+    "master" cell to be placed, and pop up the <b>Cell Placement
+    Control</b> pop-up if it is not already visible.  When the
+    <b>Place</b> button in the <b>Cell Placement Control</b> pop-up is
+    active, the current "master" will be "attached" to the mouse
+    pointer, and instances will be placed at locations where the user
+    clicks with mouse button 1 in the drawing.  There is provision in
+    the <b>Cell Placement Control</b> pop-up to define array
+    parameters, so that an array of instances will be created rather
+    than a single instance.  The placement mode can be exited by
+    pressing the <b>Esc</b> key, or by unsetting the <b>Place</b>
+    button in the <b>Cell Placement Control</b> pop-up.
+
+    <p>
+    Once a physical layout is substantially complete, the layout is a
+    candidate for batch <a href="xic:drcmenu">design rule checking</a> and
+    <a href="xic:extmenu">extraction</a>.
+
+    <p>
+    This brief introduction should convey the flavor of using
+    <i>Xic</i> in physical mode.  There are many more commands, and
+    some of the commands introduced have additional features not
+    mentioned.  The best way to learn <i>Xic</i> is to use it, and
+    read the on-line help available for the commands.  After pressing
+    the <b>Help</b> button in the <b>Help Menu</b>, pressing any
+    command button will bring up a help screen describing the command. 
+    Reading the help and then trying the operation is the fastest way
+    to learn.  The help mode, and any command, can ge exited by
+    pressing the <b>Esc</b> key.
+
+!!SEEALSO
+elecedit
+refcell
+
+!! 022916
+!!KEYWORD
+xic:batch
+!!TITLE
+Batch Mode
+!!HTML
+    <i>Xic</i> has a batch mode of operation, where <i>Xic</i> will
+    start without graphics, run commands, and exit.  Batch mode is
+    signaled by giving the <tt>-B</tt> option in the command line, in
+    one of the following forms:
+    <blockquote>
+      <tt>-B</tt><i>scriptfile</i>[,<i>param1</i>=<i>value1</i>][,<i>param2</i>=<i>value2</i>]...<br>
+      <tt>-B-</tt><i>command</i>[<tt>@</tt><i>arguments</i>]<br>
+    </blockquote>
+
+    <p>
+    In the first form, the path to a file containing <i>Xic</i> script
+    statements immediately follows "<tt>-B</tt>" with no space.  The
+    statements in the script file will be executed after the first
+    input file is loaded.  If no input file is given on the command
+    line, the script will be executed after the default "noname" cell
+    is loaded.
+
+    <p>
+    It is possible to pass parameters to the batch-mode scripts from
+    the command line.  The comma is used as a delimiter.  Commas in
+    the line that remain in single or double quotes <i>after</i> the
+    shell has treated the line are not taken as separators.  The
+    entire construct should not have any embedded white space, except
+    when single or double quoted as part of the <i>values</i>.
+
+    <p>
+    The <i>param1</i>, <i>param2</i>, etc.  are the names of variables
+    that will be defined in the execution context of the script. 
+    These variables will be set to <i>value1</i>, <i>value2</i>,
+    etc.  The values are numbers, strings, or executable text.  Values
+    that contain white space must be quoted, but note that the shell
+    will strip the quote marks, so that a string constant should be
+    single and double quoted as shown below.
+
+    <p>
+    Example  
+    <blockquote>
+    <tt>xic -Bmyscript,p1=1.234,p2='"a string"',p3="p1 + 1"</tt>
+    </blockquote>
+
+    <p>
+    This translates into the virtual addition of three lines to the
+    beginning of the script:
+    <blockquote><tt>
+    p1 = 1.234<br>
+    p2 = "a string"<br>
+    p3 = p1 + 1<br>
+    </tt></blockquote>
+
+    <p>
+    In the second form, the "<tt>-B</tt>" is immediately followed by
+    another '-' and one of the command keywords listed below.  After
+    the first cell is loaded (or "noname" if no input file was named in
+    the command line) the command will be executed.  The recognized
+    commands are listed below.
+
+    <p>
+    The command name can be immediately followed by an argument
+    string that begins with the '<tt>@</tt>' character.  The
+    arguments are specific to the command.  Multiple arguments can be
+    separated by '<tt>@</tt>' characters, or by white space if
+    quoted.
+
+    <p>
+    The <a href"initfiles"><tt>.xicstart</tt></a> file is read and
+    executed (if it exists) before the first cell is loaded, and all
+    other initialization is performed in the normal sequence.  The
+    commands below are simple shortcuts to common operations.  If
+    unavailable options are required, then these can either be set in
+    a <tt>.xicinit</tt> or <tt>.xicstart</tt> file, or the first form
+    of the <tt>-B</tt> option should be used.
+
+    <dl>
+    <dt><tt>tocgx</tt><br>
+        <tt>tocif</tt><br>
+        <tt>togds</tt><br>
+        <tt>tooas</tt><br>
+        <tt>toxic</tt><dd>
+    These write the hierarchy under the current cell to CGX, CIF,
+    GDSII, OASIS, and native cell files, respectively.  They perform
+    file conversion by reading a file into <i>Xic</i>, then writing
+    it out in the specified format.  The <a
+    href="filetool"><i>FileTool</i></a> utility and <a
+    href="-F"><tt>-F</tt></a> command line option provide a far more
+    powerful format translation capability.
+
+    <p>
+    The default name for the file written is the name of the current
+    cell, suffixed with "<tt>.cgx</tt>", "<tt>.cif</tt>", "<tt>.gds</tt>",
+    and "<tt>.oas</tt>" for the four archive file formats.  Native cell
+    files always have the same name as the cell contained.
+
+    <p>
+    These commands can take the following options.  The options are
+    separated from the command name and from one another by
+    '<tt>@</tt>' characters, and consist of a single character
+    identifier, an optional '=' character, and a value. 
+
+    <dl>
+    <dt><tt>o=</tt><i>outfile</i><dd>
+    The <i>outfile</i> is the name of the file to be generated.  If
+    not provided, the file name will be the name of the top-level
+    cell suffixed with an extension appropriate for the format.  In
+    the case of <tt>toxic</tt>, the <i>outfile</i> is a path to a
+    directory where the cell files will be created (the current
+    directory if not given).
+
+    <dt><tt>s=</tt><i>scale</i><dd>
+    The <i>scale</i> is a floating point value from 0.001 to 1000.0
+    which is applied when the file is written.
+
+    <dt><tt>l=</tt><tt>+</tt>|<tt>-</tt><i>lname</i>[,<i>lname</i> ...]<dd>
+    This option specifies a list of layer names.  The first
+    character in the list is a <tt>+</tt> or <tt>-</tt> to indicate
+    that only the listed layers will be output, or that all layers
+    except the listed layers will be output, respectively. 
+    Immediately following is a layer name, optionally followed by
+    additional layer names separated by commas.
+
+    <dt><tt>e</tt>[<i>N</i>]<dd>
+    The letter 'e' can be immediately followed by an integer 0-3. 
+    This sets the empty cell filtering level, as <a
+    href="ecfilt">described</a> for the <a href="xic:convt"><b>Format
+    Conversion</b></a> panel.  The values are
+    <table border=0>
+    <tr><td><tt>e</tt> or <tt>e1</tt></td> <td>Use both pre- and
+      post-filtering.</td></tr>
+    <tr><td><tt>e2</tt></td> <td>Use pre-filtering only.</td></tr>
+    <tr><td><tt>e3</tt></td> <td>Use post-filtering only.</td></tr>
+    <tr><td><tt>e0</tt></td> <td>No empty cell filtering
+      (no operation).</td></tr>
+    </table>
+
+    <dt><tt>f</tt><dd>
+    This flag option indicates that the output will contain a flat
+    representation of the cell hierarchy.  If the <tt>w</tt> option
+    is given, only objects that overlap the window area will be
+    present in output.  This option will not work with <tt>toxic</tt>.
+
+    <dt><tt>w=</tt><i>l</i>,<i>b</i>,<i>r</i>,<i>t</i><dd>
+    This specifies a rectangular area, in microns, for use when
+    flattening.
+
+    <dt><tt>c</tt><dd>
+    This flag indicates that when flattening with a window (both
+    <tt>f</tt> and <tt>w</tt> options also given) objects will be
+    clipped to the window boundary in output.
+    </dl>
+
+    <p>
+    Example:<br>
+    
+    <tt>xic -B-togds@o=file1.gds@w=100,200,200,300@fc@l=+0600 myfile.gds</tt>
+
+    <p>
+    This will create <tt>file1.gds</tt>, containing objects on layer 0600
+    within the window area, flattened and clipped.  Note that the
+    <tt>@</tt> separation character is actually optional after flags,
+    and other options which are not lists or strings.
+    </dl>
+
+    <dl>
+    <dt><tt>drc</tt>
+    <dd>Design rule checking is performed, and results are written to
+    a log file.
+
+    <p>
+    There are optional arguments that can be provided, separated
+    from the command name and from each other with '<tt>@</tt>'
+    characters.
+
+    <dl>
+    <dt><tt>w=</tt><i>l</i>,<i>b</i>,<i>r</i>,<i>t</i><dd>
+    This provides an area, given in microns, of the top-level cell
+    where checking will be performed.  The value consists of four
+    comma-separated floating-point numbers.  If not given, the entire
+    cell will be checked.
+
+    <dt><tt>m=</tt><i>maxerrs</i><dd>
+    This provides the maximum batch-mode <a href="xic:limit">error
+    count</a>, checking will terminate when this count is reached. 
+    The <i>maxerrs</i> is an integer 0-100000, with 0 indicating no
+    limit.  This will override the maximum error count set in the
+    technology file, if any.
+
+    <dt><tt>r=</tt><i>level</i><dd>
+    This sets the error recording level to use when checking.  The
+    <i>level</i> is an integer 0-2.  These correspond to recording one
+    error per object, one error of each type per object, or all
+    errors.  This will override the recording level set in the
+    technology file.
+
+    <dt><tt>d</tt><dd>
+    This a flag, not followed by an '=' sign or value.  If given, the
+    file which was the source of the current cell will be deleted
+    from the disk when DRC completes.  This facilitates cleaning up
+    temporary files, but obviously should be used with care.
+    </dl>
+    </dl>
+
+    <p>
+    In batch mode, the log files for reading and writing of files are
+    written to the current directory.  
+
+!!SEEALSO
+xic:server
+
+!! 020615
+!!KEYWORD
+fileorg
+!!TITLE
+Cell Organization and Libraries
+!!HTML
+    <i>Xic</i> provides several methods by which collections of cells
+    can be organized.
+
+    <ul>
+    <li><i>Xic</i> makes use of a <a href="xicpaths">search path</a>
+    for file names given to <i>Xic</i> which do not have a directory
+    path prepended.  A search path is a list of directories where
+    <i>Xic</i> searches for a named file.  If the file name contains a
+    full path, that path will be used to obtain the file.  If a file
+    name has a relative path, <i>Xic</i> will look for the file
+    relative to each of the directories in the search path.  The
+    search path can be set in the <a href="techfile">technology
+    file</a>, or by setting the <b>Path</b> variable with the <a
+    href="!set"><b>!set</b></a> command.  The current path can be
+    examined by entering "<tt>!set</tt>", which pops up a list of the
+    currently defined variables, including <b>Path</b>.  The
+    directories are searched in left-to-right order.
+
+    <p>
+    <li><i>Xic</i> accepts <a href="libraries">library files</a>. 
+    These are text-mode files which contain references to cells and
+    other libraries, and may contain cell definitions.  If a library
+    file is "open", cell names referenced or defined in the library
+    will be resolved through the library, before resolving through the
+    search path.  The name of a cell reference in a library is the
+    name by which the cell will be added to <i>Xic</i> memory, which
+    can be different from the name by which the cell is stored on
+    disk.  The fact that a library can reference other libraries
+    allows a hierarchy to be established for accessing cells,
+    independent of the search path.
+
+    <p>
+    The <a href="xic:libs"><b>Libraries List</b></a> button in the <a
+    href="xic:filemenu"><b>File Menu</b></a> brings up a panel which
+    lists the currently open libraries, and provides command buttons
+    for performing basic manipulations on libraries, including
+    opening/closing, viewing content, and opening cells.
+
+    <li>Cells contained in archive files can be randomly accessed from
+    the file, thus these files can be used for archival purposes.  The
+    <b>Contents</b> button in the panel brought up by the <a
+    href="xic:files"><b>Files List</b></a> button in the <b>Files
+    Menu</b> will display the cells contained in these files.  The
+    <b>Contents</b> button will also list the contents of library
+    files.  Individual cells (and their subcells) can be opened for
+    editing or placement through this panel.  Also, when giving a name
+    to the <a href="xic:open"><b>Open</b></a> command, or the <a
+    href="xic:place"><b>place</b></a> command in the side menu, one
+    can give two names:  the name of an archive file and a
+    space-separated name of a cell in the archive.  That cell will be
+    opened.  If the cell name is not given, the top-level cell in the
+    archive is opened.
+    </ul>
+
+    <p>
+    The strategy used to organize cells is highly dependent upon the
+    user's needs and preferences.  Below are some recommendations
+    which are probably suitable for most applications.
+
+    <ul>
+    <li>Keep the search path short.  This can usually consist of two
+    directories:  the current directory (".") listed first, and a root
+    directory for the user's design files.  The search path is most
+    conveniently defined in the technology file, with the
+    <tt>Path</tt> keyword.  The search path has the disadvantage that
+    all components are visible at all times.  If a cell name appears
+    more than once in the search path, only the first instance will be
+    found, unless the full path is given.  Libraries, on the other
+    hand, can be opened and closed easily, changing the accessibility
+    of the contents.
+
+    <p>
+    <li>Use hierarchies of libraries rooted in the search path to
+    organize cells.  One can open only the libraries in use,
+    preventing loading of cells unexpectedly.
+
+    <p>
+    <li>Place collections of cells to be referenced through libraries
+    in separate directories not in the search path.  Alternatively,
+    the <i>Xic</i> cell definitions can be incorporated directly into the
+    library file.  The cells can otherwise be kept as individual cells
+    of any compatible format, or combined into a single archive file.
+    </ul>
+
+    <p>
+    Library files have a simple format which allows the user to easily
+    create and customize them with a text editor.  There is a <a
+    href="!mklib"><b>!mklib</b></a> command in <i>Xic</i> which can
+    create a new library or append to an existing library references
+    to cells in the current editing hierarchy or cells in a given
+    archive file.
+
+    <p>
+    If one clicks on a reference in a library content listing which
+    points to another library, without a resolving "<i>cellname</i>",
+    a second content window appears providing a listing of the second
+    library's references.  Thus, when constructing library files, one
+    should use an easily recognizable name for browsable references to
+    other libraries.  This is natural, if the file name is used as the
+    reference name, and the filename has a "<tt>.lib</tt>" extension
+    as is recommended.
+
+!! 090814
+!!KEYWORD
+xicdb
+!!TITLE
+Database Overview
+!!HTML
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="xicdb#chd"><b>Cell Hierarchy Digest</b></a><br>
+    <a href="xicdb#units"><b>Database Resolution</b></a>
+    </td></tr></table>
+
+    <p>
+    The core of <i>Xic</i> is the main database, which stores objects
+    in a format that can be rapidly accessed spatially.  The database,
+    when given a rectangular region, will efficiently provide a list
+    of contained objects whose bounding boxes overlap the given
+    region.  For example, when the user clicks or drags in a drawing
+    window, the main database will quickly provide a list of the
+    objects which overlap this area, so they may be shown as selected.
+
+    <p>
+    Each cell in memory has a database for each layer used by objects
+    in the cell, plus a database corresponding to a dummy layer which
+    contains the locations of subcell instances.  The cells themselves
+    are saved in one or more hash tables, the "symbol tables".  The <a
+    href="xic:stabs">symbol tables</a> allow cell data to be rapidly
+    found by name.  Cell name strings are saved in a common string
+    table, so that address values can be used for efficient string
+    comparison.
+
+    <p>
+    Each symbol table represents a self-contained design space, which
+    can be rapidly switched between.  <i>Xic</i> allows the user to
+    define any number of symbol tables.  Cells of the same name can
+    not be saved in the same symbol table, but can exist in different
+    symbol tables.  Thus, for example, different versions of the same
+    cell hierarchy can be kept in memory simultaneously, but the user
+    can only view/edit using one symbol table at a time.  This
+    capability is used transparently by the geometry comparison
+    functions, for example, in comparing two versions of the same
+    cell.
+
+    <p>
+    The main database is organized as a tree, though the details are
+    proprietary.  This structure is self-balancing, unlike KD trees,
+    thus there is no need to "rebuild" the database when objects are
+    added or removed.  The structure is optimized for rapid access, at
+    a cost of time to build the structure.  It is also optimized for
+    low memory consumption, at a slight cost in speed.
+
+    <p>
+    When a file in loaded into the <i>Xic</i> "main" database, cell
+    structures are created for each cell defined in the file.  The
+    cell structures contain trees for each layer used plus one for
+    subcells if any, and are linked into the current symbol table.
+
+    <p>
+    The main database, with spatial access features, is not
+    particularly efficient with regard to memory use.  Large designs
+    may not fit into available memory, depending on the machine.  The
+    physical memory limitation of the computer determines the maximum
+    size of a file that can be read into <i>Xic</i> efficiently.  Very
+    roughly, the memory available should equal the size of the
+    (uncompressed) GDSII file.  If the file requires too much memory,
+    <i>Xic</i> performance can become very sluggish due to page
+    swapping, or in some cases the operating system will halt the
+    process if memory limits are exceeded.
+
+    <p>
+    Although the design must reside in the main database for efficient
+    cell editing, there are operations where this is not needed. 
+    There are provisions for handling extremely large files which can
+    not be normally loaded.
+
+    <a name="chd"></a>
+    <h2>Cell Hierarchy Digest</h2>
+
+    <p>
+    The <a href="xic:hier">Cell Hierarchy Digest</a> (CHD) is a data
+    structure designed to solve this problem.  A CHD is an in-memory
+    database which contains information about a hierarchy of cells, in
+    a very compact manner.  It holds no information about the geometry
+    contained in the cells, but does contain offsets into the original
+    layout file, so that through the CHD, the cell contents can be
+    obtained reasonably quickly.  Since the CHD uses a small fraction
+    of the memory of the full design in the main database, it allows
+    operations to be performed on very large designs with a modest
+    computer.
+
+    <p>
+    The operations that can be performed with a CHD generally involve
+    <a href="xic:convt">translation</a> of a layout file into another
+    layout file.  For example, cell sub-hierarchies can be extracted,
+    scaled, layers filtered or aliased, or cell names globally changed
+    or aliased.  The hierarchy can be flattened, filtered through a
+    rectangular window and possibly clipped to the window, and empty
+    cells (possibly produced by layer filtering) can be removed.
+
+    <p>
+    The CHD can also be used to view but not (directly) edit a large
+    file.  This is not as fast as viewing through the main database,
+    but it is possible to view much larger files with a CHD.
+
+    <p>
+    There are also some novel ways to use CHDs in <i>Xic</i> to
+    perform some limited editing.  <a href="refcell">Reference
+    cells</a> in the main database are dummy cells that contain no
+    data, but reference a cell hierarchy through a CHD.  These cells
+    can be instantiated in other cells normally.  However, when
+    written to a layout file on disk, they are replaced in output with
+    the full referenced hierarchy obtained through the CHD.  Thus one
+    can use reference cells to assemble the top-level cell of a very
+    large design.  Each reference cell points to a sub-part of the
+    design, kept in a separate layout file.  When the top-level cell
+    is written to disk, all of the parts will be extracted and
+    combined into this file.
+
+    <p>
+    There is a <a href="xic:overtab">cell override table</a> which
+    contains the names of cells in main memory.  When enabled, when
+    reading cell data through a CHD, cells in the override table will
+    supersede cells in the original layout file.  Thus, the cell
+    override table provides a substitution mechanism.  To perform
+    minor editing in a hierarchy too large for main memory, one can
+    <ol>
+    <li>extract only the cells to be edited into main memory through a
+    CHD,
+    <li>edit these cells, and place their names in the override
+    table, then
+    <li>write a new layout file using the CHD, which will
+    contain the new versions of the cells.
+    </ol>
+
+    <p>
+    There is a related <a href="xic:geom">Cell Geometry Digest</a>
+    (CGD) which contains highly compact geometry collections on a
+    per-cell/per-layer basis.  A CGD can be linked to a CHD, with the
+    total memory used still far smaller (by approximately a factor of
+    10) than the same cell hierarchy in the main database.  With a
+    linked CGD, when reading cell data through the CHD, the data are
+    extracted from the CGD, avoiding accessing the original file on
+    disk.  This is usually faster.
+
+    <a name=units></a>
+    <h2>Database Resolution</h2>
+
+    <p>
+    By default, <i>Xic</i> uses an internal resolution of 1000 units
+    per micron.  In releases prior to 3.0.12, this was internally
+    hard-coded.  As the dimensions used in integrated circuits
+    continue to shrink, an option for higher resolution has been
+    added.
+
+    <p>
+    The resolution can be set with the <a
+    href="DatabaseResolution"><b>DatabaseResolution</b></a> variable,
+    which can be set to "<tt>1000</tt>", "<tt>2000</tt>",
+    "<tt>5000</tt>", or "<tt>10000</tt>".  If unset, 1000 units is
+    used.  This resolution applies only to physical data, electrical
+    resolution is fixed at 1000.
+
+    <p>
+    This variable can be set only from the <a
+    href="initfiles"><tt>.xicinit</tt></a> file, which is read before
+    the technology file, or the technology file.  It can not be set or
+    unset in a <tt>.xicstart</tt> file (read after the technology
+    file) unless no technology file is read, or by any other means. 
+    It is important that the resolution be set before reading such
+    things as DRC rules, since the rules contain resolution-dependent
+    numbers which would be incorrect after a resolution change.
+
+    <p>
+    Superficially, changing the internal resolution has only subtle
+    effects from the user's vantage point.  Some of these are:
+
+    <ol>
+    <li>If not 1000, four digits following the decimal point are used
+    when printing coordinates in microns, in many places in <i>Xic</i>. 
+    Otherwise, only three digits are used.
+
+    <p>
+    <li>The ultimate zoom-in and grid spacing sizes are smaller for
+    higher resolutions.
+
+    <p>
+    <li>The size of "infinity", the maximum accessible size for the
+    design, becomes smaller as resolution is increased, since
+    coordinates are stored internally as 32-bit integers.  For 1000
+    units, the field width is approximately 2 meters, which decreases
+    to 20 centimeters at 10000 units.  This should still be plenty for
+    most purposes.
+
+    <p>
+    <li>Layout files produced by <i>Xic</i> will use the internal
+    resolution, so that no accuracy is lost.
+    </ol>
+
+    <p>
+    Unless there is a specific need, it is recommended that users
+    employ the default resolution.
+

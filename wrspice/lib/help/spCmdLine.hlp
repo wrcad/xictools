@@ -1,0 +1,416 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: spCmdLine.hlp,v 1.19 2015/11/15 22:55:43 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+*****************************************************************
+*
+* Command Line Arguments
+*
+*****************************************************************
+
+!!TAG WRspice
+!! This file in sync with manual.
+
+!!KEYWORD
+spCmdLine.hlp
+!!TITLE
+spCmdLine.hlp
+!!HTML 
+
+!!SUBTOPICS
+arguments
+
+
+!!REDIRECT -b           arguments#-b
+!!REDIRECT -c           arguments#-c
+!!REDIRECT -d           arguments#-d
+!!REDIRECT -dnone       arguments#-dnone
+!!REDIRECT -i           arguments#-i
+!!REDIRECT -j           arguments#-j
+!!REDIRECT -l           arguments#-l
+!!REDIRECT -m           arguments#-m
+!!REDIRECT -mnone       arguments#-mnone
+!!REDIRECT -n           arguments#-n
+!!REDIRECT -o           arguments#-o
+!!REDIRECT -p           arguments#-p
+!!REDIRECT -q           arguments#-q
+!!REDIRECT -r           arguments#-r
+!!REDIRECT -s           arguments#-s
+!!REDIRECT -t           arguments#-t
+!!REDIRECT -x           arguments#-x
+!!REDIRECT --class      arguments#--class
+!!REDIRECT --name       arguments#--name
+!!REDIRECT --no-xshm    arguments#--no-xshm
+!!REDIRECT --sync       arguments#--sync
+!!REDIRECT --v          arguments#--v
+!!REDIRECT --vv         arguments#--vv
+
+!! useriface.tex 111515
+!!KEYWORD
+arguments
+!!TITLE
+Command Line Arguments
+!!HTML 
+    The <i>WRspice</i> simulator is invoked by typing
+    <blockquote>
+    <tt>wrspice</tt> <i>options</i> ... <i>input_files</i> ...
+    </blockquote>
+    All arguments are optional.  There are several options which are
+    recognized specifically by <i>WRspice</i>.  These options are case
+    insensitive - the option letters can be given in upper or lower
+    case.  In addition, there are a few additional options recognized
+    by the graphics system.
+
+    <p>
+    The command line options are flagged with the '-' character, but
+    this can be changed by setting the <b>SPICE_OPTCHAR</b> <a
+    href="environment">environment</a> variable.  Below, the use of
+    the '-' character is assumed for simplicity.
+ 
+    <p>
+    <a href="graphics">Graphical</a> <i>WRspice</i> requires an X
+    server under UNIX.  When using X, the <b>DISPLAY</b> environment
+    variable should already be set, but if one wants to display
+    graphics on a different machine than the one running
+    <i>WRspice</i>, <b>DISPLAY</b> should be of the form
+    <i>machine</i>:0.  For example, if one wants the display to go to
+    the workstation named "<tt>crab</tt>", for the C-shell one would
+    enter "<tt>setenv DISPLAY crab:0</tt>" at the shell prompt, or
+    equivalently for the Bourne shell one would enter
+    "<tt>DISPLAY=crab:0; export DISPLAY</tt>" or the more compact form
+    "<tt>export DISPLAY=crab:0</tt>" if supported.  Note that this can
+    also be supplied using the <tt>-d</tt> option.
+
+    <p>
+    Further arguments are taken to be <i>WRspice</i> input files,
+    which are read and saved in memory.  If <a href="batchmode">batch
+    mode</a> is requested (<tt>-b</tt> option) then they are run
+    immediately.  <i>WRspice</i> will accept SPICE2 input files, and
+    output ASCII plots, Fourier analyses, and node printouts as
+    specified in <a href=".plot"><tt>.plot</tt></a>, <a
+    href=".four"><tt>.four</tt></a>, and <a
+    href=".print"><tt>.print</tt></a> lines.  If an <tt>out</tt>
+    parameter is given on a <a href=".width"><tt>.width</tt></a> line,
+    the effect is the same as "<tt>set width = ...</tt>".  Since
+    <i>WRspice</i> ASCII plots do not use multiple ranges, however, if
+    vectors together on a <tt>.plot</tt> card have different ranges
+    they will not provide as much information as they would in SPICE2. 
+    The output of <i>WRspice</i> is also much less verbose than
+    SPICE2, in that the only data printed is that requested by the
+    above lines.
+
+    <p>
+    The following option forms are accepted by <i>WRspice</i>.  The
+    option letter can be lower or upper case.
+
+    <p>
+    <a name="-b"></a>
+    <dl>
+    <dt><tt>-b</tt><dd>
+    Run in <a href="batchmode">batch mode</a>.  <i>WRspice</i> will
+    read the standard input or the specified input files and do the
+    simulation.  Note that if the standard input is not a terminal,
+    <i>WRspice</i> will default to batch mode, unless the <tt>-i</tt>
+    option is given.  In batch mode, <i>WRspice</i> generates output
+    files for <a href="oprng_analysis">operating range</a> and <a
+    href="monte">Monte Carlo</a> analysis, otherwise if the
+    <tt>-r</tt> option is used (<tt>-r</tt> <i>filename</i>)
+    <i>WRspice</i> generates a plot data file, or generates an ASCII
+    plot or print on standard output, as per
+    <tt>.plot</tt>/<tt>.print</tt> lines, if no <i>filename</i> was
+    specified.  See the description of the <a
+    href="write"><b>write</b></a> command for information about the
+    file formats available and how they can be specified.
+    </dl>
+
+    <a name="-c"></a>
+    <dl>
+    <dt><tt>-c</tt> <i>flags</i><dd>
+    This option sets the case sensitivity of various name classes
+    in <i>WRspice</i>.  These classes are:
+
+    <blockquote>
+    Function names.<br>
+    User-defined function names.<br>
+    Vector names.<br>
+    .PARAM names.<br>
+    Codeblock names.<br>
+    Node and device names.<br>
+    </blockquote>
+
+    <p>
+    The <i>flags</i> is a word consisting of letters, each letter
+    corresponds to a class from the list above.  If lower-case, the
+    class will be case-sensitive.  If upper-case, the class will be
+    case-insensitive.
+
+    <p>
+    The letters are <tt>f</tt>, <tt>u</tt>, <tt>v</tt>, <tt>p</tt>,
+    <tt>c</tt>, and <tt>n</tt> corresponding to the classes listed
+    above.  By default, all identifiers are case-insensitive, which
+    corresponds to the string "<tt>FUVPCN</tt>".  Letters can appear
+    in any order, and unrecognized characters are ignored.  Not all
+    letters need be included, only those seen will be used.
+
+    <p>
+    This word should follow <tt>-c</tt> or <tt>-C</tt> in the command
+    line options, separated by space.
+
+    <p>
+    Case sensitivity can also be set from a <a
+    href="startup_files">startup file</a> using the <a
+    href="setcase"><b>setcase</b></a> command.  This command takes as
+    an argument a string as described above.  The command line setting
+    occurs after setting from a startup file.
+    </dl>
+
+    <a name="-d"></a>
+    <dl>
+    <dt><tt>-d</tt> [<i>host</i>]:<i>server</i>[.<i>screen</i>]<dd>
+    This option is applicable when running under X windows, and
+    specifies the name of the display to use.  The <i>host</i> is the
+    hostname of the physical display, <i>server</i> specifies the
+    display server number, and <i>screen</i> specifies the screen
+    number.  Either or both of the <i>host</i> and <i>screen</i>
+    elements to the display specification can be omitted.  If
+    <i>host</i> is omitted, the local display is assumed.  If
+    <i>screen</i> is omitted, screen 0 is assumed (and the period is
+    unnecessary).  The colon and (display) <i>server</i> are necessary
+    in all cases.  This option can also be given as <tt>-display</tt>
+    and <tt>--display</tt>.
+    </dl>
+
+    <a name="-dnone"></a>
+    <dl>
+    <dt><tt>-dnone</tt><dd>
+    This is a special form of the <tt>-d</tt> option that when given
+    will suppress all use of graphics.  This can be desirable when
+    running <i>WRspice</i> remotely over a slow terminal connection. 
+    This option will also work under Windows, if for some reason it is
+    necessary to run <i>WRspice</i> in text-only mode.
+    </dl>
+
+    <a name="-i"></a>
+    <dl>
+    <dt><tt>-i</tt><dd>
+    Run in interactive (as opposed to batch) mode.  This is useful if
+    the standard input is not a terminal but interactive mode is
+    desired.  Command completion is not available unless the standard
+    input is a terminal, however.  Interactive mode is the default
+    when the standard input is a terminal.
+    </dl>
+
+    <a name="-j"></a>
+    <dl>
+    <dt><tt>-j</tt><dd>
+    Run in JSPICE3 compatibility mode.  This applies when running
+    interactively, and causes the following behavior.
+    <ol>
+    <li>The <a href="toolbar"><b>Tool Control</b></a> window is not shown.
+    <li>The <a href="noerrwin"><b>noerrwin</b></a> variable is set, which
+    causes error messages to be printed in the console rather than to
+    a separate error window.
+    <li>The <a href="subc_catmode"><b>subc_catmode</b></a> variable is
+    set to "<tt>spice3</tt>" and the <a
+    href="subc_catchar"><b>subc_catchar</b></a> variable is set to
+    "<tt>:</tt>" (colon).  This sets the subcircuit expansion method to
+    match JSPICE3 and SPICE3.
+    </ol>
+    </dl>
+
+    <a name="-l"></a>
+    <dl>
+    <dt><tt>-l</tt> <i>license_server</i>[<tt>:</tt><i>port</i>]<dd>
+    This option provides the host name of a machine running the
+    license server, and optionally the port number in use by the
+    server.  The port number is required if for some reason the
+    license server is using a non-default port.
+
+    <p>
+    Below is the logic hierarchy for setting the license server host,
+    each method will override those listed lower.  See the
+    documentation for the <tt>xtlserv</tt> (license server) program 
+    for more information.
+
+    <blockquote>
+    <tt>-l</tt> <i>serverhost</i>[:<i>port</i>]<br>
+    <b>XTLSERVER</b> in <a href="environment">environment</a><br>
+    <a href="license.host"><tt>license.host</tt></a> file<br>
+    <tt>xtlserver</tt> in <tt>/etc/hosts</tt><br>
+    name of local machine
+    </blockquote>
+    </dl>
+
+    <a name="-m"></a>
+    <dl>
+    <dt><tt>-m</tt> <i>path</i><dd>
+    The <i>path</i> is to a <a href="loadable">loadable device
+    module</a> file, or to a directory containing module files. 
+    Giving this option causes the indicated module, or modules found
+    in the directory, to be loaded into <i>WRspice</i> on program
+    startup, after the <a
+    href="startup_files"><tt>.wrspiceinit</tt></a> file has been read. 
+    The option can be given more than once.  If given, auto-loading of
+    modules from the <a href="modpath"><tt>modpath</tt></a> or the
+    <tt>devices</tt> sub-directory in the <tt>startup</tt> directory
+    will not be done.  Modules can be loaded from within
+    <i>WRspice</i> with the <a href="devload"><b>devload</b></a>
+    command.  </dl>
+
+    <a name="-mnone"></a>
+    <dl>
+    <dt><tt>-mnone</tt><dd>
+    This option will suppress auto-loading of modules from the <a
+    href="modpath"><tt>modpath</tt></a> or the <tt>devices</tt>
+    sub-directory in the <tt>startup</tt> directory.
+    </dl>
+
+    <a name="-n"></a>
+    <dl>
+    <dt><tt>-n</tt><dd>
+    Don't try to execute the user's <a href="startup_files">startup
+    files</a> (<tt>.wrspiceinit</tt> files) upon startup.  Normally
+    <i>WRspice</i> tries to find these files in the user's home
+    directory and the current directory, and will execute them in that
+    order.  In Windows, the "home directory" can be specified by
+    setting the <b>HOME</b> environment variable.  The global file
+    <tt>wrspiceinit</tt> in the system startup directory is sourced in
+    any case. 
+    </dl>
+
+    <a name="-o"></a>
+    <dl>
+    <dt><tt>-o</tt> <i>outfile</i><dd>
+    The argument <i>outfile</i> specifies a file to be used for
+    output, rather than the standard output (terminal).
+    </dl>
+
+    <a name="-p"></a>
+    <dl>
+    <dt><tt>-p</tt><dd>
+    Open <i>WRspice</i> in a mode which takes input from a UNIX port,
+    used to establish interprocess communications as a slave process.
+    </dl>
+
+    <a name="-q"></a>
+    <dl>
+    <dt><tt>-q</tt><dd>
+    Disable command completion, which saves memory and may run
+    slightly faster.  This prevents initial loading of the <a
+    href="ccom">command completion</a> data structures.  If the
+    variable <a href="nocc"><tt>nocc</tt></a> is set and unset,
+    command completion will be turned on, however most internal
+    keywords will not be present in the database.
+    </dl>
+
+    <a name="-r"></a>
+    <dl>
+    <dt><tt>-r</tt> <i>filename</i><dd>
+    Use <i>filename</i> as the default file into which the results of
+    the simulation are saved with the <a href="write"><b>write</b></a>
+    command, and for data output in batch mode.  This can be
+    overridden with the <a href="rawfile"><tt>rawfile</tt></a>
+    variable.  See the description of the <b>write</b> command for
+    information about the file formats available, and how they can be
+    specified.
+    </dl>
+
+    <a name="-s"></a>
+    <dl>
+    <dt><tt>-s</tt><dd>
+    Run in server mode.  This is like <a href="batchmode">batch
+    mode</a>, except that a temporary rawfile is used and then written
+    to the standard output, preceded by a line with a single
+    '<tt>@</tt>', after the simulation is done.  This mode is used by
+    the <i>WRspice</i> daemon <tt>wrspiced</tt>.  In server mode,
+    <i>WRspice</i> reads input from the standard input, and generates
+    output, in rawfile or margin analysis file format, on the standard
+    output.  The <tt>-r</tt> and <tt>-b</tt> options are ignored.
+    </dl>
+
+    <a name="-t"></a>
+    <dl>
+    <dt><tt>-t</tt> <i>termname</i><dd>
+    This specifies the name of the terminal, as known in a termcap or
+    terminfo database.  The terminal name is only needed in
+    interactive mode when line editing is enabled, and is generally
+    obtained from the <b>TERM</b> environment variable.  Occasionally,
+    this option is useful in overriding bad terminal info
+    specifications allowing line editing to work, such as by giving a
+    value of "<tt>vt220</tt>" when running in an <tt>xterm</tt>.
+    </dl>
+
+    <a name="-x"></a>
+    <dl>
+    <dt><tt>-x</tt><dd>
+    This option, if given, will cause <i>WRspice</i> to provide its
+    own window for text input, if <i>WRspice</i> is in interactive
+    mode and graphics is available.  Under the X window system, the
+    "<tt>xterm</tt>" command is used to obtain the text window.
+    </dl>
+
+    <p>
+    The UNIX/Linux graphical subsystem will accept the following
+    options.  It is unlikely that the user will ever need these.
+
+    <p>
+    <a name="--class"></a>
+    <dl>
+    <dt><tt>--class</tt> <i>classname</i><dd>
+    This option specifies the application class name under which
+    resources for the application should be found.
+    </dl>
+
+    <a name="--name"></a>
+    <dl>
+    <dt><tt>--name</tt> <i>appname</i><dd>
+    This option specifies the name under which resources for the
+    application should be found.  This option is useful in shell
+    aliases to distinguish between invocations of an application,
+    without resorting to creating links to alter the executable file
+    name.  This option can also be given as "<tt>-name</tt>".
+    </dl>
+
+    <a name="--sync"></a>
+    <dl>
+    <dt><tt>--sync</tt><dd>
+    This option indicates that requests to the X server should be sent
+    synchronously, instead of asynchronously.  Since Xlib normally
+    buffers requests to the server, errors do not necessarily get
+    reported immediately after they occur.  This option turns off the
+    buffering so that the application can be debugged.  It should
+    never be used with a working program.  This option can also be
+    given as "<tt>-synchronous</tt>".
+    </dl>
+
+    <a name="--no-xshm"></a>
+    <dl>
+    <dt><tt>--no-xshm</tt><dd>
+    If set, the X server will not use shared memory.
+    </dl>
+
+    <a name="--v"></a>
+    <dl>
+    <dt><tt>--v</tt><dd>
+    If this argument is given, all other arguments are ignored,
+    <i>WRspice</i> will print a version string in the form
+    <blockquote>
+    <tt>4.1.6 LinuxRHEL6_64</tt>
+    </blockquote>
+    to the standard output, and exit.
+    </dl>
+
+    <a name="--vv"></a>
+    <dl>
+    <dt><tt>--vv</tt><dd>
+    If this argument is given, all other arguments except
+    "<tt>--v</tt>" are ignored, <i>WRspice</i> will print a release tag
+    string in the form
+    <blockquote>
+    <tt>wrs-4-1-6</tt>
+    </blockquote>
+    to the standard output, and exit.
+    </dl>

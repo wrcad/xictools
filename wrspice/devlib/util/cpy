@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [ $# != 2 ]; then
+    echo "Usage: cpu oldprefix newprefix"
+    exit 0
+fi
+u1=`echo $1 | tr a-z A-Z`
+u2=`echo $2 | tr a-z A-Z`
+for a in $1*.cc $1*.h; do
+    fn=`echo $a | sed -e s/$1/$2/`
+    cat $a | sed -e s/$1/$2/g | sed -e s/$u1/$u2/g > $fn
+    unlink $a
+done

@@ -1,0 +1,3911 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiFuncsMain1.hlp,v 1.58 2017/03/22 07:30:07 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiFuncsMain1.hlp
+!!TITLE
+xiFuncsMain1.hlp
+!!HTML
+
+!!SUBTOPICS
+funcs:main1
+funcs:main1:curcell
+funcs:main1:cell
+funcs:main1:db
+funcs:main1:stab
+funcs:main1:dsp
+funcs:main1:exit
+funcs:main1:anno
+funcs:main1:ghost
+funcs:main1:graphics
+funcs:main1:hcopy
+funcs:main1:keyb
+funcs:main1:libs
+funcs:main1:oa
+funcs:main1:mode
+funcs:main1:prompt
+funcs:main1:script
+funcs:main1:tech
+funcs:main1:var
+funcs:main1:version
+
+
+!!REDIRECT nyt     http://www.nytimes.com
+
+!! Current Cell
+!!REDIRECT Edit                 funcs:main1:curcell#Edit
+!!REDIRECT OpenCell             funcs:main1:curcell#OpenCell
+!!REDIRECT TouchCell            funcs:main1:curcell#TouchCell
+!!REDIRECT Push                 funcs:main1:curcell#Push
+!!REDIRECT PushElement          funcs:main1:curcell#PushElement
+!!REDIRECT Pop                  funcs:main1:curcell#Pop
+!!REDIRECT NewCellName          funcs:main1:curcell#NewCellName
+!!REDIRECT CurCellName          funcs:main1:curcell#CurCellName
+!!REDIRECT TopCellName          funcs:main1:curcell#TopCellName
+!!REDIRECT FileName             funcs:main1:curcell#FileName
+!!REDIRECT CurCellBB            funcs:main1:curcell#CurCellBB
+!!REDIRECT SetCellFlag          funcs:main1:curcell#SetCellFlag
+!!REDIRECT GetCellFlag          funcs:main1:curcell#GetCellFlag
+!!REDIRECT Save                 funcs:main1:curcell#Save
+!!REDIRECT UpdateNative         funcs:main1:curcell#UpdateNative
+
+!! Cell Info
+!!REDIRECT CellBB               funcs:main1:cell#CellBB
+!!REDIRECT ListSubcells         funcs:main1:cell#ListSubcells
+!!REDIRECT ListParents          funcs:main1:cell#ListParents
+!!REDIRECT InitGen              funcs:main1:cell#InitGen
+!!REDIRECT CellsHandle          funcs:main1:cell#CellsHandle
+!!REDIRECT GenCells             funcs:main1:cell#GenCells
+
+!! Database
+!!REDIRECT Clear                funcs:main1:db#Clear
+!!REDIRECT ClearAll             funcs:main1:db#ClearAll
+!!REDIRECT IsCellInMem          funcs:main1:db#IsCellInMem
+!!REDIRECT IsFileInMem          funcs:main1:db#IsFileInMem
+!!REDIRECT NumCellsInMem        funcs:main1:db#NumCellsInMem
+!!REDIRECT ListCellsInMem       funcs:main1:db#ListCellsInMem
+!!REDIRECT ListTopCellsInMem    funcs:main1:db#ListTopCellsInMem
+!!REDIRECT ListModCellsInMem    funcs:main1:db#ListModCellsInMem
+!!REDIRECT ListTopFilesInMem    funcs:main1:db#ListTopFilesInMem
+
+!! Symbol Tables
+!!REDIRECT SetSymbolTable       funcs:main1:stab#SetSymbolTable
+!!REDIRECT ClearSymbolTable     funcs:main1:stab#ClearSymbolTable
+!!REDIRECT CurSymbolTable       funcs:main1:stab#CurSymbolTable
+
+!! Display
+!!REDIRECT Window               funcs:main1:dsp#Window
+!!REDIRECT GetWindow            funcs:main1:dsp#GetWindow
+!!REDIRECT GetWindowView        funcs:main1:dsp#GetWindowView
+!!REDIRECT GetWindowMode        funcs:main1:dsp#GetWindowMode
+!!REDIRECT Expand               funcs:main1:dsp#Expand
+!!REDIRECT Display              funcs:main1:dsp#Display
+!!REDIRECT FreezeDisplay        funcs:main1:dsp#FreezeDisplay
+!!REDIRECT Redraw               funcs:main1:dsp#Redraw
+
+!! Exit
+!!REDIRECT Exit                 funcs:main1:exit#Exit
+!!REDIRECT Halt                 funcs:main1:exit#Halt
+
+!! Annotation
+!!REDIRECT AddMark              funcs:main1:anno#AddMark
+!!REDIRECT EraseMark            funcs:main1:anno#EraseMark
+!!REDIRECT DumpMarks            funcs:main1:anno#DumpMarks
+!!REDIRECT ReadMarks            funcs:main1:anno#ReadMarks
+
+!! Ghost Rendering
+!!REDIRECT PushGhost            funcs:main1:ghost#PushGhost
+!!REDIRECT PushGhostBox         funcs:main1:ghost#PushGhostBox
+!!REDIRECT PushGhostH           funcs:main1:ghost#PushGhostH
+!!REDIRECT PopGhost             funcs:main1:ghost#PopGhost
+!!REDIRECT ShowGhost            funcs:main1:ghost#ShowGhost
+
+!! Graphics
+!!REDIRECT GRopen               funcs:main1:graphics#GRopen
+!!REDIRECT GRcheckError         funcs:main1:graphics#GRcheckError
+!!REDIRECT GRcreatePixmap       funcs:main1:graphics#GRcreatePixmap
+!!REDIRECT GRdestroyPixmap      funcs:main1:graphics#GRdestroyPixmap
+!!REDIRECT GRcopyDrawable       funcs:main1:graphics#GRcopyDrawable
+!!REDIRECT GRdraw               funcs:main1:graphics#GRdraw
+!!REDIRECT GRgetDrawableSize    funcs:main1:graphics#GRgetDrawableSize
+!!REDIRECT GRresetDrawable      funcs:main1:graphics#GRresetDrawable
+!!REDIRECT GRclear              funcs:main1:graphics#GRclear
+!!REDIRECT GRpixel              funcs:main1:graphics#GRpixel
+!!REDIRECT GRpixels             funcs:main1:graphics#GRpixels
+!!REDIRECT GRline               funcs:main1:graphics#GRline
+!!REDIRECT GRpolyLine           funcs:main1:graphics#GRpolyLine
+!!REDIRECT GRlines              funcs:main1:graphics#GRlines
+!!REDIRECT GRbox                funcs:main1:graphics#GRbox
+!!REDIRECT GRboxes              funcs:main1:graphics#GRboxes
+!!REDIRECT GRarc                funcs:main1:graphics#GRarc
+!!REDIRECT GRpolygon            funcs:main1:graphics#GRpolygon
+!!REDIRECT GRtext               funcs:main1:graphics#GRtext
+!!REDIRECT GRtextExtent         funcs:main1:graphics#GRtextExtent
+!!REDIRECT GRdefineColor        funcs:main1:graphics#GRdefineColor
+!!REDIRECT GRsetBackground      funcs:main1:graphics#GRsetBackground
+!!REDIRECT GRsetWindowBackground funcs:main1:graphics#GRsetWindowBackground
+!!REDIRECT GRsetColor           funcs:main1:graphics#GRsetColor
+!!REDIRECT GRdefineLinestyle    funcs:main1:graphics#GRdefineLinestyle
+!!REDIRECT GRsetLinestyle       funcs:main1:graphics#GRsetLinestyle
+!!REDIRECT GRdefineFillpattern  funcs:main1:graphics#GRdefineFillpattern
+!!REDIRECT GRsetFillpattern     funcs:main1:graphics#GRsetFillpattern
+!!REDIRECT GRupdate             funcs:main1:graphics#GRupdate
+!!REDIRECT GRsetMode            funcs:main1:graphics#GRsetMode
+
+!! Hard Copy
+!!REDIRECT HClistDrivers        funcs:main1:hcopy#HClistDrivers
+!!REDIRECT HCsetDriver          funcs:main1:hcopy#HCsetDriver
+!!REDIRECT HCgetDriver          funcs:main1:hcopy#HCgetDriver
+!!REDIRECT HCsetResol           funcs:main1:hcopy#HCsetResol
+!!REDIRECT HCgetResol           funcs:main1:hcopy#HCgetResol
+!!REDIRECT HCgetResols          funcs:main1:hcopy#HCgetResols
+!!REDIRECT HCsetBestFit         funcs:main1:hcopy#HCsetBestFit
+!!REDIRECT HCgetBestFit         funcs:main1:hcopy#HCgetBestFit
+!!REDIRECT HCsetLegend          funcs:main1:hcopy#HCsetLegend
+!!REDIRECT HCgetLegend          funcs:main1:hcopy#HCgetLegend
+!!REDIRECT HCsetLandscape       funcs:main1:hcopy#HCsetLandscape
+!!REDIRECT HCgetLandscape       funcs:main1:hcopy#HCgetLandscape
+!!REDIRECT HCsetMetric          funcs:main1:hcopy#HCsetMetric
+!!REDIRECT HCgetMetric          funcs:main1:hcopy#HCgetMetric
+!!REDIRECT HCsetSize            funcs:main1:hcopy#HCsetSize
+!!REDIRECT HCgetSize            funcs:main1:hcopy#HCgetSize
+!!REDIRECT HCshowAxes           funcs:main1:hcopy#HCshowAxes
+!!REDIRECT HCshowGrid           funcs:main1:hcopy#HCshowGrid
+!!REDIRECT HCsetGridInterval    funcs:main1:hcopy#HCsetGridInterval
+!!REDIRECT HCsetGridStyle       funcs:main1:hcopy#HCsetGridStyle
+!!REDIRECT HCsetGridCrossSize   funcs:main1:hcopy#HCsetGridCrossSize
+!!REDIRECT HCsetGridOnTop       funcs:main1:hcopy#HCsetGridOnTop
+!!REDIRECT HCdump               funcs:main1:hcopy#HCdump
+!!REDIRECT HCerrorString        funcs:main1:hcopy#HCerrorString
+!!REDIRECT HClistPrinters       funcs:main1:hcopy#HClistPrinters
+!!REDIRECT HCmedia              funcs:main1:hcopy#HCmedia
+
+!! Keyboard
+!!REDIRECT ReadKeymap           funcs:main1:keyb#ReadKeymap
+
+!! Libraries
+!!REDIRECT OpenLibrary          funcs:main1:libs#OpenLibrary
+!!REDIRECT CloseLibrary         funcs:main1:libs#CloseLibrary
+
+!!IFDEF OpenAccess
+!! OpenAccess
+!!REDIRECT OaVersion            funcs:main1:oa#OaVersion
+!!REDIRECT OaIsLibrary          funcs:main1:oa#OaIsLibrary
+!!REDIRECT OaListLibraries      funcs:main1:oa#OaListLibraries
+!!REDIRECT OaListLibCells       funcs:main1:oa#OaListLibCells
+!!REDIRECT OaListCellViews      funcs:main1:oa#OaListCellViews
+!!REDIRECT OaIsLibOpen          funcs:main1:oa#OaIsLibOpen
+!!REDIRECT OaOpenLibrary        funcs:main1:oa#OaOpenLibrary
+!!REDIRECT OaCloseLibrary       funcs:main1:oa#OaCloseLibrary
+!!REDIRECT OaIsOaCell           funcs:main1:oa#OaIsOaCell
+!!REDIRECT OaIsCellInLib        funcs:main1:oa#OaIsCellInLib
+!!REDIRECT OaIsCellView         funcs:main1:oa#OaIsCellView
+!!REDIRECT OaIsCellViewInLib    funcs:main1:oa#OaIsCellViewInLib
+!!REDIRECT OaCreateLibrary      funcs:main1:oa#OaCreateLibrary
+!!REDIRECT OaBrandLibrary       funcs:main1:oa#OaBrandLibrary
+!!REDIRECT OaIsLibBranded       funcs:main1:oa#OaIsLibBranded
+!!REDIRECT OaDestroy            funcs:main1:oa#OaDestroy
+!!REDIRECT OaLoad               funcs:main1:oa#OaLoad
+!!REDIRECT OaReset              funcs:main1:oa#OaReset
+!!REDIRECT OaSave               funcs:main1:oa#OaSave
+!!REDIRECT OaAttachTech         funcs:main1:oa#OaAttachTech
+!!REDIRECT OaGetAttachedTech    funcs:main1:oa#OaGetAttachedTech
+!!REDIRECT OaHasLocalTech       funcs:main1:oa#OaHasLocalTech
+!!REDIRECT OaCreateLocalTech    funcs:main1:oa#OaCreateLocalTech
+!!REDIRECT OaDestroyTech        funcs:main1:oa#OaDestroyTech
+!!ENDIF
+
+!! Mode
+!!REDIRECT Mode                 funcs:main1:mode#Mode
+!!REDIRECT CurMode              funcs:main1:mode#CurMode
+
+!! Prompt Line
+!!REDIRECT StuffText            funcs:main1:prompt#StuffText
+!!REDIRECT TextCmd              funcs:main1:prompt#TextCmd
+!!REDIRECT GetLastPrompt        funcs:main1:prompt#GetLastPrompt
+
+!! Scripts
+!!REDIRECT ListFunctions        funcs:main1:script#ListFunctions
+!!REDIRECT Exec                 funcs:main1:script#Exec
+!!REDIRECT SetKey               funcs:main1:script#SetKey
+!!REDIRECT HasPython            funcs:main1:script#HasPython
+!!REDIRECT RunPython            funcs:main1:script#RunPython
+!!REDIRECT RunPythonModFunc     funcs:main1:script#RunPythonModFunc
+!!REDIRECT ResetPython          funcs:main1:script#ResetPython
+!!REDIRECT HasTcl               funcs:main1:script#HasTcl
+!!REDIRECT HasTk                funcs:main1:script#HasTk
+!!REDIRECT RunTcl               funcs:main1:script#RunTcl
+!!REDIRECT ResetTcl             funcs:main1:script#ResetTcl
+!!REDIRECT HasGlobalVariable    funcs:main1:script#HasGlobalVariable
+!!REDIRECT GetGlobalVariable    funcs:main1:script#GetGlobalVariable
+!!REDIRECT SetGlobalVariable    funcs:main1:script#SetGlobalVariable
+
+!! Technology File
+!!REDIRECT GetTechName          funcs:main1:tech#GetTechName
+!!REDIRECT GetTechExt           funcs:main1:tech#GetTechExt
+!!REDIRECT SetTechExt           funcs:main1:tech#SetTechExt
+!!REDIRECT TechParseLine        funcs:main1:tech#TechParseLine
+!!REDIRECT TechGetFkeyString    funcs:main1:tech#TechGetFkeyString
+!!REDIRECT TechSetFkeyString    funcs:main1:tech#TechGetFkeyString
+
+!! Variables
+!!REDIRECT Set                  funcs:main1:var#Set
+!!REDIRECT Unset                funcs:main1:var#Unset
+!!REDIRECT PushSet              funcs:main1:var#PushSet
+!!REDIRECT PopSet               funcs:main1:var#PopSet
+!!REDIRECT SetExpand            funcs:main1:var#SetExpand
+!!REDIRECT Get                  funcs:main1:var#Get
+!!REDIRECT JoinLimits           funcs:main1:var#JoinLimits
+
+!! Xic Version
+!!REDIRECT VersionString        funcs:main1:version#VersionString
+
+!!KEYWORD
+funcs:main1
+!!TITLE
+Main Functions 1
+!!HTML
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+
+    <!-- 030115 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:curcell">Current Cell</a></th></tr>
+
+    <tr><td><a href="funcs:main1:curcell#Edit">
+     <tt>Edit</tt>(<i>name</i>, <i>symname</i>)</a>
+     </td><td>Edit cell</td></tr>
+    <tr><td><a href="funcs:main1:curcell#OpenCell">
+     <tt>OpenCell</tt>(<i>name</i>, <i>symname</i>, <i>curcell</i>)</a>
+     </td><td>Read file into memory</td></tr>
+    <tr><td><a href="funcs:main1:curcell#TouchCell">
+     <tt>TouchCell</tt>(<i>cellname</i>, <i>curcell</i>)</a>
+     </td><td>Create cell in memory</td></tr>
+    <tr><td><a href="funcs:main1:curcell#Push">
+     <tt>Push</tt>(<i>object_handle</i>)</a>
+     </td><td>Make a subcell the current cell</td></tr>
+    <tr><td><a href="funcs:main1:curcell#PushElement">
+     <tt>PushElement</tt>(<i>object_handle</i>, <i>xind</i>, <i>yind</i>)</a>
+     </td><td>Make an arrayed subcell element the current cell</td></tr>
+    <tr><td><a href="funcs:main1:curcell#Pop">
+     <tt>Pop</tt>()</a>
+     </td><td>Make parent cell the current cell</td></tr>
+    <tr><td><a href="funcs:main1:curcell#NewCellName">
+     <tt>NewCellName</tt>()</a>
+     </td><td>Return empty new cell name</td></tr>
+    <tr><td><a href="funcs:main1:curcell#CurCellName">
+     <tt>CurCellName</tt>()</a>
+     </td><td>Return current cell name</td></tr>
+    <tr><td><a href="funcs:main1:curcell#TopCellName">
+     <tt>TopCellName</tt>()</a>
+     </td><td>Return cell name at top of editing hierarchy</td></tr>
+    <tr><td><a href="funcs:main1:curcell#FileName">
+     <tt>FileName</tt>()</a>
+     </td><td>Return file name for current cell</td></tr>
+    <tr><td><a href="funcs:main1:curcell#CurCellBB">
+     <tt>CurCellBB</tt>(<i>array</i>)</a>
+     </td><td>Return current cell bounding box</td></tr>
+    <tr><td><a href="funcs:main1:curcell#SetCellFlag">
+     <tt>SetCellFlag</tt>(<i>cellname</i>, <i>flagname</i>, <i>set</i>)</a>
+     </td><td>Set the state of a cell flag</td></tr>
+    <tr><td><a href="funcs:main1:curcell#GetCellFlag">
+     <tt>GetCellFlag</tt>(<i>cellname</i>, <i>flagname</i>)</a>
+     </td><td>Get cell flag state</td></tr>
+    <tr><td><a href="funcs:main1:curcell#Save">
+     <tt>Save</tt>(<i>newname</i>)</a>
+     </td><td>Save to disk</td></tr>
+    <tr><td><a href="funcs:main1:curcell#UpdateNative">
+     <tt>UpdateNative</tt>(<i>dir</i>)</a>
+     </td><td>Save modified hierarchy cells as native</td></tr>
+
+    <!-- 022012 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:cell">Cell Info</a></th></tr>
+
+    <tr><td><a href="funcs:main1:cell#CellBB">
+     <tt>CellBB</tt>(<i>cellname</i>, <i>array</i> [, <i>symbolic</i>])</a>
+     </td><td>Obtain cell bounding box</td></tr>
+    <tr><td><a href="funcs:main1:cell#ListSubcells">
+     <tt>ListSubcells</tt>(<i>cellname</i>, <i>depth</i>, <i>array</i>,
+     <i>incl_top</i>)</a>
+     </td><td>List subcells in area to depth</td></tr>
+    <tr><td><a href="funcs:main1:cell#ListParents">
+     <tt>ListParents</tt>(<i>cellname</i>)</a>
+     </td><td>List instantiating cells</td></tr>
+    <tr><td><a href="funcs:main1:cell#InitGen">
+     <tt>InitGen</tt>()</a>
+     </td><td>Return handle to subcell name list</td></tr>
+    <tr><td><a href="funcs:main1:cell#CellsHandle">
+     <tt>CellsHandle</tt>(<i>cellname</i>, <i>depth</i>)</a>
+     </td><td>Return handle to subcell name list</td></tr>
+    <tr><td><a href="funcs:main1:cell#GenCells">
+     <tt>GenCells</tt>(<i>handle</i>)</a>
+     </td><td>Return name from name list</td></tr>
+
+    <!-- 101412 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:db">Database</a></th></tr>
+
+    <tr><td><a href="funcs:main1:db#Clear">
+     <tt>Clear</tt>(<i>cellname</i>)</a>
+     </td><td>Delete cells from memory</td></tr>
+    <tr><td><a href="funcs:main1:db#ClearAll">
+     <tt>ClearAll</tt>(<i>clear_tech</i>)</a>
+     </td><td>Delete all cells and reinitialize</td></tr>
+    <tr><td><a href="funcs:main1:db#IsCellInMem">
+     <tt>IsCellInMem</tt>(<i>cellname</i>)</a>
+     </td><td>Check if cell is in memory</td></tr>
+    <tr><td><a href="funcs:main1:db#IsFileInMem">
+     <tt>IsFileInMem</tt>(<i>filename</i>)</a>
+     </td><td>Check if cell from file is in memory</td></tr>
+    <tr><td><a href="funcs:main1:db#NumCellsInMem">
+     <tt>NumCellsInMem</tt>()</a>
+     </td><td>Count cells in memory</td></tr>
+    <tr><td><a href="funcs:main1:db#ListCellsInMem">
+     <tt>ListCellsInMem</tt>(<i>options_str</i>)</a>
+     </td><td>List names of cells in memory</td></tr>
+    <tr><td><a href="funcs:main1:db#ListTopCellsInMem">
+     <tt>ListTopCellsInMem</tt>()</a>
+     </td><td>List names of top-level cells in memory</td></tr>
+    <tr><td><a href="funcs:main1:db#ListModCellsInMem">
+     <tt>ListModCellsInMem</tt>()</a>
+     </td><td>List names of modified cells in memory</td></tr>
+    <tr><td><a href="funcs:main1:db#ListTopFilesInMem">
+     <tt>ListTopFilesInMem</tt>()</a>
+     </td><td>List source files of top-level cells in memory</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:stab">Symbol Tables</a></th></tr>
+
+    <tr><td><a href="funcs:main1:stab#SetSymbolTable">
+     <tt>SetSymbolTable</tt>(<i>tabname</i>)</a>
+     </td><td>Switch to new or existing symbol table</td></tr>
+    <tr><td><a href="funcs:main1:stab#ClearSymbolTable">
+     <tt>ClearSymbolTable</tt>(<i>destroy</i>)</a>
+     </td><td>Clear or destroy current symbol table</td></tr>
+    <tr><td><a href="funcs:main1:stab#CurSymbolTable">
+     <tt>CurSymbolTable</tt>()</a>
+     </td><td>Return name of current symbol table</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:dsp">Display</a></th></tr>
+
+    <tr><td><a href="funcs:main1:dsp#Window">
+     <tt>Window</tt>(<i>x</i>, <i>y</i>, <i>width</i>, <i>win</i>)</a>
+     </td><td>Set display window view</td></tr>
+    <tr><td><a href="funcs:main1:dsp#GetWindow">
+     <tt>GetWindow</tt>()</a>
+     </td><td>Return window containing pointer</td></tr>
+    <tr><td><a href="funcs:main1:dsp#GetWindowView">
+     <tt>GetWindowView</tt>(<i>win</i>, <i>array</i>)</a>
+     </td><td>Return window view area coordinates</td></tr>
+    <tr><td><a href="funcs:main1:dsp#GetWindowMode">
+     <tt>GetWindowMode</tt>(<i>win</i>)</a>
+     </td><td>Return window display mode</td></tr>
+    <tr><td><a href="funcs:main1:dsp#Expand">
+     <tt>Expand</tt>(<i>win</i>, <i>string</i>)</a>
+     </td><td>Set expansion status</td></tr>
+    <tr><td><a href="funcs:main1:dsp#Display">
+     <tt>Display</tt>(<i>display_string</i>, <i>win_id</i>, <i>l</i>,
+     <i>b</i>, <i>r</i>, <i>t</i>)</a>
+     </td><td>Exportable rendering service</td></tr>
+    <tr><td><a href="funcs:main1:dsp#FreezeDisplay">
+     <tt>FreezeDisplay</tt>(<i>freeze</i>)</a>
+     </td><td>Turn off/on graphics screen updates</td></tr>
+    <tr><td><a href="funcs:main1:dsp#Redraw">
+     <tt>Redraw</tt>(<i>win</i>)</a>
+     </td><td>Redraw the window</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:exit">Exit</a></th></tr>
+
+    <tr><td><a href="funcs:main1:exit#Exit">
+     <tt>Exit</tt>()</a>
+     </td><td>Exit script</td></tr>
+    <tr><td><a href="funcs:main1:exit#Halt">
+     <tt>Halt</tt>()</a>
+     </td><td>Exit script</td></tr>
+
+    <!-- 120909 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:anno">Annotation</a></th></tr>
+
+    <tr><td><a href="funcs:main1:anno#AddMark">
+     <tt>AddMark</tt>(<i>type</i>, <i>arguments</i> ...)</a>
+     </td><td>Show a user-specified mark</td></tr>
+    <tr><td><a href="funcs:main1:anno#EraseMark">
+     <tt>EraseMark</tt>(<i>id</i>)</a>
+     </td><td>Erase a mark</td></tr>
+    <tr><td><a href="funcs:main1:anno#DumpMarks">
+     <tt>DumpMarks</tt>(<i>filename</i>)</a>
+     </td><td>Dump current cell marks to file</td></tr>
+    <tr><td><a href="funcs:main1:anno#ReadMarks">
+     <tt>ReadMarks</tt>(<i>filename</i>)</a>
+     </td><td>Read marks from file</td></tr>
+
+    <!-- 092915 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:ghost">Ghost Rendering</a></th></tr>
+
+    <tr><td><a href="funcs:main1:ghost#PushGhost">
+     <tt>PushGhost</tt>(<i>array</i>, <i>numpts</i>)</a>
+     </td><td>Register ghost-drawn polygon</td></tr>
+    <tr><td><a href="funcs:main1:ghost#PushGhostBox">
+     <tt>PushGhostBox</tt>(<i>left</i>, <i>bottom</i>, <i>right</i>,
+     <i>top</i>)</a>
+     </td><td>Register ghost-drawn box</td></tr>
+    <tr><td><a href="funcs:main1:ghost#PushGhostH">
+     <tt>PushGhostH</tt>(<i>object_handle</i>, <i>all</i>)</a>
+     </td><td>Register ghost-drawn outlines</td></tr>
+    <tr><td><a href="funcs:main1:ghost#PopGhost">
+     <tt>PopGhost</tt>()</a>
+     </td><td>Unregister ghost-drawn figure</td></tr>
+    <tr><td><a href="funcs:main1:ghost#ShowGhost">
+     <tt>ShowGhost</tt>(<i>type</i>)</a>
+     </td><td>Show ghost-drawn figures</td></tr>
+
+    <!-- 022713 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:graphics">Graphics</a></th></tr>
+
+    <tr><td><a href="funcs:main1:graphics#GRopen">
+     <tt>GRopen</tt>(<i>display</i>, <i>window</i>)</a>
+     </td><td>Open a graphics context</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRcheckError">
+     <tt>GRcheckError</tt>()</a>
+     </td><td>Return graphics error status</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRcreatePixmap">
+     <tt>GRcreatePixmap</tt>(<i>handle</i>, <i>width</i>, <i>height</i>)</a>
+     </td><td>Return a new pixmap id</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRdestroyPixmap">
+     <tt>GRdestroyPixmap</tt>(<i>handle</i>, <i>pixmap</i>)</a>
+     </td><td>Free pixmap</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRcopyDrawable">
+     <tt>GRcopyDrawable</tt>(<i>handle</i>, <i>dst</i>, <i>src</i>, <i>xs</i>,
+     <i>ys</i>, <i>ws</i>, <i>hs</i>, <i>x</i>, <i>y</i>)</a>
+     </td><td>Copy area between drawables</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRdraw">
+     <tt>GRdraw</tt>(<i>handle</i>, <i>l</i>, <i>b</i>, <i>r</i>, <i>t</i>)</a>
+     </td><td>Render cell</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRgetDrawableSize">
+     <tt>GRgetDrawableSize</tt>(<i>handle</i>, <i>drawable</i>,
+     <i>array</i>)</a>
+     </td><td>Return size of drawable</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRresetDrawable">
+     <tt>GRresetDrawable</tt>(<i>handle</i>, <i>drawable</i>)</a>
+     </td><td>Switch drawable in context</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRclear">
+     <tt>GRclear</tt>(<i>handle</i>)</a>
+     </td><td>Clear window</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRpixel">
+     <tt>GRpixel</tt>(<i>handle</i>, <i>x</i>, <i>y</i>)</a>
+     </td><td>Draw pixel</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRpixels">
+     <tt>GRpixels</tt>(<i>handle</i>, <i>array</i>, <i>num</i>)</a>
+     </td><td>Draw pixels</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRline">
+     <tt>GRline</tt>(<i>handle</i>, <i>x1</i>, <i>y1</i>, <i>x2</i>,
+     <i>y2</i>)</a>
+     </td><td>Draw line</td></tr>
+    <tr><td> <a href="funcs:main1:graphics#GRpolyLine">
+     <tt>GRpolyLine</tt>(<i>handle</i>, <i>array</i>, <i>num</i>)</a>
+     </td><td>Draw path</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRlines">
+     <tt>GRlines</tt>(<i>handle</i>, <i>array</i>, <i>num</i>)</a>
+     </td><td>Draw lines</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRbox">
+     <tt>GRbox</tt>(<i>handle</i>, <i>l</i>, <i>b</i>, <i>r</i>, <i>t</i>)</a>
+     </td><td>Draw box</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRboxes">
+     <tt>GRboxes</tt>(<i>handle</i>, <i>array</i>, <i>num</i>)</a>
+     </td><td>Draw boxes</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRarc">
+     <tt>GRarc</tt>(<i>handle</i>, <i>x0</i>, <i>y0</i>, <i>rx</i>, <i>ry</i>,
+     <i>theta1</i>, <i>theta2</i>)</a>
+     </td><td>Draw arc</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRpolygon">
+     <tt>GRpolygon</tt>(<i>handle</i>, <i>array</i>, <i>num</i>)</a>
+     </td><td>Draw polygon</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRtext">
+     <tt>GRtext</tt>(<i>handle</i>, <i>text</i>, <i>x</i>, <i>y</i>,
+     <i>flags</i>)</a>
+     </td><td>Draw text</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRtextExtent">
+     <tt>GRtextExtent</tt>(<i>handle</i>, <i>text</i>, <i>array</i>)</a>
+     </td><td>Return text size</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRdefineColor">
+     <tt>GRdefineColor</tt>(<i>handle</i>, <i>red</i>, <i>green</i>,
+     <i>blue</i>)</a>
+     </td><td>Return color code</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRsetBackground">
+     <tt>GRsetBackground</tt>(<i>handle</i>, <i>pixel</i>)</a>
+     </td><td>Set default background color</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRsetWindowBackground">
+     <tt>GRsetWindowBackground</tt>(<i>handle</i>, <i>pixel</i>)</a>
+     </td><td>Set window background color</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRsetColor">
+     <tt>GRsetColor</tt>(<i>handle</i>, <i>pixel</i>)</a>
+     </td><td>Set foreground color</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRdefineLinestyle">
+     <tt>GRdefineLinestyle</tt>(<i>handle</i>, <i>index</i>, <i>mask</i>)</a>
+     </td><td>Define a line style</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRsetLinestyle">
+     <tt>GRsetLinestyle</tt>(<i>handle</i>, <i>index</i>)</a>
+     </td><td>Set current line style</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRdefineFillpattern">
+     <tt>GRdefineFillpattern</tt>(<i>handle</i>, <i>index</i>, <i>nx</i>,
+     <i>ny</i>, <i>array_string</i>)</a>
+     </td><td>Define a fill pattern</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRsetFillpattern">
+     <tt>GRsetFillpattern</tt>(<i>handle</i>, <i>index</i>)</a>
+     </td><td>Set current fill pattern</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRupdate">
+     <tt>GRupdate</tt>(<i>handle</i>)</a>
+     </td><td>Update rendering</td></tr>
+    <tr><td><a href="funcs:main1:graphics#GRsetMode">
+     <tt>GRsetMode</tt>(<i>handle</i>, <i>mode</i>)</a>
+     </td><td>Set drawing mode</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:hcopy">Hard Copy</a></th></tr>
+
+    <tr><td><a href="funcs:main1:hcopy#HClistDrivers">
+     <tt>HClistDrivers</tt>()</a>
+     </td><td>Return list of available drivers</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCsetDriver">
+     <tt>HCsetDriver</tt>(<i>driver</i>)</a>
+     </td><td>Set current driver</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCgetDriver">
+     <tt>HCgetDriver</tt>()</a>
+     </td><td>Return current driver name</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCsetResol">
+     <tt>HCsetResol</tt>(<i>resol</i>)</a>
+     </td><td>Set current driver resolution</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCgetResol">
+     <tt>HCgetResol</tt>()</a>
+     </td><td>Return current driver resolution</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCgetResols">
+     <tt>HCgetResols</tt>(<i>array</i>)</a>
+     </td><td>Return available driver resolutions</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCsetBestFit">
+     <tt>HCsetBestFit</tt>(<i>best_fit</i>)</a>
+     </td><td>Set "best fit" mode</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCgetBestFit">
+     <tt>HCgetBestFit</tt>()</a>
+     </td><td>Return "best fit" mode</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCsetLegend">
+     <tt>HCsetLegend</tt>(<i>legend</i>)</a>
+     </td><td>Set "legend" mode</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCgetLegend">
+     <tt>HCgetLegend</tt>()</a>
+     </td><td>Return "legend" mode</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCsetLandscape">
+     <tt>HCsetLandscape</tt>(<i>landscape</i>)</a>
+     </td><td>Set "landscape" mode</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCgetLandscape">
+     <tt>HCgetLandscape</tt>()</a>
+     </td><td>Return "landscape" mode</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCsetMetric">
+     <tt>HCsetMetric</tt>(<i>metric</i>)</a>
+     </td><td>Set "metric" mode</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCgetMetric">
+     <tt>HCgetMetric</tt>()</a>
+     </td><td>Return "metric" mode</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCsetSize">
+     <tt>HCsetSize</tt>(<i>x</i>, <i>y</i>, <i>w</i>, <i>h</i>)</a>
+     </td><td>Set rendering area</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCgetSize">
+     <tt>HCgetSize</tt>(<i>array</i>)</a>
+     </td><td>Return rendering area</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCshowAxes">
+     <tt>HCshowAxes</tt>(<i>style</i>)</a>
+     </td><td>Set axes display style</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCshowGrid">
+     <tt>HCshowGrid</tt>(<i>show</i>, <i>mode</i>)</a>
+     </td><td>Set grid displayed or not</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCsetGridInterval">
+     <tt>HCsetGridInterval</tt>(<i>spacing</i>, <i>mode</i>)</a>
+     </td><td>Set grid spacing</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCsetGridStyle">
+     <tt>HCsetGridStyle</tt>(<i>linemod</i>, <i>mode</i>)</a>
+     </td><td>Set grid line style</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCsetGridCrossSize">
+     <tt>HCsetGridCrossSize</tt>(<i>xsize</i>, <i>mode</i>)</a>
+     </td><td>Set grid "dot" cross size</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCsetGridOnTop">
+     <tt>HCsetGridOnTop</tt>(<i>on_top</i>, <i>mode</i>)</a>
+     </td><td>Draw grid above or below geometry</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCdump">
+     <tt>HCdump</tt>(<i>l</i>, <i>b</i>, <i>r</i>, <i>t</i>, <i>filename</i>,
+     <i>command</i>)</a>
+     </td><td>Generate output</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCerrorString">
+     <tt>HCerrorString</tt>()</a>
+     </td><td>Return error message</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HClistPrinters">
+     <tt>HClistPrinters</tt>()</a>
+     </td><td>List MS Windows printers</td></tr>
+    <tr><td><a href="funcs:main1:hcopy#HCmedia">
+     <tt>HCmedia</tt>(<i>index</i>)</a>
+     </td><td>Set MS Windows page size</td></tr>
+
+    <!-- 011114 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:keyb">Keyboard</a></th></tr>
+
+    <tr><td><a href="funcs:main1:keyb#ReadKeymap">
+     <tt>ReadKeymap</tt>(<i>mapfile</i>)</a>
+     </td><td>Read a keyboard mapping file</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:libs">Libraries</a></th></tr>
+
+    <tr><td><a href="funcs:main1:libs#OpenLibrary">
+     <tt>OpenLibrary</tt>(<i>path_name</i>)</a>
+     </td><td>Open a library file</td></tr>
+    <tr><td><a href="funcs:main1:libs#CloseLibrary">
+     <tt>CloseLibrary</tt>(<i>path_name</i>)</a>
+     </td><td>Close an open library</td></tr>
+
+!!IFDEF OpenAccess
+    <!-- 030416 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:oa">OpenAccess</a></th></tr>
+
+    <tr><td><a href="funcs:main1:oa#OaVersion">
+     <tt>OaVersion</tt>()</a>
+     </td><td>Get OpenAccess version string</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaIsLibrary">
+     <tt>OaIsLibrary</tt>(<i>libname</i>)</a>
+     </td><td>Check if argument is a library</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaListLibraries">
+     <tt>OaListLibraries</tt>()</a>
+     </td><td>Return list of libraries</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaListLibCells">
+     <tt>OaListLibCells</tt>(<i>libname</i>)</a>
+     </td><td>Return list of cells in library</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaListCellViews">
+     <tt>OaListCellViews</tt>(<i>libname</i>, <i>cellname</i>)</a>
+     </td><td>Return list of views in cell</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaIsLibOpen">
+     <tt>OaIsLibOpen</tt>(<i>libname</i>)</a>
+     </td><td>Check if library is open</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaOpenLibrary">
+     <tt>OaOpenLibrary</tt>(<i>libname</i>)</a>
+     </td><td>Open an OpenAccess library</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaCloseLibrary">
+     <tt>OaCloseLibrary</tt>(<i>libname</i>)</a>
+     </td><td>Close an open OpenAccess library</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaIsOaCell">
+     <tt>OaIsOaCell</tt>(<i>cellname</i>, <i>open_only</i>)</a>
+     </td><td>Check if cell can be resolved</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaIsCellInLib">
+     <tt>OaIsCellInLib</tt>(<i>libname</i>, <i>cellname</i>)</a>
+     </td><td>Check if cell exists in library</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaIsCellView">
+     <tt>OaIsCellView</tt>(<i>cellname</i>, <i>viewname</i>,
+       <i>open_only</i>)</a>
+     </td><td>Check if view exists in cell</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaIsCellViewInLib">
+     <tt>OaIsCellViewInLib</tt>(<i>libname</i>, <i>cellname</i>,
+       <i>viewname</i>)</a>
+     </td><td>Check if view of cell exists in library</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaCreateLibrary">
+     <tt>OaCreateLibrary</tt>(<i>libname</i>, <i>techlibname</i>)</a>
+     </td><td>Create new library</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaBrandLibrary">
+     <tt>OaBrandLibrary</tt>(<i>libname</i>, <i>branded</i>)</a>
+     </td><td>Set or unset writability from <i>Xic</i></td></tr>
+    <tr><td><a href="funcs:main1:oa#OaIsLibBranded">
+     <tt>OaIsLibBranded</tt>(<i>libname</i>)</a>
+     </td><td>Check if library writable from <i>Xic</i></td></tr>
+    <tr><td><a href="funcs:main1:oa#OaDestroy">
+     <tt>OaDestroy</tt>(<i>libname</i>, <i>cellname</i>, <i>viewname</i>)</a>
+     </td><td>Destroy library, cell, or view</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaLoad">
+     <tt>OaLoad</tt>(<i>libname</i>, <i>cellname</i>)</a>
+     </td><td>Load cell into <i>Xic</i></td></tr>
+    <tr><td><a href="funcs:main1:oa#OaReset">
+     <tt>OaReset</tt>()</a>
+     </td><td>Clear table of cells already loaded</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaSave">
+     <tt>OaSave</tt>(<i>libname</i>, <i>allhier</i>)</a>
+     </td><td>Save current cell to OpenAccess</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaAttachTech">
+     <tt>OaAttachTech</tt>(<i>libname</i>, <i>techlibname</i>)</a>
+     </td><td>Attach the technology from another library</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaGetAttachedTech">
+     <tt>OaGetAttachedTech</tt>(<i>libname</i>)</a>
+     </td><td>Return the name of attached technology library</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaHasLocalTech">
+     <tt>OaHasLocalTech</tt>(<i>libname</i>)</a>
+     </td><td>Check if library has local tech database</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaCreateLocalTech">
+     <tt>OaCreateLocalTech</tt>(<i>libname</i>)</a>
+     </td><td>Create a local tech database in library</td></tr>
+    <tr><td><a href="funcs:main1:oa#OaDestroyTech">
+     <tt>OaDestroyTech</tt>(<i>libname</i>, <i>unattach_only</i>)</a>
+     </td><td>Destroy/remove technology object</td></tr>
+!!ENDIF
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:mode">Mode</a></th></tr>
+
+    <tr><td><a href="funcs:main1:mode#Mode">
+     <tt>Mode</tt>(<i>window</i>, <i>mode</i>)</a>
+     </td><td>Set physical or electrical mode</td></tr>
+    <tr><td><a href="funcs:main1:mode#CurMode">
+     <tt>CurMode</tt>(<i>window</i>)</a>
+     </td><td>Return current mode</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:prompt">Prompt Line</a></th></tr>
+
+    <tr><td><a href="funcs:main1:prompt#StuffText">
+     <tt>StuffText</tt>(<i>string</i>)</a>
+     </td><td>Register text for future access</td></tr>
+    <tr><td><a href="funcs:main1:prompt#TextCmd">
+     <tt>TextCmd</tt>(<i>string</i>)</a>
+     </td><td>Execute a prompt line command</td></tr>
+    <tr><td><a href="funcs:main1:prompt#GetLastPrompt">
+     <tt>GetLastPrompt</tt>()</a>
+     </td><td>Return most recent prompt line message</td></tr>
+
+    <!-- 021913 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:script">Scripts</a></th></tr>
+
+    <tr><td><a href="funcs:main1:script#ListFunctions">
+     <tt>ListFunctions</tt>()</a>
+     </td><td>Return list of library file functions</td></tr>
+    <tr><td><a href="funcs:main1:script#Exec">
+     <tt>Exec</tt>(<i>script</i>)</a>
+     </td><td>Execute a script</td></tr>
+    <tr><td><a href="funcs:main1:script#SetKey">
+     <tt>SetKey</tt>(<i>password</i>)</a>
+     </td><td>Set the current password for script decryption</td></tr>
+    <tr><td><a href="funcs:main1:script#HasPython">
+     <tt>HasPython</tt>()</a>
+     </td><td>Return true if Python is available</td></tr>
+    <tr><td><a href="funcs:main1:script#RunPython">
+     <tt>RunPython</tt>(<i>command</i>)</a>
+     </td><td>Run a Python script</td></tr>
+    <tr><td><a href="funcs:main1:script#RunPythonModFunc">
+     <tt>RunPythonModFunc</tt>(<i>module</i>, <i>function</i>
+     [, <i>arg</i> ...])</a>
+     </td><td>Execute a Python module function</td></tr>
+    <tr><td><a href="funcs:main1:script#ResetPython">
+     <tt>ResetPython</tt>()</a>
+     </td><td>Reset the Python interpreter</td></tr>
+    <tr><td><a href="funcs:main1:script#HasTcl">
+     <tt>HasTcl</tt>()</a>
+     </td><td>Return true if Tcl is available</td></tr>
+    <tr><td><a href="funcs:main1:script#HasTk">
+     <tt>HasTk</tt>()</a>
+     </td><td>Return true if Tcl and Tk are available</td></tr>
+    <tr><td><a href="funcs:main1:script#RunTcl">
+     <tt>RunTcl</tt>(<i>command</i> [, <i>arg</i> ...])</a>
+     </td><td>Run a Tcl/Tk script</td></tr>
+    <tr><td><a href="funcs:main1:script#ResetTcl">
+     <tt>ResetTcl</tt>()</a>
+     </td><td>Reset the Tcl/Tk interpreter</td></tr>
+    <tr><td><a href="funcs:main1:script#HasGlobalVariable">
+     <tt>HasGlobalVariable</tt>(<i>globvar</i>)</a>
+     </td><td>test if global variable</td></tr>
+    <tr><td><a href="funcs:main1:script#GetGlobalVariable">
+     <tt>GetGlobalVariable</tt>(<i>globvar</i>)</a>
+     </td><td>Return value of global variable</td></tr>
+    <tr><td><a href="funcs:main1:script#SetGlobalVariable">
+     <tt>SetGlobalVariable</tt>(<i>globvar</i>, <i>value</i>)</a>
+     </td><td>Set value of global variable</td></tr>
+
+    <!-- 021913 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:tech">Technology File</a></th></tr>
+
+    <tr><td><a href="funcs:main1:tech#GetTechName">
+     <tt>GetTechName</tt>()</a>
+     </td><td>Return technology name</td></tr>
+    <tr><td><a href="funcs:main1:tech#GetTechExt">
+     <tt>GetTechExt</tt>()</a>
+     </td><td>Return technology file extension</td></tr>
+    <tr><td><a href="funcs:main1:tech#SetTechExt">
+     <tt>SetTechExt</tt>(<i>extension</i>)</a>
+     </td><td>Define effective technology file extension</td></tr>
+    <tr><td><a href="funcs:main1:tech#TechParseLine">
+     <tt>TechParseLine</tt>(<i>line</i>)</a>
+     </td><td>Parse text in technology file format</td></tr>
+    <tr><td><a href="funcs:main1:tech#TechGetFkeyString">
+     <tt>TechGetFkeyString</tt>(<i>fkeynum</i>)</a>
+     </td><td>Return function key encoding string</td></tr>
+    <tr><td><a href="funcs:main1:tech#TechSetFkeyString">
+     <tt>TechSetFkeyString</tt>(<i>fkeynum</i>, <i>string</i>)</a>
+     </td><td>Set function key encoding</td></tr>
+
+    <!-- 113009 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:var">Variables</a></th></tr>
+
+    <tr><td><a href="funcs:main1:var#Set">
+     <tt>Set</tt>(<i>name</i>, <i>string</i>)</a>
+     </td><td>Set a variable</td></tr>
+    <tr><td><a href="funcs:main1:var#Unset">
+     <tt>Unset</tt>(<i>name</i>)</a>
+     </td><td>Unset a variable</td></tr>
+    <tr><td><a href="funcs:main1:var#PushSet">
+     <tt>PushSet</tt>(<i>name</i>, <i>string</i>)</a>
+     </td><td>Set a variable, allow revert</td></tr>
+    <tr><td><a href="funcs:main1:var#PopSet">
+     <tt>PopSet</tt>(<i>name</i>)</a>
+     </td><td>Revert <tt>PushSet</tt></td></tr>
+    <tr><td><a href="funcs:main1:var#SetExpand">
+     <tt>SetExpand</tt>(<i>string</i>, <i>use_env</i>)</a>
+     </td><td>Perform variable substitution</td></tr>
+    <tr><td><a href="funcs:main1:var#Get">
+     <tt>Get</tt>(<i>name</i>)</a>
+     </td><td>Return variable contents</td></tr>
+    <tr><td><a href="funcs:main1:var#JoinLimits">
+     <tt>JoinLimits</tt>(<i>flag</i>)</a>
+     </td><td>Set or remove join operation limits</td></tr>
+    <tr><td>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align=center>
+        <a href="funcs:main1:version">Version</a></th></tr>
+
+    <tr><td><a href="funcs:main1:version#VersionString">
+     <tt>VersionString</tt>()</a>
+     </td><td>Return current <i>Xic</i> version</td></tr>
+
+    </table>
+
+!!SEEALSO
+scr:iffuncs
+
+!!KEYWORD
+funcs:main1:curcell
+!!TITLE
+Current Cell
+!!HTML
+
+    <!-- 062109 -->
+    <a name="Edit"></a>
+    <dl>
+    <dt><b>(int) <tt>Edit</tt>(<i>name</i>, <i>symname</i>)</b>
+    <dd><br>This function will read in the named file or cell and make it,
+    or one of the cells in the hierarchy, the current cell.  If the
+    present cell has been modified, in graphics mode the user is
+    prompted for whether to save the cell before reading the new one. 
+    The <i>name</i> argument can be null or empty, in which case the
+    user will be prompted for a file or cell to open for editing, if
+    in graphics mode.  If not in graphics mode, an empty cell is
+    created in memory and made the current cell.
+
+    <p>
+    The <i>name</i> provided can be an <a href="xic:fsaf">archive
+    file</a>, the name of an <i>Xic</i> cell, a <a
+    href="libraries">library file</a>, or the "database name" of a <a
+    href="xic:hier">Cell Hierarchy Digest</a> (CHD).  If a CHD name or
+    the name of an archive file is given, the name of the cell to open
+    can be provided as <i>symname</i>.  If <i>symname</i> is null or
+    empty, The CHD's default cell, or the top level cell (the one not
+    used as a subcell by any other cells in the file) is the one
+    opened for editing.  If there is more than one top level cell, in
+    graphics mode the user is presented with a pop-up choice menu and
+    asked to make a selection.  If the file is a library file, the
+    <i>symname</i> can be given, and it should be one of the reference
+    names from the library, or the name of a cell defined in the
+    library.  If <i>symname</i> is null or empty, in graphics mode a
+    pop-up listing the library contents will appear if in graphics
+    mode, allowing the user to select a reference or cell.  If not in
+    graphics mode, and the cell to edit can not be determined, the
+    current cell is unchanged, and nothing is read.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features
+    that apply during a call to this function.  This function is
+    consistent with the <a href="xic:open"><b>Open</b></a> menu
+    command in that cell name aliasing, layer filtering and
+    modification, and scaling are not available (unlike in the
+    pre-3.0.0 version of this function).  If these features are
+    needed, the <tt>OpenCell</tt> function should be used instead.
+  
+    <p>
+    The return value is one of the following integers, representing
+    the command status:
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>-2</td><td>The function call was reentered.  This is not
+     likely to happen in scripts.</td></tr>
+    <tr><td>-1</td><td>The user aborted the operation.</td></tr>
+    <tr><td>0</td><td>The open failed: bad file name, parse error,
+     etc.</td></tr>
+    <tr><td>1</td><td>The operation succeeded.</td></tr>
+    <tr><td>2</td><td>The read was successful on an archive with
+     multiple top-level cells but the cells to edit can't be
+     determined.  The current cell has not been set, but the cells are
+     in memory.  The second argument could have been used to resolve
+     the ambiguity.</td></tr>
+    <tr><td>3</td><td>The cell name was the name of the device library
+     or model library file, which has been opened for text editing
+     (in graphic mode only).</td></tr>
+    </table>
+    </dl>
+    <hr>
+
+    <!-- 100408 -->
+    <a name="OpenCell"></a>
+    <dl>
+    <dt><b>(int) <tt>OpenCell</tt>(<i>name</i>, <i>symname</i>,
+      <i>curcell</i>)</b>
+    <dd><br>This function will read a file into memory, similar to the
+    <tt>Edit</tt> function.  The first two arguments are the same as
+    would be passed to <tt>Edit</tt>.  The third argument is a boolean
+    value.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features that
+    apply during a call to this function.
+
+    <p>
+    If <i>curcell</i> is nonzero, then this function will behave like
+    the <tt>Edit</tt> function in switching the current cell to a
+    newly-read cell.  The only difference from <tt>Edit</tt> is that
+    <a href="SetConvertScale">scaling</a>, layer <a
+    href="layerchange">filtering and aliasing</a>, and <a
+    href="cellname">cell name modification</a> are allowed, as in the
+    pre-3.0.0 versions of the <tt>Edit</tt> function.  The return
+    values are those listed for the <tt>Edit</tt> function.
+
+    <p>
+    If <i>curcell</i> is zero, the new cell will not be the current
+    cell.  Once in memory, the cell is available by its simple name,
+    for use by the <tt>Place</tt> function for example.  If
+    <i>name</i> is the name of an archive or library file,
+    <i>symname</i> is the cell or reference to open, similar to the
+    <tt>Edit</tt> function.  In this mode, the return value is 1 on
+    success, 0 otherwise. 
+    </dl>
+    <hr>
+
+    <!-- 030115 -->
+    <a name="TouchCell"></a>
+    <dl>
+    <dt><b>(int) <tt>TouchCell</tt>(<i>cellname</i>, <i>curcell</i>)</b>
+    <dd><br>
+    If no cell exists in the current symbol table for the current mode
+    with the given name, create an empty cell for <i>cellname</i> and
+    add it to the symbol table.  If the boolean <i>curcell</i> is
+    true, switch the current cell to <i>cellname</i>.  This can be
+    much faster than <tt>Edit</tt> or <tt>OpenCell</tt> for cells
+    already in memory.  The return value is -1 on error, 0 if no new
+    cell was created, or 1 if a new cell was created.
+    </dl>
+    <hr>
+
+    <!-- 012114 -->
+    <a name="Push"></a>
+    <dl>
+    <dt><b>(int) <tt>Push</tt>(<i>object_handle</i>)</b>
+    <dd><br>This function will push the editing context to the cell of
+    the instance referenced by the handle, that is, make it the
+    current cell.  The handle is the return value from the
+    <tt>SelectHandle</tt> or <tt>AreaHandle</tt> functions.  This is
+    similar to the <a href="xic:push"><b>Push</b></a> command in
+    <i>Xic</i>.  The editing context can be restored with the
+    <tt>Pop</tt> function.  If the instance is an array, the 0,0
+    element will be pushed (see <tt>PushElement</tt>). 
+
+    <p>
+    If successful, 1 is returned, otherwise 0 is returned.  This
+    function will fail if the handle passed is not a handle to an
+    object list.
+
+    <p>
+    This function implicitly calls <a href="Commit"><tt>Commit</tt></a>
+    before the context change.
+    </dl>
+    <hr>
+
+    <!-- 012114 -->
+    <a name="PushElement"></a>
+    <dl>
+    <dt><b>(int) <tt>PushElement</tt>(<i>object_handle</i>, <i>xind</i>,
+      <i>yind</i>)</b>
+    <dd><br>
+    This is very similar to <tt>Push</tt>, but allows passing indices
+    which select the instance element to push if the instance is
+    arrayed.  The indices are always effectively 0 in the
+    <tt>Push</tt> function.  An out of range index value will cause
+    the function to return 0 and not push the context.  If both index
+    values are zero, the function is identical to <tt>Push</tt>.  The
+    selection of the array element only affects the graphical display.
+
+    <p>
+    This function implicitly calls <a href="Commit"><tt>Commit</tt></a>
+    before the context change.
+    </dl>
+    <hr>
+
+    <!-- 022206 -->
+    <a name="Pop"></a>
+    <dl>
+    <dt><b>(int) <tt>Pop</tt>()</b>
+    <dd><br>This function will pop the editing context to the parent cell,
+    to be used after the <tt>Push</tt> function or a <b>Push</b>
+    command in <i>Xic</i>.  The <tt>Pop</tt> function always returns
+    1, and has no effect if there was no corresponding push.
+
+    <p>
+    This function implicitly calls <a href="Commit"><tt>Commit</tt></a>
+    before the context change.
+    </dl>
+    <hr>
+
+    <!-- 041704 -->
+    <a name="NewCellName"></a>
+    <dl>
+    <dt><b>(int) <tt>NewCellName</tt>()</b>
+    <dd><br>This function returns a string which is a valid cell name that
+    does not conflict with any cell in the current symbol table.  The
+    cell is not actually created.  This can be used with the
+    <tt>Edit</tt> function to open a new cell for editing, similar to
+    the <a href="xic:new"><b>New</b></a> button in the <b>File
+    Menu</b>.  This function never fails.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="CurCellName"></a>
+    <dl>
+    <dt><b>(string) <tt>CurCellName</tt>()</b>
+    <dd><br>The return value of this function is a string containing the
+    name of the current cell.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="TopCellName"></a>
+    <dl>
+    <dt><b>(string) <tt>TopCellName</tt>()</b>
+    <dd><br>The return value of this function is a string containing the
+    name of the top level cell in the hierarchy being edited.  This
+    is different from the current cell name while in a subedit (i.e.,
+    the <a href="xic:push"><b>Push</b></a> command is active).
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="FileName"></a>
+    <dl>
+    <dt><b>(string) <tt>FileName</tt>()</b>
+    <dd><br>This function returns the name of the file from which the
+    current cell was read.  If there is no such file, a null string is
+    returned.
+    </dl>
+    <hr>
+
+    <!-- 022012 -->
+    <a name="CurCellBB"></a>
+    <dl>
+    <dt><b>(int) <tt>CurCellBB</tt>(<i>array</i>)</b>
+    <dd><br>This function will return the bounding box of the current
+    cell, in microns, in the <i>array</i>, as l, b, r, t.  The array
+    must have size 4 or larger.  The function returns 1 on success, 0
+    if there is no current cell.
+
+    <p>
+    In electrical mode, the bounding box returned will be for the
+    schematic or symbolic representation, matching how the cell is
+    displayed in the main window.  See the <a
+    href="CellBB"><tt>CellBB</tt></a> function for an alternative. 
+    </dl>
+    <hr>
+
+    <!-- 101108 -->
+    <a name="SetCellFlag"></a>
+    <dl>
+    <dt><b>(int) <tt>SetCellFlag</tt>(<i>cellname</i>, <i>flagname</i>,
+      <i>set</i>)</b>
+    <dd><br>
+    This will set a <a href="cellflags">flag</a> in the cell whose
+    name is passed as the first argument.  If this argument is 0, or a
+    null or empty string, the current cell is understood.  The second
+    argument is a string giving the flag name.  This must be the name
+    of a user-modifiable flag.  The third argument is a boolean
+    indicating the new flag state, a nonzero value will set the flag,
+    zero will unset it.  The return value is the previous flag status
+    (0 or 1), or -1 on error.  On error, a message can be obtained
+    from <a href="GetError"><tt>GetError</tt></a>.
+
+    <p>
+    <b>Warning</b>:  This affects the user flags directly, and does
+    <b>not</b> update the property used to hold flag status that is
+    written to disk when the cell is saved.  These flags should be set
+    by setting the <b>Flags</b> property (property number 7105) with
+    <a href="PrptyAdd"><tt>PrptyAdd</tt></a> or <a
+    href="AddCellProperty"><tt>AddCellProperty</tt></a>, if the values
+    need to persist when the cell is written to disk and reread.
+    </dl>
+    <hr>
+
+    <!-- 101108 -->
+    <a name="GetCellFlag"></a>
+    <dl>
+    <dt><b>(int) <tt>GetCellFlag</tt>(<i>cellname</i>, <i>flagname</i>)</b>
+    <dd><br>
+    This will query a <a href="cellflags">flag</a> in the cell whose
+    name is passed as the first argument.  If this argument is 0, or a
+    null or empty string, the current cell is understood.  The second
+    argument is a string giving the flag name, which can be any or the
+    flag names.  The return value is the flag status (0 or 1), or -1
+    on error.  On error, a message can be obtained from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 033009 -->
+    <a name="Save"></a>
+    <dl>
+    <dt><b>(int) <tt>Save</tt>(<i>newname</i>)</b>
+    <dd><br>This command will save to disk file the current cell, and its
+    descendents if the cell originated from an archive file.  If the
+    argument is null or the empty string, the current cell name is
+    used, suffixed with one of the following if saving as an archive:
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>CGX</td>     <td><tt>.cgx</tt></td></tr>
+    <tr><td>CIF</td>     <td><tt>.cif</tt></td></tr>
+    <tr><td>GDSII</td>   <td><tt>.gds</tt></td></tr>
+    <tr><td>OASIS</td>   <td><tt>.oas</tt></td></tr>
+    </table>
+    The default format will be the format of the original input file,
+    though format conversion can be imposed by adding one of these
+    suffixes or "<tt>.xic</tt>" to <i>newname</i>.  The cell is saved
+    unconditionally; there is no user prompt.
+
+    <p>
+    See this <a href="xic:cvrtmenu#features">table</a> for the features that
+    apply during a call to this function.
+
+    <p>
+    This function returns 1 on success, 0 otherwise.  On error, a
+    message is likely available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 010406 -->
+    <a name="UpdateNative"></a>
+    <dl>
+    <dt><b>(int) <tt>UpdateNative</tt>(<i>dir</i>)</b>
+    <dd><br>This will write to disk all of the modified cells in the
+    current hierarchy as native cell files in the directory given as
+    the argument.  If the argument is null or empty, cells will be
+    written in the current directory.  The return value is the number
+    of cells written.
+
+    <p>
+    Note that only modified or internally created cells will be
+    written.  To write all cells as native cell files, use the <a
+    href="ToXIC"><tt>ToXIC</tt></a> function.
+    </dl>
+
+!!SEEALSO
+funcs:main1
+
+!!KEYWORD
+funcs:main1:cell
+!!TITLE
+Cell Info
+!!HTML
+
+    <!-- 022012 -->
+    <a name="CellBB"></a>
+    <dl>
+    <dt><b>(int) <tt>CellBB</tt>(<i>cellname</i>, <i>array</i>
+      [, <i>symbolic</i>])</b>
+    <dd><br>
+    This function will return the bounding box of the named cell in
+    the current mode, in microns, in the array, as l, b, r, t.  If
+    <i>cellname</i> is null or empty, the current cell is used.  The
+    array must have size 4 or larger.  The function returns 1 on
+    success, 0 if the cell is not found in memory.
+
+    <p>
+    The optional boolean third argument applies to electrical cells. 
+    If not given or set to false, the schematic bounding box is always
+    returned.  If this argument is true, and the cell has a symbolic
+    representation, the symbolic representation bounding box is
+    returned, or the function fails and returns 0 if the cell has no
+    symbolic representation.
+    </dl>
+    <hr>
+
+    <!-- 020411 -->
+    <a name="ListSubcells"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListSubcells</tt>(<i>cellname</i>,
+      <i>depth</i>, <i>array</i>, <i>incl_top</i>)</b>
+    <dd><br>
+    This function returns a handle to a sorted list of subcell names
+    found under the named cell, to the given depth, and only if
+    instantiated so as to overlap a rectangular area (if given).  These
+    apply to the current mode, electrical or physical.  If
+    <i>cellname</i> is null or empty, the current cell is used.  The
+    <i>depth</i> is the search depth, which can be an integer which
+    sets the maximum depth to search (0 means search <i>cellname</i>
+    only and return its subcell names, 1 means search <i>cellname</i>
+    plus its subcells, etc., and a negative integer sets the depth to
+    search the entire hierarchy).  This argument can also be a string
+    starting with '<tt>a</tt>' such as "<tt>a</tt>" or "<tt>all</tt>"
+    which indicates to search the entire hierarchy.
+
+    <p>
+    The cell will be read into memory if not already there.  The
+    function fails if the cell can not be found.
+
+    <p>
+    The <i>array</i> argument can be passed 0, which indicates no area
+    testing.  Otherwise, the array should be size four or larger, with
+    the values being the left (<i>array</i>[0]), bottom, right, and
+    top coordinates of a rectangular region of <i>cellname</i>.  Only
+    cells that are instantiated such that the instance bounding box,
+    when reflected to top-level coordinates, intersects the region
+    will be listed.
+
+    <p>
+    If the boolean <i>incl_top</i> is nonzero, the top cell name
+    (<i>cellname</i>) will be included in the list, unless an array is
+    given and there is no overlap with the top cell.
+
+    <p>
+    The return is a handle to a list of cell names, and can be empty. 
+    The <a href="GenCells"><tt>GenCells</tt></a> or <a
+    href="ListNext"><tt>ListNext</tt></a> functions can be used to
+    iterate through the list.
+    </dl>
+    <hr>
+
+    <!-- 020411 -->
+    <a name="ListParents"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListParents</tt>(<i>cellname</i>)</b>
+    <dd><br>
+    This function returns a list of cell names, each of which contain
+    an instance of the cell name passed as the argument.  These apply
+    to the current mode, electrical or physical.  If <i>cellname</i>
+    is null or empty, the current cell is used.
+
+    <p>
+    The function fails if the cell can not be found in memory.
+
+    <p>
+    The return is a handle to a list of cell names, and can be empty.
+    The <a href="GenCells"><tt>GenCells</tt></a> or <a
+    href="ListNext"><tt>ListNext</tt></a> functions can be used to
+    iterate through the list.
+    </dl>
+    <hr>
+
+    <!-- 020411 -->
+    <a name="InitGen"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>InitGen</tt>()</b>
+    <dd><br>
+    This function returns a handle to a list of names of cells used in
+    the hierarchy of the current cell, either the physical or
+    electrical part according to the current mode.  Each cell is
+    listed once only, and all cells are listed, including the current
+    cell which is returned last.
+
+    <p>
+    The return is a handle to a list of cell names, and can be empty.
+    The <a href="GenCells"><tt>GenCells</tt></a> or <a
+    href="ListNext"><tt>ListNext</tt></a> functions can be used to
+    iterate through the list.
+    </dl>
+    <hr>
+
+    <!-- 020411 -->
+    <a name="CellsHandle"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>CellsHandle</tt>(<i>cellname</i>,
+      <i>depth</i>)</b>
+    <dd><br>
+    This function returns a handle to a list of subcell names found in
+    <i>cellname</i>, to the given hierarchy depth.  If <i>cellname</i> is
+    null or empty, the current cell is used.  The <i>depth</i> is
+    the search depth, which can be an integer which sets the maximum
+    depth to search (0 means search <i>cellname</i> only and return
+    its subcell names, 1 means search <i>cellname</i> plus its
+    subcells, etc., and a negative integer sets the depth to search
+    the entire hierarchy).  This argument can also be a string
+    starting with 'a' such as <tt>"a"</tt> or <tt>"all"</tt> which
+    indicates to search the entire hierarchy.  The listing order is as
+    a tree, with a subcell listed followed by the descent into that
+    subcell.
+
+    <p>
+    The cell will be read into memory if not already there.  The
+    function fails if the cell can not be found.
+
+    <p>
+    With "<tt>all</tt>" passed, the output is similar to that of the
+    <tt>InitGen</tt> function, except that the top-level cell name is
+    not listed, and duplicate entries are not removed
+    (<tt>ListUnique</tt> can be called to remove duplicate names).
+
+    <p>
+    Be aware that the listing will generally contain lots of duplicate
+    names.  This function is not recommended for general hierarchy
+    traversal.
+
+    <p>
+    The return is a handle to a list of cell names, and can be empty.
+    The <a href="GenCells"><tt>GenCells</tt></a> or <a
+    href="ListNext"><tt>ListNext</tt></a> functions can be used to
+    iterate through the list.
+    </dl>
+    <hr>
+
+    <!-- 020411 -->
+    <a name="GenCells"></a>
+    <dl>
+    <dt><b>(string) <tt>GenCells</tt>(<i>stringlist_handle</i>)</b>
+    <dd><br>
+    This function returns a string containing the name of one of the
+    elements in the list whose handle is passed as the argument.  It
+    advances the handle to point to the next name.  The argument can
+    be the return value from one of the functions above, or any
+    <i>stringlist_handle</i> variable.  A different name is returned
+    for each call.  The null string is returned after all names have
+    been returned.  This is identical to the <a
+    href="ListNext"><tt>ListNext</tt></a> function.
+
+    <p>
+    Example:
+    <blockquote>
+
+    <p>
+    This script will list all of the cells in the current hierarchy:
+
+    <pre>
+    i = InitGen()
+    while ((name = GenCells(i)) != 0)
+    &#32   Print(name)
+    end
+    </pre>
+    </blockquote>
+    </dl>
+
+!!SEEALSO
+funcs:main1
+
+!!KEYWORD
+funcs:main1:db
+!!TITLE
+Database
+!!HTML
+
+    <!-- 020411 -->
+    <a name="Clear"></a>
+    <dl>
+    <dt><b><tt>Clear</tt>(<i>cellname</i>)</b>
+    <dd><br>
+    If <i>cellname</i> is not empty, any matching cell and all its
+    descendents are cleared from the database, unless they are
+    referenced by another cell not being cleared.  If <i>cellname</i>
+    is null or empty, the entire database is cleared.  This function
+    is obviously very dangerous.
+    </dl>
+    <hr>
+
+    <!-- 101412 -->
+    <a name="ClearAll"></a>
+    <dl>
+    <dt><b><tt>ClearAll</tt>(<i>clear_tech</i>)</b>
+    <dd><br>This will clear all cells from the present symbol table,
+    clear and delete any other symbol tables that may be defined, and
+    revert the layer database.  If the boolean argument is nonzero,
+    layers read from the technology file will be cleared, otherwise
+    the layer database is reverted to the state just after the
+    technology file was read.  This function does <b>not</b>
+    automatically open a new cell.  This is for server mode, to give
+    the system a good scrubbing between jobs.
+    </dl>
+    <hr>
+
+    <!-- 072904 -->
+    <a name="IsCellInMem"></a>
+    <dl>
+    <dt><b>(int) <tt>IsCellInMem</tt>(<i>cellname</i>)</b>
+    <dd><br>This function returns 1 if the string <i>cellname</i> is the
+    name of a cell in the current symbol table, 0 otherwise.  If the
+    string contains a path prefix, it will be ignored, and the last
+    (filename) component used for the test.
+    </dl>
+    <hr>
+
+    <!-- 051310 -->
+    <a name="IsFileInMem"></a>
+    <dl>
+    <dt><b>(int) <tt>IsFileInMem</tt>(<i>filename</i>)</b>
+    <dd><br>This will compare the string <i>filename</i> to the source
+    file names saved with top-level cells in the current symbol table. 
+    If <i>filename</i> is a full path, the function returns 1 if an
+    exact match is found.  If <i>filename</i> is not rooted, the
+    function returns 1 if the last path component matches.  In either
+    case, 0 is returned if no match is seen.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="NumCellsInMem"></a>
+    <dl>
+    <dt><b>(int) <tt>NumCellsInMem</tt>()</b>
+    <dd><br>This function returns an integer giving the number of cells in
+    the current symbol table.
+    </dl>
+    <hr>
+
+    <!-- 032215 -->
+    <a name="ListCellsInMem"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListCellsInMem</tt>(<i>options_str</i>)</b>
+    <dd><br>
+    This function returns a handle to a list of strings, sorted
+    alphabetically, giving the names of cells found in the current
+    symbol table.
+
+    <p>
+    A fairly extensive filtering capability is available, which is
+    configured through a string passed as the argument.  If 0 is
+    passed, or the options string is null or empty, all cells will be
+    listed.
+
+    <p>
+    The string consists of a space-separated list of keywords, each of
+    which represents a condition for filtering.  The cells listed will
+    be the logical AND of all option clauses.  The keywords are
+    described with the <a href="cellfilt"><b>Cell List Filter</b></a>
+    panel.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ListTopCellsInMem"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListTopCellsInMem</tt>()</b>
+    <dd><br>This function returns a handle to a list of strings, sorted
+    alphabetically, giving the names of top-level cells in the current
+    symbol table.  These are the cells that are not used as subcells,
+    in either physical or electrical mode.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ListModCellsInMem"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListModCellsInMem</tt>()</b>
+    <dd><br>This function returns a handle to a list of strings, sorted
+    alphabetically, giving the names of modified cells in the current
+    symbol table.  A cell is modified if the contents have changed
+    since the cell was read or last written to disk.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ListTopFilesInMem"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListTopFilesInMem</tt>()</b>
+    <dd><br>This function returns a handle to a list of strings,
+    alphabetically sorted, giving the source file names of the
+    top-level cells in the current symbol table.
+    </dl>
+
+!!SEEALSO
+funcs:main1
+
+!!KEYWORD
+funcs:main1:stab
+!!TITLE
+Symbol Tables
+!!HTML
+
+    <!-- 100408 -->
+    <a name="SetSymbolTable"></a>
+    <dl>
+    <dt><b>(string) <tt>SetSymbolTable</tt>(<i>tabname</i>)</b>
+    <dd><br>This function will set the current symbol table to the table
+    named in the argument string.  If the <i>tabname</i> is null or
+    empty, the default "<tt>main</tt>" table is understood.  If a
+    table by the given name does not exist, a new table will be
+    created for that name.
+
+    <p>
+    The return value is a string giving the name of the active table
+    before the switch.
+    </dl>
+    <hr>
+
+    <!-- 100408 -->
+    <a name="ClearSymbolTable"></a>
+    <dl>
+    <dt><b>(int) <tt>ClearSymbolTable</tt>(<i>destroy</i>)</b>
+    <dd><br>This function will clear or destroy the current symbol table. 
+    If the boolean argument is nonzero, and the current table is not
+    the "<tt>main</tt>" table, the current table and its contents
+    will be destroyed.  Otherwise, the current table will be cleared,
+    i.e., all contained cells will be destroyed.  If the current
+    symbol table is destroyed, a new current table will be installed
+    from among the internal list of existing tables.
+
+    <p>
+    This function always returns 1.
+    </dl>
+    <hr>
+
+    <!-- 100408 -->
+    <a name="CurSymbolTable"></a>
+    <dl>
+    <dt><b>(string) <tt>CurSymbolTable</tt>()</b>
+    <dd><br>This function returns a string giving the name of the current
+    symbol table.
+    </dl>
+
+!!SEEALSO
+funcs:main1
+
+!!KEYWORD
+funcs:main1:dsp
+!!TITLE
+Display
+!!HTML
+
+    <!-- 030104 -->
+    <a name="Window"></a>
+    <dl>
+    <dt><b>(int) <tt>Window</tt>(<i>x</i>, <i>y</i>, <i>width</i>,
+      <i>win</i>)</b>
+    <dd><br>The window view is changed so that it is centered at <i>x</i>,
+    <i>y</i> and has width set by the third argument.  If the
+    <i>width</i> argument is less than or equal to zero, a centered,
+    full view of the current cell is obtained.  In this case, the
+    <i>x</i>, <i>y</i> arguments are ignored.  The <i>win</i> is
+    an integer 0-4 which specifies the window:
+      
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td><td>Main drawing window</td></tr>
+    <tr><td>1-4</td><td>Sub-window (number as shown in title bar)</td></tr>
+    </table>
+
+    <p>
+    The function returns 1 on success, 0 if the indicated window does
+    not exist.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GetWindow"></a>
+    <dl>
+    <dt><b>(int) <tt>GetWindow</tt>()</b>
+    <dd><br>This function returns the window number of the drawing window
+    that contains the pointer.  The window number is an integer 0-4:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td><td>Main drawing window</td></tr>
+    <tr><td>1-4</td><td>Sub-window (number as shown in title bar)</td></tr>
+    </table>
+
+    <p>
+    If the pointer is not in a drawing window, 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GetWindowView"></a>
+    <dl>
+    <dt><b>(int) <tt>GetWindowView</tt>(<i>win</i>, <i>array</i>)</b>
+    <dd><br>This function returns the view area (visible cell coordinates)
+    of the given window <i>win</i>, which is an integer 0-4 where 0 is
+    the main window and 1-4 represent sub-windows.  The view
+    coordinates, in microns, are returned in the <i>array</i>, in
+    order L, B, R, T.  On success, 1 is returned, otherwise 0 is
+    returned and the <i>array</i> is untouched.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GetWindowMode"></a>
+    <dl>
+    <dt><b>(int) <tt>GetWindowMode</tt>(<i>win</i>)</b>
+    <dd><br>This function returns the display mode of the given window
+    <i>win</i>, which is 0 for physical mode, 1 for electrical, or -1
+    if the window does not exist.  The argument is an integer 0-4,
+    where 0 represents the main window and 1-4 indicate sub-windows. 
+    This function is identical to <tt>CurMode</tt>.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Expand"></a>
+    <dl>
+    <dt><b>(int) <tt>Expand</tt>(<i>win</i>, <i>string</i>)</b>
+    <dd><br>This sets the expansion mode for the display in the window
+    specified in <i>win</i>.  The <i>win</i> argument is an integer
+    0-4, where 0 refers to the main window, and 1-4 correspond to the
+    sub-windows brought up with the <a
+    href="xic:vport"><b>Viewport</b></a> command.  The <i>string</i>
+    contains characters which modify the display mode, as would be
+    given to the <a href="xic:expnd"><b>Expand</b></a> command in the
+    <b>View Menu</b>.
+  
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>integer</td><td>set expand level</td></tr>
+    <tr><td><tt>n</tt></td><td>set level to 0</td></tr>
+    <tr><td><tt>a</tt></td><td>expand all</td></tr>
+    <tr><td><tt>+</tt></td><td>increment expand level</td></tr>
+    <tr><td><tt>-</tt></td><td>decrement expand level</td></tr>
+    </table>
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Display"></a>
+    <dl>
+    <dt><b>(int) <tt>Display</tt>(<i>display_string</i>, <i>win_id</i>,
+      <i>l</i>, <i>b</i>, <i>r</i>, <i>t</i>)</b>
+    <dd><br>This function will render the current cell in a foreign X
+    window.  The X window id is passed as an integer in the second
+    argument.  The first argument is the X display string
+    corresponding to the server in which the window is cached.  The
+    remaining arguments set the area to be displayed, in microns.  The
+    function returns 1 upon success, 0 otherwise.  This function is
+    useful for rendering a layout if interactive graphics is not
+    enabled, such as in <a href="xic:server">server mode</a>.  This
+    function will not work under Microsoft Windows.
+
+    <p>
+    This is a primitive to allow <i>Xic</i> to export graphics
+    rendering capability.  The intention is that this might be used in
+    a Tk script (for example) that is otherwise using <i>Xic</i> in
+    server mode as a back-end.  The machine containing the window to
+    be drawn into must allow X access to the machine running the
+    <i>Xic</i> server (see the <b>xhost</b> Unix command).
+
+    <p>
+    One can demonstrate the capability as follows.  The "<tt>xwininfo
+    -children</tt>" Unix command can be used to find the window id of
+    a suitable <i>child</i> window in a running application.  The
+    top-level window given from <b>xwininfo</b> without the
+    "<tt>-children</tt>" argument is generally obscured by child
+    windows, so this won't work.  For example, an <b>xterm</b> window
+    has a single child, which is the id to use.  In server mode, a
+    cell must be loaded for editing with the <tt>Edit</tt> function. 
+    Then, a <tt>Display</tt> command can be given, something like
+    <blockquote>
+    <tt>Display(":0", 0x1800015, -100, -100, 100, 100)</tt>
+    </blockquote>
+
+    The "<tt>:0</tt>" is the display name for the local machine,
+    assuming that the <i>Xic</i> server is also running on this
+    machine.  In general, this is the same as the <b>DISPLAY</b>
+    environment variable, in the form <i>hostname</i><tt>:0</tt>.  The
+    second argument is the window id returned from <b>xwininfo</b>. 
+    The remaining arguments set the area to display.  After giving the
+    command, the window should be overwritten with a display similar
+    to a drawing window in <i>Xic</i>.  However, if the window is
+    redrawn, it will revert to its previous contents.  The user must
+    set up expose event handling in a real application.  The suggested
+    way to do this is to pass the id of a pixmap to <i>Xic</i>, and
+    then copy the pixmap to the destination window.  This is usually
+    faster than a direct write, and the pixmap can be used for backing
+    store for expose events.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="FreezeDisplay"></a>
+    <dl>
+    <dt><b>(int) <tt>FreezeDisplay</tt>(<i>freeze</i>)</b>
+    <dd><br>When this function is called with a nonzero argument, the
+    graphical display in the drawing windows will be frozen until a
+    subsequent call of this function with a zero argument, or the
+    script terminates.  This is useful for speeding execution, and
+    eliminating distracting screen drawing while a script is running. 
+    When the function is called with a zero argument, all drawing
+    windows are refreshed.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Redraw"></a>
+    <dl>
+    <dt><b>(int) <tt>Redraw</tt>(<i>win</i>)</b>
+    <dd><br>This function will redraw the window indicated by the
+    argument, which is 0 for the main window or 1-4 for the
+    sub-windows.  The function returns 0 if the argument does not
+    correspond to an existing window, 1 otherwise.
+    </dl>
+!!SEEALSO
+funcs:main1
+
+!!KEYWORD
+funcs:main1:exit
+!!TITLE
+Exit
+!!HTML
+
+    <!-- 030104 -->
+    <a name="Exit"></a>
+    <dl>
+    <dt><b><tt>Exit</tt>()</b>
+    <dd><br>Calling this function terminates execution of the script.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Halt"></a>
+    <dl>
+    <dt><b><tt>Halt</tt>()</b>
+    <dd><br>Calling this function terminates execution of the script,
+    equivalent to <tt>Exit</tt>.
+    </dl>
+
+!!SEEALSO
+funcs:main1
+
+!!KEYWORD
+funcs:main1:anno
+!!TITLE
+Annotation
+!!HTML
+
+    <!-- 120809 -->
+    <a name="AddMark"></a>
+    <dl>
+    <dt><b>(int) <tt>AddMark</tt>(<i>type</i>, <i>arguments</i> ...)</b>
+    <dd><br>
+    This function will add a "user mark" to a display list, which is
+    rendered as highlighting in the current cell.  These can be used
+    for illustrative purposes.  The marks are not included in the
+    design database, but are persistent to the current cell and are
+    remembered as long as the current cell exists in memory.  Any call
+    can have associated marks, whether electrical or physical.  Marks
+    are shown in any window displaying the cell as the top level. 
+    Marks are not shown in expanded subcells.
+
+    <p>
+    The arguments that follow the type argument vary depending upon
+    the type.  The type argument can be an integer code, or a string
+    whose first character signifies the type.  The return value, if
+    nonzero, is a unique mark id, which can be passed to
+    <tt>EraseMark</tt> to erase the mark.  A zero return indicates
+    that an error occurred.
+
+    <p>
+    The table below describes the marks available.  All coordinates and
+    dimensions are in microns, in the coordinate system of the current
+    cell.  Each mark takes an optional attribute argument, which is an
+    integer whose set bits indicate a display property.  These bits are
+
+    <p>
+    <dl>
+    <dt>bit 0<dd>
+      Draw with a textured (dashed) line if set, otherwise use a solid line.
+    <dt>bit 1<dd>
+      Cause the mark to blink, using the selection colors.
+    <dt>bit 2<dd>
+      Render the mark in an alternate color (bit 1 is ignored).
+    </dl>
+
+    <dl><dt>
+    Type: 1 or "<tt>l</tt>"<br>
+    Arguments: <i>x1</i>, <i>y1</i>, <i>x2</i>, <i>y2</i> [, <i>attribute</i>]
+    <dd>
+      Draw a line segment from <i>x1</i>,<i>y1</i> to <i>x2</i>,<i>y2</i>.
+    </dl>
+
+    <dl><dt>
+    Type: 2 or "<tt>b</tt>"<br>
+    Arguments: <i>l</i>, <i>b</i>, <i>r</i>, <i>t</i> [, <i>attribute</i>]
+    <dd>
+      Draw an open box, <i>l</i>,<i>b</i> is lower-left corner and
+     <i>r</i>,<i>t</i> is upper-right corner.
+    </dl>
+
+    <dl><dt>
+    Type: 3 or "<tt>u</tt>"<br>
+    Arguments: <i>xl</i>, <i>xr</i>, <i>yb</i> [, <i>yt</i>, <i>attribute</i>]
+    <dd>
+      Draw an open triangle.  The two base vertices are
+      <i>xl</i>,<i>yb</i> and <i>xr</i>,<i>yb</i>.  The third vertex
+      is (<i>xl</i>+<i>xr</i>)/2,<i>yt</i>.  If <i>yt</i> is not
+      given, it is set to make the triangle equilateral.
+    </dl>
+
+    <dl><dt>
+    Type: 4 or "<tt>t</tt>"<br>
+    Arguments: <i>yl</i>, <i>yu</i>, <i>xb</i> [, <i>xt</i>, <i>attribute</i>]
+    <dd>
+      Draw an open triangle.  The two base vertices are
+      <i>xb</i>,<i>yl</i> and <i>xb</i>,<i>yu</i>.  The third vertex
+      is <i>xt</i>,(<i>yl</i>+<i>yu</i>)/2.  If <i>xt</i> is not
+      given, it is set to make the triangle equilateral.
+    </dl>
+
+    <dl><dt>
+    Type: 5 or "<tt>c</tt>"<br>
+    Arguments: <i>xc</i>, <i>yc</i>, <i>rad</i> [, <i>attribute</i>]
+    <dd>
+      Draw a circle of radius <i>rad</i> centered at <i>xc</i>,<i>yc</i>.
+    </dl>
+
+    <dl><dt>
+    Type: 6 or "<tt>e</tt>"<br>
+    Arguments: <i>xc</i>, <i>yc</i>, <i>rx</i>, <i>ry</i>, [, <i>attribute</i>]
+    <dd>
+      Draw an ellipse centered at xc,yc using radii rx and ry.
+    </dl>
+
+    <dl><dt>
+    Type: 7 or "<tt>p</tt>"<br>
+    Arguments: <i>numverts</i>, <i>xy_array</i> [, <i>attribute</i>]
+    <dd>
+      Draw an open polygon or path.  The number of vertices is given
+      first, followed by an array of size <tt>2*</tt><i>numverts</i>
+      or larger that contains the vertex coordinates as x-y pairs. 
+      For a polygon, The vertex list should be closed, i.e., the first
+      and last vertices listed (and counted) should be the same.
+    </dl>
+
+    <dl><dt>
+    Type: 8 or "<tt>s</tt>"<br>
+    Arguments: <i>string</i>, <i>x</i>, <i>y</i> [, <i>width</i>,
+    <i>height</i>, <i>xform</i>, <i>attribute</i>]
+    <dd>
+      Draw a text string.  The string is followed by the coordinates
+      of the reference point, which for default justification is the
+      lower-left corner of the bounding box.  The <i>width</i>,
+      <i>height</i>, and <i>xform</i> arguments are analogous to those
+      of the <a href="Label"><tt>Label</tt></a> script function,
+      providing the rendering size and justification and
+      transformation information.  Unlike the <tt>Label</tt> function,
+      the settings of the <tt>Justify</tt> and <tt>UseTransform</tt>
+      functions are ignored, transformation and justification must be
+      set through the <i>xform</i> argument.
+    </dl>
+    </dl>
+    <hr>
+
+    <!-- 041705 -->
+    <a name="EraseMark"></a>
+    <dl>
+    <dt><b>(int) <tt>EraseMark</tt>(<i>id</i>)</b>
+    <dd><br>
+    Remove a mark from the "user marks" display list.  The argument is
+    the id number returned from <tt>AddMark</tt>.  If zero is passed
+    instead, all marks will be erased.  The return value is 1 if any
+    marks were erased.
+    </dl>
+    <hr>
+
+    <!-- 120909 -->
+    <a name="DumpMarks"></a>
+    <dl>
+    <dt><b>(int) <tt>DumpMarks</tt>(<i>filename</i>)</b>
+    <dd><br>
+    This function will save the marks currently defined in the current
+    cell to a file.  If the argument is null or empty (or scalar 0), a
+    file name will be composed: 
+    <i>cellname</i>.<i>mode</i>.<tt>marks</tt> , where <i>mode</i> is
+    "<tt>phys</tt>" or "<tt>elec</tt>".  The return is the number of
+    marks written, or -1 if error.  On error, a message may be
+    available from <a href="GetError"><tt>GetError</tt></a>.  If 0, no
+    file was produced, as no marks were found.
+    </dl>
+    <hr>
+
+    <!-- 120909 -->
+    <a name="ReadMarks"></a>
+    <dl>
+    <dt><b>(int) <tt>ReadMarks</tt>(<i>filename</i>)</b>
+    <dd><br>
+    This function will read the marks found in a file into the current
+    cell.  The file must be in the format produced by
+    <tt>DumpMarks</tt>, and apply to the same name and display mode as
+    the current cell.  A null or empty or 0 argument will imply a cell
+    name composed as described for <tt>DumpMarks</tt> The return value
+    is the number of marks read, or -1 if error.  On error, a message
+    may be available from <a href="GetError"><tt>GetEreror</tt></a>.
+    </dl>
+
+!!SEEALSO
+funcs:main1
+
+!!KEYWORD
+funcs:main1:ghost
+!!TITLE
+Ghost Rendering
+!!HTML
+    <!-- 030104 -->
+    <p>
+    The PushGhost/PopGhost functions are useful in scripts where an
+    object is created, and the user must click to place the object.
+    The object's outline can be drawn and attached to the pointer,
+    facilitating placement.  Example:
+
+    <p>
+    <blockquote>
+    <pre>
+    array[2000]
+    # create some shape in array, nverts is actual size
+    ...
+    ShowPrompt("Click to locate new object");
+    xy[2]
+    PushGhost(array, nverts)
+    ShowGhost(8)
+    if !Point(xy)
+    &#32   Exit()
+    end
+    ShowGhost(0)
+    PopGhost()
+    # use xy to create object in database
+    </pre>
+    </blockquote>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="PushGhost"></a>
+    <dl>
+    <dt><b>(int) <tt>PushGhost</tt>(<i>array</i>, <i>numpts</i>)</b>
+    <dd><br>This function allows a polygon to be added to the list of
+    polygons used for dynamic highlighting with the <tt>ShowGhost</tt>
+    function.  The outline of the polygon will be "attached" to the
+    mouse pointer.  The return value is the number of polygons in the
+    list, after the present one is added.  The <i>array</i> is an
+    array of x-y values forming the polygon.  The <i>numpts</i> value
+    is the number of x-y pairs that constitute the polygon.  If this
+    value is less than 2 or greater than the real size of the array,
+    the real size of the array will be assumed.  The second argument
+    is useful when the polygon data do not entirely fill the array,
+    and can be set to 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="PushGhostBox"></a>
+    <dl>
+    <dt><b>(int) <tt>PushGhostBox</tt>(<i>left</i>, <i>bottom</i>,
+     <i>right</i>, <i>top</i>)</b>
+    <dd><br>This function is similar to <tt>PushGhost</tt>.  It allows a
+    box outline to be added to the list of polygons used for ghosting
+    with the <tt>ShowGhost</tt> function.  The outline of the box
+    will be "attached" to the mouse pointer.  The return value is the
+    number of polygons in the list, after the present one is added. 
+    The arguments are the coordinates of the lower left and upper
+    right corners of the box, where "0" is the point attached to the
+    mouse pointer.  The <tt>PopGhost</tt> function is used to remove
+    the most recently added object from the list.
+    </dl>
+    <hr>
+
+    <!-- 092915 -->
+    <a name="PushGhostH"></a>
+    <dl>
+    <dt><b>(int) <tt>PushGhostH</tt>(<i>object_handle</i>, <i>all</i>)</b>
+    <dd><br>
+    Push the outline of the figure referenced by the handle onto the
+    ghost list.  If boolean <i>all</i> is true, push all objects in
+    the list represented by the handle, otherwise push the single
+    object at the head of the list.  The return value is an integer
+    count of the number of outlines added to the ghost list.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="PopGhost"></a>
+    <dl>
+    <dt><b>(int) <tt>PopGhost</tt>()</b>
+    <dd><br>This function removes the last ghosting polygon passed to
+    <tt>PushGhost</tt> or <tt>PushGhostBox</tt> from the internal
+    list, and returns the number of polygons remaining in the list.
+    </dl>
+    <hr>
+
+    <!-- 102913 -->
+    <a name="ShowGhost"></a>
+    <dl>
+    <dt><b>(int) <tt>ShowGhost</tt>(<i>type</i>)</b>
+    <dd><br>Show dynamic highlighting.  This function turns on/off the
+    ghosting, i.e., the display of certain features which are
+    "attached" to the mouse pointer.  The argument is one of the
+    numeric codes from the table below.
+ 
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td align=left><i>type</i></td><td>&nbsp;</td></tr>
+    <tr><td align=left>0</td>
+        <td align=left>Turn off ghosting</td></tr>
+    <tr><td align=left>1</td>
+        <td align=left>full-screen horiz line, snapped to grid</td></tr>
+    <tr><td align=left>2</td>
+        <td align=left>full-screen vert line, snapped to grid</td></tr>
+    <tr><td align=left>3</td>
+        <td align=left>full-screen horiz line, not snapped</td></tr>
+    <tr><td align=left>4</td>
+        <td align=left>full-screen vert line, not snapped</td></tr>
+    <tr><td align=left>5</td>
+        <td align=left>vector from last point location to pointer</td></tr>
+    <tr><td align=left>6</td>
+        <td align=left>box, snapped to grid</td></tr>
+    <tr><td align=left>7</td>
+        <td align=left>box, not snapped</td></tr>
+    <tr><td align=left>8</td>
+        <td align=left>display polygon list from <tt>PushGhost</tt></td></tr>
+    <tr><td align=left>9</td>
+        <td align=left>vector from last point location to pointer</td></tr>
+    <tr><td align=left>10</td>
+        <td align=left>vector from last point location to pointer</td></tr>
+    <tr><td align=left>11</td>
+        <td align=left>vector from last point location to pointer</td></tr>
+    </table>
+
+    <p>
+    The modes 5, 9, 10, and 11 draw a vector from the last button 1
+    down location to the pointer.  Mode 5 snaps to the grid, and snaps
+    the angle to multiples of 45 degrees when the angle is close.  If
+    the <a href="Constrain45"><b>Constrain45</b></a> variable is set,
+    the angle is strictly constrained to multiples of 45 degrees. 
+    Mode 9 is similar, but does not snap to grid.  Mode 10 is similar,
+    but there are no angle constraints, except that implicit in
+    snapping to the grid.  Mode 11 is similar, but there are no angle
+    constraints and no grid snapping.
+
+    <p>
+    With the ghosting enabled, the <tt>Point</tt> function returns
+    coordinates that are snapped to grid or not depending on the mode
+    passed to <tt>ShowGhost</tt>.  Modes 1, 2, 5, 6, 8, and 10 are
+    snapped to grid.
+
+    <p>
+    If the <a
+    href="UseTransform"><tt>UseTransform</tt></a>
+    function has been called to enable use of the current transform,
+    the current transform will be applied to the displayed objects
+    when using mode 8.  The translation supplied to
+    <tt>UseTransform</tt> is ignored (the translation tracks the mouse
+    pointer).
+    </dl>
+
+!!SEEALSO
+funcs:main1
+
+!!KEYWORD
+funcs:main1:graphics
+!!TITLE
+Graphics
+!!HTML
+
+    The following functions represent an interface for exporting
+    graphics to a "foreign" X window.  In particular, the interface
+    can be used to draw into a window owned by a <a href="tclplugin">Tk
+    script</a>.  This interface is not available on Microsoft Windows.
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRopen"></a>
+    <dl>
+    <dt><b>(handle) <tt>GRopen</tt>(<i>display</i>, <i>window</i>)</b>
+    <dd><br>This function returns a handle to a graphical interface that
+    can be used to export graphics to a foreign X window, possibly on
+    another machine.  The first argument is the X display string,
+    corresponding to the server which owns the target window.  The
+    second argument is the X window id of the target window to which
+    graphics rendering is to be exported.  If all goes well, and the
+    user has permission to access the window, a positive integer
+    handle is returned.  If the open fails, 0 is returned.  The handle
+    should be closed with the <tt>Close</tt> function when done. 
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRcheckError"></a>
+    <dl>
+    <dt><b>(int) <tt>GRcheckError</tt>()</b>
+    <dd><br>This function returns 1 if the previous operation by any of
+    the GR interface functions caused an X error, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRcreatePixmap"></a>
+    <dl>
+    <dt><b>(drawable) <tt>GRcreatePixmap</tt>(<i>handle</i>, <i>width</i>,
+       <i>height</i>)</b>
+    <dd><br>This function returns the X id of a new pixmap.  The first
+    argument is a handle returned from <tt>GRopen</tt>.  The remaining
+    arguments set the size of the pixmap.  If the operation fails, 0
+    is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRdestroyPixmap"></a>
+    <dl>
+    <dt><b>(int) <tt>GRdestroyPixmap</tt>(<i>handle</i>, <i>pixmap</i>)</b>
+    <dd><br>This function destroys a pixmap created with
+    <tt>GRcreatePixmap</tt>.  The first argument is a handle returned
+    from <tt>GRopen</tt>.  The second argument is the pixmap id
+    returned from <tt>GRcreatePixmap</tt>.  The function returns 1 on
+    success, 0 if there was an error.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRcopyDrawable"></a>
+    <dl>
+    <dt><b>(int) <tt>GRcopyDrawable</tt>(<i>handle</i>, <i>dst</i>, <i>src</i>,
+        <i>xs</i>, <i>ys</i>, <i>ws</i>, <i>hs</i>, <i>x</i>, <i>y</i>)</b>
+    <dd><br>This function is used to copy area between drawables, which
+    can be windows or pixmaps.  The first argument is a handle
+    returned from <tt>GRopen</tt>.  The next two arguments are the ids
+    of destination and source drawables.  The area copied in the
+    source drawable is given by the next four arguments.  The
+    coordinates are pixel values, with the origin in the upper left
+    corner.  If these four values are all zero, the entire source
+    drawable is understood.  The final two values give the upper left
+    corner of the copied-to area in the destination drawable.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRdraw"></a>
+    <dl>
+    <dt><b>(int) <tt>GRdraw</tt>(<i>handle</i>, <i>l</i>, <i>b</i>, <i>r</i>,
+     <i>t</i>)</b>
+    <dd><br>This function renders an <i>Xic</i> cell.  The first argument
+    is a handle returned from <tt>GRopen</tt>.  The remaining
+    arguments are the coordinates of the cell to render, in microns. 
+    The action is the same as the <tt>Display</tt> function.  The
+    function returns 1 on success, 0 if there was an error.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRgetDrawableSize"></a>
+    <dl>
+    <dt><b>(int) <tt>GRgetDrawableSize</tt>(<i>handle</i>, <i>drawable</i>,
+      <i>array</i>)</b>
+    <dd><br>This function returns the size, in pixels, of a drawable.  The
+    first argument is a handle returned from <tt>GRopen</tt>.  The
+    second argument is the id of a window or pixmap.  The third
+    argument is an array of size two or larger that will contain the
+    pixel width and height of the drawable.  Upon success, 1 is
+    returned, and the array values are set, otherwise 0 is returned. 
+    The width is in the 0'th array element.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRresetDrawable"></a>
+    <dl>
+    <dt><b>(drawable) <tt>GRresetDrawable</tt>(<i>handle</i>,
+      <i>drawable</i>)</b>
+    <dd><br>This function allows the target window of the graphical
+    context to be changed.  Then, the rendering functions will draw
+    into the new window or pixmap, rather than the one passed to
+    <tt>GRopen</tt>.  The return value is the previous drawable id, or
+    0 if there is an error.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRclear"></a>
+    <dl>
+    <dt><b>(int) <tt>GRclear</tt>(<i>handle</i>)</b>
+    <dd><br>This function clears the window.  The argument is a handle
+    returned from <tt>GRopen</tt>.  Upon success, 1 is returned,
+    otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRpixel"></a>
+    <dl>
+    <dt><b>(int) <tt>GRpixel</tt>(<i>handle</i>, <i>x</i>, <i>y</i>)</b>
+    <dd><br>This function draws a single pixel at the pixel coordinates
+    given in the second and third arguments, using the current color. 
+    The first argument is a handle returned from <tt>GRopen</tt>. 
+    Upon success, 1 is returned, otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRpixels"></a>
+    <dl>
+    <dt><b>(int) <tt>GRpixels</tt>(<i>handle</i>, <i>array</i>, <i>num</i>)</b>
+    <dd><br>This function will draw multiple pixels using the current
+    color.  The first argument is a handle returned from
+    <tt>GRopen</tt>.  The second argument is an array of pixel
+    coordinates, taken as x-y pairs.  The third argument is the number
+    of pixels to draw (half the length of the array).  Upon success, 1
+    is returned, otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRline"></a>
+    <dl>
+    <dt><b>(int) <tt>GRline</tt>(<i>handle</i>, <i>x1</i>, <i>y1</i>,
+     <i>x2</i>, <i>y2</i>)</b>
+    <dd><br>This function renders a line using the current color and line
+    style.  The first argument is a handle returned from
+    <tt>GRopen</tt>.  The next four arguments are the endpoints of the
+    line in pixel coordinates.  Upon success, 1 is returned, otherwise
+    0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRpolyLine"></a>
+    <dl>
+    <dt><b>(int) <tt>GRpolyLine</tt>(<i>handle</i>, <i>array</i>,
+      <i>num</i>)</b>
+    <dd><br>This function renders a polyline in the current color and line
+    style.  The first argument is a handle returned from
+    <tt>GRopen</tt>.  The second argument is an array containing
+    vertex coordinates in pixels as x-y pairs.  The line will be
+    continued to each successive vertex.  The third argument is the
+    number of vertices (half the length of the array).  Upon success,
+    1 is returned, otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRlines"></a>
+    <dl>
+    <dt><b>(int) <tt>GRlines</tt>(<i>handle</i>, <i>array</i>, <i>num</i>)</b>
+    <dd><br>This function renders multiple distinct lines, each using the
+    current color and line style.  The first argument is a handle
+    returned by <tt>GRopen</tt>.  The second argument is an array of
+    coordinates, in pixels, which if taken four at a time give the x-y
+    endpoints of each line.  The third argument is the number of lines
+    in the array (one fourth the array length).  Upon success, 1 is
+    returned, otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRbox"></a>
+    <dl>
+    <dt><b>(int) <tt>GRbox</tt>(<i>handle</i>, <i>l</i>, <i>b</i>, <i>r</i>,
+      <i>t</i>)</b>
+    <dd><br>This function renders a rectangular area in the current color
+    with the current fill pattern.  The first argument is a handle
+    returned from <tt>GRopen</tt>.  The remaining arguments provide
+    the diagonal vertices of the rectangle, in pixels.  Upon success,
+    1 is returned, otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRboxes"></a>
+    <dl>
+    <dt><b>(int) <tt>GRboxes</tt>(<i>handle</i>, <i>array</i>, <i>num</i>)</b>
+    <dd><br>This function renders multiple rectangles, each using the
+    current color and fill pattern.  The first argument is a handle
+    returned from <tt>GRopen</tt>.  the second argument is an array of
+    pixel coordinates which specify the boxes.  Taken four at a time,
+    the values are the upper-left corner (x-y), width, and height. 
+    The third argument is the number of boxes represented in the array
+    (one fourth the array length).  Upon success, 1 is returned,
+    otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 120809 -->
+    <a name="GRarc"></a>
+    <dl>
+    <dt><b>(int) <tt>GRarc</tt>(<i>handle</i>, <i>x0</i>, <i>y0</i>,
+      <i>rx</i>, <i>ry</i>, <i>theta1</i>, <i>theta2</i>)</b>
+    <dd><br>This function renders an arc, using the current color and
+    line style.  The first argument is a handle returned from
+    <tt>GRopen</tt>.  The next two arguments are the pixel coordinates
+    of the center of the ellipse containing the arc.  The remaining
+    arguments are the a and y radii, and the starting and ending
+    angles.  The angles are in radians, relative to the three-o'clock
+    position, counter-clockwise.  Upon succes, 1 is returned,
+    otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRpolygon"></a>
+    <dl>
+    <dt><b>(int) <tt>GRpolygon</tt>(<i>handle</i>, <i>array</i>,
+      <i>num</i>)</b>
+    <dd><br>This function renders a polygon, using the current color and
+    fill pattern.  The first argument is a handle returned from
+    <tt>GRopen</tt>.  The second argument is an array containing the
+    vertices, as x-y pairs of pixel coordinates.  The third argument
+    is the number of vertices (half the length of the array).  The
+    polygon will be closed automatically if the first and last
+    vertices do not coincide.  Upon success, 1 is returned, otherwise
+    0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 022713 -->
+    <a name="GRtext"></a>
+    <dl>
+    <dt><b>(int) <tt>GRtext</tt>(<i>handle</i>, <i>text</i>, <i>x</i>, <i>y</i>,
+     <i>flags</i>)</b>
+    <dd><br>This function renders text in the current color.  The first
+    argument is a handle returned form <tt>GRopen</tt>.  The second
+    argument is the text string to render.  The next two arguments
+    give the anchor point in pixel coordinates.  If there is no
+    transformation, this will be the lower-left of the bounding box of
+    the rendered text.  The <i>flags</i> argument specifies a <a
+    href="labelflags">label flags</a> word as used in <i>Xic</i>.  Only
+    the bits of the least significant byte are likely to be
+    recognized.
+
+    <p>
+    Upon success, 1 is returned, otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRtextExtent"></a>
+    <dl>
+    <dt><b>(int) <tt>GRtextExtent</tt>(<i>handle</i>, <i>text</i>,
+      <i>array</i>)</b>
+    <dd><br>This function returns the width and height in pixels needed to
+    render a text string.  The first argument is a handle returned
+    from <tt>GRopen</tt>.  The second argument is the string to
+    measure.  If the string is null or empty, a "typical" single
+    character width and height is returned, which can be simply
+    multiplied for the fixed-pitch font in use.  The third argument is
+    an array of size two or larger which will receive the width (0'th
+    index) and height.  The function returns 1 on success, 0
+    otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRdefineColor"></a>
+    <dl>
+    <dt><b>(int) <tt>GRdefineColor</tt>(<i>handle</i>, <i>red</i>,
+      <i>green</i>, <i>blue</i>)</b>
+    <dd><br>This function will return a color code corresponding to the
+    given color.  The first argument is a handle returned from
+    <tt>GRopen</tt>.  The next three arguments are color component
+    values, each in a range 0-255, giving the red, green, and blue
+    intensity.  The return value is a color code representing the
+    nearest displayable color to that given.  If an error occurs, 0
+    (black) is returned.  The returned color code can be passed to
+    <tt>GRsetColor</tt> to actually change the drawing color.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRsetBackground"></a>
+    <dl>
+    <dt><b>(int) <tt>GRsetBackground</tt>(<i>handle</i>, <i>pixel</i>)</b>
+    <dd><br>This function sets the default background color assumed by the
+    graphics context.  The first argument is a handle returned from
+    <tt>GRopen</tt>.  The second argument is a color code returned
+    from <tt>GRdefineColor</tt>.  Upon success, 1 is returned,
+    otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRsetWindowBackground"></a>
+    <dl>
+    <dt><b>(int) <tt>GRsetWindowBackground</tt>(<i>handle</i>,
+      <i>pixel</i>)</b>
+    <dd><br>This function sets the color used to render the window
+    background when the window is cleared.  The first argument is a
+    handle returned from <tt>GRopen</tt>.  The second argument is a
+    color code returned from <tt>GRdefineColor</tt>.  The function
+    returns 1 on success, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRsetColor"></a>
+    <dl>
+    <dt><b>(int) <tt>GRsetColor</tt>(<i>handle</i>, <i>pixel</i>)</b>
+    <dd><br>This function sets the current color, used for all rendering
+    functions.  The first argument is a handle returned from
+    <tt>GRopen</tt>.  The second argument is a color code returned
+    from <tt>GRdefineColor</tt>.  Upon success, 1 is returned,
+    otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRdefineLinestyle"></a>
+    <dl>
+    <dt><b>(int) <tt>GRdefineLinestyle</tt>(<i>handle</i>, <i>index</i>,
+      <i>mask</i>)</b>
+    <dd><br>This function defines a line style.  The first argument is a
+    handle returned from <tt>GRopen</tt>.  The second argument is an
+    index value 1-15 which corresponds to an internal line style
+    register.  The third argument is an integer value whose bits set
+    the line on/off pattern.  the pattern starts with the most
+    significant '1' bit in the <i>mask</i>.  The '1' bits will be
+    drawn.  The pattern continues to the least significant bit, and is
+    repeated as the line is rendered.  The indices 1-10 contain
+    pre-defined line styles, which can be overwritten with this
+    function.  The <tt>SetLinestyle</tt> function is used to set the
+    pattern actually used for rendering.  Upon success, 1 is returned,
+    otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRsetLinestyle"></a>
+    <dl>
+    <dt><b>(int) <tt>GRsetLinestyle</tt>(<i>handle</i>, <i>index</i>)</b>
+    <dd><br>This function sets the line style used to render lines.  The
+    first argument is a handle returned from <tt>GRopen</tt>.  The
+    second argument is an integer 0-15 which corresponds to an
+    internal style register.  Index 0 is always solid, whereas the
+    other values can be set with <tt>GRdefineLinestyle</tt>.  The
+    function returns 1 on success, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRdefineFillpattern"></a>
+    <dl>
+    <dt><b>(int) <tt>GRdefineFillpattern</tt>(<i>handle</i>, <i>index</i>,
+     <i>nx</i>, <i>ny</i>, <i>array_string</i>)</b>
+    <dd><br>This function is used to define a fill pattern for rendering
+    boxes and polygons.  The first argument is a handle returned from
+    <tt>GRopen</tt>.  The second argument is an integer 1-15 which
+    corresponds to internal fill pattern registers.  The next two
+    arguments set the x and y size of the pixel map used for the fill
+    pattern.  These can take values of 8 or 16 only.  The final
+    argument is a character string which contains the pixel map.  The
+    most significant bit of the first byte is the upper left corner of
+    the map.  The <tt>SetFillpattern</tt> function is used to set the
+    fill pattern actually used for rendering.  The function returns 1
+    on success, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRsetFillpattern"></a>
+    <dl>
+    <dt><b>(int) <tt>GRsetFillpattern</tt>(<i>handle</i>, <i>index</i>)</b>
+    <dd><br>This function sets the fill pattern used for rendering boxes
+    and polygons.  The first argument is a handle returned from
+    <tt>GRopen</tt>.  The second argument is an integer index 0-15
+    which corresponds to internal fill pattern registers.  The value 0
+    is always solid fill.  The other values can be set with
+    <tt>GRdefineFillpattern</tt>.  Upon success, 1 is returned,
+    otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRupdate"></a>
+    <dl>
+    <dt><b>(int) <tt>GRupdate</tt>(<i>handle</i>)</b>
+    <dd><br>This function flushes the X queue and causes any pending
+    operations to be performed.  This should be called after
+    completing a sequence of drawing functions, to force a screen
+    update.  Upon success, 1 is returned, otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GRsetMode"></a>
+    <dl>
+    <dt><b>(int) <tt>GRsetMode</tt>(<i>handle</i>, <i>mode</i>)</b>
+    <dd><br>This function sets the drawing mode used for rendering.  The
+    first argument is a handle returned from <tt>GRopen</tt>.  The
+    second argument is one of the following:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td> <td>normal drawing</td></tr>
+    <tr><td>1</td> <td>XOR</td></tr>
+    <tr><td>2</td> <td>OR</td></tr>
+    <tr><td>3</td> <td>AND-inverted</td></tr>
+    </table>
+
+    <p>
+    Modes 2,3 are probably not useful on other than 8-plane displays. 
+    The function returns 1 on success, 0 otherwise.
+    </dl>
+
+!!SEEALSO
+funcs:main1
+
+!!KEYWORD
+funcs:main1:hcopy
+!!TITLE
+Hard Copy
+!!HTML
+
+    The following functions provide an interface for plot and
+    graphical file output.  This is completely outside of the normal
+    printing interface.
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HClistDrivers"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>HClistDrivers</tt>()</b>
+    <dd><br>This function returns a handle to a list of available printer
+    drivers.  The returned handle can be processed by any of the
+    functions that operate on stringlist handles.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCsetDriver"></a>
+    <dl>
+    <dt><b>(int) <tt>HCsetDriver</tt>(<i>driver</i>)</b>
+    <dd><br>This function will set the current print driver to the name
+    passed (as a string).  The name must be one of the internal driver
+    names as returned from <tt>HClistDrivers</tt>.  If the operation
+    succeeds, the function returns 1, otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCgetDriver"></a>
+    <dl>
+    <dt><b>(string) <tt>HCgetDriver</tt>()</b>
+    <dd><br>This function returns the internal name of the current driver. 
+    If no driver has been set, a null string is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCsetResol"></a>
+    <dl>
+    <dt><b>(int) <tt>HCsetResol</tt>(<i>resol</i>)</b>
+    <dd><br>This function will set the resolution of the current driver to
+    the value passed.  The scalar argument should be one of the values
+    supported by the driver, as returned from <tt>HCgetResols</tt>. 
+    If the resolution is set successfully, 1 is returned.  If no
+    driver has been set, or the driver does not support the given
+    resolution, 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCgetResol"></a>
+    <dl>
+    <dt><b>(int) <tt>HCgetResol</tt>()</b>
+    <dd><br>This function returns the resolution set for the current
+    driver, or 0 if no driver has been set or the driver does not
+    provide settable resolutions.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCgetResols"></a>
+    <dl>
+    <dt><b>(int) <tt>HCgetResols</tt>(<i>array</i>)</b>
+    <dd><br>This function sets the array values to the resolutions
+    supported by the current driver.  The array must have size 8 or
+    larger.  The return value is the number of resolutions supported. 
+    If no driver has been set, or the driver has fixed resolution, 0
+    is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCsetBestFit"></a>
+    <dl>
+    <dt><b>(int) <tt>HCsetBestFit</tt>(<i>best_fit</i>)</b>
+    <dd><br>This function will set or reset the "best fit" flag for the
+    current driver.  In best fit mode, the image will be rotated 90
+    degrees if this is a better match to the aspect ratio of the
+    rendering area.  If the operation succeeds, 1 is returned.  If
+    there is no driver set or the driver does not allow best fit mode,
+    0 is returned.  If the argument is nonzero, best fit mode will be
+    set if possible, otherwise the mode is unset.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCgetBestFit"></a>
+    <dl>
+    <dt><b>(int) <tt>HCgetBestFit</tt>()</b>
+    <dd><br>This function returns 1 if the current driver is in "best fit"
+    mode, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCsetLegend"></a>
+    <dl>
+    <dt><b>(int) <tt>HCsetLegend</tt>(<i>legend</i>)</b>
+    <dd><br>This function will set or reset the "legend" flag for the
+    current driver.  If set, a legend will be shown with the rendered
+    image.  If the operation succeeds, 1 is returned.  If there is no
+    driver set or the driver does not allow a legend, 0 is returned. 
+    If the argument is nonzero, the legend mode will be set if
+    possible, otherwise the mode is unset.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCgetLegend"></a>
+    <dl>
+    <dt><b>(int) <tt>HCgetLegend</tt>()</b>
+    <dd><br>This function returns 1 if the current driver has the "legend"
+    mode set, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCsetLandscape"></a>
+    <dl>
+    <dt><b>(int) <tt>HCsetLandscape</tt>(<i>landscape</i>)</b>
+    <dd><br>This function will set or reset the "landscape" flag for the
+    current driver.  If set, the image will be rotated 90 degrees.  If
+    the operation succeeds, 1 is returned.  If there is no driver set
+    or the driver does not allow landscape mode, 0 is returned.  If
+    the argument is nonzero, the landscape mode will be set if
+    possible, otherwise the mode is unset.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCgetLandscape"></a>
+    <dl>
+    <dt><b>(int) <tt>HCgetLandscape</tt>()</b>
+    <dd><br>This function returns 1 if the current driver has the
+    "landscape" mode set, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCsetMetric"></a>
+    <dl>
+    <dt><b>(int) <tt>HCsetMetric</tt>(<i>metric</i>)</b>
+    <dd><br>This function sets a flag in the current driver which
+    indicates that the rendering area is given in millimeters.  If not
+    set, the values are taken in inches.  This pertains to the values
+    passed to the <tt>HCsetSize</tt> function.  If the operation
+    succeeds, 1 is returned.  If there is no driver set, 0 is
+    returned.  If the argument is nonzero, the metric mode will be set
+    if possible, otherwise the mode is unset.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCgetMetric"></a>
+    <dl>
+    <dt><b>(int) <tt>HCgetMetric</tt>()</b>
+    <dd><br>This function returns 1 if the current driver has the "metric"
+    mode set, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCsetSize"></a>
+    <dl>
+    <dt><b>(int) <tt>HCsetSize</tt>(<i>x</i>, <i>y</i>, <i>w</i>, <i>h</i>)</b>
+    <dd><br>This function sets the size and offset of the rendering area. 
+    The numbers correspond to the entries in the <b>Print Control
+    Panel</b>.  The values are scalars, in inches unless metric mode
+    is in effect (with <tt>HCsetMetric</tt>) in which case the values
+    are in millimeters.  The values are clipped to the limits provided
+    in the technology file.  Most drivers accept 0 for one of
+    <i>w</i>, <i>h</i>, indicating auto dimensioning mode.  The
+    function returns 1 on success, 0 if no driver has been set.  Not
+    all drivers use all four parameters, unused parameters are
+    ignored.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCgetSize"></a>
+    <dl>
+    <dt><b>(int) <tt>HCgetSize</tt>(<i>array</i>)</b>
+    <dd><br>This function returns the rendering area parameters for the
+    current driver.  The array argument must have size 4 or larger. 
+    The values are returned in the order x, y, w, h.  If the function
+    succeeds, the values are set in the array and 1 is returned. 
+    Otherwise, 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCshowAxes"></a>
+    <dl>
+    <dt><b>(int) <tt>HCshowAxes</tt>(<i>style</i>)</b>
+    <dd><br>This function sets the style or visibility of axes shown in
+    plots of physical data (electrical plots never include axes).  The
+    argument is an integer 0-2, where 0 suppresses drawing of axes, 1
+    indicates plain axes, and 2 (or anything else) indicates axes with
+    a box at the origin.  The return value is the previous setting. 
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCshowGrid"></a>
+    <dl>
+    <dt><b>(int) <tt>HCshowGrid</tt>(<i>show</i>, <i>mode</i>)</b>
+    <dd><br>This function determines whether or not the grid is shown in
+    plots.  If the first argument is nonzero, the grid will be shown,
+    otherwise the grid will not be shown.  The second argument
+    indicates the type of data affected:  zero for physical data,
+    nonzero for electrical data.  The return value is the previous
+    setting.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCsetGridInterval"></a>
+    <dl>
+    <dt><b>(int) <tt>HCsetGridInterval</tt>(<i>spacing</i>, <i>mode</i>)</b>
+    <dd><br>This function sets the grid spacing used in plots.  The first
+    argument is the interval in microns.  The second argument
+    indicates the type of data affected:  zero for physical data,
+    nonzero for electrical data.  For electrical data, the spacing in
+    microns is rather meaningless, except as being relative to the
+    default which is 1.0.  The return value is the previous setting. 
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCsetGridStyle"></a>
+    <dl>
+    <dt><b>(int) <tt>HCsetGridStyle</tt>(<i>linemod</i>, <i>mode</i>)</b>
+    <dd><br>This function sets the line style used for the grid lines in
+    plots.  The first argument is an integer mask that defines the
+    on-off pattern.  The pattern starts at the most significant '1'
+    bit and continues through the least significant bit, and repeats. 
+    Set bits are rendered as the visible part of the pattern.  If the
+    style is 0, a dot is shown at each grid point.  Passing -1 will
+    give continuous lines.  The second argument indicates the type of
+    data affected:  zero for physical data, nonzero for electrical
+    data.  The return value is the previous setting.
+    </dl>
+    <hr>
+
+    <!-- 071110 -->
+    <a name="HCsetGridCrossSize"></a>
+    <dl>
+    <dt><b>(int) <tt>HCsetGridCrossSize</tt>(<i>xsize</i>, <i>mode</i>)</b>
+    <dd><br>This applies only to grids with style 0 (dot grid).  The
+    <i>xsize</i> is an integer 0-6 which indicates tne number of
+    pixels to draw in the four compass directions around the central
+    pixel.  Thus, for nonzero values, the "dot" is rendered as a small
+    cross.  The second argument indicates the type of data affected: 
+    zero for physical data, nonzero for electrical data.  The return
+    value is 1 if the cross size was set, 0 if the grid style was
+    nonzero in which case the cross size was not set.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCsetGridOnTop"></a>
+    <dl>
+    <dt><b>(int) <tt>HCsetGridOnTop</tt>(<i>on_top</i>, <i>mode</i>)</b>
+    <dd><br>This function sets whether the grid lines are drawn after the
+    geometry ("on top") or before the geometry.  If the first argument
+    is nonzero, the grid will be rendered on top.  The second argument
+    indicates the type of data affected:  zero for physical data,
+    nonzero for electrical data.  The return value is the previous
+    setting.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCdump"></a>
+    <dl>
+    <dt><b>(int) <tt>HCdump</tt>(<i>l</i>, <i>b</i>, <i>r</i>, <i>t</i>,
+        <i>filename</i>, <i>command</i>)</b>
+    <dd><br>This is the function which actually generates a plot or
+    graphics file.  The first four arguments set the area in microns
+    in current cell coordinates to render.  If these values are all 0,
+    a full view of the current cell will be rendered.  The next
+    argument is the name of the file to use for the graphical output. 
+    If this string is null or empty, a temporary file will be used. 
+    Under Windows, the final argument is the name of a printer, as
+    known to the operating system.  These names can be obtained with
+    <tt>HClistPrinters</tt>.  Under Unix/Linux, the last argument is a
+    command string that will be executed to generate a plot.  In any
+    case if this argument is null or empty, the plot file will be
+    generated, but no further action will be taken.  In the command
+    string, the character sequence "<tt>%s</tt>" will be replaced by
+    the file name.  If the sequence does not appear, the file name
+    will be appended.  If successful, 1 is returned, otherwise 0 is
+    returned, and an error message can be obtained with
+    <tt>HCerrorString</tt>.
+
+    <p>
+    The <i>filename</i>, or the temporary file that is used if no
+    <i>filename</i> is given, is <i>not</i> removed.  The user must
+    remove the file explicitly.
+
+    <p>
+    The Windows Native driver (Windows only) has slightly different
+    behavior.  For this driver, the command string must specify a
+    printer name, and can not be null or empty.  If <i>filename</i> is
+    not null or empty, the output goes to that file and is <i>not</i>
+    sent to the printer.  Otherwise, the output goes to the printer.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCerrorString"></a>
+    <dl>
+    <dt><b>(string) <tt>HCerrorString</tt>()</b>
+    <dd><br>This function returns a string indicating the error generated
+    by <tt>HCdump</tt>.  If there were no errors, a null string is
+    returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HClistPrinters"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>HClistPrinters</tt>()</b>
+    <dd><br>Under Microsoft Windows, this function returns a handle to a
+    list of printer names available from the current host.  The first
+    name is the name of the default printer.  The remaining names,
+    alphabetized, follow.  If there are no printers available, or if
+    not running under Windows, the function returns 0.  The returned
+    names can be supplied to the <tt>HCdump</tt> function to initiate
+    a print job.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HCmedia"></a>
+    <dl>
+    <dt><b>(int) <tt>HCmedia</tt>(<i>index</i>)</b>
+    <dd><br>This function sets the media index, which is used by the
+    Windows Native driver under Microsoft Windows only.  The media
+    index sets the assumed paper size.  The argument is one of the
+    integers from the table below.  The page dimensions are in points
+    (1/72 inch).
+    
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Index</th>    <th>Name</th>    <th>Width</th>  <th>Height</th></tr>
+    <tr><td>0</td><td>    Letter</td><td>       612</td><td>   792</td></tr>
+    <tr><td>1</td><td>    Legal</td><td>        612</td><td>   1008</td></tr>
+    <tr><td>2</td><td>    Tabloid</td><td>      792</td><td>   1224</td></tr>
+    <tr><td>3</td><td>    Ledger</td><td>       1224</td><td>  792</td></tr>
+    <tr><td>4</td><td>    10x14</td><td>        720</td><td>   1008</td></tr>
+    <tr><td>5</td><td>    11x17</td><td>        792</td><td>   1224</td></tr>
+    <tr><td>6</td><td>    12x18</td><td>        864</td><td>   1296</td></tr>
+    <tr><td>7</td><td>    17x22 "C"</td><td>    1224</td><td>  1584</td></tr>
+    <tr><td>8</td><td>    18x24</td><td>        1296</td><td>  1728</td></tr>
+    <tr><td>9</td><td>    22x34 "D"</td><td>    1584</td><td>  2448</td></tr>
+    <tr><td>10</td><td>   24x36</td><td>        1728</td><td>  2592</td></tr>
+    <tr><td>11</td><td>   30x42</td><td>        2160</td><td>  3024</td></tr>
+    <tr><td>12</td><td>   34x44 "E"</td><td>    2448</td><td>  3168</td></tr>
+    <tr><td>13</td><td>   36x48</td><td>        2592</td><td>  3456</td></tr>
+    <tr><td>14</td><td>   Statement</td><td>    396</td><td>   612</td></tr>
+    <tr><td>15</td><td>   Executive</td><td>    540</td><td>   720</td></tr>
+    <tr><td>16</td><td>   Folio</td><td>        612</td><td>   936</td></tr>
+    <tr><td>17</td><td>   Quarto</td><td>       610</td><td>   780</td></tr>
+    <tr><td>18</td><td>   A0</td><td>           2384</td><td>  3370</td></tr>
+    <tr><td>19</td><td>   A1</td><td>           1684</td><td>  2384</td></tr>
+    <tr><td>20</td><td>   A2</td><td>           1190</td><td>  1684</td></tr>
+    <tr><td>21</td><td>   A3</td><td>           842</td><td>   1190</td></tr>
+    <tr><td>22</td><td>   A4</td><td>           595</td><td>   842</td></tr>
+    <tr><td>23</td><td>   A5</td><td>           420</td><td>   595</td></tr>
+    <tr><td>24</td><td>   A6</td><td>           298</td><td>   420</td></tr>
+    <tr><td>25</td><td>   B0</td><td>           2835</td><td>  4008</td></tr>
+    <tr><td>26</td><td>   B1</td><td>           2004</td><td>  2835</td></tr>
+    <tr><td>27</td><td>   B2</td><td>           1417</td><td>  2004</td></tr>
+    <tr><td>28</td><td>   B3</td><td>           1001</td><td>  1417</td></tr>
+    <tr><td>29</td><td>   B4</td><td>           729</td><td>   1032</td></tr>
+    <tr><td>30</td><td>   B5</td><td>           516</td><td>   729</td></tr>
+    </table>
+  
+    <p>
+    The returned value is the previous setting of the media index.
+    </dl>
+
+!!SEEALSO
+funcs:main1
+
+!!KEYWORD
+funcs:main1:keyb
+!!TITLE
+Keyboard
+!!HTML
+    <!-- 011114 -->
+    <a name="ReadKeymap"></a>
+    <dl>
+    <dt><b>(int) <tt>ReadKeymap</tt>(<i>mapfile</i>)</b>
+    <dd><br>
+    Read and assert a keyboard mapping file, as generated from within
+    <i>Xic</i> with the <a href="xic:keymp"><b>Key Map</b></a> button
+    in the <b>Attributes Menu</b>.  If the <i>mapfile</i> is not
+    rooted, it is searched for in the current directory, the user's
+    home directory, and in the library <a href="xicpaths">search
+    path</a>, in that order.  If success, 1 is returned, and the
+    supplied mapping is installed.  Otherwise, 0 is returned, and an
+    error message is available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+
+!!KEYWORD
+funcs:main1:libs
+!!TITLE
+Libraries
+!!HTML
+
+    <!-- 030104 -->
+    <a name="OpenLibrary"></a>
+    <dl>
+    <dt><b>(int) <tt>OpenLibrary</tt>(<i>path_name</i>)</b>
+    <dd><br>This function will open the named <a
+      href="libraries">library</a>.  The name is either a full path to
+      the library file, or the name of a library file to find in the
+      search path.  Zero is returned on error, nonzero on success.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="CloseLibrary"></a>
+    <dl>
+    <dt><b>(int) <tt>CloseLibrary</tt>(<i>path_name</i>)</b>
+    <dd><br>This function will close the named library, or all user
+      libraries if the argument is null.  The <i>path_name</i> can be
+      a full path to a previously opened library file, or just the
+      file name.  This function always returns 1.
+    </dl>
+
+!!SEEALSO
+funcs:main1
+
+!!IFDEF OpenAccess
+!!KEYWORD
+funcs:main1:oa
+!!TITLE
+OpenAccess
+!!HTML
+    These functions provide an interface to the OpenAccess database. 
+    An OpenAccess exception triggered by these functions will generate
+    a fatal error, terminating the script.  The functions that return
+    an integer that is not an explicit boolean result always return 1.
+
+    <!-- 030316 -->
+    <a name="OaVersion"></a>
+    <dl>
+    <dt><b>(string) <tt>OaVersion</tt>()</b>
+    <dd><br>
+    Return the version string of the connected OpenAccess database. 
+    If none, a null string is returned.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaIsLibrary"></a>
+    <dl>
+    <dt><b>(int) <tt>OaIsLibrary</tt>(<i>libname</i>)</b>
+    <dd><br>
+    Return 1 if the library named in the string argument is known to
+    OpenAccess, 0 if not.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaListLibraries"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>OaListLibraries</tt>()</b>
+    <dd><br>
+    Return a handle to a list of library names known to OpenAccess.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaListLibCells"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>OaListLibCells</tt>(<i>libname</i>)</b>
+    <dd><br>
+    Return a list of the names of cells contained in the OpenAccess
+    library named in the argument.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaListCellViews"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>OaListCellViews</tt>(<i>libname</i>,
+      <i>cellname</i>)</b>
+    <dd><br>
+    Return a handle to a list of view names found for the given cell
+    in the given OpenAccess library.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaIsLibOpen"></a>
+    <dl>
+    <dt><b>(int) <tt>OaIsLibOpen</tt>(<i>libname</i>)</b>
+    <dd><br>
+    Return 1 if the OpenAccess library named in the argument is open,
+    0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 022316 -->
+    <a name="OaOpenLibrary"></a>
+    <dl>
+    <dt><b>(int) <tt>OaOpenLibrary</tt>(<i>libname</i>)</b>
+    <dd><br>
+    Open the OpenAccess library of the given name, where the name
+    should match a library defined in the <tt>lib.defs</tt> or
+    <tt>cds.lib</tt> file.  A library being open means that it is
+    available for resolving undefined references when reading cell
+    data in <i>Xic</i>.  The return is 1 on success, 0 if error.
+    </dl>
+    <hr>
+
+    <!-- 022316 -->
+    <a name="OaCloseLibrary"></a>
+    <dl>
+    <dt><b>(int) <tt>OaCloseLibrary</tt>(<i>libname</i>)</b>
+    <dd><br>
+    Close the OpenAccess library of the given name, where the name
+    should match a library defined in the <tt>lib.defs</tt> or
+    <tt>cds.lib</tt> file.  A library being open means that it is
+    available for resolving undefined references when reading cell
+    data in <i>Xic</i>.  The return is 1 on success, 0 if error.
+    </dl>
+
+    <!-- 030316 -->
+    <a name="OaIsOaCell"></a>
+    <dl>
+    <dt><b>(int) <tt>OaIsOaCell</tt>(<i>cellname</i>, <i>open_only</i>)</b>
+    <dd><br>
+    Return 1 if a cell with the given name can be resolved in an
+    OpenAccess library, 0 otherwise.  If the boolean value
+    <i>open_only</i> is true, only open libraries are considered,
+    otherwise all libraries are considered.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaIsCellInLib"></a>
+    <dl>
+    <dt><b>(int) <tt>OaIsCellInLib</tt>(<i>libname</i>, <i>cellname</i>)</b>
+    <dd><br>
+    Return 1 if the given cell can be found in the OpenAccess library
+    given as the first argument, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaIsCellView"></a>
+    <dl>
+    <dt><b>(int) <tt>OaIsCellView</tt>(<i>cellname</i>, <i>viewname</i>,
+      <i>open\_only</i>)</b>
+    <dd><br>
+    Return 1 if the cellname and viewname resolve as a cellview in an
+    OpenAccess library, 0 otherwise.  If the boolean <i>open_only</i> is
+    true, only open libraries are considered, otherwise all libraries
+    are considered.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaIsCellViewInLib"></a>
+    <dl>
+    <dt><b>(int) <tt>OaIsCellViewInLib</tt>(<i>libname</i>, <i>cellname</i>,
+      <i>viewname</i>)</b>
+    <dd><br>
+    Return 1 is the cellname and viewname resolve as a cellview in the
+    given OpenAccess library, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaCreateLibrary"></a>
+    <dl>
+    <dt><b>(int) <tt>OaCreateLibrary</tt>(<i>libname</i>,
+      <i>techlibname</i>)</b>
+    <dd><br>
+    This will create the library in the OpenAccess database if
+    <i>libname</i> currently does not exist.  This will also set up
+    the technology for the new library if <i>techlibname</i> is given
+    (not null or empty).  The new library will attach to the same
+    library as <i>techlibname</i>, or will attach to
+    <i>techlibname</i> if it has a local tech database.  If
+    <i>techlibname</i> is given then it must exist.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaBrandLibrary"></a>
+    <dl>
+    <dt><b>(int) <tt>OaBrandLibrary</tt>(<i>libname</i>)</b>
+    <dd><br>
+    Set or remove the <i>Xic</i> "brand" of the given library. 
+    <i>Xic</i> can only write to a branded library.  If the boolean
+    <i>branded</i> is true, the library will have its flag set,
+    otherwise the branded status is unset.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaIsLibBranded"></a>
+    <dl>
+    <dt><b>(int) <tt>OaIsLibBranded</tt>(<i>libname</i>)</b>
+    <dd><br>
+    Return 1 if the named library is "branded" (writable by
+    <i>Xic</i>), 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaDestroy"></a>
+    <dl>
+    <dt><b>(int) <tt>OaDestroy</tt>(<i>libname</i>, <i>cellname</i>,
+      <i>viewname</i>)</b>
+    <dd><br>
+    Destroy the named view from the given cell in the given OpenAccess
+    library.  If the <i>viewname</i> is null or empty, destroy all
+    views from the named cell, i.e., the cell itself.  If the
+    <i>cellname</i> is null or empty, undefine the library in the
+    library definition (<tt>lib.defs</tt> or <tt>cds.lib</tt>) file,
+    and change the directory name to have a "<tt>.defunct</tt>"
+    extension.  We don't blow away the data, the user can revert by
+    hand, or delete the directory.
+    </dl>
+    <hr>
+
+    <!-- 030416 -->
+    <a name="OaLoad"></a>
+    <dl>
+    <dt><b>(int) <tt>OaLoad</tt>(<i>libname</i>, <i>cellname</i>)</b>
+    <dd><br>
+    If <i>cellname</i> is null or empty, load all cells in the
+    OpenAccess library named in <i>libname</i> into <i>Xic</i>.  The
+    current cell is not changed.  Otherwise, load the cell and its
+    hierarchy and make it the current cell.  Whether the physical or
+    electrical views are read, or both, is determined by the value of
+    the <a href="OaUseOnly"><b>OaUseOnly</b></a> variable.  If the
+    value is "1" or starts with 'p' or 'P', only the physical (layout)
+    views are read.  If the value is "2" or starts with 'e' or 'E',
+    only the electrical (schematic and symbol) views are read.  If
+    anything else or not set, both physical and electrical views are
+    read.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaReset"></a>
+    <dl>
+    <dt><b>(int) <tt>OaReset</tt>()</b>
+    <dd><br>
+    There is a table in <i>Xic</i> that records the cells that have
+    been loaded from OpenAccess.  This avoids the "merge control"
+    pop-up which appears if a common subcell was previously read and
+    is already in memory, the in-memory cell will not be overwritten. 
+    This function clears the table, and should be called if this
+    protection should be ended, for example if the <i>Xic</i> database
+    has been cleared.
+    </dl>
+    <hr>
+
+    <!-- 030416 -->
+    <a name="OaSave"></a>
+    <dl>
+    <dt><b>(int) <tt>OaSave</tt>(<i>libname</i>, <i>allhier</i>)</b>
+    <dd><br>
+    Write the current cell to the OpenAccess library whose name is
+    given in the first argument.  This must exist, and be writable
+    from <i>Xic</i>.  Whether the physical or electrical views are
+    written, or both, is determined by the value of the <a
+    href="OaUseOnly"><b>OaUseOnly</b></a> variable.  If the value is
+    "1" or starts with 'p' or 'P', only the physical (layout) views
+    are written.  If the value is "2" or starts with 'e' or 'E', only
+    the electrical (schematic and symbol) views are written.  If
+    anything else or not set, both physical and electrical views are
+    written.  The second argument is a boolean that if true (nonzero)
+    indicates that the entire cell hierarchy under the current cell
+    should be saved.  Otherwise, only the current cell is saved.
+
+    <p>
+    The actual view names used are given in the <a
+    href="OaDefLayoutView"><b>OaDefLayoutView</b></a>, <a
+    href="OaDefSchematicView"><b>OaDefSchematicView</b></a>, and <a
+    href="OaDefSymbolView"><b>OaDefSymbolView</b></a> variables, or
+    default to "layout", "schematic", and "symbol".
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaAttachTech"></a>
+    <dl>
+    <dt><b>(int) <tt>OaAttachTech</tt>(<i>libname</i>, <i>techlibname</i>)</b>
+    <dd><br>
+    If <i>techlibname</i> has an attached tech library, then that
+    library will be attached to <i>libname</i>.  If <i>techlibname</i>
+    has a local tech database, then <i>techlibname</i> itself will be
+    attached to <i>libname</i>.  This will fail if <i>libname</i> has
+    a local tech database.  The local database should be destroyed
+    first.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaGetAttachedTech"></a>
+    <dl>
+    <dt><b>(string) <tt>OaGetAttachedTech</tt>(<i>libname</i>)</b>
+    <dd><br>
+    Return the name of the OpenAccess library providing the attached
+    technology, or a null string if no attachment.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaHasLocalTech"></a>
+    <dl>
+    <dt><b>(int) <tt>OaHasLocalTech</tt>(<i>libname</i>)</b>
+    <dd><br>
+    Return 1 if the OpenAccess library has a local technology
+    database, 0 if not.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaCreateLocalTech"></a>
+    <dl>
+    <dt><b>(int) <tt>OaCreateLocalTech</tt>(<i>libname</i>)</b>
+    <dd><br>
+    If the library does not have an attached or local technology
+    database, create a new local database.
+    </dl>
+    <hr>
+
+    <!-- 030316 -->
+    <a name="OaDestroyTech"></a>
+    <dl>
+    <dt><b>(int) <tt>OaDestroyTech</tt>(<i>libname</i>,
+      <i>unattach_only</i>)</b>
+    <dd><br>
+    If <i>libname</i> has an attached technology library, unattach it. 
+    If the boolean second argument is false, and the library has a
+    local database, destroy the database.
+    </dl>
+    <hr>
+
+!!SEEALSO
+funcs:main1
+!!ENDIF
+
+
+!!KEYWORD
+funcs:main1:mode
+!!TITLE
+Mode
+!!HTML
+
+    <!-- 030315 -->
+    <a name="Mode"></a>
+    <dl>
+    <dt><b>(int) <tt>Mode</tt>(<i>window</i>, <i>mode</i>)</b>
+    <dd><br>This function switches <i>Xic</i> between physical and
+    electrical modes, or switches sub-windows between the two viewing
+    modes.  The first argument is an integer 0-4, where 0 represents
+    the main window, in which case the application mode is set, and
+    1-4 represent the sub-windows, in which case the viewing mode of
+    that sub-window is set.  The sub-window number is the same number as
+    shown in the window title bar.
+
+    <p>
+    The second argument can be a number or a string.  If a number and
+    the nearest integer is not zero, the mode is electrical, otherwise
+    physical.  If a string that starts with '<tt>e</tt>' or
+    '<tt>E</tt>', the mode is electrical, otherwise physical.
+
+    <p>
+    The return value is the new mode setting (0 or 1) or -1 if the
+    indicated sub-window is not active.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="CurMode"></a>
+    <dl>
+    <dt><b>(int) <tt>CurMode</tt>(<i>window</i>)</b>
+    <dd><br>This function returns the current mode (physical or
+    electrical) of the main window or sub-windows.  The argument is an
+    integer 0-4 where 0 represents the main window (and the
+    application mode) and 1-4 represent sub-window viewing modes.  The
+    return value is 0 for physical mode, 1 for electrical mode, or -1
+    if the indicated sub-window does not exist.  This function is
+    identical to <tt>GetWindowMode</tt>.
+    </dl>
+
+!!SEEALSO
+funcs:main1
+
+!!KEYWORD
+funcs:main1:prompt
+!!TITLE
+Prompt Line
+!!HTML
+
+    <!-- 030104 -->
+    <a name="StuffText"></a>
+    <dl>
+    <dt><b>(int) <tt>StuffText</tt>(<i>string</i>)</b>
+    <dd><br>The <tt>StuffText</tt> function stores the <i>string</i> in a
+    buffer, which will be retrieved into the edit line on the next
+    call to an editing function.  The edit will terminate immediately,
+    as if the user has typed <i>string</i>.  Multiple lines can be
+    stuffed, and will be retrieved in order.  This function must be
+    issued before the function which invokes the editor.  Once a
+    "stuffed" line is used, it is discarded.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="TextCmd"></a>
+    <dl>
+    <dt><b>(int) <tt>TextCmd</tt>(<i>string</i>)</b>
+    <dd><br>This executes the command in <i>string</i> as if it were one of
+    the "!" commands in <i>Xic</i>.  The leading ! is optional.<br>
+    Examples:
+    <blockquote>
+    <tt>TextCmd("!")</tt>              #brings up an xterm<br>
+    <tt>TextCmd("set ho deedo")</tt>   #sets variable 'ho'<br>
+    <tt>TextCmd("!select c")</tt>      #selects all subcells<br>
+    </blockquote>
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GetLastPrompt"></a>
+    <dl>
+    <dt><b>(int) <tt>GetLastPrompt</tt>()</b>
+    <dd><br>This function returns the most recent message that was shown
+    on the prompt line, or would normally have been shown if
+    <i>Xic</i> is not in graphics mode.  Although the prompt line may
+    have been erased, the last message is available until the next
+    message is sent to the prompt line.  The text on the prompt line
+    while in edit mode is not saved and is not accessible with this
+    function.  An empty string is returned if there is no current
+    message.  This function never fails.
+    </dl>
+
+!!SEEALSO
+funcs:main1
+
+!!KEYWORD
+funcs:main1:script
+!!TITLE
+Scripts
+!!HTML
+
+    <!-- 030104 -->
+    <a name="ListFunctions"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListFunctions</tt>()</b>
+    <dd><br>This function will re-read all of the <tt>library</tt> files
+    in the script search path, and return a handle to a string list of
+    the functions available from the libraries.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Exec"></a>
+    <dl>
+    <dt><b>(untyped) <tt>Exec</tt>(<i>script</i>)</b>
+    <dd><br>This function will execute a script.  The argument is a string
+    giving the script name or path.  If the script is a file, it must
+    have a "<tt>.scr</tt>" extension.  The "<tt>.scr</tt>" extension
+    is optional in the argument.  If no path is given, the script will
+    be opened from the <a href="xicpaths">search path</a> or from the
+    internal list of scripts read from the <a
+    href="techfile:scripts">technology file</a> or added with the <a
+    href="!script"><b>!script</b></a> command.  If a path is given,
+    that file will be executed, if found.  It is also possible to
+    reference a script which appears in a sub-menu of the <a
+    href="xic:usermenu"><b>User Menu</b></a> by giving a modified path of
+    the form "<tt>@@/<i>libname</i>/.../<i>scriptname</i></tt>".  The
+    <i>libname</i> is the name of the script menu, the ...  indicates
+    more script menus if the menu is more than one deep, and the last
+    component is the name of the script.
+
+    <p>
+    The return value is the result of the expression following
+    "return" if a <tt>return</tt> statement caused termination of the
+    script being executed.  If the script did not terminate with a
+    <tt>return</tt> statement with a following expression, the integer
+    1 is returned by <tt>Exec</tt>.  If the script indicated by the
+    argument to <tt>Exec</tt> could not be found, integer 0 is
+    returned.  If the <tt>return</tt> statement is used, the type of
+    the return is determined by the type of object being returned.
+
+    <p>
+    Example:  script1.scr
+    <blockquote>
+    (executable lines)<br>
+    <tt>return 3</tt>
+    </blockquote>
+    in main script:
+    <blockquote>
+    <tt>Print(Exec("script1"))    # prints "3"</tt>
+    </blockquote>
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="SetKey"></a>
+    <dl>
+    <dt><b>(int) <tt>SetKey</tt>(<i>password</i>)</b>
+    <dd><br>This function sets the key used by <i>Xic</i> to decrypt <a
+    href="scr:crypt">encrypted scripts</a>.  The password must be the
+    same as that used to encrypt the scripts.  This function returns 1
+    on success, i.e., the key has been set, or 0 on failure, which
+    shouldn't happen as even an empty string is a valid password.
+    </dl>
+    <hr>
+
+    <!-- 021913 -->
+    <a name="HasPython"></a>
+    <dl>
+    <dt><b>(int) <tt>HasPython</tt>()</b>
+    <dd><br>
+    This function returns 1 if the Python language support <a
+    href="pyplugin">plug-in</a> has been successfully loaded, 0
+    otherwise.
+    </dl>
+    <hr>
+
+    <!-- 022813 -->
+    <a name="RunPython"></a>
+    <dl>
+    <dt><b>(int) <tt>RunPython</tt>(<i>command</i> [, <i>arg</i>, ...])</b>
+    <dd><br>
+    Pass a command string to the <a href="pyplugin">Python
+    interpreter</a> for evaluation.  The first argument is a path to a
+    Python script file.  Arguments that follow are concatenated and
+    passed to the script.  Presently, only string and scalar type
+    arguments are accepted.  The interpreter will have available the
+    entire <i>Xic</i> scripting interface, though only the basic data
+    types are useful.  The <a href="pyplugin">Python interface</a>
+    description provides information about the header lines needed to
+    instantiate the interface to <i>Xic</i> from Python.
+
+    <p>
+    This function exists only if the Python language support plug-in
+    has been successfully loaded.  The function returns 1 on success,
+    0 otherwise with an error message available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 021913 -->
+    <a name="RunPythonModFunc"></a>
+    <dl>
+    <dt><b>(int) <tt>RunPythonModFunc</tt>(<i>module</i>,
+         <i>function</i> [, <i>arg</i> ...])</b>
+    <dd><br>
+    This function will call the <a href="pyplugin">Python
+    interpreter</a>, to execute the module function specified in the
+    arguments.  The first argument is the name of the module, which
+    must be known to Python.  The second argument is the name of the
+    function within the module to evaluate.  Following are zero or
+    more function arguments, as required by the function.
+
+    <p>
+    This function exists only if the Python language support plug-in
+    has been successfully loaded.  The function returns 1 on success,
+    0 otherwise with an error message available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100814 -->
+    <a name="ResetPython"></a>
+    <dl>
+    <dt><b>(int) <tt>ResetPython</tt>()</b>
+    <dd><br>
+    Reset the <a href="pyplugin">Python interpreter</a>.  It is not
+    clear that a user would ever need to call this.
+
+    <p>
+    This function exists only if the Python language support plug-in
+    has been successfully loaded.  The function always returns 1.
+    </dl>
+    <hr>
+
+    <!-- 021913 -->
+    <a name="HasTcl"></a>
+    <dl>
+    <dt><b>(int) <tt>HasTcl</tt>()</b>
+    <dd><br>
+    This function returns 1 if the Tcl language support <a
+    href="tclplugin">plug-in</a> was successfully loaded, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 021913 -->
+    <a name="HasTk"></a>
+    <dl>
+    <dt><b>(int) <tt>HasTk</tt>()</b>
+    <dd><br>
+    This function returns 1 if the Tcl with Tk language support <a
+    href="tclplugin">plug-in</a> was successfully loaded, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 022813 -->
+    <a name="RunTcl"></a>
+    <dl>
+    <dt><b>(int) <tt>RunTcl</tt>(<i>command</i> [, <i>arg</i> ...])</b>
+    <dd><br>
+    Pass a command string to the <a href="tclplugin">Tcl
+    interpreter</a> for evaluation.  The first argument is a path to a
+    Tck/Tk script.  If both Tcl and Tk are available, the script file
+    must have a <tt>.tcl</tt> or <tt>.tk</tt> extension.  If only Tcl
+    is available, there is no extension requirement, but the file
+    should contain only Tcl commands.  A Tcl script ie executed
+    linearly and returns.  A Tk script blocks, handling events until
+    the last window is destroyed, at which time it returns.
+
+    <p>
+    Arguments that follow are concatenated and passed to the script. 
+    Presently, only string and scalar type arguments are accepted. 
+    The interpreter will have available the entire <i>Xic</i>
+    scripting interface, though only the basic data types are useful. 
+    The <a href="tclplugin">Tcl/Tk interface</a> description provides
+    more information.
+
+    <p>
+    This function exists only if the Tcl language support plug-in has
+    been successfully loaded.  The function returns 1 on success, 0
+    otherwise with an error message available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100814 -->
+    <a name="ResetTcl"></a>
+    <dl>
+    <dt><b>(int) <tt>ResetTcl</tt>()</b>
+    <dd><br>
+    Reset the Tcl/Tk interpreter.  It is not clear that a user would
+    ever need to call this.
+
+    <p>
+    This function exists only if the Tcl language support plug-in has
+    been successfully loaded.  The function always returns 1.
+    </dl>
+    <hr>
+
+    <!-- 022813 -->
+    <a name="HasGlobalVariable"></a>
+    <dl>
+    <dt><b>(int) <tt>HasGlobalVariable</tt>(<i>globvar</i>)</b>
+    <dd><br>
+    Return true if the passed string is the name of a <a
+    href="scr:global">global variable</a> currently in scope.  This
+    is part of the exported global variable interface to <a
+    href="pyplugin">Python</a> and <a href="tclplugin">Tcl</a>. 
+    </dl>
+    <hr>
+
+    <!-- 022813 -->
+    <a name="GetGlobalVariable"></a>
+    <dl>
+    <dt><b>(int) <tt>GetGlobalVariable</tt>(<i>globvar</i>)</b>
+    <dd><br>
+    Return the value of the <a href="scr:global">global variable</a>
+    whose name is passed.  The function will generate a fatal error,
+    halting the script, if the variable is not found, so one may need
+    to check existence with <tt>HasGlobalVariable</tt>.  The return
+    type is the type of the variable, which can be any known type. 
+    This is for use in <a href="pyplugin">Python</a> or <a
+    href="tclplugin">Tcl</a> scripts, providing access to the global
+    variables maintained in the <i>Xic</i> script interpreter.
+    </dl>
+    <hr>
+
+    <!-- 022813 -->
+    <a name="SetGlobalVariable"></a>
+    <dl>
+    <dt><b>(int) <tt>SetGlobalVariable</tt>(<i>globvar</i>, <i>value</i>)</b>
+    <dd><br>
+    Set the value of the <a href="scr:global">global variable</a>
+    named in the first argument.  The function will generate a fatal
+    error if the variable is not found, or the assignment fails due to
+    type mismatch.  This is for use in <a href="pyplugin">Python</a>
+    or <a href="tclplugin">Tcl</a> scripts, providing access to the
+    global variables maintained in the <i>Xic</i> script interpreter. 
+    Note that global variables can not be created from Python or Tcl,
+    but values can be set with this function.  Global variables can be
+    used to return data to a top-level native script from a Tcl or
+    Python sub-script.
+    </dl>
+
+!!SEEALSO
+funcs:main1
+
+!!KEYWORD
+funcs:main1:tech
+!!TITLE
+Technology File
+!!HTML
+
+    <!-- 020611 -->
+    <a name="GetTechName"></a>
+    <dl>
+    <dt><b><tt>GetTechName</tt>()</b>
+    <dd><br>
+    This returns a string containing the current technology name,
+    as set in the technology file with the <a
+    href="techfile#techname"><tt>Technology</tt></a> keyword. 
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GetTechExt"></a>
+    <dl>
+    <dt><b>(string) <tt>GetTechExt</tt>()</b>
+    <dd><br>This returns a string containing the current technology file
+    name extension.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="SetTechExt"></a>
+    <dl>
+    <dt><b>(int) <tt>SetTechExt</tt>(<i>extension</i>)</b>
+    <dd><br>This sets the current technology file extension to the string
+    argument.  It alters the name of new technology files created with
+    the <a href="xic:updat"><b>Save Tech</b></a> button in the <a
+    href="xic:attrmenu"><b>Attributes Menu</b></a>.
+    </dl>
+    <hr>
+
+    <!-- 032712 -->
+    <a name="TechParseLine"></a>
+    <dl>
+    <dt><b>(int) <tt>TechParseLine</tt>(<i>line</i>)</b>
+    <dd><br>
+    This function will parse and process a line of text is if read
+    from a technology file.  It can therefor modify parameters that
+    are otherwise set in the technology file, after a technololgy file
+    has been read, or if no technology file was read.
+
+    <p>
+    However, there are limitations.
+    <ol>
+    <li>There is no macro processing done on the line, it is parsed
+    verbatim, and macro directives will not be understood.
+    <p>
+    <li>There is no line continuation, all related text must appear in
+    the given string.
+    <p>
+    <li>The print driver block keywords are not recognized, nor are any   
+    other block forms, such as device blocks for extraction.
+    <p>
+    <li>Layer block keywords are acceptable, however they must be given
+    in a special format, which is
+    <blockquote>
+      [<tt>elec</tt>]<tt>layer</tt> <i>layername</i>
+        <i>layer_block_line...</i>
+    </blockquote>
+    i.e., the text must be prefaced by the
+    <tt>layer</tt>/<tt>eleclayer</tt> keyword followed by an existing
+    layer name.  Note that new layers must be created first, before
+    calling this function.
+    </ol>
+
+    <p>
+    If the line is recognized and successfully processed, the function
+    returns 1.  Otherwise, 0 is returned, and a message is available
+    from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 021913 -->
+    <a name="TechGetFkeyString"></a>
+    <dl>
+    <dt><b>(string) <tt>TechGetFkeyString</tt>(<i>fkeynum</i>)</b>
+    <dd><br>
+    This function returns the string which encodes the functional
+    assignment of a function key.  This is the same <a
+    href="F1key">format</a> as used in the technology file for the
+    F1Key - F12Key keyword assignments.  The argument is an integer
+    with value 1-12 representing the function key number.  The return
+    value is a null string if the argument is out of range, or if no
+    assignment has been made.
+    </dl>
+    <hr>
+
+    <!-- 021913 -->
+    <a name="TechSetFkeyString"></a>
+    <dl>
+    <dt><b>(string) <tt>TechSetFkeyString</tt>(<i>fkeynum</i>,
+     <i>string</i>)</b>
+    <dd><br>
+    This function sets the string which encodes the functional
+    assignment of a function key.  This is the same <a
+    href="F1key">format</a> as used in the technology file for the
+    F1Key - F12Key keyword assignments.  The first argument is an
+    integer with value 1-12 representing the function key number.  The
+    second argument is the string, or 0 to clear the assignment.  The
+    return value is 1 if an assignment was made, 0 if the first
+    argument is out of range.
+    </dl>
+
+
+!!SEEALSO
+funcs:main1
+
+!!KEYWORD
+funcs:main1:var
+!!TITLE
+Variables
+!!HTML
+
+    <!-- 113009 -->
+    <a name="Set"></a>
+    <dl>
+    <dt><b><tt>Set</tt>(<i>name</i>, <i>string</i>)</b>
+    <dd><br>The Set function allows variable <i>name</i> to be set to
+    <i>string</i> as with the <a href="!set"><b>!set</b></a> keyboard
+    operation in <i>Xic</i>.  Some variables, such as the search
+    paths, directly affect <i>Xic</i> operation.  The <tt>Set</tt>
+    function can also set arbitrary variables, which may be useful to
+    the script programmer.  To set a variable, both arguments should
+    be strings.  If the second argument is the constant zero (0 or
+    <tt>NULL</tt>, not "0") or a null (not empty) string, the variable
+    will be unset if set.  As with <b>!set</b>, forms like
+    $(<i>name</i>) are expanded.  If <i>name</i> matches the name of a
+    previously set variable, that variable's value string replaces the
+    form.  Otherwise, if <i>name</i> matches an environment variable,
+    the environment variable text replaces the form.
+
+    <p>
+    The <tt>Set</tt> function will permanently change the variable
+    value.  See the <a href="PushSet"><tt>PushSet</tt></a> function
+    for an alternative.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Unset"></a>
+    <dl>
+    <dt><b><tt>Unset</tt>(<i>name</i>)</b>
+    <dd><br>This function will unset the variable.  No action is taken if
+    the variable is not already set.  This is equivalent to
+    <tt>Set</tt>(<i>name</i>, 0).
+    </dl>
+    <hr>
+
+    <!-- 113009 -->
+    <a name="PushSet"></a>
+    <dl>
+    <dt><b><tt>PushSet</tt>(<i>name</i>, <i>string</i>)</b>
+    <dd><br>
+    This function is similar to <tt>Set</tt>, however the previous
+    value is stored internally, and can be restored with <a
+    href="PopSet"><tt>PopSet</tt></a>.  In addition, all variables set
+    (or unset) with <tt>PushSet</tt> are reverted to original values
+    when the script exits, thus avoiding permanent changes.  There can
+    be arbitrarily many <tt>PushSet</tt> and <tt>PopSet</tt>
+    operations on a variable.
+    </dl>
+    <hr>
+
+    <!-- 113009 -->
+    <a name="PopSet"></a>
+    <dl>
+    <dt><b><tt>PopSet</tt>(<i>name</i>)</b>
+    <dd><br>
+    This reverts a variable set with <a
+    href="PushSet"><tt>PushSet</tt></a> to its previous state.  If the
+    variable has not been set (or unset) with <tt>PushSet</tt>, no
+    action is taken.
+    </dl>
+    <hr>
+
+    <!-- 030304 -->
+    <a name="SetExpand"></a>
+    <dl>
+    <dt><b>(string) <tt>SetExpand</tt>(<i>string</i>, <i>use_env</i>)</b>
+    <dd><br>This function returns a copy of <i>string</i> which expands
+    variable references in the form $(<i>word</i>) in <i>string</i>. 
+    The <i>word</i> is expected to be a variable previously set with
+    the <tt>Set</tt> function or <b>!set</b> command.  The value of
+    the variable replaces the reference in the returned
+    string.  If the integer <i>use_env</i> is nonzero, variables found
+    in the environment will also be substituted.
+    If <i>word</i> is not resolved, no change is made.  Otherwise,
+    in general, the token is replaced with the value of <i>word</i>.
+
+    <p>
+    There is an exception to the direct-substitution rule.  If any
+    substitution string is of the form "<tt>(...)</tt>", then the
+    parentheses and leading/trailing white space are stripped before
+    substitution, and the entire substituted string is enclosed in
+    parentheses if it is not already.  This is for convenience when
+    adding a directory to a <a href="xicpaths">search path</a>
+    variable, and the path is enclosed in parentheses.  See the <a
+    href="!set"><bb>!set</b></a> command description for more
+    information.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Get"></a>
+    <dl>
+    <dt><b>(string) <tt>Get</tt>(<i>name</i>)</b>
+    <dd><br>The Get function returns a string containing the value of
+    <i>name</i>, which has been previously set with the <tt>Set</tt>
+    function, or otherwise from within <i>Xic</i>.  A null string is
+    returned if the named variable has not been set.
+    </dl>
+    <hr>
+
+    <!-- 072904 -->
+    <a name="JoinLimits"></a>
+    <dl>
+    <dt><b><tt>JoinLimits</tt>(<i>flag</i>)</b>
+    <dd><br>This is a convenience function to set/unset the variables
+    which control the polygon joining process, i.e., <a
+    href="JoinMaxPolyVerts"><b>JoinMaxPolyVerts</b></a>, <a
+    href="JoinMaxPolyQueue"><b>JoinMaxPolyQueue</b></a>, and <a
+    href="JoinMaxPolyGroup"><b>JoinMaxPolyGroup</b></a>.  If the
+    argument is zero, each of these variables is set to zero, removing
+    all limits.  If the argument is nonzero, the variables are unset,
+    meaning that the default limits will be applied.  The default
+    limits generally speed processing, but will often leave unjoined
+    joinable pieces when complex polygons are constructed.  The status
+    of the variables will persist after the script terminates.  This
+    function has no return value.
+    </dl>
+
+!!SEEALSO
+funcs:main1
+
+!!KEYWORD
+funcs:main1:version
+!!TITLE
+<i>Xic</i> Version
+!!HTML
+
+    <!-- 030104 -->
+    <a name="VersionString"></a>
+    <dl>
+    <dt><b>(string) <tt>VersionString</tt>()</b>
+    <dd><br>This function returns a string containing the current <i>Xic</i>
+    version in a form like "2.5.40".
+    </dl>
+
+!!SEEALSO
+funcs:main1
+

@@ -1,0 +1,41 @@
+
+module magnitude_comparator ( A_gt_B, A_lt_B, A_eq_B, A, B );
+input  [3:0] A;
+input  [3:0] B;
+output A_gt_B, A_lt_B, A_eq_B;
+    wire n60, n61, n62, n50, n63, n51, n64, n52, n65, n40, n53, 
+				 n41, n54, n42, n55, n43, n56, n44, n57, n45, n58, n46, 
+				 n59, n47, n48, n49, n38, n39;
+    VAND U7 ( .in0(n48), .in1(n49), .out(n38) );
+    VAND U8 ( .in0(n51), .in1(n52), .out(n50) );
+    VAND U9 ( .in0(n54), .in1(n55), .out(n53) );
+    VNOT U30 ( .in(A[2]), .out(n62) );
+    VNOT U31 ( .in(A[1]), .out(n59) );
+    VNOT U32 ( .in(A[0]), .out(n60) );
+    VNAND U20 ( .in0(B[2]), .in1(n62), .out(n45) );
+    VNAND U21 ( .in0(n61), .in1(n45), .out(n63) );
+    VNAND U22 ( .in0(n63), .in1(n42), .out(n41) );
+    VAND U10 ( .in0(n55), .in1(n52), .out(n47) );
+    VOR U23 ( .in0(n60), .in1(B[0]), .out(n57) );
+    VAND U11 ( .in0(n56), .in1(n57), .out(n49) );
+    VNAND U24 ( .in0(n57), .in1(n52), .out(n54) );
+    VAND U12 ( .in0(n40), .in1(n42), .out(n48) );
+    VNAND U25 ( .in0(n53), .in1(n44), .out(n64) );
+    VOR U13 ( .in0(n58), .in1(B[3]), .out(n42) );
+    VOR U26 ( .in0(n62), .in1(B[2]), .out(n46) );
+    VNAND U14 ( .in0(B[3]), .in1(n58), .out(n40) );
+    VNAND U27 ( .in0(n64), .in1(n46), .out(n65) );
+    VNAND U15 ( .in0(B[1]), .in1(n59), .out(n55) );
+    VNAND U28 ( .in0(n65), .in1(n40), .out(n43) );
+    VOR U16 ( .in0(n59), .in1(B[1]), .out(n52) );
+    VNOT U29 ( .in(A[3]), .out(n58) );
+    VNAND U17 ( .in0(B[0]), .in1(n60), .out(n56) );
+    VNAND U18 ( .in0(n56), .in1(n55), .out(n51) );
+    VNAND U19 ( .in0(n50), .in1(n44), .out(n61) );
+    VAND U2 ( .in0(n38), .in1(n39), .out(A_eq_B) );
+    VNAND U3 ( .in0(n40), .in1(n41), .out(A_lt_B) );
+    VNAND U4 ( .in0(n42), .in1(n43), .out(A_gt_B) );
+    VAND U5 ( .in0(n45), .in1(n46), .out(n44) );
+    VAND U6 ( .in0(n47), .in1(n44), .out(n39) );
+endmodule
+

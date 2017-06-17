@@ -1,0 +1,1630 @@
+xic-3.1.8 9/18/2009
+
+This is almost certainly the last of the "beta" releases.
+
+
+Changes and New Features
+------------------------
+
+* Update to the license validation code (Unix/Linux/OS X).
+
+  The programs will now attempt to validate using all IP and HW
+  addresses that can be determined from the machine's interfaces,
+  other than the loopback interface.  Previously, at most one IP and
+  one HW address were tested.  On machines with multiple interfaces,
+  there could be validation problems, as the IP/HW chosen at run time
+  might not be the same as assumed in the license file.
+
+* New graphical layer expression evaluator.
+
+  There is a new Layer Expression button in the Edit Menu, that brings
+  up the Evaluate Layer Expression panel.  This is basically a
+  graphical equivalent to the !layer command, whereby new layers can
+  be created or existing layers updated according to an expression
+  involving existing layers.
+
+  See the help ("? xic:lexpr") for details about this new capability.
+
+* The !layer command and Layer script function have been modified.
+
+  The !layer command is now redundant, since the Layer Expression
+  button provides the same functionality.
+
+  The !layer command has a new interface that avoids most prompting,
+  and allows some new features, such as control of merging and clearing.
+
+  The Layer function has new arguments for controlling new functionality.
+
+* Update to the flattening capability.
+
+  The MergeInFlatten variable, introduced in the last release, has been
+  removed.  There is really no need for it.
+
+  The Flatten script function has a new argument to control merging.
+
+* New text-mode command: !lsdb
+
+  This will pop up a listing of the "special" databases currently in
+  memory.  These are created by script functions such as
+  ChdOpenOdb, ChdOpenZdb, etc.
+
+* New Device Extraction Settings panel.
+
+  There is a new Settings button in the Show/Select Devices panel
+  in the Extract Menu.  This brings up the new Device Extraction
+  Settings panel, which controls some parameters used for device
+  extraction, mostly for resistors.  In particular, is controls the
+  grid parameters used for resistance extraction.
+
+* New Misc. Extraction Settings Panel.
+
+  There is a new "Misc. Config" button in the Extract Menu, which
+  brings up a new Misc. Extraction Settings panel.  This provides an
+  interface for setting visual attributes and other parameters that
+  previously could be set as variables only.
+
+* New check box in the LVS window.
+
+  A new button in LVS pop-up corresponds to the LvsFailNoConnect
+  variable.  When checked, LVS will fail if unconnected subcells are
+  found.
+
+* Change to FlattenPrefix variable.
+
+  The interpretation of the value of this variable has been extended.
+  1) The value can now be a list of space-separated tokens, each one
+     will match cell names that are to be taken as part of the parent
+     cell ("flattened") in extraction.
+
+  2) Each token can now take the following forms:
+     name[/]    The name matches as a prefix.
+     /name      The name matches as a suffix.
+     /name/     The name matches literally.
+
+* Changes to the DRC Menu.
+
+  There are two new entries:
+
+  Update Highlighting
+    This will regenerate the display highlighting from a DRC error
+    file, the same as the !errs command.
+
+  Create Layer
+    This enables creating a layer containing DRC error regions from
+    the current highlighting list, the same as the !errlayer command.
+
+  In the "Show Errors" mode, dismissing the viewport which shows the
+  errors now terminates the mode.
+
+  The file ambiguity resolution pop-up used for the Show Errors and
+  Update Highlighting commands has a new Apply button that should be
+  pressed after a selection is made.
+
+* Misc. changes.
+
+  - When using the vertex editor in the wires command, or when stretching
+    a wire, and the vertices being moved are contiguous and contain an
+    end vertex, the adjacent non-moving vertex is now used as the
+    reference for the "45" constraint.
+
+  - When creating wires, if the initial point is an end vertex of an
+    existing wire on the current layer, that wire's width and end
+    style will be used for the new wire, overriding the defaults.  The
+    new wire will be merged unless merging is disabled.
+
+  - The "edge" indicator now shows a double box when the pointer is over
+    an object vertex.
+
+  - The status line now shows the technology name from the technology
+    file.
+
+  - When the prompt line is in editing mode, button 3 (the right mouse
+    button) now acts the same as button 2 (which the user's mouse may
+    not have), inserting a text selection into the line.
+
+
+Bugs Fixed
+----------
+
+* (Unix/Linux/OS X)
+  License validation problems on machines with multiple network
+  interfaces have been fixed.
+
+* A layer name consisting of digits followed, by a '.' in a layer
+  expression string would not be recognized as a layer name, unless it
+  was quoted.
+
+* When creating wires and polys with Constrain 45 set, the second
+  vertex is now added only if it is 8 pixels or more away from the
+  initial vertex.  It was too easy to add spurious vertices.
+
+* The new vertex fuction of the vertex editor in the wires command was
+  broken.  Clicking on the selected wire would start a new wire rather
+  than add a vertex.
+
+* The multi-element resistance solver, which is used for extracting
+  resistors with more than two contacts, was dividing by
+  ohms-per-square instead of multiplying, giving wrong results for
+  other than 1 ohm/square.
+
+* (Windows Only)
+  Fixed the info text area in the help windows, which was not visible,
+  unless the window was resized, and not properly working when visible.
+
+* The Ctrl/Shift key-up events could get "swallowed" if they occur
+  with the pointer in a menu, causing commands that use these
+  modifiers to have unexpected behavior.
+
+* In the Extract Menu tech parameter editor, the Tline parameter value
+  for dielectric thickness was not printing correctly.
+
+* Fixed typos in Tline lines in the xic_tech.hyp example technology
+  file.
+
+* Fixed a logic bug in one of the trapezoid clipping sub-functions.
+  This would cause mysterious DRC false-positives.
+
+* Physical properties would not display when enabled in the Attributes
+  Menu.
+
+* The DRC error index number in the highlighting list created with the
+  !errs command was always 0.
+
+* The "bad" object highlighting wasn't working from the highlighting
+  list created with the !errs command.
+
+* (Unix/Linux only)
+  Button 2 selected text import into the prompt line in editing mode
+  wasn't working.
+
+* Fixed a couple of problems associated with the copy operation that
+  could foul up internal referencing in electrical mode.
+
+
+-------------------------------------------------------------------------------
+xic-3.1.7 8/21/2009
+
+
+Changes and New Features
+------------------------
+
+* Important interface change! New auto-merging of boxes/polygons.
+
+  When new boxes and polygons are created, the default is now to merge
+  these with existing objects on the same layer into polygons.
+
+  The previous action was to clip/merge boxes, and do nothing with
+  polygons.
+
+  This can be turned off with the "Merge Boxes, Polys" button in the
+  Edit Menu (used to be "Merge Boxes").
+
+  This does not apply when files are read, the box merging for files
+  is the same as before (and is a separate function controlled from
+  the Set Import Parameters panel from the Convert Menu.
+
+  The maximum polygon complexity that can be created is governed by
+  the JoinMaxPolyVerts and similar variables, which can be set from
+  the new Join Boxes, Polygons panel (see below).
+
+  Merging is always suppressed if the NoMerge keyword has been applied
+  to the current layer.
+
+  The "NoMergeBoxes" variable has been renamed "NoMergeObjects".
+
+  There is a new "Merge, Clip Boxes Only" button in the Edit Menu,
+  which tracks the new boolean variable NoMergePolys.  If set, the
+  merging reverts to the previous behavior, i.e., new boxes are
+  clipped/merged and polys are ignored.  This has effect only when
+  merging is enabled.
+
+* New Join button, panel
+
+  There is a new Join button in the Edit Menu, which brings up the
+  Join Boxes, Polygons panel.
+
+  This provides command buttons for joining and splitting, and
+  controls to set defaults.  The buttons provide operations similar to
+  the !join and !split text commands, which are retained.
+
+  The join/split algorithm has changed a little.
+
+  1) Join/split operations and now available in both electrical and
+     physical modes.  Previously, these were restricted to physical
+     mode.
+
+  2) By default, wire objects are no longer included in join/split
+     operations.  Wires can be included by setting the new boolean
+     variable JoinSplitWires, or by selecting the check box in the
+     Join Boxes, Polygons panel.
+
+  The !join command now has an option:  -a (or -all or a or all). 
+  When given, the selections are ignored.  If layer-specific mode is
+  active, all suitable objects on the current layer will be merged
+  into polygons.  Otherwise, all suitable objects on all layers will
+  be merged on the respective layers.
+
+  The "suitable objects" are boxes and polygons, plus wires if
+  enabled.
+
+  All merging on a layer is prevented if the NoMerge keyword is
+  applied to the layer.
+
+* Replication factor now available in copy operations.
+
+  The replication factor, previously available only fron the Copy
+  command in the Modify Menu, is now more widely available.
+
+  1) The !co command now supports a replication factor argument.
+
+  2) The basic copy operation from mouse pointer operations can now do
+     replications.  In move/copy mode, when copying, a number entered
+     into the keybress buffer will provide a replication count.
+
+  3) A new replication count argument  has been added to the following
+     script functions:
+
+        CopyObjects
+        CopyObjectsToLayer
+        Copy
+        CopyToLayer
+
+* Updates to Flatten pop-up.
+
+  The Flatten pop-up from the Edit Menu has a few changes.
+  1) Better feedback printing during processing.
+  2) There is a new check box and new MergeInFlatten variable.  When set,
+     merging, as controlled in the Edit Menu, will be applied when objects
+     are promoted to the top cell.  Full polygon merging can be slow.
+  3) The pop-up now contains a Help button.
+  4) The pop-up no longer pops down after an operation.
+
+* Hypres technology update
+
+  The Hypres technology file and the model.lib file have been updated
+  to directly support the latest Hypres foundry process.
+
+* Merging temporarily disabled in !layer command.
+
+  Since the default polygon merging can be slow, merging in the !layer
+  command has been turned off.  A switch for this will be added in the
+  next release.
+
+
+Bugs Fixed
+----------
+
+* (Unix/Linux/OS X only)
+  Pressing the "devs" button in the electrical side menu would crash
+  the program.
+
+* (Windows only)
+  The name of the log file directory no longer contains an "exe" suffix.
+
+* Press-hold-release to "pick up" a selected object didn't work if the
+  current transform was not identity.
+
+* Fixed a bug in the vertical-mode splitting function (e.g., "!split v").
+  Triangles were missing from the decomposition.
+
+* "!split v" would seg-fault on wires.
+
+* The poly splitter was not joining joinable trapezoids in some cases.
+
+
+-------------------------------------------------------------------------------
+xic-3.1.6 8/2/2009
+
+I anticipate that there will be one more beta release, 3.1.7, which
+will contain bug fixes.  This will be followed by the first production
+release, 3.2.0.
+
+Changes and New Features
+------------------------
+
+* Windows Only, keypress buffer display in sub-windows.
+
+  Under Windows, the "sub-windows" from the Viewport command do not
+  have their own "keys pressed" area, as they do in the GTK releases,
+  due to technical hurdles courtesy of Microsoft.  Previously, key
+  presses in sub-windows were not visually recorded.  Now, the main
+  window "keys pressed" area will display the keypress buffer of the
+  main or sub-window with the keyboard focus.  I.e., the main window
+  keys pressed area is now multiplexed to the focus window.
+
+* Cell array size in Cell Placement Control panel changed.
+
+  The Cell Placement Control panel now accepts array sizes up to
+  32767, as per the GDSII spec.  For some reason the maximum was
+  limited to 10000 previously.  Xic can now properly handle array
+  sizes up to 65535 found in input files, though values larger than
+  32767 are prohibited by the format specification but technically
+  possible.
+
+* Major internal changes to the architecture of the i/o module.
+  Most of this should be invisible, but has some external effects:
+
+  1) A CHD can no longer be "area configured".  This is now done
+     external to the CHD, avoiding the need to keep track of whether
+     or how a given CHD is configured.
+
+     The Configure Cell Hierarchy Digest panel and related script
+     functions have been modified to remove area configuration.  The
+     ChdConfigure and ChdGetConfigArea script functions have been
+     removed.
+
+  2) The architecture now supports "parallel" writing when file
+     splitting.  This was basically an experiment, as it was expected
+     that parallel output, with greatly reduced access to the input
+     file, would be faster.  Sadly, the performance improvement
+     was not as much as expected, though results may vary.
+
+     The parallel mode is available from the revised ChdWriteSplit
+     script function.
+
+  3) Empty cell detection and filtering is done differently, and is
+     more effective and faster.
+
+     Like area configuration, this no longer alters state in the CHD. 
+     Thus, the ChdSetSkipEmpties and ChdClearSkipEmpties script
+     functions have been removed.
+
+* Script function changes:
+
+  Functions removed:
+    ChdConfigure
+    ChdGetConfigArea
+    ChdSetSkipEmpties
+    ChdClearSkipEmpties
+
+  New function
+    ChdSetDefCellName
+      This replaces ChdConfigure, allows setting the assumed default
+      cell in a CHD.
+
+  Modified functions:
+    ChdWriteSplit
+      Completely revised, really cool.  Try it.
+    ListPhysDevs
+      Argument list changed.
+
+  Name change:
+    CreateSymbol changed to CreateCell
+
+* Extract Menu change, new Device Selection panel.
+
+  Device selection commands have been consolidated into a new
+  Show/Select Devices panel, available from the new Device Selections
+  button in the Extract Menu.  This incorporates the functionality of
+  the Compare Devices and Compute Params buttons, which are now gone,
+  and the !find command, which is retained.
+
+  This has a lot of great capabilities, see the help ("? xic:dvsel")
+  for complete information.
+
+  The very obscure electrical parameter readout feature when creating
+  boxes has been removed, a much more powerful alternative is
+  available from the panel.
+
+  The !find command can now take a range list of device index values.
+
+  The ListPhysDevs script function argument list has changed to accept
+  an index list.
+
+* Extraction logging/error reporting revised.
+
+  There is now a consolidated class for error reporting and logging
+  during extraction.  This should be invisible to the user, except:
+
+  1) The name of the log file is now "extraction.log", previously it
+     was "associate.log".  The file will be written in the log files
+     directory, accessible in the Help Menu.
+
+  2) There is a new "extraction.errs" file produced during extraction,
+     which will contain error messages.  The file will be shown in a
+     window if extraction fails.  This is also found in the log
+     directory.
+
+* Changes to Device blocks in technology file, and device extraction.
+
+  1) In Resistance extraction, extraction will now fail if resistance
+     parameters have not been provided for the body layer(s). 
+     Previously, one ohm per square was assumed in this case.
+
+     Similarly, for capacitors, capacitance parameters must now be
+     provided for one of the body layers.  or extraction will fail. 
+     For inductance, the Tline layer block keyword must be given to
+     one of the body layers, or extraction will fail.
+
+  2) When looking for resistance parameters, all layers mentioned in
+     the device body specification are now searched.  Previously,
+     there was a single-layer assumption, so only the first layer
+     mentioned would be searched.
+
+     This applies to capacitance and inductance parameters as well.
+
+  3) There is now a more intelligent calculation of the "BodyMinDimen"
+     parameter.  Previously, this was the smallest dimension found in
+     a trapezoid decomposition of the body shape.  Now, a histogram is
+     constructed, and the most-frequently used value of length and
+     width for each trapezoid is the value used.  If there is a tie,
+     the smallest such value is used.  Thus, the BodyMinDimen is now
+     more like a linewidth.
+
+     If the new keyword SimpleMinDimen appears in the Device Block,
+     the old method is used.
+
+  4) The NoMosMinDimen variable is now gone.
+
+  5) There is a new Device Block keyword:
+
+       ContactMinDimen [y/n]
+
+     The second token is assumed "y" if missing, "y" is also assumed
+     for words like "true", "1", "yes", etc., all case insensitive. 
+     Similarly, "n" is assumed for "false", "0", etc.
+
+     If "ContactMinDimen y" is given, the BodyMinDimen will be the
+     distance between the two contacts listed in the Permutes list (if
+     this list is given).
+
+     This is now the default for known MOS devices, i.e., those
+     devices with names starting with "nmos" or "pmos", unless
+     "ContactMinDimen n" is given, in which case the BodyMinDimen is
+     computed as for other device types.
+
+     In the case of a MOS device, the ContactMinDimen option allows
+     correct extraction when the device length (source/drain spacing)
+     is larger than the device width.
+
+* Vias now included in netlist extraction files.
+
+  When a net cell file is generated from the Path Selections Control
+  panel in the Extract Menu (Net Selections button), the vias can now
+  also be included in the file.  There are two new check boxes in the
+  panel, which apply when a file is produced with the "Save path to
+  file" button.
+
+  If "Path file contains vias" is checked, the file will included the
+  via layer objects, clipped to the intersection areas of the two
+  associated conductor layers.
+
+  If the "Path file contains via check layers" check box is also
+  checked, for vias with a layer expression, the layers mentioned in
+  the expression are also included, clipped to the area of the via.
+
+  When both boxes are checked, the resulting file can be read in and
+  extraction will work correctly with regard to net extraction, as all
+  needed layers will be present.  This might not otherwise be true.
+
+  The two check boxes track the state of a new variable:
+
+    PathFileVias (boolean or string)
+
+  If set as a boolean (i.e., set to no value), the via layers will be
+  included.  If set to any value, in addition the check tree layers
+  will be included.
+
+  A similar facility now exists in the !netext (batch netlist
+  extraction) command.  This command is independent of the variable
+  and check boxes, instead there are two new command line options:
+
+    -v  include via layers only.
+    -v+ include via layers and via check layers.
+
+* Attributes menu change, Non-symbolic viewing mode for electrical cells.
+
+  In electrical windows, there is a new entry in the Attributes menu:
+
+    No Top Symbolic
+
+  This appears in sub-windows, and the "Main Window" sub-menu of the
+  Attributes Menu.
+
+  When checked, the top cell will be displayed in its schematic
+  representation, whether or not it has an active symbolic
+  representation.
+
+  Unlike the symbl button in the electrical side menu, this does not
+  modify the cell flags, and applies to the present window only.  It
+  is also available when the main window is not in electrical mode.
+
+* Misc. changes.
+
+  Main-state sub-mode names are now shown in the parameters area.
+
+  A pass over the program and documentation has been done to avoid use
+  of the term "symbol" when meaning "cell", to avoid confusion.  The
+  use of "symbol" is CIF terminology from ancient days.
+
+  The !timedbg timing function now applies to most io functions.
+  Indentation is now used to separate terms.  In the listing,
+  the times of lines above a line with more indentation are included
+  in the line - they are sub-times of operations.
+
+  Revised trapezoid clipping functions to eke out a little better
+  performance.  This is noticable in the geometric comparison from
+  the Compare Layouts panel.
+
+* New tech file font keywords.
+
+  The tech file will now recognize separate keywords for the font
+  strings used by the various supported operating systems, so that the
+  tech file can be used with various Xic versions without having to
+  reselect the fonts.  The new keywords are:
+
+  Font1 - Font6
+    Same as the original keywords, these are read by any version of Xic.
+    These keywords are never written to an updated tech file from the
+    Save Tech button in the Attributes Menu.  Rather, the system-specific
+    keywords below will be used instead.  These keywords are for backward
+    compatibility.
+
+  Font1P - Font6P
+    Keywords used with GTK2 (Pango) releases, which are the Red Hat Linux
+    releases.  Equivalent to Font1 - Font6 when read.  Ignored by other
+    operating systems.
+    
+  Font1W - Font6W
+    As above, used in Microsoft Windows releases.
+
+  Font1X - Font6X
+    As above, used with GTK1 (X-window) releases, which are FreBDS7,
+    Linux2, and OS X.
+
+  If, for example, Font1 and Font1X are both given (not a normal
+  occurrence) and a GTK1 version of Xic reads the tech file, the last
+  definition read will be used.
+
+  When using Save Tech, only non-default font strings will be included
+  in the tech file with the keywords.  Previously, all of the font
+  strings would be dumped.
+
+
+Bugs Fixed
+----------
+
+* In the spin command from the side menu, the bounding boxes of
+  45-rotated subcells and labels are now shown correctly.
+
+* The GDSII reader was not handling out-of-range array index (COL/ROW)
+  numbers sanely.  Xic now interprets these as unsigned short
+  integers, meaning that the accepted range is 1-65535, though the
+  GDSII file specification allows only 1-32767.
+
+* The algorithm for empty-cell checking was not catching all empty cells.
+  There are unusual cases that sneak through.  The new implementation
+  appears to be 100% effective.
+
+* Fixed a bug:  infrequent timer events, if they happened while
+  executing in memory manager code, would cause a fault.  This is now
+  prevented from happening.
+
+* The i686 stack backtrace code, called on memory error, seg faults
+  with gcc-4, since the stack alignment has apparently changed to 16
+  bytes.  A working alternative is now in place.
+  
+* Geometric comparison from the Compare Layouts panel would not
+  stop on interrupt with abort confirmation.
+  
+* In the Properties Editor, the Global button remained pressed when
+  the panel became inactive, and would remain pressed when the panel
+  was reactivated, however internally the actual global state was
+  turned off.
+
+* Device highlighting from the !find command was drawing in windows
+  showing a symbolic reprsentation of the current (electrical) cell.
+
+* If Constrain-45 was set, when creating 0-width wires, residual stuff
+  was being left on-screen.
+
+* Windows only, a sub-window created in electrical mode could not be
+  mode-switched to physical mode.
+
+* (GTK1 releases only)
+  The search function in editor/file browser windows no longer visibly
+  scrolls, it now jumps if necessary to the new location.
+
+* The reverse search function in editor/file browser windows is now
+  much faster, previously there could be a lengthly delay when
+  searching up in large files.
+
+* Fixed a subtle history effect that was causing spurious LVS failure
+  due to incomplete association after multiple runs.
+
+* Fixed bug: The CIF reader would lose electrical cell properties.
+
+* Fixed bug: CHD access of a CGX file would omit cell instances.
+
+* Fixed bug:  CHD access with attached CGD had a problem with layer
+  record output of first layer record in each cell.
+
+* (Windows only)
+  The menus in the text editor/file browser had inappropriate entries
+  for the current mode.
+
+* Opening a file without read permission now gives a reasonable error
+  message.  An empty cell of the given name is no longer created.
+
+* In the side menu spin command, the constrain-45 logic was reversed
+  for the readout.
+
+* (GTK2 only)
+  Ghost-drawn text was not being erased/updated correctly.
+
+
+-------------------------------------------------------------------------------
+xic-3.1.5 6/1/2009
+
+I've been busy this month, lots and lots or new stuff this time.  I know
+that this is supposed to be a beta branch, but hopefully this is change
+we can believe in.
+
+Changes and New Features
+------------------------
+
+* New "Cell" menu in main menu bar.
+
+  This new menu contains Push/Pop previously in the Edit menu, and
+  Symbol Tables, Cells List, and Show Tree previously in the File
+  menu.  The main reason for the new menu was to get Push/Pop out of
+  the Edit menu, which is not available in Xiv.  The Push/Pop
+  functions are useful whether or not editing is available, and are
+  now available in Xiv.
+
+* Push and Pop script funcs are now in the Current Cell group, so are
+  available in Xiv.
+
+* Context is now darkened while Push is active.
+
+  When the Push command has been used to push the current cell into
+  the hierarchy, and the context (surrounding features) is being
+  displayed, the context colors are now darkened.  This visually
+  differentiates objects in the current cell from the context.
+
+  The new variable ContextDarkPcnt can be set to a number 1-100 to
+  control the context color intensity percentage.  If not set, 65 is
+  used.  If set to 100, all colors are the same, as in previous
+  releases.  This can also be set from the Window Attributes panel
+  from the Attributes Menu.
+
+* New Info command feature.
+
+  In the Info mode, while an object is selected, pressing Enter will
+  toggle selection of all or other objects in the cell containing the
+  original selected object.  The objects selected will respect the
+  settings of layer-specific selection mode, and object type
+  selectability, as set in the Selection Control Panel.  In this
+  state, the text in the Info window will describe the instance
+  containing the selected objects.  Pressing Enter again will revert
+  to the previous state.
+
+  This is particularly useful when viewing files from the (new)
+  !netext command, as it will select an entire wire net.
+
+* New sub-menu in Attributes Menu.
+
+  The main Attributes Menu has a new "Main Window" sub-menu which is
+  identical to the Attributes menu in sub-windows.  The controls which
+  previously provided these functions have been removed from the panel
+  brought up by the Set Attributes button.  This "Window Attributes"
+  panel now only has entries which apply to all drawing windows,
+  including a couple of new controls:
+
+  1) An entry for adjusting the illumination percentage of the context
+     in the Push command.
+
+  2) An entry for adjusting the maximum length of property text labels
+     that are displayed.
+
+* New keyword editing window in Attributes Menu.
+
+  The new Edit Tech Params button in the Attributes Menu brings up a
+  tech keyword editor, very similar to the editor in the Convert Menu. 
+  The non-conversion parameters have been moved from the Convert
+  editor to the Attributes Editor.
+
+  The tech keywords that can be edited with the Attributes editor are:
+
+    LongName
+    Description
+    Symbolic
+    NoMerge
+    CrossThick
+    CrossField
+
+  The CrossThick and CrossField keywords are new.  The only purpose is
+  to set the thickness and layer polarity assumed in the Cross Section
+  display.  If not set, and using Xic, the extraction system sets
+  these values, as before, but if set they override extraction system
+  values.  Unlike the extraction keywords, the new keywords are
+  available in XicII and Xiv.
+
+  The tech keywords that can be edited with the Convert editor are:
+
+    StreamIn
+    StreamOut
+    NoDrcDataType
+
+  The buttons in the Convert Menu and Extract Menu that bring up
+  similar keyword editors have been renamed "Edit Tech Params".
+
+* The !lthick command has been removed.
+
+  Its purpose was to set the layer thickness used in the Cross Section
+  display in XicII and Xiv.  Use the CrossThick keyword in the keyword
+  editor from the Attributes Menu instead.
+
+* The obsolete !terms command has been removed.
+
+* New !netext command for bulk physical net extraction.
+
+  The !netext command will extract all wire nets from a layout file,
+  and produce a new OASIS file that consists of a top-level that
+  contains an instance of every wire net, each as a separate cell. 
+  See the help topic for complete information.
+
+* Changes to the Extract Menu.
+
+  1) The View Extraction command in now called "Extraction View". 
+     This is now a visual mode only, compatible with most other
+     commands and modes, but geometry editing is not possible.  The
+     group/node selection has been removed from this command.
+
+  2) The Select Paths and Quick Paths menu entries are gone.
+
+  3) There is a new "Selections" menu button, which brings up a "Path
+     Selection Control" panel that controls extraction-mode selection
+     operations.  This provides the functionality of the group/node
+     selection from the old View Extraction command, and the path
+     extraction capability of the old Select Paths and Quick Paths
+     commands, with additional new features, such as resistance
+     measurement.
+
+  See the help system for more detailed information.
+
+* Potential big performance enhancement in extraction.
+
+  In extraction, the extra objects that are created as part of the
+  extraction process are now saved in a spatial-access database rather
+  than a linked list.  This can dramatically speed up grouping in
+  large cells.
+
+* Changes to Extraction layer keywords.
+
+  Major changes were made to the electrical parameters associated with
+  the extraction system.  These are not available in XicII or Xiv.
+
+  These are now part of the extraction module, and will trigger
+  warnings if found in a tech file read by XicII or Xiv.  The example
+  tech files have been updated to avoid these warnings (the warnings
+  are harmless).
+
+  1) The Resistance keyword is gone.
+  2) There is a new Rsh keyword, which can be set to the sheet
+     resistance similar to the old Resistance keyword.
+
+     Internally, when the sheet resistance is needed, it will be
+     obtained from Rsh, if given, or from Rho/Sigma and Thickness, if
+     these are given.
+
+  3) The TranLine keyword is gone.
+  4) There is a new Tline keyword that replaces tranline, but has a
+     different input syntax.  See the help system for information.
+
+* Key mapping from prompt line editor changed.
+
+  When the prompt line editor is active, key presses from the Home,
+  Numeric Plus, Numeric Minus, Page Up and Page Down keys are now
+  passed to the application, rather than being ignored.  The Up Arrow
+  and Down Arrow keys are also passed through, except when "grabbed"
+  for another use, such as in the Properties Editor where they switch
+  between properties.
+
+  When using the prompt line history mechanism "!#[n]", while the
+  prompt is active the Up/Down Arrow keys now cycle through the
+  commands in the history list.
+
+* Property Editor change.
+
+  The logic associated with the Property Editor has changed. 
+  Previously, the panel would disappear when the property editing
+  command was terminated.  This is no longer true, the Property Editor
+  panel will remain visible until explicitly dismissed.  There is a
+  new Activate button in the panel that when pressed will cause the
+  property editing mode to become active.  The editing mode is also
+  entered by pressing the Properties button in the Edit Menu.  When
+  active, the behavor is the same as with the previous logic.  The
+  mode can be terminated by pressing the Activate button or the
+  Properties menu button, pressing Esc, or starting another command. 
+  The Property Editor will remain visible, but the listing will clear,
+  and it will be in an inactive state.
+
+  This gets around the annoyance of having to move/resize a new
+  Property Editor window every time one wants to work with properties.
+
+* The dots (connection point display) logic has changed.
+
+  The dots button in the electrical side menu now brings up a new
+  dialog, which contains a radio-button group allowing showing no
+  dots, the normal dots mode, and the dots at every connection mode. 
+  The side menu button merely pops/un-pops this dialog.  The previous
+  logic was a little more complicated, and possibly confusing.
+
+* Node Mapping logic changes.
+
+  The logic associated with the node name mapping facility has been
+  simplified.  The previous logic was opaque and confusing.  For
+  example, it was not clear that use of the nmos/pmos devices with
+  their special NSUB and PSUB built-in node names required that node
+  name mapping be turned on.
+
+  Now, node name mapping is always enabled, as aside from program
+  debugging there is no reason for a user not to use this facility. 
+  The nodmp button in the side menu merely pops up/down the Node
+  Mapping Editor panel.
+
+  The EnableNodeMap script function still exists, but does nothing.
+
+  See the help description for updated information on this capability.
+
+* New Search Up button in the Selection Control Panel.
+
+  When iterating over layers after a mouse selection operation to
+  determine which objects are affected, the layers are normally
+  searched top to bottom (right to left in the layer table).  When
+  this button is active, the selection order is reversed.  This
+  affects the the initial object(s) selected or deselected in the
+  operation.
+
+  The obscure and virtually undocumented LayerSearchUp variable, which
+  had the same effect when set, has been removed.
+
+  There is a new SetlayerSearchUp script function.
+
+* Native cell file syntax change.
+
+  The terminating line of a native cell file can now have "n" or "nd"
+  following the "E", as in normal CIF.  Previously, anything after "E"
+  would cause a syntax error.
+
+  All native files generated still have "E" as termination for
+  compatibility.
+
+* Updated the internal code that handles tech file keyword recognition.
+
+  The following olsolete keywords are no longer silently ignored.
+  Their presence will now generate a harmless error message.
+
+    BeepVolume
+    ShowInstanceMark
+    AltResolution
+    AltElecResolution
+    ElecAltResolution
+    AltPhysResolution
+    PhysAltResolution
+    AltFormat
+    AltDevice
+
+  These keywords are no longer recognized, but have a current alias.
+
+    FontName             (Use Font4)
+    FixedFontName        (Use Font1)
+    GdsInToLower         (Use InToLower)
+    GdsOutToUpper        (Use OutToUpper)
+
+  This is no longer recognized, the functionality is no longer
+  provided (this wasn't documented anyway).
+
+    MinDimensions
+
+  All of the "electrical" layer keywords (Rho, Sigma, etc.) and
+  Thickness have been moved to the extraction module, meaning they are
+  no longer recognized by XicII and Xiv.  The example technology files
+  have been updated to avoid warning messages.
+
+* New and modified script functions
+
+    new:        SetLayerSearchUp
+    new:        SetSelectTypes
+    new:        FindPathOfGroup
+    modified:   ExtractNetResistance
+    modified:   GetLayerMinDimension
+    modified:   GetLayerRho
+    modified:   GetLayerResis
+
+  These functions were moved to the extraction module, meaning that
+  they are no longer available in XicII and Xiv.
+
+    GetLayerThickness
+    GetLayerRho
+    GetLayerResis
+    GetLayerEps
+    GetLayerCap
+    GetLayerCapPerim
+    GetLayerLambda
+
+* Other graphical user interface changes.
+
+  1) The "spin buttons" for entering numeric data require a lot of
+     behind-the-scenes logic, particularly in Windows.  This has been
+     consolidated into a separate class.  The up/down button
+     acceleration logic was inproved.
+
+  2) The button 2 double-click exit feature, where clicking twice with
+     the middle mouse button would dismiss a pop-up in the GTK
+     releases has been removed.  This was of dubious value and added
+     unnecessary complexity.
+
+* Layer visibility logic change.
+
+  The Invisible techfile keyword sets the default visibility.  This
+  can be changed from the Layer Parameter Editor in the Attributes
+  Menu.  When a tech file is written, the Invisible keyword is written
+  only if the Invisible keyword was applied to the layer, whether
+  or not the layer is currently visible.  Previously, the current
+  visibility set this keyword.
+
+  The default visibility sets the initial visibility of the layer. 
+  When button 2 (or Shift-button 1) is used to turn on the visibility
+  of all layers by clicking on the icon, the layers with Invisible set
+  will now remain invisible.  These layers can be made visible
+  individually if desired.
+
+
+Bugs Fixed
+----------
+
+* Oops, forgot new image file write_region.gif in help in last
+  release.
+
+* The frame box from the Print panel was not being screen-updated
+  correctly.
+
+* Global node names are now reflected in the node name mapping
+  capability, and override explicitly-set names.  Previously, there
+  was an ambiguity that could occur when clicking on nodes in a
+  drawing, the node name returned might be different from the one used
+  in a SPICE listing, if the node is a global node.
+
+* When using the wire vertex editor, the selected wire now remains
+  selected during operations.  Previously, in electrical mode, parts
+  of the wire would visually disappear during an operation.
+
+* Fixed a tiny flaw that caused it to be more difficult to
+  click-select Manhattan wire vertices in some cases, the sensitive
+  area was too small.
+
+* When moving/copying objects with basic mouse-pointer operations,
+  previously it was not possible to move with no translation.  It is
+  now possible to do this provided that the current transform is not
+  the identity transform.
+
+* Fixed very subtle issue when selecting wires:  the "Normal" area
+  selection mode was acting like "All".
+
+* The !sqdump command produced native cell files that contained a
+  symtax error: "End" as file termination instead if "E".
+
+* The Extraction Parameter Editor would not update the correct line
+  when working with multiple lines of the same kind, which can happen
+  when there are multiple Via lines given to a layer.
+
+
+-------------------------------------------------------------------------------
+xic-3.1.4 4/13/2009
+
+Changes and New Features
+------------------------
+
+* Very useful new capability in the Info command.
+
+  The Info command has been significantly enhanced.  Now, any object
+  visible in a dieplay window can be selected, regardless of its depth
+  in the hierarchy.  The text window will show the name of the cell
+  containing the object, and a back-trace of the hierarchy of parent
+  cells up to the current cell.
+
+  The selection depth tracks the visibility depth, including the
+  "Peek" mode of the Expand pop-up.  Unexpanded subcells can be
+  selected, as well as visible objects.
+
+  With an object selected, using the Push command in the Edit Menu
+  will push the editing context to the subcell containing the selected
+  object.  This can be very useful for navigating through a layout
+  hierarchy.
+
+* New prompt-line command: !split
+
+  This new command will write a set of smaller layout files from a
+  large layout file, where each file represents a cell of a logical
+  spatial grid applied to the top-level cell.  The output can be
+  flattened or not.  See the documentation for a complete description.
+
+* Saved CHD files can be used as input.
+
+  A path to a saved CHD file can now be used as input to most commands
+  that expect a layout file as input.  This applies to the Open command
+  and related, and to the cell comparison commands and functions.
+
+* In the Edit Menu:
+
+  Alt-S is a new accelerator for Push.
+  Alt-B is a new accelerator for Pop.
+
+* MS Windows Only
+
+  The "Imlib:  jpeg, tiff, png, etc." print driver has a new feature. 
+  If the word "clipboard" is entered in the File Name text area, the
+  image will be composed in the Windows clipboard, so it can be pasted
+  into other Windows programs.
+
+
+Bugs Fixed
+----------
+
+* The non-flat write operation using windowing and a CHD, from the
+  Conversion panel and elsewhere, would omit cells from output under
+  certain rather uncommon circumstances.
+
+* In the Conversion panel, the Conversion Scale entry is now grayed
+  when the output choice is "CHD".
+
+* MS Windows Only
+  The "Imlib: jpeg, tiff, png, etc." print driver was not available
+  due to some internal trouble.  It was also using the wrong font,
+  which would foul up the legend.
+
+
+-------------------------------------------------------------------------------
+xic-3.1.3 4/4/2009
+
+Changes and New Features
+------------------------
+
+* The internal architecture has been modified to reduce the sizes of
+  the basic object structures used in the main database.  This will
+  decrease memory requirements.
+
+  1.  Property list heads and extraction group numbers are no longer
+      stored in the objects, and are now saved in separate hash tables.
+      Thus, these fields now consume no memory unless actually used.
+
+  2.  In 64-bit binaries, the class hierarchy was altered to better
+      avoid "holes" due to 8-byte alignment.
+
+  The !mmstats command prints the sizes in bytes:
+
+              Box   Poly   Wire   Label   Instance
+  old 32-bit  36    44     48     60      56
+  new 32-bit  28    36     40     52      48
+  old 64-bit  48    64     64     80      80
+  new 64-bit  40    48     56     64      64
+
+* Trapezoid clipping numerics improved.
+
+  Selective use of floating-point arithmetic avoids numerical errors
+  when clipping trapezoids with sub-45 degree angles.
+
+* Updates to polygon ! commands:
+
+  1.  The !poly2path command now uses the wire width set for the layer
+      used by the new wire.  Previously, a 0-width wire was always
+      created.  Wires created are always butt-end, however (the
+      current end style is not used).
+
+  2.  The !polycheck command has slightly different logic:
+      a. As before, the command takes a list of layers as arguments,
+         and no arguments implies "all layers".
+
+      b. If polygons are selected before-hand, only the selected
+         polygons on the listed layers (if any, all layers if not) are
+         checked.  This behavior is new.
+
+      c. If no polys are selected, all polys in the current cell, on
+         the indicated layers, are checked, which was the previous
+         behavior.
+
+  3.  The !polyfix command has been moved from the Layout Information
+      group (in the main module) to the Layout Editing group in the
+      editing module (and so is no longer available in Xiv).  Polygons
+      which can't be repaired are now deleted.
+
+* Updates to script functions:
+
+  1.  New function: SetObjectGroup
+      When extraction is unavailable or not being used, the group
+      number, which is an integer that can be applied to any object or
+      cell instance, can be used for other purposes.  The
+      GetObjectGroup function can be used to retrieve the group number
+      of an object or cell instance.
+
+      These functions are in the main editing group, so are available
+      in XicII, which does not contain the extraction module.
+
+  2.  The Save script function now sets an error message available
+      from GetError on failure.
+
+* The !assemble command has been updated.
+
+  The language used in the specification file has been extended and is
+  better defined.  The help for this command has been completely
+  rewritten to more accurately describe the syntax, along with the new
+  keywords.  The new keywords allow explicit end-of-block termination,
+  which facilitates setting default options.  The boolean option
+  keywords now have a "NoXXX" variation, which turns to option off.
+
+  A corresponding command-line variant has been developed.  The
+  !assemble command can now take directives either from a file or the
+  command line.
+
+  The Assemble pop-up from the Convert Menu, which is a graphical front-
+  end for the !assemble command, has been updated to expose the new
+  functionality.
+
+  The StreamInstance script function has two new arguments which
+  correspond to the new features.
+
+* Change to Cell Hierarchy Digest functionality.
+
+  The CHD data structure no longer contains an independent scale factor.
+  Thus, the scale factor entry area in the Open Cell Hierarchy panel is
+  gone.
+
+  This feature was not used internally, and unnecessarily complicates
+  things.  Scaling can always be applied later, when the CHD is used to
+  access file data.
+
+  The CHD skip flag logic has changed.  The skip flag is now set only
+  from the SetSkipFlag script func.  There is a new, separate, flag
+  for empties.
+
+  The following script functions are new or modified:
+    ChdSetSkipFlag
+    ChdClearSkipFlags
+    ChdSetSkipEmpties
+    ChdClearSkipEmpties (new)
+
+* CIF reader update.
+
+  The CIF reader now uses the same "overwrite cell?" pop-up as the
+  other readers.  The batch-mode cell merge control pop-up is gone.
+
+
+Bugs Fixed
+----------
+
+* Fixed bug in the Open code:  it was possible to get into a mode
+  where the Open function was unresponsive due to reentrancy lockout
+  not being reset.
+
+* Physical mode edge snapping wasn't working correctly if more than 25
+  layers were present.
+
+* Fixed bugs in wire clipping in the erase (side menu) command.
+
+* Use of the windowing feature from the Conversion panel could erroneously
+  omit some cells from output if a scale factor was also applied which was
+  less than 1.0.  This is an old bug, also applies to Gen 2.
+
+* An error window with an "internal inconsistency" message was appearing
+  unnecessarily on occasion when file hierarchies contianing electrical
+  data were written.
+
+* The !assemble command had problems, for example when windowing was
+  applied without flattening, extra top-level cells might appear in
+  output.
+
+* When electrical devices/subcells are moved, the internal node
+  coordinates weren't being updated, causing miscellaneous problems.
+
+* Fixed some problems with the CIF reader.
+  1.  Opening a CIF file through a CHD would skip the "overwrite cell"
+      prompt for cells that are already in memory.
+  2.  The final "C 1;" in some CIF files was causing trouble,
+      preventing CHDs from being properly created.
+  3.  For CIF dialects with labels that explicitly refer to a layer,
+      CHD creation would fail if the referenced layer was not already
+      in the layer table.
+
+* If a CHD was used in "skip empties" mode, the skip flags would
+  remain set and potentially foul up the next operation.
+
+
+-------------------------------------------------------------------------------
+xic-3.1.2 3/10/2009
+
+This release fixes some important bugs.
+
+Changes and New Features
+------------------------
+
+* New '!' command: !diffcells [filename]
+
+  This command will read a file produced by the Compare Layouts panel
+  or the !compare command, and generate cells in the current symbol
+  table containing the difference objects.  The new cells are given
+  the name of the source cell with a suffix "_df12" or "_df21". 
+  The "12" cells contain the objects found in the "<<<" cell but not
+  the ">>>" cell, and vice-versa for the "21" cells.
+
+  The created cells contain only geometry, so do not have subcells,
+  and instance differences are ignored.
+
+  This can be very useful for graphically displaying the differences
+  between cells.
+
+* Polygon handling update.
+
+  Internally, when polygons are generated from trapezoid lists and in
+  other places, the polygon is now tested for validity before being
+  returned for use.  This should prevent degenerate polygons, which
+  can originate from these sources, from ending up in layouts or
+  otherwise causing trouble or warning messages.
+
+  The polygon validity checking function was rewritten for improved
+  speed, since this is called more frequently now.
+
+  When reading in a layout, a message now appears in the log file when
+  a polygon is repaired to remove "needles" (places where the path
+  doubles back on itself).  Previously, this was unreported.
+
+
+Bugs Fixed
+----------
+
+* When writing from memory to GDSII, a bad magnification record was
+  being added to text elements that had no previous GDSII
+  magnification record.  The bad magnification was 1000x too large. 
+  This record is for the most part ignored by Xic, but could certainly
+  cause trouble in other tools.
+
+  Previously, the original GDSII magnification record, if any, would
+  override the internal scaling used by Xic when writing GDSII output. 
+  This is no longer true, the magnification written will correspond to
+  the internal scaling.
+
+  Thus, reading in and writing out an affected GDSII file will fix the
+  text label magnification records.
+
+* The polygon creation function in the side menu would seg fault on
+  the second vertex placement.
+
+* Bugs fixed in !array command and related.
+
+  Ghost drawing during instance placement (with the Place panel) now
+  renders arrays with negative spacing correctly.
+
+  The !array -r (reconfigure) mode had some problems:
+    1. Fixed logic bug parsing "ny".
+    2. If expanding a dimension from 1, and internally no cell spacing
+       has been set, the base dx is now the cell width, dy the cell
+       height.  Previously, these would be 0 (placing array elements
+       in the same location).
+
+  The !array -d (delete) mode in the click-to-select mode could cause
+  floating-point errors which would halt the program.
+
+* In the Compare Layouts panel and the !compare command, in geometric
+  mode, instances were being compared whether or not the option was
+  given.
+
+
+-------------------------------------------------------------------------------
+xic-3.1.1 3/3/2009
+
+This is a 3.1.1 re-release to fix the WRspice IPC bug the 3/2/2006
+packages.
+
+Changes and New Features
+------------------------
+
+* New Compare Layouts button in the Convert menu.
+
+  The layout comparison feature has been updated.  There is a new
+  graphical front end available in the Convert Menu.  The !compare
+  command and the ChdCompare script function have been enhanced. 
+  There is a new "flat" comparison mode, and a new ChdCompareFlat
+  script function.  See the help system for more information.
+
+* Cell Hierarchy Digest (CHD) with linked Cell Geometry Digest (CGD)
+  changes.
+
+  It is no longer assumed that a CGD contains the geometry for all
+  cells in a linking CHD.  When a CHD is used to access the layout,
+  cells not found in the CGD will be obtained from the layout file, as
+  in the case where no CGD is linked.  Thus, the CGD can be used as a
+  "geometry cache", and there is a new script interface to make use of
+  this.
+
+  When writing a file using a CHD with a linked CGD, the electrical
+  records are now included in output.  These are obtained from the
+  file in the normal way.
+
+  A CHD can now link to a CGD on a remote host.  This implements a
+  "geometry server" concept, where a host may be designated as the
+  provider of geometric information for a cluster.  This architecture
+  may be attractive for some applications.
+  
+  The "geometry stream" server protocol has been extended to provide
+  existence testing of CGDs, cells, and layers.
+
+  The caching feature for CHD/CGDs is implemented in the following new
+  script functions:
+
+  (int) ChdLinkCgd(chdname, cgdname, hostname, port)
+      Link a (possibly remote) CGD to a local CHD.
+
+  (string) NewCellGeomDigest()
+      Create a new, empty CGD.
+
+  (int) CgdIsValidCell(cgdname, cellname)
+  (int) CgdIsValidLayer(cgdname, cellname, layername)
+      Check validity of cell and layer names.
+
+  (int) CgdRemoveCell(cgdname, cellname)
+  (int) CgdRemoveLayer(cgdname, cellname, layername)
+      Remove cells or layer info from a CGD.
+
+  (int) CgdAddCells(cgdname, chdname, cells_list)
+      Add cells to a CGD.
+
+* More new/modified script functions.
+
+  (stringlist_handle) ChdListCells
+      Return a handle to a list of cells, either within a cell hierarchy
+      or all cells in a CHD.
+
+  (int) ChdCompare
+  (int) ChdCompareFlat
+      New or improved script functions for cell comparison.
+
+  (int) DRCcheckArea
+  (int) DRCchdCheckArea
+      Improved DRC functions.
+
+* Misc. small updates to the DRC interface.
+
+  In DRC, the NoHoles and Connected tests are now only done when
+  checking the area of the entire cell.
+
+  The DRC errors file is now named "drcerror.log.cellname" or
+  "drcerror.log.cellname.pid".  Previously, the cellname was absent.
+
+  In the Show Errors command, if a DRC run for the same cell finishes,
+  the viewport will now pop down.  Pressing PageDn will pop it up again,
+  with the new errors file.
+
+  Modified script function: DRCcheckArea
+    The argument list has changed, new capability and flexibility added.
+
+  New script function: DRCchdCheckArea
+    This performs DRC using a CHD, so that the layout does not have to fit
+    in memory.
+
+* 0ne-vertex wire handling changed.
+
+  Previously, these would be rendered as a box with width the same as
+  the wire width, centered on the vertex, for all end styles.  This
+  has changed slightly:
+
+  Flush-end wires:  a "bad wire" error is generated.
+  Rounded-end wires:  rendered as an octagon, centered on the vertex.
+  Extended-end wires: rendered as a box, as before.
+
+* New Variable: OasWriteRndWireToPoly (boolean)
+
+  This has a corresponding button in the Advanced OASIS panel.
+
+  If set, when converting rounded-end wires to OASIS, the wire is
+  converted to a polygon which is shaped the same way as all
+  rounded-end wires in Xic.  Otherwise, the wire is converted to an
+  extended-end wire (Manhattan end).  This is always done when adding
+  geometry to a CGD.  Use of a polygon requires more memory than the
+  wire, but preserves the exact same geometry in the OASIS
+  representation.
+
+* Conversion panel logic.
+
+  The Conversion Scale entry is now grayed and ignored when the New CGD
+  tab is selected.  When linked to a CHD, the CHD always sets the geometry
+  scale, and if the CGD had independent scaling, the output would be
+  rubbish.  This change prevents non-unit scaling of a CGD.
+
+* Open command and related.
+
+  In the Open command and the Read layout File action, the prompt
+  is now "File, CHD and/or cell?".  This makes it explicit that a CHD
+  name can be entered.
+
+
+Bugs Fixed
+----------
+
+* When creating a GGD, electrical geometry was getting into the
+  physical database.
+
+* CHD configuration push/pop for area was broken, causing CHDs to become
+  unexpectedly unconfigured.
+
+* The layer list for layer filtering wasn't working in some cases, in
+  particular names from the layer table that are not hex-equivalents
+  weren't working with GDSII/OASIS source files.  The given layer
+  names can now be "real" names from the layer table, or hex "pseudo
+  names".
+
+* The logic in the CHD configuration panel was not quite right for
+  cell name configuration.
+
+* If flattening, windowing, etc.  was set up in the Conversion panel,
+  and the output format was then switched to CGD, the CGD would be
+  created using these features, though this was unintended and the
+  input areas are grayed in this case.
+
+* Fixed bug:  using deletion of coincident objects (in the Set Import
+  Params panel) could cause seg faults.
+
+* Fixed keyboard focus problem in CHD Add pop-up.
+
+* Bugs fixed in CHD display mode:
+
+    The grid was not being shown unless "On Top" was set in the Grid
+    panel.
+
+    Labels that extend out of the window are now shown.  Previously,
+    labels clipped by the window would disappear.
+
+    The "subthreshold boxes" mode should now work correctly.  Previously,
+    all objects were always drawn, and "extra" subthreshold bounding
+    boxes were being shown.
+
+    MS Windows only:  entering/leaving CHD display mode would
+    uncheck/check various menu items instead of graying/ungraying.
+
+* Prevented redundant window/clip operations in certain flattening
+  modes, this should improve performance.
+
+* Geometry scaling in CHD access was broken when the file contained
+  electrical information.
+
+* The zero-padding at the end of GDSII files was sometimes the wrong
+  length, which would prevent the reader from finding the electrical
+  records.
+
+  (This was fixed in the 3/3/2009 re-release)
+* The IPC connection to WRspice was unstable due to a strange timing
+  issue.  The connection would immediately break after being
+  established, but only sometimes (usually only on the first try).
+
+
+-------------------------------------------------------------------------------
+xic-3.1.0 2/9/2009
+
+This is the initial release note for the beta branch of Xic generation 3.
+The changes are relative to the final alpha release 3.0.12.
+
+A draft manual is now available on the "docs" directory in the
+distribution area of wrcad.com.
+
+See the xic3.0 file for the alpha-test series release notes.
+
+
+Changes and New Features
+------------------------
+
+* Memory manager updated.
+
+  Modified the internal memory allocator so it can use larger than
+  64-element blocks.  This has had a positive effect on performance
+  in computational-geometry intensive applications on large files.
+
+* Rulers command enhancement.
+
+  In the Rulers command, the ghost-drawn ruler now shows the scale
+  factors and actual gradations.  Previously, this showed only dummy
+  lines.
+
+* New !array command for manipulating instance arrays.
+
+  This command manipulates instance arrays.  There are three forms:
+
+  !array -u
+    This will "unarray" all selected arrays.  The arrays are converted
+    to individual instance placements, in the same location and
+    orientation as the original array elements.
+
+  !array -d [nx1[-nx2],[ny1[-ny2]]
+    This form will delete a rectangular region of array elements.  The
+    undeleted elements will be configured into a new collection of arrays
+    or single instance placements.
+
+    The elements to delete can be given on the command line or selected
+    with the mouse pointer.
+
+  !array -r [nx [+]= val] [ny [+]= val] [dx [+]= val] [ dy[+]= val]
+    This will reconfigure the array parameters of the first selected
+    instance.  It can convert instances into arrays and vice-versa.
+
+  See the description of the command in "? !array" for details.
+
+* A big batch of new script functions.
+
+  There is a new feature in scripts:  named string hash tables.  These
+  are useful for associating strings with integers, and for
+  detecting/preventing duplicates in a collection of strings.  The
+  tables are persistent across script invocations.  The interface
+  provides the following new functions to support this feature:
+
+    (int) FindNameTable(tabname, create)
+    (int) RemoveNameTable(tabname)
+    (stringlist_handle) ListNameTables()
+    (int) ClearNameTables()
+    (int) AddNameToTable(tabname, name, value)
+    (int) RemoveNameFromTable(tabname, name)
+    (int) FindNameInTable(tabname, name)
+    (stringlist-handle) ListNamesInTable(tabname)
+
+  There are new functions which allow elements of the GUI to be used
+  for prompting in scripts.  These pop up input solicitation widgets.
+
+    (string) PopUpInput(message, default, buttontext, multiline)
+    (int) PopUpAffirm(message)
+    (real) PopUpNumeric(message, initd, mind, maxd, del, numd))
+
+  There is a new capability that sets up a loop, whereby an area of a
+  cell hierarchy is logically cut into a grid, and the algorithm steps
+  through the grid cells and performs some operation on the flattened
+  geometry contained in the grid cell.  There are two new functions
+  which use this capability.
+
+    (int) ChdIterateOverRegion
+      This function will iterate over the elements of a grid, and call
+      a user-supplied script function in every grid cell.  The
+      flattened geometry for that grid cell is available for use in
+      the function, which can perform some operation or obtain
+      metrics.
+
+    (int) ChdWriteDensityMaps
+      This uses the subsystem above, but is hard-coded to obtain the
+      density (fraction of dark area) for each layer in each grid cell.
+
+  There are new density.scr, density1.scr, and density2.scr example
+  scripts provided which illustrate use of these functions.
+
+* Extraction enhancement.
+
+  Added some additional intelligence to the physical/electrical
+  association algorithm.  This takes care of cases where a cell
+  terminal is applied to metal that is not connected to any device or
+  subcircuit.  The contact is probably a pass-through.  These
+  terminals weren't being associated, as (if there is more than one)
+  there isn't enough information available at the time.  A second
+  top-down pass is now made through the hierarchy to find these cases
+  and resolve them.  The extraction example #4 of the amd2901 layout
+  now works (!help extexamp4), after years of being broken.
+
+* WRspice interface changes.
+
+  In the !spcmd command, there is is a new "send filename" directive.
+  This is implemented on the client side.  The filename is a local
+  file, which will have the .inc/.lib lines expanded locally, and the
+  complete text will be sent to WRspice and sourced.
+
+  After pressing the run button and when prompted for an analysis
+  string, in previous releases it was possible to give "load
+  filename" to load rawfile on the WRspice machine.  This obscure
+  feature has been removed, the !spcmd command can be used intead.
+
+
+Bugs Fixed
+----------
+
+* Memory deallocation bug fixed, applies to releases using GTK-2 only.
+
+* Bugs fixed in the Peek mode of the Expand command:
+  1) Pressing the Numeric +/- keys would increment/decrement the
+     expansion depth rather than zoom in/out, as they were being
+     erroneously interpreted as ordinary +/- keys.
+  2) Pressing the - key repeatedly would cycle past "expand none"
+     to "expand all".  It now stops at "expand none".
+

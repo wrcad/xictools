@@ -1,0 +1,185 @@
+
+!!HEADER
+    <table border=1 width=100% cellpadding=0 cellspacing=0>
+    <tr><td bgcolor=white><img src=wrbannermain.gif width=300 align=left>
+    <font face=utopia color=royalblue size=5>
+    <br>&nbsp;&nbsp; Help System</font></td></tr>          
+    <tr><td bgcolor=white height=40>
+    <font face=utopia color="#dd0000" size=5>&nbsp;&nbsp;%TITLE%</font></td></t>
+    </table><p>
+ 
+!!FOOTER
+    <p><hr><font size=3 face=utopia color=darkblue>
+    &#169; Whiteley Research Inc. 2014, All Rights Reserved.</font>
+
+!!KEYWORD
+mozy mozyhelp
+!!TITLE
+Welcome To Mozy!
+!!HTML
+    <table border=1 width=100% bgcolor=#ffffff cellpadding=4 rules=none>
+    <tr><td align=center>
+    <font face=helvetica>
+    <b>456 Flora Vista Avenue, Sunnyvale CA 94086</b>
+    </font>
+    <table border=0 width=80%>
+     <tr><td align=left>
+     <font face=helvetica color="#dd0000">
+     (408) 735-8973
+     </font>
+     </td><td align=right>
+     <font face=helvetica color="#dd0000">
+     (408) 245-4033 (fax)
+     </font>
+     </td></tr>
+     <tr><td align=left>
+     <font face=helvetica>
+     <a href="http://www.wrcad.com">www.wrcad.com</a>
+     </font>
+     </td><td align=right>
+     <font face=helvetica>
+     <a href="mailto:support@wrcad.com">support@wrcad.com</a></tr>
+     </font>
+     </td></tr>
+     </table>
+    </td></tr>
+    </table>
+
+    <p>
+    <b><i>Mozy</i></b> is a multi-purpose HTML viewer derived from the
+    help system used in the <i>XicTools</i> products from Whiteley
+    Research Inc.  These products are described on the Whiteley
+    Research web site at <a
+    href="http://www.wrcad.com">www.wrcad.com</a>.
+
+    <p>
+    When started from the command line, <b><i>Mozy</i></b> will take
+    the first argument as a topic to view.  Topics can also be entered
+    by using the <b>Open</b> menu item in the <b>File</b> menu.  A
+    topic can be one of:
+
+    <ul>
+    <li>The keyword associated with a help topic in the help database.
+    <p>
+    <li>A general URL referencing a page on the world-wide web.  The
+    URL must include the protocol specifier ("<tt>http:</tt>") in the
+    web address.
+    <p>
+    <li>The path to a viewable file on the local machine.  A viewable
+    file can be plain or HTML text, or an image.
+    </ul>
+
+    <p>
+    More information on the help system provided by <b><i>Mozy</i></b>
+    can be found <a href="helpsys">here</a>, or from the <b>Help</b>
+    menu in the menubar.
+
+    <p>
+    <b><i>Mozy</i></b> displays level 3.2 HTML, and does not
+    understand style sheets and consequently does a poor job displaying
+    most current web sites.  It works fine for basic HTML as likely
+    found in help text, and in HTML email.
+
+    <p>
+    One application for <b><i>Mozy</i></b> is as an accessory to allow
+    display of HTML messages from an email client such as
+    <tt>mutt</tt> which does not have that capability.  If, from
+    <tt>mutt</tt>, HTML content is piped to <b><i>Mozy</i></b>, the
+    viewer will appear displaying the content.  Once visible, the
+    operation can be repeated and the viewer will display the new
+    content.
+
+    <p>
+    <b><i>Mozy</b></i> contains some unique features, provided in the
+    menus.  One such feature is the optional FIFO created in the
+    user's home directory.  Text written to this "file" will be parsed
+    and displayed.  Another example is the <b>Log Transactions</b>
+    button, which will cause the actual transmissions to and from the
+    server to be duplicated to the standard output.  This can be
+    useful for debugging purposes.  The <b>Bad HTML Warnings</b>
+    button will issue warnings about imperfections in the HTML as it
+    is parsed.
+
+    <p>
+    <b><i>Mozy</i></b> maintains a cache of pages and images, which is
+    located in the subdirectory "<tt>.wr_cache</tt>" in the user's
+    home directory.  If you see a really nifty web page, and you want
+    to see the source, simply look at the <tt>.wr_cache/directory</tt>
+    file.  This will provide a listing of all of the components of the
+    page, which are conveniently located in the same directory.  The
+    cache contents can also be viewed as a pop-up list from the
+    <b>Show Cache</b> button in the <b>Options</b> menu.  Clicking on
+    an entry in the list will show that entry.  Thus, you can revisit
+    pages even when off-line.
+
+    <p>
+    Many of the features and capabilities of <b><i>Mozy</i></b> can be
+    configured with a <tt>.mozyrc</tt> file placed in the user's home
+    directory.  This is accomplished by pressing the <b>Save
+    Config</b> button in the <b>Options</b> menu.  Once this file is
+    installed, it will be updated when viewer windows are closed,
+    retaining the last settings.
+
+    <p>
+    Your comments about <b><i>Mozy</i></b>, and bug reports, would be
+    most welcome.  These can be sent to <a
+    href="mailto:mozy@wrcad.com">mozy@wrcad.com</a>.
+
+    <p>
+    Have fun!
+
+    <h2><i>Mozy</i> Configuration</h2>
+
+    <p>
+    When <b><i>Mozy</i></b> starts, it will build an internal table of
+    the topics found in the <a href="helpfiles"><tt>.hlp</tt>
+    files</a> that are found in the search path.  The search path is a
+    colon-separated list of directory paths, and if not given it will
+    default to the single directory that corresponds to the default
+    installation location for help files.  This is
+    <tt>/usr/local/share/mozy</tt>.
+
+    <p>
+    The search path is specified to <b><i>Mozy</i></b> through the
+    <b>MOZY_HELP_PATH</b> environment variable.  For example, suppose
+    that the user has created some new <tt>.hlp</tt> files, and wishes
+    to make them accessible to <b><i>Mozy</i></b>, while keeping
+    access the the supplied files that are installed in the usual
+    place.  The user has placed the files, along with any needed image
+    files, in <tt>/home/joe/helpfiles</tt>.  If using
+    <tt>bash</tt> or another Bourne-type shell, the command to set the
+    environment variable would be
+    <br><br>
+    <tt>export
+    MOZY_HELP_PATH=/home/joe/helpfiles:/usr/local/share/mozy</tt>
+    <br><br>
+    If using the C-shell, the corresponding command would be
+    <br><br>
+    <tt>setenv MOZY_HELP_PATH
+    /home/joe/helpfiles:/usr/local/share/mozy</tt>
+
+    <p>
+    With this variable set in the environment, <b><i>Mozy</i></b> will
+    be able to locate and display the user's topics.
+
+    <p>
+    When <b><i>Mozy</i></b> starts without an argument, a default
+    topic is shown.  The user may prefer that another topic be shown
+    instead.  This can be specified with the <b>MOZY_DEF_TOPIC</b>
+    environment variable.  This variable can be set to any keyword,
+    URL, or local file path that could be given to <b><i>Mozy</i></b>
+    through the <b>Open</b> command in the <b>File</b> menu.  When the
+    variable is set, the indicated page will be displayed when
+    <b><i>Mozy</i></b> first appears.
+
+    <p>
+    The environment variables can be set in the user's shell startup
+    script to make the definitions "permanent".
+
+!!SUBTOPICS
+mailclient
+textentry
+filesel
+helpsys
+hcopypanel
+httpget

@@ -1,0 +1,912 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiUser.hlp,v 1.30 2014/10/23 04:37:49 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiUser.hlp
+!!TITLE
+xiUser.hlp
+!!HTML
+
+!!SUBTOPICS
+xic:usermenu
+submenu
+scr:library
+scr:crypt
+xic:debug
+xic:hash
+user:fullcursor
+user:paths
+user:spiral
+user:spiralform
+user:yank
+
+
+!! 101208
+!!KEYWORD
+xic:usermenu
+!!TITLE
+User Menu
+!!HTML
+    The <b>User Menu</b> contains built-in commands listed in the table
+    below.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>User Menu</caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:debug"><b>Debugger</b></a></td> <td><tt>debug</tt></td>
+      <td><b>Script Debugger</b></td> <td>Debug scripts</td></tr>
+    <tr><td><a href="xic:hash"><b>Rehash</b></a></td> <td><tt>hash</tt></td>
+      <td>none</td> <td>Rebuild <b>User Menu</b></td></tr>
+    <tr><td>others</td> <td> - </td> <td> - </td>
+      <td>User scripts and menus</td></tr>
+    </table>
+
+    <p>
+    Other buttons which appear in the <b>User Menu</b> execute
+    user-generated <a href="xicscript">scripts</a>, or pop up menus of
+    user-generated scripts.  <i>Xic</i> provides a powerful native
+    language, from which the user can automate various tasks.  The
+    <b>User Menu</b> is the primary means to execute scripts, though
+    the <a href="!exec"><b>!exec</b></a> command provides a
+    non-graphical alternative.
+
+    <p>
+    The default system-wide location for scripts is in the directory
+    <tt>/usr/local/xictools/xic/scripts</tt>, however this can be
+    reset with the <b>XIC_SCR_PATH</b> <a
+    href="xic:env">environment</a> variable, or defined in the <a
+    href="techfile">technology file</a> with the <tt>ScriptPath</tt>
+    keyword.  The syntax is the same as for other <i>Xic</i> <a
+    href="xicpaths">search paths</a>, for example:
+
+    <blockquote>
+      <tt>ScriptPath (</tt> <i>directory directory1</i><tt> ... )</tt>
+    </blockquote>
+
+    This path can also be set with the <a
+    href="ScriptPath"><b>ScriptPath</b></a> variable using the <a
+    href="!set"><b>!set</b></a> command.  A script path set with the
+    <b>ScriptPath</b> variable takes precedence over a script path
+    defined in the environment using the <b>XIC_SCR_PATH</b>
+    environment variable.  If no script path is specified in the
+    technology file, the effective path used will consist of the
+    single default directory.
+
+    <p>
+    Each directory in the search path is expected to contain script
+    files, which must have an extension "<tt>.scr</tt>", function <a
+    href="scr:library">libraries</a> which are named
+    "<tt>library</tt>", and script <a href="submenu">menu files</a>,
+    which will produce a drop-down sub-menu in the <b>User Menu</b>. 
+    <i>Xic</i> provides a library capability which allows code to be
+    shared between scripts.  Script menu files must have an extension
+    "<tt>.scm</tt>".  In addition, auxiliary files such a images,
+    data, or documentation files may also be present, for use in
+    certain scripts.  These will be ignored when searching for
+    scripts.
+
+    <p>
+    The default button label in the <b>User Menu</b> for a script
+    found in the search path is the base name of the script file,
+    i.e., the file name with the <tt>.scr</tt> stripped off.  However,
+    if the first non-blank line of the script file is of the form
+
+    <blockquote>
+    <tt>#menulabel</tt> <i>label</i>
+    </blockquote>
+
+    then the <b>User Menu</b> button will use the text in
+    <i>label</i>.  If the <i>label</i> text contains white space, it
+    must be quoted.  This text can contain punctuation, though some
+    characters may be stripped or replaced internally.  The
+    <i>label</i> text must be unique in the top level of the <b>User
+    Menu</b>, duplicate entries will not be added.
+
+    <p>
+    Scripts can also be included in the <a
+    href="techfile:scripts">technology file</a> itself.  These scripts
+    will also appear as buttons in the <b>User Menu</b>, as with other
+    scripts.  This can be useful for including simple
+    technology-specific commands, such as those that create special
+    extraction layers.  However, scripts defined in the technology
+    file can not be loaded into the debugger.
+
+    <p>
+    The <a href="!script"><b>!script</b></a> command is yet another
+    means by which scripts can be placed into the <b>User Menu</b>. 
+    This command associates a label, which will appear on the menu
+    button, with an arbitrary path to a script file.  Commands
+    registered in this way can also be removed with the <b>!script</b>
+    command.
+
+    <p>
+    Each command button label in the <b>User Menu</b> is unique in the
+    menu or sub-menu where it resides.  If a duplicate label is found
+    during the search along the search path, that script will not be
+    added to the menu, and the existing entry will be retained. 
+    However, scripts added from the technology file and with the
+    <b>!script</b> command are stored somewhat differently, so label
+    text clashes can occur.  The following priority is observed in
+    this case.
+
+    <ol>
+    <li>Scripts defined with the <b>!script</b> command.
+    <li>Scripts found in the script search path and menus.
+    <li>Scripts found in the technology file.
+    </ol>
+
+    <p>
+    An <a href="scr:crypt">encryption capability</a> for scripts is
+    provided.  This allows the content of scripts to be hidden from
+    users.
+
+!!SEEALSO
+submenu
+xic:commands
+user:fullcursor
+user:paths
+user:spiral
+user:spiralform
+user:yank
+
+!! 020611
+!!KEYWORD
+submenu
+!!TITLE
+User Menu Sub-Menus
+!!HTML
+    Sub-menus in the <b>User Menu</b> are produced by a type of library
+    file, "script menus", which (at the top level) are found in the
+    directories in the script <a href="xicpaths">search path</a>.  The
+    script menus <i>must</i> have an extension "<tt>.scm</tt>"
+    ("script menu").  The format is similar to <a
+    href="libraries">library files</a>:
+
+    <blockquote>
+    <tt>(Library</tt> <i>libname</i><tt>);</tt><br>
+    <tt>#</tt> <i>any comments</i><br>
+    <br>
+    <tt>#</tt> <i>optional keywords to implement conditional flow</i><br>
+    <tt>Define</tt> [<tt>eval</tt>] <i>name</i> [<i>value</i>]<br>
+    <tt>If</tt> <i>expression</i><br>
+    <tt>IfDef</tt> <i>name</i><br>
+    <tt>IfnDef</tt> <i>name</i><br>
+    <tt>Else</tt><br>
+    <tt>Endif</tt><br>
+    <br>
+    [<tt>nosort</tt>]<br>
+    <i>name1   path_to_script</i><br>
+    ...<br>
+    [<i>name2</i>]&nbsp; <i>path_to_menu</i><br>
+    ...<br>
+    </blockquote>
+
+    The first line must be a CIF comment line in the same format as
+    other library files.  The <i>libname</i> contains the text which
+    will appear in the menu button which will pop up the menu.  This
+    text may contain white space and/or punctuation, though some
+    special characters, such as '/', may be stripped or replaced
+    internally.  The text can be quoted, though this is optional.  The
+    text can also not appear at all, in which case the label used will
+    be the base name (the file name, stripped of the <tt>.scm</tt>
+    extension) of the menu file.
+
+    <p>
+    Blank lines and lines starting with '#' are ignored.  If a line
+    containing the single word "<tt>nosort</tt>" is found, then the
+    menu entries will be in the same order as in the file, otherwise
+    they will be alphabetically sorted.  The <b>User Menu</b> itself
+    is always sorted.
+
+    <p>
+    All library files (including the device library) support a limited
+    macro capability.  The macro capability makes use of the generic
+    <a href="macro">macro preprocessor</a> provided in <i>Xic</i>. 
+    The reader should refer to this section for a full description of
+    the preprocessor capabilities.  The preprocessor provides a few
+    predefined macros used for testing (and customizing for) release
+    number, operating system, etc.  The keyword names, which
+    correspond to the generic names as described for the macro
+    preprocessor, are case-insensitive and listed in the following
+    table.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Keyword</th> <th>Function</th></tr>
+    <tr><td><tt>Define</tt></td> <td>Define a macro.</td></tr>
+    <tr><td><tt>If</tt></td> <td>Conditional evaluated test.</td></tr>
+    <tr><td><tt>IfDef</tt></td> <td>Conditional definition test.</td></tr>
+    <tr><td><tt>IfnDef</tt></td> <td>Conditional non-definition test.</td></tr>
+    <tr><td><tt>Else</tt></td> <td>Conditional else clause.</td></tr>
+    <tr><td><tt>Endif</tt></td> <td>Conditional end clause.</td></tr>
+    </table>
+    </blockquote>
+
+    These can be used to conditionally determine which parts of the
+    file are actually loaded when the library is read.  The paths (but
+    not the names) are macro expanded, and the conditional keywords
+    can be used to implement flow control as the file is read.  They
+    work the same as similar keywords in the <a
+    href="techfile:macros">technology file</a> and in <a
+    href="scr:preproc">scripts</a>, and are reminiscent of the
+    preprocessor directives in the C/C++ programming language.
+
+    <p>
+    The <tt>Define eval</tt> construct can access functions found in a
+    <a href="scr:library">script library</a> file found in the same
+    script <a href="xicpaths">search path</a> component directory as
+    the menu file file, or from library files found earlier in the
+    search path.  When traversing the script search path, the library
+    file, if any, is loaded before the script files and menu files are
+    read.
+    <p>
+    The remaining lines in the file are name/path pairs, where the
+    <i>name</i> is the label that will appear on the button in the
+    pop-up menu, and the <i>path</i> is a <i>full</i> path to a script
+    file (with "<tt>.scr</tt>" extension) or another script menu file
+    (with "<tt>.scm</tt>" extension) for a sub-menu.  If the path is to
+    a menu file, the pop-up menu will contain a button which will
+    produce another pop-up menu containing the referenced menu file's
+    entries.  There is no limit on the depth of the references.  In
+    this case, the <i>name</i> can be omitted, in which case the
+    referenced menu file will supply the button text.  If a
+    <i>name</i> is given, it will supersede the button text defined in
+    the referenced menu file.
+
+    <p>
+    A <i>name</i> must always be given for a path to a script file. 
+    If the label text in <i>name</i> contains white space, it must be
+    quoted.  Punctuation is allowed, though some characters may be
+    stripped or replaced internally.  Each <i>name</i> text should be
+    unique in the menu, duplicates are ignored.
+
+    <p>
+    Scripts referenced through a menu file should not be kept in the
+    script search path directories, as they would be added to the main
+    <b>User Menu</b> as well as the pop-up menu.  They can be placed,
+    for example, in a subdirectory of the directory containing the
+    menu file, which is not itself in the script path.
+
+    <p>
+    Only scripts which are defined in separate files can be referenced
+    through a script library, not those defined in the technology
+    file.  Scripts defined in the technology file, and those added
+    with the <a href="!script"><b>!script</b></a> command, will appear
+    in the main <b>User Menu</b>.
+
+    <p>
+    <b>Example:</b><br>
+    Suppose that you have a <tt>submenu.scm</tt> file, and you want to
+    be able to set the command paths at program startup, depending on
+    some factors.  One way to do this is to white a function and place
+    it in the script <tt>library</tt> file, that will return a path to
+    a directory containing the menu functions, e.g.,
+
+    <blockquote>
+    <tt>function func_loc()</tt><br>
+    <tt>&nbsp;&nbsp;if (</tt><i>something</i><tt>)</tt><br>
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;return ("/home/bob/commands")</tt><br>
+    <tt>&nbsp;&nbsp;else</tt><br>
+    <tt>&nbsp;&nbsp;&nbsp;&nbsp;return ("/home/joe/commands")</tt><br>
+    <tt>&nbsp;&nbsp;end</tt><br>
+    <tt>endfunc</tt>
+    </blockquote>
+
+    <p>
+    In the <tt>submenu.scm</tt> file, one has lines like
+
+    <blockquote><tt>
+    define eval FUNC_LOC func_loc()<br>
+    cmd1 FUNC_LOC/cmd1.scr<br>
+    cmd2 FUNC_LOC/cmd2.scr<br>
+    ...
+    </tt></blockquote>
+
+    <p>
+    In this example, the menu appearance is always the same, however
+    the functions executed when a button is pressed depend on the
+    <tt>func_loc()</tt> return.
+
+!!SEEALSO
+xic:usermenu
+
+!! 062808
+!!KEYWORD
+scr:library
+!!TITLE
+Script Function Libraries
+!!HTML
+    Scripts are executed in <i>Xic</i> using a high-performance
+    compilation technique whereby the entire script is first compiled,
+    then executed.  Looping constructs within the script execute very
+    quickly.  Further, scripts can call <a
+    href="scr:functions">user-defined</a> functions that have been saved
+    in a library, avoiding the tiny compilation overhead and allowing
+    the user to build a collection of sharable function blocks.
+
+    <p>
+    Files named "<tt>library</tt>" in the script <a
+    href="xicpaths">search path</a> are read and processed when
+    <i>Xic</i> starts, and during a <a
+    href="xic:hash"><b>Rehash</b></a> command.  These files should
+    contain <a href="scr:functions">function</a> definitions.  The
+    functions will be "compiled" and saved within <i>Xic</i>.  Any
+    executable lines that are not part of a function block will be
+    executed once only as the library is read.  This can provide
+    initialization, if needed.
+
+    <p>
+    Functions that are saved will be available for calling from
+    scripts, avoiding having to parse them each time the script is
+    run.  This also facilitates using the same functions in several
+    scripts.
+
+    <p>
+    The functions saved within <i>Xic</i> can be maintained with two
+    '!' commands:  <a href="!listfuncs"><b>!listfuncs</b></a> provides
+    a pop-up listing of the functions stored, and <a
+    href="!rmfunc"><b>!rmfunc</b></a> allows the user to remove
+    functions from memory.
+
+!!SEEALSO
+xicscript
+scr:exec
+
+!! 062808
+!!KEYWORD
+scr:crypt
+!!TITLE
+Script Encryption
+!!HTML
+    Script encryption allows script files to be encoded so as to be
+    unreadable without a password.  This allows OEMs to provide script
+    packages to users while maintaining confidentiality of the script
+    content.
+
+    <p>
+    The encryption method is strong enough to foil most attempts at
+    breaking the code by average users, however it is probably easily
+    broken by experts.  The encryption algorithm is not
+    export-restricted.
+
+    <p>
+    Encryption and decryption of script files is implemented with two
+    <a href="wrencode">utilities</a>, which are provided in the
+    <i>Xic</i> distribution.  Also provided is a <a
+    href="wrsetpass">utility</a> for changing the default password
+    compiled into the <i>Xic</i> executable.  There is also a related
+    script function, and a related command-line argument to
+    <i>Xic</i>.
+
+    <p>
+    The encryption/decryption utilities are:
+    <blockquote>
+    <tt>wrencode</tt> <i>file</i> [<i>files</i> ...]<br>
+    <tt>wrdecode</tt> <i>file</i> [<i>files</i> ...]
+    </blockquote>
+
+    <p>
+    Both programs take as arguments lists of files to encode or
+    decode.  At least one file must be specified.
+
+    <p>
+    The <tt>wrencode</tt> program will prompt the user for a password,
+    and for a repetition of the password.  The files on the command
+    line will be encrypted using this password.<br>
+    <b>WARNING</b>:  since the encryption is done in-place, be sure to
+    save a non-encrypted backup of the files. 
+
+    <p>
+    The <tt>wrdecode</tt> program will prompt once for a password, and
+    will decrypt the files listed in the command line which have been
+    encrypted with this password.  They are not touched otherwise.
+
+    <p>
+    The encryption/decryption should be portable between all systems
+    that can run these two utilities.
+
+    <p>
+    <i>Xic</i> will read plain-text and encrypted scripts.  Encrypted
+    scripts can be read only if <i>Xic</i> has the correct password,
+    i.e., the one used in the <tt>wrencode</tt> utility to encrypt the
+    scripts.  At present, <i>Xic</i> can only retain one password at a
+    time.
+
+    <p>
+    <i>Xic</i> has a built-in default password, which is active if no
+    other password is specified.  This is built into the <i>Xic</i>
+    executable file (in encrypted form) and can be changed with the
+    <tt>wrsetpass</tt> utility.  The "factory" default password is:
+    <blockquote>
+    <b>Default password</b>: <tt>qwerty</tt>
+    </blockquote>
+
+    <p>
+    The password can be given to <i>Xic</i> on the <a
+    href="xic:cmdline">command line</a> with the <tt>-K</tt> option:
+
+    <blockquote>
+    <tt>-K</tt><i>password</i>
+    </blockquote>
+
+    <p>
+    Note that there is no space between the "<tt>-K</tt>" and the
+    password.  As the password can contain almost any character, if
+    the password contains characters which could be misinterpreted by
+    the shell, the password should be quoted, e.g.,
+    <tt>-K</tt>'<i>password</i>'.  The password set with the
+    <tt>-K</tt> option overrides the default password.
+
+    <p>
+    If the <tt>.xicinit</tt> or <tt>.xicstart</tt> file, or the <a
+    href="scr:library">function library</a> file, or a script run from
+    <a href="xic:batch">batch mode</a> is encrypted, the encryption
+    password must be given to <i>Xic</i> with the <tt>-K</tt> option,
+    or be the default password.  As the password can be changed with
+    the <tt>SetKey</tt> script function, <b>User Menu</b> scripts
+    can in principle use different passwords, which must be set before
+    the script is executed.
+
+    <p>
+    It is possible the change the password when <i>Xic</i> is running
+    with the <a href="funcs:main1:script#SetKey"><tt>SetKey</tt></a>
+    script function:
+
+    <blockquote>
+    (int) <tt>SetKey</tt>(<i>password</i>)
+    </blockquote>
+
+    <p>
+    This function sets the key used by <i>Xic</i> to decrypt encrypted
+    scripts.  The password must be the same as that used to encrypt
+    the scripts.  This function returns 1 on success, i.e., the key
+    has been set, or 0 on failure, which shouldn't happen as even an
+    empty string is a valid password.
+
+    <p>
+    At most one password is active at a time.  If the file can not be
+    opened with the current password, <i>Xic</i> will behave as if the
+    file was empty.
+
+!!SEEALSO
+xicscript
+
+!! 041413
+!!KEYWORD
+xic:debug debugpanel
+!!TITLE
+Debugger
+!!HTML
+    <img src="screenshots/debug.png" align=right>
+    <b>Keyword</b>: <tt>debug</tt>
+
+    <p>
+    The <b>Debugger</b> button in the <b>User Menu</b>, which unlike
+    most of the other commands in this menu is an internal command,
+    brings up a panel which facilitates script development.  The panel
+    contains debugging options such as breakpoints, single-stepping,
+    and text editing.
+
+    <p>
+    The text window displays the text of the currently loaded script. 
+    In editing mode, the verbatim text is shown.  When not in editing
+    mode, the text is shifted to the right by two columns, so that the
+    first column can be used to indicate breakpoints and the current
+    line.
+
+    <p>
+    The current mode (editing or executing) is switched by the button
+    to the left of the title bar.  The label of this button switches
+    between "<tt>Run</tt>" and "<tt>Edit</tt>" to indicate the mode to
+    switch to.  In edit mode, the <b>Execute</b> menu is not
+    available.  In execute mode, the <b>Edit</b> menu is not
+    available, and some functions in the <b>File</b> menu, such as
+    <b>New</b> and <b>Load</b>, will switch back to edit mode.
+
+    <p>
+    While in editing mode, the text in the window can be edited, using
+    the same <a href="textkeybind">keyboard commands</a> as the <a
+    href="texteditor">text editor</a> pop-up.  The text is shown as it
+    appears in the buffer, without the first two columns reserved for
+    breakpoint indication as used outside of edit mode.
+
+    <p>
+    The following command buttons appear in the <b>File</b> menu.
+
+    <dl>
+    <dt><b>New</b><dd>
+    This button will clear the present contents of the text window,
+    allowing a new script to be keyed in.  If the present script is
+    modified and not saved, a message will inform the user, and the
+    text will not be cleared.  Pressing the <b>New</b> button a second
+    time will clear the text, and the previous changes will be lost.
+    </dl>
+
+    <dl>
+    <dt><b>Load</b><dd>
+    The <b>Load</b> button will prompt for the
+    name of a <a href="xicscript">script file</a>, which will be
+    loaded into the debugger.  A full path must be given to the file,
+    if the file is not in the script <a href="xicpaths">search
+    path</a>.  If, while the load pop-up is active, a script is
+    selected in the <b>User Menu</b>, that script name will be loaded
+    into the load dialog text area.
+    </dl>
+
+    <dl>
+    <dt><b>Print</b><dd>
+    The <b>Print</b> button brings up a control panel for sending the
+    contents of the text window to a printer, or to a file.
+    </dl>
+
+    <dl>
+    <dt><b>Save As</b><dd>
+    This button allows the contents of the text window to be saved in
+    a file.  The user is prompted for the name of the file, the
+    default being the original file name, if any.  A pre-existing file
+    of the same name will be retained with a "<tt>.bak</tt>"
+    extension.
+    </dl>
+
+!!IFDEF Windows
+    <dl>
+    <dt><b>Write CRLF</b><dd>
+    This button controls the line termination format used in files
+    written using <b>Save As</b>.  The default is to use the archaic
+    Windows two-byte (DOS) termination.  If this button is unset, the
+    more modern and efficient Unix-style termination is used.  Older
+    Windows programs such as Notepad require two-byte termination. 
+    Most newer objects and programs can use either format, as can the
+    <i>XicTools</i> programs.
+    </dl>
+!!ENDIF
+
+    <dl>
+    <dt><b>Quit</b><dd>
+    The <b>Quit</b> button will retire the debugger panel, which is
+    the same effect as pressing the <b>Debugger</b> button in the
+    <b>User Menu</b> a second time.  If there is unsaved text, a
+    message will alert the user, and the panel will not be withdrawn. 
+    Pressing the <b>Quit</b> button a second time will retire the
+    panel without saving changes.  The debugger can also be dismissed
+    with the window manager "delete window" function, which has the
+    same effect as the <b>Quit</b> button.
+    </dl>
+
+    <p>
+    The debugger text window serves as a <a href="dragdrop">drop
+    receiver</a>.  Files can be loaded by dragging from the <a
+    href="filesel"><b>File Selection</b></a> panel or another drag
+    source, and dropping into the text window of the debugger, or the
+    small "load" dialog window that receives the file name.  The file
+    name will be transferred to the load dialog, which will appear if
+    not already present.
+
+    <p>
+    If, while in editing mode, the <b>Ctrl</b> key is held during the
+    drop, the text will instead be inserted into the document at the
+    insertion point.
+
+    <p>
+    The <b>Edit</b> menu contains commands specific to editing mode,
+    and is disabled while in execute mode.
+
+    <dl>
+    <dt><b>Undo</b><dd>
+    This will undo the last modification, progressively.  The number
+    of operations that can be undone is limited to 25 in Windows, but is
+    unlimited in Unix/Linux.
+    </dl>
+
+    <dl>
+    <dt><b>Redo</b><dd>
+    This will redo previously undone operations, progressively.
+    </dl>
+
+    <p>
+    The remaining entries allow copying of selected text to and from
+    other windows.  These work with the <a
+    href="clipboard">clipboard</a> provided by the operating system,
+    which is a means of transferring a data item between windows on
+    the desktop.
+
+    <dl>
+    <dt><b>Cut to Clipboard</b><dd>
+    Delete selected text to the clipboard.  The accelerator
+    <b>Ctrl-x</b> also performs this operation.  This function is not
+    available if the text is read-only.
+    </dl>
+
+    <dl>
+    <dt><b>Copy to Clipboard</b><dd>
+    Copy selected text to the clipboard.  The accelerator
+    <b>Ctrl-c</b> also performs this operation.  This function is
+    available whether or not the text is read-only.
+    </dl>
+
+    <dl>
+    <dt><b>Paste from Clipboard</b><dd>
+    Paste the contents of the clipboard into the document at the
+    cursor location.  The accelerator <b>Ctrl-v</b> also performs this
+    operation.  This function is not available if the text is
+    read-only.
+    </dl>
+
+    <dl>
+    <dt><b>Paste Primary</b><dd>
+    Paste the contents of the primary selection register into the
+    document at the cursor location.  The accelerator <b>Alt-p</b>
+    also performs this operation.  This function is not available if
+    the text is read-only.
+    </dl>
+
+    <p>
+    The <b>Execute</b> menu contains commands for executing the script
+    in a controlled fashion.  The text is shifted to the right by two
+    columns.  The first column is used to indicate the next line to
+    execute, and breakpoints.
+
+    <p>
+    The current line, which would be executed next, is shown with a
+    colored '>' in the first column.  Clicking on this line will cause
+    the line to be executed, and the '>' will advance to the next
+    executable line (the same as the <b>Step</b> menu item).  Clicking
+    on any other executable line of text in the text window will set a
+    breakpoint, or clear the breakpoint if a breakpoint is already set
+    on that line.  A line containing a breakpoint is shown with a 'B'
+    in the first column.  Execution, initiated with the <b>Run</b>
+    button, will pause before the next line containing a breakpoint,
+    after the current line.
+
+    <dl>
+    <dt><b>Run</b><dd>
+    The <b>Run</b> button will cause lines of the script to be
+    executed until a line containing a breakpoint or the end of the
+    script is reached.  Pressing <b>Ctrl-c</b> when a drawing window
+    has the focus will cause the script to pause at the next line.
+    </dl>
+
+    <dl>
+    <dt><b>Step</b><dd>
+    The <b>Step</b> button causes the current line to be executed, and
+    the current line pointer will be advanced to the next line.
+    </dl>
+
+    <dl>
+    <dt><b>Reset</b><dd>
+    The <b>Reset</b> button will reset the current line to the start
+    of the script.
+    </dl>
+
+    <p>
+    In addition to the accelerators listed in the <b>Execute</b> menu,
+    there are hard-coded accelerators for the menu functions.
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><b>t, Space</b></td>      <td>single step</td></tr>
+    <tr><td><b>r</b></td>               <td>run</td></tr>
+    <tr><td><b>e, Backspace</b></td>    <td>reset</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    A problem with the menu accelerators is that they require the
+    <b>Ctrl</b> key to be pressed, which may fool scripts that are
+    sensitive to the <b>Ctrl</b> key.
+
+    <dl>
+    <dt><b>Monitor</b><dd>
+    The <b>Monitor</b> button allows variables to be monitored and
+    set.
+    </dl>
+
+    <p>
+    After the <b>Monitor</b> button is pressed, the user is prompted
+    for the names of variables from the <i>Xic</i> prompt line.  A
+    list of variable names (space separated) is entered.  A pop-up
+    window will appear which lists these variables and their present
+    values.  If the variable is undefined or not in scope, the value
+    will be "???".  The values are updated after each line is
+    executed.  If, in response to the prompt for a list of variables,
+    one enters "all" or "*" or ".", all of the variables currently
+    defined will be monitored.
+
+    <p>
+    Variables being displayed in the monitor window can be set to
+    an arbitrary value by clicking on the variable name in the monitor
+    window.  The value will be prompted for in the <i>Xic</i> prompt
+    line.  Only variables that are in scope will accept a value.  This
+    feature can be used to alter program operation as the program is being
+    run.  Variables will continue to be monitored until the monitor
+    window is dismissed.
+ 
+    <p>
+    The Monitor panel in the script debugger can handle
+    multi-dimensional arrays.  When specifying an array variable, the
+    variable name can be followed by a range specification, enclosed
+    in square brackets, as follows:
+    <blockquote>
+    [<i>rmin</i>-<i>rmax</i>,<i>dim2</i>,<i>dim3</i>]
+    </blockquote>
+
+    <p>
+    This is entirely optional, as are the individual entries.  The
+    three comma separated field corresponds to the three dimensions
+    (maximum) of the array.  The lowest dimension can be a range,
+    where <i>rmin</i> and <i>rmax</i> set the range of indices to
+    print or set.  The remaining two fields are indices into the
+    higher dimensions.  These indices are taken as 0 if not given. 
+    One of the range values can be omitted, with the following
+    interpretations:
+    
+    <p>
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>[<i>rmin</i>, ...</td><td>Use the single index
+     <i>rmin</i></td></tr>
+    <tr><td>[<i>rmin</i>-, ...</td><td>Use the range <i>rmin</i> to the
+     length of the lowest dimension</td></tr>
+    <tr><td>[-<i>rmax</i>, ...</td><td>Use the range 0 - <i>rmax</i></td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    White space can appear, and the commas are optional, except in the
+    second form above where a comma must follow the '-'.
+
+    <p>
+    If the <i>rmax</i> value is less than <i>rmin</i>, the printing
+    order of the elements is reversed, as is the order of elements
+    accepted when the variable is being set.
+
+    <p>
+    A similar range specification can be applied to string variables. 
+    In this case, only the first field is relevant, and the range
+    applies to character positions.
+
+    <p>
+    The following commands are found in the <b>Options</b> menu of the
+    editor.  These commands are always available.
+
+    <dl>
+    <dt><b>Search</b><dd>
+    Pop up a dialog which solicits a regular expression to search for
+    in the document.  The up and down arrow buttons will perform the
+    search, in the direction of the arrows.  If the <b>No Case</b>
+    button is active, case will be ignored in the search.  The next
+    matching text in the document will be highlighted.  If there is
+    no match, "not found" will be displayed in the message area of
+    the pop-up.
+
+    <p>
+    The search starts at the current text insertion point (the
+    location of the I-beam cursor).  This may not be visible in
+    execute mode, but can be set by clicking with button 1 (which may
+    set a breakpoint, so you will have to click again to remove it). 
+    The search does not wrap.
+    </dl>
+
+    <dl>
+    <dt><b>Font</b><dd>
+    This brings up a tool for selecting the font to use in the text
+    window.  Selecting a font will change the present font, and will
+    set the default fixed-pitch font used in pop-up text windows.
+    </dl>
+
+!!SUBTOPICS
+xicscript
+xic:usermenu
+
+!! 062808
+!!KEYWORD
+xic:hash
+!!TITLE
+Rehash
+!!HTML
+    <b>Keyword</b>: <tt>rehash</tt>
+
+    <p>
+    The <b>Rehash</b> button in the <b>User Menu</b> will rebuild the
+    <b>User Menu</b>, taking script and menu files found along the
+    script <a href="xicpaths">search path</a> and creating the
+    corresponding entries in the <b>User Menu</b>.  This command
+    should be executed if a new script is added to the path.  It is
+    implicitly executed whenever the script path is changed.  This
+    function will also load the contents of files named
+    "<tt>library</tt>" found in the script search path.  These files
+    contain <a href="scr:functions">function</a> definitions only. 
+    Like the <b>Debugger</b> button but unlike other buttons in the
+    <b>User Menu</b>, this is an internal command.
+
+!!SEEALSO
+!rehash
+xic:usermenu
+
+
+!! 062808
+!!KEYWORD
+user:fullcursor
+!!TITLE
+fullcursor: Set/Unset Full-Window Cursor
+!!HTML
+    This command executes a script that toggles whether the <a
+    href="FullWinCursor"><tt>FullWinCursor</tt></a> variable is set. 
+    When set, the default cursor consists of horizontal and vertical
+    lines that extend completely across the drawing window.  The lines
+    intersect at the nearest snap point in the current window.
+
+!!SEEALSO
+xic:usermenu
+
+!! 102114
+!!KEYWORD
+user:paths
+!!TITLE
+paths: Set Search Paths Script
+!!HTML
+    This command executes a script which allows the search path
+    variables to be edited graphically.  These variables are
+    otherwise set with the <a href="!set"><b>!set</b></a> command, or
+    from the <a href="techfile:paths">technology file</a>.
+
+!!SEEALSO
+xic:usermenu
+
+!! 062808
+!!KEYWORD
+user:spiral
+!!TITLE
+spiral: Spiral Generator Demo Script
+!!HTML
+    This is a text-based command for creating a spiral feature.  A
+    series of prompts is given on in the prompt line, where the user
+    supplies dimensions, number of turns, etc.  When the prompts are
+    complete, an outline of the spiral is attached to the mouse
+    pointer, and will be instantiated in the drawing window where the
+    user clicks, on the current layer.  To run the script while in
+    help mode, press <b>Shift</b> while clicking the <b>spiral</b>
+    menu button.
+
+!!SEEALSO
+xic:usermenu
+
+!! 062808
+!!KEYWORD
+user:spiralform
+!!TITLE
+spiralform: Form-Based Spiral Generator Demo Script
+!!HTML
+    This is a graphical version of the <a
+    href="user:spiral"><tt>spiral</tt></a> script, where the user
+    fills in a form instead of responding to prompts.  This is a
+    demonstration of the capability of <i>Xic</i> to use <a
+    href="scr:forms">HTML forms</a> as a front-end to command scripts. 
+    To run the script while in help mode, press <b>Shift</b> while
+    clicking the <b>spiralform</b> menu button.
+
+!!SEEALSO
+xic:usermenu
+
+!! 062808
+!!KEYWORD
+user:yank
+!!TITLE
+yank: Copy Geometry to New Cell Demo Script
+!!HTML
+    This example script allows the user to copy all geometry in a
+    rectangular area, independent of hierarchy, to a new flat cell. 
+    The user clicks twice to define the area, and responds to the
+    prompt for a new cell name.  All geometry in the area is copied,
+    clipped to the area, and added to the new cell.  The original
+    objects are not affected.
+
+!!SEEALSO
+xic:usermenu
+

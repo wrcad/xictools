@@ -1,0 +1,73 @@
+
+The parser_export.a make target/library contains the Xic-independent
+part of the script parser library for use in other applications.
+
+The basic struct is SIinterp.  Previously, the SIinterp struct was
+instantiated within the library code, and exported as symbol "SC". 
+This is no longer the case, the user must call the constructor in
+external code.  It takes one argument, a pointer to a pre-existing sCD
+(see the cd library).
+
+    sCD myCD;
+    SIinterp myInterp(&myCD);
+
+It is still assumed that an application will have only one SIinterp
+instantiation.  The SIinterp::si static member will point to the new
+SIinterp after the constructor has been called.  Thus, there is still
+global access to the interpreter through
+
+    SIinterp::si->
+
+This is used within the library to make available the "current"
+interpreter.  If an application has multiple interpreters, it is
+possible to reset this static pointer to the appropriate interpreter
+in use.
+
+Script function libraries are contained in the files under src/parser
+with names starting with "funcs_".  The user can generate similar library
+files.  The basic structure of the provided script library files can be
+used.
+
+Each script function is implemented as a static function:
+
+static bool
+IFmyFunction(Variable *result, Variable *args)
+{
+    ...
+    return (OK);
+}
+
+The first argument to siRegisterFunc is the function name, the second is
+the expected argument count or VARARGS, the third is the implementation
+pointer.
+
+The functions are communicated to the interpreter via
+SIinterp::siRegisterFunc().  In the libraries, all of the siRegisterFunc
+calls are placed in a global function with a prototype as below:
+
+void
+funcs_mylib_init(SIinterp &p)
+{
+    p.siRegisterFunc("MyFunc",  1,  IFmyFunction);
+    ...
+}
+
+This function prototype is typedefed as SIlibInitFunc.
+
+The script library is loaded into the interpreter, making the functions
+available, via a call to siLoadScriptLibrary.  The interpreter's own
+libraries, funcs_lexpr.cc and funcs_math.cc, are loaded in the SIinterp
+constructor.  User-provided libraries must be loaded explicitly in user
+code.
+
+    sCD myCD;
+    SIinterp myInterp(&myCD);
+
+    int main()
+    {
+        extern SIlibInitFunc funcs_mylib_init;
+
+        myInterp.siLoadScriptLibrary(funcs_mylib_init);
+        ....
+    }
+

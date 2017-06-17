@@ -1,0 +1,26 @@
+
+This directory contains some example native parameterized cells
+(pcells).
+
+$Id: README,v 1.4 2014/10/08 20:56:14 stevew Exp $
+
+cappc
+  A "capacitor" model.  This uses embedded native language.  The
+  cell has stretch handles on each side.  The "capacitance" is shown
+  in the label.
+
+cappy
+  As above, but written in Python.
+
+captcl1
+  As above, but written in Tcl, using old-style interface.
+
+captcl2
+  As above, but written in Tcl, using new interface.
+
+spiral
+  This is a native pcell version of the spiral.scr demo.  This executes
+  the spiralpc.scr script, rather than saving the script in a property.
+
+spiralpc
+  Same as above, but the script is in the cell file.

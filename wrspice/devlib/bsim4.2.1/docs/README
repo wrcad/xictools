@@ -1,0 +1,43 @@
+Dear BSIM Users,
+
+Thank you for your support of the BSIM models. We are releasing
+the BSIM4.2.1 models on October 05, 2001.
+
+BSIM4.2.1 provides bug fixes over its previous version, BSIM4.2.0. 
+These bugs were discussed and approved at the September 2001 
+Compact Model Council (CMC) Meetings. Some of the code is cleaned 
+up to be more efficient.
+
+Gate Induced Source Leakage (GISL) is added to give an enormous 
+improvement in simulation convergence.  Together with GIDL, it makes 
+the gate induced leakage component of the substrate current symmetric. 
+
+The warning limits for effective channel length, channel width and 
+gate oxide thickness are substantially decreased to avoid a large 
+number of warnings when BSIM4 is used beyond its design region. For 
+meaningful results, it is still recommended to keep these variables
+/parameters within the BSIM4 design region.  This change is intended 
+only to allow users to extend the model beyond this region with fewer 
+warnings. (See chapter 1 of the manual.) 
+
+In addition, this version adds many variables as output such as all 
+the transcapacitances and some of the current components to ease the
+ model verifications.
+
+There are seven bug fixes in this version, including four which are 
+in common with BSIM3. The complete list of bugs and fixes, the 
+BSIM4.2.1 source code, and the model documentation can be downloaded at:
+http://www-device.eecs.berkeley.edu/~bsim3/bsim4.html
+
+We welcome your feedback on this model.
+
+Sincerely,
+
+Chenming Hu
+=============================================================
+Chenming Hu, TSMC Distinguished Professor of Microelectronics
+Dept. of Electrical Engineering and Computer Sciences
+University of California, Berkeley, CA, 94720
+Email: hu@eecs.berkeley.edu
+=============================================================
+

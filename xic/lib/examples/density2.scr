@@ -1,0 +1,134 @@
+# density2.scr
+# $Id: density2.scr,v 1.2 2013/11/18 19:31:08 stevew Exp $
+#
+# This script extracts density, much like the density and density1
+# examples.
+
+# Copy the script file to a directory where you have write permission.
+# From Xic running in this directory, to run type:  !exec ./density2.scr
+
+# First, ask for a file name, then create a CHD and linked CGD.  All
+# geometry will be obtained from the CGD.
+
+filename = PopUpInput("Enter layout file path:", 0, "Compute Density", FALSE)
+
+chd = OpenCellHierDigest(filename, 0)
+if (!chd)
+    Print(GetError())
+    Halt()
+end
+if (!ChdLoadGeometry(chd))
+    Print(GetError())
+    Halt()
+end
+
+# Note that one can limit the layers processed to a subset of those used
+# in the file by setting the following variables.  We should revert these
+# back to their original states when done.
+#
+# Set("LayerList", "0000")
+# Set("UseLayerList", "")
+
+bbox[3]
+if (!ChdCellBB(chd, 0, bbox))
+    Print(GetError())
+    Halt()
+end
+
+tstart = MilliSec()
+
+# Note that the fine grid is 20x20 microns, and that the coarse grid
+# is 800x800 microns.  These values can be changed to reflect the
+# user's requirements and achieve best performance.  We use the
+# "reference zlist" (AdvanceZref, etc.) to iterate the coarse grid.
+# 
+fg = 20
+cgm = 40
+Set("PartitionSize", ToString(fg*cgm))
+AdvanceZref(TRUE, 0)
+
+cellname = ChdDefCellName(chd)
+
+// An empty string list handle, we'll add SPT names.
+spts = ListHandle()
+
+# Size in fine grid units, for SPT.
+mx = ceil((bbox[2] - bbox[0])/fg)
+my = ceil((bbox[3] - bbox[1])/fg)
+
+# Number of coarse grid cells.
+nc = ceil((bbox[2] - bbox[0])/(fg*cgm))
+nc = nc *ceil((bbox[3] - bbox[1])/(fg*cgm))
+
+count = 1
+cgcell[3]
+
+# Loop over all coarse grid cells.
+while (AdvanceZref(FALSE, bbox) != 0)
+    GetZrefBB(cgcell);
+    ChdOpenZbdb(chd, 1.0, 0, cgcell, "ZBDB", fg, fg, 0, 0)
+    hstr = ListLayersDb("ZBDB")
+    ShowPrompt("Completed", count, "of", nc)
+
+    // Loop over layer names.
+    while (hstr)
+        lname = ListContent(hstr)
+        sptname = cellname + "." + lname
+        if (!FindSPtable(sptname, 0))
+            NewSPtable(sptname, bbox[0], fg, mx, bbox[1], fg, my)
+            ListAddFront(spts, sptname)
+        end
+
+        // Loop over fine grid cells.
+        ny = 0
+        while (ny < cgm)
+            y = cgcell[1] + ny*fg
+            if (y >= cgcell[3])
+                 break
+            end
+            yt = y + fg;
+            if (yt > cgcell[3])
+                yt = cgcell[3]
+            end
+            nx = 0
+            while (nx < cgm)
+                x = cgcell[0] + nx*fg
+                if (x >= cgcell[2])
+                     break
+                end
+                xr = x + fg
+                if (xr > cgcell[2])
+                    xr = cgcell[2]
+                end
+                zl = GetZlistZbdb("ZBDB", lname, nx, ny)
+                if (zl)
+                    // Compute and save density.
+                    dens = Zarea(zl)/((xr - x)*(yt - y))
+                    SetSPdata(sptname, x + fg/2, y + fg/2, dens)
+                end
+                nx++
+            end
+            ny++
+        end
+        hstr++
+    end
+    DestroyDb("ZBDB")
+    count++
+end
+
+tstart = MilliSec() - tstart
+
+# Write out the SPTs to files and destroy SPTs.
+while (spts)
+    spt = ListContent(spts)
+    spf = spt + ".spt"
+    Print("Writing", spf)
+    WriteSPtable(spt, spf)
+    ClearSPtable(spt)
+    spts++
+end
+
+Print("Done, calculation time in msec =", tstart)
+
+# End of example.
+

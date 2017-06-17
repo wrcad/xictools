@@ -1,0 +1,59 @@
+#######################################################################
+# xic/fileio/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.27 2012/11/12 00:46:38 stevew Exp $
+#######################################################################
+
+GFX_VERSION = @GFX_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGS_SG@ @NEEDINT64@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGS_SG@ @NEEDINT64@
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+
+LIB_TARGET = fileio.a
+
+LPATH = ../../../xt_base
+HFILES =
+CCFILES = \
+  filetool.cc fio.cc fio_alias.cc fio_archive.cc fio_assemble.cc \
+  fio_cgx_read.cc fio_cgx_write.cc fio_cgd.cc fio_chd.cc \
+  fio_chd_cvtab.cc fio_chd_diff.cc fio_chd_ecf.cc fio_chd_flat.cc \
+  fio_chd_fmu.cc fio_chd_info.cc fio_chd_iter.cc fio_chd_read.cc \
+  fio_chd_split.cc fio_chd_write.cc fio_cif_read.cc fio_cif_write.cc \
+  fio_compare.cc fio_crgen.cc fio_cvt_base.cc fio_cxfact.cc \
+  fio_gds_read.cc fio_gds_text.cc fio_gds_write.cc fio_gdstx_read.cc \
+  fio_info.cc fio_layermap.cc fio_library.cc fio_oas_incr.cc \
+  fio_oas_read.cc fio_oas_reps.cc fio_oas_text.cc fio_oas_write.cc \
+  fio_paths.cc fio_to_xic.cc fio_tstream.cc fio_zio.cc
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I../../include -I$(LPATH)/miscutil
+
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+depend:
+	@echo depending in xic/fileio
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm *.o $(LIB_TARGET)
+
+distclean:
+	-rm *.o $(LIB_TARGET) Makefile
+
+#######################################################################

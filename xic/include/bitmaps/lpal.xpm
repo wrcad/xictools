@@ -1,0 +1,21 @@
+/* XPM */
+static const char * lpal_xpm[] = {
+"28 12 5 1",
+" 	c none",
+".	c blue",
+"o	c red",
+"a	c sienna",
+"X	c gray",
+" XXXXXXXXXXXXXXXXXXXXXXXXXX ",
+" X                        X ",
+" X                        X ",
+" X                        X ",
+" X   ....   oooo   aaaa   X ",
+" X   ....   oooo   aaaa   X ",
+" X   ....   oooo   aaaa   X ",
+" X   ....   oooo   aaaa   X ",
+" X                        X ",
+" X                        X ",
+" X                        X ",
+" XXXXXXXXXXXXXXXXXXXXXXXXXX "};
+

@@ -1,0 +1,1303 @@
+
+wrspice-3.0.9  1/18/09
+
+Changes and New Features
+------------------------
+
+* The "let" command can now handle multiple assignments on one line.
+
+    let lhs1=rhs1 lhs2=rhs2 ...
+
+  There can be white space around the '=' characters.  The terms are
+  evaluated left-to-right, so that forms like
+    
+    a = b  c = a
+
+  work properly.
+
+  The "let" remains optional.
+
+* Added a test for model capacitance value in the jj model.  If the "p"
+  (1e-12 multiplier) is omitted, there is an overflow somewhere that causes
+  really wacky results, even if the jj is not connected.
+
+* The current source @Ix[c] pseudo-expression now returns the AC value
+  in AC analysis.
+
+* Additional messages added to front-end error handling.
+
+
+Bugs Fixed
+----------
+
+* Windows fixes:
+  1) Use of the jpeg, etc. plot driver would cause instability due to
+     a memory error.
+  2) In plot windows, clicking on text would sometimes cause the text
+     to reposition itself.
+  3) Added clipping during text drawing so that aliased fonts would
+     not become darker due to multiple redraws.
+
+* A ".save @Ix[c]" line would cause faults in noise analysis due to a
+  memory problem.
+
+* In expression lists, such as arguments to the plot command, double
+  quoted tokens were not being handled correctly.  The double-quoting
+  should enforce evaluation of the token as a separate expression. 
+  This broke plotting current from resistors by clicking on the '+' in
+  the resistor device in Xic.
+
+
+-----------------------------------------------------------------------------
+wrspice-3.0.8  12/5/08
+
+Changes and New Features
+------------------------
+
+* New feature: Subcircuit and Model Caching.
+
+  This feature should be considered experimental, please report
+  problems and provide your feedback.
+
+  The models provided with foundry design kits (for example) have
+  become quite complex, to the point where loading these files into
+  WRspice can take appreciable time.  These files often encapsulate
+  device calls into subcuits, and use large numbers of parameter
+  definitions that must be processed into internal tables.
+
+  This overhead is annoying when simulating circuits, but can become a
+  real problem when doing repetitive simulations such as for Monte
+  Carlo analysis or when under control of a looping script.  The new
+  caching feature enables one to load these definitions once only, on
+  the first pass.  Subsequent runs will reuse the internal
+  representations, which can avoid most of the overhead. 
+
+  The new ".cache" and ".endcache" SPICE file keywords are used to
+  identify lines of an input deck which will be cached.  The syntax
+  is:
+
+    .cache <name>
+    (lines of SPICE input)
+    ...
+    .endcache
+
+  The <name> is any short alpha-numeric name token, used to identify
+  the cache block created.  The cached representation of the enclosed
+  lines is saved in WRspice memory under this name.
+
+  Presently, there can be only one .cache block per circuit deck.  The
+  first time the name is seen, the enclosed lines are processed
+  normally but internal representations are saved.  Subsequently, the
+  enclosed lines are skipped.  The skipping occurs very early in the
+  sourcing operation, before .include lines are read.  So, for example
+
+    .cache aaa
+    .include some_big_library
+    .endcache
+
+  will avoid reading some_big_library after the first time.  If a
+  different SPICE input file is sourced, and this has a .cache block
+  with the same name as the first, the cached parameters from the
+  first file will be used in the second file.  The internal
+  representation of the cache block has no attachment to any
+  particular input file.
+
+  The (Lines of SPICE input) which can appear between .cache and
+  .endcache can be, after .include/.lib expansion:
+
+    .subckt definitions, which must include all lines of the
+        definition including the .subckt and corresponding .ends line.
+    .model lines
+    .param lines
+    comments
+
+  The block can contain .include/.lib lines, but after these lines are
+  expanded, the resulting text should contain only the listed forms. 
+  Anything else that appears in the cache block will likely cause an
+  error, as it will be "missing".
+
+  The parameters from .param lines saved in the cache will override
+  parameters of the same name defined elsewhere in the circuit file.
+
+  The state of the cache can be manipulated with the (new) cache
+  command.  This is a text-mode command available in the WRspice
+  shell.  The command can have the following forms, the first argument
+  is a keyword (or letter).  additional arguments are tag names (the
+  names that follow ".cache").
+
+  cache h[elp]
+    Print command usage information.
+  cache l[ist]
+    Print a list of the tag names currently in the cache.  The cache
+    command with no arguments does the same thing.
+  cache d[ump] [tagname ...]
+    This will dump the lines saved in the cache, for each name given,
+    or for all names if no name is given.  Presently, .param lines are
+    listed as comments; the actual parameters are in an internal
+    representation and not explicitly listed.
+  cache r[emove] tagname [tagname ...]
+    This will remove the cached data associated with each name given. 
+    The given names will no longer be in the cache.
+  cache c[lear]
+    This will clear all data from the cache.
+
+* The .wrspiceinit startup script is treated a little differently now.
+  Previously, only one user startup script (.wrspiceinit file) would
+  be executed.  The program would look in the current directory, then the
+  home directory.
+
+  Now, if .wrspiceinit files exist in both the current and home
+  directories, both are executed.  The script in the home directory is
+  executed first.  Thus, directory-specific startup files can be used
+  to fine-tune the configuration.
+
+  The Update Tools command in the toolbar File menu, and the update
+  command, will always create or update a .wrspiceinit file in the home
+  directory, unless the home directory can't be determined, in which case
+  the current directory is used.
+
+* The internal read-only parameter definitions wrspice=1, WRspice=1,
+  and WRSPICE=1 have been removed.  These were found to cause
+  substitution of "1" in unexpected and wrong places.
+
+  The replacement is WRSPICE_RELEASE, which is set to a release code
+  number.  The release code number is a five digit integer xyzz0,
+  corresponding to release x.y.z.  x (3) and y are one digit, z is two
+  digits, 0 padded.  The trailing 0 is a historical anachronism.
+
+  To use the new parameter to select WRspice-specific lines:
+
+    .param WRSPICE_RELEASE=0  $ This is ignored by WRspice
+    .if WRSPICE_RELEASE
+    (WRspice-specific lines)
+    .else
+    (lines for HSPICE or whatever)
+    .endif
+
+* The font fields in .mozyrc (the optional HTML viewer startup file)
+  are now ignored (as in Xic).  All font setting takes place in the
+  .wrspiceinit file using the Update Tools command in the toolar, or
+  the update command.
+
+  WARNING:  the font names are very different between GTK1.2 and
+  GTK2.0 releases.  If, after updating, the fonts are awful, try
+  removing the setfont lines in the .wrspiceinit file.
+
+    GTK1.2             GTK2.0
+    all Gen2 releases  Gen3 LinuxRHELxxx
+    Gen3 FreeBSD
+    Gen3 Linux2
+    Gen3 OS X
+
+
+Bugs Fixed
+----------
+
+* Script execution was screwed up in the last release, including the
+  startup scripts which weren't being executed.
+
+
+-----------------------------------------------------------------------------
+wrspice-3.0.7  9/16/08
+
+Changes and New Features
+------------------------
+
+* Update to wrspiced daemon program.
+
+  The wrspiced program has enhanced protocol to support the
+  NoSpiceTools mode in xic-3.0.8 and later.  It remains backward
+  compatible with earlier releases of Xic and WRspice.
+
+
+Bugs Fixed
+----------
+
+* If a call to the gauss function has 4 args, is is now taken as a
+  tran function.  Previously, it was taken (incorrectly) as a math
+  function.
+
+* The math functions with more than one argument (such as the HSPICE
+  compatibility functions) now have strict argument count checking.
+
+* The diode device model warning messages were printing gibberish
+  instead of the device or model name.
+
+* A .lib call to a file without a path (i.e., a file in the current
+  directrory) would cause a seg fault.
+
+* Misc. small tweeks to improve operability when under control of
+  Xic.
+   - skip printing unnecessary junk to the console.
+   - skip prompt to user on exit when given an explicit quit command.
+
+* Parameter substitution was failing in .model lines where the RHS
+  of a name=value token was immediately followed by ')' or ','.
+
+
+-----------------------------------------------------------------------------
+wrspice-3.0.6  9/8/08
+
+Changes and New Features
+------------------------
+
+* When using the wrspiced daemon, the WRspice toolbar is now visible
+  when a connection is established in Xic.  Previously, the toolbar
+  was not available in remote WRspice runs through Xic.
+
+
+Bugs Fixed
+----------
+
+* In plot lines and elsewhere, ':' characters in vector names were
+  being misinterpreted, causing a syntax error.  This would apply in
+  particular to subcircuit-expanded names, such as "v:0:1#branch".
+ 
+  The problem is due to the new "a ?  b : c" conditional expression
+  handling.  If the a,b,c expressions or vectors contain ':'
+  characters, the parser has to be smart enough to ignore them.  For
+  example:
+ 
+    plot v:0:1#branch < 0 ? -v:0:1#branch : v:0:1#branch
+ 
+  or worse
+ 
+    plot v:0:1#branch<0?-v:0:1#branch:v:0:1#branch    
+ 
+  The lexical analyzer has been beefed up to better handle this case. 
+  However, it is not perfect, and it may be necessary to use double
+  quoting of vector names, for example
+
+    plot "v:0:1#branch"<0?-"v:0:1#branch":"v:0:1#branch"
+ 
+  removes any ambiguity.
+
+* Double-quoting was being ignored in plot lines.
+
+* There was no error message from a parse error in plot lines and some
+  others, the command would silently fail on a syntax error.
+
+* A missing comma between "rd" and "rds" prevented these model
+  parameters from being recognized as ignored HSPICE extensions.
+
+
+-----------------------------------------------------------------------------
+wrspice-3.0.5  9/2/08
+
+Changes and New Features
+------------------------
+
+* Revised the code that handles file reading for .include, .lib (and
+  synonyms) to fix bugs and improve error reporting.
+
+  New feature:  The .include, .lib, and similar lines are now shell
+  expanded, so that the paths can now include shell variables so can be
+  set interactively.  All other lines are shell expanded after all
+  reading for inclusions is complete, after parameter expansion, etc.
+
+  Note that this won't work in files that are to be included with
+  the 'h' option or with the dollarcmt variable set.  In this case,
+  the '$' in the path will be taken as the start of a comment.
+
+* The HSPICE MOS model parameters rd, nds, and vnds were added to the
+  list of model parameters ignored if the hspice variable is set.
+
+
+Bugs Fixed
+----------
+
+* The .lib processing was not working properly:  the entire file
+  starting at the block tag would be read in, i.e., the ".endl" was
+  ignored.
+
+* Other problems with .include, .lib, and similar:
+  1) Bad path error handling was poor.  If a bad path /bad/path/to/infile
+     was given, WRspice would (erroneously) try to read infile in the
+     current directrory, and if found, there would be no warning or error.
+  2) Files in the root directory could not be accessed.
+
+
+-----------------------------------------------------------------------------
+wrspice-3.0.4  9/1/08
+
+Bugs Fixed
+----------
+
+* Arggh!  Parameter expansion in device lines was not working properly
+  in 3.0.3.  E.g.,
+
+    .param rval=1.0
+    r1 1 0 rval
+    r2 2 1 `rval*2'
+
+  would fail for both r1 and r2.
+
+  However, param = value forms (such as "l = 'expr'" for mos devices)
+  were ok, the "value" tokens were expanded properly.  Only "solitary"
+  parameters or single-quoted expressions were not expanded.
+
+  Caveat:  Parameter handling is fairly tricky, please report problems.
+
+
+-----------------------------------------------------------------------------
+wrspice-3.0.3  7/8/08
+
+Changes and New Features
+------------------------
+
+* The .norandom keyword and norandom "set" variable introduced in
+  3.0.1 are gone (sorry for the whiplash).  Their use was found to be
+  confusing, and it was too easy to forget to use these and get
+  puzzling and variable results when including certain foundry models.
+
+  The present logic is that the gauss, etc. functions always return
+  the mean values outside of Monte Carlo analysis.  However, there
+  is a new variable that will enable random output when set.
+
+* New variable: random (boolean)
+
+  When set, the HSPICE-compatible random number functions (gauss,
+  agauss, unif, aunif, limit) return random values.  When not set and
+  not running Monte Carlo analysis these functions always return mean
+  values.
+
+  This applies to the listed functions only, and not the ogauss or rnd
+  functions, and not the voltage/current source random functions,
+  which always produce random output.
+
+  This variable can be set in a .options line or from the command line
+  to "unlock" the random number generator functions, e.g., for use in
+  scripts or during analysis.
+
+* Added new device models, imported from NGspice-17.
+
+  1) The diode model now has a number of new parameters and aliases.
+
+  2) The VBIC bipolar transistor model was added as level=4.  I don't
+     know anything about this particular model, but will attempt to
+     find documentation.  The VBIC model equation set is supposed to
+     be far better than the standard BJT model.
+
+* The ploting commands can now take as command arguments any of the
+  attributes that were previously only available as variables.  The
+  new keywords are
+
+      Grid style:
+        lingrid
+        xlog
+        ylog
+        loglog
+        polar
+        smith
+        smithgrid
+
+      Line style:
+        linplot
+        pointplot
+        combplot
+
+      Scale selection:
+        multi
+        single
+        group
+
+      Misc:
+        xlimit min max
+        ylimit min max
+        xcompress val
+        xindices min max
+        xdelta val
+        ydelta val
+        xlabel "string"
+        ylabel "string"
+        title "string"
+        nointerp
+        ysep
+        nogrid
+
+      Example:
+        plot v(1) v(2) ylog title "my log plot"
+
+* The .TEMP card now works, sort of.
+
+  Previously, and in Spice3, this card is ignored, with a warning.  In
+  some versions of SPICE, this card provides a list of temperatures,
+  and analysis will be performed at each temperature in the list.
+
+  In current WRspice, the first temperature given will set the default
+  circuit temperature used for all analysis.  This will be overridden
+  by a temperature set with a .options line or by the "temp" variable,
+  set with the set commond or otherwise.  Additional temperatures
+  listed are ignored, for now.
+
+* Like the .include line, the .lib line now has the following
+  enhancements:
+
+  1) .lib takes an optional "h" option (".lib h /path/libfile name")
+      which turns on HSPICE compatibility mode during the read.  In
+      this mode, '$' characters are recognized as comment delimiters,
+      as with the dollarcmt variable set.
+
+  2) While reading, the current directory becomes the directory
+     containing the library file, so .include and .lib references in
+     the text that reference files in the same directory without a path
+     will be found.
+    
+* .include and .lib lines are now processed after the .if family of
+  lines.
+
+  Previously, includes were read before .if/.else processing, which
+  was not good if an out-of-scope include referenced a nonexistent
+  file.
+
+* .include and .lib no longer use the search path.
+
+  Previously, the sourcepath was used to resolve file names given
+  in .include or .lib lines.  This is no longer true, only the current
+  directory is searched for unrooted file paths.
+
+* Predefined "WRspice" parameters.
+
+  The parameters "wrspice", "WRspice", and "WRSPICE" are predefined
+  with the value 1.  These parameters are read-only, and attempts to
+  change their values in a .param line or otherwise are silently
+  ignored.
+
+  These are intended to be used in conjunction with the .if
+  conditionals to select WRspice-specific lines in input files.
+
+  For example:
+
+    .param WRspice=0  $ This is ignored by WRspice
+    .if WRspice
+    (WRspice-specific lines)
+    .else
+    (lines for HSPICE or whatever)
+    .endif
+
+* The keyword ".elseif" is now accepted as an alias for ".elif".
+
+
+Bugs Fixed
+----------
+
+* Fixed bug:  Giving forms like "plot xxx vs -yyy" would double-negate
+  yyy, since it was being converted to the old unary minus enforcement
+  syntax "--yyy" internally.
+
+* Fixed bug:  The new conditional "x ? y : z" syntax handling broke
+  subcircuit expansion with dependent sources, and possibly other
+  things.  The problem was that ':' was being recognized as a token
+  terminator, however ':' should be considered as part of a node or
+  device name.  Subcircuit expansion uses ':' ubiquitously in
+  constructed names.  Logic has been added to avoid this problem.
+
+* Fixed bug: Subcircuit node name translation when doing subcircuit
+  expansion was not working correctly with the POLY(N) construct in
+  dependent sources.
+
+* Fixed noise analysis in MOS levels 1-3,6, and bsim3 level-49 to be
+  correct when the 'M' device multiplier factor is not unity.
+
+
+-----------------------------------------------------------------------------
+wrspice-3.0.2  7/1/08
+
+Changes and New Features
+------------------------
+
+* New MOS models added, and level mapping updated.
+
+  The following new MOS models have been added to the device library:
+    BSIM-3.3.0   (The final BSIM3 model from Berkeley)
+    BSIM-4.6.1   (The latest BSIM4 model from Berkeley)
+    BSIMSOI-4.0  (The latest SOI model from Berkeley)
+    HiSIM-1.2.0  (An update of the Hiroshima Univ/STARC HiSIM model)
+
+  Model notes:
+    The STAG (Southampton Thermal Analogue Model) does not appear to be
+    available from or supported by the author anymore.  This model will
+    likely be removed in a future release.
+
+    The HiSIM model source code is no longer generally available, and
+    is behind a Comapct Modeling Council firewall.  It is unlikely that
+    newer HiSIM models will be added unless there is a specific
+    customer request.
+
+    WRspice users:  If you need a specific device model, please send
+    a note to Whiteley Reseearch.  It is possible that the model can be
+    added.
+
+  Here is the latest MOS level mapping.  This is intended to provide
+  HSPICE compatibility where possible.
+
+    Level(s)  Name         Source
+    1         MOS          Spice3
+    2         MOS          Spice3
+    3         MOS          Spice3
+    4         BSIM1        Spice3
+    5         BSIM2        Spice3
+    6         MOS          Spice3
+    7,49      BSIM3.2.0    U.C. Berkeley  
+    8,47      BSIM3.2.4    U.C. Berkeley
+    9,53      BSIM3.3.0    U.C. Berkeley
+    12        BSIM4.2.1    U.C. Berkeley
+    13,54     BSIM4.3.0    U.C. Berkeley
+    14        BSIM4.4.0    U.C. Berkeley
+    15        BSIM4.6.1    U.C. Berkeley
+    20        BSIMSOI3.0   U.C. Berkeley  
+    21        BSIMSOI3.2   U.C. Berkeley  
+    22,57     BSIMSOI4.0   U.C. Berkeley  
+    25,55     EKV-2.6      EPFL Switzerland
+    30        HISIM-1.1.0  Hiroshima U.
+    31,64     HISIM-1.2.0  Hiroshima U.
+    33        STAG-Soi3    U. Southampton
+    36,58     UFSOI-7.5    U. Florida
+
+* Misc. fixups, partiularly for BSIM models.
+
+  o  The irritating BSIM3 "Pd = 0 is less than W." message will no longer
+     appear if Pd is not given, same for Ps.
+
+  o  The BSIM models no longer dump a log file in the current directory.
+
+  o  All BSIM messages should now go to the error window rather than the
+     console window.
+
+* There is a new boolean option variable: hspice
+
+  This can set in a .options line (".options hspice ..."), in which
+  case it applies to the current circuit, or it can be set with the
+  set command, where it applies to all circuits.
+
+  When set, many of the HSPICE parameters and keywords that are not
+  handled are silently ignored.  Ordinarily, these produce a warning
+  message.  In particular, when set:
+
+  1.  The following MOS model parameters are silently ignored.
+
+        acm         alpha       binflag     capop       cjgate
+        cta         ctp         dtemp       hdif        iirat
+        lalpha      ldif        lmlt        lref        lvcr
+        pta         ptp         rdc         rs          rsc
+        scale       scalm       tlev        tlevc       vcr
+        walpha      wmlt        wref        wvcr        xl
+        xw 
+
+  2.  The following MOS device parameters are silently ignored.
+
+        dtemp
+
+  3.  The following control lines are silently ignored.
+
+        .alias      .alter      .connect    .data       .dellib
+        .dout       .global     .graph      .hdl        .lin
+        .malias     .protect    .protect    .stim       .unprotect
+
+
+Bugs Fixed
+----------
+
+* MOS default model is now the MOS level 1 model.
+
+  If a MOS model name is unresolved in input, a "default model" is used.
+  Due to the link order, the default MOS model was the EKV model, which
+  was a random and rather obscure choice.
+
+  Code has been added to specify the default devices.  In particular,
+  the default MOS device is now MOS level 1, as in Spice3 and probably
+  most other SPICE-based simulators.
+
+* Fixed bug:  when zooming in to a plot, if the zoom region contained
+  a plot endpoint, possibly the endpoint would not appear in the
+  zoomed plot.
+
+* The set command with no arguments would seg fault in the last release.
+  There were probably related problems.
+
+
+-----------------------------------------------------------------------------
+wrspice-3.0.1  5/27/2008
+
+Changes and New Features
+------------------------
+
+* New option in .inc/.include/.spinclude lines.
+
+  New syntax:
+    .INC [H] path_to_file
+    .INCLUDE [H] path_to_file
+    .SPINCLUDE [H] path_to_file
+
+  If the H option (case insensitive) is given, the dollarcmt variable
+  is effectively set while the file, and any recursive sub-files, are
+  being read.  Thus, the HSPICE '$' comment syntax will be recognized
+  in the included files.  The dollarcmt variable is reset to its prior
+  value after the read.
+
+  This avoids having to explicitly set the dollarcmt variable when
+  reading model files intended for HSPICE.  It allows the normal
+  WRspice shell substitution to work with the file containing the
+  include line, which would not be the case if the dollarcmt variable
+  was set explicitly.
+
+* New keyword: .norandom
+
+  Syntax:
+    .NORANDOM
+
+  If this keyword is found in a file, the norandom variable is effectively
+  set while the file is sourced into WRspice.  This means that any of the
+  random value functions (unif, aunif, gauss, agauss, limit) will return
+  nominal or mean values when executed during circuit setup.
+
+  This can be useful in the following cases:
+
+  1) A library is included that is intended for HSPICE, which contains
+     parameter definitions using the random functions intended for
+     HSPICE Monte Carlo analysis.  This is true of the IBM foundry
+     models referenced below.  Generally, in WRspice, we want the
+     model parameters initialized to repeatable values, which is
+     ensured if the .norandom keyword is present.
+  
+  2) In WRspice input files intended for WRspice Monte Carlo analysis,
+     we would like to be able to run an ordinary analysis on the
+     circuit, using nominal parameter values.  With the .norandom
+     keyword present, this is possible.  Without the keyword present,
+     analysis can be run, however parameters will have been set to
+     random values, so analysis results are not well-defined and will
+     change if the circuit is reset or re-sourced.
+
+* It is now possible to use .param defines to introduce random values
+  in Monte Carlo analysis.
+
+  In Monte Carlo analysis:
+  1)  Parameters defined in .param lines are recomputed at the start of
+      each trial.  Random values can be set by calling the random number
+      generation functions (gauss, unif, etc.).
+
+  2)  Parameters are visible in the .exec block if the .exec block is
+      defined in the same file as the circuit (directly or through an
+      .include).  Parameters are not visible in the .control block.
+      Parameters are not visible in bound codeblocks.
+
+  There is a new "jjmc1.cir" file in the examples that demonstrates
+  use of .param assignment in Monte Carlo analysis.
+
+* The wrupdate command should work now, and can be used to install the
+  next and future updates.  Please report any issues.
+
+  The wrupdate command in 3.0.0 was incomplete and did not work.
+
+
+Bugs Fixed
+----------
+
+* Modified error string printing to avoid possible array overrun.
+
+* Modified many error message outputs from the BSIM device models
+  which could cause seg faults if generated.
+
+* Modified the number parser to avoid using the crummy pow() math
+  function in older (GLIBC-2.2.4, Red Hat 7.2) C libraries.  This was
+  causing failure of equality tests for forms like (1.00000e+00 == 1). 
+  This affected the Linux2 distributions only.
+
+* The Linux2 binaries, both Generation 3 and the final Generation 2.5
+  distributions, were built with a new custom-installed compiler.  The
+  original stock Red Hat gnu compiler can not handle some of the C++
+  constructs used in the Generation 3 programs.
+
+  Unfortunately, the new compiler was not predefining the macro for
+  setting up the floating-point math properly.  All Linux2
+  distribution files that were downloaded the week of May 19, 2008 are
+  suspect and should be updated.  These binaries will have subtle math
+  errors which can break scripts or otherwise cause trouble.
+
+* The agauss function, introduced in 3.0.0, was returning incorrect
+  values due to a programming error.
+
+
+-----------------------------------------------------------------------------
+wrspice-3.0.0  5/16/2008
+
+This is the first release of the 3.0 branch of WRspice, companion to
+the Generation 3 release of Xic.
+
+This release contains numerous changes and additions, mostly for
+operability with the model files contained in IBM's CMOS foundry
+design kit.  The changes should greatly improve compatibility with
+HSPICE in general.
+
+In common with the other Generation 3 programs:
+
+    1) The startup files are installed under <prefix>/share, where
+       <prefix> defaults to /usr/local.  In previous releases, this
+       location was <prefix>/lib.
+
+    2) The program executables are installed in
+       <prefix>/share/xictools/bin.  Previously, this location was
+       <prefix>/bin.  Note that <prefix>/share/xictools/bin should be
+       added to your shell search path.  The new installation can
+       coexist with a pre-Gen3 installation.  To run the new programs,
+       <prefix>/share/xictools/bin should be placed ahead of
+       <prefix>/bin in the shell search path.
+
+    3) WRspice now has internal provision to check for new releases,
+       and to download and install new releases.  This is very
+       preliminary at this point, and not all of the support
+       infrastructure is in place.  The checking should work fine,
+       download/install may not work yet.  See "help passwd" and "help
+       wrupdate" for more information.
+
+Changes and New Features
+------------------------
+
+* Lots of changes (most described below) to support direct use of the
+  IBM_9SF foundry PDK HSPICE models.  The model wrappers contain
+  great gobs of HSPICE-specific constructs.  The present WRspice
+  release can now load these library files directly, however:
+
+  1) The boolean variables "dollarcmt" and "norandom" MUST be set
+     before the model files are read.  One can give "set dollarcmt"
+     and "set norandom" on the command line before sourcing the
+     circuit files, or put these commands into a .wrspiceinit file. 
+     However, dollarcmt is generally not compatible with files that
+     contain "$" shell substitutions.  This issue will be revisited in
+     future releases.
+
+  2) There will be a few errors generated from the library files. 
+     In particular
+     a) The "dtemp" model parameter is unknown in the stock Berkeley
+        BSIM4.3.0 model used in WRspice.
+     b) The ".hdl" HSPICE keyword is unknown in WRspice.
+
+  3) The IBM models take a long time to load, due to the huge number
+     of parameters and expressions defined.  Probably, this can be
+     improved in WRspice.  Some feedback in comparison to HSPICE
+     would be welcome.
+
+  4) The level=54 MOSFET model was added to support HSPICE
+     compatibility.  This is the stock Berkely BSIM4.3.0 model,
+     without HSPICE extensions.  There is a collection of test files
+     for this model, using the IBM libraries and Berkeley samples,
+     available in the examples directory.
+      
+* The keyword ".inc" is now equivalent to the ".include" keyword.
+
+* During .include/.inc file expansion, WRspice now pushes the current
+  directory to that of the included file while the file is being read. 
+  Thus, .include directives in the target file will resolve to the
+  directory containing the target file, and not the initial current
+  directory.
+
+* The keyword ".macro" will be taken as the start of a subcircuit
+  definition, the same as ".subckt".
+
+* The keyword ".eom" will be taken as the end of a subcircuit
+  definition, the same as ".ends".
+
+* A number a changes were made to the expression parser to allow syntax
+  used in other simulators.
+
+  1)  '&&' is now the same as '&', the logical AND operator.
+  2)  '||' is now the same as '|', the logical OR operator.
+  3)  '!'  is not the same as '~', the logical NOT operator.
+  4)  '==' is now the same as '=', the equality operator.
+  5)  '!=' is now the same as '<>', the inequality operator.
+  6   '**' is now the same as '^', the exponentiation operator.
+
+* Ternary conditional support.
+
+  In expressions, the ternary conditional is now supported:
+
+    <expr1> ? <expr2> : <expr3>
+
+  If <expr1> evaluates nonzero (true) <expr2> is evaluated and this
+  value is returned.  Otherwise, <expr3> is evaluated and returned.
+
+* Backslash continuation with multiple backslashes
+
+  If there is more than one backslash at the end of a (continued)
+  line, they will all be stripped.  Previously, only one was stripped
+  before being joined to the following line.
+
+* Expresion token termination.
+
+  In previous releases, the sequence '--' was interpreted to coerce a
+  unary minus.  This was implemented to solve a problem - commands
+  that take expression lists as arguments would interpret a negative
+  argument as part of an expression.  For example
+
+    plot v(1) -v(2)
+
+  Would plot the difference between v(1) and v(2), and not two
+  separate values.  Using '--v(2)' as the second argument would
+  enforce interpretation as separate tokens.
+
+  However, this interpretation of '--' causes trouble elsewhere and
+  has been removed.
+
+  Instead, the "expression termination" character ';' (semicolon) can
+  be used to explicitly terminate an expression.
+
+  However, when used in a command, the ';' must be hidden from the
+  shell in this context, as the shell interprets ';' differently.  It
+  can be preceded by '\' backslash (e.g., plot v(1)\; -v(2)).
+
+  Note that double-quoting (v(1) "-v(2)") and parentheses (v(1)
+  (-v(2)) can also be used to delimit expression tokens.
+
+* Dollar-sign comments
+
+  In other simulators, the '$' character always indicates the start of
+  a comment.  In WRspice, '$' is used for shell variable substitution,
+  a feature that does not appear in other simulators and prevents
+  general use of '$' comments.  This can cause trouble when reading
+  files intended for other simulators.
+
+  WRspice will now attempt to distinguish '$' comments, and has a new
+  variable which can be set to strip '$' comments completely.  Also,
+  the ';' (semicolon) character is interpreted as equivalent to '$'
+  for purposes of comment identification.  This applies only when an
+  input file is being read.  The table below describes the
+  interpretation.
+
+  The new variable is a boolean named "dollarcmt".  This can be set
+  explicitly, or from the General page of the Tools/Commands panel.
+
+    dollarcmt unset:
+        <newline>$<space> line is a comment
+        <newline>;<space> line is a comment
+        <space>$<space>   rest of line is a comment
+        <space>;<space>   rest of line is a comment
+    dollarcmt set:
+        <newline>$      line is a comment
+        <newline>;      line is a comment
+        <space or ,>$   rest of line is a comment
+        <space or ,>;   rest of line is a comment
+
+* Parameter hashing for speed improvement.
+
+  The parameter (.param line) handling was very slow when thousands of
+  parameters are defined.  The parameters are now hashed, which
+  greatly reduces setup time when large numbers of parameters are
+  defined.
+
+* Function definition through .param statements.
+
+  Parameter assignments can now be used to define functions, with
+  the syntax
+
+    .param func(a,b,c) 'expression'
+
+  The function can then be used in expressions just as any other
+  function.
+
+  This has the same effect as the define command in WRspice.  Note
+  that the function will remain defined after the circuit file is
+  out of scope (this behavior may change in the future).
+
+* Level 54 MOSFET support
+
+  For HSPICE compatibility, the BSIM-4.3.0 model has been added to the
+  device library as level 54.  However, this is the unmodified model
+  from Berkeley and has no HSPICE extensions, so parameters that are
+  HSPICE-specific will not be recognized.
+
+  The (newer) BSIM-4.4.0 model is still available as level 14.
+
+* New error logging to file.
+
+  There is a new variable named "errorlog".  If this variable is set
+  to a file pathname, all errors and warnings will be copied to this
+  file.
+
+  This variable can be set explicitly, or fron the General page of
+  the Tools/Commands panel.
+
+* New Math Functions.
+  These support compatibility with HSPICE
+
+  The first group of functions are equivalent to the HSPICE Monte Carlo
+  functions that are used in .param lines in HSPICE.  In WRspice,
+  these are regualr math functions.
+
+  These functions differ from other math functions in that they take
+  multiple comma-separated arguments,
+
+  Note: other math functions internally accept a single argument, but
+  if there are multiple comma-separated terms, they will be collapsed
+  into a single argument through evaluation of the comma operator
+
+    a,b  = (a + j*b)
+
+  Which yields a comples value.  This will not be true in the functions
+  listed below - the comma really means separate arguments in this case.
+
+  unif(nom, rvar)
+    Uniform relative random value function.
+    This returns a vector the same length as nom, complex or real as
+    nom.  If the length of rvar is less than the length of nom, rvar
+    is extended by replicating the highest index value of rvar.
+
+    The return vector contains uniformly distributed random values,
+    each in the range [nom - nom*rvar, nom + nom*rvar] term-by-term.
+
+    Below, random() returns a random number between -1 and 1. 
+
+    If nom is complex and var is complex:
+      out[i].real = nom[i].real*(1 + random()*rvar[i].real)
+      out[i].imag = nom[i].imag*(1 + random()*rvar[i].imag)
+
+    If nom is complex and var is real:
+      out[i].real = nom[i].real*(1 + random()*rvar[i])
+      out[i].imag = nom[i].imag*(1 + random()*rvar[i])
+
+    If nom is real and var is complex:
+      out[i] = nom[i].real*(1 + random()*rvar[i].real)
+
+    If nom is real and var is real:
+      out[i] = nom[i]*(1 + random()*rvar[i])
+
+  aunif(nom, var)
+    Uniform absolute random value function.
+    This returns a vector the same length as nom, complex or real as
+    nom.  If the length of var is less than the length of nom, var is
+    extended by replicating the highest index value of var.
+
+    The return vector contains uniformly distributed random values,
+    each in the range [nom - var, nom + var] term-by-term.
+
+    Below, random() returns a random number between -1 and 1. 
+
+    If nom is complex and var is complex:
+      out[i].real = nom[i].real + random()*var[i].real
+      out[i].imag = nom[i].imag + random()*var[i].imag
+
+    If nom is complex and var is real:
+      out[i].real = nom[i].real + random()*var[i]
+      out[i].imag = nom[i].imag + random()*var[i]
+
+    If nom is real and var is complex:
+      out[i] = nom[i].real + random()*var[i].real
+
+    If nom is real and var is real:
+      out[i] = nom[i] + random()*var[i]
+
+  gauss(nom, rvar, sigma)
+    Gaussian relative random number generator.
+    This returns a vector the same length as nom, complex or real as
+    nom.  If the length of rvar is less than the length of nom, rvar
+    is extended by replicating the highest index value of rvar.  Only
+    the zero'th (real) component of sigma is used.
+
+    If fewer than three arguments are given, this reverts to the
+    original WRspice gauss function.
+
+    The return vector contains gaussian-distributed random values.
+    The (scalar) sigma value gives the specified sigma of the rvar data,
+    generally 1 or 3.
+
+    Below, gauss() returns a gaussian random number with zero mean and
+    unit standard deviation.
+
+    If nom is complex and var is complex:
+      out[i].real = nom[i].real*(1 + gauss()*rvar[i].real/sigma)
+      out[i].imag = nom[i].imag*(1 + gauss()*rvar[i].imag/sigma)
+
+    If nom is complex and var is real:
+      out[i].real = nom[i].real*(1 + gauss()*rvar[i]/sigma)
+      out[i].imag = nom[i].imag*(1 + gauss()*rvar[i]/sigma)
+
+    If nom is real and var is complex:
+      out[i] = nom[i].real*(1 + gauss()*rvar[i].real/sigma)
+
+    If nom is real and var is real:
+      out[i] = nom[i]*(1 + gauss()*rvar[i]/sigma)
+
+  agauss(nom, var, sigma)
+    Gaussian absolute random number generator.
+    This returns a vector the same length as nom, complex or real as
+    nom.  If the length of var is less than the length of nom, var
+    is extended by replicating the highest index value of var.  Only
+    the zero'th (real) component of sigma is used.
+
+    The return vector contains gaussian-distributed random values.
+    The (scalar) sigma value gives the specified sigma of the var data,
+    generally 1 or 3.
+
+    Below, gauss() returns a gaussian random number with zero mean and
+    unit standard deviation.
+
+    If nom is complex and var is complex:
+      out[i].real = nom[i].real + gauss()*var[i].real/sigma
+      out[i].imag = nom[i].imag + gauss()*var[i].imag/sigma
+
+    If nom is complex and var is real:
+      out[i].real = nom[i].real + gauss()*var[i]/sigma
+      out[i].imag = nom[i].imag + gauss()*var[i]/sigma
+
+    If nom is real and var is complex:
+      out[i] = nom[i].real + gauss()*var[i].real/sigma
+
+    If nom is real and var is real:
+      out[i] = nom[i] + gauss()*var[i]/sigma
+
+  limit(nom, var)
+    Random limit function.
+    This returns a vector the same length as nom, complex or real as
+    nom.  If the length of var is less than the length of nom, var is
+    extended by replicating the highest index value of var.
+
+    The return vector contains either nom + var or nom - var
+    determined randomly, term-by-term.
+
+    If nom is complex and var is complex:
+      out[i].real = nom[i].real +/- var[i].real randomly
+      out[i].imag = nom[i].imag +/- var[i].imag randomly
+
+    If nom is complex and var is real:
+      out[i].real = nom[i].real +/- var[i] randomly
+      out[i].imag = nom[i].imag +/- var[i] randomly
+
+    If nom is real and var is complex:
+      out[i] = nom[i].real +/- var[i].real randomly
+
+    If nom is real and var is real:
+      out[i] = nom[i] +/- var[i] randomly
+
+
+    The remaining functions are for HSPICE compatibility, but are not
+    exclusive to the HSPICE Monte Carlo analysis.  These also have
+    multiple arguments.
+
+  pow(x, y)
+    This returns a real or complex vector the same length as x.  If
+    the length of y is less than the length of x, y is extended by
+    replicating the highest index value of y.
+
+    This returns a vector containing x^y computed using complex
+    values, term-by-term, however if y is real, is is truncated to an
+    integer value.
+
+    If x is complex and y is complex:
+      out = x^y   (same as ^ operator)
+
+    If x is complex and y is real:
+      out = x^(int)y (same as ^ operator, but y is truncated to integer)
+
+    If x is real and y is complex:
+      out = x^y   (same as ^ operator)
+
+    If x is real and y is real:
+      out = x^(int)y (same as ^ operator, but y is truncated to integer)
+
+  pwr(x, y)
+    This returns a real vector the same length as x.  If the length of
+    y is less than the length of x, y is extended by replicating the
+    highest index value of y.
+
+    If x is complex and y is complex:
+      out[i] = (sign of x[i].real)(mag(x[i]) ^ y[i].real)
+
+    If x is complex and y is real:
+      out[i] = (sign of x[i].real)(mag(x[i]) ^ y[i])
+
+    If x is real and y is complex:
+      out[i] = (sign of x[i].real)(abs(x[i]) ^ y[i].real)
+
+    If x is real and y is real:
+      out[i] = (sign of x[i])(abs(x[i]) ^ y[i])
+
+  sign(x, y)
+    This returns a vector the same length as x, complex or real as x. 
+    If the length of y is less than the length of x, y is extended by
+    replicating the highest index value of y.
+ 
+    If x is complex and y is complex:
+      out[i].real = (sign of y[i].real)abs(x[i].real)
+      out[i].imag = (sign of y[i].imag)abs(x[i].imag)
+
+    If x is complex and y is real:
+      out[i].real = (sign of y[i])abs(x[i].real)
+      out[i].imag = (sign of y[i])abs(x[i].imag)
+
+    If x is real and y is complex:
+      out[i] = (sign of y[i].real)abs(x[i])
+
+    If x is real and y is real:
+      out[i] = (sign of y[i])abs(x[i])
+
+
+    This new function takes a single argument, and is consistent with
+    the existing math functions with respect to arguments.
+
+  sgn(x)
+    This returns a vector the same length as x, complex or real as x.
+
+    If x is complex:
+      out[i].real = 1,0,-1 if x[i].real is >, =, < 0
+      out[i].imag = 1,0,-1 if x[i].real is >, =, < 0
+
+    If x is real:
+      out[i] = 1,0,-1 if x[i] is >, =, < 0
+
+* Suppression of random output from sources.
+
+  The math functions that return random output (unif, aunif, gauss,
+  agauss, limit) will by default always return a random variable
+  whenever evaluated.  At times, it is useful that these functions
+  instead return the nominal value - for example when setting up a
+  circuit for Monte Carlo analysis, it is generally important that
+  the circuit "work" with nominal values.  When in Monte Carlo
+  analysis, the random values should be returned.  The following
+  new variable accomplieshes this.
+
+  New variable: norandom (boolean)
+
+  When set, the math functions unif, aunif, gauss, agauss, and limit
+  return the nominal value, not a random value, when not doing
+  Monte Carlo analysis, but will return random output when the Monte
+  Carlo analysis is in progress.
+
+  When not set, the functions always return random values.
+
+  The variable can be set explicitly, or from the General page of the
+  Tools/Commands panel.
+
+* Tran function hacks.
+
+  The "tran" functions are special functions like pulse() and pwl()
+  used to specify voltage/current source output, however in WRspice
+  these can be used in general expressions.  The sin, exp, gauss tran
+  functions have names that conflict with math functions.  There seems
+  to be no way to absolutely reliably distinguish the tran vs.  math
+  functions by context, nor is it possible to rename the functions
+  without causing huge compatibility problems.
+
+  Although the sin and exp functions are generally distinguishable
+  except for one unlikely case, with the additional arguments to the
+  gauss function for HSPICE compatibility, the problem is more acute.
+
+  It may be necessary to edit legacy WRspice input files to avoid
+  this problem.
+
+  That being said, new intelligence has been added to differentiate
+  between the two sepcies.  As before, the argument count will in
+  many cases resolve ambiguity.
+
+  First of all, to guarantee that the tran functions are used in an
+  expression, they can be called by the new synonym names "tsin",
+  "texp", and "tgauss".
+
+  If sin, exp, or gauss use white-space delimiting in the argument
+  list, then they will be called as tran functions.  The math
+  functions always use commas to separate arguments.  Commas are also
+  legal argument separators in tran funcs, but (perhaps) are not as
+  frequently used.  If comma argument separators are used, the math
+  functions are assumed.
+
+  Note that almost all math functions (whith the exception of gauss
+  and a few others) take a single complex vector argument.  It is
+  possible to give these functions multiple comma-separated
+  "arguments", but in evaluation these are collapsed by evaluation of
+  the comma operator:
+
+    a,b  = (a + j*b)
+
+  So, sin(1,1) is equivalent to sin((1+j)), which returns a complex
+  value.
+
+  In previous WRspice releases, sin(a,b) was always interpreted as the
+  tran sin function, which has a minimum of two arguments.  Presently.
+
+    sin(a,b)  -> math
+    sin(a b)  -> tran
+
+  If ambiguity occurs in a function specification for a V/I or
+  dependent source, the tran function is favored.
+
+* New provision to check for program updates, and to download/install
+  update distributions.
+
+  The new "passwd" command will create a .wrpasswd file in your home
+  directory, which contains the encrypted user/password to the
+  distribution repository.  Presently, these are
+
+     user: gumby
+     password: resKuM24
+
+  These will work for now.  Eventually, new individualized passwords
+  will be given to all users.  Note that Xic-3 has a similar command
+  and either one will work, and this need only be done once (until
+  the password changes).
+
+  With a password set, WRspice will check for updates when started,
+  and show a message if an updated release is available.  It does this
+  by contacting the Whiteley Research web site.  If you are able to
+  view the www.wrcad.com web site ffrom your computer, then the
+  communications should work fine.  If you are behind a restrictive
+  firewall that does not forward http packets, the update system
+  will not work.
+
+  Checking for updates can be suppressed by setting the variable
+  "nocheckupdate" in a .wrspiceinit file.
+
+  The new wrupdate command, which can also be started from the Files
+  menu of the toolbar, can be used to download and install updates.
+  This may not work yet.  See "help wrupdate" for more information.
+
+* Plot trace limit increased.
+
+  Up to 18 traces can now be displayed in "separate" mode.  The previous
+  limit was 10.
+
+* The code that handles the initial parsing of input files was revised.
+  Here is the logic used when reading input:
+
+  1.  The file is read into a "deck" in memory.  Line continuation is
+    applied, .include and .lib references are resolved and read, and
+    comments and empty lines are removed.
+
+  2.  The deck is scanned for .param lines which are outside of
+    subcircuit definitions.  These are shell expanded, and used to
+    evaluate .if and .elif lines.  Lines that are not is scope are
+    removed.
+
+  3.  Verilog blocks, .exec blocks, amd .control blocks are moved out
+    of the main deck into separate storage.
+
+  4.  All remaining lines outside of subcircuit definitions are
+    parameter expanded.
+
+  5.  The .exec lines, if any, are parameter expanded and executed by
+    the shell.
+  
+  6.  .options lines are extracted, shell expanded, and evaluated. 
+    During evaluation, the shell receives the assignment definitions.
+
+  7.  The remaining lines in the deck are shell expanded.
+
+  8.  Subcircuit expansion is performed.  This takes care of parameter
+    expansion within subcircuit definition blocks.
+
+  9.  The circuit (if any) is parsed, and added to the internal
+    circuits list.
+
+  10.  The .control lines, if any, are parameter expanded and executed
+    by the shell.
+
+
+Bugs Fixed
+----------
+
+* The logic for the NOT operator (~) was reversed.  True was being
+  returned (incorrectly) for nonzero values,
+
+* Fixed an array overrun bug in .param handling that would crash the
+  program.
+
+* Fixed a bug in the complex division function.  The function would fail
+  for a negative real divisor.
+

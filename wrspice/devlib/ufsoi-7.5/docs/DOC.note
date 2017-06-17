@@ -1,0 +1,75 @@
+Since the UFSOI (UFPDB and FD) models are truly physical, they cannot 
+be described by single equations. The basic formalisms are described 
+in the Ph.D. dissertations cited in the User's Guide, and are 
+overviewed pretty well by the following papers. A concise overview
+of the UFPDB model is given in the paper UFPDB.pdf in this directory.
+ 
+ D. Suh and J. G. Fossum, "A Physical Charge-Based Model for 
+ Non-Fully Depleted SOI MOSFET's and Its Use in Assessing 
+ Floating-Body Effects in SOI CMOS Circuits," IEEE Trans. 
+ Electron Devices, vol. 42, pp. 728-737, Apr. 1995.
+ 
+ P. C. Yeh and J. G. Fossum, "Physical Subthreshold MOSFET 
+ Modeling Applied to Viable Design of Deep-Submicrometer Fully 
+ Depleted SOI Low-Voltage CMOS Technology," IEEE Trans. Electron
+ Devices, vol. 42, pp. 1605-1613, Sept. 1995.
+ 
+ S. Krishnan and J. G. Fossum, "Compact Non-Local Modeling of 
+ Impact Ionization in SOI MOSFETs for Optimal CMOS Device/Circuit 
+ Design," Solid-State Electron., vol. 39, pp. 661-668, May 1996.
+ 
+ G. O. Workman, J. G. Fossum, S. Krishnan, and M. M. Pelella, Jr.,
+ "Physical Modeling of Temperature Dependences of SOI CMOS Devices 
+ and Circuits Including Self-Heating," IEEE Trans. Electron Devices, 
+ vol. 45, pp. 125-133, Jan. 1998
+
+ G. O. Workman and J. G. Fossum, "Physical Noise Modeling of SOI
+ MOSFETs with Analysis of the Lorentzian Component in the Low-
+ Frequency Noise Spectrum, IEEE Trans. Electron Devices, vol. 47,
+ pp. 1192-1201, June 2000
+
+ L. Ge, J. G. Fossum, and B. Liu, "Physical Compact Modeling and
+ Analysis of Velocity Overshoot in Extremely Scaled CMOS Devices
+ and Circuits," IEEE Trans. Electron Devices, vol. 48, pp. 2074-2080,
+ Sept. 2001.
+ 
+ S. Veeraraghavan and J. G. Fossum, "A Physical Short-Channel
+ Model for the Thin-Film SOI MOSFET Applicable to Device and
+ Circuit CAD," IEEE Trans. Electron Devices, vol. 35,
+ pp. 1866-1875, Nov. 1988.
+
+ J. G. Fossum and S. Krishnan, "Physical Modeling Needed for 
+ Reliable SOI Circuit Design," IEICE Trans. on Electronics, 
+ vol. E80-C, pp. 388-393, March 1997.
+
+ M. M. Pelella and J. G. Fossum, "On the Performance Advantage of
+ PD/SOI CMOS with Floating Bodies," IEEE Trans. Electron Devices, 
+ vol. 49, pp. 96-104, Jan. 2002.
+ 
+The last paper listed demonstrates the utility of the unified UFPDB
+model. A good overview of UFPDB is given in the paper included in 
+this directory.
+
+Note that the model parameters must be evaluated via the process-based
+calibration methodology described in the report included in this directory. 
+If global optimization is used, the physical nature of the models may
+be undermined. 
+
+-------------------------------------------------
+Jerry G. Fossum
+Professor
+
+SOI Group
+Department of Electrical and Computer Engineering
+University of Florida
+541 New Engineering Building
+P.O. Box 116130
+Gainesville, FL  32611-6130
+
+352-392-4921 (tel)
+352-392-8381 (fax)
+
+fossum@tec.ufl.edu
+http://www.soi.tec.ufl.edu
+-------------------------------------------------
+

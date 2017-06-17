@@ -1,0 +1,19 @@
+/* XPM */
+static const char * setcl_xpm[] = {
+"16 12 3 1",
+" 	c none",
+".	c red",
+"X	c blue",
+" XXXXXXXXXXXXXX ",
+" X            X ",
+" X            X ",
+" X  ....      X ",
+" X  ....      X ",
+" X  ....      X ",
+" X  ....      X ",
+" X            X ",
+" X            X ",
+" X            X ",
+" XXXXXXXXXXXXXX ",
+"                "};
+

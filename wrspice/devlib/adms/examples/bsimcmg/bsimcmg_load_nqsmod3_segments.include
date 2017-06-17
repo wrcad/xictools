@@ -1,0 +1,216 @@
+// ********************************************************
+// **** BSIM-CMG 107.0.0 released by Navid, Juan, and Sriramkumar on 07/12/2013 ****/
+// *  BSIM Common Multi-Gate Model Equations (Verilog-A)
+// ********************************************************
+//
+// ********************************************************
+// * Copyright 2012 Regents of the University of California. 
+// * All rights reserved.
+// *
+// * Project Director: Prof. Chenming Hu.
+// * Authors: Sriramkumar V., Navid Paydavosi, Juan Duarte, Darsen Lu, 
+// *          Chung-Hsun Lin, Mohan Dunga, Shijing Yao,
+// *          Ali Niknejad, Chenming Hu
+// ********************************************************
+// ********************************************************
+// *   NONDISCLOSURE STATEMENT
+// Software is distributed as is, completely without warranty or service
+// support. The University of California and its employees are not liable
+// for the condition or performance of the software.
+// The University of California owns the copyright and grants users a perpetual,
+// irrevocable, worldwide, non-exclusive, royalty-free license with 
+// respect to the software as set forth below.
+// The University of California hereby disclaims all implied warranties.
+// The University of California grants the users the right to modify, copy,
+// and redistribute the software and documentation, both within the user's
+// organization and externally, subject to the following restrictions
+// 1. The users agree not to charge for the University of California code
+// itself but may charge for additions, extensions, or support.
+// 2. In any product based on the software, the users agree to acknowledge
+// the University of California that developed the software. This
+// acknowledgment shall appear in the product documentation.
+// 3. The users agree to obey all U.S. Government restrictions governing
+// redistribution or export of the software.
+// 4. The users agree to reproduce any copyright notice which appears on
+// the software on any copy or modification of such made available
+// to others
+// Agreed to on __Sept. 11, 2012_________________
+// By: ___University of California, Berkeley____ 
+//     ___Chenming Hu_____________________ 
+//     ___Professor in Graduate School _______
+// ********************************************************
+
+// ***** Load Segment 1 *****
+if (sigvds > 0) begin
+	I(q1, si)  <+ devsign * ids1;
+end else begin
+	I(si, q1)  <+ devsign * ids1;
+end
+I(q1, si) <+ devsign * ddt(qd1);
+I(`IntrinsicGate, si) <+ devsign * ddt(qg1);
+
+// ***** Load Segment 2 *****
+if (sigvds > 0) begin
+	I(q2, q1)  <+ devsign * ids2;
+end else begin
+	I(q1, q2)  <+ devsign * ids2;
+end
+I(q2, q1) <+ devsign * ddt(qd2);
+I(`IntrinsicGate, q1) <+ devsign * ddt(qg2);
+
+// ***** Load Segment 3 *****
+if (sigvds > 0) begin
+	I(q3, q2)  <+ devsign * ids3;
+end else begin
+	I(q2, q3)  <+ devsign * ids3;
+end
+I(q3, q2) <+ devsign * ddt(qd3);
+I(`IntrinsicGate, q2) <+ devsign * ddt(qg3);
+
+if(NSEG == 4) begin
+	
+	// ***** Load Last Segment 4 *****
+	if (sigvds > 0) begin
+		I(di, q3)  <+ devsign * ids4;
+	end else begin
+		I(q3, di)  <+ devsign * ids4;
+	end
+	I(di, q3) <+ devsign * ddt(qd4);
+	I(`IntrinsicGate, q3) <+ devsign * ddt(qg4);
+end else begin	
+	
+	// ***** Load Segment 4 *****
+	if (sigvds > 0) begin
+		I(q4, q3)  <+ devsign * ids4;
+	end else begin
+		I(q3, q4)  <+ devsign * ids4;
+	end
+	I(q4, q3) <+ devsign * ddt(qd4);
+	I(`IntrinsicGate, q3) <+ devsign * ddt(qg4);
+	
+	if(NSEG == 5) begin
+		
+		// ***** Load Last Segment 5 *****
+		if (sigvds > 0) begin
+			I(di, q4)  <+ devsign * ids5;
+		end else begin
+			I(q4, di)  <+ devsign * ids5;
+		end
+		I(di, q4) <+ devsign * ddt(qd5);
+		I(`IntrinsicGate, q4) <+ devsign * ddt(qg5);
+		
+	end else begin
+		
+		// ***** Load Segment 5 *****
+		if (sigvds > 0) begin
+			I(q5, q4)  <+ devsign * ids5;
+		end else begin
+			I(q4, q5)  <+ devsign * ids5;
+		end
+		I(q5, q4) <+ devsign * ddt(qd5);
+		I(`IntrinsicGate, q4) <+ devsign * ddt(qg5);
+		
+		if(NSEG == 6) begin
+			
+			// ***** Load Last Segment 6 *****
+			if (sigvds > 0) begin
+				I(di, q5)  <+ devsign * ids6;
+			end else begin
+				I(q5, di)  <+ devsign * ids6;
+			end
+			I(di, q5) <+ devsign * ddt(qd6);
+			I(`IntrinsicGate, q5) <+ devsign * ddt(qg6);
+			
+		end else begin
+			
+			// ***** Load Segment 6 *****
+			if (sigvds > 0) begin
+				I(q6, q5)  <+ devsign * ids6;
+			end else begin
+				I(q5, q6)  <+ devsign * ids6;
+			end
+			I(q6, q5) <+ devsign * ddt(qd6);
+			I(`IntrinsicGate, q5) <+ devsign * ddt(qg6);
+			
+			if(NSEG == 7) begin
+				
+				// ***** Load Last Segment 7 *****
+				if (sigvds > 0) begin
+					I(di, q6)  <+ devsign * ids7;
+				end else begin
+					I(q6, di)  <+ devsign * ids7;
+				end
+				I(di, q6) <+ devsign * ddt(qd7);
+				I(`IntrinsicGate, q6) <+ devsign * ddt(qg7);
+				
+			end else begin
+				
+				// ***** Load Segment 7 *****
+				if (sigvds > 0) begin
+					I(q7, q6)  <+ devsign * ids7;
+				end else begin
+					I(q6, q7)  <+ devsign * ids7;
+				end
+				I(q7, q6) <+ devsign * ddt(qd7);
+				I(`IntrinsicGate, q6) <+ devsign * ddt(qg7);
+				
+				if(NSEG == 8) begin
+					
+					// ***** Load Last Segment 8 *****
+					if (sigvds > 0) begin
+						I(di, q7)  <+ devsign * ids8;
+					end else begin
+						I(q7, di)  <+ devsign * ids8;
+					end
+					I(di, q7) <+ devsign * ddt(qd8);
+					I(`IntrinsicGate, q7) <+ devsign * ddt(qg8);
+					
+				end else begin
+					
+					// ***** Load Segment 8 *****
+					if (sigvds > 0) begin
+						I(q8, q7)  <+ devsign * ids8;
+					end else begin
+						I(q7, q8)  <+ devsign * ids8;
+					end
+					I(q8, q7) <+ devsign * ddt(qd8);
+					I(`IntrinsicGate, q7) <+ devsign * ddt(qg8);
+					
+					if(NSEG == 9) begin
+						
+						// ***** Load Last Segment 9 *****
+						if (sigvds > 0) begin
+							I(di, q8)  <+ devsign * ids9;
+						end else begin
+							I(q8, di)  <+ devsign * ids9;
+						end
+						I(di, q8) <+ devsign * ddt(qd9);
+						I(`IntrinsicGate, q8) <+ devsign * ddt(qg9);
+						
+					end else begin
+						
+						// ***** Load Segment 9 *****
+						if (sigvds > 0) begin
+							I(q9, q8)  <+ devsign * ids9;
+						end else begin
+							I(q8, q9)  <+ devsign * ids9;
+						end
+						I(q9, q8) <+ devsign * ddt(qd9);
+						I(`IntrinsicGate, q8) <+ devsign * ddt(qg9);
+						
+						// ***** Load Last Segment 10 *****
+						if (sigvds > 0) begin
+							I(di, q9)  <+ devsign * ids10;
+						end else begin
+							I(q9, di)  <+ devsign * ids10;
+						end
+						I(di, q9) <+ devsign * ddt(qd10);
+						I(`IntrinsicGate, q9) <+ devsign * ddt(qg10);
+						
+					end
+				end
+			end
+		end
+	end
+end	
+

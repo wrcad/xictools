@@ -1,0 +1,22 @@
+#! /bin/sh
+
+prefix=/usr/local
+
+libdir=$prefix/xictools/xic
+
+# Back up config files
+cfgfiles="device.lib \
+    model.lib \
+    mozyrc \
+    xic_format_lib \
+    xic_mesg \
+    xic_stipples \
+    xic_tech.hyp \
+    xic_tech.scmos"
+
+for a in $cfgfiles; do
+    if [ -f $libdir/startup/$a ]; then
+        cp -pf $libdir/startup/$a $libdir/startup/$a.tmporig
+    fi
+done
+

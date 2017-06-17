@@ -1,0 +1,6 @@
+
+These are the tests from the bsimsoi-4.4 distribution, in 4-node and
+5-node forms.  Note that results are a bit different in the two cases,
+as in the 4-node form the bulk node is floating, and it is grounded in
+the 5-node form.  The r.sp is a simplified hack for checking transient
+analysis without waiting for the whole ring oscillator to simulate.

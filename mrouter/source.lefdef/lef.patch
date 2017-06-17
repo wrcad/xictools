@@ -1,0 +1,134 @@
+diff -c -r lef.orig/lef/crypt.cpp lef/lef/crypt.cpp
+*** lef.orig/lef/crypt.cpp	2016-03-14 15:20:23.000000000 -0700
+--- lef/lef/crypt.cpp	2016-05-15 17:37:35.628069300 -0700
+***************
+*** 37,43 ****
+  
+  #include "lefiKRDefs.hpp"
+  
+! BEGIN_LEFDEF_PARSER_NAMESPACE
+  
+  #ifdef WIN32
+  #   include <io.h>
+--- 37,44 ----
+  
+  #include "lefiKRDefs.hpp"
+  
+! // S. Whiteley, move this below include.
+! // BEGIN_LEFDEF_PARSER_NAMESPACE
+  
+  #ifdef WIN32
+  #   include <io.h>
+***************
+*** 46,51 ****
+--- 47,53 ----
+  
+  #endif // WIN32 
+  
++ BEGIN_LEFDEF_PARSER_NAMESPACE
+  
+  FILE *
+  encOpenFileForRead(char *filename)
+diff -c -r lef.orig/lef/lef.y lef/lef/lef.y
+*** lef.orig/lef/lef.y	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lef.y	2016-05-15 17:37:19.311896800 -0700
+***************
+*** 2,7 ****
+--- 2,12 ----
+  // ************************************************************************** 
+  // ATTENTION: THIS IS AN AUTO-GENERATED FILE. DO NOT CHANGE IT!               
+  // ************************************************************************** 
++ //====
++ // Updated to add missing semicolons for compatibility with bison-3.
++ // Bison no longer repairs this error.
++ // Stephen Whiteley, Whiteley Research Inc.
++ //====
+  // ************************************************************************** 
+  // Copyright 2012 - 2015, Cadence Design Systems                                     
+  //                                                                            
+***************
+*** 6370,6381 ****
+      }
+      
+  prop_define:
+!   K_INTEGER { lefData->lefRealNum = 0 } opt_def_range opt_def_value 
+      { 
+        if (lefCallbacks->PropCbk) lefData->lefrProp.setPropInteger();
+!       lefData->lefPropDefType = 'I'
+      }
+!   | K_REAL { lefData->lefRealNum = 1 } opt_def_range opt_def_value
+      { 
+        if (lefCallbacks->PropCbk) lefData->lefrProp.setPropReal();
+        lefData->lefPropDefType = 'R';
+--- 6375,6386 ----
+      }
+      
+  prop_define:
+!   K_INTEGER { lefData->lefRealNum = 0; } opt_def_range opt_def_value
+      { 
+        if (lefCallbacks->PropCbk) lefData->lefrProp.setPropInteger();
+!       lefData->lefPropDefType = 'I';
+      }
+!   | K_REAL { lefData->lefRealNum = 1; } opt_def_range opt_def_value
+      { 
+        if (lefCallbacks->PropCbk) lefData->lefrProp.setPropReal();
+        lefData->lefPropDefType = 'R';
+***************
+*** 6384,6400 ****
+    | K_STRING
+      {
+        if (lefCallbacks->PropCbk) lefData->lefrProp.setPropString();
+!       lefData->lefPropDefType = 'S'
+      }
+    | K_STRING QSTRING
+      {
+        if (lefCallbacks->PropCbk) lefData->lefrProp.setPropQString($2);
+!       lefData->lefPropDefType = 'Q'
+      }
+    | K_NAMEMAPSTRING T_STRING
+      {
+        if (lefCallbacks->PropCbk) lefData->lefrProp.setPropNameMapString($2);
+!       lefData->lefPropDefType = 'S'
+      }
+  
+  opt_range_second:
+--- 6389,6405 ----
+    | K_STRING
+      {
+        if (lefCallbacks->PropCbk) lefData->lefrProp.setPropString();
+!       lefData->lefPropDefType = 'S';
+      }
+    | K_STRING QSTRING
+      {
+        if (lefCallbacks->PropCbk) lefData->lefrProp.setPropQString($2);
+!       lefData->lefPropDefType = 'Q';
+      }
+    | K_NAMEMAPSTRING T_STRING
+      {
+        if (lefCallbacks->PropCbk) lefData->lefrProp.setPropNameMapString($2);
+!       lefData->lefPropDefType = 'S';
+      }
+  
+  opt_range_second:
+diff -c -r lef.orig/template.mk lef/template.mk
+*** lef.orig/template.mk	2016-02-05 14:39:13.000000000 -0800
+--- lef/template.mk	2016-05-15 17:36:47.857480400 -0700
+***************
+*** 23,28 ****
+--- 23,38 ----
+      ARCH=lnx86 
+      CXX=g++
+      CC=gcc
++ # S. Whiteley, add some optimization and set PIC.
++     CXXFLAGS = -O -fPIC
++ endif
++ 
++ # S. Whiteley, add OS X (Darwin) support.
++ ifeq ($(OS_TYPE),Darwin)
++     ARCH=darwin 
++     CXX=g++
++     CC=gcc
++     CXXFLAGS = -O
+  endif
+  
+  .SUFFIXES: $(SUFFIXES) .cpp

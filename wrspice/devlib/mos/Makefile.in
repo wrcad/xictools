@@ -1,0 +1,67 @@
+#######################################################################
+# devlib/mos/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 2.22 2015/10/04 20:05:29 stevew Exp $
+#######################################################################
+
+DEVLIB_VERSION = @DEVLIB_VERSION@
+DATE = @DATE@
+OSNAME = @OSNAME@
+
+CC = @CC@
+CXX = @CXX@
+LINKCC = @LINKCC@
+CFLAGS = @CFLAGS_S@ @UFLAGS@
+LSHFLAG = @LSHFLAG@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGS_S@
+FILTER = @FILTER@
+PIC_OPT = @PIC_OPT@
+SOEXT = @SOEXT@
+DEVWINDLL = @DEVWINDLL@
+
+MODULE = mos
+TARGET = $(MODULE).$(SOEXT)
+HFILES = mosdefs.h
+CFILES =
+CCFILES = mos.cc mosacld.cc mosaski.cc mosaskm.cc mosconv.cc mosdist.cc \
+  mosdset.cc moseq.cc mosic.cc mosload.cc mosnois.cc mospzld.cc mosset.cc \
+  mosseti.cc mossetm.cc mostemp.cc mostrun.cc
+COBJS = $(CCFILES:.cc=.o) $(CFILES:.c=.o)
+INCLUDE = -I../include
+DEFS = -D__WRMODULE__=$(MODULE) -D__WRVERSION__=$(DEVLIB_VERSION)
+
+$(TARGET): $(COBJS)
+	$(LINKCC) -o $(TARGET) $(LSHFLAG) $(COBJS) $(DEVWINDLL)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(PIC_OPT) $(INCLUDE) $(DEFS) -c $*.cc
+
+.c.o:
+	$(CC) $(CFLAGS) $(PIC_OPT) $(INCLUDE) $(DEFS) -c $*.c
+
+depend:
+	@echo depending in devlib/mos
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    if [ "z$(CCFILES)" != "z" ]; then \
+	        for a in $(CCFILES); do \
+	            $(DEPEND_PROG) $(INCLUDE) $$a $(FILTER)>> Makefile; \
+	        done \
+	    fi; \
+	    if [ "z$(CFILES)" != "z" ]; then \
+	        for a in $(CFILES); do \
+	            $(DEPEND_PROG) $(INCLUDE) $$a $(FILTER)>> Makefile; \
+	        done \
+	    fi; \
+	fi
+
+clean:
+	-rm $(COBJS) $(TARGET)
+
+distclean:
+	-rm $(COBJS) $(TARGET) Makefile
+
+modname:
+	@echo $(MODULE)
+
+#######################################################################

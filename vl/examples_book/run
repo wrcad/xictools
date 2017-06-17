@@ -1,0 +1,5 @@
+#! /bin/sh
+
+for a in *.v; do
+    vl $a
+done

@@ -1,0 +1,56 @@
+# density1.scr
+# $Id: density1.scr,v 1.2 2013/11/18 19:31:08 stevew Exp $
+#
+# This script illustrates use of the ChdWriteDensityMaps function to
+# compute layer density.  This is faster than using the more general
+# ChdIterateOverRegion function as in the density.scr example, but
+# is restricted in computing density only.
+
+# Copy the script file to a directory where you have write permission.
+# From Xic running in this directory, to run type:  !exec ./density1.scr
+
+# First, ask for a file name, then create a CHD and linked CGD.  All
+# geometry will be obtained from the CGD.
+
+filename = PopUpInput("Enter layout file path:", 0, "Compute Density", FALSE)
+
+chd = OpenCellHierDigest(filename, 0)
+if (!chd)
+    Print(GetError())
+    Halt()
+end
+if (!ChdLoadGeometry(chd))
+    Print(GetError())
+    Halt()
+end
+
+# Note that one can limit the layers processed to a subset of those used
+# in the file by setting the following variables.  We should revert these
+# back to their original states when done.
+#
+# Set("LayerList", "0200 0600")
+# Set("UseLayerList", "")
+
+# If save is FALSE, the SPTs will be dumped to files and destroyed.
+# If save is TRUE, the SPTs will be retained in memory, and the function
+# returns a list of the table names.
+save = FALSE
+
+tstart = MilliSec();
+hret = ChdWriteDensityMaps(chd, 0, 0, 40, 20.0, 0.0, save)
+if (save)
+    while (hret)
+        Print(ListContent(hret))
+        hret++
+    end
+else
+    if (hret == 0)
+        Print(GetError())
+        Halt()
+    end
+end
+tstart = MilliSec() - tstart
+Print("Done, calculation time in msec =", tstart)
+
+# End of example.
+

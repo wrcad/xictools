@@ -1,0 +1,2359 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiAttributes.hlp,v 1.91 2016/10/10 18:30:04 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiAttributes.hlp
+!!TITLE
+xiAttributes.hlp
+!!HTML
+
+!!SUBTOPICS
+xic:attrmenu
+xic:updat
+xic:keymp
+xic:macro
+xic:attr
+xic:dots
+xic:font
+xic:color
+xic:fill
+xic:edlyr
+xic:lpedt
+xic:attrsubmenu
+xic:freez
+xic:cntxt
+xic:props
+xic:labls
+xic:larot
+xic:cnams
+xic:cnrot
+xic:objs
+xic:nouxp
+xic:tinyb
+xic:grid
+
+
+!! 012715
+!!KEYWORD
+xic:attrmenu
+!!TITLE
+Attributes Menu
+!!HTML
+    The <b>Attributes Menu</b> contains commands primarily for
+    modifying the presentation format of <i>Xic</i>.  Each <a
+    href="xic:vport">sub-window</a> has an independent set of
+    attributes, which are initially set to those of the main window.
+
+    <p>
+    The table below summarizes the command buttons found in the
+    <b>Attributes Menu</b>, listing the internal name and command
+    function.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Attributes Menu</caption>
+    <tr><th>Label</th> <th>Name</th>
+      <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:updat"><b>Save Tech</b></a></td>
+      <td><tt>updat</tt></td> <td>none</td>
+      <td>Save technology file</td></tr>
+    <tr><td><a href="xic:keymp"><b>Key Map</b></a></td>
+      <td><tt>keymp</tt></td> <td>none</td>
+      <td>Create keyboard mapping file</td></tr>
+    <tr><td><a href="xic:macro"><b>Define Macro</b></a></td>
+      <td><tt>macro</tt></td> <td>none</td>
+      <td>Define a keyboard macro</td></tr>
+    <tr><td><a href="xic:attrsubmenu"><b>Main Window</b></a></td>
+      <td>&nbsp;</td> <td>Attributes sub-menu</td>
+      <td>Set main window attributes</td></tr>
+    <tr><td><a href="xic:attr"><b>Set Attributes</b></a></td>
+      <td><tt>attr</tt></td> <td><b>Window Attributes</b></td>
+      <td>Set misc. attributes for drawing windows</td></tr>
+    <tr><td><a href="xic:dots"><b>Connection Dots</b></a></td>
+      <td><tt>dots</tt></td> <td><b>Connection Points</b></td>
+      <td>Show connection dots in schematics</td></tr>
+    <tr><td><a href="xic:font"><b>Set Font</b></a></td>
+      <td><tt>font</tt></td> <td><b>Font Selection</b></td>
+      <td>Set text fonts used</td></tr>
+    <tr><td><a href="xic:color"><b>Set Color</b></a></td>
+      <td><tt>color</tt></td> <td><b>Color Selection</b></td>
+      <td>Set layer and other colors</td></tr>
+    <tr><td><a href="xic:fill"><b>Set Fill</b></a></td>
+      <td><tt>fill</tt></td> <td><b>Fill Pattern Editor</b></td>
+      <td>Set layer fill patterns</td></tr>
+    <tr><td><a href="xic:edlyr"><b>Edit Layers</b></a></td>
+      <td><tt>edlyr</tt></td> <td><b>Layer Editor</b></td>
+      <td>Add or remove layers</td></tr>
+    <tr><td><a href="xic:lpedt"><b>Edit Tech Params</b></a></td>
+      <td><tt>lpedt</tt></td> <td><b>Tech Parameter Editor</b></td>
+      <td>Edit technology parameters</td></tr>
+    </table>
+
+    <p>
+    The <b>Connection Dots</b> button appears only when the full
+    <i>Xic</i> feature set is enabled, not in the <a
+    href="xicii"><i>XicII</i></a> or <a href="xiv"><i>Xiv</i></a>
+    virtual products.
+
+    <p>
+    The sub-menu brought up by the <b>Main Window</b> button is
+    identical to the <b>Attributes</b> menu in the <a
+    href="xic:vport">sub-windows</a> produced from the <b>Viewport</b>
+    button in the <a href="xic:viewmenu"><b>View Menu</b></a>.  The
+    settings apply to the main window.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption><b>Sub-Window Attributes Menu</b></caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:freez"><b>Freeze Display</b></a></td>
+      <td><tt>freez</tt></td> <td>none</td>
+      <td>Suppress redisplay</td></tr>
+    <tr><td><a href="xic:cntxt"><b>Show Context in Push</b></a></td>
+      <td><tt>cntxt</tt></td> <td>none</td>
+      <td>Show context in subedit</td></tr>
+    <tr><td><a href="xic:props"><b>Show Phys Properties</b></a></td>
+      <td><tt>props</tt></td> <td>none</td>
+      <td>Show physical properties</td></tr>
+    <tr><td><a href="xic:labls"><b>Show Labels</b></a></td>
+      <td><tt>labls</tt></td> <td>none</td>
+      <td>Show labels</td></tr>
+    <tr><td><a href="xic:larot"><b>Label True Orient</b></a></td>
+      <td><tt>larot</tt></td> <td>none</td>
+      <td>Show labels transformed</td></tr>
+    <tr><td><a href="xic:cnams"><b>Show Cell Names</b></a></td>
+      <td><tt>cnams</tt></td> <td>none</td>
+      <td>Show cell names</td></tr>
+    <tr><td><a href="xic:cnrot"><b>Cell Name True Orient</b></a></td>
+      <td><tt>cnrot</tt></td> <td>none</td>
+      <td>Show cell names transformed</td></tr>
+    <tr><td><a href="xic:nouxp"><b>Don't Show Unexpanded</b></a></td>
+      <td><tt>nouxp</tt></td> <td>none</td>
+      <td>Don't show unexpanded subcells</td></tr>
+    <tr><td><a href="xic:objs"><b>Objects Shown</b></a></td>
+      <td><tt>objs</tt></td> <td>none</td>
+      <td>Object display control</td></tr>
+    <tr><td><a href="xic:tinyb"><b>Subthreshold Boxes</b></a></td>
+      <td><tt>tinyb</tt></td> <td>none</td>
+      <td>Show outline of subthreshold cells</td></tr>
+    <tr><td><a href="xic:nosym"><b>No Top Symbolic</b></a></td>
+      <td><tt>nosym</tt></td> <td>none</td>
+      <td>Electrical only, don't show top cell as symbolic</td></tr>
+    <tr><td><a href="xic:grid"><b>Set Grid</b></a></td>
+      <td><tt>grid</tt></td> <td><b>Grid Setup</b></td>
+      <td>Set grid parameters</td></tr>
+    </table>
+
+!!SEEALSO
+xic:commands
+
+!! 071010
+!!KEYWORD
+xic:updat
+!!TITLE
+Save Tech
+!!HTML
+    <img src="screenshots/tech.png" align=right>
+    <b>Keyword</b>: <tt>updat</tt>
+
+    <p>
+    The <b>Save Tech</b> button in the <b>Attributes Menu</b> will pop
+    up a small panel, from which one may write an updated <a
+    href="techfile">technology file</a> to disk.  This file provides
+    setup information to <i>Xic</i>, and is read on program start-up. 
+    The file will reflect the current settings of the configurable
+    attributes, layers, etc.
+
+    <p>
+    The <b>Write Tech File</b> panel has three radio buttons that
+    select how parameters that are currently set to program defaults
+    will be handled.  By default, keywords which would specify a
+    default value are omitted from the file, providing a more compact
+    file.  However, it may be useful to include the defaults in the
+    file, to facilitate future hand-editing.  If <b>Comment default
+    definitions</b> is selected, these lines will be added to the
+    technology file as comments.  If <b>Include default
+    definitions</b> is selected, these lines will be added as active
+    text.
+
+    <p>
+    An entry area allows the user to change the name of the file to
+    write.  The default is to use "<tt>xic_tech</tt>" with an
+    extension, if any, that was given to <i>Xic</i> on startup with
+    the <a href="-T"><tt>-T</tt></a> option, written in the current
+    directory.  The base name must be "<tt>xic_tech</tt>" and the file
+    must be located in the library <a href="xicpaths">search path</a>
+    in order to load the new file when <i>Xic</i> is restarted.
+
+    <p>
+    The radio buttons track and set the status of the <a
+    href="TechPrintDefaults"><tt>TechPrintDefaults</tt></a> variable.
+
+!!SEEALSO
+techfile
+xic:attrmenu
+
+!! 011014
+!!KEYWORD
+xic:keymp
+!!TITLE
+Key Map
+!!HTML
+    <b>Keyword</b>: <tt>keymp</tt>
+
+    <p>
+    <b>jump to</b> <a href="xic:keymp#kmapfile"><b>Key Mapping File</b></a>
+
+    <p>
+    Several of the keys which <i>Xic</i> uses are not found on all
+    keyboards, or they may return a different code than <i>Xic</i>
+    expects.  <i>Xic</i> contains a built-in facility for remapping
+    keys from the keyboard to the functions expected in <i>Xic</i>,
+    through the <b>Key Map</b> button in the <b>Attributes Menu</b>. 
+    The user is prompted to press keys on the keyboard that will
+    correspond to the various special keys such as <b>Page Up</b>,
+    <b>Page Down</b>, <b>Home</b>, and numeric keypad <b>Add</b> and
+    <b>Subtract</b>.  Only special function keys can be remapped, not
+    the standard character entry keys, or modifier keys (e.g.,
+    <b>Shift</b>, <b>Control</b>) and not the function keys 1-12.  If
+    there is no response when a key is pressed and the pointer is in a
+    drawing window, then that key can not be mapped.  To skip mapping
+    of a key, press <b>Enter</b>.  To abort, press <b>Esc</b>.  When
+    the prompting is finished, a file will be created in the current
+    directory named <tt>xic_keymap</tt> by default.  The user is given
+    the option to alter this name.
+
+    <p>
+    The file can be moved to a safe place if desired.  The keyboard
+    mapping is not actually performed until this file is read by
+    <i>Xic</i>, which must be done explicitly.  This differs from
+    <i>Xic</i> releases earlier than 4.0.0, which attempted to
+    automatically read a created mapping file.  There are two ways to
+    accomplish reading the mapping file:
+
+    <ol>
+    <li>The <a href="!kmap"><b>!kmap</b></a> command:
+      <tt>!kmap</tt> <i>mapfile</i><br>
+    This command can be typed into the prompt line and will cause the
+    named file to be read and the mapping asserted immediately.
+
+    <li>The <a href="ReadKeymap"><tt>ReadKeymap</tt></a> script function:
+      <tt>ReadKeymap(</tt><i>mapfile</i><tt>)</tt><br>
+    The function can be run from any <a href="xicscript">script</a>. 
+    In particular, this line can be added to a <a
+    href="initfiles">startup script</a> (<tt>.xicstart</tt> or
+    <tt>.xicinit</tt> file) to assert the mapping when <i>Xic</i>
+    starts.
+    </ol>
+
+    <p>
+    In either case, the <i>mapfile</i> is a path to a file as created
+    with this command.  If the path is not rooted, the file is
+    searched for relative to the current directory, the user's home
+    directory, and through the library <a href="xicpaths">search
+    path</a>, in that order.  The commands can be re-run with
+    different mapping files at any time, the current mapping state
+    reflects the most recent mapping applied.
+
+    <a name="kmapfile"></a>
+    <h4>Key Mapping File</h4>
+
+    The file produced in this manner contains all key mapping and
+    action translation tables used by <i>Xic</i>.  Although it is not
+    really recommended, this file can be customized by the user, with
+    a text editor.  The recommended way to alter a key sequence
+    response is with a macro (see below), but there may be occasions
+    where the mapping file should be changed to achieve a desired
+    effect.  Contact Whiteley Research for assistance.
+
+    <p>
+    The name of the file is <tt>xic_keymap.</tt><i>hostname</i>, where
+    <i>hostname</i> is the name of the machine.  When <i>Xic</i>
+    starts, it looks for a file of this name in the current directory,
+    then in the user's home directory, then in the library <a
+    href="xicpaths">search path</a>.  If a file is found, it is read
+    and processed.
+
+    <p>
+    The first section of the mapping file contains a listing of the
+    keysyms for the special keys mapped with this command
+    (<b>Home</b>, <b>Page Down</b>, etc.).  The keysym is a
+    system-defined number assigned to that key.  In Unix/Linux,
+    keysyms are defined in the X include file
+    <tt>X11/keysymdef.h</tt>.
+
+    <p>
+    The next section of the file consists of the definition of the
+    "macro suppression" character (described below).  This must be a
+    printable ASCII character, surrounded by single quotes.
+
+    <p>
+    The third section contains a mapping table for keysyms to an
+    internal code.  The first column contains the keysyms; a numeric
+    value in Windows, or the standard name under Unix/Linux.  The
+    second column is the internal code.  The third column is a subcode
+    used only for function keys.
+
+    <p>
+    The next section contains an action table which maps actions
+    before the keypress code is sent to any internal command in
+    <i>Xic</i>.  In action tables, the first column is a code which is
+    either an internal code, or the ASCII value of the keysym.  This
+    is operating system dependent.  Under Unix/Linux, the keysym code
+    for a printing character is simply the ASCII value of that
+    character.  The internal code is interpreted numerically as a
+    value (hex) 0 - 1f.  Ascii values are (hex) 20 - fe.  Other values
+    are taken as keysyms.  Under Windows, the code is similar, but the
+    Windows keysym is used.  The Windows keysym differs in that (1)
+    the upper-case alpha characters must be specified rather than
+    lower case, (2) for punctuation which is the Shift of a numeric
+    key, the numeric key should be given, (3) for punctuation which is
+    not a Shift value for a numeric key, a special keysym for that key
+    should be given.
+
+    <p>
+    The second column is the modifier state.  The actions should be
+    listed in order of most specific to least specific with regard to
+    modifiers.  A value "0" in this column indicates "don't care". 
+    Otherwise, the entry consists of one or more of "SHIFT", "CTRL",
+    and "ALT", separated by a minus sign "-".  The actual modifier
+    should be listed, even if a Shift state is implied by the value in
+    column one.
+
+    <p>
+    For example, to select the '!' character, in Unix/Linux one has
+    <blockquote>
+       <tt>'!'        SHIFT</tt>
+    </blockquote>
+    in Windows, this would be
+    <blockquote>
+       <tt>'1'        SHIFT</tt>
+    </blockquote>
+
+    <p>
+    The third column in the action tables is the name of an action,
+    which is defined internally in <i>Xic</i>.  This is the action
+    performed when the keypress combination specified in columns one
+    and two is detected.
+
+    <p>
+    The next section in the file is an action table that specifies
+    actions to perform after the present <i>Xic</i> command processes
+    the keypress.  Many of the <i>Xic</i> commands look for specific
+    keys, and if that key is seen, further mapping is inhibited.  If
+    the keypress is not used by the command, it is available for
+    translation by this final table.
+
+    <p>
+    The last section of the file contains a "<tt>&#60Buttons></tt>"
+    field which maps the functions of the mouse buttons under
+    Unix/Linux.  This allows the functions of the buttons within
+    <i>Xic</i> to be permuted.  However, the functions of the buttons
+    with respect to the user interface, such as the mouse button used
+    to engage user interface buttons and menu items, will not change. 
+    This field is ignored under Windows.
+
+!!SEEALSO
+xic:attrmenu
+
+!! 011114
+!!KEYWORD
+xic:macro
+!!TITLE
+Keyboard Macros
+!!HTML
+    <b>Keyword</b>: <tt>macro</tt>
+
+    <p>
+    <b>jump to</b> <a href="xic:macro#macrofile"><b>Macro File Format</b></a>
+
+    <p>
+    Pressing the <b>Define Macro</b> button in the <b>Attributes
+    Menu</b> allows the user to enter a macro.  The generated macros
+    are stored in a file named <tt>.xicmacros</tt> or
+    <tt>.xicmacros.</tt><i>ext</i>, where <i>ext</i> is the current
+    technology file extension.  In all cases, when a macro file is
+    produced, which occurs after any new macro is defined, the file is
+    written in the current directory as <tt>.xicmacros</tt>.  The new
+    file contains definitions for all current macros.  The user can
+    add the suffix and move the file to their home directory if
+    desired.
+
+    <p>
+    When <i>Xic</i> starts, it looks for a macro file in the following
+    sequence, and inputs the first one (and only one) found:
+    <ol>
+    <li>current directory using same extension as tech file.
+    <li>home directory using same extension as tech file.
+    <li>current directory with no extension.
+    <li>home directory with no extension.
+    </ol>
+    Under Windows, the home directory is obtained from environment
+    variables, in particular the value of <a
+    href="HOME"><b>HOME</b></a>.
+
+    <p>
+    Macros can be attached to any combination of a keyboard key and
+    modifier key(s), with the exceptions of <b>Enter</b>, <b>Esc</b>,
+    <b>Backspace</b>, and the "bare" modifier keys (<b>Shift</b>,
+    <b>Ctrl</b>, etc).  However, not all key combinations will work. 
+    For example, the expansion of keyboard menu accelerators occurs
+    before macro expansion, so menu accelerator key combinations can
+    not be used as macros.  Also, key combinations that are
+    intercepted by the window manager, which may include some
+    combinations involving the <b>Alt</b> key, can not be used as
+    macros.  Otherwise, macro definitions have higher priority than
+    most other functions in <i>Xic</i>.
+
+    <p>
+    Macros are <i>not</i> expanded when the <a
+    href="promptline">prompt line</a> is in text editing mode.  The
+    macro expansion can be suppressed for the next key combination by
+    pressing the macro suppression character first.  The macro
+    suppression character is the backquote (`).  The macro suppression
+    character is eliminated from the keypress buffer after the next
+    key is typed.  For example, suppose '<tt>o</tt>' is mapped to
+    something, but you want to enter a literal '<tt>o</tt>' to trigger
+    the <b>Open</b> command ("<tt>op</tt>").  One would type
+    "<tt>`op</tt>", after which the keypress buffer would contain
+    "<tt>op</tt>" triggering the <b>Open</b> command.
+
+    <p>
+    While recording a macro, button and key presses will not have the
+    normal effect, but the events are stored in the macro and will
+    have the normal effect when the macro is invoked.  Button presses
+    will open a menu in the normal way, and selected menu commands
+    will become active, but subsequent events will be swallowed by the
+    macro recorder.  In most cases, one can send events to a pop-up by
+    performing the actions, which won't be carried out but will be
+    recorded in the macro.
+
+    <p>
+    Note that while recording a macro, if a command is initiated that
+    uses the prompt line, the macro string display will be
+    overwritten.  It will come back after the first event.  However,
+    if the command uses the prompt line for input, the macro
+    definition will be terminated as if <b>Esc</b> was entered.
+
+    <p>
+    Pressing <b>Enter</b> while a drawing window has the keyboard
+    focus terminates the macro definition.  Pressing <b>Esc</b>
+    terminates a macro without saving it.  <b>Backspace</b> removes
+    the last event when defining a macro.  To enter <b>Esc</b>,
+    <b>Backspace</b>, or <b>Enter</b> into the macro, use
+    <b>Ctrl-Esc</b>, <b>Ctrl-Backspace</b>, <b>Ctrl-Enter</b>.
+
+    <p>
+    For example, suppose we want to define <b>Ctrl-x</b> to "press"
+    the <a href="xic:expnd"><b>Expand</b></a> button.  In the
+    <b>Define Macro</b> command, press <b>Ctrl</b> and <b>x</b> and
+    release.  In response to the next prompt, select the <b>Expand</b>
+    button in the <b>View Menu</b>, move the pointer into a drawing
+    window, and press the <b>Enter</b> key.  From then on,
+    <b>Ctrl-x</b> will be equivalent to pressing the <b>Expand</b>
+    button.
+
+    <p>
+    To undefine a macro, define it with a null definition for the body.
+
+    <p>
+    See the description of the <a href="keybang#bangbang">!! 
+    interface</a> for information on using script functions in macros.
+
+    <p>
+    In the present GTK-based user interface, there is less need for
+    macros due to the rich set of <a href="accelerator">keyboard
+    accelerators</a> available.
+
+    <a name="macrofile"></a>
+    <h2>Macro File Format</h2>
+
+    The <tt>.xicmacros</tt> file can contain any number of macro
+    definitions.  It is not expected that most users will have a need
+    to work with this file directly, though the possibility exists. 
+    Each macro consists of a block of lines in the following form:
+
+    <blockquote>
+    <tt>#macro</tt><br>
+    <tt>KeyDown(... , NULL)</tt><br>
+    <i>statements</i><br>
+    <tt>#end</tt><br>
+    </blockquote>
+
+    <p>
+    Lines that start with '#' that are not script <a
+    href="scr:preproc">preprocessor</a> keywords are taken as
+    comments.  The body of the macro consists entirely of calls to
+    four script functions:  <a href="KeyDown"><tt>KeyDown</tt></a>, <a
+    href="KeyUp"><tt>KeyUp</tt></a>, <a
+    href="BtnDown"><tt>BtnDown</tt></a>, and <a
+    href="BtnUp"><tt>BtnUp</tt></a>.  The first line must be a
+    <tt>KeyDown</tt> command which specifies the character mapped to
+    the macro.  The widget string is the value "<tt>NULL</tt>".  The
+    remaining lines contain calls to these functions, which simulate
+    the button and key presses recorded in the macro.
+
+    <p>
+    The events processed while <i>Xic</i> is in use are recorded in
+    the <a href="logfiles"><tt>xic_run.log</tt></a> file.  This file
+    and other log files are stored in a temporary directory, which is
+    deleted when <i>Xic</i> terminates normally.  To access the
+    <tt>xic_run.log</tt> file from <i>Xic</i>, press the <a
+    href="xic:logs"><b>Log Files</b></a> button in the <b>Help
+    Menu</b>, then select the <tt>xic_run.log</tt> entry in the
+    resulting file selector, then press the green octagon on the file
+    selector.  Advanced users can cut/paste sequences of the commands
+    into script files or macros.
+
+!!SEEALSO
+scr:preproc
+xic:attrmenu
+
+!! 101016
+!!KEYWORD
+xic:attr
+!!TITLE
+Window Attributes
+!!HTML
+    <img src="screenshots/winattr1.png" align=right>
+    <b>Keyword</b>: <tt>attr</tt>
+
+    <p>
+    The <b>Set Attributes</b> button in the <b>Attributes Menu</b>
+    brings up the <b>Window Attributes</b> panel.  The panel contains
+    controls which affect presentation attributes in all drawing
+    windows.  The panel contains five tabbed pages:  <b>General</b>,
+    <b>Selections</b>, <b>Phys Props</b>, <b>Terminals</b>, and
+    <b>Labels</b>
+
+    <p>
+    The controls found is the <b>General</b> page are as follows.
+    This is the default page shown when the panel first appears.
+
+    <dl>
+    <dt><b>Cursor</b><dd>
+    This menu provides a choice of cursors.  These include the system
+    default cursor (which is probably the same as the left arrow),
+    cross cursor, left and right arrows.  Under Windows, there is no
+    right arrow, so an up arrow is used instead (but it is ugly and
+    useless).  Also, the default cross cursor for Windows 7 service
+    pack 1 is huge and grotesque, but can be switched for a better
+    looking cross cursor through the selections in the Windows
+    <b>System Preferences</b> panel.
+    </dl>
+
+    <dl>
+    <dt><b>Use full-window cursor</b><dd>
+    When this check box is checked, the mouse cursor will be
+    represented by horizontal and vertical lines which extend across
+    the entire width and height of the drawing window containing the
+    cursor.  The lines intersect at the nearest snap point in the
+    current window. 
+
+    <p>
+    When not checked, the cursor is the normal small cross.
+
+    <p>
+    This tracks the state of the <a
+    href="FullWinCursor"><b>FullWinCursor</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Subcell visibility threshold (pixels)</b><dd>
+    This entry area specifies a pixel size threshold for display of
+    expanded subcells.  Subcells with height or width less than this
+    threshold will not be displayed, or displayed as an unfilled
+    bounding box, according to the setting of the <a
+    href="xic:tinyb"><b>Subthreshold Boxes</b></a> menu button in the
+    <b>Main Window</b> sub-menu of the <b>Attributes Menu</b>, and the
+    <b>Attributes</b> menu of sub-windows.  The value can be in the
+    range 0-100.  If 0, subcells will always be rendered when in
+    expanded state, which can greatly increase drawing time when
+    zoomed out.  This setting applies to all drawing windows. 
+
+    <p>
+    This entry tracks the setting of the <a
+    href="CellThreshold"><b>CellThreshold</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Push context display illumination percent</b><dd>
+    When the <a href="xic:push"><b>Push</b></a> command is active, and
+    the "context" (the features surrounding the pushed-to subcell) is
+    being displayed, the intensity of colors used to render the
+    context is reduced.  This visually differentiates objects in the
+    current cell from those in the context.  The percentage intensity
+    of the context can be set from this input area.  If set to 100,
+    the context is rendered with the same coloring as the current
+    cell.
+
+    <p>
+    This entry tracks the setting of the <a
+    href="ContextDarkPcnt"><b>ContextDarkPcnt</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Pixels between pop-ups and prompt line</b><dd>
+    For windows that are automatically placed just above the prompt
+    line, giving this entry a positive integer value will position these
+    windows toward the top of the screen by that many pixels.  This is
+    useful when using "plasma" displays (such as Mac or KDE), where
+    the shadow falls on the prompt line, which can be distracting.  It
+    might also be helpful if the window positioning is incorrect,
+    which might occur with some window managers.
+
+    <p>
+    This tracks the state of the <a
+    href="LowerWinOffset"><b>LowerWinOffset</b></a> Variable.
+    </dl>
+
+    <br clear=all>
+    <p>
+    <img src="screenshots/winattr2.png" align=right>
+    The <b>Selections</b> page contains the following two
+    check boxes.
+
+    <dl>
+    <dt><b>Show origin of selected physical instances</b><dd>
+    When this check box is set, selected physical instances will have
+    the cell origin marked with a cross.  This applies to the
+    selection highlighting, as well as to the ghost rendition which is
+    attached to the mouse pointer during a <a href="xic:move">move</a>
+    or <a href="xic:copy">copy</a> operation.
+
+    <p>
+    Showing the origin may seem trivial, but marking the origin
+    requires a bit of overhead since it requires running a
+    transformation and keeping track of an additional redisplay area
+    since the origin may be outside of the cell bounding box.  Thus,
+    the default is to not show the mark.
+
+    <p>
+    This tracks the state of the <a
+    href="MarkInstanceOrigin"><b>MarkInstanceOrigin</b></a> variable,
+    and applies to all physical drawing windows.
+    </dl>
+
+    <dl>
+    <dt><b>Show centroids of selected physical objects</b><dd>
+    In mathematics, the centroid or geometric center of a
+    two-dimensional region is the arithmetic mean of all the points in
+    the shape.  When this check box is set, selected objects will mark
+    the centroid with a cross.  This applies to the selection
+    highlighting, as well as to the ghost rendition which is attached
+    to the mouse pointer during a <a href="xic:move">move</a> or <a
+    href="xic:copy">copy</a> operation.
+
+    <p>
+    This tracks the state of the <a
+    href="MarkObjectCentroid"><b>MarkObjectCentroid</b></a> variable,
+    and applies to all physical drawing windows.
+    </dl>
+
+    <br clear=all>
+    <p>
+    <img src="screenshots/winattr3.png" align=right>
+    The <b>Phys Props</b> page contains the following controls.
+
+    <dl>
+    <dt><b>Erase behind physical properties text</b><dd>
+    When this check box is set, in windows where physical properties are
+    being displayed, the area around the physical property text is erased,
+    providing improved visibility.
+
+    <p>
+    This tracks the state of the <a
+    href="EraseBehindProps"><b>EraseBehindProps</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Physical property text size (pixels)</b><dd>
+    This entry sets the height, in pixels, of the text used to render
+    physical properties on-screen, when physical property text is
+    being displayed.
+
+    This tracks the state of the <a
+    href="PhysPropTextSize"><b>PhysPropTextSize</b></a> variable.
+    </dl>
+
+    <br clear=all>
+    <p>
+    <img src="screenshots/winattr4.png" align=right>
+    The <b>Terminals</b> page contains the following controls.
+
+    <dl>
+    <dt><b>Erase behind physical terminals</b><dd>
+    This will cause the area under terminals in physical windows to be
+    erased, to promote visibility.  One can choose to not erase, to
+    erase only under the cell's terminals, or to erase under all
+    terminals.  This tracks the setting of the <a
+    href="EraseBehindTerms"><b>EraseBehindTerms</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Terminal text pixel size</b><dd>
+    This sets the text height, in pixels, of the text associated with
+    terminals in both physical and electrical windows.  This tracks
+    the setting of the <a href="TermTextSize"><b>TermTextSize</b></a>
+    variable.  The default text height is 14 pixels.
+    </dl>
+
+    <dl>
+    <dt><b>Terminal mark size</b><dd>
+    This sets the pixel size of the mark used to indicate terminal
+    locations in both physical and electrical windows.  It tracks the
+    value of the <a href="TermMarkSize"><b>TermMarkSize</b></a>
+    variable.  The default mark size is 10 pixels.
+    </dl>
+
+    <br clear=all>
+    <p>
+    <img src="screenshots/winattr5.png" align=right>
+    Finally, the <b>Labels</b> page contains controls related to
+    label presentation.
+
+    <dl>
+    <dt><b>Hidden label scope</b><dd>
+    By default, all labels participate in a protocol whereby clicking
+    on the label with the <b>Shift</b> key held will "hide" the label,
+    displaying a small box instead.  <b>Shift</b>-clicking on the
+    box will return to the display of the label text.  This menu
+    limits the labels which will participate in this protocol.  The
+    choices are <b>all labels</b> the default, <b>all electrical
+    labels</b>, <b>electrical property labels</b>, and <b>no
+    labels</b>.
+    
+    This menu tracks the setting of the <a
+    href="LabelHiddenMode"><b>LabelHiddenMode</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Default minimum label height</b><dd>
+    This sets the minimum label height, in microns, for new text
+    labels.  The actual initial height may be larger, depending on the
+    zoom factor of the window, but it can not be smaller.
+
+    This tracks the setting of the <a
+    href="LabelDefHeight"><b>LabelDefHeight</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Maximum displayed label length</b><dd>
+    This entry sets the maximum width, in default-sized character
+    cells, of a displayed <a href="xic:label#maxlen">label</a>.  If
+    the label exceeds this width, it is not shown, and a small box at
+    the text origin is shown instead.  The default is 256.
+
+    <p>
+    The "hidden" status of a property label can be toggled by clicking
+    the text or box with button 1 with the <b>Shift</b> key held.
+
+    <p>
+    This entry tracks the setting of the <a
+    href="LabelMaxLen"><b>LabelMaxLen</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Label optional displayed line limit</b><dd>
+    Label text strings may have embedded newline characters which
+    cause them to be displayed on multiple lines.  This setting, when
+    set to a positive integer value, provides a limit on the number of
+    lines that are actually displayed, in labels that respect this
+    limit.  Only the first <i>N</i> lines would actually appear in the
+    display, where <i>N</i> is the given number.  If <i>N</i> is
+    zero, there is no limit.
+
+    <p>
+    Labels observe this limit only if an internal flag is set in the
+    label.  Presently, this is set internally for the labels
+    associated with <a href="prpty:value"><b>value</b></a> and <a
+    href="prpty:param"><b>param</b></a> properties.  The user can
+    apply the limit to any label by setting the <tt>LIML</tt> flag in
+    the <a href="XprpXform"><tt>XprpXform</tt></a> pseudo-property.
+
+    <p>
+    The setting tracks the value of the <a
+    href="LabelMaxLines"><b>LabelMaxLines</b></a> variable.
+    </dl>
+
+!!SEEALSO
+xic:attrmenu
+
+!! 022712
+!!KEYWORD
+xic:dots
+!!TITLE
+Connection Dots
+!!HTML
+    <img src="screenshots/dots.png" align=right>
+    <b>Keyword</b>: <tt>dots</tt>
+
+    <p>
+    The <b>Connection Dots</b> button in the <b>Attributes Menu</b>
+    brings up the <b>Connection Points</b> dialog, which contains
+    three "radio" buttons which specify how connection points are to
+    be indicated in schematics shown in electrical mode windows.  This
+    appears in <i>Xic</i> only.
+
+    <p>
+    If <b>Don't show dots</b> is selected, there will not be any
+    indication of connection points.  This is the default.
+
+    <p>
+    If the <b>Show dots normally</b> button is selected, a "dot" will
+    be shown at ambiguous connections points.  These are wire vertices
+    common to two or more wires (except for common end vertices of two
+    wires), non-endpoint wire vertices common with device or
+    subcircuit terminals, and any point common to three or more
+    terminals or wire vertices.
+
+    <p>
+    A dot will also be shown if a cell connection point lies on an
+    internal (non-endpoint) wire vertex.  In instances, this marks the
+    connection location, and also ensures that a dot will be shown at
+    this location, as one likely would not appear otherwise due to the
+    logic used.
+
+    <p>
+    If the <b>Show dot at every connection</b> button is selected, a
+    dot will be shown at every intersection recognized as a connection
+    by <b>Xic</b>.  This can sometimes be useful for debugging
+    connection problems in drawings.
+
+    <p>
+    The <b>Connection Points</b> choices track and set the state of
+    the <a href="ShowDots"><b>ShowDots</b></a> variable.  This
+    variable can be set in the <a href="techfile:set">technology
+    file</a> or a <a href="initfiles">startup file</a> to initialize
+    the connection point indication mode.
+
+!!SEEALSO
+xic:attrmenu
+
+!! 032513
+!!KEYWORD
+xic:font
+!!TITLE
+Font Selection
+!!HTML
+    <img src="screenshots/font.png" align=right>
+    <b>Keyword</b>: <tt>font</tt>
+
+    <p>
+    The <b>Set Font</b> button in the <b>Attributes Menu</b> brings up
+    the <b>Font Selection</b> panel, which allows selection of the
+    fonts used in the graphical interface.  A drop-down menu provides
+    selection of the various font targets.  Pressing the <b>Apply</b>
+    button will immediately apply the selected font to all visible
+    windows which use the font.
+
+    <p>
+    Although many of the fonts used in the graphical interface can be
+    set from this panel, the main font, the one used for menu text and
+    control labels, must be set externally (it must be available
+    before the graphical interface is created).  This is probably set
+    by your desktop environment, and there should be a tool available
+    for customization.  One can also likely set various "themes" which
+    alter the appearance of the window decorations.
+
+    <p>
+    This is not true in Windows.  Perhaps there is a better way, but
+    one can do the following: In the directory
+    <blockquote>
+    <tt>c:\Documents and Settings\</tt><i>your_username</i>,
+    </blockquote>
+    create a file named <tt>.gtkrc-2.0</tt> containing lines similar to
+
+    <blockquote>
+    <tt>style "win32-font" {</tt><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<tt>font_name = "tahoma 12"</tt><br>
+    <tt>}</tt><br>
+    <tt>class "*" style "win32-font"</tt>
+    </blockquote>
+
+    You may need a DOS or Cygwin window to create the file, as Windows
+    Explorer apparently cannot create a file starting with a period.
+
+    <p>
+    The <b>Dump Vector Font</b> button in the <b>Font Selection</b>
+    panel will dump the vector font used for text labels in the
+    drawing areas to a file.  The user will be prompted for the name
+    of a file to use, the default name is "<tt>xic_font</tt>".  Any
+    existing file with the same name will be backed up with a
+    <tt>.bak</tt> extension.  A <a href="vectorfont">font file</a>
+    with this name found along the library <a href="xicpaths">search
+    path</a> will be read on program startup, and will define the
+    label font, overriding the internal font.  The user can start by
+    dumping the internal font, and tweak this to their taste.
+
+    <p>
+    The drop-down font targets list contains the following entries:
+
+    <dl>
+    <dt><b>Fixed Pitch Text Window Font</b><dd>
+    This sets the font used in pop-up multi-line text windows, such as
+    the <a href="xic:files"><b>Files Listing</b></a> and <a
+    href="xic:cells"><b>Cells Listing</b></a>, where the names are
+    formatted into columns.
+    </dl>
+
+    <dl>
+    <dt><b>Proportional Text Window Font</b><dd>
+    This sets the font used in pop-up multi-line text windows where
+    text is not formatted, such as the info and error message pop-ups.
+    </dl>
+
+    <dl>
+    <dt><b>Fixed Pitch Drawing Window Font</b><dd>
+    This is the font used in the <a href="coordline">coordinate
+    readout</a>, the <a href="statusline">status line</a>, <a
+    href="layertab">layer table</a>, and the <a
+    href="promptline">prompt line</a>.  It is not the font used to
+    render label text in the drawing windows, which is a vector font
+    generated by <a href="xic:label">other means</a>.
+    </dl>
+
+    <dl>
+    <dt><b>Text Editor Font</b><dd>
+    This is the font used in the <a href="texteditor"><b>Text
+    Editor</b></a> pop-up.
+    </dl>
+
+    <dl>
+    <dt><b>HTML Viewer Proportional Font</b><dd>
+    This is the base font used for proportional text in the HTML
+    viewer (<a href="helpsys">help windows</a>).  If set, this will
+    override the font set in the <a
+    href="mozyrcfile"><tt>.mozyrc</tt></a> file, if any.
+    </dl>
+
+    <dl>
+    <dt><b>HTML Viewer Fixed Pitch Font</b><dd>
+    This is the base fixed-pitch font used by the HTML viewer.  If
+    set, this will override the font set in the <tt>.mozyrc</tt> file,
+    if any.
+    </dl>
+
+    <p>
+    The <b>Font</b> button in the <b>Options</b> menu of the <a
+    href="texteditor">text editor</a> brings up a similar panel, as does
+    the <b>Font</b> button in the <b>Options</b> menu of the help
+    viewer.
+
+    <p>
+    These fonts can be set in the <a
+    href="techfile:attr#fontkw">technology file</a>, and are updated
+    to the technology file when a <a href="xic:updat"><b>Save
+    Tech</b></a> command is given.
+
+!!SEEALSO
+xic:attrmenu
+
+!! 022215
+!!KEYWORD
+xic:color colorpanel
+!!TITLE
+Color Selection
+!!HTML
+    <img src="screenshots/color.png" align=right>
+    <b>Keyword</b>: <tt>color</tt>
+
+    <p>
+    The <b>Set Color</b> button in the <b>Attributes Menu</b> brings
+    up the <b>Color Selection</b> panel.  The panel can also be
+    displayed by clicking on a layer in the <a href="layertab">layer
+    table</a> or <a href="xic:lpal">layer palette</a> with <a
+    href="button3">button 3</a> while holding down the <b>Ctrl</b>
+    key.  The current layer will become the clicked-on layer, and its
+    color will be loaded into the editor.
+
+    <p>
+    The panel contains controls that are manipulated to set the
+    components of the color of the currently selected layer or other
+    drawing attribute.  If the <b>Print Control</b> panel (induced by
+    the <a href="xic:hcopy"><b>Print</b></a> button in the <b>File
+    Menu</b>) is visible, the color set will be used for rendering the
+    plot, if the plot driver supports definable colors.
+
+    <p>
+    Near the top of the panel is a pull-down menu plus a "radio group"
+    of three buttons.  The three buttons allow the pull-down menu to
+    contain different sets of entries.  Each entry represents a color
+    that can be adjusted.
+
+    <p>
+    The three buttons provide the following sets of menu entries:
+
+    <p>
+    <b>Attributes</b> button<br>
+    These are the colors used in the drawing windows.  Most of these
+    colors can be separately set while in electrical or physical
+    mode.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Current Layer</th><td>Current layer color</td></tr>
+    <tr><th>Background</th><td>Drawing window background color</td></tr>
+    <tr><th>Coarse Grid</th><td>Color used for coarse grid lines</td></tr>
+    <tr><th>Fine Grid</th><td>Color used for fine grid lines</td></tr>
+    <tr><th>Ghosting</th><td>Color used for "sprites" attached to
+      the mouse pointer</td></tr>
+    <tr><th>Highlighting</th><td>Color used for highlighting, such as
+      for DRC errors</td></tr>
+    <tr><th>Selection Color 1</th><td>One of two alternating colors used
+      for selections</td></tr>
+    <tr><th>Selection Color 2</th><td>One of two alternating colors used
+      for selections</td></tr>
+    <tr><th>Terminals</th><td>Electrical terminals</td></tr>
+    <tr><th>Instance Boundary</th><td>Boundary color of unexpanded
+      instance</td></tr>
+    <tr><th>Instance Name Text</th><td>Name text color in unexpanded
+      instance</td></tr>
+    <tr><th>Instance Size Text</th><td>Size text color in unexpanded
+      instance, physical mode only</td></tr>
+    </table>
+
+    <p>
+    <b>Prompt</b> button<br>
+    These are the colors used in the <a href="promptline">prompt
+    line</a> and <a href="statusline">status line</a>.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Text</th><td>Normal prompt line text</td></tr>
+    <tr><th>Prompt Text</th><td>Text color used for prompting</td></tr>
+    <tr><th>Highlight Text</th><td>Text color used for <a
+      href="hypertext">hypertext</a> references</td></tr>
+    <tr><th>Cursor</th><td>Text cursor color</td></tr>
+    <tr><th>Background</th><td>Normal background color</td></tr>
+    <tr><th>Edit Background</th><td>Background color while editing</td></tr>
+    </table>
+
+    <p>
+    <b>Plot Marks</b> button<br>
+    These are the colors of the plot point marks used in electrical
+    mode to indicate a node or current being plotted by
+    <i>WRspice</i>.  The default colors are the same as the trace
+    colors used by <i>WRspice</i> for plotting.
+
+    <p>
+    The entries are:  <b>Plot Mark 1</b> to <b>Plot Mark 18</b>
+
+    <p>
+    The rest of the panel consists of the stock GTK-2 color selection
+    widgets.  There are six up/down buttons which can adjust the red,
+    green, and blue values, or the hue, saturation, and intensity
+    values.  To the left is a color wheel, with a triangle inside. 
+    One can drag the marked triangle vertex around the outer ring to
+    set the color, and drag the small circle in the triangle to set
+    the lightness.  All widgets automatically track the current color
+    setting.
+
+    <p>
+    There is also a palette containing several colors, and a
+    rectangular color display area for the current and previous
+    colors.  Colors can be dragged between the palette locations and
+    the current color location.  The eye-dropper button allows setting
+    the current color from a clicked-on screen object.
+
+    <p>
+    <img src="screenshots/clrlist.png" align=right>
+    The <b>Colors</b> button brings up a listing of color names and
+    RGB values.  Clicking on a list entry will load that color into
+    the color selector.
+
+    <p>
+    The <b>Apply</b> button must be pressed to actually transfer the
+    new color to <i>Xic</i>.  For layer colors, drag/drop of a color
+    to the entries in the layer table or <a href="xic:lpal">layer
+    palette</a> can be done as well.  When changing layer colors, or
+    screen attribute colors such as grid colors, the main window and
+    similar (same display mode) sub-windows will be redrawn.  The <a
+    href="NoPhysRedraw"><b>NoPhysRedraw</b></a> variable, if set, will
+    suppress automatic redraw of physical-mode windows.
+
+    <p>
+    When the <b>Print Control Panel</b> is visible, i.e., in hard copy
+    mode, the colors set will be used in that mode only, and in the
+    plots if the printer driver supports it.
+
+!!SEEALSO
+layertab
+techfile
+xic:attrmenu
+xic:fill
+xic:update
+
+!! 022215
+!!KEYWORD
+xic:fill fillpanel
+!!TITLE
+Fill Pattern Editor
+!!HTML
+    <table border=0 cellpadding=2 align=right>
+    <tr><td><img src="screenshots/fill1.png"></td></tr>
+    <tr><td><img src="screenshots/fill2.png"></td></tr>
+    </table>
+    <b>Keyword</b>: <tt>fill</tt>
+
+    <p>
+    The <b>Set Fill</b> button in the <b>Attributes Menu</b> brings up
+    the <b>Fill Pattern Editor</b> panel.  The panel can also be
+    displayed by clicking on a layer in the <a href="layertab">layer
+    table</a> or <a href="xic:lpal">layer palette</a> with <a
+    href="button3">button 3</a> while holding down the <b>Shift</b>
+    key.  The current layer will become the clicked-on layer, and its
+    fill pattern will be loaded into the editor.
+
+    <p>
+    This panel initially displays an array of sample fill patterns. 
+    By pressing the <b>Pixel Editor</b> button, the pop-up will
+    instead display a large pixel editor window, from which stipple
+    patterns can be created and modified.  The pixel editor is
+    pre-loaded with the pattern of the current layer when the pop-up
+    was invoked.  When viewing the pixel editor, the <b>Show
+    Stores</b> button reverts the display to the sample patterns.
+
+    <p>
+    Patterns are moved between the various boxes and layers in the
+    layer table by drag/drop.  Press and hold the left mouse button
+    while the pointer is over the box or layer entry that is the
+    source of a pattern, and release the button after moving the mouse
+    pointer over the destination box or layer table entry.
+
+    <p>
+    There are also <b>Load</b> and <b>Apply</b> buttons that will load
+    the pattern of the current layer into the editor, or set the
+    pattern of the current layer from the <b>Sample</b>, respectively.
+
+    <p>
+    The <b>Sample</b> box, which is visible in both display modes, is
+    the entry and exit point for the pixel editor.  Dropping a pattern
+    into the <b>Sample</b> area will load the pattern into the editor. 
+    The current pattern in the <b>Sample</b> area, which matches that
+    currently in the editor, can be dragged and dropped onto a layer,
+    or into one of the storage areas.  When the <b>Pixel Editor</b>
+    window is visible, it is also a drop receiver, equivalent to the
+    <b>Sample</b> area.
+
+    <p>
+    When a pattern is applied to a layer by any means, the main window
+    and any sub-windows showing the same display mode will be redrawn.
+    The automatic redraw can be suppressed in physical mode by setting
+    the <a href="NoPhysRedraw"><b>NoPhysRedraw</b></a> variable.
+
+    <p>
+    When displaying the pattern array, there are 18 pattern windows
+    visible.  The first two of these are immutable, containing empty
+    and solid fills.  The remaining 16 are registers, preset with
+    default patterns.  These patterns can be changed by dropping a new
+    pattern into the display box.
+
+    <p>
+    There are 64 pattern registers available, in four pages.  When the
+    patterns are visible, the <b>Page</b> spin button can be used to
+    cycle between the four sets of registers.
+
+    <p>
+    To summarize, the following transfers are possible with drag/drop:
+    <ul>
+    <li>To the <b>Sample</b> box from any pattern register box, or the
+    empty and solid boxes, or from any layer in the <a
+    href="layertab">layer table</a> or <a href="xic:ltpal">layer
+    palette</a>.  Drag patterns into the <b>Sample</b> area to allow
+    editing with the pixel editor.  The <b>Pixel Editor</b> window is
+    also a drop receiver equivalent to the <b>Sample</b> area.
+
+    <p>
+    <li>From the <b>Sample</b> box to any pattern register box, or to
+    any layer in the layer table or layer palette.  Drag patterns into
+    layers to set the pattern used for that layer.  A pattern dragged
+    into a pattern register box will replace the existing pattern with
+    the one from the source.
+
+    <p>
+    <li>From any pattern register box, or the solid and empty fill
+    boxes, to any layer in the layer table or layer palette, or to the
+    <b>Sample</b> box.
+
+    <p>
+    <li>To any pattern register box, from any layer from the layer
+    table or layer palette, or the <b>Sample</b> box.  Note that it is
+    not possible to drag/drop patterns between pattern register boxes
+    directly, one can drag from a register to the <b>Sample</b> box,
+    then from the <b>Sample</b> box to another register box.
+
+    <p>
+    <li>From any layer in the layer table or layer palette to any of
+    the default pattern boxes except solid and empty, or to the
+    <b>Sample</b> box.
+
+    <p>
+    <li>To any layer in the layer table or layer palette, from any of
+    the pattern register boxes, or the solid and empty boxes, or the
+    <b>Sample</b> box.
+    </ul>
+
+    <p>
+    If the <b>Print Control</b> panel (induced by the <a
+    href="xic:hcopy"><b>Print</b></a> button in the <b>File Menu</b>)
+    is visible, when a new fill pattern is applied to a layer, the new
+    fill pattern will be used for rendering the plot, if the plot
+    driver supports definable fill patterns.
+
+    <p>
+    Note that the new pattern set for a layer will not be visible in
+    the drawing windows until they are next redrawn (press
+    <b>Ctrl-r</b>, or click with button 2 near the center of the
+    window to redraw the window).
+
+    <p>
+    The color used to display patterns in the pop-up is the color of
+    the current layer.  Initiating a drag from a layer in the layer
+    table or layer palette will change the current layer (and hence
+    the color) to that layer.
+
+    <p>
+    The 64 "default" fill patterns can be saved in an
+    <tt>xic_stipples</tt> file in the current directory with the
+    <b>Dump Defs</b> button, which is visible when the pattern array
+    is being displayed.  If this file is found in the library <a
+    href="xicpaths">search path</a>, it will be used to initialize the
+    pattern registers when <i>Xic</i> starts.  A system default
+    <tt>xic_stipples</tt> file is provided in the startup directory.
+
+    <p>
+    When a pattern (including empty) is dropped on a layer, the
+    <b>Outline</b>, <b>Fat</b>, and <b>Cut</b> buttons at the bottom
+    of the pop-up set additional attributes relating to the pattern
+    display.
+
+    <p>
+    When a pattern from a layer is dropped into the <b>Sample</b> box,
+    the buttons will change state to that saved in the layer.  The
+    pattern registers, however, do not have attributes, so that the
+    buttons remain unchanged when a pattern is dragged from a register
+    box, except to gray the <b>Fat</b> button if the new pattern is
+    not empty.
+
+    <p>
+    For empty fill, there are three available outline styles:
+    <ol>
+    <li>A thin solid line boundary.
+    <li>A thin dashed line boundary.
+    <li>A thick solid line boundary for Manhattan boxes and polygons,
+    and a thin solid line boundary for other objects.
+    </ol>
+
+    <p>
+    If the <b>Outline</b> button is not in the pressed state, the thin
+    solid line boundary (style 1) will be used.  If <b>Outline</b> is
+    in the pressed state, and <b>Fat</b> is not in the pressed state,
+    a thin dashed outline (style 2) will be used.  If <b>Fat</b> is
+    pressed, thick segments (style 3) will be used, but only for edges
+    of boxes and Manhattan polygons.  A thin solid outline will be
+    used elsewhere.
+
+    <p>
+    If the <b>Cut</b> button is in the pressed state, boxes are
+    rendered with thin lines along the diagonals, forming an X over
+    the box.  Polygons (even four-sided rectangular ones) and wires
+    are drawn normally.  The "cut" attribute is often used to signify
+    vias.
+
+    <p>
+    If <b>Cut</b> and <b>Outline</b> are pressed with empty fill, but
+    <b>Fat</b> is not pressed, the diagonal "cut" lines will be drawn
+    as dashed, as for the outline.
+
+    <p>
+    When the pattern is not empty, the options are slightly different. 
+    If <b>Outline</b> is not pressed, objects will not be outlined. 
+    If <b>Outline</b> is pressed and <b>Fat</b> is not pressed, the
+    patterned areas will have a thin solid outline.  When <b>Fat</b>
+    is pressed, boxes and Manhattan polygons will be shown with thick
+    outlines.  These are the only boundaries available with stippled
+    fill.  The <b>Cut</b> button will produce diagonals over boxes, as
+    in the empty-fill case.  If the pattern is solid, none of the
+    attributes will be used, and the buttons are grayed.
+
+    <p>
+    When a pattern is dropped on a layer, the state of these buttons
+    set the attributes for the layer.  This applies whether the
+    pattern source is the <b>Sample</b> box, or one of the pattern
+    register boxes.  In particular, to set up a desired empty-fill
+    presentation for a layer, one would set the buttons, then drag the
+    "pattern" from the empty-fill box to the layer to set.
+
+    <p>
+    In the pixel editor, the <b>NX x NY</b> spin buttons control the
+    size of the map.  Each coordinate can range from 2 to 32.  The
+    pixel editor window changes to accommodate the different aspect
+    ratios, keeping the actual pixels square.
+
+    <p>
+    The three buttons just below operate on the pixel map.
+    <dl>
+    <dt><b>Rot90</b><dd>
+    Pressing this button will rotate the pixel map by 90 degrees.  Note that
+    this swaps the Nx and Ny values.
+    </dl>
+    <dl>
+    <dt><b>X</b><dd>
+    This will flip the map right-to-left (mirroring about the Y axis).
+    </dl>
+    <dl>
+    <dt><b>Y</b><dd>
+    This will flip the map top-to-bottom (mirroring about the X axis).
+    </dl>
+    
+    <p>
+    The basic operation in the pixel editor is to toggle the state of
+    a pixel by clicking on it with button 1, but more complex
+    possibilities exist.  A hold and drag will operate on all of the
+    pixels enclosed in or intersecting the defined rectangle, which is
+    ghost-drawn.  The operations are indicated in the table below.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Button</th> <th>Figure</th> <th>&nbsp;</th> <th>Shift</th>
+     <th>Ctrl</th>
+    <tr><td>1</td> <td>solid box</td> <td>toggle</td> <td>set</td>
+     <td>unset</td></tr>
+    <tr><td>2</td> <td>open box</td> <td>toggle</td> <td>set</td>
+     <td>unset</td></tr>
+    <tr><td>3</td> <td>line</td> <td>toggle</td> <td>set</td>
+     <td>unset</td></tr>
+    </table>
+
+    <p>
+    If <b>Shift</b> or <b>Ctrl</b> is held down <i>before</i> button 1
+    is pressed, the action will be as for button 2.  The three columns
+    from the right indicate the state of the modifier keys on button
+    release which produces the stated effect on the pixels.  The
+    <b>Ctrl</b> press overrides <b>Shift</b> if both are pressed.
+
+    <p>
+    Pressing the arrow keys while the pop-up has the keyboard focus
+    permutes the pixel editor bitmap in the opposite direction of the
+    arrow.  This is valuable for allowing layers with similar patterns
+    to show through one another.
+
+    <p>
+    Pressing the <b>Dismiss</b> button in the <b>Fill Pattern
+    Editor</b> will retire the editor.  This has the same effect as
+    pressing the <b>Set Fill</b> menu button a second time.
+
+!!SEEALSO
+techfile
+layertab
+xic:attrmenu
+xic:color
+xic:updat
+
+!! 022115
+!!KEYWORD
+xic:edlyr
+!!TITLE
+Layer Editor
+!!HTML
+    <img src="screenshots/edlayer.png" align=right>
+    <b>Keyword</b>: <tt>edlyr</tt>
+
+    <p>
+    The <b>Edit Layers</b> button in the <b>Attributes Menu</b> brings
+    up the <b>Layer Editor</b> pop-up, which contains buttons for
+    adding and removing layers from the <a href="layertab">layer
+    table</a>, plus a drop-down menu of removed layers which can be
+    added back.  When the pop-up first appears, the text area will be
+    blank, or will contain the name of the last removed layer.  The
+    text area can be edited to provide the name of a new layer to add,
+    or the name of a removed layer can be selected in the drop-down
+    menu.  After pressing the <b>Add Layer</b> button and clicking in
+    the layer table, the new layer will be added at the location of
+    the layer entry clicked on.  One can also click beyond the end of
+    the listed layers to put the new layer above the existing layers. 
+    With the <b>Remove Layer</b> button pressed, layers clicked on
+    will be removed from the layer table and added to the list in the
+    drop-down menu.
+
+    <p>
+    When layers are removed, the geometry on the layer is not
+    affected, however it will be invisible on-screen (after the first
+    redraw) and to all commands, and the geometry will not be included
+    if the cell is updated to disk.
+
+    <p>
+    Layers can also be added, removed, and renamed with the <a
+    href="!ltab"><b>!ltab</b></a> command.
+
+!!SEEALSO
+layername
+xic:attrmenu
+
+!! 022215
+!!KEYWORD
+xic:lpedt
+!!TITLE
+Tech Parameter Editor
+!!HTML
+    <img src="screenshots/techeditprms.png" align=right>
+    <b>Keyword</b>: <tt>lpedt</tt>
+
+    <p>
+    The <b>Edit Tech Params</b> button in the <b>Attributes Menu</b>
+    brings up the <b>Tech Parameter Editor</b>.  The editor can also
+    be displayed by clicking on a layer in the <a
+    href="layertab">layer table</a> or <a href="xic:lpal">layer
+    palette</a> with <a href="button3">button 3</a> while holding down
+    the <b>Shift</b> and <b>Ctrl</b> keys.  The current layer will
+    become the clicked-on layer, and it will become the target layer
+    for the editor.
+
+    <p>
+    From the editor, many of the technology file keywords, mostly
+    associated with layers, can have their specifications added,
+    deleted, or edited.  Keywords that are not adjustable in the
+    editor have an alternate means of control, such as the separate
+    panels for setting layer <a href="xic:color">colors</a> and <a
+    href="xic:fill">fill patterns</a>.  After modification, the <a
+    href="xic:updat"><b>Save Tech</b></a> button in the <b>Attributes
+    Menu</b> can be used to generate a new technology file that
+    incorporates the changes.
+
+    <p>
+    The present editor applies to all keywords.  In earlier <i>Xic</i>
+    releases, there were separate keyword editors in the
+    <b>Extract</b> and <b>Convert</b> menus, as well as an editor in
+    the <b>Attributes Menu</b>.  The different keyword classes,
+    previously available in separate editors, are now available by
+    selecting one of the four tabs at the top of the editor window. 
+    Each of these keywords is normally applied to a <a
+    href="techfile:layers">layer</a> in the <a
+    href="techfile">technology file</a>.
+
+    <p>
+    The editor is configured for the class of keywords selected,
+    meaning that the pull-down menu contains entries for those
+    keywords, and the listing details those keywords only.  The
+    classes, and keywords that can be manipulated, are listed
+    below.
+
+    <dl>
+    <dt><b>Layer</b><dd>
+    These are miscellaneous layer attributes.
+    <blockquote>
+    <a href="LppName"><tt>LppName</tt></a><br>
+    <a href="Description"><tt>Description</tt></a><br>
+    <a href="Symbolic"><tt>Symbolic</tt></a><br>
+    <a href="Invisible"><tt>Invisible</tt></a><br>
+    <a href="NoSelect"><tt>NoSelect</tt></a><br>
+    <a href="Invalid"><tt>Invalid</tt></a><br>
+    <a href="NoMerge"><tt>NoMerge</tt></a><br>
+    <a href="CrossThick"><tt>CrossThick</tt></a><br>
+    <a href="WireActive"><tt>WireActive</tt></a><br>
+    <a href="NoInstView"><tt>NoInstView</tt></a><br>
+    <a href="WireWidth"><tt>WireWidth</tt></a>
+    </blockquote>
+    </dl>
+
+    <dl>
+    <dt><b>Extract</b><dd>
+    These are parameters that are used by the extraction system, but
+    have relevance elsewhere, such as in the <a href="xic:csect">cross
+    section</a> viewer.
+    <blockquote>
+    <a href="Conductor"><tt>Conductor</tt></a><br>
+    <a href="Routing"><tt>Routing</tt></a><br>
+    <a href="GroundPlane"><tt>GroundPlane</tt></a><br>
+    <a href="GroundPlaneClear"><tt>GroundPlaneClear</tt></a><br>
+    <a href="Contact"><tt>Contact</tt></a><br>
+    <a href="Via"><tt>Via</tt></a><br>
+    <a href="Dielectric"><tt>Dielectric</tt></a><br>
+    <a href="DarkField"><tt>DarkField</tt></a>
+    </blockquote>
+    </dl>
+
+    <dl>
+    <dt><b>Physical</b><dd>
+    These generally set a physical property of the layer material,
+    primarily in support of the extraction system.
+    <blockquote>
+    <a href="Planarize"><tt>Planarize</tt></a><br>
+    <a href="Thickness"><tt>Thickness</tt></a><br>
+    <a href="Rho"><tt>Rho</tt></a><br>
+    <a href="Sigma"><tt>Sigma</tt></a><br>
+    <a href="Rsh"><tt>Rsh</tt></a><br>
+    <a href="EpsRel"><tt>EpsRel</tt></a><br>
+    <a href="Capacitance"><tt>Capacitance</tt></a><br>
+    <a href="Lambda"><tt>Lambda</tt></a><br>
+    <a href="Tline"><tt>Tline</tt></a><br>
+    <a href="Antenna"><tt>Antenna</tt></a>
+    </blockquote>
+    </dl>
+
+    <dl>
+    <dt><b>Convert</b><dd>
+    These are mostly for establishing the mapping between <i>Xic</i>
+    layers and GDSII layer and datatype numbers.
+    <blockquote>
+    <a href="StreamIn"><tt>StreamIn</tt></a><br>
+    <a href="StreamOut"><tt>StreamOut</tt></a><br>
+    <a href="NoDrcDatatype"><tt>NoDrcDatatype</tt></a>
+    </blockquote>
+    </dl>
+
+    In addition to the per-layer keywords, there is a <b>Global
+    Attributes</b> menu that allows a few miscellaneous non-layer
+    parameters to be manipulated.  These were defined as technology
+    file parameters in <i>Xic</i> releases earlier than 4.1.7.  In
+    present releases, these are simply variables.  The editor provides
+    a "front end" for setting the variables.
+
+    <dl>
+    <dt><b>Global Attributes</b><dd>
+    <a href="BoxLineStyle"><tt>BoxLineStyle</tt></a><br>
+    <a href="LayerReorderMode"><tt>LayerReorderMode</tt></a><br>
+    <a href="NoPlanarize"><tt>NoPlanarize</tt></a><br>
+    <a href="AntennaTotal"><tt>AntennaTotal</tt></a><br>
+    <a href="SubstrateEps"><tt>SubstrateEps</tt></a><br>
+    <a href="SubstrateThickness"><tt>SubstrateThickness</tt></a>
+    </blockquote>
+    </dl>
+
+    <p>
+    The editor is similar to the <a href="xic:dredt"><b>Design Rule
+    Editor</b></a> found in the <b>DRC Menu</b>.  When the editor
+    first appears, the keyword specifications for the current layer in
+    the selected class are listed.  The specifications appear as they
+    would in the <a href="techfile:layers">technology file</a>. 
+    Changing the current layer will update the listing to the
+    parameters for the new current layer.  Selecting a different
+    keyword class will update the display to show the keywords in the
+    selected class.  The user can add new keyword lines or modify
+    existing lines as desired.
+
+    <p>
+    To add a keyword specification, one selects the desired keyword in
+    the keywords menu of the editor.  The available keywords are
+    listed in the drop-down menu, and the set available depends on the
+    class tab currently selected.  After clicking on a keyword in the
+    menu, the user will be asked to enter the associated text in the
+    prompt line, if the keyword requires it.  The keyword will be
+    applied internally and appear in the listing if there are no
+    errors.  A status message will appear, indicating success, or
+    providing an error message.
+
+    <p>
+    When adding a keyword, redundant and inconsistent keywords that
+    are already in the list, such as a previous instance of the
+    keyword, are removed.  In other cases, a pop-up message will
+    appear if inconsistent keywords are found.
+
+    <p>
+    Clicking on a line in the listing will select the line.  The text
+    for the selected line can be edited, or the line deleted, with the
+    <b>Edit</b> and <b>Delete</b> buttons in the editor's <b>Edit</b>
+    menu.  The <b>Edit</b> menu also contains an <b>Undo</b> button,
+    allowing the last operation to be undone.
+
+!!SEEALSO
+xic:attrmenu
+xic:extmenu
+xic:dredt
+gdslayer
+layertab
+electric
+
+!! 011916
+!!KEYWORD
+xic:attrsubmenu
+!!TITLE
+Main Window Sub-Menu
+!!HTML
+    The <b>Main Window</b> button in the <b>Attributes Menu</b> brings
+    up a sub-menu which is identical to the <b>Attributes</b> menu in
+    the sub-windows produced by the <a
+    href="xic:vport"><b>Viewport</b></a> button in the <a
+    href="xic:viewmenu"><b>View Menu</b></a>.  The menu contains
+    attribute settings which apply to the main window.  When a new
+    sub-window appears, its attributes are inherited from the main
+    window, but can be reset for the sub-window through its
+    <b>Attributes</b> menu.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption><b>Main Window Sub-Menu</b></caption>
+    <tr><th>Label</th> <th>Name</th> <th>Pop-up</th> <th>Function</th></tr>
+    <tr><td><a href="xic:freez"><b>Freeze Display</b></a></td>
+      <td><tt>freez</tt></td> <td>none</td>
+      <td>Suppress redisplay</td></tr>
+    <tr><td><a href="xic:cntxt"><b>Show Context in Push</b></a></td>
+      <td><tt>cntxt</tt></td> <td>none</td>
+      <td>Show context in subedit</td></tr>
+    <tr><td><a href="xic:props"><b>Show Phys Properties</b></a></td>
+      <td><tt>props</tt></td> <td>none</td>
+      <td>Show physical properties</td></tr>
+    <tr><td><a href="xic:labls"><b>Show Labels</b></a></td>
+      <td><tt>labls</tt></td> <td>none</td>
+      <td>Show labels</td></tr>
+    <tr><td><a href="xic:larot"><b>Label True Orient</b></a></td>
+      <td><tt>larot</tt></td> <td>none</td>
+      <td>Show labels transformed</td></tr>
+    <tr><td><a href="xic:cnams"><b>Show Cell Names</b></a></td>
+      <td><tt>cnams</tt></td> <td>none</td>
+      <td>Show cell names</td></tr>
+    <tr><td><a href="xic:cnrot"><b>Cell Name True Orient</b></a></td>
+      <td><tt>cnrot</tt></td> <td>none</td>
+      <td>Show cell names transformed</td></tr>
+    <tr><td><a href="xic:nouxp"><b>Don't Show Unexpanded</b></a></td>
+      <td><tt>nouxp</tt></td> <td>none</td>
+      <td>Don't show unexpanded subcells</td></tr>
+    <tr><td><a href="xic:objs"><b>Objects Shown</b></a></td>
+      <td><tt>objs</tt></td> <td>none</td>
+      <td>Object display control</td></tr>
+    <tr><td><a href="xic:tinyb"><b>Subthreshold Boxes</b></a></td>
+      <td><tt>tinyb</tt></td> <td>none</td>
+      <td>Show outline of subthreshold cells</td></tr>
+    <tr><td><a href="xic:nosym"><b>No Top Symbolic</b></a></td>
+      <td><tt>nosym</tt></td> <td>none</td>
+      <td>Electrical only, don't show top cell as symbolic</td></tr>
+    <tr><td><a href="xic:grid"><b>Set Grid</b></a></td>
+      <td><tt>grid</tt></td> <td><b>Grid Setup</b></td>
+      <td>Set grid parameters</td></tr>
+    </table>
+
+!!SEEALSO
+xic:attrmenu
+
+!! 042909
+!!KEYWORD
+xic:freez
+!!TITLE
+Freeze Display
+!!HTML
+    <b>Keyword</b>: <tt>freez</tt>
+
+    <p>
+    When the <b>Freeze Display</b> button in the <b>Main Window</b>
+    sub-menu of the <b>Attributes Menu</b> or the <a
+    href="xic:vport">sub-window</a> <b>Attributes</b> menu is active,
+    no cell structure is drawn in the window, only the grid and the
+    cell bounding box.  This is for use when working on a large,
+    complex design when it is not necessary to see the structure and
+    it is inconvenient to wait for the display.  When active, "FROZEN"
+    appears in the upper left corner of the window.
+
+    <p>
+    In a frozen window, certain other highlighting features may
+    appear.  In particular <a href=xic:ruler>rulers</a> and the
+    viewport location indicators as used by the <a
+    href="xic:lshow"><b>Show Location</b></a> function will be
+    displayed.  Also, the outlines of selected objects will appear in
+    these windows.
+
+    <p>
+    Frozen <a href="xic:vport">sub-windows</a> have an additional
+    feature:  frozen sub-windows display the viewport of the main
+    window, the reverse of the <b>Show Location</b> function for
+    sub-windows (which displays sub-window viewports in the main
+    window). 
+
+    <p>
+    This allows a useful trick for viewing huge cells.  Suppose that
+    one has a large design which takes a long time to render, and one
+    wishes to examine a small part of this design (the approximate
+    coordinates are known).  One can employ the following procedure. 
+    Freeze the main window and read in the design.  Bring up a
+    sub-window by clicking twice outside of the cell boundary, so that
+    the sub-window is empty.  Freeze the sub-window, then press the
+    <b>Home</b> key with the cursor in the sub-window to center and
+    fully view the top cell boundary.  Use the grid and/or rulers to
+    determine the region of interest.  Drag with <a
+    href="button3">button 3</a> to define a rectangle in the sub-window
+    surrounding the region of interest, then click with button 3 in
+    the center of the main window.  Un-freeze the main window, and
+    this region will be displayed.  The region shown in the main
+    window is shown with a dotted yellow outline in the frozen
+    sub-window.
+
+!!SEEALSO
+xic:attrmenu
+xic:attrsubmenu
+xic:vport
+
+!! 042909
+!!KEYWORD
+xic:cntxt
+!!TITLE
+Show Context in Push
+!!HTML
+    <b>Keyword</b>: <tt>cntxt</tt>
+
+    <p>
+    When the <b>Show Context in Push</b> button in the <b>Main
+    Window</b> sub-menu of the <b>Attributes Menu</b> or the <a
+    href="xic:vport">sub-window</a> <b>Attributes</b> menu is active,
+    the context is displayed in the window when the <a
+    href="xic:push"><b>Push</b></a> command in the <a
+    href="xic:cellmenu"><b>Cell Menu</b></a> is active.  The context
+    is the surrounding geometry in cells other than the instance of
+    the cell that was "pushed" into.
+
+!!SEEALSO
+xic:attrmenu
+xic:attrsubmenu
+xic:vport
+xic:pop
+
+!! 042909
+!!KEYWORD
+xic:props
+!!TITLE
+Show Phys Properties
+!!HTML
+    <b>Keyword</b>: <tt>props</tt>
+
+    <p>
+    The <b>Show Phys Properties</b> button in the <b>Main Window</b>
+    sub-menu of the <b>Attributes Menu</b> or the <a
+    href="xic:vport">sub-window</a> <b>Attributes</b> menu enables the
+    display of object properties on-screen while the window is in
+    physical mode.  The property text is placed near the leftmost
+    vertex with largest y value of a polygon, the leftmost end of a
+    wire, or in the upper left corner of the object's bounding box. 
+    Properties of the cell itself are not displayed.
+
+    <p>
+    Properties can be assigned with the <a
+    href="xic:prpty"><b>Properties</b></a> command in the <a
+    href="xic:editmenu"><b>Edit Menu</b></a>.
+
+    <p>
+    Outside of any command, clicking on a visible physical property
+    string allows the property to be edited.  The property string must
+    be close to or overlap the object.  If the string is too far away
+    from the object (if there are a large number of properties, or the
+    object size is small) it can not be selected in this way.  The
+    user is first prompted for new text, then for a new property
+    number.  The clicked-on property will be replaced with the new
+    values.  If <b>Ctrl-d</b> is pressed at any time while responding
+    to the prompts, the property will be deleted, with no replacement.
+
+    <p>
+    Properties with property numbers 7000-7104 are not displayed. 
+    These numbers are reserved for internal use and should not be
+    assigned.
+
+    <p>
+    The <b>Erase behind physical properties text</b> check box in the
+    <a href="xic:attr"><b>Window Attributes</b></a> panel, or
+    equivalently the <a
+    href="EraseBehindProps"><b>EraseBehindProps</b></a> variable can
+    be set to erase around the property strings, enhancing visibility.
+
+!!SEEALSO
+xic:attrmenu
+xic:attrsubmenu
+xic:vport
+
+!! 042909
+!!KEYWORD
+xic:labls
+!!TITLE
+Show Labels
+!!HTML
+    <b>Keyword</b>: <tt>labls</tt>
+
+    <p>
+    When the <b>Show Labels</b> button in the <b>Main Window</b>
+    sub-menu of the <b>Attributes Menu</b> or the <a
+    href="xic:vport">sub-window</a> <b>Attributes</b> menu is active,
+    labels will be displayed in the window, otherwise label rendering
+    is suppressed.  It is unlikely that it would be necessary to turn
+    off the display of labels, unless a layout has so many labels that
+    important features are obscured.  Labels are shown in legible
+    orientation by default, however if the <a
+    href="xic:larot"><b>Label True Orient</b></a> button is active,
+    labels will be shown with all transformations applied.
+
+!!SEEALSO
+xic:attrmenu
+xic:attrsubmenu
+xic:vport
+
+!! 042909
+!!KEYWORD
+xic:larot
+!!TITLE
+Label True Orient
+!!HTML
+    <b>Keyword</b>: <tt>larot</tt>
+
+    <p>
+    The <b>Label True Orient</b> button in the <b>Main Window</b>
+    sub-menu of the <b>Attributes Menu</b> or the <a
+    href="xic:vport">sub-window</a> <b>Attributes</b> menu is sensitive
+    only when labels are being displayed (the <a
+    href="xic:labls"><b>Show Labels</b></a> button is active).  When
+    active, labels will be shown in true orientation, i.e., all
+    transformations are applied to the text before display.  If not
+    active, labels will always be shown in "legible" orientation.
+
+!!SEEALSO
+xic:attrmenu
+xic:attrsubmenu
+xic:vport
+
+!! 042909
+!!KEYWORD
+xic:cnams
+!!TITLE
+Show Cell Names
+!!HTML
+    <b>Keyword</b>: <tt>cnams</tt>
+
+    <p>
+    When the <b>Show Cell Names</b> button in the <b>Main Window</b>
+    sub-menu of the <b>Attributes Menu</b> or the <a
+    href="xic:vport">sub-window</a> <b>Attributes</b> menu is active,
+    cell names and other information are printed within the bounding
+    box outline of unexpanded subcells.  The text is shown in a
+    legible orientation, but if the <a href="xic:cnrot"><b>Cell Name
+    True Orient</b></a> button is set, the text will be transformed in
+    the same way as the cell.
+
+!!SEEALSO
+xic:attrmenu
+xic:attrsubmenu
+xic:vport
+
+!! 042909
+!!KEYWORD
+xic:cnrot
+!!TITLE
+Cell Name True Orient
+!!HTML
+    <b>Keyword</b>: <tt>cnrot</tt>
+
+    <p>
+    The <b>Cell Name True Orient</b> button in the <b>Main Window</b>
+    sub-menu of the <b>Attributes Menu</b> or the <a
+    href="xic:vport">sub-window</a> <b>Attributes</b> menu is sensitive
+    when cell names are being displayed in unexpanded instances (the
+    <a href="xic:cnams"><b>Show Cell Names</b></a> button is active). 
+    When set, the name text is transformed in the same way as the
+    subcell.  When not set, the name text is always shown in a
+    "legible" orientation.  It is sometimes convenient to invoke this
+    option, as one can see at a glance which subcells are rotated,
+    mirrored, etc.
+
+!!SEEALSO
+xic:attrmenu
+xic:attrsubmenu
+xic:vport
+
+!! 042909
+!!KEYWORD
+xic:nouxp
+!!TITLE 
+Don't Show Unexpanded
+!!HTML   
+    <b>Keyword</b>: <tt>nouxp</tt>
+
+    <p>
+    Normally, unexpanded subcells are shown as a bounding box,
+    containing a cell name label and perhaps other text.  When the
+    <b>Don't Show Unexpanded</b> button in the <b>Main Window</b>
+    sub-menu of the <b>Attributes Menu</b> or the <a
+    href="xic:vport">sub-window</a> <b>Attributes</b> menu is active,
+    unexpanded subcells will not be displayed at all, i.e., they will
+    be invisible.
+
+!!SEEALSO
+xic:attrmenu
+xic:attrsubmenu
+xic:vport
+
+!! 053110
+!!KEYWORD
+xic:objs xic:dpyb xic:dpyp xic:dpyw
+!!TITLE 
+Objects Shown
+!!HTML   
+    <b>Keyword</b>: <tt>objs</tt>
+
+    <p>
+    This button in the <b>Main Window</b> sub-menu of the
+    <b>Attributes Menu</b> and the <b>Attributes</b> menu of
+    subwindows brings up a sub-menu containing three checkable
+    entries:  <b>Boxes</b>, <b>Polys</b>, and <b>Wires</b>.  All three
+    entries are checked by default.  If unchecked, objects of that
+    type will not be shown in the display in the corresponding window. 
+    The window will have to be redrawn to see the effect, the redraw
+    is not automatic.
+
+    <p>
+    Display of labels and instances is controlled by other buttons in
+    the same menu.
+
+!!SEEALSO
+xic:attrmenu
+xic:attrsubmenu
+xic:vport
+
+!! 042909
+!!KEYWORD
+xic:tinyb
+!!TITLE 
+Subthreshold Boxes
+!!HTML   
+    <b>Keyword</b>: <tt>tinyb</tt>
+
+    <p>
+    When the <b>Subthreshold Boxes</b> button in the <b>Main
+    Window</b> sub-menu of the <b>Attributes Menu</b> or the <a
+    href="xic:vport">sub-window</a> <b>Attributes</b> menu is active,
+    subcells with a displayed size smaller than a threshold will be
+    shown in unexpanded form, as an unfilled box.  Otherwise, the cell
+    will not be shown at all.
+
+    <p>
+    The threshold pixel size can be adjusted with the <b>Subcell
+    visibility threshold (pixels)</b> entry area in the <a
+    href="xic:attr"><b>Window Attributes</b></a> panel, or
+    equivalently by setting the <a
+    href="CellThreshold"><b>CellThreshold</b></a> variable.
+
+!!SEEALSO
+xic:attrmenu
+xic:attrsubmenu
+xic:vport
+
+!! 090814
+!!KEYWORD
+xic:nosym
+!!TITLE 
+No Top Symbolic
+!!HTML   
+    <b>Keyword</b>: <tt>nosym</tt>
+
+    <p>
+    This button will appear in the <b>Main Window</b> sub-menu of the
+    <b>Attributes Menu</b> or the <a href="xic:vport">sub-window</a>
+    <b>Attributes</b> menu only when the window is displaying in
+    electrical mode.  Thus, it never appears in <a
+    href="xicii"><i>XicII</i></a> or <a href="xiv"><i>Xiv</i></a>
+    feature sets.
+
+    <p>
+    When set, the top-level cell will be displayed as a schematic,
+    whether or not the top-cell has an active <a
+    href="xic:symbl">symbolic representation</a>.
+
+    <p>
+    Unlike the <b>symbl</b> button in the electrical side menu, this
+    does not change the internal state of the cell (thus triggering
+    the "modified" flag), and applies only to the window where set. 
+    It is available in electrical sub-windows in physical mode, when
+    the electrical side menu is hidden.
+
+    <p>
+    All editing capability is available, so it is possible to edit the
+    schematic and symbolic views of the same cell simultaneously, in
+    different windows.
+
+!!SEEALSO
+xic:attrmenu
+xic:attrsubmenu
+xic:vport
+
+!! 022215
+!!KEYWORD
+xic:grid
+!!TITLE
+Grid Setup
+!!HTML
+    <img src="screenshots/grid1.png" align=right>
+    <b>Keyword</b>: <tt>grid</tt>
+
+    <p>
+    The <b>Set Grid</b> button in the <b>Main Window</b> sub-menu of
+    the <b>Attributes Menu</b> or the <a
+    href="xic:vport">sub-window</a> <b>Attributes</b> menu brings up
+    the <b>Grid Setup</b> panel.  Pressing <a
+    href="keyctrlg"><b>Ctrl-g</b></a> when a drawing window has
+    keyboard focus will also produce this panel.  The panel provides
+    control of the grid display in the associated drawing window. 
+    Separate grid styles are available for electrical and physical
+    mode, and in the main drawing window when the <b>Print Control
+    Panel</b> is visible.
+
+    <p>
+    The panel is divided into two pages:  <b>Snapping</b> and
+    <b>Style</b>.  The <b>Snapping</b> page is shown when the panel
+    first appears.  It provides control of the grid spacing and
+    snapping, plus is the main control point for the edge snapping
+    feature to be described.  The <b>Style</b> page provides control
+    over the visual presentation of the grid.
+
+    <p>
+    In most cases, the grid is not actually changed unless/until the
+    <b>Apply</b> button, at the bottom-left of the panel, is pressed. 
+    This is not true of the <b>Edge Snapping</b> group, or the <b>All
+    Windows</b> controls in the <b>Style</b> page, which work
+    immediately, but do not force a screen redraw.
+
+    <p>
+    The following controls appear in the <b>Snapping</b> page.
+
+    <p>
+    At the top of the panel are entries which control the grid spacing
+    and snapping.  There is a coarse grid, and a fine grid, that may
+    be displayed in drawing windows and hard-copy output.  The coarse
+    grid is an integer multiple of fine grid increments, the
+    multiplier can be set from the <b>Style</b> page.  If a grid would
+    be too fine, it is not shown.
+
+    <p>
+    The snap grid represents points where the cursor is allowed to
+    reside.  These are related to the fine grid interval, there can
+    be an integer number of snap points per fine grid interval, or an
+    integer number of fine grid lines between snap points.
+
+    <dl>
+    <dt><b>Snap Spacing</b><dd>
+    The <b>Snap Spacing</b> entry area will set the spacing, in
+    microns, between snap points.  The mouse pointer is constrained to
+    fall only on snap points when geometry is being created.  If the
+    <a href="MfgGrid"><tt>MfgGrid</tt></a> parameter has been set in
+    the technology file, the <b>Snap Spacing</b> value is constrained
+    to be a multiple of this value.  The <tt>MfgGrid</tt> value is
+    printed below the text entry area if set, or the word
+    "<tt>unset</tt>" is printed if not.
+
+    <p>
+    The <b>Snap Spacing</b> entry displays the actual snap spacing in
+    microns.  If a <tt>MfgGrid</tt> has been defined, and one enters a
+    snap spacing that is not an integer multiple of this value, the
+    actual snap spacing will "snap" to the closest multiple before
+    use.
+
+    <p>
+    When assigning a <tt>MfgGrid</tt>, one must consider the internal
+    resolution, and the <tt>MfgGrid</tt> should be representable in
+    the resolution in use.  For example, the default resolution is
+    1000 per micron, or 1nm.  If one attempts to use a
+    <tt>MfgGrid</tt> of 2.5nm, round-off error will occur.  To support
+    this <tt>MfgGrid</tt>, a resolution of 2000 would be required. 
+    The resolution is set with the <a
+    href="DatabaseResolution"><b>DatabaseResolution</b></a> variable.
+
+    <p>
+    When the panel first appears, the initial keyboard focus is to the
+    <b>Snap Spacing</b> entry.  Thus, text typed will go to this
+    entry.  Pressing <b>Enter</b> when a text entry has the focus
+    calls the <b>Apply</b> callback and sets focus to the
+    <b>Dismiss</b> button, where another <b>Enter</b> press will
+    dismiss the panel.  So, to quickly change the grid spacing from
+    the keyboard only, one can type
+    <blockquote>
+    <b>Ctrl-g</b> (adjust number) <b>Enter Enter</b>
+    </blockquote>
+    </dl>
+
+    <dl>
+    <dt><b>SnapPerGrid</b> or <b>GridPerSnap</b><dd>
+    To the right is another text entry, which accepts an integer in
+    the range 1-10.  The entry label indicates <b>SnapPerGrid</b> or
+    <b>GridPerSnap</b>, depending on whether the <b>GridPerSnap</b>
+    check box, below the text entry, is checked.  This controls the
+    placement of the fine grid lines in the window.
+
+    <p>
+    If the label indicates <b>SnapPerGrid</b>, then the fine grid is
+    spaced at the given integer times the <b>Snap Spacing</b> value. 
+    For example, if the integer is 3, then a fine grid line (or dot)
+    will be drawn at every third snap point.  there will be three snap
+    points per fine grid interval.
+
+    <p>
+    If the label indicates <b>GridPerSnap</b>, then the fine grid is
+    spaced such that the integer will give the number of fine grid
+    lines per snap interval.  For example, it the integer is 3, fine
+    grid lines (or dots) will appear at the snap points, as well as
+    the 1/3 and 2/3 proportional distances between snap points.
+
+    <p>
+    Note that when the integer is 1, there is no difference between
+    the two cases.
+
+    <p>
+    In electrical mode, the snap interval should be a multiple of one
+    micron, to avoid connectivity errors due to numerical roundoff. 
+    However, this was not enforced in older releases of <i>Xic</i>. 
+    Presently, sub-micron snapping on tenth-micron intervals is
+    accepted, but with a warning issued.  This allows older files to
+    be "repaired", i.e., objects moved to a one micron grid.  This is
+    recommended for files that require it.  A sub-micron snapping
+    interval should not be used otherwise, and will not be saved in
+    the technology file produced with the <a href="xic:updat"><b>Save
+    Tech</b></a> button in the <b>Attributes Menu</b>.
+    </dl>
+
+    <p>
+    The <b>Edge Snapping</b> group appears below the grid snapping
+    controls.  This is different from grid snapping.  The edge
+    snapping will snap the cursor to the edge of a nearby object,
+    which may or may not be off grid ("off grid" means that the
+    coordinate is not on a multiple of the snap grid interval).  The
+    edge snapping is used in, and the controls apply to, physical mode
+    only.  In electrical mode, the cursor will always snap to and
+    indicate when near a connection point.
+
+    <p>
+    When snapped in this manner to an edge, a small dotted box
+    transiently appears around the mouse pointer.  If snapped to
+    vertex of an object, the box will have a double outline.
+
+    <p>
+    Snapping will apply to visible objects at any level of the cell
+    hierarchy.  The edges of unexpanded subcells will also be snapped
+    to.
+
+    <p>
+    The group consists of an <b>Edge Snapping</b> menu, and four check
+    boxes, as described below.  These may be set independently in the
+    main window and <a href="xic:vport">sub-windows</a>.  When a new
+    sub-window appears, it will inherit the edge snapping settings
+    from the main window, but these can then be changed in the
+    sub-window if desired.
+
+    <p>
+    Unlike other controls in the <b>Grid Setup</b> panel, these
+    controls operate immediately.  They do not require pressing the
+    <b>Apply</b> button.
+
+    <dl>
+    <dt><b>Edge Snapping Menu</b><dd>
+    The menu has three choices, to set the scope of the edge snapping mode.
+    If <b>DISABLED</b> is selected, then there is no edge snapping in the
+    window.  The default entry, <b>Enabled in some commands</b>, enables
+    the edge snapping in commands where it may be useful.  These include
+    the side menu commands with the following keywords:
+    <blockquote>
+    <a href="xic:arc"><tt>arc</tt></a><br>
+    <a href="xic:box"><tt>box</tt></a><br>
+    <a href="xic:break"><tt>break</tt></a><br>
+    <a href="xic:donut"><tt>donut</tt></a><br>
+    <a href="xic:erase"><tt>erase</tt></a><br>
+    <a href="xic:polyg"><tt>polyg</tt></a><br>
+    <a href="xic:round"><tt>round</tt></a><br>
+    <a href="xic:wire"><tt>wire</tt></a><br>
+    <a href="xic:xor"><tt>xor</tt></a><br>
+    </blockquote>
+    as well as the <a href="xic:ruler"><b>Rulers</b></a> command in the
+    <b>View Menu</b>.
+
+    <p>
+    The third choice is <b>Enabled always</b>, which provides the edge
+    snapping at all times, in commands or outside of any command.
+    </dl>
+
+    <dl>
+    <dt><b>Allow off-grid edge snapping</b><dd>
+    When this check box is checked, the cursor will snap to nearby
+    edges, whether or not they are on grid.  When not checked, only
+    snapping to on-grid locations is done.  This is unchecked
+    by default.
+    </dl>
+
+    <dl>
+    <dt><b>Include non-Manhattan edges</b><dd>
+    When checked, non-Manhattan (meaning not horizontal or vertical)
+    edges will be snapped to.  The snap points are the intersection of
+    the snap grid and the edge, plus the endpoints (vertices).  If not
+    checked, non-Manhattan edges are not snapped to.  This is unchecked
+    by default.
+    </dl>
+
+    <dl>
+    <dt><b>Include wire edges</b><dd>
+    If checked, the edges of wires are considered for edge snapping.
+    If not checked, wire edges are ignored.  This mode is enabled by
+    default.
+    </dl>
+
+    <dl>
+    <dt><b>Include wire path</b><dd>
+    A wire definition consists of a sequence of vertices, with an
+    implied line path connecting them.  This path would appear as a
+    line running along the center of a drawn wire.  When this box is
+    checked, the wire path is considered for "edge" snapping.  By
+    default, this box is unchecked, so that the wire path is not
+    snapped to.
+    </dl>
+
+    <br clear=all>
+    <p>
+    <img src="screenshots/grid2.png" align=right>
+    The <b>Style</b> page contains controls which alter the
+    presentation of the grid visually.
+
+    <dl>
+    <dt><b>Show</b><dd>
+    If the <b>Show</b> button is active, the grid will be visible when
+    gradations are adequately large.  Otherwise, the grid will not be
+    visible in the window.
+    </dl>
+
+    <dl>
+    <dt><b>On Top</b><dd>
+    If the <b>On Top</b> button is active, the grid will be drawn
+    last, after all geometry.  Otherwise, it will be drawn first, in
+    which case it is more likely to be obscured by the geometry.
+    </dl>
+
+    <dl>
+    <dt><b>Store</b> and <b>Recall</b><dd>
+    The <b>Store</b> and <b>Recall</b> menus allow a set of grid
+    parameters to be saved in an internal register, to be recalled as
+    needed.  There are separate physical and electrical grid
+    registers.  One will automatically save to and recall from the
+    register associated with the window display mode.
+
+    <p>
+    The grid registers save all per-window parameters that can be set
+    from the <b>Grid Setup</b> panel.  There are seven registers
+    available, as indicated on the menu produced by the <b>Store</b>
+    button.  The <b>Recall</b> button produces a menu with two
+    additional entries:
+
+    <dl>
+    <dt><b>revert</b><dd>
+    Revert the <b>Grid Setup</b> panel to the current window settings.
+    </dl>
+    <dl>
+    <dt><b>last appl</b><dd>
+    Recall the last settings that were applied with the <b>Apply</b>
+    button.
+    </dl>
+
+    Grid registers are saved to the technology file when a technology
+    file is written, and are loaded when a technology file is read.
+
+    <p>
+    See also the description of the <a href="!rg"><b>!rg</b></a> and
+    <a href="!sg"><b>!sg</b></a> commands.  These can be used to save
+    and restore the grid from registers.
+    </dl>
+
+    <dl>
+    <dt><b>Axes</b> group<dd>
+    Below the <b>Show</b> button, a radio button group is provided to
+    set the presentation style of the axes in physical mode.  The
+    choices are <b>No Axes</b>, <b>Plain Axes</b>, and <b>Mark
+    Origin</b>.  The <b>Mark Origin</b> choice is the default.  The
+    <b>Plain Axes</b> choice does away with the small box at the
+    origin, showing the axes as simple lines.  The <b>No Axes</b>
+    choice suppresses the axes entirely.  In electrical mode, the axes
+    are always suppressed.
+    </dl>
+
+    <dl>
+    <dt><b>Coarse Mult</b><dd>
+    To the right of the radio group is an integer entry for the coarse
+    multiple.  This is the number of fine grid lines or dots per
+    coarse grid line or dot.  Acceptable values are 1 through 50. 
+    When set to one, the coarse grid replaces the fine grid, which is
+    shown with the coarse grid color.  The default value is 5.
+    </dl>
+
+    <dl>
+    <dt><b>Line Style Editor</b><dd>
+    This group sets the line or dot style used to render the grid. 
+    There are three "radio buttons", <b>Solid</b>, <b>Dots</b>, and
+    <b>Textured</b> that set the basic grid style.  Choosing
+    <b>Solid</b> will cause the grid to use continuous lines.  The
+    <b>Dots</b> option will use a grid consisting of a small dot or
+    cross at each grid point.  When this selection is active, a
+    <b>Cross Size</b> entry area appears.  This can be set to values
+    0-6, indicating the number of pixels to light up around the
+    central dot in the four compass directions.  If zero, only the
+    central pixel is lit, which can be difficult to see on
+    high-resolution displays.  The value 1 generally looks like a much
+    brighter dot.  Larger values will appear as a small cross.
+
+    <p>
+    If <b>Textured</b> is chosen, a user-specified patterned line will
+    be used, and the line style editing areas become visible.  The
+    line style editor allows the user to specify the patterning of the
+    lines used to form the grid.  The upper window is a sample of the
+    current line style.  The lower window allows the user to set the
+    line style by clicking.
+
+    <p>
+    The line pattern starts at the left set bit (blue area) and
+    extends to the right of the display.  The pattern is used to
+    "tile" the line.  The left part of the display is shown in gray to
+    indicate that it is not part of the line style mask.  Clicking in
+    this window with button 1 will toggle the bit.  Button 2 will
+    clear the bit, and button 3 will set the bit.  Multiple bits can
+    be set or toggled by dragging.  The line in the preview window
+    will reflect changes in the pattern.
+
+    <p>
+    The sample window is a drag source for a piece of text giving the
+    line style mask in <tt>0x</tt><i>hhhh</i> (hexadecimal) notation.
+    The mask is the integer being represented by the lower window, with
+    set bits in blue.  This may be useful for creating line styles for
+    entry elsewhere.
+    </dl>
+
+    <dl>
+    <dt><b>All Windows</b><dd>
+    This control group appears only in the <b>Grid Setup</b> panel for
+    the main drawing window.  The two controls in the group are different from
+    other controls in the panel in that they apply globally to all
+    drawing windows.  They also differ from other controls in that they
+    operate immediately without the need to press the <b>Apply</b> button,
+    however an explicit screen redraw is necessary to see the effect.
+
+    <p>
+    The <b>No coarse when fine invisible</b> check box applies in
+    physical mode only.  When the check box is not checked, as one
+    zooms out, when the fine grid becomes too closely spaced it won't
+    be shown, however the coarse grid will be shown, unless it too is
+    too finely spaced.  If the check box is checked, the coarse grid
+    will not be shown by itself, it will be suppressed when the fine
+    grid is suppressed.  This tracks the state (set or unset) of the
+    <a href="GridNoCoarseOnly"><b>GridNoCoarseOnly</b></a> variable.
+
+    <p>
+    The <b>Visibility Threshold</b> entry sets the minimum number of
+    pixels between grid lines or dots.  The grid will be suppressed if
+    it would be smaller.  This applies to all drawing windows, both
+    physical and electrical.  This tracks the setting of the <a
+    href="GridThreshold"><b>GridThreshold</b></a> variable.
+    </dl>
+
+    <p>
+    Pressing the <b>Apply</b> button will actually save the new grid
+    parameters in <i>Xic</i>, and redraw the window if something has
+    changed.  Changes in the <b>Edge Snapping</b> and <b>All
+    Windows</b> groups do not need the <b>Apply</b> button, changes
+    take effect immediately.  All other controls require an
+    <b>Apply</b> button press to assert the change, and changes will
+    <b>not</b> be saved unless <b>Apply</b> is pressed.
+
+!!SEEALSO
+xic:attrmenu
+xic:attrsubmenu
+xic:vport
+

@@ -1,0 +1,56 @@
+#######################################################################
+# xic/edit/Makefile.in
+#######################################################################
+# $Id: Makefile.in,v 1.26 2016/05/14 20:29:34 stevew Exp $
+#######################################################################
+
+GFX_VERSION = @GFX_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @NEEDINT64@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @NEEDINT64@
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+
+LIB_TARGET = edit.a
+
+LPATH = ../../../xt_base
+HFILES =
+CCFILES = \
+  45s.cc abut.cc array.cc bloat.cc boxes.cc break.cc cell.cc copy.cc \
+  edit.cc edit_ghost.cc edit_menu.cc edit_txtcmds.cc edit_variables.cc \
+  erase.cc flatten.cc funcs_geom1.cc funcs_geom2.cc grip.cc \
+  instance.cc join.cc labels.cc layerchg.cc mainstate.cc miscgeom.cc \
+  modf_menu.cc move.cc mrouter_if.cc pbtn_menu.cc pcplace.cc \
+  polygns.cc prpcedit.cc prpedit.cc prpmisc.cc rotate.cc stretch.cc \
+  transfrm.cc undolist.cc undolist_setif.cc wires.cc xorbox.cc
+CCOBJS = $(CCFILES:.cc=.o)
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+depend:
+	@echo depending in xic/edit
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-rm *.o $(LIB_TARGET)
+
+distclean:
+	-rm *.o $(LIB_TARGET) Makefile
+
+#######################################################################

@@ -1,0 +1,2738 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiFuncsMain3.hlp,v 1.32 2017/03/22 07:30:07 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiFuncsMain3.hlp
+!!TITLE
+xiFuncsMain3.hlp
+!!HTML
+
+!!SUBTOPICS
+funcs:main3
+funcs:main3:snap
+funcs:main3:grid
+funcs:main3:curlyr
+funcs:main3:ltab
+funcs:main3:ldb
+funcs:main3:layer
+funcs:main3:layerex
+funcs:main3:sel
+funcs:main3:pfgen
+funcs:main3:meas
+
+// Grid and Edge Snapping
+!!REDIRECT SetMfgGrid           funcs:main3:snap#SetMfgGrid
+!!REDIRECT GetMfgGrid           funcs:main3:snap#GetMfgGrid
+!!REDIRECT SetGrid              funcs:main3:snap#SetGrid
+!!REDIRECT GetGridSnap          funcs:main3:snap#GetGridSnap
+!!REDIRECT GetGridInterval      funcs:main3:snap#GetGridInterval
+!!REDIRECT GetSnapInterval      funcs:main3:snap#GetSnapInterval
+!!REDIRECT ClipToGrid           funcs:main3:snap#ClipToGrid
+!!REDIRECT SetEdgeSnappingMode  funcs:main3:snap#SetEdgeSnappingMode
+!!REDIRECT SetEdgeOffGrid       funcs:main3:snap#SetEdgeOffGrid
+!!REDIRECT SetEdgeNonManh       funcs:main3:snap#SetEdgeNonManh
+!!REDIRECT SetEdgeWireEdge      funcs:main3:snap#SetEdgeWireEdge
+!!REDIRECT SetEdgeWirePath      funcs:main3:snap#SetEdgeWirePath
+!!REDIRECT GetEdgeSnappingMode  funcs:main3:snap#GetEdgeSnappingMode
+!!REDIRECT GetEdgeOffGrid       funcs:main3:snap#GetEdgeOffGrid
+!!REDIRECT GetEdgeNonManh       funcs:main3:snap#GetEdgeNonManh
+!!REDIRECT GetEdgeWireEdge      funcs:main3:snap#GetEdgeWireEdge
+!!REDIRECT GetEdgeWirePath      funcs:main3:snap#GetEdgeWirePath
+!!REDIRECT SetRulerSnapToGrid   funcs:main3:snap#SetRulerSnapToGrid
+!!REDIRECT SetRulerEdgeSnappingMode funcs:main3:snap#SetRulerEdgeSnappingMode
+!!REDIRECT SetRulerEdgeOffGrid  funcs:main3:snap#SetRulerEdgeOffGrid
+!!REDIRECT SetRulerEdgeNonManh  funcs:main3:snap#SetRulerEdgeNonManh
+!!REDIRECT SetRulerEdgeWireEdge funcs:main3:snap#SetRulerEdgeWireEdge
+!!REDIRECT SetRulerEdgeWirePath funcs:main3:snap#SetRulerEdgeWirePath
+!!REDIRECT GetRulerSnapToGrid   funcs:main3:snap#GetRulerSnapToGrid
+!!REDIRECT GetRulerEdgeSnappingMode funcs:main3:snap#GetRulerEdgeSnappingMode
+!!REDIRECT GetRulerEdgeOffGrid  funcs:main3:snap#GetRulerEdgeOffGrid
+!!REDIRECT GetRulerEdgeNonManh  funcs:main3:snap#GetRulerEdgeNonManh
+!!REDIRECT GetRulerEdgeWireEdge funcs:main3:snap#GetRulerEdgeWireEdge
+!!REDIRECT GetRulerEdgeWirePath funcs:main3:snap#GetRulerEdgeWirePath
+
+!! Grid Style
+!!REDIRECT ShowGrid             funcs:main3:grid#ShowGrid
+!!REDIRECT ShowAxes             funcs:main3:grid#ShowAxes
+!!REDIRECT SetGridStyle         funcs:main3:grid#SetGridStyle
+!!REDIRECT GetGridStyle         funcs:main3:grid#GetGridStyle
+!!REDIRECT SetGridCrossSize     funcs:main3:grid#SetGridCrossSize
+!!REDIRECT GetGridCrossSize     funcs:main3:grid#GetGridCrossSize
+!!REDIRECT SetGridOnTop         funcs:main3:grid#SetGridOnTop
+!!REDIRECT GetGridOnTop         funcs:main3:grid#GetGridOnTop
+!!REDIRECT SetGridCoarseMult    funcs:main3:grid#SetGridCoarseMult
+!!REDIRECT GetGridCoarseMult    funcs:main3:grid#GetGridCoarseMult
+!!REDIRECT SaveGrid             funcs:main3:grid#SaveGrid
+!!REDIRECT RecallGrid           funcs:main3:grid#RecallGrid
+
+!! Current Layer
+!!REDIRECT GetCurLayer          funcs:main3:curlyr#GetCurLayer
+!!REDIRECT GetCurLayerIndex     funcs:main3:curlyr#GetCurLayerIndex
+!!REDIRECT SetCurLayer          funcs:main3:curlyr#SetCurLayer
+!!REDIRECT SetCurLayerFast      funcs:main3:curlyr#SetCurLayerFast
+!!REDIRECT NewCurLayer          funcs:main3:curlyr#NewCurLayer
+!!REDIRECT GetCurLayerAlias     funcs:main3:curlyr#GetCurLayerAlias
+!!REDIRECT SetCurLayerAlias     funcs:main3:curlyr#SetCurLayerAlias
+!!REDIRECT GetCurLayerDescr     funcs:main3:curlyr#GetCurLayerDescr
+!!REDIRECT SetCurLayerDescr     funcs:main3:curlyr#SetCurLayerDescr
+
+!! Layer Table
+!!REDIRECT LayersUsed           funcs:main3:ltab#LayersUsed
+!!REDIRECT AddLayer             funcs:main3:ltab#AddLayer
+!!REDIRECT RemoveLayer          funcs:main3:ltab#RemoveLayer
+!!REDIRECT RenameLayer          funcs:main3:ltab#RenameLayer
+!!REDIRECT LayerHandle          funcs:main3:ltab#LayerHandle
+!!REDIRECT GenLayers            funcs:main3:ltab#GenLayers
+!!REDIRECT GetLayerPalette      funcs:main3:ltab#GetLayerPalette
+!!REDIRECT SetLayerPalette      funcs:main3:ltab#SetLayerPalette
+
+!! Layer Database
+!!REDIRECT GetLayerNum          funcs:main3:ldb#GetLayerNum
+!!REDIRECT GetLayerName         funcs:main3:ldb#GetLayerName
+!!REDIRECT IsPurposeDefined     funcs:main3:ldb#IsPurposeDefined
+!!REDIRECT GetPurposeNum        funcs:main3:ldb#GetPurposeNum
+!!REDIRECT GetPurposeName       funcs:main3:ldb#GetPurposeName
+
+!! Layers
+!!REDIRECT GetLayerLayerNum     funcs:main3:layer#GetLayerLayerNum
+!!REDIRECT GetLayerPurposeNum   funcs:main3:layer#GetLayerPurposeNum
+!!REDIRECT GetLayerAlias        funcs:main3:layer#GetLayerAlias
+!!REDIRECT SetLayerAlias        funcs:main3:layer#SetLayerAlias
+!!REDIRECT GetLayerDescr        funcs:main3:layer#GetLayerDescr
+!!REDIRECT SetLayerDescr        funcs:main3:layer#SetLayerDescr
+!!REDIRECT IsLayerDefined       funcs:main3:layer#IsLayerDefined
+!!REDIRECT IsLayerVisible       funcs:main3:layer#IsLayerVisible
+!!REDIRECT SetLayerVisible      funcs:main3:layer#SetLayerVisible
+!!REDIRECT IsLayerSelectable    funcs:main3:layer#IsLayerSelectable
+!!REDIRECT SetLayerSelectable   funcs:main3:layer#SetLayerSelectable
+!!REDIRECT IsLayerSymbolic      funcs:main3:layer#IsLayerSymbolic
+!!REDIRECT SetLayerSymbolic     funcs:main3:layer#SetLayerSymbolic
+!!REDIRECT IsLayerNoMerge       funcs:main3:layer#IsLayerNoMerge
+!!REDIRECT SetLayerNoMerge      funcs:main3:layer#SetLayerNoMerge
+!!REDIRECT GetLayerMinDimension funcs:main3:layer#GetLayerMinDimension
+!!REDIRECT GetLayerWireWidth    funcs:main3:layer#GetLayerWireWidth
+!!REDIRECT AddLayerGdsOutMap    funcs:main3:layer#AddLayerGdsOutMap
+!!REDIRECT RemoveLayerGdsOutMap funcs:main3:layer#RemoveLayerGdsOutMap
+!!REDIRECT AddLayerGdsInMap     funcs:main3:layer#AddLayerGdsInMap
+!!REDIRECT ClearLayerGdsInMap   funcs:main3:layer#ClearLayerGdsInMap
+!!REDIRECT SetLayerNoDRCdatatype funcs:main3:layer#SetLayerNoDRCdatatype
+
+!! Layers - Extraction Support
+!!REDIRECT SetLayerExKeyword    funcs:main3:layerex#SetLayerExKeyword
+!!REDIRECT SetCurLayerExKeyword funcs:main3:layerex#SetCurLayerExKeyword
+!!REDIRECT RemoveLayerExKeyword funcs:main3:layerex#RemoveLayerExKeyword
+!!REDIRECT RemoveCurLayerExKeyword funcs:main3:layerex#RemoveCurLayerExKeyword
+!!REDIRECT IsLayerConductor     funcs:main3:layerex#IsLayerConductor
+!!REDIRECT IsLayerRouting       funcs:main3:layerex#IsLayerRouting
+!!REDIRECT IsLayerGround        funcs:main3:layerex#IsLayerGround
+!!REDIRECT IsLayerContact       funcs:main3:layerex#IsLayerContact
+!!REDIRECT IsLayerVia           funcs:main3:layerex#IsLayerVia
+!!REDIRECT IsLayerDielectric    funcs:main3:layerex#IsLayerDielectric
+!!REDIRECT IsLayerDarkField     funcs:main3:layerex#IsLayerDarkField
+!!REDIRECT GetLayerThickness    funcs:main3:layerex#GetLayerThickness
+!!REDIRECT GetLayerRho          funcs:main3:layerex#GetLayerRho
+!!REDIRECT GetLayerResis        funcs:main3:layerex#GetLayerResis
+!!REDIRECT GetLayerEps          funcs:main3:layerex#GetLayerEps
+!!REDIRECT GetLayerCap          funcs:main3:layerex#GetLayerCap
+!!REDIRECT GetLayerCapPerim     funcs:main3:layerex#GetLayerCapPerim
+!!REDIRECT GetLayerLambda       funcs:main3:layerex#GetLayerLambda
+
+!! Selections
+!!REDIRECT SetLayerSpecific     funcs:main3:sel#SetLayerSpecific
+!!REDIRECT SetLayerSearchUp     funcs:main3:sel#SetLayerSearchUp
+!!REDIRECT SetSelectMode        funcs:main3:sel#SetSelectMode
+!!REDIRECT SetSelectTypes       funcs:main3:sel#SetSelectTypes
+!!REDIRECT Select               funcs:main3:sel#Select
+!!REDIRECT Deselect             funcs:main3:sel#Deselect
+
+!! Pseudo-Flat Generator
+!!REDIRECT FlatObjList          funcs:main3:pfgen#FlatObjList
+!!REDIRECT FlatObjGen           funcs:main3:pfgen#FlatObjGen
+!!REDIRECT FlatObjGenLayers     funcs:main3:pfgen#FlatObjGenLayers
+!!REDIRECT FlatGenNext          funcs:main3:pfgen#FlatGenNext
+!!REDIRECT FlatGenCount         funcs:main3:pfgen#FlatGenCount
+!!REDIRECT FlatOverlapList      funcs:main3:pfgen#FlatOverlapList
+
+!! Geometry Measurement
+!!REDIRECT Distance             funcs:main3:meas#Distance
+!!REDIRECT MinDistPointToSeg    funcs:main3:meas#MinDistPointToSeg
+!!REDIRECT MinDistPointToObj    funcs:main3:meas#MinDistPointToObj
+!!REDIRECT MinDistSegToObj      funcs:main3:meas#MinDistSegToObj
+!!REDIRECT MinDistObjToObj      funcs:main3:meas#MinDistObjToObj
+!!REDIRECT MaxDistPointToObj    funcs:main3:meas#MaxDistPointToObj
+!!REDIRECT MaxDistObjToObj      funcs:main3:meas#MaxDistObjToObj
+!!REDIRECT Intersect            funcs:main3:meas#Intersect
+
+!!REDIRECT stdlyr               funcs:main3#stdlyr   
+
+!!KEYWORD
+funcs:main3
+!!TITLE
+Main Functions 3
+!!HTML
+
+    <!-- 101412 -->
+    <a name="stdlyr"></a>
+    <h4>Standard Layer Argument</h4>
+
+    Many of the layer-related functions take a "standard layer
+    argument".  This can be an integer index number into the layer
+    table, where the index is 1-based, and values less than 1 return
+    the current layer.  The argument can also be a string, giving a
+    layer name in <i>layer</i>[<tt>:</tt><i>purpose</i>] form, or an
+    alias name.  If the string is null or empty, the current layer is
+    returned.
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+
+    <!-- 012815 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main3:snap">Grid and Edge Snapping</a></th></tr>
+
+    <tr><td><a href="funcs:main3:snap#SetMfgGrid">
+     <tt>SetMfgGrid</tt>(<i>mfg_grid</i>)</a>
+     </td><td>Set the manufacturing grid</td></tr>
+    <tr><td><a href="funcs:main3:snap#GetMfgGrid">
+     <tt>GetMfgGrid</tt>()</a>
+     </td><td>Return the manufacturing grid</td></tr>
+    <tr><td><a href="funcs:main3:snap#SetGrid">
+     <tt>SetGrid</tt>(<i>interval</i>, <i>snap</i>, <i>win</i>)</a>
+     </td><td>Set grid parameters for window</td></tr>
+    <tr><td><a href="funcs:main3:snap#GetGridInterval">
+     <tt>GetGridInterval</tt>(<i>win</i>)</a>
+     </td><td>Return fine grid spacing</td></tr>
+    <tr><td><a href="funcs:main3:snap#GetSnapInterval">
+     <tt>GetSnapInterval</tt>(<i>win</i>)</a>
+     </td><td>Return the snap grid spacing</td></tr>
+    <tr><td><a href="funcs:main3:snap#GetGridSnap">
+     <tt>GetGridSnap</tt>(<i>win</i>)</a>
+     </td><td>Return grid snap number</td></tr>
+    <tr><td><a href="funcs:main3:snap#ClipToGrid">
+     <tt>ClipToGrid</tt>(<i>coord</i>, <i>win</i>)</a>
+     </td><td>Move coord to grid</td></tr>
+    <tr><td><a href="funcs:main3:snap#SetEdgeSnappingMode">
+     <tt>SetEdgeSnappingMode</tt>(<i>win</i>, <i>mode</i>)</a>
+     </td><td>Set edge snapping scope for window</td></tr>
+    <tr><td><a href="funcs:main3:snap#SetEdgeOffGrid">
+     <tt>SetEdgeOffGrid</tt>(<i>win</i>, <i>off_grid</i>)</a>
+     </td><td>Enable off-grid edge snapping in window</td></tr>
+    <tr><td><a href="funcs:main3:snap#SetEdgeNonManh">
+     <tt>SetEdgeNonManh</tt>(<i>win</i>, <i>non_manh</i>)</a>
+     </td><td>Enable non-Manhattan edge snapping in window</td></tr>
+    <tr><td><a href="funcs:main3:snap#SetEdgeWireEdge">
+     <tt>SetEdgeWireEdge</tt>(<i>win</i>, <i>wire_edge</i>)</a>
+     </td><td>Snap to wire edges in window</td></tr>
+    <tr><td><a href="funcs:main3:snap#SetEdgeWirePath">
+     <tt>SetEdgeWirePath</tt>(<i>win</i>, <i>wire_path</i>)</a>
+     </td><td>Snap to wire path in window</td></tr>
+    <tr><td><a href="funcs:main3:snap#GetEdgeSnappingMode">
+     <tt>GetEdgeSnappingMode</tt>(<i>win</i>)</a>
+     </td><td>Return edge snapping mode for windoiw</td></tr>
+    <tr><td><a href="funcs:main3:snap#GetEdgeOffGrid">
+     <tt>GetEdgeOffGrid</tt>(<i>win</i>)</a>
+     </td><td>Return off-grid edge snapping flag for window</td></tr>
+    <tr><td><a href="funcs:main3:snap#GetEdgeNonManh">
+     <tt>GetEdgeNonManh</tt>(<i>win</i>)</a>
+     </td><td>Return non-Manhattan edge snapping flag for window</td></tr>
+    <tr><td><a href="funcs:main3:snap#GetEdgeWireEdge">
+     <tt>GetEdgeWireEdge</tt>(<i>win</i>)</a>
+     </td><td>Return wire edge snapping flag for window</td></tr>
+    <tr><td><a href="funcs:main3:snap#GetEdgeWirePath">
+     <tt>GetEdgeWirePath</tt>(<i>win</i>)</a>
+     </td><td>Return wire path snapping flag for window</td></tr>
+    <tr><td><a href="funcs:main3:snap#SetRulerSnapToGrid">
+     <tt>SetRulerSnapToGrid</tt>(<i>snap</i>)</a>
+     </td><td>Set ruler command grid snapping state</td></tr>
+    <tr><td><a href="funcs:main3:snap#SetRulerEdgeSnappingMode">
+     <tt>SetRulerEdgeSnappingMode</tt>(<i>mode</i>)</a>
+     </td><td>Set ruler command edge snapping mode</td></tr>
+    <tr><td><a href="funcs:main3:snap#SetRulerEdgeOffGrid">
+     <tt>SetRulerEdgeOffGrid</tt>(<i>off_grid</i>)</a>
+     </td><td>Set ruler command edge snapping off-grid state</td></tr>
+    <tr><td><a href="funcs:main3:snap#SetRulerEdgeNonManh">
+     <tt>SetRulerEdgeNonManh</tt>(<i>non_manh</i>)</a>
+     </td><td>Set ruler command edge snapping non-Manhattan
+     state</td></tr>
+    <tr><td><a href="funcs:main3:snap#SetRulerEdgeWireEdge">
+     <tt>SetRulerEdgeWireEdge</tt>(<i>wire_edge</i>)</a>
+     </td><td>Set ruler command edge snapping wire-edge state</td></tr>
+    <tr><td><a href="funcs:main3:snap#SetRulerEdgeWirePath">
+     <tt>SetRulerEdgeWirePath</tt>(<i>wire_path</i>)</a>
+     </td><td>Set ruler command edge snapping wire-path state</td></tr>
+    <tr><td><a href="funcs:main3:snap#GetRulerSnapToGrid">
+     <tt>GetRulerSnapToGrid</tt>()</a>
+     </td><td>Return ruler command grid snapping state</td></tr>
+    <tr><td><a href="funcs:main3:snap#GetRulerEdgeSnappingMode">
+     <tt>GetRulerEdgeSnappingMode</tt>()</a>
+     </td><td>Return ruler command edge snapping mode</td></tr>
+    <tr><td><a href="funcs:main3:snap#GetRulerEdgeOffGrid">
+     <tt>GetRulerEdgeOffGrid</tt>()</a>
+     </td><td>Return ruler command edge snapping off-grid
+     state</td></tr>
+    <tr><td><a href="funcs:main3:snap#GetRulerEdgeNonManh">
+     <tt>GetRulerEdgeNonManh</tt>()</a>
+     </td><td>Return ruler command edge snapping non-Manhattan
+     state</td></tr>
+    <tr><td><a href="funcs:main3:snap#GetRulerEdgeWireEdge">
+     <tt>GetRulerEdgeWireEdge</tt>()</a>
+     </td><td>Return ruler command edge snapping wire-edge
+     state</td></tr>
+    <tr><td><a href="funcs:main3:snap#GetRulerEdgeWirePath">
+     <tt>GetRulerEdgeWirePath</tt>()</a>
+     </td><td>Return ruler command edge snapping wire-path
+     state</td></tr>
+
+    <!-- 012815 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main3:grid">Grid Style</a></th></tr>
+
+    <tr><td><a href="funcs:main3:grid#ShowGrid">
+     <tt>ShowGrid</tt>(<i>on</i>, <i>win</i>)</a>
+     </td><td>Set grid visibility in window</td></tr>
+    <tr><td><a href="funcs:main3:grid#ShowAxes">
+     <tt>ShowAxes</tt>(<i>style</i>, <i>win</i>)</a>
+     </td><td>Set axes style in window</td></tr>
+    <tr><td><a href="funcs:main3:grid#SetGridStyle">
+     <tt>SetGridStyle</tt>(<i>style</i>, <i>win</i>)</a>
+     </td><td>Set grid line style</td></tr>
+    <tr><td><a href="funcs:main3:grid#GetGridStyle">
+     <tt>GetGridStyle</tt>(<i>win</i>)</a>
+     </td><td>Return grid line style</td></tr>
+    <tr><td><a href="funcs:main3:grid#SetGridCrossSize">
+     <tt>SetGridCrossSize</tt>(<i>xsize</i>, <i>win</i>)</a>
+     </td><td>Set grid "dot" cross size</td></tr>
+    <tr><td><a href="funcs:main3:grid#GetGridCrossSize">
+     <tt>GetGridCrossSize</tt>(<i>win</i>)</a>
+     </td><td>Return grid "dot" cross size</td></tr>
+    <tr><td><a href="funcs:main3:grid#SetGridOnTop">
+     <tt>SetGridOnTop</tt>(<i>ontop</i>, <i>win</i>)</a>
+     </td><td>Set grid on top of geometry</td></tr>
+    <tr><td><a href="funcs:main3:grid#GetGridOnTop">
+     <tt>GetGridOnTop</tt>(<i>win</i>)</a>
+     </td><td>Return grid top/bottom status</td></tr>
+    <tr><td><a href="funcs:main3:grid#SetGridCoarseMult">
+     <tt>SetGridCoarseMult</tt>(<i>mult</i>, <i>win</i>)</a>
+     </td><td>Set coarse grid spacing multiple</td></tr>
+    <tr><td><a href="funcs:main3:grid#GetGridCoarseMult">
+     <tt>GetGridCoarseMult</tt>(<i>win</i>)</a>
+     </td><td>Return coarse grid spacing multiple</td></tr>
+    <tr><td><a href="funcs:main3:grid#SaveGrid">
+     <tt>SaveGrid</tt>(<i>regnum</i>, <i>win</i>)</a>
+     </td><td>Save grid parameters in register</td></tr>
+    <tr><td><a href="funcs:main3:grid#RecallGrid">
+     <tt>RecallGrid</tt>(<i>regnum</i>, <i>win</i>)</a>
+     </td><td>Recall grid parameters from register</td></tr>
+
+    <!-- 030115 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main3:curlyr">Current Layer</a></th></tr>
+
+    <tr><td><a href="funcs:main3:curlyr#GetCurLayer">
+     <tt>GetCurLayer</tt>()</a>
+     </td><td>Return name of current layer</td></tr>
+    <tr><td><a href="funcs:main3:curlyr#GetCurLayerIndex">
+     <tt>GetCurLayerIndex</tt>()</a>
+     </td><td>Return index of current layer</td></tr>
+    <tr><td><a href="funcs:main3:curlyr#SetCurLayer">
+     <tt>SetCurLayer</tt>(<i>name</i>)</a>
+     </td><td>Set current layer, layer must exist</td></tr>
+    <tr><td><a href="funcs:main3:curlyr#SetCurLayerFast">
+     <tt>SetCurLayerFast</tt>(<i>name</i>)</a>
+     </td><td>As SetCurLayer, but no screen updating</td></tr>
+    <tr><td><a href="funcs:main3:curlyr#NewCurLayer">
+     <tt>NewCurLayer</tt>(<i>name</i>)</a>
+     </td><td>Set current layer, create if necessary</td></tr>
+    <tr><td><a href="funcs:main3:curlyr#GetCurLayerAlias">
+     <tt>GetCurLayerAlias</tt>()</a>
+     </td><td>Return alias name of current layer</td></tr>
+    <tr><td><a href="funcs:main3:curlyr#SetCurLayerAlias">
+     <tt>SetCurLayerAlias</tt>(<i>alias</i>)</a>
+     </td><td>Set alias name of current layer</td></tr>
+    <tr><td><a href="funcs:main3:curlyr#GetCurLayerDescr">
+     <tt>GetCurLayerDescr</tt>()</a>
+     </td><td>Return description of current layer</td></tr>
+    <tr><td><a href="funcs:main3:curlyr#SetCurLayerDescr">
+     <tt>SetCurLayerDescr</tt>(<i>descr</i>)</a>
+     </td><td>Set description of current layer</td></tr>
+
+    <!-- 101412 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main3:ltab">Layer Table</a></th></tr>
+
+    <tr><td><a href="funcs:main3:ltab#LayersUsed">
+     <tt>LayersUsed</tt>()</a>
+     </td><td>Return number of layers in table</td></tr>
+    <tr><td><a href="funcs:main3:ltab#AddLayer">
+     <tt>AddLayer</tt>(<i>name</i>, <i>index</i>)</a>
+     </td><td>Add a new layer</td></tr>
+    <tr><td><a href="funcs:main3:ltab#RemoveLayer">
+     <tt>RemoveLayer</tt>(<i>stdlyr</i>)</a>
+     </td><td>Remove a layer</td></tr>
+    <tr><td><a href="funcs:main3:ltab#RenameLayer">
+     <tt>RenameLayer</tt>(<i>oldname</i>, <i>newname</i>)</a>
+     </td><td>Give a new name to a layer</td></tr>
+    <tr><td><a href="funcs:main3:ltab#LayerHandle">
+     <tt>LayerHandle</tt>(<i>down</i>)</a>
+     </td><td>Return a handle to a list of layer names</td></tr>
+    <tr><td><a href="funcs:main3:ltab#GenLayers">
+     <tt>GenLayers</tt>(<i>stringlist_handle</i>)</a>
+     </td><td>Return a layer name and advance list to next</td></tr>
+    <tr><td><a href="funcs:main3:ltab#GetLayerPalette">
+     <tt>GetLayerPalette</tt>(<i>regnum</i>)</a>
+     </td><td>Return list of palette layers</td></tr>
+    <tr><td><a href="funcs:main3:ltab#SetLayerPalette">
+     <tt>SetLayerPalette</tt>(<i>list</i>, <i>regnum</i>)</a>
+     </td><td>Save list of palette layers</td></tr>
+
+    <!-- 032017 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main3:ldb">Layer Database</a></th></tr>
+
+    <tr><td><a href="funcs:main3:ldb#GetLayerNum">
+     <tt>GetLayerNum</tt>(<i>name</i>)</a>
+     </td><td>Return component layer number for name</td></tr>
+    <tr><td><a href="funcs:main3:ldb#GetLayerName">
+     <tt>GetLayerName</tt>(<i>num</i>)</a>
+     </td><td>Return component layer name for number</td></tr>
+    <tr><td><a href="funcs:main3:ldb#IsPurposeDefined">
+     <tt>IsPurposeDefined</tt>(<i>name</i>)</a>
+     </td><td>Return true if name matches a purpose</td></tr>
+    <tr><td><a href="funcs:main3:ldb#GetPurposeNum">
+     <tt>GetPurposeNum</tt>(<i>name</i>)</a>
+     </td><td>Return purpose number for name</td></tr>
+    <tr><td><a href="funcs:main3:ldb#GetPurposeName">
+     <tt>GetPurposeName</tt>(<i>num</i>)</a>
+     </td><td>Return purpose name for number</td></tr>
+
+    <!-- 032017 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main3:layer">Layers</a></th></tr>
+
+    <tr><td><a href="funcs:main3:layer#GetLayerLayerNum">
+     <tt>GetLayerLayerNum</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return the component layer number for layer</td></tr>
+    <tr><td><a href="funcs:main3:layer#GetLayerPurposeNum">
+     <tt>GetLayerPurposeNum</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return the purpose number for layer</td></tr>
+    <tr><td><a href="funcs:main3:layer#GetLayerAlias">
+     <tt>GetLayerAlias</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return the alias for layer</td></tr>
+    <tr><td><a href="funcs:main3:layer#SetLayerAlias">
+     <tt>SetLayerAlias</tt>(<i>stdlyr</i>, <i>alias</i>)</a>
+     </td><td>Set the alias for layer</td></tr>
+    <tr><td><a href="funcs:main3:layer#GetLayerDescr">
+     <tt>GetLayerDescr</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return the description for layer</td></tr>
+    <tr><td><a href="funcs:main3:layer#SetLayerDescr">
+     <tt>SetLayerDescr</tt>(<i>stdlyr</i>, <i>descr</i>)</a>
+     </td><td>Set the description for layer</td></tr>
+    <tr><td><a href="funcs:main3:layer#IsLayerDefined">
+     <tt>IsLayerDefined</tt>(<i>lname</i>)</a>
+     </td><td>Return nonzero if layer exists with given name</td></tr>
+    <tr><td><a href="funcs:main3:layer#IsLayerVisible">
+     <tt>IsLayerVisible</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return true if layer is visible</td></tr>
+    <tr><td><a href="funcs:main3:layer#SetLayerVisible">
+     <tt>SetLayerVisible</tt>(<i>stdlyr</i>, <i>visible</i>)</a>
+     </td><td>Set layer visibility flag</td></tr>
+    <tr><td><a href="funcs:main3:layer#IsLayerSelectable">
+     <tt>IsLayerSelectable</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return true if layer is selectable</td></tr>
+    <tr><td><a href="funcs:main3:layer#SetLayerSelectable">
+     <tt>SetLayerSelectable</tt>(<i>stdlyr</i>, <i>selectable</i>)</a>
+     </td><td>Set layer selectability flag</td></tr>
+    <tr><td><a href="funcs:main3:layer#IsLayerSymbolic">
+     <tt>IsLayerSymbolic</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return true if layer is symbolic</td></tr>
+    <tr><td><a href="funcs:main3:layer#SetLayerSymbolic">
+     <tt>SetLayerSymbolic</tt>(<i>stdlyr</i>, <i>symbolic</i>)</a>
+     </td><td>Set layer symbolic flag</td></tr>
+    <tr><td><a href="funcs:main3:layer#IsLayerNoMerge">
+     <tt>IsLayerNoMerge</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return true if layer has no_merge set </td></tr>
+    <tr><td><a href="funcs:main3:layer#SetLayerNoMerge">
+     <tt>SetLayerNoMerge</tt>(<i>stdlyr</i>, <i>nomerge</i>)</a>
+     </td><td>Set layer no_merge flag</td></tr>
+    <tr><td><a href="funcs:main3:layer#GetLayerMinDimension">
+     <tt>GetLayerMinDimension</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return minimum dimension</td></tr>
+    <tr><td><a href="funcs:main3:layer#GetLayerWireWidth">
+     <tt>GetLayerWireWidth</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return default wire width</td></tr>
+    <tr><td><a href="funcs:main3:layer#AddLayerGdsOutMap">
+     <tt>AddLayerGdsOutMap</tt>(<i>stdlyr</i>, <i>layer_num</i>,
+     <i>datatype</i>)</a>
+     </td><td>Add GDSII output layer mapping</td></tr>
+    <tr><td><a href="funcs:main3:layer#RemoveLayerGdsOutMap">
+     <tt>RemoveLayerGdsOutMap</tt>(<i>stdlyr</i>, <i>layer_num</i>,
+     <i>datatype</i>)</a>
+     </td><td>Remove GDSII output layer mapping</td></tr>
+    <tr><td><a href="funcs:main3:layer#AddLayerGdsInMap">
+     <tt>AddLayerGdsInMap</tt>(<i>stdlyr</i>, <i>string</i>)</a>
+     </td><td>Add GDSII input layer mapping</td></tr>
+    <tr><td><a href="funcs:main3:layer#ClearLayerGdsInMap">
+     <tt>ClearLayerGdsInMap</tt>(<i>stdlyr</i>)</a>
+     </td><td>Clear GDSII input layer mapping</td></tr>
+    <tr><td><a href="funcs:main3:layer#SetLayerNoDRCdatatype">
+     <tt>SetLayerNoDRCdatatype</tt>(<i>stdlyr</i>, <i>datatype</i>)</a>
+     </td><td>Set GDSII NoDRC datatype</td></tr>
+
+    <!-- 120114 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main3:layerex">Layers - Extraction Support</a></th></tr>
+
+    <tr><td><a href="funcs:main3:layerex#SetLayerExKeyword">
+     <tt>SetLayerExKeyword</tt>(<i>stdlyr</i>, <i>string</i>)</a>
+     </td><td>Set extraction keyword/value of layer</td></tr>
+    <tr><td><a href="funcs:main3:layerex#SetCurLayerExKeyword">
+     <tt>SetCurLayerExKeyword</tt>(<i>string</i>)</a>
+     </td><td>Set extraction keyword/value of current layer</td></tr>
+    <tr><td><a href="funcs:main3:layerex#RemoveLayerExKeyword">
+     <tt>RemoveLayerExKeyword</tt>(<i>stdlyr</i>, <i>keyword</i>)</a>
+     </td><td>Remove extraction keyword spec from layer</td></tr>
+    <tr><td><a href="funcs:main3:layerex#RemoveCurLayerExKeyword">
+     <tt>RemoveCurLayerExKeyword</tt>(<i>keyword</i>)</a>
+     </td><td>Remove extraction keyword spec from current layer</td></tr>
+    <tr><td><a href="funcs:main3:layerex#IsLayerConductor">
+     <tt>IsLayerConductor</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return nonzero for Conductor</td></tr>
+    <tr><td><a href="funcs:main3:layerex#IsLayerRouting">
+     <tt>IsLayerRouting</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return nonzero for Routing</td></tr>
+    <tr><td><a href="funcs:main3:layerex#IsLayerGround">
+     <tt>IsLayerGround</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return nonzero for GroundPlane</td></tr>
+    <tr><td><a href="funcs:main3:layerex#IsLayerContact">
+     <tt>IsLayerContact</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return nonzero for Contact</td></tr>
+    <tr><td><a href="funcs:main3:layerex#IsLayerVia">
+     <tt>IsLayerVia</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return nonzero for Via</td></tr>
+    <tr><td><a href="funcs:main3:layerex#IsLayerDielectric">
+     <tt>IsLayerDielectric</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return nonzero for Dielectric</td></tr>
+    <tr><td><a href="funcs:main3:layerex#IsLayerDarkField">
+     <tt>IsLayerDarkField</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return nonzero for DarkField</td></tr>
+    <tr><td><a href="funcs:main3:layerex#GetLayerThickness">
+     <tt>GetLayerThickness</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return Thickness</td></tr>
+    <tr><td><a href="funcs:main3:layerex#GetLayerRho">
+     <tt>GetLayerRho</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return resistivity</td></tr>
+    <tr><td><a href="funcs:main3:layerex#GetLayerResis">
+     <tt>GetLayerResis</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return resistance per square</td></tr>
+    <tr><td><a href="funcs:main3:layerex#GetLayerEps">
+     <tt>GetLayerEps</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return dielectric constant</td></tr>
+    <tr><td><a href="funcs:main3:layerex#GetLayerCap">
+     <tt>GetLayerCap</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return capacitance per area</td></tr>
+    <tr><td><a href="funcs:main3:layerex#GetLayerCapPerim">
+     <tt>GetLayerCapPerim</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return capacitance per length</td></tr>
+    <tr><td><a href="funcs:main3:layerex#GetLayerLambda">
+     <tt>GetLayerLambda</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return penetration depth</td></tr>
+
+    <!-- 100412 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main3:sel">Selections</a></th></tr>
+
+    <tr><td><a href="funcs:main3:sel#SetLayerSpecific">
+     <tt>SetLayerSpecific</tt>(<i>state</i>)</a>
+     </td><td>Restrict selectability to current layer</td></tr>
+    <tr><td><a href="funcs:main3:sel#SetLayerSearchUp">
+     <tt>SetLayerSearchUp</tt>(<i>state</i>)</a>
+     </td><td>Set layer traversal direction</td></tr>
+    <tr><td><a href="funcs:main3:sel#SetSelectMode">
+     <tt>SetSelectMode</tt>(<i>ptr_mode</i>, <i>area_mode</i>,
+     <i>sel_mode</i>)</a>
+     </td><td>Set selection modes</td></tr>
+    <tr><td><a href="funcs:main3:sel#SetSelectTypes">
+     <tt>SetSelectTypes</tt>(<i>string</i>)</a>
+     </td><td>Set selectable object types</td></tr>
+    <tr><td><a href="funcs:main3:sel#Select">
+     <tt>Select</tt>(<i>left</i>, <i>bottom</i>, <i>right</i>, <i>top</i>,
+     <i>types</i>)</a>
+     </td><td>Select objects</td></tr>
+    <tr><td><a href="funcs:main3:sel#Deselect">
+     <tt>Deselect</tt>()</a>
+     </td><td>Deselect objects</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main3:pfgen">Pseudo-Flat Generator</a></th></tr>
+
+    <tr><td><a href="funcs:main3:pfgen#FlatObjList">
+     <tt>FlatObjList</tt>(<i>l</i>, <i>b</i>, <i>r</i>, <i>t</i>,
+     <i>depth</i>)</a>
+     </td><td>Return list of object copies</td></tr>
+    <tr><td><a href="funcs:main3:pfgen#FlatObjGen">
+     <tt>FlatObjGen</tt>(<i>l</i>, <i>b</i>, <i>r</i>, <i>t</i>,
+     <i>depth</i>)</a>
+     </td><td>Return handle to object generator</td></tr>
+    <tr><td><a href="funcs:main3:pfgen#FlatObjGenLayers">
+     <tt>FlatObjGenLayers</tt>(<i>l</i>, <i>b</i>, <i>r</i>, <i>t</i>,
+     <i>depth</i>, <i>layers</i>)</a>
+     </td><td>Return handle to object generator</td></tr>
+    <tr><td><a href="funcs:main3:pfgen#FlatGenNext">
+     <tt>FlatGenNext</tt>(<i>handle</i>)</a>
+     </td><td>Return handle to next object copy</td></tr>
+    <tr><td><a href="funcs:main3:pfgen#FlatGenCount">
+     <tt>FlatGenCount</tt>(<i>handle</i>)</a>
+     </td><td>Count objects accessible by handle</td></tr>
+    <tr><td><a href="funcs:main3:pfgen#FlatOverlapList">
+     <tt>FlatOverlapList</tt>(<i>object_handle</i>, <i>touch_ok</i>,
+     <i>depth</i>, <i>layers</i>)</a>
+     </td><td>Return handle to next object copy</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main3:meas">Geometry Measurement</a></th></tr>
+
+    <tr><td><a href="funcs:main3:meas#Distance">
+     <tt>Distance</tt>(<i>x</i>, <i>y</i>, <i>x1</i>, <i>y1</i>)</a>
+     </td><td>Measure distance between points</td></tr>
+    <tr><td><a href="funcs:main3:meas#MinDistPointToSeg">
+     <tt>MinDistPointToSeg</tt>(<i>x</i>, <i>y</i>, <i>x1</i>, <i>y1</i>,
+     <i>x2</i>, <i>y2</i>, <i>aret</i>)</a>
+     </td><td>Measure minimum distance between point and line segment</td></tr>
+    <tr><td><a href="funcs:main3:meas#MinDistPointToObj">
+     <tt>MinDistPointToObj</tt>(<i>x</i>, <i>y</i>, <i>object_handle</i>,
+     <i>aret</i>)</a>
+     </td><td>Measure minimum distance between point and object</td></tr>
+    <tr><td><a href="funcs:main3:meas#MinDistSegToObj">
+     <tt>MinDistSegToObj</tt>(<i>x1</i>, <i>y1</i>, <i>x2</i>, <i>y2</i>,
+     <i>object_handle</i>, <i>aret</i>)</a>
+     </td><td>Measure minimum distance from line segment to object</td></tr>
+    <tr><td><a href="funcs:main3:meas#MinDistObjToObj">
+     <tt>MinDistObjToObj</tt>(<i>object_handle1</i>, <i>object_handle2</i>,
+     <i>aret</i>)</a>
+     </td><td>Measure minimum distance between objects</td></tr>
+    <tr><td><a href="funcs:main3:meas#MaxDistPointToObj">
+     <tt>MaxDistPointToObj</tt>(<i>x</i>, <i>y</i>, <i>object_handle</i>,
+     <i>aret</i>)</a>
+     </td><td>Measure maximum distance from point to object</td></tr>
+    <tr><td><a href="funcs:main3:meas#MaxDistObjToObj">
+     <tt>MaxDistObjToObj</tt>(<i>object_handle1</i>, <i>object_handle2</i>,
+     <i>aret</i>)</a>
+     </td><td>Measure maximum distance between objects</td></tr>
+    <tr><td><a href="funcs:main3:meas#Intersect">
+     <tt>Intersect</tt>(<i>object_handle1</i>, <i>object_handle2</i>,
+     <i>touchok</i>)</a>
+     </td><td>Check if objects touch or overlap</td></tr>
+
+     </table>
+
+!!SEEALSO
+scr:iffuncs
+
+!!KEYWORD
+funcs:main3:snap
+!!TITLE
+Grid and Edge Snapping
+!!HTML
+    <!-- 101412 -->
+    <a name="SetMfgGrid"></a>
+    <dl>
+    <dt><b>(int) <tt>SetMfgGrid</tt>(<i>mfg_grid</i>)</b>
+    <dd><br>This will set the manufacturing grid to the value of the
+    argument, provided that the value is in the range 0.0 - 100.0
+    microns.  When the manufacturing grid is nonzero, the snap grid is
+    constrained to integer multiples of the manufacturing grid.  The
+    function returns 1 if the argument is in range, in which case the
+    value is accepted, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 101412 -->
+    <a name="GetMfgGrid"></a>
+    <dl>
+    <dt><b>(real) <tt>GetMfgGrid</tt>()</b>
+    <dd><br>This function returns the value of the manufacturing grid. 
+    When nonzero, the snap grid is constrained to integer multiples of
+    the manufacturing grid.
+    </dl>
+    <hr>
+
+    <!-- 101412 -->
+    <a name="SetGrid"></a>
+    <dl>
+    <dt><b>(int) <tt>SetGrid</tt>(<i>interval</i>, <i>snap</i>,
+      <i>win</i>)</b>
+    <dd><br>This function sets the grid parameters for the window
+    indicated by the third argument, which is 0 for the main window or
+    1-4 for the sub-windows.  The interval argument sets snap grid
+    spacing, in microns.  This value can be zero, in which case the
+    present value is retained.
+
+    <p>
+    The snap value is an integer in the range of -10 to 10.  If
+    positive, the number provides the number of snap grid intervals
+    between fine grid lines.  If negative, the absolute value is the
+    number of fine grid lines displayed per snap grid interval.  If
+    zero, the present setting is retained.
+
+    <p>
+    For electrical mode windows, the snap points must be on multiples
+    of one micron.  If not, this function returns 0 and the grid is
+    unchanged.  The function also returns 0 if the window argument
+    does not correspond to an existing window.  The return is 1 if the
+    operation succeeds.
+
+    <p>
+    The function does not redraw the window.  The <a
+    href="Redraw"><tt>Redraw()</tt></a> function can be called to
+    redraw the window if necessary.
+    </dl>
+    <hr>
+
+    <!-- 101412 -->
+    <a name="GetGridInterval"></a>
+    <dl>
+    <dt><b>(real) <tt>GetGridInterval</tt>(<i>win</i>)</b>
+    <dd><br>This function returns the fine grid interval in microns
+    for the grid in the window indicated by the argument, which is 0
+    for the main window or 1-4 for the sub-windows.  The function
+    returns 0 if the argument does not correspond to an existing
+    window.
+    </dl>
+    <hr>
+
+    <!-- 101412 -->
+    <a name="GetSnapInterval"></a>
+    <dl>
+    <dt><b>(real) <tt>GetSnapInterval</tt>(<i>win</i>)</b>
+    <dd><br>This function returns the snap grid interval in microns
+    for the grid in the window indicated by the argument, which is 0
+    for the main window or 1-4 for the sub-windows.  The function
+    returns 0 if the argument does not correspond to an existing
+    window.
+    </dl>
+    <hr>
+
+    <!-- 101412 -->
+    <a name="GetGridSnap"></a>
+    <dl>
+    <dt><b>(int) <tt>GetGridSnap</tt>(<i>win</i>)</b>
+    <dd><br>This function returns the snap number for the grid in the
+    window specified by the argument, which is 0 for the main window
+    or 1-4 for the sub-windows.  The snap number determines the number
+    of snap grid intervals between fine grid lines if positive, or
+    fine grid lines per snap interval if negative.  The function
+    returns 0 if the argument does not correspond to an existing
+    window.
+    </dl>
+
+    <!-- 121508 -->
+    <a name="ClipToGrid"></a>
+    <dl>
+    <dt><b>(int) <tt>ClipToGrid</tt>(<i>coord</i>, <i>win</i>)</b>
+    <dd><br>The first argument to this function is a coordinate in
+    microns.  The return value is the coordinate, in microns, snapped
+    to the nearest snap point of the grid of the window given in the
+    second argument.  The second argument is 0 for the main window, or
+    1-4 for the sub-windows.  The function fails if the window
+    argument does not correspond to an existing window.
+
+    <p>
+    Note that this function must be called twice for an x,y coordinate
+    pair.  This function ignores the edge-snapping modes, only taking
+    into account the grid resolution and snap values.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="SetEdgeSnappingMode"></a>
+    <dl>
+    <dt><b>(int) <tt>SetEdgeSnappingMode</tt>(<i>win</i>, <i>mode</i>)</b>
+    <dd><br>
+    Change the edge snapping mode in a drawing window.  The first
+    argument is an integer representing the drawing window:  0 for the
+    main window, and 1-4 for subwindows.  The change will apply only
+    to that window, though changes in the main window will apply to
+    new sub-windows.  The second argument is an integer in the range
+    0-2.  The effects are
+    <blockquote>
+    <table border=0 cellspacing=2>
+    <tr><td>0</td> <td>No edge snapping.</td></tr>
+    <tr><td>1</td> <td>Edge snapping is enabled in some commands.</td></tr>
+    <tr><td>2</td> <td>Edge snapping is always enabled.</td></tr>
+    </table>
+    </blockquote>
+
+    The return value is 1 if the window edge snapping was updated, 0
+    otherwise.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="SetEdgeOffGrid"></a>
+    <dl>
+    <dt><b>(int) <tt>SetEdgeOffGrid</tt>(<i>win</i>, <i>off_grid</i>)</b>
+    <dd><br>
+    This will enable snapping to off-grid locations when edge snapping
+    is enabled, in the given window.  The first argument is an integer
+    representing the drawing window:  0 for the main window, and 1-4
+    for subwindows.  The second argument is a boolean which will allow
+    off-grid snapping when true.  The return value is 1 if the window
+    parameter was updated, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="SetEdgeNonManh"></a>
+    <dl>
+    <dt><b>(int) <tt>SetEdgeNonManh</tt>(<i>win</i>, <i>non_manh</i>)</b>
+    <dd><br>
+    This will enable snapping to non-Manhattan edges when edge
+    snapping is enabled, in the given window.  The first argument is
+    an integer representing the drawing window:  0 for the main
+    window, and 1-4 for subwindows.  The second argument is a boolean
+    which will allow snapping to non-Manhattan edges when true.  The
+    return value is 1 if the window parameter was updated, 0
+    otherwise.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="SetEdgeWireEdge"></a>
+    <dl>
+    <dt><b>(int) <tt>SetEdgeWireEdge</tt>(<i>win</i>, <i>wire_edge</i>)</b>
+    <dd><br>
+    This will enable snapping to wire edges when edge snapping is
+    enabled, in the given window.  The first argument is an integer
+    representing the drawing window:  0 for the main window, and 1-4
+    for subwindows.  The second argument is a boolean which will allow
+    snapping to wire edges when true.  The return value is 1 if the
+    window parameter was updated, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="SetEdgeWirePath"></a>
+    <dl>
+    <dt><b>(int) <tt>SetEdgeWirePath</tt>(<i>win</i>, <i>wire_path</i>)</b>
+    <dd><br>
+    This will enable snapping to the wire path when edge snapping is
+    enabled, in the given window.  The path is the set of line
+    segments that invisibly run along the center of the displayed
+    wire, which, along with the wire width and end style, actually
+    defines the wire.  The first argument is an integer representing
+    the drawing window:  0 for the main window, and 1-4 for
+    subwindows.  The second argument is a boolean which will allow
+    snapping to the wire path when true.  The return value is 1 if the
+    window parameter was updated, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="GetEdgeSnappingMode"></a>
+    <dl>
+    <dt><b>(int) <tt>GetEdgeSnappingMode</tt>(<i>win</i>)</b>
+    <dd><br>
+    This function returns the edge snapping mode in effect for the
+    given window.  The argument is an integer representing the drawing
+    window:  0 for the main window, and 1-4 for subwindows.  The
+    return value is -1 if the window is not found, 0-2 otherwise.
+
+    <blockquote>
+    <table border=0 cellspacing=2>
+    <tr><td>0</td> <td>No edge snapping.</td></tr>
+    <tr><td>1</td> <td>Edge snapping is enabled in some commands.</td></tr>
+    <tr><td>2</td> <td>Edge snapping is always enabled.</td></tr>
+    </table>
+    </blockquote>
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="GetEdgeOffGrid"></a>
+    <dl>
+    <dt><b>(int) <tt>GetEdgeOffGrid</tt>(<i>win</i>)</b>
+    <dd><br>
+    This returns the setting of the allow off-grid edge snapping flag
+    for the given window.  The argument is an integer representing the
+    drawing window:  0 for the main window, and 1-4 for subwindows. 
+    The return value is -1 if the window is not found, 0 or 1 otherwise
+    tracking the state of the flag.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="GetEdgeNonManh"></a>
+    <dl>
+    <dt><b>(int) <tt>GetEdgeNonManh</tt>(<i>win</i>)</b>
+    <dd><br>
+    This returns the setting of the allow non-Manhattan edge snapping
+    flag for the given window.  The argument is an integer
+    representing the drawing window:  0 for the main window, and 1-4
+    for subwindows.  The return value is -1 if the window is not
+    found, 0 or 1 otherwise tracking the state of the flag.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="GetEdgeWireEdge"></a>
+    <dl>
+    <dt><b>(int) <tt>GetEdgeWireEdge</tt>(<i>win</i>)</b>
+    <dd><br>
+    This returns the setting of the allow wire-edge edge snapping flag
+    for the given window.  The argument is an integer representing the
+    drawing window:  0 for the main window, and 1-4 for subwindows. 
+    The return value is -1 if the window is not found, 0 or 1 otherwise
+    tracking the state of the flag.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="GetEdgeWirePath"></a>
+    <dl>
+    <dt><b>(int) <tt>GetEdgeWirePath</tt>(<i>win</i>)</b>
+    <dd><br>
+    This returns the setting of the allow wire-path edge snapping flag
+    for the given window.  The argument is an integer representing the
+    drawing window:  0 for the main window, and 1-4 for subwindows. 
+    The return value is -1 if the window is not found, 0 or 1 otherwise
+    tracking the state of the flag.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="SetRulerSnapToGrid"></a>
+    <dl>
+    <dt><b>(int) SetRulerSnapToGrid</tt>(<i>snap</i>)</b>
+    <dd><br>
+    This function sets the snap-to-grid behavior when creating rulers
+    in the <a href="xic:ruler"><b>Rulers</b></a> command.  When set,
+    the mouse cursor will snap to grid locations, otherwise not.  In
+    either case the cursor may snap to object edges if edge snapping
+    is enabled.  If the <b>Rulers</b> command is active the mode will
+    change immediately, otherwise the new mode will apply when the
+    command becomes active.  The return value is 0 or 1 representing
+    the previous flag value.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="SetRulerEdgeSnappingMode"></a>
+    <dl>
+    <dt><b>(int) SetRulerEdgeSnappingMode</tt>(<i>mode</i>)</b>
+    <dd><br>
+    This sets the edge snapping mode which is applied during the <a
+    href="xic:ruler"><b>Rulers</b></a> command.  This command has its
+    own default edge snapping state.  This function changes only the
+    initial state when the command starts, and will have no effect in
+    a running command (use <tt>SetEdgeSnappingMode</tt> to alter the
+    current setting).  The argument is an integer 0-2.
+
+    <blockquote>
+    <table border=0 cellspacing=2>
+    <tr><td>0</td> <td>No edge snapping.</td></tr>
+    <tr><td>1</td> <td>Edge snapping is enabled in some commands.</td></tr>
+    <tr><td>2</td> <td>Edge snapping is always enabled.</td></tr>
+    </table>
+    </blockquote>
+
+    The function returns -1 if the argument is out of range, or 0-2
+    representing the previous state otherwise.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="SetRulerEdgeOffGrid"></a>
+    <dl>
+    <dt><b>(int) SetRulerEdgeOffGrid</tt>(<i>off_grid</i>)</b>
+    <dd><br>
+    This sets the edge snapping allow off-grid flag which is applied
+    during the <a href="xic:ruler"><b>Rulers</b></a> command.  This
+    command has its own default edge snapping state.  This function
+    changes only the initial state when the command starts, and will
+    have no effect in a running command (use <tt>SetEdgeOffGrid</tt>
+    to alter the current setting).  The argument is a boolean value
+    which enables the flag when true.
+
+    <p>
+    The return value is 0 or 1 representing the previous flag state.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="SetRulerEdgeNonManh"></a>
+    <dl>
+    <dt><b>(int) SetRulerEdgeNonManh</tt>(<i>non_manh</i>)</b>
+    <dd><br>
+    This sets the edge snapping allow non-Manhattan flag which is
+    applied during the <a href="xic:ruler"><b>Rulers</b></a> command. 
+    This command has its own default edge snapping state.  This
+    function changes only the initial state when the command starts,
+    and will have no effect in a running command (use
+    <tt>SetEdgeNonManh</tt> to alter the current setting).  The
+    argument is a boolean value which enables the flag when true.
+
+    <p>
+    The return value is 0 or 1 representing the previous flag state.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="SetRulerEdgeWireEdge"></a>
+    <dl>
+    <dt><b>(int) SetRulerEdgeWireEdge</tt>(<i>wire_edge</i>)</b>
+    <dd><br>
+    This sets the edge snapping allow wire-edge flag which is applied
+    during the <a href="xic:ruler"><b>Rulers</b></a> command.  This
+    command has its own default edge snapping state.  This function
+    changes only the initial state when the command starts, and will
+    have no effect in a running command (use <tt>SetEdgeWireEdge</tt>
+    to alter the current setting).  The argument is a boolean value
+    which enables the flag when true.
+
+    <p>
+    The return value is 0 or 1 representing the previous flag state.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="SetRulerEdgeWirePath"></a>
+    <dl>
+    <dt><b>(int) SetRulerEdgeWirePath</tt>(<i>wire_path</i>)</b>
+    <dd><br>
+    This sets the edge snapping allow wire-path flag which is applied
+    during the <a href="xic:ruler"><b>Rulers</b></a> command.  This
+    command has its own default edge snapping state.  This function
+    changes only the initial state when the command starts, and will
+    have no effect in a running command (use <tt>SetEdgeWirePath</tt>
+    to alter the current setting).  The argument is a boolean value
+    which enables the flag when true.
+
+    <p>
+    The return value is 0 or 1 representing the previous flag state.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="GetRulerSnapToGrid"></a>
+    <dl>
+    <dt><b>(int) GetRulerSnapToGrid()</b>
+    <dd><br>
+    This returns the present default snap-to-grid state used during
+    the <a href="xic:ruler"><b>Rulers</b></a> command.  The values are
+    0 or 1 depending on the state.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="GetRulerEdgeSnappingMode"></a>
+    <dl>
+    <dt><b>(int) GetRulerEdgeSnappingMode()</b>
+    <dd><br>
+    The return value is an integer 0-2 representing the default edge
+    snapping mode to use during the <a
+    href="xic:ruler"><b>Rulers</b></a> command.
+
+    <blockquote>
+    <table border=0 cellspacing=2>
+    <tr><td>0</td> <td>No edge snapping.</td></tr>
+    <tr><td>1</td> <td>Edge snapping is enabled in some commands.</td></tr>
+    <tr><td>2</td> <td>Edge snapping is always enabled.</td></tr>
+    </table>
+    </blockquote>
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="GetRulerEdgeOffGrid"></a>
+    <dl>
+    <dt><b>(int) GetRulerEdgeOffGrid()</b>
+    <dd><br>
+    The return value is 0 or 1 depending on the setting of the edge
+    snapping allow off-grid flag which is the default in the <a
+    href="xic:ruler"><b>Rulers</b></a> command.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="GetRulerEdgeNonManh"></a>
+    <dl>
+    <dt><b>(int) GetRulerEdgeNonManh()</b>
+    <dd><br>
+    The return value is 0 or 1 depending on the setting of the edge
+    snapping allow non-Manhattan flag which is the default in the <a
+    href="xic:ruler"><b>Rulers</b></a> command.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="GetRulerEdgeWireEdge"></a>
+    <dl>
+    <dt><b>(int) GetRulerEdgeWireEdge()</b>
+    <dd><br>
+    The return value is 0 or 1 depending on the setting of the edge
+    snapping allow wire-edge flag which is the default in the <a
+    href="xic:ruler"><b>Rulers</b></a> command.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="GetRulerEdgeWirePath"></a>
+    <dl>
+    <dt><b>(int) GetRulerEdgeWirePath()</b>
+    <dd><br>
+    The return value is 0 or 1 depending on the setting of the edge
+    snapping allow wire-path flag which is the default in the <a
+    href="xic:ruler"><b>Rulers</b></a> command.
+    </dl>
+
+!!SEEALSO
+funcs:main3
+
+!!KEYWORD
+funcs:main3:grid
+!!TITLE
+Grid Presentation
+!!HTML
+    <!-- 030204 -->
+    <a name="ShowGrid"></a>
+    <dl>
+    <dt><b>(int) <tt>ShowGrid</tt>(<i>on</i>, <i>win</i>)</b>
+    <dd><br>This function sets whether or not the grid is shown in a
+    window.  If the first argument is nonzero, the grid will be shown,
+    otherwise the grid will not be shown.  The second argument is an
+    integer representing the drawing window:  0 for the main window,
+    and 1-4 for sub-windows.  The change will not be visible until the
+    window is redrawn (one can call <a
+    href="Redraw"><tt>Redraw</tt></a>).  If success, 1 is returned, or
+    0 is returned if the window does not exist.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="ShowAxes"></a>
+    <dl>
+    <dt><b>(int) <tt>ShowAxes</tt>(<i>style</i>, <i>win</i>)</b>
+    <dd><br>This function sets the axes presentation style in physical
+    mode windows.  The first argument is an integer 0-2, where 0
+    suppresses drawing of axes, 1 indicates plain axes, and 2 (or
+    anything else) indicates axes with a box at the origin.  The
+    second argument is an integer representing the drawing window:  0
+    for the main window, 1-4 for sub-windows.  Axes are never shown in
+    electrical mode windows.  On success, 1 is returned.  If the
+    window does not exist or is not showing a physical view, 0 is
+    returned.  The change will not be visible until the window is
+    redrawn (one can call <a href="Redraw"><tt>Redraw</tt></a>).
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SetGridStyle"></a>
+    <dl>
+    <dt><b>(int) <tt>SetGridStyle</tt>(<i>style</i>, <i>win</i>)</b>
+    <dd><br>This function sets the line style used for grid rendering. 
+    The first argument is an integer mask that defines the on-off
+    pattern.  The pattern starts at the most significant '1' bit and
+    continues through the least significant bit, and repeats.  Set
+    bits are rendered as the visible part of the pattern.  If the
+    style is 0, a dot is shown at each grid point.  Passing -1 will
+    give continuous lines.  The second argument is an integer
+    representing the drawing window:  0 for the main window, 1-4 for
+    sub-windows.  The function returns 1 on success, 0 if the window
+    does not exist.  The change will not be visible until the window
+    is redrawn (one can call <a href="Redraw"><tt>Redraw</tt></a>).
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetGridStyle"></a>
+    <dl>
+    <dt><b>(int) <tt>GetGridStyle</tt>(<i>win</i>)</b>
+    <dd><br>This function returns the line style mask used for rendering
+    the grid in the given window.  The mask has the interpretation
+    described in the description of <tt>SetGridStyle</tt>.  The
+    argument is an integer representing the window:  0 for the main
+    window, and 1-4 for sub-windows.  If the window does not exist, 0
+    is returned.
+    </dl>
+    <hr>
+
+    <!-- 071110 -->
+    <a name="SetGridCrossSize"></a>
+    <dl>
+    <dt><b>(int) <tt>SetGridCrossSize</tt>(<i>xsize</i>, <i>win</i>)</b>
+    <dd><br>This applies only to grids with style 0 (dot grid).  The
+    <i>xsize</i> is an integer 0-6 which indicates the number of
+    pixels to draw in the four compass directions around the central
+    pixel.  Thus, for nonzero values, the "dot" is rendered as a small
+    cross.  The second argument is an integer representing the drawing
+    window:  0 for the main window, 1-4 for subwindows.  The function
+    returns 1 on success, 0 if the window does not exist or the style
+    is nonzero.  The change will not be visible until the window is
+    redrawn (one can call <a href="Redraw"><tt>Redraw</tt></a>).
+    </dl>
+    <hr>
+
+    <!-- 071110 -->
+    <a name="GetGridCrossSize"></a>
+    <dl>
+    <dt><b>(int) <tt>GetGridCrossSize</tt>(<i>win</i>)</b>
+    <dd><br>This returns an integer 0-6, which will be nonzero only
+    for grid style 0 (dot grid), and if the "dots" are being rendered
+    as small crosses via a call to <tt>SetGridCrossSize</tt> or
+    otherwise.  The argument is an integer representing the window:  0
+    for the main window, and 1-4 for subwindows.  If the window does
+    not exist, 0 is returned. 
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SetGridOnTop"></a>
+    <dl>
+    <dt><b>(int) <tt>SetGridOnTop</tt>(<i>ontop</i>, <i>win</i>)</b>
+    <dd><br>This function sets whether the grid is shown above or below
+    rendered objects.  If the first argument is nonzero, the grid will
+    be shown above rendered objects.  The second argument is an
+    integer representing the drawing window:  0 for the main window
+    and 1-4 for sub-windows.  The function returns 1 on success, 0 if
+    the window does not exist.  The change will not be visible until
+    the window is redrawn (one can call <a
+    href="Redraw"><tt>Redraw</tt></a>).
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetGridOnTop"></a>
+    <dl>
+    <dt><b>(int) <tt>GetGridOnTop</tt>(<i>win</i>)</b>
+    <dd><br>This function returns 1 is the grid is shown on top of
+    objects.  The argument is an integer representing the drawing
+    window:  0 for the main window and 1-4 for sub-windows.  If the
+    grid is shown below rendered objects, 0 is returned.  If the
+    window does not exist, -1 is returned.
+    </dl>
+    <hr>
+
+    <!-- 101412 -->
+    <a name="SetGridCoarseMult"></a>
+    <dl>
+    <dt><b>(int) <tt>SetGridCoarseMult</tt>(<i>mult</i>, <i>win</i>)</b>
+    <dd><br>This sets the number of fine grid lines per coarse grid
+    line.  The first argument is an integer 1-50 that provides this
+    multiple (it is clipped to this range).  If 1, the coarse grid
+    color is used for all grid lines.  The second argument represents
+    the drawing window whose grid is being changed, 0 for the main
+    drawing window, and 1-4 for sub-windows.  The change will not be
+    visible until the window is redrawn (one can call <a
+    href="Redraw"><tt>Redraw()</tt></a>).
+
+    <p>
+    The return value is 1 on success, 0 if the window does not exist.
+    </dl>
+    <hr>
+
+    <!-- 101412 -->
+    <a name="GetGridCoarseMult"></a>
+    <dl>
+    <dt><b>(int) <tt>GetGridCoarseMult</tt>(<i>win</i>)</b>
+    <dd><br>This returns the number of fine grid lines per coarse grid
+    interval, as being used in the drawing window indicated by the
+    argument.  The argument is 0 for the main drawing window, 1-4 for
+    sub-windows.  If the window does not exist, zero is returned.
+    </dl>
+    <hr>
+
+    <!-- 101412 -->
+    <a name="SaveGrid"></a>
+    <dl>
+    <dt><b>(int) <tt>SaveGrid</tt>(<i>regnum</i>, <i>win</i>)</b>
+    <dd><br>This will save a grid parameter set to a register.  The
+    first argument is a register index value 0-7.  Register 0 is used
+    internally for the "last" value whenever grid parameters are
+    changed, so is probably not a good choice unless this behavior is
+    expected.  These are the same registers as used with the <a
+    href="xic:grid"><b>Grid Setup</b></a> panel, and are associated
+    with the <a href="PhysGridReg"><tt>PhysGridReg</tt></a> and <a
+    href="ElecGridReg"><tt>ElecGridReg</tt></a> keyword families in
+    the technology file.
+
+    <p>
+    The second argument represents the drawing window whose grid
+    parameters are to be saved.  The value is 0 for the main drawing
+    window, and 1-4 for sub-windows.  Note that separate registers
+    exist for electrical and physical mode, so register numbers can be
+    reused in the two modes.
+
+    <p>
+    The return value is 1 on success, 0 if the indicated window does
+    not exist, or the register value is out of range.
+    </dl>
+    <hr>
+
+    <!-- 101412 -->
+    <a name="RecallGrid"></a>
+    <dl>
+    <dt><b>(int) <tt>RecallGrid</tt>(<i>regnum</i>, <i>win</i>)</b>
+    <dd><br>This will recall a grid parameter set from a register, and
+    update the grid of a drawing window.  The first argument is a
+    register index value 0-7.  Register 0 is used internally for the
+    "last" value whenever grid parameters are changed, so is probably
+    not a good choice unless this behavior is expected.  These are the
+    same registers as used with the <a href="xic:grid"><b>Grid
+    Setup</b></a> panel, and are associated with the <a
+    href="PhysGridReg"><tt>PhysGridReg</tt></a> and <a
+    href="ElecGridReg"><tt>ElecGridReg</tt></a> keyword families in
+    the technology file.
+
+    <p>
+    The second argument represents the drawing window whose grid
+    parameters are to be saved.  The value is 0 for the main drawing
+    window, and 1-4 for sub-windows.  Note that separate registers
+    exist for electrical and physical mode, so register numbers can be
+    reused in the two modes.
+
+    <p>
+    The return value is 1 on success, 0 if the indicated window does
+    not exist.  The change will not be visible until the window is
+    redrawn (one can call <a href="Redraw"><tt>Redraw()</tt></a>).
+    </dl>
+
+!!SEEALSO
+funcs:main3
+
+!!KEYWORD
+funcs:main3:curlyr
+!!TITLE
+Current Layer
+!!HTML
+    <!-- 101312 -->
+    <a name="GetCurLayer"></a>
+    <dl>
+    <dt><b>(string) <tt>GetCurLayer</tt>()</b>
+    <dd><br>This function returns a string containing the name of the
+    current layer.  If no current layer is defined, a null string is
+    returned.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="GetCurLayerIndex"></a>
+    <dl>
+    <dt><b>(int) <tt>GetCurLayerIndex</tt>()</b>
+    <dd><br>This function returns the 1-based index of the current
+    layer in the layer table.  If no current layer is defined, 0 is
+    returned.
+    </dl>
+    <hr>
+
+    <!-- 030115 -->
+    <a name="SetCurLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>SetCurLayer</tt>(<i>stdlyr</i>)</b>
+    <dd><br>This function sets the current layer as indicated by the
+    <a href="stdlyr">standard layer</a> argument.  The return value is
+    the 1-based index of the previous current layer in the layer
+    table, or 0 if there was no current layer.  This return can be
+    passed as the argument to revert to the previous current layer.
+    </dl>
+    <hr>
+
+    <!-- 030115 -->
+    <a name="SetCurLayerFast"></a>
+    <dl>
+    <dt><b>(int) <tt>SetCurLayerFast</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    This is like <tt>GetCurLayer</tt>, but there is no visible update,
+    i.e., the layer table indication, and the current layer shown in
+    various pop-ups, is unchanged.  This is for speed when drawing. 
+    When drawing is finished, this should be called with the original
+    current layer, or <tt>SetCurLayer</tt> should be called with some
+    layer.  The return value is the 1-based index of the previous
+    current layer in the layer table, or 0 if there was no current
+    layer.  This return can be passed as the argument to revert to the
+    previous current layer.
+    </dl>
+    <hr>
+
+    <!-- 030115 -->
+    <a name="NewCurLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>NewCurLayer</tt>(<i>stdlyr</i>)</b>
+    <dd><br>If the <a href="stdlyr">standard layer</a> argument
+    matches an existing layer, the current layer is set to that layer. 
+    Otherwise, a new layer is created, if possible, and the current
+    layer is set to the new layer.  The function will fail if it is
+    not possible to create a new layer, for example if the name is not
+    a valid layer name.
+
+    <p>
+    If the name is not in the <i>layer</i><tt>:</tt><i>purpose</i>
+    form, any new layer created will use the default
+    "<tt>drawing</tt>" purpose.
+
+    <p>
+    The return value is the 1-based index of the previous current
+    layer in the layer table, or 0 if there was no current layer. 
+    This return can be passed as the argument to revert to the
+    previous current layer.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="GetCurLayerAlias"></a>
+    <dl>
+    <dt><b>(string) <tt>GetCurLayerAlias</tt>()</b>
+    <dd><br>This function is deprecated, see <a
+    href="GetLayerAlias"><tt>GetLayerAlias</tt></a>.  Return the alias
+    name of the current layer, or a null string if there is no alias.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="SetCurLayerAlias"></a>
+    <dl>
+    <dt><b>(int) <tt>SetCurLayerAlias</tt>(<i>alias</i>)</b>
+    <dd><br> This function is deprecated, see <a
+    href="SetLayerAlias"><tt>SetLayerAlias</tt></a>.  Set the alias
+    name of the current layer.  Returns 1 on success, 0 otherwise
+    (possibly indicating a name clash).
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="GetCurLayerDescr"></a>
+    <dl>
+    <dt><b>(string) <tt>GetCurLayerDescr</tt>()</b>
+    <dd><br>This function is deprecated, see <a
+    href="GetLayerDescr"><tt>GetLayerDescr</tt></a>.  Return the
+    description string of the current layer.  This will be null if no
+    description has been set.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="SetCurLayerDescr"></a>
+    <dl>
+    <dt><b>(int) <tt>SetCurLayerDescr</tt>(<i>descr</i>)</b>
+    <dd><br>This function is deprecated, see <a
+    href="SetLayerDescr"><tt>SetLayerDescr</tt></a>.  Set the
+    description string of the current layer.  The return value is
+    always 1.
+    </dl>
+    <hr>
+
+!!SEEALSO
+funcs:main3
+
+!!KEYWORD
+funcs:main3:ltab
+!!TITLE
+Layer Table
+!!HTML
+    <!-- 101312 -->
+    <a name="LayersUsed"></a>
+    <dl>
+    <dt><b>(int) <tt>LayersUsed</tt>()</b>
+    <dd><br>This returns a count of the layers in the layer table for
+    the current display mode.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="AddLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>AddLayer</tt>(<i>name</i>, <i>index</i>)</b>
+    <dd><br>
+    This adds the named layer to the layer table, in the position
+    specified by the integer second argument.  If the second argument
+    is negative, the new layer will be added at the end, above all
+    existing layers.  If the index is 0, the new layer will be
+    positioned at the index of the current layer, and the current
+    layer and those above moved up.  Otherwise, the index is a 1-based
+    index into the layer table, where the new layer will be inserted. 
+    The layer at that index and those above will be moved up.
+
+    <p>
+    The name can match the name of an existing layer that has been
+    removed from the layer table.  It can also be a unique new name,
+    and a new layer will be created.  If the name matches an existing
+    layer in the table, a new layer will also be created, but with an
+    internally generated name.
+
+    <p>
+    The function will return 0 if it is not possible to create a new
+    layer, for example if the name is not a valid layer name.  On
+    success 1 is returned.
+
+    <p>
+    If the name is not in the <i>layer</i><tt>:</tt><i>purpose</i>
+    form, any new layer created will use the default
+    "<tt>drawing</tt>" purpose.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="RemoveLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>RemoveLayer</tt>(<i>stdlyr</i>)</b>
+    <dd><br>This removes the layer indicated by the <a
+    href="stdlyr">standard layer</a> argument from the layer table if
+    found.  This returns 1 if the layer is found and removed, 0
+    otherwise.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="RenameLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>RenameLayer</tt>(<i>oldname</i>, <i>newname</i>)</b>
+    <dd><br>The <i>oldname</i> is a <a href="stdlyr">standard
+    layer</a> argument.  The <i>newname</i> is a string providing a
+    new layer/purpose name in the
+    <i>layer</i>[<tt>:</tt><i>purpose</i>] form.  If no purpose field
+    is given, the default "<tt>drawing</tt>" purpose is assumed.  This
+    renames the layer specified in <i>oldname</i> to <i>newname</i>. 
+    The renamed layer will have any alias name removed.
+
+    <p>
+    This fails if <i>oldname</i> is unresolved or <i>newname</i> is
+    null, and returns 0 on error, with an error message available from
+    <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="LayerHandle"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>LayerHandle</tt>(<i>down</i>)</b>
+    <dd><br>This function returns a handle to a list of the layer
+    names from the layer table.  If the argument is 0, the list is in
+    ascending order.  If the argument is nonzero, the list is in
+    descending order.  The layers used in the current display mode are
+    listed.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="GenLayers"></a>
+    <dl>
+    <dt><b>(string) <tt>GenLayers</tt>(<i>stringlist_handle</i>)</b>
+    <dd><br>This function returns a string containing a layer name
+    from the layer table.  The argument is the handle returned by
+    <tt>LayerHandle</tt>.  A different layer is returned for each
+    call.  The null string is returned after all layers have been
+    cycled through.  This is equivalent to <a
+    href="ListNext"><tt>ListNext</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="GetLayerPalette"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>GetLayerPalette</tt>(<i>regnum</i>)</b>
+    <dd><br>The argument is an integer 0-7 corresponding to a layer
+    palette register, as used with the <a href="xic:lpal"><b>Layer
+    Palette</b></a> panel, and associated with the <a
+    href="PhysLayerPalette"><tt>PhysLayerPalette</tt></a> and <a
+    href="ElecLayerPalette"><tt>ElecLayerPalette</tt></a> technology
+    file keyword families.  The return value is a stringlist handle,
+    where the strings are the names of layers saved in the indexed
+    palette register corresponding to the display mode of the main
+    drawing window.
+
+    <p>
+    If the palette register is empty, or the argument is out of range,
+    a scalar 0 is returned.
+
+    <p>
+    The register with index 0 is used internally to save the last
+    <b>Layer Palette</b> user area before it pops down.  Thus, this
+    index should not be used unless this behavior is expected.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="SetLayerPalette"></a>
+    <dl>
+    <dt><b>(int) <tt>SetLayerPalette</tt>(<i>list</i>, <i>regnum</i>)</b>
+    <dd><br>The second argument is an integer 0-7 corresponding to a
+    layer palette register, as used with the <a
+    href="xic:lpal"><b>Layer Palette</b></a> panel, and associated
+    with the <a href="PhysLayerPalette"><tt>PhysLayerPalette</tt></a>
+    and <a href="ElecLayerPalette"><tt>ElecLayerPalette</tt></a>
+    technology file keyword families.
+
+    <p>
+    The first argument provides a list of layers, or null, to be saved
+    in the indexed palette register corresponding to the display mode
+    of the main drawing window.  If the argument is a scalar 0, or a
+    null string, the palette register will be cleared.  Otherwise this
+    argument can be a string consisting of space-separated layer
+    names, or a stringlist handle, where the strings are layer names. 
+    The handle is unaffected by this function call.
+
+    <p>
+    The function returns 1 on success, 0 if the register index is out
+    of range.  The call will fail (halt the script) if a bad argument
+    is passed.
+
+    <p>
+    There is no checking of the validity of the string saved as palette
+    register data.
+    </dl>
+    <hr>
+
+!!SEEALSO
+funcs:main3
+
+!!KEYWORD
+funcs:main3:ldb
+!!TITLE
+Layer Database
+!!HTML
+    <!-- 032017 -->
+    <a name="GetLayerNum"></a>
+    <dl>
+    <dt><b>(int) <tt>GetLayerNum</tt>(<i>name</i>)</b>
+    <dd><br>Return the component layer number given the component
+    layer name.  This is the <i>layer</i> part of the general
+    <i>layer</i>[<tt>:</tt><i>purpose</i>] layer name used in
+    <i>Xic</i>.  Each such name has a corresponding number in the
+    database.  If the name is not found, the return value is -1,
+    which is reserved and is not a valid component layer number.
+    </dl>
+    <hr>
+
+    <!-- 032017 -->
+    <a name="GetLayerName"></a>
+    <dl>
+    <dt><b>(string) <tt>GetLayerName</tt>(<i>num</i>)</b>
+    <dd><br>Return the component layer name given the component layer
+    number.  If there is no name associated with the number, a null
+    string is returned.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="IsPurposeDefined"></a>
+    <dl>
+    <dt><b>(int) <tt>IsPurposeDefined</tt>(<i>name</i>)</b>
+    <dd><br>This returns 1 if the name matches a known purpose, 0
+    otherwise.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="GetPurposeNum"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPurposeNum</tt>(<i>name</i>)</b>
+    <dd><br>This will return a purpose number associated with the
+    name.  If the name is not recognized, is null or empty, or matches
+    "<tt>drawing</tt>" without case sensitivity, -1 is returned.  This
+    is the <tt>drawing</tt> purpose number.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="GetPurposeName"></a>
+    <dl>
+    <dt><b>(string) <tt>GetPurposeName</tt>(<i>num</i>)</b>
+    <dd><br>Return a string giving the purpose name corresponding to
+    the passed purpose number.  If the purpose number is not
+    recognized, or is the <tt>drawing</tt> purpose value of -1, a null
+    string is returned.
+    </dl>
+    <hr>
+
+!!SEEALSO
+funcs:main3
+
+!!KEYWORD
+funcs:main3:layer
+!!TITLE
+Layers
+!!HTML
+    <!-- 032017 -->
+    <a name="GetLayerLayerNum"></a>
+    <dl>
+    <dt><b>(int) <tt>GetLayerLayerNum</tt>(<i>stdlyr</i>)</b>
+    <dd><br>Return the component layer number associated with the
+    layer indicated by the <a href="stdlyr">standard layer</a>
+    argument.
+    </dl>
+    <hr>
+
+    <!-- 032017 -->
+    <a name="GetLayerPurposeNum"></a>
+    <dl>
+    <dt><b>(int) <tt>GetLayerPurposeNum</tt>(<i>stdlyr</i>)</b>
+    <dd><br>Return the purpose number associated with the layer
+    indicated by the <a href="stdlyr">standard layer</a> argument.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="GetLayerAlias"></a>
+    <dl>
+    <dt><b>(string) <tt>GetLayerAlias</tt>(<i>stdlyr</i>)</b>
+    <dd><br>This function returns a string containing the alias name
+    of the layer indicated by the <a href="stdlyr">standard layer</a>
+    argument.  The string will be null if no alias is set.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="SetLayerAlias"></a>
+    <dl>
+    <dt><b>(int) <tt>SetLayerAlias</tt>(<i>stdlyr</i>, <i>alias</i>)</b>
+    <dd><br>This function sets the alias name of the layer indicated
+    by the <a href="stdlyr">standard layer</a> first argument to the
+    string given as the second argument, as for the <a
+    href="LppName"><tt>LppName</tt></a> technology file keyword.  The
+    alias name is an optional secondary name for a layer/purpose pair. 
+    Most if not all functions that take a layer name argument will
+    also accept an alias name.
+
+    <p>
+    The alias name will hide other layers if there is a name clash. 
+    This can be used for layer remapping, but the user must be careful
+    with this.  Layer name comparisons are case-insensitive.
+
+    <p>
+    Unlike the normal layer names, the alias name can have arbitrary
+    punctuation, embedded white space, etc.  However, leading and
+    trailing white space is removed, and if the resulting string is
+    empty or null, the existing alias name (if any) will be removed.
+
+    <p>
+    The function returns 1 if the alias name is applied to the layer,
+    0 if an error occurs.  It is not possible to set the same name on
+    more than one layer.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="GetLayerDescr"></a>
+    <dl>
+    <dt><b>(string) <tt>GetLayerDescr</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    This function returns a string containing the description of the
+    layer indicated by the argument, which is a <a
+    href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string.  If no description
+    has been set, a null string is returned.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="SetLayerDescr"></a>
+    <dl>
+    <dt><b>(int) <tt>SetLayerDescr</tt>(<i>stdlyr</i>, <i>descr</i>)</b>
+    <dd><br>
+    This function sets the description of the layer indicated by the
+    first argument, which is a <a href="stdlyr">standard layer</a>
+    argument or a <a href="drvlayer">derived layer</a> name string, to
+    the string given as the second argument.  The description is an
+    optional text string associated with the layer.  The function
+    always returns 1.
+    </dl>
+    <hr>
+
+    <!-- 101312 -->
+    <a name="IsLayerDefined"></a>
+    <dl>
+    <dt><b>(int) <tt>IsLayerDefined</tt>(<i>name</i>)</b>
+    <dd><br>The string argument contains a layer name.  This can be
+    the standard <i>layer</i>[<tt>:</tt><i>purpose</i>] form, or can
+    be an alias name.  This function returns 1 if the argument can be
+    resolved as the name of a layer in the layer table, in the current
+    (electrical/physical) mode.  If the layer can't be resolved, 0 is
+    returned.  The function will fail fatally if the argument is null
+    or empty.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="IsLayerVisible"></a>
+    <dl>
+    <dt><b>(int) <tt>IsLayerVisible</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns 1 if the layer indicated by the argument,
+    which is a <a href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string, is currently
+    visible (i.e., the visibility flag is set), 0 otherwise.  If the
+    layer is derived, the return is the flag status, derived layers
+    are never actually visible.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="SetLayerVisible"></a>
+    <dl>
+    <dt><b>(int) <tt>SetLayerVisible</tt>(<i>stdlyr</i>, <i>visible</i>)</b>
+    <dd><br>
+    This will set the visibility of the layer indicated in the first
+    argument, which is a <a href="stdlyr">standard layer</a> argument
+    or a <a href="drvlayer">derived layer</a> name string.  The layer
+    will be visible if the boolean second argument is nonzero,
+    invisible otherwise.  The previous visibility status is returned. 
+    If the layer is derived, the flag status is set, however derived
+    layers are never visible.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="IsLayerSelectable"></a>
+    <dl>
+    <dt><b>(int) <tt>IsLayerSelectable</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns 1 if the layer indicated by the argument,
+    which is a <a href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string, is currently
+    selectable (i.e., the selectability flag is set), 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="SetLayerSelectable"></a>
+    <dl>
+    <dt><b>(int) <tt>SetLayerSelectable</tt>(<i>stdlyr</i>,
+      <i>selectable</i>)</b>
+    <dd><br>
+    This will set the selectability of the layer indicated in the
+    first argument, which is a <a href="stdlyr">standard layer</a>
+    argument or a <a href="drvlayer">derived layer</a> name string. 
+    The layer will be selectable if the boolean second argument is
+    nonzero, not selectable otherwise.  The previous selectability
+    status is returned.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="IsLayerSymbolic"></a>
+    <dl>
+    <dt><b>(int) <tt>IsLayerSymbolic</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns 1 if the layer indicated by the argument,
+    which is a <a href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string, is currently
+    symbolic (i.e., the <a href="Symbolic"><tt>Symbolic</tt></a>
+    attribute is set), 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="SetLayerSymbolic"></a>
+    <dl>
+    <dt><b>(int) <tt>SetLayerSymbolic</tt>(<i>stdlyr</i>, <i>symbolic</i>)</b>
+    <dd><br>
+    This will set the <a href="Symbolic"><tt>Symbolic</tt></a>
+    attribute of the layer indicated in the first argument, which is a
+    <a href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string.  The layer will be
+    symbolic if the boolean second argument is nonzero, not symbolic
+    otherwise.  The previous symbolic status is returned.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="IsLayerNoMerge"></a>
+    <dl>
+    <dt><b>(int) <tt>IsLayerNoMerge</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns 1 if the <a
+    href="NoMerge"><tt>NoMerge</tt></a> attribute is set in the layer
+    indicated by the argument, which is a <a href="stdlyr">standard
+    layer</a> argument or a <s href="drvlayer">derived layer</a> name
+    string, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="SetLayerNoMerge"></a>
+    <dl>
+    <dt><b>(int) <tt>SetLayerNoMerge</tt>(<i>stdlyr</i>, <i>nomerge</i>)</b>
+    <dd><br>
+    This will set the <a href="NoMerge"><tt>NoMerge</tt></a> attribute
+    of the layer indicated in the first argument, which is a <a
+    href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string.  The layer will be
+    given the <tt>NoMerge</tt> attribute if the boolean second
+    argument is nonzero, or the attribute will be removed if present
+    otherwise.  The previous <tt>NoMerge</tt> status is returned.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="GetLayerMinDimension"></a>
+    <dl>
+    <dt><b>(real) <tt>GetLayerMinDimension</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The return value is the <tt>MinWidth</tt> design rule value in
+    microns for the layer indicated by the argument, which is a <a
+    href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string.  If there is no
+    <tt>MinWidth</tt> rule, or the DRC package is not available, 0 is
+    returned.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="GetLayerWireWidth"></a>
+    <dl>
+    <dt><b>(real) <tt>GetLayerWireWidth</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns the default wire width for the layer
+    indicated by the argument, which is a <a href="stdlyr">standard
+    layer</a> argument or a <a href="drvlayer">derived layer</a> name
+    string.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="AddLayerGdsOutMap"></a>
+    <dl>
+    <dt><b>(int) <tt>AddLayerGdsOutMap</tt>(<i>stdlyr</i>, <i>layer_num</i>,
+      <i>datatype</i>)</b>
+    <dd><br>
+    This function will add a mapping from the layer in the first
+    argument (a <a href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string) to the given GDSII
+    layer number and data type.  The layer number and data type are
+    integers which define the layer in the GDSII world.  When a GDSII
+    file is written, the present layer will appear on the given layer
+    number and data type in the GDSII file.  It is possible to have
+    multiple mappings of the layer, in which case the geometry from
+    the named layer will appear on each layer number/data type given.
+
+    <p>
+    The function returns 1 on success, or 0 if the layer number or
+    data type number is out of range.  The acceptable range for the
+    layer number and data type is [0 - 65535].
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="RemoveLayerGdsOutMap"></a>
+    <dl>
+    <dt><b>(int) <tt>RemoveLayerGdsOutMap</tt>(<i>stdlyr</i>, <i>layer_num</i>,
+      <i>datatype</i>)</b>
+    <dd><br>
+    This function will remove a GDSII output layer mapping for the
+    layer indicated in the first argument (a <a href="stdlyr">standard
+    layer</a> argument or a <a href=drvlayer">derived layer</a> name
+    string).  The mapping may have been applied in the technology
+    file, with the <a href="xic:lpedt"><b>Tech Parameter
+    Editor</b></a> panel from the <b>Attributes Menu</b>, or by
+    calling the <tt>AddLayerGdsOutMap</tt> function.  The mappings
+    removed match the given layer number and data type integers
+    provided.  These are in the range [-1 - 65535], where the value
+    '-1' indicates a wild-card which will match all layer numbers or
+    data types.
+
+    <p>
+    The return value is -1 if the layer number or data type is out of
+    range.  Otherwise, the return value is the number of mappings
+    removed.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="AddLayerGdsInMap"></a>
+    <dl>
+    <dt><b>(int) <tt>AddLayerGdsInMap</tt>(<i>stdlyr</i>, <i>string</i>)</b>
+    <dd><br>
+    This function adds a GDSII input mapping record to the layer whose
+    name is indicated in the first argument (a <a
+    href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string).  The second
+    argument is a string listing the layer numbers and data types
+    which will map to the named layer, in the same syntax as used in
+    the technology file.  This is "<i>l1 l2-l3</i> ..., <i>d1
+    d2-d3</i> ...", where there are two comma separated fields.  The
+    left field consists of individual layer numbers and/or ranges of
+    layer numbers, similarly the right field consists of individual
+    data types and/or ranges of data types.  Each field can have an
+    arbitrary number of space-separated terms.  For each layer listed
+    or in a range, all of the data types listed or in a range will map
+    to the named layer.  There can be multiple input mappings applied
+    to the named layer.
+
+    <p>
+    The function returns 0 if there was a syntax error.  The function
+    returns 1 if the mapping is successfully added.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="ClearLayerGdsInMap"></a>
+    <dl>
+    <dt><b>(int) <tt>ClearLayerGdsInMap</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    This function deletes all of the GDSII input mappings applied to
+    the layer indicated in the argument, which is a <a
+    href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string.  These mappings may
+    have been applied through the technology file, added with the <a
+    href="xic:lpedt"><b>Tech Parameter Editor</b></a> from the
+    <b>Attributes Menu</b>, or added with the
+    <tt>AddLayerGdsInMap</tt> function.  This function returns 0 if
+    the layer name does not exist in the symbol table for the current
+    display mode (physical or electrical).  Otherwise, the return
+    value is the number of mapping records deleted.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="SetLayerNoDRCdatatype"></a>
+    <dl>
+    <dt><b>(int) <tt>SetLayerNoDRCdatatype</tt>(<i>stdlyr</i>,
+      <i>datatype</i>)</b>
+    <dd><br>
+    This function assigns a data type to be used for objects with the
+    DRC skip flag set.  The first argument is a <a
+    href="stdlyr">standard layer</a> argument indicating a physical
+    layer, or a <a href="drvlayer">derived layer</a> name string.  The
+    second argument is the data type in the range [0 - 65535], or -1. 
+    If -1 is given, any previously defined data type is cleared.  The
+    function returns 0 if the layer name can't be resolved, or the
+    data type is out of range.  The value 1 is returned on success.
+    </dl>
+
+!!SEEALSO
+funcs:main3
+
+!!KEYWORD
+funcs:main3:layerex
+!!TITLE
+Layers - Extraction Support
+!!HTML
+    <!-- 120114 -->
+    These functions mainly support the extraction system, but are
+    maintained in the main program and are therefor accepted in
+    feature sets where the extraction system is disabled.
+
+    <p>
+    Many of the layer-related functions take a "standard layer
+    argument".  This can be an integer index number into the layer
+    table, where the index is 1-based, and values less than 1 return
+    the current layer.  The argument can also be a string, giving a
+    layer name in <i>layer</i>[<tt>:</tt><i>purpose</i>] form, or an
+    alias name.  If the string is null or empty, the current layer is
+    returned.
+
+    <!-- 120114 -->
+    <a name="SetLayerExKeyword"></a>
+    <dl>
+    <dt><b>(string) <tt>SetLayerExKeyword</tt>(<i>stdlyr</i>,
+      <i>string</i>)</b>
+    <dd><br>
+    The first argument is a <a href="stdlyr">standard layer</a>
+    argument indicating a physical layer, or a <a
+    href="drvlayer">derived layer</a> name string.  The <i>string</i>
+    argument is an extraction keyword and associated text, as would
+    appear in a <a href="ext:setup">layer block</a> in the <a
+    href="techfile">technology file</a>.  The specification will be
+    applied to the layer, overriding existing settings and possibly
+    causing incompatible or redundant existing keywords to be deleted. 
+    This is similar to the editing functions of the <a
+    href="xic:lpedt"><b>Tech Parameter Editor</b></a> from the <a
+    href="xic:attrmenu"><b>Attributes Menu</b></a>, when using the
+    <b>Extract</b> or <b>Physical</b> pages.
+
+    <p>
+    The return is a status or error string, which may be null.
+
+    <p>
+    The following keywords can be specified:
+    <blockquote>
+    <tt>
+    Conductor<br>
+    Routing<br>
+    GroundPlane<br>
+    GroundPlaneDark<br>
+    GroundPlaneClear<br>
+    TermDefault<br>
+    Contact<br>
+    Via<br>
+    Dielectric<br>
+    DarkField<br>
+    Thickness<br>
+    Rho<br>
+    Sigma<br>
+    Rsh<br>
+    EpsRel<br>
+    Capacitance<br>
+    Lambda<br>
+    Tline<br>
+    Antenna
+    </tt>
+    </blockquote>
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="SetCurLayerExKeyword"></a>
+    <dl>
+    <dt><b>(string) <tt>SetCurLayerExKeyword</tt>(<i>string</i>)</b>
+    <dd><br>
+    This is similar to <tt>SetLayerExKeyword</tt>, but applies to the
+    current layer.  This function is deprecated and not recommended
+    for use in new scripts.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="RemoveLayerExKeyword"></a>
+    <dl>
+    <dt><b>(int) <tt>RemoveLayerExKeyword</tt>(<i>stdlyr</i>,
+      <i>keyword</i>)</b>
+    <dd><br>
+    The first argument is a <a href="stdlyr">standard layer</a>
+    argument indicating a physical layer, or a <a
+    href="drvlayer">derived layer</a> name string.  This will remove
+    the specification for the extract keyword given in the argument
+    from the layer.  The argument must be one of the extraction
+    keywords, i.e., those listed for <tt>SetCurLayerExKeyword</tt>. 
+    The return value is 1 if a specification was removed, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="RemoveCurLayerExKeyword"></a>
+    <dl>
+    <dt><b>(int) <tt>RemoveCurLayerExKeyword</tt>(<i>keyword</i>)</b>
+    <dd><br>
+    This is similar to <tt>RemoveLayerExKeyword</tt> but applies to
+    the current layer.  This function is deprecated and not
+    recommended for use in new scripts.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="IsLayerConductor"></a>
+    <dl>
+    <dt><b>(int) <tt>IsLayerConductor</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns 1 if the <tt>Conductor</tt> keyword is given
+    or implied for the layer indicated by the argument, which is a <a
+    href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="IsLayerRouting"></a>
+    <dl>
+    <dt><b>(int) <tt>IsLayerRouting</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns 1 if the <tt>Routing</tt> keyword is given
+    for the layer indicated by the argument, which is a <a
+    href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string, 0 otherwise. 
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="IsLayerGround"></a>
+    <dl>
+    <dt><b>(int) <tt>IsLayerGround</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns 1 if one of the <tt>GroundPlane</tt> keywords
+    was given for the layer indicated by the argument, which is a <a
+    href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="IsLayerContact"></a>
+    <dl>
+    <dt><b>(int) <tt>IsLayerContact</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns 1 if the <tt>Contact</tt> keyword is given
+    for the layer indicated by the argument, which is a <a
+    href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string, 0 otherwise. 
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="IsLayerVia"></a>
+    <dl>
+    <dt><b>(int) <tt>IsLayerVia</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns 1 if the <tt>Via</tt> keyword is given for
+    the layer indicated by the argument, which is a <a
+    href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="IsLayerDielectric"></a>
+    <dl>
+    <dt><b>(int) <tt>IsLayerDielectric</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns 1 if the <tt>Dielectric</tt> keyword is given
+    for the layer indicated by the argument, which is a <a
+    href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="IsLayerDarkField"></a>
+    <dl>
+    <dt><b>(int) <tt>IsLayerDarkField</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns 1 if the <tt>DarkField</tt> keyword is given
+    or implied for the layer indicated by the argument, which is a <a
+    href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 101812 -->
+    <a name="GetLayerThickness"></a>
+    <dl>
+    <dt><b>(real) <tt>GetLayerThickness</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns the value of the <tt>Thickness</tt> parameter
+    given for the layer indicated by the argument, which is a <a
+    href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="GetLayerRho"></a>
+    <dl>
+    <dt><b>(real) <tt>GetLayerRho</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns the resistivity in ohm-meters of the layer
+    indicated by the argument, which is a <a href="stdlyr">standard
+    layer</a> argument or a <a href="drvlayer">derived layer</a> name
+    string, as given by the <tt>Rho</tt> or <tt>Sigma</tt> parameters,
+    if given.  If neither of these is given, and <tt>Rsh</tt> and
+    <tt>Thickness</tt> are given, the return value will be
+    <tt>Rsh*Thickness</tt>.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="GetLayerResis"></a>
+    <dl>
+    <dt><b>(real) <tt>GetLayerResis</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns the sheet resistance for the layer indicated
+    by the argument, which is a <a href="stdlyr">standard layer</a>
+    argument or a <a href="drvlayer">derived layer</a> name string. 
+    This will be the value of the <tt>Rsh</tt> parameter, if given, or
+    the values of <tt>Rho</tt>/<tt>Thickness</tt>, if <tt>Rho</tt> or
+    <tt>Sigma</tt> and <tt>Thickness</tt> are given, or 0 if no value
+    is available.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="GetLayerEps"></a>
+    <dl>
+    <dt><b>(real) <tt>GetLayerEps</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns the relative dielectric constant for the
+    layer indicated by the argument, which is a <a
+    href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string, as given by the
+    <tt>EpsRel</tt> parameter if applied.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="GetLayerCap"></a>
+    <dl>
+    <dt><b>(real) <tt>GetLayerCap</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns the per-area capacitance for the layer
+    indicated by the argument, which is a <a href="stdlyr">standard
+    layer</a> argument or a <a href="drvlayer">derived layer</a> name
+    string.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="GetLayerCapPerim"></a>
+    <dl>
+    <dt><b>(real) <tt>GetLayerCapPerim</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns the per-perimeter capacitance for the layer
+    indicated by the argument, which is a <a href="stdlyr">standard
+    layer</a> argument or a <a href="drvlayer">derived layer</a> name
+    string.
+    </dl>
+    <hr>
+
+    <!-- 120114 -->
+    <a name="GetLayerLambda"></a>
+    <dl>
+    <dt><b>(real) <tt>GetLayerLambda</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns the value of the <tt>Lambda</tt> parameter
+    for the layer indicated by the argument, which is a <a
+    href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string.
+    </dl>
+
+!!SEEALSO
+funcs:main3
+
+!!KEYWORD
+funcs:main3:sel
+!!TITLE
+Selections
+!!HTML
+
+    <!-- 100412 -->
+    <a name="SetLayerSpecific"></a>
+    <dl>
+    <dt><b>(int) <tt>SetLayerSpecific</tt>(<i>state</i>)</b>
+    <dd><br>
+    If the boolean state value is nonzero, all layers except for the
+    current layer will become unselectable.  Otherwise, all layers
+    will be set to their default selectability state.  The return
+    value is always 1. 
+    </dl>
+    <hr>
+
+    <!-- 052409 -->
+    <a name="SetLayerSearchUp"></a>
+    <dl>
+    <dt><b>(int) <tt>SetLayerSearchUp</tt>(<i>state</i>)</b>
+    <dd><br>
+    This function will set <a
+    href="xic:selcp#searchup">layer-search-up</a> selection mode if the
+    argument is nonzero, or normal mode otherwise.  The return value
+    is 1 or 0 representing the previous layer-search-up mode status.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SetSelectMode"></a>
+    <dl>
+    <dt><b>(string) <tt>SetSelectMode</tt>(<i>ptr_mode</i>, <i>area_mode</i>,
+     <i>sel_mode</i>)</b>
+    <dd><br>This function allows the various selection modes to be set. 
+    These are the same modes that can be set with the <b>Selection
+    Control Panel</b> provided by the <a
+    href="xic:selcp"><b>selcp</b></a> button.  If an input value is
+    given as -1, that particular parameter will be unchanged. 
+    Otherwise, the possible values are
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th><i>ptr_mode</i></th><th><i>area_mode</i></th><th><i>sel_mode</i></th></tr>
+    <tr><td>0 Normal</td><td>0 Normal  </td><td>0 Normal</td></tr>
+    <tr><td>1 Select</td><td>1 Enclosed</td><td>1 Toggle</td></tr>
+    <tr><td>2 Modify</td><td>2 All     </td><td>2 Add   </td></tr>
+    <tr><td>&nbsp;  </td><td>&nbsp;    </td><td>3 Remove</td></tr>
+    </table>
+
+    <p>
+    The return value is a string, where the first three characters are
+    the previous values of <i>ptr_mode</i>, <i>area_mode</i>, and
+    <i>sel_mode</i> as <i>integers</i>, not ASCII characters.
+    </dl>
+    <hr>
+
+    <!-- 052409 -->
+    <a name="SetSelectTypes"></a>
+    <dl>
+    <dt><b>(string) <tt>SetSelectTypes</tt>(<i>string</i>)</b>
+    <dd><br>
+    This function allows setting of the object types that can be
+    selected.  This provides the default selection types, but does not
+    apply to functions that provide an explicit argument for selection
+    types.
+
+    <p>
+    The string argument consists of a sequence of characters whose
+    presence indicates that the corresponding object type is
+    selectable.  These are:
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><tt>c</tt></td> <td>cell instances</td></tr>
+    <tr><td><tt>b</tt></td> <td>boxes</td></tr>
+    <tr><td><tt>p</tt></td> <td>polygons</td></tr>
+    <tr><td><tt>w</tt></td> <td>wires</td></tr>
+    <tr><td><tt>l</tt></td> <td>labels</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Other characters are ignored.  If the string is null, empty, or
+    contains none of the listed characters, all objects are enabled,
+    as if the string "<tt>cbpwl</tt>" was entered.
+
+    <p>
+    This function always returns 1.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Select"></a>
+    <dl>
+    <dt><b>(int) <tt>Select</tt>(<i>left</i>, <i>bottom</i>, <i>right</i>,
+      <i>top</i>, <i>types</i>)</b>
+    <dd><br>This function performs a selection operation in the rectangle
+    defined by the first four arguments (given in microns).  The fifth
+    argument is a string whose characters serve to enable selection of
+    a given type of object:  '<tt>b</tt>' for boxes, '<tt>p</tt>' for
+    polygons, '<tt>w</tt>' for wires, '<tt>l</tt>' for labels, and
+    '<tt>c</tt>' for instances.  If this string is empty or null, then
+    all objects will be selected.  Any matching object that touches or
+    overlaps the selection box will have its selection status toggled.
+    For example,
+    <blockquote><tt>
+        Select(-INFINITY, -INFINITY, INFINITY, INFINITY, "c")
+    </tt></blockquote>
+    will select all subcells.
+
+    <p>
+    For more complex selections based on object types, etc., the <a
+    href="TextCmd"><tt>TextCmd</tt></a> function can be
+    used to call the <a href="!select"><b>!select</b></a> command.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Deselect"></a>
+    <dl>
+    <dt><b>(int) <tt>Deselect</tt>()</b>
+    <dd><br>This function unselects all selected objects.
+    </dl>
+
+!!SEEALSO
+funcs:main3
+
+!!KEYWORD
+funcs:main3:pfgen
+!!TITLE
+Pseudo-Flat Generator
+!!HTML
+
+    <!-- 030204 -->
+    <a name="FlatObjList"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>FlatObjList</tt>(<i>l</i>, <i>b</i>, <i>r</i>,
+      <i>t</i>, <i>depth</i>)</b>
+    <dd><br>This function provides access to the "pseudo-flat" object
+    access functions that are part of internal DRC routines in
+    <i>Xic</i>.  This enables cycling through objects in the database
+    without regard to the cell hierarchy.  The first four arguments
+    are the coordinates in microns of the bounding box to search in. 
+    The <i>depth</i> is the search depth, which can be an integer
+    which sets the maximum depth to search (0 means search the current
+    cell only, 1 means search the current cell plus the subcells,
+    etc., and a negative integer sets the depth to search the entire
+    hierarchy).  This argument can also be a string starting with
+    '<tt>a</tt>' such as "<tt>a</tt>" or "<tt>all</tt>" which
+    indicates to search the entire hierarchy.
+
+    <p>
+    The return value is a list of box, polygon, and wire objects found
+    in the given region on the current layer.  Label and subcell
+    objects are never returned.  If <i>depth</i> is 0, the actual
+    object pointers are returned in the list, and all of the object
+    manipulation functions are available.  Otherwise, the list
+    references copies of the actual objects, transformed to the
+    coordinate space of the current cell.
+
+    <p>
+    The copies of the objects can use substantial memory if the list
+    is very long.  The <tt>FlatObjGen</tt> function provides another
+    access interface that can use less memory.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="FlatObjGen"></a>
+    <dl>
+    <dt><b>(handle) <tt>FlatObjGen</tt>(<i>l</i>, <i>b</i>, <i>r</i>,
+      <i>t</i>, <i>depth</i>)</b>
+    <dd><br>This function provides access to the "pseudo-flat" object
+    access functions that are part of internal DRC routines in
+    <i>Xic</i>.  This enables cycling through objects in the database
+    without regard to the cell hierarchy.  The first four arguments
+    are the coordinates in microns of the bounding box to search in. 
+    The <i>depth</i> is the search depth, which can be an integer
+    which sets the maximum depth to search (0 means search the current
+    cell only, 1 means search the current cell plus the subcells,
+    etc., and a negative integer sets the depth to search the entire
+    hierarchy).  This argument can also be a string starting with
+    '<tt>a</tt>' such as "<tt>a</tt>" or "<tt>all</tt>" which
+    indicates to search the entire hierarchy.
+
+    <p>
+    Similar to <tt>FlatObjList</tt>, objects on the current layer are
+    returned, but through an intermediate handle rather than through a
+    list, which can require significant memory.  This function returns
+    a special handle which is passed to the <tt>FlatGenNext</tt>
+    function to actually retrieve the objects.  Although this handle
+    can be passed to the <a href="funcs:main2:handle"> generic handle
+    functions</a>, most of these functions will have no effect. 
+    <tt>HandleContent</tt> will return 1, or 0 if the handle is
+    exhausted.  <tt>HandleNext</tt> will advance to the next object
+    without saving the object.  The other functions will return 0 and
+    do nothing.  The <a href="Close"><tt>Close</tt></a> function
+    should be called to delete the handle unless the handle is
+    iterated to completion with <tt>FlatGenNext</tt> or
+    <tt>HandleNext</tt>.
+
+    <p>
+    If <i>depth</i> is 0, the object pointers returned from
+    <tt>FlatGenNext</tt> represent the actual object, and all object
+    manipulation functions are available.  Otherwise, transformed
+    copies of the actual objects are returned, and there are <a
+    href="funcs:geom1:objbh">restrictions</a> on the operations that
+    can be performed.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="FlatObjGenLayers"></a>
+    <dl>
+    <dt><b>(handle) <tt>FlatObjGenLayers</tt>(<i>l</i>, <i>b</i>, <i>r</i>,
+      <i>t</i>, <i>depth</i>, <i>layers</i>)</b>
+    <dd><br>This function is very similar to <tt>FlatObjGen</tt>, however
+    it returns objects from layers named in the <i>layers</i> string. 
+    If the string is null or empty, objects on all layers will be
+    returned.  Otherwise, the string is a space separated list of
+    layer names.  The names are expected to match layers in the
+    current display mode.  Names that do not match any layer are
+    silently ignored, though the function fails if no layer can be
+    recognized.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="FlatGenNext"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>FlatGenNext</tt>(<i>handle</i>)</b>
+    <dd><br>This function takes as an argument the handle returned from
+    <tt>FlatObjGen</tt> or <tt>FlatObjGenLayers</tt>, and returns an
+    object handle which contains a single object returned from the
+    generator.  If the <i>depth</i> argument passed to these functions
+    was nonzero, the objects are transformed copies.  The returned
+    handles should be closed after use by calling <tt>Close</tt>, or
+    by calling an iterating function such as <tt>HandleNext</tt> or
+    <tt>ObjectNext</tt>.
+
+    <p>
+    A new handle is returned for each call of this function, until no
+    further objects are available in which case this function returns
+    0, and the handle passed as the argument will be closed.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="FlatGenCount"></a>
+    <dl>
+    <dt><b>(int) <tt>FlatGenCount</tt>(<i>handle</i>)</b>
+    <dd><br>This function returns the number of objects that can be
+    generated with the generator handle passed, which must be returned
+    from <tt>FlatObjGen</tt> or <tt>FlatObjGenLayers</tt>.  Generator
+    handles do not cache an internal list of objects, so that the
+    number of objects is unknown, which is why <tt>HandleContent</tt>
+    returns 1 for generator handles.  This function duplicates the
+    generator context and iterates through the loop, counting returned
+    objects.  This can be an expensive operation.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="FlatOverlapList"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>FlatOverlapList</tt>(<i>object_handle</i>,
+        <i>touch_ok</i>, <i>depth</i>, <i>layers</i>)</b>
+    <dd><br>This function returns a handle to a list of objects that touch
+    or overlap the object referenced by the <i>object_handle</i>
+    argument.  If <i>touch_ok</i> is nonzero, objects that touch but
+    have zero overlap area will be included; if <i>touch_ok</i> is
+    zero these objects will be skipped.  The <i>depth</i> is the
+    search depth, which can be an integer which sets the maximum depth
+    to search (0 means search the current cell only, 1 means search
+    the current cell plus the subcells, etc., and a negative integer
+    sets the depth to search the entire hierarchy).  This argument can
+    also be a string starting with '<tt>a</tt>' such as "<tt>a</tt>"
+    or "<tt>all</tt>" which indicates to search the entire hierarchy. 
+    If <i>depth</i> is not 0, the objects returned are transformed
+    copies, otherwise the actual objects are returned.  The
+    <i>layer</i> argument is a string containing space-separated layer
+    names of the layers to search for objects.  If this is empty or
+    null, all layers will be searched.  The function fails if the
+    handle argument is not a handle to an object list.  The return
+    value is a handle to a list of objects, or 0 if no overlapping or
+    touching objects are found.
+
+    <p>
+    Only boxes, polygons, and wires are returned.  The reference
+    object can be any object.  If the reference object is a subcell,
+    objects from within the cell will be returned if <i>depth</i> is
+    nonzero.
+    </dl>
+
+!!SEEALSO
+funcs:main3
+
+!!KEYWORD
+funcs:main3:meas
+!!TITLE
+Geometry Measurement
+!!HTML
+
+    <!-- 030204 -->
+    <a name="Distance"></a>
+    <dl>
+    <dt><b>(real) <tt>Distance</tt>(<i>x</i>, <i>y</i>, <i>x1</i>,
+      <i>y1</i>)</b>
+    <dd><br>This function computes the distance between two points, given
+    in microns, returning the distance between the points in microns.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="MinDistPointToSeg"></a>
+    <dl>
+    <dt><b>(real) <tt>MinDistPointToSeg</tt>(<i>x</i>, <i>y</i>, <i>x1</i>,
+     <i>y1</i>, <i>x2</i>, <i>y2</i>, <i>aret</i>)</b>
+    <dd><br>This function computes the shortest distance from <i>x,y</i>
+    to the line segment defined by the next four arguments.  The
+    <i>aret</i> is an array of size at least 4, used for returned
+    coordinates.  If no return is needed, this argument can be set to
+    0.  Upon return of a value greater than 0, the first two values in
+    <i>aret</i> are <i>x</i> and <i>y</i>, the next two values are the
+    point on the segment closest to <i>x,y</i>.  All values are in
+    microns.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="MinDistPointToObj"></a>
+    <dl>
+    <dt><b>(real) <tt>MinDistPointToObj</tt>(<i>x</i>, <i>y</i>,
+     <i>object_handle</i>, <i>aret</i>)</b>
+    <dd><br>This function computes the minimum distance from the point
+    <i>x,y</i> to the boundary of the object given by the handle.  The
+    <i>aret</i> is an array of size at least 4 for return coordinates. 
+    If the return is not needed, this argument can be given as 0. 
+    Upon return of a value greater than 0, the first two values of
+    aret will be <i>x</i> and <i>y</i>, the next two values will be
+    the point on the boundary of the object closest to <i>x,y</i>. 
+    The function returns 0 if <i>x,y</i> touch or are enclosed in the
+    object.  The function will fail if the handle is not a reference
+    to an object list.  If there is an internal error, -1 is returned. 
+    All coordinates are in microns.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="MinDistSegToObj"></a>
+    <dl>
+    <dt><b>(real) <tt>MinDistSegToObj</tt>(<i>x1</i>, <i>y1</i>, <i>x2</i>,
+     <i>y2</i>, <i>object_handle</i>, <i>aret</i>)</b>
+    <dd><br>This function computes the minimum distance from the line
+    segment defined by the first four arguments to the boundary of the
+    object given by the handle.  The <i>aret</i> is an array of size
+    at least 4 for return coordinates.  If the return is not needed,
+    this argument can be given as 0.  Upon return of a value greater
+    than 0, the first two values of <i>aret</i> will be the point on
+    the line segment nearest the object, the next two values will be
+    the point on the boundary of the object nearest to the line
+    segment.  The function returns 0 if the line segment touches or
+    overlaps the object.  The function will fail if the handle is not
+    a reference to an object list.  If there is an internal error, -1
+    is returned.  All coordinates are in microns.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="MinDistObjToObj"></a>
+    <dl>
+    <dt><b>(real) <tt>MinDistObjToObj</tt>(<i>object_handle1</i>,
+     <i>object_handle2</i>, <i>aret</i>)</b>
+    <dd><br>This function computes the minimum distance between the two
+    objects referenced by the handles.  The <i>aret</i> is an array of
+    size at least 4 for return coordinates.  If the return is not
+    needed, this argument can be given as 0.  Upon return of a value
+    greater than 0, the first two values of <i>aret</i> will be the
+    point on the boundary of the first object nearest the second
+    object, the next two values will be the point on the boundary of
+    the second object nearest to the first object.  The function
+    returns 0 if the objects touch or overlap.  The function will fail
+    if either handle is not a reference to an object list.  If there
+    is an internal error, -1 is returned.  All coordinates are in
+    microns.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="MaxDistPointToObj"></a>
+    <dl>
+    <dt><b>(real) <tt>MaxDistPointToObj</tt>(<i>x</i>, <i>y</i>,
+     <i>object_handle</i>, <i>aret</i>)</b>
+    <dd><br>This function finds the vertex of the object referenced by
+    the handle farthest from the point <i>x,y</i> and returns this
+    distance.  The <i>aret</i> is an array of size at least 4 for
+    return coordinates.  If the return is not needed, this argument
+    can be given as 0.  Upon return of a value greater than 0, the
+    first two values of aret will be <i>x</i> and <i>y</i>, the next
+    two values will be the vertex of the object farthest from
+    <i>x,y</i>.  The function will fail if the handle is not a
+    reference to an object list.  If there is an internal error, -1 is
+    returned.  All coordinates are in microns.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="MaxDistObjToObj"></a>
+    <dl>
+    <dt><b>(real) <tt>MaxDistObjToObj</tt>(<i>object_handle1</i>,
+     <i>object_handle2</i>, <i>aret</i>)</b>
+    <dd><br>This function finds the pair of vertices, one from each
+    object, that are farthest apart.  Both handles can be the same. 
+    The <i>aret</i> is an array of size at least 4 for return
+    coordinates.  If the return is not needed, this argument can be
+    given as 0.  Upon return of a value greater than 0, the first two
+    values of <i>aret</i> will be the vertex from the first object,
+    the next two values will be the vertex from the second object. 
+    The function will fail if either handle is not a reference to an
+    object list.  If there is an internal error, -1 is returned.  All
+    coordinates are in microns.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Intersect"></a>
+    <dl>
+    <dt><b>(int) <tt>Intersect</tt>(<i>object_handle1</i>,
+     <i>object_handle2</i>, <i>touchok</i>)</b>
+    <dd><br>This function determines whether the two objects referenced by
+    the handles touch or overlap.  The return value is 1 if the
+    objects touch or overlap, 0 if the objects do not touch or
+    overlap, or -1 if either handle points to an empty list or some
+    other error occurred.  The function fails if either handle is not
+    a reference to an object list.  If the <i>touchok</i> argument is
+    nonzero, 1 will be returned if the objects touch but do not
+    overlap.  If touchok is 0, objects must overlap (have nonzero
+    intersection area) for 1 to be returned.
+    </dl>
+
+!!SEEALSO
+funcs:main3
+

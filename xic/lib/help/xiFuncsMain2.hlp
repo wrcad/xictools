@@ -1,0 +1,3087 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiFuncsMain2.hlp,v 1.34 2015/11/11 19:58:48 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiFuncsMain2.hlp
+!!TITLE
+xiFuncsMain2.hlp
+!!HTML
+
+!!SUBTOPICS
+Shell
+funcs:main2
+funcs:main2:array
+funcs:main2:bit
+funcs:main2:error
+funcs:main2:handle
+funcs:main2:mem
+funcs:main2:scrv
+funcs:main2:path
+funcs:main2:regex
+funcs:main2:shndl
+funcs:main2:string
+funcs:main2:cwd
+funcs:main2:date
+funcs:main2:file
+funcs:main2:skt
+funcs:main2:sys
+funcs:main2:menu
+funcs:main2:mouse
+funcs:main2:grin
+funcs:main2:textin
+funcs:main2:textout
+
+
+!! Arrays
+!!REDIRECT ArrayDims            funcs:main2:array#ArrayDims
+!!REDIRECT ArrayDimension       funcs:main2:array#ArrayDimension
+!!REDIRECT GetDims              funcs:main2:array#GetDims
+!!REDIRECT DupArray             funcs:main2:array#DupArray
+!!REDIRECT SortArray            funcs:main2:array#SortArray
+
+!! Bitwise Logic
+!!REDIRECT ShiftBits            funcs:main2:bit#ShiftBits
+!!REDIRECT AndBits              funcs:main2:bit#AndBits
+!!REDIRECT OrBits               funcs:main2:bit#OrBits
+!!REDIRECT XorBits              funcs:main2:bit#XorBits
+!!REDIRECT NotBits              funcs:main2:bit#NotBits
+
+!! Error Reporting
+!!REDIRECT GetError             funcs:main2:error#GetError
+!!REDIRECT AddError             funcs:main2:error#AddError
+!!REDIRECT GetLogNumber         funcs:main2:error#GetLogNumber
+!!REDIRECT GetLogMessage        funcs:main2:error#GetLogMessage
+!!REDIRECT AddLogMessage        funcs:main2:error#AddLogMessage
+
+!! Generic Handle Functions
+!!REDIRECT NumHandles           funcs:main2:handle#NumHandles
+!!REDIRECT HandleContent        funcs:main2:handle#HandleContent
+!!REDIRECT HandleTruncate       funcs:main2:handle#HandleTruncate
+!!REDIRECT HandleNext           funcs:main2:handle#HandleNext
+!!REDIRECT HandleDup            funcs:main2:handle#HandleDup
+!!REDIRECT HandleDupNitems      funcs:main2:handle#HandleDupNitems
+!!REDIRECT H                    funcs:main2:handle#H
+!!REDIRECT HandleArray          funcs:main2:handle#HandleArray
+!!REDIRECT HandleCat            funcs:main2:handle#HandleCat
+!!REDIRECT HandleReverse        funcs:main2:handle#HandleReverse
+!!REDIRECT HandlePurgeList      funcs:main2:handle#HandlePurgeList
+!!REDIRECT Close                funcs:main2:handle#Close
+!!REDIRECT CloseArray           funcs:main2:handle#CloseArray
+
+!! Memory Management
+!!REDIRECT FreeArray            funcs:main2:mem#FreeArray
+!!REDIRECT CoreSize             funcs:main2:mem#CoreSize
+
+!! Script Variables
+!!REDIRECT Defined              funcs:main2:scrv#Defined
+!!REDIRECT TypeOf               funcs:main2:scrv#TypeOf
+
+!! Path Manipulation and Query
+!!REDIRECT PathToEnd            funcs:main2:path#PathToEnd
+!!REDIRECT PathToFront          funcs:main2:path#PathToFront
+!!REDIRECT InPath               funcs:main2:path#InPath
+!!REDIRECT RemovePath           funcs:main2:path#RemovePath
+
+!! Regular Expressions
+!!REDIRECT RegCompile           funcs:main2:regex#RegCompile
+!!REDIRECT RegCompare           funcs:main2:regex#RegCompare
+!!REDIRECT RegError             funcs:main2:regex#RegError
+
+!! String List Handles
+!!REDIRECT StringHandle         funcs:main2:shndl#StringHandle
+!!REDIRECT ListHandle           funcs:main2:shndl#ListHandle
+!!REDIRECT ListContent          funcs:main2:shndl#ListContent
+!!REDIRECT ListReverse          funcs:main2:shndl#ListReverse
+!!REDIRECT ListNext             funcs:main2:shndl#ListNext
+!!REDIRECT ListAddFront         funcs:main2:shndl#ListAddFront
+!!REDIRECT ListAddBack          funcs:main2:shndl#ListAddBack
+!!REDIRECT ListAlphaSort        funcs:main2:shndl#ListAlphaSort
+!!REDIRECT ListUnique           funcs:main2:shndl#ListUnique
+!!REDIRECT ListFormatCols       funcs:main2:shndl#ListFormatCols
+!!REDIRECT ListConcat           funcs:main2:shndl#ListConcat
+!!REDIRECT ListIncluded         funcs:main2:shndl#ListIncluded
+
+!! String Manipulation and Conversion
+!!REDIRECT Strcat               funcs:main2:string#Strcat
+!!REDIRECT Strcmp               funcs:main2:string#Strcmp
+!!REDIRECT Strncmp              funcs:main2:string#Strncmp
+!!REDIRECT Strcasecmp           funcs:main2:string#Strcasecmp
+!!REDIRECT Strncasecmp          funcs:main2:string#Strncasecmp
+!!REDIRECT Strdup               funcs:main2:string#Strdup
+!!REDIRECT Strtok               funcs:main2:string#Strtok
+!!REDIRECT Strchr               funcs:main2:string#Strchr
+!!REDIRECT Strrchr              funcs:main2:string#Strrchr
+!!REDIRECT Strstr               funcs:main2:string#Strstr
+!!REDIRECT Strpath              funcs:main2:string#Strpath
+!!REDIRECT Strlen               funcs:main2:string#Strlen
+!!REDIRECT Sizeof               funcs:main2:string#Sizeof
+!!REDIRECT ToReal               funcs:main2:string#ToReal
+!!REDIRECT ToString             funcs:main2:string#ToString
+!!REDIRECT ToStringA            funcs:main2:string#ToStringA
+!!REDIRECT ToFormat             funcs:main2:string#ToFormat
+!!REDIRECT ToChar               funcs:main2:string#ToChar
+
+!! Currrent Directory
+!!REDIRECT Cwd                  funcs:main2:cwd#Cwd
+!!REDIRECT Pwd                  funcs:main2:cwd#Pwd
+
+!! Date and Time
+!!REDIRECT DateString           funcs:main2:date#DateString
+!!REDIRECT Time                 funcs:main2:date#Time
+!!REDIRECT MakeTime             funcs:main2:date#MakeTime
+!!REDIRECT TimeToString         funcs:main2:date#TimeToString
+!!REDIRECT TimeToVals           funcs:main2:date#TimeToVals
+!!REDIRECT MilliSec             funcs:main2:date#MilliSec
+!!REDIRECT StartTiming          funcs:main2:date#StartTiming
+!!REDIRECT StopTiming           funcs:main2:date#StopTiming
+
+!! File System Interface
+!!REDIRECT Glob                 funcs:main2:file#Glob
+!!REDIRECT Open                 funcs:main2:file#Open
+!!REDIRECT Popen                funcs:main2:file#Popen
+!!REDIRECT Sopen                funcs:main2:file#Sopen
+!!REDIRECT ReadLine             funcs:main2:file#ReadLine
+!!REDIRECT ReadChar             funcs:main2:file#ReadChar
+!!REDIRECT WriteLine            funcs:main2:file#WriteLine
+!!REDIRECT WriteChar            funcs:main2:file#WriteChar
+!!REDIRECT TempFile             funcs:main2:file#TempFile
+!!REDIRECT ListDirectory        funcs:main2:file#ListDirectory
+!!REDIRECT MakeDir              funcs:main2:file#MakeDir
+!!REDIRECT FileStat             funcs:main2:file#FileStat
+!!REDIRECT DeleteFile           funcs:main2:file#DeleteFile
+!!REDIRECT MoveFile             funcs:main2:file#MoveFile
+!!REDIRECT CopyFile             funcs:main2:file#CopyFile
+!!REDIRECT CreateBak            funcs:main2:file#CreateBak
+!!REDIRECT Md5Digest            funcs:main2:file#Md5Digest
+
+!! Socket and Xic Client/Server Interface
+!!REDIRECT ReadData             funcs:main2:skt#ReadData
+!!REDIRECT ReadReply            funcs:main2:skt#ReadReply
+!!REDIRECT ConvertReply         funcs:main2:skt#ConvertReply
+!!REDIRECT WriteMsg             funcs:main2:skt#WriteMsg
+
+!! System Command Interface
+!! REDIRECT Shell               funcs:main2:sys#Shell
+!!KEYWORD
+Shell
+!!TITLE
+Shell
+!!HTML
+    Click <a href="funcs:main2:sys#Shell">here</a> for info on the
+    <tt>Shell</tt> script function.
+
+    <p>
+    Click <a href="!set:bangcmds#Shell">here</a> for info on the
+    <b>Shell</b> variable.
+
+!!REDIRECT System               funcs_main2:sys#System
+!!REDIRECT GetPID               funcs_main2:sys#GetPID
+
+!! Menu Buttons
+!!REDIRECT SetButtonStatus      funcs:main2:menu#SetButtonStatus
+!!REDIRECT GetButtonStatus      funcs:main2:menu#GetButtonStatus
+!!REDIRECT PressButton          funcs:main2:menu#PressButton
+!!REDIRECT BtnDown              funcs:main2:menu#BtnDown
+!!REDIRECT BtnUp                funcs:main2:menu#BtnUp
+!!REDIRECT KeyDown              funcs:main2:menu#KeyDown
+!!REDIRECT KeyUp                funcs:main2:menu#KeyUp
+
+!! Mouse Input
+!!REDIRECT Point                funcs:main2:mouse#Point
+!!REDIRECT Selection            funcs:main2:mouse#Selection
+
+!! Graphical Input
+!!REDIRECT PopUpInput           funcs:main2:grin#PopUpInput
+!!REDIRECT PopUpAffirm          funcs:main2:grin#PopUpAffirm
+!!REDIRECT PopUpNumeric         funcs:main2:grin#PopUpNumeric
+
+!! Text Input
+!!REDIRECT AskReal              funcs:main2:textin#AskReal
+!!REDIRECT AskString            funcs:main2:textin#AskString
+!!REDIRECT AskConsoleReal       funcs:main2:textin#AskConsoleReal
+!!REDIRECT AskConsoleString     funcs:main2:textin#AskConsoleString
+!!REDIRECT GetKey               funcs:main2:textin#GetKey
+
+!! Text Output
+!!REDIRECT SepString            funcs:main2:textout#SepString
+!!REDIRECT ShowPrompt           funcs:main2:textout#ShowPrompt
+!!REDIRECT SetIndent            funcs:main2:textout#SetIndent
+!!REDIRECT SetPrintLimits       funcs:main2:textout#SetPrintLimits
+!!REDIRECT Print                funcs:main2:textout#Print
+!!REDIRECT PrintLog             funcs:main2:textout#PrintLog
+!!REDIRECT PrintString          funcs:main2:textout#PrintString
+!!REDIRECT PrintStringEsc       funcs:main2:textout#PrintStringEsc
+!!REDIRECT Message              funcs:main2:textout#Message
+!!REDIRECT ErrorMsg             funcs:main2:textout#ErrorMsg
+!!REDIRECT TextWindow           funcs:main2:textout#TextWindow
+
+!!KEYWORD
+funcs:main2
+!!TITLE
+Main Functions 2
+!!HTML
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:array#arrays">Arrays</a></th></tr>
+
+    <tr><td><a href="funcs:main2:array#ArrayDims">
+     <tt>ArrayDims</tt>(<i>out_array</i>, <i>array</i>)</a>
+     </td><td>Get array dimensions</td></tr>
+    <tr><td><a href="funcs:main2:array#ArrayDimension">
+     <tt>ArrayDimension</tt>(<i>out_array</i>, <i>array</i>)</a>
+     </td><td>Get array dimensions</td></tr>
+    <tr><td><a href="funcs:main2:array#GetDims">
+     <tt>GetDims</tt>(<i>array</i>, <i>out_array</a>)</a>
+     </td><td>Get array dimensions</td></tr>
+    <tr><td><a href="funcs:main2:array#DupArray">
+     <tt>DupArray</tt>(<i>dest_array</i>, <i>src_array</i>)</a>
+     </td><td>Copy an array</td></tr>
+    <tr><td><a href="funcs:main2:array#SortArray">
+     <tt>SortArray</tt>(<i>array</i>, <i>size</i>, <i>descend</i>,
+     <i>indices</i>)</a>
+     </td><td>Sort array elements</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:bit#bitwise">Bitwise Logic</a></th></tr>
+
+    <tr><td><a href="funcs:main2:bit#ShiftBits">
+     <tt>ShiftBits</tt>(<i>bits</i>, <i>val</i>)</a>
+     </td><td>Shift bit field</td></tr>
+    <tr><td><a href="funcs:main2:bit#AndBits">
+     <tt>AndBits</tt>(<i>bits1</i>, <i>bits2</i>)</a>
+     </td><td>AND operation</td></tr>
+    <tr><td><a href="funcs:main2:bit#OrBits">
+     <tt>OrBits</tt>(<i>bits1</i>, <i>bits2</i>)</a>
+     </td><td>OR operation</td></tr>
+    <tr><td><a href="funcs:main2:bit#XorBits">
+     <tt>XorBits</tt>(<i>bits1</i>, <i>bits2</i>)</a>
+     </td><td>XOR operation</td></tr>
+    <tr><td><a href="funcs:main2:bit#NotBits">
+     <tt>NotBits</tt>(<i>bits</i>)</a>
+     </td><td>NOT operation</td></tr>
+
+    <!-- 101609 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:error">Error Reporting</a></th></tr>
+
+    <tr><td><a href="funcs:main2:error#GetError">
+     <tt>GetError</tt>()</a>
+     </td><td>Return error message</td></tr>
+    <tr><td><a href="funcs:main2:error#AddError">
+     <tt>AddError</tt>(<i>string</i>)</a>
+     </td><td>Save error string</td></tr>
+    <tr><td><a href="funcs:main2:error#GetLogNumber">
+     <tt>GetLogNumber</tt>()</a>
+     </td><td>Return current message index</td></tr>
+    <tr><td><a href="funcs:main2:error#GetLogMessage">
+     <tt>GetLogMessage</tt>(<i>message_num</i>)</a>
+     </td><td>Return string for message index</td></tr>
+    <tr><td><a href="funcs:main2:error#AddLogMessage">
+     <tt>AddLogMessage</tt>(<i>string</i>, <i>error</i>)</a>
+     </td><td>Add message to log</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:handle">Generic Handle Functions</a></th></tr>
+
+    <tr><td><a href="funcs:main2:handle#NumHandles">
+     <tt>NumHandles</tt>()</a>
+     </td><td>Returns the number of active handles</td></tr>
+    <tr><td><a href="funcs:main2:handle#HandleContent">
+     <tt>HandleContent</tt>(<i>handle</i>)</a>
+     </td><td>Returns count of list items</td></tr>
+    <tr><td><a href="funcs:main2:handle#HandleTruncate">
+     <tt>HandleTruncate</tt>(<i>handle</i>, <i>count</i>)</a>
+     </td><td>Truncate a list of items</td></tr>
+    <tr><td><a href="funcs:main2:handle#HandleNext">
+     <tt>HandleNext</tt>(<i>handle</i>)</a>
+     </td><td>Advance list to next item</td></tr>
+    <tr><td><a href="funcs:main2:handle#HandleDup">
+     <tt>HandleDup</tt>(<i>handle</i>)</a>
+     </td><td>Duplicate a handle and list</td></tr>
+    <tr><td><a href="funcs:main2:handle#HandleDupNitems">
+     <tt>HandleDupNitems</tt>(<i>handle</i>, <i>count</i>)</a>
+     </td><td>Duplicate a handle and list, truncating list</td></tr>
+    <tr><td><a href="funcs:main2:handle#H">
+     <tt>H</tt>(<i>scalar</i>)</a>
+     </td><td>Create temporary handle from scalar</td></tr>
+    <tr><td><a href="funcs:main2:handle#HandleArray">
+     <tt>HandleArray</tt>(<i>handle</i>, <i>array</i>)</a>
+     </td><td>Write an array of handles to list elements</td></tr>
+    <tr><td><a href="funcs:main2:handle#HandleCat">
+     <tt>HandleCat</tt>(<i>handle1</i>, <i>handle2</i>)</a>
+     </td><td>Add <i>handle2</i> list to end of <i>handle1</i> list</td></tr>
+    <tr><td><a href="funcs:main2:handle#HandleReverse">
+     <tt>HandleReverse</tt>(<i>handle</i>)</a>
+     </td><td>Reverse list order</td></tr>
+    <tr><td><a href="funcs:main2:handle#HandlePurgeList">
+     <tt>HandlePurgeList</tt>(<i>handle1</i>, <i>handle2</i>)</a>
+     </td><td>Remove from second list items in first</td></tr>
+    <tr><td><a href="funcs:main2:handle#Close">
+     <tt>Close</tt>(<i>handle</i>)</a>
+     </td><td>Close a handle</td></tr>
+    <tr><td><a href="funcs:main2:handle#CloseArray">
+     <tt>CloseArray</tt>(<i>array</i>, <i>size</i>)</a>
+     </td><td>Close an array of handles</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:mem">Memory Management</a></th></tr>
+
+    <tr><td><a href="funcs:main2:mem#FreeArray">
+     <tt>FreeArray</tt>(<i>array</i>)</a>
+     </td><td>Free memory used by array</td></tr>
+    <tr><td><a href="funcs:main2:mem#CoreSize">
+     <tt>CoreSize</tt>()</a>
+     </td><td>Return kilobytes used by program</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:scrv">Script Variables</a></th></tr>
+
+    <tr><td><a href="funcs:main2:scrv#Defined">
+     <tt>Defined</tt>(<i>variable</i>)</a>
+     </td><td>Check if variable is defined</td></tr>
+    <tr><td><a href="funcs:main2:scrv#TypeOf">
+     <tt>TypeOf</tt>(<i>variable</i>)</a>
+     </td><td>Return variable type</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:path">Path Manipulation and Query</a></th></tr>
+
+    <tr><td><a href="funcs:main2:path#PathToEnd">
+     <tt>PathToEnd</tt>(<i>path_name</i>, <i>dir</i>)</a>
+     </td><td>Modify search path</td></tr>
+    <tr><td><a href="funcs:main2:path#PathToFront">
+     <tt>PathToFront</tt>(<i>path_name</i>, <i>dir</i>)</a>
+     </td><td>Modify search path</td></tr>
+    <tr><td><a href="funcs:main2:path#InPath">
+     <tt>InPath</tt>(<i>path_name</i>, <i>dir</i>)</a>
+     </td><td>Check if directory is in search path</td></tr>
+    <tr><td><a href="funcs:main2:path#RemovePath">
+     <tt>RemovePath</tt>(<i>path_name</i>, <i>dir</i>)</a>
+     </td><td>Remove directory from the search path</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:regex">Regular Expressions</a></th></tr>
+
+    <tr><td><a href="funcs:main2:regex#RegCompile">
+     <tt>RegCompile</tt>(<i>regex</i>, <i>case_insens</i>)</a>
+     </td><td>Compile regular expression</td></tr>
+    <tr><td><a href="funcs:main2:regex#RegCompare">
+     <tt>RegCompare</tt>(<i>regex_handle</i>, <i>string</i>, <i>array</i>)</a>
+     </td><td>Regular expression evaluation</td></tr>
+    <tr><td><a href="funcs:main2:regex#RegError">
+     <tt>RegError</tt>(<i>regex_handle</i>)</a>
+     </td><td>Return error string</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:shndl">String List Handles</a></th></tr>
+
+    <tr><td><a href="funcs:main2:shndl#StringHandle">
+     <tt>StringHandle</tt>(<i>string</i>, <i>sepchars</i>)</a>
+     </td><td>Return handle to string tokens</td></tr>
+    <tr><td><a href="funcs:main2:shndl#ListHandle">
+     <tt>ListHandle</tt>(<i>arglist</i>)</a>
+     </td><td>Return handle to string arguments</td></tr>
+    <tr><td><a href="funcs:main2:shndl#ListContent">
+     <tt>ListContent</tt>(<i>stringlist_handle</i>)</a>
+     </td><td>Return referenced string</td></tr>
+    <tr><td><a href="funcs:main2:shndl#ListReverse">
+     <tt>ListReverse</tt>(<i>stringlist_handle</i>)</a>
+     </td><td>Reverse order of strings in list</td></tr>
+    <tr><td><a href="funcs:main2:shndl#ListNext">
+     <tt>ListNext</tt>(<i>stringlist_handle</i>)</a>
+     </td><td>Return referenced string and advance to next</td></tr>
+    <tr><td><a href="funcs:main2:shndl#ListAddFront">
+     <tt>ListAddFront</tt>(<i>stringlist_handle</i>, <i>string</i>)</a>
+     </td><td>Add string to list</td></tr>
+    <tr><td><a href="funcs:main2:shndl#ListAddBack">
+     <tt>ListAddBack</tt>(<i>stringlist_handle</i>, <i>string</i>)</a>
+     </td><td>Add string to list</td></tr>
+    <tr><td><a href="funcs:main2:shndl#ListAlphaSort">
+     <tt>ListAlphaSort</tt>(<i>stringlist_handle</i>)</a>
+     </td><td>Sort string list</td></tr>
+    <tr><td><a href="funcs:main2:shndl#ListUnique">
+     <tt>ListUnique</tt>(<i>stringlist_handle</i>)</a>
+     </td><td>Remove duplicates from list</td></tr>
+    <tr><td><a href="funcs:main2:shndl#ListFormatCols">
+     <tt>ListFormatCols</tt>(<i>stringlist_handle</i>, <i>columns</i>)</a>
+     </td><td>Format strings into columns</td></tr>
+    <tr><td><a href="funcs:main2:shndl#ListConcat">
+     <tt>ListConcat</tt>(<i>stringlist_handle</i>, <i>sepchars</i>)</a>
+     </td><td>Create single string from list</td></tr>
+    <tr><td><a href="funcs:main2:shndl#ListIncluded">
+     <tt>ListIncluded</tt>(<i>stringlist_handle</i>, <i>string</i>)</a>
+     </td><td>Check if string is in list</td></tr>
+
+    <!-- 102114 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:string">String Manipulation and
+        Conversion</a></th></tr>
+
+    <tr><td><a href="funcs:main2:string#Strcat">
+     <tt>Strcat</tt>(<i>string1</i>, <i>string2</i>)</a>
+     </td><td>String concatenation</td></tr>
+    <tr><td><a href="funcs:main2:string#Strcmp">
+     <tt>Strcmp</tt>(<i>string1</i>, <i>string2</i>)</a>
+     </td><td>String comparison</td></tr>
+    <tr><td><a href="funcs:main2:string#Strncmp">
+     <tt>Strncmp</tt>(<i>string1</i>, <i>string2</i>, <i>n</i>)</a>
+     </td><td>String comparison, fixed length</td></tr>
+    <tr><td><a href="funcs:main2:string#Strcasecmp">
+     <tt>Strcasecmp</tt>(<i>string1</i>, <i>string2</i>)</a>
+     </td><td>String comparison, case insensitive</td></tr>
+    <tr><td><a href="funcs:main2:string#Strncasecmp">
+     <tt>Strncasecmp</tt>(<i>string1</i>, <i>string2</i>, <i>n</i>)</a>
+     </td><td>String comparison, case insensitive, fixed length</td></tr>
+    <tr><td><a href="funcs:main2:string#Strdup">
+     <tt>Strdup</tt>(<i>string</i>)</a>
+     </td><td>String copy</td></tr>
+    <tr><td><a href="funcs:main2:string#Strtok">
+     <tt>Strtok</tt>(<i>str</i>, <i>sep</i>)</a>
+     </td><td>String tokenization</td></tr>
+    <tr><td><a href="funcs:main2:string#Strchr">
+     <tt>Strchr</tt>(<i>string</i>, <i>char</i>)</a>
+     </td><td>Return pointer to first instance of character</td></tr>
+    <tr><td><a href="funcs:main2:string#Strrchr">
+     <tt>Strrchr</tt>(<i>string</i>, <i>char</i>)</a>
+     </td><td>Return pointer to last instance of character</td></tr>
+    <tr><td><a href="funcs:main2:string#Strstr">
+     <tt>Strstr</tt>(<i>string</i>, <i>substring</i>)</a>
+     </td><td>Return pointer to first instance of substring</td></tr>
+    <tr><td><a href="funcs:main2:string#Strpath">
+     <tt>Strpath</tt>(<i>string</i>)</a>
+     </td><td>Return pointer to filename in path</td></tr>
+    <tr><td><a href="funcs:main2:string#Strlen">
+     <tt>Strlen</tt>(<i>string</i>)</a>
+     </td><td>Return length of string</td></tr>
+    <tr><td><a href="funcs:main2:string#Sizeof">
+     <tt>Sizeof</tt>(<i>arg</i>)</a>
+     </td><td>Return string length or array size</td></tr>
+    <tr><td><a href="funcs:main2:string#ToReal">
+     <tt>ToReal</tt>(<i>string</i>)</a>
+     </td><td>Convert string to number</td></tr>
+    <tr><td><a href="funcs:main2:string#ToString">
+     <tt>ToString</tt>(<i>real</i>)</a>
+     </td><td>Convert number to string</td></tr>
+    <tr><td><a href="funcs:main2:string#ToStringA">
+     <tt>ToStringA</tt>(<i>real</i>, <i>digits</i>)</a>
+     </td><td>Convert number to string using SPICE notation</td></tr>
+    <tr><td><a href="funcs:main2:string#ToFormat">
+     <tt>ToFormat</tt>(<i>format</i>, <i>arg_list</i>)</a>
+     </td><td>Print variables according to format string</td></tr>
+    <tr><td><a href="funcs:main2:string#ToChar">
+     <tt>ToChar</tt>(<i>integer</i>)</a>
+     </td><td>Convert character constant to string representation</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:cwd">Currrent Directory</a></th></tr>
+
+    <tr><td><a href="funcs:main2:cwd#Cwd">
+     <tt>Cwd</tt>(<i>path</i>)</a>
+     </td><td>Set current directory</td></tr>
+    <tr><td><a href="funcs:main2:cwd#Pwd">
+     <tt>Pwd</tt>()</a>
+     </td><td>Return current directory</td></tr>
+
+    <!-- 020411 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:date">Date and Time</a></th></tr>
+
+    <tr><td><a href="funcs:main2:date#DateString">
+     <tt>DateString</tt>()</a>
+     </td><td>Return the date/time</td></tr>
+    <tr><td><a href="funcs:main2:date#Time">
+     <tt>Time</tt>()</a>
+     </td><td>Return system-encoded time</td></tr>
+    <tr><td><a href="funcs:main2:date#MakeTime">
+     <tt>MakeTime</tt>(<i>array</i>, <i>gmt</i>)</a>
+     </td><td>Create system-encoded time from values</td></tr>
+    <tr><td><a href="funcs:main2:date#TimeToString">
+     <tt>TimeToString</tt>(<i>time</i>, <i>gmt</i>)</a>
+     </td><td>Return string from system-encoded time</td></tr>
+    <tr><td><a href="funcs:main2:date#TimeToVals">
+     <tt>TimeToVals</tt>(<i>time</i>, <i>gmt</i>, <i>array</i>)</a>
+     </td><td>Parse system-encoded time</td></tr>
+    <tr><td><a href="funcs:main2:date#MilliSec">
+     <tt>MilliSec</tt>()</a>
+     </td><td>Return elapsed time in milliseconds</td></tr>
+    <tr><td><a href="funcs:main2:date#StartTiming">
+     <tt>StartTiming</tt>(<i>array</i>)</a>
+     </td><td>Initialize resource timing</td></tr>
+    <tr><td><a href="funcs:main2:date#StopTiming">
+     <tt>StopTiming</tt>(<i>array</i>)</a>
+     </td><td>Obtain resource times</td></tr>
+
+    <!-- 102214 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:file">File System Interface</a></th></tr>
+
+    <tr><td><a href="funcs:main2:file#Glob">
+     <tt>Glob</tt>(<i>pattern</i>)</a>
+     </td><td>Perform global expansion</td></tr>
+    <tr><td><a href="funcs:main2:file#Open">
+     <tt>Open</tt>(<i>file</i>, <i>mode</i>)</a>
+     </td><td>Open a file for read/write</td></tr>
+    <tr><td><a href="funcs:main2:file#Popen">
+     <tt>Popen</tt>(<i>command</i>, <i>mode</i>)</a>
+     </td><td>Open a process for read/write</td></tr>
+    <tr><td><a href="funcs:main2:file#Sopen">
+     <tt>Sopen</tt>(<i>host</i>, <i>port</i>)</a>
+     </td><td>Open a socket for read/write</td></tr>
+    <tr><td><a href="funcs:main2:file#ReadLine">
+     <tt>ReadLine</tt>(<i>maxlen</i>, <i>file_handle</i>)</a>
+     </td><td>Read a line of text from a file</td></tr>
+    <tr><td><a href="funcs:main2:file#ReadChar">
+     <tt>ReadChar</tt>(<i>file_handle</i>)</a>
+     </td><td>Read a character from a file</td></tr>
+    <tr><td><a href="funcs:main2:file#WriteLine">
+     <tt>WriteLine</tt>(<i>string</i>, <i>file_handle</i>)</a>
+     </td><td>Write a line of text to a file</td></tr>
+    <tr><td><a href="funcs:main2:file#WriteChar">
+     <tt>WriteChar</tt>(<i>c</i>, <i>file_handle</i>)</a>
+     </td><td>Write a character to a file</td></tr>
+    <tr><td><a href="funcs:main2:file#TempFile">
+     <tt>TempFile</tt>(<i>prefix</i>)</a>
+     </td><td>Create a temporary file name</td></tr>
+    <tr><td><a href="funcs:main2:file#ListDirectory">
+     <tt>ListDirectory</tt>(<i>path</i>, <i>filter</i>)</a>
+     </td><td>Return handle to list of file names</td></tr>
+    <tr><td><a href="funcs:main2:file#MakeDir">
+     <tt>MakeDir</tt>(<i>path</i>)</a>
+     </td><td>Create directory tree</td></tr>
+    <tr><td><a href="funcs:main2:file#FileStat">
+     <tt>FileStat</tt>(<i>path</i>, <i>array</i>)</a>
+     </td><td>Get file/directory statistics</td></tr>
+    <tr><td><a href="funcs:main2:file#DeleteFile">
+     <tt>DeleteFile</tt>(<i>path</i>)</a>
+     </td><td>Destroy file or empty directory</td></tr>
+    <tr><td><a href="funcs:main2:file#MoveFile">
+     <tt>MoveFile</tt>(<i>from_path</i>, <i>to_path</i>)</a>
+     </td><td>Move (rename) file</td></tr>
+    <tr><td><a href="funcs:main2:file#CopyFile">
+     <tt>CopyFile</tt>(<i>from_path</i>, <i>to_path</i>)</a>
+     </td><td>Copy file</td></tr>
+    <tr><td><a href="funcs:main2:file#CreateBak">
+     <tt>CreateBak</tt>(<i>path</i>)</a>
+     </td><td>Move file to backup</td></tr>
+    <tr><td><a href="funcs:main2:file#Md5Digest">
+     <tt>Md5Digest</tt>(<i>path</i>)</a>
+     </td><td>Return file digest string</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:skt">Socket and <i>Xic</i> Client/Server
+        Interface</a></th></tr>
+
+    <tr><td><a href="funcs:main2:skt#ReadData">
+     <tt>ReadData</tt>(<i>size</i>, <i>skt_handle</i>)</a>
+     </td><td>Read data from a socket</td></tr>
+    <tr><td><a href="funcs:main2:skt#ReadReply">
+     <tt>ReadReply</tt>(<i>retcode</i>, <i>skt_handle</i>)</a>
+     </td><td>Read a message from the <i>Xic</i> server</td></tr>
+    <tr><td><a href="funcs:main2:skt#ConvertReply">
+     <tt>ConvertReply</tt>(<i>message</i>, <i>retcode</i>)</a>
+     </td><td>Parse <i>Xic</i> server response</td></tr>
+    <tr><td><a href="funcs:main2:skt#WriteMsg">
+     <tt>WriteMsg</tt>(<i>string</i>, <i>skt_handle</i>)</a>
+     </td><td>Write a message to a socket</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:sys">System Command Interface</a></th></tr>
+
+    <tr><td><a href="funcs:main2:sys#Shell">
+     <tt>Shell</tt>(<i>command</i>)</a>
+     </td><td>Execute a shell command</td></tr>
+    <tr><td><a href="funcs:main2:sys#System">
+     <tt>System</tt>(<i>command</i>)</a>
+     </td><td>Execute a shell command</td></tr>
+    <tr><td><a href="funcs:main2:sys#GetPID">
+     <tt>GetPID</tt>(<i>parent</i>)</a>
+     </td><td>Return process ID</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:menu">Menu Buttons</a></th></tr>
+
+    <tr><td><a href="funcs:main2:menu#SetButtonStatus">
+     <tt>SetButtonStatus</tt>(<i>menu</i>, <i>button</i>, <i>set</i>)</a>
+     </td><td>Set button toggle status</td></tr>
+    <tr><td><a href="funcs:main2:menu#GetButtonStatus">
+     <tt>GetButtonStatus</tt>(<i>menu</i>, <i>button</i>)</a>
+     </td><td>Return button toggle status</td></tr>
+    <tr><td><a href="funcs:main2:menu#PressButton">
+     <tt>PressButton</tt>(<i>menu</i>, <i>button</i>)</a>
+     </td><td>Synthesize a button press</td></tr>
+    <tr><td><a href="funcs:main2:menu#BtnDown">
+     <tt>BtnDown</tt>(<i>num</i>, <i>state</i>, <i>x</i>, <i>y</i>,
+     <i>widget</i>)</a>
+     </td><td>Synthesize a button press</td></tr>
+    <tr><td><a href="funcs:main2:menu#BtnUp">
+     <tt>BtnUp</tt>(<i>num</i>, <i>state</i>, <i>x</i>, <i>y</i>,
+     <i>widget</i>)</a>
+     </td><td>Synthesize a button release</td></tr>
+    <tr><td><a href="funcs:main2:menu#KeyDown">
+     <tt>KeyDown</tt>(<i>keysym</i>, <i>state</i>, <i>widget</i>)</a>
+     </td><td>Synthesize a key press</td></tr>
+    <tr><td><a href="funcs:main2:menu#KeyUp">
+     <tt>KeyUp</tt>(keysym, state, widget)</a>
+     </td><td>Synthesize a key release</td></tr>
+
+    <!-- 110115 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:mouse">Mouse Input</a></th></tr>
+
+    <tr><td><a href="funcs:main2:mouse#Point">
+     <tt>Point</tt>(<i>array</i>)</a>
+     </td><td>Wait for a mouse button press</td></tr>
+    <tr><td><a href="funcs:main2:mouse#Selection">
+     <tt>Selection</tt>()</a>
+     </td><td>Wait for key press, allow selections</td></tr>
+
+    <!-- 020109 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:grin">Graphical Input</a></th></tr>
+
+    <tr><td><a href="funcs:main2:grin#PopUpInput">
+     <tt>PopUpInput</tt>(<i>message</i>, <i>default</i>, <i>buttontext</i>,
+     <i>multiline</i>)</a>
+     </td><td>Pop up text input dialog</td></tr>
+    <tr><td><a href="funcs:main2:grin#PopUpAffirm">
+     <tt>PopUpAffirm</tt>(<i>message</i>)</a>
+     </td><td>Pop up yes/no dialog</td></tr>
+    <tr><td><a href="funcs:main2:grin#PopUpNumeric">
+     <tt>PopUpNumeric</tt>(<i>message</i>, <i>initval</i>, <i>minval</i>,
+     <i>maxval</i>, <i>delta</i>, <i>numdgt</i>)</a>
+     </td><td>Pop up numeric entry dialog</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:textin">Text Input</a></th></tr>
+
+    <tr><td><a href="funcs:main2:textin#AskReal">
+     <tt>AskReal</tt>(<i>prompt</i>, <i>default</i>)</a>
+     </td><td>Prompt for a number from prompt line</td></tr>
+    <tr><td><a href="funcs:main2:textin#AskString">
+     <tt>AskString</tt>(<i>prompt</i>, <i>default</i>)</a>
+     </td><td>Prompt for a string from prompt line</td></tr>
+    <tr><td><a href="funcs:main2:textin#AskConsoleReal">
+     <tt>AskConsoleReal</tt>(<i>prompt</i>, <i>default</i>)</a>
+     </td><td>Prompt for a number from console</td></tr>
+    <tr><td><a href="funcs:main2:textin#AskConsoleString">
+     <tt>AskConsoleString</tt>(<i>prompt</i>, <i>default</i>)</a>
+     </td><td>Prompt for a string from console</td></tr>
+    <tr><td><a href="funcs:main2:textin#GetKey">
+     <tt>GetKey</tt>()</a>
+     </td><td>Wait for key press</td></tr>
+
+    <!-- 100408 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:main2:textout">Text Output</a></th></tr>
+
+    <tr><td><a href="funcs:main2:textout#SepString">
+     <tt>SepString</tt>(<i>string</i>, <i>repeat</i>)</a>
+     </td><td>Create separation or indentation string</td></tr>
+    <tr><td><a href="funcs:main2:textout#ShowPrompt">
+     <tt>ShowPrompt</tt>(<i>arg_list</i>)</a>
+     </td><td>Show arguments on prompt line</td></tr>
+    <tr><td><a href="funcs:main2:textout#SetIndent">
+     <tt>SetIndent</tt>(<i>level</i>)</a>
+     </td><td>Set indentation level for printing</td></tr>
+    <tr><td><a href="funcs:main2:textout#SetPrintLimits">
+     <tt>SetPrintLimits</tt>(<i>num_array_elts</i>, <i>num_zoids</i>)</a>
+     </td><td>Limit number of array values and trapezoids printed</td></tr>
+    <tr><td><a href="funcs:main2:textout#Print">
+     <tt>Print</tt>(<i>arg_list</i>)</a>
+     </td><td>Print arguments to console window</td></tr>
+    <tr><td><a href="funcs:main2:textout#PrintLog">
+     <tt>PrintLog</tt>(<i>file_handle</i>, <i>arg_list</i>)</a>
+     </td><td>Print arguments to file</td></tr>
+    <tr><td><a href="funcs:main2:textout#PrintString">
+     <tt>PrintString</tt>(<i>arg_list</i>)</a>
+     </td><td>Print arguments to a string</td></tr>
+    <tr><td><a href="funcs:main2:textout#PrintStringEsc">
+     <tt>PrintStringEsc</tt>(<i>arg_list</i>)</a>
+     </td><td>Print arguments to a string</td></tr>
+    <tr><td><a href="funcs:main2:textout#Message">
+     <tt>Message</tt>(<i>arg_list</i>)</a>
+     </td><td>Print arguments to pop-up window</td></tr>
+    <tr><td><a href="funcs:main2:textout#ErrorMsg">
+     <tt>ErrorMsg</tt>(<i>arg_list</i>)</a>
+     </td><td>Print arguments to pop-up error window</td></tr>
+    <tr><td><a href="funcs:main2:textout#TextWindow">
+     <tt>TextWindow</tt>(<i>fname</i>, <i>readonly</i>)</a>
+     </td><td>Show file in text editor</td></tr>
+
+    </table>
+
+!!SEEALSO
+scr:iffuncs
+
+!!KEYWORD
+funcs:main2:array
+!!TITLE
+Arrays
+!!HTML
+
+    <!-- 030104 -->
+    <a name="ArrayDims"></a>
+    <dl>
+    <dt><b>(int) <tt>ArrayDims</tt>(<i>out_array</i>, <i>array</i>)</b>
+    <dd><br>This function returns the size (number of storage locations)
+    of an array, and possibly the size of each dimension.  Arrays can
+    have from one to three dimensions.  If the first argument is an
+    array with size three or larger, the size of each dimension of the
+    array in the second argument is stored in the first three
+    locations of the first argument array, with the 0'th index being
+    the lowest order.  Unused dimensions are saved as 0.  If the first
+    argument is an integer 0, no dimension size information is
+    returned.  The size of the array (number of storage locations,
+    which should equal the product of the nonzero dimensions) is
+    returned by the function.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ArrayDimension"></a>
+    <dl>
+    <dt><b>(int) <tt>ArrayDimension</tt>(<i>out_array</i>, <i>array</i>)</b>
+    <dd><br>This function is very similar to <tt>ArrayDims</tt>, and the
+    arguments have the same types and purpose as for that function. 
+    The return value is the number of dimensions used (1-3) if the
+    second argument is an array, 0 otherwise.  Unlike
+    <tt>ArrayDims</tt>, this function does not fail if the second
+    argument is not an array.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GetDims"></a>
+    <dl>
+    <dt><b>(int) <tt>GetDims</tt>(<i>array</i>, <i>out_array</i>)</b>
+    <dd><br>This is for backward compatibility.  This function is
+    equivalent to <tt>ArrayDimension</tt>, but the two arguments are in
+    reverse order.  This function may disappear - don't use.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="DupArray"></a>
+    <dl>
+    <dt><b>(int) <tt>DupArray</tt>(<i>dest_array</i>, <i>src_array</i>)</b>
+    <dd><br>This function duplicates the <i>src_array</i> into the
+    <i>dest_array</i>.  The <i>dest_array</i> argument must be an
+    unreferenced array.  Upon successful return, the <i>dest_array</i>
+    will be a copy of the <i>src_array</i>, and the return value is 1. 
+    If the <i>dest_array</i> can not be resized due to its being
+    referenced by a pointer, 0 is returned.  The function will fail if
+    either argument is not an array.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="SortArray"></a>
+    <dl>
+    <dt><b>(int) <tt>SortArray</tt>(<i>array</i>, <i>size</i>,
+      <i>descend</i>, <i>indices</i>)</b>
+    <dd><br>This function will sort the elements of the array passed as
+    the first argument.  The number of elements to sort is given in
+    the second argument.  The function will fail if <i>size</i> is
+    negative, or will return without action if <i>size</i> is 0.  The
+    size is implicitly limited to the size of the array.  The sorted
+    values will be ascending if the third argument is 0, descending
+    otherwise.  The fourth argument, if nonzero, is an array which
+    will be filled in with the index mapping applied to the array. 
+    For example, if array[5] is moved to array[0] during the sort, the
+    value of indices[0] will be 5.  This array will be resized if
+    necessary, but the function will fail if resizing fails.
+
+    <p>
+    If the array being sorted is multi-dimensional, the sorting will
+    use the internal linear order.  The return value is the actual
+    number of items sorted, which will be the value of size unless
+    this was limited by the actual array size.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:bit
+!!TITLE
+Bitwise Logic
+!!HTML
+
+    All numerical data are stored internally in double-precision
+    floating point representation.  These functions convert the
+    internal values to unsigned integer data, apply the operation, and
+    return the floating-point representation of the result.  This
+    should be invisible to the user, but assumes well-behaved
+    numerics in the host computer.
+
+    <!-- 030104 -->
+    <a name="ShiftBits"></a>
+    <dl>
+    <dt><b>(unsigned int) <tt>ShiftBits</tt>(<i>bits</i>, <i>val</i>)</b>
+    <dd><br>This function will shift the binary representation of the
+    unsigned integer <i>bits</i> by the integer <i>val</i>.  If
+    <i>val</i> is positive, the bits are shifted to the right, or if
+    negative the bits are shifted to the left.  The function returns
+    the shifted value.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="AndBits"></a>
+    <dl>
+    <dt><b>(unsigned int) <tt>AndBits</tt>(<i>bits1</i>, <i>bits2</i>)</b>
+    <dd><br>This function returns the bitwise AND of the two arguments,
+    which are taken as unsigned integers.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="OrBits"></a>
+    <dl>
+    <dt><b>(unsigned int) <tt>OrBits</tt>(<i>bits1</i>, <i>bits2</i>)</b>
+    <dd><br>This function returns the bitwise OR of the two arguments,
+    which are taken as unsigned integers.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="XorBits"></a>
+    <dl>
+    <dt><b>(unsigned int) <tt>XorBits</tt>(<i>bits1</i>, <i>bits2</i>)</b>
+    <dd><br>This function returns the bitwise exclusive-OR of the two
+    arguments, which are taken as unsigned integers.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="NotBits"></a>
+    <dl>
+    <dt><b>(unsigned int) <tt>NotBits</tt>(<i>bits</i>)</b>
+    <dd><br>This function returns the bitwise NOT of the argument, which
+    is taken as an unsigned integer.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:error
+!!TITLE
+Error Reporting
+!!HTML
+
+    The following functions provide an interface to the <i>Xic</i>
+    error reporting and logging system.  The first two functions
+    operate on the "message" which is a list of strings generated by
+    errors encountered in function calls.  Within <i>Xic</i>, the
+    message may or may not be added to the error log, which is
+    accessible via the functions below.  Logged messages are included
+    in the error log file, and will be displayed in a pop-up
+    on-screen.  If not added to the error log, the message may be
+    displayed in another type of pop-up window, or on the prompt line,
+    or may be placed in a conversion log file.
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GetError"></a>
+    <dl>
+    <dt><b>(string) <tt>GetError</tt>()</b>
+    <dd><br>This returns the current error text.  Error messages generated
+    by an unsuccessful operation that opens, translates, or writes
+    cells or manipulates the database, can be retrieved with this
+    function for diagnostic purposes.  This function should be called
+    immediately after an error return is detected, since subsequent
+    operations may clear or change the error text.  If there are no
+    recorded errors, a "no errors" string is returned.  This function
+    never fails and always returns a message string.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="AddError"></a>
+    <dl>
+    <dt><b><tt>AddError</tt>(<i>string</i>)</b>
+    <dd><br>This function will add a string to the current error message,
+    which can be retrieved with <tt>GetError</tt>.  This is useful for
+    error reporting from user-defined functions.  Any number of calls
+    can be made, with the retrieved text consisting of a concatenation
+    of the strings, with line termination added if necessary, in
+    reverse order of the <tt>AddError</tt> calls.  No other built-in
+    function should be executed between calls to <tt>AddError</tt>, or
+    between a call that generated an error and a call to
+    <tt>AddError</tt>, as this will cause the second string to
+    overwrite the first.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GetLogNumber"></a>
+    <dl>
+    <dt><b>(int) <tt>GetLogNumber</tt>()</b>
+    <dd><br>Return the integer index of the most recent error message
+    dumped to the errors log file.  The return value is 0 if there are
+    no errors recorded in the file.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GetLogMessage"></a>
+    <dl>
+    <dt><b>(string) <tt>GetLogMessage</tt>(<i>message_num</i>)</b>
+    <dd><br>Return the error message string corresponding to the integer
+    argument, as was appended to the errors log file.  The 10 most
+    recent error messages are available.  If the argument is out of
+    range, a null string is returned.  The range is the current index
+    to (not including) this index minus 10, or 0, whichever is larger.
+    </dl>
+    <hr>
+
+    <!-- 101609 -->
+    <a name="AddLogMessage"></a>
+    <dl>
+    <dt><b>(int) <tt>AddLogMessage</tt>(<i>string</i>, <i>error</i>)</b>
+    <dd><br>
+    Apply a new message to the error/warning log file.  The second
+    argument is a boolean which if nonzero will add the string as an
+    error message, otherwise the message is added as a warning.  The
+    return value is the index assigned to the new message, or 0 if the
+    string is empty or null.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:handle
+!!TITLE
+Generic Handle Functions
+!!HTML
+
+    The following functions take as an argument any type of handle,
+    though some of these functions may do nothing if passed an
+    inappropriate handle type.  In particular, for functions that
+    operate on lists, the following handle types are meaningful:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Object</th> <th>Handle Type</th></tr>
+    <tr><td>string</td> <td>stringlist_handle</td></tr>
+    <tr><td>object</td> <td>object_handle</td></tr>
+    <tr><td>property</td> <td>prpty_handle</td></tr>
+    <tr><td>device</td> <td>device_handle</td></tr>
+    <tr><td>device contact</td> <td>dev_contact_handle</td></tr>
+    <tr><td>subcircuit</td> <td>subckt_handle</td></tr>
+    <tr><td>subcircuit contact</td> <td>subc_contact_handle</td></tr>
+    <tr><td>terminal</td> <td>terminal_handle</td></tr>
+    </table>
+    </blockquote>
+    <br>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="NumHandles"></a>
+    <dl>
+    <dt><b>(int) <tt>NumHandles</tt>()</b>
+    <dd><br>This returns the number of handles of all types currently in
+    the hash table.  It can be used as a check to make sure handles
+    are being properly closed (and thus removed from the table) in the
+    user's scripts.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HandleContent"></a>
+    <dl>
+    <dt><b>(int) <tt>HandleContent</tt>(<i>handle</i>)</b>
+    <dd><br>This function returns the number of objects currently
+    referenced by the list-type handle passed as an argument.  The
+    return value is 1 for other types of handle.  The return value is
+    0 for an empty or closed handle.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HandleTruncate"></a>
+    <dl>
+    <dt><b>(int) <tt>HandleTruncate</tt>(<i>handle</i>, <i>count</i>)</b>
+    <dd><br>This function truncates the list referenced by the handle,
+    leaving the current item plus at most <i>count</i> additional
+    items.  If <i>count</i> is negative, it is taken as 0.  The
+    function returns 1 on success, or 0 if the handle does not
+    reference a list or is not found.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HandleNext"></a>
+    <dl>
+    <dt><b>(int) <tt>HandleNext</tt>(<i>handle</i>)</b>
+    <dd><br>This function will advance the handle to reference the next
+    element in its list, for handle types that reference a list.  It
+    has no effect on other handles.  If there were no objects left in
+    the list, or the handle was not found, 0 is returned, otherwise 1
+    is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HandleDup"></a>
+    <dl>
+    <dt><b>(handle) <tt>HandleDup</tt>(<i>handle</i>)</b>
+    <dd><br>This function will duplicate a handle and its underlying
+    reference or list of references.  The new handle is not associated
+    with the old, and should be iterated through or closed explicitly. 
+    For file descriptors, the return value is a duplicate descriptor
+    to the underlying file, with the same read/write mode and file
+    position as the original handle.  If the function succeeds, a
+    handle value is returned.  If the function fails, 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HandleDupNitems"></a>
+    <dl>
+    <dt><b>(handle) <tt>HandleDupNitems</tt>(<i>handle</i>, <i>count</i>)</b>
+    <dd><br>This function acts similarly to <tt>HandleDup</tt>, however
+    for handles that are references to lists, the new handle will
+    reference the current item plus at most <i>count</i> additional
+    items.  For handles that are not references to lists, the
+    <i>count</i> argument is ignored.  The new handle is returned on
+    success, 0 is returned if there was an error.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="H"></a>
+    <dl>
+    <dt><b>(handle) <tt>H</tt>(<i>scalar</i>)</b>
+    <dd><br>This function creates a handle from an integer variable.  This
+    is needed for using the handle values stored in the array created
+    with the <tt>HandleArray</tt> function, or otherwise.  Array
+    elements are numeric variables, and can not be passed directly to
+    functions expecting handles.  This function performs the necessary
+    data conversion.
+
+    <p>
+    Example: 
+    <blockquote>
+    <tt>SomeFunction(H(handle_array[3]))</tt>
+    </blockquote>
+
+    <p>
+    Array elements are always numeric variables, though it is possible
+    to assign a handle value to an array element.  In order to use as
+    a handle an array element so defined, the <tt>H</tt> function must
+    be applied.  Since scalar variables become handles when assigned
+    from a handle, the <tt>H</tt> function should never be needed for
+    scalar variables.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HandleArray"></a>
+    <dl>
+    <dt><b>(int) <tt>HandleArray</tt>(<i>handle</i>, <i>array</i>)</b>
+    <dd><br>This function will create a new handle for every object in the
+    list referenced by the handle argument, and add that handle
+    identifier to the array.  Each new handle references a single
+    object.  The array argument is the name of a previously defined
+    array variable.  The array will be resized if necessary, if
+    possible.  It is not possible to resize an array referenced
+    through a pointer, or an array with pointer references.  The
+    function returns 0 if the array cannot be resized and resizing is
+    needed.  The number of new handles is returned, which will be 0 if
+    the handle argument is empty or does not reference a list.  The
+    handles in the array of handle identifiers can be closed
+    conveniently with the <tt>CloseArray</tt> function.  Since the
+    array elements are numeric quantities and not handles, they can
+    not be passed directly to functions expecting handles.  The
+    <tt>H</tt> function should be used to create a temporary handle
+    variable from the array elements when a handle is needed:  for
+    example, <tt>HandleNext(H(array[2]))</tt>.
+    </dl>
+    <hr>
+
+    <!-- 110115 -->
+    <a name="HandleCat"></a>
+    <dl>
+    <dt><b>(int) <tt>HandleCat</tt>(<i>handle1</i>, <i>handle2</i>)</b>
+    <dd><br>This function will add a copy of the list referenced by the
+    second handle to the end of the list referenced by the first
+    handle.  Both arguments must be handles referencing lists of
+    the same kind.  The return value is nonzero for success, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HandleReverse"></a>
+    <dl>
+    <dt><b>(int) <tt>HandleReverse</tt>(<i>handle</i>)</b>
+    <dd><br>This function will reverse the order of the list referenced by
+    the handle.  Calling this function on other types of handles does
+    nothing.  The function returns 1 if the action was successful, 0
+    otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="HandlePurgeList"></a>
+    <dl>
+    <dt><b>(int) <tt>HandlePurgeList</tt>(<i>handle1</i>, <i>handle2</i>)</b>
+    <dd><br>This function removes from the list referenced by the second
+    handle any items that are also found in the list referenced by the
+    first handle.  Both handles must reference lists of the same type. 
+    The return value is 1 on success, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Close"></a>
+    <dl>
+    <dt><b>(int) <tt>Close</tt>(<i>handle</i>)</b>
+    <dd><br>This function deletes and frees the handle.  It can be used to
+    free up resources when a handle is no longer in use.  In
+    particular, for file handles, the underlying file descriptor is
+    closed by calling this function.  The return value is 1 if the
+    handle is closed successfully, 0 if the handle is not found in the
+    internal hash table or some other error occurs.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="CloseArray"></a>
+    <dl>
+    <dt><b>(int) <tt>CloseArray</tt>(<i>array</i>, <i>size</i>)</b>
+    <dd><br>This function will call <tt>Close</tt> on the first
+    <i>size</i> elements of the array.  The array is assumed to be an
+    array of handles as returned from <a
+    href="HandleArray"><tt>HandleArray</tt></a>.  The function will
+    fail if the <i>array</i> is not an array variable.  The return
+    value is always 1.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:mem
+!!TITLE
+Memory Management
+!!HTML
+
+    <!-- 030104 -->
+    <a name="FreeArray"></a>
+    <dl>
+    <dt><b>(int) <tt>FreeArray</tt>(<i>array</i>)</b>
+    <dd><br>This function will delete the memory used in the <i>array</i>,
+    and reallocate the size to 1.  This function may be useful when
+    memory is tight.  It is not possible to free an array it there are
+    variables that point to it, and calling this function on a pointer
+    will have no effect.  If the array has an alias, the alias will
+    likewise point to the same reallocated array.  This function
+    returns 1 if array data were freed, 0 otherwise.
+
+    <p>
+    This is different from the effect of the <a
+    href="scr::control"><tt>delete</tt></a> operator.  After using
+    <tt>delete</tt> on an array, the variable is no longer an array,
+    it is completely undefined.  The <tt>FreeArray</tt> function
+    preserves the fact that the variable is an array.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="CoreSize"></a>
+    <dl>
+    <dt><b>(real) <tt>CoreSize</tt>()</b>
+    <dd><br>This returns the total size of dynamically allocated memory
+    used by <i>Xic</i>, in kilobytes.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:scrv
+!!TITLE
+Script Variables
+!!HTML
+
+    <!-- 030104 -->
+    <a name="Defined"></a>
+    <dl>
+    <dt><b>(int) <tt>Defined</tt>(<i>variable</i>)</b>
+    <dd><br>If a variable is referenced before it is assigned to, the variable
+    has no type, but behaves in all ways as a string set to the
+    variable's name.  This function returns 1 if the argument has
+    a type assigned, or 0 if it has no type.
+    </dl>
+    <hr>
+
+    <!-- 110115 -->
+    <a name="TypeOf"></a>
+    <dl>
+    <dt><b>(string) <tt>TypeOf</tt>(<i>variable</i>)</b>
+    <dd><br>This function returns a string which indicates the type of
+    variable passed as an argument.  The possible returns are
+
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><tt>"none"</tt></td><td>    variable has no type</td></tr>
+    <tr><td><tt>"scalar"</tt></td><td>  variable is a scalar number</td></tr>
+    <tr><td><tt>"complex"</tt></td><td>  variable is a complex number</td></tr>
+    <tr><td><tt>"string"</tt></td><td>  variable is a string</td></tr>
+    <tr><td><tt>"array"</tt></td><td>   variable is an array</td></tr>
+    <tr><td><tt>"zoidlist"</tt></td><td> variable is a zoidlist</td></tr>
+    <tr><td><tt>"layer_expr"</tt></td><td> variable is a layer_expr</td></tr>
+    <tr><td><tt>"handle"</tt></td><td> variable is a handle to
+     something</td></tr>
+    </table>
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:path
+!!TITLE
+Path Manipulation and Query
+!!HTML
+
+    <!-- 030104 -->
+    <a name="PathToEnd"></a>
+    <dl>
+    <dt><b>(int) <tt>PathToEnd</tt>(<i>path_name</i>, <i>dir</i>)</b>
+    <dd><br>This function manipulates path strings.  The string
+    <i>path_name</i> can be anything, but it is usually one of
+    "<tt>Path</tt>", "<tt>LibPath</tt>", "<tt>HlpPath</tt>", or
+    "<tt>ScrPath</tt>", i.e., the name of a search path.  The string
+    <i>dir</i> will be appended to the path if it does not exist in
+    the path, or is moved to the end if it does.  If the
+    <i>path_name</i> is not a recognized path keyword, a variable of
+    that name will be created to hold the path.  This can be used to
+    store alternate paths.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="PathToFront"></a>
+    <dl>
+    <dt><b>(int) <tt>PathToFront</tt>(<i>path_name</i>, <i>dir</i>)</b>
+    <dd><br>This is similar to the <tt>PathToEnd</tt> function, but the
+    <i>dir</i> will be added or moved to the front of the path.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="InPath"></a>
+    <dl>
+    <dt><b>(int) <tt>InPath</tt>(<i>path_name</i>, <i>dir</i>)</b>
+    <dd><br>This function returns 1 if <i>dir</i> is in the path named in
+    <i>path_name</i>, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="RemovePath"></a>
+    <dl>
+    <dt><b>(int) <tt>RemovePath</tt>(<i>path_name</i>, <i>dir</i>)</b>
+    <dd><br>This function removes the directory <i>dir</i> from the search
+    path, if it is present.  The return value is 1 if the path was
+    modified, 0 otherwise.  The <i>path_name</i> argument has the same
+    meaning as in <tt>PathToEnd</tt>.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:regex
+!!TITLE
+Regular Expressions
+!!HTML
+
+    <!-- 030104 -->
+    <a name="RegCompile"></a>
+    <dl>
+    <dt><b>(regex_handle) <tt>RegCompile</tt>(<i>regex</i>,
+      <i>case_insens</i>)</b>
+    <dd><br>This function returns a handle to a compiled regular
+    expression, as given in the first (string) argument.  The handle
+    can be used for string comparison in <tt>RegCompare</tt>, and
+    should be closed when no longer needed.  The second argument is a
+    flag; if nonzero the regular expression is compiled such that
+    comparisons will be case-insensitive.  If zero, the test will be
+    case-sensitive.  If the compilation fails, this function returns
+    0, and an error message can be obtained from <tt>RegError</tt>.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="RegCompare"></a>
+    <dl>
+    <dt><b>(int) <tt>RegCompare</tt>(<i>regex_handle</i>, <i>string</i>,
+      <i>array</i>)</b>
+    <dd><br>This function compares the regular expression represented by
+    the handle to the string given in the second argument.  If a match
+    is found, the function returns 1, and the match location is set in
+    the <i>array</i> argument, unless 0 is passed for this argument. 
+    If an array is passed, it must have size 2 or larger.  The 0'th
+    array element is set to the character index in the <i>string</i>
+    where the match starts, and the next array location is set to the
+    character index of the first character following the match.  This
+    function returns 0 if there is no match, and -1 if an error
+    occurs.  If -1 is returned, an error message can be obtained from
+    <tt>RegError</tt>.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="RegError"></a>
+    <dl>
+    <dt><b>(string) <tt>RegError</tt>(<i>regex_handle</i>)</b>
+    <dd><br>This function returns an error message string produced by
+    the failure of <tt>RegCompile</tt> or <tt>RegCompare</tt>.  It can
+    be called after one of these functions returns an error value. 
+    The argument is the handle value returned from
+    <tt>RegCompile</tt>, which will be 0 if <tt>RegCompile</tt> fails. 
+    A null string is returned if the handle is bogus.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:shndl
+!!TITLE
+String List Handles
+!!HTML
+
+    The following group of functions relate to lists of strings
+    accessed by a handle.  Such lists are returned by functions that
+    find, for example, the list of layers in the current technology
+    file, of a list of subcells in the current cell.  Lists can also
+    be defined by the user and are quite convenient for some purposes.
+    <hr>
+
+    <!-- 030104 -->
+    <a name="StringHandle"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>StringHandle</tt>(<i>string</i>,
+      <i>sepchars</i>)</b>
+    <dd><br>This function returns a handle to a list of strings which are
+    derived by splitting the <i>string</i> argument at characters
+    found in the <i>sepchars</i> string.  If <i>sepchars</i> is empty
+    or null, the strings will be separated by white space, so each
+    string in the handle list will be a word from the argument string.
+    </dl>
+    <hr>
+
+    <!-- 010509 -->
+    <a name="ListHandle"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListHandle</tt>(<i>arglist</i>)</b>
+    <dd><br>This function creates a list of strings corresponding to the
+    variable number of arguments, and returns a handle to the list. 
+    The arguments are converted to strings in the manner of the
+    <tt>Print</tt> function, however each argument corresponds to a
+    unique string in the list.  The strings are accessed in (left to
+    right) order of the arguments.
+
+    <p>
+    If no arguments are given, a handle to an empty list is returned. 
+    Calls to <tt>ListAddFront</tt> and/or <tt>ListAddBack</tt> can be
+    used to add strings subsequently.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ListContent"></a>
+    <dl>
+    <dt><b>(string) <tt>ListContent</tt>(<i>stringlist_handle</i>)</b>
+    <dd><br>This function returns the string currently referenced by the
+    handle, and does <i>not</i> increment the handle to the next
+    string in the list.  If the handle is not found or contains no
+    further list elements, a null string is returned.  The function
+    will fail if the handle is not a reference to a list of strings.
+    </dl>
+    <hr>
+
+    <!-- 060905 -->
+    <a name="ListReverse"></a>
+    <dl>
+    <dt><b>(int) <tt>ListReverse</tt>(<i>stringlist_handle</i>)</b>
+    <dd><br>
+    This function reverses the order of strings in the stringlist
+    handle passed.  If the operation succeeds the return value is 1,
+    or if the list is empty or an error occurs the value is 0.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ListNext"></a>
+    <dl>
+    <dt><b>(string) <tt>ListNext</tt>(<i>stringlist_handle</i>)</b>
+    <dd><br>This function will return the string at the front of the list
+    referenced by the handle, and set the handle to reference the next
+    string in the list.  The function will fail if the handle is not a
+    reference to a list of strings.  A null string is returned if the
+    handle is not found, or after all strings in the list have been
+    returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ListAddFront"></a>
+    <dl>
+    <dt><b>(int) <tt>ListAddFront</tt>(<i>stringlist_handle</i>,
+      <i>string</i>)</b>
+    <dd><br>This function adds <i>string</i> to the front of the list of
+    strings referenced by the handle, so that the handle immediately
+    references the new string.  The function will fail if the handle
+    is not a reference to a string list, or the given string is null. 
+    The return value is 1 unless the handle is not found, in which
+    case 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ListAddBack"></a>
+    <dl>
+    <dt><b>(int) <tt>ListAddBack</tt>(<i>stringlist_handle</i>,
+      <i>string</i>)</b>
+    <dd><br>This function adds <i>string</i> to the back of the list of
+    strings referenced by the handle, so that the handle references
+    the new string after all existing strings have been cycled.  The
+    function will fail if the handle is not a reference to a string
+    list, or the given string is null.  The return value is 1 unless
+    the handle is not found, in which case 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ListAlphaSort"></a>
+    <dl>
+    <dt><b>(int) <tt>ListAlphaSort</tt>(<i>stringlist_handle</i>)</b>
+    <dd><br>This function will alphabetically sort the list of strings
+    referenced by the handle.  The function will fail if the handle is
+    not a reference to a list of strings.  The return value is 1
+    unless the handle is not found, in which case 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ListUnique"></a>
+    <dl>
+    <dt><b>(int) <tt>ListUnique</tt>(<i>stringlist_handle</i>)</b>
+    <dd><br>This function deletes duplicate strings from the string list
+    referenced by the handle, so that strings remaining in the list
+    are unique.  The function will fail if the handle is not a
+    reference to a list of strings.  The return value is 1 unless the
+    handle is not found, in which case 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ListFormatCols"></a>
+    <dl>
+    <dt><b>(string) <tt>ListFormatCols</tt>(<i>stringlist_handle</i>,
+     <i>columns</i>)</b>
+    <dd><br>This function returns a string which contains the column
+    formatted list of strings referenced by the handle.  The
+    <i>columns</i> argument sets the page width in character columns. 
+    This function is useful for formatting lists of cell names, for
+    example.  The return is a null string if the handle is not found. 
+    The function fails if the handle does not reference a list of
+    strings.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ListConcat"></a>
+    <dl>
+    <dt><b>(string) <tt>ListConcat</tt>(<i>stringlist_handle</i>,
+     <i>sepchars</i>)</b>
+    <dd><br>This function returns a string consisting of each string in
+    the list referenced by the handle separated by the <i>sepchars</i>
+    string.  If the <i>sepchars</i> string is empty or null, there is
+    no separation between the strings.  The function will fail if the
+    handle does not reference a list of strings.  A null string is
+    returned if the handle is not found.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ListIncluded"></a>
+    <dl>
+    <dt><b>(int) <tt>ListIncluded</tt>(<i>stringlist_handle</i>,
+      <i>string</i>)</b>
+    <dd><br>This function compares <i>string</i> to each string in the
+    list referenced by the handle and returns 1 if a match is found
+    (case sensitive).  If no match, or the handle is not found, 0 is
+    returned.  The function will fail if the handle is not a reference
+    to a list of strings.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:string
+!!TITLE
+String Manipulation and Conversion
+!!HTML
+
+    <!-- 030104 -->
+    <a name="Strcat"></a>
+    <dl>
+    <dt><b>(string) <tt>Strcat</tt>(<i>string1</i>, <i>string2</i>)</b>
+    <dd><br>This function appends <i>string2</i> on the end of
+    <i>string1</i> and returns the new string.  The `+' operator is
+    overloaded to also perform this function on string operands.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Strcmp"></a>
+    <dl>
+    <dt><b>(int) <tt>Strcmp</tt>(<i>string1</i>, <i>string2</i>)</b>
+    <dd><br>This function returns an integer representing the lexical
+    difference between <i>string1</i> and <i>string2</i>.  This is the
+    same as the "<tt>strcmp</tt>" C library function, except that null
+    strings are accepted and have the minimum lexical value.  The
+    comparison operators are overloaded to also perform this function
+    on string operands.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Strncmp"></a>
+    <dl>
+    <dt><b>(int) <tt>Strncmp</tt>(<i>string1</i>, <i>string2</i>, <i>n</i>)</b>
+    <dd><br>This compares at most <i>n</i> characters in strings 1 and 2
+    and returns the lexical difference.  This is equivalent to the C
+    library "<tt>strncmp</tt>" function, except that null strings are
+    accepted and have the minimum lexical value.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Strcasecmp"></a>
+    <dl>
+    <dt><b>(int) <tt>Strcasecmp</tt>(<i>string1</i>, <i>string2</i>)</b>
+    <dd><br>This internally converts strings 1 and 2 to lower case, and
+    returns the lexical difference.  This is equivalent to the C
+    library "<tt>strcasecmp</tt>" function, except that null strings
+    are accepted and have the minimum lexical value.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Strncasecmp"></a>
+    <dl>
+    <dt><b>(int) <tt>Strncasecmp</tt>(<i>string1</i>, <i>string2</i>,
+      <i>n</i>)</b>
+    <dd><br>This internally converts strings 1 and 2 to lower case, and
+    compares at most <i>n</i> characters, returning the lexical
+    difference.  This is equivalent to the C library
+    "<tt>strncasecmp</tt>" function, except that null strings are
+    accepted and have the minimum lexical value.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Strdup"></a>
+    <dl>
+    <dt><b>(string) <tt>Strdup</tt>(<i>string</i>)</b>
+    <dd><br>This returns a new string variable containing a copy of the
+    argument's string.  An error occurs if the argument is not
+    string-type.  Note that this differs from assignment, which
+    propagates a pointer to the string data rather than copying.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Strtok"></a>
+    <dl>
+    <dt><b>(string) <tt>Strtok</tt>(<i>str</i>, <i>sep</i>)</b>
+    <dd><br>The Strtok function is used to isolate sequential tokens in a
+    string, <i>str</i>.  These tokens are separated in the string by
+    at least one of the characters in the string <i>sep</i>.  The
+    first time that <tt>Strtok</tt> is called, <i>str</i> should be
+    specified; subsequent calls, wishing to obtain further tokens from
+    the same string, should pass 0 instead.  The separator string,
+    <i>sep</i>, must be supplied each time, and may change between
+    calls.
+
+    <p>
+    The <tt>Strtok</tt> function returns a reference to each
+    subsequent token in the string, after replacing the separator
+    character with a NULL character.  When no more tokens remain, a
+    null string is returned.  Note that this is destructive to
+    <i>str</i>.
+
+    <p>
+    This function is similar to the C library "<tt>strtok</tt>"
+    function.
+
+    <p>
+    Example:  print the space-separated words
+    <blockquote>
+    <pre>
+      teststr = "here are\tsome   words"
+      word = Strtok(teststr, " \t")
+      Print("First word is", word);
+      while (word = Strtok(0, " \t"))
+        Print("Next word:", word)
+      done
+    </pre>
+    </blockquote>
+    </dl>
+    <hr>
+
+    <!-- 072904 -->
+    <a name="Strchr"></a>
+    <dl>
+    <dt><b>(string) <tt>Strchr</tt>(<i>string</i>, <i>char</i>)</b>
+    <dd><br>The second argument is an integer representing a character. 
+    The return value is a pointer into <i>string</i> offset to point
+    to the first instance of the character.  If the character is not
+    in the string, a null pointer is returned.  This is basically the
+    same as the C <tt>strchr</tt> function.
+    </dl>
+    <hr>
+
+    <!-- 072904 -->
+    <a name="Strrchr"></a>
+    <dl>
+    <dt><b>(string) <tt>Strrchr</tt>(<i>string</i>, <i>char</i>)</b>
+    <dd><br>The second argument is an integer representing a character. 
+    The return value is a pointer into <i>string</i> offset to point
+    to the last instance of the character.  If the character is not in
+    the string, a null pointer is returned.  This is basically the
+    same as the C <tt>strrchr</tt> function.
+    </dl>
+    <hr>
+
+    <!-- 072904 -->
+    <a name="Strstr"></a>
+    <dl>
+    <dt><b>(string) <tt>Strstr</tt>(<i>string</i>, <i>char</i>)</b>
+    <dd><br>The second argument is a string which is expected to be a
+    substring of the string.  The return value is a pointer into
+    <i>string</i> to the start of the first occurrence of the
+    substring.  If there are no occurrences, a null pointer is
+    returned.  This is equivalent to the C <tt>strstr</tt> function.
+    </dl>
+    <hr>
+
+    <!-- 072904 -->
+    <a name="Strpath"></a>
+    <dl>
+    <dt><b>(string) <tt>Strpath</tt>(<i>string</i>)</b>
+    <dd><br>This returns a copy of the file name part of a full path
+    given in the string.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Strlen"></a>
+    <dl>
+    <dt><b>(int) <tt>Strlen</tt>(<i>string</i>)</b>
+    <dd><br>This function returns the number of characters in the string.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Sizeof"></a>
+    <dl>
+    <dt><b>(int) <tt>Sizeof</tt>(<i>arg</i>)</b>
+    <dd><br>This function returns the allocated size of the argument,
+    which is mostly useful for determining the size of an array.  The
+    return value is
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>string length</td><td>        <i>arg</i> is a string</td></tr>
+    <tr><td>allocated array size</td><td> <i>arg</i> is an array</td></tr>
+    <tr><td>number of trapezoids</td><td> <i>arg</i> is a zoidlist</td></tr>
+    <tr><td>1</td><td>                    <i>arg</i> is none of above</td></tr>
+    </table>
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ToReal"></a>
+    <dl>
+    <dt><b>(scalar) <tt>ToReal</tt>(<i>string</i>)</b>
+    <dd><br>The returned value is a variable of type scalar containing the
+    numeric value from the passed argument, which is a string.  The
+    text of the string should be interpretable as a numeric constant.
+    If the argument is instead a scalar, the value is simply copied.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ToString"></a>
+    <dl>
+    <dt><b>(string) <tt>ToString</tt>(<i>real</i>)</b>
+    <dd><br>The returned value is a variable of type string containing a
+    text representation of the passed variable, which is expected to
+    be of type scalar.  The format is the same as the C
+    <tt>printf</tt> function with "<tt>%g</tt>" as a format specifier. 
+    If the argument is instead a string, the returned value points to
+    that string.
+    </dl>
+    <hr>
+
+    <!-- 102114 -->
+    <a name="ToStringA"></a>
+    <dl>
+    <dt><b>(string) <tt>ToStringA</tt>(<i>real</i>, <i>digits</i>)</b>
+    <dd><br>
+    This will return a string containing the real number argument in
+    SPICE format, which is a form consisting of a fixed point number
+    followed by an alpha character or sequence which designates a
+    scale factor.  These are the same scale factors as used in the
+    number parser.  though "<tt>mils</tt>" is not used.  The second
+    argument is an integer giving the number of digits to print (in
+    the range 2-15).  If out of this range, a default of 6 is used.
+
+    <p>
+    If the first argument is a string, the string contents will be
+    parsed as a number, and the result output as described above.  If
+    the parse fails, the number is silently taken as zero.
+    </dl>
+    <hr>
+
+    <!-- 101104 -->
+    <a name="ToFormat"></a>
+    <dl>
+    <dt><b>(string) <tt>ToFormat</tt>(<i>format</i>, <i>arg_list</i>)</b>
+    <dd><br>This function returns a string, formatted in the manner of the
+    C <tt>printf</tt> function.  The first argument is a format
+    string, as would be given to <tt>printf</tt>.  Additional
+    arguments (there can be zero or more) are the variables that
+    correspond to the format specification.  The type and position of
+    the arguments must match the format specification, which means
+    that the variables passed must resolve to strings or to numeric
+    scalars.  All of the formatting options described in the Unix
+    manual page for <tt>printf</tt> are available, with the following
+    exceptions:
+    <ol>
+    <li>No random argument access.
+    <li>At most one "<tt>*</tt>" per substitution.
+    <li>"<tt>%p</tt>" will always print zero.
+    <li>"<tt>%n</tt>" is not supported.
+    </ol>
+
+    <p>
+    The function fails if the first argument is not a string, is null,
+    or there is a syntax error or unsupported construct, or there is a
+    type or number mismatch between specification and arguments.
+
+    <p>
+    For example, the "id" returned from <tt>GetObjectID</tt> prints as
+    a floating point value by default (since it is a large integer),
+    which is usually not useful.  One can print this as a hex value as
+    follows:
+    <blockquote><tt>
+     id = GetObjectID(handle)<br>
+     Print("Id =", ToFormat("0x%x", id))
+    </tt></blockquote>
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ToChar"></a>
+    <dl>
+    <dt><b>(string) <tt>ToChar</tt>(<i>integer</i>)</b>
+    <dd><br>This function takes as its input an integer value for a
+    character, and returns a string containing a printable
+    representation of the character.  A null string is returned if the
+    input is not a valid character index.  This function can be used
+    to preformat character data for printing with the various print
+    functions.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:cwd
+!!TITLE
+Current Directory
+!!HTML
+
+    <!-- 030104 -->
+    <a name="Cwd"></a>
+    <dl>
+    <dt><b>(int) <tt>Cwd</tt>(<i>path</i>)</b>
+    <dd><br>This function changes the current working directory to that
+    given by the argument.  If <i>path</i> is null or empty, the
+    change will be to the user's home directory.  A tilde character
+    ('~') appearing in <i>path</i> is expanded to the user's home
+    directory as in a Unix shell.  The return value is 1 if the change
+    succeeds, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Pwd"></a>
+    <dl>
+    <dt><b>(string) <tt>Pwd</tt>()</b>
+    <dd><br>This function returns a string containing the absolute path to
+    the current directory.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:date
+!!TITLE
+Date and Time
+!!HTML
+
+    <!-- 030104 -->
+    <a name="DateString"></a>
+    <dl>
+    <dt><b>(string) <tt>DateString</tt>()</b>
+    <dd><br>This function returns a string containing the date and time in
+    the format
+    <blockquote>
+    <tt>Tue Jun 12 23:42:38 PDT 2001</tt>
+    </blockquote>
+    </dl>
+    <hr>
+
+    <!-- 020411 -->
+    <a name="Time"></a>
+    <dl>
+    <dt><b>(int) <tt>Time</tt>()</b>
+    <dd><br>
+    This returns a system time value, which can be converted to more
+    useful output by <tt>TimeToString</tt> or <tt>TimeToVals</tt>. 
+    Actually, the returned value is the number of seconds since the
+    start of the year 1970.
+    </dl>
+    <hr>
+
+    <!-- 020411 -->
+    <a name="MakeTime"></a>
+    <dl>
+    <dt><b>(int) <tt>MakeTime</tt>(<i>array</i>, <i>gmt</i>)</b>
+    <dd><br>
+    This function takes the time fields specified in the array and
+    returns a time value is if returned from <tt>Time</tt>.  If the
+    boolean argument <i>gmt</i> is nonzero, the interpretation is GMT,
+    otherwise local time.  The array must be size 9 or larger, with
+    the values set as when returned by the <tt>TimeToVals</tt>
+    function (below).
+
+    <p>
+    Under Windows, the <i>gmt</i> argument is ignored and local time
+    is used.
+    </dl>
+    <hr>
+
+    <!-- 020411 -->
+    <a name="TimeToString"></a>
+    <dl>
+    <dt><b>(string) <tt>TimeToString</tt>(<i>time</i>, <i>gmt</i>)</b>
+    <dd><br>
+    Given a time value as returned from <tt>Time</tt>, this returns a
+    string in the form
+    <blockquote>
+    <tt>Tue Jun 12 23:42:38 PDT 2001</tt>
+    </blockquote>
+
+    <p>
+    If the boolean argument <i>gmt</i> is nonzero, GMT will be used,
+    otherwise the local time is used.
+    </dl>
+    <hr>
+
+    <!-- 020411 -->
+    <a name="TimeToVals"></a>
+    <dl>
+    <dt><b>(string) <tt>TimeToVals</tt>(<i>time</i>, <i>gmt</i>,
+      <i>array</i>)</b>
+    <dd><br>
+    Given a time value as returned from <tt>Time</tt>, this breaks out
+    the time/date into the array.  The array must have size 9 or
+    larger.  If the boolean argument <i>gmt</i> is nonzero, GMT is
+    used, otherwise local time is used.
+
+    <p>
+    The array values are set as follows.
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><i>array</i>&nbsp;[0]</td> <td>seconds (0 - 59).</td></tr>
+    <tr><td><i>array</i>&nbsp;[1]</td> <td>minutes (0 - 59).</td></tr>
+    <tr><td><i>array</i>&nbsp;[2]</td> <td>hours (0 - 23).</td></tr>
+    <tr><td><i>array</i>&nbsp;[3]</td> <td>day of month (1 - 31).</td></tr>
+    <tr><td><i>array</i>&nbsp;[4]</td> <td>month of year (0 - 11).</td></tr>
+    <tr><td><i>array</i>&nbsp;[5]</td> <td>year - 1900.</td></tr>
+    <tr><td><i>array</i>&nbsp;[6]</td> <td>day of week (Sunday = 0).</td></tr>
+    <tr><td><i>array</i>&nbsp;[7]</td> <td>day of year (0 - 365).</td></tr>
+    <tr><td><i>array</i>&nbsp;[8]</td> <td>1 if summer time is in effect,
+      or 0.</td></tr>
+    </table>
+
+    <p>
+    The return value is a string containing an abbreviation of the
+    local timezone name, except under Windows where the return is an
+    empty string.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="MilliSec"></a>
+    <dl>
+    <dt><b>(int) <tt>MilliSec</tt>()</b>
+    <dd><br>This returns the elapsed time in milliseconds since midnight
+    January 1, 1970 GMT.  This can be used to measure script execution
+    time.
+    </dl>
+    <hr>
+
+    <!-- 102504 -->
+    <a name="StartTiming"></a>
+    <dl>
+    <dt><b>(int) <tt>StartTiming</tt>(<i>array</i>)</b>
+    <dd><br>
+    This will initialize the values in the array, which must have size
+    3 or larger, for later use by the <tt>StopTiming</tt> function. 
+    The return value is always 1.
+    </dl>
+    <hr>
+
+    <!-- 102504 -->
+    <a name="StopTiming"></a>
+    <dl>
+    <dt><b>(int) <tt>StopTiming</tt>(<i>array</i>)</b>
+    <dd><br>
+    This will place time differences (in seconds) into the array,
+    since the last call to <tt>StartTiming</tt> (with the same
+    argument).  The array must have size 3 or larger.  the components
+    are:
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td> <td>Elapsed wall-clock time</td></tr>
+    <tr><td>1</td> <td>Elapsed user time</td></tr>
+    <tr><td>2</td> <td>Elapsed system time</td></tr>
+    </table>
+    The user time is the time the cpu spent executing in user mode. 
+    The system time is the time spent in the system executing on
+    behalf of the process.  This uses the Unix <tt>getrusage</tt> or
+    <tt>times</tt> system calls, which may not be available on all
+    systems.  If support is not available, e.g., in Windows, the user
+    and system entries will be zero, but the wall-clock time is valid. 
+    This function always returns 1.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:file
+!!TITLE
+File System Interface
+!!HTML
+
+    <!-- 030104 -->
+    <a name="Glob"></a>
+    <dl>
+    <dt><b>(string) <tt>Glob</tt>(<i>pattern</i>)</b>
+    <dd><br>This function returns a string which is a filename expansion
+    of the pattern string, in the manner of the C-shell.  The
+    pattern can contain the usual substitution characters *, ?, [],
+    {}.
+
+    <p>
+    Example:  Return a list of "<tt>.gds</tt>" files in the current
+    directory
+    <blockquote><tt>
+      list = Glob("*.gds")
+    </tt></blockquote>
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Open"></a>
+    <dl>
+    <dt><b>(file_handle) <tt>Open</tt>(<i>file</i>, <i>mode</i>)</b>
+    <dd><br>This command opens the file given as a string argument
+    according to the string <i>mode</i>, and returns a file
+    descriptor.  The <i>mode</i> string should consist of a single
+    character:  '<tt>r</tt>' for reading, '<tt>w</tt>' to write, or
+    '<tt>a</tt>' to append.  If the returned value is negative, an
+    error occurred.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Popen"></a>
+    <dl>
+    <dt><b>(file_handle) <tt>Popen</tt>(<i>command</i>, <i>mode</i>)</b>
+    <dd><br>This command opens a pipe to the shell command given as the
+    first argument, and returns a file handle that can be used to read
+    and/or write to the process.  The handle should be closed with the
+    <tt>Close</tt> function.  This is a wrapper around the C library
+    <tt>popen</tt> command so has the same limitations as the local
+    version of that command.  In particular, on some systems the mode
+    may be reading or writing, but not both.  The function will fail
+    if either argument is null or if the <tt>popen</tt> call fails.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="Sopen"></a>
+    <dl>
+    <dt><b>(file_handle) <tt>Sopen</tt>(<i>host</i>, <i>port</i>)</b>
+    <dd><br>This function opens a "socket" which is a communications
+    channel to the given <i>host</i> and <i>port</i>.  If the
+    <i>host</i> string is null or empty, the local host is assumed. 
+    The <i>port</i> number must be provided, there is no default.  If
+    the open is successful, the return value is an integer larger than
+    zero and is a handle that can be used in any of the read/write
+    functions that accept a file handle.  The <tt>Close</tt> function
+    should be called on the handle when the interaction is complete. 
+    If the connection fails, a negative number is returned.  The
+    function fails if there is a major error, such as no BSD sockets
+    support.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ReadLine"></a>
+    <dl>
+    <dt><b>(string) <tt>ReadLine</tt>(<i>maxlen</i>, <i>file_handle</i>)</b>
+    <dd><br>The <tt>ReadLine</tt> function returns a string with length up
+    to <i>maxlen</i> filled with characters read from
+    <i>file_handle</i>.  The <i>file_handle</i> must have been
+    successfully opened for reading by a call to <tt>Open</tt>,
+    <tt>Popen</tt>, or <tt>Sopen</tt>.  The read is terminated by end
+    of file, a return character, or a NULL byte.  The terminating
+    character is not included in the string.  A null string is
+    returned when the end of file is reached, or if the handle is not
+    found.  The function will fail if the handle is not a file handle,
+    or <i>maxlen</i> is less than 1.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="ReadChar"></a>
+    <dl>
+    <dt><b>(int) <tt>ReadChar</tt>(<i>file_handle</i>)</b>
+    <dd><br>The <tt>ReadChar</tt> function returns a single character read
+    from <i>file_handle</i>, which must have been successfully opened
+    for reading with an <tt>Open</tt>, <tt>Popen</tt>, or
+    <tt>Sopen</tt> call.  The function returns EOF (-1) when the end
+    of file is reached, or if the handle is not found.  The function
+    will fail if the handle is not a file handle.
+    </dl>
+    <hr>
+
+    <!-- 041004 -->
+    <a name="WriteLine"></a>
+    <dl>
+    <dt><b>(int) <tt>WriteLine</tt>(<i>string</i>, <i>file_handle</i>)</b>
+    <dd><br>The <tt>WriteLine</tt> function writes the content of
+    <i>string</i> to <i>file_handle</i>, which must have been
+    successfully opened for writing or appending with an
+    <tt>Open</tt>, <tt>Popen</tt>, or <tt>Sopen</tt> call.  The number
+    of characters written is returned.  The function will fail if the
+    handle is not a file handle, or the <i>string</i> is null.
+
+    <p>
+    This function has the unusual property that it will accept the
+    arguments in reverse order.
+
+    <p>
+    <tt>WriteLine</tt> does not append a carriage return character to
+    the string.  See the <tt><a href="PrintLog">PrintLog</a></tt>
+    function for a variable argument list alternative that does append
+    a return character.
+    </dl>
+    <hr>
+
+    <!-- 041004 -->
+    <a name="WriteChar"></a>
+    <dl>
+    <dt><b>(int) <tt>WriteChar</tt>(<i>c</i>, <i>file_handle</i>)</b>
+    <dd><br>This function writes a single character <i>c</i> to
+    <i>file_handle</i>, which must have been successfully opened for
+    writing or appending with a call to <tt>Open</tt>, <tt>Popen</tt>,
+    or <tt>Sopen</tt>.  The function returns 1 on success.  The
+    function will fail if the handle is not a file handle, or the
+    integer value of <i>c</i> is not in the range 0-255.
+
+    <p>
+    This function has the unusual property that it will accept the
+    arguments in reverse order.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="TempFile"></a>
+    <dl>
+    <dt><b>(string) <tt>TempFile</tt>(<i>prefix</i>)</b>
+    <dd><br>This function creates a unique temporary file name using the
+    prefix string given, and arranges for the file of that name to be
+    deleted when the program terminates.  The file is not actually
+    created.  The return from this command is passed to the
+    <tt>Open</tt> command to actually open the file for writing.
+    </dl>
+    <hr>
+
+    <!-- 020411 -->
+    <a name="ListDirectory"></a>
+    <dl>
+    <dt><b>(stringlist_handle) <tt>ListDirectory</tt>(<i>path</i>,
+      <i>filter</i>)</b>
+    <dd><br>This function returns a handle to a list of names of files
+    and/or directories in the given directory.  If the
+    <i>path</i> argument is null or empty, the current directory
+    is understood.  If the <i>filter</i> string is null or empty, all
+    files and subdirectories will be listed.  Otherwise the
+    <i>filter</i> string can be "<tt>f</tt>" in which case only
+    regular files will be listed, or "<tt>d</tt>" in which case only
+    directories will be listed.  If the directory does not exist or
+    can't be read, 0 is returned, otherwise the return value is a
+    handle to a list of strings.
+    </dl>
+    <hr>
+
+    <!-- 020411 -->
+    <a name="MakeDir"></a>
+    <dl>
+    <dt><b>(int) <tt>MakeDir</tt>(<i>path</i>)</b>
+    <dd><br>
+    This function will create a directory, if it doesn't already
+    exist.  If the <i>path</i> specifies a multi-component path, all
+    parent directories needed will be created.  The function will fail
+    if a null or empty <i>path</i> is passed, otherwise the return
+    value is 1 if no errors, 0 otherwise, with a message available
+    from <a href="GetError"><tt>GetError</tt></a>.  Passing the name
+    of an existing directory is not an error.
+    </dl>
+    <hr>
+
+    <!-- 020411 -->
+    <a name="FileStat"></a>
+    <dl>
+    <dt><b>(int) <tt>FileStat</tt>(<i>path</i>, <i>array</i>)</b>
+    <dd><br>
+    This function returns 1 if the file in <i>path</i> exists, and
+    fills in some data about the file (or directory).  If the file
+    does not exist, 0 is returned, and the array is untouched.
+
+    <p>
+    The <i>array</i> must have size 7 or larger, or a value 0 can be
+    passed for this argument.  In this case, no statistics are
+    returned, but the function return still indicates file existence.
+
+    <p>
+    If an array is passed and the path points to an existing file or
+    directory, the array is filled in as follows:
+
+    <dl>
+    <dt><i>array</i>&nbsp;[0]<dd>
+    Set to 0 if <i>path</i> is a regular file.  Set to 1 if
+    <i>path</i> is a directory.  Set to 2 if <i>path</i> is some other
+    type of object.
+    </dl>
+
+    <dl>
+    <dt><i>array</i>&nbsp;[1]<dd>
+    The size of the regular file in bytes, undefined if not a regular
+    file.
+    </dl>
+
+    <dl>
+    <dt><i>array</i>&nbsp;[2]<dd>
+    Set to 1 if the present process has read access to the file, 0
+    otherwise.
+    </dl>
+
+    <dl>
+    <dt><i>array</i>&nbsp;[3]<dd>
+    Set to 1 if the present process has write access to the file, 0
+    otherwise.
+    </dl>
+
+    <dl>
+    <dt><i>array</i>&nbsp;[4]<dd>
+    Set to 1 if the present process has execute permission to the
+    file, 0 otherwise.
+    </dl>
+
+    <dl>
+    <dt><i>array</i>&nbsp;[5]<dd>
+    Set to the user id of the file owner.
+    </dl>
+
+    <dl>
+    <dt><i>array</i>&nbsp;[6]<dd>
+    Set to the last modification time.  This is in a system-encoded
+    form, use <a href="TimeToString"><tt>TimeToString</tt></a> or <a
+    href="TimeToVals"><tt>TimeToVals</tt></a> to convert.
+    </dl>
+    </dl>
+    <hr>
+
+    <!-- 020411 -->
+    <a name="DeleteFile"></a>
+    <dl>
+    <dt><b>(int) <tt>DeleteFile</tt>(<i>path</i>)</b>
+    <dd><br>
+    Delete the file or directory given in <i>path</i>.  If a
+    directory, it must be empty.  If the file or directory does not
+    exist or was successfully deleted, 1 is returned, otherwise 0 is
+    returned with an error message available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 020411 -->
+    <a name="MoveFile"></a>
+    <dl>
+    <dt><b>(int) <tt>MoveFile</tt>(<i>from_path</i>, <i>to_path</i>)</b>
+    <dd><br>
+    Move (rename) the file <i>from_path</i> to a new file
+    <i>to_path</i>.  On success, 1 is returned, otherwise 0 is
+    returned with an error message available from <a
+    href="GetError"><tt>GetError</tt></a>.
+
+    <p>
+    Except under Windows, directories can be moved as well, but only
+    within the same file system.
+    </dl>
+    <hr>
+
+    <!-- 020411 -->
+    <a name="CopyFile"></a>
+    <dl>
+    <dt><b>(int) <tt>CopyFile</tt>(<i>from_path</i>, <i>to_path</i>)</b>
+    <dd><br>
+    Copy the file <i>from_path</i> to a new file <i>to_path</i>.  On
+    success, 1 is returned, otherwise 0 is returned with an error
+    message available from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 020411 -->
+    <a name="CreateBak"></a>
+    <dl>
+    <dt><b>(int) <tt>CreateBak</tt>(<i>path</i>)</b>
+    <dd><br>
+    If the path file exists, rename it, suffixing the name with a
+    "<tt>.bak</tt>" extension.  If a file with this name already
+    exists, it will be overwritten.  The function returns 1 if the
+    file was moved or doesn't exist, 0 otherwise, with an error
+    message available from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 102214 -->
+    <a name="Md5Digest"></a>
+    <dl>
+    <dt><b>(string) <tt>Md5Digest</tt>(<i>path</i>)</b>
+    <dd><br>
+    Return a string containing an MD5 digest for the file whose path
+    is passed as the argument.  This is the same digest as returned
+    from the <a href="!md5"><b>!md5</b></a> command, and from the
+    command
+    <blockquote>
+    <tt>openssl dgst -md5</tt> <i>filepath</i>
+    </blockquote>
+    available on many Linux-like systems.
+
+    <p>
+    If the file can not be opened, an empty string is returned, and an
+    error message is available from <a
+    href="GetError"><tt>GetError</tt></a>.
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:skt
+!!TITLE
+Socket and <i>Xic</i> Client/Server Interface
+!!HTML
+
+    <!-- 100408 -->
+    <a name="ReadData"></a>
+    <dl>
+    <dt><b>(string) <tt>ReadData</tt>(<i>size</i>, <i>skt_handle</i>)</b>
+    <dd><br>
+    This function will read exactly <i>size</i> bytes from a socket,
+    and return string-type data containing the bytes read.  The
+    <i>skt_handle</i> must be a socket handle returned from <a
+    href="Sopen"><tt>Sopen</tt></a>.  The function will fail (halt the
+    script) only if the <i>size</i> argument is not an integer.  On
+    error, a null string is returned, and a message is available from
+    <a href="GetError"><tt> GetError</tt></a>.
+
+    <p>
+    Note that the string can contain binary data, and if reading an
+    ASCII string be sure to include the null termination byte.  With
+    binary data, the standard string manipulations may not work, and
+    in fact can easily cause a program crash.
+    </dl>
+    <hr>
+
+    <!-- 100408 -->
+    <a name="ReadReply"></a>
+    <dl>
+    <dt><b>(string) <tt>ReadReply</tt>(<i>retcode</i>, <i>skt_handle</i>)</b>
+    <dd><br>
+    This function will read a response message from the <i>Xic</i> <a
+    href="xic:server">server</a>.  It expects the <i>Xic</i> server
+    protocol and can not be used for other purposes.
+
+    <p>
+    The first argument is an array of size 3 or larger.  Upon return,
+    <i>retcode</i>[0] will contain the server return code, which is an
+    integer 0-9, or possibly -1 on error.  The value in
+    <i>retcode</i>[1] will be the size of the message returned, which
+    will be 0 or larger.  The value in <i>retcode</i>[2] will be 0 on
+    success, 1 on error.  If an error occurred, an error message is
+    available from <a href="GetError"><tt>GetError</tt></a>.
+
+    <p>
+    The return code in <i>retcode</i>[0] can have the following
+    response types:
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td> <td>ok</td></tr>
+    <tr><td>1</td> <td>in block, waiting for "end"</td></tr>
+    <tr><td>2</td> <td>error</td></tr>
+    <tr><td>3</td> <td>scalar data</td></tr>
+    <tr><td>4</td> <td>string data</td></tr>
+    <tr><td>5</td> <td>array data</td></tr>
+    <tr><td>6</td> <td>zlist data</td></tr>
+    <tr><td>7</td> <td>lexpr data</td></tr>
+    <tr><td>8</td> <td>handle data</td></tr>
+    <tr><td>9</td> <td>geometry data</td></tr>
+    <tr><td>-1</td> <td>error reading data from server</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The return value is of string-type, and may be null or binary. 
+    With binary data, the standard string manipulations may not work,
+    and in fact can easily cause a program crash.  It is not likely
+    that the return will have any use other than as an argument to
+    <tt>ConvertReply</tt>.
+
+    <p>
+    This function will fail (halt the script) only if the retcode
+    argument is bad.
+    </dl>
+    <hr>
+
+    <!-- 100408 -->
+    <a name="ConvertReply"></a>
+    <dl>
+    <dt><b>(variable) <tt>ConvertReply</tt>(<i>message</i>, <i>retcode</i>)</b>
+    <dd><br>
+    This function will parse and analyze a return message from the
+    <i>Xic</i> <a href="xic:server">server</a>, which has been
+    received with <tt>ReadReply</tt>.  The first argument is the
+    message returned from <tt>ReadReply</tt>.  The second argument is
+    an array of size 3 or larger, and can be the same array passed to
+    <tt>ReadReply</tt>.  The <i>retcode</i>[0] entry must be set to
+    the message return code, and <i>retcode</i>[1] must be set to the
+    size of the returned buffer.  These are the same values as set in
+    <tt>ReadReply</tt>.
+
+    <p>
+    Upon return, <i>retcode</i>[2] will contain a "data_ok" flag,
+    which will be nonzero if the message contained data and the data
+    were read properly.  The function will fail (by halting the
+    script) if the <i>retcode</i> argument is bad, i.e., not an array
+    of size 3 or larger, or the <i>message</i> argument is not
+    string-type.
+
+    <p>
+    The response codes 0-2 contain no data and are status responses
+    from the server.  The data responses will set the type and data of
+    the function return, if successful.  The <i>retcode</i>[2] value
+    will be nonzero on success in these cases, and will always be
+    false if "<tt>longmode</tt>" is not enabled.
+
+    <p>
+    Note that the type returned can be anything, and if assigned to a
+    variable that already has a different type, an error will occur. 
+    The <a href="scr:control"><tt>delete</tt></a> operator can be
+    applied to the assigned-to variable to clear its state, before the
+    function call.
+
+    <p>
+    The response type 9 is returned from the <tt>geom</tt> server
+    function.  This function will return a handle to a geometry
+    stream, which can be passed to <a
+    href="GsReadObject"><tt>GsReadObject</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 100408 -->
+    <a name="WriteMsg"></a>
+    <dl>
+    <dt><b>(int) <tt>WriteMsg</tt>(<i>string</i>, <i>skt_handle</i>)</b>
+    <dd><br>
+    This function will write a message to a socket, adding the proper
+    network line termination.  The first argument is a string
+    containing the characters to write.  The second argument is a
+    socket handle obtained from <a href="Sopen"><tt>Sopen</tt></a>. 
+    Any trailing line termination will be stripped from the string,
+    and the network termination "<tt>\r\n</tt>" will be added.
+
+    <p>
+    This function never fails (halts the script).  The return value is
+    the number of bytes written, or 0 on error.  On error, a message
+    is available from <a href="GetError"><tt>GetError</tt></a>.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:sys
+!!TITLE
+System Command Interface
+!!HTML
+
+    <!-- 030104 -->
+    <a name="Shell"></a>
+    <dl>
+    <dt><b>(int) <tt>Shell</tt>(<i>command</i>)</b>
+    <dd><br>The <tt>Shell</tt> function will execute <i>command</i> under
+    an operating system shell.  The <i>command</i> string consists of
+    a program name plus arguments, which should be meaningful to the
+    operating system.  The return value is the return code from the
+    command, as obtained by the shell.  The function will fail if the
+    <i>command</i> string is null or empty.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="System"></a>
+    <dl>
+    <dt><b>(int) <tt>System</tt>(<i>command</i>)</b>
+    <dd><br>This function sends the <i>command</i> string to the operating
+    system for execution.  This is an alias to the <tt>Shell</tt>
+    function.
+    </dl>
+    <hr>
+
+    <!-- 100704 -->
+    <a name="GetPID"></a>
+    <dl>
+    <dt><b>(int) <tt>GetPID</tt>(<i>parent</i>)</b>
+    <dd><br>
+    If the boolean argument is zero, this function returns the process
+    ID of the currently running <i>Xic</i> process.  If the argument
+    is nonzero, the function returns the process ID of the parent
+    process (typically a shell).  The process ID is a unique integer
+    assigned by the operating system.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:menu
+!!TITLE
+Menu Buttons
+!!HTML
+
+    <p>
+    <!-- 030113 -->
+    <a name="SetButtonStatus"></a>
+    <dl>
+    <dt><b>(int) <tt>SetButtonStatus</tt>(<i>menu</i>, <i>button</i>,
+      <i>set</i>)</b>
+    <dd><br>This command sets the state of the specified button in the
+    given menu or button array, which must be a toggle button.
+    The button will be "pressed" if necessary to match the given state.
+
+    <p>
+    The first argument is a string giving the internal name of a menu. 
+    If the given name is null, empty, or "<tt>main</tt>", all of the
+    menus in the main window will be searched.  The internal menu
+    names are as follows:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><tt>main</tt></td>        <td>Main window menus</td></tr>
+    <tr><td><tt>side</tt></td>        <td><b>Side Buttons</td></tr>
+    <tr><td><tt>top</tt></td>         <td><b>Top Buttons</td></tr>
+    <tr><td><tt>sub1</tt></td>        <td>Viewport 1 menus</td></tr>
+    <tr><td><tt>sub2</tt></td>        <td>Viewport 2 menus</td></tr>
+    <tr><td><tt>sub3</tt></td>        <td>Viewport 3 menus</td></tr>
+    <tr><td><tt>sub4</tt></td>        <td>Viewport 4 menus</td></tr>
+    <tr><td colspan=2>&nbsp;</td></tr>
+    <tr><td><tt>file</tt></td>        <td><b>File Menu</b></td></tr>
+    <tr><td><tt>cell</tt></td>        <td><b>Cell Menu</b></td></tr>
+    <tr><td><tt>edit</tt></td>        <td><b>Edit Menu</b></td></tr>
+    <tr><td><tt>mod</tt></td>         <td><b>Modify Menu</b></td></tr>
+    <tr><td><tt>view</tt></td>        <td><b>View Menu</b></td></tr>
+    <tr><td><tt>attr</tt></td>        <td><b>Attributes Menu</b></td></tr>
+    <tr><td><tt>conv</tt></td>        <td><b>Convert Menu</b></td></tr>
+    <tr><td><tt>drc</tt></td>         <td><b>DRC Menu</b></td></tr>
+    <tr><td><tt>ext</tt></td>         <td><b>Extract Menu</b></td></tr>
+    <tr><td><tt>user</tt></td>        <td><b>User Menu</b></td></tr>
+    <tr><td><tt>help</tt></td>        <td><b>Help Menu</b></td></tr>
+    </table>
+
+    <p>
+    The second argument is the button name, which is the code name
+    given in the tooltip window which pops up when the mouse pointer
+    rests over the button.  In the case of <b>User Menu</b> command
+    buttons, the name is the text which appears on the button.  Only
+    buttons and menus visible in the current mode (electrical or
+    physical) can be accessed.
+
+    <p>
+    It should be stressed that the string arguments refer to internal
+    names, and <i>not</i> (in general) the label printed on the
+    button.  For a button, this is the five character or fewer name
+    that is shown in the tooltip that pops up when the pointer is over
+    the button.  The same applies to the <i>menu</i> argument, however
+    these names are not available from running <i>Xic</i>.  The
+    internal menu names are provided in the table above.
+
+    <p>
+    The identification of the menu is case insensitive.  In the lower
+    group of entries, only the first one or two characters have to
+    match.  Thus "Convert", "c", and "crazy" would all select the
+    <b>Convert</b> menu, for example.  One character is sufficient,
+    except for 'e' (<b>Extract</b> and <b>Edit</b>).  So, the menu
+    argument can be the menu label, or the internal name, or some
+    simplification at the user's discretion.  For the upper group, the
+    entire menu name must be given.
+
+    <p>
+    If the third argument is nonzero, the button will be pressed if it
+    is not already engaged.  If the third argument is zero, the button
+    will be depressed if it is not already disengaged.  The return
+    value is 1 if the button state changed, 0 if the button state did
+    not change, or -1 if the button was not found.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="GetButtonStatus"></a>
+    <dl>
+    <dt><b>(int) <tt>GetButtonStatus</tt>(<i>menu</i>, <i>button</i>)</b>
+    <dd><br>This command returns the status of the indicated menu button,
+    which should be a toggle button.  The two arguments are as
+    described for <tt>SetButtonStatus</tt>.  The return value is 1 if
+    the button is engaged, 0 if the button is not engaged, or -1 if
+    the button is not found.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="PressButton"></a>
+    <dl>
+    <dt><b>(int) <tt>PressButton</tt>(<i>menu</i>, <i>button</i>)</b>
+    <dd><br>This command "presses" the indicated button.  This works with
+    all buttons, toggle or otherwise, and is equivalent to clicking on
+    the button with the mouse.  The two arguments, which identify the
+    menu and button, are described under <tt>SetButtonStatus</tt>. 
+    The return value is 1 if the button was pressed, 0 if the button
+    was not found.
+    </dl>
+    <hr>
+
+    <p>
+    The following four functions send raw events to the window system. 
+    They are used primarily for the run time logging in the <a
+    href="logfiles"><tt>xic_run.log</tt></a> file.  The run log
+    consists entirely of executable statements, thus command scripts
+    can be created by simply performing operations in <i>Xic</i>, and
+    editing the <tt>xic_run.log</tt> file.  Otherwise, these functions
+    are not likely to be of much use to most <i>Xic</i> users.
+    <hr>
+
+    <p>
+    <!-- 030104 -->
+    <a name="BtnDown"></a>
+    <dl>
+    <dt><b><tt>BtnDown</tt>(<i>num</i>, <i>state</i>, <i>x</i>, <i>y</i>,
+      <i>widget</i>)</b>
+    <dd><br>This function generates a button press event dispatched to the
+    widget specified by the last argument.  The <i>num</i> is the
+    button number:  1 for left, 2 for middle, 3 for right.  The
+    <i>state</i> is the "modifier" key state at the time of the event,
+    and is the OR of 1 if <b>Shift</b> pressed, 4 if <b>Control</b>
+    pressed, 8 if <b>Alt</b> pressed, as in X windows.  Other flags
+    may be given as per that spec, but are not used by <i>Xic</i>. 
+    The coordinates are relative to the window of the target, in
+    pixels.  The <i>widget</i> argument is a string containing a
+    resource path for the widget relative to the application, the
+    syntax of which is dependent upon the specific user interface.  A
+    call to <tt>BtnDown</tt> should be followed by a call to
+    <tt>BtnUp</tt> on the same widget.  There is no return value.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="BtnUp"></a>
+    <dl>
+    <dt><b><tt>BtnUp</tt>(<i>num</i>, <i>state</i>, <i>x</i>, <i>y</i>,
+      <i>widget</i>)</b>
+    <dd><br>This function generates a button release event dispatched to
+    the widget specified by the last argument.  The <i>num</i> is the
+    button number:  1 for left, 2 for middle, 3 for right.  The
+    <i>state</i> is the "modifier" key state at the time of the event,
+    and is the OR of 1 if <b>Shift</b> pressed, 4 if <b>Control</b>
+    pressed, 8 if <b>Alt</b> pressed, as in X windows.  Other flags
+    may be given as per that spec, but are not used by <i>Xic</i>. 
+    The coordinates are relative to the window of the target.  The
+    <i>widget</i> argument is a string containing a resource path for
+    the widget relative to the application, the syntax of which is
+    dependent upon the specific user interface.  A call to
+    <tt>BtnDown</tt> should be only follow a call to <tt>BtnUp</tt> on
+    the same widget.  There is no return value.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="KeyDown"></a>
+    <dl>
+    <dt><b><tt>KeyDown</tt>(<i>keysym</i>, <i>state</i>, <i>widget</i>)</b>
+    <dd><br>This function generates a key press event dispatched to the
+    widget specified in the last argument.  The <i>keysym</i> is a
+    code representing the key to send.  The <i>state</i> and
+    <i>widget</i> arguments are as described for <tt>BtnDown</tt>.  A
+    call to <tt>KeyUp</tt> should follow a call to <tt>KeyDown</tt>,
+    on the same widget.  There is no return value.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="KeyUp"></a>
+    <dl>
+    <dt><b><tt>KeyUp</tt>(<i>keysym</i>, <i>state</i>, <i>widget</i>)</b>
+    <dd><br>This function generates a key release event dispatched to the
+    widget specified in the last argument.  The <i>keysym</i> is a
+    code representing the key to send.  The <i>state</i> and
+    <i>widget</i> arguments are as described for <tt>BtnDown</tt>.  A
+    call to <tt>KeyUp</tt> should only follow a call to
+    <tt>KeyDown</tt>, on the same widget.  There is no return value.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:mouse
+!!TITLE
+Mouse Input
+!!HTML
+
+    <!-- 021310 -->
+    <a name="Point"></a>
+    <dl>
+    <dt><b>(int) <tt>Point</tt>(<i>array</i>)</b>
+    <dd><br>The argument is the name of a two component (or larger) array. 
+    This function blocks until mouse button 1 (left button) is
+    pressed, or the <b>Esc</b> key is pressed, while the pointer is in
+    a drawing window.  The coordinates of the pointer at the time of
+    the press are returned in the array.  The return value is 0 if
+    <b>Esc</b> was pressed or 1 for a button 1 press.  Buttons 2 and 3
+    have their normal effects while this function is active, i.e.,
+    they are not handled in this function.
+
+      <p>
+      Example:
+      <blockquote><tt>
+      a[2]<br>
+      ShowPrompt("Click in a drawing window")<br>
+      Point(a)<br>
+      ShowPrompt("x=", a[0], "y=", a[1])<br>
+      </tt></blockquote>
+
+    <p>
+    When a ghost image is displayed with the <a
+    href="ShowGhost"><tt>ShowGhost</tt></a> function, the coordinates
+    returned are either snapped to the grid or not, depending on the
+    mode number passed to <tt>ShowGhost</tt>.  If no ghost image is
+    displayed, the nearest grid point is returned.
+
+    <p>
+    If the <a href="UseTransform"><tt>UseTransform</tt></a> function
+    has been called to enable use of the current transform, the
+    current transform will be applied to the displayed objects when
+    using mode 8.  The translation supplied to <tt>UseTransform</tt>
+    is ignored (the translation tracks the mouse pointer).
+    </dl>
+    <hr>
+
+    <!-- 110115 -->
+    <a name="Selection"></a>
+    <dl>
+    <dt><b>(int) <tt>Selection</tt>()</b>
+    <dd><br>
+    Block, but allow selections in drawing windows.  Return on any
+    keypress, or escape event.  Return the number of selected objects
+    in the selection list.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:grin
+!!TITLE
+Graphical Input
+!!HTML
+
+    <!-- 020109 -->
+    <a name="PopUpInput"></a>
+    <dl>
+    <dt><b>(string) <tt>PopUpInput</tt>(<i>message</i>, <i>default</i>,
+      <i>buttontext</i>, <i>multiline</i>)</b>
+    <dd><br>
+    This function will pop up a text-input widget, into which the user
+    can enter text.  The function blocks until the user presses the
+    affirmation button, at which time the text is returned, and the
+    pop-up disappears.  If the user instead presses the <b>Dismiss</b>
+    button or otherwise destroys the pop-up, the script will halt.
+
+    <p>
+    The first argument is an explanatory string which is printed on
+    the pop-up.  If this argument is null or empty, a default message
+    is used.  Recall that passing 0 is equivalent to passing a null
+    string.
+
+    <p>
+    The second argument is a string providing default text which
+    appears in the entry area when the pop-up appears.  If this
+    argument is null or empty there will be no default text.
+
+    <p>
+    The third argument is a string giving text that will appear on the
+    affirmation button.  If null or empty, the button will show a
+    default label.
+
+    <p>
+    The fourth argument is a boolean that when nonzero, a multi-line
+    text input widget will be used.  Otherwise, a single-line input
+    widget will be used.
+    </dl>
+    <hr>
+
+    <!-- 020109 -->
+    <a name="PopUpAffirm"></a>
+    <dl>
+    <dt><b>(int) <tt>PopUpAffirm</tt>(<i>message</i>)</b>
+    <dd><br>
+    This button pops up a small window which allows the user to answer
+    yes or no to a question.  Deleting the window is equivalent to
+    answering no.  The argument is a string which should contain the
+    text to which the user responds.  When the user responds, the
+    pop-up disappears, and the return value is 1 if the user answered
+    "yes", 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 020109 -->
+    <a name="PopUpNumeric"></a>
+    <dl>
+    <dt><b>(real) <tt>PopUpNumeric</tt>(<i>message</i>, <i>initval</i>,
+      <i>minval</i>, <i>maxval</i>, <i>delta</i>, <i>numdgt</i>)</b>
+    <dd><br>
+    This function pops up a small window which contains a "spin
+    button" for numerical entry.  The user is able to enter a number
+    directly, or by clicking on the increment/decrement buttons.
+
+    <p>
+    The first argument is a string providing explanatory text.  The
+    second argument provides the initial numeric value.  The
+    <i>minval</i> and <i>maxval</i> arguments are the minimum and
+    maximum allowed values.  The <i>delta</i> argument is the delta to
+    increment or decrement when the user presses the up/down buttons. 
+    These parameters are all real values.  The <i>numdgt</i> is an
+    integer value which sets how many places to the right of a decimal
+    point are shown.
+
+    <p>
+    If the user presses <b>Apply</b>, the pop-up disappears, and this
+    function returns the current value.  If the user presses the
+    <b>Dismiss</b> button or otherwise destroys the widget, the script
+    will halt.
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:textin
+!!TITLE
+Text Input
+!!HTML
+
+    <!-- 030204 -->
+    <a name="AskReal"></a>
+    <dl>
+    <dt><b>(scalar) <tt>AskReal</tt>(<i>prompt</i>, <i>default</i>)</b>
+    <dd><br>The two arguments ar both strings, or 0 (equivalent to the
+    predefined constant <tt>NULL</tt>).  The function will print the
+    strings on the prompt line, and the user will type a response. 
+    The response is converted to a real number which is returned by
+    the function.  If either argument is NULL, that part of the
+    message is not printed.  The <i>prompt</i> is immutable, but the
+    <i>default</i> can be edited by the user. 
+
+    <p>
+    Example:
+    <blockquote><tt>
+    a = AskReal("enter a value for a ", "2.5")
+    </tt></blockquote>
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="AskString"></a>
+    <dl>
+    <dt><b>(string) <tt>AskString</tt>(<i>prompt</i>, <i>default</i>)</b>
+    <dd><br>The two arguments and the return value are strings.  Similar to
+    the <tt>AskReal</tt> function, however a string is returned.
+    <p>
+    Example:
+    <blockquote><tt>
+    title = AskString("Enter your title: ", "Senior Computer Geek")
+    </tt></blockquote>
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="AskConsoleReal"></a>
+    <dl>
+    <dt><b>(scalar) <tt>AskConsoleReal</tt>(<i>prompt</i>, <i>default</i>)</b>
+    <dd><br>This function prompts the user for a number, in the console
+    window.  It is otherwise similar to the <tt>AskReal</tt> function.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="AskConsoleString"></a>
+    <dl>
+    <dt><b>(string) <tt>AskConsoleString</tt>(<i>prompt</i>, <i>default</i>)</b>
+    <dd><br>This function prompts the user for a string, in the console
+    window.  It is otherwise similar to the <tt>AskString</tt>
+    function.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="GetKey"></a>
+    <dl>
+    <dt><b>(int) <tt>GetKey</tt>()</b>
+    <dd><br>This function blocks until any key is pressed.  The return
+    value is a key code, which is system dependent, but is generally
+    the "keysym" of the key pressed.  If the value is less than 20,
+    the value is an internal code.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+
+!!KEYWORD
+funcs:main2:textout
+!!TITLE
+Text Output
+!!HTML
+
+    <!-- 030104 -->
+    <a name="SepString"></a>
+    <dl>
+    <dt><b>(string) <tt>SepString</tt>(<i>string</i>, <i>repeat</i>)</b>
+    <dd><br>This function returns a string that is created by repeating
+    the <i>string</i> argument <i>repeat</i> times.  The <i>repeat</i>
+    value is an integer in the range 1-132.  The function will fail if
+    <i>string</i> is null.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="ShowPrompt"></a>
+    <dl>
+    <dt><b>(int) <tt>ShowPrompt</tt>(<i>arg_list</i>)</b>
+    <dd><br>Print the values of the arguments on the prompt line.  The
+    number of arguments is variable.
+      <p>
+      Example:
+      <blockquote><tt>
+      a = 2.5<br>
+      b = "The value of a is "<br>
+      ShowPrompt(b, a)<br>
+      </tt></blockquote>
+      This code fragment will print "The value of a is 2.5" on the
+      prompt line.
+
+    <p>
+    If given without arguments, the prompt line will be erased, but
+    without disturbing the current message as returned with
+    <tt>GetLastPrompt</tt>.  The function returns 1 if something is
+    printed (message updated), 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SetIndent"></a>
+    <dl>
+    <dt><b>(int) <tt>SetIndent</tt>(<i>level</i>)</b>
+    <dd><br>This function is used to set the indentation level used for
+    printing with the <tt>Print</tt> and <tt>PrintLog</tt> functions. 
+    The argument is an integer which specifies the column where
+    printed output will start.  The argument can also be a string in
+    one of the following formats:
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td valign=top><tt>"+<i>N</i>"</tt></td><td> <tt><i>N</i></tt>
+       is an optional integer (default 1), increases indentation by
+       <tt><i>N</i></tt> columns</td></tr>
+    <tr><td valign=top><tt>"-<i>N</i>"</tt></td><td> <tt><i>N</i></tt>
+       is an optional integer (default 1), decreases indentation by
+       <tt><i>N</i></tt> columns</td></tr>
+    <tr><td valign=top><tt>""</tt></td><td> Empty string, does not change
+       indentation</td></tr>
+    </table>
+
+    <p>
+    The function returns the previous indentation level.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="SetPrintLimits"></a>
+    <dl>
+    <dt><b>(int) <tt>SetPrintLimits</tt>(<i>num_array_elts</i>,
+      <i>max_zoids</i>)</b>
+    <dd><br>While printing with the <tt>Print</tt> family of functions, or
+    when using <tt>ListHandle</tt>, the number of array points and
+    trapezoids actually printed is limited.  The default limits are
+    100 array points and 20 trapezoids.  This function allows these
+    limits to be changed.  A value for either argument of -1 will
+    remove any limit, 0 will keep the present limit, non-negative
+    values will set the limit, and negative values of -2 or less will
+    revert to the default values.  This function always returns 1 and
+    never fails.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Print"></a>
+    <dl>
+    <dt><b>(int) <tt>Print</tt>(<i>arg_list</i>)</b>
+    <dd><br>This function will print the arguments on the console.  This
+    is the window from which <i>Xic</i> was launched.  The number of
+    arguments is variable.  The printing is indented according to the
+    level set with the <tt>SetIndent</tt> function.
+
+    <p>
+    Any type of variable can be printed.  Handles will be printed as a
+    string giving the handle type.  For a zoidlist variable, the
+    coordinates of the trapezoids are printed, one trapezoid per line,
+    in order x-lower-left, x-lower-right, y-lower, x-upper-left,
+    x-upper-right, y-upper.  Arrays are printed as a sequence of
+    numbers.  The number of array elements and trapezoids printed is
+    limited to 100 and 20, respectively, but these limits can be
+    changed or removed with the <tt>SetPrintLimits</tt> function.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="PrintLog"></a>
+    <dl>
+    <dt><b>(int) <tt>PrintLog</tt>(<i>file_handle</i>, <i>arg_list</i>)</b>
+    <dd><br>This works like the <tt>Print</tt> function, however output
+    goes to a file previously opened for writing with the
+    <tt>Open</tt> function.  The first argument is the file handle
+    returned from <tt>Open</tt>.  Following arguments are printed to
+    the file in order, using indentation set with the
+    <tt>SetIndent</tt> function.  The function returns the number of
+    characters written.  The function will fail if the handle is not a
+    file handle.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="PrintString"></a>
+    <dl>
+    <dt><b>(string) <tt>PrintString</tt>(<i>arg_list</i>)</b>
+    <dd><br>This works like the <tt>Print</tt>, etc.  functions, however
+    it returns a string containing the text, and indentation as set
+    with <tt>SetIndent</tt> is ignored.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="PrintStringEsc"></a>
+    <dl>
+    <dt><b>(string) <tt>PrintStringEsc</tt>(<i>arg_list</i>)</b>
+    <dd><br>This works exactly like <tt>PrintString</tt>, however, special
+    characters in any string supplied as an argument are shown in
+    their '\' escape form.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Message"></a>
+    <dl>
+    <dt><b>(int) <tt>Message</tt>(<i>arg_list</i>)</b>
+    <dd><br>This function will print the arguments in a pop-up message
+    window, indentation is ignored.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="ErrorMsg"></a>
+    <dl>
+    <dt><b>(int) <tt>ErrorMsg</tt>(<i>arg_list</i>)</b>
+    <dd><br>This function will print the arguments in a pop-up error
+    window, indentation is ignored.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="TextWindow"></a>
+    <dl>
+    <dt><b>(int) <tt>TextWindow</tt>(<i>fname</i>, <i>readonly</i>)</b>
+    <dd><br>This function brings up a text editor window loaded with the
+    file whose path is given in the <i>fname</i> string.  If the
+    integer <i>readonly</i> is 0, editing of the file is enabled,
+    otherwise editing is prevented.
+    </dl>
+
+!!SEEALSO
+funcs:main2
+

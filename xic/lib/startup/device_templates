@@ -1,0 +1,68 @@
+# Xic system device recognition templates.
+# $Id: device_templates,v 1.1 2017/03/22 22:31:51 stevew Exp $
+
+DeviceTemplate NmosTemplate
+Name $(_1)
+Prefix M
+Body $(_2)
+#Body ((((PO&OD)-NW)-VTL_N)-VTH_N)-CDUDMY
+Contact s $(_4) $(_4)&(nplus_layer-$(_3))
+Contact d $(_4) $(_4)&(nplus_layer-$(_3))
+Contact g $(_3) $(_4)&$(_3)
+BulkContact b defer gnd! 1 metal1_layer (((metal1_layer&$(_4))&contact_layer)&pplus_layer)-nwell_layer
+Permute d s
+Depth 1
+Bloat 0.01
+Merge
+Measure Length BodyMinDimen*1e-06
+Measure Width (BodyArea/BodyMinDimen)*1e-06
+Measure AS CArea.0.$(_4)*1e-12
+Measure AD CArea.1.$(_4)*1e-12
+Measure PS CPerim.0.$(_4)*1e-06
+Measure PD CPerim.1.$(_4)*1e-06
+Measure Fingers Sections
+LVS Length l
+LVS Width 'm*w'
+#LVS AS 'm*as'
+#LVS AD 'm*ad'
+#LVS PS 'm*ps'
+#LVS PD 'm*pd'
+#LVS Fingers 'm*nf'
+Spice %n% %c%d %c%g %c%s %c%b %model% %param%
+Cmput NMOS device %n%, Length: %me%Length  Width: %me%Width  AS: %me%AS PS: %me%PS  AD: %me%AD  PD: %me%PD
+Model modn
+Param l=%me%Length w=%me%Width ad=%me%AD pd=%me%PD as=%me%AS ps=%me%PS
+End
+
+DeviceTemplate PmosTemplate
+Name $(_1)
+Prefix M
+Body $(_2)
+Contact s $(_4) $(_4)&(pplus_layer-$(_3))
+Contact d $(_4) $(_4)&(pplus_layer-$(_3))
+Contact g $(_3) $(_4)&$(_3)
+BulkContact b 2 metal1_layer (((metal1_layer&$(_4))&contact_layer)&nwell_layer)&nplus_layer
+Permute d s
+Depth 1
+Bloat 0.01
+Merge
+Measure Length BodyMinDimen*1e-06
+Measure Width (BodyArea/BodyMinDimen)*1e-06
+Measure AS CArea.0.$(_4)*1e-12
+Measure AD CArea.1.$(_4)*1e-12
+Measure PS CPerim.0.$(_4)*1e-06
+Measure PD CPerim.1.$(_4)*1e-06
+Measure Fingers Sections
+LVS Length l
+LVS Width 'm*w'
+#LVS AS 'm*as'
+#LVS AD 'm*ad'
+#LVS PS 'm*ps'
+#LVS PD 'm*pd'
+#LVS Fingers 'm*nf'
+Spice %n% %c%d %c%g %c%s %c%b %model% %param%
+Cmput PMOS device %n%, Length: %me%Length  Width: %me%Width  AS: %me%AS PS: %me%PS  AD: %me%AD  PD: %me%PD
+Model modp
+Param l=%me%Length w=%me%Width ad=%me%AD pd=%me%PD as=%me%AS ps=%me%PS
+End
+

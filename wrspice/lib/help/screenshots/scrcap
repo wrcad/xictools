@@ -1,0 +1,17 @@
+#! /bin/sh
+
+# $Id: scrcap,v 1.1 2013/12/17 03:01:03 stevew Exp $
+# A simple capture program for shell windows, requires ImageMagick.
+# This will include the window manager decoration.
+# Usage:  scrcap filename.ext, then click on a window.  The "ext"
+# gives the type of image file to create.
+
+fname=$1
+if [ x$fname = x ]; then
+    echo usage: scrcap filename
+    exit
+fi
+wid=`xwininfo -frame | grep "Window id:" -`
+set $wid
+# echo $4
+import -window $4 $fname

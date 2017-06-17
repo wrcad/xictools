@@ -1,0 +1,165 @@
+% -----------------------------------------------------------------------------
+% MRouter Manual file: mrman1.tex
+% Stephen R. Whiteley, Whiteley Research Inc., Sunnyvale CA
+% No copyright, open-source
+% $Id: mrman1.tex,v 1.4 2017/02/17 05:44:31 stevew Exp $
+% -----------------------------------------------------------------------------
+
+\chapter{Introduction to {\MRouter}}
+\pagenumbering{arabic}
+
+In this manual, text which is provided in {\vt typewriter} font
+represents verbatim input to or output from the program.  Text
+enclosed in square brackets ( [text] ) is optional in the given
+context, as in optional command arguments, whereas other text should
+be provided as indicated.  Text which is {\it italicized\/} should be
+replaced with the necessary input, as described in the accompanying
+text.
+
+\section{{\MRouter} Overview}
+
+The {\MRouter} is an open-source maze router available from the free
+software archive on {\vt wrcad.com}.  It is derived from the {\it
+Qrouter} from {\vt opencircuitdesign.com}.
+
+The {\MRouter} is a separate, stand-alone open-source project. 
+Presently, users must download and build the {\MRouter} tool. 
+Instructions can be found in the README file in the distribution. 
+Eventually, packages for the supported operating systems will be
+provided.
+
+The {\it Qrouter} source code was converted from C to C++, and
+architected into two classes:
+
+\begin{enumerate}
+\item{A database class.  This caches technology and routing
+information.  It can read and write technology and route information
+in standard LEF and DEF file formats.  It makes use of the open-source
+Cadence LEF/DEF toolkit to provide complete and correct handling of
+these files.}
+
+\item{The maze router itself.  This is logically the same as the
+{\it Qrouter}, but the code has been refactored to make use of C++
+encapsulation and other elements of the language.  This will
+facilitate future development of new modes and features, and
+maintenance.}
+\end{enumerate}
+
+The two classes are exported as a plug-in library, intended to be used
+with {\Xic}, or another application.  {\Xic} is a commercial graphical
+editor for integrated circuit design from Whiteley Research Inc.  More
+information can be gound on the company's web site {\vt
+http://wrcad.com}.  {\Xic} has a developing interface to the
+{\MRouter} plug-in.  providing full control of the routing operations,
+visualization, etc.
+
+\section{Theory of Operation}
+
+The {\MRouter} is a maze router, which is terminology that describes
+a routing program that makes use of the Lee algorithm.  On
+oversimplified description of the Lee algorithm is as follows.
+
+\begin{enumerate}
+\item{The routing space is logically divided into an x-y grid of
+routing channels.  We will assume that each layer has the same
+routing pitch for simplicity.  From each routing grid location, one
+can logically move north, south, east, west, and up or down.}
+
+\item{Obstructions and pins from placed gate instances are added to
+the grid by setting flags in the overlapping grid locations.  These
+indicate locations where it is not possible to "travel".}
+
+\item{Suppose you have a route with two connections:  the source and
+the target.  Both the source and target consist initially of a set of
+one or more points, each marked accordinly.  One iteratively visits
+all of the non-obstructed grid points adjacent to a previously
+visited grid point, whth the initial points being the source. 
+Iteration continues until a new point falls on a target location.  We
+have then found a route through the maze.}
+
+\item{Nets with more than two connections are handled analogously.}
+
+\item{Once a complete route is found, we then "commit" the route by
+marking all of the grid points that the route covers, which are then
+treated like obstructions when finding routes on other nets.}
+\end{enumerate}
+
+Maze routers are most successful for small to medium designs, as they
+are compute and memory intensive.  They do have the advantage that if
+a layout is routable, the Lee algorithm will find a route, and the
+route will be the lowest cost (perhaps shortest) of any alternatives.
+
+{\MRouter} (and {\it Qrouter}) use extensions to the basic Lee
+algorithm in order to reduce routing timer.  First of all, routing is
+a two stage process.  In stage 1, we route as much as can be routed,
+but typically some fraction of the nets will be painted into a corner
+and not be routable.  We keep a "failed route" list of these routes. 
+In stage 2, we use a different approach.  For each route in the failed
+list, we will find a best route while ignoring collisions with
+existing routes.  If this succeeds, we then find the routes that
+collide, rip them up, and add them to the end of the failed route
+list.  We continue processing the failed route list until all nets are
+routed, or stage 2 can no longer make progress and stalls.
+
+One important factor is the use of masking and multiple passes when
+finding routes.  The mask identifies grid points that are candidates
+for searching for a route.  We attempt to identify where a solution
+is likely to be found, and enable this area, plus some "slop" space. 
+This minimizes the number of grid locations that need processing,
+speeding up the finding of nets, at least until congestion becomes
+heavy.  As congestion becomes heavier, one has to increase the size
+of the mask open areas to find a solution.  To find the last of the
+nets, one may work with no mask at all.  This is resource consuming,
+but may be the only way to find nets that need to wander a long way
+off-course in order to finally make the connection.
+
+When finding a route, we try an initial pass with a tight mask.  If
+that fails, we perform subsequent passes, each time increasing the
+open area of the mask, until we have success or reach a limit on
+the number of passes.
+
+\section{Use with {\Xic}}
+
+Once installed in the standard location, the {\Xic} program from
+Whiteley Research Inc.  will find and load the plug-in on start-up.  A
+message ``{\vt Loading MRouter}'' will be printed in the console along
+with the other startup messages.
+
+When {\Xic} starts, it will look for the {\MRouter}
+plug-in in the following locations, in order.
+\begin{enumerate}
+\index{MROUTER\_PATH environment variable}
+\item{The value of the {\vt MROUTER\_PATH} environment variable,
+if found.  This is the full path to the shared library.  If this
+variable exists, no other locations are checked.}
+
+\index{MROUTER\_HOME environment variable}
+\item{The {\MRouter} installation location, which defaults to {\vt
+/usr/local/mrouter}.  If installed in another location, the
+environment variable {\vt MROUTER\_HOME} can be set to the equivalent
+path.  The library will be found in the {\vt lib} subdirectory of the
+installation location.}
+\end{enumerate}
+
+There is a version compatibility test applied before the plug-in can
+be loaded.  The {\MRouter} version string consists of three integers
+separated by periods, as
+
+\begin{quote}
+{\it major\/}{\vt .}{\it minor\/}{\vt .}{\it release}
+\end{quote}
+
+The {\it major} and {\it minor} numbers must match the version {\Xic}
+was built for.  If not, the plug-in is not loaded.  The {\it release}
+number need not match, consequently there may be differences in
+behavior seen, but there should be no instability.
+
+If the {\vt XIC\_PLUGIN\_DBG} variable is set in the environment,
+messages are printed in the console tracing the plug-in search and
+load.  This can be used to diagnosae a problem, as the process is
+otherwise silent.
+
+Presently, the router is controlled exclusively with the {\cb !mr}
+text command.  The {\vt MRouter} script function can be used to
+perform the operations from scripts.
+

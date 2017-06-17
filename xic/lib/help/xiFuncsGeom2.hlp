@@ -1,0 +1,2324 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiFuncsGeom2.hlp,v 1.40 2017/04/19 12:56:30 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiFuncsGeom2.hlp
+!!TITLE
+xiFuncsGeom2.hlp
+!!HTML
+
+!!SUBTOPICS
+funcs:geom2
+funcs:geom2:cell
+funcs:geom2:clip
+funcs:geom2:obj
+funcs:geom2:prp
+
+
+!! Cells, PCells, Vias, and Instance Placement
+!!REDIRECT CheckPCellParam      funcs:geom2:cell#CheckPCellParam
+!!REDIRECT CheckPCellParams     funcs:geom2:cell#CheckPCellParams
+!!REDIRECT CreateCell           funcs:geom2:cell#CreateCell
+!!REDIRECT CopyCell             funcs:geom2:cell#CopyCell
+!!REDIRECT RenameCell           funcs:geom2:cell#RenameCell
+!!REDIRECT DeleteEmpties        funcs:geom2:cell#DeleteEmpties
+!!REDIRECT Place                funcs:geom2:cell#Place
+!!REDIRECT PlaceH               funcs:geom2:cell#PlaceH
+!!REDIRECT PlaceSetArrayParams  funcs:geom2:cell#PlaceSetArrayParams
+!!REDIRECT PlaceSetPCellParams  funcs:geom2:cell#PlaceSetPCellParams
+!!REDIRECT Replace              funcs:geom2:cell#Replace
+!!REDIRECT OpenViaSubMaster     funcs:geom2:cell#OpenViaSubMaster
+
+!! Clipping Functions
+!!REDIRECT ClipAround           funcs:geom2:clip#ClipAround
+!!REDIRECT ClipAroundCopy       funcs:geom2:clip#ClipAroundCopy
+!!REDIRECT ClipTo               funcs:geom2:clip#ClipTo
+!!REDIRECT ClipToCopy           funcs:geom2:clip#ClipToCopy
+!!REDIRECT ClipObjects          funcs:geom2:clip#ClipObjects
+!!REDIRECT ClipIntersectCopy    funcs:geom2:clip#ClipIntersectCopy
+
+!! Other Object Management Functions
+!!REDIRECT ChangeLayer          funcs:geom2:obj#ChangeLayer
+!!REDIRECT Bloat                funcs:geom2:obj#Bloat
+!!REDIRECT Manhattanize         funcs:geom2:obj#Manhattanize
+!!REDIRECT Join                 funcs:geom2:obj#Join
+!!REDIRECT Decompose            funcs:geom2:obj#Decompose
+!!REDIRECT Box                  funcs:geom2:obj#Box
+!!REDIRECT BoxH                 funcs:geom2:obj#BoxH
+!!REDIRECT Polygon              funcs:geom2:obj#Polygon
+!!REDIRECT PolygonH             funcs:geom2:obj#PolygonH
+!!REDIRECT Arc                  funcs:geom2:obj#Arc
+!!REDIRECT ArcH                 funcs:geom2:obj#ArcH
+!!REDIRECT Round                funcs:geom2:obj#Round
+!!REDIRECT RoundH               funcs:geom2:obj#RoundH
+!!REDIRECT HalfRound            funcs:geom2:obj#HalfRound
+!!REDIRECT HalfRoundH           funcs:geom2:obj#HalfRoundH
+!!REDIRECT Sides                funcs:geom2:obj#Sides
+!!REDIRECT Wire                 funcs:geom2:obj#Wire
+!!REDIRECT WireH                funcs:geom2:obj#WireH
+!!REDIRECT Label                funcs:geom2:obj#Label
+!!REDIRECT LabelH               funcs:geom2:obj#LabelH
+!!REDIRECT Logo                 funcs:geom2:obj#Logo
+!!REDIRECT Justify              funcs:geom2:obj#Justify
+!!REDIRECT Delete               funcs:geom2:obj#Delete
+!!REDIRECT Erase                funcs:geom2:obj#Erase
+!!REDIRECT EraseUnder           funcs:geom2:obj#EraseUnder
+!!REDIRECT Yank                 funcs:geom2:obj#Yank
+!!REDIRECT Put                  funcs:geom2:obj#Put
+!!REDIRECT Xor                  funcs:geom2:obj#Xor
+!!REDIRECT Copy                 funcs:geom2:obj#Copy
+!!REDIRECT CopyToLayer          funcs:geom2:obj#CopyToLayer
+!!REDIRECT Move                 funcs:geom2:obj#Move
+!!REDIRECT MoveToLayer          funcs:geom2:obj#MoveToLayer
+!!REDIRECT Rotate               funcs:geom2:obj#Rotate
+!!REDIRECT RotateToLayer        funcs:geom2:obj#RotateToLayer
+!!REDIRECT Split                funcs:geom2:obj#Split
+!!REDIRECT Flatten              funcs:geom2:obj#Flatten
+!!REDIRECT Layer                funcs:geom2:obj#Layer
+
+!! Property Management
+!!REDIRECT PrpHandle            funcs:geom2:prp#PrpHandle
+!!REDIRECT GetPrpHandle         funcs:geom2:prp#GetPrpHandle
+!!REDIRECT CellPrpHandle        funcs:geom2:prp#CellPrpHandle
+!!REDIRECT GetCellPrpHandle     funcs:geom2:prp#GetCellPrpHandle
+!!REDIRECT PrpNext              funcs:geom2:prp#PrpNext
+!!REDIRECT PrpNumber            funcs:geom2:prp#PrpNumber
+!!REDIRECT PrpString            funcs:geom2:prp#PrpString
+!!REDIRECT PrptyString          funcs:geom2:prp#PrptyString
+!!REDIRECT GetPropertyString    funcs:geom2:prp#GetPropertyString
+!!REDIRECT GetCellPropertyString funcs:geom2:prp#GetCellPropertyString
+!!REDIRECT PrptyAdd             funcs:geom2:prp#PrptyAdd
+!!REDIRECT AddProperty          funcs:geom2:prp#AddProperty
+!!REDIRECT AddCellProperty      funcs:geom2:prp#AddCellProperty
+!!REDIRECT PrptyRemove          funcs:geom2:prp#PrptyRemove
+!!REDIRECT RemoveProperty       funcs:geom2:prp#RemoveProperty
+!!REDIRECT RemoveCellProperty   funcs:geom2:prp#RemoveCellProperty
+
+!!KEYWORD
+funcs:geom2
+!!TITLE
+Geometry Editing Functions 2
+!!HTML
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+
+    <!-- 032115 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:geom2:cell">Cells, PCells, Vias, and Instance
+        Placement</a></th></tr>
+
+    <tr><td><a href="funcs:geom2:cell#CheckPCellParam">
+     <tt>CheckPCellParam</tt>(<i>library</i>, <i>cell</i>, <i>view</i>,
+     <i>pname</i>, <i>value</i>)</a></td><td>Validate a parameter
+     value</td></tr>
+    <tr><td><a href="funcs:geom2:cell#CheckPCellParams">
+     <tt>CheckPCellParams</tt>(<i>library</i>, <i>cell</i>, <i>view</i>,
+     <i>params</i>)</a></td><td>Validate a parameter list</td></tr>
+    <tr><td><a href="funcs:geom2:cell#CreateCell">
+     <tt>CreateCell</tt>(<i>cellname</i>, [<i>orig_x</i>, <i>orig_y</i>])</a>
+     </td><td>Create new cell from selected objects</td></tr>
+    <tr><td><a href="funcs:geom2:cell#CopyCell">
+     <tt>CopyCell</tt>(<i>name</i>, <i>newname</i>)</a>
+     </td><td>Copy a cell</td></tr>
+    <tr><td><a href="funcs:geom2:cell#RenameCell">
+     <tt>RenameCell</tt>(<i>oldname</i>, <i>newname</i>)</a>
+     </td><td>Globally rename cell in memory, fix references</td></tr>
+    <tr><td><a href="funcs:geom2:cell#DeleteEmpties">
+     <tt>DeleteEmpties</tt>(<i>recurse</i>)</a>
+     </td><td>Delete empty cells</td></tr>
+    <tr><td><a href="funcs:geom2:cell#Place">
+     <tt>Place</tt>(<i>cellname</i>, <i>x</i>, <i>y</i> [, <i>refpt</i>,
+     <i>array</i>, <i>smash</i>, <i>usegui</i>, <i>tfstring</i>])</a>
+     </td><td>Place an instance</td></tr>
+    <tr><td><a href="funcs:geom2:cell#PlaceH">
+     <tt>PlaceH</tt>(<i>cellname</i>, <i>x</i>, <i>y</i> [, <i>refpt</i>,
+     <i>array</i>, <i>smash</i>, <i>usegui</i>, <i>tfstring</i>])</a>
+     </td><td>Place an instance, return handle</td></tr>
+    <tr><td><a href="funcs:geom2:cell#PlaceSetArrayParams">
+     <tt>PlaceSetArrayParams</tt>(<i>nx</i>, <i>ny</i>, <i>dx</i>,
+     <i>dy</i>)</a>
+     </td><td>Set instance arraying parameters</td></tr>
+    <tr><td><a href="funcs:geom2:cell#PlaceSetPCellParams">
+     <tt>PlaceSetPCellParams</tt>(<i>library</i>, <i>cell</i>, <i>view</i>,
+     <i>params</i>)</a> </td><td>Set pcell parameter string</td></tr>
+    <tr><td><a href="funcs:geom2:cell#Replace">
+     <tt>Replace</tt>(<i>cellname</i>, <i>add_xform</i>, <i>array</i>)</a>
+     </td><td>Replace an instance</td></tr>
+    <tr><td><a href="funcs:geom2:cell#OpenViaSubMaster">
+     <tt>OpenViaSubMaster</tt>(<i>vianame</i>, <i>defnstr</i>)</a>
+     </td><td>Define a standard via variant</td></tr>
+
+    <!-- 100508 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:geom2:clip">Clipping Functions</a></th></tr>
+
+    <tr><td><a href="funcs:geom2:clip#ClipAround">
+     <tt>ClipAround</tt>(<i>object_handle1</i>, <i>all1</i>,
+     <i>object_handle2</i>, <i>all2</i>)</a>
+     </td><td>Clip objects around other objects</td></tr>
+    <tr><td><a href="funcs:geom2:clip#ClipAroundCopy">
+     <tt>ClipAroundCopy</tt>(<i>object_handle1</i>, <i>all1</i>,
+     <i>object_handle2</i>, <i>all2</i>, <i>lname</i>)</a>
+     </td><td>Clip objects around other objects, return copies</td></tr>
+    <tr><td><a href="funcs:geom2:clip#ClipTo">
+     <tt>ClipTo</tt>(<i>object_handle1</i>, <i>all1</i>,
+     <i>object_handle2</i>, <i>all2</i>)</a>
+     </td><td>Clip objects to other objects</td></tr>
+    <tr><td><a href="funcs:geom2:clip#ClipToCopy">
+     <tt>ClipToCopy</tt>(<i>object_handle1</i>, <i>all1</i>,
+     <i>object_handle2</i>, <i>all2</i>, <i>lname</i>)</a>
+     </td><td>Clip objects to other objects, return copies</td></tr>
+    <tr><td><a href="funcs:geom2:clip#ClipObjects">
+     <tt>ClipObjects</tt>(<i>object_handle</i>, <i>merge</i>)</a>
+     </td><td>Clip object list so no overlap</td></tr>
+    <tr><td><a href="funcs:geom2:clip#ClipIntersectCopy">
+     <tt>ClipIntersectCopy</tt>(<i>object_handle1</i>, <i>all1</i>,
+     <i>object_handle2</i>, <i>all2</i>, <i>lname</i>)</a>
+     </td><td>Exclusive-or objects or lists</td></tr>
+
+    <!-- 012915 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:geom2:obj">Other Object Management
+        Functions</a></th></tr>
+
+    <tr><td><a href="funcs:geom2:obj#ChangeLayer">
+     <tt>ChangeLayer</tt>()</a>
+     </td><td>Change layer of selected objects</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Bloat">
+     <tt>Bloat</tt>(<i>dimen</i>, <i>mode</i>)</a>
+     </td><td>Bloat selected objects</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Manhattanize">
+     <tt>Manhattanize</tt>(<i>dimen</i>, <i>mode</i>)</a>
+     </td><td>Manhattanize selected objects</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Join">
+     <tt>Join</tt>()</a>
+     </td><td>Join selected objects</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Decompose">
+     <tt>Decompose</tt>(<i>vert</i>)</a>
+     </td><td>Convert selected objects to trapezoids</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Box">
+     <tt>Box</tt>(<i>left</i>, <i>bottom</i>, <i>right</i>, <i>top</i>)</a>
+     </td><td>Create a box</td></tr>
+    <tr><td><a href="funcs:geom2:obj#BoxH">
+     <tt>BoxH</tt>(<i>left</i>, <i>bottom</i>, <i>right</i>, <i>top</i>)</a>
+     </td><td>Create a box, return handle</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Polygon">
+     <tt>Polygon</tt>(<i>num</i>, <i>arraypts</i>)</a>
+     </td><td>Create a polygon</td></tr>
+    <tr><td><a href="funcs:geom2:obj#PolygonH">
+     <tt>PolygonH</tt>(<i>num</i>, <i>arraypts</i>)</a>
+     </td><td>Create a polygon, return handle</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Arc">
+     <tt>Arc</tt>(<i>x</i>, <i>y</i>, <i>rad1X</i>, <i>rad1Y</i>,
+     <i>rad2X</i>, <i>rad2Y</i>, <i>ang_start</i>, <i>ang_end</i>)</a>
+     </td><td>Create an arc polygon</td></tr>
+    <tr><td><a href="funcs:geom2:obj#ArcH">
+     <tt>ArcH</tt>(<i>x</i>, <i>y</i>, <i>rad1X</i>, <i>rad1Y</i>,
+     <i>rad2X</i>, <i>rad2Y</i>, <i>ang_start</i>, <i>ang_end</i>)</a>
+     </td><td>Create an arc polygon, return handle</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Round">
+     <tt>Round</tt>(<i>x</i>, <i>y</i>, <i>rad</i>)</a>
+     </td><td>Create a disk polygon</td></tr>
+    <tr><td><a href="funcs:geom2:obj#RoundH">
+     <tt>RoundH</tt>(<i>x</i>, <i>y</i>, <i>rad</i>)</a>
+     </td><td>Create a disk polygon, return handle</td></tr>
+    <tr><td><a href="funcs:geom2:obj#HalfRound">
+     <tt>HalfRound</tt>(<i>x</i>, <i>y</i>, <i>rad</i>, <i>dir</i>)</a>
+     </td><td>Create a half-disk polygon</td></tr>
+    <tr><td><a href="funcs:geom2:obj#HalfRoundH">
+     <tt>HalfRoundH</tt>(<i>x</i>, <i>y</i>, <i>rad</i>, <i>dir</i>)</a>
+     </td><td>Create a half-disk polygon, return handle</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Sides">
+     <tt>Sides</tt>(<i>numsides</i>)</a>
+     </td><td>Set the number of sides used for round objects</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Wire">
+     <tt>Wire</tt>(<i>width</i>, <i>num</i>, <i>arraypts</i>,
+     <i>end_style</i>)</a>
+     </td><td>Create a wire</td></tr>
+    <tr><td><a href="funcs:geom2:obj#WireH">
+     <tt>WireH</tt>(<i>width</i>, <i>num</i>, <i>arraypts</i>,
+     <i>end_style</i>)</a>
+     </td><td>Create a wire, return handle</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Label">
+     <tt>Label</tt>(<i>text</i>, <i>x</i>, <i>y</i> [, <i>width</i>,
+     <i>height</i>, <i>flags</i>])</a>
+     </td><td>Create a label</td></tr>
+    <tr><td><a href="funcs:geom2:obj#LabelH">
+     <tt>LabelH</tt>(<i>text</i>, <i>x</i>, <i>y</i> [, <i>width</i>,
+     <i>height</i>, <i>flags</i>])</a>
+     </td><td>Create a label, return handle</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Logo">
+     <tt>Logo</tt>(<i>string</i>, <i>x</i>, <i>y</i> [, <i>width</i>,
+     <i>height</i>])</a>
+     </td><td>Create physical text</td></tr>
+    <tr><td <a href="funcs:geom2:obj#Justify">
+     <tt>Justify</tt>(<i>hj</i>, <i>vj</i>)</a>
+     </td><td>Set default text justification</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Delete">
+     <tt>Delete</tt>()</a>
+     </td><td>Delete selected objects</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Erase">
+     <tt>Erase</tt>(<i>left</i>, <i>bottom</i>, <i>right</i>, <i>top</i>)</a>
+     </td><td>Erase objects in area</td></tr>
+    <tr><td><a href="funcs:geom2:obj#EraseUnder">
+     <tt>EraseUnder</tt>()</a>
+     </td><td>Erase overlap with selected objects</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Yank">
+     <tt>Yank</tt>(<i>left</i>, <i>bottom</i>, <i>right</i>, <i>top</i>)</a>
+     </td><td>Grab geometry into buffer</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Put">
+     <tt>Put</tt>(<i>x</i>, <i>y</i>, <i>bufnum</i>)</a>
+     </td><td>Place stored geometry</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Xor">
+     <tt>Xor</tt>(<i>left</i>, <i>bottom</i>, <i>right</i>, <i>top</i>)</a>
+     </td><td>Exclusive-or geometry in area</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Copy">
+     <tt>Copy</tt>(<i>fromx</i>, <i>fromy</i>, <i>tox</i>, <i>toy</i>,
+     <i>repcnt</i>)</a>
+     </td><td>Copy selected objects</td></tr>
+    <tr><td><a href="funcs:geom2:obj#CopyToLayer">
+     <tt>CopyToLayer</tt>(<i>fromx</i>, <i>fromy</i>, <i>tox</i>, <i>toy</i>,
+     <i>oldlayer</i>, <i>newlayer</i>, <i>repcnt</i>)</a>
+     </td><td>Copy selected objects and change layer</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Move">
+     <tt>Move</tt>(<i>fromx</i>, <i>fromy</i>, <i>tox</i>, <i>toy</i>)</a>
+     </td><td>Move selected objects</td></tr>
+    <tr><td><a href="funcs:geom2:obj#MoveToLayer">
+     <tt>MoveToLayer</tt>(<i>fromx</i>, <i>fromy</i>, <i>tox</i>, <i>toy</i>,
+     <i>oldlayer</i>, <i>newlayer</i>)</a>
+     </td><td>Move selected objects and change layer</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Rotate">
+     <tt>Rotate</tt>(<i>x</i>, <i>y</i>, <i>ang</i>, <i>remove</i>)</a>
+     </td><td>Rotate selected objects</td></tr>
+    <tr><td><a href="funcs:geom2:obj#RotateToLayer">
+     <tt>RotateToLayer</tt>(<i>x</i>, <i>y</i>, <i>ang</i>, <i>oldlayer</i>,
+     <i>newlayer</i>, <i>remove</i>)</a>
+     </td><td>Rotate selected objects and change layer</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Split">
+     <tt>Split</tt>(<i>x</i>, <i>y</i>, <i>flag</i>, <i>orient</i>)</a>
+     </td><td>Divide selected objects</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Flatten">
+     <tt>Flatten</tt>(<i>depth</i>, <i>use_merge</i>, <i>fast</i>)</a>
+     </td><td>Flatten hierarchy</td></tr>
+    <tr><td><a href="funcs:geom2:obj#Layer">
+     <tt>Layer</tt>(<i>string</i>, <i>mode</i>, <i>depth</i>, <i>recurse</i>,
+     <i>noclear</i>, <i>use_merge</i>, <i>fast_mode</i>)</a>
+     </td><td>Apply geometric manipulations</td></tr>
+
+    <!-- 030215 -->
+    <tr><th colspan=2 align="center">
+        <a href="funcs:geom2:prp">Property Management</a></th></tr>
+
+    <tr><td><a href="funcs:geom2:prp#PrpHandle">
+     <tt>PrpHandle</tt>(<i>object_handle</i>)</a>
+     </td><td>Return handle to a list of the object's properties</td></tr>
+    <tr><td><a href="funcs:geom2:prp#GetPrpHandle">
+     <tt>GetPrpHandle</tt>(<i>number</i>)</a>
+     </td><td>Return a handle to certain properties</td></tr>
+    <tr><td><a href="funcs:geom2:prp#CellPrpHandle">
+     <tt>CellPrpHandle</tt>()</a>
+     </td><td>Return handle to a list of all current cell properties</td></tr>
+    <tr><td><a href="funcs:geom2:prp#GetCellPrpHandle">
+     <tt>GetCellPrpHandle</tt>(<i>number</i>)</a>
+     </td><td>Return handle to a list of specific current cell
+     properties</td></tr>
+    <tr><td><a href="funcs:geom2:prp#PrpNext">
+     <tt>PrpNext</tt>(<i>prpty_handle</i>)</a>
+     </td><td>Advance to the next property</td></tr>
+    <tr><td><a href="funcs:geom2:prp#PrpNumber">
+     <tt>PrpNumber</tt>(<i>prpty_handle</i>)</a>
+     </td><td>Return the property number</td></tr>
+    <tr><td><a href="funcs:geom2:prp#PrpString">
+     <tt>PrpString</tt>(<i>prpty_handle</i>)</a>
+     </td><td>Return the property string</td></tr>
+    <tr><td><a href="funcs:geom2:prp#PrptyString">
+     <tt>PrptyString</tt>(<i>obj_or_prp_handle</i>, <i>number</i>)</a>
+     </td><td>Return the property string</td></tr>
+    <tr><td><a href="funcs:geom2:prp#GetPropertyString">
+     <tt>GetPropertyString</tt>(<i>number</i>)</a>
+     </td><td>Return property string from selected object</td></tr>
+    <tr><td><a href="funcs:geom2:prp#GetCellPropertyString">
+     <tt>GetCellPropertyString</tt>(<i>number</i>)</a>
+     </td><td>Return property string from current cell</td></tr>
+    <tr><td><a href="funcs:geom2:prp#PrptyAdd">
+     <tt>PrptyAdd</tt>(<i>object_handle</i>, <i>number</i>, <i>string</i>)</a>
+     </td><td>Add a property</td></tr>
+    <tr><td><a href="funcs:geom2:prp#AddProperty">
+     <tt>AddProperty</tt>(<i>number</i>, <i>string</i>)</a>
+     </td><td>Add properties to selected objects</td></tr>
+    <tr><td><a href="funcs:geom2:prp#AddCellProperty">
+     <tt>AddCellProperty</tt>(<i>number</i>, <i>string</i>)</a>
+     </td><td>Add property to current cell</td></tr>
+    <tr><td><a href="funcs:geom2:prp#PrptyRemove">
+     <tt>PrptyRemove</tt>(<i>object_handle</i>, <i>number</i>,
+     <i>string</i>)</a>
+     </td><td>Remove a property</td></tr>
+    <tr><td><a href="funcs:geom2:prp#RemoveProperty">
+     <tt>RemoveProperty</tt>(<i>number</i>, <i>string</i>)</a>
+     </td><td>Remove properties from selected objects</td></tr>
+    <tr><td><a href="funcs:geom2:prp#RemoveCellProperty">
+     <tt>RemoveCellProperty</tt>(<i>number</i>, <i>string</i>)</a>
+     </td><td>Remove properties from current cell</td></tr>
+
+    </table>
+
+!!SEEALSO
+scr:iffuncs
+
+!!KEYWORD
+funcs:geom2:cell
+!!TITLE
+Cells, PCells, Vias, and Instance Placement
+!!HTML
+    <!-- 102414 -->
+    <a name="CheckPCellParam"></a>
+    <dl>
+    <dt><b>(int) <tt>CheckPCellParam</tt>(<i>library</i>, <i>cell</i>,
+    <i>view</i>, <i>pname</i>, <i>value</i>)</b>
+    <dd><br>
+    The first three arguments specify a parameterized cell.
+!!IFDEF OpenAccess
+    If <i>library</i> is not given as a scalar 0, it is the name of
+    the OpenAccess library containing the pcell super-master, whose
+    name is given in the <i>cell</i> argument.  The <i>view</i>
+    argument can be passed a scalar 0 to indicate that the OpenAccess
+    view name is "<tt>layout</tt>", or the actual view name can be
+    passed if different.  For <i>Xic</i> native pcells not stored in
+    OpenAccess, the <i>library</i> and <i>view</i> should both be 0
+    (zero).
+!!ELSE
+    The <i>library</i> and <i>view</i> arguments passed to this
+    function should always be 0 (zero).
+!!ENDIF
+
+    <p>
+    The <i>pname</i> is a string containing a parameter name for a
+    parameter of the specified pcell, and the <i>value</i> argument is
+    either a scalar or string value.  The function returns 1 if the
+    value is not forbidden by a constraint, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 102414 -->
+    <a name="CheckPCellParams"></a>
+    <dl>
+    <dt><b>(int) <tt>CheckPCellParams</tt>(<i>library</i>, <i>cell</i>,
+    <i>view</i>, <i>params</i>)</b>
+    <dd><br>
+    The first three arguments specify a parameterized cell.
+!!IFDEF OpenAccess
+    If <i>library</i> is not given as a scalar 0, it is the name of
+    the OpenAccess library containing the pcell super-master, whose
+    name is given in the <i>cell</i> argument.  The <i>view</i>
+    argument can be passed a scalar 0 to indicate that the OpenAccess
+    view name is "<tt>layout</tt>", or the actual view name can be
+    passed if different.  For <i>Xic</i> native pcells not stored in
+    OpenAccess, the <i>library</i> and <i>view</i> should both be 0
+    (zero).
+!!ELSE
+    The <i>library</i> and <i>view</i> arguments passed to this
+    function should always be 0 (zero).
+!!ENDIF
+
+    <p>
+    The <i>params</i> argument is a string providing the parameter
+    values in the format of the <a
+    href="prpty:pc_params"><b>pc_params</b></a> property as applied to
+    sub-masters and instances.  i.e., values are constants and
+    constraints are not included.  The function returns 1 if no
+    parameter has a value forbidden by a constraint, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 062109 -->
+    <a name="CreateCell"></a>
+    <dl>
+    <dt><b>(int) <tt>CreateCell</tt>(<i>cellname</i>, [<i>orig_x</i>,
+      <i>orig_y</i>])</b>
+    <dd><br>This will create a new cell from the contents of the
+    selection queue, with the given name, which can not already be in
+    use.  The new cell is created in memory only, with the modified
+    flag set so as to generate a reminder to the user to save the cell
+    to disk when exiting <i>Xic</i>.  This provides functionality
+    similar to the <a href="xic:crcel"><b>Create Cell</b></a> button
+    in the <b>Edit Menu</b>.
+
+    <p>
+    If the optional coordinate pair <i>orig_x</i> and <i>orig_y</i>
+    are given (in microns), then this point will be the new cell
+    origin in physical mode only.  Otherwise, the lower-left corner of
+    the bounding box of the objects will be the new cell origin.  In
+    electrical mode, the cell origin is selected to keep contacts
+    on-grid, and the origin arguments are ignored.
+
+    <p>
+    By default, this function will fail if a cell of the same name
+    already exists in the current symbol table.  However, if the <a
+    href="CrCellOverwrite"><b>CrCellOverwrite</b></a> variable is set,
+    existing cells will be overwritten with the new data, and the
+    function will succeed.
+    </dl>
+    <hr>
+
+    <!-- 100408 -->
+    <a name="CopyCell"></a>
+    <dl>
+    <dt><b>(int) <tt>CopyCell</tt>(<i>name</i>, <i>newname</i>)</b>
+    <dd><br>This function will copy the cell in memory named
+    <i>name</i> to <i>newname</i>.  The function returns 1 if the
+    operation was successful, 0 otherwise.  The <i>name</i> cell must
+    exist in memory, and the <i>newname</i> can not clash with an
+    existing cell or library device.
+    </dl>
+    <hr>
+
+    <!-- 030104 -->
+    <a name="RenameCell"></a>
+    <dl>
+    <dt><b>(int) <tt>RenameCell</tt>(<i>oldname</i>, <i>newname</i>)</b>
+    <dd><br>This function will rename the cell in memory named
+    <i>oldname</i> to <i>newname</i>, and update all references.  The
+    function returns 1 if the operation was successful, 0 otherwise. 
+    The <i>oldname</i> cell must exist in memory, and the
+    <i>newname</i> can not clash with an existing cell or library
+    device.
+    </dl>
+    <hr>
+
+    <!-- 062109 -->
+    <a name="DeleteEmpties"></a>
+    <dl>
+    <dt><b>(int) <tt>DeleteEmpties</tt>(<i>recurse</i>)</b>
+    <dd><br>This function will delete empty cells found in the hierarchy
+    under the current cell.  This operation can not be undone.  The
+    argument is an integer flag; if zero, one pass is done, and all
+    empty cells are deleted.  If the argument is nonzero, additional
+    passes are done to delete cells that are newly empty due to their
+    subcells being deleted on the previous pass.  The top-level cells
+    is never deleted.  The return value is the number of cells
+    deleted.
+    </dl>
+    <hr>
+
+    <!-- 030215 -->
+    <a name="Place"></a>
+    <dl>
+    <dt><b>(int) <tt>Place</tt>(<i>cellname</i>, <i>x</i>, <i>y</i>
+      [, <i>refpt</i>, <i>array</i>, <i>smash</i>, <i>usegui</i>,
+      <i>tfstring</i>])</b>
+    <dd><br>
+    This function places an instance of the named cell at <i>x</i>,
+    <i>y</i>.  The first argument is of string type and contains the
+    name of the cell to place.  The string can consist of two
+    space-separated words.  If so, the first word may be a <a
+    href="xic:chd">CHD</a> name, an <a href=xic:fsaf">archive file</a>
+    name, or a <a href="libraries">library</a>
+!!IFDEF OpenAccess
+    name (including <a
+    href="oaplugin">OpenAccess</a> when available).
+!!ELSE
+    name.
+!!ENDIF
+
+    <p>
+    The interpretation is similar to the <b>new</b> selection in the
+    <a href="xic:open"><b>Open</b></a> command in the <b>File
+    Menu</b>.  In the case of two words, the second word is the name
+    of the cell to extract from the source specified as the first
+    word.  If only one word is given, it can be an archive file name
+    in which case the top-level cell is understood, or a CHD name in
+    which case the default cell is understood, or it can be the name
+    of a cell available as a native cell from a library or the search
+    path, or already exist in memory.
+
+    <p>
+    The second two arguments define the placement location, in
+    microns.
+
+    <p>
+    The remaining arguments are optional, meaning that they need not
+    be given, but all arguments to the left must be given.
+
+    <p>
+    The <i>refpt</i> argument is an integer code that specifies the
+    reference point which will correspond to <i>x</i>, <i>y</i> after
+    placement.  The values can be
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td> <td>the cell origin (the default)</td></tr>
+    <tr><td>1</td> <td>the lower left corner</td></tr>
+    <tr><td>2</td> <td>the upper left corner</td></tr>
+    <tr><td>3</td> <td>the upper right corner</td></tr>
+    <tr><td>4</td> <td>the lower right corner</td></tr>
+    </table>
+    </blockquote>
+    The corners are those of the untransformed array or cell.
+
+    <p>
+    In electrical mode, if the cell has terminals, this code is
+    ignored, and the location of the first terminal is the reference
+    point.  If the cell has no terminals, the corner reference points
+    are snapped to the nearest grid location.  This is to avoid
+    producing off-grid terminal locations.
+
+    <p>
+    The <i>array</i> argument, if given, can be a scalar, or the name
+    of an array containing four numbers.  This argument specifies the
+    arraying parameters for the instance placement, which apply in
+    physical mode only.  If a scalar 0 is passed, the placement will
+    not be arrayed, which is also the case if this argument does not
+    appear and is always true in electrical mode.  If the scalar is
+    nonzero, then the placement will use the current array parameters,
+    as displayed in the <a href="xic:place"><b>Cell Placement
+    Control</b></a> pop-up, or set with the
+    <tt>PlaceSetArrayParams</tt> function.  If the argument is the
+    name of an array, the array contains the arraying parameters. 
+    These parameters are:
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><i>array</i>[0]</td> <td>NX, integer number in the X
+      direction.</td></tr>
+    <tr><td><i>array</i>[1]</td> <td>NY, integer number in the Y
+      direction.</td></tr>
+    <tr><td><i>array</i>[2]</td> <td>DX, the real value spacing between
+      cells in the X direction, in microns.</td></tr>
+    <tr><td><i>array</i>[3]</td> <td>DY, the real value spacing between
+      cells in the Y direction, in microns.</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The NX and NY values will be clipped to the range of 1 through
+    32767.  The DX and DY are edge to adjacent edge spacing, i.e.,
+    when zero the elements will abut.  If DX or DY is given the
+    negative cell width or height, so that all elements appear at the
+    same location, the corresponding NX or NY is taken as 1. 
+    Otherwise, there is no restriction on DX or DY.
+
+    <p>
+    If the boolean value <i>smash</i> is given and nonzero (TRUE), the
+    cell will be flattened into the parent, rather than placed as an
+    instance.  The flatten-level is 1, so subcells of the cell (if
+    any) become subcells of the parent.  This argument is ignored if
+    the cell being placed is a parameterized cell (pcell).
+
+    <p>
+    The <i>usegui</i> argument applies only when placing a pcell.  If
+    nonzero (TRUE), the <a href="xic:pcparams"><b>Parameters</b></a>
+    panel will appear, and the function will block until the user
+    dismisses the panel.  The panel can be used to set cell parameters
+    before instantiation.  Initially, the parameters will be shown
+    with default values, or values that were last given to <a
+    href="PlaceSetPCellParams"><tt>PlaceSetPCellParams</tt></a>.  If
+    the <i>usegui</i> argument is not given or zero (FALSE), the
+    default parameter set as updated with parameters given to
+    <tt>PlaceSetPCellParams</tt> will be used to instantiate the cell
+    immediately.
+
+    <p>
+    The final argument can be a null string or scalar 0 which is
+    equivalent, an empty string, or a transform description in the
+    format returned by <a
+    href="GetTransformString"><tt>GetTransformString</tt></a>.  If
+    null or not given, the arguemnt is ignored.  In this case, the
+    cell will be transformed before placement according to the current
+    transform.  Otherwise, the given transformation will be used when
+    placing the instance.  An empty string is taken as the identity
+    transform.  If the <a
+    href="UseTransform"><tt>UseTransform</tt></a> mode is in effect,
+    the current transform will be added to the string transform,
+    giving an overall transformation that will match geometry
+    placement in this mode.
+
+    <p>
+    On success, the function returns 1, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030215 -->
+    <a name="PlaceH"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>PlaceH</tt>(<i>cellname</i>, <i>x</i>,
+      <i>y</i> [, <i>refpt</i>, <i>array</i>, <i>smash</i>, <i>usegui</i>,
+      <i>tfstring</i>])</b>
+    <dd><br>
+    This is similar to the <tt>Place</tt> function, however it returns
+    a handle to the newly created instance.  However, if the <i>smash</i>
+    boolean is true or on error, a scalar 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030215 -->
+    <a name="PlaceSetArrayParams"></a>
+    <dl>
+    <dt><b>(int) <tt>PlaceSetArrayParams</tt>(<i>nx</i>, <i>ny</i>,
+      <i>dx</i>, <i>dy</i>)</b>
+    <dd><br>
+    This function provides array parameters which may be used when
+    instantiating physical cells.  These parameters will appear in the
+    <a href="xic:place"><b>Cell Placement Control</b></a> panel.  The
+    arguments are:
+   
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><i>nx</i></td> <td>Integer number in the X
+      direction.</td></tr>
+    <tr><td><i>ny</i></td> <td>Integer number in the Y
+      direction.</td></tr>
+    <tr><td><i>dx</i></td> <td>The real value spacing between
+      cells in the X direction, in microns.</td></tr>
+    <tr><td><i>dy</i></td> <td>The real value spacing between
+      cells in the Y direction, in microns.</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The <i>nx</i> and <i>ny</i> values will be clipped to the range of
+    1 through 32767.  The <i>dx</i> and <i>dy</i> are edge to adjacent
+    edge spacing, i.e., when zero the elements will abut.  If
+    <i>dx</i> or <i>dy</i> is given the negative cell width or height,
+    so that all elements appear at the same location, the
+    corresponding <i>nx</i> or <i>ny</i> is taken as 1.  Otherwise,
+    there is no restriction on <i>dx</i> or <i>dy</i>.
+
+    <p>
+    The function returns 1 and sets the array parameters in physical
+    mode.  In electrical mode, the furnction returns 0 and does
+    nothing. 
+    </dl>
+    <hr>
+
+    <!-- 102414 -->
+    <a name="PlaceSetPCellParams"></a>
+    <dl>
+    <dt><b>(int) <tt>PlaceSetPCellParams</tt>(<i>library</i>, <i>cell</i>,
+    <i>view</i>, <i>params</i>)</b>
+    <dd><br>
+    This sets the default <a href="xic:pcells">parameterized cell</a>
+    (pcell) parameters used when instantiating the pcell indicated by
+    the <i>libname</i>/<i>cell</i>/<i>view</i>.
+!!IFDEF OpenAccess
+    If <i>library</i> is not given as a scalar 0, it is the name of
+    the <a href="oaplugin">OpenAccess</a> library containing the
+    pcell super-master, whose name is given in the <i>cell</i>
+    argument.  The <i>view</i> argument can be passed a scalar 0 to
+    indicate that the OpenAccess view name is "<tt>layout</tt>", or
+    the actual view name can be passed if different.  For <i>Xic</i>
+    native pcells not stored in OpenAccess, the library and view
+    should both be 0 (zero).
+!!ELSE
+    The <i>library</i> and <i>view</i> arguments passed to this
+    function should always be 0 (zero).
+!!ENDIF
+
+    <p>
+    The <i>params</i> argument is a string providing the parameter
+    values in the format of the <a
+    href="prpty:pc_params"><b>pc_params</b></a> property as applied to
+    sub-masters and instances, i.e., values are constants and
+    constraints are <b>not</b> included.  Not all parameters need be
+    given, only those with non-default values.
+
+    <p>
+    Be aware that there is no immediate constraint testing of the
+    parameter values given to this function, though bad values will
+    cause subsequent instantiation of the named pcell to fail.  The <a
+    href="CheckPCellParams"><tt>CheckPCellParams</tt></a> fuction can
+    be used to validate the params list before calling this function. 
+    When giving parameters for non-native pcells, it is recommended
+    that the type specification prefixes be used, though an attempt is
+    made internally to recognize and adapt to differing types.
+
+    <p>
+    The saved parameter set will be used for all instantiations of the
+    pcell, until changed with another call to
+    <tt>PlaceSetPCellParams</tt>.  The placement is done with the <a
+    href="Place"><tt>Place</tt></a> script function, as for normal
+    cells.
+
+    <p>
+    In graphical mode, the given parameter set will initialize the
+    <a href="xic:pcparams"><b>Parameters</b></a> pop-up.
+
+    <p>
+    This function manages an internal table of cellname/parameter list
+    associations.  If 0 is given for all arguments, the table will be
+    cleared.  If the <i>params</i> argument is 0, the specified entry
+    will be removed from the table.  When the script terminates,
+    parameter lists set with this function will revert to the
+    pre-script values.  Entries that were cleared by passing null
+    arguments are <b>not</b> reverted, and remain cleared.
+
+    <p>
+    The function returns 1 on success, 0 if an error occurred, with an
+    error message available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 030215 -->
+    <a name="Replace"></a>
+    <dl>
+    <dt><b>(int) <tt>Replace</tt>(<i>cellname</i>, <i>add_xform</i>,
+      <i>array</i>) </b>
+    <dd><br>This will replace all selected subcells with <i>cellname</i>. 
+    The same transformation applied to the previous instance is
+    applied to the replacing instance.  In addition, if
+    <i>add_xform</i> is nonzero, the current transform will be added. 
+    The function returns 1 if successful, 0 if the new cell could not
+    be opened.
+
+    <p>
+    The <i>array</i> argument can be a scalar, or the name of an array
+    containing four numbers.  This argument specifies the arraying
+    parameters for the instance placement, which apply in physical
+    mode only.  If a scalar 0 is passed, the placement will retain the
+    same arraying parameters as the previous instance.  If the scalar
+    is nonzero, then the placement will use the current array
+    parameters, as displayed in the <a href="xic:place"><b>Cell
+    Placement Control</b></a> pop-up, or set with the
+    <tt>PlaceSetArrayParams</tt> function.  If the argument is the
+    name of an array, the array contains the arraying parameters. 
+    These parameters are:
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><i>array</i>[0]</td> <td>NX, integer number in the X
+      direction.</td></tr>
+    <tr><td><i>array</i>[1]</td> <td>NY, integer number in the Y
+      direction.</td></tr>
+    <tr><td><i>array</i>[2]</td> <td>DX, the real value spacing between
+      cells in the X direction, in microns.</td></tr>
+    <tr><td><i>array</i>[3]</td> <td>DY, the real value spacing between
+      cells in the Y direction, in microns.</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The NX and NY values will be clipped to the range of 1 through
+    32767.  The DX and DY are edge to adjacent edge spacing, i.e.,
+    when zero the elements will abut.  If DX or DY is given the
+    negative cell width or height, so that all elements appear at the
+    same location, the corresponding NX or NY is taken as 1. 
+    Otherwise, there is no restriction on DX or DY.
+    </dl>
+    <hr>
+
+    <!-- 032115 -->
+    <a name="OpenViaSubMaster"></a>
+    <dl>
+    <dt><b>(string) <tt>OpenViaSubMaster</tt>(<i>vianame</i>,
+      <i>defnstr</i>)</b>
+    <dd><br>
+    This function will create if necessary and return the name of a <a
+    href="stdvia">standard via</a> sub-master cell in memory.  The
+    first argument is the name of a standard via, as defined in the <a
+    href="techfile:stdvia">technology file</a> or imported from
+    Virtuoso.  The second argument contains a string that specifies
+    the parameters that differ from the default values.  This can be
+    null or empty if no non-default values are used.  The format is
+    the same as <a href="stdvia#prpty">described</a> for the <a
+    href="prpty:stdvia"><b>stdvia</b> property</a>, with the standard
+    via name token stripped.
+
+    <p>
+    On success, a name is returned.  One can use this name with the
+    <a href="Place"><tt>Place</tt></a> function to instantiate the
+    via.  Otherwise, a fatal error is triggered.
+
+!!SEEALSO
+funcs:geom2
+
+!!KEYWORD
+funcs:geom2:clip
+!!TITLE
+Clipping Functions
+!!HTML
+
+    <!-- 100508 -->
+    <a name="ClipAround"></a>
+    <dl>
+    <dt><b>(int) <tt>ClipAround</tt>(<i>object_handle1</i>, <i>all1</i>,
+     <i>object_handle2</i>, <i>all2</i>])</b>
+    <dd><br>This function will clip out the pieces of objects in the
+    second handle list that intersect with objects in the first handle
+    list.
+
+    <p>
+    If the boolean value <i>all1</i> is nonzero, all objects in the
+    first handle are used for clipping, otherwise only the first
+    object is used.  If the boolean value <i>all2</i> is nonzero, all
+    objects in the second handle list may be clipped, otherwise only
+    the first object in the list is a candidate for clipping.  Only
+    boxes, polygons, and wires that appear in the second handle list
+    will be clipped.  The objects in the first handle list can be of
+    any type, and labels and subcells will use the bounding box.  The
+    objects in the second list must be database objects, if they are
+    are copies, no clipping is performed.  The objects in the first
+    list can be copies.
+
+    <p>
+    The newly created objects are added to the front of the second
+    handle list, and the original object is removed from the list. 
+    The return value is the number of objects created, or -1 if either
+    handle is empty or some other error occurred.  The function fails
+    if either handle does not reference an object list.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="ClipAroundCopy"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>ClipAroundCopy</tt>(<i>object_handle1</i>,
+     <i>all1</i>, <i>object_handle2</i>, <i>all2</i>, <i>lname</i>)</b>
+    <dd><br>This function is similar to <tt>ClipAround</tt>, however no
+    new objects are created in the database, and neither of the lists
+    passed as arguments is altered.  Instead, a new object list handle
+    is returned, which references a list of "copies" of objects that
+    are created by the clipping.  The new objects are the pieces of
+    the object or objects referenced by the second handle that do not
+    intersect the object or objects referenced by the first handle. 
+
+    <p>
+    If the boolean value <i>all1</i> is nonzero, all objects in the
+    first handle are used for clipping, otherwise only the first
+    object is used.  If the boolean value <i>all2</i> is nonzero, all
+    objects in the second handle list may be clipped, otherwise only
+    the first object in the list is a candidate for clipping.  Only
+    boxes, polygons, and wires that appear in the second handle list
+    will be clipped.  The objects in the first handle list can be of
+    any type, and labels and subcells will use the bounding box.  The
+    objects in the second list can be database objects or copies.
+
+    <p>
+    If <i>lname</i> is a non-empty string, it is taken as the name for
+    a layer on which all of the returned objects will be placed.  The
+    layer will be created if it does not exist.  If zero or an empty
+    or null string is passed, the object copies will retain the layer
+    of the original object from the second handle list.
+
+    <p>
+    The returned list can be used by most functions that expect a list
+    of objects, however they are not copies of "real" objects.  If no
+    new object copy would be created by clipping, the function returns
+    0.  The function will fail if either handle is not an object-list
+    handle.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="ClipTo"></a>
+    <dl>
+    <dt><b>(int) <tt>ClipTo</tt>(<i>object_handle1</i>, <i>all1</i>,
+      <i>object_handle2</i>, <i>all2</i>])</b>
+    <dd><br>This function will clip objects referenced by the second
+    handle to the boundaries of objects referenced by the first
+
+    <p>
+    If the boolean value <i>all1</i> is nonzero, all objects in the
+    first handle are used for clipping, otherwise only the first
+    object is used.  If the boolean value <i>all2</i> is nonzero, all
+    objects in the second handle list may be clipped, otherwise only
+    the first object in the list is a candidate for clipping.  Only
+    boxes, polygons, and wires that appear in the second handle list
+    will be clipped.  The objects in the first handle list can be of
+    any type, and labels and subcells will use the bounding box.  The
+    objects in the second list must be database objects, if they are
+    are copies, no clipping is performed.  The objects in the first
+    list can be copies.
+
+    <p>
+    The newly created objects are added to the front of the second
+    handle list, and the original object is removed from the list. 
+    The return value is the number of objects created, or -1 if either
+    handle is empty or some other error occurred.  The function fails
+    if either handle does not reference an object list.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="ClipToCopy"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>ClipToCopy</tt>(<i>object_handle1</i>,
+     <i>all1</i>, <i>object_handle2</i>, <i>all2</i>, <i>lname</i>)</b>
+    <dd><br>This function is similar to <tt>ClipTo</tt>, however no new
+    objects are created in the database, and neither of the lists
+    passed as arguments is altered.  Instead, a new object list handle
+    is returned, which references a list of "copies" of objects that
+    are created by the clipping.  The new objects are the pieces of
+    the object or objects referenced by the second handle that
+    intersect the object or objects referenced by the first handle. 
+
+    <p>
+    If the boolean value <i>all1</i> is nonzero, all objects in the
+    first handle are used for clipping, otherwise only the first
+    object is used.  If the boolean value <i>all2</i> is nonzero, all
+    objects in the second handle list may be clipped, otherwise only
+    the first object in the list is a candidate for clipping.  Only
+    boxes, polygons, and wires that appear in the second handle list
+    will be clipped.  The objects in the first handle list can be of
+    any type, and labels and subcells will use the bounding box.  The
+    objects in the second list can be database objects or copies.
+
+    <p>
+    If <i>lname</i> is a non-empty string, it is taken as the name for
+    a layer on which all of the returned objects will be placed.  The
+    layer will be created if it does not exist.  If zero or an empty
+    or null string is passed, the object copies will retain the layer
+    of the original object from the second handle list.
+
+    <p>
+    The returned list can be used by most functions that expect a list
+    of objects, however they are not copies of "real" objects.  If no
+    new object copy would be created by clipping, the function returns
+    0.  The function will fail if either handle is not an object-list
+    handle.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="ClipObjects"></a>
+    <dl>
+    <dt><b>(int) <tt>ClipObjects</tt>(<i>object_handle</i>, <i>merge</i>)</b>
+    <dd><br>This function will clip boxes, polygons, and wires in the list
+    on the same layer as the first such object in the list so that
+    none of these objects overlap.  Newly created objects are added to
+    the front of the handle list, and deleted objects are removed from
+    the list.  Objects in the list that are not on the same layer as
+    the first box, polygon, or wire or are not boxes, polygons or wires
+    are ignored.  If the merge argument is nonzero, adjacent new
+    objects will be merged, otherwise the pieces will remain separate
+    objects.  If successful, the number of newly created objects is
+    returned, otherwise -1 is returned.  The function will fail if the
+    handle does not reference an object list.
+    </dl>
+    <hr>
+
+    <!-- 100508 -->
+    <a name="ClipIntersectCopy"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>ClipIntersectCopy</tt>(<i>object_handle1</i>,
+     <i>all1</i>, <i>object_handle2</i>, <i>all2</i>, <i>lname</i>)</b>
+    <dd><br>This function returns a list of object copies which represent
+    the exclusive-or of box, polygon, and wire objects in the two
+    object lists passed.  The lists are not altered in any way, and
+    the new objects, being "copies", are not added to the database. 
+    Objects found in the lists that are not boxes, polygons, or wires
+    are ignored.  The new objects are placed on the layer with the
+    name given in <i>lname</i>, which is created if it does not exist,
+    independent of the originating layer of the objects.  If a null
+    string or 0 is passed for <i>lname</i>, the target layer is the
+    first layer found in <i>object_handle1</i>, or
+    <i>object_handle2</i> if <i>object_handle1</i> is empty.  The
+    <i>all1</i> and <i>all2</i> are integer arguments indicating
+    whether to use only the first object in the list, or all objects
+    in the list.  If nonzero, then all boxes, polygons, and wires in
+    the corresponding list will be used, otherwise only the first box,
+    polygon, or wire will be processed.  On success, a handle to a
+    list of object copies is returned, zero is returned otherwise.  A
+    fatal error is triggered if either argument is not a handle to a
+    list of objects.
+    </dl>
+
+!!SEEALSO
+funcs:geom2
+
+!!KEYWORD
+funcs:geom2:obj
+!!TITLE
+Other Object Management Functions
+!!HTML
+
+    <!-- 100408 -->
+    <a name="ChangeLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>ChangeLayer</tt>()</b>
+    <dd><br>This function will change the layer of all selected geometry
+    to the current layer.  This is similar to the functionality of the
+    <a href="xic:chlyr"><b>Change Layer</b></a> button in the <a
+    href="xic:modifymenu"><b>Modify Menu</b></a>.
+    </dl>
+    <hr>
+
+    <!-- 100412 -->
+    <a name="Bloat"></a>
+    <dl>
+    <dt><b>(int) <tt>Bloat</tt>(<i>dimen</i>, <i>mode</i>)</b>
+    <dd><br>Each selected object is bloated by the given dimension,
+    similar to the <a href="!bloat"><b>!bloat</b></a> command.
+    The returned value is 0 on success, or 1 if there was a
+    runtime error.  This function will return 1 if not called in
+    physical mode.
+
+    <p>
+    The second argument is an integer that specifies the algorithm to
+    use for bloating.  Giving zero specifies the default algorithm. 
+    See the description of the <a href="!bloat"><b>!bloat</b></a>
+    command for documentation of the algorithms available.
+    </dl>
+    <hr>
+
+    <!-- 100412 -->
+    <a name="Manhattanize"></a>
+    <dl>
+    <dt><b>(int) <tt>Manhattanize</tt>(<i>dimen</i>, <i>mode</i>)</b>
+    <dd><br>Each selected non-Manhattan polygon or wire is converted to a
+    Manhattan polygon or box approximation, similar to the <a
+    href="!manh"><b>!manh</b></a> command.  The first argument is a
+    size in microns representing the smallest dimension of the boxes
+    created to approximate the non-Manhattan parts.  The second
+    argument is a boolean value that specifies which of two algorithms
+    to use.  These algorithms are described with the <b>!manh</b>
+    command. 
+
+    <p>
+    The returned value is 0 on success, or 1 if there was a runtime
+    error.  This function will return 1 if not called in physical
+    mode.  The function will fail if the <i>dimen</i> argument is
+    smaller than 0.01.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Join"></a>
+    <dl>
+    <dt><b>(int) <tt>Join</tt>()</b>
+    <dd><br>The selected objects that touch or overlap are merged together
+    into polygons, similar to the <a href="!join"><b>!join</b></a>
+    command.  The returned value is 0 on success, 1 if there is a
+    runtime error.  This function will return 1 if not called in
+    physical mode.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Decompose"></a>
+    <dl>
+    <dt><b>(int) <tt>Decompose</tt>(<i>vert</i>)</b>
+    <dd><br>The selected polygons and wires are decomposed into elemental
+    non-overlapping trapezoids (polygons) similar to the <a
+    href="!split"><b>!split</b></a> command.  If the integer argument
+    is nonzero, the decomposition favors a vertical orientation,
+    otherwise the splitting favors horizontal.  The returned value is
+    0 if called in physical mode, 1 if not called in physical mode (an
+    error).
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Box"></a>
+    <dl>
+    <dt><b>(int) <tt>Box</tt>(<i>left</i>, <i>bottom</i>, <i>right</i>,
+      <i>top</i>)</b>
+    <dd><br>The four arguments are real values specifying the coordinates
+    of a rectangle in microns.  Calling this function will generate a
+    box on the current layer with the given coordinates.  This
+    provides functionality similar to the <a
+    href="xic:box"><b>box<</b></a> menu button.
+
+    <p>
+    If the <a href="UseTransform"><tt>UseTransform</tt></a> function
+    has been called to enable use of the current transform, the
+    current transform will be applied to given coordinates before the
+    box is created.  The translation supplied to <tt>UseTransform</tt>
+    is added to the coordinates before the current transform is
+    applied.
+
+    <p>
+    The <tt>Box</tt> function will actually create a polygon if the
+    current transform is being used and the rotation angle is 45
+    degrees or one of the other non-Manhattan angles.
+    </dl>
+    <hr>
+
+    <!-- 021913 -->
+    <a name="BoxH"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>BoxH</tt>(<i>left</i>, <i>bottom</i>,
+      <i>right</i>, <i>top</i>)</b>
+    <dd><br>
+    This is similar to the <tt>Box</tt> function, but will return a
+    handle to the new object.  On error, a scalar 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Polygon"></a>
+    <dl>
+    <dt><b>(int) <tt>Polygon</tt>(<i>num</i>, <i>arraypts</i>)</b>
+    <dd><br>This function creates a polygon on the current layer.  The
+    second argument is an array of values, taken as x-y pairs.  The
+    first pair of values must be the same as the last, i.e., the path
+    must be closed.  The first argument is the number of pairs of
+    coordinates in the array.  This provides functionality similar to
+    the <a href="xic:polyg"><b>polyg</b></a> menu button.
+
+    <p>
+    If the <a href="UseTransform"><tt>UseTransform</tt></a> function
+    has been called to enable use of the current transform, the
+    current transform will be applied to the given coordinates before
+    the polygon is created.  The translation supplied to
+    <tt>UseTransform</tt> is added to the coordinates before the
+    current transform is applied.
+
+    <p>
+    The <tt>Polygon</tt> function will actually create a box if the
+    rotated figure can be so represented.  The <tt>Polygon</tt>
+    function will never create boxes unless use of the current
+    transform is enabled.
+    </dl>
+    <hr>
+
+    <!-- 021913 -->
+    <a name="PolygonH"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>PolygonH</tt>(<i>num</i>, <i>arraypts</i>)</b>
+    <dd><br>
+    This is similar to the <tt>Polygon</tt> function, but will return
+    a handle to the new object.  On error, a scalar 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="Arc"></a>
+    <dl>
+    <dt><b>(int) <tt>Arc</tt>(<i>x</i>, <i>y</i>, <i>rad1X</i>, <i>rad1Y</i>,
+        <i>rad2X</i>, <i>rad2Y</i>, <i>ang_start</i>, <i>ang_end</i>)</b>
+    <dd><br>This produces a circular or elliptical solid or ring-like
+    figure, providing functionality similar to the <a
+    href="xic:round"><b>round</b></a>, <a
+    href="xic:donut"><b>donut</b></a>, and <a
+    href="xic:arc"><b>arc</b></a> buttons in the physical side menu.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td align=left><i>x, y</i></td>
+      <td align=left>center coordinates</td></tr>
+    <tr><td align=left><i>rad1X, rad1Y</i></td>
+      <td align=left>x and y inner radii</td></tr>
+    <tr><td align=left><i>rad2X, rad2Y</i></td>
+      <td align=left>x and y outer radii</td></tr>
+    <tr><td align=left><i>ang_start</i></td>
+      <td align=left>starting angle in degrees</td></tr>
+    <tr><td align=left><i>ang_end</i></td>
+      <td align=left>ending angle in degrees</td></tr>
+    </table>
+
+    <p>
+    All dimensions are given in microns.  The first two arguments
+    provide the center coordinates.  The second two arguments are the
+    inner radius in the X and Y directions.  If these differ, the
+    inner radus will be elliptical, otherwise it will be circular.  If
+    both are zero, the figure will not have an inner surface.
+
+    <p>
+    Similarly, the next two arguments specify the outer radius, X and
+    Y directions separately.  Both are required to be larger than the
+    inner radius counterpart.
+
+    <p>
+    The final two arguments are the start and end angle, given in
+    If <i>ang_start</i> and <i>ang_end</i> are equal, a donut (ring
+    figure) is produced.  If the outer and inner radii are equal, a
+    solid figure is produced.  Angles are defined from the
+    positive x-axis, in a counter-clockwise sense.  The arc is
+    generated in a clockwise direction.
+
+    <p>
+    If the <a href="UseTransform"><tt>UseTransform</tt></a> function
+    has been called to enable use of the current transform, the
+    current transform will be applied to the arc coordinates before
+    the arc is created.  The translation s upplied to
+    <tt>UseTransform</tt> is added to the coordinates before the
+    current transform is applied.
+
+    <p>
+    The function returns 1 on success, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 021913 -->
+    <a name="ArcH"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>ArcH</tt>(<i>x</i>, <i>y</i>, <i>rad1X</i>,
+        <i>rad1Y</i>, <i>rad2X</i>, <i>rad2Y</i>, <i>ang_start</i>,
+        <i>ang_end</i>)</b>
+    <dd><br>
+    This is similar to the <tt>Arc</tt> function, but will return a
+    handle to the new object.  On error, a scalar 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="Round"></a>
+    <dl>
+    <dt><b>(int) <tt>Round</tt>(<i>x</i>, <i>y</i>, <i>rad</i>)</b>
+    <dd><br>
+    This a simplification of the <tt>Arc</tt> function which simply
+    creates a circular disk object at the location specified in the
+    first two arguments.  All dimensions are in microns.  The third
+    argument specifies the radius.
+
+    <p>
+    The function returns 1 on success, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="RoundH"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>RoundH</tt>(<i>x</i>, <i>y</i>, <i>rad</i>)</b>
+    <dd><br>
+    This is similar to the <tt>Round</tt> function, but will return a
+    handle to the new object.  On error, a scalar 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="HalfRound"></a>
+    <dl>
+    <dt><b>(int) <tt>HalfRound</tt>(<i>x</i>, <i>y</i>, <i>rad</i>,
+     <i>dir</i>)</b>
+    <dd><br>
+    This is a simplification of the <tt>Arc</tt> function which
+    creates a half-circular figure.  The first two arguments indicate
+    the center of an equivalent full circle, i.e., it is the midpoint
+    of the flat edge.  The <i>dir</i> argument is an integer 0-7 which
+    specifies the orientation, in increments of 45 degrees.  With 0,
+    the flat section is horizontal with the curved surface on top. 
+    The dir rotates clockwise, so that a value of 2 would produce a
+    figure that looks like the letter D.
+
+    <p>
+    The function returns 1 on success, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 012815 -->
+    <a name="HalfRoundH"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>HalfRoundH</tt>(<i>x</i>, <i>y</i>,
+     <i>rad</i>, <i>dir</i>)</b>
+    <dd><br>
+    This is similar to the <tt>HalfRound</tt> function, but will
+    return a handle to the new object.  On error, a scalar 0 is
+    returned.
+    </dl>
+    <hr>
+
+    <!-- 021515 -->
+    <a name="Sides"></a>
+    <dl>
+    <dt><b>(int) <tt>Sides</tt>(<i>numsides</i>)</b>
+    <dd><br>
+    This sets the number of segments to use in generating round
+    objects, for the current display mode (electrical or physical). 
+    The function returns the present value for this parameter.  This
+    is similar to the <a href="xic:sidces"><b>sides</b> side menu
+    button in physical mode.  It simply sets the <a
+    href="RoundFlashSides"><b>RoundFlashSides</b></a> variable, or
+    clears the variable if the number of sides given is the default. 
+    Similarly, in electrical mode it is similar to the <b>sides</b>
+    entry in the menu from the <a href="xic:shapes"><b>shapes</b>
+    button in the side menu, and sets or clears the <a
+    href="ElecRoundFlashSides"><b>ElecRoundFlashSides</b></a>
+    variable.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Wire"></a>
+    <dl>
+    <dt><b>(int) <tt>Wire</tt>(<i>width</i>, <i>num</i>, <i>arraypts</i>,
+     <i>end_style</i>)</b>
+    <dd><br>This function creates a wire on the current layer.  The first
+    argument is the width of the wire.  The third argument is the name
+    of an array of coordinates, taken as x-y pairs.  The second
+    argument is the number of coordinate pairs in the array.  The
+    fourth argument is 0, 1, or 2 to set the end style to flush,
+    rounded, or extended, respectively.  This provides the
+    functionality of the <a href="xic:wire"><b>wire</b></a> menu
+    button.
+
+    <p>
+    If the <a href="UseTransform"><tt>UseTransform</tt></a> function
+    has been called to enable use of the current transform, the
+    current transform will be applied to the given coordinates before
+    the wire is created.  The translation supplied to
+    <tt>UseTransform</tt> is added to the coordinates before the
+    current transform is applied.  The variable <b>NoWireWidthMag</b>
+    will suppress changes to the wire width due to the magnification
+    component of the current transform when set.
+    </dl>
+    <hr>
+
+    <!-- 021913 -->
+    <a name="WireH"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>WireH</tt>(<i>width</i>, <i>num</i>,
+     <i>arraypts</i>, <i>end_style</i>)</b>
+    <dd><br>
+    This is similar to the <tt>Wire</tt> function, but will return a
+    handle to the new object.  On error, a scalar 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 022713 -->
+    <a name="Label"></a>
+    <dl>
+    <dt><b>(int) <tt>Label</tt>(<i>text</i>, <i>x</i>, <i>y</i>
+     [, <i>width</i>, <i>height</i>, <i>flags</i>])</b>
+    <dd><br>
+    This function creates a label on the current layer.  The function
+    takes a variable number of arguments, but the first three must be
+    present.  The first argument is of string type and contains the
+    label text.  The next two arguments specify the x and y
+    coordinates of the label reference point.
+
+    <p>
+    The remaining arguments are optional.  The <i>width</i> and
+    <i>height</i> specify the size of the bounding box into which the
+    text will be rendered, in microns.  if both are zero or negative
+    or not given, a default size will be used.  If only one is given a
+    value greater than zero, the other will be computed using a
+    default aspect ratio.  If both are greater than zero, the text
+    will be squeezed or stretched to conform.
+
+    <p>
+    The <i>flags</i> argument is a <a href="labelflags">label
+    flags</a> word used in <i>Xic</i> to set various label attributes. 
+    If given, the <tt>Justify</tt> function and <a
+    href="UseTransform"><tt>UseTransform</tt></a> function settings
+    will be ignored, as these attributes will be set from the
+    <i>flags</i>.  If <i>flags</i> is not given, the functions will
+    set the justification and transformation.
+
+    <p>
+    This function always returns 1.
+    </dl>
+    <hr>
+
+    <!-- 022713 -->
+    <a name="LabelH"></a>
+    <dl>
+    <dt><b>(object_handle) <tt>LabelH</tt>(<i>text</i>, <i>x</i>, <i>y</i>
+     [, <i>width</i>, <i>height</i>, <i>flags</i>])</b>
+    <dd><br>
+    This is similar to the <tt>Label</tt> function, but will return a
+    handle to the new object.  On error, a scalar 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 100408 -->
+    <a name="Logo"></a>
+    <dl>
+    <dt><b>(int) <tt>Logo</tt>(<i>string</i>, <i>x</i>, <i>y</i>
+      [, <i>width</i>, <i>height</i>])</b>
+    <dd><br>
+    This creates and places physical text, i.e., text that is
+    constructed with database polygons that will appear in the mask
+    layout.  The function takes a variable number of arguments, but
+    the first three must be present.  The first argument is of string
+    type and contains the label text.  The next two arguments specify
+    the x and y coordinates of the reference point, which is dependent
+    on the current justification, as set with the <a
+    href="Justify"><tt>Justify</tt></a> function.  The default is the
+    lower-left corner of the bounding box.  The text will be
+    transformed according to the current transform.
+
+    <p>
+    The remaining arguments are optional.  The <i>width</i> and
+    <i>height</i> specify the approximate size of the rendered text. 
+    Unlike the <a href="Label"><tt>Label</tt></a> function, the text
+    aspect ratio is fixed.  The first of <i>height</i> or <i>width</i>
+    which is positive will be used to set the "pixel" size used to
+    render the text, by dividing this value by the character cell
+    height or width of the default font.  Thus, the rendered text size
+    will only be accurate for this font, and will scale with the
+    number of pixels used in the "pretty" fonts.  One must experiment
+    with a chosen font to obtain accurate sizing.  If neither
+    parameter is given and positive, a default size will be used.
+
+    <p>
+    This provides the functionality of the <a
+    href="xic:logo"><b>logo</b></a> menu button, and is sensitive to
+    the following variables.
+
+    <blockquote><tt>
+     <a href="LogoEndStyle"><b>LogoEndStyle</b></a><br>
+     <a href="LogoPathWidth"><b>LogoPathWidth</b></a><br>
+     <a href="LogoAltFont"><b>LogoAltFont</b></a><br>
+     <a href="LogoPrettyFont"><b>LogoPrettyFont</b></a><br>
+     <a href="LogoToFile"><b>LogoToFile</b></a>
+    </tt></blockquote>
+
+    <p>
+    This function always returns 1.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Justify"></a>
+    <dl>
+    <dt><b>(int) <tt>Justify</tt>(<i>hj</i>, <i>vj</i>)</b>
+    <dd><br>This sets the justification for text created with the
+    <b>logo</b> and <b>label</b> commands and corresponding script
+    functions.  The arguments can have the following values:
+
+    <p>
+    <table border=0>
+    <tr><td>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><i>hj</i></td> <td>&nbsp;</td></td></tr>
+    <tr><td>0</td> <td align=left>left</td></td></tr>
+    <tr><td>1</td> <td align=left>center</td></td></tr>
+    <tr><td>2</td> <td align=left>right</td></td></tr>
+    </table>
+    </td><td>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><i>vj</i></td> <td>&nbsp;</td></tr>
+    <tr><td>0</td> <td align=left>bottom</td></tr>
+    <tr><td>1</td> <td align=left>center</td></tr>
+    <tr><td>2</td> <td align=left>top</td></tr>
+    </table>
+    </td></tr>
+    </table>
+
+    <p>
+    Values out of range will preserve the present justification setting.
+    The function always returns 1.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Delete"></a>
+    <dl>
+    <dt><b>(int) <tt>Delete</tt>()</b>
+    <dd><br>This function deletes all selected objects from the database.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Erase"></a>
+    <dl>
+    <dt><b>(int) <tt>Erase</tt>(<i>left</i>, <i>bottom</i>, <i>right</i>,
+     <i>top</i>)</b>
+    <dd><br>This function erases the area defined by the arguments. 
+    Polygons, wires, and boxes are appropriately clipped.  The erase
+    function has no effect on subcells or labels.  This provides an
+    erase capability similar to the <a
+    href="xic:erase"><b>erase</b></a> menu button.
+    </dl>
+    <hr>
+
+    <!-- 100412 -->
+    <a name="EraseUnder"></a>
+    <dl>
+    <dt><b>(int) <tt>EraseUnder</tt>()</b>
+    <dd><br>This function will erase geometry from unselected objects
+    that intersect with objects that are selected.  This is equivalent
+    to the <a href="xic:eundr"><b>Erase Under</b></a> command in
+    <i>Xic</i>.  This function always returns 1.
+
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Yank"></a>
+    <dl>
+    <dt><b>(int) <tt>Yank</tt>(<i>left</i>, <i>bottom</i>, <i>right</i>,
+     <i>top</i>)</b>
+    <dd><br>This function puts the geometry in the specified rectangle in
+    yank buffer 0.  It can be placed with the <tt>Put</tt> function,
+    or the <a href="xic:put"><b>put</b></a> command.  This provides a
+    yank capability similar to the <a
+    href="xic:erase"><b>erase</b></a> button in the side menu.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Put"></a>
+    <dl>
+    <dt><b>(int) <tt>Put</tt>(<i>x</i>, <i>y</i>, <i>bufnum</i>)</b>
+    <dd><br>This puts the contents of the indicated yank buffer in the
+    current layout, with the lower left at <i>x</i>, <i>y</i>.  The
+    <i>bufnum</i> is the yank buffer index, which can be 0-4.  Buffer
+    0 is the most recent yank or erase, buffer 1 is the next most
+    recent, etc.  This provides functionality similar to the <a
+    href="xic:put"><b>put</b></a> button in the side menu.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Xor"></a>
+    <dl>
+    <dt><b>(int) <tt>Xor</tt>(<i>left</i>, <i>bottom</i>, <i>right</i>,
+     <i>top</i>)</b>
+    <dd><br>This function exclusive-or's the rectangular area defined by
+    the arguments with boxes, polygons, and wires on the current
+    layer.  Existing objects become clear areas.  This provides
+    functionality similar to the <a href="xic:xor"><b>xor</b></a>
+    button in the side menu.
+    </dl>
+    <hr>
+
+    <!-- 082009 -->
+    <a name="Copy"></a>
+    <dl>
+    <dt><b>(int) <tt>Copy</tt>(<i>fromx</i>, <i>fromy</i>, <i>tox</i>,
+      <i>toy</i>, <i>repcnt</i>)</b>
+    <dd><br>Copies of selected objects are created and placed such that
+    the point specified by the first two arguments is moved to the
+    location specified by the second two arguments.
+
+    <p>
+    The <i>repcnt</i> is an integer replication count in the range
+    1-100000, which will be silently taken as one if out of range.  If
+    not one, multiple copies are made, at multiples of the translation
+    factors given.
+
+    <p>
+    This provides functionality similar to the <a
+    href="xic:copy"><b>Copy</b></a> button in the <b>Modify Menu</b>. 
+    The return value is 1 if there were no errors and something was
+    copied, 0 otherwise. 
+    </dl>
+    <hr>
+
+    <!-- 082009 -->
+    <a name="CopyToLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>CopyToLayer</tt>(<i>fromx</i>, <i>fromy</i>, <i>tox</i>,
+      <i>toy</i>, <i>oldlayer</i>, <i>newlayer</i>, <i>repcnt</i>)</b>
+    <dd><br>This is similar to the <tt>Copy</tt> function, but allows
+    layer change.  If <i>newlayer</i> is 0, null, or empty,
+    <i>oldlayer</i> is ignored and the function behaves identically to
+    <tt>Copy</tt>.  Otherwise the <i>newlayer</i> string must be a
+    layer name.  If <i>oldlayer</i> is 0, null, or empty, all copied
+    objects are placed on <i>newlayer</i>.  Otherwise, <i>oldlayer</i>
+    must be a layer name, in which case only objects on
+    <i>oldlayer</i> will be placed on <i>newlayer</i>, other objects
+    will remain on the same layer.  Subcell objects are copied as in
+    <tt>Copy</tt>, i.e., the layer arguments are ignored.
+    </dl>
+    <hr>
+
+    <!-- 100408 -->
+    <a name="Move"></a>
+    <dl>
+    <dt><b>(int) <tt>Move</tt>(<i>fromx</i>, <i>fromy</i>, <i>tox</i>,
+      <i>toy</i>)</b>
+    <dd><br>This function moves the selected objects such that the
+    reference point specified in the first two arguments is moved to
+    the point specified by the second two arguments.  This provides
+    functionality similar to the <a href="xic:move"><b>Move</b></a>
+    button in the <b>Modify Menu</b>.  The return value is 1 if there
+    were no errors and something was moved, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="MoveToLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>MoveToLayer</tt>(<i>fromx</i>, <i>fromy</i>, <i>tox</i>,
+      <i>toy</i>, <i>oldlayer</i>, <i>newlayer</i>)</b>
+    <dd><br>This is similar to the <tt>Move</tt> function, but allows
+    layer change.  If <i>newlayer</i> is 0, null, or empty,
+    <i>oldlayer</i> is ignored and the function behaves identically to
+    <tt>Move</tt>.  Otherwise the <i>newlayer</i> string must be a
+    layer name.  If <i>oldlayer</i> is 0, null, or empty, all moved
+    objects are placed on <i>newlayer</i>.  Otherwise, <i>oldlayer</i>
+    must be a layer name, in which case only objects on
+    <i>oldlayer</i> will be placed on <i>newlayer</i>, other objects
+    will remain on the same layer.  Subcell objects are moved as in
+    <tt>Move</tt>, i.e., the layer arguments are ignored.
+    </dl>
+    <hr>
+
+    <!-- 081908 -->
+    <a name="Rotate"></a>
+    <dl>
+    <dt><b>(int) <tt>Rotate</tt>(<i>x</i>, <i>y</i>, <i>ang</i>,
+    <i>remove</i>)</b>
+    <dd><br>The selected objects are rotated counter-clockwise by
+    <i>ang</i> (in degrees) about he point specified in the first two
+    arguments.  This provides functionality similar to the <a
+    href="xic:spin"><b>spin</b></a> button in the side menu.
+
+    <p>
+    If the boolean argument <i>remove</i> is true (nonzero), the
+    original objects will be deleted.  Otherwise, the original objects
+    are retained, and will become deselected.
+
+    <p>
+    The return value is 1 if there were no errors and something was
+    rotated, 0 otherwise.
+
+    <p>
+    Note:  in releases prior to 3.0.5, the <i>remove</i> argument was
+    absent and effectively 0 in the current function implementation.
+    </dl>
+    <hr>
+
+    <!-- 081908 -->
+    <a name="RotateToLayer"></a>
+    <dl>
+    <dt><b>(int) <tt>RotateToLayer</tt>(<i>x</i>, <i>y</i>, <i>ang</i>,
+      <i>oldlayer</i>, <i>newlayer</i>, <i>remove</i>)</b>
+    <dd><br>This is similar to the <tt>Rotate</tt> function, but allows
+    layer change.  If <i>newlayer</i> is 0, null, or empty,
+    <i>oldlayer</i> is ignored and the function behaves identically to
+    <tt>Rotate</tt>.  Otherwise the <i>newlayer</i> string must be a
+    layer name.  If <i>oldlayer</i> is 0, null, or empty, all rotated
+    objects are placed on <i>newlayer</i>.  Otherwise, <i>oldlayer</i>
+    must be a layer name, in which case only objects on
+    <i>oldlayer</i> will be placed on <i>newlayer</i>, other objects
+    will remain on the same layer.  Subcell objects are rotated as in
+    <tt>Rotate</tt>, i.e., the layer arguments are ignored.
+
+    <p>
+    If the boolean argument <i>remove</i> is true (nonzero), the
+    original objects will be deleted.  Otherwise, the original objects
+    are retained, and will become deselected.
+
+    <p>
+    The return value is 1 if there were no errors and something was
+    rotated, 0 otherwise.
+
+    <p>
+    Note:  in releases prior to 3.0.5, the <i>remove</i> argument was
+    absent and effectively 0 in the current function implementation.
+    </dl>
+    <hr>
+
+    <!-- 030204 -->
+    <a name="Split"></a>
+    <dl>
+    <dt><b>(int) <tt>Split</tt>(<i>x</i>, <i>y</i>, <i>flag</i>,
+      <i>orient</i>)</b>
+    <dd><br>This will sever selected objects along a vertical or
+    horizontal line through <i>x</i>, <i>y</i> if <i>flag</i> is
+    nonzero.  If <i>orient</i> is 0, the break line is vertical,
+    otherwise it is horizontal.  If <i>flag</i> is zero, the function
+    will return 1 if an object would be split, 0 otherwise, though no
+    objects are actually split.  This provides functionality similar
+    to the <a href="xic:break"><b>break</b></a> button in the side
+    menu.
+    </dl>
+    <hr>
+
+    <!-- 102913 -->
+    <a name="Flatten"></a>
+    <dl>
+    <dt><b>(int) <tt>Flatten</tt>(<i>depth</i>, <i>use_merge</i>,
+      <i>fast</i>)</b>
+    <dd><br>
+    The selected subcells are flattened into the current cell,
+    recursively to the given depth, similar to the effect of the <a
+    href="xic:flatn"><b>Flatten</b></a> button in the <b>Edit
+    Menu</b>.
+
+    <p>
+    The <i>depth</i> argument may be an integer representing the depth
+    into the hierarchy to flatten:  0 for top-level subcells only, 1
+    to include second-level subcells, etc.  This argument can also be
+    a string starting with '<tt>a</tt>' to signify flattening all
+    levels.  A negative depth also signifies flattening all levels.
+
+    <p>
+    The <i>use_merge</i> argument is a boolean which if nonzero
+    indicates that new objects will be merged with existing objects
+    when added to the current cell.  This is the same merging as
+    specified in the <a href="xic:edset"><b>Editing Setup</b></a> panel
+    from the <b>Edit Menu</b>, or corresponding variables.
+
+    <p>
+    If the boolean argument <i>fast</i> is nonzero, "fast" mode is
+    used, meaning that there will be no undo list generation and no
+    object merging.  This is not undoable so should be used with care.
+
+    <p>
+    The function returns 1 on success, 0 otherwise, with an error
+    message probably available from <a
+    href="GetError"><tt>GetError</tt></a>.
+    </dl>
+    <hr>
+
+    <!-- 082809 -->
+    <a name="Layer"></a>
+    <dl>
+    <dt><b><tt>Layer</tt>(<i>string</i>, <i>mode</i>, <i>depth</i>,
+     <i>recurse</i>, <i>noclear</i>, <i>use_merge</i>, <i>fast_mode</i>)</b>
+    <dd><br>
+    This is very similar to the <a href="!layer"><b>!layer</b></a>
+    command, and operations from the <b>Evaluate Layer Expression</b>
+    panel brought up with the <a href="xic:lexpr"><b>Layer
+    Expression</b></a> button in the <b>Edit Menu</b>.  The
+    <i>string</i> is of the form
+    <blockquote>
+      "<i>new_layer_name</i> [=] <i>layer_expression</i>".
+    </blockquote>
+
+    <p>
+    The <i>mode</i> argument is an integer which sets the split/join
+    mode, similar to the keywords in the <b>!layer</b> command, and
+    the buttons in the <b>Evaluate Layer Expression</b> panel.  Only
+    the two least-significant bits of the integer value are used.
+  
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td>0</td> <td>default</td></tr>
+    <tr><td>1</td> <td>horizontal split</td></tr>
+    <tr><td>2</td> <td>vertical split</td></tr>
+    <tr><td>3</td> <td>join</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    The <i>depth</i> is the search depth, which can be an integer
+    which sets the maximum depth to search (0 means search the current
+    cell only, 1 means search the current cell plus the subcells,
+    etc., and a negative integer sets the depth to search the entire
+    hierarchy).  This argument can also be a string starting with
+    '<tt>a</tt>' such as "<tt>a</tt>" or "<tt>all</tt>" which
+    specifies to search the entire hierarchy.
+
+    <p>
+    The <i>recurse</i> argument is a boolean value which corresponds
+    to the "<tt>-r</tt>" option of the <b>!layer</b> command, or the
+    <b>Recursively create in subcells</b> check box in the <b>Evaluate
+    Layer Expression</b> panel.  If nonzero, evaluation will be
+    performed in subcells to depth, using only that cell's geometry. 
+    When zero, geometry is created in the current cell only, using
+    geometry found in subcells to depth.
+
+    <p>
+    If the boolean argument <i>noclear</i> is true, the target layer
+    will not be cleared before expression evaluation.  This
+    corresponds to the "<tt>-c</tt>" option of the <b>!layer</b>
+    command, and the <b>Don't clear layer before evaluation</b> button
+    in the <b>Evaluate Layer Expression</b> panel.
+
+    <p>
+    The boolean argument <i>use_merge</i> corresponds to the
+    "<tt>-m</tt>" option in the <b>!layer</b> command, and the <b>Use
+    object merging while processing</b> check box in the <b>Evaluate
+    Layer Expression</b> panel.  When nonzero, new objects will be
+    merged with existing objects when added to a cell.
+
+    <p>
+    The <i>fast_mode</i> argument is a boolean value that corresponds
+    to the "<tt>-f</tt>" option in the <b>!layer</b> command, and the
+    <b>Fast mode</b> check box in the <b>Evaluate Layer Expression</b>
+    panel.  When nonzero, undo list processing and merging are skipped
+    for speed and to reduce memory use.  However, the result is not
+    undoable so this flag should be used with care.
+
+    <p>
+    There is no return value; the function either succeeds or will
+    terminate the script on error.
+    </dl>
+
+!!SEEALSO
+funcs:geom2
+
+!!KEYWORD
+funcs:geom2:prp
+!!TITLE
+Property Management
+!!HTML
+
+    <!-- 030515 -->
+    The functions described in this section provide an interface for
+    working with properties.
+
+    <p>
+    When specifying the property "number" for electrical mode
+    properties, either a number or string equivalent can be used.  The
+    string equivalent is a prefix of one of the supported property
+    names.  In addition, some of the properties have a letter that any
+    word that starts with the letter will indicate that property.  The
+    idea was that each property could be keyed by a single letter, and
+    this is almost still true (<b>Node</b> is the exception).
+
+    <p>
+    The following table identifies the recognized strings.  Not all of
+    these properties apply in all functions.  The listed order is the
+    order of testing, the first match yields the equivalence.
+
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Number</th> <th>Name</th> <th>String</th></tr>
+    <tr><td>1</td>  <td><b>model</b></td> <td>prefix</td></tr>
+    <tr><td>2</td>  <td><b>value</b></td> <td>prefix</td></tr>
+    <tr><td>3</td>  <td><b>param</b></td> <td>prefix</td></tr>
+    <tr><td>3</td>  <td><b>initc</b></td> <td>prefix</td></tr>
+    <tr><td>4</td>  <td><b>other</b></td> <td>prefix</td></tr>
+    <tr><td>11</td> <td><b>name</b></td> <td>prefix</td></tr>
+    <tr><td>5</td>  <td><b>nophys</b></td> <td>prefix or starts
+      with 'y' or 'Y'</td></tr>
+    <tr><td>6</td>  <td><b>virtual</b></td> <td>prefix</td> or starts
+      with 't' ot 'T'</tr>
+    <tr><td>7</td>  <td><b>flatten</b></td> <td>prefix</td></tr>
+    <tr><td>8</td>  <td><b>range</b></td> <td>prefix</td></tr>
+    <tr><td>10</td> <td><b>node</b></td> <td>prefix</td></tr>
+    <tr><td>18</td> <td><b>nosymb</b></td> <td>prefix or starts
+      with 's' or 'S'</td></tr>
+    <tr><td>20</td> <td><b>macro</b></td> <td>prefix< or starts
+      with 'c' or 'C'/td></tr>
+    <tr><td>21</td> <td><b>devref</b></td> <td>prefix</td></tr>
+    </table>
+    </blockquote>
+
+    The <b>initc</b> is an archaic alias for the <b>param</b>
+    property that is still recognized.  In some functions, an
+    additonal keyword "<tt>all</tt>" is recognized in a way that has
+    significance to the function.  If the string does not match,
+    an error is indicated.
+    <hr>
+
+    <!-- 030215 -->
+    <a name="PrpHandle"></a>
+    <dl>
+    <dt><b>(prpty_handle) <tt>PrpHandle</tt>(<i>object_handle</i>)</b>
+    <dd><br>This function returns a handle to the list of properties
+    of the object referenced by the passed object handle.  The
+    function fails if the argument is not a valid object handle, use
+    <tt>CellPrpHandle</tt> to list cell properties.
+    </dl>
+    <hr>
+
+    <!-- 040106 -->
+    <a name="GetPrpHandle"></a>
+    <dl>
+    <dt><b>(prpty_handle) <tt>GetPrpHandle</tt>(<i>number</i>)</b>
+    <dd><br>Since there can be arbitrarily many properties defined with
+    the same number, a generator function is used to read properties
+    one at a time.  This function returns a handle to a list of the
+    properties that match the <i>number</i> passed.  This applies
+    to the first object in the selection queue (the most recent object
+    selected).  The returned value is used by other functions to
+    actually retrieve the property text.
+
+    <p>
+    If the <i>number</i> argument is a prefix of "<tt>all</tt>", then
+    any property string will be returned.  In physical mode, the
+    <i>number</i>argument should otherwise be an integer.  In
+    electrical mode, the <i>number</i> argument can have string form
+    as described in the introduction to this section.
+    </dl>
+    <hr>
+
+    <!-- 030215 -->
+    <a name="CellPrpHandle"></a>
+    <dl>
+    <dt><b>(prpty_handle) <tt>CellPrpHandle</tt>()</b>
+    <dd><br>This function returns a handle to the list of properties
+    of the current cell, applicable to the current display mode in the
+    main window.
+    </dl>
+    <hr>
+
+    <!-- 040106 -->
+    <a name="GetCellPrpHandle"></a>
+    <dl>
+    <dt><b>(prpty_handle) <tt>GetCellPrpHandle</tt>(<i>number</i>)</b>
+    <dd><br>Since there can be arbitrarily many properties defined with
+    the same number, a generator function is used to read properties
+    one at a time.  This function returns a handle to a list of the
+    properties that match the <i>number</i> passed, from the current
+    cell.  The returned value is used by other functions to actually
+    retrieve the property text.
+
+    <p>
+    A prefix of the string "<tt>all</tt>" can be passed for the
+    <i>number</i> argument, in which case the handle will reference
+    all properties of the cell.  In physical mode, the <i>number</i>
+    argument should otherwise be an integer.  In electrical mode, the
+    <i>number</i> argument can have string form as described in the
+    introduction to this section.
+    </dl>
+    <hr>
+
+    <!-- 030215 -->
+    <a name="PrpNext"></a>
+    <dl>
+    <dt><b>(int) <tt>PrpNext</tt>(<i>prpty_handle</i>)</b>
+    <dd><br>This function causes the referenced property of the passed
+    handle to be advanced to the next in the list.  If there are no
+    other properties in the list, the handle is closed, and 0 is
+    returned.  Otherwise, 1 is returned.  The number of remaining
+    properties can be obtained with the <tt>HandleContent</tt>
+    function.
+    </dl>
+    <hr>
+
+    <!-- 030215 -->
+    <a name="PrpNumber"></a>
+    <dl>
+    <dt><b>(int) <tt>PrpNumber</tt>(<i>prpty_handle</i>)</b>
+    <dd><br>This function returns the number of the property referenced by
+    the handle.
+    </dl>
+    <hr>
+
+    <!-- 030215 -->
+    <a name="PrpString"></a>
+    <dl>
+    <dt><b>(string) <tt>PrpString</tt>(<i>prpty_handle</i>)</b>
+    <dd><br>This function returns the string of the property referenced by
+    the handle.  The "raw" string is returned, meaning that if the
+    property comes from an electrical object, all of the detail from
+    the internal property string is returned.
+    </dl>
+    <hr>
+
+    <!-- 030215 -->
+    <a name="PrptyString"></a>
+    <dl>
+    <dt><b>(string) <tt>PrptyString</tt>(<i>obj_or_prp_handle</i>,
+      <i>number</i>)</b>
+    <dd><br>
+    The first argument can be a property handle, or an object handle. 
+    If a property handle is given, the function returns the string of
+    the first property referenced by the handle that matches the
+    <i>number</i>.  If the <i>number</i> argument is a prefix of
+    "<tt>all</tt>", then any property string will be returned.  In
+    physical mode, the <i>number</i> argument should otherwise be an
+    integer.  In electrical mode, the <i>number</i> argument can be a
+    string, as described in the introduction to this section.  The
+    handle is set to reference the next property in the reference
+    list, following the one returned.  When there are no more
+    properties, this function returns a null string.
+
+    <p>
+    If the first argument is an object handle, the function returns
+    the strings from properties or pseudo-properties for the object
+    referenced by the handle.
+
+    <p>
+    In physical mode, the function will locate a property with the
+    given number, and return its string.  If no property is found with
+    that number, and a pseudo-property for the object matches the
+    number, then the pseudo-property string is returned.  If no
+    matching pseudo-property is found, a null string is returned. 
+    Note:  objects can be modified through setting pseudo-properties
+    using the <tt>PrptyAdd</tt> function.
+
+    <p>
+    In electrical mode, the number argument can be a string, as
+    described in the introduction to this section.  In the case of an
+    object handle, the "<tt>all</tt>" keyword is not supported.
+
+    <p>
+    The function will fail if the argument is not a valid object or
+    property handle.  Use <tt>GetCellPropertyString</tt> to obtain
+    strings from cell properties.
+
+    <p>
+    If the requested property is a <b>name</b> property of an
+    electrical device or subcircuit, only the name is returned (the
+    internal property string is more complex).  Otherwise the "raw"
+    string is returned.
+    </dl>
+    <hr>
+
+    <!-- 030215 -->
+    <a name="GetPropertyString"></a>
+    <dl>
+    <dt><b>(string) <tt>GetPropertyString</tt>(<i>number</i>)</b>
+    <dd><br>
+    This function searches the selection queue for an object with a
+    property matching <i>number</i>.  The string for the first such
+    property found is returned.  A null string is returned if no
+    matching property was found.
+    </dl>
+    <hr>
+
+    <!-- 030215 -->
+    <a name="GetCellPropertyString"></a>
+    <dl>
+    <dt><b>(string) <tt>GetCellPropertyString</tt>(<i>number</i>)</b>
+    <dd><br>
+    This function searches the properties of the current cell, and
+    returns the string for the first property found that matches
+    <i>number</i>.  If no match, a null string is returned. 
+    </dl>
+    <hr>
+
+    <!-- 030515 -->
+    <a name="PrptyAdd"></a>
+    <dl>
+    <dt><b>(int) <tt>PrptyAdd</tt>(<i>object_handle</i>, <i>number</i>,
+     <i>string</i>)</b>
+    <dd><br>
+    This function will create a new <a href="properties">property</a>
+    using the <i>number</i> and <i>string</i> provided, on the object
+    referenced by the handle.  The object must be defined in the
+    current cell.  The function will fail if the handle is invalid. 
+    Use <tt>CellPropertyAdd</tt> to add properties to the current
+    cell.
+
+    <p>
+    In physical mode, the property number can take any non-negative
+    value.  This includes property numbers that are used by <i>Xic</i>
+    for various purposes in the range 7000-7199.  Unless the user is
+    expecting the <i>Xic</i> interpretation of the property number,
+    these numbers should be avoided.  It is the caller's
+    responsibility to ensure that the properties in this range are
+    applied to the appropriate objects, in the correct context and
+    with correct syntax, as there is little or no checking.  Adding
+    some properties in this range such as <b>flags</b>,
+    <b>flatten</b>, or a pcell property will automatically remove an
+    existing property with the same number, if any.
+
+    <p>
+    The <a href="pseudoprops">pseudo-properties</a> in the range
+    7200-7299 will have their documented effect when applied, and no
+    property is added,
+
+    <p>
+    In electrical mode, it is possible to set these properties of
+    device instances:
+    <blockquote>
+     <b>name</b>, <b>model</b>, <b>value</b>, <b>param</b>, <b>devref</b>,
+     <b>other</b>, <b>range</b>, <b>nophys</b, <b>symblc</b>
+    </blockquote>
+    and the following properties of subcircuit instances:
+    <blockquote>
+     <b>name</b>, <b>param</b>, <b>other</b>, <b>flatten</b>,
+     <b>range</b>, <b>nophys</b>, <b>symblc</b>.
+    </blockquote>
+    Attempts to set properties not listed here will silently fail. 
+    The object must be defined in the current cell, thus the mode must
+    be electrical.
+
+    <p>
+    If the function succeeds, 1 is returned.  otherwise 0 is returned.
+    </dl>
+    <hr>
+
+    <!-- 030515 -->
+    <a name="AddProperty"></a>
+    <dl>
+    <dt><b>(int) <tt>AddProperty</tt>(<i>number</i>, <i>string</i>)</b>
+    <dd><br>
+    This function adds a <a href="properties">property</a> with the
+    given number and string to all selected objects.
+
+    <p>
+    In physical mode, the property number can take any non-negative
+    value.  This includes property numbers that are used by <i>Xic</i>
+    for various purposes in the range 7000-7199.  Unless the user is
+    expecting the <i>Xic</i> interpretation of the property number,
+    these numbers should be avoided.  It is the caller's
+    responsibility to ensure that the properties in this range are
+    applied to the appropriate objects, in the correct context and
+    with correct syntax, as there is little or no checking.
+ 
+    <p>
+    The <a href="pseudoprops">pseudo-properties</a> in the range
+    7200-7299 will have their documented effect when applied, and no
+    property is added,
+
+    <p>
+    In electrical mode, it is possible to set these properties of
+    device instances:
+    <blockquote>
+     <b>name</b>, <b>model</b>, <b>value</b>, <b>param</b>, <b>devref</b>,
+     <b>other</b>, <b>range</b>, <b>nophys</b, <b>symblc</b>
+    </blockquote>
+    and the following properties of subcircuit instances:
+    <blockquote>
+     <b>name</b>, <b>param</b>, <b>other</b>, <b>flatten</b>,
+     <b>range</b>, <b>nophys</b>, <b>symblc</b>.
+    </blockquote>
+    Attempts to set properties not listed here will silently fail. 
+    The object must be defined in the current cell, thus the mode must
+    be electrical.
+
+    <p>
+    The number of properties added plus the number of pseudo-properties
+    applied is returned.
+    </dl>
+    <hr>
+
+    <!-- 030515 -->
+    <a name="AddCellProperty"></a>
+    <dl>
+    <dt><b>(int) <tt>AddCellProperty</tt>(<i>number</i>, <i>string</i>)</b>
+    <dd><br>
+    This function adds a <a href="properties">property</a> to the
+    current cell.
+
+    <p>
+    In physical mode, the property number can take any non-negative
+    value.  This includes property numbers that are used by <i>Xic</i>
+    for various purposes in the range 7000-7199.  Unless the user is
+    expecting the <i>Xic</i> interpretation of the property number,
+    these numbers should be avoided.  It is the caller's
+    responsibility to ensure that the properties in this range are
+    applied to the appropriate objects, in the correct context and
+    with correct syntax, as there is little or no checking.  Adding
+    some properties in this range such as <b>flags</b>,
+    <b>flatten</b>, or a pcell property will automatically remove an
+    existing property with the same number, if any.
+
+    <p>
+    Numbers in the <a href="pseudiprops">pseudo-property</a> range
+    7200-7299 will do nothing.
+
+    <p>
+    In electrical mode, it is possible to set the <b>param</b>,
+    <b>other</b>, <b>virtual</b>, <b>flatten</b>, <b>macro</b>,
+    <b>node</b>, <b>name</b>, and <b>symblc</b> properties of the
+    current cell.  The last three are not "user settable" but are
+    needed when building up a new circuit cell in memory, as in the
+    scripts produced by the <a href="!mkscripot"><b>!mkscript</b></a>
+    command.  The string should have the format as read from a native
+    cell file.
+
+    <p>
+    The function returns 1 if the operation was successful, 0
+    otherwise.
+    </dl>
+    <hr>
+
+    <!-- 030515 -->
+    <a name="PrptyRemove"></a>
+    <dl>
+    <dt><b>(int) <tt>PrptyRemove</tt>(<i>object_handle</i>, <i>number</i>,
+     <i>string</i>)</b>
+    <dd><br>
+    This function will remove <a href="properties">properties</a>
+    matching the given <i>number</i> and <i>string</i> from the object
+    referenced by the handle.
+
+    <p>
+    In physical mode, the property number can take any non-negative
+    value.  This includes property numbers that are used by <i>Xic</i>
+    for various purposes in the range 7000-7199.  It is the caller's
+    responsibility to make sure that removal of properties in this
+    range is appropriate.  Giving numbers in the <a
+    href="pseudoprops">pseudo-property</a> range 7200-7299 will do
+    nothing.
+ 
+    <p>
+    If the <i>string</i> is null or empty, only the <i>number</i> is
+    used for comparison, and all properties with that number will be
+    removed.  Otherwise, if the <i>string</i> is a prefix of the
+    property string and the numbers match, the property will be
+    removed.
+
+    <p>
+    In electrical mode, it is possible to remove these properties of
+    device instances:
+    <blockquote>
+     <b>name</b>, <b>model</b>, <b>value</b>, <b>param</b>, <b>devref</b>,
+     <b>other</b>, <b>range</b>, <b>nophys</b, <b>symblc</b>
+    </blockquote>
+    and the following properties of subcircuit instances:
+    <blockquote>
+     <b>name</b>, <b>param</b>, <b>other</b>, <b>flatten</b>,
+     <b>range</b>, <b>nophys</b>, <b>symblc</b>.
+    </blockquote>
+    Attempts to remove properties not listed here will silently fail. 
+    Except for <b>other</b>, the string argument is ignored.  For
+    <b>other</b> properties, the string is used as above to identify
+    the property to delete.
+
+    <p>
+    Objects must be defined in the current cell.  The function returns
+    the number of properties removed.
+    </dl>
+    <hr>
+
+    <!-- 030515 -->
+    <a name="RemoveProperty"></a>
+    <dl>
+    <dt><b>(int) <tt>RemoveProperty</tt>(<i>number</i>, <i>string</i>)</b>
+    <dd><br>
+    This function will remove <a href="properties">properties</a> from
+    selected objects.
+
+    <p>
+    In physical mode, the property number can take any non-negative
+    value.  This includes property numbers that are used by <i>Xic</i>
+    for various purposes in the range 7000-7199.  It is the caller's
+    responsibility to make sure that removal of properties in this
+    range is appropriate.  Giving numbers in the <a
+    href="pseudoprops">pseudo-property</a> range 7200-7299 will do
+    nothing.
+
+    <p>
+    If the <i>string</i> is null or empty, only the <i>number</i> is
+    used for comparison, and all properties with that number will be
+    removed.  Otherwise, if the <i>string</i> is a prefix of the
+    property string and the numbers match, the property will be
+    removed.
+
+    <p>
+    In electrical mode, it is possible to remove these properties of
+    device instances:
+    <blockquote>
+     <b>name</b>, <b>model</b>, <b>value</b>, <b>param</b>, <b>devref</b>,
+     <b>other</b>, <b>range</b>, <b>nophys</b, <b>symblc</b>
+    </blockquote>
+    and the following properties of subcircuit instances:
+    <blockquote>
+     <b>name</b>, <b>param</b>, <b>other</b>, <b>flatten</b>,
+     <b>range</b>, <b>nophys</b>, <b>symblc</b>.
+    </blockquote>
+    Attempts to remove properties not listed here will silently fail. 
+    Except for <b>other</b>, the string argument is ignored.  For
+    <b>other</b> properties, the string is used as above to identify
+    the property to delete.
+
+    <p>
+    The number of properties removed is returned.
+    </dl>
+    <hr>
+
+    <!-- 030515 -->
+    <a name="RemoveCellProperty"></a>
+    <dl>
+    <dt><b>(int) <tt>RemoveCellProperty</tt>(<i>number</i>, <i>string</i>)</b>
+    <dd><br>
+    This function will remove <a href="properties">properties</a> from
+    the current cell.
+
+    <p>
+    In physical mode, the property number can take any non-negative
+    value.  This includes property numbers that are used by <i>Xic</i>
+    for various purposes in the range 7000-7199.  It is the caller's
+    responsibility to make sure that removal of properties in this
+    range is appropriate.  Giving numbers in the <a
+    href="pseudoprops">pseudo-property</a> range 7200-7299 will do
+    nothing.
+
+    <p>
+    If the <i>string</i> is null or empty, only the <i>number</i> is
+    used for comparison, and all properties with that number will be
+    removed.  Otherwise, if the <i>string</i> is a prefix of the
+    property string and the numbers match, the property will be
+    removed.
+
+    <p>
+    In electrical mode, it is possible to remove the <b>param</b>,
+    <b>other</b>, <b>virtual</b>, <b>flatten</b>, and <b>macro</b>
+    properties of the current cell.  Except for <b>other</b>, the
+    string argument is ignored.  For <b>other</b> properties, the
+    string is used as above to identify the property to delete.
+
+    <p>
+    The function returns the number of properties removed.
+    </dl>
+
+!!SEEALSO
+funcs:geom2
+

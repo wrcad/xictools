@@ -1,0 +1,68 @@
+#=========================================================================
+# Makefile for httpget/libhttpget
+# Steve Whiteley (stevew@wrcad.com)
+# happy hacking!
+# $Id: Makefile.in,v 1.4 2015/09/29 03:29:36 stevew Exp $
+
+# Below are the recognized CFLAGS defines.  The configure script
+# defines some or all of these in HTP_DEFS.
+#
+# -Dsocklen_t=int       | socklen_t type not defined in headers
+# -DHAVE_VSNPRINTF      | library has vsnprintf()
+
+# Note: the graphical support is no longer included in the library
+# produced here.  The executable target is no longer produced here.
+# Graphics support is provided if built with:
+#  ../gtkinterf/gtkhttpmon.cc  (for gtk 1/2)
+#  ../qtinterf/httpmon_d.cc    (for qt-3/4)
+
+DATE = @DATE@
+VERSION = 2.20
+
+CC = @CXX@
+CFLAGS = @CFLAGS@ @UFLAGS@ -DVERSION=\"$(VERSION)\"
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGS@ -DVERSION=\"$(VERSION)\"
+FILTER = @FILTER@
+
+HFILES = \
+    comm.h \
+    transact.h
+
+CCFILES = \
+    comm.cc \
+    transact.cc
+
+CCOBJS = $(CCFILES:.cc=.o)
+LIBOBJS = $(CCOBJS)
+INCLUDE = -I. -I..
+
+stamp: $(LIBOBJS)
+	touch stamp
+
+.cc.o:
+	$(CC) -c $(CFLAGS) $(INCLUDE) -o $@ $<
+
+files::
+	@echo [ $(CCFILES) $(HFILES) Makefile.in README rfc1945.txt rfc2616.txt ]
+
+subdirs::
+	@echo ]
+
+clean:
+	-@rm -f $(CCOBJS) stamp
+
+distclean: clean
+	-@rm -f Makefile
+
+depend:
+	@echo depending in httpget
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+install:
+
+uninstall:
+
+#######################################################################

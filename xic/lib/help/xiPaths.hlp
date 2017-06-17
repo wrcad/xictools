@@ -1,0 +1,306 @@
+
+!!  ---------------------------------------------------------------
+!!  Xic/WRspice Help System Database
+!!  $Id: xiPaths.hlp,v 1.18 2013/01/25 05:32:44 stevew Exp $
+!!  Copyright (C) Whiteley Research Inc. 2003.  All Rights Reserved
+!!  ---------------------------------------------------------------
+
+!!TAG Xic
+
+!!KEYWORD
+xiPaths.hlp
+!!TITLE
+xiPaths.hlp
+!!HTML
+
+!!SUBTOPICS
+xicpaths
+xt_redirect
+
+
+!! 031611
+!!KEYWORD
+xicpaths
+!!TITLE
+<i>Xic</i> Search Paths
+!!HTML
+    <p>
+    There are four search paths used by <i>Xic</i>.  Search paths are
+    lists of directories, which are searched in left-to-right order
+    for files of a particular type.  In addition to search paths,
+    <i>Xic</i> provides a <a href="xt_redirect">redirect file</a>
+    mechanism for finding files, which supplements the search path. 
+    If a specific file is being sought, the first file with matching
+    name is used.  The format used for search path strings can be one
+    of two forms: 
+
+    <dl>
+    <dt><b>Unix-shell style:</b>&nbsp;&nbsp;
+      ( <tt>directory</tt><i>1</i> <tt>directory</tt><i>2</i> ...
+      <tt>directory</tt><i>N</i> )
+    <dd>
+    <br>
+    The tokens are separated by white space.  If white space appears
+    in a directory entry, that entry should be single or double <a
+    href="quoting">quoted</a>.  The entire path should be enclosed in
+    parentheses.  Space between the parentheses and directory names is
+    optional.
+
+    <p>
+    Examples:
+    <blockquote>
+    <tt>( . )</tt><br>
+    <tt>( /usr/local/bin "/Program Files/xic/stuff" ~/work )</tt>
+    </blockquote>
+
+    <p>
+    This format is the same in Windows and Unix releases, however in
+    Windows, back and forward slashes are equivalent, and the drive
+    specifier can appear in the entries.
+    </dl>
+
+    <dl>
+    <dt><b>Traditional search path:</b>&nbsp;&nbsp;
+      <tt>directory</tt><i>1</i><tt>:directory</tt><i>2</i><tt>:...:directory</tt><i>N</i>
+    <dd>
+    <br>
+    The entries are separated by a special character, which is a colon
+    "<tt>:</tt>" in Unix/Linux, and a semicolon "<tt>;</tt>" in
+    Windows.  There should be no white space that is not part of a
+    file/directory name.  An entry should be single or double quoted
+    if it contains the separation character.  In the examples here, a
+    colon is used, which in Windows must be converted to a semicolon. 
+    The separation character is optional at the front or end of the
+    path, unless it is needed to delimit white space that is part of
+    an entry.
+
+    <p>
+    Examples:
+    <blockquote>
+    <tt>.</tt><br>
+    <tt>/usr/local/bin:/Program Files/xic/stuff:~/work</tt>
+    </blockquote>
+    </dl>
+
+    <p>
+    In earlier <i>Xic</i> releases, parsing was fairly loose, and in
+    particular hybrids of the two formats would be accepted.  This is
+    not true in the present release, due to support for white space in
+    path entries.  The format used in a path string must be
+    consistent.
+
+    <p>
+    The following special symbols are recognized in entries:
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><td><tt>.</tt></td><td>The current directory</tr></tf>
+    <tr><td><tt>..</tt></td><td>The parent directory of the current
+     directory</td></tr>
+    <tr><td><tt>~</tt></td><td>The user's home directory, applies
+     in non-Windows releases only.</td></tr>
+    </table>
+
+    <p>
+    The four paths used by <i>Xic</i> are the design data path, the
+    library path, the help path, and the script path.  The design data
+    path is used to locate <a href="symfilefmt">design data files</a>,
+    consisting of native cell, archive, and library files.  The
+    library path is used to locate the <a href="techfile">technology
+    file</a>, <a href="devlib">device</a> and <a
+    href="modlib">model</a> libraries, and various other configuration
+    files.  The help path contains files for the <a
+    href="helpsys">help system</a>, and the script path contains
+    executable <a href="xicscript">scripts</a> and libraries which
+    appear as commands under the <a href="xic:usermenu"><b>User
+    Menu</b></a>.
+
+    <p>
+    These paths can be set in the technology file, the
+    <tt>.xicinit</tt> or <tt>.xicstart</tt> <a
+    href="initfiles">initialization files</a>, or by use of <a
+    href="xic:env">environment</a> variables, or with the <a
+    href="!set"><b>!set</b></a> command.  A specification in the
+    <tt>.xicinit</tt> file will override specification in the
+    environment, which is in turn superseded by a specification in the
+    technology file, and the <tt>.xicstart</tt> supersedes the
+    technology file.  Once <i>Xic</i> is running, the <a
+    href="!set"><b>!set</b></a> command can be used to set or examine
+    the search paths.  Similar commands exist in the script
+    interpreter interface <a href="scr:iffuncs">function library</a>.
+
+    <p>
+    In addition, the design data path is augmented with any path
+    preceding a native cell file to open in the <a
+    href="xic:open"><b>Open</b></a> command.  By default, the path is
+    added to the beginning of the present design data path.  For
+    example, suppose a design hierarchy exists in the directory
+    <tt>/usr/work</tt>.  If the user enters
+    <tt>/usr/work/maincell</tt> in response to the prompt which
+    appears after pressing the <b>Open</b> button, then the file
+    <tt>maincell</tt> is opened for editing, and the directory
+    <tt>/usr/work</tt> is added to the front of the design data path. 
+    Once the design data path is updated, the cells in that path can
+    be accessed by their base file name only.  The treatment of any
+    path which is given with a native cell to open in the <b>Open</b>
+    command can be altered with the <a
+    href="NoReadExclusive"><b>NoReadExclusive</b></a> and <a
+    href="AddToBack"><b>AddToBack</b></a> variables.
+
+    <p>
+    The use of paths facilitates user customization of <i>Xic</i>,
+    particularly when the directories used in the system installation
+    are not writable by the user.  By installing a different search
+    path, the user can augment or substitute for the system default
+    files and libraries.
+
+    <p>
+    Below are the environment variable names, the names of the
+    corresponding variables which can be modified with the <b>!set</b>
+    command, and the and internal defaults.
+
+    <p>
+    Design Data Path:<br>
+    <table border=0>
+    <tr><th>variable</th> <td><a href="Path"><b>Path</b></a></td></tr>
+    <tr><th>environment</th>
+      <td><a href="XIC_SYM_PATH"><b>XIC_SYM_PATH</b></a></td></tr>
+    <tr><th>default</th> <td><tt>( . )</tt></td></tr>
+    </table>
+
+    <p>
+    Library Path:<br>
+    <table border=0>
+    <tr><th>variable</th> <td><a href="LibPath"><b>LibPath</b></a></td></tr>
+    <tr><th>environment</th>
+      <td><a href="XIC_LIB_PATH"><b>XIC_LIB_PATH</b></a></td></tr>
+    <tr><th>default</th>
+      <td><tt>( . /usr/local/xictools/xic/startup )</tt></td></tr>
+    </table>
+
+    <p>
+    Help Path:<br>
+    <table border=0>
+    <tr><th>variable</th> <td><a href="HelpPath"><b>HelpPath</b></a></td></tr>
+    <tr><th>environment</th>
+      <td><a href="XIC_HLP_PATH"><b>XIC_HLP_PATH</b></a></td></tr>
+    <tr><th>default</th>
+      <td><tt>( /usr/local/xictools/xic/help )</tt></td></tr>
+    </table>
+
+    <p>
+    Script Path:<br>
+    <table border=0>
+    <tr><th>variable</th> <td><a href="ScriptPath"><b>ScriptPath</b></a></td></tr>
+    <tr><th>environment</th>
+      <td><a href="XIC_SCR_PATH"><b>XIC_SCR_PATH</b></a></td></tr>
+    <tr><th>default</th>
+      <td><tt>( /usr/local/xictools/xic/scripts )</tt></td></tr>
+    </table>
+
+    <p>
+    If the <a href="XT_PREFIX"><b>XT_PREFIX</b></a> environment
+    variable is set, its value will be taken instead of
+    "<tt>/usr/local</tt>" in the defaults.
+
+    <p>
+    The <b>variable</b> field in the table above provides the name of
+    the variable, which can be altered with the <b>!set</b> command to
+    set the path.  Unlike other variables, these are always defined
+    and cannot be unset.  The same name is also used as a keyword in
+    the technology file.
+
+    <p>
+    Files containing cell data, whether <i>Xic</i> native, GDSII, or
+    some other format, are expected to be found in a directory along
+    the design data search path.  The first file found matching the
+    name requested is opened.  Normally, it is desirable to include
+    the current directory '.' in the design data path, otherwise files
+    located in the current directory will not be found.
+
+    <p>
+    The technology file, device library file, model library file and
+    other model files are found along the library path.
+
+    <p>
+    The search behavior of the library path is slightly different from
+    the other paths, in that an attempt is made to open a file in the
+    current directory before looking through the search directories. 
+    Thus, the current directory '.' is always logically at the head of
+    the library path.  There is no problem if '.' is also explicitly
+    defined in the path.  A consequence is that startup files that
+    exist in the current directory will <i>always</i> have precedence
+    over files located in other directories.
+
+    <p>
+    Each directory in the help path is expected to contain help
+    database files.  These files use names with an extension
+    "<tt>.hlp</tt>".  The directories may also contain graphics files
+    used by the help system.  Changing this path allows the user to
+    provide their own help files for the custom functions (scripts)
+    which appear in the <b>User Menu</b>, for example, or to add
+    information topics, such as about local design rules, to the
+    database.
+
+    <p>
+    The <a href="xicscript">scripts</a> and related files are found
+    along the script path.  Only files which have the extension
+    "<tt>.scr</tt>" are taken as scripts.  The directories in this
+    path may also contain script menus, with extension
+    "<tt>.scm</tt>", and files named "<tt>library</tt>" which contain
+    subroutines used by other scripts.  Whenever the script path is
+    changed, a <a href="xic:hash">rehash</a> is performed, i.e., the
+    <a href="xic:usermenu"><b>User Menu</b></a> is rebuilt.
+
+!!SEEALSO
+fileformats
+
+!! 031611
+!!KEYWORD
+xt_redirect
+!!TITLE
+Redirect Files
+!!HTML
+    <p>
+    Redirect files are an adjunct to the <a href="xicpaths">search
+    path</a> mechanism used by <i>Xic</i> for finding files.  Redirect
+    files are files created by the user, that tell <i>Xic</i> about
+    additional locations to search for input files.
+
+    <p>
+    Redirect files <b>must</b> be named "<tt>xt_redirect</tt>", and
+    are text files with the following format and properties:
+    <ul>
+    <li>Lines that start with '<tt>#</tt>' or contain only white space
+      are ignored.
+    <li>Each line otherwise contains one or more directory paths,
+      separated by white space.  If a directory path contains white
+      space or other special characters, it should be double-quoted
+      (i.e., as <tt>"..."</tt>).
+    <li>Multiple directories can be provided on a single line, or in
+      different lines.
+    <li>Paths that are not rooted are taken as relative to the
+      directory containing the redirect file.
+    <li>Paths that do not point to an existing directory are silently
+      ignored.
+    </ul>
+
+    <p>
+    When searching a directory, the directories found in a redirect
+    file are also searched, in order, after the current directory. 
+    The search is recursive, so that arbitrarily deep hierarchies can
+    be searched via the redirect file mechanism.
+
+    <p>
+    With redirect files, only the top directory of a hierarchy needs
+    to be included in the search path (or given explicitly).  This can
+    be very convenient for organizing collections of native cell
+    files, for example.
+
+    <p>
+    The <a href="xic:files"><b>Path Files Listing</b></a> panel from
+    the <b>File Menu</b> will list files found through the redirect
+    files on separate pages for each redirected directory, just as
+    for the directories contained in the search path.
+
+!!SEEALSO
+fileformats
+

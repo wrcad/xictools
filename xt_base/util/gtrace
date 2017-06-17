@@ -1,0 +1,31 @@
+#!/bin/sh
+
+write_cmd()
+{
+    while read word1 word2 word3; do
+        s=`echo $word1 | grep ^# -`
+        if [ ! x$s = x ]; then
+            if [ ! $word1 = "#" ]; then
+                t=`echo $word2 | grep ^0x -`
+                if [ ! x$t = x ]; then
+                    echo "echo $word1 -"
+                    echo info line \*$word2
+                fi
+            fi
+        fi
+        
+    done
+    echo quit
+}
+
+if [ $# != 2 ]; then
+    echo
+    echo gtrace: Resolve program addresses in gdb backtrace dump.
+    echo " Usage: gtrace <gdbfile> <program>"
+    echo " output to <gdbfile>.gdb"
+    echo
+    exit 0
+fi
+
+write_cmd < $1 > zztmp
+gdb -x zztmp $2 2>&1 | tee $1.gdb

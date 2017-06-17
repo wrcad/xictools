@@ -1,0 +1,18 @@
+
+Dependencies
+
+wrspice
+  xt_base
+  secure
+  KLU
+  vl
+
+xic
+  xt_base
+  secure
+  mrouter
+
+xt_aCCS
+  xt_base
+
+KLU, vl, and mrouter can be built stand-alone.

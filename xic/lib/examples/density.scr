@@ -1,0 +1,93 @@
+# density.scr
+# $Id: density.scr,v 1.2 2013/11/18 19:31:08 stevew Exp $
+#
+# This script illustrates use of the ChdIterateOverRegion function to
+# compute layer density.
+
+# Copy the script file to a directory where you have write permission.
+# From Xic running in this directory, to run type:  !exec ./density.scr
+
+################################
+# Here is the user-supplied script function, called for each fine grid
+# location by ChdIterateOverRegion.  It recurses over the layers used,
+# computes the density of each, and saves the result in a spatial
+# parameter table (one table for each layer).  A named string hash
+# table is used to save the generated table names, so that we have a
+# convenient list when done.
+
+function computeDensity(dbname, j, i, x, y, prm, cname)
+
+hl = ListLayersDb(dbname)
+while (hl)
+    lname = ListContent(hl)
+    zl = GetZlistZbdb(dbname, lname, j, i)
+    if (zl)
+        // fg_area is the actual area used, it might be smaller than the
+        // fine grid due to clipping by the overall area of interest.
+        fg_area = (prm[15] - prm[13])*(prm[16] - prm[14])
+        density = Zarea(zl)/fg_area
+        sptname = cname + "." + lname
+        if (FindSPtable(sptname, 0) == 0)
+            // args: aoi.left, fine_grid, ncols, aoi.bottom, fine_grid, nrows
+            NewSPtable(sptname, prm[5], prm[2], prm[0], prm[6], prm[2], prm[1])
+            // "myjunk" is our hash table name, could be anything.
+            FindNameTable("myjunk", TRUE)
+            AddNameToTable("myjunk", sptname, 1);
+        end
+        SetSPdata(sptname, x, y, density)
+    end
+    hl++
+end
+endfunc
+
+################################
+# The main function begins here.  First, ask for a file name, then create
+# a CHD and linked CGD.  All geometry will be obtained from the CGD.
+
+filename = PopUpInput("Enter layout file path:", 0, "Compute Density", FALSE)
+
+chd = OpenCellHierDigest(filename, 0)
+if (!chd)
+    Print(GetError())
+    Halt()
+end
+if (!ChdLoadGeometry(chd))
+    Print(GetError())
+    Halt()
+end
+
+# Note that one can limit the layers processed to a subset of thoes used
+# in the file by setting the following variables.  We should revert these
+# back to their original states when done.
+#
+# Set("LayerList", "0200 0600")
+# Set("UseLayerList", "")
+
+# Note that the fine grid is 20x20 microns, and that the coarse grid is
+# 800x800 microns.  These values can be changed to reflect the user's
+# requirements and achieve best performance.
+
+tstart = MilliSec();
+if (!ChdIterateOverRegion(chd, 0, "computeDensity", 0, 40, 20.0, 0))
+    Print(GetError())
+    Halt()
+end
+tstart = MilliSec() - tstart
+
+# Now loop through a listing of the SPT names created, and write the
+# tables to disk files.  The tables are then destroyed.
+
+hh = ListNamesInTable("myjunk")
+while (hh)
+    sptname = ListContent(hh)
+    sptfile = sptname + ".spt"
+    Print("Writing", sptfile)
+    WriteSPtable(sptname, sptfile)
+    ClearSPtable(sptname)
+    hh++
+end
+RemoveNameTable("myjunk")
+Print("Done, calculation time in msec =", tstart)
+
+# End of example.
+

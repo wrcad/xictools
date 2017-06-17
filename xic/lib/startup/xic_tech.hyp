@@ -1,0 +1,1169 @@
+Comment Technology file for Hypres design rules
+# $Id: xic_tech.hyp,v 1.24 2014/09/08 16:54:24 stevew Exp $
+
+# This is an example tech file based on the Hypres superconductive foundry
+# process (www.hypres.com).
+# Data from Hypres Design Rules Revision #24, Jan. 11, 2008.
+# 4500 A/cm2 process.
+
+Comment  9/9/14 Updated for 4.0.9 (test FEATURESET).
+Comment  7/3/14 Updated for 4.0.8 (NoPlanarize).
+Comment  7/5/12 Certified 3.3.x compatible.
+Comment  6/8/12 Added Hyp1k define to support 1KA/cm2 process.
+Comment  3/12/12 Added elecwhite/black scripts, these need 3.2.25 or later.
+Comment  7/6/10 Update to remove/replace "Alt" keywords for 3.2.11.
+Comment  This file is NOT compatible with releases before 3.2.11.
+
+Technology hypres
+
+# Uncomment below if you are using the 1KA/cm2 process.  Default support
+# is for the 4.5KA/cm2 process only.
+# Define Hyp1k
+
+# Changed colors/fill for better visibility.  Comment this out for old
+# colors.
+Define NewColors
+
+# When defined, schematics will use a white background.  This looks
+# better when exported for figures in presentations, etc., and some
+# users might prefer it generally.  Uncomment to use.
+# Define WhiteSchem
+
+# The search paths can be defined here
+#Path ( . ) 
+#LibPath ( . /usr/local/xictools/xic/startup ) 
+#HelpPath ( /usr/local/xictools/xic/help ) 
+#ScriptPath ( /usr/local/xictools/xic/scripts ) 
+
+# This sets all layers to non-planarizing.
+NoPlanarize
+
+If FEATURESET == "FULL"
+#------------------------------------------------------------------------------
+# Electrical Layers
+
+ElecLayer SCED
+Description Active wiring layer
+StreamOut 1 0
+IfDef WhiteSchem
+RGB 0 0 0
+Else
+RGB 225 225 225
+Endif
+Filled y
+
+ElecLayer ETC1
+Description General drawing layer
+StreamOut 2 0
+IfDef WhiteSchem
+RGB 105 195 195
+Else
+RGB 125 225 225
+Endif
+Filled n
+
+ElecLayer ETC2
+Description General drawing layer
+StreamOut 3 0
+IfDef WhiteSchem
+RGB 170 125 105
+Else
+RGB 225 225 125
+Endif
+Filled n
+
+ElecLayer NAME
+Description Name property label
+StreamOut 4 0
+IfDef WhiteSchem
+RGB 185 155 90
+Else
+RGB 255 230 175
+Endif
+Filled n
+
+ElecLayer MODL
+Description Model property label
+StreamOut 5 0
+IfDef WhiteSchem
+RGB 85 215 80
+Else
+RGB 175 225 175
+Endif
+Filled n
+
+ElecLayer VALU
+Description Value property label
+StreamOut 6 0
+IfDef WhiteSchem
+RGB 210 70 65
+Else
+RGB 255 225 225
+Endif
+Filled n
+
+ElecLayer PARM
+Description Param property label
+StreamOut 7 0
+IfDef WhiteSchem
+RGB 225 95 215
+Else
+RGB 200 175 225
+Endif
+Filled n
+
+ElecLayer NODE
+Description Node property label
+StreamOut 8 0
+IfDef WhiteSchem
+RGB 175 175 155
+Else
+RGB 255 255 225
+Endif
+Filled n
+
+ElecLayer SPTX
+Description Active label layer
+StreamOut 10 0
+IfDef WhiteSchem
+RGB 0 135 15
+Else
+RGB 225 134 170
+Endif
+Filled n
+
+#------------------------------------------------------------------------------
+Endif
+
+#------------------------------------------------------------------------------
+# Physical Layers
+
+PhysLayer M0
+StreamIn 30, 0-255
+StreamOut 30 0
+RGB 255 235 230
+Filled 00 00 00 08 08 00 00 00 outline
+Thickness 0.1
+Lambda 0.09
+GroundPlaneClear
+If FEATURESET == "FULL"
+MinSpace 2.0 # M0 minimum space 2.0 (#1.1)
+MinWidth 2.0 # M0 minimum width 2.0 (#1.2)
+MinSpaceTo I0 1.5 # M0 minimum space to I0 1.5 (#1.3)
+MinSpaceTo M1 1.0 # M0 minimum space to M1 1.0 (#1.4)
+MinSpaceTo R2 1.5 # M0 minimum space to R2 1.5 (#1.5)
+Endif
+
+PhysLayer I0
+StreamIn 31, 0-255
+StreamOut 31 0
+IfDef NewColors
+RGB 255 67 63
+Filled 00 55 00 55 00 55 00 55 outline
+Else
+RGB 188 255 255
+Filled 18 00 c3 00 18 00 c3 00 outline
+EndIf
+Thickness 0.2
+# M0/M1 capacitance = .28 fF/um2
+EpsRel 4.7
+Via M0 M1 
+If FEATURESET == "FULL"
+MinWidth 2.5 # I0 minimum width 2.5 (#2.1)
+IfDef Hyp1k
+MinSpaceTo I1A 1.5 # I0 minimum space to I1A 1.5 (#2.2)
+NoOverlap I1A # I0 no overlap of I1A (footnote 2)
+Else
+MinSpaceTo I1C 1.5 # I0 minimum space to I1C 1.5 (#2.2)
+NoOverlap I1C # I0 no overlap of I1C (footnote 2)
+Endif
+MinSpaceFrom M1 1.5 # I0 surrounded by M1 1.5 (#2.3)
+MinSpaceTo R2 1.0 # I0 minimum space to R2 1.0 (#2.4)
+Endif
+
+PhysLayer M1
+StreamIn 1, 0-255
+StreamOut 1 0
+IfDef NewColors
+RGB 58 83 255
+Filled 00 aa 00 aa 00 aa 00 aa outline
+Else
+RGB 34 37 255
+Filled 55 aa 55 aa 55 aa 55 aa
+EndIf
+WireWidth 2.5
+Thickness 0.15
+Lambda 0.09
+# M1/M0 tline
+Tline M0 0.20 4.7
+Conductor Exclude LX
+Routing
+If FEATURESET == "FULL"
+MinSpace 2.5 # M1 minimum space 2.5 (#5.1)
+MinWidth 2.5 # M1 minimum width 2.5 (#5.2)
+MinSpaceTo R2 1.0 # M1 minimum space to R2 1.0 (#5.3)
+MinNoOverlap I1B 1.5 # M1 surrounding I1B 1.5 (#5.4)
+Endif
+
+IfDef Hyp1k
+
+PhysLayer I1A
+StreamIn 2, 0-255
+StreamOut 2 0
+IfDef NewColors
+RGB 255 213 213
+Filled 22 55 22 00 22 55 22 00 outline
+Else
+RGB 205 255 209
+Filled ee aa ff aa fe aa ff aa outline
+EndIf
+If FEATURESET == "FULL"
+MinSpace 2.0 # I1A minimum space 2.0 (#3.1)
+MinWidth 1.5 # I1A minimum width 1.5 (#3.2)
+MinSpaceFrom A1 1.0 # I1A surrounded by A1 1.0 (#3.3)
+MinSpaceTo M1 1.5 # I1A minimum space to M1 1.5 (#3.4)
+MinSpaceTo R2 0.5 # I1A minimum space to R2 0.5 (#3.5)
+Endif
+
+Else
+
+PhysLayer I1C
+StreamIn 4, 0-255
+StreamOut 4 0
+IfDef NewColors
+RGB 255 213 213
+Filled 22 55 22 00 22 55 22 00 outline
+Else
+RGB 205 255 209
+Filled ee aa ff aa fe aa ff aa outline
+EndIf
+If FEATURESET == "FULL"
+MinSpace 2.0 # I1C minimum space 2.0 (#3.1)
+MinWidth 1.5 # I1C minimum width 1.5 (#3.2)
+MinSpaceFrom A1 1.0 # I1C surrounded by A1 1.0 (#3.3)
+MinSpaceTo M1 1.5 # I1C minimum space to M1 1.5 (#3.4)
+MinSpaceTo R2 0.5 # I1C minimum space to R2 0.5 (#3.5)
+Endif
+
+Endif
+
+PhysLayer A1
+StreamIn 5, 0-255
+StreamOut 5 0
+IfDef NewColors
+RGB 210 112 168
+Filled aa aa aa aa aa aa aa aa outline
+Else
+RGB 254 136 203
+Filled 00 ee aa aa aa aa ee 00 outline
+EndIf
+If FEATURESET == "FULL"
+MinSpace 2.0 # A1 minimum space 2.0 (#4.1)
+MinWidth 2.0 # A1 minimum width 2.0 (#4.2)
+MinSpaceFrom M1 0.5 # A1 surrounded by M1 0.5 (#4.3)
+MinSpaceTo R2 0.5 # A1 minimum space to R2 0.5 (#4.4)
+IfDef Hyp1k
+MinNoOverlap I1A 1.0 # A1 surrounding I1A 1.0 (#4.5)
+Else
+MinNoOverlap I1C 1.0 # A1 surrounding I1C 1.0 (#4.5)
+Endif
+Endif
+
+PhysLayer R2
+StreamIn 9, 0-255
+StreamOut 9 0
+IfDef NewColors
+RGB 255 235 63
+Filled 08 14 22 41 80 41 22 14 outline
+Else
+RGB 240 255 55
+Filled 81 42 24 18 18 24 42 81 outline
+EndIf
+WireWidth 5
+Rsh 2.1
+If FEATURESET == "FULL"
+MinSpace 2.0 # R2 minimum space 2.0 (#6.1)
+MinWidth 3.0 # R2 minimum width 3.0 (#6.2)
+MinNoOverlap I1B 1.5 # R2 surrounding I1B 1.5 (#6.3)
+MinSpaceTo M2 1.0 # R2 minimum space to M2 1.0 (#6.4)
+Endif
+
+PhysLayer I1B
+StreamIn 3, 0-255
+StreamOut 3 0
+IfDef NewColors
+RGB 139 227 255
+Filled 00 88 00 22 00 88 00 22 outline
+Else
+RGB 133 217 255
+Filled a5 00 24 00 a5 00 24 00 outline
+Endif
+Thickness 0.2
+EpsRel 4.7
+IfDef Hyp1k
+Via M1 M2 !A1&!R2&!I1A
+Else
+Via M1 M2 !A1&!R2&!I1C
+Endif
+If FEATURESET == "FULL"
+MinSpace 2.0 # I1B minimum space 2.0 (#7.1)
+MinWidth 2.0 # I1B minimum width 2.0 (#7.2)
+MinSpaceFrom M2 1.5 # I1B surrounded by M2 1.5 (#7.3)
+Endif
+
+PhysLayer M2
+StreamIn 6, 0-255
+StreamOut 6 0
+IfDef NewColors
+RGB 32 255 60
+Filled aa 00 aa 00 aa 00 aa 00 outline
+Else
+RGB 30 228 54
+Filled 00 ff 00 ff 00 ff 00 ff outline
+EndIf
+WireWidth 2
+Thickness 0.3
+Lambda 0.09
+# M2/M1 tline
+Tline M1 0.2 4.7
+Conductor Exclude LX
+Routing
+If FEATURESET == "FULL"
+MinSpace 2.5 # M2 minimum space 2.5 (#8.1)
+MinWidth 2.0 # M2 minimum width 2.0 (#8.2)
+MinNoOverlap I2 1.5 # M2 surrounding I2 1.5 (#8.3)
+Endif
+
+PhysLayer I2
+StreamIn 8, 0-255
+StreamOut 8 0
+IfDef NewColors
+RGB 165 95 10
+Filled 00 66 66 00 00 66 66 00 outline
+Else
+RGB 165 95 10
+Filled ff ab d5 bb dd ab d5 ff outline
+EndIf
+Thickness 0.5
+EpsRel 4.5
+Via M2 M3 
+If FEATURESET == "FULL"
+MinSpace 3.0 # I2 minimum space 3.0 (#9.1)
+MinWidth 1.5 # I2 minimum width 1.5 (#9.2)
+Endif
+
+PhysLayer M3
+StreamIn 10, 0-255
+StreamOut 10 0
+IfDef NewColors
+RGB 212 222 207
+Filled 55 00 55 00 55 00 55 00 outline
+Else
+RGB 210 220 205
+Filled 55 55 55 55 55 55 55 55 outline
+Endif
+WireWidth 2.0
+Thickness 0.6
+Lambda 0.09
+# M3/M2 tline
+Tline M2 0.5 4.5
+Conductor Exclude LX
+Routing
+If FEATURESET == "FULL"
+MinSpace 2.5 # M3 minimum space 2.5 (#10.1)
+MinWidth 2.0 # M3 minimum width 2.0 (#10.2)
+MinOverlap R3 3.0 # contact width with R3 3.0 (#10.3)
+Endif
+
+PhysLayer R3
+StreamIn 11, 0-255
+StreamOut 11 0
+IfDef NewColors
+RGB 230 255 133
+Filled 00 02 00 08 00 20 00 80 outline
+Else
+RGB 134 117 255
+Filled 81 03 06 0c 18 30 60 c0 outline
+EndIf
+WireWidth 3.0
+Thickness 0.35
+Contact M3 
+If FEATURESET == "FULL"
+MinSpace 5.0 # R3 minimum space 5.0 (#11.1)
+MinWidth 3.0 # R3 minimum width 3.0 (#11.2)
+Endif
+
+PhysLayer TEXT
+StreamIn 7, 0-255
+StreamOut 7 0
+RGB 175 175 175
+Filled n
+
+IfDef notdef
+PhysLayer I1D
+StreamIn 5, 0-255
+StreamOut 5 0
+RGB 175 215 175
+Filled n
+Endif
+
+PhysLayer LB
+StreamIn 60, 0-255
+StreamOut 60 0
+RGB 173 173 243
+Filled n
+Comment  Special layer for inductor body
+
+PhysLayer LC
+StreamIn 61, 0-255
+StreamOut 61 0
+RGB 235 129 233
+Filled n
+Comment  Special layer for inductor contact
+
+PhysLayer LX
+StreamIn 62, 0-255
+StreamOut 62 0
+RGB 245 243 81
+Filled n
+Comment  Special layer for inductor cut
+
+#------------------------------------------------------------------------------
+
+If FEATURESET == "FULL"
+#------------------------------------------------------------------------------
+# Device Blocks
+
+Device
+Name res
+Prefix R_
+Body R2
+Depth 1
+Contact + M2 I1B&R2
+Contact - M2 I1B&R2 ...
+Permute + -
+Merge S
+Measure Resistance Resistance
+LVS Resistance
+Spice %n% %c%+ %c%- %ms3%Resistance
+Cmput Resistor %e%, resistance = %ms3%Resistance 
+Value %m%Resistance
+End
+
+Device
+Name ind
+Prefix La_
+Body M2&LB
+Contact + M2 M2&LC
+Contact - M2 M2&LC
+Permute - +
+Merge S
+Measure Inductance Inductance * 1e-12
+LVS Inductance
+Spice %n% %c%+ %c%- %ms3%Inductance%H
+Cmput Inductor %e% on M2, inductance = %ms3%Inductance%H
+Value %m%Inductance%H
+End
+
+Device
+Name ind
+Prefix Lb_
+Body (M3) & (LB)
+Contact + M3 M3&LC
+Contact - M3 M3&LC
+Permute - +
+Merge S
+Measure Inductance Inductance * 1e-12
+LVS Inductance
+Spice %n% %c%+ %c%- %ms3%Inductance%H
+Cmput Inductor %e% on M3, inductance = %ms3%Inductance%H
+Value %m%Inductance%H
+End
+
+Device
+Name jj
+Prefix B_
+IfDef Hyp1k
+Body I1A&M1&M2
+Else
+Body I1C&M1&M2
+Endif
+ContactsOverlap
+IfDef Hyp1k
+Contact + M2 M2&I1A
+Contact - M1 M1&I1A
+Else
+Contact + M2 M2&I1C
+Contact - M1 M1&I1C
+Endif
+Permute + -
+Depth 1
+Merge
+Comment Measure Area BodyArea/100 4
+Comment #
+Comment # This assumes use of the "jj1" Josephson junction device model
+Comment # from the 2.2.16 version of the model.lib file.  The area is
+Comment # normalized to 100 square microns (1 mA critical current).
+Comment #
+Measure Area BodyArea*0.045 4
+Comment #
+Comment # This assumes use of the "jj3" Josephson junction device model
+Comment # from the 2.2.16 version of the model.lib file.  The area is
+Comment # normalized to 22.222... square microns (1 mA critical current).
+Comment #
+LVS Area area
+Spice %n% %c%+ %c%- jj1 area=%m%Area
+Cmput Josephson junction %e%, area = %m%Area
+Initc area=%m%Area
+End
+
+#------------------------------------------------------------------------------
+Endif
+
+#------------------------------------------------------------------------------
+# Script Definitions
+# In Xic, these appear in the User Menu.
+
+Script elecwhite
+# Set the colors for white background in electrical mode, as if
+# WhiteSchem was active.
+if (TechParseLine("ElecLayer SCED RGB 0 0 0") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer ETC1 RGB 105 195 195") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer ETC2 RGB 170 125 105") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer NAME RGB 185 155 90") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer MODL RGB 85 215 80") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer VALU RGB 210 70 65") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer PARM RGB 225 95 215") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer NODE RGB 175 175 155") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer SPTX RGB 0 135 15") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecBackground 243 243 243") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecGhostColor 1 1 1") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecHighlightingColor 1 1 1") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecSelectColor1 109 255 105") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecMarkerColor 191 188 40") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecInstanceBBColor 50 175 163") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecInstanceNameColor 214 161 170") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecCoarseGridColor 28 23 15") == 0)
+    Print(GetError())
+end
+if (TechParseLine("PhysCoarseGridColor 0 215 215") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecFineGridColor 0 157 160") == 0)
+    Print(GetError())
+end
+if (TechParseLine("PhysFineGridColor 0 0 207") == 0)
+    Print(GetError())
+end
+EndScript
+
+Script elecblack
+# Set the colors for black background in electrical mode, as if
+# WhiteSchem was inactive.
+if (TechParseLine("ElecLayer SCED RGB 225 225 225") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer ETC1 RGB 125 225 225") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer ETC2 RGB 225 225 125") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer NAME RGB 255 230 175") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer MODL RGB 175 225 175") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer VALU RGB 255 225 225") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer PARM RGB 200 175 225") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer NODE RGB 255 255 225") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecLayer SPTX RGB 225 134 170") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecBackground black") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecGhostColor white") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecHighlightingColor white") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecSelectColor1 white") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecMarkerColor yellow") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecInstanceBBColor turquoise") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecInstanceNameColor salmon") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecCoarseGridColor 255 208 136") == 0)
+    Print(GetError())
+end
+if (TechParseLine("ElecFineGridColor 0 245 249") == 0)
+    Print(GetError())
+end
+EndScript
+
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Misc. Parameters and Attributes
+
+IfDef WhiteSchem
+ElecBackground 243 243 243
+ElecGhostColor 1 1 1
+ElecHighlightingColor 1 1 1
+ElecSelectColor1 109 255 105
+ElecMarkerColor 191 188 40
+ElecInstanceBBColor 50 175 163
+ElecInstanceNameColor 214 161 170
+ElecCoarseGridColor 28 23 15
+PhysCoarseGridColor 0 215 215
+ElecFineGridColor 0 157 160
+PhysFineGridColor 0 0 207
+Else
+ElecCoarseGridColor 255 208 136
+PhysCoarseGridColor 0 215 215
+ElecFineGridColor 0 245 249
+PhysFineGridColor 0 0 207
+Endif
+
+# Function Key Assignments
+F1Key box
+F2Key wire
+F3Key polyg
+F4Key label
+F5Key open
+F6Key cells
+F7Key prpty
+F8Key desel
+
+# Misc., Extraction and DRC parameters follow.
+RoundFlashSides 40
+If FEATURESET == "FULL"
+DrcMaxErrors 1000
+DrcInterMaxObjs 25
+DrcInterSkipInst y
+Endif
+# End of global attributes.
+
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# Print Driver Blocks
+
+PhysDefaultDriver postscript_bitmap
+ElecDefaultDriver postscript_line_draw
+
+HardCopyDevice postscript_line_draw
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 3
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.8
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+ShowGrid n
+GridOnBottom y
+PhysLayer M0
+Filled n
+PhysLayer I0
+Filled n outline
+PhysLayer M1
+RGB 255 10 0
+Filled n
+IfDef Hyp1k
+PhysLayer I1A
+Else
+PhysLayer I1C
+Endif
+RGB 236 10 254
+Filled n
+PhysLayer A1
+RGB 236 10 254
+Filled n
+PhysLayer R2
+Filled n
+PhysLayer I1B
+Filled n outline
+PhysLayer M2
+Filled n
+PhysLayer I2
+Filled n outline
+PhysLayer M3
+Filled n
+PhysLayer R3
+RGB 55 20 255
+Filled n
+
+HardCopyDevice postscript_line_draw_color
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 3
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.8
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+ShowGrid n
+GridOnBottom y
+PhysLayer M0
+Filled n outline
+PhysLayer I0
+Filled n
+PhysLayer M1
+RGB 255 10 0
+Filled n
+IfDef Hyp1k
+PhysLayer I1A
+Else
+PhysLayer I1C
+Endif
+RGB 236 10 254
+Filled n
+PhysLayer A1
+RGB 236 10 254
+Filled n
+PhysLayer R2
+Filled n
+PhysLayer I1B
+Filled n outline
+PhysLayer M2
+Filled n
+PhysLayer I2
+Filled n outline
+PhysLayer M3
+Filled n
+PhysLayer R3
+RGB 55 20 255
+Filled n
+
+HardCopyDevice postscript_bitmap
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 3
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.9
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+ShowGrid n
+GridOnBottom y
+PhysLayer M0
+Filled 00 00 42 00 24 00 42 00 outline
+PhysLayer I0
+Filled 88 48 24 13 c8 24 12 11 outline
+PhysLayer M1
+RGB 255 10 0
+Filled 89 18 24 c2 43 24 18 91 outline
+IfDef Hyp1k
+PhysLayer I1A
+Else
+PhysLayer I1C
+Endif
+RGB 236 10 254
+Filled 08 14 22 41 82 44 28 10 outline
+PhysLayer A1
+RGB 236 10 254
+Filled 08 14 22 41 82 44 28 10 outline
+PhysLayer R2
+Filled 66 00 00 66 66 00 00 66 outline
+PhysLayer I1B
+Filled 11 22 40 88 11 02 44 88 outline
+PhysLayer M2
+Filled 42 c3 00 00 00 00 c3 42 outline
+PhysLayer I2
+Filled 88 44 22 11 88 44 22 11 outline
+PhysLayer M3
+Filled 00 00 3c 24 24 3c 00 00 outline
+PhysLayer R3
+RGB 55 20 255
+Filled 11 22 44 88 11 22 44 88 outline
+
+HardCopyDevice postscript_bitmap_encoded
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 3
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.9
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+ShowGrid n
+GridOnBottom y
+PhysLayer M0
+Filled 00 00 42 00 24 00 42 00 outline
+PhysLayer I0
+Filled 88 48 24 13 c8 24 12 11 outline
+PhysLayer M1
+RGB 255 10 0
+Filled 89 18 24 c2 43 24 18 91 outline
+IfDef Hyp1k
+PhysLayer I1A
+Else
+PhysLayer I1C
+Endif
+RGB 236 10 254
+Filled 08 14 22 41 82 44 28 10 outline
+PhysLayer A1
+RGB 236 10 254
+Filled 08 14 22 41 82 44 28 10 outline
+PhysLayer R2
+Filled 66 00 00 66 66 00 00 66 outline
+PhysLayer I1B
+Filled 11 22 40 88 11 02 44 88 outline
+PhysLayer M2
+Filled 42 c3 00 00 00 00 c3 42 outline
+PhysLayer I2
+Filled 88 44 22 11 88 44 22 11 outline
+PhysLayer M3
+Filled 00 00 3c 24 24 3c 00 00 outline
+PhysLayer R3
+RGB 55 20 255
+Filled 11 22 44 88 11 22 44 88 outline
+
+HardCopyDevice postscript_bitmap_color
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 3
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.9
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+ShowGrid n
+GridOnBottom y
+PhysLayer M0
+Filled 00 00 42 00 24 00 42 00 outline
+PhysLayer I0
+Filled 88 48 24 13 c8 24 12 11 outline
+PhysLayer M1
+RGB 255 10 0
+Filled 89 18 24 c2 43 24 18 91 outline
+IfDef Hyp1k
+PhysLayer I1A
+Else
+PhysLayer I1C
+Endif
+RGB 236 10 254
+Filled 08 14 22 41 82 44 28 10 outline
+PhysLayer A1
+RGB 236 10 254
+Filled 08 14 22 41 82 44 28 10 outline
+PhysLayer R2
+Filled 66 00 00 66 66 00 00 66 outline
+PhysLayer I1B
+Filled 11 22 40 88 11 02 44 88 outline
+PhysLayer M2
+Filled 42 c3 00 00 00 00 c3 42 outline
+PhysLayer I2
+Filled 88 44 22 11 88 44 22 11 outline
+PhysLayer M3
+Filled 00 00 3c 24 24 3c 00 00 outline
+PhysLayer R3
+RGB 55 20 255
+Filled 11 22 44 88 11 22 44 88 outline
+
+HardCopyDevice postscript_bitmap_color_encoded
+HardCopyResol 72 75 100 150 200 300 400
+HardCopyDefResol 3
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.9
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+ShowGrid n
+GridOnBottom y
+PhysLayer M0
+Filled 00 00 42 00 24 00 42 00 outline
+PhysLayer I0
+Filled 88 48 24 13 c8 24 12 11 outline
+PhysLayer M1
+RGB 255 10 0
+Filled 89 18 24 c2 43 24 18 91 outline
+IfDef Hyp1k
+PhysLayer I1A
+Else
+PhysLayer I1C
+Endif
+RGB 236 10 254
+Filled 08 14 22 41 82 44 28 10 outline
+PhysLayer A1
+RGB 236 10 254
+Filled 08 14 22 41 82 44 28 10 outline
+PhysLayer R2
+Filled 66 00 00 66 66 00 00 66 outline
+PhysLayer I1B
+Filled 11 22 40 88 11 02 44 88 outline
+PhysLayer M2
+Filled 42 c3 00 00 00 00 c3 42 outline
+PhysLayer I2
+Filled 88 44 22 11 88 44 22 11 outline
+PhysLayer M3
+Filled 00 00 3c 24 24 3c 00 00 outline
+PhysLayer R3
+RGB 55 20 255
+Filled 11 22 44 88 11 22 44 88 outline
+
+HardCopyDevice hpgl_line_draw_color
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.8
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+ShowGrid n
+GridOnBottom y
+PhysLayer M0
+Filled n
+PhysLayer I0
+Filled n outline
+PhysLayer M1
+RGB 255 10 0
+Filled n
+IfDef Hyp1k
+PhysLayer I1A
+Else
+PhysLayer I1C
+Endif
+RGB 236 10 254
+Filled n
+PhysLayer A1
+RGB 236 10 254
+Filled n
+PhysLayer R2
+Filled n
+PhysLayer I1B
+Filled n outline
+PhysLayer M2
+Filled n
+PhysLayer I2
+Filled n outline
+PhysLayer M3
+Filled n
+PhysLayer R3
+RGB 55 20 255
+Filled n
+
+HardCopyDevice hp_laser_pcl
+HardCopyResol 75 100 150 300
+HardCopyDefResol 2
+HardCopyLegend 1
+HardCopyOrient 2
+HardCopyDefWidth 7.8
+HardCopyDefHeight 10.3
+HardCopyDefXoff 0.25
+HardCopyDefYoff 0.25
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 16.5
+HardCopyMaxHeight 16.5
+HardCopyMaxXoff 15
+HardCopyMaxYoff 15
+ShowGrid n
+GridOnBottom y
+PhysLayer M0
+Filled 00 00 42 00 24 00 42 00 outline
+PhysLayer I0
+Filled 88 48 24 13 c8 24 12 11 outline
+PhysLayer M1
+RGB 255 10 0
+Filled 89 18 24 c2 43 24 18 91 outline
+IfDef Hyp1k
+PhysLayer I1A
+Else
+PhysLayer I1C
+Endif
+RGB 236 10 254
+Filled 08 14 22 41 82 44 28 10 outline
+PhysLayer A1
+RGB 236 10 254
+Filled 08 14 22 41 82 44 28 10 outline
+PhysLayer R2
+Filled 66 00 00 66 66 00 00 66 outline
+PhysLayer I1B
+Filled 11 22 40 88 11 02 44 88 outline
+PhysLayer M2
+Filled 42 c3 00 00 00 00 c3 42 outline
+PhysLayer I2
+Filled 88 44 22 11 88 44 22 11 outline
+PhysLayer M3
+Filled 00 00 3c 24 24 3c 00 00 outline
+PhysLayer R3
+RGB 55 20 255
+Filled 11 22 44 88 11 22 44 88 outline
+
+HardCopyDevice xfig_line_draw_color
+HardCopyLegend 0
+HardCopyOrient 2
+HardCopyDefWidth 4
+HardCopyDefHeight 4
+HardCopyDefXoff 0
+HardCopyDefYoff 0
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 23.5
+HardCopyMaxHeight 23.5
+HardCopyMaxXoff 22
+HardCopyMaxYoff 22
+ShowGrid n
+GridOnBottom y
+PhysLayer M0
+Filled n
+PhysLayer I0
+Filled n outline
+PhysLayer M1
+RGB 255 10 0
+Filled n
+IfDef Hyp1k
+PhysLayer I1A
+Else
+PhysLayer I1C
+Endif
+RGB 236 10 254
+Filled n
+PhysLayer A1
+RGB 236 10 254
+Filled n
+PhysLayer R2
+Filled n
+PhysLayer I1B
+Filled n outline
+PhysLayer M2
+Filled n
+PhysLayer I2
+Filled n outline
+PhysLayer M3
+Filled n
+PhysLayer R3
+RGB 55 20 255
+Filled n
+
+HardCopyDevice image
+HardCopyResol 100 200
+HardCopyDefResol 0
+HardCopyLegend 0
+HardCopyOrient 2
+HardCopyDefWidth 4
+HardCopyDefHeight 4
+HardCopyDefXoff 0
+HardCopyDefYoff 0
+HardCopyMinWidth 1
+HardCopyMinHeight 1
+HardCopyMinXoff 0
+HardCopyMinYoff 0
+HardCopyMaxWidth 16.5
+HardCopyMaxHeight 16.5
+HardCopyMaxXoff 15
+HardCopyMaxYoff 15
+GridOnBottom y
+
+#------------------------------------------------------------------------------
+# End of file
+
