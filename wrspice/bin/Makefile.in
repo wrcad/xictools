@@ -238,7 +238,8 @@ clean:
 	-rm -f *.o $(WDEMODIR).tar.gz
 
 distclean:
-	-@for a in $(SUBDIRS) ../include ../lib ../devlib ../packages; do \
+	-@for a in $(SUBDIRS) ../include ../lib ../devlib ../packages \
+  ../$(WDEMODIR); do \
 	    (dir=`pwd`; cd $$a; $(MAKE) distclean; cd $$dir) \
 	done
 	-@for a in $(SPICE_TARGETS; do \

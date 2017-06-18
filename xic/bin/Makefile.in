@@ -211,7 +211,8 @@ clean:
 	-rm -f *.o
 
 distclean:
-	-@for a in $(SUBDIRS) ../include ../lib ../plugins ../packages; do \
+	-@for a in $(SUBDIRS) ../src/scrkit ../include ../lib ../plugins \
+  ../packages; do \
 	    (dir=`pwd`; cd $$a; $(MAKE) distclean; cd $$dir) \
 	done
 	-@for a in $(TARGETS); do \
