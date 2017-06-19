@@ -1,36 +1,37 @@
+# Generated automatically from Makefile.in by configure.
 #######################################################################
 # wrspice_ipc_demo/Makefile.in
 #######################################################################
 # $Id: Makefile.in,v 1.6 2014/10/05 03:17:48 stevew Exp $
 #######################################################################
 
-DATE = Thu Jun 15 22:08:57 PDT 2017
+DATE = Sun Jun 18 13:38:56 PDT 2017
 SPICE_VERSION = 4.2.17
 DEVLIB_VERSION = 4.2.17
 
 prefix = /usr/local
-CXX = g++
-CC = gcc
-LINKCC = g++
-CFLAGS = -O -g -Wall -W -Wshadow -Wwrite-strings -pthread -DDYNAMIC_LIBS   -DWRSPICE
-LFLAGS = -rdynamic  
-PIC_OPT = -fPIC
-#LSHFLAG = -shared
-LIBS = $(APPLIBS) -lncurses -lm   -lpng -ljpeg -ltiff -lz -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lcairo -lpango-1.0 -lfontconfig -lgobject-2.0 -lglib-2.0 -lfreetype   
+CXX = /usr/local/win-builds/bin/g++
+CC = /usr/local/win-builds/bin/gcc
+LINKCC = /usr/local/win-builds/bin/g++ -static-libgcc -static-libstdc++
+CFLAGS = -O -g -Wall -W -Wshadow -Wwrite-strings -pthread    -DWRSPICE
+LFLAGS =   
+PIC_OPT = 
+#LSHFLAG = -shared -Wl,--enable-auto-import,--export-all-symbols
+LIBS = $(APPLIBS)  -lm -lgdi32 -lwinspool -lcomdlg32 -lole32 -loleaut32  -luuid -lodbc32 -lversion -lcomctl32 -lwsock32 -lws2_32 -liphlpapi -lbfd -liberty -lintl -liconv -lm -ltiff -ljpeg -lpng -lz  -Wl,-luuid -LC:/usr/local/gtk2-bundle/lib -lgtk-win32-2.0 -lgdk-win32-2.0 -limm32 -lshell32 -lole32 -latk-1.0 -lpangocairo-1.0 -lgio-2.0 -lgdk_pixbuf-2.0 -lpangowin32-1.0 -lgdi32 -lpango-1.0 -lm -lcairo -lgobject-2.0 -lglib-2.0 -lintl   
 STDCLIB = 
-SLIBS = 
-OSNAME = LinuxRHEL7_64
-ARCH = x86_64
-DIST_SUFFIX = rpm
+SLIBS = -lgdi32 -lwinspool -lcomdlg32 -lole32 -loleaut32  -luuid -lodbc32 -lversion -lcomctl32 -lwsock32 -lws2_32 -liphlpapi
+OSNAME = Win32
+ARCH = i386
+DIST_SUFFIX = exe
 GRPREF = gtk
-DEPEND_PROG = $(CC) -MM -O -g -Wall -W -Wshadow -Wwrite-strings -pthread -DDYNAMIC_LIBS  -DWRSPICE
+DEPEND_PROG = $(CC) -MM -O -g -Wall -W -Wshadow -Wwrite-strings -pthread   -DWRSPICE
 INSTALL = $(LPATH)/util/install-sh
 INSTALL_USER = @INSTALL_USER@
-NTSUFFIX = 
-FILTER = 
-MALLOC = $(LPATH)/malloc/malloc.a
+NTSUFFIX = .exe
+FILTER = |sed -e s/C:// -e s///
+MALLOC = 
 SECURE = @SECURE@
-NTREGEX = 
+NTREGEX = $(LPATH)/miscutil/libregex/libregex.a
 NTDBGOBJ = @NTDBGOBJ@
 #DEVLIB_SHARED = libwrsdev.so.2.0
 DEVLIB_STATIC = libwrsdev.a

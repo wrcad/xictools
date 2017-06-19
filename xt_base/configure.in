@@ -1114,23 +1114,3 @@ fi
 
 AC_OUTPUT($makefiles)
 
-if test -d util; then
-    if test -f util/Makefile; then
-        (cd util; ${MAKE-make})
-    fi
-fi
-if test -d ../xic/lib; then
-    (cd ../xic/lib; ${MAKE-make})
-fi
-if test -d ../wrspice/lib; then
-    (cd ../wrspice/lib; ${MAKE-make})
-fi
-
-if test -d ../KLU; then
-    (cd ../KLU; make unpack patch)
-fi
-if test -d ../mrouter; then
-    (cd ../mrouter; ./configure)
-fi
-(cd ..; ${MAKE-make} depend)
-

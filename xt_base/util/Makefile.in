@@ -16,5 +16,5 @@ CC = @CC@
 timegen: timegen.cc
 	$(CXX) -o timegen timegen.cc
 
-clean:
+clean distclean:
 	rm -f datestr timegen

@@ -1,3 +1,4 @@
+# Generated automatically from Makefile.in by configure.
 #######################################################################
 # scrkit/Makefile.in
 #######################################################################
@@ -18,17 +19,17 @@ DLL_LOC = c:/usr/local/xictools/bin
 
 # This Makefile originated from this distribution:
 #GFX_VERSION = 4.2.17
-#OSNAME = LinuxRHEL7_64
-#CXX = g++
-#CC = gcc
-#CFLAGS = -O3 -Wall -W -Wshadow -Wwrite-strings -pthread 
-#LSHFLAG = -shared
-#DEPEND_PROG = $(CC) -MM -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
-#FILTER = 
-#PIC_OPT = -fPIC
-#SOEXT = so
+#OSNAME = Win32
+#CXX = /usr/local/win-builds/bin/g++
+#CC = /usr/local/win-builds/bin/gcc
+#CFLAGS = -O2 -Wall -W -Wshadow -Wwrite-strings -pthread 
+#LSHFLAG = -shared -Wl,--enable-auto-import,--export-all-symbols
+#DEPEND_PROG = $(CC) -MM -O2 -Wall -W -Wshadow -Wwrite-strings -pthread
+#FILTER = |sed -e s/C:// -e s///
+#PIC_OPT = 
+#SOEXT = dll
 
-DATE = Thu Jun 15 22:08:57 PDT 2017
+DATE = Sun Jun 18 13:38:56 PDT 2017
 
 # Edit the blocks below if necessary.
 

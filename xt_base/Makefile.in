@@ -7,9 +7,10 @@
 DATE = @DATE@
 
 SUBDIRS = \
-        ginterf \
-        miscutil \
-        malloc
+    ginterf \
+    miscutil \
+    malloc \
+    util
 
 dummy: 
 	@for a in $(SUBDIRS); do \

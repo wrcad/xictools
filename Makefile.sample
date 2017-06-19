@@ -1,0 +1,78 @@
+#######################################################################
+# Top level Makefile for XicTools.
+#######################################################################
+# $Id:
+#######################################################################
+
+WRSPICE = KLU vl wrspice/bin
+XIC = mrouter xic/bin
+
+SUBDIRS = xt_base secure $(WRSPICE) $(XIC) xt_accs
+
+#######################################################################
+# Configuration
+
+# OpenAccess support, Linux only, OS X experimental.
+# If you have an OpenAccess source tree, specify its location in this
+# variable and uncomment.  This enables OpenAccess support in Xic.
+#
+#OALOC  = --enable-oa=/usr/local/cad/OA-22.04
+
+# PSF support in WRspice (for Cadence ADE integration), Linux RHEL6/7
+# only.  If you have this Cadence product, PSF file support can be
+# enabled by setting and uncommenting this variable.
+#
+#KITLOC = --enable-psf=/home/stevew/cadence/oasis-kit/tools.lnx86
+
+# Windows setup.  This uses the win-builds tool chain and gtk2
+# libraries.  The libraries are packaged into a "gtk2-bundle"
+# distribution, which may be obtained and used.  This must be provided
+# to the user.  Alternatively the user and install and link to the
+# libraries directly.  In any case, these valiables must be given when
+# building under Mingw or similar on Windows.
+#
+#MINGW  = --enable-mingw=/usr/local/win-builds
+#GTKLOC = --enable-gtk2=/usr/local/gtk2-bundle/bin
+
+# On Windows, we use Cygwin "autoconf-2.13".  Everywhere else, this is
+" just "autoconf".
+
+#ACONF  = autoconf-2.13
+ACONF  = autoconf
+
+#######################################################################
+CFARGS = $(OALOC) $(KITLOC) $(MINGW) $(GTKLOC)
+
+
+
+config:
+#	if [ ! -f xt_base/Makefile ]; then \
+#	    (cd xt_base; $(ACONF); ./configure $(CFARGS)); \
+#	fi
+	if [ -d KLU ]; then \
+	    (cd KLU; $(MAKE) unpack patch) \
+	fi
+	if [ -d wrspice/lib ]; then \
+	    (cd wrspice/lib; ${MAKE}) \
+	fi
+	if [ -d mrouter ]; then \
+	    (cd mrouter; ./configure $(CFARGS)) \
+	fi
+	if [ -d xic/lib ]; then \
+	    (cd xic/lib; ${MAKE}) \
+	fi
+	(${MAKE} depend)
+
+reconfig:
+	rm -f xt_base/Makefile
+	$(MAKE) config
+
+all: config
+	for a in $(SUBDIRS); do \
+	    (cd $$a; $(MAKE)) \
+	done
+
+depend clean distclean::
+	for a in $(SUBDIRS); do \
+	    (cd $$a; $(MAKE) $@) \
+	done

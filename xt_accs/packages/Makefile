@@ -1,3 +1,4 @@
+# Generated automatically from Makefile.in by configure.
 #######################################################################
 # packages/Makefile.in
 #######################################################################
@@ -5,7 +6,7 @@
 #######################################################################
 
 ACCS_VERSION = 4.2.2
-OSNAME = LinuxRHEL7_64
+OSNAME = Win32
 PREFIX = /usr/local
 
 RELEASE = ../../version
