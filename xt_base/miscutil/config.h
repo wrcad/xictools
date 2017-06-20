@@ -1,4 +1,4 @@
-/* miscutil/config.h.  Generated from config.h.in by configure.  */
+/* miscutil/config.h.  Generated automatically by configure.  */
 /***************************************************************************
 XICtools main configuration header template
 Copyright (c) Whiteley Research Inc 1996
@@ -11,32 +11,32 @@ Copyright (c) Whiteley Research Inc 1996
 
 #define STDC_HEADERS 1
 #define TIME_WITH_SYS_TIME 1
-#define HAVE_ALLOCA_H 1
+/* #undef HAVE_ALLOCA_H */
 #define HAVE_DIRENT_H 1
 #define HAVE_FCNTL_H 1
 #define HAVE_FENV_H 1
 #define HAVE_FLOAT_H 1
-#define HAVE_FNMATCH_H 1
+/* #undef HAVE_FNMATCH_H */
 #define HAVE_LIMITS_H 1
-#define HAVE_PWD_H 1
-#define HAVE_REGEX_H 1
+/* #undef HAVE_PWD_H */
+/* #undef HAVE_REGEX_H */
 #define HAVE_SETJMP_H 1
-#define HAVE_SGTTY_H 1
+/* #undef HAVE_SGTTY_H */
 #define HAVE_STRINGS_H 1
-#define HAVE_SYS_DIR_H 1
+/* #undef HAVE_SYS_DIR_H */
 #define HAVE_SYS_FILE_H 1
-#define HAVE_SYS_IOCTL_H 1
-#define HAVE_SYS_RESOURCE_H 1
+/* #undef HAVE_SYS_IOCTL_H */
+/* #undef HAVE_SYS_RESOURCE_H */
 #define HAVE_SYS_TIME_H 1
-#define HAVE_SYS_WAIT_H 1
-#define HAVE_TERM_H 1
-#define HAVE_TERMCAP_H 1
-#define HAVE_TERMIO_H 1
-#define HAVE_TERMIOS_H 1
-#define HAVE_ULIMIT_H 1
+/* #undef HAVE_SYS_WAIT_H */
+/* #undef HAVE_TERM_H */
+/* #undef HAVE_TERMCAP_H */
+/* #undef HAVE_TERMIO_H */
+/* #undef HAVE_TERMIOS_H */
+/* #undef HAVE_ULIMIT_H */
 #define HAVE_UNISTD_H 1
 
-#define SYS_ERRLIST_DEF 1
+/* #undef SYS_ERRLIST_DEF */
 /* #undef SELECT_TAKES_INTP */
 
 #define HAVE_ACCESS 1
@@ -48,7 +48,7 @@ Copyright (c) Whiteley Research Inc 1996
 #define HAVE_DUP2 1
 #define HAVE_ERF 1
 #define HAVE_ERFC 1
-#define HAVE_FORK 1
+/* #undef HAVE_FORK */
 #define HAVE_FSEEKO 1
 #define HAVE_FTIME 1
 #define HAVE_GETCWD 1
@@ -56,26 +56,26 @@ Copyright (c) Whiteley Research Inc 1996
 #define HAVE_GETHOSTNAME 1
 #define HAVE_GETHOSTBYNAME 1
 #define HAVE_GETPID 1
-#define HAVE_GETPWUID 1
-#define HAVE_GETRLIMIT 1
-#define HAVE_GETRUSAGE 1
+/* #undef HAVE_GETPWUID */
+/* #undef HAVE_GETRLIMIT */
+/* #undef HAVE_GETRUSAGE */
 #define HAVE_GETTIMEOFDAY 1
-#define HAVE_GETWD 1
-#define HAVE_HSTRERROR 1
+/* #undef HAVE_GETWD */
+/* #undef HAVE_HSTRERROR */
 #define HAVE_ISATTY 1
-#define HAVE_KILL 1
+/* #undef HAVE_KILL */
 #define HAVE_LGAMMA 1
 #define HAVE_MKSTEMPS 1
 #define HAVE_PERROR 1
 #define HAVE_POPEN 1
-#define HAVE_POSIX_MEMALIGN 1
-#define HAVE_POSIX_OPENPT 1
+/* #undef HAVE_POSIX_MEMALIGN */
+/* #undef HAVE_POSIX_OPENPT */
 #define HAVE_QSORT 1
 #define HAVE_RAISE 1
-#define HAVE_RE_COMP 1
+/* #undef HAVE_RE_COMP */
 #define HAVE_SELECT 1
-#define HAVE_SHMGET 1
-#define HAVE_SIGACTION 1
+/* #undef HAVE_SHMGET */
+/* #undef HAVE_SIGACTION */
 #define HAVE_SIGNAL 1
 #define HAVE_SOCKET 1
 #define HAVE_SRAND 1
@@ -86,11 +86,11 @@ Copyright (c) Whiteley Research Inc 1996
 #define HAVE_STRERROR 1
 #define HAVE_STRTOK_R 1
 #define HAVE_SYSTEM 1
-#define HAVE_TCGETPGRP 1
-#define HAVE_TGETENT 1
-#define HAVE_TIGETSTR 1
-#define HAVE_TIMES 1
-#define HAVE_ULIMIT 1
+/* #undef HAVE_TCGETPGRP */
+/* #undef HAVE_TGETENT */
+/* #undef HAVE_TIGETSTR */
+/* #undef HAVE_TIMES */
+/* #undef HAVE_ULIMIT */
 #define HAVE_UNLINK 1
 #define HAVE_VSNPRINTF 1
 #define HAVE_VASPRINTF 1
@@ -99,12 +99,12 @@ Copyright (c) Whiteley Research Inc 1996
 #define HAVE_GTK2 1
 /* #undef HAVE_QT */
 
-#define HAVE_OA 1
-#define HAVE_PYTHON 1
-#define HAVE_TCL 1
-#define HAVE_TK 1
+/* #undef HAVE_OA */
+/* #undef HAVE_PYTHON */
+/* #undef HAVE_TCL */
+/* #undef HAVE_TK */
 
-/* #undef socklen_t */
+#define socklen_t int
 
 #define HAVE_LIBZ 1
 #define HAVE_LIBPNG 1
@@ -112,7 +112,7 @@ Copyright (c) Whiteley Research Inc 1996
 #define HAVE_LIBTIFF 1
 
 #define HAVE_COMPUTED_GOTO 1
-#define HAVE_LOCAL_ALLOCATOR 1
+/* #undef HAVE_LOCAL_ALLOCATOR */
 
 #endif
 

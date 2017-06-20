@@ -152,7 +152,7 @@ cMain::FixupColors(void *dp)
 
 #else
     for (unsigned i = 0; i < ColorTableEnd; i++) {
-        sColorTabEnt *c = DSP()->ColorTab()->color_ent(i);
+        sColorTab::sColorTabEnt *c = DSP()->ColorTab()->color_ent(i);
         if (!c)
             continue;
         const char *colorname = c->get_defclr();

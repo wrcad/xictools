@@ -1,3 +1,4 @@
+# Generated automatically from Makefile.in by configure.
 # Makefile.in for malloc
 # $Id: Makefile.in,v 1.12 2013/12/05 19:37:42 stevew Exp $
 
@@ -5,13 +6,13 @@
 # If monitor is enabled, to monitor new/delete only: -DCPP_ONLY
 
 MALLOCFILE = malloc-2.8.6.c
-CXX = g++
-CC = gcc
+CXX = /usr/local/win-builds/bin/g++
+CC = /usr/local/win-builds/bin/gcc
 CFLAGS = -O -g -Wall -W -Wshadow -Wwrite-strings -pthread 
 DEPEND_PROG = $(CC) -MM -O -g -Wall -W -Wshadow -Wwrite-strings -pthread -DMALLOCFILE=\"$(MALLOCFILE)\"
-AR = ar
-RANLIB = ranlib
-FILTER = 
+AR = /usr/local/win-builds/bin/ar
+RANLIB = /usr/local/win-builds/bin/ranlib
+FILTER = |sed -e s/C:// -e s///
 
 CCFILES = local_malloc.cc monitor.cc
 INCLUDE = -I../miscutil
@@ -53,4 +54,4 @@ depend:
 DEPEND_DONE = 1
 local_malloc.o: local_malloc.cc local_malloc.h
 monitor.o: monitor.cc local_malloc.h
-malloc.o: malloc.c malloc-2.8.6.c /usr/include/malloc.h
+malloc.o: malloc.c
