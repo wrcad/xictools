@@ -1993,7 +1993,7 @@ win_bag::button_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
         // Mouse wheel
         if (bev->state & GDK_CONTROL_MASK) {
             if (DSP()->MouseWheelZoomFactor() > 0.0)
-                w->wib_windesc->Zoom(1.0 + DSP()->MouseWheelZoomFactor());
+                w->wib_windesc->Zoom(1.0 - DSP()->MouseWheelZoomFactor());
         }
         else if (bev->state & GDK_SHIFT_MASK) {
             if (DSP()->MouseWheelPanFactor() > 0.0)
@@ -2008,7 +2008,7 @@ win_bag::button_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
         // Mouse wheel
         if (bev->state & GDK_CONTROL_MASK) {
             if (DSP()->MouseWheelZoomFactor() > 0.0)
-                w->wib_windesc->Zoom(1.0 - DSP()->MouseWheelZoomFactor());
+                w->wib_windesc->Zoom(1.0 + DSP()->MouseWheelZoomFactor());
         }
         else if (bev->state & GDK_SHIFT_MASK) {
             if (DSP()->MouseWheelPanFactor() > 0.0)

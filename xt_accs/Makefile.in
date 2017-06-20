@@ -136,6 +136,7 @@ clean:: eclean
 
 distclean:: eclean
 	-rm -f *.o Makefile $(ODIR).tar.gz
+	(cd packages; $(MAKE) distclean)
 
 #######################################################################
 ####### Installation ##################################################
