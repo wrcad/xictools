@@ -1989,36 +1989,7 @@ win_bag::button_dn_hdlr(GtkWidget *caller, GdkEvent *event, void *client_data)
             EV()->Button3Callback(w->wib_windesc, (int)bev->x, (int)bev->y,
                 bev->state);
         break;
-    case 4:
-        // Mouse wheel
-        if (bev->state & GDK_CONTROL_MASK) {
-            if (DSP()->MouseWheelZoomFactor() > 0.0)
-                w->wib_windesc->Zoom(1.0 - DSP()->MouseWheelZoomFactor());
-        }
-        else if (bev->state & GDK_SHIFT_MASK) {
-            if (DSP()->MouseWheelPanFactor() > 0.0)
-                w->wib_windesc->Pan(DirEast, DSP()->MouseWheelPanFactor());
-        }
-        else {
-            if (DSP()->MouseWheelPanFactor() > 0.0)
-                w->wib_windesc->Pan(DirNorth, DSP()->MouseWheelPanFactor());
-        }
-        break;
-    case 5:
-        // Mouse wheel
-        if (bev->state & GDK_CONTROL_MASK) {
-            if (DSP()->MouseWheelZoomFactor() > 0.0)
-                w->wib_windesc->Zoom(1.0 + DSP()->MouseWheelZoomFactor());
-        }
-        else if (bev->state & GDK_SHIFT_MASK) {
-            if (DSP()->MouseWheelPanFactor() > 0.0)
-                w->wib_windesc->Pan(DirWest, DSP()->MouseWheelPanFactor());
-        }
-        else {
-            if (DSP()->MouseWheelPanFactor() > 0.0)
-                w->wib_windesc->Pan(DirSouth, DSP()->MouseWheelPanFactor());
-        }
-        break;
+
     default:
         // No-op, update coordinates only.
         if (XM()->IsDoingHelp() && !is_shift_down())
@@ -2110,7 +2081,7 @@ win_bag::scroll_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
 
         if (event->scroll.state & GDK_CONTROL_MASK) {
             if (DSP()->MouseWheelZoomFactor() > 0.0)
-                w->wib_windesc->Zoom(1.0 + DSP()->MouseWheelZoomFactor());
+                w->wib_windesc->Zoom(1.0 - DSP()->MouseWheelZoomFactor());
         }
         else if (event->scroll.state & GDK_SHIFT_MASK) {
             if (DSP()->MouseWheelPanFactor() > 0.0)
@@ -2124,7 +2095,7 @@ win_bag::scroll_hdlr(GtkWidget*, GdkEvent *event, void *client_data)
     else if (event->scroll.direction == GDK_SCROLL_DOWN) {
         if (event->scroll.state & GDK_CONTROL_MASK) {
             if (DSP()->MouseWheelZoomFactor() > 0.0)
-                w->wib_windesc->Zoom(1.0 - DSP()->MouseWheelZoomFactor());
+                w->wib_windesc->Zoom(1.0 + DSP()->MouseWheelZoomFactor());
         }
         else if (event->scroll.state & GDK_SHIFT_MASK) {
             if (DSP()->MouseWheelPanFactor() > 0.0)
