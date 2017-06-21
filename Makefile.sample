@@ -1,7 +1,7 @@
 #######################################################################
 # Top level Makefile for XicTools.
 #######################################################################
-# $Id:
+# $Id:$
 #######################################################################
 
 WRSPICE = KLU vl wrspice/bin
@@ -35,7 +35,7 @@ SUBDIRS = xt_base secure $(WRSPICE) $(XIC) xt_accs
 #GTKLOC = --enable-gtk2=/usr/local/gtk2-bundle/bin
 
 # On Windows, we use Cygwin "autoconf-2.13".  Everywhere else, this is
-" just "autoconf".
+# just "autoconf".
 
 #ACONF  = autoconf-2.13
 ACONF  = autoconf
@@ -43,12 +43,10 @@ ACONF  = autoconf
 #######################################################################
 CFARGS = $(OALOC) $(KITLOC) $(MINGW) $(GTKLOC)
 
-
-
 config:
-#	if [ ! -f xt_base/Makefile ]; then \
-#	    (cd xt_base; $(ACONF); ./configure $(CFARGS)); \
-#	fi
+	if [ ! -f xt_base/Makefile ]; then \
+	    (cd xt_base; $(ACONF); ./configure $(CFARGS)); \
+	fi
 	if [ -d KLU ]; then \
 	    (cd KLU; $(MAKE) unpack patch) \
 	fi

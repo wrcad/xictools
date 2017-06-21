@@ -35,8 +35,11 @@ malloc.o: malloc.c $(MALLOCFILE) Makefile
 	$(CC) $(CFLAGS) $(INCLUDE) -DMALLOCFILE=\"$(MALLOCFILE)\" -c \
  -o malloc.o malloc.c
 
-clean distclean:
+clean:
 	-@rm *.o *.a
+
+distclean:
+	-@rm *.o *.a Makefile
 
 mtest: test.cc malloc.a
 	$(CXX) $(CFLAGS) $(INCLUDE) -o mtest test.cc malloc.a
