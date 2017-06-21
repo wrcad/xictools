@@ -32,8 +32,9 @@ distclean:
 	        (cd $$a; $(MAKE) $@) \
 	    fi; \
 	done
-	-rm -f config.cache config.log config.status Makefile
+	-rm -f config.cache config.log config.status configure Makefile
 	-rm -rf autom4te.cache
+	-rm -f miscutil/config.h
 
 depend:
 	@for a in $(SUBDIRS); do \
