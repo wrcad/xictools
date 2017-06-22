@@ -281,7 +281,7 @@ error:
         char *t = new char[len];
         sprintf(t, "Error occurred when reading image data:\n%s", s);
         DSP()->show_message(t, true);
-        delete t;
+        delete [] t;
     }
     Tdbg()->stop_timing("compose_chd_image");
     return (0);

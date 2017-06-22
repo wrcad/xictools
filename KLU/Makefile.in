@@ -170,6 +170,8 @@ unpack:
 patch:
 	patch -p0 < long_dbl_patch
 
+depend:
+
 buildlib:
 	if [ ! -d AMD ]; then \
 	    $(MAKE) unpack patch; \
