@@ -43,26 +43,29 @@ ACONF  = autoconf
 #######################################################################
 CFARGS = $(OALOC) $(KITLOC) $(MINGW) $(GTKLOC)
 
+FLAGFILE = .configured
+
 config:
-	if [ ! -f xt_base/Makefile ]; then \
+	@if [ ! -f $(FLAGFILE) ]; then \
 	    (cd xt_base; $(ACONF); ./configure $(CFARGS)); \
-	fi
-	if [ -d KLU ]; then \
-	    (cd KLU; $(MAKE) unpack patch) \
-	fi
-	if [ -d wrspice/lib ]; then \
-	    (cd wrspice/lib; ${MAKE}) \
-	fi
-	if [ -d mrouter ]; then \
-	    (cd mrouter; ./configure $(CFARGS)) \
-	fi
-	if [ -d xic/lib ]; then \
-	    (cd xic/lib; ${MAKE}) \
+            if [ -d KLU ]; then \
+                (cd KLU; $(MAKE) unpack patch); \
+            fi; \
+            if [ -d wrspice/lib ]; then \
+                (cd wrspice/lib; ${MAKE}); \
+            fi; \
+            if [ -d mrouter ]; then \
+                (cd mrouter; ./configure $(CFARGS)); \
+            fi; \
+            if [ -d xic/lib ]; then \
+                (cd xic/lib; ${MAKE}); \
+            fi; \
+	    touch $(FLAGFILE); \
 	fi
 	(${MAKE} depend)
 
 reconfig:
-	rm -f xt_base/Makefile
+	rm -f $(FLAGFILE)
 	$(MAKE) config
 
 all: config
@@ -70,7 +73,15 @@ all: config
 	    (cd $$a; $(MAKE)) \
 	done
 
-depend clean distclean::
+depend clean:
 	for a in $(SUBDIRS); do \
 	    (cd $$a; $(MAKE) $@) \
 	done
+
+distclean:
+	for a in $(SUBDIRS); do \
+	    (cd $$a; $(MAKE) $@) \
+	done
+	-rm -f $(FLAGFILE)
+
+
