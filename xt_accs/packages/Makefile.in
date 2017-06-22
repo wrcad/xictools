@@ -75,44 +75,14 @@ Solaris8 Solaris8_64:
 	    mkdir root; \
 	fi
 
-fetch::
-	-@if [ ! -f files/fetch_form.html ]; then \
-	    DIREC=`pwd`; cat files/fetch_form.sed | sed s%DIREC%$$DIREC% \
-  > files/fetch_form.html; \
-	fi
-	mozy files/fetch_form.html &
-
 clean::
 	-@for os in Darwin Debian FreeBSD Linux Solaris Win32; do \
-	    for pg in wrspice xic xicii xiv xtlserv; do \
-	        cd $$os/$$pg; $(MAKE) clean; cd ../..; \
-	    done \
+	    if [ -d $$os -a -d $$os/xt_accs ]; then \
+	        (cd $$os/xt_accs; $(MAKE) clean); \
+	    fi \
 	done
 	-@rm -rf root/*
 
 distclean: clean
-	cd util; $(MAKE) distclean;
-	rm -f files/make_config files/fetch_form.html
 
-# make PROGS="..." install, "..." list: xic, xicii, wrspice, etc
-#
-install:
-	@for a in $(PROGS); do \
-	    vs=`$(RELEASE) $$a`; \
-	    if [ x$vs = x ]; then \
-	        echo Unknown program: $$a; \
-	        continue; \
-	    fi; \
-	    fn=`util/wr_filename $$a $(OSNAME) $$vs`; \
-            if [ ! -f pkgfiles/$$fn ]; then \
-	        echo Not found: pkgfiles/$$fn; \
-	        continue; \
-	    fi; \
-	    if [ x"$arg" = x ]; then \
-	        arg=pkgfiles/$$fn; \
-	    else \
-	        arg="$$arg pkgfiles/$$fn"; \
-	    fi; \
-	done; \
-	util/wr_install $$arg
 

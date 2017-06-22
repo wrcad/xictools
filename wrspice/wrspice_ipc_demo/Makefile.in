@@ -74,15 +74,21 @@ $(MISCUTIL)::
 	cd $(@D); $(MAKE)
 
 clean::
-	cd $(LPATH)/miscutil; $(MAKE) clean
+	if [ -d $(LPATH)/miscutil ]; then \
+	    (cd $(LPATH)/miscutil; $(MAKE) $@); \
+	fi
 	rm -f spclient wrspiced
 
 distclean::
-	cd $(LPATH)/miscutil; $(MAKE) distclean
+	if [ -d $(LPATH)/miscutil ]; then \
+	    (cd $(LPATH)/miscutil; $(MAKE) $@); \
+	fi
 	rm -f spclient wrspiced Makefile config.*
 
 depend:
-	cd $(LPATH)/miscutil; $(MAKE) depend
+	if [ -d $(LPATH)/miscutil ]; then \
+	    (cd $(LPATH)/miscutil; $(MAKE) $@); \
+	fi
 	@echo depending in wrspice_ipc_demo
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \

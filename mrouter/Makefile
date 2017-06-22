@@ -18,7 +18,9 @@ def:
 
 clean:
 	-@for a in $(SUBDIRS); do \
-	    (dir=`pwd`; cd $$a; $(MAKE) clean; cd $$dir) \
+	    if [ -d $$a ]; then \
+	        (cd $$a; $(MAKE) clean); \
+	    fi \
 	done
 	-cd examples; $(MAKE) clean
 

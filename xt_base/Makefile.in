@@ -5,11 +5,13 @@
 #######################################################################
 
 DATE = @DATE@
+MALLOC = @MALLOC@
+
+LPATH = .
 
 SUBDIRS = \
     ginterf \
     miscutil \
-    malloc \
     util
 
 dummy: 
@@ -18,13 +20,23 @@ dummy:
 	        (cd $$a; $(MAKE)) \
 	    fi; \
 	done
+	@if [ z$(MALLOC) != z ]; then \
+	    if [ -d malloc ]; then \
+	        (cd malloc; $(MAKE)) \
+	    fi; \
+	fi
 	
-clean:
+depend clean:
 	@for a in $(SUBDIRS); do \
 	    if [ -d $$a ]; then \
 	        (cd $$a; $(MAKE) $@) \
 	    fi; \
 	done
+	@if [ z$(MALLOC) != z ]; then \
+	    if [ -d malloc ]; then \
+	        (cd malloc; $(MAKE) $@) \
+	    fi; \
+	fi
 
 distclean:
 	@for a in $(SUBDIRS) packages; do \
@@ -32,14 +44,13 @@ distclean:
 	        (cd $$a; $(MAKE) $@) \
 	    fi; \
 	done
+	@if [ z$(MALLOC) != z ]; then \
+	    if [ -d malloc ]; then \
+	        (cd malloc; $(MAKE) $@) \
+	    fi; \
+	fi
 	-rm -f config.cache config.log config.status configure Makefile
 	-rm -rf autom4te.cache
 	-rm -f miscutil/config.h
 
-depend:
-	@for a in $(SUBDIRS); do \
-	    if [ -d $$a ]; then \
-	        (cd $$a; $(MAKE) $@) \
-	    fi; \
-	done
 
