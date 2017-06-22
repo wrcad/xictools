@@ -272,7 +272,7 @@ NODLL_XIC_PROG='$(XIC_PROG)'
 case $sys_os in
 CYGWIN*)
     NTSUFFIX=".exe"
-    FILTER="|sed -e s/C:// -e s///"
+    FILTER="|sed -e s/C:// -e s///g"
     MALLOC=
     OSNAME="Win32"
     ARCH="i386"
@@ -517,7 +517,7 @@ if test $have_cfg = yes; then
         GRPREF=gtk
         TOOLKITINC="-DUSE_GTK `${gtklocd}pkg-config --cflags gtk+-2.0`"
 dnl Filter needed in Windows, pkg-config adds ^M that chokes g++.
-        TOOLKITLIBS="`${gtklocd}pkg-config --libs gtk+-2.0 |sed -e s///`"
+        TOOLKITLIBS="`${gtklocd}pkg-config --libs gtk+-2.0 |sed -e s///g`"
         if test $OSNAME = "Darwin64" -a $with_quartz = yes; then
             TOOLKITCFLAGS="-DWITH_QUARTZ"
         fi
