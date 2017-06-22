@@ -7,6 +7,7 @@
 DATE = @DATE@
 CXX = @CXX@
 CC = @CC@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@
 
 #all: datestr timegen
 
@@ -18,3 +19,12 @@ timegen: timegen.cc
 
 clean distclean:
 	rm -f datestr timegen
+
+depend:
+	@echo depending in utilw
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) timegen.cc $(FILTER) >> Makefile; \
+	fi
+
+####################################################################
