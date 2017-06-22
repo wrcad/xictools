@@ -3050,7 +3050,7 @@ cgx_in::short_value(char **p)
     // CGX format is big-endian
     unsigned i = b[1] | ((b[0] & 0x7f) << 8);
     if (b[0] & 0x80)
-        i |= (-1 << 15);
+        i |= (0xffffffffU << 15);
     return ((int)i);
 }
 
@@ -3063,7 +3063,7 @@ cgx_in::long_value(char **p)
     // CGX format is big-endian
     unsigned i = b[3] | (b[2] << 8) | (b[1] << 16) | ((b[0] & 0x7f) << 24);
     if (b[0] & 0x80)
-        i |= (-1 << 31);
+        i |= (0xffffffffU << 31);
     return ((int)i);
 }
 
