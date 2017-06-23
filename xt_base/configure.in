@@ -515,8 +515,9 @@ if test $have_cfg = yes; then
     ${gtklocd}pkg-config --exists gtk+-2.0
     if test $? = 0; then
         GRPREF=gtk
-        TOOLKITINC="-DUSE_GTK `${gtklocd}pkg-config --cflags gtk+-2.0`"
 dnl Filter needed in Windows, pkg-config adds ^M that chokes g++.
+        tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0 |sed -e s///g`"
+        TOOLKITINC="-DUSE_GTK $tkcf"
         TOOLKITLIBS="`${gtklocd}pkg-config --libs gtk+-2.0 |sed -e s///g`"
         if test $OSNAME = "Darwin64" -a $with_quartz = yes; then
             TOOLKITCFLAGS="-DWITH_QUARTZ"
