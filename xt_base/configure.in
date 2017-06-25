@@ -175,7 +175,7 @@ fi
 )
 
 dnl --enable-gtk2[=config_dir]
-dnl redundant except for giving pkg-confgig path
+dnl redundant except for giving pkg-config path
 AC_ARG_ENABLE(gtk2,  [  ]--enable-gtk2[[=config_dir]]           link with gtk2,
 if test $enable_gtk2 != yes -a $enable_gtk2 != no; then
     gtkloc="$enable_gtk2"
@@ -347,28 +347,54 @@ Linux)
     OSNAME="LinuxUnknown"
     ARCH="x86_64"
     if test -f /etc/redhat-release; then
+        dst=`rpm -qf /etc/redhat-release`
+    elif [ -f /etc/centos-release ]; then
+        dst=`rpm -qf /etc/centos-release`
+    elif [ -f /etc/SuSE-release ]; then
+        dst=`rpm -qf /etc/SuSE-release`
+    fi
+    if test x"$dst" != x; then
+dnl  RPM-based:  Red Hat, CentOS, OpenSuSE, and others.  Recognize 5/6/7
+dnl  and assume RHEL production releases.  We obtain the release name
+dnl  and number from RPM, which will work even if someone hacked the text
+dnl  of the redhat-release file.
+        tifs=$IFS
+        IFS=".-_ "
+        set -- $dst
+        IFS=$tifs
+        word=$1
+        ch=${word:0:1}
+dnl  Upper-case the first letter of oname.
+        oname=`echo -n "$ch" | tr [a-z] [A-Z]; echo ${word:1}`
+        major=$3
+        minor=$4
+
         # RedHat/CentOS
         # Supported 7_64, 6_64, 5_64, 5_32
-        if test x"`cat /etc/redhat-release | grep 7\.[[0-9]]`" != x; then
-            if test $linux32 = yes; then
-                echo "Architecture not supported."
-                exit
+        if test x$major == x7; then
+            if test $linux32 == yes; then
+                OSNAME="LinuxRHEL7"
+                ARCH="i686"
+                lib_dirs="/usr/lib /usr/local/lib"
+            else
+                OSNAME="LinuxRHEL7_64"
+                ARCH="x86_64"
+                lib_dirs="/usr/lib64 /usr/local/lib64"
             fi
-            OSNAME="LinuxRHEL7_64"
-            ARCH="x86_64"
-            lib_dirs="/usr/lib64 /usr/local/lib64"
             with_psf_ok=yes
-        elif test x"`cat /etc/redhat-release | grep 6\.[[0-9]]`" != x; then
-            if test $linux32 = yes; then
-                echo "Architecture not supported."
-                exit
+        elif test x$major == x6; then 
+            if test $linux32 == yes; then
+                OSNAME="LinuxRHEL7"
+                ARCH="i686"
+                lib_dirs="/usr/lib /usr/local/lib"
+            else
+                OSNAME="LinuxRHEL7_64"
+                ARCH="x86_64"
+                lib_dirs="/usr/lib64 /usr/local/lib64"
             fi
-            OSNAME="LinuxRHEL6_64"
-            ARCH="x86_64"
-            lib_dirs="/usr/lib64 /usr/local/lib64"
             with_psf_ok=yes
-        elif test x"`cat /etc/redhat-release | grep 5\.[[0-9]]`" != x; then
-            if test $linux32 = yes; then
+        elif test x$major == x5; then 
+            if test $linux32 == yes; then
                 OSNAME="LinuxRHEL5"
                 ARCH="i686"
                 ac_x_libraries=/usr/X11R6/lib
@@ -379,19 +405,17 @@ Linux)
                 largs="-L/usr/local/lib64"
             fi
         else
-            echo "Architecture not supported."
-            exit
+            if test $linux32 == yes; then
+                OSNAME="Linux$oname$major"
+                ARCH="i686"
+            else
+                OSNAME="Linux$oname$major_64"
+                ARCH="x86_64"
+                lib_dirs="/usr/lib64"
+            fi
         fi
-    elif test -f /etc/os-release; then
-        # SuSE (open SuSE)
-        if test $linux32 = yes; then
-            echo "Architecture not supported."
-            exit
-        fi
-        OSNAME="LinuxOSuSE_64"
-        ARCH="x86_64"
-        lib_dirs="/usr/lib64"
     else
+dnl  Need Debian/Ubuntu, etc.
         echo "Architecture not supported."
         exit
     fi
@@ -598,90 +622,28 @@ elif test $OSNAME = "FreeBSD10"; then
         TK_LIBS="-L/usr/local/lib -ltk84"
         echo '#define HAVE_TK 1'>> confdefs.h
     fi
-elif test $OSNAME = "LinuxRHEL5"; then
-    if test -d /usr/include/python2.6; then
-        PY_INCLUDE="-I/usr/include/python2.6"
-        PY_LIBS="-lpython2.6"
-        PY_TARGETS="py26.so"
-        echo '#define HAVE_PYTHON 1'>> confdefs.h
-    fi
-    if test -f /usr/include/tcl.h; then
-        TCL_INCLUDE=
-        TCL_LIBS="-ltcl"
-        echo '#define HAVE_TCL 1'>> confdefs.h
-    fi
-    if test -f /usr/include/tk.h; then
-        TK_INCLUDE="$X_CFLAGS"
-        TK_LIBS="-ltk"
-        echo '#define HAVE_TK 1'>> confdefs.h
-    fi
-elif test $OSNAME = "LinuxRHEL5_64"; then
-    if test -d /usr/include/python2.6; then
-        PY_INCLUDE="-I/usr/include/python2.6"
-        PY_LIBS="-lpython2.6"
-        PY_TARGETS="py26.so"
-        echo '#define HAVE_PYTHON 1'>> confdefs.h
-    fi
-    if test -f /usr/include/tcl.h; then
-        TCL_INCLUDE=
-        TCL_LIBS="-ltcl"
-        echo '#define HAVE_TCL 1'>> confdefs.h
-    fi
-    if test -f /usr/include/tk.h; then
-        TK_INCLUDE="$X_CFLAGS"
-        TK_LIBS="-ltk"
-        echo '#define HAVE_TK 1'>> confdefs.h
-    fi
-elif test $OSNAME = "LinuxRHEL6_64"; then
-    if test -d /usr/include/python2.6; then
-        PY_INCLUDE="-I/usr/include/python2.6"
-        PY_LIBS="-lpython2.6"
-        PY_TARGETS="py26.so"
-        echo '#define HAVE_PYTHON 1'>> confdefs.h
-    fi
-    if test -f /usr/include/tcl.h; then
-        TCL_INCLUDE=
-        TCL_LIBS="-ltcl"
-        echo '#define HAVE_TCL 1'>> confdefs.h
-    fi
-    if test -f /usr/include/tk.h; then
-        TK_INCLUDE="$X_CFLAGS"
-        TK_LIBS="-ltk"
-        echo '#define HAVE_TK 1'>> confdefs.h
-    fi
-elif test $OSNAME = "LinuxRHEL7_64"; then
+elif test ${OSNAME:0:5} = "Linux"; then
     if test -d /usr/include/python2.7; then
         PY_INCLUDE="-I/usr/include/python2.7"
         PY_LIBS="-lpython2.7"
         PY_TARGETS="py27.so"
         echo '#define HAVE_PYTHON 1'>> confdefs.h
-    fi
-    if test -f /usr/include/tcl.h; then
-        TCL_INCLUDE=
-        TCL_LIBS="-ltcl"
-        echo '#define HAVE_TCL 1'>> confdefs.h
-    fi
-    if test -f /usr/include/tk.h; then
-        TK_INCLUDE="$X_CFLAGS"
-        TK_LIBS="-ltk"
-        echo '#define HAVE_TK 1'>> confdefs.h
-    fi
-elif test $OSNAME = "LinuxOSuSE_64"; then
-    if test -d /usr/include/python2.7; then
-        PY_INCLUDE="-I/usr/include/python2.7"
-        PY_LIBS="-lpython2.7"
-        PY_TARGETS="py27.so"
+    elif test -d /usr/include/python2.6; then
+        PY_INCLUDE="-I/usr/include/python2.6"
+        PY_LIBS="-lpython2.6"
+        PY_TARGETS="py26.so"
         echo '#define HAVE_PYTHON 1'>> confdefs.h
     fi
     if test -f /usr/include/tcl.h; then
+        vrs=`echo 'puts $tcl_version; exit 0' | tclsh`
         TCL_INCLUDE=
-        TCL_LIBS="-ltcl8.6"
+        TCL_LIBS="-ltcl$vrs"
         echo '#define HAVE_TCL 1'>> confdefs.h
-    fi
-    if test -f /usr/include/tk.h; then
-        TK_INCLUDE="$X_CFLAGS"
-        TK_LIBS="-ltk8.6"
-        echo '#define HAVE_TK 1'>> confdefs.h
+        if test -f /usr/include/tk.h; then
+            TK_INCLUDE="$X_CFLAGS"
+            TK_LIBS="-ltk$vrs"
+            echo '#define HAVE_TK 1'>> confdefs.h
+        fi
     fi
 fi
 
@@ -831,27 +793,56 @@ else
     IMG_LIBS=
     IMG_FLAGS=
 
-    if test $OSNAME = "LinuxRHEL6_64"; then
-        AC_CHECK_LIB(png, main)
-        AC_CHECK_LIB(png, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBPNG"
-          IMG_LIBS="$IMG_LIBS /usr/lib64/libpng12.a")
-        AC_CHECK_LIB(jpeg, main)
-        AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
-          IMG_LIBS="$IMG_LIBS /usr/lib64/libjpeg.a")
-        AC_CHECK_LIB(tiff, main)
-        AC_CHECK_LIB(tiff, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBTIFF"
-          IMG_LIBS="$IMG_LIBS /usr/lib64/libtiff.a")
+dnl  Try to link static graphics libraries if found.
+
+    AC_CHECK_LIB(png, main)
+    AC_CHECK_LIB(png, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBPNG"
+    if test $linux32 == yes; then
+        if test -f /usr/lib/libpng.a; then
+            IMG_LIBS="$IMG_LIBS /usr/lib/libpng.a"
+        else
+            IMG_LIBS="$IMG_LIBS -lpng"
+        fi
     else
-        AC_CHECK_LIB(png, main)
-        AC_CHECK_LIB(png, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBPNG"
-          IMG_LIBS="$IMG_LIBS -lpng")
-        AC_CHECK_LIB(jpeg, main)
-        AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
-          IMG_LIBS="$IMG_LIBS -ljpeg")
-        AC_CHECK_LIB(tiff, main)
-        AC_CHECK_LIB(tiff, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBTIFF"
-          IMG_LIBS="$IMG_LIBS -ltiff")
-    fi
+        if test -f /usr/lib64/libpng.a; then
+            IMG_LIBS="$IMG_LIBS /usr/lib64/libpng.a"
+        else
+            IMG_LIBS="$IMG_LIBS -lpng"
+        fi
+    fi)
+
+    AC_CHECK_LIB(jpeg, main)
+    AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
+    if test $linux32 == yes; then
+        if test -f /usr/lib/libjpeg.a; then
+            IMG_LIBS="$IMG_LIBS /usr/lib/libjpeg.a"
+        else
+            IMG_LIBS="$IMG_LIBS -ljpeg"
+        fi
+    else
+        if test -f /usr/lib64/libjpeg.a; then
+            IMG_LIBS="$IMG_LIBS /usr/lib64/libjpeg.a"
+        else
+            IMG_LIBS="$IMG_LIBS -ljpeg"
+        fi
+    fi)
+
+    AC_CHECK_LIB(tiff, main)
+    AC_CHECK_LIB(tiff, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBTIFF"
+    if test $linux32 == yes; then
+        if test -f /usr/lib/libtiff.a; then
+            IMG_LIBS="$IMG_LIBS /usr/lib/libtiff.a"
+        else
+            IMG_LIBS="$IMG_LIBS -ltiff"
+        fi
+    else
+        if test -f /usr/lib64/libtiff.a; then
+            IMG_LIBS="$IMG_LIBS /usr/lib64/libtiff.a"
+        else
+            IMG_LIBS="$IMG_LIBS -ltiff"
+        fi
+    fi)
+
     tmplibs1="$tmplibsq $IMG_LIBS"
     AC_CHECK_LIB(z, main)
     AC_CHECK_LIB(z, main, tmplibs1="$tmplibs1 -lz")
@@ -867,14 +858,17 @@ else
     if test x"$largs" != x; then
         LIBS="$largs $LIBS"
     fi
-    if test $OSNAME = "LinuxRHEL7_64"; then
-        EXTRALIBS="-lpthread -ldl -lX11 -lXext"
-    elif test $OSNAME = "FreeBSD10"; then
-        LIBS="$LIBS -lexecinfo"
-        SLIBS="$LIBS -lexecinfo"
-        EXTRALIBS="ldl -lX11 -lXext"
-    elif test $OSNAME = "LinuxOSuSE_64"; then
-        EXTRALIBS="-lpthread -ldl -lX11 -lXext"
+    if test ${OSNAME:0:5} == Linux; then
+        AC_CHECK_LIB(pthread, main, EXTRALIBS="$EXTRALIBS -lpthread")
+        AC_CHECK_LIB(dl, main, EXTRALIBS="$EXTRALIBS -ldl")
+        AC_CHECK_LIB(X11, main, EXTRALIBS="$EXTRALIBS -lX11")
+        AC_CHECK_LIB(Xext, main, EXTRALIBS="$EXTRALIBS -lXext")
+    elif test ${OSNAME:0:7} = "FreeBSD"; then
+        AC_CHECK_LIB(execinfo, main, LIBS="$LIBS -lexecinfo"
+          SLIBS="$SLIBS -lexecinfo")
+        AC_CHECK_LIB(dl, main, EXTRALIBS="$EXTRALIBS -ldl")
+        AC_CHECK_LIB(X11, main, EXTRALIBS="$EXTRALIBS -lX11")
+        AC_CHECK_LIB(Xext, main, EXTRALIBS="$EXTRALIBS -lXext")
     fi
 
     AC_CHECK_LIB(ncurses, main, [ CURSES="-lncurses" ],
