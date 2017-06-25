@@ -384,11 +384,11 @@ dnl  Upper-case the first letter of oname.
             with_psf_ok=yes
         elif test x$major == x6; then 
             if test $linux32 == yes; then
-                OSNAME="LinuxRHEL7"
+                OSNAME="LinuxRHEL6"
                 ARCH="i686"
                 lib_dirs="/usr/lib /usr/local/lib"
             else
-                OSNAME="LinuxRHEL7_64"
+                OSNAME="LinuxRHEL6_64"
                 ARCH="x86_64"
                 lib_dirs="/usr/lib64 /usr/local/lib64"
             fi

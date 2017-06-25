@@ -68,6 +68,9 @@ reconfig:
 	rm -f $(FLAGFILE)
 	$(MAKE) config
 
+testcfg:
+	(cd xt_base; $(MAKE) distclean; $(ACONF); ./configure $(CFARGS))
+
 all: config
 	for a in $(SUBDIRS); do \
 	    (cd $$a; $(MAKE)) \
