@@ -409,7 +409,7 @@ dnl  Upper-case the first letter of oname.
                 OSNAME="Linux$oname$major"
                 ARCH="i686"
             else
-                OSNAME="Linux$oname$major_64"
+                OSNAME="Linux$oname${major}_64"
                 ARCH="x86_64"
                 lib_dirs="/usr/lib64"
             fi
