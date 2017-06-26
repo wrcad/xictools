@@ -69,9 +69,6 @@ gtk_bag::PopUpMultiCol(stringlist *symlist, const char *title,
 {
     static int mcol_count;
 
-    if (!(void*)this)
-        return (0);
-
     GTKmcolPopup *mcol = new GTKmcolPopup(this, symlist, title,
         buttons, pgsize, arg);
     mcol->register_callback(callback);

@@ -512,7 +512,8 @@ struct htmImageInfo
     // check whether the body image is fully loaded
     bool BodyImageLoaded()
         {
-            return ((void*)this ? (!Delayed() && !Progressive()) : true);
+            htmImageInfo *iit = this;
+            return (iit ? (!Delayed() && !Progressive()) : true);
         }
 
     // regular image fields

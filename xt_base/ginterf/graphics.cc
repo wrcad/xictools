@@ -858,8 +858,13 @@ namespace {
 void
 GRdraw::defineLinestyle(GRlineType *lineptr, int mask)
 {
-    // the dash list has 8 bytes storage
-    if (!(void*)this || !lineptr)
+    // The dash list has 8 bytes storage.
+    {
+        GRdraw *gdt = this;
+        if (!gdt)
+            return;
+    }
+    if (!lineptr)
         return;
     lineptr->mask = mask;
     lineptr->length = 0;
@@ -912,15 +917,18 @@ void
 GRdraw::setDefaultLinestyle(int index)
 {
     static GRlineType lt;
-    if ((void*)this) {
-        if (!index)
-            SetLinestyle(0);
-        else {
-            if (index > GRnumDefLinestyles)
-                index = (index % GRnumDefLinestyles) + 1;
-            index--;
-            defineLinestyle(&lt, GRdefLinestyles[index]);
-        }
+    {
+        GRdraw *gdt = this;
+        if (!gdt)
+            return;
+    }
+    if (!index)
+        SetLinestyle(0);
+    else {
+        if (index > GRnumDefLinestyles)
+            index = (index % GRnumDefLinestyles) + 1;
+        index--;
+        defineLinestyle(&lt, GRdefLinestyles[index]);
     }
 }
 
@@ -929,7 +937,12 @@ void
 GRdraw::defineFillpattern(GRfillType *fillp, int nx, int ny,
     const unsigned char *array)
 {
-    if (!(void*)this || !fillp)
+    {
+        GRdraw *gdt = this;
+        if (!gdt)
+            return;
+    }
+    if (!fillp)
         return;
     fillp->newMap(nx, ny, array);
     DefineFillpattern(fillp);

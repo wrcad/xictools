@@ -2418,7 +2418,8 @@ void
 spMatrixFrame::spErrorMessage(FILE *stream, const char *originator)
 {
     int error;
-    if ((void*)this == 0)
+    spMatrixFrame *mfpt = this;
+    if (!mfpt)
         error = spNO_MEMORY;
     else {
         ASSERT(this->ID == SPARSE_ID);
@@ -2500,7 +2501,8 @@ spMatrixFrame::spErrorMessage(int error)
 int
 spMatrixFrame::spError()
 {
-    if ((void*)this != 0) {
+    spMatrixFrame *mfpt = this;
+    if (mfpt) {
         ASSERT(this->ID == SPARSE_ID);
         return (Error);
     }

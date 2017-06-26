@@ -159,16 +159,18 @@ struct HLPtopic
 
     HLPtopic *get_parent()
         {
-            if ((void*)this && tp_parent)
-                return (tp_parent);
-            return (this);
+            HLPtopic *ht = this;
+            if (ht && ht->tp_parent)
+                return (ht->tp_parent);
+            return (ht);
         }
 
     HLPtopic *get_last()
         {
-            if ((void*)this && tp_lastborn)
-                return (tp_lastborn);
-            return (this);
+            HLPtopic *ht = this;
+            if (ht && ht->tp_lastborn)
+                return (ht->tp_lastborn);
+            return (ht);
         }
 
     HLPtopic *parent()              { return (tp_parent); }

@@ -82,18 +82,21 @@ struct htmHashTab
 
     void clear()
     {
-        if ((void*)this) {
-            if (tNumAllocated) {
-                for (unsigned int i = 0; i <= tMask; i++) {
-                    htmHashEnt *hn;
-                    for (htmHashEnt *h = tEnt[i]; h; h = hn) {
-                        hn = h->next();
-                        delete h;
-                    }
-                    tEnt[i] = 0;
+        {
+            htmHashTab *ht = this;
+            if (!ht)
+                return;
+        }
+        if (tNumAllocated) {
+            for (unsigned int i = 0; i <= tMask; i++) {
+                htmHashEnt *hn;
+                for (htmHashEnt *h = tEnt[i]; h; h = hn) {
+                    hn = h->next();
+                    delete h;
                 }
-                tNumAllocated = 0;
+                tEnt[i] = 0;
             }
+            tNumAllocated = 0;
         }
     }
 
@@ -102,7 +105,12 @@ struct htmHashTab
     //
     bool add(htmHashEnt *ent)
     {
-        if (!(void*)this || !ent)
+        {
+            htmHashTab *ht = this;
+            if (!ht)
+                return (false);
+        }
+        if (!ent)
             return (false);
         unsigned int i = string_hash(ent->name(), tMask);
         ent->set_next(tEnt[i]);
@@ -119,7 +127,12 @@ struct htmHashTab
     //
     htmHashEnt *get(const char *tag)
     {
-        if (!(void*)this || !tag)
+        {
+            htmHashTab *ht = this;
+            if (!ht)
+                return (0);
+        }
+        if (!tag)
             return (0);
         unsigned int i = string_hash(tag, tMask);
         for (htmHashEnt *h = tEnt[i]; h; h = h->next()) {

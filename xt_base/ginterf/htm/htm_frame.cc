@@ -166,7 +166,8 @@ htmFrameWidget::new_frame_set(const char *attributes)
     // create new entry
     htmFrameWidget *frameset = new htmFrameWidget(HT_FRAMESET);
 
-    if ((void*)this) {
+    htmFrameWidget *fwt = this;
+    if (fwt) {
         int insert_pos;
         if (!fr_children) {
             insert_pos = 0;
@@ -192,7 +193,7 @@ htmFrameWidget::new_frame_set(const char *attributes)
     if (chPtr == 0) {
         chPtr = htmTagGetValue(attributes, "cols");
         if (chPtr == 0) {
-            if (!(void*)this)
+            if (!fwt)
                 delete frameset;
             return (0);
         }

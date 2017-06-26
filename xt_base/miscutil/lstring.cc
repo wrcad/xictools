@@ -59,8 +59,11 @@
 char *
 stringlist::flatten(const char *term)
 {
-    if (!(void*)this)
-        return (lstring::copy(""));
+    {
+        stringlist *st = this;
+        if (!st)
+            return (lstring::copy(""));
+    }
     int tlen = term ? strlen(term) : 0;
     int cnt = 0;
     for (stringlist *s = this; s; s = s->next)
@@ -107,8 +110,11 @@ stringlist::dup()
 void
 stringlist::reverse()
 {
-    if (!(void*)this)
-        return;
+    {
+        stringlist *st = this;
+        if (!st)
+            return;
+    }
     stringlist *sl = next, *s0 = 0;
     while (sl) {
         stringlist *sn = sl->next;
@@ -144,8 +150,11 @@ namespace {
 void
 stringlist::sort(bool(*cf)(const char*, const char*))
 {
-    if (!(void*)this)
-        return;
+    {
+        stringlist *st = this;
+        if (!st)
+            return;
+    }
     int len = length();
     if (len < 2)
         return;
@@ -194,8 +203,11 @@ namespace {
 stringcolumn *
 stringlist::get_columns(int charcols)
 {
-    if (!(void*)this)
-        return (0);
+    {
+        stringlist *st = this;
+        if (!st)
+            return (0);
+    }
     if (charcols < 25)
         charcols = 25;
     int len = length();
@@ -319,8 +331,11 @@ namespace {
 void
 stringnumlist::sort_by_string()
 {
-    if (!(void*)this || !next)
-        return;
+    {
+        stringnumlist *st = this;
+        if (!st || !st->next)
+            return;
+    }
     int len = length();
     sn *aa = new sn[len];
     int cnt = 0;
@@ -343,8 +358,11 @@ stringnumlist::sort_by_string()
 void
 stringnumlist::sort_by_num()
 {
-    if (!(void*)this || !next)
-        return;
+    {
+        stringnumlist *st = this;
+        if (!st || !st->next)
+            return;
+    }
     int len = length();
     sn *aa = new sn[len];
     int cnt = 0;
@@ -843,7 +861,8 @@ MacroHandler::macro_expand(const char *str, bool *sub, const char *skipme,
 const char *
 MacroHandler::find_text(const char *def)
 {
-    if ((void*)this && def) {
+    MacroHandler *mht = this;
+    if (mht && def) {
         for (sMacro *m = Macros; m; m = m->next) {
             if (!strcmp(def, m->m_name)) {
                 if (m->m_text)
@@ -862,7 +881,8 @@ MacroHandler::find_text(const char *def)
 void
 MacroHandler::print(FILE *fp, const char *invoke, bool show_predef)
 {
-    if ((void*)this && fp) {
+    MacroHandler *mht = this;
+    if (mht && fp) {
         for (sMacro *m = Macros; m; m = m->next)
             m->print(fp, invoke, show_predef);
     }

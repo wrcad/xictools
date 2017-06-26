@@ -337,7 +337,8 @@ htmTable::open(htmWidget *html, htmObjectTable *start, htmObject *obj,
     htmTableCell **tcellp)
 {
     htmTable *table;
-    if ((void*)this) {
+    htmTable *tabt = this;
+    if (tabt) {
         // get to the absolute parent of this table
         htmTable *parent_table = this;
         while (parent_table->t_parent)
@@ -379,7 +380,7 @@ htmTable::open(htmWidget *html, htmObjectTable *start, htmObject *obj,
 
     // table properties
     table->t_properties = html->tableCheckProperties(obj->attributes,
-        (void*)this ? t_properties : 0, *halign, *bg, *bg_image);
+        tabt ? t_properties : 0, *halign, *bg, *bg_image);
 
     // set return alignment
     *halign = table->t_properties->tp_halign;
@@ -457,7 +458,7 @@ htmTable::open(htmWidget *html, htmObjectTable *start, htmObject *obj,
     }
 
     // The master table contains all tables
-    if (!(void*)this) {
+    if (!tabt) {
         nchildren++;
         table->t_children = new htmTable[nchildren];
         table->t_nchildren = nchildren;
@@ -483,9 +484,9 @@ htmTable::open(htmWidget *html, htmObjectTable *start, htmObject *obj,
 htmTable*
 htmTable::close(htmWidget*, htmObjectTable *end, htmTableCell **tcellp)
 {
-    if (!(void*)this)
-        return (0);
     htmTable *table = this;
+    if (!table)
+        return (0);
 
     // bad hack
     htmTable *real_table = t_owner->table;
@@ -527,9 +528,9 @@ void
 htmTable::openCaption(htmWidget *html, htmObjectTable *start,
     htmObject *obj, unsigned int *bg, htmImage **bg_image)
 {
-    if (!(void*)this)
-        return;
     htmTable *table = this;
+    if (!table)
+        return;
     if (!table->t_parent)
         table = t_children;
 
@@ -587,9 +588,9 @@ htmTable::openCaption(htmWidget *html, htmObjectTable *start,
 void
 htmTable::closeCaption(htmWidget*, htmObjectTable *end)
 {
-    if (!(void*)this)
-        return;
     htmTable *table = this;
+    if (!table)
+        return;
     if (!table->t_parent)
         table = t_children;
 
@@ -612,9 +613,9 @@ void
 htmTable::openRow(htmWidget *html, htmObjectTable *start, htmObject *obj,
     Alignment *halign, unsigned int *bg, htmImage **bg_image)
 {
-    if (!(void*)this)
-        return;
     htmTable *table = this;
+    if (!table)
+        return;
     if (!table->t_parent)
         table = t_children;
 
@@ -681,9 +682,9 @@ htmTable::openRow(htmWidget *html, htmObjectTable *start, htmObject *obj,
 void
 htmTable::closeRow(htmWidget*, htmObjectTable *end)
 {
-    if (!(void*)this)
-        return;
     htmTable *table = this;
+    if (!table)
+        return;
     if (!table->t_parent)
         table = t_children;
 
@@ -712,9 +713,9 @@ htmTableCell *
 htmTable::openCell(htmWidget *html, htmObjectTable *start, htmObject *obj,
     Alignment *halign, unsigned int *bg, htmImage **bg_image)
 {
-    if (!(void*)this)
-        return (0);
     htmTable *table = this;
+    if (!table)
+        return (0);
     if (!table->t_parent)
         table = t_children;
 
@@ -770,9 +771,9 @@ htmTable::openCell(htmWidget *html, htmObjectTable *start, htmObject *obj,
 void
 htmTable::closeCell(htmWidget*, htmObjectTable *end)
 {
-    if (!(void*)this)
-        return;
     htmTable *table = this;
+    if (!table)
+        return;
     if (!table->t_parent)
         table = t_children;
 

@@ -162,7 +162,12 @@ sHtab::chg_ciflag(bool ci)
 void
 sHtab::add(const char *name, void *data)
 {
-    if ((void*)this == 0 || name == 0)
+    {
+        sHtab *ht = this;
+        if (!ht)
+            return;
+    }
+    if (!name)
         return;
     unsigned int n = ht_hash(name);
     sHent *h = ht_base[n];
@@ -208,7 +213,12 @@ sHtab::add(const char *name, void *data)
 void *
 sHtab::remove(const char *name)
 {
-    if ((void*)this == 0 || name == 0)
+    {
+        sHtab *ht = this;
+        if (!ht)
+            return (0);
+    }
+    if (!name)
         return (0);
     unsigned int n = ht_hash(name);
     sHent *h = ht_base[n];
@@ -237,7 +247,12 @@ sHtab::remove(const char *name)
 void *
 sHtab::get(const char *name) const
 {
-    if ((void*)this == 0 || name == 0)
+    {
+        sHtab *ht = this;
+        if (!ht)
+            return (0);
+    }
+    if (!name)
         return (0);
     unsigned int n = ht_hash(name);
     for (sHent *h = ht_base[n]; h; h = h->h_next) {
@@ -258,7 +273,12 @@ sHtab::get(const char *name) const
 sHent *
 sHtab::get_ent(const char *name) const
 {
-    if ((void*)this == 0 || name == 0)
+    {
+        sHtab *ht = this;
+        if (!ht)
+            return (0);
+    }
+    if (!name)
         return (0);
     unsigned int n = ht_hash(name);
     for (sHent *h = ht_base[n]; h; h = h->h_next) {
@@ -279,8 +299,11 @@ sHtab::get_ent(const char *name) const
 void
 sHtab::print(const char *datafmt) const
 {
-    if ((void*)this == 0)
-        return;
+    {
+        sHtab *ht = this;
+        if (!ht)
+            return;
+    }
     if (datafmt == 0)
         datafmt = "hash=%d name=%s data=%x\n";
     for (unsigned int i = 0; i <= ht_hashmask; i++) {
@@ -296,8 +319,11 @@ wordlist *
 sHtab::wl() const
 {
 #ifdef WRSPICE
-    if ((void*)this == 0)
-        return (0);
+    {
+        sHtab *ht = this;
+        if (!ht)
+            return (0);
+    }
     wordlist *twl = 0, *wl0 = 0;
     for (unsigned int i = 0; i <= ht_hashmask; i++) {
         for (sHent *h = ht_base[i]; h; h = h->h_next) {
@@ -321,8 +347,11 @@ sHtab::wl() const
 bool
 sHtab::empty() const
 {
-    if ((void*)this == 0)
-        return (true);
+    {
+        sHtab *ht = this;
+        if (!ht)
+            return (true);
+    }
     return (ht_allocated == 0);
 }
 
@@ -333,8 +362,11 @@ sHtab::empty() const
 void
 sHtab::clear_data(void(*cb)(void*, void*), void *user_arg)
 {
-    if ((void*)this == 0)
-        return;
+    {
+        sHtab *ht = this;
+        if (!ht)
+            return;
+    }
     for (unsigned int i = 0; i <= ht_hashmask; i++) {
         for (sHent *h = ht_base[i]; h; h = h->h_next) {
             if (cb)

@@ -186,8 +186,11 @@ mtable_t::new_element(void *k)
 mtable_t *
 mtable_t::check_rehash()
 {
-    if (!(void*)this)
-        return (0);
+    {
+        mtable_t *mt = this;
+        if (!mt)
+            return (0);
+    }
     if (count/hashsize <= MAX_DENS)
         return (this);
 

@@ -1408,7 +1408,12 @@ spHtab::~spHtab()
 spMatrixElement *
 spHtab::get(int row, int col)
 {
-    if ((void*)this && allocated) {
+    {
+        spHtab *ht = this;
+        if (!ht)
+            return (0);
+    }
+    if (allocated) {
         getcalls++;
         unsigned int i = number_hash(row, col, mask);
         for (spHelt *h = entries[i]; h; h = h->next) {
@@ -1435,12 +1440,15 @@ spHtab::link(spHelt *h)
 void
 spHtab::stats(unsigned int *pg, unsigned int *pa)
 {
-    if (!(void*)this) {
-        if (pg)
-            *pg = 0;
-        if (pa)
-            *pa = 0;
-        return;
+    {
+        spHtab *ht = this;
+        if (!ht) {
+            if (pg)
+                *pg = 0;
+            if (pa)
+                *pa = 0;
+            return;
+        }
     }
     if (pg)
         *pg = getcalls;

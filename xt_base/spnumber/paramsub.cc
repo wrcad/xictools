@@ -276,10 +276,10 @@ sParamTab::extract_params(const char *str)
 sParamTab *
 sParamTab::update(const sParamTab *ptab)
 {
-    if (!ptab)
-        return (this);
     sParamTab *p0 = this;
-    if (!(void*)this)
+    if (!ptab)
+        return (p0);
+    if (!p0)
         p0 = new sParamTab;
 
     sHgen gen(&ptab->pt_table);
@@ -314,7 +314,12 @@ sParamTab::update(const sParamTab *ptab)
 void
 sParamTab::update(const char *str)
 {
-    if (!str || !(void*)this)
+    {
+        sParamTab *pt = this;
+        if (!pt)
+            return;
+    }
+    if (!str)
         return;
     while (*str) {
         char *pname, *psub;
@@ -388,8 +393,11 @@ sParamTab::eval(const sParam *p) const
 void
 sParamTab::collapse()
 {
-    if (!(void*)this)
-        return;
+    {
+        sParamTab *pt = this;
+        if (!pt)
+            return;
+    }
     sHgen gen(&pt_table);
     sHent *h;
     while ((h = gen.next()) != 0) {
@@ -611,7 +619,12 @@ sParamTab::defn_subst(char **str, PTmode mode, int nskip) const
 void
 sParamTab::line_subst(char **str) const
 {
-    if (!(void*)this || !str || !*str)
+    {
+        sParamTab *pt = this;
+        if (!pt)
+            return;
+    }
+    if (!str || !*str)
         return;
 
     char *in = *str, *tok, *start = 0, *end = 0;
@@ -625,7 +638,7 @@ sParamTab::line_subst(char **str) const
         else if (is_namechar(*tok)) {
             char *ltok = lstring::copy(tok);
             if (subst(&tok)) {
-                ((sParamTab*)this)->pt_rctab.add(ltok, (void*)1);
+                pt_rctab.add(ltok, (void*)1);
                 if (*tok == '\'')
                     squote_subst(&tok);
                 else {
@@ -644,7 +657,7 @@ sParamTab::line_subst(char **str) const
                         line_subst(&tok);
                 }
 
-                ((sParamTab*)this)->pt_rctab.remove(ltok);
+                pt_rctab.remove(ltok);
                 chg = true;
             }
             delete [] ltok;
@@ -853,7 +866,7 @@ sParamTab::subst(char **tok) const
             errString = lstr.string_trim();
             return (false);
         }
-        ((sParamTab*)this)->pt_rctab.add(p->name(), p);
+        pt_rctab.add(p->name(), p);
 
         if (pt_collapse) {
             if (!p->collapsed()) {
@@ -875,7 +888,7 @@ sParamTab::subst(char **tok) const
         else
             *tok = lstring::copy(p->sub());
 
-        ((sParamTab*)this)->pt_rctab.remove(p->name());
+        pt_rctab.remove(p->name());
         return (true);
     }
     return (false);

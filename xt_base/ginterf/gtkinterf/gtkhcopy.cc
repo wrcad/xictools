@@ -290,8 +290,6 @@ MsgList::remove(pid_t pid)
 void
 gtk_bag::PopUpPrint(GRobject caller, HCcb *cb, HCmode mode, GRdraw *context)
 {
-    if (!(void*)this)
-        return;
     GTKprintPopup::hc_hcpopup(caller, this, cb, mode, context);
 }
 

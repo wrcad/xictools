@@ -284,8 +284,6 @@ struct ntop
 bool
 gtk_bag::PopUpHelp(const char *wordin)
 {
-    if (!(void*)this)
-        return (false);
     if (!HLP()->get_path(0)) {
         PopUpErr(MODE_ON, "Error: no path to database.");
         HLP()->context()->quitHelp();

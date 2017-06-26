@@ -120,8 +120,6 @@ GReditPopup *
 gtk_bag::PopUpTextEditor(const char *fname,
     bool(*editsave)(const char*, void*, XEtype), void *arg, bool source)
 {
-    if (!(void*)this)
-        return (0);
     GTKeditPopup *we = new GTKeditPopup(this, GTKeditPopup::Editor, fname,
         source, arg);
     if (!we->wb_shell) {
@@ -150,8 +148,6 @@ gtk_bag::PopUpTextEditor(const char *fname,
 GReditPopup *
 gtk_bag::PopUpFileBrowser(const char *fname)
 {
-    if (!(void*)this)
-        return (0);
     // If we happen to already have this file open, reread it.
     // Called after something was appended to the file.
     for (int i = 0; i < NUM_SUBED; i++) {
@@ -190,8 +186,6 @@ GReditPopup *
 gtk_bag::PopUpStringEditor(const char *string,
     bool (*callback)(const char*, void*, XEtype), void *arg)
 {
-    if (!(void*)this)
-        return (0);
     if (!callback) {
         // pop down and destroy all string editor windows
         for (int i = 0; i < NUM_SUBED; i++) {
@@ -228,8 +222,6 @@ GReditPopup *
 gtk_bag::PopUpMail(const char *subject, const char *mailaddr,
     void(*downproc)(GReditPopup*), GRloc loc)
 {
-    if (!(void*)this)
-        return (0);
     for (int i = 0; i < NUM_SUBED; i++) {
         if (EditWin[i] && EditWin[i]->incarnation() == GTKeditPopup::Mailer)
             // already active

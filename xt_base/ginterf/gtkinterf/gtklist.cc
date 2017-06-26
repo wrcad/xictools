@@ -72,9 +72,6 @@ gtk_bag::PopUpList(stringlist *symlist, const char *title,
 {
     static int list_count;
 
-    if (!(void*)this)
-        return (0);
-
     GTKlistPopup *list = new GTKlistPopup(this, symlist, title, header,
         usepix, use_apply, arg);
     list->register_callback(callback);

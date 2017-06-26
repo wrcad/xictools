@@ -372,8 +372,11 @@ PLC::~PLC()
 bool
 PLC::DataRequest()
 {
-    if ((void*)this == 0)
-        return (false);
+    {
+        PLC *pt = this;
+        if (!pt)
+            return (false);
+    }
     if (!plc_owner->im_html->htm_if)
         return (false);
 

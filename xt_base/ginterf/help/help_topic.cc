@@ -61,18 +61,21 @@ int HLPtopic::tp_wincount = 0;
 void
 HLPtopic::free()
 {
-    if ((void*)this) {
-        HLPtopic *tn;
-        for (HLPtopic *t = tp_lastborn; t; t = tn) {
-            tn = t->tp_sibling;
-            t->free();
-        }
-        for (HLPtopic *t = tp_next; t; t = tn) {
-            tn = t->tp_sibling;
-            t->free();
-        }
-        delete this;
+    {
+        HLPtopic *ht = this;
+        if (!ht)
+            return;
     }
+    HLPtopic *tn;
+    for (HLPtopic *t = tp_lastborn; t; t = tn) {
+        tn = t->tp_sibling;
+        t->free();
+    }
+    for (HLPtopic *t = tp_next; t; t = tn) {
+        tn = t->tp_sibling;
+        t->free();
+    }
+    delete this;
 }
 
 
