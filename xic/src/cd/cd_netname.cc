@@ -667,7 +667,12 @@ CDnetex::check_set_compatible(const CDnetex *nx)
 {
     // A null netex implies an unlabeled object, which can connect to
     // anything.
-    if (!(void*)this || !nx)
+    {
+        CDnetex *ntx = this;
+        if (!ntx)
+            return (true);
+    }
+    if (!nx)
         return (true);
 
     if (!nx_name) {

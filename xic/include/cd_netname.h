@@ -82,7 +82,11 @@ struct CDvecex
             }
         }
 
-    CDvecex *dup() const { return ((void*)this ? new CDvecex(*this) : 0); }
+    CDvecex *dup() const
+        {
+            const CDvecex *vx = this;
+            return (vx ? new CDvecex(*vx) : 0);
+        }
 
     CDvecex *next()                 const { return (vx_next); }
     void set_next(CDvecex *v)             { vx_next = v; }
@@ -173,8 +177,11 @@ private:
 struct CDnetNameStr
 {
     const char *string()    const { return ((const char*)this); }
-    const char *stringNN()  const {
-        return ((void*)this ? (const char*)this : ""); }
+    const char *stringNN()  const
+        {
+            const CDnetNameStr *cn = this;
+            return (cn ? (const char*)cn : "");
+        }
 };
 typedef CDnetNameStr* CDnetName;
 
@@ -413,7 +420,11 @@ struct CDnetex
             }
         }
 
-    CDnetex *dup() const { return ((void*)this ? new CDnetex(*this) : 0); }
+    CDnetex *dup() const
+        {
+            const CDnetex *nx = this;
+            return (nx ? new CDnetex(*nx) : 0);
+        }
 
     CDnetex *next()                 const { return (nx_next); }
     void set_next(CDnetex *n)             { nx_next = n; }

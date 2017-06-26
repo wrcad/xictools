@@ -365,7 +365,13 @@ CDcterm::master_name() const
 CDsterm *
 CDcterm::master_term() const
 {
-    if (!(void*)this || !t_cdesc || !t_node)
+    {
+        const CDcterm *ct = this;
+        if (!ct)
+            return (0);
+    }
+
+    if (!t_cdesc || !t_node)
         return (0);
     CDs *sdp = t_cdesc->masterCell();
     if (sdp) {
@@ -386,7 +392,13 @@ CDcterm::master_term() const
 int
 CDcterm::master_group() const
 {
-    if (!(void*)this || !t_cdesc || !t_node)
+    {
+        const CDcterm *ct = this;
+        if (!ct)
+            return (0);
+    }
+
+    if (!t_cdesc || !t_node)
         return (-1);
     CDs *sdp = t_cdesc->masterCell();
     if (sdp) {

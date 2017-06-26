@@ -248,8 +248,11 @@ private:
 struct CDcellNameStr
 {
     const char *string()    const { return ((const char*)this); }
-    const char *stringNN()  const {
-        return ((void*)this ? (const char*)this : ""); }
+    const char *stringNN()  const
+        {
+            const CDcellNameStr *cn = this;
+            return (cn ? (const char*)cn : "");
+        }
 };
 typedef CDcellNameStr* CDcellName;
 
@@ -258,8 +261,11 @@ typedef CDcellNameStr* CDcellName;
 struct CDpfxNameStr
 {
     const char *string()    const { return ((const char*)this); }
-    const char *stringNN()  const {
-        return ((void*)this ? (const char*)this : ""); }
+    const char *stringNN()  const
+        {
+            const CDpfxNameStr *cn = this;
+            return (cn ? (const char*)cn : "");
+        }
 };
 typedef CDpfxNameStr* CDpfxName;
 
@@ -268,8 +274,11 @@ typedef CDpfxNameStr* CDpfxName;
 struct CDinstNameStr
 {
     const char *string()    const { return ((const char*)this); }
-    const char *stringNN()  const {
-        return ((void*)this ? (const char*)this : ""); }
+    const char *stringNN()  const
+        {
+            const CDinstNameStr *cn = this;
+            return (cn ? (const char*)cn : "");
+        }
 };
 typedef CDinstNameStr* CDinstName;
 
@@ -278,8 +287,11 @@ typedef CDinstNameStr* CDinstName;
 struct CDarchiveNameStr
 {
     const char *string()    const { return ((const char*)this); }
-    const char *stringNN()  const {
-        return ((void*)this ? (const char*)this : ""); }
+    const char *stringNN()  const
+        {
+            const CDarchiveNameStr *cn = this;
+            return (cn ? (const char*)cn : "");
+        }
 };
 typedef CDarchiveNameStr* CDarchiveName;
 

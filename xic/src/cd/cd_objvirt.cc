@@ -54,8 +54,11 @@ CDo_helper CDo::o_hlpr;
 void
 CDo::destroy()
 {
-    if (!(void*)this)
-        return;
+    {
+        CDo *ot = this;
+        if (!ot)
+            return;
+    }
 
 #ifdef CD_PRPTY_TAB
     CD()->DestroyPrptyList(this);
@@ -98,8 +101,12 @@ inst:
 bool
 CDo::intersect(const CDo *od, bool tok) const
 {
-    if (!(void*)this)
-        return (false);
+    {
+        const CDo *ot = this;
+        if (!ot)
+            return (false);
+    }
+
 #ifdef HAVE_COMPUTED_GOTO
     COMPUTED_JUMP(this)
 #else
@@ -133,8 +140,12 @@ wire:
 bool
 CDo::intersect(const Point *px, bool tok) const
 {
-    if (!(void*)this)
-        return (false);
+    {
+        const CDo *ot = this;
+        if (!ot)
+            return (false);
+    }
+
 #ifdef HAVE_COMPUTED_GOTO
     COMPUTED_JUMP(this)
 #else
@@ -156,8 +167,12 @@ wire:
 bool
 CDo::intersect(const BBox *BB, bool tok) const
 {
-    if (!(void*)this)
-        return (false);
+    {
+        const CDo *ot = this;
+        if (!ot)
+            return (false);
+    }
+
 #ifdef HAVE_COMPUTED_GOTO
     COMPUTED_JUMP(this)
 #else
@@ -177,8 +192,12 @@ wire:
 bool
 CDo::intersect(const Poly *p, bool tok) const
 {
-    if (!(void*)this)
-        return (false);
+    {
+        const CDo *ot = this;
+        if (!ot)
+            return (false);
+    }
+
 #ifdef HAVE_COMPUTED_GOTO
     COMPUTED_JUMP(this)
 #else
@@ -198,8 +217,12 @@ wire:
 bool
 CDo::intersect(const Wire *wx, bool tok) const
 {
-    if (!(void*)this)
-        return (false);
+    {
+        const CDo *ot = this;
+        if (!ot)
+            return (false);
+    }
+
 #ifdef HAVE_COMPUTED_GOTO
     COMPUTED_JUMP(this)
 #else
@@ -219,8 +242,12 @@ wire:
 void
 CDo::computeBB()
 {
-    if (!(void*)this)
-        return;
+    {
+        const CDo *ot = this;
+        if (!ot)
+            return;
+    }
+
 #ifdef HAVE_COMPUTED_GOTO
     COMPUTED_JUMP(this)
 #else
@@ -288,8 +315,12 @@ inst:
 double
 CDo::area() const
 {
-    if (!(void*)this)
-        return (0.0);
+    {
+        const CDo *ot = this;
+        if (!ot)
+            return (0.0);
+    }
+
 #ifdef HAVE_COMPUTED_GOTO
     COMPUTED_JUMP(this)
 #else
@@ -309,8 +340,12 @@ wire:
 double
 CDo::perim() const
 {
-    if (!(void*)this)
-        return (0.0);
+    {
+        const CDo *ot = this;
+        if (!ot)
+            return (0.0);
+    }
+
 #ifdef HAVE_COMPUTED_GOTO
     COMPUTED_JUMP(this)
 #else
@@ -336,8 +371,12 @@ CDo::centroid(double *pcx, double *pcy) const
         *pcx = 0.0;
     if (pcy)
         *pcy = 0.0;
-    if (!(void*)this)
-        return;
+    {
+        const CDo *ot = this;
+        if (!ot)
+            return;
+    }
+
 #ifdef HAVE_COMPUTED_GOTO
     COMPUTED_JUMP(this)
 #else
@@ -363,8 +402,12 @@ wire:
 Zlist *
 CDo::toZlist() const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const CDo *ot = this;
+        if (!ot)
+            return (0);
+    }
+
 #ifdef HAVE_COMPUTED_GOTO
     COMPUTED_JUMP(this)
 #else
@@ -410,8 +453,12 @@ inst:
 Zlist *
 CDo::toZlistR() const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const CDo *ot = this;
+        if (!ot)
+            return (0);
+    }
+
 #ifdef HAVE_COMPUTED_GOTO
     COMPUTED_JUMP(this)
 #else
@@ -483,8 +530,12 @@ inst:
 CDo *
 CDo::dup() const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const CDo *ot = this;
+        if (!ot)
+            return (0);
+    }
+
 #ifdef HAVE_COMPUTED_GOTO
     COMPUTED_JUMP(this)
 #else
@@ -739,8 +790,12 @@ inst:
 CDo *
 CDo::copyObject(bool bndry_mode) const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const CDo *ot = this;
+        if (!ot)
+            return (0);
+    }
+
 #ifdef HAVE_COMPUTED_GOTO
     COMPUTED_JUMP(this)
 #else
@@ -818,8 +873,12 @@ inst:
 CDo *
 CDo::copyObjectWithXform(const cTfmStack *tstk, bool bndry_mode) const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const CDo *ot = this;
+        if (!ot)
+            return (0);
+    }
+
     BBox BB(oBB());
     Point *pts = 0;
 #ifdef HAVE_COMPUTED_GOTO
@@ -925,11 +984,15 @@ inst:
 void
 CDo::boundary(BBox *BB, Point **pts) const
 {
-    if (!(void*)this) {
-        if (pts)
-            *pts = 0;
-        return;
+    {
+        const CDo *ot = this;
+        if (!ot) {
+            if (pts)
+                *pts = 0;
+            return;
+        }
     }
+
 #ifdef HAVE_COMPUTED_GOTO
     COMPUTED_JUMP(this)
 #else
@@ -999,8 +1062,12 @@ inst:
 char *
 CDo::cif_string(int xo, int yo, bool use_wire_extension) const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const CDo *ot = this;
+        if (!ot)
+            return (0);
+    }
+
     char buf[256];
     sLstr lstr;
 #ifdef HAVE_COMPUTED_GOTO
@@ -1144,8 +1211,12 @@ inst:
 bool
 CDo::prptyAdd(int value, const char *str, DisplayMode mode)
 {
-    if (!(void*)this)
-        return (false);
+    {
+        const CDo *ot = this;
+        if (!ot)
+            return (false);
+    }
+
     if (!str)
         return (true);
     CDp *pdesc;

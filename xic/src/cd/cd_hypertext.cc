@@ -45,7 +45,8 @@
 void
 CDs::hyInit() const
 {
-    if (!(void*)this || !isElectrical() || !getHY())
+    const CDs *sdt = this;
+    if (!sdt || !isElectrical() || !getHY())
         return;
     for (hyEnt **hent = getHY(); *hent; hent++)
         (*hent)->check_ref();
@@ -863,7 +864,12 @@ hyEnt::~hyEnt()
 bool
 hyEnt::add()
 {
-    if (!(void*)this || !hySdesc || hyLinked)
+    {
+        hyEnt *hyt = this;
+        if (!hyt)
+            return (true);
+    }
+    if (!hySdesc || hyLinked)
         return (true);
     // Presently, there are no hypertxt properties in Physical mode.
     if (!hySdesc->isElectrical()) {
@@ -898,8 +904,13 @@ hyEnt::add()
 bool
 hyEnt::remove()
 {
-    if (!(void*)this || !hySdesc || !hyLinked)
-        return (true);;
+    {
+        hyEnt *hyt = this;
+        if (!hyt)
+            return (true);
+    }
+    if (!hySdesc || !hyLinked)
+        return (true);
     hyEnt **oldh = hySdesc->getHY();
     if (oldh) {
         for (int i = 0; oldh[i]; i++) {
@@ -920,8 +931,11 @@ hyEnt::remove()
 hyEnt *
 hyEnt::dup() const
 {
-    if (!(void*)this)
-        return (new hyEnt());
+    {
+        const hyEnt *hyt = this;
+        if (!hyt)
+            return (new hyEnt());
+    }
     hyEnt *newh = new hyEnt(*this);
     newh->hyPrnt = hyPrnt->dup();
     newh->hyPrxy = hyPrxy->dup();
@@ -1034,8 +1048,11 @@ namespace {
 char *
 hyEnt::stringUpdate(cTfmStack *tstk)
 {
-    if (!(void*)this)
-        return (0);
+    {
+        hyEnt *hyt = this;
+        if (!hyt)
+            return (0);
+    }
     cTfmStack stk;
     if (!tstk)
         tstk = &stk;
@@ -1668,8 +1685,11 @@ namespace {
 char *
 hyList::string(HYcvType cvtype, bool allow_long)
 {
-    if (!(void*)this)
-        return (0);
+    {
+        hyList *hyt = this;
+        if (!hyt)
+            return (0);
+    }
     hyList *hh;
     char *s;
     sLstr lstr;
@@ -1774,8 +1794,11 @@ hyList::string(HYcvType cvtype, bool allow_long)
 char *
 hyList::get_entry_string()
 {
-    if (!(void*)this)
-        return (0);
+    {
+        hyList *hyt = this;
+        if (!hyt)
+            return (0);
+    }
     switch (hlRefType) {
     case HLrefText:
         return (lstring::copy(hlText));
@@ -1813,8 +1836,9 @@ hyList::dup()
         else if (hh->hlEnt)
             h1->hlEnt = hh->hlEnt->dup();
     }
-    if ((void*)this && hlRefType == HLrefLongText)
-        HYlt::lt_copy(this, h0);
+    hyList *hyl = this;
+    if (hyl && hlRefType == HLrefLongText)
+        HYlt::lt_copy(hyl, h0);
     return (h0);
 }
 
@@ -1824,8 +1848,11 @@ hyList::dup()
 int
 hyList::length()
 {
-    if (!(void*)this)
-        return (0);
+    {
+        hyList *hyt = this;
+        if (!hyt)
+            return (0);
+    }
     char *s = string(HYcvPlain, true);
     if (!s)
         return (0);

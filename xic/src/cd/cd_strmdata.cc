@@ -188,8 +188,12 @@ strm_idata::parse_lspec(const char **string)
 bool
 strm_idata::check(unsigned int layer, unsigned int dtype)
 {
-    if (!(void*)this)
-        return (false);
+    {
+        strm_idata *st = this;
+        if (!st)
+            return (false);
+    }
+
     if (layer >= GDS_MAX_LAYERS || dtype >= GDS_MAX_DTYPES)
         return (false);
 

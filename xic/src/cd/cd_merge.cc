@@ -256,7 +256,8 @@ CDs::mergeBoxOrPoly(CDo *odesc, bool Undoable)
         return (true);
     if (CD()->IsNoMergePolys())
         return (mergeBox(odesc, Undoable));
-    if (!(void*)this || !odesc)
+    CDs *sdt = this;
+    if (!sdt || !odesc)
         return (true);
     if (odesc->type() != CDBOX && odesc->type() != CDPOLYGON)
         return (true);
@@ -496,7 +497,8 @@ CDs::mergeWire(CDw *wdesc, bool Undoable)
 {
     if (CD()->IsNoMergeObjects())
         return (true);
-    if (!(void*)this || !wdesc || wdesc->type() != CDWIRE)
+    CDs *sdt = this;
+    if (!sdt || !wdesc || wdesc->type() != CDWIRE)
         return (true);
     if (wdesc->has_flag(CDnoMerge))
         return (true);

@@ -84,8 +84,9 @@ namespace {
 //
 CDdb::~CDdb()
 {
-    if ((void*)this)
-        ((CDs*)this)->clear(false);
+    CDdb *dbt = this;
+    if (dbt)
+        ((CDs*)dbt)->clear(false);
 }
 
 
@@ -397,7 +398,12 @@ CDdb::db_list_coinc(CDo *od)
 void
 CDdb::db_rebuild(bool(*process)(CDo*, CDdb*, void*), void *arg)
 {
-    if (!process || !(void*)this)
+    {
+        CDdb *dbt = this;
+        if (!dbt)
+            return;
+    }
+    if (!process)
         return;
 
     unsigned int ntmp = db_layers_used;
@@ -427,7 +433,12 @@ void
 CDdb::db_merge(CDdb *sdb, bool(*process)(CDo*, CDdb*, CDdb*, void*),
     void *arg)
 {
-    if (!process || !(void*)this || !sdb)
+    {
+        CDdb *dbt = this;
+        if (!dbt)
+            return;
+    }
+    if (!process || !sdb)
         return;
 
     unsigned int ntmp = sdb->db_layers_used;
@@ -540,8 +551,11 @@ CDg::init_gen(const CDs *sdesc, const CDl *ld, const BBox *pBB)
 CDo *
 CDg::next()
 {
-    if (!(void*)this)
-        return (0);
+    {
+        CDg *gt = this;
+        if (!gt)
+            return (0);
+    }
     for (;;) {
         RTelem *rt;
         if (!(flags & GEN_RET_MASK))
@@ -758,7 +772,12 @@ namespace {
 CDo *
 sPF::next(bool nocopy, bool touchok)
 {
-    if (!(void*)this || !pf_gen)
+    {
+        sPF *pft = this;
+        if (!pft)
+            return (0);
+    }
+    if (!pf_gen)
         return (0);
     CDo *pointer = 0;
     for (;;) {
@@ -924,9 +943,10 @@ sPF::purge(const CDs *sdesc)
 sPF*
 sPF::dup()
 {
-    if (!(void*)this)
+    sPF *pft = this;
+    if (!pft)
         return (0);
-    return (new sPF(*this));
+    return (new sPF(*pft));
 }
 
 
@@ -1157,8 +1177,11 @@ sPFel::~sPFel()
 sPFel *
 sPFel::dup()
 {
-    if (!(void*)this)
-        return (0);
+    {
+        sPFel *pfe = this;
+        if (!pfe)
+            return (0);
+    }
     sPFel *t = this;
     while (t->el_prev)
         t = t->el_prev;

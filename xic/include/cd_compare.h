@@ -169,7 +169,8 @@ struct prpfilt_t
     // Return true if filtering everything.
     bool filter_all()
         {
-            return ((void*)this && !pf_skip && !pf_tab);
+            prpfilt_t *pt = this;
+            return (pt && !pf_skip && !pf_tab);
         }
 
     void parse(const char*);
