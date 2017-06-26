@@ -1866,7 +1866,10 @@ public:
             return (gd_vcontacts ? gd_vcontacts->vgroup + 1 : nextindex());
         }
     bool nets_only()        const { return (!gd_devices && !gd_subckts); }
-    bool isempty()          const { return (!(void*)this || !gd_groups); }
+    bool isempty()          const
+        {
+            const cGroupDesc *gt = this; return (!gt || !gt->gd_groups);
+        }
 
     bool has_net_or_terms(int g) const
         {

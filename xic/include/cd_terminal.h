@@ -95,8 +95,6 @@ struct CDterm
 
     int group() const
         {
-            if (!(void*)this)
-                return (-1);
             if (t_flags & TE_UNINIT)
                 return (-1);
             const CDo *od = get_ref();

@@ -122,14 +122,16 @@ public:
 
     void setDirty()
         {
-            if ((void*)this)
-                nm_dirty = true;
+            cNodeMap *mt = this;
+            if (mt)
+                mt->nm_dirty = true;
         }
 
     bool isDirty()
         {
-            if ((void*)this)
-                return (nm_dirty);
+            cNodeMap *mt = this;
+            if (mt)
+                return (mt->nm_dirty);
             return (false);
         }
 

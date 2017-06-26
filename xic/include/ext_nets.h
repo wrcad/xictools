@@ -117,42 +117,48 @@ struct sElecNetList
 
     void set_group(int n, int g)
         {
-            if ((void*)this && et_list && n >= 0 && n < (int)et_size)
+            sElecNetList *nt = this;
+            if (nt && et_list && n >= 0 && n < (int)et_size)
                 et_list[n].group = g;
         }
 
     int group_of_node(int n) const
         {
-            if ((void*)this && et_list && n >= 0 && n <= (int)et_maxix)
+            const sElecNetList *nt = this;
+            if (nt && et_list && n >= 0 && n <= (int)et_maxix)
                 return (et_list[n].group);
             return (-1);
         }
 
     CDpin *pins_of_node(int n) const
         {
-            if ((void*)this && et_list && n >= 0 && n <= (int)et_maxix)
+            const sElecNetList *nt = this;
+            if (nt && et_list && n >= 0 && n <= (int)et_maxix)
                 return (et_list[n].pins);
             return (0);
         }
 
     CDcont *conts_of_node(int n) const
         {
-            if ((void*)this && et_list && n >= 0 && n <= (int)et_maxix)
+            const sElecNetList *nt = this;
+            if (nt && et_list && n >= 0 && n <= (int)et_maxix)
                 return (et_list[n].conts);
             return (0);
         }
 
     bool node_active(int n) const
         {
-            if ((void*)this && et_list && n >= 0 && n <= (int)et_maxix)
+            const sElecNetList *nt = this;
+            if (nt && et_list && n >= 0 && n <= (int)et_maxix)
                 return (et_list[n].conts || et_list[n].pins);
             return (false);
         }
 
     int count_active() const
         {
+            const sElecNetList *nt = this;
             int n = 0;
-            if ((void*)this && et_list) {
+            if (nt && et_list) {
                 for (unsigned int i = 1; i <= et_maxix; i++) {
                     if (et_list[i].conts || et_list[i].pins)
                         n++;

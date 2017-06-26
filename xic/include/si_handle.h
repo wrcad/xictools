@@ -330,8 +330,13 @@ struct gdrec
     gdrec(BBox *BB, int d, DisplayMode m, stringlist *s)
         { AOI = *BB; depth = d; mode = m; names = s; }
     ~gdrec() { names->free(); }
-    gdrec *dup() { if (!(void*)this) return (0);
-        return (new gdrec(&AOI, depth, mode, names->dup())); }
+
+    gdrec *dup() {
+        gdrec *gt = this;
+        if (!gt)
+            return (0);
+        return (new gdrec(&AOI, depth, mode, names->dup()));
+    }
 
     BBox AOI;
     int depth;

@@ -117,7 +117,8 @@ struct sExtPermGrp : private sExtPermGrpB
 
     unsigned int num_states_of_this() const
         {
-            if ((void*)this) {
+            const sExtPermGrp *pgt = this;
+            if (pgt) {
                 switch (pg_num) {
                     case 2: return (2);
                     case 3: return (6);
@@ -131,14 +132,16 @@ struct sExtPermGrp : private sExtPermGrpB
     unsigned int num_states() const
         {
             unsigned ns = num_states_of_this();
-            if ((void*)this)
+            const sExtPermGrp *pgt = this;
+            if (pgt)
                 ns *= pg_next->num_states();
             return (ns);
         }
 
     unsigned int state_of_this() const
         {
-            if ((void*)this)
+            const sExtPermGrp *pgt = this;
+            if (pgt)
                 return (pg_state);
             return (0);
         }
@@ -146,7 +149,8 @@ struct sExtPermGrp : private sExtPermGrpB
     unsigned int state() const
         {
             unsigned int s = state_of_this();
-            if ((void*)this && pg_next) {
+            const sExtPermGrp *pgt = this;
+            if (pgt && pg_next) {
                 unsigned int xs = pg_next->num_states();
                 if (xs > 1)
                     s = s*xs + pg_next->state();
@@ -193,7 +197,8 @@ struct sExtPermGrp : private sExtPermGrpB
 
     bool set_state(unsigned int s)
         {
-            if (!(void*)this)
+            sExtPermGrp *pgt = this;
+            if (!pgt)
                 return (false);
             if (s >= num_states())
                 return (false);
@@ -267,7 +272,8 @@ struct sExtPermGrp : private sExtPermGrpB
     //
     bool is_permute(const T &o) const
         {
-            if ((void*)this) {
+            const sExtPermGrp *pgt = this;
+            if (pgt) {
                 if (pg_objects) {
                     for (unsigned int i = 0; i < pg_num; i++) {
                         if (pg_objects[i] == o)
@@ -287,7 +293,8 @@ struct sExtPermGrp : private sExtPermGrpB
         {
             if (o1 == o2)
                 return (true);
-            if ((void*)this) {
+            const sExtPermGrp *pgt = this;
+            if (pgt) {
                 if (pg_objects) {
                     int f = 0;
                     for (unsigned int i = 0; i < pg_num; i++) {

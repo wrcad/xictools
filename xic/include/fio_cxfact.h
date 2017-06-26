@@ -310,7 +310,8 @@ struct fact_t
     // Return true if ix starts a new block.
     bool is_blstart(ticket_t ix)
         {
-            if (!ix || !(void*)this)
+            fact_t *ft = this;
+            if (!ix || !ft)
                 return (false);
             ix--;  
             if (ix >= indx)
@@ -327,7 +328,8 @@ struct fact_t
                 i1 = t;
             }
 
-            if (!i1 || !(void*)this)
+            fact_t *ft = this;
+            if (!i1 || !ft)
                 return;
             i1--;
             if (i1 >= indx)
@@ -342,7 +344,7 @@ struct fact_t
                     return;
             }
 
-            if (!i2 || !(void*)this)
+            if (!i2)
                 return;
             i2--;
             if (i2 >= indx)
@@ -399,7 +401,8 @@ struct fact_t
 
     char *find_item(ticket_t ix)
         {
-            if (!ix || !(void*)this)
+            fact_t *ft = this;
+            if (!ix || !ft)
                 return (0);
             ix--;
             if (ix >= indx)

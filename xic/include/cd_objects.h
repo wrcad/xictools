@@ -336,7 +336,9 @@ struct CDo : public RTelem
 #ifdef CD_GROUP_TAB
             CD()->SetGroup(this, g);
 #else
-            if ((void*)this) this->oGroup = g;
+            CDo *ot = this;
+            if (ot)
+                ot->oGroup = g;
 #endif
         }
 
@@ -345,7 +347,8 @@ struct CDo : public RTelem
 #ifdef CD_GROUP_TAB
             return (CD()->Group(this));
 #else
-            return ((void*)this ? this->oGroup : DEFAULT_GROUP);
+            const CDo *ot = this;
+            return (ot ? ot->oGroup : DEFAULT_GROUP);
 #endif
         }
 

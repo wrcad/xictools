@@ -214,21 +214,24 @@ namespace ext_duality {
 
         void new_grp_assoc(int g, int n)
             {
-                if (!(void*)this)
+                sSymBrk *sbt = this;
+                if (!sbt)
                     return;
                 sb_grp_assoc = new sSymGrp(g, n, sb_grp_assoc);
             }
 
         void new_dev_assoc(sDevInst *di, sEinstList *e)
             {
-                if (!(void*)this)
+                sSymBrk *sbt = this;
+                if (!sbt)
                     return;
                 sb_dev_assoc = new sSymDev(di, e, sb_dev_assoc);
             }
 
         void new_subc_assoc(sSubcInst *s, sEinstList *e)
             {
-                if (!(void*)this)
+                sSymBrk *sbt = this;
+                if (!sbt)
                     return;
                 sb_subc_assoc = new sSymSubc(s, e, sb_subc_assoc);
             }
