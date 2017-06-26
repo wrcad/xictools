@@ -1609,8 +1609,11 @@ Poly::clip_acute(int rad) const
 edg_t *
 Poly::edges() const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const Poly *pt = this;
+        if (!pt)
+            return (0);
+    }
     if (numpts >= 6) {
         linedb_t ldb;
         ldb.add(this);
@@ -1782,8 +1785,11 @@ Poly::halo(int d) const
 double
 Poly::ext_perim(const BBox *psgBB) const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const Poly *pt = this;
+        if (!pt)
+            return (0);
+    }
     linedb_t ldb;
     ldb.add(this, psgBB);
     return (ldb.perim(psgBB));
@@ -1796,8 +1802,11 @@ Poly::ext_perim(const BBox *psgBB) const
 Zlist *
 Poly::ext_zoids(int delta, int mode) const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const Poly *pt = this;
+        if (!pt)
+            return (0);
+    }
     linedb_t ldb;
     ldb.add(this);
     return (ldb.zoids(delta, mode));

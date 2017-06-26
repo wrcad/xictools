@@ -521,7 +521,12 @@ Zoid::scanlines(const Zoid *Zref, int *pary, int *psize)
 {
     if (psize)
         *psize = 0;
-    if (!(void*)this || !Zref)
+    {
+        Zoid *zt = this;
+        if (!zt)
+            return;
+    }
+    if (!Zref)
         return;
     if (is_rect() && Zref->is_rect())
         return;
@@ -545,7 +550,12 @@ Zoid::scanlines(const Zoid *Zref, int *pary, int *psize)
 Zlist *
 Zoid::clip_to(const Zoid *Zref) const
 {
-    if (!(void*)this || !Zref)
+    {
+        const Zoid *zt = this;
+        if (!zt)
+            return (0);
+    }
+    if (!Zref)
         return (0);
     if (yl >= Zref->yu || yu <= Zref->yl)
         return (0);
@@ -568,7 +578,12 @@ Zoid::clip_to(const Zoid *Zref) const
 Zlist *
 Zoid::clip_to(const BBox *cBB) const
 {
-    if (!(void*)this || !cBB)
+    {
+        const Zoid *zt = this;
+        if (!zt)
+            return (0);
+    }
+    if (!cBB)
         return (0);
     if (yl >= cBB->top || yu <= cBB->bottom)
         return (0);
@@ -594,7 +609,14 @@ Zoid::clip_to(const BBox *cBB) const
 Zlist *
 Zoid::clip_out(const Zoid *Zref, bool *no_overlap) const
 {
-    if (!(void*)this || !Zref) {
+    {
+        const Zoid *zt = this;
+        if (!zt) {
+            *no_overlap = true;
+            return (0);
+        }
+    }
+    if (!Zref) {
         *no_overlap = true;
         return (0);
     }

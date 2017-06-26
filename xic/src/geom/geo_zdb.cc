@@ -49,11 +49,12 @@
 Zlist *
 Zlist::merge(bool ignore_intr) throw (XIrt)
 {
-    if (!(void*)this || !next)
-        return (this);
     (void)ignore_intr;
+    Zlist *zt = this;
+    if (!zt || !zt->next)
+        return (zt);
 
-    Zdb *zdb = new Zdb(this);
+    Zdb *zdb = new Zdb(zt);
     zdb->mutualClipAndMerge();
     Zlist *z0 = zdb->toZlist();
     return (z0);

@@ -224,8 +224,11 @@ Zlist::sort(int mode)
 Zlist *
 Zlist::bloat(int delta, int blflags) const throw (XIrt)
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const Zlist *zt = this;
+        if (!zt)
+            return (0);
+    }
     if (delta == 0)
         return (copy());
 
@@ -503,8 +506,11 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
 Zlist *
 Zlist::halo(int delta) const throw (XIrt)
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const Zlist *zt = this;
+        if (!zt)
+            return (0);
+    }
 
     // Merge into maximal polys, no limits.
     int tg = JoinMaxGroup;
@@ -656,8 +662,11 @@ Zlist::edges(int dim) const throw (XIrt)
 Zlist *
 Zlist::wire_edges(int delta) const throw (XIrt)
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const Zlist *zt = this;
+        if (!zt)
+            return (0);
+    }
 
     // Merge into maximal polys, no limits.
     int tg = JoinMaxGroup;
@@ -938,8 +947,11 @@ Zlist::transform(const cTfmStack *tstk)
 int
 Zlist::linewidth() const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const Zlist *zt = this;
+        if (!zt)
+            return (0);
+    }
 
     if (!next) {
         int h = Z.yu - Z.yl;
@@ -993,8 +1005,12 @@ Zlist::linewidth() const
 double
 Zlist::ext_perim(const BBox *psgBB) const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const Zlist *zt = this;
+        if (!zt)
+            return (0);
+    }
+
     if (!next) {
         double perim = 0.0;
         Point_c p1(Z.xll, Z.yl);
@@ -1078,8 +1094,12 @@ Zlist::ext_perim(const BBox *psgBB) const
 edg_t *
 Zlist::ext_edges() const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const Zlist *zt = this;
+        if (!zt)
+            return (0);
+    }
+
     linedb_t ldb;
     for (const Zlist *z = this; z; z = z->next)
         ldb.add(&z->Z);
@@ -1095,8 +1115,12 @@ Zlist::ext_edges() const
 Zlist *
 Zlist::ext_zoids(int delta, int mode) const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const Zlist *zt = this;
+        if (!zt)
+            return (0);
+    }
+
     linedb_t ldb;
     for (const Zlist *z = this; z; z = z->next)
         ldb.add(&z->Z);
@@ -1111,17 +1135,18 @@ Zlist::ext_zoids(int delta, int mode) const
 Zgroup *
 Zlist::group(int max_in_grp)
 {
-    if (!(void*)this || !next) {
+    Zlist *zt = this;
+    if (!zt || !zt->next) {
         Zgroup *g = new Zgroup;
-        if ((void*)this) {
+        if (zt) {
             g->num = 1;
             g->list = new Zlist*[2];
-            g->list[0] = this;
+            g->list[0] = zt;
             g->list[1] = 0;
         }
         return (g);
     }
-    return ((new Ylist(this))->group(max_in_grp));
+    return ((new Ylist(zt))->group(max_in_grp));
 }
 
 
@@ -1154,7 +1179,8 @@ Zlist::to_temp_layer(const char *name, int ttl_flags, CDs *sdesc, XIrt *retp)
             (ttl_flags & TTLinternal) ? CDLinternal : CDLnormal, -1,
             (ttl_flags & TTLnoinsert));
     }
-    if (ld && (void*)this && sdesc) {
+    Zlist *zthis = this;
+    if (ld && zthis && sdesc) {
         if (ttl_flags & TTLjoin)
             *retp = to_poly_add(sdesc, ld, false);
         else {
@@ -1176,12 +1202,13 @@ Zlist::to_temp_layer(const char *name, int ttl_flags, CDs *sdesc, XIrt *retp)
 Zlist *
 Zlist::to_poly(Point **pts, int *num)
 {
-    if (!(void*)this) {
+    Zlist *zt = this;
+    if (!zt) {
         *pts = 0;
         *num = 0;
         return (0);
     }
-    Ylist *y = new Ylist(this);
+    Ylist *y = new Ylist(zt);
     y = y->to_poly(pts, num, JoinMaxVerts);
     return (y->to_zlist());
 }
@@ -1192,8 +1219,11 @@ Zlist::to_poly(Point **pts, int *num)
 PolyList *
 Zlist::to_poly_list()
 {
-    if (!(void*)this)
-        return (0);
+    {
+        Zlist *zt = this;
+        if (!zt)
+            return (0);
+    }
 
     Ylist *y = new Ylist(this);
     Zgroup *g = y->group(JoinMaxGroup);
@@ -1224,8 +1254,11 @@ XIrt
 Zlist::to_poly_add(CDs *sdesc, CDl *ld, bool undoable, const cTfmStack *tstk,
     bool use_merge)
 {
-    if (!(void*)this)
-        return (XIok);
+    {
+        Zlist *zt = this;
+        if (!zt)
+            return (XIok);
+    }
     if (!sdesc || !ld)
         return (XIbad);
 
@@ -1256,8 +1289,11 @@ Zlist::to_poly_add(CDs *sdesc, CDl *ld, bool undoable, const cTfmStack *tstk,
 CDo *
 Zlist::to_obj_list(CDl *ld, bool nomerge)
 {
-    if (!(void*)this)
-        return (0);
+    {
+        Zlist *zt = this;
+        if (!zt)
+            return (0);
+    }
 
     CDo *od0 = 0;
     if (nomerge) {

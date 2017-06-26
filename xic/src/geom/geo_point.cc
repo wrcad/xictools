@@ -36,8 +36,11 @@
 Point *
 Point::dup_with_xform(const cTfmStack *tstk, int n) const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const Point *pt = this;
+        if (!pt)
+            return (0);
+    }
     if (n < 1)
         n = 1;
     Point *p = new Point[n];
@@ -56,8 +59,9 @@ Point::dup_with_xform(const cTfmStack *tstk, int n) const
 void
 Point::xform(const cTfmStack *tstk, int n)
 {
-    if ((void*)this && tstk && n > 0)
-        tstk->TPath(n, this);
+    Point *pt = this;
+    if (pt && tstk && n > 0)
+        tstk->TPath(n, pt);
 }
 
 
@@ -68,17 +72,18 @@ Point::xform(const cTfmStack *tstk, int n)
 Point *
 Point::append(int *n, int xx, int yy)
 {
-    if (!(void*)this)
+    Point *pt = this;
+    if (!pt)
         *n = 0;
-    else if (xx == this[*n - 1].x && yy == this[*n - 1].y)
-        return (this);
+    else if (xx == pt[*n - 1].x && yy == pt[*n - 1].y)
+        return (pt);
     Point *p = new Point[*n + 1];
     int i = *n;
     while (i--)
-        p[i] = this[i];
+        p[i] = pt[i];
     p[*n].set(xx, yy);
     (*n)++;
-    delete [] this;
+    delete [] pt;
     return (p);
 }
 
@@ -89,14 +94,15 @@ Point::append(int *n, int xx, int yy)
 Point *
 Point::remove_last(int *n)
 {
-    if (!(void*)this || *n < 2) {
+    Point *pt = this;
+    if (!pt || *n < 2) {
         *n = 0;
-        delete [] this;
+        delete [] pt;
         return (0);
     }
     (*n)--;
-    Point *p = dup(*n);
-    delete [] this;
+    Point *p = pt->dup(*n);
+    delete [] pt;
     return (p);
 }
 
@@ -106,11 +112,13 @@ Point::remove_last(int *n)
 void
 Point::scale(int n, double magn, int xx, int yy)
 {
-    if (!(void*)this || n < 1)
+    Point *pt = this;
+    if (!pt || n < 1)
         return;
-    while (n--)
-        this[n].set(mmRnd(xx + (this[n].x - xx)*magn),
-            mmRnd(yy + (this[n].y - yy)*magn));
+    while (n--) {
+        pt[n].set(mmRnd(xx + (pt[n].x - xx)*magn),
+            mmRnd(yy + (pt[n].y - yy)*magn));
+    }
 }
 
 
@@ -243,19 +251,20 @@ Point::inPath(const Point *p, int d, Point *po, int numpts) const
 Point *
 Point::nearestVertex(int numpts, int xx, int yy)
 {
-    if (!(void*)this)
+    Point *pt = this;
+    if (!pt)
         return (0);
     unsigned int minv = 0xffffffff;
     Point *p;
     int i, indx = 0;
-    for (p = this, i = 0; i < numpts; p++, i++) {
+    for (p = pt, i = 0; i < numpts; p++, i++) {
         unsigned int d = abs(p->x - xx) + abs(p->y - yy);
         if (d < minv) {
             minv = d;
             indx = i;
         }
     }
-    return (this + indx);
+    return (pt + indx);
 }
 
 
@@ -264,18 +273,19 @@ Point::nearestVertex(int numpts, int xx, int yy)
 const Point *
 Point::nearestVertex(int numpts, int xx, int yy) const
 {
-    if (!(void*)this)
+    const Point *pt = this;
+    if (!pt)
         return (0);
     unsigned int minv = 0xffffffff;
     const Point *p;
     int i, indx = 0;
-    for (p = this, i = 0; i < numpts; p++, i++) {
+    for (p = pt, i = 0; i < numpts; p++, i++) {
         unsigned int d = abs(p->x - xx) + abs(p->y - yy);
         if (d < minv) {
             minv = d;
             indx = i;
         }
     }
-    return (this + indx);
+    return (pt + indx);
 }
 

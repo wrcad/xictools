@@ -56,10 +56,11 @@ RTfunc RTelem::e_destroy_funcs[26];
 
 RTelem::~RTelem()
 {
-    if ((void*)this && e_type >= 'a' && e_type <= 'z') {
+    RTelem *rte = this;
+    if (rte && e_type >= 'a' && e_type <= 'z') {
         int p = e_type - 'a';
         if (e_destroy_funcs[p])
-            (*e_destroy_funcs[p])(this);
+            (*e_destroy_funcs[p])(rte);
     }
 }
 
@@ -69,13 +70,14 @@ RTelem::~RTelem()
 void
 RTelem::free()
 {
-    if ((void*)this) {
+    RTelem *rte = this;
+    if (rte) {
         RTelem *rn;
-        for (RTelem *r = children(); r; r = rn) {
+        for (RTelem *r = rte->children(); r; r = rn) {
             rn = r->sibling();
             r->free();
         }
-        delete this;
+        delete rte;
     }
 }
 
@@ -87,7 +89,12 @@ RTelem::free()
 int
 RTelem::test()
 {
-    if (!(void*)this || is_leaf())
+    {
+        RTelem *rte = this;
+        if (!rte)
+            return (0);
+    }
+    if (is_leaf())
         return (0);
     BBox tBB = children()->e_BB;
     int cnt = 1;
@@ -110,8 +117,11 @@ RTelem::test()
 void
 RTelem::show(int depth, int d)
 {
-    if (!(void*)this)
-        return;
+    {
+        RTelem *rte = this;
+        if (!rte)
+            return;
+    }
     if (depth <= 0) {
         Zoid Z(&e_BB);
         Z.show();

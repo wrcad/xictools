@@ -172,8 +172,11 @@ BBox::clip_out(const Blist *bc) const
 Blist *
 BBox::clip_out(const BYlist *yl0) const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const BBox *bt = this;
+        if (!bt)
+            return (0);
+    }
     BYlist *yt = new BYlist(new Blist(this, 0));
     for (const BYlist *y = yl0; y; y = y->next) {
         if (y->yl >= top)
@@ -371,8 +374,11 @@ Blist *
 Blist::insert_merge(const BBox *tBB)
 {
     BYlist *y = 0;
-    if ((void*)this)
-        y = new BYlist(this);
+    {
+        const Blist *bt = this;
+        if (bt)
+            y = new BYlist(this);
+    }
     y = y->insert_merge(tBB);
     return (y->toblist());
 }
@@ -384,9 +390,10 @@ Blist::insert_merge(const BBox *tBB)
 Blist *
 Blist::merge()
 {
-    if (!(void*)this || !next)
-        return (this);
-    BYlist *y = new BYlist(this);
+    Blist *bt = this;
+    if (!bt || !bt->next)
+        return (bt);
+    BYlist *y = new BYlist(bt);
     y = y->merge();
     return (y->toblist());
 }

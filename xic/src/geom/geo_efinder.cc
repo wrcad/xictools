@@ -60,8 +60,11 @@ XIrt
 Zlist::to_poly_add(CDs *sdesc, CDl *ld, bool undoable, const cTfmStack *tstk,
     bool use_merge)
 {
-    if (!(void*)this)
-        return (XIok);
+    {
+        const Zlist *zt = this;
+        if (!zt)
+            return (XIok);
+    }
     if (!sdesc || !ld)
         return (XIbad);
 
