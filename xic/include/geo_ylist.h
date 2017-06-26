@@ -117,10 +117,11 @@ struct Ylist
 
     Ylist *clear_to_next()
         {
-            if (!(void*)this)
+            Ylist *yl = this;
+            if (!yl)
                 return (0);
-            Ylist *yn = next;
-            delete this;
+            Ylist *yn = yl->next;
+            delete yl;
             return (yn);
         }
 
@@ -139,11 +140,12 @@ struct Ylist
             if (!BB)
                 return;
             *BB = CDnullBB;
-            if (!(void*)this)
+            const Ylist *y0 = this;
+            if (!y0)
                 return;
-            BB->top = y_yu;
-            BB->bottom = y_yl;
-            for (const Ylist *y = this; y; y = y->next) {
+            BB->top = y0->y_yu;
+            BB->bottom = y0->y_yl;
+            for (const Ylist *y = y0; y; y = y->next) {
                 if (y->y_yl < BB->bottom)
                     BB->bottom = y->y_yl;
                 for (Zlist *z = y->y_zlist; z; z = z->next) {
@@ -294,9 +296,10 @@ public:
 inline Zlist *
 Zlist::repartition() throw (XIrt)
 {
-    if (!(void*)this || !next)
-        return (this);
-    Ylist *yl = new Ylist(this);
+    Zlist *z0 = this;
+    if (!z0 || !z0->next)
+        return (z0);
+    Ylist *yl = new Ylist(z0);
     return (yl->repartition());
 }
 
@@ -304,9 +307,10 @@ Zlist::repartition() throw (XIrt)
 inline Zlist *
 Zlist::repartition_ni()
 {
-    if (!(void*)this || !next)
-        return (this);
-    Ylist *yl = new Ylist(this);
+    Zlist *z0 = this;
+    if (!z0 || !z0->next)
+        return (z0);
+    Ylist *yl = new Ylist(z0);
     return (yl->repartition_ni());
 }
 

@@ -46,13 +46,14 @@ struct Point
 
     Point *dup(int n) const
         {
-            if (!(void*)this)
+            const Point *pts = this;
+            if (!pts)
                 return (0);
             if (n < 1)
                 n = 1;
             Point *p = new Point[n];
             while (n--)
-                p[n] = this[n];
+                p[n] = pts[n];
             return (p);
         }
 
@@ -60,11 +61,12 @@ struct Point
     //
     void removeDups(int *numpts)
         {
-            if (!(void*)this)
+            Point *pts = this;
+            if (!pts)
                 return;
             int i = *numpts - 1;
             Point *p1, *p2;
-            for (p1 = this, p2 = p1 + 1; i > 0; i--, p2++) {
+            for (p1 = pts, p2 = p1 + 1; i > 0; i--, p2++) {
                 if (*p1 == *p2) {
                     (*numpts)--;
                     continue;

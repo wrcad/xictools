@@ -181,8 +181,11 @@ Ylist::to_poly(Point **pts, int *num, int maxv)
 
     *pts = 0;
     *num = 0;
-    if (!(void*)this)
-        return (0);
+    {
+        const Ylist *yt = this;
+        if (!yt)
+            return (0);
+    }
 
     Zlist *zl;
     Ylist *yl0 = first(&zl);
@@ -356,8 +359,11 @@ Ylist::group(int max_in_grp)
 Ylist *
 Ylist::remove_backg(const BBox *AOI)
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const Ylist *yt = this;
+        if (!yt)
+            return (0);
+    }
     Zlist *z0 = 0;
     z0 = new Zlist(-CDinfinity, AOI->top, CDinfinity, CDinfinity, z0);
     Zlist *ze = z0;
@@ -418,8 +424,11 @@ Ylist::connected(Zlist **zp)
 void
 Ylist::scanlines(const Ylist *y1, intDb &idb) const
 {
-    if (!(void*)this)
-        return;
+    {
+        const Ylist *yt = this;
+        if (!yt)
+            return;
+    }
     if (y1) {
         const Ylist *y0 = this;
         if (y1->y_yu > y0->y_yu) {
@@ -520,8 +529,11 @@ Ylist::scanlines(const Ylist *y1, intDb &idb) const
 Ylist *
 Ylist::slice(const int *scans, int nscans) throw (XIrt)
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const Ylist *yt = this;
+        if (!yt)
+            return (0);
+    }
     Ylist *y0 = this;
     Zlist *z0 = 0;
     int indx = nscans - 1;
@@ -959,8 +971,11 @@ Ylist::clip_to() throw (XIrt)
 Zlist *
 Ylist::clip_to(const Zoid *Z) const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const Ylist *yt = this;
+        if (!yt)
+            return (0);
+    }
     Zlist *z0 = 0, *ze = 0;
     for (const Ylist *y = this; y; y = y->next) {
         if (y->y_yl >= Z->yu)
@@ -2615,8 +2630,11 @@ Ylist::clip_out_of(const Zoid *Z) const throw (XIrt)
     if (!Z)
         return (0);
     Ylist *yt = new Ylist(new Zlist(Z));
-    if (!(void*)this)
-        return (yt);
+    {
+        const Ylist *yth = this;
+        if (!yth)
+            return (yt);
+    }
     try {
         for (const Ylist *y = this; y; y = y->next) {
             if (checkInterrupt())
@@ -2651,8 +2669,11 @@ Ylist::scl_clip_out_of(const Zoid *Z) const throw (XIrt)
     if (!Z)
         return (0);
     Ylist *yt = new Ylist(new Zlist(Z));
-    if (!(void*)this)
-        return (yt);
+    {
+        const Ylist *yth = this;
+        if (!yth)
+            return (yt);
+    }
     Zlist *z0 = yt->scl_clip_out(this);
     if (!z0)
         return (0);
@@ -2748,8 +2769,11 @@ namespace {
 Zlist *
 Ylist::clip_out_new(const Zoid *Z) const
 {
-    if (!(void*)this)
-        return (0);
+    {
+        const Ylist *yt = this;
+        if (!yt)
+            return (0);
+    }
     BBox BB;
     computeBB(&BB);
     if (BB.bottom >= BB.top || BB.left >= BB.right)

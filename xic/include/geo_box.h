@@ -275,15 +275,6 @@ struct Blist
     Blist(int l, int b, int r, int t, Blist *bn = 0) : BB(l, b, r, t)
         { next = bn; }
 
-    void computeBB(BBox &AOI) const
-        {
-            if ((void*)this) {
-                AOI = BB;
-                for (Blist *b = next; b; b = b->next)
-                    AOI.add(&b->BB);
-            }
-        }
-
     void wtov()
         {
             for (Blist *b = this; b; b = b->next) {

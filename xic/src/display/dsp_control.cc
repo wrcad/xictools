@@ -532,8 +532,9 @@ WindowDesc::RunPending()
     }
     else {
         BBox tBB(CDnullBB);
-        pendR->computeBB(tBB);
-        for (Blist *bl = pendU; bl; bl = bl->next) {
+        for (const Blist *bl = pendR; bl; bl = bl->next)
+            tBB.add(&bl->BB);
+        for (const Blist *bl = pendU; bl; bl = bl->next) {
             BBox uBB = bl->BB;
             ViewportBloat(uBB, uBB, 1);
             PToLbb(uBB, uBB);
