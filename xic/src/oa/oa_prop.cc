@@ -1324,7 +1324,12 @@ void
 cOAelecInfo::create_inst_param_string(sLstr &lstr,
     const sPrmList *prm_list) const
 {
-    if (!(void*)this || !cdf_inst_params)
+    {
+        cOAelecInfo *oit = this;
+        if (!oit)
+            return;
+    }
+    if (!cdf_inst_params)
         return;
 
     for (const cOAelecInfo::param *p = cdf_inst_params; p->name(); p++) {
@@ -1396,7 +1401,12 @@ cOAelecInfo::create_inst_param_string(sLstr &lstr,
 void
 cOAelecInfo::create_all_param_string(sLstr &lstr) const
 {
-    if (!(void*)this || !cdf_all_params)
+    {
+        cOAelecInfo *oit = this;
+        if (!oit)
+            return;
+    }
+    if (!cdf_all_params)
         return;
 
     for (const cOAelecInfo::param *p = cdf_all_params; p->name(); p++) {
@@ -1443,8 +1453,11 @@ cOAelecInfo::create_all_param_string(sLstr &lstr) const
 void
 cOAelecInfo::add()
 {
-    if (!(void*)this)
-        return;
+    {
+        cOAelecInfo *oit = this;
+        if (!oit)
+            return;
+    }
     if (!cdf_tab)
         cdf_tab = new SymTab(false, false);
     cdf_tab->add(name(), this, false);

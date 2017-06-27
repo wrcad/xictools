@@ -2867,7 +2867,8 @@ HTTPCookieCache::write()
 void
 HTTPCookieCache::merge(HTTPCookieCache *c2)
 {
-    if ((void*)this && c2) {
+    HTTPCookieCache *cct = this;
+    if (cct && c2) {
         HTTPCookie **tmp = new HTTPCookie* [ncookies + c2->ncookies];
         memcpy(tmp, cookies, ncookies*sizeof(HTTPCookie*));
         memcpy(tmp + ncookies, c2->cookies,

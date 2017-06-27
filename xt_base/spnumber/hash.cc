@@ -248,7 +248,7 @@ void *
 sHtab::get(const char *name) const
 {
     {
-        sHtab *ht = this;
+        const sHtab *ht = this;
         if (!ht)
             return (0);
     }
@@ -274,7 +274,7 @@ sHent *
 sHtab::get_ent(const char *name) const
 {
     {
-        sHtab *ht = this;
+        const sHtab *ht = this;
         if (!ht)
             return (0);
     }
@@ -300,7 +300,7 @@ void
 sHtab::print(const char *datafmt) const
 {
     {
-        sHtab *ht = this;
+        const sHtab *ht = this;
         if (!ht)
             return;
     }
@@ -348,7 +348,7 @@ bool
 sHtab::empty() const
 {
     {
-        sHtab *ht = this;
+        const sHtab *ht = this;
         if (!ht)
             return (true);
     }

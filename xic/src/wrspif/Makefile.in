@@ -34,8 +34,13 @@ $(LIB_TARGET): $(CCOBJS)
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
-$(SPFILES): $(LPATH)/spnumber/$@
+$(SPFILES):
 	cp -f $(LPATH)/spnumber/$@ .
+
+hash.cc: $(LPATH)/spnumber/hash.cc
+paramsub.cc: $(LPATH)/spnumber/paramsub.cc
+spnumber.cc: $(LPATH)/spnumber/spnumber.cc
+spparse.cc: $(LPATH)/spnumber/spparse.cc
 
 depend: $(SPFILES)
 	@echo depending in xic/wrspif

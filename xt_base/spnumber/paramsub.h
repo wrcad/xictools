@@ -45,7 +45,8 @@ struct sArgList
 
     sArgList *copy()
         {
-            if (!(void*)this)
+            sArgList *alt = this;
+            if (!alt)
                 return (0);
             return (new sArgList(lstring::copy(a_args), a_argc));
         }
@@ -115,9 +116,10 @@ struct sParamTab
     // PTsngl:      Handle p=v constructs plus isolated params and exprs
 
     // Parameter names are case-insensitive!
-    sParamTab() : pt_table(sHtab::get_ciflag(CSE_PARAM)),
-            pt_rctab(sHtab::get_ciflag(CSE_PARAM))
+    sParamTab()
         {
+            pt_table = new sHtab(sHtab::get_ciflag(CSE_PARAM));
+            pt_rctab = new sHtab(sHtab::get_ciflag(CSE_PARAM));
             pt_collapse = false;
             add_predefs();
         }
@@ -225,10 +227,10 @@ struct sParamTab
     void dump() const;
 
     const sParam *get(const char *n) const
-        { return ((const sParam*)pt_table.get(n)); }
+        { return ((const sParam*)pt_table->get(n)); }
 
     unsigned int allocated()
-        { return ((void*)this ? pt_table.allocated() : 0); }
+        { sParamTab *ptt = this; return (ptt ? pt_table->allocated() : 0); }
 
     static char *errString; // global error return
 
@@ -239,8 +241,8 @@ private:
     bool subst(char**) const;
     bool tokenize(const char**, char**, char**, PTmode, const char** =0) const;
 
-    sHtab pt_table;         // Main table for elements.
-    sHtab pt_rctab;         // Used for recursion testing.
+    sHtab *pt_table;        // Main table for elements.
+    sHtab *pt_rctab;        // Used for recursion testing.
     bool pt_collapse;
 };
 

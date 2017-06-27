@@ -72,7 +72,9 @@ namespace {
 
 sParamTab::~sParamTab()
 {
-    pt_table.clear_data(&free_param, 0);
+    pt_table->clear_data(&free_param, 0);
+    delete pt_table;
+    delete pt_rctab;
 }
 
 
@@ -101,14 +103,14 @@ sParamTab::add_predefs()
     sParam *prm = new sParam(lstring::copy("WRSPICE_PROGRAM"),
         lstring::copy("1"));
     prm->set_readonly();
-    pt_table.add(prm->name(), prm);
+    pt_table->add(prm->name(), prm);
 
 #define STRINGIFY(foo) #foo
 #define XSTRINGIFY(x) STRINGIFY(x)
     prm = new sParam(lstring::copy("WRSPICE_RELEASE"),
         lstring::copy(XSTRINGIFY(CD_RELEASE_NUM)));
     prm->set_readonly();
-    pt_table.add(prm->name(), prm);
+    pt_table->add(prm->name(), prm);
 #endif
 }
 
@@ -118,7 +120,7 @@ sParamTab::copy() const
 {
     sParamTab *pnew = new sParamTab;
 
-    sHgen gen(&pt_table);
+    sHgen gen(pt_table);
     sHent *h;
     while ((h = gen.next()) != 0) {
         sParam *po = (sParam*)h->data();
@@ -128,7 +130,7 @@ sParamTab::copy() const
             p->set_collapsed();
         if (po->readonly())
             p->set_readonly();
-        pnew->pt_table.add(p->name(), p);
+        pnew->pt_table->add(p->name(), p);
     }
     return (pnew);
 }
@@ -228,7 +230,7 @@ sParamTab::extract_params(const char *str)
         if (is_func(&pname, &al)) {
             sParam *p = 0;
             if (ptab) {
-                p = (sParam*)ptab->pt_table.get(pname);
+                p = (sParam*)ptab->pt_table->get(pname);
                 if (p) {
                     delete [] p->sub();
                     p->set_sub(psub);
@@ -241,13 +243,13 @@ sParamTab::extract_params(const char *str)
                 p->set_args(al);
                 if (!ptab)
                     ptab = new sParamTab;
-                ptab->pt_table.add(pname, p);
+                ptab->pt_table->add(pname, p);
             }
         }
         else {
             sParam *p = 0;
             if (ptab) {
-                p = (sParam*)ptab->pt_table.get(pname);
+                p = (sParam*)ptab->pt_table->get(pname);
                 if (p) {
                     if (!p->readonly()) {
                         delete [] p->sub();
@@ -262,7 +264,7 @@ sParamTab::extract_params(const char *str)
                 p = new sParam(pname, psub);
                 if (!ptab)
                     ptab = new sParamTab;
-                ptab->pt_table.add(pname, p);
+                ptab->pt_table->add(pname, p);
             }
         }
     }
@@ -282,14 +284,14 @@ sParamTab::update(const sParamTab *ptab)
     if (!p0)
         p0 = new sParamTab;
 
-    sHgen gen(&ptab->pt_table);
+    sHgen gen(ptab->pt_table);
     sHent *ent;
     while ((ent = gen.next()) != 0) {
         const sParam *p = (const sParam*)ent->data();
         if (!p)
             // impossible
             continue;
-        sParam *q = (sParam*)p0->pt_table.get(p->name());
+        sParam *q = (sParam*)p0->pt_table->get(p->name());
         if (q) {
             if (!q->readonly())
                 q->update(p);
@@ -301,7 +303,7 @@ sParamTab::update(const sParamTab *ptab)
                 pnew->set_collapsed();
             if (p->readonly())
                 pnew->set_readonly();
-            p0->pt_table.add(pnew->name(), pnew);
+            p0->pt_table->add(pnew->name(), pnew);
         }
     }
     return (p0);
@@ -327,7 +329,7 @@ sParamTab::update(const char *str)
             break;
         sArgList *al;
         if (is_func(&pname, &al)) {
-            sParam *p = (sParam*)pt_table.get(pname);
+            sParam *p = (sParam*)pt_table->get(pname);
             if (p && !p->readonly()) {
                 delete [] p->sub();
                 p->set_sub(psub);
@@ -340,10 +342,10 @@ sParamTab::update(const char *str)
             delete [] pname;
         }
         else {
-            sParam *p = (sParam*)pt_table.get(pname);
+            sParam *p = (sParam*)pt_table->get(pname);
             if (!p) {
                 p = new sParam(pname, psub);
-                pt_table.add(p->name(), p);
+                pt_table->add(p->name(), p);
             }
             else {
                 if (p && !p->readonly()) {
@@ -398,7 +400,7 @@ sParamTab::collapse()
         if (!pt)
             return;
     }
-    sHgen gen(&pt_table);
+    sHgen gen(pt_table);
     sHent *h;
     while ((h = gen.next()) != 0) {
         sParam *p = (sParam*)h->data();
@@ -423,7 +425,7 @@ sParamTab::define_macros(bool nopush)
     if (!nopush)
         Sp.PushUserFuncs(0);
 
-    sHgen gen(&pt_table);
+    sHgen gen(pt_table);
     sHent *ent;
     while ((ent = gen.next()) != 0) {
         sParam *p = (sParam*)ent->data();
@@ -464,7 +466,7 @@ sParamTab::undefine_macros()
 void
 sParamTab::dump() const
 {
-    sHgen gen(&pt_table);
+    sHgen gen(pt_table);
     sHent *ent;
     while ((ent = gen.next()) != 0) {
         sParam *po = (sParam*)ent->data();
@@ -565,7 +567,7 @@ sParamTab::defn_subst(char **str, PTmode mode, int nskip) const
             // along.  This is so constructs like "x=1 y=1 z='x+y'"
             // will work.
 
-            sParam *p = (sParam*)tmp_tab->pt_table.get(pname);
+            sParam *p = (sParam*)tmp_tab->pt_table->get(pname);
             if (p) {
                 if (!p->readonly()) {
                     delete [] p->sub();
@@ -574,7 +576,7 @@ sParamTab::defn_subst(char **str, PTmode mode, int nskip) const
             }
             else {
                 p = new sParam(lstring::copy(pname), lstring::copy(psub));
-                tmp_tab->pt_table.add(pname, p);
+                tmp_tab->pt_table->add(pname, p);
             }
         }
 
@@ -620,7 +622,7 @@ void
 sParamTab::line_subst(char **str) const
 {
     {
-        sParamTab *pt = this;
+        const sParamTab *pt = this;
         if (!pt)
             return;
     }
@@ -638,11 +640,11 @@ sParamTab::line_subst(char **str) const
         else if (is_namechar(*tok)) {
             char *ltok = lstring::copy(tok);
             if (subst(&tok)) {
-                pt_rctab.add(ltok, (void*)1);
+                pt_rctab->add(ltok, (void*)1);
                 if (*tok == '\'')
                     squote_subst(&tok);
                 else {
-                    if (pt_rctab.get(tok)) {
+                    if (pt_rctab->get(tok)) {
                         // Uh-oh, we're already subbing this token,
                         // there is a recursive loop.
                         delete [] errString;
@@ -657,7 +659,7 @@ sParamTab::line_subst(char **str) const
                         line_subst(&tok);
                 }
 
-                pt_rctab.remove(ltok);
+                pt_rctab->remove(ltok);
                 chg = true;
             }
             delete [] ltok;
@@ -854,7 +856,7 @@ sParamTab::subst(char **tok) const
 {
     sParam *p = (sParam*)get(*tok);
     if (p) {
-        if (pt_rctab.get(*tok) != 0) {
+        if (pt_rctab->get(*tok) != 0) {
             // Uh-oh, we're already subbing this token, there is a
             // recursive loop.
             delete [] errString;
@@ -866,7 +868,7 @@ sParamTab::subst(char **tok) const
             errString = lstr.string_trim();
             return (false);
         }
-        pt_rctab.add(p->name(), p);
+        pt_rctab->add(p->name(), p);
 
         if (pt_collapse) {
             if (!p->collapsed()) {
@@ -888,7 +890,7 @@ sParamTab::subst(char **tok) const
         else
             *tok = lstring::copy(p->sub());
 
-        pt_rctab.remove(p->name());
+        pt_rctab->remove(p->name());
         return (true);
     }
     return (false);
