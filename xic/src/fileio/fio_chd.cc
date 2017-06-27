@@ -578,7 +578,8 @@ namespace {
 
         bool record()
             {
-                if ((void*)this) {
+                fb_t *fbt = this;
+                if (fbt) {
                     count++;
                     if (!(count & del)) {
                         FIO()->ifInfoMessage(IFMSG_INFO, "%s:  %u",

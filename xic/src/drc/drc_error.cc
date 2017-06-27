@@ -713,8 +713,11 @@ DRCerrRet::DRCerrRet(const DRCtestDesc *td, int vc)
 DRCerrRet *
 DRCerrRet::filter()
 {
-    if (!(void*)this)
-        return (0);
+    {
+        DRCerrRet *ert = this;
+        if (!ert)
+            return (0);
+    }
     if (DRC()->errorLevel() == 0) {
         // return one error, the first found
         er_next->free();

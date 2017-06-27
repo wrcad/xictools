@@ -75,29 +75,35 @@ DspLayerParams::~DspLayerParams()
 void
 DspLayerParams::defaultColor()
 {
-    if ((void*)this) {
-        double h = fmod(alloc_count * 111.0, 360.0);
-        double s = 0.6;
-        double v = 0.85;
-        double r = 0.0, g = 0.0, b = 0.0;
-        hsv_to_rgb(h, s, v, &r, &g, &b);
-        lp_red = mmRnd(r*255);
-        lp_green = mmRnd(g*255);
-        lp_blue = mmRnd(b*255);
-        alloc_count++;
+    {
+        DspLayerParams *dlpt = this;
+        if (!dlpt)
+            return;
     }
+    double h = fmod(alloc_count * 111.0, 360.0);
+    double s = 0.6;
+    double v = 0.85;
+    double r = 0.0, g = 0.0, b = 0.0;
+    hsv_to_rgb(h, s, v, &r, &g, &b);
+    lp_red = mmRnd(r*255);
+    lp_green = mmRnd(g*255);
+    lp_blue = mmRnd(b*255);
+    alloc_count++;
 }
 
 
 void
 DspLayerParams::setColor(int r, int g, int b)
 {
-    if ((void*)this) {
-        lp_red = r;
-        lp_green = g;
-        lp_blue = b;
-        GRpkgIf()->AllocateColor((int*)&lp_pixel, lp_red, lp_green, lp_blue);
+    {
+        DspLayerParams *dlpt = this;
+        if (!dlpt)
+            return;
     }
+    lp_red = r;
+    lp_green = g;
+    lp_blue = b;
+    GRpkgIf()->AllocateColor((int*)&lp_pixel, lp_red, lp_green, lp_blue);
 }
 
 

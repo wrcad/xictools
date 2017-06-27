@@ -209,8 +209,11 @@ gtkLcb::~gtkLcb()
 void
 gtkLcb::update(CDll *list)
 {
-    if (!(void*)this)
-        return;
+    {
+        gtkLcb *lcbt = this;
+        if (!lcbt)
+            return;
+    }
     gtk_list_clear_items(GTK_LIST(le_opmenu), 0, -1);
     if (!list) {
         GtkWidget *text =

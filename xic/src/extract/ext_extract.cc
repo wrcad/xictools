@@ -610,8 +610,11 @@ cGroupDesc::setup_extract(int dcnt)
 void
 cGroupDesc::clear_extract()
 {
-    if (!(void*)this)
-        return;
+    {
+        cGroupDesc *gdt = this;
+        if (!gdt)
+            return;
+    }
 
     clear_duality();
 
@@ -703,7 +706,8 @@ cGroupDesc::clear_extract()
 sSubcInst *
 cGroupDesc::find_subc(CDc *c, int x, int y)
 {
-    if ((void*)this) {
+    cGroupDesc *gdt = this;
+    if (gdt) {
         CDs *msdesc = c->masterCell(true);
         for (sSubcList *sl = gd_subckts; sl; sl = sl->next()) {
             if (sl->subs()->cdesc()->masterCell(true) != msdesc)

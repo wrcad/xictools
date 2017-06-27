@@ -461,7 +461,12 @@ SIlexp_list::~SIlexp_list()
 int
 SIlexp_list::check(const char *e)
 {
-    if (!(void*)this || !ll_lspec)
+    {
+        SIlexp_list *llt = this;
+        if (!llt)
+            return (0);
+    }
+    if (!ll_lspec)
         return (0);
     for (int i = 0; i < ll_indx; i++)
         if (ll_lspec[i].lname() == e)
@@ -492,7 +497,12 @@ SIlexp_list::add(const sLspec &l)
 const sLspec *
 SIlexp_list::find(int i)
 {
-    if (!(void*)this || i <= 0 || i > ll_indx)
+    {
+        SIlexp_list *llt = this;
+        if (!llt)
+            return (0);
+    }
+    if (i <= 0 || i > ll_indx)
         return (0);
     return (ll_lspec + i - 1);
 }

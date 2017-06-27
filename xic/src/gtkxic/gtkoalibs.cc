@@ -453,8 +453,11 @@ sLBoa::get_selection(const char **plibname, const char **pcellname)
 void
 sLBoa::update()
 {
-    if (!(void*)this)
-        return;
+    {
+        sLBoa *lbt = this;
+        if (!lbt)
+            return;
+    }
 
     const char *s = CDvdb()->getVariable(VA_OaUseOnly);
     if (s && ((s[0] == '1' && s[1] == 0) || s[0] == 'p' || s[0] == 'P')) {
@@ -557,8 +560,11 @@ sLBoa::update()
 void
 sLBoa::pop_up_contents()
 {
-    if (!(void*)this)
-        return;
+    {
+        sLBoa *lbt = this;
+        if (!lbt)
+            return;
+    }
     if (!lb_selection)
         return;
 

@@ -709,7 +709,8 @@ namespace {
 void
 sFh::update_fh_freq_widgets()
 {
-    if ((void*)this) {
+    sFh *fht = this;
+    if (fht) {
         const char *str = CDvdb()->getVariable(VA_FhFreq);
         char *smin = str ? getword("fmin=", str) :
             lstring::copy(fh_def_string(FhFreq));
@@ -731,7 +732,8 @@ sFh::update_fh_freq_widgets()
 void
 sFh::update_fh_freq()
 {
-    if ((void*)this) {
+    sFh *fht = this;
+    if (fht) {
         char buf[128];
         const char *smin = gtk_entry_get_text(GTK_ENTRY(fh_fmin));
         const char *smax = gtk_entry_get_text(GTK_ENTRY(fh_fmax));

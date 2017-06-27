@@ -351,8 +351,11 @@ cGroupDesc::setup_groups()
 void
 cGroupDesc::clear_groups(bool gptoo)
 {
-    if (!(void*)this)
-        return;
+    {
+        cGroupDesc *gdt = this;
+        if (!gdt)
+            return;
+    }
 
     clear_extract();
 

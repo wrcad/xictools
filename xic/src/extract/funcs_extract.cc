@@ -3905,10 +3905,11 @@ extract_funcs::IFgetPdevContactDevName(Variable *res, Variable *args, void*)
         if (hdl->type != HDLdcontact)
             return (BAD);
         tlist<sDevContactInst> *ct = (tlist<sDevContactInst>*)hdl->data;
-        if (ct && ct->elt->dev() && ct->elt->dev()->desc())
+        if (ct && ct->elt->dev() && ct->elt->dev()->desc()) {
             res->content.string =
                 lstring::copy(ct->elt->dev()->desc()->name()->stringNN());
             res->flags |= VF_ORIGINAL;
+        }
     }
     return (OK);
 }

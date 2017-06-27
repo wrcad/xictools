@@ -9483,7 +9483,8 @@ oas_elt::~oas_elt()
 
 oas_table::~oas_table()
 {
-    if ((void*)this) {
+    oas_table *ot = this;
+    if (ot) {
         for (unsigned int i = 0; i <= hashmask; i++) {
             oas_elt *e = tab[i];
             tab[i] = 0;
@@ -9500,7 +9501,8 @@ oas_table::~oas_table()
 oas_elt *
 oas_table::get(unsigned int x)
 {
-    if ((void*)this) {
+    oas_table *ot = this;
+    if (ot) {
         unsigned int k = hash(x);
         for (oas_elt *e = tab[k]; e; e = e->e_next) {
             if (e->e_index == x)
@@ -9514,7 +9516,8 @@ oas_table::get(unsigned int x)
 oas_elt *
 oas_table::add(unsigned int x)
 {
-    if ((void*)this) {
+    oas_table *ot = this;
+    if (ot) {
         unsigned int k = hash(x);
         tab[k] = new oas_elt(x, tab[k]);
         count++;
@@ -9531,8 +9534,11 @@ oas_table::add(unsigned int x)
 oas_table *
 oas_table::check_rehash()
 {
-    if (!(void*)this)
-        return (0);
+    {
+        oas_table *ot = this;
+        if (!ot)
+            return (0);
+    }
     if (count/(hashmask + 1) <= ST_MAX_DENS)
         return (this);
 

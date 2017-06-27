@@ -176,7 +176,12 @@ WindowDesc::~WindowDesc()
 void
 WindowDesc::ShowTitleDirect()
 {
-    if (!(void*)this || !Wbag())
+    {
+        WindowDesc *wdt = this;
+        if (!wdt)
+            return;
+    }
+    if (!Wbag())
         return;
     int win = WinNumber();
     if (win < 0)
@@ -237,7 +242,12 @@ namespace {
 void
 WindowDesc::ShowTitle()
 {
-    if (!(void*)this || !Wbag())
+    {
+        WindowDesc *wdt = this;
+        if (!wdt)
+            return;
+    }
+    if (!Wbag())
         return;
     int win = WinNumber();
     if (win < 0)
@@ -417,7 +427,12 @@ WindowDesc::SetSymbol(const CDcbin *cbin)
 bool
 WindowDesc::IsSimilar(const WindowDesc *w, unsigned int flags)
 {
-    if (!(void*)this || !w)
+    {
+        WindowDesc *wdt = this;
+        if (!wdt)
+            return (false);
+    }
+    if (!w)
         return (false);
 
     // Override callback.
@@ -461,7 +476,12 @@ WindowDesc::IsSimilar(const WindowDesc *w, unsigned int flags)
 bool
 WindowDesc::IsSimilar(DisplayMode m, const WindowDesc *w, unsigned int flags)
 {
-    if (!(void*)this || !w)
+    {
+        WindowDesc *wdt = this;
+        if (!wdt)
+            return (false);
+    }
+    if (!w)
         return (false);
 
     // Override callback.
@@ -501,7 +521,12 @@ WindowDesc::IsSimilar(DisplayMode m, const WindowDesc *w, unsigned int flags)
 bool
 WindowDesc::IsSimilarNonSymbolic(const WindowDesc *w)
 {
-    if (!(void*)this || !w || w_dbtype != w->w_dbtype || w_mode != Electrical)
+    {
+        WindowDesc *wdt = this;
+        if (!wdt)
+            return (false);
+    }
+    if (!w || w_dbtype != w->w_dbtype || w_mode != Electrical)
         return (false);
     if (w_dbtype == WDcddb) {
         if (w_cur_cellname != w->w_cur_cellname)
@@ -690,7 +715,8 @@ WindowDesc::SetID()
 int
 WindowDesc::WinNumber() const
 {
-    if ((void*)this) {
+    const WindowDesc *wdt = this;
+    if (wdt) {
         for (int i = 0; i < DSP_NUMWINS; i++) {
             if (DSP()->Window(i) == this)
                 return (i);

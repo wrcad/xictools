@@ -216,7 +216,12 @@ cNodeMap::findNode(const char *n)
 int
 cNodeMap::findNode(CDnetName name)
 {
-    if (!(void*)this || !name)
+    {
+        cNodeMap *nmt = this;
+        if (!nmt)
+            return (-1);
+    }
+    if (!name)
         return (-1);
     refresh();
 
@@ -263,8 +268,11 @@ cNodeMap::countNodes()
 {
     if (!nm_dirty)
         return (nm_size);
-    if (!(void*)this)
-        return (0);
+    {
+        cNodeMap *nmt = this;
+        if (!nmt)
+            return (0);
+    }
     SCD()->connect(nm_celldesc);
     if (!nm_connect_size)
         nm_connect_size = 1;
@@ -285,17 +293,22 @@ cNodeMap::countNodes()
 void
 cNodeMap::refresh()
 {
-    if ((void*)this && nm_dirty) {
-        int osz = nm_size;
-        nm_size = countNodes();
-        if (osz != nm_size) {
-            delete [] nm_nmap;
-            delete [] nm_fmap;
-            nm_nmap = new CDnetName[nm_size];
-            nm_fmap = new unsigned char[nm_size];
-        }
-        setup();
+    {
+        cNodeMap *nmt = this;
+        if (!nmt)
+            return;
     }
+    if (!nm_dirty)
+        return;
+    int osz = nm_size;
+    nm_size = countNodes();
+    if (osz != nm_size) {
+        delete [] nm_nmap;
+        delete [] nm_fmap;
+        nm_nmap = new CDnetName[nm_size];
+        nm_fmap = new unsigned char[nm_size];
+    }
+    setup();
 }
 
 
@@ -318,9 +331,12 @@ cNodeMap::setupNetNames(int csize, SymTab *nmtab)
 bool
 cNodeMap::newEntry(const char *nm, int node)
 {
-    if (!(void*)this) {
-        Errs()->add_error("null node table pointer.");
-        return (false);
+    {
+        cNodeMap *nmt = this;
+        if (!nmt) {
+            Errs()->add_error("null node table pointer.");
+            return (false);
+        }
     }
     CDnetName name = CDnetex::name_tab_add(nm);
     bool already_there = false;
@@ -416,8 +432,11 @@ cNodeMap::newEntry(const char *nm, int node)
 void
 cNodeMap::delEntry(int node)
 {
-    if (!(void*)this)
-        return;
+    {
+        cNodeMap *nmt = this;
+        if (!nmt)
+            return;
+    }
     int cnt = 0;
     sNodeName *sp = 0, *snext;
     for (sNodeName *sn = nm_setnames; sn; sn = snext) {
@@ -451,7 +470,8 @@ cNodeMap::delEntry(int node)
 const char *
 cNodeMap::map(int i)
 {
-    if (!(void*)this || nm_dirty || i < 0 || i >= nm_size || !nm_nmap[i]) {
+    cNodeMap *nmt = this;
+    if (!nmt || nm_dirty || i < 0 || i >= nm_size || !nm_nmap[i]) {
         char buf[64];
         mmItoA(buf, i);
         return (CDnetex::name_tab_add(buf)->string());
@@ -463,7 +483,8 @@ cNodeMap::map(int i)
 CDnetName
 cNodeMap::mapStab(int i)
 {
-    if (!(void*)this || nm_dirty || i < 0 || i >= nm_size || !nm_nmap[i])
+    cNodeMap *nmt = this;
+    if (!nmt || nm_dirty || i < 0 || i >= nm_size || !nm_nmap[i])
         return (0);
     return (nm_nmap[i]);
 }
@@ -474,7 +495,8 @@ cNodeMap::mapStab(int i)
 const char *
 cNodeMap::mapName(int i)
 {
-    if (!(void*)this || nm_dirty || i < 0 || i >= nm_size || !nm_nmap[i])
+    cNodeMap *nmt = this;
+    if (!nmt || nm_dirty || i < 0 || i >= nm_size || !nm_nmap[i])
         return ("");
     return (nm_nmap[i]->string());
 }
@@ -485,7 +507,8 @@ cNodeMap::mapName(int i)
 bool
 cNodeMap::isSet(int i)
 {
-    if (!(void*)this || nm_dirty || i < 0 || i >= nm_size ||
+    cNodeMap *nmt = this;
+    if (!nmt || nm_dirty || i < 0 || i >= nm_size ||
             !(nm_fmap[i] & NM_SET))
         return (false);
     return (true);
@@ -497,7 +520,8 @@ cNodeMap::isSet(int i)
 bool
 cNodeMap::isGlobal(int i)
 {
-    if (!(void*)this || nm_dirty || i < 0 || i >= nm_size)
+    cNodeMap *nmt = this;
+    if (!nmt || nm_dirty || i < 0 || i >= nm_size)
         return (false);
     if (!nm_nmap[i]) {
         nm_fmap[i] &= ~NM_GLOB;
@@ -518,7 +542,12 @@ cNodeMap::isGlobal(int i)
 int
 cNodeMap::countGlobal()
 {
-    if (!(void*)this || nm_dirty)
+    {
+        cNodeMap *nmt = this;
+        if (!nmt)
+            return (0);
+    }
+    if (nm_dirty)
         return (0);
     int cnt = 0;
     for (int i = 0; i < nm_size; i++) {
@@ -534,7 +563,12 @@ cNodeMap::countGlobal()
 void
 cNodeMap::tabAddGlobal(SymTab *tab)
 {
-    if (!(void*)this || nm_dirty || !tab)
+    {
+        cNodeMap *nmt = this;
+        if (!nmt)
+            return;
+    }
+    if (nm_dirty || !tab)
         return;
     for (int i = 0; i < nm_size; i++) {
         if (nm_fmap[i] & NM_GLOB)
@@ -548,8 +582,11 @@ cNodeMap::tabAddGlobal(SymTab *tab)
 void
 cNodeMap::updateProperty()
 {
-    if (!(void*)this)
-        return;
+    {
+        cNodeMap *nmt = this;
+        if (!nmt)
+            return;
+    }
     refresh();
 
     CDp_nodmp *pn = (CDp_nodmp*)nm_celldesc->prpty(P_NODMAP);
@@ -592,8 +629,11 @@ cNodeMap::updateProperty()
 xyname_t *
 cNodeMap::getSetList()
 {
-    if (!(void*)this)
-        return (0);
+    {
+        cNodeMap *nmt = this;
+        if (!nmt)
+            return (0);
+    }
     xyname_t *n0 = 0, *ne = 0;
     for (sNodeName *sn = nm_setnames; sn; sn = sn->next()) {
         if (sn->hent()->ref_type() == HYrefNode) {

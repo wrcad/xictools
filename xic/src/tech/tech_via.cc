@@ -623,11 +623,16 @@ sStdVia::open()
 void
 sStdVia::tech_print(FILE *fp) const
 {
-    char buf[256];
-    if (!(void*)this || !via() || !bottom() || !top())
+    {
+        const sStdVia *svt = this;
+        if (!svt)
+            return;
+    }
+    if (!via() || !bottom() || !top())
         return;
     fprintf(fp, "%s %-16s %-10s %-10s %s \\\n", Tkw.StandardVia(),
         tab_name(), bottom()->name(), top()->name(), via()->name());
+    char buf[256];
     sprintf(buf, "%g %g", MICRONS(via_wid()), MICRONS(via_hei()));
     fprintf(fp, "    %-12s", buf);
     sprintf(buf, "%d %d", via_rows(), via_cols());

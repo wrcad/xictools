@@ -255,8 +255,11 @@ cv_info::add_wire(int nverts)
 cvINFO
 cv_info::savemode()
 {
-    if (!(void*)this)
-        return (cvINFOnone);
+    {
+        cv_info *cvt = this;
+        if (!cvt)
+            return (cvINFOnone);
+    }
     if (enable_per_layer) {
         if (enable_per_cell)
             return (cvINFOplpc);

@@ -215,7 +215,8 @@ WindowDesc::GhostUpdate(const BBox *AOI)
 void
 WindowDesc::GhostFinalUpdate()
 {
-    if ((void*)this && w_accum_mode == WDaccumAccum) {
+    WindowDesc *wdt = this;
+    if (wdt && w_accum_mode == WDaccumAccum) {
         w_accum_mode = WDaccumDone;
         Update(&w_accum_rect);
     }

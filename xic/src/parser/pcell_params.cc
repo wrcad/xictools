@@ -581,7 +581,12 @@ PCellParam::dup() const
 void
 PCellParam::setup(const PCellParam *p0)
 {
-    if (!(void*)this || !p0)
+    {
+        PCellParam *ppt = this;
+        if (!ppt)
+            return;
+    }
+    if (!p0)
         return;
     SymTab tab(false, false);
     for (PCellParam *p = this; p; p = p->next())
@@ -601,7 +606,12 @@ PCellParam::setup(const PCellParam *p0)
 void
 PCellParam::reset(const PCellParam *p0)
 {
-    if (!(void*)this || !p0)
+    {
+        PCellParam *ppt = this;
+        if (!ppt)
+            return;
+    }
+    if (!p0)
         return;
     SymTab tab(false, false);
     for (PCellParam *p = this; p; p = p->next())

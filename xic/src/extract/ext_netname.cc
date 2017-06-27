@@ -175,7 +175,8 @@ cGroupDesc::group_name(int grp, sLstr *map_lstr) const
 {
     if (grp < 0)
         return (CDnetex::name_tab_add("-1")->string());
-    if ((void*)this) {
+    const cGroupDesc *gdt = this;
+    if (gdt) {
         sGroup *g = group_for(grp);
         if (!g)
             return (CDnetex::name_tab_add("-1")->string());

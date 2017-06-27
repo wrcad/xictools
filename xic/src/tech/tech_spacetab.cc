@@ -46,8 +46,11 @@ namespace {
 bool
 sTspaceTable::check_sort()
 {
-    if (!(void*)this)
-        return (false);
+    {
+        sTspaceTable *stt = this;
+        if (!stt)
+            return (false);
+    }
 
     // The first record (this) is a dummy, the entries field contains
     // the number of records (including the first), the dimen field

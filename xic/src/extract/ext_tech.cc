@@ -349,9 +349,12 @@ cExt::techPrintDevices(FILE *techfp)
 bool
 sDevDesc::parse_device(FILE *fp, bool initialize)
 {
-    if (!(void*)this) {
-        Log()->WarningLogV(mh::Techfile, "parse_device: null object.\n");
-        return (false);
+    {
+        sDevDesc *ddt = this;
+        if (!ddt) {
+            Log()->WarningLogV(mh::Techfile, "parse_device: null object.\n");
+            return (false);
+        }
     }
 
     bool nogo = false;

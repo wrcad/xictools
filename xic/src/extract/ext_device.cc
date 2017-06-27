@@ -709,8 +709,11 @@ cGroupDesc::parse_find_dev(const char *str, bool show)
 stringlist *
 cGroupDesc::list_devs()
 {
-    if (!(void*)this)
-        return (0);
+    {
+        cGroupDesc *gdt = this;
+        if (!gdt)
+            return (0);
+    }
     stringlist *s0 = 0;
     char buf[256];
     for (sDevList *dv = gd_devices; dv; dv = dv->next()) {
@@ -750,8 +753,12 @@ cGroupDesc::set_devs_display(bool state)
 int
 cGroupDesc::show_devs(WindowDesc *wdesc, bool d_or_e)
 {
-    if (!(void*)this)
-        return (0);
+    {
+        cGroupDesc *gdt = this;
+        if (!gdt)
+            return (0);
+    }
+
     static bool skipit;  // prevent reentrancy
     if (skipit)
         return (0);

@@ -150,8 +150,11 @@ pf_ordered_path::pf_ordered_path(CDo *odesc)
 void
 pf_ordered_path::simplify(pathfinder *pf)
 {
-    if (!(void*)this)
-        return;
+    {
+        pf_ordered_path *pt = this;
+        if (!pt)
+            return;
+    }
     for (int i = 0; i < num_elements; i++) {
         for (int j = num_elements - 1; j > i+1 ; j--) {
             if (pf->is_contacting(elements[i], elements[j])) {

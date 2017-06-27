@@ -901,6 +901,7 @@ sDC::dc_action_proc(GtkWidget *caller, void*)
 }
 
 
+//XXX Fixme, not used
 void
 sDC::dc_text_changed(GtkWidget *caller, void*)
 {

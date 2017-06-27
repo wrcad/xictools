@@ -185,8 +185,11 @@ sLspec::print(FILE *fp)
 CDll *
 sLspec::findLayers()
 {
-    if (!(void*)this)
-        return (0);
+    {
+        sLspec *lst = this;
+        if (!lst)
+            return (0);
+    }
     if (ls_tree)
         return (ls_tree->findLayersInTree());
     if (ls_ldesc)

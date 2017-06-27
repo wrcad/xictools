@@ -429,8 +429,11 @@ cGroupDesc::print_devs_subs(FILE *fp, sDumpOpts *opts)
 bool
 cGroupDesc::print_spice(FILE *fp, CDs *topsdesc, sDumpOpts *opts)
 {
-    if (!(void*)this)
-        return (true);
+    {
+        cGroupDesc *gdt = this;
+        if (!gdt)
+            return (true);
+    }
     fprintf(fp, "* SPICE listing of physical cell %s\n",
         gd_celldesc->cellname()->string());
 

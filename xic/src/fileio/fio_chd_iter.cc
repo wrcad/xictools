@@ -1032,7 +1032,8 @@ cCHD::compareCHDs_fp(const char *cname1, cCHD *chd2, const char *cname2,
     const BBox *AOI, const char *layer_list, bool skip, FILE *fp,
     unsigned int maxerrs, unsigned int *errcnt, int cgm, int fg)
 {
-    if (!(void*)this || !chd2) {
+    cCHD *chd1 = this;
+    if (!chd1 || !chd2) {
         Errs()->add_error("compareCHDs: null CHD pointer.");
         return (XIbad);
     }
@@ -1051,7 +1052,7 @@ cCHD::compareCHDs_fp(const char *cname1, cCHD *chd2, const char *cname2,
 
     sCmpIter iter(fp, maxerrs, cgm, fg);
     iter.setupLayers(layer_list, skip);
-    XIrt ret = iter.run2(this, cname1, chd2, cname2, AOI);
+    XIrt ret = iter.run2(chd1, cname1, chd2, cname2, AOI);
     if (ret != XIbad) {
         if (errcnt)
             *errcnt = iter.diffCount();
@@ -1067,7 +1068,8 @@ cCHD::compareCHDs_sd(const char *cname1, cCHD *chd2, const char *cname2,
     const BBox *AOI, const char *layer_list, bool skip, Sdiff **sdiff,
     unsigned int maxerrs, unsigned int *errcnt, int cgm, int fg)
 {
-    if (!(void*)this || !chd2) {
+    cCHD *chd1 = this;
+    if (!chd1 || !chd2) {
         Errs()->add_error("compareCHDs: null CHD pointer.");
         return (XIbad);
     }
@@ -1090,7 +1092,7 @@ cCHD::compareCHDs_sd(const char *cname1, cCHD *chd2, const char *cname2,
         *sdiff = 0;
         iter.setupLdiffs();
     }
-    XIrt ret = iter.run2(this, cname1, chd2, cname2, AOI);
+    XIrt ret = iter.run2(chd1, cname1, chd2, cname2, AOI);
     if (ret != XIbad) {
         if (sdiff)
             *sdiff = iter.getDiffs();

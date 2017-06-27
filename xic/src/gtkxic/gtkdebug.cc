@@ -714,8 +714,11 @@ sDbg::is_last_line()
 void
 sDbg::step()
 {
-    if (!(void*)this)
-        return;
+    {
+        sDbg *dbt = this;
+        if (!dbt)
+            return;
+    }
     if (db_row_cb_flag) {
         // We're waiting for input in the prompt line, back out.
         PL()->AbortEdit();
@@ -760,8 +763,11 @@ sDbg::step()
 void
 sDbg::run()
 {
-    if (!(void*)this)
-        return;
+    {
+        sDbg *dbt = this;
+        if (!dbt)
+            return;
+    }
     if (db_row_cb_flag) {
         // We're waiting for input in the prompt line, back out.
         PL()->AbortEdit();
@@ -1003,8 +1009,11 @@ sDbg::check_save(int code)
 void
 sDbg::refresh(bool mode_switch, locType loc, bool clear)
 {
-    if (!(void*)this)
-        return;
+    {
+        sDbg *dbt = this;
+        if (!dbt)
+            return;
+    }
     char *s = listing(clear ? false : mode_switch);
     double val = text_get_scroll_value(wb_textarea);
     if (db_mode == DBedit) {
@@ -1073,8 +1082,11 @@ sDbg::refresh(bool mode_switch, locType loc, bool clear)
 char *
 sDbg::listing(bool mode_switch)
 {
-    if (!(void*)this)
-        return (0);
+    {
+        sDbg *dbt = this;
+        if (!dbt)
+            return (0);
+    }
     char buf[LINESIZE];
     if (!db_file_ptr) {
         char *str = text_get_chars(wb_textarea, 0, -1);
@@ -1191,8 +1203,11 @@ sDbg::listing(bool mode_switch)
 void
 sDbg::monitor()
 {
-    if (!(void*)this)
-        return;
+    {
+        sDbg *dbt = this;
+        if (!dbt)
+            return;
+    }
     char buf[256];
     char *s = buf;
     *s = 0;

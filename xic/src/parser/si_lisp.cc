@@ -2450,8 +2450,11 @@ lispnode::lispnode(LN_TYPE ltype, char *str)
 lispnode *
 lispnode::dup()
 {
-    if (!(void*)this)
-        return (0);
+    {
+        lispnode *lnt = this;
+        if (!lnt)
+            return (0);
+    }
     lispnode *n = new lispnode;
     n->type = type;
     n->string = lstring::copy(string);
@@ -2522,9 +2525,12 @@ namespace {
 bool
 lispnode::print(FILE *fp, int idlev, bool nonl)
 {
-    if (!(void*)this) {
-        fprintf(fp, "\nInternal error: NULL NODE!\n");
-        return (true);
+    {
+        lispnode *lnt = this;
+        if (!lnt) {
+            fprintf(fp, "\nInternal error: NULL NODE!\n");
+            return (true);
+        }
     }
     bool lf = false;
     if (type == LN_NODE) {
@@ -2594,8 +2600,11 @@ lispnode::print(FILE *fp, int idlev, bool nonl)
 void
 lispnode::print(sLstr *lstr)
 {
-    if (!(void*)this)
-        return;
+    {
+        lispnode *lnt = this;
+        if (!lnt)
+            return;
+    }
     if (type == LN_NODE) {
         if (is_nil())
             lstr->add(" nil");
@@ -2653,9 +2662,12 @@ lispnode::eval(lispnode *res, char **err)
         *err = lstring::copy("no execution environment");
         return (false);
     }
-    if (!(void*)this) {
-        *err = lstring::copy("null node");
-        return (false);
+    {
+        lispnode *lnt = this;
+        if (!lnt) {
+            *err = lstring::copy("null node");
+            return (false);
+        }
     }
 
     if (type == LN_NODE) {

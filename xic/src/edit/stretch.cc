@@ -1857,8 +1857,11 @@ sObj::mark_vertices(bool DisplayOrErase)
 bool
 sObj::get_ref(int *xrp, int *yrp, int *xmp, int *ymp)
 {
-    if (!(void*)this)
-        return (false);
+    {
+        sObj *ot = this;
+        if (!ot)
+            return (false);
+    }
     if (o_next)
         return (false);
     if (!o_obj || o_obj->type() != CDWIRE)

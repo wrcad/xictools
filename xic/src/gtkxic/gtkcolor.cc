@@ -423,7 +423,8 @@ sClr::update()
 void
 sClr::update_color()
 {
-    if ((void*)this && c_sel) {
+    sClr *ct = this;
+    if (ct && c_sel) {
         int r, g, b;
         c_get_rgb(c_mode, &r, &g, &b);
         double rgb[4];

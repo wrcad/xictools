@@ -61,8 +61,11 @@ ParseNode::print(FILE *fp)
 void
 ParseNode::string(sLstr &lstr, bool unique)
 {
-    if (!(void*)this)
-        return;
+    {
+        ParseNode *pnt = this;
+        if (!pnt)
+            return;
+    }
 
     if (type == PT_VAR) {
         lstr.add(data.v->name);
@@ -175,8 +178,11 @@ ParseNode::getVar()
 bool
 ParseNode::istrue(void *datap)
 {
-    if (!(void*)this)
-        return (false);
+    {
+        ParseNode *pnt = this;
+        if (!pnt)
+            return (false);
+    }
     if (type == PT_VAR) {
         Variable *v = getVar();
         if (v)
@@ -203,9 +209,11 @@ ParseNode::istrue(void *datap)
 bool
 ParseNode::check()
 {
-    if (!(void*)this)
-        return (OK);
-
+    {
+        ParseNode *pnt = this;
+        if (!pnt)
+            return (OK);
+    }
     if (type == PT_VAR || type == PT_CONSTANT)
         return (OK);
     if (type == PT_BINOP) {
@@ -231,7 +239,8 @@ ParseNode::check()
 void
 ParseNode::free()
 {
-    if ((void*)this) {
+    ParseNode *pnt = this;
+    if (pnt) {
         if (SIparse()->isSubFunc(this)) {
             SIfunc *sf = data.f.userfunc;
             if (sf)
@@ -450,7 +459,12 @@ ParseNode::evalTree(SIlexprCx *cx, Zlist **zret, PolarityType retwhich)
     TimeDbgAccum ac("evalTree");
 
     *zret = 0;
-    if (!(void*)this || !cx)
+    {
+        ParseNode *pnt = this;
+        if (!pnt)
+            return (XIok);
+    }
+    if (!cx)
         return (XIok);
 
     siVariable v;
@@ -497,8 +511,11 @@ ParseNode::evalTree(SIlexprCx *cx, Zlist **zret, PolarityType retwhich)
 bool
 ParseNode::checkTree()
 {
-    if (!(void*)this)
-        return (OK);
+    {
+        ParseNode *pnt = this;
+        if (!pnt)
+            return (OK);
+    }
 
     if (type == PT_VAR) {
         if (data.v->type == TYP_STRING || data.v->type == TYP_NOTYPE) {
@@ -573,8 +590,11 @@ bool
 ParseNode::checkExpandTree(ParseNode **pn)
 {
     *pn = 0;
-    if (!(void*)this)
-        return (OK);
+    {
+        ParseNode *pnt = this;
+        if (!pnt)
+            return (OK);
+    }
 
     if (type == PT_VAR) {
         if (data.v->type == TYP_STRING || data.v->type == TYP_NOTYPE) {
@@ -687,8 +707,11 @@ ParseNode::checkExpandTree(ParseNode **pn)
 CDll *
 ParseNode::findLayersInTree()
 {
-    if (!(void*)this)
-        return (0);
+    {
+        ParseNode *pnt = this;
+        if (!pnt)
+            return (0);
+    }
 
     if (type == PT_VAR) {
         if (data.v->type == TYP_STRING || data.v->type == TYP_NOTYPE) {
@@ -745,7 +768,12 @@ ParseNode::findLayersInTree()
 bool
 ParseNode::isLayerInTree(const CDl *ld)
 {
-    if (!(void*)this || !ld)
+    {
+        ParseNode *pnt = this;
+        if (!pnt)
+            return (false);
+    }
+    if (!ld)
         return (false);
 
     if (type == PT_VAR) {
@@ -791,8 +819,11 @@ ParseNode::isLayerInTree(const CDl *ld)
 char *
 ParseNode::checkLayersInTree()
 {
-    if (!(void*)this)
-        return (0);
+    {
+        ParseNode *pnt = this;
+        if (!pnt)
+            return (0);
+    }
 
     if (type == PT_VAR) {
         if (lexpr_string)
@@ -836,8 +867,11 @@ ParseNode::checkLayersInTree()
 char *
 ParseNode::checkCellsInTree(BBox *BB)
 {
-    if (!(void*)this)
-        return (0);
+    {
+        ParseNode *pnt = this;
+        if (!pnt)
+            return (0);
+    }
 
     if (type == PT_VAR) {
         if (lexpr_string)
@@ -927,8 +961,11 @@ using namespace zlist_funcs;
 void
 ParseNode::getBloat(int *bp)
 {
-    if (!(void*)this)
-        return;
+    {
+        ParseNode *pnt = this;
+        if (!pnt)
+            return;
+    }
 
     if (type == PT_UNOP)
         left->getBloat(bp);

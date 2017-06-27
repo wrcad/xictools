@@ -67,7 +67,8 @@ ContextDesc::ContextDesc(const CDc *cdesc,
 
 ContextDesc::~ContextDesc()
 {
-    if (!(void*)this)
+    ContextDesc *cdt = this;
+    if (!cdt)
         return;
     delete cState;
     for (int i = 0; i < DSP_NUMWINS; i++)

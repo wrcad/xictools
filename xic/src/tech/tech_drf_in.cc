@@ -346,7 +346,8 @@ cTechDrfIn::report_unresolved(sLstr &lstr)
 const sDrfColor *
 cTechDrfIn::find_color(const char *name)
 {
-    if ((void*)this && c_color_tab && name) {
+    cTechDrfIn *dit = this;
+    if (dit && c_color_tab && name) {
         const sDrfColor *c = (sDrfColor*)c_color_tab->get(name);
         if (c != (sDrfColor*)ST_NIL)
             return (c);
@@ -358,7 +359,8 @@ cTechDrfIn::find_color(const char *name)
 const sDrfColor *
 cTechDrfIn::find_color(int r, int g, int b)
 {
-    if ((void*)this && c_color_rtab) {
+    cTechDrfIn *dit = this;
+    if (dit && c_color_rtab) {
         char *nm = mk_color_name(r, g, b);
         const sDrfColor *c = (sDrfColor*)c_color_rtab->get(nm);
         delete [] nm;
@@ -414,7 +416,8 @@ cTechDrfIn::add_color(sDrfColor *c)
 const sDrfStipple *
 cTechDrfIn::find_stipple(const char *name)
 {
-    if ((void*)this && c_stipple_tab && name) {
+    cTechDrfIn *dit = this;
+    if (dit && c_stipple_tab && name) {
         const sDrfStipple *s = (sDrfStipple*)c_stipple_tab->get(name);
         if (s != (sDrfStipple*)ST_NIL)
             return (s);
@@ -426,7 +429,8 @@ cTechDrfIn::find_stipple(const char *name)
 const sDrfStipple *
 cTechDrfIn::find_stipple(const GRfillType *fill)
 {
-    if ((void*)this && c_stipple_rtab) {
+    cTechDrfIn *dit = this;
+    if (dit && c_stipple_rtab) {
         unsigned char *map = fill->newBitmap();
         char *nm = mk_stp_str(fill->nX(), fill->nY(), map);
         delete [] map;
@@ -483,7 +487,8 @@ cTechDrfIn::add_stipple(sDrfStipple *s)
 const sDrfLine *
 cTechDrfIn::find_line(const char *name)
 {
-    if ((void*)this && c_line_tab && name) {
+    cTechDrfIn *dit = this;
+    if (dit && c_line_tab && name) {
         const sDrfLine *l = (sDrfLine*)c_line_tab->get(name);
         if (l != (sDrfLine*)ST_NIL)
             return (l);
@@ -517,7 +522,8 @@ cTechDrfIn::add_line(sDrfLine *l)
 const sDrfPacket *
 cTechDrfIn::find_packet(const char *name)
 {
-    if ((void*)this && c_packet_tab && name) {
+    cTechDrfIn *dit = this;
+    if (dit && c_packet_tab && name) {
         const sDrfPacket *p = (sDrfPacket*)c_packet_tab->get(name);
         if (p != (sDrfPacket*)ST_NIL)
             return (p);
@@ -530,7 +536,8 @@ const sDrfPacket *
 cTechDrfIn::find_packet(const char *color, const char *stipple,
     const char *line, const char *outline)
 {
-    if ((void*)this && c_packet_rtab) {
+    cTechDrfIn *dit = this;
+    if (dit && c_packet_rtab) {
         char *nm = mk_packet_name(color, stipple, line, outline);
         const sDrfPacket *p = (sDrfPacket*)c_packet_rtab->get(nm);
         delete [] nm;
