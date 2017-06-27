@@ -3,14 +3,16 @@
 
 SOEXT = @SOEXT@
 
-FILES = wr_install foo
+FILES = wr_install
 LPATH = ../../../xt_base
 KPATH = ../../../KLU
 
-dummy: $(FILES)
+dummy: $(FILES) foo
 
-wr_install: $(LPATH)/packages/util/$@
+$(FILES):
 	cp -f $(LPATH)/packages/util/$@ .
+
+wr_install:     $(LPATH)/packages/util/wr_install
 
 foo::
 	if [ -f $(KPATH)/klu_wr.$(SOEXT) ]; then \
@@ -18,9 +20,11 @@ foo::
 	fi
 
 klu_wr.$(SOEXT): $(KPATH)/klu_wr.$(SOEXT)
-	cp $(KPATH)/klu_wr.$(SOEXT) .
+	cp -f $(KPATH)/klu_wr.$(SOEXT) .
 
 clean:
+	rm -f $(FILES) klu_wr.$(SOEXT)
 
 distclean:
-	rm -f wr_install klu_wr.$(SOEXT) Makefile
+	rm -f $(FILES) klu_wr.$(SOEXT) Makefile
+

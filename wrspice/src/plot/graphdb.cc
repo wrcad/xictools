@@ -339,8 +339,10 @@ SPgraphics::InitGgen()
 sGraph *
 sGgen::next()
 {
-    if (!(void*)this)
+    const sGgen *thisgen = this;
+    if (!thisgen)
         return (0);
+
     if (!graph) {
         delete this;
         return (0);

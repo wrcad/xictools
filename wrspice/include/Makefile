@@ -1,11 +1,8 @@
 #######################################################################
-# wrspice/include/Makefile.in
+# wrspice/include/Makefile
 #######################################################################
-# $Id: Makefile.in,v 2.49 2012/05/16 17:58:58 stevew Exp $
+# $Id:$
 #######################################################################
-
-SPICE_VERSION = @SPICE_VERSION@
-DATE = @DATE@
 
 LPATH = ../../xt_base
 FILES = spmatrix.h hash.h paramsub.h spnumber.h spparse.h
@@ -13,21 +10,23 @@ FILES = spmatrix.h hash.h paramsub.h spnumber.h spparse.h
 depend: $(FILES)
 
 spmatrix.h: $(LPATH)/sparse/spmatrix.h
-	cp -f $(LPATH)/sparse/spmatrix.h .
+	cp -fp $(LPATH)/sparse/spmatrix.h .
 
 spparse.h: $(LPATH)/spnumber/spparse.h
-	cp -f $(LPATH)/spnumber/spparse.h .
+	cp -fp $(LPATH)/spnumber/spparse.h .
 
 hash.h: $(LPATH)/spnumber/hash.h
-	cp -f $(LPATH)/spnumber/hash.h .
+	cp -fp $(LPATH)/spnumber/hash.h .
 
 paramsub.h: $(LPATH)/spnumber/paramsub.h
-	cp -f $(LPATH)/spnumber/paramsub.h .
+	cp -fp $(LPATH)/spnumber/paramsub.h .
 
 spnumber.h: $(LPATH)/spnumber/spnumber.h
-	cp -f $(LPATH)/spnumber/spnumber.h .
+	cp -fp $(LPATH)/spnumber/spnumber.h .
 
 clean:
+	rm -f $(FILES)
 
 distclean:
-	rm -f $(FILES) Makefile
+	rm -f $(FILES)
+

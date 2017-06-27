@@ -2326,8 +2326,10 @@ sCblkTab::~sCblkTab()
 wordlist *
 sCblkTab::dump_wl(const char *tag)
 {
-    if (!(void*)this)
+    const sCblkTab *cbt = this;
+    if (!cbt)
         return (0);
+
     char buf[128];
     if (tag) {
         sCblk *blk = (sCblk*)get(tag);

@@ -425,7 +425,8 @@ spMatrixFrame::spCheckNode(int node, sCKT *ckt)
 void
 spMatrixFrame::spGetStat(int *size, int *nonZero, int *fillIns)
 {
-    if ((void*)this) {
+    const spMatrixFrame *thismf = this;
+    if (thismf) {
         *size = Size;
         *nonZero = spElementCount();
         *fillIns = spFillinCount();

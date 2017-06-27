@@ -468,7 +468,8 @@ sGENinstance::setParam(int param, IFdata *data)
 {
     if (!data)
         return (E_BADPARM);
-    if (!(void*)this)
+    const sGENinstance *inst = this;
+    if (!inst)
         return (E_NODEV);
     int type = GENmodPtr->GENmodType;
     if (type < 0 || type >= DEV.numdevs() || !DEV.device(type))
@@ -484,7 +485,8 @@ sGENinstance::setParam(const char *pname, IFdata *data)
 {
     if (!pname || !data)
         return (E_BADPARM);
-    if (!(void*)this)
+    const sGENinstance *inst = this;
+    if (!inst)
         return (E_NODEV);
     int type = GENmodPtr->GENmodType;
     if (type < 0 || type >= DEV.numdevs())
@@ -507,7 +509,8 @@ sGENinstance::askParam(const sCKT *ckt, int param, IFdata *data) const
 {
     if (!data)
         return (E_BADPARM);
-    if (!(void*)this)
+    const sGENinstance *inst = this;
+    if (!inst)
         return (E_NODEV);
     int type = GENmodPtr->GENmodType;
     if (type < 0 || type >= DEV.numdevs() || !DEV.device(type))
@@ -523,7 +526,8 @@ sGENinstance::askParam(const sCKT *ckt, const char *pname, IFdata *data) const
 {
     if (!pname || !data)
         return (E_BADPARM);
-    if (!(void*)this)
+    const sGENinstance *inst = this;
+    if (!inst)
         return (E_NODEV);
     int type = GENmodPtr->GENmodType;
     if (type < 0 || type >= DEV.numdevs() || !DEV.device(type))
@@ -537,15 +541,16 @@ sGENinstance::askParam(const sCKT *ckt, const char *pname, IFdata *data) const
 // End of sGENinstance functions.
 
 
-// Set a model parameter identified by number;
+// Set a model parameter identified by number.
 //
 int
 sGENmodel::setParam(int param, IFdata *data)
 {
     if (!data)
         return (E_BADPARM);
-    if (!(void*)this)
-        return (E_NODEV);
+    const sGENmodel *mod = this;
+    if (!mod)
+        return (E_NOMOD);
     int type = GENmodType;
     if (type < 0 || type >= DEV.numdevs() || !DEV.device(type))
         return (E_NOMOD);
@@ -560,8 +565,9 @@ sGENmodel::setParam(const char *pname, IFdata *data)
 {
     if (!pname || !data)
         return (E_BADPARM);
-    if (!(void*)this)
-        return (E_NODEV);
+    const sGENmodel *mod = this;
+    if (!mod)
+        return (E_NOMOD);
 
     int type = GENmodType;
     IFdevice *dev = DEV.device(type);
@@ -582,8 +588,9 @@ sGENmodel::askParam(int param, IFdata *data) const
 {
     if (!data)
         return (E_BADPARM);
-    if (!(void*)this)
-        return (E_NODEV);
+    const sGENmodel *mod = this;
+    if (!mod)
+        return (E_NOMOD);
     int type = GENmodType;
     if (type < 0 || type >= DEV.numdevs() || !DEV.device(type))
         return (E_NOMOD);
@@ -598,8 +605,9 @@ sGENmodel::askParam(const char *pname, IFdata *data) const
 {
     if (!pname || !data)
         return (E_BADPARM);
-    if (!(void*)this)
-        return (E_NODEV);
+    const sGENmodel *mod = this;
+    if (!mod)
+        return (E_NOMOD);
     int type = GENmodType;
     if (type < 0 || type >= DEV.numdevs() || !DEV.device(type))
         return (E_NOMOD);

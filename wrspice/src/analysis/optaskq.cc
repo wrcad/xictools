@@ -236,351 +236,352 @@ int
 sOPTIONS::askOpt(int which, IFvalue *value, int *notset)
 {
     *notset = 0;
+    const sOPTIONS *opt = this;
 
     switch (which) {
     case OPT_ABSTOL:
-        if ((void*)this && OPTabstol_given)
+        if (opt && OPTabstol_given)
             value->rValue = OPTabstol;
         else
             *notset = 1;
         break;
     case OPT_CHGTOL:
-        if ((void*)this && OPTchgtol_given)
+        if (opt && OPTchgtol_given)
             value->rValue = OPTchgtol;
         else
             *notset = 1;
         break;
     case OPT_DCMU:
-        if ((void*)this && OPTdcmu_given)
+        if (opt && OPTdcmu_given)
             value->rValue = OPTdcmu;
         else
             *notset = 1;
         break;
     case OPT_DEFAD:
-        if ((void*)this && OPTdefad_given)
+        if (opt && OPTdefad_given)
             value->rValue = OPTdefad;
         else
             *notset = 1;
         break;
     case OPT_DEFAS:
-        if ((void*)this && OPTdefas_given)
+        if (opt && OPTdefas_given)
             value->rValue = OPTdefas;
         else
             *notset = 1;
         break;
     case OPT_DEFL:
-        if ((void*)this && OPTdefl_given)
+        if (opt && OPTdefl_given)
             value->rValue = OPTdefl;
         else
             *notset = 1;
         break;
     case OPT_DEFW:
-        if ((void*)this && OPTdefw_given)
+        if (opt && OPTdefw_given)
             value->rValue = OPTdefw;
         else
             *notset = 1;
         break;
     case OPT_DELMIN:
-        if ((void*)this && OPTdelmin_given)
+        if (opt && OPTdelmin_given)
             value->rValue = OPTdelmin;
         else
             *notset = 1;
         break;
     case OPT_DPHIMAX:
-        if ((void*)this && OPTdphimax_given)
+        if (opt && OPTdphimax_given)
             value->rValue = OPTdphimax;
         else
             *notset = 1;
         break;
     case OPT_GMAX:
-        if ((void*)this && OPTgmax_given)
+        if (opt && OPTgmax_given)
             value->rValue = OPTgmax;
         else
             *notset = 1;
         break;
     case OPT_GMIN:
-        if ((void*)this && OPTgmin_given)
+        if (opt && OPTgmin_given)
             value->rValue = OPTgmin;
         else
             *notset = 1;
         break;
     case OPT_MAXDATA:
-        if ((void*)this && OPTmaxdata_given)
+        if (opt && OPTmaxdata_given)
             value->rValue = OPTmaxdata;
         else
             *notset = 1;
         break;
     case OPT_MINBREAK:
-        if ((void*)this && OPTminbreak_given)
+        if (opt && OPTminbreak_given)
             value->rValue = OPTminbreak;
         else
             *notset = 1;
         break;
     case OPT_PIVREL:
-        if ((void*)this && OPTpivrel_given)
+        if (opt && OPTpivrel_given)
             value->rValue = OPTpivrel;
         else
             *notset = 1;
         break;
     case OPT_PIVTOL:
-        if ((void*)this && OPTpivtol_given)
+        if (opt && OPTpivtol_given)
             value->rValue = OPTpivtol;
         else
             *notset = 1;
         break;
     case OPT_RAMPUP:
-        if ((void*)this && OPTrampup_given)
+        if (opt && OPTrampup_given)
             value->rValue = OPTrampup;
         else
             *notset = 1;
         break;
     case OPT_RELTOL:
-        if ((void*)this && OPTreltol_given)
+        if (opt && OPTreltol_given)
             value->rValue = OPTreltol;
         else
             *notset = 1;
         break;
     case OPT_TEMP:
-        if ((void*)this && OPTtemp_given)
+        if (opt && OPTtemp_given)
             value->rValue = OPTtemp - wrsCONSTCtoK;
         else
             *notset = 1;
         break;
     case OPT_TNOM:
-        if ((void*)this && OPTtnom_given)
+        if (opt && OPTtnom_given)
             value->rValue = OPTtnom - wrsCONSTCtoK;
         else
             *notset = 1;
         break;
     case OPT_TRAPRATIO:
-        if ((void*)this && OPTtrapratio_given)
+        if (opt && OPTtrapratio_given)
             value->rValue = OPTtrapratio;
         else
             *notset = 1;
         break;
     case OPT_TRTOL:
-        if ((void*)this && OPTtrtol_given)
+        if (opt && OPTtrtol_given)
             value->rValue = OPTtrtol;
         else
             *notset = 1;
         break;
     case OPT_VNTOL:
-        if ((void*)this && OPTvntol_given)
+        if (opt && OPTvntol_given)
             value->rValue = OPTvntol;
         else
             *notset = 1;
         break;
     case OPT_XMU:
-        if ((void*)this && OPTxmu_given)
+        if (opt && OPTxmu_given)
             value->rValue = OPTxmu;
         else
             *notset = 1;
         break;
 
     case OPT_BYPASS:
-        if ((void*)this && OPTbypass_given)
+        if (opt && OPTbypass_given)
             value->iValue = OPTbypass;
         else
             *notset = 1;
         break;
     case OPT_FPEMODE:
-        if ((void*)this && OPTfpemode_given)
+        if (opt && OPTfpemode_given)
             value->iValue = OPTfpemode;
         else
             *notset = 1;
         break;
     case OPT_GMINSTEPS:
-        if ((void*)this && OPTgminsteps_given)
+        if (opt && OPTgminsteps_given)
             value->iValue = OPTgminsteps;
         else
             *notset = 1;
         break;
     case OPT_INTERPLEV:
-        if ((void*)this && OPTinterplev_given)
+        if (opt && OPTinterplev_given)
             value->iValue = OPTinterplev;
         else
             *notset = 1;
         break;
     case OPT_ITL1:
-        if ((void*)this && OPTitl1_given)
+        if (opt && OPTitl1_given)
             value->iValue = OPTitl1;
         else
             *notset = 1;
         break;
     case OPT_ITL2:
-        if ((void*)this && OPTitl2_given)
+        if (opt && OPTitl2_given)
             value->iValue = OPTitl2;
         else
             *notset = 1;
         break;
     case OPT_ITL2GMIN:
-        if ((void*)this && OPTitl2gmin_given)
+        if (opt && OPTitl2gmin_given)
             value->iValue = OPTitl2gmin;
         else
             *notset = 1;
         break;
     case OPT_ITL2SRC:
-        if ((void*)this && OPTitl2src_given)
+        if (opt && OPTitl2src_given)
             value->iValue = OPTitl2src;
         else
             *notset = 1;
         break;
     case OPT_ITL4:
-        if ((void*)this && OPTitl4_given)
+        if (opt && OPTitl4_given)
             value->iValue = OPTitl4;
         else
             *notset = 1;
         break;
 #ifdef WITH_THREADS
     case OPT_LOADTHRDS:
-        if ((void*)this && OPTloadthrds_given)
+        if (opt && OPTloadthrds_given)
             value->iValue = OPTloadthrds;
         else
             *notset = 1;
         break;
     case OPT_LOOPTHRDS:
-        if ((void*)this && OPTloopthrds_given)
+        if (opt && OPTloopthrds_given)
             value->iValue = OPTloopthrds;
         else
             *notset = 1;
         break;
 #endif
     case OPT_MAXORD:
-        if ((void*)this && OPTmaxord_given)
+        if (opt && OPTmaxord_given)
             value->iValue = OPTmaxord;
         else
             *notset = 1;
         break;
     case OPT_SRCSTEPS:
-        if ((void*)this && OPTsrcsteps_given)
+        if (opt && OPTsrcsteps_given)
             value->iValue = OPTsrcsteps;
         else
             *notset = 1;
         break;
 
     case OPT_DCODDSTEP:
-        if ((void*)this && OPTdcoddstep_given)
+        if (opt && OPTdcoddstep_given)
             value->iValue = OPTdcoddstep;
         else
             *notset = 1;
         break;
     case OPT_EXTPREC:
-        if ((void*)this && OPTextprec_given)
+        if (opt && OPTextprec_given)
             value->iValue = OPTextprec;
         else
             *notset = 1;
         break;
     case OPT_FORCEGMIN:
-        if ((void*)this && OPTforcegmin_given)
+        if (opt && OPTforcegmin_given)
             value->iValue = OPTforcegmin;
         else
             *notset = 1;
         break;
     case OPT_GMINFIRST:
-        if ((void*)this && OPTgminfirst_given)
+        if (opt && OPTgminfirst_given)
             value->iValue = OPTgminfirst;
         else
             *notset = 1;
         break;
     case OPT_HSPICE:
-        if ((void*)this && OPThspice_given)
+        if (opt && OPThspice_given)
             value->iValue = OPThspice;
         else
             *notset = 1;
         break;
     case OPT_JJACCEL:
-        if ((void*)this && OPTjjaccel_given)
+        if (opt && OPTjjaccel_given)
             value->iValue = OPTjjaccel;
         else
             *notset = 1;
         break;
     case OPT_NOITER:
-        if ((void*)this && OPTnoiter_given)
+        if (opt && OPTnoiter_given)
             value->iValue = OPTnoiter;
         else
             *notset = 1;
         break;
     case OPT_NOJJTP:
-        if ((void*)this && OPTnojjtp_given)
+        if (opt && OPTnojjtp_given)
             value->iValue = OPTnojjtp;
         else
             *notset = 1;
         break;
     case OPT_NOKLU:
-        if ((void*)this && OPTnoklu_given)
+        if (opt && OPTnoklu_given)
             value->iValue = OPTnoklu;
         else
             *notset = 1;
         break;
     case OPT_NOMATSORT:
-        if ((void*)this && OPTnomatsort_given)
+        if (opt && OPTnomatsort_given)
             value->iValue = OPTnomatsort;
         else
             *notset = 1;
         break;
     case OPT_NOOPITER:
-        if ((void*)this && OPTnoopiter_given)
+        if (opt && OPTnoopiter_given)
             value->iValue = OPTnoopiter;
         else
             *notset = 1;
         break;
     case OPT_NOSHELLOPTS:
-        if ((void*)this && OPTnoshellopts_given)
+        if (opt && OPTnoshellopts_given)
             value->iValue = OPTnoshellopts;
         else
             *notset = 1;
         break;
     case OPT_OLDLIMIT:
-        if ((void*)this && OPToldlimit_given)
+        if (opt && OPToldlimit_given)
             value->iValue = OPToldlimit;
         else
             *notset = 1;
         break;
     case OPT_OLDSTEPLIM:
-        if ((void*)this && OPToldsteplim_given)
+        if (opt && OPToldsteplim_given)
             value->iValue = OPToldsteplim;
         else
             *notset = 1;
         break;
     case OPT_RENUMBER:
-        if ((void*)this && OPTrenumber_given)
+        if (opt && OPTrenumber_given)
             value->iValue = OPTrenumber;
         else
             *notset = 1;
         break;
     case OPT_SAVECURRENT:
-        if ((void*)this && OPTsavecurrent_given)
+        if (opt && OPTsavecurrent_given)
             value->iValue = OPTsavecurrent;
         else
             *notset = 1;
         break;
     case OPT_SPICE3:
-        if ((void*)this && OPTspice3_given)
+        if (opt && OPTspice3_given)
             value->iValue = OPTspice3;
         else
             *notset = 1;
         break;
     case OPT_TRAPCHECK:
-        if ((void*)this && OPTtrapcheck_given)
+        if (opt && OPTtrapcheck_given)
             value->iValue = OPTtrapcheck;
         else
             *notset = 1;
         break;
     case OPT_TRYTOCOMPACT:
-        if ((void*)this && OPTtrytocompact_given)
+        if (opt && OPTtrytocompact_given)
             value->iValue = OPTtrytocompact;
         else
             *notset = 1;
         break;
     case OPT_USEADJOINT:
-        if ((void*)this && OPTuseadjoint_given)
+        if (opt && OPTuseadjoint_given)
             value->iValue = OPTuseadjoint;
         else
             *notset = 1;
         break;
 
     case OPT_METHOD:
-        if ((void*)this && OPTmaxord_given) {
+        if (opt && OPTmaxord_given) {
             if (OPTmethod == TRAPEZOIDAL)
                 value->sValue = spkw_trap;
             else if (OPTmethod == GEAR)
@@ -592,7 +593,7 @@ sOPTIONS::askOpt(int which, IFvalue *value, int *notset)
             *notset = 1;
         break;
     case OPT_OPTMERGE:
-        if ((void*)this && OPToptmerge_given) {
+        if (opt && OPToptmerge_given) {
             if (OPToptmerge == OMRG_GLOBAL)
                 value->sValue = spkw_global;
             else if (OPToptmerge == OMRG_LOCAL)
@@ -606,7 +607,7 @@ sOPTIONS::askOpt(int which, IFvalue *value, int *notset)
             *notset = 1;
         break;
     case OPT_PARHIER:
-        if ((void*)this && OPTparhier_given) {
+        if (opt && OPTparhier_given) {
             if (OPTparhier == 0)
                 value->sValue = spkw_global;
             else if (OPToptmerge == 1)
@@ -618,7 +619,7 @@ sOPTIONS::askOpt(int which, IFvalue *value, int *notset)
             *notset = 1;
         break;
     case OPT_STEPTYPE:
-        if ((void*)this && OPTsteptype_given) {
+        if (opt && OPTsteptype_given) {
             if (OPTsteptype == STEP_NORMAL)
                 value->sValue = spkw_interpolate;
             else if (OPTsteptype == STEP_HITUSERTP)

@@ -128,8 +128,10 @@ sDataVec::newperm(sPlot *pl)
 sDataVec *
 sDataVec::copy()
 {
-    if (!(void*)this)
+    const sDataVec *datavec = this;
+    if (!datavec)
         return (0);
+
     sDataVec *nv = new sDataVec(lstring::copy(v_name), v_flags & VF_COPYMASK,
         0, &v_units);
     nv->v_length = v_length;
@@ -344,7 +346,8 @@ sDataVec::sort()
 sDataVec *
 sDataVec::mkfamily()
 {
-    if ((void*)this == 0)
+    const sDataVec *datavec = this;
+    if (!datavec)
         return (0);
     if (v_numdims < 2)
         return (this);

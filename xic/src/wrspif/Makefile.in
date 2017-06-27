@@ -35,12 +35,12 @@ $(LIB_TARGET): $(CCOBJS)
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
 $(SPFILES):
-	cp -f $(LPATH)/spnumber/$@ .
+	cp -fp $(LPATH)/spnumber/$@ .
 
-hash.cc: $(LPATH)/spnumber/hash.cc
-paramsub.cc: $(LPATH)/spnumber/paramsub.cc
-spnumber.cc: $(LPATH)/spnumber/spnumber.cc
-spparse.cc: $(LPATH)/spnumber/spparse.cc
+hash.cc:        $(LPATH)/spnumber/hash.cc
+paramsub.cc:    $(LPATH)/spnumber/paramsub.cc
+spnumber.cc:    $(LPATH)/spnumber/spnumber.cc
+spparse.cc:     $(LPATH)/spnumber/spparse.cc
 
 depend: $(SPFILES)
 	@echo depending in xic/wrspif
@@ -50,9 +50,9 @@ depend: $(SPFILES)
 	fi
 
 clean:
-	-rm *.o $(LIB_TARGET)
+	-rm *.o $(LIB_TARGET) $(SPFILES)
 
 distclean:
-	-rm *.o $(LIB_TARGET) Makefile $(SPFILES)
+	-rm *.o $(LIB_TARGET) $(SPFILES) Makefile
 
 #######################################################################

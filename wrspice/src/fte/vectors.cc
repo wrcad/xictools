@@ -2248,8 +2248,10 @@ sPlot::num_perm_vecs() const
 sDataVec *
 sPlot::find_vec(const char *word)
 {
-    if (!(void*)this || !word || !*word)
+    const sPlot *tplot = this;
+    if (!tplot || !word || !*word)
         return (0);
+
     if (lstring::cieq(word, "all")) {
         // Create a dummy vector with link2 pointing at dvlist.
         sHgen gen(pl_hashtab);
@@ -2583,8 +2585,10 @@ sPlot::compare(const sPlot *pl)
 void
 sPlot::destroy()
 {
-    if (!(void*)this)
+    const sPlot *tplot = this;
+    if (!tplot)
         return;
+
     if (this == pl_constants) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "can't destroy the constants plot.\n");
         return;

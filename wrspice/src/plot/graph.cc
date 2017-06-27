@@ -120,8 +120,10 @@ sGraph::gr_dev_init()
 void
 sGraph::gr_reset()
 {
-    if (!(void*)this)
+    const sGraph *thisgr = this;
+    if (!thisgr)
         return;
+
     while (gr_keyed) {
         sKeyed *nextk = gr_keyed->next;
         delete gr_keyed;

@@ -320,7 +320,7 @@ sHtab::wl() const
 {
 #ifdef WRSPICE
     {
-        sHtab *ht = this;
+        const sHtab *ht = this;
         if (!ht)
             return (0);
     }

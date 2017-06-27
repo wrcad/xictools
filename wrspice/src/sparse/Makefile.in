@@ -19,7 +19,7 @@ LIB_TARGET = sparse.a
 
 LPATH = ../../../xt_base
 KPATH = ../../../KLU
-HFILES = spconfig.h spmacros.h
+SP_HFILES = spconfig.h spmacros.h
 SP_CCFILES = spbuild.cc spfactor.cc spoutput.cc spsolve.cc sputils.cc
 CCFILES = kluif.cc spspice.cc $(SP_CCFILES)
 CCOBJS = $(CCFILES:.cc=.o)
@@ -27,7 +27,7 @@ INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil \
 -I$(KPATH)/AMD/Include -I$(KPATH)/BTF/Include -I$(KPATH)/COLAMD/Include \
 -I$(KPATH)/KLU/Include -I$(KPATH)/SuiteSparse_config
 
-$(LIB_TARGET): $(HFILES) $(CCOBJS)
+$(LIB_TARGET): $(SP_HFILES) $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
 	    rm -f $(LIB_TARGET); \
 	fi
@@ -37,10 +37,18 @@ $(LIB_TARGET): $(HFILES) $(CCOBJS)
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
-$(HFILES) $(SP_CCFILES): $(LPATH)/sparse/$@
-	cp -f $(LPATH)/sparse/$@ .
+$(SP_HFILES) $(SP_CCFILES):
+	cp -fp $(LPATH)/sparse/$@ .
 
-depend: $(HFILES) $(CCFILES)
+spconfig.h:     $(LPATH)/sparse/spconfig.h
+spmacros.h:     $(LPATH)/sparse/spmacros.h
+spbuild.cc:     $(LPATH)/sparse/spbuild.cc
+spfactor.cc:    $(LPATH)/sparse/spfactor.cc
+spoutput.cc:    $(LPATH)/sparse/spoutput.cc
+spsolve.cc:     $(LPATH)/sparse/spsolve.cc
+sputils.cc:     $(LPATH)/sparse/sputils.cc
+
+depend: $(SP_HFILES) $(CCFILES)
 	@echo depending in wrspice/sparse
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
@@ -48,9 +56,9 @@ depend: $(HFILES) $(CCFILES)
 	fi
 
 clean:
-	-rm *.o $(LIB_TARGET)
+	-rm *.o $(LIB_TARGET) $(SP_HFILES) $(SP_CCFILES)
 
 distclean:
-	-rm *.o $(LIB_TARGET) Makefile $(SP_CCFILES)
+	-rm *.o $(LIB_TARGET) $(SP_HFILES) $(SP_CCFILES) Makefile
 
 #######################################################################

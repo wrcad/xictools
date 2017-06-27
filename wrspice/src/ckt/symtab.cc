@@ -574,7 +574,8 @@ sCKTnodeTab::dealloc(unsigned int num)
 int
 sCKTnode::ask(int parm, IFvalue *value) const
 {
-    if (!(void*)this)
+    const sCKTnode *node = this;
+    if (!node)
         return (E_BADPARM);
     switch (parm) {
     case PARM_NS:
@@ -598,7 +599,8 @@ sCKTnode::ask(int parm, IFvalue *value) const
 int
 sCKTnode::set(int parm, IFdata *data)
 {
-    if (!(void*)this)
+    const sCKTnode *node = this;
+    if (!node)
         return (E_BADPARM);
 
     switch (parm) {
@@ -639,7 +641,8 @@ sCKTnode::set(int parm, IFdata *data)
 int
 sCKTnode::bind(sGENinstance *fast, int term)
 {
-    if (!(void*)this || !fast)
+    const sCKTnode *node = this;
+    if (!node || !fast)
         return (E_NOTERM);
     int tp = fast->GENmodPtr->GENmodType;
     char key = *(const char*)fast->GENname;

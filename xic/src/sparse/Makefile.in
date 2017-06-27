@@ -33,8 +33,15 @@ $(LIB_TARGET): $(HFILES) $(CCOBJS)
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
-$(HFILES) $(CCFILES): $(LPATH)/sparse/$@
-	cp -f $(LPATH)/sparse/$@ .
+$(HFILES) $(CCFILES):
+	cp -fp $(LPATH)/sparse/$@ .
+
+spconfig.h:     $(LPATH)/sparse/spconfig.h
+spmacros.h:     $(LPATH)/sparse/spmacros.h
+spbuild.cc:     $(LPATH)/sparse/spbuild.cc
+spfactor.cc:    $(LPATH)/sparse/spfactor.cc
+spsolve.cc:     $(LPATH)/sparse/spsolve.cc
+sputils.cc:     $(LPATH)/sparse/sputils.cc
 
 depend: $(HFILES) $(CCFILES)
 	@echo depending in xic/sparse
@@ -44,9 +51,9 @@ depend: $(HFILES) $(CCFILES)
 	fi
 
 clean:
-	-rm *.o $(LIB_TARGET)
+	-rm *.o $(LIB_TARGET) $(HFILES) $(CCFILES)
 
 distclean:
-	-rm *.o $(LIB_TARGET) Makefile $(HFILES) $(CCFILES)
+	-rm *.o $(LIB_TARGET) $(HFILES) $(CCFILES) Makefile
 
 #######################################################################

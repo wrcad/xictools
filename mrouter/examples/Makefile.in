@@ -30,10 +30,6 @@ mrouter-plg: main-plg.cc
 
 depend:
 	@echo depending in examples
-	@if [ x$(DEPEND_DONE) = x ]; then \
-	    echo DEPEND_DONE = 1 >> Makefile; \
-	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
-	fi
 
 clean:
 	-@rm mrouter-plg

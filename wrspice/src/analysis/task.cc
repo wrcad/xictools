@@ -49,7 +49,8 @@ sTASK::newAnal(int type, sJOB **analPtr)
         if (job) {
             job->JOBname = an->name;
             job->JOBtype = type;
-            if ((void*)this) {
+            const sTASK *tsk = this;
+            if (tsk) {
                 job->JOBnextJob = TSKjobs;
                 TSKjobs = job;
             }

@@ -25,13 +25,29 @@ dummy: $(XPMS) $(BASEFILES) $(SPFILES)
 	cd screenshots; $(MAKE)
 
 $(XPMS): $(BITMAPS)/$@
-	cp -f $(BITMAPS)/$@ .
+	cp -fp $(BITMAPS)/$@ .
 
-$(BASEFILES): $(BASE)/$@
-	cp -f $(BASE)/$@ .
+$(BASEFILES):
+	cp -fp $(BASE)/$@ .
 
-$(SPFILES): $(SPBASE)/$@
-	cp -f $(SPBASE)/$@ .
+$(SPFILES):
+	cp -fp $(SPBASE)/$@ .
+
+FileSel.hlp:    $(BASE)/FileSel.hlp
+Hardcopy.hlp:   $(BASE)/Hardcopy.hlp
+HelpSys.hlp:    $(BASE)/HelpSys.hlp
+TextEditor.hlp: $(BASE)/TextEditor.hlp
+accessories.hlp: $(BASE)/accessories.hlp
+TMsmall.gif:    $(BASE)/TMsmall.gif
+wrbannermain.gif: $(BASE)/wrbannermain.gif
+
+spAnalysis.hlp: $(SPBASE)/spAnalysis.hlp
+spElements.hlp: $(SPBASE)/spElements.hlp
+spExpressions.hlp: $(SPBASE)/spExpressions.hlp
+spInput.hlp:    $(SPBASE)/spInput.hlp
+spModels.hlp:   $(SPBASE)/spModels.hlp
+spSemicond.hlp: $(SPBASE)/spSemicond.hlp
+spSources.hlp:  $(SPBASE)/spSources.hlp
 
 clean:
 

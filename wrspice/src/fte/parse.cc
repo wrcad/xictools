@@ -1044,10 +1044,10 @@ pnode::vecstring(const char *fnstr)
             return (0);
 
         int arity = 0;
-        if ((void*)this)
+        const pnode *tp = this;
+        if (tp)
             arity = 1;  
-        const pnode *tp;
-        for (tp = this; tp && tp->pn_op && (tp->pn_op->optype() == TT_COMMA);
+        for ( ; tp && tp->pn_op && (tp->pn_op->optype() == TT_COMMA);
                 tp = tp->pn_right)
             arity++;
         if (arity < 1 || arity > 2)
@@ -1114,7 +1114,8 @@ pnode::vecstring(const char *fnstr)
         return (p);
     }
     if (*fnstr == 'i') {
-        if (!(void*)this || !pn_string)
+        const pnode *thispn = this;
+        if (!thispn || !pn_string)
             return (0);
 
         sFunc *f;
@@ -1149,7 +1150,8 @@ pnode::vecstring(const char *fnstr)
     }
     if (lstring::eq(fnstr, "p")) {
         // Replace "p(source)" with "@source[p]".
-        if (!(void*)this || !pn_string)
+        const pnode *thispn = this;
+        if (!thispn || !pn_string)
             return (0);
         char *t = new char[strlen(pn_string) + 8];
         t[0] = '@';
@@ -1170,7 +1172,8 @@ pnode::vecstring(const char *fnstr)
 void
 pnode::get_string(sLstr &lstr, TokenType parent_optype, bool rhs) const
 {
-    if (!(void*)this) {
+    const pnode *thispn = this;
+    if (!thispn) {
         lstr.add("<undefined>");
         return;
     }
@@ -1260,7 +1263,8 @@ namespace {
 pnode *
 pnode::copy(const char *args, const pnode *nn) const
 {
-    if (!(void*)this)
+    const pnode *thispn = this;
+    if (!thispn)
         return (0);
     if (pn_string && !pn_value) {
         if (args) {
@@ -1308,7 +1312,8 @@ pnode::copy(const char *args, const pnode *nn) const
 void
 pnode::copyvecs()
 {
-    if (!(void*)this)
+    const pnode *thispn = this;
+    if (!thispn)
         return;
     if (pn_value) {
         // We specifically don't add this to the plot list

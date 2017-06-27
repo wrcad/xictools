@@ -1078,7 +1078,6 @@ if test -d ../vl; then
 fi
 if test -d ../wrspice; then
     makefiles="$makefiles \
-        ../wrspice/include/Makefile \
         ../wrspice/lib/startup/Makefile \
         ../wrspice/src/analysis/Makefile \
         ../wrspice/src/ckt/Makefile \
@@ -1095,7 +1094,7 @@ if test -d ../wrspice; then
         ../wrspice/devlib/Makefile"
     (cd ../wrspice/devlib; make -f Makefile.in devlist)
     subd="`cat ../wrspice/devlib/devices ../wrspice/devlib/modules`"
-    for a in $subd adms adms/include disto include; do
+    for a in $subd adms disto; do
         makefiles="$makefiles ../wrspice/devlib/$a/Makefile"
     done
     rm -f ../wrspice/devlib/devices ../wrspice/devlib/modules

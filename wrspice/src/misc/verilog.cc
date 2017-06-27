@@ -190,7 +190,8 @@ VerilogBlock::~VerilogBlock()
 void
 VerilogBlock::initialize()
 {
-    if ((void*)this && sim)
+    const VerilogBlock *thisvb = this;
+    if (thisvb && sim)
         sim->step(0);
 }
 
@@ -198,7 +199,8 @@ VerilogBlock::initialize()
 void
 VerilogBlock::finalize(bool pause)
 {
-    if ((void*)this && sim) {
+    const VerilogBlock *thisvb = this;
+    if (thisvb && sim) {
         if (pause)
             sim->flush_files();
         else
@@ -264,7 +266,8 @@ VerilogBlock::run_step(sOUTdata *outd)
     }
     for (sADC *a = adc; a; a = a->next)
         a->set_var(this, outd->circuitPtr->CKTrhsOld);
-    if ((void*)this && sim)
+    const VerilogBlock *thisvb = this;
+    if (thisvb && sim)
         sim->step(outd->count);
 }
 
@@ -272,7 +275,8 @@ VerilogBlock::run_step(sOUTdata *outd)
 bool
 VerilogBlock::query_var(const char *name, const char *range, double *d)
 {
-    if ((void*)this && sim && sim->top_modules) {
+    const VerilogBlock *thisvb = this;
+    if (thisvb && sim && sim->top_modules) {
         vl_context cx;
         cx.module = sim->top_modules->mods[0];
         vl_var *data = cx.lookup_var((char*)name, true);
@@ -310,7 +314,8 @@ VerilogBlock::query_var(const char *name, const char *range, double *d)
 bool
 VerilogBlock::set_var(sADC *a, double val)
 {
-    if ((void*)this && sim && sim->top_modules) {
+    const VerilogBlock *thisvb = this;
+    if (thisvb && sim && sim->top_modules) {
         vl_context cx;
         cx.module = sim->top_modules->mods[0];
         vl_var *data = cx.lookup_var((char*)a->dig_var, true);

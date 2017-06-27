@@ -440,7 +440,8 @@ sTrie::match(const char *word)
 wordlist *
 sTrie::wl(bool sib)
 {
-    if (!(void*)this)
+    const sTrie *trie = this;
+    if (!trie)
         return (0);
     wordlist *twl;
     if (!cc_invalid) {

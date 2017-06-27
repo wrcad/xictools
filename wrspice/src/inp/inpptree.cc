@@ -690,7 +690,8 @@ int
 IFparseTree::eval(double *result, double *vals, double *dvs, int *docomma)
 {
     Errs()->init_error();
-    if (!(void*)this || !pt_tree)
+    const IFparseTree *thispt = this;
+    if (!thispt || !pt_tree)
         *result = 0.0;
     else {
         if (docomma && pt_tree->p_type == PT_COMMA) {
@@ -2026,7 +2027,8 @@ IFparseNode::~IFparseNode()
 IFparseNode *
 IFparseNode::copy(bool skip_nd)
 {
-    if ((void*)this == 0)
+    const IFparseNode *thispn = this;
+    if (!thispn)
         return (0);
 
     // The p_newderiv flag is set if the node was created in differentiation,
@@ -2069,7 +2071,8 @@ IFparseNode::copy(bool skip_nd)
 bool
 IFparseNode::check()
 {
-    if (!(void*)this) {
+    const IFparseNode *thispn = this;
+    if (!thispn) {
         Errs()->add_error("parse error, null parse node");
         return (false);
     }
@@ -2114,8 +2117,10 @@ IFparseNode::check()
 bool
 IFparseNode::check_macro()
 {
-    if (!(void*)this)
+    const IFparseNode *thispn = this;
+    if (!thispn)
         return (false);
+
     switch (p_type) {
     case PT_PLACEHOLDER:
     case PT_VAR:
@@ -2151,7 +2156,8 @@ IFparseNode::check_macro()
 bool
 IFparseNode::is_const()
 {
-    if ((void*)this) {
+    const IFparseNode *thispn = this;
+    if (thispn) {
         if (p_type == PT_PLACEHOLDER || p_type == PT_VAR ||
                 p_type == PT_PARAM || p_type == PT_TFUNC)
             return (false);
@@ -2403,7 +2409,8 @@ IFparseNode::set_args(const char *names)
 double
 IFparseNode::time_limit(sCKT *ckt, double lim) 
 {
-    if ((void*)this) {
+    const IFparseNode *thispn = this;
+    if (thispn) {
         if (p_type == PT_TFUNC) {
             if (v.td)
                 v.td->time_limit(ckt, &lim);
@@ -3332,7 +3339,8 @@ IFparseNode::p_macro_deriv(double *res, const double *vals,
 void
 IFparseNode::p_init_node(double step, double finaltime)
 {
-    if ((void*)this) {
+    const IFparseNode *thispn = this;
+    if (thispn) {
         // Don't recurse into tranfunc args, unnecessary and can cause
         // stack overflow for long lists.
         if (p_type != PT_TFUNC)

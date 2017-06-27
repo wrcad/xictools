@@ -481,7 +481,8 @@ sCKTtable::tablEvalDeriv(double x)
 void
 sCKTtable::tablfix()
 {
-    if (!(void*)this)
+    const sCKTtable *thistab = this;
+    if (!thistab)
         return;
 
     sCKTentry *e, *ee;

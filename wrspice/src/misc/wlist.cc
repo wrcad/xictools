@@ -144,9 +144,10 @@ wordlist::splice(wordlist *list)
 wordlist *
 wordlist::append(wordlist *nwl)
 {
-    if ((void*)this == 0)
+    const wordlist *thiswl = this;
+    if (!thiswl)
         return (nwl);
-    if (nwl == 0)
+    if (!nwl)
         return (this);
     wordlist *wl;
     for (wl = this; wl->wl_next; wl = wl->wl_next) ;
@@ -162,7 +163,8 @@ wordlist::append(wordlist *nwl)
 void
 wordlist::print(FILE *fp) const
 {
-    if (!(void*)this)
+    const wordlist *thiswl = this;
+    if (!thiswl)
         return;
     for (const wordlist *wl = this; wl; wl = wl->wl_next) {
         if (!wl->wl_word)
@@ -180,7 +182,8 @@ wordlist::print(FILE *fp) const
 char **
 wordlist::mkvec() const
 {
-    if (!(void*)this)
+    const wordlist *thiswl = this;
+    if (!thiswl)
         return (0);
     const wordlist *wl = this;
     int len = length();
@@ -200,7 +203,8 @@ wordlist::mkvec() const
 wordlist *
 wordlist::reverse()
 {
-    if (!(void*)this)
+    const wordlist *thiswl = this;
+    if (!thiswl)
         return (0);
     wordlist *w, *t;
     for (w = this; ; w = t) {
@@ -219,7 +223,8 @@ wordlist::reverse()
 char *
 wordlist::flatten() const
 {
-    if (!(void*)this)
+    const wordlist *thiswl = this;
+    if (!thiswl)
         return (0);
     const wordlist *tw;
     int i = 0;
@@ -246,7 +251,8 @@ wordlist::flatten() const
 wordlist *
 wordlist::nthelem(int i)
 {
-    if (!(void*)this)
+    const wordlist *thiswl = this;
+    if (!thiswl)
         return (0);
     wordlist *ww = this;
     while ((i-- > 0) && ww->wl_next)
@@ -316,7 +322,8 @@ wordlist::sort()
 wordlist *
 wordlist::range(int low, int up)
 {
-    if (!(void*)this)
+    const wordlist *thiswl = this;
+    if (!thiswl)
         return (0);
     bool rev = false;
     if (low > up) {

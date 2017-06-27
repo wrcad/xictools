@@ -650,7 +650,8 @@ void
 sGraph::gr_pkg_init_colors()
 {
     SetDefaultColors();
-    if (!(void*)this)
+    const sGraph *tgraph = this;
+    if (!tgraph)
         return;
 
     plot_bag *w = dynamic_cast<plot_bag*>(gr_dev);

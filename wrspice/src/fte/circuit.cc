@@ -528,7 +528,8 @@ sFtCirc::~sFtCirc()
 void
 sFtCirc::clear()
 {
-    if (!(void*)this)
+    const sFtCirc *ftcirc = this;
+    if (!ftcirc)
         return;
 
     delete [] ci_descr;         ci_descr = 0;

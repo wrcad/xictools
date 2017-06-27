@@ -953,8 +953,10 @@ IFtranData::eval_tINTERP_D(double t)
 IFtranData *
 IFtranData::dup() const
 {
-    if (!(void*)this)
+    const IFtranData *thistd = this;
+    if (!thistd)
         return (0);
+
     IFtranData *td = new IFtranData(*this);
     if (td_coeffs) {
         td->td_coeffs = new double[td->td_numcoeffs];

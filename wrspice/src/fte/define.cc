@@ -981,8 +981,10 @@ cUdf::copy() const
 void
 cUdf::print() const
 {
-    if (!(void*)this)
+    const cUdf *cudf = this;
+    if (!cudf)
         return;
+
     sHgen gen(ud_tab);
     sHent *h;
     while ((h = gen.next()) != 0) {

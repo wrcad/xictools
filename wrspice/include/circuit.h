@@ -1845,7 +1845,8 @@ public:
 
     double mos_default_l()
     {
-        double d = (void*)this && CKTcurTask ? CKTcurTask->TSKdefaultMosL : 0.0;
+        const sCKT *ckt = this;
+        double d = ckt && CKTcurTask ? CKTcurTask->TSKdefaultMosL : 0.0;
         if (d <= 0.0)
             d = CKT_DEF_MOS_L;
         return (d);
@@ -1853,7 +1854,8 @@ public:
 
     double mos_default_w()
     {
-        double d = (void*)this && CKTcurTask ? CKTcurTask->TSKdefaultMosW : 0.0;
+        const sCKT *ckt = this;
+        double d = ckt && CKTcurTask ? CKTcurTask->TSKdefaultMosW : 0.0;
         if (d <= 0.0)
             d = CKT_DEF_MOS_W;
         return (d);
@@ -1861,7 +1863,8 @@ public:
 
     double mos_default_as()
     {
-        double d = (void*)this && CKTcurTask ? CKTcurTask->TSKdefaultMosAS : 0.0;
+        const sCKT *ckt = this;
+        double d = ckt && CKTcurTask ? CKTcurTask->TSKdefaultMosAS : 0.0;
         if (d <= 0.0)
             d = CKT_DEF_MOS_AS;
         return (d);
@@ -1869,7 +1872,8 @@ public:
 
     double mos_default_ad()
     {
-        double d = (void*)this && CKTcurTask ? CKTcurTask->TSKdefaultMosAD : 0.0;
+        const sCKT *ckt = this;
+        double d = ckt && CKTcurTask ? CKTcurTask->TSKdefaultMosAD : 0.0;
         if (d <= 0.0)
             d = CKT_DEF_MOS_AD;
         return (d);
@@ -1921,7 +1925,8 @@ public:
     //
     double interp(int which, double deflt = 0.0) const
         {
-            if (!(void*)this || !CKTstates[0])
+            const sCKT *ckt = this;
+            if (!ckt || !CKTstates[0])
                 return (deflt);
             if (CKTcurrentAnalysis & DOING_TRAN) {
                 double val = CKTtranDiffs[0]* *(CKTstates[0] + which);
@@ -1937,14 +1942,16 @@ public:
     //
     double rhsOld(int which) const
         {
-            if (!(void*)this || !CKTrhsOld)
+            const sCKT *ckt = this;
+            if (!ckt || !CKTrhsOld)
                 return (0.0);
             return (*(CKTrhsOld + which));
         }
 
     double irhsOld(int which) const
         {
-            if (!(void*)this || !CKTirhsOld)
+            const sCKT *ckt = this;
+            if (!ckt || !CKTirhsOld)
                 return (0.0);
             return (*(CKTirhsOld + which));
         }

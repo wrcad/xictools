@@ -149,7 +149,8 @@ sOPTIONS sOPTIONS::OPTsh_opts;
 sOPTIONS *
 sOPTIONS::copy()
 {
-    if (!(void*)this)
+    const sOPTIONS *opt = this;
+    if (!opt)
         return (0);
     sOPTIONS *n = new sOPTIONS(*this);
     return (n);
