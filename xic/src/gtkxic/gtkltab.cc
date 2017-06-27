@@ -560,7 +560,7 @@ namespace {
             unsigned char *a = (unsigned char*)&f;
             for (int j = 0; j < bpp; j++)
                 a[j] = *z++;
-                if ((f & mask) == (pix & mask)) {
+            if ((f & mask) == (pix & mask)) {
                 z -= bpp;
                 a = (unsigned char*)&dimpix;
                 for (int j = 0; j < bpp; j++)

@@ -265,7 +265,8 @@ vl_simulator::~vl_simulator()
 bool
 vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
 {
-    if (!this)
+    const vl_simulator *vlsim = this;
+    if (!vlsim)
         return (false);
 
     description = 0;
@@ -639,7 +640,8 @@ vl_context::push(vl_fork_join_stmt *f)
 vl_context *
 vl_context::pop()
 {
-    if (this) {
+    const vl_context *vcx = this;
+    if (vcx) {
         vl_context *cx = parent;
         delete this;
         return (cx);
@@ -1366,7 +1368,8 @@ vl_action_item::print(ostream &outs)
 vl_stack *
 vl_stack::copy()
 {
-    if (!this)
+    const vl_stack *stk = this;
+    if (!stk)
         return (0);
     return (new vl_stack(acts, num));
 }

@@ -800,11 +800,12 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
         (GtkTreeSelectionFunc)fs_tree_select_proc, this, 0);
 
     gtk_container_add(GTK_CONTAINER(swin), fs_tree);
-    if (nofiles)
+    if (nofiles) {
         gtk_table_attach(GTK_TABLE(form), swin, 0, 1, rowcnt, rowcnt+1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
         rowcnt++;
+    }
 
     gtk_widget_add_events(fs_tree, GDK_BUTTON_PRESS_MASK);
 

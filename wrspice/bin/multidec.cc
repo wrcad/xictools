@@ -99,7 +99,7 @@ main (int argc, char **argv)
     unsigned gotl=0, gotc=0, gotlen=0;
     unsigned gotname = 0, gotnum = 0;
     int ch;
-    while ((ch = getopt(argc, argv, "ul:c:r:g:k:n:o:x:L:")) != EOF)
+    while ((ch = getopt(argc, argv, "ul:c:r:g:k:n:o:x:L:")) != EOF) {
         switch (ch) {
         case 'o':
             name = new char[strlen(optarg) + 1];
@@ -139,161 +139,163 @@ main (int argc, char **argv)
             exit(1);
             break;
         case '?':
-                errflg++;
+            errflg++;
         }
-        if (errflg) {
-            usage(argv);
-            exit (2);
-        }
+    }
 
-        if (gotl + gotc + gotname + gotnum + gotlen < 5) {
-            fprintf(stderr,
-    "l, c, model_name, number_of_conductors and length must be specified.\n");
-            fprintf(stderr,"%s -u for details.\n",argv[0]);
-            fflush(stdout);
-            exit(1);
-        }
+    if (errflg) {
+        usage(argv);
+        exit (2);
+    }
 
-        if ( (k<0.0?-k:k) >= 1.0 ) {
-            fprintf(stderr,"Error: |k| must be less than 1.0\n");
-            fflush(stderr);
-            exit(1);
-        }
+    if (gotl + gotc + gotname + gotnum + gotlen < 5) {
+        fprintf(stderr,
+"l, c, model_name, number_of_conductors and length must be specified.\n");
+        fprintf(stderr,"%s -u for details.\n",argv[0]);
+        fflush(stdout);
+        exit(1);
+    }
 
-        if (num == 1) {
-            fprintf(stdout,"* single conductor line\n");
-            fflush(stdout);
-            exit(1);
-        }
+    if ( (k<0.0?-k:k) >= 1.0 ) {
+        fprintf(stderr,"Error: |k| must be less than 1.0\n");
+        fflush(stderr);
+        exit(1);
+    }
 
-        lm = l*k;
-        switch (num) {
-        case 1:
-            ctot = c;
-            break;
-        case 2:
-            ctot = c + cm;
-            break;
-        default:
-            ctot = c + 2*cm;
-            break;
-        }
+    if (num == 1) {
+        fprintf(stdout,"* single conductor line\n");
+        fflush(stdout);
+        exit(1);
+    }
 
-        comments(r, l, g, c, ctot, cm, lm, k, name, num, len);
+    lm = l*k;
+    switch (num) {
+    case 1:
+        ctot = c;
+        break;
+    case 2:
+        ctot = c + cm;
+        break;
+    default:
+        ctot = c + 2*cm;
+        break;
+    }
 
-        double **matrix = new double*[num + 1];
-        double **inverse = new double*[num + 1];
-        double *tpeigenvalues = new double[num + 1];
+    comments(r, l, g, c, ctot, cm, lm, k, name, num, len);
 
-        for (i = 1; i <= num; i++) {
-            matrix[i] = new double[num + 1];
-            inverse[i] = new double[num + 1];
-        }
+    double **matrix = new double*[num + 1];
+    double **inverse = new double*[num + 1];
+    double *tpeigenvalues = new double[num + 1];
 
-        for (i = 1; i <= num; i++) {
-            tpeigenvalues[i] = -2.0 * cos(M_PI*i/(num+1));
-        }
+    for (i = 1; i <= num; i++) {
+        matrix[i] = new double[num + 1];
+        inverse[i] = new double[num + 1];
+    }
 
-        for (i = 1; i<= num; i++) {
-            for (j = 1; j <= num; j++) {
-                matrix[i][j] = phi(i-1, tpeigenvalues[j]);
-            }
-        }
+    for (i = 1; i <= num; i++) {
+        tpeigenvalues[i] = -2.0 * cos(M_PI*i/(num+1));
+    }
 
-        double *gammaj = new double[num + 1];
-        for (j = 1; j<= num; j++) {
-            gammaj[j] = 0.0;
-            for (i = 1; i <= num; i++) {
-                gammaj[j] += matrix[i][j] * matrix[i][j];
-            }
-            gammaj[j] = sqrt(gammaj[j]);
-        }
-
+    for (i = 1; i<= num; i++) {
         for (j = 1; j <= num; j++) {
-            for (i = 1; i <= num; i++) {
-                matrix[i][j] /= gammaj[j];
+            matrix[i][j] = phi(i-1, tpeigenvalues[j]);
+        }
+    }
+
+    double *gammaj = new double[num + 1];
+    for (j = 1; j<= num; j++) {
+        gammaj[j] = 0.0;
+        for (i = 1; i <= num; i++) {
+            gammaj[j] += matrix[i][j] * matrix[i][j];
+        }
+        gammaj[j] = sqrt(gammaj[j]);
+    }
+
+    for (j = 1; j <= num; j++) {
+        for (i = 1; i <= num; i++) {
+            matrix[i][j] /= gammaj[j];
+        }
+    }
+
+    delete [] gammaj;
+
+    // matrix = M set up
+
+    {
+        double *rhs = new double[num + 1];
+        double *irhs = new double[num + 1];
+        double *solution = new double[num + 1];
+        double *isolution = new double[num + 1];
+
+        spMatrixFrame *othermatrix =
+            new spMatrixFrame(num, SP_NO_KLU | SP_NO_SORT);
+
+        for (i = 1; i <= num; i++) {
+            for (j = 1; j <= num; j++) {
+                double *elptr = othermatrix->spGetElement(i, j);
+                *elptr = matrix[i][j];
             }
         }
-
-        delete [] gammaj;
-
-        // matrix = M set up
-
-        {
-            double *rhs = new double[num + 1];
-            double *irhs = new double[num + 1];
-            double *solution = new double[num + 1];
-            double *isolution = new double[num + 1];
-
-            spMatrixFrame *othermatrix =
-                new spMatrixFrame(num, SP_NO_KLU | SP_NO_SORT);
-
-            for (i = 1; i <= num; i++) {
-                for (j = 1; j <= num; j++) {
-                    double *elptr = othermatrix->spGetElement(i, j);
-                    *elptr = matrix[i][j];
-                }
-            }
 
 #ifdef DEBUG_LEVEL1
-            spPrint(othermatrix,0,1,0);
+        spPrint(othermatrix,0,1,0);
 #endif
 
-            for (i = 1; i <= num; i++)
-                rhs[i] = 0.0;
-            rhs[1] = 1.0;
+        for (i = 1; i <= num; i++)
+            rhs[i] = 0.0;
+        rhs[1] = 1.0;
 
-            int err = othermatrix->spOrderAndFactor(rhs,
-                THRSH, ABS_THRSH, DIAG_PIVOTING);
-            othermatrix->spErrorMessage(stderr, 0);
+        int err = othermatrix->spOrderAndFactor(rhs,
+            THRSH, ABS_THRSH, DIAG_PIVOTING);
+        othermatrix->spErrorMessage(stderr, 0);
 
-            int singular_row, singular_col;
-            switch (err) {
-            case spNO_MEMORY:
-                fprintf(stderr,"No memory in spOrderAndFactor\n");
-                fflush(stderr);
-                exit(1);
-            case spSINGULAR:
-                othermatrix->spWhereSingular(&singular_row, &singular_col);
-                fprintf(stderr,
-                    "Singular matrix: problem in row %d and col %d\n",
-                    singular_row, singular_col);
-                fflush(stderr);
-                exit(1);
-            case spSMALL_PIVOT:
-                fprintf(stderr,"* Warning: matrix is illconditioned.\n");
-                fflush(stderr);
-                break;
-            default: break;
-            }
-
-            for (i = 1; i <= num; i++) {
-                for (j = 1; j <= num; j++) {
-                    rhs[j] = (j==i ? 1.0 : 0.0);
-                    irhs[j] = 0.0;
-                }
-                othermatrix->spSolveTransposed(rhs, solution, irhs, isolution);
-                for (j = 1; j <= num;j++) {
-                    inverse[i][j] = solution[j];
-                }
-            }
-
-            delete [] rhs;
-            delete [] solution;
+        int singular_row, singular_col;
+        switch (err) {
+        case spNO_MEMORY:
+            fprintf(stderr,"No memory in spOrderAndFactor\n");
+            fflush(stderr);
+            exit(1);
+        case spSINGULAR:
+            othermatrix->spWhereSingular(&singular_row, &singular_col);
+            fprintf(stderr,
+                "Singular matrix: problem in row %d and col %d\n",
+                singular_row, singular_col);
+            fflush(stderr);
+            exit(1);
+        case spSMALL_PIVOT:
+            fprintf(stderr,"* Warning: matrix is illconditioned.\n");
+            fflush(stderr);
+            break;
+        default: break;
         }
 
-        // inverse = M^{-1} set up
-
-        fprintf(stdout, "\n");
-        fprintf(stdout, "* Lossy line models\n");
-
-        options = new char[256];
-        strcpy(options, "rel=1.2 nocontrol");
         for (i = 1; i <= num; i++) {
-            fprintf(stdout,
-    ".model mod%d_%s ltra %s r=%0.12g l=%0.12g g=%0.12g c=%0.12g len=%0.12g\n",
-                i, name, options, r, l+tpeigenvalues[i]*lm, g,
-                ctot-tpeigenvalues[i]*cm, len);
+            for (j = 1; j <= num; j++) {
+                rhs[j] = (j==i ? 1.0 : 0.0);
+                irhs[j] = 0.0;
+            }
+            othermatrix->spSolveTransposed(rhs, solution, irhs, isolution);
+            for (j = 1; j <= num;j++) {
+                inverse[i][j] = solution[j];
+            }
+        }
+
+        delete [] rhs;
+        delete [] solution;
+    }
+
+    // inverse = M^{-1} set up
+
+    fprintf(stdout, "\n");
+    fprintf(stdout, "* Lossy line models\n");
+
+    options = new char[256];
+    strcpy(options, "rel=1.2 nocontrol");
+    for (i = 1; i <= num; i++) {
+        fprintf(stdout,
+".model mod%d_%s ltra %s r=%0.12g l=%0.12g g=%0.12g c=%0.12g len=%0.12g\n",
+            i, name, options, r, l+tpeigenvalues[i]*lm, g,
+            ctot-tpeigenvalues[i]*cm, len);
 //i, name, options, r, l+tpeigenvalues[i]*lm, g, ctot+tpeigenvalues[i]*cm, len);
     }
 

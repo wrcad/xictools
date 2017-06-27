@@ -176,9 +176,11 @@ namespace {
             { return (false); }
     };
 
+#ifdef HAVE_OA
     void setup_bang_cmds();
     void setup_vars();
     void setup_funcs();
+#endif
 }
 
 
@@ -230,6 +232,7 @@ cOAif::on_null_ptr()
 // ! (Bang) Commands
 //
 
+#ifdef HAVE_OA
 namespace {
     namespace oa_bangcmds {
         void oaversion(const char*);
@@ -698,6 +701,7 @@ namespace {
         XM()->RegisterBangCmd("oadelete",   &oa_bangcmds::oadelete);
     }
 }
+#endif
 // End of bang commands
 
 

@@ -71,7 +71,7 @@
 #endif
 
 #define VL_REVISION \
-"vl-"VL_VERSION" Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001."
+"vl-" VL_VERSION " Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001."
 
 
 //---------------------------------------------------------------------------

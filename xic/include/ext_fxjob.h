@@ -52,9 +52,9 @@
 #define FR_DEFAULT_PROGRAM      "FasterCap"
 #define FH_DEFAULT_PROGRAM      "fasthenry"
 #endif
-#define FC_DEFAULT_PATH         "/usr/local/bin/"FC_DEFAULT_PROGRAM
-#define FR_DEFAULT_PATH         "/usr/local/FasterCap/"FR_DEFAULT_PROGRAM
-#define FH_DEFAULT_PATH         "/usr/local/bin/"FH_DEFAULT_PROGRAM
+#define FC_DEFAULT_PATH         "/usr/local/bin/" FC_DEFAULT_PROGRAM
+#define FR_DEFAULT_PATH         "/usr/local/FasterCap/" FR_DEFAULT_PROGRAM
+#define FH_DEFAULT_PATH         "/usr/local/bin/" FH_DEFAULT_PROGRAM
 
 // Base class for graphical interface panel.
 //

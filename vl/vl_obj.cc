@@ -314,7 +314,8 @@ vl_port::~vl_port()
 vl_port *
 vl_port::copy()
 {
-    if (!this)
+    const vl_port *prt = this;
+    if (!prt)
         return (0);
     return (new vl_port(type, vl_strdup(name), copy_list(port_exp)));
 }
@@ -343,7 +344,8 @@ vl_port_connect::~vl_port_connect()
 vl_port_connect *
 vl_port_connect::copy()
 {
-    if (!this)
+    const vl_port_connect *pc = this;
+    if (!pc)
         return (0);
     return (new vl_port_connect(type, vl_strdup(name),
         expr ? expr->copy() : 0));
@@ -894,7 +896,8 @@ vl_specify_item::~vl_specify_item()
 vl_specify_item *
 vl_specify_item::copy()
 {
-    if (!this)
+    const vl_specify_item *sitm = this;
+    if (!sitm)
         return (0);
     vl_specify_item *retval = new vl_specify_item(type);
     retval->params = copy_list(params);
@@ -940,7 +943,8 @@ vl_spec_term_desc::~vl_spec_term_desc()
 vl_spec_term_desc *
 vl_spec_term_desc::copy()
 {
-    if (!this)
+    vl_spec_term_desc *stdsc = this;
+    if (!stdsc)
         return (0);
     vl_spec_term_desc *retval = new vl_spec_term_desc(vl_strdup(name),
         exp1 ? exp1->copy() : 0, exp2 ? exp2->copy() : 0);
@@ -979,7 +983,8 @@ vl_path_desc::~vl_path_desc()
 vl_path_desc *
 vl_path_desc::copy()
 {
-    if (!this)
+    const vl_path_desc *pdsc = this;
+    if (!pdsc)
         return (0);
     vl_path_desc *retval = new vl_path_desc(copy_list(list1),
         copy_list(list2));
@@ -1645,7 +1650,8 @@ vl_case_item::~vl_case_item()
 vl_case_item *
 vl_case_item::copy()
 {
-    if (!this)
+    vl_case_item *citm = this;
+    if (!citm)
         return (0);
     return (new vl_case_item(type, copy_list(exprs), stmt ? stmt->copy() : 0));
 }

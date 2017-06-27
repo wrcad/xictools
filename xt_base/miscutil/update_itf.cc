@@ -934,7 +934,7 @@ UpdIf::set_proxy(const char *addr, const char *port)
         return (0);
     }
     delete [] a;
-    return ("can't open "DST_PXFILE" file for writing");
+    return ("can't open " DST_PXFILE " file for writing");
 }
 
 

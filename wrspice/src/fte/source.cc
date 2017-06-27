@@ -2644,7 +2644,7 @@ sLine::process_conditionals(sParamTab *ptab)
             if (strchr(dd->li_line, '$'))
                 dd->var_subst();
             if (!inif)
-                err_msg(dd, ELIF_KW" or "ELSEIF_KW);
+                err_msg(dd, ELIF_KW " or " ELSEIF_KW);
             else if (!blhead) {
                 blhead = dp;
                 blev = inif;

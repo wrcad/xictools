@@ -3789,7 +3789,8 @@ vl_array::check_range(int *m, int *l)
 vl_range *
 vl_range::copy()
 {
-    if (!this || !left)
+    const vl_range *rng = this;
+    if (!rng || !left)
         return (0);
     return (new vl_range(left->copy(), right ? right->copy() : 0));
 }
@@ -3827,7 +3828,8 @@ bool
 vl_range::eval(vl_range **r)
 {
     *r = 0;
-    if (this) {
+    const vl_range *rng = this;
+    if (rng) {
         int m, l;
         if (!eval(&m, &l))
             return (false);
@@ -3871,7 +3873,8 @@ vl_delay::~vl_delay()
 vl_delay *
 vl_delay::copy()
 {
-    if (!this)
+    const vl_delay *dly = this;
+    if (!dly)
         return (0);
     vl_delay *retval;
     if (delay1)
@@ -3926,7 +3929,8 @@ vl_event_expr::~vl_event_expr()
 vl_event_expr *
 vl_event_expr::copy()
 {
-    if (!this)
+    const vl_event_expr *evxpr = this;
+    if (!evxpr)
         return (0);
     vl_event_expr *retval = new vl_event_expr(type, 0);
     if (expr)

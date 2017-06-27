@@ -959,7 +959,7 @@ struct KWent_polydegree : public KWent
         kw_polydegree,
         VTYP_NUM, DEF_polydegree_MIN, DEF_polydegree_MAX,
         "Degree of polynomial used for interpolation, default "
-            STRINGIFY(DEF_polydegree)"."); }
+            STRINGIFY(DEF_polydegree) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -987,7 +987,7 @@ struct KWent_polysteps : public KWent
         kw_polysteps,
         VTYP_NUM, DEF_polysteps_MIN, DEF_polysteps_MAX,
         "Number of interpolating points, default "
-            STRINGIFY(DEF_polysteps)"10."); }
+            STRINGIFY(DEF_polysteps) "10."); }
 
     void callback(bool isset, variable *v)
     {
@@ -2288,7 +2288,7 @@ struct KWent_diff_abstol : public KWent
     KWent_diff_abstol() { set(
         kw_diff_abstol,
         VTYP_REAL, DEF_diff_abstol_MIN, DEF_diff_abstol_MAX,
-        "Absolute error tolerance, default "STRINGIFY(DEF_diff_abstol)"."); }
+        "Absolute error tolerance, default " STRINGIFY(DEF_diff_abstol) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -2314,7 +2314,7 @@ struct KWent_diff_reltol : public KWent
     KWent_diff_reltol() { set(
         kw_diff_reltol,
         VTYP_REAL, DEF_diff_reltol_MIN, DEF_diff_reltol_MAX,
-        "Relative error tolerance, default "STRINGIFY(DEF_diff_reltol)"."); }
+        "Relative error tolerance, default " STRINGIFY(DEF_diff_reltol) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -2340,7 +2340,7 @@ struct KWent_diff_vntol : public KWent
     KWent_diff_vntol() { set(
         kw_diff_vntol,
         VTYP_REAL, DEF_diff_vntol_MIN, DEF_diff_vntol_MAX,
-        "Voltage error tolerance, default "STRINGIFY(DEF_diff_vntol)"."); }
+        "Voltage error tolerance, default " STRINGIFY(DEF_diff_vntol) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -2383,7 +2383,7 @@ struct KWent_dpolydegree : public KWent
         kw_dpolydegree,
         VTYP_NUM, DEF_dpolydegree_MIN, DEF_dpolydegree_MAX,
         "Poly degree for deriv function, default "
-            STRINGIFY(DEF_dpolydegree)"."); }
+            STRINGIFY(DEF_dpolydegree) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -2491,7 +2491,7 @@ struct KWent_fourgridsize : public KWent
         kw_fourgridsize,
         VTYP_NUM, DEF_fourgridsize_MIN, DEF_fourgridsize_MAX,
         "Number of interpolation points in fourier analysis, default "
-            STRINGIFY(DEF_fourgridsize)"."); }
+            STRINGIFY(DEF_fourgridsize) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -2684,7 +2684,7 @@ struct KWent_nfreqs : public KWent
         kw_nfreqs,
         VTYP_NUM, DEF_nfreqs_MIN, DEF_nfreqs_MAX,
         "Number of frequencies in fourier command, default "
-            STRINGIFY(DEF_nfreqs)"."); }
+            STRINGIFY(DEF_nfreqs) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -2792,7 +2792,7 @@ struct KWent_numdgt : public KWent
         kw_numdgt,
         VTYP_NUM, DEF_numdgt_MIN, DEF_numdgt_MAX,
         "Number of significant digits to print, default "
-            STRINGIFY(DEF_numdgt)"."); }
+            STRINGIFY(DEF_numdgt) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -2941,7 +2941,7 @@ struct KWent_rawfileprec : public KWent
         kw_rawfileprec,
         VTYP_NUM, DEF_rawfileprec_MIN, DEF_rawfileprec_MAX,
         "Significant digits in rawfile, default "
-            STRINGIFY(DEF_rawfileprec)"."); }
+            STRINGIFY(DEF_rawfileprec) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -3068,7 +3068,7 @@ struct KWent_specwindoworder : public KWent
         kw_specwindoworder,
         VTYP_NUM, 2.0, 8.0,
         "Spec command, gaussian window order, default "
-            STRINGIFY(DEF_specwindoworder)"."); }
+            STRINGIFY(DEF_specwindoworder) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -3746,7 +3746,7 @@ struct KWent_abstol : public KWent
     KWent_abstol() { set(
         spkw_abstol,
         VTYP_REAL, DEF_abstol_MIN, DEF_abstol_MAX,
-        "Absolute error tolerance, default "STRINGIFY(DEF_abstol)".") ;}
+        "Absolute error tolerance, default " STRINGIFY(DEF_abstol) ".") ;}
 
     void callback(bool isset, variable *v)
     {
@@ -3773,7 +3773,7 @@ struct KWent_chgtol : public KWent
     KWent_chgtol() { set(
         spkw_chgtol,
         VTYP_REAL, DEF_chgtol_MIN, DEF_chgtol_MAX,
-        "Charge tolerance, default "STRINGIFY(DEF_chgtol)"."); }
+        "Charge tolerance, default " STRINGIFY(DEF_chgtol) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -3800,7 +3800,7 @@ struct KWent_dcmu : public KWent
     KWent_dcmu() { set(
         spkw_dcmu,
         VTYP_REAL, DEF_dcMu_MIN, DEF_dcMu_MAX,
-        "DC last iteration mixing, default "STRINGIFY(DEF_dcMu)"."); }
+        "DC last iteration mixing, default " STRINGIFY(DEF_dcMu) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -3962,7 +3962,8 @@ struct KWent_dphimax : public KWent
     KWent_dphimax() { set(
         spkw_dphimax,
         VTYP_REAL, DEF_dphiMax_MIN, DEF_dphiMax_MAX,
-        "Max phase change per time step, default "STRINGIFY(DEF_dphiMax)"."); }
+        "Max phase change per time step, default "
+            STRINGIFY(DEF_dphiMax) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -3989,7 +3990,7 @@ struct KWent_gmax : public KWent
     KWent_gmax() { set(
         spkw_gmax,
         VTYP_REAL, DEF_gmax_MIN, DEF_gmax_MAX,
-        "Maximum conductance allowed, default "STRINGIFY(DEF_gmax)"."); }
+        "Maximum conductance allowed, default " STRINGIFY(DEF_gmax) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4016,7 +4017,7 @@ struct KWent_gmin : public KWent
     KWent_gmin() { set(
         spkw_gmin,
         VTYP_REAL, DEF_gmin_MIN, DEF_gmin_MAX,
-        "Minimum conductance allowed, default "STRINGIFY(DEF_gmin)"."); }
+        "Minimum conductance allowed, default " STRINGIFY(DEF_gmin) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4098,7 +4099,7 @@ struct KWent_pivrel : public KWent
         spkw_pivrel,
         VTYP_REAL, DEF_pivotRelTol_MIN, DEF_pivotRelTol_MAX,
         "Minimum relative pivot value, default "
-            STRINGIFY(DEF_pivotRelTol)"."); }
+            STRINGIFY(DEF_pivotRelTol) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4125,7 +4126,7 @@ struct KWent_pivtol : public KWent
     KWent_pivtol() { set(
         spkw_pivtol,
         VTYP_REAL, DEF_pivotAbsTol_MIN, DEF_pivotAbsTol_MAX,
-        "Minimum pivot value, default "STRINGIFY(DEF_pivotAbsTol)"."); }
+        "Minimum pivot value, default " STRINGIFY(DEF_pivotAbsTol) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4152,7 +4153,7 @@ struct KWent_rampup : public KWent
     KWent_rampup() { set(
         spkw_rampup,
         VTYP_REAL, DEF_rampup_MIN, DEF_rampup_MAX,
-        "Transient source ramp-up time, default "STRINGIFY(DEF_rampup)"."); }
+        "Transient source ramp-up time, default " STRINGIFY(DEF_rampup) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4179,7 +4180,7 @@ struct KWent_reltol : public KWent
     KWent_reltol() { set(
         spkw_reltol,
         VTYP_REAL, DEF_reltol_MIN, DEF_reltol_MAX,
-        "Relative error tolerance, default "STRINGIFY(DEF_reltol)"."); }
+        "Relative error tolerance, default " STRINGIFY(DEF_reltol) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4262,7 +4263,7 @@ struct KWent_trapratio : public KWent
         spkw_trapratio,
         VTYP_REAL, DEF_trapRatio_MIN, DEF_trapRatio_MAX,
         "Trapezoid integration convergence test ratio, default "
-            STRINGIFY(DEF_trapRatio)"."); }
+            STRINGIFY(DEF_trapRatio) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4289,7 +4290,7 @@ struct KWent_trtol : public KWent
     KWent_trtol() { set(
         spkw_trtol,
         VTYP_REAL, DEF_trtol_MIN, DEF_trtol_MAX,
-        "Truncation error factor, default "STRINGIFY(DEF_trtol)"."); }
+        "Truncation error factor, default " STRINGIFY(DEF_trtol) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4316,7 +4317,7 @@ struct KWent_vntol : public KWent
     KWent_vntol() { set(
         spkw_vntol,
         VTYP_REAL, DEF_voltTol_MIN, DEF_voltTol_MAX,
-        "Voltage error tolerance, default "STRINGIFY(DEF_voltTol)"."); }
+        "Voltage error tolerance, default " STRINGIFY(DEF_voltTol) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4343,7 +4344,7 @@ struct KWent_xmu : public KWent
     KWent_xmu() { set(
         spkw_xmu,
         VTYP_REAL, DEF_xmu_MIN, DEF_xmu_MAX,
-        "Trapezoid/Euler mixing, default "STRINGIFY(DEF_xmu)"."); }
+        "Trapezoid/Euler mixing, default " STRINGIFY(DEF_xmu) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4393,7 +4394,7 @@ struct KWent_gminsteps : public KWent
     KWent_gminsteps() { set(
         spkw_gminsteps,
         VTYP_NUM, DEF_numGminSteps_MIN, DEF_numGminSteps_MAX,
-        "Number of gmin steps, default "STRINGIFY(DEF_numGminSteps)"."); }
+        "Number of gmin steps, default " STRINGIFY(DEF_numGminSteps) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4421,7 +4422,7 @@ struct KWent_interplev : public KWent
         spkw_interplev,
         VTYP_NUM, DEF_polydegree_MIN, DEF_polydegree_MAX,
         "Output interpolation polynomial degree, default "
-            STRINGIFY(DEF_polydegree)"."); }
+            STRINGIFY(DEF_polydegree) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4448,7 +4449,7 @@ struct KWent_itl1 : public KWent
     KWent_itl1() { set(
         spkw_itl1,
         VTYP_NUM, DEF_dcMaxIter_MIN, DEF_dcMaxIter_MAX,
-        "DC iteration limit, default "STRINGIFY(DEF_itl1)"."); }
+        "DC iteration limit, default " STRINGIFY(DEF_itl1) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4475,7 +4476,8 @@ struct KWent_itl2 : public KWent
     KWent_itl2() { set(
         spkw_itl2,
         VTYP_NUM, DEF_dcTrcvMaxIter_MIN, DEF_dcTrcvMaxIter_MAX,
-        "DC transfer curve iteration limit, default "STRINGIFY(DEF_itl2)"."); }
+        "DC transfer curve iteration limit, default "
+            STRINGIFY(DEF_itl2) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4503,7 +4505,7 @@ struct KWent_itl2gmin : public KWent
         spkw_itl2gmin,
         VTYP_NUM, DEF_dcOpGminMaxIter_MIN, DEF_dcOpGminMaxIter_MAX,
         "DCOP dynamic gmin stepping iteration limit, default "
-            STRINGIFY(DEF_itl2gmin)"."); }
+            STRINGIFY(DEF_itl2gmin) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4531,7 +4533,7 @@ struct KWent_itl2src : public KWent
         spkw_itl2src,
         VTYP_NUM, DEF_dcOpSrcMaxIter_MIN, DEF_dcOpSrcMaxIter_MAX,
         "DCOP dynamic source stepping iteration limit, default "
-            STRINGIFY(DEF_itl2src)"."); }
+            STRINGIFY(DEF_itl2src) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4558,7 +4560,7 @@ struct KWent_itl4 : public KWent
     KWent_itl4() { set(
         spkw_itl4,
         VTYP_NUM, DEF_tranMaxIter_MIN, DEF_tranMaxIter_MAX,
-        "Transient iteration limit, default "STRINGIFY(DEF_itl4)"."); }
+        "Transient iteration limit, default " STRINGIFY(DEF_itl4) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4586,7 +4588,7 @@ struct KWent_loadthrds : public KWent
     KWent_loadthrds() { set(
         spkw_loadthrds,
         VTYP_NUM, DEF_loadThreads_MIN, DEF_loadThreads_MAX,
-        "Number of loading threads, default "STRINGIFY(DEF_loadThreads)"."); }
+        "Number of loading threads, default " STRINGIFY(DEF_loadThreads) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4613,7 +4615,7 @@ struct KWent_loopthrds : public KWent
     KWent_loopthrds() { set(
         spkw_loopthrds,
         VTYP_NUM, DEF_loopThreads_MIN, DEF_loopThreads_MAX,
-        "Number of looping threads, default "STRINGIFY(DEF_loopThreads)"."); }
+        "Number of looping threads, default " STRINGIFY(DEF_loopThreads) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4642,7 +4644,7 @@ struct KWent_maxord : public KWent
         spkw_maxord,
         VTYP_NUM, DEF_maxOrder_MIN, DEF_maxOrder_MAX,
         "Maximum order of integration method, default "
-            STRINGIFY(DEF_maxOrder)"."); }
+            STRINGIFY(DEF_maxOrder) "."); }
 
     void callback(bool isset, variable *v)
     {
@@ -4669,7 +4671,7 @@ struct KWent_srcsteps : public KWent
     KWent_srcsteps() { set(
         spkw_srcsteps,
         VTYP_NUM, DEF_numSrcSteps_MIN, DEF_numSrcSteps_MAX,
-        "Number of source steps, default "STRINGIFY(DEF_numSrcSteps)"."); }
+        "Number of source steps, default " STRINGIFY(DEF_numSrcSteps) "."); }
 
     void callback(bool isset, variable *v)
     {
