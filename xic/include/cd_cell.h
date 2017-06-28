@@ -399,9 +399,10 @@ struct CDs : public CDdb
 
     CDm *findMaster(CDcellName mname) const
         {
-            if (sMasters & 1)
-                return (((itable_t<CDm>*)(sMasters & ~1))->find(
-                    mname->string()));
+            if (sMasters & 1) {
+                itable_t<CDm> *tab = (itable_t<CDm>*)(sMasters & ~1);
+                return (tab ? tab->find(mname->string()) : 0);
+            }
             return (((CDm*)sMasters)->findInList(mname->string()));
         }
 

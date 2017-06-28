@@ -74,9 +74,9 @@ struct stab_t
     void *operator new(size_t sz)       { return (malloc(sz)); }
     void operator delete(void *p)       { free(p); }
 
-    int allocated() { stab_t *t = this; return (t ? t->count : 0); }
-    int hashwidth() { stab_t *t = this; return (t ? t->hashmask+1 : 0); }
-    T **array() { return (tab); }
+    int allocated()                     { return (count); }
+    int hashwidth()                     { return (hashmask+1); }
+    T **array()                         { return (tab); }
 
     void dump(bool verbose)
     {
@@ -152,13 +152,10 @@ struct table_t : public stab_t<T>
 template <class T> T *
 table_t<T>::find(const char *tag)
 {
-    table_t<T> *tabt = this;
-    if (tabt) {
-        unsigned int i = string_hash(tag, this->hashmask);
-        for (T *e = this->tab[i]; e; e = e->tab_next()) {
-            if (str_compare(tag, e->tab_name()))
-                return (e);
-        }
+    unsigned int i = string_hash(tag, this->hashmask);
+    for (T *e = this->tab[i]; e; e = e->tab_next()) {
+        if (str_compare(tag, e->tab_name()))
+            return (e);
     }
     return (0);
 }
@@ -170,22 +167,19 @@ table_t<T>::find(const char *tag)
 template <class T> T *
 table_t<T>::remove(const char *tag)
 {
-    table_t<T> *tabt = this;
-    if (tabt) {
-        unsigned int i = string_hash(tag, this->hashmask);
-        T *ep = 0;
-        for (T *e = this->tab[i]; e; e = e->tab_next()) {
-            if (str_compare(tag, e->tab_name())) {
-                if (!ep)
-                    this->tab[i] = e->tab_next();
-                else
-                    ep->set_tab_next(e->tab_next());
-                e->set_tab_next(0);
-                this->count--;
-                return (e);
-            }
-            ep = e;
+    unsigned int i = string_hash(tag, this->hashmask);
+    T *ep = 0;
+    for (T *e = this->tab[i]; e; e = e->tab_next()) {
+        if (str_compare(tag, e->tab_name())) {
+            if (!ep)
+                this->tab[i] = e->tab_next();
+            else
+                ep->set_tab_next(e->tab_next());
+            e->set_tab_next(0);
+            this->count--;
+            return (e);
         }
+        ep = e;
     }
     return (0);
 }
@@ -198,8 +192,7 @@ table_t<T>::remove(const char *tag)
 template <class T> T *
 table_t<T>::link(T *el, bool check)
 {
-    table_t<T> *tabt = this;
-    if (tabt && el) {
+    if (el) {
         unsigned int i = string_hash(el->tab_name(), this->hashmask);
         if (check) {
             for (T *e = this->tab[i]; e; e = e->tab_next()) {
@@ -223,8 +216,7 @@ table_t<T>::link(T *el, bool check)
 template <class T> T *
 table_t<T>::unlink(T *el)
 {
-    table_t<T> *tabt = this;
-    if (tabt && el) {
+    if (el) {
         unsigned int i = string_hash(el->tab_name(), this->hashmask);
         T *ep = 0;
         for (T *e = this->tab[i]; e; e = e->tab_next()) {
@@ -251,9 +243,6 @@ table_t<T>::unlink(T *el)
 template <class T> table_t<T> *
 table_t<T>::check_rehash()
 {
-    table_t<T> *tabt = this;
-    if (!tabt)
-        return (0);
     if (this->count/(this->hashmask+1) <= ST_MAX_DENS)
         return (this);
 
@@ -328,13 +317,10 @@ struct ctable_t : public stab_t<T>
 template <class T> T *
 ctable_t<T>::find(const char *tag)
 {
-    ctable_t<T> *tabt = this;
-    if (tabt) {
-        unsigned int i = string_hash_ci(tag, this->hashmask);
-        for (T *e = this->tab[i]; e; e = e->tab_next()) {
-            if (str_compare_ci(tag, e->tab_name()))
-                return (e);
-        }
+    unsigned int i = string_hash_ci(tag, this->hashmask);
+    for (T *e = this->tab[i]; e; e = e->tab_next()) {
+        if (str_compare_ci(tag, e->tab_name()))
+            return (e);
     }
     return (0);
 }
@@ -346,22 +332,19 @@ ctable_t<T>::find(const char *tag)
 template <class T> T *
 ctable_t<T>::remove(const char *tag)
 {
-    ctable_t<T> *tabt = this;
-    if (tabt) {
-        unsigned int i = string_hash_ci(tag, this->hashmask);
-        T *ep = 0;
-        for (T *e = this->tab[i]; e; e = e->tab_next()) {
-            if (str_compare_ci(tag, e->tab_name())) {
-                if (!ep)
-                    this->tab[i] = e->tab_next();
-                else
-                    ep->set_tab_next(e->tab_next());
-                e->set_tab_next(0);
-                this->count--;
-                return (e);
-            }
-            ep = e;
+    unsigned int i = string_hash_ci(tag, this->hashmask);
+    T *ep = 0;
+    for (T *e = this->tab[i]; e; e = e->tab_next()) {
+        if (str_compare_ci(tag, e->tab_name())) {
+            if (!ep)
+                this->tab[i] = e->tab_next();
+            else
+                ep->set_tab_next(e->tab_next());
+            e->set_tab_next(0);
+            this->count--;
+            return (e);
         }
+        ep = e;
     }
     return (0);
 }
@@ -374,8 +357,7 @@ ctable_t<T>::remove(const char *tag)
 template <class T> T *
 ctable_t<T>::link(T *el, bool check)
 {
-    ctable_t<T> *tabt = this;
-    if (tabt && el) {
+    if (el) {
         unsigned int i = string_hash_ci(el->tab_name(), this->hashmask);
         if (check) {
             for (T *e = this->tab[i]; e; e = e->tab_next()) {
@@ -399,8 +381,7 @@ ctable_t<T>::link(T *el, bool check)
 template <class T> T *
 ctable_t<T>::unlink(T *el)
 {
-    ctable_t<T> *tabt = this;
-    if (tabt && el) {
+    if (el) {
         unsigned int i = string_hash_ci(el->tab_name(), this->hashmask);
         T *ep = 0;
         for (T *e = this->tab[i]; e; e = e->tab_next()) {
@@ -427,9 +408,6 @@ ctable_t<T>::unlink(T *el)
 template <class T> ctable_t<T> *
 ctable_t<T>::check_rehash()
 {
-    ctable_t<T> *tabt = this;
-    if (!tabt)
-        return (0);
     if (this->count/(this->hashmask+1) <= ST_MAX_DENS)
         return (this);
 
@@ -504,13 +482,10 @@ struct sntable_t : public stab_t<T>
 template <class T> T *
 sntable_t<T>::find(const char *tag, int indx)
 {
-    sntable_t<T> *tabt = this;
-    if (tabt) {
-        unsigned int i = string_num_hash(tag, indx, this->hashmask);
-        for (T *e = this->tab[i]; e; e = e->tab_next()) {
-            if (string_num_compare(tag, indx, e->tab_name(), e->tab_indx()))
-                return (e);
-        }
+    unsigned int i = string_num_hash(tag, indx, this->hashmask);
+    for (T *e = this->tab[i]; e; e = e->tab_next()) {
+        if (string_num_compare(tag, indx, e->tab_name(), e->tab_indx()))
+            return (e);
     }
     return (0);
 }
@@ -522,22 +497,19 @@ sntable_t<T>::find(const char *tag, int indx)
 template <class T> T *
 sntable_t<T>::remove(const char *tag, int indx)
 {
-    sntable_t<T> *tabt = this;
-    if (tabt) {
-        unsigned int i = string_num_hash(tag, indx, this->hashmask);
-        T *ep = 0;
-        for (T *e = this->tab[i]; e; e = e->tab_next()) {
-            if (string_num_compare(tag, indx, e->tab_name(), e->tab_indx())) {
-                if (!ep)
-                    this->tab[i] = e->tab_next();
-                else
-                    ep->set_tab_next(e->tab_next());
-                e->set_tab_next(0);
-                this->count--;
-                return (e);
-            }
-            ep = e;
+    unsigned int i = string_num_hash(tag, indx, this->hashmask);
+    T *ep = 0;
+    for (T *e = this->tab[i]; e; e = e->tab_next()) {
+        if (string_num_compare(tag, indx, e->tab_name(), e->tab_indx())) {
+            if (!ep)
+                this->tab[i] = e->tab_next();
+            else
+                ep->set_tab_next(e->tab_next());
+            e->set_tab_next(0);
+            this->count--;
+            return (e);
         }
+        ep = e;
     }
     return (0);
 }
@@ -550,8 +522,7 @@ sntable_t<T>::remove(const char *tag, int indx)
 template <class T> T *
 sntable_t<T>::link(T *el, bool check)
 {
-    sntable_t<T> *tabt = this;
-    if (tabt && el) {
+    if (el) {
         unsigned int i = string_num_hash(el->tab_name(), el->tab_indx(),
             this->hashmask);
         if (check) {
@@ -577,8 +548,7 @@ sntable_t<T>::link(T *el, bool check)
 template <class T> T *
 sntable_t<T>::unlink(T *el)
 {
-    sntable_t<T> *tabt = this;
-    if (tabt && el) {
+    if (el) {
         unsigned int i = string_num_hash(el->tab_name(), el->tab_indx(),
             this->hashmask);
         T *ep = 0;
@@ -606,9 +576,6 @@ sntable_t<T>::unlink(T *el)
 template <class T> sntable_t<T> *
 sntable_t<T>::check_rehash()
 {
-    sntable_t<T> *tabt = this;
-    if (!tabt)
-        return (0);
     if (this->count/(this->hashmask+1) <= ST_MAX_DENS)
         return (this);
 
@@ -684,13 +651,10 @@ struct csntable_t : public stab_t<T>
 template <class T> T *
 csntable_t<T>::find(const char *tag, int indx)
 {
-    csntable_t<T> *tabt = this;
-    if (tabt) {
-        unsigned int i = string_num_hash_ci(tag, indx, this->hashmask);
-        for (T *e = this->tab[i]; e; e = e->tab_next()) {
-            if (string_num_compare_ci(tag, indx, e->tab_name(), e->tab_indx()))
-                return (e);
-        }
+    unsigned int i = string_num_hash_ci(tag, indx, this->hashmask);
+    for (T *e = this->tab[i]; e; e = e->tab_next()) {
+        if (string_num_compare_ci(tag, indx, e->tab_name(), e->tab_indx()))
+            return (e);
     }
     return (0);
 }
@@ -702,23 +666,20 @@ csntable_t<T>::find(const char *tag, int indx)
 template <class T> T *
 csntable_t<T>::remove(const char *tag, int indx)
 {
-    csntable_t<T> *tabt = this;
-    if (tabt) {
-        unsigned int i = string_num_hash_ci(tag, indx, this->hashmask);
-        T *ep = 0;
-        for (T *e = this->tab[i]; e; e = e->tab_next()) {
-            if (string_num_compare_ci(tag, indx, e->tab_name(),
-                    e->tab_indx())) {
-                if (!ep)
-                    this->tab[i] = e->tab_next();
-                else
-                    ep->set_tab_next(e->tab_next());
-                e->set_tab_next(0);
-                this->count--;
-                return (e);
-            }
-            ep = e;
+    unsigned int i = string_num_hash_ci(tag, indx, this->hashmask);
+    T *ep = 0;
+    for (T *e = this->tab[i]; e; e = e->tab_next()) {
+        if (string_num_compare_ci(tag, indx, e->tab_name(),
+                e->tab_indx())) {
+            if (!ep)
+                this->tab[i] = e->tab_next();
+            else
+                ep->set_tab_next(e->tab_next());
+            e->set_tab_next(0);
+            this->count--;
+            return (e);
         }
+        ep = e;
     }
     return (0);
 }
@@ -731,8 +692,7 @@ csntable_t<T>::remove(const char *tag, int indx)
 template <class T> T *
 csntable_t<T>::link(T *el, bool check)
 {
-    csntable_t<T> *tabt = this;
-    if (tabt && el) {
+    if (el) {
         unsigned int i = string_num_hash_ci(el->tab_name(), el->tab_indx(),
             this->hashmask);
         if (check) {
@@ -758,8 +718,7 @@ csntable_t<T>::link(T *el, bool check)
 template <class T> T *
 csntable_t<T>::unlink(T *el)
 {
-    csntable_t<T> *tabt = this;
-    if (tabt && el) {
+    if (el) {
         unsigned int i = string_num_hash_ci(el->tab_name(), el->tab_indx(),
             this->hashmask);
         T *ep = 0;
@@ -787,9 +746,6 @@ csntable_t<T>::unlink(T *el)
 template <class T> csntable_t<T> *
 csntable_t<T>::check_rehash()
 {
-    csntable_t<T> *tabt = this;
-    if (!tabt)
-        return (0);
     if (this->count/(this->hashmask+1) <= ST_MAX_DENS)
         return (this);
 
@@ -855,13 +811,10 @@ struct itable_t : public stab_t<T>
 template <class T> T *
 itable_t<T>::find(unsigned long tag)
 {
-    itable_t<T> *tabt = this;
-    if (tabt) {
-        unsigned int i = number_hash(tag, this->hashmask);
-        for (T *e = this->tab[i]; e; e = e->tab_next()) {
-            if (tag == e->tab_key())
-                return (e);
-        }
+    unsigned int i = number_hash(tag, this->hashmask);
+    for (T *e = this->tab[i]; e; e = e->tab_next()) {
+        if (tag == e->tab_key())
+            return (e);
     }
     return (0);
 }
@@ -873,22 +826,19 @@ itable_t<T>::find(unsigned long tag)
 template <class T> T *
 itable_t<T>::remove(unsigned long tag)
 {
-    itable_t<T> *tabt = this;
-    if (tabt) {
-        unsigned int i = number_hash(tag, this->hashmask);
-        T *ep = 0;
-        for (T *e = this->tab[i]; e; e = e->tab_next()) {
-            if (tag == e->tab_key()) {
-                if (!ep)
-                    this->tab[i] = e->tab_next();
-                else
-                    ep->set_tab_next(e->tab_next());
-                e->set_tab_next(0);
-                this->count--;
-                return (e);
-            }
-            ep = e;
+    unsigned int i = number_hash(tag, this->hashmask);
+    T *ep = 0;
+    for (T *e = this->tab[i]; e; e = e->tab_next()) {
+        if (tag == e->tab_key()) {
+            if (!ep)
+                this->tab[i] = e->tab_next();
+            else
+                ep->set_tab_next(e->tab_next());
+            e->set_tab_next(0);
+            this->count--;
+            return (e);
         }
+        ep = e;
     }
     return (0);
 }
@@ -901,8 +851,7 @@ itable_t<T>::remove(unsigned long tag)
 template <class T> T *
 itable_t<T>::link(T *el, bool check)
 {
-    itable_t<T> *tabt = this;
-    if (tabt && el) {
+    if (el) {
         unsigned int i = number_hash(el->tab_key(), this->hashmask);
         if (check) {
             for (T *e = this->tab[i]; e; e = e->tab_next()) {
@@ -925,8 +874,7 @@ itable_t<T>::link(T *el, bool check)
 template <class T> T *
 itable_t<T>::unlink(T *el)
 {
-    itable_t<T> *tabt = this;
-    if (tabt && el) {
+    if (el) {
         unsigned int i = number_hash(el->tab_key(), this->hashmask);
         T *ep = 0;
         for (T *e = this->tab[i]; e; e = e->tab_next()) {
@@ -953,9 +901,6 @@ itable_t<T>::unlink(T *el)
 template <class T> itable_t<T> *
 itable_t<T>::check_rehash()
 {
-    itable_t<T> *tabt = this;
-    if (!tabt)
-        return (0);
     if (this->count/(this->hashmask+1) <= ST_MAX_DENS)
         return (this);
 
@@ -1023,13 +968,10 @@ xy_hash(int x, int y, unsigned long hashmask)
 template <class T> T *
 xytable_t<T>::find(int x, int y)
 {
-    xytable_t<T> *tabt = this;
-    if (tabt) {
-        unsigned int i = xy_hash(x, y, this->hashmask);
-        for (T *e = this->tab[i]; e; e = e->tab_next()) {
-            if (x == e->tab_x() && y == e->tab_y())
-                return (e);
-        }
+    unsigned int i = xy_hash(x, y, this->hashmask);
+    for (T *e = this->tab[i]; e; e = e->tab_next()) {
+        if (x == e->tab_x() && y == e->tab_y())
+            return (e);
     }
     return (0);
 }
@@ -1041,22 +983,19 @@ xytable_t<T>::find(int x, int y)
 template <class T> T *
 xytable_t<T>::remove(int x, int y)
 {
-    xytable_t<T> *tabt = this;
-    if (tabt) {
-        unsigned int i = xy_hash(x, y, this->hashmask);
-        T *ep = 0;
-        for (T *e = this->tab[i]; e; e = e->tab_next()) {
-            if (x == e->tab_x() && y == e->tab_y()) {
-                if (!ep)
-                    this->tab[i] = e->tab_next();
-                else
-                    ep->set_tab_next(e->tab_next());
-                e->set_tab_next(0);
-                this->count--;
-                return (e);
-            }
-            ep = e;
+    unsigned int i = xy_hash(x, y, this->hashmask);
+    T *ep = 0;
+    for (T *e = this->tab[i]; e; e = e->tab_next()) {
+        if (x == e->tab_x() && y == e->tab_y()) {
+            if (!ep)
+                this->tab[i] = e->tab_next();
+            else
+                ep->set_tab_next(e->tab_next());
+            e->set_tab_next(0);
+            this->count--;
+            return (e);
         }
+        ep = e;
     }
     return (0);
 }
@@ -1069,8 +1008,7 @@ xytable_t<T>::remove(int x, int y)
 template <class T> T *
 xytable_t<T>::link(T *el, bool check)
 {
-    xytable_t<T> *tabt = this;
-    if (tabt && el) {
+    if (el) {
         unsigned int i = xy_hash(el->tab_x(), el->tab_y(), this->hashmask);
         if (check) {
             for (T *e = this->tab[i]; e; e = e->tab_next()) {
@@ -1093,8 +1031,7 @@ xytable_t<T>::link(T *el, bool check)
 template <class T> T *
 xytable_t<T>::unlink(T *el)
 {
-    xytable_t<T> *tabt = this;
-    if (tabt && el) {
+    if (el) {
         unsigned int i = xy_hash(el->tab_x(), el->tab_y(), this->hashmask);
         T *ep = 0;
         for (T *e = this->tab[i]; e; e = e->tab_next()) {
@@ -1121,9 +1058,6 @@ xytable_t<T>::unlink(T *el)
 template <class T> xytable_t<T> *
 xytable_t<T>::check_rehash()
 {
-    xytable_t<T> *tabt = this;
-    if (!tabt)
-        return (0);
     if (this->count/(this->hashmask+1) <= ST_MAX_DENS)
         return (this);
 
@@ -1179,13 +1113,10 @@ struct ptable_t : public stab_t<T>
 template <class T> T *
 ptable_t<T>::find(T *el)
 {
-    ptable_t<T> *tabt = this;
-    if (tabt) {
-        unsigned int i = number_hash((unsigned long)el, this->hashmask);
-        for (T *e = this->tab[i]; e; e = e->ptab_next()) {
-            if (e == el)
-                return (e);
-        }
+    unsigned int i = number_hash((unsigned long)el, this->hashmask);
+    for (T *e = this->tab[i]; e; e = e->ptab_next()) {
+        if (e == el)
+            return (e);
     }
     return (0);
 }
@@ -1197,8 +1128,7 @@ ptable_t<T>::find(T *el)
 template <class T> T *
 ptable_t<T>::add(T *el)
 {
-    ptable_t<T> *tabt = this;
-    if (tabt && el) {
+    if (el) {
         unsigned int i = number_hash((unsigned long)el, this->hashmask);
         for (T *e = this->tab[i]; e; e = e->ptab_next()) {
             if (e == el)
@@ -1219,22 +1149,19 @@ ptable_t<T>::add(T *el)
 template <class T> T *
 ptable_t<T>::remove(T *el)
 {
-    ptable_t<T> *tabt = this;
-    if (tabt) {
-        unsigned int i = number_hash((unsigned long)el, this->hashmask);
-        T *ep = 0;
-        for (T *e = this->tab[i]; e; e = e->ptab_next()) {
-            if (e == el) {
-                if (!ep)
-                    this->tab[i] = e->ptab_next();
-                else
-                    ep->set_ptab_next(e->ptab_next());
-                e->set_ptab_next(0);
-                this->count--;
-                return (e);
-            }
-            ep = e;
+    unsigned int i = number_hash((unsigned long)el, this->hashmask);
+    T *ep = 0;
+    for (T *e = this->tab[i]; e; e = e->ptab_next()) {
+        if (e == el) {
+            if (!ep)
+                this->tab[i] = e->ptab_next();
+            else
+                ep->set_ptab_next(e->ptab_next());
+            e->set_ptab_next(0);
+            this->count--;
+            return (e);
         }
+        ep = e;
     }
     return (0);
 }
@@ -1247,9 +1174,6 @@ ptable_t<T>::remove(T *el)
 template <class T> ptable_t<T> *
 ptable_t<T>::check_rehash()
 {
-    ptable_t<T> *tabt = this;
-    if (!tabt)
-        return (0);
     if (this->count/(this->hashmask+1) <= ST_MAX_DENS)
         return (this);
 
@@ -1489,9 +1413,10 @@ struct strtab_t
     unsigned int memuse()
         {
             unsigned int bytes = st_buf.memuse() + st_elts.memuse();
-            if (st_tab)
+            if (st_tab) {
                 bytes += sizeof(table_t<sl_t>) +
                     (st_tab->hashwidth() - 1)*sizeof(void*);
+            }
             return (bytes);
         }
 
@@ -1591,9 +1516,10 @@ struct cstrtab_t
     unsigned int memuse()
         {
             unsigned int bytes = st_buf.memuse() + st_elts.memuse();
-            if (st_tab)
+            if (st_tab) {
                 bytes += sizeof(table_t<sl_t>) +
                     (st_tab->hashwidth() - 1)*sizeof(void*);
+            }
             return (bytes);
         }
 

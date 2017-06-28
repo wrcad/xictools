@@ -107,15 +107,19 @@ struct CDm
 
     bool hasInstances() const
         {
-            if (mObjRefs & 1)
-                return (((ptable_t<CDc>*)(mObjRefs & ~1))->allocated() > 0);
+            if (mObjRefs & 1) {
+                ptable_t<CDc> *tab = (ptable_t<CDc>*)(mObjRefs & ~1);
+                return (tab && tab->allocated() > 0);
+            }
             return (mObjRefs);
         }
 
     bool hasUnlinked() const
         {
-            if (mUnlinked & 1)
-                return (((ptable_t<CDc>*)(mUnlinked & ~1))->allocated() > 0);
+            if (mUnlinked & 1) {
+                ptable_t<CDc> *tab = (ptable_t<CDc>*)(mUnlinked & ~1);
+                return (tab && tab->allocated() > 0);
+            }
             return (mUnlinked);
         }
 

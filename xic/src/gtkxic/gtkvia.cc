@@ -591,6 +591,8 @@ sStv::stv_action(GtkWidget *caller, void*)
         return;
     }
     if (!strcmp(name, "Apply")) {
+        if (!Tech()->StdViaTab())
+            return;
 #if GTK_CHECK_VERSION(2,24,0)
         char *nm = gtk_combo_box_text_get_active_text(
             GTK_COMBO_BOX_TEXT(Stv->stv_name));
@@ -699,6 +701,8 @@ void
 sStv::stv_name_menu_proc(GtkWidget*, void*)
 {
     if (!Stv)
+        return;
+    if (!Tech()->StdViaTab())
         return;
 #if GTK_CHECK_VERSION(2,24,0)
     char *nm =

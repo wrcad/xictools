@@ -176,6 +176,8 @@ cTimeDbg::start_timing_prv(const char *key)
 void
 cTimeDbg::accum_timing_prv(const char *key)
 {
+    if (!td_table)
+        return;
     tv_elt *tv = td_table->find(key);
     if (!tv)
         return;
@@ -192,6 +194,8 @@ cTimeDbg::accum_timing_prv(const char *key)
 void
 cTimeDbg::update_timing_prv(const char *key, int num)
 {
+    if (!td_table)
+        return;
     tv_elt *tv = td_table->find(key);
     if (tv)
         tv->tv.stop();
@@ -211,6 +215,8 @@ cTimeDbg::update_timing_prv(const char *key, int num)
 void
 cTimeDbg::stop_timing_prv(const char *key, int num)
 {
+    if (!td_table)
+        return;
     tv_elt *tv = td_table->find(key);
     if (tv) {
         tv->tv.stop();
@@ -304,6 +310,8 @@ namespace {
 void
 cTimeDbg::print_accum_prv(const char *key)
 {
+    if (!td_table)
+        return;
     if (key == TDB_ALL_ACCUM) {
 
         // Remove the entries with level equal to the current level
