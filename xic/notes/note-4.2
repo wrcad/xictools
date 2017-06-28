@@ -1,0 +1,1031 @@
+
+----- Begin 4.2.X (Production)
+
+removed gtk-1.2 support.
+
+fixed issue that causes spurious
+(xic:18757): Gtk-CRITICAL **: IA__gtk_widget_get_direction: assertion 'GTK_IS_WIDGET (widget)' failed
+on stock CentOS 7
+
+Fixed python setup on CentOS 7, used py27 not py26.
+
+Fixed a problem when generating SPICE from old circuits with device
+names that clash. duplicate names were produced. 
+
+Todo: add pow function (Andrew). DONE
+
+Geometry bug fixed (Brian).
+
+------
+
+Hi Steve,=20
+
+Thanks for putting so much work into getting multithreading support into =
+Xic/WRspice. I eagerly await the speedup in my swept analysis. In the =
+meantime I compiled a list of features/functions you might consider =
+adding in the future.=20
+
+1. Complex number support for math functions. (I already mentioned this =
+one.) Presently I grind out the algebra by hand and code that in =
+directly. Unfortunately this can result in some code that is much longer =
+and nastier than it needs to be.=20
+2. Support for a math power function, pow(a,b) =3D a^b. Maybe I missed =
+this in the documentation but I couldn=E2=80=99t get Xic to recognize =
+pow in my scripts. Presently I handle this with a while loop that =
+multiplies a number by itself n times.=20
+3. XIc script function names can contain numbers. Right now Xic gets =
+confused if I create a function called 180deg(args) and attempt to call =
+it. Presently I just make sure my function names are all non-numeric =
+characters. i.e. one_eightydeg(args).=20
+4. Update to logical operation menu buttons. Consider adding buttons on =
+the left menu in Xic=E2=80=99s physical layout that are the equivalent =
+of !layer lay1 =3D sqz(lay2^lay3^...), !layer lay1 =3D =
+sqz(lay2&lay3&...), ect. Where lay1 is the presently selected layer, =
+lay2,lay3... are layers of presently selected objects. These would =
+replace the existing Xor button. The reason I request this is that I =
+find I need to do logical operations on arbitrary geometries more often =
+than rectangular ones (the xor of two curved shapes in different layers =
+for instance).=20
+5. Toggle automerg of objects in the same layer. Related to 4, sometimes =
+its useful if two objects in the same layer that touch don=E2=80=99t =
+automatically merge into one object. Maybe this feature already exists =
+and I just haven=E2=80=99t found it yet.=20
+
+I understand you might not be able to get to these for a while given the =
+priority of adding thread support.=20
+
+Cheers,=20
+
+Andrew
+
+
+Andrew Wagner, Ph.D
+Quantum Information Processing
+Raytheon BBN Technologies
+10 Moulton St. Cambridge, MA 02138
+Office: 617-873-3055
+Cell: 650-798-4481
+
+------
+
+New environment variable:  XIC_LIBRARY_PATH
+Linux only.  If given, this will be prepended to the LD_LIBRARY_PATH
+in the Xic process, and applies during plugin loading.  Specifically, this
+can be used to point to the OpenAccess libraries.
+
+Added "Diffs" listing after Coords for polys and wires in Info list.
+
+Fixed global coordinate printing to use 5 digits when resolution is 20000.
+
+New math function: pow
+
+Updated install/packages to safe update.
+
+DONE:
+1) message broadcast
+At most one "current message"  restricted/xic_current_mesg
+On startup:
+   look for current mesg file, if found get digest
+   look in $HOME/.wr_cache/xic_cur_mesg_digest
+   if doesn't exist or is different,
+      get message, save in .wr_cache/xi_current_mesg
+      save digest in .wr_cache/xic_current_mesg_digest
+      pop up message in tool
+   done
+2) New release message
+   First time starting a new release, automatically show the release note,
+   look at file $HOME/.wr_cache/xic_current_release
+   if not exist or different from release
+       save current release number
+       pop up notes
+   done
+   
+reading design data thru url, -p/-u no longer accepted. use
+http://user:pass@host...
+
+new .wrproxy file, created with new !proxy command.
+
+Document FORCE_XIV, FORCE_XICII
+
+TODO: CopyObjectsH function for Andrew. implemented DONE
+----
+New PushGhostH function
+
+--------- xic-4.2.1 Released --------------------------------------------------
+
+New plug in "scrkit" directory/export.
+
+New !ldshared  command,
+
+--------- xic-4.2.2 Released --------------------------------------------------
+
+TODO: add more doc links about script plug-ins.
+
+Update to computational geometry functions.  This should reduce the number
+of clipping errors when working with smooth
+all-angle geometry.
+-  New integer database for keeping track of a collection of arbitrary
+integers (checking for dups, etc).  This is used in a new repartition
+function that first finds all scan lines. then clips along the lines.
+then does merging.
+-  The merge function call now calls repartition.  It seems that the
+only reliable way to clip/merge is to use the repartition algorithm.
+-  New zoidclip function, again based on scan lines.  Uses trick to ensure
+vertices are moved to grid without changing 45s.
+-  Both new clipper and repartition are much simpler and cleaner than the
+old versions.
+
+No longer use the offset when rotating nonortho (cd_transforms).  This
+caused adjacent figures to have gaps after rotating.
+New scan-line and/andnot/xor functions, slower but perhaps more
+accurate.
+New inlined timer interrupt checking.
+The merge call replaced by repartition globally.
+
+Bug fixed: borp merge not called when a box was changed to poly in
+move/copy.
+
+New variable SafeClipping, use scanline functions when set.
+
+Moved to ElCapitan, fixed bad problem under EC where pop-ups
+would disappear.  Interaction problem with gtk/EC of some sort.
+
+Copy "filt" lexp descr from Filt command, this is left out. DONE
+
+New !layer args:  -da same as -d a, -s[h] same as split, -sv same
+as splitv, -j same as join.
+
+Fixed issue:  layer expression evaluation is gridded by default,
+this would cause problems with the bloat operation.  Now, this is dealt with
+by bloating the grid area and clipping the excess.
+
+New variable: NoFixRot45 (boolean)
+When set, rotate all coordinates without attempting to avoid numerical
+problems (causes its own numerical problem: gaps between objects).
+
+--------- xic-4.2.3 Released --------------------------------------------------
+
+Added back the separate rounding in 45 rotations, but only when rotating
+a box or poly.  This transform ensures 45 <--> Manhattan.
+
+Status---
+1. Complex number support for math functions.
+   DONE (first pass, needs testing)
+2. Support for a math power function, pow(a,b) = a^b.
+   DONE
+3. Xic script function names can contain numbers. Right now Xic gets
+   confused if I create a function called 180deg(args) and attempt to
+   call it.
+   CAN'T
+   Identifiers must start with an alpha character or underscore, digits
+   can follow.  Otherwise, too much complexity and parser overhead.
+4. Update to logical operation menu buttons. Consider adding buttons on
+   the left menu in Xic's physical layout that are the equivalent
+   of !layer lay1 = sqz(lay2^lay3^...), !layer lay1 = sqz(lay2&lay3&...),
+   ect. Where lay1 is the presently selected layer,
+   lay2,lay3... are layers of presently selected objects. These would
+   replace the existing Xor button.
+   MAYBE
+5. Toggle automerg of objects in the same layer. Related to 4,
+   MAYBE
+
+6.
+I was wondering if you might change the behavior of the HandleCat
+function and handle + operator overloading to return a new handle that
+is the union of the two handles passed as arguments.  The problem I
+run into is that functions like:
+
+JoinObjects(h1+h2,0)
+
+segfault since the + operator doesn’t explicitly return anything, it just
+appends h2 to h1. The work around is easy enough,
+
+h3 = h1+2
+JoinObjects(h3,0)
+
+but it would be really slick if overloaded expressions could be passed directly
+to other handle management functions as arguments.
+----
+The + operator presently returns the first handle, so
+JoinObjects(h1+h2,0)
+should be fine.  Don't know why this would seg fault, as the handles
+are checked before use.  It probably is a bad object pointer.
+E.g., DeleteObjects(h1+h1. TRUE) will crash (FIXED).
+------------------------
+Fixed above.  The handle concatenation operation for lists other than
+string lists will throw out duplicates. 
+
+New scriopt function: (int) Selections()
+This will block until a keypress, but will allow selections in drawing
+windows.
+
+Docs: HandleCat returns NONZERO on success, not 1.
+
+variable SafeClipping gone, recompile geo_zlfuncs and set "scldebug",
+
+interrupt timer handling was fooked.
+
+New complex data type in scripts.
+TypeOf descr change.
+
+xclient.cc demo updated. TEST THIS.  clearly broken, used old port #
+
+--------- xic-4.2.4 Released --------------------------------------------------
+
+TODO: mention that identifiers must start with _ or alpha, digits can
+follow.
+
+bug:  all or the relational evaluation functions have a spurious check for
+zero of the right side arg, which when 0 halts the script.
+
+--------- xic-4.2.5 Released --------------------------------------------------
+
+The complex sqrt function now returns the principal root.  if z = sqrt(w),
+re(z) is always non-negative, and im(z) has the same sign as im(w).  This
+will also affect returns from acos, acosh, asin, asinh, which call sqrt
+internally.
+
+The Check button is now the default button in the DRC Run Control
+panel.  One can start a foreground DRC run with ALT-d b Enter.
+
+The WR button now has a text code: mail.  This button was always sort of
+tacked-on thing, not part of any internal menu.  It is now part of
+and maintained with the "misc" menu.
+XXX in help xic:wrbtn ->xic:mail DONE
+
+Update to licensing, user-limited multi-host licensing is now supported.
+License file is prepared in the normal way, but the user limit is nonzero.
+The license server must run on the licensed machine.  The application
+can run on any machine compatible with the program binary.  It must be
+configured to query the license server running on the license host.
+A user-limit license will not work in local auth mode.
+
+-Llichost was not working, fixed.
+
+--------- xic-4.2.6 Released --------------------------------------------------
+
+Hi Steve,
+
+Thanks very much for the update, the complex number support has definitely
++cleaned up a few of my scripts. For the next Xic release I was wondering if you
++might consider the following:
+
+1. And an ‘all’ argument to the GetObjectBB function. Presently if several
++objects are selected and their handle is passed to GetObjectBB, only the first
++object in the handle is used to define the BB. If ‘all’ was non-zero then
++GetObjectBB would return the global BB of all objects in the list, otherwise it
++returns the BB of only the first object as before.
+
+Done, new function GetObjectListBB.
+Kept GetObjectBB as-is for back compatibility and symmetry with SetObjectBB.
+
+2. Fix cell interior vanishing. Presently when a cell is selected for point and
++click drag/placement, the interior of the cell disappears (and reappears once
++placed) even if the expand menu option is “all”. This makes aligning objects in
++one cell to objects in another cell somewhat difficult. Consider retaining a
++ghost or translucent outline of the features in the selected cell up to the
++level selected in the expand menu.
+
+Done.
+
+3. Consider adding a radius indicator to the round, donut and arc buttons. This
++indicator would simply display value of the current radius in either the bottom
++or top text bars. Presently the dx,dy indicator has to been used to see the
++radius “on the fly”.
+
+Done, radii are displayed, and angle when making arcs.
+
+Thanks again for all your help.
+
+Cheers,
+
+Andrew
+
+The text editor now sizes itself from the font.
+
+XXX fixed
+Windows problem:  The g++ from win-builds forces a libwinpthread-1.dll
+dependency that is hard to avoid.  This is not a problem with xic and
+wrspice, but caused failure with the other programs.  The other
+programs in xic and wrspice distribs are now statically linked to
+avoid this.  The accessories art not - thry will require that
+gtk2)butdle/bin be in the search path.
+
+--------- xic-4.2.7 Released --------------------------------------------------
+
+The join command had funny logic if multiple layers were selected.  It
+would move and join all selected shapes to the layer of the first
+object found in the internal selected list.  Now, objects are joined only
+to other objects on the same layer.
+
+Ruler command now continues showing key actions on prompt line when
+awaiting endpoint click.
+
+The selections displayed after undo of an Erase Under command weren't
+right. (fixed).
+
+The vertex editor used for polygons, used in the polygon creation
+and stretch commands, had incorrect logic when moving the polygon's
+anchor vertex.  This is the first vertex in the internal list.  Attempts
+to move this vertex would cause a new vertex to be created instead.
+
+When in the main state, i.e., not in any command, the text
+"Mode: MAIN" now appears in the status line.  Previously, this would
+be set to "Idle", "Select", "Move", "Stretch" depending on the last action.
+This is a bit confusing ane meaningless, so that the mode is "MAIN" unless
+in some actual command, as initiated from a menu or button.
+
+There is a new accelerator.  When in the MAIN state, clicking an a
+selected object with both Ctrl and Shift held will enter the actual
+Select command, as if initiated from the Modify menu.  Unlike the simple
+stretch initiated by holding just Ctrl, one can access the vertex editor
+byt selecting vertices (hold Shift while clicking on vertices).  The selected
+vertices can then be dragged to a now location in tandem.  Note that in this
+mode, Xic is actually in the Select command, and one must press Esc to go
+back to the MAIN mode.
+
+The !check45 command is now documented.  It was present but for some reason
+never documented.
+The !exlayers command is now documented.  It was present but for some reason
+never documented.
+
+When exiting the program, the user is no longer prompted to save special
+internal cells such as those created for !svq/!rcq.
+
+---
+To listview in gtkltalias, gtkdebug.
+In gtkdebug, if prompt line editor is active, stepping to end would cause
+gtk error and program exit, running now causes editor to exit.
+
+gtk_tree_model_get returned strings need to be freed!  CHECK
+
+Holy Sht, Extraction was broken, incorrect handling of repartition
+return ext_device.cc 4555.
+
+Mapping the name of a node without a wire connected would add a bogus
+node to the netlist.
+
+If the terms command or some others were run first, the node mapping
+panel would not show any mappings (connect clean while name map dirty).
+
+Group selection in physical sub-windows from the nodmp command
+(Use Extraction set) now works properly.
+---
+
+Selections of nets in an electrical sub-window while in physical mode
+using the Path Selection Control panel works much better now.
+
+---
+The node selection in the mapping panel how handles the ground net.
+this is never highlighted in the drawing.
+
+The backrground coloring of the keys area, incorrectly applied to
+sub-windows, caused a seg fault when sub-windows were popped down.
+
+--------- xic-4.2.8 Released --------------------------------------------------
+
+Updated tree pop-up to GtkTreeView.
+
+Updated file selector to use tree view.  All widgets now use
+treeview, no more clist/ctree
+
+WINDOWS requires use of the MS-Windows theme or the tree view selection
+is not rendered properly.  Tell users:  edit c:/usr/local/gtk2-bundle/etc/gtk-2.0/gtkrc
+Either comment out the line, pr replace with gtk-theme-name="MS-Windows"
+
+Fixed crash bug on attemptint to open non-existing file through a library
+reference.
+
+Libraries listing: clicking on open/closed icon toggles status.
+OA Libraries listing: clicking in open/closed or wrtitable Y/N toggles
+status.
+
+FIXED:  missing cells (i.e., missing libraries) in OpenAccess
+would cause geometry to be imported into schematics.
+
+New variable OaLoadOnly and radio group in OA libs panel, allow OP read
+mode of physical only, electrical only, or both.
+"1" or (p|P)... Physical Only
+"2" or (e|E)... Electrical Only
+anything else Both.
+
+Misc tweaks to allow a native schematic to call an OA cell for simulation.
+This works from Cadence without Express-PCells.
+
+new variables:  OaDefLayoutView, OaDefSchematicView, OaDefSymbolView
+specifies assumed view names for OA data access.
+
+Changed variable name: OaDefaultLib to OaDefLibrary for consistency
+with other OA variable names.
+
+New variables OaDefDevPropView  default HspiceD symbol used for obtaining
+CDF parameters and properties.
+
+DONE:  When plotting, use subwins to show expanded subcells that can be
+clicked on to assign plot traces.
+New feature: press Ctrl+Shift and click on an instance in a drawing window,
+a sub-window will appear containing the master.  Further, in electrical
+mode, the new window will have a "proxy", which means that the window can be
+clicked in to generate hypertext references.  In particular, when plotting,
+one can use this to obtain plot points in instances that are shown as
+symbols in the schematic, the sub-window will contain a schematic
+representation of the clicked-on symbol.
+
+Unbound labels that contained hypertext elements are updated on-screen
+after each operation.  Previously the screen would have to be refreshed
+to see updated text, and the label size would not change with the text.
+
+Fixed integer overflow problem in donut command (Ari Friedman).
+
+Added new OA script function infrastructure in oa_if.cc.
+new functions OaOpenLibrary, OaCloseLibrary
+
+DONE Fix:  If the main window cell changes, all proxy windows are bogus.
+Add test for this!!!
+
+--------- xic-4.2.9 Released --------------------------------------------------
+
+DONE:  Write an app note about how to simulate things like chip4b_top.gds.
+Explain the spicetext labels, etc.
+
+DONE: script interface functions for OA.
+22 new functions
+
+Update docs, save function uses variables for lib/cell/view
+
+DONE: tree track database, adding/removing instances doesn't update tree.
+New Update button in Tree pop-up, user can update the tree when necessary.
+
+In native cells, instance reference names can have the form
+9 refname cellname;
+The refname can be an archive file path, or open library (oa and not).
+The second token is optional for archive files and is the name of the
+cell.
+
+TODO:  Convert menu, "Write Layout File" change Layout to "Cell Data"
+or "Archive" ore something, file can contain electrical data not just
+layout.
+Combine write/export and read/import panels, rid chd stuff.
+NEW read/write panels.
+NEW Convert menu text, order.
+kill xic:rdprm, xic:wrprm
+Renoved "CHD" check box frim cvin/Setup, redundant to CHD check box.
+moved RefCellAutoRename to CHD panel, uppdated panel.
+The CHD stuff in the old export params panel is gone, all in CHD
+panel.
+
+The meaning of open/closed in OA Libraries has changed.  Now, a library
+being "open" means that vcell names can resolve missing instance masters
+in situations where the lib name is not given.  If a library and cell
+are given by name, the library does not have to be open.
+
+The layer pallete was updated:
+1) backgrounds of the three areas are now different providing visual
+distinction.
+2) new Remove button allows layers to be removed from user area.  This
+was impossible before.
+
+Paul D, Reverted default button in  DRC run panel to Check.
+Also, on all GtkTreeViews, unset search_mode so that the widget doesn't
+comsume key events.  Also, in FileSel for open/save mode, made Go button
+the default.  Need this for sav<enter> to work if the filesel gets focus
+(in OS X).
+
+All pop-ups from main menu now position wrt viewport instead of menu
+position.  When command is run with accelerator before menu is shown first,
+position is not well defined.
+
+New variables:
+EvalOaPCell (boolean)
+NoEvalNativePCell (boolean)
+When reading input, whether to try and evaluate pcell instances found.
+Default is to evaluate native and skip OA.
+
+The rename from Cells Listingfunction now strips leading and trailing
+white space from new name, and will warn, but allow, if non GDS chars found.
+Used to accept anything silently.
+
+Done:  write note "fun with reference cells" or whatever
+refcell help topic expanded
+
+DONE Update docs, save function uses variables for lib/cell/view
+OaLoadOnly changed to OaUseOnly, applies to all save functions.
+!oasave command changed:  !oasave [-a] [libname], uses OsUseOnly.
+OA Libraries panel change, Load -> use
+
+--------- xic-4.2.10 Released --------------------------------------------------
+
+More tweaks to oa for schematic loading, trying to load test jj
+schematics for simulation.
+
+The lisp.log switch was being reset in the cLispEnv constructor.
+LIsp parser fix, now handles forms like "INP\+", i.e., allows backslash
+quoting of operator characters.
+
+New infrastructure for translating devices from the Virtuoso analogLib.
+Since the Skill function that composes the SPICE string for these
+devices is not available in general, we have to fake it by creating
+our own functions.
+
+It is feasible to use the analogLib devices instead of or in addidion
+to the Xic device library.
+
+add_dot_global in sced_spiceout.cc
+will add '!' global nets.
+Should no longer need to explicitly add .global spicetext labels.
+
+Bug fixed, when composing plot line, clicking on background of a proxy
+window would crash program.
+
+The SPICE listing included in top-level cell files now contains .plot
+and analysis lines, same as the dump command.  Both listings are
+now the same.
+
+Some new examples from old coomparator/superstack cells:  jj_cmos_if.tar.gz
+
+Fixed: DRC would crash program on objects with null zoidlist, such as zero
+width wires.
+
+Virtuoso IC617 uses oa-22.50, which is a new api-major.  The plug-in
+now transparently handles api-majors 4 and 5.
+Check this!!
+
+new command: !rcpcprops [-a]
+traverses the hierarchy of the current cell twice,  On the first pass,
+for OpenAccess sub-masters, the pcell_name and pcell_param properties
+are removed, makeing it an ordinary cell.  On the second pass, instances
+of pcells whose master is not in fact a pcell (i.e., has had properties
+removed) will have the pcell_name and pcell_param properties removed.
+if -a is given, native pcells are given the same treatment.
+
+The !bloat command:
+1) with mode == 3, bloat now works for 0-width wires.
+2) in mode == 3 the edge-only flag (0x8) is now recognized.
+
+--------- xic-4.2.11 Released --------------------------------------------------
+
+routing params added to layer params.  The Cadence tech converter now
+sets routing direction and other parameters.
+layerRules
+  routingDirections
+constraintGroups
+  LEFDefaultRouteSpec
+    interconnect
+      maxRoutingDistance (maxdist)
+    routingGrids
+      verticalPitch      (pitch x)
+      horizontalPitch    (pitch y)
+      verticalOffset     (offset x)
+      horizontalOffset   (offset y)
+  foundry
+    spacings
+      minWidth           (width)
+
+the 3-D layer sequencer no longer cares if a dielectric constant has been
+given to insulators.
+
+TODO:  a libsrc property on instances, path to archive containing master.
+
+Document phys-example button in Dump Phys Netlist.
+New DEF format.
+
+new script functions (extraction)
+check text of similar funcs, some small changes
+// (int) GetPscLoc(subckt_handle, array)
+// (string) GetPscTransform(subckt_handle, type, array)
+(string) GetPscInstName(subckt_handle)
+(int) GetPscIdNum(subckt_handle, array)
+(string) GetPscContactInstName(subc_contact_handle)
+
+Dump Phys Netlist would crash if more than one xic_format_lib
+format was defined.
+
+The index for subcircuits is no 0-based for each master, there is
+an IdNum which is completely unique.  In printed output, an instance
+name is formed from the master anem, underscore, and index.  This is
+used in printed output from the extraction system.  Previously, this was
+reported as the cell name and IdNum.
+
+Origin mark of labels was almoost invisible and is now more obvious.
+This is also now shown when a lable is highlighted for move/copy.
+This mark, and the origin marks of instances, are now shown as diagonal
+cross so that it doesn;t get hidden by edges.  If the rotation is 45,
+becomes ortho.
+
+New variable PinLayer.  If set to a layer name, and the layer exists,
+it will be searched exclusively for net name labels, Overriding any
+PIN purpose.
+
+scmos tech file, PIN:PIN defined for layer 109 dt 0, and PinLayer is
+set to this, for compatibility with OSU libraries.  The labels now
+give names to the nets in the gates.
+
+Big change, separation of cell/instance terminals and properties.  Physical
+terms now owned by physical cell, if there is one.
+script funcs:
+funcs_sced:
+ListNodeTerminals gone
+ListNodePins, ListNodeContacts new
+ListNodeTerminalNames gone
+listNodePinNames, ListNodeContactNames new
+funcs_extract
+new Physical Terminals category, lots of new stuff, see source.
+
+The program name and technology name are now defined as "no
+substitution" macros, meaning that they can be tested to see if set
+(their intended purpose) but will not cause replacement of the name
+with noting in macro-expanded test.
+
+PhysDump variables changed, initial button states changed.
+NoPnet -> PnetNet
+NoPnetDevs ->PnetDevs
+NoPnetSpice -> PnetSpice
+NoEnet -> EnetNet
+
+The scripts in the xic_format_lib file are now macro-expanded when
+read.
+
+The Elec Netlist button logic was completely fooked up.
+
+New OSNAME predefined macro expands to the distribution name.
+
+funcs_geom1: Object Management By Handles
+ListElecInstances new
+ListPhysInstances new
+GetInstanceMaster new
+SetInstanceMaster new
+GetInstanceName changed
+SetInstanceName changed
+GetInstanceAltName new
+GetInstanceType new
+GetInstanceIdNum new
+GetInstanceAltIdNum new
+
+funcs_sced: Output Generation
+Connect new
+funcs_sced: Nodes
+ListNodeTerminals gone
+ListNodePins new
+ListNodeContacts new
+GetNodeContactInstance new
+ListNodeTerminalNames gone
+ListNodePinNames new
+ListNodeContactNames new
+
+funcs_extract
+new category:  Physical Terminals
+Terminals:
+ListTerminals no change
+FindTerminal no change
+CreateTerminal no change
+CreatePhysTerminal gone to Physical Terminals
+HasPhysTerminal gone to Physical Terminals
+DestroyTerminal no change
+DestroyPhysTerminal moved to Physical Terminals
+GetTerminalName no change
+SetTerminalName no change
+GetTerminalType no change
+SetTerminalType no change
+GetTerminalLayer gone, replaced by Physical Terminals/GetPhysTerminalLayer
+SetTerminalLayer gone, replaced by Physical Terminals/SetPhysTerminalLayer
+GetTerminalFlags no change
+SetTerminalFlags no change
+UnsetTerminalFlags no change
+GetElecTerminalLoc no change
+SetElecTerminalLoc no change
+ClearElecTerminalLoc no change
+GetPhysTerminalLoc to Physical Terminals
+SetPhysTerminalLoc to Physical Terminals
+GetTerminalGroup gone, to Physical Terminals/GetPhysTerminalGroup
+GetTerminalObject gone, to Physical Terminals/GetPhysTerminalObject
+
+Physical Terminals:
+ListPhysTerminals new
+FindPhysTerminal new
+CreatePhysTerminal moved from Terminals
+HasPhysTerminal moved from Terminals
+DestroyPhysTerminal moved from Terminals
+GetPhysTerminalLoc moved from Terminals
+SetPhysTerminalLoc moved from Terminals
+GetPhysTerminalLayer new
+SetPhysTerminalLayer new
+GetPhysTerminalGroup new
+GetPhysTerminalObject new
+
+Routing params now parsed/written after Routing keyword, and are
+handled in the keyword editor.
+
+--------- xic-4.2.12 Released --------------------------------------------------
+
+The Arc script function was broken for angles that differ by 360 degrees,
+but would work (i.e., create all angles) if the two angles were equal.
+The Round, RoundH functions were completely broken (internally used the
+same arc generator hard-coded to 0,360).
+ 
+Paul D FH interface bug fixed.
+Would crash if more than one FH label overlapped term.
+
+Fixed LVS problem that caused "Terminal not connected to node" errors.
+
+New functions:
+ListGroupObjects, objects from via cells now have CDmergeDeleted set
+CountGroupVias
+ListGroupVias
+GetObjectFlags, flags now documented
+SetObjectNoDrcFlag
+SetObjectMark1Flag
+SetObjectMark2Flag
+
+The DumpPhysNetlist function would crash if trying to print using the
+format script.  Fixed a second buq that would prevent printing if the
+format library wasn't initialized, which occured when the pop-up was
+displayed.
+
+Path Files Listing
+Fixed: program crashes when using "Place" of a native cell file with
+more than three path components.
+Fixed: related issue of listing update due to path order change.  This
+works much better, selection/scroll value etc now retained.
+Fixed: The "busy" cursor now displays in Windows when the listing is
+being generated as the pop-up first appears.
+
+Bug fixed:  in FastHenry output, rows were listed, and numbered, in
+reverse order.
+
+new !join -l command, new Join Lyr button in the Join or Split Objects
+panel.  This will join objects on the current layer, selected or not,
+provided that the current layer is visible and mergeable (NoMerge not set).
+
+Changes to !join form:
+for !join or Join button, now NoMerge is ignored.  Since the user selects
+the objects, and probably really wants them joined.
+
+FastHenry terminal names can now be 2 chars. e.g., "t1".
+
+--------- xic-4.2.13 Released --------------------------------------------------
+
+Fixed bug with Image print driver when layers were in both physical and
+electrical layer tables.  After generating image file, get X error messages,
+then likely a program crash when exiting Print mode.
+
+Fixed garbled text from wrspice problem (partially, still see some
+on occasion).
+
+TODO: variable to prevent highlighting sub-structure when moving/placing
+subcells. DONE:  MaxGhostDepth
+
+FIXED:  Apple window placement bug when running programs remotely. 
+This is actually a bug in GTK under Apple, and was fixed previously
+for the Apple releases.  Unfortunately, the bug reappears when running
+Xic remotely from a Mac, so changes were required for all operating
+systems.
+
+New variable:  LowerWinOffset (integer -16 to 16)
+For windows that are automatically placed just above the prompt line,
+giving this variable a positive value will position these windows
+toward the top of the screen by that many pixels.  This is useful when
+using "plasma" displays (such as Mac or KDE), where the shadow falls
+on the prompt line.  It might also be helpful if the window
+positioning is incorrect, which might occur with some window managers.
+set from Window Attributes/General page
+
+Revised the ghost display for move/copy and instance placement.
+1) now observes maximum object count.
+2) objects are shown top to botom, ends at object count.
+3) transformations weren't correct for some cases.
+New variable:  MaxGhostDepth (integer 0 or larger)
+Sets the maximum level for instance expansion in ghosting.  If not
+set, this is the same as the normal expansion depth.
+
+The Max master menu length entry is gone from the Editing Setup panel.
+There is a new Maximum menu length entry in the Cell Placement Control
+panel which does the same thing, i.e., set the maximum menu length.
+
+There is a new Maximum subcell depth in ghosting option menu in the
+Editing Setup panel, tied to the MaxGhostDepth variable.
+
+Threads variable moved from General Visual to ! commands.
+In Layer Expresion panel, added "Number of hewlper threads", removed from
+General page of Window Attributes.
+
+Added "Pixels between pop-ups and prompt line" to General page of
+Window Attributes panel, tied to LowerWonOffset variable.
+
+FIXED: change elec  label, can't place where clicked.
+
+wrspice interface hang: Christine's SWn with gininterf debug, run to
+timestep too samll abort,  1) text in console is garbled, 2) Xic is
+frozen.
+FIXED?  Can't make it hang.
+
+Why don't terminal names take case as given? FIXED
+Prefixes, Instance names, net names now saved as upper-case in string
+table.  This means that things like labels will show an upper-case name,
+indep. of original name.  Used to save as first name given.
+
+Sometimes, file browser gives
+(xic:24203): Gtk-CRITICAL **: IA__gtk_window_set_focus: assertion 'gtk_widget_get_can_focus (focus)' failed
+
+Fixed:  The archive file readers would refuse to create a new layer
+that had layer number and datatype matching a Virtuoso internal
+layer/purpose.  This would prevent some cell files from being readable
+without a tech file.  This is no longer a fatal error, Xic will now
+create these layers when needed.
+
+Fixed:  The round and donut shapes with SpotSize set weren't quite right.
+SpotSize  ! Commands -> Side Menu Commands
+!tospot no longer prompts for spot size.
+SpotSize now defaults to MfgGrid
+
+----
+Each removed from Attributes Menu, renamed and moved to Side Menu
+DefLabelHeight -> LabelDefHeight
+MaxLabelLen -> LabelMaxLen
+MaxLabelLines -> LabelMaxLines
+HiddenLabelMode ->LabelHiddenMode
+
+--------- xic-4.2.14 Released --------------------------------------------------
+
+Sometimes, file browser gives
+(xic:24203): Gtk-CRITICAL **: IA__gtk_window_set_focus: assertion 'gtk_widget_get_can_focus (focus)' failed
+
+In oa_load, of a lib/cell not found, continue loading, don't quit.  Load
+all cells possible. DONE
+Avoid some spurious warnings in this case by avoiding master/instance
+cell type mismatch.
+
+The ParseTechLine script funct now handles StandardVia lines.
+
+The StandardVia lines are now printed in alphabetical order in the tech file.
+
+!mklib now properly handles rooted arcfile (doesn't prompt for reference
+directory, and doesn't prepend anything).
+
+FastCap interface in Windows version didn't work with fastcap-wr, at least
+the new MinGW version.
+
+Fixed bug, file selector windows would go blank at root directory.
+
+Mention id web docs, MUST install my gtk-bundle, others (like the one
+from gtk.org) won't work.
+
+Fixed bug:  the opamp macor (and tha macro reathre in general) was broken.
+
+--------- xic-4.2.15 Released --------------------------------------------------
+
+Fixed bug: !oatech -p libname -o filename would crash the program.
+
+oatech -p libname [-o filename] now prints a Virtuoso tech file from the
+OA tech database.
+
+New techfile keyword:
+ReadOaTech libname
+
+This will open and read the OA technology database for the named OA
+library.  The libname must be listed in the lib.defs/cds.lib file.
+Presently, the ReadDRF operation must be done before this.
+
+In tech file, '//' will now start a comment.
+
+In the techfile, ReadDrf and the tech read keywords ReadCdsTech,
+ReadOaTech, and ReadCniTech can be listed in any order.  Previously,
+ReadDrf had to come first.
+
+Lisp nodes like (2 -3) were being parsed as (2 - 3) instead of a
+list.  Now, a unary - is assumed if preceding char is space or (,
+following char is an integer, or period followed by an integer.
+
+New techfile boolean keyword:  LispLogging
+When true, the LISP parser, used to read Cadence-style technology and
+DRF files, will output a log file into the logfiles area.  Equivalent to
+setting the Lisp logging in the Logging panel from the Help menu.  The
+log can be useful for debugging.
+
+The file name of the LISP parser log file is now filename-lisp.log,
+where filename is the name of the file being parsed.  Previously,
+the name was just "lisp.log".
+
+Updates to the !dumpcds output: new techfile fields, format fixes.
+
+New layer aliasing feature, takes techParams definitionz where
+value is a layer.  Aliases will be found in addition to normal names.
+New techfile keyword:
+MapLayer alias layer_name
+
+Major refactor of the techfile parser, in particular wrt error handling.
+
+New feature: DeviceTemplates
+Generic device recognition;
+device_templates file, or in tech file
+syntax:
+DeviceTemplate template_name arg1 are2 ...
+device block lines where $(_1), $(_2)... are replaced by
+arguments.
+Internal default names in device_templates file: NmosTemplate, PmosTemplate.
+
+Automatically add "Conductor exclude: to layer aliased as "active_layer"
+using "ngate_layer" and/or "pgate_layer".
+
+Derived layer handling.  New "expansion" doesn;t require call to
+evalDerivedLayers, however old way still works and might be faster.  New
+boolean second arg to
+// (layerexpr) GetDerivedLayerLexpr(lname, noexp)
+text change
+// (string) EvalDerivedLayers(list, array)
+
+Horrible bug, schematics broken, "inapplicable model type" message.
+
+--------- xic-4.2.15 Released --------------------------------------------------
+
+Fixed bug, user rules broken.
+
+--------- xic-4.2.16 Released --------------------------------------------------
+
+Lots of small things fixed, revealed by valgrind runs.
+
+fixed no name assignment in the Node (Net) Name Mapping panel.  Operation
+would fail if names are case-insensitive (the default) and new name contained
+lower case.
+
+undoc:
+avoid OA warning when opening "chip1b_top.gds nand", tries to open as
+OA lib/cell.
+
+----- switch to git code control ------
+
+reversed direction of Ctrl-mouse wheel zoom, to match prevailing standard.
+
+Porting to Fedora-25, which uses gcc-6.
+Nasty problem, I have used "this" to check for a null object throughout the
+program.  I.e., if (this == 0), it was assumed that one could go ahead and
+do useful things without referencing the object.  This would work for simple
+objects, without polymorphism.  However, calling a methon on a null object
+pointer is technically undefined.  Clang would work, but emit a warning
+for (this == 0), which was shut up by ((void*)this == 0).  Gcc-6 will
+issue a warning even with the (void*), but allows a new local variable
+to be set to this and subsequently tested.  However, it gets worse.
+Gcc-6 will seg fault when calling a method through a null pointer, unless
+-fno-delete-null-pointer-checks is set.  So, a lot of refactoring is needed.
+
+Leave it to the pedantic assholes to break a perfectly
+reasonable idiom which a sane person would design into the language.
+So begins the process of making sure that no null object pointers are
+dereferenced, looks like lots of work.
+
+__attribute__((deprecated)) can be temporarily added to a function
+that tests this==0, causing the calls to emit a warning on compilation. 
+The calling object can be tested at these locations.
+
+
+
+==== Sticky ==================================
+
+todo:  implement same-net DRC tests.
+
+TODO: make instance labels moveable by user in ext setup?
+
+TODO add property to prevent merging?
+
+TODO (maybe)
+Allow "9 1 library ....", will open library b4 read
+
+XXX Bug: "+" icon current fails for caps with .param value.
+
+TODO:
+add hash table script functions.
+add an InstanceCount() script func that returns a hash table handle..
+TODO: script interface to Lisp parser.
+
+todo (maybe): handle all-angle GDSII cell placements.
+gds reader would add a property to instances giving real angle.
+bottom-up traversal would reparent these instances into an ortho cell with
+rotated content.
+
+Idea:
+Somehow maybe make the spin operation applicable whever objects are
+being placed/moved/copied?
+
+Idea: string table, hash tab elements are kept in one big array.  Each
+string is associated with an int offset into the array.  Decorate this
+int with a struct with a type conversion operator to const char*, which
+returns the string.  I.e., CDname is an int instead of a char* saves space
+in 64-bit binaries.  Do this for other hashable objects?
+todo: write a template class implementing this.
+
+todo: report bad objects in info somehow.
+fix: long text incs mod count at wrong time.
+
+todo: make Push/Pop and Info work better with cell arrays.
+
+todo: implement net extraction with bloat from netex file.
+add vias
+
+TODO: use hash tables in dsp_marks.cc
+
+Long term ------
+TODO: look at more complete SPICE file extraction - for exjjiv.cir for
+example (.model lines retained?)
+TODO: extend spice parsing to support .param, .if/.else/.endif and perhaps
+model binning
+-------
+================================================

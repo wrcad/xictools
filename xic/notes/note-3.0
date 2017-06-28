@@ -1,0 +1,2080 @@
+
+Start of 3.0.X
+
+Major changes to modularize the components.
+
+cd_gds_read.cc : BOXTYPE now handled.
+
+all skeleton mode stuff has been stripped out.
+
+There is now a local in-core image kept for each graphics window.  This
+should greatly accelerate image redraws, particularly when running over
+a network.
+
+new Variable: NoLocalImage (boolean)
+
+When set, Xic will not compose graphics images locally in memory.   By
+default, the display images are composed in local memory, and flushed to
+the graphics system when drawing is complete.  This greatly improves
+rendering speed, partitularly when running over a network.  It this variable
+is set, this feature is disabled, and rendering is performed by server-side
+functions.  This is for debugging, it is not likely that the user will need
+to set this variable.
+
+New menu item in File Menu : Hierarchies
+
+Cells popup: The search function now uses the same window instead of a
+separate window.
+
+The "archive context" is now termed "cell hierarchy digest".
+Ongoing:  move all text to new terminology.
+
+Script function names changed, alias to old names retained.
+
+Todo: replace DSP()->windows[] with Cycle, MainWdesc, etc and make
+private.
+
+BUG:  setArea flags. FIXED
+
+Cells popup: listing limited to N entries, combo menu selects page.
+same for popUpList
+
+BUG: Spin command Shift logic backwards. FIXED
+Also, Shift-Return now does copy, Return does move.  Previously, only
+copy was possible.
+UPDATED xictools-release.
+
+BUG: ShowPaths was broken.  FIXED
+UPDATED xictools-release.
+
+New entry in Attributes and SubwAttributes menu: No Show Unexpanded
+When active, cells that are not expanded are not shown at all - no
+bounding box or label.
+
+BUG:?  Looks like a grouping error in MRAMPFF subcell of m269 .
+FIXED (ext_group.cc 2429).
+xictools-release updated.
+
+By default, if an extracted device is found to have all terminals
+shorted together at the time the device is recognized, the device
+will be ignored.  This will help reject spurious devices from
+test structures, etc.
+
+If the variable KeepShortedDevs (boolean) is set, then these devices
+will be kept (as in earlier releases).  This flag may be needed 
+for LVS to pass, if the schematic contains shorted devices.
+
+ToDo: display mode using Extracted features only (use group object
+    lists).
+New Feature (tentative): In the Select Groups command, the display is
+drawn using information from the extraction system.  Although similar to
+the normal display, there are important differences:
+  1) Only the conducting layers are shown.
+  2) The features from internally-flattened subcells are shown as part
+     of the parent cell.
+  3) The geometry represents the processing from the conductor exclude
+     directive.
+
+The convert/export panel was changed - it now uses notebook tabs to
+select the output format.
+Similar changes made to convert/convert pop-up.
+
+BUG: ExportPhys is screwy.  It will affect the writing when set, but
+e.g. in conversions it doesn't elide electrical and doesn't change the
+file name.
+||
+Electrical data are now not read when translating with ExportPhys set.
+ToDo: new file name setting needs work.
+
+Finished complete code upgrade of all files
+    static -> namespace { }
+    code passes -Wshadow -Wwrite-strings
+    in gtk, static handlers moved to classes.
+
+BUG FIXED : xictools-release also
+pop down Print panel with title bar X button.  Mode change causes
+gtk error messages on console (HCupdate accessing null widget pointers).
+
+PENDING
+Logic issue:  With !set AutoRename, if an archive file is placed, the
+anto-rename is not applied when the hierarchy is read into memory.
+Make this consistent with Edit.
+DONE (xictools-release also updated)
+Opening an archive as part of a place/replace or new name pseudo-property
+will use the same conversion flags as Edit.
+enabled: auto-alias, name case change, use alias file
+
+Added layer palette.
+
+Major change.  Previously, the CDsym was the top hash table item.  This
+contains pointers to CDs structs for electrical and physical mode.  Now,
+There are two hash tables, for the physical and electrical CDs structs.
+The CDsym is still around, but is a local struct for convenience - when
+one needs to treat phys/elec cells in a unified manner.
+
+The change has the advantage that for physical data only, the memory
+used will be smaller.
+
+PENDING: -convert cell tables to pointer rather than string comparison.
+      -create a new data type for char strings in the name table.
+DONE, CDname is name table object, name tables all use address comparison.
+
+All of the M_xxx menu funcs are now local.
+
+XXX I arbitrarily changed the DESEL command from NOTSAFE to SAFE, to simplify
+logic for the properties override.
+THIS NEEDS SOME EVALUATION.
+the CmdState has a new virtual method: desel(), which is called in desel.
+Commands can use this to reset if necessary.
+PENDING: update commands to use this (stretch is done).
+DONE.
+
+The Versatec and WordPerfect print drivers were removed.  These are
+obsolete and not maintainable.  Ridding Versatec allows getting rid of the
+swath and cmyk junk.
+
+The viewport left,top is now always 0,0.  Previously, viewport offsets
+were used in hardcopy, and the device palette.  The device palette now
+uses pixmap copying.  The hardcopy drivers will be rewritten to add the
+offset as necessary.
+
+The Convert panel now accepts a CHD name as the input file.
+
+The Conversion Export panel new has a Windowing control area, like the
+convert panel.
+PENDING: implement in msw
+DONE
+PENDING: implement all modes
+DONE
+
+PENDING: write_object looks inefficient wrt layer setup.
+DONE: added hash table
+
+Added hast table for FindLayer.
+
+PENDING:
+possible new feature:
+"Pseudo cells" that represent a CHD.  These can be placed like normal
+cells.
+Writing as archive: streams CHD source files into output.
+Writing as native:  saves pseudo-cells as references (somehow).
+DONE: more or less. "somehow" is a special XICP_CHD_REF cell property
+
+------
+Presently, cell name aliases are stored in the CHD, so that CHDs opened
+with different mappings will be diferent.
+This is retained:  The chd has the aliasing and scaling saved internally.
+I.e., opening a flie thru the CHD automatically applies the aliasing
+and scaling.
+
+When accessing a file through a CHD, all cellnames are aliased by the
+original aliasing, if any.  Original cell names are invisible, though they
+can be recovered if the original alias table still exists.
+
+Writing hierarchy with aliasing when chd reference cells exist what happens?
+If chd exists:
+    cname is extracted from property, same as unaliased cell name.
+    top symref is found for this name.
+    top symref is written using aliasing.
+
+    This will be ok if cname in property is always found in chd, i.e., aliased
+    by whatever aliasing was used when creating the chd.
+    This should always be true - so all is ok.
+
+if chd must be created:
+    if filename in property is chd.sav, all should be ok if .sav read ok.
+    This is not currently implemented.
+
+    create new chd using current aliasing.
+    find top symref using ALIASED name.
+    write top symref using no aliasing.
+    
+
+-----
+PENDING:
+chdlist add
+new popup:  contains aliasing choices, along with input file name.
+DONE.
+
+Script funcs for creating CHD, provide aliasing choices.
+
+Add flag(s) to chd to indicate aliasing applied.
+NOTE: with auto-aliasing, tables may be different even with same flags, etc.
+      ditto if using alias files.
+done.
+
+
+----
+NumToTxtCells removed, obsolete.
+
+BUG: concident instance testing isn't done in some cases (fix_bb()).
+xictools-release fixed.
+
+----
+NEW:  The Property line in deice.lib can take either a text name or integer
+value for the properties.
+There is a new property that allows the internal prefix->device mapping to
+be altered.  Prefixes and be multi-char.
+
+// Prooperties for the device library.  These can be given in the
+// device.lib file keyed by either the number or the text token, e.g.,
+//   Property 20 ...
+//   Property SpiceDotSave ...
+
+// Add .saves, text is  'device_prefix param_name' (e.g., I c)
+// to add ".save @Ixxx[c]" lines.  Added to all spice decks created.
+#define LpSpiceDotSaveVal 20
+#define LpSpiceDotSaveStr "SpiceDotSave"
+
+// Add a default node, text is 'device_name num_nodes string'
+// (e.g., nmos 4 NSUB) to add a 4'th node "NSUB" to nmos device with
+// fewer than 4 nodes.
+#define LpDefaultNodeVal  21
+#define LpDefaultNodeStr  "DefaultNode"
+
+// Add a prefix/device mapping, text is 'prefix opt val nnodes nname pname'
+//  prefix  short device id prefix, first char must be alpha.  This must
+//          match a device in the library.
+//  opt     0,no,off or 1,yes,on (binary). If true, last node presence is
+//          optional (such as for bjt).
+//  val     0,no,off or 1,yes,on (binary). If true, all text goes into
+//          value string (such as for sources).
+//  nnodes  number of device nodes, including optional.
+//  nname   device name for device, or n-type device, in library.
+//  pname   if not 0 or missing, the device name for the p-type library
+//          device.
+// (e.g., m 0 0 4 nmos pmos)
+#define LpDeviceKeyVal    22
+#define LpDeviceKeyStr    "DeviceKey"
+-----
+
+New ! command (in sced):  !devkeys
+This dumps a tabulation of the device keys to the console.
+
+Caching added get nameOK, etc. for electrical mode.  This greatly speeds up
+io for very complex cells.
+
+WriteGeomSplit is gone, replaced by ChdWriteSplit.
+
+The cv_info object count mechanism was rewritten to accommodate per-layer and
+per-cell counts.
+
+The third arg to GetCellHierDigest is now an integer that sets the info
+level.
+
+The Clear(xxx) function will now delete the phys/elec part that is empty
+and top level.
+
+The READC command in the Convert Menu is gone.  Instead, the IMPRT panel
+has a mew "Merge Into Current" option menu.  Choices are no merging,
+merge cell, and merge recursive.
+
+Merging applies only the the current mode of the cells and hierarchies
+involved. etc etc.
+
+The Show Mark function in the Attributes menu is gone.  This is too
+obscure to warrant menu space.  Replaced with
+
+New Variable:  MarkInstanceOrigin (boolean)
+When set, selected instances will have the cell origin marked with a cross.
+This may seem trivial, but marking the origin requires a bit of overhead
+since it requires running a transformation and keeping track of an
+additional redisplay area since the origin may be outside of the cell
+bounding box.  Thus, the default is to not show the mark.
+
+There is a new pop-up in the File Menu that enables control of the
+sypbol table (select/add/delete).
+
+The !symtab command has been removed, since there is now a menu command
+for the same purpose.
+
+In subwindows, new View menu entry Swap to Main, swaps contents of window
+with main window.
+
+The !sw command is redundant and has been removed.
+
+In subwindows, new View menu entry Load New, allows loading a new cell to
+this window only.
+
+The !cc command is redundant and has been removed.
+
+new variables
+    UnknownGdsLayerBase (integer 0-65535) (default: 128)
+    UnknownGdsDatatype  (integer 0-65535) (default: 128)
+
+When translating to GDSII or OASIS from a file format that does not have
+layer/datatype numbers, and no mapping can be resolved, new layer/datatype
+combinations are created.  The new layer numbers are sequientially generated,
+starting with UnknownGdsLayerBase.  Each has datatype UnknownGdsDatatype;
+
+CIF change, symnums are now used in instance calls is every case.
+The writer now always terminates the fiel with "End" rather that
+"C 0;\nE"
+
+There are now a lot of new switches to control CIF extensions, accessible
+from a menu in the CIF tab of cvofmt.
+
+The CifAddBBox format is now
+        fprintf(out_fp, "(Bound %d %d %d %d);\n",
+            BB.left, BB.bottom, BB.right, BB.top);
+This adds a bbox to every objects.  The bound extension adds a bbox to
+instances.
+This is no longer applied to native cells - CIF only.
+
+CifOldWire variable is gone, replaced by wire_extension_new, which is used
+for CIF only.  Native cells always use new extension.
+
+In scripts, negative indexing of a string is now a fatal error, as is
+indexing beyond the end.
+previously:  for str + n, n was set to 0 if negative
+             for str - n, no checking
+
+The TLoad/TStore now take an integer arg, which is a register number.
+Register 0 is reserved for push/pop.
+
+Register 1 is applied to the top of the transform stack before a
+flat-mode chd_parse, i.e., readFlat() and write().
+
+The central layer alias table has been removed.  There is a new variable
+LayerAlias (string)
+that contains the name=newname pairs.  If UseLayerAlias is set, a transient
+alias table is used when needed for a conversion.
+
+The !lal layer alias table manipulation command is gone.  Layer aliases
+are now set in the LayerAlias variable.
+
+BUG: OASIS compression was not compatible with other readers.
+FIXED, xictools-release updated.
+WARNING - compatibility with previous releases broken.
+
+The "file will change" test was eliminated from the readers, a new file
+will always be parsed/written instead of copied.
+
+The OasWriteNoXicTextPrps variable is deprecated, the new name is
+OasWriteprptyMask.  Now, if the variable is set to a non-integer non-empty
+value, during conversions (only) all properties are stripped from output.
+The latter is true in xictools-release also, EXCEPT that properties will be
+stripped in all output, not just conversions, if the variable is set to
+strip all.
+
+Now, small blocks are not compressed, since most often the "compressed"
+size is larger than the uncompressed size.
+Also true in xictools-release.
+
+If OasWriteCompressed is set to the word "force", then all blocks are
+compressed, as before.  This can be used for comparison purposes, but is
+not likely to yield the best results.
+
+PENDING (Paolo)  accelerator key for reflections.
+XXXXXX almost done. Problem with Ctrl key and force to 45 (OK)
+DONE
+
+new OasWriteRep define: t=1000000
+This is the maximum number of repetitions saved before flushing.  The
+default is 1000000.
+If set to 0, there is no limit.
+
+The a arraymin variable can be set to 0, in which case no arrays are
+extracted.
+
+xictools-release updated for oasis.
+
+PENDING: bug, can set current transform magn to 0 with script func.
+      bug, ShowParameters not called(?) when reset (OK)
+DONE, FIXED
+
+PENDING: save/recall registers for window coords in Convert popups
+DONE
+
+BUG: TRotate was broken for rotations 135, 225 with regard to the Tx,Ty
+factors.  This seems to only affect application of current transform during
+move/copy/place.
+FIXED (xictools-release also);
+
+CHANGE: Ctrl-UpArrow now toggles current transform flip-Y, previously
+this advanced rotations.  Ctrl-DownArrow not foggles current transform
+flip-X, proviously this decremented rotations.
+
+New store/recall buttons in the wnd_t window interface.
+
+New Config button in the Hierarchies pop-up, and new configuration
+dialog.
+
+New "oasdb" geometry database struct.  This is an in-core object that
+stores geometry per cell/per layer in a highly compact form.  This
+can be "associated" with a CHD, in which case the CHD will read from the
+database instead of from the original file.  Association is established
+in the Hierarchise/Config pop-up.
+
+PENDING: make Layer Palette drop receiver for layer fill/color.
+DONE
+
+PENDING: set NoFatLines (boolean)
+Avoid fat lines in drawing.
+DONE
+By default,
+Xic uses minimum-width lines when rendering unfilled objects, since this
+maximizes rendering speed.  This is different from previous versions of
+Xic, which used "fat" lines for unfilled boxes and Manhattan polygons.
+The previous rendering mode can be established by setting the
+UseFatSegments variable.
+
+New variable:  UseFatSegments (boolean)
+When set, Xic will use 'fat' line segments when rendering unfilled
+boxes and Manhattan polygons.  This was the mode used for all
+rendering in older releases of Xic.  However, this rendering can be
+substantially slower that use of minimum-width lines, which is the
+default for the present Xic release.
+
+New File Menu entry:  Geometry Digests.
+
+Rewrote zoid clipping functions.  Global fudge factor now 0.  Updated
+xictools-release.  "bloat -.001 0" should now work.
+
+Modified the device extraction contact recognition when bloat given (per
+George Chen).  Updated xictools-release.
+
+The installation location for xictools support files is now under
+/usr/local/share.
+
+The xic_tech files for xicii have had unused keywords removed.  These
+keywords cause not trouble, but generate a lot of error messages.  They
+aren't regenerated if the file is rewritten.
+
+Moved the electrical keywords plus Thickness and Symbolic into the main
+code body.  Thickness and Symbolic are used in the cross section viewer.
+
+New ! command: lthick
+This displays/ sets the thickness value stored for the current layer,
+which is used for cross-section display and in the extraction system in
+Xic.  Since the extraction parameter editor is not present in XicII, this
+command allows changing layer thicknesses from the application (the value
+will be saved in the technolofy file, if it is updated).
+
+Fixed Bug:  If a viewport (or main window, probably) comes up partially off
+screen, only the on-screen part has the correct image, the off-screen part
+is rubbish.
+also updated xictools-release
+
+xictools-release only,  REP_RUN_MIN was 3, caused seg faults in oasis
+rep finder.  Changed to 4.
+
+BUG:  !compare with two files, second run symbol name clashes that can't
+be bypassed.
+!compare needs work:
+   set wait cursor
+   provide user feedback
+   perform -g in sections
+
+The LayerPartSize variables is gone, renamed "PartitionSize".
+
+----
+PENDING: make NoMergeBoxes layer-specific.  Turn it off for Symbolic layers?
+DONE
+
+In the Conversion Param Editor
+BUG: Description and LongName entries not prevented from appearing multiple
+times. FIXED (xictools-release, too)
+BUG: free() problems with description, longname. FIXED
+Added Symbolic and NoMerge to keywords.
+
+New Layer Block tech file keyword: NoMerge
+if given, boxes will not automatically be merged on the layer (phys only)
+
+change to NoMergeBoxes variable:
+If set as a boolean, boxes are never merged (as before).
+if set to a word starting with 's' or 'S',
+boxes on symbolic layers will not be merged, others will.
+
+The Prompt line can handle more text than is visible in the display
+area.  If a string is longer than the display area, initially the
+rightmost part of the string will be shown.  Clicking in the prompt
+area near the left border will show the start of the string.  Clicking
+in the prompt area near the right border will show the end of the
+string.  Clicking in the interior of the prompt area will show the
+middle part of the string, proportionate to click location.
+
+In Peek mode, an expose event would cause the expose to redraw slowly.
+Peek mode is now suppressed in CheckForInterrupt.
+
+Im Peek mode, the layer names are now shown in the prompt line as drawn.
+
+Bug found in GDSII reader.  During conversions or reading through an
+archive context, with a certain layer sequence in the file, a small number
+of objects can be written to the wrong layer.  This does not affect GDSII
+file written from designs loaded into Xic.
+
+------ changes ----------------------------------------------------------
+
+Hierarchy Digests
+Keyword xic:hierlist
+in xiFile.hlp
+
+Cell Geometry Digests
+Keyword: xic:geomlist
+in xiFile.hlp
+
+Symbol Tables
+Keyword: xic:symtabs
+test in xiFile.hlp
+
+Cells Listing
+New features
+
+Files Listing
+   In Hierarchy Display mode, only the Content And Help buttons are
+   available.
+
+Listing windows
+The display of the cell names is paged.  The number of entries displayed
+per page can be set with the ListPageEntries variable, or defaults to
+5000 if this variable is unset.  If the listing requires multiple pages,
+a page selection menu will appear to the left of the Dismiss button.
+
+Cut and Export
+in xiConvert.hlp
+
+layer palette
+kw: layer_palette
+in xiNew.hlp
+should sticky layers be remembered across popdown? NO
+save around mode switch? NO, layer palette pops down on switch
+
+layer presentation
+kw: layer_present
+in xiNew.hlp
+
+new Variable: NoLocalImage (boolean)
+in xiVariables.hlp
+
+KeepShortedDevs variable
+in xiVariables.hlp
+
+New Variable:  MarkInstanceOrigin (boolean)
+in xiVariables.hlp
+
+New variable:  UseFatSegments (boolean)
+in xiVariables.hlp
+
+The LayerPartSize variables is gone, renamed "PartitionSize".
+in xiVariables.hlp
+(Need to search for references)
+
+LayerAlias variable
+The central layer alias table has been removed.
+in xiVariable.hlp
+
+The OasWriteNoXicTextPrps variable is deprecated, the new name is
+OasWritePrptyMask.
+in xiVariables.hlp
+
+If OasWriteCompressed is set to the word "force"...
+in xiVariables.hlp
+
+new OasWriteRep define: t=1000000
+This is the maximum number of repetitions saved before flushing.  The
+default is 1000000.
+If set to 0, there is no limit.
+The a arraymin variable can be set to 0, in which case no arrays are
+extracted.
+minrun=4 new minimum.
+in xiVariables.hlp
+
+CHANGE: Ctrl-UpArrow now toggles current transform flip-Y, previously
+this advanced rotations.  Ctrl-DownArrow not foggles current transform
+flip-X, proviously this decremented rotations.
+in xiMain.hlp
+
+In scripts, negative indexing of a string is now a fatal error, as is
+indexing beyond the end.
+previously:  for str + n, n was set to 0 if negative
+             for str - n, no checking
+in xiScript.hlp
+
+new variables
+    UnknownGdsLayerBase (integer 0-65535) (default: 128)
+    UnknownGdsDatatype  (integer 0-65535) (default: 128)
+in xiVariables.hlp
+
+The !sw command is redundant and has been removed (Swap to Main)
+The !cc command is redundant and has been removed (Load New)
+The !symtab command has been removed, since there is now a menu command
+for the same purpose.
+The !lal layer alias table manipulation command is gone.  Layer aliases
+are now set in the LayerAlias variable.
+in xiNew.hlp, xiBangcmds.hlp
+
+viext command
+in xiExtract.hlp
+
+The installation location for xictools support files is now under
+/usr/local/share.
+in xiNew.hlp
+
+The Property line in deice.lib can take either a text name or integer
+in xiFileFormat.hlp
+
+New ! command: lthick
+in xiBangcmds.hlp
+
+New ! command (in sced):  !devkeys
+in xiBangcmds.hlp
+
+Extension Flags
+in xiFormat.hlp
+
+CIF change, symnums are now used in instance calls is every case.
+The writer now always terminates the file with "End" rather that
+"C 0;\nE"
+in xiFormat.hlp
+
+The CifAddBBox format is now...
+This is no longer applied to native cells - CIF only.
+in xiVariable.hlp
+
+CifOldWire variable is gone, replaced by wire_extension_new, which is used
+for CIF only.  Native cells always use new extension.
+in xiVariable.hlp
+
+There are now a lot of new switches to control CIF extensions, accessible
+from a menu in the CIF tab of cvofmt.
+in xiFileFormat.hlp
+
+mew "Merge Into Current" option menu.
+in xiConvert.hlp
+
+new feature:
+"Pseudo cells" that represent a CHD.  These can be placed like normal
+cells.
+in xiNew.hlp
+
+In the Conversion Param Editor
+Added Symbolic and NoMerge to keywords.
+New Layer Block tech file keyword: NoMerge
+if given, boxes will not automatically be merged on the layer (phys only)
+NoMerge keyword prevents dup check.
+/*
+change to NoMergeBoxes variable:
+If set as a boolean, boxes are never merged (as before).
+if set to a word starting with 's' or 'S',
+boxes on symbolic layers will not be merged, others will.
+*/
+NoMergeBoxes variable is a boolean, forget Symbolic state.
+New logic, conversion MergeInput always applies while reading, NoMergeBoxes
+applies when not reading.  NoMerge always applies.
+
+data size now printed in CGD layer info.
+
+The Prompt line can handle more text than is visible in the display
+in xiMain.hlp
+
+Uh-oh, the ToLower/ToUpper works in Edit (fixed)
+make sure that aliasing and case change do not apply to Edit/Save (ok)
+This will be a change from old bahavior (noted in xiNew.hlp).
+
+New "Log files" command in the Help Menu.
+Replaces as !logfiles command.
+help updated
+
+!dumpfont is gone
+Functionality available from Dump Vector Font button in the Attr/Set Font
+panel.
+help updated
+
+rid LogoManhattan, LogoPretty, replace with LogoAltFont
+help updated
+
+rid !logofont
+rid !dumplogofont button in new Setup Logo Font pop-up
+
+New PopUpLogoFont pop-up.
+xic:logo help text updated
+
+Main3 to Extr DONE
+    bool IFisLayerConductor(Variable*, Variable*);
+    bool IFisLayerRouting(Variable*, Variable*);
+    bool IFisLayerGround(Variable*, Variable*);
+    bool IFisLayerContact(Variable*, Variable*);
+    bool IFisLayerVia(Variable*, Variable*);
+    bool IFisLayerDarkField(Variable*, Variable*);
+
+New in Main3 (after Visible) DONE
+    bool IFisLayerSymbolic(Variable*, Variable*);
+    bool IFsetLayerSymbolic(Variable*, Variable*);
+    bool IFisLayerNoMerge(Variable*, Variable*);
+    bool IFsetLayerNoMerge(Variable*, Variable*);
+
+New in Main1  (Symbol Tables after Database) DONE
+    (string) SetSymbolTable(tabname)
+    ClearSymbolTable(bool destroy)
+    (string) CurSymbolTable()
+
+New function ChdLoadGeometry
+
+SetConvertArea, SetConvertFlags have additional argument
+
+New variables CifOutExtensions
+help updated
+
+Create a more complete OASIS pop-up
+done
+
+Make a big table of script funcs, etc to show when variables/modes apply.
+done, in xiVariables (2), and xiConvert
+
+Check CifOutSyle re set by reading CIF.  Does reading override?
+No more automatic override, "Last Seen" button on CIF setup page.
+
+GdsMunit control
+done
+
+Internal, no more chd handle, the access name is used.
+
+Add function to change CHD access name.  ChdChangeName added
+
+After ClearAll, "Contents" popups will be bogus and crash the program.
+panels popped down now.
+
+Path Files Listing
+Use option menu, as in Windows, instead of notebook tabs?  I don't like
+"Dir 0", etc.
+DONE.
+
+new func: ReadMsg()
+ETC.
+
+changes to daemon, geom keyword.
+The daemon can now have up to five concurrent connections.
+geom returs forced to longform, geom return froced to binary.
+make binary format the default.
+geom without args, the CGD names might contain white space, have to
+quote these in reply.
+rid ascii mode
+always use message length for message delineation
+DONE.
+
+"delete variable" in scripts.
+DONE.
+
+NoReadLabels button in Import Parameters panel added.
+DONE.
+
+Create/destroy CGD
+Generator function for CGD
+Server process for CGD
+build in client process (xclient.cc)?
+DONE.
+
+Added entry, button to CHD Configure panel.
+
+Fixed HelpMultiWin, button 2 new window in help.
+
+Give crash dump email a subject.
+Fix backtrace on FreeBSD.
+DONE.
+
+do the record things work for oasis to text?
+OK.
+
+make sure !fileinfo/FileInfo/ChdInfo descr is accurate.
+OK.
+
+Should document when wires->polys.
+OK.  Only when clipped.
+
+New button in edit menu controls NoMergeBoxes
+
+New Menu, "Modify", contains some things moved from edit menu.
+
+Help should show visited anchors.
+Done.
+
+Need to differentiate WRspice help pages.
+New Help system keywords
+!!TAG
+!!MAINTAG
+!!TAGTEXT
+
+NoCoincCheck is gone
+new variable DupCheckMode
+   When no set, Warn
+   When set, 'r' Remove
+             'w' Warn
+             else NoTest
+
+Moved some bools from fio to cd.  These apply only when objects enter
+database.  Change doc to say this, Import Parameters.
+Moved poly check function into makePoly.  NoPolyCheck controls this,
+now polys are always tested unless variable is set.
+
+readFlat ignores text labels, so no labels in CHD Display mode
+other functions keep labels entirely in window (?)
+
+get rid of BW command.
+New command: !timedbg [y|n] [logfile]
+
+the Show button is always disabled.
+Show mode now works with CHDs.
+
+OasReadNoChecksum? leave as variable only.
+
+Modified transform stack functions.  The inverse was not giving the initial
+numbers, caused differences between oasis and other output for 45-rotated
+cell arrays.
+
+Labels are now included in readFlat.  When clipping, if the label bb would
+be clipped, the label is rejected.
+
+Zlist::merge no longer uses sloppy mode.  Sloppy mode unused everywhere?
+Sloppy mode GONE.
+
+When comparing polys, rotations of the vertex list are now considered.
+---
+
+how to replace cell definitions in a file?
+Use CHD to write file, pass a list of cell names to replace.  Writer
+will obtain these cells from some other source (e.g., the database, or
+another CHD) when generating output file.
+
+
+need to update MSW
+
+check poly splitting, self-overlapping polys and overlapping zoids.
+New poly splitting code, both in graphics and geom.
+
+Bloat mode flags changed.
+!bloat mode argument takes 0x hex.
+xictools-release changed
+update doc for xic-release
+
+!manh has optional third arg:
+0:  triangle decomp
+nonzero: grid decomp.
+ManhattanizeObjects() has fourth mode arg.
+Manhattanize() has fourth mode arg.
+manhattanize() lexpr func third mode arg.
+Bresenham, errterm = dx/2;
+
+default JoinPolyMaxGroup changed 100->300
+
+edges lexpr function is obsolete.
+EdgesZ, edges lexpr func, new modes
+
+BUG:
+manhattanize lexpr function hangs program.
+FIXED (xictools-release too)
+
+New Variable: ScreenCoords (boolean)
+When set, coordinate display shows the screen pixel coordinate, for
+main window only.
+
+New variable:  RefCellAutoAlias (boolean)
+corresponding button in Set Export Parameters
+
+Cell Tab:
+new variable: UseCellTab (boolean)
+CellTab script funcs
+separate CellTab for each symbol table
+
+New variable: ChdLoadTopOnly (boolean)
+New Load Top Only button in Hierarchies panel.
+Opening cell from chd with ChdLoadTopOnly
+   cell is added to Cell Tab
+   reference cells are created for all subcells
+In override, the cell will be substituted recursively, but only cells in
+table will be written.
+
+New help menu button:  Multi-Window Mode, controls HelpMultiWin
+Variable NoHelpDefault is gone
+New variable HelpDefaultTopic (string)
+   If set to an empty string (i.e., as a boolean), there will be no
+   default topic, i.e., pressing the Help button puts Xic into Help mode,
+   but does not show any topic.  If set to a URL or help database keyword,
+   pressing Help will show that content.
+
+PnetFlattenPrefix and other !Set variables in tech file don't get saved
+in copy.
+when writing tech file:
+   writes !Set lines from the original tech file commented
+   srites !Set lines for all currently set variables
+
+Attributes menu
+   new attributes panel
+   new cursor panel
+CellThreshold maximum
+pop-ups update from set
+
+turn on edge indicator outside of commands?
+revision of edge selection stuff
+New variable: EdgeSnapMode
+removed variable: NoSnapToEdges
+
+command to dump all set variables?
+new command: !setdump [filename]
+dump all set vars in script format to filename, or stdout
+
+New variable: RmTmpFileMinutes (integer 0-4320)
+New variable: DefaultPrintCmd (string)
+
+encrypt tools are now in distrib.
+
+get rid of wr_lp, replace with filestat::schedule_rm_file.
+get rid of accessories, these go into apps or freestuff.
+
+download widget modified
+FileManager and path files now use confirmation mode for all file operations.
+New variable:  NoAskFileAction (boolean)
+
+New cmd line arg: -Rprefix where prefix is equiv to "/usr/local"
+
+Xic will check for update availability on startup. can be disabled with
+New Variable: NoCheckUpdate (boolean)
+
+!update command
+New variable InstallCmdFormat (string)
+Allows modification of the installation command in !update
+
+!passwd command, encrypted .wrpasswd file.
+tool for generating .wrpasswd file, encrypted.
+
+GJC mod to LVS
+new variable LvsFailNoConnect
+
+ZtoFile/ZfromFile ascii format support.
+
+Param line sez "RO" for immutable cells.
+
+Don't write LIBRARY (LibUser) cells
+LibUser cells will have immutable flag set.
+If cell is renamed: can't rename if immutable, Libuser unset if renamed
+If cell is copied: copy unsets Libuser, Immutable
+Cells opened from library mechanism will have libuser/immutable
+When reading archive, clashes with immutable cells will always "skip"
+(fix CIF)
+StripForExport - write all cells
+reading archive, always skip IMMUT (library) cell if clash.  This is BAD,
+warning issued.
+Changes to Cells Listing:  Flags button and pop-up
+
+new variable SkipOverrideCells
+
+new variable WriteAllCells (xiVariables.hlp)
+Applies to Write Layout File, and script funcs.
+Save/SaveAs will not write library cells.
+
+FcPath, PhPath now full path to program, including prog name.
+used to be dir containing hard-coded "fastcap", "fasthenry".
+
+-------------------------------
+
+
+=== Maybe someday... ========================================
+
+In assemble: add switch for auto-rename vs. skip
+
+Add general message printing on xic startup from distrib center?
+
+Check this, doesn't work right when Current Transform popup has focus
+Keypress forwarding is strange.
+Seems like a gtk issue.
+
+Implement read-only layers
+=============================================================
+###
+=== To Do ===================================================
+
+Revisit setup BB after read into database, can speed be improved?
+
+Chd display ignores interrupts (fixed, probably)
+
+Check keyboard macro stuff.
+
+How to limit access to updates per-program.
+
+How to enforce server-only (additional host licenses).
+
+update preferences script
+=============================================================
+###
+=== Bugs fixed ==============================================
+
+fixed checksum bug in oasis
+fixed electrical records but in oasis
+updated xictools-release
+=============================================================
+###
+=== Doc change pending ======================================
+
+--- 3.0.0 released -----------------------
+
+PENDING: 'h' option in .include/.spinclude spice text. DONE
+
+check FlattenPrefix/PnetFlattenPrefix.  Looks like PnetFlattenPrefix
+is being set from somewhere. DONE
+
+Fixed bug: Xic would hang if simulation was started and WRspice wouldn't
+start due to licensing or other issue.
+
+Fixed crash in extraction.
+
+Fixed problem with FlattenPrefix feature.
+
+The .include handling now recognizes ".inc" and the "h" option (stripping local
+text of '$' comments).
+
+--- 3.0.1 released -----------------------
+
+Doc:
+Check:  see if cell/symtab example in !layer help really works.
+--- change ---
+The main symbol table name is now "main" rather than "<main>".
+
+This is so that the name doesn't have to be quoted when used as part of
+a "layer name".
+
+In !layer, an empty st name is the same as "main", i.e., $$cname is the same
+as $main$cname.
+
+
+New syntax:
+layer[.stname][.cellname]
+each filed can be double-quoted, and must be double quoted if a name contains
+the separation character '.'.  The separation character '.' can't be in quotes.
+if only two fields, the second field is "cellname".  An empty stname is the
+same as "main".  An empty cellname is the same as the current cell.
+
+Previous syntax no longer used: lname[.cellname] where
+cellname cna have the form $stname$cellname
+
+
+Cut and Export, default file name problem.
+Fixed default file name.  The AOI parameters are now reset.
+
+Fixed bug (xictools-release too): In zoid clipping functions, horiz loop
+break condition bogus, must be continue for non-Manhattan layouts.
+
+WTF?
+<a name="DupCheckMode"></a>
+    On layers where the <a href="NoMerge"><b>NoMerge</b></a>
+    technology file keyword has been applied, no checking for
+    duplicates is performed, overriding this variable.
+
+This is no longer true.  Why was this true before?
+
+added a default font to default_theme/gtkrc
+also xictools-release
+Without this, font is too big.
+
+The programs will look for gtkrc in default_theme and startup, startup
+will have precedence.  So, if user needs to modify gtkrc, the modified
+version should go into startup, where it won't be clobbered by update.
+
+
+GTK-2 versions would crash immediately on geometry creation.
+
+Fixed incorrect edge-snapping logic.
+
+--- 3.0.1 released -----------------------
+
+Need DarkField, Via, etc for cross section. Check for XicII.
+Done.  only DarkField is recognized in XicII
+
+Fixed bug:
+problem with html link coords after window resize.
+
+--- 3.0.2 released ------------------------
+
+added FreezelayerTable around techfile and input reading to only update
+layer table once, rather than after each new layer.
+
+"delete handle" is the same as Close(handle), except the handle becomes an
+undefined variable rather than a scalar 0.
+
+Update SCMOS design rules.
+
+Fixed memory double-free error that occurred when a bad DRC rule was found
+in the tech file.
+
+Fixed bug in DRC system which would cause errors to be missed.
+Multiple MinSpaceTo rules, was bloating only from the first rule dimen,
+now bloats according to the max dimen.
+
+Some touch-up in the html viewer to avoid mung from bad html at
+www.mosis.com.
+
+--- 3.0.3 released ------------------------
+
+Added the VIRTUAL property, which can be applied to electrical cells.
+Cells with this property will not be included on netlist output.
+For example, when generating SPICE, the .subckt definitions of cells
+with this property will be absent, however the calls will still be
+present.  Thus, additional text must added with include lines or
+by some other means to satisfy the references.
+
+cprop editor, functions, properties document.
+
+ibm library example.
+
+Fixed some bugs in spice to circuit translator.
+
+
+Modified the .include processing  to match wrspice.
+.lib now handles h option
+chdir applied during read.
+
+jpl2 placement issue. FIXED
+
+separate transform stack for display.
+
+Pixed polygon positioning in pslindrw driver.
+
+Fixes to hpgl driver, this was basically broken.
+
+new generator gdesc.init_gen, doesn't use transform stack.  All iterators
+over CDinfiniteBB canged to this.
+
+Some work on snapping indicator.
+1) note in docs edge snapping is physical mode only.
+2) in electrical mode, the cursor will now indicate and snap to a connection
+   point, in a command or not.
+
+When in move/copy, Ctrl enforces constraint, which is confusing when
+using Ctrl-arrows.
+The mainstate move operation has been modified.  While in a move/copy,
+Shift imposes the 45 constrains, as Ctrl used to.  The Space bar toggles
+between moving and copying, which user t be comtrolled with Shift.
+
+new class cHypertext conxolidates hypertext stuff.
+
+none of the files in cd directory use the CD transform stack.
+
+Except for display, the transformation stack is now local, not in CD.
+xictools-release updated too (2.5.70).
+
+In layer expressions, the layer tokens have the form
+layer[.stname][.cellname].  If the cellname starts with '@', the rest
+of the cellname is taken as the name os a "special" database, which
+is used to supply geometry instead of a cell.
+This used to be '$', which was undocumented and didn't work anyway in
+the !layer command.
+
+fixed bug: reading wires into a special database with
+functions like ChdOpenZdb failed.
+
+--- 3.0.4 released ------------------------
+
+The mozyrc file can contain a line like
+  Alias /images /real/path/to/images
+then, for text like <img src=/images/xxx
+the location will become /real/path/to/images/xxx
+This applies to image src and general urls.
+
+New command: !antenna [layer_name layer_min_ratio]... [min_ratio]
+
+In the design of CMOS circuits, design rules and guidelines often provide
+a limit on the area of a wire net connected to a MOS gate.  During
+processing, the wire net can act as an "antenna" which accumulates charge,
+potentially damaging the thing MOS gate oxide.  This command provides
+checking of antenna nets.
+
+Note that this is part of the extraction system and not DRC.  The DRC
+system presently does not maintain a sophisticated enough state to
+identify device contacts or follow wire nets.
+
+If given without arguments, the !antenna command will identify and print
+an entry for each wire net in the hierarchy of the current cell which
+connects to a MOS gate.  The results go to a file, created in the
+current directory, named cellname.antenna.log, where "cellname" is the
+name of the current cell.  The user is given a chance to view this file
+when the operation completes.
+
+The arguments provide a "filtering" function, whereby only entries
+outside of the filter range are printed in the file.  The filtering
+parameter is the ratio wire net area to total junction area connected to
+the net.  These ratios can apply to indifidual layers contained in the
+wire net, or the total wire net area.  Only entries that exceed given
+parameters are printed in the log file.
+
+For example,
+!antenna POLY 20 M1 30 50
+
+This will print wire nets where at least one of the following is true:
+1) the ratio of POLY area to gate area exceeds 20.
+2) the ratio of M1 area to gate area exceeds 30.
+3_ the ration of total wire net area to gate area exceeds 50.
+
+Thus the log file will tupically contain only those nets that exceed the
+guidelines.
+
+These "bad" nets can be displayed in the Show Paths or Quice Paths command.
+
+After the !antenna command has been run, and/or with the log file in the
+current directory, while in either of these commands, pressing the "f" key
+will
+1) Prompt for an antenna net number.  This is the number in the log file
+   that begins the report for each net.
+2) The file will be accessed, and the corresponding wire net will be
+   extracted and displayed.  The wire net is identified via the reference
+   bounding box provided in the log file, on the same line as the net number.
+
+
+white space in cell names
+Previous versions of Xic allowed white space in cell names.  However,
+many Xic features, such as selection of cell names in the Cells Listing
+panel will not work with cell names containing white space, and there are
+probably may other examples.  However, most basic operations will work,
+though the cell name containing white space will have to be quoted when
+given in the prompt area and elsewhere.  The use of white space in
+cell names can lead to trouble and is discouraged.
+
+In the present release, by default, white space is not permitted in cell
+names.  When reading archive files, the cell name alias mechanism is used
+to convert white space characters found in cell names to underscore
+characters.  Attempts to open a new cell with a name containing white
+space will fail.  However, if the boolean variable NoStrictCellnames is
+set, there will be no checking of cell names for white space, and the
+previous behavior of accepting white space in cell names will be enabled.
+
+// (int) Rotate(x, y, ang, remove)
+// (int) RotateToLayer(x, y, ang, oldlayer, newlayer, remove)
+remove arg added
+
+The TERM layer in electrical mode is no longer defined internally
+or in the supplied example tech files.  This layer is not used by
+Xic.  Its intended purpose was pretty obscure, and the user can define
+this layer if needed.
+
+There is a new electrical layer names SPTX.  Labels that appear on the
+SPTX layer will be included in SPICE output, much like the "spicetext"
+labels.  The "spicetext" feature still exists.  Labels on the SPTX
+layer that are not "spicetext" labels will appear verbatim, ahead of
+any "spicetext" labels, and are sorted top-to-bottom and
+left-to-right.  Thus, there is now two ways to get label text into
+SPICE output.
+
+Fixed bug: Main Window Attributes panel, Subcell visibility threshold
+spin button up/down controls caused infinite recursion and fault.
+
+Fixed Bug: In busy state, key-up events are now processed normally instead
+of being ignored.  This fixes subtle problems like if using Ctrl-R to
+redraw the screen, the Ctrl key up event can get lost causing subsequent
+funny behavior like the inability to move windows (the window manager still
+thinks that the Ctrl key is down).
+
+Fixed bug:  fixed in xictools-release too.
+If one presses button2 in a drawing window, and releases in another
+drawing window, the release window should display the area around the
+press location, with the press location located at the release location
+in the release window.  This was not happening.
+
+If a mouse button is down when busy mode is entered, and is released while
+busy, the release event is now handled when busy mode is exited.  Previously,
+the release event was discarded, which could cause funny behavior.  E.g.,
+assume a design that takes a long time to draw.  Select an object and start
+a drag-move/copy.  With button 1 still down, do something that redisplays
+the screen, such as clicking button 2.  While busy, release button 1.
+When the screen update finishes, the move/copy will be performed.  Previously,
+the operation would not be done, and the object would still be attached to the
+mouse pointer, but clicking would have no effect.  Pressing Esc would exit
+the funny state.
+
+The local image method is no longer used under Windows, since it provides no
+benefit in the Windows architecture.
+
+The local image method is not used when editing simple cells and hierarchies.
+In the local image method, a large block of data representing the image must
+be transferred between the client and X-server for a window update.  This is
+noticably slower than transferring a few "draw" command to the server, which
+renders the image in server memory.  However, for complex images, the local
+image method is far faster, i.e., the image data block is muc smaller than
+a long sequence of "draw" commands.
+
+This is rather academic, as even over a network the time required to trasnfer
+a screen image is likely in the .1 second range, which is only slightly
+sluggish.
+
+In scripts, the macro name RELEASE is now predefined to the release number code,
+i.e., as if given with #define.  The release number code is a five digit
+integer xyxx0, corresponding to release x.y.z.  x (3) and y are one digit,
+z is two digits 0 padded.  The trailing 0 is a historical anachronism.
+
+In scripts, there is a new "preprocessor" clause  #if expression
+The expression is a constant expression containing macros previously defined
+with #define, or predefines.  The expression is evaluated numerically, and
+if the result is nonzero (as an integer), the block that follows uptil the
+corresponding #else or #endif is evaluated.  If the result is 0 (as an integer),
+the block of lines that follow is skipped.
+
+Thus, scripts can now be sensitive to the Xic release number, and can therefor
+be more portable across different releases of Xic.
+
+Note: #ifdef/#ifndef RELEASE can be used to test for releases earlier than this one.
+
+Example:
+
+#ifndef RELEASE
+# old release
+code...
+#else
+#if RELEASE == 30040
+# this release
+code...
+#else
+# a future release
+code...
+#endif
+#endif
+
+
+In tech files, the macro name RELEASE is now predefined to the release number code,
+i.e., as if given with DEFINE.  The release number code is a five digit
+integer xyxx0, corresponding to release x.y.z.  x (3) and y are one digit,
+z is two digits 0 padded.  The trailing 0 is a historical anachronism.
+
+In tech files, there is a new "preprocessor" clause  IF expression
+The expression is a constant expression containing macros previously defined
+with DEFINE, or predefines.  The expression is evaluated numerically, and
+if the result is nonzero (as an integer), the block that follows uptil the
+corresponding ELSE or ENDIF is evaluated.  If the result is 0 (as an integer),
+the block of lines that follow is skipped.
+
+Thus, tech files can now be sensitive to the Xic release number, and
+can therefor be more portable across different releases of Xic.
+
+Note:  IFDEF/IFNDEF RELEASE can be used to test for releases earlier
+than this one.
+
+Example:
+
+IFNDEF RELEASE
+# old release
+text lines...
+ELSE
+IF RELEASE == 30040
+# this release
+text lines...
+ELSE
+# a future release
+text lines...
+ENDIF
+ENDIF
+
+In tech files, the program name token ("Xic", "XicII", "Xiv") is now predefined
+as a macro.  Thus, the tech file can now be portable between programs.
+
+The licensing system was updated so that host names are now case-insensitive.
+Gen3 programs/server are completely compatible with Gen2 programs/server.
+The Gen3 validate program will produce license files that are NOT COMPATIBLE
+with Gen2 programs/server if a hostname contains an upper-case character.
+
+--- 3.0.5 released ------------------------
+
+pathlist::open_path_file now zeros the realname pointer, avoids problems with
+undefined pointer (in !update, if script not found).
+
+Fixed bug:  Parser for "spicetext" labels would crash on certain
+incorect constructs, such as "spicetext:".  These are now accepted,
+spicetext(punct)(alpha)(numeric)(non-numeric)
+
+New '!' command: !spcmd [WRspice command...]
+
+This will establish a stream to WRspice (if not already established) and
+run the command (if given).  This is a means for running arbitrary
+WRspice commands.
+
+Moved the heartbeat timer out of main, to miscutil.  Timer uses VTALRM
+to avoid screwing up select calls.
+
+With remote WRspice and wrspiced, the stdout/stderr from WRspice is
+dumped to the console windod after every !spcmd execution.
+
+Bug: Pressing button 3, as for a zoom operation, would reset the
+"reference point" unsed in the coordinates readout.  Now, after
+the zoom, the original reference point is restored.
+
+New math functions, can be called in any expression.  The arguments must
+be scalar values.
+
+   (scalar) min(x, y)   returns the larger of x, y
+   (scalar) max(x, y)   returns the smaller of x, y
+
+--- 3.0.6 released ------------------------
+
+Problems using ITIMER_VTIMER, timer events don't occur when idle, foobars
+the license periodic test.
+
+Had to go back to SIGALRM, and fix select calls not to hang.  When select
+is used with a timeout, have to explicitly decrease the time value when
+restarting select.
+
+Fixed bug:  If a Return was typed in the console, the peek sleep interval
+would be zero (and elsewhere milli_sleep was used).
+
+The !update command was updated so as not to fail if the "xterm" command
+is not found in the user's search path, and xtern is in a "usual"
+location.  Also, the shell escape '!'.
+
+--- 3.0.7 released ------------------------
+
+PENDING: local license auth vs. server.  How to deal with "additional hosts"?
+DONE: there will no longer be "additional hosts" price differential,
+and the license server itself will no longer require licensing.
+
+The BodyMinDimen measurement parameter in Device blocks has a new hack
+for MOS devices, to catch the case where MOS Width < Length.
+The hack applies to devices that
+1) have a device name that starts with "nmos" or "pmos"
+2) has contacts named "s" and "d"
+3) has a rectangular device body
+the "BodyMinDimen" parameter is set to the S/D spacing across the body.
+Thus, the "usual" MOD device lines
+    Measure Length BodyMinDimen*1e-6 4 
+    Measure Width (BodyArea/BodyMinDimen)*1e-6 4 
+will now also give correct results for W < L, for rectangular MOS devices.
+
+This can be turned off (for backwards compativility) by setting the
+boolean variable NoMosMinDimen
+
+New layer block keyword: Antenna <float>
+New attrib keyword: AntennaTotal <float>
+
+These end up as defaults to the !antenna command.  Arguments given to the
+!antenna command override these defaults.  If the !antenna command is given
+without arguments, The command arguments are constructed form the defaults,
+and displayer on the promptline where they can be edited, before the
+run.  The run begins when the user presses the Enter key.
+
+Fixed problem with spice ipc, read_msg with 0 timeout would never return.
+Xic would still be working, but act sluggish due to polling.
+
+Tweeks and minor bug fixes/changes to the WRspice IPC interface.
+
+Xic is notified when a run is paused from WRspice (red X button in the
+toolbar), and will change state accordingly.  However, Xic is not
+notified when a run is restarted from WRspice (green triangle button
+in the toolbar), and will continue to assume that WRspice is not busy. 
+Messages sent to WRspice in this state would hang until the run ended
+or the connection timed out.  Messages are sent in response to the
+plot, iplot, and run buttons, on !spcmd, and on Xic program
+termination.  If a run was resumed from Xic, with the run button in
+the side menu, then these messages are locked out, since the Xic
+interface is aware that WRspice is busy.
+
+In the case of Xic termination, WRspice would finish a run in progress
+before terminating.
+
+Now, WRspice is interrupted before a message is sent in the case that
+Xic believes that WRspice is not busy, which stops any run in progress
+so that WRspice can handle the message.  After the message operation,
+a run that was in progress will need to be restarted, either with the
+run button or the WRspice toolbar.  On Xic termination, WRspice will
+now terminate immediately.
+
+After pausing a run, the Run pop-up will now disappear after a few
+seconds, the same as when a run completes.  This avoids the case where
+the run is restarted from WRspice, yet the popup, being unaware of
+this, would continue to indicate that the run was paused.  The run can
+be restarted with the run button in the side menu, or with the WRspice
+toolbar.  When a run is started or resumend with the run button, the
+Xic interface will lock out commands that send messages, so these will
+not pause the run.
+
+The synchronous WRspice IPC mode has been removed.
+The NoAsyncSpice variable has been removed.
+
+NoSpiceTools will fail when used with wrspiced < 3.0.7
+
+--- 3.0.8 released ------------------------
+
+inconsistency/unfinished work reading cells through library.
+
+Rule: when reading a library cell that is in an archive file into memory,
+the entire hierarchy is read from the same archive file as the library
+reference, unless the subcell already exists in memory, in which case it will
+not be read from the archive file.  Cells read from the archive file will
+have the Library and Immutable flags set.
+
+Same applies to native cells resolved through a library, including
+inline cells and Device Library cells.
+
+bug: deleting immutable cells would cause program crashes.
+
+bug: a CGD linked to a CHD wouln't work if aliasing was used to build
+the chd.  Steps were taken to ensure that the cgd has the same aliasing as
+the chd.
+
+some fixup related to linked CGD access through CHD.  In particular, the
+CGD should always be used for access rather than the initial file.
+The will apply when the CHD name is given to commands like Edit and
+the Write Layout File prompt.
+
+PENDING:Convert, from chd, allow second arg after chd name for cell name.
+DONE.
+Conversion: with chd name as source, a second cell name arg can be passed.
+If cell passed, it will be taken as top-level in the CHD fro ceoversion.
+If not given, the configured cell (if any) will serve as top level, and
+if no cell was configured, all cells are converted.  The cell name must be
+the aliased name, if aliasing ws used when the CHD was created.
+
+Edit/ReadLayoutFile: The first token can be a CHD name, optional second token
+is a cell name.
+
+PENDING: GJC tmpdir problem
+DONE - upd_install.sh modified.
+
+update command changes:
+All distributions except Windows noy uses the "sudo" program for permission
+authorization.  FreeBSD users must install this package or port.
+
+At the password prompt this is your password, not the root password.
+
+Bug: if the TMPDIR or XIC_TMP_DIR environment variables were set to a
+path containing the '-' character, the installation would fail.
+
+If you don't want to use sudo, su can be used instead, by setting the
+Xic variable InstallCmdFormat ot installcmdfmt in WRspice to the string
+  xterm -e su root -c \"%s\"
+
+Xic doesn't know if the installation was actually successful, so the
+end message was changed.
+
+Xiv now provides selections in the "main state" (previously there was no main
+state).  Selections are needed for some ! commands, perhaps elsewhere.
+
+The desel and layer buttons have been removed from the side menus and
+relocated to the left of the layer table.  This allows these functions
+to be available in Xiv, which has no side menu.
+
+Fixed a bug in the OASIS integer parser that would cause failure in
+obscure cases.
+
+Put !commands into hash list.
+New: ? name   calls !help !name
+
+!?? Pops up a list of !commands that are currently hashed.  Clicking on
+and an entry will bring up help about the command, except for those that
+are "undocumented".
+
+The HTML info popup new sends anchor href text to the help system.
+
+The print format of the !set valiables listing has been changed, the
+variable names in the listing are now links into the help system.
+XXX variables not known to Xic will be broken links.
+
+New keypress action Help_action, triggered by '?'.
+? !,b,B list bangcmds
+? v,V   list variables
+? s,S   list currently set variables
+? f,F   list script functs
+? xxx   !help xxx
+
+With ChdLoadTopOnly, Edit would require a second cellname arg.  Now,
+this is optional:  config cell/default cell.
+
+// (string) Strpath(string)
+//
+// This returns a copy of the file name part of a full path given
+// in string.
+
+A round of char* -> const char* args, mainly for arg_string().
+
+Fixed up the ChdWriteSplit function.
+
+Added Errs() printing in message when a script function exec fails.
+
+Finished implementing the ChdWriteSplit script function.
+
+In Conversion and Write Layout File, the user is now warned and given
+a chance to abort before writing a file with the "wrong" extension,
+e.g., myfile.gds when saving as OASIS.
+
+--- 3.0.9 released ------------------------
+
+FromArchive script func can take CHD name as first arg. (docs updated)
+
+Script errors now go to pop-up window rather than console.
+
+All script function argument type errors produce message.
+
+New script funcs:
+   ChdCreateReferenceCell (docs updated)
+   ChdLoadCell (docs updated)
+
+Modified
+   BloatObjects ("all" arg added)
+   EdgesObjects (rewritten, mode arg added)
+   ManhattanizeObjects ("all" arg added)
+SplitObjects (all arg added)
+FilterObjects (order changed)
+
+removed
+ObjectDelete
+ObjectSelect
+ObjectDeselect
+ObjectMove
+ObjectMoveToLayer
+ObjectCopy
+ObjectCopyToLayer
+
+replaced by
+DeleteObjects
+SelectObjects
+DeselectObjects
+MoveObjects
+MoveObjectsToLayer
+CopyObjects
+CopyObjectsToLayer
+
+Arg lists changed:
+ClipAround
+ClipAroundCopy
+ClipTo
+ClipToCopy
+ClipIntersectCopy
+
+New funcs:
+WriteSPTable
+NewSPTable
+
+modified
+ListCellsInMem (filter)
+
+Hack added to PopUpInput:  if prompt_str begins with "<tt>", the fixed font
+and left justification will be used for the label.
+
+Cells popup, mode menu now has Filter Phys, Filter Elec
+This allows the cell listing to be filtered.
+
+User Menu allows space in script names.
+done 1) Script techfile keyword can take quoted name e.g. Script "xstr 1"
+     2) !script cmd first arg works ok.
+     3) first token in .scm files works ok
+     4) (Library XXX), XXX now used for menu button label.
+
+in .scm files, the name token for a .scm reference can be omitted, in which
+case the button text is that from the referenced library.  Otherwise, this
+is overidden by name.
+
+It is now possible to set the user menu button for a script that is not
+in a submenu.  The top line of the script should be in the form
+#menulabel label
+where label should be double-quoted if it contains white space.  This line
+must appear before any other line in the script.
+
+!tk accepts args: !tk cmd.tk arg1 arg2 ...
+not documented?
+
+!tk now sanely handles tcl scripts, runs these with a tcl interpreter,
+no graphics.
+The command file must have a .tcl or .tk extension.
+
+ext flags/strip finished in MSW check!
+
+added Get/SetCellFlag() funcs
+
+filtered out '/' and other bad chars from menu button text.
+
+--
+
+Fixed bug: allow_layer_mapping was not initially false.
+conversion: gds, oas, cif page change, check MSW
+
+Conversion, now remembers input source.
+
+Moved Edit to File Menu.
+
+In Info, click outside of cell boundary brings up cell info, same as
+Shift-click.
+
+Libraries: Edit/Master gray in CHD display mode.
+Add Contents button
+Open listing now uses open/closed icons.
+The Libraries pop-up revised, Edit/Master moved to contents pop-up.
+
+New library widget: GRmcolPopup, replaces multicol list.  Provides buttons.
+
+Files Listing popup revised.
+
+Changes to mcol listing s and similar:
+1. click on selected remains selected
+2. time delay before drag/drop
+3. no modal buttons
+
+Prompt line text edit mode:
+1) int gtk2, which uses pixel dithering when rendering text, overwriting
+characters, causes rendering problems.  Characters are now always erased
+before overwirte.
+2) Fixed problem where the cursor would disappear when right shifthing a
+longer-than-space-available line of text with the left arrow key.
+3) Added Ctrk-K as special editing control sequence, this will erase the cursor
+location and all chars to the right.
+--
+
+Fixed bug:  The "Link" button in the drop file transfer action pop-up was
+broken.
+
+Info: Clicking on non-similar subwindow now shows info about the window cell.
+
+Global label change "Edit" to "Open"
+Global label change "Master" to "Place"
+xic:hier/Contents, added Info/Open/Place buttons
+chdconfig, cell name entry is drop receiver
+Cell and Display no longer take entry from contents.
+Display: have to use Config pop up to config top-level cell.
+Open edit->open
+Open File -> File Select, open->fsel
+changed menu accelerators
+Open/View tooltips added
+
+Tree popup now has Info/Open/Place buttons.
+Tree popup is now refreshed when going from CHD display and regular display
+
+Drag/drop
+drop in window showing CHD display:
+   If source is a cell name found in the CHD, that cell will become the
+   root cell displayed in the window.  This does not change the default
+   cell of the CHD.
+
+   If the dragged text is not a cell name found in the CHD, an error
+   message is shown.
+
+   Nothing new is added to memory in this mode.
+
+drop in window showing normal display:
+   Will open dropped text from disk or the symbol table, depending on what
+   is dropped.  If opened from disk, new cells enter the database.
+   If dropped in the main window, the cell shown becomes the current cell
+   for editing. 
+
+"Open" buttons: always opens new cell in main window, which becomes current
+cell.
+
+Changed Debug pop-up;
+Added mode change button, mode change via menu access was silly.
+
+accelerators in debugger?
+added accelerators to msw debugger.
+
+--- 3.0.10 released ------------------------
+
+When a cell is read while reading an archive file or native cell into memory,
+and a cell of the same name exists in memory, and we are overwriting cells
+in memory:
+1) If the existing cell is IMMUTABLE, it will be overwritten.  The IMMUTABLE
+flag has no bearing on wheter or not a cell can be overwritten in memory.
+The overwritten cell will no longer be IMMUTABLE.
+
+Previously, IMMUTABLE cells would not be overwritten.
+
+2) If the existing cell has the LIBRARY flag set, it will be overwritten,
+unless the NoOverwriteLibCells variable is set.  The overwritten cell will
+no longer have the LIBRARY flag set.
+
+Previously, LIBRARY cells would be oversritten, unless IMMUTABLE was also
+set, which is the default for library cells.
+
+New Variable: NoOverwriteLibCells (boolean)
+
+By default, existing cells in memory can be overwritten if a cell of the
+same name is read when opening cells from an archive file, if the
+overwriting mode is enabled.  Setting this variable will prevent existing
+cells that were opened through the library mechanism (and thus has the
+LIBRARY flag set) from being overwritten.
+
+Bug Fixed: Merge control pop-up count was not being initialized.  The
+Merge Control pop-up would not appear at times when needed.
+
+Cells Listing: Flags button no longer toggles.
+Flags pop-up, pops down after Apply, and after cells listing change.
+
+Elec mode labels default to SPTX, bad (FIXED).
+Electrical layer order changed.
+default layer for labels: ETC1
+default layer for shapes: ETC2
+Boxes no longer merged.
+Set Import Parameters, Clip and Merge Overlapping Boxes, now Physical only
+
+Allow fillpatterns in elec mode.
+FILLED y/n
+OUTLINED y/n
+   filled = y: draw solid outline or not
+   filled = n: draw dotted outline or draw solid outline
+techfile: filled n [token], "outline" it token starts with y/Y/o/O
+
+Fixed issue in macro parser:  Macro(...) no longer replaces "Macro"
+that is not followed by "(...)".  I.e., if a macro has args, the
+text to be replaced must also provide args.
+
+Reading into db with CHD: now library mechanism is used to resolve cells
+in CHD that weren't defined in CHD's source.
+
+Got rid of variable sizes of symref_t, now fixed (maximum) size.  The
+BB capability is potentially always used.
+
+Working on resolving unseen symrefs through library, for general access
+through CHD.
+
+Bug fixed: View menu submenu update was broken, could cause seg faults.
+
+In gtk2 versions only:
+The font selection pop-up was updated so that only applicable fonts are listed.
+The gtk1.2 font selection pop-up can filter the font listing so that only
+fixed-pitch fonts are listed.  Unfortunately, the stock gtk2 font selector
+does not have this capability, but a filtering capability was added.
+Selecting a proportional font for the drawing window font leads to big
+problems with the prompt line editor.  This is now prevented from happening.
+
+Fixed Bug: in_offset_next issue in get_record, fio_gds_read.cc
+
+Tentative suppoirt for electrical mode in CHDs, in gtkchdlist.cc
+
+Note: creating a CHD does not map or create layers(?)
+layer listing in CHD info uses unmapped names.
+
+GTK1 - now can't set non-fixed font to fixed entry.
+Add doc note about font names and gtk/gtk2/msw.
+
+BIG rewrite of core functions for accessing through a CHD.  This is to
+provide library support.  In general, cells that are missing in the file
+source of the chd will be transparently accessed, if the missing cell can
+be obtained from a library, and the cell is contained in an archive
+file (not (yet) native or inlined symbols, except when reading into the
+main database).  If a missing cell can't be resolved, this is now generally
+a fatal error.
+
+Make fail on bad reference optional (DONE).
+
+CHD List pop-up: Contents button is no longer a toggle.
+Contents now show references to cells in current mode, used to be Phys only.
+
+New variable: ChdFailOnUnresolved.
+When doing an operation with a CHD that was created from a file with
+unresolved references (cells that were referenced but not defined in the
+file), and the cells can't be referenced through libraries, the operation
+will fail.  If not set, processing will continue, with the non-references
+either being ignored (e.g., when flattening), or converted to empty cells (when
+reading into the database), or propagated to output (when writing output),
+depending on the operation.
+
+problem with fonts in html viewer.
+Convert viewer to Pango (DONE)
+Fixed strange bug variable list.
+
+In GTK2 releases, the HTML viewer now uses the Pango font backend, instead of
+X fonts.  These fonts use anti-aliasing and should be easier to read and
+more attractive.  However, a lot of infrastructure was developed for X font
+handling that had to be adapted, so there may be, uh, imperfections.  Also,
+an attempt has been made for interoperability between the two font systems,
+since font names used in the tech file, moxyrc file, and elsewhere are quite
+different between the two systems.
+
+The font fields in .mozyrc are ignored in Xic/WRspice.  These are now used
+only in the stand-alone mozy program.
+
+Simple pop-ups are now fixed-size.
+
+Make sure window titles are displayed (DONE).
+
+Bug fixed: OpenFile dialog was stripping the path from the given name.
+
+Updates to Zoom pop-up:
+  Fixed problem, could only be one zoom window visible.  Now each drawing
+  window has own zoom window.
+  The entries are now preset and updated with the current display parameters.
+
+New Display Window popup, from CHD Display button.  Allows the user to
+set a window before the display is presented.
+
+CGD list:
+  Content button no longer toggles
+  Content list has Info button, info printing no longer automatic on
+  selection.
+Suppress drag/drop from contents listing and info listing.
+Arg added to PopUpMultiCol
+
+Fixed bug: X destroy window of merge control 2 caused seg fault.
+----
+
+If using the Properties Editor, while the prompt line text editor is
+active, exiting the Properties Editor with the title bar X button would
+cause crashes.
+
+No Overwrite Lib Cells button added to Libraries Listing pop-up.
+---
+
+The "fat segment" display mode, similar to the default drawing mode used in
+Gen2, has changed.
+
+The UseFatSegments variable, and the corresponding check box in the
+Main Window Attributes pop up, are gone.
+
+Whether to render using fat segments is now a per-layer flag, which can be
+set in the tech file or with the Fill Pattern Editor.
+
+In the tech file, the form for the Filled keyword for empty fill is
+Filled n [o|f] 
+
+The tokens can be words starting with the indicated letters, or just the
+letters themselves, e.g., "n", "no", and "none" are equivalent.  This is
+case insensitive.
+
+The forst token must start with 'n'.  If there is no second token, or the
+second token is unrecognized, a thin solid outline is used.  If the second
+token starts with 'o', a thin dashed line is used.  If the second token
+starts with 'f', a think solid line is used for edge segments of Manhattan
+objects, and a thin solid line is used for non-Manhattan objects.
+
+The Fill Pattern Editor has a new "Fat" button next to the "Outline" button.
+the Fat button is only enabled when Outline is pressed.  The status of the
+Fat button is only applicable with empty fill. If the Fat button is pressed
+when empty fill is assigned, "fat" solid edge segments will be used for
+Manhattan features (thin solid edges are used for non-Manhattan features.
+If Fat is not pressed, and Outline is pressed, a thin dashed line will be
+used for all edges.  If Outline is not pressed, a thin solid line is used
+for all boundaries.
+
+The integer parser for tech files now understands 0x... hex numbers.
+
+--- 3.0.11 released ------------------------
+
+New Info button in Properties Editor.  When pressed, clicking on
+object will bring up or update the properties info listing.  This is
+the same as Shift-Click, but makes the presence of this feature
+explicit.
+
+Unix/Linux - check msw
+Resizing a drawing window containing an image that takes more than a second
+or two would often cause the image to become garbled, and even caused
+seg faults on occasion.  This should be fixed now.
+
+Bug fixed in OASIS reader, property records in strict-mode tables.
+todo: scan_for_names mucks up record counts (fixed).
+todo: think through ordering of property names/strings.  property names can
+have property records... (ok, probably)
+
+Another OASIS bug fixed:  Couldn't read/write OASIS files larger than
+4G due to 32-bit integer overflow problem.
+
+OASIS reader no longer does scan_for_names on unresolved references if
+the corresponding table is strict-mode.
+
+TODO: When placing instances, ENTER should cycle thru corners as when moving
+objects. DONE
+PlaceParams function changed UPDATE DOCS
+check MSW ok
+In electrical mode, the closest grid point to the corners is used, it there is
+no reference terminal, so that device terminals remain on-grid.
+
+
+Assemble, advanced oasis doesn't pop down.  Conversion is same.
+Fixed
+Check MSW ok
+
+Presing Enter while in Move/Copy will now cycle around the corners of the
+bounding box of the objects being moved/copied, and the original reference
+location.  Previously, the original reference location was not returned to.
+
+Boxes in electrical schematics are no longer merged when cells are
+flattened.
+
+The Cell Placement Control panel has a new Smash button.  When Smash is
+active, instances will be smashed into the parent where the user clicks.
+replace mode?  smash depth is 1.
+check MSW
+
+The !cont command has been removed, since it duplicates the functionality
+of the Smash button in the Cell Placement Control pop-up.
+
+
+In electrical mode, is is now not possible to set the grid so that the
+snap spacing is not a multiple of one micron.  This makes it more difficult
+to place devices and subcircuits such that contacts are not made due to a
+tiny gap due to grid resolution.
+
+todo: Place script func, PlaceParams, and smash mode. done
+The Place script function has major change to arg list.  NEEDS TEST
+The PlaceParams function is gone.
+
+attrDB bug fixed, xictools-release too.
+
+When the Cell Placement Control is popped down, place mode is exited.
+Previously, place mode, if active, would remain active.
+The Place button in the control panel must be pressed to be in Place mode,
+when instances can be added to the drawing.
+
+Big change:  the CDresolution now CDphysResolution and CDelecResolution.
+
+The Logo command no longer limits the size of physical text according to
+rules.  This is futile.
+
+Fixed bug: certain error messages were not being reported the first time
+an archive containing electrical data was read.
+
+Fixed integer over in DRC corner overlap test function.
+
+The ClipToGrid function now ignores edge snapping modes, doc updated.
+
+New variable: Database Resolution (integer)
+  Can be set to 1000, 2000, 5000, or 10000
+
+  The is is the internal database resolution, i.e., the number of units per
+  micron.
+  Changing the resolution will clear all data destructively.
+
+Added internal buffering to zio compression interface.
+
+Fixed tiny OASIS reader overflow bug - did not produce errors, but would
+cause a mysterious seg fault very rarely.
+
+Fixes to move/copy/stretch, etc ghost drawing when a large number of objects
+are selected.  When there are too many objects, a bounding rectangle will
+be shown.  Previously, this rectangle was not being shown in some cases.
+
+Modified startup sequence so that init files are called after graphics is
+initialized.
+
+The DisplayResolution variable can't be changed after startup, so it must
+be set in .xicinit or the tech file.
+
+    // The files read on startup, in order:
+    //     .xicinit
+    //     tech file
+    //     stipple file
+    //     .xicstart
+    //     .xicmacros
+    //     font files
+    //     cell file
+
+The XSectThickness not takes a value in microns, range 0.01 - 10.0.  Previously
+this took internal units.
+Ditto SpotSize
+!tospot
+
+TODO: for logo fonts using pixels, make pixel size relate to grid size.
+(never mind)
+
+//
+
+fixed bug: OpenCellHierDigest function had wrong asumed arg count.
+
+The form !string is now valid in scripts.  This is true if string is null,
+false otherwise.
+
+SetZref function can take an array representing a BB as an arg. (done)
+AdvanceZref has new BB array arg. (done)
+New function: GetZrefBB (done)
+New function: ListLayersDb (done)
+New function: GetZlistZbdb (done)
+New function: FindSPtable (done)
+modified doc: ListHandle (done)
+
+
+Check MSW: long text labels can have extra trailing ^Ms ?
+Fixed bugs (MSW only)
+1) \r characters are now stripped from labels
+2) The Text() function in mswinterf now prints a big dot for control
+chars.  Previously, these would be invisible, fouling up htest editing.
+
+--- 3.0.12 released ------------------------
+--- End of 3.0.X
+

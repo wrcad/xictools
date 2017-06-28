@@ -1,0 +1,1087 @@
+--- Start of 3.1.X
+
+Modified the internal memory allocator so it can use larger than 64-element
+blocks.
+
+Help system:  keyword clashes are not reported id keywords are in
+different directories.  Is this documented?
+
+return from gtk_pango_context_get now freed with g_object_unref rather
+than g_free.  The latter caused seg fault in Mozy, and appears to be wrong
+from pango source.  The docs don't make this clear.
+
+TODO: add command to download/show release notes for new release.
+
+In the Rulers command, the ghost-drawn ruler now shows the scale factors.
+
+In (expand) peek mode
+1) Numeric +/- are no longer confused with +/- key presses.
+2) Pressing - would cycle past "expand none" to "expand all".
+
+New command: !array
+This command manipulates instance arrays.  There are three forms:
+!array -u
+    This will "unarray" all selected arrays.  The arrays are converted to
+    individual instance placements, in the same location and orientation as
+    the original array elements.
+
+!array -d [nx1[-nx2],[ny1[-ny2]]
+    This form will delete a rectangular region of array elements.  The
+    undeleted elements will be configured into a new collection of arrays
+    or single instance placements.
+
+    The command operates a selected instance, the most recently selected
+    if there is more than one.
+
+    If no arguments follow the option character, the user is asked to
+    click on or drag over the array, to define two points.  The two
+    points are transformed back into the coordinate system of the
+    instance master, and define a rectangular region in the array
+    indices in that space.  The elements corresponding to this
+    rectangle are deleted, and new arrays or separate instances are
+    created to cover the undeleted elements.
+
+    Otherwise, the range if x and y indices to delete is coven on the
+    command line.  These indices are 0-based, and the x and y ranges are
+    separated by a comma.  A range can be a single number, or two numbers
+    separated by '-'.  If a single number, the range is taken as that number
+    only.
+
+    In the untransformed array, the 0,0 location is the lower-left corner.
+
+    Example:
+    Suppose that a 3x3 array is selected.
+    Erase the middle element: !array -d 1,1
+    Erase the rightmost column: !array -d 2,0-2
+
+!array -r [nx [+]= val] [ny [+]= val] [dx [+]= val] [dy [+]= val]
+
+    This will reconfigure the array parameters of the first selected
+    instance.  It can convert instances into arrays and vice-versa.
+
+    All of the parameters are optional, but at least one should be
+    given or the operation does nothing.  Each is in the form keyword
+    [+]= value.  It a '+' appears ahead of the '=', the value will be
+    added to the existing value, otherwise the value is assigned. 
+    White space around '=' or '+=' is optional.  The nx and ny are the
+    number of colums and rows in the untransformed array.  These
+    integer values must be one or larger.  The dx and dy are the array
+    cell spacing in the x and y directions, given in microns.
+
+    Examples:
+    Add a column to the selected array:  !array -r nx+=1
+    Add 1.5um additional space between elements: !array -r dx+=1.5 dy+=1.5
+---
+
+fix description of !helpfont, !helpfixed.  remove these?
+
+New script functions:
+This function group implements a hash table for hash tables of strings.
+
+// (int) FindNameTable(tabname, create)
+// (int) RemoveNameTable(tabname)
+// (stringlist_handle) ListNameTables()
+// (int) ClearNameTables()
+// (int) AddNameToTable(tabname, name, value)
+// (int) RemoveNameFromTable(tabname, name)
+// (real) FindNameInTable(tabname, name)
+// (real) ListNamesInTable(tabname)
+
+New function: ChdWriteDensityMaps
+New function: ChdIterateOverRegion
+// (string) PopUpInput(message, default, buttontext, multiline)
+// (string) PopUpAffirm(message)
+// (string) PopUpNumeric(message, initd, mind, maxd, del, numd))
+
+Added some additional intelligence to the physical/electrical
+association algorithm (fixup_duality).  This takes care of cases where
+a cell terminal is applied to metal that is not connected to any
+device or subcircuit.  The contact is probably a pass-through.  These
+terminals weren't being associated, as (if there is more than one)
+there isn't enough information available.  A second top-down pass is
+now made through the hierarchy to find these cases and resolve them. 
+The extracion example #4 of the amd2901 layout now works, after years
+of being broken.
+
+----
+in !spcmd:
+
+"send filename" will expand local filename for all .inc/.lib lines locally and
+send the result to WRspice.
+
+in Spice interface: "load xxx" no longer works in the prompt for analysis.
+Use !spcmd for this.
+
+--- 3.1.0 released ------------------------
+
+When creating a GGD, electrical stuff was getting into the database.
+
+(notes added in docs)
+In LoadGeometry and configuration, the CGD is always created directly
+from the file, no windowing.
+From the Conversion panel it is NOT possible to use windowing either.
+Note: in CHD display mode, area configuration is always ignored.
+
+CHD configuration push/pop for area was broken.
+
+Open, etc. new prompt "File, CHD and/or cell?"
+
+The layer list for layer filtering wasn't working in some cases, in particular
+names from the layer table that are not hex-equivalents wouldn't work.
+Note: the layer names can be "real" names from the layer table, or 
+hex "pseudo names".  Only the hex names were working.
+
+!compare function changed.
+ChdCompare function changed
+ChdCompareFlat function added
+New Compare Layouts in Convert Menu
+
+New function ChdListCells
+
+DRC changes
+modified function: DRCcheckArea
+new function: DRCchdCheckArea
+In DRC, the NoHoles and Connected tests are now only done when checking the
+area of the entire cell.
+DRC errors file now named "drcerror.log.cellname" or "drcerror.log.cellname.pid"
+In the Show Errors command, if a drc run for the same cell finishes, the
+viewport will now pop down.  Press PageDn to pop it up again, with the new
+errors file.
+
+TODO: Make is possible to pick and choose CGD contents.
+When reading with CHD/CGD, what happens if cell not found in CGD?  It should
+go to file.  (Cell would be taken as empty)
+
+---
+The logic in the CHF configuration panel was not quite right for cell name
+configuration.
+
+New capability to use linked CGD as a cache, cells not in CGD will be read
+from file.
+
+If flattening, windowing, etc. was set in the Conversion panel, and the output
+format switched to CGD, the CGD would be created with these features, though
+this was unintended and the input areas are grayed in this case.
+
+Fixed keyboard focus problem in chd add pop-up.
+
+The CDs poly/wire allocators now zero passed points pointer.
+Fixed bug: using deletion of coincident objects could cause seg faults.
+
+Slightly different handling of 1-point wires:
+previously, these would always map to a centered widthXwidth box 
+flush ends: bad wire
+rounded ends: render as octagon
+extended ends: render as box (as before)
+
+New variable: OasWriteRndWireToPoly
+If set, when converting rounded-end wires to OASIS, the wire is converted
+to a polygon which is rendered the same way as all rounded-end wires in Xic.
+Itherwise, the wire is converted to an extended-end wire (Manhattan end).
+This is always done when adding to a CHD.
+This requires more space than a wire, but ensures that a geometric area
+compare doesn't show a lot of errors.
+NEW entry in oas advanced panel (Need MSW!)
+
+oasdb caching initiated.
+the geom server protocol augmented.
+
+Fixed bug: in CGD display mode, the grid was not being shown unless
+"on top" was set.
+
+Stopped double window/clip in readFlat.
+
+issues:  chd display mode
+small boxes disappear when zoomed in (they were "." labels).
+In Display mode, labels the extend out of the window are now shown.
+
+---
+
+Bug: Leaving CHD Display mode, MSW only, menu entries were checked rather
+than ungrayed.
+
+CHD creation uses ReadScale, CGD creation uses TrnsScale.
+how do these fit together?
+ADD a sentence to function descrs that use an internal scale.
+
+CHD scaling was foobar due to elec mode.
+
+When creating a CGD, scaling should always be 1.0.  When linked to CHD,
+CHD sets scale.  When writing, and overall write scale can be added.
+TODO: need to enforce no scaling
+
+Fixed bug: writing file with linked CGD failed due to elec mode trouble.
+
+The padding at the end of GDS files was sometimes the wront length,
+causing trouble with electrical records.
+
+When writing a file using a CHD with a linked CGD, the electrical records
+are now included in output.  These are obtained form the file in the normal
+way.
+
+The caching feature for CHD/CGDs is implemented in the following new funcs
+// (int) ChdLinkCgd(chdname, cgdname, hostname, port)
+// (string) NewCellGeomDigest()
+// (int) CgdIsValidCell(cgdname, cellname)
+// (int) CgdIsValidLayer(cgdname, cellname, layername)
+// (int) CgdRemoveCell(cgdname, cellname)
+// (int) CgdRemoveLayer(cgdname, cellname, layername)
+// (int) CgdAddCells(cgdname, chdname, cells_list)
+
+--- 3.1.1 released ------------------------
+
+Writing from memory to gds, bad magnif record added to text elements.
+Reading in/writing out as GDS will repair this.
+The internal scaling now overrides the MAG from, the input GDS file in output
+GDS.  Previously, the MAG overrode.
+
+TODO: write and example script or command that will create objects from
+diff file.
+
+Ghost drawing during instance placement now renders arrays with negative
+spacing correctly.
+
+!array reconfigure:
+1. fixed logic bug parsing ny.
+2. If expanding a dimension from 1, and internally no cell spacing has been
+set, the base dx is now the cell width, dy the cell height.  Previously,
+these would be 0.
+!array delete
+1. Fixed floating-point error in click-to-select.
+
+Compare panel, !compare cmd, in geometric mode instances were being compared
+whether or not option was given.
+
+New function: !diffcells [filename]
+
+toPolyList/toPolyAdd now check poly before adding to list, bad polys are
+filtered out and destroyed.
+
+Bug: the polygon creation function would seg fault on the second point.
+
+The polygon validity checking (Poly::check_poly) was rewritten for
+improved speed, since this is called more frequently now.
+
+--- 3.1.2 released ------------------------
+
+GetObjectGroup, moved to extract from geom1.
+
+added hash tables to replace oPrptyList, pGroup object fields.
+These are cleared in clearAll() only.
+This removes 8 bytes from storage in 32-bits.  CHECK 64
+
+Bug:  Edit function was returning with reentry lockout not reset.
+
+Now use floating point in zoid clipping functions, more accurate.
+
+Physical mode edge snapping wasn't working correctly if more than 25
+layers are present.
+
+Internal architecture changes that reduce the sizes of the basic structs
+for data objects in the database.
+
+        B   P   W   L   C
+org 32  36  44  48  60  56
+new 32  28  36  40  52  48
+org 64  48  64  64  80  80
+new 64  40  48  56  64  64
+
+The !poly2path command now uses the correct (nonzero) wire width set for
+the layer.  Wires created are always butt-end.
+
+!polycheck command
+1. take list of layers as args, none = all layers.
+2. if polys selected before hand, check only those polys, else check all polys 
+
+!polyfix:  moved from Layout Information to Layout Editing
+unfixable polys are now deleted.
+
+The CDs:: makeXXX/newXXX functions now zero the passed pointer.
+
+fixed bugs in wire clipping in erase command.
+
+The Save script function changed: error messages are now available from
+GetError, some interactive features disabled.
+---
+
+!assemble write with window would include extra cells in output (setBoundaries
+not called).
+
+TODO: finish incorporting new !assemble keywords.
+added EndPLace, EndSource, NoXXX
+No longer possible to put Source options in Placement blocks.
+todo: add NoHier option
+
+fixme: "internal inconsistency" pop-up when writing file.
+DONE
+
+funcs_cvrt.cc/IFstreamInstance needs update
+
+Bug fixed: goes back to gen2 (fix gen2!) GEN2 FIXED
+windowing with scale factor < 1 can leave oout cells.  Have to configure
+CHD with (1/scale)*BB;
+
+Todo: get rid of CHD scaling?  aliasing?
+The CHD no longer has a built-in scale, since this is redundant and
+complicates things.  Any scaling now takes place when the CHD is used.
+
+Todo: GET_PRPTY_LIST needs optimization to reduce call count
+
+Todo: finsih updating the Assemble panel.
+---
+
+ASM:
+The cell name change options operate on the output channel.  If a source
+specifies a CHD, they will be "in series" with the CHD cell name aliasing,
+which allies during input.
+
+The source can also specify the name of a saved CHD file, it will read in
+the file and create a temp CHD.
+
+Removed the CHD button from the Assemble panel.  source path can be layout
+file, chd file, or chd name.
+
+!assemble configfile | arg_list
+---
+ASM:  Top-Level Cells listing token for default cell is "<default>", can
+be entered with empty string from New Topcell.  Maps to PlaceTop.
+
+Fixed bug: When electrical devices/subcells are moved, the internal node
+coords weren't being updated, causing big trouble (xictools-release too).
+
+CIF now uses special symref_t, to save space in non-CIF.
+
+The CHD/nametab skip flag logic has changed.  The skip flag is now set
+only from the SetSkipFlag script func.  There is a new, separate, flag for
+empties.
+This fixes problem: if a chd was used in "skip empties" mode, the skip
+flags would remain set and fu the next operation.
+ChdSetSkipFlag
+ChdClearSkipFlags
+ChdSetSkipEmpties
+ChdClearSkipEmpties (new)
+
+The CIF reader now uses the same overwirte cell pop-up as the other
+readers.  The batch-mode merge control pop-up is gone.
+
+Fixed problem: opening a CIF file thru a CHD would skip overwrite
+cell prompt.
+
+Fixed problem:  the "C 1;" in some CIF files was causing trouble, prevented
+CHDs from being properly created.
+
+--- 3.1.3 released ------------------------
+
+New command: !split
+docs done
+
+
+Fixed bug (xictools-release too) CHD write non-flat with window would omit
+cells.
+
+TODO: in filetool, add a create CHD file option.  Make sure this can be used
+  for all file entries.
+
+Fixed: Conversion panel, Conversion Scale now grayed when CHD is output
+choice.
+
+TODO: In info command, clicking on any object should show info, including
+cell of object, and path to top.
+DONE
+Updated Info command, can choose any displayed object or subcell.  When
+Push os invoked with an object selected, will push to the subcell in
+the context of the instance containing the object.
+
+TODO: make sure that all inputs can deal with a saved CHD. (done?, ongoing)
+The Open command and related can now accept as input the name of a saved
+CHD file.
+ditto for Compare commands.
+
+New accelerators: Alt-S Push, Alt-B Pop
+--
+
+In MSW, the imlib driver was broken.
+The wrong text font was being used.
+New feature: if the word "clipboard" is entered in the filename entry area,
+the image will be loaded into the clipboard, where it can easily be placed
+in other applications.
+
+--- 3.1.4 released ------------------------
+
+oops, forgot write_region.gif in help
+
+help text for Conversion panel, add link to advanced oasis panel, variable
+descriptions. not needed
+
+In extraction, the extra objects that are created as part of the extraction
+process are now saved in a spatial-access database rather than a linked list.
+This can dramatically speed up grouping in large cells.
+
+int prompt line editing mode:
+    case HOME_KEY:
+    case NUPLUS_KEY:
+    case NUMINUS_KEY:
+    case PAGEDN_KEY:
+    case PAGEUP_KEY:
+these now "pass thru" and affect the application in the nor ml way.
+The up/down arrows also pass-thru, unless "grabbed" in certain cases, such
+as in the Properties Editor where they switch between properties.
+
+In "!#[n]", while the prompt is active, the up/down arrow keys now cycle
+through the commands in the history list.
+
+todo: the Print frame box doesn't refresh right.
+FIXED
+
+todo: in Push, darken colors in context.
+DONE
+new variable: ContextDarkPcnt (int 0-100)
+Set the percentage of context illumination in display, default is 65.
+
+todo; implement "selection" whereby all objects in chosen subcell are
+highlighted.
+DONE
+In Info command.
+Pressing Enter with an object or subcell selected will cause all objects
+in that subcell to become selected (respecting selection types and layer
+specific mode).  The info window will display the containing subcell data.
+Press Enter again to revert.
+
+in progress: remove all variable use from cd, geo, fio, dsp
+variables will be set at higher level, in xic modules.
+need to fix up filetool. DONE
+funcs_misc1/JoinLimits moved to edit geom1 : add refs to this func in funcs
+that use these.
+CD, FIO, GEOM, DSP no longer have their own variable handling.
+All referencing is to equiv variables in main classes.  These variables
+should not be changed, except transiently and restored.
+The variables are ui-level i/o to the equiv struct variables.
+
+parser uses Tcl locations
+
+moving push/pop to main.
+Push/Pup functions need to be moved from funcs_geom1. DONE
+
+New Cells menu, contains Push/Pop from Edit,  Symbol Tables, Cells List,
+and Show tree from File.
+
+---
+
+Main Attributes Menu change, new Sub-menu "Main Window" that contains the same
+entries as the subwindow Attributes menu, and apply to the main window.  The
+Set Attributes pop-up is now smaller, and applies to all drawing windows.
+The controls that were specific to the main window were moved to the Attributes
+sub-menu.
+
+---
+PhysPropTextSize in Window Attributes panel. DONE
+update docs! DONE
+
+Freez in global desens?
+XXX check MSW!
+
+Sced issues:
+
+Force MOVE mode if a bound label is copied. (?)
+NO, too tricky and might be confusing.
+
+Make it possible to move/copy/etc with properties editor present (add an
+"activate" button to panel?)
+DONE
+The Properties Editor is no longer dismissed when the property-setting mode
+is inactive...
+
+Always keep node mapping on? YES
+Issue with need for node mapping.  With terminals, ambiguity of node name,
+might be PSUB or vcc.
+TODO:  Incorporate global nodes in name map, global name will supersede
+       all other names.
+       Keep mapping on always, add a NoMapNodeNames variable for debugging.
+       Side menu button brings up panel only.
+DONE
+In node map panel, Point -> Click-Select Mode
+document naming hierarchy
+EnableNodeMap script function now a no-op
+update doc for NODEMAP property, active flag always on
+
+Figure out a way to easily see node name from drawing.
+RESOL: node-name map
+
+Saw problem with wire vertex editor, appeared to use wrong vertex.
+Can't reproduce.
+FIX: The target object now remains selected, so it doesn't disappear.
+FIX: Wire selection of 0-width wires now "easier", fixed inPath function.
+
+Allow move to same location if transform changed.
+FIXED (affected main state only)
+
+Figure out a way to keep plot active while able to do other things, ditto
+for properties editor (DONE).
+RESOL: use iplot.
+
+Always keep dots on? no
+New Dots pop-up and logic.  The side menu dots button now simply pops up
+a small dialog the enables the dot display mode.
+
+exset, sourc, pnet, enet, lvs are now "notsafe".
+TODO: fix popdown from menu. DONE
+
+--
+Node mapping: prevent changing global node names! DONE
+Figure out a way to avoid ambiguity if multi terminals/cell formals. DONE,
+strcmp order.
+add help button the nodmp panel. DONE
+TODO: MSW nodmp panel, add 3rd column, help button. DONE
+
+Get rid of !terms command. DONE
+
+Is there a command to dump selected objects to a file? (!sqdump)  Does it
+work for Paths command? (no, separate facility for this)
+
+The Extraction View mode now works in both physical and electrical modes,
+and "plays nice" with the Node Mapping Editor panel.  One can click in any
+window showing the physical or electrical current cell, and a group/node
+can be selected and highlighted in windows for both modes.  The
+node list in the Node Mapping Editor will track and initiate node selection.
+
+TODO: MSW node selection higlighting scrolls to visibility in NM editor? OK
+
+native cell file end terminator can now be "End", same as a normal CIF
+file.
+
+Changes to Extract menu:
+1) VIEXT now simply affects the view.  When active, editing is inhibited.
+2) The PATHS, QPATH, and group/node selections are now controlled by a
+new Selections control panel from the new Selections button.  This replaces
+the PATHS and QPATH menu buttons.
+
+TODO: update selection control pop-up with "real" update mode, fix
+SetSelectMode in funcs_misc3.cc (DONE)
+MSW popup needs update (DONE)
+--
+TODO: Select Up button in selection control. DONE
+LayerSearchUp variable gone (from extraction)
+new script func SetLayerSearchUp
+
+In extsel, Quick Path gound plane menu added.
+
+Selections initially in area mode all, not normal. Wires were foo, fixed.
+
+new function SetSelectTypes.
+new function FindPathOfGroup.
+modified function ExtractNetResistance
+
+PopCallback modified to quit commands above current REQUIRES CHECKING!!! OK
+
+Selections -> Net Selections button/ Path Selection Control panel
+
+Added resistance measurement to Net Selections panel.
+
+TODO: need to extract vias when exporting nets.
+--
+in progress: move elec keywords back to extract. DONE
+new LayerParams struct
+rid Resistance keyword, replace with Rsh. DONE
+internally, o/sq objained from Rsh or Rho/thickness. DONE
+rid Tranline, replace with Tline. DONE
+Tline layername diel_thick diel_const
+
+Added central tech file keyword definitions (tech_kwords.h).
+removed MinDimensions mindim wirewid
+
+added MinDimension mindim (removed)
+
+added CrossThick microns
+
+These are no longer silently ignored.
+        if (Matching("MENUPROMPT")) continue;
+        if (Matching("MENUTEXT")) continue;
+        if (Matching("MENUHIGHLIGHTING")) continue;
+        if (Matching("MENUSELECT")) continue;
+        if (Matching("MORETEXT")) continue;
+        if (Matching("FINEVIEWPORTONSIDE")) continue;
+        if (Matching("SPLITSCREEN")) continue;
+        if (Matching("BUTTONCOLOR1") || Matching("BUTTONCOLOR2")) continue;
+    if (Matching("CURSORSHAPE")) {
+    if (Matching("FULLSCREENCURSOR")) {
+    if (Matching("FONTNAME")) {
+    if (Matching("FIXEDFONTNAME")) {
+    if (Matching("BEEPVOLUME")) {
+    ShowInstanceMark
+
+    if (Matching("ALTRESOLUTION") ||
+            Matching("ALTELECRESOLUTION") ||
+            Matching("ELECALTRESOLUTION") ||
+            Matching("ALTPHYSRESOLUTION") ||
+            Matching("PHYSALTRESOLUTION")) {
+    if (Matching(Tkw.AltFormat())) {
+    if (Matching(Tkw.AltDevice())) {
+    const char *GdsInToLower
+    const char *GdsOutToUpper
+
+New keyword menu in Attributes, some keywords moved from Conversion Params Ed
+todo: consistent xic:keyword for keyword editors.
+lpedt ledit
+cvedt adgds
+exedt adelp
+dredt dimen dimenpanel
+
+Attributes/Convert/Extract, menu button now "Edit Tech Params"
+
+All min_dimesnion use is gone.
+GetLayerMinDimension function NEEDS WORK. DONE
+
+GetLayerThickness, etc moved to extract module, order changed.
+GetLayerResis change
+
+The keyword handling in extraction has some new checking and lockout logic
+in the parameter editor, also used when reading tech file.
+
+New keyword: CrossField dark|clear
+
+Cross Sect menu button logic, keep checked while mode active. DONE
+
+The !lthick command is gone.
+todo: add Invisible to kw editor
+
+Make sure that rho in FastH can use Rsh/thickness. DONE
+
+In MSW, added mswspinbtn.cc/h to consolidate spin-button logic.
+
+The button 2 double click exit feature has been removed.
+
+Fixed: the Extraction Parameter Editor was foobar when working with
+multiple via layers.
+
+To-file in extsel, add note about vias and recognition in  the file.
+---
+
+Layer visibility changes.
+1) When writing a new tech file, the Invisible keyword is now given to
+layers with the Invisible keyword initially set from the tech file, or set
+in the Layer Parameter Editor.  It is NOT the prsent visibility of the layer.
+2) When making all layers visible by clicking wiht button 2 or Shift-button 1
+on the layer table icon, layers with the Invisible keyword will not be
+set visible.  Their status can be changed individually.
+3)  The Invisible  keyword can be modified with the LPE.  This sets the
+default visibility, not the current visibility.
+
+--- 3.1.5 released ------------------------
+
+todo: MSW, move spinbtn stuff to mswinterf, apply to files there. DONE
+ apply to WRspice.
+
+todo: do something about keypress buffer in viewports in MSW
+DONE
+The main keypress display now automatically tracks between drawing windows.
+In GTK, each subwin has its own keypress display.  In MSW, the main
+keypress display shows keys for the current window.
+
+spin command: bounding boxes of 45's rotated subcells, labels now shown
+correctly.
+
+new splitting code.
+modified ChdWriteSplit function
+
+fixed GDSII col/row issue, values larger than 32767 would cause big
+trouble without indication.
+
+In place panel, NX/NY max value now 32767, was 1000.  The GDS spec gives
+32767 as max value, Xic can actually use 1-65535.
+
+New fio_chd_vecctab.cc, replaces fio_chd_ctab.h, allows vectorization
+for parallel output.
+
+fixed problem in the flag empties code, was letting some empties sneak
+through.
+
+problem, windowing ouputs unresolved cell references.
+base set_area on vecctab?  prevent this without set_area?
+
+how are symref flags set/cleared in multi-chd hierarchies?
+
+fixed bug, periodic test not locked out by memory_busy, would seg fault
+if malloc interrupted.
+
+The i386 stack backtrace code was seg faulting, no longer used.
+CHECK all platforms.
+
+TODO: flat comparison (zl_andnot2) is way too slow.
+
+todo:: check range of std::sort, start, end+1
+
+Revised Ylist clip_to/clip_out functions, added remove_common.
+faster, particularly for geometric comparison in Compare panel.
+
+Switched to new empty-cell detection logic.
+ChdSetSkipEmpties, ChdClearSkipEmpties script funct gone (COMMENTED out)
+TODO: new function, args like cCHD::write, that lists cells needed,
+empty cells, gets BBs, etc.  Replace script funcs with this.
+
+todo: make sure splitting with scaling works.
+
+todo: comparison geom mode doesn't terminate on interrupt/Y FIXED
+
+changes to CHD architecture
+1) There is no longer CHD "area configuration"
+2) Instance use maps are now saved in cv_vec_ctab, replacing the
+cref_t flags.
+3) ftab creates a vec_ctab when windowing used
+4) a vec ctab is (should be) created whenever windowing is used,
+or when empty cell filtering is used.
+5) empty cell filtering is applied the the vec_ctab before use.
+6) The vec_ctab replaces "area configuration", but handles all library
+   CHDs.  May not be quite as fast as the old method for simple case
+   of a single CHD.
+
+New cv_chd_state struct/interface in io readers.
+
+scaling no longer included in ftab/vec_ctab
+
+TODO:
+1. make sure that scaling works properly in all modes.
+2. make sure that area filtering is internally correct for all
+modes.
+3. check CGD actions.
+
+Make sure that empty cell filtering works, with and without windowing.
+Note that it is possible to do this now when flattening, wont affect
+output but might speed things.
+
+Todo: xictools_accs Makefile, install targets, rid dir names. DONE
+
+CHD area configuration is gone.
+ChdGetConfigArea function gone
+ChdSetSkipEmpties
+ChdClearSkipEmpties
+ChdConfigure
+new ChdSetDefCellName
+
+update docs: ChdInfo flags
+
+XXX: Cells Listing, listing in area BROKEN. FIXED
+
+add label etc in chdconfig popup MSW
+
+struct allocation count table in CD, useful for mem debug
+new !checkalloc command prints nonzero counts from table.
+
+CreateSymbol -> CreateCell
+"symbol" -> "cell" in xxxcvin,xxxempty, update docs.  Try to avoid
+"symbol" except in context of CIF/native.
+---
+CrsymOverwrite -> CrCellOverwrite
+crsym -> crcel
+
+asic2
+check resistance extraction: how can LVS pass with RESISTANCE keywords?
+add back Resistance as synonym for Rsh?
+
+Modify via extract for net extract to get tree layers.
+
+Modify bodyLayer to get the correct layer for resistance/capacitance,
+generate warning is not found.
+
+new variable: PathFileVias
+set as boolean: will include vias, not check layers
+set to any string: will include vias and check layers
+Tracks status in new check buttons in extraction Selections panel.
+MSW!!!!
+
+two new flags in bulk netlist extractor do same thing.
+-v  include vias, bo check layers
+-v+ include vias, check layers
+
+Association now fails if Rhs is not available for a resistor, or the
+cap params are not given for a cap.  Previously, 1 ohm/sq would be used,
+without warning.
+TODO: improve error report, showing assiciate.log too much data
+
+New linewidth detection algo more BodyMinWidth
+new keyword SimpleMinDimen
+
+rid variable NoModMinDimen
+new keyword ContactMinDimen y/n
+if y, use MOS contact fis for permutes
+in n, don't ""
+default form nmos, pmos is yes
+
+New Select Devices panel in extract menu.  Replaces, Compute, Compare which
+are gone.  !find command remains, index numbers can now be ranges.
+
+todo: window non-sybolic option.
+
+fixed bug: device highlighting from !find was drawing in symbolic windows.
+
+fixed bug: constrain-45 with 0-width wires left funnies on screen.
+
+New Attributes/No Top Symbolic button
+
+MSW! don't forget the window focus callback.
+
+Main-state sub-modes are now shown in the parameters area.
+
+Fixed bug: in properties editor, Global button remained pressed when
+inactive, but was not really in global mode when pop up was reactivated.
+
+The show electrical thing has been removed from boxes.
+
+in progress, new "show electrica; command.
+done, new button in device selections panel.
+---
+
+The device "index" can now be a range list.
+ListPhysDevs, arg list change.
+!find command arg change
+
+TODO: pop-up association errors
+
+XXX No Top Symbolic in initial phys mode.
+
+fixed bug in MSW, subwin in electrical mode wouldnt mode switch.
+
+rewrite error handling/logging for extraction.  The associate.log file
+is now extraction.log, new extraction.errs file.
+
+--
+When comparing labels, differences in height can cause a lot of false errors
+since height is not carried over to OASIS from GDSII
+
+The search function in editor/browser windows no longer visibly scrolls,
+it now jumps if necessary to the new location (GTK1).
+CHECK MSW! OK
+XXX search up is really slow! FIXED
+
+New font techfile keywords
+FontN  read by all releases
+FontNW  read/written by MSW, ignored by others
+FontNP  read/written by GTK2, ignored by others
+FontNX  read/written by GTK1, ignored by others
+FontNQ  read/written by QT, ignored by others
+
+Fonts not written in update if they match the default font.
+
+Fixed bug: cif read would lose electrical cell properties.
+
+Fixed bug: a subtle history effect (group table entries with group = -1)
+was causing spurious LVS failure due to incomplete association after multiple
+runs.
+
+Fixed bug: CHD access to CGX files was omitting cell instances.
+
+Fixed bug: when writing file using CHD with attached CGD, there was a problem
+with layer records.
+
+---
+text editor menus:
+the MSW menus were all fouled up, fixed.
+Edit/Copy added to browser.
+Convert/Text Editor
+   If there is no ascii cell file available for the current cell, the editor
+   now pops up anyway, with a temp file.
+
+opening a file with no permission now gives reasonable error message, no
+longer creates internal cell of same name.
+---
+Fixed angle readout of spin command, 45-constrain logic was reversed.
+
+Bug: GTK2 only, soin angle readout and device param readout wasn't being
+updated correctly.
+
+--- 3.1.6 released ------------------------
+
+Done, fixed: MSW, make sure log dir is xic, not xic.exe
+
+Fixed bug: press-hold-lift to pick up selected object didn't work if current
+transform not identity.
+
+model.lib file updated to current Hypres JJ models.
+
+xic_tech.hyp updated.
+
+If createCell with replace, is mod flag set? i.e., prompt for save? Seems OK.
+
+TODO; some kind of auto-join into polys.
+added polygon merge in object creation operations.
+fileio?
+
+todo: try to clean up circle merging. FIXED? seems better now after split
+merging fix.
+
+todo: !joinall command
+joins all layers: cur layer only if layer-specific.
+DONE
+New arg: !join -a  => join all
+
+variable NoMergeBoxes -> NoMergeObjects
+
+New Join command in edit menu, brings up panel for join/split.
+
+join/split now works in electrical mode, previously this was prevented
+for some reason.
+removed some local tests for phys mode only for merging.
+
+Join/split no longer includes wires, unless JoinSplitWires (new var) is
+set.
+
+BUG in vert split! (triangles missing) FIXED
+
+MSW: revert focus after join, etc. DONE
+
+Fixed column merging in splitting code, wasn't merging.
+
+!split v would seg fault on wires.
+
+--
+CDnoMerge flag: needed? OK
+
+todo: add multiple arg to !co cmd.
+allow mult in basic copy?
+
+Is phys wire creation correct? OK
+
+BUG: seg fault when popping up devs.
+
+!co command now takes a replication count
+    "Usage:  !co dx [dy [[-l] layer_name] [[-r] repcnt]]  (dx,dy in microns)");
+
+New replication count arg.
+CopyObjects
+CopyObjectsToLayer
+Copy
+CopyToLayer
+
+MainState copy mode takes repl count from the keypress buffer.
+--
+
+new variable NoMergePolys  - imposes "old" merge mode.
+new corresponding Edit Menu entry: Merge, Clip Boxes Only
+
+tweeks to flatten pop-up:
+readout/feedback improved.
+new check box and MergeInFlatten variable to control merging
+new help button
+no longer pops down after operation.
+
+Merging temporarily turned off in the !layer command, pending update.
+
+--- 3.1.7 released ------------------------
+
+Added Layer Expressions button in Edit Menu, Evaluate Layer Expression
+panel, MergeInLayer variable.
+
+Update to validation system, will check against all HW and IP addresses
+found in the local interfaces.
+
+todo: createLayer update from special database.
+removed MergeInLayer
+new args to !layer, prompting eliminated.
+usage:  !layer [split|splitv|join] [-d depth] [-r] [-c] [-m] [-f] "
+        "layername [=] [expression]");
+new args in Layer()
+
+removed MergeInFlatten
+updated Flatten(), new args
+
+Fixed bug:  In layer expressions, a four-integer layer name followed by '.'
+would not be recognized as a layer.
+
+New command: !lsdb
+This will pop up a listing of the special databases in memory.
+
+----
+
+WIRE VERTEX PROBLEM!
+
+Resistor extraction problem with merged contact, jjwhole.gds,
+also seg fault.
+Also, jj detection issue.
+
+When creating wires and polys with Constrain45 set, the second vertex
+is now added only if it is 8 pixels or more away from the initial vertex.
+It was too easy to add spurious vertices.
+
+The new vertex fuction of the vertex editor in the wries command was broken,
+FIXED.
+
+multi-contact resistance solver, wrong results, gij should be divided by
+ohm_per_sq rather than multiplied.
+
+New Settings button in Show/Select Devices panel, brings up Device Extraction
+Settings panel.
+
+----
+
+Add FlatttenPrefix to Settings panel.
+
+rewrite of lstring utilities:
+   most are now inlines
+   most new wrap string.h functions.
+
+FlattenPrefixe is now token list
+name[/] prefix
+/name   suffix
+/name/  literal
+
+New button in LVS pop-up corresponds to LvsFailNoConnect.
+
+MSW: fixed foobar label area in help windows.
+
+New Misc Config button in Extract Menu, brings up the Misc. Extraction
+Settings panel.
+
+----
+TODO: wires 45s still broken (NOT REALLY).
+vertex editor, detect last vertex, treat differently for constraints.
+!mo relative (Already relative, but not good if cur xform not identity).
+
+fix "Device Block" in .hlp files, to lower case. DONE.
+
+In wire stretching and vertex editing, if moving an end vertex, the 45
+constraint is now refereced to the last non-moved vertex.
+
+The Ctrl/Shift keys up events are now handled differently, to avoid
+key up events getting lost.
+
+Fixed bug printing Tline diel thickness in Extract param editor.
+
+Fixed typos in Tline lines in xic_tech.hyp
+
+The "edge" indicator now whows a double box when over a vertex.
+
+When creating wires, if the initial point is an end vertex of a wire on
+the current layer, that wires width and end style will be used, overriding
+the defaults.  The new wire will be merged unless merging is disabled.
+
+Fixed logic bug in zoid clipping function Zoid::clip_out(Ylist*).
+
+Fixed bug: physical properties would not display.
+
+Fixed bug: error number in struct built by !errs was always 0.
+
+BUG: physical text redrawing when test outside of object BB.
+
+Skip marking object when DRC fails?
+
+DoubleClickExit removed from gtkinterf widgets.
+
+Changes/updates to the DRC Menu.
+New entry: Update Highlighting, same as !errs.
+New entry: Create Layer, same as !errlayer
+"Next" command:
+  dismissing viewport now terminates command mode.
+Bug: "bad" object highlighting wasn't working from !errs.
+
+Prompt line now shows the technology name from the tech file.
+---
+
+Text selection drop into prompt line editing mode didn't work (Unix/Linux).
+Button 3 now works like button 2 for this.
+
+Fixed bugs which would foul up schematics due to a copy operation.  The
+foul-up would not happen if the Node Mapping Editor was popped up.
+vcc terminals not being updated, device 0 not being updated.
+
+--- 3.1.8 released ------------------------
+---- End of 3.1.X
+

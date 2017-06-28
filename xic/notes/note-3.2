@@ -1,0 +1,2646 @@
+--- Start of 3.2.X
+
+Menus used as pop-ups from buttons are now explicitly released, this was
+a core leak.
+
+New code implements a "flash message" over the prompt line for a couple of
+seconds. 
+
+The main window keys area is now replaced by R and S (and L) buttons
+while in editing mode.  These provide access to 6 storage registers
+for text.  Register 0 always saves the last text entered, others are
+read/write. 
+
+The L button now stays visible, but is enabled only when the cursor is in
+column 1.
+
+Increased wire to poly buffer size to avoid seg faults with bad wires.
+
+problem: calling CheckForInterrupt when drawing an object will foul up
+color.
+CheckForInterrupt now waves/restores gc values.
+CheckForInterrupt now skips event processing when in XOR mode, which also
+causes trouble.
+
+modified logic in non-Manh edge test functions for toPoly, should be faster
+and better (old logic missed join opportunities).
+
+Changed Ylist ordering, fixed bug.  /||  rect would come first!
+
+Wire to poly changes.
+
+fixes to geo_zoidclip.cc (ztest1 file).
+
+the "extend" bloat mode now limits the projection for shallow angles.
+
+Fixed polygon rendering problem at very high magnifications.
+
+Fixed memory bug in !layer.
+
+Fixed clipping bug in the "join break clean" code.
+
+Turned off default trapezoid group and queue limiting.  These limits can
+cause unexpected ungliness in trapezoids after bloating, etc.  They can
+be set by the user to possibly improve speed when needed.
+
+Tweeks to corner fill-in:
+extend mode, corner now truncated to 2X line width, very small angles
+use flat fill.
+clip mode, small angles use flat fill.
+
+Fixed bug: In wires and other commands that use Shift/Ctrl to affect
+ghost drawing (such as for the 45 constraint), if Ctrl-g or Ctrl-e were used,
+which switches to prompt line editing mode, the Ctrl/Shift up event would
+be lost, and the display would remain in the button down state after the
+editor exits.
+
+Much work on trapezoid clipping functions, and traps to polygon function,
+to reduce tiny errors that could appear in complex non-Manhattan operations.
+
+The wire rendering now better handles point lists where points are closely
+spaced, less than the half wire width.  There is a separate rendering
+algorithm for this case.  This is more conpute intensive so is used
+only when needed.  Note that the corner handling between the two
+algorithms are visible different for acute angles.
+
+----
+new ginterf function PopUpWarn
+
+Error logging updated.  Tech file errors now go to pop-up rather than
+screen.
+Device init errors now reported.
+Todo: device block error from missing layer (Chris).  Add more descriptive
+message. DONE
+
+Todo: check for bad wires, like polys, in input.  add !wirecheck.
+
+Fixed bug: the empty cell filtering breaks oasis input (Ming).
+also fixed xictools-release.
+
+Removed the tab chars from the model.lib opamp model, which broke the
+model in WRspice (which filters tab chars).
+
+New tests for problematic wires when reading archive and in info command.
+
+New !wirecheck function, similar to !polycheck.
+
+Fixed: parallel write wouldn't work with oasis input.
+Also fixed xictools-release.
+
+Fixed endian problem for oasis reals.  xictools-release too.
+This broke oasis on ppc.
+
+The AddLogMessage function now has a second argument to indicate whether
+the message is an error or a warning.
+
+MSW only, fixed bug in Add button in the Properties Editor in physical
+mode.
+
+New code implements a "flash message" over the prompt line for a couple of
+seconds. 
+
+new ginterf function PopUpWarn
+
+todo: fix deselection bug fron join panel: select wire, press split. DONE
+
+Todo: device block error from missing layer (Chris).  Add more descriptive
+message. DONE.
+
+Added SmartArray, used in Wire::toPoly.
+
+todo: finish Debian release converter. DONE
+
+---
+
+Eliminated a bunch of spurious warnings from the help system when
+starting in batch mode.
+
+Batch mode arguments added.
+
+In Windows, background DRC jobs will now check in the AOI specified,
+rather than the whole file.
+
+todo: look in /tmp at temp files, make sure these are cleared in programs.
+
+todo: is there a file remove script function?  mv/cp?
+Yes, Shell(cmd).
+
+merged filetool into application.  Triggered if
+1) xic -F <ft_args>
+2) called as "filetool" via link or copy.
+
+Explain filetool var setting logic.  Are startup files read? read .filetoolrc?
+No xic startup files are read.
+Will read .filetoolrc in home or current cirectory.  Can't do much but set
+variables.
+
+The -m and -p split files options weren't in docs.
+
+new bloat corner fill mode 3.
+
+Fixed bug: changing grid resolution would possibly leave coord marker boxes
+around.
+
+Fixed the database ssearch function in Help windows Options menu, which
+was broken.
+
+TODO: poly check, filter triangle mung. DONE.
+
+TODO: revisit help text display html/not issue. DONE.
+
+TODO: avoid redraw on first prompline edit due to resize for buttons.
+DONE, not caused by resize.
+
+Mainstate change: When copying, mode remains active after copy, so more
+copies can be made whihout having to "pick up" the original object again.
+
+TODO: add paragraph about warning log messages. DONE
+__
+
+open accelerator works in CHD display mode under Unix, can enter cell
+name in CHD.  Doesn't work in MSW.  Menu ent is grayed.
+Fixed, open accel deacttivated in Unix.
+
+The side menu accelerators still worked when the side menu was hidden.
+
+--- 3.2.0 released ------------------------
+
+Fix to subtle problem in bloating code with extend corner modes.
+
+Fixed CIF reader, would hang on certain old dialect files with electrical info.
+
+Fixed drop handling in entry widgets in gtk2 releases, text was getting
+munged.
+NOTE: All drag-data-received handlers are now connect_after.  This is
+critical for get_entry, which has its own handler that needs to be
+overridden.
+
+add a bit for corner modes? extend-1 without trunctaion, no corner fill.
+
+moved scale fix to the zoids() function, rewrote bloat code.
+
+Fixed a logic problem in repartition.  Self clipping wasn't handled
+correctly, affected bloat.
+
+Note in docs: the bloat scale fix is good for 45's, but bad for non-45s.
+
+Smash mode electrical mode now shows devices in ghost display, not just
+BBs.
+
+Cells popup, buttons now have correct sensitivity status after Copy or
+Rename.
+
+Fixed bug: flattening an electrical cell with mutual inductors would
+foul up the k-factor labels.
+
+cd_database sPF elec/phys mode, in progress, get back to this. DONE
+
+todo: add poly closure/dup vtx test in poly splitter.  NO, added to
+gds reader.
+
+Info window recursive selection now works in electrical mode.
+
+Fixed buf (GJC): merging a physical object that has oset property (trminal
+target) would crash the program.
+
+Fixed instability associated with Global mode in the Properties Editor.
+
+The size of the last label created no longer affects label placement
+for new devices in electrical mode.
+
+Selected devices are now deselected when the Device Selections panel is
+dismissed.
+
+Fixed bug:  If the consistency repair featrues kick in for electrical mode
+data, such as if the device.lib file is changed, the undo list would
+become corrupted and bad things would happen.
+---
+Tweeks to the Cells Listing
+No longer an All Cells listing mode
+button sens follows current mode and current editability
+MSW error: file Save button not suppressed in Xiv
+
+New Edit Menu item: Enable Editing
+state follows immutable flag of cur cell.
+when not editable, Edit entries, Modify menus desensitized, side menu hidden.
+pressing menu button changes immutable flag of cur cell.
+
+libraries can now resolve missing cells in native hierarchies.
+
+TODO: (GJC) moving a terminal in a symbiolic rep doesn't invalidate
+extraction. FIXED
+---
+
+new functions:  GetSqZlist, sqz.
+
+todo: Paolo, 1) replace w/mirror doesn't work, 2) message box with ^E.
+1) FIXED.
+
+--- 3.2.1 released ------------------------
+
+More fixes, spurions pop-up in Ctrl-E.
+
+In progress, terminal labels...
+ListTermLabels script func.
+extraction 
+
+todo: control for property label display in elec mode
+turn prpty types on/off
+
+todo: how to better deal with long label strings?
+
+In progress: label expand/hide  search LAF_HIDE
+DONE.
+SHift-click on property labels will toggle hidden status.
+
+Bug: first time entering symbolic mode, window dimensions are wacky.
+
+Bug: The ToXIC script function would always fail.
+
+Bug: ExtractAndSet script function would not create an electrical cell
+if none exists.
+
+Bugs:  Empty cell checking
+Spurious message if cell is IMMUTABLE
+crash if current cell doesn't exist
+
+Logic change: null current cell is now editable.
+
+MakeSymbolic function.
+
+todo:  add switch for terminal label recognition.
+
+function to create terminal labels?
+
+New ExsetNoLabels variable.
+New "ignore labels" check box in Extract Physical pop-up.
+New n/N flag in ExtractAndSet Function.
+
+Ner PnetNoLabels variable
+New "ignore labels" check box in List Physical pop-up.
+New _ignore_labels preset format script variable
+New l/L flag in DumpPhysNetlist Function.
+
+final new functions:  ListLabelTerms, ListTermLabels
+
+new functions: PushSet, PopSet.
+
+Bug: Exset would place cell terminals off-grid.
+
+Bug: in subct, shift double click for term rename doesn't work. FIXED
+
+Bug?  electrical spice out has no subckt line
+
+The DumpPhysNetlist function was broken, wrong arg cnt.
+---
+The DumpElecNetlist function was broken, wrong arg cnt.
+The ListPhysDevs function was broken, wrong arg cnt.
+The CgdChangeName function was broken.
+The StreamSource function was broken, wrong arg cnt.
+The ManhattanizeZ function was broken, wrong arg cnt.
+The GetObjectsOdb function was broken.
+The GRdefineLinestyle function was broken, wrong arg cnt.
+The GRdefineFillpattern function was broken, wrong arg cnt.
+The Manhattanize function was broken.
+---
+
+To implement show/hide property label persistence:
+in GDSII, the xic label property can now contain "show" or "hide".
+in OASIS, xform is passed in property already.
+in CIF, xform is passed in property already.
+in CGS, vis flags, if present, are placed after a null byte following text.
+Above are defaults, suppressing property writing may affect feature.
+
+OASIS reader/writer does not support multi-line comments since non-printing
+chars are stripped in a-string.
+
+The OASIS writer now subs \n,\r, \t with "\n", etc., and the reader now does
+the reverse.
+OASIS files produced now contain an empty file property named "XIC_SOURCE"
+as a marker.  The reader will only do the transforms above if this property
+exists in the file.
+
+Fixed subtle label size issue in OASIS and CGX readers.  These affect only
+multi-line "long text" labels.
+
+update CGX format date record, string.
+---
+
+Removed cGEO::geoFudge, always 0 anyway.
+
+Add layer name to bad object warnings in readers. DONE
+The message format in the file reader logs has changed a bit.  Generally,
+each warning contains a generic message, followed be detais enclosed in
+square brackets.  The details may include, the containing cell name,
+an x,y location, a layer name, and the file offset.  Not all of these
+may appear, depending on the context.
+This will actually give more information than before, in a more compact
+form.
+
+the OASIS reader was incorrectly preventing LAYERNAME type 11 and 12
+records from existing in the same file.
+xictools-release updated.
+---
+
+Fixed bug, gtk-2 releases only, occasionally horizontal lines wouldn't
+be updated due to some gtk-2 strangeness.
+
+Marks (AddMark, etc script funcs) are now persistent to the cell where
+created, i.e., they are no longer freed when the cur cell changes.
+
+new !mark command.
+
+GrMark has new ry arg.
+
+AddMark, arg list has changed, new mark types.
+
+fix: 64-bit windows problem. DONE
+
+New functions:  DumpMarks, ReadMarks
+
+ginterf support for elliptical arcs added (needs work!). OK
+
+--- 3.2.2 released ------------------------
+
+NOPHYS property, string can now be "shorted".  When string starts with
+s or S, device will be shorted in schematic during LVS.  Usually, devices
+nophys are open.
+
+rules:
+elec connectivity always follows nophys, except running, dumping, plotting
+from side menu.
+
+Removed cell user flag 2, added SPCONNECT.
+
+IncludeNoPhys script function.
+
+EnableNodeMap function removed.
+
+todo: Node Mapping Ed
+  deselect button DONE
+  ndphys handling button DONE
+
+Nophys devices now drawn using a different color instead of the SCED layer
+color.
+
+Fixed bug:  the "hidden" box of property labels would almost disappear
+if the text was top-justified.
+
+Fixed bug: MSW only, the Node Map Editor could enter an infinite loop
+when being updated.
+
+BUG alert. labels on symbolic rep went to main cell.
+FIXED, undo list corrupted on symbolic mode change.
+
+Label placement of X labels of subckts is crap when switching to
+symbolic mode in push.
+--
+
+Todo: call reposition sometime to clean up existing placements. DONE
+Bound labels are now repositioned  if they are too far from device,
+as cell is read.  in checkElectrical
+
+Bug:: save in Subct, then op, asks to save again.
+InitCallback now called in save to ensure all cached changes are made before
+save.
+
+tff, strange desel, not erased.
+Bug fixed:  Showing dots would sometimes prevent proper erasure of the
+selection box when deselecting an expanded subcircuit.
+
+when wire comand starts, switch to SCED layer?
+YES
+When entering the wire command in electrical mode while not displaying
+in symbolic mode, the current layer now switches to the SCED layer.
+This makes it less easy to create a wire on the wrong layer, which won't
+work for electrical connectivity.
+
+Fixed bug:  Writing a gds file of an electrical cell with no phys cell
+crashed the program.
+
+In No Top Symbolic mode in main window:
+Changing symbolic state in side menu now prints a sensible message.
+The contact indicator now works.
+
+Extra space added in plot line when terms deleted.
+If hypertext references are removed from a plot string due to deletion of
+the referenced object, the entry plus a preceding space character are now
+deleted.  Previously, the space was kept, which would accumulate.
+--
+
+TODO: add label position set/get script func. DONE
+New pseudo-property XprpXY 7215 can be set.  Effect is to translate object
+Interp depends on object: box ll corner, poly or wire first vertex, label
+anchor point, subcell translation.
+New script funcs
+GetObjectXY(handle, array)
+SetObjectXY(handle, x, y)
+--
+
+Implemented "bus" terminals, in "bus connectors" for cells.
+New "vbus" device in device.lib, has two labels.  One is for name,
+other is for width.
+
+new multi-node property P_BNODE (9)
+inode_min, inode_max : reference to scalar node properties
+x,y, sx,sy           : connection location (symbolic)
+
+Subckts can have a "bus connector".  Wires can tie together bus terms,
+cus connectors.
+
+Many internal changes to support this.  Algorithm in sced_connect changed.
+
+Mung when moving unexpanded elec subcells from terminal indicators. DONE
+---
+
+Fixed bug: The preferences script could not handle quote marks in paths.
+This is a bad problem under Windows, as the paths by default contain quotes,
+and use of the preferences script would set the baths to bogus values.
+
+In HTML forms, the value="string" form will fail if string contains
+quotes.  These should be replaced by "&quot;", which will work in
+ie8 and (now) mozy.
+
+The opening line for library files "(Library ..." had to be exact or
+reading through the library would fail.
+If in an .scm file, the "library" token matched but was not in the form
+above, the menus would display correctly but pressing a sib-menu button
+would do nothing.
+
+todo: extra space in techfile Path. FIXED
+Bug: the search path wasn't getting reset ater native cell read.
+--
+
+The SPICE Run pop-up was not staying on top of the main window.
+
+--- 3.2.3 released ------------------------
+
+Start of Open Access integration.
+
+Bugs fixed in Quick Paths command in Path Selections pop-up.
+UZ66VSCONNBM2M3 doesn't get flattened in t.gds
+
+Misc updates to extraction. paths.
+
+UsinT aan inverted ground plane with extraction no longer generates
+pop=up error about modifying an internal layer.
+
+PartitionSize now 0 or 1.0-10000.0
+New "none" button in Layer Expr panel
+todo MSW! DONE
+
+Select Paths panel, depth spin button now calls redraw thru idle proc,
+otherwise spin button would skip values in Quick Paths.
+check MSW! OK
+
+Bug fixes to the Select Path/Quick Path commands.  These had problems.
+This included changes to the grouping/extraction algorithm, to ensure
+that all appropriate metal would be included in the paths.
+
+Added iteration limits to LVS, it could get into a perpetual loop.
+---
+
+New poly splitter class, profiles much faster.
+
+UPDATED FreeBSD to 7.3-prerelease, Xorg to 7.4, all ports/packages.
+The new libtiff requires libjbig.
+
+Simplified via connectivity test, much faster in cases where vias aren't
+rectangular.
+
+--- 3.2.4 released ------------------------
+
+Set up Windows 7/64 box.
+
+The pictorial device menu wasn't working under Windows.  FIXED
+
+Selecting the current layer in the layer table was strange under Windows 7,
+the new selection wouldn't show until the mouse pointer entered the main
+drawing window.
+
+The prompt line, keys box, coordinates readout, and status line now all
+share the same background color, which can be changed from the color panel
+(Prompt/Backgoound).  The internal default for this color is now
+"lavender" instead of "Antique White".
+
+The "Colors" button in the Set Color panel was not working in RHEL5 since
+it couldn't find the rgb.txt file.  This situation now prints an informative
+message.
+There is a new variable RgbTxtPath which can contain the full path to this
+file, e.g., something like "/usr/share/X11/rgb.txt".  This can be set if
+none of the hard-coded internal paths succeed.
+
+The Point() script function description is wrong, update.
+
+Don't know if it was change to Xorg-7.4 or turning off Composite enstension
+for IC610, but help windows bacame flashy.  FIXED.
+
+How to easily grab things from another cell?  yank script doesn't work
+in elec mode, no warning.
+
+XXX
+Smashing elec cell fouls up connectivity.  Also, parameters not handled
+well.
+avoid smashing name label, param label
+create labels with actual params?
+FIXED: The param label is deleted when a subcell with a param label is
+flattened, like the name label.
+FIXED: probelem with flattening (could be more general).  Undoing would
+rotate connected flag back to cell, but connectivity not valid.
+FIXED: similar problem with group/extract/assoc.
+FIXED: the show group/show node buttons are now unchecked when the group
+struct is destroyed or cleared.
+
+Mysterious use of pop-up instead of prompt line.
+Fixed.  When in plot command and a device from the menu is selected, there
+was a timing issue.
+
+Fixed a couple of problems in the Unix/Linux HTML viewer:
+1) no longer jumps to the top of the page on window resize.
+2) images were being clipped incorrectly in some unusual cases.
+CHECK GTK-2 (OK)
+
+Fixed problems with gzip reader.
+
+TODO: Add IsLayerDefined(layer_name, display_mode) script func.  DONE.
+
+The built-in "helper" for the imsave (jpeg, tiff, etc.) wasn't working
+properly.  On Unix/Linux, if you have ImageMagick and netpbm installed,
+allo of the formats supported by these programs are available, for example
+pdf.  This is not available under Windows.
+
+Is IMSAVE_PATH documented?  YES
+
+Imlib driver now named "Image".  Minor rewrite of GRpkg to make data private,
+added "alias" field and FindHCdesc function so can find driver by alias.
+Imlib can be found as "imlib" or "imsave".
+
+--- 3.2.5 released ------------------------
+
+Added a function that will process wires read into the main database from
+a file, or created with the wires command.  This will
+1) remove duplicate and colinear vertices.
+2) if the path doubles back on itself, the wire will be split into two
+segments that don't double back.  This is for OA,
+
+Fixed %%BoundingBox in imsave ps writer, images would not be displayed
+fully in gv.
+
+Added resolution choices in imsave print driver.  This really doesn't change
+image resolution, but changes th size of the image bitmap in pixels.
+Previously, the image "resolution" was fixed at 100 pixels per inch, so that
+selecting a 4x4 inch image size would create a 400/400 pixel image.
+Note that selecting resolution "200" and size 4x4 would produce the same
+bitmap size as 100 and 8x8.
+
+Fixed color mapping problem in postscript color bitmap driver(s).
+
+added dumpcds function, dumps a Cadence tech and drf file.
+
+CBOCK handling was broken in the OASIS reader.
+
+Spice interface:  Deal with change from ':' to '_' in subckt expansion.
+
+Elec mode: moving wire vertices is a chore.
+
+Global terms must be tied to voltage source.  Vcc term to ground looks
+like it doesn't work.
+
+The "ping" WRspice ipc command now conveys the SUBC_CATCHAR.
+
+ReadZfile function added.  NEEDS WORK
+
+New unified layer database (cd_ldb).  Ensures all layers have unique
+names, needed for OA.
+
+Ugh.  The ovlchk was logically incorrect, can't break.
+Sort Ylist rows by minleft?
+
+modified description: ChdLayers
+new functions:
+ChdInfoMode, ChdInfoLayers, ChdInfoCells, ChdInfoCounts
+--
+
+Placing terminals, figure out a way to insert new rather than append.
+DONE, will take index from keypress buffer if present.
+
+Fixed strange bug in vertex editor, wires could be munged.  Other
+small bugs as well.
+
+todo:  In plot mode in elec, when a new cell is loaded through the
+file sel, exit plot mode and load new cell rather than enter path
+in prompt line.
+DONE.  CHECK MSW (new idle proc added).
+
+non-orthogonal rotations are handled a little differently, should be
+slightly faster and more accurate overall.
+
+New ylist sort order, ovlchk can break now.
+
+Fixed GTK-2 Warning message after CGD creation with GTK-2.10.x and
+later (latest RHEL 5 releases).
+Also Compare, Layer Expression
+
+Problem with coord background. FIXED
+
+Removed some apparent silliness from mswcoord. CHECK MSW. OK.
+---
+
+--- 3.2.6 released ------------------------
+Oops, bug, device selections broken in Properties Editor.
+--- 3.2.7 released ------------------------
+
+If the dielectric thickness and const TLINE params are 0, will obtain them
+from a corresponding VIA layer.  These params are now optional in TLINE
+line.
+
+Got rid of InsertSymbol function, was creating empty cells.
+
+mozy image failure on ~/aa.html.  FIXED.
+
+Dots disappear.
+
+problem rendering filled boxes in electrical mode.
+FIXED
+
+"Set" window popdown gives GTK warnings.  Seg faults in GTK2 sometimes.
+FIXED.
+
+XIC_NOTIMER undocumented?
+
+batch mode produced a lot of GTK error messages.  CHECK MSW
+DisableMainMenuItem()
+
+Fixed problem in cv_info system, pc_data destructor caused faults.
+---
+
+explain why mozy sucks on web.
+
+Fixed bug:  Using green button in file selector to load a file in elec
+mode, with plot mode active, and if loading caused the merge control
+pop-up to appear, the program would hang when the merge control pop
+up is dismissed.
+
+When initially editing a cell, gnd does not have snap feedback.
+
+Added OA libs memu item, pop-up, internal OA support that is invisible
+without oa libs enabled.
+
+Added file path string table, all cells now have origin file pointer set.
+added pointer to CDs for file name, this didn't exist in elec cells.
+
+When the program faults, unsaved work is now saved in a subdirectory,
+rather than the current directory.  The subdirectory is named
+"panic.pid" where pid is the Xic process id number.  If all goes well,
+this directory will be created, and contain dumps of the hierarchies
+or cells that have been modified and not saved.  OA cells are NOT saved
+back to OA, rather they are dumped as native cell files.  The dumped
+files no longer contain "panic" in the name.
+
+changed int->long in a number of places thet use bytefact_t, improved
+checking for out-of-tickets.
+
+check modified/save works with OA.
+save-as works with oa, extension to spec format.
+
+TODO: make libraries pop-up list all libs with open icon, like OA
+libs pop-up.
+DONE
+
+Fixed strange bug in coord popup.  Only affects FreeBSD/gtk2 (?).
+width was set to 0, but it worked anyway (?).  width now set properly.
+
+gtk 2.18.6 causes trouble: there is now a per-widget clipping context
+in the gc that has to be cleared.  Use of gdk drawing functions are ok,
+calling X requires explicit clearing (gtkinterf.cc).
+
+Ack! the oState enum values were defined differently in 2 places (cd_const.h
+and cd_objects.h).
+
+Rewrote dot-handling code.
+Fixed bug, use of dots could cause crashes.  E.g.,
+1. display cell hier in elec mode showing dots.
+2. using Place panel, re-read one of the shown cell files from disk,
+   select Override Elec in pop-up.
+3. This clears the cell(s), including dots, but left behind bad pointers
+   in the dots database that would cause trouble.
+The new dots code is not prone to this problem.
+
+XXX Elec mode grid snap can be set < 1u in tech file! FIXED
+No longer possible to set electrical grid to other than 1 micron snap
+from tech file.  However, it is nopw possible to set finer (.1u) grid
+from grid command, with a warning message, so old files can be repaired.
+
+Fixed bug, ElecSnapping printed as PhysGridSpacing in tech file update.
+
+XXX
+path symtab, user for
+archive file paths, hooked to all cells from archive
+originating directory, native cells **NOT full path to file
+OA library, all cells read from OA
+If cell is saved as same name and format with save/save_as, the fileName
+is updated (XXX check OA).
+
+IsFileInMem function changed, now looks at all native cells, not just
+top level.  funcs_misc1.cc
+
+revision of cell finalization logic in save.  New logic for undo list,
+which is now always retained.
+
+--
+Trying to do a convert-menu operation using windowing with a zero-area
+window could cause program crashes.
+
+Rewrote table-generation functions for speed.
+
+new filetool "set" variable timedbg[=filename] turns on the timedbg execution
+timing system.
+
+BUG! elide_empties did not consider BOX records! FIXED
+
+Gen2 bug: clipping of text elts in readers bad.
+
+Gen2 bug: looks like write with area requires set_area call.
+
+cd_compare, instance comparison is slow, revize.  TODO
+in compare, print array params in "Instances".
+don't fail on unresolved instance masters. DONE
+added table to instance comparison function, much faster. DONE
+
+Work on windowed writing code, various bugs fixed.
+
+Replaced the number_hash function with a faster version.
+
+--
+
+todo: !!REDITECTNC  in help case-insens keyword mapping. NO
+
+Attributes/Grid needs elec snapping mod. DONE
+
+OPEN ISSUE: support for gtk-2.18
+CLOSED: always use gdk drawing for GTK-2.
+--
+
+Revised window proc code - static strct members.  Now use CallWindowProc,
+rules say this should have been done, but wasn't.  Switch to ListView
+in Libraries, CHD and CGD listings.  In CHD, icon indicates which
+entry is being used for display, if any.
+
+--- 3.2.8 released ------------------------
+
+New display image algo:
+XxY field of short ints.  Recurse thru hier ONCE. Write pixels, where
+pixel is layer table index.  Only write pixel if > existing value (backg
+is 0).  Map this into RGB image (in parallel?).
+
+Kaplan:
+1. Replace menu works differently than before; when one clocks on a member
+of the list of previously used replacement cells, Xic replaces with the
+*last* cell used for replacement.
+
+2. New save syntax doesn't work as before.
+
+3. Saved subcell by Save As, When I popped out and tried to save the larger
+cell, faulted.
+
+New RGBzimg image back-end, much faster for in-memory display, slightly
+faster for CHD display.
+
+OOPS, serious pointer bug in Save operation for native cell files.
+
+--- 3.2.9 released ------------------------
+
+Context now darkened in electrical mode.
+
+TODO: add switches to turn on/off display of objects by type.
+
+TODO: combine bbox and first-pass of the tr stream table.
+scalar ctab in ftab.
+
+Added Objects Shown to attributes menu, can turn off/on display of
+boxes/polys/wires.
+
+MIT_SHM no supported under Unix/Linux if the x-server provides this
+support (and the display is on the same machine running Xic).  Will
+transfer image data to screen faster (but I don't see much difference).
+Use --no_xshm on the command line to prevent use if this causes trouble
+for some reason.
+
+There are now three choices of image transfer code when not using MIT_SHM.
+these can be set with the environment variable XT_IMAGE_CODE.  Possible
+values are
+0 (default)
+  The fastest, avoids allocating a second bitmap and copying, a step
+  formerly taken but appears to be unnecessary.
+
+1
+  Use the old method, which used direct X-window system calls and avoids
+  use of GTK for transfer.
+
+2
+  Use the GTK functions to transfer the image.  Probably the slowest method
+  but probably the most reliable if the other methods have problems.
+
+MSW, found a way to avoid copying image data for display, slightly faster.
+
+MSW  Xic can now read/write files from shared folders, and should generally
+understand share paths of the form //machine/sharename/... (forward or
+back slashes).  This never worked before, due to internal path handling.
+Paths of this form were "fixed" to remove one of the leading directory
+separation characters, among other things.  Previously, the file
+manager would not list shared files, and Xic would fail to open shared
+files.
+
+When starting in a shared folder, Xic will create the temproary directory
+it needs, if it hasn't been otherwise specified, in c:/tmp.  Previously,
+it would try to create a tmp directory in the share, which may not be
+allowed.
+
+Fixed: Hardcopy frame would disappear when showing CHD.
+
+Using empty cell filtering without windowing caused
+a crash, at least from the Conversion panel.
+
+New unified CHD tables class incorporated.
+---
+
+FIXED: Trouble in 45 path() transform function.
+
+Dots problem. FIXED
+
+In symbl mode, after hardcopy terminals disappear.
+
+After a hardcopy, higlighting would disappear.  FIXED
+
+Expose event caused full redraw after each hardcopy.  FIXED.
+
+Location boxes now use Refresh rather than Redisplay, much faster
+for complex layout.
+---
+
+About presentation changed, no longer reads text from file.
+Modified PopUpHTML so that <body> tag is followed, images are now resolved
+through the help path. (Unix/Linux)
+CHECK MSW. OK
+
+XXX grid appears in elec jpeg when off.
+update elec colors not saved. NO. need more print-specific attrib colors.
+save in tech file only non-default attributes (?)
+
+mozy is still f*cked up for single image, supstk_sim.jpg
+
+--- 3.2.10 released ------------------------
+
+BUG: saving CHD to file doesn't work, floating point format bad. FIXED.
+
+in progress: chained cref lists.
+The CHD format has been modified to use chained instance lists.  The
+file format for saved files has been bumped to magic=5 to support this.
+The chained instance lists reduce the size of contiguous memory needed
+to implement a compressed instance list, which could previously grow
+to gigabytes in some insane cases.
+
+In progress: new context system for print.
+No More "Alt" keywords.
+colors
+    AltCoarseGridColor,
+    AltElecCoarseGridColor,
+    AltPhysCoarseGridColor,
+    AltFineGridColor,
+    AltElecFineGridColor,
+    AltPhysFineGridColor,
+layer kws
+    if (Matching(Tkw.AltRGB()) || Matching(Tkw.AltFilled()) ||
+            Matching(Tkw.AltInvisible())) {
+
+attrib kws
+            Matching(Tkw.AltAxes()) ||
+            Matching(Tkw.AltGridSpacing()) ||
+            Matching(Tkw.AltPhysGridSpacing()) ||
+            Matching(Tkw.PhysAltGridSpacing()) ||
+            Matching(Tkw.AltElecGridSpacing()) ||
+            Matching(Tkw.ElecAltGridSpacing()) ||
+            Matching(Tkw.AltShowGrid()) ||
+            Matching(Tkw.AltElecShowGrid()) ||
+            Matching(Tkw.ElecAltShowGrid()) ||
+            Matching(Tkw.AltPhysShowGrid()) ||
+            Matching(Tkw.PhysAltShowGrid()) ||
+            Matching(Tkw.AltGridOnBottom()) ||
+            Matching(Tkw.AltElecGridOnBottom()) ||
+            Matching(Tkw.ElecAltGridOnBottom()) ||
+            Matching(Tkw.AltPhysGridOnBottom()) ||
+            Matching(Tkw.PhysAltGridOnBottom()) ||
+            Matching(Tkw.AltGridStyle()) ||
+            Matching(Tkw.AltElecGridStyle()) ||
+            Matching(Tkw.ElecAltGridStyle()) ||
+            Matching(Tkw.AltPhysGridStyle()) ||
+            Matching(Tkw.PhysAltGridStyle()) ||
+            Matching(Tkw.AltBackground()) ||
+            Matching(Tkw.AltElecBackground()) ||
+            Matching(Tkw.ElecAltBackground()) ||
+            Matching(Tkw.AltPhysBackground()) ||
+            Matching(Tkw.PhysAltBackground())) {
+driver
+        if (Matching(Tkw.NoAlt())) {
+
+AltDriver, etc. still recognized but deprecated.  New keywords
+DefaultDriver, PhysDefaultDriver, ElecDefaultDriver.
+
+New keyword: DrcLevel 0-2
+
+Presently, only non-default attrib keywords are printed in tech file update.
+Provision to print commented, print all.
+
+-F -o xxx.gds -i ty.oas -c ICV_22648 fails! faults
+FIXED:  filetool -c option seg fault
+
+In filetool or using -F, log file now defaults to "filetool.log".
+New option/keyword: LogFile logfile (-log logfiel) specify name of
+log file.
+
+Mut inductor label wasn't deleted when mut deleted with 'd'.  FIXED
+
+New tech keyword Visible.  opposite of Invisible, needed in driver blocks
+when layer is normally invisible.
+REMOVED, use "Invisible n"
+---
+
+new cross grid option.
+Finish grid pop-up.  Check script funcs, etc.
+second integer in GridStyle, 0-6 default 0.
+grid style now printed in hex.
+
+Todo: HPFilled keyword, etc, move to driver block.
+HPglFilled can now only apper in HPGL driver block.
+XfigFilled can now only apper in Xfig driver block.
+
+Bug: Measure precision was not being added to Measure lines in Device
+blocks.
+
+TODO: Add a popup for tech file generation
+default attr handling
+file name/path
+Unix/Linux DONE
+TODO MSW
+
+TODO: something still funny with mozy, blank page
+FIXED
+
+Bug fixed: overrun in grid rendering.
+
+Fixed grid display in print mode, so display of grid better tracks
+display on screen.
+---
+
+Use GetBoolean for all single-token keywords, so can be turned off
+without deletion.  E.g., Invisible n  is effectively as if kw not given.
+
+Go to PhysLayer instead of LayerName.
+
+---
+
+Updates to coordinate readout window:
+now uses backing pixmap to avoid flashing
+now uses event filtering to avoid slowing down cursor updates.
+
+TODO: Limit "pathtype 4 converted to pathtype 0" message count! DONE
+---
+
+GridSpacing and Snapping kws not accepted/written to driver blocks,
+spacing/snapping not changed when entering hcopy mode.
+
+XXX Fix Misc Extraction Settings pixel size entries
+FIXED (Unix/Linux only)
+
+In SPICE output, mutual inductor definitions are now printed only if
+both coupled inductors are included in the output.
+
+If different nodes assigned same name in mapping editor, are they connected?
+
+In the Node Name Mapping editor, it is now not possible to assign a name
+that duplicates an existing name.
+Changing the node name mapping from the pop-up was not incrementing
+the modified flag.
+---
+Xic will no longer set Pango fonts from XFD and vice-versa.
+Will never write the FontN keyword, only the P/Q/W/X variants.
+
+--- 3.2.11 released ------------------------
+
+Added random mapping capability for CHD accesses to gzipped GDSII and CGX
+files.  This will speed up CHD operations that must seek randomly in
+the input file.  This is enabled by setting a variable
+
+ChdRandomGzip [1-255]
+
+CHDs created with this variable set will include the mapping structure.
+The mapping structure provides accesspoints within the file, spaced
+by default about 1Mb of uncompressed data.  The map requires about 32Kb
+per access point.  When seeking in the file, one can jump to the closest
+earlier accesspoint, and read to the desired offset.
+
+The integer is the number of Mb between access points.  If 0, it is if the
+variable is not set.  Setting as a boolean, i.e., to no value, is equivalent
+to setting to 1.
+
+Bug (instance placement) in CIF->GDSII direct translation fixed.
+
+New conversion mode: All native cell files in a given directory are placed
+in an archive file.  Supported manipulations are cell name aliasing,
+layer filtering, scaling.
+Available from Conversion panel: Input Source is now a drop-down menu,
+with new "Native Cell Directory" item.
+New script function FromNative().
+
+The "root" cell produced by !splwrite when flattening could not be read.
+The file path as instance name thing in native cells was broken.
+Is this feature documented?
+New table of cellname->paths, used to fix cell when writing.  Previoulsy
+writing would use top cell name as instance name, not path to archive.
+
+Bug:  When updating tech file
+"User-Defined Desgin Rule tests" was printing un-commented.
+
+The Windows "stackdump" was broken.  Due to some strange compatibility
+problem with the latest MinGW compiler, instead of generating a stack
+trace after a program fault, the program was restarted.
+
+Completed electrical mode cell comparison in Compare Layouts panel.
+Although the buttons were present, the mode didn't work.  However,
+electrical mode comparison is allowed only in Per-Cell Objects mode,
+elec mode selector buttons removed from Per-Cell geometry page.
+
+Eliminated retries and added actual elapsed time test to comm.cc to
+shorten wait time when update server is down. 
+
+In Compare Layouts panel, Source entries are now drop recievers.
+
+Added fairly comprehensive property comparison to !compare and
+Compare Layouts panel.  Property filtering. Lots of new stuff.
+
+MAKE SURE libraleigh.so is right 32/64 bits!
+RHEL3/Linux2 32-bit releases were getting 64-bit shared lib.
+
+In compare functions, now can have both fname1 and fname2 not given.
+In this case the Cells and Equiv list can not be empty.  Cells are
+obtained from memory.  Can't use "Recurse Into Hierarchy" or
+Flat geometry.
+
+Cells/Equiv entries are now drop receivers, so can drag/drop from,
+e.g., Cells Listing.
+check MSW D&D OK
+
+!compare options, -f1 and -f2 to specify file names (optional).
+
+Fixed some things that weren't quite right in drag/drop, mostly in
+GTK-2 releases.
+
+DONE. MSW mswdebug.cc add HDROP
+
+XXX
+MSW: after suspension with Xic active in elec mode, crash with new image.
+Reproducible?
+
+New !timedbg feature:  !timedbg [y|n [-maxlev] [filename]]
+maxlev is an integer, sets print level.
+
+---
+The currently displayed cell name is now shown in the status line in
+CHD display mode.
+
+Status line now allows text selections, drag over text or click on
+word.  Prompt line now allows selections when not editing.  drag over
+text.  Clicking deselects and/or moves text if line is too long to
+display entirely.
+
+Ctrl-P bound to all entry widgets, will insert primary selection.  In
+prompt line edit mode, Ctrl-P inserts primary, Ctrl-V inserts
+clipboard.
+
+Confusion between primary selection and clipboard.  Check docs, revise
+texteditor.  DONE
+
+Text editor edit menu now has Paste Primary entry, Alt-P.
+
+---
+FIX GTK-2 drag test. DONE
+Have to call function to get additional motion events needed for drag
+distance test.
+
+Consolidated GUI color setting, moved into ginterf/gtkinterf.  Can no longer
+set gui special colors with !set, must use !setcolor.  Can also
+use X resource mechanism.
+Color resource names and defaults are:
+"GUIcolorSel",    "#e1e1ff",
+"GUIcolorNo",     "red",
+"GUIcolorYes",    "green3",
+"GUIcolorHl1",    "red",
+"GUIcolorHl2",    "darkblue",
+"GUIcolorHl3",    "darkviolet",
+"GUIcolorHl4",    "sienna",
+"GUIcolorDvBg",   "gray90",
+"GUIcolorDvFg",   "black",
+"GUIcolorDvHl",   "blue",
+"GUIcolorDvSl",   "gray80",
+
+Audit/update of selection behavior of most text pop-ups.
+GTK:  In most windows, text can be selected by clicking and/or dragging.
+Text is copied to primary selection register.  In many pop-ups, if the
+pop-up loses the selection (text is selected in another window), the
+highlighting color changes, but remains selected, for operations on the
+selected text within the window.  The primary selection can be pasted
+into other window using standard X mechanism.  In addition, editable text
+windows have a separate clipboard and accelerations:
+Ctrl-C copy selected text to clipboard.
+Ctrl-X cut (erase) selected text, saving in clipboard.
+Ctrl-V paste clipboard text into window at insertion point.
+Single-line entry areas:
+Ctrl-P paste primary selection into window at insertion point.
+
+Windows:  Selections are local to each window.  Most windows will copy
+the selection to the clipboard if Ctrl-C is pressed when the window has focus.
+The status line and prompt line selections are automatically written to
+the clipboard.  All other selections require Ctrl-C.  In editable windows,
+Ctrl-X will cut (erase) test, saving it in the clipboard.
+Ctrl-V will paste clipboard text into the window at the insertion point.
+
+Handle button 3 for pop-up menu?  Is there one?
+NO, RichEdit doesn't have one built-in.
+Undo function, add to edit memu in text editor
+DONE
+Updates to Text Editor and Script Debugger menus.
+Added Edit menu to Script Debugger.
+Debug pop-up, drop with Ctrl pressed inserts text in edit mode, like text
+editor.
+Debug/Text Edit menus modified for commonality of function names and
+accelerators.
+
+MSW now uses RichEdit2 for multi-level undo capability.
+
+Search, Font toggle menu not working, GRX->Deselect issue.  FIXME
+DONE.  New caller encoding allows toggle menus from dialogs.
+
+GTK2, dismissing the Print pop-up in the text editor would crash the
+program.
+FIXED
+
+TODO: Make Place work with "chdname cellname", check d&d receiver from
+content windows.
+DONE: Drags from content pos now work.  Generally, can give two tokens
+to Place, thre first can be an archive file, CHD name, or CHD filename.
+
+Problem: Deleting empty cells does not erase highlight box.
+OK: not intended to change display.
+XXX change this?
+
+TODO: compare all ddr handlers to msw, make sure they match. DONE
+
+When removing empty cells, instances of empty cells won't be removed from
+immutable cells, and the empty cells won't be deleted.  However, instances
+of empty cells will be removed when possible.
+
+change to !empties:
+Usage: !empties [force_delete_all]"
+with force_delete_all given, will delete all empty cells when possible,
+no pop-up.
+
+---
+
+check text editor GTK-2 edit menu paste funcs.
+
+XXX problem: when cell hierarchies are added as above to native cell,
+saving native cell does not save subcells.
+
+RHEL3 issues:
+paragraph-background doesn't exist
+Compare Layouts panel spews warnings when dismissed.
+
+--- 3.2.12 released ------------------------
+
+The XEDITOR_FONT environment variable has been removed from code/docs.
+It was being ignored.
+
+Fixed an instability problem associated with the Path Files Listing
+pop-up.  Monitor dereferenced null instance pointer.
+
+port to Darwin64, new package.
+
+Key mapping issues: mapping file couldn't be written in OS X 10.6, display
+name was path, can't be used in file name.
+
+On MacBook Pro, no numeric keypad keys.  Use key mapping function,
+recommend fn-Enter (Insert) NUPLUS, fn-Right (End) NUMINUS
+Other mappings:
+Delete -> Backspace
+fn-Delete ->Delete
+fn-Left -> Home
+fn->Up -> Page Up
+fn-Down -> Page Down
+Button 3 -> "Secondary press"
+
+fixed bug: seg fault while expanding .lib SPICE model when starting simulation.
+
+While in plotting mode, it is now possible to select/deselect objects with
+the mouse in the usual way.  No longer have to ESC out of plot mode to
+select a label to change, while simulating.
+Plot marks can be dragged to another location.  If dropped on an existing
+mark, the marks trade positions.
+---
+
+XXX Fix MacBook Alt key issue.
+must use xmodmap -e "keycode 66 = Alt_L" -e "add mod1 = Alt_L"
+or .Xmodmap file
+
+revisit ref count issue re GTK FAQ, probably have a core leak. DONE, OK.
+
+Put xclient into accessories export.
+
+Ports updated, consolided, IANA request.
+
+--- 3.2.13 released ------------------------
+re-release after fix of malloc init order problem.
+
+Revision of rpm package files.  The scripts were broken
+1. left behind xxx.tmporig files in startup
+2. xxx.old was new version, not old.
+
+New files will save modified config files as xxx.rpmsave
+(Rpm now handles modified file updating).
+
+After updating, user should manually remove .tmporig files.
+
+Full new transition won't occur until the next update, because old scripts
+are saved on the system.
+To get around this:
+rpm -qa | grep progname
+(identify progname installed package)
+su root
+rpm -e progname_installed_package
+wr_update new_progname_package
+
+New IANA port numbers.
+
+Fixed bug, uninitialized sLibname CDs member.  If cell was created in memory
+and not saved, possible seg fault on program exit.
+
+IN PROGRESS
+When specifying a license host, one can now add a :port suffix.
+
+New -p port argument to xtlserv.
+
+Fixed bug: Library files (like device.lib) are not specifically excluded
+by the parser.  In conversion operations, a device.lib file was being taken
+as a native cell file.
+
+Fixed bug: If the top cell has no physical data, and the electrical consistency
+check repaired something, and xic was started in physical mode with the cell
+name as arg, there would be a seg fault.
+----
+
+env var XT_REMOTE_TEST removed from docs, not used in code (removed some
+tme ago).
+env var XTNETDEBUG now does as advertised.
+
+
+--- 3.2.14 released ------------------------
+
+Improved spiceipc interface (handle stdio from source, turn on working
+during source).
+
+Fixed bug:  Device name hypertext entries would become unresolved.
+
+--- 3.2.14 re-released ------------------------
+
+Fixed bug: Unix/Linux releases only. In electrical mode, plot mode active,
+with design modified.  Click window frame X button.  Modifed cells pop-up
+appears.  Click Apply-Continue.  Program will hang.
+
+Added logic for plot mark colors.  The mark color should now always
+match the plot trace color.
+
+Fixed a bug in the cell overwrite logic when reading archives.  It was possible,
+given the presence/absence of physical/electrical cekks in memory, that
+data would be added to an existing cell, rather than overwriting the cell.
+
+In particular: a.gds top level cell a has no phys part, but cells under a
+have both phys and electrical.
+b.gds contains contains the cell a, except this version of a has phys data.
+First read in a.gds, then b.gds, and accept overwrite phys and elec for all
+conflicts.  The electrical a cell will contain both the data read from a.gds
+and b.gds, i.e., probably duplicates of everything in the cell.
+
+
+--- 3.2.15 released ------------------------
+
+Fixed bug in Place command, seg fault if Master cell has not been created
+yet in current mode.
+
+
+--- 3.2.16 released ------------------------
+
+The CHD splitting functions can now take a list of regions in addition to
+a grid.  Update to ChdWriteSplit function, !splwrite command.
+
+Fixed a bug:  With devices selected, press Tab to undo.  If the undo
+removes an object, there would be a seg fault, since the extraction struct
+is deleted if an object is deleted, and the blinking highlighting would
+access a bad pointer.
+
+In docs for split, -r ... can appear multiple times, region list will
+be concatenated.
+
+(for split) filename format now masenameN.suffix, N is 1-based.
+
+TODO:
+implement getc_unlocked/fread_unlocked in fio_zio DONE
+implement caching to avoid hash table get DONE
+
+check this!
+The Print panel format now correctly tracks mode switch.
+todo: change tech files to use Phys/Elec DefaultDriver DONE
+todo: MSW! DONE
+
+check: out of memory in hcopy, messgae? LOOKS OK
+
+filetool: -info, fixed formatting bug.
+TODO: filetool -info, print munits,uunits
+DONE: the scale flag is now "unit", prints file m-unit.
+Added cv_header swapping to CIF reader: CHECK!!!!!
+Make sure filetool doen's have fixed-length command line problem. OK (fixed)
+TODO: Add pc info print to filetool -info DONE
+filetool: how to save CHD in file?
+DONE -cfile command.
+
+Speed update to vec cell tab. DONE.
+
+Internal CHD instance list gzip compression.  DONE
+new variable ChdCmpThreshold.
+
+inline strcmp replacement for string tab.
+DONE, maybe better than gen-2.
+
+CDo::cif_string now uses W0, W1, etc instead of W, for comparison output.
+IMPLICATIONS?  CHECK THIS! OK
+
+Kirtley
+long pseudo-prop strings can't be edited.
+DONE
+The prompt line used to have a fixed internal buffer size of 256 characters.
+Strings longer than this could be edited with the "long text" mechanism
+when available, otherwise editing was not possible.
+The editor (and prompt line in general) now has no fixed size limit.
+The PageDown/PageUp keys now now move the cursor ahead and back by one half
+of the number of characters displayable in the prompt line, making it easier
+to shift through a long line.
+
+CHD file: magic 6 allows compression, geometry data.
+check flags in file. OK
+
+Wires, phys mode: can't delete inline wire vertex with editor
+FIXED, clicking on vertices didn't do correct thing.
+
+90 degree auto wire thingy, doesn't work with viewport.  FIXED
+
+From Gen2:
+  empty cell prefiltering by layers DONE
+  table gen speedup DONE
+  use of instance flags (CVok, aful, geom) avoided DONE
+Magic 6, compressed chd file, geometry records DONE
+internal gzip instance list compression DONE
+
+Compare Layouts/!compare new buttons/modes
+-b sloppy mode, a box will match a wire or poly with the same dimensions
+-n ignore dups, duplicate objects are ignored in listing  
+---
+
+The W<N> CIF-like format is now used in diff.log files, and the output
+from the ObjectString function.
+
+Fix copy undo:  place, undo should back up to selection ready.
+DONE: improved undo/redo logic in Copy, main state.
+
+wire width switching, check logic.
+DONE, improved by callback from width/end style button.
+
+Peek mode, layer list is wrong.
+Fixed, was counting object if BB intersects aoi but not object itself.
+
+when current cell is renamed, need to switch cc to new name.
+FIXED.
+
+--
+SplitArchive option: -e[N]  N is ecf level
+in assemble:
+  NoEmpties [N], N = 0,1,2,3, 0 same as NoNoEmpties, 3 same as missing
+  -e[N], -e0 same as -e-, 3 same as missing
+In Conversion panel, new Empty Cell Filter buttons.
+TODO MSW! DONE
+In Assemble panel, new Empty Cell Filter buttons.
+TODO MSW! DONE
+
+TODO: add geometry option to CHD save from listing panel.
+New save CHD panel from listing panel.
+TODO: MSW DONE
+help kw xic:chdsav
+
+The New CHD page in the Conversion panel now has a Geometry Counts menu,
+same as the Open Cell Hierarchy panel from the Add button of the Cell
+Hierarchy Digests panel.
+TODO: MSW DONE
+
+The New CHD page is now visible when the Input Source is Cell Hierarchy
+Digest File, making it possible to create an in-memory CHD from a file
+representation from this panel.
+TODO: MSW DONE
+
+Join pop-up, small logic change on "No Limits".
+
+All spin-buttons have new logic, update when losing focus.
+
+mingw-4.5.0 update: discovered that "vtx_t" was locally defined in dots
+and line clipper, used as table_t template arg in both, but dots was calling
+wrong template functions!  no compiler/linker warnings.  Refactored all code
+so that 1) local structs are in anon namespace, 2) local structs with
+an exported type name are in a local namespace.
+
+--- 3.2.17 released ------------------------
+
+The Show command in the Cells Listing panel:
+ - revised search algorithm, much faster.
+ - now prints the number of instances found in the prompt area.
+
+hypertext in analysis spec? for .dc Vxx ...
+YES, DONE.
+
+TODO: add view file option to deck cmd. DONE
+
+BUG: If a plot point is in a subckt, all plot points are rendered white.
+FIXED.
+
+TODO: update nmos1/pmos1 symbols in device.lib. DONE
+
+fixed: Win32 large file support added to pathlist.cc.
+
+TODO: Implement ifdef/endif and/or suffix in device.lib/model.lib for
+tech-specific.  Use Technology keyword from tech file.
+DONE for device.lib (provisions for all library files).  These files
+now support ifdef, etc.   The technology name is predefined, as is
+RELEASE.
+The device.lib file was updated to 1) change 4-t mos device appearance,
+2) conditionally include special Hypres inductors.
+
+label command property mod: if all selected labels have same text, this
+text is used as default text in prompt.
+
+TODO: Implement so way to select objects in subwindow, and copy them
+into the main window. DONE
+TODO: Implement Per-sdesc selection list. DONE
+There is a new feature in the Copy command from the Modify menu.
+While this command is active, objects in non-editing windows showing the same
+electrical/physical mode can be selected, and copied into an editing window.
+Thus, it is now possible to easily grab stuff from another cell.
+To make this work, the selection system had to be extensively revised.
+
+New variable MaxGhostObjects, unsigned int 50-5000, sets the max number of
+outlined objects in ghosting for move/copy, etc.  If there are more than
+this number, some outlines won't be shown.  Default 400.
+
+New variable MaxBlinkingObjects, unsigned int 500-250000.  If there are
+more than this number of objects selected, they won't blink in true-color
+display modes.  If NoPixmapStore is set, threshold is divided by 8.
+
+New "remove" and "unlisted_test" functions in geom interface and dbif.
+
+Fixed bug: use of named CHD with geometry was failing when given
+as input to some commands.
+
+In a CGD attached to a CHD, when using the CHD and a cell is encountered
+that has been removed from the CGD, the geometry is now obtained from
+the original file.
+
+Notes on CHD/CHD.
+There are four ways to get geometry when reading thru a CHD.
+  1.  From the original file (the default).
+  2.  From an attached CGD, with geometry in memory.
+         CHD configure panel.
+  3.  From an attached CGD, with geometry in the CHD with geom records file.
+         From a CHD name or file from a file with "geometry records".
+  4.  From an interface to a remote "geometry server".
+   
+A CHD name or file is given as input to most operations.  If it has
+a linked CGD, phys data will be obtained from the GCD interface.
+   
+Fixed bug: empty cell filtering would fail with CHD/linked CGD.
+
+--
+
+todo:
+check reading chdfile with geom:
+  read in phys data as CGD.  OK.
+ configure with link. OK
+check: cellname aliasing in chd must be applied to CGD as well. OK
+
+TODO: add time sorting to file mgr.
+New "Sort By Date" menu check button in Listing menu if File Selection.
+DONE (CHECK MSW) OK
+
+New panel for !debug command.
+NEED MSW DONE
+
+Unix/Linux help windows:
+much better page search capability added.
+Search -> Search Dbase, ALT-S
+Find Text Alt-T
+
+Architecture change for CHD/CGD link.  No longer an interface class,
+new CGD type for remote access.  reference counting, direct pointers.
+changes:
+A CGD created explicitly to link into a CHD, such as from LoadGeometry,
+will be freed automatically when unlinked.
+ChdLoadGeometry  description modified
+ChdLinkCgd script func arg list.
+ChdClearGeometry descrip modified
+OpenRemoteCellGeomDigest  new function
+CHD config panel: the hostname:port/idname syntax is no longer used.
+New cgd open panel from cgd lists panel. NEED MSW
+Recall button in Cgd List panel is gone, use Add.
+New Info button in Cgd Info panel, prints some info about the CGD.
+in Chd Config panel, new logic for configuring with geom:
+  open new cgd brings up the Open CGD panel, loaded with chd file
+  name and idname from chd name entry or new id name if none entered.
+  If id name is given and already exists, it will be linked to directly,
+  wheter or not Open New box is checked.
+  Open and entry widgets are grayed unless Link CGD is checked.
+change to CHD Open panel, logic.  new idname entry. 
+
+Get rid of loadGeometry? YES, DONE
+Update script functions for mode selections. DONE
+What about layer/cname mapping for various CGD types and input sources? OK
+
+check: generated access names, don't inc unless used.
+
+TODO: update To CGD in Conversion panel to set mode. NO
+TODO: update Chd Config panel to call New CGD panel. NO
+The New CHD and New CGD output tabs have been removed from the
+Conversion panel, since the capabilities are redundant and incomplete,
+and they thee make the Converswion panel logic too complex.
+
+removed ReadCellGeomDigest (replaced by OpenCellGeomDigest).
+
+// all docs updated
+WriteCellHierDigest  new arguments
+ReadCellHierDigest  new argument
+ChdLoadGeometry descrip changed
+ChdLinkCgd args changed
+ChdClearGeometry descr changed
+OpenCellGeomDigest args changed
+WriteCellGeomDigest descr changed
+ReadCellGeomDigest removed, use OpenCellGeomDigest
+CgdDestroy descr changed
+CgdRemoveCell descr changed
+CgdIsCellRemoved new function
+CgdRemoveLayer descr changed
+CgdAddCells descr changed
+
+--
+
+Revised CHD Configuration pop-up:
+1) remove layer list group
+2) name/chd configured independently, simplified logic.
+MSW DONE
+
+Revised CGD Open popup
+// When are the layer list and cell name mapping entries applicable?
+// 1) Neither is applied in file or remote CGD creation.
+// 2) Layer mapping is applied for memory CGDs from layout files or
+//    from CHD names, and from CHD files without geometry.  If a CHD
+//    file has geometry, its CGD will be read verbatim.  A CGD file
+//    will be read verbatim.
+// 3) Cell name mapping is applied only for memory CGDs and layout
+//    files.  A CHD source will use the CHD's aliasing.  A CGD file
+//    will be read verbatim.
+MSW DONE
+
+Added notebook to Open CHD panel.
+CHD Open now subclassed, error msgs on apply_proc.
+MSW DONE
+
+CHD Open panel title "Open Cell Hierarchy Digest", was
+"Open Cell Hierarchy".
+--
+
+Check server returns for remove funcs. OK
+
+Added layer filtering group to CHD save pop-up.
+MSW DONE
+
+CHD list now retains selection across update.
+MSW DONE, GTK2 OK.
+need this for CGD list, too. DONE
+layer filtering group, enabling skip or only updates tp list, deselecting
+and popping down e.g. CHD Save popup which contains layer filter group.
+
+Make sure that CHD Save, etc create .bak file. DONE
+
+Fixed subtle computational geometry bug that would affect cell
+comparison results.
+
+ReadZfile script function logic has changed.
+
+--- 3.2.18 released ------------------------
+
+Update to copy command from foreign cell, now avoid copying object list,
+and the hack of saving this list in the selection queue.
+fixed bug: copying mutual inductor pair from another cell now works (OK).
+
+New feature in move, copy, break, stretch, rotate,
+When the command is active, objects are selected, and the next mouse click
+would begin the operation, the Bsp and Del keys, if pressed, will revert
+state back to selecting objects.  Then, other objects can be selected or
+deselected, and the command is ready to go again.  This can be repeated,
+to build up the set of selections needed.
+
+Copy updates:
+Can now select objects in both main and same-mode sub-windows, using BSP.
+Only objects from window where copy is initiated (objs are picked up)
+will be copied.
+When copying, i.e., when ghost is displayed, can now press BSP/DEL to revert
+to start of copy operation, so can start over with new ref point or new
+source window.
+
+Move, Break, Rotate, Stretch:
+Command no longer exits after one operation when GotOne.
+Changed logic a bit, no longer uses GotOne in undo/redo.
+GotOne only used in deselection in exc.
+Takes part in BSP as above.
+No longer uses AOI and selection().
+Rotate: better indication for text input.
+Stretch:
+The vertex marking is now a separate op in undo/redo.
+
+New preprocessor defines, built into any new macro parser.
+OSBTTS  defined to 32 or 64
+OSTYPE defined to one of "Windows", "Linux", "OSX", "UNIX", "UNKNOWN"
+e.g.,
+#if OSTYPE == "WINDOWS"
+XTROOT defined to install loc root, e.g. "/usr/local/share/xictools"
+Predefines are now in registered callback, set in main_scriptif.cc.
+
+The define, ifdef, etc directives now recognized in .scm files.
+
+in main_scriptif.cc add_dir, now read the "library" file before reading
+.scr/.scm files, so that library defs are available.
+
+Fixed bug: if SIparser::evaluate fails, future calls will fail, too.
+Fixed bug: error condition from evaluate was not being detected.
+
+new CellBB(name, array) function - Cell Info category.
+
+new functions:
+  SIparse()->registerFunc("MakeDir",          1,  IFmakeDir);
+  SIparse()->registerFunc("FileStat",          2,  IFfileStat);
+  SIparse()->registerFunc("DeleteFile",          1,  IFdeleteFile);
+  SIparse()->registerFunc("MoveFile",          2,  IFmoveFile);
+  SIparse()->registerFunc("CopyFile",          2,  IFcopyFile);
+  SIparse()->registerFunc("CreateBak",          1,  IFcreateBak);
+
+new functions ListSubcells, ListParents
+new subcell listing function sCD::listSubcells, used by Search function is
+Cells Listing pop-up.  CHECK THIS! OK
+InitGen, CellsHandle docs changed. 
+Is GenCells alias documented? YES
+
+misc2: Cell Name Enumeration removed, funcs moved to main1: Cell Info
+
+XXX: device.lib needs Hypres thing. DONE
+
+Cell Listing: *,+ indicators now for listing mode only, used to be
+some combination of both modes.
+
+XXX!! stretch command Bsp, lock out if vertex selected, or undraw vertices.
+DONE (lockout)
+XXX Add Xic/XicII/Xiv to macro predefines. DONE
+XXX coerce return in Eval to string. OK.
+
+TODO: macro expand Reference lines in libraries. DONE
+
+TODO: implement eval in all Define processing. DONE
+  Can this be consolidated? YES, DONE
+TODO: make Technology a predefined macro? what about techfile? DONE,
+  only defined after set.
+
+new function GetTechName() returns the technology name.
+got rid of Techfile() function, it was a no-op.
+
+* In a tech file produced with Save Tech in the Attributes Menu, the
+  GUIcolor block was printing bad values.  Color highlighting in pop-up
+  wouldows would be incorrect (all black).
+
+* If the "current cell" is empty and the internal data structure has
+  not been created, none of the commands in the User Menu would work. 
+  This would happen, e.g., if a cell containing only electrical data
+  was opened in physical mode, and no other commands were run first. 
+  The logic has changed to avoid this.
+
+--- 3.2.19 released ------------------------
+
+Fixed non-initialization bug in SPICE IPC init function.  Caused faults in
+wrspice ipc demo, never noticed a problem in Xic.
+
+BUG: Print button on WRspice vectors tool doesn't work, get output
+on next !spcmd.
+FIXED: sced_spiceipc.cc, now use asynchronous stdout/stderr channel.
+
+wrspice_ipc_demo configure failed, LOCAL_ALLOC problem,
+FIXED configure.in.
+
+Fixed bug in SpiceIPC: To much stdout data in DoCmd would freeze the
+interface.
+
+When Xic was run from WRspice, the simulation interface wasn't working
+right.  Xic would start its own WRspice instead of using the parent
+WRspice.  Other releases would not establish a connection to any
+simulator.
+
+The wrspiced requies that local ports not be blocked by the firewall.
+To make this so, with firewall enabled, on Red Hat 5:
+System/Administration/Security Level and Firewall
+give root password
+click on triangle by "Other ports"
+click Add
+enter "32768-61000"
+click Apply
+This should allow wrspiced to work, while keeping the firewall on.
+
+InitSpice now returns bool
+callback now has new arg.
+spclient.cc updated.
+
+RHEL3: make sure eth0 is checked as a trusted source in Security Level.
+can't connect to xtlserv/wrspiced othjerwise, even if firewall is turned
+off!
+
+gtkinterf no longer calls exit on bad display.  WRspice no longer
+exits on bad display, continues with no graphics.
+
+New variable: SpiceHostDisplay   (for ssh)
+Contains the display string to use for remote runs.
+
+New command: !ssh [hostname]
+
+TODO: in device.lib, jj default lib to jj3
+
+TODO: update distribs to include xic3.2-0-19 DONE
+
+fixed Box, Polygon, etc. script funcs to create currect cell if needed.
+fixed xicii GTK message from modified cells panel.
+fixed spiral.scr, spiralform.scr to not call DRC in xicii.
+
+Xic under WRspice, Xic continues after WRspice exits. OK, intended.
+
+Check interrupt/pause under Xic and spclient. OK
+
+--- 3.2.20 released ------------------------
+
+TODO: Add a redirect file capability for native cell dirs.  When opening
+a cell in path dir, and subcell isn't resolved, look in redirect file
+for location.  Or something like this.
+DONE: xt_redirect files supported, see pathlist.h.
+
+Copy command now creates a cell struct when entered, so can copy from
+foreign window.
+
+TODO: add folder icon to CGD list indicating linked CHDs.
+DONE, NEED MSW DONE
+How about indicating type, delete-on-unlink flag?
+todo? tooltip displays full path of chd/cgd.
+REVISED changes to chd/cgd lists NEED MSW DONE
+
+DONE:
+The general-purpose text display window has a new "Save Text" button.
+This allows the window content to be saved in a file.
+"Save Text" for content listing windows.
+Also for Cells Listing. NEED MSW
+
+DONE: Layer Editor pop-up, give focus to text entry initially.
+Check MSW.
+
+TODO: In Path Selections, allow selecting net in schematic.
+FIXED, this was a bug.
+
+TODO: allow yank form foreign window, like copy.
+DONE, erase command had logic flaw re Ctrl key.  Ctrl key no longer sets
+erase/clip, space bar does that now.
+
+bug fixed: It was impossible to add a new layer from the Layer Editor
+if the layer table is empty.
+
+The dirs and files from redirect files will be included in the "path files
+listing" panel.
+Fixed bug: files listing is blank unless window is redrawn.
+--
+
+Fixed bug: dots will now be created in the master when a new subcircuit
+is added and dots are being shown.
+
+Fixed a bug that could crash the program when overwriting the current cell
+while reading input from a file.  Actually never saw this from a file,
+but with OA.
+
+Fixed a sort-of bug.  When unsing the file open/save commands that pop-up
+a version of the file selector above the prompt line, one would find in
+some cases entering a space would terminate the string, as if Enter were
+pressed.  What happens is that to file selector takes the focus, but
+echos characters to the  main window, so one doesn't notice that the
+main window has lost focus.  However a space is not echoed, instead it
+"presses" the load button of the pop-up, which terminates input.
+The file selector now reverts focus to the main window when it pops up.
+CHECK MSW. OK
+
+Fixed: duplicate entries in the model.lib file would cause a memory
+warning (or worse).
+
+Get spparse.cc/h and spnumber.cc/h out of WRspice tree!
+DONE
+
+XXX oa needs memalign in the local allocator interface.
+DONE
+
+Fixed some issues with the xic_keymap file.  The file name is now created
+understanding ssh connections, and any final component that starts with
+".local" is stripped off.  This helps avoid situations where Xic won't
+read the mapping file due to a change in network status, which effectively
+changes the host name, and allows mapping more effectively when using
+ssh.
+
+make label text sizes consistent
+DONE.
+
+new feature:  when editing text in most cases, clicking on a lable in
+the current cell will add the label text to the prompt text.
+
+combine cursor boxes in box/erase cmds, e.g., create a box, oops, meant to
+erase, undo, bress erase, (have prev ghost box), click to erase.
+or something similar.
+DONE, participating box, erase, xor.
+
+XXX: erasing plot marks is difficult unless zoomed in.
+FIXED: should be better now, uses log scaling.
+
+BUG: plot \ hangs.
+FIXED: WRspice plot command uses stderr for some messages, need to use
+async interface to handle this.
+
+BUG: wrspice gets garbage is plot line ends with \
+FIXED (WRspice issue).
+
+BUG: \ caused crash somehow.
+(FIXED, getqtok bug)
+
+PROBLEM: create cell should reject property labels without cell.
+replace-with-cell can swallow property labels.
+FIXED, bound labels all purged, labels for selected objects brought in.
+
+Create cell doesn't update cells list.
+FIXED
+
+BUG:
+Add terminal to subckt in sub-edit, that has main cell wire over it.
+Connection not made to wire.
+FIXED: NEEDS CHECKING
+
+XXX Dots left behind that don't go away.
+Happens after a cell is renamed with dots visible.
+FIXED: have to update dots table, which references cells by CDname.
+
+Copy from foreign window, allow copy of objects "directly over" themselves.
+DONE
+
+join wires after removing a vertex.
+DONE
+XXX Needs work, erase vertex marks. OK
+new feature: Press Enter, then click or drag to perform a selection
+op.  Newly selected wires have vertices marked for editing.  Repeat as
+needed.
+
+XXX update similar for poly vertex editor.
+DONE.
+
+Inline vertex detection improved in non-manhattan case.
+
+--- 3.2.21 released ------------------------
+
+Bug: swap with main breaks plot lists.
+FIXED
+
+Bug: Clear(0) should clear sub-windows.
+FIXED
+
+Fixed save logic.  Modified archive cells that are no longer in an archive
+hierarchy now get saved as native cells (converted to Fnone).  E.g., load
+gds file, modify a subcell, overwrite top-level cell with native.  Save
+list now includes modified cell.
+
+native cell files save path gets fouled up.  load gds, load native cell
+that used gds cells, save cell.
+FIXED (I think, couldn't reproduce).  In OpenNative, setFileName wasn't being
+called if there was no path.
+
+The last six analysis strings analysis strings, prompted from teh run
+cmd, are now saved and can be cycled through with the up/down arrow keys
+during prompting.
+
+THe analysis command first token now must be one of
+        "ac",
+        "check",
+        "dc",
+        "disto",
+        "loop",
+        "noise",
+        "op",
+        "pz",
+        "run",
+        "send",  // send over deck, but don't run an analysis
+        "sens",
+        "tf",
+        "tran",
+
+If analysis is "load", don't store string.
+no longer applies (check docs).
+
+In progress: move DOTS to Attributes Menu.
+check: works in either mode
+check: works in any window
+The "dots" button in the electrical side menu is now the "Connection Dots"
+button in the Attributes Menu (Xic only).  Thus. one can now control dots
+display in electrical sub-windows whtn the main window is in physical mode.
+DONE
+
+The side menu dots button is now the "spcmd" button.  The function is
+identical to the !spcmd command (which still exists).  Pressing the
+button will prompt on the prompt line for a command to send to WRspice.
+A connection will be established if one does not exist.  The command should
+be known to WRspice, however commands that require a response
+(such as "setplot") won't do the right thing as there will not be a response
+prompt.  The line is not interactive.
+
+In progress
+Updates to device menu, device.lib file.
+vp device, tiny dummy voltage source for current sense
+tblk  new terminal
+gnde  earth ground
+names changed
+vcc->tbar
+vbus->tbus
+Alias keword added to library syntax.
+New variables to specify terminal mapping in Source cmd
+SourceTermDevName
+  defaults to "tbar", then "vcc", first found in library.
+SourceGndDevName
+  defaults to "gnd"
+DONE
+
+Dev menu logic: now tree menu styles: categories, alphabetized, pictorial.
+PictorialDevices gone, replaced by
+DevMenuStyle, values 0-2, tracks/sets menu style.
+
+Rethink param property handling in hierarchy. DONE
+- don't automatically create instance param props for subckts, do so for
+  devs. previously, param instance property was created.
+- if subckt master property modified, don't update instances.  For dev masters,
+  update iff matching old string, sreate in no inst prpty, delete if
+  deleting.  Previously, did the latter ffor subcircuits.
+
+Don't abort sourc if term name not found unless creating devices.
+DONE
+
+Somehow analysis string was fubar, after n for resume run in progress.
+OK, fixed by type keyword check.
+
+subcell terms that are moved get lost.
+can't reproduce.
+
+Fixed bug:  make a horiz wire, place terminal on right end.  Make a horiz
+wire starting at this point, to the right.  The wires will be joined, and
+the vertex under the terminal will be lost.
+Also T configuration.
+
+Fixed: start wire on Manh seg of another wire, Esc.  This would leave
+behind a spurious vertex in wire.
+
+Handle Enter in text print pop up. DONE
+Tweeks and fixes to the PostScript formatting for the print pop-up
+of help windows.
+
+Fixed bug, stipple paterns were being munged from ReadCDS.
+
+FIX message "Hierarchy has been saved in .." DONE
+
+modified sced_spiceipc, dump stdout to not freeze xic while
+trantrace is running.
+
+XXX in progress needs checking
+update to dots, sced_fixup.cc addParentConnection, to deal with terminal
+changes in sub-edit
+
+new electrical wires were being created without a node property.
+---
+
+Iplot active, switch to phys mode, switch back, no iplot! FIXED
+iplot button new unset when mode switches.
+
+Hypres  JJ area extract is wrong. FIXED
+Updated tech files with an option for white-background schematics.
+
+logo: need message if xpm file not found DONE
+Added elements to logo popup to set a fixed "pixel" size.  sets new
+variable LogoPizelSize.
+Fixed bug, "pretty" font not working, would blow up the gui making program
+unusable.  Fixed up the logic to make this all work.
+
+--- 3.2.22 released ------------------------
+
+Improved stipple map handling in tech_cds_in.cc, will now convert all maps,
+but they won't be right unless sizes are 4,8,16.
+
+Switched default drawing window font to MiscFixed 11.
+Antialiased fonts look bad white on black.
+
+Change default mouse pointer to arrow.
+Update to Set Cursor panel, now have choice of cursors.
+Logic changes to fix problems with different phys/elec color schemes
+with legacy cross cursor.
+Busy mode cursor part of new code.
+MSW is OK, sort of.  There is no stock right arrow, so used a worthless
+up arrow.  The default cross as of Win7sp1 is ugly.  User can choose
+another cursor set.
+
+Bug fixed in OASIS reader, wire end extensions weren't being scaled.
+
+file.oas.gz files can now be read in directly.  Unlike gds.gz, this is
+not really supported, OASIS gzip files can not be produced.  Better to use
+the compression provided in the OASIS format.
+
+Todo: figure out a way to use symbol and schematic in different cells,
+without changing symbolic mode.
+ongoing: new logic for symbolic view.
+symbolic property in CDc, used to suppress symbolic rep on a per-instance
+basis.
+Property Editor NoSymb in Add menu.
+
+new CDla::replace_text function.
+
+Most pseudo-properties can now be asserted in object copies
+(todo: handle instances).  cEdit::assertPseudoProp
+
+gnsel:
+Show coord box in alt window
+XXX seems not to work in push? SEEMS OK
+In symbolic, indicate selection with a flashing terminal box.  (DONE,
+ shows in any schem/symb window)
+
+Todo:  subwin Load, default string to window cell.  Like main window
+Open. DONE
+
+If symbolic top cell and in a push, attempting to unset No Top Symbolic will
+now generate a warning message and not succeed.
+
+Bug fixed in GDSII reader, paththpe 4 extensions now initialized to 0 in
+read_element();
+
+The Info command no longer recurses into library devices.
+
+In Push, expanding symbolic subcell, remove context? NO.
+
+Ghosting, show symbolic cell ghost instead of box. DONE.
+Also when selected, now show symbolic rendering instead of a box.
+
+In Cross Section, label layers somehow?
+Btn 3 zoom problem.
+
+Click on button 2 (maybe 3) in layer table
+Gdk-ERROR **: BadMatch (invalid parameter attributes)
+  serial 663519 error_code 8 request_code 73 minor_code 0
+All modified cells have been dumped.
+Killed
+
+Fixed problem with click-to-focus (Apple) and Run button, text window really
+didn't have focus unless pointer moves across main drawing window, however
+briefly.
+
+add ReadCDS to help keywords. DONE
+
+The !select command doesn't work!? FIXED (bug)
+
+Adding templ params prpty gives memory error. FIXED.
+Other problems: changing the Templ Params property of an instance doesn't
+work, screws up template cell master.  SEEMS OK after fix above.
+
+If the script fails in a template cell instantiation, destroy the master!
+DONE.  Master is no longer created, nor is an instance placed, if the script
+exits on error.
+
+Fixed strange crashing bug in the text editor pop-up.
+
+TODO: let default little cursor box propagate between all drawing
+windows, use local window grid.  DONE (I think, was it always this way?)
+NO, previously marker was drawn only in "similar" windows, but coords
+were output correctly.
+
+TODO: mouse wheel should scroll display, like Cadence. DONE.
+Mouse wheel scrolls drawings windows up/down.  If Shift held, scrolls
+right/left.  If Ctrl held (overrides Shift), mouse wheel zooms out or
+in.
+
+New variable: MouseWheel (string)
+The string consists of two space-separated floating-point numbers, each in
+the range of 0 - 0.5.  The first is the pan factor, the second is the zoom
+factor.  The default is 0.1 0.1.  Larger numbers increase the effect per
+mouse wheel click.  If either number is set to 0, that effect (pan or zoom)
+is suppressed.  To turn off mouse wheel support in drawing wihdows, give
+"0 0".
+
+in help button4 -> noopbutton
+keyword changed.
+
+TODO: confirm to overwrite plot image files. DONE
+If printing to a file would overwrite an existing file, a warning message
+appears.  Simply hitting Print again will continue, overwriting the file.
+Of course, the file named can be changed to avoid overwriting.
+
+TODO: change log(), add log10() for compatibility with WRspice. DONE.
+By default, the log() math function now returns the natural log, in
+prior releases it returned the base-10 log.  There is a new function
+log10 which always returns the base-10 log.  The change is for compatibility
+with WRspice and Hspice.  If the new boolean variable LogIsLog10 is set,
+the log math function reverts to returning the base-10 log.
+
+TODO: Need a ReadCds-type function for GDS mapping file.  DONE.
+In techfile
+   ReadCdsLmap filename
+This will read a Virtuoso layer mapping file, and add the GDSII mappings
+to the corresponding Xic layers.
+
+Fixed a bug in the macro processing, for macro-maps using Ctrl or
+Shift.  For example, suppose Ctrl-Z is mapped to something. 
+Previously, the macro would be executed when both Ctrl and z are up. 
+Now, the macro is executed when z is pressed with Ctrl pressed. 
+Previously, the logic could get confused, and the macro would never be
+executed.  Worse:  1) the macro would never work again, and 2)
+internally, there would be an infinite loop trying to execute the
+macro, making the program slower (but it would still run reasonably).
+
+The logic was due to the desire to start the macro command when no key
+presses are active.  This will no longer be true, in the example both
+z and Ctrl will be pressed when the macro starts executing.
+
+---
+
+New "ping" ipc for WRspice allows setting subc catchar/catmode.  New
+variables:
+SpiceSubcCatchar  (set to punctuation catchar)
+SpiceSubcCatmode  (set to "wrspice" or "spice3")
+However, these will be overridden is the connected WRspice does not support
+these *i.e., is old).
+
+Fixed used-after-free bug in selection system.
+
+new info flags
+instcnts   print total number of cell instantiations.  arrays expanded. 
+instcntsp  as above but print totals for each masster.
+These are not done by default (0 flags).
+Updated depth counts to:
+  consistently count array elements (like instanceCounts)
+  use hashing for speed
+  print the total instance count (same as instanceCounts total)
+
+TODO: Some easy method to set identity transform. DONE
+New IT/LT buttons next to the WR button, for Identity and Last
+transform.
+
+Rewrote memory error handler to avoid malloc calls.
+
+In plot command, clicking on device selects it, so can't get hypertext
+device name.  FIXED, can select only labels now.
+
+In the plot command:
+1) Now only labels can be selected, for quick change of property labels.
+2) It is once again possible to get a hypertext device name.
+
+In Labels command.
+In label command, when a single label was selected (updating label),
+the label text is no longer immediately updated after entering text.
+Instead, the new text is attached to the mouse pointer, where it can be
+resized, transformed, etc., as when placing new labels.  Click anywhere
+in the drawing window or press Enter, and the original label will be updated.
+
+BUG: can't select branch for vsrc over subckt BB, get subckt name
+instead.
+FIXED, rewrote the hyPoint function.
+
+In the frequent delta = pixelDelta/ratio expressions, added a "+1" to rhs.
+this guarantees ratio*delta >= PixelDelta (only > when rhs exactly hits the
+integer value).
+PixelDelta new variable!
+
+---
+
+finalized logic for psuedo props in electrical mode, which impacts the
+Set... functions in the "Object Management by Handles" group.
+boxes, polys: no restrictions
+wires: can't accept electrical wires on active layer
+labels: no restrictions
+instances: physical only, now can pass object copies too
+
+flatten command: it is no longer possible to flatten symbolic instances.
+If these must be flattened, make them display non-symbolically first by
+giving them a NoSymb property with the Property Editor.
+
+--
+TODO: do something with two empty cell filter funcs. DONE
+checks whether source is gzipped, used appropriate function.
+TEST THIS!
+
+XIC: label size after text change not right on shelley. FIXED.
+
+Why does Print pop-up bring up Device palette? BUG FIXED.
+
+Print panel now remembers last format for each mode.
+CHECK MSW, OK
+
+Swap-with-main, subw not redisplayed. FIXED
+
+fix dots issue at subc connect points.  DONE
+When showing dots, a dot will now be drawn at an internal wire vertex
+(not a wire endpoint) that is also a cell connection point.  This
+visually marks the location, and also provides a dot when the subcircuit
+is instantiated, which would not otherwise appear and therefor appear
+unconnected.
+
+BUG: subcell loses connection points, switching from/to sym in separate
+cell edit.
+FIXED:  new check in sced_check, new fixup called after mode change.
+---
+
+new consistency test when creating a schematic from a SPICE file.  The
+node counts of techfile mos devices and those used in the schematic,
+set from device.lib, must be consistent for LVS.  Need some doc text
+on this.  Is is possible for nmos/pmos to have different node counts.
+
+Fixed crashing bug in rl_solver.
+RLsolver debug messages  now enabled byu debug flag, off by default.
+New flag in !debug pop up for RLsolver.
+CHECK MSW, OK
+
+In the plot command, now must hold Shift to return a cell name string.
+
+--- 3.2.23 released ------------------------
+
+Added check for no format selected in Enet,Pnet commands.
+
+Enet command now skips over devices with nophys property.
+
+XXX: property editor, global nophys change, color change doesn't show
+until forced redisplay.
+In trstk16, nophys color doesn't show at all, properties show in editor.
+BUG FIXED
+
+BUG FIXED: flatten was assuming that an inductor device would have at
+most one reference to a mutual inductor pair.
+
+Added XICP_EXT_FLATTEN property, "Flatten" in the Cell Property Editor
+Add menu, 7151.  The extraction system will treat the cell as if
+it matches the a FlattenPrefix entry.  This is much easier and
+persistent in the cell.
+
+Fixed bug in spice number parser that caused LVS value comparison
+problems.
+
+Upsddates to the extract-from-SPICE-file function:
+1) now handles nested subcircuits and in-subcircuit model definitions
+properly.
+2) all model definitions found in the file are written to a file named
+cellname_models.inc, where cellname is the name of the top cell.
+A ".include" spicetext label is created in the top level schematic
+that brings in this file.
+3) All "dotcards" that are not otherwise handled are now written as
+spicetext labels in the top-level schematic.
+4) Various bug fixes, for example continuation line handling was omitting
+space between lines.
+
+Updates to LVS:
+LVS now reports four levels of success:
+CLEAN  if everything is measurable and matches.
+PASSED - AMBIGUITY if there were device parameters which could not be
+compared, but all comparisons that were done matched.
+
+In the electrical schematic, if component values are parameterized
+(i.e., use a token defined in a .param line or similar), or perhaps
+use WRspice shell expansion, the value is unavailable.  Presently, a
+value is available only if it is a numeric constant.  Xic does not
+(yet) know how to do parameter substitution, so these comparisons
+can't be done.
+
+PASSED - PARAM DIFFS if there were device parameters that differ
+outside of the tolerence between electrical and physical.  So
+actually, only the circuit topological check passed.
+
+FAILED if differences in circuit topology are detected.
+
+Brought in parameter table/substitution code from WRspice, and expression
+evaluator.
+Limitations:
+1) no defined functions (yet)
+2) instance parameter properties are ignored in extraction.
+The parhier option is searched for in spicetext .options
+
+Limitations on SPICE constructs, from LVS.
+1) ignores instance parameters.
+2) no nested subcircuits.
+
+new command: !calc expression
+this will calculate the value of the expression given.  All operators
+and numeric functions of the scripting language are available.  The
+only named parameters available by name are those defined in the param
+property of the top level electrical cell, and in .param lines found in
+labels on the SPTX layer of that cell.
+---
+
+When using the "clear" option of Source SPICE or Source Physical,
+any symbolic representaion is retained, though made inactive.  Previously
+it was thrown away.
+
+--- 3.2.24 released ------------------------
+
+The GTK2 Oa Libs listing needs sorting. DONE.
+
+Update copyright notice date in startup banner and elsewhere.
+DONE (Xic/WRspice banners, about pages, help footer).
+
+Peek doesn't work on Apple!
+Check the keymap file, it wasn't right.
+
+The cells listing btn sens screwed up after copy.
+
+Write layout panel, something happened, try to repeat.
+
+Need a NoMerge property for physical resistors. DONE.
+ongoing: new NoMerge property.
+In device extraction, it looks like the flatten property is not used,
+i.e., still need to set the depth to >= 1?
+New NoMerge property, can be applied to physical boxes, polys, wires.
+If found on any object used in the body of an extracted device, that
+device will not be merged with other devices of the same type.  Relevant
+when merging is enabled for the device - prevents parallel and series merging.
+Update to the Property Editor, the Add button now has a menu in physical
+mode, containint "NoMerge" and "other".  The "other" selection allows
+arbitrary properties to be added.
+NEED MSW! DONE
+
+Improved the paging display of the Cells Listing panel, no longer jumps
+back to first page after copying a cell.
+
+MSW: new function to finish up after updating text in a richedit, scrolls
+to orig location and avoids overscrolling.
+
+License system updated so that key can be machine serial number for Apple.
+New executable maclicinfo that produces an XtLicenseInfo flie, just like
+Windows.
+
+TODO: Add a ? b : c to script language. DONE
+
+TODO: handle "cut" in layers, i.e., draw X over boxes.
+NEED MSW ltab/lpal/fill editor DONE
+FIXED: MSW ghosting in pixel editor not working
+New 'c' or 'cut' in techfile Filled lines
+needs checking
+
+TODO:Script function to parse tech file line. Done.
+New function: (int) TechParseLine(line)
+FIXED: Color attributes set to default values were never written to new
+tech file.
+ADDED elecwhite and elecblack stripts to example tech files, can now switch
+electrical mode background color scheme between whith and black background.
+---
+
+Someday, support arbitrary stipple map sizes. DONE
+Xic stipple maps can now use any NX or NY from 2-32.
+New variable: NoPrintPatMap (boolean)
+New format for printing stipple map data in tech file and xic_stipples
+file, uses a field of dots to represent the map.  If variable is set,
+will use hex numbers only, backwards compatible for 8x8 8x16 16x8 and 16x16
+maps.
+
+Major revision of Fill pattern editor, separate pages for pattern editor
+and storage register display.
+
+Lots more now converted from the Cadence techfile with ReadCds, including
+extraction params and design rules.
+
+Refactored DRC system, more used of private members in DRC classes.
+Added optional MinArea clause, rule now handles CDS MinHoleArea.
+
+New rule syntax:
+NoHoles [Region spec] [MinArea dimen] string
+  (new MinArea)
+MinWidth [Region spec] dimen [Diagonal dimen] string
+  (new Diagonal)
+MinSpace [Region spec] dimen [Diagonal dimen] [SameNet dimen] string
+  (new Diagonal, SameNet)
+MinSpaceTo [Region spec] target dimen [Diagonal dimen] string
+  (new Diagonal)
+MinSpaceFrom [Region spec] target dimen [Enclosed dimen] [Opposite dimen dimen] string
+  (new Enclosed, Opposite)
+
+implemented, needs checking
+NoHoles: MinArea
+MinWidth, MinSpace, MinSpaceTo: Diagonal
+new MaxWidth  (checks ok)
+
+Remade Extract RLC panel.
+New variable FcNoPart (boolean)
+   There will be no partitioning when set.
+New variable FcOldFormat (boolean)
+   The fastcap input produced will consist of multiple files compatible
+   will the original fastcap.
+------
+
+TODO: add width and height pseudo-properties for boxes (at least).
+DONE
+
+TODO: add simple way to change width/height of selected boxes (off grid).
+
+Added a log file when layers are sequenced for the Fc/FH interface.
+This is shown if there is an error detected, or can be viewed with the
+Log Files button in the Hel Menu.  The file name is "fch_sequence.log".
+
+TODO: Add to tech file capability to run scripts, and not add them to
+menu. DONE.
+Scripts defined in the technology file that contain the line
+RunScript anywhere after the initial "Script" line and befire the
+"EndScript" line will not be added to the User Menu.  Instead, it will
+be executed after the technology file has been read, then discarded.
+Any number of scripts can be treated this way, they execute in order
+of appearance in the tech file.
+
+TODO: Add a Create Via panel like Virtuoso, but better.
+
+BUG: conductor side panels were not being printed in the FastCap interface,
+causing too-low values.
+
+Big improvements to FastCap interface:
+- Subwindows now show partitioning
+- non-Manhattan no supported for FastCap (but not FastHenry).
+- The Home key now shows the cell plus the plane bloat.
+
+Forgot to mention new paths for entering/editing design rules.
+need xic:ruleedit help topic
+
+--- 3.2.25 released ------------------------
+
+Updated the Path Files Listing, File Selection, and mozy directory listing
+to correctly handle file names with embedded white space.
+
+
+
+=======
+FIX v(gnd!.x0) on plot cmd (bad global) [shouldn't happen, watch for this]
+
+Use SPICE number parser in scripts?
+----
+
+MSW issues
+----
+Mail client, email intrerface in windows does it/make it work.
+Works.   Downloaded/installed the "live mail" program from Microsoft.
+Get this working with Earthlink, but not wrcad.  The Win8 Mail app
+doesn't work with pop3.  No idea if the Mail app would cover MAPI,
+as live mail does.
+
+TODO: XXX fix print pop-up in windows: clipboard, windows driver, etc.
+ONGOING:  font issues, color issues, PDF issues.
+
+------
+
+
+---- todo after release
+
+TODO: make instance labels moveable by user in ext setup?
+
+TODO add property to prevent merging?
+
+XXX What to do about xicii,xiv errors when reading electrical data?
+Skip reading? Then a save would blow it all away.
+Added device.lib to xicii/xiv.  With this, those tools can read
+electrical data and write it back without corruption.  Also avoids
+error messages.
+
+Xiv can't evaluate native pcells, no script funcs.
+
+gtk1  Ctrl-g doesn't work.
+
+Rulers flash too much when being created.
+
+
+TODO (maybe)
+1. In native cells, allow "9 oalib cellname;"
+2. Allow "9 1 library ....", will open library b4 read
+
+TODO: script interface to Lisp parser.
+
+TODO: use new syntax for cell open, see fio_archive.cc
+
+----
+
+
+
+==== Sticky ==================================
+
+XXX Bug: "+" icon current fails for caps with .param value.
+
+FIX: sometimes, the pointer gets fouled up (ghost box) in main state.
+Can't reproduce
+
+FIX: assert symbolic doesn't set menu on startup. ???
+
+XXX still lose plot/iplot lists, after save?
+
+TODO:
+add hash table script functions.
+add an InstanceCount() script func that returns a hash table handle..
+
+todo (maybe): handle all-angle GDSII cell placements.
+gds reader would add a property to instances giving real angle.
+bottom-up traversal would reparent these instances into an ortho cell with
+rotated content.
+
+Idea:
+Somehow maybe make the spin operation applicable whever objects are
+being placed/moved/copied?
+
+Idea: string table, hash tab elements are kept in one big array.  Each
+string is associated with an int offset into the array.  Decorate this
+int with a struct with a type conversion operator to const char*, which
+returns the string.  I.e., CDname is an int instead of a char* saves space
+in 64-bit binaries.  Do this for other hashable objects?
+todo: write a template class implementing this.
+
+Are dots supposed to appear in expanded subckts?  sometimes they don't?
+todo: report bad objects in info somehow.
+TODO: function to add term labels.
+TODO: use term labels in batch extraction.
+fix: long text incs mod count at wrong time.
+
+todo: make Push/Pop and Info work better with cell arrays.
+
+todo: implement net extraction with bloat from netex file.
+add vias
+
+TODO: use hash tables in dsp_marks.cc
+
+Long term ------
+TODO: look at more complete SPICE file extraction - for exjjiv.cir for
+example (.model lines retained?)
+TODO: extend spice parsing to support .param, .if/.else/.endif and perhaps
+model binning
+-------
+
+which is read first, tech file or script library files?  Can techfile
+macros use library funcs? scripts in techfile?
+** Script libraries are read after tech and init files.
+
+================================================
+
+
+==== 3-2-final notes ==================================
+
+3-2-26 released ----------------
+
+FIXED nist report, ends of flush-end wire loops drawn wrong.
+FIXED in 3-2-final
+
+3-2-27 released ----------------
+
+BUG: DRC error regions weren't being copied out.
+
+BUG: Extract/Device Selections, start Enable Meaasure Box, dismiss
+Show/Select Devices panel, measure command remains in effect until
+Esc, crashes. FIXED.
+- Retiring Show/Select Devices exits measure command.
+- Exiting measure now removes Info pop-up if it was popped.
+
+BUG: Clicking in a drawing window, with no current layer set, in
+layer-specific mode, would crash the program.  Can do this with
+Layer Editor: remove all layers, set lsp mode, click->crash
+
+BUG:  If one of the upper physical layers is the current layer, after
+switching to electrical mode the layer table would show as empty, or
+a subset of the layers, until the scroll bar is clicked.
+FIXED
+Now, both scrollbar position and current layer are remembered across a
+mode switch.
+
+3-2-28 released ----------------
+
+--- End of 3.2.X
+

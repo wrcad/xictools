@@ -1,0 +1,361 @@
+--- Start of 3.1.X
+
+Cleanup of the compose command:
+1) remove unimplemented log,dec keywords
+2) change logic slightly, start is always first
+3) add some checks to avoid seg faults
+4) fix bug: start/stop/step spec gave wrong result
+
+The let command can define vectors with white space in the name:
+let aaa bbb=1
+will define "aaa bbb".  Not sure that this is a good thing.  Commands
+can (or should) accept the vector names if double-quoted.
+THIS WAS CHANGED, no longer allowed.
+
+todo: handle user-defined types better.
+
+The codeblock print option was causing faults.
+New codeblock option -c, prints bound codeblocks of cur ckt.
+
+The program could not open temporary files in some cases.
+
+Implicit source can not take multiple file names. FIXED
+
+Documentation of source command updated: multiple files, flags.
+
+*** revisit codeblock option handling, files starting with '-'? OK
+
+dphimax limits sin source timestep? (see var descr) YES
+
+The parsing and shell expansion of .option lines has been changed. Multiple
+.option lines are parsed top-to-bottom in file order, left-to-right, and
+the result of setting each option is immediately available.  Thus, forms
+like
+    .options aaa=1.0 bbb=$aaa
+now work, and as do forms like
+    .options random tmpval=$&(gauss(.2,1))
+In the second example, the variable random will be set when the gauss
+function is evaluated, so it will return a random value and not just the
+mean value.
+
+todo:
+functions defined in .param statements should be specific to that ckt,
+like shell vars.
+NO.  There may not be a ckt when a function is defined.
+
+FileSel.hlp was missing from distrib files.
+
+FileSel - ask mode default for drag/drop? YES don't change
+
+the postscript_line_draw driver (and perhaps others) weren't being
+initialized correctly, was broken
+vertical positioning wasn't right, all ps drivers.
+
+Print - how to remove temp files?
+new hcopyrmdelay variable
+set to integer larger than 1, this is the delay in minutes before the
+temporary file used for hard copy generation is deleted.  If this is not
+set, this file (create in a system temporary directory) will not be
+deleted when the printer is used.
+---
+
+fixed units calc for +,-,j()  unless both args have same units, result
+as no units.  Previously, result had units of first operand.
+
+backquote expansion didn't work, would hang program.
+Check MSW!
+
+Internal buffer size quadrupled tp 2048 bytes.
+
+Backquote substitution within double quotes will maintain the single-token
+aspect of quoting, as it should.  Previously, this was not happening.
+
+Previously, it was possible to generate really strange vector names
+with the let command, for example "let aaa bbb=1" would create a vector
+named "aaa bbb".  A check now prevents white space and many other potentially
+troublesome characters from being included in variable names.  Odd vector
+names can be double-quoted in expressions when necessary.
+
+Previously, vectors created in the constants plot could not be removed.
+This is no longer true, but the vectors created internally remain
+immutable.
+
+----
+
+Fixed up the terminal setup, the default values weren't right for
+gnome (without mapkey).
+CHECK ALL PLATFORMS!
+
+TODO: document server operation
+
+Fixed bug: .cache blocks with multiple lines would cause program crashes.
+
+todo: implement multiple circuits per circuit file.  DONE
+
+New feature:  support for multiple circuits in a single file.
+New card:  .newjob
+The .newjob card is recognized in files directly read by WRspice, and
+not in files read through .include/.lib directives.  When encountered
+during a source, file parsing terminates, and lines that follow are
+are taken as belonging to a new circuit.  The script execution and
+other operations the usually occur at the end of a source operation
+are done before parsing resumes.
+
+This, one can place multiple circuit decks in a single file, separated
+by .newjob lines.  Sourcing the file is equivalent to sourcing each
+circuit independently and sequentially.
+
+The line that follows a .newjob line is interpreted in exactly the same
+way as the first line of of any input file, i.e., it is interpreted as
+a circuit title line except in a few odd cases.
+
+If the first line of an input file is a .newjob line, it will be ignored.
+
+If multiple files are given to the source command, logical circuits are
+loaded sequentially, separated by .newjob lines.  These may or may not
+coincide with the physical files - lines in the files between .newjob lines
+are concatenated.
+
+Batch mode is similar.  A single batch job can now run multiple circuits.
+Logical circuts are read, run, and output generated, in sequence.
+The individual circuits can be concatenetated into a single file, separated
+with .newjob lines, or a .newjob line can be added to the top of the individual
+circuit files.  In the later case, "wrspice -b file1 file2 ..." would run
+each circuit in sequence.  If the .newjob lines weren't present, WRspice
+would attempt to run a concatenation of the three files.
+
+Although circuits run in this manner are independent, note that variables
+set by scripts associated with a circuit, for example, would remain set
+for the later circuits.  Thus, there are potential side effects which
+must be considered.
+
+.cache/.endcache blocks work as if they would in separate files.  Only
+one cache block can appear in a circuit, but of course a file containing
+multiple circuits can contain multiple cache blocks.
+
+After a source of multiple circuits, the current circuit will be the last
+circuit read.
+
+The .newjob lines separate the input into separate groups of lines,
+so one must take care to ensure that all related .control, .verilog, etc
+blocks and lines will appear in the correct group.  There are no "common"
+lines.
+
+todo: print . DONE
+the . can now appear anywhere among the vectors in the arg list, will
+be replaced by the first .plot command args.
+Also new format .@N  N is and integer, graps the n'th .plot command.
+Same applies to print.  N is 1-based, 0 same as 1.
+
+todo: how to get rusage params into vectors for time measure? DONE
+New "special" vectors:
+  @elapsed    program renning time seconds
+  @space      program memory use
+
+Documentation?  Before each sim run, the .execs are run (Reset called).
+ditto reset command
+
+--
+print without args will print the previous expression list, user to
+prompt for variable name.
+
+---- 3.1.0 released ---
+
+Tweeked the interrupt logic to avoid problem in portmon mode, and to
+avoid segfaults if ResetControl without longjmp.
+
+TODO: fix "separate" plots axes per ucb suggestion.  DONE
+moved h scale shift icons.
+
+fixed bug in plots: the fixed marker would disappear/reappear improperly.
+---- 3.1.1 released ---
+
+In MSW, the imlib driver was broken.
+The wrong text font was being used.
+New feature: if the word "clipboard" is entered in the filename entry area,
+the image will be loaded into the clipboard, where it can easily be placed
+in other applications.
+
+TODO:
+WRspice:
+.options defl doesn't work in WRspice. same with ysep.
+WRspice plot: single -> separate leaves residual "e0" string.
+
+Fixed bug: set title and other methods of setting the title didn't work,
+produced garbage string.
+
+In the plot command line, keywords that take a value can now be followed
+by an optional '=', with/wo white space.  Eg, each of the following will
+work:
+plot title "new title" ...
+plot title="new title" ...
+plot title = "new title" ...
+
+In the plot command, keywords that take two values can now delimit the
+values with a ',' with or without space. Quoting / '=' is optional.
+
+The following all work:
+plot xlimits low ho
+plot xlimits low,ho
+plot xlimits="low hi"
+
+Slightly revised the actions for the plot arrow icons.  The set_scale
+functions have been modified for better scale choices.
+
+DONE
+change l/w/ad/as default setting in all mos models.
+the options will then work.  Default values are now set in the model code.
+
+All of the plot "set" variables, it they appear in a .options line, will
+now affect plots when the circuit is the current circuit.
+
+---- 3.1.2 released ---
+
+Ghost drawing in GTK2 release was not working correctly.
+
+---- 3.1.3 released ---
+
+Changed to arrow cursor in point-and-click text windows, such as the
+Vectors listing.
+
+New capability: Common Simulation Data Format file input/output.  These
+are produced in HSPICE with, e.g.,
+.options csdf=1
+or .options post=csdf
+The format is ASCII.  It is less expressive that the rawfile format, but
+handles the simple cases.
+
+The load command will transparently read and convert CSDF files, just as
+with rawfiles.  E.g.,
+load myfile.tr0
+
+Output: write command, batch output
+
+In server mode, file output is always rawfile.  In any other case, the
+file format can be specified with a file name extension.
+
+CSDF extensions: .csdf, .tr[N], .ac[N], .dc[N] where N is an integer.
+
+ADD tc1/2 to resistor element.
+ADD r= for device value, allow expression
+similar for cap.
+
+Resistor changes:
+"r" is now keywrod for resistance, along with "res" and "resistance".
+"tc1" and "tc2" are new instance keywords.  They override the model
+tc1/2 if given.
+
+Cap change:
+Instance param "c" is now capacitance, along with "cap" and "capacitance".
+It used to be current, same as "i".
+
+plot panel
+Save button -> Save Plot and Save Print
+MSW! DONE
+
+some problems with monte carlo:  iplot stops working,
+"run" stops working.
+
+Fixed bug:  iplots would stop working in monte carlo analysis.  Do a
+mc aanalysis with iplot.  delete iplot window. do mc analysis, no iplot.
+do mc analysis, iplot returns.
+
+It is no longer possible to do an ordinary analysis on the same circuit
+while a Monte Carlo or operating range analysis is in progress but paused.
+This could be done before, but would not work correctly and would screw up
+internal logic possibly leading to seg faults.
+
+However, with a paused job, one can reload the circuit, do a run, return
+to the previous circuit and finisn the original analysis.
+
+---
+
+The choice indicator in the Vectors panel no longer loses color when the
+panel is updated.
+Check MSW!
+
+prelinary code to fix vector scales when plotting added.
+
+plotting keyed text bug fixed in grid.cc
+
+In single-trace plot, dragging a trace in will now automatically update
+the display to show both traces (didn't do this before).
+
+BUG something wrong with plot tran2.xxx in expressions.
+
+In plot, all traces are now interpolated to the scale automatically.
+
+Fixed bug with the interpolate function, would cause faults if used.
+
+.measure find at  should now work.
+
+.measure param=  should work now.
+
+vectors names in .measure lines are now added to the save list.
+
+single-quote expansion is no longer done in .measure lines,  these are
+replaced by ( ).
+
+two additional hspice mos model params recofnized but ignored:
+CALCACM
+SFVTFLAG
+
+added p(Vsrc) pseudo-function, expands to @Vsrc[p] and returns power.
+However, this will only work if @Vsrc[p] is saved (as with all device @
+paeams.  But, if used in a .measure or a debug, this will be done
+auomatically.
+
+---- 3.1.4 released ---
+
+todo:  Add temp/tc0/tc1 for capacitor instance/model. DONE
+
+fixed decoloring in vectors, trace tools in MSW, trace tool in unix.
+
+rewrite function in inpmodel.cc
+added tcv, tlev, tlevc (diode) to unhandled list (GJC).
+added iss, ns (BJT)
+more, see impmodel.cc
+
+print instance warnings once per model rather than once per instance?
+
+p(name) should work with resistors, capacitors, inductors, etc, too.
+
+with .options hspice, do parameter conversions (GJC).
+
+MSW: fixed foobar label area in help windows.
+------
+
+(Herr)
+Fixed a bug related to carrying scales through computations (recent feature).
+If a vector was destroyed that was used as a scale, care must be taken to
+zero-out these pointers.
+Also, scales anre no longer carried through computations for scalars.
+
+capacitors:
+   new instance parameters: temp, tc1, tc2
+   new model parameters: tnom, tc1, tc2
+
+Bug: interpolation broke x-y plots.
+
+JJ model changes:
+1) rtype=2 model has been cleaned up to better match rtype=1 results
+   with same parameters.  This includes rn projection to axes.
+2) New model param vshunt.  If given, a linear shunt resistance will
+be added across all instances of the device.  This is in addition to the
+quasiparticle branch.  The resistance value is vshunt/Ic, where vshunt
+is the model parameter value, and Ic is the device (maximum) critical
+current.  This parameter facilitates SFQ circuit simulation by eliminating
+the separate shunt resistor.
+
+The scale stuff broke i-v plots.
+
+updated the bsim3 models to handle xw, xl.
+----
+
+New warning message when duplicate .model specifications appear in the
+same deck.
+When this happens, the first definition is used.
+
+---- 3.1.5 released ---
+--- End of 3.1.X
+

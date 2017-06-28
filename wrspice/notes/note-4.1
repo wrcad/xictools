@@ -1,0 +1,693 @@
+--- Start of 4.1.X
+
+-------- 4.1.1 released -------------
+-------- 4.1.2 released -------------
+
+Left over from 3.2:
+
+Added named fifo feature.  Not available in Windows.  When it starts,
+WRspice creates a "named pipe" in the current directory.  This looks like
+a file named "wrsfifo", or wrsfifo1, wrsfifo2, etc if there are multiple
+copies running.  This has the property that text written to this "file"
+will be sourced into WRspice.  In particular, if you are editing a
+SPICE file with your favorite text editor, you can "save" the text to this
+file name, and it gets sourced into WRspice.
+
+Fixed: dropping traces in a plot with the Marker button active would
+cause the marker and button status to be opposite.
+
+Tweeks to .global (node name) processing.  There were bugs.
+
+roft.cir Ricardo, fix div by zero error if possible. DONE
+The resistor model now prevents loading a resistance value less than
+ +/- 1e-12 ohms.
+
+Fix help sys callback to WRspice.  Import csdf files, too. DONE
+
+New env var WRSPICE_HOME
+
+-------- 4.1.3 released -------------
+
+Changes related to Apple OS X release.
+- Native support for tiff and ppm/pgm/pnm image formats added to help
+viewer.  Previously, these formats were supported by third-party
+conversion software (netpbm) which may not be around.
+
+-------- 4.1.4 released -------------
+
+WRspice strangeness after update, starts new fifo? FIXED
+
+Updates to the Verilig-A system to subbort BSIM6.  A version of the
+ adms-2.3.0 package
+is now available from the Whiteley Research free
+software repository.  This has bug-fixes, etc., and is required for
+full Verilog-A capability.
+
+The BSIM4.8.0 model has been installed as levels 17 and 59.
+
+The BSIM6 model has been added to the adms examples, level 80.
+
+The BSIMSOI-4.5 model has been added to the adms examples, level 81.
+
+In DECK mode listing from listing command, long lines (defined by width
+variable) are now continued using the '+' continuation method.  The 'n'
+option to the listing command suppresses this.
+
+The .TEMP line was ignored in batch mode.  Fixed, now .TEMP adds a
+dummy ".option temp=xxx".
+
+TODO: .measure fixups
+  Check accommodate syntax in bsim6 ringosc_17 example.
+  When measuring time, but the time value in the vector, same as its
+  scale (e.g., above).
+
+Apple packages now clear files from a previous release when updating.
+
+The fifo is now put in the home directory.
+
+Fixed cascade of gtk errors when WRspice tool wondiw was destroyed under
+Xic control.
+
+New boolean variable: wmfocusfix
+If the user finds that the terminal window loses keyboard focus when
+another window, such as a plot pops up, setting this variable may fix
+the problem.  This should be set in the .wrspiceinit file, so that
+if WRspice is started from a terminal window, the terminal won't lose
+focus when the WRspice tool control window appears.  In some cases,
+this fix may have side effects, such as causing the pop up windows
+to appear below other windows, so it may not be suitable in some cases.
+
+New variable: modpath , type list
+A list of directories where WRspice will search for loadable device models
+on program startup.  If not set, look in startup/devices.
+
+New variable: nomodload, type boolean
+This variable has relevance only if set in the .wrspiceinit file.  If
+set, the automatic loading of device model modules will be suppressed.
+This normally occurs after the .wrspiceinit file (if any) is read and
+processed.  This variable is set if the -m command line option is
+given.
+
+"devload all" now will load all modules, as is normally done at startup.
+
+The loadable module framework in now included in the Windows release.
+
+A loadable module for the bsim6 MOS model is now included in the distribution.
+This the same as can be build in the devkit examples.  In future, additional
+verilog-a models will be distributed as loadable modules.
+
+Updated to the latest release of the KLU sparse matrix solver.
+
+-------- 4.1.5 released -------------
+
+BUG: plot scale wrong, importing multi-d traces for MOS IV. FIXED.
+
+BUG: overriding loadable modules fails to overwrite bsim6.
+FIXED: now possible to reload a module.  There were some logic problems.
+
+-m option changed: now have
+  -m path
+  -mnone
+The second form suppresses auto-loading.  The now -m now takes a
+argument, which is a path to either a module, or a directory containing
+modules.  This implies -mnone.
+
+The devload command can now take a directory argument, and will load
+all modules in the directory.
+
+Minimum reltol reduced to 1e-8 from 1e-5 for compatibility with
+cmc qa scripts.
+
+Updated example Verilog-A source for mextram/psp.  Added psp103.
+
+NOTE: Local auth is much faster, when running many small sims such as for
+cmc tests.
+
+Validation speedup implemented.
+
+Now, if --v or --vv appears with other args, the other args will be
+ignored.  Previously, this was an error.
+
+Fixed subtle bug that prevented ".ac" from being recognized as a help
+keyword.
+
+New standard option: forcegmin (boolean)
+When set, this will enforce a minimim gmin conductance to ground on all
+nodes in the circuit (including internal nodes of devices).  This may
+facilitate convergence, etc.  This has  new check box in the Convergence
+page of the Sim Defs tool.
+
+XXX clarify cktvars variable.
+
+Fixed bug:  AC source mag not defaulting to 1.0 (was 0.0).
+
+Fixed bug:  The dump command printed the real val twice instead of 
+real and imag for complex matrices.
+
+Fixed bug: numerical tokens with leading '.' would crash the program
+in some cases.
+
+typing "where" (the where command) with no current circuit would crash
+the program.
+
+New "notes" feature for plots.  Used for noise analysis only for now.
+A note is printed after printing, it the gain is less than the minimum.
+
+Found/Fixed bug in bsim 4.7/4.8 that breaks noise analysis for tnoimod!=2.
+
+New bool option dcoddstep
+
+In ac dec analysis, with fstop/fstop < 10, will tweak the frequency
+delta to his the final value, if the change would be small.  This
+is mostly for cases where fstop/fstart is 2, 4, or 8 and N=10.  If
+no correction, the value is 1.995 rather than 2.0, etc.  Other
+simulators do this, so it is important when comparing results.
+
+HUGE:  new boolean option extprec
+When set, WRspice will use Intel's native 80-bit floating-point format
+for matrix solution.
+
+ITL4 (tran max itertions) increased to 20 (the ltra_1.cir with convolution
+model and extprec set requires more iterations than the previous
+10).
+
+m parameter
+bsim4 4.6.5 and later
+all Verilog-A MOS devices
+
+.options fpemode[=xxx]
+now works, sets the mode during runs of the circuit.  If xxx is missing,
+0 is default (as before).
+There is now only one signaling mode, ahd the program will die if
+triggered.  This is for GDB debugging only.
+The CPU is no longer set to 64-bit mode, but to 80-bit mode.
+If WRSPICE64 is set in environment, 64-bit precision will be used.
+
+Slight change to the dynamic_gmin logic, now won't fail if there are
+two successive failed trials.
+
+Logic change:  there is no longer an attempt to reorder a singular
+matrix after the first iteration at a step.  This will pretty much
+always fail, stopping the simulation.  Instead, just return, and let
+the driver try again with a smaller step.  This seems to be a huge
+improvement.
+
+Implemented device state backup/restore for Verilog devices, which is
+used for reverting to a known-good state after convergence failure.
+
+Added trapcheck.cir example
+
+Fixed bug in file selection panel, the file listing window would get into
+a loop adding and removing the vertical scrollbar on occasion.
+
+New option var: delmin
+
+New option var:  optmerge global, local, none
+
+savecurrent deleted from plot defs, added to sim/general
+several other changes to sim defs
+
+Sim Defs -> Sim Opts, "Simulation Options" panel global change
+Plot Defs -> Plot Opts, "Plot Options" panel global change
+
+-------- 4.1.6 released -------------
+
+adding bsimcmg to adms examples.
+
+new real-valued option: gmax  (1e-2 - 1e12, def 1e6)
+The diagonal elements of the circuit matrix will be limited to this value.
+This aids convergence in some circuits - without the limiting, the
+element can "blow up", causing the matrix to become singular
+(the transient analysis examples for bsimcmg-1.0.7 require this).
+
+fixed
+.IC and .NODESET required the form v(xx)=val, now xx=val works too.
+
+.measure lines now accept forms like "param'expr'", i.e., the = is left
+out amd there is no white space.  For Hspice compatibility.
+
+Change to default transient TMAX parameter.  If not given explicitly in
+the .tran line/tran command, this now defaults to the smaller of
+TSTEP or (TSTOP - TSTART)/50.
+
+Previously, it defaulted to (TSTOP - TSTART)/50.
+
+The new value produces much better looking results for circuits that
+by nature take too large time steps, at the expense of simulation
+time.  Some MOS ring oscillators exhibit this problem, and previous
+default-parameter results could be seriously ugly unless the user set
+TMAX.
+
+        /* Old
+        if (ckt->CKTmaxStep == 0) {
+            if (tran->t_nocut) {
+                // No timestep predicting devices in circuit,
+                // set to multiple of user step.
+                //
+                int i = (int)(tran->t_stop/tran->t_step);
+                i /= 100;
+                if (!i)
+                   i = 1;
+                ckt->CKTmaxStep = i*tran->t_step;
+            }
+            else
+                // 50 really is too small
+                ckt->CKTmaxStep = (tran->t_stop - tran->t_start)/50;
+        }
+
+        tran->t_delmax = (tran->t_stop - tran->t_start)/50;
+        if (tran->t_spice3)
+            tran->t_delmax = SPMIN(tran->t_delmax, ckt->CKTmaxStep);
+        else
+            tran->t_delmax = (1.001)*SPMIN(tran->t_delmax, ckt->CKTmaxStep);
+*/
+
+ITL4 back to 10, no good reason to change it making it non-standard.
+
+.meas and .measure are now equivalent.
+
+New options in load command: -p -cN+M
+
+Doc this
+// Consider the following script:
+//     
+//     title
+//     .control
+//     let x = 1
+//     while (x < 5)
+//         source circuit.cir
+//         run
+//         print x
+//         x = x + 1
+//     end
+// 
+// Previous behavior
+//
+// This will only work when started with the current plot being the
+// constants plot.  The vector x is defined in the constants plot.  The
+// run changes the current plot, but x is still resolved into the
+// constants plot, since the constants plot is always searched.  Once a
+// vector is defined in the constants plot, it can not be removed, so
+// repeated runs of the script will always work.
+//
+// However, if the initial plot was not the constants plot, x would be
+// defined in that plot, and the script would fail when x is accessed
+// after the run.
+//
+// Current behavior
+//
+// Now, before executing a script, the current plot is saved in ft_plot_cx,
+// which is searched after ft_plot_cur when resolving vectors.  When the   
+// script ends, ft_plot_cx takes the prior value, which is zero at the top 
+// level.
+
+New plot aliases prev[N], next[N], plot[N], curplot.
+
+-------- 4.1.7 released -------------
+
+Fixed a bug that would crash the program under certain conditions when
+the marker was used in plot windows.
+
+Added a real parameter NOISE to resistor instances and models.  This
+parameter multiplies the linear conductance used in the noise equations.
+The default value is 1.0.  Probably the major use is to give NOISE=0.0
+to remove a resistor from a circuit noise analysis.
+
+DONE: use multi-d colors when plotting multi-traces with ysep.
+
+Fixed crash in the show command when no current circuit.
+
+New plotwin command, to pop down plot windows from scripts.
+plotwin [i[d]]     will print the id number of the last plot window
+                   created.
+plotwin k[ill] [id] will pop down the plot with given id number, missing or
+                    0 for last plot, can be a[ll] for all plots.  Negative
+                    is relative to last plot id.
+
+Big change to backquote expansion feature.  Previously, the backquoted
+text was evaluated by the external shell under which WRspice is running.
+Now, by default, the WRspice shell itself is used for evaluation, which
+makes far more sense.  One can force the external shell evaluation by
+prepending the word "shell" to the command, separated by white space.
+For example:  set datevar="`shell date`"
+
+Typing "help" without an argument would (probably) not bring up the top page,
+and could cause a program hang or crash.
+
+New setdim command.
+
+TODO: a pwd command DONE
+FIXED Bug: in Windows, the toolbar print has a problem (Segall aa.cir)
+
+Fixed Bug: File desc not being closed, caused loop failure after about
+500 sources (Segall).
+
+-------- 4.1.8 released -------------
+-------- 4.1.9 released -------------
+
+Fixed JPL validation issue
+-------- 4.1.9 re-released -------------
+
+Make sure new users know about the tran delta timestep limiting,
+and the way around using "max step" jjaccel.
+Amplify this in the docs.
+
+-------- 4.1.10 released -------------
+
+TODO: nonlinear (func of flux) inductors. DONE
+
+Subckt expansion peoblems for optional nodes fixed.
+
+Avoid discontinuity at origin of tran uic output by using the computed
+results after the first time point for the origin.  The origin point 
+does not include the effect of device initial conditions.
+
+-------- 4.1.11 released -------------
+
+BUG.  Don't want to parameter expand device names.  This breaks circuits
+at Northrup Grumman that have parameter names that unintentially
+match device names.
+FIXED
+Went through and avoid things that were getting parameter expanded that
+shouldn't be.  Also moved parameter expansion of the main circuit to
+the subcircuit expansion module, so that expansion of lines will be consistent
+in the main circuit vs. a subcircuit.
+
+Node names
+Prev:  were expanded in subcircuits but not at top level.
+Now:  never expanded
+
+Model names in .model, subcircuit names in .subckt
+Prev: expanded
+Now:  not expanded
+
+Device names
+Prev: expanded in subcircuits, not at top level
+Now: not expanded
+
+
+Bugs - double click in file selector files list starts drag. FIXED
+
+Fixes to improve operation with multi-monitors, especially on Apple.
+
+For device lines with optional nodes, recognition of the model token
+is now right to left, which allows an optional node name to be the
+same as a model name.  Not recommended.
+
+---
+In File Menu, the "Open" button is now labeled "File Select"
+
+TODO: error messages to deck in param_expand in inpsubc.cc DONE,
+messages are deferred until the parse.
+
+in .measure, trig/targ v(x) forms now work (again).  These haven't
+worked for a while, requiring tha the user give just "x" and not
+v(x).
+
+In .measure and probably elsewhere, "special" vectors in the form
+@device[param] now work.  The p(device) construct, which is an
+alias for @device[p] (device power for most devices) now works.
+
+Daniel's old file latcham2final2.sp used parameterized node names.
+4.1.9 gave wrong simulations since this expansion wasn't handled
+properly.
+
+new boolean variable: pexnodes
+When set, nodes will be parameters expanded
+For backwards compat, runs daniels deck correctly.
+
+-------- 4.1.12 released -------------
+-------- 4.1.13 released -------------
+
+Updated adms scripts, now can support inductors.
+The source letter keys are now allowed.
+
+TODO: convert between 1 point in n dimesnions to length n, and maybe
+back. DONE, setdim command
+Updated the setdim command, fixed bugs.
+If given without args, it prints the length and dimensions of the scale vector
+of the current plot.
+If the numdims equals the vector length, the vector vecomes multidim
+with length 1,  the dimension number is unlimited in this case.
+Following args ignored.  Such vectors plot as multi-color points.
+Giving dimension 0 or 1 converts to a 1-d regular ol' vector.
+
+In plot panel, if Points not in effect, draw line btwn points?
+No, use glyph, DONE.
+
+-------- 4.1.14 released -------------
+
+Fixed multi-monitor problem with plot windows.
+
+The CCVS was generating the wrong polarity output!
+
+Fixed adms scripts so that this would work:
+analog begin
+  V(p,n) <+ R1*I(p,n);
+  I(p,n) <+ V(p,n)/R2
+end
+
+-------- 4.1.15 released -------------
+
+TODO: Start tutorial on C++ device module interface.
+
+Verilog-a support updates:
+The a % b operator now maps to fmod(a, b)
+The following Verilog functions are now supported:
+$random
+$rdist_uniform
+$rdist_normal
+$rdist_exponential
+$rdist_poisson
+$rdist_chi_square
+$rdist_t
+$rdist_erlang
+
+new random number generator functions
+exponential(mean)
+chisq(dof)
+erlang(k, mean)
+tdist(dof)
+beta(a, b)
+binomial(p, n)
+poisson(mean)
+
+-------- 4.1.16 released -------------
+
+The fpemode=2 option now works in OS X.
+
+The Verilog-a initial_step and final_step blocks are now recognized and dealt
+with.  Inital blocks execute when MODEINITTRAN.  Final blocks execute
+when time >= finalTime.
+
+Fixed:  invocation of a function without arguments would crash the program
+in some cases.  (print ogauss()).
+
+Updated random number generators for Verilog-a.  Randomness is now gridded
+at tran time steps.  Repeated runs of the same circuit will generate the
+same random values unless the seed changes.
+
+-------- 4.1.17 released -------------
+
+Somehow Mark Jeffery's noise stuff never got into the docs.  Now an example
+in tgauss descr, mentionion in .noise, reference to ASC paper, and new
+noise.cir example.
+
+tran .1p 1n was omitting final time point due to numerical problem, FIXED
+
+-------- 4.1.18 released -------------
+
+New section in adms/README explains how to set up tools to build
+Verilog modules in Windows.
+
+The rdist_xxx functions now accept an optional final argument, which
+if given is taken as the random number time lattice spacing.  If not
+given, the lattice sime spacing is set to the transient analysis
+TStep.  This is completely a WRspice extension, which has significance
+only in transient analysis.
+
+long term bug: the logic for handling save/.save lines was reversed.
+These were being ignored in all but .op analysis, when the reverse
+is correct.
+
+-------- 4.1.19 released -------------
+
+no more gdb, backtrace generated internally on all platforms.
+
+-------- 4.1.20 released -------------
+
+Rewrote support for output from Verilog-a
+Now supported: $display, $monitor
+$strobe is now done correctly.
+
+The file descriptor in fdisplay etc can be
+0   output to the pop-up error window.  Previously, output from
+    strobe/write went to this window.
+
+1 or < 0
+    output to the standard output (terminal window).  Output from
+    display/monitor/strobe/write now goes to the terminal.
+
+All supported Verilog system functions are documented in README.adms
+
+new $simparam keywords
+tstep
+tstart
+tstop
+delta
+delmin
+delmax
+abstol
+reltol
+chgtol
+volttol
+predictor
+
+Enabled -x option in Windows, seems to work ok so not sure why it was
+disabled.  It is handy for running wrspice from a mintty window.
+
+-------- 4.1.21 released -------------
+
+Huge new feature: multi-threading matrix loading.
+
+new option variable: threads (integer, 0-31)
+This is the number of helper threads to call on to execute device model
+code in parallel.  Each should correspond to an available processor
+core.  Experiment to see what works best for your machine and circuit -
+more is not necessarily better.
+
+fixed problem with multiple V()<+ contributions in a device (Andrew).
+
+-------- 4.1.22 released -------------
+
+More script fixes for Andrew.
+
+The LIMITING keyword was left out of example Makefiles, all semiconductor
+devices broken.
+Rewrote ADMS example makefiles to to be more portable.
+
+Fixed bug:   >& redirection would fault.
+Debugging messages now participate in the "shell" redirection, mostly
+to the standard error channel. Thus, run >& outfile will redirect
+messages to outfile.  Previously, such messages were hard-coded to the
+screen.
+
+
+Lots of work trying to improve multi-threading, without much success.
+Load balancing should be improved, but it doesn't seem to affect run
+time.
+
+New rusage keywords
+trantstime
+tranouttime
+cvchktime
+
+rusage all output now ordered nicely
+new "stats" command, sorta like rusage -all
+
+removed option keywords notrapcheck, noadjoint
+new replacements: trapcheck, useadjoint
+both are now off by default (for speed).
+
+FIXME: toolbar flashes badly in Windows. DONE
+Toolbar is now double-buffered.  Added percent complete annotation in
+transient analysis.
+
+-------- 4.1.23 released -------------
+
+todo: table for qp resistance in JJ
+
+TODO: implement "tee"
+
+refactor for eventual multi-thread when looping.
+variable noparse is gone.
+Now, parse does not occur until an analysis command is given.
+
+damn, mutual inductors are broken, again.  The loading order
+is important, muts first!
+
+two new example files jjloop.cir and jjloop1.cir.  Illustrate use of
+the loop command and use of chained dc analysis.
+
+sensitivity analysis was broken, incorrect error handling caused
+program crash.
+
+Resistor noise scaling factor was defaulting to 0.
+
+TODO: add devcnt function/command. DONE
+new command:  devcnt [ modnames ... ]
+This will print the number of device instantiations for each model, found in
+the current circuit.  The arguments are model names, where glob-type
+wildcard characters *,? may be employed.  If no models are given,
+all models will be listed.
+
+-------- 4.1.24 released -------------
+
+Multi-threading TODO
+DC sweep chain
+loop command
+Monte Carlo
+Op Range?
+
+added srource device base class in device.h to provide fast access to
+source info, avoiding wrapper calls in the device lib.
+
+threads variable is gone, new variables
+loadthrds
+loopthrds
+
+The .global lines were not being handled correctly.
+
+TODO: account for dimensions in measure results in plot, so can support
+threads.
+
+the loadthrds handling now uses the generic threadpool.
+
+-------- 4.1.25 released -------------
+
+TODO: license file format that works only with server, allow floating
+license.
+This is already true!  Floeting licenses should work now.
+EXCEPT How to prevent use of multiple license servers to get around
+limits?
+
+Bug fixed:  forms like PWL( 0 ... were not being parsed correctly.
+The space between the ( and the first token would cause trouble.
+
+Updated PSF capability to handle batch-mode "rawfile" output.
+
+The --no-xshm GTK argument has not been recognized since gtk-1,2.
+This is now handled explicitly, calling the deprecated gdk_set_use_xshm
+function, which may or may not do anything.
+
+Mutual inductors still broken, inductor lines must precede mut line
+in file.  Fixed, order now independent as it should be.
+The "k" parameter was returned as coeff*sqrt(L1*L2), now the coeff is
+returned.  There is a new parameter "factor" that returns coeff*sqrt(L1*L2).
+Mutuals now better support nonlinear inductors.
+
+
+-------- 4.1.26 released -------------
+
+Damn!  Muts still broken (Paul D)
+
+-------- 4.1.27 released -------------
+
+Bug: PSF output: everything is a branch (fixed)
+
+control lines can now have trailing '#' comments, e.g. lines like
+  alter I0, dc=0.0021             #Main JTL
+now work in scripts and control blocks.  This was true a long
+time ago but the capability was lost somewhere.
+
+Fixed a bug that could crash the program when evaluating vectors.
+
+An analysis call in an .exec block would probably crash the program.
+Can't build a circuit object before text expansion.  Now, this will
+fail cleanly with a message.
+
+Fine-tuning of layout in mplot windows.
+
+-------- 4.1.28 released -------------
+--- End of 4.1.X
+

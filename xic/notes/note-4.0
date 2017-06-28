@@ -1,0 +1,1238 @@
+----- Start of 4.0.X (Alpha)
+
+In the FascCap interface, the dielectric layers are now merged.  Overlapping
+vias would cause trouble.
+
+TODO: Tech keywords for OA layer/purpose DONE
+New Layer/Purpose tables
+Added tech layer block keyword: OaLayerPurpose int int
+TODO: add script interface
+
+TODO: save overall and per-layer mfg grid, tech keywords. DONE (sort of)
+New MfgGrid keyword, NOT per layer.
+Added tech keyword: MfgGrid real
+TODO: do something with it.
+TODO: add script interface
+
+Added line clipping during XOR drawing
+CHECK MSW
+
+ongoing: update to pcell system
+new flags to save cell type 
+Tcell names no longer require XXX suffix.  suffix will still be
+recognized and stripped when creating sub-masters.
+PCell properties are now saved with instances.  This will allow pcell
+sub-masters to disappear.
+scripts can now be kept in a separate file from a pcell.
+/*
+Reading cells, if sub-master seen, put it in the table.
+
+Writing cells:  Add a switch whether or not to include sub-masters in
+archive.  How to put super-master into archive?
+
+Allow indirection to a separate script file.
+  search path?
+*/
+XXX resolve how much functionality/how to partition for xiv/xicii.
+
+description change:
+geom2_funcs::IFplaceTemplateArgs(Variable *res, Variable *args)
+
+Python support added.  Tcl and Python support now provided by plug-ins.
+Python:
+   xic.internal_func(args,...)
+   xic.eval("int_or_user_func", args,...)
+Tcl:
+   internal_func(args,...)
+   xic("int_or_user_func", args,...)
+
+new environment variable: XT_PLUGIN_DBG
+if defined, will print diagnostics when loading plugins.
+new commands: !tcl, !py
+!tk, !tcl, !py are available only if plugin is loaded.
+Now separate tcl.so plugin for tcl only, selected if tk not found at
+run time.
+New functions (misc1/scripts)
+RunPython
+RunPythomModFunc
+ResetPython
+RunTcl
+ResetTcl
+SetGlobalVariable
+
+TODO: implement named layer tables, name is purpose.  Add purpose menu,
+layer tab shows only selected purpose.
+
+Ongoing: New layer table and layout.
+BUG: it is possible to create boxes on invisible layers.  FIXED
+Layer names can now have any length.
+CIF will now read/write arbitrary layer names.
+TODO: add a traditional mode for CIF output.
+Got rid of layer-specific mode:
+  move/copy/rotate make use of a new LCHGmode enum which controls
+    layer mapping.  NEEDS GUI CONNECTION
+  join: only joins visible, selectable, mergeable layers.
+  erase under:  clips visible, selectable layers
+Removed LayerTable variable.
+Subcell selection, no longer checks cell content for layer (layer-specific).
+New CDl flag: Invalid.  When set, layer not in visible layer table, but is
+available for display.
+
+Big refactoring of CD.  Cell database, etc are now separate classes.
+
+Changes to grid/snap
+Elec grid now set to 1.0/1 on startup, can't be set in the tech file but
+can be set with ctrl-g and grid pop-up.
+Removed tech keywords: [Phys|Elec]GridSpacing, ElecSnapping.
+Snapping and PhysSnapping retained for now.
+New Tech keywords:
+    MfgGrid (float, def one dbu)
+    SnapGridSpacing (float, def 1.0)
+    SnapPerGrid (int 1-10, def 1) OR
+    GridPerSnap (int 1-10, def 1)
+The snap grid spacing will always be a multiple of the mfg grid.  These
+all apply to phys mode only.
+Grid pop-up modified (NEED MSW).
+New tech keywords: NoSelect, Invalid.  NoSelect added to lp editor.
+New tech attribute [Phys|Elec]GridCoarseMult 1 - 50
+
+Note that now layer names can be arbitrarily long and are case
+insensitive in native and CIF files.
+
+The CenterFullView function now takes account of all window marks.
+
+TODO: add a label property that will cause the label to be displayed
+only in the top level.
+
+FIX: electrical labels erase wires along edges. FIXED
+
+New CDl flag: CDL_IMMUT, prevents add/remove of objects on layer.
+Extraction inv ground plane uses this.  Hackery added to allow flattening
+with this layer present.  Warning in CommitChanges about changes to
+internal layer removed.
+
+Moved RTree into geom, for separate use.  MINSPACE is kaput.  Need to
+check if BBs are ever changed while an object is in the database.
+A warning will be issued if this happens.  Some of the edit_txtcmds
+look suspect.
+
+Need a way to edit instance array params.  Replace should work for this
+but doesn't.  FIXED.
+The Use Array and Replace buttons now co-exist.  When active, to replacement
+cell is arrayed  according to the place panel.  When not active, the existing
+array params are kept.  Note that it is now possible to replace and instance
+with andither instance of the same cell, but with different array params.
+
+TODO: add help button to layer palette. DONE
+When setting cur layer, scroll layer table to make visible. DONE
+Blinking doesn't work? (poe) FIXED
+  TODO: better method?
+Explore use of btn 3 for sel toggle. NO
+Layer palette, how to show sel/nsel?  Showing invisible confusing,
+  index numbers confusing.  Think about inserting layers at start
+  of line, end might be better? DONE
+New color scheme makes sel state visible.  Can now drag layers to new
+locations in user area.  User area now has three rows.
+Layers in palette and table: ctrl-b1 now toggles selectability.  This
+used to toggle visibility like shift-b1.
+New registers for saving palettes.
+
+XXX Deal with M problem in fixed-fonts. FIXED
+
+XXX Haus initial window size problem.  Default screen size may be split
+between multiple monitors.  FIXED
+----
+
+New setcl button, sets current layer from clicked-on object,
+
+New XIC_HORIZ_BUTTONS environment variable, controls button menu
+presentation.
+
+XXX got "change BB in database" when adding voltage source to amp_top
+layout in model4a. FIXED
+
+Added Modify menu command to set the LayerChange variable.
+
+The LongName tech kw now is an alias for LppName, no more warning.
+
+TODO: implement store/recall grid registers from Ctrl-g. NO
+The Grid_action is now a no-op.  Ctrl-g is now an accelerator for
+the Set Grid button in the Attributes/Main Window/Set Grid and
+Attributes/Set Grid in sub-windows.
+
+TODO: add import switch to fail read rather than create new layer.  Maybe
+have an interactive mode - ask user if ok to create new layer. DONE
+SetImportParams pop-up has new check box
+Don't create new layers when reading, abort instead
+When checked, new layers will not be created while reading input.
+If a layer can not be mapped to existing Xic layers, the read is
+aborted.
+This ties to new boolean variable NoCreateLayer
+---
+
+TODO: allow modifiers with function keys
+F1Key aaa C xxx S yyy CS zzz
+xxx can be command kw, !cmd, script.scr DONE
+New format for FNKey strings in tech file:
+[<tok>] cmd [<tok> cmd]...
+The tok is a combination of letters s, c, and a.  These indicate the
+pressed state of the Shift, Control, and Alt keys.  The letters are
+enclosed in angle brackets.  The first tok (only) can be missing,
+indicating the case where none of these keys is pressed.
+The cmd is either the command keyword for any gui command, or a
+'!' command if it starts with an exclamation point.  If the command
+contains white space it must be quoted.
+
+TODO:Make these programmable from Xic. DONE
+New script functions: TechGetFkeyString, TecgSetFkeyString
+
+Haus: persistent default for !layer -d,-r.
+
+In CIF output, a "C topcellnum;" record is now added, just before "End".
+
+New techfile keywords:
+PhysLayerPalette1-7
+ElecLayerPalette1-7
+contains a list of layers for the layer palette registers 1-7.
+
+TODO: write GridDesc functions to save/parse for tech file. DONE
+Separate phys/elec grid registers. DONE
+There are now separate physical and electrical grid registers.  You
+will automatically save to and recall from the register associated with
+the window display mode.  The grid registers now save all parameters,
+i.e. including axes style, show, display on top, and coarse multiple.
+There is an expanded string syntas used in the tech file.  There are
+two new techfile keyword families: PysGridReg1-7 and ElecGridReg1-7
+The old GridReg1-7 is now a synonym for PhysGridReg1-7.
+There are two new entries in the recall menu:
+revert   revert the Set Grid panel to the current window settings.
+last appl  recall the last settings that were applied with the Apply
+button.
+GridReg0 is used internally and is no longer directly accessible.
+
+Changes to the !ltab command:
+1) now only need unique part of keyword
+2) new i[nsert] lname index  clause
+
+Allow WRspice command if cur cell is empty. DONE
+MSW spice interface broken. OK
+MSW btn3 blinking badly broken. OK
+
+BUG FIXED: .saves were being formatted incorrectly in sced_spiceout.cc
+---
+
+new names, added "Cv" to these funcs to avoid confusion with LPP alias.
+// (int) ReadLayerCvAliases(handle_or_filename)
+// (int) DumpLayerCvAliases(handle_or_filename)
+// (int) ClearLayerCvAliases()
+// (int) AddLayerCvAlias(lname, new_lname)
+// (int) RemoveLayerCvAlias(lname)
+// (string) GetLayerCvAlias(lname)
+ClearAll has a new argument
+
+ReadCds no longer exists
+ReadDrf  new, for DRF files
+ReadCdsTech  new, for Virtuoso ascii tech files
+ReadCniTech  new, for CiraNova tech files
+
+new script function PlaceSetArrayParams
+Replace function has new array argument
+Change to Place function array arg, now accepts nonzero constant.
+
+    // The XIC_PC_SCRIPT property text is in the form
+    //
+    //    [@LANG langtok] [@READ path] [script text]
+    //
+    // where langtok may be one of (case insensitive)
+    //   n[ative] (native sript, the default)
+    //   p[ython] (python script)
+    //   t[cl]    (tcl script)   
+    //
+    // The path if given is to the script text, otherwise the script
+    // text follows.  The path should b e quoted if it contains white
+    // space.
+
+script interface
+cni interface
+TODO:  stretch handles DONE
+CNI stretch handles now supported, in native cells too.
+
+XXX print driver tech blocks ignore Filled Y FIXED
+
+New functions:
+BoxH, PolygonH, ArcH, WireH, LabelH, PlaceH
+These return a handle to the new object.
+
+rewrote help/doc text for xic:sv
+Added help button to Modified Cells pop up.
+New Variable:  PcListSubMasters
+When this boolean variable is set, PCell sub-masters created in memory
+will be listed in the Modified Cells pop up.
+
+Change to CIF/native file syntax.
+In user-extension strings (notable property strings) aemicolons will
+be read literally if preceded by backslash, the backslash is stripped. 
+Semicolons are now generated in output preceded by backslashes. 
+Previously, a semicolon would stop parse of the record, so semicolons
+could not appear in these strings.
+
+Is the syntax for save-as fully documented, including OA?
+
+Going to need py26.so for Ciranova support in RHEL5. FIXED.
+All platforms have py26, rhel5 will also have py24 which is native.
+The py22 in rhel3 is too old, cant support.  The py26 can hook to
+Ciranova.
+
+RHEL3 crap:
+1.  The Ciranova release for rhel4/gcc4.1.2 seems to work ok AFTER
+I installed a new libz in plat.../lib.  The libz was build from
+scratch.  This will have to be provided.
+2.  Will have to supply libstdc++.so.6, libgcc_s.so.1.  Thee are also
+provided by ciranova, I need to provide also.
+
+In the CDp_sym property, the colon terminator now MUST be followed
+by a newline char to be considered as a terminator.  Other colons
+such as the colon in layer names, will be interpreted literally.
+
+Native label <<>> not accepted.  Check empty label handling!
+
+CR into layer name text entry should press the arrow button. DONE.
+
+XXX check Cells listing, phys/Elec cells option menu DONE, modified
+label.
+
+In OA, there is no distinction between physical and electrical layers.
+Sure enough, there are layers ("instance" from tsmc) used in both modes.
+Xic has been updated to support this.  Any layer can appear in both
+modes, though it makes no sense for any but non-physical annotation
+layers.
+
+Added a bit to the xform field for labels.  TXTF_ANNO if set will make
+the label visible only when the containing cell is top-level.
+
+In progress:
+combine both cell layers.  PROBLEM background colors now same for
+both modes.  Need nw background color storage.
+
+Now more single electrically active layer in the lowest position.
+Any number of layers can have the WireActive flag set, and wires will
+be considered for connectivity.
+
+No special treatment of elec active layer when making boxes.
+No special treatment of elec active layer when making labels.
+No special treatment of elec active layer when making polys, arcs, shapes.
+No auto switch to elec active layer when entering wires cmd.
+
+In electrical device cells, if no model or value properties, model now
+defaults to cell name.  Appropriate for electrical symbols from PCells.
+
+Electrical Virtuoso reserved layers are automatically GDSII mapped
+and unmapped when reading/writing GDSII and OASIS.
+
+new variables
+PCellKeepSubMaster (boolean) include sub masters when writing output
+PCellScriptPath  (string) search path for PCell scripts
+
+DRC MinArea test is stupid, does not consider adjacency.
+
+in the filtering in cd_filter.cc, "libdev" is now "device", but "libdev"
+still understood.
+Globally, libdev->device, libuser->library.  old libdev will have device and
+library set.
+
+add Xic version string to native cell files!
+
+Add XOR clipping for non-Manhattan lines.
+default MaxGhostObjects 400->4000
+limit value 5000 -> 50000
+
+New variable MaxPrpLabelLines, sets number of lines to show in value and
+param properties.  Default 5.
+
+New property position map codes.
+
+New tech layer keyword: NoInstView
+When given, objects on layer won't show in instances of the containing
+cell, only when cell is top level.
+
+Ongoing: add name label for wire node properties.  The label sets the net
+name, much like a terminal.   Adaptation of CDp_lref string, for wires
+this is x y 10, where x,y is a vertex of the associated wire.  The "10"
+is P_NODE.
+
+Ctrl-a / Ctrl-p now work with wires and associated labels.  If a property
+label is selected, Ctrl-a now selects the device.
+
+The Node Mapping is more powerful now.  One can give duplicate node names,
+and the topology will be reconfigured to merge the nets.
+This needs a lot of testing!
+
+Label command: in elec mode if a single active wire is selected, the new
+label will be bound to the wire.
+
+When replacing a label, if the original label has a rotation, the same
+transform will now be applied to the current transform for the duration of
+the command.  Previously, the same rotation had to be set by hand.
+
+In progress:
+It will be possible to have multiple pins for symbolic representation
+nodes.  This will facilitate cell tiling.
+Probably, this will NOT be extended to schematic nodes (?).
+SUBCT ui changed:
+Clicking on a terminal will select it (attach to mouse).
+Pressing Del will delete the selected mark, except in symbolic case where
+this is the only mark for a node.  Nodes (and bus term definitions)
+must be created and deleted in schematic mode.  In schematic mode,
+SHIFT-click for new bus term, CTRL-click for virtual term, or click on
+vertex for new terminal.  In symbolic mode, can only select marks.
+Click again to move mark, hold Shift or Ctrl while placing to copy instead.
+There can be arbitrarily many marks for each node.  Press Delete while
+mark is selected to delete.  The same applies to bus terms.  In symbolic mode,
+the last mark can't be deleted, as this deletes the node or bus term definition,
+which must be done in schematic mode.
+
+TODO: vertex editor, use Delete key.
+
+If a virtual cell terminal has a name that matches a named terminal or
+wire in the cell, the cell terminal will now be connected to that net.
+
+TODO:  add a flag to cell connection points to make them invisible
+in symbolic view.  Can then hide the scalar terminals when using bus
+terminals.
+TODO:  add a name for bus terminals.  This will override the bit net
+tith "name<index>".
+TODO:  switch to Cadence-style multi-net names. 
+
+REMOVED sced2xic utility (sced_txtcmds)
+
+Big change to Extract menu.  The Misc Config panel is now paged.  The
+first page contains buttons previously in the menu, plus buttons that
+perform !ptrms and !ushow.
+
+New variable VerbosePromptline (boolean)
+When set, print lots of messages on prompt line during extraction (as before).
+Otherwise not much is printed, which speeds things up.
+Added check box to page 2 of Config panel.
+
+Fill Pattern Editor
+Now uses gtkinterf ghost drawing system, so has line clipping.
+Editor window is now a drop receiver, same as sample window.
+
+XXX Fixed NIST wire bug, overflow in check_colinear.
+
+Added Rot90, Mx, and My buttons to the Fillpattern Editor.
+
+Change to the vertex editor for polys and wires.  Clicking on a vertex
+now selectes it (used to delete it).  Additional vertices can be selected
+by holding Shift and clicking or dragging.  Selected vertices can be
+deleted by pressing Delete.  Clicking anywhere starts a vertex move
+operation.
+
+The 3.3 branch is now located in /usr/local/xictools.
+
+Plug-ins are now installed in plugins directory, and are version-specific.
+
+New WireActive layer block keyword.  Implicit for layer named SCED,
+and set for wire:drawing by CDS/OA reader.
+
+TODO: Need to finalize node/terminal flags.  Support for non-physical
+devices, non-physical terminals (like JJ phase node). DONE
+
+old node property
+5 10 node index ex ey [name px py flags lname ttype_name]
+
+new node property
+5 10 node index ex,, ey,, [(flgs <<8)|ttype name px py lname]
+ex/ey may contain lists of points
+flags.ttype is a HEX ENCODED integer that MUST begin with "0x" or "0X".
+flags/24 | ttype/8
+
+TODO: Flag that will write native/CIF using old format: 4-char layers
+
+New variable: Out32nodes (boolean)
+will use 3.2 node property syntax in output if set.
+
+Virtual terminals
+Can be placed anywhere not over connection point.  If moved over a connection
+point becomes non-virtual.
+
+flags:
+uninit   physical placement not valid
+fixed    plysical placement set by user, can't move  (EXTERN)
+locset   physical placement applied by xic (NEEDED?)
+
+virtual  no underlying connect point  (EXTERN)
+will become normal if moved over contact
+
+byname   connect by name only, ignore position -->virtual (EXTERN)
+ignores placement location
+
+invis    invisible in elec (EXTERN)
+phys term will show.
+Given to terminals that are arrayed
+
+TODO: extend tedit pop-up, use in subct cmd too (instead of name prompt)
+DONE
+subct command: Esc and Bsp now exit dragging.
+
+FIXED nist report, ends of flush-end wire loops drawn wrong.
+FIXED in 3-2-final
+
+TODO: wire vertex editor, may have coincident vertices, deal with it. DONE
+
+Pseudo-property format change: Xform, Wstyle
+All pp entries now print something in Properties panel, previously some
+were invisible (null val) or couldn't be selected (empty val).
+The Magn work differently now on object, before it was pure scaling.
+Now, a point remains fixed i locateion
+Box LL corner
+Poly,Wire first vertex in internal list
+Label reference location
+
+TODO: make the TXTF_LIML flag user-settable in labels.  DONE
+The xform pseudo-property now accepts strings of the form
+[+|-] [0x]hex|string_token,...
+
+The label-hiding now applies to all labels.
+TODO: tie this to a variable, dsp flag. DONE
+new variable: HiddenLabelMode (integer 0-3)
+
+TODO: new layer block keywords in editor? DONE (WireActive, NoInstView)
+
+TODO: MaxPrpLabelxxx    make these apply to all labels, per show/hide
+change names to eliminate "Prp". DONE
+
+FIXED: bugs in 3-2-final list
+
+TODO: drop from OpenAccess contents list.  Need better way to pass
+ oalib|chd|xiclib|archive cellname
+DONE.  The OpenImport function will try and resolve libname/cellname
+before checking Xic libraries.
+Thus can give libname cellname to open command, etc.
+
+TODO: Update property names in properties/cell properties listings. DONE
+Lower-cased and updated property names in prop editors, now use "any"
+for general phys prop.
+
+CIF/naitve can take arbitrarily long comments and property strings,
+there is no longer a warning for lengths more than 1920 chars.
+
+In GDS/CGX files, now check if string too long for record.  This wasn't
+checked for before, could produce crap files.  Fatal error by default.
+New variable: GdsTruncateLongStrings (boolean)
+If set, too-long strings will be truncated to fit into a record,
+warning in log only.
+
+FIXED:  on poe, xic -E gives Objects changed in non-target cell, this
+can not be undone. FIXED (set mode to phys temporarily in evalScript)
+
+New variables:  PCellAbutMode, PCellHideGrips
+new Edit menu button PCell Control
+brings up new PCell Control panel, has buttons for above plus
+keep and list submasters.
+new variable PCellShowAllWarnings
+suppress coincident box warning when creating pcells. some Cni cells
+generate these and it is annoying. DONE
+
+StripForExport now implies PCellKeepSubMasters
+
+Ctrl-click on selected non-pcell instance now brings up property
+editor if not already up.  Brings up Parameter panel for pcell
+instance.
+
+Removed the stupidity where there was a hunt thru instances when a device
+master P_PARAMS changed.
+
+TODO: fix install script for Ubuntu DONE (wr_install and upd_install.sh)
+Aaron problem FIXED
+
+Changes to:
+PrptyAdd
+PrptyRemove
+AddProperty
+AddCellProperty
+RemoveProperty
+RemoveCellProperty
+    <a name="ChdIterateOverRegion"></a>
+    <a name="ChdWriteDensityMaps"></a>
+GetLabelXform ->GetLabelFlags
+SetLabelXform ->SetLabelFlags
+
+Techfile change:
+$(xxxx) now substitutes environment variables, too.
+the Expansion is now recursive.
+
+TODO:  add XIC_HOME environment variable.
+If set, directs Xic to installation directory. DONE
+New variable ProgramRoot, set to install dir
+NEW PREDEF MACRO: PROGROOT
+
+Removed RgbTxtPath variable, obsolete and unused
+New Variable: ProgramRoot  (string)
+This is set to the installation location assumed by the program at program
+start-up.  For example, for Xic in the standard location, the variable
+will contain the string "/usr/local/xictools/xic".  This variable is not
+used by Xic, but is available in scripts so that the user can query
+the value when needing to access files in the installation location.
+
+New command line option: --vb
+Should be the only option given, print the program build date and exit.
+
+installed python26 rpm from epel on rhel5.  User is assumend to have
+this in RHEL5 (no py24.so plugin anymore).
+
+In RHEL5, using PackageManager or yum, install "epel-release-5-4.noarch"
+This will add additional repositories.  Then, in the epel repository,
+find releases like "python26-2.6.8-2.el5.x86_64".  You will then have
+python-2.6, which is the same Python as RHEL6 and Ciranova PyCell Studio.
+
+ciranova with gcc-44 matches RHEL6, has oa 22.41.004
+virtuoso-1.6.4 uses 22.04.069
+ciranova with gcc-42 matches RHEL5, has oa 22.04.054
+error: Requested minor API version '47' which is supported by OpenAccess
+build 22.04.064 is newer than the minor API version 44 of the shared library
+of OpenAccess build 22.04.054
+
+SaveAs oa command documented?  YES
+make this use OaDefaultLib DONE CHECK
+
+Added check box for GDS string cut in GDSII path of cvofmt widget.
+
+TODO; label flags in oasis,gds,cgx? OK
+GDSII: XICP_GDS_LABEL_SIZE property: width=n height=n show hide tlev liml
+4 right words indicate flags set, 2 right are new.
+CGX: flags byte saved behind label text
+OASIS: XIC_LABEL property
+
+MaxPrpLabel... ->MaxLabel...
+
+Added controls to Window Attributes panel:
+Hidden Label Scope menu
+Label optional displayed line limit entry
+
+PlaceTemplateArgs ->PlaceSetPCellParams (does this work?)
+Yes, ok now, but new args.
+
+New variable: PCellGripInstSize (integer 0-1000)
+Stretch handles are not shown and inactive if the instance rendering
+size is too small.  This is to avoid triggering a stretch
+inadvertently.  By default, the smallest of the instance height/width
+must be 100 screen pixels or larger to activate stretch handles.  This
+variable can be set to provide a different threshold.
+New corres control in PCell Control panel
+
+Really need planarized x-section display. DONE
+Button3 blink doesn't work in x-section. FIXED
+TODO: let rulers work for any physical or x-sect window, chd too. DONE
+Delete key will now delete only rulers in current window.
+
+TODO: Fix anchor text entry for OA, update docs.  Support two-token entries.
+DONE.
+
+Node Mapping Editor:   
+New check box "Use Extract".  When checked, Click-Select Mode brings up the
+Path Selection Control panel from extraction system.  The new Find button
+will extract/associate when pressed, so can be used with physical windows.
+When Use Extract not selected, Click-Select Mode does not use the extraction
+system or trigger extraction, but will use extraction results in phys
+windows if available. 
+||
+When a terminal is selected in the right pane, it is given a flashing
+marker in electrical and physical windows.  The Find button will bring up
+a sub-window with the terminal centered, like the TFIND connand in extraction.
+||
+new grip between windows.
+||
+Extraction Setup panel:  Find Terminals brings up Node Mapping Editor.
+Edit Terminals starts subct command in electrical mode.
+||
+New search capability in Node Mapping Editor
+||
+Terminology changes:
+Node Mapping Editor  ->  Node (Net) Name Mapping
+Rename -> Map Name
+Remove -> Unmap
+||
+Now mostly uses pop-ups for text input/output instead of the prompt line.
+||
+In right side, terminal devices are listed as "T name".
+Now can have YG it third column, meaning that the G name was assigned.
+This can be edited.
+
+FIXED: extraction, virtual formal terms below top level weren't being 
+placed correctly.  New resposition_vterm function.
+
+TODO: add undo/redo to TEDIT command.
+DONE - added undo/redo to tedit command.
+check doc, is correct wrt electrical mode? OK
+XXX  tedit and subct have different interface wrt move/select
+Logic in TEDIT changed.
+todo: shift-click == double click in both. DONE
+
+Check/Fix:  If a native pcell is stored in OA, its type should still be
+CDpcXic. OK.
+
+Check text editor behavior wrt docs.  Add line term button in MSW? DONE.
+
+Script func change: ModifyTerminal gone, change to the Terminals
+function group in extraction.
+
+TODO: check the techfile Font parse, what to do now with gtk2 only?
+Update docs for techfile/FontN DONE
+All programs now use "P" exclusively.
+
+New bang command: !poly45.  Selects polys that contain an angle
+not multiple of 45.
+
+
+FREEZE!!!!!
+---- todo b4 release
+
+I don't like big gray sensitive areas in layer tab. FIXED
+
+Fixed: Python (actually Py_Final) would revert sigint handling.
+
+Check cross-sect with scmos tech, doesn't seem right.  OK, added thickness.
+
+Things like current tx, label justif. should revert after pcell eval.
+DONE, new provision for this.
+
+FIX:  if in busy mode and the prompt line editor is called, program
+hangs.  DONE, editor tests busy flag now and returns if set.
+
+Add message if reading gds/oas file with higher resolution. DONE,
+warning to log.
+
+TE_VIRTUAL is gone, no more virtual terminals.
+Terminals connect by position and/or by name.  BYNAME terminals connect
+by name only, position is ignored.  Barrel shape now used for BYNAME.
+Terminals can join nets (explain).
+
+In subct, pgUp/Dn toggle visibility of invisible terminals.
+
+Ongoing:
+Unlabeled active wires no longer have a node property.
+Wire labels can specify a scalar or vector name, causing addition of a 
+node or bnode property.
+
+NEW: If a scalar terminal connects by position to a vector net object,
+each net bit is connected to the scalar.
+
+NEW: vector instances and P_RANGE property.
+Mentioned before?
+New "range" property, can be applied to electrical instances, creates
+a "vectorized" instance.  Applied in Property Editor.
+
+The OpenAccess cells-read name table is now persistent, to avoid merge
+control.  It is cleared in:
+1  new !oareset command
+2  cMain::Load top
+3  Open button in Contents Listing of OA Libs pop-up
+
+The lisp parser now correctly handles exponential numbers.  Actually,
+the SPICE number parser is now used.
+The math library has been added.
+bugs fixed.
+
+All terminal devices are now polymorphic, depending on the net expression
+given as the label.
+Net expressions (bundles) are supported now.
+TODO: fix device library, backward compat with param property? NO
+
+Now two invis terminal flags, for schematic/symbolic, can be applied to
+scalar and bus terminals.  It should be possible for, e.g., the schematic
+of a circuit to connect via a bus term, where the symbol connects to the
+scalar bits.
+
+Update to terminal editor pop-ups.  scalar: new invis in symbol check
+box.  vector: no beg/end, user must enter net expr.  new schem/symb
+invisible check boxes.
+
+Wires with bound labels are no longer merged.
+
+new command !netxp net_expr
+The command will parse the net expression, then reassemble into a
+string and print, also print the scalar elements in order.
+
+new command !oadebug turns of/off load/pcell/net logfiles.
+
+Full blown Cadence-style wire net labeling now supported.
+Now have mapping in bus connections so scalars arent required to be
+in special position.
+
+Help menu:  Multi-Window Mode -> Multi Window
+New "Logging" entry, pops up same panel as !debug command
+undocumented!
+xic:dblog
+
+Subcircuits can now have zero nodes, if they have a global node.
+Any subcircuit with a global node won't be filtered.
+
+Fix device.lib.  All terminals are basically the same, just look
+different.  Whether bus or scalar depends on label text.
+Any chance of back compat for bus terms? NO
+
+!join pop-up has new window title: Join or Split Objects.
+
+Now physical terminals have separate editor pop-up.  Update dicumentation.
+
+Updates to Help windows:
+Help window: Options menu:
+New Save Config button, will save a .mozyrc file in $HOME, allowing persistent
+storage of options.
+New Default Colors button, brings up a panel where the default colors
+used in help pages can be set.
+The sample mozyrc file is no longer distributed.
+TODO: feedback after writing mozyrc file. DONE
+Help windows have new fifo and pipe capability.
+Help windows now assume utf-8 char set.  There is an "Old Charset"
+button in the File menu to support old docments.  Source containing invalid
+utf=8 sequences will also be treated as iso-8859-1.
+
+In setcl, dig thru subcells to get layer? YES, new code, revised.
+Update docs.
+
+Updating interface for FasterCap.
+Requires 5.0.2 or later.  This can handle the unified file format!
+
+PathSelection Control changes:
+Quick Path by default now uses ROUTING layers.
+new check box "Quick" Path use CONDUCTOR
+hooked to new boolean variable QpathUseConductor
+No longer starts in group/node selection mode so no longer does extraction
+when popped.
+
+xic:netname (in progress)
+New extraction netlist labels.  Labels created on layer:pin automatically,
+updated, used in association.  new variables PinPurpose, IgnoreNetLabels,
+UpdateNetLabels.
+
+xic:meascache (in progress)
+New feature for caching measure results in extraction.  New internal
+layer device:xicdata.  Every device has a box on this layer same size as
+body bounding box.  XICP_MEASURE property applied to this box contains list
+of numbers for measuements.  New variable NoMeasurePrpty to turn off
+management, NoReadMeasurePrpty to turn off reading.
+
+FIXED chip1/nand vdd!/gnd! short problem. Fixed: the P_NAME indices must
+be set by calling connect before the cell is saved, or label references
+will be lost!
+
+new Variable DefLabelHieght real 0.01 - 10.0 sets the default height
+of internally generated labels.  Default is 1.0 micron, which is too
+big for a recent cmos process.
+
+The Device Extraction Settings panel is now the Device Config page of the
+Extraction Setup panel.
+xic:rlext bogus
+In Show/Select devices panel, the Settings button is gone.
+Keep devices with terminals shorted ->Include...
+Skip device terminal.. -> Don't permute device terminals in association.
+Setup -> Views and Operations
+Misc. Config ->Net and Cell Config
+
+New function for lexpers filt(Zlist, lexper_string)
+
+Elec mode Replace function in Place panel FU  (cap2p1/cap2p1a) FIXED.
+
+The extraction system will now recognize most if not all pcell devices
+as having a flattenable physical part, so these devices don't need to
+be listed in the FlattenPrefix string.
+
+Changing the names of the "convert_xxx.log" files, these names are stupid.
+
+new Schematic/WRspice interface control panel, press spcmd button,
+press Enter at prompt, or type "setup" as command.  xic:spif
+
+Rule: parameter properties have value which is single token.  If it contains
+white space it must be single or double-quoted.  HOWEVER, double quoting
+implies a manifest string type, which will not be evaluated, single quoting
+implies an expression which reduces to a number when evaluated.  If not
+quoted, and attemt to evaluate will be done (when needed), and failures
+are silently ignored.
+
+The MOS contact fix now applies when Prefix is m/M (name doesn't need to
+be nmos/pmos anymore).
+
+TODO: need help buttons on extraction pop-ups (Source, Netlist, etc) DONE
+
+No more "terminal labels".  Rather, a new property XICP_TERM_ORDER.
+removed ListTermLabels and ListLabelTerms script funcs.
+
+The "ignore labels" variables and check boxes have a different effect now.
+When on, physical netlist output will use group numbers, except for global
+net names, otherwise will use netnames (usually derived from labels) when
+set.
+
+The LVS device block can now contain a single-quoted expression containing
+device parameters and numbers.
+
+New flatten property, electrical flattening.
+
+Although <[{ are all equivalent subscripting chars, Xic will convert to
+a preferred char pair internally.  This defaults to <>,  The new
+Subscripting variable (a[ngle] | s[quare] | c[urly]) can be set before
+startup (like DatabaseResolution) to set choice.
+New NetNamesCaseSens variable
+
+new variables: MaxAssocLoops and MaxAssocIters
+
+new variable: NoMergeShorted.
+devices with all terminals shorted are now (parallel) merged by default.
+
+Add this checking when parsing device blocks, blocks with the same name must
+1) have the same contact names and number and type (bulk or not)
+2) have the same flags
+3) permutes the same
+DONE
+
+new variable: AskSaveNative
+This turns on the annoying "You've modified this cell.  Do you want to
+save it?" prompt, which is now off by default.
+
+New prompt when editing a new cell, and the symbolic state of the current
+electrical cell has been unset, allowing symbolic view to be re-asserted.
+It was too easy to turn off symbolic mode to look at something in the
+schematic, then edit a new cell and later find that instances of the
+first cell are now all schematics.
+
+New Variables:  booleans enable hard to explain tests
+MergePhysContacts
+SubcPermutationFix
+
+Two-pass duality calculation should get rid of permutation fix.
+
+New iterative selection algorithm.
+
+New variable: GlobalExclude layer expression that if true over an object,
+the object will be ignored in extraction.
+----
+
+=======
+new variables
+
+ext
+ QpathUseConductor (exists in net select)
+
+ NoMeasurePrpty (-> dev cfg)
+ NoReadMeasurePrpty (-> dev cfg)
+ NoMergeShorted (-> dev cfg)
+
+ MaxAssocLoops (-> misc cfg)
+ MaxAssocIters (-> misc cfg)
+ MergePhysContacts (-> misc cfg)
+ SubcPermutationFix (-> misc cfg)
+
+ GlobalExclude (-> net and cell cfg)
+ PinPurpose (-> net and cell cfg)
+ IgnoreNetLabels (exists in net and cell cfg)
+ UpdateNetLables (exists in net and cell cfg)
+ MergeMatchingNamed (exists in net and cell cfg)
+
+etc
+ DefLabelHeight (Window Attributes)
+ AskSaveNative (in new edit setup panel) (in Editing General, moved from File Menu)
+
+new Constrain45 variable, in edit setup
+
+New page and modifieactions in Extraction Setup panel contains new variable
+setting.
+
+New Editing Setup panel xic:edset contains former edit menu entries plus
+variable setting (new and old);
+new in edit setup
+#define VA_MasterMenuLength     "MasterMenuLength"
+#define VA_UndoListLength       "UndoListLength"
+#define VA_MaxGhostObjects      "MaxGhostObjects"
+#define VA_NoWireWidthMag       "NoWireWidthMag"
+#define VA_CrCellOverwrite      "CrCellOverwrite"
+
+NoMeasurePrpty -> UseMeasurePrpty
+
+TODO:
+Gene Hilton, key mapping.  Map prompt line different than drawing windows?
+Separate prompt line and non-promptline key mapping.
+When placing labels, can't use arrow keys to pan! DONE
+//
+When the prompt line is in editing mode there is now a difference between
+the case where the mouse pointer is over the prompt line, and not.
+When over the prompt line: 1) Numeric Keypad +/- send + and - instead of
+zooming, 2) the arrow keys move the prompt line cursor.  Otherwise,
+Numeric Keypad +/- zoom and the arrow keys pan the drawing window.
+
+TODO: How about something to click on that sends CR to the prompt line?
+DONE, Double-clicking in the prompt line area while editing sends a
+ return char.
+
+schematics are NOT backward compatible, will crash program
+unless Out32nodes is set.
+New check box in Set Export Parameters panel.
+
+How to decide phys vs elec layers when writing tech?
+in phys table, WireActive not set, eiither have to set this or ensure that
+WireActive layers go to electrical table. FIXED
+// For Cadence compatibility, the following layer numbers will
+// also go into the Electrical menu.
+//
+//   228  wire
+//   229  pin
+//   230  text
+//   231  device
+//   236  instance
+//   237  annotate
+
+For RW, Run page of extract rlc, Run in Foreg and Out to Console
+check boxes, modified interp of FxForeg property (if set to anything,
+send output to console).
+
+Fixed inst array selection in Info command.
+Fixed inst array selection in Push command.
+FIX the Python plug in versioning!!!! DONE
+
+New variable FindOldTermLabels
+new check box Extraction Setup/Net and Cell Config/Find old-style net (term
+name) labels
+
+New variable PnetVerbose, new check box in Dump Phys Netlist "devs verbose"
+will print detailed contact info.
+
+port to openSuSE-13.1
+The internal malloc is no longer used, causes problems with the
+complex allocators now in use.  It Will be used if XT_LOCAL_MALLOC is defined
+(for debugging).  XT_SYSTEM_MALLOC no longer does anything.
+
+XXX holy F, wrspice ipc doesn't work in CentOS 6.4.  Using display string
+hostname:0 no longer works in local Gnome desktop.  This was hard-coded in.
+Removed hard coding.
+
+New logic for Out to Console in RLC extract.
+New Jobs tab and page, job control.
+
+New support for unicode special characters : ctrl-shift-u + code in
+prompt line.
+
+logic change for key map.
+new command !kmap
+new function ReadKeymap
+
+Implement "Check Deferred" in Bulk Contact extraction. DONE!
+
+New P_MACRO property of device masters.
+
+Missing directory now created when writing native cells, from panel
+and save-as.
+XXX save-as doesn't work, should be able to give
+xic dirname *  FIXED
+
+Changes to Invalid from Cadence, doc that objs are invisible.
+
+New DrfDebug variable
+
+Make sure stamping test detects "wrong" global! OK
+
+TODO: make a "quick reference guide" containing all key/mouse stuff. DONE
+
+
+--------- xic-4.0.3 Released --------------------------------------------------
+
+Updated the Path Files Listing, File Selection, and mozy directory listing
+to correctly handle file names with embedded white space.
+
+The MSW release can now authenticate with a standard-fromat LICENSE file.
+
+BAD bug in 4.0.3, MSW version can't find its root directory. FIXED
+
+--------- xic-4.0.4 Released --------------------------------------------------
+
+in MSW:
+-  The programs are now started from batch files, which set the PATH
+   for the gtk2-bundle DLL's.  Now, no user path setup is needed.
+-  The update command now schedules an exit proc, which creates a new
+   process to run the distrib exe.
+-  The deinstall function is now explicitly called when updating.
+-  Fixed errors in File Selection: hard-coded Unix commands for actions,
+   misc bugs.
+-  Fixed colors in Print-to-clipboard.
+
+When a keypress is forwarded to the main window, the focus is now
+shifted to the main window.  This avoids typing a command then then
+pressing Enter, and finding that the forwarding window accepts the
+Enter.
+
+Improved the Ruler command and some others, less flashing.  New
+deferred-update code used.
+
+Hard-coded icons.
+
+Fixed bug:  Extra XICP_PC and XICP_PCP_PARAMS were being added to some
+pcell instances when input was read (getting properties from sub-master
+and file).  Now will keep properties from sub-master.
+
+OA plug-in, the XICP_PC_PARAMS for sub-masters is now only the changed
+parameters, was all parameters.  Now matches the instance property string.
+
+When witing the instance list in any file format, the instance list
+is now sorted and deterministic, previously instances were grouped by
+master, but otherwise order was random.
+
+Bug: Read in chip1/chip1b_top, op antenna_dio_n, sa, edit to cwd. get
+error with no message. FIXED
+
+Bug: Using default save string when saving a Native cell, or otherwise
+giving the name of an existing file to the Save As command, would fail.
+FIXED
+
+Bug: if only cells in selection CP, can't select anything.  FIXED
+
+Bug: CGX writes all labels as text "hidden". FIXED
+
+Fixed bad flashing when main window is resized in RHEL5.
+
+--------- xic-4.0.5 Released --------------------------------------------------
+
+Changes related to Apple OS X release.
+- Native support for tiff and ppm/pgm/pnm image formats added to help
+viewer.  Previously, these formats were supported by third-party
+conversion software (netpbm) which may not be around.
+
+In Apple releases, there are two special keyboard mappings that replace
+the absent Numeric Plus and Numeric Minus keys.  On the Mac keyboard,
+fn-Enter and fn-Right (arrow) provide the respective functionality.
+
+Made wr_install back-compat with gen 3 for OS X.
+Now skip relocation prompt for Apple in wr_install script.  Hope this
+isn't a problem for Gen3 users.
+
+--------- xic-4.0.6 Released --------------------------------------------------
+
+Apple packages now clear files from a previous release when updating.
+
+spin command, angle readout now defaults to degrees, was radians.  Change
+with d or r keypress, spacebar toggles.
+
+Fixed bug: hypertext prompt line was badly screwed up.
+
+Now, when prompt-line editing starts, the mouse pointer is warped into the
+left side of the prompt area.  So, the left/right arrows will move the
+text carat, and not pan the main window.
+Also, new "PromptEditFocusBackgColor" applies when mouse pointer is in prompt
+area, and prompt area thus has full focus.
+
+Bug: device menu wasn't giving up focus when device was selected from
+drop-down menu.
+
+Fixed bug in file selection panel, the file listing window would get into
+a loop adding and removing the vertical scrollbar on occasion.
+
+New FC2 interface.
+New variables: SubstrateEps, SubstrateThickness, AntennaTotal
+New techfile kw: SubstrateThickness
+These are now controlled by a variable, as well as having a techfile
+keyword.  The Attributes menu int the Extraction Parameters editor now
+contains SubstrateThickness, and this now just sets the variables.
+
+--------- xic-4.0.7 Released --------------------------------------------------
+Very preliminary FC2 doc.
+
+Moved all extraction system tech keyword recording into the tech system.
+TODO: do this for DRC, too.
+
+New layer sequencer, for FC2 and also for use in new cross-section generator.
+
+Got rid of these variables:
+XSectLayers, XSectThickness, XSectTopPlanar
+Got rid of CrossField techfile keyword.
+Got rid of FxFlag techfile keyword.
+Got rid of FxUseFlag variable.
+Kept CrossThick, provides alternate thickness for cross section, Thickness
+param must be nonzero.
+
+New variable:  NoPlanarize
+New rtechfile keyword: NoPlanarize
+Whe set/given, layers will be non-planarizing by default, the Planarize
+layer keyword overrides.
+
+THe Cross Section command and the old fc/fh interface now use the
+new layer sequencer.`
+
+Added fc2 button to Extract Menu
+
+Lots to not forget...
+!fc command
+FCAP layer
+
+Extract parameter editor gone.  Device block editing moved to the
+Device Config page of the Extration Setup panel.  Parameter setting moved
+to the tech param editor in teh Attributes menu.
+
+All tech layer keyword editing has moved into the parameter editor in
+the Attributes Menu.  The Convert and Extract menu parameter editors
+are gone.
+
+TODO: make LayerReorderMode a global tech keyword Done
+moving EraseBehindTerms, TermMarkSize, TermTextSize to General Visual
+from ext_setup to attributes.
+
+Grid panel, the line sample is now a drag source for a plain-text
+line mask in "0xhhhh" notation.
+
+pressing Enter in cross section command displays the last line again.
+
+TODO: FcPanelTarget doc
+
+--------- xic-4.0.8 Released --------------------------------------------------
+
+Stripped fastcap out of old interface, now "Extract LR" button,
+modified panel.
+
+Update to !fc run command:
+  !fc run [-i infile] [-o outfile] [-r resultfile]
+
+Grid drawing error in crsoo sect fixed.
+Coarse Grid is now still visible if fine grid is too fine.
+
+Fixed grid display in cross sect.
+
+Fixed bug in cross section display that caused incorrect display.
+
+Cross marks are now roughly fixed-size.  They were too small in
+the cap interface for some layouts.
+
+FC number marks weren't getting erased properly.
+
+Fixed the sub-window Dump to File command, was not working.
+
+FC assumed substrate thickness was not being multiplied by the resolution,
+was 1000x too thin.
+
+Fixed bug: in ldb3d setup, seg fault in error message printing.
+
+---
+
+TODO: move sub-master write switch from pcell control to output paramerters.
+The function works only with output generated with the Convert menu.
+DONE
+out3.2 compat check box from Write Params to Write, applies from Write only
+added pcell sub-master write check box to Write
+
+Fixed:  deleting all cells with extraction data present would leave
+residual empty cells.
+
+core leak audit, fixed some.
+
+new command "exlayers", prints lists of conductor/routing/contact/via
+layers in console.
+
+Extraction Setup panel changes
+net and cell config -> net config
+new Via Detection group
+cell stuff to Misc page
+
+New variables: ViaTestFull, ViaSearchDepth ViaCheckBtwnSubs
+
+Fix spurious warning for Constrain45 tech keyword.
+
+--------- xic-4.0.9 Released --------------------------------------------------
+
+------- End of 4.0.X (Alpha)
+

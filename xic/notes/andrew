@@ -1,0 +1,351 @@
+//// Andrew notes
+
+From: Andrew Wagner <awagner@bbn.com>
+To: "Stephen R. Whiteley" <stevew@wrcad.com>
+Subject: Import from Spice questions
+X-Mailer: Apple Mail (2.2070.6)
+ 
+Hi Steve,
+ 
+I’ve started digging into the electrical mode of Xic and I’m very impressed. The
++ability to (almost) seamlessly transition between an electrical model and
++physical layout is a feature I’ve never seen implemented very well in other
++layout programs. I do however have a question about how Xic handles importing a
++SPICE .cir file. The problem is that I’ve noticed that Xic doesn’t seem to
++correctly import voltage/current controlled switches/sources from a
++pre-existing SPICE model. For instance if my pre-existing spice file contains a
++voltage controlled voltage source like:
+ 
+ed n6 n4 n21 0 (abs(V(n21)+V(n21))/2)*i(Ld)/2
+ 
+if I import my model into Xic via Source SPICE and then export via the dump
++SPICE button I get back:
+ 
+ed n6 n4 abs(V(n21)+V(n21))/2)*i(Ld)/2
+ 
+This has two errors, the first is that the controlling nodes are missing which
++prevents my model from running in Xic, the second is that the leading
++parenthesis is missing creating a syntax error if the result of the dumped
++SPICE file is run with WRSpice. The same error seems to occur for all
++current/voltage controlled devices, e, f, g, w ect. A second error I noticed is
++that definitions of a model in a pre-existing SPICE file are ignored. For
++instance if in my SPICE model I have :
+ 
+.subckt XXXX pg ps pd
+.
+.
+
+
+wsreset2 n62 0 l3 Iswitch
+
+.model Iswitch CSW(it=0.2u ron=1e6 roff=0.0001)
+ 
+.ends XXXX
+ 
+
+I get back after sourcing and dumping :
+
+
+.
+.
+.
+
+wsreset2 n62 0 Iswitch_nTron
+
+So the switch has lost its control variable and the model definition has
++disappeared.
+
+Thanks again for all your help. Let me know if there is a solution/work around
++or anything I can do on my end to help.
+ 
+
+Cheers,
+
+Andrew
+
+
+On Tue, Feb 17, 2015 at 05:12:17PM -0500, Andrew Wagner wrote:
+> Thanks Stephen,
+> 
+> I\xE2\x80\x99m happy to say that I really appreciated the changes you made in
+> Xic 4.1.6 .  The interface is really smooth and fast, editing
+> layouts (even complicated ones) is quick and easy.  If you don\xE2\x80\x99t
+> mind I do have a few more suggestions, two of these I would
+> categorize as minor bugs.
+> 
+> Bugs:
+> 1.  Edges of objects are not recognized when viewed as part of an
+> expanded hierarchy.  This primarily affects ruler measurements
+> between objects in different cells.  The new edge snapping feature
+> is great but appears to only work for objects within the current
+> cell.
+> 2.  Snap Spacing in the grid seems fixed to be a multiple of 1 um,
+> (perhaps this is intended).  I\xE2\x80\x99ve set the MfgGrid to 0.0025 (2.5
+> nm) in my Tech file appropriate for an Ebeam process I\xE2\x80\x99m
+> developing however, this isn\xE2\x80\x99t reflected in the grid or snap
+> spacing.  As far as I can tell MfgGrid is listed correctly in the
+> Grid Setup window but otherwise has no affect in Xic.  (See attached
+> screen shot)
+> 
+>
+>
+> Suggestions:
+> 1.  Consider adding a right-click functionality to the layers as
+> listed in the layer column.  I suggest right-clicking on the layers
+> launches both the Fill and Color Attribute windows (consider combing
+> to one window) for that layer to allow quick editing of the layer
+> properties.  Clicking and dragging the fill style over the layer is
+> \xE2\x80\x9Cfun\xE2\x80\x9D but not very quick, I suggest just having the lay>
+> property update instantly once the style is selected.  (This already
+> happens with the color).  Right-clicking on the empty space in the
+> layer column should launch the \xE2\x80\x9Cedit layers\xE2\x80\x9D menu.
+> 2.  Consider adding right-click functionality to selected objects.
+> Right-clicking on a selected object (or objects) should launch a new
+> window with appropriate options to manipulate the selected objects,
+> Right-clicking on a selected object (or objects) should launch a new
+> window with appropriate options to manipulate the selected objects,
+> (basically the modify menu perhaps with the "create cell\xE2\x80\x9D option
+> added).
+> 3.  Consider adding a "Record Script\xE2\x80\x9D button.  This feature (when
+> launched) opens a window that transliterates the users keyboard and
+> mouse actions in the Xic scripting language and gives the user the
+> option of saving this file as a script.  For instance if the user
+> clicks on a layer to make it the current layer,
+> SetCurLayer(\xE2\x80\x9CLayerName\xE2\x80\x9D) would appear as a new line in >
+> script window.  Getting a feature like this to work well is bit of a
+> chore but it would make learning how to automate a design process
+> very easy.
+>
+> OSX Note:
+>
+> XQuartz allows the user to set some handy \xE2\x80\x9CUNIX Style\xE2\x80\x9D >
+> in preferences.  This includes having the keyboard send the ALT-L,R
+> characters properly rather than Mode_switch.  This allows a Mac user
+> to use the alt-char functionality in Xic to access the menu bar
+> acceleration.  (See attached screen)
+>
+
+
+Hi Steve,
+ 
+Thanks for the script you sent, I took a look at some of the examples and was
+happy to see that Xic supports a power scripting language, but there are some
+features that are nice to have at your fingertips. Since you're working on a
+new version of Xic, I might make a few suggestions:
+ 
+1. The ability to have the cursor snap to underlaying geometry, especially the
+end points of a ruler, was a feature I found very useful in other packages.
+This really helped me double check critical dimensions of my designs before I
+sent them out for production.
+>>> DONE
+
+2.  I really like the bang (!) and keyboard accelerator commands for drawing and
+manipulating objects but they're a little disjointed. For instance ro draws a
+circle but !ro rotates an object. You might consider eliminating ro in favor of
+!circ where !circ with no args allows a free form circle to be drawn but !circ
+x,y,r draws a circle at x,y with radius r.
+>>> Changed the name !ro to !spin.  The ro accelerator is a good enough
+!circ command.
+ 
+I look forward to using the latest and greats Xic release.
+ 
+Cheers,
+ 
+Andrew
+
+Hi Stephen,
+ 
+I've started playing around with Xic more seriously and have noticed a few
++things that are a little off with this install/version of Xic.
+ 
+1. Zoom function keys don't all work. Numeric +,- don't work to zoom out, in.
+fn-return, fn-right arrow seem ok as does control-scroll wheel. I have also
+noticed that Xic doesn't recognize the fn key when pressed from the Kinesis
+Freestyle 2 keyboard (Mac Version). The function key is recognized by the rest
+of the OS but Xic doesn't understand it. I have to use the built in keyboard on
+the Macbook for the fn key to work properly in Xic. That last part isn't
+necessarily your problem just that some third party keyboards seem to cause
+difficulties.
+ 
+2. X windows seems to get very confused when I use multiple displays. The Help
+menu for instance doesn't translate over properly when I use my Macbook in
+conjunction with my Apple display. This is really Apples problem but I just
+wanted to let you know.
+ 
+3. Alt-char accelerators for the menu options don't seem to work.
+ 
+Thanks again for your help. Since there are multiple ways to do things in Xic
+none of the issues above is really that big a deal, I just have to figure out
+by trial an error what the best way to do something is.
+ 
+Cheers,
+ 
+Andrew
+
+Hi Stephen,
+
+Thanks as always for your help. I’m a big fan of the changes you made, the
++windows now appear correctly when I use two displays and the ruler
++functionality with snapping to non-manhattan objects is much improved. I’ve
++played around a little more and do have a few more suggestions to add to the
++next release.
+
+1. Selecting Layer visibility does not force the screen to redraw. I’ve noticed
++that when I toggle the visibility of a layer I need to do something (like move
++left/right or zoom in/out) to force the screen to refresh so the visibility
++option takes effect. This is a little obnoxious if you want to quickly see the
++different layers of your circuit.
+
+2. I really like the new Grid Setup options but you’re missing the option to
++select if the cursor snaps to the grid or not. For instance its sometimes
++useful to free hand draw a shape not anchored to the grid. Perhaps this ability
++is implemented some other way.
+
+3. Usage of the right mouse button (button 3) to center and zoom is a little
++confusing. Two clicks of the right mouse selecting an area zooms that region to
++fill the current window, but a click-drag-release just centers the selected
++region. This took me a little while to get the hang of since a
++click-drag-release to zoom into the selected region is in general faster that
++the two click method.
+
+Thanks again for being so responsive. I’m sure I’ll have more suggestions as I
++move into using the more powerful features of Xic
+
+Cheers,
+
+Andrew
+
+Hi Steve,
+
+I’ve started playing around with cell arrays and hierarchy and have run into a
++few problems. Attached is a screen shot to show you where I’ve gotten.
+
+1. I like that its easy to create a new cell out of an object(s) in your current
++cell, essentially its easy to build your layout descending in hierarchy.
++Unfortunately the opposite doesn’t seem to be true. It seems very difficult to
++create a new, blank cell and populate it with an array(s) or previously
++existing cells. The work around I found was to copy an existing cell, delete
++its contents and then place cell arrays inside that. It would be great if the
++Create Cell command would create a new blank cell if no objects where selected
++before entering that command. Let me know if there is a better way to do this
++that I just haven’t discovered.
+
+2. Populating a cell with an array of cells is such a common activity that I
++think it deserves a its own quick draw feature like rectangle, circle, xor ect.
++Clicking this button would popup a dialogue box where the user would input the
++cell to create an array of and n x m dimension of the cell array. The user
++would then click once to define the coordinate of the (0,0) array element and
++once more to define the (n,m) array element. The remainder of the array would
++automatically populate in a regular grid.
+
+3. Hierarchy visibility is confusing me. When I create an array of a particular
++cell in a new cell it appears as a bounded box with some simple information
++about the cell array printed inside. This is totally fine and in general
++useful. The problem is that I don’t know how to tell Xic, “Display everything n
++cells deep in the hierarchy tree”. So far in order to see inside the cell array
++I have to explicitly flatten the cell. It would be great if there was a little
++area (right above the layer visibility in the menu bar) that allowed the user
++to increment and decrement the visibility of the hierarchy in a given cell. I
++might even be so bold as to suggest that numerical +/- be dedicated to this
++feature rather than zoom since the right click combined with ctrl-scroll wheel
++is already a very quick and fluid way to zoom in/out of a region of interest.
+
+
+Thanks again for all your help.
+
+Cheers,
+
+Andrew
+
+Date: Tue, 24 Mar 2015 11:11:00 -0400
+From: Andrew Wagner <awagner@bbn.com>
+To: "Stephen R. Whiteley" <stevew@wrcad.com>
+Subject: WRSpice modules
+X-Mailer: Apple Mail (2.2070.6)
+
+Hi Stephen,
+ 
+Thanks very much for your most recent updates to Xic and WRSpice, the mkscript
++feature is great and the fixes to the current controlled sources have my model
++up and running. As I dig into my project however I’m finding the need to use
++ever more powerful features of your programs, which brings me to a few
++questions about building and implementing my own modules in WRSpice.
+ 
+1. Do you have (or can you point me to) some documentation on the C++ API for
++WRSpice? I ask since I’m pretty proficient with C,C++ but new to Verilog and in
++some cases it will be easier for me to just write a module directly in C++
++rather than write it in Verilog, and translate via ADMS. This is especially
++true for devices with complicated physics behind them. Furthermore as you point
++out, ADMS doesn’t work perfectly and being able to confidently tweak the C code
++to get the behavior I want will be critical.
+2. Is it possible to include new modules into the Xic electrical layout as a new
++symbol that can be “plugged into” a circuit design. I suspect there is since I
++can see you define symbols explicitly in device.lib files but the syntax for
++drawing the symbol and  associating them with a particular model/module is a
++little hard to parse. A tutorial would be greatly appreciated here.
+ 
+Thanks once again for your help.
+ 
+Cheers,
+ 
+Andrew
+
+
+Date: Wed, 25 Mar 2015 15:00:58 -0400
+From: Andrew Wagner <awagner@bbn.com>
+To: "Stephen R. Whiteley" <stevew@wrcad.com>
+Cc: cryan@bbn.com
+Subject: New Module support/debugging ADMS
+X-Mailer: Apple Mail (2.2070.6)
+ 
+[-- Attachment #1 --]
+[-- Type: text/plain, Encoding: quoted-printable, Size: 2.4K --]
+ 
+Hi Stephen,
+ 
+I’m trying to develop a new WRSpice module from an existing Verilog model and am
++running into a few problems. I’ve successfully compiled and tested your
++examples and have even read the Implementation guide and Adding devices to
++SPICE3 chapters from Thomas Quarles’ Thesis so I have some idea whats going on
++“under the hood”. The module I’m trying to compile is a memristor (resistance
++depends on last input above some threshold) with a switching mechanism that is
++sensitive to thermal noise, see attached Verilog code. This is modeled in the
++Verilog as gaussian random numbers thrown before the impedance is calculated.
++The problem this causes is that ADMS has no support for random number
++generation as defined in Verilog. See error below:
+ 
+[fatal..] ./STT-PMTJ.va:2642:10: analog function '$rdist_normal' is undefined
+[fatal..] see [/usr/local/xictools/wrspice/devkit/admst/adms.implicit.xml:750]
+make: *** [STT_PMTJdefs.h] Error 1
+ 
+Do you have any plans (or spare time) to implement a translation of $random
++functions in Verilog to the <random> functions implemented in C via ADMS? If
++not I’ve started doing a little digging into ADMS and might be able to hack
++something myself. Its a pity that we’re starting to fork pretty far from the
++project on GitHub but se la vie.
+
+In an effort to push forward, I commented out the $rdist functions and fixed the
++noise contributions to 0. Now I got a little further but ran into the
++following:
+
+STT_PMTJload.cc:491:57: error: invalid operands to binary expression ('double'
++and 'double')
+Fair enough c compiler, it is wrong to use % with doubles. Actually this points
++to a bug in ADMS, I would need to investigate what behavior was causing the
++need to mod by 2pi in the C code, but ADMS should use either fmod or remainder
++in this case. Perhaps also a consistent more precise value of pi. After
++replacing with
+ 
+V2 = fmod(ckt->va_idt(inst->STATE_idt_12,I2,0.0),2*3.1415);
+ 
+the dylib compiles successfully modulo a few warnings about unused variables.
++I’ll see how things work once I start playing with this thing in WRSpice and
++I’m sure I’ll have more questions related to optimizing/debugging my model.
++Thanks again for all your help.
+
+Cheers,
+ 
+Andrew
+
+
+

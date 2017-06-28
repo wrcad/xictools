@@ -1,0 +1,561 @@
+--- Start of 4.2.X
+
+Updated install/package for safe install.
+
+DONE:
+1) message broadcast
+At most one "current message"  restricted/xic_current_mesg
+On startup:
+   look for current mesg file, if found get digest
+   look in $HOME/.wr_cache/xic_cur_mesg_digest
+   if doesn't exist or is different,
+      get message, save in .wr_cache/xi_current_mesg
+      save digest in .wr_cache/xic_current_mesg_digest
+      pop up message in tool
+   done
+2) New release message
+   First time starting a new release, automatically show the release note,
+   look at file $HOME/.wr_cache/xic_current_release
+   if not exist or different from release
+       save current release number
+       pop up notes
+   done
+message check disabled with nocheckupdate set
+   
+
+Max issue with tiny resistors, gmax.
+Now resistance explicitly limited in model code, new warning message.
+
+Add note about uic in release notes. DONE
+
+Open through url, no longer accept -p/-u, use user:pass@host
+
+new proxy command:  proxy address [port]
+
+Added tooltips to main menus and buttons.
+
+mozy double-close fault at protected page.
+---
+
+The input file test was incorrectly finding that a regular input file
+was a fifo, which would cause the input to be copied to a temporary file.
+This would prevent the edit command without arguments from opening
+the circuit file.
+
+Using '#' as an in-line comment in 4.1.28 was stupid, since
+things like "print v1#branch" would become "print va".
+Now, the # must be at the start of line or be preceded by white space.
+The user can put a backslash ahead to explicitgly prevent comment
+interpretation.
+
+-------- 4.2.1 released -------------
+
+Some initial startup things, such as checking for updates and messages,
+were being done after the command line files were sourced.  These are
+now done before.
+
+document nototop (already documented, but updated)
+
+The complex sqrt function now returns the principal root.  if z = sqrt(w),
+re(z) is always non-negative, and im(z) has the same sign as im(w).  This
+will also affect returns from acos, acosh, asin, asinh, which call sqrt
+internally.
+
+wrspice -j now sets sub_catmode=jspice3 and subc_catchar=":"`
+if wrspice -dnone, the "No graphics package available" message is now
+ suppressed.
+
+The noerrwin variable wasn't working.  This is set for -j.
+
+Timing issue, had to move KW.initDatabase from PreInit to main.
+
+-------- 4.2.2 released -------------
+
+In operating range analysis, the .exec lines were being executed before
+every trial, which is incorrect.  They should be executed only once,
+at the start of analysis.  This would break use of the value vector
+for passing trial values if the vector was initialized in the .exec
+block, where it would always be set to the initial value ahead of each
+trial.  If the vector was not defined in the .exec block, or if the value
+method is not used, analysis would work ok.  The bug did not affect any
+of the examples.
+
+new sweep command, the loop command is an alias
+sweep pstr1 start1 stop1 step1 pstr2 start2 stop2 step2 analysis
+
+check command line now allows range variable overrides, param strings,
+
+The param strings use the form of the alter command, provide device
+parameters to sweep.when given, the set variables/vectors are not used
+to set trial values.  Lower overhead.
+
+The dc analysis now allows devname[param] as the "source" names,
+the parameter value is swept.
+
+-------- 4.2.3 released -------------
+
+The proc2mod, printtoraw, and multidec programs are now linked to avoid
+libwinpthread-1.dll dependedce in Windows.
+Also wrspiced fixed to avoid multiple dependencies.
+
+Fixed bug that would crash program with -dnone given and run attempts
+to show iplot or mplot.
+
+-------- 4.2.4 released -------------
+
+basic print (printnum) now prints numdgt digits when units given
+("%.*g", numd+1, num).  was just "%g".
+
+print command:
+scalar value, format (/nf) now recognized, numdgt value now recognized.
+
+the evaluation of a real valued variable (i.e., $value) is now %.15g,
+was just %g.
+
+Damn, Monte Carlo is broken, fixed.
+
+The check findEdge and findRange with all flag set require a values
+vector.  This is now checked for.
+
+special "exec" plot now retained.
+When a circuit file is sourced that contains a .exec block, a special
+plot is created that is active when the .exec block is evaluated, and
+while the circuit lines are variable-substituted.  The plot will contain
+and vectors that are created when the .exec block is evaluated.  Previously,
+this plot was destroyed once the circuit lines were processed, so was
+invisible to the user.  However, this could be confusing, as it is not
+clear what happens to the created vectors, ad any attempt to print them
+failed.
+Now, this plot is retained if it contains any vectors.
+Example
+.exec
+let foo=1.2345
+.endc
+.control
+print foo
+.endc
+v1 1 0 sin(0 1 $&foo%GHz)
+
+This will print the value of vector foo in the present release.  In
+earlier releases, the "print foo" would genertate a vector not found
+error.  If the plots are listed, one will see that there is a plot
+ot type "exec" containing the vector foo.  This plot will be the
+current plot until an analysis is run, at which point a new plot will be
+created for the analysis results.
+
+-------- 4.2.5 released -------------
+
+Bug fixed, crash with -dnone and tries to show release notes.
+
+Fixed bug that would cause spurious error messages complaining about a
+bad parameter named '  (single quote).
+
+Fixed iplot problem, display data update location wrong in ysep.
+
+Fixed problem with plots causing faults when plot deleted when showing
+ghost marker.
+
+The memory use printed in the tool control window of Linux releases
+should now be accurate.
+---
+
+One can now give "iplot ." as with plot, only looks at transient analysis
+plot commands though.
+
+ 
+Fixed asciiplot interpolation bug for multi-dimensional plots.
+
+New data reduction technique speeds plot drawing when there are lots
+of points.  This was a problem on Windows, composing a plot with
+2.5M data points took minutes.
+
+-------- 4.2.6 released -------------
+
+Updated KLU to SuiteSparse-4.4.6
+
+Go back to itl4=20 default. DONE (was 10)
+
+fixed Windows spmatrix overrun issue.
+
+Implement a fixed-timestep mode. DONE  steptype=fixedstep or steptype=3
+
+check amds problem (initfixed?) RESOLVED see README.adms
+
+-------- 4.2.7 released -------------
+
+Fixed bug:  If started without graphics and tries to show broadcast
+message, would crash.
+
+Now list all unresolved subcircuits, along with calling lines.
+Used to just give that name of the first unresolved subcircuit
+seen and  quit.
+
+Fixed logic in saving tempfiles list from input.  If more than one
+used, only one would be unlinked.
+
+The parameter call subcircuit reference name is now parameter
+expanded, so that forms like the following should now work:
+
+.subckt mysub ...
+...
+.ends mysub
+.param sub=mysub
+X0 (nodes) sub (params)
+
+Is there a more general model binning method from Hspice, e.g., for
+resistor linewidth?  Somehow rnod maps to rnods or rnodl in Hspice(?).
+NO, Xic fixed to use "model" cdf param instead of cell name, model of
+rnod is rnodl.
+
+The default xicpath was set incorrectly except under Windows.  It would
+have to be set explicitly to launch Xic from WRspice.
+XXX check Windows.
+
+If a model name can't be resolved, fatal error results.  Previously
+warnings were emitted, but the run would be performed with a default
+model.
+
+DONE: clean up error messages in subexpand.
+
+added POLY to R,C,L  as in Hspice.
+
+-------- 4.2.8 released -------------
+
+Added PHI to sin tranfunc (per Hspice);
+
+refactor tranfuncs
+-IFparseNode no longer keeps the IFspecial and IFtranData in union,
+uses pointers instead.  Should save a bit of space.
+-New AM function as in Hspice
+-PWL now handles R and TD
+  must be inside parentheses if any
+  value at time=0 is value at first given time point, different from
+  Hspice which uses source dc value.
+All parameters are optional, if only the keyword is given, the
+source is just constant 0V, keyword is ignored.
+
+Giving something like ".tran 1p 40" in a margin analysis run would
+effectively hange the program.  New limit of 1e9 analysis points,
+i.e.  tstop/tstep <= 1e9 now enforced.
+
+distortion analysis was broken.
+
+Fixed a strange thing in PZ analysis, caused a spurious warning.
+---
+New tran func gpulse(v1 v2 td pw per td1 td2 ...)
+Produces gaussian pulses.  The (first) pulse is at td, if per
+then additional pulses ate per intervals after td.  If per is 0,
+can give a list o delays where a pulse will appear.
+
+if v1 == v2, the amplitude will be a single flux quantum.
+
+-------- 4.2.9 released -------------
+
+Manuel:  core leak(?), way to suppress printing title when sourcing
+circuit.  Spurious warnings in abs(mean(v(1)[1000,14000]))
+
+new boolean variable: noprtitle
+when set, the "Circuit: (title line)" is not printed when a circuit
+is sourced.
+Also button in source tab of Commands tool
+
+Fixed bug, vector ranges in evaluation scripts for operating range
+or Monte Carlo analysis weren't being accessed correctly, giving messages like
+Warning: upper limit 200 should be 0.
+
+Andrew: generic function.
+
+added jjloop2.cir example: another parameter sweep example.
+
+Fixed reallocation seg fault, probably Apple only.
+
+Fixed thread clashing and garbage data when outputting @device[param]
+vectors from a multi-threaded "chained dc" analysis.
+
+ADMS extensions:
+new HEADER variable in device Makefile, when set to yes, a user-supplied
+include file will be called intop the C++ files.
+ 
+New "cfunc" pseudo-function
+In Verilog code cfunc("myfunc",arg, ..., arg) will map to
+myfunc(arg,...,arg) in the C++.  The user-suppled header should provide
+the protitype, and the Makefile should be modified to link to the library
+providing the called function.
+
+Ugly core leak when setup called mor than once.  It is called before every
+iteration in swept dc analysis.
+Need to check all devices xxxset.cc to avoid multiple allocations.
+
+-------- 4.2.10 released -------------
+-------- 4.2.11 released -------------
+--------
+cite ex8.cir in jj model desc for rtype=4
+
+Internal changes to "load" multi-threading (loadthrds variable).
+1) Faster device loading queue logic.
+2) Fixed a problem that produced "Bad node" errors.
+
+TO-DO Christine, .postrun/.endc block for commands that run after
+an analysis.
+
+Convergence issues (Christine)
+Issue: when delta becomes too small, the matrix elements may become
+larger than Gmax, and solutions lose accuracy or won't converge.
+Here, if delta gets to e-17/18, the tiomestep fails, delta is cut,
+until "too small" failure for delta=e-21.  Thew gauss source with
+0.025ps lattice, and the 0.05ps transmission lines imply lots of
+breakpoints, and timestep cutting.  Thuis causes high probability
+of convergence failure.  Setting delmin to something like e-14
+allows simulation without failure, somewhat conuterintuitively.
+
+Revised the transmission line tratrun.cc to avoid setting the delta
+too small.
+
+Fixed logic in Debug pop-up for "debug" group buttons.
+
+UPDATE jj.va!
+jj model param aliases:
+mfactor for area
+vgap for vg
+rsub for r0
+rnorm for rn
+
+new option rampup=dt
+Aplies to transient analysis.
+effectively multiplies all source values with pwl(0, 0, dt 1).  The
+OP becomes trivial with all sources set to zero.  Mostly fior JJ
+circuits so constant valued sources can be used safely.
+---
+
+New syntax element:
+.postrun
+(commands)
+.endc
+The commands are executed when a simulation run terminates by ending
+normally.
+
+New element:  the "global return value".  This is a number that is known
+in any context.  It is set with the new "retval" function, or by the new
+string comparison functions.  It is accessed with "$?".
+
+New string comparison functions:
+strcmp(str1, str2)      // case-sensitive string comparison
+strcicmp(str1, str2)    // case insensitive string comparison
+strprefix(str1, str2)   // case sensitive, true is str1 prefixes str2
+strciprefix(str1, str2) // case insensitive, true is str1 prefixes str2
+retval(number)          // directly set "$?" to number
+Each of these returns a value in "$?"
+Example:
+set foo="a string"
+set bar="a string too"
+strcmp($foo, $bar)
+if ($? == 0)
+    echo "strings are the same"
+end
+
+New read-only variable: curanalysis (string)
+This is set to the name of the analysis when analysis starts, and retains
+the value until a new analysis starts.  Possible values are
+ac dc op tran tf noise disto sens or not set
+This can be used in the .postrun block to make actions specific to
+analysis type.
+Example
+.postrun
+strcmp("tran", $curanalysis)
+if ($? = 0)
+    print v(1) v(2) > tranout.prn
+end
+.endc
+
+-------- 4.2.12 released -------------
+
+Changed the delmin calculation (again):
+
+I understand the delmin issue now.  The "problem" is the very long 
+simulation time of 400ns.  The delmin is the larger of tstep*1e-6 and    
+tstop*1e-9.  In Berkeley Spice3 and WRspice before 4.2.12, the values      
+were tstep*1e-9 and tstop*1e-12.
+
+Adding the extra 1e3 seemed to help convergence of earlier circuits,
+but here the second term gives a bad (too big) delmin for long (400ns) 
+runs.
+
+It seems to me that it is not right to use tstop since the delmin 
+should be independent of simulation length.  So, in the next release   
+I'm going to simply remove the second term, which fixes the problem
+with your circuit(s) and is (hopefully) unlikely to cause problems in 
+other ciruits.
+
+The noise calculations and noise macro appear to be wrong!  They assume
+B = 1/dt, whereas by the sampling theorem B = 1/(2*dt).
+>>> Updated noise.cir example, manual/help for gauss function.  Jeffery
+Memo is correct.
+
+Replaced the MarkJefferyNoiseMemo.pdf file in the "docs" directory of
+the distribution archive with a cleaner scan, with additional material.
+
+Fixed problems with very long (e.g., 50k points) PWL statements.
+1.  There was excessive overhead in processing the PWL arguments, causing
+a long startup delay where WRspice seemed unresponsive.  This has been
+fixed: what used to take half an hour now takes perhaps a second.
+2.  The "argument list" of the PWL "function" was called recursively,
+possibly causing  a stack overflow and seg fault.  This is avoided now.
+
+New options for print command, more control on formatting.
+New variables:
+printautowidth (booleean)
+  When set, use print width sufficient to include all variables, or up
+  to 2048 character lines (col mode).
+printnoheader (boolean)
+  Don't print the top header (col mode).
+printniindex (boolean)
+  Don't print the indices (col mode).
+printnopageheader (boolean)
+  Don't print the page header (col mode)
+printnoscale (boolean)
+  Don't print the scale in column 1 (col mode).
+  Replaces noprintscale, which is still accepted.
+The format spec of the print line can override these (see comment in code).
+All have entries in Print page of Commands tool.
+
+TO DO
+In JJ Verilog model, how to get recognition as "JJ" device.
+
+JJ,R other devices: built-in noise model?
+
+DC analysis, L and C, use Gmin for convergence ?
+
+The number of nodes is now saved in the sGENinstance.  This is the
+maximum number of external current-carrying nodes (not sense nodes).
+ADMS updated.
+
+all device instance and model structs now have a constructor that
+clears all and sets what's needed, mostly GENnumNodes.
+
+New check for cap/current source cut sets, but doesn't deetect
+deries devices so is pretty worthless.
+
+Updated the ADMS Makefiles with new "FLAGS" configuration.  Most likely
+this won;t be needed, except that one can now identify Josephson
+junctions, so that the Verilog JJ model will be recognized as a JJ in
+WRspice.
+
+-------- 4.2.13 released -------------
+
+Fixed, AC analysis broken for transmission lines.
+
+In multi-D plots, clicking win the dimensions list with button 2 hides
+all dimensions, clicking with button 3 shows all dimensions.
+
+Dimension list looked funny due to multiple rendering with anti-aliased
+fonts.
+
+The percent done reported for sweep analysis is now correct.
+
+chained dc analysis with transmission line caused seg fault.
+
+Using "o" instead of "t" doesn't call level=2 model.
+XXX is it supposed to?
+No mention is docs.
+Need to say something in docs, are they simply equivalent?
+level can be a device parameter!
+
+in dc analysis, the minimum step was 1e-8.  This has been relaxed,
+since the parameters can now be arbitrary circuit parameters.
+
+internal JJ device has new param aliases for init conds:
+ic_phase  same as phi
+ic_v      same as vj
+for compat with Verilog example.
+
+Verilog JJ updated:
+pijj=1  paraemter for "PI" junction.
+trfactor timestep control parameter
+
+Internal model now has
+pijj=1/0 parameter, both instance and model (instance overrides if
+given).
+
+-------- 4.2.14 released -------------
+
+update to jj.va, syntax fixes.
+
+Manuel, doesn't work:
+.param=x=0.6
+L0 1 2 x*10pH
+FIXED
+
+help:  link "filetype" from "rawfile". DONE
+
+Kirtley opamp issue FIXED (NOT WRspice issue)
+
+compose command now does the right thing with a vector name in the form
+plotname.vecname, i.e., will create vecname in plotname.
+
+Christine, read huge binary pwl efficiently. DONE
+new syntax (see "help pwl")
+PWL vec1 [vec2]
+
+Might as well document Cadence PSF support
+CentOS 6/7 only. DONE
+
+-------- 4.2.15 released -------------
+
+Add screen shots in help. plot windows!  Tool control, etc.
+
+Max value of maxdata is now 2e9 from 1e15.  The new value avoids
+possible FPE when converting value to integer, and 2TB should be plenty.
+
+Looks like a bug in the time step computation that broke the jjaccel
+mode, and may have affected accuracy in normal mode with JJ circuits.
+
+No longer cut delta at breakpoint below 0.1 times the previous delta,
+seems to improve convergence.
+
+When "jjaccel" is in use, the time delta is now limited to less than
+or equal to 1/2 the shortest transmission line delay.  Previously,
+tl delays weren't considered.  Very short tls can now be supported
+properly.
+
+Param expansion changes.
+params first encountered in an instance call line are now accepted,
+previously they could only be updated, meaning that they had to be
+defined at a higher level (usually the subcircuit definition).
+Device parameter lines are in some cases expanded slightly differently,
+to avoid expanding parameter name keywords.  Example:
+.subckt tline 1 2 3 4
+T1 1 2 3 4 l=l c=c len=len
+.ends tline
+This can now be called as
+
+xt1 1 0 2 0 l=1.5nh c=12ff len=1e-6
+
+Which expands to
+
+T1.xt1 1 0 2 0 l=1.5nh c=12ff len=1e-6
+
+So, 1) parameters get expanded when defined first in the instance call
+line.  Previously, one would have to define default values for the
+"known" parameters on the .subckt line. 2) In param=value, the "value" is
+parameter expanded, not the "param".
+
+-------- 4.2.16 released -------------
+
+The default path to xic was incorrect.
+
+Matt,
+
+You can give commands like "plot v(1) v2) ; plot (v3) v(4)" to get two     
+plot windows.  Importantly, this works from the Xic prompt line when the
+plot button is active, and you can click to define the vectors.  Just add
+": plot" as plain text.
+
+I plan to add a "group" option to the WRspice plot command, so one could     
+have something like "plot v(1) v(2) -g v(3) v(4) -g i(v1) i(v2)" to obtain
+three sub-plots containing the listed vectors.  These would be displayed
+into the same window somehow, or perhaps separate windows.  The latter case
+would be equivalent to "plot v(1) v(2) ; plot v(3) v(4) ; plot i(v1) i(v2)",
+which should not be too difficult to implement.
+
+Regards,
+Steve

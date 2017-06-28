@@ -1,0 +1,785 @@
+--- Start of 3.0.X
+
+Use cimatch instead of ciprefix to detect keywords.
+
+.inc in now equiv to .include
+
+.include now pushes to the directory of the target, if the target has a
+directory path.  Thus, includes within the target file will resolve
+relative to the target directory, instead of the initial cwd.
+
+Fixed bug: the ~ (NOT) operator was broken, returned x ? 1 : 0.
+
+Expression parser changes:
+&& is the same as &  (AND operator)
+|| is the same as |  (OR operator)
+== is the same as =  (equality)
+! is the same as ~ (NOT)
+!= is the same as <>, >< (NOT EQUAL)
+
+Level 54 mapped to level 14 (BSIM4.4.0)
+
+updated the hash functions (hash.cc, new hash.h) to be dynamic hashwidth.
+
+Updated all the paramsub stuff to use hash tables, for efficiency.
+
+Parameter assignments can now be used to define functions.
+.param func(a,b,c) 'expression'
+This has the same effect as the define command.
+note: function remains defined, provide circuit-specific functions?
+
+An isolated '$' character in a line of SPICE input is now taken as a comment
+start.  The '$' and the rest of the line is thrown away.
+
+In expressions, '**' is now the same as '^' (power).
+
+Expressions now support xxx ? yyy : zzz
+There must be white space surrounding the ? :.
+
+If there are more than one backslashes at the end of a (continued) line, they
+will all be stripped.
+
+VLvalue new return struct for GetVar, avoids fixed-length string buffers.
+
+An integer followed by ':' is taken as the start of a node name, which
+might break "x ? y : z" constructs.  If y is an integer, there must be space
+before ':', or y must be in parens, of y can be given as a floating value.
+
+".macro" is a synonym for ".subckt" (or value of substart)
+".eom"  is a synonym for ".ends" (of value of subend)
+
+modified tranfunc recognition to be a little faster and not fail.
+
+Parser::Parser() now takes some flags, for more careful control.
+When called from .param expand, tran func recognition is turned off
+(but still can be called from devine.cc).  Node name <int>: hack is
+also turned off.
+
+numparse always returned 0 for <int>:, removed this.
+
+new variable : errorlog (string).  When set to a file name, errors will
+be written to the file.
+
+new variable : dollarcmt (bool)
+unset:
+    ^$<space>         line is a comment
+    ^;<space>         line is a comment
+    <space>$<space>   rest of line is a comment
+    <space>;<space>   rest of line is a comment
+set:
+    ^$         line is a comment
+    ^;         line is a comment
+    <space or ,>$   rest of line is a comment
+    <space or ,>;   rest of line is a comment
+
+
+parameter substitution.
+    // For .param, .subckt, .model, subinvoke, device line:
+    //   For each "p = v", call line_subst on each v, ignore the p's
+    //   except as syntax elements.  I.e., update only the RHS of
+    //   assignments.
+    // For v/i source, .print, .plot, others?:
+    //   Call line_subst on line.  This tokenizes and updates each
+    //   token.
+
+"--" unary minus is gone.
+
+When given a list of expressions, such as arguments to print or plot,
+terms like "v(1) -v(2)" will be interpreted as "v(1)-v(2)"  (one term,
+the difference, instead of two terms).  In previous releases, one could
+give "--" instead of "-" to coerce a unary minus.  However, this breaks
+the parser in subtle ways and has been removed.  Instead, a semicolon ";"
+can be inserted to explicitly enforce a token break:  "v(1); -v(2)".
+ 
+Problem with this: the shell breaks the line at the semicolon.  Have to
+use double quotes, of backslash quoting.
+
+Double-quoting the tokens also works.
+
+fixed array overrun bug in .param handling
+
+Fixed bug in v_divide, failed for negative divisor.
+
+Added bsim4.3.0 as level=54 MOS model.
+
+--
+
+New functions
+These have been added for HSPICE compatibility.  Unlike the other math
+functions, these take multiple arguments, and the comma separating the
+arguments is taken as an argument separator and not the comma operator.
+
+unif(nom, rvar)
+    Returns a vector the same length as nom, complex or real as nom.
+
+    Below, random() returns a random number between -1 and 1. 
+
+    if nom is complex, var is complex:
+    out[i].real = nom[i].real*(1 + random()*rvar[i].real/sigma)
+    out[i].imag = nom[i].imag*(1 + random()*rvar[i].imag/sigma)
+
+    if nom is complex, var is real:
+    out[i].real = nom[i].real*(1 + random()*rvar[i]/sigma)
+    out[i].imag = nom[i].imag*(1 + random()*rvar[i]/sigma)
+
+    if nom is real, var is complex:
+    out[i] = nom[i].real*(1 + random()*rvar[i].real/sigma)
+
+    if nom is real, var is real:
+    out[i] = nom[i]*(1 + random()*rvar[i]/sigma)
+
+aunif(nom, var)
+    Returns a vector the same length as nom, complex or real as nom.
+
+    Below, random() returns a random number between -1 and 1. 
+
+    if nom is complex, var is complex:
+    out[i].real = nom[i].real + random()*var[i].real/sigma
+    out[i].imag = nom[i].imag + random()*var[i].imag/sigma
+
+    if nom is complex, var is real:
+    out[i].real = nom[i].real + random()*var[i]/sigma
+    out[i].imag = nom[i].imag + random()*var[i]/sigma
+
+    if nom is real, var is complex:
+    out[i] = nom[i].real + random()*var[i].real/sigma
+
+    if nom is real, var is real:
+    out[i] = nom[i] + random()*var[i]/sigma
+
+gauss(nom, rvar, sigma)
+    Returns a vector the same length as nom, complex or real as nom.
+
+    Below, gauss() returns a gaussian random number with zero mean and
+    unit standard deviation.
+
+    if nom is complex, var is complex:
+    out[i].real = nom[i].real*(1 + gauss()*rvar[i].real/sigma)
+    out[i].imag = nom[i].imag*(1 + gauss()*rvar[i].imag/sigma)
+
+    if nom is complex, var is real:
+    out[i].real = nom[i].real*(1 + gauss()*rvar[i]/sigma)
+    out[i].imag = nom[i].imag*(1 + gauss()*rvar[i]/sigma)
+
+    if nom is real, var is complex:
+    out[i] = nom[i].real*(1 + gauss()*rvar[i].real/sigma)
+
+    if nom is real, var is real:
+    out[i] = nom[i]*(1 + gauss()*rvar[i]/sigma)
+
+
+agauss(nom, var, sigma)
+    Returns a vector the same length as nom, complex or real as nom.
+
+    Below, gauss() returns a gaussian random number with zero mean and
+    unit standard deviation.
+
+    if nom is complex, var is complex:
+    out[i].real = nom[i].real + gauss()*var[i].real/sigma
+    out[i].imag = nom[i].imag + gauss()*var[i].imag/sigma
+
+    if nom is complex, var is real:
+    out[i].real = nom[i].real + gauss()*var[i]/sigma
+    out[i].imag = nom[i].imag + gauss()*var[i]/sigma
+
+    if nom is real, var is complex:
+    out[i] = nom[i].real + gauss()*var[i].real/sigma
+
+    if nom is real, var is real:
+    out[i] = nom[i] + gauss()*var[i]/sigma
+
+limit(nom, var)
+    Returns a vector the same length as nom, complex or real as nom.
+
+    if nom is complex, var is complex:
+    out[i].real = nom[i].real +/- var[i].real randomly
+    out[i].imag = nom[i].imag +/- var[i].imag randomly
+
+    if nom is complex, var is real:
+    out[i].real = nom[i].real +/- var[i] randomly
+    out[i].imag = nom[i].imag +/- var[i] randomly
+
+    if nom is real, var is complex:
+    out[i] = nom[i].real +/- var[i].real randomly
+
+    if nom is real, var is real:
+    out[i] = nom[i] +/- var[i] randomly
+
+pow(x, y)
+    Returns a real vector the same length as x.
+
+    if x is complex, y is complex:
+    out = x^y   (same as ^ operator)
+
+    if x is complex, y is real:
+    out = x^(int)y (same as ^ operator, but y is truncated to integer)
+
+    if x is real, y is complex:
+    out = x^y   (same as ^ operator)
+
+    if x is real, y is real:
+    out = x^(int)y (same as ^ operator, but y is truncated to integer)
+
+pwr(x, y)
+    Returns a real vector the same length as x.
+
+    if x is complex, y is complex:
+    out[i] = (sign of x[i].real)(mag(x[i]) ^ y[i].real)
+
+    if x is complex, y is real:
+    out[i] = (sign of x[i].real)(mag(x[i]) ^ y[i])
+
+    if x is real, y is complex:
+    out[i] = (sign of x[i].real)(abs(x[i]) ^ y[i].real)
+
+    if x is real, y is real:
+    out[i] = (sign of x[i].real)(abs(x[i]) ^ y[i])
+
+sgn(x)
+    Returns a vector the same length as x, complex or real as x.
+
+    if x is complex:
+    out[i].real = 1,0,-1 if x[i].real is >, =, < 0
+    out[i].imag = 1,0,-1 if x[i].real is >, =, < 0
+
+    if x is real:
+    out[i] = 1,0,-1 if x[i] is >, =, < 0
+
+sign(x, y)
+    Returns a vector the same length as x, complex or real as x.
+    The vector y is padded to the length of x if necessary, by replicating
+    the highest value.
+ 
+    if x is complex, y is complex:
+    out[i].real = (sign of y[i].real)abs(x[i].real)
+    out[i].imag = (sign of y[i].imag)abs(x[i].imag)
+
+    if x is complex, y is real:
+    out[i].real = (sign of y[i])abs(x[i].real)
+    out[i].imag = (sign of y[i])abs(x[i].imag)
+
+    if x is real, y is complex:
+    out[i] = (sign of y[i].real)abs(x[i])
+
+    if x is real, y is real:
+    out[i] = (sign of y[i])abs(x[i])
+
+tsin
+texp
+tgauss
+
+The "tran" functions sin, exp, gauss have names that conflict with math
+functions.  There seems to be no way to reliably distinguish the tran
+vs. math functions by context, nor is it possible to rename the functions
+without causing big compatibility problems.
+
+Although the sin and exp functions are generally distinguishable except
+for one unlikely case, with the additional arguments to the gauss function
+for HSPICE compatibility, the problem is more acute.
+
+To guarantee that the tran functions are used in an expression, they can
+be called by the names "tsin", "texp", and "tgauss".
+
+If sin, exp, or gauss use white-space delimiting in the argument list, then
+they will be called as tran functions.  The math functions always use
+commas to separate arguments.  Commas are also legal argument separators
+in tran funcs.
+
+The argument count is used to resolve ambiguity.
+
+To resolve ambiguity, if comma argument separators are used, the math
+function is assumed.
+
+Note that almost all math functions (whith the exception of gauss and a few
+others) take a single complex vector argument.  It is possible to give
+these functions multiple comma-separated "arguments", but in evaluation
+these are collapsed by evaluation of the comma operator:
+    a,v  = (a + j*b)
+
+So, sin(1,1) is equivalent to sin((1+j)), which returns a complex value.
+
+In previous WRspice releases, sin(a,b) was always interpreted as the
+tran sin function, which has a minimum of two arguments.  Presently.
+
+sin(a,b)  -> math
+sin(a b)  -> tran
+
+If ambiguity occurs in a function spec for a V/I or dependent source,
+the tran function is favored.
+
+New variable: norandom (boolean)
+When set, the math functions unif, aunif, gauss, agauss, and limit
+return the nominal value, not a random value, when not doing Monte-Carlo
+analysis.
+
+--
+
+Now checks for updates on program start in graphical mode.
+
+new variable: nocheckupdate
+This variable can be set in your .wrspiceinit file to suppress checking
+for updates on program startup.
+
+New command: passwd (no args)
+Creates $HOME ./wrpasswd file
+
+New command: wrupdate
+
+New variable: installcmdfmt
+
+New function: helpreset (no args)
+Re-read the help database.
+
+XXX George, plot trace limit
+Done, now cay have up to 18 separable traces.
+
+Work on dec sourcing functions, mo param sub into SpDeck.  This should put
+param evaluation into Monte Carlo loop.
+
+/*XXX
+Procesing order
+-- start DeckSource --   
+read .param lines
+handle .if, etc lines after param sub and var sub
+conditional lines are gone, only in-scope lines remain
+
+extract Verilog lines
+extract .exec lines
+extract .control lines
+
+-- start SpDeck --
+         
+extract .param lines
+param sub all remaining lines  
+     
+if (.exec lines) {   
+    param sub exec lines
+    execute exec lines
+}
+ 
+-- if no circuit lines return --
+var sub .option lines
+parse/set .option lines
+
+var sub all lines
+
+expand subcircuits:
+    read and merge local .param lines
+    param sub lines
+
+-- return to DeckSource
+
+if (.control lines) {
+    param sub .control lines
+    execute .control lines
+}
+*/
+
+TODO:
+  new variables to tools  DONE, both in General page of Cmds tool
+  implement agauss, etc.  DONE
+  check yn function, 2 args OK
+  add auto-update code DONE
+  make sure all paths are correct (gtkcmds.cc has /usr/local) OK
+  update MSW Tools/Cmds/General page
+  check new help text
+
+-------------------------------------------------
+output.cc
+Modified error string printing to avoid possible array overrun.
+
+Modified many error message outputs from the BSIM device models which
+could cause seg faults if generated.
+
+Modified the number parser to avoid using crummy pow() math function in
+older (GLIBC-2.2.4, Red Hat 7.2) C libraries.  This was causing failure
+of equality tests for forms like (1.00000e+00 == 1).  This affected the
+Linux2 distributions only.
+
+The Linux2 binaries, both Generation 3 and the final Generation 2.5
+distributions, were generated with a new custom-installed compiler,
+the installation of which was necessary to build Generation-3
+programs.  The original stock Red Hat compiler can not handle some of
+the C++ constructs in these programs.
+
+Unfortunately, the new compiler was not predefining the macro for
+setting up the floating-point math properly.  All Linux2 distribution
+files that were downloaded the week of May 19, 2008 are suspect and
+should be updated.  These binaries will have subtle math errors which
+can break scripts or otherwise cause trouble.
+
+.ind/.include [H] path
+
+If H/h given, the dollarcmt and norandom variables will be set during
+the file read.  XXX norandom needed?
+
+In Monte Carlo:
+1.  .params are recomputed at the start of each trial.
+2.  parameters are known in .exec block if not bound, but not in .control block
+    ie, params known in .exec block if it is read in the smae logical unit
+    (same file, or through .inc) as the circuit.
+
+agauss wasn't working correctly.
+
+new example: jjmc1.cir
+This uses .param defines to generate random values.
+
+new keyword: .norandom
+-----------------------------------------------
+
+gtkrc change, xictools-release too.
+
+mos default model, make sure mos1.  FIXED, added level=1 check.
+
+added models:
+    bsim3.3.0
+    bsim4.6.1
+    bsimsoi4.0
+    hisim-1.2.0
+
+Bug fixed: when zooming in to a plot, if the zoom region contained a
+plot endpoint, possibly the endpoint would not appear in the zoomed
+plot.
+
+The irritating BSIM3 "Pd = 0 is less than W." message will no linger
+appear if Pd is not given, same for Ps.
+
+The BSIM models no longer dump a log file in the current directory.
+
+All BSIM messages should now go to the error window rather than the
+console window.
+
+TODO:
+GJC:  hspice bsim3 params, flag to quiet all hspice warnings?
+
+The set command with no args would seg fault in the last release.
+
+New variable/option: hspice (boolean)
+When set:
+  1) MOS model parameters
+    "acm",
+    "alpha",   
+    "binflag",
+    "capop",   
+    "cjgate",
+    "cta",
+    "ctp",  
+    "dtemp",
+    "hdif",
+    "iirat",
+    "lalpha",
+    "ldif",
+    "lmlt",
+    "lref",
+    "lvcr",
+    "pta",
+    "ptp",
+    "rdc",
+    "rs",
+    "rsc",
+    "scale",
+    "scalm",
+    "tlev",
+    "tlevc",
+    "vcr",
+    "walpha",
+    "wmlt",
+    "wref",
+    "wvcr",
+    "xl",
+    "xw",
+  are silently ignored.  Ordinarily, they produce a warning message.
+  2)  MOS device parameters
+    "dtemp",
+  are silently ignored.  Ordinarily, they produce a warning message.
+  3)  Control keywords
+.alias
+.alter
+.connect
+.data
+.dellib
+.dout
+.global
+.graph
+    .hdl
+.lin
+.malias
+.protect
+.protect
+.stim
+.unprotect
+  are silently ignored.  Ordinarily, they produce a warning message.
+   
+This can be set in a .options line (".options hspice") or with the set command.
+
+---- 3.0.2 released ---
+
+added nospice17 diode and vbic models
+
+bug: plot xxx vs -yyy  was being changed to xxx vs --yyy, left over from
+old unary-minus coesrsion.
+
+The ploting commands can now take as arguments any or the attributes.
+
+Fixed bug:  The new x ? y : z syntax handling broke dependent sources
+with subcircuits, since the ':' characters intriduced into node and
+source names broke the parser.
+
+Fixed bug: Subcircuit node name translation when doing internal flattening
+was not working cirrectly with the POLY(N) construct.
+
+added VBIC bipolar transistor model as level=4
+
+updated the diode model.
+
+fixed noise analysis in MOS levels 1-3,6, and bsim3 level-49 to be correct
+when the 'M' multiplier is not unity.
+
+The .TEMP card now works, sort of.  Previously, and in Spice3, this card would
+be ignored, with a warning.  in WRspice, the first temperature given will
+set the default circuit temperature, which will be overridden by the .options temp
+it that is also given.  Additional temperatures listed are just ignored,
+for now.
+
+Rewrite device descriptions:
+combine device and model into same text.
+consult hspice manual
+
+The tokens wrspice, WRspice, WRSPICE are defined as "1" when used in
+.if/.elif conditionals.  These params are read-only, and attempts
+to change values in a .param line is silently ignored.
+One can add specific WRspice text to a spice input line as
+
+.param WRspice=0  $ This is ignored by WRspice
+.if WRspice
+(WRspice-specific lines)
+.else
+(lines for HSPICE or whatever)
+.endif
+
+
+The .norandom token and norandom variables are gone (sorry)
+
+The present logic disables random functions unless in Monte Carlo analysis,
+as previously with norandom set.
+
+There is a new boolean varialbe "random" which has the inverse effect: the
+random functions are enabled when this variable is set.
+
+hspice uses .elseif
+.elseif and .elif are not equivalent
+
+the .lib inclusions now chdir.
+there is a "lib h" option for hspice comment filtering.
+
+.include/.lib now processed after .if
+
+.include/.lib now use fopen instead of PathOpen.
+
+--check this:
+    If no arguments are given, the arguments to the last given
+    <b>plot</b> command are used.  If the argument list contains a
+    token consisting of a single period ("."), this is replaced with
+    the vector list found in a <a href=".plot"><tt>.plot</tt></a> line
+    from the input file with the same analysis type as the current
+    plot.  For example, if the input file contains
+    <blockquote><tt>
+    .tran .1u 10u<br>
+    .plot tran v(1) v(2)
+    </tt></blockquote>
+    then one can type "<tt>run</tt>" followed by "<tt>plot .</tt>" to
+    plot <tt>v(1)</tt> and <tt>v(2)</tt>.
+
+---- 3.0.3 released ---
+
+Bug: "singleton" params and signle-quoted expressions weren't being expanded
+in device lines, but param=value forms were ok.
+
+---- 3.0.4 released ---
+
+Bug: .lib access would read in the entire library file starting at the
+block start.
+
+Bug:  path errors in .include/.lib weren't being handled well.
+
+Bug: files in the root directory couldn't be accessed with .include/.lib
+
+New feature:  .include/.lib lines are now shell expanded, so that the
+paths can be set interactively.  All other lines are shell expanded
+after the includes are read in.  Note that in files included with
+the "h" option or with dollarcmt set, shell expansion won't work, since
+the '$' will be taken as the start of a comment.
+
+added HSPICE model params rd, nds, vnds to the "HSPICE unhandled"
+list.
+
+---- 3.0.5 released ---
+
+Missing comman between rd and rds prevented these model params from
+being recognized as HSPICE-ignored.
+
+double-quoting was being ignored in plot lines.
+
+There was no error message from a parse error in plot lines and some others,
+the command would silently fail.
+
+When using the wrspiced daemon, the WRspice toolbar is now visible when
+a connection is established in Xic.
+
+In plot lines and elsewhere, ':' characters were being misinterpreted,
+causing a syntax error.  This would apply in particular to subcircuit-expanded
+names, such as "v:0:1#branch".
+
+The problem is due to the new "a ? b : c" conditional expression handling.
+If the a,b,c expressions contain ':' characters, the parser has to be
+smart enough to ignore them.  For example:
+
+  plot v:0:1#branch < 0 ? v:0:1#branch : v:0:1#branch
+
+or worse
+
+  plot v:0:1#branch<0?v:0:1#branch:v:0:1#branch
+
+The lexical analyzer has been beefed up to better handle this case.
+However, it is not perfect, and it may be necessary to use double
+quoting of, e.g., vector names, e.g.
+
+  plot "v:0:1#branch"<0?"v:0:1#branch":"v:0:1#branch"
+
+removes any ambiguity.
+
+---- 3.0.6 released ---
+
+trgauss is really tgauss (fix help) (tsin, texp too)
+
+If the gauss function has 4 args, is is taken as a tran function.
+Previously, it was taken (incorrectly) as a math function.
+
+The math functions with more than one arg (such as the HSPICE
+compatibility functions) now have strict argument count checking.
+
+The Diode warning messages were printing gibberish instead of the
+diode device or model name.
+*** inc devlib release num
+
+A lib call to a file without a path would cause a seg fault.
+
+---- 3.0.7 released ---
+
+TODO: cache models and subckts for reuse, avoid loading for each
+circuit.
+
+Caching added.
+
+syntax:
+.cache name
+...
+.endcache
+
+The name is any name token.  There can be only one .cache block per
+circuit deck.  The first time the name is seen, the enclosed lines are
+processed normally but saved.  Subsequently, the enclosed lines are
+skipped.  The skipping occurs early in the sourcing operation, before
+.include lines are read.  So, for example
+
+.cache aaa
+.include some_big_library
+.endcache
+
+will avoid reading some_big_library after the first time.  Sourcing the
+file containing these lines a second time should be much faster than the first
+time, if some_big_library requires a lot of processing.  This can save a
+lot of time, particularly in scripts which run a circuit simulation repeatedly.
+
+Note that once the name is seen, it would apply to all input files that have a
+.cache block with the same name.
+
+The only things that should appear in a .cache block are
+.subckt definitions, must include all lines including .ends
+.model lines
+.param lines
+comments
+
+Anything else will likely cause an error, as it will be "missing".
+
+The state of the cache can be manipulated with the (new) cache command.
+This can have the following forms, the first argument is a keyword (or letter).
+additional arguments are tag names (the names that follow ".cache").
+
+cache h[elp]
+   Print command usage information.
+cache l[ist]
+   Print a list of the tag names currently in the cache.  The cache command
+   with no arguments does the same thing.
+cache d[ump] [tagname ...]
+   This will dump the lines saved in the cache, for each name given, or
+   for all names if no name is given.
+cache r[emove] tagname [tagname ...]
+   This will remove the cached data associated with each name given.  The
+   given names will no longer be in the cache.
+cache c[lear]
+   This will clear all data from the cache.
+
+Bug:
+Script execution was messed up before, including startup scripts.
+
+New startup script exec mode:
+If .wrspiceinit files exist in the home and current directory, both will
+be execed on startup, the home dir first.
+The toolbar update command will update or create a file in the home dir,
+unless the home dir is unknown (MSW), in which case the cwd is used.
+
+The internal parameter defines wrspice WRspice and WRSPICE have been
+removed, since they would cause substitution of "1" in unexpected and
+wrong places.  The replacement is WRSPICE_RELEASE, which is set to a
+five digit release number.  The release number code is a five digit
+integer xyzz0, corresponding to release x.y.z.  x (3) and y are one
+digit, z is two digits 0 padded.  The trailing 0 is a historical
+anachronism.
+
+The font fields in .mozyrc are not ignored.  All font setting takes place
+in the .wrspiceinit file using the Update Tools command in the toolar, or the
+update command.
+
+WARNING: the font names are very different between GTK1.2 and GTK2.0
+releases.  If, after updating, the fonts are awful, try removing the
+setfont lines in the .wrspiceinit file.
+GTK1.2             GTK2.0
+all Gen2 releases  Gen3 LinuxRHELxxx
+Gen3 FreeBSD
+Gen3 Linux2
+Gen3 OS X
+
+---- 3.0.8 released ---
+
+TODO: allow multiple assignments in let: let a=b c=d ...
+DONE
+
+MSW fixes:
+1) Use of the jpeg, etc plot driver would cause instability due to memory
+   error.
+2) In plot windows, clicking on text would sometimes cause the text
+   to reposition itself.
+3) Added clipping during text drawing so that aliased fonts would not
+   become darker due to multiple redraws.
+
+Added test for model cap value in jj model.  If the "p" is omitted,
+there is an overflow somewhere that causes really wacky results, even if
+the jj is not connected.
+
+Fixed bug: a ".save @Ix[c]" line would cause big trouble in noise
+analysis due to memory problem.
+
+The current source @Ix[c] now returns the AC value in AC analysis.
+
+Additional messages added to front end error handling.
+
+Bug fixed:  In expression lists, such as args to the plot command, double
+quoted tokens were not being handled correctly.  The doulbe-quoting should
+enforce evaluation of the token as a separate expression.
+This broke plotting current from resistors by clicking on the '+' in the
+resistor device in Xic.
+
+---- 3.0.9 released ---
+--- End of 3.0.X
+
