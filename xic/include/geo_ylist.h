@@ -64,7 +64,7 @@ struct Ylist
             unsigned int cnt = 0;
             Ylist *y = this;
             while (y) {
-                cnt += y->y_zlist->length();
+                cnt += Zlist::length(y->y_zlist);
                 y = y->next;
             }
             return (cnt);

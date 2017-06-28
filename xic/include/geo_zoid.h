@@ -51,7 +51,7 @@ struct Zoid
     bool is_rect() const { return (xll == xul && xlr == xur); }
     bool is_manh() const { return (xll == xul && xlr == xur); }
 
-    bool is_45()
+    bool is_45() const
         {
             int dy = yu - yl;
             int dx = xul - xll;

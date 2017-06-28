@@ -1048,7 +1048,7 @@ lexpr_funcs::IFzArea(Variable *res, Variable *args, void *datap)
     }
 
     res->type = TYP_SCALAR;
-    res->content.value = zl->area();
+    res->content.value = Zlist::area(zl);
     FREE_CHK_ZL(free_zl, zl)
     return (OK);
 }

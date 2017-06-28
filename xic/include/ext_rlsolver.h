@@ -141,10 +141,10 @@ private:
                 rl_BB.bottom + rl_delta*y + rl_delta/2);
             for (int i = 0; i < rl_num_contacts; i++) {
                 if (rl_contacts[i].cBB.intersect(&px, true) &&
-                        rl_contacts[i].czl->intersect(&px, true))
+                        Zlist::intersect(rl_contacts[i].czl, &px, true))
                     return (i + rl_offset);
             }
-            if (rl_zlist->intersect(&px, true))
+            if (Zlist::intersect(rl_zlist, &px, true))
                 return (y*rl_nx + x + rl_num_contacts + rl_offset);
             return (-1);
         }
@@ -155,7 +155,7 @@ private:
         {
             Point_c px(rl_BB.left + rl_delta*x + rl_delta/2,
                 rl_BB.bottom + rl_delta*y + rl_delta/2);
-            if (rl_zlist->intersect(&px, true))
+            if (Zlist::intersect(rl_zlist, &px, true))
                 return (true);
             return (false);
         }

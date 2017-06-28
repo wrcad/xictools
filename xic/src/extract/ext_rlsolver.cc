@@ -808,7 +808,7 @@ RLsolver::set_delta()
         // structure can be tiled.
 
         int t = find_tile();
-        double a = rl_zlist->area() * CDphysResolution * CDphysResolution;
+        double a = Zlist::area(rl_zlist) * CDphysResolution * CDphysResolution;
         double d = a/(t*t);
         bool needs_edges = false;
 
@@ -831,7 +831,7 @@ RLsolver::set_delta()
         // Don't try to tile, just set a delta according to the
         // rl_numgrid value and use the edge lists.
 
-        double a = rl_zlist->area() * CDphysResolution * CDphysResolution;
+        double a = Zlist::area(rl_zlist) * CDphysResolution * CDphysResolution;
         double t = sqrt(a/rl_numgrid);
         rl_delta = (int)t;
         setup_edges();

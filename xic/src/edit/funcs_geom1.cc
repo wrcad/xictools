@@ -2883,7 +2883,7 @@ geom1_funcs::IFjoinObjects(Variable *res, Variable *args, void*)
                 ldfirst = ol->odesc->ldesc();
             if (ldset || ol->odesc->ldesc() == ldfirst) {
                 Zlist *z = ol->odesc->toZlist();
-                int n = z->length();
+                int n = Zlist::length(z);
                 if (Zlist::JoinMaxQueue <= 0 || zcnt + n <
                         Zlist::JoinMaxQueue) {
                     if (!zl0)

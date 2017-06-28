@@ -356,13 +356,13 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
         else {
             if (blflags & BL_SCALE_FIX) {
                 try {
-                    zt->expand_by_2();
-                    z0->expand_by_2();
+                    Zlist::expand_by_2(zt);
+                    Zlist::expand_by_2(z0);
                     XIrt ret = Zlist::zl_andnot(&zt, z0);
                     if (ret != XIok)
                         throw (ret);
                     zt = zt->repartition();
-                    zt = zt->shrink_by_2();
+                    zt = Zlist::shrink_by_2(zt);
                 }
                 catch (XIrt) {
                     throw;
@@ -458,8 +458,8 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
                 try {
                     Zlist *zedg = zx->ext_zoids(delta, blflags);
 
-                    zedg->expand_by_2();
-                    zx->expand_by_2();
+                    Zlist::expand_by_2(zedg);
+                    Zlist::expand_by_2(zx);
                     XIrt ret = Zlist::zl_andnot(&zx, zedg);
                     if (ret != XIok) {
                         g->list[i] = 0;
@@ -467,7 +467,7 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
                         throw (ret);
                     }
                     zx = zx->repartition();
-                    zx = zx->shrink_by_2();
+                    zx = Zlist::shrink_by_2(zx);
                 }
                 catch (XIrt) {
                     g->list[i] = 0;

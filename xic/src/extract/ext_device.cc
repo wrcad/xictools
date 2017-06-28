@@ -2837,7 +2837,7 @@ sMprim::cAP(sDevInst *di)
         // terminal, do the calculation and begone.
 
         if (do_area)
-            mp_variable->content.value = z0->area();
+            mp_variable->content.value = Zlist::area(z0);
         if (do_perim) {
             int perim = 0;
             PolyList *pl = z0->to_poly_list();
@@ -3992,7 +3992,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
     if (AOI) {
         int j = 0;
         for (int i = 0; i < g->num; i++) {
-            if (!g->list[i]->intersect(AOI, false)) {
+            if (!Zlist::intersect(g->list[i], AOI, false)) {
                 g->list[i]->free();
                 g->list[i] = 0;
             }
@@ -4165,7 +4165,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
         }
         else {
             mindim = g->list[i]->linewidth();
-            area = g->list[i]->area();
+            area = Zlist::area(g->list[i]);
         }
         d->set_bmindim(mindim);
         d->set_barea(area);
@@ -4347,10 +4347,10 @@ sDevDesc::identify_contact(CDs *sdesc, sDevInst *d, Zlist **zbbp,
     int nc = 0;
     sDevContactInst *ci0 = 0, *ciend = 0;
     for (int j = 0; j < gc->num; j++) {
-        if (gc->list[j]->intersect(zb, true)) {
+        if (Zlist::intersect(gc->list[j], zb, true)) {
             sDevContactInst *ci = new sDevContactInst(d, c);
             gc->list[j]->BB(*ci->BB());
-            ci->set_fillfct(gc->list[j]->area()/ci->cBB()->area());
+            ci->set_fillfct(Zlist::area(gc->list[j])/ci->cBB()->area());
 
             if (!overlap_conts()) {
                 for (Zlist *z = gc->list[j]; z; z = z->next)
@@ -4443,7 +4443,7 @@ sDevDesc::identify_bulk_contact(CDs *sdesc, sDevInst *d, sDevContactDesc *c,
     }
     sDevContactInst *ci = new sDevContactInst(d, c);
     gc->list[ix]->BB(*ci->BB());
-    ci->set_fillfct(gc->list[ix]->area()/ci->cBB()->area());
+    ci->set_fillfct(Zlist::area(gc->list[ix])/ci->cBB()->area());
     delete gc;
     return (ci);
 }
@@ -5919,7 +5919,7 @@ sDevInst::setup_squares(bool lmode) const
         zlist = 0;
         if (g->num > 1) {
             for (int i = 0; i < g->num; i++) {
-                if (g->list[i]->intersect(di_contacts->cBB(), true)) {
+                if (Zlist::intersect(g->list[i], di_contacts->cBB(), true)) {
                     zlist = g->list[i];
                     g->list[i] = 0;
                     break;

@@ -96,10 +96,10 @@ struct Zlist
     Zlist(int xll, int xlr, int yl, int xul, int xur, int yu, Zlist *zn) :
             Z(xll, xlr, yl, xul, xur, yu) { next = zn; };
 
-    double area() const
+    static double area(const Zlist *thiszl)
         {
             double d = 0.0;
-            for (const Zlist *z = this; z; z = z->next) {
+            for (const Zlist *z = thiszl; z; z = z->next) {
                 double w = (z->Z.xur + z->Z.xlr) - (z->Z.xul + z->Z.xll);
                 double h = z->Z.yu - z->Z.yl;
                 d += w*h;
@@ -107,65 +107,65 @@ struct Zlist
             return (0.5*d/(CDphysResolution*CDphysResolution));
         }
 
-    bool intersect(const Point *p, bool touchok) const
+    static bool intersect(const Zlist *thiszl, const Point *p, bool touchok)
         {
-            for (const Zlist *z = this; z; z = z->next) {
+            for (const Zlist *z = thiszl; z; z = z->next) {
                 if (z->Z.intersect(p, touchok))
                     return (true);
             }
             return (false);
         }
 
-    bool intersect(const BBox *pBB, bool touchok) const
+    static bool intersect(const Zlist *thiszl, const BBox *pBB, bool touchok)
         {
-            for (const Zlist *z = this; z; z = z->next) {
+            for (const Zlist *z = thiszl; z; z = z->next) {
                 if (z->Z.intersect(pBB, touchok))
                     return (true);
             }
             return (false);
         }
 
-    bool intersect(const Zoid *Zx, bool touchok) const
+    static bool intersect(const Zlist *thiszl, const Zoid *Zx, bool touchok)
         {
-            for (const Zlist *z = this; z; z = z->next) {
+            for (const Zlist *z = thiszl; z; z = z->next) {
                 if (z->Z.intersect(Zx, touchok))
                     return (true);
             }
             return (false);
         }
 
-    bool intersect(const Zlist *zl, bool touchok) const
+    static bool intersect(const Zlist *thiszl, const Zlist *zl, bool touchok)
         {
-            for (const Zlist *z = this; z; z = z->next) {
-                if (zl->intersect(&z->Z, touchok))
+            for (const Zlist *z = thiszl; z; z = z->next) {
+                if (Zlist::intersect(zl, &z->Z, touchok))
                     return (true);
             }
             return (false);
         }
 
-    int length() const
+    static int length(const Zlist *thiszl)
         {
             int cnt = 0;
-            for (const Zlist *z = this; z; z = z->next, cnt++) ;
+            for (const Zlist *z = thiszl; z; z = z->next, cnt++) ;
             return (cnt);
         }
 
-    void print(FILE *fp = 0) const
+    static void print(const Zlist *thiszl, FILE *fp = 0)
         {
-            for (const Zlist *z = this; z; z = z->next)
+            for (const Zlist *z = thiszl; z; z = z->next)
                 z->Z.print(fp);
         }
 
-    Zlist *expand_by_2()
+    static Zlist *expand_by_2(Zlist *thiszl)
         {
-            for (Zlist *z = this; z; z = z->next)
+            for (Zlist *z = thiszl; z; z = z->next)
                 z->Z.expand_by_2();
-            return (this);
+            return (thiszl);
         }
 
-    Zlist *shrink_by_2()
+    static Zlist *shrink_by_2(Zlist *thiszl)
         {
-            Zlist *z0 = this, *zp = 0, *zn;
+            Zlist *z0 = thiszl, *zp = 0, *zn;
             for (Zlist *z = z0; z; z = zn) {
                 zn = z->next;
                 z->Z.shrink_by_2();
@@ -182,18 +182,18 @@ struct Zlist
             return (z0);
         }
 
-    bool is_manh()
+    static bool is_manh(const Zlist *thiszl)
         {
-            for (Zlist *z = this; z; z = z->next) {
+            for (const Zlist *z = thiszl; z; z = z->next) {
                 if (!z->Z.is_manh())
                     return (false);
             }
             return (true);
         }
 
-    bool is_45()
+    static bool is_45(const Zlist *thiszl)
         {
-            for (Zlist *z = this; z; z = z->next) {
+            for (const Zlist *z = thiszl; z; z = z->next) {
                 if (!z->Z.is_45())
                     return (false);
             }

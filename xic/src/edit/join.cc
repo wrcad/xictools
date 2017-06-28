@@ -80,7 +80,7 @@ namespace {
                 if (!jl->j_zlist)
                     jl->j_zlist = jl->j_odesc->toZlist();
 
-                int n = jl->j_zlist->length();
+                int n = Zlist::length(jl->j_zlist);
                 if (Zlist::JoinMaxQueue > 0 && n >= Zlist::JoinMaxQueue) {
                     // Complex object, no need to rejoin.  Just remove
                     // from queue and continue.

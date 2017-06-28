@@ -1808,10 +1808,10 @@ namespace {
             return (XIbad);
         }
         if (!strcmp(s, "ms")) {
-            z0->expand_by_2();
+            Zlist::expand_by_2(z0);
             Ylist *y = new Ylist(z0);
             z0 = y->repartition_ni();
-            z0 = z0->shrink_by_2();
+            z0 = Zlist::shrink_by_2(z0);
         }
         if (!strcmp(s, "c")) {
             Ylist *y = new Ylist(z0);

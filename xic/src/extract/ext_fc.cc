@@ -1206,7 +1206,7 @@ fcLayout::panelize_group_zbot(const glZlistRef3d *z0) const
             Zlist *zz = Zt.clip_out(&Zx, &novl);
             if (zz || novl) {
                 printf("Internal: panelize_group, cutting error, area %g, "
-                    "%s/%s.\n", zz->area(),
+                    "%s/%s.\n", Zlist::area(zz),
                     layer(z->PZ->layer_index)->layer_desc()->name(),
                     layer(zu->Z.layer_index)->layer_desc()->name());
                 printf("no overlap %d\n", novl);
@@ -1215,7 +1215,7 @@ fcLayout::panelize_group_zbot(const glZlistRef3d *z0) const
                 printf("under: ");
                 Zx.print();
                 printf("residual\n");
-                zz->print();
+                Zlist::print(zz);
                 zz->free();
             }
         }
@@ -1992,7 +1992,7 @@ fcLayout::panelize_dielectric_zbot(const Layer3d *l) const
                     zz->free();
 
                     printf("Internal: panelize_electric, cutting error, "
-                        "area %g, %s/%s.\n", zz->area(),
+                        "area %g, %s/%s.\n", Zlist::area(zz),
                         layer(z->Z.layer_index)->layer_desc()->name(),
                         layer(zu->Z.layer_index)->layer_desc()->name());
                     printf("no overlap %d\n", novl);
@@ -2001,7 +2001,7 @@ fcLayout::panelize_dielectric_zbot(const Layer3d *l) const
                     printf("under: ");
                     Zx.print();
                     printf("residual\n");
-                    zz->print();
+                    Zlist::print(zz);
                     zz->free();
                 }
                 continue;
@@ -2756,7 +2756,7 @@ fcLayout::area_group_ztop(const glZlistRef3d *z0) const
 
                     if (l->is_insulator()) {
                         Zlist *zx = yl->clip_to(&z2->Z);
-                        area += zx->area();
+                        area += Zlist::area(zx);
                         zx->free();
                     }
                     yl = yl->clip_out(&z2->Z);
@@ -2771,7 +2771,7 @@ done:   ;
             // everything.
 
             Zlist *zx = yl->to_zlist();
-            area += zx->area();
+            area += Zlist::area(zx);
             zx->free();
         }
     }

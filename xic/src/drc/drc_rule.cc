@@ -2037,7 +2037,7 @@ DRCtestDesc::testPoly_MinArea(PolyObj *dpo, const CDl *ldtarget,
         PolyList *p0 = expandRegions(dpo);
         for (PolyList *p = p0; p; p = p->next) {
             Zlist *zl = p->po.toZlist();
-            if (1.0001*zl->area() < area()) {
+            if (1.0001*Zlist::area(zl) < area()) {
                 seterr(p->po.points, p->po.numpts, TT_AMIN);
                 errs.add(this, 0);
             }
@@ -2048,7 +2048,7 @@ DRCtestDesc::testPoly_MinArea(PolyObj *dpo, const CDl *ldtarget,
         p0->free();
     }
     else {
-        if (1.0001*dpo->zlist()->area() < area()) {
+        if (1.0001*Zlist::area(dpo->zlist()) < area()) {
             // This is pretty ugly.  If the object fails the area test,
             // need to check if it is part of a group that would pass.
 
@@ -2085,11 +2085,12 @@ DRCtestDesc::testPoly_MinArea(PolyObj *dpo, const CDl *ldtarget,
             Zgroup *zg = zx0->group();
             double a = 0.0;
             if (zg->num == 1)
-                a = zg->list[0]->area();
+                a = Zlist::area(zg->list[0]);
             else {
                 for (int i = 0; i < zg->num; i++) {
-                    if (zg->list[i]->intersect(&dpo->zlist()->Z, false)) {
-                        a = zg->list[i]->area();
+                    if (Zlist::intersect(zg->list[i], &dpo->zlist()->Z,
+                            false)) {
+                        a = Zlist::area(zg->list[i]);
                         break;
                     }
                 }
@@ -2121,7 +2122,7 @@ DRCtestDesc::testPoly_MaxArea(PolyObj *dpo, const CDl *ldtarget,
         PolyList *p0 = expandRegions(dpo);
         for (PolyList *p = p0; p; p = p->next) {
             Zlist *zl = p->po.toZlist();
-            if (0.9999*zl->area() > area()) {
+            if (0.9999*Zlist::area(zl) > area()) {
                 seterr(p->po.points, p->po.numpts, TT_AMAX);
                 errs.add(this, 0);
             }
@@ -2132,7 +2133,7 @@ DRCtestDesc::testPoly_MaxArea(PolyObj *dpo, const CDl *ldtarget,
         p0->free();
     }
     else {
-        if (0.9999*dpo->zlist()->area() > area()) {
+        if (0.9999*Zlist::area(dpo->zlist()) > area()) {
             seterr(dpo->points(), dpo->numpts(), TT_AMAX);
             errs.add(this, 0);
         }

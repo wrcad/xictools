@@ -280,7 +280,7 @@ CDs::mergeBoxOrPoly(CDo *odesc, bool Undoable)
     for (CDol *ol = o0; ol; ol = ol->next) {
         CDo *od = ol->odesc;
         Zlist *z = od->toZlist();
-        int n = z->length();
+        int n = Zlist::length(z);
         if (Zlist::JoinMaxQueue <= 0 || zcnt + n < Zlist::JoinMaxQueue) {
             if (!zl0)
                 zl0 = ze = z;

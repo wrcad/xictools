@@ -686,7 +686,7 @@ cGroupDesc::process_exclude()
                         zret->free();
                         continue;
                     }
-                    if (!zx->intersect(zret, false)) {
+                    if (!Zlist::intersect(zx, zret, false)) {
                         zret->free();
                         zx->free();
                         continue;

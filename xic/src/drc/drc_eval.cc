@@ -1049,7 +1049,7 @@ cDRC::layerRules(const CDl *ld, const BBox *AOI, DRCerrRet **eret)
                 double amax = 0;
                 int skipme = -1;
                 for (int i = 0; i < g->num; i++) {
-                    double a = g->list[i]->area();
+                    double a = Zlist::area(g->list[i]);
                     if (a > amax) {
                         amax = a;
                         skipme = i;
@@ -1086,7 +1086,7 @@ cDRC::layerRules(const CDl *ld, const BBox *AOI, DRCerrRet **eret)
                 BBox BB;
                 if (minarea > 0.0) {
                     // MinHoleArea test
-                    double area = g->list[i]->area();
+                    double area = Zlist::area(g->list[i]);
                     if (area >= minarea)
                         continue;
                 }

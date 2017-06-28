@@ -661,7 +661,7 @@ namespace {
                         if (fBB.top > cBB->top)
                             fBB.top = cBB->top;
 
-                        float dens = zl->area()/fBB.area();
+                        float dens = Zlist::area(zl)/fBB.area();
 
                         if (!f) {
                             int tnxf = ci_aoiBB.width()/ci_fine_grid +

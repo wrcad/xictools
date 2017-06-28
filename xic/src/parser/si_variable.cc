@@ -1769,7 +1769,7 @@ namespace {
             // |zlist(4)|len(4)|...(len*6*4)|
             // order: xll xlr yl xul xur yu
             Zlist *zl = v->content.zlist;
-            int len = zl->length();
+            int len = Zlist::length(zl);
             int32_t *vals = new int32_t[len*6 + 2];
             vals[0] = htonl(RSP_ZLIST | LONGFORM_FLAG);
             vals[1] = htonl(len);

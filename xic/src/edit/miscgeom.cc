@@ -644,7 +644,7 @@ cEdit::createLayer_notree(CDs *sdesc, const BBox *pAOI, CDl *ld,
                     }
                     if (!z)
                         continue;
-                    int n = z->length();
+                    int n = Zlist::length(z);
                     if (maxq > 0 && n >= maxq) {
                         if (pAOI) {
                             XIrt ret = z->to_poly_add(sdesc, ld, ud, 0,
