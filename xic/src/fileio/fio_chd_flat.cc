@@ -980,14 +980,14 @@ rf_out::write_object(const CDo *odesc, cvLchk *lchk)
     }
     else if (odesc->type() == CDPOLYGON) {
         int num = ((const CDpo*)odesc)->numpts();
-        Poly po(num, ((const CDpo*)odesc)->points()->dup(num));
+        Poly po(num, Point::dup(((const CDpo*)odesc)->points(), num));
         rf_stack->TPath(po.numpts, po.points);
         ret = write_poly(&po);
         delete [] po.points;
     }
     else if (odesc->type() == CDWIRE) {
         int num = ((const CDpo*)odesc)->numpts();
-        Wire w(num, ((const CDw*)odesc)->points()->dup(num),
+        Wire w(num, Point::dup(((const CDw*)odesc)->points(), num),
             ((const CDw*)odesc)->attributes());
         w.set_wire_width(mmRnd(w.wire_width() * rf_stack->TGetMagn()));
         rf_stack->TPath(w.numpts, w.points);
@@ -1083,7 +1083,7 @@ rf_out::write_poly(const Poly *po)
             }
             else {
                 CDpo *newo;
-                Poly poly(po->numpts, po->points->dup(po->numpts));
+                Poly poly(po->numpts, Point::dup(po->points, po->numpts));
                 CDerrType err =
                     rf_targcell->makePolygon(rf_targld, &poly, &newo);
                 if (err != CDok)
@@ -1163,7 +1163,8 @@ rf_out::write_wire(const Wire *w)
                     out_interrupted = rf_backend->aborted();
             }
             else {
-                Wire wire(w->numpts, w->points->dup(w->numpts), w->attributes);
+                Wire wire(w->numpts, Point::dup(w->points, w->numpts),
+                    w->attributes);
 
                 Point *pres = 0;
                 int nres = 0;

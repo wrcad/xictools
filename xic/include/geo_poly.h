@@ -73,7 +73,7 @@ struct Poly
     Poly() { points = 0; numpts = 0; }
     Poly(int num, Point *pts) { points = pts; numpts = num; }
 
-    Poly *dup() const { return new Poly(numpts, points->dup(numpts)); }
+    Poly *dup() const { return new Poly(numpts, Point::dup(points, numpts)); }
 
     static bool chkp(Point *p1, Point *p2, int n, int npoints)
         {

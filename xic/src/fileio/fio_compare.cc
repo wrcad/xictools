@@ -1061,7 +1061,7 @@ diff_parser::add_object(CDs *cursd, const CDo *ocpy)
     }
     else if (ocpy->type() == CDPOLYGON) {
         int num = ((const CDpo*)ocpy)->numpts();
-        Poly poly(num, ((const CDpo*)ocpy)->points()->dup(num));
+        Poly poly(num, Point::dup(((const CDpo*)ocpy)->points(), num));
         CDpo *newo;
         CDerrType eret = cursd->makePolygon(ld, &poly, &newo);
         if (eret != CDok) {
@@ -1077,7 +1077,7 @@ diff_parser::add_object(CDs *cursd, const CDo *ocpy)
     }
     else if (ocpy->type() == CDWIRE) {
         int num = ((const CDw*)ocpy)->numpts();
-        Wire wire(num, ((const CDw*)ocpy)->points()->dup(num),
+        Wire wire(num, Point::dup(((const CDw*)ocpy)->points(), num),
             ((const CDw*)ocpy)->attributes());
         CDw *newo;
         CDerrType eret = cursd->makeWire(ld, &wire, &newo);

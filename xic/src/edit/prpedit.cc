@@ -2955,7 +2955,7 @@ cEdit::acceptPolyPseudoProp(CDpo *pdesc, CDs *sdesc, int val,
             pdesc->set_ldesc(ld);
         else {
             int num = pdesc->numpts();
-            Poly po(num, pdesc->points()->dup(num));
+            Poly po(num, Point::dup(pdesc->points(), num));
             CDo *newo = sdesc->newPoly(pdesc, &po, ld, pdesc->prpty_list(),
                 false);
             if (!newo) {
@@ -3189,7 +3189,8 @@ cEdit::acceptWirePseudoProp(CDw *wdesc, CDs *sdesc, int val,
             wdesc->set_ldesc(ld);
         else {
             int num = wdesc->numpts();
-            Wire wire(num, wdesc->points()->dup(num), wdesc->attributes());
+            Wire wire(num, Point::dup(wdesc->points(), num),
+                wdesc->attributes());
             CDo *newo = sdesc->newWire(wdesc, &wire, ld,
                 wdesc->prpty_list(), false);
             if (!newo) {
@@ -3232,7 +3233,8 @@ cEdit::acceptWirePseudoProp(CDw *wdesc, CDs *sdesc, int val,
         }
         else {
             int num = wdesc->numpts();
-            Wire wire(num, wdesc->points()->dup(num), wdesc->attributes());
+            Wire wire(num, Point::dup(wdesc->points(), num),
+                wdesc->attributes());
             wire.set_wire_width(d);
             if (wire.wire_width() != wdesc->wire_width()) {
                 CDo *newo = sdesc->newWire(wdesc, &wire, wdesc->ldesc(),
@@ -3279,7 +3281,8 @@ cEdit::acceptWirePseudoProp(CDw *wdesc, CDs *sdesc, int val,
         }
         else {
             int num = wdesc->numpts();
-            Wire wire(num, wdesc->points()->dup(num), wdesc->attributes());
+            Wire wire(num, Point::dup(wdesc->points(), num),
+                wdesc->attributes());
             wire.set_wire_style((WireStyle)d);
             if (wire.wire_style() != wdesc->wire_style()) {
                 CDo *newo = sdesc->newWire(wdesc, &wire, wdesc->ldesc(),

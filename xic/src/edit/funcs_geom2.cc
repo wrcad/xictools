@@ -2544,9 +2544,10 @@ namespace {
 
             if (poly.points) {
                 poly.numpts = 5;
-                if (GEO()->curTx()->magset())
-                    poly.points->scale(5, GEO()->curTx()->magn(),
+                if (GEO()->curTx()->magset()) {
+                    Point::scale(poly.points, 5, GEO()->curTx()->magn(),
                         SIlcx()->transformX(), SIlcx()->transformY());
+                }
                 CDo *odesc = cursd->newPoly(0, &poly, LT()->CurLayer(), 0,
                     false);
                 if (!odesc)
@@ -2671,9 +2672,11 @@ namespace {
                     *odptr = odesc;
             }
             else {
-                if (GEO()->curTx()->magset())
-                    poly.points->scale(poly.numpts, GEO()->curTx()->magn(),
+                if (GEO()->curTx()->magset()) {
+                    Point::scale(poly.points, poly.numpts,
+                        GEO()->curTx()->magn(),
                         SIlcx()->transformX(), SIlcx()->transformY());
+                }
                 CDo *odesc = cursd->newPoly(0, &poly, LT()->CurLayer(), 0,
                     false);
                 if (!odesc)
@@ -2783,9 +2786,10 @@ namespace {
                 SIlcx()->transformX(), SIlcx()->transformY());
             stk.TPath(poly.numpts, poly.points);
             stk.TPop();
-            if (GEO()->curTx()->magset())
-                poly.points->scale(poly.numpts, GEO()->curTx()->magn(),
+            if (GEO()->curTx()->magset()) {
+                Point::scale(poly.points, poly.numpts, GEO()->curTx()->magn(),
                     SIlcx()->transformX(), SIlcx()->transformY());
+            }
         }
         CDo *odesc = cursd->newPoly(0, &poly, LT()->CurLayer(), 0, false);
         if (!odesc)
@@ -3122,7 +3126,7 @@ namespace {
             stk.TPath(wire.numpts, wire.points);
             stk.TPop();
             if (GEO()->curTx()->magset()) {
-                wire.points->scale(wire.numpts, GEO()->curTx()->magn(),
+                Point::scale(wire.points, wire.numpts, GEO()->curTx()->magn(),
                     SIlcx()->transformX(), SIlcx()->transformY());
                 if (!ED()->noWireWidthMag())
                     wire.set_wire_width(mmRnd(wire.wire_width() *

@@ -3284,7 +3284,7 @@ misc1_funcs::IFpushGhostH(Variable *res, Variable *args, void*)
             if (od->type() == CDPOLYGON) {
                 Poly po;
                 po.numpts = ((CDpo*)od)->numpts();
-                po.points = ((CDpo*)od)->points()->dup(po.numpts);
+                po.points = Point::dup(((CDpo*)od)->points(), po.numpts);
                 SIlcx()->setGhostList(new PolyList(po, SIlcx()->ghostList()));
                 cnt++;
             }

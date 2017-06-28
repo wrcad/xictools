@@ -1108,7 +1108,7 @@ edit_bangcmds::path2poly(const char*)
         int num = ((const CDw*)od)->numpts();
         const Point *pts = ((const CDw*)od)->points();
         if (num >= 4 && pts[0] == pts[num - 1]) {
-            Poly po(num, pts->dup(num));
+            Poly po(num, Point::dup(pts, num));
             if (!cursd->newPoly(od, &po, od->ldesc(), 0, false)) {
                 ecnt++;
             }
@@ -1145,7 +1145,7 @@ edit_bangcmds::poly2path(const char*)
         int num = ((const CDpo*)od)->numpts();
         const Point *pts = ((const CDpo*)od)->points();
         Wire w(dsp_prm(od->ldesc())->wire_width(), CDWIRE_FLUSH,
-            num, pts->dup(num));
+            num, Point::dup(pts, num));
         if (!cursd->newWire(od, &w, od->ldesc(), 0, false))
             ecnt++;
         else
@@ -1435,7 +1435,7 @@ edit_bangcmds::togrid(const char*)
         else if (od->type() == CDPOLYGON) {
             int num = ((const CDpo*)od)->numpts();
             const Point *pts = ((const CDpo*)od)->points();
-            Poly p(num, pts->dup(num));
+            Poly p(num, Point::dup(pts, num));
             bool changed = false;
             for (int i = 0; i < num; i++) {
                 DSP()->MainWdesc()->Snap(&p.points[i].x, &p.points[i].y);
@@ -1457,7 +1457,7 @@ edit_bangcmds::togrid(const char*)
         else if (od->type() == CDWIRE) {
             int num = ((const CDw*)od)->numpts();
             const Point *pts = ((const CDw*)od)->points();
-            Wire w(num, pts->dup(num), ((const CDw*)od)->attributes());
+            Wire w(num, Point::dup(pts, num), ((const CDw*)od)->attributes());
             bool changed = false;
             for (int i = 0; i < num; i++) {
                 DSP()->MainWdesc()->Snap(&w.points[i].x, &w.points[i].y);
@@ -1465,7 +1465,7 @@ edit_bangcmds::togrid(const char*)
                     changed = true;
             }
             if (changed) {
-                w.points->removeDups(&w.numpts);
+                Point::removeDups(w.points, &w.numpts);
                 CDw *newp = cursd->newWire(od, &w, od->ldesc(),
                     od->prpty_list(), false);
                 if (newp) {
@@ -1524,7 +1524,7 @@ edit_bangcmds::tospot(const char *s)
     CDo *od;
     while ((od = sg.next()) != 0) {
         int num = ((const CDpo*)od)->numpts();
-        Poly po(num, ((const CDpo*)od)->points()->dup(num));
+        Poly po(num, Point::dup(((const CDpo*)od)->points(), num));
         GEO()->setToSpot(po.points, &po.numpts);
         CDpo *newp = cursd->newPoly(od, &po, od->ldesc(), od->prpty_list(),
             false);

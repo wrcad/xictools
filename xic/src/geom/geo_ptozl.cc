@@ -85,7 +85,7 @@ Poly::pts4_to_zlist(const Point *pts, Zlist *z0)
 {
     Point p[5] = { pts[0], pts[1], pts[2], pts[3], pts[0] };
     int num = 4;
-    p->removeDups(&num);
+    Point::removeDups(p, &num);
     if (num == 3)
         return (pts3_to_zlist(p, z0));
     if (num < 3)

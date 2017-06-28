@@ -688,7 +688,7 @@ sGroupObjs::mk_cell(const CDtf *tf, const CDl *ld) const
                 CDpo *podesc = (CDpo*)odesc;
                 Poly po;
                 po.numpts = podesc->numpts();
-                po.points = podesc->points()->dup_with_xform(&stk,
+                po.points = Point::dup_with_xform(podesc->points(), &stk,
                     podesc->numpts());
                 CDpo *newp = new CDpo(odesc->ldesc(), &po);
                 sd->insert(newp);
@@ -697,7 +697,7 @@ sGroupObjs::mk_cell(const CDtf *tf, const CDl *ld) const
                 CDw *wodesc = (CDw*)odesc;
                 Wire w;
                 w.numpts = wodesc->numpts();
-                w.points = wodesc->points()->dup_with_xform(&stk,
+                w.points = Point::dup_with_xform(wodesc->points(), &stk,
                     wodesc->numpts());
                 w.set_wire_style(wodesc->wire_style());
                 w.set_wire_width(wodesc->wire_width());
@@ -720,7 +720,7 @@ sGroupObjs::mk_cell(const CDtf *tf, const CDl *ld) const
                 CDpo *podesc = (CDpo*)odesc;
                 Poly po;
                 po.numpts = podesc->numpts();
-                po.points = podesc->points()->dup(podesc->numpts());
+                po.points = Point::dup(podesc->points(), podesc->numpts());
                 CDpo *newp = new CDpo(odesc->ldesc(), &po);
                 sd->insert(newp);
             }
@@ -728,7 +728,7 @@ sGroupObjs::mk_cell(const CDtf *tf, const CDl *ld) const
                 CDw *wodesc = (CDw*)odesc;
                 Wire w;
                 w.numpts = wodesc->numpts();
-                w.points = wodesc->points()->dup(wodesc->numpts());
+                w.points = Point::dup(wodesc->points(), wodesc->numpts());
                 w.set_wire_style(wodesc->wire_style());
                 w.set_wire_width(wodesc->wire_width());
                 CDw *neww = new CDw(odesc->ldesc(), &w);

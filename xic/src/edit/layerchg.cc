@@ -99,7 +99,7 @@ box:
 poly:
     {
         int num = ((const CDpo*)odesc)->numpts();
-        Poly po(num, ((const CDpo*)odesc)->points()->dup(num));
+        Poly po(num, Point::dup(((const CDpo*)odesc)->points(), num));
         CDpo *newo;
         if (sdesc->makePolygon(new_layer, &po, &newo) != CDok) {
             Errs()->add_error("makePolygon failed");
@@ -120,7 +120,7 @@ poly:
 wire:
     {
         int num = ((const CDw*)odesc)->numpts();
-        Wire wire(num, ((const CDw*)odesc)->points()->dup(num),
+        Wire wire(num, Point::dup(((const CDw*)odesc)->points(), num),
             ((const CDw*)odesc)->attributes());
         CDw *newo;
         if (sdesc->makeWire(new_layer, &wire, &newo) != CDok) {

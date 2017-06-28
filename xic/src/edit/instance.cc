@@ -1409,7 +1409,7 @@ namespace {
                         Point pnts[5];
                         sdesc->BB()->to_path(pnts);
                         DSP()->TLoadCurrent(tf);
-                        pnts->xform(DSP(), 5);
+                        Point::xform(pnts, DSP(), 5);
                         DSP()->TLoadCurrent(&tfold);
                         Gst()->ShowGhostPath(pnts, 5);
                         return (count);
@@ -1431,7 +1431,7 @@ namespace {
                     Point pnts[5];
                     sdesc->BB()->to_path(pnts);
                     DSP()->TLoadCurrent(tf);
-                    pnts->xform(DSP(), 5);
+                    Point::xform(pnts, DSP(), 5);
                     DSP()->TLoadCurrent(&tfold);
                     Gst()->ShowGhostPath(pnts, 5);
                     return (count);
@@ -1462,7 +1462,7 @@ namespace {
             Point pnts[5];
             odesc->oBB().to_path(pnts);
             DSP()->TLoadCurrent(tfnew);
-            pnts->xform(DSP(), 5);
+            Point::xform(pnts, DSP(), 5);
             DSP()->TLoadCurrent(tfold);
             Gst()->ShowGhostPath(pnts, 5);
             return (1);
@@ -1473,7 +1473,7 @@ namespace {
                 return (0);
             int num = ((const CDpo*)odesc)->numpts();
             DSP()->TLoadCurrent(tfnew);
-            Point *pts = ((const CDpo*)odesc)->points()->dup_with_xform(
+            Point *pts = Point::dup_with_xform(((const CDpo*)odesc)->points(),
                 DSP(), num);
             DSP()->TLoadCurrent(tfold);
             Gst()->ShowGhostPath(pts, num);
@@ -1487,7 +1487,8 @@ namespace {
             int num = ((const CDw*)odesc)->numpts();
             DSP()->TLoadCurrent(tfnew);
             Wire wire(num,
-                ((const CDw*)odesc)->points()->dup_with_xform(DSP(), num),
+                Point::dup_with_xform(((const CDw*)odesc)->points(),
+                    DSP(), num),
                 ((const CDw*)odesc)->attributes());
             DSP()->TLoadCurrent(tfold);
             if (!ED()->noWireWidthMag())
@@ -1508,7 +1509,7 @@ namespace {
                 BB.to_path(pts);
             }
             DSP()->TLoadCurrent(tfnew);
-            pts->xform(DSP(), 5);
+            Point::xform(pts, DSP(), 5);
             DSP()->TLoadCurrent(tfold);
             Gst()->ShowGhostPath(pts, 5);
             delete [] pts;
@@ -1567,7 +1568,7 @@ namespace {
                 DSP()->TPremultiply();
                 Point pnts[5];
                 msdesc->BB()->to_path(pnts);
-                pnts->xform(DSP(), 5);
+                Point::xform(pnts, DSP(), 5);
                 DSP()->TLoadCurrent(tfnew);
                 Gst()->ShowGhostPath(pnts, 5);
                 DSP()->TPop();

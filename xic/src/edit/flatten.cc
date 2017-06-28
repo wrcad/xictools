@@ -500,7 +500,8 @@ box:
 poly:
     {
         int num = ((const CDpo*)odesc)->numpts();
-        Poly po(num, ((const CDpo*)odesc)->points()->dup_with_xform(tstk, num));
+        Poly po(num, Point::dup_with_xform(((const CDpo*)odesc)->points(),
+            tstk, num));
         CDpo *newo;
         if (FastMode) {
             if (sdesc->makePolygon(odesc->ldesc(), &po, &newo) != CDok) {
@@ -531,8 +532,8 @@ wire:
     {
         Wire wire(((const CDw*)odesc)->numpts(), 0,
             ((const CDw*)odesc)->attributes());
-        wire.points = ((const CDw*)odesc)->points()->dup_with_xform(tstk,
-            wire.numpts);
+        wire.points = Point::dup_with_xform(((const CDw*)odesc)->points(),
+            tstk, wire.numpts);
         if (!ED()->noWireWidthMag())
             wire.set_wire_width(mmRnd(wire.wire_width()*tfnew->mag()));
         CDw *newo;

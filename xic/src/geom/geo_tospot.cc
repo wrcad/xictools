@@ -86,6 +86,6 @@ cGEO::setToSpot(Point *pts, int *numpts) const
     }
 
     // remove duplicate vertices
-    pts->removeDups(numpts);
+    Point::removeDups(pts, numpts);
 }
 

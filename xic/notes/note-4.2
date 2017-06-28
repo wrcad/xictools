@@ -976,6 +976,28 @@ __attribute__((deprecated)) can be temporarily added to a function
 that tests this==0, causing the calls to emit a warning on compilation. 
 The calling object can be tested at these locations.
 
+Any method that uses this under the assumption that it may be null needs
+attention, e.g. linked lists with things like
+for (x = this; x; x = x->next), and the ubiquitous free function.
+
+Remedies:
+-  Make the functions static, and pass the pointer.  This is probably
+   the easiest/safest approach.  But, some structs will end up with
+   all or mostly static methods.  The syntax becomes a bit ugly and
+   cluttered.  The language default behavior for simple objects should
+   be exactly this.  Fecken idiots!
+
+-  Define a macro that will test for a null pointer before a call, something
+   like
+#define ZCK(foo, bar, baz) (foo ? foo->bar : baz)
+#define ZCK(foo, bar) if (foo) foo->bar
+   Wrap calls in the macro.
+
+-  Find the method calls and add an explicit test for null pointer.
+
+
+
+
 
 
 ==== Sticky ==================================

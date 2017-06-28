@@ -617,7 +617,7 @@ namespace {
 
         const Point *points = owire->points();
         int numpts = owire->numpts();
-        const Point *p = points->nearestVertex(numpts, refx, refy);
+        const Point *p = Point::nearestVertex(points, numpts, refx, refy);
         if (p == points) {
             *px = points[1].x;
             *py = points[1].y;
@@ -1114,8 +1114,10 @@ poly:
             }
         }
         else {
-            poly.points = ((const CDpo*)odesc)->points()->dup(poly.numpts);
-            Point *p = poly.points->nearestVertex(poly.numpts, refx, refy);
+            poly.points = Point::dup(((const CDpo*)odesc)->points(),
+                poly.numpts);
+            Point *p = Point::nearestVertex(poly.points, poly.numpts,
+                refx, refy);
             if (poly.is_manhattan()) {
                 Point *pp, *pn = p+1;
                 if (pn == &poly.points[poly.numpts-1])
@@ -1178,8 +1180,9 @@ wire:
             }
         }
         else {
-            Point *points = ((const CDw*)odesc)->points()->dup(wire.numpts);
-            Point *p = points->nearestVertex(wire.numpts, refx, refy);
+            Point *points = Point::dup(((const CDw*)odesc)->points(),
+                wire.numpts);
+            Point *p = Point::nearestVertex(points, wire.numpts, refx, refy);
             p->x += mapx - refx;
             p->y += mapy - refy;
             if (wire.numpts == 2 && points[0].x == points[1].x &&
@@ -1340,8 +1343,10 @@ namespace {
                 Gst()->ShowGhostPath(po.points, po.numpts);
             }
             else {
-                po.points = ((const CDpo*)odesc)->points()->dup(po.numpts);
-                Point *p = po.points->nearestVertex(po.numpts, refx, refy);
+                po.points = Point::dup(((const CDpo*)odesc)->points(),
+                    po.numpts);
+                Point *p = Point::nearestVertex(po.points, po.numpts,
+                    refx, refy);
                 if (po.is_manhattan()) {
                     Point *pp, *pn = p+1;
                     if (pn == &po.points[po.numpts-1])
@@ -1404,8 +1409,9 @@ namespace {
                 EGst()->showGhostWire(&wire);
             }
             else {
-                wire.points = ((const CDw*)odesc)->points()->dup(wire.numpts);
-                Point *p = wire.points->nearestVertex(wire.numpts,
+                wire.points = Point::dup(((const CDw*)odesc)->points(),
+                    wire.numpts);
+                Point *p = Point::nearestVertex(wire.points, wire.numpts,
                     refx, refy);
                 p->x += mapx - refx;
                 p->y += mapy - refy;

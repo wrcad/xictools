@@ -1555,7 +1555,7 @@ cgx_in::a_wire(int size, int flags)
         if (in_savebb) {
             BBox BB;
             // warning: if dup verts, computeBB may fail
-            w.points->removeDups(&w.numpts);
+            Point::removeDups(w.points, &w.numpts);
             w.computeBB(&BB);
             in_cBB.add(&BB);
         }

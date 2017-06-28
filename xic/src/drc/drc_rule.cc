@@ -1108,7 +1108,7 @@ DRCtestDesc::edgeTest(DRCedgeEval *ev, const Zlist *elist)
             }
         }
         else {
-            Zlist *zx0 = po->toZlist(5);
+            Zlist *zx0 = Point::toZlist(po, 5);
             if (zx0) {
                 if (DRC()->isShowZoids() && DSP()->MainWdesc())
                     zx0->show();
@@ -1208,7 +1208,7 @@ DRCtestDesc::cornerTest(DRCedgeEval *ev)
     if (!cornerTestArea(ev->p1(), ev->p2(), ev->p3(), ev->cw(), po))
         return (XIok);
 
-    Zlist *zx0 = po->toZlist(5);
+    Zlist *zx0 = Point::toZlist(po, 5);
     if (DRC()->isShowZoids() && DSP()->MainWdesc())
         zx0->show();
     for (Zlist *zx = zx0; zx; zx = zx->next) {
@@ -2449,7 +2449,7 @@ XIrt
 DRCtestDesc::testPolyCovered(Point *po, DRCedgeEval *ev, bool *ret)
 {
     *ret = true;
-    Zlist *zx0 = po->toZlist(5);
+    Zlist *zx0 = Point::toZlist(po, 5);
     if (DRC()->isShowZoids() && DSP()->MainWdesc())
         zx0->show();
     for (Zlist *zx = zx0; zx; zx = zx->next) {

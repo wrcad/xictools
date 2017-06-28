@@ -44,9 +44,10 @@ struct Point
     void set(int xx, int yy) { x = xx; y = yy; }
     void set(const Point &p) { x = p.x; y = p.y; }
 
-    Point *dup(int n) const
+    // Methods are static so we can freely allow a null "this" pointer.
+
+    static Point *dup(const Point *pts, int n)
         {
-            const Point *pts = this;
             if (!pts)
                 return (0);
             if (n < 1)
@@ -59,9 +60,8 @@ struct Point
 
     // Remove duplicates in array by copying down.
     //
-    void removeDups(int *numpts)
+    static void removeDups(Point *pts, int *numpts)
         {
-            Point *pts = this;
             if (!pts)
                 return;
             int i = *numpts - 1;
@@ -77,17 +77,17 @@ struct Point
             }
         }
 
-    Point *dup_with_xform(const cTfmStack*, int) const;
-    void xform(const cTfmStack*, int);
-    Point *append(int*, int, int);
-    Point *remove_last(int*);
-    void scale(int, double, int, int);
-    Zlist *toZlist(int);
-    Zlist *toZlistR(int);
+    static Point *dup_with_xform(const Point*, const cTfmStack*, int);
+    static void xform(Point*, const cTfmStack*, int);
+    static Point *append(Point*, int*, int, int);
+    static Point *remove_last(Point*, int*);
+    static void scale(Point*, int, double, int, int);
+    static Zlist *toZlist(Point*, int);
+    static Zlist *toZlistR(Point*, int);
 
-    bool inPath(const Point*, int, Point*, int) const;
-    Point *nearestVertex(int, int, int);
-    const Point *nearestVertex(int, int, int) const;
+    static bool inPath(const Point*, const Point*, int, Point*, int);
+    static Point *nearestVertex(Point*, int, int, int);
+    static const Point *nearestVertex(const Point*, int, int, int);
 
     static double distance(const Point *p1, const Point *p2)
         {

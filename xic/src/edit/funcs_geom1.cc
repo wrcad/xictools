@@ -3227,7 +3227,7 @@ namespace {
             if (poly.points) {
                 poly.numpts = 5;
                 if (GEO()->curTx()->magset())
-                    poly.points->scale(5, GEO()->curTx()->magn(), x, y);
+                    Point::scale(poly.points, 5, GEO()->curTx()->magn(), x, y);
                 if (mc == CDcopy) {
                     CDpo *newo;
                     if (cursd->makePolygon(ld, &poly, &newo) != CDok) {
@@ -3278,7 +3278,7 @@ namespace {
         }
         else if (od->type() == CDPOLYGON) {
             int num = ((const CDpo*)od)->numpts();
-            Poly poly(num, ((const CDpo*)od)->points()->dup_with_xform(
+            Poly poly(num, Point::dup_with_xform(((const CDpo*)od)->points(),
                 &stk, num));
             stk.TPop();
             BBox BB;
@@ -3310,9 +3310,10 @@ namespace {
                 }
             }
             else {
-                if (GEO()->curTx()->magset())
-                    poly.points->scale(poly.numpts, GEO()->curTx()->magn(),
-                        x, y);
+                if (GEO()->curTx()->magset()) {
+                    Point::scale(poly.points, poly.numpts,
+                        GEO()->curTx()->magn(), x, y);
+                }
                 if (mc == CDcopy) {
                     CDpo *newo;
                     if (cursd->makePolygon(ld, &poly, &newo) != CDok) {
@@ -3339,11 +3340,12 @@ namespace {
         else if (od->type() == CDWIRE) {
             Wire wire(((const CDw*)od)->numpts(), 0,
                 ((const CDw*)od)->attributes());
-            wire.points = ((const CDw*)od)->points()->dup_with_xform(&stk,
-                wire.numpts);
+            wire.points = Point::dup_with_xform(((const CDw*)od)->points(),
+                &stk, wire.numpts);
             stk.TPop();
             if (GEO()->curTx()->magset()) {
-                wire.points->scale(wire.numpts, GEO()->curTx()->magn(), x, y);
+                Point::scale(wire.points, wire.numpts, GEO()->curTx()->magn(),
+                    x, y);
                 if (!ED()->noWireWidthMag())
                     wire.set_wire_width(
                         mmRnd(wire.wire_width()*GEO()->curTx()->magn()));

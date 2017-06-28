@@ -168,7 +168,7 @@ CDs::hyPoint(cTfmStack *stk, const BBox *AOI, int mask)
                             // box intersecting a zero-width wire.
                             int d = ((CDw*)odesc)->wire_width() +
                                 (AOI->width() + AOI->height())/2;
-                            if (!pts->inPath(&px, d/2, &po, num))
+                            if (!Point::inPath(pts, &px, d/2, &po, num))
                                 continue;
                             return (new hyEnt(this, po.x, po.y, odesc,
                                 HYrefNode, HYorNone));
@@ -661,7 +661,7 @@ namespace {
             int nump = ((CDw*)odesc)->numpts() - 1;
             for (int i = 0; i < nump; i++) {
                 double x1, y1, d, d0;
-                if (!(p+i)->inPath(&px, 20, 0, 2))
+                if (!Point::inPath(p+i, &px, 20, 0, 2))
                     continue;
                 if (ref_x == p[i].x && ref_y == p[i].y) {
                     x1 = p[i+1].x - (*hent)->pos_x();

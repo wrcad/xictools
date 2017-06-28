@@ -1434,7 +1434,7 @@ CDs::makePolygon(CDl *ldesc, Poly *poly, CDpo **pointer, int *pchk_flags,
         numpts++;
         poly->numpts = numpts;
     }
-    poly->points->removeDups(&poly->numpts);
+    Point::removeDups(poly->points, &poly->numpts);
 
     if (!CD()->IsNotStrict()) {
         if (!poly->check_quick()) {
@@ -1512,7 +1512,7 @@ CDs::newPoly(CDo *oldobj, Poly *poly, CDl *ldesc, CDp *prps, bool Copy)
             CD()->Error(CDbadPolygon, cellname()->string());
             return (0);
         }
-        Poly npoly(poly->numpts, poly->points->dup(poly->numpts));
+        Poly npoly(poly->numpts, Point::dup(poly->points, poly->numpts));
         if (makePolygon(ldesc, &npoly, &newo) != CDok)
             return (0);
     }
@@ -1556,7 +1556,7 @@ CDs::makeWire(CDl *ldesc, Wire *wire, CDw **pointer, int *wchk_flags,
         return (CDbadWire);
     }
 
-    wire->points->removeDups(&wire->numpts);
+    Point::removeDups(wire->points, &wire->numpts);
 
     if (!CD()->IsNotStrict()) {
         if (wchk_flags) {
@@ -1642,7 +1642,7 @@ CDs::newWire(CDo *oldobj, Wire *wire, CDl *ldesc, CDp *prps, bool Copy)
             CD()->Error(CDbadWire, cellname()->string());
             return (0);
         }
-        Wire nwire(wire->numpts, wire->points->dup(wire->numpts),
+        Wire nwire(wire->numpts, Point::dup(wire->points, wire->numpts),
             wire->attributes);
         if (makeWire((CDl*)ldesc, &nwire, &newo) != CDok)
             return (0);
@@ -1768,7 +1768,7 @@ CDs::addToDb(Poly &poly, CDl *ld, bool undoable, CDo **oret,
         *oret = 0;
     CDerrType ret = CDok;
     Poly po(poly);
-    po.points = po.points->dup_with_xform(tstk, po.numpts);
+    po.points = Point::dup_with_xform(po.points, tstk, po.numpts);
 
     if (po.is_rect()) {
         BBox tBB(po.points);

@@ -31,115 +31,117 @@
 // Point Functions
 //------------------------------------------------------------------------
 
+// Static function.
 // Duplicate a Point array with transformation.
 //
 Point *
-Point::dup_with_xform(const cTfmStack *tstk, int n) const
+Point::dup_with_xform(const Point *thispt, const cTfmStack *tstk, int n)
 {
-    {
-        const Point *pt = this;
-        if (!pt)
-            return (0);
-    }
+    if (!thispt)
+        return (0);
     if (n < 1)
         n = 1;
     Point *p = new Point[n];
     if (tstk)
-        tstk->TPath(n, p, this);
+        tstk->TPath(n, p, thispt);
     else {
         while (n--)
-            p[n] = this[n];
+            p[n] = thispt[n];
     }
     return (p);
 }
 
 
+// Static function.
 // Transform the coordinates.
 //
 void
-Point::xform(const cTfmStack *tstk, int n)
+Point::xform(Point *thispt, const cTfmStack *tstk, int n)
 {
-    Point *pt = this;
-    if (pt && tstk && n > 0)
-        tstk->TPath(n, pt);
+    if (thispt && tstk && n > 0)
+        tstk->TPath(n, thispt);
 }
 
 
+// Static function.
 // Copy to a new array one unit larger, adding x,y to end, but only if
 // the new point differes from the provious last point.
 // 'This' is deleted!
 //
 Point *
-Point::append(int *n, int xx, int yy)
+Point::append(Point *thispt, int *n, int xx, int yy)
 {
-    Point *pt = this;
-    if (!pt)
+    if (!thispt)
         *n = 0;
-    else if (xx == pt[*n - 1].x && yy == pt[*n - 1].y)
-        return (pt);
+    else if (xx == thispt[*n - 1].x && yy == thispt[*n - 1].y)
+        return (thispt);
     Point *p = new Point[*n + 1];
     int i = *n;
     while (i--)
-        p[i] = pt[i];
+        p[i] = thispt[i];
     p[*n].set(xx, yy);
     (*n)++;
-    delete [] pt;
+    delete [] thispt;
     return (p);
 }
 
 
+// Static function.
 // Copy to a new array one unit smaller, removing the last point.
 // 'This' is deleted!
 //
 Point *
-Point::remove_last(int *n)
+Point::remove_last(Point *thispt, int *n)
 {
-    Point *pt = this;
-    if (!pt || *n < 2) {
+    if (!thispt || *n < 2) {
         *n = 0;
-        delete [] pt;
+        delete [] thispt;
         return (0);
     }
     (*n)--;
-    Point *p = pt->dup(*n);
-    delete [] pt;
+    Point *p = dup(thispt, *n);
+    delete [] thispt;
     return (p);
 }
 
 
+// Static function.
 // Magnify the path around x, y.
 //
 void
-Point::scale(int n, double magn, int xx, int yy)
+Point::scale(Point *thispt, int n, double magn, int xx, int yy)
 {
-    Point *pt = this;
-    if (!pt || n < 1)
+    if (!thispt || n < 1)
         return;
     while (n--) {
-        pt[n].set(mmRnd(xx + (pt[n].x - xx)*magn),
-            mmRnd(yy + (pt[n].y - yy)*magn));
+        thispt[n].set(mmRnd(xx + (thispt[n].x - xx)*magn),
+            mmRnd(yy + (thispt[n].y - yy)*magn));
     }
 }
 
 
+// Static function.
+//
 Zlist *
-Point::toZlist(int npts)
+Point::toZlist(Point *thispt, int npts)
 {
-    Poly po = Poly(npts, this);
+    Poly po = Poly(npts, thispt);
     return (po.toZlist());
 }
 
 
+// Static function.
 // Rotate -90 degrees before decomposing.
 //
 Zlist *
-Point::toZlistR(int npts)
+Point::toZlistR(Point *thispt, int npts)
 {
-    Poly po = Poly(npts, this);
+    Poly po = Poly(npts, thispt);
     return (po.toZlistR());
 }
 
 
+// Static function.
 // Is pi on the path?
 // If yes, return true, and set po to an exact point on the path, however
 // if within d of a vertex, favor the vertex point.
@@ -149,12 +151,16 @@ Point::toZlistR(int npts)
 // numpts:   assumed size of this
 //
 bool
-Point::inPath(const Point *p, int d, Point *po, int numpts) const
+Point::inPath(const Point *thispt, const Point *p, int d, Point *po,
+    int numpts)
 {
+    if (!thispt || numpts < 2)
+        return (false);
+
     d++;  // Avoid quantization error for small dimensions.
     if (d < 1)
         d = 1;
-    const Point *p1 = this;
+    const Point *p1 = thispt;
     for (numpts--; numpts; numpts--, p1++) {
         const Point *p2 = p1 + 1;
         if (p1->y == p2->y) {
@@ -246,46 +252,46 @@ Point::inPath(const Point *p, int d, Point *po, int numpts) const
 }
 
 
+// Static function.
 // Return the point nearest x, y.
 //
 Point *
-Point::nearestVertex(int numpts, int xx, int yy)
+Point::nearestVertex(Point *thispt, int numpts, int xx, int yy)
 {
-    Point *pt = this;
-    if (!pt)
+    if (!thispt)
         return (0);
     unsigned int minv = 0xffffffff;
     Point *p;
     int i, indx = 0;
-    for (p = pt, i = 0; i < numpts; p++, i++) {
+    for (p = thispt, i = 0; i < numpts; p++, i++) {
         unsigned int d = abs(p->x - xx) + abs(p->y - yy);
         if (d < minv) {
             minv = d;
             indx = i;
         }
     }
-    return (pt + indx);
+    return (thispt + indx);
 }
 
 
+// Static function.
 // Return the point nearest x, y.
 //
 const Point *
-Point::nearestVertex(int numpts, int xx, int yy) const
+Point::nearestVertex(const Point *thispt, int numpts, int xx, int yy)
 {
-    const Point *pt = this;
-    if (!pt)
+    if (!thispt)
         return (0);
     unsigned int minv = 0xffffffff;
     const Point *p;
     int i, indx = 0;
-    for (p = pt, i = 0; i < numpts; p++, i++) {
+    for (p = thispt, i = 0; i < numpts; p++, i++) {
         unsigned int d = abs(p->x - xx) + abs(p->y - yy);
         if (d < minv) {
             minv = d;
             indx = i;
         }
     }
-    return (pt + indx);
+    return (thispt + indx);
 }
 

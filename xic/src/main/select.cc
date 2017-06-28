@@ -1175,7 +1175,7 @@ wire:
                 Point_c px(BB->left + delta, BB->bottom + delta);
                 const Point *pts = ((CDw*)odesc)->points();
                 int num = ((CDw*)odesc)->numpts();
-                return (pts->inPath(&px, delta, 0, num));
+                return (Point::inPath(pts, &px, delta, 0, num));
             }
             if (odesc->oBB().left >= BB->left &&
                     odesc->oBB().right <= BB->right &&

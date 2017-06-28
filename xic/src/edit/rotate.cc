@@ -763,7 +763,7 @@ box:
             }
         }
         else {
-            poly.points = p->dup(5);
+            poly.points = Point::dup(p, 5);
             CDo *newo = sdesc->newPoly(mc == CDmove ? odesc : 0, &poly, ld,
                 odesc->prpty_list(), false);
             if (!newo) {
@@ -780,7 +780,7 @@ box:
 poly:
     {
         int num = ((const CDpo*)odesc)->numpts();
-        Poly poly(num, ((const CDpo*)odesc)->points()->dup(num));
+        Poly poly(num, Point::dup(((const CDpo*)odesc)->points(), num));
         rotate_path(poly.points, poly.numpts, x, y, ang);
         tstk->TPath(poly.numpts, poly.points);
         CDl *ld = odesc->ldesc();
@@ -817,7 +817,7 @@ poly:
 wire:
     {
         int num = ((const CDw*)odesc)->numpts();
-        Wire wire(num, ((const CDw*)odesc)->points()->dup(num),
+        Wire wire(num, Point::dup(((const CDw*)odesc)->points(), num),
             ((const CDw*)odesc)->attributes());
         rotate_path(wire.points, wire.numpts, x, y, ang);
         tstk->TPath(wire.numpts, wire.points);
@@ -870,7 +870,7 @@ namespace {
     poly:
         {
             int num = ((const CDpo*)odesc)->numpts();
-            Poly poly(num, ((const CDpo*)odesc)->points()->dup(num));
+            Poly poly(num, Point::dup(((const CDpo*)odesc)->points(), num));
             rotate_path(poly.points, poly.numpts, refx, refy, ang);
             Gst()->ShowGhostPath(poly.points, poly.numpts);
             delete [] poly.points;
@@ -879,7 +879,7 @@ namespace {
     wire:
         {
             int num = ((const CDw*)odesc)->numpts();
-            Wire wire(num, ((const CDw*)odesc)->points()->dup(num),
+            Wire wire(num, Point::dup(((const CDw*)odesc)->points(), num),
                 ((const CDw*)odesc)->attributes());
             rotate_path(wire.points, wire.numpts, refx, refy, ang);
             EGst()->showGhostWire(&wire);

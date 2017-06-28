@@ -449,7 +449,7 @@ PolyState::b1down()
             GhostOn(x, y);
             return;
         }
-        Points = Points->append(&NumPts, x, y);
+        Points = Point::append(Points, &NumPts, x, y);
         if (!Simple45) {
             // Only add the second point if it is 8 pixels or more
             // away, otherwise it is too easy to add spurious
@@ -457,7 +457,7 @@ PolyState::b1down()
             if (pixdist(x, y, xc, yc) >= 8.0) {
                 x = xc;
                 y = yc;
-                Points = Points->append(&NumPts, x, y);
+                Points = Point::append(Points, &NumPts, x, y);
             }
         }
     }
@@ -470,7 +470,7 @@ PolyState::b1down()
             x = xc;
             y = yc;
         }
-        Points = Points->append(&NumPts, x, y);
+        Points = Point::append(Points, &NumPts, x, y);
     }
     if (x == Firstx && y == Firsty) {
         if (NumPts <= 3) {
@@ -479,8 +479,8 @@ PolyState::b1down()
             PL()->ShowPrompt(msg1);
         }
         else {
-            Points = Points->dup(NumPts);
-            Poly poly(NumPts, Points->dup(NumPts));
+            Points = Point::dup(Points, NumPts);
+            Poly poly(NumPts, Point::dup(Points, NumPts));
 
             // Be sure poly checking is on.
             int pchk_flags;
@@ -836,7 +836,7 @@ PolyState::undo()
     GhostOff();
     XM()->SetCoordMode(CO_ABSOLUTE);
     Phead = new Plist(Points[NumPts-1].x, Points[NumPts-1].y, Phead);
-    Points = Points->remove_last(&NumPts);
+    Points = Point::remove_last(Points, &NumPts);
     BBox oldBB = RdBB;
     if (!NumPts) {
         delete_inc();
@@ -922,7 +922,7 @@ PolyState::redo()
                 20, DSP()->CurMode());
         }
         else {
-            Points = Points->append(&NumPts, x, y);
+            Points = Point::append(Points, &NumPts, x, y);
             if (!allocate_poly())
                 return;
             DSPmainDraw(SetColor(dsp_prm(LT()->CurLayer())->pixel()))
@@ -1119,7 +1119,7 @@ PolyState::add_vertex()
                 return (false);
         }
         for (i = 1; i < num; i++) {
-            if ((pts+i-1)->inPath(&px, delta, 0, 2)) {
+            if (Point::inPath(pts+i-1, &px, delta, 0, 2)) {
                 secnum = i;
                 break;
             }
@@ -1206,7 +1206,7 @@ PolyState::allocate_poly()
             "Creation of polygon on invisible layer not allowed.");
         return (false);
     }
-    Poly poly(NumPts, Points->dup(NumPts));
+    Poly poly(NumPts, Point::dup(Points, NumPts));
     if (cursd->makePolygon(ld, &poly, &newp) != CDok) {
         CD()->SetNotStrict(false);
         Errs()->add_error("makePolygon failed");

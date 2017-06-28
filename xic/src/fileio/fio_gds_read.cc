@@ -2508,7 +2508,7 @@ gds_in::a_boundary()
             }
             else if (!in_areafilt || poly.intersect(&in_cBB, false)) {
                 for (CDll *ll = in_layers; ll; ll = ll->next) {
-                    poly.points = in_points->dup(in_numpts);
+                    poly.points = Point::dup(in_points, in_numpts);
                     CDpo *newo;
                     int pchk_flags;
                     CDerrType err = in_sdesc->makePolygon(ll->ldesc, &poly,
@@ -2589,7 +2589,7 @@ gds_in::a_path()
         if (in_savebb) {
             BBox BB;
             // warning: if dup verts, computeBB may fail
-            wire.points->removeDups(&wire.numpts);
+            Point::removeDups(wire.points, &wire.numpts);
             wire.computeBB(&BB);
             in_cBB.add(&BB);
         }
@@ -3751,7 +3751,7 @@ gds_in::ac_path()
             in_points->x, in_points->y);
         in_pwidth = -in_pwidth;
     }
-    in_points->removeDups(&in_numpts);
+    Point::removeDups(in_points, &in_numpts);
 
     bool ret = true;
     if (in_tf_list) {

@@ -1082,7 +1082,7 @@ cEdit::put(int x, int y, int buffer)
         }
         else if (yx->type == CDPOLYGON) {
             Poly poly = ((yb_p*)yx)->poly;
-            poly.points = poly.points->dup_with_xform(&stk, poly.numpts);
+            poly.points = Point::dup_with_xform(poly.points, &stk, poly.numpts);
             CDpo *newo = cursd->newPoly(0, &poly, yx->ldesc, 0, false);
             if (!newo) {
                 Errs()->add_error("newPoly failed");
@@ -1099,7 +1099,7 @@ cEdit::put(int x, int y, int buffer)
         }
         else if (yx->type == CDWIRE) {
             Wire wire = ((yb_w*)yx)->wire;
-            wire.points = wire.points->dup_with_xform(&stk, wire.numpts);
+            wire.points = Point::dup_with_xform(wire.points, &stk, wire.numpts);
             CDo *newo = cursd->newWire(0, &wire, yx->ldesc, 0, false);
             if (!newo) {
                 Errs()->add_error("newWire failed");
@@ -1700,7 +1700,8 @@ namespace {
         else if (yx->type == CDPOLYGON) {
             Poly *po = &((yb_p*)yx)->poly;
             DSP()->TLoadCurrent(tfold);
-            Point *points = po->points->dup_with_xform(DSP(), po->numpts);
+            Point *points = Point::dup_with_xform(po->points, DSP(),
+                po->numpts);
             DSP()->TLoadCurrent(tftmp);
             Gst()->ShowGhostPath(points, po->numpts);
             delete [] points;
@@ -1709,7 +1710,7 @@ namespace {
             Wire *w = &((yb_w*)yx)->wire;
             Point *points = w->points;
             DSP()->TLoadCurrent(tfold);
-            w->points = points->dup_with_xform(DSP(), w->numpts);
+            w->points = Point::dup_with_xform(points, DSP(), w->numpts);
             DSP()->TLoadCurrent(tftmp);
             EGst()->showGhostWire(w);
             delete [] w->points;

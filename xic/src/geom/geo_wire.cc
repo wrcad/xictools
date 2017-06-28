@@ -333,7 +333,7 @@ namespace geo_wire {
         int cur_num()               { return (pl_num); }
         void set_cur_num(int n)     { pl_num = n; }
 
-        void remove_dups()          { sa_list->removeDups(&pl_num); }
+        void remove_dups()          { Point::removeDups(sa_list, &pl_num); }
 
         int poly_check()
             {
@@ -480,7 +480,7 @@ Wire::toPoly(Point **polypts, int *polynum, unsigned int *retflgs) const
         if (pts[i-1] == pts[i]) {
             Point *npts = new Point[num];
             memcpy(npts, points, num*sizeof(Point));
-            npts->removeDups(&num);
+            Point::removeDups(npts, &num);
             pts = npts;
             free_pts = true;
             break;

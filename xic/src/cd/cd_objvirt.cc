@@ -443,7 +443,7 @@ inst:
         stk.TPop();
         if (!pts)
             return (new Zlist(&cBB));
-        Zlist *zn = pts->toZlist(5);
+        Zlist *zn = Point::toZlist(pts, 5);
         delete [] pts;
         return (zn);
     }
@@ -517,7 +517,7 @@ inst:
         stk.TPop();
         if (!pts)
             return (new Zlist(&cBB));
-        Zlist *zn = pts->toZlist(5);
+        Zlist *zn = Point::toZlist(pts, 5);
         delete [] pts;
         return (zn);
     }
@@ -552,7 +552,8 @@ poly:
         CDpo *newp = new CDpo(ldesc());
         newp->e_BB = oBB();
         newp->set_numpts(((const CDpo*)this)->numpts());
-        newp->set_points(((const CDpo*)this)->points()->dup(newp->numpts()));
+        newp->set_points(
+            Point::dup(((const CDpo*)this)->points(), newp->numpts()));
         newp->prptyAddCopyList(prpty_list());
         return (newp);
     }
@@ -562,7 +563,8 @@ wire:
         neww->e_BB = oBB();
         neww->set_attributes(((const CDw*)this)->attributes());
         neww->set_numpts(((const CDw*)this)->numpts());
-        neww->set_points(((const CDw*)this)->points()->dup(neww->numpts()));
+        neww->set_points(
+            Point::dup(((const CDw*)this)->points(), neww->numpts()));
         neww->prptyAddCopyList(prpty_list());
         return (neww);
     }
@@ -623,7 +625,7 @@ poly:
         CDpo *newp = new CDpo(ldesc());
         newp->e_BB = oBB();
         newp->set_numpts(cdpo->numpts());
-        newp->set_points(cdpo->points()->dup(newp->numpts()));
+        newp->set_points(Point::dup(cdpo->points(), newp->numpts()));
         newp->prptyAddCopyList(prpty_list());
         if (!sdesc->insert(newp)) {
             delete newp;
@@ -638,7 +640,7 @@ wire:
         neww->e_BB = oBB();
         neww->set_attributes(cdw->attributes());
         neww->set_numpts(cdw->numpts());
-        neww->set_points(cdw->points()->dup(neww->numpts()));
+        neww->set_points(Point::dup(cdw->points(), neww->numpts()));
         if (!sdesc->insert(neww)) {
             delete neww;
             return (0);
@@ -815,7 +817,7 @@ poly:
     {
         CDpo *od = new CDpo(ldesc());
         od->set_numpts(((const CDpo*)this)->numpts());
-        od->set_points(((const CDpo*)this)->points()->dup(od->numpts()));
+        od->set_points(Point::dup(((const CDpo*)this)->points(), od->numpts()));
         od->e_BB = oBB();
         od->set_state(state());
         od->set_flag(e_flags);
@@ -828,7 +830,7 @@ wire:
         CDw *od = new CDw(ldesc());
         od->set_attributes(((const CDw*)this)->attributes());
         od->set_numpts(((const CDw*)this)->numpts());
-        od->set_points(((const CDw*)this)->points()->dup(od->numpts()));
+        od->set_points(Point::dup(((const CDw*)this)->points(), od->numpts()));
         od->e_BB = oBB();
         od->set_state(state());
         od->set_flag(e_flags);
@@ -912,8 +914,8 @@ poly:
             tstk->TBB(&BB, 0);
         CDpo *od = new CDpo(ldesc());
         od->set_numpts(((const CDpo*)this)->numpts());
-        od->set_points(((const CDpo*)this)->points()->dup_with_xform(tstk,
-            od->numpts()));
+        od->set_points(Point::dup_with_xform(((const CDpo*)this)->points(),
+            tstk, od->numpts()));
         od->e_BB = BB;
         od->set_state(state());
         od->set_flag(e_flags);
@@ -935,8 +937,8 @@ wire:
         od->set_wire_width(width);
         od->set_wire_style(((CDw*)this)->wire_style());
         od->set_numpts(((const CDw*)this)->numpts());
-        od->set_points(((const CDw*)this)->points()->dup_with_xform(tstk,
-            od->numpts()));
+        od->set_points(Point::dup_with_xform(((const CDw*)this)->points(),
+            tstk, od->numpts()));
         od->e_BB = BB;
         od->set_state(state());
         od->set_flag(e_flags);

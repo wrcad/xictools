@@ -2667,7 +2667,7 @@ oas_in::a_path()
         if (in_savebb) {
             BBox BB;
             // warning: if dup verts, computeBB may fail
-            w.points->removeDups(&w.numpts);
+            Point::removeDups(w.points, &w.numpts);
             w.computeBB(&BB);
             in_cBB.add(&BB);
         }
@@ -3628,7 +3628,7 @@ oas_in::ac_path()
             w.points[w.numpts-2].x, w.points[w.numpts-2].y,
             scale(uobj.path.end_extension));
     }
-    w.points->removeDups(&w.numpts);
+    Point::removeDups(w.points, &w.numpts);
 
     bool ret = true;
     if (in_tf_list) {

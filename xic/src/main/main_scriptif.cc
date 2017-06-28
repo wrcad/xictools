@@ -1828,11 +1828,11 @@ cGhost::ShowGhostScript(int xp, int yp, int,  int)
     for (PolyList *p = SIlcx()->ghostList(); p; p = p->next) {
         Poly poly = p->po;
         DSP()->TLoadCurrent(&tfnew);
-        poly.points = poly.points->dup_with_xform(DSP(), poly.numpts);
+        poly.points = Point::dup_with_xform(poly.points, DSP(), poly.numpts);
         DSP()->TLoadCurrent(&tfold);
         if (SIlcx()->applyTransform()) {
             if (GEO()->curTx()->magset())
-                poly.points->scale(poly.numpts, GEO()->curTx()->magn(),
+                Point::scale(poly.points, poly.numpts, GEO()->curTx()->magn(),
                     xp, yp);
         }
         ShowGhostPath(poly.points, poly.numpts);

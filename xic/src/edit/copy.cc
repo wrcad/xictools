@@ -1091,7 +1091,7 @@ box:
             // non-manhattan, convert to polygon
             poly.numpts = 5;
             if (GEO()->curTx()->magset())
-                poly.points->scale(5, GEO()->curTx()->magn(), x, y);
+                Point::scale(poly.points, 5, GEO()->curTx()->magn(), x, y);
             CDo *newo = sdesc->newPoly(mc == CDmove ? odesc : 0, &poly, ld,
                 odesc->prpty_list(), false);
             if (!newo) {
@@ -1123,8 +1123,8 @@ poly:
     {
         Poly poly(((const CDpo*)odesc)->numpts(), 0);
         stk.TLoadCurrent(tfnew);
-        poly.points = ((const CDpo*)odesc)->points()->dup_with_xform(&stk,
-            poly.numpts);
+        poly.points = Point::dup_with_xform(((const CDpo*)odesc)->points(),
+            &stk, poly.numpts);
         stk.TLoadCurrent(tfold);
         CDl *ld = odesc->ldesc();
         if (ldnew && (!ldold || ldold == odesc->ldesc()))
@@ -1147,8 +1147,10 @@ poly:
             }
         }
         else {
-            if (GEO()->curTx()->magset())
-                poly.points->scale(poly.numpts, GEO()->curTx()->magn(), x, y);
+            if (GEO()->curTx()->magset()) {
+                Point::scale(poly.points, poly.numpts, GEO()->curTx()->magn(),
+                    x, y);
+            }
             CDpo *newo = sdesc->newPoly(mc == CDmove ? odesc : 0, &poly, ld,
                 odesc->prpty_list(), false);
             if (!newo) {
@@ -1167,11 +1169,12 @@ wire:
         Wire wire(((const CDw*)odesc)->numpts(), 0,
             ((const CDw*)odesc)->attributes());
         stk.TLoadCurrent(tfnew);
-        wire.points = ((const CDw*)odesc)->points()->dup_with_xform(&stk,
-            wire.numpts);
+        wire.points = Point::dup_with_xform(((const CDw*)odesc)->points(),
+            &stk, wire.numpts);
         stk.TLoadCurrent(tfold);
         if (GEO()->curTx()->magset()) {
-            wire.points->scale(wire.numpts, GEO()->curTx()->magn(), x, y);
+            Point::scale(wire.points, wire.numpts, GEO()->curTx()->magn(),
+                x, y);
             if (!ED()->noWireWidthMag())
                 wire.set_wire_width(
                     mmRnd(wire.wire_width()*GEO()->curTx()->magn()));
@@ -1398,7 +1401,7 @@ namespace {
             DSP()->TLoadCurrent(tfold);
             if (pts) {
                 if (GEO()->curTx()->magset())
-                    pts->scale(5, GEO()->curTx()->magn(), x, y);
+                    Point::scale(pts, 5, GEO()->curTx()->magn(), x, y);
                 Gst()->ShowGhostPath(pts, 5);
                 delete [] pts;
             }
@@ -1414,11 +1417,11 @@ namespace {
         {
             int num = ((const CDpo*)odesc)->numpts();
             DSP()->TLoadCurrent(tfnew);
-            Point *pts = ((const CDpo*)odesc)->points()->dup_with_xform(
+            Point *pts = Point::dup_with_xform(((const CDpo*)odesc)->points(),
                 DSP(), num);
             DSP()->TLoadCurrent(tfold);
             if (GEO()->curTx()->magset())
-                pts->scale(num, GEO()->curTx()->magn(), x, y);
+                Point::scale(pts, num, GEO()->curTx()->magn(), x, y);
             Gst()->ShowGhostPath(pts, num);
             delete [] pts;
             display_centroid(odesc, tfold, tfnew, refx, refy);
@@ -1429,11 +1432,13 @@ namespace {
             int num = ((const CDw*)odesc)->numpts();
             DSP()->TLoadCurrent(tfnew);
             Wire wire(num, 
-                ((const CDw*)odesc)->points()->dup_with_xform(DSP(), num),
+                Point::dup_with_xform(((const CDw*)odesc)->points(), DSP(),
+                    num),
                 ((const CDw*)odesc)->attributes());
             DSP()->TLoadCurrent(tfold);
             if (GEO()->curTx()->magset()) {
-                wire.points->scale(wire.numpts, GEO()->curTx()->magn(), x, y);
+                Point::scale(wire.points, wire.numpts, GEO()->curTx()->magn(),
+                    x, y);
                 if (!ED()->noWireWidthMag())
                     wire.set_wire_width(
                         mmRnd(wire.wire_width()*GEO()->curTx()->magn()));
@@ -1450,10 +1455,10 @@ namespace {
             odesc->boundary(&BB, &pts);
             if (pts) {
                 DSP()->TLoadCurrent(tfnew);
-                pts->xform(DSP(), 5);
+                Point::xform(pts, DSP(), 5);
                 DSP()->TLoadCurrent(tfold);
                 if (GEO()->curTx()->magset())
-                    pts->scale(5, GEO()->curTx()->magn(), x, y);
+                    Point::scale(pts, 5, GEO()->curTx()->magn(), x, y);
                 Gst()->ShowGhostPath(pts, 5);
                 delete [] pts;
             }
@@ -1463,7 +1468,7 @@ namespace {
                 DSP()->TLoadCurrent(tfold);
                 if (pts) {
                     if (GEO()->curTx()->magset())
-                        pts->scale(5, GEO()->curTx()->magn(), x, y);
+                        Point::scale(pts, 5, GEO()->curTx()->magn(), x, y);
                     Gst()->ShowGhostPath(pts, 5);
                     delete [] pts;
                 }
@@ -1582,10 +1587,10 @@ namespace {
             odesc->boundary(&BB, &pts);
             if (pts) {
                 DSP()->TLoadCurrent(tfnew);
-                pts->xform(DSP(), 5);
+                Point::xform(pts, DSP(), 5);
                 DSP()->TLoadCurrent(tfold);
                 if (GEO()->curTx()->magset())
-                    pts->scale(5, GEO()->curTx()->magn(), x, y);
+                    Point::scale(pts, 5, GEO()->curTx()->magn(), x, y);
                 Gst()->ShowGhostPath(pts, 5);
                 delete [] pts;
             }
@@ -1595,7 +1600,7 @@ namespace {
                 DSP()->TLoadCurrent(tfold);
                 if (pts) {
                     if (GEO()->curTx()->magset())
-                        pts->scale(5, GEO()->curTx()->magn(), x, y);
+                        Point::scale(pts, 5, GEO()->curTx()->magn(), x, y);
                     Gst()->ShowGhostPath(pts, 5);
                     delete [] pts;
                 }

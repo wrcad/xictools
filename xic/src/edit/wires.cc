@@ -454,7 +454,7 @@ WireState::b1down()
                 (Tech()->IsConstrain45() && !Override)) {
             // reg45 or simple45
             ED()->pthGet(&xx, &yy);
-            Points = Points->append(&NumPts, xx, yy);
+            Points = Point::append(Points, &NumPts, xx, yy);
             pt_added = true;
         }
         if ((!Tech()->IsConstrain45() && !Simple45) ||
@@ -464,7 +464,7 @@ WireState::b1down()
             // away, otherwise it is too easy to add spurious
             // vertices.
             if (!pt_added || pixdist(x, y, xx, yy) >= 8.0)
-                Points = Points->append(&NumPts, x, y);
+                Points = Point::append(Points, &NumPts, x, y);
         }
         if (np != NumPts) {
             if (allocate_wire(width, style)) {
@@ -489,7 +489,7 @@ WireState::b1down()
             CDw *neww = (CDw*)DSP()->IncompleteObject();
             Wire wire;
             wire.numpts = neww->numpts();
-            wire.points = neww->points()->dup(wire.numpts);
+            wire.points = Point::dup(neww->points(), wire.numpts);
             wire.set_wire_style(neww->wire_style());
             wire.set_wire_width(neww->wire_width());
             CDl *ldesc = neww->ldesc();
@@ -816,7 +816,7 @@ WireState::undo()
     GhostOff();
     XM()->SetCoordMode(CO_ABSOLUTE);
     Phead = new Plist(Points[NumPts-1].x, Points[NumPts-1].y, Phead);
-    Points = Points->remove_last(&NumPts);
+    Points = Point::remove_last(Points, &NumPts);
     BBox oldBB = RdBB;
     if (!NumPts) {
         delete_inc();
@@ -908,7 +908,7 @@ WireState::redo()
             int width =
                 UseChain ? ChainWidth : dsp_prm(LT()->CurLayer())->wire_width();
             WireStyle style = UseChain ? ChainStyle : ED()->getWireStyle();
-            Points = Points->append(&NumPts, x, y);
+            Points = Point::append(Points, &NumPts, x, y);
             if (!allocate_wire(width, style))
                 return;
             DSPmainDraw(SetColor(dsp_prm(LT()->CurLayer())->pixel()))
@@ -1160,7 +1160,8 @@ WireState::add_vertex()
                 return (false);
         }
         for (i = 1; i < num; i++) {
-            if ((pts+i-1)->inPath(&px, delta + wrdesc->wire_width()/4, 0, 2)) {
+            if (Point::inPath(pts+i-1, &px, delta + wrdesc->wire_width()/4,
+                    0, 2)) {
                 secnum = i;
                 break;
             }
@@ -1247,7 +1248,7 @@ WireState::allocate_wire(int width, WireStyle style)
     }
     Wire wire(width,
         (DSP()->CurMode() == Physical ? style : CDWIRE_EXTEND),
-        NumPts, Points->dup(NumPts));
+        NumPts, Point::dup(Points, NumPts));
     if (cursd->makeWire(ld, &wire, &neww) != CDok) {
         CD()->SetNotStrict(false);
         Errs()->add_error("makeWire failed");
@@ -1266,7 +1267,7 @@ WireState::allocate_wire(int width, WireStyle style)
         ScedIf()->install(neww, cursd, true);
         NumPts = neww->numpts();
         delete [] Points;
-        Points = neww->points()->dup(NumPts);
+        Points = Point::dup(neww->points(), NumPts);
     }
     return (true);
 }
@@ -1333,7 +1334,7 @@ cEdit::execWireStyle()
         if (wd->state() == CDSelected && wd->ldesc()->isSelectable()) {
             // Change selected wires to new end style.
             int num = wd->numpts();
-            Wire wire(num, wd->points()->dup(num), wd->attributes());
+            Wire wire(num, Point::dup(wd->points(), num), wd->attributes());
             wire.set_wire_style(ed_wire_style);
             Errs()->init_error();
             CDw *neww = CurCell()->newWire(wd, &wire, wd->ldesc(),
@@ -1438,7 +1439,8 @@ cEdit::execWireWidth()
                     continue;
                 if (wd->state() == CDSelected && wd->ldesc()->isSelectable()) {
                     int num = wd->numpts();
-                    Wire wire(num, wd->points()->dup(num), wd->attributes());
+                    Wire wire(num, Point::dup(wd->points(), num),
+                        wd->attributes());
                     wire.set_wire_width(width);
                     Errs()->init_error();
                     CDw *neww = CurCell()->newWire(wd, &wire, wd->ldesc(),
