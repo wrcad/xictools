@@ -264,7 +264,7 @@ cGEO::edge_zlist(const CDs *sdesc, sLspec *lspec, const Point *p1,
             return (ret);
 
         // Important!
-        el = el->filter_slivers(1);
+        el = Zlist::filter_slivers(el, 1);
 
         if (edge_code == DRCeCWA || edge_code == DRCeCCWD) {
             Zlist *zp = 0, *zn;
@@ -315,7 +315,7 @@ cGEO::edge_zlist(const CDs *sdesc, sLspec *lspec, const Point *p1,
 
     if (el) {
         if (el->next) {
-            el = el->sort();  // ascending in yl, left
+            el = Zlist::sort(el);  // ascending in yl, left
             // el is closest to p1
 
             // Combine if possible, allow for overlap.  We know that
@@ -544,7 +544,7 @@ namespace {
                 ze = ze->next;
             }
         }
-        elist->free();
+        Zlist::free(elist);
         return (z0);
     }
 }
@@ -560,7 +560,7 @@ cGEO::merge_edge_zlists(const Zlist *zl1, int code1, Zlist *zl2)
     if (!zl2)
         return (0);
     if (!zl1) {
-        zl2->free();
+        Zlist::free(zl2);
         return (0);
     }
 
@@ -695,7 +695,7 @@ cGEO::merge_edge_zlists(const Zlist *zl1, int code1, Zlist *zl2)
         }
         break;
     }
-    zl2->free();
+    Zlist::free(zl2);
     return (zx0);
 }
 

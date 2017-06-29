@@ -559,7 +559,7 @@ namespace {
                     Zoid Z(tbb);
                     bool cover;
                     bool cov = Z.test_coverage(zl0, &cover, 0);
-                    zl0->free();
+                    Zlist::free(zl0);
                     if (!cov)
                         return (false);
                 }
@@ -1650,7 +1650,7 @@ namespace {
     {
         Zlist *zl = odesc->toZlist();
         XIrt ret = ::coverageTest(zl, lspec, type, istrue);
-        zl->free();
+        Zlist::free(zl);
         return (ret);
     }
 }
@@ -2648,7 +2648,7 @@ selqueue_t::get_zlist(const CDl *ld, const Zlist *zref) const
     ol0->free();
 
     try {
-        z0 = z0->repartition();
+        z0 = Zlist::repartition(z0);
         return (z0);
     }
     catch (XIrt) {

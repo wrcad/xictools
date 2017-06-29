@@ -1280,7 +1280,7 @@ drc_funcs::IFdrcTestPoly(Variable *res, Variable *args, void*)
     sPF::set_skip_drc(true);
     XIrt x = lspec.testZlistCovPartial(&cx, &cov, DRC()->fudgeVal());
     sPF::set_skip_drc(false);
-    z0->free();
+    Zlist::free(z0);
     lspec.clear();
     if (x == XIok)
         res->content.value = (int)cov;
@@ -1435,7 +1435,7 @@ drc_funcs::IFdrcZlist(Variable *res, Variable *args, void *datap)
 
     if (zsrc) {
         if (!orig)
-            zsrc = zsrc->copy();
+            zsrc = Zlist::copy(zsrc);
         XIrt ret;
         ld = zsrc->to_temp_layer(DRC_TMPLYR,
             TTLinternal | TTLnoinsert | TTLjoin, cursdp, &ret);
@@ -1487,7 +1487,7 @@ drc_funcs::IFdrcZlist(Variable *res, Variable *args, void *datap)
     const Zlist *zref = ((SIlexprCx*)datap)->getZref();
     BBox BB;
     if (zref)
-        zref->BB(BB);
+        Zlist::BB(zref, BB);
 
     bool ret = OK;
     Zlist *z0 = 0, *ze = 0;
@@ -1533,7 +1533,7 @@ drc_funcs::IFdrcZlist(Variable *res, Variable *args, void *datap)
     }
     if (ret == BAD) {
         Errs()->add_error("DrcZlist: evaluation failed.");
-        z0->free();
+        Zlist::free(z0);
     }
     else {
         res->type = TYP_ZLIST;
@@ -1628,7 +1628,7 @@ drc_funcs::IFdrcZlistEx(Variable *res, Variable *args, void *datap)
         res->type = TYP_ZLIST;
         res->content.zlist = 0;
         if (orig)
-            zsrc->free();
+            Zlist::free(zsrc);
         return (OK);
     }
 
@@ -1641,7 +1641,7 @@ drc_funcs::IFdrcZlistEx(Variable *res, Variable *args, void *datap)
     }
 
     if (!orig)
-        zsrc = zsrc->copy();
+        zsrc = Zlist::copy(zsrc);
     XIrt xrt;
     CDl *ld = zsrc->to_temp_layer(DRC_TMPLYR,
         TTLinternal | TTLnoinsert | TTLjoin, cursdp, &xrt);
@@ -1656,7 +1656,7 @@ drc_funcs::IFdrcZlistEx(Variable *res, Variable *args, void *datap)
     const Zlist *zref = ((SIlexprCx*)datap)->getZref();
     BBox BB;
     if (zref)
-        zref->BB(BB);
+        Zlist::BB(zref, BB);
 
     bool ret = OK;
     Zlist *z0 = 0, *ze = 0;
@@ -1681,7 +1681,7 @@ drc_funcs::IFdrcZlistEx(Variable *res, Variable *args, void *datap)
 
     if (ret == BAD) {
         Errs()->add_error("DrcZlistEx: evaluation failed.");
-        z0->free();
+        Zlist::free(z0);
     }
     else {
         res->type = TYP_ZLIST;

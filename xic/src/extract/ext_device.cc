@@ -592,7 +592,7 @@ cGroupDesc::find_dev_set(const char *name, const char *pref, const char *inds,
                                             &zret) != XIok)
                                         return (found);
                                     if (zret) {
-                                        zret->free();
+                                        Zlist::free(zret);
                                         di->set_displayed(state);
                                         found++;
                                     }
@@ -988,7 +988,7 @@ cGroupDesc::has_bulk_contact(const sDevDesc *d, const BBox *bBB,
         const char *msg = "contact expression for %s%s, evaluation %s.";
         ExtErrLog.add_dev_err(gd_celldesc, 0, msg, d->name(), c->name(),
             ret == XIintr ? "interrupted" : "failed");
-        zret->free();
+        Zlist::free(zret);
         *xrt = ret;
         return (false);
     }
@@ -996,8 +996,8 @@ cGroupDesc::has_bulk_contact(const sDevDesc *d, const BBox *bBB,
         return (false);
 
     BBox cBB;
-    zret->BB(cBB);
-    zret->free();
+    Zlist::BB(zret, cBB);
+    Zlist::free(zret);
     return (check_bulk_contact_group(&cBB, c));
 }
 
@@ -2810,16 +2810,16 @@ sMprim::cAP(sDevInst *di)
         return (true);
 
     // Clip/merge the list, so no trapezoids intersect.
-    z0 = z0->repartition_ni();
+    z0 = Zlist::repartition_ni(z0);
 
     // Clip the list to the actual contact layer expression.
     SIlexprCx cx(di->celldesc(), CDMAXCALLDEPTH, z0);
     Zlist *zret = 0;
     XIrt xrt = c1->desc()->lspec()->getZlist(&cx, &zret);
-    z0->free();
+    Zlist::free(z0);
     if (xrt != XIok)
         return (false);
-    z0 = zret->repartition_ni();
+    z0 = Zlist::repartition_ni(zret);
 
     bool perm = di->desc()->is_permute(c1->desc()->name());
     int nterms = 0;
@@ -2847,7 +2847,7 @@ sMprim::cAP(sDevInst *di)
             mp_extravar->content.value = MICRONS(perim);
         }
         else
-            z0->free();
+            Zlist::free(z0);
         return (true);
     }
 
@@ -3993,7 +3993,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
         int j = 0;
         for (int i = 0; i < g->num; i++) {
             if (!Zlist::intersect(g->list[i], AOI, false)) {
-                g->list[i]->free();
+                Zlist::free(g->list[i]);
                 g->list[i] = 0;
             }
             else {
@@ -4011,7 +4011,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
         for (int i = 0; i < g->num; i++) {
             if (g->list[i]) {
                 if (!findall && j)
-                    g->list[i]->free();
+                    Zlist::free(g->list[i]);
                 else
                     zz[j++] = g->list[i];
                 g->list[i] = 0;
@@ -4035,7 +4035,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
             CovType ct;
             if (globex.testZlistCovNone(&cx, &ct, 2*Tech()->AngleSupport())
                     == XIok && ct != CovNone) {
-                g->list[i]->free();
+                Zlist::free(g->list[i]);
                 g->list[i] = 0;
                 continue;
             }
@@ -4092,7 +4092,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
         }
         sDevInst *d = new sDevInst(g->num - 1 - i, this, sdesc);
         BBox tBB;
-        g->list[i]->BB(tBB);
+        Zlist::BB(g->list[i], tBB);
         d->set_bBB(&tBB);
         d->set_BB(&tBB);
         if (d_bloat != 0.0)
@@ -4140,7 +4140,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
 
         // Compute area, mindim, and perim.
         try {
-            g->list[i] = g->list[i]->repartition();
+            g->list[i] = Zlist::repartition(g->list[i]);
         }
         catch (XIrt tmpret) {
             delete d;
@@ -4280,12 +4280,12 @@ sDevDesc::identify_contacts(CDs *sdesc, sDevInst *d, const Zlist *zbody,
             }
         }
         else {
-            zbb->free();
+            Zlist::free(zbb);
             *xrt = ret;
             return (false);
         }
     }
-    zbb->free();
+    Zlist::free(zbb);
     return (true);
 }
 
@@ -4331,7 +4331,7 @@ sDevDesc::identify_contact(CDs *sdesc, sDevInst *d, Zlist **zbbp,
     const Zlist *zb = zbody;
     if (d_bloat != 0.0) {
         try {
-            zb = zbody->bloat(INTERNAL_UNITS(d_bloat), 0);
+            zb = Zlist::bloat(zbody, INTERNAL_UNITS(d_bloat), 0);
         }
         catch (XIrt zbret) {
             const char *msg = "contact expression for %s%s, body "
@@ -4349,7 +4349,7 @@ sDevDesc::identify_contact(CDs *sdesc, sDevInst *d, Zlist **zbbp,
     for (int j = 0; j < gc->num; j++) {
         if (Zlist::intersect(gc->list[j], zb, true)) {
             sDevContactInst *ci = new sDevContactInst(d, c);
-            gc->list[j]->BB(*ci->BB());
+            Zlist::BB(gc->list[j], *ci->BB());
             ci->set_fillfct(Zlist::area(gc->list[j])/ci->cBB()->area());
 
             if (!overlap_conts()) {
@@ -4383,7 +4383,7 @@ sDevDesc::identify_contact(CDs *sdesc, sDevInst *d, Zlist **zbbp,
     }
     delete gc;
     if (d_bloat != 0.0)
-        zb->free();
+        Zlist::free(zb);
     *zbbp = zbb;
     return (ci0);
 }
@@ -4409,7 +4409,7 @@ sDevDesc::identify_bulk_contact(CDs *sdesc, sDevInst *d, sDevContactDesc *c,
         const char *msg = "contact expression for %s%s, evaluation %s.";
         ExtErrLog.add_dev_err(sdesc, 0, msg, name(), c->name(),
             ret == XIintr ? "interrupted" : "failed");
-        zret->free();
+        Zlist::free(zret);
         *xrt = ret;
         return (0);
     }
@@ -4432,7 +4432,7 @@ sDevDesc::identify_bulk_contact(CDs *sdesc, sDevInst *d, sDevContactDesc *c,
 
     for (int j = 0; j < gc->num; j++) {
         BBox tBB;
-        gc->list[j]->BB(tBB);
+        Zlist::BB(gc->list[j], tBB);
         int x = (tBB.left + tBB.right)/2;
         int y = (tBB.bottom + tBB.top)/2;
         double dd = (x-xo)*(x-xo) + (y-yo)*(y-yo);
@@ -4442,7 +4442,7 @@ sDevDesc::identify_bulk_contact(CDs *sdesc, sDevInst *d, sDevContactDesc *c,
         }
     }
     sDevContactInst *ci = new sDevContactInst(d, c);
-    gc->list[ix]->BB(*ci->BB());
+    Zlist::BB(gc->list[ix], *ci->BB());
     ci->set_fillfct(Zlist::area(gc->list[ix])/ci->cBB()->area());
     delete gc;
     return (ci);
@@ -5773,7 +5773,7 @@ sDevInst::getdev(BBox *AOI, bool *err)
                 return (0);
             }
             if (zret) {
-                zret->free();
+                Zlist::free(zret);
                 return (new sDevInstList(this, 0));
             }
         }
@@ -5951,7 +5951,7 @@ sDevInst::setup_squares(bool lmode) const
                 !cg->list[i]) {
             const char *msg = "contact %s, failed to extract area";
             ExtErrLog.add_dev_err(di_sdesc, this, msg, ci->desc()->name());
-            zlist->free();
+            Zlist::free(zlist);
             delete cg;
             return (0);
         }
@@ -5959,7 +5959,7 @@ sDevInst::setup_squares(bool lmode) const
 
     RLsolver *r = new RLsolver;
     bool ret = r->setup(zlist, bld, cg);
-    zlist->free();
+    Zlist::free(zlist);
     delete cg;
 
     const char *msg = "RLsolver error: %s";

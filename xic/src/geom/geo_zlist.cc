@@ -42,35 +42,15 @@ bool Zlist::JoinSplitWires = false;
 // Zlist Functions
 //------------------------------------------------------------------------
 
-void
-Zlist::show() const
-{
-    for (const Zlist *zl = this; zl; zl = zl->next)
-        (zl->Z).show();
-}
 
-
-void
-Zlist::free() const
-{
-    Zlist *zx;
-    for (const Zlist *zl = this; zl; zl = zx) {
-        zx = zl->next;
-        delete zl;
-    }
-}
-
-
+// Static function.
 // Fill in the bounding box of the zoid list
 //
 void
-Zlist::BB(BBox &tBB) const
+Zlist::BB(const Zlist *z0, BBox &tBB)
 {
-    tBB.left = Z.minleft();
-    tBB.bottom = Z.yl;
-    tBB.right = Z.maxright();
-    tBB.top = Z.yu;
-    for (Zlist *z = next; z; z = z->next) {
+    tBB = CDnullBB;
+    for (const Zlist *z = z0; z; z = z->next) {
         int left = z->Z.minleft();
         if (left < tBB.left)
             tBB.left = left;
@@ -85,13 +65,14 @@ Zlist::BB(BBox &tBB) const
 }
 
 
-// Function to copy a Zlist
+// Static function.
+// Function to copy a Zlist.
 //
 Zlist *
-Zlist::copy() const
+Zlist::copy(const Zlist *thiszl)
 {
     Zlist *z0 = 0, *ze = 0;
-    for (const Zlist *zl = this; zl; zl = zl->next) {
+    for (const Zlist *zl = thiszl; zl; zl = zl->next) {
         if (!z0)
             z0 = ze = new Zlist(&zl->Z);
         else {
@@ -103,12 +84,13 @@ Zlist::copy() const
 }
 
 
+// Static function.
 // Remove the sub-dimensional elements.
 //
 Zlist *
-Zlist::filter_slivers(int d)
+Zlist::filter_slivers(Zlist *thiszl, int d)
 {
-    Zlist *zl = this, *zp = 0, *zn;
+    Zlist *zl = thiszl, *zp = 0, *zn;
     for (Zlist *z = zl; z; z = zn) {
         zn = z->next;
         if (z->Z.is_sliver(d)) {
@@ -125,12 +107,13 @@ Zlist::filter_slivers(int d)
 }
 
 
+// Static function.
 // Remove the sub-dimensional elements, using the criteria for DRC.
 //
 Zlist *
-Zlist::filter_drc_slivers(int d)
+Zlist::filter_drc_slivers(Zlist *thiszl, int d)
 {
-    Zlist *zl = this, *zp = 0, *zn;
+    Zlist *zl = thiszl, *zp = 0, *zn;
     for (Zlist *z = zl; z; z = zn) {
         zn = z->next;
         if (z->Z.is_drc_sliver(d)) {
@@ -177,10 +160,12 @@ namespace {
 }
 
 
+// Static function.
+//
 Zlist *
-Zlist::sort(int mode)
+Zlist::sort(Zlist *thiszl, int mode)
 {
-    Zlist *z0 = this;
+    Zlist *z0 = thiszl;
     if (z0 && z0->next) {
         int len = 0;
         for (Zlist *z = z0; z; z = z->next, len++) ;
@@ -217,20 +202,18 @@ Zlist::sort(int mode)
 }
 
 
+// Static function.
 // Expand or shrink a list of zoids, 'this' is untouched.
 // On exception: 'this' is untouched.
 //
 //
 Zlist *
-Zlist::bloat(int delta, int blflags) const throw (XIrt)
+Zlist::bloat(const Zlist *thiszl, int delta, int blflags) throw (XIrt)
 {
-    {
-        const Zlist *zt = this;
-        if (!zt)
-            return (0);
-    }
+    if (!thiszl)
+        return (0);
     if (delta == 0)
-        return (copy());
+        return (copy(thiszl));
 
     int blmode = blflags & BL_MODE_MASK;
 
@@ -239,7 +222,7 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
         // The old slow algorithm, but takes into account unselected
         // objects.
         XIrt retp = XIok;
-        Zlist *zl = GEO()->ifBloatList(this, delta, (blflags & BL_EDGE_ONLY),
+        Zlist *zl = GEO()->ifBloatList(thiszl, delta, (blflags & BL_EDGE_ONLY),
             &retp);
         if (retp != XIok)
             throw (retp);
@@ -252,11 +235,11 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
             Zlist *z0;
             try {
                 if (blmode == 0)
-                    z0 = halo(delta);
+                    z0 = halo(thiszl, delta);
                 else if (blmode == 1)
                     // This method should be faster, but not recommended
                     // for non-Manhattan.
-                    z0 = edges(delta);
+                    z0 = edges(thiszl, delta);
                 else if (blmode == 2)
                     // This method creates a wire from the vertex list
                     // of each maximal polygon, then either joins the
@@ -264,15 +247,15 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
                     // If delta < 0, we invert first, using edges around
                     // the clear areas.  Otherwise, there are problems
                     // with polygons with holes.
-                    z0 = wire_edges(2*delta);
+                    z0 = wire_edges(thiszl, 2*delta);
                 else
-                    z0 = halo(delta);
+                    z0 = halo(thiszl, delta);
             }
             catch (XIrt) {
                 throw;
             }
-            Zlist *zx = copy();
-            XIrt ret = Zlist::zl_or(&z0, zx);
+            Zlist *zx = copy(thiszl);
+            XIrt ret = zl_or(&z0, zx);
             if (ret != XIok)
                 throw (ret);
             return (z0);
@@ -281,16 +264,16 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
             // Find the bounding box and expand by abs(delta), and
             // clip out the poly areas (effectively inverting).
             BBox tBB;
-            BB(tBB);
+            BB(thiszl, tBB);
             tBB.bloat(-delta);
-            Zlist *z1 = copy();
+            Zlist *z1 = copy(thiszl);
             Zlist *za = new Zlist(&tBB);
-            XIrt ret = Zlist::zl_andnot(&za, z1);
+            XIrt ret = zl_andnot(&za, z1);
             if (ret != XIok)
                 throw (ret);
 
             try {
-                za = za->repartition();
+                za = repartition(za);
             }
             catch (XIrt) {
                 throw;
@@ -300,30 +283,30 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
             Zlist *z0;
             try {
                 if (blmode == 0)
-                    z0 = za->halo(delta);
+                    z0 = halo(za, delta);
                 else if (blmode == 1)
-                    z0 = za->edges(delta);
+                    z0 = edges(za, delta);
                 else if (blmode == 2)
-                    z0 = za->wire_edges(2*delta);
+                    z0 = wire_edges(za, 2*delta);
                 else
-                    z0 = za->halo(delta);
-                za->free();
+                    z0 = halo(za, delta);
+                free(za);
             }
             catch (XIrt) {
-                za->free();
+                free(za);
                 throw;
             }
 
             // Subtract halo from original poly area.
-            za = copy();
-            ret = Zlist::zl_andnot(&za, z0);
+            za = copy(thiszl);
+            ret = zl_andnot(&za, z0);
             if (ret != XIok)
                 throw (ret);
             return (za);
         }
     }
 
-    Zlist *zt = copy();
+    Zlist *zt = copy(thiszl);
 
     // BL_NO_MERGE_OUT suppresses all merging if BL_EDGE_ONLY.
     if (blflags & BL_NO_MERGE_OUT) {
@@ -334,7 +317,7 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
     if (blflags & BL_NO_GROUP) {
         if (!(blflags & BL_NO_MERGE_IN)) {
             try {
-                zt = zt->repartition();
+                zt = repartition(zt);
             }
             catch (XIrt) {
                 throw;
@@ -343,37 +326,37 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
         Zlist *z0 = zt->ext_zoids(delta, blflags);
 
         if (blflags & BL_EDGE_ONLY) {
-            zt->free();
+            free(zt);
             zt = z0;
             // The returned list has had repartition called, unless
             // BL_NO_MERGE_OUT is set,
         }
         else if (delta > 0) {
-            XIrt ret = Zlist::zl_or(&zt, z0);
+            XIrt ret = zl_or(&zt, z0);
             if (ret != XIok)
                 throw (ret);
         }
         else {
             if (blflags & BL_SCALE_FIX) {
                 try {
-                    Zlist::expand_by_2(zt);
-                    Zlist::expand_by_2(z0);
-                    XIrt ret = Zlist::zl_andnot(&zt, z0);
+                    expand_by_2(zt);
+                    expand_by_2(z0);
+                    XIrt ret = zl_andnot(&zt, z0);
                     if (ret != XIok)
                         throw (ret);
-                    zt = zt->repartition();
-                    zt = Zlist::shrink_by_2(zt);
+                    zt = repartition(zt);
+                    zt = shrink_by_2(zt);
                 }
                 catch (XIrt) {
                     throw;
                 }
             }
             else {
-                XIrt ret = Zlist::zl_andnot(&zt, z0);
+                XIrt ret = zl_andnot(&zt, z0);
                 if (ret != XIok)
                     throw (ret);
                 try {
-                    zt = zt->repartition();
+                    zt = repartition(zt);
                 }
                 catch (XIrt) {
                     throw;
@@ -387,7 +370,7 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
             Zlist *zx = g->list[i];
             if (!(blflags & BL_NO_MERGE_IN)) {
                 try {
-                    zx = zx->repartition();
+                    zx = repartition(zx);
                 }
                 catch (XIrt) {
                     g->list[i] = 0;
@@ -396,12 +379,12 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
                 }
             }
             g->list[i] = zx->ext_zoids(delta, blflags);
-            zx->free();
+            free(zx);
         }
         zt = g->zoids();
         if (!(blflags & BL_NO_MERGE_OUT)) {
             try {
-                zt = zt->repartition();
+                zt = repartition(zt);
             }
             catch (XIrt) {
                 throw;
@@ -414,7 +397,7 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
             Zlist *zx = g->list[i];
             if (!(blflags & BL_NO_MERGE_IN)) {
                 try {
-                    zx = zx->repartition();
+                    zx = repartition(zx);
                 }
                 catch (XIrt) {
                     g->list[i] = 0;
@@ -434,7 +417,7 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
         }
         zt = g->zoids();
         try {
-            zt = zt->repartition();
+            zt = repartition(zt);
         }
         catch (XIrt) {
             throw;
@@ -446,7 +429,7 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
             Zlist *zx = g->list[i];
             if (!(blflags & BL_NO_MERGE_IN)) {
                 try {
-                    zx = zx->repartition();
+                    zx = repartition(zx);
                 }
                 catch (XIrt) {
                     g->list[i] = 0;
@@ -458,16 +441,16 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
                 try {
                     Zlist *zedg = zx->ext_zoids(delta, blflags);
 
-                    Zlist::expand_by_2(zedg);
-                    Zlist::expand_by_2(zx);
-                    XIrt ret = Zlist::zl_andnot(&zx, zedg);
+                    expand_by_2(zedg);
+                    expand_by_2(zx);
+                    XIrt ret = zl_andnot(&zx, zedg);
                     if (ret != XIok) {
                         g->list[i] = 0;
                         delete g;
                         throw (ret);
                     }
-                    zx = zx->repartition();
-                    zx = Zlist::shrink_by_2(zx);
+                    zx = repartition(zx);
+                    zx = shrink_by_2(zx);
                 }
                 catch (XIrt) {
                     g->list[i] = 0;
@@ -477,14 +460,14 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
             }
             else {
                 Zlist *zedg = zx->ext_zoids(delta, blflags);
-                XIrt ret = Zlist::zl_andnot(&zx, zedg);
+                XIrt ret = zl_andnot(&zx, zedg);
                 if (ret != XIok) {
                     g->list[i] = 0;
                     delete g;
                     throw (ret);
                 }
                 try {
-                    zx = zx->repartition();
+                    zx = repartition(zx);
                 }
                 catch (XIrt) {
                     g->list[i] = 0;
@@ -500,24 +483,22 @@ Zlist::bloat(int delta, int blflags) const throw (XIrt)
 }
 
 
+// Static function.
 // Return a list representing the boundaries extending out from the
 // polygons formed from this.  'this' is untouched.
 //
 Zlist *
-Zlist::halo(int delta) const throw (XIrt)
+Zlist::halo(const Zlist *thiszl, int delta) throw (XIrt)
 {
-    {
-        const Zlist *zt = this;
-        if (!zt)
-            return (0);
-    }
+    if (!thiszl)
+        return (0);
 
     // Merge into maximal polys, no limits.
     int tg = JoinMaxGroup;
     int tv = JoinMaxVerts;
     JoinMaxGroup = 0;
     JoinMaxVerts = 0;
-    PolyList *p0 = copy()->to_poly_list();
+    PolyList *p0 = copy(thiszl)->to_poly_list();
     JoinMaxGroup = tg;
     JoinMaxVerts = tv;
 
@@ -537,10 +518,10 @@ Zlist::halo(int delta) const throw (XIrt)
     p0->free();
 
     try {
-        z0 = z0->repartition();
+        z0 = repartition(z0);
 
         // Clip out original poly area, needed for internal edges.
-        XIrt ret = Zlist::zl_andnot(&z0, copy());
+        XIrt ret = zl_andnot(&z0, copy(thiszl));
         if (ret != XIok)
             throw (ret);
         return (z0);
@@ -551,18 +532,19 @@ Zlist::halo(int delta) const throw (XIrt)
 }
 
 
+// Static function.
 // Return a list of zoids that cover the edges of each zoid in the list
 // extending +/- dim normal to the edge.  Not really recommended for
 // non-Manhattan.  'this' is untouched.
 //
 Zlist *
-Zlist::edges(int dim) const throw (XIrt)
+Zlist::edges(const Zlist *thiszl, int dim) throw (XIrt)
 {
     if (dim == 0)
-        return (copy());
+        return (copy(thiszl));
     int d = abs(dim);
     Zlist *z0 = 0;
-    for (const Zlist *z = this; z; z = z->next) {
+    for (const Zlist *z = thiszl; z; z = z->next) {
 
         int yut = z->Z.yu + d;
         int yub = z->Z.yu - d;
@@ -647,7 +629,7 @@ Zlist::edges(int dim) const throw (XIrt)
         }
     }
     try {
-        z0 = z0->repartition();
+        z0 = repartition(z0);
         return (z0);
     }
     catch (XIrt) {
@@ -656,24 +638,22 @@ Zlist::edges(int dim) const throw (XIrt)
 }
 
 
+// Static function.
 // Return a list of zoids that represent a wire along the edges of
 // each joined polygon.  'this' is untouched.
 //
 Zlist *
-Zlist::wire_edges(int delta) const throw (XIrt)
+Zlist::wire_edges(const Zlist *thiszl, int delta) throw (XIrt)
 {
-    {
-        const Zlist *zt = this;
-        if (!zt)
-            return (0);
-    }
+    if (!thiszl)
+        return (0);
 
     // Merge into maximal polys, no limits.
     int tg = JoinMaxGroup;
     int tv = JoinMaxVerts;
     JoinMaxGroup = 0;
     JoinMaxVerts = 0;
-    PolyList *p0 = copy()->to_poly_list();
+    PolyList *p0 = copy(thiszl)->to_poly_list();
     JoinMaxGroup = tg;
     JoinMaxVerts = tv;
 
@@ -696,7 +676,7 @@ Zlist::wire_edges(int delta) const throw (XIrt)
         }
     }
     try {
-        z0 = z0->repartition();
+        z0 = repartition(z0);
         return (z0);
     }
     catch (XIrt) {
@@ -713,16 +693,17 @@ namespace {
 }
 
 
+// Static function.
 // Convert this (which is destroyed) to a Manhattan representation.
 // The returned list consists of rectangles only.  Rectangles added
 // from triangular parts have w and h <= mindim.
 //
 Zlist *
-Zlist::manhattanize(int mindim, int mode)
+Zlist::manhattanize(Zlist *thiszl, int mindim, int mode)
 {
    if (mindim < 10)
         mindim = 10;
-    Zlist *z0 = 0, *z = this;
+    Zlist *z0 = 0, *z = thiszl;
 
     if (mode) {
         // This version first puts all coordinates on a grid defined by
@@ -788,7 +769,8 @@ Zlist::manhattanize(int mindim, int mode)
                     xlr += s2;
                 }
             }
-            if (Z.yu != z->Z.yu) {
+//XXX thiszl?
+            if (thiszl->Z.yu != z->Z.yu) {
                 tZ.yu = z->Z.yu;
                 tZ.xul = z->Z.xul;
                 tZ.xur = z->Z.xur;
@@ -910,14 +892,15 @@ Zlist::manhattanize(int mindim, int mode)
 }
 
 
+// Static function.
 // Create a new Zlist that is a transformed copy of this (this is not
 // affected).  The zoids are converted to polygons, transformed, and
 // split into a new zoid list.
 //
 Zlist *
-Zlist::transform(const cTfmStack *tstk)
+Zlist::transform(const Zlist *thiszl, cTfmStack *tstk)
 {
-    PolyList *p0 = PolyList::new_poly_list(this, false);
+    PolyList *p0 = PolyList::new_poly_list(thiszl, false);
     for (PolyList *p = p0; p; p = p->next)
         tstk->TPath(p->po.numpts, p->po.points);
 
@@ -1185,12 +1168,12 @@ Zlist::to_temp_layer(const char *name, int ttl_flags, CDs *sdesc, XIrt *retp)
             *retp = to_poly_add(sdesc, ld, false);
         else {
             add(sdesc, ld, false);
-            free();
+            free(this);
             *retp = XIok;
         }
     }
     else
-        free();
+        free(this);
     return (ld);
 }
 
@@ -1545,7 +1528,7 @@ Zlist::to_r()
     }
     // Apply the canonicalization so that vertical partitioning will be
     // complete.
-    return (z0->repartition_ni());
+    return (repartition_ni(z0));
 }
 
 

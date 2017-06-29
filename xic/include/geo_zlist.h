@@ -96,6 +96,15 @@ struct Zlist
     Zlist(int xll, int xlr, int yl, int xul, int xur, int yu, Zlist *zn) :
             Z(xll, xlr, yl, xul, xur, yu) { next = zn; };
 
+    static void free(const Zlist *zl)
+    {
+        while (zl) {
+            const Zlist *zx = zl;
+            zl = zl->next;
+            delete zx;
+        }
+    }
+
     static double area(const Zlist *thiszl)
         {
             double d = 0.0;
@@ -156,6 +165,12 @@ struct Zlist
                 z->Z.print(fp);
         }
 
+    static void show(const Zlist *zl)
+        {
+            for ( ; zl; zl = zl->next)
+                (zl->Z).show();
+        }
+
     static Zlist *expand_by_2(Zlist *thiszl)
         {
             for (Zlist *z = thiszl; z; z = z->next)
@@ -201,23 +216,21 @@ struct Zlist
         }
 
     // geo_ylist.h
-    inline Zlist *repartition() throw (XIrt);
-    inline Zlist *repartition_ni();
+    inline static Zlist *repartition(Zlist*) throw (XIrt);
+    inline static Zlist *repartition_ni(Zlist*);
 
     // geo_zlist,cc
-    void show() const;
-    void free() const;
-    void BB(BBox&) const;
-    Zlist *copy() const;
-    Zlist *filter_slivers(int = 0);
-    Zlist *filter_drc_slivers(int = 0);
-    Zlist *sort(int=0);
-    Zlist *bloat(int, int) const throw (XIrt);
-    Zlist *halo(int) const throw (XIrt);
-    Zlist *edges(int) const throw (XIrt);
-    Zlist *wire_edges(int) const throw (XIrt);
-    Zlist *manhattanize(int, int);
-    Zlist *transform(const cTfmStack*);
+    static void BB(const Zlist*, BBox&);
+    static Zlist *copy(const Zlist*);
+    static Zlist *filter_slivers(Zlist*, int = 0);
+    static Zlist *filter_drc_slivers(Zlist*, int = 0);
+    static Zlist *sort(Zlist*, int=0);
+    static Zlist *bloat(const Zlist*, int, int) throw (XIrt);
+    static Zlist *halo(const Zlist*, int) throw (XIrt);
+    static Zlist *edges(const Zlist*, int) throw (XIrt);
+    static Zlist *wire_edges(const Zlist*, int) throw (XIrt);
+    static Zlist *manhattanize(Zlist*, int, int);
+    static Zlist *transform(const Zlist*, cTfmStack*);
     int linewidth() const;
     double ext_perim(const BBox* = 0) const;
     edg_t *ext_edges() const;

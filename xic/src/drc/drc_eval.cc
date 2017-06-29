@@ -1061,7 +1061,7 @@ cDRC::layerRules(const CDl *ld, const BBox *AOI, DRCerrRet **eret)
                     DRCerrRet *er = new DRCerrRet(td, 0);
                     er->set_errtype(TT_CON);
                     BBox BB;
-                    g->list[i]->BB(BB);
+                    Zlist::BB(g->list[i], BB);
                     er->set_pbad(BB);
                     er->set_next(*eret);
                     *eret = er;
@@ -1090,7 +1090,7 @@ cDRC::layerRules(const CDl *ld, const BBox *AOI, DRCerrRet **eret)
                     if (area >= minarea)
                         continue;
                 }
-                g->list[i]->BB(BB);
+                Zlist::BB(g->list[i], BB);
                 if (minwidth > 0) {
                     // MinHoleWidth test
                     if (BB.width() >= minwidth && BB.height() >= minwidth)

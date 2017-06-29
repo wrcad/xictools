@@ -42,7 +42,7 @@ struct Zgroup
     ~Zgroup()
         {
             while (num--)
-                list[num]->free();
+                Zlist::free(list[num]);
             delete [] list;
         }
 

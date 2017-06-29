@@ -48,8 +48,8 @@ Zlist::zl_intersect(Zlist *zl1, Zlist *zl2, bool touchok)
     // Do simple case
     if (!zl1->next && !zl2->next) {
         bool ret = zl1->Z.intersect(&zl2->Z, touchok);
-        zl1->free();
-        zl2->free();
+        Zlist::free(zl1);
+        Zlist::free(zl2);
         return (ret);
     }
 
@@ -81,7 +81,7 @@ Zlist::zl_or(Zlist **zl1p, Zlist *zl2)
         zn = zn->next;
     zn->next = zl2;
     try {
-        *zl1p = (*zl1p)->repartition();
+        *zl1p = Zlist::repartition((*zl1p));
         return (XIok);
     }
     catch (XIrt ret) {
@@ -100,7 +100,7 @@ Zlist::zl_and(Zlist **zp)
 {
     Zlist *zl = *zp;
     if (!zl || !zl->next) {
-        zl->free();
+        Zlist::free(zl);
         *zp = 0;
         return (XIok);
     }
@@ -123,7 +123,7 @@ XIrt
 Zlist::zl_and(Zlist **zl1p, const Zoid *ZB)
 {
     if (!*zl1p || !ZB) {
-        (*zl1p)->free();
+        Zlist::free((*zl1p));
         *zl1p = 0;
         return (XIok);
     }
@@ -151,9 +151,9 @@ Zlist::zl_and(Zlist **zl1p, Zlist *zl2)
     TimeDbgAccum ac("zl_and");
 
     if (!*zl1p || !zl2) {
-        (*zl1p)->free();
+        Zlist::free((*zl1p));
         *zl1p = 0;
-        zl2->free();
+        Zlist::free(zl2);
         return (XIok);
     }
 
@@ -161,8 +161,8 @@ Zlist::zl_and(Zlist **zl1p, Zlist *zl2)
     if (!(*zl1p)->next && !zl2->next) {
         Zlist *zt = *zl1p;
         *zl1p = (zt->Z).clip_to(&zl2->Z);
-        zl2->free();
-        zt->free();
+        Zlist::free(zl2);
+        Zlist::free(zt);
         return (XIok);
     }
 
@@ -206,7 +206,7 @@ Zlist::zl_and(Zlist **zl1p, const Ylist *yl2)
     TimeDbgAccum ac("zl_and_y");
 
     if (!*zl1p || !yl2 || (!yl2->y_zlist && !yl2->next)) {
-        (*zl1p)->free();
+        Zlist::free((*zl1p));
         *zl1p = 0;
         return (XIok);
     }
@@ -314,7 +314,7 @@ Zlist::zl_andnot(Zlist **zl1p, Zlist *zl2)
     TimeDbgAccum ac("zl_andnot");
 
     if (!*zl1p || !zl2) {
-        zl2->free();
+        Zlist::free(zl2);
         return (XIok);
     }
     if (!(*zl1p)->next && !zl2->next) {
@@ -324,8 +324,8 @@ Zlist::zl_andnot(Zlist **zl1p, Zlist *zl2)
         if (no_ovl)
             *zl1p = zo;
         else
-            zo->free();
-        zl2->free();
+            Zlist::free(zo);
+        Zlist::free(zl2);
         return (XIok);
     }
 
@@ -497,13 +497,13 @@ Zlist::zl_bloat(Zlist **zp, int delta, int mode)
 {
     Zlist *zl = *zp;
     try {
-        *zp = zl->bloat(delta, mode);
-        zl->free();
+        *zp = Zlist::bloat(zl, delta, mode);
+        Zlist::free(zl);
         return (XIok);
     }
     catch (XIrt ret) {
         *zp = 0;
-        zl->free();
+        Zlist::free(zl);
         return (ret);
     }
 }

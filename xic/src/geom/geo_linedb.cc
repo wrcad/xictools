@@ -729,7 +729,7 @@ linedb_t::zoids(int delta, int mode)
         }
     }
     if (!nomerge)
-       z0 = z0->repartition_ni();
+       z0 = Zlist::repartition_ni(z0);
     if (ldb_doing_scale_fix) {
         z0 = Zlist::shrink_by_2(z0);
         ldb_doing_scale_fix = false;

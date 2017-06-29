@@ -741,7 +741,7 @@ cExt::loadScriptFuncs()
 #endif
 }
 
-#define FREE_CHK_ZL(b, zl) { if (b) zl->free(); zl = 0; }
+#define FREE_CHK_ZL(b, zl) { if (b) Zlist::free(zl); zl = 0; }
 
 
 /*========================================================================*
@@ -4900,7 +4900,7 @@ extract_funcs::IFextractRL(Variable *res, Variable *args, void *datap)
         }
         if (zc) {
             if (!free_zc)
-                zg.list[zg.num] = zc->copy();
+                zg.list[zg.num] = Zlist::copy(zc);
             else
                 zg.list[zg.num] = zc;
             zg.num++;
@@ -5049,7 +5049,7 @@ extract_funcs::IFextractNetResistance(Variable *res, Variable *args,
         }
         if (zc) {
             if (!free_zc)
-                zg.list[zg.num] = zc->copy();
+                zg.list[zg.num] = Zlist::copy(zc);
             else
                 zg.list[zg.num] = zc;
             zg.num++;

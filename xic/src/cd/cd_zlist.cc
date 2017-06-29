@@ -144,7 +144,7 @@ CDs::getZlist(int maxdepth, const CDl *ld, const Zlist *zref,
     }
 
     try {
-        z0 = z0->repartition();
+        z0 = Zlist::repartition(z0);
         return (z0);
     }
     catch (XIrt ret) {

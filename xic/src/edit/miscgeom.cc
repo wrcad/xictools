@@ -271,12 +271,12 @@ namespace {
 
         if (gv->mode == CLsplitH) {
             zret->add(gv->sdesc, gv->ldesc, gv->ud, gv->tmp_merge);
-            zret->free();
+            Zlist::free(zret);
         }
         else if (gv->mode == CLsplitV) {
             zret = zret->to_r();
             zret->add_r(gv->sdesc, gv->ldesc, gv->ud, gv->tmp_merge);
-            zret->free();
+            Zlist::free(zret);
         }
         else {
             // default
@@ -431,12 +431,12 @@ cEdit::createLayer(CDs *sdesc, const BBox *pAOI, CDl *ld, const char *str,
 
             if (mode == CLsplitH) {
                 zret->add(sdesc, ld, ud, tmp_merge);
-                zret->free();
+                Zlist::free(zret);
             }
             else if (mode == CLsplitV) {
                 zret = zret->to_r();
                 zret->add_r(sdesc, ld, ud, tmp_merge);
-                zret->free();
+                Zlist::free(zret);
             }
             else {
                 // default
@@ -592,7 +592,7 @@ cEdit::createLayer_notree(CDs *sdesc, const BBox *pAOI, CDl *ld,
             if (mode == CLsplitV) {
                 zimport = zimport->to_r();
                 zimport->add_r(sdesc, ld, ud, use_merge);
-                zimport->free();
+                Zlist::free(zimport);
             }
             else if (mode == CLjoin) {
                 XIrt ret =
@@ -602,7 +602,7 @@ cEdit::createLayer_notree(CDs *sdesc, const BBox *pAOI, CDl *ld,
             }
             else {
                 zimport->add(sdesc, ld, ud, use_merge);
-                zimport->free();
+                Zlist::free(zimport);
             }
         }
         else {
@@ -620,7 +620,7 @@ cEdit::createLayer_notree(CDs *sdesc, const BBox *pAOI, CDl *ld,
                     }
                     if (z) {
                         z->add(sdesc, ld, ud, use_merge);
-                        z->free();
+                        Zlist::free(z);
                     }
                 }
                 else if (mode == CLsplitV) {
@@ -632,7 +632,7 @@ cEdit::createLayer_notree(CDs *sdesc, const BBox *pAOI, CDl *ld,
                     if (z) {
                         z = z->to_r();
                         z->add_r(sdesc, ld, ud, use_merge);
-                        z->free();
+                        Zlist::free(z);
                     }
                 }
                 else if (mode == CLjoin) {
@@ -650,19 +650,19 @@ cEdit::createLayer_notree(CDs *sdesc, const BBox *pAOI, CDl *ld,
                             XIrt ret = z->to_poly_add(sdesc, ld, ud, 0,
                                 use_merge);
                             if (ret != XIok) {
-                                zl0->free();
+                                Zlist::free(zl0);
                                 delete odesc;
                                 return (ret);
                             }
                         }
                         else {
-                            z->free();
+                            Zlist::free(z);
                             if (!change_layer(odesc, sdesc, ld, false, ud,
                                     false)) {
                                 Errs()->add_error("change_layer failed");
                                 Log()->ErrorLog(layer_creation,
                                     Errs()->get_error());
-                                zl0->free();
+                                Zlist::free(zl0);
                                 delete odesc;
                                 return (XIbad);
                             }

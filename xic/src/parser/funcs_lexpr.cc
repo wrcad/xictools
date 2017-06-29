@@ -600,7 +600,7 @@ SIparser::funcs_lexpr_init()
 #endif
 }
 
-#define FREE_CHK_ZL(b, zl) { if (b) zl->free(); zl = 0; }
+#define FREE_CHK_ZL(b, zl) { if (b) Zlist::free(zl); zl = 0; }
 #define FREE_CHK_LS(b, ls) { if (b) delete ls; ls = 0; }
 
 
@@ -625,7 +625,7 @@ arg_zlist(const Variable *args, int indx, Zlist **zlp, bool *orig,
         cx = SI()->LexprCx();
     if (args[indx].type == TYP_SCALAR) {
         if (to_boolean(args[indx].content.value)) {
-            *zlp = cx->getZref()->copy();
+            *zlp = Zlist::copy(cx->getZref());
             *orig = true;
         }
         else {
@@ -731,7 +731,7 @@ lexpr_funcs::IFsetZref(Variable *res, Variable *args, void *datap)
 {
     Zlist *zl = 0;
     if (args[0].type == TYP_ZLIST)
-        zl = args[0].content.zlist->copy();
+        zl = Zlist::copy(args[0].content.zlist);
     else if (args[0].type == TYP_ARRAY) {
         double *vals;
         if (!arg_array(args, 0, &vals, 4))
@@ -779,7 +779,7 @@ lexpr_funcs::IFgetZref(Variable *res, Variable*, void *datap)
     if (!cx)
         cx = SI()->LexprCx();
     res->type = TYP_ZLIST;
-    res->content.zlist = cx->refZlist()->copy();
+    res->content.zlist = Zlist::copy(cx->refZlist());
     return (OK);
 }
 
@@ -806,7 +806,7 @@ lexpr_funcs::IFgetZrefBB(Variable *res, Variable *args, void *datap)
         cx = SI()->LexprCx();
     if (cx->refZlist()) {
         BBox BB;
-        cx->refZlist()->BB(BB);
+        Zlist::BB(cx->refZlist(), BB);
         vals[0] = MICRONS(BB.left);
         vals[1] = MICRONS(BB.bottom);
         vals[2] = MICRONS(BB.right);
@@ -929,13 +929,13 @@ lexpr_funcs::IFzHead(Variable *res, Variable *args, void *datap)
             zl->next = 0;
         }
         else if (free_zl) {
-            zl->next->free();
+            Zlist::free(zl->next);
             zl->next = 0;
         }
         else {
             // can't get here
             zl->next = 0;
-            res->content.zlist = zl->copy();
+            res->content.zlist = Zlist::copy(zl);
         }
     }
     return (OK);
@@ -1222,7 +1222,7 @@ lexpr_funcs::IFtransformZ(Variable *res, Variable *args, void *datap)
     cTfmStack stk;
     stk.TPush();
     GEO()->applyCurTransform(&stk, refx, refy, newx, newy);
-    res->content.zlist = zl->transform(&stk);
+    res->content.zlist = Zlist::transform(zl, &stk);
     stk.TPop();
     FREE_CHK_ZL(free_zl, zl)
     return (OK);
@@ -1265,7 +1265,7 @@ lexpr_funcs::IFbloatZ(Variable *res, Variable *args, void *datap)
     }
 
     if (!free_zl)
-        zl = zl->copy();
+        zl = Zlist::copy(zl);
     ret = Zlist::zl_bloat(&zl, dimen, mode);
     if (ret == XIbad)
         return (BAD);
@@ -1302,13 +1302,13 @@ lexpr_funcs::IFextentZ(Variable *res, Variable *args, void *datap)
         return (OK);
     }
     if (!free_zl)
-        zl = zl->copy();
+        zl = Zlist::copy(zl);
     res->type = TYP_ZLIST;
     res->content.zlist = 0;
     if (zl) {
         BBox BB;
-        zl->BB(BB);
-        zl->next->free();
+        Zlist::BB(zl, BB);
+        Zlist::free(zl->next);
         zl->next = 0;
         zl->Z.yl = BB.bottom;
         zl->Z.xll = zl->Z.xul = BB.left;
@@ -1389,16 +1389,16 @@ lexpr_funcs::IFedgesZ(Variable *res, Variable *args, void *datap)
     res->type = TYP_ZLIST;
     try {
         if (mode >= 0 && mode <= 3)
-            res->content.zlist = zl->bloat(dimen,
+            res->content.zlist = Zlist::bloat(zl, dimen,
                 BL_EDGE_ONLY | (mode << BL_CORNER_MODE_SHIFT));
         if (mode == 4)
-            res->content.zlist = zl->halo(dimen);
+            res->content.zlist = Zlist::halo(zl, dimen);
         else if (mode == 5)
-            res->content.zlist = zl->wire_edges(dimen);
+            res->content.zlist = Zlist::wire_edges(zl, dimen);
         else if (mode == 6)
-            res->content.zlist = zl->edges(dimen);
+            res->content.zlist = Zlist::edges(zl, dimen);
         else
-            res->content.zlist = zl->bloat(dimen, BL_EDGE_ONLY);
+            res->content.zlist = Zlist::bloat(zl, dimen, BL_EDGE_ONLY);
         FREE_CHK_ZL(free_zl, zl)
     }
     catch (XIrt tmpret) {
@@ -1451,10 +1451,10 @@ lexpr_funcs::IFmanhattanizeZ(Variable *res, Variable *args, void *datap)
         return (BAD);
     }
     if (!free_zl)
-        zl = zl->copy();
+        zl = Zlist::copy(zl);
 
     res->type = TYP_ZLIST;
-    res->content.zlist = zl->manhattanize(dimen, mode);
+    res->content.zlist = Zlist::manhattanize(zl, dimen, mode);
     return (OK);
 }
 
@@ -1482,10 +1482,10 @@ lexpr_funcs::IFrepartitionZ(Variable *res, Variable *args, void *datap)
         return (OK);
     }
     if (!free_zl)
-        zl = zl->copy();
+        zl = Zlist::copy(zl);
     res->type = TYP_ZLIST;
     try {
-        res->content.zlist = zl->repartition();
+        res->content.zlist = Zlist::repartition(zl);
     }
     catch (XIrt tmpret) {
         res->content.zlist = 0;
@@ -1604,7 +1604,7 @@ lexpr_funcs::IFobjectZ(Variable *res, Variable *args, void*)
     }
     if (all) {
         try {
-            z0 = z0->repartition();
+            z0 = Zlist::repartition(z0);
         }
         catch (XIrt ret) {
             if (ret == XIintr) {
@@ -2144,7 +2144,7 @@ lexpr_funcs::IFzToObjects(Variable *res, Variable *args, void *datap)
     res->content.value = 0;
     CDol *o0 = 0, *oend = 0;
     if (join) {
-        Zlist *zl1 = zl->copy();
+        Zlist *zl1 = Zlist::copy(zl);
         PolyList *p0 = zl1->to_poly_list();
         if (!todb) {
             if (!o0)
@@ -2268,7 +2268,7 @@ lexpr_funcs::IFzToTempLayer(Variable *res, Variable *args, void *datap)
     if (SIparse()->ifGetCurMode() == Physical) {
         CDl *ld;
         if (!free_zl)
-            zl = zl->copy();
+            zl = Zlist::copy(zl);
         int flags = TTLinternal;
         if (join)
             flags |= TTLjoin;
@@ -2506,7 +2506,7 @@ lexpr_funcs::IFreadZfile(Variable *res, Variable *args, void*)
                     return (BAD);
                 if (z0) {
                     z0->add(SIparse()->ifGetCurPhysCell(), ld, false, false);
-                    z0->free();
+                    Zlist::free(z0);
                     z0 = ze = 0;
                 }
                 ld = 0;
@@ -2529,12 +2529,9 @@ lexpr_funcs::IFreadZfile(Variable *res, Variable *args, void*)
         if (z0) {
             if (!ld && !lcnt)
                 ld = SIparse()->ifGetCurLayer();
-            if (ld) {
+            if (ld)
                 z0->add(SIparse()->ifGetCurPhysCell(), ld, false, false);
-                z0->free();
-            }
-            else
-                z0->free();
+            Zlist::free(z0);
         }
         fclose(fp);
         res->content.value = 1;
@@ -2651,7 +2648,7 @@ lexpr_funcs::IFchdGetZlist(Variable *res, Variable *args, void*)
         }
         delete tab;
         try {
-            res->content.zlist = zl0->repartition();
+            res->content.zlist = Zlist::repartition(zl0);
         }
         catch (XIrt ret) {
             res->content.zlist = 0;
@@ -2689,7 +2686,7 @@ lexpr_funcs::IFnoOp(Variable *res, Variable *args, void *datap)
         return (OK);
     }
     if (free_zl)
-        zl = zl->copy();
+        zl = Zlist::copy(zl);
     res->type = TYP_ZLIST;
     res->content.zlist = zl;
     return (OK);
@@ -2730,7 +2727,7 @@ lexpr_funcs::IFfilt(Variable *res, Variable *args, void *datap)
     if (!cx)
         cx = SI()->LexprCx();
     if (!free_zl)
-        zl = zl->copy();
+        zl = Zlist::copy(zl);
     Zgroup *zg = zl->group();
 
     for (int i = 0; i < zg->num; i++) {
@@ -2758,7 +2755,7 @@ lexpr_funcs::IFfilt(Variable *res, Variable *args, void *datap)
             return (OK);
         }
         if (cov == CovNone) {
-            zg->list[i]->free();
+            Zlist::free(zg->list[i]);
             zg->list[i] = 0;
         }
     }
@@ -2830,7 +2827,7 @@ lexpr_funcs::IFgeomAnd(Variable *res, Variable *args, void *datap)
     if (nargs == 1) {
         res->type = TYP_ZLIST;
         if (!free_zl1)
-            zl1 = zl1->copy();
+            zl1 = Zlist::copy(zl1);
         ret = Zlist::zl_and(&zl1);
         res->content.zlist = zl1;
         if (ret == XIintr)
@@ -2910,7 +2907,7 @@ lexpr_funcs::IFgeomCat(Variable *res, Variable *args, void *datap)
         bool free_zl;
         XIrt ret = arg_zlist(args, i, &zl, &free_zl, datap);
         if (ret != XIok) {
-            z0->free();
+            Zlist::free(z0);
             if (ret == XIbad)
                 return (BAD);
             res->type = TYP_ZLIST;
@@ -2920,7 +2917,7 @@ lexpr_funcs::IFgeomCat(Variable *res, Variable *args, void *datap)
         }
         if (zl) {
             if (!free_zl)
-                zl = zl->copy();
+                zl = Zlist::copy(zl);
             if (!z0)
                 z0 = ze = zl;
             else {
@@ -2985,7 +2982,7 @@ lexpr_funcs::IFgeomOr(Variable *res, Variable *args, void *datap)
         bool free_zl;
         XIrt ret = arg_zlist(args, i, &zl, &free_zl, datap);
         if (ret != XIok) {
-            z0->free();
+            Zlist::free(z0);
             if (ret == XIbad)
                 return (BAD);
             res->type = TYP_ZLIST;
@@ -2995,7 +2992,7 @@ lexpr_funcs::IFgeomOr(Variable *res, Variable *args, void *datap)
         }
         if (zl) {
             if (!free_zl)
-                zl = zl->copy();
+                zl = Zlist::copy(zl);
             if (!z0)
                 z0 = ze = zl;
             else {
@@ -3007,7 +3004,7 @@ lexpr_funcs::IFgeomOr(Variable *res, Variable *args, void *datap)
     }
     res->type = TYP_ZLIST;
     try {
-        res->content.zlist = z0->repartition();
+        res->content.zlist = Zlist::repartition(z0);
     }
     catch (XIrt ret) {
         res->content.zlist = 0;
@@ -3067,7 +3064,7 @@ lexpr_funcs::IFgeomXor(Variable *res, Variable *args, void *datap)
     if (nargs == 1) {
         res->type = TYP_ZLIST;
         if (!free_zl1)
-            zl1 = zl1->copy();
+            zl1 = Zlist::copy(zl1);
         ret = Zlist::zl_andnot(&zl1);
         res->content.zlist = zl1;
         if (ret == XIintr)
@@ -3851,7 +3848,7 @@ lexpr_funcs::IFgetZlistZbdb(Variable *res, Variable *args, void*)
         if (db && db->table() && db->type() == sdbZbdb) {
             zbins_t *zdb = (zbins_t*)db->table()->get((unsigned long)ld);
             if (zdb != (zbins_t*)ST_NIL)
-                res->content.zlist = zdb->getZlist(nx, ny)->copy();
+                res->content.zlist = Zlist::copy(zdb->getZlist(nx, ny));
         }
     }
     return (OK);

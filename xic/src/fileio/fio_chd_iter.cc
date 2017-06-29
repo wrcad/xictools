@@ -913,8 +913,8 @@ namespace {
 
                     Zlist *z1 = zdb1 ? zdb1->getZlist(j, i) : 0;
                     Zlist *z2 = zdb2 ? zdb2->getZlist(j, i) : 0;
-                    z1 = z1->copy();
-                    z2 = z2->copy();
+                    z1 = Zlist::copy(z1);
+                    z2 = Zlist::copy(z2);
 
                     Ldiff *ld0 = 0;
                     if (!ci_fp && ci_ldiffs) {

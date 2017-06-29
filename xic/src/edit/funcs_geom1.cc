@@ -2297,7 +2297,7 @@ geom1_funcs::IFcheckObjectsConnected(Variable *res, Variable *args, void*)
                     return (BAD);
             }
             yl = yl->connected(&zl0);
-            zl0->free();
+            Zlist::free(zl0);
             if (yl) {
                 res->content.value = 0;
                 yl->free();
@@ -2359,7 +2359,7 @@ geom1_funcs::IFcheckForHoles(Variable *res, Variable *args, void*)
         }
         if (zl0 && zl0->next) {
             try {
-                zl0 = zl0->repartition();
+                zl0 = Zlist::repartition(zl0);
             }
             catch (XIrt ret) {
                 if (ret == XIintr) {
@@ -2370,7 +2370,7 @@ geom1_funcs::IFcheckForHoles(Variable *res, Variable *args, void*)
                     return (BAD);
             }
             BBox BB;
-            zl0->BB(BB);
+            Zlist::BB(zl0, BB);
             BB.bloat(10);
             Zlist *zarea = new Zlist(&BB);
             XIrt ret = Zlist::zl_andnot(&zarea, zl0);
@@ -2382,7 +2382,7 @@ geom1_funcs::IFcheckForHoles(Variable *res, Variable *args, void*)
             }
             Ylist *yl = new Ylist(zarea);
             yl = yl->connected(&zl0);
-            zl0->free();
+            Zlist::free(zl0);
             if (yl) {
                 res->content.value = 1.0;
                 yl->free();
@@ -2594,22 +2594,22 @@ geom1_funcs::IFedgeObjects(Variable *res, Variable *args, void*)
             Zlist *zret = 0;
             try {
                 if (mode >= 0 && mode <= 3)
-                    zret = zl0->bloat(dimen,
+                    zret = Zlist::bloat(zl0, dimen,
                         BL_EDGE_ONLY | (mode << BL_CORNER_MODE_SHIFT));
                 if (mode == 4)
-                    zret = zl0->halo(dimen);
+                    zret = Zlist::halo(zl0, dimen);
                 else if (mode == 5)
-                    zret = zl0->wire_edges(dimen);
+                    zret = Zlist::wire_edges(zl0, dimen);
                 else if (mode == 6)
-                    zret = zl0->edges(dimen);
+                    zret = Zlist::edges(zl0, dimen);
                 else
-                    zret = zl0->bloat(dimen, BL_EDGE_ONLY);
-                zl0->free();
+                    zret = Zlist::bloat(zl0, dimen, BL_EDGE_ONLY);
+                Zlist::free(zl0);
                 zl0 = zret;
             }
             catch (XIrt tmpret) {
                 zret = 0;
-                zl0->free();
+                Zlist::free(zl0);
                 zl0 = 0;
                 if (tmpret == XIintr)
                     SI()->SetInterrupt();
@@ -2715,7 +2715,7 @@ geom1_funcs::IFmanhattanizeObjects(Variable *res, Variable *args, void*)
         while (ol) {
             CDl *ld = ldset ? ldset : ol->odesc->ldesc();
             Zlist *z = ol->odesc->toZlist();
-            z = z->manhattanize(bsize, mode);
+            z = Zlist::manhattanize(z, bsize, mode);
             PolyList *p0 = z->to_poly_list();
             if (!o0)
                 o0 = p0->to_olist(ld, &oe);

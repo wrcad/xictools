@@ -112,7 +112,7 @@ PolyObj::~PolyObj()
 {
     if (po_freepts)
         delete [] po_po.points;
-    po_zlist->free();
+    Zlist::free(po_zlist);
 }
 
 

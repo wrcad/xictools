@@ -47,7 +47,7 @@ namespace {
         if (!cursd)
             return (0);
         Zlist *z0 = 0;
-        CDl *ld = zl->copy()->to_temp_layer(DRC_TMPLYR,
+        CDl *ld = Zlist::copy(zl)->to_temp_layer(DRC_TMPLYR,
             TTLinternal | TTLnoinsert | TTLjoin, cursd, retp);
         if (*retp != XIok)
             return (0);
@@ -64,7 +64,7 @@ namespace {
             Zlist *ztmp;
             *retp = td.bloat(odesc, &ztmp, edgeonly);
             if (*retp != XIok) {
-                z0->free();
+                Zlist::free(z0);
                 cursd->clearLayer(ld);
                 return (0);
             }

@@ -513,7 +513,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
         SymTabGen stgen(tab);
         SymTabEnt *h;
         while ((h = stgen.next()) != 0)
-            h->stData = ((Zlist*)h->stData)->repartition_ni();
+            h->stData = Zlist::repartition_ni(((Zlist*)h->stData));
     }
 
     // Cycle through VIA layers.  For each via, find and save
@@ -537,8 +537,8 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
             Zlist *z2 = (Zlist*)tab->get((unsigned long)ld2);
             if (z2 == (Zlist*)ST_NIL)
                 continue;
-            z1 = z1->copy();
-            z2 = z2->copy();
+            z1 = Zlist::copy(z1);
+            z2 = Zlist::copy(z2);
 
             ret = Zlist::zl_and(&z1, z2);
             if (ret != XIok) {
@@ -551,7 +551,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
                 continue;
 
             Zlist *zv = sdesc->getZlist(0, ld, z1, &ret);
-            z1->free();
+            Zlist::free(z1);
             if (ret != XIok) {
                 if (ret == XIbad)
                     Errs()->add_error("write_vias: failed to get zlist for %s",
@@ -569,7 +569,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
                         if (ret == XIbad)
                             Errs()->add_error(
                                 "write_vias: via check returned error");
-                        zv->free();
+                        Zlist::free(zv);
                         break;
                     }
                     if (istrue && (en_flags & EN_VTRE)) {
@@ -582,7 +582,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
                                     Errs()->add_error(
                                     "write_vias: failed to get zlist for %s",
                                         ldtmp->name());
-                                zv->free();
+                                Zlist::free(zv);
                                 break;
                             }
                             if (zx) {
@@ -618,11 +618,11 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
                     zv0 = zv;
                 }
                 else
-                    zv->free();
+                    Zlist::free(zv);
             }
         }
         if (ret != XIok) {
-            zv0->free();
+            Zlist::free(zv0);
             break;
         }
 
@@ -652,7 +652,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
     SymTabGen gen(tab, true);
     SymTabEnt *h;
     while ((h = gen.next()) != 0) {
-        ((Zlist*)h->stData)->free();
+        Zlist::free(((Zlist*)h->stData));
         delete h;
     }
     delete tab;

@@ -279,7 +279,8 @@ struct PolyList
     PolyList(Poly &p, PolyList *pn) { next = pn; po = p; }
     ~PolyList() { delete [] po.points; }
 
-    static PolyList *new_poly_list(Zlist*, bool);
+    static PolyList *new_poly_list(const Zlist*, bool);
+
     CDo *to_odesc(CDl*);
     CDol *to_olist(CDl*, CDol** = 0);
     void free();

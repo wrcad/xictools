@@ -212,7 +212,7 @@ struct cv_backend_zdb : cv_backend
                 Zlist *z0 = po->toZlist();
                 for (Zlist *z = z0; z; z = z->next)
                     entry->add(&z->Z);
-                z0->free();
+                Zlist::free(z0);
             }
             return (true);
         }
@@ -226,7 +226,7 @@ struct cv_backend_zdb : cv_backend
                 delete [] po.points;
                 for (Zlist *z = z0; z; z = z->next)
                     entry->add(&z->Z);
-                z0->free();
+                Zlist::free(z0);
             }
             return (true);
         }

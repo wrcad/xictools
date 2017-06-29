@@ -271,19 +271,19 @@ sLspec::testZlistCovFull(SIlexprCx *cx, CovType *cov, int minsz)
                 return (XIbad);
 
             Zlist *z = v.content.zlist;
-            z = z->filter_drc_slivers(minsz);
+            z = Zlist::filter_drc_slivers(z, minsz);
             if (z) {
-                Zlist *za = zref.copy();
+                Zlist *za = Zlist::copy(&zref);
                 XIrt ret = Zlist::zl_andnot(&za, z);
                 if (ret != XIok)
                     return (ret);
-                za = za->filter_drc_slivers(minsz);
+                za = Zlist::filter_drc_slivers(za, minsz);
                 if (!za) {
                     found_full = true;
                     *cov = CovFull;
                 }
                 else {
-                    za->free();
+                    Zlist::free(za);
                     *cov = CovPartial;
                     return (XIok);
                 }
@@ -377,13 +377,13 @@ sLspec::testZlistCovPartial(SIlexprCx *cx, CovType *cov, int minsz)
                 return (XIbad);
 
             Zlist *z = v.content.zlist;
-            z = z->filter_drc_slivers(minsz);
+            z = Zlist::filter_drc_slivers(z, minsz);
             if (z) {
-                Zlist *za = zref.copy();
+                Zlist *za = Zlist::copy(&zref);
                 XIrt ret = Zlist::zl_andnot(&za, z);
                 if (ret != XIok)
                     return (ret);
-                za = za->filter_drc_slivers(minsz);
+                za = Zlist::filter_drc_slivers(za, minsz);
                 if (!za) {
                     if (found_none) {
                         *cov = CovPartial;
@@ -393,7 +393,7 @@ sLspec::testZlistCovPartial(SIlexprCx *cx, CovType *cov, int minsz)
                     *cov = CovFull;
                 }
                 else {
-                    za->free();
+                    Zlist::free(za);
                     *cov = CovPartial;
                     return (XIok);
                 }
@@ -466,10 +466,10 @@ sLspec::testZlistCovNone(SIlexprCx *cx, CovType *cov, int minsz)
                 return (XIbad);
 
             Zlist *z = v.content.zlist;
-            z = z->filter_drc_slivers(minsz);
+            z = Zlist::filter_drc_slivers(z, minsz);
             if (z) {
                 *cov = CovPartial;
-                z->free();
+                Zlist::free(z);
                 return (XIok);
             }
         }
@@ -508,7 +508,7 @@ sLspec::getZlist(SIlexprCx *cx, Zlist **zret, bool isclear)
         if (ret != XIok)
             return (ret);
         if (isclear) {
-            *zret = cx->getZref()->copy();
+            *zret = Zlist::copy(cx->getZref());
             return (Zlist::zl_andnot(zret, z0));
         }
         *zret = z0;
@@ -533,7 +533,7 @@ sLspec::testContact(const CDs *sdesc, int maxdepth, const CDo *odesc,
 
     Zlist *zl = odesc->toZlist();
     XIrt ret = testContact(sdesc, maxdepth, zl, istrue);
-    zl->free();
+    Zlist::free(zl);
     return (ret);
 }
 
@@ -574,7 +574,7 @@ sLspec::testContact(const CDs *sdesc, int maxdepth, const Zlist *zl0,
                     break;
                 }
             }
-            v.content.zlist->free();
+            Zlist::free(v.content.zlist);
         }
         return (XIok);
     }

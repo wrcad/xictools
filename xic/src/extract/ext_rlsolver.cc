@@ -120,7 +120,7 @@ RLsolver::~RLsolver()
 {
     delete rl_matrix;
     delete [] rl_contacts;
-    rl_zlist->free();
+    Zlist::free(rl_zlist);
     rl_h_edges->free();
     rl_v_edges->free();
 }
@@ -131,9 +131,9 @@ RLsolver::~RLsolver()
 bool
 RLsolver::setup(const Zlist *zb, CDl *ld, Zgroup *zg)
 {
-    rl_zlist = zb->copy();
+    rl_zlist = Zlist::copy(zb);
     if (rl_zlist)
-        rl_zlist->BB(rl_BB);
+        Zlist::BB(rl_zlist, rl_BB);
     rl_ld = ld;
 
     rl_num_contacts = zg->num;
@@ -141,8 +141,8 @@ RLsolver::setup(const Zlist *zb, CDl *ld, Zgroup *zg)
     rl_offset = rl_num_contacts > 2 ? 1 : 0;
 
     for (int i = 0; i < rl_num_contacts; i++) {
-        rl_contacts[i].czl = zg->list[i]->copy();
-        XIrt ret = Zlist::zl_and(&rl_contacts[i].czl, rl_zlist->copy());
+        rl_contacts[i].czl = Zlist::copy(zg->list[i]);
+        XIrt ret = Zlist::zl_and(&rl_contacts[i].czl, Zlist::copy(rl_zlist));
         if (ret == XIintr) {
             Errs()->add_error("user interrupt");
             return (false);
@@ -156,7 +156,7 @@ RLsolver::setup(const Zlist *zb, CDl *ld, Zgroup *zg)
                 "RLsolver::setup: contact %d does not intersect body.", i);
             return (false);
         }
-        rl_contacts[i].czl->BB(rl_contacts[i].cBB);
+        Zlist::BB(rl_contacts[i].czl, rl_contacts[i].cBB);
     }
 
     set_delta();
@@ -193,7 +193,7 @@ RLsolver::setupR()
 
     FILE *fp = 0;
     if (ExtErrLog.log_rlsolver()) {
-        rl_zlist->show();
+        Zlist::show(rl_zlist);
         fp = ExtErrLog.rlsolver_log_fp();
         fprintf(fp, "nx=%d ny=%d del=%d\n", rl_nx, rl_ny, rl_delta);
         fprintf(fp, "BB=(%d,%d  %d,%d)\n", rl_BB.left, rl_BB.bottom,
@@ -424,7 +424,7 @@ RLsolver::setupL()
 
     FILE *fp = 0;
     if (ExtErrLog.log_rlsolver()) {
-        rl_zlist->show();
+        Zlist::show(rl_zlist);
         fp = ExtErrLog.rlsolver_log_fp();
         fprintf(fp, "nx=%d ny=%d del=%d\n", rl_nx, rl_ny, rl_delta);
         fprintf(fp, "BB=(%d,%d  %d,%d)\n", rl_BB.left, rl_BB.bottom,
@@ -716,13 +716,13 @@ RLsolver::solve_multi(int *gmat_size, float **gmat)
 void
 RLsolver::setup_edges()
 {
-    PolyList *pl = rl_zlist->copy()->to_poly_list();
+    PolyList *pl = Zlist::copy(rl_zlist)->to_poly_list();
     rl_h_edges = to_edges(pl, false);
     rl_v_edges = to_edges(pl, true);
     pl->free();
 
     for (int i = 0; i < rl_num_contacts; i++) {
-        pl = rl_contacts[i].czl->copy()->to_poly_list();
+        pl = Zlist::copy(rl_contacts[i].czl)->to_poly_list();
         rl_contacts[i].h_edges = to_edges(pl, false);
         rl_contacts[i].v_edges = to_edges(pl, true);
         pl->free();
@@ -754,7 +754,7 @@ RLsolver::find_tile()
     // resistor endpoints from the gcd, potentially allowing fewer
     // tile squares.
 
-    Zlist *zl = rl_zlist->copy();
+    Zlist *zl = Zlist::copy(rl_zlist);
     Ylist *yl = new Ylist(zl);
 
     for (int i = 0; i < rl_num_contacts; i++) {
@@ -765,7 +765,7 @@ RLsolver::find_tile()
 
     // Compute new BB.
     BBox BB;
-    zl->BB(BB);
+    Zlist::BB(zl, BB);
 
     int h = BB.height();
     int w = BB.width();
@@ -777,7 +777,7 @@ RLsolver::find_tile()
         t = mmGCD(t, z->Z.xll - BB.left);
         t = mmGCD(t, z->Z.xlr - BB.left);
     }
-    zl->free();
+    zl->Zlist::free(zl);
 
     return (t);
 }
@@ -1032,7 +1032,7 @@ MRsolver::load_path(CDol *ol)
 bool
 MRsolver::add_terminal(Zlist *zt)
 {
-    PolyList *p0 = zt->copy()->to_poly_list();
+    PolyList *p0 = Zlist::copy(zt)->to_poly_list();
     if (!p0) {
         Errs()->add_error("add_terminal: no poly for terminal.");
         return (false);
@@ -1083,8 +1083,8 @@ MRsolver::find_vias()
                 continue;
 
             XIrt ret;
-            z1 = z1->copy();
-            z2 = z2->copy();
+            z1 = Zlist::copy(z1);
+            z2 = Zlist::copy(z2);
             ret = Zlist::zl_and(&z1, z2);
             if (ret != XIok) {
                 Errs()->add_error("find_vias: zl_and failed or user abort.");
@@ -1097,7 +1097,7 @@ MRsolver::find_vias()
                     "find_vias: getZlist failed or user abort.");
                 return (false);
             }
-            z1->free();
+            Zlist::free(z1);
 
             PolyList *p0 = z2->to_poly_list();
 
@@ -1113,7 +1113,7 @@ MRsolver::find_vias()
                         Zlist *zx = p->po.toZlist();
                         ret = lsp.testContact(cursdp, CDMAXCALLDEPTH, zx,
                             &istrue);
-                        zx->free();
+                        Zlist::free(zx);
                         lsp.set_tree(0);
                         if (ret == XIintr) {
                             Errs()->add_error("find_vias: interrupted");
@@ -1346,7 +1346,7 @@ MRsolver::solve_elements()
 
             RLsolver *r = new RLsolver;
             bool ret = r->setup(zl, c->ld, &zg);
-            zl->free();
+            Zlist::free(zl);
             if (!ret) {
                 Errs()->add_error("solve_elements: setup failed.");
                 return (false);

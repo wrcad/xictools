@@ -71,7 +71,7 @@ namespace {
     void
     clear__zlist(Variable *v)
     {
-        v->content.zlist->free();
+        Zlist::free(v->content.zlist);
     }
 
     void
@@ -403,7 +403,7 @@ namespace {
     void
     safe_del__zlist(Variable *v)
     {
-        v->content.zlist->free();
+        Zlist::free(v->content.zlist);
         v->type = TYP_NOTYPE;
         v->flags = 0;
         v->content.string = v->name;
@@ -488,7 +488,7 @@ namespace {
             return;
         if (res->type == TYP_ZLIST && res->content.zlist == v->content.zlist)
             return;
-        v->content.zlist->free();
+        Zlist::free(v->content.zlist);
         v->content.zlist = 0;
     }
 
@@ -526,7 +526,7 @@ namespace {
     gc_result__zlist(Variable *v)
     {
         if (!(v->flags & VF_NAMED)) {
-            v->content.zlist->free();
+            Zlist::free(v->content.zlist);
             v->content.zlist = 0;
         }
     }
@@ -771,9 +771,9 @@ namespace {
                 "-eillegal type conversion: non-zlist to zlist");
             return (BAD);
         }
-        v->content.zlist->free();
+        Zlist::free(v->content.zlist);
         if (r2.flags & VF_NAMED)
-            v->content.zlist = r2.content.zlist->copy();
+            v->content.zlist = Zlist::copy(r2.content.zlist);
         else
             v->content.zlist = r2.content.zlist;
 
@@ -855,7 +855,7 @@ namespace {
     {
         if (r->flags & VF_NAMED)
             // the source was another named variable
-            v->content.zlist = v->content.zlist->copy();
+            v->content.zlist = Zlist::copy(v->content.zlist);
     }
 }
 

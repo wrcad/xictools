@@ -253,7 +253,7 @@ cSDB::~cSDB()
     else if (dbtype == sdbZldb) {
         SymTabEnt *h;
         while ((h = gen.next()) != 0) {
-            ((Zlist*)h->stData)->free();
+            Zlist::free(((Zlist*)h->stData));
             delete h;
         }
     }
@@ -386,7 +386,7 @@ bdb_t::getZlist(const Zlist *zref, XIrt *retp)
         }
     }
     try {
-        z0 = z0->repartition();
+        z0 = Zlist::repartition(z0);
         return (z0);
     }
     catch (XIrt ret) {
@@ -565,7 +565,7 @@ odb_t::getZlist(const Zlist *zref, XIrt *retp)
         }
     }
     try {
-        z0 = z0->repartition();
+        z0 = Zlist::repartition(z0);
         return (z0);
     }
     catch (XIrt ret) {
@@ -751,7 +751,7 @@ zdb_t::getZlist(const Zlist *zref, XIrt *retp)
         }
     }
     try {
-        z0 = z0->repartition();
+        z0 = Zlist::repartition(z0);
         return (z0);
     }
     catch (XIrt ret) {
@@ -889,7 +889,7 @@ zbins_t::~zbins_t()
 {
     unsigned int n = b_nx*b_ny;
     for (unsigned int i = 0; i < n; i++)
-        b_array[i]->free();
+        Zlist::free(b_array[i]);
     delete [] b_array;
 }
 
@@ -1029,7 +1029,7 @@ zbins_t::merge()
                 MICRONS(b_y + y*b_dy), MICRONS(b_x + x*b_dx + b_dx),
                 MICRONS(b_y + y*b_dy + b_dy));
 #endif
-            b_array[i] = b_array[i]->repartition_ni();
+            b_array[i] = Zlist::repartition_ni(b_array[i]);
         }
     }
 }
@@ -1056,7 +1056,7 @@ zbins_t::getZlist(const Zlist *zref, XIrt *retp)
         if (ny < 0 || (unsigned int)ny >= b_ny)
             return (0);
     }
-    return (getZlist(nx, ny)->copy());
+    return (Zlist::copy(getZlist(nx, ny)));
 }
 
 

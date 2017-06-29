@@ -1139,7 +1139,7 @@ namespace {
 
         ~sPgrp()
             {
-                list->free();
+                Zlist::free(list);
             }
 
         sPgrp *add(double e, int z, int xll, int xlr, int yl,
@@ -1216,7 +1216,7 @@ fcLayout::panelize_group_zbot(const glZlistRef3d *z0) const
                 Zx.print();
                 printf("residual\n");
                 Zlist::print(zz);
-                zz->free();
+                Zlist::free(zz);
             }
         }
 #endif
@@ -1253,8 +1253,8 @@ fcLayout::panelize_group_zbot(const glZlistRef3d *z0) const
         for (sPgrp *zg = grps; zg; zg = zn) {
             zn = zg->next;
             if (fcl_mrgflgs & MRG_C_ZBOT)
-                zg->list = zg->list->repartition_ni();
-            zg->list = zg->list->filter_slivers(1);
+                zg->list = Zlist::repartition_ni(zg->list);
+            zg->list = Zlist::filter_slivers(zg->list, 1);
             if (fcl_zoids) {
                 save_zlist(zg->list, z0->PZ->group, "zbot", cnt);
                 cnt++;
@@ -1329,7 +1329,7 @@ fcLayout::panelize_group_ztop(const glZlistRef3d *z0) const
                                 }
                             }
                         }
-                        zx->free();
+                        Zlist::free(zx);
                     }
                     yl = yl->clip_out(&z2->Z);
                     if (!yl)
@@ -1364,7 +1364,7 @@ done:   ;
                     }
                 }
             }
-            zx->free();
+            Zlist::free(zx);
         }
     }
     if (fcl_domerge) {
@@ -1373,8 +1373,8 @@ done:   ;
         for (sPgrp *zg = grps; zg; zg = zn) {
             zn = zg->next;
             if (fcl_mrgflgs & MRG_C_ZTOP)
-                zg->list = zg->list->repartition_ni();
-            zg->list = zg->list->filter_slivers(1);
+                zg->list = Zlist::repartition_ni(zg->list);
+            zg->list = Zlist::filter_slivers(zg->list, 1);
             if (fcl_zoids) {
                 save_zlist(zg->list, z0->PZ->group, "ztop", cnt);
                 cnt++;
@@ -1448,7 +1448,7 @@ fcLayout::panelize_group_yl(const glZlistRef3d *z0) const
                         continue;
 
                     Zoid Z2(z2->Z.xul, z2->Z.zbot, z2->Z.xur, z2->Z.ztop);
-                    Zlist *zn = z1yl->copy();
+                    Zlist *zn = Zlist::copy(z1yl);
                     Zlist::zl_and(&zn, &Z2);
                     while (zn) {
                         if (fcl_domerge) {
@@ -1513,8 +1513,8 @@ done:   ;
         for (sPgrp *zg = grps; zg; zg = zn) {
             zn = zg->next;
             if (fcl_mrgflgs & MRG_C_YL)
-                zg->list = zg->list->repartition_ni();
-            zg->list = zg->list->filter_slivers(1);
+                zg->list = Zlist::repartition_ni(zg->list);
+            zg->list = Zlist::filter_slivers(zg->list, 1);
             for (Zlist *zl = zg->list; zl; zl = zl->next) {
                 fcCpanel *p = new fcCpanel(fcP_YL,
                     zl->Z.xll, zg->zval, zl->Z.yl,
@@ -1586,7 +1586,7 @@ fcLayout::panelize_group_yu(const glZlistRef3d *z0) const
                         continue;
 
                     Zoid Z2(z2->Z.xll, z2->Z.zbot, z2->Z.xlr, z2->Z.ztop);
-                    Zlist *zn = z1yu->copy();
+                    Zlist *zn = Zlist::copy(z1yu);
                     Zlist::zl_and(&zn, &Z2);
                     while (zn) {
                         if (fcl_domerge) {
@@ -1651,8 +1651,8 @@ done:   ;
         for (sPgrp *zg = grps; zg; zg = zn) {
             zn = zg->next;
             if (fcl_mrgflgs & MRG_C_YU)
-                zg->list = zg->list->repartition_ni();
-            zg->list = zg->list->filter_slivers(1);
+                zg->list = Zlist::repartition_ni(zg->list);
+            zg->list = Zlist::filter_slivers(zg->list, 1);
             for (Zlist *zl = zg->list; zl; zl = zl->next) {
                 fcCpanel *p = new fcCpanel(fcP_YU,
                     zl->Z.xll, zg->zval, zl->Z.yl,
@@ -1723,7 +1723,7 @@ fcLayout::panelize_group_left(const glZlistRef3d *z0) const
                         continue;
 
                     Zoid Z2(z2->Z.yl, z2->Z.zbot, z2->Z.yu, z2->Z.ztop);
-                    Zlist *zn = z1l->copy();
+                    Zlist *zn = Zlist::copy(z1l);
                     Zlist::zl_and(&zn, &Z2);
                     while (zn) {
                         if (sl == 0.0 && fcl_domerge) {
@@ -1797,8 +1797,8 @@ done:   ;
         for (sPgrp *zg = grps; zg; zg = zn) {
             zn = zg->next;
             if (fcl_mrgflgs & MRG_C_LEFT)
-                zg->list = zg->list->repartition_ni();
-            zg->list = zg->list->filter_slivers(1);
+                zg->list = Zlist::repartition_ni(zg->list);
+            zg->list = Zlist::filter_slivers(zg->list, 1);
             for (Zlist *zl = zg->list; zl; zl = zl->next) {
                 fcCpanel *p = new fcCpanel(fcP_LEFT,
                     zg->zval, zl->Z.xll, zl->Z.yl,
@@ -1869,7 +1869,7 @@ fcLayout::panelize_group_right(const glZlistRef3d *z0) const
                         continue;
 
                     Zoid Z2(z2->Z.yl, z2->Z.zbot, z2->Z.yu, z2->Z.ztop);
-                    Zlist *zn = z1r->copy();
+                    Zlist *zn = Zlist::copy(z1r);
                     Zlist::zl_and(&zn, &Z2);
                     while (zn) {
                         if (sr == 0.0 && fcl_domerge) {
@@ -1941,8 +1941,8 @@ done:   ;
         for (sPgrp *zg = grps; zg; zg = zn) {
             zn = zg->next;
             if (fcl_mrgflgs & MRG_C_RIGHT)
-                zg->list = zg->list->repartition_ni();
-            zg->list = zg->list->filter_slivers(1);
+                zg->list = Zlist::repartition_ni(zg->list);
+            zg->list = Zlist::filter_slivers(zg->list, 1);
             for (Zlist *zl = zg->list; zl; zl = zl->next) {
                 fcCpanel *p = new fcCpanel(fcP_RIGHT,
                     zg->zval, zl->Z.xll, zl->Z.yl,
@@ -1989,7 +1989,7 @@ fcLayout::panelize_dielectric_zbot(const Layer3d *l) const
                 Zlist *zz = Zt.clip_out(&Zx, &novl);
                 if (zz || novl) {
                     printf("Internal: panelize_dielectric, cutting error.\n");
-                    zz->free();
+                    Zlist::free(zz);
 
                     printf("Internal: panelize_electric, cutting error, "
                         "area %g, %s/%s.\n", Zlist::area(zz),
@@ -2002,7 +2002,7 @@ fcLayout::panelize_dielectric_zbot(const Layer3d *l) const
                     Zx.print();
                     printf("residual\n");
                     Zlist::print(zz);
-                    zz->free();
+                    Zlist::free(zz);
                 }
                 continue;
             }
@@ -2037,8 +2037,8 @@ fcLayout::panelize_dielectric_zbot(const Layer3d *l) const
         for (sPgrp *zg = grps; zg; zg = zn) {
             zn = zg->next;
             if (fcl_mrgflgs & MRG_D_ZBOT)
-                zg->list = zg->list->repartition_ni();
-            zg->list = zg->list->filter_slivers(1);
+                zg->list = Zlist::repartition_ni(zg->list);
+            zg->list = Zlist::filter_slivers(zg->list, 1);
             if (fcl_zoids) {
                 CDl *ld = l->layer_desc();
                 save_zlist(zg->list, ld->name(), "zbot", cnt);
@@ -2118,7 +2118,7 @@ fcLayout::panelize_dielectric_ztop(const Layer3d *l1) const
                                         }
                                     }
                                 }
-                                zx->free();
+                                Zlist::free(zx);
                             }
                         }
                         yl = yl->clip_out(&z2->Z);
@@ -2155,7 +2155,7 @@ done:       ;
                             }
                         }
                     }
-                    zx->free();
+                    Zlist::free(zx);
                 }
             }
         }
@@ -2166,8 +2166,8 @@ done:       ;
         for (sPgrp *zg = grps; zg; zg = zn) {
             zn = zg->next;
             if (fcl_mrgflgs & MRG_D_ZTOP)
-                zg->list = zg->list->repartition_ni();
-            zg->list = zg->list->filter_slivers(1);
+                zg->list = Zlist::repartition_ni(zg->list);
+            zg->list = Zlist::filter_slivers(zg->list, 1);
             if (fcl_zoids) {
                 CDl *ld = l1->layer_desc();
                 save_zlist(zg->list, ld->name(), "ztop", cnt);
@@ -2227,7 +2227,7 @@ fcLayout::panelize_dielectric_yl(const Layer3d *l1) const
                             // Avoid generating redundant panels.
                             double dc2 = l->epsrel();
                             if (dc1 != dc2) {
-                                Zlist *zn = z1yl->copy();
+                                Zlist *zn = Zlist::copy(z1yl);
                                 Zlist::zl_and(&zn, &Z2);
                                 while (zn) {
                                     if (fcl_domerge) {
@@ -2295,8 +2295,8 @@ done:       ;
         for (sPgrp *zg = grps; zg; zg = zn) {
             zn = zg->next;
             if (fcl_mrgflgs & MRG_D_YL)
-                zg->list = zg->list->repartition_ni();
-            zg->list = zg->list->filter_slivers(1);
+                zg->list = Zlist::repartition_ni(zg->list);
+            zg->list = Zlist::filter_slivers(zg->list, 1);
             for (Zlist *zl = zg->list; zl; zl = zl->next) {
                 fcDpanel *p = new fcDpanel(fcP_YL,
                     zl->Z.xll, zg->zval, zl->Z.yl,
@@ -2353,7 +2353,7 @@ fcLayout::panelize_dielectric_yu(const Layer3d *l1) const
                             // Avoid generating redundant panels.
                             double dc2 = l->epsrel();
                             if (dc1 != dc2) {
-                                Zlist *zn = z1yu->copy();
+                                Zlist *zn = Zlist::copy(z1yu);
                                 Zlist::zl_and(&zn, &Z2);
                                 while (zn) {
                                     if (fcl_domerge) {
@@ -2421,8 +2421,8 @@ done:       ;
         for (sPgrp *zg = grps; zg; zg = zn) {
             zn = zg->next;
             if (fcl_mrgflgs & MRG_D_YU)
-                zg->list = zg->list->repartition_ni();
-            zg->list = zg->list->filter_slivers(1);
+                zg->list = Zlist::repartition_ni(zg->list);
+            zg->list = Zlist::filter_slivers(zg->list, 1);
             for (Zlist *zl = zg->list; zl; zl = zl->next) {
                 fcDpanel *p = new fcDpanel(fcP_YU,
                     zl->Z.xll, zg->zval, zl->Z.yl,
@@ -2477,7 +2477,7 @@ fcLayout::panelize_dielectric_left(const Layer3d *l1) const
                             // Avoid generating redundant panels.
                             double dc2 = l->epsrel();
                             if (dc1 != dc2) {
-                                Zlist *zn = z1l->copy();
+                                Zlist *zn = Zlist::copy(z1l);
                                 Zlist::zl_and(&zn, &Z2);
                                 while (zn) {
                                     if (sl == 0.0 && fcl_domerge) {
@@ -2554,8 +2554,8 @@ done:       ;
         for (sPgrp *zg = grps; zg; zg = zn) {
             zn = zg->next;
             if (fcl_mrgflgs & MRG_D_LEFT)
-                zg->list = zg->list->repartition_ni();
-            zg->list = zg->list->filter_slivers(1);
+                zg->list = Zlist::repartition_ni(zg->list);
+            zg->list = Zlist::filter_slivers(zg->list, 1);
             for (Zlist *zl = zg->list; zl; zl = zl->next) {
                 fcDpanel *p = new fcDpanel(fcP_LEFT,
                     zg->zval, zl->Z.xll, zl->Z.yl,
@@ -2612,7 +2612,7 @@ fcLayout::panelize_dielectric_right(const Layer3d *l1) const
                             // Avoid generating redundant panels.
                             double dc2 = l->epsrel();
                             if (dc1 != dc2) {
-                                Zlist *zn = z1r->copy();
+                                Zlist *zn = Zlist::copy(z1r);
                                 Zlist::zl_and(&zn, &Z2);
                                 while (zn) {
                                     if (sr == 0.0 && fcl_domerge) {
@@ -2689,8 +2689,8 @@ done:       ;
         for (sPgrp *zg = grps; zg; zg = zn) {
             zn = zg->next;
             if (fcl_mrgflgs & MRG_D_RIGHT)
-                zg->list = zg->list->repartition_ni();
-            zg->list = zg->list->filter_slivers(1);
+                zg->list = Zlist::repartition_ni(zg->list);
+            zg->list = Zlist::filter_slivers(zg->list, 1);
             for (Zlist *zl = zg->list; zl; zl = zl->next) {
                 fcDpanel *p = new fcDpanel(fcP_RIGHT,
                     zg->zval, zl->Z.xll, zl->Z.yl,
@@ -2757,7 +2757,7 @@ fcLayout::area_group_ztop(const glZlistRef3d *z0) const
                     if (l->is_insulator()) {
                         Zlist *zx = yl->clip_to(&z2->Z);
                         area += Zlist::area(zx);
-                        zx->free();
+                        Zlist::free(zx);
                     }
                     yl = yl->clip_out(&z2->Z);
                     if (!yl)
@@ -2772,7 +2772,7 @@ done:   ;
 
             Zlist *zx = yl->to_zlist();
             area += Zlist::area(zx);
-            zx->free();
+            Zlist::free(zx);
         }
     }
     return (area);
@@ -2826,7 +2826,7 @@ fcLayout::area_group_yl(const glZlistRef3d *z0) const
                         continue;
 
                     Zoid Z2(z2->Z.xul, z2->Z.zbot, z2->Z.xur, z2->Z.ztop);
-                    Zlist *zn = z1yl->copy();
+                    Zlist *zn = Zlist::copy(z1yl);
                     Zlist::zl_and(&zn, &Z2);
                     while (zn) {
                         area += zn->Z.area();
@@ -2903,7 +2903,7 @@ fcLayout::area_group_yu(const glZlistRef3d *z0) const
                         continue;
 
                     Zoid Z2(z2->Z.xll, z2->Z.zbot, z2->Z.xlr, z2->Z.ztop);
-                    Zlist *zn = z1yu->copy();
+                    Zlist *zn = Zlist::copy(z1yu);
                     Zlist::zl_and(&zn, &Z2);
                     while (zn) {
                         area += zn->Z.area();
@@ -2980,7 +2980,7 @@ fcLayout::area_group_left(const glZlistRef3d *z0) const
                         continue;
 
                     Zoid Z2(z2->Z.yl, z2->Z.zbot, z2->Z.yu, z2->Z.ztop);
-                    Zlist *zn = z1l->copy();
+                    Zlist *zn = Zlist::copy(z1l);
                     Zlist::zl_and(&zn, &Z2);
                     while (zn) {
                         atmp += zn->Z.area();
@@ -3060,7 +3060,7 @@ fcLayout::area_group_right(const glZlistRef3d *z0) const
                         continue;
 
                     Zoid Z2(z2->Z.yl, z2->Z.zbot, z2->Z.yu, z2->Z.ztop);
-                    Zlist *zn = z1r->copy();
+                    Zlist *zn = z1r->Zlist::copy(z1r);
                     Zlist::zl_and(&zn, &Z2);
                     while (zn) {
                         atmp += zn->Z.area();
@@ -3149,7 +3149,7 @@ fcLayout::area_dielectric_ztop(const Layer3d *l1) const
                                 Zlist *zx = yl->clip_to(&z2->Z);
                                 for (Zlist *zz = zx; zz; zz = zz->next)
                                     area += zz->Z.area();
-                                zx->free();
+                                Zlist::free(zx);
                             }
                         }
                         yl = yl->clip_out(&z2->Z);
@@ -3167,7 +3167,7 @@ done:       ;
                     Zlist *zx = yl->to_zlist();
                     for (Zlist *zz = zx; zz; zz = zz->next)
                         area += zz->Z.area();
-                    zx->free();
+                    Zlist::free(zx);
                 }
             }
         }
@@ -3208,7 +3208,7 @@ fcLayout::area_dielectric_yl(const Layer3d *l1) const
                             // Avoid generating redundant panels.
                             double dc2 = l->epsrel();
                             if (dc1 != dc2) {
-                                Zlist *zn = z1yl->copy();
+                                Zlist *zn = Zlist::copy(z1yl);
                                 Zlist::zl_and(&zn, &Z2);
                                 while (zn) {
                                     area += zn->Z.area();
@@ -3271,7 +3271,7 @@ fcLayout::area_dielectric_yu(const Layer3d *l1) const
                             // Avoid generating redundant panels.
                             double dc2 = l->epsrel();
                             if (dc1 != dc2) {
-                                Zlist *zn = z1yu->copy();
+                                Zlist *zn = Zlist::copy(z1yu);
                                 Zlist::zl_and(&zn, &Z2);
                                 while (zn) {
                                     area += zn->Z.area();
@@ -3335,7 +3335,7 @@ fcLayout::area_dielectric_left(const Layer3d *l1) const
                             // Avoid generating redundant panels.
                             double dc2 = l->epsrel();
                             if (dc1 != dc2) {
-                                Zlist *zn = z1l->copy();
+                                Zlist *zn = Zlist::copy(z1l);
                                 Zlist::zl_and(&zn, &Z2);
                                 while (zn) {
                                     atmp += zn->Z.area();
@@ -3400,7 +3400,7 @@ fcLayout::area_dielectric_right(const Layer3d *l1) const
                             // Avoid generating redundant panels.
                             double dc2 = l->epsrel();
                             if (dc1 != dc2) {
-                                Zlist *zn = z1r->copy();
+                                Zlist *zn = Zlist::copy(z1r);
                                 Zlist::zl_and(&zn, &Z2);
                                 while (zn) {
                                     atmp += zn->Z.area();

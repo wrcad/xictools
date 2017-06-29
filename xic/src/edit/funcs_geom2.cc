@@ -2135,7 +2135,7 @@ geom2_funcs::IFclipObjects(Variable *res, Variable *args, void*)
                 }
             }
             try {
-                zl = zl->repartition();
+                zl = Zlist::repartition(zl);
             }
             catch (XIrt ret) {
                 if (ret == XIintr) {
@@ -2192,7 +2192,7 @@ geom2_funcs::IFclipObjects(Variable *res, Variable *args, void*)
                             }
                         }
                     }
-                    zl->free();
+                    Zlist::free(zl);
                 }
             }
             res->content.value = cnt;
@@ -2281,7 +2281,7 @@ geom2_funcs::IFclipIntersectCopy(Variable *res, Variable *args, void*)
                 break;
         }
         try {
-            zl1 = zl1->repartition();
+            zl1 = Zlist::repartition(zl1);
         }
         catch (XIrt ret) {
             if (ret == XIintr) {
@@ -2313,7 +2313,7 @@ geom2_funcs::IFclipIntersectCopy(Variable *res, Variable *args, void*)
                 break;
         }
         try {
-            zl2 = zl2->repartition();
+            zl2 = Zlist::repartition(zl2);
         }
         catch (XIrt ret) {
             if (ret == XIintr) {

@@ -231,9 +231,9 @@ ant_pathfinder::process(const sDevContactInst *cx)
     SymTabGen lgen(&ltab);
     while ((h = lgen.next()) != 0) {
         Zlist *zl = (Zlist*)h->stData;
-        zl = zl->repartition_ni();
+        zl = Zlist::repartition_ni(zl);
         double a = Zlist::area(zl);
-        zl->free();
+        Zlist::free(zl);
         char *s = new char[32];
         sprintf(s, "%.6e", a);
         h->stData = s;

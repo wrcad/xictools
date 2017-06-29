@@ -1749,8 +1749,8 @@ zlist_funcs::PTminusZ(Variable *res, Variable *args, void *datap)
     unsigned long t1 = Tvals::millisec();
 #endif
 
-    Zlist *z1 = zlist1->copy();
-    XIrt ret = Zlist::zl_andnot(&z1, zlist2->copy());
+    Zlist *z1 = Zlist::copy(zlist1);
+    XIrt ret = Zlist::zl_andnot(&z1, Zlist::copy(zlist2));
     if (ret != XIok) {
         if (ret == XIintr) {
             res->content.zlist = 0;
@@ -1817,8 +1817,8 @@ zlist_funcs::PTandZ(Variable *res, Variable *args, void *datap)
     unsigned long t1 = Tvals::millisec();
 #endif
 
-    Zlist *z1 = zlist1->copy();
-    XIrt ret = Zlist::zl_and(&z1, zlist2->copy());
+    Zlist *z1 = Zlist::copy(zlist1);
+    XIrt ret = Zlist::zl_and(&z1, Zlist::copy(zlist2));
     if (ret != XIok) {
         if (ret == XIintr) {
             res->content.zlist = 0;
@@ -1885,8 +1885,8 @@ zlist_funcs::PTorZ(Variable *res, Variable *args, void *datap)
     unsigned long t1 = Tvals::millisec();
 #endif
 
-    Zlist *z1 = zlist1->copy();
-    XIrt ret = Zlist::zl_or(&z1, zlist2->copy());
+    Zlist *z1 = Zlist::copy(zlist1);
+    XIrt ret = Zlist::zl_or(&z1, Zlist::copy(zlist2));
     if (ret != XIok) {
         if (ret == XIintr) {
             res->content.zlist = 0;
@@ -1954,8 +1954,8 @@ zlist_funcs::PTxorZ(Variable *res, Variable *args, void *datap)
     unsigned long t1 = Tvals::millisec();
 #endif
 
-    Zlist *z1 = zlist1->copy();
-    Zlist *z2 = zlist2->copy();
+    Zlist *z1 = Zlist::copy(zlist1);
+    Zlist *z2 = Zlist::copy(zlist2);
     XIrt ret = Zlist::zl_xor(&z1, z2);
     if (ret != XIok) {
         if (ret == XIintr) {
@@ -2012,8 +2012,8 @@ zlist_funcs::PTnotZ(Variable *res, Variable *args, void *datap)
     unsigned long t1 = Tvals::millisec();
 #endif
 
-    Zlist *z1 = zlist1->copy();
-    XIrt ret = Zlist::zl_andnot(&z1, zlist2->copy());
+    Zlist *z1 = Zlist::copy(zlist1);
+    XIrt ret = Zlist::zl_andnot(&z1, Zlist::copy(zlist2));
     if (ret != XIok) {
         if (ret == XIintr) {
             res->content.zlist = 0;

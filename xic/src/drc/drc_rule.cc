@@ -494,12 +494,12 @@ DRCtestDesc::getEdgeList(DRCedgeEval *ev, Zlist **zret, bool *copy)
                 true, 0, &zl);
             if (ret != XIok) {
                 if (cpy)
-                    z0->free();
+                    Zlist::free(z0);
                 return (ret);
             }
             Zlist *zn = cGEO::merge_edge_zlists(z0, ev->edgecode(), zl);
             if (cpy)
-                z0->free();
+                Zlist::free(z0);
             if (!zn)
                 return (XIok);
             z0 = zn;
@@ -514,12 +514,12 @@ DRCtestDesc::getEdgeList(DRCedgeEval *ev, Zlist **zret, bool *copy)
                 ev->inside(), (edgeInside() == EdgeCovered), 0, &zl);
             if (ret != XIok) {
                 if (cpy)
-                    z0->free();
+                    Zlist::free(z0);
                 return (ret);
             }
             Zlist *zn = cGEO::merge_edge_zlists(z0, ev->edgecode(), zl);
             if (cpy)
-                z0->free();
+                Zlist::free(z0);
             if (!zn)
                 return (XIok);
             z0 = zn;
@@ -532,12 +532,12 @@ DRCtestDesc::getEdgeList(DRCedgeEval *ev, Zlist **zret, bool *copy)
                 ev->outside(), (edgeOutside() == EdgeCovered), 0, &zl);
             if (ret != XIok) {
                 if (cpy)
-                    z0->free();
+                    Zlist::free(z0);
                 return (ret);
             }
             Zlist *zn = cGEO::merge_edge_zlists(z0, ev->edgecode(), zl);
             if (cpy)
-                z0->free();
+                Zlist::free(z0);
             if (!zn)
                 return (XIok);
             z0 = zn;
@@ -550,12 +550,12 @@ DRCtestDesc::getEdgeList(DRCedgeEval *ev, Zlist **zret, bool *copy)
             &ev->p2(), &ev->p3(), ev->inside(), true, 0, &zl);
         if (ret != XIok) {
             if (cpy)
-                z0->free();
+                Zlist::free(z0);
             return (ret);
         }
         Zlist *zn = cGEO::merge_edge_zlists(z0, ev->edgecode(), zl);
         if (cpy)
-            z0->free();
+            Zlist::free(z0);
         if (!zn)
             return (XIok);
         z0 = zn;
@@ -567,12 +567,12 @@ DRCtestDesc::getEdgeList(DRCedgeEval *ev, Zlist **zret, bool *copy)
             &ev->p2(), &ev->p3(), ev->outside(), true, 0, &zl);
         if (ret != XIok) {
             if (cpy)
-                z0->free();
+                Zlist::free(z0);
             return (ret);
         }
         Zlist *zn = cGEO::merge_edge_zlists(z0, ev->edgecode(), zl);
         if (cpy)
-            z0->free();
+            Zlist::free(z0);
         if (!zn)
             return (XIok);
         z0 = zn;
@@ -606,7 +606,7 @@ DRCtestDesc::polyEdgesPreTest(DRCedgeEval *ev, ErrFuncCb err_cb, void *arg)
                 return (ret);
             if (cov == CovPartial) {
                 BBox BB;
-                cx.getZref()->BB(BB);
+                Zlist::BB(cx.getZref(), BB);
                 Zoid Z(&BB);
                 seterr(&Z, TT_IFOVL);
                 if (result() && err_cb)
@@ -667,7 +667,7 @@ DRCtestDesc::polyEdgesTest(DRCedgeEval *ev, ErrFuncCb err_cb, void *arg)
 
             if (ret != XIok) {
                 if (ecopy)
-                    elist->free();
+                    Zlist::free(elist);
                 return (ret);
             }
             if (result()) {
@@ -688,7 +688,7 @@ DRCtestDesc::polyEdgesTest(DRCedgeEval *ev, ErrFuncCb err_cb, void *arg)
 
             if (ret != XIok) {
                 if (ecopy)
-                    elist->free();
+                    Zlist::free(elist);
                 return (ret);
             }
             if (result()) {
@@ -724,7 +724,7 @@ DRCtestDesc::polyEdgesTest(DRCedgeEval *ev, ErrFuncCb err_cb, void *arg)
 
             if (ret != XIok) {
                 if (ecopy)
-                    elist->free();
+                    Zlist::free(elist);
                 return (ret);
             }
             if (result() && err_cb)
@@ -734,7 +734,7 @@ DRCtestDesc::polyEdgesTest(DRCedgeEval *ev, ErrFuncCb err_cb, void *arg)
 
 finish:
     if (ecopy)
-        elist->free();
+        Zlist::free(elist);
     lastCw();
     return (XIok);
 }
@@ -1111,12 +1111,12 @@ DRCtestDesc::edgeTest(DRCedgeEval *ev, const Zlist *elist)
             Zlist *zx0 = Point::toZlist(po, 5);
             if (zx0) {
                 if (DRC()->isShowZoids() && DSP()->MainWdesc())
-                    zx0->show();
+                    Zlist::show(zx0);
                 for (Zlist *zx = zx0; zx; zx = zx->next) {
                     bool istrue;
                     XIrt ret = (*td_testfunc)(&zx->Z, this, ev, &istrue);
                     if (ret != XIok) {
-                        zx0->free();
+                        Zlist::free(zx0);
                         return (ret);
                     }
                     if (!istrue) {
@@ -1124,7 +1124,7 @@ DRCtestDesc::edgeTest(DRCedgeEval *ev, const Zlist *elist)
                         break;
                     }
                 }
-                zx0->free();
+                Zlist::free(zx0);
             }
         }
     }
@@ -1210,12 +1210,12 @@ DRCtestDesc::cornerTest(DRCedgeEval *ev)
 
     Zlist *zx0 = Point::toZlist(po, 5);
     if (DRC()->isShowZoids() && DSP()->MainWdesc())
-        zx0->show();
+        Zlist::show(zx0);
     for (Zlist *zx = zx0; zx; zx = zx->next) {
         bool istrue;
         XIrt ret = (*td_testfunc)(&zx->Z, this, ev, &istrue);
         if (ret != XIok) {
-            zx0->free();
+            Zlist::free(zx0);
             return (ret);
         }
         if (!istrue) {
@@ -1223,7 +1223,7 @@ DRCtestDesc::cornerTest(DRCedgeEval *ev)
             break;
         }
     }
-    zx0->free();
+    Zlist::free(zx0);
     return (XIok);
 }
 
@@ -1745,7 +1745,7 @@ DRCtestDesc::testPoly_Overlap(PolyObj *dpo, const CDl *ldtarget,
             Zlist *zl = p->po.toZlist();
             bool istrue;
             XIrt ret = testOverlap(zl, &istrue);
-            zl->free();
+            Zlist::free(zl);
             if (ret != XIok) {
                 *eret = ret;
                 if (ret == XIbad)
@@ -1794,7 +1794,7 @@ DRCtestDesc::testPoly_IfOverlap(PolyObj *dpo, const CDl *ldtarget,
             Zlist *zl = p->po.toZlist();
             bool istrue;
             XIrt ret = testIfOverlap(zl, &istrue);
-            zl->free();
+            Zlist::free(zl);
             if (ret != XIok) {
                 *eret = ret;
                 if (ret == XIbad)
@@ -1843,7 +1843,7 @@ DRCtestDesc::testPoly_NoOverlap(PolyObj *dpo, const CDl *ldtarget,
             Zlist *zl = p->po.toZlist();
             bool istrue;
             XIrt ret = testNoOverlap(zl, &istrue);
-            zl->free();
+            Zlist::free(zl);
             if (ret != XIok) {
                 *eret = ret;
                 if (ret == XIbad)
@@ -1892,7 +1892,7 @@ DRCtestDesc::testPoly_AnyOverlap(PolyObj *dpo, const CDl *ldtarget,
             Zlist *zl = p->po.toZlist();
             bool istrue;
             XIrt ret = testAnyOverlap(zl, &istrue);
-            zl->free();
+            Zlist::free(zl);
             if (ret != XIok) {
                 *eret = ret;
                 if (ret == XIbad)
@@ -1941,7 +1941,7 @@ DRCtestDesc::testPoly_PartOverlap(PolyObj *dpo, const CDl *ldtarget,
             Zlist *zl = p->po.toZlist();
             bool istrue;
             XIrt ret = testPartOverlap(zl, &istrue);
-            zl->free();
+            Zlist::free(zl);
             if (ret != XIok) {
                 *eret = ret;
                 if (ret == XIbad)
@@ -1990,7 +1990,7 @@ DRCtestDesc::testPoly_AnyNoOverlap(PolyObj *dpo, const CDl *ldtarget,
             Zlist *zl = p->po.toZlist();
             bool istrue;
             XIrt ret = testAnyNoOverlap(zl, &istrue);
-            zl->free();
+            Zlist::free(zl);
             if (ret != XIok) {
                 *eret = ret;
                 if (ret == XIbad)
@@ -2043,7 +2043,7 @@ DRCtestDesc::testPoly_MinArea(PolyObj *dpo, const CDl *ldtarget,
             }
             if (errbrk(this, errs))
                 break;
-            zl->free();
+            Zlist::free(zl);
         }
         p0->free();
     }
@@ -2066,7 +2066,7 @@ DRCtestDesc::testPoly_MinArea(PolyObj *dpo, const CDl *ldtarget,
             else
                 dim = INTERNAL_UNITS(sqrt(area()));
             BBox BB;
-            dpo->zlist()->BB(BB);
+            Zlist::BB(dpo->zlist(), BB);
             BB.bloat(dim);
             sPF gen(CurCell(Physical), &BB, td_source.ldesc(),
                 CDMAXCALLDEPTH);
@@ -2081,7 +2081,7 @@ DRCtestDesc::testPoly_MinArea(PolyObj *dpo, const CDl *ldtarget,
                 zx0 = zx;
                 delete odesc;
             }
-            zx0 = zx0->repartition_ni();
+            zx0 = Zlist::repartition_ni(zx0);
             Zgroup *zg = zx0->group();
             double a = 0.0;
             if (zg->num == 1)
@@ -2128,7 +2128,7 @@ DRCtestDesc::testPoly_MaxArea(PolyObj *dpo, const CDl *ldtarget,
             }
             if (errbrk(this, errs))
                 break;
-            zl->free();
+            Zlist::free(zl);
         }
         p0->free();
     }
@@ -2207,7 +2207,7 @@ DRCtestDesc::testOverlap(const Zlist *zl, bool *istrue)
         return (XIok);
     *istrue = false;
     BBox BB;
-    zl->BB(BB);
+    Zlist::BB(zl, BB);
     Zoid Z(&BB);
     seterr(&Z, TT_OVL);
     return (XIok);
@@ -2232,7 +2232,7 @@ DRCtestDesc::testIfOverlap(const Zlist *zl, bool *istrue)
         return (XIok);
     *istrue = false;
     BBox BB;
-    zl->BB(BB);
+    Zlist::BB(zl, BB);
     Zoid Z(&BB);
     seterr(&Z, TT_IFOVL);
     return (XIok);
@@ -2256,7 +2256,7 @@ DRCtestDesc::testNoOverlap(const Zlist *zl, bool *istrue)
         return (XIok);
     *istrue = false;
     BBox BB;
-    zl->BB(BB);
+    Zlist::BB(zl, BB);
     Zoid Z(&BB);
     seterr(&Z, TT_NOOVL);
     return (XIok);
@@ -2280,7 +2280,7 @@ DRCtestDesc::testAnyOverlap(const Zlist *zl, bool *istrue)
         return (XIok);
     *istrue = false;
     BBox BB;
-    zl->BB(BB);
+    Zlist::BB(zl, BB);
     Zoid Z(&BB);
     seterr(&Z, TT_ANYOVL);
     return (XIok);
@@ -2304,7 +2304,7 @@ DRCtestDesc::testPartOverlap(const Zlist *zl, bool *istrue)
         return (XIok);
     *istrue = false;
     BBox BB;
-    zl->BB(BB);
+    Zlist::BB(zl, BB);
     Zoid Z(&BB);
     seterr(&Z, TT_PARTOVL);
     return (XIok);
@@ -2328,7 +2328,7 @@ DRCtestDesc::testAnyNoOverlap(const Zlist *zl, bool *istrue)
         return (XIok);
     *istrue = false;
     BBox BB;
-    zl->BB(BB);
+    Zlist::BB(zl, BB);
     Zoid Z(&BB);
     seterr(&Z, TT_ANOOVL);
     return (XIok);
@@ -2452,7 +2452,7 @@ DRCtestDesc::testPolyCovered(Point *po, DRCedgeEval *ev, bool *ret)
     *ret = true;
     Zlist *zx0 = Point::toZlist(po, 5);
     if (DRC()->isShowZoids() && DSP()->MainWdesc())
-        zx0->show();
+        Zlist::show(zx0);
     for (Zlist *zx = zx0; zx; zx = zx->next) {
         if (zx->Z.yu - zx->Z.yl <= td_fudge)
             continue;
@@ -2460,7 +2460,7 @@ DRCtestDesc::testPolyCovered(Point *po, DRCedgeEval *ev, bool *ret)
         bool istrue;
         XIrt xrt = (*td_testfunc)(&zx->Z, this, ev, &istrue);
         if (xrt != XIok) {
-            zx0->free();
+            Zlist::free(zx0);
             return (xrt);
         }
         if (!istrue) {
@@ -2468,7 +2468,7 @@ DRCtestDesc::testPolyCovered(Point *po, DRCedgeEval *ev, bool *ret)
             break;
         }
     }
-    zx0->free();
+    Zlist::free(zx0);
     return (XIok);
 }
 
@@ -2491,12 +2491,12 @@ DRCtestDesc::spaceTest(Zoid *ZB, DRCedgeEval *ev, int *edge_length)
     if (ret != XIok)
         return (ret);
     if (z0)
-        z0 = z0->filter_drc_slivers(td_fudge);
+        z0 = Zlist::filter_drc_slivers(z0, td_fudge);
     if (!z0) {
         *edge_length = 0;
         return (ret);
     }
-    z0 = z0->repartition_ni();
+    z0 = Zlist::repartition_ni(z0);
     // The edge is Manhattan.
     int el = 0;
     if (ev->edgecode() == DRCeB) {
@@ -2511,7 +2511,7 @@ DRCtestDesc::spaceTest(Zoid *ZB, DRCedgeEval *ev, int *edge_length)
         for (Zlist *z = z0; z; z = z->next)
             el += z->Z.yu - z->Z.yl;
     }
-    z0->free();
+    Zlist::free(z0);
     *edge_length = el;
     return (XIok);
 }
@@ -2545,8 +2545,8 @@ DRCedgeEval::DRCedgeEval(PolyObj *dpo)
 
 DRCedgeEval::~DRCedgeEval()
 {
-    e_elist->free();
-    e_accum_zlist->free();
+    Zlist::free(e_elist);
+    Zlist::free(e_accum_zlist);
 }
 
 
@@ -2561,7 +2561,7 @@ DRCedgeEval::advance()
 {
     if (e_last_vtx)
         return (false);
-    e_elist->free();
+    Zlist::free(e_elist);
     e_elist = 0;
     if (e_passcnt == e_epoly->numpts() - 1) {
         e_vtx = e_epoly->points() + 1;

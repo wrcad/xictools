@@ -64,7 +64,7 @@ Ldb3d::Ldb3d()
 
 Ldb3d::~Ldb3d()
 {
-    db3_zlref->free();
+    Zlist::free(db3_zlref);
     db3_stack->free();
     delete db3_groups;
 }
@@ -316,11 +316,11 @@ namespace {
                 XIrt ret;
                 Zlist *zl = sdesc->getZlist(CDMAXCALLDEPTH, fld, zref, &ret);
                 if (ret != XIok) {
-                    zref->free();
+                    Zlist::free(zref);
                     return (0);
                 }
                 if (zl) {
-                    zref->free();
+                    Zlist::free(zref);
                     zref = zl;
                 }
             }
@@ -367,8 +367,8 @@ Ldb3d::init_stack(CDs *sdesc, const BBox *AOI, bool is_cs,
             "Failed to determine reference area for geometry extraction.");
         return (false);
     }
-    zref->BB(db3_aoi);
-    db3_zlref->free();
+    Zlist::BB(zref, db3_aoi);
+    Zlist::free(db3_zlref);
     db3_zlref = zref;
 
     // Next, obtain geometry, and remove layers that are nonexistant
@@ -701,27 +701,27 @@ Layer3d::extract_geom(const CDs *sdesc, const Zlist *zref)
     Zlist *zl = sdesc->getZlist(CDMAXCALLDEPTH, l3_ldesc, zref, &ret);
     if (ret != XIok) {
         if (free_zref)
-            zref->free();
+            Zlist::free(zref);
         return (false);
     }
     if (l3_ldesc->isVia() || l3_ldesc->isDarkField()) {
-        Zlist *zr = zref->copy();
+        Zlist *zr = Zlist::copy(zref);
         ret = Zlist::zl_andnot(&zr, zl);
         if (ret != XIok) {
             if (free_zref)
-                zref->free();
+                Zlist::free(zref);
             return (false);
         }
         zl = zr;
     }
     if (free_zref)
-        zref->free();
+        Zlist::free(zref);
 
     l3_cut->free();
     l3_cut = 0;
     l3_uncut->free();
 
-    zl = zl->filter_slivers(1);
+    zl = Zlist::filter_slivers(zl, 1);
     l3_uncut = zl ? new Ylist(zl) : 0;
     l3_yl3d->free();
     l3_yl3d = 0;
@@ -789,7 +789,7 @@ Layer3d::cut(const Layer3d *btm)
             zn = zn->next;
         zn->next = z2;
     }
-    z1 = z1->filter_slivers(1);
+    z1 = Zlist::filter_slivers(z1, 1);
     l3_cut->free();
     l3_cut = new Ylist(z1);
     return (true);

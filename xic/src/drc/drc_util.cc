@@ -72,7 +72,7 @@ DRCtestDesc::bloat(const CDo *od, Zlist **zret, bool edgonly)
     if (td_where == DRCoutside) {
         Zlist *z0 = 0;
         if (spo.zlist()) {
-            z0 = spo.zlist()->copy();
+            z0 = Zlist::copy(spo.zlist());
             Zlist *ze = z0;
             while (ze->next)
                 ze = ze->next;
@@ -80,12 +80,12 @@ DRCtestDesc::bloat(const CDo *od, Zlist **zret, bool edgonly)
         }
         else
             z0 = ev.accumZlist();
-        z0 = z0->repartition_ni();
+        z0 = Zlist::repartition_ni(z0);
         *zret = z0;
         return (XIok);
     }
     Zlist *zc = ev.accumZlist();
-    Zlist *zlist = spo.zlist()->copy();
+    Zlist *zlist = Zlist::copy(spo.zlist());
     XIrt ret = Zlist::zl_andnot(&zlist, zc);
     *zret = zlist;
     return (ret);

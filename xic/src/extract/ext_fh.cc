@@ -1093,14 +1093,14 @@ fhLayout::add_terminal(const Poly *po, const char *portname, const char *sfx,
                     Zlist *z0 = po->toZlist();
                     for (Zlist *zl = z0; zl; zl = zl->next) {
                         if (z->Z.Zoid::intersect(&zl->Z, false)) {
-                            z0->free();
+                            Zlist::free(z0);
                             int grp = c->group();
                             fhl_terms[grp] = new fhTermList(po, portname, sfx,
                                 lnum, cnum, ccnt, fhl_terms[grp]);
                             return;
                         }
                     }
-                    z0->free();
+                    Zlist::free(z0);
                 }
             }
         }
@@ -1578,7 +1578,7 @@ fhConductor::save_zlist_db()
     CurCell(Physical)->db_clear_layer(ld);
     Zlist *zl = hc_zlist3d->to_zlist();
     zl->add(CurCell(Physical), ld, false, false);
-    zl->free();
+    Zlist::free(zl);
 }
 // End of fhConductor functions.
 

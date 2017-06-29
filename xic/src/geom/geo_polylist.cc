@@ -31,10 +31,10 @@
 // Static functions to create a PolyList from a Zlist.
 //
 PolyList *
-PolyList::new_poly_list(Zlist *zl, bool vert)
+PolyList::new_poly_list(const Zlist *zl, bool vert)
 {
     PolyList *plist = 0, *pe = 0;
-    for (Zlist *z = zl; z; z = z->next) {
+    for (const Zlist *z = zl; z; z = z->next) {
         Poly po;
         if (z->Z.mkpoly(&po.points, &po.numpts, vert)) {
             if (!plist)

@@ -417,19 +417,19 @@ namespace {
         err = (*p->right->evfunc)(p->right, &v[1], datap);
         if (err != OK) {
             if (v[0].type == TYP_ZLIST)
-                v[0].content.zlist->free();
+                Zlist::free(v[0].content.zlist);
             return (err);
         }
         if (v[1].type != TYP_ZLIST && v[1].type != TYP_SCALAR) {
             if (v[0].type == TYP_ZLIST)
-                v[0].content.zlist->free();
+                Zlist::free(v[0].content.zlist);
             return (BAD);
         }
         err = (*p->data.f.function)(res, v, datap);
         if (v[0].type == TYP_ZLIST)
-            v[0].content.zlist->free();
+            Zlist::free(v[0].content.zlist);
         if (v[1].type == TYP_ZLIST)
-            v[1].content.zlist->free();
+            Zlist::free(v[1].content.zlist);
         return (err);
     }
 
@@ -447,7 +447,7 @@ namespace {
             return (BAD);
         err = (*p->data.f.function)(res, &r1, datap);
         if (r1.type == TYP_ZLIST)
-            r1.content.zlist->free();
+            Zlist::free(r1.content.zlist);
         return (err);
     }
 }
@@ -477,16 +477,16 @@ ParseNode::evalTree(SIlexprCx *cx, Zlist **zret, PolarityType retwhich)
         if (v.type == TYP_SCALAR) {
             if (retwhich == PolarityClear) {
                 if (!to_boolean(v.content.value))
-                    *zret = cx->getZref()->copy();
+                    *zret = Zlist::copy(cx->getZref());
             }
             else {
                 if (to_boolean(v.content.value))
-                    *zret = cx->getZref()->copy();
+                    *zret = Zlist::copy(cx->getZref());
             }
         }
         else if (v.type == TYP_ZLIST) {
             if (retwhich == PolarityClear) {
-                *zret = cx->getZref()->copy();
+                *zret = Zlist::copy(cx->getZref());
                 XIrt ret = Zlist::zl_andnot(zret, v.content.zlist);
                 if (ret != XIok)
                     return (ret);

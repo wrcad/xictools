@@ -354,7 +354,7 @@ GEOblock *
 GEOblock::build(Zlist *z0, bool nosort)
 {
     if (!nosort)
-        z0 = z0->sort(1);  // Same order as Ylist in Gen3.
+        z0 = Zlist::sort(z0, 1);  // Same order as Ylist in Gen3.
 
     GEOblock *row0 = 0, *rowe = 0;
     while (z0) {
@@ -427,7 +427,7 @@ GEOblock::~GEOblock()
 {
     if (b_list) {
         if (b_type == GBLKzlist)
-            ((Zlist*)b_list)->free();
+            Zlist::free(((Zlist*)b_list));
         else
             ((GEOblock*)b_list)->free();
     }

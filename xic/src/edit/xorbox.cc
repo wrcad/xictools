@@ -365,12 +365,12 @@ cEdit::xorArea(int x1, int y1, int x2, int y2)
 
     Zoid Z(&AOI);
     Zlist::zl_and(&z0, &Z);
-    z0 = z0->filter_slivers(0);
+    z0 = Zlist::filter_slivers(z0, 0);
     if (!z0)
         return (false);
     Zlist zt(&Z);
 
-    Zlist *zinv = zt.copy();
+    Zlist *zinv = Zlist::copy(&zt);
     XIrt ret = Zlist::zl_andnot(&zinv, z0);
     if (ret != XIok) {
         Errs()->add_error("Error or interrupt during inversion.");

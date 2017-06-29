@@ -1392,16 +1392,16 @@ cExt::isConnection(CDs *sdesc, const sVia *via, const CDo *odv,
             siVariable v;
             cx.enableExceptions(true);
             if ((*via->tree()->evfunc)(via->tree(), &v, &cx) != OK) {
-                zv->free();
+                Zlist::free(zv);
                 return (XIbad);
             }
             cx.enableExceptions(false);
-            zl->free();
+            Zlist::free(zl);
 
             if (v.type == TYP_ZLIST) {
                 zv = v.content.zlist;
                 v.content.zlist = 0;
-                zv = zv->filter_slivers(1);
+                zv = Zlist::filter_slivers(zv, 1);
                 if (!zv)
                     return (XIok);
             }

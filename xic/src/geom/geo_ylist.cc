@@ -48,7 +48,7 @@ Ylist::Ylist(Zlist *z0, bool sub)
             y_yl = z0->Z.yl;
         }
         else {
-            z0 = z0->sort(1);
+            z0 = Zlist::sort(z0, 1);
             y_zlist = z0;
             y_yu = z0->Z.yu;
             y_yl = z0->Z.yl;
@@ -162,7 +162,7 @@ Ylist::copy() const
     for (const Ylist *yl = this; yl; yl = yl->next) {
         Ylist *yn = new Ylist(*yl);
         yn->next = 0;
-        yn->y_zlist = yn->y_zlist->copy();
+        yn->y_zlist = Zlist::copy(yn->y_zlist);
         if (!y0)
             y0 = ye = yn;
         else {
@@ -632,7 +632,7 @@ Ylist::repartition() throw (XIrt)
     }
     catch (XIrt) {
         yl0->free();
-        zl0->free();
+        Zlist::free(zl0);
         throw;
     }
 }
@@ -841,7 +841,7 @@ restart:
             }
         }
         if (rsort)
-            y->y_zlist = y->y_zlist->sort(1);
+            y->y_zlist = Zlist::sort(y->y_zlist, 1);
     }
     return (change);
 }
@@ -906,7 +906,7 @@ Ylist::filter_slivers(int d)
     for (Ylist *y = yl0; y; y = yn) {
         yn = y->next;
 
-        y->y_zlist = y->y_zlist->filter_slivers(d);
+        y->y_zlist = Zlist::filter_slivers(y->y_zlist, d);
         if (!y->y_zlist) {
             if (!yp)
                 yl0 = yn;
@@ -941,7 +941,7 @@ Ylist::clip_to() throw (XIrt)
             if (checkInterrupt()) {
                 delete zl;
                 yl0->free();
-                z0->free();
+                Zlist::free(z0);
                 throw (XIintr);
             }
             Zlist *zret = yl0->clip_to(&zl->Z);
@@ -1049,7 +1049,7 @@ Ylist::clip_to(const Ylist *yl0) const throw (XIrt)
         return (z0);
     }
     catch (XIrt) {
-        z0->free();
+        Zlist::free(z0);
         throw;
     }
 }
@@ -1068,7 +1068,7 @@ Ylist::clip_out() const throw (XIrt)
         for (const Ylist *y = this; y; y = y->next) {
             for (Zlist *z = y->y_zlist; z; z = z->next) {
                 if (checkInterrupt()) {
-                    z0->free();
+                    Zlist::free(z0);
                     throw (XIintr);
                 }
 
@@ -1117,7 +1117,7 @@ Ylist::clip_out() const throw (XIrt)
         return (z0);
     }
     catch (XIrt) {
-        z0->free();
+        Zlist::free(z0);
         throw;
     }
 }
@@ -1261,7 +1261,7 @@ Ylist::clip_out(const Ylist *yr) const throw (XIrt)
         return (z0);
     }
     catch (XIrt) {
-        z0->free();
+        Zlist::free(z0);
         throw;
     }
 }
@@ -1374,7 +1374,8 @@ Ylist::scl_clip_to(Ylist *y) throw (XIrt)
             if (!ya->y_zlist || !yb->y_zlist)
                 ya->set_zlist(0);
             else {
-                Zlist *z0 = band_clip_to(ya->y_zlist, yb->y_zlist)->sort(1);
+                Zlist *z0 = band_clip_to(ya->y_zlist, yb->y_zlist);
+                z0 = Zlist::sort(z0, 1);
                 scl_merge(z0);
                 ya->set_zlist(z0);
             }
@@ -1512,7 +1513,8 @@ Ylist::scl_clip_out() throw (XIrt)
             throw XIintr;
         }
 
-        Zlist *zl = band_clip_out(y->y_zlist)->sort(1);
+        Zlist *zl = band_clip_out(y->y_zlist);
+        zl = Zlist::sort(zl, 1);
         scl_merge(zl);
         y->y_zlist = zl;
     }
@@ -1527,7 +1529,7 @@ namespace {
     //
     Zlist *band_clip_out(const Zlist *zleft, const Zlist *zright)
     {
-        Zlist *z0 = zleft->copy();
+        Zlist *z0 = Zlist::copy(zleft);
         Zlist *zap = 0, *zn;
         for (Zlist *za = z0; za; za = zn) {
             zn = za->next;
@@ -1629,7 +1631,8 @@ Ylist::scl_clip_out(Ylist *y) throw (XIrt)
         }
         if (ya && ya->y_yu == yb->y_yu) {
             if (ya->y_zlist && yb->y_zlist) {
-                Zlist *z0 = band_clip_out(ya->y_zlist, yb->y_zlist)->sort(1);
+                Zlist *z0 = band_clip_out(ya->y_zlist, yb->y_zlist);
+                z0 = Zlist::sort(z0, 1);
                 scl_merge(z0);
                 ya->set_zlist(z0);
             }
@@ -1674,9 +1677,11 @@ Ylist::scl_clip_out2(Ylist **py) throw (XIrt)
         }
         if (ya && ya->y_yu == yb->y_yu) {
             if (ya->y_zlist && yb->y_zlist) {
-                Zlist *z0 = band_clip_out(ya->y_zlist, yb->y_zlist)->sort(1);
+                Zlist *z0 = band_clip_out(ya->y_zlist, yb->y_zlist);
+                z0 = Zlist::sort(z0, 1);
                 scl_merge(z0);
-                Zlist *z1 = band_clip_out(yb->y_zlist, ya->y_zlist)->sort(1);
+                Zlist *z1 = band_clip_out(yb->y_zlist, ya->y_zlist);
+                z1 = Zlist::sort(z1, 1);
                 scl_merge(z1);
                 ya->set_zlist(z0);
                 yb->set_zlist(z1);
@@ -1784,7 +1789,8 @@ Ylist::scl_clip_xor(Ylist *y) throw (XIrt)
                 yb->y_zlist = 0;
             }
             else if (yb->y_zlist) {
-                Zlist *z0 = band_clip_xor(ya->y_zlist, yb->y_zlist)->sort(1);
+                Zlist *z0 = band_clip_xor(ya->y_zlist, yb->y_zlist);
+                z0 = Zlist::sort(z0, 1);
                 scl_merge(z0);
                 ya->set_zlist(z0);
             }
@@ -2376,7 +2382,7 @@ Ylist::first(Zlist **zp)
 void
 Ylist::insert(Zlist *z0)
 {
-    z0 = z0->sort(1);
+    z0 = Zlist::sort(z0, 1);
     Ylist *y = this;
     Zlist *zn, *zp = 0;
     for (Zlist *z = z0; z; zp = z, z = zn) {

@@ -46,7 +46,7 @@ SIlexprCx::~SIlexprCx()
 {
     delete cx_gridCx;
     delete [] cx_db_name;
-    cx_zlSaved->free();
+    Zlist::free(cx_zlSaved);
 }
 
 
@@ -207,8 +207,8 @@ SIlexprCx::getDbZlist(const CDl *ld, const char *name, Zlist **zret)
             if (SIparse()->ifCheckInterrupt())
                 return (XIintr);
 
-            Zlist *zl = db->copy();
-            XIrt ret = Zlist::zl_and(&zl, getZref()->copy());
+            Zlist *zl = Zlist::copy(db);
+            XIrt ret = Zlist::zl_and(&zl, Zlist::copy(getZref()));
             if (ret == XIok)
                 *zret = zl;
             return (ret);

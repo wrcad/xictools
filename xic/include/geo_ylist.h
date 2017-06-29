@@ -47,7 +47,7 @@ struct Ylist
     void operator delete(void*, size_t);
 #endif
     Ylist(Zlist*, bool = false);
-    ~Ylist() { y_zlist->free(); }
+    ~Ylist() { Zlist::free(y_zlist); }
 
     void free()
         {
@@ -72,7 +72,7 @@ struct Ylist
 
     void set_zlist(Zlist *zl)
         {
-            y_zlist->free();
+            Zlist::free(y_zlist);
             y_zlist = zl;
         }
 
@@ -293,10 +293,11 @@ public:
 };
 
 
+// Static function.
+//
 inline Zlist *
-Zlist::repartition() throw (XIrt)
+Zlist::repartition(Zlist *z0) throw (XIrt)
 {
-    Zlist *z0 = this;
     if (!z0 || !z0->next)
         return (z0);
     Ylist *yl = new Ylist(z0);
@@ -304,10 +305,11 @@ Zlist::repartition() throw (XIrt)
 }
 
 
+// Static function.
+//
 inline Zlist *
-Zlist::repartition_ni()
+Zlist::repartition_ni(Zlist *z0)
 {
-    Zlist *z0 = this;
     if (!z0 || !z0->next)
         return (z0);
     Ylist *yl = new Ylist(z0);

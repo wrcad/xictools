@@ -89,7 +89,7 @@ struct RLcontact
 
     ~RLcontact()
         {
-            czl->free();
+            Zlist::free(czl);
             h_edges->free();
             v_edges->free();
         }
