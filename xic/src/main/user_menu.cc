@@ -111,7 +111,7 @@ namespace {
             mbox->menu[i].cmd.caller = 0;
         }
         fill_menu(u0, &mbox->menu[nstatic], "/User", 0);
-        u0->free();
+        umenu::destroy(u0);
     }
 }
 

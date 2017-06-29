@@ -145,7 +145,7 @@ struct SIifel
 
     ~SIifel()
         {
-            text->free();
+            ParseNode::destroy(text);
             children->free();
         }
 

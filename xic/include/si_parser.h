@@ -232,7 +232,7 @@ public:
     ParseNode *MakeBopNode(PTokenType t, ParseNode *pl, ParseNode *pr)
         { return (mkbnode(t, pl, pr)); }
 
-    bool isSubFunc(ParseNode *p)
+    bool isSubFunc(const ParseNode *p)
         { return (p->type == PT_FUNCTION && p->evfunc == pt_switch); }
 
 private:

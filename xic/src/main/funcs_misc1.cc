@@ -5859,7 +5859,7 @@ bool
 misc1_funcs::IFlistFunctions(Variable *res, Variable*, void*)
 {
     umenu *u = XM()->GetFunctionList();
-    u->free();
+    umenu::destroy(u);
     stringlist *s0 = SI()->GetSubfuncList();
     sHdl *hdl = new sHdlString(s0);
     res->type = TYP_HANDLE;

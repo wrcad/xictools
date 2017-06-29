@@ -85,12 +85,11 @@ struct umenu
         {
             delete [] u_name;
             delete [] u_realname;
-            u_menu->free();
+            destroy(u_menu);
         }
 
-    void free()
+    static void destroy(const umenu *u)
         {
-            umenu *u = this;
             while (u) {
                 umenu *un = u->u_next;
                 delete u;
@@ -213,7 +212,8 @@ struct ParseNode
     siVariable *getVar();
     bool istrue(void*);
     bool check();
-    void free();
+
+    static void destroy(const ParseNode*);
 
     // allocator
     static ParseNode *allocate_pnode(PallocMode);

@@ -236,20 +236,21 @@ ParseNode::check()
 }
 
 
+// Static function.
+//
 void
-ParseNode::free()
+ParseNode::destroy(const ParseNode *pn)
 {
-    ParseNode *pnt = this;
-    if (pnt) {
-        if (SIparse()->isSubFunc(this)) {
-            SIfunc *sf = data.f.userfunc;
+    if (pn) {
+        if (SIparse()->isSubFunc(pn)) {
+            SIfunc *sf = pn->data.f.userfunc;
             if (sf)
                 sf->sf_refcnt--;
         }
-        left->free();
-        right->free();
-        next->free();
-        delete this;
+        destroy(pn->left);
+        destroy(pn->right);
+        destroy(pn->next);
+        delete pn;
     }
 }
 

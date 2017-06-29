@@ -864,7 +864,7 @@ sVia::~sVia()
 {
     delete [] v_lname1;
     delete [] v_lname2;
-    v_tree->free();
+    ParseNode::destroy(v_tree);
 }
 
 

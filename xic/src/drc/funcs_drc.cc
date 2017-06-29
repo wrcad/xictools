@@ -1547,11 +1547,11 @@ drc_funcs::IFdrcZlist(Variable *res, Variable *args, void *datap)
         if (pbak) {
             ParseNode *p = td->sourceTree();
             if (pleft) {
-                p->left->free();
+                ParseNode::destroy(p->left);
                 p->left = pbak;
             }
             else {
-                p->right->free();
+                ParseNode::destroy(p->right);
                 p->right = pbak;
             }
         }

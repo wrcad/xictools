@@ -1399,7 +1399,7 @@ SIlocal::get_lib(const char *lpath)
                 }
                 else {
                     if (nametab->get(ux->label()) != ST_NIL) {
-                        ux->free();
+                        umenu::destroy(ux);
                         delete [] val;
                         continue;
                     }
@@ -1423,7 +1423,7 @@ SIlocal::get_lib(const char *lpath)
 
     if (u0) {
         if (!u1) {
-            u0->free();
+            umenu::destroy(u0);
             return (0);
         }
         if (nosort) {

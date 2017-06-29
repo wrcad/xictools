@@ -39,7 +39,7 @@
 
 sLspec::~sLspec()
 {
-    ls_tree->free();
+    ParseNode::destroy(ls_tree);
     delete [] ls_lname;
 }
 
@@ -47,7 +47,7 @@ sLspec::~sLspec()
 void
 sLspec::reset()
 {
-    ls_tree->free();
+    ParseNode::destroy(ls_tree);
     delete [] ls_lname;
     ls_tree = 0;
     ls_ldesc = 0;
@@ -90,7 +90,7 @@ sLspec::parseExpr(const char **line, bool noexp)
             if (!ldo->cellname() && !ldo->stab_name() && ldo->ldesc() &&
                     ldo->ldesc() != CellLayer()) {
                 set_lname(ldo->ldesc()->name());
-                p->free();
+                ParseNode::destroy(p);
                 return (true);
             }
         }
@@ -106,7 +106,7 @@ sLspec::parseExpr(const char **line, bool noexp)
             if (p->data.v->name[0] != '$' || p->data.v->name[1] != '$' ||
                     p->data.v->name[2]) {
                 set_lname(p->data.v->name);
-                p->free();
+                ParseNode::destroy(p);
                 return (true);
             }
         }

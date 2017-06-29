@@ -481,13 +481,13 @@ namespace {
             else if (p->optype == TOK_POWER)
                 lstr.add("'xor");
             else {
-                p->free();
+                ParseNode::destroy(p);
                 return (0);
             }
             lstr.add_c(' ');
             lstr.add(p->right->data.v->content.string);
             lstr.add_c(')');
-            p->free();
+            ParseNode::destroy(p);
             return (lstr.string_trim());
         }
         if (p && p->type == PT_BINOP && p->optype == TOK_AND && p->left &&
@@ -501,10 +501,10 @@ namespace {
             lstr.add(" 'and ");
             lstr.add(p->right->left->data.v->content.string);
             lstr.add_c(')');
-            p->free();
+            ParseNode::destroy(p);
             return (lstr.string_trim());
         }
-        p->free();
+        ParseNode::destroy(p);
         return (0);
     }
 }

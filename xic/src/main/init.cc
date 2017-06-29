@@ -346,7 +346,7 @@ cMain::Rehash()
     else {
         // Read the library files in the script path
         umenu *u = GetFunctionList();
-        u->free();
+        umenu::destroy(u);
     }
 }
 

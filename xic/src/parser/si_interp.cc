@@ -1883,7 +1883,7 @@ SIinterp::set_block(const char **line, int lineno)
                 siVariable r;
                 if ((*pn->evfunc)(pn, &r, &cx) != OK)
                     LineError("exec failed");
-                pn->free();
+                ParseNode::destroy(pn);
             }
             else
                 LineError("parse failed");
@@ -2400,7 +2400,7 @@ SIcontrol::free()
         case CO_WHILE:
         case CO_DOWHILE:
         case CO_RETURN:
-            cc->co_content.text->free();
+            ParseNode::destroy(cc->co_content.text);
             break;
         case CO_IF:
             cc->co_content.ifcond->free();
