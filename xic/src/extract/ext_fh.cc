@@ -756,12 +756,12 @@ fhLayout::setup()
             Zlist *zl = sd->getZlist(CDMAXCALLDEPTH, fld, ref_zlist(), &xret);
             if (!zl)
                 continue;
-            Zgroup *zg = zl->group(0);
+            Zgroup *zg = Zlist::group(zl, 0);
 
             for (int i = 0; i < zg->num; i++) {
                 Zlist *z = zg->list[i];
                 zg->list[i] = 0;
-                PolyList *p0 = z->to_poly_list();
+                PolyList *p0 = Zlist::to_poly_list(z);
                 if (!p0)
                     continue;
 
@@ -1477,7 +1477,7 @@ PolyList *
 fhConductor::polylist()
 {
     Zlist *z0 = hc_zlist3d_ref->to_zlist();
-    return (z0->to_poly_list());
+    return (Zlist::to_poly_list(z0));
 }
 
 
@@ -1577,7 +1577,7 @@ fhConductor::save_zlist_db()
     CDl *ld = CDldb()->newLayer(buf, Physical);
     CurCell(Physical)->db_clear_layer(ld);
     Zlist *zl = hc_zlist3d->to_zlist();
-    zl->add(CurCell(Physical), ld, false, false);
+    Zlist::add(zl, CurCell(Physical), ld, false, false);
     Zlist::free(zl);
 }
 // End of fhConductor functions.

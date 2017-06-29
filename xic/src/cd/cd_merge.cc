@@ -293,22 +293,22 @@ CDs::mergeBoxOrPoly(CDo *odesc, bool Undoable)
             continue;
         }
         if (!p0)
-            p0 = pe = zl0->to_poly_list();
+            p0 = pe = Zlist::to_poly_list(zl0);
         else {
             while (pe->next)
                 pe = pe->next;
-            pe->next = zl0->to_poly_list();
+            pe->next = Zlist::to_poly_list(zl0);
         }
         zl0 = ze = z;
         zcnt = n;
     }
     if (zcnt) {
         if (!p0)
-            p0 = pe = zl0->to_poly_list();
+            p0 = pe = Zlist::to_poly_list(zl0);
         else {
             while (pe->next)
                 pe = pe->next;
-            pe->next = zl0->to_poly_list();
+            pe->next = Zlist::to_poly_list(zl0);
         }
     }
 

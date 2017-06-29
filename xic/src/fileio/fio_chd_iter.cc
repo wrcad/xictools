@@ -940,7 +940,7 @@ namespace {
 
                     unsigned int diffcnt = 0;
                     bool skip = false;
-                    CDo *o1 = z1->to_obj_list(ld);
+                    CDo *o1 = Zlist::to_obj_list(z1, ld);
                     const CDo *on;
                     for (const CDo *o = o1; o; o = on) {
                         on = o->next_odesc();
@@ -963,7 +963,7 @@ namespace {
 
                     diffcnt = 0;
                     skip = false;
-                    CDo *o2 = z2->to_obj_list(ld);
+                    CDo *o2 = Zlist::to_obj_list(z2, ld);
                     for (const CDo *o = o2; o; o = on) {
                         on = o->next_odesc();
                         if (!skip) {

@@ -254,7 +254,6 @@ struct Poly
     Poly *clip_acute(int) const;
     edg_t *edges() const;
     Zlist *halo(int) const;
-    double ext_perim(const BBox* = 0) const;
     Zlist *ext_zoids(int, int) const;
 
     // geo_ptozl.cc

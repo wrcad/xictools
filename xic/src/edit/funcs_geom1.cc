@@ -2494,7 +2494,7 @@ geom1_funcs::IFbloatObjects(Variable *res, Variable *args, void*)
                 SI()->SetInterrupt();
                 return (OK);
             }
-            PolyList *p0 = zl0->to_poly_list();
+            PolyList *p0 = Zlist::to_poly_list(zl0);
             CDol *o0 = p0->to_olist(ldset ? ldset : ldfirst);
             if (o0) {
                 sHdl *hnew = new sHdlObject(o0, cursd, true);
@@ -2618,7 +2618,7 @@ geom1_funcs::IFedgeObjects(Variable *res, Variable *args, void*)
             }
         }
         if (zl0) {
-            PolyList *p0 = zl0->to_poly_list();
+            PolyList *p0 = Zlist::to_poly_list(zl0);
             CDol *o0 = p0->to_olist(ldset ? ldset : ldfirst);
             if (o0) {
                 sHdl *hnew = new sHdlObject(o0, cursd, true);
@@ -2716,7 +2716,7 @@ geom1_funcs::IFmanhattanizeObjects(Variable *res, Variable *args, void*)
             CDl *ld = ldset ? ldset : ol->odesc->ldesc();
             Zlist *z = ol->odesc->toZlist();
             z = Zlist::manhattanize(z, bsize, mode);
-            PolyList *p0 = z->to_poly_list();
+            PolyList *p0 = Zlist::to_poly_list(z);
             if (!o0)
                 o0 = p0->to_olist(ld, &oe);
             else
@@ -2798,7 +2798,7 @@ geom1_funcs::IFgroupObjects(Variable *res, Variable *args, void*)
             ol = ol->next;
         }
         if (zl0) {
-            Zgroup *g = zl0->group(Zlist::JoinMaxGroup);
+            Zgroup *g = Zlist::group(zl0, Zlist::JoinMaxGroup);
             if (ADATA(args[1].content.a)->resize(g->num) == BAD) {
                 delete g;
                 return (OK);
@@ -2898,11 +2898,11 @@ geom1_funcs::IFjoinObjects(Variable *res, Variable *args, void*)
                     continue;
                 }
                 if (!p0)
-                    p0 = pe = zl0->to_poly_list();
+                    p0 = pe = zl0->Zlist::to_poly_list(zl0);
                 else {
                     while (pe->next)
                         pe = pe->next;
-                    pe->next = zl0->to_poly_list();
+                    pe->next = Zlist::to_poly_list(zl0);
                 }
                 zl0 = ze = z;
                 zcnt = n;
@@ -2911,11 +2911,11 @@ geom1_funcs::IFjoinObjects(Variable *res, Variable *args, void*)
         }
         if (zcnt) {
             if (!p0)
-                p0 = pe = zl0->to_poly_list();
+                p0 = pe = Zlist::to_poly_list(zl0);
             else {
                 while (pe->next)
                     pe = pe->next;
-                pe->next = zl0->to_poly_list();
+                pe->next = Zlist::to_poly_list(zl0);
             }
         }
         CDol *o0 = p0->to_olist(ldset ? ldset : ldfirst);

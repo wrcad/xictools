@@ -814,7 +814,7 @@ pathfinder::atomize_path()
             CDl *ld = ox->ldesc();
             delete ox;
             if (zl) {
-                CDo *odnew = zl->to_obj_list(ld, true);
+                CDo *odnew = Zlist::to_obj_list(zl, ld, true);
                 while (odnew) {
                     ox = odnew;
                     odnew = odnew->next_odesc();
@@ -1126,7 +1126,7 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
                                 break;
                             }
                             if (zx) {
-                                PolyList *pl = zx->to_poly_list();
+                                PolyList *pl = Zlist::to_poly_list(zx);
                                 CDo *od = pl->to_odesc(ldtmp);
                                 CDo *on;
                                 for ( ; od; od = on) {
@@ -1161,7 +1161,7 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
         // coincident via objects generated from multiple Via lines on
         // a layer.
 
-        PolyList *po = zv0->to_poly_list();
+        PolyList *po = Zlist::to_poly_list(zv0);
         CDo *od = po->to_odesc(ld);
 
         CDo *on;

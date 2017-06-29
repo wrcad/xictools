@@ -122,7 +122,7 @@ Zgroup::mk_cell(CDl *ld)
         return (0);
     CDs *sd = new CDs(0, Physical);
     for (int i = 0; i < num; i++) {
-        PolyList *pl = list[i]->to_poly_list();
+        PolyList *pl = Zlist::to_poly_list(list[i]);
         list[i] = 0;
         for (PolyList *p = pl; p; p = p->next) {
             // There should be only one polygon in the list.

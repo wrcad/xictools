@@ -512,7 +512,7 @@ CDdiff::diff_layer(CDl *ldesc, const CDs *s1, const CDs *s2, Ldiff **lret)
                 }
 
                 bool skip = false;
-                CDo *o1 = z1->to_obj_list(ldesc), *on;
+                CDo *o1 = Zlist::to_obj_list(z1, ldesc), *on;
                 for (CDo *o = o1; o; o = on) {
                     on = o->next_odesc();
                     if (!skip) {
@@ -532,7 +532,7 @@ CDdiff::diff_layer(CDl *ldesc, const CDs *s1, const CDs *s2, Ldiff **lret)
                 if (skip)
                     break;
 
-                CDo *o2 = z2->to_obj_list(ldesc);
+                CDo *o2 = Zlist::to_obj_list(z2, ldesc);
                 for (CDo *o = o2; o; o = on) {
                     on = o->next_odesc();
                     if (!skip) {

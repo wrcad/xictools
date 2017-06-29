@@ -47,7 +47,7 @@ namespace {
         if (!cursd)
             return (0);
         Zlist *z0 = 0;
-        CDl *ld = Zlist::copy(zl)->to_temp_layer(DRC_TMPLYR,
+        CDl *ld = Zlist::to_temp_layer(Zlist::copy(zl), DRC_TMPLYR,
             TTLinternal | TTLnoinsert | TTLjoin, cursd, retp);
         if (*retp != XIok)
             return (0);

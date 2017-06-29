@@ -377,7 +377,7 @@ cEdit::xorArea(int x1, int y1, int x2, int y2)
         Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
     }
     else {
-        PolyList *p0 = zinv->to_poly_list();
+        PolyList *p0 = Zlist::to_poly_list(zinv);
 
         for (PolyList *p = p0; p; p = p->next) {
             if (p->po.is_rect()) {

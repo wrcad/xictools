@@ -716,13 +716,13 @@ RLsolver::solve_multi(int *gmat_size, float **gmat)
 void
 RLsolver::setup_edges()
 {
-    PolyList *pl = Zlist::copy(rl_zlist)->to_poly_list();
+    PolyList *pl = Zlist::to_poly_list(Zlist::copy(rl_zlist));
     rl_h_edges = to_edges(pl, false);
     rl_v_edges = to_edges(pl, true);
     pl->free();
 
     for (int i = 0; i < rl_num_contacts; i++) {
-        pl = Zlist::copy(rl_contacts[i].czl)->to_poly_list();
+        pl = Zlist::to_poly_list(Zlist::copy(rl_contacts[i].czl));
         rl_contacts[i].h_edges = to_edges(pl, false);
         rl_contacts[i].v_edges = to_edges(pl, true);
         pl->free();
@@ -1032,7 +1032,7 @@ MRsolver::load_path(CDol *ol)
 bool
 MRsolver::add_terminal(Zlist *zt)
 {
-    PolyList *p0 = Zlist::copy(zt)->to_poly_list();
+    PolyList *p0 = Zlist::to_poly_list(Zlist::copy(zt));
     if (!p0) {
         Errs()->add_error("add_terminal: no poly for terminal.");
         return (false);
@@ -1099,7 +1099,7 @@ MRsolver::find_vias()
             }
             Zlist::free(z1);
 
-            PolyList *p0 = z2->to_poly_list();
+            PolyList *p0 = Zlist::to_poly_list(z2);
 
             if (via->tree()) {
                 PolyList *pn, *pp = 0;
@@ -1159,7 +1159,7 @@ MRsolver::find_vias()
             int tv = Zlist::JoinMaxVerts;
             Zlist::JoinMaxGroup = 0;
             Zlist::JoinMaxVerts = 0;
-            PolyList *p0 = z0->to_poly_list();
+            PolyList *p0 = Zlist::to_poly_list(z0);
             Zlist::JoinMaxGroup = tg;
             Zlist::JoinMaxVerts = tv;
 

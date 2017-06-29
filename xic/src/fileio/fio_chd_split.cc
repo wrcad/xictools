@@ -985,7 +985,7 @@ mpx_out::write_poly(const Poly *poly)
                 yl->free();
 
                 if (zl) {
-                    PolyList *pl = zl->to_poly_list();
+                    PolyList *pl = Zlist::to_poly_list(zl);
                     for (PolyList *p = pl; p; p = p->next) {
                         if (p->po.is_rect()) {
                             BBox BBb(p->po.points);
@@ -1035,7 +1035,7 @@ mpx_out::write_wire(const Wire *wire)
                 yl->free();
 
                 if (zl) {
-                    PolyList *pl = zl->to_poly_list();
+                    PolyList *pl = Zlist::to_poly_list(zl);
                     for (PolyList *p = pl; p; p = p->next) {
                         if (p->po.is_rect()) {
                             BBox BBb(p->po.points);
@@ -1707,7 +1707,7 @@ mpx_flat_out::write_poly(const Poly *poly)
                 yl->free();
 
                 if (zl) {
-                    PolyList *pl = zl->to_poly_list();
+                    PolyList *pl = Zlist::to_poly_list(zl);
                     for (PolyList *p = pl; p; p = p->next) {
                         if (p->po.is_rect()) {
                             BBox BBb(p->po.points);
@@ -1751,7 +1751,7 @@ mpx_flat_out::write_wire(const Wire *wire)
                 yl->free();
 
                 if (zl) {
-                    PolyList *pl = zl->to_poly_list();
+                    PolyList *pl = Zlist::to_poly_list(zl);
                     for (PolyList *p = pl; p; p = p->next) {
                         if (p->po.is_rect()) {
                             BBox BBb(p->po.points);

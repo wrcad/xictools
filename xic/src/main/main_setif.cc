@@ -211,7 +211,7 @@ namespace {
     {
         CDl *ld = CDldb()->newLayer(lname, Physical);
         if (ld)
-            zl->add(CurCell(), ld, false, false);
+            Zlist::add(zl, CurCell(), ld, false, false);
     }
 
     void ifShowAndPause(const char *prompt)

@@ -129,10 +129,11 @@ cEdit::eraseUnder()
     if (!zs0)
         return;
 
-    if (DSP()->CurMode() == Electrical && DSP()->ShowTerminals())
+    if (DSP()->CurMode() == Electrical && DSP()->ShowTerminals()) {
         // These might be deleted
         DSP()->ShowCellTerminalMarks(ERASE);
-    PolyList *ps = zs0->to_poly_list();
+    }
+    PolyList *ps = Zlist::to_poly_list(zs0);
 
     for (PolyList *pl = ps; pl; pl = pl->next) {
 
@@ -179,7 +180,7 @@ cEdit::eraseUnder()
                 }
             }
             if (z0) {
-                PolyList *p0 = z0->to_poly_list();
+                PolyList *p0 = Zlist::to_poly_list(z0);
                 for (PolyList *pp = p0; pp; pp = pp->next)
                     cursd->newPoly(0, &pp->po, ld, 0, true);
                 p0->free();
@@ -1273,7 +1274,7 @@ poly:
             }
         }
 #else
-        PolyList *p0 = zl->to_poly_list();
+        PolyList *p0 = Zlist::to_poly_list(zl);
         for (PolyList *p = p0; p; p = p->next) {
             CDpo *newo = sdesc->newPoly(0, &p->po, odesc->ldesc(),
                 odesc->prpty_list(), false);
@@ -1414,7 +1415,7 @@ poly:
             }
         }
 #else
-        PolyList *p0 = zl->to_poly_list();
+        PolyList *p0 = Zlist::to_poly_list(zl);
         for (PolyList *p = p0; p; p = p->next) {
             CDpo *newo = sdesc->newPoly(0, &p->po, odesc->ldesc(),
                     odesc->prpty_list(), false);
@@ -1535,7 +1536,7 @@ poly:
             Zlist::zl_andnot(&zl, &Z);
         else
             Zlist::zl_and(&zl, &Z);
-        PolyList *p0 = zl->to_poly_list();
+        PolyList *p0 = Zlist::to_poly_list(zl);
         for (PolyList *p = p0; p; p = p->next) {
             for (int i = 0; i < p->po.numpts; i++) {
                 p->po.points[i].x -= AOI->left;

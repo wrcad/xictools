@@ -2145,7 +2145,7 @@ lexpr_funcs::IFzToObjects(Variable *res, Variable *args, void *datap)
     CDol *o0 = 0, *oend = 0;
     if (join) {
         Zlist *zl1 = Zlist::copy(zl);
-        PolyList *p0 = zl1->to_poly_list();
+        PolyList *p0 = Zlist::to_poly_list(zl1);
         if (!todb) {
             if (!o0)
                 o0 = p0->to_olist(ldesc, &oend);
@@ -2272,8 +2272,8 @@ lexpr_funcs::IFzToTempLayer(Variable *res, Variable *args, void *datap)
         int flags = TTLinternal;
         if (join)
             flags |= TTLjoin;
-        ld = zl->to_temp_layer(name, flags, SIparse()->ifGetCurPhysCell(),
-            &ret);
+        ld = Zlist::to_temp_layer(zl, name, flags,
+            SIparse()->ifGetCurPhysCell(), &ret);
         if (ret != XIok) {
             if (ret == XIbad)
                 return (BAD);
@@ -2505,7 +2505,8 @@ lexpr_funcs::IFreadZfile(Variable *res, Variable *args, void*)
                 if (!ld)
                     return (BAD);
                 if (z0) {
-                    z0->add(SIparse()->ifGetCurPhysCell(), ld, false, false);
+                    Zlist::add(z0, SIparse()->ifGetCurPhysCell(), ld, false,
+                        false);
                     Zlist::free(z0);
                     z0 = ze = 0;
                 }
@@ -2530,7 +2531,7 @@ lexpr_funcs::IFreadZfile(Variable *res, Variable *args, void*)
             if (!ld && !lcnt)
                 ld = SIparse()->ifGetCurLayer();
             if (ld)
-                z0->add(SIparse()->ifGetCurPhysCell(), ld, false, false);
+                Zlist::add(z0, SIparse()->ifGetCurPhysCell(), ld, false, false);
             Zlist::free(z0);
         }
         fclose(fp);
@@ -2728,7 +2729,7 @@ lexpr_funcs::IFfilt(Variable *res, Variable *args, void *datap)
         cx = SI()->LexprCx();
     if (!free_zl)
         zl = Zlist::copy(zl);
-    Zgroup *zg = zl->group();
+    Zgroup *zg = Zlist::group(zl);
 
     for (int i = 0; i < zg->num; i++) {
         const Zlist *tzref = cx->getZref();

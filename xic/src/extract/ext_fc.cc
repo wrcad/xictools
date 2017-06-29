@@ -1173,7 +1173,7 @@ namespace {
         sprintf(buf, "%s%s%d", s1, s2, i);
         CDl *ld = CDldb()->newLayer(buf, Physical);
         CurCell(Physical)->db_clear_layer(ld);
-        zl->add(CurCell(Physical), ld, false, false);
+        Zlist::add(zl, CurCell(Physical), ld, false, false);
     }
 
 
@@ -1183,7 +1183,7 @@ namespace {
         sprintf(buf, "g%d%s%d", g, s2, i);
         CDl *ld = CDldb()->newLayer(buf, Physical);
         CurCell(Physical)->db_clear_layer(ld);
-        zl->add(CurCell(Physical), ld, false, false);
+        Zlist::add(zl, CurCell(Physical), ld, false, false);
     }
 }
 

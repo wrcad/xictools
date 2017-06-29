@@ -115,7 +115,7 @@ namespace {
             }
             if (!z0)
                 break;
-            XIrt ret = z0->to_poly_add(cursd, ld, true);
+            XIrt ret = Zlist::to_poly_add(z0, cursd, ld, true);
             if (ret != XIok) {
                 DSP()->SetInterrupt(DSPinterNone);
                 Ulist()->RestoreObjects();

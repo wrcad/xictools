@@ -586,7 +586,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
                                 break;
                             }
                             if (zx) {
-                                PolyList *pl = zx->to_poly_list();
+                                PolyList *pl = Zlist::to_poly_list(zx);
                                 CDo *od = pl->to_odesc(ldtmp);
 
                                 if (od) {
@@ -630,7 +630,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
         // coincident via objects generated from multiple Via lines on
         // a layer.
 
-        PolyList *po = zv0->to_poly_list();
+        PolyList *po = Zlist::to_poly_list(zv0);
         CDo *od = po->to_odesc(ld);
 
         if (od) {

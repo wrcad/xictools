@@ -1131,7 +1131,7 @@ cDRC::objectRules(const CDo *odesc, const BBox *AOI, DRCerrRet **erptr,
             Zlist *zl = odesc->toZlist();
             Zoid Zc(AOI);
             Zlist::zl_and(&zl, &Zc);
-            PolyList *p0 = zl->to_poly_list();
+            PolyList *p0 = Zlist::to_poly_list(zl);
             drc_obj_type = odesc->type();
             for (PolyList *p = p0; p; p = p->next) {
 

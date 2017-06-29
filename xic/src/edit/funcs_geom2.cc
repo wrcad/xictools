@@ -1548,7 +1548,7 @@ namespace {
                     // o is now freed
 
                     if (zo) {
-                        PolyList *p0 = zo->to_poly_list(), *pn;
+                        PolyList *p0 = Zlist::to_poly_list(zo), *pn;
                         for (PolyList *pp = p0; pp; pp = pn) {
                             pn = pp->next;
                             CDo *newo = 0;
@@ -1651,7 +1651,7 @@ namespace {
                     }
                     if (zo) {
                         CDl *ld = ldesc ? ldesc : o->odesc->ldesc();
-                        PolyList *p0 = zo->to_poly_list();
+                        PolyList *p0 = Zlist::to_poly_list(zo);
                         if (!o0)
                             o0 = p0->to_olist(ld, &oend); 
                         else
@@ -1746,7 +1746,7 @@ namespace {
                     // o is now freed
 
                     if (zo) {
-                        PolyList *p0 = zo->to_poly_list(), *pn;
+                        PolyList *p0 = Zlist::to_poly_list(zo), *pn;
                         for (PolyList *pp = p0; pp; pp = pn) {
                             pn = pp->next;
                             CDo *newo = 0;
@@ -1880,7 +1880,7 @@ namespace {
 
                     if (zo) {
                         CDl *ld = ldesc ? ldesc : o->odesc->ldesc();
-                        PolyList *p0 = zo->to_poly_list();
+                        PolyList *p0 = Zlist::to_poly_list(zo);
                         if (!o0)
                             o0 = p0->to_olist(ld, &oend);
                         else
@@ -2158,7 +2158,7 @@ geom2_funcs::IFclipObjects(Variable *res, Variable *args, void*)
                     Ulist()->RecordObjectChange(sdesc, o->odesc, 0);
                 }
                 if (merge) {
-                    PolyList *p0 = zl->to_poly_list();
+                    PolyList *p0 = Zlist::to_poly_list(zl);
                     for (PolyList *pp = p0; pp; pp = pp->next) {
                         CDo *newo = sdesc->newPoly(0, &pp->po, ld, 0, false);
                         if (newo) {
@@ -2334,14 +2334,14 @@ geom2_funcs::IFclipIntersectCopy(Variable *res, Variable *args, void*)
 
         CDol *o0 = 0, *oend = 0;
         if (zl1) {
-            PolyList *p0 = zl1->to_poly_list();
+            PolyList *p0 = Zlist::to_poly_list(zl1);
             if (!o0)
                 o0 = p0->to_olist(ldesc, &oend); 
             else
                 p0->to_olist(ldesc, &oend); 
         }
         if (zl2) {
-            PolyList *p0 = zl2->to_poly_list();
+            PolyList *p0 = Zlist::to_poly_list(zl2);
             if (!o0)
                 o0 = p0->to_olist(ldesc, &oend); 
             else

@@ -1847,7 +1847,7 @@ namespace {
                 y = new Ylist(y->repartition_ni());
             else if (!strcmp(s, "wp")) {
                 z0 = y->to_zlist();
-                PolyList *pl0 = z0->to_poly_list();
+                PolyList *pl0 = Zlist::to_poly_list(z0);
                 for (PolyList *p = pl0; p; p = p->next)
                     cursd->newPoly(0, &p->po, oo->ldesc(), 0, false);
                 pl0->free();

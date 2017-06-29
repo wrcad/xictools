@@ -698,7 +698,7 @@ cGroupDesc::process_exclude()
                     // Mark as not included.
                     odesc->set_group(-1);
 
-                    CDo *od = zx->to_obj_list(ld);
+                    CDo *od = Zlist::to_obj_list(zx, ld);
                     if (!od)
                         continue;
 

@@ -2840,7 +2840,7 @@ sMprim::cAP(sDevInst *di)
             mp_variable->content.value = Zlist::area(z0);
         if (do_perim) {
             int perim = 0;
-            PolyList *pl = z0->to_poly_list();
+            PolyList *pl = Zlist::to_poly_list(z0);
             for (PolyList *p = pl; p; p = p->next)
                 perim += p->po.perim();
             pl->free();
@@ -2855,7 +2855,7 @@ sMprim::cAP(sDevInst *di)
     // same group for devices of the same type.
 
     // Separate the trapezoids into mutually-connected groups.
-    Zgroup *zg = z0->group();
+    Zgroup *zg = Zlist::group(z0);
 
     // We're going to count the contact areas of the present contact,
     // and other contacts, that intersect each group.
@@ -3986,7 +3986,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
         return (ret);
     if (!zret)
         return (XIok);
-    Zgroup *g = zret->group();
+    Zgroup *g = Zlist::group(zret);
 
     // Look for those that overlap AOI, if AOI given.
     if (AOI) {
@@ -4164,7 +4164,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
             area /= (CDphysResolution*CDphysResolution);
         }
         else {
-            mindim = g->list[i]->linewidth();
+            mindim = Zlist::linewidth(g->list[i]);
             area = Zlist::area(g->list[i]);
         }
         d->set_bmindim(mindim);
@@ -4206,7 +4206,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
         }
 
         Poly po;
-        g->list[i] = g->list[i]->to_poly(&po.points, &po.numpts);
+        g->list[i] = Zlist::to_poly(g->list[i], &po.points, &po.numpts);
         // g->list[i] should be 0, any return is ignored
         d->set_bperim(po.perim());
         delete [] po.points;
@@ -4324,7 +4324,7 @@ sDevDesc::identify_contact(CDs *sdesc, sDevInst *d, Zlist **zbbp,
     }
     if (!zret)
         return (0);
-    Zgroup *gc = zret->group();
+    Zgroup *gc = Zlist::group(zret);
 
     // Bloat the device body if bloating.  Device contacts must
     // touch or intersect the (possibly bloated) body.
@@ -4422,7 +4422,7 @@ sDevDesc::identify_bulk_contact(CDs *sdesc, sDevInst *d, sDevContactDesc *c,
         }
         return (0);
     }
-    Zgroup *gc = zret->group();
+    Zgroup *gc = Zlist::group(zret);
 
     // Find the "closest" contact area.
     double dst = -1;
@@ -5915,7 +5915,7 @@ sDevInst::setup_squares(bool lmode) const
         // can happen with odd shaped devices whose BB covers part of
         // another device.
         //
-        Zgroup *g = zlist->group();
+        Zgroup *g = Zlist::group(zlist);
         zlist = 0;
         if (g->num > 1) {
             for (int i = 0; i < g->num; i++) {

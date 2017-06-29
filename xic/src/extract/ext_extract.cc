@@ -767,7 +767,7 @@ cGroupDesc::compute_cap()
             for (int itmp = 0; itmp < numl; itmp++) {
                 if (heads[itmp]) {
                     CDl *ld = CDldb()->layer(itmp, Physical);
-                    PolyList *p0 = heads[itmp]->to_poly_list();
+                    PolyList *p0 = Zlist::to_poly_list(heads[itmp]);
                     heads[itmp] = 0;
                     for (PolyList *p = p0; p; p = p->next) {
                         cap += p->po.area() * tech_prm(ld)->cap_per_area() +

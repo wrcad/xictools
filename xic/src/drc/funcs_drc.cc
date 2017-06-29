@@ -1437,7 +1437,7 @@ drc_funcs::IFdrcZlist(Variable *res, Variable *args, void *datap)
         if (!orig)
             zsrc = Zlist::copy(zsrc);
         XIrt ret;
-        ld = zsrc->to_temp_layer(DRC_TMPLYR,
+        ld = Zlist::to_temp_layer(zsrc, DRC_TMPLYR,
             TTLinternal | TTLnoinsert | TTLjoin, cursdp, &ret);
         if (ret != XIok)
             return (BAD);
@@ -1643,7 +1643,7 @@ drc_funcs::IFdrcZlistEx(Variable *res, Variable *args, void *datap)
     if (!orig)
         zsrc = Zlist::copy(zsrc);
     XIrt xrt;
-    CDl *ld = zsrc->to_temp_layer(DRC_TMPLYR,
+    CDl *ld = Zlist::to_temp_layer(zsrc, DRC_TMPLYR,
         TTLinternal | TTLnoinsert | TTLjoin, cursdp, &xrt);
     if (xrt != XIok)
         return (BAD);

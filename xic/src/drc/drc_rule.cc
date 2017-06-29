@@ -2082,7 +2082,7 @@ DRCtestDesc::testPoly_MinArea(PolyObj *dpo, const CDl *ldtarget,
                 delete odesc;
             }
             zx0 = Zlist::repartition_ni(zx0);
-            Zgroup *zg = zx0->group();
+            Zgroup *zg = Zlist::group(zx0);
             double a = 0.0;
             if (zg->num == 1)
                 a = Zlist::area(zg->list[0]);
@@ -2438,7 +2438,7 @@ DRCtestDesc::expandRegions(PolyObj *drcpo)
     Zlist *z0;
     SIlexprCx cx(cursdp, CDMAXCALLDEPTH, drcpo->zlist());
     if (td_source.getZlist( &cx, &z0) == XIok)
-        return (z0->to_poly_list());
+        return (Zlist::to_poly_list(z0));
     return (0);
 }
 

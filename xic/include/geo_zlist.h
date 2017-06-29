@@ -231,19 +231,19 @@ struct Zlist
     static Zlist *wire_edges(const Zlist*, int) throw (XIrt);
     static Zlist *manhattanize(Zlist*, int, int);
     static Zlist *transform(const Zlist*, cTfmStack*);
-    int linewidth() const;
-    double ext_perim(const BBox* = 0) const;
-    edg_t *ext_edges() const;
-    Zlist *ext_zoids(int, int) const;
-    Zgroup *group(int = 0);
-    CDl *to_temp_layer(const char*, int, CDs*, XIrt*);
-    Zlist *to_poly(Point**, int*);
-    PolyList *to_poly_list();
-    XIrt to_poly_add(CDs*, CDl*, bool, const cTfmStack* = 0, bool = false);
-    CDo *to_obj_list(CDl*, bool = false);
-    void add(CDs*, CDl*, bool, bool = false) const;
-    void add_r(CDs*, CDl*, bool, bool = false) const;
-    Zlist *to_r();
+    static int linewidth(const Zlist*);
+    static edg_t *ext_edges(const Zlist*);
+    static Zlist *ext_zoids(const Zlist*, int, int);
+    static Zgroup *group(Zlist*, int = 0);
+    static CDl *to_temp_layer(Zlist*, const char*, int, CDs*, XIrt*);
+    static Zlist *to_poly(Zlist*, Point**, int*);
+    static PolyList *to_poly_list(Zlist*);
+    static XIrt to_poly_add(Zlist*, CDs*, CDl*, bool, const cTfmStack* = 0,
+        bool = false);
+    static CDo *to_obj_list(Zlist*, CDl*, bool = false);
+    static void add(const Zlist*, CDs*, CDl*, bool, bool = false);
+    static void add_r(const Zlist*, CDs*, CDl*, bool, bool = false);
+    static Zlist *to_r(Zlist*);
 
     static void reset_join_params();
 

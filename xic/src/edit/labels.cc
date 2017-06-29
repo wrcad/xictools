@@ -1500,7 +1500,7 @@ label::write_logo(const cTfmStack *tstk, CDl *ld, const char *string,
         }
 
         Zlist *z = xpm_to_zlist(string, width, xos, yos);
-        PolyList *plist = z->to_poly_list();
+        PolyList *plist = Zlist::to_poly_list(z);
         for (PolyList *p = plist; p; p = p->next) {
             tstk->TPath(p->po.numpts, p->po.points);
             cursd->newPoly(0, &p->po, ld, 0, false);
@@ -1610,7 +1610,7 @@ label::write_logofile(FILE *fp, const char *name, const char *string,
         int xos = width;
 
         Zlist *z = xpm_to_zlist(string, width, xos, yos);
-        PolyList *plist = z->to_poly_list();
+        PolyList *plist = Zlist::to_poly_list(z);
         for (PolyList *p = plist; p; p = p->next)
             Gen.Polygon(fp, p->po.points, p->po.numpts);
         plist->free();
@@ -1798,9 +1798,9 @@ label::string_to_polys(const char *string, int d, int x, int y, int lwid,
         Zlist *z = char_to_zlist(*s, d, x, y);
         if (z) {
             if (!p0)
-                p0 = pe = z->to_poly_list();
+                p0 = pe = Zlist::to_poly_list(z);
             else
-                pe->next = z->to_poly_list();
+                pe->next = Zlist::to_poly_list(z);
             while (pe->next)
                 pe = pe->next;
         }
@@ -2266,7 +2266,7 @@ LabelState::show_logo(WindowDesc *wdesc, char *label, int x, int y,
             if (!Plist || Xos != xos || Yos != yos || Pwidth != pw) {
                 Plist->free();
                 Zlist *z = label::xpm_to_zlist(label, pw, xos, yos);
-                Plist = z->to_poly_list();
+                Plist = Zlist::to_poly_list(z);
                 Xos = xos;
                 Yos = yos;
                 Pwidth = pw;

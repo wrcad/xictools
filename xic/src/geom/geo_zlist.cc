@@ -323,7 +323,7 @@ Zlist::bloat(const Zlist *thiszl, int delta, int blflags) throw (XIrt)
                 throw;
             }
         }
-        Zlist *z0 = zt->ext_zoids(delta, blflags);
+        Zlist *z0 = ext_zoids(zt, delta, blflags);
 
         if (blflags & BL_EDGE_ONLY) {
             free(zt);
@@ -365,7 +365,7 @@ Zlist::bloat(const Zlist *thiszl, int delta, int blflags) throw (XIrt)
         }
     }
     else if (blflags & BL_EDGE_ONLY) {
-        Zgroup *g = zt->group(0);
+        Zgroup *g = group(zt, 0);
         for (int i = 0; i < g->num; i++) {
             Zlist *zx = g->list[i];
             if (!(blflags & BL_NO_MERGE_IN)) {
@@ -378,7 +378,7 @@ Zlist::bloat(const Zlist *thiszl, int delta, int blflags) throw (XIrt)
                     throw;
                 }
             }
-            g->list[i] = zx->ext_zoids(delta, blflags);
+            g->list[i] = ext_zoids(zx, delta, blflags);
             free(zx);
         }
         zt = g->zoids();
@@ -392,7 +392,7 @@ Zlist::bloat(const Zlist *thiszl, int delta, int blflags) throw (XIrt)
         }
     }
     else if (delta > 0) {
-        Zgroup *g = zt->group(0);
+        Zgroup *g = group(zt, 0);
         for (int i = 0; i < g->num; i++) {
             Zlist *zx = g->list[i];
             if (!(blflags & BL_NO_MERGE_IN)) {
@@ -405,7 +405,7 @@ Zlist::bloat(const Zlist *thiszl, int delta, int blflags) throw (XIrt)
                     throw;
                 }
             }
-            g->list[i] = zx->ext_zoids(delta, blflags);
+            g->list[i] = ext_zoids(zx, delta, blflags);
             Zlist *zn = g->list[i];
             if (!zn)
                 zn = zx;
@@ -424,7 +424,7 @@ Zlist::bloat(const Zlist *thiszl, int delta, int blflags) throw (XIrt)
         }
     }
     else {
-        Zgroup *g = zt->group(0);
+        Zgroup *g = group(zt, 0);
         for (int i = 0; i < g->num; i++) {
             Zlist *zx = g->list[i];
             if (!(blflags & BL_NO_MERGE_IN)) {
@@ -439,7 +439,7 @@ Zlist::bloat(const Zlist *thiszl, int delta, int blflags) throw (XIrt)
             }
             if (blflags & BL_SCALE_FIX) {
                 try {
-                    Zlist *zedg = zx->ext_zoids(delta, blflags);
+                    Zlist *zedg = ext_zoids(zx, delta, blflags);
 
                     expand_by_2(zedg);
                     expand_by_2(zx);
@@ -459,7 +459,7 @@ Zlist::bloat(const Zlist *thiszl, int delta, int blflags) throw (XIrt)
                 }
             }
             else {
-                Zlist *zedg = zx->ext_zoids(delta, blflags);
+                Zlist *zedg = ext_zoids(zx, delta, blflags);
                 XIrt ret = zl_andnot(&zx, zedg);
                 if (ret != XIok) {
                     g->list[i] = 0;
@@ -498,7 +498,8 @@ Zlist::halo(const Zlist *thiszl, int delta) throw (XIrt)
     int tv = JoinMaxVerts;
     JoinMaxGroup = 0;
     JoinMaxVerts = 0;
-    PolyList *p0 = copy(thiszl)->to_poly_list();
+//XXX copy?
+    PolyList *p0 = to_poly_list(copy(thiszl));
     JoinMaxGroup = tg;
     JoinMaxVerts = tv;
 
@@ -653,7 +654,8 @@ Zlist::wire_edges(const Zlist *thiszl, int delta) throw (XIrt)
     int tv = JoinMaxVerts;
     JoinMaxGroup = 0;
     JoinMaxVerts = 0;
-    PolyList *p0 = copy(thiszl)->to_poly_list();
+//XXX copy?
+    PolyList *p0 = to_poly_list(copy(thiszl));
     JoinMaxGroup = tg;
     JoinMaxVerts = tv;
 
@@ -921,6 +923,7 @@ Zlist::transform(const Zlist *thiszl, cTfmStack *tstk)
 }
 
 
+// Static function.
 // This will attempt to find the linewidth of collection of
 // trapezoids.  The algorithm is to create a histogram of the height
 // and mid-height width of each zoid.  The value with the longest run
@@ -928,22 +931,20 @@ Zlist::transform(const Zlist *thiszl, cTfmStack *tstk)
 // value is chosen.
 //
 int
-Zlist::linewidth() const
+Zlist::linewidth(const Zlist *thiszl)
 {
-    {
-        const Zlist *zt = this;
-        if (!zt)
-            return (0);
-    }
+    if (!thiszl)
+        return (0);
 
-    if (!next) {
-        int h = Z.yu - Z.yl;
-        int w = ((Z.xur + Z.xlr) - (Z.xul + Z.xll))/2;
+    if (!thiszl->next) {
+        const Zlist *z = thiszl;
+        int h = z->Z.yu - z->Z.yl;
+        int w = ((z->Z.xur + z->Z.xlr) - (z->Z.xul + z->Z.xll))/2;
         return (mmMin(w, h));
     }
 
     SymTab *tab = new SymTab(false, false);
-    for (const Zlist *z = this; z; z = z->next) {
+    for (const Zlist *z = thiszl; z; z = z->next) {
         unsigned long ht = z->Z.yu - z->Z.yl;
         unsigned long wd = ((z->Z.xur + z->Z.xlr) - (z->Z.xul + z->Z.xll))/2;
         SymTabEnt *h = tab->get_ent(ht);
@@ -978,147 +979,52 @@ Zlist::linewidth() const
 }
 
 
-// Compute the sum of the lengths of external edges of the trapezoid
-// list.  The external edges are the parts of edges next to empty
-// space.  This assumes the trapezoids don't overlap!  (repartition()
-// called).  If a BBox is passed, the segments will be clipped to this
-// BB, and segments that lie on the BB will contribute 1/2 length
-// (Praesagus uses this).
-//
-double
-Zlist::ext_perim(const BBox *psgBB) const
-{
-    {
-        const Zlist *zt = this;
-        if (!zt)
-            return (0);
-    }
-
-    if (!next) {
-        double perim = 0.0;
-        Point_c p1(Z.xll, Z.yl);
-        Point_c p2(Z.xul, Z.yu);
-        if (!psgBB || !cGEO::line_clip(&p1.x, &p1.y, &p2.x, &p2.y, psgBB)) {
-            if (Z.xll == Z.xul) {
-                unsigned int diff = abs(p1.y - p2.y);
-                if (psgBB && (p1.x == psgBB->left || p1.x == psgBB->right)) {
-                    perim += (diff >> 1);
-                    if (diff & 1)
-                        perim += 0.5;
-                }
-                else
-                    perim += diff;
-            }
-            else {
-                double dx = p1.x - p2.x;
-                double dy = p1.y - p2.y;
-                perim += sqrt(dx*dx + dy*dy);
-            }
-        }
-
-        p1.set(Z.xlr, Z.yl);
-        p2.set(Z.xur, Z.yu);
-        if (!psgBB || !cGEO::line_clip(&p1.x, &p1.y, &p2.x, &p2.y, psgBB)) {
-            if (Z.xlr == Z.xur) {
-                unsigned int diff = abs(p1.y - p2.y);
-                if (psgBB && (p1.x == psgBB->left || p1.x == psgBB->right)) {
-                    perim += (diff >> 1);
-                    if (diff & 1)
-                        perim += 0.5;
-                }
-                else
-                    perim += diff;
-            }
-            else {
-                double dx = p1.x - p2.x;
-                double dy = p1.y - p2.y;
-                perim += sqrt(dx*dx + dy*dy);
-            }
-        }
-
-        p1.set(Z.xul, Z.yu);
-        p2.set(Z.xur, Z.yu);
-        if (!psgBB || !cGEO::line_clip(&p1.x, &p1.y, &p2.x, &p2.y, psgBB)) {
-            unsigned int diff = abs(p1.x - p2.x);
-            if (psgBB && (p1.y == psgBB->bottom || p1.y == psgBB->top)) {
-                perim += (diff >> 1);
-                if (diff & 1)
-                    perim += 0.5;
-            }
-            else
-                perim += diff;
-        }
-
-        p1.set(Z.xll, Z.yl);
-        p2.set(Z.xlr, Z.yl);
-        if (!psgBB || !cGEO::line_clip(&p1.x, &p1.y, &p2.x, &p2.y, psgBB)) {
-            unsigned int diff = abs(p1.x - p2.x);
-            if (psgBB && (p1.y == psgBB->bottom || p1.y == psgBB->top)) {
-                perim += (diff >> 1);
-                if (diff & 1)
-                    perim += 0.5;
-            }
-            else
-                perim += diff;
-        }
-        return (perim);
-    }
-    linedb_t ldb;
-    for (const Zlist *z = this; z; z = z->next)
-        ldb.add(&z->Z, psgBB);
-    return (ldb.perim(psgBB));
-}
-
-
+// Static function.
 // Return a list of the external edges of the trapezoids.  The
 // external edges are the parts of edges next to empty space.  This
 // assumes the trapezoids don't overlap!  (repartition() called).
 //
 edg_t *
-Zlist::ext_edges() const
+Zlist::ext_edges(const Zlist *thiszl)
 {
-    {
-        const Zlist *zt = this;
-        if (!zt)
-            return (0);
-    }
+    if (!thiszl)
+        return (0);
 
     linedb_t ldb;
-    for (const Zlist *z = this; z; z = z->next)
+    for (const Zlist *z = thiszl; z; z = z->next)
         ldb.add(&z->Z);
     return (ldb.edges());
 }
 
 
+// Static function.
 // Return a list of the external edges of the trapezoids, as
 // trapezoids bloated by delta.  The external edges are the parts of
 // edges next to empty space.  This assumes the trapezoids don't
 // overlap! (repartition() called).
 //
 Zlist *
-Zlist::ext_zoids(int delta, int mode) const
+Zlist::ext_zoids(const Zlist *thiszl, int delta, int mode)
 {
-    {
-        const Zlist *zt = this;
-        if (!zt)
-            return (0);
-    }
+    if (!thiszl)
+        return (0);
 
     linedb_t ldb;
-    for (const Zlist *z = this; z; z = z->next)
+    for (const Zlist *z = thiszl; z; z = z->next)
         ldb.add(&z->Z);
     return (ldb.zoids(delta, mode));
 }
 
 
+// Static function.
 // Group the list according to connectivity.  If max_in_grp is nonzero,
 // groups are *approximately* limited to this number of entries.  In this
 // case, the groups are not necessarily disjoint.  'this' is consumed.
 //
 Zgroup *
-Zlist::group(int max_in_grp)
+Zlist::group(Zlist *thiszl, int max_in_grp)
 {
-    Zlist *zt = this;
+    Zlist *zt = thiszl;
     if (!zt || !zt->next) {
         Zgroup *g = new Zgroup;
         if (zt) {
@@ -1133,6 +1039,7 @@ Zlist::group(int max_in_grp)
 }
 
 
+// Static function.
 // Create a layer from name, and add the zoid list to sdesc.
 // The zoidlist is freed.  The ttl_flags recognized are:
 //
@@ -1146,7 +1053,8 @@ Zlist::group(int max_in_grp)
 // The first two flags apply only when a new layer is created here.
 //
 CDl *
-Zlist::to_temp_layer(const char *name, int ttl_flags, CDs *sdesc, XIrt *retp)
+Zlist::to_temp_layer(Zlist *thiszl, const char *name, int ttl_flags,
+    CDs *sdesc, XIrt *retp)
 {
     *retp = XIbad;
     if (!sdesc)
@@ -1162,53 +1070,50 @@ Zlist::to_temp_layer(const char *name, int ttl_flags, CDs *sdesc, XIrt *retp)
             (ttl_flags & TTLinternal) ? CDLinternal : CDLnormal, -1,
             (ttl_flags & TTLnoinsert));
     }
-    Zlist *zthis = this;
-    if (ld && zthis && sdesc) {
+    if (ld && thiszl && sdesc) {
         if (ttl_flags & TTLjoin)
-            *retp = to_poly_add(sdesc, ld, false);
+            *retp = to_poly_add(thiszl, sdesc, ld, false);
         else {
-            add(sdesc, ld, false);
-            free(this);
+            add(thiszl, sdesc, ld, false);
+            free(thiszl);
             *retp = XIok;
         }
     }
     else
-        free(this);
+        free(thiszl);
     return (ld);
 }
 
 
+// Static function.
 // Create a polygon from the zoids which touch (recursively) the top
 // left zoid in the list.  The zoids used are removed from the list.
 // It is assumed that repartition() has been called!
 //
 Zlist *
-Zlist::to_poly(Point **pts, int *num)
+Zlist::to_poly(Zlist *thiszl, Point **pts, int *num)
 {
-    Zlist *zt = this;
-    if (!zt) {
+    if (!thiszl) {
         *pts = 0;
         *num = 0;
         return (0);
     }
-    Ylist *y = new Ylist(zt);
+    Ylist *y = new Ylist(thiszl);
     y = y->to_poly(pts, num, JoinMaxVerts);
     return (y->to_zlist());
 }
 
 
+// Static function.
 // Convert the zoid list to a list of polygons.  The zoid list is consumed.
 //
 PolyList *
-Zlist::to_poly_list()
+Zlist::to_poly_list(Zlist *thiszl)
 {
-    {
-        Zlist *zt = this;
-        if (!zt)
-            return (0);
-    }
+    if (!thiszl)
+        return (0);
 
-    Ylist *y = new Ylist(this);
+    Ylist *y = new Ylist(thiszl);
     Zgroup *g = y->group(JoinMaxGroup);
     if (!g)
         return (0);
@@ -1230,22 +1135,20 @@ Zlist::to_poly_list()
 }
 
 
+// Static function.
 // Convert the zoid list to polygons, which are added to the database.
 // This frees the zoid list.
 //
 XIrt
-Zlist::to_poly_add(CDs *sdesc, CDl *ld, bool undoable, const cTfmStack *tstk,
-    bool use_merge)
+Zlist::to_poly_add(Zlist *thiszl, CDs *sdesc, CDl *ld, bool undoable,
+    const cTfmStack *tstk, bool use_merge)
 {
-    {
-        Zlist *zt = this;
-        if (!zt)
-            return (XIok);
-    }
+    if (!thiszl)
+        return (XIok);
     if (!sdesc || !ld)
         return (XIbad);
 
-    Ylist *y = new Ylist(this);
+    Ylist *y = new Ylist(thiszl);
     Zgroup *g = y->group(JoinMaxGroup);
     if (!g)
         return (XIok);
@@ -1265,22 +1168,20 @@ Zlist::to_poly_add(CDs *sdesc, CDl *ld, bool undoable, const cTfmStack *tstk,
 }
 
 
+// Static function.
 // Convert the zoid list to a list of object descriptors.  The new objects
 // are not added to the database (the CDisCopy flag is set), the zoid list
 // is freed.  The objects are linked along the next_odesc() pointer.
 //
 CDo *
-Zlist::to_obj_list(CDl *ld, bool nomerge)
+Zlist::to_obj_list(Zlist *thiszl, CDl *ld, bool nomerge)
 {
-    {
-        Zlist *zt = this;
-        if (!zt)
-            return (0);
-    }
+    if (!thiszl)
+        return (0);
 
     CDo *od0 = 0;
     if (nomerge) {
-        for (Zlist *z = this; z; z = z->next) {
+        for (Zlist *z = thiszl; z; z = z->next) {
             if (z->Z.is_rect()) {
                 BBox tBB(z->Z.xll, z->Z.yl, z->Z.xlr, z->Z.yu);
                 if (tBB.valid()) {
@@ -1302,7 +1203,7 @@ Zlist::to_obj_list(CDl *ld, bool nomerge)
         }
     }
     else {
-        Ylist *y = new Ylist(this);
+        Ylist *y = new Ylist(thiszl);
         Zgroup *g = y->group(JoinMaxGroup);
         if (!g)
             return (0);
@@ -1326,19 +1227,22 @@ Zlist::to_obj_list(CDl *ld, bool nomerge)
 }
 
 
+// Static function.
 // Add the zoids as objects in the database.
 //
 void
-Zlist::add(CDs *sdesc, CDl *ld, bool undoable, bool use_merge) const
+Zlist::add(const Zlist *thiszl, CDs *sdesc, CDl *ld, bool undoable,
+    bool use_merge)
 {
     if (!sdesc || !ld)
         return;
     Errs()->init_error();
-    for (const Zlist *z = this; z; z = z->next) {
+    for (const Zlist *z = thiszl; z; z = z->next) {
         if (z->Z.xll == z->Z.xul && z->Z.xlr == z->Z.xur) {
-            if (z->Z.xll == z->Z.xlr || z->Z.yl >= z->Z.yu)
+            if (z->Z.xll == z->Z.xlr || z->Z.yl >= z->Z.yu) {
                 // bad zoid, ignore
                 continue;
+            }
             BBox tBB;
             tBB.left = z->Z.xll;
             tBB.bottom = z->Z.yl;
@@ -1364,9 +1268,10 @@ Zlist::add(CDs *sdesc, CDl *ld, bool undoable, bool use_merge) const
         else {
             if (z->Z.xll > z->Z.xlr || z->Z.xul > z->Z.xur ||
                     (z->Z.xll == z->Z.xlr && z->Z.xul == z->Z.xur) ||
-                    z->Z.yl >= z->Z.yu)
+                    z->Z.yl >= z->Z.yu) {
                 // bad zoid, ignore
                 continue;
+            }
 
             Poly poly;
             if (z->Z.mkpoly(&poly.points, &poly.numpts, false)) {
@@ -1391,18 +1296,21 @@ Zlist::add(CDs *sdesc, CDl *ld, bool undoable, bool use_merge) const
 }
 
 
+// Static function.
 // Assume coordinates need +90 degree rotation.
 //
 void
-Zlist::add_r(CDs *sdesc, CDl *ld, bool undoable, bool use_merge) const
+Zlist::add_r(const Zlist *thiszl, CDs *sdesc, CDl *ld, bool undoable,
+    bool use_merge)
 {
     if (!sdesc || !ld)
         return;
-    for (const Zlist *z = this; z; z = z->next) {
+    for (const Zlist *z = thiszl; z; z = z->next) {
         if (z->Z.xll == z->Z.xul && z->Z.xlr == z->Z.xur) {
-            if (z->Z.xll == z->Z.xlr || z->Z.yl >= z->Z.yu)
+            if (z->Z.xll == z->Z.xlr || z->Z.yl >= z->Z.yu) {
                 // bad zoid, ignore
                 continue;
+            }
             BBox tBB;
             tBB.left = z->Z.yl;
             tBB.bottom = -z->Z.xur;
@@ -1428,9 +1336,10 @@ Zlist::add_r(CDs *sdesc, CDl *ld, bool undoable, bool use_merge) const
         else {
             if (z->Z.xll > z->Z.xlr || z->Z.xul > z->Z.xur ||
                     (z->Z.xll == z->Z.xlr && z->Z.xul == z->Z.xur) ||
-                    z->Z.yl >= z->Z.yu)
+                    z->Z.yl >= z->Z.yu) {
                 // bad zoid, ignore
                 continue;
+            }
 
             Poly poly;
             if (z->Z.mkpoly(&poly.points, &poly.numpts, true)) {
@@ -1455,14 +1364,15 @@ Zlist::add_r(CDs *sdesc, CDl *ld, bool undoable, bool use_merge) const
 }
 
 
+// Static function.
 // Rotate the trapezoid list by -90 degrees (x -> y, y -> -x) and
 // create a new canonical trapezoid list.  This is freed.
 //
 Zlist *
-Zlist::to_r()
+Zlist::to_r(Zlist *thiszl)
 {
     Zlist *z0 = 0, *zn;
-    for (Zlist *z = this; z; z = zn) {
+    for (Zlist *z = thiszl; z; z = zn) {
         zn = z->next;
         if (z->Z.is_rect())
             // Manhattan, easy case.

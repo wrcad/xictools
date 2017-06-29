@@ -308,7 +308,7 @@ cGroupDesc::print_groups(FILE *fp, sDumpOpts *opts)
                     }
                 }
                 if (z0) {
-                    PolyList *p0 = z0->to_poly_list();
+                    PolyList *p0 = Zlist::to_poly_list(z0);
                     double area = 0.0, perim = 0.0;
                     for (PolyList *p = p0; p; p = p->next) {
                         area += p->po.area();

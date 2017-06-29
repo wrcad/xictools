@@ -196,7 +196,7 @@ cEdit::bloatQueue(int width, int mode)
                     dspPkgIf()->SetWorking(false);
                     return (ret);
                 }
-                l0 = new OPlist(od, zlist->to_poly_list(), l0);
+                l0 = new OPlist(od, Zlist::to_poly_list(zlist), l0);
             }
         }
     }
@@ -233,7 +233,7 @@ cEdit::bloatQueue(int width, int mode)
                                 Zlist::free(zlist);
                             }
                             else
-                                o->plist = zlist->to_poly_list();
+                                o->plist = Zlist::to_poly_list(zlist);
                             break;
                         }
                     }
@@ -281,7 +281,7 @@ cEdit::manhattanizeQueue(int minside, int mode)
 
             Zlist *zl = od->toZlist();
             zl = Zlist::manhattanize(zl, minside, mode);
-            ret = zl->to_poly_add(cursd, od->ldesc(), true);
+            ret = Zlist::to_poly_add(zl, cursd, od->ldesc(), true);
             if (ret != XIok)
                 break;
             Ulist()->RecordObjectChange(cursd, od, 0);

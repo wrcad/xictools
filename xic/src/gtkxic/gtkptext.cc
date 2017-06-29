@@ -304,7 +304,7 @@ cEdit::polytext(const char *string, int psz, int x, int y)
         }
     }
     gdk_image_destroy(im);
-    PolyList *po = z0->to_poly_list();
+    PolyList *po = Zlist::to_poly_list(z0);
     return (po);
 }
 

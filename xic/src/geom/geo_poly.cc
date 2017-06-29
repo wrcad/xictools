@@ -850,8 +850,8 @@ Poly::divide(int maxverts) const
                 delete z;
             }
         }
-        p0 = zl->to_poly_list();
-        p1 = zr->to_poly_list();
+        p0 = Zlist::to_poly_list(zl);
+        p1 = Zlist::to_poly_list(zr);
     }
     else {
         int npm1 = numpts - 1;
@@ -890,8 +890,8 @@ Poly::divide(int maxverts) const
                 delete z;
             }
         }
-        p0 = zb->to_poly_list();
-        p1 = zt->to_poly_list();
+        p0 = Zlist::to_poly_list(zb);
+        p1 = Zlist::to_poly_list(zt);
     }
     if (!p0)
         p0 = p1;
@@ -1774,25 +1774,6 @@ Poly::halo(int d) const
         }
     }
     return (z0);
-}
-
-
-// Return the sum of the lengths of the external edges.  The external
-// edges are adjacent to empty space.  If a BBox is passed, the
-// segments will be clipped to this BB, and segments that lie on the
-// BB will contribute 1/2 length (Praesagus uses this).
-//
-double
-Poly::ext_perim(const BBox *psgBB) const
-{
-    {
-        const Poly *pt = this;
-        if (!pt)
-            return (0);
-    }
-    linedb_t ldb;
-    ldb.add(this, psgBB);
-    return (ldb.perim(psgBB));
 }
 
 
