@@ -1325,7 +1325,7 @@ cOAelecInfo::create_inst_param_string(sLstr &lstr,
     const sPrmList *prm_list) const
 {
     {
-        cOAelecInfo *oit = this;
+        const cOAelecInfo *oit = this;
         if (!oit)
             return;
     }
@@ -1402,7 +1402,7 @@ void
 cOAelecInfo::create_all_param_string(sLstr &lstr) const
 {
     {
-        cOAelecInfo *oit = this;
+        const cOAelecInfo *oit = this;
         if (!oit)
             return;
     }
