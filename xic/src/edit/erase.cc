@@ -1246,7 +1246,7 @@ box:
                 Errs()->add_error("mergeBoxOrPoly failed");
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
             }
-            b0->free();
+            Blist::destroy(b0);
         }
         return (true);
     }
@@ -1388,7 +1388,7 @@ box:
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
             }
         }
-        b0->free();
+        Blist::destroy(b0);
         return (true);
     }
 poly:
@@ -1525,7 +1525,7 @@ box:
             yx->next = y0;
             y0 = yx;
         }
-        b0->free();
+        Blist::destroy(b0);
         return (y0);
     }
 poly:

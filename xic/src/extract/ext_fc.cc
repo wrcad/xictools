@@ -3473,7 +3473,7 @@ fcCpanel::print_panel(FILE *fp, int xo, int yo, e_unit unit,
             if (pcnt)
                 (*pcnt)++;
         }
-        list->free();
+        qflist3d::destroy(list);
     }
     else {
         Q.print(fp, group, xo, yo, sc, ffmt);
@@ -3583,7 +3583,7 @@ fcDpanel::print_panel(FILE *fp, int xo, int yo, e_unit unit,
             if (pcnt)
                 (*pcnt)++;
         }
-        list->free();
+        qflist3d::destroy(list);
     }
     else {
         Q.print(fp, index, xo, yo, sc, ffmt);

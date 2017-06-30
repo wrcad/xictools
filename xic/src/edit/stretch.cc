@@ -1728,7 +1728,7 @@ sObj::mklist(CDol *slist, BBox *AOI)
                             }
                         }
                     }
-                    p0->free();
+                    Plist::destroy(p0);
                 }
                 else {
                     objlist = new sObj(sl->odesc, objlist);
@@ -1755,7 +1755,7 @@ sObj::mklist(CDol *slist, BBox *AOI)
                             }
                         }
                     }
-                    p0->free();
+                    Plist::destroy(p0);
                 }
             }
         }
@@ -1799,7 +1799,7 @@ sObj::mklist(CDol *slist, BBox *AOI)
                             }
                         }
                     }
-                    p0->free();
+                    Plist::destroy(p0);
                 }
                 else {
                     objlist = new sObj(sl->odesc, objlist);
@@ -1826,7 +1826,7 @@ sObj::mklist(CDol *slist, BBox *AOI)
                             }
                         }
                     }
-                    p0->free();
+                    Plist::destroy(p0);
                 }
             }
         }

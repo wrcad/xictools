@@ -189,11 +189,10 @@ struct qflist3d
             next = n;
         }
 
-    void free()
+    static void destroy(const qflist3d *q)
         {
-            qflist3d *q = this;
             while (q) {
-                qflist3d *x = q;
+                const qflist3d *x = q;
                 q = q->next;
                 delete x;
             }
@@ -310,11 +309,10 @@ struct Zlist3d
             next = n;
         }
 
-    void free()
+    static void destroy(const Zlist3d *z)
         {
-            Zlist3d *z = this;
             while (z) {
-                Zlist3d *zx = z;
+                const Zlist3d *zx = z;
                 z = z->next;
                 delete zx;
             }
@@ -376,11 +374,10 @@ struct glZlist3d
             next = n;
         }
 
-    void free()
+    static void destroy(const glZlist3d *z)
         {
-            glZlist3d *z = this;
             while (z) {
-                glZlist3d *zx = z;
+                const glZlist3d *zx = z;
                 z = z->next;
                 delete zx;
             }
@@ -425,11 +422,10 @@ struct glZlistRef3d
             PZ = z;
         }
 
-    void free()
+    static void destroy(const glZlistRef3d *z)
         {
-            glZlistRef3d *z = this;
             while (z) {
-                glZlistRef3d *zx = z;
+                const glZlistRef3d *zx = z;
                 z = z->next;
                 delete zx;
             }
@@ -474,7 +470,7 @@ struct glZgroup3d
     ~glZgroup3d()
         {
             while (num--)
-                list[num]->free();
+                glZlist3d::destroy(list[num]);
             delete [] list;
         }
 
@@ -497,7 +493,7 @@ struct glZgroupRef3d
     ~glZgroupRef3d()
         {
             while (num--)
-                list[num]->free();
+                glZlistRef3d::destroy(list[num]);
             delete [] list;
         }
 
@@ -510,16 +506,16 @@ struct glZgroupRef3d
 struct glYlist3d
 {
     glYlist3d(glZlist3d*, bool = false);
-    ~glYlist3d() { y_zlist->free(); }
+    ~glYlist3d() { glZlist3d::destroy(y_zlist); }
 
-    void free() {
-        glYlist3d *y = this;
-        while (y) {
-            glYlist3d *yn = y->next;
-            delete y;
-            y = yn;
+    static void destroy(const glYlist3d *y)
+        {
+            while (y) {
+                const glYlist3d *yn = y->next;
+                delete y;
+                y = yn;
+            }
         }
-    }
 
     double volume() const
         {

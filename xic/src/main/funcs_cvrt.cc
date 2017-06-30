@@ -4953,7 +4953,7 @@ cvrt_funcs::IFchdWriteSplit(Variable *res, Variable *args, void*)
     res->content.value = chd->writeMulti(cname, &prms, bl0, gridsize,
         sz_or_bv, maxdepth, flat_map, parallel);
 
-    bl0->free();
+    Blist::destroy(bl0);
     return (OK);
 }
 

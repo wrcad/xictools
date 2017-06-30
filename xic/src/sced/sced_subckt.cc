@@ -176,7 +176,7 @@ namespace {
                         delete opx->prp;
                     else if (opx->type == N_BDEL)
                         delete opx->bprp;
-                    opx->sypts->free();
+                    Plist::destroy(opx->sypts);
                     delete opx;
                 }
             }
@@ -191,7 +191,7 @@ namespace {
                         delete opx->prp;
                     else if (opx->type == N_BADD)
                         delete opx->bprp;
-                    opx->sypts->free();
+                    Plist::destroy(opx->sypts);
                     delete opx;
                 }
             }
@@ -1391,7 +1391,7 @@ SubcState::undo()
                 pn->set_pos(ix, p->x, p->y);
                 ix++;
             }
-            op->sypts->free();
+            Plist::destroy(op->sypts);
             op->sypts = p0;
         }
         show_terms(DISPLAY, cnt);
@@ -1497,7 +1497,7 @@ SubcState::undo()
                 pn->set_pos(ix, p->x, p->y);
                 ix++;
             }
-            op->sypts->free();
+            Plist::destroy(op->sypts);
             op->sypts = p0;
         }
         show_bterms(DISPLAY);
@@ -1638,7 +1638,7 @@ SubcState::redo()
                 pn->set_pos(ix, p->x, p->y);
                 ix++;
             }
-            op->sypts->free();
+            Plist::destroy(op->sypts);
             op->sypts = p0;
         }
         show_terms(DISPLAY, cnt);
@@ -1742,7 +1742,7 @@ SubcState::redo()
                 pn->set_pos(ix, p->x, p->y);
                 ix++;
             }
-            op->sypts->free();
+            Plist::destroy(op->sypts);
             op->sypts = p0;
         }
         show_bterms(DISPLAY);
@@ -2097,7 +2097,7 @@ SubcState::delete_terminal(int x, int y)
         if (p0 && !p0->next) {
             // If there is only one pin, skip delete.  The
             // node can only be deleted when not symbolic.
-            p0->free();
+            Plist::destroy(p0);
             show_terms(DISPLAY, count);
             int xx, yy;
             Menu()->PointerRootLoc(&xx, &yy);
@@ -2172,7 +2172,7 @@ SubcState::move_terminal(int oldx, int oldy, int x, int y, bool cpy)
             break;
         // Don't allow coincident pins.
         if (issym && px == x && py == y) {
-            p0->free();
+            Plist::destroy(p0);
             return (false);
         }
         if (!p0)
@@ -2698,7 +2698,7 @@ SubcState::delete_bterm(int x, int y)
         if (p0 && !p0->next) {
             // If there is only one pin, skip delete.  The
             // node can only be deleted when not symbolic.
-            p0->free();
+            Plist::destroy(p0);
             show_bterms(DISPLAY);
             return (false);
         }
@@ -2767,7 +2767,7 @@ SubcState::move_bterm(int oldx, int oldy, int x, int y, bool cpy)
             break;
         // Don't allow coincident pins.
         if (issym && px == x && py == y) {
-            p0->free();
+            Plist::destroy(p0);
             return (false);
         }
         if (!p0)

@@ -104,7 +104,7 @@ namespace {
         }
         *ppts = po;
         *pnum = i;
-        p0->free();
+        Plist::destroy(p0);
     }
 
 

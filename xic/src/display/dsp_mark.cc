@@ -2632,7 +2632,7 @@ sMK::erase_behind(WindowDesc *wdesc)
         wdesc->Wdraw()->SetColor(DSP()->Color(BackgroundColor, Physical));
         for (Blist *bl = erbh_list; bl; bl = bl->next)
             wdesc->ShowBox(&bl->BB, CDL_FILLED, 0);
-        erbh_list->free();
+        Blist::destroy(erbh_list);
         erbh_list = 0;
     }
 }
@@ -2705,8 +2705,8 @@ sMK::clear_BBs()
             }
         }
     }
-    pl->free();
-    el->free();
+    Blist::destroy(pl);
+    Blist::destroy(el);
 }
 // End of sMK functions.
 

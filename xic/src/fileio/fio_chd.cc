@@ -639,7 +639,7 @@ namespace fio_chd {
 
         ~ib_t()
             {
-                blist->free();
+                Blist::destroy(blist);
             }
 
         CDcellName refname;

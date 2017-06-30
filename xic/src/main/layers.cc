@@ -530,7 +530,7 @@ ProfState::show_cross_section(int x1, int y1, int x2, int y2)
             CDl *ld = l->layer_desc();
             tab->add((unsigned long)ld, db, false);
         }
-        boxes[lnum]->free();
+        Blist::destroy(boxes[lnum]);
         lnum++;
     }
     delete [] boxes;

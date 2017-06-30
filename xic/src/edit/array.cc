@@ -120,7 +120,7 @@ sArrayManip::delete_elements(unsigned int nx1, unsigned int nx2,
         }
     }
     TPop();
-    bl0->free();
+    Blist::destroy(bl0);
 
     if (ret) {
         Ulist()->RecordObjectChange(am_sdesc, am_cdesc, 0);

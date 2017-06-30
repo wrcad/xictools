@@ -1576,10 +1576,10 @@ cMRcmdIf::implementRoute(dbNet *net)
                         Errs()->add_error(
                             "implementRoute: net %s, wire creation failed.",
                             net->netname);
-                        p0->free();
+                        Plist::destroy(p0);
                         return (false);
                     }
-                    p0->free();
+                    Plist::destroy(p0);
                     p0 = pe = 0;
                 }
                 lname = 0;
@@ -1626,10 +1626,10 @@ cMRcmdIf::implementRoute(dbNet *net)
                         Errs()->add_error(
                             "implementRoute: net %s, wire creation failed.",
                             net->netname);
-                        p0->free();
+                        Plist::destroy(p0);
                         return (false);
                     }
-                    p0->free();
+                    Plist::destroy(p0);
                     p0 = pe = 0;
 
                     lefObject *lefo = if_l->getLefObject(p->vid);
@@ -1655,10 +1655,10 @@ cMRcmdIf::implementRoute(dbNet *net)
                 Errs()->add_error(
                     "implementRoute: net %s, wire creation failed.",
                     net->netname);
-                p0->free();
+                Plist::destroy(p0);
                 return (false);
             }
-            p0->free();
+            Plist::destroy(p0);
             p0 = pe = 0;
         }
     }

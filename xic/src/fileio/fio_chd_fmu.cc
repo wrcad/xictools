@@ -168,7 +168,7 @@ fmu_t::fmu_core_rc(symref_t *p, cTfmStack *tstk)
                     double a = 0.0;
                     for (Blist *b = bl; b; b = b->next)
                         a += b->BB.area();
-                    bl->free();
+                    Blist::destroy(bl);
                     double a_max = sBB.area();
                     ret = sum_counts(a/a_max, cp);
                 }

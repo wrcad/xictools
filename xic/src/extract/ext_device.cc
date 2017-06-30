@@ -5287,7 +5287,7 @@ sDevInst::clip_contacts() const
                 }
                 c->set_BB(&tBB);
             }
-            bla[i]->free();
+            Blist::destroy(bla[i]);
         }
         i++;
     }

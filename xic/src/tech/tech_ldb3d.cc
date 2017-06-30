@@ -661,7 +661,7 @@ Layer3d::~Layer3d()
 {
     l3_cut->free();
     l3_uncut->free();
-    l3_yl3d->free();
+    glYlist3d::destroy(l3_yl3d);
 }
 
 
@@ -723,7 +723,7 @@ Layer3d::extract_geom(const CDs *sdesc, const Zlist *zref)
 
     zl = Zlist::filter_slivers(zl, 1);
     l3_uncut = zl ? new Ylist(zl) : 0;
-    l3_yl3d->free();
+    glYlist3d::destroy(l3_yl3d);
     l3_yl3d = 0;
     return (true);
 }
@@ -804,7 +804,7 @@ Layer3d::mk3d(bool is_cross_sect)
 {
     Zlist *zl0 = l3_cut->to_zlist();
     l3_cut = 0;
-    l3_yl3d->free();
+    glYlist3d::destroy(l3_yl3d);
     l3_yl3d = 0;
     glZlist3d *z3 = 0, *z3e = 0;
     while (zl0) {

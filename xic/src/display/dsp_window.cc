@@ -1287,7 +1287,7 @@ box:
     {
         Blist *bl = AddEdges(0, &odesc->oBB());
         RedisplayList(bl);
-        bl->free();
+        Blist::destroy(bl);
         return;
     }
 poly:
@@ -1332,7 +1332,7 @@ inst:
                 else {
                     Blist *bl = AddEdges(0, &odesc->oBB());
                     RedisplayList(bl);
-                    bl->free();
+                    Blist::destroy(bl);
                 }
             }
         }

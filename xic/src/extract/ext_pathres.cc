@@ -131,7 +131,7 @@ TermState::b1up()
         t = t->next;
         if (t->next) {
             PL()->ShowPrompt("Two terminals are already defined.");
-            t->next->free();
+            Blist::destroy(t->next);
             t->next = 0;
         }
     }
@@ -151,7 +151,7 @@ TermState::esc()
     EX()->showTerminals(0, ERASE);
     Blist *bl = EX()->terminals();
     EX()->setTerminals(0);
-    bl->free();
+    Blist::destroy(bl);
     EX()->PopUpSelections(0, MODE_UPD);
     delete this;
 }

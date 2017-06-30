@@ -173,11 +173,10 @@ struct Plist : public Point_c
     Plist() { next = 0; }
     Plist(int xx, int yy, Plist *n = 0) : Point_c(xx, yy) { next = n; }
 
-    void free()
+    static void destroy(const Plist *p)
         {
-            Plist *p = this;
             while (p) {
-                Plist *px = p;
+                const Plist *px = p;
                 p = p->next;
                 delete px;
             }
@@ -241,11 +240,11 @@ struct edg_t
 {
     edg_t(int x1, int y1, int x2, int y2, edg_t *n) :
         p1(x1, y1), p2(x2, y2) { next = n; }
-    void free()
+
+    static void destroy(const edg_t *e)
         {
-            edg_t *e = this;
             while (e) {
-                edg_t *ex = e;
+                const edg_t *ex = e;
                 e = e->next;
                 delete ex;
             }

@@ -159,7 +159,7 @@ BBox::clip_out(const Blist *bc) const
                 }
             }
         }
-        bl->free();
+        Blist::destroy(bl);
         bl = b0;
         bc = bc->next;
     }

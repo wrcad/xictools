@@ -284,12 +284,12 @@ struct Blist
             }
         }
 
-    void free()
+    static void destroy(const Blist *bl)
         {
-            Blist *nxt;
-            for (Blist *bl = this ; bl; bl = nxt) {
-                nxt = bl->next;
-                delete bl;
+            while (bl) {
+                const Blist *bx = bl;
+                bl = bl->next;
+                delete bx;
             }
         }
 
@@ -333,14 +333,13 @@ struct BYlist
     void operator delete(void*, size_t);
 #endif
     BYlist(Blist*, bool = false);
-    ~BYlist() { blist->free(); }
+    ~BYlist() { Blist::destroy(blist); }
 
-    void free() {
-        BYlist *y = this;
+    static void destroy(const BYlist *y) {
         while (y) {
-            BYlist *yn = y->next;
-            delete y;
-            y = yn;
+            const BYlist *yx = y;
+            y = y->next;
+            delete yx;
         }
     }
 

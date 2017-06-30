@@ -184,7 +184,7 @@ cMain::HCdrawFrame(int display)
             FrameState::FrameSuppress = true; // avoid reentrancy
             Blist *bl = wdesc->AddEdges(0, &FrameState::FrameBox);
             wdesc->RefreshList(bl);
-            bl->free();
+            Blist::destroy(bl);
             FrameState::FrameSuppress = false;
             return;
         }

@@ -292,8 +292,8 @@ struct fhConductor
 
     ~fhConductor()
         {
-            hc_zlist3d_ref->free();
-            hc_zlist3d->free();
+            glZlistRef3d::destroy(hc_zlist3d_ref);
+            glZlist3d::destroy(hc_zlist3d);
             hc_segments->free();
         }
 

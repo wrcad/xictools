@@ -571,10 +571,10 @@ WindowDesc::RunPending()
                 if (!DSP()->NoPixmapStore() && !DSP()->SlowMode() &&
                         !w_frozen) {
                     // Will use pixmap, expand to full window.
-                    pendU->next->free();
+                    Blist::destroy(pendU->next);
                     pendU->next = 0;
                     pendU->BB = w_window;
-                    pendR->free();
+                    Blist::destroy(pendR);
                     pendR = pendU;
                     tBB = pendR->BB;
                 }
@@ -640,9 +640,9 @@ WindowDesc::RunPending()
 void
 WindowDesc::ClearPending()
 {
-    w_pending_R->free();
+    Blist::destroy(w_pending_R);
     w_pending_R = 0;
-    w_pending_U->free();
+    Blist::destroy(w_pending_U);
     w_pending_U = 0;
 }
 
@@ -729,7 +729,7 @@ WindowDesc::add_redisp_region(const BBox *BB)
             BB->bottom > w_window.top || BB->top < w_window.bottom)
         return;
     if (*BB == w_window) {
-        w_pending_R->free();
+        Blist::destroy(w_pending_R);
         w_pending_R = 0;
     }
 
@@ -762,7 +762,7 @@ WindowDesc::add_update_region(const BBox *BB)
             BB->bottom < 0 || BB->top >= w_height)
         return;
     if (*BB == Viewport()) {
-        w_pending_U->free();
+        Blist::destroy(w_pending_U);
         w_pending_U = 0;
     }
 
@@ -865,7 +865,7 @@ WindowDesc::show_cellbb(bool display, const BBox *AOI, bool flag, Blist **bret)
                     for (Blist *bl = b0; bl; bl = bl->next)
                         Refresh(&bl->BB);
 
-                    b0->free();
+                    Blist::destroy(b0);
                     w_clip_rect = tBB;
                 }
                 return (true);

@@ -2816,7 +2816,7 @@ selqueue_t::redisplay_list(const CDs *sd, CDol *c0)
                     bl = addEdges(c->odesc, wdesc, bl);
                 if (bl) {
                     wdesc->RedisplayList(bl);
-                    bl->free();
+                    Blist::destroy(bl);
                 }
             }
         }

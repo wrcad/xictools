@@ -1766,7 +1766,7 @@ cDRC::eval_instance(const CDc *cdesc, BBox *errBB, const Blist *blist)
 void
 cDRC::close_drc(Blist *blist)
 {
-    blist->free();
+    Blist::destroy(blist);
     sPF::set_skip_drc(false);
 
     // Clear the derived layers that we created for DRC.

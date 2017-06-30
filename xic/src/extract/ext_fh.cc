@@ -1468,7 +1468,7 @@ fhConductor::refine(const BBox *BB)
         hc_zlist3d->Z.xll = hc_zlist3d->Z.xul = z->Z.xlr - dx;
         hc_zlist3d->Z.yl = z->Z.yu - dy;
     }
-    z0->free();
+    glZlist3d::destroy(z0);
     return (true);
 }
 

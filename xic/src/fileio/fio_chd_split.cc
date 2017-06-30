@@ -54,7 +54,7 @@ namespace {
             if (ep == tok) {
                 // Parse error.
                 delete [] tok;
-                bl0->free();
+                Blist::destroy(bl0);
                 return (0);
             }
             delete [] tok;
@@ -76,7 +76,7 @@ namespace {
         }
         if (cnt != 0) {
             // Extra/missing numbers.
-            bl0->free();
+            Blist::destroy(bl0);
             return (0);
         }
         return (bl0);
@@ -353,7 +353,7 @@ cFIO::SplitArchive(const char *string)
     delete [] fname;
     delete [] cname;
     delete [] bname;
-    bl0->free();
+    Blist::destroy(bl0);
     return (oiret);
 }
 
@@ -559,7 +559,7 @@ cCHD::writeMulti(const char *cellname, const FIOcvtPrms *iprms,
         else
             oiret = write_multi_hier(ptop, iprms, bl0, gridsize, bloatval);
         FIO()->ifSetWorking(false);
-        bl0->free();
+        Blist::destroy(bl0);
         return (oiret);
     }
 
@@ -667,7 +667,7 @@ cCHD::writeMulti(const char *cellname, const FIOcvtPrms *iprms,
                 break;
             }
         }
-        bl0->free();
+        Blist::destroy(bl0);
     }
     else {
         int nxc = BB.width()/gridsize + (BB.width()%gridsize != 0);
@@ -949,7 +949,7 @@ mpx_out::write_box(const BBox *BB)
                 Blist *bl0 = BB->clip_to(&BBaoi);
                 if (bl0) {
                     ret = mpx_channels[i]->write_box(&bl0->BB);
-                    bl0->free();
+                    Blist::destroy(bl0);
                 }
             }
             if (!ret)
@@ -1678,7 +1678,7 @@ mpx_flat_out::write_box(const BBox *BB)
                 Blist *bl0 = BB->clip_to(BBaoi);
                 if (bl0) {
                     ret = mpx_channels[i]->write_box(&bl0->BB);
-                    bl0->free();
+                    Blist::destroy(bl0);
                 }
             }
             if (!ret)
