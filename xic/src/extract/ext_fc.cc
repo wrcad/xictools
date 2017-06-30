@@ -1139,7 +1139,7 @@ namespace {
 
         ~sPgrp()
             {
-                Zlist::free(list);
+                Zlist::destroy(list);
             }
 
         sPgrp *add(double e, int z, int xll, int xlr, int yl,
@@ -1216,7 +1216,7 @@ fcLayout::panelize_group_zbot(const glZlistRef3d *z0) const
                 Zx.print();
                 printf("residual\n");
                 Zlist::print(zz);
-                Zlist::free(zz);
+                Zlist::destroy(zz);
             }
         }
 #endif
@@ -1329,7 +1329,7 @@ fcLayout::panelize_group_ztop(const glZlistRef3d *z0) const
                                 }
                             }
                         }
-                        Zlist::free(zx);
+                        Zlist::destroy(zx);
                     }
                     yl = yl->clip_out(&z2->Z);
                     if (!yl)
@@ -1364,7 +1364,7 @@ done:   ;
                     }
                 }
             }
-            Zlist::free(zx);
+            Zlist::destroy(zx);
         }
     }
     if (fcl_domerge) {
@@ -1989,7 +1989,7 @@ fcLayout::panelize_dielectric_zbot(const Layer3d *l) const
                 Zlist *zz = Zt.clip_out(&Zx, &novl);
                 if (zz || novl) {
                     printf("Internal: panelize_dielectric, cutting error.\n");
-                    Zlist::free(zz);
+                    Zlist::destroy(zz);
 
                     printf("Internal: panelize_electric, cutting error, "
                         "area %g, %s/%s.\n", Zlist::area(zz),
@@ -2002,7 +2002,7 @@ fcLayout::panelize_dielectric_zbot(const Layer3d *l) const
                     Zx.print();
                     printf("residual\n");
                     Zlist::print(zz);
-                    Zlist::free(zz);
+                    Zlist::destroy(zz);
                 }
                 continue;
             }
@@ -2118,7 +2118,7 @@ fcLayout::panelize_dielectric_ztop(const Layer3d *l1) const
                                         }
                                     }
                                 }
-                                Zlist::free(zx);
+                                Zlist::destroy(zx);
                             }
                         }
                         yl = yl->clip_out(&z2->Z);
@@ -2155,7 +2155,7 @@ done:       ;
                             }
                         }
                     }
-                    Zlist::free(zx);
+                    Zlist::destroy(zx);
                 }
             }
         }
@@ -2757,7 +2757,7 @@ fcLayout::area_group_ztop(const glZlistRef3d *z0) const
                     if (l->is_insulator()) {
                         Zlist *zx = yl->clip_to(&z2->Z);
                         area += Zlist::area(zx);
-                        Zlist::free(zx);
+                        Zlist::destroy(zx);
                     }
                     yl = yl->clip_out(&z2->Z);
                     if (!yl)
@@ -2772,7 +2772,7 @@ done:   ;
 
             Zlist *zx = yl->to_zlist();
             area += Zlist::area(zx);
-            Zlist::free(zx);
+            Zlist::destroy(zx);
         }
     }
     return (area);
@@ -3149,7 +3149,7 @@ fcLayout::area_dielectric_ztop(const Layer3d *l1) const
                                 Zlist *zx = yl->clip_to(&z2->Z);
                                 for (Zlist *zz = zx; zz; zz = zz->next)
                                     area += zz->Z.area();
-                                Zlist::free(zx);
+                                Zlist::destroy(zx);
                             }
                         }
                         yl = yl->clip_out(&z2->Z);
@@ -3167,7 +3167,7 @@ done:       ;
                     Zlist *zx = yl->to_zlist();
                     for (Zlist *zz = zx; zz; zz = zz->next)
                         area += zz->Z.area();
-                    Zlist::free(zx);
+                    Zlist::destroy(zx);
                 }
             }
         }

@@ -160,7 +160,7 @@ namespace drc_user {
                     *zret = ts_ev->accumZlist();
                 else {
                     Zlist *zl = ts_ev->accumZlist();
-                    Zlist::free(zl);
+                    Zlist::destroy(zl);
                 }
                 return (ret);
             }
@@ -404,7 +404,7 @@ DRCtest::~DRCtest()
         delete t_evalfunc;
         // The variables are deleted in t_evalfunc.
     }
-    Zlist::free(t_edgeZlist);
+    Zlist::destroy(t_edgeZlist);
     delete [] t_cotstr;
 }
 

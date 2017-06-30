@@ -427,7 +427,7 @@ GEOblock::~GEOblock()
 {
     if (b_list) {
         if (b_type == GBLKzlist)
-            Zlist::free(((Zlist*)b_list));
+            Zlist::destroy(((Zlist*)b_list));
         else
             ((GEOblock*)b_list)->free();
     }

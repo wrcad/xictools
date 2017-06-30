@@ -1130,12 +1130,12 @@ cGroupDesc::bind_term_to_group(CDsterm *term, int group)
                             term->set_loc((zx->Z.xll + zx->Z.xul +
                                 zx->Z.xlr + zx->Z.xur)/4,
                                 (zx->Z.yl + zx->Z.yu)/2);
-                            Zlist::free(zx);
+                            Zlist::destroy(zx);
                             setit = true;
                             break;
                         }
                     }
-                    Zlist::free(z0);
+                    Zlist::destroy(z0);
                 }
                 if (setit) {
                     term->set_ref(oset);

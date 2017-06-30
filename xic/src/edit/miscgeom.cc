@@ -271,12 +271,12 @@ namespace {
 
         if (gv->mode == CLsplitH) {
             Zlist::add(zret, gv->sdesc, gv->ldesc, gv->ud, gv->tmp_merge);
-            Zlist::free(zret);
+            Zlist::destroy(zret);
         }
         else if (gv->mode == CLsplitV) {
             zret = Zlist::to_r(zret);
             Zlist::add_r(zret, gv->sdesc, gv->ldesc, gv->ud, gv->tmp_merge);
-            Zlist::free(zret);
+            Zlist::destroy(zret);
         }
         else {
             // default
@@ -431,12 +431,12 @@ cEdit::createLayer(CDs *sdesc, const BBox *pAOI, CDl *ld, const char *str,
 
             if (mode == CLsplitH) {
                 Zlist::add(zret, sdesc, ld, ud, tmp_merge);
-                Zlist::free(zret);
+                Zlist::destroy(zret);
             }
             else if (mode == CLsplitV) {
                 zret = Zlist::to_r(zret);
                 Zlist::add_r(zret, sdesc, ld, ud, tmp_merge);
-                Zlist::free(zret);
+                Zlist::destroy(zret);
             }
             else {
                 // default
@@ -592,7 +592,7 @@ cEdit::createLayer_notree(CDs *sdesc, const BBox *pAOI, CDl *ld,
             if (mode == CLsplitV) {
                 zimport = Zlist::to_r(zimport);
                 Zlist::add_r(zimport, sdesc, ld, ud, use_merge);
-                Zlist::free(zimport);
+                Zlist::destroy(zimport);
             }
             else if (mode == CLjoin) {
                 XIrt ret = Zlist::to_poly_add(zimport, sdesc, ld, ud, 0,
@@ -602,7 +602,7 @@ cEdit::createLayer_notree(CDs *sdesc, const BBox *pAOI, CDl *ld,
             }
             else {
                 Zlist::add(zimport, sdesc, ld, ud, use_merge);
-                Zlist::free(zimport);
+                Zlist::destroy(zimport);
             }
         }
         else {
@@ -620,7 +620,7 @@ cEdit::createLayer_notree(CDs *sdesc, const BBox *pAOI, CDl *ld,
                     }
                     if (z) {
                         Zlist::add(z, sdesc, ld, ud, use_merge);
-                        Zlist::free(z);
+                        Zlist::destroy(z);
                     }
                 }
                 else if (mode == CLsplitV) {
@@ -632,7 +632,7 @@ cEdit::createLayer_notree(CDs *sdesc, const BBox *pAOI, CDl *ld,
                     if (z) {
                         z = Zlist::to_r(z);
                         Zlist::add_r(z, sdesc, ld, ud, use_merge);
-                        Zlist::free(z);
+                        Zlist::destroy(z);
                     }
                 }
                 else if (mode == CLjoin) {
@@ -650,19 +650,19 @@ cEdit::createLayer_notree(CDs *sdesc, const BBox *pAOI, CDl *ld,
                             XIrt ret = Zlist::to_poly_add(z, sdesc, ld, ud, 0,
                                 use_merge);
                             if (ret != XIok) {
-                                Zlist::free(zl0);
+                                Zlist::destroy(zl0);
                                 delete odesc;
                                 return (ret);
                             }
                         }
                         else {
-                            Zlist::free(z);
+                            Zlist::destroy(z);
                             if (!change_layer(odesc, sdesc, ld, false, ud,
                                     false)) {
                                 Errs()->add_error("change_layer failed");
                                 Log()->ErrorLog(layer_creation,
                                     Errs()->get_error());
-                                Zlist::free(zl0);
+                                Zlist::destroy(zl0);
                                 delete odesc;
                                 return (XIbad);
                             }

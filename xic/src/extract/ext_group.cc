@@ -654,7 +654,7 @@ cGroupDesc::process_exclude()
                 if (globex.testZlistCovNone(&cx, &ct,
                         2*Tech()->AngleSupport()) == XIok && ct != CovNone)
                     odesc->set_group(-1);
-                Zlist::free(zl);
+                Zlist::destroy(zl);
             }
         }
         else {
@@ -683,17 +683,17 @@ cGroupDesc::process_exclude()
                     // zret is list of areas to exclude
                     Zlist *zx = odesc->toZlist();
                     if (!zx) {
-                        Zlist::free(zret);
+                        Zlist::destroy(zret);
                         continue;
                     }
                     if (!Zlist::intersect(zx, zret, false)) {
-                        Zlist::free(zret);
-                        Zlist::free(zx);
+                        Zlist::destroy(zret);
+                        Zlist::destroy(zx);
                         continue;
                     }
                     for (Zlist *z = zret; z; z = z->next)
                         Zlist::zl_andnot(&zx, &z->Z);
-                    Zlist::free(zret);
+                    Zlist::destroy(zret);
 
                     // Mark as not included.
                     odesc->set_group(-1);

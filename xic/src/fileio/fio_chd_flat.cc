@@ -539,7 +539,7 @@ cCHD::readFlat_zl(SymTab **tabptr, const char *cellname,
         SymTabGen gen(bk.table, true);
         SymTabEnt *h;
         while ((h = gen.next()) != 0) {
-            Zlist::free(((Zlist*)h->stData));
+            Zlist::destroy(((Zlist*)h->stData));
             delete h;
         }
         delete bk.table;

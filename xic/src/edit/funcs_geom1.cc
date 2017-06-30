@@ -2297,7 +2297,7 @@ geom1_funcs::IFcheckObjectsConnected(Variable *res, Variable *args, void*)
                     return (BAD);
             }
             yl = yl->connected(&zl0);
-            Zlist::free(zl0);
+            Zlist::destroy(zl0);
             if (yl) {
                 res->content.value = 0;
                 yl->free();
@@ -2382,7 +2382,7 @@ geom1_funcs::IFcheckForHoles(Variable *res, Variable *args, void*)
             }
             Ylist *yl = new Ylist(zarea);
             yl = yl->connected(&zl0);
-            Zlist::free(zl0);
+            Zlist::destroy(zl0);
             if (yl) {
                 res->content.value = 1.0;
                 yl->free();
@@ -2604,12 +2604,12 @@ geom1_funcs::IFedgeObjects(Variable *res, Variable *args, void*)
                     zret = Zlist::edges(zl0, dimen);
                 else
                     zret = Zlist::bloat(zl0, dimen, BL_EDGE_ONLY);
-                Zlist::free(zl0);
+                Zlist::destroy(zl0);
                 zl0 = zret;
             }
             catch (XIrt tmpret) {
                 zret = 0;
-                Zlist::free(zl0);
+                Zlist::destroy(zl0);
                 zl0 = 0;
                 if (tmpret == XIintr)
                     SI()->SetInterrupt();

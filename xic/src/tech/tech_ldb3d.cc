@@ -64,7 +64,7 @@ Ldb3d::Ldb3d()
 
 Ldb3d::~Ldb3d()
 {
-    Zlist::free(db3_zlref);
+    Zlist::destroy(db3_zlref);
     db3_stack->free();
     delete db3_groups;
 }
@@ -316,11 +316,11 @@ namespace {
                 XIrt ret;
                 Zlist *zl = sdesc->getZlist(CDMAXCALLDEPTH, fld, zref, &ret);
                 if (ret != XIok) {
-                    Zlist::free(zref);
+                    Zlist::destroy(zref);
                     return (0);
                 }
                 if (zl) {
-                    Zlist::free(zref);
+                    Zlist::destroy(zref);
                     zref = zl;
                 }
             }
@@ -368,7 +368,7 @@ Ldb3d::init_stack(CDs *sdesc, const BBox *AOI, bool is_cs,
         return (false);
     }
     Zlist::BB(zref, db3_aoi);
-    Zlist::free(db3_zlref);
+    Zlist::destroy(db3_zlref);
     db3_zlref = zref;
 
     // Next, obtain geometry, and remove layers that are nonexistant
@@ -701,7 +701,7 @@ Layer3d::extract_geom(const CDs *sdesc, const Zlist *zref)
     Zlist *zl = sdesc->getZlist(CDMAXCALLDEPTH, l3_ldesc, zref, &ret);
     if (ret != XIok) {
         if (free_zref)
-            Zlist::free(zref);
+            Zlist::destroy(zref);
         return (false);
     }
     if (l3_ldesc->isVia() || l3_ldesc->isDarkField()) {
@@ -709,13 +709,13 @@ Layer3d::extract_geom(const CDs *sdesc, const Zlist *zref)
         ret = Zlist::zl_andnot(&zr, zl);
         if (ret != XIok) {
             if (free_zref)
-                Zlist::free(zref);
+                Zlist::destroy(zref);
             return (false);
         }
         zl = zr;
     }
     if (free_zref)
-        Zlist::free(zref);
+        Zlist::destroy(zref);
 
     l3_cut->free();
     l3_cut = 0;

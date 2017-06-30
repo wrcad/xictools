@@ -616,7 +616,7 @@ oas_in::~oas_in()
     in_layermap_list->free();
     delete in_xname_table;
 
-    Zlist::free(in_zoidlist);
+    Zlist::destroy(in_zoidlist);
 
     delete in_bakif;
 }

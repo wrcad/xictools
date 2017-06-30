@@ -212,7 +212,7 @@ cEdit::bloatQueue(int width, int mode)
                     if (ret != XIok) {
                         l0->free();
                         for (i++; i < nused; i++)
-                            Zlist::free(zheads[i]);
+                            Zlist::destroy(zheads[i]);
                         delete [] zheads;
                         PL()->ErasePrompt();
                         XM()->ShowParameters();
@@ -230,7 +230,7 @@ cEdit::bloatQueue(int width, int mode)
                                             false))
                                         o->plist = new PolyList(po, o->plist);
                                 }
-                                Zlist::free(zlist);
+                                Zlist::destroy(zlist);
                             }
                             else
                                 o->plist = Zlist::to_poly_list(zlist);

@@ -120,7 +120,7 @@ RLsolver::~RLsolver()
 {
     delete rl_matrix;
     delete [] rl_contacts;
-    Zlist::free(rl_zlist);
+    Zlist::destroy(rl_zlist);
     rl_h_edges->free();
     rl_v_edges->free();
 }
@@ -777,7 +777,7 @@ RLsolver::find_tile()
         t = mmGCD(t, z->Z.xll - BB.left);
         t = mmGCD(t, z->Z.xlr - BB.left);
     }
-    zl->Zlist::free(zl);
+    zl->Zlist::destroy(zl);
 
     return (t);
 }
@@ -1097,7 +1097,7 @@ MRsolver::find_vias()
                     "find_vias: getZlist failed or user abort.");
                 return (false);
             }
-            Zlist::free(z1);
+            Zlist::destroy(z1);
 
             PolyList *p0 = Zlist::to_poly_list(z2);
 
@@ -1113,7 +1113,7 @@ MRsolver::find_vias()
                         Zlist *zx = p->po.toZlist();
                         ret = lsp.testContact(cursdp, CDMAXCALLDEPTH, zx,
                             &istrue);
-                        Zlist::free(zx);
+                        Zlist::destroy(zx);
                         lsp.set_tree(0);
                         if (ret == XIintr) {
                             Errs()->add_error("find_vias: interrupted");
@@ -1346,7 +1346,7 @@ MRsolver::solve_elements()
 
             RLsolver *r = new RLsolver;
             bool ret = r->setup(zl, c->ld, &zg);
-            Zlist::free(zl);
+            Zlist::destroy(zl);
             if (!ret) {
                 Errs()->add_error("solve_elements: setup failed.");
                 return (false);

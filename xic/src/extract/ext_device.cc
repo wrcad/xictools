@@ -592,7 +592,7 @@ cGroupDesc::find_dev_set(const char *name, const char *pref, const char *inds,
                                             &zret) != XIok)
                                         return (found);
                                     if (zret) {
-                                        Zlist::free(zret);
+                                        Zlist::destroy(zret);
                                         di->set_displayed(state);
                                         found++;
                                     }
@@ -988,7 +988,7 @@ cGroupDesc::has_bulk_contact(const sDevDesc *d, const BBox *bBB,
         const char *msg = "contact expression for %s%s, evaluation %s.";
         ExtErrLog.add_dev_err(gd_celldesc, 0, msg, d->name(), c->name(),
             ret == XIintr ? "interrupted" : "failed");
-        Zlist::free(zret);
+        Zlist::destroy(zret);
         *xrt = ret;
         return (false);
     }
@@ -997,7 +997,7 @@ cGroupDesc::has_bulk_contact(const sDevDesc *d, const BBox *bBB,
 
     BBox cBB;
     Zlist::BB(zret, cBB);
-    Zlist::free(zret);
+    Zlist::destroy(zret);
     return (check_bulk_contact_group(&cBB, c));
 }
 
@@ -2816,7 +2816,7 @@ sMprim::cAP(sDevInst *di)
     SIlexprCx cx(di->celldesc(), CDMAXCALLDEPTH, z0);
     Zlist *zret = 0;
     XIrt xrt = c1->desc()->lspec()->getZlist(&cx, &zret);
-    Zlist::free(z0);
+    Zlist::destroy(z0);
     if (xrt != XIok)
         return (false);
     z0 = Zlist::repartition_ni(zret);
@@ -2847,7 +2847,7 @@ sMprim::cAP(sDevInst *di)
             mp_extravar->content.value = MICRONS(perim);
         }
         else
-            Zlist::free(z0);
+            Zlist::destroy(z0);
         return (true);
     }
 
@@ -3993,7 +3993,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
         int j = 0;
         for (int i = 0; i < g->num; i++) {
             if (!Zlist::intersect(g->list[i], AOI, false)) {
-                Zlist::free(g->list[i]);
+                Zlist::destroy(g->list[i]);
                 g->list[i] = 0;
             }
             else {
@@ -4011,7 +4011,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
         for (int i = 0; i < g->num; i++) {
             if (g->list[i]) {
                 if (!findall && j)
-                    Zlist::free(g->list[i]);
+                    Zlist::destroy(g->list[i]);
                 else
                     zz[j++] = g->list[i];
                 g->list[i] = 0;
@@ -4035,7 +4035,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
             CovType ct;
             if (globex.testZlistCovNone(&cx, &ct, 2*Tech()->AngleSupport())
                     == XIok && ct != CovNone) {
-                Zlist::free(g->list[i]);
+                Zlist::destroy(g->list[i]);
                 g->list[i] = 0;
                 continue;
             }
@@ -4280,12 +4280,12 @@ sDevDesc::identify_contacts(CDs *sdesc, sDevInst *d, const Zlist *zbody,
             }
         }
         else {
-            Zlist::free(zbb);
+            Zlist::destroy(zbb);
             *xrt = ret;
             return (false);
         }
     }
-    Zlist::free(zbb);
+    Zlist::destroy(zbb);
     return (true);
 }
 
@@ -4383,7 +4383,7 @@ sDevDesc::identify_contact(CDs *sdesc, sDevInst *d, Zlist **zbbp,
     }
     delete gc;
     if (d_bloat != 0.0)
-        Zlist::free(zb);
+        Zlist::destroy(zb);
     *zbbp = zbb;
     return (ci0);
 }
@@ -4409,7 +4409,7 @@ sDevDesc::identify_bulk_contact(CDs *sdesc, sDevInst *d, sDevContactDesc *c,
         const char *msg = "contact expression for %s%s, evaluation %s.";
         ExtErrLog.add_dev_err(sdesc, 0, msg, name(), c->name(),
             ret == XIintr ? "interrupted" : "failed");
-        Zlist::free(zret);
+        Zlist::destroy(zret);
         *xrt = ret;
         return (0);
     }
@@ -5773,7 +5773,7 @@ sDevInst::getdev(BBox *AOI, bool *err)
                 return (0);
             }
             if (zret) {
-                Zlist::free(zret);
+                Zlist::destroy(zret);
                 return (new sDevInstList(this, 0));
             }
         }
@@ -5951,7 +5951,7 @@ sDevInst::setup_squares(bool lmode) const
                 !cg->list[i]) {
             const char *msg = "contact %s, failed to extract area";
             ExtErrLog.add_dev_err(di_sdesc, this, msg, ci->desc()->name());
-            Zlist::free(zlist);
+            Zlist::destroy(zlist);
             delete cg;
             return (0);
         }
@@ -5959,7 +5959,7 @@ sDevInst::setup_squares(bool lmode) const
 
     RLsolver *r = new RLsolver;
     bool ret = r->setup(zlist, bld, cg);
-    Zlist::free(zlist);
+    Zlist::destroy(zlist);
     delete cg;
 
     const char *msg = "RLsolver error: %s";

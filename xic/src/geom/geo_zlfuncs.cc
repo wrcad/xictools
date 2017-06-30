@@ -48,8 +48,8 @@ Zlist::zl_intersect(Zlist *zl1, Zlist *zl2, bool touchok)
     // Do simple case
     if (!zl1->next && !zl2->next) {
         bool ret = zl1->Z.intersect(&zl2->Z, touchok);
-        Zlist::free(zl1);
-        Zlist::free(zl2);
+        Zlist::destroy(zl1);
+        Zlist::destroy(zl2);
         return (ret);
     }
 
@@ -100,7 +100,7 @@ Zlist::zl_and(Zlist **zp)
 {
     Zlist *zl = *zp;
     if (!zl || !zl->next) {
-        Zlist::free(zl);
+        Zlist::destroy(zl);
         *zp = 0;
         return (XIok);
     }
@@ -123,7 +123,7 @@ XIrt
 Zlist::zl_and(Zlist **zl1p, const Zoid *ZB)
 {
     if (!*zl1p || !ZB) {
-        Zlist::free((*zl1p));
+        Zlist::destroy((*zl1p));
         *zl1p = 0;
         return (XIok);
     }
@@ -151,9 +151,9 @@ Zlist::zl_and(Zlist **zl1p, Zlist *zl2)
     TimeDbgAccum ac("zl_and");
 
     if (!*zl1p || !zl2) {
-        Zlist::free((*zl1p));
+        Zlist::destroy((*zl1p));
         *zl1p = 0;
-        Zlist::free(zl2);
+        Zlist::destroy(zl2);
         return (XIok);
     }
 
@@ -161,8 +161,8 @@ Zlist::zl_and(Zlist **zl1p, Zlist *zl2)
     if (!(*zl1p)->next && !zl2->next) {
         Zlist *zt = *zl1p;
         *zl1p = (zt->Z).clip_to(&zl2->Z);
-        Zlist::free(zl2);
-        Zlist::free(zt);
+        Zlist::destroy(zl2);
+        Zlist::destroy(zt);
         return (XIok);
     }
 
@@ -206,7 +206,7 @@ Zlist::zl_and(Zlist **zl1p, const Ylist *yl2)
     TimeDbgAccum ac("zl_and_y");
 
     if (!*zl1p || !yl2 || (!yl2->y_zlist && !yl2->next)) {
-        Zlist::free((*zl1p));
+        Zlist::destroy((*zl1p));
         *zl1p = 0;
         return (XIok);
     }
@@ -314,7 +314,7 @@ Zlist::zl_andnot(Zlist **zl1p, Zlist *zl2)
     TimeDbgAccum ac("zl_andnot");
 
     if (!*zl1p || !zl2) {
-        Zlist::free(zl2);
+        Zlist::destroy(zl2);
         return (XIok);
     }
     if (!(*zl1p)->next && !zl2->next) {
@@ -324,8 +324,8 @@ Zlist::zl_andnot(Zlist **zl1p, Zlist *zl2)
         if (no_ovl)
             *zl1p = zo;
         else
-            Zlist::free(zo);
-        Zlist::free(zl2);
+            Zlist::destroy(zo);
+        Zlist::destroy(zl2);
         return (XIok);
     }
 
@@ -498,12 +498,12 @@ Zlist::zl_bloat(Zlist **zp, int delta, int mode)
     Zlist *zl = *zp;
     try {
         *zp = Zlist::bloat(zl, delta, mode);
-        Zlist::free(zl);
+        Zlist::destroy(zl);
         return (XIok);
     }
     catch (XIrt ret) {
         *zp = 0;
-        Zlist::free(zl);
+        Zlist::destroy(zl);
         return (ret);
     }
 }

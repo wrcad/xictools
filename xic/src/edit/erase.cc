@@ -186,7 +186,7 @@ cEdit::eraseUnder()
                 p0->free();
             }
         }
-        Zlist::free(zl);
+        Zlist::destroy(zl);
     }
     ps->free();
     if (DSP()->CurMode() == Electrical && DSP()->ShowTerminals())

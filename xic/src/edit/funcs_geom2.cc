@@ -2192,7 +2192,7 @@ geom2_funcs::IFclipObjects(Variable *res, Variable *args, void*)
                             }
                         }
                     }
-                    Zlist::free(zl);
+                    Zlist::destroy(zl);
                 }
             }
             res->content.value = cnt;

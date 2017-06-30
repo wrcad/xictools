@@ -559,7 +559,7 @@ namespace {
                     Zoid Z(tbb);
                     bool cover;
                     bool cov = Z.test_coverage(zl0, &cover, 0);
-                    Zlist::free(zl0);
+                    Zlist::destroy(zl0);
                     if (!cov)
                         return (false);
                 }
@@ -1650,7 +1650,7 @@ namespace {
     {
         Zlist *zl = odesc->toZlist();
         XIrt ret = ::coverageTest(zl, lspec, type, istrue);
-        Zlist::free(zl);
+        Zlist::destroy(zl);
         return (ret);
     }
 }

@@ -741,7 +741,7 @@ cExt::loadScriptFuncs()
 #endif
 }
 
-#define FREE_CHK_ZL(b, zl) { if (b) Zlist::free(zl); zl = 0; }
+#define FREE_CHK_ZL(b, zl) { if (b) Zlist::destroy(zl); zl = 0; }
 
 
 /*========================================================================*

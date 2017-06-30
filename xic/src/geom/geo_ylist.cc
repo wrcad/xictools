@@ -632,7 +632,7 @@ Ylist::repartition() throw (XIrt)
     }
     catch (XIrt) {
         yl0->free();
-        Zlist::free(zl0);
+        Zlist::destroy(zl0);
         throw;
     }
 }
@@ -941,7 +941,7 @@ Ylist::clip_to() throw (XIrt)
             if (checkInterrupt()) {
                 delete zl;
                 yl0->free();
-                Zlist::free(z0);
+                Zlist::destroy(z0);
                 throw (XIintr);
             }
             Zlist *zret = yl0->clip_to(&zl->Z);
@@ -1049,7 +1049,7 @@ Ylist::clip_to(const Ylist *yl0) const throw (XIrt)
         return (z0);
     }
     catch (XIrt) {
-        Zlist::free(z0);
+        Zlist::destroy(z0);
         throw;
     }
 }
@@ -1068,7 +1068,7 @@ Ylist::clip_out() const throw (XIrt)
         for (const Ylist *y = this; y; y = y->next) {
             for (Zlist *z = y->y_zlist; z; z = z->next) {
                 if (checkInterrupt()) {
-                    Zlist::free(z0);
+                    Zlist::destroy(z0);
                     throw (XIintr);
                 }
 
@@ -1117,7 +1117,7 @@ Ylist::clip_out() const throw (XIrt)
         return (z0);
     }
     catch (XIrt) {
-        Zlist::free(z0);
+        Zlist::destroy(z0);
         throw;
     }
 }
@@ -1261,7 +1261,7 @@ Ylist::clip_out(const Ylist *yr) const throw (XIrt)
         return (z0);
     }
     catch (XIrt) {
-        Zlist::free(z0);
+        Zlist::destroy(z0);
         throw;
     }
 }

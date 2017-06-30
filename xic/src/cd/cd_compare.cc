@@ -489,13 +489,13 @@ CDdiff::diff_layer(CDl *ldesc, const CDs *s1, const CDs *s2, Ldiff **lret)
                 if (ret == XIintr) {
                     Errs()->add_error("diffLayer: user interrupt");
                     delete ld0;
-                    Zlist::free(z1);
+                    Zlist::destroy(z1);
                     return (DFabort);
                 }
                 else if (ret == XIbad) {
                     Errs()->add_error("diffLayer: getZlist failed");
                     delete ld0;
-                    Zlist::free(z1);
+                    Zlist::destroy(z1);
                     return (DFerror);
                 }
 
@@ -767,7 +767,7 @@ CDdiff::diff_layer(CDl *ldesc, const CDs *s1, const CDs *s2)
                     return (DFerror);
                 Zlist *z2 = s2->getZlist(0, ldesc, &zr, &ret);
                 if (ret != XIok) {
-                    Zlist::free(z1);
+                    Zlist::destroy(z1);
                     return (DFerror);
                 }
                 ret = Zlist::zl_andnot2(&z1, &z2);
@@ -775,8 +775,8 @@ CDdiff::diff_layer(CDl *ldesc, const CDs *s1, const CDs *s2)
                     return (DFerror);
 
                 bool df = (z1 || z2);
-                Zlist::free(z1);
-                Zlist::free(z2);
+                Zlist::destroy(z1);
+                Zlist::destroy(z2);
                 if (df)
                     return (DFdiffer);
             }

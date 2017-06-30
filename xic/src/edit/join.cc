@@ -48,7 +48,7 @@ namespace {
     struct j_list
     {
         j_list(CDo *o) { j_odesc = o; j_zlist = 0; next = 0; }
-        ~j_list() { Zlist::free(j_zlist); }
+        ~j_list() { Zlist::destroy(j_zlist); }
 
         XIrt join(CDs*, CDl*, bool);
 
@@ -86,7 +86,7 @@ namespace {
                     // from queue and continue.
                     if (use_sq)
                         Selections.removeObject(CurCell(), jl->j_odesc);
-                    Zlist::free(jl->j_zlist);
+                    Zlist::destroy(jl->j_zlist);
                     jl->j_zlist = 0;
                     cnt++;
                     delete jl;
@@ -487,7 +487,7 @@ cEdit::splitQueue(bool vert)
                     cursd->newPoly(0, &po, od->ldesc(), 0, false);
             }
         }
-        Zlist::free(zl);
+        Zlist::destroy(zl);
         Ulist()->RecordObjectChange(cursd, od, 0);
     }
     return (XIok);

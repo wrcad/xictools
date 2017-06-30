@@ -283,7 +283,7 @@ sLspec::testZlistCovFull(SIlexprCx *cx, CovType *cov, int minsz)
                     *cov = CovFull;
                 }
                 else {
-                    Zlist::free(za);
+                    Zlist::destroy(za);
                     *cov = CovPartial;
                     return (XIok);
                 }
@@ -393,7 +393,7 @@ sLspec::testZlistCovPartial(SIlexprCx *cx, CovType *cov, int minsz)
                     *cov = CovFull;
                 }
                 else {
-                    Zlist::free(za);
+                    Zlist::destroy(za);
                     *cov = CovPartial;
                     return (XIok);
                 }
@@ -469,7 +469,7 @@ sLspec::testZlistCovNone(SIlexprCx *cx, CovType *cov, int minsz)
             z = Zlist::filter_drc_slivers(z, minsz);
             if (z) {
                 *cov = CovPartial;
-                Zlist::free(z);
+                Zlist::destroy(z);
                 return (XIok);
             }
         }
@@ -533,7 +533,7 @@ sLspec::testContact(const CDs *sdesc, int maxdepth, const CDo *odesc,
 
     Zlist *zl = odesc->toZlist();
     XIrt ret = testContact(sdesc, maxdepth, zl, istrue);
-    Zlist::free(zl);
+    Zlist::destroy(zl);
     return (ret);
 }
 
@@ -574,7 +574,7 @@ sLspec::testContact(const CDs *sdesc, int maxdepth, const Zlist *zl0,
                     break;
                 }
             }
-            Zlist::free(v.content.zlist);
+            Zlist::destroy(v.content.zlist);
         }
         return (XIok);
     }

@@ -66,7 +66,7 @@ sLCx::sLCx(sLCx *n)
 sLCx::~sLCx()
 {
     delete lcx;
-    Zlist::free(zlbak);
+    Zlist::destroy(zlbak);
 }
 // End of sLCx functions.
 
@@ -2175,7 +2175,7 @@ SIfunc::restore_vars(Variable *vi, Variable *res)
             }
             if (!found)
                 // Found a zlist not passed or returned, free it
-                Zlist::free(v->content.zlist);
+                Zlist::destroy(v->content.zlist);
         }
         if (v->type == TYP_LEXPR) {
             bool found = false;

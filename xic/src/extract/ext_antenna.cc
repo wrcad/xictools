@@ -233,7 +233,7 @@ ant_pathfinder::process(const sDevContactInst *cx)
         Zlist *zl = (Zlist*)h->stData;
         zl = Zlist::repartition_ni(zl);
         double a = Zlist::area(zl);
-        Zlist::free(zl);
+        Zlist::destroy(zl);
         char *s = new char[32];
         sprintf(s, "%.6e", a);
         h->stData = s;

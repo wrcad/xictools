@@ -253,7 +253,7 @@ cSDB::~cSDB()
     else if (dbtype == sdbZldb) {
         SymTabEnt *h;
         while ((h = gen.next()) != 0) {
-            Zlist::free(((Zlist*)h->stData));
+            Zlist::destroy(((Zlist*)h->stData));
             delete h;
         }
     }
@@ -889,7 +889,7 @@ zbins_t::~zbins_t()
 {
     unsigned int n = b_nx*b_ny;
     for (unsigned int i = 0; i < n; i++)
-        Zlist::free(b_array[i]);
+        Zlist::destroy(b_array[i]);
     delete [] b_array;
 }
 

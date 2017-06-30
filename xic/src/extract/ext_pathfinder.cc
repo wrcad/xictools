@@ -1089,7 +1089,7 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
                 continue;
 
             Zlist *zv = cursdp->getZlist(pf_depth, ld, z1, &ret);
-            Zlist::free(z1);
+            Zlist::destroy(z1);
             if (ret != XIok) {
                 if (ret == XIbad)
                     Errs()->add_error(
@@ -1108,7 +1108,7 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
                         if (ret == XIbad)
                             Errs()->add_error(
                                 "get_via_list: via check returned error");
-                        Zlist::free(zv);
+                        Zlist::destroy(zv);
                         break;
                     }
                     if (istrue && incl_xtra_layers) {
@@ -1122,7 +1122,7 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
                                     Errs()->add_error(
                                     "get_via_list: failed to get zlist for %s",
                                         ldtmp->name());
-                                Zlist::free(zv);
+                                Zlist::destroy(zv);
                                 break;
                             }
                             if (zx) {
@@ -1149,11 +1149,11 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
                     zv0 = zv;
                 }
                 else
-                    Zlist::free(zv);
+                    Zlist::destroy(zv);
             }
         }
         if (ret != XIok) {
-            Zlist::free(zv0);
+            Zlist::destroy(zv0);
             break;
         }
 
@@ -1176,7 +1176,7 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
     //
     SymTabGen gen(tab, true);
     while ((h = gen.next()) != 0) {
-        Zlist::free(((Zlist*)h->stData));
+        Zlist::destroy(((Zlist*)h->stData));
         delete h;
     }
     delete tab;

@@ -47,7 +47,7 @@ struct Ylist
     void operator delete(void*, size_t);
 #endif
     Ylist(Zlist*, bool = false);
-    ~Ylist() { Zlist::free(y_zlist); }
+    ~Ylist() { Zlist::destroy(y_zlist); }
 
     void free()
         {
@@ -72,7 +72,7 @@ struct Ylist
 
     void set_zlist(Zlist *zl)
         {
-            Zlist::free(y_zlist);
+            Zlist::destroy(y_zlist);
             y_zlist = zl;
         }
 

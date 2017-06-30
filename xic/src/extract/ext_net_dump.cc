@@ -551,7 +551,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
                 continue;
 
             Zlist *zv = sdesc->getZlist(0, ld, z1, &ret);
-            Zlist::free(z1);
+            Zlist::destroy(z1);
             if (ret != XIok) {
                 if (ret == XIbad)
                     Errs()->add_error("write_vias: failed to get zlist for %s",
@@ -569,7 +569,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
                         if (ret == XIbad)
                             Errs()->add_error(
                                 "write_vias: via check returned error");
-                        Zlist::free(zv);
+                        Zlist::destroy(zv);
                         break;
                     }
                     if (istrue && (en_flags & EN_VTRE)) {
@@ -582,7 +582,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
                                     Errs()->add_error(
                                     "write_vias: failed to get zlist for %s",
                                         ldtmp->name());
-                                Zlist::free(zv);
+                                Zlist::destroy(zv);
                                 break;
                             }
                             if (zx) {
@@ -618,11 +618,11 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
                     zv0 = zv;
                 }
                 else
-                    Zlist::free(zv);
+                    Zlist::destroy(zv);
             }
         }
         if (ret != XIok) {
-            Zlist::free(zv0);
+            Zlist::destroy(zv0);
             break;
         }
 
@@ -652,7 +652,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
     SymTabGen gen(tab, true);
     SymTabEnt *h;
     while ((h = gen.next()) != 0) {
-        Zlist::free(((Zlist*)h->stData));
+        Zlist::destroy(((Zlist*)h->stData));
         delete h;
     }
     delete tab;

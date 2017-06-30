@@ -1871,7 +1871,7 @@ namespace {
                     cursd->newPoly(0, &po, oo->ldesc(), 0, false);
             }
         }
-        Zlist::free(z0);
+        Zlist::destroy(z0);
 
         return (XIok);
     }

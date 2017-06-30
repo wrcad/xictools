@@ -1392,11 +1392,11 @@ cExt::isConnection(CDs *sdesc, const sVia *via, const CDo *odv,
             siVariable v;
             cx.enableExceptions(true);
             if ((*via->tree()->evfunc)(via->tree(), &v, &cx) != OK) {
-                Zlist::free(zv);
+                Zlist::destroy(zv);
                 return (XIbad);
             }
             cx.enableExceptions(false);
-            Zlist::free(zl);
+            Zlist::destroy(zl);
 
             if (v.type == TYP_ZLIST) {
                 zv = v.content.zlist;
