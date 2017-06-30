@@ -774,7 +774,7 @@ cGroupDesc::compute_cap()
                             MICRONS(p->po.perim()) *
                             tech_prm(ld)->cap_per_perim();
                     }
-                    p0->free();
+                    PolyList::destroy(p0);
                 }
             }
         }

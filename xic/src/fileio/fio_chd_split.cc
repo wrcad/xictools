@@ -601,7 +601,7 @@ cCHD::writeMulti(const char *cellname, const FIOcvtPrms *iprms,
     FIO()->ifSetWorking(true);
     OItype oiret = OIok;
     if (bl0) {
-        int nvals = bl0->length();
+        int nvals = Blist::length(bl0);
         int cnt = 0;
         for (Blist *bl = bl0; bl; bl = bl->next) {
             cnt++;
@@ -982,7 +982,7 @@ mpx_out::write_poly(const Poly *poly)
                 Zlist *zl = poly->toZlist();
                 Ylist *yl = new Ylist(new Zlist(&BBaoi));
                 ret = (Zlist::zl_and(&zl, yl) == XIok);
-                yl->free();
+                Ylist::destroy(yl);
 
                 if (zl) {
                     PolyList *pl = Zlist::to_poly_list(zl);
@@ -996,7 +996,7 @@ mpx_out::write_poly(const Poly *poly)
                         if (!ret)
                             break;
                     }
-                    pl->free();
+                    PolyList::destroy(pl);
                 }
             }
             if (!ret)
@@ -1032,7 +1032,7 @@ mpx_out::write_wire(const Wire *wire)
                 Zlist *zl = po.toZlist();
                 Ylist *yl = new Ylist(new Zlist(&BBaoi));
                 ret = (Zlist::zl_and(&zl, yl) == XIok);
-                yl->free();
+                Ylist::destroy(yl);
 
                 if (zl) {
                     PolyList *pl = Zlist::to_poly_list(zl);
@@ -1046,7 +1046,7 @@ mpx_out::write_wire(const Wire *wire)
                         if (!ret)
                             break;
                     }
-                    pl->free();
+                    PolyList::destroy(pl);
                 }
             }
             if (!ret)
@@ -1277,7 +1277,7 @@ cCHD::write_multi_hier(symref_t *ptop, const FIOcvtPrms *prms,
     int nyc = 0;
 
     if (blist) {
-        wmc.nvals = blist->length();
+        wmc.nvals = Blist::length(blist);
         wmc.ctab = new cCVtab(false, wmc.nvals);
 
         int cnt = 0;
@@ -1704,7 +1704,7 @@ mpx_flat_out::write_poly(const Poly *poly)
                 Zlist *zl = poly->toZlist();
                 Ylist *yl = new Ylist(new Zlist(BBaoi));
                 ret = (Zlist::zl_and(&zl, yl) == XIok);
-                yl->free();
+                Ylist::destroy(yl);
 
                 if (zl) {
                     PolyList *pl = Zlist::to_poly_list(zl);
@@ -1718,7 +1718,7 @@ mpx_flat_out::write_poly(const Poly *poly)
                         if (!ret)
                             break;
                     }
-                    pl->free();
+                    PolyList::destroy(pl);
                 }
             }
             if (!ret)
@@ -1748,7 +1748,7 @@ mpx_flat_out::write_wire(const Wire *wire)
                 Zlist *zl = po.toZlist();
                 Ylist *yl = new Ylist(new Zlist(BBaoi));
                 ret = (Zlist::zl_and(&zl, yl) == XIok);
-                yl->free();
+                Ylist::destroy(yl);
 
                 if (zl) {
                     PolyList *pl = Zlist::to_poly_list(zl);
@@ -1762,7 +1762,7 @@ mpx_flat_out::write_wire(const Wire *wire)
                         if (!ret)
                             break;
                     }
-                    pl->free();
+                    PolyList::destroy(pl);
                 }
             }
             if (!ret)

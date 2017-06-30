@@ -61,12 +61,12 @@ Zgroup::to_poly_list(int ix, int max_verts)
             Ylist *y = new Ylist(zl);
 
             CD()->SetIgnoreIntr(true);
-            y = y->repartition_group();
+            y = Ylist::repartition_group(y);
             CD()->SetIgnoreIntr(false);
 
             while (y) {
                 if (max_verts > 0 && Zlist::JoinBreakClean) {
-                    y = y->to_poly(&po.points, &po.numpts, 0);
+                    y = Ylist::to_poly(y, &po.points, &po.numpts, 0);
                     if (po.numpts > max_verts) {
                         PolyList *pn = po.divide(max_verts);
                         PolyList *px = pn;
@@ -80,7 +80,7 @@ Zgroup::to_poly_list(int ix, int max_verts)
                         p0 = new PolyList(po, p0);
                 }
                 else {
-                    y = y->to_poly(&po.points, &po.numpts, max_verts);
+                    y = Ylist::to_poly(y, &po.points, &po.numpts, max_verts);
                     if (po.numpts)
                         p0 = new PolyList(po, p0);
                 }
@@ -135,7 +135,7 @@ Zgroup::mk_cell(CDl *ld)
             newp->set_group(i);
             sd->insert(newp);
         }
-        pl->free();
+        PolyList::destroy(pl);
     }
     delete this;
     return (sd);

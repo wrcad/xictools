@@ -150,7 +150,7 @@ WindowDesc::ShowPolygon(const Poly *poly, int type, const GRfillType *fillpat,
                     S_bf->assign(i, pl->po.points[i].x, pl->po.points[i].y);
                 w_draw->Polygon(S_bf, pl->po.numpts);
             }
-            p0->free();
+            PolyList::destroy(p0);
 
             if (type & CDL_OUTLINED) {
                 w_draw->SetFillpattern(0);
@@ -181,7 +181,7 @@ WindowDesc::ShowPolygon(const Poly *poly, int type, const GRfillType *fillpat,
                 }
                 w_draw->Polygon(S_bf, pl->po.numpts);
             }
-            p0->free();
+            PolyList::destroy(p0);
 
             if (type & CDL_OUTLINED) {
                 w_draw->SetFillpattern(0);

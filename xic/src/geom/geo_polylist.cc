@@ -117,15 +117,3 @@ PolyList::to_olist(CDl *ld, CDol **endp)
     return (ol0);
 }
 
-
-void
-PolyList::free()
-{
-    PolyList *p = this;
-    while (p) {
-        PolyList *pn = p->next;
-        delete p;
-        p = pn;
-    }
-}
-

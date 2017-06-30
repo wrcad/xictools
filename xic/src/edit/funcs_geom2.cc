@@ -1566,7 +1566,7 @@ namespace {
                         }
                     }
                 }
-                yr->free();
+                Ylist::destroy(yr);
                 if (DSP()->CurMode() == Electrical && DSP()->ShowTerminals())
                     DSP()->ShowCellTerminalMarks(DISPLAY);
                 res->content.value = cnt;
@@ -1658,7 +1658,7 @@ namespace {
                             p0->to_olist(ld, &oend); 
                     }
                 }
-                yr->free();
+                Ylist::destroy(yr);
                 sHdl *hnew = new sHdlObject(o0, cursd, true);
                 res->type = TYP_HANDLE;
                 res->content.value = hnew->id;
@@ -1764,7 +1764,7 @@ namespace {
                         }
                     }
                 }
-                yl->free();
+                Ylist::destroy(yl);
                 if (DSP()->CurMode() == Electrical && DSP()->ShowTerminals())
                     DSP()->ShowCellTerminalMarks(DISPLAY);
                 res->content.value = cnt;
@@ -1887,7 +1887,7 @@ namespace {
                             p0->to_olist(ld, &oend);
                     }
                 }
-                yl->free();
+                Ylist::destroy(yl);
                 sHdl *hnew = new sHdlObject(o0, cursd, true);
                 res->type = TYP_HANDLE;
                 res->content.value = hnew->id;
@@ -2166,7 +2166,7 @@ geom2_funcs::IFclipObjects(Variable *res, Variable *args, void*)
                             cnt++;
                         }
                     }
-                    p0->free();
+                    PolyList::destroy(p0);
                 }
                 else {
                     for (Zlist *z = zl; z; z = z->next) {

@@ -531,74 +531,6 @@ qface3d::print(FILE *fp, int n, int x, int y, double sc, const char *ff) const
 // End of qface3d functions.
 
 
-// Split all panels in the list so that no dimension is larger than t.
-//
-qflist3d *
-qflist3d::split(int t) const
-{
-    qflist3d *q0 = 0, *qe = 0;
-    for (const qflist3d *q = this; q; q = q->next) {
-        qflist3d *qs = q->Q.split(t);
-        if (qs) {
-            if (!q0)
-                q0 = qe = qs;
-            else {
-                while (qe->next)
-                    qe = qe->next;
-                qe->next = qs;
-            }
-        }
-    }
-    return (q0);
-}
-
-
-// Apply partitioning to the vertical edge panels.  These are always
-// rectangular.  We cut a thin edge at the top and bottom, and split
-// the middle part with the minimum of partmax and edgemax.
-//
-qflist3d *
-qflist3d::side_split(int partmax, int edgemax, int thinedge) const
-{
-    qflist3d *q0 = 0, *qe = 0;
-    for (const qflist3d *q = this; q; q = q->next) {
-        qflist3d *qs = q->Q.side_split(partmax, edgemax, thinedge);
-        if (qs) {
-            if (!q0)
-                q0 = qe = qs;
-            else {
-                while (qe->next)
-                    qe = qe->next;
-                qe->next = qs;
-            }
-        }
-    }
-    return (q0);
-}
-
-
-bool
-qflist3d::save(FILE *fp, const char *qname, int indent) const
-{
-    if (!fp)
-        return (false);
-    int cnt = 0;
-    for (const qflist3d *q = this; q; cnt++, q = q->next) ;
-    if (!cnt)
-        return (true);
-
-    fprintf(fp, "%*c%s %d\n", indent, ' ', qname ? qname : "unnamed", cnt);
-    indent++;
-    for (const qflist3d *q = this; q; q = q->next) {
-        fprintf(fp, "%*c%d,%d,%d %d,%d,%d %d,%d,%d %d,%d,%d\n", indent, ' ',
-            q->Q.c1.x,q->Q.c1.y,q->Q.c1.z, q->Q.c2.x,q->Q.c2.y,q->Q.c2.z,
-            q->Q.c3.x,q->Q.c3.y,q->Q.c3.z, q->Q.c4.x,q->Q.c4.y,q->Q.c4.z);
-    }
-    return (true);
-}
-// End of qflist3d functions.
-
-
 // glYlist3d constructor, z0 is consumed.
 //
 glYlist3d::glYlist3d(glZlist3d *z0, bool sub)
@@ -614,7 +546,7 @@ glYlist3d::glYlist3d(glZlist3d *z0, bool sub)
             y_yl = z0->Z.yl;
         }
         else {
-            z0 = z0->sort();
+            z0 = glZlist3d::sort(z0);
             y_zlist = z0;
             y_yu = z0->Z.yu;
             y_yl = z0->Z.yl;
@@ -637,14 +569,15 @@ glYlist3d::glYlist3d(glZlist3d *z0, bool sub)
 }
 
 
+// Static function.
 // Convert this to a glZlist3d, destructive.
 //
 glZlist3d *
-glYlist3d::to_zl3d()
+glYlist3d::to_zl3d(glYlist3d *thisgl)
 {
     glZlist3d *z0 = 0, *ze = 0;
     glYlist3d *yn;
-    for (glYlist3d *y = this; y; y = yn) {
+    for (glYlist3d *y = thisgl; y; y = yn) {
         yn = y->next;
         if (y->y_zlist) {
             if (!z0)
@@ -661,13 +594,15 @@ glYlist3d::to_zl3d()
 }
 
 
+// Static function.
+//
 glZgroup3d *
-glYlist3d::group(int max_in_grp)
+glYlist3d::group(glYlist3d *thisgl, int max_in_grp)
 {
     struct gtmp_t { gtmp_t *next; glZlist3d *lst[256]; };
     gtmp_t *g0 = 0, *ge = 0;
 
-    glYlist3d *yl0 = this;
+    glYlist3d *yl0 = thisgl;
 
     int gcnt = 0;
     while (yl0) {
@@ -694,8 +629,9 @@ glYlist3d::group(int max_in_grp)
 
         int cnt = 1;
         for (glZlist3d *z = ze; z; z = z->next) {
-            glZlist3d *zret;
-            yl0 = yl0->touching(&zret, &z->Z);
+            glZlist3d *zret = 0;
+            if (yl0)
+                yl0 = yl0->touching(&zret, &z->Z);
             ze->next = zret;
             if (!yl0)
                 break;
@@ -986,12 +922,13 @@ namespace {
 }
 
 
-// Sort for glYlist3d.
+// Static function.
+// Sort for glZlist3d.
 //
 glZlist3d *
-glZlist3d::sort()
+glZlist3d::sort(glZlist3d *thisgl)
 {
-    glZlist3d *z0 = this;
+    glZlist3d *z0 = thisgl;
     if (z0 && z0->next) {
         int len = 0;
         for (glZlist3d *z = z0; z; z = z->next, len++) ;
@@ -1019,16 +956,17 @@ glZlist3d::sort()
 }
 
 
+// Static function.
 // Convert this (which is destroyed) to a Manhattan representation.
 // The returned list consists of rectangles only.  Rectangles added
 // from triangular parts have w and h <= mindim.
 //
 glZlist3d *
-glZlist3d::manhattanize(int mindim)
+glZlist3d::manhattanize(glZlist3d *thisgl, int mindim)
 {
    if (mindim < 10)
         mindim = 10;
-    glZlist3d *z0 = 0, *z = this;
+    glZlist3d *z0 = 0, *z = thisgl;
 
     // This version decomposes the zoids into right-triangles, then
     // recursively cuts out the Manhattan parts.  The coordinates are

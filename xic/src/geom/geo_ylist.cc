@@ -104,11 +104,13 @@ namespace geo_ylist {
 }
 
 
+// Static function.
+//
 bool
-Ylist::intersect(const Ylist *yl0, bool touchok) const
+Ylist::intersect(const Ylist *thisyl, const Ylist *yl0, bool touchok)
 {
     Ymgr ym(yl0);
-    for (const Ylist *y = this; y; y = y->next) {
+    for (const Ylist *y = thisyl; y; y = y->next) {
         for (Zlist *zl1 = y->y_zlist; zl1; zl1 = zl1->next) {
             ovlchk_t ovl(zl1->Z.minleft(), zl1->Z.maxright(), zl1->Z.yu);
             ym.reset();
@@ -131,13 +133,14 @@ Ylist::intersect(const Ylist *yl0, bool touchok) const
 }
 
 
+// Static function.
 // Return the first zoid found that encloses p.
 //
 const Zoid *
-Ylist::find_container(const Point *p)
+Ylist::find_container(const Ylist *thisyl, const Point *p)
 {
     ovlchk_t ovl(p->x, p->x, p->y);
-    for (Ylist *y = this; y; y = y->next) {
+    for (const Ylist *y = thisyl; y; y = y->next) {
         if (y->y_yl >= p->y)
             continue;
         if (y->y_yu <= p->y)
@@ -155,11 +158,13 @@ Ylist::find_container(const Point *p)
 }
 
 
+// Static function.
+//
 Ylist *
-Ylist::copy() const
+Ylist::copy(const Ylist *thisyl)
 {
     Ylist *y0 = 0, *ye = 0;
-    for (const Ylist *yl = this; yl; yl = yl->next) {
+    for (const Ylist *yl = thisyl; yl; yl = yl->next) {
         Ylist *yn = new Ylist(*yl);
         yn->next = 0;
         yn->y_zlist = Zlist::copy(yn->y_zlist);
@@ -174,21 +179,20 @@ Ylist::copy() const
 }
 
 
+// Static function.
+//
 Ylist *
-Ylist::to_poly(Point **pts, int *num, int maxv)
+Ylist::to_poly(Ylist *thisyl, Point **pts, int *num, int maxv)
 {
     TimeDbgAccum ac("to_poly");
 
     *pts = 0;
     *num = 0;
-    {
-        const Ylist *yt = this;
-        if (!yt)
-            return (0);
-    }
+    if (!thisyl)
+        return(0);
 
     Zlist *zl;
-    Ylist *yl0 = first(&zl);
+    Ylist *yl0 = thisyl->first(&zl);
     if (!zl)
         return (0);
     if (!yl0) {
@@ -264,18 +268,19 @@ Ylist::to_poly(Point **pts, int *num, int maxv)
         // The poly found was bad, throw it away and try again,
         // recursively.
         delete [] po.points;
-        return (yl0->to_poly(pts, num, maxv));
+        return (to_poly(yl0, pts, num, maxv));
     }
 }
 
 
+// Static function.
 // Return a group struct containing the groups of elements that are
 // mutually connected, 'this' is consumed.  If max_in_grp is nonzero,
 // groups are *approximately* limited to this number of entries.  In
 // this case, the groups are not necessarily disjoint
 //
 Zgroup *
-Ylist::group(int max_in_grp)
+Ylist::group(Ylist *thisyl, int max_in_grp)
 {
     TimeDbgAccum ac("group");
 
@@ -295,7 +300,7 @@ Ylist::group(int max_in_grp)
         Zlist *lst[256];
     } *g0 = 0, *ge = 0;
 
-    Ylist *yl0 = this;
+    Ylist *yl0 = thisyl;
 
     int gcnt = 0;
     while (yl0) {
@@ -353,17 +358,15 @@ Ylist::group(int max_in_grp)
 }
 
 
+// Static function.
 // Remove, recursively, all zoids that are connected to the AOI
 // border.
 //
 Ylist *
-Ylist::remove_backg(const BBox *AOI)
+Ylist::remove_backg(Ylist *thisyl, const BBox *AOI)
 {
-    {
-        const Ylist *yt = this;
-        if (!yt)
-            return (0);
-    }
+    if (!thisyl)
+        return (0);
     Zlist *z0 = 0;
     z0 = new Zlist(-CDinfinity, AOI->top, CDinfinity, CDinfinity, z0);
     Zlist *ze = z0;
@@ -371,7 +374,7 @@ Ylist::remove_backg(const BBox *AOI)
     z0 = new Zlist(AOI->right, AOI->bottom, CDinfinity, AOI->top, z0);
     z0 = new Zlist(-CDinfinity, -CDinfinity, CDinfinity, AOI->bottom, z0);
 
-    Ylist *yl0 = this;
+    Ylist *yl0 = thisyl;
     while (z0) {
         Zlist *zret;
         yl0 = yl0->touching(&zret, &z0->Z);
@@ -388,14 +391,15 @@ Ylist::remove_backg(const BBox *AOI)
 }
 
 
+// Static function.
 // Pull the "first" zoid, and all those that recursively touch it, out
 // of this and return them in zp.
 //
 Ylist *
-Ylist::connected(Zlist **zp)
+Ylist::connected(Ylist *thisyl, Zlist **zp)
 {
     *zp = 0;
-    Ylist *yl0 = this;
+    Ylist *yl0 = thisyl;
     if (yl0) {
         Zlist *ze;
         yl0 = yl0->first(&ze);
@@ -416,21 +420,19 @@ Ylist::connected(Zlist **zp)
 }
 
 
+// Static function.
 // If y1 is null, compute all "scan" values for this, which are zoid
 // tops and bottoms, and edge y-intersections not on a top or bottom. 
 // If y1 is not null, compute the edge intersections between zoids of
 // the two lists that are not on a zoid top or bottom.
 //
 void
-Ylist::scanlines(const Ylist *y1, intDb &idb) const
+Ylist::scanlines(const Ylist *thisyl, const Ylist *y1, intDb &idb)
 {
-    {
-        const Ylist *yt = this;
-        if (!yt)
-            return;
-    }
+    if (!thisyl)
+        return;
     if (y1) {
-        const Ylist *y0 = this;
+        const Ylist *y0 = thisyl;
         if (y1->y_yu > y0->y_yu) {
             const Ylist *yt = y0;
             y0 = y1;
@@ -469,7 +471,7 @@ Ylist::scanlines(const Ylist *y1, intDb &idb) const
         return;
     }
 
-    for (const Ylist *y0 = this; y0; y0 = y0->next) {
+    for (const Ylist *y0 = thisyl; y0; y0 = y0->next) {
         idb.add(y0->y_yu);
         for (Zlist *z0 = y0->y_zlist; z0; z0 = z0->next) {
             idb.add(z0->Z.yl);
@@ -523,18 +525,16 @@ Ylist::scanlines(const Ylist *y1, intDb &idb) const
 }
 
 
+// Static function.
 // Cut all zoids at the passed y values.  Return a new Ylist, this is
 // consumed.  The scans array is sorted ascending.
 //
 Ylist *
-Ylist::slice(const int *scans, int nscans) throw (XIrt)
+Ylist::slice(Ylist *thisyl, const int *scans, int nscans) throw (XIrt)
 {
-    {
-        const Ylist *yt = this;
-        if (!yt)
-            return (0);
-    }
-    Ylist *y0 = this;
+    if (!thisyl)
+        return (0);
+    Ylist *y0 = thisyl;
     Zlist *z0 = 0;
     int indx = nscans - 1;
     while (y0) {
@@ -544,7 +544,7 @@ Ylist::slice(const int *scans, int nscans) throw (XIrt)
             continue;
 
         if (checkInterrupt()) {
-            y0->free();
+            destroy(y0);
             throw XIintr;
         }
 
@@ -579,6 +579,7 @@ Ylist::slice(const int *scans, int nscans) throw (XIrt)
 }
 
 
+// Static function.
 // Clip and merge the list using the "scan lines", so as to produce a
 // representation where each zoid is as wide as possible.
 //
@@ -588,11 +589,11 @@ Ylist::slice(const int *scans, int nscans) throw (XIrt)
 // On interrupt, 'this' is freed.
 //
 Zlist *
-Ylist::repartition() throw (XIrt)
+Ylist::repartition(Ylist *thisyl) throw (XIrt)
 {
     TimeDbgAccum ac("repartition");
 
-    Ylist *yl0 = this;
+    Ylist *yl0 = thisyl;
     Zlist *zl0 = 0;
 
     try {
@@ -619,7 +620,7 @@ Ylist::repartition() throw (XIrt)
             }
 
             Ylist *yl = new Ylist(zl);
-            zl = yl->repartition_group()->to_zlist();
+            zl = to_zlist(repartition_group(yl));
             if (zl) {
                 Zlist *zn = zl;
                 while (zn->next)
@@ -631,25 +632,29 @@ Ylist::repartition() throw (XIrt)
         return (zl0);
     }
     catch (XIrt) {
-        yl0->free();
+        destroy(yl0);
         Zlist::destroy(zl0);
         throw;
     }
 }
 
 
+// Static function.
 // As above, but ignore interrupts.
 //
 Zlist *
-Ylist::repartition_ni()
+Ylist::repartition_ni(Ylist *thisyl)
 {
+    if (!thisyl)
+        return (0);
     CD()->SetIgnoreIntr(true);
-    Zlist *zl = repartition();
+    Zlist *zl = repartition(thisyl);
     CD()->SetIgnoreIntr(false);
     return (zl);
 }
 
 
+// Static function.
 // Clip and merge the list using the "scan lines", so as to produce a
 // representation where each zoid is as wide as possible.
 //
@@ -659,15 +664,15 @@ Ylist::repartition_ni()
 // On interrupt, 'this' is freed.
 //
 Ylist *
-Ylist::repartition_group() throw (XIrt)
+Ylist::repartition_group(Ylist *thisyl) throw (XIrt)
 {
     // Check trivial cases.
-    Ylist *y0 = this;
+    Ylist *y0 = thisyl;
     if (!y0)
         return (0);
     if (!y0->next) {
         if (!y0->y_zlist) {
-            delete this;
+            delete y0;
             return (0);
         }
         if (!y0->y_zlist->next)
@@ -679,7 +684,7 @@ Ylist::repartition_group() throw (XIrt)
     // intersections not on a top or bottom.
 
     intDb idb;
-    scanlines(0, idb);
+    scanlines(y0, 0, idb);
     int *scans;
     int nscans;
     idb.list(&scans, &nscans);
@@ -687,13 +692,13 @@ Ylist::repartition_group() throw (XIrt)
 
     if (checkInterrupt()) {
         delete [] scans;
-        y0->free();
+        destroy(y0);
         throw XIintr;
     }
 
     // Now clip each zoid at the scan lines.
     try {
-        y0 = y0->slice(scans, nscans);
+        y0 = slice(y0, scans, nscans);
         delete [] scans;
     }
     catch (XIrt) {
@@ -707,7 +712,7 @@ Ylist::repartition_group() throw (XIrt)
     for (Ylist *y = y0; y; y = y->next) {
 
         if (checkInterrupt()) {
-            y0->free();
+            destroy(y0);
             throw XIintr;
         }
 
@@ -720,6 +725,1029 @@ Ylist::repartition_group() throw (XIrt)
 }
 
 
+// Static function.
+// It is known that yend is a single row that is not linked, which
+// would logically lie at the end of this.  Attempt to merge the
+// elements, and if it is not merged away, link yend to the the end. 
+// Used by polygon splitting code.
+//
+bool
+Ylist::merge_end_row(Ylist *thisyl, Ylist *yend)
+{
+    if (!yend)
+        return (true);
+    Ylist *yp = 0;
+    for (Ylist *y = thisyl; y; yp = y, y = y->next) {
+        if (y->y_yl < yend->y_yu)
+            continue;
+
+        Zlist *z2p = 0;
+        for (Zlist *zl = y->y_zlist; zl; zl = zl->next) {
+            if (zl->Z.yl != yend->y_yu)
+                continue;
+            for (Zlist *zl2 = z2p ? z2p->next : yend->y_zlist; zl2;
+                    z2p = zl2, zl2 = zl2->next) {
+
+                // The trapezoids are inherently clipped/merged from
+                // poly splitting, so logic below is ok.
+                //
+                if (zl2->Z.xul < zl->Z.xll)
+                    continue;
+                if (zl2->Z.xul > zl->Z.xll)
+                    break;
+                 
+                if (zl->Z.join_below(zl2->Z)) {
+                    if (y->y_yl > zl2->Z.yl)
+                        y->y_yl = zl2->Z.yl;
+                    yend->remove_next(z2p, zl2);
+                    delete zl2;
+                    if (!yend->y_zlist) {
+                        delete yend;
+                        return (true);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    yp->next = yend;
+    return (true);
+}
+
+
+// Static function.
+// Purge slivers.
+//
+Ylist *
+Ylist::filter_slivers(Ylist *thisyl, int d)
+{
+    Ylist *yl0 = thisyl;
+    Ylist *yp = 0, *yn;
+    for (Ylist *y = yl0; y; y = yn) {
+        yn = y->next;
+
+        y->y_zlist = Zlist::filter_slivers(y->y_zlist, d);
+        if (!y->y_zlist) {
+            if (!yp)
+                yl0 = yn;
+            else
+                yp->next = yn;
+            delete y;
+            continue;
+        }
+        yp = y;
+    }
+    return (yl0);
+}
+
+
+// Static function.
+// Return a list of the intersection areas, 'this' is destroyed.
+// On exception: 'this' is freed.
+//
+// This should be "safe", see note in Ylist::clip_to(Zoid*) below.  No
+// zoid is clipped more than once.
+//
+Zlist *
+Ylist::clip_to(Ylist *thisyl) throw (XIrt)
+{
+    if (!thisyl)
+        return (0);
+    Zlist *z0 = 0, *ze = 0, *zl;
+    Ylist *yl0 = thisyl->first(&zl);
+    if (zl) {
+        for (;;) {
+            if (!yl0) {
+                delete zl;
+                break;
+            }
+            if (checkInterrupt()) {
+                delete zl;
+                destroy(yl0);
+                Zlist::destroy(z0);
+                throw (XIintr);
+            }
+            Zlist *zret = clip_to(yl0, &zl->Z);
+            delete zl;
+            if (zret) {
+                if (!z0)
+                    z0 = ze = zret;
+                else
+                    ze->next = zret;
+                while (ze->next)
+                    ze = ze->next;
+            }
+            yl0 = yl0->first(&zl);
+        }
+    }
+    return (z0);
+}
+
+
+// Static function.
+// Return the zoids clipped to Z, this is not touched.
+//
+// I think that this should be "safe" as the same zoid is used as a
+// template for all clipping, and no zoid is clipped more than once. 
+// Problems arise when a zoid is clipped into smaller zoids, which are
+// clipped again, etc.  That is not the case here.
+//
+Zlist *
+Ylist::clip_to(const Ylist *thisyl, const Zoid *Z)
+{
+    if (!thisyl)
+        return (0);
+    Zlist *z0 = 0, *ze = 0;
+    for (const Ylist *y = thisyl; y; y = y->next) {
+        if (y->y_yl >= Z->yu)
+            continue;
+        if (y->y_yu <= Z->yl)
+            break;
+        ovlchk_t ovl(Z->minleft(), Z->maxright(), Z->yu);
+        for (Zlist *z = y->y_zlist; z; z = z->next) {
+            if (ovl.check_break(z->Z))
+                break;
+            if (ovl.check_continue(z->Z))
+                continue;
+            Zlist *zt = Z->clip_to(&z->Z);
+            if (zt) {
+                if (ze) {
+                    while (ze->next)
+                        ze = ze->next;
+                    ze->next = zt;
+                }
+                else
+                    z0 = ze = zt;
+            }
+        }
+    }
+    return (z0);
+}
+
+
+// Static function.
+// The original clip-to function for Ylists.
+// Return a zoid list representing (this & yl0).  On exception: 
+// 'this' and yl0 are untouched.
+//
+// This function is probably "safe" as no zoid is clipped more than
+// once.  See note for Ylist::clip_to(Zoid*).
+//
+Zlist *
+Ylist::clip_to(const Ylist *thisyl, const Ylist *yl0) throw (XIrt)
+{
+    Ymgr ym(yl0);
+    Zlist *z0 = 0, *ze = 0;
+    try {
+        for (const Ylist *y = thisyl; y; y = y->next) {
+            for (Zlist *zl1 = y->y_zlist; zl1; zl1 = zl1->next) {
+                if (checkInterrupt())
+                    throw (XIintr);
+                ovlchk_t ovl(zl1->Z.minleft(), zl1->Z.maxright(), zl1->Z.yu);
+                ym.reset();
+                const Ylist *yy;
+                while ((yy = ym.next(zl1->Z.yu)) != 0) {
+                    if (yy->y_yu <= zl1->Z.yl)
+                        break;
+                    for (Zlist *zl2 = yy->y_zlist; zl2; zl2 = zl2->next) {
+                        if (ovl.check_break(zl2->Z))
+                            break;
+                        if (ovl.check_continue(zl2->Z))
+                            continue;
+                        Zlist *zt = (zl1->Z).clip_to(&zl2->Z);
+                        if (zt) {
+                            if (ze) {
+                                while (ze->next)
+                                    ze = ze->next;
+                                ze->next = zt;
+                            }
+                            else
+                                z0 = ze = zt;
+                        }
+                    }
+                }
+            }
+        }
+        return (z0);
+    }
+    catch (XIrt) {
+        Zlist::destroy(z0);
+        throw;
+    }
+}
+
+
+// Static function.
+// New Ylist clip-out function, uses scan lines so is safe for
+// all-angles.  Returns a list with the common areas clipped out.
+//
+// This should be faster than calling scl_clip_out directly.
+//
+Zlist *
+Ylist::clip_out(const Ylist *thisyl) throw (XIrt)
+{
+    Zlist *z0 = 0;
+    try {
+        for (const Ylist *y = thisyl; y; y = y->next) {
+            for (Zlist *z = y->y_zlist; z; z = z->next) {
+                if (checkInterrupt()) {
+                    Zlist::destroy(z0);
+                    throw (XIintr);
+                }
+
+                // Grab a list of zoids that overlap.  We will employ
+                // scanline clipping with this collection.  This
+                // appears to be much faster than using scl_clip_out
+                // directly on the entire list.
+
+                Zlist *zb = thisyl->overlapping(&z->Z);
+                if (!zb) {
+                    // Won't include argument.
+                    // No overlap, zoid is not clipped, save it.
+                    z0 = new Zlist(&z->Z, z0);
+                }
+                else if (!zb->next) {
+                    // Just one overlapping zoid, use the zoid clipper.
+                    bool no_ovl;
+                    Zlist *zx = z->Z.clip_out(&zb->Z, &no_ovl);
+                    if (no_ovl) {
+                        // Can't happen, we know that there is overlap.
+                        z0 = new Zlist(&z->Z, z0);
+                    }
+                    else if (zx) {
+                        Zlist *zn = zx;
+                        while (zn->next)
+                            zn = zn->next;
+                        zn->next = z0;
+                        z0 = zx;
+                    }
+                    delete zb;
+                }
+                else {
+                    // More than one zoid, use the scanline clip-out.
+                    Ylist *ya = new Ylist(new Zlist(&z->Z));
+                    Ylist *yb = new Ylist(zb);
+                    Zlist *zx = to_zlist(ya->scl_clip_out(yb));
+                    if (zx) {
+                        Zlist *zn = zx;
+                        while (zn->next)
+                            zn = zn->next;
+                        zn->next = z0;
+                        z0 = zx;
+                    }
+                }
+            }
+        }
+        return (z0);
+    }
+    catch (XIrt) {
+        Zlist::destroy(z0);
+        throw;
+    }
+}
+
+
+// Static function.
+// Clip this (destructively) around Z, returning the clipped Ylist,
+// which can be nil.
+//
+// The new version should be be "safe", zoids are clipped around Z,
+// and the fragments replace the original zoid in this.
+//
+// WARNING: Calling this again for a different zoid is unsafe in the
+// all-angle case, should use scl_clip_out.
+//
+// In the original version the fragments may be clipped around Z
+// again, which is dangerous.
+//
+Ylist *
+Ylist::clip_out(Ylist *thisyl, const Zoid *Z)
+{
+    // This version saves the fragments and reinserts after the
+    // clipping pass, so that no fragment is re-clipped.  The
+    // re-clipping might cause numerical artifacts in all-angle cases.
+
+    Zlist *z0 = 0, *ze = 0;
+    Ylist *yl0 = thisyl, *yp = 0, *yn = 0;
+    for (Ylist *y = yl0; y; y = yn) {
+        yn = y->next;
+        if (y->y_yl >= Z->yu) {
+            yp = y;
+            continue;
+        }
+        if (y->y_yu <= Z->yl)
+            break;
+        Zlist *zn, *zp = 0;
+
+        ovlchk_t ovl(Z->minleft(), Z->maxright(), Z->yu);
+        for (Zlist *z = y->y_zlist; z; z = zn) {
+            zn = z->next;
+            if (ovl.check_break(z->Z))
+                break;
+            if (ovl.check_continue(z->Z)) {
+                zp = z;
+                continue;
+            }
+
+            bool no_ovl;
+            Zlist *zt = z->Z.clip_out(Z, &no_ovl);
+            if (no_ovl) {
+                zp = z;
+                continue;
+            }
+            y->remove_next(zp, z);
+            delete z;
+            if (zt) {
+                if (ze) {
+                    while (ze->next)
+                        ze = ze->next;
+                    ze->next = zt;
+                }
+                else
+                    z0 = ze = zt;
+            }
+        }
+        if (!y->y_zlist) {
+            if (!yp)
+                yl0 = yn;
+            else
+                yp->next = yn;
+            delete y;
+            continue;
+        }
+        yp = y;
+    }
+    if (z0) {
+        if (!yl0)
+            yl0 = new Ylist(z0);
+        else
+            yl0->insert(z0);
+    }
+    return (yl0);
+}
+
+
+// Static function.
+// New Ylist clip-out function, uses scan lines so is safe for
+// all-angles.  Ylists are not touched.
+//
+Zlist *
+Ylist::clip_out(const Ylist *thisyl, const Ylist *yr) throw (XIrt)
+{
+    Zlist *z0 = 0;
+    try {
+        for (const Ylist *y = thisyl; y; y = y->next) {
+            for (Zlist *zl1 = y->y_zlist; zl1; zl1 = zl1->next) {
+                if (checkInterrupt())
+                    throw (XIintr);
+
+                // Grab a list of zoids that overlap.  We will employ
+                // scanline clipping with this collection.  This
+                // appears to be much faster than using scl_clip_out
+                // directly on the entire list.
+
+                Zlist *zb = yr->overlapping(&zl1->Z);
+                if (!zb) {
+                    // No overlap, zoid is not clipped, save it.
+                    z0 = new Zlist(&zl1->Z, z0);
+                    continue;
+                }
+                if (!zb->next) {
+                    // Just one overlapping zoid, use the zoid clipper.
+                    bool no_ovl;
+                    Zlist *zx = zl1->Z.clip_out(&zb->Z, &no_ovl);
+                    if (no_ovl) {
+                        // Can't happen, we know that there is overlap.
+                        z0 = new Zlist(&zl1->Z, z0);
+                    }
+                    else if (zx) {
+                        Zlist *zn = zx;
+                        while (zn->next)
+                            zn = zn->next;
+                        zn->next = z0;
+                        z0 = zx;
+                    }
+                    delete zb;
+                    continue;
+                }
+
+                // More than one zoid, use the scanline clip-out.
+                Ylist *ya = new Ylist(new Zlist(&zl1->Z));
+                Ylist *yb = new Ylist(zb);
+                Zlist *zx = to_zlist(ya->scl_clip_out(yb));
+                if (zx) {
+                    Zlist *zn = zx;
+                    while (zn->next)
+                        zn = zn->next;
+                    zn->next = z0;
+                    z0 = zx;
+                }
+            }
+        }
+        return (z0);
+    }
+    catch (XIrt) {
+        Zlist::destroy(z0);
+        throw;
+    }
+}
+
+
+namespace {
+    // Clip left to right.  Zoids are from the same scanline band and
+    // all have the same height, and no edges cross if height > 1.
+    //
+    Zlist *band_clip_to(const Zlist *zleft, const Zlist *zright)
+    {
+        Zlist *z0 = 0;
+        for (const Zlist *za = zleft; za; za = za->next) {
+            ovlchk_t ovl(za->Z.minleft(), za->Z.maxright(), za->Z.yu);
+            for (const Zlist *zb = zright; zb; zb = zb->next) {
+                if (ovl.check_break(zb->Z))
+                    break;
+                if (ovl.check_continue(zb->Z))
+                    continue;
+
+                int xul = mmMax(za->Z.xul, zb->Z.xul);
+                int xur = mmMin(za->Z.xur, zb->Z.xur);
+                int xll = mmMax(za->Z.xll, zb->Z.xll);
+                int xlr = mmMin(za->Z.xlr, zb->Z.xlr);
+                if (xul <= xur && xll <= xlr) {
+                   Zoid zt(xll, xlr, za->Z.yl, xul, xur, za->Z.yu);
+                   if (!zt.is_bad())
+                       z0 = new Zlist(&zt, z0);
+                }
+            }
+        }
+        return (z0);
+    }
+
+
+    // Compute all the scan lines for the two lists and cross terms,
+    // and slice the two lists at the scans.
+    //
+    void slice_scans(Ylist **pyl, Ylist **pyr) throw (XIrt)
+    {
+        TimeDbgAccum ac("slice_scans");
+
+        Ylist *yl = *pyl;
+        Ylist *yr = *pyr;
+        intDb idb;
+        Ylist::scanlines(yl, 0, idb);
+        Ylist::scanlines(yr, 0, idb);
+        if (yr)
+            Ylist::scanlines(yl, yr, idb);
+
+        int *scans, nscans;
+        idb.list(&scans, &nscans);
+
+        try {
+            *pyl = Ylist::slice(yl, scans, nscans);
+        }
+        catch (XIrt) {
+            Ylist::destroy(yr);
+            *pyl = 0;
+            *pyr = 0;
+            delete [] scans;
+            throw;
+        }
+        try {
+            *pyr = Ylist::slice(yr, scans, nscans);
+        }
+        catch (XIrt) {
+            Ylist::destroy(*pyl);
+            *pyl = 0;
+            *pyr = 0;
+            delete [] scans;
+            throw;
+        }
+        delete [] scans;
+    }
+}
+
+
+// Static function.
+// A clip-to function based on scan lines.
+//
+// This is not used.  The clip-to operation does not clip zoids
+// multiply and sequentially and therefor does not produce accumulated
+// vertex placement errors in all-angle collections.  The non
+// scan-line clip-to is much faster.
+//
+Ylist *
+Ylist::scl_clip_to(Ylist *thisyl, Ylist *y) throw (XIrt)
+{
+    Ylist *y0 = thisyl;
+    Ylist *yb = y;
+    if (!y0 || !yb) {
+        destroy(y0);
+        destroy(yb);
+        return (0);
+    }
+    slice_scans(&y0, &yb);
+
+    // Run down the lists, processing each band.  We know that if
+    // zoids exist in a band, all have the same height, and none of
+    // the edges overlap if height > 1.  We keep the results in y0.
+
+    Ylist *ya = y0;
+    while (ya || yb) {
+        if (ya && (!yb || ya->y_yu > yb->y_yu)) {
+            ya->set_zlist(0);
+            ya = ya->next;
+            continue;
+        }
+        if (ya && ya->y_yu == yb->y_yu) {
+            if (!ya->y_zlist || !yb->y_zlist)
+                ya->set_zlist(0);
+            else {
+                Zlist *z0 = band_clip_to(ya->y_zlist, yb->y_zlist);
+                z0 = Zlist::sort(z0, 1);
+                scl_merge(z0);
+                ya->set_zlist(z0);
+            }
+            if (checkInterrupt()) {
+                destroy(y0);
+                destroy(yb);
+                throw XIintr;
+            }
+            ya = ya->next;
+        }
+        yb = clear_to_next(yb);
+    }
+    y0 = strip_empty(y0);
+    y0->col_row_merge();
+    return (y0);
+}
+
+
+namespace {
+    // Clip the common areas out of the list.  Zoids are from the same
+    // scanline band and all have the same height, and no edges cross
+    // if height > 1.  The passed list is consumed.
+    //
+    Zlist *band_clip_out(Zlist *z0)
+    {
+        Zlist *zap = 0, *zn;
+        for (Zlist *za = z0; za; za = zn) {
+            zn = za->next;
+            ovlchk_t ovl(za->Z.minleft(), za->Z.maxright(), za->Z.yu);
+            Zoid &Za = za->Z;
+            for (const Zlist *zb = zn; zb; zb = zb->next) {
+                const Zoid &Zb = zb->Z;
+                if (ovl.check_break(Zb))
+                    break;
+                if (ovl.check_continue(Zb))
+                    continue;
+                if (Za.xlr <= Zb.xll && Za.xur <= Zb.xul)
+                    continue;
+                if (Zb.xlr <= Za.xll && Zb.xur <= Za.xul)
+                    continue;
+
+                Zoid Zl(Za.xll, mmMin(Za.xlr, Zb.xll), Za.yl,
+                    Za.xul, mmMin(Za.xur, Zb.xul), Za.yu);
+                Zoid Zr(mmMax(Za.xll, Zb.xlr), Za.xlr, Za.yl,
+                    mmMax(Za.xul, Zb.xur), Za.xur, Za.yu);
+
+                bool lok = (Zl.xur >= Zl.xul && Zl.xlr >= Zl.xll &&
+                    !Zl.is_bad());
+                bool rok = (Zr.xur >= Zr.xul && Zr.xlr >= Zr.xll &&
+                    !Zr.is_bad());
+                if (!lok) {
+                    if (!rok) {
+                        if (zap)
+                            zap->next = zn;
+                        else
+                            z0 = zn;
+                        delete za;
+                    }
+                    else {
+                        za->Z = Zr;
+                        zn = za;
+                    }
+                    za = 0;
+                }
+                else {
+                    za->Z = Zl;
+                    if (rok) {
+                        za->next = new Zlist(&Zr, zn);
+                        zn = za->next;
+                    }
+                }
+                break;
+            }
+            if (za)
+                zap = za;
+        }
+        return (z0);
+    }
+}
+
+
+// Static function.
+// A self clip-out based on scan lines.  This may be less prone to
+// artifacts in all-angle collections than other methods.  The 'this'
+// list is destroyed.
+//
+Ylist *
+Ylist::scl_clip_out(Ylist *thisyl) throw (XIrt)
+{
+    Ylist *y0 = thisyl;
+    if (!y0)
+        return (0);
+    if (!y0->next) {
+        if (!y0->y_zlist) {
+            delete y0;
+            return (0);
+        }
+        if (!y0->y_zlist->next)
+            return (y0);
+    }
+
+    // First find the "scan lines" where we will cut horizontally. 
+    // These are zoid tops and bottoms, plus (and importantly) edge
+    // intersections not on a top or bottom.
+
+    intDb idb;
+    scanlines(y0, 0, idb);
+    int *scans;
+    int nscans;
+    idb.list(&scans, &nscans);
+    // The scanlines (y values) are in ascending order.
+
+    if (checkInterrupt()) {
+        delete [] scans;
+        destroy(y0);
+        throw XIintr;
+    }
+
+    // Now clip each zoid at the scan lines.
+    try {
+        y0 = slice(y0, scans, nscans);
+        delete [] scans;
+    }
+    catch (XIrt) {
+        delete [] scans;
+        throw;
+    }
+
+    // Now, there is no overlap between scans, and every zoid in a
+    // scan has the same height.
+
+    for (Ylist *y = y0; y; y = y->next) {
+
+        if (checkInterrupt()) {
+            destroy(y0);
+            throw XIintr;
+        }
+
+        Zlist *zl = band_clip_out(y->y_zlist);
+        zl = Zlist::sort(zl, 1);
+        scl_merge(zl);
+        y->y_zlist = zl;
+    }
+    y0->col_row_merge();
+    return (y0);
+}
+
+
+namespace {
+    // Clip right out of left.  Zoids are from the same scanline band
+    // and all have the same height, and no edges cross if height > 1.
+    //
+    Zlist *band_clip_out(const Zlist *zleft, const Zlist *zright)
+    {
+        Zlist *z0 = Zlist::copy(zleft);
+        Zlist *zap = 0, *zn;
+        for (Zlist *za = z0; za; za = zn) {
+            zn = za->next;
+            ovlchk_t ovl(za->Z.minleft(), za->Z.maxright(), za->Z.yu);
+            Zoid &Za = za->Z;
+            for (const Zlist *zb = zright; zb; zb = zb->next) {
+                const Zoid &Zb = zb->Z;
+                if (ovl.check_break(Zb))
+                    break;
+                if (ovl.check_continue(Zb))
+                    continue;
+                if (Za.xlr <= Zb.xll && Za.xur <= Zb.xul)
+                    continue;
+                if (Zb.xlr <= Za.xll && Zb.xur <= Za.xul)
+                    continue;
+
+                Zoid Zl(Za.xll, mmMin(Za.xlr, Zb.xll), Za.yl,
+                    Za.xul, mmMin(Za.xur, Zb.xul), Za.yu);
+                Zoid Zr(mmMax(Za.xll, Zb.xlr), Za.xlr, Za.yl,
+                    mmMax(Za.xul, Zb.xur), Za.xur, Za.yu);
+
+                bool lok = (Zl.xur >= Zl.xul && Zl.xlr >= Zl.xll &&
+                    !Zl.is_bad());
+                bool rok = (Zr.xur >= Zr.xul && Zr.xlr >= Zr.xll &&
+                    !Zr.is_bad());
+                if (!lok) {
+                    if (!rok) {
+                        if (zap)
+                            zap->next = zn;
+                        else
+                            z0 = zn;
+                        delete za;
+                    }
+                    else {
+                        za->Z = Zr;
+                        zn = za;
+                    }
+                    za = 0;
+                }
+                else {
+                    za->Z = Zl;
+                    if (rok) {
+                        za->next = new Zlist(&Zr, zn);
+                        zn = za->next;
+                    }
+                }
+                break;
+            }
+            if (za)
+                zap = za;
+        }
+        return (z0);
+    }
+}
+
+
+// Static function.
+// A clip-out based on scan lines.  This may be less prone to
+// artifacts in all-angle collections than other methods.  Both this
+// and the passed list are destroyed.
+//
+// This avoids vertex location errors seen in the original non
+// scan-line clip-out function.  In the original clip-out algorithm, a
+// zoid would be clipped, and the resulting pieces would be clipped
+// again by other zoids, and so on.  The problem is that the angles in
+// the pieces are likely a little different than the angles in the
+// original zoids, due to coordinate quantization.  This can cause
+// vertex locations to not be well defined, which can cause
+// aberrations such as needles and gaps in the result.
+//
+// With the scan lines, the clipping is done at each scan line before
+// the and-not operation, so the angles are based on the original zoid
+// angles, and vertex locations are well defined.
+//
+// Probably, one should use clip_out rather than calling this function
+// directly, for performance reasons.
+//
+Ylist *
+Ylist::scl_clip_out(Ylist *thisyl, Ylist *y) throw (XIrt)
+{
+    Ylist *y0 = thisyl;
+    Ylist *yb = y;
+    if (!y0) {
+        destroy(yb);
+        return (0);
+    }
+    if (!yb)
+        return (y0);
+    slice_scans(&y0, &yb);
+
+    // Run down the lists, processing each band.  We know that if
+    // zoids exist in a band, all have the same height, and none of
+    // the edges overlap if height > 1.
+
+    Ylist *ya = y0;
+    while (ya || yb) {
+        if (ya && (!yb || ya->y_yu > yb->y_yu)) {
+            ya = ya->next;
+            continue;
+        }
+        if (ya && ya->y_yu == yb->y_yu) {
+            if (ya->y_zlist && yb->y_zlist) {
+                Zlist *z0 = band_clip_out(ya->y_zlist, yb->y_zlist);
+                z0 = Zlist::sort(z0, 1);
+                scl_merge(z0);
+                ya->set_zlist(z0);
+            }
+            if (checkInterrupt()) {
+                destroy(y0);
+                destroy(yb);
+                throw XIintr;
+            }
+            ya = ya->next;
+        }
+        yb = clear_to_next(yb);
+    }
+    y0 = strip_empty(y0);
+    y0->col_row_merge();
+    return (y0);
+}
+
+
+// Static function.
+// As above, but also return y - this in *py.
+//
+Ylist *
+Ylist::scl_clip_out2(Ylist *thisyl, Ylist **py) throw (XIrt)
+{
+    Ylist *y0 = thisyl;
+    Ylist *y1 = *py;
+    if (!y0)
+        return (0);
+    if (!y1)
+        return (y0);
+    slice_scans(&y0, &y1);
+
+    // Run down the lists, processing each band.  We know that if
+    // zoids exist in a band, all have the same height, and none of
+    // the edges overlap if height > 1.
+
+    Ylist *ya = y0;
+    Ylist *yb = y1;
+    while (ya || yb) {
+        if (ya && (!yb || ya->y_yu > yb->y_yu)) {
+            ya = ya->next;
+            continue;
+        }
+        if (ya && ya->y_yu == yb->y_yu) {
+            if (ya->y_zlist && yb->y_zlist) {
+                Zlist *z0 = band_clip_out(ya->y_zlist, yb->y_zlist);
+                z0 = Zlist::sort(z0, 1);
+                scl_merge(z0);
+                Zlist *z1 = band_clip_out(yb->y_zlist, ya->y_zlist);
+                z1 = Zlist::sort(z1, 1);
+                scl_merge(z1);
+                ya->set_zlist(z0);
+                yb->set_zlist(z1);
+            }
+            if (checkInterrupt()) {
+                destroy(y0);
+                destroy(y1);
+                throw XIintr;
+            }
+            ya = ya->next;
+        }
+        yb = yb->next;
+    }
+    y0 = strip_empty(y0);
+    y1 = strip_empty(y1);
+    try {
+        y0->col_row_merge();
+    }
+    catch (XIrt) {
+        destroy(y1);
+        throw;
+    }
+    try {
+        y1->col_row_merge();
+    }
+    catch (XIrt) {
+        destroy(y0);
+        throw;
+    }
+    *py = y1;
+    return (y0);
+}
+
+
+namespace {
+    // Xor the lists.  Zoids are from the same scanline band and all
+    // have the same height, and no edges cross if height > 1.
+    //
+    Zlist *band_clip_xor(const Zlist *zleft, const Zlist *zright)
+    {
+        Zlist *z12 = band_clip_out(zleft, zright);
+        Zlist *z21 = band_clip_out(zright, zleft);
+        if (!z12)
+            z12 = z21;
+        else if (z21) {
+            Zlist *zn = z12;
+            while (zn->next)
+                zn = zn->next;
+            zn->next = z21;
+        }
+        return (z12);
+    }
+}
+
+
+// Static function.
+// A clip-xor function based on scan lines.  This may be less prone
+// to artifacts in all-angle collections than other methods.  Both
+// this and the passed list are destroyed.
+//
+Ylist *
+Ylist::scl_clip_xor(Ylist *thisyl, Ylist *y) throw (XIrt)
+{
+    Ylist *y0 = thisyl;
+    Ylist *yb = y;
+    if (!y0)
+        return (yb);
+    if (!yb)
+        return (y0);
+    slice_scans(&y0, &yb);
+
+    // Run down the lists, processing each band.  We know that if
+    // zoids exist in a band, all have the same height, and none of
+    // the edges overlap if height > 1.
+
+    Ylist *ya = y0;
+    Ylist *yap = 0;
+    while (ya || yb) {
+        if (ya && (!yb || ya->y_yu > yb->y_yu)) {
+            yap = ya;
+            ya = ya->next;
+            continue;
+        }
+        if (yb && !ya) {
+            // Append the remainder of the b list onto a.
+            if (yap)
+                yap->next = yb;
+            else
+                y0 = yb;
+            break;
+        }
+        if (yb->y_yu > ya->y_yu) {
+            // Add yb to the a list before ya.
+            if (yap)
+                yap->next = yb;
+            else
+                y0 = yb;
+            Ylist *yx = yb;
+            yb = yb->next;
+            yx->next = ya;
+            yap = yx;
+        }
+        else {
+            if (!ya->y_zlist) {
+                ya->y_zlist = yb->y_zlist;
+                yb->y_zlist = 0;
+            }
+            else if (yb->y_zlist) {
+                Zlist *z0 = band_clip_xor(ya->y_zlist, yb->y_zlist);
+                z0 = Zlist::sort(z0, 1);
+                scl_merge(z0);
+                ya->set_zlist(z0);
+            }
+            yap = ya;
+            ya = ya->next;
+            yb = clear_to_next(yb);
+        }
+        if (checkInterrupt()) {
+            destroy(y0);
+            destroy(yb);
+            throw XIintr;
+        }
+    }
+    y0 = strip_empty(y0);
+    y0->col_row_merge();
+    return (y0);
+}
+
+
+// Static function.
+// Do some testing and print messages if errors found, for debugging.
+//
+bool
+Ylist::debug(Ylist *thisyl)
+{
+    for (Ylist *y = thisyl; y; y = y->next) {
+        if (!y->debug_row())
+            return (false);
+    }
+    return (true);
+}
+
+
+bool
+Ylist::debug_row()
+{
+    if (next && next->y_yu >= y_yu) {
+        printf("FU 1: Ylist out of order\n");
+        return (false);
+    }
+    Zlist *zp = 0;
+    for (Zlist *z = y_zlist; z; z = z->next) {
+        if (z->Z.yu != y_yu) {
+            printf("FT 2: Zlist and Ylist yu differ\n");
+            return (false);
+        }
+
+        if (z->Z.yl < y_yl) {
+            printf("FU 3: Zlist yl out of range\n");
+            return (false);
+        }
+
+        if (zp && z->Z.zcmp(&zp->Z) < 0) {
+            printf("FU 5: Zlist out of order\n");
+            zp->Z.print();
+            z->Z.print();
+            return (false);
+        }
+        zp = z;
+    }
+    return (true);
+}
+
+
+//--- Start of Ylist private functions
+
 // For each row, join adjacent elements.  On exception:  'this' is
 // freed.
 //
@@ -729,7 +1757,7 @@ Ylist::merge_rows() throw (XIrt)
     bool change = false;
     for (Ylist *y = this; y; y = y->next) {
         if (checkInterrupt()) {
-            free();
+            destroy(this);
             throw (XIintr);
         }
         for (Zlist *zl1 = y->y_zlist; zl1; zl1 = zl1->next) {
@@ -762,7 +1790,7 @@ Ylist::merge_cols() throw (XIrt)
     bool change = false;
     for (Ylist *y = this; y; y = y->next) {
         if (checkInterrupt()) {
-            free();
+            destroy(this);
             throw (XIintr);
         }
         bool rsort = false;
@@ -845,1016 +1873,6 @@ restart:
     }
     return (change);
 }
-
-
-// It is known that yend is a single row that is not linked, which
-// would logically lie at the end of this.  Attempt to merge the
-// elements, and if it is not merged away, link yend to the the end. 
-// Used by polygon splitting code.
-//
-bool
-Ylist::merge_end_row(Ylist *yend)
-{
-    if (!yend)
-        return (true);
-    Ylist *yp = 0;
-    for (Ylist *y = this; y; yp = y, y = y->next) {
-        if (y->y_yl < yend->y_yu)
-            continue;
-
-        Zlist *z2p = 0;
-        for (Zlist *zl = y->y_zlist; zl; zl = zl->next) {
-            if (zl->Z.yl != yend->y_yu)
-                continue;
-            for (Zlist *zl2 = z2p ? z2p->next : yend->y_zlist; zl2;
-                    z2p = zl2, zl2 = zl2->next) {
-
-                // The trapezoids are inherently clipped/merged from
-                // poly splitting, so logic below is ok.
-                //
-                if (zl2->Z.xul < zl->Z.xll)
-                    continue;
-                if (zl2->Z.xul > zl->Z.xll)
-                    break;
-                 
-                if (zl->Z.join_below(zl2->Z)) {
-                    if (y->y_yl > zl2->Z.yl)
-                        y->y_yl = zl2->Z.yl;
-                    yend->remove_next(z2p, zl2);
-                    delete zl2;
-                    if (!yend->y_zlist) {
-                        delete yend;
-                        return (true);
-                    }
-                    break;
-                }
-            }
-        }
-    }
-    yp->next = yend;
-    return (true);
-}
-
-
-// Purge slivers.
-//
-Ylist *
-Ylist::filter_slivers(int d)
-{
-    Ylist *yl0 = this;
-    Ylist *yp = 0, *yn;
-    for (Ylist *y = yl0; y; y = yn) {
-        yn = y->next;
-
-        y->y_zlist = Zlist::filter_slivers(y->y_zlist, d);
-        if (!y->y_zlist) {
-            if (!yp)
-                yl0 = yn;
-            else
-                yp->next = yn;
-            delete y;
-            continue;
-        }
-        yp = y;
-    }
-    return (yl0);
-}
-
-
-// Return a list of the intersection areas, 'this' is destroyed.
-// On exception: 'this' is freed.
-//
-// This should be "safe", see note in Ylist::clip_to(Zoid*) below.  No
-// zoid is clipped more than once.
-//
-Zlist *
-Ylist::clip_to() throw (XIrt)
-{
-    Zlist *z0 = 0, *ze = 0, *zl;
-    Ylist *yl0 = first(&zl);
-    if (zl) {
-        for (;;) {
-            if (!yl0) {
-                delete zl;
-                break;
-            }
-            if (checkInterrupt()) {
-                delete zl;
-                yl0->free();
-                Zlist::destroy(z0);
-                throw (XIintr);
-            }
-            Zlist *zret = yl0->clip_to(&zl->Z);
-            delete zl;
-            if (zret) {
-                if (!z0)
-                    z0 = ze = zret;
-                else
-                    ze->next = zret;
-                while (ze->next)
-                    ze = ze->next;
-            }
-            yl0 = yl0->first(&zl);
-        }
-    }
-    return (z0);
-}
-
-
-// Return the zoids clipped to Z, this is not touched.
-//
-// I think that this should be "safe" as the same zoid is used as a
-// template for all clipping, and no zoid is clipped more than once. 
-// Problems arise when a zoid is clipped into smaller zoids, which are
-// clipped again, etc.  That is not the case here.
-//
-Zlist *
-Ylist::clip_to(const Zoid *Z) const
-{
-    {
-        const Ylist *yt = this;
-        if (!yt)
-            return (0);
-    }
-    Zlist *z0 = 0, *ze = 0;
-    for (const Ylist *y = this; y; y = y->next) {
-        if (y->y_yl >= Z->yu)
-            continue;
-        if (y->y_yu <= Z->yl)
-            break;
-        ovlchk_t ovl(Z->minleft(), Z->maxright(), Z->yu);
-        for (Zlist *z = y->y_zlist; z; z = z->next) {
-            if (ovl.check_break(z->Z))
-                break;
-            if (ovl.check_continue(z->Z))
-                continue;
-            Zlist *zt = Z->clip_to(&z->Z);
-            if (zt) {
-                if (ze) {
-                    while (ze->next)
-                        ze = ze->next;
-                    ze->next = zt;
-                }
-                else
-                    z0 = ze = zt;
-            }
-        }
-    }
-    return (z0);
-}
-
-
-// The original clip-to function for Ylists.
-// Return a zoid list representing (this & yl0).  On exception: 
-// 'this' and yl0 are untouched.
-//
-// This function is probably "safe" as no zoid is clipped more than
-// once.  See note for Ylist::clip_to(Zoid*).
-//
-Zlist *
-Ylist::clip_to(const Ylist *yl0) const throw (XIrt)
-{
-    Ymgr ym(yl0);
-    Zlist *z0 = 0, *ze = 0;
-    try {
-        for (const Ylist *y = this; y; y = y->next) {
-            for (Zlist *zl1 = y->y_zlist; zl1; zl1 = zl1->next) {
-                if (checkInterrupt())
-                    throw (XIintr);
-                ovlchk_t ovl(zl1->Z.minleft(), zl1->Z.maxright(), zl1->Z.yu);
-                ym.reset();
-                const Ylist *yy;
-                while ((yy = ym.next(zl1->Z.yu)) != 0) {
-                    if (yy->y_yu <= zl1->Z.yl)
-                        break;
-                    for (Zlist *zl2 = yy->y_zlist; zl2; zl2 = zl2->next) {
-                        if (ovl.check_break(zl2->Z))
-                            break;
-                        if (ovl.check_continue(zl2->Z))
-                            continue;
-                        Zlist *zt = (zl1->Z).clip_to(&zl2->Z);
-                        if (zt) {
-                            if (ze) {
-                                while (ze->next)
-                                    ze = ze->next;
-                                ze->next = zt;
-                            }
-                            else
-                                z0 = ze = zt;
-                        }
-                    }
-                }
-            }
-        }
-        return (z0);
-    }
-    catch (XIrt) {
-        Zlist::destroy(z0);
-        throw;
-    }
-}
-
-
-// New Ylist clip-out function, uses scan lines so is safe for
-// all-angles.  Returns a list with the common areas clipped out.
-//
-// This should be faster than calling scl_clip_out directly.
-//
-Zlist *
-Ylist::clip_out() const throw (XIrt)
-{
-    Zlist *z0 = 0;
-    try {
-        for (const Ylist *y = this; y; y = y->next) {
-            for (Zlist *z = y->y_zlist; z; z = z->next) {
-                if (checkInterrupt()) {
-                    Zlist::destroy(z0);
-                    throw (XIintr);
-                }
-
-                // Grab a list of zoids that overlap.  We will employ
-                // scanline clipping with this collection.  This
-                // appears to be much faster than using scl_clip_out
-                // directly on the entire list.
-
-                Zlist *zb = overlapping(&z->Z);  // won't include argument
-                if (!zb) {
-                    // No overlap, zoid is not clipped, save it.
-                    z0 = new Zlist(&z->Z, z0);
-                }
-                else if (!zb->next) {
-                    // Just one overlapping zoid, use the zoid clipper.
-                    bool no_ovl;
-                    Zlist *zx = z->Z.clip_out(&zb->Z, &no_ovl);
-                    if (no_ovl) {
-                        // Can't happen, we know that there is overlap.
-                        z0 = new Zlist(&z->Z, z0);
-                    }
-                    else if (zx) {
-                        Zlist *zn = zx;
-                        while (zn->next)
-                            zn = zn->next;
-                        zn->next = z0;
-                        z0 = zx;
-                    }
-                    delete zb;
-                }
-                else {
-                    // More than one zoid, use the scanline clip-out.
-                    Ylist *ya = new Ylist(new Zlist(&z->Z));
-                    Ylist *yb = new Ylist(zb);
-                    Zlist *zx = ya->scl_clip_out(yb)->to_zlist();
-                    if (zx) {
-                        Zlist *zn = zx;
-                        while (zn->next)
-                            zn = zn->next;
-                        zn->next = z0;
-                        z0 = zx;
-                    }
-                }
-            }
-        }
-        return (z0);
-    }
-    catch (XIrt) {
-        Zlist::destroy(z0);
-        throw;
-    }
-}
-
-
-// Clip this (destructively) around Z, returning the clipped Ylist,
-// which can be nil.
-//
-// The new version should be be "safe", zoids are clipped around Z,
-// and the fragments replace the original zoid in this.
-//
-// WARNING: Calling this again for a different zoid is unsafe in the
-// all-angle case, should use scl_clip_out.
-//
-// In the original version the fragments may be clipped around Z
-// again, which is dangerous.
-//
-Ylist *
-Ylist::clip_out(const Zoid *Z)
-{
-    // This version saves the fragments and reinserts after the
-    // clipping pass, so that no fragment is re-clipped.  The
-    // re-clipping might cause numerical artifacts in all-angle cases.
-
-    Zlist *z0 = 0, *ze = 0;
-    Ylist *yl0 = this, *yp = 0, *yn = 0;
-    for (Ylist *y = yl0; y; y = yn) {
-        yn = y->next;
-        if (y->y_yl >= Z->yu) {
-            yp = y;
-            continue;
-        }
-        if (y->y_yu <= Z->yl)
-            break;
-        Zlist *zn, *zp = 0;
-
-        ovlchk_t ovl(Z->minleft(), Z->maxright(), Z->yu);
-        for (Zlist *z = y->y_zlist; z; z = zn) {
-            zn = z->next;
-            if (ovl.check_break(z->Z))
-                break;
-            if (ovl.check_continue(z->Z)) {
-                zp = z;
-                continue;
-            }
-
-            bool no_ovl;
-            Zlist *zt = z->Z.clip_out(Z, &no_ovl);
-            if (no_ovl) {
-                zp = z;
-                continue;
-            }
-            y->remove_next(zp, z);
-            delete z;
-            if (zt) {
-                if (ze) {
-                    while (ze->next)
-                        ze = ze->next;
-                    ze->next = zt;
-                }
-                else
-                    z0 = ze = zt;
-            }
-        }
-        if (!y->y_zlist) {
-            if (!yp)
-                yl0 = yn;
-            else
-                yp->next = yn;
-            delete y;
-            continue;
-        }
-        yp = y;
-    }
-    if (z0) {
-        if (!yl0)
-            yl0 = new Ylist(z0);
-        else
-            yl0->insert(z0);
-    }
-    return (yl0);
-}
-
-
-// New Ylist clip-out function, uses scan lines so is safe for
-// all-angles.  Ylists are not touched.
-//
-Zlist *
-Ylist::clip_out(const Ylist *yr) const throw (XIrt)
-{
-    Zlist *z0 = 0;
-    try {
-        for (const Ylist *y = this; y; y = y->next) {
-            for (Zlist *zl1 = y->y_zlist; zl1; zl1 = zl1->next) {
-                if (checkInterrupt())
-                    throw (XIintr);
-
-                // Grab a list of zoids that overlap.  We will employ
-                // scanline clipping with this collection.  This
-                // appears to be much faster than using scl_clip_out
-                // directly on the entire list.
-
-                Zlist *zb = yr->overlapping(&zl1->Z);
-                if (!zb) {
-                    // No overlap, zoid is not clipped, save it.
-                    z0 = new Zlist(&zl1->Z, z0);
-                    continue;
-                }
-                if (!zb->next) {
-                    // Just one overlapping zoid, use the zoid clipper.
-                    bool no_ovl;
-                    Zlist *zx = zl1->Z.clip_out(&zb->Z, &no_ovl);
-                    if (no_ovl) {
-                        // Can't happen, we know that there is overlap.
-                        z0 = new Zlist(&zl1->Z, z0);
-                    }
-                    else if (zx) {
-                        Zlist *zn = zx;
-                        while (zn->next)
-                            zn = zn->next;
-                        zn->next = z0;
-                        z0 = zx;
-                    }
-                    delete zb;
-                    continue;
-                }
-
-                // More than one zoid, use the scanline clip-out.
-                Ylist *ya = new Ylist(new Zlist(&zl1->Z));
-                Ylist *yb = new Ylist(zb);
-                Zlist *zx = ya->scl_clip_out(yb)->to_zlist();
-                if (zx) {
-                    Zlist *zn = zx;
-                    while (zn->next)
-                        zn = zn->next;
-                    zn->next = z0;
-                    z0 = zx;
-                }
-            }
-        }
-        return (z0);
-    }
-    catch (XIrt) {
-        Zlist::destroy(z0);
-        throw;
-    }
-}
-
-
-namespace {
-    // Clip left to right.  Zoids are from the same scanline band and
-    // all have the same height, and no edges cross if height > 1.
-    //
-    Zlist *band_clip_to(const Zlist *zleft, const Zlist *zright)
-    {
-        Zlist *z0 = 0;
-        for (const Zlist *za = zleft; za; za = za->next) {
-            ovlchk_t ovl(za->Z.minleft(), za->Z.maxright(), za->Z.yu);
-            for (const Zlist *zb = zright; zb; zb = zb->next) {
-                if (ovl.check_break(zb->Z))
-                    break;
-                if (ovl.check_continue(zb->Z))
-                    continue;
-
-                int xul = mmMax(za->Z.xul, zb->Z.xul);
-                int xur = mmMin(za->Z.xur, zb->Z.xur);
-                int xll = mmMax(za->Z.xll, zb->Z.xll);
-                int xlr = mmMin(za->Z.xlr, zb->Z.xlr);
-                if (xul <= xur && xll <= xlr) {
-                   Zoid zt(xll, xlr, za->Z.yl, xul, xur, za->Z.yu);
-                   if (!zt.is_bad())
-                       z0 = new Zlist(&zt, z0);
-                }
-            }
-        }
-        return (z0);
-    }
-
-
-    // Compute all the scan lines for the two lists and cross terms,
-    // and slice the two lists at the scans.
-    //
-    void slice_scans(Ylist **pyl, Ylist **pyr) throw (XIrt)
-    {
-        TimeDbgAccum ac("slice_scans");
-
-        Ylist *yl = *pyl;
-        Ylist *yr = *pyr;
-        intDb idb;
-        yl->scanlines(0, idb);
-        yr->scanlines(0, idb);
-        if (yr)
-            yl->scanlines(yr, idb);
-
-        int *scans, nscans;
-        idb.list(&scans, &nscans);
-
-        try {
-            *pyl = yl->slice(scans, nscans);
-        }
-        catch (XIrt) {
-            yr->free();
-            *pyl = 0;
-            *pyr = 0;
-            delete [] scans;
-            throw;
-        }
-        try {
-            *pyr = yr->slice(scans, nscans);
-        }
-        catch (XIrt) {
-            (*pyl)->free();
-            *pyl = 0;
-            *pyr = 0;
-            delete [] scans;
-            throw;
-        }
-        delete [] scans;
-    }
-}
-
-
-// A clip-to function based on scan lines.
-//
-// This is not used.  The clip-to operation does not clip zoids
-// multiply and sequentially and therefor does not produce accumulated
-// vertex placement errors in all-angle collections.  The non
-// scan-line clip-to is much faster.
-//
-Ylist *
-Ylist::scl_clip_to(Ylist *y) throw (XIrt)
-{
-    Ylist *y0 = this;
-    Ylist *yb = y;
-    if (!y0 || !yb) {
-        y0->free();
-        yb->free();
-        return (0);
-    }
-    slice_scans(&y0, &yb);
-
-    // Run down the lists, processing each band.  We know that if
-    // zoids exist in a band, all have the same height, and none of
-    // the edges overlap if height > 1.  We keep the results in y0.
-
-    Ylist *ya = y0;
-    while (ya || yb) {
-        if (ya && (!yb || ya->y_yu > yb->y_yu)) {
-            ya->set_zlist(0);
-            ya = ya->next;
-            continue;
-        }
-        if (ya && ya->y_yu == yb->y_yu) {
-            if (!ya->y_zlist || !yb->y_zlist)
-                ya->set_zlist(0);
-            else {
-                Zlist *z0 = band_clip_to(ya->y_zlist, yb->y_zlist);
-                z0 = Zlist::sort(z0, 1);
-                scl_merge(z0);
-                ya->set_zlist(z0);
-            }
-            if (checkInterrupt()) {
-                y0->free();
-                yb->free();
-                throw XIintr;
-            }
-            ya = ya->next;
-        }
-        yb = yb->clear_to_next();
-    }
-    y0 = y0->strip_empty();
-    y0->col_row_merge();
-    return (y0);
-}
-
-
-namespace {
-    // Clip the common areas out of the list.  Zoids are from the same
-    // scanline band and all have the same height, and no edges cross
-    // if height > 1.  The passed list is consumed.
-    //
-    Zlist *band_clip_out(Zlist *z0)
-    {
-        Zlist *zap = 0, *zn;
-        for (Zlist *za = z0; za; za = zn) {
-            zn = za->next;
-            ovlchk_t ovl(za->Z.minleft(), za->Z.maxright(), za->Z.yu);
-            Zoid &Za = za->Z;
-            for (const Zlist *zb = zn; zb; zb = zb->next) {
-                const Zoid &Zb = zb->Z;
-                if (ovl.check_break(Zb))
-                    break;
-                if (ovl.check_continue(Zb))
-                    continue;
-                if (Za.xlr <= Zb.xll && Za.xur <= Zb.xul)
-                    continue;
-                if (Zb.xlr <= Za.xll && Zb.xur <= Za.xul)
-                    continue;
-
-                Zoid Zl(Za.xll, mmMin(Za.xlr, Zb.xll), Za.yl,
-                    Za.xul, mmMin(Za.xur, Zb.xul), Za.yu);
-                Zoid Zr(mmMax(Za.xll, Zb.xlr), Za.xlr, Za.yl,
-                    mmMax(Za.xul, Zb.xur), Za.xur, Za.yu);
-
-                bool lok = (Zl.xur >= Zl.xul && Zl.xlr >= Zl.xll &&
-                    !Zl.is_bad());
-                bool rok = (Zr.xur >= Zr.xul && Zr.xlr >= Zr.xll &&
-                    !Zr.is_bad());
-                if (!lok) {
-                    if (!rok) {
-                        if (zap)
-                            zap->next = zn;
-                        else
-                            z0 = zn;
-                        delete za;
-                    }
-                    else {
-                        za->Z = Zr;
-                        zn = za;
-                    }
-                    za = 0;
-                }
-                else {
-                    za->Z = Zl;
-                    if (rok) {
-                        za->next = new Zlist(&Zr, zn);
-                        zn = za->next;
-                    }
-                }
-                break;
-            }
-            if (za)
-                zap = za;
-        }
-        return (z0);
-    }
-}
-
-
-// A self clip-out based on scan lines.  This may be less prone to
-// artifacts in all-angle collections than other methods.  The 'this'
-// list is destroyed.
-//
-Ylist *
-Ylist::scl_clip_out() throw (XIrt)
-{
-    Ylist *y0 = this;
-    if (!y0)
-        return (0);
-    if (!y0->next) {
-        if (!y0->y_zlist) {
-            delete this;
-            return (0);
-        }
-        if (!y0->y_zlist->next)
-            return (y0);
-    }
-
-    // First find the "scan lines" where we will cut horizontally. 
-    // These are zoid tops and bottoms, plus (and importantly) edge
-    // intersections not on a top or bottom.
-
-    intDb idb;
-    scanlines(0, idb);
-    int *scans;
-    int nscans;
-    idb.list(&scans, &nscans);
-    // The scanlines (y values) are in ascending order.
-
-    if (checkInterrupt()) {
-        delete [] scans;
-        y0->free();
-        throw XIintr;
-    }
-
-    // Now clip each zoid at the scan lines.
-    try {
-        y0 = y0->slice(scans, nscans);
-        delete [] scans;
-    }
-    catch (XIrt) {
-        delete [] scans;
-        throw;
-    }
-
-    // Now, there is no overlap between scans, and every zoid in a
-    // scan has the same height.
-
-    for (Ylist *y = y0; y; y = y->next) {
-
-        if (checkInterrupt()) {
-            y0->free();
-            throw XIintr;
-        }
-
-        Zlist *zl = band_clip_out(y->y_zlist);
-        zl = Zlist::sort(zl, 1);
-        scl_merge(zl);
-        y->y_zlist = zl;
-    }
-    y0->col_row_merge();
-    return (y0);
-}
-
-
-namespace {
-    // Clip right out of left.  Zoids are from the same scanline band
-    // and all have the same height, and no edges cross if height > 1.
-    //
-    Zlist *band_clip_out(const Zlist *zleft, const Zlist *zright)
-    {
-        Zlist *z0 = Zlist::copy(zleft);
-        Zlist *zap = 0, *zn;
-        for (Zlist *za = z0; za; za = zn) {
-            zn = za->next;
-            ovlchk_t ovl(za->Z.minleft(), za->Z.maxright(), za->Z.yu);
-            Zoid &Za = za->Z;
-            for (const Zlist *zb = zright; zb; zb = zb->next) {
-                const Zoid &Zb = zb->Z;
-                if (ovl.check_break(Zb))
-                    break;
-                if (ovl.check_continue(Zb))
-                    continue;
-                if (Za.xlr <= Zb.xll && Za.xur <= Zb.xul)
-                    continue;
-                if (Zb.xlr <= Za.xll && Zb.xur <= Za.xul)
-                    continue;
-
-                Zoid Zl(Za.xll, mmMin(Za.xlr, Zb.xll), Za.yl,
-                    Za.xul, mmMin(Za.xur, Zb.xul), Za.yu);
-                Zoid Zr(mmMax(Za.xll, Zb.xlr), Za.xlr, Za.yl,
-                    mmMax(Za.xul, Zb.xur), Za.xur, Za.yu);
-
-                bool lok = (Zl.xur >= Zl.xul && Zl.xlr >= Zl.xll &&
-                    !Zl.is_bad());
-                bool rok = (Zr.xur >= Zr.xul && Zr.xlr >= Zr.xll &&
-                    !Zr.is_bad());
-                if (!lok) {
-                    if (!rok) {
-                        if (zap)
-                            zap->next = zn;
-                        else
-                            z0 = zn;
-                        delete za;
-                    }
-                    else {
-                        za->Z = Zr;
-                        zn = za;
-                    }
-                    za = 0;
-                }
-                else {
-                    za->Z = Zl;
-                    if (rok) {
-                        za->next = new Zlist(&Zr, zn);
-                        zn = za->next;
-                    }
-                }
-                break;
-            }
-            if (za)
-                zap = za;
-        }
-        return (z0);
-    }
-}
-
-
-// A clip-out based on scan lines.  This may be less prone to
-// artifacts in all-angle collections than other methods.  Both this
-// and the passed list are destroyed.
-//
-// This avoids vertex location errors seen in the original non
-// scan-line clip-out function.  In the original clip-out algorithm, a
-// zoid would be clipped, and the resulting pieces would be clipped
-// again by other zoids, and so on.  The problem is that the angles in
-// the pieces are likely a little different than the angles in the
-// original zoids, due to coordinate quantization.  This can cause
-// vertex locations to not be well defined, which can cause
-// aberrations such as needles and gaps in the result.
-//
-// With the scan lines, the clipping is done at each scan line before
-// the and-not operation, so the angles are based on the original zoid
-// angles, and vertex locations are well defined.
-//
-// Probably, one should use clip_out rather than calling this function
-// directly, for performance reasons.
-//
-Ylist *
-Ylist::scl_clip_out(Ylist *y) throw (XIrt)
-{
-    Ylist *y0 = this;
-    Ylist *yb = y;
-    if (!y0) {
-        yb->free();
-        return (0);
-    }
-    if (!yb)
-        return (y0);
-    slice_scans(&y0, &yb);
-
-    // Run down the lists, processing each band.  We know that if
-    // zoids exist in a band, all have the same height, and none of
-    // the edges overlap if height > 1.
-
-    Ylist *ya = y0;
-    while (ya || yb) {
-        if (ya && (!yb || ya->y_yu > yb->y_yu)) {
-            ya = ya->next;
-            continue;
-        }
-        if (ya && ya->y_yu == yb->y_yu) {
-            if (ya->y_zlist && yb->y_zlist) {
-                Zlist *z0 = band_clip_out(ya->y_zlist, yb->y_zlist);
-                z0 = Zlist::sort(z0, 1);
-                scl_merge(z0);
-                ya->set_zlist(z0);
-            }
-            if (checkInterrupt()) {
-                y0->free();
-                yb->free();
-                throw XIintr;
-            }
-            ya = ya->next;
-        }
-        yb = yb->clear_to_next();
-    }
-    y0 = y0->strip_empty();
-    y0->col_row_merge();
-    return (y0);
-}
-
-
-// As above, but also return y - this in *py.
-//
-Ylist *
-Ylist::scl_clip_out2(Ylist **py) throw (XIrt)
-{
-    Ylist *y0 = this;
-    Ylist *y1 = *py;
-    if (!y0)
-        return (0);
-    if (!y1)
-        return (y0);
-    slice_scans(&y0, &y1);
-
-    // Run down the lists, processing each band.  We know that if
-    // zoids exist in a band, all have the same height, and none of
-    // the edges overlap if height > 1.
-
-    Ylist *ya = y0;
-    Ylist *yb = y1;
-    while (ya || yb) {
-        if (ya && (!yb || ya->y_yu > yb->y_yu)) {
-            ya = ya->next;
-            continue;
-        }
-        if (ya && ya->y_yu == yb->y_yu) {
-            if (ya->y_zlist && yb->y_zlist) {
-                Zlist *z0 = band_clip_out(ya->y_zlist, yb->y_zlist);
-                z0 = Zlist::sort(z0, 1);
-                scl_merge(z0);
-                Zlist *z1 = band_clip_out(yb->y_zlist, ya->y_zlist);
-                z1 = Zlist::sort(z1, 1);
-                scl_merge(z1);
-                ya->set_zlist(z0);
-                yb->set_zlist(z1);
-            }
-            if (checkInterrupt()) {
-                y0->free();
-                y1->free();
-                throw XIintr;
-            }
-            ya = ya->next;
-        }
-        yb = yb->next;
-    }
-    y0 = y0->strip_empty();
-    y1 = y1->strip_empty();
-    try {
-        y0->col_row_merge();
-    }
-    catch (XIrt) {
-        y1->free();
-        throw;
-    }
-    try {
-        y1->col_row_merge();
-    }
-    catch (XIrt) {
-        y0->free();
-        throw;
-    }
-    *py = y1;
-    return (y0);
-}
-
-
-namespace {
-    // Xor the lists.  Zoids are from the same scanline band and all
-    // have the same height, and no edges cross if height > 1.
-    //
-    Zlist *band_clip_xor(const Zlist *zleft, const Zlist *zright)
-    {
-        Zlist *z12 = band_clip_out(zleft, zright);
-        Zlist *z21 = band_clip_out(zright, zleft);
-        if (!z12)
-            z12 = z21;
-        else if (z21) {
-            Zlist *zn = z12;
-            while (zn->next)
-                zn = zn->next;
-            zn->next = z21;
-        }
-        return (z12);
-    }
-}
-
-
-// A clip-xor function based on scan lines.  This may be less prone
-// to artifacts in all-angle collections than other methods.  Both
-// this and the passed list are destroyed.
-//
-Ylist *
-Ylist::scl_clip_xor(Ylist *y) throw (XIrt)
-{
-    Ylist *y0 = this;
-    Ylist *yb = y;
-    if (!y0)
-        return (yb);
-    if (!yb)
-        return (y0);
-    slice_scans(&y0, &yb);
-
-    // Run down the lists, processing each band.  We know that if
-    // zoids exist in a band, all have the same height, and none of
-    // the edges overlap if height > 1.
-
-    Ylist *ya = y0;
-    Ylist *yap = 0;
-    while (ya || yb) {
-        if (ya && (!yb || ya->y_yu > yb->y_yu)) {
-            yap = ya;
-            ya = ya->next;
-            continue;
-        }
-        if (yb && !ya) {
-            // Append the remainder of the b list onto a.
-            if (yap)
-                yap->next = yb;
-            else
-                y0 = yb;
-            break;
-        }
-        if (yb->y_yu > ya->y_yu) {
-            // Add yb to the a list before ya.
-            if (yap)
-                yap->next = yb;
-            else
-                y0 = yb;
-            Ylist *yx = yb;
-            yb = yb->next;
-            yx->next = ya;
-            yap = yx;
-        }
-        else {
-            if (!ya->y_zlist) {
-                ya->y_zlist = yb->y_zlist;
-                yb->y_zlist = 0;
-            }
-            else if (yb->y_zlist) {
-                Zlist *z0 = band_clip_xor(ya->y_zlist, yb->y_zlist);
-                z0 = Zlist::sort(z0, 1);
-                scl_merge(z0);
-                ya->set_zlist(z0);
-            }
-            yap = ya;
-            ya = ya->next;
-            yb = yb->clear_to_next();
-        }
-        if (checkInterrupt()) {
-            y0->free();
-            yb->free();
-            throw XIintr;
-        }
-    }
-    y0 = y0->strip_empty();
-    y0->col_row_merge();
-    return (y0);
-}
-
-
-// Do some testing and print messages if errors found, for debugging.
-//
-bool
-Ylist::debug()
-{
-    for (Ylist *y = this; y; y = y->next) {
-        if (!y->debug_row())
-            return (false);
-    }
-    return (true);
-}
-
-
-bool
-Ylist::debug_row()
-{
-    if (next && next->y_yu >= y_yu) {
-        printf("FU 1: Ylist out of order\n");
-        return (false);
-    }
-    Zlist *zp = 0;
-    for (Zlist *z = y_zlist; z; z = z->next) {
-        if (z->Z.yu != y_yu) {
-            printf("FT 2: Zlist and Ylist yu differ\n");
-            return (false);
-        }
-
-        if (z->Z.yl < y_yl) {
-            printf("FU 3: Zlist yl out of range\n");
-            return (false);
-        }
-
-        if (zp && z->Z.zcmp(&zp->Z) < 0) {
-            printf("FU 5: Zlist out of order\n");
-            zp->Z.print();
-            z->Z.print();
-            return (false);
-        }
-        zp = z;
-    }
-    return (true);
-}
-
-
-//--- Start of Ylist private functions
 
 
 // Private support function for to_poly().

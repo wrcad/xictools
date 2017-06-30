@@ -358,7 +358,7 @@ SIlocalContext::clear()
     }
 
     lc_ghostCount = 0;
-    lc_ghostList->free();
+    PolyList::destroy(lc_ghostList);
     lc_ghostList = 0;
 
     lc_applyTransform = false;

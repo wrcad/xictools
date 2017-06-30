@@ -378,7 +378,7 @@ cDRC::intrListTest(const op_change_t *list, BBox *errBB)
             continue;
 
         DRCerrRet *er = 0;
-        if (!blist->intersect(&pointer->oBB(), false)) {
+        if (!Blist::intersect(blist, &pointer->oBB(), false)) {
             if (objectRules(pointer, 0, &er) != XIok) {
                 aborting = true;
                 break;
@@ -413,7 +413,7 @@ cDRC::intrListTest(const op_change_t *list, BBox *errBB)
             CDo *odesc;
             while ((odesc = gen.next(false, false)) != 0) {
 
-                if (!blist->intersect(&odesc->oBB(), false)) {
+                if (!Blist::intersect(blist, &odesc->oBB(), false)) {
                     if (objectRules(odesc, 0, &er, ldesc) != XIok) {
                         delete odesc;
                         aborting = true;
@@ -545,7 +545,7 @@ cDRC::batchTest(const BBox *AOI, FILE *fp, sLstr *lstr, BBox *errBB,
                 drc_num_checked++;
 
                 // throw out any that overlap NDRC layer
-                if (!blist->intersect(&odesc->oBB(), false)) {
+                if (!Blist::intersect(blist, &odesc->oBB(), false)) {
 
                     DRCerrRet *er;
                     ret = objectRules(odesc, pass_halo ? &bltAOI : 0, &er);
@@ -945,7 +945,7 @@ cDRC::batchListTest(const CDol *slist, FILE *fp, sLstr *lstr, BBox *errBB)
         drc_num_checked++;
 
         // throw out any that overlap NDRC layer
-        if (!blist->intersect(&odesc->oBB(), false)) {
+        if (!Blist::intersect(blist, &odesc->oBB(), false)) {
 
             DRCerrRet *er;
             if (objectRules(odesc, 0, &er) != XIok) {
@@ -1040,7 +1040,7 @@ cDRC::layerRules(const CDl *ld, const BBox *AOI, DRCerrRet **eret)
             Ylist *y0 = new Ylist(zret);
             if (!y0)
                 continue;
-            Zgroup *g = y0->group();
+            Zgroup *g = Ylist::group(y0);
 
             // There should be exactly one group.  If multiple groups,
             // the one with the largest area is the good one.
@@ -1071,10 +1071,10 @@ cDRC::layerRules(const CDl *ld, const BBox *AOI, DRCerrRet **eret)
         }
         else if (td->type() == drNoHoles) {
             Ylist *y0 = new Ylist(zret);
-            y0 = y0->remove_backg(AOI);
+            y0 = Ylist::remove_backg(y0, AOI);
             if (!y0)
                 continue;
-            Zgroup *g = y0->group();
+            Zgroup *g = Ylist::group(y0);
 
             // We've inverted the layer and thrown out any zoids in
             // the group that touch the edges, Any groups that
@@ -1162,7 +1162,7 @@ cDRC::objectRules(const CDo *odesc, const BBox *AOI, DRCerrRet **erptr,
                         break;
                 }
             }
-            p0->free();
+            PolyList::destroy(p0);
             *erptr = e0;
         }
         else {
@@ -1522,7 +1522,7 @@ cDRC::init_drc(const BBox *AOI, Blist **blist, bool skip_cnt)
                 bl->next = bl0;
                 bl0 = bl;
             }
-            bl0 = bl0->merge();
+            bl0 = Blist::merge(bl0);
             *blist = bl0;
         }
     }
@@ -1726,7 +1726,7 @@ cDRC::eval_instance(const CDc *cdesc, BBox *errBB, const Blist *blist)
         while ((odesc = gen.next(false, false)) != 0) {
 
             // throw out any that overlap NDRC layer
-            if (!blist->intersect(&odesc->oBB(), false)) {
+            if (!Blist::intersect(blist, &odesc->oBB(), false)) {
 
                 DRCerrRet *er;
                 if (objectRules(odesc, 0, &er) != XIok) {

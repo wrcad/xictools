@@ -2286,7 +2286,7 @@ geom1_funcs::IFcheckObjectsConnected(Variable *res, Variable *args, void*)
         if (zl0 && zl0->next) {
             Ylist *yl = new Ylist(zl0);
             try {
-                yl = new Ylist(yl->repartition());
+                yl = new Ylist(Ylist::repartition(yl));
             }
             catch (XIrt ret) {
                 if (ret == XIintr) {
@@ -2296,11 +2296,11 @@ geom1_funcs::IFcheckObjectsConnected(Variable *res, Variable *args, void*)
                 else
                     return (BAD);
             }
-            yl = yl->connected(&zl0);
+            yl = Ylist::connected(yl, &zl0);
             Zlist::destroy(zl0);
             if (yl) {
                 res->content.value = 0;
-                yl->free();
+                Ylist::destroy(yl);
             }
         }
     }
@@ -2381,11 +2381,11 @@ geom1_funcs::IFcheckForHoles(Variable *res, Variable *args, void*)
                 return (OK);
             }
             Ylist *yl = new Ylist(zarea);
-            yl = yl->connected(&zl0);
+            yl = Ylist::connected(yl, &zl0);
             Zlist::destroy(zl0);
             if (yl) {
                 res->content.value = 1.0;
-                yl->free();
+                Ylist::destroy(yl);
             }
         }
     }

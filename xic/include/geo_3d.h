@@ -198,10 +198,10 @@ struct qflist3d
             }
         }
 
-    qflist3d *copy() const
+    static qflist3d *copy(const qflist3d *thisqf)
         {
             qflist3d *q0 = 0, *qe = 0;
-            for (const qflist3d *q = this; q; q = q->next) {
+            for (const qflist3d *q = thisqf; q; q = q->next) {
                 if (q0) {
                     qe->next = new qflist3d(*q);
                     qe = qe->next;
@@ -213,15 +213,78 @@ struct qflist3d
             return (q0);
         }
 
-    void print(FILE *fp, int n, int x, int y, double sc, const char *ff) const
+    static void print(const qflist3d *thisqf, FILE *fp, int n,
+        int x, int y, double sc, const char *ff)
         {
-            for (const qflist3d *q = this; q; q = q->next)
+            for (const qflist3d *q = thisqf; q; q = q->next)
                 q->Q.print(fp, n, x, y, sc, ff);
         }
 
-    qflist3d *split(int) const;
-    qflist3d *side_split(int, int, int) const;
-    bool save(FILE*, const char*, int) const;
+    static qflist3d *split(const qflist3d *thisqf, int t)
+        {
+            qflist3d *q0 = 0, *qe = 0;
+            for (const qflist3d *q = thisqf; q; q = q->next) {
+                qflist3d *qs = q->Q.split(t);
+                if (qs) {
+                    if (!q0)
+                        q0 = qe = qs;
+                    else {
+                        while (qe->next)
+                            qe = qe->next;
+                        qe->next = qs;
+                    }
+                }
+            }
+            return (q0);
+        }
+
+
+    // Apply partitioning to the vertical edge panels.  These are always
+    // rectangular.  We cut a thin edge at the top and bottom, and split
+    // the middle part with the minimum of partmax and edgemax.
+    //
+    static qflist3d *side_split(const qflist3d *thisqf, int partmax,
+        int edgemax, int thinedge)
+        {
+            qflist3d *q0 = 0, *qe = 0;
+            for (const qflist3d *q = thisqf; q; q = q->next) {
+                qflist3d *qs = q->Q.side_split(partmax, edgemax, thinedge);
+                if (qs) {
+                    if (!q0)
+                        q0 = qe = qs;
+                    else {
+                        while (qe->next)
+                            qe = qe->next;
+                        qe->next = qs;
+                    }
+                }
+            }
+            return (q0);
+        }
+
+    static bool save(const qflist3d *thisqf, FILE *fp, const char *qname,
+        int indent)
+        {
+            if (!fp)
+                return (false);
+            int cnt = 0;
+            for (const qflist3d *q = thisqf; q; cnt++, q = q->next) ;
+            if (!cnt)
+                return (true);
+
+            fprintf(fp, "%*c%s %d\n", indent, ' ', qname ? qname : "unnamed",
+                cnt);
+            indent++;
+            for (const qflist3d *q = thisqf; q; q = q->next) {
+                fprintf(fp, "%*c%d,%d,%d %d,%d,%d %d,%d,%d %d,%d,%d\n",
+                    indent, ' ',
+                    q->Q.c1.x,q->Q.c1.y,q->Q.c1.z,
+                    q->Q.c2.x,q->Q.c2.y,q->Q.c2.z,
+                    q->Q.c3.x,q->Q.c3.y,q->Q.c3.z,
+                    q->Q.c4.x,q->Q.c4.y,q->Q.c4.z);
+            }
+            return (true);
+        }
 
     qflist3d *next;
     qface3d Q;
@@ -383,10 +446,10 @@ struct glZlist3d
             }
         }
 
-    Zlist *to_zlist() const
+    static Zlist *to_zlist(const glZlist3d *thisgl)
         {
             Zlist *z0 = 0, *ze = 0;
-            for (const glZlist3d *z = this; z; z = z->next) {
+            for (const glZlist3d *z = thisgl; z; z = z->next) {
                 if (!z0)
                     z0 = ze = new Zlist(&z->Z, 0);
                 else {
@@ -397,16 +460,16 @@ struct glZlist3d
             return (z0);
         }
 
-    double volume() const
+    static double volume(const glZlist3d *thisgl)
         {
             double v = 0;
-            for (const glZlist3d *z = this; z; z = z->next)
+            for (const glZlist3d *z = thisgl; z; z = z->next)
                 v += z->Z.volume();
             return (v);
         }
 
-    glZlist3d *sort();
-    glZlist3d *manhattanize(int);
+    static glZlist3d *sort(glZlist3d*);
+    static glZlist3d *manhattanize(glZlist3d*, int);
 
     glZlist3d *next;
     glZoid3d Z;
@@ -517,16 +580,16 @@ struct glYlist3d
             }
         }
 
-    double volume() const
+    static double volume(const glYlist3d *thisgl)
         {
             double v = 0;
-            for (const glYlist3d *y = this; y; y = y->next)
-                v += y->y_zlist->volume();
+            for (const glYlist3d *y = thisgl; y; y = y->next)
+                v += glZlist3d::volume(y->y_zlist);
             return (v);
         }
 
-    glZlist3d *to_zl3d();
-    glZgroup3d *group(int = 0);
+    static glZlist3d *to_zl3d(glYlist3d*);
+    static glZgroup3d *group(glYlist3d*, int = 0);
 
 private:
     void remove_next(glZlist3d *zp, glZlist3d *z)
@@ -549,6 +612,7 @@ private:
             }
         }
 
+    // ZTST ok
     glYlist3d *touching(glZlist3d**, const Zoid3d*);
     glYlist3d *first(glZlist3d**);
 

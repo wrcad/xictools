@@ -275,9 +275,9 @@ struct Blist
     Blist(int l, int b, int r, int t, Blist *bn = 0) : BB(l, b, r, t)
         { next = bn; }
 
-    void wtov()
+    static void wtov(Blist *thisbl)
         {
-            for (Blist *b = this; b; b = b->next) {
+            for (Blist *b = thisbl; b; b = b->next) {
                 int t = b->BB.top;
                 b->BB.top = b->BB.bottom;
                 b->BB.bottom = t;
@@ -293,10 +293,10 @@ struct Blist
             }
         }
 
-    int length() const
+    static int length(const Blist *thisbl)
         {
             int cnt = 0;
-            const Blist *bl = this;
+            const Blist *bl = thisbl;
             while (bl) {
                 cnt++;
                 bl = bl->next;
@@ -304,23 +304,23 @@ struct Blist
             return (cnt);
         }
 
-    double area() const
+    static double area(const Blist *thisbl)
         {
             double d = 0.0;
-            for (const Blist *bl = this; bl; bl = bl->next)
+            for (const Blist *bl = thisbl; bl; bl = bl->next)
                 d += bl->BB.area();
             return (d);
         }
 
     // geo_box.cc
-    Blist *sort(int = 0);
-    Blist *insert_merge(const BBox*);
-    Blist *merge();
-    Blist *clip_out(const BBox*);
-    Blist *clip_out(const Blist*);
-    Blist *clip_to(const BBox*);
-    Blist *clip_to(const Blist*);
-    bool intersect(const BBox*, bool) const;
+    static Blist *sort(Blist*, int = 0);
+    static Blist *insert_merge(Blist*, const BBox*);
+    static Blist *merge(Blist*);
+    static Blist *clip_out(Blist*, const BBox*);
+    static Blist *clip_out(Blist*, const Blist*);
+    static Blist *clip_to(Blist*, const BBox*);
+    static Blist *clip_to(Blist*, const Blist*);
+    static bool intersect(const Blist*, const BBox*, bool);
 
     Blist *next;
     BBox BB;
@@ -343,15 +343,15 @@ struct BYlist
         }
     }
 
-    BYlist *insert_merge(const BBox *BB);
-    BYlist *merge();
-    BYlist *clip_out(const BBox*);
-    BYlist *insert(Blist*);
-    Blist *toblist();
+    static BYlist *insert_merge(BYlist*, const BBox *BB);
+    static BYlist *merge(BYlist*);
+    static BYlist *clip_out(BYlist*, const BBox*);
+    static BYlist *insert(BYlist*, Blist*);
+    static Blist *toblist(BYlist*);
 
 private:
+    // ZTST ok
     BYlist *trymerge(const BBox*, Blist**);
-    BYlist *check_rows();
     bool merge_rows();
     bool merge_cols();
     BYlist *clip();

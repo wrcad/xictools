@@ -884,11 +884,11 @@ gds_out::write_poly(const Poly *po)
     PolyList *p0 = po->divide(out_max_poly);
     for (PolyList *p = p0; p; p = p->next) {
         if (!write_poly(&p->po)) {
-            p0->free();
+            PolyList::destroy(p0);
             return (false);
         }
     }
-    p0->free();
+    PolyList::destroy(p0);
     return (true);
 }
 

@@ -3690,7 +3690,7 @@ gds_in::ac_boundary_prv()
                     if (!ret)
                         break;
                 }
-                pl->free();
+                PolyList::destroy(pl);
             }
             if (need_out) {
                 for (CDll *ll = in_layers; ; ) {
@@ -3849,7 +3849,7 @@ gds_in::ac_path_prv()
                 if (!ret)
                     break;
             }
-            pl->free();
+            PolyList::destroy(pl);
         }
         if (need_out) {
             for (CDll *ll = in_layers; ; ) {

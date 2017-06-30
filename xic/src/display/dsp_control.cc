@@ -592,7 +592,7 @@ WindowDesc::RunPending()
                         while (b->next)
                             b = b->next;
                         b->next = pendU;
-                        pendR = pendR->merge();
+                        pendR = Blist::merge(pendR);
                     }
                 }
                 pendU = 0;
@@ -745,7 +745,7 @@ WindowDesc::add_redisp_region(const BBox *BB)
     if (!w_pending_R)
         w_pending_R = new Blist(&tBB, 0);
     else
-        w_pending_R = w_pending_R->insert_merge(&tBB);
+        w_pending_R = Blist::insert_merge(w_pending_R, &tBB);
 }
 
 
@@ -778,12 +778,12 @@ WindowDesc::add_update_region(const BBox *BB)
     if (!w_pending_U)
         w_pending_U = new Blist(&tBB, 0);
     else {
-        w_pending_U->wtov();
+        Blist::wtov(w_pending_U);
         int t = tBB.top;
         tBB.top = tBB.bottom;
         tBB.bottom = t;
-        w_pending_U = w_pending_U->insert_merge(&tBB);
-        w_pending_U->wtov();
+        w_pending_U = Blist::insert_merge(w_pending_U, &tBB);
+        Blist::wtov(w_pending_U);
     }
 }
 

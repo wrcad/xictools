@@ -336,7 +336,7 @@ bdb_t::getBlist(Blist *bref, XIrt *retp)
         for (unsigned int i = 0; i < n; i++) {
             Blist *bx = new Blist(bdb_objects[i], 0);
             if (!(bx->BB < bl->BB))
-                bx = bx->clip_to(&bl->BB);
+                bx = Blist::clip_to(bx, &bl->BB);
             if (bx) {
                 Blist *bn = bx;
                 while (bn->next)
@@ -347,7 +347,7 @@ bdb_t::getBlist(Blist *bref, XIrt *retp)
         }
     }
     try {
-        b0 = b0->merge();
+        b0 = Blist::merge(b0);
         return (b0);
     }
     catch (XIrt ret) {

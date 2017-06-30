@@ -593,7 +593,7 @@ cDisplay::ShowCells(const char *name)
         }
         sprintf(buf, "Marked %d instances of %s.",
             CurMode() == Electrical ?
-                MK.elec_show->length() : MK.phys_show->length(),
+                Blist::length(MK.elec_show) : Blist::length(MK.phys_show),
             name);
         show_message(buf);
     }
@@ -614,7 +614,7 @@ cDisplay::ShowCells(const char *name)
             return;
         }
         MK.phys_show = b0;
-        sprintf(buf, "Marked %d instances of %s.", b0->length(),
+        sprintf(buf, "Marked %d instances of %s.", Blist::length(b0),
             pref->get_name()->string());
         show_message(buf);
     }
@@ -2628,7 +2628,7 @@ sMK::erase_behind(WindowDesc *wdesc)
     if (!wdesc->Wdraw())
         return;
     if (erbh_list) {
-        erbh_list = erbh_list->merge();
+        erbh_list = Blist::merge(erbh_list);
         wdesc->Wdraw()->SetColor(DSP()->Color(BackgroundColor, Physical));
         for (Blist *bl = erbh_list; bl; bl = bl->next)
             wdesc->ShowBox(&bl->BB, CDL_FILLED, 0);

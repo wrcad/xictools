@@ -309,7 +309,7 @@ struct fhConductor
 
     void manhattanize(int minsize)
         {
-            hc_zlist3d = hc_zlist3d->manhattanize(minsize);
+            hc_zlist3d = glZlist3d::manhattanize(hc_zlist3d, minsize);
         }
 
     fhConductor *addz3d(const glZoid3d*);

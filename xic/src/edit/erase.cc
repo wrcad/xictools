@@ -183,12 +183,12 @@ cEdit::eraseUnder()
                 PolyList *p0 = Zlist::to_poly_list(z0);
                 for (PolyList *pp = p0; pp; pp = pp->next)
                     cursd->newPoly(0, &pp->po, ld, 0, true);
-                p0->free();
+                PolyList::destroy(p0);
             }
         }
         Zlist::destroy(zl);
     }
-    ps->free();
+    PolyList::destroy(ps);
     if (DSP()->CurMode() == Electrical && DSP()->ShowTerminals())
         DSP()->ShowCellTerminalMarks(DISPLAY);
 }
@@ -1287,7 +1287,7 @@ poly:
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
             }
         }
-        p0->free();
+        PolyList::destroy(p0);
 #endif
         return (true);
     }
@@ -1352,7 +1352,7 @@ wire:
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
             }
         }
-        p0->free();
+        PolyList::destroy(p0);
         return (true);
     }
 label:
@@ -1428,7 +1428,7 @@ poly:
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
             }
         }
-        p0->free();
+        PolyList::destroy(p0);
 #endif
         return (true);
     }
@@ -1493,7 +1493,7 @@ wire:
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
             }
         }
-        p0->free();
+        PolyList::destroy(p0);
         return (true);
     }
 label:
@@ -1547,7 +1547,7 @@ poly:
             yx->next = y0;
             y0 = yx;
         }
-        p0->free();
+        PolyList::destroy(p0);
         return (y0);
     }
 wire:
@@ -1625,7 +1625,7 @@ wire:
             yx->next = y0;
             y0 = yx;
         }
-        p0->free();
+        PolyList::destroy(p0);
         return (y0);
     }
 label:

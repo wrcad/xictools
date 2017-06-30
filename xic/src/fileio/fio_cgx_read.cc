@@ -2124,7 +2124,7 @@ cgx_in::ac_box_prv(BBox &BB)
                         if (!ret)
                             break;
                     }
-                    pl->free();
+                    PolyList::destroy(pl);
                 }
                 if (need_out)
                     ret = in_out->write_poly(&po);
@@ -2267,7 +2267,7 @@ cgx_in::ac_poly_prv(Poly &po)
                     if (!ret)
                         break;
                 }
-                pl->free();
+                PolyList::destroy(pl);
             }
             if (need_out)
                 ret = in_out->write_poly(&po);
@@ -2391,7 +2391,7 @@ cgx_in::ac_wire_prv(Wire &w)
                 if (!ret)
                     break;
             }
-            pl->free();
+            PolyList::destroy(pl);
         }
         if (need_out)
             ret = in_out->write_wire(&w);

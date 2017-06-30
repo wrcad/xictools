@@ -692,7 +692,7 @@ cEdit::logoUpdate()
 {
     if (LabelCmd && LabelCmd->DoLogo && LabelCmd->Text) {
         Gst()->SetGhost(GFnone);
-        LabelCmd->Plist->free();
+        PolyList::destroy(LabelCmd->Plist);
         LabelCmd->Plist = 0;
 
         int dd;
@@ -990,7 +990,7 @@ LabelState::LabelState(const char *nm, const char *hk) : CmdState(nm, hk)
 LabelState::~LabelState()
 {
     LabelCmd = 0;
-    Plist->free();
+    PolyList::destroy(Plist);
     if (DoLogo)
         ED()->PopUpLogo(0, MODE_OFF);
 }
@@ -1262,7 +1262,7 @@ LabelState::key(int code, const char*, int mstate)
         if (mstate & GR_SHIFT_MASK) {
             Gst()->SetGhost(GFnone);
             ED()->decHorzJustify();
-            Plist->free();
+            PolyList::destroy(Plist);
             Plist = 0;
             Gst()->SetGhost(GFlabel);
             return (true);
@@ -1299,7 +1299,7 @@ LabelState::key(int code, const char*, int mstate)
         if (mstate & GR_SHIFT_MASK) {
             Gst()->SetGhost(GFnone);
             ED()->decVertJustify();
-            Plist->free();
+            PolyList::destroy(Plist);
             Plist = 0;
             Gst()->SetGhost(GFlabel);
             return (true);
@@ -1332,7 +1332,7 @@ LabelState::key(int code, const char*, int mstate)
         if (mstate & GR_SHIFT_MASK) {
             Gst()->SetGhost(GFnone);
             ED()->incHorzJustify();
-            Plist->free();
+            PolyList::destroy(Plist);
             Plist = 0;
             Gst()->SetGhost(GFlabel);
             return (true);
@@ -1369,7 +1369,7 @@ LabelState::key(int code, const char*, int mstate)
         if (mstate & GR_SHIFT_MASK) {
             Gst()->SetGhost(GFnone);
             ED()->incVertJustify();
-            Plist->free();
+            PolyList::destroy(Plist);
             Plist = 0;
             Gst()->SetGhost(GFlabel);
             return (true);
@@ -1402,7 +1402,7 @@ LabelState::key(int code, const char*, int mstate)
         }
         Text->free();
         Text = hlabel;
-        Plist->free();
+        PolyList::destroy(Plist);
         Plist = 0;
         DSPmainDraw(ShowGhost(DISPLAY))
         ED()->logoUpdate();
@@ -1505,7 +1505,7 @@ label::write_logo(const cTfmStack *tstk, CDl *ld, const char *string,
             tstk->TPath(p->po.numpts, p->po.points);
             cursd->newPoly(0, &p->po, ld, 0, false);
         }
-        plist->free();
+        PolyList::destroy(plist);
     }
     else {
         int dd;
@@ -1542,7 +1542,7 @@ label::write_logo(const cTfmStack *tstk, CDl *ld, const char *string,
                 tstk->TPath(p->po.numpts, p->po.points);
                 cursd->newPoly(0, &p->po, ld, 0, false);
             }
-            plist->free();
+            PolyList::destroy(plist);
         }
         else {
             int lwid, lhei, numlines;
@@ -1613,7 +1613,7 @@ label::write_logofile(FILE *fp, const char *name, const char *string,
         PolyList *plist = Zlist::to_poly_list(z);
         for (PolyList *p = plist; p; p = p->next)
             Gen.Polygon(fp, p->po.points, p->po.numpts);
-        plist->free();
+        PolyList::destroy(plist);
     }
     else {
         int dd;
@@ -1631,7 +1631,7 @@ label::write_logofile(FILE *fp, const char *name, const char *string,
                 string_to_polys(string, width, xos, yos, lwid, pretty);
             for (PolyList *p = plist; p; p = p->next)
                 Gen.Polygon(fp, p->po.points, p->po.numpts);
-            plist->free();
+            PolyList::destroy(plist);
         }
         else {
             int lwid, lhei, numlines;
@@ -2264,7 +2264,7 @@ LabelState::show_logo(WindowDesc *wdesc, char *label, int x, int y,
             int xos = pw;
             int yos = 0;
             if (!Plist || Xos != xos || Yos != yos || Pwidth != pw) {
-                Plist->free();
+                PolyList::destroy(Plist);
                 Zlist *z = label::xpm_to_zlist(label, pw, xos, yos);
                 Plist = Zlist::to_poly_list(z);
                 Xos = xos;
@@ -2286,7 +2286,7 @@ LabelState::show_logo(WindowDesc *wdesc, char *label, int x, int y,
             yos = (lhei - lhei/numlines)*pw;
 
         if (!Plist || Xos != xos || Yos != yos || Pwidth != pw) {
-            Plist->free();
+            PolyList::destroy(Plist);
             Plist = 0;
 
             // To avoid spurious rendering, hide this from the

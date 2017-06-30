@@ -140,9 +140,9 @@ struct RTelem
 
     // For working with RTelem lists returned from RTree::to_list().
     //
-    RTelem *list_next(RTelem **nx)
+    static RTelem *list_next(RTelem *thisel, RTelem **nx)
         {
-            RTelem *r = this;
+            RTelem *r = thisel;
             if (r) {
                 *nx = r->sibling();
                 r->e_right = 0;
@@ -409,7 +409,7 @@ private:
         }
 
 public:
-    void free();
+    static void destroy(const RTelem*);
     int test();
     void show(int, int = 1);
     void list_test();
@@ -491,7 +491,7 @@ struct RTree
 
     void clear()
         {
-            rt_root->free();
+            RTelem::destroy(rt_root);
             rt_root = 0;
             rt_allocated = 0;
             rt_deferred = false;

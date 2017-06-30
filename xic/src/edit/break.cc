@@ -511,7 +511,7 @@ poly:
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
             }
         }
-        p0->free();
+        PolyList::destroy(p0);
 
         p0 = ((const CDpo*)odesc)->po_clip(&BB2);
         for (PolyList *p = p0; p; p = p->next) {
@@ -521,7 +521,7 @@ poly:
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
             }
         }
-        p0->free();
+        PolyList::destroy(p0);
         Ulist()->RecordObjectChange(sdesc, odesc, 0);
         return (true);
     }

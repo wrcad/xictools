@@ -1810,19 +1810,19 @@ namespace {
         if (!strcmp(s, "ms")) {
             Zlist::expand_by_2(z0);
             Ylist *y = new Ylist(z0);
-            z0 = y->repartition_ni();
+            z0 = Ylist::repartition_ni(y);
             z0 = Zlist::shrink_by_2(z0);
         }
         if (!strcmp(s, "c")) {
             Ylist *y = new Ylist(z0);
             intDb idb;
-            y->scanlines(0, idb);
+            Ylist::scanlines(y, 0, idb);
             int *scans;
             int nscans;
             idb.list(&scans, &nscans);
-            y = y->slice(scans, nscans);
+            y = Ylist::slice(y, scans, nscans);
             delete [] scans;
-            z0 = y->to_zlist();
+            z0 = Ylist::to_zlist(y);
         }
         else if (!strcmp(s, "x")) {
             Zlist::zl_andnot(&z0);
@@ -1830,31 +1830,35 @@ namespace {
         else {
             Ylist *y = new Ylist(z0);
             if (!strcmp(s, "mc")) {
+/*XXX fixme, need access to private members
                 CD()->SetIgnoreIntr(true);
                 bool chg = y->merge_cols();
                 CD()->SetIgnoreIntr(false);
                 printf("merge_cols returned %s.\n", chg ? "true" : "false");
+*/
             }
             else if (!strcmp(s, "mr")) {
+/*XXX fixme, need access to private members
                 CD()->SetIgnoreIntr(true);
                 bool chg = y->merge_rows();
                 CD()->SetIgnoreIntr(false);
                 printf("merge_rows returned %s.\n", chg ? "true" : "false");
+*/
             }
             else if (!strcmp(s, "r"))
-                y = new Ylist(y->repartition_ni());
+                y = new Ylist(Ylist::repartition_ni(y));
             else if (!strcmp(s, "wr"))
-                y = new Ylist(y->repartition_ni());
+                y = new Ylist(Ylist::repartition_ni(y));
             else if (!strcmp(s, "wp")) {
-                z0 = y->to_zlist();
+                z0 = Ylist::to_zlist(y);
                 PolyList *pl0 = Zlist::to_poly_list(z0);
                 for (PolyList *p = pl0; p; p = p->next)
                     cursd->newPoly(0, &p->po, oo->ldesc(), 0, false);
-                pl0->free();
+                PolyList::destroy(pl0);
                 return (XIok);
             }
 
-            z0 = y->to_zlist();
+            z0 = Ylist::to_zlist(y);
         }
         for (Zlist *z = z0; z; z = z->next) {
             if (z->Z.xll == z->Z.xul && z->Z.xlr == z->Z.xur) {

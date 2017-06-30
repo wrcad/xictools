@@ -719,13 +719,13 @@ RLsolver::setup_edges()
     PolyList *pl = Zlist::to_poly_list(Zlist::copy(rl_zlist));
     rl_h_edges = to_edges(pl, false);
     rl_v_edges = to_edges(pl, true);
-    pl->free();
+    PolyList::destroy(pl);
 
     for (int i = 0; i < rl_num_contacts; i++) {
         pl = Zlist::to_poly_list(Zlist::copy(rl_contacts[i].czl));
         rl_contacts[i].h_edges = to_edges(pl, false);
         rl_contacts[i].v_edges = to_edges(pl, true);
-        pl->free();
+        PolyList::destroy(pl);
     }
 }
 
@@ -759,9 +759,9 @@ RLsolver::find_tile()
 
     for (int i = 0; i < rl_num_contacts; i++) {
         for (Zlist *z = rl_contacts[i].czl; z; z = z->next)
-            yl = yl->clip_out(&z->Z);
+            yl = Ylist::clip_out(yl, &z->Z);
     }
-    zl = yl->to_zlist();
+    zl = Ylist::to_zlist(yl);
 
     // Compute new BB.
     BBox BB;
@@ -1117,12 +1117,12 @@ MRsolver::find_vias()
                         lsp.set_tree(0);
                         if (ret == XIintr) {
                             Errs()->add_error("find_vias: interrupted");
-                            p0->free();
+                            PolyList::destroy(p0);
                             return (false);
                         }
                         if (ret == XIbad) {
                             Errs()->add_error("find_vias: testContact failed.");
-                            p0->free();
+                            PolyList::destroy(p0);
                             return (false);
                         }
                     }

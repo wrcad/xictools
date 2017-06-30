@@ -1073,7 +1073,7 @@ rf_out::write_poly(const Poly *po)
                             rf_targld->getStrmDatatypeFlags(rf_targdt));
                 }
             }
-            pl->free();
+            PolyList::destroy(pl);
         }
         if (need_out) {
             if (rf_backend) {
@@ -1118,7 +1118,7 @@ rf_out::write_wire(const Wire *w)
                         break;
                     }
                 }
-                pl->free();
+                PolyList::destroy(pl);
             }
             if (need_out) {
                 ret = rf_backend->write_poly(&wp);
@@ -1154,7 +1154,7 @@ rf_out::write_wire(const Wire *w)
                             rf_targld->getStrmDatatypeFlags(rf_targdt));
                 }
             }
-            pl->free();
+            PolyList::destroy(pl);
         }
         if (need_out) {
             if (rf_backend) {

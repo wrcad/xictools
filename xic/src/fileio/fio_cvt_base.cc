@@ -1730,14 +1730,14 @@ cv_out::write_object_clipped(const CDo *odesc, const BBox *AOI, cvLchk *lchk)
             cdpo.set_oBB(tBB);
             if (!write_object(&cdpo, lchk)) {
                 cdpo.set_points(0);
-                pl->free();
+                PolyList::destroy(pl);
                 return (false);
             }
             if (lchk && *lchk == cvLnogo)
                 break;
         }
         cdpo.set_points(0);
-        pl->free();
+        PolyList::destroy(pl);
         return (true);
     }
 
@@ -1766,7 +1766,7 @@ cv_out::write_object_clipped(const CDo *odesc, const BBox *AOI, cvLchk *lchk)
             if (!write_object(&cdpo, lchk)) {
                 cdpo.set_points(0);
                 cdpo.set_numpts(0);
-                pl->free();
+                PolyList::destroy(pl);
                 return (false);
             }
             if (lchk && *lchk == cvLnogo)
@@ -1774,7 +1774,7 @@ cv_out::write_object_clipped(const CDo *odesc, const BBox *AOI, cvLchk *lchk)
         }
         cdpo.set_points(0);
         cdpo.set_numpts(0);
-        pl->free();
+        PolyList::destroy(pl);
         return (true);
     }
     return (true);

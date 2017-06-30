@@ -445,7 +445,7 @@ PeekState::redisplay(WindowDesc *wdesc, CDol *sl)
         }
     }
     if (b0) {
-        b0 = b0->merge();
+        b0 = Blist::merge(b0);
         for (Blist *bl = b0; bl; bl = be) {
             be = bl->next;
             wdesc->Redisplay(&bl->BB);

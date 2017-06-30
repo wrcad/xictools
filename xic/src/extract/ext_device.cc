@@ -2843,7 +2843,7 @@ sMprim::cAP(sDevInst *di)
             PolyList *pl = Zlist::to_poly_list(z0);
             for (PolyList *p = pl; p; p = p->next)
                 perim += p->po.perim();
-            pl->free();
+            PolyList::destroy(pl);
             mp_extravar->content.value = MICRONS(perim);
         }
         else
@@ -5262,7 +5262,7 @@ sDevInst::clip_contacts() const
                 continue;
             if (cnt != i) {
                 Blist bx = Blist(c->cBB(), 0);
-                bla[i] = bla[i]->clip_out(&bx);
+                bla[i] = Blist::clip_out(bla[i], &bx);
             }
             cnt++;
         }

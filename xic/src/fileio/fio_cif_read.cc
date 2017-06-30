@@ -3341,7 +3341,7 @@ cif_in::a_box_cvt_prv(BBox &BB)
                         if (!ret)
                             break;
                     }
-                    pl->free();
+                    PolyList::destroy(pl);
                 }
                 if (need_out)
                     ret = in_out->write_poly(&po);
@@ -3642,7 +3642,7 @@ cif_in::a_polygon_cvt_prv(Poly &po)
                     if (!ret)
                         break;
                 }
-                pl->free();
+                PolyList::destroy(pl);
             }
             if (need_out)
                 ret = in_out->write_poly(&po);
@@ -3919,7 +3919,7 @@ cif_in::a_wire_cvt_prv(Wire &w)
                 if (!ret)
                     break;
             }
-            pl->free();
+            PolyList::destroy(pl);
         }
         if (need_out)
             ret = in_out->write_wire(&w);

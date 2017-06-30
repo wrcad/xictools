@@ -1750,7 +1750,7 @@ DRCtestDesc::testPoly_Overlap(PolyObj *dpo, const CDl *ldtarget,
                 *eret = ret;
                 if (ret == XIbad)
                     treeError();
-                p0->free();
+                PolyList::destroy(p0);
                 return (0);
             }
             if (!istrue)
@@ -1758,7 +1758,7 @@ DRCtestDesc::testPoly_Overlap(PolyObj *dpo, const CDl *ldtarget,
             if (errbrk(this, errs))
                 break;
         }
-        p0->free();
+        PolyList::destroy(p0);
     }
     else {
         bool istrue;
@@ -1799,7 +1799,7 @@ DRCtestDesc::testPoly_IfOverlap(PolyObj *dpo, const CDl *ldtarget,
                 *eret = ret;
                 if (ret == XIbad)
                     treeError();
-                p0->free();
+                PolyList::destroy(p0);
                 return (0);
             }
             if (!istrue)
@@ -1807,7 +1807,7 @@ DRCtestDesc::testPoly_IfOverlap(PolyObj *dpo, const CDl *ldtarget,
             if (errbrk(this, errs))
                 break;
         }
-        p0->free();
+        PolyList::destroy(p0);
     }
     else {
         bool istrue;
@@ -1848,7 +1848,7 @@ DRCtestDesc::testPoly_NoOverlap(PolyObj *dpo, const CDl *ldtarget,
                 *eret = ret;
                 if (ret == XIbad)
                     treeError();
-                p0->free();
+                PolyList::destroy(p0);
                 return (0);
             }
             if (!istrue)
@@ -1856,7 +1856,7 @@ DRCtestDesc::testPoly_NoOverlap(PolyObj *dpo, const CDl *ldtarget,
             if (errbrk(this, errs))
                 break;
         }
-        p0->free();
+        PolyList::destroy(p0);
     }
     else {
         bool istrue;
@@ -1897,7 +1897,7 @@ DRCtestDesc::testPoly_AnyOverlap(PolyObj *dpo, const CDl *ldtarget,
                 *eret = ret;
                 if (ret == XIbad)
                     treeError();
-                p0->free();
+                PolyList::destroy(p0);
                 return (0);
             }
             if (!istrue)
@@ -1905,7 +1905,7 @@ DRCtestDesc::testPoly_AnyOverlap(PolyObj *dpo, const CDl *ldtarget,
             if (errbrk(this, errs))
                 break;
         }
-        p0->free();
+        PolyList::destroy(p0);
     }
     else {
         bool istrue;
@@ -1946,7 +1946,7 @@ DRCtestDesc::testPoly_PartOverlap(PolyObj *dpo, const CDl *ldtarget,
                 *eret = ret;
                 if (ret == XIbad)
                     treeError();
-                p0->free();
+                PolyList::destroy(p0);
                 return (0);
             }
             if (!istrue)
@@ -1954,7 +1954,7 @@ DRCtestDesc::testPoly_PartOverlap(PolyObj *dpo, const CDl *ldtarget,
             if (errbrk(this, errs))
                 break;
         }
-        p0->free();
+        PolyList::destroy(p0);
     }
     else {
         bool istrue;
@@ -1995,7 +1995,7 @@ DRCtestDesc::testPoly_AnyNoOverlap(PolyObj *dpo, const CDl *ldtarget,
                 *eret = ret;
                 if (ret == XIbad)
                     treeError();
-                p0->free();
+                PolyList::destroy(p0);
                 return (0);
             }
             if (!istrue)
@@ -2003,7 +2003,7 @@ DRCtestDesc::testPoly_AnyNoOverlap(PolyObj *dpo, const CDl *ldtarget,
             if (errbrk(this, errs))
                 break;
         }
-        p0->free();
+        PolyList::destroy(p0);
     }
     else {
         bool istrue;
@@ -2045,7 +2045,7 @@ DRCtestDesc::testPoly_MinArea(PolyObj *dpo, const CDl *ldtarget,
                 break;
             Zlist::destroy(zl);
         }
-        p0->free();
+        PolyList::destroy(p0);
     }
     else {
         if (1.0001*Zlist::area(dpo->zlist()) < area()) {
@@ -2130,7 +2130,7 @@ DRCtestDesc::testPoly_MaxArea(PolyObj *dpo, const CDl *ldtarget,
                 break;
             Zlist::destroy(zl);
         }
-        p0->free();
+        PolyList::destroy(p0);
     }
     else {
         if (0.9999*Zlist::area(dpo->zlist()) > area()) {
@@ -2174,7 +2174,7 @@ DRCtestDesc::testPoly_EdgeTest(PolyObj *dpo, const CDl *ldtarget,
                     if (errbrk(td, errs) || *eret != XIok)
                         break;
                 }
-                p0->free();
+                PolyList::destroy(p0);
                 if ((DRC()->errorLevel() == 0 && errs.has_errs()) ||
                         *eret != XIok)
                     break;

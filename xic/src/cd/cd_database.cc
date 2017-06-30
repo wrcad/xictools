@@ -415,7 +415,7 @@ CDdb::db_rebuild(bool(*process)(CDo*, CDdb*, void*), void *arg)
         RTelem *list = ttmp[i].to_list();
         while (list) {
             RTelem *ln = 0;
-            list = list->list_next(&ln);
+            list = RTelem::list_next(list, &ln);
             if ((*process)((CDo*)list, this, arg))
                 ttmp[i].insert(list);
             list = ln;
@@ -450,7 +450,7 @@ CDdb::db_merge(CDdb *sdb, bool(*process)(CDo*, CDdb*, CDdb*, void*),
         RTelem *list = ttmp[i].to_list();
         while (list) {
             RTelem *ln = 0;
-            list = list->list_next(&ln);
+            list = RTelem::list_next(list, &ln);
             if ((*process)((CDo*)list, this, sdb, arg))
                 db_insert((CDo*)list);
             list = ln;

@@ -290,7 +290,7 @@ Ldb3d::line_scan(const Point *p1, const Point *p2)
 
             }
         }
-        lists[lnum] = lists[lnum]->merge();
+        lists[lnum] = Blist::merge(lists[lnum]);
         lnum++;
     }
     return (lists);
@@ -382,7 +382,7 @@ Ldb3d::init_stack(CDs *sdesc, const BBox *AOI, bool is_cs,
     for (Layer3d *l = db3_stack; l; l = lnxt) {
         lnxt = l->next();
         l->extract_geom(sdesc, db3_zlref);
-        unsigned int zc = l->uncut()->count_zoids();
+        unsigned int zc = Ylist::count_zoids(l->uncut());
         if (db3_logfp && zc) {
             fprintf(db3_logfp, "Trapezoid count for %s is %u.\n",
                 l->layer_desc()->name(), zc);
@@ -472,7 +472,7 @@ Ldb3d::init_stack(CDs *sdesc, const BBox *AOI, bool is_cs,
     glZlist3d *c0 = 0, *ce = 0;
     for (Layer3d *l = db3_stack; l; l = l->next()) {
         if (l->is_conductor()) {
-            glZlist3d *zl = l->yl3d()->to_zl3d();
+            glZlist3d *zl = glYlist3d::to_zl3d(l->yl3d());
             l->set_yl3d(0);
             if (!c0)
                 c0 = ce = zl;
@@ -487,7 +487,7 @@ Ldb3d::init_stack(CDs *sdesc, const BBox *AOI, bool is_cs,
     delete db3_groups;
     db3_ngroups = 0;
     glYlist3d *y0 = new glYlist3d(c0);
-    glZgroup3d *g = y0->group();  // consumes y0
+    glZgroup3d *g = glYlist3d::group(y0);  // consumes y0
     db3_groups = new glZgroupRef3d(g);
     db3_ngroups = g->num;
 
@@ -659,8 +659,8 @@ Ldb3d::find_object_under(const glZoid3d *Z) const
 
 Layer3d::~Layer3d()
 {
-    l3_cut->free();
-    l3_uncut->free();
+    Ylist::destroy(l3_cut);
+    Ylist::destroy(l3_uncut);
     glYlist3d::destroy(l3_yl3d);
 }
 
@@ -717,9 +717,9 @@ Layer3d::extract_geom(const CDs *sdesc, const Zlist *zref)
     if (free_zref)
         Zlist::destroy(zref);
 
-    l3_cut->free();
+    Ylist::destroy(l3_cut);
     l3_cut = 0;
-    l3_uncut->free();
+    Ylist::destroy(l3_uncut);
 
     zl = Zlist::filter_slivers(zl, 1);
     l3_uncut = zl ? new Ylist(zl) : 0;
@@ -735,7 +735,7 @@ bool
 Layer3d::intersect(int x, int y) const
 {
     Point_c p(x, y);
-    return (l3_uncut->find_container(&p));
+    return (Ylist::find_container(l3_uncut, &p));
 }
 
 
@@ -758,8 +758,8 @@ Layer3d::cut(const Layer3d *btm)
         // This signals that we just add the cut field as a copy of
         // uncut, which is appropriate for the lowest layer.
 
-        l3_cut->free();
-        l3_cut = l3_uncut->copy();
+        Ylist::destroy(l3_cut);
+        l3_cut = Ylist::copy(l3_uncut);
         return (true);
     }
     
@@ -790,7 +790,7 @@ Layer3d::cut(const Layer3d *btm)
         zn->next = z2;
     }
     z1 = Zlist::filter_slivers(z1, 1);
-    l3_cut->free();
+    Ylist::destroy(l3_cut);
     l3_cut = new Ylist(z1);
     return (true);
 }
@@ -802,7 +802,7 @@ Layer3d::cut(const Layer3d *btm)
 void
 Layer3d::mk3d(bool is_cross_sect)
 {
-    Zlist *zl0 = l3_cut->to_zlist();
+    Zlist *zl0 = Ylist::to_zlist(l3_cut);
     l3_cut = 0;
     glYlist3d::destroy(l3_yl3d);
     l3_yl3d = 0;

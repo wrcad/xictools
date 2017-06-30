@@ -48,7 +48,7 @@ namespace {
     {
         OPlist(CDo *o, PolyList *p, OPlist *n)
             { odesc = o; plist = p; next = n; }
-        ~OPlist() { plist->free(); }
+        ~OPlist() { PolyList::destroy(plist); }
 
         void free()
             {

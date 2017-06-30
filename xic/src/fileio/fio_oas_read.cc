@@ -3713,7 +3713,7 @@ oas_in::ac_path_prv(Wire &w)
                 if (!ret)
                     break;
             }
-            pl->free();
+            PolyList::destroy(pl);
         }
         if (need_out)
             ret = in_out->write_wire(&w);
@@ -3978,7 +3978,7 @@ oas_in::ac_polygon_save_prv(Poly *po)
                     if (!ret)
                         break;
                 }
-                pl->free();
+                PolyList::destroy(pl);
             }
             if (need_out)
                 ret = in_out->write_poly(po);

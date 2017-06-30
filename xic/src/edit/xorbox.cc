@@ -404,7 +404,7 @@ cEdit::xorArea(int x1, int y1, int x2, int y2)
                 }
             }
         }
-        p0->free();
+        PolyList::destroy(p0);
     }
 
     // replace the part of the object outside of the AOI
@@ -480,7 +480,7 @@ poly:
                     Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
                 }
             }
-            p0->free();
+            PolyList::destroy(p0);
         }
         if (odesc->oBB().bottom < AOI->bottom) {
             BB.left = odesc->oBB().left;
@@ -494,7 +494,7 @@ poly:
                     Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
                 }
             }
-            p0->free();
+            PolyList::destroy(p0);
         }
         if (odesc->oBB().left < AOI->left) {
             BB.left = odesc->oBB().left;
@@ -508,7 +508,7 @@ poly:
                     Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
                 }
             }
-            p0->free();
+            PolyList::destroy(p0);
         }
         if (odesc->oBB().right > AOI->right) {
             BB.left = AOI->right;
@@ -522,7 +522,7 @@ poly:
                     Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
                 }
             }
-            p0->free();
+            PolyList::destroy(p0);
         }
         return;
     }

@@ -1307,7 +1307,7 @@ fcLayout::panelize_group_ztop(const glZlistRef3d *z0) const
                         continue;
 
                     if (l->is_insulator()) {
-                        Zlist *zx = yl->clip_to(&z2->Z);
+                        Zlist *zx = Ylist::clip_to(yl, &z2->Z);
                         for (Zlist *zz = zx; zz; zz = zz->next) {
                             if (fcl_domerge) {
                                 grps = grps->add(l->epsrel(), z1->PZ->ztop,
@@ -1331,7 +1331,7 @@ fcLayout::panelize_group_ztop(const glZlistRef3d *z0) const
                         }
                         Zlist::destroy(zx);
                     }
-                    yl = yl->clip_out(&z2->Z);
+                    yl = Ylist::clip_out(yl, &z2->Z);
                     if (!yl)
                         goto done;
                 }
@@ -1342,7 +1342,7 @@ done:   ;
             // These abut the vacuum assumed to surround
             // everything.
 
-            Zlist *zx = yl->to_zlist();
+            Zlist *zx = Ylist::to_zlist(yl);
             for (Zlist *zz = zx; zz; zz = zz->next) {
                 if (fcl_domerge) {
                     grps = grps->add(1.0, z1->PZ->ztop,
@@ -2096,7 +2096,7 @@ fcLayout::panelize_dielectric_ztop(const Layer3d *l1) const
                         if (l->is_insulator()) {
                             double dc2 = l->epsrel();
                             if (dc1 != dc2) {
-                                Zlist *zx = yl->clip_to(&z2->Z);
+                                Zlist *zx = Ylist::clip_to(yl, &z2->Z);
                                 for (Zlist *zz = zx; zz; zz = zz->next) {
                                     if (fcl_domerge) {
                                         grps = grps->add(dc2, z1->Z.ztop,
@@ -2121,7 +2121,7 @@ fcLayout::panelize_dielectric_ztop(const Layer3d *l1) const
                                 Zlist::destroy(zx);
                             }
                         }
-                        yl = yl->clip_out(&z2->Z);
+                        yl = Ylist::clip_out(yl, &z2->Z);
                         if (!yl)
                             goto done;
                     }
@@ -2133,7 +2133,7 @@ done:       ;
                 // everything.
 
                 if (dc1 != 1.0) {
-                    Zlist *zx = yl->to_zlist();
+                    Zlist *zx = Ylist::to_zlist(yl);
                     for (Zlist *zz = zx; zz; zz = zz->next) {
                         if (fcl_domerge) {
                             grps = grps->add(1.0, z1->Z.ztop,
@@ -2755,11 +2755,11 @@ fcLayout::area_group_ztop(const glZlistRef3d *z0) const
                         continue;
 
                     if (l->is_insulator()) {
-                        Zlist *zx = yl->clip_to(&z2->Z);
+                        Zlist *zx = Ylist::clip_to(yl, &z2->Z);
                         area += Zlist::area(zx);
                         Zlist::destroy(zx);
                     }
-                    yl = yl->clip_out(&z2->Z);
+                    yl = Ylist::clip_out(yl, &z2->Z);
                     if (!yl)
                         goto done;
                 }
@@ -2770,7 +2770,7 @@ done:   ;
             // These abut the vacuum assumed to surround
             // everything.
 
-            Zlist *zx = yl->to_zlist();
+            Zlist *zx = Ylist::to_zlist(yl);
             area += Zlist::area(zx);
             Zlist::destroy(zx);
         }
@@ -3146,13 +3146,13 @@ fcLayout::area_dielectric_ztop(const Layer3d *l1) const
                         if (l->is_insulator()) {
                             double dc2 = l->epsrel();
                             if (dc1 != dc2) {
-                                Zlist *zx = yl->clip_to(&z2->Z);
+                                Zlist *zx = Ylist::clip_to(yl, &z2->Z);
                                 for (Zlist *zz = zx; zz; zz = zz->next)
                                     area += zz->Z.area();
                                 Zlist::destroy(zx);
                             }
                         }
-                        yl = yl->clip_out(&z2->Z);
+                        yl = Ylist::clip_out(yl, &z2->Z);
                         if (!yl)
                             goto done;
                     }
@@ -3164,7 +3164,7 @@ done:       ;
                 // everything.
 
                 if (dc1 != 1.0) {
-                    Zlist *zx = yl->to_zlist();
+                    Zlist *zx = Ylist::to_zlist(yl);
                     for (Zlist *zz = zx; zz; zz = zz->next)
                         area += zz->Z.area();
                     Zlist::destroy(zx);

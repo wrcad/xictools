@@ -348,7 +348,7 @@ CDs::mergeBoxOrPoly(CDo *odesc, bool Undoable)
             }
         }
     }
-    p0->free();
+    PolyList::destroy(p0);
 
     for (CDol *ol = o0; ol; ol = ol->next) {
         CDo *od = ol->odesc;

@@ -280,9 +280,17 @@ struct PolyList
 
     static PolyList *new_poly_list(const Zlist*, bool);
 
+    static void destroy(const PolyList *p)
+    {
+        while (p) {
+            const PolyList *px = p;
+            p = p->next;
+            delete px;
+        }
+    }
+
     CDo *to_odesc(CDl*);
     CDol *to_olist(CDl*, CDol** = 0);
-    void free();
 
     PolyList *next;
     Poly po;

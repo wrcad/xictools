@@ -44,8 +44,6 @@ struct Point
     void set(int xx, int yy) { x = xx; y = yy; }
     void set(const Point &p) { x = p.x; y = p.y; }
 
-    // Methods are static so we can freely allow a null "this" pointer.
-
     static Point *dup(const Point *pts, int n)
         {
             if (!pts)

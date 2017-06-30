@@ -577,7 +577,7 @@ fhLayout::setup()
             double vol = 0.0;
             for (Layer3d *l = layers(); l; l = l->next()) {
                 if (l->is_conductor())
-                    vol += l->yl3d()->volume();
+                    vol += glYlist3d::volume(l->yl3d());
             }
             double cvol = vol / val;
             max_rect_size = INTERNAL_UNITS(cbrt(cvol));
@@ -658,7 +658,7 @@ fhLayout::setup()
                                         p->po.points[i]);
                             }
                         }
-                        pl->free();
+                        PolyList::destroy(pl);
                     }
                 }
             }
@@ -682,7 +682,7 @@ fhLayout::setup()
                                         p->po.points[i]);
                             }
                         }
-                        pl->free();
+                        PolyList::destroy(pl);
                     }
                 }
             }
@@ -800,7 +800,7 @@ fhLayout::setup()
                     }
                     delete od;
                 }
-                p0->free();
+                PolyList::destroy(p0);
             }
             delete zg;
         }
@@ -1576,7 +1576,7 @@ fhConductor::save_zlist_db()
     sprintf(buf, "G%dL%d:FH", hc_group, hc_layer_ix);
     CDl *ld = CDldb()->newLayer(buf, Physical);
     CurCell(Physical)->db_clear_layer(ld);
-    Zlist *zl = hc_zlist3d->to_zlist();
+    Zlist *zl = glZlist3d::to_zlist(hc_zlist3d);
     Zlist::add(zl, CurCell(Physical), ld, false, false);
     Zlist::destroy(zl);
 }

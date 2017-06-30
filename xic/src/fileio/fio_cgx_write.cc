@@ -470,7 +470,7 @@ cgx_out::write_poly(const Poly *poly)
                 for (int i = 0; i < p->po.numpts; i++) {
                     if (out_bufcnt >= end) {
                         if (!flush_buf()) {
-                            p0->free();
+                            PolyList::destroy(p0);
                             return (false);
                         }
                     }
@@ -480,7 +480,7 @@ cgx_out::write_poly(const Poly *poly)
                 if (!flush_buf())
                     return (false);
             }
-            p0->free();
+            PolyList::destroy(p0);
         }
         else {
             int dsize = 4 + poly->numpts*8;

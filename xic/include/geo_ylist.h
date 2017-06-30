@@ -49,25 +49,14 @@ struct Ylist
     Ylist(Zlist*, bool = false);
     ~Ylist() { Zlist::destroy(y_zlist); }
 
-    void free()
+    static void destroy(const Ylist *thisyl)
         {
-            Ylist *y = this;
+            const Ylist *y = thisyl;
             while (y) {
-                Ylist *yn = y->next;
-                delete y;
-                y = yn;
-            }
-        }
-
-    unsigned int count_zoids()
-        {
-            unsigned int cnt = 0;
-            Ylist *y = this;
-            while (y) {
-                cnt += Zlist::length(y->y_zlist);
+                const Ylist *yx = y;
                 y = y->next;
+                delete yx;
             }
-            return (cnt);
         }
 
     void set_zlist(Zlist *zl)
@@ -76,11 +65,22 @@ struct Ylist
             y_zlist = zl;
         }
 
-    Zlist *to_zlist()
+    static unsigned int count_zoids(const Ylist *thisyl)
+        {
+            unsigned int cnt = 0;
+            const Ylist *y = thisyl;
+            while (y) {
+                cnt += Zlist::length(y->y_zlist);
+                y = y->next;
+            }
+            return (cnt);
+        }
+
+    static Zlist *to_zlist(Ylist *thisyl)
         {
             Zlist *z0 = 0, *ze = 0;
             Ylist *yn;
-            for (Ylist *y = this; y; y = yn) {
+            for (Ylist *y = thisyl; y; y = yn) {
                 yn = y->next;
                 if (y->y_zlist) {
                     if (!z0)
@@ -96,9 +96,9 @@ struct Ylist
             return (z0);
         }
 
-    Ylist *strip_empty()
+    static Ylist *strip_empty(Ylist *thisyl)
         {
-            Ylist *y0 = this;
+            Ylist *y0 = thisyl;
             Ylist *yp = 0, *yn;
             for (Ylist *y = y0; y; y = yn) {
                 yn = y->next;
@@ -115,9 +115,9 @@ struct Ylist
             return (y0);
         }
 
-    Ylist *clear_to_next()
+    static Ylist *clear_to_next(Ylist *thisyl)
         {
-            Ylist *yl = this;
+            Ylist *yl = thisyl;
             if (!yl)
                 return (0);
             Ylist *yn = yl->next;
@@ -125,22 +125,12 @@ struct Ylist
             return (yn);
         }
 
-    void col_row_merge() throw (XIrt)
-        {
-            bool chg = true;
-            while (chg) {
-                chg = merge_cols();
-                if (chg)
-                    chg = merge_rows();
-            }
-        }
-
-    void computeBB(BBox *BB) const
+    static void computeBB(const Ylist *thisyl, BBox *BB)
         {
             if (!BB)
                 return;
             *BB = CDnullBB;
-            const Ylist *y0 = this;
+            const Ylist *y0 = thisyl;
             if (!y0)
                 return;
             BB->top = y0->y_yu;
@@ -198,40 +188,48 @@ struct Ylist
         }
 
     // geo_ylist.cc
-    bool intersect(const Ylist*, bool) const;
-    const Zoid *find_container(const Point*);
-    Ylist *copy() const;
-    Ylist *to_poly(Point**, int*, int);
-    Zgroup *group(int = 0);
-    Ylist *connected(Zlist**);
-    Ylist *remove_backg(const BBox*);
-    void scanlines(const Ylist*, intDb&) const;
-    Ylist *slice(const int*, int) throw (XIrt);
-    Zlist *repartition() throw (XIrt);
-    Zlist *repartition_ni();
-    Ylist *repartition_group() throw (XIrt);
-    bool merge_rows() throw (XIrt);
-    bool merge_cols() throw (XIrt);
-    bool merge_end_row(Ylist*);
-    Ylist *filter_slivers(int = 0);
-    Zlist *clip_to() throw (XIrt);
-    Zlist *clip_to(const Zoid*) const;
-    Zlist *clip_to(const Ylist*) const throw (XIrt);
-    Zlist *clip_out() const throw (XIrt);
-    Ylist *clip_out(const Zoid*);
-    Zlist *clip_out(const Ylist*) const throw (XIrt);
+    static bool intersect(const Ylist*, const Ylist*, bool);
+    static const Zoid *find_container(const Ylist*, const Point*);
+    static Ylist *copy(const Ylist*);
+    static Ylist *to_poly(Ylist*, Point**, int*, int);
+    static Zgroup *group(Ylist*, int = 0);
+    static Ylist *connected(Ylist*, Zlist**);
+    static Ylist *remove_backg(Ylist*, const BBox*);
+    static void scanlines(const Ylist*, const Ylist*, intDb&);
+    static Ylist *slice(Ylist*, const int*, int) throw (XIrt);
+    static Zlist *repartition(Ylist*) throw (XIrt);
+    static Zlist *repartition_ni(Ylist*);
+    static Ylist *repartition_group(Ylist*) throw (XIrt);
+    static bool merge_end_row(Ylist*, Ylist*);
+    static Ylist *filter_slivers(Ylist*, int = 0);
+    static Zlist *clip_to(Ylist*) throw (XIrt);
+    static Zlist *clip_to(const Ylist*, const Zoid*);
+    static Zlist *clip_to(const Ylist*, const Ylist*) throw (XIrt);
+    static Zlist *clip_out(const Ylist*) throw (XIrt);
+    static Ylist *clip_out(Ylist*, const Zoid*);
+    static Zlist *clip_out(const Ylist*, const Ylist*) throw (XIrt);
 
-    Ylist *scl_clip_to(Ylist*) throw (XIrt);
-    Ylist *scl_clip_out() throw (XIrt);
-    Ylist *scl_clip_out(Ylist*) throw (XIrt);
-    Ylist *scl_clip_out2(Ylist**) throw (XIrt);
-    Ylist *scl_clip_xor(Ylist*) throw (XIrt);
-    bool debug();
+    static Ylist *scl_clip_to(Ylist*, Ylist*) throw (XIrt);
+    static Ylist *scl_clip_out(Ylist*) throw (XIrt);
+    static Ylist *scl_clip_out(Ylist*, Ylist*) throw (XIrt);
+    static Ylist *scl_clip_out2(Ylist*, Ylist**) throw (XIrt);
+    static Ylist *scl_clip_xor(Ylist*, Ylist*) throw (XIrt);
+    static bool debug(Ylist*);
     bool debug_row();
 
     static void remove_common(Ylist**, Ylist**);
 
 private:
+    void col_row_merge() throw (XIrt)
+        {
+            bool chg = true;
+            while (chg) {
+                chg = merge_cols();
+                if (chg)
+                    chg = merge_rows();
+            }
+        }
+
     void remove_next(Zlist *zp, Zlist *z)
         {
             if (!zp)
@@ -272,6 +270,8 @@ private:
         }
 
     // geo_ylist.cc
+    bool merge_rows() throw (XIrt);
+    bool merge_cols() throw (XIrt);
     Ylist *find_bottom(geo_ylist::topoly_t*);
     Ylist *find_top(geo_ylist::topoly_t*);
     Ylist *find_left(geo_ylist::topoly_t*);
@@ -301,7 +301,7 @@ Zlist::repartition(Zlist *z0) throw (XIrt)
     if (!z0 || !z0->next)
         return (z0);
     Ylist *yl = new Ylist(z0);
-    return (yl->repartition());
+    return (Ylist::repartition(yl));
 }
 
 
@@ -313,7 +313,7 @@ Zlist::repartition_ni(Zlist *z0)
     if (!z0 || !z0->next)
         return (z0);
     Ylist *yl = new Ylist(z0);
-    return (yl->repartition_ni());
+    return (Ylist::repartition_ni(yl));
 }
 
 #endif
