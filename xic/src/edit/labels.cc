@@ -338,7 +338,7 @@ cEdit::makeLabelsExec(CmdDesc *cmd)
 
     if (!hlabel || (hlabel->ref_type() == HLrefText && !hlabel->text()[0])) {
         if (hlabel)
-            hlabel->free();
+            hyList::destroy(hlabel);
         // careful! might be in the logo command now
         if (LabelCmd && !LabelCmd->DoLogo)
             LabelCmd->esc();
@@ -369,7 +369,7 @@ cEdit::makeLabelsExec(CmdDesc *cmd)
             }
         }
         Ulist()->CommitChanges(true);
-        hlabel->free();
+        hyList::destroy(hlabel);
         LabelCmd->KeepLT = true;
         LabelCmd->esc();
         if (DSP()->CurMode() == Electrical)
@@ -395,7 +395,8 @@ cEdit::makeLabelsExec(CmdDesc *cmd)
         LabelCmd->set_curtx(true);
 
         GRvecFont *ft = &FT;
-        char *text = LabelCmd->Target->label()->string(HYcvPlain, false);
+        char *text = hyList::string(LabelCmd->Target->label(), HYcvPlain,
+            false);
         int width, height;
         ft->textExtent(text, &width, &height, &numlines);
         delete [] text;
@@ -549,7 +550,8 @@ cEdit::execLabelScript()
         if (!OLABEL(sl->odesc)->label()->is_label_script())
             continue;
 
-        char *string = OLABEL(sl->odesc)->label()->string(HYcvPlain, true);
+        char *string = hyList::string(OLABEL(sl->odesc)->label(), HYcvPlain,
+            true);
         char *path = 0;
         const char *s = string;
         lstring::advtok(&s);
@@ -1115,7 +1117,7 @@ LabelState::esc()
     if (LabelCmd) {
         Gst()->SetGhost(GFnone);
         set_curtx(false);
-        Text->free();
+        hyList::destroy(Text);
         if (!TrgWire)
             PL()->ErasePrompt();
         if (Pushed)
@@ -1192,7 +1194,7 @@ LabelState::b1down()
     else {
         Ulist()->ListCheck(StateName, cursd, false);
         Gst()->SetGhost(GFnone);
-        char *str = Text->string(HYcvPlain, false);
+        char *str = hyList::string(Text, HYcvPlain, false);
         int x, y;
         EV()->Cursor().get_xy(&x, &y);
         ED()->createLogo(str, x, y,
@@ -1395,12 +1397,12 @@ LabelState::key(int code, const char*, int mstate)
         if (!hlabel || (hlabel->ref_type() == HLrefText &&
                 !hlabel->text()[0])) {
             if (hlabel)
-                hlabel->free();
+                hyList::destroy(hlabel);
             if (LabelCmd && LabelCmd->DoLogo == waslogo)
                 esc();
             return (true);
         }
-        Text->free();
+        hyList::destroy(Text);
         Text = hlabel;
         PolyList::destroy(Plist);
         Plist = 0;
@@ -2351,7 +2353,7 @@ cEditGhost::showGhostLabel(int x, int y, int, int)
         return;
     int xform = LabelCmd->current_xform();
     GRvecFont *ft = LabelCmd->DoLogo ? &LogoFT : &FT;
-    char *text = LabelCmd->Text->string(HYcvPlain, false);
+    char *text = hyList::string(LabelCmd->Text, HYcvPlain, false);
     int width, height, numlines;
     if (LabelCmd->DoLogo) {
         if (label::is_xpm(text)) {

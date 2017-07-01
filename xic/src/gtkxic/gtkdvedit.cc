@@ -277,7 +277,7 @@ sDE::sDE(GRobject caller)
 
     CDp_user *pu = (CDp_user*)(cursde ? cursde->prpty(P_MODEL) : 0);
     if (pu) {
-        char *s = pu->data()->string(HYcvPlain, false);
+        char *s = hyList::string(pu->data(), HYcvPlain, false);
         gtk_entry_set_text(GTK_ENTRY(de_model), s);
         delete [] s;
     }
@@ -295,7 +295,7 @@ sDE::sDE(GRobject caller)
 
     pu = (CDp_user*)(cursde ? cursde->prpty(P_VALUE) : 0);
     if (pu) {
-        char *s = pu->data()->string(HYcvPlain, false);
+        char *s = hyList::string(pu->data(), HYcvPlain, false);
         gtk_entry_set_text(GTK_ENTRY(de_value), s);
         delete [] s;
     }
@@ -313,7 +313,7 @@ sDE::sDE(GRobject caller)
 
     pu = (CDp_user*)(cursde ? cursde->prpty(P_PARAM) : 0);
     if (pu) {
-        char *s = pu->data()->string(HYcvPlain, false);
+        char *s = hyList::string(pu->data(), HYcvPlain, false);
         gtk_entry_set_text(GTK_ENTRY(de_param), s);
         delete [] s;
     }
@@ -553,7 +553,7 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
     if (ent.model) {
         CDp_user *pu = (CDp_user*)cursde->prpty(P_MODEL);
         if (pu)
-            pu->data()->free();
+            hyList::destroy(pu->data());
         else {
             pu = new CDp_user(P_MODEL);
             pu->set_next_prp(cursde->prptyList());
@@ -574,7 +574,7 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
         }
         CDp_user *pu = (CDp_user*)cursde->prpty(P_VALUE);
         if (pu)
-            pu->data()->free();
+            hyList::destroy(pu->data());
         else {
             pu = new CDp_user(P_VALUE);
             pu->set_next_prp(cursde->prptyList());
@@ -608,7 +608,7 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
     if (ent.param) {
         CDp_user *pu = (CDp_user*)cursde->prpty(P_PARAM);
         if (pu)
-            pu->data()->free();
+            hyList::destroy(pu->data());
         else {
             pu = new CDp_user(P_PARAM);
             pu->set_next_prp(cursde->prptyList());

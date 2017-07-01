@@ -199,7 +199,7 @@ cParamCx::localParHier(const CDs *sdesc)
             continue;
         hyList *hp = ((CDla*)od)->label();
         if (hp) {
-            char *string = hp->string(HYcvPlain, false);
+            char *string = hyList::string(hp, HYcvPlain, false);
             if (string) {
                 char *s = string;
                 while (isspace(*s))
@@ -242,7 +242,7 @@ cParamCx::buildParamTab(const CDs *sdesc)
     for ( ; pp; pp = pp->next()) {
         hyList *hp = pp->data();
         if (hp) {
-            char *string = hp->string(HYcvPlain, false);
+            char *string = hyList::string(hp, HYcvPlain, false);
             if (string) {
                 ptab->extract_params(string);
                 delete [] string;
@@ -263,7 +263,7 @@ cParamCx::buildParamTab(const CDs *sdesc)
             continue;
         hyList *hp = ((CDla*)od)->label();
         if (hp) {
-            char *string = hp->string(HYcvPlain, false);
+            char *string = hyList::string(hp, HYcvPlain, false);
             if (string) {
                 char *s = string;
                 while (isspace(*s))

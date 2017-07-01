@@ -1068,13 +1068,13 @@ CDp_oset::~CDp_oset()
 
 CDp_glob::CDp_glob(const CDp_glob &pd) : CDp(pd.p_string, pd.p_value)
 {
-    pg_data = pd.pg_data->dup();
+    pg_data = hyList::dup(pd.pg_data);
 }
 
 
 CDp_glob::~CDp_glob()
 {
-    pg_data->free();
+    hyList::destroy(pg_data);
 }
 
 
@@ -1082,7 +1082,7 @@ bool
 CDp_glob::print(sLstr *lstr, int, int) const
 {
     if (pg_data) {
-        char *s = pg_data->string(HYcvAscii, false);
+        char *s = hyList::string(pg_data, HYcvAscii, false);
         if (s) {
             lstr->add(s);
             delete [] s;
@@ -1100,7 +1100,7 @@ CDp_glob::print(sLstr *lstr, int, int) const
 hyList *
 CDp_glob::hpstring(CDs*) const
 {
-    return (pg_data->dup());
+    return (hyList::dup(pg_data));
 }
 // End CDp_glob functions
 
@@ -1130,7 +1130,7 @@ CDp_user::CDp_user(CDs *sdesc, const char *str, int val) : CDp(0, val)
 CDp_user::CDp_user(const CDp_user &pd) : CDp(0, pd.p_value)
 {
     pu_label = pd.pu_label;
-    pu_data = pd.pu_data->dup();
+    pu_data = hyList::dup(pd.pu_data);
 }
 
 
@@ -1139,14 +1139,14 @@ CDp_user::operator=(const CDp_user &pd)
 {
     (CDp&)*this = (const CDp&)pd;
     pu_label = pd.pu_label;
-    pu_data = pd.pu_data->dup();
+    pu_data = hyList::dup(pd.pu_data);
     return (*this);
 }
 
 
 CDp_user::~CDp_user()
 {
-    pu_data->free();
+    hyList::destroy(pu_data);
 }
 
 
@@ -1157,7 +1157,7 @@ CDp_user::print(sLstr *lstr, int, int) const
 {
     if (!pu_data)
         return (false);
-    char *s = pu_data->string(HYcvAscii, true);
+    char *s = hyList::string(pu_data, HYcvAscii, true);
     if (s) {
         lstr->add(s);
         delete [] s;
@@ -1170,7 +1170,7 @@ CDp_user::print(sLstr *lstr, int, int) const
 hyList *
 CDp_user::hpstring(CDs*) const
 {
-    return (pu_data->dup());
+    return (hyList::dup(pu_data));
 }
 
 

@@ -1668,7 +1668,7 @@ CDs::makeLabel(CDl *ldesc, Label *label, CDla **pointer, bool internal)
         *pointer = 0;
     if (!ldesc) {
         if (label) {
-            label->label->free();
+            hyList::destroy(label->label);
             label->label = 0;
         }
         CD()->Error(CDbadLayer, cellname()->string());
@@ -1735,7 +1735,7 @@ CDs::newLabel(CDo *oldobj, Label *label, CDl *ldesc, CDp *prps, bool Copy)
             return (0);
         }
         hyList *tl = label->label;
-        label->label = label->label->dup();
+        label->label = hyList::dup(label->label);
         CDerrType ret = makeLabel(ldesc, label, &newo);
         label->label = tl;
         if (ret != CDok)
@@ -4266,7 +4266,7 @@ CDs::prptyMutualLink(const cTfmStack *tstk, CDc *new1, CDc *new2,
             CDla *nlabel = newLabel(0, &label, olabel->ldesc(),
                 olabel->prpty_list(), true);
             if (copied)
-                label.label->free();
+                hyList::destroy(label.label);
             if (nlabel) {
                 pmn->bind(nlabel);
                 nlabel->link(this, 0, 0);

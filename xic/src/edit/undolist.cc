@@ -115,8 +115,8 @@ namespace ed_undolist {
         Hlist(hyEnt*, Hlist*);
         ~Hlist()
             {
-                hyPrnt->free();
-                hyPrxy->free();
+                hyParent::destroy(hyPrnt);
+                hyParent::destroy(hyPrxy);
             }
 
         void free();
@@ -131,8 +131,8 @@ namespace ed_undolist {
     {
         from = ent;
         next = nx;
-        hyPrnt = hyPrnt->dup();
-        hyPrxy = hyPrxy->dup();
+        hyPrnt = hyParent::dup(hyPrnt);
+        hyPrxy = hyParent::dup(hyPrxy);
     }
 
 

@@ -534,7 +534,7 @@ namespace {
             hyList *hp = ((CDla*)od)->label();
             if (!hp)
                 continue;
-            char *str = hp->string(HYcvPlain, false);
+            char *str = hyList::string(hp, HYcvPlain, false);
             if (!str)
                 continue;
             for (int i = 0; i < cnt; i++) {
@@ -1342,7 +1342,8 @@ cSpiceBuilder::sub_glob(CDs *sdesc)
                 CDla *olabel = pna->bound();
                 if (!olabel)
                     continue;
-                char *label = olabel->label()->string(HYcvPlain, false);
+                char *label = hyList::string(olabel->label(), HYcvPlain,
+                    false);
                 if (label) {
                     for (sGlobNode *g = sb_globs; g; g = g->next) {
                         if (!strcmp(label, g->nname)) {

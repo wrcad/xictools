@@ -2516,7 +2516,7 @@ oas_in::a_text()
 
         // in_sdesc can be 0
         hyList *hpl = new hyList(in_sdesc, str, HYcvAscii);
-        char *string = hpl->string(HYcvPlain, false);
+        char *string = hyList::string(hpl, HYcvPlain, false);
         // This is the displayed string, not necessarily the same as the
         // label text.
 
@@ -2543,11 +2543,11 @@ oas_in::a_text()
             in_cBB.add(&BB);
         }
         else if (!in_areafilt || la.intersect(&in_cBB, false)) {
-            la.label = hpl->dup();
+            la.label = hyList::dup(hpl);
             CDla *newo;
             CDerrType err = in_sdesc->makeLabel(in_layers->ldesc, &la, &newo);
             if (err != CDok) {
-                hpl->free();
+                hyList::destroy(hpl);
                 if (err == CDbadLabel) {
                     warning("bad label (ignored)", la.x, la.y,
                         uobj.text.textlayer, uobj.text.texttype);
@@ -2558,9 +2558,9 @@ oas_in::a_text()
             if (newo)
                 a_add_properties(in_sdesc, newo);
             else
-                la.label->free();
+                hyList::destroy(la.label);
         }
-        hpl->free();
+        hyList::destroy(hpl);
     }
     return (true);
 }
@@ -3370,12 +3370,12 @@ oas_in::ac_text()
     text.xform = uobj.text.xform;
 
     hyList *hpl = new hyList(in_sdesc, uobj.text.string, HYcvAscii);
-    char *string = hpl->string(HYcvPlain, false);
+    char *string = hyList::string(hpl, HYcvPlain, false);
 
     double tw, th;
     CD()->DefaultLabelSize(string, in_mode, &tw, &th);
     delete [] string;
-    hpl->free();
+    hyList::destroy(hpl);
 
     if (text.width)
         text.height = mmRnd(text.width*th/tw);

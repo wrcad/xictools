@@ -90,7 +90,7 @@ wire:
     delete [] ((CDw*)this)->points();
     return;
 label:
-    ((CDla*)this)->label()->free();
+    hyList::destroy(((CDla*)this)->label());
     return;
 inst:
     ((CDc*)this)->cleanup();
@@ -577,7 +577,7 @@ label:
         newla->set_width(((CDla*)this)->width());
         newla->set_height(((CDla*)this)->height());
         newla->set_xform(((CDla*)this)->xform());
-        newla->set_label(((CDla*)this)->label()->dup());
+        newla->set_label(hyList::dup(((CDla*)this)->label()));
         newla->prptyAddCopyList(prpty_list());
         return (newla);
     }
@@ -679,7 +679,7 @@ label:
         newla->set_width(cdla->width());
         newla->set_height(cdla->height());
         newla->set_xform(cdla->xform());
-        newla->set_label(cdla->label()->dup());
+        newla->set_label(hyList::dup(cdla->label()));
         newla->prptyAddCopyList(prpty_list());
         if (!sdesc->insert(newla)) {
             delete newla;

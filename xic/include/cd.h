@@ -247,6 +247,7 @@ private:
 //
 struct CDcellNameStr
 {
+//XXX FIXME, violates dispatch from null pointer spec.
     const char *string()    const { return ((const char*)this); }
     const char *stringNN()  const
         {

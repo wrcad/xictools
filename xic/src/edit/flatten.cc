@@ -587,7 +587,7 @@ label:
 
         CDla *newo;
         if (FastMode) {
-            label.label = label.label->dup();
+            label.label = hyList::dup(label.label);
             if (sdesc->makeLabel(odesc->ldesc(), &label, &newo) != CDok) {
                 Errs()->add_error("makeLabel failed");
                 return (false);

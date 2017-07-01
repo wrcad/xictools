@@ -747,7 +747,7 @@ cMain::Info(const CDo *odesc)
         if (ocpy && ocpy->type() != odesc->type())
             ocpy = 0;
         lstr.add("Text: ");
-        char *s = ((CDla*)odesc)->label()->string(HYcvPlain, false);
+        char *s = hyList::string(((CDla*)odesc)->label(), HYcvPlain, false);
         lstr.add(s);
         lstr.add_c('\n');
         delete [] s;

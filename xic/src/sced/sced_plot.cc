@@ -72,9 +72,9 @@ cSced::showOutputExec(CmdDesc *cmd)
         hyList *htmp = PL()->EditHypertextPrompt("plot ", sc_plot_hpr_list ?
             sc_plot_hpr_list : sc_iplot_hpr_list, false);
         if (htmp) {
-            char *s = htmp->string(HYcvPlain, false);
+            char *s = hyList::string(htmp, HYcvPlain, false);
             if (s) {
-                sc_plot_hpr_list->free();
+                hyList::destroy(sc_plot_hpr_list);
                 sc_plot_hpr_list = htmp;
                 bool ret = spif()->ExecPlot(s);
                 delete [] s;
@@ -125,12 +125,12 @@ cSced::setDoIplotExec(CmdDesc *cmd)
             sc_iplot_hpr_list : sc_plot_hpr_list, false);
         sc_doing_plot = false;
         if (htmp) {
-            char *s = htmp->string(HYcvPlain, false);
+            char *s = hyList::string(htmp, HYcvPlain, false);
             if (s) {
                 char *estr = findPlotExpressions(s);
                 delete [] s;
                 if (estr && *estr) {
-                    sc_iplot_hpr_list->free();
+                    hyList::destroy(sc_iplot_hpr_list);
                     sc_iplot_hpr_list = htmp;
                     delete [] estr;
                     PL()->ShowPrompt("Will generate plot while simulating.");
@@ -140,10 +140,10 @@ cSced::setDoIplotExec(CmdDesc *cmd)
                 }
                 PL()->ShowPrompt("No plotting during simulation.");
                 delete [] estr;
-                sc_iplot_hpr_list->free();
+                hyList::destroy(sc_iplot_hpr_list);
                 sc_iplot_hpr_list = 0;
             }
-            htmp->free();
+            hyList::destroy(htmp);
         }
         // no string entered, abort
         sc_doing_iplot = false;
@@ -203,7 +203,7 @@ cSced::setPlotMarkColors()
     hyList *curlist = PL()->List(false);
     if (!curlist)
         return;
-    char *plstr = curlist->string(HYcvPlain, false);
+    char *plstr = hyList::string(curlist, HYcvPlain, false);
     char *expr_str0 = findPlotExpressions(plstr);
     delete [] plstr;
     const char *expr_str = expr_str0;
@@ -222,7 +222,7 @@ cSced::setPlotMarkColors()
             DSP()->SetPlotMarkColor(tok_ix, -1);
             continue;
         }
-        char *estr = h->get_entry_string();
+        char *estr = hyList::get_entry_string(h);
         if (!estr) {
             DSP()->SetPlotMarkColor(tok_ix, -1);
             continue;
@@ -256,7 +256,7 @@ cSced::setPlotMarkColors()
     }
     delete [] expr;
     delete [] expr_str0;
-    curlist->free();
+    hyList::destroy(curlist);
 }
 
 
@@ -268,11 +268,11 @@ cSced::clearPlots()
     if (!DSP()->CurCellName())
         return;
     if (sc_plot_hpr_list) {
-        sc_plot_hpr_list->free();
+        hyList::destroy(sc_plot_hpr_list);
         sc_plot_hpr_list = 0;
     }
     if (sc_iplot_hpr_list) {
-        sc_iplot_hpr_list->free();
+        hyList::destroy(sc_iplot_hpr_list);
         sc_iplot_hpr_list = 0;
         sc_iplot_status_changed = true;
     }
@@ -289,7 +289,8 @@ cSced::getPlotCmd(bool ascii)
     if (!sc_plot_hpr_list)
         return (0);
     check_list(&sc_plot_hpr_list);
-    return (sc_plot_hpr_list->string(ascii ? HYcvAscii : HYcvPlain, false));
+    return (hyList::string(sc_plot_hpr_list, ascii ? HYcvAscii : HYcvPlain,
+        false));
 }
 
 
@@ -301,7 +302,7 @@ cSced::setPlotCmd(const char *cmd)
     CDs *cursde = CurCell(Electrical);
     if (cursde) {
         if (sc_plot_hpr_list)
-            sc_plot_hpr_list->free();
+            hyList::destroy(sc_plot_hpr_list);
         sc_plot_hpr_list = new hyList(cursde, cmd, HYcvAscii);
     }
 }
@@ -316,7 +317,8 @@ cSced::getIplotCmd(bool ascii)
     if (!sc_iplot_hpr_list)
         return (0);
     check_list(&sc_iplot_hpr_list);
-    return (sc_iplot_hpr_list->string(ascii ? HYcvAscii : HYcvPlain, false));
+    return (hyList::string(sc_iplot_hpr_list, ascii ? HYcvAscii : HYcvPlain,
+        false));
 }
 
 
@@ -328,7 +330,7 @@ cSced::setIplotCmd(const char *cmd)
     CDs *cursde = CurCell(Electrical);
     if (cursde) {
         if (sc_iplot_hpr_list)
-            sc_iplot_hpr_list->free();
+            hyList::destroy(sc_iplot_hpr_list);
         sc_iplot_hpr_list = new hyList(cursde, cmd, HYcvAscii);
     }
 }
@@ -364,7 +366,7 @@ namespace {
             if (h->ref_type() == HLrefText)
                 continue;
             if (h->hent() && h->hent()->ref_type() != HYrefBogus) {
-                char *s = h->get_entry_string();
+                char *s = hyList::get_entry_string(h);
                 if (s) {
                     delete [] s;
                     continue;

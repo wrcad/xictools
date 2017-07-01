@@ -781,8 +781,8 @@ fhLayout::setup()
                         delete od;
                         continue;
                     }
-                    char *text =
-                        ((CDla*)odla)->label()->string(HYcvPlain, false);
+                    char *text = hyList::string(((CDla*)odla)->label(),
+                        HYcvPlain, false);
                     char *portname, *sfx;
                     splitname(text, &portname, &sfx);
                     delete [] text;

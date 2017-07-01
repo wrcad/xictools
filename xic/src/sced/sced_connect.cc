@@ -855,7 +855,8 @@ cScedConnect::init(CDs *sd, bool lvsmode)
                     // an associated label will have a bundle list, which
                     // is refreshed here for bus wire properties.
 
-                    char *lbl = pb->bound()->label()->string(HYcvPlain, true);
+                    char *lbl = hyList::string(pb->bound()->label(),
+                        HYcvPlain, true);
                     const char *s = lbl;
                     if (s) {
                         while (isspace(*s))
@@ -941,7 +942,7 @@ cScedConnect::init(CDs *sd, bool lvsmode)
                 continue;
             }
 
-            char *lbl = pn->bound()->label()->string(HYcvPlain, true);
+            char *lbl = hyList::string(pn->bound()->label(), HYcvPlain, true);
             const char *s = lbl;
             char *tok = lstring::gettok(&s);
             delete [] lbl;
@@ -1089,7 +1090,7 @@ cScedConnect::init_terminal(CDc *cdesc)
         tbf[1] = 0;
         pna->set_name_string(tbf);
     }
-    char *label = pna->bound()->label()->string(HYcvPlain, true);
+    char *label = hyList::string(pna->bound()->label(), HYcvPlain, true);
     if (!label)
         return (false);
 
@@ -1829,7 +1830,8 @@ cScedConnect::infer_name(const CDw *wdesc, CDnetex **pnx)
                     else {
                         if (!pna->bound())
                             continue;
-                        label = pna->bound()->label()->string(HYcvPlain, true);
+                        label = hyList::string(pna->bound()->label(),
+                            HYcvPlain, true);
                     }
                     if (!label)
                         continue;

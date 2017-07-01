@@ -281,7 +281,7 @@ CDdiff::diff(const CDs *s1, const CDs *s2, Sdiff **pret)
 
     Pdiff *pd0 = 0;
     if ((cdf_flags & DiffPrpCell) && !max_diffs() &&
-            !cdf_filt_cell->filter_all()) {
+            !prpfilt_t::filter_all(cdf_filt_cell)) {
         pd0 = diff_cell_props(s1, s2);
         if (pd0)
             cdf_diffcnt++;
@@ -639,7 +639,7 @@ CDdiff::diff_layer(CDl *ldesc, const CDs *s1, const CDs *s2, Ldiff **lret)
             // CDoMark1 flags are now cleared.
 
             if ((cdf_flags & obj_pflags) && !max_diffs() &&
-                    !cdf_filt_obj->filter_all()) {
+                    !prpfilt_t::filter_all(cdf_filt_obj)) {
                 gen1.init(l1, &CDinfiniteBB);
                 gen2.init(l2, &CDinfiniteBB);
                 od1 = next_elem(gen1, otypes);
@@ -1123,7 +1123,7 @@ CDdiff::diff_instances(const CDs *s1, const CDs *s2, Ldiff **lret)
                 }
             }
             if ((cdf_flags & DiffPrpInst) && !max_diffs() &&
-                    !cdf_filt_inst->filter_all()) {
+                    !prpfilt_t::filter_all(cdf_filt_inst)) {
                 for (unsigned int i = 0; i < n1; i++) {
                     if (!e1[i])
                         continue;

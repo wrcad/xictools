@@ -155,8 +155,8 @@ sSFD::path_get()
     hyList *hp = PL()->List();
     if (!hp)
         return (0);
-    char *s = hp->string(HYcvPlain, true);
-    hp->free();
+    char *s = hyList::string(hp, HYcvPlain, true);
+    hyList::destroy(hp);
     // remove any quoting
     char *t = s;
     char *path = lstring::getqtok(&t);

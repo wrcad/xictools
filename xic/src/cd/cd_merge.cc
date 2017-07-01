@@ -122,9 +122,12 @@ namespace {
                 bool found = false;
                 char *s = 0;
                 for (CDp *p = pa_list; p; pend = p, p = p->next_prp()) {
-                    if (!s)
-                        s = ((CDp_user*)pp)->data()->string(HYcvAscii, true);
-                    char *s1 = ((CDp_user*)p)->data()->string(HYcvAscii, true);
+                    if (!s) {
+                        s = hyList::string(((CDp_user*)pp)->data(), HYcvAscii,
+                            true);
+                    }
+                    char *s1 = hyList::string(((CDp_user*)p)->data(),
+                        HYcvAscii, true);
                     if (!s && !s1) {
                         found = true;
                         delete [] s1;

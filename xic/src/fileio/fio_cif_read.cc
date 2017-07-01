@@ -4339,7 +4339,7 @@ cif_in::a_label(char type, char *text)
         }
         else {
             double tw, th;
-            char *t = label.label->string(HYcvPlain, false);
+            char *t = hyList::string(label.label, HYcvPlain, false);
             CD()->DefaultLabelSize(t, in_mode, &tw, &th);
             delete [] t;
             if (in_mode == Physical) {
@@ -4354,7 +4354,7 @@ cif_in::a_label(char type, char *text)
                 BBox BB;
                 label.computeBB(&BB);
                 in_cBB.add(&BB);
-                label.label->free();
+                hyList::destroy(label.label);
             }
             else
                 retval = create_label(label);
@@ -4402,7 +4402,7 @@ cif_in::a_label(char type, char *text)
             }
             else {
                 double tw, th;
-                char *t = label.label->string(HYcvPlain, false);
+                char *t = hyList::string(label.label, HYcvPlain, false);
                 CD()->DefaultLabelSize(t, in_mode, &tw, &th);
                 delete [] t;
                 if (in_mode == Physical) {
@@ -4417,7 +4417,7 @@ cif_in::a_label(char type, char *text)
                     BBox BB;
                     label.computeBB(&BB);
                     in_cBB.add(&BB);
-                    label.label->free();
+                    hyList::destroy(label.label);
                 }
                 else {
                     if (!ldp)
@@ -4443,7 +4443,7 @@ cif_in::a_label(char type, char *text)
             }
             else {
                 double tw, th;
-                char *t = label.label->string(HYcvPlain, false);
+                char *t = hyList::string(label.label, HYcvPlain, false);
                 CD()->DefaultLabelSize(t, in_mode, &tw, &th);
                 delete [] t;
                 if (in_mode == Physical) {
@@ -4458,7 +4458,7 @@ cif_in::a_label(char type, char *text)
                     BBox BB;
                     label.computeBB(&BB);
                     in_cBB.add(&BB);
-                    label.label->free();
+                    hyList::destroy(label.label);
                 }
                 else {
                     CDl *ld = 0;
@@ -4512,7 +4512,7 @@ cif_in::a_label(char type, char *text)
     else {
         // given width but not height (odd!)
         double tw, th;
-        char *t = label.label->string(HYcvPlain, false);
+        char *t = hyList::string(label.label, HYcvPlain, false);
         CD()->DefaultLabelSize(t, in_mode, &tw, &th);
         delete [] t;
         height = mmRnd(width*th/tw);
@@ -4535,7 +4535,7 @@ cif_in::a_label(char type, char *text)
             BBox BB;
             label.computeBB(&BB);
             in_cBB.add(&BB);
-            label.label->free();
+            hyList::destroy(label.label);
         }
         else
             retval = create_label(label);

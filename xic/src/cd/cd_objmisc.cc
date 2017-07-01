@@ -340,7 +340,7 @@ CDw::set_node_label(CDs *sdesc, CDla *label, bool noundo)
     }
 
     hyList *h = label->label();
-    char *string = h->string(HYcvPlain, true);
+    char *string = hyList::string(h, HYcvPlain, true);
 
     CDnetex *netex;
     if (!CDnetex::parse(string, &netex) || !netex) {

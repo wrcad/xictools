@@ -147,7 +147,7 @@ cSced::setMutLabel(CDs *sd, CDp_nmut *newp, CDp_nmut *oldp)
         hyList *htxt = newp->label_text(&copied);
         BBox tBB;
         if (!updateLabelText(newp->bound(), sd, htxt, &tBB))
-            htxt->free();
+            hyList::destroy(htxt);
         else
             DSP()->RedisplayArea(&tBB, Electrical);
         return (true);
@@ -189,7 +189,7 @@ cSced::setMutLabel(CDs *sd, CDp_nmut *newp, CDp_nmut *oldp)
     CDla *nlabel = sd->newLabel(olabel, &label,
         olabel ? olabel->ldesc() : defaultLayer(newp), 0, true);
     if (copied)
-        label.label->free();
+        hyList::destroy(label.label);
     if (!nlabel) {
         Errs()->add_error("newLabel failed");
         return (false);;
@@ -767,9 +767,9 @@ MutState::change_mutual()
         do {
             bool copied;
             hyList *lt = pm->label_text(&copied);
-            char *s = lt->string(HYcvPlain, false);
+            char *s = hyList::string(lt, HYcvPlain, false);
             if (copied)
-                lt->free();
+                hyList::destroy(lt);
             strcpy(devn, s);
             delete [] s;
             s = PL()->EditPrompt("Enter new label: ", devn);

@@ -182,12 +182,13 @@ namespace {
                     return (sdesc->prpty(pdesc->value()));
                 if (pdesc->value() == P_OTHER) {
                     // Return a P_OTHER property with matching text
-                    char *s1 = (PUSR(pdesc)->data())->string(HYcvPlain, false);
+                    char *s1 = hyList::string((PUSR(pdesc)->data()),
+                        HYcvPlain, false);
                     for (CDp *pd = sdesc->prptyList(); pd;
                             pd = pd->next_prp()) {
                         if (pd->value() == P_OTHER) {
-                            char *s2 =
-                                (PUSR(pd)->data())->string(HYcvPlain, false);
+                            char *s2 = hyList::string((PUSR(pd)->data()),
+                                HYcvPlain, false);
                             int j = strcmp(s1, s2);
                             delete [] s2;
                             if (!j) {
@@ -250,13 +251,13 @@ namespace {
         else {
             char *string;
             if (h->ref_type() == HLrefLongText)
-                string = h->string(HYcvAscii, true);
+                string = hyList::string(h, HYcvAscii, true);
             else
-                string = h->string(HYcvPlain, true);
+                string = hyList::string(h, HYcvPlain, true);
             if (string && *string)
                 newp = new CDp(string, lt->value);
             delete [] string;
-            h->free();
+            hyList::destroy(h);
         }
         if (newp) {
             Ulist()->ListCheckPush("edcprp", lt->sdesc, false, false);
@@ -423,7 +424,7 @@ cEdit::cellPrptyAdd(int which)
     c_ltobj *lt = new c_ltobj(cursd, pdesc, which);
     hyList *hnew = PL()->EditHypertextPrompt(tbuf, hp, true, PLedStart,
         PLedNormal, c_ltcb, lt);
-    hp->free();
+    hyList::destroy(hp);
     PL()->ErasePrompt();
     if (!hnew) {
         delete lt;
@@ -516,7 +517,7 @@ cEdit::cellPrptyEdit(Ptxt *line)
     c_ltobj *lt = new c_ltobj(cursd, pdesc, pdesc->value());
     hyList *hnew = PL()->EditHypertextPrompt(tbuf, hp, true, PLedStart,
         PLedNormal, c_ltcb, lt);
-    hp->free();
+    hyList::destroy(hp);
     PL()->ErasePrompt();
     if (!hnew) {
         delete lt;

@@ -264,11 +264,11 @@ namespace {
             if (!saved_analyses[i])
                 break;
             if (!hyList::hy_strcmp(hp, saved_analyses[i])) {
-                hp->free();
+                hyList::destroy(hp);
                 return;
             }
         }
-        saved_analyses[NUM_SAVED_ANAL - 1]->free();
+        hyList::destroy(saved_analyses[NUM_SAVED_ANAL - 1]);
         for (int i = NUM_SAVED_ANAL - 1; i > 0; i--)
             saved_analyses[i] = saved_analyses[i-1];
         saved_analyses[0] = hp;
@@ -487,7 +487,7 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
         SCD()->getAnalysisList(), false);
     PL()->RegisterArrowKeyCallbacks(0, 0);
     if (anl) {
-        char *analysis_str = anl->string(HYcvPlain, false);
+        char *analysis_str = hyList::string(anl, HYcvPlain, false);
         const char *s = analysis_str;
         while (isspace(*s))
             s++;
@@ -503,14 +503,14 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
         else if (tok) {
             delete [] tok;
             delete [] analysis_str;
-            anl->free();
+            hyList::destroy(anl);
             PL()->ShowPromptV("Unknown analysis type %s.", tok);
             return (false);
         }
         else {
             delete [] tok;
             delete [] analysis_str;
-            anl->free();
+            hyList::destroy(anl);
             PL()->ShowPrompt("An analysis command is required.");
             return (false);
         }

@@ -330,7 +330,7 @@ GTKedit::flash_msg_here(int x, int y, const char *msg, ...)
 void
 GTKedit::save_line()
 {
-    pe_stores[0]->free();
+    hyList::destroy(pe_stores[0]);
     pe_stores[0] = get_hyList(false);
 }
 
@@ -648,7 +648,7 @@ GTKedit::pe_s_menu_proc(GtkWidget *w, void*)
     int ix = atoi(name);
     if (ix < 1 || ix >= PE_NUMSTORES)
         return;
-    pe_stores[ix]->free();
+    hyList::destroy(pe_stores[ix]);
     pe_stores[ix] = ptr()->get_hyList(false);
 
     ptr()->flash_msg("Edit line saved in register %d.", ix);
@@ -865,7 +865,7 @@ GTKedit::pe_selection_proc(GtkWidget*, GtkSelectionData *sdata, guint, void*)
     }
     else {
         ptr()->insert(hpl);
-        hpl->free();
+        hyList::destroy(hpl);
     }
 }
 
@@ -907,7 +907,7 @@ GTKedit::pe_drag_data_received(GtkWidget*, GdkDragContext *context,
             CDs *cursd = CurCell(true);
             hyList *hp = new hyList(cursd, (char*)val, HYcvAscii);
             ptr()->insert(hp);
-            hp->free();
+            hyList::destroy(hp);
             success = true;
         }
     }

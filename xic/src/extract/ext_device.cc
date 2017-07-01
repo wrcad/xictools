@@ -1639,7 +1639,7 @@ sEinstList::setup_eval(sParamTab **tret, double **dret) const
     sLstr lstr;
     CDp_user *pv = (CDp_user*)el_cdesc->prpty(P_VALUE);
     if (pv) {
-        char *string = pv->data()->string(HYcvPlain, true);
+        char *string = hyList::string(pv->data(), HYcvPlain, true);
         if (EX()->paramCx())
             EX()->paramCx()->update(&string);
         lstr.add(string);
@@ -1648,7 +1648,7 @@ sEinstList::setup_eval(sParamTab **tret, double **dret) const
 
     CDp_user *pp = (CDp_user*)el_cdesc->prpty(P_PARAM);
     if (pp) {
-        char *string = pp->data()->string(HYcvPlain, true);
+        char *string = hyList::string(pp->data(), HYcvPlain, true);
         if (EX()->paramCx())
             EX()->paramCx()->update(&string);
         if (lstr.string())

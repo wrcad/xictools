@@ -265,7 +265,7 @@ cGroupDesc::update_net_label(int grp)
             Ulist()->RecordObjectChange(gd_celldesc, ol->odesc, 0);
         else {
             CDla *la = (CDla*)ol->odesc;
-            char *s = la->label()->string(HYcvPlain, true);
+            char *s = hyList::string(la->label(), HYcvPlain, true);
             if (!s || strcmp(s, newstr)) {
                 Label label;
                 label.label = new hyList(0, newstr, HYcvPlain); 
@@ -447,7 +447,7 @@ cGroupDesc::find_net_labels(CDol *olist, const CDo *odesc, const CDl *pld,
             continue;
         CDla *la = (CDla*)od;
         if (string && *string) {
-            char *s = la->label()->string(HYcvPlain, true);
+            char *s = hyList::string(la->label(), HYcvPlain, true);
             if (!s || strcmp(s, string)) {
                 delete [] s;
                 continue;
@@ -486,7 +486,7 @@ cGroupDesc::find_net_labels(CDol *olist, const CDo *odesc, const CDl *pld,
             }
 
             if (ExtErrLog.log_extracting() && ExtErrLog.verbose()) {
-                char *s = la->label()->string(HYcvPlain, true);
+                char *s = hyList::string(la->label(), HYcvPlain, true);
                 ExtErrLog.add_log(ExtLogExtV,
                     "Found net label %s on %s at %d,%d.", s,
                     la->ldesc()->name(), px.x, px.y);
@@ -546,7 +546,8 @@ cGroupDesc::find_set_net_names()
         CDnetName name = 0;
         for (CDol *o = ol; o; o = o->next) {
             // Can't assume that global names have already been added.
-            char *s = ((CDla*)o->odesc)->label()->string(HYcvPlain, true);
+            char *s = hyList::string(((CDla*)o->odesc)->label(), HYcvPlain,
+                true);
             CDnetName nn = CDnetex::name_tab_add(s);
             delete [] s;
             if (!nn)
@@ -685,7 +686,7 @@ cGroupDesc::find_net_labels_rc(const CDs *topsd, cTfmStack &stk, int grp,
                         continue;
                     CDla *la = (CDla*)od;
                     if (string && *string) {
-                        char *s = la->label()->string(HYcvPlain, true);
+                        char *s = hyList::string(la->label(), HYcvPlain, true);
                         if (!s || strcmp(s, string)) {
                             delete [] s;
                             continue;
@@ -696,7 +697,8 @@ cGroupDesc::find_net_labels_rc(const CDs *topsd, cTfmStack &stk, int grp,
                     if (odesc->intersect(&px, true)) {
                         if (ExtErrLog.log_extracting() &&
                                 ExtErrLog.verbose()) {
-                            char *s = la->label()->string(HYcvPlain, true);
+                            char *s = hyList::string(la->label(), HYcvPlain,
+                                true);
                             ExtErrLog.add_log(ExtLogExtV,
                                 "Found net label %s on %s at %d,%d.", s,
                                 la->ldesc()->name(), px.x, px.y);

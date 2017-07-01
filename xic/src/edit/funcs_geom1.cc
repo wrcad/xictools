@@ -5090,7 +5090,7 @@ geom1_funcs::IFgetLabelText(Variable *res, Variable *args, void*)
         CDol *ol = (CDol*)hdl->data;
         if (ol && ol->odesc->type() == CDLABEL) {
             res->content.string =
-                OLABEL(ol->odesc)->label()->string(HYcvPlain, true);
+                hyList::string(OLABEL(ol->odesc)->label(), HYcvPlain, true);
             if (res->content.string)
                 res->flags |= VF_ORIGINAL;
         }
@@ -5624,9 +5624,9 @@ geom1_funcs::IFgetInstanceName(Variable *res, Variable *args, void*)
             if (pna) {
                 bool copied;
                 hyList *hyl = pna->label_text(&copied, cd);
-                res->content.string = hyl->string(HYcvPlain, false);
+                res->content.string = hyList::string(hyl, HYcvPlain, false);
                 if (copied)
-                    hyl->free();
+                    hyList::destroy(hyl);
             }
         }
     }
@@ -5744,9 +5744,10 @@ geom1_funcs::IFgetInstanceAltName(Variable *res, Variable *args, void*)
                 else {
                     bool copied;
                     hyList *hyl = pna->label_text(&copied, cd);
-                    res->content.string = hyl->string(HYcvPlain, false);
+                    res->content.string = hyList::string(hyl, HYcvPlain,
+                        false);
                     if (copied)
-                        hyl->free();
+                        hyList::destroy(hyl);
                     res->flags |= VF_ORIGINAL;
                 }
             }

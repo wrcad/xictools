@@ -263,7 +263,7 @@ namespace dsp_mark {
             sMark*);
         ~sMark_Plot()
             {
-                mProxy->free();
+                hyParent::destroy(mProxy);
             }
         void show(WindowDesc*, bool);
         void addBB(WindowDesc*, BBox*);
@@ -2264,7 +2264,7 @@ WindowDesc::ProxyList() const
     if (!HasProxy())
         return (0);
     return (new hyParent((CDc*)w_proxy->odesc(), w_proxy->pos_x(),
-        w_proxy->pos_y(), w_proxy->proxy()->dup()));
+        w_proxy->pos_y(), hyParent::dup(w_proxy->proxy())));
 }
 
 
@@ -2303,18 +2303,18 @@ WindowDesc::UpdateProxy()
                 lstr.add_c('.');
             bool copied;
             hyList *hp = pn->label_text(&copied, p->cdesc());
-            char *s = hp->string(HYcvPlain, false);
+            char *s = hyList::string(hp, HYcvPlain, false);
             lstr.add(s);
             delete [] s;
             if (copied)
-                hp->free();
+                hyList::destroy(hp);
         }
         else {
             lstr.free();
             break;
         }
     }
-    pl->free();
+    hyParent::destroy(pl);
     Wbag()->SetLabelText(lstr.string());
 }
 
@@ -4616,7 +4616,7 @@ sMark_Plot::sMark_Plot(const CDs *sd, const hyParent *p, int t, int x, int y,
     mY = y;
     mColor = clr;
     mSdesc = sd;
-    mProxy = p->dup();
+    mProxy = hyParent::dup(p);
 }
 
 
@@ -4627,8 +4627,8 @@ sMark_Plot::show(WindowDesc *wdesc, bool display)
     if (sd != mSdesc)
         return;
     hyParent *p = wdesc->ProxyList();
-    int c = p->cmp(mProxy);
-    p->free();
+    int c = hyParent::cmp(p, mProxy);
+    hyParent::destroy(p);
     if (!c)
         return;
 
@@ -4655,8 +4655,8 @@ sMark_Plot::addBB(WindowDesc *wdesc, BBox *BB)
     if (sd != mSdesc)
         return;
     hyParent *p = wdesc->ProxyList();
-    int c = p->cmp(mProxy);
-    p->free();
+    int c = hyParent::cmp(p, mProxy);
+    hyParent::destroy(p);
     if (!c)
         return;
 

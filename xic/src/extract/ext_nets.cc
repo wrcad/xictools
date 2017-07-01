@@ -616,7 +616,7 @@ sElecNetList::check_flatten(CDc *cdesc)
             if (EX()->paramCx()) {
                 CDp_user *pp = (CDp_user*)cdesc->prpty(P_PARAM);
                 char *pstr =
-                    pp ? pp->data()->string(HYcvPlain, true) : 0;
+                    pp ? hyList::string(pp->data(), HYcvPlain, true) : 0;
                 EX()->paramCx()->push(msdesc, pstr);
 #ifdef PRM_DEBUG
                 printf("%s\n---\n", pstr);
@@ -742,7 +742,7 @@ namespace {
                 CDp_user *p = (CDp_user*)c->prpty(P_PARAM);
                 if (!p)
                     continue;
-                char *pstr = p->data()->string(HYcvPlain, true);
+                char *pstr = hyList::string(p->data(), HYcvPlain, true);
                 if (!pstr)
                     continue;
 
@@ -890,7 +890,7 @@ namespace {
                     printf("%s\n---\n", lstr.string());
 #endif
                 if (!err && scnt) {
-                    p->data()->free();
+                    hyList::destroy(p->data());
                     p->set_data(new hyList(sd, lstr.string(), HYcvPlain));
                 }
                 delete [] pstr;

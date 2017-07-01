@@ -285,7 +285,7 @@ CDscriptOut::writeLabel(const CDo *odesc)
         so_newlyr = false;
     }
 
-    char *text = l->label()->string(HYcvPlain, false);
+    char *text = hyList::string(l->label(), HYcvPlain, false);
     int ret = 0;
 
     CDp *p0 = objProperties(odesc);

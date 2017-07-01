@@ -726,7 +726,7 @@ cSced::prptyCheckLabel(CDs *sdesc, CDla *olabel, char **str)
         return (true);
 
     if (str) {
-        char *s = olabel->label()->string(HYcvPlain, false);
+        char *s = hyList::string(olabel->label(), HYcvPlain, false);
         sLstr lstr;
         lstr.add("Label: ");
         lstr.add(s);

@@ -163,7 +163,7 @@ CDla::format_string(char **buf, int size, hyList *ltext, bool longtxt,
     FileType ftype)
 {
     bool toolong = false;
-    char *str = ltext->string(HYcvAscii, longtxt);
+    char *str = hyList::string(ltext, HYcvAscii, longtxt);
     if (str) {
         if (size == 0) {
             sLstr lstr;

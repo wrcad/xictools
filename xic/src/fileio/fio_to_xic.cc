@@ -628,7 +628,7 @@ xic_out::write_object(const CDo *odesc, cvLchk *lchk)
         Text text;
         // use long text for unbound labels
         CDp_lref *prf = (CDp_lref*)odesc->prpty(P_LABRF);
-        text.text = ((CDla*)odesc)->label()->string(HYcvAscii,
+        text.text = hyList::string(((CDla*)odesc)->label(), HYcvAscii,
             !(prf && prf->devref()));
         const Label la(((const CDla*)odesc)->la_label());
         bool ret = text.set(&la, out_mode, Fnative);

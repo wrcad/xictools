@@ -492,8 +492,8 @@ sPbase::drag_data_get(GtkSelectionData *selection_data)
         CDs *cursd =  CurCell(true);
         if (cursd) {
             hyList *hp = cursd->hyPrpList(pi_odesc, p->prpty());
-            char *s = hp->string(HYcvAscii, true);
-            hp->free();
+            char *s = hyList::string(hp, HYcvAscii, true);
+            hyList::destroy(hp);
             sz = sizeof(int) + strlen(s) + 1;
             bf = new char[sz];
             *(int*)bf = p->prpty()->value();
@@ -553,7 +553,7 @@ sPbase::data_received(GtkWidget *caller, GdkDragContext *context,
                                 HYcvAscii);
                             ED()->prptyModify(OCALL(pi_odesc), pdesc, num,
                                 0, hp);
-                            hp->free();
+                            hyList::destroy(hp);
                             Ulist()->CommitChanges(true);
                             accept = true;
                         }

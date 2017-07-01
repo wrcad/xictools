@@ -1393,7 +1393,7 @@ cGroupDesc::check_wire_cap(CDc *cd, const char *cname, FILE *fp)
         fprintf(fp, "  wire cap %s: missing VALUE property\n", cname);
         return (true);
     }
-    char *string = pv->data()->string(HYcvPlain, true);
+    char *string = hyList::string(pv->data(), HYcvPlain, true);
     double ecap;
     if (!string || sscanf(string, "%lf", &ecap) != 1) {
         fprintf(fp, "  wire cap %s: bad value %s\n", cname,

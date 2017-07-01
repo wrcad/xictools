@@ -1432,7 +1432,7 @@ gds_out::write_object_prv(const CDo *odesc)
         Text text;
         // use long text for unbound labels
         CDp_lref *prf = (CDp_lref*)odesc->prpty(P_LABRF);
-        text.text = ((CDla*)odesc)->label()->string(HYcvAscii,
+        text.text = hyList::string(((CDla*)odesc)->label(), HYcvAscii,
             !(prf && prf->devref()));
         const Label la(((const CDla*)odesc)->la_label());
         bool ret = text.set(&la, out_mode, Fgds);

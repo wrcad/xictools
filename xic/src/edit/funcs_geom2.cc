@@ -4488,8 +4488,7 @@ namespace {
                     p = p->next_prp()) {
                 if (p->value() == P_OTHER) {
                     if (string && *string) {
-                        char *s =
-                            (PUSR(p)->data())->string(HYcvPlain,
+                        char *s = hyList::string((PUSR(p)->data()), HYcvPlain,
                             false);
                         bool zz = lstring::prefix(string, s);
                         delete [] s;

@@ -1650,7 +1650,7 @@ cgx_in::a_text(int size, int flags)
         }
 
         hyList *hpl = new hyList(in_sdesc, ptr, HYcvAscii);
-        char *string = hpl->string(HYcvPlain, false);
+        char *string = hyList::string(hpl, HYcvPlain, false);
         // This is the displayed string, not necessarily the same as the
         // label text.
         double tw, th;
@@ -1664,12 +1664,12 @@ cgx_in::a_text(int size, int flags)
             in_cBB.add(&BB);
         }
         else if (!in_areafilt || la.intersect(&in_cBB, false)) {
-            la.label = hpl->dup();
+            la.label = hyList::dup(hpl);
             CDla *newo;
             CDerrType err = in_sdesc->makeLabel(in_curlayer, &la, &newo);
             if (err != CDok) {
                 clear_properties();
-                hpl->free();
+                hyList::destroy(hpl);
                 if (err == CDbadLabel) {
                     warning("bad label (ignored)", la.x, la.y);
                     return (true);
@@ -1679,7 +1679,7 @@ cgx_in::a_text(int size, int flags)
             if (newo)
                 add_properties_db(newo);
         }
-        hpl->free();
+        hyList::destroy(hpl);
     }
     clear_properties();
     return (true);
@@ -2439,14 +2439,14 @@ cgx_in::ac_text(int size, int flags)
     }
 
     hyList *hpl = new hyList(in_sdesc, ptr, HYcvAscii);
-    char *string = hpl->string(HYcvPlain, false);
+    char *string = hyList::string(hpl, HYcvPlain, false);
     // This is the displayed string, not necessarily the same as the
     // label text.
     double tw, th;
     CD()->DefaultLabelSize(string, in_mode, &tw, &th);
     text.height = mmRnd(text.width*th/tw);
     delete [] string;
-    hpl->free();
+    hyList::destroy(hpl);
     text.text = ptr;
 
     bool ret = true;
