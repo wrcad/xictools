@@ -366,11 +366,10 @@ struct CDclxy : public CDcxy
             next = n;
         }
 
-    void free()
+    static void destroy(const CDclxy *c)
         {
-            CDclxy *c = this;
             while (c) {
-                CDclxy *cx = c;
+                const CDclxy *cx = c;
                 c = c->next;
                 delete cx;
             }

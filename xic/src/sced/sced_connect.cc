@@ -1120,7 +1120,7 @@ cScedConnect::init_terminal(CDc *cdesc)
     if (netex->is_scalar(&nm) ||
             (netex->is_simple(&nm, &beg, &end) && nm && beg == end)) {
         // A scalar or 1-bit connector.
-        netex->free();
+        CDnetex::destroy(netex);
 
         cdesc->prptyRemove(P_BNODE);
         CDp_cnode *pn = (CDp_cnode*)cdesc->prpty(P_NODE);
@@ -1655,7 +1655,7 @@ cScedConnect::push(const CDw *wdesc)
             return (false);
         if (ScedErrLog.log_connect()) {
             sLstr lstr;
-            netex->print_all(&lstr);
+            CDnetex::print_all(netex, &lstr);
             ScedErrLog.add_log("pushed %s", lstr.string());
         }
     }
@@ -1663,7 +1663,7 @@ cScedConnect::push(const CDw *wdesc)
         netex = get_netex(wdesc);
         if (netex && !netex->first_name()) {
             // A tap wire, no good.
-            netex->free();
+            CDnetex::destroy(netex);
             return (false);
         }
         if (!netex) {
@@ -1675,7 +1675,7 @@ cScedConnect::push(const CDw *wdesc)
         }
         if (ScedErrLog.log_connect()) {
             sLstr lstr;
-            netex->print_all(&lstr);
+            CDnetex::print_all(netex, &lstr);
             ScedErrLog.add_log("top pushed %s", lstr.string());
         }
     }
@@ -1873,7 +1873,7 @@ cScedConnect::infer_name(const CDw *wdesc, CDnetex **pnx)
                     *pnx = pb->get_netex();
                 if (ScedErrLog.log_connect()) {
                     sLstr lstr;
-                    (*pnx)->print_all(&lstr);
+                    CDnetex::print_all((*pnx), &lstr);
                     ScedErrLog.add_log("found terminal %s", lstr.string());
                 }
                 return (true);
@@ -1903,7 +1903,7 @@ cScedConnect::infer_name(const CDw *wdesc, CDnetex **pnx)
                         *pnx = pcn->get_netex();
                     if (ScedErrLog.log_connect()) {
                         sLstr lstr;
-                        (*pnx)->print_all(&lstr);
+                        CDnetex::print_all((*pnx), &lstr);
                         ScedErrLog.add_log("found terminal device %s",
                             lstr.string());
                     }
@@ -2160,31 +2160,31 @@ cScedConnect::is_compatible(const CDw *wdesc, CDnetex **pnetex)
 
     CDnetex *nx = get_netex(wdesc);
     if (nx) {
-        if (!nx->check_set_compatible(cn_wire_stack->netex())) {
+        if (!CDnetex::check_set_compatible(nx, cn_wire_stack->netex())) {
             if (!nx->first_name()) {
                 // A tap wire, don't complain.  A tap wire may connect
                 // to other tap wires, along with the wire being
                 // tapped.  Just ignore that the taps are
                 // "incompatible" mutually.
 
-                nx->free();
+                CDnetex::destroy(nx);
                 return (false);
             }
 
-            char *tn1 = cn_wire_stack->netex()->id_text();
-            char *tn2 = nx->id_text();
+            char *tn1 = CDnetex::id_text(cn_wire_stack->netex());
+            char *tn2 = CDnetex::id_text(nx);
             ScedErrLog.add_err(
                 "warning: incompatible expressions in connected named "
                 "subnets.\nExpressions are %s and %s.", tn1, tn2);
             delete [] tn1;
             delete [] tn2;
-            nx->free();
+            CDnetex::destroy(nx);
             return (false);
         }
         if (pnetex)
             *pnetex = nx;
         else
-            nx->free();
+            CDnetex::destroy(nx);
         return (true);
     }
     if (wdesc->prpty(P_NODE)) {
@@ -2192,7 +2192,7 @@ cScedConnect::is_compatible(const CDw *wdesc, CDnetex **pnetex)
         // extension of the connected wire.
 
         if (pnetex)
-            *pnetex = cn_wire_stack->netex()->dup();
+            *pnetex = CDnetex::dup(cn_wire_stack->netex());
         return (true);
     }
 
@@ -2312,7 +2312,7 @@ cScedConnect::connect_to_terminals()
     const CDw *wdesc = cn_wire_stack->wdesc();
     sLstr lstr;
     if (ScedErrLog.log_connect()) {
-        cn_wire_stack->netex()->print_all(&lstr);
+        CDnetex::print_all(cn_wire_stack->netex(), &lstr);
         if (!lstr.string())
             lstr.add("(unnamed)");
         ScedErrLog.add_log("looking for terminals: %s", lstr.string());
@@ -2430,7 +2430,7 @@ cScedConnect::connect_to_terminals()
                         "cell terminal contacts incompatible scalar wire "
                         "at %.4f,%.4f.", MICRONS(x), MICRONS(y));
                 }
-                nxt->free();
+                CDnetex::destroy(nxt);
 
                 /***** Don't flatten cell terminals.
                 ScedErrLog.add_log("wire_to_bcell %s %s", lstr.string(),
@@ -3042,7 +3042,7 @@ cScedConnect::bit_to_named(CDp_nodeEx *pcn1, const CDp_range *pr1,
         int w2 = nx2->width();
         if (w1 != w2) {
             char *tn1 = pcn1->id_text();
-            char *tn2 = nx2->id_text();
+            char *tn2 = CDnetex::id_text(nx2);
             ScedErrLog.add_err(
                 "warning, %s and %s widths %d and %d differ,\n"
                 "connecting what I can anyway.", tn1, tn2, w1, w2);
@@ -3445,7 +3445,7 @@ cScedConnect::inst_to_named(const CDc *cdesc, const CDp_bcnode *pbcn1,
             int m = nx2->multip();
             if (m == 1 || w1 != w2/m) {
                 char *tn1 = pbcn1->id_text();
-                char *tn2 = nx2->id_text();
+                char *tn2 = CDnetex::id_text(nx2);
                 ScedErrLog.add_err(
                     "warning, %s and %s widths %d and %d differ,\n"
                     "connecting what I can anyway.", tn1, tn2, w1, w2);
@@ -3481,7 +3481,7 @@ cScedConnect::inst_to_named(const CDc *cdesc, const CDp_bcnode *pbcn1,
         if (!roll && bw != iw*cw) {
             // We require bw/m == cw or bw == iw*cw.
             char *tn1 = pbcn1->id_text();
-            char *tn2 = nx2->id_text();
+            char *tn2 = CDnetex::id_text(nx2);
             ScedErrLog.add_err(
                 "can't connect %s/%s and %s, instances have\n"
                 "vector widths %d and 1, connector widths are %d and %d,\n"
@@ -3639,8 +3639,8 @@ cScedConnect::named_to_named(const CDnetex *nx1, const CDnetex *nx2)
         return;
 
     if (!CDnetex::check_compatible(nx1, nx2)) {
-        char *tn1 = nx1->id_text();
-        char *tn2 = nx2->id_text();
+        char *tn1 = CDnetex::id_text(nx1);
+        char *tn2 = CDnetex::id_text(nx2);
         ScedErrLog.add_err(
             "warning: incompatible expressions in connected named subnets.\n"
             "Expressions are %s and %s.", tn1, tn2);
@@ -3676,7 +3676,7 @@ cScedConnect::named_to_cell(const CDnetex *nx1, const CDp_bsnode *pbsn2)
     }
 
     if (w1 != w2) {
-        char *tn1 = nx1->id_text();
+        char *tn1 = CDnetex::id_text(nx1);
         char *tn2 = pbsn2->id_text();
         ScedErrLog.add_err(
             "warning, %s and %s widths %d and %d differ,\n"

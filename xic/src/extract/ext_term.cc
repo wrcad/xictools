@@ -738,7 +738,7 @@ PtState::terminalEdit(CDsterm *term)
 {
     if (!term)
         return;
-    Terms->free();
+    CDpin::destroy(Terms);
     Terms = new CDpin(term, 0);
 
     if (EditTerm) {
@@ -824,11 +824,11 @@ PtState::b1down()
             cEventHdlr::sel_b1down();
             return;
         }
-        Terms->free();
+        CDpin::destroy(Terms);
         Terms = tlist;
         unsigned int downstate = EV()->Cursor().get_downstate();
         if (downstate & GR_SHIFT_MASK) {
-            Terms->next()->free();
+            CDpin::destroy(Terms->next());
             Terms->set_next(0);
             if (EditTerm) {
                 CDpin p(EditTerm, 0);
@@ -885,7 +885,7 @@ PtState::b1up()
                 cEventHdlr::sel_b1up(&AOI, 0, B1UP_NOSEL);
                 CDpin *tlist = EX()->pointAtPins(&AOI);
                 if (tlist) {
-                    Terms->free();
+                    CDpin::destroy(Terms);
                     Terms = tlist;
                     Gst()->SetGhost(GFpterms);
                     State = 1;
@@ -914,7 +914,7 @@ PtState::b1up()
             SetLevel2();
     }
     else if (State == 3) {
-        Terms->free();
+        CDpin::destroy(Terms);
         Terms = 0;
         SetLevel1();
     }
@@ -958,7 +958,7 @@ PtState::esc()
     EV()->PopCallback(this);
     if (Caller)
         Menu()->Deselect(Caller);
-    Terms->free();
+    CDpin::destroy(Terms);
     CDs *cursde = CurCell(Electrical, true);
     if (cursde)
         cursde->reflectTermNames();
@@ -1053,7 +1053,7 @@ PtState::undo()
         }
     }
     DSP()->ShowPhysTermList(DISPLAY, tltmp);
-    tltmp->free();
+    CDpin::destroy(tltmp);
     op->next = Redos;
     Redos = op;
 }
@@ -1125,7 +1125,7 @@ PtState::redo()
         }
     }
     DSP()->ShowPhysTermList(DISPLAY, tltmp);
-    tltmp->free();
+    CDpin::destroy(tltmp);
     op->next = Opers;
     Opers = op;
 }
@@ -1214,7 +1214,7 @@ PtState::move_terms(int dx, int dy)
     DSP()->ShowPhysTermList(DISPLAY, Terms);
     if (dups) {
         DSP()->ShowPhysTermList(DISPLAY, dups);
-        dups->free();
+        CDpin::destroy(dups);
     }
     if (cbin.elec())
         cbin.elec()->incModified();

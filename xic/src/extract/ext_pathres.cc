@@ -277,7 +277,7 @@ cExt::extractNetResistance(double **pvals, int *psz, const char *spicefile)
         return (false);
     }
 
-    CDol *ol = pf->get_object_list()->to_ol();
+    CDol *ol = CDo::to_ol(pf->get_object_list());
     if (!ol) {
         Errs()->add_error("extractNetResistance: empty object list.");
         return (false);

@@ -1437,7 +1437,7 @@ CDp_bnode::CDp_bnode(const CDp_bnode &pd) : CDp(0, pd.p_value)
     pbn_beg_range = pd.pbn_beg_range;
     pbn_end_range = pd.pbn_end_range;
     pbn_name = pd.pbn_name;
-    pbn_bundle = pd.bundle_spec()->dup();
+    pbn_bundle = CDnetex::dup(pd.bundle_spec());
     pbn_label = 0;
 }
 
@@ -1449,7 +1449,7 @@ CDp_bnode::operator=(const CDp_bnode &pd)
     pbn_beg_range = pd.pbn_beg_range;
     pbn_end_range = pd.pbn_end_range;
     pbn_name = pd.pbn_name;
-    pbn_bundle = pd.bundle_spec()->dup();
+    pbn_bundle = CDnetex::dup(pd.bundle_spec());
     pbn_label = 0;
     return (*this);
 }
@@ -1457,7 +1457,7 @@ CDp_bnode::operator=(const CDp_bnode &pd)
 
 CDp_bnode::~CDp_bnode()
 {
-    pbn_bundle->free();
+    CDnetex::destroy(pbn_bundle);
 }
 
 
@@ -1537,7 +1537,7 @@ CDp_bnode::parse_bnode(const char *str)
 void
 CDp_bnode::update_bundle(CDnetex *nx)
 {
-    pbn_bundle->free();
+    CDnetex::destroy(pbn_bundle);
     pbn_bundle = 0;
     if (!nx)
         return;
@@ -1549,7 +1549,7 @@ CDp_bnode::update_bundle(CDnetex *nx)
         pbn_beg_range = 0;
         pbn_end_range = 0;
         pbn_name = nm;
-        nx->free();
+        CDnetex::destroy(nx);
         return;
     }
 
@@ -1559,7 +1559,7 @@ CDp_bnode::update_bundle(CDnetex *nx)
         pbn_beg_range = b;
         pbn_end_range = e;
         pbn_name = nm;
-        nx->free();
+        CDnetex::destroy(nx);
         return;
     }
 
@@ -1590,7 +1590,7 @@ CDp_bnode::add_label_text(sLstr *lstr) const
         lstr->add_c('>');
         return;
     }
-    pbn_bundle->print_all(lstr);
+    CDnetex::print_all(pbn_bundle, lstr);
 }
 
 
@@ -1601,7 +1601,7 @@ CDnetex *
 CDp_bnode::get_netex() const
 {
     if (pbn_bundle)
-        return (pbn_bundle->dup());
+        return (CDnetex::dup(pbn_bundle));
     CDvecex *vx = new CDvecex(0, pbn_beg_range, pbn_end_range, 1, 1);
     return (new CDnetex(pbn_name, 1, vx, 0));
 }
@@ -1619,7 +1619,7 @@ CDp_bnode::has_name() const
 
 NetexWrap::~NetexWrap()
 {
-    nxtmp->free();
+    CDnetex::destroy(nxtmp);
 }
 // End of NetexWrap functions.
 
@@ -1903,7 +1903,7 @@ CDp_bcnode::full_name() const
     // commas.
 
     sLstr lstr;
-    bundle_spec()->print_all(&lstr);
+    CDnetex::print_all(bundle_spec(), &lstr);
     if (!lstr.string())
         return (lstring::copy(nmstr));
     if (!nmstr)
@@ -1931,7 +1931,7 @@ CDp_bcnode::id_text() const
         lstr.add_c('>');
     }
     else
-        pbn_bundle->print_all(&lstr);
+        CDnetex::print_all(pbn_bundle, &lstr);
     return (lstr.string_trim());
 }
 

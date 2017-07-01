@@ -268,9 +268,8 @@ struct CDo : public RTelem
             return (is_copy() ? (const CDo*)e_right : 0);
         }
 
-    CDol *to_ol()
+    static CDol *to_ol(CDo *od)
         {
-            CDo *od = this;
             if (!od)
                 return (0);
             CDol *o0 = 0, *oe = 0;
@@ -297,7 +296,7 @@ struct CDo : public RTelem
 #ifdef CD_PRPTY_TAB
             CD()->SetPrptyList(this, p);
 #else
-            if (this) this->oPrptyList = p;
+            oPrptyList = p;
 #endif
         }
 
@@ -306,9 +305,9 @@ struct CDo : public RTelem
 #ifdef CD_PRPTY_TAB
             CD()->LinkPrptyList(this, p);
 #else
-            if (this && p) {
-                p->set_next_prp(this->oPrptyList);
-                this->oPrptyList = p;
+            if (p) {
+                p->set_next_prp(oPrptyList);
+                oPrptyList = p;
             }
 #endif
         }
@@ -318,7 +317,7 @@ struct CDo : public RTelem
 #ifdef CD_PRPTY_TAB
             return (CD()->PrptyList(this));
 #else
-            return (this ? this->oPrptyList : 0);
+            return (oPrptyList);
 #endif
         }
 
@@ -336,9 +335,7 @@ struct CDo : public RTelem
 #ifdef CD_GROUP_TAB
             CD()->SetGroup(this, g);
 #else
-            CDo *ot = this;
-            if (ot)
-                ot->oGroup = g;
+            oGroup = g;
 #endif
         }
 
@@ -347,8 +344,7 @@ struct CDo : public RTelem
 #ifdef CD_GROUP_TAB
             return (CD()->Group(this));
 #else
-            const CDo *ot = this;
-            return (ot ? ot->oGroup : DEFAULT_GROUP);
+            return (oGroup);
 #endif
         }
 

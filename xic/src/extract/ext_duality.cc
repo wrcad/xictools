@@ -480,14 +480,14 @@ cGroupDesc::check_permutes() const
     for (CDpin *p1 = pins; p1; p1 = p1->next())
         nterms++;
     if (nterms < 2) {
-        pins->free();
+        CDpin::destroy(pins);
         return (0);
     }
     CDsterm **ary = new CDsterm*[nterms];
     nterms = 0;
     for (CDpin *p1 = pins; p1; p1 = p1->next())
         ary[nterms++] = p1->term();
-    pins->free();
+    CDpin::destroy(pins);
 
     sPermGrpList *pgl = 0;
     int find_cnt = 0;
@@ -1160,7 +1160,7 @@ void
 cGroupDesc::clear_formal_terms()
 {
     for (int i = 0; i < gd_asize; i++) {
-        gd_groups[i].termlist()->free();
+        CDpin::destroy(gd_groups[i].termlist());
         gd_groups[i].set_termlist(0);
     }
 }
@@ -1511,7 +1511,7 @@ top:
                 term->name(), term->group(), term->lx(), term->ly(),
                 term->is_fixed() ? "(fixed)" : "");
         }
-        pins->free();
+        CDpin::destroy(pins);
     }
 
     // Sort the devices and subcircuits by increasing instantiation

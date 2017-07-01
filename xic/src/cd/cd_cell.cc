@@ -3801,9 +3801,11 @@ CDs::prptyWireLink(const cTfmStack *tstk, CDw *onew, CDw *old,
         return;
     }
 
-    for (CDp *pd = old->prpty_list(); pd; pd = pd->next_prp()) {
-        if (pd->bound())
-            prptyLabelLink(tstk, onew, pd, MoveOrCopy);
+    if (old) {
+        for (CDp *pd = old->prpty_list(); pd; pd = pd->next_prp()) {
+            if (pd->bound())
+                prptyLabelLink(tstk, onew, pd, MoveOrCopy);
+        }
     }
 }
 
@@ -3826,11 +3828,13 @@ CDs::prptyInstLink(const cTfmStack *tstk, CDc *onew, CDc *old,
     }
 
     int mutref = false;
-    for (CDp *pd = old->prpty_list(); pd; pd = pd->next_prp()) {
-        if (pd->bound())
-            prptyLabelLink(tstk, onew, pd, MoveOrCopy);
-        else if (pd->value() == P_MUTLRF)
-            mutref = true;
+    if (old) {
+        for (CDp *pd = old->prpty_list(); pd; pd = pd->next_prp()) {
+            if (pd->bound())
+                prptyLabelLink(tstk, onew, pd, MoveOrCopy);
+            else if (pd->value() == P_MUTLRF)
+                mutref = true;
+        }
     }
     if (mutref) {
         // This is one of a mutual inductor pair
@@ -3838,12 +3842,14 @@ CDs::prptyInstLink(const cTfmStack *tstk, CDc *onew, CDc *old,
             // Remove the new MUTLRF properties, since we know that
             // the other inductor was not copied.
             //
-            CDp *pn;
-            for (CDp *pd = onew->prpty_list(); pd; pd = pn) {
-                pn = pd->next_prp();
-                if (pd->value() == P_MUTLRF) {
-                    onew->prptyUnlink(pd);
-                    delete pd;
+            if (onew) {
+                CDp *pn;
+                for (CDp *pd = onew->prpty_list(); pd; pd = pn) {
+                    pn = pd->next_prp();
+                    if (pd->value() == P_MUTLRF) {
+                        onew->prptyUnlink(pd);
+                        delete pd;
+                    }
                 }
             }
             return;

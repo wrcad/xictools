@@ -116,7 +116,7 @@ public:
 
         ~cstk_elt()
             {
-                stk_netex->free();
+                CDnetex::destroy(stk_netex);
             }
 
         cstk_elt *next()            const { return (stk_next); }

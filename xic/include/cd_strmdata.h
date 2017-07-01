@@ -50,11 +50,10 @@ struct strm_idata
                 max = x;
             }
 
-        void free()
+        static void destroy(const idata_list *l)
             {
-                idata_list *l = this;
                 while (l) {
-                    idata_list *lx = l;
+                    const idata_list *lx = l;
                     l = l->next;
                     delete lx;
                 }
@@ -73,8 +72,8 @@ struct strm_idata
 
     ~strm_idata()
         {
-            si_layer_list->free();
-            si_dtype_list->free();
+            idata_list::destroy(si_layer_list);
+            idata_list::destroy(si_dtype_list);
         }
 
     void print(FILE*, sLstr*);
@@ -111,11 +110,10 @@ struct strm_odata
             so_dtype = d;
         }
 
-    void free()
+    static void destroy(const strm_odata *sd)
         {
-            strm_odata *sd = this;
             while (sd) {
-                strm_odata *sx = sd;
+                const strm_odata *sx = sd;
                 sd = sd->next();
                 delete sx;
             }

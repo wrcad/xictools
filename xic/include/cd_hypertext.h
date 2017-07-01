@@ -415,8 +415,9 @@ struct hyList
 private:
     char *string_prv(HYcvType, bool);
     char *get_entry_string_prv();
+
 public:
-    void trim_white_space() __attribute__((deprecated));
+    void trim_white_space();
 
     static const char *hy_token(const char*, const char**, char**);
     static char *hy_scale(char*, double);

@@ -113,6 +113,8 @@ namespace {
     void
     prp_accum_t::add_properties(CDo *odesc)
     {
+        if (!odesc)
+            return;
         for (CDp *pp = odesc->prpty_list(); pp; pp = pp->next_prp()) {
             if (pa_elec) {
                 // In electrical mode, merge only unique "other" properties.

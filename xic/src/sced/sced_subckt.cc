@@ -163,7 +163,7 @@ namespace {
 
         ~sNop()
             {
-                netexp->free();
+                CDnetex::destroy(netexp);
             }
 
         void freeUndo()
@@ -1512,7 +1512,7 @@ SubcState::undo()
             unsigned int tbeg = op->bprp->beg_range();
             unsigned int tend = op->bprp->end_range();
             CDnetName tname = op->bprp->get_term_name();
-            CDnetex *tnx = op->bprp->bundle_spec()->dup();
+            CDnetex *tnx = CDnetex::dup(op->bprp->bundle_spec());
             op->bprp->set_index(op->indx);
             if (op->netexp)
                 op->bprp->update_bundle(op->netexp);
@@ -1757,7 +1757,7 @@ SubcState::redo()
             unsigned int tbeg = op->bprp->beg_range();
             unsigned int tend = op->bprp->end_range();
             CDnetName tname = op->bprp->get_term_name();
-            CDnetex *tnx = op->bprp->bundle_spec()->dup();
+            CDnetex *tnx = CDnetex::dup(op->bprp->bundle_spec());
             op->bprp->set_index(op->indx);
             if (op->netexp)
                 op->bprp->update_bundle(op->netexp);
@@ -2341,7 +2341,7 @@ SubcState::te_cb(te_info_t *tinfo, CDp *prp)
         if (netex) {
             bool ret = netex->is_scalar(&name) ||
                 netex->is_simple(&name, &beg, &end);
-            netex->free();
+            CDnetex::destroy(netex);
             if (!ret) {
                 Log()->ErrorLogV(mh::Properties,
                     "Bad name string %s, too complex.", tname);
@@ -2359,7 +2359,7 @@ SubcState::te_cb(te_info_t *tinfo, CDp *prp)
             int b = -1, e = -1;
             bool ret = netex->is_scalar(&n) || netex->is_simple(&n, &b, &e);
             if (ret) {
-                netex->free();
+                CDnetex::destroy(netex);
                 netex = 0;
                 if (name && n && name != n) {
                     Log()->ErrorLog(mh::NetlistCreation,
@@ -2402,7 +2402,7 @@ SubcState::te_cb(te_info_t *tinfo, CDp *prp)
             pb->CDp_bnode::set_term_name(name);
         }
 
-        CDnetex *onx = pb->bundle_spec()->dup();
+        CDnetex *onx = CDnetex::dup(pb->bundle_spec());
         int obeg = pb->beg_range();
         int oend = pb->end_range();
 
@@ -2415,11 +2415,11 @@ SubcState::te_cb(te_info_t *tinfo, CDp *prp)
             pb->set_range(beg, end);
         }
         else {
-            CDnetex *onl = pb->bundle_spec()->dup();
+            CDnetex *onl = CDnetex::dup(pb->bundle_spec());
             pb->update_bundle(netex);
             if (!CDnetex::cmp(onl, pb->bundle_spec()))
                 changed = true;
-            onl->free();
+            CDnetex::destroy(onl);
         }
 
         unsigned int oflags = pb->flags();

@@ -526,7 +526,7 @@ namespace {
         ~cvbak_t()
             {
                 delete strmIn;
-                strmOut->free();
+                strm_odata::destroy(strmOut);
             }
 
         void revert()
@@ -535,7 +535,7 @@ namespace {
                 ldesc->setStrmIn(strmIn);
                 strmIn = 0;
 
-                ldesc->strmOut()->free();
+                strm_odata::destroy(ldesc->strmOut());
                 ldesc->setStrmOut(strmOut);
                 strmOut = 0;
 

@@ -1550,7 +1550,7 @@ struct sGroup
     ~sGroup()
         {
             delete g_net;
-            g_termlist->free();
+            CDpin::destroy(g_termlist);
             g_device_contacts->free();
             g_subc_contacts->free();
         }

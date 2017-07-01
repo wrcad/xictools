@@ -357,7 +357,7 @@ CDw::set_node_label(CDs *sdesc, CDla *label, bool noundo)
                 (netex->is_simple(&nm, &beg, &end) && nm && beg == end)) {
             // A scalar or 1-bit connector.
 
-            netex->free();
+            CDnetex::destroy(netex);
             prptyRemove(P_BNODE);
             CDp_node *pn = (CDp_node*)prpty(P_NODE);
             if (!pn) {
@@ -389,14 +389,14 @@ CDw::set_node_label(CDs *sdesc, CDla *label, bool noundo)
             if (pb->bound()) {
                 Errs()->add_error(
                     "set_node_label: bus node label already bound.");
-                netex->free();
+                CDnetex::destroy(netex);
                 return (false);
             }
             pb->bind(label);
             if (!label->link(0, this, 0)) {
                 Errs()->add_error(
                     "set_node_label: failed to link label reference.");
-                netex->free();
+                CDnetex::destroy(netex);
                 return (false);
             }
             pb->update_bundle(netex);
@@ -417,7 +417,7 @@ CDw::set_node_label(CDs *sdesc, CDla *label, bool noundo)
         if (netex->is_scalar(&nm) ||
                 (netex->is_simple(&nm, &beg, &end) && nm && beg == end)) {
             // A scalar or 1-bit connector.
-            netex->free();
+            CDnetex::destroy(netex);
 
             // Create, link, and bind a new node property.
             CDp_node *pn = new CDp_node;

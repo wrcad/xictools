@@ -62,7 +62,7 @@ namespace {
         ~tlst_t()
             {
                 delete odesc;
-                cdescs->free();
+                CDclxy::destroy(cdescs);
             }
 
         void free()
@@ -1632,7 +1632,7 @@ InfoState::show_cell_expand(bool exp, bool clear)
             delete c0;
 
             show_obj_info(&tlst);
-            tlst.cdescs->free();
+            CDclxy::destroy(tlst.cdescs);
             tlst.cdescs = 0;
             tlst.odesc = 0;
         }

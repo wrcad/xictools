@@ -573,7 +573,7 @@ cGroupDesc::setup_extract(int dcnt)
     }
 
     cterms = group_terms(cterms, false);
-    cterms->free();
+    CDpin::destroy(cterms);
 
     compute_cap();
     if (!EX()->skipExtract(gd_celldesc))
@@ -649,7 +649,7 @@ cGroupDesc::clear_extract()
 
     for (int i = 0; i < gd_asize; i++) {
         sGroup &g = gd_groups[i];
-        g.termlist()->free();
+        CDpin::destroy(g.termlist());
         g.set_termlist(0);
         g.device_contacts()->free();
         g.set_device_contacts(0);

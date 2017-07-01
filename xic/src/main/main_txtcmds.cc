@@ -1359,7 +1359,7 @@ bangcmds::netxp(const char *s)
         return;
     }
     sLstr lstr;
-    netex->print_all(&lstr);
+    CDnetex::print_all(netex, &lstr);
     printf("Back: %s\n", lstr.string());
     CDnetName nm;
     int n;
@@ -1371,7 +1371,7 @@ bangcmds::netxp(const char *s)
             printf(" %s<%d>\n", nm->string(), n);
     }
     printf("\n");
-    netex->free();
+    CDnetex::destroy(netex);
 }
 
 

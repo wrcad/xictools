@@ -69,23 +69,21 @@ struct CDvecex
 
     ~CDvecex()
         {
-            vx_group->free();
+            destroy(vx_group);
         }
 
-    void free()
+    static void destroy(const CDvecex *v)
         {
-            CDvecex *v = this;
             while (v) {
-                CDvecex *vx = v;
+                const CDvecex *vx = v;
                 v = v->next();
                 delete vx;
             }
         }
 
-    CDvecex *dup() const
+    static CDvecex *dup(const CDvecex *v)
         {
-            const CDvecex *vx = this;
-            return (vx ? new CDvecex(*vx) : 0);
+            return (v ? new CDvecex(*v) : 0);
         }
 
     CDvecex *next()                 const { return (vx_next); }
@@ -133,7 +131,15 @@ struct CDvecex
     bool operator!=(const CDvecex&) const;
 
     void print_this(sLstr*) const;
-    void print_all(sLstr*) const;
+
+    static void print_all(const CDvecex *thisv, sLstr *lstr)
+        {
+            for (const CDvecex *v = thisv; v; v = v->next()) {
+                v->print_this(lstr);
+                if (v->next())
+                    lstr->add_c(',');
+            }
+        }
 
     static bool parse(const char*, CDvecex**, const char** = 0);
 
@@ -176,6 +182,7 @@ private:
 //
 struct CDnetNameStr
 {
+//XXX fixme, can't call thru void pointer.
     const char *string()    const { return ((const char*)this); }
     const char *stringNN()  const
         {
@@ -406,24 +413,22 @@ struct CDnetex
 
     ~CDnetex()
         {
-            nx_group->free();
-            nx_vecex->free();
+            CDnetex::destroy(nx_group);
+            CDvecex::destroy(nx_vecex);
         }
 
-    void free()
+    static void destroy(const CDnetex *n)
         {
-            CDnetex *n = this;
             while (n) {
-                CDnetex *nx = n;
+                const CDnetex *nx = n;
                 n = n->next();
                 delete nx;
             }
         }
 
-    CDnetex *dup() const
+    static CDnetex *dup(const CDnetex *n)
         {
-            const CDnetex *nx = this;
-            return (nx ? new CDnetex(*nx) : 0);
+            return (n ? new CDnetex(*n) : 0);
         }
 
     CDnetex *next()                 const { return (nx_next); }
@@ -523,13 +528,36 @@ struct CDnetex
     bool operator!=(const CDnetex&) const;
 
     void print_this(sLstr*) const;
-    void print_all(sLstr*) const;
-    char *id_text() const;
+
+    static void print_all(const CDnetex *thisn, sLstr *lstr)
+        {
+            for (const CDnetex *n = thisn; n; n = n->next()) {
+                n->print_this(lstr);
+                if (n->next())
+                    lstr->add_c(',');
+            }
+        }
+
+    static char *id_text(const CDnetex *n)
+        {
+            sLstr lstr;
+            print_all(n, &lstr);
+            return (lstr.string_trim());
+        }
 
     static bool check_compatible(const CDnetex*, const CDnetex*);
-    bool check_set_compatible(const CDnetex*);
+    static bool check_set_compatible(CDnetex *thisn, const CDnetex *nm)
+        {
+            if (!thisn)
+                return (true);
+            return (thisn->check_set_compatible_prv(nm));
+        }
+
+private:
+    bool check_set_compatible_prv(const CDnetex*);
     bool resolve(CDnetName, int) const;
 
+public:
     // Return true if the expressions are logically identical.
     static bool cmp(const CDnetex *n1, const CDnetex *n2)
         {
@@ -547,22 +575,22 @@ struct CDnetex
             if (!parse(s1, &n1))
                 return (false);
             if (!parse(s2, &n2)) {
-                n1->free();
+                destroy(n1);
                 return (false);
             }
             if (!n1 && !n2)
                 return (true);
             if (!n1) {
-                n2->free();
+                destroy(n2);
                 return (false);
             }
             if (!n2) {
-                n1->free();
+                destroy(n1);
                 return (false);
             }
             bool res = (*n1 == *n2);
-            n1->free();
-            n2->free();
+            destroy(n1);
+            destroy(n2);
             return (res);
         }
 
@@ -577,11 +605,11 @@ struct CDnetex
             if (!n1)
                 return (false);
             if (!n2) {
-                n1->free();
+                destroy(n1);
                 return (false);
             }
             bool res = (*n1 == *n2);
-            n1->free();
+            destroy(n1);
             return (res);
         }
 

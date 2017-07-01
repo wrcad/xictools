@@ -199,8 +199,8 @@ sElecNetList::~sElecNetList()
 {
     if (et_list) {
         for (unsigned int i = 0; i <= et_maxix; i++) {
-            et_list[i].conts->free();
-            et_list[i].pins->free();
+            CDcont::destroy(et_list[i].conts);
+            CDpin::destroy(et_list[i].pins);
         }
         delete [] et_list;
     }
@@ -326,7 +326,7 @@ void
 sElecNetList::update_pins()
 {
     for (unsigned int i = 0; i < et_size; i++) {
-        et_list[i].pins->free();
+        CDpin::destroy(et_list[i].pins);
         et_list[i].pins = 0;
     }
 
@@ -1602,8 +1602,8 @@ cExt::arrangeTerms(CDcbin *cbin, bool conts_only)
         t->term()->set_loc(x + i*twid, y + j*thei);
         i++;
     }
-    upins->free();
-    uconts->free();
+    CDpin::destroy(upins);
+    CDcont::destroy(uconts);
 }
 
 

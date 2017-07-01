@@ -278,7 +278,7 @@ strm_idata::set_lspec(unsigned int min, unsigned int max, bool dt)
     // Otherwise create a new range element.
 
     if (lx0) {
-        lx0->next->free();
+        idata_list::destroy(lx0->next);
         lx0->next = 0;
         lx0->min = min;
         lx0->max = max;

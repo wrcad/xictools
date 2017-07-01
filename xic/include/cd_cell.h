@@ -403,7 +403,7 @@ struct CDs : public CDdb
                 itable_t<CDm> *tab = (itable_t<CDm>*)(sMasters & ~1);
                 return (tab ? tab->find(mname->string()) : 0);
             }
-            return (((CDm*)sMasters)->findInList(mname->string()));
+            return (CDm::findInList((CDm*)sMasters, mname->string()));
         }
 
     // Use this to invalidate all connectivity of electrical cell,

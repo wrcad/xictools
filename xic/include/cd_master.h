@@ -96,9 +96,9 @@ struct CDm
     // name-keyed table in the cell containing instances, and a
     // self-keyed table on the cell the instances resolve to.
 
-    CDm *findInList(const char *n)
+    static CDm *findInList(CDm *thism, const char *n)
         {
-            for (CDm *m = this; m; m = m->mTabNext) {
+            for (CDm *m = thism; m; m = m->mTabNext) {
                 if (str_compare(n, m->mName))
                     return (m);
             }
