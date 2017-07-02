@@ -32,15 +32,9 @@
 cvINFO
 cCHD::infoMode(DisplayMode mode)
 {
-    if (mode == Physical) {
-        if (c_phys_info)
-            return (c_phys_info->savemode());
-    }
-    else {
-        if (c_elec_info)
-            return (c_elec_info->savemode());
-    }
-    return (cvINFOnone);
+    if (mode == Physical)
+        return (cv_info::savemode(c_phys_info));
+    return (cv_info::savemode(c_elec_info));
 }
 
 
@@ -311,7 +305,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
                 fputs("Unresolved Cells:\n", fp);
             else
                 lstr.add("Unresolved Cells:\n");
-            sy0->sort(false);
+            syrlist_t::sort(sy0, false);
             for (syrlist_t *sy = sy0; sy; sy = sy->next) {
                 sprintf(buf, "%-16s\n", sy->symref->get_name()->string());
                 if (fp)
@@ -1082,26 +1076,27 @@ namespace {
 }
 
 
+// Static function.
 // Sort the list, alpha by name, or by offset.
 //
 void
-syrlist_t::sort(bool by_offset)
+syrlist_t::sort(syrlist_t *thissy, bool by_offset)
 {
     int cnt = 0;
-    for (syrlist_t *s = this; s; s = s->next)
+    for (syrlist_t *s = thissy; s; s = s->next)
         cnt++;
     if (cnt <= 1)
         return;
     symref_t **ary = new symref_t*[cnt];
     cnt = 0;
-    for (syrlist_t *s = this; s; s = s->next)
+    for (syrlist_t *s = thissy; s; s = s->next)
         ary[cnt++] = s->symref;
     if (by_offset)
         std::sort(ary, ary + cnt, cmp_off);
     else
         std::sort(ary, ary + cnt, cmp_alp);
     cnt = 0;
-    for (syrlist_t *s = this; s; s = s->next)
+    for (syrlist_t *s = thissy; s; s = s->next)
         s->symref = ary[cnt++];
     delete [] ary;
 }

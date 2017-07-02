@@ -9468,31 +9468,15 @@ oas_in::placement_array_params(int *dx, int *dy, unsigned int *nx,
 // End of oas_in functions
 
 
-//
-// oas_table and related functions
-//
-
-/*
-oas_elt::~oas_elt()
-{
-    delete [] e_string;
-    e_prpty_list->free_list();
-}
-*/
-
-
 oas_table::~oas_table()
 {
-    oas_table *ot = this;
-    if (ot) {
-        for (unsigned int i = 0; i <= hashmask; i++) {
-            oas_elt *e = tab[i];
-            tab[i] = 0;
-            while (e) {
-                oas_elt *ex = e;
-                e = e->e_next;
-                delete ex;
-            }
+    for (unsigned int i = 0; i <= hashmask; i++) {
+        oas_elt *e = tab[i];
+        tab[i] = 0;
+        while (e) {
+            oas_elt *ex = e;
+            e = e->e_next;
+            delete ex;
         }
     }
 }
@@ -9501,13 +9485,10 @@ oas_table::~oas_table()
 oas_elt *
 oas_table::get(unsigned int x)
 {
-    oas_table *ot = this;
-    if (ot) {
-        unsigned int k = hash(x);
-        for (oas_elt *e = tab[k]; e; e = e->e_next) {
-            if (e->e_index == x)
-                return (e);
-        }
+    unsigned int k = hash(x);
+    for (oas_elt *e = tab[k]; e; e = e->e_next) {
+        if (e->e_index == x)
+            return (e);
     }
     return (0);
 }
@@ -9516,14 +9497,10 @@ oas_table::get(unsigned int x)
 oas_elt *
 oas_table::add(unsigned int x)
 {
-    oas_table *ot = this;
-    if (ot) {
-        unsigned int k = hash(x);
-        tab[k] = new oas_elt(x, tab[k]);
-        count++;
-        return (tab[k]);
-    }
-    return (0);
+    unsigned int k = hash(x);
+    tab[k] = new oas_elt(x, tab[k]);
+    count++;
+    return (tab[k]);
 }
 
 
@@ -9534,11 +9511,6 @@ oas_table::add(unsigned int x)
 oas_table *
 oas_table::check_rehash()
 {
-    {
-        oas_table *ot = this;
-        if (!ot)
-            return (0);
-    }
     if (count/(hashmask + 1) <= ST_MAX_DENS)
         return (this);
 

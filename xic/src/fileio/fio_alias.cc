@@ -388,12 +388,6 @@ FIOaliasTab::set_frozen()
 const char *
 FIOaliasTab::alias(const char *name)
 {
-    {
-        FIOaliasTab *att = this;
-        if (!att)
-            return (name);
-    }
-
     const char *als = at_alias_tab->find_alias(name);
     if (als)
         return (als);
@@ -787,11 +781,6 @@ bdtable_t::remove(const char *name)
 bdtable_t *
 bdtable_t::check_rehash()
 {
-    {
-        bdtable_t *bt = this;
-        if (!bt)
-            return (0);
-    }
     if (count/(hashmask+1) <= ST_MAX_DENS)
         return (this);
 

@@ -68,7 +68,7 @@ CVecFilt::setup(cCHD *chd, symref_t *p)
     bool skip_layers = false;
     stringlist *sl = 0;
     cv_info *info = chd->pcInfo(p->mode());
-    if (info && info->savemode() == cvINFOplpc) {
+    if (cv_info::savemode(info) == cvINFOplpc) {
         ULLtype ull = FIO()->UseLayerList();
         if (ull == ULLnoList) {
             ec_lock = true;

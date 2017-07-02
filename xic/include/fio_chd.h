@@ -160,10 +160,12 @@ public:
         int);
     bool createDensityMaps(const char*, const BBox*, int, int, int,
         stringlist** = 0);
-    XIrt compareCHDs_fp(const char*, cCHD*, const char*, const BBox*,
-        const char*, bool, FILE*, unsigned int, unsigned int*, int, int);
-    XIrt compareCHDs_sd(const char*, cCHD*, const char*, const BBox*,
-        const char*, bool, Sdiff**, unsigned int, unsigned int*, int, int);
+    static XIrt compareCHDs_fp(cCHD*, const char*, cCHD*, const char*,
+        const BBox*, const char*, bool, FILE*, unsigned int, unsigned int*,
+        int, int);
+    static XIrt compareCHDs_sd(cCHD*, const char*, cCHD*, const char*,
+        const BBox*, const char*, bool, Sdiff**, unsigned int, unsigned int*,
+        int, int);
 
     // fio_chd_split.cc
     OItype writeMulti(const char*, const FIOcvtPrms*, const Blist*,

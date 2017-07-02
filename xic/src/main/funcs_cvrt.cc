@@ -3183,7 +3183,7 @@ cvrt_funcs::IFchdInfoMode(Variable *res, Variable *args, void*)
     res->content.value = -1;
     cCHD *chd = CDchd()->chdRecall(chdname, false);
     if (chd)
-        res->content.value = chd->pcInfo(Physical)->savemode();
+        res->content.value = cv_info::savemode(chd->pcInfo(Physical));
     else
         Errs()->add_error("Unresolved CHD access name");
     return (OK);
@@ -4041,7 +4041,7 @@ cvrt_funcs::IFchdCompareFlat(Variable *res, Variable *args, void*)
 
     Sdiff *sdiff = 0;
     unsigned int diffcnt = 0;
-    XIrt ret = chd1->compareCHDs_sd(cname1, chd2, cname2,
+    XIrt ret = cCHD::compareCHDs_sd(chd1, cname1, chd2, cname2,
         area ? &BB : 0, layer_list, skip_layers, array ? &sdiff : 0,
         maxdiffs, &diffcnt, coarse_mult, fine_grid);
 

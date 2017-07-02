@@ -269,7 +269,7 @@ struct syrlist_t
             }
         }
 
-    void sort(bool);
+    static void sort(syrlist_t*, bool);
 
     symref_t *symref;
     syrlist_t *next;

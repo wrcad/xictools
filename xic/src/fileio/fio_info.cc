@@ -250,31 +250,6 @@ cv_info::add_wire(int nverts)
 }
 
 
-// Return the save level enumeration.
-//
-cvINFO
-cv_info::savemode()
-{
-    {
-        cv_info *cvt = this;
-        if (!cvt)
-            return (cvINFOnone);
-    }
-    if (enable_per_layer) {
-        if (enable_per_cell)
-            return (cvINFOplpc);
-        else
-            return (cvINFOpl);
-    }
-    else {
-        if (enable_per_cell)
-            return (cvINFOpc);
-        else
-            return (cvINFOtotals);
-    }
-}
-
-
 // If cname is null, return a list of all layers seen in the file.  If
 // the save mode is cvINFOplpc, and a nonzero cname is passed, the
 // return will be a list of the layers used in the named cell, or 0 if
@@ -351,7 +326,7 @@ cv_info::cells()
 pl_data *
 cv_info::info(const char *cname, const char *lname)
 {
-    cvINFO mode = savemode();
+    cvINFO mode = savemode_prv();
     if (mode == cvINFOtotals) {
         if (!pldata)
             return (0);

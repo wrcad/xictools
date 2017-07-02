@@ -651,7 +651,7 @@ sTree::build_tree_rc(cCHD *chd, symref_t *p, GtkTreeIter *parent, int dpt)
         }
     }
     delete xtab;
-    s0->sort(false);
+    syrlist_t::sort(s0, false);
 
     for (syrlist_t *sr = s0; sr; sr = sr->next) {
         if (!build_tree_rc(chd, sr->symref, &iter, dpt+1)) {

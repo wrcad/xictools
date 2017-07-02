@@ -1024,15 +1024,16 @@ namespace {
     // End of sCmpIter functions.
 }
 
+//XXX make next two funcs accept const CHD*
 
+// Static function.
 // Run the comparison, dumping output to a file.
 //
 XIrt
-cCHD::compareCHDs_fp(const char *cname1, cCHD *chd2, const char *cname2,
-    const BBox *AOI, const char *layer_list, bool skip, FILE *fp,
-    unsigned int maxerrs, unsigned int *errcnt, int cgm, int fg)
+cCHD::compareCHDs_fp(cCHD *chd1, const char *cname1, cCHD *chd2,
+    const char *cname2, const BBox *AOI, const char *layer_list, bool skip,
+    FILE *fp, unsigned int maxerrs, unsigned int *errcnt, int cgm, int fg)
 {
-    cCHD *chd1 = this;
     if (!chd1 || !chd2) {
         Errs()->add_error("compareCHDs: null CHD pointer.");
         return (XIbad);
@@ -1061,14 +1062,14 @@ cCHD::compareCHDs_fp(const char *cname1, cCHD *chd2, const char *cname2,
 }
 
 
+// Static function.
 // Run the comparison, saving output in the returned Sdiff.
 //
 XIrt
-cCHD::compareCHDs_sd(const char *cname1, cCHD *chd2, const char *cname2,
-    const BBox *AOI, const char *layer_list, bool skip, Sdiff **sdiff,
-    unsigned int maxerrs, unsigned int *errcnt, int cgm, int fg)
+cCHD::compareCHDs_sd(cCHD *chd1, const char *cname1, cCHD *chd2,
+    const char *cname2, const BBox *AOI, const char *layer_list, bool skip,
+    Sdiff **sdiff, unsigned int maxerrs, unsigned int *errcnt, int cgm, int fg)
 {
-    cCHD *chd1 = this;
     if (!chd1 || !chd2) {
         Errs()->add_error("compareCHDs: null CHD pointer.");
         return (XIbad);

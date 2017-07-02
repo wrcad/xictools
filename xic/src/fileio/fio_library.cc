@@ -64,7 +64,7 @@ cFIO::IsLibrary(FILE *fp)
 stringlist *
 cFIO::ListLibraries(int type)
 {
-    return (fioLibraries->list(type));
+    return (sLib::list(fioLibraries, type));
 }
 
 
@@ -75,7 +75,7 @@ bool
 cFIO::OpenLibrary(const char *path, const char *name)
 {
     bool err;
-    fioLibraries = fioLibraries->open_library(path, name, &err);
+    fioLibraries = sLib::open_library(fioLibraries, path, name, &err);
     return (!err);
 }
 
@@ -85,7 +85,7 @@ cFIO::OpenLibrary(const char *path, const char *name)
 sLib *
 cFIO::FindLibrary(const char *libname)
 {
-    return (fioLibraries->find(libname));
+    return (sLib::find(fioLibraries, libname));
 }
 
 
@@ -95,7 +95,7 @@ cFIO::FindLibrary(const char *libname)
 const stringlist *
 cFIO::GetLibraryProperties(const char *libname)
 {
-    return (fioLibraries->properties(libname));
+    return (sLib::properties(fioLibraries, libname));
 }
 
 
@@ -106,7 +106,7 @@ cFIO::GetLibraryProperties(const char *libname)
 void
 cFIO::CloseLibrary(const char *libname, int type)
 {
-    fioLibraries = fioLibraries->close_library(libname, type);
+    fioLibraries = sLib::close_library(fioLibraries, libname, type);
     ifLibraryChange();
 }
 
@@ -117,7 +117,7 @@ cFIO::CloseLibrary(const char *libname, int type)
 stringlist *
 cFIO::GetLibNamelist(const char *libname, int type)
 {
-    return (fioLibraries->namelist(libname, type));
+    return (sLib::namelist(fioLibraries, libname, type));
 }
 
 
@@ -129,7 +129,7 @@ FILE *
 cFIO::OpenLibFile(const char *libname, const char *name, int type,
     sLibRef **ref, sLib **plib)
 {
-    return (fioLibraries->open_file(libname, name, type, ref, plib));
+    return (sLib::open_file(fioLibraries, libname, name, type, ref, plib));
 }
 
 
@@ -139,7 +139,7 @@ OItype
 cFIO::OpenLibCell(const char *libname, const char *name, int type,
     CDcbin *cbin)
 {
-    return (fioLibraries->open_cell(libname, name, type, cbin));
+    return (sLib::open_cell(fioLibraries, libname, name, type, cbin));
 }
 
 
@@ -150,7 +150,7 @@ sLib *
 cFIO::LookupLibCell(const char *libname, const char *name, int type,
     sLibRef **ref)
 {
-    return (fioLibraries->lookup(libname, name, type, ref));
+    return (sLib::lookup(fioLibraries, libname, name, type, ref));
 }
 
 
@@ -313,12 +313,14 @@ sLib::~sLib()
 }
 
 
+// Static function.
 // Open a new library.  The searchpath is a search path, used to find
 // filename, the file name.  If an error, the err address is set.  The
 // (new) head of the libraries list is returned.
 //
 sLib *
-sLib::open_library(const char *searchpath, const char *fname, bool *err)
+sLib::open_library(sLib *thislib, const char *searchpath, const char *fname,
+    bool *err)
 {
     if (err)
         *err = 0;
@@ -329,9 +331,9 @@ sLib::open_library(const char *searchpath, const char *fname, bool *err)
         Errs()->add_error("Unable to open %s.", fname);
         if (err)
             *err = true;
-        return (this);
+        return (thislib);
     }
-    sLib *lib, *l0 = this;
+    sLib *lib, *l0 = thislib;
     for (lib = l0; lib; lib = lib->l_nextlib) {
         if (!strcmp(fullname, lib->l_libfilename)) {
             // already open
@@ -572,12 +574,13 @@ sLib::open_library(const char *searchpath, const char *fname, bool *err)
 }
 
 
+// Static function.
 // Return the library matching the file or path name given.
 //
 sLib *
-sLib::find(const char *libname)
+sLib::find(sLib *thislib, const char *libname)
 {
-    for (sLib *lib = this; lib; lib = lib->l_nextlib) {
+    for (sLib *lib = thislib; lib; lib = lib->l_nextlib) {
         if (lib->match_name(libname))
             return (lib);
     }
@@ -585,19 +588,20 @@ sLib::find(const char *libname)
 }
 
 
+// Static function.
 // Open the file indirected from the name in libname according to
 // type.  The reference and library pointers are returned in the
 // arguments, on success.
 //
 FILE *
-sLib::open_file(const char *libname, const char *name, int type,
+sLib::open_file(sLib *thislib, const char *libname, const char *name, int type,
     sLibRef **ref, sLib **plib)
 {
     if (ref)
         *ref = 0;
     if (plib)
         *plib = 0;
-    for (sLib *lib = this; lib; lib = lib->l_nextlib) {
+    for (sLib *lib = thislib; lib; lib = lib->l_nextlib) {
         if (lib->match_type_and_name(type, libname)) {
             sLibRef *r = lib->l_symtab.find(name);
             if (r) {
@@ -637,16 +641,18 @@ sLib::open_file(const char *libname, const char *name, int type,
 }
 
 
+// Static function.
 // Open a cell through library references, if possible.  This returns ok
 // if the cell is not found, one should examine cbin to determine if a
 // cell was actually read.
 //
 OItype
-sLib::open_cell(const char *libname, const char *name, int type, CDcbin *cbin)
+sLib::open_cell(sLib *thislib, const char *libname, const char *name,
+    int type, CDcbin *cbin)
 {
     OItype oiret = OIok;
     sLibRef *libref;
-    sLib *lib = lookup(libname, name, type, &libref);
+    sLib *lib = lookup(thislib, libname, name, type, &libref);
     if (lib) {
         if ((type & LIBnativeOnly) || !libref->dir()) {
             // inline cell
@@ -669,15 +675,17 @@ sLib::open_cell(const char *libname, const char *name, int type, CDcbin *cbin)
 }
 
 
+// Static function.
 // If name exists in libname, return the lib pointer and a pointer to
 // the reference struct.
 //
 sLib *
-sLib::lookup(const char *libname, const char *name, int type, sLibRef **ref)
+sLib::lookup(sLib *thislib, const char *libname, const char *name, int type,
+    sLibRef **ref)
 {
     if (ref)
         *ref = 0;
-    for (sLib *lib = this; lib; lib = lib->l_nextlib) {
+    for (sLib *lib = thislib; lib; lib = lib->l_nextlib) {
         if (lib->match_type_and_name(type, libname)) {
             sLibRef *r = lib->l_symtab.find(name);
             if (r) {
@@ -706,16 +714,17 @@ sLib::lookup(const char *libname, const char *name, int type, sLibRef **ref)
 }
 
 
+// Static function.
 // Return a list of library access names from the named library, or
 // from all libraries is name is null.  Use type to filter the search.
 //
 // Aliases are not included.
 //
 stringlist *
-sLib::namelist(const char *libname, int type)
+sLib::namelist(sLib *thislib, const char *libname, int type)
 {
     stringlist *s0 = 0;
-    for (sLib *lib = this; lib; lib = lib->l_nextlib) {
+    for (sLib *lib = thislib; lib; lib = lib->l_nextlib) {
         if (lib->match_type_and_name(type, libname)) {
             tgen_t<sLibRef> gen(lib->l_symtab.table());
             sLibRef *r;
@@ -730,13 +739,14 @@ sLib::namelist(const char *libname, int type)
 }
 
 
+// Static function.
 // Return the property strings list for the library named.  Only LIBdevice
 // libraries have properties.
 //
 const stringlist *
-sLib::properties(const char *libname)
+sLib::properties(const sLib *thislib, const char *libname)
 {
-    for (sLib *lib = this; lib; lib = lib->l_nextlib) {
+    for (const sLib *lib = thislib; lib; lib = lib->l_nextlib) {
         if (lib->match_name(libname)) {
             if (lib->l_type == LIBdevice)
                 return (lib->l_prpty_strings);
@@ -746,13 +756,14 @@ sLib::properties(const char *libname)
 }
 
 
+// Static function.
 // Return a list of the libraries currently open, according to type.
 //
 stringlist *
-sLib::list(int type)
+sLib::list(const sLib *thislib, int type)
 {
     stringlist *s0 = 0, *se = 0;
-    for (sLib *lib = this; lib; lib = lib->l_nextlib) {
+    for (const sLib *lib = thislib; lib; lib = lib->l_nextlib) {
         if (lib->l_type & type) {
             if (!s0)
                 se = s0 = new stringlist(
@@ -768,15 +779,16 @@ sLib::list(int type)
 }
 
 
+// Static function.
 // Close and free the named library, and delete the cells from the
 // database if lib is LIBdevice.  If name is null, clear all
 // libraries and library cells.
 //
 sLib *
-sLib::close_library(const char *libname, int type)
+sLib::close_library(sLib *thislib, const char *libname, int type)
 {
     sLib *lp = 0, *ln;
-    sLib *l0 = this;
+    sLib *l0 = thislib;
     for (sLib *lib = l0; lib; lib = ln) {
         ln = lib->l_nextlib;
         if (lib->match_type_and_name(type, libname)) {

@@ -618,8 +618,9 @@ cCompare::compare()
                 s->string, DIFF_RTOK, ss ? ss->string : s->string);
 
             unsigned int ec;
-            ret = c_chd1->compareCHDs_fp(s->string, c_chd2, ss ? ss->string : 0,
-                c_aoi_given ? &c_AOI : 0, c_layer_list, c_skip_layers, c_fp,
+            ret = cCHD::compareCHDs_fp(c_chd1, s->string, c_chd2,
+                ss ? ss->string : 0, c_aoi_given ? &c_AOI : 0,
+                c_layer_list, c_skip_layers, c_fp,
                 c_max_diffs, &ec, c_coarse_mult, c_fine_grid);
             if (ret != XIok)
                 break;
