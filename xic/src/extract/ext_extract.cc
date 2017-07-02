@@ -2205,7 +2205,7 @@ cGroupDesc::flatten_core(sSubcList *sc, bool assoc, int *nf, int *ns, int *nd)
             if (!ok)
                 break;
         }
-        via->free();  // Should have been used and zeroed.
+        CDol::destroy(via);  // Should have been used and zeroed.
 
         // The termlist can be ignored?
 

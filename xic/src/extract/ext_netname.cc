@@ -283,7 +283,7 @@ cGroupDesc::update_net_label(int grp)
             delete [] s;
         }
     }
-    list->free();
+    CDol::destroy(list);
     return (true);
 }
 
@@ -310,7 +310,7 @@ cGroupDesc::create_net_label(int grp, const char *string, bool check,
     if (check) {
         CDol *ol = find_net_labels(grp, string);
         if (ol) {
-            ol->free();
+            CDol::destroy(ol);
             return (true);
         }
     }
@@ -566,7 +566,7 @@ cGroupDesc::find_set_net_names()
                 break;
             }
         }
-        ol->free();
+        CDol::destroy(ol);
         if (!name)
             continue;
 

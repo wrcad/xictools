@@ -916,7 +916,7 @@ cDRC::batchListTest(const CDol *slist, FILE *fp, sLstr *lstr, BBox *errBB)
     if (!update_rule_disable())
         return;
     BBox AOI;
-    slist->computeBB(&AOI);
+    CDol::computeBB(slist, &AOI);
     if (XM()->RunMode() == ModeNormal) {
         PL()->ShowPrompt("Working ... ");
         eraseErrors(&AOI);
@@ -1396,13 +1396,13 @@ cDRC::init_drc(const BBox *AOI, Blist **blist, bool skip_cnt)
                 if (l->ldesc->layerType() == CDLderived)
                     drc_drv_tab->add((unsigned long)l->ldesc, 0, true);
             }
-            l0->free();
+            CDll::destroy(l0);
             l0 = td->targetLayers();
             for (CDll *l = l0; l; l = l->next) {
                 if (l->ldesc->layerType() == CDLderived)
                     drc_drv_tab->add((unsigned long)l->ldesc, 0, true);
             }
-            l0->free();
+            CDll::destroy(l0);
         }
     }
 
@@ -1463,7 +1463,7 @@ cDRC::init_drc(const BBox *AOI, Blist **blist, bool skip_cnt)
             drc_drv_tab = new SymTab(false, false);
             for (CDll *l = l0; l; l = l->next)
                 drc_drv_tab->add((unsigned long)l->ldesc, 0, false);
-            l0->free();
+            CDll::destroy(l0);
         }
 
         if (ret != XIok) {

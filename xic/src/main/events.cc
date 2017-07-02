@@ -1202,7 +1202,7 @@ cEventHdlr::sel_b1up(BBox *AOI, const char *types, CDol **selection,
                 bool cells_only = (types && *types ==
                     CDINSTANCE && *(types+1) == '\0');
                 if (!cells_only) {
-                    (*selection)->free();
+                    CDol::destroy(*selection);
                     *selection = 0;
                 }
                 else {
@@ -1312,7 +1312,7 @@ cEventHdlr::sel_b1up_altw(BBox *AOI, const char *types, CDol **selection,
                 bool cells_only = (types && *types ==
                     CDINSTANCE && *(types+1) == '\0');
                 if (!cells_only) {
-                    (*selection)->free();
+                    CDol::destroy(*selection);
                     *selection = 0;
                 }
                 else {

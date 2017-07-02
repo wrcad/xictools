@@ -1152,7 +1152,7 @@ extract_funcs::IFfindPath(Variable *res, Variable *args, void*)
         return (OK);
     }
 
-    CDol *ol0 = CDo::to_ol(pf->get_object_list());
+    CDol *ol0 = CDol::object_list(pf->get_object_list());
     if (ol0) {
         sHdl *nhdl = new sHdlObject(ol0, cursdp, true);
         res->type = TYP_HANDLE;
@@ -1225,7 +1225,7 @@ extract_funcs::IFfindPathOfGroup(Variable *res, Variable *args, void*)
         return (OK);
     }
 
-    CDol *ol0 = CDo::to_ol(pf.get_object_list());
+    CDol *ol0 = CDol::object_list(pf.get_object_list());
     if (ol0) {
         sHdl *nhdl = new sHdlObject(ol0, cursdp, true);
         res->type = TYP_HANDLE;

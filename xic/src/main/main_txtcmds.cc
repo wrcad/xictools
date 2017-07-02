@@ -1155,7 +1155,7 @@ bangcmds::sqdump(const char *s)
                 PL()->ShowPromptV("Selections saved in %s.", fn);
             else
                 PL()->ShowPromptV("Save FAILED: %s", Errs()->get_error());
-            ol0->free();
+            CDol::destroy(ol0);
         }
         else
             PL()->ShowPrompt("No selections, nothing to save.");
@@ -2704,7 +2704,7 @@ bangcmds::dups(const char*)
                 Selections.insertObject(CurCell(true), o->odesc);
                 dupcnt++;
             }
-            o0->free();
+            CDol::destroy(o0);
         }
     }
     if (dupcnt == 0)
@@ -2806,7 +2806,7 @@ bangcmds::wirecheck(const char *s)
             }
         }
     }
-    wirelist->free();
+    CDol::destroy(wirelist);
     if (count) {
         XM()->ShowParameters();
         PL()->ShowPromptV("Selected wires are questionable, found %d.",
@@ -2913,7 +2913,7 @@ bangcmds::polycheck(const char *s)
             }
         }
     }
-    polylist->free();
+    CDol::destroy(polylist);
     if (count) {
         XM()->ShowParameters();
         PL()->ShowPromptV("Selected polys are badly formed, found %d.",

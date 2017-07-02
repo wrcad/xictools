@@ -172,7 +172,7 @@ StrState::StrState(const char *nm, const char *hk) : CmdState(nm, hk)
 StrState::~StrState()
 {
     StrCmd = 0;
-    OrigObjs->free();
+    CDol::destroy(OrigObjs);
 }
 
 
@@ -265,7 +265,7 @@ StrState::b1up()
 
             CDol *st = Selections.listQueue(CurCell());
             ED()->setObjectList(ED()->objectList()->mklist(st, &BB));
-            st->free();
+            CDol::destroy(st);
             ED()->objectList()->mark_vertices(DISPLAY);
             message();
             return;
@@ -430,7 +430,7 @@ StrState::undo()
             ED()->setObjectList(0);
             return;
         }
-        OrigObjs->free();
+        CDol::destroy(OrigObjs);
         OrigObjs = Selections.listQueue(CurCell(), Types, false);
         Selections.setShowSelected(CurCell(), Types, false);
         Selections.removeTypes(CurCell(), Types);
@@ -563,7 +563,7 @@ cEdit::doStretchObjList(int ref_x, int ref_y, int map_x, int map_y, bool reins)
             o0 = new CDol(obj->object(), o0);
     }
     CDmergeInhibit inh(o0);
-    o0->free();
+    CDol::destroy(o0);
 
     for (sObj *obj = ed_object_list; obj; obj = obj->next_obj()) {
         Ochg *op = Ulist()->CurOp().obj_list();
@@ -670,7 +670,7 @@ cEdit::doStretch(int ref_x, int ref_y, int *map_x, int *map_y)
         }
         CDol *st = Selections.listQueue(cursd);
         CDmergeInhibit inh(st);
-        st->free();
+        CDol::destroy(st);
         sSelGen sg(Selections, cursd, "bpwl");
         CDo *od;
         while ((od = sg.next()) != 0) {

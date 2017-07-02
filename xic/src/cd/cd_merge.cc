@@ -366,7 +366,7 @@ CDs::mergeBoxOrPoly(CDo *odesc, bool Undoable)
         else
             unlink(od, false);
     }
-    o0->free();
+    CDol::destroy(o0);
 
     return (true);
 }

@@ -909,7 +909,7 @@ cCHD::createLayers()
             if (strmdata::hextrn(s->string, &layer, &dtype)) {
                 CDll *ll = FIO()->GetGdsInputLayers(layer, dtype, Physical);
                 if (ll)
-                    ll->free();
+                    CDll::destroy(ll);
                 else {
                     bool err;
                     FIO()->MapGdsLayer(layer, dtype, Physical, s->string,

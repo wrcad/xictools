@@ -35,6 +35,7 @@
 #include "fio_cif.h"
 #include "fio_chd.h"
 #include <ctype.h>
+#include <algorithm>
 
 
 namespace {
@@ -3558,7 +3559,7 @@ CDp_mut::find(int x, int y, CDs *sdesc)
             cdesc = (CDc*)sl->odesc;
         }
     }
-    s0->free();
+    CDol::destroy(s0);
     return (cdesc);
 }
 // End CDp_mut functions
@@ -4493,6 +4494,39 @@ CDp_nodmp::parse_nodmp(const char* str)
 }
 // End CDp_nodmp functions
 
+
+namespace {
+    // Comparison function for properties.
+    //
+    inline bool
+    p_comp(const CDp *p1, const CDp *p2)
+    {
+        return (p1->value() < p2->value());
+    }
+}
+
+
+// Static function.
+// Sort a list of properties by increasing value.
+//
+void
+CDpl::sort(CDpl *thisp)
+{
+    int cnt = 0;
+    for (CDpl *p = thisp; p; p = p->next, cnt++) ;
+    if (cnt < 2)
+        return;
+    CDp **aa = new CDp*[cnt];
+    cnt = 0;
+    for (CDpl *p = thisp; p; p = p->next, cnt++)
+        aa[cnt] = p->pdesc;
+    std::sort(aa, aa + cnt, p_comp);
+    cnt = 0;
+    for (CDpl *p = thisp; p; p = p->next, cnt++)
+        p->pdesc = aa[cnt];
+    delete [] aa;
+}
+// End CDpl functions
 
 //
 // Parser/composer for the XICP_CHD_REF property string.

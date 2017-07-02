@@ -1570,7 +1570,7 @@ cv_out::write_instances(const CDs *sdesc)
         if (cdesc->cellname())
             cl0 = new CDcl(cdesc, cl0);
     }
-    cl0->sort_instances();
+    CDcl::sort_instances(cl0);
     bool ret = true;
     for (CDcl *cl = cl0; cl; cl = cl->next) {
         cdesc = cl->cdesc;
@@ -1591,7 +1591,7 @@ cv_out::write_instances(const CDs *sdesc)
         if (!ret)
             break;
     }
-    cl0->free();
+    CDcl::destroy(cl0);
     return (ret);
 
 #else

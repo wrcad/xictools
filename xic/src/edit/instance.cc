@@ -428,7 +428,7 @@ cEdit::placeAction()
             }
             if (didone)
                 Ulist()->CommitChanges(true);
-            slist->free();
+            CDol::destroy(slist);
         }
         Gst()->SetGhost(GFplace);
     }

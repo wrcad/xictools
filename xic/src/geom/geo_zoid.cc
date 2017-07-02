@@ -390,11 +390,6 @@ Zoid::test_coverage(const Zlist *zl0, bool *covered, int minsz,
     *covered = false;
     if (zlp)
         *zlp = 0;
-    {
-        const Zoid *zt = this;
-        if (!zt)
-            return (true);
-    }
     if (!zl0)
         return (true);
 

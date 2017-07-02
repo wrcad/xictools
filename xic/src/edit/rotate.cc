@@ -190,7 +190,7 @@ RotState::RotState(const char *nm, const char *hk) : CmdState(nm, hk)
 RotState::~RotState()
 {
     RotCmd = 0;
-    OrigObjs->free();
+    CDol::destroy(OrigObjs);
 }
 
 
@@ -529,7 +529,7 @@ RotState::undo()
     else if (Level == 2) {
         // Undo the selection.
         //
-        OrigObjs->free();
+        CDol::destroy(OrigObjs);
         OrigObjs = Selections.listQueue(CurCell(), Types, false);
         Selections.setShowSelected(CurCell(), Types, false);
         Selections.removeTypes(CurCell(), Types);
@@ -690,7 +690,7 @@ cEdit::rotateQueue(int rx, int ry, double ang, int mx, int my,
     if (mc == CDmove) {
         CDol *st = Selections.listQueue(cursd);
         inh = new CDmergeInhibit(st);
-        st->free();
+        CDol::destroy(st);
     }
     sg = sSelGen(Selections, cursd, "bpw");
     while ((od = sg.next()) != 0) {
@@ -1006,7 +1006,7 @@ void
 cEditGhost::ghost_rotate_setup(bool on)
 {
     if (on) {
-        ghost_display_list->free();  // should never need this
+        CDol::destroy(ghost_display_list);  // should never need this
         ghost_display_list = Selections.listQueue(CurCell());
         unsigned int n = Selections.queueLength(CurCell());
         if (n > EGst()->eg_max_ghost_objects) {
@@ -1025,12 +1025,12 @@ cEditGhost::ghost_rotate_setup(bool on)
                     break;
                 ol0 = new CDol(od, ol0);
             }
-            ghost_display_list->free();
+            CDol::destroy(ghost_display_list);
             ghost_display_list = ol0;
         }
     }
     else {
-        ghost_display_list->free();
+        CDol::destroy(ghost_display_list);
         ghost_display_list = 0;
     }
 }

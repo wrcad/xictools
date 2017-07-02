@@ -899,11 +899,10 @@ namespace {
                 delete [] l_lpp_name;
             }
 
-        void free()
+        static void destroy(const ldb_lpp *l)
             {
-                ldb_lpp *l = this;
                 while (l) {
-                    ldb_lpp *lx = l;
+                    const ldb_lpp *lx = l;
                     l = l->next;
                     delete lx;
                 }
@@ -931,11 +930,11 @@ namespace {
 
         ~LDBstate()
             {
-                s_phys_ary->free();
-                s_elec_ary->free();
-                s_unused_phys->free();
-                s_unused_elec->free();
-                s_invalid_list->free();
+                ldb_lpp::destroy(s_phys_ary);
+                ldb_lpp::destroy(s_elec_ary);
+                ldb_lpp::destroy(s_unused_phys);
+                ldb_lpp::destroy(s_unused_elec);
+                ldb_lpp::destroy(s_invalid_list);
             }
 
         ldb_lpp *s_phys_ary;

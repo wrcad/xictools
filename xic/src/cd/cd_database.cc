@@ -84,9 +84,7 @@ namespace {
 //
 CDdb::~CDdb()
 {
-    CDdb *dbt = this;
-    if (dbt)
-        ((CDs*)dbt)->clear(false);
+    ((CDs*)this)->clear(false);
 }
 
 
@@ -398,11 +396,6 @@ CDdb::db_list_coinc(CDo *od)
 void
 CDdb::db_rebuild(bool(*process)(CDo*, CDdb*, void*), void *arg)
 {
-    {
-        CDdb *dbt = this;
-        if (!dbt)
-            return;
-    }
     if (!process)
         return;
 
@@ -433,11 +426,6 @@ void
 CDdb::db_merge(CDdb *sdb, bool(*process)(CDo*, CDdb*, CDdb*, void*),
     void *arg)
 {
-    {
-        CDdb *dbt = this;
-        if (!dbt)
-            return;
-    }
     if (!process || !sdb)
         return;
 
@@ -551,11 +539,6 @@ CDg::init_gen(const CDs *sdesc, const CDl *ld, const BBox *pBB)
 CDo *
 CDg::next()
 {
-    {
-        CDg *gt = this;
-        if (!gt)
-            return (0);
-    }
     for (;;) {
         RTelem *rt;
         if (!(flags & GEN_RET_MASK))
@@ -695,7 +678,7 @@ sPF::sPF(sPF &pf) : cTfmStack(pf)
     pf_wires = pf.pf_wires;
     pf_labels = pf.pf_labels;
     pf_error = pf.pf_error;
-    pf_gen = pf_error ? 0 : pf.pf_gen->dup();
+    pf_gen = pf_error ? 0 : sPFel::dup(pf.pf_gen);
     pf_dmode = pf.pf_dmode;
     sPF_genTab.add(this);
 }
@@ -772,11 +755,6 @@ namespace {
 CDo *
 sPF::next(bool nocopy, bool touchok)
 {
-    {
-        sPF *pft = this;
-        if (!pft)
-            return (0);
-    }
     if (!pf_gen)
         return (0);
     CDo *pointer = 0;
@@ -943,10 +921,7 @@ sPF::purge(const CDs *sdesc)
 sPF*
 sPF::dup()
 {
-    sPF *pft = this;
-    if (!pft)
-        return (0);
-    return (new sPF(*pft));
+    return (new sPF(*this));
 }
 
 
@@ -1174,15 +1149,13 @@ sPFel::~sPFel()
 }
 
 
+// Static function.
 sPFel *
-sPFel::dup()
+sPFel::dup(const sPFel *thispe)
 {
-    {
-        sPFel *pfe = this;
-        if (!pfe)
-            return (0);
-    }
-    sPFel *t = this;
+    if (!thispe)
+        return (0);
+    const sPFel *t = thispe;
     while (t->el_prev)
         t = t->el_prev;
     sPFel *n0 = 0, *ne = 0;
@@ -1198,7 +1171,7 @@ sPFel::dup()
             ne->el_next = n;
             ne = n;
         }
-        if (t == this)
+        if (t == thispe)
             newg = n;
         t = t->el_next;
     }

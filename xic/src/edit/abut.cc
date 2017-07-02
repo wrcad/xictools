@@ -205,7 +205,7 @@ cAbutCtrl::handleAbutment()
             continue;
         }
     }
-    ac_abut_instances->free();
+    CDol::destroy(ac_abut_instances);
     ac_abut_instances = 0;
 }
 // End of cAbutCtrl functions.

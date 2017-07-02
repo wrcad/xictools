@@ -393,13 +393,13 @@ cEdit::joinQueue()
                 }
             }
         }
-        o0->free();
+        CDol::destroy(o0);
         if (j0) {
             XIrt ret = j0->join(cursd, ld, true);
             if (ret != XIok) {
                 XM()->ShowParameters();
                 dspPkgIf()->SetWorking(false);
-                olst->free();
+                CDol::destroy(olst);
                 return (ret);
             }
         }

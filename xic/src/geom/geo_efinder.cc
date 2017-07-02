@@ -48,6 +48,11 @@
 
 
 #ifdef NOTDEF
+#include "geo_ylist.h"
+#include "geo_zgroup.h"
+#include "cd.h"
+#include "cd_types.h"
+
 // A debugging hack for the efinder, causes toPolyAdd to use polys
 // from the efinder (these don't have holes!) if the variable "ET" is
 // set.  Maybe someday the efinder can reassemble the polys and holes
@@ -57,26 +62,23 @@
 // This frees the zoid list.
 //
 XIrt
-Zlist::to_poly_add(CDs *sdesc, CDl *ld, bool undoable, const cTfmStack *tstk,
-    bool use_merge)
+Zlist::to_poly_add(Zlist *thiszl, CDs *sdesc, CDl *ld, bool undoable,
+    const cTfmStack *tstk, bool use_merge)
 {
-    {
-        const Zlist *zt = this;
-        if (!zt)
-            return (XIok);
-    }
+    if (!thiszl)
+        return (XIok);
     if (!sdesc || !ld)
         return (XIbad);
 
-    Ylist *y = new Ylist(this);
-    Zgroup *g = y->group(JoinMaxGroup);
+    Ylist *y = new Ylist(thiszl);
+    Zgroup *g = Ylist::group(y, JoinMaxGroup);
     if (!g)
         return (XIok);
 
     // Debugging hack for the efinder.  Holes and polys are returned as
     // separate polygons.
 
-    if (CD()->GetVariable("ET")) {
+    if (CDvdb()->getVariable("ET")) {
         for (int i = 0; i < g->num; i++) {
             EdgeFinder ef;
             for (Zlist *zl = g->list[i]; zl; zl = zl->next)
@@ -96,7 +98,7 @@ Zlist::to_poly_add(CDs *sdesc, CDl *ld, bool undoable, const cTfmStack *tstk,
                 if (sdesc->addToDb(p0, ld, undoable, 0, tstk, use_merge) !=
                         CDok)
                     GEO()->ifInfoMessage(IFMSG_LOG_ERR, Errs()->get_error());
-                p0->free();
+                PolyList::destroy(p0);
             }
         }
     }
@@ -109,7 +111,7 @@ Zlist::to_poly_add(CDs *sdesc, CDl *ld, bool undoable, const cTfmStack *tstk,
                         CDok)
                     GEO()->ifInfoMessage(IFMSG_LOG_ERR,
                         Errs()->get_error());
-                p0->free();
+                PolyList::destroy(p0);
             }
         }
     }

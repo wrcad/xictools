@@ -1609,11 +1609,6 @@ Poly::clip_acute(int rad) const
 edg_t *
 Poly::edges() const
 {
-    {
-        const Poly *pt = this;
-        if (!pt)
-            return (0);
-    }
     if (numpts >= 6) {
         linedb_t ldb;
         ldb.add(this);
@@ -1783,11 +1778,6 @@ Poly::halo(int d) const
 Zlist *
 Poly::ext_zoids(int delta, int mode) const
 {
-    {
-        const Poly *pt = this;
-        if (!pt)
-            return (0);
-    }
     linedb_t ldb;
     ldb.add(this);
     return (ldb.zoids(delta, mode));

@@ -5201,20 +5201,20 @@ sDevInst::body_layer(sDevInst::bl_type type) const
         CDl *ld = l->ldesc;
         if (type == bl_resis && (tech_prm(ld)->rho() > 0.0 ||
                 tech_prm(ld)->ohms_per_sq() > 0.0)) {
-            l0->free();
+            CDll::destroy(l0);
             return (ld);
         }
         else if (type == bl_cap && (tech_prm(ld)->cap_per_area() > 0.0 ||
                 tech_prm(ld)->cap_per_perim() > 0.0)) {
-            l0->free();
+            CDll::destroy(l0);
             return (ld);
         }
         else if (type == bl_induct && cTech::GetLayerTline(ld, params)) {
-            l0->free();
+            CDll::destroy(l0);
             return (ld);
         }
     }
-    l0->free();
+    CDll::destroy(l0);
     return (0);
 }
 
@@ -5432,13 +5432,13 @@ sDevInst::no_merge()
             CDo *odesc;
             while ((odesc = gen.next(true, false)) != 0) {
                 if (odesc->prpty(XICP_NOMERGE)) {
-                    l0->free();
+                    CDll::destroy(l0);
                     di_nomerge = true;
                     return (true);
                 }
             }
         }
-        l0->free();
+        CDll::destroy(l0);
         di_nm_checked = true;
     }
     return (false);
@@ -6168,7 +6168,7 @@ sGroupXf::find_objects(const sDevContactInst *c1, const CDl *ld)
         CDol *ol = gx_objs->find_object(ld, c1->cBB());
         if (ol) {
             if (tab->get((unsigned long)ol->odesc) != ST_NIL) {
-                ol->free();
+                CDol::destroy(ol);
                 return (0);
             }
             tab->add((unsigned long)ol->odesc, 0, false);
@@ -6248,7 +6248,7 @@ sGroupXf::find_objects_rc(const sDevContactInst *c1, const CDl *ld,
         CDol *ol = gx_objs->find_object(ld, c1->cBB());
         if (ol) {
             if (tab->get((unsigned long)ol->odesc) != ST_NIL) {
-                ol->free();
+                CDol::destroy(ol);
                 return (0);
             }
             tab->add((unsigned long)ol->odesc, 0, false);

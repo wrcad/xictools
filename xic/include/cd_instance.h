@@ -334,10 +334,37 @@ struct CDcl
             cdesc = c;
         }
 
-    // cd_lists.cc
-    void sort_instances();
-    CDcl *unlink(CDcl**, const CDc*);
-    void free();
+    static void destroy(const CDcl *cl)
+        {
+            while (cl) {
+                const CDcl *cx = cl;
+                cl = cl->next;
+                delete cx;
+            }
+        }
+
+    // Unlink which from list, return a pointer to it if found.
+    //
+    static CDcl *unlink(CDcl **list, const CDc *which)
+        {
+            if (!list)
+                return (0);
+            CDcl *p = 0;
+            for (CDcl *c = *list; c; c = c->next) {
+                if (c->cdesc == which) {
+                    if (!p)
+                        *list = c->next;
+                    else
+                        p->next = c->next;
+                    return (c);
+                }
+                p = c;
+            }
+            return (0);
+        }
+
+    // cd_instance.cc
+    static void sort_instances(CDcl*);
 
     CDcl *next;
     const CDc *cdesc;

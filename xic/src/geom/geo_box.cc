@@ -172,11 +172,6 @@ BBox::clip_out(const Blist *bc) const
 Blist *
 BBox::clip_out(const BYlist *yl0) const
 {
-    {
-        const BBox *bt = this;
-        if (!bt)
-            return (0);
-    }
     BYlist *yt = new BYlist(new Blist(this, 0));
     for (const BYlist *y = yl0; y; y = y->next) {
         if (y->yl >= top)

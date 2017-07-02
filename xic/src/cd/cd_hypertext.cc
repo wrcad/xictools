@@ -45,8 +45,7 @@
 void
 CDs::hyInit() const
 {
-    const CDs *sdt = this;
-    if (!sdt || !isElectrical() || !getHY())
+    if (!isElectrical() || !getHY())
         return;
     for (hyEnt **hent = getHY(); *hent; hent++)
         (*hent)->check_ref();
@@ -103,7 +102,7 @@ CDs::hyPoint(cTfmStack *stk, const BBox *AOI, int mask)
         if (sl0) {
             // return the name of the smallest cell
             BBox tBB;
-            sl0->computeBB(&tBB);
+            CDol::computeBB(sl0, &tBB);
             double marea = ((double)tBB.width())*tBB.height();
             odesc = sl0->odesc;
             CDol *sl;
@@ -206,7 +205,7 @@ CDs::hyPoint(cTfmStack *stk, const BBox *AOI, int mask)
                                 break;
 
                             if (InvAOI.intersect(x, y, true)) {
-                                cl0->free();
+                                CDol::destroy(cl0);
                                 return (new hyEnt(this, x, y, cinst,
                                     HYrefNode, HYorNone));
                             }
@@ -240,7 +239,7 @@ CDs::hyPoint(cTfmStack *stk, const BBox *AOI, int mask)
                                 else
                                     orient = HYorLt;
                             }
-                            cl0->free();
+                            CDol::destroy(cl0);
                             return (new hyEnt(this, pb->pos_x(), pb->pos_y(),
                                 cinst, HYrefBranch, orient));
                         }
@@ -259,7 +258,7 @@ CDs::hyPoint(cTfmStack *stk, const BBox *AOI, int mask)
                         // Devices only!
                         int x = (InvAOI.left + InvAOI.right)/2;
                         int y = (InvAOI.bottom + InvAOI.top)/2;
-                        cl0->free();
+                        CDol::destroy(cl0);
                         return (new hyEnt(this, x, y, cinst, HYrefDevice,
                             HYorNone));
                     }
@@ -296,7 +295,7 @@ CDs::hyPoint(cTfmStack *stk, const BBox *AOI, int mask)
                 if (!msdesc->isDevice()) {
                     hyEnt *h = hyPoint(stk, cinst, AOI, mask);
                     if (h) {
-                        cl0->free();
+                        CDol::destroy(cl0);
                         h->set_owner(this);
                         return (h);
                     }
@@ -314,13 +313,13 @@ CDs::hyPoint(cTfmStack *stk, const BBox *AOI, int mask)
                         // Subckts only!
                         int x = (InvAOI.left + InvAOI.right)/2;
                         int y = (InvAOI.bottom + InvAOI.top)/2;
-                        cl0->free();
+                        CDol::destroy(cl0);
                         return (new hyEnt(this, x, y, cinst, HYrefDevice,
                             HYorNone));
                     }
                 }
             }
-            cl0->free();
+            CDol::destroy(cl0);
         }
     }
 
@@ -864,11 +863,6 @@ hyEnt::~hyEnt()
 bool
 hyEnt::add()
 {
-    {
-        hyEnt *hyt = this;
-        if (!hyt)
-            return (true);
-    }
     if (!hySdesc || hyLinked)
         return (true);
     // Presently, there are no hypertxt properties in Physical mode.
@@ -904,11 +898,6 @@ hyEnt::add()
 bool
 hyEnt::remove()
 {
-    {
-        hyEnt *hyt = this;
-        if (!hyt)
-            return (true);
-    }
     if (!hySdesc || !hyLinked)
         return (true);
     hyEnt **oldh = hySdesc->getHY();
@@ -931,11 +920,6 @@ hyEnt::remove()
 hyEnt *
 hyEnt::dup() const
 {
-    {
-        const hyEnt *hyt = this;
-        if (!hyt)
-            return (new hyEnt());
-    }
     hyEnt *newh = new hyEnt(*this);
     newh->hyPrnt = hyParent::dup(hyPrnt);
     newh->hyPrxy = hyParent::dup(hyPrxy);
@@ -1048,11 +1032,6 @@ namespace {
 char *
 hyEnt::stringUpdate(cTfmStack *tstk)
 {
-    {
-        hyEnt *hyt = this;
-        if (!hyt)
-            return (0);
-    }
     cTfmStack stk;
     if (!tstk)
         tstk = &stk;

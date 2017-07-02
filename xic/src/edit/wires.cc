@@ -553,7 +553,7 @@ WireState::b1up()
                     Selections.insertObject(CurCell(), sl->odesc);
             }
             mark_vertices(DISPLAY);
-            slist->free();
+            CDol::destroy(slist);
         }
         SelectingWires = false;
         message();
@@ -589,7 +589,7 @@ WireState::b1up()
         }
         else if (!add_vertex())
             mark_vertices(DISPLAY);
-        slist->free();
+        CDol::destroy(slist);
         return;
     }
     if (Level == 2) {
@@ -1143,7 +1143,7 @@ WireState::add_vertex()
             break;
         }
     }
-    slist->free();
+    CDol::destroy(slist);
     if (!wrdesc)
         return (false);
 

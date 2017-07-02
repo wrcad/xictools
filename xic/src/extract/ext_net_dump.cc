@@ -209,7 +209,7 @@ cExtNets::dump_nets(const BBox *AOI, int x, int y)
                     if (ltab->get((unsigned long)ldtmp) == ST_NIL)
                         ltab->add((unsigned long)ldtmp, 0, false);
                 }
-                l0->free();
+                CDll::destroy(l0);
             }
         }
     }
@@ -587,7 +587,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
                             }
                             if (zx) {
                                 PolyList *pl = Zlist::to_poly_list(zx);
-                                CDo *od = pl->to_odesc(ldtmp);
+                                CDo *od = PolyList::to_odesc(pl, ldtmp);
 
                                 if (od) {
                                     SymTabEnt *h =
@@ -605,7 +605,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
                                 }
                             }
                         }
-                        l0->free();
+                        CDll::destroy(l0);
                         if (ret != XIok)
                             break;
                     }
@@ -631,7 +631,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
         // a layer.
 
         PolyList *po = Zlist::to_poly_list(zv0);
-        CDo *od = po->to_odesc(ld);
+        CDo *od = PolyList::to_odesc(po, ld);
 
         if (od) {
             SymTabEnt *h = out_tab->get_ent((unsigned long)ld);

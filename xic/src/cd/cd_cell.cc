@@ -2479,11 +2479,6 @@ CDs::checkTerminals(CDp_snode ***nary)
 {
     if (nary)
         *nary = 0;
-    {
-        CDs *st = this;
-        if (!st)
-            return (0);
-    }
     if (!isElectrical())
         return (0);
 
@@ -3051,11 +3046,6 @@ CDs::elecCellType(CDpfxName *nret)
 {
     if (nret)
         *nret = 0;
-    {
-        CDs *st = this;
-        if (!st)
-            return (CDelecBad);
-    }
     if (!isElectrical())
         return (CDelecBad);
 

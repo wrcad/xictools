@@ -50,7 +50,15 @@ struct Pdiff
         }
     ~Pdiff();
 
-    void free();
+    static void destroy(const Pdiff *p)
+        {
+            while (p) {
+                const Pdiff *px = p;
+                p = p->pd_next;
+                delete px;
+            }
+        }
+
     void add(const char*, const char*);
     void reset(const char*);
     void print(FILE*);
@@ -81,7 +89,16 @@ struct Ldiff
         }
     ~Ldiff();
 
-    void free();
+
+    static void destroy(const Ldiff *l)
+        {
+            while (l) {
+                const Ldiff *lx = l;
+                l = l->ld_next;
+                delete lx;
+            }
+        }
+
     void add(const char*, const char*);
     void print(FILE*, bool = false);
 
@@ -114,8 +131,8 @@ struct Sdiff
 
     ~Sdiff()
         {
-            sd_ldiffs->free();
-            sd_pdiffs->free();
+            Ldiff::destroy(sd_ldiffs);
+            Pdiff::destroy(sd_pdiffs);
         }
 
     void print(FILE*);

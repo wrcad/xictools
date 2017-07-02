@@ -292,7 +292,7 @@ FlagState::b1up()
             s->odesc->set_flag(CDnoDRC);
         }
     }
-    stmp->free();
+    CDol::destroy(stmp);
     return;
 }
 

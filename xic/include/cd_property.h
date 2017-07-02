@@ -1870,8 +1870,16 @@ struct CDpl
             next = n;
         }
 
-    void sort();
-    void free();
+    static void destroy(const CDpl *p)
+        {
+            while (p) {
+                const CDpl *px = p;
+                p = p->next;
+                delete px;
+            }
+        }
+
+    static void sort(CDpl*);
 
     CDp *pdesc;
     CDpl *next;

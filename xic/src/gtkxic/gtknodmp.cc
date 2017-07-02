@@ -804,7 +804,7 @@ sNM::update_map()
                     break;
                 }
             }
-            plx->free();
+            CDpl::destroy(plx);
             if (found) {
                 nm_showing_node = node;
                 break;
@@ -813,7 +813,7 @@ sNM::update_map()
         if (!found)
             nm_showing_node = -1;
     }
-    pl->free();
+    CDpl::destroy(pl);
 
     if (nm_showing_node >= 0) {
         // select row
@@ -1645,11 +1645,11 @@ NmpState::b1up()
             if (pn) {
                 NM->show_node_terms(pn->enode());
                 NM->update_map();
-                sels->free();
+                CDol::destroy(sels);
                 return;
             }
         }
-        sels->free();
+        CDol::destroy(sels);
 
         // Check subcells, can't use sels bacause only one subcell is
         // returned.

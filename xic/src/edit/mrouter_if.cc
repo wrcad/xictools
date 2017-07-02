@@ -709,7 +709,7 @@ cMRcmdIf::cmdReadTech(const char*)
             if_l->lefAddObject(lefc);
         }
     }
-    llist->free();
+    CDll::destroy(llist);
 
     // Now add the 1x1 standard vias.
     tgen_t<sStdVia> gen(Tech()->StdViaTab());
@@ -1690,7 +1690,7 @@ cMRcmdIf::setLayers()
     if (!cnt) {
         Errs()->add_error(
             "No sequencable routing layers found in layer table.");
-        llist->free();
+        CDll::destroy(llist);
         return (false);
     }
     if_layers = new CDl*[cnt];
@@ -1700,7 +1700,7 @@ cMRcmdIf::setLayers()
         if (l->ldesc->isRouting())
             if_layers[cnt++] = l->ldesc;
     }
-    llist->free();
+    CDll::destroy(llist);
     return (true);
 }
 

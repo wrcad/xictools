@@ -356,7 +356,7 @@ EraseState::b1down()
             Refx = slp->odesc->oBB().left;
             Refy = slp->odesc->oBB().bottom;
             AOI = slp->odesc->oBB();
-            slist->free();
+            CDol::destroy(slist);
 
             slist = get_list(CurCell(),
                 AOI.left, AOI.bottom, AOI.right, AOI.top, &AOI);
@@ -377,7 +377,7 @@ EraseState::b1down()
                 }
                 else
                     PL()->FlashMessage("Yanked...");
-                slist->free();
+                CDol::destroy(slist);
             }
             return;
         }
@@ -406,7 +406,7 @@ EraseState::b1down()
                             XM()->SetCoordMode(CO_ABSOLUTE);
                             Ulist()->CommitChanges(true);
                             State = 3;
-                            slist->free();
+                            CDol::destroy(slist);
                             return;
                         }
                     }
@@ -416,7 +416,7 @@ EraseState::b1down()
                             XM()->SetCoordMode(CO_ABSOLUTE);
                             Ulist()->CommitChanges(true);
                             State = 3;
-                            slist->free();
+                            CDol::destroy(slist);
                             return;
                         }
                     }
@@ -426,10 +426,10 @@ EraseState::b1down()
                     XM()->SetCoordMode(CO_ABSOLUTE);
                     PL()->FlashMessage("Yanked...");
                     State = 4;
-                    slist->free();
+                    CDol::destroy(slist);
                     return;
                 }
-                slist->free();
+                CDol::destroy(slist);
             }
         }
     }
@@ -465,7 +465,7 @@ EraseState::b1up()
                                 XM()->SetCoordMode(CO_ABSOLUTE);
                                 Ulist()->CommitChanges(true);
                                 State = 2;
-                                slist->free();
+                                CDol::destroy(slist);
                                 return;
                             }
                         }
@@ -475,7 +475,7 @@ EraseState::b1up()
                                 XM()->SetCoordMode(CO_ABSOLUTE);
                                 Ulist()->CommitChanges(true);
                                 State = 2;
-                                slist->free();
+                                CDol::destroy(slist);
                                 return;
                             }
                         }
@@ -484,10 +484,10 @@ EraseState::b1up()
                         Gst()->SetGhost(GFnone);
                         XM()->SetCoordMode(CO_ABSOLUTE);
                         PL()->FlashMessage("Yanked...");
-                        slist->free();
+                        CDol::destroy(slist);
                         return;
                     }
-                    slist->free();
+                    CDol::destroy(slist);
                 }
             }
         }
@@ -563,7 +563,7 @@ EraseState::b1down_altw()
             Refx = slp->odesc->oBB().left;
             Refy = slp->odesc->oBB().bottom;
             AOI = slp->odesc->oBB();
-            slist->free();
+            CDol::destroy(slist);
 
             slist = get_list(sdesc,
                 AOI.left, AOI.bottom, AOI.right, AOI.top, &AOI);
@@ -573,7 +573,7 @@ EraseState::b1down_altw()
                 else
                     ED()->yank(slist, &AOI, true);
                 PL()->FlashMessage("Yanked...");
-                slist->free();
+                CDol::destroy(slist);
             }
             return;
         }
@@ -600,7 +600,7 @@ EraseState::b1down_altw()
                 XM()->SetCoordMode(CO_ABSOLUTE);
                 PL()->FlashMessage("Yanked...");
                 State = 4;
-                slist->free();
+                CDol::destroy(slist);
             }
         }
     }
@@ -645,7 +645,7 @@ EraseState::b1up_altw()
                     Gst()->SetGhost(GFnone);
                     XM()->SetCoordMode(CO_ABSOLUTE);
                     PL()->FlashMessage("Yanked...");
-                    slist->free();
+                    CDol::destroy(slist);
                     return;
                 }
             }
@@ -867,7 +867,7 @@ cEdit::eraseArea(bool yank_only, int x1, int y1, int x2, int y2)
             ret = eraseList(slist, &BB);
         else
             ret = true;
-        slist->free();
+        CDol::destroy(slist);
     }
     return (ret);
 }

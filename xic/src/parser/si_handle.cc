@@ -542,7 +542,7 @@ sHdlFd::close(int hd)
 
 sHdlPrpty::~sHdlPrpty()
 {
-    ((CDpl*)data)->free();
+    CDpl::destroy((CDpl*)data);
 }
 
 void *

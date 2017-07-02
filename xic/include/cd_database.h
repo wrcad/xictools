@@ -223,7 +223,7 @@ struct sPFel
                 BB.bottom == el_invAOI.top || BB.top == el_invAOI.bottom));
         }
 
-    sPFel *dup();
+    static sPFel *dup(const sPFel*);
     bool init(sPF*);
     bool advance(sPF*);
   

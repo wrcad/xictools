@@ -1340,7 +1340,7 @@ cgx_in::a_layer(int, int)
         CDll *lyrs = FIO()->GetGdsInputLayers(layer_num, data_type, in_mode);
         if (lyrs) {
             in_curlayer = lyrs->ldesc;
-            lyrs->free();
+            CDll::destroy(lyrs);
         }
     }
     if (!in_curlayer)

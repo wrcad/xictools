@@ -70,7 +70,7 @@ cMain::PrptyStrings(CDs *sdesc)
                 break;
             }
         }
-        pl0->sort();
+        CDpl::sort(pl0);
         for (CDpl *pl = pl0; pl; pl = pl->next) {
             CDp *pdesc = pl->pdesc;
             const char *string = pdesc->string() ? pdesc->string() : "";
@@ -99,7 +99,7 @@ cMain::PrptyStrings(CDs *sdesc)
                 lend = lend->next();
             }
         }
-        pl0->free();
+        CDpl::destroy(pl0);
 
         CDp_name *pna = (CDp_name*)sdesc->prpty(P_NAME);
         if (pna) {
@@ -383,7 +383,7 @@ cMain::PrptyStrings(CDs *sdesc)
         CDpl *pl0 = 0;
         for (CDp *pdesc = sdesc->prptyList(); pdesc; pdesc = pdesc->next_prp())
             pl0 = new CDpl(pdesc, pl0);
-        pl0->sort();
+        CDpl::sort(pl0);
         for (CDpl *pl = pl0; pl; pl = pl->next) {
             CDp *pdesc = pl->pdesc;
             const char *string = pdesc->string() ? pdesc->string() : "";
@@ -419,7 +419,7 @@ cMain::PrptyStrings(CDs *sdesc)
                 lend = lend->next();
             }
         }
-        pl0->free();
+        CDpl::destroy(pl0);
     }
     return (list);
 }
@@ -654,7 +654,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
         for (CDp *pdesc = odesc->prpty_list(); pdesc;
                 pdesc = pdesc->next_prp())
             pl0 = new CDpl(pdesc, pl0);
-        pl0->sort();
+        CDpl::sort(pl0);
         for (CDpl *pl = pl0; pl; pl = pl->next) {
             CDp *pdesc = pl->pdesc;
             const char *string = pdesc->string() ? pdesc->string() : "";
@@ -674,7 +674,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
             list = new Ptxt(lstring::copy(tbuf), lstring::copy(string),
                 pdesc, list);
         }
-        pl0->free();
+        CDpl::destroy(pl0);
 
         char *s;
         if (odesc->type() != CDINSTANCE) {

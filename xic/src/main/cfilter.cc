@@ -57,8 +57,8 @@ cfilter_t::~cfilter_t()
     cf_np_list->free();
     cf_s_list->free();
     cf_ns_list->free();
-    cf_l_list->free();
-    cf_nl_list->free();
+    CDll::destroy(cf_l_list);
+    CDll::destroy(cf_nl_list);
 }
 
 
@@ -71,8 +71,8 @@ cfilter_t::set_default()
     cf_np_list->free();
     cf_s_list->free();
     cf_ns_list->free();
-    cf_l_list->free();
-    cf_nl_list->free();
+    CDll::destroy(cf_l_list);
+    CDll::destroy(cf_nl_list);
     cf_f_bits = 0;
     cf_nf_bits = 0;
     cf_ft_mask = 0;

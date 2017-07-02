@@ -28,7 +28,8 @@
 #include "geo_zlist.h"
 
 
-// Static functions to create a PolyList from a Zlist.
+// Static function.
+// Create a PolyList from a Zlist.
 //
 PolyList *
 PolyList::new_poly_list(const Zlist *zl, bool vert)
@@ -49,16 +50,17 @@ PolyList::new_poly_list(const Zlist *zl, bool vert)
 }
 
 
+// Static function.
 // Convert the list to a chain of polygon object copies, the list is
 // destroyed.
 //
 CDo *
-PolyList::to_odesc(CDl *ld)
+PolyList::to_odesc(PolyList *thisp, CDl *ld)
 {
     if (!ld)
         return (0);
     CDo *od0 = 0;
-    PolyList *p = this;
+    PolyList *p = thisp;
     while (p) {
         CDo *od;
         if (p->po.is_rect()) {
@@ -80,17 +82,18 @@ PolyList::to_odesc(CDl *ld)
 }
 
 
+// Static function.
 // Convert the list to an object list of polygon descriptors, the list
 // is destroyed.
 //
 CDol *
-PolyList::to_olist(CDl *ld, CDol **endp)
+PolyList::to_olist(PolyList *thisp, CDl *ld, CDol **endp)
 {
     if (!ld)
         return (0);
     CDol *ol0 = endp ? *endp : 0;
     CDol *oe = ol0;
-    PolyList *p = this;
+    PolyList *p = thisp;
     while (p) {
         CDo *od;
         if (p->po.is_rect()) {

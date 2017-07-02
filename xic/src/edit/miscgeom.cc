@@ -753,11 +753,11 @@ namespace {
         CDll *l0 = lspec.findLayers();
         for (CDll *l = l0; l; l = l->next) {
             if (!addrefs(l->ldesc, tab)) {
-                l0->free();
+                CDll::destroy(l0);
                 return (false);
             }
         }
-        l0->free();
+        CDll::destroy(l0);
         return (true);
     }
 }
@@ -797,7 +797,7 @@ cEdit::evalDerivedLayers(CDll **plist, CDs *sdesc, const BBox *AOI)
         return (XIok);
 
     if (!sdesc || sdesc->isElectrical()) {
-        list->free();
+        CDll::destroy(list);
         *plist = 0;
         return (XIbad);
     }
@@ -808,7 +808,7 @@ cEdit::evalDerivedLayers(CDll **plist, CDs *sdesc, const BBox *AOI)
     for (CDll *l = list; l; l = l->next) {
         if (!addrefs(l->ldesc, dltab)) {
             delete dltab;
-            list->free();
+            CDll::destroy(list);
             *plist = 0;
             return (XIbad);
         }
@@ -820,7 +820,7 @@ cEdit::evalDerivedLayers(CDll **plist, CDs *sdesc, const BBox *AOI)
     int asize = dltab->allocated();
     if (!asize) {
         delete dltab;
-        list->free();
+        CDll::destroy(list);
         *plist = 0;
         return (XIok);
     }
@@ -866,7 +866,7 @@ cEdit::evalDerivedLayers(CDll **plist, CDs *sdesc, const BBox *AOI)
                     }
                 }
             }
-            l0->free();
+            CDll::destroy(l0);
             if (!defer) {
                 // For now at least, depth is always maximum, and
                 // non-mode flags are ignored except to impose
@@ -916,7 +916,7 @@ err:
     while ((ent = gen.next()) != 0)
         l0 = new CDll((CDl*)ent->stTag, l0);
     delete dltab;
-    list->free();
+    CDll::destroy(list);
     *plist = l0;
     return (ret);
 }

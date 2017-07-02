@@ -1212,7 +1212,7 @@ Zlist::to_obj_list(Zlist *thiszl, CDl *ld, bool nomerge)
         for (int i = 0; i < g->num; i++) {
             PolyList *p0 = g->to_poly_list(i, JoinMaxVerts);
             if (p0) {
-                CDo *od = p0->to_odesc(ld);
+                CDo *od = PolyList::to_odesc(p0, ld);
                 if (od) {
                     CDo *on = od;
                     while (on->next_odesc())

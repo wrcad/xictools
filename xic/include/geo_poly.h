@@ -289,8 +289,8 @@ struct PolyList
         }
     }
 
-    CDo *to_odesc(CDl*);
-    CDol *to_olist(CDl*, CDol** = 0);
+    static CDo *to_odesc(PolyList*, CDl*);
+    static CDol *to_olist(PolyList*, CDl*, CDol** = 0);
 
     PolyList *next;
     Poly po;

@@ -1420,8 +1420,8 @@ struct sGroupObjs
 
     ~sGroupObjs()
         {
-            go_list->free();
-            go_vias->free();
+            CDol::destroy(go_list);
+            CDol::destroy(go_vias);
         }
 
     CDol *objlist()             const { return (go_list); }
@@ -1438,7 +1438,7 @@ struct sGroupObjs
     BBox &BB()                        { return (go_BB); }
     const BBox &cBB()           const { return (go_BB); }
 
-    void computeBB()                  { go_list->computeBB(&go_BB); }
+    void computeBB()                  { CDol::computeBB(go_list, &go_BB); }
 
     bool is_sorted()            const { return (go_sorted); }
     void sort()

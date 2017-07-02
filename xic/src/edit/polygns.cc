@@ -558,7 +558,7 @@ PolyState::b1up()
                     Selections.insertObject(CurCell(), sl->odesc);
             }
             mark_vertices(DISPLAY);
-            slist->free();
+            CDol::destroy(slist);
         }
         SelectingPolys = false;
         message();
@@ -594,7 +594,7 @@ PolyState::b1up()
         }
         else if (!add_vertex())
             mark_vertices(DISPLAY);
-        slist->free();
+        CDol::destroy(slist);
     }
     if (Level == 2) {
         // Finish the stretch if the pointer moved, otherwise set up to
@@ -1102,7 +1102,7 @@ PolyState::add_vertex()
             break;
         }
     }
-    slist->free();
+    CDol::destroy(slist);
     if (!podesc)
         return (false);
 

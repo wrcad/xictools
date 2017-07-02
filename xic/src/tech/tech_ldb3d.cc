@@ -166,7 +166,7 @@ Ldb3d::order_layers()
             lend = lend->next();
         }
     }
-    ll0->free();
+    CDll::destroy(ll0);
 
     return (db3_stack != 0);
 }

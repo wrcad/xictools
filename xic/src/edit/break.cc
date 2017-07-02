@@ -155,7 +155,7 @@ BreakState::BreakState(const char *nm, const char *hk) : CmdState(nm, hk)
 BreakState::~BreakState()
 {
     BreakCmd = 0;
-    OrigObjs->free();
+    CDol::destroy(OrigObjs);
     DSP()->SetInEdgeSnappingCmd(false);
 }
 
@@ -208,7 +208,7 @@ BreakState::b1up()
         if (State == 3) {
             State = 2;
             CDs *cursd = CurCell();
-            OrigObjs->free();
+            CDol::destroy(OrigObjs);
             OrigObjs = Selections.listQueue(cursd, Types);
             Selections.deselectTypes(cursd, Types);
             Selections.removeTypes(cursd, Types);
@@ -324,7 +324,7 @@ BreakState::undo()
         //
         Gst()->SetGhost(GFnone);
         GhostOn = false;
-        OrigObjs->free();
+        CDol::destroy(OrigObjs);
         OrigObjs = Selections.listQueue(CurCell(), Types);
         Selections.deselectTypes(CurCell(), Types);
         Selections.removeTypes(CurCell(), Types);

@@ -2148,9 +2148,9 @@ lexpr_funcs::IFzToObjects(Variable *res, Variable *args, void *datap)
         PolyList *p0 = Zlist::to_poly_list(zl1);
         if (!todb) {
             if (!o0)
-                o0 = p0->to_olist(ldesc, &oend);
+                o0 = PolyList::to_olist(p0, ldesc, &oend);
             else
-                p0->to_olist(ldesc, &oend);
+                PolyList::to_olist(p0, ldesc, &oend);
         }
         else {
             while (p0) {

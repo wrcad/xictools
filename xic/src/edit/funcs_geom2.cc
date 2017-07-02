@@ -1653,9 +1653,9 @@ namespace {
                         CDl *ld = ldesc ? ldesc : o->odesc->ldesc();
                         PolyList *p0 = Zlist::to_poly_list(zo);
                         if (!o0)
-                            o0 = p0->to_olist(ld, &oend); 
+                            o0 = PolyList::to_olist(p0, ld, &oend); 
                         else
-                            p0->to_olist(ld, &oend); 
+                            PolyList::to_olist(p0, ld, &oend); 
                     }
                 }
                 Ylist::destroy(yr);
@@ -1882,9 +1882,9 @@ namespace {
                         CDl *ld = ldesc ? ldesc : o->odesc->ldesc();
                         PolyList *p0 = Zlist::to_poly_list(zo);
                         if (!o0)
-                            o0 = p0->to_olist(ld, &oend);
+                            o0 = PolyList::to_olist(p0, ld, &oend);
                         else
-                            p0->to_olist(ld, &oend);
+                            PolyList::to_olist(p0, ld, &oend);
                     }
                 }
                 Ylist::destroy(yl);
@@ -2336,16 +2336,16 @@ geom2_funcs::IFclipIntersectCopy(Variable *res, Variable *args, void*)
         if (zl1) {
             PolyList *p0 = Zlist::to_poly_list(zl1);
             if (!o0)
-                o0 = p0->to_olist(ldesc, &oend); 
+                o0 = PolyList::to_olist(p0, ldesc, &oend); 
             else
-                p0->to_olist(ldesc, &oend); 
+                PolyList::to_olist(p0, ldesc, &oend); 
         }
         if (zl2) {
             PolyList *p0 = Zlist::to_poly_list(zl2);
             if (!o0)
-                o0 = p0->to_olist(ldesc, &oend); 
+                o0 = PolyList::to_olist(p0, ldesc, &oend); 
             else
-                p0->to_olist(ldesc, &oend); 
+                PolyList::to_olist(p0, ldesc, &oend); 
         }
         sHdl *hnew = new sHdlObject(o0, cursd, true);
         res->type = TYP_HANDLE;

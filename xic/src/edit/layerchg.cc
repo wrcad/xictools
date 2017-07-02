@@ -48,7 +48,7 @@ cEdit::changeLayer()
         return;
     CDol *st = Selections.listQueue(cursd);
     CDmergeInhibit inh(st);
-    st->free();
+    CDol::destroy(st);
 
     CDl *new_layer = LT()->CurLayer();
     sSelGen sg(Selections, cursd, "bpwl");

@@ -534,7 +534,7 @@ sGroupObjs::accumulate(CDol *ol0, SymTab *tab)
             op = o;
         }
     }
-    ol1->free();
+    CDol::destroy(ol1);
 }
 
 
@@ -593,7 +593,7 @@ sGroupObjs::accumulate(const CDl *ld, const BBox *tBB)
             op = o;
         }
     }
-    ol1->free();
+    CDol::destroy(ol1);
     return (ol0);
 }
 
@@ -1177,7 +1177,7 @@ namespace {
                     }
                 }
                 if (!ol22) {
-                    ol11->free();
+                    CDol::destroy(ol11);
                     ol11 = 0;
                     return;
                 }
@@ -1187,17 +1187,17 @@ namespace {
                 BB1 = BBox(BB11, BB22);
                 BB1.bloat(-1);
                 if (BB1.right <= BB1.left || BB1.top <= BB1.bottom) {
-                    ol11->free();
+                    CDol::destroy(ol11);
                     ol11 = 0;
-                    ol22->free();
+                    CDol::destroy(ol22);
                     ol22 = 0;
                 }
             }
 
         ~Vcheck()
             {
-                ol11->free();
-                ol22->free();
+                CDol::destroy(ol11);
+                CDol::destroy(ol22);
             }
 
         CDol *ol11;

@@ -478,7 +478,7 @@ PeekState::process_list(CDol *sl, BBox *BB, WindowDesc *wdesc, bool exp)
             }
         }
         sl->odesc = sm->odesc;
-        sl->next->free();
+        CDol::destroy(sl->next);
         sl->next = 0;
     }
     if (exp) {

@@ -582,7 +582,7 @@ PrptyState::b1up()
                 break;
             }
         }
-        sl0->free();
+        CDol::destroy(sl0);
         if (od)
             ED()->PopUpPropertyInfo(od, MODE_ON);
         return;
@@ -606,7 +606,7 @@ PrptyState::b1up()
                     sd = sd->next;
                 }
             }
-            sl0->free();
+            CDol::destroy(sl0);
         }
         else {
             if (!cEventHdlr::sel_b1up(&AOI, Types, 0))
@@ -667,7 +667,7 @@ PrptyState::b1up()
                     else
                         // Make the new object the currently marked object
                         Scur = sd;
-                    sl0->free();
+                    CDol::destroy(sl0);
                     ED()->PopUpProperties(od_of(Scur), MODE_UPD, PRPnochange);
                     return;
                 }
@@ -697,7 +697,7 @@ PrptyState::b1up()
         // Scur/Shead is null, if objects have been merged away through
         // pseudo-props
         //
-        sl0->free();
+        CDol::destroy(sl0);
         n0->prev = Scur;
         if (Scur) {
             newsel->next = Scur->next;

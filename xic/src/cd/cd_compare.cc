@@ -217,11 +217,11 @@ CDdiff::diff(const CDs *s1, const CDs *s2, Sdiff **pret)
             switch (diff_layer(ldesc, s1, s2, &lf)) {
             case DFerror:
                 Errs()->add_error("diff: diff_layer failed");
-                lf0->free();
+                Ldiff::destroy(lf0);
                 return (DFerror);
             case DFabort:
                 Errs()->add_error("diff: diff_layer aborted");
-                lf0->free();
+                Ldiff::destroy(lf0);
                 return (DFabort);
             default:
                 break;
@@ -256,11 +256,11 @@ CDdiff::diff(const CDs *s1, const CDs *s2, Sdiff **pret)
             switch (diff_layer(ldesc, s1, s2, &lf)) {
             case DFerror:
                 Errs()->add_error("diff: diff_layer failed");
-                lf0->free();
+                Ldiff::destroy(lf0);
                 return (DFerror);
             case DFabort:
                 Errs()->add_error("diff: diff_layer aborted");
-                lf0->free();
+                Ldiff::destroy(lf0);
                 return (DFabort);
             default:
                 break;
@@ -1533,17 +1533,6 @@ Pdiff::~Pdiff()
 
 
 void
-Pdiff::free()
-{
-    Pdiff *pn;
-    for (Pdiff *p = this; p; p = pn) {
-        pn = p->pd_next;
-        delete p;
-    }
-}
-
-
-void
 Pdiff::add(const char *s1, const char *s2)
 {
     if (s1)
@@ -1626,18 +1615,7 @@ Ldiff::~Ldiff()
 {
     ld_list12->free();
     ld_list21->free();
-    ld_pdiffs->free();
-}
-
-
-void
-Ldiff::free()
-{
-    Ldiff *ln;
-    for (Ldiff *l = this; l; l = ln) {
-        ln = l->ld_next;
-        delete l;
-    }
+    Pdiff::destroy(ld_pdiffs);
 }
 
 

@@ -1775,7 +1775,7 @@ misc2_funcs::IFhandleTruncate(Variable *res, Variable *args, void*)
             CDol *o0 = (CDol*)hdl->data;
             for (CDol *o = o0; o; o = o->next) {
                 if (items == 0) {
-                    o->next->free();
+                    CDol::destroy(o->next);
                     o->next = 0;
                 }
                 items--;
@@ -1786,7 +1786,7 @@ misc2_funcs::IFhandleTruncate(Variable *res, Variable *args, void*)
             CDpl *p0 = (CDpl*)hdl->data;
             for (CDpl *p = p0; p; p = p->next) {
                 if (items == 0) {
-                    p->next->free();
+                    CDpl::destroy(p->next);
                     p->next = 0;
                 }
                 items--;

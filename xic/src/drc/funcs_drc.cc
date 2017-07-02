@@ -1111,7 +1111,7 @@ drc_funcs::IFdrcCheckObjects(Variable *res, Variable *args, void*)
         }
         CDol *st = Selections.listQueue(CurCell(Physical));
         DRC()->batchListTest(st, fp, 0, 0);
-        st->free();
+        CDol::destroy(st);
         res->content.value = DRC()->getErrCount();
         if (fp)
             fclose(fp);

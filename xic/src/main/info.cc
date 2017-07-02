@@ -1279,7 +1279,7 @@ InfoState::InfoState(const char *nm, const char *hk) : CmdState(nm, hk)
 InfoState::~InfoState()
 {
     InfoCmd = 0;
-    SelBack->free();
+    CDol::destroy(SelBack);
     ObjList->free();
     delete TmpObj;
     while (ExpObjs) {

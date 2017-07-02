@@ -2423,7 +2423,7 @@ cPromptEdit::button1_handler(bool up)
                         break;
                     }
                 }
-                ol->free();
+                CDol::destroy(ol);
                 if (od)
                     EditIf()->prptyCallback(od);
             }

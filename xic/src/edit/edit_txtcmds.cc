@@ -1327,7 +1327,7 @@ edit_bangcmds::polyfix(const char*)
             nbad++;
         }
         Ulist()->CommitChanges(true);
-        badlist->free();
+        CDol::destroy(badlist);
     }
     if (nbad)
         PL()->ShowPromptV(

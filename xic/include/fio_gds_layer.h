@@ -67,7 +67,7 @@ struct gds_lspec
 
     ~gds_lspec()
         {
-            list->free();
+            CDll::destroy(list);
         }
 
     int layer;          // Layer number.
