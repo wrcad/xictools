@@ -51,11 +51,10 @@ struct named_box_list
 
     ~named_box_list() { delete [] name; }
 
-    void free()
+    static void destroy(const named_box_list *t)
         {
-            named_box_list *t = this;
             while (t) {
-                named_box_list *tx = t;
+                const named_box_list *tx = t;
                 t = t->next;
                 delete tx;
             }
@@ -259,11 +258,10 @@ struct sCHDlist
 {
     sCHDlist(cCHD *c, sCHDlist *n) { chd = c; next = n; }
 
-    void free()
+    static void destroy(const sCHDlist *cl)
         {
-            sCHDlist *cl = this;
             while (cl) {
-                sCHDlist *cx = cl;
+                const sCHDlist *cx = cl;
                 cl = cl->next;
                 delete cx;
             }

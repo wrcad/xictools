@@ -3036,7 +3036,7 @@ cvrt_funcs::IFchdTopCells(Variable *res, Variable *args, void*)
                     se = se->next;
                 }
             }
-            s0->free();
+            syrlist_t::destroy(s0);
 
             sHdl *hdltmp = new sHdlString(sl0);
             res->type = TYP_HANDLE;

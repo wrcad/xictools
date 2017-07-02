@@ -706,8 +706,8 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
                     se = se->next;
                 }
             }
-            allcells->free();
-            topcells->free();
+            syrlist_t::destroy(allcells);
+            syrlist_t::destroy(topcells);
 
             sLstr lstr;
             lstr.add(DisplayModeName(DSP()->CurMode()));

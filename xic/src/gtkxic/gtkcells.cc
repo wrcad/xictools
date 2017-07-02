@@ -1751,10 +1751,11 @@ ListState::cell_list(bool nomark)
             const char *cname = DSP()->MainWdesc()->DbCellName();
             syrlist_t *sy0 = chd->listing(DSP()->CurMode(), cname, false,
                 &lsAOI);
-            for (syrlist_t *s = sy0; s; s = s->next)
+            for (syrlist_t *s = sy0; s; s = s->next) {
                 s0 = new stringlist(
                     lstring::copy(s->symref->get_name()->string()), s0);
-            sy0->free();
+            }
+            syrlist_t::destroy(sy0);
         }
         s0->sort();
     }

@@ -48,7 +48,7 @@ fmu_t::fmu_t(cCHD *chd, symref_t *top)
         syrlist_t *sl = chd->topCells(Physical, true);
         if (sl)
             ftop = sl->symref;
-        sl->free();
+        syrlist_t::destroy(sl);
     }
 }
 
@@ -110,7 +110,7 @@ fmu_t::find_totals()
             ftab->add((unsigned long)s->symref, (void*)(long)cnt, false);
             cnt++;
         }
-        sl->free();
+        syrlist_t::destroy(sl);
     }
 
     cTfmStack stk;

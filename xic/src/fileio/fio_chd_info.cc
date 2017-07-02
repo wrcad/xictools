@@ -319,7 +319,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
                 else
                     lstr.add(buf);
             }
-            sy0->free();
+            syrlist_t::destroy(sy0);
             state = true;
         }
     }
@@ -347,7 +347,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
                 delete [] str;
             }
         }
-        sy0->free();
+        syrlist_t::destroy(sy0);
         state = true;
     }
     if (dflags & FIO_INFO_ALLCELLS) {
@@ -383,7 +383,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
                 delete [] str;
             }
         }
-        sy0->free();
+        syrlist_t::destroy(sy0);
         state = true;
     }
 
@@ -649,7 +649,7 @@ cCHD::prDepthCounts(FILE *fp, DisplayMode mode, bool sort_by_offset)
             lstr.add(buf);
         }
     }
-    s0->free();
+    syrlist_t::destroy(s0);
     if (fp)
         return (0);
     return (lstr.string_trim());
@@ -722,7 +722,7 @@ cCHD::prInstanceCounts(FILE *fp, DisplayMode mode, bool print)
     char buf[256];
     SymTab *tab = instanceCounts(s0->symref);
     if (!tab) {
-        s0->free();
+        syrlist_t::destroy(s0);
         const char *errstr = Errs()->get_error();
         char *msg = new char[strlen(errstr) + 20];
         sprintf(msg, "ERROR: %s\n", errstr);
@@ -733,7 +733,7 @@ cCHD::prInstanceCounts(FILE *fp, DisplayMode mode, bool print)
         }
         return (msg);
     }
-    s0->free();
+    syrlist_t::destroy(s0);
     {
         unsigned long totcnt = 0;
         SymTabGen stgen(tab);

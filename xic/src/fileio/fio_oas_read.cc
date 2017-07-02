@@ -613,7 +613,7 @@ oas_in::~oas_in()
     delete in_propname_table;
     delete in_propstring_table;
     delete in_layername_table;
-    in_layermap_list->free();
+    oas_layer_map_elem::destroy(in_layermap_list);
     delete in_xname_table;
 
     Zlist::destroy(in_zoidlist);
@@ -800,7 +800,7 @@ oas_in::parse(DisplayMode mode, bool listonly, double sc, bool save_bb,
     in_propstring_table = 0;
     delete in_layername_table;
     in_layername_table = 0;
-    in_layermap_list->free();
+    oas_layer_map_elem::destroy(in_layermap_list);
     in_layermap_list = 0;
     delete in_xname_table;
     in_xname_table = 0;
@@ -942,7 +942,7 @@ oas_in::parse_incremental(double sc)
         in_propstring_table = 0;
         delete in_layername_table;
         in_layername_table = 0;
-        in_layermap_list->free();
+        oas_layer_map_elem::destroy(in_layermap_list);
         in_layermap_list = 0;
         delete in_xname_table;
         in_xname_table = 0;
@@ -2951,7 +2951,7 @@ oas_in::a_endlib()
 void
 oas_in::a_clear_properties()
 {
-    in_prpty_list->free_list();
+    CDp::destroy(in_prpty_list);
     in_prpty_list = 0;
 }
 
@@ -6571,7 +6571,7 @@ oas_in::read_cellname(unsigned int ix)
         if (!te->prpty_list())
             te->set_prpty_list(in_prpty_list);
         else
-            in_prpty_list->free_list();
+            CDp::destroy(in_prpty_list);
         in_prpty_list = 0;
     }
 
@@ -6696,7 +6696,7 @@ oas_in::read_textstring(unsigned int ix)
         if (!te->prpty_list())
             te->set_prpty_list(in_prpty_list);
         else
-            in_prpty_list->free_list();
+            CDp::destroy(in_prpty_list);
         in_prpty_list = 0;
     }
 
@@ -6782,7 +6782,7 @@ oas_in::read_propname(unsigned int ix)
         if (!te->prpty_list())
             te->set_prpty_list(in_prpty_list);
         else
-            in_prpty_list->free_list();
+            CDp::destroy(in_prpty_list);
         in_prpty_list = 0;
     }
 
@@ -6869,7 +6869,7 @@ oas_in::read_propstring(unsigned int ix)
         if (!te->prpty_list())
             te->set_prpty_list(in_prpty_list);
         else
-            in_prpty_list->free_list();
+            CDp::destroy(in_prpty_list);
         in_prpty_list = 0;
     }
 
@@ -6955,7 +6955,7 @@ oas_in::read_layername(unsigned int ix)
         if (!te->prpty_list())
             te->set_prpty_list(in_prpty_list);
         else
-            in_prpty_list->free_list();
+            CDp::destroy(in_prpty_list);
         in_prpty_list = 0;
     }
 
@@ -9110,7 +9110,7 @@ oas_in::read_xname(unsigned int ix)
         if (!te->prpty_list())
             te->set_prpty_list(in_prpty_list);
         else
-            in_prpty_list->free_list();
+            CDp::destroy(in_prpty_list);
         in_prpty_list = 0;
     }
 

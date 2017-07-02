@@ -2930,7 +2930,7 @@ cgx_in::add_properties_db(CDo *odesc)
 void
 cgx_in::clear_properties()
 {
-    in_prpty_list->free_list();
+    CDp::destroy(in_prpty_list);
     in_prpty_list = 0;
 }
 

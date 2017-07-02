@@ -93,7 +93,7 @@ namespace {
                 pa_list = 0;
                 pa_elec = elec;
             }
-        ~prp_accum_t() { pa_list->free_list(); }
+        ~prp_accum_t() { CDp::destroy(pa_list); }
 
         void add_properties(CDo*);
 

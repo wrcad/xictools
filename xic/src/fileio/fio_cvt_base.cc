@@ -318,7 +318,7 @@ cv_in::cv_in(bool allow_layer_mapping)
 cv_in::~cv_in()
 {
     delete [] in_filename;
-    in_prpty_list->free_list();
+    CDp::destroy(in_prpty_list);
     delete in_phys_sym_tab;
     delete in_elec_sym_tab;
     if (in_own_in_out)
@@ -1025,7 +1025,7 @@ cv_out::~cv_out()
     dump_alias(out_filename);
     delete [] out_filename;
     delete out_visited;
-    out_prpty->free_list();
+    CDp::destroy(out_prpty);
     delete out_alias;
     out_chd_refs->free();
 
@@ -1840,7 +1840,7 @@ cv_out::queue_properties(const CDo *odesc)
 void
 cv_out::clear_property_queue()
 {
-    out_prpty->free_list();
+    CDp::destroy(out_prpty);
     out_prpty = 0;
 }
 

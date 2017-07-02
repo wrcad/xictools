@@ -655,11 +655,11 @@ sTree::build_tree_rc(cCHD *chd, symref_t *p, GtkTreeIter *parent, int dpt)
 
     for (syrlist_t *sr = s0; sr; sr = sr->next) {
         if (!build_tree_rc(chd, sr->symref, &iter, dpt+1)) {
-            s0->free();
+            syrlist_t::destroy(s0);
             return (false);
         }
     }
-    s0->free();
+    syrlist_t::destroy(s0);
     return (true);
 }
 

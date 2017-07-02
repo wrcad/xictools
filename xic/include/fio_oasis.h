@@ -53,7 +53,7 @@ struct oas_elt
     ~oas_elt()
         {
             delete [] e_string;
-            e_prpty_list->free_list();
+            CDp::destroy(e_prpty_list);
         }
 
     void set_string(char *s, unsigned int l = 0)
@@ -184,11 +184,10 @@ struct oas_layer_map_elem
         is_text = false;
     }
 
-    void free()
+    static void destroy(const oas_layer_map_elem *el)
     {
-        oas_layer_map_elem *el = this;
         while (el) {
-            oas_layer_map_elem *e = el;
+            const oas_layer_map_elem *e = el;
             el = el->next;
             delete e;
         }

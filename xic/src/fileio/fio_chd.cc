@@ -267,7 +267,7 @@ cCHD::defaultSymref(DisplayMode mode)
         // topCells() is slow.
         c_top_symref = sl->symref;
 
-    sl->free();
+    syrlist_t::destroy(sl);
     return (s);
 }
 
@@ -1452,7 +1452,7 @@ cCHD::translate_write(const FIOcvtPrms *prms, const char *chdcell)
                 if (oiret != OIok)
                     break;
             }
-            sl0->free();
+            syrlist_t::destroy(sl0);
         }
     }
     return (oiret);

@@ -193,19 +193,6 @@ CDp::hpstring(CDs *sdesc) const
 }
 
 
-// Free the entire CDp struct list headed by pdesc.
-//
-void
-CDp::free_list()
-{
-    CDp *pd, *pnxt;
-    for (pd = this; pd; pd = pnxt) {
-        pnxt = pd->p_next;
-        delete pd;
-    }
-}
-
-
 // Return a copy of the text for property.
 //
 bool

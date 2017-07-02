@@ -362,7 +362,7 @@ CDscriptOut::writeInst(const CDo *odesc)
 
         // Instantiation should generate correct instance
         // properties (?)
-        p0->free_list();
+        CDp::destroy(p0);
 
         ret = fprintf(so_fp,
             "Place(\"%s\", %.5f, %.5f, 0, %s, FALSE, FALSE, \"%s\")\n",

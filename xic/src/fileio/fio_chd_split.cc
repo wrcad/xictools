@@ -1516,7 +1516,7 @@ cCHD::write_multi_hier(symref_t *ptop, const FIOcvtPrms *prms,
                 if (!ok)
                     break;
             }
-            sy0->free();
+            syrlist_t::destroy(sy0);
             if (!ok)
                 break;
         }

@@ -542,8 +542,8 @@ cScedConnect::~cScedConnect()
         delete (CDw*)ol->odesc;
         delete ol;
     }
-    cn_ndprps->free_list();
-    cn_btprps->free_list();
+    CDp::destroy(cn_ndprps);
+    CDp::destroy(cn_btprps);
 
     delete cn_wire_tab;
     while (cn_wire_stack) {
@@ -756,7 +756,7 @@ cScedConnect::init(CDs *sd, bool lvsmode)
     // assignments.  These will behave like the CDelecTerm devices in
     // enforcing connectivity between (sub)nets.
     //
-    cn_ndprps->free_list();
+    CDp::destroy(cn_ndprps);
     cn_ndprps = 0;
     CDp_cnode *pe = 0;
     xyname_t *setnames = cn_sdesc->nodes()->getSetList();
@@ -802,7 +802,7 @@ cScedConnect::init(CDs *sd, bool lvsmode)
     // These are dummy node properties used for named bus terminals
     // and named bus terminal devices.
     //
-    cn_btprps->free_list();
+    CDp::destroy(cn_btprps);
     cn_btprps = 0;
 
     // Add a dummy ground node.  The name "0" will match node number
