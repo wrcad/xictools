@@ -935,7 +935,7 @@ cCHD::createLayers()
             }
         }
     }
-    sl->free();
+    stringlist::destroy(sl);
     return (true);
 }
 // End of cCHD functions.

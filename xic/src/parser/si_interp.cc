@@ -635,7 +635,7 @@ SIinterp::ShowSubfuncs()
     stringlist *sl = GetSubfuncList();
     if (sl) {
         SIparse()->ifShowFunctionList(sl);
-        sl->free();
+        stringlist::destroy(sl);
         return (true);
     }
     return (false);
@@ -716,7 +716,7 @@ SIinterp::GetSubfuncList()
         s0 = new stringlist(lstr.string_trim(), s0);
         lstr.clear();
     }
-    s0->sort();
+    stringlist::sort(s0);
     return (s0);
 }
 

@@ -160,7 +160,7 @@ namespace {
             else {
                 sl = SI()->GetSubfuncList();
                 funcList->update(sl, "Functions in memory", 0);
-                sl->free();
+                stringlist::destroy(sl);
             }
         }
         else if (sl) {
@@ -380,7 +380,7 @@ SIlocalContext::clear()
                     CDvdb()->setVariable(h->stTag, s->string);
                 else
                     CDvdb()->clearVariable(h->stTag);
-                s0->free();
+                stringlist::destroy(s0);
             }
             delete [] h->stTag;
             delete h;
@@ -477,7 +477,7 @@ SIlocalContext::popVar(const char *name)
     else
         CDvdb()->clearVariable(name);
     sl->next = 0;
-    sl->free();
+    stringlist::destroy(sl);
 }
 // End of SIlocalContext functions
 
@@ -602,7 +602,7 @@ namespace {
                     {
                         delete [] name;
                         delete [] path;
-                        script->free();
+                        stringlist::destroy(script);
                     }
 
                 char *name;         // name of script
@@ -1076,7 +1076,7 @@ SIlocal::InsertScript(sScript *s, bool exec)
                 if (!strcmp(a->name, s->name)) {
                     // No script entries with paths here.
 
-                    a->script->free();
+                    stringlist::destroy(a->script);
                     a->script = s->script;
                     s->script = 0;
                     delete s;
@@ -1105,7 +1105,7 @@ SIlocal::InsertScript(sScript *s, bool exec)
                         s->path = 0;
                     }
                     else if (!a->path) {
-                        a->script->free();
+                        stringlist::destroy(a->script);
                         a->script = s->script;
                         s->script = 0;
                     }

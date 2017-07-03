@@ -241,7 +241,7 @@ SIparser::funcList()
     SIptfunc *ptf;
     while ((ptf = tgen.next()) != 0)
         s0 = new stringlist(lstring::copy(ptf->tab_name()), s0);
-    s0->sort();
+    stringlist::sort(s0);
     return (s0);
 }
 
@@ -254,7 +254,7 @@ SIparser::altFuncList()
     SIptfunc *ptf;
     while ((ptf = tgen.next()) != 0)
         s0 = new stringlist(lstring::copy(ptf->tab_name()), s0);
-    s0->sort();
+    stringlist::sort(s0);
     return (s0);
 }
 

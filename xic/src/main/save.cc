@@ -265,7 +265,7 @@ cMain::CheckModified(bool panic)
             retval = CmodAborted;
             break;
         }
-        s0->free();
+        stringlist::destroy(s0);
     }
     return (retval);
 }
@@ -1435,7 +1435,7 @@ SaveHlpr::write_export(CDcellName cellname, const char *fname, FileType ftype)
         EditIf()->assignGlobalProperties(&cbin);
     stringlist *namelist =
         new stringlist(lstring::copy(cellname->string()), 0);
-    GCfree<stringlist*> gc_namelist(namelist);
+    GCdestroy<stringlist> gc_namelist(namelist);
 
     bool tmp[7];
     tmp[0] = FIO()->IsStripForExport();

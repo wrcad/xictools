@@ -3212,7 +3212,7 @@ sPromptContext::save_prompt()
 void
 sPromptContext::restore_prompt()
 {
-    pc_prompt_stack->free();
+    stringlist::destroy(pc_prompt_stack);
     pc_prompt_stack = 0;
     if (pc_saved_prompt) {
         stringlist *sl = pc_saved_prompt;

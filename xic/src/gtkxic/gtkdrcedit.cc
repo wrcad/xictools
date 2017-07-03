@@ -399,7 +399,7 @@ sDim::update()
         text_insert_chars_at_point(dim_text, 0, "\n", 1, -1);
     }
     text_set_scroll_value(dim_text, val);
-    s0->free();
+    stringlist::destroy(s0);
 
     check_sens();
     DRC()->PopUpRuleEdit(0, MODE_UPD, drNoRule, 0, 0, 0, 0);

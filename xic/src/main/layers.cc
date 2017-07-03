@@ -236,7 +236,7 @@ LpeekState::peek_doit(int x, int y)
     if (l0)
         // The redisplay now updates the layer names in the prompt line
         // as drawing occurs.
-        l0->free();
+        stringlist::destroy(l0);
     else {
         PL()->ShowPrompt("No layers found.");
         return;

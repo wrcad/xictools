@@ -344,7 +344,7 @@ cCHD::listCellnames(int mode, bool mark)
             }
         }
     }
-    s0->sort(mark ? ls_comp : 0);
+    stringlist::sort(s0, mark ? ls_comp : 0);
     return (s0);
 }
 
@@ -363,7 +363,7 @@ cCHD::listCellnames(const char *cname, DisplayMode mode)
     stringlist *sl = 0;
     if (listCellnames_rc(p, tab, 0)) {
         sl = tab->names();
-        sl->sort();
+        stringlist::sort(sl);
     }
     delete tab;
     return (sl);

@@ -499,8 +499,7 @@ sCHL::update()
     }
 
     stringlist *names = CDchd()->chdList();
-    if (names)
-        names->sort();
+    stringlist::sort(names);
 
     int rowcnt = 0;
     int rowsel = -1;
@@ -555,7 +554,7 @@ sCHL::update()
         gtk_tree_path_free(p);
     }
 
-    names->free();
+    stringlist::destroy(names);
     recolor();
 }
 
@@ -741,7 +740,7 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
                         chl_cnt_pop->set_button_sens(0xff);
                 }
             }
-            s0->free();
+            stringlist::destroy(s0);
         }
         else
             err_message("Content scan failed:\n%s");
@@ -1214,7 +1213,7 @@ sCHL::chl_cnt_cb(const char *cellname, void*)
         int flgs = FIO_INFO_OFFSET | FIO_INFO_INSTANCES |
             FIO_INFO_BBS | FIO_INFO_FLAGS;
         char *str = chd->prCells(0, DSP()->CurMode(), flgs, sl);
-        sl->free();
+        stringlist::destroy(sl);
         CHL->PopUpInfo(MODE_ON, str, STY_FIXED);
         dspPkgIf()->SetWorking(false);
     }

@@ -791,7 +791,7 @@ cv_in::mark_references(stringlist **slp)
     if (slp)
         *slp = s0;
     else
-        s0->free();
+        stringlist::destroy(s0);
 
     return (true);
 }
@@ -824,7 +824,7 @@ cv_in::mark_top(stringlist **psl, stringlist **esl)
             if (top)
                 top->setArchiveTopLevel(true);
             if (esl) {
-                (*esl)->free();
+                stringlist::destroy(*esl);
                 *esl = 0;
             }
             return;
@@ -852,7 +852,7 @@ cv_in::mark_top(stringlist **psl, stringlist **esl)
             if (top)
                 top->setArchiveTopLevel(true);
             if (psl) {
-                (*psl)->free();
+                stringlist::destroy(*psl);
                 *psl = 0;
             }
         }
@@ -1027,7 +1027,7 @@ cv_out::~cv_out()
     delete out_visited;
     CDp::destroy(out_prpty);
     delete out_alias;
-    out_chd_refs->free();
+    stringlist::destroy(out_chd_refs);
 
     CD()->RegisterDestroy("cv_out");
 }

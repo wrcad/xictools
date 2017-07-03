@@ -563,7 +563,7 @@ cCGD::cells_list()
         cgd_cn_t *ct;
         while ((ct = gen.next()) != 0)
             s0 = new stringlist(lstring::copy(ct->name), s0);
-        s0->sort();
+        stringlist::sort(s0);
     }
     else {
         if (cg_skt < 0) {
@@ -841,7 +841,7 @@ cCGD::unlisted_list()
         cgd_cn_t *ct;
         while ((ct = gen.next()) != 0)
             s0 = new stringlist(lstring::copy(ct->name), s0);
-        s0->sort();
+        stringlist::sort(s0);
     }
     else {
         if (cg_skt < 0)

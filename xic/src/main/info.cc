@@ -337,14 +337,14 @@ cMain::Info(CDs *sdesc, int level)
         if (list) {
             stringnumlist *liste = 0;
             counte = sdesc->listParents(&liste, true);
-            list->sort_by_string();
-            liste->sort_by_string();
+            stringnumlist::sort_by_string(list);
+            stringnumlist::sort_by_string(liste);
             lstr.add("Parent cells:\n");
             while (list) {
                 if (!liste || strcmp(list->string, liste->string)) {
                     // can't happen;
-                    list->free();
-                    liste->free();
+                    stringnumlist::destroy(list);
+                    stringnumlist::destroy(liste);
                     break;
                 }
                 sprintf(buf, "  %-24s %6d %6d\n", list->string, list->num,
@@ -379,14 +379,14 @@ cMain::Info(CDs *sdesc, int level)
         if (list) {
             stringnumlist *liste = 0;
             counte = sdesc->listSubcells(&liste, true);
-            list->sort_by_string();
-            liste->sort_by_string();
+            stringnumlist::sort_by_string(list);
+            stringnumlist::sort_by_string(liste);
             lstr.add("Subcells:\n");
             while (list) {
                 if (!liste || strcmp(list->string, liste->string)) {
                     // can't happen;
-                    list->free();
-                    liste->free();
+                    stringnumlist::destroy(list);
+                    stringnumlist::destroy(liste);
                     break;
                 }
                 sprintf(buf, "  %-24s %6d %6d\n", list->string, list->num,
@@ -1722,7 +1722,7 @@ InfoState::show_obj_info(tlst_t *ol)
             lstr.add(s->string);
             lstr.add("\n");
         }
-        s0->free();
+        stringlist::destroy(s0);
     }
 
     if (!ol->cdescs) {

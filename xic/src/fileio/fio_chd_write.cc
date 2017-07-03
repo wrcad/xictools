@@ -564,11 +564,11 @@ sCHDout::write_info()
         stringlist *s0 = cv->layers();
         for (stringlist *s = s0; s; s = s->next) {
             if (!write_n_string(s->string)) {
-                s0->free();
+                stringlist::destroy(s0);
                 return (false);
             }
         }
-        s0->free();
+        stringlist::destroy(s0);
     }
     // Write end indicator for the layer name entries.  Reader must
     // look for null byte leading n-string.

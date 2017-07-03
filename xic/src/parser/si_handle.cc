@@ -462,7 +462,7 @@ sHdlUniq::test(sHdl *hdl)
 
 sHdlString::~sHdlString()
 {
-    ((stringlist*)data)->free();
+    stringlist::destroy((stringlist*)data);
 }
 
 // Iterator for strings: return the string (the string is *always* a copy

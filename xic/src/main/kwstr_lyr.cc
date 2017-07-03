@@ -42,7 +42,7 @@ void
 lyrKWstruct::load_keywords(const CDl *ld, const char *string)
 {
     clear_undo_list();
-    kw_list->free();
+    stringlist::destroy(kw_list);
     kw_list = 0;
     char *localstr = 0;
     if (!string) {
@@ -108,7 +108,7 @@ char *
 lyrKWstruct::list_keywords()
 {
     sort();
-    char *s = kw_list->flatten("\n");
+    char *s = stringlist::flatten(kw_list, "\n");
     if (!s)
         s = lstring::copy("");
     return (s);
@@ -145,7 +145,7 @@ namespace {
 void
 lyrKWstruct::sort()
 {
-    kw_list->sort(sortcmp);
+    stringlist::sort(kw_list, sortcmp);
 }
 
 

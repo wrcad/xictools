@@ -490,7 +490,7 @@ sLBoa::update()
     if (!liblist)
         liblist = new stringlist(lstring::copy(nolibmsg), 0);
     else
-        liblist->sort();
+        stringlist::sort(liblist);
     GtkListStore *store =
         GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(lb_list)));
     gtk_list_store_clear(store);
@@ -510,7 +510,7 @@ sLBoa::update()
         gtk_list_store_set(store, &iter, 0, isopen ? lb_open_pb : lb_close_pb,
             1, branded ? "Y" :"N", 2, l->string, -1);
     }
-    liblist->free();
+    stringlist::destroy(liblist);
     char *oldsel = lb_selection;
     lb_selection = 0;
     set_sensitive(false);
@@ -604,7 +604,7 @@ sLBoa::pop_up_contents()
                 lb_content_pop->set_button_sens(-1);
         }
     }
-    list->free();
+    stringlist::destroy(list);
 }
 
 
@@ -633,7 +633,7 @@ sLBoa::update_contents(bool upd_dir)
     lstr.add("Cells found in library - click to select\n");
     lstr.add(lb_contlib);
     lb_content_pop->update(list, lstr.string());
-    list->free();
+    stringlist::destroy(list);
 }
 
 

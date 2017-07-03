@@ -691,7 +691,7 @@ sNM::show_node_terms(int node)
             gtk_list_store_set(store, &iter, 0, strings[0], -1);
             didone = true;
         }
-        sl->free();
+        stringlist::destroy(sl);
         if (!didone) {
             strings[0] = msg;
             gtk_list_store_append(store, &iter);
@@ -1553,13 +1553,13 @@ sNM::do_search(int *pindx, int *ptindx)
                         *pindx = i;
                     if (ptindx)
                         *ptindx = trow;
-                    sl->free();
+                    stringlist::destroy(sl);
                     regfree(&preg);
                     return;
                 }
                 trow++;
             }
-            sl->free();
+            stringlist::destroy(sl);
         }
     }
 

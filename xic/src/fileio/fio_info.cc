@@ -482,7 +482,7 @@ cv_info::format_totals()
                 lstr.add(buf);
             }
         }
-        s0->free();
+        stringlist::destroy(s0);
 
         lstr.add("\nTotals:\n");
     }
@@ -526,7 +526,7 @@ cv_info::format_counts(const symref_t *p)
                 lstr.add(buf);
             }
         }
-        s0->free();
+        stringlist::destroy(s0);
 
         pcd->print_totals(buf);
         lstr.add(buf);

@@ -2523,7 +2523,7 @@ misc3_funcs::IFlayerHandle(Variable *res, Variable *args, void*)
     while ((ld = lgen.next()) != 0)
         s0 = new stringlist(lstring::copy(ld->name()), s0);
     if (!dec)
-        s0->reverse();
+        stringlist::reverse(s0);
     sHdl *hdl = new sHdlString(s0);
     res->type = TYP_HANDLE;
     res->content.value = hdl->id;
@@ -4429,7 +4429,7 @@ misc3_funcs::IFflatOverlapList(Variable *res, Variable *args, void*)
                     delete odesc;
             }
         }
-        s0->free();
+        stringlist::destroy(s0);
         if (o0) {
             sHdl *hdltmp = new sHdlObject(o0, cursd, (depth != 0));
             res->type = TYP_HANDLE;

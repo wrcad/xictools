@@ -179,7 +179,7 @@ namespace {
         }
         stringlist *namelist = new stringlist(lstring::copy(
             allcells ? FIO_CUR_SYMTAB : DSP()->CurCellName()->string()), 0);
-        GCfree<stringlist*> gc_namelist(namelist);
+        GCdestroy<stringlist> gc_namelist(namelist);
 
         CDcbin cbin(DSP()->CurCellName());
         if (!cbin.isSubcell())

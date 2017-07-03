@@ -942,7 +942,7 @@ cMain::PopUpVariables(bool force_show)
         // List is sorted, each element is name[ value].
 
         sLstr lstr;
-        int numvars = list->length();
+        int numvars = stringlist::length(list);
         if (numvars == 0)
             lstr.add("<h2>There are no variables currently set.</h2>");
         else {
@@ -989,7 +989,7 @@ cMain::PopUpVariables(bool force_show)
             lstr.add("</table>");
         }
         info_id = DSPmainWbagRet(PopUpHTMLinfo(MODE_ON, lstr.string()));
-        list->free();
+        stringlist::destroy(list);
     }
 }
 

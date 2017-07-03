@@ -520,7 +520,7 @@ sFL::show_content()
                     fl_content_pop->set_button_sens(-1);
             }
         }
-        list->free();
+        stringlist::destroy(list);
         return (true);
     }
     else if (filetype == Fnative) {
@@ -561,7 +561,7 @@ sFL::show_content()
                             fl_content_pop->set_button_sens(-1);
                    }
                 }
-                list->free();
+                stringlist::destroy(list);
                 return (true);
             }
         }
@@ -612,7 +612,7 @@ sFL::show_content()
                         fl_content_pop->set_button_sens(-1);
                 }
             }
-            list->free();
+            stringlist::destroy(list);
             return (true);
         }
         else {

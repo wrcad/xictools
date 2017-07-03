@@ -337,8 +337,8 @@ sAT::update()
         gdk_window_get_size(wb_textarea->window, &width, &height);
         int cols = (width-4)/GTKfont::stringWidth(wb_textarea, 0);
         stringlist *s0 = ct->list();
-        char *newtext = s0->col_format(cols);
-        s0->free();
+        char *newtext = stringlist::col_format(s0, cols);
+        stringlist::destroy(s0);
         double val = text_get_scroll_value(wb_textarea);
         text_set_chars(wb_textarea, newtext);
         text_set_scroll_value(wb_textarea, val);

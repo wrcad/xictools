@@ -118,7 +118,7 @@ cConvert::CheckEmpties(bool force_delete_all)
         return;
     if (!force_delete_all) {
         PopUpEmpties(sl);
-        sl->free();
+        stringlist::destroy(sl);
         return;
     }
     SymTab *tab = new SymTab(true, false);
@@ -134,7 +134,7 @@ cConvert::CheckEmpties(bool force_delete_all)
                 didone = true;
             }
         }
-        sl->free();
+        stringlist::destroy(sl);
         if (!didone)
             break;
         else
@@ -198,7 +198,7 @@ cConvert::Export(const char *filename, bool allcells)
     stringlist *namelist = new stringlist(lstring::copy(
         allcells ? FIO_CUR_SYMTAB : DSP()->CurCellName()->string()), 0);
 
-    GCfree<stringlist*> gc_namelist(namelist);
+    GCdestroy<stringlist> gc_namelist(namelist);
     GCarray<char*> gc_path(path);
 
     CDcbin cbin(DSP()->CurCellName());

@@ -763,7 +763,7 @@ cFIO::FromNative(const char *fullpath, CDcbin *cbret, double scale)
             if (OIfailed(oiret)) {
                 ifPrintCvLog(IFLOG_FATAL, "Failed to open %s.", s0->string);
                 Errs()->add_error("FromNative: OpenNative failed.");
-                s0->free();
+                stringnumlist::destroy(s0);
                 s0 = 0;
                 break;
             }
@@ -804,13 +804,13 @@ cFIO::FromNative(const char *fullpath, CDcbin *cbret, double scale)
                 n = n->next;
             n->next = s0->next;
             s0->next = 0;
-            s0->free();
+            stringnumlist::destroy(s0);
             s0 = inames;
         }
         else {
             stringnumlist *n = s0->next;
             s0->next = 0;
-            s0->free();
+            stringnumlist::destroy(s0);
             s0 = n;
         }
     }
@@ -4840,7 +4840,7 @@ cif_in::add_properties_db(CDs *sdesc, CDo *odesc)
         stringlist *s0 = sdesc->prptyApplyList(odesc, &in_prpty_list);
         for (stringlist *s = s0; s; s = s->next)
             warning(s->string, true);
-        s0->free();
+        stringlist::destroy(s0);
 
         if (!odesc) {
             sdesc->setPCellFlags();

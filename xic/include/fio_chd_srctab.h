@@ -51,7 +51,7 @@ struct chd_src_t
     ~chd_src_t()
         {
             delete cs_seen_tab;
-            cs_cellnames->free();
+            stringlist::destroy(cs_cellnames);
             delete cs_chd_prp;
         }
 

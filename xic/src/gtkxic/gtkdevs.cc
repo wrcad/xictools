@@ -356,7 +356,7 @@ sDv::sDv(GRobject caller, stringlist *wl)
     dv_selec = 0;
     dv_active = false;
 
-    wl->sort(dv_comp_func);
+    stringlist::sort(wl, dv_comp_func);
 
     wb_shell = gtk_NewPopup(mainBag(), "Device Palette", dv_cancel_proc, 0);
     if (!wb_shell)
@@ -377,7 +377,7 @@ sDv::sDv(GRobject caller, stringlist *wl)
 
         GTKfont::setupFont(gd_viewport, FNT_SCREEN, true);
 
-        int i = wl->length();
+        int i = stringlist::length(wl);
         dv_entries = new sEnt[i];
         dv_numdevs = i;
         dv_leftindx = 0;
@@ -502,7 +502,7 @@ sDv::sDv(GRobject caller, stringlist *wl)
             gtk_menu_append(GTK_MENU(menu), ent);
             lastc = c;
         }
-        wl->free();
+        stringlist::destroy(wl);
 
         GtkWidget *button = new_pixmap_button(pict_xpm, 0, false);
         gtk_widget_set_name(button, "Style");
@@ -615,7 +615,7 @@ sDv::sDv(GRobject caller, stringlist *wl)
                 ww->string = 0;
             }
         }
-        wl->free();
+        stringlist::destroy(wl);
 
         GtkWidget *button = new_pixmap_button(dda_xpm, 0, false);
         gtk_widget_set_name(button, "Style");

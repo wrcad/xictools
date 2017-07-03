@@ -461,7 +461,7 @@ FIOlayerAliasTab::toString(bool todec)
             strcat(buf, e->tab_alias());
         s0 = new stringlist(lstring::copy(buf), s0);
     }
-    s0->sort();
+    stringlist::sort(s0);
 
     sLstr lstr;
     for (stringlist *s = s0; s; s = s->next) {
@@ -469,7 +469,7 @@ FIOlayerAliasTab::toString(bool todec)
             lstr.add_c(' ');
         lstr.add(s->string);
     }
-    s0->free();
+    stringlist::destroy(s0);
 
     return (lstr.string_trim());
 }
@@ -491,10 +491,10 @@ FIOlayerAliasTab::dumpFile(FILE *fp)
         sprintf(buf, "%s=%s", e->tab_name(), e->tab_alias());
         s0 = new stringlist(lstring::copy(buf), s0);
     }
-    s0->sort();
+    stringlist::sort(s0);
 
     for (stringlist *s = s0; s; s = s->next)
         fprintf(fp, "%s\n", s->string);
-    s0->free();
+    stringlist::destroy(s0);
 }
 

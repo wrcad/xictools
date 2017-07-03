@@ -130,7 +130,7 @@ main()
         else
             printf("Error: unable to write %s file.\n", OUTFILE);
     }
-    ifc->free();
+    miscutil::ifc_t::destroy(ifc);
 #endif
 
     return (0);

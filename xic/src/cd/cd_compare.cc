@@ -1527,8 +1527,8 @@ prpfilt_t::parse(const char *str)
 Pdiff::~Pdiff()
 {
     delete [] pd_name;
-    pd_list12->free();
-    pd_list21->free();
+    stringlist::destroy(pd_list12);
+    stringlist::destroy(pd_list21);
 }
 
 
@@ -1547,9 +1547,9 @@ Pdiff::reset(const char *n)
 {
     delete [] pd_name;
     pd_name = lstring::copy(n);
-    pd_list12->free();
+    stringlist::destroy(pd_list12);
     pd_list12 = 0;
-    pd_list21->free();
+    stringlist::destroy(pd_list21);
     pd_list21 = 0;
 }
 
@@ -1613,8 +1613,8 @@ Pdiff::save(Pdiff *pd, const char *n, const char *s1, const char *s2)
 
 Ldiff::~Ldiff()
 {
-    ld_list12->free();
-    ld_list21->free();
+    stringlist::destroy(ld_list12);
+    stringlist::destroy(ld_list21);
     Pdiff::destroy(ld_pdiffs);
 }
 

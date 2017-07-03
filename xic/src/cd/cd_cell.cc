@@ -2914,7 +2914,7 @@ namespace {
                     sd->cellname()->string()), s0);
             }
         }
-        s0->sort(mark ? &cl_comp : 0);
+        stringlist::sort(s0, mark ? &cl_comp : 0);
         return (s0);
     }
 }
@@ -2970,10 +2970,10 @@ CDs::listSubcells(int depth, bool incl_top, bool mark, const BBox *AOI)
             }
         }
         if (err) {
-            s0->free();
+            stringlist::destroy(s0);
             s0 = 0;
         }
-        s0->sort(mark ? &cl_comp : 0);
+        stringlist::sort(s0, mark ? &cl_comp : 0);
         return (s0);
     }
     if (AOI->intersect(&sBB, true)) {

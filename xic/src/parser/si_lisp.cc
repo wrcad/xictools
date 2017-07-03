@@ -912,8 +912,8 @@ cLispEnv::parseLisp(const char *filename, char **err)
         fprintf(lp, "## ---------------------\n\n");
     }
 
-    char *s0 = sl->flatten(" ");
-    sl->free();
+    char *s0 = stringlist::flatten(sl, " ");
+    stringlist::destroy(sl);
     const char *s = s0;
 
     if (lp) {

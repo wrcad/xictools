@@ -431,8 +431,8 @@ struct sDevDesc
     ~sDevDesc()
         {
             d_contacts->free();
-            d_finds->free();
-            d_prmconts->free();
+            stringlist::destroy(d_finds);
+            stringlist::destroy(d_prmconts);
             d_measures->free();
             delete [] d_netline;
             delete [] d_netline1;

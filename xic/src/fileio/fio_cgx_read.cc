@@ -1005,7 +1005,7 @@ cgx_in::end_struct()
         stringlist *s0 = in_sdesc->prptyApplyList(0, &in_prpty_list);
         for (stringlist *s = s0; s; s = s->next)
             warning(s->string);
-        s0->free();
+        stringlist::destroy(s0);
         in_has_cprops = 0;
 
         in_sdesc->setPCellFlags();
@@ -1281,7 +1281,7 @@ cgx_in::a_property(int, int)
             stringlist *s0 = in_sdesc->prptyApplyList(0, &in_prpty_list);
             for (stringlist *s = s0; s; s = s->next)
                 warning(s->string);
-            s0->free();
+            stringlist::destroy(s0);
             clear_properties();
             in_has_cprops = 0;
         }
@@ -1304,7 +1304,7 @@ cgx_in::a_layer(int, int)
         stringlist *s0 = in_sdesc->prptyApplyList(0, &in_prpty_list);
         for (stringlist *s = s0; s; s = s->next)
             warning(s->string);
-        s0->free();
+        stringlist::destroy(s0);
         clear_properties();
         in_has_cprops = 0;
     }
@@ -1380,7 +1380,7 @@ cgx_in::a_box(int size, int)
         stringlist *s0 = in_sdesc->prptyApplyList(0, &in_prpty_list);
         for (stringlist *s = s0; s; s = s->next)
             warning(s->string);
-        s0->free();
+        stringlist::destroy(s0);
         clear_properties();
         in_has_cprops = 0;
     }
@@ -1436,7 +1436,7 @@ cgx_in::a_poly(int size, int)
         stringlist *s0 = in_sdesc->prptyApplyList(0, &in_prpty_list);
         for (stringlist *s = s0; s; s = s->next)
             warning(s->string);
-        s0->free();
+        stringlist::destroy(s0);
         clear_properties();
         in_has_cprops = 0;
     }
@@ -1528,7 +1528,7 @@ cgx_in::a_wire(int size, int flags)
         stringlist *s0 = in_sdesc->prptyApplyList(0, &in_prpty_list);
         for (stringlist *s = s0; s; s = s->next)
             warning(s->string);
-        s0->free();
+        stringlist::destroy(s0);
         clear_properties();
         in_has_cprops = 0;
     }
@@ -1616,7 +1616,7 @@ cgx_in::a_text(int size, int flags)
         stringlist *s0 = in_sdesc->prptyApplyList(0, &in_prpty_list);
         for (stringlist *s = s0; s; s = s->next)
             warning(s->string);
-        s0->free();
+        stringlist::destroy(s0);
         clear_properties();
         in_has_cprops = 0;
     }
@@ -1695,7 +1695,7 @@ cgx_in::a_sref(int, int flags)
         stringlist *s0 = in_sdesc->prptyApplyList(0, &in_prpty_list);
         for (stringlist *s = s0; s; s = s->next)
             warning(s->string);
-        s0->free();
+        stringlist::destroy(s0);
         clear_properties();
         in_has_cprops = 0;
     }

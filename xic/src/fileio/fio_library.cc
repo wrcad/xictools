@@ -301,7 +301,7 @@ sLib::sLib(const char *lfn, int t)
 
 sLib::~sLib()
 {
-    l_prpty_strings->free();
+    stringlist::destroy(l_prpty_strings);
 
     SymTabGen gen(l_chdtab, true);
     SymTabEnt *h;
@@ -536,7 +536,7 @@ sLib::open_library(sLib *thislib, const char *searchpath, const char *fname,
                 lib->l_symtab.add(rnew);
             }
         }
-        aliases->free();
+        stringlist::destroy(aliases);
     }
 
     // Link the new library into the list.  The LIBdevice libraries
@@ -734,7 +734,7 @@ sLib::namelist(sLib *thislib, const char *libname, int type)
             }
         }
     }
-    s0->sort();
+    stringlist::sort(s0);
     return (s0);
 }
 

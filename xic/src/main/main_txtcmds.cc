@@ -410,7 +410,7 @@ cMain::ListBangCmds()
         if (!skip)
             s0 = new stringlist(lstring::copy(el->tab_name()), s0);
     }
-    s0->sort();
+    stringlist::sort(s0);
     return (s0);
 }
 
@@ -877,7 +877,7 @@ bangcmds::pop_up_list(LStype type)
             lstr.add("No commands found.\n");
         else {
             const int cols = 4;
-            int len = s0->length();
+            int len = stringlist::length(s0);
             int nc = len/cols + (len%cols != 0);
             stringlist *s = s0;
             lstr.add("<table border=0 cellspacing=4><tr>\n");
@@ -895,7 +895,7 @@ bangcmds::pop_up_list(LStype type)
             }
             lstr.add("</tr></table>\n");
         }
-        s0->free();
+        stringlist::destroy(s0);
         DSPmainWbagRet(PopUpHTMLinfo(MODE_ON, lstr.string()));
     }
     else if (type == LSscript) {
@@ -911,7 +911,7 @@ bangcmds::pop_up_list(LStype type)
             lstr.add("No functions found.\n");
         else {
             const int cols = 3;
-            int len = s0->length();
+            int len = stringlist::length(s0);
             int nc = len/cols + (len%cols != 0);
             stringlist *s = s0;
             lstr.add("<table border=0 cellspacing=4><tr>\n");
@@ -929,14 +929,14 @@ bangcmds::pop_up_list(LStype type)
             }
             lstr.add("</tr></table>\n");
         }
-        s0->free();
+        stringlist::destroy(s0);
         s0 = SIparse()->altFuncList();
         if (s0) {
             lstr.add(
                 "<br clear=all><p>These functions apply in layer "
                 "expressions.\n\n<p>\n");
             const int cols = 3;
-            int len = s0->length();
+            int len = stringlist::length(s0);
             int nc = len/cols + (len%cols != 0);
             stringlist *s = s0;
             lstr.add("<table border=0 cellspacing=4><tr>\n");
@@ -969,7 +969,7 @@ bangcmds::pop_up_list(LStype type)
             lstr.add("No variables found.\n");
         else {
             const int cols = 3;
-            int len = s0->length();
+            int len = stringlist::length(s0);
             int nc = len/cols + (len%cols != 0);
             stringlist *s = s0;
             lstr.add("<table border=0 cellspacing=4><tr>\n");
@@ -987,7 +987,7 @@ bangcmds::pop_up_list(LStype type)
             }
             lstr.add("</tr></table>\n");
         }
-        s0->free();
+        stringlist::destroy(s0);
         DSPmainWbagRet(PopUpHTMLinfo(MODE_ON, lstr.string()));
     }
 }
@@ -2060,7 +2060,7 @@ bangcmds::summary(const char *s)
     bool err;
     while ((sd = gen.next(&err)) != 0)
         s0 = new stringlist(lstring::copy(sd->cellname()->string()), s0);
-    s0->sort();
+    stringlist::sort(s0);
     while (s0) {
         CDcbin cbin;
         CDcdb()->findSymbol(s0->string, &cbin);
@@ -3317,7 +3317,7 @@ bangcmds::mklib(const char *s)
     stringlist *s0 = tab->names();
     delete tab;
 
-    int len = s0->length();
+    int len = stringlist::length(s0);
     if (len <= 0) {
         PL()->ShowPrompt("No cells found!  Library creation aborted.");
         delete [] arcfile;
@@ -3328,7 +3328,7 @@ bangcmds::mklib(const char *s)
     }
 
     // sort the cells names
-    s0->sort();
+    stringlist::sort(s0);
 
     if (append) {
         FILE *fp = fopen(libfile, "r");
@@ -3337,7 +3337,7 @@ bangcmds::mklib(const char *s)
                 PL()->ShowPrompt(
                     "Error: File %s is not a library, can't append.");
                 fclose(fp);
-                s0->free();
+                stringlist::destroy(s0);
                 delete [] arcfile;
                 delete [] arcname;
                 delete [] refpath;
@@ -3406,7 +3406,7 @@ bangcmds::mklib(const char *s)
     else
         PL()->ShowPromptV("Error: can't open %s.", libfile);
     fclose(fp);
-    s0->free();
+    stringlist::destroy(s0);
     delete [] arcfile;
     delete [] arcname;
     delete [] refpath;
@@ -3429,7 +3429,7 @@ bangcmds::lsdb(const char*)
     }
     DSPmainWbag(PopUpInfo(MODE_ON, lstr.string(), STY_FIXED))
     PL()->ErasePrompt();
-    s0->free();
+    stringlist::destroy(s0);
     return;
 }
 

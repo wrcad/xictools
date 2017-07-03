@@ -756,7 +756,7 @@ cCHD::writeMulti(const char *cellname, const FIOcvtPrms *iprms,
     //
     if (oiret == OIok && iprms->flatten() && flat_map)
         write_native_composite(bname, s0);
-    s0->free();
+    stringlist::destroy(s0);
 
     FIO()->ifSetWorking(false);
     delete in;
@@ -2244,7 +2244,7 @@ cCHD::write_multi_flat(symref_t *ptop, const FIOcvtPrms *prms,
             }
         }
         write_native_composite(bname, s0);
-        s0->free();
+        stringlist::destroy(s0);
     }
 
     return (oiret);

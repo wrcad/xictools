@@ -888,7 +888,7 @@ cCHD::prLayers(FILE *fp, DisplayMode mode)
             lstr.add_c(' ');
         lstr.add(s->string);
     }
-    s0->free();
+    stringlist::destroy(s0);
     if (fp) {
         fputs(lstr.string(), fp);
         return (0);

@@ -170,7 +170,7 @@ Variable::cat__handle(Variable *v, Variable *res)
 
         if (hdl1->type == HDLstring) {
             stringlist *s0 = (stringlist*)hdl2->data;
-            s0 = s0->dup();
+            s0 = stringlist::dup(s0);
             if (!hdl1->data)
                 hdl1->data = s0;
             else {

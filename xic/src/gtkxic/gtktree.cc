@@ -840,7 +840,7 @@ sTree::t_action(GtkWidget *widget, void *client_data)
             int flgs = FIO_INFO_OFFSET | FIO_INFO_INSTANCES |
                 FIO_INFO_BBS | FIO_INFO_FLAGS;
             char *str = chd->prCells(0, DSP()->CurMode(), flgs, sl);
-            sl->free();
+            stringlist::destroy(sl);
             tree->PopUpInfo(MODE_ON, str, STY_FIXED);
             delete [] str;
         }

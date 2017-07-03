@@ -553,7 +553,7 @@ sDbg::sDbg(GRobject c)
 sDbg::~sDbg()
 {
     Dbg = 0;
-    db_vlist->free();
+    stringlist::destroy(db_vlist);
     delete [] db_line_save;
     delete [] db_dropfile;
     delete [] db_file_path;
@@ -1226,7 +1226,7 @@ sDbg::monitor()
     PL()->ErasePrompt();
     if (!in)
         return;
-    db_vlist->free();
+    stringlist::destroy(db_vlist);
     db_vlist = db_mklist(in);
 
     if (db_vars_pop) {

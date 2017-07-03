@@ -1043,16 +1043,16 @@ private:
 };
 
 template <class T>
-struct GCfree
+struct GCdestroy
 {
-    GCfree(T x)         { ptr = x; }
-    ~GCfree()           { ptr->free(); }
-    void set(T x)       { ptr = x; }
+    GCdestroy(T *x)     { ptr = x; }
+    ~GCdestroy()        { T::destroy(ptr); }
+    void set(T *x)      { ptr = x; }
     void clear()        { ptr = 0; }
-    void flush()        { ptr->free(); ptr = 0; }
+    void flush()        { T::destroy(ptr); ptr = 0; }
 
 private:
-    T ptr;
+    T *ptr;
 };
 
 #endif

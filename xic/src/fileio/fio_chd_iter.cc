@@ -639,7 +639,7 @@ namespace {
                 Errs()->add_error("iterFunc: layer %s unknown (impossible!).",
                     lname);
                 spt_t::swapSPtableCx(old_tab);
-                layers->free();
+                stringlist::destroy(layers);
                 return (XIbad);
             }
             zbins_t *zdb = (zbins_t*)ci_db1->table()->get((unsigned long)ld);
@@ -679,7 +679,7 @@ namespace {
                                 "iterFunc: param table %s creation failed.",
                                     buf);
                                 spt_t::swapSPtableCx(old_tab);
-                                layers->free();
+                                stringlist::destroy(layers);
                                 return (XIbad);
                             }
                         }
@@ -688,7 +688,7 @@ namespace {
                 }
             }
         }
-        layers->free();
+        stringlist::destroy(layers);
         spt_tables = spt_t::swapSPtableCx(old_tab);
         return (XIok);
     }
@@ -862,7 +862,7 @@ namespace {
             ltab->add(s->string, 0, false);
             s->string = 0;
         }
-        layers->free();
+        stringlist::destroy(layers);
         layers = ci_db2->layers();
         for (stringlist *s = layers; s; s = s->next) {
             if (ltab->get(s->string) == ST_NIL)
@@ -871,7 +871,7 @@ namespace {
                 delete [] s->string;
             s->string = 0;
         }
-        layers->free();
+        stringlist::destroy(layers);
         layers = ltab->names();
         delete ltab;
 
@@ -1018,7 +1018,7 @@ namespace {
             }
         }
     done:
-        layers->free();
+        stringlist::destroy(layers);
         return (ret);
     }
     // End of sCmpIter functions.

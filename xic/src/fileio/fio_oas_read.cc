@@ -1424,7 +1424,7 @@ oas_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
         bool ret = true;
         stringlist *layers = in_cgd->layer_list(p->get_name()->string());
         if (layers) {
-            GCfree<stringlist*> gc_layers(layers);
+            GCdestroy<stringlist> gc_layers(layers);
             for (stringlist *s = layers; s; s = s->next) {
                 if (FIO()->IsCgdSkipInvisibleLayers()) {
                     CDl *ld = CDldb()->findLayer(s->string, Physical);
@@ -1691,7 +1691,7 @@ oas_in::has_geom(symref_t *p, const BBox *AOI)
         if (!layers)
             return (OIambiguous);
 
-        GCfree<stringlist*> gc_layers(layers);
+        GCdestroy<stringlist> gc_layers(layers);
         for (stringlist *s = layers; s; s = s->next) {
             if (FIO()->IsCgdSkipInvisibleLayers()) {
                 CDl *ld = CDldb()->findLayer(s->string, Physical);

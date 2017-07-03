@@ -1998,7 +1998,7 @@ cCDldb::listOAlayerTab()
         }
         s0 = new stringnumlist(lstring::copy(e->name()), e->num(), s0);
     }
-    s0->sort_by_num();
+    stringnumlist::sort_by_num(s0);
 
     // When there are aliases, make sure that the "real" name is
     // listed first.
@@ -2135,7 +2135,7 @@ cCDldb::listOApurposeTab()
     loa_t *e;
     while ((e = gen.next()) != 0)
         s0 = new stringnumlist(lstring::copy(e->name()), e->num(), s0);
-    s0->sort_by_num();
+    stringnumlist::sort_by_num(s0);
 
     // When there are aliases, make sure that the "real" name is
     // listed first.

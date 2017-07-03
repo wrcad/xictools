@@ -655,7 +655,7 @@ main(int argc, char **argv)
         if (sl) {
             fprintf(stderr, "Operation failed, logfiles in %s retained.\n",
                 Log()->LogDirectory());
-            sl->free();
+            stringlist::destroy(sl);
         }
         else
             fprintf(stderr, "Operation failed.\n");
@@ -819,7 +819,7 @@ struct Bargs
         {
             delete [] ba_name;
             delete [] ba_outname;
-            ba_layers->free();
+            stringlist::destroy(ba_layers);
         }
 
     BBox ba_BB;
@@ -1225,7 +1225,7 @@ xic_main::do_batch_commands()
             stringlist *namelist =
                 new stringlist(lstring::copy(args.ba_name), 0);
             FIO()->ConvertToCgx(namelist, &prms);
-            namelist->free();
+            stringlist::destroy(namelist);
         }
         else if (!strcmp(c, "togds")) {
             if (!args.ba_outname) {
@@ -1237,7 +1237,7 @@ xic_main::do_batch_commands()
             stringlist *namelist =
                 new stringlist(lstring::copy(args.ba_name), 0);
             FIO()->ConvertToGds(namelist, &prms);
-            namelist->free();
+            stringlist::destroy(namelist);
         }
         else if (!strcmp(c, "tooas")) {
             if (!args.ba_outname) {
@@ -1249,7 +1249,7 @@ xic_main::do_batch_commands()
             stringlist *namelist =
                 new stringlist(lstring::copy(args.ba_name), 0);
             FIO()->ConvertToOas(namelist, &prms);
-            namelist->free();
+            stringlist::destroy(namelist);
         }
         else if (!strcmp(c, "tocif")) {
             if (!args.ba_outname) {
@@ -1261,14 +1261,14 @@ xic_main::do_batch_commands()
             stringlist *namelist =
                 new stringlist(lstring::copy(args.ba_name), 0);
             FIO()->ConvertToCif(namelist, &prms);
-            namelist->free();
+            stringlist::destroy(namelist);
         }
         else if (!strcmp(c, "toxic")) {
             prms.set_destination(args.ba_outname, Fnative);
             stringlist *namelist =
                 new stringlist(lstring::copy(args.ba_name), 0);
             FIO()->ConvertToNative(namelist, &prms);
-            namelist->free();
+            stringlist::destroy(namelist);
         }
         else
             fprintf(stderr,

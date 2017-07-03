@@ -73,7 +73,7 @@ struct PConstraint
 
     ~PConstraint()
         {
-            pc_choice_list->free();
+            stringlist::destroy(pc_choice_list);
             delete [] pc_scale;
         }
         
