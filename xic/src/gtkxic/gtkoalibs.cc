@@ -453,12 +453,6 @@ sLBoa::get_selection(const char **plibname, const char **pcellname)
 void
 sLBoa::update()
 {
-    {
-        sLBoa *lbt = this;
-        if (!lbt)
-            return;
-    }
-
     const char *s = CDvdb()->getVariable(VA_OaUseOnly);
     if (s && ((s[0] == '1' && s[1] == 0) || s[0] == 'p' || s[0] == 'P')) {
         if (!GRX->GetStatus(lb_phys)) {
@@ -560,11 +554,6 @@ sLBoa::update()
 void
 sLBoa::pop_up_contents()
 {
-    {
-        sLBoa *lbt = this;
-        if (!lbt)
-            return;
-    }
     if (!lb_selection)
         return;
 

@@ -77,11 +77,10 @@ namespace {
                     delete sb;
                 }
 
-            void free()
+            static void destroy(const sbsv *s)
                 {
-                    sbsv *s = this;
                     while (s) {
-                        sbsv *sx = s;
+                        const sbsv *sx = s;
                         s = s->next;
                         delete sx;
                     }
@@ -318,7 +317,7 @@ sPcp::~sPcp()
         GRX->Deselect(pcp_caller);
     if (pcp_popup)
         gtk_widget_destroy(pcp_popup);
-    pcp_sbsave->free();
+    sbsv::destroy(pcp_sbsave);
     pcp_params_bak->free();
     if (pcp_mode == pcpEdit || pcp_mode == pcpPlaceScr) {
         if (GRX->LoopLevel() > 1)

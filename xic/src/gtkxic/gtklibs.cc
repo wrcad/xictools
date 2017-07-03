@@ -336,8 +336,7 @@ sLB::~sLB()
 char *
 sLB::get_selection()
 {
-    sLB *lbt = this;
-    if (lbt && lb_contlib && lb_content_pop) {
+    if (lb_contlib && lb_content_pop) {
         char *sel = lb_content_pop->get_selection();
         if (sel) {
             int len = strlen(lb_contlib) + strlen(sel) + 2;
@@ -358,12 +357,6 @@ sLB::get_selection()
 void
 sLB::update()
 {
-    {
-        sLB *lbt = this;
-        if (!lbt)
-            return;
-    }
-
     GRX->SetStatus(lb_noovr, CDvdb()->getVariable(VA_NoOverwriteLibCells));
 
     stringlist *liblist = lb_pathlibs();
@@ -424,11 +417,6 @@ sLB::update()
 void
 sLB::pop_up_contents()
 {
-    {
-        sLB *lbt = this;
-        if (!lbt)
-            return;
-    }
     if (!lb_selection)
         return;
 

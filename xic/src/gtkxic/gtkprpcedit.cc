@@ -339,11 +339,6 @@ sPc::update()
 Ptxt *
 sPc::get_selection()
 {
-    {
-        sPc *pct = this;
-        if (!pct)
-            return (0);
-    }
     int start, end;
     start = pc_start;
     end = pc_end;

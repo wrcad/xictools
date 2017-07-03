@@ -106,8 +106,7 @@ gtkLcb::gtkLcb(GRobject c)
     le_rem = 0;
     le_opmenu = 0;
 
-    le_shell = gtk_NewPopup(mainBag(), "Layer Editor", le_popdown,
-        this);
+    le_shell = gtk_NewPopup(mainBag(), "Layer Editor", le_popdown, this);
     if (!le_shell)
         return;
     gtk_window_set_resizable(GTK_WINDOW(le_shell), false);
@@ -209,11 +208,6 @@ gtkLcb::~gtkLcb()
 void
 gtkLcb::update(CDll *list)
 {
-    {
-        gtkLcb *lcbt = this;
-        if (!lcbt)
-            return;
-    }
     gtk_list_clear_items(GTK_LIST(le_opmenu), 0, -1);
     if (!list) {
         GtkWidget *text =

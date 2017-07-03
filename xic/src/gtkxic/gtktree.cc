@@ -568,12 +568,8 @@ sTree::build_tree_rc(CDs *sdesc, GtkTreeIter *parent, int dpt)
         t_mdepth = dpt;
     if (check_fb())
         return (false);
-
-    {
-        sTree *tt = this;
-        if (!tt)
-            return (false);
-    }
+    if (!Tree)
+        return (false);
 
     // The sorting function in gtk is too slow, so we do sorting
     // ourselves.
@@ -631,12 +627,8 @@ sTree::build_tree_rc(cCHD *chd, symref_t *p, GtkTreeIter *parent, int dpt)
         t_mdepth = dpt;
     if (check_fb())
         return (false);
-
-    {
-        sTree *tt = this;
-        if (!tt)
-            return (false);
-    }
+    if (!Tree)
+        return (false);
 
     SymTab *xtab = new SymTab(false, false);
     syrlist_t *s0 = 0;

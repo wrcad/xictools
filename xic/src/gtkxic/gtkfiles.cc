@@ -263,11 +263,6 @@ sFL::update()
 char *
 sFL::get_selection()
 {
-    {
-        sFL *flt = this;
-        if (!flt)
-            return (0);
-    }
     if (fl_contlib && fl_content_pop) {
         char *sel = fl_content_pop->get_selection();
         if (sel) {

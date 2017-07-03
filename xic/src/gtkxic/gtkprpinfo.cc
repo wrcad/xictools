@@ -260,11 +260,6 @@ sPbase::resolve(int offset, CDo **odp)
 Ptxt *
 sPbase::get_selection()
 {
-    {
-        sPbase *pbt = this;
-        if (!pbt)
-            return (0);
-    }
     int start, end;
     start = pi_start;
     end = pi_end;
