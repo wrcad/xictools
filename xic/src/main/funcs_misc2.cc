@@ -1729,7 +1729,8 @@ misc2_funcs::IFhandleContent(Variable *res, Variable *args, void*)
             if (!hdl->data)
                 hdl->close(id);
             else
-                res->content.value = ((tlist<void>*)hdl->data)->count();
+                res->content.value =
+                    tlist<void>::count((tlist<void>*)hdl->data);
         }
         else
             // HDLgeneric, HDLfd, HDLgen, HDLgraph, HDLregex, HDLchd
@@ -1801,7 +1802,7 @@ misc2_funcs::IFhandleTruncate(Variable *res, Variable *args, void*)
             tlist<void> *t0 = (tlist<void>*)hdl->data;
             for (tlist<void> *t = t0; t; t = t->next) {
                 if (items == 0) {
-                    t->next->free();
+                    tlist<void>::destroy(t->next);
                     t->next = 0;
                 }
                 items--;
@@ -1949,7 +1950,7 @@ misc2_funcs::IFhandleDup(Variable *res, Variable *args, void*)
         else if (hdl->type == HDLgen) {
             sPF *gen = (sPF*)hdl->data;
             nhdl = new sHdlGen(gen->dup(), ((sHdlGen*)hdl)->sdesc,
-                ((sHdlGen*)hdl)->rec->dup());
+                gdrec::dup(((sHdlGen*)hdl)->rec));
         }
         if (nhdl) {
             res->type = TYP_HANDLE;
@@ -2088,7 +2089,7 @@ misc2_funcs::IFhandleDupNitems(Variable *res, Variable *args, void*)
         else if (hdl->type == HDLgen) {
             sPF *gen = (sPF*)hdl->data;
             nhdl = new sHdlGen(gen->dup(), ((sHdlGen*)hdl)->sdesc,
-                ((sHdlGen*)hdl)->rec->dup());
+                gdrec::dup(((sHdlGen*)hdl)->rec));
         }
         if (nhdl) {
             res->type = TYP_HANDLE;
@@ -2208,7 +2209,7 @@ misc2_funcs::IFhandleArray(Variable *res, Variable *args, void*)
             res->content.value = cnt;
         }
         else if (hdl->type == HDLnode) {
-            int size = ((tlist2<void>*)hdl->data)->count();
+            int size = tlist2<void>::count((tlist2<void>*)hdl->data);
             if (ADATA(args[1].content.a)->resize(size) == BAD)
                 return (OK);
             int cnt = 0;
@@ -2222,7 +2223,7 @@ misc2_funcs::IFhandleArray(Variable *res, Variable *args, void*)
         else if (hdl->type == HDLterminal ||
                 hdl->type == HDLdevice || hdl->type == HDLdcontact ||
                 hdl->type == HDLsubckt || hdl->type == HDLscontact) {
-            int size = ((tlist<void>*)hdl->data)->count();
+            int size = tlist<void>::count((tlist<void>*)hdl->data);
             if (ADATA(args[1].content.a)->resize(size) == BAD)
                 return (OK);
             int cnt = 0;

@@ -398,7 +398,7 @@ DRCtest::~DRCtest()
     delete [] t_fail;
     if (t_evaltree) {
         delete t_evaltree;
-        t_variables->free();
+        siVariable::destroy(t_variables);
     }
     else if (t_evalfunc) {
         delete t_evalfunc;

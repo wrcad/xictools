@@ -88,20 +88,23 @@ struct cv_incr_reader;
 
 template<class T> struct tlist
 {
-    tlist(T *e, tlist *n) { elt = e; next = n; }
-    void free() {
-        tlist *s = this;
-        while (s) {
-            tlist *sn = s->next;
-            delete s;
-            s = sn;
+    tlist(T *e, tlist *n)   { elt = e; next = n; }
+
+    static void destroy(const tlist *s)
+        {
+            while (s) {
+                const tlist *sx = s;
+                s = s->next;
+                delete sx;
+            }
         }
-    }
-    int count() {
-        int cnt = 0;
-        for (tlist *t = this; t; t = t->next, cnt++) ;
-        return (cnt);
-    }
+
+    static int count(const tlist *thistl)
+        {
+            int cnt = 0;
+            for (const tlist *t = thistl; t; t = t->next, cnt++) ;
+            return (cnt);
+        }
 
     T *elt;
     tlist *next;
@@ -110,17 +113,19 @@ template<class T> struct tlist
 template<class T> struct tlist2
 {
     tlist2(T *e, void *x, tlist2 *n) { elt = e; xtra = x; next = n; }
-    void free() {
-        tlist2 *s = this;
-        while (s) {
-            tlist2 *sn = s->next;
-            delete s;
-            s = sn;
+
+    static void destroy(const tlist2 *s)
+        {
+            while (s) {
+                const tlist2 *sx = s;
+                s = s->next;
+                delete sx;
+            }
         }
-    }
-    int count() {
+
+    static int count(const tlist2 *thistl) {
         int cnt = 0;
-        for (tlist2 *t = this; t; t = t->next, cnt++) ;
+        for (const tlist2 *t = thistl; t; t = t->next, cnt++) ;
         return (cnt);
     }
 
@@ -327,15 +332,15 @@ struct sHdlSubcContact : public sHdl
 //
 struct gdrec
 {
-    gdrec(BBox *BB, int d, DisplayMode m, stringlist *s)
+    gdrec(const BBox *BB, int d, DisplayMode m, stringlist *s)
         { AOI = *BB; depth = d; mode = m; names = s; }
     ~gdrec() { stringlist::destroy(names); }
 
-    gdrec *dup() {
-        gdrec *gt = this;
+    static gdrec *dup(const gdrec *gt) {
         if (!gt)
             return (0);
-        return (new gdrec(&AOI, depth, mode, stringlist::dup(names)));
+        return (new gdrec(&gt->AOI, gt->depth, gt->mode,
+            stringlist::dup(gt->names)));
     }
 
     BBox AOI;

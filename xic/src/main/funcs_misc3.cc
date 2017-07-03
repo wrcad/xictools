@@ -4261,7 +4261,7 @@ misc3_funcs::IFflatGenCount(Variable *res, Variable *args, void*)
         sPF *gen = (sPF*)hdl->data;
         gen = gen->dup();
         gdrec *rec = ((sHdlGen*)hdl)->rec;
-        rec = rec->dup();
+        rec = gdrec::dup(rec);
         CDs *sdesc = ((sHdlGen*)hdl)->sdesc;
         int cnt = 0;
         for (;;) {

@@ -149,14 +149,14 @@ struct SIifel
             children->free();
         }
 
-    void free() {
-        SIifel *n = this;
-        while (n) {
-            SIifel *nx = n;
-            n = n->next;
-            delete nx;
+    static void destroy(const SIifel *n)
+        {
+            while (n) {
+                const SIifel *nx = n;
+                n = n->next;
+                delete nx;
+            }
         }
-    }
 
     ParseNode *text;
     SIcontrol *children;
@@ -180,14 +180,14 @@ struct SIarg
             next = 0;
         }
 
-    void free() {
-        SIarg *a = this;
-        while (a) {
-            SIarg *ax = a;
-            a = a->next;
-            delete ax;
+    static void destroy(const SIarg *a)
+        {
+            while (a) {
+                const SIarg *ax = a;
+                a = a->next;
+                delete ax;
+            }
         }
-    }
 
     Variable *var;
     SIarg *next;

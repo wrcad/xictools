@@ -1956,8 +1956,8 @@ SIinterp::gettokval(const char **line)
 SIfunc::~SIfunc()
 {
     delete [] sf_name;
-    sf_args->free();
-    sf_variables->free();
+    SIarg::destroy(sf_args);
+    siVariable::destroy(sf_variables);
     sf_text->free();
     delete sf_exprs;
     while (sf_varinit) {
@@ -1971,9 +1971,9 @@ SIfunc::~SIfunc()
 void
 SIfunc::clear()
 {
-    sf_args->free();
+    SIarg::destroy(sf_args);
     sf_args = 0;
-    sf_variables->free();
+    siVariable::destroy(sf_variables);
     sf_variables = 0;
     sf_text->free();
     sf_text = new SIcontrol(0);
@@ -2403,7 +2403,7 @@ SIcontrol::free()
             ParseNode::destroy(cc->co_content.text);
             break;
         case CO_IF:
-            cc->co_content.ifcond->free();
+            SIifel::destroy(cc->co_content.ifcond);
             break;
         default:
             break;

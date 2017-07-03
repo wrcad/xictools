@@ -439,7 +439,7 @@ struct sDevDesc
             delete [] d_model;
             delete [] d_value;
             delete [] d_param;
-            d_variables->free();
+            siVariable::destroy(d_variables);
             d_mprims->free();
         }
 

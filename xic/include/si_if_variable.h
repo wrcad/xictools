@@ -230,9 +230,8 @@ struct Variable
     // Free a list of variables.  This frees the content, unlike the
     // destructor.
     //
-    void free()
+    static void destroy(Variable *v)
         {
-            Variable *v = this;
             while (v) {
                 Variable *vx = v;
                 v = v->next;
