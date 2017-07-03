@@ -1160,7 +1160,7 @@ GTKhelpPopup::show_cache(int mode)
         if (h_cache_list) {
             stringlist *s0 = HLP()->context()->listCache();
             h_cache_list->update(s0, "Cache Entries", 0);
-            s0->free();
+            stringlist::destroy(s0);
         }
         return;
     }
@@ -1170,7 +1170,7 @@ GTKhelpPopup::show_cache(int mode)
     h_cache_list =
         PopUpList(s0, "Cache Entries", 0, h_list_cb, this, false, false);
     h_cache_list->register_usrptr((void**)&h_cache_list);
-    s0->free();
+    stringlist::destroy(s0);
 }
 
 
@@ -2984,7 +2984,7 @@ sClr::clr_action_proc(GtkWidget *caller, void*)
             Clr->clr_listpop = Clr->PopUpList(list, "Colors",
                 "click to select, color name to clipboard",
                 clr_list_callback, 0, false, false);
-            list->free();
+            stringlist::destroy(list);
             if (Clr->clr_listpop)
                 Clr->clr_listpop->register_usrptr((void**)&Clr->clr_listpop);
         }

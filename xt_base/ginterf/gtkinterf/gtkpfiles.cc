@@ -251,7 +251,7 @@ files_bag::update(const char *path, const char **buttons, int numbuttons,
         }
         if (f_check_path_and_update(path))
             relist(s0);
-        s0->free();
+        stringlist::destroy(s0);
     }
 
     if (numbuttons > 0 && buttons) {
@@ -421,7 +421,7 @@ files_bag::relist(stringlist *oldlist)
     // This is faster, and retains the selection.
 
     // Put the list in an array, easier to work with.
-    int len = oldlist->length();
+    int len = stringlist::length(oldlist);
     const char **ary = new const char*[len];
     stringlist *stmp = oldlist;
     for (int i = 0; i < len; i++) {

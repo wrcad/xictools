@@ -74,7 +74,7 @@ cTimeDbg::~cTimeDbg()
 {
     instancePtr = 0;
     delete [] td_logfile;
-    td_msgs->free();
+    stringlist::destroy(td_msgs);
     clear();
 }
 
@@ -134,7 +134,7 @@ cTimeDbg::save_message(const char *fmt, ...)
 void
 cTimeDbg::clear()
 {
-    td_msgs->free();
+    stringlist::destroy(td_msgs);
     td_msgs = 0;
     if (!td_table)
         return;
@@ -243,7 +243,7 @@ cTimeDbg::print(const tv_elt *tv, const char *key, int num)
     if (td_msgs) {
         for (stringlist *s = td_msgs; s; s = s->next)
             fprintf(fp, "%s\n", s->string);
-        td_msgs->free();
+        stringlist::destroy(td_msgs);
         td_msgs = 0;
     }
     if (!tv)
@@ -352,7 +352,7 @@ cTimeDbg::acprint(const tv_elt *tv, int lev)
     if (td_msgs) {
         for (stringlist *s = td_msgs; s; s = s->next)
             fprintf(fp, "%s\n", s->string);
-        td_msgs->free();
+        stringlist::destroy(td_msgs);
         td_msgs = 0;
     }
     if (tv) {

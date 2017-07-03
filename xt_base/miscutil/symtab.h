@@ -1738,7 +1738,7 @@ strtab_t::strings()
     sl_t *sl;
     while ((sl = gen.next()) != 0)
         s0 = new stringlist(lstring::copy(sl->tab_name()), s0);
-    s0->sort();
+    stringlist::sort(s0);
     return (s0);
 }
 
@@ -1765,7 +1765,7 @@ cstrtab_t::strings()
     sl_t *sl;
     while ((sl = gen.next()) != 0)
         s0 = new stringlist(lstring::copy(sl->tab_name()), s0);
-    s0->sort();
+    stringlist::sort(s0);
     return (s0);
 }
 

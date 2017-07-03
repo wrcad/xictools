@@ -900,8 +900,8 @@ cHelp::get_include(const char *str)
 HLPdirList::~HLPdirList()
 {
     delete [] hd_dir;
-    hd_files->free();
-    hd_tags->free();
+    stringlist::destroy(hd_files);
+    stringlist::destroy(hd_tags);
     if (hd_base) {
         for (int i = 0; i < NUMHASH; i++)
             hd_base[i]->free();
@@ -943,7 +943,7 @@ HLPdirList::init()
 void
 HLPdirList::reset()
 {
-    hd_files->free();
+    stringlist::destroy(hd_files);
     hd_files = 0;
     if (hd_base) {
         for (int i = 0; i < NUMHASH; i++)

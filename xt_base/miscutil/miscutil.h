@@ -66,11 +66,10 @@ namespace miscutil
                 delete [] ifc_hw;
             }
 
-        void free()
+        static void destroy(const ifc_t *ifc)
             {
-                ifc_t *ifc = this;
                 while (ifc) {
-                    ifc_t *ix = ifc;
+                    const ifc_t *ix = ifc;
                     ifc = ifc->ifc_next;
                     delete ix;
                 }

@@ -85,7 +85,7 @@ cThreadPool::cThreadPool(int numthreads)
 
 cThreadPool::~cThreadPool()
 {
-    tp_list_bak->free();
+    sTPjobList::destroy(tp_list_bak);
     for (unsigned int i = 0; i < tp_nthreads; i++) {
         tp_state[i].s_die = true;
         tp_state[i].s_ready = true;

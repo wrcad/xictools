@@ -681,41 +681,39 @@ namespace lstring {
 //
 struct stringlist
 {
-    stringlist()
+    stringlist(char *s = 0, stringlist *n = 0)
         {
-            next = 0;
-            string = 0;
+            next = n;
+            string = s;
         }
 
-    stringlist(char *s, stringlist *n)
+    // No destructor needed (string is not freed!).
+
+    // Free the list and the strings.
+    static void destroy(const stringlist *sl)
         {
-            string = s; next = n;
+            while (sl) {
+                const stringlist *sx = sl;
+                sl = sl->next;
+                delete [] sx->string;
+                delete sx;
+            }
         }
 
-    int length()
+    static int length(const stringlist *thissl)
         {
             int n=0;
-            for (stringlist *l = this; l; l = l->next)
+            for (const stringlist *sl = thissl; sl; sl = sl->next)
                 n++;
             return (n);
         }
 
-    void free()
-        {
-            stringlist *cn;
-            for (stringlist *c = this; c; c = cn) {
-                cn = c->next;
-                delete [] c->string;
-                delete c;
-            }
-        }
-
-    char *flatten(const char*);
-    stringlist *dup();
-    void reverse();
-    void sort(bool(*)(const char*, const char*) = 0);
-    struct stringcolumn  *get_columns(int);
-    char *col_format(int, int** = 0);
+    static char *flatten(const stringlist*, const char*);
+    static stringlist *dup(const stringlist*);
+    static stringlist *reverse(stringlist*);
+    static void sort(stringlist*, bool(*)(const char*, const char*) = 0);
+    static struct stringcolumn  *get_columns(const stringlist*, int);
+    static char *col_format(const stringlist*, int, int** = 0);
 
     stringlist *next;
     char *string;
@@ -725,37 +723,30 @@ struct stringlist
 //
 struct string2list
 {
-    string2list()
-        {
-            next = 0;
-            string = 0;
-            value = 0;
-        }
-
-    string2list(char *s, char *v, string2list *n)
+    string2list(char *s = 0, char *v = 0, string2list *n = 0)
         {
             next = n;
             string = s;
             value = v;
         }
 
-    int length()
+    static void destroy(const string2list *sl)
         {
-            int n=0;
-            for (string2list *l = this; l; l = l->next)
-                n++;
-            return (n);
+            while (sl) {
+                const string2list *sx = sl;
+                sl = sl->next;
+                delete [] sx->string;
+                delete [] sx->value;
+                delete sx;
+            }
         }
 
-    void free()
+    static int length(const string2list *thissl)
         {
-            string2list *cn;
-            for (string2list *c = this; c; c = cn) {
-                cn = c->next;
-                delete [] c->string;
-                delete [] c->value;
-                delete c;
-            }
+            int n=0;
+            for (const string2list *l = thissl; l; l = l->next)
+                n++;
+            return (n);
         }
 
     string2list *next;
@@ -767,41 +758,34 @@ struct string2list
 //
 struct stringnumlist
 {
-    stringnumlist()
-        {
-            next = 0;
-            string = 0;
-            num = 0;
-        }
-
-    stringnumlist(char *s, int n, stringnumlist *nx)
+    stringnumlist(char *s = 0, int n = 0, stringnumlist *nx = 0)
         {
             string = s;
             num = n;
             next = nx;
         }
 
-    int length()
+    static void destroy(const stringnumlist *sl)
+        {
+            while (sl) {
+                const stringnumlist *sx = sl;
+                sl = sl->next;
+                delete [] sx->string;
+                delete sx;
+            }
+        }
+
+    static int length(const stringnumlist *thissl)
         {
             int n=0;
-            for (stringnumlist *l = this; l; l = l->next)
+            for (const stringnumlist *l = thissl; l; l = l->next)
                 n++;
             return (n);
         }
 
-    void free()
-        {
-            stringnumlist *cn;
-            for (stringnumlist *c = this; c; c = cn) {
-                cn = c->next;
-                delete [] c->string;
-                delete c;
-            }
-        }
-
-    stringnumlist *dup();
-    void sort_by_string();
-    void sort_by_num();
+    static stringnumlist *dup(const stringnumlist*);
+    static void sort_by_string(stringnumlist*);
+    static void sort_by_num(stringnumlist*);
 
     stringnumlist *next;
     char *string;
@@ -814,10 +798,10 @@ struct stringnumlist
 //
 struct stringcolumn
 {
-    stringcolumn(stringlist**, int);
+    stringcolumn(const stringlist**, int);
     ~stringcolumn()
         {
-            sc_words->free();
+            stringlist::destroy(sc_words);
         }
 
     void pad();
@@ -845,33 +829,27 @@ private:
 template <class T>
 struct itemlist
 {
-    itemlist()
-        {
-            next = 0;
-            item = 0;
-        }
-
     itemlist(T i, itemlist *n)
         {
             next = n;
             item = i;
         }
 
-    int length()
+    static void destroy(const itemlist *il)
         {
-            int n=0;
-            for (itemlist *l = this; l; l = l->next)
-                n++;
-            return (n);
+            while (il) {
+                const itemlist *ix = il;
+                il = il->next;
+                delete ix;
+            }
         }
 
-    void free()
+    static int length(const itemlist *thisil)
         {
-            itemlist *cn;
-            for (itemlist *c = this; c; c = cn) {
-                cn = c->next;
-                delete c;
-            }
+            int n=0;
+            for (itemlist *l = thisil; l; l = l->next)
+                n++;
+            return (n);
         }
 
     itemlist    *next;
@@ -988,11 +966,10 @@ struct sMacro
             delete [] m_argv;
         }
 
-    void free()
+    static void destroy(const sMacro *m)
         {
-            sMacro *m = this;
             while (m) {
-                sMacro *mx = m;
+                const sMacro *mx = m;
                 m = m->next;
                 delete mx;
             }
@@ -1023,7 +1000,7 @@ class MacroHandler
 {
 public:
     MacroHandler() { Macros = 0; }
-    ~MacroHandler() { Macros->free(); }
+    ~MacroHandler() { sMacro::destroy(Macros); }
 
     bool parse_macro(const char*, bool, bool = false);
     char *macro_expand(const char*, bool* = 0, const char* = 0, int = 0);
@@ -1079,3 +1056,4 @@ private:
 };
 
 #endif
+

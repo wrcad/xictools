@@ -95,7 +95,7 @@ public:
         {
             for (stringlist *s = tmp_deletes; s; s = s->next)
                 unlink(s->string);
-            tmp_deletes->free();
+            stringlist::destroy(tmp_deletes);
             tmp_deletes = 0;
         }
 

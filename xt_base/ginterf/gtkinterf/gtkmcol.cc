@@ -113,8 +113,8 @@ GTKmcolPopup::GTKmcolPopup(gtk_bag *owner, stringlist *symlist,
         mc_buttons[i] = 0;
     mc_save_pop = 0;
     mc_msg_pop = 0;
-    mc_strings = symlist->dup();
-    mc_strings->sort();
+    mc_strings = stringlist::dup(symlist);
+    stringlist::sort(mc_strings);
 
     mc_alloc_width = 0;
     mc_drag_x = mc_drag_y = 0;
@@ -251,7 +251,7 @@ GTKmcolPopup::~GTKmcolPopup()
         *p_usrptr = 0;
     if (p_caller)
         GRX->Deselect(p_caller);
-    mc_strings->free();
+    stringlist::destroy(mc_strings);
 
     gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
         GTK_SIGNAL_FUNC(mc_quit_proc), this);
@@ -283,9 +283,9 @@ GTKmcolPopup::update(stringlist *symlist, const char *title)
             return;
     }
 
-    mc_strings->free();
-    mc_strings = symlist->dup();
-    mc_strings->sort();
+    stringlist::destroy(mc_strings);
+    mc_strings = stringlist::dup(symlist);
+    stringlist::sort(mc_strings);
 
     mc_page = 0;
     relist();
@@ -379,8 +379,8 @@ GTKmcolPopup::relist()
 
     int cols = (wb_textarea->allocation.width - 4)/
         GTKfont::stringWidth(wb_textarea, 0);
-    char *s = s0->col_format(cols);
-    s0->free();
+    char *s = stringlist::col_format(s0, cols);
+    stringlist::destroy(s0);
     text_set_chars(wb_textarea, s);
     delete [] s;
 }
