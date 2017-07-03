@@ -280,14 +280,14 @@ cTechCniIn::dispLayerPurposePairs(lispnode *p0, lispnode*, char **err)
                 tab.add(sl->string, 0, false);
         }
         stringlist *names = tab.names();
-        names->sort();
+        stringlist::sort(names);
         for (stringlist *sl = names; sl; sl = sl->next) {
             lstr.add("    ");
             lstr.add(sl->string);
             lstr.add_c('\n');
         }
-        names->free();
-        badpkts->free();
+        stringlist::destroy(names);
+        stringlist::destroy(badpkts);
     }
     if (badstips) {
         lstr.add(
@@ -298,14 +298,14 @@ cTechCniIn::dispLayerPurposePairs(lispnode *p0, lispnode*, char **err)
                 tab.add(sl->string, 0, false);
         }
         stringlist *names = tab.names();
-        names->sort();
+        stringlist::sort(names);
         for (stringlist *sl = names; sl; sl = sl->next) {
             lstr.add("    ");
             lstr.add(sl->string);
             lstr.add_c('\n');
         }
-        names->free();
-        badstips->free();
+        stringlist::destroy(names);
+        stringlist::destroy(badstips);
     }
     if (badclrs) {
         lstr.add(
@@ -316,14 +316,14 @@ cTechCniIn::dispLayerPurposePairs(lispnode *p0, lispnode*, char **err)
                 tab.add(sl->string, 0, false);
         }
         stringlist *names = tab.names();
-        names->sort();
+        stringlist::sort(names);
         for (stringlist *sl = names; sl; sl = sl->next) {
             lstr.add("    ");
             lstr.add(sl->string);
             lstr.add_c('\n');
         }
-        names->free();
-        badclrs->free();
+        stringlist::destroy(names);
+        stringlist::destroy(badclrs);
     }
     if (lstr.string() && CDvdb()->getVariable(VA_DrfDebug))
         Log()->WarningLog(compat, lstr.string());

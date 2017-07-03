@@ -727,7 +727,7 @@ SpOut::ckt_deck(CDs *sdesc, bool add_sc)
 
     globs->free();
     for (int i = 0; i < tsize; i++)
-        tnames[i]->free();
+        stringlist::destroy(tnames[i]);
     delete [] tnames;
 
     // Sort the element cards, and check for duplicate tokens.
@@ -910,7 +910,7 @@ SpOut::def_node_term_list(CDs *sdesc)
             }
         }
     }
-    defnames->free();
+    stringlist::destroy(defnames);
     return (nm0);
 }
 

@@ -687,7 +687,7 @@ cGroupDesc::clear_extract()
 
     delete gd_flatten_tab;
     gd_flatten_tab = 0;
-    gd_lvs_msgs->free();
+    stringlist::destroy(gd_lvs_msgs);
     gd_lvs_msgs = 0;
 
     // Clear the cached pin layer in the conductor layer descs.  The
@@ -1873,7 +1873,7 @@ cGroupDesc::fix_connections_rc(SymTab *done_tab)
                     }
                     for (itemlist<int_list*> *j = list; j; j = j->next)
                         j->item->free();
-                    list->free();
+                    itemlist<int_list*>::destroy(list);
                     if (!ref_list)
                         return;
                 }
@@ -1940,7 +1940,7 @@ cGroupDesc::fix_connections_rc(SymTab *done_tab)
     }
     for (itemlist<int_list*> *l = ref_list; l; l = l->next)
         l->item->free();
-    ref_list->free();
+    itemlist<int_list*>::destroy(ref_list);
 }
 
 

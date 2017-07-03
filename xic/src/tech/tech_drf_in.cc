@@ -111,9 +111,9 @@ cTechDrfIn::~cTechDrfIn()
     }
     delete c_packet_rtab;
 
-    c_badpkts->free();
-    c_badstips->free();
-    c_badclrs->free();
+    stringlist::destroy(c_badpkts);
+    stringlist::destroy(c_badstips);
+    stringlist::destroy(c_badclrs);
 }
 
 
@@ -292,14 +292,14 @@ cTechDrfIn::report_unresolved(sLstr &lstr)
                 tab.add(sl->string, 0, false);
         }
         stringlist *names = tab.names();
-        names->sort();
+        stringlist::sort(names);
         for (stringlist *sl = names; sl; sl = sl->next) {
             lstr.add("    ");
             lstr.add(sl->string);
             lstr.add_c('\n');
         }
-        names->free();
-        c_badpkts->free();
+        stringlist::destroy(names);
+        stringlist::destroy(c_badpkts);
         c_badpkts = 0;
     }
     if (c_badstips) {
@@ -311,14 +311,14 @@ cTechDrfIn::report_unresolved(sLstr &lstr)
                 tab.add(sl->string, 0, false);
         }
         stringlist *names = tab.names();
-        names->sort();
+        stringlist::sort(names);
         for (stringlist *sl = names; sl; sl = sl->next) {
             lstr.add("    ");
             lstr.add(sl->string);
             lstr.add_c('\n');
         }
-        names->free();
-        c_badstips->free();
+        stringlist::destroy(names);
+        stringlist::destroy(c_badstips);
         c_badstips = 0;
     }
     if (c_badclrs) {
@@ -330,14 +330,14 @@ cTechDrfIn::report_unresolved(sLstr &lstr)
                 tab.add(sl->string, 0, false);
         }
         stringlist *names = tab.names();
-        names->sort();
+        stringlist::sort(names);
         for (stringlist *sl = names; sl; sl = sl->next) {
             lstr.add("    ");
             lstr.add(sl->string);
             lstr.add_c('\n');
         }
-        names->free();
-        c_badclrs->free();
+        stringlist::destroy(names);
+        stringlist::destroy(c_badclrs);
         c_badclrs = 0;
     }
 }

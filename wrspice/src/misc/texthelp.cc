@@ -255,7 +255,7 @@ text_help::putlist(HLPtopic *t, HLPtopList *tl, int base)
         }
         TTY.send("\n");
     }
-    s0->free();
+    stringlist::destroy(s0);
     return (nbuts);
 }
 

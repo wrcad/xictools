@@ -93,7 +93,7 @@ fxJob::~fxJob()
         for (stringlist *sl = j_infiles; sl; sl = sl->next)
             unlink(sl->string);
     }
-    j_infiles->free();
+    stringlist::destroy(j_infiles);
     if (j_flags & FX_UNLINK_OUT)
         unlink(j_outfile);
     delete [] j_outfile;
@@ -1360,7 +1360,7 @@ fxJob::fh_get_matrix(FILE *fp, zmat_t **mret)
     zmat_t *m;
     if (*mret && (*mret)->size == size) {
         m = *mret;
-        rstrs->free();
+        stringlist::destroy(rstrs);
         rstrs = 0;
         m->freq = freq;
         for (int i = 0; i < size; i++) {
@@ -1389,7 +1389,7 @@ fxJob::fh_get_matrix(FILE *fp, zmat_t **mret)
             if (!m->row_strings[i])
                 m->row_strings[i] = lstring::copy("unknown");
         }
-        rstrs->free();
+        stringlist::destroy(rstrs);
     }
     for (int i = 0; i < size; i++) {
         char *str;

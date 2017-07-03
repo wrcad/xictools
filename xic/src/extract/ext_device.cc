@@ -379,7 +379,7 @@ cExt::listDevices()
             s0 = new stringlist(lstr.string_trim(), s0);
         }
     }
-    s0->sort();
+    stringlist::sort(s0);
     return (s0);
 }
 
@@ -729,7 +729,7 @@ cGroupDesc::list_devs()
             s0 = new stringlist(lstring::copy(buf), s0);
         }
     }
-    s0->sort();
+    stringlist::sort(s0);
     return (s0);
 }
 
@@ -3533,7 +3533,7 @@ sDevDesc::checkEquiv(const sDevDesc *dref)
     if (dref->d_prmconts) {
         if (!d_prmconts) {
             // Silently inherit the reference permutes in this case.
-            d_prmconts = dref->d_prmconts->dup();
+            d_prmconts = stringlist::dup(dref->d_prmconts);
         }
         else {
             // We accept different ordering, but the names must match.

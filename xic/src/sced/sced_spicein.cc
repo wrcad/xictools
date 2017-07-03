@@ -419,7 +419,7 @@ cSced::extractFromSpice(CDs *sdesc, FILE *fp, int modeflag)
     // add the dotcards as spicetext labels at top level
     if (dotcards) {
         add_spicetext(sdesc, dotcards);
-        dotcards->free();
+        stringlist::destroy(dotcards);
     }
 
     const BBox *sBB = sdesc->BB();
@@ -1059,7 +1059,7 @@ cSpiceBuilder::place(CDs *sdesc, const char *key, bool create)
             }
             stringlist *sl = new stringlist(lstr.string_trim(), 0);
             add_spicetext(sdesc, sl);
-            sl->free();
+            stringlist::destroy(sl);
         }
         else {
             // The links following nx are the actual nodes, in reverse

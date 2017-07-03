@@ -292,9 +292,9 @@ namespace {
         stringlist *names = 0;
         if (ftab) {
             names = ftab->names();
-            names->sort();
+            stringlist::sort(names);
         }
-        int len = names->length() + pnet_build_preset(0);
+        int len = stringlist::length(names) + pnet_build_preset(0);
         sExtCmdBtn *btns = new sExtCmdBtn[len];
         int i = pnet_build_preset(btns);
         int user_start = i;
@@ -309,7 +309,7 @@ namespace {
             s->string = 0;
             i++;
         }
-        names->free();
+        stringlist::destroy(names);
 
         pnet_cmd.set_btns(btns, i);
         pnet_opts = new sDumpOpts(btns, i, user_start);
@@ -622,9 +622,9 @@ namespace {
         stringlist *names = 0;
         if (ftab) {
             names = ftab->names();
-            names->sort();
+            stringlist::sort(names);
         }
-        int len = names->length() + enet_build_preset(0);
+        int len = stringlist::length(names) + enet_build_preset(0);
         sExtCmdBtn *btns = new sExtCmdBtn[len];
         int i = enet_build_preset(btns);
         int user_start = i;
@@ -639,7 +639,7 @@ namespace {
             s->string = 0;
             i++;
         }
-        names->free();
+        stringlist::destroy(names);
 
         enet_cmd.set_btns(btns, i);
         enet_opts = new sDumpOpts(btns, i, user_start);

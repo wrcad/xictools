@@ -533,7 +533,7 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
         PL()->ShowPrompt("Deck inclusion expansion failed.");
         if (Errs()->has_error())
             Log()->ErrorLog(SpiceIPC, Errs()->get_error());
-        deck->free();
+        stringlist::destroy(deck);
         dspPkgIf()->SetWorking(false);
         return (false);
     }
@@ -548,10 +548,10 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
     if (!ok && ipc_msg_skt > 0) {
         Errs()->get_error();  // Throw this away.
         PL()->ShowPrompt("WRspice returned error, source failed.");
-        deck->free();
+        stringlist::destroy(deck);
         return (false);
     }
-    deck->free();
+    stringlist::destroy(deck);
     if (ipc_msg_skt < 0) {
         PL()->ShowPrompt(msg);
         if (Errs()->has_error())
@@ -775,7 +775,7 @@ cSpiceIPC::FileToSpice(const char *fname, char **outbuf)
     fclose(fp);
 
     if (err) {
-        s0->free();
+        stringlist::destroy(s0);
         return (false);
     }
 #ifdef DEMO_EXPORT
@@ -783,12 +783,12 @@ cSpiceIPC::FileToSpice(const char *fname, char **outbuf)
     // locally.
 #else
     if (!expand_includes(&s0, "decksource")) {
-        s0->free();
+        stringlist::destroy(s0);
         return (false);
     }
 #endif
     bool ok = deck_to_spice(s0, outbuf);
-    s0->free();
+    stringlist::destroy(s0);
     return (ok);
 }
 
@@ -1433,11 +1433,11 @@ cSpiceIPC::init_remote(const char *c_spice_host)
             lstr.add_c('\n');
         }
         Errs()->add_error(lstr.string());
-        s0->free();
+        stringlist::destroy(s0);
         CLOSESOCKET(sd);
         return (-1);
     }
-    s0->free();
+    stringlist::destroy(s0);
 
     int tfd = sd;
     sd = open_skt(hent, port);

@@ -853,7 +853,7 @@ geom2_funcs::IFdeleteEmpties(Variable *res, Variable *args, void*)
                     dcnt++;
                 }
             }
-            sl->free();
+            stringlist::destroy(sl);
             if (didone) {
                 cbin.fixBBs();
                 XM()->PopUpCells(0, MODE_UPD);

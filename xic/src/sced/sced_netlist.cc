@@ -169,7 +169,7 @@ cSced::getElecNodeContactNames(CDs *sdesc, int node)
         if (ps->enode() == node)
             s0 = new stringlist(lstring::copy(ps->term_name()->string()), s0);
     }
-    s0->sort();
+    stringlist::sort(s0);
     return (s0);
 }
 
@@ -248,7 +248,7 @@ cSced::getElecContactNames(CDs *sdesc, int *size)
     while ((h = gen.next()) != 0) {
         int n = (long)h->stTag;
         stringlist *sl = (stringlist*)h->stData;
-        sl->sort();
+        stringlist::sort(sl);
         if (n >= 0 && n <= max_node)
             // should always be true
             ary[n] = sl;

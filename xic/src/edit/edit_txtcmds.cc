@@ -970,12 +970,12 @@ edit_bangcmds::rename(const char *s)
     PL()->ErasePrompt();
     DSP()->MainWdesc()->ShowTitle();
     if (er) {
-        char *list = er->col_format(80);
+        char *list = stringlist::col_format(er, 80);
         Log()->ErrorLogV(mh::EditOperation,
             "The following cells were not renamed, likely due to "
             "conflict:\n%s\n",
             list);
-        er->free();
+        stringlist::destroy(er);
         delete [] list;
     }
 }

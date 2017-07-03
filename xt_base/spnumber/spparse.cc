@@ -1010,6 +1010,6 @@ Parser::clear_stack(int sp)
         }
         sp--;
     }
-    sl0->free();
+    stringlist::destroy(sl0);
 }
 

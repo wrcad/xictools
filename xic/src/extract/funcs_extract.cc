@@ -3686,7 +3686,7 @@ extract_funcs::IFlistPdevMeasures(Variable *res, Variable *args, void*)
             stringlist *s0 = 0;
             for (sMeasure *m = t->elt->desc()->measures(); m; m = m->next())
                 s0 = new stringlist(lstring::copy(m->name()), s0);
-            s0->reverse();
+            stringlist::reverse(s0);
             sHdl *nhdl = new sHdlString(s0);
             res->type = TYP_HANDLE;
             res->content.value = nhdl->id;

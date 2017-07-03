@@ -95,11 +95,11 @@ sLibMap::expand_includes(stringlist **deck, const char *word)
             }
         }
         if (err) {
-            s0->free();
+            stringlist::destroy(s0);
             return (false);
         }
     }
-    (*deck)->free();
+    stringlist::destroy(*deck);
     if (word)
         *deck = s0;
     else {

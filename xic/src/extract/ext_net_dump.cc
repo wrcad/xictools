@@ -1804,7 +1804,7 @@ cExtNets::stage3()
                         SymTab *st = (SymTab*)h->stData;
                         stringlist *names = st->names();
                         ok = add_listed_nets(flat, names, oas, chd_cache, in);
-                        names->free();
+                        stringlist::destroy(names);
                         if (!ok)
                             break;
                     }

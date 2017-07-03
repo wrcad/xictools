@@ -942,7 +942,7 @@ cEdit::plInitMenuLen()
         i++;
         if (i == ed_menu_len) {
             if (pd->next) {
-                pd->next->free();
+                stringlist::destroy(pd->next);
                 pd->next = 0;
                 if (ed_popup)
                     ed_popup->rebuild_menu();

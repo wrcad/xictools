@@ -403,7 +403,7 @@ namespace {
                 int len = 2;
                 if (hdl->type == HDLstring) {
                     stringlist *s0 = (stringlist*)hdl->data;
-                    len += s0->length();
+                    len += stringlist::length(s0);
                 }
                 PyObject *list = PyList_New(len);
                 PyList_SetItem(list, 0, PyString_FromString("xic_handle"));

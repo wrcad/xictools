@@ -178,7 +178,7 @@ namespace {
                 lines->free();
                 delete stab;
                 calls->free();
-                dotparams->free();
+                stringlist::destroy(dotparams);
                 models->free();
             }
 
