@@ -452,20 +452,6 @@ wStackElt::wStackElt(BBox *b, const char *nm, wStackElt *nx)
     strncpy(name, nm, 8);
     next = nx;
 }
-
-
-// Free element list.
-//
-void
-wStackElt::free()
-{
-    wStackElt *w = this;
-    while (w) {
-        wStackElt *wn = w->next;
-        delete w;
-        w = wn;
-    }
-}
 // End wStackElt functions
 
 
@@ -474,9 +460,9 @@ wStackElt::free()
 void
 wStack::clear()
 {
-    w_views->free();
+    wStackElt::destroy(w_views);
     w_views = 0;
-    w_viewhist->free();
+    wStackElt::destroy(w_viewhist);
     w_viewhist = 0;
 }
 

@@ -78,14 +78,23 @@ namespace dsp_mark {
         // mdDspMain     Show mark in schematic cell of name-matching windows.
         // mdDspSymb     Show mark in symbolic cell of name-matching windows.
 
+        enum gp_style { gp_box, gp_barrel, gp_ullr, gp_diam, gp_oct };
+
         sMark();
         virtual ~sMark() { }
 
-        enum gp_style { gp_box, gp_barrel, gp_ullr, gp_diam, gp_oct };
+        static void destroy(const sMark *m)
+            {
+                while (m) {
+                    const sMark *mx  = m;
+                    m = m->mNext;
+                    delete mx;
+                }
+            }
 
         int pixel(WindowDesc*);
         void gp_mark(WindowDesc*, int, bool, gp_style);
-        void free();
+        static void destroy();
         virtual void show(WindowDesc*, bool) = 0;
         virtual void addBB(WindowDesc*, BBox*) = 0;
 
@@ -884,11 +893,11 @@ cDisplay::ShowCellTerminalMarks(bool display)
                     mm->show(wdesc, ERASE);
             }
         }
-        mp->free();
-        me->free();
-        ms->free();
-        mb->free();
-        my->free();
+        sMark::destroy(mp);
+        sMark::destroy(me);
+        sMark::destroy(ms);
+        sMark::destroy(mb);
+        sMark::destroy(my);
     }
 }
 
@@ -968,11 +977,11 @@ cDisplay::ShowInstTerminalMarks(bool display, CDc *cdesc, int vecix)
                     mm->show(wdesc, ERASE);
             }
         }
-        mp->free();
-        me->free();
-        ms->free();
-        mb->free();
-        my->free();
+        sMark::destroy(mp);
+        sMark::destroy(me);
+        sMark::destroy(ms);
+        sMark::destroy(mb);
+        sMark::destroy(my);
     }
 }
 
@@ -1030,7 +1039,7 @@ cDisplay::ShowPhysTermList(bool display, CDpin *tlist)
             for (sMark *mm = m0; mm; mm = mm->mNext)
                 mm->show(wdesc, ERASE);
         }
-        m0->free();
+        sMark::destroy(m0);
     }
 }
 
@@ -1088,7 +1097,7 @@ cDisplay::ShowPhysTermList(bool display, CDcont *tlist)
             for (sMark *mm = m0; mm; mm = mm->mNext)
                 mm->show(wdesc, ERASE);
         }
-        m0->free();
+        sMark::destroy(m0);
     }
 }
 
@@ -1854,7 +1863,7 @@ cDisplay::EraseMarks(int type)
         for (sMark *mm = m0; mm; mm = mm->mNext)
             mm->show(wdesc, ERASE);
     }
-    m0->free();
+    sMark::destroy(m0);
 }
 
 
@@ -2347,7 +2356,7 @@ sMK::clear(int type)
 {
     if (type < 0)
         return;
-    mark_heads[listnum(type)]->free();
+    sMark::destroy(mark_heads[listnum(type)]);
     mark_heads[listnum(type)] = 0;
 }
 
@@ -2924,17 +2933,6 @@ sMark::gp_mark(WindowDesc *wdesc, int deltap, bool decimal,
         wdesc->ViewportText(nbuf, x0 + xos, y2 - yos, scale, false);
     else
         wdesc->ViewportText(nbuf, x0 + yos, y2 - xos, scale, true);
-}
-
-
-void
-sMark::free()
-{
-    sMark *mn;
-    for (sMark *mm = this; mm; mm = mn) {
-        mn = mm->mNext;
-        delete mm;
-    }
 }
 
 

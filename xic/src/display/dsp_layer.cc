@@ -75,11 +75,6 @@ DspLayerParams::~DspLayerParams()
 void
 DspLayerParams::defaultColor()
 {
-    {
-        DspLayerParams *dlpt = this;
-        if (!dlpt)
-            return;
-    }
     double h = fmod(alloc_count * 111.0, 360.0);
     double s = 0.6;
     double v = 0.85;
@@ -95,11 +90,6 @@ DspLayerParams::defaultColor()
 void
 DspLayerParams::setColor(int r, int g, int b)
 {
-    {
-        DspLayerParams *dlpt = this;
-        if (!dlpt)
-            return;
-    }
     lp_red = r;
     lp_green = g;
     lp_blue = b;

@@ -395,18 +395,6 @@ sRuler::bbox(BBox &BB, WindowDesc *wdesc)
     }
     return (false);
 }
-
-
-void
-sRuler::free()
-{
-    sRuler *r = this;
-    while (r) {
-        sRuler *n = r->next;
-        delete r;
-        r = n;
-    }
-}
 // End of sRuler functions
 
 

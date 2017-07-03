@@ -147,9 +147,18 @@ struct sRuler
     sRuler(int wn, int x1, int y1, int x2, int y2, bool m, double l,
         sRuler *nx) : p1(x1, y1), p2(x2, y2)
         { win_num = wn; mirror = m; loff = 0.0; loff = l; next = nx; }
+
+    static void destroy(const sRuler *r)
+        {
+            while (r) {
+                const sRuler *rx = r;
+                r = r->next;
+                delete rx;
+            }
+        }
+
     void show(bool, bool = false);
     bool bbox(BBox&, WindowDesc*);
-    void free();
 
     Point_c p1, p2;
     int win_num;     // window number of ruler (indep. of graphics context)

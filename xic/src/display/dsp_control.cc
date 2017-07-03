@@ -210,19 +210,6 @@ WindowDesc::GhostUpdate(const BBox *AOI)
 }
 
 
-// Ghost drawing finished, uopdate the highlighting.
-//
-void
-WindowDesc::GhostFinalUpdate()
-{
-    WindowDesc *wdt = this;
-    if (wdt && w_accum_mode == WDaccumAccum) {
-        w_accum_mode = WDaccumDone;
-        Update(&w_accum_rect);
-    }
-}
-
-
 // Update the specified area (in window coordinates) from the backing
 // pixmap, if available.  If no backing pixmap, redraw.
 //

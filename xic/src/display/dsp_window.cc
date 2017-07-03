@@ -176,11 +176,6 @@ WindowDesc::~WindowDesc()
 void
 WindowDesc::ShowTitleDirect()
 {
-    {
-        WindowDesc *wdt = this;
-        if (!wdt)
-            return;
-    }
     if (!Wbag())
         return;
     int win = WinNumber();
@@ -242,11 +237,6 @@ namespace {
 void
 WindowDesc::ShowTitle()
 {
-    {
-        WindowDesc *wdt = this;
-        if (!wdt)
-            return;
-    }
     if (!Wbag())
         return;
     int win = WinNumber();
@@ -427,11 +417,6 @@ WindowDesc::SetSymbol(const CDcbin *cbin)
 bool
 WindowDesc::IsSimilar(const WindowDesc *w, unsigned int flags)
 {
-    {
-        WindowDesc *wdt = this;
-        if (!wdt)
-            return (false);
-    }
     if (!w)
         return (false);
 
@@ -521,11 +506,6 @@ WindowDesc::IsSimilar(DisplayMode m, const WindowDesc *w, unsigned int flags)
 bool
 WindowDesc::IsSimilarNonSymbolic(const WindowDesc *w)
 {
-    {
-        WindowDesc *wdt = this;
-        if (!wdt)
-            return (false);
-    }
     if (!w || w_dbtype != w->w_dbtype || w_mode != Electrical)
         return (false);
     if (w_dbtype == WDcddb) {
@@ -558,32 +538,25 @@ WindowDesc::IsShowing(const CDs *sd)
 
 // Return the cell pointer of the current cell being displayed as
 // CDDB.  This returns the symbolic cell if displaying in symbolic
-// mode, unless no_symb is true.  Note that 'this' can be null,
-// defaults to main window.
+// mode, unless no_symb is true.
 //
 CDs *
 WindowDesc::CurCellDesc(DisplayMode m, bool no_symb) const
 {
-    const WindowDesc *wd = this;
-    if (!wd)
-        wd = DSP()->MainWdesc();
-    if (!wd)
+    if (DbType() != WDcddb)
         return (0);
-    if (wd->DbType() != WDcddb)
+    if (!CurCellName())
         return (0);
-    if (!wd->CurCellName())
-        return (0);
-    CDs *sd = CDcdb()->findCell(wd->CurCellName(), m);
+    CDs *sd = CDcdb()->findCell(CurCellName(), m);
     if (!sd)
         return (0);
     if (m == Electrical && !no_symb) {
         const CDc *top_cdesc = 0;
-        if (wd->AttribC()->no_elec_symbolic() &&
-                wd->CurCellName() == wd->TopCellName())
+        if (AttribC()->no_elec_symbolic() && CurCellName() == TopCellName())
             top_cdesc = CD_NO_SYMBOLIC;
-        else if (wd->CurCellName() != wd->TopCellName() &&
+        else if (CurCellName() != TopCellName() &&
                 DSP()->MainWdesc()->Mode() == Electrical &&
-                DSP()->MainWdesc()->CurCellName() == wd->CurCellName())
+                DSP()->MainWdesc()->CurCellName() == CurCellName())
             top_cdesc = DSP()->context_cell();
         CDs *srep = sd->symbolicRep(top_cdesc);
         if (srep)
@@ -595,27 +568,21 @@ WindowDesc::CurCellDesc(DisplayMode m, bool no_symb) const
 
 // Return the cell pointer of the top cell being displayed as CDDB. 
 // This returns the symbolic cell if displaying in symbolic mode,
-// unless no_symb is true. Note that 'this' can be null, defaults to
-// main window.
+// unless no_symb is true.
 //
 CDs *
 WindowDesc::TopCellDesc(DisplayMode m, bool no_symb) const
 {
-    const WindowDesc *wd = this;
-    if (!wd)
-        wd = DSP()->MainWdesc();
-    if (!wd)
+    if (DbType() != WDcddb)
         return (0);
-    if (wd->DbType() != WDcddb)
+    if (!TopCellName())
         return (0);
-    if (!wd->TopCellName())
-        return (0);
-    CDs *sd = CDcdb()->findCell(wd->TopCellName(), m);
+    CDs *sd = CDcdb()->findCell(TopCellName(), m);
     if (!sd)
         return (0);
     if (m == Electrical && !no_symb) {
         const CDc *top_cdesc = 0;
-        if (wd->AttribC()->no_elec_symbolic())
+        if (AttribC()->no_elec_symbolic())
             top_cdesc = CD_NO_SYMBOLIC;
         CDs *srep = sd->symbolicRep(top_cdesc);
         if (srep)
@@ -715,12 +682,9 @@ WindowDesc::SetID()
 int
 WindowDesc::WinNumber() const
 {
-    const WindowDesc *wdt = this;
-    if (wdt) {
-        for (int i = 0; i < DSP_NUMWINS; i++) {
-            if (DSP()->Window(i) == this)
-                return (i);
-        }
+    for (int i = 0; i < DSP_NUMWINS; i++) {
+        if (DSP()->Window(i) == this)
+            return (i);
     }
     return (-1);
 }
