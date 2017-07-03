@@ -34,7 +34,7 @@ CCOBJS = $(CCFILES:.cc=.o)
 INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil \
   -I$(LPATH)/malloc $(PSINCL)
 
-$(LIB_TARGET): $(CCOBJS)
+$(LIB_TARGET): include $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
 	    rm -f $(LIB_TARGET); \
 	fi
@@ -47,6 +47,9 @@ $(LIB_TARGET): $(CCOBJS)
 paramsub.cc: $(LPATH)/spnumber/paramsub.cc
 	cp -f $(LPATH)/spnumber/paramsub.cc .
 
+include:
+	cd ../../include; $(MAKE)
+
 depend: paramsub.cc
 	@echo depending in wrspice/fte
 	@if [ x$(DEPEND_DONE) = x ]; then \
@@ -55,9 +58,9 @@ depend: paramsub.cc
 	fi
 
 clean:
-	-rm *.o $(LIB_TARGET)
+	-rm *.o $(LIB_TARGET) paramsub.cc
 
 distclean:
-	-rm *.o $(LIB_TARGET) Makefile paramsub.cc
+	-rm *.o $(LIB_TARGET) paramsub.cc Makefile
 
 #######################################################################

@@ -2605,7 +2605,7 @@ sLine::process_conditionals(sParamTab *ptab)
         }
         else if (lstring::cimatch(PARAM_KW, dd->li_line)) {
             if (!blhead && !insc) {
-                ptab = ptab->extract_params(dd->li_line);
+                ptab = sParamTab::extract_params(ptab, dd->li_line);
                 if (ptab->errString) {
                     dd->li_error = ptab->errString;
                     ptab->errString = 0;

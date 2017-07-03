@@ -203,13 +203,14 @@ namespace {
 }
 
 
+// Static function.
 // Override any currently assigned params in 'this' list, or add if
 // not found.  'this' can be null.  The str is a .param line.
 //
 sParamTab *
-sParamTab::extract_params(const char *str)
+sParamTab::extract_params(sParamTab *thispt, const char *str)
 {
-    sParamTab *ptab = this;
+    sParamTab *ptab = thispt;
     if (!str)
         return (ptab);
 
@@ -272,13 +273,14 @@ sParamTab::extract_params(const char *str)
 }
 
 
+// Static function.
 // Update the param values in this from the passed table.  If the override
 // name is not found in this, add the assignment to this.
 //
 sParamTab *
-sParamTab::update(const sParamTab *ptab)
+sParamTab::update(sParamTab *thispt, const sParamTab *ptab)
 {
-    sParamTab *p0 = this;
+    sParamTab *p0 = thispt;
     if (!ptab)
         return (p0);
     if (!p0)
@@ -316,11 +318,6 @@ sParamTab::update(const sParamTab *ptab)
 void
 sParamTab::update(const char *str)
 {
-    {
-        sParamTab *pt = this;
-        if (!pt)
-            return;
-    }
     if (!str)
         return;
     while (*str) {
@@ -395,11 +392,6 @@ sParamTab::eval(const sParam *p) const
 void
 sParamTab::collapse()
 {
-    {
-        sParamTab *pt = this;
-        if (!pt)
-            return;
-    }
     sHgen gen(pt_table);
     sHent *h;
     while ((h = gen.next()) != 0) {
@@ -486,6 +478,7 @@ namespace {
 }
 
 
+// Static function.
 // Update a line containing param=value constructs.  The RHS of each
 // definition is updated.  This is applied to .model, .param, .subckt,
 // and X lines (according to mode).
@@ -500,18 +493,19 @@ namespace {
 //             to the left, e.g., in sequences like "p1=1 p2=2 p3="p1+p2'".
 //
 void
-sParamTab::defn_subst(char **str, PTmode mode, int nskip) const
+sParamTab::defn_subst(const sParamTab *thispt, char **str, PTmode mode,
+    int nskip)
 {
     if (!str || !*str)
         return;
 
-    const sParamTab *ptab = this;
+    const sParamTab *ptab = thispt;
     if (!ptab && mode != PTsubc)
         return;
     sParamTab *tmp_tab = 0;
     if (mode == PTsubc) {
         tmp_tab = new sParamTab;
-        tmp_tab = tmp_tab->update(ptab);
+        tmp_tab = update(tmp_tab, ptab);
         ptab = tmp_tab;
     }
 
@@ -621,11 +615,6 @@ sParamTab::defn_subst(char **str, PTmode mode, int nskip) const
 void
 sParamTab::line_subst(char **str) const
 {
-    {
-        const sParamTab *pt = this;
-        if (!pt)
-            return;
-    }
     if (!str || !*str)
         return;
 
@@ -897,6 +886,7 @@ sParamTab::subst(char **tok) const
 }
 
 
+// Static function.
 // Grab the param = value and advance pstr.  If mode == PTparam, fail
 // on a bad construct, otherwise silently skip over bad constructs. 
 // If mode == PTsngl, return isolated (i.e., without following value)
@@ -904,7 +894,7 @@ sParamTab::subst(char **tok) const
 //
 bool
 sParamTab::tokenize(const char **pstr, char **pname, char **psub,
-    PTmode mode, const char **pstart) const
+    PTmode mode, const char **pstart)
 {
     *pname = 0;
     *psub = 0;

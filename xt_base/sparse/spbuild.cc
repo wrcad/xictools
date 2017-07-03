@@ -224,7 +224,6 @@ spMatrixFrame::spMatrixFrame(int size, int flags)
 
     RelThreshold                    = DEFAULT_THRESHOLD;
     AbsThreshold                    = 0.0;
-    ID                              = SPARSE_ID;
 #if SP_OPT_INTERRUPT
     InterruptCallback               = 0;
 #endif
@@ -300,8 +299,6 @@ spMatrixFrame::spMatrixFrame(int size, int flags)
 //
 spMatrixFrame::~spMatrixFrame()
 {
-    ASSERT(IS_SPARSE(this));
-
     // Deallocate the vectors that are located in the matrix frame.
     delete [] FirstInCol;
     delete [] FirstInRow;
@@ -339,8 +336,6 @@ spMatrixFrame::~spMatrixFrame()
 void
 spMatrixFrame::spClear()
 {
-    ASSERT(IS_SPARSE(this));
-
     if (Matrix)
         Matrix->clear();
     else {
@@ -406,7 +401,7 @@ spMatrixFrame::spClear()
 spREAL *
 spMatrixFrame::spGetElement(int inrow, int incol)
 {
-    ASSERT(IS_SPARSE(this) AND inrow >= 0 AND incol >= 0);
+    ASSERT(inrow >= 0 AND incol >= 0);
 
     if ((inrow == 0) OR (incol == 0))
         return (&TrashCan.Real);
@@ -822,8 +817,6 @@ spGetInitInfo(spREAL *pElement)
 int
 spMatrixFrame::spInitialize(spInitializeFunc pInit)
 {
-    ASSERT(IS_SPARSE(this));
-
     // Initialize the matrix
     for (int j = Size; j > 0; j--) {
         spMatrixElement *pElement = FirstInCol[j];
@@ -1408,11 +1401,6 @@ spHtab::~spHtab()
 spMatrixElement *
 spHtab::get(int row, int col)
 {
-    {
-        spHtab *ht = this;
-        if (!ht)
-            return (0);
-    }
     if (allocated) {
         getcalls++;
         unsigned int i = number_hash(row, col, mask);
@@ -1440,16 +1428,6 @@ spHtab::link(spHelt *h)
 void
 spHtab::stats(unsigned int *pg, unsigned int *pa)
 {
-    {
-        spHtab *ht = this;
-        if (!ht) {
-            if (pg)
-                *pg = 0;
-            if (pa)
-                *pa = 0;
-            return;
-        }
-    }
     if (pg)
         *pg = getcalls;
     if (pa)

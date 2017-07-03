@@ -1129,6 +1129,9 @@ public:
         }
 
 #endif
+    // Former macros.
+    spBOOLEAN IS_VALID()    { return (Error >= spOKAY && Error < spFATAL); }
+    spBOOLEAN IS_FACTORED() { return (Factored && !NeedsOrdering); }
 
     spBOOLEAN spNeedsOrdering()
         {
@@ -1339,7 +1342,7 @@ private:
     //
     spMatrixElement *sph_get(int row, int col)
         {
-            return (ElementHashTab->get(row, col));
+            return (ElementHashTab ? ElementHashTab->get(row, col) : 0);
         }
 
     // Return the sph_get call count and the allocated size.  The call
@@ -1347,6 +1350,13 @@ private:
     //
     void sph_stats(unsigned int *pg, unsigned int *pa)
         {
+            if (!ElementHashTab) {
+                if (pg)
+                    *pg = 0;
+                if (pa)
+                    *pa = 0;
+                return;
+            }
             ElementHashTab->stats(pg, pa);
         }
 
@@ -1509,7 +1519,6 @@ private:
     spREAL                      RelThreshold;
     spREAL                      AbsThreshold;
     spMatrixElement             TrashCan;
-    unsigned long               ID;
 #if SP_OPT_INTERRUPT
     int                         (*InterruptCallback)();
 #endif

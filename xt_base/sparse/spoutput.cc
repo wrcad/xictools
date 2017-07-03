@@ -175,8 +175,6 @@ void
 spMatrixFrame::spPrint(int printReordered, int data, int header, FILE *fp)
 #endif
 {
-    ASSERT(IS_SPARSE(this));
-
     double *pImagElements[PRINTER_WIDTH/10+1];
     double smallestDiag = 0.0, smallestElement = 0.0;
     double largestElement = 0.0, largestDiag = 0.0;
@@ -437,8 +435,6 @@ spMatrixFrame::spPrint(int printReordered, int data, int header, FILE *fp)
 void
 spMatrixFrame::spPrint(int printReordered, int data, int header)
 {
-    ASSERT(IS_SPARSE(this));
-
     double *pImagElements[PRINTER_WIDTH/10+1];
     double smallestDiag = 0.0, smallestElement = 0.0;
     double largestElement = 0.0, largestDiag = 0.0;
@@ -735,8 +731,6 @@ int
 spMatrixFrame::spFileMatrix(char *file, char *label, int reordered, int data,
     int header)
 {
-    ASSERT(IS_SPARSE(this));
-
     // Open file matrix file in write mode.
     FILE *pMatrixFile;
     if ((pMatrixFile = fopen(file, "w")) == 0)
@@ -891,7 +885,7 @@ spMatrixFrame::spFileMatrix(char *file, char *label, int reordered, int data,
 int
 spMatrixFrame::spFileVector(char *file, spREAL *rhs IMAG_RHS_P)
 {
-    ASSERT(IS_SPARSE(this) AND RHS != 0)
+    ASSERT(RHS != 0)
 
     // Open File in append mode.
     FILE *pMatrixFile;
@@ -998,8 +992,6 @@ spMatrixFrame::spFileVector(char *file, spREAL *rhs IMAG_RHS_P)
 int
 spMatrixFrame::spFileStats(char *file, char *label)
 {
-    ASSERT(IS_SPARSE(this));
-
     // Open File in append mode
     FILE *pStatsFile;
     if ((pStatsFile = fopen(file, "a")) == 0)

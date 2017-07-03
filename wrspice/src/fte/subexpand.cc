@@ -368,7 +368,7 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
             return (0);
         }
         sg_stack[sg_stack_ptr].subs = blk->cb_subs->copy();
-        *parm_ptr = (*parm_ptr)->update(blk->cb_prms);
+        *parm_ptr = sParamTab::update(*parm_ptr, blk->cb_prms);
         IP.setModCache(blk->cb_mods);
 
         // Swap in the cached function definitions.
@@ -487,20 +487,20 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
             // Above-scope parameter assignments override
             // lower assignments.
 
-            ptab = ptab->update(sss->su_params);
+            ptab = sParamTab::update(ptab, sss->su_params);
             if (params) {
                 if (!ptab)
                     ptab = new sParamTab;
                 ptab->update(params);
             }
-            ptab = ptab->update(*parm_ptr);
+            ptab = sParamTab::update(ptab, *parm_ptr);
         }
         else {
             // The "local" expansion mode, lower level parameter
             // assignments override upper level.
 
-            ptab = ptab->update(*parm_ptr);
-            ptab = ptab->update(sss->su_params);
+            ptab = sParamTab::update(ptab, *parm_ptr);
+            ptab = sParamTab::update(ptab, sss->su_params);
             if (params) {
                 if (!ptab)
                     ptab = new sParamTab;
@@ -2155,7 +2155,7 @@ sSubc::sSubc(sLine *def)
     // First extract params defined in .subckt line.
     su_params = 0;
     if (pars) {
-        su_params = su_params->extract_params(pars);
+        su_params = sParamTab::extract_params(su_params, pars);
         if (sParamTab::errString) {
             def->errcat(sParamTab::errString);
             delete [] sParamTab::errString;
@@ -2169,7 +2169,7 @@ sSubc::sSubc(sLine *def)
 
     for (sLine *li = def; li; li = li->next()) {
         if (lstring::cimatch(PARAM_KW, li->line())) {
-            su_params = su_params->extract_params(li->line());
+            su_params = sParamTab::extract_params(su_params, li->line());
             li->comment_out();
             if (sParamTab::errString) {
                 li->errcat(sParamTab::errString);
