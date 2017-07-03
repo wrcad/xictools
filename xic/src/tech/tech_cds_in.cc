@@ -2057,7 +2057,7 @@ cTechCdsIn::spacingTables(lispnode *p0, lispnode*, char **err)
                 if (st->length)
                     st->length |= STF_IGNORE;
 
-                if (!st->check_sort()) {
+                if (!sTspaceTable::check_sort(st)) {
                     sLstr lstr;
                     q->print(&lstr);
                     Log()->WarningLogV(compat,

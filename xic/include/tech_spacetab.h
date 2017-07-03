@@ -56,9 +56,10 @@ struct sTspaceTable
             return (dimen);
         }
 
-    bool check_sort();
-    char *to_lisp_string(const char*, const char*, const char*) const;
-    void tech_print(FILE*, sLstr*) const;
+    static bool check_sort(sTspaceTable*);
+    static char *to_lisp_string(const sTspaceTable*, const char*,
+        const char*, const char*);
+    static void tech_print(const sTspaceTable*, FILE*, sLstr*);
 
     static sTspaceTable *tech_parse(const char**, const char**);
 

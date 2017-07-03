@@ -967,7 +967,7 @@ namespace {
 
         ~esbak_t()
             {
-                via_list->free();
+                sVia::destroy(via_list);
                 delete exclude;
                 delete [] gp_lname;
             }
@@ -1001,7 +1001,7 @@ namespace {
 
                 TechLayerParams *lp = tech_prm(ldesc);
 
-                lp->via_list()->free();
+                sVia::destroy(lp->via_list());
                 lp->set_via_list(via_list);
                 via_list = 0;
 

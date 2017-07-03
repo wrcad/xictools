@@ -250,7 +250,7 @@ cTech::Print(FILE *techfp)
         sStdViaList *vl = StdViaList();
         for (sStdViaList *sv = vl; sv; sv = sv->next)
             sv->std_via->tech_print(techfp);
-        vl->free();
+        sStdViaList::destroy(vl);
         CommentDump(techfp, 0, tBlkNone, 0, Tkw.StandardVia());
         fprintf(techfp, "\n");
     }

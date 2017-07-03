@@ -214,11 +214,10 @@ struct sStdViaList
             std_via = v;
         }
 
-    void free()
+    static void destroy(const sStdViaList *vl)
         {
-            sStdViaList *vl = this;
             while (vl) {
-                sStdViaList *vx = vl;
+                const sStdViaList *vx = vl;
                 vl = vl->next;
                 delete vx;
             }

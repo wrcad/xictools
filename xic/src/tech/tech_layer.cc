@@ -49,11 +49,10 @@ namespace {
                 ldesc = ld;
             }
 
-        void free()
+        static void destroy(const CDllp *p)
             {
-                CDllp *p = this;
                 while (p) {
-                    CDllp *px = p;
+                    const CDllp *px = p;
                     p = p->next;
                     delete px;
                 }
@@ -377,7 +376,7 @@ TechLayerParams::~TechLayerParams()
 {
     DrcIf()->deleteRules(&lp_rules);
     delete lp_exclude;
-    lp_vialist->free();
+    sVia::destroy(lp_vialist);
     delete [] lp_gp_lname;
 }
 // End of TechLayerParams functions.

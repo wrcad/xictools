@@ -623,11 +623,6 @@ sStdVia::open()
 void
 sStdVia::tech_print(FILE *fp) const
 {
-    {
-        const sStdVia *svt = this;
-        if (!svt)
-            return;
-    }
     if (!via() || !bottom() || !top())
         return;
     fprintf(fp, "%s %-16s %-10s %-10s %s \\\n", Tkw.StandardVia(),

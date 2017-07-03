@@ -65,7 +65,7 @@ Ldb3d::Ldb3d()
 Ldb3d::~Ldb3d()
 {
     Zlist::destroy(db3_zlref);
-    db3_stack->free();
+    Layer3d::destroy(db3_stack);
     delete db3_groups;
 }
 
@@ -152,7 +152,7 @@ Ldb3d::order_layers()
     // variable is set, in which case no layers are planarizing by
     // default.
 
-    db3_stack->free();
+    Layer3d::destroy(db3_stack);
     db3_stack = 0;
 
     Layer3d *lend = 0;
