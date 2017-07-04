@@ -861,10 +861,10 @@ struct CDol
             return (o0);
         }
 
-    static void destroy(const CDol *ol)
+    static void destroy(CDol *ol)
         {
             while (ol) {
-                const CDol *ox = ol;
+                CDol *ox = ol;
                 ol = ol->next;
                 delete ox;
             }

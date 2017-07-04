@@ -515,7 +515,7 @@ again:
                             if (insert(s->odesc) == PFerror)
                                 return (esp_error(this));
                         }
-                        stack->free();
+                        pf_stack_elt::destroy(stack);
                         for (CDol *o = trash; o; o = o->next) {
                             if (insert(o->odesc) == PFerror)
                                 return (esp_error(this));

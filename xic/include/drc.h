@@ -229,10 +229,10 @@ struct DRCerrRet
     char *errmsg(const CDo*);
     const char *which_test(char*);
 
-    static void destroy(const DRCerrRet *er)
+    static void destroy(DRCerrRet *er)
         {
             while (er) {
-                const DRCerrRet *ex = er;
+                DRCerrRet *ex = er;
                 er = er->next();
                 delete ex;
             }
@@ -285,10 +285,10 @@ struct DRCedgeCnd
             ec_lspec.set_lname(ex);
         }
 
-    static void destroy(const DRCedgeCnd *e)
+    static void destroy(DRCedgeCnd *e)
         {
             while (e) {
-                const DRCedgeCnd *ex = e;
+                DRCedgeCnd *ex = e;
                 e = e->ec_next;
                 delete ex;
             }
@@ -324,10 +324,10 @@ struct DRCtestCnd
             tc_lspec.set_lname(ex);
         }
 
-    static void destroy(const DRCtestCnd *t)
+    static void destroy(DRCtestCnd *t)
         {
             while (t) {
-                const DRCtestCnd *tx = t;
+                DRCtestCnd *tx = t;
                 t = t->tc_next;
                 delete tx;
             }

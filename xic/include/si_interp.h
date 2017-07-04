@@ -149,10 +149,10 @@ struct SIifel
             SIcontrol::destroy(children);
         }
 
-    static void destroy(const SIifel *n)
+    static void destroy(SIifel *n)
         {
             while (n) {
-                const SIifel *nx = n;
+                SIifel *nx = n;
                 n = n->next;
                 delete nx;
             }
@@ -180,10 +180,10 @@ struct SIarg
             next = 0;
         }
 
-    static void destroy(const SIarg *a)
+    static void destroy(SIarg *a)
         {
             while (a) {
-                const SIarg *ax = a;
+                SIarg *ax = a;
                 a = a->next;
                 delete ax;
             }

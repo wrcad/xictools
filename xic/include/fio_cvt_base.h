@@ -355,10 +355,10 @@ struct mitem_t
             overwrite_elec = false;
         }
 
-    static void destroy(const mitem_t *m)
+    static void destroy(mitem_t *m)
         {
             while (m) {
-                const mitem_t *mn = m->next;
+                mitem_t *mn = m->next;
                 delete m;
                 m = mn;
             }

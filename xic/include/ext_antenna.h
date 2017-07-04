@@ -140,10 +140,10 @@ struct abl_t
             next = n;
         }
 
-    static void destroy(const abl_t *bl)
+    static void destroy(abl_t *bl)
         {
             while (bl) {
-                const abl_t *bx = bl;
+                abl_t *bx = bl;
                 bl = bl->next;
                 delete bx;
             }

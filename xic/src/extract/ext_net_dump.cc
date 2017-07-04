@@ -1084,7 +1084,7 @@ namespace {
             const char *name = h->stTag;
             emrec_t *em = (emrec_t*)h->stData;
             delete [] name;
-            em->free();
+            emrec_t::destroy(em);
             delete h;
         }
         delete st;
@@ -1337,15 +1337,15 @@ cExtNets::reduce(FILE *fp, SymTab *st1, SymTab *st2, int x1, int y1,
                 Errs()->add_error("reduce: reduction failed.");
                 delete [] name1;
                 delete [] name2;
-                em1->free();
-                em2->free();
+                emrec_t::destroy(em1);
+                emrec_t::destroy(em2);
                 return (false);
             }
         }
         delete [] name1;
         delete [] name2;
-        em1->free();
-        em2->free();
+        emrec_t::destroy(em1);
+        emrec_t::destroy(em2);
     }
 
     return (true);

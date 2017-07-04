@@ -221,10 +221,10 @@ struct sp_line_t
 #endif
         }
 
-    static void destroy(const sp_line_t *t)
+    static void destroy(sp_line_t *t)
         {
             while (t) {
-                const sp_line_t *tx = t;
+                sp_line_t *tx = t;
                 t = t->li_next;
                 delete tx;
             }

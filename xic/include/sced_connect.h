@@ -83,10 +83,10 @@ public:
                 nl_np = p;
             }
 
-        static void destroy(const node_list *n)
+        static void destroy(node_list *n)
             {
                 while (n) {
-                    const node_list *nx = n;
+                    node_list *nx = n;
                     n = n->nl_next;
                     delete nx;
                 }

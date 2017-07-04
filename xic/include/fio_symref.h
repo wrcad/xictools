@@ -260,10 +260,10 @@ struct syrlist_t
 {
     syrlist_t(symref_t *s, syrlist_t *n) { symref = s; next = n; }
 
-    static void destroy(const syrlist_t *syl)
+    static void destroy(syrlist_t *syl)
         {
             while (syl) {
-                const syrlist_t *syx = syl;
+                syrlist_t *syx = syl;
                 syl = syl->next;
                 delete syx;
             }

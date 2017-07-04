@@ -90,10 +90,10 @@ template<class T> struct tlist
 {
     tlist(T *e, tlist *n)   { elt = e; next = n; }
 
-    static void destroy(const tlist *s)
+    static void destroy(tlist *s)
         {
             while (s) {
-                const tlist *sx = s;
+                tlist *sx = s;
                 s = s->next;
                 delete sx;
             }
@@ -114,10 +114,10 @@ template<class T> struct tlist2
 {
     tlist2(T *e, void *x, tlist2 *n) { elt = e; xtra = x; next = n; }
 
-    static void destroy(const tlist2 *s)
+    static void destroy(tlist2 *s)
         {
             while (s) {
-                const tlist2 *sx = s;
+                tlist2 *sx = s;
                 s = s->next;
                 delete sx;
             }

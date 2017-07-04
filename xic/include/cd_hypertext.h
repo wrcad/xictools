@@ -119,10 +119,10 @@ struct hyParent
             pY = y;
         }
 
-    static void destroy(const hyParent *p)
+    static void destroy(hyParent *p)
         {
             while (p) {
-                const hyParent *px = p;
+                hyParent *px = p;
                 p = p->pNext;
                 delete px;
             }
@@ -369,10 +369,10 @@ struct hyList
             delete hlEnt;
         }
 
-    static void destroy(const hyList *h)
+    static void destroy(hyList *h)
         {
             while (h) {
-                const hyList *hx = h;
+                hyList *hx = h;
                 h = h->hlNext;
                 delete hx;
             }

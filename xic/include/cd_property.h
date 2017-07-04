@@ -1870,10 +1870,10 @@ struct CDpl
             next = n;
         }
 
-    static void destroy(const CDpl *p)
+    static void destroy(CDpl *p)
         {
             while (p) {
-                const CDpl *px = p;
+                CDpl *px = p;
                 p = p->next;
                 delete px;
             }

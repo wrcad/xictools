@@ -88,12 +88,12 @@ struct umenu
             destroy(u_menu);
         }
 
-    static void destroy(const umenu *u)
+    static void destroy(umenu *u)
         {
             while (u) {
-                umenu *un = u->u_next;
-                delete u;
-                u = un;
+                umenu *ux = u;
+                u = u->u_next;
+                delete ux;
             }
         }
 

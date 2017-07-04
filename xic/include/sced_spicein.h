@@ -72,10 +72,10 @@ namespace {
 
         ~sNodeLink() { delete [] node; }
 
-        static void destroy(const sNodeLink *n)
+        static void destroy(sNodeLink *n)
             {
                 while (n) {
-                    const sNodeLink *x = n;
+                    sNodeLink *x = n;
                     n = n->next;
                     delete x;
                 }
@@ -102,10 +102,10 @@ namespace {
                 delete [] subst;
             }
 
-        static void destroy(const sGlobNode *g)
+        static void destroy(sGlobNode *g)
             {
                 while (g) {
-                    const sGlobNode *x = g;
+                    sGlobNode *x = g;
                     g = g->next;
                     delete x;
                 }
@@ -135,10 +135,10 @@ namespace {
                 delete [] text;
             }
 
-        static void destroy(const sModLink *m)
+        static void destroy(sModLink *m)
             {
                 while (m) {
-                    const sModLink *x = m;
+                    sModLink *x = m;
                     m = m->next;
                     delete x;
                 }
@@ -179,10 +179,10 @@ namespace {
                 sModLink::destroy(models);
             }
 
-        static void destroy(const sSubcLink *s)
+        static void destroy(sSubcLink *s)
             {
                 while (s) {
-                    const sSubcLink *x = s;
+                    sSubcLink *x = s;
                     s = s->next;
                     delete x;
                 }

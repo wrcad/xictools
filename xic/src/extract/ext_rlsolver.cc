@@ -121,8 +121,8 @@ RLsolver::~RLsolver()
     delete rl_matrix;
     delete [] rl_contacts;
     Zlist::destroy(rl_zlist);
-    rl_h_edges->free();
-    rl_v_edges->free();
+    RLedge::destroy(rl_h_edges);
+    RLedge::destroy(rl_v_edges);
 }
 
 

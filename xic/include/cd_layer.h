@@ -398,10 +398,10 @@ struct CDll
     CDll() { next = 0; ldesc = 0; }
     CDll(CDl *l, CDll *n) { next = n; ldesc = l; }
 
-    static void destroy(const CDll *l)
+    static void destroy(CDll *l)
         {
             while (l) {
-                const CDll *lx = l;
+                CDll *lx = l;
                 l = l->next;
                 delete lx;
             }

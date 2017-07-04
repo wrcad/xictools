@@ -78,9 +78,8 @@ struct sElecNetList
                     delete sdcopy[i];
             }
 
-        void free()
+        static void destroy(sdlink *s)
             {
-                sdlink *s = this;
                 while (s) {
                     sdlink *x = s;
                     s = s->next;

@@ -1706,7 +1706,7 @@ fhNodeGen::clear()
 {
     ng_ncnt = 1;
     for (int i = 0; i < FH_NDHASHW; i++) {
-        ng_tab[i]->free();
+        fhNode::destroy(ng_tab[i]);
         ng_tab[i] = 0;
     }
 }

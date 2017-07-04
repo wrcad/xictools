@@ -76,9 +76,8 @@ struct fhNode
             n_next = nx;
         }
 
-    void free()
+    static void destroy(fhNode *n)
         {
-            fhNode *n = this;
             while (n) {
                 fhNode *x = n;
                 n = n->n_next;
@@ -113,9 +112,8 @@ struct fhNodeList
             next = x;
         }
 
-    void free()
+    static void destroy(fhNodeList *n)
         {
-            fhNodeList *n = this;
             while (n) {
                 fhNodeList *x = n;
                 n = n->next;
@@ -168,9 +166,8 @@ struct fhSegment
             s_next = n;
         }
 
-    void free()
+    static void destroy(fhSegment *s)
         {
-            fhSegment *s = this;
             while (s) {
                 fhSegment *x = s;
                 s = s->s_next;
@@ -231,12 +228,11 @@ struct fhTermList
             delete [] tl_portname;
             delete [] tl_sfx;
             delete [] tl_points;
-            tl_nodes->free();
+            fhNodeList::destroy(tl_nodes);
         }
 
-    void free()
+    static void destroy(fhTermList *l)
         {
-            fhTermList *l = this;
             while (l) {
                 fhTermList *x = l;
                 l = l->next();
@@ -258,7 +254,7 @@ struct fhTermList
 
     void set_nodes(fhNodeList *l)
         {
-            tl_nodes->free();
+            fhNodeList::destroy(tl_nodes);
             tl_nodes = l;
             for (fhNodeList *n = tl_nodes; n; n = n->next)
                 n->nd->inc_ref();
@@ -294,12 +290,11 @@ struct fhConductor
         {
             glZlistRef3d::destroy(hc_zlist3d_ref);
             glZlist3d::destroy(hc_zlist3d);
-            hc_segments->free();
+            fhSegment::destroy(hc_segments);
         }
 
-    void free()
+    static void destroy(fhConductor *c)
         {
-            fhConductor *c = this;
             while (c) {
                 fhConductor *x = c;
                 c = c->hc_next;
@@ -365,12 +360,12 @@ struct fhLayer
 
     ~fhLayer()
         {
-            fl_list->free();
+            fhConductor::destroy(fl_list);
         }
 
     void clear_list()
         {
-            fl_list->free();
+            fhConductor::destroy(fl_list);
             fl_list = 0;
         }
 
@@ -398,7 +393,7 @@ struct fhLayout : public Ldb3d
             delete [] fhl_layers;
             if (fhl_terms) {
                 for (int i = 0; i < num_groups(); i++)
-                    fhl_terms[i]->free();
+                    fhTermList::destroy(fhl_terms[i]);
                 delete [] fhl_terms;
             }
         }

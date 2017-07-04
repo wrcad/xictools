@@ -1092,7 +1092,7 @@ cGroupDesc::add_subckts()
     // groups.
     ret = connect_to_subs(&cg1);
     if (ret != XIok) {
-        cl->free();
+        sSubcLink::destroy(cl);
         return (ret);
     }
 #ifdef TIME_DBG
@@ -1103,7 +1103,7 @@ cGroupDesc::add_subckts()
     // Now look for connections between groups in different subcells.
     ret = connect_between_subs(&cg1);
     if (ret != XIok) {
-        cl->free();
+        sSubcLink::destroy(cl);
         return (ret);
     }
 #ifdef TIME_DBG
@@ -1158,7 +1158,7 @@ cGroupDesc::add_subckts()
             fixup_subc_contacts(s);
     }
 
-    cl->free();
+    sSubcLink::destroy(cl);
     renumber_groups();
 #ifdef TIME_DBG
     Tdbg()->accum_timing("other_stuff");

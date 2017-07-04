@@ -72,10 +72,10 @@ struct CDvecex
             destroy(vx_group);
         }
 
-    static void destroy(const CDvecex *v)
+    static void destroy(CDvecex *v)
         {
             while (v) {
-                const CDvecex *vx = v;
+                CDvecex *vx = v;
                 v = v->next();
                 delete vx;
             }
@@ -417,10 +417,10 @@ struct CDnetex
             CDvecex::destroy(nx_vecex);
         }
 
-    static void destroy(const CDnetex *n)
+    static void destroy(CDnetex *n)
         {
             while (n) {
-                const CDnetex *nx = n;
+                CDnetex *nx = n;
                 n = n->next();
                 delete nx;
             }

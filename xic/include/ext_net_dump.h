@@ -148,9 +148,8 @@ struct emrec_t
             group = g;
         }
 
-    void free()
+    static void destroy(emrec_t *em)
         {
-            emrec_t *em = this;
             while (em) {
                 emrec_t *ex = em;
                 em = em->next;

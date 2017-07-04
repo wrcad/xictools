@@ -49,10 +49,10 @@ namespace ext_duality {
                 sg_next = nx;
             }
 
-        static void destroy(const sSymGrp *s)
+        static void destroy(sSymGrp *s)
             {
                 while (s) {
-                    const sSymGrp *x = s;
+                    sSymGrp *x = s;
                     s = s->next();
                     delete x;
                 }
@@ -80,10 +80,10 @@ namespace ext_duality {
                 sd_next = nx;
             }
 
-        static void destroy(const sSymDev *s)
+        static void destroy(sSymDev *s)
             {
                 while (s) {
-                    const sSymDev *x = s;
+                    sSymDev *x = s;
                     s = s->next();
                     delete x;
                 }
@@ -111,10 +111,10 @@ namespace ext_duality {
                 ss_next = nx;
             }
 
-        static void destroy(const sSymSubc *s)
+        static void destroy(sSymSubc *s)
             {
                 while (s) {
-                    const sSymSubc *x = s;
+                    sSymSubc *x = s;
                     s = s->next();
                     delete x;
                 }
@@ -141,10 +141,10 @@ namespace ext_duality {
                 sc_next = nx;
             }
 
-        static void destroy(const sSymCll *s)
+        static void destroy(sSymCll *s)
             {
                 while (s) {
-                    const sSymCll *x = s;
+                    sSymCll *x = s;
                     s = s->next();
                     delete x;
                 }
@@ -196,10 +196,10 @@ namespace ext_duality {
                 sSymSubc::destroy(sb_subc_assoc);
             }
 
-        static void destroy(const sSymBrk *s)
+        static void destroy(sSymBrk *s)
             {
                 while (s) {
-                    const sSymBrk *x = s;
+                    sSymBrk *x = s;
                     s = s->next();
                     delete x;
                 }

@@ -146,10 +146,10 @@ struct CDp
 
     virtual bool is_elec()        const { return (false); }
 
-    static void destroy(const CDp *p)
+    static void destroy(CDp *p)
         {
             while (p) {
-                const CDp *px = p;
+                CDp *px = p;
                 p = p->p_next;
                 delete px;
             }

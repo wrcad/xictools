@@ -72,10 +72,10 @@ struct GEOblock
 
     // Destroy the entire list.
     //
-    static void destroy(const GEOblock *g)
+    static void destroy(GEOblock *g)
         {
             while (g) {
-                const GEOblock *gx = g;
+                GEOblock *gx = g;
                 g = g->next();
                 delete gx;
             }

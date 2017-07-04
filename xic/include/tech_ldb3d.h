@@ -58,10 +58,10 @@ struct Layer3d
 
     ~Layer3d();
 
-    static void destroy(const Layer3d *l)
+    static void destroy(Layer3d *l)
         {
             while (l) {
-                const Layer3d *x = l;
+                Layer3d *x = l;
                 l = l->l3_next;
                 delete x;
             }

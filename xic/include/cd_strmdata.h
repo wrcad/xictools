@@ -50,10 +50,10 @@ struct strm_idata
                 max = x;
             }
 
-        static void destroy(const idata_list *l)
+        static void destroy(idata_list *l)
             {
                 while (l) {
-                    const idata_list *lx = l;
+                    idata_list *lx = l;
                     l = l->next;
                     delete lx;
                 }

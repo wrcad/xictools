@@ -334,10 +334,10 @@ struct CDcl
             cdesc = c;
         }
 
-    static void destroy(const CDcl *cl)
+    static void destroy(CDcl *cl)
         {
             while (cl) {
-                const CDcl *cx = cl;
+                CDcl *cx = cl;
                 cl = cl->next;
                 delete cx;
             }
@@ -393,10 +393,10 @@ struct CDclxy : public CDcxy
             next = n;
         }
 
-    static void destroy(const CDclxy *c)
+    static void destroy(CDclxy *c)
         {
             while (c) {
-                const CDclxy *cx = c;
+                CDclxy *cx = c;
                 c = c->next;
                 delete cx;
             }

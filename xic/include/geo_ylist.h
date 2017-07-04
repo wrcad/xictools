@@ -49,9 +49,9 @@ struct Ylist
     Ylist(Zlist*, bool = false);
     ~Ylist() { Zlist::destroy(y_zlist); }
 
-    static void destroy(const Ylist *thisyl)
+    static void destroy(Ylist *thisyl)
         {
-            const Ylist *y = thisyl;
+            Ylist *y = thisyl;
             while (y) {
                 const Ylist *yx = y;
                 y = y->next;

@@ -64,24 +64,6 @@ RTelem::~RTelem()
 }
 
 
-// Static function.
-// Free the element and its descendents.
-//
-void
-RTelem::destroy(const RTelem *thisel)
-{
-    const RTelem *rte = thisel;
-    if (rte) {
-        RTelem *rn;
-        for (RTelem *r = rte->children(); r; r = rn) {
-            rn = r->sibling();
-            destroy(r);
-        }
-        delete rte;
-    }
-}
-
-
 //---- Diagnostics
 
 // Test the BB's and pointers (diagnostic).

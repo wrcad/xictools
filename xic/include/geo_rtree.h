@@ -68,6 +68,19 @@ struct RTelem
     // This should explicitly call subclass destructors.
     ~RTelem();
 
+    // Free the element and its descendents.
+    static void destroy(RTelem *rte)
+        {
+            if (rte) {
+                RTelem *rn;
+                for (RTelem *r = rte->children(); r; r = rn) {
+                    rn = r->sibling();
+                    destroy(r);
+                }
+                delete rte;
+            }
+        }
+
     // Ordering
     bool op_gt(const RTelem *r) const
         {
@@ -409,7 +422,6 @@ private:
         }
 
 public:
-    static void destroy(const RTelem*);
     int test();
     void show(int, int = 1);
     void list_test();

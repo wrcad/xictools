@@ -39,9 +39,9 @@ struct sNodeName
         }
     ~sNodeName();
 
-    static void destroy(const sNodeName *n) {
+    static void destroy(sNodeName *n) {
         while (n) {
-            const sNodeName *nx = n;
+            sNodeName *nx = n;
             n = n->nn_next;
             delete nx;
         }
@@ -74,10 +74,10 @@ struct xyname_t
             xy_y = y;
         }
 
-    static void destroy(const xyname_t *n)
+    static void destroy(xyname_t *n)
         {
             while (n) {
-                const xyname_t *nx = n;
+                xyname_t *nx = n;
                 n = n->xy_next;
                 delete nx;
             }

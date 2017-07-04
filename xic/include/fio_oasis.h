@@ -184,10 +184,10 @@ struct oas_layer_map_elem
         is_text = false;
     }
 
-    static void destroy(const oas_layer_map_elem *el)
+    static void destroy(oas_layer_map_elem *el)
     {
         while (el) {
-            const oas_layer_map_elem *e = el;
+            oas_layer_map_elem *e = el;
             el = el->next;
             delete e;
         }

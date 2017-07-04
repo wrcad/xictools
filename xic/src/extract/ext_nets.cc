@@ -204,7 +204,7 @@ sElecNetList::~sElecNetList()
         }
         delete [] et_list;
     }
-    et_fcells->free();
+    sdlink::destroy(et_fcells);
     delete et_ftab;
 }
 

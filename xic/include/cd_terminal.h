@@ -313,10 +313,10 @@ struct CDtlist
             tl_term = t;
         }
 
-    static void destroy(const CDtlist *t)
+    static void destroy(CDtlist *t)
         {
             while (t) {
-                const CDtlist*x = t;
+                CDtlist*x = t;
                 t = t->tl_next;;
                 delete x;
             }

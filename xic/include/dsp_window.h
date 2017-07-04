@@ -225,10 +225,10 @@ struct wStackElt
     wStackElt() { next = 0; memset(name, 0, sizeof(name)); }
     wStackElt(BBox*, const char*, wStackElt*);
 
-    static void destroy(const wStackElt *w)
+    static void destroy(wStackElt *w)
         {
             while (w) {
-                const wStackElt *wx = w;
+                wStackElt *wx = w;
                 w = w->next;
                 delete wx;
             }

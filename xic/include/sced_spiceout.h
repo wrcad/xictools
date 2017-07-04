@@ -64,10 +64,10 @@ public:
                 return (0);
             }
 
-        static void destroy(const sp_nmlist_t *n)
+        static void destroy(sp_nmlist_t *n)
             {
                 while (n) {
-                    const sp_nmlist_t *nx = n;
+                    sp_nmlist_t *nx = n;
                     n = n->next;
                     delete nx;
                 }

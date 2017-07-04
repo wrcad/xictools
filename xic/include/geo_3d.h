@@ -189,10 +189,10 @@ struct qflist3d
             next = n;
         }
 
-    static void destroy(const qflist3d *q)
+    static void destroy(qflist3d *q)
         {
             while (q) {
-                const qflist3d *x = q;
+                qflist3d *x = q;
                 q = q->next;
                 delete x;
             }
@@ -372,10 +372,10 @@ struct Zlist3d
             next = n;
         }
 
-    static void destroy(const Zlist3d *z)
+    static void destroy(Zlist3d *z)
         {
             while (z) {
-                const Zlist3d *zx = z;
+                Zlist3d *zx = z;
                 z = z->next;
                 delete zx;
             }
@@ -437,10 +437,10 @@ struct glZlist3d
             next = n;
         }
 
-    static void destroy(const glZlist3d *z)
+    static void destroy(glZlist3d *z)
         {
             while (z) {
-                const glZlist3d *zx = z;
+                glZlist3d *zx = z;
                 z = z->next;
                 delete zx;
             }
@@ -485,10 +485,10 @@ struct glZlistRef3d
             PZ = z;
         }
 
-    static void destroy(const glZlistRef3d *z)
+    static void destroy(glZlistRef3d *z)
         {
             while (z) {
-                const glZlistRef3d *zx = z;
+                glZlistRef3d *zx = z;
                 z = z->next;
                 delete zx;
             }
@@ -571,10 +571,10 @@ struct glYlist3d
     glYlist3d(glZlist3d*, bool = false);
     ~glYlist3d() { glZlist3d::destroy(y_zlist); }
 
-    static void destroy(const glYlist3d *y)
+    static void destroy(glYlist3d *y)
         {
             while (y) {
-                const glYlist3d *yn = y->next;
+                glYlist3d *yn = y->next;
                 delete y;
                 y = yn;
             }

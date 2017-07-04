@@ -50,10 +50,10 @@ struct Pdiff
         }
     ~Pdiff();
 
-    static void destroy(const Pdiff *p)
+    static void destroy(Pdiff *p)
         {
             while (p) {
-                const Pdiff *px = p;
+                Pdiff *px = p;
                 p = p->pd_next;
                 delete px;
             }
@@ -90,10 +90,10 @@ struct Ldiff
     ~Ldiff();
 
 
-    static void destroy(const Ldiff *l)
+    static void destroy(Ldiff *l)
         {
             while (l) {
-                const Ldiff *lx = l;
+                Ldiff *lx = l;
                 l = l->ld_next;
                 delete lx;
             }

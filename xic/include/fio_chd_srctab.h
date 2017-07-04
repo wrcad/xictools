@@ -55,10 +55,10 @@ struct chd_src_t
             delete cs_chd_prp;
         }
 
-    static void destroy(const chd_src_t *c)
+    static void destroy(chd_src_t *c)
         {
             while (c) {
-                const chd_src_t *cx = c;
+                chd_src_t *cx = c;
                 c = c->cs_next;
                 delete cx;
             }

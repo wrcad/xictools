@@ -691,31 +691,28 @@ Layer3d::extract_geom(const CDs *sdesc, const Zlist *zref)
         return (false);
 
     // If zref is null, use the cell BB.
-    bool free_zref = false;
+    Zlist *ztemp = 0;
     if (!zref) {
-        zref = new Zlist(sdesc->BB(), 0);
-        free_zref = true;
+        ztemp = new Zlist(sdesc->BB(), 0);
+        zref = ztemp;
     }
 
     XIrt ret;
     Zlist *zl = sdesc->getZlist(CDMAXCALLDEPTH, l3_ldesc, zref, &ret);
     if (ret != XIok) {
-        if (free_zref)
-            Zlist::destroy(zref);
+        Zlist::destroy(ztemp);
         return (false);
     }
     if (l3_ldesc->isVia() || l3_ldesc->isDarkField()) {
         Zlist *zr = Zlist::copy(zref);
         ret = Zlist::zl_andnot(&zr, zl);
         if (ret != XIok) {
-            if (free_zref)
-                Zlist::destroy(zref);
+            Zlist::destroy(ztemp);
             return (false);
         }
         zl = zr;
     }
-    if (free_zref)
-        Zlist::destroy(zref);
+    Zlist::destroy(ztemp);
 
     Ylist::destroy(l3_cut);
     l3_cut = 0;

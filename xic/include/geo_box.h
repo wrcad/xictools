@@ -284,10 +284,10 @@ struct Blist
             }
         }
 
-    static void destroy(const Blist *bl)
+    static void destroy(Blist *bl)
         {
             while (bl) {
-                const Blist *bx = bl;
+                Blist *bx = bl;
                 bl = bl->next;
                 delete bx;
             }
@@ -335,9 +335,9 @@ struct BYlist
     BYlist(Blist*, bool = false);
     ~BYlist() { Blist::destroy(blist); }
 
-    static void destroy(const BYlist *y) {
+    static void destroy(BYlist *y) {
         while (y) {
-            const BYlist *yx = y;
+            BYlist *yx = y;
             y = y->next;
             delete yx;
         }

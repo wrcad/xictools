@@ -98,10 +98,10 @@ struct sDevContactDesc
             delete [] c_lname;
         }
 
-    static void destroy(const sDevContactDesc *c)
+    static void destroy(sDevContactDesc *c)
         {
             while (c) {
-                const sDevContactDesc *cx = c;
+                sDevContactDesc *cx = c;
                 c = c->c_next;
                 delete cx;
             }
@@ -184,10 +184,10 @@ struct sDevContactInst
             ci_name = 0;
         }
 
-    static void destroy(const sDevContactInst *ci)
+    static void destroy(sDevContactInst *ci)
         {
             while (ci) {
-                const sDevContactInst *cx = ci;
+                sDevContactInst *cx = ci;
                 ci = ci->ci_next;
                 delete cx;
             }
@@ -267,10 +267,10 @@ struct sMeasure
             delete [] m_lvsword;
         }
 
-    static void destroy(const sMeasure *m)
+    static void destroy(sMeasure *m)
         {
             while (m) {
-                const sMeasure *mx = m;
+                sMeasure *mx = m;
                 m = m->m_next;
                 delete mx;
             }
@@ -310,10 +310,10 @@ struct sMprim
 {
     sMprim(siVariable*, siVariable*, sMprim*);
 
-    static void destroy(const sMprim *m)
+    static void destroy(sMprim *m)
         {
             while (m) {
-                const sMprim *mx = m;
+                sMprim *mx = m;
                 m = m->mp_next;
                 delete mx;
             }
@@ -629,10 +629,10 @@ struct sDevInst
                 sDevInst::destroy(di_multi_devs);
         }
 
-    static void destroy(const sDevInst *d)
+    static void destroy(sDevInst *d)
         {
             while (d) {
-                const sDevInst *dx = d;
+                sDevInst *dx = d;
                 d = d->di_next;
                 delete dx;
             }
@@ -835,10 +835,10 @@ struct sDevInstList
             dev = p;
         }
 
-    static void destroy(const sDevInstList *l)
+    static void destroy(sDevInstList *l)
         {
             while (l) {
-                const sDevInstList *x = l;
+                sDevInstList *x = l;
                 l = l->next;
                 delete x;
             }
@@ -859,10 +859,10 @@ struct sDevContactList
             dc_contact = c;
         }
 
-    static void destroy(const sDevContactList *d)
+    static void destroy(sDevContactList *d)
         {
             while (d) {
-                const sDevContactList *x = d;
+                sDevContactList *x = d;
                 d = d->dc_next;
                 delete x;
             }
@@ -898,10 +898,10 @@ struct sEinstList
             destroy(el_parallel);
         }
 
-    static void destroy(const sEinstList *e)
+    static void destroy(sEinstList *e)
         {
             while (e) {
-                const sEinstList *x = e;
+                sEinstList *x = e;
                 e = e->el_next;
                 delete x;
             }
@@ -954,10 +954,10 @@ struct sDevPrefixList
             sDevInst::destroy(p_devs);
         }
 
-    static void destroy(const sDevPrefixList *p)
+    static void destroy(sDevPrefixList *p)
         {
             while (p) {
-                const sDevPrefixList *x = p;
+                sDevPrefixList *x = p;
                 p = p->p_next;
                 delete x;
             }
@@ -994,10 +994,10 @@ struct sDevList
             sEinstList::destroy(dl_edevs);
         }
 
-    static void destroy(const sDevList *d)
+    static void destroy(sDevList *d)
         {
             while (d) {
-                const sDevList *x = d;
+                sDevList *x = d;
                 d = d->dl_next;
                 delete x;
             }
@@ -1039,10 +1039,10 @@ struct sSubcContactInst
             sci_subc_group = c;
         }
 
-    static void destroy(const sSubcContactInst *s)
+    static void destroy(sSubcContactInst *s)
         {
             while (s) {
-                const sSubcContactInst *x = s;
+                sSubcContactInst *x = s;
                 s = s->sci_next;
                 delete x;
             }
@@ -1084,10 +1084,10 @@ struct sSubcContactList
             sc_contact = c;
         }
 
-    static void destroy(const sSubcContactList *s)
+    static void destroy(sSubcContactList *s)
         {
             while (s) {
-                const sSubcContactList *x = s;
+                sSubcContactList *x = s;
                 s = s->sc_next;
                 delete x;
             }
@@ -1241,10 +1241,10 @@ struct sSubcInst
     void update_template();
     char *instance_name();
 
-    static void destroy(const sSubcInst *s)
+    static void destroy(sSubcInst *s)
         {
             while (s) {
-                const sSubcInst *x = s;
+                sSubcInst *x = s;
                 s = s->sc_next;
                 delete x;
             }
@@ -1298,7 +1298,7 @@ struct sSubcInstList
         {
             while (l) {
                 const sSubcInstList *x = l;
-                l = l->next();
+                l = l->sl_next;
                 delete x;
             }
         }
@@ -1356,10 +1356,10 @@ struct sSubcList
             sSubcInst::destroy(sl_subs);
         }
 
-    static void destroy(const sSubcList *s)
+    static void destroy(sSubcList *s)
         {
             while (s) {
-                const sSubcList *x = s;
+                sSubcList *x = s;
                 s = s->sl_next;
                 delete x;
             }
@@ -1735,10 +1735,10 @@ struct sVContact
             vgroup = vg;
         }
 
-    static void destroy(const sVContact *v)
+    static void destroy(sVContact *v)
         {
             while (v) {
-                const sVContact *x = v;
+                sVContact *x = v;
                 v = v->next;
                 delete x;
             }
@@ -1769,10 +1769,10 @@ struct sBcErr
             sbc_next = n;
         }
 
-    static void destroy(const sBcErr *s)
+    static void destroy(sBcErr *s)
         {
             while (s) {
-                const sBcErr *x = s;
+                sBcErr *x = s;
                 s = s->sbc_next;
                 delete x;
             }

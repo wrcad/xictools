@@ -283,10 +283,10 @@ struct sVia
     sVia(char* = 0, char* = 0, ParseNode* = 0);
     ~sVia();
 
-    static void destroy(const sVia *v)
+    static void destroy(sVia *v)
         {
             while (v) {
-                const sVia *vx = v;
+                sVia *vx = v;
                 v = v->v_next;
                 delete vx;
             }

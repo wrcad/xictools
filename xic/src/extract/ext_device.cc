@@ -950,14 +950,14 @@ cGroupDesc::find_contact_group(sDevContactInst *ci, bool check_hier)
                     if (top_group >= 0) {
                         ci->set_group(top_group);
                         link_contact(ci);
-                        cl->free();
+                        sSubcLink::destroy(cl);
                         return (top_group);
                     }
                 }
             }
         }
     }
-    cl->free();
+    sSubcLink::destroy(cl);
     return (-1);
 }
 
@@ -1077,7 +1077,7 @@ cGroupDesc::check_bulk_contact_group(const BBox *cBB, const sDevContactDesc *c)
             }
         }
     }
-    cl->free();
+    sSubcLink::destroy(cl);
     return (false);
 }
 
@@ -4329,9 +4329,11 @@ sDevDesc::identify_contact(CDs *sdesc, sDevInst *d, Zlist **zbbp,
     // Bloat the device body if bloating.  Device contacts must
     // touch or intersect the (possibly bloated) body.
     const Zlist *zb = zbody;
+    Zlist *ztemp = 0;
     if (d_bloat != 0.0) {
         try {
-            zb = Zlist::bloat(zbody, INTERNAL_UNITS(d_bloat), 0);
+            ztemp = Zlist::bloat(zbody, INTERNAL_UNITS(d_bloat), 0);
+            zb = ztemp;
         }
         catch (XIrt zbret) {
             const char *msg = "contact expression for %s%s, body "
@@ -4382,8 +4384,7 @@ sDevDesc::identify_contact(CDs *sdesc, sDevInst *d, Zlist **zbbp,
         }
     }
     delete gc;
-    if (d_bloat != 0.0)
-        Zlist::destroy(zb);
+    Zlist::destroy(ztemp);
     *zbbp = zbb;
     return (ci0);
 }

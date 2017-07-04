@@ -148,10 +148,10 @@ struct sRuler
         sRuler *nx) : p1(x1, y1), p2(x2, y2)
         { win_num = wn; mirror = m; loff = 0.0; loff = l; next = nx; }
 
-    static void destroy(const sRuler *r)
+    static void destroy(sRuler *r)
         {
             while (r) {
-                const sRuler *rx = r;
+                sRuler *rx = r;
                 r = r->next;
                 delete rx;
             }

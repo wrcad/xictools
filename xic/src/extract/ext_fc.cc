@@ -593,7 +593,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
                     &fcl_num_c_panels_written);
                 p->print_panel_end(tfp);
             }
-            panels->free();
+            fcCpanel::destroy(panels);
             fcl_num_c_panels_raw += pc;
             TPRINT(".");
 
@@ -610,7 +610,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
                     &fcl_num_c_panels_written);
                 p->print_panel_end(tfp);
             }
-            panels->free();
+            fcCpanel::destroy(panels);
             fcl_num_c_panels_raw += pc;
             TPRINT(".");
 
@@ -627,7 +627,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
                     &fcl_num_c_panels_written);
                 p->print_panel_end(tfp);
             }
-            panels->free();
+            fcCpanel::destroy(panels);
             fcl_num_c_panels_raw += pc;
             TPRINT(".");
 
@@ -644,7 +644,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
                     &fcl_num_c_panels_written);
                 p->print_panel_end(tfp);
             }
-            panels->free();
+            fcCpanel::destroy(panels);
             fcl_num_c_panels_raw += pc;
             TPRINT(".");
 
@@ -661,7 +661,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
                     &fcl_num_c_panels_written);
                 p->print_panel_end(tfp);
             }
-            panels->free();
+            fcCpanel::destroy(panels);
             fcl_num_c_panels_raw += pc;
             TPRINT(".");
 
@@ -678,7 +678,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
                     &fcl_num_c_panels_written);
                 p->print_panel_end(tfp);
             }
-            panels->free();
+            fcCpanel::destroy(panels);
             fcl_num_c_panels_raw += pc;
         }
         else {
@@ -740,7 +740,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
                     fcl_num_c_panels_raw++;
                 }
                 p0->print_panel_end(tfp);
-                p0->free();
+                fcCpanel::destroy(p0);
                 p0 = px;
             }
         }
@@ -937,7 +937,7 @@ fcLayout::write_d_panels(FILE *fp, FILE *tfp, fcDpanel *p0, char *bname,
                 &fcl_num_d_panels_written);
             p->print_panel_end(tfp);
         }
-        p0->free();
+        fcDpanel::destroy(p0);
         fcl_num_d_panels_raw += pc;
         return;
     }
@@ -969,7 +969,7 @@ fcLayout::write_d_panels(FILE *fp, FILE *tfp, fcDpanel *p0, char *bname,
             fcl_num_d_panels_raw++;
         }
         p0->print_panel_end(tfp);
-        p0->free();
+        fcDpanel::destroy(p0);
         p0 = px;
     }
 }
