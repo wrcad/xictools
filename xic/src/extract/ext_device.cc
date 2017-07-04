@@ -434,8 +434,8 @@ cExt::getDevlist(CDcbin *cbin, sDevList **dvl)
             sDevInst *di;
             XIrt ret = d->find(cbin->phys(), &di, 0);
             if (ret != XIok) {
-                di->free();
-                dv0->free();
+                sDevInst::destroy(di);
+                sDevList::destroy(dv0);
                 return (ret);
             }
             if (di) {
@@ -533,7 +533,7 @@ cGroupDesc::find_dev(const char *name, const char *pref, const char *inds,
                         bool err = false;
                         sDevInstList *dx = di->getdev(&aoiBB, &err);
                         if (err) {
-                            d0->free();
+                            sDevInstList::destroy(d0);
                             return (0);
                         }
                         if (dx) {
@@ -4498,7 +4498,7 @@ sDevDesc::find_finds(CDs *sdesc, sDevInst *d, XIrt *xrt)
                     delete dt;
                     continue;
                 }
-                di->next()->free();
+                sDevInst::destroy(di->next());
                 di->set_next(0);
             }
             d->fdevs()[j++] = di;

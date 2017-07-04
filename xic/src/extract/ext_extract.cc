@@ -361,7 +361,7 @@ cExt::updateReferenceTable(const CDs *sd)
         SymTabGen gen(ext_reference_tab, true);
         SymTabEnt *ent;
         while ((ent = gen.next()) != 0) {
-            ((sGdList*)ent->stData)->free();
+            sGdList::destroy((sGdList*)ent->stData);
             delete ent;
         }
         delete ext_reference_tab;
@@ -651,9 +651,9 @@ cGroupDesc::clear_extract()
         sGroup &g = gd_groups[i];
         CDpin::destroy(g.termlist());
         g.set_termlist(0);
-        g.device_contacts()->free();
+        sDevContactList::destroy(g.device_contacts());
         g.set_device_contacts(0);
-        g.subc_contacts()->free();
+        sSubcContactList::destroy(g.subc_contacts());
         g.set_subc_contacts(0);
         g.set_node(-1);
         g.set_netname(0, sGroup::NameFromLabel);
@@ -666,11 +666,11 @@ cGroupDesc::clear_extract()
         delete gd_e_phonycell;
         gd_e_phonycell = 0;
     }
-    gd_devices->free();
+    sDevList::destroy(gd_devices);
     gd_devices = 0;
-    gd_subckts->free();
+    sSubcList::destroy(gd_subckts);
     gd_subckts = 0;
-    gd_vcontacts->free();
+    sVContact::destroy(gd_vcontacts);
     gd_vcontacts = 0;
 
     for (CDm *m = gd_master_list; m; m = gd_master_list) {
@@ -1128,7 +1128,7 @@ cGroupDesc::add_subckts()
                 s2->add(v->vgroup, v->subg2);
             }
         }
-        gd_vcontacts->free();
+        sVContact::destroy(gd_vcontacts);
         gd_vcontacts = 0;
     }
 

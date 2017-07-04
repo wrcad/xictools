@@ -246,7 +246,7 @@ cGroupDesc::print_lvs(FILE *fp)
                     MICRONS(b->locBB()->right), MICRONS(b->locBB()->top));
             }
             fprintf(fp, "\n");
-            bcerrs->free();
+            sBcErr::destroy(bcerrs);
         }
     }
 

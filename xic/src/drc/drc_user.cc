@@ -391,10 +391,10 @@ DRCtest::~DRCtest()
     for (int i = 0; i < t_argc; i++)
         delete [] t_argv[i];
     delete [] t_argv;
-    t_edges->free();
+    DRCedgeCnd::destroy(t_edges);
     delete [] t_eminstr;
     delete [] t_emaxstr;
-    t_tests->free();
+    DRCtestCnd::destroy(t_tests);
     delete [] t_fail;
     if (t_evaltree) {
         delete t_evaltree;

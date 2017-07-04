@@ -49,11 +49,10 @@ namespace ext_duality {
                 sg_next = nx;
             }
 
-        void free()
+        static void destroy(const sSymGrp *s)
             {
-                sSymGrp *s = this;
                 while (s) {
-                    sSymGrp *x = s;
+                    const sSymGrp *x = s;
                     s = s->next();
                     delete x;
                 }
@@ -81,11 +80,10 @@ namespace ext_duality {
                 sd_next = nx;
             }
 
-        void free()
+        static void destroy(const sSymDev *s)
             {
-                sSymDev *s = this;
                 while (s) {
-                    sSymDev *x = s;
+                    const sSymDev *x = s;
                     s = s->next();
                     delete x;
                 }
@@ -113,11 +111,10 @@ namespace ext_duality {
                 ss_next = nx;
             }
 
-        void free()
+        static void destroy(const sSymSubc *s)
             {
-                sSymSubc *s = this;
                 while (s) {
-                    sSymSubc *x = s;
+                    const sSymSubc *x = s;
                     s = s->next();
                     delete x;
                 }
@@ -144,11 +141,10 @@ namespace ext_duality {
                 sc_next = nx;
             }
 
-        void free()
+        static void destroy(const sSymCll *s)
             {
-                sSymCll *s = this;
                 while (s) {
-                    sSymCll *x = s;
+                    const sSymCll *x = s;
                     s = s->next();
                     delete x;
                 }
@@ -194,17 +190,16 @@ namespace ext_duality {
 
         ~sSymBrk()
             {
-                sb_elist->free();
-                sb_grp_assoc->free();
-                sb_dev_assoc->free();
-                sb_subc_assoc->free();
+                sSymCll::destroy(sb_elist);
+                sSymGrp::destroy(sb_grp_assoc);
+                sSymDev::destroy(sb_dev_assoc);
+                sSymSubc::destroy(sb_subc_assoc);
             }
 
-        void free()
+        static void destroy(const sSymBrk *s)
             {
-                sSymBrk *s = this;
                 while (s) {
-                    sSymBrk *x = s;
+                    const sSymBrk *x = s;
                     s = s->next();
                     delete x;
                 }

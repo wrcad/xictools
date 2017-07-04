@@ -384,7 +384,7 @@ cGroupDesc::clear_groups(bool gptoo)
     gd_asize = 0;
     delete gd_g_phonycell;
     gd_g_phonycell = 0;
-    gd_devices->free();
+    sDevList::destroy(gd_devices);
     gd_devices = 0;
     delete gd_ignore_tab;
     gd_ignore_tab = 0;

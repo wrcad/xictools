@@ -292,7 +292,7 @@ DvselState::handle_selection(const BBox *AOI)
                 }
             }
         }
-        dv->free();
+        sDevInstList::destroy(dv);
     }
     if (di) {
         EX()->queueDevice(di);
@@ -387,7 +387,7 @@ cExt::queueDevice(sDevInst *di)
 {
     sDevInstList *dv = di ? new sDevInstList(di, 0) : 0;
     queueDevices(dv);
-    dv->free();
+    sDevInstList::destroy(dv);
 }
 
 
@@ -409,7 +409,7 @@ cExt::queueDevices(sDevInstList *dv)
                 wd->Redisplay(&BB);
             }
         }
-        tdv->free();
+        sDevInstList::destroy(tdv);
     }
     sDevInstList *de = 0;
     for (sDevInstList *d = dv; d; d = d->next) {

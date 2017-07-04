@@ -1146,7 +1146,7 @@ cDRC::objectRules(const CDo *odesc, const BBox *AOI, DRCerrRet **erptr,
                         if (errorLevel() == DRCone_err && errs.has_errs())
                             break;
                     }
-                    DRCerrRet *er = errs.get_errs()->filter();
+                    DRCerrRet *er = DRCerrRet::filter(errs.get_errs());
                     if (er) {
                         if (!e0)
                             e0 = ee = er;
@@ -1175,7 +1175,7 @@ cDRC::objectRules(const CDo *odesc, const BBox *AOI, DRCerrRet **erptr,
                     if (errorLevel() == DRCone_err && errs.has_errs())
                         break;
                 }
-                *erptr = errs.get_errs()->filter();
+                *erptr = DRCerrRet::filter(errs.get_errs());
             }
         }
     }
@@ -1624,7 +1624,7 @@ cDRC::handle_errors(DRCerrRet *er, sPF *gen, const CDo *odesc, BBox *errBB,
 
         if (maxErrors() > 0 && drc_err_count >= maxErrors()) {
             done = true;
-            er->free();
+            DRCerrRet::destroy(er);
             break;
         }
         DRCerrRet *en = er->next();

@@ -98,11 +98,10 @@ struct sDevContactDesc
             delete [] c_lname;
         }
 
-    void free()
+    static void destroy(const sDevContactDesc *c)
         {
-            sDevContactDesc *c = this;
             while (c) {
-                sDevContactDesc *cx = c;
+                const sDevContactDesc *cx = c;
                 c = c->c_next;
                 delete cx;
             }
@@ -185,11 +184,10 @@ struct sDevContactInst
             ci_name = 0;
         }
 
-    void free()
+    static void destroy(const sDevContactInst *ci)
         {
-            sDevContactInst *ci = this;
             while (ci) {
-                sDevContactInst *cx = ci;
+                const sDevContactInst *cx = ci;
                 ci = ci->ci_next;
                 delete cx;
             }
@@ -269,11 +267,10 @@ struct sMeasure
             delete [] m_lvsword;
         }
 
-    void free()
+    static void destroy(const sMeasure *m)
         {
-            sMeasure *m = this;
             while (m) {
-                sMeasure *mx = m;
+                const sMeasure *mx = m;
                 m = m->m_next;
                 delete mx;
             }
@@ -313,11 +310,10 @@ struct sMprim
 {
     sMprim(siVariable*, siVariable*, sMprim*);
 
-    void free()
+    static void destroy(const sMprim *m)
         {
-            sMprim *m = this;
             while (m) {
-                sMprim *mx = m;
+                const sMprim *mx = m;
                 m = m->mp_next;
                 delete mx;
             }
@@ -430,17 +426,17 @@ struct sDevDesc
 
     ~sDevDesc()
         {
-            d_contacts->free();
+            sDevContactDesc::destroy(d_contacts);
             stringlist::destroy(d_finds);
             stringlist::destroy(d_prmconts);
-            d_measures->free();
+            sMeasure::destroy(d_measures);
             delete [] d_netline;
             delete [] d_netline1;
             delete [] d_model;
             delete [] d_value;
             delete [] d_param;
             siVariable::destroy(d_variables);
-            d_mprims->free();
+            sMprim::destroy(d_mprims);
         }
 
     // ext_extract.cc
@@ -624,20 +620,19 @@ struct sDevInst
 
     ~sDevInst()
         {
-            di_contacts->free();
+            sDevContactInst::destroy(di_contacts);
             delete [] di_fdevs;
             delete [] di_mvalues;
             delete [] di_mvalues_permuted;
             delete [] di_precmp;
             if (di_mstatus != MS_SPLIT_NOFREE)
-                di_multi_devs->free();
+                sDevInst::destroy(di_multi_devs);
         }
 
-    void free()
+    static void destroy(const sDevInst *d)
         {
-            sDevInst *d = this;
             while (d) {
-                sDevInst *dx = d;
+                const sDevInst *dx = d;
                 d = d->di_next;
                 delete dx;
             }
@@ -840,11 +835,10 @@ struct sDevInstList
             dev = p;
         }
 
-    void free()
+    static void destroy(const sDevInstList *l)
         {
-            sDevInstList *l = this;
             while (l) {
-                sDevInstList *x = l;
+                const sDevInstList *x = l;
                 l = l->next;
                 delete x;
             }
@@ -865,11 +859,10 @@ struct sDevContactList
             dc_contact = c;
         }
 
-    void free()
+    static void destroy(const sDevContactList *d)
         {
-            sDevContactList *d = this;
             while (d) {
-                sDevContactList *x = d;
+                const sDevContactList *x = d;
                 d = d->dc_next;
                 delete x;
             }
@@ -902,14 +895,13 @@ struct sEinstList
 
     ~sEinstList()
         {
-            el_parallel->free();
+            destroy(el_parallel);
         }
 
-    void free()
+    static void destroy(const sEinstList *e)
         {
-            sEinstList *e = this;
             while (e) {
-                sEinstList *x = e;
+                const sEinstList *x = e;
                 e = e->el_next;
                 delete x;
             }
@@ -959,14 +951,13 @@ struct sDevPrefixList
 
     ~sDevPrefixList()
         {
-            p_devs->free();
+            sDevInst::destroy(p_devs);
         }
 
-    void free()
+    static void destroy(const sDevPrefixList *p)
         {
-            sDevPrefixList *p = this;
             while (p) {
-                sDevPrefixList *x = p;
+                const sDevPrefixList *x = p;
                 p = p->p_next;
                 delete x;
             }
@@ -999,15 +990,14 @@ struct sDevList
 
     ~sDevList()
         {
-            dl_prefixes->free();
-            dl_edevs->free();
+            sDevPrefixList::destroy(dl_prefixes);
+            sEinstList::destroy(dl_edevs);
         }
 
-    void free()
+    static void destroy(const sDevList *d)
         {
-            sDevList *d = this;
             while (d) {
-                sDevList *x = d;
+                const sDevList *x = d;
                 d = d->dl_next;
                 delete x;
             }
@@ -1049,11 +1039,10 @@ struct sSubcContactInst
             sci_subc_group = c;
         }
 
-    void free()
+    static void destroy(const sSubcContactInst *s)
         {
-            sSubcContactInst *s = this;
             while (s) {
-                sSubcContactInst *x = s;
+                const sSubcContactInst *x = s;
                 s = s->sci_next;
                 delete x;
             }
@@ -1095,11 +1084,10 @@ struct sSubcContactList
             sc_contact = c;
         }
 
-    void free()
+    static void destroy(const sSubcContactList *s)
         {
-            sSubcContactList *s = this;
             while (s) {
-                sSubcContactList *x = s;
+                const sSubcContactList *x = s;
                 s = s->sc_next;
                 delete x;
             }
@@ -1236,9 +1224,9 @@ struct sSubcInst
 
     ~sSubcInst()
         {
-            sc_contacts->free();
-            sc_glob_conts->free();
-            sc_permutes->free();
+            sSubcContactInst::destroy(sc_contacts);
+            sSubcContactInst::destroy(sc_glob_conts);
+            sExtPermGrp<int>::destroy(sc_permutes);
         }
 
     // ext_duality.cc
@@ -1253,11 +1241,10 @@ struct sSubcInst
     void update_template();
     char *instance_name();
 
-    void free()
+    static void destroy(const sSubcInst *s)
         {
-            sSubcInst *s = this;
             while (s) {
-                sSubcInst *x = s;
+                const sSubcInst *x = s;
                 s = s->sc_next;
                 delete x;
             }
@@ -1307,9 +1294,8 @@ struct sSubcInstList
             sl_inst = i;
         }
 
-    void free()
+    static void destroy(const sSubcInstList *l)
         {
-            const sSubcInstList *l = this;
             while (l) {
                 const sSubcInstList *x = l;
                 l = l->next();
@@ -1366,15 +1352,14 @@ struct sSubcList
     ~sSubcList()
         {
             delete sl_desc;
-            sl_esubs->free();
-            sl_subs->free();
+            sEinstList::destroy(sl_esubs);
+            sSubcInst::destroy(sl_subs);
         }
 
-    void free()
+    static void destroy(const sSubcList *s)
         {
-            sSubcList *s = this;
             while (s) {
-                sSubcList *x = s;
+                const sSubcList *x = s;
                 s = s->sl_next;
                 delete x;
             }
@@ -1551,8 +1536,8 @@ struct sGroup
         {
             delete g_net;
             CDpin::destroy(g_termlist);
-            g_device_contacts->free();
-            g_subc_contacts->free();
+            sDevContactList::destroy(g_device_contacts);
+            sSubcContactList::destroy(g_subc_contacts);
         }
 
     // Used to clear unused array components.
@@ -1750,11 +1735,10 @@ struct sVContact
             vgroup = vg;
         }
 
-    void free()
+    static void destroy(const sVContact *v)
         {
-            sVContact *v = this;
             while (v) {
-                sVContact *x = v;
+                const sVContact *x = v;
                 v = v->next;
                 delete x;
             }
@@ -1785,11 +1769,10 @@ struct sBcErr
             sbc_next = n;
         }
 
-    void free()
+    static void destroy(const sBcErr *s)
         {
-            sBcErr *s = this;
             while (s) {
-                sBcErr *x = s;
+                const sBcErr *x = s;
                 s = s->sbc_next;
                 delete x;
             }
@@ -2257,11 +2240,10 @@ struct sGdList
             gd = g;
         }
 
-    void free()
+    static void destroy(sGdList *l)
         {
-            sGdList *l = this;
             while (l) {
-                sGdList *x = l;
+                const sGdList *x = l;
                 l = l->next;
                 delete x;
             }

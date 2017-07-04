@@ -3479,7 +3479,7 @@ extract_funcs::IFlistPhysDevs(Variable *res, Variable *args, void*)
                     te = te->next;
                 }
             }
-            dv0->free();
+            sDevInstList::destroy(dv0);
             sHdl *hdl = new sHdlDevice(t0, gd);
             res->type = TYP_HANDLE;
             res->content.value = hdl->id;

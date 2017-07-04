@@ -62,11 +62,10 @@ struct sExtPermGrp : private sExtPermGrpB
             delete [] pg_order;
         }
 
-    void free()
+    static void destroy(const sExtPermGrp *pg)
         {
-            sExtPermGrp *pg = this;
             while (pg) {
-                sExtPermGrp *px = pg;
+                const sExtPermGrp *px = pg;
                 pg = pg->next();
                 delete px;
             }
@@ -388,11 +387,10 @@ struct sPermGrpList
             pg_type = t;
         }
 
-    void free()
+    static void destroy(const sPermGrpList *p)
         {
-            sPermGrpList *p = this;
             while (p) {
-                sPermGrpList *px = p;
+                const sPermGrpList *px = p;
                 p = p->pg_next;
                 delete px;
             }

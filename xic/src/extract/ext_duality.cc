@@ -799,24 +799,24 @@ cGroupDesc::clear_duality()
 
     // Delete electrical devices from the device list.
     for (sDevList *dv = gd_devices; dv; dv = dv->next()) {
-        dv->edevs()->free();
+        sEinstList::destroy(dv->edevs());
         dv->set_edevs(0);
         for (sDevPrefixList *p = dv->prefixes(); p; p = p->next()) {
             for (sDevInst *di = p->devs(); di; di = di->next())
                 di->set_dual(0);
         }
     }
-    gd_extra_devs->free();
+    sEinstList::destroy(gd_extra_devs);
     gd_extra_devs = 0;
 
     // Delete electrical subcells in the subckts list.
     for (sSubcList *su = gd_subckts; su; su = su->next()) {
-        su->esubs()->free();
+        sEinstList::destroy(su->esubs());
         su->set_esubs(0);
         for (sSubcInst *s = su->subs(); s; s = s->next())
             s->clear_duality();
     }
-    gd_extra_subs->free();
+    sEinstList::destroy(gd_extra_subs);
     gd_extra_subs = 0;
 
     for (int i = 1; i < gd_asize; i++) {
@@ -850,7 +850,7 @@ cGroupDesc::clear_duality()
     gd_etlist = 0;
     delete gd_global_nametab;
     gd_global_nametab = 0;
-    gd_sym_list->free();
+    sSymBrk::destroy(gd_sym_list);
     gd_sym_list = 0;
 
     set_skip_permutes(false);
@@ -1243,7 +1243,7 @@ cGroupDesc::select_unassoc_pdevs()
     }
     if (d0) {
         EX()->queueDevices(d0);
-        d0->free();
+        sDevInstList::destroy(d0);
     }
 }
 
@@ -2088,7 +2088,7 @@ cGroupDesc::link_elec_devs(sEinstList *dlist)
             }
             dp = d;
         }
-        dlist->free();  // gnd and terminal only
+        sEinstList::destroy(dlist);  // gnd and terminal only
     }
 }
 
@@ -2808,7 +2808,7 @@ cGroupDesc::find_match(sDevList *dv, sDevComp &comp, bool brksym) throw (XIrt)
                     mx = n;
                     dp = c;
                     if (brksym) {
-                        eposs->free();
+                        sSymCll::destroy(eposs);
                         eposs = 0;
                     }
                     continue;
@@ -2832,7 +2832,7 @@ cGroupDesc::find_match(sDevList *dv, sDevComp &comp, bool brksym) throw (XIrt)
                         px = p2;
                         dp = c;
                         if (brksym) {
-                            eposs->free();
+                            sSymCll::destroy(eposs);
                             eposs = 0;
                         }
                         continue;
@@ -2875,14 +2875,14 @@ cGroupDesc::find_match(sDevList *dv, sDevComp &comp, bool brksym) throw (XIrt)
             ep_param_comp(di, dp);
         }
         catch (XIrt) {
-            eposs->free();
+            sSymCll::destroy(eposs);
             throw;
         }
     }
 
     // Don't associate unless the score is reasonable.
     if (mx < CMP_SCALE/2) {
-        eposs->free();
+        sSymCll::destroy(eposs);
         // We can never associate the present device, so might as well
         // skip permuting if this is not a symmetry trial.
 
@@ -3100,7 +3100,7 @@ cGroupDesc::find_match(sSubcList *sl, sSubcInst *si, bool brksym,
                 mx = n;
                 dp = c;
                 if (brksym) {
-                    eposs->free();
+                    sSymCll::destroy(eposs);
                     eposs = 0;
                 }
             }
@@ -3128,7 +3128,7 @@ cGroupDesc::find_match(sSubcList *sl, sSubcInst *si, bool brksym,
 
     // Don't associate unless the score is reasonable.
     if (mx < CMP_SCALE/2) {
-        eposs->free();
+        sSymCll::destroy(eposs);
 
         // We can never associate the present subcell, so might as
         // well skip permuting if this is not a symmetry trial.
@@ -3345,7 +3345,7 @@ cGroupDesc::solve_duals() throw (XIrt)
     try {
         for (;;) {
             if (loop_count > gd_loop_max) {
-                gd_sym_list->free();
+                sSymBrk::destroy(gd_sym_list);
                 gd_sym_list = 0;
                 break;
             }
@@ -3448,7 +3448,7 @@ cGroupDesc::solve_duals() throw (XIrt)
             // Break symmetries,
             if (last) {
                 if (last < lastlast) {
-                    saved->free();
+                    sSymBrk::destroy(saved);
                     saved = gd_sym_list->dup();
                 }
                 lastlast = last;
@@ -3496,7 +3496,7 @@ cGroupDesc::solve_duals() throw (XIrt)
                     sv = sv->next();
                 }
             }
-            saved->free();
+            sSymBrk::destroy(saved);
             saved = 0;
 
             if (!first_pass()) {
@@ -3529,15 +3529,15 @@ cGroupDesc::solve_duals() throw (XIrt)
                 }
             }
 
-            gd_sym_list->free();
+            sSymBrk::destroy(gd_sym_list);
             gd_sym_list = 0;
             break;
         }
     }
     catch (XIrt) {
-        gd_sym_list->free();
+        sSymBrk::destroy(gd_sym_list);
         gd_sym_list = 0;
-        saved->free();
+        sSymBrk::destroy(saved);
         saved = 0;
         throw;
     }
@@ -4065,7 +4065,7 @@ cGroupDesc::break_symmetry() throw (XIrt)
             gd_groups[sg->group()].set_node(-1);
             gd_etlist->set_group(sg->node(), -1);
         }
-        gd_sym_list->grp_assoc()->free();
+        sSymGrp::destroy(gd_sym_list->grp_assoc());
         gd_sym_list->set_grp_assoc(0);
 
         for (sSymDev *sd = gd_sym_list->dev_assoc(); sd; sd = sd->next()) {
@@ -4076,7 +4076,7 @@ cGroupDesc::break_symmetry() throw (XIrt)
             sd->phys_dev()->set_dual(0);
             sd->elec_dev()->set_dual((sDevInst*)0);
         }
-        gd_sym_list->dev_assoc()->free();
+        sSymDev::destroy(gd_sym_list->dev_assoc());
         gd_sym_list->set_dev_assoc(0);
 
         for (sSymSubc *su = gd_sym_list->subc_assoc(); su; su = su->next()) {
@@ -4088,7 +4088,7 @@ cGroupDesc::break_symmetry() throw (XIrt)
             su->phys_subc()->set_dual(0);
             su->elec_subc()->set_dual((sSubcInst*)0);
         }
-        gd_sym_list->subc_assoc()->free();
+        sSymSubc::destroy(gd_sym_list->subc_assoc());
         gd_sym_list->set_subc_assoc(0);
 
         if (gd_sym_list->elec_insts()) {
@@ -4338,7 +4338,7 @@ sSubcInst::pre_associate()
         return;
 
     // This shouldn't be set yet.
-    sc_permutes->free();
+    sExtPermGrp<int>::destroy(sc_permutes);
     sc_permutes = 0;
 
     sSubcDesc *scd = EX()->findSubcircuit(sdesc);
@@ -4491,7 +4491,7 @@ sSubcDesc::find_and_set_permutes()
         for (unsigned int i = 0; i < p->size(); i++)
             *b++ = p->group(i);
     }
-    pgl->free();
+    sPermGrpList::destroy(pgl);
     delete [] sd_array;
     sd_array = a;
 #ifdef PERM_DEBUG

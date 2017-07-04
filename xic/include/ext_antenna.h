@@ -140,20 +140,18 @@ struct abl_t
             next = n;
         }
 
-    void free()
+    static void destroy(const abl_t *bl)
         {
-            abl_t *bl = this;
             while (bl) {
-                abl_t *bx = bl;
+                const abl_t *bx = bl;
                 bl = bl->next;
                 delete bx;
             }
         }
 
-    int length() const
+    static int length(const abl_t *bl)
         {
             int cnt = 0;
-            const abl_t *bl = this;
             while (bl) {
                 cnt++;
                 bl = bl->next;
@@ -162,13 +160,12 @@ struct abl_t
         }
 
 
-    double farea()
+    static double farea(const abl_t *bl)
         {
             double a = 0.0;
-            abl_t *bl = this;
             while (bl) {
                 a += bl->factor * bl->BB.area();
-                bl = (abl_t*)bl->next;
+                bl = bl->next;
             }
             return (a);
         }
@@ -189,7 +186,7 @@ struct gate_t
             next = n;
         }
 
-    ~gate_t() { bbs->free(); }
+    ~gate_t() { abl_t::destroy(bbs); }
 
     gate_t *next;
     const char *pathname;   // unique gate name path, pointer to
