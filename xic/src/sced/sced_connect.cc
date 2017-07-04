@@ -529,7 +529,7 @@ namespace {
 cScedConnect::~cScedConnect()
 {
     for (int i = 0; i < cn_count; i++)
-        cn_ntab[i]->free();
+        node_list::destroy(cn_ntab[i]);
     delete [] cn_ntab;
 
     if (cn_case_insens)
@@ -759,7 +759,9 @@ cScedConnect::init(CDs *sd, bool lvsmode)
     CDp::destroy(cn_ndprps);
     cn_ndprps = 0;
     CDp_cnode *pe = 0;
-    xyname_t *setnames = cn_sdesc->nodes()->getSetList();
+    xyname_t *setnames = 0;
+    if (cn_sdesc->nodes())
+        setnames = cn_sdesc->nodes()->getSetList();
     for (xyname_t *xy = setnames; xy; xy = xy->next()) {
         CDp_cnode *pc = new CDp_cnode;
         ScedErrLog.add_log("nodemap %s", xy->name());
@@ -773,7 +775,7 @@ cScedConnect::init(CDs *sd, bool lvsmode)
             pe = pc;
         }
     }
-    setnames->free();
+    xyname_t::destroy(setnames);
 
     // Initialize the dummy node-mapping property nodes.
     //

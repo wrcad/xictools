@@ -166,9 +166,8 @@ namespace {
                 CDnetex::destroy(netexp);
             }
 
-        void freeUndo()
+        static void freeUndo(sNop *op)
             {
-                sNop *op = this;
                 while (op) {
                     sNop *opx = op;
                     op = op->next;
@@ -181,9 +180,8 @@ namespace {
                 }
             }
 
-        void freeRedo()
+        static void freeRedo(sNop *op)
             {
-                sNop *op = this;
                 while (op) {
                     sNop *opx = op;
                     op = op->next;
@@ -1251,8 +1249,8 @@ SubcState::esc()
     if (DSP()->ShowTerminals())
         // add the cell's marks only
         DSP()->ShowCellTerminalMarks(DISPLAY);
-    Opers->freeUndo();
-    Redos->freeRedo();
+    sNop::freeUndo(Opers);
+    sNop::freeRedo(Redos);
     delete this;
 }
 

@@ -899,9 +899,10 @@ fhLayout::fh_dump(FILE *fp)
                 continue;
             if (t->ccnt() > 0)
                 continue;
-            for (fhNodeList *nl = t->nodes()->next; nl; nl = nl->next)
+            for (fhNodeList *nl = t->nodes()->next; nl; nl = nl->next) {
                 fprintf(fp, ".Equiv N%d N%d\n", t->nodes()->nd->number(),
                     nl->nd->number());
+            }
         }
     }
 

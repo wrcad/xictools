@@ -236,7 +236,7 @@ cSced::dumpSpiceDeck(FILE *fp)
 #endif
             fprintf(fp, "%s\n", d->li_line);
     }
-    deck->free();
+    sp_line_t::destroy(deck);
 }
 
 
@@ -638,7 +638,7 @@ SpOut::ckt_deck(CDs *sdesc, bool add_sc)
                     // ground node, never mapped
                     strcpy(buf, " 0");
                 else {
-                    char *gname = globs->globname(node);
+                    const char *gname = sp_nmlist_t::globname(globs, node);
                     if (gname)
                         sprintf(buf, " %s", gname);
                     else
@@ -725,7 +725,7 @@ SpOut::ckt_deck(CDs *sdesc, bool add_sc)
         for (; d->li_next; d = d->li_next) ;
     }
 
-    globs->free();
+    sp_nmlist_t::destroy(globs);
     for (int i = 0; i < tsize; i++)
         stringlist::destroy(tnames[i]);
     delete [] tnames;
@@ -775,7 +775,7 @@ namespace {
     {
         if (sdesc->owner())
             return (has_global(sdesc->owner()));
-        if (sdesc->nodes()->countGlobal())
+        if (sdesc->nodes() && sdesc->nodes()->hasGlobal())
             return (true);
         CDm_gen mgen(sdesc, GEN_MASTERS);
         for (CDm *mdesc = mgen.m_first(); mdesc; mdesc = mgen.m_next()) {

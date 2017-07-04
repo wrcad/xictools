@@ -436,7 +436,7 @@ cSced::extractFromSpice(CDs *sdesc, FILE *fp, int modeflag)
     bool trd = DSP()->NoRedisplay();
     DSP()->SetNoRedisplay(true);
     pr.sb_lineht = 0;
-    pr.sb_globs->free();
+    sGlobNode::destroy(pr.sb_globs);
     pr.sb_globs = 0;
     for (sNodeLink *n = pr.sb_lines; n; n = n->next)
         pr.parseline(sdesc, n->node, (modeflag & EFS_CREATE));
@@ -612,14 +612,14 @@ cSpiceBuilder::~cSpiceBuilder()
     delete [] sb_model;
     delete [] sb_value;
     delete [] sb_param;
-    sb_nodes->free();
-    sb_devs->free();
-    sb_models->free();
-    sb_subckts->free();
-    sb_globs->free();
-    sb_lines->free();
+    sNodeLink::destroy(sb_nodes);
+    sNodeLink::destroy(sb_devs);
+    sModLink::destroy(sb_models);
+    sSubcLink::destroy(sb_subckts);
+    sGlobNode::destroy(sb_globs);
+    sNodeLink::destroy(sb_lines);
     delete sb_stab;
-    sb_mutlist->free();
+    sMut::destroy(sb_mutlist);
     delete sb_keydb;
     delete [] sb_term_name;
     delete [] sb_gnd_name;
@@ -746,7 +746,7 @@ cSpiceBuilder::devname(const sKey *dev)
         tok = cSced::sp_gettok(&s);
         delete [] tok;
         tok = cSced::sp_gettok(&s);
-        l->free();
+        sp_line_t::destroy(l);
         s = setnp(dev, tok);
         delete [] tok;
         return (s);
@@ -905,7 +905,7 @@ cSpiceBuilder::make_subc(const char *cname, int modeflag)
     }
     sb_lineht = 0;
 
-    sb_globs->free();
+    sGlobNode::destroy(sb_globs);
     sb_globs = 0;
     SymTab *st = sb_stab;
     sb_stab = s->stab;
@@ -1093,7 +1093,7 @@ cSpiceBuilder::place(CDs *sdesc, const char *key, bool create)
                 lstr.add(n->node);
             }
             sb_param = lstr.string_trim();
-            params->free();
+            sNodeLink::destroy(params);
 
             // Grab the name out of nx, then destroy nx.
             cname = nx->node;
@@ -1644,9 +1644,9 @@ cSpiceBuilder::parseline(CDs *sdesc, const char *line, bool create)
     sb_model = 0;
     sb_value = 0;
     sb_param = 0;
-    sb_nodes->free();
+    sNodeLink::destroy(sb_nodes);
     sb_nodes = 0;
-    sb_devs->free();
+    sNodeLink::destroy(sb_devs);
     sb_devs = 0;
 }
 
@@ -1721,7 +1721,7 @@ cSpiceBuilder::process_muts(CDs *sdesc)
                 record_error(Errs()->get_error());
         }
     }
-    sb_mutlist->free();
+    sMut::destroy(sb_mutlist);
     sb_mutlist = 0;
 }
 
@@ -1742,11 +1742,10 @@ namespace {
                 delete [] pval;
             }
 
-        void free()
+        static void destroy(const sMparm *m)
             {
-                sMparm *m = this;
                 while (m) {
-                    sMparm *mx = m;
+                    const sMparm *mx = m;
                     m = m->next;
                     delete mx;
                 }
@@ -1915,7 +1914,7 @@ cSpiceBuilder::dump_models(FILE *fp, sModLink *mods, const char *namesfx)
             }
             fprintf(fp, "\n");
         }
-        p0->free();
+        sMparm::destroy(p0);
     }
 }
 

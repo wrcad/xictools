@@ -130,7 +130,7 @@ cExt::dump_elec_recurse(FILE *fp, CDs *sdesc, int depth, sDumpOpts *opts,
         sp_line_t *d0 = SCD()->makeSpiceDeck(sdesc, &sptab);
         if (spice_only)
             pr_line(fp, d0);
-        d0->free();
+        sp_line_t::destroy(d0);
     }
 
     tab->add((unsigned long)sdesc, 0, false);
@@ -165,7 +165,7 @@ cExt::dump_elec_recurse(FILE *fp, CDs *sdesc, int depth, sDumpOpts *opts,
         SymTabEnt *h;
         while ((h = gen.next()) != 0) {
             delete [] h->stTag;
-            ((sp_line_t*)h->stData)->free();
+            sp_line_t::destroy((sp_line_t*)h->stData);
             h->stData = 0;
             h->stTag = 0;
             delete h;

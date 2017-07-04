@@ -53,23 +53,23 @@ public:
         ~sp_nmlist_t() { delete [] name; }
 
 
-        char *globname(int num)
+        static const char *globname(const sp_nmlist_t* thisn, int num)
             {
                 if (num < 1)
                     return (0);
-                for (sp_nmlist_t *m = this; m; m = m->next) {
+                for (const sp_nmlist_t *m = thisn; m; m = m->next) {
                     if (m->node == num)
                         return (m->name);
                 }
                 return (0);
             }
 
-        void free()
+        static void destroy(const sp_nmlist_t *n)
             {
-                sp_nmlist_t *nxt;
-                for (sp_nmlist_t *m = this; m; m = nxt) {
-                    nxt = m->next;
-                    delete m;
+                while (n) {
+                    const sp_nmlist_t *nx = n;
+                    n = n->next;
+                    delete nx;
                 }
             }
 
@@ -100,7 +100,7 @@ public:
             {
                 for (ds_sp--; ds_sp >= 0; ds_sp--)
                     delete [] ds_names[ds_sp];
-                ds_saves->free();
+                sp_line_t::destroy(ds_saves);
             }
 
         sp_line_t *lines()      { return (ds_saves); }

@@ -72,11 +72,10 @@ namespace {
 
         ~sNodeLink() { delete [] node; }
 
-        void free()
+        static void destroy(const sNodeLink *n)
             {
-                sNodeLink *n = this;
                 while (n) {
-                    sNodeLink *x = n;
+                    const sNodeLink *x = n;
                     n = n->next;
                     delete x;
                 }
@@ -103,11 +102,10 @@ namespace {
                 delete [] subst;
             }
 
-        void free()
+        static void destroy(const sGlobNode *g)
             {
-                sGlobNode *g = this;
                 while (g) {
-                    sGlobNode *x = g;
+                    const sGlobNode *x = g;
                     g = g->next;
                     delete x;
                 }
@@ -137,11 +135,10 @@ namespace {
                 delete [] text;
             }
 
-        void free()
+        static void destroy(const sModLink *m)
             {
-                sModLink *m = this;
                 while (m) {
-                    sModLink *x = m;
+                    const sModLink *x = m;
                     m = m->next;
                     delete x;
                 }
@@ -174,19 +171,18 @@ namespace {
         ~sSubcLink()
             {
                 delete [] name;
-                nodes->free();
-                lines->free();
+                sNodeLink::destroy(nodes);
+                sNodeLink::destroy(lines);
                 delete stab;
-                calls->free();
+                sNodeLink::destroy(calls);
                 stringlist::destroy(dotparams);
-                models->free();
+                sModLink::destroy(models);
             }
 
-        void free()
+        static void destroy(const sSubcLink *s)
             {
-                sSubcLink *s = this;
                 while (s) {
-                    sSubcLink *x = s;
+                    const sSubcLink *x = s;
                     s = s->next;
                     delete x;
                 }
@@ -304,11 +300,10 @@ namespace {
                 delete [] val;
             }
 
-        void free()
+        static void destroy(const sMut *m)
             {
-                sMut *m = this;
                 while (m) {
-                    sMut *x = m;
+                    const sMut *x = m;
                     m = m->next;
                     delete x;
                 }

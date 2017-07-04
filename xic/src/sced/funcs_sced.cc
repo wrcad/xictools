@@ -351,7 +351,6 @@ sced_funcs::IFgetNumberNodes(Variable *res, Variable*, void*)
     cNodeMap *map = cursde->nodes();
     if (map)
         res->content.value = map->countNodes();
-    res->content.value = map->countNodes();
     return (OK);
 }
 

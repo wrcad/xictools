@@ -217,15 +217,14 @@ struct sp_line_t
             delete [] li_line;
 #ifdef SP_LINE_FULL
             delete [] li_error;
-            li_actual->free();
+            sp_line_t::destroy(li_actual);
 #endif
         }
 
-    void free()
+    static void destroy(const sp_line_t *t)
         {
-            sp_line_t *t = this;
             while (t) {
-                sp_line_t *tx = t;
+                const sp_line_t *tx = t;
                 t = t->li_next;
                 delete tx;
             }
