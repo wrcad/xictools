@@ -467,7 +467,7 @@ namespace {
     err_rpt(const char *name, lispnode *p)
     {
         sLstr lstr;
-        p->print(&lstr);
+        lispnode::print(p, &lstr);
         if (name)
             Log()->WarningLogV(compat, "Ignored bad node in %s:\n\t%s\n",
                 name, lstr.string());
@@ -485,7 +485,7 @@ namespace {
         else if (n.type == LN_NODE) {
             lispnode v[2];
             char *err = 0;
-            int sc = n.args->eval_list(v, 2, &err);
+            int sc = lispnode::eval_list(n.args, v, 2, &err);
             delete [] err;
             if (sc != 2 || v[0].type != LN_STRING || v[1].type != LN_STRING)
                 return;
@@ -513,7 +513,7 @@ namespace {
             lname = n.string;
         else if (n.type == LN_NODE) {
             lispnode v[2];
-            int sc = n.args->eval_list(v, 2, err);
+            int sc = lispnode::eval_list(n.args, v, 2, err);
             if (sc != 2 || v[0].type != LN_STRING || v[1].type != LN_STRING) {
                 *badnode = true;
                 return (0);
@@ -554,7 +554,7 @@ bool
 cTechCdsIn::include_node(lispnode *p0, lispnode*, char **err)
 {
     lispnode n;
-    int cnt = p0->args->eval_list(&n, 1, err);
+    int cnt = lispnode::eval_list(p0->args, &n, 1, err);
     if (cnt == 1 && n.type == LN_STRING) {
         if (!CdsIn())
             new cTechCdsIn;
@@ -598,7 +598,7 @@ cTechCdsIn::techParams(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[2];
-        int cnt = p->args->eval_list(n, 3, err);
+        int cnt = lispnode::eval_list(p->args, n, 3, err);
         if (cnt < 2) {
             err_rpt("techParams", p);
             continue;
@@ -644,7 +644,7 @@ cTechCdsIn::viewTypeUnits(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[3];
-        int cnt = p->args->eval_list(n, 3, err);
+        int cnt = lispnode::eval_list(p->args, n, 3, err);
         if (cnt < 3) {
             err_rpt("viewTypeUnits", p);
             continue;
@@ -687,7 +687,7 @@ cTechCdsIn::mfgGridResolution(lispnode *p0, lispnode*, char **err)
 {
     lispnode n[1];
     lispnode *p = p0->args;
-    int cnt = p->args->eval_list(n, 1, err);
+    int cnt = lispnode::eval_list(p->args, n, 1, err);
     if (cnt < 1) {
         err_rpt("mfgGridResolution", p);
         return (true);
@@ -710,7 +710,7 @@ cTechCdsIn::techLayers(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[3];
-        int cnt = p->args->eval_list(n, 3, err);
+        int cnt = lispnode::eval_list(p->args, n, 3, err);
         if (cnt < 2) {
             err_rpt("techLayers", p);
             continue;
@@ -737,7 +737,7 @@ cTechCdsIn::techPurposes(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[3];
-        int cnt = p->args->eval_list(n, 3, err);
+        int cnt = lispnode::eval_list(p->args, n, 3, err);
         if (cnt < 2) {
             err_rpt("techPurposes", p);
             continue;
@@ -764,7 +764,7 @@ cTechCdsIn::techLayerPurposePriorities(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[2];
-        int cnt = p->args->eval_list(n, 2, err);
+        int cnt = lispnode::eval_list(p->args, n, 2, err);
         if (cnt < 2) {
             err_rpt("techLayerPurposePriorities", p);
             continue;
@@ -821,7 +821,7 @@ cTechCdsIn::techDisplays(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[8];
-        int cnt = p->args->eval_list(n, 8, err);
+        int cnt = lispnode::eval_list(p->args, n, 8, err);
         if (cnt < 8) {
             err_rpt("techDisplays", p);
             continue;
@@ -914,7 +914,7 @@ cTechCdsIn::techLayerProperties(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[4];
-        int cnt = p->args->eval_list(n, 4, err);
+        int cnt = lispnode::eval_list(p->args, n, 4, err);
         if (cnt < 3) {
             err_rpt("techLayerProperties", p);
             continue;
@@ -985,7 +985,7 @@ cTechCdsIn::techDerivedLayers(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[3];
-        int cnt = p->args->eval_list(n, 3, err);
+        int cnt = lispnode::eval_list(p->args, n, 3, err);
         if (cnt < 3) {
             err_rpt("techDerivedLayers", p);
             continue;
@@ -1013,7 +1013,7 @@ cTechCdsIn::techDerivedLayers(lispnode *p0, lispnode*, char **err)
             continue;
         }
         lispnode a[3];
-        int acnt = n[2].args->eval_list(a, 3, err);
+        int acnt = lispnode::eval_list(n[2].args, a, 3, err);
         if (acnt < 3) {
             err_rpt("techDerivedLayers", p);
             continue;
@@ -1096,7 +1096,7 @@ cTechCdsIn::routingDirections(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[2];
-        int cnt = p->args->eval_list(n, 2, err);
+        int cnt = lispnode::eval_list(p->args, n, 2, err);
         if (cnt < 2) {
             err_rpt("routingDirections", p);
             continue;
@@ -1159,7 +1159,7 @@ cTechCdsIn::viaLayers(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[3];
-        int cnt = p->args->eval_list(n, 3, err);
+        int cnt = lispnode::eval_list(p->args, n, 3, err);
         if (cnt < 3) {
             err_rpt("viaLayers", p);
             continue;
@@ -1221,7 +1221,7 @@ cTechCdsIn::streamLayers(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[3];
-        int cnt = p->args->eval_list(n, 3, err);
+        int cnt = lispnode::eval_list(p->args, n, 3, err);
         if (cnt < 3) {
             err_rpt("streamLayers", p);
             continue;
@@ -1266,7 +1266,7 @@ cTechCdsIn::standardViaDefs(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[14];
-        int cnt = p->args->eval_list(n, 14, err);
+        int cnt = lispnode::eval_list(p->args, n, 14, err);
         if (cnt < 10) {
             err_rpt("standardViaDefs", p);
             continue;
@@ -1312,7 +1312,7 @@ cTechCdsIn::standardViaDefs(lispnode *p0, lispnode*, char **err)
         ld2->setConductor(true);
 
         lispnode v[4];
-        int sc = n[3].args->eval_list(v, 4, err);
+        int sc = lispnode::eval_list(n[3].args, v, 4, err);
         if (sc < 3) {
             err_rpt("standardViaDefs", p);
             continue;
@@ -1344,7 +1344,7 @@ cTechCdsIn::standardViaDefs(lispnode *p0, lispnode*, char **err)
         }
 
         // (rows cols ( space_w space_h ) )
-        sc = n[4].args->eval_list(v, 3, err);
+        sc = lispnode::eval_list(n[4].args, v, 3, err);
         if (sc != 3) {
             err_rpt("standardViaDefs", p);
             continue;
@@ -1356,7 +1356,7 @@ cTechCdsIn::standardViaDefs(lispnode *p0, lispnode*, char **err)
         }
         if (v[2].type == LN_NODE) {
             lispnode vx[2];
-            sc = v[2].args->eval_list(vx, 2, err);
+            sc = lispnode::eval_list(v[2].args, vx, 2, err);
             if (sc != 2) {
                 err_rpt("standardViaDefs", p);
                 continue;
@@ -1369,7 +1369,7 @@ cTechCdsIn::standardViaDefs(lispnode *p0, lispnode*, char **err)
         }
 
         // ( l1_enc_w l1_enc_h )
-        sc = n[5].args->eval_list(v, 2, err);
+        sc = lispnode::eval_list(n[5].args, v, 2, err);
         if (sc != 2) {
             err_rpt("standardViaDefs", p);
             continue;
@@ -1381,7 +1381,7 @@ cTechCdsIn::standardViaDefs(lispnode *p0, lispnode*, char **err)
         }
 
         // ( l2_enc_w l2_enc_h )
-        sc = n[6].args->eval_list(v, 2, err);
+        sc = lispnode::eval_list(n[6].args, v, 2, err);
         if (sc != 2) {
             err_rpt("standardViaDefs", p);
             continue;
@@ -1393,7 +1393,7 @@ cTechCdsIn::standardViaDefs(lispnode *p0, lispnode*, char **err)
         }
 
         // ( l1_offs_w l1_offs_h )
-        sc = n[7].args->eval_list(v, 2, err);
+        sc = lispnode::eval_list(n[7].args, v, 2, err);
         if (sc != 2) {
             err_rpt("standardViaDefs", p);
             continue;
@@ -1405,7 +1405,7 @@ cTechCdsIn::standardViaDefs(lispnode *p0, lispnode*, char **err)
         }
 
         // ( l2_offs_w l2_offs_h )
-        sc = n[8].args->eval_list(v, 2, err);
+        sc = lispnode::eval_list(n[8].args, v, 2, err);
         if (sc != 2) {
             err_rpt("standardViaDefs", p);
             continue;
@@ -1417,7 +1417,7 @@ cTechCdsIn::standardViaDefs(lispnode *p0, lispnode*, char **err)
         }
 
         // ( org_offs_w org_offs_h )
-        sc = n[9].args->eval_list(v, 2, err);
+        sc = lispnode::eval_list(n[9].args, v, 2, err);
         if (sc != 2) {
             err_rpt("standardViaDefs", p);
             continue;
@@ -1439,7 +1439,7 @@ cTechCdsIn::standardViaDefs(lispnode *p0, lispnode*, char **err)
             // Implant 1
             svia.set_implant1(lim1);
             if (n[11].type == LN_NODE) {
-                sc = n[11].args->eval_list(v, 2, err);
+                sc = lispnode::eval_list(n[11].args, v, 2, err);
                 if (sc != 2) {
                     err_rpt("standardViaDefs", p);
                     continue;
@@ -1455,7 +1455,7 @@ cTechCdsIn::standardViaDefs(lispnode *p0, lispnode*, char **err)
                     // Implant 2
                     svia.set_implant2(lim2);
                     if (n[13].type == LN_NODE) {
-                        sc = n[13].args->eval_list(v, 2, err);
+                        sc = lispnode::eval_list(n[13].args, v, 2, err);
                         if (sc != 2) {
                             err_rpt("standardViaDefs", p);
                             continue;
@@ -1492,7 +1492,7 @@ cTechCdsIn::constraintGroups(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[2];
-        int cnt = p->args->eval_list(n, 2, err);
+        int cnt = lispnode::eval_list(p->args, n, 2, err);
         if (cnt < 2) {
             err_rpt("constraintGroups", p);
             continue;
@@ -1537,7 +1537,7 @@ cTechCdsIn::spacings(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[6];
-        int cnt = p->args->eval_list(n, 6, err);
+        int cnt = lispnode::eval_list(p->args, n, 6, err);
         if (cnt < 3) {
             err_rpt("spacings", p);
             continue;
@@ -1858,7 +1858,7 @@ cTechCdsIn::viaStackingLimits(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[3];
-        int cnt = p->args->eval_list(n, 3, err);
+        int cnt = lispnode::eval_list(p->args, n, 3, err);
         if (cnt < 3) {
             err_rpt("viaStackingLimits", p);
             continue;
@@ -1874,7 +1874,7 @@ cTechCdsIn::spacingTables(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[4];
-        int cnt = p->args->eval_list(n, 4, err);
+        int cnt = lispnode::eval_list(p->args, n, 4, err);
         if (cnt < 4) {
             err_rpt("spacingTables", p);
             continue;
@@ -1887,7 +1887,7 @@ cTechCdsIn::spacingTables(lispnode *p0, lispnode*, char **err)
         if (lstring::cieq(rname, "minSpacing")) {
             lispnode *q = p->args->next;
             lispnode v[1];
-            if (q->eval_list(v, 1, err) != 1) {
+            if (lispnode::eval_list(q, v, 1, err) != 1) {
                 err_rpt(rname, q);
                 continue;
             }
@@ -1908,7 +1908,7 @@ cTechCdsIn::spacingTables(lispnode *p0, lispnode*, char **err)
                 continue;
 
             CDl *ld2 = 0;
-            if (q->eval_list(v, 1, err) != 1) {
+            if (lispnode::eval_list(q, v, 1, err) != 1) {
                 err_rpt(rname, q);
                 continue;
             }
@@ -2059,7 +2059,7 @@ cTechCdsIn::spacingTables(lispnode *p0, lispnode*, char **err)
 
                 if (!sTspaceTable::check_sort(st)) {
                     sLstr lstr;
-                    q->print(&lstr);
+                    lispnode::print(q, &lstr);
                     Log()->WarningLogV(compat,
                         "Ignored bad spacing table:\n\t%s\n",
                         lstr.string());
@@ -2090,7 +2090,7 @@ cTechCdsIn::orderedSpacings(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[6];
-        int cnt = p->args->eval_list(n, 6, err);
+        int cnt = lispnode::eval_list(p->args, n, 6, err);
         if (cnt < 4) {
             err_rpt("orderedSpacings", p);
             continue;
@@ -2173,7 +2173,7 @@ cTechCdsIn::orderedSpacings(lispnode *p0, lispnode*, char **err)
                 continue;
             }
             lispnode v[2];
-            cnt = n[3].args->eval_list(v, 2, err);
+            cnt = lispnode::eval_list(n[3].args, v, 2, err);
             if (cnt < 2 || v[0].type != LN_NUMERIC ||
                     v[1].type != LN_NUMERIC) {
                 err_rpt(rname, &n[3]);
@@ -2222,7 +2222,7 @@ cTechCdsIn::antennaModels(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[1];
-        int cnt = p->args->eval_list(n, 1, err);
+        int cnt = lispnode::eval_list(p->args, n, 1, err);
         if (cnt < 1) {
             err_rpt("antennaModels", p);
             continue;
@@ -2243,7 +2243,7 @@ cTechCdsIn::electrical(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[1];
-        int cnt = p->args->eval_list(n, 1, err);
+        int cnt = lispnode::eval_list(p->args, n, 1, err);
         if (cnt < 1) {
             err_rpt("electrical", p);
             continue;
@@ -2351,7 +2351,7 @@ cTechCdsIn::routingGrids(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[3];
-        int cnt = p->args->eval_list(n, 3, err);
+        int cnt = lispnode::eval_list(p->args, n, 3, err);
         if (cnt < 1) {
             err_rpt("routingGrids", p);
             continue;

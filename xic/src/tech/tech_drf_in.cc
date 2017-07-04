@@ -734,7 +734,7 @@ namespace {
         }
         else {
             sLstr lstr;
-            p->print(&lstr);
+            lispnode::print(p, &lstr);
             if (name)
                 Log()->WarningLogV(compat, "Ignored bad node in %s:\n\t%s\n",
                     name, lstr.string());
@@ -752,7 +752,7 @@ cTechDrfIn::drDefineDisplay(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[1];
-        int cnt = p->args->eval_list(n, 1, err);
+        int cnt = lispnode::eval_list(p->args, n, 1, err);
         if (cnt < 1) {
             err_rpt("drDefineDisplay", p);
             continue;
@@ -777,7 +777,7 @@ cTechDrfIn::drDefineColor(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[6];
-        int cnt = p->args->eval_list(n, 6, err);
+        int cnt = lispnode::eval_list(p->args, n, 6, err);
         if (cnt < 5) {
             err_rpt("drDefineColor", p);
             continue;
@@ -816,7 +816,7 @@ cTechDrfIn::drDefineStipple(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[3];
-        int cnt = p->args->eval_list(n, 3, err);
+        int cnt = lispnode::eval_list(p->args, n, 3, err);
         if (cnt < 3) {
             err_rpt("drDefineStipple", 0);
             continue;
@@ -864,7 +864,7 @@ cTechDrfIn::drDefineLineStyle(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[4];
-        int cnt = p->args->eval_list(n, 4, err);
+        int cnt = lispnode::eval_list(p->args, n, 4, err);
         if (cnt < 4) {
             err_rpt("drDefineLineStyle", p);
             continue;
@@ -914,7 +914,7 @@ cTechDrfIn::drDefinePacket(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[6];
-        int cnt = p->args->eval_list(n, 6, err);
+        int cnt = lispnode::eval_list(p->args, n, 6, err);
         if (cnt < 6) {
             err_rpt("drDefinePacket", p);
             continue;

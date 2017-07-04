@@ -53,10 +53,10 @@ cfilter_t::cfilter_t(DisplayMode m)
 
 cfilter_t::~cfilter_t()
 {
-    cf_p_list->free();
-    cf_np_list->free();
-    cf_s_list->free();
-    cf_ns_list->free();
+    cnlist_t::destroy(cf_p_list);
+    cnlist_t::destroy(cf_np_list);
+    cnlist_t::destroy(cf_s_list);
+    cnlist_t::destroy(cf_ns_list);
     CDll::destroy(cf_l_list);
     CDll::destroy(cf_nl_list);
 }
@@ -67,10 +67,10 @@ cfilter_t::~cfilter_t()
 void
 cfilter_t::set_default()
 {
-    cf_p_list->free();
-    cf_np_list->free();
-    cf_s_list->free();
-    cf_ns_list->free();
+    cnlist_t::destroy(cf_p_list);
+    cnlist_t::destroy(cf_np_list);
+    cnlist_t::destroy(cf_s_list);
+    cnlist_t::destroy(cf_ns_list);
     CDll::destroy(cf_l_list);
     CDll::destroy(cf_nl_list);
     cf_f_bits = 0;

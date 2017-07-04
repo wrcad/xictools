@@ -114,7 +114,7 @@ struct SIcontrol
 
     SIcontrol *findlabel(const char*);
     void print(int, FILE*);
-    void free();
+    static void destroy(SIcontrol*);
 
     CblkType co_type;             // Block type
     unsigned short co_lineno;     // Source file line number
@@ -146,7 +146,7 @@ struct SIifel
     ~SIifel()
         {
             ParseNode::destroy(text);
-            children->free();
+            SIcontrol::destroy(children);
         }
 
     static void destroy(const SIifel *n)

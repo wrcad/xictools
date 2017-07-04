@@ -1669,7 +1669,7 @@ sEinstList::setup_eval(sParamTab **tret, double **dret) const
         // Build a parameter table from the string.
         if (*t) {
             ptab = new sParamTab;
-            ptab->extract_params(t);
+            sParamTab::extract_params(ptab, t);
         }
     }
 
@@ -1686,7 +1686,7 @@ sEinstList::setup_eval(sParamTab **tret, double **dret) const
                 ptab->param_subst_all_collapse(&str);
                 sprintf(buf, "M=%s", str);
                 delete [] str;
-                ptab->extract_params(buf);
+                sParamTab::extract_params(ptab, buf);
             }
             else if (EX()->paramCx() && EX()->paramCx()->has_param("M")) {
                 sprintf(buf, "'%d*M'", esects);
@@ -1694,17 +1694,17 @@ sEinstList::setup_eval(sParamTab **tret, double **dret) const
                 EX()->paramCx()->update(&str);
                 sprintf(buf, "M=%s", str);
                 delete [] str;
-                ptab->extract_params(buf);
+                sParamTab::extract_params(ptab, buf);
             }
             else {
                 sprintf(buf, "M=%d", esects);
-                ptab->extract_params(buf);
+                sParamTab::extract_params(ptab, buf);
             }
         }
         else {
             ptab = new sParamTab;
             sprintf(buf, "M=%d", esects);
-            ptab->extract_params(buf);
+            sParamTab::extract_params(ptab, buf);
         }
     }
     if (tret)

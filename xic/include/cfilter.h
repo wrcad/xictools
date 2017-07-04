@@ -75,11 +75,10 @@ struct cfilter_t
                 cname = cn;
             }
 
-        void free()
+        static void destroy(const cnlist_t *l)
             {
-                cnlist_t *l = this;
                 while (l) {
-                    cnlist_t *x = l;
+                    const cnlist_t *x = l;
                     l = l->next;
                     delete x;
                 }

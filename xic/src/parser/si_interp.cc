@@ -286,7 +286,7 @@ step_again:
         else {
             // done
             siBlockStepping = false;
-            siMain.sf_text->free();
+            SIcontrol::destroy(siMain.sf_text);
             siMain.sf_text = 0;
             siMain.sf_end = 0;
             skip_leading = true;
@@ -454,7 +454,7 @@ SIinterp::LineInterp(const char *str, siVariable *res,
             if (IsHalted() || SIparse()->ifCheckInterrupt())
                 clear();
         }
-        siMain.sf_text->free();
+        SIcontrol::destroy(siMain.sf_text);
         siMain.sf_text = 0;
         siMain.sf_end = 0;
     }
@@ -600,7 +600,7 @@ void
 SIinterp::Clear()
 {
     siBlockStepping = false;
-    siMain.sf_text->free();
+    SIcontrol::destroy(siMain.sf_text);
     delete siDefines;
     siDefines = siMacrosPreset;
     siMacrosPreset = 0;
@@ -1806,7 +1806,7 @@ SIinterp::set_block(const char **line, int lineno)
                 // The cx is not used, can probably safely pass null.
                 while (siStack)
                     eval_stmt(0, 0, &cx);
-                siCurFunc->sf_text->free();
+                SIcontrol::destroy(siCurFunc->sf_text);
                 siCurFunc->sf_text = new SIcontrol(0);
                 siCurFunc->sf_end = siCurFunc->sf_text;
                 cur = siCurFunc->sf_end;
@@ -1851,7 +1851,7 @@ SIinterp::set_block(const char **line, int lineno)
                 // The cx is not used, can probably safely pass null.
                 while (siStack)
                     eval_stmt(0, 0, &cx);
-                siCurFunc->sf_text->free();
+                SIcontrol::destroy(siCurFunc->sf_text);
                 siCurFunc->sf_text = new SIcontrol(0);
                 siCurFunc->sf_end = siCurFunc->sf_text;
                 cur = siCurFunc->sf_end;
@@ -1958,7 +1958,7 @@ SIfunc::~SIfunc()
     delete [] sf_name;
     SIarg::destroy(sf_args);
     siVariable::destroy(sf_variables);
-    sf_text->free();
+    SIcontrol::destroy(sf_text);
     delete sf_exprs;
     while (sf_varinit) {
         siVariable *v = (siVariable*)sf_varinit->next;
@@ -1975,7 +1975,7 @@ SIfunc::clear()
     sf_args = 0;
     siVariable::destroy(sf_variables);
     sf_variables = 0;
-    sf_text->free();
+    SIcontrol::destroy(sf_text);
     sf_text = new SIcontrol(0);
     sf_end = sf_text;
     delete sf_exprs;
@@ -2174,7 +2174,7 @@ SIfunc::restore_vars(Variable *vi, Variable *res)
                 }
             }
             if (!found)
-                // Found a zlist not passed or returned, free it
+                // Found a zlist not passed or returned, delete it.
                 Zlist::destroy(v->content.zlist);
         }
         if (v->type == TYP_LEXPR) {
@@ -2193,7 +2193,7 @@ SIfunc::restore_vars(Variable *vi, Variable *res)
                 }
             }
             if (!found)
-                // Found a layer expr not passed or returned, free it.
+                // Found a layer expr not passed or returned, delete it.
                 delete v->content.lspec;
         }
         if (v->type == TYP_HANDLE) {
@@ -2380,13 +2380,14 @@ SIcontrol::print(int indent, FILE *fp)
 }
 
 
+// Static function.
 // Free the control structure.
 //
 void
-SIcontrol::free()
+SIcontrol::destroy(SIcontrol *thiscc)
 {
     SIcontrol *cc, *cd;
-    for (cc = this; cc; cc = cd) {
+    for (cc = thiscc; cc; cc = cd) {
         switch (cc->co_type) {
         case CO_LABEL:
         case CO_GOTO:
@@ -2408,8 +2409,8 @@ SIcontrol::free()
         default:
             break;
         }
-        cc->co_children->free();
-        cc->co_elseblock->free();
+        SIcontrol(cc->co_children);
+        SIcontrol(cc->co_elseblock);
         cd = cc->co_next;
         delete cc;
     }

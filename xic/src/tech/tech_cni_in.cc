@@ -94,7 +94,7 @@ namespace {
     err_rpt(const char *name, lispnode *p)
     {
         sLstr lstr;
-        p->print(&lstr);
+        lispnode::print(p, &lstr);
         if (name)
             Log()->WarningLogV(compat, "Ignored bad node in %s:\n\t%s\n",
                 name, lstr.string());
@@ -134,7 +134,7 @@ cTechCniIn::dispLayerPurposePairs(lispnode *p0, lispnode*, char **err)
 
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[5];
-        int cnt = p->args->eval_list(n, 5, err);
+        int cnt = lispnode::eval_list(p->args, n, 5, err);
         if (cnt < 5) {
             err_rpt("dispLayerPurposePairs", p);
             continue;
@@ -344,7 +344,7 @@ cTechCniIn::viewTypeUnits(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[3];
-        int cnt = p->args->eval_list(n, 3, err);
+        int cnt = lispnode::eval_list(p->args, n, 3, err);
         if (cnt < 3) {
             err_rpt("viewTypeUnits", p);
             continue;
@@ -387,7 +387,7 @@ cTechCniIn::mfgGridResolution(lispnode *p0, lispnode*, char **err)
 {
     lispnode n[1];
     lispnode *p = p0->args;
-    int cnt = p->args->eval_list(n, 1, err);
+    int cnt = lispnode::eval_list(p->args, n, 1, err);
     if (cnt < 1) {
         err_rpt("mfgGridResolution", p);
         return (true);
@@ -407,7 +407,7 @@ cTechCniIn::layerMapping(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[3];
-        int cnt = p->args->eval_list(n, 2, err);
+        int cnt = lispnode::eval_list(p->args, n, 2, err);
         if (cnt < 2) {
             err_rpt("layerMapping", p);
             continue;
@@ -444,7 +444,7 @@ cTechCniIn::purposeMapping(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[3];
-        int cnt = p->args->eval_list(n, 3, err);
+        int cnt = lispnode::eval_list(p->args, n, 3, err);
         if (cnt < 2) {
             err_rpt("purposeMapping", p);
             continue;
