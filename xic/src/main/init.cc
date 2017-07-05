@@ -35,6 +35,7 @@
 #include "si_parsenode.h"
 #include "si_parser.h"
 #include "si_interp.h"
+#include "main_scriptif.h"
 #include "fio.h"
 #include "events.h"
 #include "layertab.h"

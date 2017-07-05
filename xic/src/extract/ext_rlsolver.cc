@@ -576,11 +576,6 @@ bool
 RLsolver::solve_two(double *squares)
 {
     *squares = 0.0;
-    {
-        RLsolver *rt = this;
-        if (!rt)
-            return (false);
-    }
     if (rl_state == RLuninit) {
         Errs()->add_error("solve_two: solver not initialized.");
         return (false);
@@ -631,11 +626,6 @@ RLsolver::solve_multi(int *gmat_size, float **gmat)
 {
     *gmat_size = 0;
     *gmat = 0;
-    {
-        RLsolver *rt = this;
-        if (!rt)
-            return (false);
-    }
     if (rl_state == RLuninit) {
         Errs()->add_error("solve_multi: solver not initialized.");
         return (false);

@@ -531,25 +531,26 @@ namespace {
 }
 
 
+// Static function.
 // umenu sort function
 //
 void
-umenu::sort()
+umenu::sort(umenu *thisu)
 {
     int cnt = 0;
-    for (umenu *u = this; u; u = u->u_next, cnt++) ;
+    for (umenu *u = thisu; u; u = u->u_next, cnt++) ;
     if (cnt < 2)
         return;
     ut *aa = new ut[cnt];
     cnt = 0;
-    for (umenu *u = this; u; u = u->u_next, cnt++) {
+    for (umenu *u = thisu; u; u = u->u_next, cnt++) {
         aa[cnt].n = u->u_name;
         aa[cnt].r = u->u_realname;
         aa[cnt].m = u->u_menu;
     }
     std::sort(aa, aa + cnt, comp);
     cnt = 0;
-    for (umenu *u = this; u; u = u->u_next, cnt++) {
+    for (umenu *u = thisu; u; u = u->u_next, cnt++) {
         u->u_name = aa[cnt].n;
         u->u_realname = aa[cnt].r;
         u->u_menu = aa[cnt].m;
@@ -1438,7 +1439,7 @@ SIlocal::get_lib(const char *lpath)
             u1 = ur;
         }
         else
-            u1->sort();
+            umenu::sort(u1);
         u0->set_menu(u1);
         return (u0);
     }
@@ -1777,7 +1778,7 @@ cMain::GetFunctionList()
     }
     ul = SIxic.AddScript(ul, nametab);
     delete nametab;
-    ul->sort();
+    umenu::sort(ul);
     return (ul);
 }
 

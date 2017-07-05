@@ -709,11 +709,6 @@ cGroupDesc::parse_find_dev(const char *str, bool show)
 stringlist *
 cGroupDesc::list_devs()
 {
-    {
-        cGroupDesc *gdt = this;
-        if (!gdt)
-            return (0);
-    }
     stringlist *s0 = 0;
     char buf[256];
     for (sDevList *dv = gd_devices; dv; dv = dv->next()) {
@@ -753,15 +748,10 @@ cGroupDesc::set_devs_display(bool state)
 int
 cGroupDesc::show_devs(WindowDesc *wdesc, bool d_or_e)
 {
-    {
-        cGroupDesc *gdt = this;
-        if (!gdt)
-            return (0);
-    }
-
     static bool skipit;  // prevent reentrancy
     if (skipit)
         return (0);
+
     if (!wdesc->Wdraw())
         return (0);
     if (!wdesc->IsSimilar(DSP()->MainWdesc(), WDsimXmode))
@@ -1737,18 +1727,19 @@ namespace {
 }
 
 
+// Static function.
 // Sort the list by name, index, and vec-index.
 //
 sEinstList *
-sEinstList::sort()
+sEinstList::sort(sEinstList *thisil)
 {
     int cnt = 0;
-    for (sEinstList *e = this; e; e = e->next(), cnt++) ;
+    for (sEinstList *e = thisil; e; e = e->next(), cnt++) ;
     if (cnt < 2)
-        return (this);
+        return (thisil);
     sEinstList **ary = new sEinstList*[cnt];
     cnt = 0;
-    for (sEinstList *e = this; e; e = e->next())
+    for (sEinstList *e = thisil; e; e = e->next())
         ary[cnt++] = e;
 
     std::sort(ary, ary + cnt, et_comp);
@@ -2246,13 +2237,14 @@ sDevContactInst::node_prpty(const sEinstList *el) const
 }
 
 
+// Static function.
 // Copy the contact list, providing the device pointer passed.
 //
 sDevContactInst *
-sDevContactInst::dup_list(sDevInst *di) const
+sDevContactInst::dup_list(const sDevContactInst *thisci, sDevInst *di)
 {
     sDevContactInst *c0 = 0, *ce = 0;
-    for (const sDevContactInst *c = this; c; c = c->next()) {
+    for (const sDevContactInst *c = thisci; c; c = c->next()) {
         sDevContactInst *cnew = new sDevContactInst(*c);
         cnew->ci_dev = di;
         if (!c0)
@@ -5813,7 +5805,7 @@ sDevInst::insert_parallel(sDevInst *di)
     else {
         sDevInst *dx = new sDevInst(-1, di_desc, di_sdesc);
         dx->di_next = di;
-        dx->di_contacts = di_contacts->dup_list(dx);
+        dx->di_contacts = sDevContactInst::dup_list(di_contacts, dx);
         dx->di_fdevs = di_fdevs;
         di_fdevs = 0;
         dx->di_fnum = di_fnum;
@@ -5860,7 +5852,7 @@ sDevInst::insert_series(sDevInst *di)
     else {
         sDevInst *dx = new sDevInst(-1, di_desc, di_sdesc);
         dx->di_next = di;
-        dx->di_contacts = di_contacts->dup_list(dx);
+        dx->di_contacts = sDevContactInst::dup_list(di_contacts, dx);
         dx->di_fdevs = di_fdevs;
         di_fdevs = 0;
         dx->di_fnum = di_fnum;

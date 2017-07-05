@@ -26,8 +26,10 @@
 #include "main.h"
 #include "dsp_tkif.h"
 #include "si_parsenode.h"
+#include "si_parser.h"
 #include "menu.h"
 #include "user_menu.h"
+#include "main_scriptif.h"
 
 
 namespace {

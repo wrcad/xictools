@@ -307,7 +307,7 @@ struct fhConductor
             hc_zlist3d = glZlist3d::manhattanize(hc_zlist3d, minsize);
         }
 
-    fhConductor *addz3d(const glZoid3d*);
+    static fhConductor *addz3d(fhConductor*, const glZoid3d*);
     fhNodeList *get_nodes(const fhNodeGen&, int, const Point*);
     void segmentize(fhNodeGen&);
     fhSegment *find_segment_by_node(int);
@@ -373,7 +373,7 @@ struct fhLayer
         {
             for (const glYlist3d *y = yl; y; y = y->next) {
                 for (const glZlist3d *z = y->y_zlist; z; z = z->next)
-                    fl_list = fl_list->addz3d(&z->Z);
+                    fl_list = fhConductor::addz3d(fl_list, &z->Z);
             }
         }
 

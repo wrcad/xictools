@@ -471,12 +471,11 @@ namespace {
                     *term_bak = tmp;
                 }
                 delete term_bak;
-                sibling->free();
+                destroy(sibling);
             }
 
-        void free()
+        static void destroy(sTop *op)
             {
-                sTop *op = this;
                 while (op) {
                     sTop *opx = op;
                     op = op->next;
@@ -727,8 +726,8 @@ PtState::~PtState()
             }
         }
     }
-    Opers->free();
-    Redos->free();
+    sTop::destroy(Opers);
+    sTop::destroy(Redos);
     PtCmd = 0;
 }
 

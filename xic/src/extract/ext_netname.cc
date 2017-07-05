@@ -175,35 +175,33 @@ cGroupDesc::group_name(int grp, sLstr *map_lstr) const
 {
     if (grp < 0)
         return (CDnetex::name_tab_add("-1")->string());
-    const cGroupDesc *gdt = this;
-    if (gdt) {
-        sGroup *g = group_for(grp);
-        if (!g)
-            return (CDnetex::name_tab_add("-1")->string());
+    sGroup *g = group_for(grp);
+    if (!g)
+        return (CDnetex::name_tab_add("-1")->string());
 
-        const char *nm = g->netname()->string();
-        if (nm && (!EX()->isIgnoreGroupNames() || SCD()->isGlobalNetName(nm)))
-            return (nm);
+    const char *nm = g->netname()->string();
+    if (nm && (!EX()->isIgnoreGroupNames() || SCD()->isGlobalNetName(nm)))
+        return (nm);
 
-        if (!EX()->isIgnoreGroupNames() && map_lstr) {
-            CDnetName cnm = 0;
-            for (CDpin *p = gd_groups[grp].termlist(); p; p = p->next()) {
-                if (!p->term()->instance()) {
-                    // found a cell terminal
-                    cnm = p->term()->name();
-                    break;
-                }
+    if (!EX()->isIgnoreGroupNames() && map_lstr) {
+        CDnetName cnm = 0;
+        for (CDpin *p = gd_groups[grp].termlist(); p; p = p->next()) {
+            if (!p->term()->instance()) {
+                // found a cell terminal
+                cnm = p->term()->name();
+                break;
             }
-            if (cnm)
-                gd_groups[grp].set_netname(cnm, sGroup::NameFromTerm);
-
-            map_lstr->add("* ");
-            map_lstr->add_i(grp);
-            map_lstr->add_c(' ');
-            map_lstr->add(cnm ? cnm->string() : "???");
-            map_lstr->add_c('\n');
         }
+        if (cnm)
+            gd_groups[grp].set_netname(cnm, sGroup::NameFromTerm);
+
+        map_lstr->add("* ");
+        map_lstr->add_i(grp);
+        map_lstr->add_c(' ');
+        map_lstr->add(cnm ? cnm->string() : "???");
+        map_lstr->add_c('\n');
     }
+
     char buf[64];
     mmItoA(buf, grp);
     return (CDnetex::name_tab_add(buf)->string());

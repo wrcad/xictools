@@ -26,6 +26,7 @@
 #include "main.h"
 #include "ext.h"
 #include "ext_extract.h"
+#include "ext_nets.h"
 #include "ext_pathfinder.h"
 #include "sced.h"
 #include "dsp_layer.h"
@@ -253,9 +254,8 @@ namespace {
                     group = g;
                 }
 
-            void free()
+            static void destroy(grp_list *gl)
                 {
-                    grp_list *gl = this;
                     while (gl) {
                         grp_list *x = gl;
                         gl = gl->next;
@@ -295,7 +295,7 @@ namespace {
             return (-1);
         if (cursdp != gs_sdesc || !gs_BB.intersect(x, y, false)) {
             gs_sdesc = cursdp;
-            gs_groups->free();
+            grp_list::destroy(gs_groups);
             gs_groups = 0;
             WindowDesc *wd = EV()->CurrentWin();
             if (!wd)

@@ -196,7 +196,7 @@ struct sDevContactInst
     // ext_device.cc
     int node(const sEinstList* = 0) const;
     CDp_cnode *node_prpty(const sEinstList* = 0) const;
-    sDevContactInst *dup_list(sDevInst*) const;
+    static sDevContactInst *dup_list(const sDevContactInst*, sDevInst*);
     void show(WindowDesc*, BBox* = 0) const;
     void set_term_loc(CDs*, CDl*) const;
     CDo *is_set(CDs*, CDl*) const;
@@ -911,7 +911,7 @@ struct sEinstList
     char *instance_name() const;
     bool is_parallel(const sEinstList*) const;
     void setup_eval(sParamTab**, double**) const;
-    sEinstList *sort();
+    static sEinstList *sort(sEinstList*);
     const CDp_cnode* const *nodes(unsigned int*);
     const int *permutes(const sDevDesc*, int*);
 
@@ -1849,10 +1849,7 @@ public:
             return (gd_vcontacts ? gd_vcontacts->vgroup + 1 : nextindex());
         }
     bool nets_only()        const { return (!gd_devices && !gd_subckts); }
-    bool isempty()          const
-        {
-            const cGroupDesc *gt = this; return (!gt || !gt->gd_groups);
-        }
+    bool isempty()          const { return (!gd_groups); }
 
     bool has_net_or_terms(int g) const
         {
@@ -1962,6 +1959,12 @@ public:
     static int assoc_iter_max()             { return (gd_iter_max); }
     static void set_assoc_iter_max(int i)   { gd_iter_max = i; }
 
+    // ext_nets.h
+    inline bool node_active(int);
+    inline int group_of_node(int);
+    inline CDpin *pins_of_node(int);
+    inline CDcont *conts_of_node(int);
+
     // ext_device.cc
     sDevInstList *find_dev(const char*, const char*, const char*, const BBox*);
     int find_dev_set(const char*, const char*, const char*, const BBox*, bool);
@@ -1991,9 +1994,6 @@ public:
     sSubcInst *find_dual_subc(const CDc*, int);
     bool bind_term_to_group(CDsterm*, int);
     void clear_formal_terms();
-    int group_of_node(int);
-    CDpin *pins_of_node(int);
-    CDcont *conts_of_node(int);
     void set_association(int, int);
     void select_unassoc_groups();
     void select_unassoc_nodes();

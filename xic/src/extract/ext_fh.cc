@@ -1259,12 +1259,13 @@ fhLayout::dump_ports(FILE *fp)
 // End of fhLayout functions.
 
 
+// Static function.
 fhConductor *
-fhConductor::addz3d(const glZoid3d *Z)
+fhConductor::addz3d(fhConductor *thisc, const glZoid3d *Z)
 {
     if (!Z)
-        return (this);
-    fhConductor *cl0 = this;
+        return (thisc);
+    fhConductor *cl0 = thisc;
     for (fhConductor *cl = cl0; cl; cl = cl->next()) {
         if (cl->layer_index() == Z->layer_index && cl->group() == Z->group) {
             cl->hc_zlist3d_ref = new glZlistRef3d(Z, cl->hc_zlist3d_ref);

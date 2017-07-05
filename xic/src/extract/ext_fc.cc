@@ -1142,19 +1142,19 @@ namespace {
                 Zlist::destroy(list);
             }
 
-        sPgrp *add(double e, int z, int xll, int xlr, int yl,
-            int xul, int xur, int yu)
+        static sPgrp *add(sPgrp *thispg, double e, int z, int xll, int xlr,
+            int yl, int xul, int xur, int yu)
             {
-                for (sPgrp *tg = this; tg; tg = tg->next) {
+                for (sPgrp *tg = thispg; tg; tg = tg->next) {
                     if (tg->zval == z && tg->eps == e) {
                         tg->list =
                             new Zlist(xll, xlr, yl, xul, xur, yu, tg->list);
-                        return (this);
+                        return (thispg);
                     }
                 }
                 sPgrp *tg = new sPgrp(e, z);
                 tg->list = new Zlist(xll, xlr, yl, xul, xur, yu, 0);
-                tg->next = this;
+                tg->next = thispg;
                 return (tg);
             }
 
@@ -1229,7 +1229,7 @@ fcLayout::panelize_group_zbot(const glZlistRef3d *z0) const
         else
             continue;
         if (fcl_domerge) {
-            grps = grps->add(op, z->PZ->zbot, z->PZ->xll, z->PZ->xlr,
+            grps = sPgrp::add(grps, op, z->PZ->zbot, z->PZ->xll, z->PZ->xlr,
                 z->PZ->yl, z->PZ->xul, z->PZ->xur, z->PZ->yu);
         }
         else {
@@ -1310,7 +1310,8 @@ fcLayout::panelize_group_ztop(const glZlistRef3d *z0) const
                         Zlist *zx = Ylist::clip_to(yl, &z2->Z);
                         for (Zlist *zz = zx; zz; zz = zz->next) {
                             if (fcl_domerge) {
-                                grps = grps->add(l->epsrel(), z1->PZ->ztop,
+                                grps = sPgrp::add(grps, l->epsrel(),
+                                    z1->PZ->ztop,
                                     zz->Z.xll, zz->Z.xlr, zz->Z.yl,
                                     zz->Z.xul, zz->Z.xur, zz->Z.yu);
                             }
@@ -1345,7 +1346,7 @@ done:   ;
             Zlist *zx = Ylist::to_zlist(yl);
             for (Zlist *zz = zx; zz; zz = zz->next) {
                 if (fcl_domerge) {
-                    grps = grps->add(1.0, z1->PZ->ztop,
+                    grps = sPgrp::add(grps, 1.0, z1->PZ->ztop,
                         zz->Z.xll, zz->Z.xlr, zz->Z.yl,
                         zz->Z.xul, zz->Z.xur, zz->Z.yu);
                 }
@@ -1452,7 +1453,7 @@ fcLayout::panelize_group_yl(const glZlistRef3d *z0) const
                     Zlist::zl_and(&zn, &Z2);
                     while (zn) {
                         if (fcl_domerge) {
-                            grps = grps->add(l->epsrel(), z1->PZ->yl,
+                            grps = sPgrp::add(grps, l->epsrel(), z1->PZ->yl,
                                 zn->Z.xll, zn->Z.xlr, zn->Z.yl,
                                 zn->Z.xul, zn->Z.xur, zn->Z.yu);
                         }
@@ -1485,7 +1486,7 @@ done:   ;
         // Anything left must abut vacuum.
         while (z1yl) {
             if (fcl_domerge) {
-                grps = grps->add(1.0, z1->PZ->yl,
+                grps = sPgrp::add(grps, 1.0, z1->PZ->yl,
                     z1yl->Z.xll, z1yl->Z.xlr, z1yl->Z.yl,
                     z1yl->Z.xul, z1yl->Z.xur, z1yl->Z.yu);
             }
@@ -1590,7 +1591,7 @@ fcLayout::panelize_group_yu(const glZlistRef3d *z0) const
                     Zlist::zl_and(&zn, &Z2);
                     while (zn) {
                         if (fcl_domerge) {
-                            grps = grps->add(l->epsrel(), z1->PZ->yu,
+                            grps = sPgrp::add(grps, l->epsrel(), z1->PZ->yu,
                                 zn->Z.xll, zn->Z.xlr, zn->Z.yl,
                                 zn->Z.xul, zn->Z.xur, zn->Z.yu);
                         }
@@ -1623,7 +1624,7 @@ done:   ;
         // Anything left must abut vacuum.
         while (z1yu) {
             if (fcl_domerge) {
-                grps = grps->add(1.0, z1->PZ->yu,
+                grps = sPgrp::add(grps, 1.0, z1->PZ->yu,
                     z1yu->Z.xll, z1yu->Z.xlr, z1yu->Z.yl,
                     z1yu->Z.xul, z1yu->Z.xur, z1yu->Z.yu);
             }
@@ -1728,7 +1729,7 @@ fcLayout::panelize_group_left(const glZlistRef3d *z0) const
                     while (zn) {
                         if (sl == 0.0 && fcl_domerge) {
                             // Can only merge Manhattan panels for now.
-                            grps = grps->add(l->epsrel(), z1->PZ->xll,
+                            grps = sPgrp::add(grps, l->epsrel(), z1->PZ->xll,
                                 zn->Z.xll, zn->Z.xlr, zn->Z.yl,
                                 zn->Z.xul, zn->Z.xur, zn->Z.yu);
                         }
@@ -1765,7 +1766,7 @@ done:   ;
         // Anything left must abut vacuum.
         while (z1l) {
             if (sl == 0.0 && fcl_domerge) {
-                grps = grps->add(1.0, z1->PZ->xll,
+                grps = sPgrp::add(grps, 1.0, z1->PZ->xll,
                     z1l->Z.xll, z1l->Z.xlr, z1l->Z.yl,
                     z1l->Z.xul, z1l->Z.xur, z1l->Z.yu);
             }
@@ -1874,7 +1875,7 @@ fcLayout::panelize_group_right(const glZlistRef3d *z0) const
                     while (zn) {
                         if (sr == 0.0 && fcl_domerge) {
                             // Can only merge Manhattan panels for now.
-                            grps = grps->add(l->epsrel(), z1->PZ->xlr,
+                            grps = sPgrp::add(grps, l->epsrel(), z1->PZ->xlr,
                                 zn->Z.xll, zn->Z.xlr, zn->Z.yl,
                                 zn->Z.xul, zn->Z.xur, zn->Z.yu);
                         }
@@ -1911,7 +1912,7 @@ done:   ;
         // Anything left must abut vacuum.
         while (z1r) {
             if (sr == 0.0 && fcl_domerge) {
-                grps = grps->add(1.0, z1->PZ->xlr,
+                grps = sPgrp::add(grps, 1.0, z1->PZ->xlr,
                     z1r->Z.xll, z1r->Z.xlr, z1r->Z.yl,
                     z1r->Z.xul, z1r->Z.xur, z1r->Z.yu);
             }
@@ -2012,7 +2013,7 @@ fcLayout::panelize_dielectric_zbot(const Layer3d *l) const
 #endif
 
             if (fcl_domerge) {
-                grps = grps->add(dc2, z->Z.zbot, z->Z.xll, z->Z.xlr,
+                grps = sPgrp::add(grps, dc2, z->Z.zbot, z->Z.xll, z->Z.xlr,
                     z->Z.yl, z->Z.xul, z->Z.xur, z->Z.yu);
             }
             else {
@@ -2099,7 +2100,7 @@ fcLayout::panelize_dielectric_ztop(const Layer3d *l1) const
                                 Zlist *zx = Ylist::clip_to(yl, &z2->Z);
                                 for (Zlist *zz = zx; zz; zz = zz->next) {
                                     if (fcl_domerge) {
-                                        grps = grps->add(dc2, z1->Z.ztop,
+                                        grps = sPgrp::add(grps, dc2,z1->Z.ztop,
                                             zz->Z.xll, zz->Z.xlr, zz->Z.yl,
                                             zz->Z.xul, zz->Z.xur, zz->Z.yu);
                                     }
@@ -2136,7 +2137,7 @@ done:       ;
                     Zlist *zx = Ylist::to_zlist(yl);
                     for (Zlist *zz = zx; zz; zz = zz->next) {
                         if (fcl_domerge) {
-                            grps = grps->add(1.0, z1->Z.ztop,
+                            grps = sPgrp::add(grps, 1.0, z1->Z.ztop,
                                 zz->Z.xll, zz->Z.xlr, zz->Z.yl,
                                 zz->Z.xul, zz->Z.xur, zz->Z.yu);
                         }
@@ -2231,7 +2232,7 @@ fcLayout::panelize_dielectric_yl(const Layer3d *l1) const
                                 Zlist::zl_and(&zn, &Z2);
                                 while (zn) {
                                     if (fcl_domerge) {
-                                        grps = grps->add(dc2, z1->Z.yl,
+                                        grps = sPgrp::add(grps, dc2, z1->Z.yl,
                                             zn->Z.xll, zn->Z.xlr, zn->Z.yl,
                                             zn->Z.xul, zn->Z.xur, zn->Z.yu);
                                     }
@@ -2265,7 +2266,7 @@ done:       ;
             if (dc1 != 1.0) {
                 while (z1yl) {
                     if (fcl_domerge) {
-                        grps = grps->add(1.0, z1->Z.yl,
+                        grps = sPgrp::add(grps, 1.0, z1->Z.yl,
                             z1yl->Z.xll, z1yl->Z.xlr, z1yl->Z.yl,
                             z1yl->Z.xul, z1yl->Z.xur, z1yl->Z.yu);
                     }
@@ -2357,7 +2358,7 @@ fcLayout::panelize_dielectric_yu(const Layer3d *l1) const
                                 Zlist::zl_and(&zn, &Z2);
                                 while (zn) {
                                     if (fcl_domerge) {
-                                        grps = grps->add(dc2, z1->Z.yu,
+                                        grps = sPgrp::add(grps, dc2, z1->Z.yu,
                                             zn->Z.xll, zn->Z.xlr, zn->Z.yl,
                                             zn->Z.xul, zn->Z.xur, zn->Z.yu);
                                     }
@@ -2391,7 +2392,7 @@ done:       ;
             if (dc1 != 1.0) {
                 while (z1yu) {
                     if (fcl_domerge) {
-                        grps = grps->add(1.0, z1->Z.yu,
+                        grps = sPgrp::add(grps, 1.0, z1->Z.yu,
                             z1yu->Z.xll, z1yu->Z.xlr, z1yu->Z.yl,
                             z1yu->Z.xul, z1yu->Z.xur, z1yu->Z.yu);
                     }
@@ -2484,7 +2485,7 @@ fcLayout::panelize_dielectric_left(const Layer3d *l1) const
                                         // Can only merge Manhattan
                                         // panels for now.
 
-                                        grps = grps->add(dc2, z1->Z.xll,
+                                        grps = sPgrp::add(grps, dc2, z1->Z.xll,
                                             zn->Z.xll, zn->Z.xlr, zn->Z.yl,
                                             zn->Z.xul, zn->Z.xur, zn->Z.yu);
                                     }
@@ -2522,7 +2523,7 @@ done:       ;
             if (dc1 != 1.0) {
                 while (z1l) {
                     if (sl == 0.0 && fcl_domerge) {
-                        grps = grps->add(1.0, z1->Z.xll,
+                        grps = sPgrp::add(grps, 1.0, z1->Z.xll,
                             z1l->Z.xll, z1l->Z.xlr, z1l->Z.yl,
                             z1l->Z.xul, z1l->Z.xur, z1l->Z.yu);
                     }
@@ -2619,7 +2620,7 @@ fcLayout::panelize_dielectric_right(const Layer3d *l1) const
                                         // Can only merge Manhattan
                                         // panels for now.
 
-                                        grps = grps->add(dc2, z1->Z.xlr,
+                                        grps = sPgrp::add(grps, dc2, z1->Z.xlr,
                                             zn->Z.xll, zn->Z.xlr, zn->Z.yl,
                                             zn->Z.xul, zn->Z.xur, zn->Z.yu);
                                     }
@@ -2657,7 +2658,7 @@ done:       ;
             if (dc1 != 1.0) {
                 while (z1r) {
                     if (sr == 0.0 && fcl_domerge) {
-                        grps = grps->add(1.0, z1->Z.xlr,
+                        grps = sPgrp::add(grps, 1.0, z1->Z.xlr,
                             z1r->Z.xll, z1r->Z.xlr, z1r->Z.yl,
                             z1r->Z.xul, z1r->Z.xur, z1r->Z.yu);
                     }

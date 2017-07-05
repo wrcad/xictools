@@ -216,14 +216,18 @@ cExt::invalidateGroups(bool gptoo)
 
     CDgenTab_s sgen(Physical);
     CDs *sd;
-    while ((sd = sgen.next()) != 0)
-        sd->groups()->clear_groups(gptoo);
+    while ((sd = sgen.next()) != 0) {
+        if (sd->groups())
+            sd->groups()->clear_groups(gptoo);
+    }
     const char *tabname = CDcdb()->tableName();
     CDcdb()->rotateTable();
     while (CDcdb()->tableName() != tabname) {
         sgen = CDgenTab_s(Physical);
-        while ((sd = sgen.next()) != 0)
-            sd->groups()->clear_groups(gptoo);
+        while ((sd = sgen.next()) != 0) {
+            if (sd->groups())
+                sd->groups()->clear_groups(gptoo);
+        }
     }
 
     // Blow away all the sSubcDescs and table.
@@ -246,9 +250,11 @@ cExt::destroyGroups(CDs *sd)
     if (!sd || sd->isElectrical())
         return;
     cGroupDesc *gd = sd->groups();
-    gd->clear_groups();
-    sd->setGroups(0);
-    delete gd;
+    if (gd) {
+        gd->clear_groups();
+        sd->setGroups(0);
+        delete gd;
+    }
 }
 
 
@@ -259,8 +265,8 @@ cExt::clearGroups(CDs *sd)
 {
     if (!sd || sd->isElectrical())
         return;
-    cGroupDesc *gd = sd->groups();
-    gd->clear_groups();
+    if (sd->groups())
+        sd->groups()->clear_groups();
 }
 
 
@@ -351,12 +357,6 @@ cGroupDesc::setup_groups()
 void
 cGroupDesc::clear_groups(bool gptoo)
 {
-    {
-        cGroupDesc *gdt = this;
-        if (!gdt)
-            return;
-    }
-
     clear_extract();
 
     SI()->ClearGroups(this);

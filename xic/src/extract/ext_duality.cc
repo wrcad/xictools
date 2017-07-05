@@ -432,7 +432,7 @@ cGroupDesc::fixup_duality(const sSubcList *sl)
                 continue;
 
             int parent_node = pn->enode();
-            int parent_group = gd_etlist->group_of_node(parent_node);
+            int parent_group = group_of_node(parent_node);
             if (parent_node < 0 || parent_group < 0)
                 continue;
 
@@ -715,7 +715,7 @@ cGroupDesc::subcircuit_permutation_fix(const sSubcList *sl)
                                 break;
                         }
                         if (ps) {
-                            int g = mgd->gd_etlist->group_of_node(ps->enode());
+                            int g = mgd->group_of_node(ps->enode());
                             if (g == ci->subc_group()) {
                                 esg = -1;
                                 break;
@@ -1166,27 +1166,6 @@ cGroupDesc::clear_formal_terms()
 }
 
 
-int
-cGroupDesc::group_of_node(int n)
-{
-    return (gd_etlist ? gd_etlist->group_of_node(n) : -1);
-}
-
-
-CDpin *
-cGroupDesc::pins_of_node(int n)
-{
-    return (gd_etlist ? gd_etlist->pins_of_node(n) : 0);
-}
-
-
-CDcont *
-cGroupDesc::conts_of_node(int n)
-{
-    return (gd_etlist ? gd_etlist->conts_of_node(n) : 0);
-}
-
-
 void
 cGroupDesc::set_association(int grp, int node)
 {
@@ -1199,7 +1178,8 @@ cGroupDesc::set_association(int grp, int node)
         g->set_node(node);
         gd_etlist->set_group(node, grp);
         ExtErrLog.add_log(ExtLogAssoc, msg_g, node, grp);
-        gd_sym_list->new_grp_assoc(grp, node);
+        if (gd_sym_list)
+            gd_sym_list->new_grp_assoc(grp, node);
     }
 }
 
@@ -1945,7 +1925,7 @@ cGroupDesc::check_series_merge()
             continue;
         if (ps->cell_terminal()->is_fixed())
             continue;
-        CDcont *tl = gd_etlist->conts_of_node(ps->enode());
+        CDcont *tl = conts_of_node(ps->enode());
         CDs *msd = 0;
         for (CDcont *t = tl; t; t = t->next()) {
             CDc *cd = t->term()->instance();
@@ -2111,7 +2091,7 @@ cGroupDesc::combine_elec_parallel()
         // and if the vectored elements are connected in parallel, the
         // index 0 device will remain.
 
-        dv->set_edevs(dv->edevs()->sort());
+        dv->set_edevs(sEinstList::sort(dv->edevs()));
 
         for (sEinstList *c1 = dv->edevs(); c1;  c1 = c1->next()) {
             unsigned int asz1;
@@ -2192,7 +2172,7 @@ cGroupDesc::reposition_terminals(bool no_errs)
         int node = ps->enode();
         if (node < 0)
             continue;
-        int group = gd_etlist->group_of_node(node);
+        int group = group_of_node(node);
         if (group < 0 && ps->term_name()) {
             // If the node is not associated, try to resolve by name. 
             // We should need to do this only when the net is
@@ -2295,7 +2275,7 @@ cGroupDesc::reposition_terminals(bool no_errs)
         CDsterm *mterm = 0;
         CDc *cdesc = 0;
         int cdesc_vecix = 0;
-        for (CDcont *t = gd_etlist->conts_of_node(node); t; t = t->next()) {
+        for (CDcont *t = conts_of_node(node); t; t = t->next()) {
             if (!t->term()->instance())
                 continue;
 
@@ -2619,7 +2599,8 @@ cGroupDesc::ident_node(int grp)
             "Associating node %d to group %d, weight %d.";
         ExtErrLog.add_log(ExtLogAssoc, msg, jlast, grp, mx);
     }
-    gd_sym_list->new_grp_assoc(grp, jlast);
+    if (gd_sym_list)
+        gd_sym_list->new_grp_assoc(grp, jlast);
     return (true);
 }
 
@@ -2912,7 +2893,8 @@ cGroupDesc::find_match(sDevList *dv, sDevComp &comp, bool brksym) throw (XIrt)
             di->index(), instname, mx);
         delete [] instname;
     }
-    gd_sym_list->new_dev_assoc(di, dp);
+    if (gd_sym_list)
+        gd_sym_list->new_dev_assoc(di, dp);
 
     // Now see if we can associate the groups connected to the
     // newly-associated device.
@@ -2934,7 +2916,7 @@ cGroupDesc::find_match(sDevList *dv, sDevComp &comp, bool brksym) throw (XIrt)
                 }
             }
             int n = g >= 0 ? gd_groups[g].node() : -1;
-            int ng = n >= 0 ? gd_etlist->group_of_node(n) : -1;
+            int ng = n >= 0 ? group_of_node(n) : -1;
             ExtErrLog.add_log(ExtLogAssoc, 
                 "  %s g=%d n=%d ng=%d found=%d",
                 ci->desc()->name(), g, n, ng, found);
@@ -3162,7 +3144,8 @@ cGroupDesc::find_match(sSubcList *sl, sSubcInst *si, bool brksym,
         delete [] iname;
         delete [] instname;
     }
-    gd_sym_list->new_subc_assoc(si, dp);
+    if (gd_sym_list)
+        gd_sym_list->new_subc_assoc(si, dp);
 
     const char *msg_g = gd_sym_list ?
         "Assigning node %d to group %d (symmetry trial)." :
@@ -3179,12 +3162,13 @@ cGroupDesc::find_match(sSubcList *sl, sSubcInst *si, bool brksym,
             continue;
         int node = ci->node(dp);
         if (node >= 0) {
-            int gchk = gd_etlist->group_of_node(node);
+            int gchk = group_of_node(node);
             if (gchk < 0 || gchk == grp) {
                 gd_groups[grp].set_node(node);
                 gd_etlist->set_group(node, grp);
                 ExtErrLog.add_log(ExtLogAssoc, msg_g, node, grp);
-                gd_sym_list->new_grp_assoc(grp, node);
+                if (gd_sym_list)
+                    gd_sym_list->new_grp_assoc(grp, node);
             }
         }
     }
@@ -3202,7 +3186,7 @@ cGroupDesc::find_match(sSubcList *sl, sSubcInst *si, bool brksym,
                 }
             }
             int n = g >= 0 ? gd_groups[g].node() : -1;
-            int ng = n >= 0 ? gd_etlist->group_of_node(n) : -1;
+            int ng = n >= 0 ? group_of_node(n) : -1;
             ExtErrLog.add_log(ExtLogAssoc, "  g=%d n=%d ng=%d found=%d",
                 g, n, ng, found);
         }
@@ -3284,11 +3268,11 @@ cGroupDesc::solve_duals() throw (XIrt)
 
     set_allow_errs(false);
     if (first_pass()) {
-        if (has_net_or_terms(0) && !gd_etlist->conts_of_node(0)) {
+        if (has_net_or_terms(0) && !conts_of_node(0)) {
             ExtErrLog.add_log(ExtLogAssoc,
                 "Grounding inconsistency, group 0 nonempty, net 0 empty.");
         }
-        else if (!has_net_or_terms(0) && gd_etlist->conts_of_node(0)) {
+        else if (!has_net_or_terms(0) && conts_of_node(0)) {
             ExtErrLog.add_log(ExtLogAssoc,
                 "Grounding inconsistency, group 0 empty, net 0 nonempty.");
         }
@@ -3449,7 +3433,7 @@ cGroupDesc::solve_duals() throw (XIrt)
             if (last) {
                 if (last < lastlast) {
                     sSymBrk::destroy(saved);
-                    saved = gd_sym_list->dup();
+                    saved = sSymBrk::dup(gd_sym_list);
                 }
                 lastlast = last;
 
@@ -3594,7 +3578,7 @@ cGroupDesc::check_split()
             }
         }
         if (node >= 0) {
-            int gchk = gd_etlist->group_of_node(node);
+            int gchk = group_of_node(node);
             if (gchk >= 0) {
                 g.set_split_group(gchk);
                 if (ExtErrLog.log_associating()) {
@@ -3755,13 +3739,13 @@ cGroupDesc::check_associations(int grp)
 
     bool retval = false;
     int tcnt = 0;
-    for (CDcont *t = gd_etlist->conts_of_node(g->node()); t; t = t->next())
+    for (CDcont *t = conts_of_node(g->node()); t; t = t->next())
         tcnt++;
     CDcterm **terms = new CDcterm*[tcnt];
 
     // List and check device contacts.
     tcnt = 0;
-    for (CDcont *t = gd_etlist->conts_of_node(g->node()); t; t = t->next()) {
+    for (CDcont *t = conts_of_node(g->node()); t; t = t->next()) {
         CDc *cd = t->term()->instance();
         if (!cd || !cd->isDevice())
             continue;
@@ -3838,7 +3822,7 @@ cGroupDesc::check_associations(int grp)
 
     // List and check subcircuit contacts.
     tcnt = 0;
-    for (CDcont *t = gd_etlist->conts_of_node(g->node()); t; t = t->next()) {
+    for (CDcont *t = conts_of_node(g->node()); t; t = t->next()) {
         CDc *cd = t->term()->instance();
         if (!cd || cd->isDevice())
             continue;
@@ -3900,7 +3884,8 @@ cGroupDesc::check_associations(int grp)
                     break;
                 }
             }
-            else if (subc->permutes()->is_equiv(subg, ci->subc_group())) {
+            else if (subg == ci->subc_group() || (subc->permutes() &&
+                    subc->permutes()->is_equiv(subg, ci->subc_group()))) {
                 found = true;
                 terms[i] = 0;
                 break;
@@ -4111,7 +4096,8 @@ cGroupDesc::break_symmetry() throw (XIrt)
                         di->desc()->name(), di->index(), instname);
                     delete [] instname;
                 }
-                gd_sym_list->new_dev_assoc(di, dp);
+                if (gd_sym_list)
+                    gd_sym_list->new_dev_assoc(di, dp);
 
                 sDevComp comp;
                 if (comp.set(di) && comp.set(dp))
@@ -4142,7 +4128,8 @@ cGroupDesc::break_symmetry() throw (XIrt)
                     delete [] iname;
                     delete [] instname;
                 }
-                gd_sym_list->new_subc_assoc(s, dp);
+                if (gd_sym_list)
+                    gd_sym_list->new_subc_assoc(s, dp);
 
                 const char *msg_g =
                     "Assigning node %d to group %d (symmetry trial).";
@@ -4159,12 +4146,13 @@ cGroupDesc::break_symmetry() throw (XIrt)
                         continue;
                     int node = ci->node(dp);
                     if (node >= 0) {
-                        int gchk = gd_etlist->group_of_node(node);
+                        int gchk = group_of_node(node);
                         if (gchk < 0 || gchk == grp) {
                             gd_groups[grp].set_node(node);
                             gd_etlist->set_group(node, grp);
                             ExtErrLog.add_log(ExtLogAssoc, msg_g, node, grp);
-                            gd_sym_list->new_grp_assoc(grp, node);
+                            if (gd_sym_list)
+                                gd_sym_list->new_grp_assoc(grp, node);
                         }
                     }
                 }

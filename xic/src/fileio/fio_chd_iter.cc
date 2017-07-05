@@ -536,7 +536,7 @@ namespace {
         SymTabEnt *h;
         while ((h = gen.next()) != 0)
             s0 = new stringlist(lstring::copy(h->stTag), s0);
-        s0->sort(0);
+        stringlist::sort(s0);
         return (s0);
     }
 

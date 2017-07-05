@@ -205,29 +205,32 @@ namespace ext_duality {
                 }
             }
 
-        sSymBrk *dup() const;
+        static sSymBrk *dup(const sSymBrk *thissb)
+            {
+                sSymBrk *s0 = 0, *se = 0;
+                for (const sSymBrk *s = thissb; s; s = s->next()) {
+                    if (!s0)
+                        s0 = se = new sSymBrk(*s);
+                    else {
+                        se->set_next(new sSymBrk(*s));
+                        se = se->next();
+                    }
+                }
+                return (s0);
+            }
 
         void new_grp_assoc(int g, int n)
             {
-                sSymBrk *sbt = this;
-                if (!sbt)
-                    return;
                 sb_grp_assoc = new sSymGrp(g, n, sb_grp_assoc);
             }
 
         void new_dev_assoc(sDevInst *di, sEinstList *e)
             {
-                sSymBrk *sbt = this;
-                if (!sbt)
-                    return;
                 sb_dev_assoc = new sSymDev(di, e, sb_dev_assoc);
             }
 
         void new_subc_assoc(sSubcInst *s, sEinstList *e)
             {
-                sSymBrk *sbt = this;
-                if (!sbt)
-                    return;
                 sb_subc_assoc = new sSymSubc(s, e, sb_subc_assoc);
             }
 
@@ -306,22 +309,6 @@ namespace ext_duality {
         }
 
         sb_next = 0;
-    }
-
-
-    sSymBrk *
-    sSymBrk::dup() const
-    {
-        sSymBrk *s0 = 0, *se = 0;
-        for (const sSymBrk *s = this; s; s = s->next()) {
-            if (!s0)
-                s0 = se = new sSymBrk(*s);
-            else {
-                se->set_next(new sSymBrk(*s));
-                se = se->next();
-            }
-        }
-        return (s0);
     }
 }
 

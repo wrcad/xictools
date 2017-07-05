@@ -5547,7 +5547,7 @@ misc1_funcs::IFhcListPrinters(Variable *res, Variable*, void*)
                 continue;
             s0 = new stringlist(printers[i], s0);
         }
-        s0->sort();
+        stringlist::sort(s0);
         s0 = new stringlist(printers[cur], s0);
         delete [] printers;
         sHdl *hdl = new sHdlString(s0);

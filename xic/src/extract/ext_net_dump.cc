@@ -791,7 +791,7 @@ cExtNets::write_edge_map(const CDs *sdesc, const BBox *AOI, int x, int y) const
             fprintf(fp, "%s\n", EDG_MAGIC);
             fprintf(fp, "TopCell: %s\n", en_cellname);
             fprintf(fp, "%s\n", EDG_BEGIN);
-            em0 = em0->sort_edge();
+            em0 = emrec_t::sort_edge(em0);
             while (em0) {
                 em0->print(fp, 'L');
                 emrec_t *et = em0;
@@ -870,7 +870,7 @@ cExtNets::write_edge_map(const CDs *sdesc, const BBox *AOI, int x, int y) const
             fprintf(fp, "Edge Mapping Info\n");
             fprintf(fp, "TopCell: %s\n", en_cellname);
             fprintf(fp, "%s\n", EDG_BEGIN);
-            em0 = em0->sort_edge();
+            em0 = emrec_t::sort_edge(em0);
             while (em0) {
                 em0->print(fp, 'B');
                 emrec_t *et = em0;
@@ -951,7 +951,7 @@ cExtNets::write_edge_map(const CDs *sdesc, const BBox *AOI, int x, int y) const
             fprintf(fp, "Edge Mapping Info\n");
             fprintf(fp, "TopCell: %s\n", en_cellname);
             fprintf(fp, "%s\n", EDG_BEGIN);
-            em0 = em0->sort_edge();
+            em0 = emrec_t::sort_edge(em0);
             while (em0) {
                 em0->print(fp, 'R');
                 emrec_t *et = em0;
@@ -1032,7 +1032,7 @@ cExtNets::write_edge_map(const CDs *sdesc, const BBox *AOI, int x, int y) const
             fprintf(fp, "Edge Mapping Info\n");
             fprintf(fp, "TopCell: %s\n", en_cellname);
             fprintf(fp, "%s\n", EDG_BEGIN);
-            em0 = em0->sort_edge();
+            em0 = emrec_t::sort_edge(em0);
             while (em0) {
                 em0->print(fp, 'T');
                 emrec_t *et = em0;
@@ -1884,7 +1884,7 @@ cExtNets::add_listed_nets(bool flat, stringlist *names, oas_out *oas,
 
         // Sort the names, so that names from the same grid file will be
         // grouped.  A lexical sort is good enough.
-        names->sort(0);
+        stringlist::sort(names);
 
         for (stringlist *n = names; n; n = n->next) {
             int x, y, g;
@@ -1996,11 +1996,12 @@ cExtNets::add_listed_nets(bool flat, stringlist *names, oas_out *oas,
 // End of cExtNets functions.
 
 
+// Static function.
 emrec_t *
-emrec_t::sort_edge()
+emrec_t::sort_edge(emrec_t *thisem)
 {
     emrec_t *eml0 = 0, *emle = 0;
-    emrec_t *emlist = this;
+    emrec_t *emlist = thisem;
     while (emlist) {
         emrec_t *em0 = emlist;
         emrec_t *ee = emlist;
@@ -2009,7 +2010,7 @@ emrec_t::sort_edge()
         emlist = ee->next;
         ee->next = 0;
 
-        em0 = em0->sort();  // include merge
+        em0 = sort(em0);  // include merge
 
         if (!eml0)
             eml0 = emle = em0;
@@ -2046,17 +2047,18 @@ namespace {
 }
 
 
+// Static private function.
 emrec_t *
-emrec_t::sort()
+emrec_t::sort(emrec_t *thisem)
 {
     int cnt = 0;
-    for (emrec_t *em = this; em; em = em->next)
+    for (emrec_t *em = thisem; em; em = em->next)
         cnt++;
     if (cnt < 2)
-        return (this);
+        return (thisem);
     emrec_t **ary = new emrec_t*[cnt];
     cnt = 0;
-    for (emrec_t *em = this; em; em = em->next)
+    for (emrec_t *em = thisem; em; em = em->next)
         ary[cnt++] = em;
     std::sort(ary, ary + cnt, emcmp);
     for (int i = 1; i < cnt; i++)

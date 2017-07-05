@@ -280,7 +280,7 @@ cSDB::layers()
         CDl *ld = (CDl*)h->stTag;
         s0 = new stringlist(lstring::copy(ld->name()), s0);
     }
-    s0->sort(0);
+    stringlist::sort(s0);
     return (s0);
 }
 // End of cSDB functions.

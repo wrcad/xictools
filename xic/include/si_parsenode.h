@@ -69,53 +69,6 @@ struct SIfunc;
 // Prefix to distinguish lib path in scOpen()
 #define SCR_LIBCODE "@@/"
 
-// This is a list element for the user menu.
-//
-struct umenu
-{
-    umenu(char *nm, char *rn, umenu *nx)
-        {
-            u_name = nm;
-            u_realname = rn;
-            u_menu = 0;
-            u_next = nx;
-        }
-
-    ~umenu()
-        {
-            delete [] u_name;
-            delete [] u_realname;
-            destroy(u_menu);
-        }
-
-    static void destroy(umenu *u)
-        {
-            while (u) {
-                umenu *ux = u;
-                u = u->u_next;
-                delete ux;
-            }
-        }
-
-    const char *label()    const { return (u_name ? u_name : u_realname); }
-    const char *basename() const { return (u_realname ? u_realname : u_name); }
-
-    umenu *next()           { return (u_next); }
-    umenu *menu()           { return (u_menu); }
-    void set_next(umenu *n) { u_next = n; }
-    void set_menu(umenu *n) { u_menu = n; }
-    void set_name(char *n)  { delete [] u_name; u_name = n; }
-
-    void sort();
-    int numitems() const;
-
-private:
-    char *u_name;       // Name of script or menu, appears on button.
-    char *u_realname;   // Name of file for top-level script files and menus.
-    umenu *u_menu;      // Menu entries for menu.
-    umenu *u_next;      // Link to rest of menu.
-};
-
 // Struct to hold user-given range values for arrays and strings,
 // used in debugger support functions.
 //
