@@ -42,174 +42,15 @@
 #define DEF_LOGO_END_STYLE  2
 #define DEF_LOGO_PATH_WIDTH 3
 
-// The yank buffer.
-//
-// List interface element to hold yanked object.
-struct yb
-{
-    yb()
-        {
-            next = 0;
-            type = 0;
-            ldesc = 0;
-        }
-
-    virtual ~yb() { }
-
-    virtual void add_bbox(BBox*) = 0;
-
-    void free();
-    void computeBB(BBox*);
-
-    yb *next;
-    CDl *ldesc;
-    int type;
-};
-
-struct yb_b : public yb
-{
-    yb_b(CDl *ld, BBox *iBB)
-        {
-            type = CDBOX;
-            ldesc = ld;
-            BB = *iBB;
-        }
-
-    void add_bbox(BBox *tBB)
-        {
-            tBB->add(&BB);
-        }
-
-    BBox BB;
-};
-
-struct yb_p : public yb
-{
-    yb_p(CDl *ld, Poly *po)
-        {
-            type = CDPOLYGON;
-            ldesc = ld;
-            poly = *po;
-        }
-
-    ~yb_p()
-        {
-            delete [] poly.points;
-        }
-
-    void add_bbox(BBox *tBB)
-        {
-            BBox BB; poly.computeBB(&BB);
-            tBB->add(&BB);
-        }
-
-    Poly poly;
-};
-
-struct yb_w : public yb
-{
-    yb_w(CDl *ld, Wire *w)
-        {
-            type = CDWIRE;
-            ldesc = ld;
-            wire = *w;
-        }
-
-    ~yb_w()
-        {
-            delete [] wire.points;
-        }
-
-    void add_bbox(BBox *tBB)
-        {
-            BBox BB; wire.computeBB(&BB);
-            tBB->add(&BB);
-        }
-
-    Wire wire;
-};
-
-
-// The two structs below are used when selecting multiple vertices to
-// move.
-
-// List element for object vertices.
-//
-struct Vtex
-{
-    Vtex(const Point &px) : v_p(px.x, px.y)
-        {
-            v_next = 0;
-            v_movable = false;
-        }
-
-    void free()
-        {
-            Vtex *v = this;
-            while (v) {
-                Vtex *vx = v;
-                v = v->v_next;
-                delete vx;
-            }
-        }
-
-    Point_c v_p;
-    Vtex *v_next;
-    bool v_movable;
-};
-
-// A selected object with a vertex to move.
-//
-struct sObj
-{
-    sObj(CDo *p, sObj *n)
-        {
-            o_obj = p;
-            o_pts = 0;
-            o_next = n;
-        }
-
-    ~sObj()
-        {
-            o_pts->free();
-        }
-
-    void free()
-        {
-            sObj *o = this;
-            while (o) {
-                sObj *ox = o;
-                o = o->o_next;
-                delete ox;
-            }
-        }
-
-    bool empty();
-    sObj *mklist(CDol*, BBox*);
-    void mark_vertices(bool);
-    bool get_ref(int*, int*, int*, int*);
-
-    CDo *object()               { return (o_obj); }
-    void set_object(CDo *o)     { o_obj = o; }
-
-    Vtex *points()              { return (o_pts); }
-    void set_points(Vtex *v)    { o_pts = v; }
-
-    sObj *next_obj()            { return (o_next); }
-    void set_next_obj(sObj *n)  { o_next = n; }
-
-private:
-    CDo *o_obj;
-    Vtex *o_pts;
-    sObj *o_next;
-};
-
 class cGripDb;
 struct sGrip;
 struct PCellParam;
 struct CmdState;
 struct ParseNode;
 struct MenuBox;
+struct sObj;
+struct yb;
+struct Vtex;
 namespace ginterf { struct GRvecFont; }
 
 // The default maximum number of outlined objects that can be attached
@@ -619,6 +460,11 @@ public:
     void clearCurTransform();                                       // export
     static bool cur_tf_cb(const char*, bool, const char*, void*);
 
+    // vtxedit.cc
+    void clearObjectList();
+    void purgeObjectList(CDo*);
+    bool get_wire_ref(int*, int*, int*, int*);
+
     // wires.cc
     void widthCallback();                                           // export
     void setWireAttribute(WsType);                                  // export
@@ -672,29 +518,6 @@ public:
 
     sObj *objectList()                      { return (ed_object_list); }
     void setObjectList(sObj *ol)            { ed_object_list = ol; }
-
-    void clearObjectList()
-        {
-            ed_object_list->free();
-            ed_object_list = 0;
-        }
-
-    void purgeObjectList(CDo *od)
-        {
-            sObj *op = 0, *on;
-            for (sObj *o = ed_object_list; o; o = on) {
-                on = o->next_obj();
-                if (o->object() == od) {
-                    if (op)
-                        op->set_next_obj(on);
-                    else
-                        ed_object_list = on;
-                    delete o;
-                    continue;
-                }
-                op = o;
-            }
-        }
 
     CDl *pressLayer()                       { return (ed_press_layer); }
     void setPressLayer(CDl *l)              { ed_press_layer = l; }

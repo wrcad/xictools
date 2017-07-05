@@ -59,9 +59,8 @@ struct ViaItem
             delete vi_params;
         }
 
-    void free()
+    static void destroy(ViaItem *v0)
         {
-            ViaItem *v0 = this;
             while (v0) {
                 ViaItem *vx = v0;
                 v0 = v0->vi_next;
@@ -90,7 +89,7 @@ struct ViaDesc
     ~ViaDesc()
         {
             delete [] vd_dbname;
-            vd_instances->free();
+            ViaItem::destroy(vd_instances);
         }
 
     ViaItem *findItem(const oaViaParam &prms)

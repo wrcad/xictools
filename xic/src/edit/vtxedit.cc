@@ -1,0 +1,428 @@
+
+/*========================================================================*
+ *                                                                        *
+ *  XICTOOLS Integrated Circuit Design System                             *
+ *  Copyright (c) 2007 Whiteley Research Inc, all rights reserved.        *
+ *                                                                        *
+ *  WHITELEY RESEARCH INCORPORATED PROPRIETARY SOFTWARE                   *
+ *                                                                        *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
+ *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-        *
+ *   INFRINGEMENT.  IN NO EVENT SHALL WHITELEY RESEARCH INCORPORATED      *
+ *   OR STEPHEN R. WHITELEY BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER     *
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,      *
+ *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE       *
+ *   USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
+ *                                                                        *
+ *========================================================================*
+ *                                                                        *
+ * XIC Integrated Circuit Layout and Schematic Editor                     *
+ *                                                                        *
+ *========================================================================*
+ $Id: stretch.cc,v 1.40 2017/03/14 01:26:34 stevew Exp $
+ *========================================================================*/
+
+#include "config.h"
+#include "main.h"
+#include "edit.h"
+#include "vtxedit.h"
+#include "dsp_color.h"
+#include "dsp_inlines.h"
+
+
+//
+// Support for the vertex editor, used in polygons and wires, and the
+// stretch command.
+//
+
+void
+cEdit::clearObjectList()
+{
+    sObj::destroy(ed_object_list);
+    ed_object_list = 0;
+}
+
+
+void
+cEdit::purgeObjectList(CDo *od)
+{
+    sObj *op = 0, *on;
+    for (sObj *o = ed_object_list; o; o = on) {
+        on = o->next_obj();
+        if (o->object() == od) {
+            if (op)
+                op->set_next_obj(on);
+            else
+                ed_object_list = on;
+            delete o;
+            continue;
+        }
+        op = o;
+    }
+}
+
+
+bool
+cEdit::get_wire_ref(int *xrp, int *yrp, int *xmp, int *ymp)
+{
+    if (!ed_object_list)
+        return (false);
+    return (ed_object_list->get_wire_ref(xrp, yrp, xmp, ymp));
+}
+// End of cEdit functions.
+
+
+// Static function.
+// Return true if there are no movable vertices in the list.
+//
+bool
+sObj::empty(const sObj *thiso)
+{
+    for (const sObj *o = thiso; o; o = o->o_next) {
+        for (const Vtex *v = o->o_pts; v; v = v->v_next) {
+            if (v->v_movable)
+                return (false);
+        }
+    }
+    return (true);
+}
+
+
+// Static function.
+// Create, add to, or modify the selected status of the objlist according
+// to the objects in slist and the given selection rectangle AOI.  The
+// modified list is returned.
+//
+sObj *
+sObj::mklist(sObj *thiso, CDol *slist, BBox *AOI)
+{
+    sObj *objlist = thiso;
+    for (CDol *sl = slist; sl; sl = sl->next) {
+        if (!sl->odesc)
+            continue;
+        if (sl->odesc->type() == CDINSTANCE)
+            continue;
+        if (sl->odesc->type() == CDLABEL)
+            continue;
+        if (sl->odesc->state() != CDSelected)
+            continue;
+        if (sl->odesc->type() == CDBOX) {
+            Point_c p(sl->odesc->oBB().left, sl->odesc->oBB().bottom);
+            if (!AOI->intersect(&p, true)) {
+                p.set(sl->odesc->oBB().left, sl->odesc->oBB().top);
+                if (!AOI->intersect(&p, true)) {
+                    p.set(sl->odesc->oBB().right, sl->odesc->oBB().top);
+                    if (!AOI->intersect(&p, true)) {
+                        p.set(sl->odesc->oBB().right,
+                            sl->odesc->oBB().bottom);
+                        if (!AOI->intersect(&p, true))
+                            continue;
+                    }
+                }
+            }
+            sObj *o;
+            for (o = objlist; o; o = o->o_next)
+                if (o->o_obj == sl->odesc)
+                    break;
+            if (o) {
+                for (Vtex *v = o->o_pts; v; v = v->v_next)
+                    if (AOI->intersect(&v->v_p, true))
+                        v->v_movable = !v->v_movable;
+            }
+            else {
+                objlist = new sObj(sl->odesc, objlist);
+                Vtex *v = 0;
+                p.set(objlist->o_obj->oBB().left,
+                    objlist->o_obj->oBB().bottom);
+                v = objlist->o_pts = new Vtex(p);
+                if (AOI->intersect(&v->v_p, true))
+                    v->v_movable = true;
+                p.set(objlist->o_obj->oBB().left,
+                    objlist->o_obj->oBB().top);
+                v->v_next = new Vtex(p);
+                v = v->v_next;
+                if (AOI->intersect(&v->v_p, true))
+                    v->v_movable = true;
+                p.set(objlist->o_obj->oBB().right,
+                    objlist->o_obj->oBB().top);
+                v->v_next = new Vtex(p);
+                v = v->v_next;
+                if (AOI->intersect(&v->v_p, true))
+                    v->v_movable = true;
+                p.set(objlist->o_obj->oBB().right,
+                    objlist->o_obj->oBB().bottom);
+                v->v_next = new Vtex(p);
+                v = v->v_next;
+                if (AOI->intersect(&v->v_p, true))
+                    v->v_movable = true;
+            }
+        }
+        else if (sl->odesc->type() == CDPOLYGON) {
+            int num = ((const CDpo*)sl->odesc)->numpts();
+            const Point *pnts = ((const CDpo*)sl->odesc)->points();
+            int i;
+            for (i = 0; i < num; i++)
+                if (AOI->intersect(&pnts[i], true))
+                    break;
+            if (i < num) {
+                sObj *o;
+                for (o = objlist; o; o = o->o_next) {
+                    if (o->o_obj == sl->odesc)
+                        break;
+                }
+
+                // Note that we prevent selecting two vertices at the
+                // same location in the same poly (shouldn't see this
+                // anyway).
+                // NOTE:  This means that the movable field of the
+                // last vertex is NOT set to match the first.
+
+                if (o) {
+                    Plist *p0 = 0;
+                    for (Vtex *v = o->o_pts; v; v = v->v_next) {
+
+                        if (AOI->intersect(&v->v_p, true)) {
+                            if (v->v_movable) {
+                                v->v_movable = false;
+                                continue;
+                            }
+
+                            bool found = false;
+                            for (Plist *p = p0; p; p = p->next) {
+                                if (*(Point*)p == v->v_p) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                v->v_movable = true;
+                                p0 = new Plist(v->v_p.x, v->v_p.y, p0);
+                            }
+                        }
+                    }
+                    Plist::destroy(p0);
+                }
+                else {
+                    objlist = new sObj(sl->odesc, objlist);
+                    Vtex *v = 0;
+                    Plist *p0 = 0;
+                    for (i = 0; i < num; i++) {
+                        if (!v)
+                            v = objlist->o_pts = new Vtex(pnts[i]);
+                        else {
+                            v->v_next = new Vtex(pnts[i]);
+                            v = v->v_next;
+                        }
+                        if (AOI->intersect(&v->v_p, true)) {
+                            bool found = false;
+                            for (Plist *p = p0; p; p = p->next) {
+                                if (*(Point*)p == v->v_p) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                v->v_movable = true;
+                                p0 = new Plist(v->v_p.x, v->v_p.y, p0);
+                            }
+                        }
+                    }
+                    Plist::destroy(p0);
+                }
+            }
+        }
+        else if (sl->odesc->type() == CDWIRE) {
+            int num = ((const CDw*)sl->odesc)->numpts();
+            const Point *pnts = ((const CDw*)sl->odesc)->points();
+            int i;
+            for (i = 0; i < num; i++)
+                if (AOI->intersect(&pnts[i], true))
+                    break;
+            if (i < num) {
+                sObj *o;
+                for (o = objlist; o; o = o->o_next) {
+                    if (o->o_obj == sl->odesc)
+                        break;
+                }
+
+                // Note that we prevent selecting two vertices at the
+                // same location in the same wire.
+
+                if (o) {
+                    Plist *p0 = 0;
+                    for (Vtex *v = o->o_pts; v; v = v->v_next) {
+
+                        if (AOI->intersect(&v->v_p, true)) {
+                            if (v->v_movable) {
+                                v->v_movable = false;
+                                continue;
+                            }
+
+                            bool found = false;
+                            for (Plist *p = p0; p; p = p->next) {
+                                if (*(Point*)p == v->v_p) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                v->v_movable = true;
+                                p0 = new Plist(v->v_p.x, v->v_p.y, p0);
+                            }
+                        }
+                    }
+                    Plist::destroy(p0);
+                }
+                else {
+                    objlist = new sObj(sl->odesc, objlist);
+                    Vtex *v = 0;
+                    Plist *p0 = 0;
+                    for (i = 0; i < num; i++) {
+                        if (!v)
+                            v = objlist->o_pts = new Vtex(pnts[i]);
+                        else {
+                            v->v_next = new Vtex(pnts[i]);
+                            v = v->v_next;
+                        }
+                        if (AOI->intersect(&v->v_p, true)) {
+                            bool found = false;
+                            for (Plist *p = p0; p; p = p->next) {
+                                if (*(Point*)p == v->v_p) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                v->v_movable = true;
+                                p0 = new Plist(v->v_p.x, v->v_p.y, p0);
+                            }
+                        }
+                    }
+                    Plist::destroy(p0);
+                }
+            }
+        }
+    }
+    return (objlist);
+}
+
+
+// Static function.
+// Mark all movable vertices in the list, or erase all vertex marks.
+//
+void
+sObj::mark_vertices(const sObj *thiso, bool DisplayOrErase)
+{
+    if (DisplayOrErase == ERASE) {
+        DSP()->EraseMarks(MARK_BOX);
+        return;
+    }
+    for (const sObj *o = thiso; o; o = o->o_next) {
+        for (const Vtex *v = o->o_pts; v; v = v->v_next) {
+            if (v->v_movable) {
+                DSP()->ShowBoxMark(DISPLAY, v->v_p.x, v->v_p.y,
+                    HighlightingColor, 12, DSP()->CurMode());
+            }
+        }
+    }
+}
+
+
+// If there is only one object and it is a wire, and the vertex list
+// contains one endpoint and possibly adjacent points, return the
+// coordinates of the next vertex not in the list.  This will be used
+// as the reference vertex for vertex moving, so 45 constraints are
+// reasonable.
+//
+bool
+sObj::get_wire_ref(int *xrp, int *yrp, int *xmp, int *ymp)
+{
+    if (o_next)
+        return (false);
+    if (!o_obj || o_obj->type() != CDWIRE)
+        return (false);
+
+    int nv = 0;
+    for (Vtex *v = o_pts; v; v = v->v_next) {
+        if (v->v_movable)
+            nv++;
+    }
+    if (!nv)
+        return (false);
+
+    const Point *wpts = ((CDw*)o_obj)->points();
+    int npts = ((CDw*)o_obj)->numpts();
+    if (nv == npts)
+        return (false);
+
+    bool has_end = false;
+    for (Vtex *v = o_pts; v; v = v->v_next) {
+        if (!v->v_movable)
+            continue;
+        if (v->v_p.x == wpts[0].x && v->v_p.y == wpts[0].y) {
+            has_end = true;
+            break;
+        }
+    }
+    if (has_end) {
+        for (int i = 1; i < nv; i++) {
+            has_end = false;
+            for (Vtex *v = o_pts; v; v = v->v_next) {
+                if (!v->v_movable)
+                    continue;
+                if (v->v_p.x == wpts[i].x && v->v_p.y == wpts[i].y) {
+                    has_end = true;
+                    break;
+                }
+            }
+            if (!has_end)
+                return (false);
+        }
+        if (xrp)
+            *xrp = wpts[nv].x;
+        if (yrp)
+            *yrp = wpts[nv].y;
+        if (xmp)
+            *xmp = wpts[nv-1].x;
+        if (ymp)
+            *ymp = wpts[nv-1].y;
+        return (true);
+    }
+    for (Vtex *v = o_pts; v; v = v->v_next) {
+        if (!v->v_movable)
+            continue;
+        if (v->v_p.x == wpts[npts-1].x && v->v_p.y == wpts[npts-1].y) {
+            has_end = true;
+            break;
+        }
+    }
+    if (has_end) {
+        for (int i = 1; i < nv; i++) {
+            has_end = false;
+            for (Vtex *v = o_pts; v; v = v->v_next) {
+                if (!v->v_movable)
+                    continue;
+                if (v->v_p.x == wpts[npts-i-1].x &&
+                        v->v_p.y == wpts[npts-i-1].y) {
+                    has_end = true;
+                    break;
+                }
+            }
+            if (!has_end)
+                return (false);
+        }
+        if (xrp)
+            *xrp = wpts[npts-nv-1].x;
+        if (yrp)
+            *yrp = wpts[npts-nv-1].y;
+        if (xmp)
+            *xmp = wpts[npts-nv].x;
+        if (ymp)
+            *ymp = wpts[npts-nv].y;
+        return (true);
+    }
+    return (false);
+}
+// End of sObj functions
+

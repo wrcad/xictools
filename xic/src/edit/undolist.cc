@@ -112,54 +112,43 @@ namespace ed_undolist {
     // Struct to save hypertext entries that change.
     struct Hlist : public hyEntData
     {
-        Hlist(hyEnt*, Hlist*);
+        Hlist(hyEnt *ent, Hlist *nx) : hyEntData(*ent)
+            {
+                from = ent;
+                next = nx;
+                hyPrnt = hyParent::dup(hyPrnt);
+                hyPrxy = hyParent::dup(hyPrxy);
+            }
+
         ~Hlist()
             {
                 hyParent::destroy(hyPrnt);
                 hyParent::destroy(hyPrxy);
             }
 
-        void free();
-        void rotate();
+        static void destroy(Hlist *h)
+            {
+                while (h) {
+                    Hlist *hx = h;
+                    h = h->next;
+                    delete hx;
+                }
+            }
+
+        void rotate()
+            {
+                if (!from)
+                    return;
+                hyEntData *d1 = this;
+                hyEntData *d2 = from;
+                hyEntData t(*d1);
+                *d1 = *d2;
+                *d2 = t;
+            }
 
         hyEnt *from;
         Hlist *next;
     };
-
-
-    Hlist::Hlist(hyEnt *ent, Hlist *nx) : hyEntData(*ent)
-    {
-        from = ent;
-        next = nx;
-        hyPrnt = hyParent::dup(hyPrnt);
-        hyPrxy = hyParent::dup(hyPrxy);
-    }
-
-
-    void
-    Hlist::free()
-    {
-        Hlist *h = this;
-        while (h) {
-            Hlist *hn = h->next;
-            delete h;
-            h = hn;
-        }
-    }
-
-
-    void
-    Hlist::rotate()
-    {
-        if (!from)
-            return;
-        hyEntData *d1 = this;
-        hyEntData *d2 = from;
-        hyEntData t(*d1);
-        *d1 = *d2;
-        *d2 = t;
-    }
-    // End of Hlist functions.
 }
 
 
@@ -368,50 +357,53 @@ void
 Oper::clearLists(bool del_content)
 {
     freePrpList();
-    o_obj_list->free(del_content);
+    Ochg::destroy(o_obj_list, del_content);
     o_obj_list = 0;
-    o_prp_list->free(del_content);
+    Pchg::destroy(o_prp_list, del_content);
     o_prp_list = 0;
-    o_ent_list->free();
+    ed_undolist::Hlist::destroy(o_ent_list);
     o_ent_list = 0;
 }
 
 
+// Static function.
 // Eliminate anything on sd/ld from the list.  If sd is null, eliminate
 // anything on ld.  Otherwise, eliminate objects on ld in sdesc.
 //
 void
-Oper::purge(const CDs *sd, const CDl *ld)
+Oper::purge(Oper *thiso, const CDs *sd, const CDl *ld)
 {
     // Since the list goes backward in time, have to save deletes until
     // we're through, otherwise an object might be deleted that we later
     // find in an add.
-    for (Oper *cur = this; cur; cur = cur->o_next) {
-        cur->o_next_in_group->purge(sd, ld);
+
+    for (Oper *cur = thiso; cur; cur = cur->o_next) {
+        Oper::purge(cur->o_next_in_group, sd, ld);
         if (!sd || sd == cur->o_cell_desc) {
-            cur->o_obj_list = cur->o_obj_list->purge_layer(ld);
-            cur->o_prp_list = cur->o_prp_list->purge_layer(ld);
+            cur->o_obj_list = Ochg::purge_layer(cur->o_obj_list, ld);
+            cur->o_prp_list = Pchg::purge_layer(cur->o_prp_list, ld);
         }
     }
 }
 
 
+// Static function.
 // Eliminate sd/od from the list.  The sd is the container for od and must
 // be given.  If od is null, eliminate all sd objects/properties.
 //
 void
-Oper::purge(const CDs *sd, const CDo *od)
+Oper::purge(Oper *thiso, const CDs *sd, const CDo *od)
 {
     if (!sd)
         return;
-    for (Oper *cur = this; cur; cur = cur->o_next) {
-        cur->o_next_in_group->purge(sd, od);
+    for (Oper *cur = thiso; cur; cur = cur->o_next) {
+        Oper::purge(cur->o_next_in_group, sd, od);
         if (cur->o_cell_desc == sd) {
             if (!od)
                 cur->clearLists(true);
             else {
-                cur->o_obj_list = cur->o_obj_list->purge(od);
-                cur->o_prp_list = cur->o_prp_list->purge(od);
+                cur->o_obj_list = Ochg::purge(cur->o_obj_list, od);
+                cur->o_prp_list = Pchg::purge(cur->o_prp_list, od);
             }
         }
     }
@@ -638,7 +630,7 @@ Oper::check_objects()
     delete tab;
 
     // Remove empty entries.
-    o_obj_list = o_obj_list->purge(0);
+    o_obj_list = Ochg::purge(o_obj_list, 0);
 }
 
 
@@ -778,7 +770,7 @@ cUndoList::ListCheck(const char *cmd, CDs *sdesc, bool selected)
 
     Oper *cur = ul_redo_list;
     ul_redo_list = 0;
-    cur->clear();
+    Oper::destroy(cur);
 }
 
 
@@ -1393,8 +1385,8 @@ cUndoList::CommitChanges(bool redisplay, bool nodrc)
         change_made = true;
 
         // Reverse order of the lists, so oldest change is first.
-        cur->set_obj_list(cur->obj_list()->reverse_list());
-        cur->set_prp_list(cur->prp_list()->reverse_list());
+        cur->set_obj_list(Ochg::reverse_list(cur->obj_list()));
+        cur->set_prp_list(Pchg::reverse_list(cur->prp_list()));
 
         // Save name label position.
         move_hack(cur, false);
@@ -1603,7 +1595,7 @@ cUndoList::CommitChanges(bool redisplay, bool nodrc)
         // After an operation, the redo list may be bogus, so free it.
         cur = ul_redo_list;
         ul_redo_list = 0;
-        cur->clear();
+        Oper::destroy(cur);
         ED()->prptyRelist();  // update the Properties pop-ups
 
         XM()->ShowParameters();
@@ -1744,10 +1736,10 @@ cUndoList::ListFinalize(bool keep_undo)
     else {
         Oper *cur = ul_operations;
         ul_operations = 0;
-        cur->clear();
+        Oper::destroy(cur);
         cur = ul_redo_list;
         ul_redo_list = 0;
-        cur->clear();
+        Oper::destroy(cur);
     }
 }
 
@@ -1759,9 +1751,9 @@ cUndoList::ListFinalize(bool keep_undo)
 void
 cUndoList::InvalidateLayer(CDs *sd, CDl *ld)
 {
-    ul_curop.purge(sd, ld);
-    ul_operations->purge(sd, ld);
-    ul_redo_list->purge(sd, ld);
+    Oper::purge(&ul_curop, sd, ld);
+    Oper::purge(ul_operations, sd, ld);
+    Oper::purge(ul_redo_list, sd, ld);
 }
 
 
@@ -1775,8 +1767,8 @@ cUndoList::InvalidateObject(CDs *sd, CDo *od, bool save)
     if (!sd)
         return;
     if (!save) {
-        ul_operations->purge(sd, od);
-        ul_redo_list->purge(sd, od);
+        Oper::purge(ul_operations, sd, od);
+        Oper::purge(ul_redo_list, sd, od);
     }
 }
 
@@ -1795,9 +1787,9 @@ cUndoList::PopState()
 void
 cUndoList::PushState(ULstate *eul)
 {
-    ul_operations->clear();
+    Oper::destroy(ul_operations);
     ul_operations = 0;
-    ul_redo_list->clear();
+    Oper::destroy(ul_redo_list);
     ul_redo_list = 0;
 
     if (eul) {
@@ -1967,10 +1959,10 @@ cUndoList::ResetPcPrmChanges(void *pcptr)
     // The lists should already be clear.
     Oper *ops = ul_operations;
     ul_operations = 0;
-    ops->clear();
+    Oper::destroy(ops);
     ops = ul_redo_list;
     ul_redo_list = 0;
-    ops->clear();
+    Oper::destroy(ops);
     sPcPch **p = (sPcPch**)pcptr;
     if (p && *p) {
         ul_operations = (*p)->undos;
@@ -1993,13 +1985,13 @@ cUndoList::trim_undo_list()
     if (!o)
         return;
     if (ul_undo_length == 1) {
-        o->clear();
+        Oper::destroy(o);
         ul_operations = 0;
         return;
     }
     for (int i = 2; o->next_op(); o = o->next_op(), i++) {
         if (i == ul_undo_length) {
-            o->next_op()->clear();
+            Oper::destroy(o->next_op());
             o->set_next_op(0);
             return;
         }

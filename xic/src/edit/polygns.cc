@@ -26,6 +26,7 @@
 #include "main.h"
 #include "edit.h"
 #include "undolist.h"
+#include "vtxedit.h"
 #include "scedif.h"
 #include "drcif.h"
 #include "dsp_tkif.h"
@@ -129,12 +130,11 @@ namespace {
 
         ~sUndoV()
             {
-                list->free(false);
+                Ochg::destroy(list, false);
             }
 
-        void free()
+        static void destroy(sUndoV *u)
             {
-                sUndoV *u = this;
                 while (u) {
                     sUndoV *ux = u;
                     u = u->next;
@@ -377,9 +377,9 @@ PolyState::b1down()
     if (!cursd)
         return;
 
-    Objlist_back->free();
+    sObj::destroy(Objlist_back);
     Objlist_back = 0;
-    RedoList->free();
+    sUndoV::destroy(RedoList);
     RedoList = 0;
     if (!NumPts)
         Ulist()->ListCheck(PolyCmd->StateName, cursd, false);
@@ -397,7 +397,7 @@ PolyState::b1down()
     }
 
     if (!NumPts && !(EV()->Cursor().get_downstate() & GR_CONTROL_MASK)) {
-        if (!ED()->objectList()->empty() &&
+        if (!sObj::empty(ED()->objectList()) &&
                 !(EV()->Cursor().get_downstate() & GR_SHIFT_MASK)) {
             // Start stretching
             EV()->Cursor().get_xy(&Refx, &Refy);
@@ -515,7 +515,7 @@ PolyState::b1down()
                 // add a placeholder in the UndoList
                 UndoList = new sUndoV(UndoList);
                 // clear any redo operations
-                RedoList->free();
+                sUndoV::destroy(RedoList);
                 RedoList = 0;
             }
             CD()->SetNoPolyCheck(tmp_nc);
@@ -570,7 +570,7 @@ PolyState::b1up()
         if (!cEventHdlr::sel_b1up(&BB, Types, &slist))
             return;
         SelectingVertex = false;
-        ED()->objectList()->mark_vertices(ERASE);
+        sObj::mark_vertices(ED()->objectList(), ERASE);
 
         WindowDesc *wdesc = EV()->ButtonWin();
         if (!wdesc)
@@ -587,9 +587,9 @@ PolyState::b1up()
             BB.top = yr + delta;
         }
 
-        ED()->setObjectList(ED()->objectList()->mklist(slist, &BB));
-        if (!ED()->objectList()->empty()) {
-            ED()->objectList()->mark_vertices(DISPLAY);
+        ED()->setObjectList(sObj::mklist(ED()->objectList(), slist, &BB));
+        if (!sObj::empty(ED()->objectList())) {
+            sObj::mark_vertices(ED()->objectList(), DISPLAY);
             PL()->ShowPrompt(msgB);
         }
         else if (!add_vertex())
@@ -638,11 +638,11 @@ PolyState::desel()
         cEventHdlr::sel_esc();
     mark_vertices(ERASE);
     ED()->clearObjectList();
-    Objlist_back->free();
+    sObj::destroy(Objlist_back);
     Objlist_back = 0;
-    UndoList->free();
+    sUndoV::destroy(UndoList);
     UndoList = 0;
-    RedoList->free();
+    sUndoV::destroy(RedoList);
     RedoList = 0;
 }
 
@@ -652,10 +652,10 @@ PolyState::desel()
 void
 PolyState::esc()
 {
-    if (!ED()->objectList()->empty()) {
+    if (!sObj::empty(ED()->objectList())) {
         GhostOff();
-        ED()->objectList()->mark_vertices(ERASE);
-        Objlist_back->free();
+        sObj::mark_vertices(ED()->objectList(), ERASE);
+        sObj::destroy(Objlist_back);
         Objlist_back = ED()->objectList();
         ED()->setObjectList(0);
         SetLevel1();
@@ -674,7 +674,7 @@ PolyState::esc()
     mark_vertices(ERASE);
     ED()->clearObjectList();
     EV()->SetConstrained(false);
-    Objlist_back->free();
+    sObj::destroy(Objlist_back);
 
     // Go through the undo list.  For polys that are in the database
     // that were created by adding a vertex, remove inline vertices. 
@@ -688,8 +688,8 @@ PolyState::esc()
             ((CDpo*)ul->newo)->po_check_poly(0, false);
     }
 
-    UndoList->free();
-    RedoList->free();
+    sUndoV::destroy(UndoList);
+    sUndoV::destroy(RedoList);
     if (delete_inc()) {
         DSP()->RedisplayArea(&RdBB);
         DSP()->ShowCrossMark(ERASE, Firstx, Firsty, HighlightingColor,
@@ -754,10 +754,10 @@ PolyState::key(int code, const char*, int)
         delete_vertices();
         break;
     case BSP_KEY:
-        if (!ED()->objectList()->empty()) {
+        if (!sObj::empty(ED()->objectList())) {
             GhostOff();
-            ED()->objectList()->mark_vertices(ERASE);
-            Objlist_back->free();
+            sObj::mark_vertices(ED()->objectList(), ERASE);
+            sObj::destroy(Objlist_back);
             Objlist_back = ED()->objectList();
             ED()->setObjectList(0);
             SetLevel1();
@@ -781,9 +781,9 @@ PolyState::undo()
         SetLevel1();
         return;
     }
-    if (!ED()->objectList()->empty()) {
-        ED()->objectList()->mark_vertices(ERASE);
-        Objlist_back->free();
+    if (!sObj::empty(ED()->objectList())) {
+        sObj::mark_vertices(ED()->objectList(), ERASE);
+        sObj::destroy(Objlist_back);
         Objlist_back = ED()->objectList();
         ED()->setObjectList(0);
         mark_vertices(DISPLAY);
@@ -819,7 +819,7 @@ PolyState::undo()
             }
             else {
                 // hit the end of the (truncated) undo list
-                UndoList->free();
+                sUndoV::destroy(UndoList);
                 UndoList = 0;
                 PL()->ShowPrompt(vmsg);
             }
@@ -891,14 +891,14 @@ PolyState::redo()
 
     if (Level == 2)
         return;
-    if (!Objlist_back->empty()) {
+    if (!sObj::empty(Objlist_back)) {
         ED()->setObjectList(Objlist_back);
         Objlist_back = 0;
         mark_vertices(ERASE);
-        ED()->objectList()->mark_vertices(DISPLAY);
+        sObj::mark_vertices(ED()->objectList(), DISPLAY);
         return;
     }
-    if (State >= 1 && !ED()->objectList()->empty()) {
+    if (State >= 1 && !sObj::empty(ED()->objectList())) {
         XM()->SetCoordMode(CO_RELATIVE, Refx, Refy);
         Gst()->SetGhostAt(GFstretch, Refx, Refy);
         SetLevel2();
@@ -948,7 +948,7 @@ PolyState::redo()
 void
 PolyState::copy_objlist()
 {
-    UndoList->list = Ulist()->CurOp().obj_list()->copy();
+    UndoList->list = Ochg::copy(Ulist()->CurOp().obj_list());
     for (Ochg *oc1 = UndoList->list; oc1; oc1 = oc1->next_chg()) {
         if (oc1->oadd() && oc1->oadd()->state() == CDDeleted) {
             for (Ochg *oc2 = UndoList->list; oc2; oc2 = oc2->next_chg()) {
@@ -973,7 +973,7 @@ PolyState::stretch(int ref_x, int ref_y, int *map_x, int *map_y)
         return (false);
 
     bool ret = false;
-    if (!ED()->objectList()->empty()) {
+    if (!sObj::empty(ED()->objectList())) {
         if (Tech()->IsConstrain45() ^ EV()->IsConstrained())
             XM()->To45(ref_x, ref_y, map_x, map_y);
 
@@ -981,7 +981,7 @@ PolyState::stretch(int ref_x, int ref_y, int *map_x, int *map_y)
 
         if (Ulist()->HasChanged()) {
             Gst()->SetGhost(GFnone);
-            ED()->objectList()->mark_vertices(ERASE);
+            sObj::mark_vertices(ED()->objectList(), ERASE);
             ED()->clearObjectList();
 
             // save operation for undo
@@ -989,7 +989,7 @@ PolyState::stretch(int ref_x, int ref_y, int *map_x, int *map_y)
             UndoList->operation = V_CHGV;
             copy_objlist();
             // clear any redo operations
-            RedoList->free();
+            sUndoV::destroy(RedoList);
             RedoList = 0;
 
             mark_vertices(DISPLAY);
@@ -1007,7 +1007,7 @@ PolyState::stretch(int ref_x, int ref_y, int *map_x, int *map_y)
 void
 PolyState::delete_vertices()
 {
-    if (ED()->objectList()->empty())
+    if (sObj::empty(ED()->objectList()))
         return;
     CDs *cursd = CurCell();
     if (!cursd)
@@ -1059,7 +1059,7 @@ PolyState::delete_vertices()
     copy_objlist();
 
     // clear any redo operations
-    RedoList->free();
+    sUndoV::destroy(RedoList);
     RedoList = 0;
 
     mark_vertices(DISPLAY);
@@ -1178,7 +1178,7 @@ PolyState::add_vertex()
     UndoList->operation = V_NEWV;
 
     // clear any redo operations
-    RedoList->free();
+    sUndoV::destroy(RedoList);
     RedoList = 0;
 
     return (true);

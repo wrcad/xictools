@@ -45,21 +45,20 @@ struct Ochg : public op_change_t
             oc_next = n;
         }
 
-    void free(bool freedel)
+    static void destroy(Ochg *oc, bool freedel)
         {
-            Ochg *ocn;
-            for (Ochg *oc = this; oc; oc = ocn) {
-                ocn = oc->oc_next;
+            while (oc) {
+                Ochg *ox = oc;
+                oc = oc->oc_next;
                 if (freedel)
-                    delete oc->oc_delobj;
-                delete oc;
-                oc = ocn;
+                    delete ox->oc_delobj;
+                delete ox;
             }
         }
 
-    Ochg *reverse_list()
+    static Ochg *reverse_list(Ochg *thiso)
         {
-            Ochg *oc = this, *o0 = 0;
+            Ochg *oc = thiso, *o0 = 0;
             while (oc) {
                 Ochg *ox = oc;
                 oc = oc->oc_next;
@@ -69,9 +68,9 @@ struct Ochg : public op_change_t
             return (o0);
         }
 
-    Ochg *purge(const CDo *obj)
+    static Ochg *purge(Ochg *thiso, const CDo *obj)
         {
-            Ochg *o0 = this, *op = 0, *on;
+            Ochg *o0 = thiso, *op = 0, *on;
             for (Ochg *o = o0; o; o = on) {
                 on = o->oc_next;
                 if (obj) {
@@ -93,9 +92,9 @@ struct Ochg : public op_change_t
             return (o0);
         }
 
-    Ochg *purge_layer(const CDl *ld)
+    static Ochg *purge_layer(Ochg *thiso, const CDl *ld)
         {
-            Ochg *o0 = this, *op = 0, *on;
+            Ochg *o0 = thiso, *op = 0, *on;
             for (Ochg *o = o0; o; o = on) {
                 on = o->oc_next;
                 if (ld) {
@@ -117,10 +116,10 @@ struct Ochg : public op_change_t
             return (o0);
         }
 
-    Ochg *copy() const
+    static Ochg *copy(const Ochg *thiso)
         {
             Ochg *l0 = 0, *le = 0;
-            for (const Ochg *oc = this; oc; oc = oc->oc_next) {
+            for (const Ochg *oc = thiso; oc; oc = oc->oc_next) {
                 if (!l0)
                     l0 = le = new Ochg(oc->oc_delobj, oc->oc_addobj, 0);
                 else {
@@ -159,28 +158,20 @@ struct Pchg
             pc_odesc = o;
         }
 
-    void free(bool freedel)
+    static void destroy(Pchg *pc, bool freedel)
         {
-            Pchg *pcn;
-            for (Pchg *pc = this; pc; pc = pcn) {
-                pcn = pc->pc_next;
+            while (pc) {
+                Pchg *px = pc;
+                pc = pc->pc_next;
                 if (freedel)
-                    delete pc->pc_delprp;
-                delete pc;
-                pc = pcn;
+                    delete px->pc_delprp;
+                delete px;
             }
         }
 
-    void swap()
+    static Pchg *reverse_list(Pchg *thisp)
         {
-            CDp *tmp = pc_delprp;
-            pc_delprp = pc_addprp;
-            pc_addprp = tmp;
-        }
-
-    Pchg *reverse_list()
-        {
-            Pchg *pc = this, *p0 = 0;
+            Pchg *pc = thisp, *p0 = 0;
             while (pc) {
                 Pchg *px = pc;
                 pc = pc->pc_next;
@@ -190,9 +181,9 @@ struct Pchg
             return (p0);
         }
 
-    Pchg *purge(const CDo *obj)
+    static Pchg *purge(Pchg *thisp, const CDo *obj)
         {
-            Pchg *p0 = this, *pp = 0, *pn;
+            Pchg *p0 = thisp, *pp = 0, *pn;
             for (Pchg *p = p0; p; p = pn) {
                 pn = p->pc_next;
                 if (p->pc_odesc == obj) {
@@ -208,9 +199,9 @@ struct Pchg
             return (p0);
         }
 
-    Pchg *purge_layer(const CDl *ld)
+    static Pchg *purge_layer(Pchg *thisp, const CDl *ld)
         {
-            Pchg *p0 = this, *pp = 0, *pn;
+            Pchg *p0 = thisp, *pp = 0, *pn;
             for (Pchg *p = p0; p; p = pn) {
                 pn = p->pc_next;
                 if (!p->pc_odesc || p->pc_odesc->ldesc() == ld) {
@@ -224,6 +215,13 @@ struct Pchg
                 pp = p;
             }
             return (p0);
+        }
+
+    void swap()
+        {
+            CDp *tmp = pc_delprp;
+            pc_delprp = pc_addprp;
+            pc_addprp = tmp;
         }
 
     Pchg *next_chg()        const { return (pc_next); }
@@ -248,21 +246,20 @@ struct Oper
     Oper();
     ~Oper();
 
-    void clear()
+    static void destroy(Oper *o)
         {
-            Oper *o = this;
             while (o) {
-                Oper *onxt = o->o_next;
-                delete o;
-                o = onxt;
+                Oper *ox = o;
+                o = o->o_next;
+                delete ox;
             }
         }
 
     bool changed(bool* = 0) const;
     void fixParentConnections();
     void clearLists(bool);
-    void purge(const CDs*, const CDl*);
-    void purge(const CDs*, const CDo*);
+    static void purge(Oper*, const CDs*, const CDl*);
+    static void purge(Oper*, const CDs*, const CDo*);
     void freePrpList();
     void copyPrpList(CDp*);
     void changeBB(BBox*, BBox* = 0);
@@ -318,7 +315,7 @@ struct ULstate
 {
     ULstate(CDcellName n, Oper *o, Oper *r)
         { cellname = n; operations = o; redo_list = r; }
-    ~ULstate() { operations->clear(); redo_list->clear(); }
+    ~ULstate() { Oper::destroy(operations); Oper::destroy(redo_list); }
 
     CDcellName cellname;
     Oper *operations;

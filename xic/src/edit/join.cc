@@ -50,19 +50,20 @@ namespace {
         j_list(CDo *o) { j_odesc = o; j_zlist = 0; next = 0; }
         ~j_list() { Zlist::destroy(j_zlist); }
 
-        XIrt join(CDs*, CDl*, bool);
+        static XIrt join(j_list*, CDs*, CDl*, bool);
 
         j_list *next;
+
     private:
         CDo *j_odesc;
         Zlist *j_zlist;
     };
 
 
+    // Static function.
     XIrt
-    j_list::join(CDs *cursd, CDl *ld, bool use_sq)
+    j_list::join(j_list *j0, CDs *cursd, CDl *ld, bool use_sq)
     {
-        j_list *j0 = this;
         if (!j0)
             return (XIok);
         int ocnt = 0;
@@ -186,7 +187,7 @@ cEdit::joinAllCmd()
                 je = je->next;
             }
         }
-        XIrt ret = j0->join(cursd, ld, false);
+        XIrt ret = j_list::join(j0, cursd, ld, false);
         if (ret != XIok) {
             XM()->ShowParameters();
             dspPkgIf()->SetWorking(false);
@@ -259,7 +260,7 @@ cEdit::joinLyrCmd()
             je = je->next;
         }
     }
-    XIrt ret = j0->join(cursd, ld, false);
+    XIrt ret = j_list::join(j0, cursd, ld, false);
     if (ret != XIok) {
         XM()->ShowParameters();
         dspPkgIf()->SetWorking(false);
@@ -395,7 +396,7 @@ cEdit::joinQueue()
         }
         CDol::destroy(o0);
         if (j0) {
-            XIrt ret = j0->join(cursd, ld, true);
+            XIrt ret = j_list::join(j0, cursd, ld, true);
             if (ret != XIok) {
                 XM()->ShowParameters();
                 dspPkgIf()->SetWorking(false);

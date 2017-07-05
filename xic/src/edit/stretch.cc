@@ -27,7 +27,7 @@
 #include "main.h"
 #include "edit.h"
 #include "undolist.h"
-#include "dsp_color.h"
+#include "vtxedit.h"
 #include "dsp_tkif.h"
 #include "dsp_inlines.h"
 #include "tech.h"
@@ -37,7 +37,7 @@
 #include "errorlog.h"
 #include "select.h"
 #include "ghost.h"
-#include "texttf.h"
+//#include "texttf.h"
 
 
 //
@@ -64,10 +64,17 @@ namespace {
             bool key(int, const char*, int);
             void undo();
             void redo();
-            void message() { if (Level == 1) PL()->ShowPrompt(msg1);
-                else if (Level == 2)
-                    PL()->ShowPrompt(ED()->objectList()->empty() ? msg2 : msg4);
-                else PL()->ShowPrompt(msg3); }
+            void message()
+                {
+                    if (Level == 1)
+                        PL()->ShowPrompt(msg1);
+                    else if (Level == 2) {
+                        PL()->ShowPrompt(
+                            sObj::empty(ED()->objectList()) ? msg2 : msg4);
+                    }
+                    else
+                        PL()->ShowPrompt(msg3);
+                }
 
         private:
             void SetLevel1(bool show) { Level = 1; if (show) message(); }
@@ -193,7 +200,7 @@ StrState::b1down()
         // Identify the closest vertex, and begin the stretch.
         //
         EV()->Cursor().get_xy(&Refx, &Refy);
-        if (ED()->objectList()->empty())
+        if (sObj::empty(ED()->objectList()))
             ED()->setStretchRef(&Refx, &Refy);
         XM()->SetCoordMode(CO_RELATIVE, Refx, Refy);
         State = 2;
@@ -213,7 +220,7 @@ StrState::b1down()
             Newx = x;
             Newy = y;
             GhostOn = false;
-            ED()->objectList()->mark_vertices(ERASE);
+            sObj::mark_vertices(ED()->objectList(), ERASE);
             XM()->SetCoordMode(CO_ABSOLUTE);
             if (DSP()->CurMode() == Electrical && DSP()->ShowTerminals())
                 DSP()->ShowCellTerminalMarks(DISPLAY);
@@ -237,7 +244,7 @@ StrState::b1up()
         State = 1;
 
         ED()->clearObjectList();
-        Objlist_back->free();
+        sObj::destroy(Objlist_back);
         Objlist_back = 0;
     }
     else if (Level == 2) {
@@ -246,7 +253,7 @@ StrState::b1up()
             BBox BB;
             if (!cEventHdlr::sel_b1up(&BB, Types, B1UP_NOSEL))
                 return;
-            ED()->objectList()->mark_vertices(ERASE);
+            sObj::mark_vertices(ED()->objectList(), ERASE);
 
             WindowDesc *wdesc = EV()->ButtonWin();
             if (!wdesc)
@@ -264,9 +271,9 @@ StrState::b1up()
             }
 
             CDol *st = Selections.listQueue(CurCell());
-            ED()->setObjectList(ED()->objectList()->mklist(st, &BB));
+            ED()->setObjectList(sObj::mklist(ED()->objectList(), st, &BB));
             CDol::destroy(st);
-            ED()->objectList()->mark_vertices(DISPLAY);
+            sObj::mark_vertices(ED()->objectList(), DISPLAY);
             message();
             return;
         }
@@ -286,7 +293,7 @@ StrState::b1up()
                     Newx = x;
                     Newy = y;
                     GhostOn = false;
-                    ED()->objectList()->mark_vertices(ERASE);
+                    sObj::mark_vertices(ED()->objectList(), ERASE);
                     XM()->SetCoordMode(CO_ABSOLUTE);
                     State = 3;
                     if (DSP()->CurMode() == Electrical &&
@@ -319,9 +326,9 @@ StrState::desel()
 {
     if (Level != 1)
         Gst()->SetGhost(GFnone);
-    ED()->objectList()->mark_vertices(ERASE);
+    sObj::mark_vertices(ED()->objectList(), ERASE);
     ED()->clearObjectList();
-    Objlist_back->free();
+    sObj::destroy(Objlist_back);
     Objlist_back = 0;
     if (Level == 1)
         cEventHdlr::sel_esc();
@@ -341,9 +348,9 @@ StrState::esc()
 {
     if (Level != 1)
         Gst()->SetGhost(GFnone);
-    ED()->objectList()->mark_vertices(ERASE);
+    sObj::mark_vertices(ED()->objectList(), ERASE);
     ED()->clearObjectList();
-    Objlist_back->free();
+    sObj::destroy(Objlist_back);
     if (!GotOne) {
         Selections.setShowSelected(CurCell(), Types, false);
         Selections.removeTypes(CurCell(), Types);
@@ -411,7 +418,7 @@ StrState::undo()
 
             if (State == 3) {
                 Gst()->SetGhostAt(GFstretch, Refx, Refy);
-                ED()->objectList()->mark_vertices(DISPLAY);
+                sObj::mark_vertices(ED()->objectList(), DISPLAY);
                 GhostOn = true;
                 ShiftResponse = true;
                 SetLevel3();
@@ -424,8 +431,8 @@ StrState::undo()
         // Undo the selection.
         //
         if (ED()->objectList()) {
-            ED()->objectList()->mark_vertices(ERASE);
-            Objlist_back->free();
+            sObj::mark_vertices(ED()->objectList(), ERASE);
+            sObj::destroy(Objlist_back);
             Objlist_back = ED()->objectList();
             ED()->setObjectList(0);
             return;
@@ -444,7 +451,7 @@ StrState::undo()
         ShiftResponse = false;
         Gst()->SetGhost(GFnone);
         GhostOn = false;
-        ED()->objectList()->mark_vertices(DISPLAY);
+        sObj::mark_vertices(ED()->objectList(), DISPLAY);
         XM()->SetCoordMode(CO_ABSOLUTE);
         Selections.setShowSelected(CurCell(), Types, true);
         SetLevel2(true);
@@ -477,7 +484,7 @@ StrState::redo()
         if (Objlist_back) {
             ED()->setObjectList(Objlist_back);
             Objlist_back = 0;
-            ED()->objectList()->mark_vertices(DISPLAY);
+            sObj::mark_vertices(ED()->objectList(), DISPLAY);
             return;
         }
         if (State == 2 || State == 3) {
@@ -495,7 +502,7 @@ StrState::redo()
         if (State == 3) {
             Gst()->SetGhost(GFnone);
             GhostOn = false;
-            ED()->objectList()->mark_vertices(ERASE);
+            sObj::mark_vertices(ED()->objectList(), ERASE);
             XM()->SetCoordMode(CO_ABSOLUTE);
             ShiftResponse = false;
             SetLevel1(true);
@@ -643,10 +650,10 @@ cEdit::doStretch(int ref_x, int ref_y, int *map_x, int *map_y)
         return (false);
 
     Errs()->init_error();
-    if (!ed_object_list->empty()) {
+    if (!sObj::empty(ed_object_list)) {
         if (Tech()->IsConstrain45() ^ EV()->IsConstrained()) {
             int rx, ry, xm, ym;
-            if (ED()->objectList()->get_ref(&rx, &ry, &xm, &ym)) {
+            if (ED()->get_wire_ref(&rx, &ry, &xm, &ym)) {
                 int dx = ref_x - xm;
                 int dy = ref_y - ym;
                 *map_x -= dx;
@@ -1458,9 +1465,8 @@ namespace {
                 next = n;
             }
 
-        void free()
+        static void destroy(ol_t *o)
             {
-                ol_t *o = this;
                 while (o) {
                     ol_t *ox = o;
                     o = o->next;
@@ -1507,10 +1513,10 @@ namespace {
 void
 cEditGhost::showGhostStretch(int map_x, int map_y, int ref_x, int ref_y)
 {
-    if (!ED()->objectList()->empty()) {
+    if (!sObj::empty(ED()->objectList())) {
         if (Tech()->IsConstrain45() ^ EV()->IsConstrained()) {
             int rx, ry, xm, ym;
-            if (ED()->objectList()->get_ref(&rx, &ry, &xm, &ym)) {
+            if (ED()->get_wire_ref(&rx, &ry, &xm, &ym)) {
                 int dx = ref_x - xm;
                 int dy = ref_y - ym;
                 map_x -= dx;
@@ -1550,10 +1556,10 @@ void
 cEditGhost::ghost_stretch_setup(bool on)
 {
     if (on) {
-        ghost_display_list->free();  // should never need this
+        ol_t::destroy(ghost_display_list);  // should never need this
         ghost_display_list = 0;
         unsigned int n = 0;
-        if (!ED()->objectList()->empty()) {
+        if (!sObj::empty(ED()->objectList())) {
             for (sObj *obj = ED()->objectList(); obj; obj = obj->next_obj()) {
                 if (!obj->object())
                     continue;
@@ -1586,373 +1592,15 @@ cEditGhost::ghost_stretch_setup(bool on)
                     break;
                 ol0 = new ol_t(od->odesc, od->vtx, ol0);
             }
-            ghost_display_list->free();
+            ol_t::destroy(ghost_display_list);
             ghost_display_list = ol0;
         }
     }
     else {
-        ghost_display_list->free();
+        ol_t::destroy(ghost_display_list);
         ghost_display_list = 0;
     }
 }
 // End of Stretch functions.
 // End of cEdit functions.
-
-
-//-----------------------------------------------------------------------------
-// The following code is for the poly/wire vertex editor.
-//
-
-// Return true if there are no movable vertices in the list.
-//
-bool
-sObj::empty()
-{
-    for (sObj *o = this; o; o = o->o_next) {
-        for (Vtex *v = o->o_pts; v; v = v->v_next)
-            if (v->v_movable)
-                return (false);
-    }
-    return (true);
-}
-
-
-// Create, add to, or modify the selected status of the objlist according
-// to the objects in slist and the given selection rectangle AOI.  The
-// modified list is returned.
-//
-sObj *
-sObj::mklist(CDol *slist, BBox *AOI)
-{
-    sObj *objlist = this;
-    for (CDol *sl = slist; sl; sl = sl->next) {
-        if (!sl->odesc)
-            continue;
-        if (sl->odesc->type() == CDINSTANCE)
-            continue;
-        if (sl->odesc->type() == CDLABEL)
-            continue;
-        if (sl->odesc->state() != CDSelected)
-            continue;
-        if (sl->odesc->type() == CDBOX) {
-            Point_c p(sl->odesc->oBB().left, sl->odesc->oBB().bottom);
-            if (!AOI->intersect(&p, true)) {
-                p.set(sl->odesc->oBB().left, sl->odesc->oBB().top);
-                if (!AOI->intersect(&p, true)) {
-                    p.set(sl->odesc->oBB().right, sl->odesc->oBB().top);
-                    if (!AOI->intersect(&p, true)) {
-                        p.set(sl->odesc->oBB().right,
-                            sl->odesc->oBB().bottom);
-                        if (!AOI->intersect(&p, true))
-                            continue;
-                    }
-                }
-            }
-            sObj *o;
-            for (o = objlist; o; o = o->o_next)
-                if (o->o_obj == sl->odesc)
-                    break;
-            if (o) {
-                for (Vtex *v = o->o_pts; v; v = v->v_next)
-                    if (AOI->intersect(&v->v_p, true))
-                        v->v_movable = !v->v_movable;
-            }
-            else {
-                objlist = new sObj(sl->odesc, objlist);
-                Vtex *v = 0;
-                p.set(objlist->o_obj->oBB().left,
-                    objlist->o_obj->oBB().bottom);
-                v = objlist->o_pts = new Vtex(p);
-                if (AOI->intersect(&v->v_p, true))
-                    v->v_movable = true;
-                p.set(objlist->o_obj->oBB().left,
-                    objlist->o_obj->oBB().top);
-                v->v_next = new Vtex(p);
-                v = v->v_next;
-                if (AOI->intersect(&v->v_p, true))
-                    v->v_movable = true;
-                p.set(objlist->o_obj->oBB().right,
-                    objlist->o_obj->oBB().top);
-                v->v_next = new Vtex(p);
-                v = v->v_next;
-                if (AOI->intersect(&v->v_p, true))
-                    v->v_movable = true;
-                p.set(objlist->o_obj->oBB().right,
-                    objlist->o_obj->oBB().bottom);
-                v->v_next = new Vtex(p);
-                v = v->v_next;
-                if (AOI->intersect(&v->v_p, true))
-                    v->v_movable = true;
-            }
-        }
-        else if (sl->odesc->type() == CDPOLYGON) {
-            int num = ((const CDpo*)sl->odesc)->numpts();
-            const Point *pnts = ((const CDpo*)sl->odesc)->points();
-            int i;
-            for (i = 0; i < num; i++)
-                if (AOI->intersect(&pnts[i], true))
-                    break;
-            if (i < num) {
-                sObj *o;
-                for (o = objlist; o; o = o->o_next) {
-                    if (o->o_obj == sl->odesc)
-                        break;
-                }
-
-                // Note that we prevent selecting two vertices at the
-                // same location in the same poly (shouldn't see this
-                // anyway).
-                // NOTE:  This means that the movable field of the
-                // last vertex is NOT set to match the first.
-
-                if (o) {
-                    Plist *p0 = 0;
-                    for (Vtex *v = o->o_pts; v; v = v->v_next) {
-
-                        if (AOI->intersect(&v->v_p, true)) {
-                            if (v->v_movable) {
-                                v->v_movable = false;
-                                continue;
-                            }
-
-                            bool found = false;
-                            for (Plist *p = p0; p; p = p->next) {
-                                if (*(Point*)p == v->v_p) {
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found) {
-                                v->v_movable = true;
-                                p0 = new Plist(v->v_p.x, v->v_p.y, p0);
-                            }
-                        }
-                    }
-                    Plist::destroy(p0);
-                }
-                else {
-                    objlist = new sObj(sl->odesc, objlist);
-                    Vtex *v = 0;
-                    Plist *p0 = 0;
-                    for (i = 0; i < num; i++) {
-                        if (!v)
-                            v = objlist->o_pts = new Vtex(pnts[i]);
-                        else {
-                            v->v_next = new Vtex(pnts[i]);
-                            v = v->v_next;
-                        }
-                        if (AOI->intersect(&v->v_p, true)) {
-                            bool found = false;
-                            for (Plist *p = p0; p; p = p->next) {
-                                if (*(Point*)p == v->v_p) {
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found) {
-                                v->v_movable = true;
-                                p0 = new Plist(v->v_p.x, v->v_p.y, p0);
-                            }
-                        }
-                    }
-                    Plist::destroy(p0);
-                }
-            }
-        }
-        else if (sl->odesc->type() == CDWIRE) {
-            int num = ((const CDw*)sl->odesc)->numpts();
-            const Point *pnts = ((const CDw*)sl->odesc)->points();
-            int i;
-            for (i = 0; i < num; i++)
-                if (AOI->intersect(&pnts[i], true))
-                    break;
-            if (i < num) {
-                sObj *o;
-                for (o = objlist; o; o = o->o_next) {
-                    if (o->o_obj == sl->odesc)
-                        break;
-                }
-
-                // Note that we prevent selecting two vertices at the
-                // same location in the same wire.
-
-                if (o) {
-                    Plist *p0 = 0;
-                    for (Vtex *v = o->o_pts; v; v = v->v_next) {
-
-                        if (AOI->intersect(&v->v_p, true)) {
-                            if (v->v_movable) {
-                                v->v_movable = false;
-                                continue;
-                            }
-
-                            bool found = false;
-                            for (Plist *p = p0; p; p = p->next) {
-                                if (*(Point*)p == v->v_p) {
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found) {
-                                v->v_movable = true;
-                                p0 = new Plist(v->v_p.x, v->v_p.y, p0);
-                            }
-                        }
-                    }
-                    Plist::destroy(p0);
-                }
-                else {
-                    objlist = new sObj(sl->odesc, objlist);
-                    Vtex *v = 0;
-                    Plist *p0 = 0;
-                    for (i = 0; i < num; i++) {
-                        if (!v)
-                            v = objlist->o_pts = new Vtex(pnts[i]);
-                        else {
-                            v->v_next = new Vtex(pnts[i]);
-                            v = v->v_next;
-                        }
-                        if (AOI->intersect(&v->v_p, true)) {
-                            bool found = false;
-                            for (Plist *p = p0; p; p = p->next) {
-                                if (*(Point*)p == v->v_p) {
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (!found) {
-                                v->v_movable = true;
-                                p0 = new Plist(v->v_p.x, v->v_p.y, p0);
-                            }
-                        }
-                    }
-                    Plist::destroy(p0);
-                }
-            }
-        }
-    }
-    return (objlist);
-}
-
-
-// Mark all movable vertices in the list, or erase all vertex marks.
-//
-void
-sObj::mark_vertices(bool DisplayOrErase)
-{
-    if (DisplayOrErase == ERASE) {
-        DSP()->EraseMarks(MARK_BOX);
-        return;
-    }
-    for (sObj *o = this; o; o = o->o_next) {
-        for (Vtex *v = o->o_pts; v; v = v->v_next) {
-            if (v->v_movable)
-                DSP()->ShowBoxMark(DISPLAY, v->v_p.x, v->v_p.y,
-                    HighlightingColor, 12, DSP()->CurMode());
-        }
-    }
-}
-
-
-// If there is only one object and it is a wire, and the vertex list
-// contains one endpoint and possibly adjacent points, return the
-// coordinates of the next vertex not in the list.  This will be used
-// as the reference vertex for vertex moving, so 45 constraints are
-// reasonable.
-
-bool
-sObj::get_ref(int *xrp, int *yrp, int *xmp, int *ymp)
-{
-    {
-        sObj *ot = this;
-        if (!ot)
-            return (false);
-    }
-    if (o_next)
-        return (false);
-    if (!o_obj || o_obj->type() != CDWIRE)
-        return (false);
-
-    int nv = 0;
-    for (Vtex *v = o_pts; v; v = v->v_next) {
-        if (v->v_movable)
-            nv++;
-    }
-    if (!nv)
-        return (false);
-
-    const Point *wpts = ((CDw*)o_obj)->points();
-    int npts = ((CDw*)o_obj)->numpts();
-    if (nv == npts)
-        return (false);
-
-    bool has_end = false;
-    for (Vtex *v = o_pts; v; v = v->v_next) {
-        if (!v->v_movable)
-            continue;
-        if (v->v_p.x == wpts[0].x && v->v_p.y == wpts[0].y) {
-            has_end = true;
-            break;
-        }
-    }
-    if (has_end) {
-        for (int i = 1; i < nv; i++) {
-            has_end = false;
-            for (Vtex *v = o_pts; v; v = v->v_next) {
-                if (!v->v_movable)
-                    continue;
-                if (v->v_p.x == wpts[i].x && v->v_p.y == wpts[i].y) {
-                    has_end = true;
-                    break;
-                }
-            }
-            if (!has_end)
-                return (false);
-        }
-        if (xrp)
-            *xrp = wpts[nv].x;
-        if (yrp)
-            *yrp = wpts[nv].y;
-        if (xmp)
-            *xmp = wpts[nv-1].x;
-        if (ymp)
-            *ymp = wpts[nv-1].y;
-        return (true);
-    }
-    for (Vtex *v = o_pts; v; v = v->v_next) {
-        if (!v->v_movable)
-            continue;
-        if (v->v_p.x == wpts[npts-1].x && v->v_p.y == wpts[npts-1].y) {
-            has_end = true;
-            break;
-        }
-    }
-    if (has_end) {
-        for (int i = 1; i < nv; i++) {
-            has_end = false;
-            for (Vtex *v = o_pts; v; v = v->v_next) {
-                if (!v->v_movable)
-                    continue;
-                if (v->v_p.x == wpts[npts-i-1].x &&
-                        v->v_p.y == wpts[npts-i-1].y) {
-                    has_end = true;
-                    break;
-                }
-            }
-            if (!has_end)
-                return (false);
-        }
-        if (xrp)
-            *xrp = wpts[npts-nv-1].x;
-        if (yrp)
-            *yrp = wpts[npts-nv-1].y;
-        if (xmp)
-            *xmp = wpts[npts-nv].x;
-        if (ymp)
-            *ymp = wpts[npts-nv].y;
-        return (true);
-    }
-    return (false);
-}
-// End of sObj functions
 

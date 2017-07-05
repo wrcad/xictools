@@ -200,12 +200,12 @@ cEdit::invalidateLayer(CDs *sd, CDl *ld)
     ed_edit::sEditState *es = XM()->hist().editState();
     if (es) {
         if (es->PhysUL) {
-            es->PhysUL->operations->purge(sd, ld);
-            es->PhysUL->redo_list->purge(sd, ld);
+            Oper::purge(es->PhysUL->operations, sd, ld);
+            Oper::purge(es->PhysUL->redo_list, sd, ld);
         }
         if (es->ElecUL) {
-            es->ElecUL->operations->purge(sd, ld);
-            es->ElecUL->redo_list->purge(sd, ld);
+            Oper::purge(es->ElecUL->operations, sd, ld);
+            Oper::purge(es->ElecUL->redo_list, sd, ld);
         }
         if (es->PhysCX) {
             es->PhysCX->context->purge(sd, ld);
@@ -230,12 +230,12 @@ cEdit::invalidateObject(CDs *sd, CDo *od, bool save)
     ed_edit::sEditState *es = XM()->hist().editState();
     if (es) {
         if (es->PhysUL) {
-            es->PhysUL->operations->purge(sd, od);
-            es->PhysUL->redo_list->purge(sd, od);
+            Oper::purge(es->PhysUL->operations, sd, od);
+            Oper::purge(es->PhysUL->redo_list, sd, od);
         }
         if (es->ElecUL) {
-            es->ElecUL->operations->purge(sd, od);
-            es->ElecUL->redo_list->purge(sd, od);
+            Oper::purge(es->ElecUL->operations, sd, od);
+            Oper::purge(es->ElecUL->redo_list, sd, od);
         }
         if (es->PhysCX) {
             es->PhysCX->context =
@@ -397,7 +397,7 @@ cEdit::ulPCevalReset(ulPCstate *pcstate)
     Ulist()->ListPop();
 
     Oper *cur = Ulist()->RotateUndo(0);
-    cur->clear();
+    Oper::destroy(cur);
     Ulist()->RotateUndo((Oper*)*pcstate);
     Ulist()->RotateUndo((Oper*)*pcstate);
 }
@@ -448,20 +448,20 @@ namespace {
 
         ~PPstate()
             {
-                ppUndoList->clear();
-                ppRedoList->clear();
+                Oper::destroy(ppUndoList);
+                Oper::destroy(ppRedoList);
             }
 
         void purge(const CDs *sd, const CDl *ld)
             {
-                ppUndoList->purge(sd, ld);    
-                ppRedoList->purge(sd, ld);    
+                Oper::purge(ppUndoList, sd, ld);    
+                Oper::purge(ppRedoList, sd, ld);    
             }
 
         void purge(const CDs *sd, const CDo *od)
             {
-                ppUndoList->purge(sd, od);
-                ppRedoList->purge(sd, od);
+                Oper::purge(ppUndoList, sd, od);
+                Oper::purge(ppRedoList, sd, od);
             }
 
         void rotate()

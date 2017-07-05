@@ -27,6 +27,7 @@
 #include "main.h"
 #include "edit.h"
 #include "undolist.h"
+#include "yankbuf.h"
 #include "scedif.h"
 #include "dsp_tkif.h"
 #include "dsp_inlines.h"
@@ -1135,8 +1136,7 @@ cEdit::yank(CDol *slist, BBox *AOI, bool clipping)
             y0 = yx;
     }
     if (y0) {
-        if (ed_yank_buffer[ED_YANK_DEPTH-1])
-            ed_yank_buffer[ED_YANK_DEPTH-1]->free();
+        yb::destroy(ed_yank_buffer[ED_YANK_DEPTH-1]);
         for (int i = ED_YANK_DEPTH-1; i > 0; i--)
             ed_yank_buffer[i] = ed_yank_buffer[i-1];
         ed_yank_buffer[0] = y0;
@@ -1633,28 +1633,6 @@ inst:
     return (y0);
 }
 // End of cEdit functions
-
-
-// Free a yank buffer list.
-//
-void
-yb::free()
-{
-    yb *yt;
-    for (yb *yx = this; yx; yx = yt) {
-        yt = yx->next;
-        delete yx;
-    }
-}
-
-void
-yb::computeBB(BBox *BB)
-{
-    *BB = CDnullBB;
-    for (yb *yx = this; yx; yx = yx->next)
-        yx->add_bbox(BB);
-}
-// End of yb functions
 
 
 //----------------
