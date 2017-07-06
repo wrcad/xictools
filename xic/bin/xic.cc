@@ -1312,7 +1312,7 @@ xic_main::exec_batch_script(const char *scr)
     PCellParam *pars;
     if (PCellParam::parseParams(args, &pars)) {
         SI()->Interpret(sfp, 0, 0, 0, false, pars);
-        pars->free();
+        PCellParam::destroy(pars);
         EditIf()->ulCommitChanges();
         XM()->CommitCell();
     }

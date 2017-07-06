@@ -198,9 +198,8 @@ struct PCellParam
                 delete [] u.aval;
         }
 
-    void free()
+    static void destroy(PCellParam *p)
         {
-            PCellParam *p = this;
             while (p) {
                 PCellParam *px = p;
                 p = p->p_next;
@@ -212,7 +211,7 @@ struct PCellParam
 
     const char *typestr();
     bool set(const PCellParam*);
-    PCellParam *dup() const;
+    static PCellParam *dup(const PCellParam*);
     void setup(const PCellParam*);
     void reset(const PCellParam*);
     bool setValue(const char*, double, const char* = 0);
@@ -230,24 +229,22 @@ struct PCellParam
     static bool getPair(const char**, char*, char**, char**, char**);
     static bool parseParams(const char*, PCellParam**);
 
-    PCellParam *find(const char *nm)
+    static PCellParam *find(PCellParam *thisp, const char *nm)
         {
             if (!nm)
                 return (0);
-            PCellParam *p = this;
-            for ( ; p; p = p->next()) {
+            for (PCellParam *p = thisp; p; p = p->next()) {
                 if (!strcmp(p->name(), nm))
                     return (p);
             }
             return (0);
         }
 
-    const PCellParam *find_c(const char *nm) const
+    static const PCellParam *find_c(const PCellParam *thisp, const char *nm)
         {
             if (!nm)
                 return (0);
-            const PCellParam *p = this;
-            for ( ; p; p = p->next()) {
+            for (const PCellParam *p = thisp; p; p = p->next()) {
                 if (!strcmp(p->name(), nm))
                     return (p);
             }
@@ -354,20 +351,19 @@ struct PCellItem
     PCellItem(const PCellParam *pm)
         {
             pi_next = 0;
-            pi_params = pm->dup();
+            pi_params = PCellParam::dup(pm);
             pi_cellname = 0;
             pi_index = 0;
         }
 
     ~PCellItem()
         {
-            pi_params->free();
+            PCellParam::destroy(pi_params);
             delete [] pi_cellname;
         }
 
-    void free()
+    static void destroy(PCellItem *p0)
         {
-            PCellItem *p0 = this;
             while (p0) {
                 PCellItem *px = p0;
                 p0 = p0->pi_next;
@@ -381,8 +377,8 @@ struct PCellItem
     const PCellParam *params()      const { return (pi_params); }
     void setParams(const PCellParam *p)
         {
-            pi_params->free();
-            pi_params = p->dup();
+            PCellParam::destroy(pi_params);
+            pi_params = PCellParam::dup(p);
         }
 
     unsigned int index()            const { return (pi_index); }
@@ -441,8 +437,8 @@ struct PCellDesc
     ~PCellDesc()
         {
             delete [] pd_dbname;
-            pd_instances->free();
-            pd_defprms->free();
+            PCellItem::destroy(pd_instances);
+            PCellParam::destroy(pd_defprms);
         }
 
     PCellItem *findItem(const PCellParam *prms) const

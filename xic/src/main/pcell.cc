@@ -118,7 +118,7 @@ cPCellDb::setPCinstParams(const char *dbname, const PCellParam *prms,
             SymTabGen gen(pc_param_tab, true);
             SymTabEnt *ent;
             while ((ent = gen.next()) != 0) {
-                ((PCellParam*)ent->stData)->free();
+                PCellParam::destroy((PCellParam*)ent->stData);
                 delete [] ent->stTag;
                 delete ent;
             }
@@ -133,7 +133,7 @@ cPCellDb::setPCinstParams(const char *dbname, const PCellParam *prms,
             PCellParam *p = (PCellParam*)pc_param_tab->get(dbname);
             if (p != (PCellParam*)ST_NIL) {
                 pc_param_tab->remove(dbname);
-                p->free();
+                PCellParam::destroy(p);
             }
         }
         return (true);
@@ -150,7 +150,7 @@ cPCellDb::setPCinstParams(const char *dbname, const PCellParam *prms,
             if (pc_param_tab) {
                 PCellParam *p = (PCellParam*)pc_param_tab->get(dbname);
                 if (p != (PCellParam*)ST_NIL)
-                    px = p->dup();
+                    px = PCellParam::dup(p);
             }
             pc_script_param_tab->add(lstring::copy(dbname), px, false);
         }
@@ -160,11 +160,11 @@ cPCellDb::setPCinstParams(const char *dbname, const PCellParam *prms,
         pc_param_tab = new SymTab(true, false);
     SymTabEnt *ent = pc_param_tab->get_ent(dbname);
     if (ent) {
-        ((PCellParam*)ent->stData)->free();
-        ent->stData = prms->dup();
+        PCellParam::destroy((PCellParam*)ent->stData);
+        ent->stData = PCellParam::dup(prms);
     }
     else
-        pc_param_tab->add(lstring::copy(dbname), prms->dup(), false);
+        pc_param_tab->add(lstring::copy(dbname), PCellParam::dup(prms), false);
     return (true);
 }
 
@@ -187,15 +187,14 @@ cPCellDb::revertPCinstParams()
             PCellParam *p = (PCellParam*)pc_param_tab->get(ent->stTag);
             if (p != (PCellParam*)ST_NIL) {
                 pc_param_tab->remove(ent->stTag);
-                p->free();
+                PCellParam::destroy(p);
                 if (ent->stData) {
                     pc_param_tab->add(lstring::copy(ent->stTag), ent->stData,
                         false);
                     ent->stData = 0;
                 }
             }
-            if (ent->stData)
-                ((PCellParam*)ent->stData)->free();
+            PCellParam::destroy((PCellParam*)ent->stData);
             delete [] ent->stTag;
             delete ent;
         }
@@ -267,7 +266,7 @@ cPCellDb::addSuperMaster(const char *libname, const char *cellname,
         pc_master_tab = new SymTab(false, false);
     SymTabEnt *ent = pc_master_tab->get_ent(dbname);
     if (!ent) {
-        PCellDesc *pd = new PCellDesc(dbname, defprms->dup());
+        PCellDesc *pd = new PCellDesc(dbname, PCellParam::dup(defprms));
         pc_master_tab->add(pd->dbname(), pd, false);
     }
     return (dbname);
@@ -354,7 +353,7 @@ cPCellDb::getParams(const char *dbname, const char *input, PCellParam **pret)
         char *ndbname = addSuperMaster(libname, cellname, viewname, pdef);
         delete [] ndbname;
         bool ret = parseParams(input, pret, pdef);
-        pdef->free();
+        PCellParam::destroy(pdef);
         return (ret);
     }
     Errs()->add_error(
@@ -378,7 +377,7 @@ cPCellDb::getDefaultParams(const char *dbname, PCellParam **pret)
     if (pc_master_tab) {
         PCellDesc *pd = (PCellDesc*)pc_master_tab->get(dbname);
         if (pd != (PCellDesc*)ST_NIL && pd->defaultParams()) {
-            *pret = pd->defaultParams()->dup();
+            *pret = PCellParam::dup(pd->defaultParams());
             return (true);
         }
     }
@@ -474,7 +473,7 @@ cPCellDb::parseParams(const char *input, PCellParam **pret,
         return (false);
 
     if (pdef) {
-        PCellParam *pref = pdef->dup();
+        PCellParam *pref = PCellParam::dup(pdef);
         while (p0) {
             bool found = false;
             for (PCellParam *p = pref; p; p = p->next()) {
@@ -485,8 +484,8 @@ cPCellDb::parseParams(const char *input, PCellParam **pret,
                             "parseParams: incompatible data types for %s, "
                             "expecting %s got %s.", p0->name(),
                             p->typestr(), p0->typestr());
-                        p0->free();
-                        pref->free();
+                        PCellParam::destroy(p0);
+                        PCellParam::destroy(pref);
                         return (false);
                     }
                     break;
@@ -501,8 +500,8 @@ cPCellDb::parseParams(const char *input, PCellParam **pret,
                 // bad arg name
                 Errs()->add_error(
                     "parseParams: unknown parameter %s.", p0->name());
-                p0->free();
-                pref->free();
+                PCellParam::destroy(p0);
+                PCellParam::destroy(pref);
                 return (false);
             }
         }
@@ -551,11 +550,11 @@ cPCellDb::formatParams(const char *input, char **output,
 
     PCellParam *prms;
     if (!parseParams(input, &prms, pdef)) {
-        pdef->free();
+        PCellParam::destroy(pdef);
         return (false);
     }
     *output = prms->string(true);  // no constraints
-    prms->free();
+    PCellParam::destroy(prms);
     return (true);
 }
 
@@ -613,7 +612,7 @@ cPCellDb::openSubMaster(const CDs *sdsup, const char *params, CDs **sdret)
 
     CDcbin cbin;
     CDcdb()->findSymbol(nm, &cbin);
-    pcprms->free();
+    PCellParam::destroy(pcprms);
 
 #ifdef PC_DEBUG
     printf("openSubMaster: name=%s %s\n", nm, cbin.cellname() ? "exists" : "");
@@ -791,7 +790,7 @@ cPCellDb::openSubMaster(const char *nmstr, const char *prpstr, CDs **psd,
         if (psd)
             *psd = CDcdb()->findCell(subm_name, Physical);
         delete [] subm_name;
-        prms->free();
+        PCellParam::destroy(prms);
     }
     return (true);
 }
@@ -1037,7 +1036,7 @@ cPCellDb::evalScript(CDs *sdesc, const char *pcname)
     }
     delete [] scr;
     delete sfp;
-    pars->free();
+    PCellParam::destroy(pars);
 
     sdesc->prptyRemove(XICP_PC_SCRIPT);
     sdesc->prptyAdd(XICP_PC, pcname);

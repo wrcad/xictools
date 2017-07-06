@@ -188,23 +188,23 @@ struct Ptxt
             delete [] pt_string;
         }
 
-    void free()
+    static void destroy(Ptxt *p)
         {
-            Ptxt *pn;
-            for (Ptxt *p = this; p; p = pn) {
-                pn = p->pt_next;
-                delete p;
+            while(p) {
+                Ptxt *px = p;
+                p = p->pt_next;
+                delete px;
             }
         }
 
     // Convert the Ptxt list into a long string, and fill in the
     // offsets in the Ptxt elements.
     //
-    char *tostring()
+    static char *tostring(Ptxt *thisp)
         {
             int cnt = 0;
             sLstr lstr;
-            for (Ptxt *p = this; p; p = p->pt_next) {
+            for (Ptxt *p = thisp; p; p = p->pt_next) {
                 p->pt_start = cnt;
                 lstr.add(p->pt_head);
                 cnt += strlen(p->pt_head);

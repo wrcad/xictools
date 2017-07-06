@@ -515,7 +515,7 @@ cEdit::addMaster(const char *mnamein, const char *cname, cCHD *chd)
                     // Make sure super-master is in table.
                     char *dbname = PC()->addSuperMaster(mnamein, cname,
                         "layout", p0);
-                    p0->free();
+                    PCellParam::destroy(p0);
                     delete [] dbname;
 
                     sLstr lstr;
@@ -677,7 +677,7 @@ cEdit::placeInstance(const char *name, int x, int y, int nx, int ny,
                 // Make sure super-master is in table.
                 char *dbname = PC()->addSuperMaster(lname, cname,
                     "layout", p0);
-                p0->free();
+                PCellParam::destroy(p0);
                 bool ret = ED()->startPlacement(0, dbname, pmode);
                 if (!ret || !ED()->resolvePCell(&cbin, dbname)) {
                     Errs()->add_error("Instance placement failed");

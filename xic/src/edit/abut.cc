@@ -347,7 +347,7 @@ cAbutHandler::handleAbutment()
             }
         }
 
-        sAbutRule *r1 = rules1->find(rule1);
+        sAbutRule *r1 = sAbutRule::find(rules1, rule1);
         if (!r1) {
             Errs()->add_error("handleAbutment: shape 1, missing %s rule.",
                 sAbutRule::rule_name(rule1));
@@ -357,7 +357,7 @@ cAbutHandler::handleAbutment()
         r1->print(stdout);
 #endif
 
-        sAbutRule *r2 = rules2->find(rule2);
+        sAbutRule *r2 = sAbutRule::find(rules2, rule2);
         if (!r2) {
             Errs()->add_error("handleAbutment: shape 2, missing %s rule.",
                 sAbutRule::rule_name(rule2));
@@ -427,7 +427,7 @@ cAbutHandler::handleAbutment()
                 !ap1.ptnr_shape_name()) {
             Errs()->add_error(
                 "handleAbutment: error creating prior property1.\n");
-            kv2->free();
+            sAbutKeyVal::destroy(kv2);
             return (false);
         }
         char *pstr = ap1.string();
@@ -457,10 +457,10 @@ cAbutHandler::handleAbutment()
 
         CDc *c2new;
         if (!setNewParams(ai->cdesc2(), prms2, &c2new)) {
-            prms2->free();
+            PCellParam::destroy(prms2);
             return (false);
         }
-        prms2->free();
+        PCellParam::destroy(prms2);
         if (c2new) {
             pprior2->set_next_prp(c2new->prpty_list());
             c2new->set_prpty_list(pprior2);
@@ -782,8 +782,8 @@ sAbutRule::sAbutRule()
 
 sAbutRule::~sAbutRule()
 {
-    ar_moving_keys->free();
-    ar_fixed_keys->free();
+    sAbutKeyVal::destroy(ar_moving_keys);
+    sAbutKeyVal::destroy(ar_fixed_keys);
 }
 
 
@@ -810,7 +810,7 @@ sAbutRule::parseRules(const char *str, sAbutRule **pret)
 
         if (!ret) {
             delete ar;
-            a0->free();
+            sAbutRule::destroy(a0);
             Errs()->add_error("Rule parse failed: token1=%s\n",
                 tok1 ? tok1 : "null");
             delete [] tok1;
@@ -920,7 +920,7 @@ sAbutRule::setup(const char *tok1, const char *tok2, const char *tok3)
 
 
 void
-sAbutRule::print(FILE *fp)
+sAbutRule::print(FILE *fp) const
 {
     const char *nm = rule_name(ar_name);
     fprintf(fp, "Name: %s  Spacing: %g\n", nm ? nm : "null", ar_spacing);
@@ -1306,7 +1306,7 @@ sAbutPrior::revertPartnerAbutment()
     if (!prtap.parse(pprior->string())) {
         Errs()->add_error(
             "revertPartnerAbutment: revert property string parse failed.");
-        prms->free();
+        PCellParam::destroy(prms);
         return (false);
     }
     for (const sAbutKeyVal *p = prtap.params(); p; p = p->nextc())
@@ -1315,10 +1315,10 @@ sAbutPrior::revertPartnerAbutment()
     if (!cAbutHandler::setNewParams(cptnr, prms, &cnew)) {
         Errs()->add_error(
             "revertPartnerAbutment: failed to revert cell.");
-        prms->free();
+        PCellParam::destroy(prms);
         return (false);
     }
-    prms->free();
+    PCellParam::destroy(prms);
 
     // Find and rid the PRIOR property in the new instance.
     CDp *pp = 0, *pn;

@@ -968,7 +968,7 @@ sLBoa::lb_content_cb(const char *cellname, void*)
         if (p0) {
             char *dbname = PC()->addSuperMaster(LB->lb_contlib, sel,
                 DSP()->CurMode() == Physical ? "layout" : "schematic", p0);
-            p0->free();
+            PCellParam::destroy(p0);
             if (EditIf()->hasEdit()) {
                 if (!EditIf()->openPlacement(0, dbname)) {
                     Log()->ErrorLogV(mh::PCells,

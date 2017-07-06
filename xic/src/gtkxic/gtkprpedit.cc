@@ -419,7 +419,7 @@ sPo::update(CDo *odesc, PRPmode activ)
 {
     if (pi_odesc)
         DSP()->ShowCurrentObject(ERASE, pi_odesc, MarkerColor);
-    pi_list->free();
+    Ptxt::destroy(pi_list);
     pi_list = 0;
     pi_odesc = odesc;
     if (odesc) {

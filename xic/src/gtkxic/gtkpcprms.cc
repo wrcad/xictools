@@ -318,7 +318,7 @@ sPcp::~sPcp()
     if (pcp_popup)
         gtk_widget_destroy(pcp_popup);
     sbsv::destroy(pcp_sbsave);
-    pcp_params_bak->free();
+    PCellParam::destroy(pcp_params_bak);
     if (pcp_mode == pcpEdit || pcp_mode == pcpPlaceScr) {
         if (GRX->LoopLevel() > 1)
             GRX->BreakLoop();
@@ -331,8 +331,8 @@ sPcp::update(const char *dbname, PCellParam *p0)
 {
     pcp_params = p0;
     if (pcp_mode == pcpEdit || Pcp->pcp_mode == pcpPlaceScr) {
-        pcp_params_bak->free();
-        pcp_params_bak = p0->dup();
+        PCellParam::destroy(pcp_params_bak);
+        pcp_params_bak = PCellParam::dup(p0);
     }
     if (dbname) {
         delete [] pcp_dbname;

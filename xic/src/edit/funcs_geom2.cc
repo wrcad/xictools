@@ -635,7 +635,7 @@ geom2_funcs::IFcheckPCellParam(Variable *res, Variable *args, void*)
     }
     PCellParam *pcp;
     if (PC()->getDefaultParams(dbname, &pcp) && pcp) {
-        pcp = pcp->find(pname);
+        pcp = PCellParam::find(pcp, pname);
         if (pcp && pcp->constraint()) {
             if (was_string) {
                 if (!pcp->constraint()->checkConstraint(stringval))
@@ -705,7 +705,7 @@ geom2_funcs::IFcheckPCellParams(Variable *res, Variable *args, void*)
     PCellParam *pcp;
     if (PC()->getDefaultParams(dbname, &pcp)) {
         for (PCellParam *p = prm; p; p = p->next()) {
-            PCellParam *pr = pcp->find(p->name());
+            PCellParam *pr = PCellParam::find(pcp, p->name());
             if (!pr || !pr->constraint())
                 continue;
             if (!pr->constraint()->checkConstraint(p)) {
@@ -715,7 +715,7 @@ geom2_funcs::IFcheckPCellParams(Variable *res, Variable *args, void*)
         }
     }
     delete [] dbname;
-    prm->free();
+    PCellParam::destroy(prm);
     return (OK);
 }
 
@@ -1328,7 +1328,7 @@ geom2_funcs::IFplaceSetPCellParams(Variable *res, Variable *args, void*)
     if (!PC()->setPCinstParams(dbname, prm, true)) {
         Errs()->add_error(
             "PlaceSetPCellParams: error setting instantiance parameters.");
-        prm->free();
+        PCellParam::destroy(prm);
         delete [] dbname;
         return (BAD);
     }

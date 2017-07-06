@@ -214,7 +214,7 @@ sPi::update(CDo *odesc)
 {
     if (pi_odesc)
         DSP()->ShowCurrentObject(ERASE, pi_odesc, HighlightingColor);
-    pi_list->free();
+    Ptxt::destroy(pi_list);
     pi_list = 0;
     if (odesc)
         pi_odesc = odesc;

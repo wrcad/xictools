@@ -124,7 +124,7 @@ Zlist::to_poly_add(Zlist *thiszl, CDs *sdesc, CDl *ld, bool undoable,
             if (sdesc->addToDb(p0, ld, undoable, 0, tstk, use_merge) != CDok)
                 GEO()->ifInfoMessage(IFMSG_LOG_ERR,
                     Errs()->get_error());
-            p0->free();
+            PolyList::destroy(p0);
         }
     }
     */

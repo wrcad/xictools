@@ -71,7 +71,7 @@ cEdit::reparameterize(CDc *cd, char **pstr)
     bool ret = PopUpPCellParams(0, MODE_ON, pm, pn->string(), pcpEdit);
     if (ret && pstr)
         *pstr = pm->string(true);
-    pm->free();
+    PCellParam::destroy(pm);
     return (ret);
 }
 
@@ -155,17 +155,17 @@ cEdit::resetPlacement(const char *dbname)
             ed_pcsuper->cellname()->string());
         PC()->setPCinstParams(dbn, ed_pcparams, false);
         delete [] dbn;
-        px->free();
+        PCellParam::destroy(px);
     }
     else if (dbname) {
         // The pcell is from OA.
         PCellDesc *pd = PC()->findSuperMaster(dbname);
         if (pd && pd->defaultParams()) {
             PCellParam *px = ed_pcparams;
-            ed_pcparams = pd->defaultParams()->dup();
+            ed_pcparams = PCellParam::dup(pd->defaultParams());
             PopUpPCellParams(0, MODE_UPD, ed_pcparams, 0, pcpNone);
             PC()->setPCinstParams(dbname, ed_pcparams, false);
-            px->free();
+            PCellParam::destroy(px);
         }
     }
     return (true);
@@ -181,7 +181,7 @@ cEdit::stopPlacement()
 
     PopUpPCellParams(0, MODE_OFF, 0, 0, pcpNone);
     ed_pcsuper = 0;
-    ed_pcparams->free();
+    PCellParam::destroy(ed_pcparams);
     ed_pcparams = 0;
 }
 
@@ -324,15 +324,15 @@ cEdit::reparamSubMaster(CDs *sdesc, const char *inprms)
         PCellParam *oldprms;
         if (!PC()->getParams(dbname, pp->string(), &oldprms)) {
             delete [] dbname;
-            prms->free();
+            PCellParam::destroy(prms);
             return (false);
         }
 
         if (*oldprms == *prms) {
             // No change, we're done.
             delete [] dbname;
-            prms->free();
-            oldprms->free();
+            PCellParam::destroy(prms);
+            PCellParam::destroy(oldprms);
             return (true);
         }
 
@@ -341,8 +341,8 @@ cEdit::reparamSubMaster(CDs *sdesc, const char *inprms)
             Errs()->add_error(
                 "reparamSubMaster: super-master not in table.");
             delete [] dbname;
-            prms->free();
-            oldprms->free();
+            PCellParam::destroy(prms);
+            PCellParam::destroy(oldprms);
             return (false);
         }
         PCellItem *piold = pd->findItem(oldprms);
@@ -350,8 +350,8 @@ cEdit::reparamSubMaster(CDs *sdesc, const char *inprms)
             Errs()->add_error(
                 "reparamSubMaster: sub-master not in item list.");
             delete [] dbname;
-            prms->free();
-            oldprms->free();
+            PCellParam::destroy(prms);
+            PCellParam::destroy(oldprms);
             return (false);
         }
         PCellItem *pinew = pd->findItem(prms);
@@ -383,8 +383,8 @@ cEdit::reparamSubMaster(CDs *sdesc, const char *inprms)
             Errs()->add_error("reparamSubMaster: failed to open master %s.",
                 pn->string());
             delete [] dbname;
-            prms->free();
-            oldprms->free();
+            PCellParam::destroy(prms);
+            PCellParam::destroy(oldprms);
             if (pinew) {
                 pinew->setCellname(oldcellname);
                 delete [] oldcellname;
@@ -396,8 +396,8 @@ cEdit::reparamSubMaster(CDs *sdesc, const char *inprms)
                 "reparamSubMaster: cell %s is not a valid super-master.",
                 pn->string());
             delete [] dbname;
-            prms->free();
-            oldprms->free();
+            PCellParam::destroy(prms);
+            PCellParam::destroy(oldprms);
             if (pinew) {
                 pinew->setCellname(oldcellname);
                 delete [] oldcellname;
@@ -425,8 +425,8 @@ cEdit::reparamSubMaster(CDs *sdesc, const char *inprms)
         bool ret = PC()->evalScript(sdesc, nmstr);
         delete [] nmstr;
         delete [] dbname;
-        prms->free();
-        oldprms->free();
+        PCellParam::destroy(prms);
+        PCellParam::destroy(oldprms);
         EditIf()->ulPCreparamReset(&pcstate);
 
         if (pinew) {
@@ -450,14 +450,14 @@ cEdit::reparamSubMaster(CDs *sdesc, const char *inprms)
 
         PCellParam *oldprms;
         if (!PC()->getParams(pn->string(), pp->string(), &oldprms)) {
-            prms->free();
+            PCellParam::destroy(prms);
             return (false);
         }
 
         if (*oldprms == *prms) {
             // No change, we're done.
-            prms->free();
-            oldprms->free();
+            PCellParam::destroy(prms);
+            PCellParam::destroy(oldprms);
             return (true);
         }
 
@@ -465,16 +465,16 @@ cEdit::reparamSubMaster(CDs *sdesc, const char *inprms)
         if (!pd) {
             Errs()->add_error(
                 "reparamSubMaster: super-master not in table.");
-            prms->free();
-            oldprms->free();
+            PCellParam::destroy(prms);
+            PCellParam::destroy(oldprms);
             return (false);
         }
         PCellItem *piold = pd->findItem(oldprms);
         if (!piold) {
             Errs()->add_error(
                 "reparamSubMaster: sub-master not in item list.");
-            prms->free();
-            oldprms->free();
+            PCellParam::destroy(prms);
+            PCellParam::destroy(oldprms);
             return (false);
         }
         PCellItem *pinew = pd->findItem(prms);
@@ -522,8 +522,8 @@ cEdit::reparamSubMaster(CDs *sdesc, const char *inprms)
             delete [] oldcellname;
         }
 
-        prms->free();
-        oldprms->free();
+        PCellParam::destroy(prms);
+        PCellParam::destroy(oldprms);
         if (!ret) {
             Errs()->add_error("reparamSubMaster: OA cell load failed.");
             return (false);
@@ -631,7 +631,7 @@ cEdit::reparamInstance(CDs *sdesc, CDc *cdesc, const CDp *newp, CDc **pnew)
 
         delete [] dbname;
         char *prmstr = prms->string(true);
-        prms->free();
+        PCellParam::destroy(prms);
 #ifdef PC_DEBUG
         printf("reparamInstance: prmstr = %s\n", prmstr);
 #endif
@@ -703,7 +703,7 @@ cEdit::reparamInstance(CDs *sdesc, CDc *cdesc, const CDp *newp, CDc **pnew)
             return (false);
         }
         delete [] subm_name;
-        prms->free();
+        PCellParam::destroy(prms);
 
         sdsub = cbin.celldesc(sdesc->displayMode());
     }
@@ -759,14 +759,14 @@ cEdit::resetInstance(CDc *cdesc, const char *prm_name, double prm_value)
             return (false);
 
         if (!prms->setValue(prm_name, prm_value)) {
-            prms->free();
+            PCellParam::destroy(prms);
             return (false);
         }
 
         char *nstr = prms->string(true);
         CDp *nprp = new CDp(nstr, XICP_PC_PARAMS);
         delete [] nstr;
-        prms->free();
+        PCellParam::destroy(prms);
 
         Ulist()->ListCheck("PRMCHG", CurCell(), true);
         Ulist()->RecordPrptyChange(CurCell(), cdesc, p_prms, nprp);
@@ -784,14 +784,14 @@ cEdit::resetInstance(CDc *cdesc, const char *prm_name, double prm_value)
             return (false);
 
         if (!prms->setValue(prm_name, prm_value)) {
-            prms->free();
+            PCellParam::destroy(prms);
             return (false);
         }
 
         char *nstr = prms->string(true);
         CDp *nprp = new CDp(nstr, XICP_PC_PARAMS);
         delete [] nstr;
-        prms->free();
+        PCellParam::destroy(prms);
 
         Ulist()->ListCheck("PRMCHG", CurCell(), false);
         Ulist()->RecordPrptyChange(CurCell(), 0, p_prms, nprp);

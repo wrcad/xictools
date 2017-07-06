@@ -279,7 +279,7 @@ sPc::~sPc()
         Pc->pc_action_calls = 0;
     }
     Pc = 0;
-    pc_list->free();
+    Ptxt::destroy(pc_list);
     Menu()->MenuButtonSet(0, MenuCPROP, false);
     PL()->AbortLongText();
     if (wb_shell)
@@ -291,7 +291,7 @@ sPc::~sPc()
 void
 sPc::update()
 {
-    pc_list->free();
+    Ptxt::destroy(pc_list);
     CDs *cursd = CurCell();
     pc_list = cursd ? XM()->PrptyStrings(cursd) : 0;
     update_display();

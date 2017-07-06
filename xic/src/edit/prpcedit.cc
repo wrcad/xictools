@@ -329,10 +329,10 @@ cEdit::cellPrptyAdd(int which)
 
                 if (PopUpPCellParams(0, MODE_ON, pm, pn->string(), pcpEdit)) {
                     newstr = pm->string(true);
-                    pm->free();
+                    PCellParam::destroy(pm);
                 }
                 else {
-                    pm->free();
+                    PCellParam::destroy(pm);
                     return;
                 }
             }
@@ -347,10 +347,10 @@ cEdit::cellPrptyAdd(int which)
                 if (PopUpPCellParams(0, MODE_ON, pm,
                         cursd->cellname()->string(), pcpEdit)) {
                     newstr = pm->string(false);
-                    pm->free();
+                    PCellParam::destroy(pm);
                 }
                 else {
-                    pm->free();
+                    PCellParam::destroy(pm);
                     return;
                 }
             }
@@ -478,10 +478,10 @@ cEdit::cellPrptyEdit(Ptxt *line)
 
             if (PopUpPCellParams(0, MODE_ON, pm, pn->string(), pcpEdit)) {
                 newstr = pm->string(true);
-                pm->free();
+                PCellParam::destroy(pm);
             }
             else {
-                pm->free();
+                PCellParam::destroy(pm);
                 return;
             }
         }
@@ -496,10 +496,10 @@ cEdit::cellPrptyEdit(Ptxt *line)
             if (PopUpPCellParams(0, MODE_ON, pm,
                     cursd->cellname()->string(), pcpEdit)) {
                 newstr = pm->string(false);
-                pm->free();
+                PCellParam::destroy(pm);
             }
             else {
-                pm->free();
+                PCellParam::destroy(pm);
                 return;
             }
         }

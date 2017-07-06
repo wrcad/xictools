@@ -667,6 +667,8 @@ RTree::insert_prv(RTelem *rnew)
 
 
 //---- Diagnostics
+// #define DT_DIAGNOSTICS
+
 #ifdef RT_DIAGNOSTICS
 
 #include "randval.h"
@@ -677,12 +679,13 @@ namespace {
     struct RTl
     {
         RTl(RTelem *r, RTl *n) { rt = r; next = n; }
-        void free()
+
+        static void destroy(RTl *s)
             {
-                RTl *sn;
-                for (RTl *s = this; s; s = sn) {
-                    sn = s->next;
-                    delete s;
+                while (s) {
+                    RTl *sx = s;
+                    s = s->next;
+                    delete sx;
                 }
             }
 
