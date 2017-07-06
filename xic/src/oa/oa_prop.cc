@@ -267,7 +267,7 @@ namespace {
             sLstr lstr;
             print_special(p0, &lstr);
 
-            p0->free();
+            lispnode::destroy(p0);
             lispnode::set_env(tenv);
             return (lstr.string_trim());
         }
@@ -615,7 +615,7 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
         // be compatible with Virtuoso.
 
         prm_list->free();
-        pvrt->free_list();
+        CDp::destroy(pvrt);
         if (pxic) {
             CDp *ptmp = p0;
             p0 = pxic;
@@ -631,7 +631,7 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
 
     // Otherwise, we're reading a Virtuoso database.  There shouldn't
     // be any Xic properties.
-    pxic->free_list();
+    CDp::destroy(pxic);
 
     if (pvrt) {
         CDp *ptmp = p0;
@@ -1013,7 +1013,7 @@ cOAprop::addPrptyLabel(CDc *cdesc, CDp *pdesc)
         return (false);
     bool copied = false;
     Label label;
-    label.label = pdesc->label_text(&copied, cdesc)->dup();
+    label.label = hyList::dup(pdesc->label_text(&copied, cdesc));
     if (!label.label)
         return (true);
     if (pdesc->value() == P_VALUE || pdesc->value() == P_PARAM)
@@ -1026,7 +1026,7 @@ cOAprop::addPrptyLabel(CDc *cdesc, CDp *pdesc)
             false) != CDok)
         return (false);
     if (copied)
-        label.label->free();
+        hyList::destroy(label.label);
     if (!nlabel)
         return (false);;
     pdesc->bind(nlabel);
@@ -1112,12 +1112,12 @@ cOAprop::getCDFinfo(const oaCell *cell, const char *def_symbol,
 
                 if (write_cdf) {
                     for (lispnode *p = p0; p; p = p->next)
-                        p->print(fp, false, false);
+                        lispnode::print(p, fp, false, false);
                     fprintf(fp, "\n");
                 }
 
                 cOAelecInfo::parse_CDF(p0, cell);
-                p0->free();
+                lispnode::destroy(p0);
             }
 
             // There are other definitions, too.  So far I don't see
@@ -1263,7 +1263,7 @@ cOAelecInfo::set_prp_info(const char *cname, const oaProp *pip,
             ary[cnt] = 0;
             cdf->cdf_ports = ary;
         }
-        p0->free();
+        lispnode::destroy(p0);
     }
 }
 

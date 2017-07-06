@@ -107,11 +107,11 @@ namespace {
             return (s0);
         }
         catch (oaCompatibilityError &ex) {
-            s0->free();
+            stringlist::destroy(s0);
             throw;
         }
         catch (oaException &excp) {
-            s0->free();
+            stringlist::destroy(s0);
             throw;
         }
     }
@@ -360,7 +360,7 @@ cOA::is_oa_cell(const char *cellname, bool open_libs_only, bool *retval)
         if (open_libs_only) {
             bool isopen;
             if (!is_lib_open(s->string, &isopen)) {
-                liblist->free();
+                stringlist::destroy(liblist);
                 return (false);
             }
             if (!isopen)
@@ -368,7 +368,7 @@ cOA::is_oa_cell(const char *cellname, bool open_libs_only, bool *retval)
         }
         bool found;
         if (!is_cell_in_lib(s->string, cellname, &found)) {
-            liblist->free();
+            stringlist::destroy(liblist);
             return (false);
         }
         if (found) {
@@ -377,7 +377,7 @@ cOA::is_oa_cell(const char *cellname, bool open_libs_only, bool *retval)
             break;
         }
     }
-    liblist->free();
+    stringlist::destroy(liblist);
     return (true);
 }
 
@@ -465,7 +465,7 @@ cOA::is_oa_cellview(const char *cellname, const char *viewname,
         if (open_libs_only) {
             bool isopen;
             if (!is_lib_open(s->string, &isopen)) {
-                liblist->free();
+                stringlist::destroy(liblist);
                 return (false);
             }
             if (!isopen)
@@ -473,7 +473,7 @@ cOA::is_oa_cellview(const char *cellname, const char *viewname,
         }
         bool found;
         if (!is_cellview_in_lib(s->string, cellname, viewname, &found)) {
-            liblist->free();
+            stringlist::destroy(liblist);
             return (false);
         }
         if (found) {
@@ -482,7 +482,7 @@ cOA::is_oa_cellview(const char *cellname, const char *viewname,
             break;
         }
     }
-    liblist->free();
+    stringlist::destroy(liblist);
     return (true);
 }
 

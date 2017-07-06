@@ -83,7 +83,7 @@ struct sElecNetList
                 while (s) {
                     sdlink *x = s;
                     s = s->next;
-                    std::free(x);
+                    free(x);
                 }
             }
 

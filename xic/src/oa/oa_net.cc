@@ -125,8 +125,8 @@ sOAportTab::find(const char *str, unsigned int *t, unsigned int *p) const
     }
     else {
         sLstr lstr;
-        nx->print_all(&lstr);
-        nx->free();
+        CDnetex::print_all(nx, &lstr);
+        CDnetex::destroy(nx);
         unsigned long l = (unsigned long)pt_tab->get(lstr.string());
         if (l == (unsigned long)ST_NIL)
             return (false);
@@ -154,8 +154,8 @@ sOAportTab::add(const char *str, unsigned int t, unsigned int p)
     }
     else {
         sLstr lstr;
-        nx->print_all(&lstr);
-        nx->free();
+        CDnetex::print_all(nx, &lstr);
+        CDnetex::destroy(nx);
         pt_tab->add(lstr.string_trim(), (void*)l, false);
     }
 }
@@ -402,7 +402,7 @@ cOAnetHandler::setupNets(bool symbolic)
                     CDp_bsnode *pb = (CDp_bsnode*)nh_sdesc->prpty(P_BNODE);
                     while (pb) {
                         if (CDnetex::cmp(netex, NetexWrap(pb).netex())) {
-                            netex->free();
+                            CDnetex::destroy(netex);
                             break;
                         }
                         pb = pb->next();

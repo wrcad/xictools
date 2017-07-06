@@ -323,7 +323,7 @@ cOA::load_cell(const char *libname, const char *cellname, const char *viewname,
             lstr.add(sl->string);
             lstr.add_c('\n');
         }
-        sl0->free();
+        stringlist::destroy(sl0);
         OAerrLog.add_err(IFLOG_INFO, lstr.string());
     }
 
@@ -365,14 +365,14 @@ cOA::open_lib_cell(const char *cellname, CDcbin *cbin)
     for (stringlist *s = liblist; s; s = s->next) {
         bool isopen;
         if (!is_lib_open(s->string, &isopen)) {
-            liblist->free();
+            stringlist::destroy(liblist);
             return (OIerror);
         }
         if (!isopen)
             continue;
         bool in_lib;
         if (!is_cell_in_lib(s->string, cellname, &in_lib)) {
-            liblist->free();
+            stringlist::destroy(liblist);
             return (OIerror);
         }
         if (in_lib) {
@@ -381,7 +381,7 @@ cOA::open_lib_cell(const char *cellname, CDcbin *cbin)
             break;
         }
     }
-    liblist->free();
+    stringlist::destroy(liblist);
     if (ret) {
         CDcbin ctmp(CD()->CellNameTableAdd(cellname));
 
@@ -466,11 +466,11 @@ oa_in::~oa_in()
 {
     delete in_skip_tab;
 
-    in_undef_phys->free();
-    in_undef_elec->free();
-    in_top_phys->free();
-    in_top_elec->free();
-    in_warnings->free();
+    stringlist::destroy(in_undef_phys);
+    stringlist::destroy(in_undef_elec);
+    stringlist::destroy(in_top_phys);
+    stringlist::destroy(in_top_elec);
+    stringlist::destroy(in_warnings);
 
     if (in_via_tab) {
         SymTabGen gen(in_via_tab, true);
@@ -484,7 +484,7 @@ oa_in::~oa_in()
     }
     delete [] in_subm_name;
     delete [] in_part_name;
-    in_pc_params->free();
+    PCellParam::destroy(in_pc_params);
     delete [] in_def_layout;
     delete [] in_def_schematic;
     delete [] in_def_symbol;
@@ -1285,13 +1285,13 @@ oa_in::checkMasterXicProps(CDs *sdesc)
 bool
 oa_in::markReferences()
 {
-    in_undef_phys->free();
+    stringlist::destroy(in_undef_phys);
     in_undef_phys = 0;
-    in_undef_elec->free();
+    stringlist::destroy(in_undef_elec);
     in_undef_elec = 0;
-    in_top_phys->free();
+    stringlist::destroy(in_top_phys);
     in_top_phys = 0;
-    in_top_elec->free();
+    stringlist::destroy(in_top_elec);
     in_top_elec = 0;
 
     SymTabGen gen(NameTab.cnameTab());
@@ -1557,7 +1557,7 @@ oa_in::handleSuperMaster(oaDesign *design, char **pcname)
         viewName.get(in_ns, viewname);
 
         *pcname = PC()->addSubMaster(libname, cellname, viewname, pm);
-        pm->free();
+        PCellParam::destroy(pm);
         design->close();
         return (sub);
     }
@@ -1796,7 +1796,7 @@ oa_in::loadVia(const oaViaHeader *viaHeader, oaUInt4  depth)
             char *str = pm->string(true);
             lstr.add(str);
             delete [] str;
-            pm->free();
+            PCellParam::destroy(pm);
             sd->prptyAdd(XICP_CSTMVIA, lstr.string());
         }
         return (oiret);
@@ -2275,7 +2275,7 @@ oa_in::readOaDesign(const oaDesign *design, const oaString &xic_cname,
             char *pmstr = pm->string(true);
             sdesc->prptyAdd(XICP_PC_PARAMS, pmstr);
             delete [] pmstr;
-            pm->free();
+            PCellParam::destroy(pm);
         }
         sdesc->setPCell(true, false, true);
     }
@@ -2451,7 +2451,7 @@ oa_in::readProperties(const oaDesign *design, CDs *sdesc)
         CDp *p0 = readProperties(design);
         if (p0) {
             stringlist *s0 = sdesc->prptyApplyList(0, &p0);
-            p0->free_list();
+            CDp::destroy(p0);
             if (s0) {
                 stringlist *s = s0;
                 while (s->next)
@@ -2642,7 +2642,7 @@ oa_in::readOaEllipse(oaEllipse *ellipse, CDs *sdesc, CDl *ldesc)
             CDp *p0 = readProperties(ellipse);
             if (p0) {
                 stringlist *s0 = sdesc->prptyApplyList(newo, &p0);
-                p0->free_list();
+                CDp::destroy(p0);
                 if (s0) {
                     stringlist *s = s0;
                     while (s->next)
@@ -2726,7 +2726,7 @@ oa_in::readOaArc(oaArc *arc, CDs *sdesc, CDl *ldesc)
             CDp *p0 = readProperties(arc);
             if (p0) {
                 stringlist *s0 = sdesc->prptyApplyList(newo, &p0);
-                p0->free_list();
+                CDp::destroy(p0);
                 if (s0) {
                     stringlist *s = s0;
                     while (s->next)
@@ -2809,7 +2809,7 @@ oa_in::readOaDonut(oaDonut *donut, CDs *sdesc, CDl *ldesc)
             CDp *p0 = readProperties(donut);
             if (p0) {
                 stringlist *s0 = sdesc->prptyApplyList(newo, &p0);
-                p0->free_list();
+                CDp::destroy(p0);
                 if (s0) {
                     stringlist *s = s0;
                     while (s->next)
@@ -2886,7 +2886,7 @@ oa_in::readOaLine(oaLine *line, CDs *sdesc, CDl *ldesc)
             CDp *p0 = readProperties(line);
             if (p0) {
                 stringlist *s0 = sdesc->prptyApplyList(newo, &p0);
-                p0->free_list();
+                CDp::destroy(p0);
                 if (s0) {
                     stringlist *s = s0;
                     while (s->next)
@@ -3010,7 +3010,7 @@ oa_in::readOaPath(oaPath *path, CDs *sdesc, CDl *ldesc)
             CDp *p0 = readProperties(path);
             if (p0) {
                 stringlist *s0 = sdesc->prptyApplyList(newo, &p0);
-                p0->free_list();
+                CDp::destroy(p0);
                 if (s0) {
                     stringlist *s = s0;
                     while (s->next)
@@ -3154,7 +3154,7 @@ oa_in::readOaPathSeg(oaPathSeg *seg, CDs *sdesc, CDl *ldesc)
             CDp *p0 = readProperties(seg);
             if (p0) {
                 stringlist *s0 = sdesc->prptyApplyList(newo, &p0);
-                p0->free_list();
+                CDp::destroy(p0);
                 if (s0) {
                     stringlist *s = s0;
                     while (s->next)
@@ -3233,7 +3233,7 @@ oa_in::readOaPolygon(oaPolygon *polygon, CDs *sdesc, CDl *ldesc)
             CDp *p0 = readProperties(polygon);
             if (p0) {
                 stringlist *s0 = sdesc->prptyApplyList(newo, &p0);
-                p0->free_list();
+                CDp::destroy(p0);
                 if (s0) {
                     stringlist *s = s0;
                     while (s->next)
@@ -3286,7 +3286,7 @@ oa_in::readOaRect(oaRect *rect, CDs *sdesc, CDl *ldesc)
             CDp *p0 = readProperties(rect);
             if (p0) {
                 stringlist *s0 = sdesc->prptyApplyList(newo, &p0);
-                p0->free_list();
+                CDp::destroy(p0);
                 if (s0) {
                     stringlist *s = s0;
                     while (s->next)
@@ -3445,7 +3445,7 @@ oa_in::readOaText(oaText *text, CDs *sdesc, CDl *ldesc)
             CDp *p0 = readProperties(text);
             if (p0) {
                 stringlist *s0 = sdesc->prptyApplyList(newo, &p0);
-                p0->free_list();
+                CDp::destroy(p0);
                 if (s0) {
                     stringlist *s = s0;
                     while (s->next)
@@ -3617,7 +3617,7 @@ oa_in::readOaAttrDisplay(oaAttrDisplay *attrDisplay, CDs *sdesc, CDl *ldesc)
             CDp *p0 = readProperties(attrDisplay);
             if (p0) {
                 stringlist *s0 = sdesc->prptyApplyList(newo, &p0);
-                p0->free_list();
+                CDp::destroy(p0);
                 if (s0) {
                     stringlist *s = s0;
                     while (s->next)
@@ -3731,7 +3731,7 @@ oa_in::readOaPropDisplay(oaPropDisplay *propDisplay, CDs *sdesc, CDl *ldesc)
             CDp *p0 = readProperties(propDisplay);
             if (p0) {
                 stringlist *s0 = sdesc->prptyApplyList(newo, &p0);
-                p0->free_list();
+                CDp::destroy(p0);
                 if (s0) {
                     stringlist *s = s0;
                     while (s->next)
@@ -3844,7 +3844,7 @@ oa_in::readOaTextOverride(oaTextOverride *textOverride, CDs *sdesc, CDl *ldesc)
             CDp *p0 = readProperties(textOverride);
             if (p0) {
                 stringlist *s0 = sdesc->prptyApplyList(newo, &p0);
-                p0->free_list();
+                CDp::destroy(p0);
                 if (s0) {
                     stringlist *s = s0;
                     while (s->next)
@@ -4127,7 +4127,7 @@ oa_in::readOaEvalText(oaEvalText *evalText, CDs *sdesc, CDl *ldesc)
             CDp *p0 = readProperties(evalText);
             if (p0) {
                 stringlist *s0 = sdesc->prptyApplyList(newo, &p0);
-                p0->free_list();
+                CDp::destroy(p0);
                 if (s0) {
                     stringlist *s = s0;
                     while (s->next)
@@ -4332,7 +4332,7 @@ namespace {
                     *warnings = s0;
                 }
                 else
-                    s0->free();
+                    stringlist::destroy(s0);
             }
         }
 
@@ -4366,7 +4366,7 @@ namespace {
                 prmstr = lstring::copy("");
             newo->prptyAdd(XICP_PC_PARAMS, prmstr, Physical);
             delete [] prmstr;
-            prms->free();
+            PCellParam::destroy(prms);
         }
 
         CDs *msdesc = newo->masterCell();
@@ -4451,7 +4451,7 @@ oa_in::readOaScalarInst(oaScalarInst *inst, const char *cname,
     CDap ap;
     ret = makeInst(inst, &calldesc, &tx, &ap, header, sdesc, &p0,
         &in_warnings);
-    p0->free_list();
+    CDp::destroy(p0);
     return (ret);
 }
 
@@ -4530,7 +4530,7 @@ oa_in::readOaVectorInst(oaVectorInst *inst, const char *cname,
     CDc *newinst;
     ret = makeInst(inst, &calldesc, &tx, &ap, header, sdesc, &p0,
         &in_warnings, &newinst);
-    p0->free_list();
+    CDp::destroy(p0);
 
     // Add the P_RANGE property.
     if (newinst) {
@@ -4637,7 +4637,7 @@ oa_in::readOaArrayInst(oaArrayInst *inst, const char *cname,
 
                 if (!makeInst(inst, &calldesc, &ttx, &tap, header,
                         sdesc, &p0, &in_warnings)) {
-                    p0->free_list();
+                    CDp::destroy(p0);
                     return (false);
                 }
             }
@@ -4646,10 +4646,10 @@ oa_in::readOaArrayInst(oaArrayInst *inst, const char *cname,
     }
     else if (!makeInst(inst, &calldesc, &tx, &ap, header, sdesc, &p0,
             &in_warnings)) {
-        p0->free_list();
+        CDp::destroy(p0);
         return (false);
     }
-    p0->free_list();
+    CDp::destroy(p0);
     return (true);
 }
 
@@ -4718,7 +4718,7 @@ oa_in::readOaVia(oaVia *via, const char *cname, CDs *sdesc)
         cstmvhdr->getParams(vparams);
         PCellParam *prms = cOAprop::getPcParameters(vparams, 0);
         char *str = prms->string(true);
-        prms->free();
+        PCellParam::destroy(prms);
         char *dbname = PCellDesc::mk_dbname(libname, cellname, viewname);
         sLstr lstr;
         lstr.add(dbname);

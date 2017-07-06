@@ -98,7 +98,7 @@ struct AryData
     ~AryData()
         {
             if (!ad_refptr)
-                std::free(ad_values);
+                free(ad_values);
         }
 
     // Use this for allocation, ad_values always allocated with C
@@ -106,7 +106,7 @@ struct AryData
     //
     void allocate(int sz)
         {
-            std::free(ad_values);
+            free(ad_values);
             if (sz > 0)
                 ad_values = (double*)calloc(sz, sizeof(double));
             else

@@ -101,13 +101,13 @@ cAlibFixup::prpty_fix(const char *cname, sLstr &lstr)
 void
 cAlibFixup::dcac(const PCellParam *prms, sLstr &lstr)
 {
-    const PCellParam *p = prms->find_c("dc");
+    const PCellParam *p = PCellParam::find_c(prms, "dc");
     if (p) {
         lstr.add(" dc ");
         lstr.add(p->stringVal());
     }
-    const PCellParam *pm = prms->find_c("acm");
-    const PCellParam *pp = prms->find_c("acp");
+    const PCellParam *pm = PCellParam::find_c(prms, "acm");
+    const PCellParam *pp = PCellParam::find_c(prms, "acp");
     if (pm || pp) {
         lstr.add(" ac ");
         lstr.add(pm ? pm->stringVal() : "1.0");
@@ -129,9 +129,9 @@ cAlibFixup::src_params(sLstr &lstr, const char *dname, const char **params)
     if (!PCellParam::parseParams(lstr.string(), &prms))
         return (false);
 
-    PCellParam *p = prms->find(*params++);
+    PCellParam *p = PCellParam::find(prms, *params++);
     if (!p) {
-        prms->free();
+        PCellParam::destroy(prms);
         return (false);
     }
     lstr.free();
@@ -139,12 +139,12 @@ cAlibFixup::src_params(sLstr &lstr, const char *dname, const char **params)
     lstr.add_c(' ');
     lstr.add(p->stringVal());
 
-    while ((p = prms->find(*params++)) != 0) {
+    while ((p = PCellParam::find(prms, *params++)) != 0) {
         lstr.add_c(' ');
         lstr.add(p->stringVal());
     }
     dcac(prms, lstr);
-    prms->free();
+    PCellParam::destroy(prms);
     return (true);
 }
 
@@ -175,7 +175,7 @@ cAlibFixup::alib_vdc(sLstr &lstr)
         return (true);
     }
     dcac(prms, lstr);
-    prms->free();
+    PCellParam::destroy(prms);
     return (true);
 }
 
@@ -221,8 +221,8 @@ cAlibFixup::alib_vpwl(sLstr &lstr)
     if (!PCellParam::parseParams(lstr.string(), &prms))
         return (false);
 
-    GCfree<PCellParam*> gc_prms(prms);
-    PCellParam *p = prms->find("tvpairs");
+    GCdestroy<PCellParam> gc_prms(prms);
+    PCellParam *p = PCellParam::find(prms, "tvpairs");
     if (!p)
         return (false);
     int tvp = atoi(p->stringVal());
@@ -236,11 +236,11 @@ cAlibFixup::alib_vpwl(sLstr &lstr)
     for (int i = 1; i <= tvp; i++) {
         sprintf(txx+1, "%d", i);
         sprintf(vxx+1, "%d", i);
-        PCellParam *p = prms->find(txx);
+        PCellParam *p = PCellParam::find(prms, txx);
         lstr.add_c(' ');
         lstr.add(p ? p->stringVal() : "0");
         lstr.add_c(' ');
-        p = prms->find(vxx);
+        p = PCellParam::find(prms, vxx);
         lstr.add(p ? p->stringVal() : "0");
     }
     dcac(prms, lstr);
@@ -288,7 +288,7 @@ cAlibFixup::alib_idc(sLstr &lstr)
         return (true);
     }
     dcac(prms, lstr);
-    prms->free();
+    PCellParam::destroy(prms);
     return (true);
 }
 
@@ -323,8 +323,8 @@ cAlibFixup::alib_ipwl(sLstr &lstr)
     if (!PCellParam::parseParams(lstr.string(), &prms))
         return (false);
 
-    GCfree<PCellParam*> gc_prms(prms);
-    PCellParam *p = prms->find("tvpairs");
+    GCdestroy<PCellParam> gc_prms(prms);
+    PCellParam *p = PCellParam::find(prms, "tvpairs");
     if (!p)
         return (false);
     int tvp = atoi(p->stringVal());
@@ -338,11 +338,11 @@ cAlibFixup::alib_ipwl(sLstr &lstr)
     for (int i = 1; i <= tvp; i++) {
         sprintf(txx+1, "%d", i);
         sprintf(ixx+1, "%d", i);
-        PCellParam *p = prms->find(txx);
+        PCellParam *p = PCellParam::find(prms, txx);
         lstr.add_c(' ');
         lstr.add(p ? p->stringVal() : "0");
         lstr.add_c(' ');
-        p = prms->find(ixx);
+        p = PCellParam::find(prms, ixx);
         lstr.add(p ? p->stringVal() : "0");
     }
     dcac(prms, lstr);
@@ -431,19 +431,19 @@ cAlibFixup::alib_cap(sLstr &lstr)
         return (false);
     if (!prms)
         return (false);
-    PCellParam *p = prms->find("c");
+    PCellParam *p = PCellParam::find(prms, "c");
     if (!p) {
-        prms->free();
+        PCellParam::destroy(prms);
         return (false);
     }
     lstr.free();
     lstr.add(p->stringVal());
-    p = prms->find("ic");
+    p = PCellParam::find(prms, "ic");
     if (p) {
         lstr.add(" ic ");
         lstr.add(p->stringVal());
     }
-    prms->free();
+    PCellParam::destroy(prms);
     return (true);
 }
 
@@ -463,19 +463,19 @@ cAlibFixup::alib_ind(sLstr &lstr)
         return (false);
     if (!prms)
         return (false);
-    PCellParam *p = prms->find("l");
+    PCellParam *p = PCellParam::find(prms, "l");
     if (!p) {
-        prms->free();
+        PCellParam::destroy(prms);
         return (false);
     }
     lstr.free();
     lstr.add(p->stringVal());
-    p = prms->find("ic");
+    p = PCellParam::find(prms, "ic");
     if (p) {
         lstr.add(" ic ");
         lstr.add(p->stringVal());
     }
-    prms->free();
+    PCellParam::destroy(prms);
     return (true);
 }
 
@@ -507,14 +507,14 @@ cAlibFixup::alib_res(sLstr &lstr)
         return (false);
     if (!prms)
         return (false);
-    PCellParam *p = prms->find("r");
+    PCellParam *p = PCellParam::find(prms, "r");
     if (!p) {
-        prms->free();
+        PCellParam::destroy(prms);
         return (false);
     }
     lstr.free();
     lstr.add(p->stringVal());
-    prms->free();
+    PCellParam::destroy(prms);
     return (true);
 }
 

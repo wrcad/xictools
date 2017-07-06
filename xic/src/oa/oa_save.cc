@@ -62,7 +62,7 @@ public:
 
     ~oa_save()
         {
-            out_warnings->free();
+            stringlist::destroy(out_warnings);
             delete out_devsused;
         }
 
@@ -502,23 +502,23 @@ oa_save::save_device_lib()
                 continue;
             if (!save_symb_cell(sd, 0, XIC_DEVICES, 0, false, true)) {
                 Log()->ErrorLog(mh::OpenAccess, Errs()->get_error());
-                s0->free();
+                stringlist::destroy(s0);
                 return (false);
             }
         }
     }
     catch (oaCompatibilityError &ex) {
         cOA::handleFBCError(ex);
-        s0->free();
+        stringlist::destroy(s0);
         return (false);
     }
     catch (oaException &excp) {
         Errs()->add_error((const char*)excp.getMsg());
-        s0->free();
+        stringlist::destroy(s0);
         return (false);
     }
     if (s0) {
-        s0->free();
+        stringlist::destroy(s0);
         return (update_tech(XIC_DEVICES));
     }
     return (true);
@@ -719,7 +719,7 @@ namespace {
             }
             if (!tech) {
                 delete [] vianame;
-                prms->free();
+                PCellParam::destroy(prms);
                 return (true);
             }
             oaViaDef *vdef = oaViaDef::find(tech, vianame);
@@ -730,7 +730,7 @@ namespace {
                         "Fatal error: In cell %s, instance of %s has\n"
                         "incorrect custom via name.",
                         cellname, cdesc->cellname()->string());
-                    prms->free();
+                    PCellParam::destroy(prms);
                     return (false);
                 }
                 oaParamArray parray;
@@ -740,7 +740,7 @@ namespace {
                     prms ? &parray : 0);
                 *via_created = true;
             }
-            prms->free();
+            PCellParam::destroy(prms);
         }
         return (true);
     }
@@ -1010,7 +1010,7 @@ oa_save::save_phys_geom(CDs *sdesc, const char *cellname, oaBlock *block,
                 }
                 oaOrient orient = orient_from_xform(xform);
 
-                char *string = la->label()->string(HYcvAscii, true);
+                char *string = hyList::string(la->label(), HYcvAscii, true);
                 int nlines = DSP()->LabelExtent(string, 0, 0);
 
                 int lhei = (int)(la->height()/nlines/CDS_TEXT_SCALE);
@@ -1387,7 +1387,7 @@ oa_save::save_elec_geom(CDs *sdesc, const char *cellname, oaBlock *block,
                 }
                 oaOrient orient = orient_from_xform(xform);
 
-                char *string = la->label()->string(HYcvAscii, true);
+                char *string = hyList::string(la->label(), HYcvAscii, true);
                 int nlines = DSP()->LabelExtent(string, 0, 0);
 
                 int lhei = (int)(la->height()/nlines/CDS_TEXT_SCALE);
@@ -1572,7 +1572,7 @@ oa_save::save_symb_geom(CDs *srep, const char *cellname, oaBlock *block,
                 }
                 oaOrient orient = orient_from_xform(xform);
 
-                char *string = la->label()->string(HYcvAscii, true);
+                char *string = hyList::string(la->label(), HYcvAscii, true);
                 int nlines = DSP()->LabelExtent(string, 0, 0);
 
                 int lhei = (int)(la->height()/nlines/CDS_TEXT_SCALE);

@@ -115,7 +115,7 @@ cOAnameTab::getMasterName(const oaScalarName &libName,
         char *cname = PC()->addSubMaster(libname, cellname, viewname, pm);
         CDcellName nn = CD()->CellNameTableAdd(cname);
         delete [] cname;
-        pm->free();
+        PCellParam::destroy(pm);
         return (nn);
     }
     return (cellNameAlias(libName, cellName, from_xic));
@@ -213,7 +213,7 @@ cOAnameTab::listLibNames()
     SymTabEnt *h;
     while ((h = gen.next()) != 0)
         sl0 = new stringlist(lstring::copy(h->stTag), sl0);
-    sl0->sort();
+    stringlist::sort(sl0);
     return (sl0);
 }
 

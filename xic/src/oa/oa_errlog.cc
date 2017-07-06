@@ -97,7 +97,7 @@ cOAerrLog::~cOAerrLog()
     close_files();
     delete [] el_logfile;
     delete [] el_errfile;
-    el_names->free();
+    stringlist::destroy(el_names);
 }
 
 
