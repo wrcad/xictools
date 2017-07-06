@@ -1647,9 +1647,8 @@ namespace {
                 next = n;
             }
 
-        void free()
+        static void destroy(ybl_t *y)
             {
-                ybl_t *y = this;
                 while (y) {
                     ybl_t *yx = y;
                     y = y->next;
@@ -1767,7 +1766,7 @@ void
 cEditGhost::ghost_put_setup(bool on)
 {
     if (on) {
-        ghost_display_list->free();  // should never need this
+        ybl_t::destroy(ghost_display_list);  // should never need this
         ghost_display_list = 0;
         if (!PutCmd)
             return;
@@ -1792,12 +1791,12 @@ cEditGhost::ghost_put_setup(bool on)
                     break;
                 yl0 = new ybl_t(y, yl0);
             }
-            ghost_display_list->free();
+            ybl_t::destroy(ghost_display_list);
             ghost_display_list = yl0;
         }
     }
     else {
-        ghost_display_list->free();
+        ybl_t::destroy(ghost_display_list);
         ghost_display_list = 0;
     }
 }

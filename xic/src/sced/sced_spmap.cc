@@ -353,12 +353,12 @@ sLibMap::find(const char *file, const char *name)
     if (!lib_tab)
         lib_tab = new SymTab(true, false);
 
-    char *path = getcwd(0, 0);
-    char *fullpath = new char[strlen(path) + strlen(file) + 2];
-    char *t = lstring::stpcpy(fullpath, path);
+    char *cwd = getcwd(0, 0);
+    char *fullpath = new char[strlen(cwd) + strlen(file) + 2];
+    char *t = lstring::stpcpy(fullpath, cwd);
     *t++ = '/';
     strcpy(t, file);
-    free(path);
+    free(cwd);
 
     SymTab *tab = 0;
     SymTabEnt *ent = lib_tab->get_ent(fullpath);

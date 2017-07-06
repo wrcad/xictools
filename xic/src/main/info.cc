@@ -65,9 +65,8 @@ namespace {
                 CDclxy::destroy(cdescs);
             }
 
-        void free()
+        static void destroy(tlst_t *tl0)
             {
-                tlst_t *tl0 = this;
                 while (tl0) {
                     tlst_t *t = tl0;
                     tl0 = tl0->next;
@@ -1280,7 +1279,7 @@ InfoState::~InfoState()
 {
     InfoCmd = 0;
     CDol::destroy(SelBack);
-    ObjList->free();
+    tlst_t::destroy(ObjList);
     delete TmpObj;
     while (ExpObjs) {
         CDol *o = ExpObjs;
@@ -1454,7 +1453,7 @@ InfoState::find_obj(WindowDesc *wdesc, const BBox *BB)
     }
 
     // Clear list.
-    ObjList->free();
+    tlst_t::destroy(ObjList);
     ObjList = 0;
 
     if (!wdesc)

@@ -53,9 +53,8 @@ namespace {
                 pl_value = lstring::copy(va);
             }
 
-        void free()
+        static void destroy(sPrmList *p)
             {
-                sPrmList *p = this;
                 while (p) {
                     sPrmList *px = p;
                     p = p->pl_next;
@@ -614,7 +613,7 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
         // The database is saved for use by Xic.  It is NOT intended to
         // be compatible with Virtuoso.
 
-        prm_list->free();
+        sPrmList::destroy(prm_list);
         CDp::destroy(pvrt);
         if (pxic) {
             CDp *ptmp = p0;
@@ -724,7 +723,7 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
                 p0 = px;
             }
         }
-        prm_list->free();
+        sPrmList::destroy(prm_list);
     }
     if (model_prp) {
         // Add a model property.

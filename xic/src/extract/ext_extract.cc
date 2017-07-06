@@ -1461,9 +1461,8 @@ namespace {
                 value = v;
             }
 
-        void free()
+        static void destroy(int_list *l)
             {
-                int_list *l = this;
                 while (l) {
                     int_list *x = l;
                     l = l->next;
@@ -1566,7 +1565,7 @@ namespace {
             ip = i;
         }
         if (l0) {
-            ref->free();
+            int_list::destroy(ref);
             if (!l0->next) {
                 delete l0;
                 l0 = 0;
@@ -1822,13 +1821,13 @@ cGroupDesc::fix_connections_rc(SymTab *done_tab)
                     SymTabGen gen(&tab, true);
                     SymTabEnt *ent;
                     while ((ent = gen.next()) != 0) {
-                        ((int_list*)ent->stData)->free();
+                        int_list::destroy((int_list*)ent->stData);
                         delete ent;
                     }
                     while (ref_list) {
                         itemlist<int_list*> *ix = ref_list;
                         ref_list = ref_list->next;
-                        ix->item->free();
+                        int_list::destroy(ix->item);
                         delete ix;
                     }
                     return;
@@ -1861,7 +1860,7 @@ cGroupDesc::fix_connections_rc(SymTab *done_tab)
                             }
                         }
                         if (!found || !ref) {
-                            ref->free();
+                            int_list::destroy(ref);
                             if (ip)
                                 ip->next = in;
                             else
@@ -1872,7 +1871,7 @@ cGroupDesc::fix_connections_rc(SymTab *done_tab)
                         i->item = ref;
                     }
                     for (itemlist<int_list*> *j = list; j; j = j->next)
-                        j->item->free();
+                        int_list::destroy(j->item);
                     itemlist<int_list*>::destroy(list);
                     if (!ref_list)
                         return;
@@ -1939,7 +1938,7 @@ cGroupDesc::fix_connections_rc(SymTab *done_tab)
         delete [] map;
     }
     for (itemlist<int_list*> *l = ref_list; l; l = l->next)
-        l->item->free();
+        int_list::destroy(l->item);
     itemlist<int_list*>::destroy(ref_list);
 }
 

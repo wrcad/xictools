@@ -196,7 +196,7 @@ cDRC::runDRC(const BBox *AOI, bool backg, cCHD *chd, const char *cellname,
         FIO()->ConvertToGds(namelist, &prms);
 
         filestat::queue_deletion(tf);
-        namelist->free();
+        stringlist::destroy(namelist);
 
         char cmdline[512];
         GetModuleFileName(0, cmdline, 512);
