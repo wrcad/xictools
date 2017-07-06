@@ -268,7 +268,7 @@ miscutil::net_if_list()
                 }
             }
         }
-        s0->free();
+        stringlist::destroy(s0);
     }
     else {
         struct ifconf ifc;

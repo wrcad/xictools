@@ -691,7 +691,7 @@ cEdit::copyQueue(int ref_x, int ref_y, int new_x, int new_y,
     if (cpq) {
         // Mutual inductor copies, put back in queue.
         Selections.insertList(srcsd, cpq);
-        cpq->free();
+        CDol::destroy(cpq);
     }
     XM()->ShowParameters();
     return (copied);
@@ -1729,9 +1729,9 @@ cEditGhost::ghost_move_setup(bool on)
         CDs *sd = CurCell();
         if (CopyCmd && CopyCmd->alt_source())
             sd = CopyCmd->alt_source();
-        ghost_display_list->free();         // should never need this
+        CDol::destroy(ghost_display_list);      // should never need this
         ghost_display_list = Selections.listQueue(sd);
-        ghost_display_inst_list->free();    // should never need this
+        CDol::destroy(ghost_display_inst_list); // should never need this
         ghost_display_inst_list = 0;
 
         unsigned int n = Selections.queueLength(sd);
@@ -1751,7 +1751,7 @@ cEditGhost::ghost_move_setup(bool on)
                     break;
                 ol0 = new CDol(od, ol0);
             }
-            ghost_display_list->free();
+            CDol::destroy(ghost_display_list);
             ghost_display_list = ol0;
         }
         // Separate the cell instances.
@@ -1771,9 +1771,9 @@ cEditGhost::ghost_move_setup(bool on)
         }
     }
     else {
-        ghost_display_list->free();
+        CDol::destroy(ghost_display_list);
         ghost_display_list = 0;
-        ghost_display_inst_list->free();
+        CDol::destroy(ghost_display_inst_list);
         ghost_display_inst_list = 0;
     }
 }

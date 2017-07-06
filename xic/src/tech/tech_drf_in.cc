@@ -111,9 +111,9 @@ cTechDrfIn::~cTechDrfIn()
     }
     delete c_packet_rtab;
 
-    c_badpkts->free();
-    c_badstips->free();
-    c_badclrs->free();
+    stringlist::destroy(c_badpkts);
+    stringlist::destroy(c_badstips);
+    stringlist::destroy(c_badclrs);
 }
 
 
@@ -292,14 +292,14 @@ cTechDrfIn::report_unresolved(sLstr &lstr)
                 tab.add(sl->string, 0, false);
         }
         stringlist *names = tab.names();
-        names->sort();
+        stringlist::sort(names);
         for (stringlist *sl = names; sl; sl = sl->next) {
             lstr.add("    ");
             lstr.add(sl->string);
             lstr.add_c('\n');
         }
-        names->free();
-        c_badpkts->free();
+        stringlist::destroy(names);
+        stringlist::destroy(c_badpkts);
         c_badpkts = 0;
     }
     if (c_badstips) {
@@ -311,14 +311,14 @@ cTechDrfIn::report_unresolved(sLstr &lstr)
                 tab.add(sl->string, 0, false);
         }
         stringlist *names = tab.names();
-        names->sort();
+        stringlist::sort(names);
         for (stringlist *sl = names; sl; sl = sl->next) {
             lstr.add("    ");
             lstr.add(sl->string);
             lstr.add_c('\n');
         }
-        names->free();
-        c_badstips->free();
+        stringlist::destroy(names);
+        stringlist::destroy(c_badstips);
         c_badstips = 0;
     }
     if (c_badclrs) {
@@ -330,14 +330,14 @@ cTechDrfIn::report_unresolved(sLstr &lstr)
                 tab.add(sl->string, 0, false);
         }
         stringlist *names = tab.names();
-        names->sort();
+        stringlist::sort(names);
         for (stringlist *sl = names; sl; sl = sl->next) {
             lstr.add("    ");
             lstr.add(sl->string);
             lstr.add_c('\n');
         }
-        names->free();
-        c_badclrs->free();
+        stringlist::destroy(names);
+        stringlist::destroy(c_badclrs);
         c_badclrs = 0;
     }
 }
@@ -346,8 +346,7 @@ cTechDrfIn::report_unresolved(sLstr &lstr)
 const sDrfColor *
 cTechDrfIn::find_color(const char *name)
 {
-    cTechDrfIn *dit = this;
-    if (dit && c_color_tab && name) {
+    if (c_color_tab && name) {
         const sDrfColor *c = (sDrfColor*)c_color_tab->get(name);
         if (c != (sDrfColor*)ST_NIL)
             return (c);
@@ -359,8 +358,7 @@ cTechDrfIn::find_color(const char *name)
 const sDrfColor *
 cTechDrfIn::find_color(int r, int g, int b)
 {
-    cTechDrfIn *dit = this;
-    if (dit && c_color_rtab) {
+    if (c_color_rtab) {
         char *nm = mk_color_name(r, g, b);
         const sDrfColor *c = (sDrfColor*)c_color_rtab->get(nm);
         delete [] nm;
@@ -416,8 +414,7 @@ cTechDrfIn::add_color(sDrfColor *c)
 const sDrfStipple *
 cTechDrfIn::find_stipple(const char *name)
 {
-    cTechDrfIn *dit = this;
-    if (dit && c_stipple_tab && name) {
+    if (c_stipple_tab && name) {
         const sDrfStipple *s = (sDrfStipple*)c_stipple_tab->get(name);
         if (s != (sDrfStipple*)ST_NIL)
             return (s);
@@ -429,8 +426,7 @@ cTechDrfIn::find_stipple(const char *name)
 const sDrfStipple *
 cTechDrfIn::find_stipple(const GRfillType *fill)
 {
-    cTechDrfIn *dit = this;
-    if (dit && c_stipple_rtab) {
+    if (c_stipple_rtab) {
         unsigned char *map = fill->newBitmap();
         char *nm = mk_stp_str(fill->nX(), fill->nY(), map);
         delete [] map;
@@ -487,8 +483,7 @@ cTechDrfIn::add_stipple(sDrfStipple *s)
 const sDrfLine *
 cTechDrfIn::find_line(const char *name)
 {
-    cTechDrfIn *dit = this;
-    if (dit && c_line_tab && name) {
+    if (c_line_tab && name) {
         const sDrfLine *l = (sDrfLine*)c_line_tab->get(name);
         if (l != (sDrfLine*)ST_NIL)
             return (l);
@@ -522,8 +517,7 @@ cTechDrfIn::add_line(sDrfLine *l)
 const sDrfPacket *
 cTechDrfIn::find_packet(const char *name)
 {
-    cTechDrfIn *dit = this;
-    if (dit && c_packet_tab && name) {
+    if (c_packet_tab && name) {
         const sDrfPacket *p = (sDrfPacket*)c_packet_tab->get(name);
         if (p != (sDrfPacket*)ST_NIL)
             return (p);
@@ -536,8 +530,7 @@ const sDrfPacket *
 cTechDrfIn::find_packet(const char *color, const char *stipple,
     const char *line, const char *outline)
 {
-    cTechDrfIn *dit = this;
-    if (dit && c_packet_rtab) {
+    if (c_packet_rtab) {
         char *nm = mk_packet_name(color, stipple, line, outline);
         const sDrfPacket *p = (sDrfPacket*)c_packet_rtab->get(nm);
         delete [] nm;
@@ -741,7 +734,7 @@ namespace {
         }
         else {
             sLstr lstr;
-            p->print(&lstr);
+            lispnode::print(p, &lstr);
             if (name)
                 Log()->WarningLogV(compat, "Ignored bad node in %s:\n\t%s\n",
                     name, lstr.string());
@@ -759,7 +752,7 @@ cTechDrfIn::drDefineDisplay(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[1];
-        int cnt = p->args->eval_list(n, 1, err);
+        int cnt = lispnode::eval_list(p->args, n, 1, err);
         if (cnt < 1) {
             err_rpt("drDefineDisplay", p);
             continue;
@@ -784,7 +777,7 @@ cTechDrfIn::drDefineColor(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[6];
-        int cnt = p->args->eval_list(n, 6, err);
+        int cnt = lispnode::eval_list(p->args, n, 6, err);
         if (cnt < 5) {
             err_rpt("drDefineColor", p);
             continue;
@@ -823,7 +816,7 @@ cTechDrfIn::drDefineStipple(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[3];
-        int cnt = p->args->eval_list(n, 3, err);
+        int cnt = lispnode::eval_list(p->args, n, 3, err);
         if (cnt < 3) {
             err_rpt("drDefineStipple", 0);
             continue;
@@ -871,7 +864,7 @@ cTechDrfIn::drDefineLineStyle(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[4];
-        int cnt = p->args->eval_list(n, 4, err);
+        int cnt = lispnode::eval_list(p->args, n, 4, err);
         if (cnt < 4) {
             err_rpt("drDefineLineStyle", p);
             continue;
@@ -921,7 +914,7 @@ cTechDrfIn::drDefinePacket(lispnode *p0, lispnode*, char **err)
 {
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[6];
-        int cnt = p->args->eval_list(n, 6, err);
+        int cnt = lispnode::eval_list(p->args, n, 6, err);
         if (cnt < 6) {
             err_rpt("drDefinePacket", p);
             continue;

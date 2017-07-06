@@ -54,7 +54,8 @@ cSced::getAnalysis(bool ascii)
 {
     if (!sc_analysis_cmd)
         return (0);
-    return (sc_analysis_cmd->string(ascii ? HYcvAscii : HYcvPlain, false));
+    return (hyList::string(sc_analysis_cmd, ascii ? HYcvAscii : HYcvPlain,
+        false));
 }
 
 
@@ -66,7 +67,7 @@ cSced::setAnalysis(const char *cmd)
     CDs *cursde = CurCell(Electrical, true);
     if (cursde) {
         if (sc_analysis_cmd)
-            sc_analysis_cmd->free();
+            hyList::destroy(sc_analysis_cmd);
         sc_analysis_cmd = new hyList(cursde, cmd, HYcvAscii);
     }
 }
@@ -235,7 +236,7 @@ cSced::dumpSpiceDeck(FILE *fp)
 #endif
             fprintf(fp, "%s\n", d->li_line);
     }
-    deck->free();
+    sp_line_t::destroy(deck);
 }
 
 
@@ -553,13 +554,13 @@ SpOut::ckt_deck(CDs *sdesc, bool add_sc)
         // The nodes array may be empty!
 
         CDp_user *pu = (CDp_user*)cdesc->prpty(P_MODEL);
-        char *model = pu ? pu->data()->string(HYcvPlain, true) : 0;
+        char *model = pu ? hyList::string(pu->data(), HYcvPlain, true) : 0;
         pu = (CDp_user*)cdesc->prpty(P_VALUE);
-        char *value = pu ? pu->data()->string(HYcvPlain, true) : 0;
+        char *value = pu ? hyList::string(pu->data(), HYcvPlain, true) : 0;
         pu = (CDp_user*)cdesc->prpty(P_PARAM);
-        char *param = pu ? pu->data()->string(HYcvPlain, true) : 0;
+        char *param = pu ? hyList::string(pu->data(), HYcvPlain, true) : 0;
         pu = (CDp_user*)cdesc->prpty(P_DEVREF);
-        char *devref = pu ? pu->data()->string(HYcvPlain, true) : 0;
+        char *devref = pu ? hyList::string(pu->data(), HYcvPlain, true) : 0;
 
         // If a device has a P_MACRO property, we add an 'X' ahead of
         // the name so that SPICE treats the line as a subcircuit
@@ -637,7 +638,7 @@ SpOut::ckt_deck(CDs *sdesc, bool add_sc)
                     // ground node, never mapped
                     strcpy(buf, " 0");
                 else {
-                    char *gname = globs->globname(node);
+                    const char *gname = sp_nmlist_t::globname(globs, node);
                     if (gname)
                         sprintf(buf, " %s", gname);
                     else
@@ -724,9 +725,9 @@ SpOut::ckt_deck(CDs *sdesc, bool add_sc)
         for (; d->li_next; d = d->li_next) ;
     }
 
-    globs->free();
+    sp_nmlist_t::destroy(globs);
     for (int i = 0; i < tsize; i++)
-        tnames[i]->free();
+        stringlist::destroy(tnames[i]);
     delete [] tnames;
 
     // Sort the element cards, and check for duplicate tokens.
@@ -774,7 +775,7 @@ namespace {
     {
         if (sdesc->owner())
             return (has_global(sdesc->owner()));
-        if (sdesc->nodes()->countGlobal())
+        if (sdesc->nodes() && sdesc->nodes()->hasGlobal())
             return (true);
         CDm_gen mgen(sdesc, GEN_MASTERS);
         for (CDm *mdesc = mgen.m_first(); mdesc; mdesc = mgen.m_next()) {
@@ -895,7 +896,8 @@ SpOut::def_node_term_list(CDs *sdesc)
                 CDla *olabel = pna->bound();
                 if (!olabel)
                     continue;
-                char *label = olabel->label()->string(HYcvPlain, false);
+                char *label = hyList::string(olabel->label(), HYcvPlain,
+                    false);
                 if (slmatch(defnames, label)) {
                     CDp_cnode *pn = (CDp_cnode*)c->prpty(P_NODE);
                     if (pn)
@@ -908,7 +910,7 @@ SpOut::def_node_term_list(CDs *sdesc)
             }
         }
     }
-    defnames->free();
+    stringlist::destroy(defnames);
     return (nm0);
 }
 
@@ -1298,7 +1300,7 @@ SpOut::subckt_line(CDs *sub)
 
     CDp *prp = sub->prpty(P_PARAM);
     if (prp) {
-        char *str = PUSR(prp)->data()->string(HYcvPlain, false);
+        char *str = hyList::string(PUSR(prp)->data(), HYcvPlain, false);
         const char *s = str;
         char *name, *value;
         while (get_pair(&s, &name, &value) != 0) {
@@ -1469,7 +1471,7 @@ SpOut::get_sptext_labels(CDs *sdesc)
                 // Don't use property labels (shouldn't happen anyway).
                 continue;
             hyList *hlabel = OLABEL(odesc)->label();
-            char *string = hlabel->string(HYcvPlain, true);
+            char *string = hyList::string(hlabel, HYcvPlain, true);
             if (!string)
                 continue;
             char *s;
@@ -1517,7 +1519,7 @@ SpOut::get_sptext_labels(CDs *sdesc)
                 // don't use property labels
                 continue;
             hyList *hlabel = OLABEL(odesc)->label();
-            char *string = hlabel->string(HYcvPlain, true);
+            char *string = hyList::string(hlabel, HYcvPlain, true);
             if (!string)
                 continue;
             char *s, *t;

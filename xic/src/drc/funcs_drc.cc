@@ -1111,7 +1111,7 @@ drc_funcs::IFdrcCheckObjects(Variable *res, Variable *args, void*)
         }
         CDol *st = Selections.listQueue(CurCell(Physical));
         DRC()->batchListTest(st, fp, 0, 0);
-        st->free();
+        CDol::destroy(st);
         res->content.value = DRC()->getErrCount();
         if (fp)
             fclose(fp);
@@ -1280,7 +1280,7 @@ drc_funcs::IFdrcTestPoly(Variable *res, Variable *args, void*)
     sPF::set_skip_drc(true);
     XIrt x = lspec.testZlistCovPartial(&cx, &cov, DRC()->fudgeVal());
     sPF::set_skip_drc(false);
-    Zlist::free(z0);
+    Zlist::destroy(z0);
     lspec.clear();
     if (x == XIok)
         res->content.value = (int)cov;
@@ -1533,7 +1533,7 @@ drc_funcs::IFdrcZlist(Variable *res, Variable *args, void *datap)
     }
     if (ret == BAD) {
         Errs()->add_error("DrcZlist: evaluation failed.");
-        Zlist::free(z0);
+        Zlist::destroy(z0);
     }
     else {
         res->type = TYP_ZLIST;
@@ -1547,11 +1547,11 @@ drc_funcs::IFdrcZlist(Variable *res, Variable *args, void *datap)
         if (pbak) {
             ParseNode *p = td->sourceTree();
             if (pleft) {
-                p->left->free();
+                ParseNode::destroy(p->left);
                 p->left = pbak;
             }
             else {
-                p->right->free();
+                ParseNode::destroy(p->right);
                 p->right = pbak;
             }
         }
@@ -1628,7 +1628,7 @@ drc_funcs::IFdrcZlistEx(Variable *res, Variable *args, void *datap)
         res->type = TYP_ZLIST;
         res->content.zlist = 0;
         if (orig)
-            Zlist::free(zsrc);
+            Zlist::destroy(zsrc);
         return (OK);
     }
 
@@ -1681,7 +1681,7 @@ drc_funcs::IFdrcZlistEx(Variable *res, Variable *args, void *datap)
 
     if (ret == BAD) {
         Errs()->add_error("DrcZlistEx: evaluation failed.");
-        Zlist::free(z0);
+        Zlist::destroy(z0);
     }
     else {
         res->type = TYP_ZLIST;

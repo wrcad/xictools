@@ -391,15 +391,47 @@ private:
     void *ld_app_data;              // hook for application data
 };
 
+
 // Linked list element for CDl.
 struct CDll
 {
     CDll() { next = 0; ldesc = 0; }
     CDll(CDl *l, CDll *n) { next = n; ldesc = l; }
 
-    CDll *unlink(CDll**, CDl*);
-    bool inlist(CDl*);
-    void free();
+    static void destroy(CDll *l)
+        {
+            while (l) {
+                CDll *lx = l;
+                l = l->next;
+                delete lx;
+            }
+        }
+
+    static bool inlist(const CDll *thisl, CDl *ld)
+        {
+            for (const CDll *l = thisl; l; l = l->next) {
+                if (l->ldesc == ld)
+                    return (true);
+            }
+            return (false);
+        }
+
+    static CDll *unlink(CDll **list, CDl *which)
+        {
+            if (!list)
+                return (0);
+            CDll *p = 0;
+            for (CDll *l = *list; l; p = l, l = l->next) {
+                if (l->ldesc == which) {
+                    if (!p)
+                        *list = l->next;
+                    else
+                        p->next = l->next;
+                    return (l);
+                }
+            }
+            return (0);
+        }
 
     CDll *next;
     CDl *ldesc;

@@ -43,12 +43,11 @@ struct sArgList
             delete [] a_args;
         }
 
-    sArgList *copy()
+    static sArgList *copy(const sArgList *a)
         {
-            sArgList *alt = this;
-            if (!alt)
+            if (!a)
                 return (0);
-            return (new sArgList(lstring::copy(a_args), a_argc));
+            return (new sArgList(lstring::copy(a->a_args), a->a_argc));
         }
 
     char *a_args;
@@ -96,7 +95,7 @@ struct sParam
             delete [] p_sub;
             p_sub = lstring::copy(p->p_sub);
             delete p_args;
-            p_args = p->p_args->copy();
+            p_args = sArgList::copy(p->p_args);
         }
 
 private:
@@ -148,28 +147,28 @@ struct sParamTab
     //
     void param_subst_defn_list(char **str, bool do_singles) const
         {
-            defn_subst(str, do_singles ? PTsngl : PTgeneral, 0);
+            defn_subst(this, str, do_singles ? PTsngl : PTgeneral, 0);
         }
 
     // Special for .param lines.
     //
     void param_subst_param(char **str) const
         {
-            defn_subst(str, PTparam, 1);
+            defn_subst(this, str, PTparam, 1);
         }
 
     // Special for .subckt lines.
     //
     void param_subst_subckt(char **str) const
         {
-            defn_subst(str, PTsubc, 2);
+            defn_subst(this, str, PTsubc, 2);
         }
 
     // Special for .model lines.
     //
     void param_subst_model(char **str) const
         {
-            defn_subst(str, PTgeneral, 3);
+            defn_subst(this, str, PTgeneral, 3);
         }
 
     // Special for .measure line.  For HSPICE compatibility, don't do
@@ -211,14 +210,14 @@ struct sParamTab
     void param_subst_options(char **str)
         {
             pt_collapse = true;
-            defn_subst(str, PTgeneral, 1);
+            defn_subst(this, str, PTgeneral, 1);
             pt_collapse = false;
         }
 
     void add_predefs();
     sParamTab *copy() const;
-    sParamTab *extract_params(const char*);
-    sParamTab *update(const sParamTab*);
+    static sParamTab *extract_params(sParamTab*, const char*);
+    static sParamTab *update(sParamTab*, const sParamTab*);
     void update(const char*);
     double eval(const sParam*) const;
     void collapse();
@@ -230,16 +229,16 @@ struct sParamTab
         { return ((const sParam*)pt_table->get(n)); }
 
     unsigned int allocated()
-        { sParamTab *ptt = this; return (ptt ? pt_table->allocated() : 0); }
+        { return (pt_table->allocated()); }
 
     static char *errString; // global error return
 
 private:
-    void defn_subst(char**, PTmode, int) const;
+    static void defn_subst(const sParamTab*, char**, PTmode, int);
     void line_subst(char**) const;
     void squote_subst(char**) const;
     bool subst(char**) const;
-    bool tokenize(const char**, char**, char**, PTmode, const char** =0) const;
+    static bool tokenize(const char**, char**, char**, PTmode, const char** =0);
 
     sHtab *pt_table;        // Main table for elements.
     sHtab *pt_rctab;        // Used for recursion testing.

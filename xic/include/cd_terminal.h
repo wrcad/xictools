@@ -313,9 +313,8 @@ struct CDtlist
             tl_term = t;
         }
 
-    void free()
+    static void destroy(CDtlist *t)
         {
-            CDtlist*t = this;
             while (t) {
                 CDtlist*x = t;
                 t = t->tl_next;;

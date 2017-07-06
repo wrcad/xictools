@@ -142,11 +142,10 @@ namespace {
                         delete [] h_text;
                     }
 
-                void free()
+                static void destroy(const histlist *l)
                     {
-                        histlist *l = this;
                         while (l) {
-                            histlist *x = l;
+                            const histlist *x = l;
                             l = l->h_next;
                             delete x;
                         }
@@ -553,7 +552,7 @@ sDbg::sDbg(GRobject c)
 sDbg::~sDbg()
 {
     Dbg = 0;
-    db_vlist->free();
+    stringlist::destroy(db_vlist);
     delete [] db_line_save;
     delete [] db_dropfile;
     delete [] db_file_path;
@@ -569,8 +568,8 @@ sDbg::~sDbg()
             GTK_SIGNAL_FUNC(db_cancel_proc), wb_shell);
         GRX->Deselect(db_caller);
     }
-    db_undo_list->free();
-    db_redo_list->free();
+    histlist::destroy(db_undo_list);
+    histlist::destroy(db_redo_list);
 
     SI()->Clear();
     if (wb_shell)
@@ -714,11 +713,8 @@ sDbg::is_last_line()
 void
 sDbg::step()
 {
-    {
-        sDbg *dbt = this;
-        if (!dbt)
-            return;
-    }
+    if (!Dbg)
+        return;
     if (db_row_cb_flag) {
         // We're waiting for input in the prompt line, back out.
         PL()->AbortEdit();
@@ -763,11 +759,6 @@ sDbg::step()
 void
 sDbg::run()
 {
-    {
-        sDbg *dbt = this;
-        if (!dbt)
-            return;
-    }
     if (db_row_cb_flag) {
         // We're waiting for input in the prompt line, back out.
         PL()->AbortEdit();
@@ -1009,11 +1000,8 @@ sDbg::check_save(int code)
 void
 sDbg::refresh(bool mode_switch, locType loc, bool clear)
 {
-    {
-        sDbg *dbt = this;
-        if (!dbt)
-            return;
-    }
+    if (!Dbg)
+        return;
     char *s = listing(clear ? false : mode_switch);
     double val = text_get_scroll_value(wb_textarea);
     if (db_mode == DBedit) {
@@ -1082,11 +1070,8 @@ sDbg::refresh(bool mode_switch, locType loc, bool clear)
 char *
 sDbg::listing(bool mode_switch)
 {
-    {
-        sDbg *dbt = this;
-        if (!dbt)
-            return (0);
-    }
+    if (!Dbg)
+        return (0);
     char buf[LINESIZE];
     if (!db_file_ptr) {
         char *str = text_get_chars(wb_textarea, 0, -1);
@@ -1203,11 +1188,8 @@ sDbg::listing(bool mode_switch)
 void
 sDbg::monitor()
 {
-    {
-        sDbg *dbt = this;
-        if (!dbt)
-            return;
-    }
+    if (!Dbg)
+        return;
     char buf[256];
     char *s = buf;
     *s = 0;
@@ -1226,7 +1208,7 @@ sDbg::monitor()
     PL()->ErasePrompt();
     if (!in)
         return;
-    db_vlist->free();
+    stringlist::destroy(db_vlist);
     db_vlist = db_mklist(in);
 
     if (db_vars_pop) {
@@ -1668,9 +1650,9 @@ sDbg::db_action_proc(GtkWidget *caller, void *client_data, unsigned code)
     case NewCode:
         if (Dbg->check_save(NewCode))
             return;
-        Dbg->db_undo_list->free();
+        histlist::destroy(Dbg->db_undo_list);
         Dbg->db_undo_list = 0;
-        Dbg->db_redo_list->free();
+        histlist::destroy(Dbg->db_redo_list);
         Dbg->db_redo_list = 0;
         Dbg->check_sens();
         text_set_chars(Dbg->wb_textarea, "");
@@ -1798,9 +1780,9 @@ sDbg::db_open_idle(void*)
     if (Dbg) {
         Dbg->db_file_ptr = fopen(Dbg->db_file_path, "r");
         if (Dbg->db_file_ptr) {
-            Dbg->db_undo_list->free();
+            histlist::destroy(Dbg->db_undo_list);
             Dbg->db_undo_list = 0;
-            Dbg->db_redo_list->free();
+            histlist::destroy(Dbg->db_redo_list);
             Dbg->db_redo_list = 0;
             Dbg->check_sens();
             Dbg->db_in_undo = true;
@@ -1899,7 +1881,7 @@ sDbg::db_insert_text_proc(GtkTextBuffer*, GtkTextIter *istart, char *text,
     strncpy(ntext, text, len);
     ntext[len] = 0;
     Dbg->db_undo_list = new histlist(ntext, start, false, Dbg->db_undo_list);
-    Dbg->db_redo_list->free();
+    histlist::destroy(Dbg->db_redo_list);
     Dbg->db_redo_list = 0;
     Dbg->check_sens();
 }
@@ -1914,7 +1896,7 @@ sDbg::db_delete_range_proc(GtkTextBuffer*, GtkTextIter *istart,
     int start = gtk_text_iter_get_offset(istart);
     char *s = lstring::tocpp(gtk_text_iter_get_text(istart, iend));
     Dbg->db_undo_list = new histlist(s, start, true, Dbg->db_undo_list);
-    Dbg->db_redo_list->free();
+    histlist::destroy(Dbg->db_redo_list);
     Dbg->db_redo_list = 0;
     Dbg->check_sens();
 }

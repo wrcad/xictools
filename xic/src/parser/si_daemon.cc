@@ -800,8 +800,7 @@ siDaemon::f_geom(const char *args)
         // query:  geom or geom ?
         // reply:  list of cgdnames
         stringlist *names = CDcgd()->cgdList();
-        if (names)
-            names->sort();
+        stringlist::sort(names);
 
         // The names are allowed to contain white space, so we have to
         // quote these.
@@ -817,7 +816,7 @@ siDaemon::f_geom(const char *args)
             else
                 lstr.add(sl->string);
         }
-        names->free();
+        stringlist::destroy(names);
         v.content.string = lstr.string_trim();
         if (d_daemon->respond(&v, true) < 0) {
             log_perror(">>> send");
@@ -868,9 +867,9 @@ siDaemon::f_geom(const char *args)
             // query:  geom cgdname - or geom cgdname -? or geom cgdname ?-
             // reply:  list of removed cellnames
             stringlist *names = cgd->unlisted_list();
-            char *s = names->flatten(" ");
+            char *s = stringlist::flatten(names, " ");
             GCarray<char*> gc_s(s);
-            names->free();
+            stringlist::destroy(names);
             v.content.string = s;
             if (d_daemon->respond(&v, true) < 0) {
                 log_perror(">>> send");
@@ -881,9 +880,9 @@ siDaemon::f_geom(const char *args)
             // query:  geom cgdname or geom cgdname ?
             // reply:  list of cellnames in database
             stringlist *names = cgd->cells_list();
-            char *s = names->flatten(" ");
+            char *s = stringlist::flatten(names, " ");
             GCarray<char*> gc_s(s);
-            names->free();
+            stringlist::destroy(names);
             v.content.string = s;
             if (d_daemon->respond(&v, true) < 0) {
                 log_perror(">>> send");
@@ -933,9 +932,9 @@ siDaemon::f_geom(const char *args)
         // query:  geom cgdname cellname
         // reply:  list of layers
         stringlist *names = cgd->layer_list(cellname);
-        char *s = names->flatten(" ");
+        char *s = stringlist::flatten(names, " ");
         GCarray<char*> gc_s(s);
-        names->free();
+        stringlist::destroy(names);
         v.content.string = s;
         if (d_daemon->respond(&v, true) < 0) {
             log_perror(">>> send");

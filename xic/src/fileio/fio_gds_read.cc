@@ -2982,7 +2982,7 @@ gds_in::a_text()
         else {
             // This is the displayed string, not necessarily the same as the
             // label text.
-            char *string = hpl->string(HYcvPlain, false);
+            char *string = hyList::string(hpl, HYcvPlain, false);
             double tw, th;
             CD()->DefaultLabelSize(string, in_mode, &tw, &th);
             delete [] string;
@@ -3039,7 +3039,7 @@ gds_in::a_text()
                     }
                 }
                 for (CDll *ll = in_layers; ll; ll = ll->next) {
-                    label.label = hpl->dup();
+                    label.label = hyList::dup(hpl);
                     CDla *newo;
                     CDerrType err = in_sdesc->makeLabel(ll->ldesc, &label,
                         &newo);
@@ -3057,7 +3057,7 @@ gds_in::a_text()
                 }
             }
         }
-        hpl->free();
+        hyList::destroy(hpl);
     }
     delete [] in_string;
     in_string = 0;
@@ -3690,7 +3690,7 @@ gds_in::ac_boundary_prv()
                     if (!ret)
                         break;
                 }
-                pl->free();
+                PolyList::destroy(pl);
             }
             if (need_out) {
                 for (CDll *ll = in_layers; ; ) {
@@ -3849,7 +3849,7 @@ gds_in::ac_path_prv()
                 if (!ret)
                     break;
             }
-            pl->free();
+            PolyList::destroy(pl);
         }
         if (need_out) {
             for (CDll *ll = in_layers; ; ) {
@@ -4184,11 +4184,11 @@ gds_in::ac_text_core()
         // This is the displayed string, not necessarily the same as the
         // label text
         hyList *hpl = new hyList(in_sdesc, in_string, HYcvAscii);
-        char *string = hpl->string(HYcvPlain, false);
+        char *string = hyList::string(hpl, HYcvPlain, false);
         double tw, th;
         CD()->DefaultLabelSize(string, in_mode, &tw, &th);
         delete [] string;
-        hpl->free();
+        hyList::destroy(hpl);
         if (in_mode == Physical) {
             wid = INTERNAL_UNITS(tw*in_ext_phys_scale*in_magn);
             hei = INTERNAL_UNITS(th*in_ext_phys_scale*in_magn);

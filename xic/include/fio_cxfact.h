@@ -310,8 +310,7 @@ struct fact_t
     // Return true if ix starts a new block.
     bool is_blstart(ticket_t ix)
         {
-            fact_t *ft = this;
-            if (!ix || !ft)
+            if (!ix)
                 return (false);
             ix--;  
             if (ix >= indx)
@@ -328,8 +327,7 @@ struct fact_t
                 i1 = t;
             }
 
-            fact_t *ft = this;
-            if (!i1 || !ft)
+            if (!i1)
                 return;
             i1--;
             if (i1 >= indx)
@@ -401,8 +399,7 @@ struct fact_t
 
     char *find_item(ticket_t ix)
         {
-            fact_t *ft = this;
-            if (!ix || !ft)
+            if (!ix)
                 return (0);
             ix--;
             if (ix >= indx)
@@ -412,15 +409,15 @@ struct fact_t
             return (blocks[bel] + bix*datasize);
         }
 
-/*
+    /*** UNUSED
     // It would be possible to eliminate the ticket_t stored in the
     // symref_t, however 1) this saves no space in 64-bit builds due
     // to alignment and 2) this function is called for each instance
-    // wher reading in the file, and may have too much overhead.
+    // when reading in the file, and may have too much overhead.
 
     ticket_t find_ticket(char *p)
         {
-            if (!p || !this)
+            if (!p)
                 return (0);
             unsigned int bsz = FCT_BLOCKSIZE * datasize;
             for (unsigned int i = 0; i < bsize; i++) {
@@ -431,7 +428,7 @@ struct fact_t
             }
             return (0);
         }
-*/
+    ***/
 
     size_t memuse()
         {

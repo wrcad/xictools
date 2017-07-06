@@ -336,8 +336,7 @@ sLB::~sLB()
 char *
 sLB::get_selection()
 {
-    sLB *lbt = this;
-    if (lbt && lb_contlib && lb_content_pop) {
+    if (lb_contlib && lb_content_pop) {
         char *sel = lb_content_pop->get_selection();
         if (sel) {
             int len = strlen(lb_contlib) + strlen(sel) + 2;
@@ -358,12 +357,6 @@ sLB::get_selection()
 void
 sLB::update()
 {
-    {
-        sLB *lbt = this;
-        if (!lbt)
-            return;
-    }
-
     GRX->SetStatus(lb_noovr, CDvdb()->getVariable(VA_NoOverwriteLibCells));
 
     stringlist *liblist = lb_pathlibs();
@@ -380,7 +373,7 @@ sLB::update()
         else
             gtk_list_store_set(store, &iter, 0, lb_close_pb, 1, l->string, -1);
     }
-    liblist->free();
+    stringlist::destroy(liblist);
     char *oldsel = lb_selection;
     lb_selection = 0;
     gtk_widget_set_sensitive(lb_openbtn, false);
@@ -424,11 +417,6 @@ sLB::update()
 void
 sLB::pop_up_contents()
 {
-    {
-        sLB *lbt = this;
-        if (!lbt)
-            return;
-    }
     if (!lb_selection)
         return;
 
@@ -465,7 +453,7 @@ sLB::pop_up_contents()
                     lb_content_pop->set_button_sens(-1);
             }
         }
-        list->free();
+        stringlist::destroy(list);
     }
 }
 

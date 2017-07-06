@@ -117,7 +117,7 @@ RuState::RuState(const char *nm, const char *hk) : CmdState(nm, hk)
 
 RuState::~RuState()
 {
-    RedoList->free();
+    sRuler::destroy(RedoList);
     RuCmd = 0;
     DSP()->EndRulerCmd();
 }
@@ -197,7 +197,7 @@ RuState::b1down()
             }
             else
                 ChainLen = 0.0;
-            RedoList->free();
+            sRuler::destroy(RedoList);
             RedoList = 0;
             DownOK = true;
             Wdesc->GhostFinalUpdate();  // Final highlighting redisplay.
@@ -237,7 +237,7 @@ RuState::b1up()
                     ChainLen = 0.0;
                     message();
                 }
-                RedoList->free();
+                sRuler::destroy(RedoList);
                 RedoList = 0;
                 Wdesc->GhostFinalUpdate();  // Final highlighting redisplay.
                 return;

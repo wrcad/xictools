@@ -1668,7 +1668,7 @@ CDs::makeLabel(CDl *ldesc, Label *label, CDla **pointer, bool internal)
         *pointer = 0;
     if (!ldesc) {
         if (label) {
-            label->label->free();
+            hyList::destroy(label->label);
             label->label = 0;
         }
         CD()->Error(CDbadLayer, cellname()->string());
@@ -1735,7 +1735,7 @@ CDs::newLabel(CDo *oldobj, Label *label, CDl *ldesc, CDp *prps, bool Copy)
             return (0);
         }
         hyList *tl = label->label;
-        label->label = label->label->dup();
+        label->label = hyList::dup(label->label);
         CDerrType ret = makeLabel(ldesc, label, &newo);
         label->label = tl;
         if (ret != CDok)
@@ -2479,11 +2479,6 @@ CDs::checkTerminals(CDp_snode ***nary)
 {
     if (nary)
         *nary = 0;
-    {
-        CDs *st = this;
-        if (!st)
-            return (0);
-    }
     if (!isElectrical())
         return (0);
 
@@ -2919,7 +2914,7 @@ namespace {
                     sd->cellname()->string()), s0);
             }
         }
-        s0->sort(mark ? &cl_comp : 0);
+        stringlist::sort(s0, mark ? &cl_comp : 0);
         return (s0);
     }
 }
@@ -2975,10 +2970,10 @@ CDs::listSubcells(int depth, bool incl_top, bool mark, const BBox *AOI)
             }
         }
         if (err) {
-            s0->free();
+            stringlist::destroy(s0);
             s0 = 0;
         }
-        s0->sort(mark ? &cl_comp : 0);
+        stringlist::sort(s0, mark ? &cl_comp : 0);
         return (s0);
     }
     if (AOI->intersect(&sBB, true)) {
@@ -3051,11 +3046,6 @@ CDs::elecCellType(CDpfxName *nret)
 {
     if (nret)
         *nret = 0;
-    {
-        CDs *st = this;
-        if (!st)
-            return (CDelecBad);
-    }
     if (!isElectrical())
         return (CDelecBad);
 
@@ -3801,9 +3791,11 @@ CDs::prptyWireLink(const cTfmStack *tstk, CDw *onew, CDw *old,
         return;
     }
 
-    for (CDp *pd = old->prpty_list(); pd; pd = pd->next_prp()) {
-        if (pd->bound())
-            prptyLabelLink(tstk, onew, pd, MoveOrCopy);
+    if (old) {
+        for (CDp *pd = old->prpty_list(); pd; pd = pd->next_prp()) {
+            if (pd->bound())
+                prptyLabelLink(tstk, onew, pd, MoveOrCopy);
+        }
     }
 }
 
@@ -3826,11 +3818,13 @@ CDs::prptyInstLink(const cTfmStack *tstk, CDc *onew, CDc *old,
     }
 
     int mutref = false;
-    for (CDp *pd = old->prpty_list(); pd; pd = pd->next_prp()) {
-        if (pd->bound())
-            prptyLabelLink(tstk, onew, pd, MoveOrCopy);
-        else if (pd->value() == P_MUTLRF)
-            mutref = true;
+    if (old) {
+        for (CDp *pd = old->prpty_list(); pd; pd = pd->next_prp()) {
+            if (pd->bound())
+                prptyLabelLink(tstk, onew, pd, MoveOrCopy);
+            else if (pd->value() == P_MUTLRF)
+                mutref = true;
+        }
     }
     if (mutref) {
         // This is one of a mutual inductor pair
@@ -3838,12 +3832,14 @@ CDs::prptyInstLink(const cTfmStack *tstk, CDc *onew, CDc *old,
             // Remove the new MUTLRF properties, since we know that
             // the other inductor was not copied.
             //
-            CDp *pn;
-            for (CDp *pd = onew->prpty_list(); pd; pd = pn) {
-                pn = pd->next_prp();
-                if (pd->value() == P_MUTLRF) {
-                    onew->prptyUnlink(pd);
-                    delete pd;
+            if (onew) {
+                CDp *pn;
+                for (CDp *pd = onew->prpty_list(); pd; pd = pn) {
+                    pn = pd->next_prp();
+                    if (pd->value() == P_MUTLRF) {
+                        onew->prptyUnlink(pd);
+                        delete pd;
+                    }
                 }
             }
             return;
@@ -4266,7 +4262,7 @@ CDs::prptyMutualLink(const cTfmStack *tstk, CDc *new1, CDc *new2,
             CDla *nlabel = newLabel(0, &label, olabel->ldesc(),
                 olabel->prpty_list(), true);
             if (copied)
-                label.label->free();
+                hyList::destroy(label.label);
             if (nlabel) {
                 pmn->bind(nlabel);
                 nlabel->link(this, 0, 0);

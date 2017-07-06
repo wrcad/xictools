@@ -120,9 +120,9 @@ RLsolver::~RLsolver()
 {
     delete rl_matrix;
     delete [] rl_contacts;
-    Zlist::free(rl_zlist);
-    rl_h_edges->free();
-    rl_v_edges->free();
+    Zlist::destroy(rl_zlist);
+    RLedge::destroy(rl_h_edges);
+    RLedge::destroy(rl_v_edges);
 }
 
 
@@ -576,11 +576,6 @@ bool
 RLsolver::solve_two(double *squares)
 {
     *squares = 0.0;
-    {
-        RLsolver *rt = this;
-        if (!rt)
-            return (false);
-    }
     if (rl_state == RLuninit) {
         Errs()->add_error("solve_two: solver not initialized.");
         return (false);
@@ -631,11 +626,6 @@ RLsolver::solve_multi(int *gmat_size, float **gmat)
 {
     *gmat_size = 0;
     *gmat = 0;
-    {
-        RLsolver *rt = this;
-        if (!rt)
-            return (false);
-    }
     if (rl_state == RLuninit) {
         Errs()->add_error("solve_multi: solver not initialized.");
         return (false);
@@ -719,13 +709,13 @@ RLsolver::setup_edges()
     PolyList *pl = Zlist::to_poly_list(Zlist::copy(rl_zlist));
     rl_h_edges = to_edges(pl, false);
     rl_v_edges = to_edges(pl, true);
-    pl->free();
+    PolyList::destroy(pl);
 
     for (int i = 0; i < rl_num_contacts; i++) {
         pl = Zlist::to_poly_list(Zlist::copy(rl_contacts[i].czl));
         rl_contacts[i].h_edges = to_edges(pl, false);
         rl_contacts[i].v_edges = to_edges(pl, true);
-        pl->free();
+        PolyList::destroy(pl);
     }
 }
 
@@ -759,9 +749,9 @@ RLsolver::find_tile()
 
     for (int i = 0; i < rl_num_contacts; i++) {
         for (Zlist *z = rl_contacts[i].czl; z; z = z->next)
-            yl = yl->clip_out(&z->Z);
+            yl = Ylist::clip_out(yl, &z->Z);
     }
-    zl = yl->to_zlist();
+    zl = Ylist::to_zlist(yl);
 
     // Compute new BB.
     BBox BB;
@@ -777,7 +767,7 @@ RLsolver::find_tile()
         t = mmGCD(t, z->Z.xll - BB.left);
         t = mmGCD(t, z->Z.xlr - BB.left);
     }
-    zl->Zlist::free(zl);
+    zl->Zlist::destroy(zl);
 
     return (t);
 }
@@ -1097,7 +1087,7 @@ MRsolver::find_vias()
                     "find_vias: getZlist failed or user abort.");
                 return (false);
             }
-            Zlist::free(z1);
+            Zlist::destroy(z1);
 
             PolyList *p0 = Zlist::to_poly_list(z2);
 
@@ -1113,16 +1103,16 @@ MRsolver::find_vias()
                         Zlist *zx = p->po.toZlist();
                         ret = lsp.testContact(cursdp, CDMAXCALLDEPTH, zx,
                             &istrue);
-                        Zlist::free(zx);
+                        Zlist::destroy(zx);
                         lsp.set_tree(0);
                         if (ret == XIintr) {
                             Errs()->add_error("find_vias: interrupted");
-                            p0->free();
+                            PolyList::destroy(p0);
                             return (false);
                         }
                         if (ret == XIbad) {
                             Errs()->add_error("find_vias: testContact failed.");
-                            p0->free();
+                            PolyList::destroy(p0);
                             return (false);
                         }
                     }
@@ -1346,7 +1336,7 @@ MRsolver::solve_elements()
 
             RLsolver *r = new RLsolver;
             bool ret = r->setup(zl, c->ld, &zg);
-            Zlist::free(zl);
+            Zlist::destroy(zl);
             if (!ret) {
                 Errs()->add_error("solve_elements: setup failed.");
                 return (false);

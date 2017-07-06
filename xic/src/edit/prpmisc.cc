@@ -126,7 +126,7 @@ cEdit::assignGlobalProperties(CDcbin *cbin)
                 if (s && *s) {
                     CDp_glob *np = new CDp_glob(pnum);
                     np->set_string(s);
-                    np->set_data(ScedIf()->getAnalysisList()->dup());
+                    np->set_data(hyList::dup(ScedIf()->getAnalysisList()));
                     np->set_next_prp(sdesc->prptyList());
                     sdesc->setPrptyList(np);
                 }
@@ -147,7 +147,7 @@ cEdit::assignGlobalProperties(CDcbin *cbin)
                 if (s && *s) {
                     CDp_glob *np = new CDp_glob(pnum);
                     np->set_string(s);
-                    np->set_data(ScedIf()->getPlotList()->dup());
+                    np->set_data(hyList::dup(ScedIf()->getPlotList()));
                     np->set_next_prp(sdesc->prptyList());
                     sdesc->setPrptyList(np);
                 }
@@ -167,7 +167,7 @@ cEdit::assignGlobalProperties(CDcbin *cbin)
                 if (s && *s) {
                     CDp_glob *np = new CDp_glob(pnum);
                     np->set_string(s);
-                    np->set_data(ScedIf()->getIplotList()->dup());
+                    np->set_data(hyList::dup(ScedIf()->getIplotList()));
                     np->set_next_prp(sdesc->prptyList());
                     sdesc->setPrptyList(np);
                 }

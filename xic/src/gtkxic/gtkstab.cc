@@ -229,7 +229,7 @@ sTb::sTb(GRobject c)
 sTb::~sTb()
 {
     Tb = 0;
-    tb_namelist->free();
+    stringlist::destroy(tb_namelist);
     if (tb_caller)
         GRX->Deselect(tb_caller);
 }
@@ -268,11 +268,11 @@ sTb::update()
         gtk_option_menu_remove_menu(GTK_OPTION_MENU(tb_tables));
         gtk_option_menu_set_menu(GTK_OPTION_MENU(tb_tables), menu);
         gtk_option_menu_set_history(GTK_OPTION_MENU(tb_tables), 0);
-        tb_namelist->free();
+        stringlist::destroy(tb_namelist);
         tb_namelist = list;
     }
     else
-        list->free();
+        stringlist::destroy(list);
     if (!tb_namelist || !strcmp(tb_namelist->string, CD_MAIN_ST_NAME))
         gtk_widget_set_sensitive(tb_del, false);
     else

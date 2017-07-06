@@ -46,7 +46,7 @@ SIlexprCx::~SIlexprCx()
 {
     delete cx_gridCx;
     delete [] cx_db_name;
-    Zlist::free(cx_zlSaved);
+    Zlist::destroy(cx_zlSaved);
 }
 
 

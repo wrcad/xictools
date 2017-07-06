@@ -156,7 +156,7 @@
 int
 spMatrixFrame::spSolve(spREAL *rhs, spREAL *solution IMAG_VECTORS_P)
 {
-    ASSERT(IS_VALID(this) AND IS_FACTORED(this));
+    ASSERT(IS_VALID() AND IS_FACTORED());
 
     if (Trace) {
 #if SP_OPT_LONG_DBL_SOLVE
@@ -559,7 +559,7 @@ spMatrixFrame::SolveComplexMatrix(spREAL *rhs, spREAL *solution IMAG_VECTORS_P)
 int
 spMatrixFrame::spSolveTransposed(spREAL *rhs, spREAL *solution IMAG_VECTORS_P)
 {
-    ASSERT(IS_VALID(this) AND IS_FACTORED(this));
+    ASSERT(IS_VALID() AND IS_FACTORED());
 
     if (Trace) {
 #if SP_OPT_LONG_DBL_SOLVE

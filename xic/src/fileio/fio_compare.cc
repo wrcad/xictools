@@ -82,8 +82,8 @@ cCompare::~cCompare()
         delete c_chd1;
     if (c_free_chd2)
         delete c_chd2;
-    c_cell_names1->free();
-    c_cell_names2->free();
+    stringlist::destroy(c_cell_names1);
+    stringlist::destroy(c_cell_names2);
     if (c_fp)
         fclose(c_fp);
 }
@@ -372,7 +372,8 @@ cCompare::setup()
     // always be equal.
     //
     if (c_cell_names1 && c_cell_names2 &&
-            c_cell_names1->length() != c_cell_names2->length()) {
+            stringlist::length(c_cell_names1) !=
+            stringlist::length(c_cell_names2)) {
         Errs()->add_error("Cell name lists have different lengths.");
         return (false);
     }
@@ -487,7 +488,7 @@ cCompare::setup()
                 }
             }
             c_cell_names1 = st->names();
-            c_cell_names1->sort();
+            stringlist::sort(c_cell_names1);
             delete st;
 
             if (!c_cell_names1) {
@@ -519,11 +520,11 @@ cCompare::setup()
                 delete stmp;
             }
         }
-        c_cell_names1->free();
+        stringlist::destroy(c_cell_names1);
         c_cell_names1 = st->names();
-        c_cell_names1->sort();
+        stringlist::sort(c_cell_names1);
         delete st;
-        c_cell_names2->free();  // This is quietly ignored when recursive.
+        stringlist::destroy(c_cell_names2);
         c_cell_names2 = 0;
     }
 
@@ -618,8 +619,9 @@ cCompare::compare()
                 s->string, DIFF_RTOK, ss ? ss->string : s->string);
 
             unsigned int ec;
-            ret = c_chd1->compareCHDs_fp(s->string, c_chd2, ss ? ss->string : 0,
-                c_aoi_given ? &c_AOI : 0, c_layer_list, c_skip_layers, c_fp,
+            ret = cCHD::compareCHDs_fp(c_chd1, s->string, c_chd2,
+                ss ? ss->string : 0, c_aoi_given ? &c_AOI : 0,
+                c_layer_list, c_skip_layers, c_fp,
                 c_max_diffs, &ec, c_coarse_mult, c_fine_grid);
             if (ret != XIok)
                 break;
@@ -652,7 +654,7 @@ cCompare::compare()
         chd_diff.set_sloppy_boxes(c_sloppy);
         chd_diff.set_ignore_dups(c_ignore_dups);
 
-        unsigned int numcells = c_cell_names1->length();
+        unsigned int numcells = stringlist::length(c_cell_names1);
         unsigned int cnt = 0;
         bool differ = false;
 

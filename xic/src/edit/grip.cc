@@ -648,7 +648,7 @@ namespace {
                 }
             }
         }
-        pcp->free();
+        PCellParam::destroy(pcp);
         return (found);
     }
 }
@@ -681,7 +681,7 @@ sGrip::setup(const sCniGripDesc &gd, const BBox &BB)
         char *dbname = PCellDesc::canon(pd->string());
         PCellParam *pcp;
         if (PC()->getDefaultParams(dbname, &pcp)) {
-            pcp = pcp->find(gd_param);
+            pcp = PCellParam::find(pcp, gd_param);
             if (pcp)
                 g_constr = pcp->constraint();
         }

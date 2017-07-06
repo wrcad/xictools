@@ -60,13 +60,12 @@ struct RLedge
             p = pt;
         }
 
-    void free()
+    static void destroy(RLedge *e)
         {
-            RLedge *e = this;
             while (e) {
-                RLedge *en = e->next;
-                delete e;
-                e = en;
+                RLedge *ex = e;
+                e = e->next;
+                delete ex;
             }
         }
 
@@ -89,9 +88,9 @@ struct RLcontact
 
     ~RLcontact()
         {
-            Zlist::free(czl);
-            h_edges->free();
-            v_edges->free();
+            Zlist::destroy(czl);
+            RLedge::destroy(h_edges);
+            RLedge::destroy(v_edges);
         }
 
     BBox cBB;             // contact bounding box
@@ -247,13 +246,13 @@ struct via_t
 struct vls_t
 {
     vls_t(via_t *v, vls_t *n) { via = v; next = n; }
-    void free()
+
+    static void destroy(vls_t *v)
         {
-            vls_t *v = this;
             while (v) {
-                vls_t *vn = v->next;
-                delete v;
-                v = vn;
+                vls_t *vx = v;
+                v = v->next;;
+                delete vx;
             }
         }
 
@@ -270,7 +269,7 @@ struct cnd_t
     ~cnd_t()
         {
             delete po;
-            vias->free();
+            vls_t::destroy(vias);
             delete [] gmat;
         }
 

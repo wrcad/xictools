@@ -240,7 +240,7 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
                 // Keep first selected only.
                 while (list) {
                     if (list->odesc->state() == CDSelected) {
-                        list->next->free();
+                        CDol::destroy(list->next);
                         list->next = 0;
                         sel_list = list;
                         break;
@@ -255,7 +255,7 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
                 while (list) {
                     if (list->odesc->state() == CDSelected) {
                         if (list->next) {
-                            list->next->next->free();
+                            CDol::destroy(list->next->next);
                             list->next->next = 0;
                             unsel_list = list->next;
                         }
@@ -270,7 +270,7 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
             }
             else {
                 // Keep first one only.
-                list->next->free();
+                CDol::destroy(list->next);
                 list->next = 0;
                 unsel_list = list;
             }
@@ -306,23 +306,23 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
 
     selqueue_t *sq = findQueue(sd, true);
     if (!sq) {
-        sel_list->free();
-        unsel_list->free();
+        CDol::destroy(sel_list);
+        CDol::destroy(unsel_list);
         return (false);
     }
 
     if (addmode == SELselect) {
         sq->insert_and_show(unsel_list);
-        unsel_list->free();
+        CDol::destroy(unsel_list);
         unsel_list = 0;
-        sel_list->free();
+        CDol::destroy(sel_list);
         sel_list = 0;
     }
     else if (addmode == SELdesel) {
     }
     else if (addmode == SELtoggle) {
         sq->insert_and_show(unsel_list);
-        unsel_list->free();
+        CDol::destroy(unsel_list);
         unsel_list = 0;
     }
     else {
@@ -330,7 +330,7 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
                 sel_list->odesc->type() == CDINSTANCE) {
             selqueue_t::show_unselected(sd, sel_list->odesc);
             sq->remove_object(sel_list->odesc);
-            sel_list->free();
+            CDol::destroy(sel_list);
             return (true);
         }
         if (unsel_list && !unsel_list->next && !sel_list &&
@@ -341,7 +341,7 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
                 bool cells_only = (types && *types ==
                     CDINSTANCE && *(types+1) == '\0');
                 if (!cells_only) {
-                    unsel_list->free();
+                    CDol::destroy(unsel_list);
                     return (true);
                 }
                 else {
@@ -353,7 +353,7 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
                 }
             }
             sq->insert_object(unsel_list->odesc, SQinsShow);
-            unsel_list->free();
+            CDol::destroy(unsel_list);
             return (true);
         }
         int selcnt = 0;
@@ -366,13 +366,13 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
         }
         if (selcnt > 1) {
             if (sel_list) {
-                sel_list->next->free();
+                CDol::destroy(sel_list->next);
                 sel_list->next = 0;
             }
         }
         else {
             sq->insert_and_show(unsel_list);
-            unsel_list->free();
+            CDol::destroy(unsel_list);
             unsel_list = 0;
         }
     }
@@ -381,11 +381,11 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
         for (CDol *c = sel_list; c; c = c->next)
             sq->remove_object(c->odesc);
         selqueue_t::redisplay_list(sd, sel_list);
-        sel_list->free();
+        CDol::destroy(sel_list);
     }
     sq->count_queue(&s_display_count, 0);
 
-    unsel_list->free();
+    CDol::destroy(unsel_list);
     return (true);
 }
 
@@ -519,7 +519,7 @@ namespace {
     {
         // find the smallest cell
         BBox BB;
-        list->computeBB(&BB);
+        CDol::computeBB(list, &BB);
         double Area = BB.width();
         Area *= BB.height();
         CDol *cret = list;
@@ -559,7 +559,7 @@ namespace {
                     Zoid Z(tbb);
                     bool cover;
                     bool cov = Z.test_coverage(zl0, &cover, 0);
-                    Zlist::free(zl0);
+                    Zlist::destroy(zl0);
                     if (!cov)
                         return (false);
                 }
@@ -716,7 +716,7 @@ cSelections::filter(const CDs *sd, CDol *list, const BBox *AOI,
         }
 
         if (c0) {
-            list->free();
+            CDol::destroy(list);
             list = c0;
         }
         // else list contains only boxes
@@ -752,7 +752,7 @@ cSelections::filter(const CDs *sd, CDol *list, const BBox *AOI,
                 for (CDol *ol = list; ol; ol = ol->next) {
                     ol->odesc = ary[i++];
                     if (i == cnt) {
-                        ol->next->free();
+                        CDol::destroy(ol->next);
                         ol->next = 0;
                         break;
                     }
@@ -806,7 +806,7 @@ cSelections::filter(const CDs *sd, CDol *list, const BBox *AOI,
                     // Keep first selected only.
                     while (c0) {
                         if (c0->odesc->state() == CDSelected) {
-                            c0->next->free();
+                            CDol::destroy(c0->next);
                             c0->next = 0;
                             break;
                         }
@@ -820,7 +820,7 @@ cSelections::filter(const CDs *sd, CDol *list, const BBox *AOI,
                     while (c0) {
                         if (c0->odesc->state() == CDSelected) {
                             if (c0->next) {
-                                c0->next->next->free();
+                                CDol::destroy(c0->next->next);
                                 c0->next->next = 0;
                             }
                             break;
@@ -832,19 +832,19 @@ cSelections::filter(const CDs *sd, CDol *list, const BBox *AOI,
                 }
                 else {
                     // Keep first one only.
-                    c0->next->free();
+                    CDol::destroy(c0->next);
                     c0->next = 0;
                 }
             }
             else {
                 CDol *c = smallest_bb(c0);
                 if (!c) {
-                    c0->free();
+                    CDol::destroy(c0);
                     c0 = 0;
                 }
                 else {
                     c0->odesc = c->odesc;
-                    c0->next->free();
+                    CDol::destroy(c0->next);
                     c0->next = 0;
                 }
             }
@@ -882,14 +882,14 @@ cSelections::filter(const CDs *sd, CDol *list, const BBox *AOI,
                 list = c0;
                 if (!iterate_mode) {
                     // No leading geometry, save the instance only.
-                    list->next->free();
+                    CDol::destroy(list->next);
                     list->next = 0;
                 }
             }
             else {
                 if (!iterate_mode) {
                     // Keep only the geometry ahead of instances.
-                    c0->free();
+                    CDol::destroy(c0);
                 }
                 else {
                     ce = list;
@@ -1040,7 +1040,7 @@ cSelections::parseSelections(const CDs *sd, const char *string, bool select)
             cmatch(sd, s, select, &s0);
         if (s0) {
             selqueue_t::redisplay_list(sd, s0);
-            s0->free();
+            CDol::destroy(s0);
         }
         return;
     }
@@ -1436,7 +1436,7 @@ cSelections::pmatch(const CDs *sd, int num, const char *str, bool select)
         }
         if (s0) {
             selqueue_t::redisplay_list(sd, s0);
-            s0->free();
+            CDol::destroy(s0);
         }
     }
     if (!all)
@@ -1497,7 +1497,7 @@ cSelections::cmatch(const CDs *sd, const char *str, bool select, CDol **sx)
             }
             else {
                 selqueue_t::redisplay_list(sd, s0);
-                s0->free();
+                CDol::destroy(s0);
             }
         }
     }
@@ -1650,7 +1650,7 @@ namespace {
     {
         Zlist *zl = odesc->toZlist();
         XIrt ret = ::coverageTest(zl, lspec, type, istrue);
-        Zlist::free(zl);
+        Zlist::destroy(zl);
         return (ret);
     }
 }
@@ -1689,7 +1689,7 @@ cSelections::lmatch(const CDs *sd, const char *str, bool select, CDol **sx)
                 lstring::ciprefix("anynooverlap", str)) {
             lspec = parseCoverageTest(str, &testtype);
             if (!lspec) {
-                ll->free();
+                CDll::destroy(ll);
                 return;
             }
             break;
@@ -1749,7 +1749,7 @@ cSelections::lmatch(const CDs *sd, const char *str, bool select, CDol **sx)
         sSelGen sg(*this, sd, "bpwl");
         CDo *od;
         while ((od = sg.next()) != 0) {
-            if (ll->inlist(od->ldesc())) {
+            if (CDll::inlist(ll, od->ldesc())) {
                 if ((od->type() == CDBOX && (boxes || all)) ||
                         (od->type() == CDPOLYGON && (polys || all)) ||
                         (od->type() == CDWIRE && (wires || all)) ||
@@ -1774,11 +1774,11 @@ cSelections::lmatch(const CDs *sd, const char *str, bool select, CDol **sx)
             }
             else {
                 selqueue_t::redisplay_list(sd, s0);
-                s0->free();
+                CDol::destroy(s0);
             }
         }
     }
-    ll->free();
+    CDll::destroy(ll);
     delete lspec;
 }
 // End of cSelections functions.
@@ -2057,7 +2057,7 @@ selqueue_t::deselect_types(const char *types)
         }
     }
     redisplay_list(sq_sdesc, o0);
-    o0->free();
+    CDol::destroy(o0);
 }
 
 
@@ -2077,7 +2077,7 @@ selqueue_t::deselect_layer(const CDl *ld)
         }
     }
     redisplay_list(sq_sdesc, o0);
-    o0->free();
+    CDol::destroy(o0);
 }
 
 
@@ -2478,7 +2478,7 @@ selqueue_t::add_labels()
         insert_object(ol->odesc, SQinsNoShow);
         ol->odesc->set_state(st);
     }
-    list->free();
+    CDol::destroy(list);
 }
 
 
@@ -2564,7 +2564,7 @@ selqueue_t::purge_labels(bool all)
         insert_object(ol->odesc, SQinsNoShow);
         ol->odesc->set_state(st);
     }
-    list->free();
+    CDol::destroy(list);
 }
 
 
@@ -2621,7 +2621,7 @@ selqueue_t::get_zlist(const CDl *ld, const Zlist *zref) const
         return (0);
 
     BBox sBB;
-    ol0->computeBB(&sBB);
+    CDol::computeBB(ol0, &sBB);
 
     Zlist *z0 = 0;
     for (const Zlist *zl = zref; zl; zl = zl->next) {
@@ -2645,7 +2645,7 @@ selqueue_t::get_zlist(const CDl *ld, const Zlist *zref) const
             }
         }
     }
-    ol0->free();
+    CDol::destroy(ol0);
 
     try {
         z0 = Zlist::repartition(z0);
@@ -2816,7 +2816,7 @@ selqueue_t::redisplay_list(const CDs *sd, CDol *c0)
                     bl = addEdges(c->odesc, wdesc, bl);
                 if (bl) {
                     wdesc->RedisplayList(bl);
-                    bl->free();
+                    Blist::destroy(bl);
                 }
             }
         }

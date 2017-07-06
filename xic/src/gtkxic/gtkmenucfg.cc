@@ -1139,11 +1139,11 @@ gtkMenuConfig::updateDynamicMenus()
                 stringlist *sx = sold;
                 sold = sold->next;
                 sx->next = 0;
-                sx->free();
+                stringlist::destroy(sx);
                 sx = snew;
                 snew = snew->next;
                 sx->next = 0;
-                sx->free();
+                stringlist::destroy(sx);
             }
 
             // Build the item factory path in buf.
@@ -1186,8 +1186,8 @@ gtkMenuConfig::updateDynamicMenus()
             if (btn)
                 ent->cmd.caller = btn;
         }
-        snew->free();
-        sold->free();
+        stringlist::destroy(snew);
+        stringlist::destroy(sold);
     }
 }
 

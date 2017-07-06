@@ -56,28 +56,10 @@ RTfunc RTelem::e_destroy_funcs[26];
 
 RTelem::~RTelem()
 {
-    RTelem *rte = this;
-    if (rte && e_type >= 'a' && e_type <= 'z') {
+    if (e_type >= 'a' && e_type <= 'z') {
         int p = e_type - 'a';
         if (e_destroy_funcs[p])
-            (*e_destroy_funcs[p])(rte);
-    }
-}
-
-
-// Free the element and its descendents.
-//
-void
-RTelem::free()
-{
-    RTelem *rte = this;
-    if (rte) {
-        RTelem *rn;
-        for (RTelem *r = rte->children(); r; r = rn) {
-            rn = r->sibling();
-            r->free();
-        }
-        delete rte;
+            (*e_destroy_funcs[p])(this);
     }
 }
 
@@ -89,11 +71,6 @@ RTelem::free()
 int
 RTelem::test()
 {
-    {
-        RTelem *rte = this;
-        if (!rte)
-            return (0);
-    }
     if (is_leaf())
         return (0);
     BBox tBB = children()->e_BB;
@@ -117,11 +94,6 @@ RTelem::test()
 void
 RTelem::show(int depth, int d)
 {
-    {
-        RTelem *rte = this;
-        if (!rte)
-            return;
-    }
     if (depth <= 0) {
         Zoid Z(&e_BB);
         Z.show();
@@ -695,6 +667,8 @@ RTree::insert_prv(RTelem *rnew)
 
 
 //---- Diagnostics
+// #define DT_DIAGNOSTICS
+
 #ifdef RT_DIAGNOSTICS
 
 #include "randval.h"
@@ -705,12 +679,13 @@ namespace {
     struct RTl
     {
         RTl(RTelem *r, RTl *n) { rt = r; next = n; }
-        void free()
+
+        static void destroy(RTl *s)
             {
-                RTl *sn;
-                for (RTl *s = this; s; s = sn) {
-                    sn = s->next;
-                    delete s;
+                while (s) {
+                    RTl *sx = s;
+                    s = s->next;
+                    delete sx;
                 }
             }
 

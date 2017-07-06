@@ -150,11 +150,6 @@ pf_ordered_path::pf_ordered_path(CDo *odesc)
 void
 pf_ordered_path::simplify(pathfinder *pf)
 {
-    {
-        pf_ordered_path *pt = this;
-        if (!pt)
-            return;
-    }
     for (int i = 0; i < num_elements; i++) {
         for (int j = num_elements - 1; j > i+1 ; j--) {
             if (pf->is_contacting(elements[i], elements[j])) {
@@ -236,7 +231,7 @@ pathfinder::find_path(BBox *AOI)
                         delete sf;
                     }
                     catch (int) {
-                        sl->free();
+                        CDol::destroy(sl);
                         throw;
                     }
                 }
@@ -326,7 +321,7 @@ pathfinder::find_path(const CDo *odesc)
                         delete sf;
                     }
                     catch (int) {
-                        sl->free();
+                        CDol::destroy(sl);
                         throw;
                     }
                 }
@@ -515,12 +510,12 @@ again:
                             if (insert(s->odesc) == PFerror)
                                 return (esp_error(this));
                         }
-                        stack->free();
+                        pf_stack_elt::destroy(stack);
                         for (CDol *o = trash; o; o = o->next) {
                             if (insert(o->odesc) == PFerror)
                                 return (esp_error(this));
                         }
-                        trash->free();
+                        CDol::destroy(trash);
                         return (path);
                     }
                     goto again;
@@ -546,7 +541,7 @@ again:
         if (insert(o->odesc) == PFerror)
             return (esp_error(this));
     }
-    trash->free();
+    CDol::destroy(trash);
     Errs()->add_error("extract_subpath: no connected subpath found!");
     return (0);
 }
@@ -1089,7 +1084,7 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
                 continue;
 
             Zlist *zv = cursdp->getZlist(pf_depth, ld, z1, &ret);
-            Zlist::free(z1);
+            Zlist::destroy(z1);
             if (ret != XIok) {
                 if (ret == XIbad)
                     Errs()->add_error(
@@ -1108,7 +1103,7 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
                         if (ret == XIbad)
                             Errs()->add_error(
                                 "get_via_list: via check returned error");
-                        Zlist::free(zv);
+                        Zlist::destroy(zv);
                         break;
                     }
                     if (istrue && incl_xtra_layers) {
@@ -1122,12 +1117,12 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
                                     Errs()->add_error(
                                     "get_via_list: failed to get zlist for %s",
                                         ldtmp->name());
-                                Zlist::free(zv);
+                                Zlist::destroy(zv);
                                 break;
                             }
                             if (zx) {
                                 PolyList *pl = Zlist::to_poly_list(zx);
-                                CDo *od = pl->to_odesc(ldtmp);
+                                CDo *od = PolyList::to_odesc(pl, ldtmp);
                                 CDo *on;
                                 for ( ; od; od = on) {
                                     on = od->next_odesc();
@@ -1136,7 +1131,7 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
                                 }
                             }
                         }
-                        l0->free();
+                        CDll::destroy(l0);
                         if (ret != XIok)
                             break;
                     }
@@ -1149,11 +1144,11 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
                     zv0 = zv;
                 }
                 else
-                    Zlist::free(zv);
+                    Zlist::destroy(zv);
             }
         }
         if (ret != XIok) {
-            Zlist::free(zv0);
+            Zlist::destroy(zv0);
             break;
         }
 
@@ -1162,7 +1157,7 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
         // a layer.
 
         PolyList *po = Zlist::to_poly_list(zv0);
-        CDo *od = po->to_odesc(ld);
+        CDo *od = PolyList::to_odesc(po, ld);
 
         CDo *on;
         for ( ; od; od = on) {
@@ -1176,7 +1171,7 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
     //
     SymTabGen gen(tab, true);
     while ((h = gen.next()) != 0) {
-        Zlist::free(((Zlist*)h->stData));
+        Zlist::destroy(((Zlist*)h->stData));
         delete h;
     }
     delete tab;
@@ -1219,7 +1214,7 @@ pathfinder::neighbors(CDs *sdesc, CDo *odesc)
                 continue;
             }
             if (checkInterrupt()) {
-                sl0->free();
+                CDol::destroy(sl0);
                 delete pointer;
                 throw (1);
             }
@@ -1233,7 +1228,7 @@ pathfinder::neighbors(CDs *sdesc, CDo *odesc)
                 continue;
             }
             if (pfret == PFerror) {
-                sl0->free();
+                CDol::destroy(sl0);
                 delete pointer;
                 return (0);
             }
@@ -1270,7 +1265,7 @@ pathfinder::neighbors(CDs *sdesc, CDo *odesc)
                     continue;
                 }
                 if (checkInterrupt()) {
-                    sl0->free();
+                    CDol::destroy(sl0);
                     delete pointer;
                     throw (1);
                 }
@@ -1287,7 +1282,7 @@ pathfinder::neighbors(CDs *sdesc, CDo *odesc)
                         &istrue);
                     lsp.set_tree(0);
                     if (ret == XIintr) {
-                        sl0->free();
+                        CDol::destroy(sl0);
                         delete pointer;
                         throw (1);
                     }
@@ -1306,7 +1301,7 @@ pathfinder::neighbors(CDs *sdesc, CDo *odesc)
                     continue;
                 }
                 if (pfret == PFerror) {
-                    sl0->free();
+                    CDol::destroy(sl0);
                     delete pointer;
                     return (0);
                 }
@@ -1350,7 +1345,7 @@ pathfinder::neighbors(CDs *sdesc, CDo *odesc)
                     continue;
                 }
                 if (checkInterrupt()) {
-                    sl0->free();
+                    CDol::destroy(sl0);
                     delete odesc2;
                     throw (1);
                 }
@@ -1371,7 +1366,7 @@ pathfinder::neighbors(CDs *sdesc, CDo *odesc)
                         continue;
                     }
                     if (checkInterrupt()) {
-                        sl0->free();
+                        CDol::destroy(sl0);
                         delete pointer;
                         throw (1);
                     }
@@ -1392,7 +1387,7 @@ pathfinder::neighbors(CDs *sdesc, CDo *odesc)
                         continue;
                     }
                     if (pfret == PFerror) {
-                        sl0->free();
+                        CDol::destroy(sl0);
                         delete odesc2;
                         return (0);
                     }

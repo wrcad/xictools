@@ -951,7 +951,7 @@ cFIO::OpenImport(const char *fullname, const FIOreadPrms *prms,
                 ifAmbiguityCallback(list,
                     "References found in library - click to select",
                     libptr->filename(), (AMBIGUITY_CALLBACK)callback, cbdata);
-                list->free();
+                stringlist::destroy(list);
                 return (OIambiguous);
             }
             else {
@@ -1170,7 +1170,7 @@ cFIO::open_symbol_file(const char *fullname, const char *cellname,
             ifAmbiguityCallback(list,
                 "References found in library - click to select",
                 libptr->filename(), (AMBIGUITY_CALLBACK)callback, cbdata);
-            list->free();
+            stringlist::destroy(list);
             return (OIambiguous);
         }
         else {
@@ -1260,8 +1260,8 @@ cFIO::open_cif(const char *fullpath, const char *cellname, cCHD *chd,
                 if (ambg)
                     oiret = OIambiguous;
             }
-            tlp->free();
-            tle->free();
+            stringlist::destroy(tlp);
+            stringlist::destroy(tle);
         }
     }
     if (!from_lib)
@@ -1349,8 +1349,8 @@ cFIO::open_gds(const char *fullpath, const char *cellname, cCHD *chd,
                 if (ambg)
                     oiret = OIambiguous;
             }
-            tlp->free();
-            tle->free();
+            stringlist::destroy(tlp);
+            stringlist::destroy(tle);
         }
     }
     if (!from_lib)
@@ -1438,8 +1438,8 @@ cFIO::open_cgx(const char *fullpath, const char *cellname, cCHD *chd,
                 if (ambg)
                     oiret = OIambiguous;
             }
-            tlp->free();
-            tle->free();
+            stringlist::destroy(tlp);
+            stringlist::destroy(tle);
         }
     }
     if (!from_lib)
@@ -1527,8 +1527,8 @@ cFIO::open_oas(const char *fullpath, const char *cellname, cCHD *chd,
                 if (ambg)
                     oiret = OIambiguous;
             }
-            tlp->free();
-            tle->free();
+            stringlist::destroy(tlp);
+            stringlist::destroy(tle);
         }
     }
     if (!from_lib)
@@ -1576,7 +1576,7 @@ cFIO::find_top_symbol(CDcbin *cbret, void (*callback)(const char*, OIcbData*),
         }
     }
 
-    sl->sort();
+    stringlist::sort(sl);
     if (!sl->next)
         CDcdb()->findSymbol(sl->string, cbret);
     else {

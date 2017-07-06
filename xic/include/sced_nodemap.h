@@ -39,8 +39,7 @@ struct sNodeName
         }
     ~sNodeName();
 
-    void free() {
-        sNodeName *n = this;
+    static void destroy(sNodeName *n) {
         while (n) {
             sNodeName *nx = n;
             n = n->nn_next;
@@ -75,9 +74,8 @@ struct xyname_t
             xy_y = y;
         }
 
-    void free()
+    static void destroy(xyname_t *n)
         {
-            xyname_t *n = this;
             while (n) {
                 xyname_t *nx = n;
                 n = n->xy_next;
@@ -116,45 +114,34 @@ public:
         {
             delete [] nm_nmap;
             delete [] nm_fmap;
-            nm_setnames->free();
+            sNodeName::destroy(nm_setnames);
             delete nm_netname_tab;
         }
 
-    void setDirty()
-        {
-            cNodeMap *mt = this;
-            if (mt)
-                mt->nm_dirty = true;
-        }
-
-    bool isDirty()
-        {
-            cNodeMap *mt = this;
-            if (mt)
-                return (mt->nm_dirty);
-            return (false);
-        }
+    void setDirty()     { nm_dirty = true; }
+    bool isDirty()      const { return (nm_dirty); }
 
     int findNode(const char*);
     int findNode(CDnetName);
     int countNodes();
-    void refresh();
+
     void setupNetNames(int, SymTab*);
     bool newEntry(const char*, int);
     void delEntry(int);
-    const char *map(int);
-    CDnetName mapStab(int);
-    const char *mapName(int);
-    bool isSet(int);
-    bool isGlobal(int);
-    int countGlobal();
-    void tabAddGlobal(SymTab*);
+    const char *map(int) const;
+    CDnetName mapStab(int) const;
+    const char *mapName(int) const;
+    bool isSet(int) const;
+    bool isGlobal(int) const;
+    int hasGlobal(bool = false) const;
+    void tabAddGlobal(SymTab*) const;
     void updateProperty();
-    xyname_t *getSetList();
+    xyname_t *getSetList() const;
 
 private:
     void extract_setnames();
     void setup();
+    void refresh();
 
     CDnetName *nm_nmap;          // map to name strings
     unsigned char *nm_fmap;      // map to flags

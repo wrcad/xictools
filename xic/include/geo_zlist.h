@@ -96,10 +96,10 @@ struct Zlist
     Zlist(int xll, int xlr, int yl, int xul, int xur, int yu, Zlist *zn) :
             Z(xll, xlr, yl, xul, xur, yu) { next = zn; };
 
-    static void free(const Zlist *zl)
+    static void destroy(Zlist *zl)
     {
         while (zl) {
-            const Zlist *zx = zl;
+            Zlist *zx = zl;
             zl = zl->next;
             delete zx;
         }

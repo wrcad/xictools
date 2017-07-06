@@ -172,7 +172,7 @@ cTechCdsOut::dump_controls()
         for (string2list *s = s2; s; s = s->next)
             fprintf(tco_fp, "    ( %-19s \"%s\" )\n", s->string, s->value);
         fputs("  )\n\n", tco_fp);
-        s2->free();
+        string2list::destroy(s2);
     }
 
     fputs("  viewTypeUnits(\n", tco_fp);
@@ -229,7 +229,7 @@ cTechCdsOut::dump_techPurposes()
 {
     fputs("  techPurposes(\n", tco_fp);
     stringnumlist *s0 = CDldb()->listOApurposeTab();
-    s0->sort_by_num();
+    stringnumlist::sort_by_num(s0);
     for (stringnumlist *s = s0; s; s = s->next) {
         stringnumlist *sn = s->next;
         if (sn && sn->num == s->num) {
@@ -248,7 +248,7 @@ cTechCdsOut::dump_techPurposes()
         else
             fprintf(tco_fp, "    ( %-24s %6d )\n", s->string, s->num);
     }
-    s0->free();
+    stringnumlist::destroy(s0);
     fputs("  )\n\n", tco_fp);
     return (!ferror(tco_fp));
 }
@@ -259,7 +259,7 @@ cTechCdsOut::dump_techLayers()
 {
     fputs("  techLayers(\n", tco_fp);
     stringnumlist *s0 = CDldb()->listOAlayerTab();
-    s0->sort_by_num();
+    stringnumlist::sort_by_num(s0);
     for (stringnumlist *s = s0; s; s = s->next) {
         stringnumlist *sn = s->next;
         if (sn && sn->num == s->num) {
@@ -278,7 +278,7 @@ cTechCdsOut::dump_techLayers()
         else
             fprintf(tco_fp, "    ( %-24s %6d )\n", s->string, s->num);
     }
-    s0->free();
+    stringnumlist::destroy(s0);
     fputs("  )\n\n", tco_fp);
     return (!ferror(tco_fp));
 }
@@ -481,13 +481,13 @@ namespace {
             else if (p->optype == TOK_POWER)
                 lstr.add("'xor");
             else {
-                p->free();
+                ParseNode::destroy(p);
                 return (0);
             }
             lstr.add_c(' ');
             lstr.add(p->right->data.v->content.string);
             lstr.add_c(')');
-            p->free();
+            ParseNode::destroy(p);
             return (lstr.string_trim());
         }
         if (p && p->type == PT_BINOP && p->optype == TOK_AND && p->left &&
@@ -501,10 +501,10 @@ namespace {
             lstr.add(" 'and ");
             lstr.add(p->right->left->data.v->content.string);
             lstr.add_c(')');
-            p->free();
+            ParseNode::destroy(p);
             return (lstr.string_trim());
         }
-        p->free();
+        ParseNode::destroy(p);
         return (0);
     }
 }

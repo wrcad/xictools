@@ -70,7 +70,7 @@ tcKWstruct::undo_keyword_change()
 void
 tcKWstruct::clear_undo_list()
 {
-    kw_undolist->free();
+    stringlist::destroy(kw_undolist);
     kw_undolist = 0;
     kw_newstr = 0;
 }

@@ -100,7 +100,8 @@ cDisplay::MainDraw()
 inline CDs *
 CurCell(bool no_symb = false)
 {
-    return (DSP()->MainWdesc()->CurCellDesc(DSP()->CurMode(), no_symb));
+    return (DSP()->MainWdesc() ?
+        DSP()->MainWdesc()->CurCellDesc(DSP()->CurMode(), no_symb) : 0);
 }
 
 // The per-mode current cell.
@@ -108,7 +109,8 @@ CurCell(bool no_symb = false)
 inline CDs *
 CurCell(DisplayMode m, bool no_symb = false)
 {
-    return (DSP()->MainWdesc()->CurCellDesc(m, no_symb));
+    return (DSP()->MainWdesc() ?
+        DSP()->MainWdesc()->CurCellDesc(m, no_symb) : 0);
 }
 
 // Top-cell for main window, same as current cell except when
@@ -117,7 +119,8 @@ CurCell(DisplayMode m, bool no_symb = false)
 inline CDs *
 TopCell(bool no_symb = false)
 {
-    return (DSP()->MainWdesc()->TopCellDesc(DSP()->CurMode(), no_symb));
+    return (DSP()->MainWdesc() ?
+        DSP()->MainWdesc()->TopCellDesc(DSP()->CurMode(), no_symb) : 0);
 }
 
 // The per-mode top cell.
@@ -125,7 +128,8 @@ TopCell(bool no_symb = false)
 inline CDs *
 TopCell(DisplayMode m, bool no_symb = false)
 {
-    return (DSP()->MainWdesc()->TopCellDesc(m, no_symb));
+    return (DSP()->MainWdesc() ?
+        DSP()->MainWdesc()->TopCellDesc(m, no_symb) : 0);
 }
 
 

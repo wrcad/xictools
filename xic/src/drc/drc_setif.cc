@@ -64,7 +64,7 @@ namespace {
             Zlist *ztmp;
             *retp = td.bloat(odesc, &ztmp, edgeonly);
             if (*retp != XIok) {
-                Zlist::free(z0);
+                Zlist::destroy(z0);
                 cursd->clearLayer(ld);
                 return (0);
             }

@@ -91,7 +91,7 @@ cPy *cPy::ptr = 0;
 cPy::cPy()
 {
     methods = 0;
-    idstr = OSNAME" "CVS_RELEASE_TAG;
+    idstr = OSNAME " " CVS_RELEASE_TAG;
     level = 0;
     exit_status = 0;
 
@@ -376,7 +376,7 @@ namespace {
         }
         if (v->type == TYP_ZLIST) {
             Zlist *zl = v->content.zlist;
-            int len = zl->length();
+            int len = Zlist::length(zl);
             PyObject *list = PyList_New(len + 1);
             PyList_SetItem(list, 0, PyString_FromString("zlist"));
             for (int i = 1; i <= len; i++) {
@@ -403,7 +403,7 @@ namespace {
                 int len = 2;
                 if (hdl->type == HDLstring) {
                     stringlist *s0 = (stringlist*)hdl->data;
-                    len += s0->length();
+                    len += stringlist::length(s0);
                 }
                 PyObject *list = PyList_New(len);
                 PyList_SetItem(list, 0, PyString_FromString("xic_handle"));

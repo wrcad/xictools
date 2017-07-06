@@ -68,6 +68,19 @@ struct RTelem
     // This should explicitly call subclass destructors.
     ~RTelem();
 
+    // Free the element and its descendents.
+    static void destroy(RTelem *rte)
+        {
+            if (rte) {
+                RTelem *rn;
+                for (RTelem *r = rte->children(); r; r = rn) {
+                    rn = r->sibling();
+                    destroy(r);
+                }
+                delete rte;
+            }
+        }
+
     // Ordering
     bool op_gt(const RTelem *r) const
         {
@@ -140,9 +153,9 @@ struct RTelem
 
     // For working with RTelem lists returned from RTree::to_list().
     //
-    RTelem *list_next(RTelem **nx)
+    static RTelem *list_next(RTelem *thisel, RTelem **nx)
         {
-            RTelem *r = this;
+            RTelem *r = thisel;
             if (r) {
                 *nx = r->sibling();
                 r->e_right = 0;
@@ -409,7 +422,6 @@ private:
         }
 
 public:
-    void free();
     int test();
     void show(int, int = 1);
     void list_test();
@@ -491,7 +503,7 @@ struct RTree
 
     void clear()
         {
-            rt_root->free();
+            RTelem::destroy(rt_root);
             rt_root = 0;
             rt_allocated = 0;
             rt_deferred = false;

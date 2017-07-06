@@ -91,11 +91,11 @@ public:
 
     void clear()
         {
-            erMsgs->free();
+            stringlist::destroy(erMsgs);
             erMsgs = 0;
             while (erStack) {
                 stringlist *s = (stringlist*)erStack->string;
-                s->free();
+                stringlist::destroy(s);
                 erStack->string = 0;
                 stringlist *tmp = erStack;
                 erStack = erStack->next;
@@ -110,7 +110,7 @@ public:
             if (erMsgs) {
                 delete [] lastMsg;
                 lastMsg = getstr();
-                erMsgs->free();
+                stringlist::destroy(erMsgs);
                 erMsgs = 0;
             }
         }
@@ -120,7 +120,7 @@ public:
 
     void pop_error()
         {
-            erMsgs->free();
+            stringlist::destroy(erMsgs);
             erMsgs = 0;
             if (erStack) {
                 erMsgs = (stringlist*)erStack->string;
@@ -142,7 +142,7 @@ public:
     // Maintain a list of warning messages.
     void arm_warnings(bool b) { clear_warnings(); warnings_flag = b; }
     void add_warning(const char *fmt, ...);
-    void clear_warnings() { warnings->free(); warnings = 0; }
+    void clear_warnings() { stringlist::destroy(warnings); warnings = 0; }
     const stringlist *get_warnings() { return (warnings); }
 
 private:

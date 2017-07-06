@@ -91,7 +91,7 @@ cSced::findNode(const CDs *sd, const char *name)
 const char *
 cSced::nodeName(const CDs *sd, int node, bool *glob)
 {
-    if (sd && sd->isElectrical()) {
+    if (sd && sd->isElectrical() && sd->nodes()) {
         if (glob)
             *glob = sd->nodes()->isGlobal(node);
         return (sd->nodes()->map(node));
@@ -111,7 +111,7 @@ cSced::nodeName(const CDs *sd, int node, bool *glob)
 void
 cSced::updateNodes(const CDs *sd)
 {
-    if (sd && sd->isElectrical())
+    if (sd && sd->isElectrical() && sd->nodes())
         sd->nodes()->updateProperty();
 }
 
@@ -174,7 +174,8 @@ cSced::tabGlobals(CDs *sdesc)
     CDs *sd;
     while ((sd = gen.next(&err)) != 0) {
         cNodeMap *map = sd->nodes();
-        map->tabAddGlobal(tab);
+        if (map)
+            map->tabAddGlobal(tab);
     }
     return (tab);
 }
@@ -206,6 +207,8 @@ cNodeMap::cNodeMap(CDs *sdesc)   // electrical arg
 int
 cNodeMap::findNode(const char *n)
 {
+    if (!n)
+        return (-1);
     return (findNode(CDnetex::name_tab_add(n)));
 }
 
@@ -216,14 +219,9 @@ cNodeMap::findNode(const char *n)
 int
 cNodeMap::findNode(CDnetName name)
 {
-    {
-        cNodeMap *nmt = this;
-        if (!nmt)
-            return (-1);
-    }
     if (!name)
         return (-1);
-    refresh();
+    refresh();  // makes this function non-const
 
     if (nm_netname_tab) {
         long n = (long)nm_netname_tab->get((unsigned long)name);
@@ -268,47 +266,10 @@ cNodeMap::countNodes()
 {
     if (!nm_dirty)
         return (nm_size);
-    {
-        cNodeMap *nmt = this;
-        if (!nmt)
-            return (0);
-    }
     SCD()->connect(nm_celldesc);
     if (!nm_connect_size)
         nm_connect_size = 1;
     return (nm_connect_size);
-}
-
-
-// Rebuild the mapping if not current.  The hierarchy for naming is:
-//   1. Global names.  These override everything, including user-
-//      supplied names.
-//   2. User-supplied node names.
-//   3. Names from cell terminals.
-//   4. Names from terminal devices or wire labels.
-//   7. Internally-generated names.
-//
-// If a map entry is 0, the internal name is implied.
-//
-void
-cNodeMap::refresh()
-{
-    {
-        cNodeMap *nmt = this;
-        if (!nmt)
-            return;
-    }
-    if (!nm_dirty)
-        return;
-    int osz = nm_size;
-    nm_size = countNodes();
-    if (osz != nm_size) {
-        delete [] nm_nmap;
-        delete [] nm_fmap;
-        nm_nmap = new CDnetName[nm_size];
-        nm_fmap = new unsigned char[nm_size];
-    }
-    setup();
 }
 
 
@@ -331,13 +292,8 @@ cNodeMap::setupNetNames(int csize, SymTab *nmtab)
 bool
 cNodeMap::newEntry(const char *nm, int node)
 {
-    {
-        cNodeMap *nmt = this;
-        if (!nmt) {
-            Errs()->add_error("null node table pointer.");
-            return (false);
-        }
-    }
+    if (!nm)
+        return (false);
     CDnetName name = CDnetex::name_tab_add(nm);
     bool already_there = false;
     bool renamed = false;
@@ -432,11 +388,6 @@ cNodeMap::newEntry(const char *nm, int node)
 void
 cNodeMap::delEntry(int node)
 {
-    {
-        cNodeMap *nmt = this;
-        if (!nmt)
-            return;
-    }
     int cnt = 0;
     sNodeName *sp = 0, *snext;
     for (sNodeName *sn = nm_setnames; sn; sn = snext) {
@@ -468,10 +419,9 @@ cNodeMap::delEntry(int node)
 // up-to-date.
 //
 const char *
-cNodeMap::map(int i)
+cNodeMap::map(int i) const
 {
-    cNodeMap *nmt = this;
-    if (!nmt || nm_dirty || i < 0 || i >= nm_size || !nm_nmap[i]) {
+    if (nm_dirty || i < 0 || i >= nm_size || !nm_nmap[i]) {
         char buf[64];
         mmItoA(buf, i);
         return (CDnetex::name_tab_add(buf)->string());
@@ -481,10 +431,9 @@ cNodeMap::map(int i)
 
 
 CDnetName
-cNodeMap::mapStab(int i)
+cNodeMap::mapStab(int i) const
 {
-    cNodeMap *nmt = this;
-    if (!nmt || nm_dirty || i < 0 || i >= nm_size || !nm_nmap[i])
+    if (nm_dirty || i < 0 || i >= nm_size || !nm_nmap[i])
         return (0);
     return (nm_nmap[i]);
 }
@@ -493,10 +442,9 @@ cNodeMap::mapStab(int i)
 // Given the node number, return the name if up-to-date.
 //
 const char *
-cNodeMap::mapName(int i)
+cNodeMap::mapName(int i) const
 {
-    cNodeMap *nmt = this;
-    if (!nmt || nm_dirty || i < 0 || i >= nm_size || !nm_nmap[i])
+    if (nm_dirty || i < 0 || i >= nm_size || !nm_nmap[i])
         return ("");
     return (nm_nmap[i]->string());
 }
@@ -505,11 +453,9 @@ cNodeMap::mapName(int i)
 // Return true if the node has a user-defined name.
 //
 bool
-cNodeMap::isSet(int i)
+cNodeMap::isSet(int i) const
 {
-    cNodeMap *nmt = this;
-    if (!nmt || nm_dirty || i < 0 || i >= nm_size ||
-            !(nm_fmap[i] & NM_SET))
+    if (nm_dirty || i < 0 || i >= nm_size || !(nm_fmap[i] & NM_SET))
         return (false);
     return (true);
 }
@@ -518,10 +464,9 @@ cNodeMap::isSet(int i)
 // Return true if the node has global name.
 //
 bool
-cNodeMap::isGlobal(int i)
+cNodeMap::isGlobal(int i) const
 {
-    cNodeMap *nmt = this;
-    if (!nmt || nm_dirty || i < 0 || i >= nm_size)
+    if (nm_dirty || i < 0 || i >= nm_size)
         return (false);
     if (!nm_nmap[i]) {
         nm_fmap[i] &= ~NM_GLOB;
@@ -537,22 +482,21 @@ cNodeMap::isGlobal(int i)
 }
 
 
-// Return the number of connections to global nets.
+// Return the number of connections to global nets if count is true,
+// otherwise return true on the first global.
 //
 int
-cNodeMap::countGlobal()
+cNodeMap::hasGlobal(bool count) const
 {
-    {
-        cNodeMap *nmt = this;
-        if (!nmt)
-            return (0);
-    }
     if (nm_dirty)
         return (0);
     int cnt = 0;
     for (int i = 0; i < nm_size; i++) {
-        if (nm_fmap[i] & NM_GLOB)
+        if (nm_fmap[i] & NM_GLOB) {
+            if (!count)
+                return (1);
             cnt++;
+        }
     }
     return (cnt);
 }
@@ -561,13 +505,8 @@ cNodeMap::countGlobal()
 // Record each global name in the passed symbol table.
 //
 void
-cNodeMap::tabAddGlobal(SymTab *tab)
+cNodeMap::tabAddGlobal(SymTab *tab) const
 {
-    {
-        cNodeMap *nmt = this;
-        if (!nmt)
-            return;
-    }
     if (nm_dirty || !tab)
         return;
     for (int i = 0; i < nm_size; i++) {
@@ -582,11 +521,6 @@ cNodeMap::tabAddGlobal(SymTab *tab)
 void
 cNodeMap::updateProperty()
 {
-    {
-        cNodeMap *nmt = this;
-        if (!nmt)
-            return;
-    }
     refresh();
 
     CDp_nodmp *pn = (CDp_nodmp*)nm_celldesc->prpty(P_NODMAP);
@@ -627,13 +561,8 @@ cNodeMap::updateProperty()
 // xyname_t::free.
 //
 xyname_t *
-cNodeMap::getSetList()
+cNodeMap::getSetList() const
 {
-    {
-        cNodeMap *nmt = this;
-        if (!nmt)
-            return (0);
-    }
     xyname_t *n0 = 0, *ne = 0;
     for (sNodeName *sn = nm_setnames; sn; sn = sn->next()) {
         if (sn->hent()->ref_type() == HYrefNode) {
@@ -920,5 +849,32 @@ cNodeMap::setup()
 
     // All done, we're clean now.
     nm_dirty = false;
+}
+
+
+// Rebuild the mapping if not current.  The hierarchy for naming is:
+//   1. Global names.  These override everything, including user-
+//      supplied names.
+//   2. User-supplied node names.
+//   3. Names from cell terminals.
+//   4. Names from terminal devices or wire labels.
+//   7. Internally-generated names.
+//
+// If a map entry is 0, the internal name is implied.
+//
+void
+cNodeMap::refresh()
+{
+    if (!nm_dirty)
+        return;
+    int osz = nm_size;
+    nm_size = countNodes();
+    if (osz != nm_size) {
+        delete [] nm_nmap;
+        delete [] nm_fmap;
+        nm_nmap = new CDnetName[nm_size];
+        nm_fmap = new unsigned char[nm_size];
+    }
+    setup();
 }
 

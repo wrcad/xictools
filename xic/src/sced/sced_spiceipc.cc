@@ -264,11 +264,11 @@ namespace {
             if (!saved_analyses[i])
                 break;
             if (!hyList::hy_strcmp(hp, saved_analyses[i])) {
-                hp->free();
+                hyList::destroy(hp);
                 return;
             }
         }
-        saved_analyses[NUM_SAVED_ANAL - 1]->free();
+        hyList::destroy(saved_analyses[NUM_SAVED_ANAL - 1]);
         for (int i = NUM_SAVED_ANAL - 1; i > 0; i--)
             saved_analyses[i] = saved_analyses[i-1];
         saved_analyses[0] = hp;
@@ -487,7 +487,7 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
         SCD()->getAnalysisList(), false);
     PL()->RegisterArrowKeyCallbacks(0, 0);
     if (anl) {
-        char *analysis_str = anl->string(HYcvPlain, false);
+        char *analysis_str = hyList::string(anl, HYcvPlain, false);
         const char *s = analysis_str;
         while (isspace(*s))
             s++;
@@ -503,14 +503,14 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
         else if (tok) {
             delete [] tok;
             delete [] analysis_str;
-            anl->free();
+            hyList::destroy(anl);
             PL()->ShowPromptV("Unknown analysis type %s.", tok);
             return (false);
         }
         else {
             delete [] tok;
             delete [] analysis_str;
-            anl->free();
+            hyList::destroy(anl);
             PL()->ShowPrompt("An analysis command is required.");
             return (false);
         }
@@ -533,7 +533,7 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
         PL()->ShowPrompt("Deck inclusion expansion failed.");
         if (Errs()->has_error())
             Log()->ErrorLog(SpiceIPC, Errs()->get_error());
-        deck->free();
+        stringlist::destroy(deck);
         dspPkgIf()->SetWorking(false);
         return (false);
     }
@@ -548,10 +548,10 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
     if (!ok && ipc_msg_skt > 0) {
         Errs()->get_error();  // Throw this away.
         PL()->ShowPrompt("WRspice returned error, source failed.");
-        deck->free();
+        stringlist::destroy(deck);
         return (false);
     }
-    deck->free();
+    stringlist::destroy(deck);
     if (ipc_msg_skt < 0) {
         PL()->ShowPrompt(msg);
         if (Errs()->has_error())
@@ -775,7 +775,7 @@ cSpiceIPC::FileToSpice(const char *fname, char **outbuf)
     fclose(fp);
 
     if (err) {
-        s0->free();
+        stringlist::destroy(s0);
         return (false);
     }
 #ifdef DEMO_EXPORT
@@ -783,12 +783,12 @@ cSpiceIPC::FileToSpice(const char *fname, char **outbuf)
     // locally.
 #else
     if (!expand_includes(&s0, "decksource")) {
-        s0->free();
+        stringlist::destroy(s0);
         return (false);
     }
 #endif
     bool ok = deck_to_spice(s0, outbuf);
-    s0->free();
+    stringlist::destroy(s0);
     return (ok);
 }
 
@@ -1433,11 +1433,11 @@ cSpiceIPC::init_remote(const char *c_spice_host)
             lstr.add_c('\n');
         }
         Errs()->add_error(lstr.string());
-        s0->free();
+        stringlist::destroy(s0);
         CLOSESOCKET(sd);
         return (-1);
     }
-    s0->free();
+    stringlist::destroy(s0);
 
     int tfd = sd;
     sd = open_skt(hent, port);

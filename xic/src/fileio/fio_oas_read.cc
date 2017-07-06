@@ -613,10 +613,10 @@ oas_in::~oas_in()
     delete in_propname_table;
     delete in_propstring_table;
     delete in_layername_table;
-    in_layermap_list->free();
+    oas_layer_map_elem::destroy(in_layermap_list);
     delete in_xname_table;
 
-    Zlist::free(in_zoidlist);
+    Zlist::destroy(in_zoidlist);
 
     delete in_bakif;
 }
@@ -800,7 +800,7 @@ oas_in::parse(DisplayMode mode, bool listonly, double sc, bool save_bb,
     in_propstring_table = 0;
     delete in_layername_table;
     in_layername_table = 0;
-    in_layermap_list->free();
+    oas_layer_map_elem::destroy(in_layermap_list);
     in_layermap_list = 0;
     delete in_xname_table;
     in_xname_table = 0;
@@ -942,7 +942,7 @@ oas_in::parse_incremental(double sc)
         in_propstring_table = 0;
         delete in_layername_table;
         in_layername_table = 0;
-        in_layermap_list->free();
+        oas_layer_map_elem::destroy(in_layermap_list);
         in_layermap_list = 0;
         delete in_xname_table;
         in_xname_table = 0;
@@ -1424,7 +1424,7 @@ oas_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
         bool ret = true;
         stringlist *layers = in_cgd->layer_list(p->get_name()->string());
         if (layers) {
-            GCfree<stringlist*> gc_layers(layers);
+            GCdestroy<stringlist> gc_layers(layers);
             for (stringlist *s = layers; s; s = s->next) {
                 if (FIO()->IsCgdSkipInvisibleLayers()) {
                     CDl *ld = CDldb()->findLayer(s->string, Physical);
@@ -1691,7 +1691,7 @@ oas_in::has_geom(symref_t *p, const BBox *AOI)
         if (!layers)
             return (OIambiguous);
 
-        GCfree<stringlist*> gc_layers(layers);
+        GCdestroy<stringlist> gc_layers(layers);
         for (stringlist *s = layers; s; s = s->next) {
             if (FIO()->IsCgdSkipInvisibleLayers()) {
                 CDl *ld = CDldb()->findLayer(s->string, Physical);
@@ -2516,7 +2516,7 @@ oas_in::a_text()
 
         // in_sdesc can be 0
         hyList *hpl = new hyList(in_sdesc, str, HYcvAscii);
-        char *string = hpl->string(HYcvPlain, false);
+        char *string = hyList::string(hpl, HYcvPlain, false);
         // This is the displayed string, not necessarily the same as the
         // label text.
 
@@ -2543,11 +2543,11 @@ oas_in::a_text()
             in_cBB.add(&BB);
         }
         else if (!in_areafilt || la.intersect(&in_cBB, false)) {
-            la.label = hpl->dup();
+            la.label = hyList::dup(hpl);
             CDla *newo;
             CDerrType err = in_sdesc->makeLabel(in_layers->ldesc, &la, &newo);
             if (err != CDok) {
-                hpl->free();
+                hyList::destroy(hpl);
                 if (err == CDbadLabel) {
                     warning("bad label (ignored)", la.x, la.y,
                         uobj.text.textlayer, uobj.text.texttype);
@@ -2558,9 +2558,9 @@ oas_in::a_text()
             if (newo)
                 a_add_properties(in_sdesc, newo);
             else
-                la.label->free();
+                hyList::destroy(la.label);
         }
-        hpl->free();
+        hyList::destroy(hpl);
     }
     return (true);
 }
@@ -2951,7 +2951,7 @@ oas_in::a_endlib()
 void
 oas_in::a_clear_properties()
 {
-    in_prpty_list->free_list();
+    CDp::destroy(in_prpty_list);
     in_prpty_list = 0;
 }
 
@@ -3370,12 +3370,12 @@ oas_in::ac_text()
     text.xform = uobj.text.xform;
 
     hyList *hpl = new hyList(in_sdesc, uobj.text.string, HYcvAscii);
-    char *string = hpl->string(HYcvPlain, false);
+    char *string = hyList::string(hpl, HYcvPlain, false);
 
     double tw, th;
     CD()->DefaultLabelSize(string, in_mode, &tw, &th);
     delete [] string;
-    hpl->free();
+    hyList::destroy(hpl);
 
     if (text.width)
         text.height = mmRnd(text.width*th/tw);
@@ -3713,7 +3713,7 @@ oas_in::ac_path_prv(Wire &w)
                 if (!ret)
                     break;
             }
-            pl->free();
+            PolyList::destroy(pl);
         }
         if (need_out)
             ret = in_out->write_wire(&w);
@@ -3978,7 +3978,7 @@ oas_in::ac_polygon_save_prv(Poly *po)
                     if (!ret)
                         break;
                 }
-                pl->free();
+                PolyList::destroy(pl);
             }
             if (need_out)
                 ret = in_out->write_poly(po);
@@ -6571,7 +6571,7 @@ oas_in::read_cellname(unsigned int ix)
         if (!te->prpty_list())
             te->set_prpty_list(in_prpty_list);
         else
-            in_prpty_list->free_list();
+            CDp::destroy(in_prpty_list);
         in_prpty_list = 0;
     }
 
@@ -6696,7 +6696,7 @@ oas_in::read_textstring(unsigned int ix)
         if (!te->prpty_list())
             te->set_prpty_list(in_prpty_list);
         else
-            in_prpty_list->free_list();
+            CDp::destroy(in_prpty_list);
         in_prpty_list = 0;
     }
 
@@ -6782,7 +6782,7 @@ oas_in::read_propname(unsigned int ix)
         if (!te->prpty_list())
             te->set_prpty_list(in_prpty_list);
         else
-            in_prpty_list->free_list();
+            CDp::destroy(in_prpty_list);
         in_prpty_list = 0;
     }
 
@@ -6869,7 +6869,7 @@ oas_in::read_propstring(unsigned int ix)
         if (!te->prpty_list())
             te->set_prpty_list(in_prpty_list);
         else
-            in_prpty_list->free_list();
+            CDp::destroy(in_prpty_list);
         in_prpty_list = 0;
     }
 
@@ -6955,7 +6955,7 @@ oas_in::read_layername(unsigned int ix)
         if (!te->prpty_list())
             te->set_prpty_list(in_prpty_list);
         else
-            in_prpty_list->free_list();
+            CDp::destroy(in_prpty_list);
         in_prpty_list = 0;
     }
 
@@ -9110,7 +9110,7 @@ oas_in::read_xname(unsigned int ix)
         if (!te->prpty_list())
             te->set_prpty_list(in_prpty_list);
         else
-            in_prpty_list->free_list();
+            CDp::destroy(in_prpty_list);
         in_prpty_list = 0;
     }
 
@@ -9468,31 +9468,15 @@ oas_in::placement_array_params(int *dx, int *dy, unsigned int *nx,
 // End of oas_in functions
 
 
-//
-// oas_table and related functions
-//
-
-/*
-oas_elt::~oas_elt()
-{
-    delete [] e_string;
-    e_prpty_list->free_list();
-}
-*/
-
-
 oas_table::~oas_table()
 {
-    oas_table *ot = this;
-    if (ot) {
-        for (unsigned int i = 0; i <= hashmask; i++) {
-            oas_elt *e = tab[i];
-            tab[i] = 0;
-            while (e) {
-                oas_elt *ex = e;
-                e = e->e_next;
-                delete ex;
-            }
+    for (unsigned int i = 0; i <= hashmask; i++) {
+        oas_elt *e = tab[i];
+        tab[i] = 0;
+        while (e) {
+            oas_elt *ex = e;
+            e = e->e_next;
+            delete ex;
         }
     }
 }
@@ -9501,13 +9485,10 @@ oas_table::~oas_table()
 oas_elt *
 oas_table::get(unsigned int x)
 {
-    oas_table *ot = this;
-    if (ot) {
-        unsigned int k = hash(x);
-        for (oas_elt *e = tab[k]; e; e = e->e_next) {
-            if (e->e_index == x)
-                return (e);
-        }
+    unsigned int k = hash(x);
+    for (oas_elt *e = tab[k]; e; e = e->e_next) {
+        if (e->e_index == x)
+            return (e);
     }
     return (0);
 }
@@ -9516,14 +9497,10 @@ oas_table::get(unsigned int x)
 oas_elt *
 oas_table::add(unsigned int x)
 {
-    oas_table *ot = this;
-    if (ot) {
-        unsigned int k = hash(x);
-        tab[k] = new oas_elt(x, tab[k]);
-        count++;
-        return (tab[k]);
-    }
-    return (0);
+    unsigned int k = hash(x);
+    tab[k] = new oas_elt(x, tab[k]);
+    count++;
+    return (tab[k]);
 }
 
 
@@ -9534,11 +9511,6 @@ oas_table::add(unsigned int x)
 oas_table *
 oas_table::check_rehash()
 {
-    {
-        oas_table *ot = this;
-        if (!ot)
-            return (0);
-    }
     if (count/(hashmask + 1) <= ST_MAX_DENS)
         return (this);
 

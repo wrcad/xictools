@@ -2345,7 +2345,7 @@ win_bag::drag_data_received(GtkWidget*, GdkDragContext *context, gint, gint,
             CDs *cursd = CurCell(true);
             hyList *hp = new hyList(cursd, (char*)val, HYcvAscii);
             gtkEdit()->insert(hp);
-            hp->free();
+            hyList::destroy(hp);
             success = true;
         }
     }

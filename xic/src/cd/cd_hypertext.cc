@@ -45,8 +45,7 @@
 void
 CDs::hyInit() const
 {
-    const CDs *sdt = this;
-    if (!sdt || !isElectrical() || !getHY())
+    if (!isElectrical() || !getHY())
         return;
     for (hyEnt **hent = getHY(); *hent; hent++)
         (*hent)->check_ref();
@@ -103,7 +102,7 @@ CDs::hyPoint(cTfmStack *stk, const BBox *AOI, int mask)
         if (sl0) {
             // return the name of the smallest cell
             BBox tBB;
-            sl0->computeBB(&tBB);
+            CDol::computeBB(sl0, &tBB);
             double marea = ((double)tBB.width())*tBB.height();
             odesc = sl0->odesc;
             CDol *sl;
@@ -206,7 +205,7 @@ CDs::hyPoint(cTfmStack *stk, const BBox *AOI, int mask)
                                 break;
 
                             if (InvAOI.intersect(x, y, true)) {
-                                cl0->free();
+                                CDol::destroy(cl0);
                                 return (new hyEnt(this, x, y, cinst,
                                     HYrefNode, HYorNone));
                             }
@@ -240,7 +239,7 @@ CDs::hyPoint(cTfmStack *stk, const BBox *AOI, int mask)
                                 else
                                     orient = HYorLt;
                             }
-                            cl0->free();
+                            CDol::destroy(cl0);
                             return (new hyEnt(this, pb->pos_x(), pb->pos_y(),
                                 cinst, HYrefBranch, orient));
                         }
@@ -259,7 +258,7 @@ CDs::hyPoint(cTfmStack *stk, const BBox *AOI, int mask)
                         // Devices only!
                         int x = (InvAOI.left + InvAOI.right)/2;
                         int y = (InvAOI.bottom + InvAOI.top)/2;
-                        cl0->free();
+                        CDol::destroy(cl0);
                         return (new hyEnt(this, x, y, cinst, HYrefDevice,
                             HYorNone));
                     }
@@ -296,7 +295,7 @@ CDs::hyPoint(cTfmStack *stk, const BBox *AOI, int mask)
                 if (!msdesc->isDevice()) {
                     hyEnt *h = hyPoint(stk, cinst, AOI, mask);
                     if (h) {
-                        cl0->free();
+                        CDol::destroy(cl0);
                         h->set_owner(this);
                         return (h);
                     }
@@ -314,13 +313,13 @@ CDs::hyPoint(cTfmStack *stk, const BBox *AOI, int mask)
                         // Subckts only!
                         int x = (InvAOI.left + InvAOI.right)/2;
                         int y = (InvAOI.bottom + InvAOI.top)/2;
-                        cl0->free();
+                        CDol::destroy(cl0);
                         return (new hyEnt(this, x, y, cinst, HYrefDevice,
                             HYorNone));
                     }
                 }
             }
-            cl0->free();
+            CDol::destroy(cl0);
         }
     }
 
@@ -409,7 +408,7 @@ CDs::hyPrpList(CDo *odesc, const CDp *pdesc)
             if (pdesc->value() == P_MODEL || pdesc->value() == P_VALUE ||
                     pdesc->value() == P_PARAM || pdesc->value() == P_OTHER ||
                     pdesc->value() == P_DEVREF)
-                return (((CDp_user*)pdesc)->data()->dup());
+                return (hyList::dup(((CDp_user*)pdesc)->data()));
             if (pdesc->value() == P_NOPHYS) {
                 hyList *hp = new hyList(HLrefText);
                 hp->set_text(lstring::copy(pdesc->string()));
@@ -851,8 +850,8 @@ hyEnt::~hyEnt()
     }
 
     CD()->ifRecordHYent(this, false);  // purge from undo list
-    hyPrnt->free();
-    hyPrxy->free();
+    hyParent::destroy(hyPrnt);
+    hyParent::destroy(hyPrxy);
 }
 
 
@@ -864,11 +863,6 @@ hyEnt::~hyEnt()
 bool
 hyEnt::add()
 {
-    {
-        hyEnt *hyt = this;
-        if (!hyt)
-            return (true);
-    }
     if (!hySdesc || hyLinked)
         return (true);
     // Presently, there are no hypertxt properties in Physical mode.
@@ -904,11 +898,6 @@ hyEnt::add()
 bool
 hyEnt::remove()
 {
-    {
-        hyEnt *hyt = this;
-        if (!hyt)
-            return (true);
-    }
     if (!hySdesc || !hyLinked)
         return (true);
     hyEnt **oldh = hySdesc->getHY();
@@ -931,14 +920,9 @@ hyEnt::remove()
 hyEnt *
 hyEnt::dup() const
 {
-    {
-        const hyEnt *hyt = this;
-        if (!hyt)
-            return (new hyEnt());
-    }
     hyEnt *newh = new hyEnt(*this);
-    newh->hyPrnt = hyPrnt->dup();
-    newh->hyPrxy = hyPrxy->dup();
+    newh->hyPrnt = hyParent::dup(hyPrnt);
+    newh->hyPrxy = hyParent::dup(hyPrxy);
     newh->hyLinked = false;
     if (hyLinked)
         newh->add();
@@ -1048,11 +1032,6 @@ namespace {
 char *
 hyEnt::stringUpdate(cTfmStack *tstk)
 {
-    {
-        hyEnt *hyt = this;
-        if (!hyt)
-            return (0);
-    }
     cTfmStack stk;
     if (!tstk)
         tstk = &stk;
@@ -1061,8 +1040,8 @@ hyEnt::stringUpdate(cTfmStack *tstk)
         // This points to a hySdesc terminal location.  There can be
         // no parent or proxy list.
 
-        hyPrnt->free();
-        hyPrxy->free();
+        hyParent::destroy(hyPrnt);
+        hyParent::destroy(hyPrxy);
         hyFixProxy = false;
 
         return (get_subname(true));
@@ -1163,7 +1142,7 @@ hyEnt::stringUpdate(cTfmStack *tstk)
             delete [] s;
             return (0);
         }
-        hyPrnt->free();
+        hyParent::destroy(hyPrnt);
         hyPrnt = newent->hyPrnt;
         newent->hyPrnt = 0;
 
@@ -1313,7 +1292,8 @@ hyEnt::parse_bstring() const
             }
             if (!pd)
                 return (lstring::copy(badstr));
-            char *str = ((CDp_user*)pd)->data()->string(HYcvPlain, false);
+            char *str = hyList::string(((CDp_user*)pd)->data(), HYcvPlain,
+                false);
             if (!str)
                 return (lstring::copy(badstr));
             lstr.add(str);
@@ -1680,16 +1660,39 @@ namespace {
 }
 
 
+// Static function.
+// Copy a hypertext list.
+//
+hyList *
+hyList::dup(const hyList *thishy)
+{
+    hyList *h0 = 0, *h1 = 0;
+    for (const hyList *hh = thishy; hh; hh = hh->hlNext) {
+        if (!h0)
+            h0 = h1 = new hyList(hh->hlRefType);
+        else {
+            h1->hlNext = new hyList(hh->hlRefType);
+            h1 = h1->hlNext;
+        }
+        if (hh->hlRefType == HLrefText || hh->hlRefType == HLrefLongText) {
+            if (hh->hlText)
+                h1->hlText = lstring::copy(hh->hlText);
+        }
+        else if (hh->hlEnt)
+            h1->hlEnt = hh->hlEnt->dup();
+    }
+    const hyList *hyl = thishy;
+    if (hyl && hyl->hlRefType == HLrefLongText)
+        HYlt::lt_copy(hyl, h0);
+    return (h0);
+}
+
+
 // Return an expanded string with up to date entries.
 //
 char *
-hyList::string(HYcvType cvtype, bool allow_long)
+hyList::string_prv(HYcvType cvtype, bool allow_long)
 {
-    {
-        hyList *hyt = this;
-        if (!hyt)
-            return (0);
-    }
     hyList *hh;
     char *s;
     sLstr lstr;
@@ -1700,7 +1703,7 @@ hyList::string(HYcvType cvtype, bool allow_long)
             return (allow_long ?
                 lstring::copy(hlText) : lstring::copy(HY_LT_MSG));
         for (hh = this; hh; hh = hh->hlNext) {
-            s = hh->get_entry_string();
+            s = hh->get_entry_string_prv();
             if (!s)
                 lstr.add("_UNKNOWN_");
             else {
@@ -1792,13 +1795,8 @@ hyList::string(HYcvType cvtype, bool allow_long)
 // Return a string representing the list entry.
 //
 char *
-hyList::get_entry_string()
+hyList::get_entry_string_prv()
 {
-    {
-        hyList *hyt = this;
-        if (!hyt)
-            return (0);
-    }
     switch (hlRefType) {
     case HLrefText:
         return (lstring::copy(hlText));
@@ -1813,52 +1811,6 @@ hyList::get_entry_string()
     default:
         return (0);
     }
-}
-
-
-// Copy a hypertext list.
-//
-hyList *
-hyList::dup()
-{
-    hyList *h0 = 0, *h1 = 0;
-    for (hyList *hh = this; hh; hh = hh->hlNext) {
-        if (!h0)
-            h0 = h1 = new hyList(hh->hlRefType);
-        else {
-            h1->hlNext = new hyList(hh->hlRefType);
-            h1 = h1->hlNext;
-        }
-        if (hh->hlRefType == HLrefText || hh->hlRefType == HLrefLongText) {
-            if (hh->hlText)
-                h1->hlText = lstring::copy(hh->hlText);
-        }
-        else if (hh->hlEnt)
-            h1->hlEnt = hh->hlEnt->dup();
-    }
-    hyList *hyl = this;
-    if (hyl && hlRefType == HLrefLongText)
-        HYlt::lt_copy(hyl, h0);
-    return (h0);
-}
-
-
-// Return the character length of the equivalent text.
-//
-int
-hyList::length()
-{
-    {
-        hyList *hyt = this;
-        if (!hyt)
-            return (0);
-    }
-    char *s = string(HYcvPlain, true);
-    if (!s)
-        return (0);
-    int i = strlen(s);
-    delete [] s;
-    return (i);
 }
 
 
@@ -2034,8 +1986,8 @@ hyList::hy_strcmp(hyList *hl1, hyList *hl2)
 {
     int j = 1;
     if (hl1 && hl2) {
-        char *s1 = hl1->string(HYcvPlain, false);
-        char *s2 = hl2->string(HYcvPlain, false);
+        char *s1 = hl1->string_prv(HYcvPlain, false);
+        char *s2 = hl2->string_prv(HYcvPlain, false);
         if (s1 && s2)
             j = strcmp(s1, s2);
         delete [] s1;
@@ -2146,7 +2098,7 @@ HYlt::lt_new(hyList *hh, void(*ltcb)(hyList*, void*), void *ltarg)
 void
 HYlt::lt_clear()
 {
-    // called when all editor windows are being terminated
+    // Called when all editor windows are being terminated.
     LTdlist *ln;
     for (LTdlist *l = LtList; l; l = ln) {
         ln = l->next;
@@ -2195,7 +2147,7 @@ HYlt::lt_update(void *arg, const char *string)
 // Find the list containing ho, and add hn.
 //
 void
-HYlt::lt_copy(hyList *ho, hyList *hn)
+HYlt::lt_copy(const hyList *ho, hyList *hn)
 {
     if (!ho || !hn)
         return;
@@ -2214,10 +2166,8 @@ HYlt::lt_copy(hyList *ho, hyList *hn)
 // Find the list containing hl, and delete the entry.
 //
 void
-HYlt::lt_free(hyList *hl)
+HYlt::lt_free(const hyList *hl)
 {
-    if (!hl)
-        return;
     for (LTdlist *l = LtList; l; l = l->next) {
         LTdest *ldp = 0;
         for (LTdest *ld = l->lt; ld; ld = ld->next) {
@@ -2234,3 +2184,4 @@ HYlt::lt_free(hyList *hl)
     }
 }
 // End of HYlt functions.
+

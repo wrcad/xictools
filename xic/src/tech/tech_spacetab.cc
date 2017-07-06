@@ -39,46 +39,45 @@ namespace {
 }
 
 
+// Static function.
 // Do some very basic testing and make sure that the elements are
 // sorted correctly in ascending width, then length.  Return false if
 // the table is no good.
 //
 bool
-sTspaceTable::check_sort()
+sTspaceTable::check_sort(sTspaceTable *thisst)
 {
-    {
-        sTspaceTable *stt = this;
-        if (!stt)
-            return (false);
-    }
+    if (!thisst)
+        return (false);
 
     // The first record (this) is a dummy, the entries field contains
     // the number of records (including the first), the dimen field
     // contains the default spacing.  The width is the dimensionality
     // (1 or 2) and length contains flags from Virtuoso.
 
-    if (entries < 2)
+    if (thisst->entries < 2)
         return (false);
-    if (width != 1 && width != 2)
+    if (thisst->width != 1 && thisst->width != 2)
         return (false);
-    if (entries > 2)
-        std::sort(this + 1, this + entries, st_cmp);
+    if (thisst->entries > 2)
+        std::sort(thisst + 1, thisst + thisst->entries, st_cmp);
     return (true);
 }
 
 
+// Static function.
 // Compose a string containing the Lisp record describing the table. 
 // This is used when creating a Virtuoso-compatible tech file.  The
 // argument contains a line prefix which is prepended to each line of
 // text.  Return null on error.
 //
 char *
-sTspaceTable::to_lisp_string(const char *pref, const char *lname,
-    const char *lname2) const
+sTspaceTable::to_lisp_string(const sTspaceTable *thisst, const char *pref,
+    const char *lname, const char *lname2)
 {
     char buf[256];
     sLstr lstr;
-    const sTspaceTable *tab = this;
+    const sTspaceTable *tab = thisst;
     if (!tab)
         return (0);
     int dims = tab->width;
@@ -156,13 +155,14 @@ sTspaceTable::to_lisp_string(const char *pref, const char *lname,
 }
 
 
+// Static function.
 // Write the spacing table description to fp or lstr, in the format
 // used in the Xic technology file.
 //
 void
-sTspaceTable::tech_print(FILE *fp, sLstr *lstr) const
+sTspaceTable::tech_print(const sTspaceTable *thisst, FILE *fp, sLstr *lstr)
 {
-    const sTspaceTable *t = this;
+    const sTspaceTable *t = thisst;
     if (!t)
         return;
     if (lstr) {

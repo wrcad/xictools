@@ -496,7 +496,7 @@ cCDvdb::listInternal()
     intvar_t<CDvarProc> *iv;
     while ((iv = tgen.next()) != 0)
         s0 = new stringlist(lstring::copy(iv->tab_name()), s0);
-    s0->sort();
+    stringlist::destroy(s0);
     return (s0);
 }
 

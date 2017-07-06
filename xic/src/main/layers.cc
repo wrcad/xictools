@@ -236,7 +236,7 @@ LpeekState::peek_doit(int x, int y)
     if (l0)
         // The redisplay now updates the layer names in the prompt line
         // as drawing occurs.
-        l0->free();
+        stringlist::destroy(l0);
     else {
         PL()->ShowPrompt("No layers found.");
         return;
@@ -530,7 +530,7 @@ ProfState::show_cross_section(int x1, int y1, int x2, int y2)
             CDl *ld = l->layer_desc();
             tab->add((unsigned long)ld, db, false);
         }
-        boxes[lnum]->free();
+        Blist::destroy(boxes[lnum]);
         lnum++;
     }
     delete [] boxes;

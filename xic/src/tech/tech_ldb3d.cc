@@ -64,8 +64,8 @@ Ldb3d::Ldb3d()
 
 Ldb3d::~Ldb3d()
 {
-    Zlist::free(db3_zlref);
-    db3_stack->free();
+    Zlist::destroy(db3_zlref);
+    Layer3d::destroy(db3_stack);
     delete db3_groups;
 }
 
@@ -152,7 +152,7 @@ Ldb3d::order_layers()
     // variable is set, in which case no layers are planarizing by
     // default.
 
-    db3_stack->free();
+    Layer3d::destroy(db3_stack);
     db3_stack = 0;
 
     Layer3d *lend = 0;
@@ -166,7 +166,7 @@ Ldb3d::order_layers()
             lend = lend->next();
         }
     }
-    ll0->free();
+    CDll::destroy(ll0);
 
     return (db3_stack != 0);
 }
@@ -290,7 +290,7 @@ Ldb3d::line_scan(const Point *p1, const Point *p2)
 
             }
         }
-        lists[lnum] = lists[lnum]->merge();
+        lists[lnum] = Blist::merge(lists[lnum]);
         lnum++;
     }
     return (lists);
@@ -316,11 +316,11 @@ namespace {
                 XIrt ret;
                 Zlist *zl = sdesc->getZlist(CDMAXCALLDEPTH, fld, zref, &ret);
                 if (ret != XIok) {
-                    Zlist::free(zref);
+                    Zlist::destroy(zref);
                     return (0);
                 }
                 if (zl) {
-                    Zlist::free(zref);
+                    Zlist::destroy(zref);
                     zref = zl;
                 }
             }
@@ -368,7 +368,7 @@ Ldb3d::init_stack(CDs *sdesc, const BBox *AOI, bool is_cs,
         return (false);
     }
     Zlist::BB(zref, db3_aoi);
-    Zlist::free(db3_zlref);
+    Zlist::destroy(db3_zlref);
     db3_zlref = zref;
 
     // Next, obtain geometry, and remove layers that are nonexistant
@@ -382,7 +382,7 @@ Ldb3d::init_stack(CDs *sdesc, const BBox *AOI, bool is_cs,
     for (Layer3d *l = db3_stack; l; l = lnxt) {
         lnxt = l->next();
         l->extract_geom(sdesc, db3_zlref);
-        unsigned int zc = l->uncut()->count_zoids();
+        unsigned int zc = Ylist::count_zoids(l->uncut());
         if (db3_logfp && zc) {
             fprintf(db3_logfp, "Trapezoid count for %s is %u.\n",
                 l->layer_desc()->name(), zc);
@@ -472,7 +472,7 @@ Ldb3d::init_stack(CDs *sdesc, const BBox *AOI, bool is_cs,
     glZlist3d *c0 = 0, *ce = 0;
     for (Layer3d *l = db3_stack; l; l = l->next()) {
         if (l->is_conductor()) {
-            glZlist3d *zl = l->yl3d()->to_zl3d();
+            glZlist3d *zl = glYlist3d::to_zl3d(l->yl3d());
             l->set_yl3d(0);
             if (!c0)
                 c0 = ce = zl;
@@ -487,7 +487,7 @@ Ldb3d::init_stack(CDs *sdesc, const BBox *AOI, bool is_cs,
     delete db3_groups;
     db3_ngroups = 0;
     glYlist3d *y0 = new glYlist3d(c0);
-    glZgroup3d *g = y0->group();  // consumes y0
+    glZgroup3d *g = glYlist3d::group(y0);  // consumes y0
     db3_groups = new glZgroupRef3d(g);
     db3_ngroups = g->num;
 
@@ -659,9 +659,9 @@ Ldb3d::find_object_under(const glZoid3d *Z) const
 
 Layer3d::~Layer3d()
 {
-    l3_cut->free();
-    l3_uncut->free();
-    l3_yl3d->free();
+    Ylist::destroy(l3_cut);
+    Ylist::destroy(l3_uncut);
+    glYlist3d::destroy(l3_yl3d);
 }
 
 
@@ -691,39 +691,36 @@ Layer3d::extract_geom(const CDs *sdesc, const Zlist *zref)
         return (false);
 
     // If zref is null, use the cell BB.
-    bool free_zref = false;
+    Zlist *ztemp = 0;
     if (!zref) {
-        zref = new Zlist(sdesc->BB(), 0);
-        free_zref = true;
+        ztemp = new Zlist(sdesc->BB(), 0);
+        zref = ztemp;
     }
 
     XIrt ret;
     Zlist *zl = sdesc->getZlist(CDMAXCALLDEPTH, l3_ldesc, zref, &ret);
     if (ret != XIok) {
-        if (free_zref)
-            Zlist::free(zref);
+        Zlist::destroy(ztemp);
         return (false);
     }
     if (l3_ldesc->isVia() || l3_ldesc->isDarkField()) {
         Zlist *zr = Zlist::copy(zref);
         ret = Zlist::zl_andnot(&zr, zl);
         if (ret != XIok) {
-            if (free_zref)
-                Zlist::free(zref);
+            Zlist::destroy(ztemp);
             return (false);
         }
         zl = zr;
     }
-    if (free_zref)
-        Zlist::free(zref);
+    Zlist::destroy(ztemp);
 
-    l3_cut->free();
+    Ylist::destroy(l3_cut);
     l3_cut = 0;
-    l3_uncut->free();
+    Ylist::destroy(l3_uncut);
 
     zl = Zlist::filter_slivers(zl, 1);
     l3_uncut = zl ? new Ylist(zl) : 0;
-    l3_yl3d->free();
+    glYlist3d::destroy(l3_yl3d);
     l3_yl3d = 0;
     return (true);
 }
@@ -735,7 +732,7 @@ bool
 Layer3d::intersect(int x, int y) const
 {
     Point_c p(x, y);
-    return (l3_uncut->find_container(&p));
+    return (Ylist::find_container(l3_uncut, &p));
 }
 
 
@@ -758,8 +755,8 @@ Layer3d::cut(const Layer3d *btm)
         // This signals that we just add the cut field as a copy of
         // uncut, which is appropriate for the lowest layer.
 
-        l3_cut->free();
-        l3_cut = l3_uncut->copy();
+        Ylist::destroy(l3_cut);
+        l3_cut = Ylist::copy(l3_uncut);
         return (true);
     }
     
@@ -790,7 +787,7 @@ Layer3d::cut(const Layer3d *btm)
         zn->next = z2;
     }
     z1 = Zlist::filter_slivers(z1, 1);
-    l3_cut->free();
+    Ylist::destroy(l3_cut);
     l3_cut = new Ylist(z1);
     return (true);
 }
@@ -802,9 +799,9 @@ Layer3d::cut(const Layer3d *btm)
 void
 Layer3d::mk3d(bool is_cross_sect)
 {
-    Zlist *zl0 = l3_cut->to_zlist();
+    Zlist *zl0 = Ylist::to_zlist(l3_cut);
     l3_cut = 0;
-    l3_yl3d->free();
+    glYlist3d::destroy(l3_yl3d);
     l3_yl3d = 0;
     glZlist3d *z3 = 0, *z3e = 0;
     while (zl0) {

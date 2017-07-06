@@ -76,9 +76,8 @@ struct fhNode
             n_next = nx;
         }
 
-    void free()
+    static void destroy(fhNode *n)
         {
-            fhNode *n = this;
             while (n) {
                 fhNode *x = n;
                 n = n->n_next;
@@ -113,9 +112,8 @@ struct fhNodeList
             next = x;
         }
 
-    void free()
+    static void destroy(fhNodeList *n)
         {
-            fhNodeList *n = this;
             while (n) {
                 fhNodeList *x = n;
                 n = n->next;
@@ -168,9 +166,8 @@ struct fhSegment
             s_next = n;
         }
 
-    void free()
+    static void destroy(fhSegment *s)
         {
-            fhSegment *s = this;
             while (s) {
                 fhSegment *x = s;
                 s = s->s_next;
@@ -231,12 +228,11 @@ struct fhTermList
             delete [] tl_portname;
             delete [] tl_sfx;
             delete [] tl_points;
-            tl_nodes->free();
+            fhNodeList::destroy(tl_nodes);
         }
 
-    void free()
+    static void destroy(fhTermList *l)
         {
-            fhTermList *l = this;
             while (l) {
                 fhTermList *x = l;
                 l = l->next();
@@ -258,7 +254,7 @@ struct fhTermList
 
     void set_nodes(fhNodeList *l)
         {
-            tl_nodes->free();
+            fhNodeList::destroy(tl_nodes);
             tl_nodes = l;
             for (fhNodeList *n = tl_nodes; n; n = n->next)
                 n->nd->inc_ref();
@@ -292,14 +288,13 @@ struct fhConductor
 
     ~fhConductor()
         {
-            hc_zlist3d_ref->free();
-            hc_zlist3d->free();
-            hc_segments->free();
+            glZlistRef3d::destroy(hc_zlist3d_ref);
+            glZlist3d::destroy(hc_zlist3d);
+            fhSegment::destroy(hc_segments);
         }
 
-    void free()
+    static void destroy(fhConductor *c)
         {
-            fhConductor *c = this;
             while (c) {
                 fhConductor *x = c;
                 c = c->hc_next;
@@ -309,10 +304,10 @@ struct fhConductor
 
     void manhattanize(int minsize)
         {
-            hc_zlist3d = hc_zlist3d->manhattanize(minsize);
+            hc_zlist3d = glZlist3d::manhattanize(hc_zlist3d, minsize);
         }
 
-    fhConductor *addz3d(const glZoid3d*);
+    static fhConductor *addz3d(fhConductor*, const glZoid3d*);
     fhNodeList *get_nodes(const fhNodeGen&, int, const Point*);
     void segmentize(fhNodeGen&);
     fhSegment *find_segment_by_node(int);
@@ -365,12 +360,12 @@ struct fhLayer
 
     ~fhLayer()
         {
-            fl_list->free();
+            fhConductor::destroy(fl_list);
         }
 
     void clear_list()
         {
-            fl_list->free();
+            fhConductor::destroy(fl_list);
             fl_list = 0;
         }
 
@@ -378,7 +373,7 @@ struct fhLayer
         {
             for (const glYlist3d *y = yl; y; y = y->next) {
                 for (const glZlist3d *z = y->y_zlist; z; z = z->next)
-                    fl_list = fl_list->addz3d(&z->Z);
+                    fl_list = fhConductor::addz3d(fl_list, &z->Z);
             }
         }
 
@@ -398,7 +393,7 @@ struct fhLayout : public Ldb3d
             delete [] fhl_layers;
             if (fhl_terms) {
                 for (int i = 0; i < num_groups(); i++)
-                    fhl_terms[i]->free();
+                    fhTermList::destroy(fhl_terms[i]);
                 delete [] fhl_terms;
             }
         }

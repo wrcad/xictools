@@ -526,13 +526,14 @@ PCellParam::set(const PCellParam *p)
 }
 
 
+// Static function.
 // Duplicate a parameter list.
 //
 PCellParam *
-PCellParam::dup() const
+PCellParam::dup(const PCellParam *thispc)
 {
     PCellParam *p0 = 0, *pe = 0;
-    for (const PCellParam *p = this; p; p = p->next()) {
+    for (const PCellParam *p = thispc; p; p = p->next()) {
         PCellParam *pn = 0;
         switch (p->type()) {
         case PCPbool:
@@ -634,7 +635,7 @@ bool
 PCellParam::setValue(const char *prm_name, double prm_value,
     const char *constr)
 {
-    PCellParam *p = find(prm_name);
+    PCellParam *p = find(this, prm_name);
     if (!p)
         return (false);
 
@@ -713,7 +714,7 @@ bool
 PCellParam::setValue(const char *prm_name, const char *prm_value,
     const char *constr)
 {
-    PCellParam *p = find(prm_name);
+    PCellParam *p = find(this, prm_name);
     if (!p)
         return (false);
 
@@ -817,7 +818,7 @@ PCellParam::getValue() const
 char *
 PCellParam::getValueByName(const char *prm_name) const
 {
-    const PCellParam *p = find_c(prm_name);
+    const PCellParam *p = find_c(this, prm_name);
     if (p)
         return (p->getValue());
     return (0);
@@ -1364,7 +1365,7 @@ PCellParam::parseParams(const char *str, PCellParam **pret)
     while (*s) {
         char typ, *nam, *val, *cns;
         if (!getPair(&s, &typ, &nam, &val, &cns)) {
-            p0->free();
+            PCellParam::destroy(p0);
             return (false);
         }
         if (!nam)

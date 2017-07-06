@@ -26,6 +26,7 @@
 #include "main.h"
 #include "edit.h"
 #include "undolist.h"
+#include "vtxedit.h"
 #include "scedif.h"
 #include "dsp_tkif.h"
 #include "dsp_layer.h"
@@ -97,12 +98,11 @@ namespace {
 
         ~sUndoV()
             {
-                list->free(false);
+                Ochg::destroy(list, false);
             }
 
-        void free()
+        static void destroy(sUndoV *u)
             {
-                sUndoV *u = this;
                 while (u) {
                     sUndoV *ux = u;
                     u = u->next;
@@ -355,9 +355,9 @@ WireState::b1down()
     if (!cursd)
         return;
 
-    Objlist_back->free();
+    sObj::destroy(Objlist_back);
     Objlist_back = 0;
-    RedoList->free();
+    sUndoV::destroy(RedoList);
     RedoList = 0;
     if (!NumPts)
         Ulist()->ListCheck(WireCmd->StateName, cursd, false);
@@ -377,7 +377,7 @@ WireState::b1down()
     // Pressing Ctrl will force start of a new wire when editing
     // vertices.
     if (!NumPts && !(EV()->Cursor().get_downstate() & GR_CONTROL_MASK)) {
-        if (!ED()->objectList()->empty() &&
+        if (!sObj::empty(ED()->objectList()) &&
                 !(EV()->Cursor().get_downstate() & GR_SHIFT_MASK)) {
             // Start stretching
             EV()->Cursor().get_xy(&Refx, &Refy);
@@ -528,7 +528,7 @@ WireState::b1down()
             // Add a placeholder in the UndoList
             UndoList = new sUndoV(UndoList);
             // clear any redo operations
-            RedoList->free();
+            sUndoV::destroy(RedoList);
             RedoList = 0;
         }
         NumPts = 0;
@@ -553,7 +553,7 @@ WireState::b1up()
                     Selections.insertObject(CurCell(), sl->odesc);
             }
             mark_vertices(DISPLAY);
-            slist->free();
+            CDol::destroy(slist);
         }
         SelectingWires = false;
         message();
@@ -565,7 +565,7 @@ WireState::b1up()
         if (!cEventHdlr::sel_b1up(&BB, Types, &slist))
             return;
         SelectingVertex = false;
-        ED()->objectList()->mark_vertices(ERASE);
+        sObj::mark_vertices(ED()->objectList(), ERASE);
 
         WindowDesc *wdesc = EV()->ButtonWin();
         if (!wdesc)
@@ -582,14 +582,14 @@ WireState::b1up()
             BB.top = yr + delta;
         }
 
-        ED()->setObjectList(ED()->objectList()->mklist(slist, &BB));
-        if (!ED()->objectList()->empty()) {
-            ED()->objectList()->mark_vertices(DISPLAY);
+        ED()->setObjectList(sObj::mklist(ED()->objectList(), slist, &BB));
+        if (!sObj::empty(ED()->objectList())) {
+            sObj::mark_vertices(ED()->objectList(), DISPLAY);
             PL()->ShowPrompt(msgB);
         }
         else if (!add_vertex())
             mark_vertices(DISPLAY);
-        slist->free();
+        CDol::destroy(slist);
         return;
     }
     if (Level == 2) {
@@ -634,11 +634,11 @@ WireState::desel()
         cEventHdlr::sel_esc();
     mark_vertices(ERASE);
     ED()->clearObjectList();
-    Objlist_back->free();
+    sObj::destroy(Objlist_back);
     Objlist_back = 0;
-    UndoList->free();
+    sUndoV::destroy(UndoList);
     UndoList = 0;
-    RedoList->free();
+    sUndoV::destroy(RedoList);
     RedoList = 0;
 }
 
@@ -648,10 +648,10 @@ WireState::desel()
 void
 WireState::esc()
 {
-    if (!ED()->objectList()->empty()) {
+    if (!sObj::empty(ED()->objectList())) {
         GhostOff();
-        ED()->objectList()->mark_vertices(ERASE);
-        Objlist_back->free();
+        sObj::mark_vertices(ED()->objectList(), ERASE);
+        sObj::destroy(Objlist_back);
         Objlist_back = ED()->objectList();
         ED()->setObjectList(0);
         SetLevel1();
@@ -669,9 +669,9 @@ WireState::esc()
     mark_vertices(ERASE);
     ED()->clearObjectList();
     EV()->SetConstrained(false);
-    Objlist_back->free();
-    UndoList->free();
-    RedoList->free();
+    sObj::destroy(Objlist_back);
+    sUndoV::destroy(UndoList);
+    sUndoV::destroy(RedoList);
     if (delete_inc()) {
         DSP()->RedisplayArea(&RdBB);
         DSP()->ShowCrossMark(ERASE, Firstx, Firsty, HighlightingColor,
@@ -735,10 +735,10 @@ WireState::key(int code, const char*, int)
         delete_vertices();
         break;
     case BSP_KEY:
-        if (!ED()->objectList()->empty()) {
+        if (!sObj::empty(ED()->objectList())) {
             GhostOff();
-            ED()->objectList()->mark_vertices(ERASE);
-            Objlist_back->free();
+            sObj::mark_vertices(ED()->objectList(), ERASE);
+            sObj::destroy(Objlist_back);
             Objlist_back = ED()->objectList();
             ED()->setObjectList(0);
             SetLevel1();
@@ -762,9 +762,9 @@ WireState::undo()
         SetLevel1();
         return;
     }
-    if (!ED()->objectList()->empty()) {
-        ED()->objectList()->mark_vertices(ERASE);
-        Objlist_back->free();
+    if (!sObj::empty(ED()->objectList())) {
+        sObj::mark_vertices(ED()->objectList(), ERASE);
+        sObj::destroy(Objlist_back);
         Objlist_back = ED()->objectList();
         ED()->setObjectList(0);
         return;
@@ -799,7 +799,7 @@ WireState::undo()
             }
             else {
                 // hit the end of the (truncated) undo list
-                UndoList->free();
+                sUndoV::destroy(UndoList);
                 UndoList = 0;
                 PL()->ShowPrompt(vmsg);
             }
@@ -874,14 +874,14 @@ WireState::redo()
 
     if (Level == 2)
         return;
-    if (!Objlist_back->empty()) {
+    if (!sObj::empty(Objlist_back)) {
         ED()->setObjectList(Objlist_back);
         Objlist_back = 0;
         mark_vertices(ERASE);
-        ED()->objectList()->mark_vertices(DISPLAY);
+        sObj::mark_vertices(ED()->objectList(), DISPLAY);
         return;
     }
-    if (State >= 1 && !ED()->objectList()->empty()) {
+    if (State >= 1 && !sObj::empty(ED()->objectList())) {
         XM()->SetCoordMode(CO_RELATIVE, Refx, Refy);
         Gst()->SetGhostAt(GFstretch, Refx, Refy);
         SetLevel2();
@@ -967,7 +967,7 @@ WireState::message()
 void
 WireState::copy_objlist()
 {
-    UndoList->list = Ulist()->CurOp().obj_list()->copy();
+    UndoList->list = Ochg::copy(Ulist()->CurOp().obj_list());
     for (Ochg *oc1 = UndoList->list; oc1; oc1 = oc1->next_chg()) {
         if (oc1->oadd() && oc1->oadd()->state() == CDDeleted) {
             for (Ochg *oc2 = UndoList->list; oc2; oc2 = oc2->next_chg()) {
@@ -992,10 +992,10 @@ WireState::stretch(int ref_x, int ref_y, int *map_x, int *map_y)
         return (false);
 
     bool ret = false;
-    if (!ED()->objectList()->empty()) {
+    if (!sObj::empty(ED()->objectList())) {
         if (Tech()->IsConstrain45() ^ EV()->IsConstrained()) {
             int rx, ry, xm, ym;
-            if (ED()->objectList()->get_ref(&rx, &ry, &xm, &ym)) {
+            if (ED()->get_wire_ref(&rx, &ry, &xm, &ym)) {
                 int dx = ref_x - xm;
                 int dy = ref_y - ym;
                 *map_x -= dx;
@@ -1012,7 +1012,7 @@ WireState::stretch(int ref_x, int ref_y, int *map_x, int *map_y)
 
         if (Ulist()->HasChanged()) {
             Gst()->SetGhost(GFnone);
-            ED()->objectList()->mark_vertices(ERASE);
+            sObj::mark_vertices(ED()->objectList(), ERASE);
             ED()->clearObjectList();
 
             // save operation for undo
@@ -1020,7 +1020,7 @@ WireState::stretch(int ref_x, int ref_y, int *map_x, int *map_y)
             UndoList->operation = V_CHGV;
             copy_objlist();
             // clear any redo operations
-            RedoList->free();
+            sUndoV::destroy(RedoList);
             RedoList = 0;
 
             mark_vertices(DISPLAY);
@@ -1040,7 +1040,7 @@ WireState::stretch(int ref_x, int ref_y, int *map_x, int *map_y)
 void
 WireState::delete_vertices()
 {
-    if (ED()->objectList()->empty())
+    if (sObj::empty(ED()->objectList()))
         return;
     CDs *cursd = CurCell();
     if (!cursd)
@@ -1098,7 +1098,7 @@ WireState::delete_vertices()
     copy_objlist();
 
     // clear any redo operations
-    RedoList->free();
+    sUndoV::destroy(RedoList);
     RedoList = 0;
 
     mark_vertices(DISPLAY);
@@ -1143,7 +1143,7 @@ WireState::add_vertex()
             break;
         }
     }
-    slist->free();
+    CDol::destroy(slist);
     if (!wrdesc)
         return (false);
 
@@ -1219,7 +1219,7 @@ WireState::add_vertex()
     UndoList->operation = V_NEWV;
 
     // clear any redo operations
-    RedoList->free();
+    sUndoV::destroy(RedoList);
     RedoList = 0;
 
     return (true);
@@ -1353,7 +1353,7 @@ cEdit::execWireStyle()
         WireCmd->UndoList->operation = V_STY;
         WireCmd->copy_objlist();
         // clear any redo operations
-        WireCmd->RedoList->free();
+        sUndoV::destroy(WireCmd->RedoList);
         WireCmd->RedoList = 0;
 
         mark_vertices(DISPLAY);
@@ -1466,7 +1466,7 @@ cEdit::execWireWidth()
                 WireCmd->UndoList->operation = V_WID;
                 WireCmd->copy_objlist();
                 // clear any redo operations
-                WireCmd->RedoList->free();
+                sUndoV::destroy(WireCmd->RedoList);
                 WireCmd->RedoList = 0;
 
                 mark_vertices(DISPLAY);

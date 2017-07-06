@@ -1903,7 +1903,7 @@ cvrt_funcs::IFtoXIC(Variable *res, Variable *args, void*)
     prms.set_destination(dstn, Fnative);
     res->content.value = FIO()->ConvertToNative(namelist, &prms);
 
-    namelist->free();
+    stringlist::destroy(namelist);
     return (OK);
 }
 
@@ -1960,7 +1960,7 @@ cvrt_funcs::IFtoCGX(Variable *res, Variable *args, void*)
     prms.set_destination(name, Fcgx);
     res->content.value = FIO()->ConvertToCgx(namelist, &prms);
 
-    namelist->free();
+    stringlist::destroy(namelist);
     return (OK);
 }
 
@@ -2017,7 +2017,7 @@ cvrt_funcs::IFtoCIF(Variable *res, Variable *args, void*)
     prms.set_destination(name, Fcif);
     res->content.value = FIO()->ConvertToCif(namelist, &prms);
 
-    namelist->free();
+    stringlist::destroy(namelist);
     return (OK);
 }
 
@@ -2074,7 +2074,7 @@ cvrt_funcs::IFtoGDS(Variable *res, Variable *args, void*)
     prms.set_destination(name, Fgds);
     res->content.value = FIO()->ConvertToGds(namelist, &prms);
 
-    namelist->free();
+    stringlist::destroy(namelist);
     return (OK);
 }
 
@@ -2132,7 +2132,7 @@ cvrt_funcs::IFtoGdsLibrary(Variable *res, Variable *args, void*)
     prms.set_destination(name, Fgds);
     res->content.value = FIO()->ConvertToGds(namelist, &prms);
 
-    namelist->free();
+    stringlist::destroy(namelist);
     return (OK);
 }
 
@@ -2189,7 +2189,7 @@ cvrt_funcs::IFtoOASIS(Variable *res, Variable *args, void*)
     prms.set_destination(name, Foas);
     res->content.value = FIO()->ConvertToOas(namelist, &prms);
 
-    namelist->free();
+    stringlist::destroy(namelist);
     return (OK);
 }
 
@@ -3036,7 +3036,7 @@ cvrt_funcs::IFchdTopCells(Variable *res, Variable *args, void*)
                     se = se->next;
                 }
             }
-            s0->free();
+            syrlist_t::destroy(s0);
 
             sHdl *hdltmp = new sHdlString(sl0);
             res->type = TYP_HANDLE;
@@ -3144,7 +3144,7 @@ cvrt_funcs::IFchdLayers(Variable *res, Variable *args, void*)
     if (chd) {
         stringlist *s0 = chd->layers(Physical);
         if (s0) {
-            s0->sort();
+            stringlist::sort(s0);
             sHdl *hdltmp = new sHdlString(s0);
             res->type = TYP_HANDLE;
             res->content.value = hdltmp->id;
@@ -3183,7 +3183,7 @@ cvrt_funcs::IFchdInfoMode(Variable *res, Variable *args, void*)
     res->content.value = -1;
     cCHD *chd = CDchd()->chdRecall(chdname, false);
     if (chd)
-        res->content.value = chd->pcInfo(Physical)->savemode();
+        res->content.value = cv_info::savemode(chd->pcInfo(Physical));
     else
         Errs()->add_error("Unresolved CHD access name");
     return (OK);
@@ -3218,7 +3218,7 @@ cvrt_funcs::IFchdInfoLayers(Variable *res, Variable *args, void*)
         if (info) {
             stringlist *s0 = info->layers(cellname);
             if (s0) {
-                s0->sort();
+                stringlist::sort(s0);
                 sHdl *hdltmp = new sHdlString(s0);
                 res->type = TYP_HANDLE;
                 res->content.value = hdltmp->id;
@@ -3260,7 +3260,7 @@ cvrt_funcs::IFchdInfoCells(Variable *res, Variable *args, void*)
         if (info) {
             stringlist *s0 = info->cells();
             if (s0) {
-                s0->sort();
+                stringlist::sort(s0);
                 sHdl *hdltmp = new sHdlString(s0);
                 res->type = TYP_HANDLE;
                 res->content.value = hdltmp->id;
@@ -4041,7 +4041,7 @@ cvrt_funcs::IFchdCompareFlat(Variable *res, Variable *args, void*)
 
     Sdiff *sdiff = 0;
     unsigned int diffcnt = 0;
-    XIrt ret = chd1->compareCHDs_sd(cname1, chd2, cname2,
+    XIrt ret = cCHD::compareCHDs_sd(chd1, cname1, chd2, cname2,
         area ? &BB : 0, layer_list, skip_layers, array ? &sdiff : 0,
         maxdiffs, &diffcnt, coarse_mult, fine_grid);
 
@@ -4953,7 +4953,7 @@ cvrt_funcs::IFchdWriteSplit(Variable *res, Variable *args, void*)
     res->content.value = chd->writeMulti(cname, &prms, bl0, gridsize,
         sz_or_bv, maxdepth, flat_map, parallel);
 
-    bl0->free();
+    Blist::destroy(bl0);
     return (OK);
 }
 
@@ -5861,7 +5861,7 @@ cvrt_funcs::IFcgdAddCells(Variable *res, Variable *args, void*)
     else
         Errs()->add_error("Unresolved CGD access name");
     if (free_sl)
-        sl->free();
+        stringlist::destroy(sl);
     return (OK);
 }
 

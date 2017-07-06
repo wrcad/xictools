@@ -483,7 +483,7 @@ sED::relist()
         delete [] ls[1];
         delete [] ls[2];
     }
-    devlist->free();
+    stringlist::destroy(devlist);
     delete [] ed_selection;
     ed_selection = 0;
 

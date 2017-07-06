@@ -237,7 +237,7 @@ sEC::update(stringlist *sl)
             return;
         CDcbin cbin(DSP()->CurCellName());
         sl = cbin.listEmpties();
-        sl->sort();
+        stringlist::sort(sl);
         s0 = sl;
     }
     if (!sl) {
@@ -246,7 +246,7 @@ sEC::update(stringlist *sl)
     }
     delete [] ec_list;
 
-    int sz = sl->length();
+    int sz = stringlist::length(sl);
     ec_list = new e_item[sz+1];
     ec_field = 0;
     e_item *itm = ec_list;
@@ -262,7 +262,7 @@ sEC::update(stringlist *sl)
         }
         sl = sl->next;
     }
-    s0->free();
+    stringlist::destroy(s0);
 
     if (itm == ec_list) {
         // No new items.

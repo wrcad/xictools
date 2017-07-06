@@ -850,7 +850,7 @@ sEs::devs_page()
                 gtk_menu_append(GTK_MENU(es_p2_menu), mi);
             }
         }
-        dnames->free();
+        stringlist::destroy(dnames);
     }
 
     es_p2_delblk =
@@ -1909,7 +1909,7 @@ sEs::dev_menu_upd()
             gtk_menu_append(GTK_MENU(es_p2_menu), mi);
         }
     }
-    dnames->free();
+    stringlist::destroy(dnames);
 }
 
 

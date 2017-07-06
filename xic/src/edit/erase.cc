@@ -27,6 +27,7 @@
 #include "main.h"
 #include "edit.h"
 #include "undolist.h"
+#include "yankbuf.h"
 #include "scedif.h"
 #include "dsp_tkif.h"
 #include "dsp_inlines.h"
@@ -183,12 +184,12 @@ cEdit::eraseUnder()
                 PolyList *p0 = Zlist::to_poly_list(z0);
                 for (PolyList *pp = p0; pp; pp = pp->next)
                     cursd->newPoly(0, &pp->po, ld, 0, true);
-                p0->free();
+                PolyList::destroy(p0);
             }
         }
-        Zlist::free(zl);
+        Zlist::destroy(zl);
     }
-    ps->free();
+    PolyList::destroy(ps);
     if (DSP()->CurMode() == Electrical && DSP()->ShowTerminals())
         DSP()->ShowCellTerminalMarks(DISPLAY);
 }
@@ -356,7 +357,7 @@ EraseState::b1down()
             Refx = slp->odesc->oBB().left;
             Refy = slp->odesc->oBB().bottom;
             AOI = slp->odesc->oBB();
-            slist->free();
+            CDol::destroy(slist);
 
             slist = get_list(CurCell(),
                 AOI.left, AOI.bottom, AOI.right, AOI.top, &AOI);
@@ -377,7 +378,7 @@ EraseState::b1down()
                 }
                 else
                     PL()->FlashMessage("Yanked...");
-                slist->free();
+                CDol::destroy(slist);
             }
             return;
         }
@@ -406,7 +407,7 @@ EraseState::b1down()
                             XM()->SetCoordMode(CO_ABSOLUTE);
                             Ulist()->CommitChanges(true);
                             State = 3;
-                            slist->free();
+                            CDol::destroy(slist);
                             return;
                         }
                     }
@@ -416,7 +417,7 @@ EraseState::b1down()
                             XM()->SetCoordMode(CO_ABSOLUTE);
                             Ulist()->CommitChanges(true);
                             State = 3;
-                            slist->free();
+                            CDol::destroy(slist);
                             return;
                         }
                     }
@@ -426,10 +427,10 @@ EraseState::b1down()
                     XM()->SetCoordMode(CO_ABSOLUTE);
                     PL()->FlashMessage("Yanked...");
                     State = 4;
-                    slist->free();
+                    CDol::destroy(slist);
                     return;
                 }
-                slist->free();
+                CDol::destroy(slist);
             }
         }
     }
@@ -465,7 +466,7 @@ EraseState::b1up()
                                 XM()->SetCoordMode(CO_ABSOLUTE);
                                 Ulist()->CommitChanges(true);
                                 State = 2;
-                                slist->free();
+                                CDol::destroy(slist);
                                 return;
                             }
                         }
@@ -475,7 +476,7 @@ EraseState::b1up()
                                 XM()->SetCoordMode(CO_ABSOLUTE);
                                 Ulist()->CommitChanges(true);
                                 State = 2;
-                                slist->free();
+                                CDol::destroy(slist);
                                 return;
                             }
                         }
@@ -484,10 +485,10 @@ EraseState::b1up()
                         Gst()->SetGhost(GFnone);
                         XM()->SetCoordMode(CO_ABSOLUTE);
                         PL()->FlashMessage("Yanked...");
-                        slist->free();
+                        CDol::destroy(slist);
                         return;
                     }
-                    slist->free();
+                    CDol::destroy(slist);
                 }
             }
         }
@@ -563,7 +564,7 @@ EraseState::b1down_altw()
             Refx = slp->odesc->oBB().left;
             Refy = slp->odesc->oBB().bottom;
             AOI = slp->odesc->oBB();
-            slist->free();
+            CDol::destroy(slist);
 
             slist = get_list(sdesc,
                 AOI.left, AOI.bottom, AOI.right, AOI.top, &AOI);
@@ -573,7 +574,7 @@ EraseState::b1down_altw()
                 else
                     ED()->yank(slist, &AOI, true);
                 PL()->FlashMessage("Yanked...");
-                slist->free();
+                CDol::destroy(slist);
             }
             return;
         }
@@ -600,7 +601,7 @@ EraseState::b1down_altw()
                 XM()->SetCoordMode(CO_ABSOLUTE);
                 PL()->FlashMessage("Yanked...");
                 State = 4;
-                slist->free();
+                CDol::destroy(slist);
             }
         }
     }
@@ -645,7 +646,7 @@ EraseState::b1up_altw()
                     Gst()->SetGhost(GFnone);
                     XM()->SetCoordMode(CO_ABSOLUTE);
                     PL()->FlashMessage("Yanked...");
-                    slist->free();
+                    CDol::destroy(slist);
                     return;
                 }
             }
@@ -867,7 +868,7 @@ cEdit::eraseArea(bool yank_only, int x1, int y1, int x2, int y2)
             ret = eraseList(slist, &BB);
         else
             ret = true;
-        slist->free();
+        CDol::destroy(slist);
     }
     return (ret);
 }
@@ -1135,8 +1136,7 @@ cEdit::yank(CDol *slist, BBox *AOI, bool clipping)
             y0 = yx;
     }
     if (y0) {
-        if (ed_yank_buffer[ED_YANK_DEPTH-1])
-            ed_yank_buffer[ED_YANK_DEPTH-1]->free();
+        yb::destroy(ed_yank_buffer[ED_YANK_DEPTH-1]);
         for (int i = ED_YANK_DEPTH-1; i > 0; i--)
             ed_yank_buffer[i] = ed_yank_buffer[i-1];
         ed_yank_buffer[0] = y0;
@@ -1246,7 +1246,7 @@ box:
                 Errs()->add_error("mergeBoxOrPoly failed");
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
             }
-            b0->free();
+            Blist::destroy(b0);
         }
         return (true);
     }
@@ -1287,7 +1287,7 @@ poly:
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
             }
         }
-        p0->free();
+        PolyList::destroy(p0);
 #endif
         return (true);
     }
@@ -1352,7 +1352,7 @@ wire:
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
             }
         }
-        p0->free();
+        PolyList::destroy(p0);
         return (true);
     }
 label:
@@ -1388,7 +1388,7 @@ box:
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
             }
         }
-        b0->free();
+        Blist::destroy(b0);
         return (true);
     }
 poly:
@@ -1428,7 +1428,7 @@ poly:
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
             }
         }
-        p0->free();
+        PolyList::destroy(p0);
 #endif
         return (true);
     }
@@ -1493,7 +1493,7 @@ wire:
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
             }
         }
-        p0->free();
+        PolyList::destroy(p0);
         return (true);
     }
 label:
@@ -1525,7 +1525,7 @@ box:
             yx->next = y0;
             y0 = yx;
         }
-        b0->free();
+        Blist::destroy(b0);
         return (y0);
     }
 poly:
@@ -1547,7 +1547,7 @@ poly:
             yx->next = y0;
             y0 = yx;
         }
-        p0->free();
+        PolyList::destroy(p0);
         return (y0);
     }
 wire:
@@ -1625,7 +1625,7 @@ wire:
             yx->next = y0;
             y0 = yx;
         }
-        p0->free();
+        PolyList::destroy(p0);
         return (y0);
     }
 label:
@@ -1633,28 +1633,6 @@ inst:
     return (y0);
 }
 // End of cEdit functions
-
-
-// Free a yank buffer list.
-//
-void
-yb::free()
-{
-    yb *yt;
-    for (yb *yx = this; yx; yx = yt) {
-        yt = yx->next;
-        delete yx;
-    }
-}
-
-void
-yb::computeBB(BBox *BB)
-{
-    *BB = CDnullBB;
-    for (yb *yx = this; yx; yx = yx->next)
-        yx->add_bbox(BB);
-}
-// End of yb functions
 
 
 //----------------

@@ -214,9 +214,8 @@ struct sStdViaList
             std_via = v;
         }
 
-    void free()
+    static void destroy(sStdViaList *vl)
         {
-            sStdViaList *vl = this;
             while (vl) {
                 sStdViaList *vx = vl;
                 vl = vl->next;

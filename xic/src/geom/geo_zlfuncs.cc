@@ -48,17 +48,17 @@ Zlist::zl_intersect(Zlist *zl1, Zlist *zl2, bool touchok)
     // Do simple case
     if (!zl1->next && !zl2->next) {
         bool ret = zl1->Z.intersect(&zl2->Z, touchok);
-        Zlist::free(zl1);
-        Zlist::free(zl2);
+        Zlist::destroy(zl1);
+        Zlist::destroy(zl2);
         return (ret);
     }
 
     Ylist *yl1 = new Ylist(zl1);
     Ylist *yl2 = new Ylist(zl2);
 
-    bool ret = yl1->intersect(yl2, touchok);
-    yl1->free();
-    yl2->free();
+    bool ret = Ylist::intersect(yl1, yl2, touchok);
+    Ylist::destroy(yl1);
+    Ylist::destroy(yl2);
     return (ret);
 }
 
@@ -100,13 +100,13 @@ Zlist::zl_and(Zlist **zp)
 {
     Zlist *zl = *zp;
     if (!zl || !zl->next) {
-        Zlist::free(zl);
+        Zlist::destroy(zl);
         *zp = 0;
         return (XIok);
     }
     Ylist *yl = new Ylist(zl);
     try {
-        *zp = yl->clip_to();
+        *zp = Ylist::clip_to(yl);
         return (XIok);
     }
     catch (XIrt ret) {
@@ -123,7 +123,7 @@ XIrt
 Zlist::zl_and(Zlist **zl1p, const Zoid *ZB)
 {
     if (!*zl1p || !ZB) {
-        Zlist::free((*zl1p));
+        Zlist::destroy((*zl1p));
         *zl1p = 0;
         return (XIok);
     }
@@ -135,8 +135,8 @@ Zlist::zl_and(Zlist **zl1p, const Zoid *ZB)
     }
 
     Ylist *y = new Ylist(*zl1p);
-    *zl1p = y->clip_to(ZB);
-    y->free();
+    *zl1p = Ylist::clip_to(y, ZB);
+    Ylist::destroy(y);
     return (XIok);
 }
 
@@ -151,9 +151,9 @@ Zlist::zl_and(Zlist **zl1p, Zlist *zl2)
     TimeDbgAccum ac("zl_and");
 
     if (!*zl1p || !zl2) {
-        Zlist::free((*zl1p));
+        Zlist::destroy((*zl1p));
         *zl1p = 0;
-        Zlist::free(zl2);
+        Zlist::destroy(zl2);
         return (XIok);
     }
 
@@ -161,8 +161,8 @@ Zlist::zl_and(Zlist **zl1p, Zlist *zl2)
     if (!(*zl1p)->next && !zl2->next) {
         Zlist *zt = *zl1p;
         *zl1p = (zt->Z).clip_to(&zl2->Z);
-        Zlist::free(zl2);
-        Zlist::free(zt);
+        Zlist::destroy(zl2);
+        Zlist::destroy(zt);
         return (XIok);
     }
 
@@ -183,14 +183,14 @@ Zlist::zl_and(Zlist **zl1p, Zlist *zl2)
 #endif
     try {
         *zl1p = yl1->clip_to(yl2);
-        yl1->free();
-        yl2->free();
+        Ylist::destroy(yl1);
+        Ylist::destroy(yl2);
         return (XIok);
     }
     catch (XIrt ret) {
         *zl1p = 0;
-        yl1->free();
-        yl2->free();
+        Ylist::destroy(yl1);
+        Ylist::destroy(yl2);
         return (ret);
     }
 }
@@ -206,7 +206,7 @@ Zlist::zl_and(Zlist **zl1p, const Ylist *yl2)
     TimeDbgAccum ac("zl_and_y");
 
     if (!*zl1p || !yl2 || (!yl2->y_zlist && !yl2->next)) {
-        Zlist::free((*zl1p));
+        Zlist::destroy((*zl1p));
         *zl1p = 0;
         return (XIok);
     }
@@ -226,13 +226,13 @@ Zlist::zl_and(Zlist **zl1p, const Ylist *yl2)
     }
 #endif
     try {
-        *zl1p = yl1->clip_to(yl2);
-        yl1->free();
+        *zl1p = Ylist::clip_to(yl1, yl2);
+        Ylist::destroy(yl1);
         return (XIok);
     }
     catch (XIrt ret) {
         *zl1p = 0;
-        yl1->free();
+        Ylist::destroy(yl1);
         return (ret);
     }
 }
@@ -262,13 +262,13 @@ Zlist::zl_andnot(Zlist **zp)
     }
 #endif
     try {
-        *zp = yl->clip_out();
-        yl->free();
+        *zp = Ylist::clip_out(yl);
+        Ylist::destroy(yl);
         return (XIok);
     }
     catch (XIrt ret) {
         *zp = 0;
-        yl->free();
+        Ylist::destroy(yl);
         return (ret);
     }
 }
@@ -299,7 +299,7 @@ Zlist::zl_andnot(Zlist **zl1p, const Zoid *ZB)
     }
 
     Ylist *y = new Ylist(*zl1p);
-    *zl1p = y->clip_out(ZB)->to_zlist();
+    *zl1p = Ylist::to_zlist(Ylist::clip_out(y, ZB));
     return (XIok);
 }
 
@@ -314,7 +314,7 @@ Zlist::zl_andnot(Zlist **zl1p, Zlist *zl2)
     TimeDbgAccum ac("zl_andnot");
 
     if (!*zl1p || !zl2) {
-        Zlist::free(zl2);
+        Zlist::destroy(zl2);
         return (XIok);
     }
     if (!(*zl1p)->next && !zl2->next) {
@@ -324,14 +324,14 @@ Zlist::zl_andnot(Zlist **zl1p, Zlist *zl2)
         if (no_ovl)
             *zl1p = zo;
         else
-            Zlist::free(zo);
-        Zlist::free(zl2);
+            Zlist::destroy(zo);
+        Zlist::destroy(zl2);
         return (XIok);
     }
 
     Ylist *yl = new Ylist(*zl1p);
     if (!zl2->next) {
-        *zl1p = yl->clip_out(&zl2->Z)->to_zlist();
+        *zl1p = Ylist::to_zlist(Ylist::clip_out(yl, &zl2->Z));
         return (XIok);
     }
 
@@ -350,14 +350,14 @@ Zlist::zl_andnot(Zlist **zl1p, Zlist *zl2)
 #endif
     try {
         *zl1p = yl->clip_out(yr);
-        yl->free();
-        yr->free();
+        Ylist::destroy(yl);
+        Ylist::destroy(yr);
         return (XIok);
     }
     catch (XIrt ret) {
         *zl1p = 0;
-        yl->free();
-        yr->free();
+        Ylist::destroy(yl);
+        Ylist::destroy(yr);
         return (ret);
     }
 }
@@ -390,12 +390,12 @@ Zlist::zl_andnot(Zlist **zlp, const Ylist *yr)
 #endif
     try {
         *zlp = yl->clip_out(yr);
-        yl->free();
+        Ylist::destroy(yl);
         return (XIok);
     }
     catch (XIrt ret) {
         *zlp = 0;
-        yl->free();
+        Ylist::destroy(yl);
         return (ret);
     }
 }
@@ -433,15 +433,15 @@ Zlist::zl_andnot2(Zlist **zl1p, Zlist **zl2p)
     try {
         *zl2p = yr->clip_out(yl);
         *zl1p = yl->clip_out(yr);
-        yl->free();
-        yr->free();
+        Ylist::destroy(yl);
+        Ylist::destroy(yr);
         return (XIok);
     }
     catch (XIrt ret) {
         *zl1p = 0;
         *zl2p = 0;
-        yl->free();
-        yr->free();
+        Ylist::destroy(yl);
+        Ylist::destroy(yr);
         return (ret);
     }
 }
@@ -498,12 +498,12 @@ Zlist::zl_bloat(Zlist **zp, int delta, int mode)
     Zlist *zl = *zp;
     try {
         *zp = Zlist::bloat(zl, delta, mode);
-        Zlist::free(zl);
+        Zlist::destroy(zl);
         return (XIok);
     }
     catch (XIrt ret) {
         *zp = 0;
-        Zlist::free(zl);
+        Zlist::destroy(zl);
         return (ret);
     }
 }

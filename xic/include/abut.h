@@ -92,9 +92,8 @@ struct sAbutKeyVal
             delete [] kv_value;
         }
 
-    void free()
+    static void destroy(sAbutKeyVal *v)
         {
-            sAbutKeyVal *v = this;
             while (v) {
                 sAbutKeyVal *vx = v;
                 v = v->next();
@@ -141,11 +140,10 @@ struct sAbutRule
 
     static bool parseRules(const char*, sAbutRule**);
     bool setup(const char*, const char*, const char*);
-    void print(FILE*);
+    void print(FILE*) const;
 
-    void free()
+    static void destroy(sAbutRule *r)
         {
-            sAbutRule *r = this;
             while (r) {
                 sAbutRule *rx = r;
                 r = r->ar_next;
@@ -153,18 +151,17 @@ struct sAbutRule
             }
         }
 
-    void print_all(FILE *fp)
+    static void print_all(const sAbutRule *r, FILE *fp)
         {
-            sAbutRule *r = this;
             while (r) {
                 r->print(fp);
                 r = r->ar_next;
             }
         }
 
-    sAbutRule *find(aRuleType n)
+    static sAbutRule *find(sAbutRule *thisr, aRuleType n)
         {
-            for (sAbutRule *r = this; r; r = r->next()) {
+            for (sAbutRule *r = thisr; r; r = r->next()) {
                 if (r->name_val() == n)
                     return (r);
             }
@@ -225,9 +222,8 @@ struct sAbutItem
             delete ai_info2;
         }
 
-    void free()
+    static void destroy(sAbutItem *ai)
         {
-            sAbutItem *ai = this;
             while (ai) {
                 sAbutItem *ax = ai;
                 ai = ai->ai_next;
@@ -276,7 +272,7 @@ struct sAbutPrior
             delete [] ap_class;
             delete [] ap_self_shape;
             delete [] ap_ptnr_shape;
-            ap_params->free();
+            sAbutKeyVal::destroy(ap_params);
         }
 
     bool parse(const char*);
@@ -324,8 +320,8 @@ public:
 
     ~cAbutHandler()
         {
-            ah_prms1->free();
-            ah_list->free();
+            PCellParam::destroy(ah_prms1);
+            sAbutItem::destroy(ah_list);
         }
 
     void set_params(PCellParam *p)      { ah_prms1 = p; }

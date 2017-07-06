@@ -26,6 +26,7 @@
 #include "main.h"
 #include "ext.h"
 #include "ext_extract.h"
+#include "ext_nets.h"
 #include "ext_pathfinder.h"
 #include "sced.h"
 #include "dsp_layer.h"
@@ -253,9 +254,8 @@ namespace {
                     group = g;
                 }
 
-            void free()
+            static void destroy(grp_list *gl)
                 {
-                    grp_list *gl = this;
                     while (gl) {
                         grp_list *x = gl;
                         gl = gl->next;
@@ -295,7 +295,7 @@ namespace {
             return (-1);
         if (cursdp != gs_sdesc || !gs_BB.intersect(x, y, false)) {
             gs_sdesc = cursdp;
-            gs_groups->free();
+            grp_list::destroy(gs_groups);
             gs_groups = 0;
             WindowDesc *wd = EV()->CurrentWin();
             if (!wd)
@@ -351,7 +351,7 @@ cExt::netSelB1Up()
         ext_extraction_select = btmp;
         if (!bret)
             return (-1);
-        selections->free();
+        CDol::destroy(selections);
 
         // hyPoint won't detect an object unless the AOI intersects
         // it, which for a point select won't occur unless it happens
@@ -459,11 +459,11 @@ cExt::netSelB1Up_altw()
                 continue;
             int grp = odesc->group();
             if (grp >= 0) {
-                list->free();
+                CDol::destroy(list);
                 return (grp);
             }
         }
-        list->free();
+        CDol::destroy(list);
     }
     return (-1);
 }

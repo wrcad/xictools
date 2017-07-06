@@ -22,11 +22,11 @@ HFILES =
 CCFILES = \
   cd.cc cd_attrdb.cc cd_cbin.cc cd_cell.cc cd_celldb.cc cd_compare.cc \
   cd_database.cc cd_digest.cc cd_grid.cc cd_hypertext.cc \
-  cd_instance.cc cd_label.cc cd_layer.cc cd_ldb.cc cd_lists.cc \
-  cd_master.cc cd_memmgr.cc cd_merge.cc cd_netname.cc cd_objhash.cc \
-  cd_objmisc.cc cd_objvirt.cc cd_open.cc cd_property.cc cd_sdb.cc \
-  cd_scriptout.cc cd_strmdata.cc cd_symtab.cc cd_terminal.cc \
-  cd_transform.cc cd_variable.cc cd_zlist.cc
+  cd_instance.cc cd_label.cc cd_layer.cc cd_ldb.cc cd_master.cc \
+  cd_memmgr.cc cd_merge.cc cd_netname.cc cd_objhash.cc cd_objmisc.cc \
+  cd_objvirt.cc cd_open.cc cd_property.cc cd_sdb.cc cd_scriptout.cc \
+  cd_strmdata.cc cd_symtab.cc cd_terminal.cc cd_transform.cc \
+  cd_variable.cc cd_zlist.cc
 CCOBJS = $(CCFILES:.cc=.o)
 INCLUDE = -I../../include -I$(LPATH)/miscutil
 

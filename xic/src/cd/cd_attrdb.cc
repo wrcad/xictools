@@ -88,8 +88,8 @@ namespace cd_attrdb {
         ticket_t find(const unsigned char*);
         void add(const unsigned char*, ticket_t);
 
-        int allocated() { attable_t *t = this; return (t ? count : 0); }
-        int hashwidth() { attable_t *t = this; return (t ? hashmask+1 : 0); }
+        int allocated() { return (count); }
+        int hashwidth() { return (hashmask+1); }
 
     private:
 

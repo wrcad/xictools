@@ -313,7 +313,7 @@ main(int argc, char **argv)
     if (do_wrs)
         HLP()->define("WRspice");
     HLP()->define("Mozy");
-    HLP()->set_name("mozy-"VERSION_STR);
+    HLP()->set_name("mozy-" VERSION_STR);
 
     HLP()->context()->registerQuitHelpProc(quit_proc);
     init_signals();

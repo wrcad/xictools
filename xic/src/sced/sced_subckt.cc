@@ -163,12 +163,11 @@ namespace {
 
         ~sNop()
             {
-                netexp->free();
+                CDnetex::destroy(netexp);
             }
 
-        void freeUndo()
+        static void freeUndo(sNop *op)
             {
-                sNop *op = this;
                 while (op) {
                     sNop *opx = op;
                     op = op->next;
@@ -176,14 +175,13 @@ namespace {
                         delete opx->prp;
                     else if (opx->type == N_BDEL)
                         delete opx->bprp;
-                    opx->sypts->free();
+                    Plist::destroy(opx->sypts);
                     delete opx;
                 }
             }
 
-        void freeRedo()
+        static void freeRedo(sNop *op)
             {
-                sNop *op = this;
                 while (op) {
                     sNop *opx = op;
                     op = op->next;
@@ -191,7 +189,7 @@ namespace {
                         delete opx->prp;
                     else if (opx->type == N_BADD)
                         delete opx->bprp;
-                    opx->sypts->free();
+                    Plist::destroy(opx->sypts);
                     delete opx;
                 }
             }
@@ -1251,8 +1249,8 @@ SubcState::esc()
     if (DSP()->ShowTerminals())
         // add the cell's marks only
         DSP()->ShowCellTerminalMarks(DISPLAY);
-    Opers->freeUndo();
-    Redos->freeRedo();
+    sNop::freeUndo(Opers);
+    sNop::freeRedo(Redos);
     delete this;
 }
 
@@ -1391,7 +1389,7 @@ SubcState::undo()
                 pn->set_pos(ix, p->x, p->y);
                 ix++;
             }
-            op->sypts->free();
+            Plist::destroy(op->sypts);
             op->sypts = p0;
         }
         show_terms(DISPLAY, cnt);
@@ -1497,7 +1495,7 @@ SubcState::undo()
                 pn->set_pos(ix, p->x, p->y);
                 ix++;
             }
-            op->sypts->free();
+            Plist::destroy(op->sypts);
             op->sypts = p0;
         }
         show_bterms(DISPLAY);
@@ -1512,7 +1510,7 @@ SubcState::undo()
             unsigned int tbeg = op->bprp->beg_range();
             unsigned int tend = op->bprp->end_range();
             CDnetName tname = op->bprp->get_term_name();
-            CDnetex *tnx = op->bprp->bundle_spec()->dup();
+            CDnetex *tnx = CDnetex::dup(op->bprp->bundle_spec());
             op->bprp->set_index(op->indx);
             if (op->netexp)
                 op->bprp->update_bundle(op->netexp);
@@ -1638,7 +1636,7 @@ SubcState::redo()
                 pn->set_pos(ix, p->x, p->y);
                 ix++;
             }
-            op->sypts->free();
+            Plist::destroy(op->sypts);
             op->sypts = p0;
         }
         show_terms(DISPLAY, cnt);
@@ -1742,7 +1740,7 @@ SubcState::redo()
                 pn->set_pos(ix, p->x, p->y);
                 ix++;
             }
-            op->sypts->free();
+            Plist::destroy(op->sypts);
             op->sypts = p0;
         }
         show_bterms(DISPLAY);
@@ -1757,7 +1755,7 @@ SubcState::redo()
             unsigned int tbeg = op->bprp->beg_range();
             unsigned int tend = op->bprp->end_range();
             CDnetName tname = op->bprp->get_term_name();
-            CDnetex *tnx = op->bprp->bundle_spec()->dup();
+            CDnetex *tnx = CDnetex::dup(op->bprp->bundle_spec());
             op->bprp->set_index(op->indx);
             if (op->netexp)
                 op->bprp->update_bundle(op->netexp);
@@ -2097,7 +2095,7 @@ SubcState::delete_terminal(int x, int y)
         if (p0 && !p0->next) {
             // If there is only one pin, skip delete.  The
             // node can only be deleted when not symbolic.
-            p0->free();
+            Plist::destroy(p0);
             show_terms(DISPLAY, count);
             int xx, yy;
             Menu()->PointerRootLoc(&xx, &yy);
@@ -2172,7 +2170,7 @@ SubcState::move_terminal(int oldx, int oldy, int x, int y, bool cpy)
             break;
         // Don't allow coincident pins.
         if (issym && px == x && py == y) {
-            p0->free();
+            Plist::destroy(p0);
             return (false);
         }
         if (!p0)
@@ -2341,7 +2339,7 @@ SubcState::te_cb(te_info_t *tinfo, CDp *prp)
         if (netex) {
             bool ret = netex->is_scalar(&name) ||
                 netex->is_simple(&name, &beg, &end);
-            netex->free();
+            CDnetex::destroy(netex);
             if (!ret) {
                 Log()->ErrorLogV(mh::Properties,
                     "Bad name string %s, too complex.", tname);
@@ -2359,7 +2357,7 @@ SubcState::te_cb(te_info_t *tinfo, CDp *prp)
             int b = -1, e = -1;
             bool ret = netex->is_scalar(&n) || netex->is_simple(&n, &b, &e);
             if (ret) {
-                netex->free();
+                CDnetex::destroy(netex);
                 netex = 0;
                 if (name && n && name != n) {
                     Log()->ErrorLog(mh::NetlistCreation,
@@ -2402,7 +2400,7 @@ SubcState::te_cb(te_info_t *tinfo, CDp *prp)
             pb->CDp_bnode::set_term_name(name);
         }
 
-        CDnetex *onx = pb->bundle_spec()->dup();
+        CDnetex *onx = CDnetex::dup(pb->bundle_spec());
         int obeg = pb->beg_range();
         int oend = pb->end_range();
 
@@ -2415,11 +2413,11 @@ SubcState::te_cb(te_info_t *tinfo, CDp *prp)
             pb->set_range(beg, end);
         }
         else {
-            CDnetex *onl = pb->bundle_spec()->dup();
+            CDnetex *onl = CDnetex::dup(pb->bundle_spec());
             pb->update_bundle(netex);
             if (!CDnetex::cmp(onl, pb->bundle_spec()))
                 changed = true;
-            onl->free();
+            CDnetex::destroy(onl);
         }
 
         unsigned int oflags = pb->flags();
@@ -2698,7 +2696,7 @@ SubcState::delete_bterm(int x, int y)
         if (p0 && !p0->next) {
             // If there is only one pin, skip delete.  The
             // node can only be deleted when not symbolic.
-            p0->free();
+            Plist::destroy(p0);
             show_bterms(DISPLAY);
             return (false);
         }
@@ -2767,7 +2765,7 @@ SubcState::move_bterm(int oldx, int oldy, int x, int y, bool cpy)
             break;
         // Don't allow coincident pins.
         if (issym && px == x && py == y) {
-            p0->free();
+            Plist::destroy(p0);
             return (false);
         }
         if (!p0)

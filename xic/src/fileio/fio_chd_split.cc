@@ -54,7 +54,7 @@ namespace {
             if (ep == tok) {
                 // Parse error.
                 delete [] tok;
-                bl0->free();
+                Blist::destroy(bl0);
                 return (0);
             }
             delete [] tok;
@@ -76,7 +76,7 @@ namespace {
         }
         if (cnt != 0) {
             // Extra/missing numbers.
-            bl0->free();
+            Blist::destroy(bl0);
             return (0);
         }
         return (bl0);
@@ -353,7 +353,7 @@ cFIO::SplitArchive(const char *string)
     delete [] fname;
     delete [] cname;
     delete [] bname;
-    bl0->free();
+    Blist::destroy(bl0);
     return (oiret);
 }
 
@@ -559,7 +559,7 @@ cCHD::writeMulti(const char *cellname, const FIOcvtPrms *iprms,
         else
             oiret = write_multi_hier(ptop, iprms, bl0, gridsize, bloatval);
         FIO()->ifSetWorking(false);
-        bl0->free();
+        Blist::destroy(bl0);
         return (oiret);
     }
 
@@ -601,7 +601,7 @@ cCHD::writeMulti(const char *cellname, const FIOcvtPrms *iprms,
     FIO()->ifSetWorking(true);
     OItype oiret = OIok;
     if (bl0) {
-        int nvals = bl0->length();
+        int nvals = Blist::length(bl0);
         int cnt = 0;
         for (Blist *bl = bl0; bl; bl = bl->next) {
             cnt++;
@@ -667,7 +667,7 @@ cCHD::writeMulti(const char *cellname, const FIOcvtPrms *iprms,
                 break;
             }
         }
-        bl0->free();
+        Blist::destroy(bl0);
     }
     else {
         int nxc = BB.width()/gridsize + (BB.width()%gridsize != 0);
@@ -756,7 +756,7 @@ cCHD::writeMulti(const char *cellname, const FIOcvtPrms *iprms,
     //
     if (oiret == OIok && iprms->flatten() && flat_map)
         write_native_composite(bname, s0);
-    s0->free();
+    stringlist::destroy(s0);
 
     FIO()->ifSetWorking(false);
     delete in;
@@ -949,7 +949,7 @@ mpx_out::write_box(const BBox *BB)
                 Blist *bl0 = BB->clip_to(&BBaoi);
                 if (bl0) {
                     ret = mpx_channels[i]->write_box(&bl0->BB);
-                    bl0->free();
+                    Blist::destroy(bl0);
                 }
             }
             if (!ret)
@@ -982,7 +982,7 @@ mpx_out::write_poly(const Poly *poly)
                 Zlist *zl = poly->toZlist();
                 Ylist *yl = new Ylist(new Zlist(&BBaoi));
                 ret = (Zlist::zl_and(&zl, yl) == XIok);
-                yl->free();
+                Ylist::destroy(yl);
 
                 if (zl) {
                     PolyList *pl = Zlist::to_poly_list(zl);
@@ -996,7 +996,7 @@ mpx_out::write_poly(const Poly *poly)
                         if (!ret)
                             break;
                     }
-                    pl->free();
+                    PolyList::destroy(pl);
                 }
             }
             if (!ret)
@@ -1032,7 +1032,7 @@ mpx_out::write_wire(const Wire *wire)
                 Zlist *zl = po.toZlist();
                 Ylist *yl = new Ylist(new Zlist(&BBaoi));
                 ret = (Zlist::zl_and(&zl, yl) == XIok);
-                yl->free();
+                Ylist::destroy(yl);
 
                 if (zl) {
                     PolyList *pl = Zlist::to_poly_list(zl);
@@ -1046,7 +1046,7 @@ mpx_out::write_wire(const Wire *wire)
                         if (!ret)
                             break;
                     }
-                    pl->free();
+                    PolyList::destroy(pl);
                 }
             }
             if (!ret)
@@ -1277,7 +1277,7 @@ cCHD::write_multi_hier(symref_t *ptop, const FIOcvtPrms *prms,
     int nyc = 0;
 
     if (blist) {
-        wmc.nvals = blist->length();
+        wmc.nvals = Blist::length(blist);
         wmc.ctab = new cCVtab(false, wmc.nvals);
 
         int cnt = 0;
@@ -1516,7 +1516,7 @@ cCHD::write_multi_hier(symref_t *ptop, const FIOcvtPrms *prms,
                 if (!ok)
                     break;
             }
-            sy0->free();
+            syrlist_t::destroy(sy0);
             if (!ok)
                 break;
         }
@@ -1678,7 +1678,7 @@ mpx_flat_out::write_box(const BBox *BB)
                 Blist *bl0 = BB->clip_to(BBaoi);
                 if (bl0) {
                     ret = mpx_channels[i]->write_box(&bl0->BB);
-                    bl0->free();
+                    Blist::destroy(bl0);
                 }
             }
             if (!ret)
@@ -1704,7 +1704,7 @@ mpx_flat_out::write_poly(const Poly *poly)
                 Zlist *zl = poly->toZlist();
                 Ylist *yl = new Ylist(new Zlist(BBaoi));
                 ret = (Zlist::zl_and(&zl, yl) == XIok);
-                yl->free();
+                Ylist::destroy(yl);
 
                 if (zl) {
                     PolyList *pl = Zlist::to_poly_list(zl);
@@ -1718,7 +1718,7 @@ mpx_flat_out::write_poly(const Poly *poly)
                         if (!ret)
                             break;
                     }
-                    pl->free();
+                    PolyList::destroy(pl);
                 }
             }
             if (!ret)
@@ -1748,7 +1748,7 @@ mpx_flat_out::write_wire(const Wire *wire)
                 Zlist *zl = po.toZlist();
                 Ylist *yl = new Ylist(new Zlist(BBaoi));
                 ret = (Zlist::zl_and(&zl, yl) == XIok);
-                yl->free();
+                Ylist::destroy(yl);
 
                 if (zl) {
                     PolyList *pl = Zlist::to_poly_list(zl);
@@ -1762,7 +1762,7 @@ mpx_flat_out::write_wire(const Wire *wire)
                         if (!ret)
                             break;
                     }
-                    pl->free();
+                    PolyList::destroy(pl);
                 }
             }
             if (!ret)
@@ -2244,7 +2244,7 @@ cCHD::write_multi_flat(symref_t *ptop, const FIOcvtPrms *prms,
             }
         }
         write_native_composite(bname, s0);
-        s0->free();
+        stringlist::destroy(s0);
     }
 
     return (oiret);

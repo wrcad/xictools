@@ -224,7 +224,15 @@ struct wStackElt
 {
     wStackElt() { next = 0; memset(name, 0, sizeof(name)); }
     wStackElt(BBox*, const char*, wStackElt*);
-    void free();
+
+    static void destroy(wStackElt *w)
+        {
+            while (w) {
+                wStackElt *wx = w;
+                w = w->next;
+                delete wx;
+            }
+        }
 
     BBox BB;
     wStackElt *next;
@@ -442,7 +450,6 @@ struct WindowDesc
     // dsp_control.cc
     void Update(const BBox*, bool = false);
     void GhostUpdate(const BBox*);
-    void GhostFinalUpdate();
     void Refresh(const BBox*);
     void RefreshList(const Blist*);
     void Redisplay(const BBox*);
@@ -576,6 +583,15 @@ struct WindowDesc
     void PToLbb(const BBox &BBp, BBox &BB) const
         { PToL(BBp.left, BBp.bottom, BB.left, BB.bottom);
             PToL(BBp.right, BBp.top, BB.right, BB.top); }
+
+    // Ghost drawing finished, update the highlighting.
+    void GhostFinalUpdate()
+        {
+            if (w_accum_mode == WDaccumAccum) {
+                w_accum_mode = WDaccumDone;
+                Update(&w_accum_rect);
+            }
+        }
 
     BBox *Window()                          { return (&w_window); }
     BBox *ClipRect()                        { return (&w_clip_rect); }

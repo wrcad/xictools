@@ -267,7 +267,7 @@ cCHD::defaultSymref(DisplayMode mode)
         // topCells() is slow.
         c_top_symref = sl->symref;
 
-    sl->free();
+    syrlist_t::destroy(sl);
     return (s);
 }
 
@@ -344,7 +344,7 @@ cCHD::listCellnames(int mode, bool mark)
             }
         }
     }
-    s0->sort(mark ? ls_comp : 0);
+    stringlist::sort(s0, mark ? ls_comp : 0);
     return (s0);
 }
 
@@ -363,7 +363,7 @@ cCHD::listCellnames(const char *cname, DisplayMode mode)
     stringlist *sl = 0;
     if (listCellnames_rc(p, tab, 0)) {
         sl = tab->names();
-        sl->sort();
+        stringlist::sort(sl);
     }
     delete tab;
     return (sl);
@@ -398,7 +398,7 @@ cCHD::listing(DisplayMode mode, bool sort_by_offset, tristate_t skip)
         if (b2)
             s0 = new syrlist_t(p, s0);
     }
-    s0->sort(sort_by_offset);
+    syrlist_t::sort(s0, sort_by_offset);
     return (s0);
 }
 
@@ -421,7 +421,7 @@ cCHD::listing(DisplayMode mode, const char *cname, bool sort_by_offset,
     }
     syrlist_t *list = ctab->listing(0);
     delete ctab;
-    list->sort(sort_by_offset);
+    syrlist_t::sort(list, sort_by_offset);
     return (list);
 }
 
@@ -450,7 +450,7 @@ cCHD::topCells(DisplayMode mode, bool sort_by_offset)
         if (!p->get_refd())
             s0 = new syrlist_t(p, s0);
     }
-    s0->sort(sort_by_offset);
+    syrlist_t::sort(s0, sort_by_offset);
     return (s0);
 }
 
@@ -576,17 +576,22 @@ namespace {
                     del = 1;
             }
 
-        bool record()
+        static bool record(fb_t *fb)
             {
-                fb_t *fbt = this;
-                if (fbt) {
-                    count++;
-                    if (!(count & del)) {
-                        FIO()->ifInfoMessage(IFMSG_INFO, "%s:  %u",
-                            msg ? msg : "processed", count);
-                        if (checkInterrupt())
-                            return (true);
-                    }
+                if (fb)
+                    return (fb->record_prv());
+                return (false);
+            }
+
+    private:
+        bool record_prv()
+            {
+                count++;
+                if (!(count & del)) {
+                    FIO()->ifInfoMessage(IFMSG_INFO, "%s:  %u",
+                        msg ? msg : "processed", count);
+                    if (checkInterrupt())
+                        return (true);
                 }
                 return (false);
             }
@@ -639,7 +644,7 @@ namespace fio_chd {
 
         ~ib_t()
             {
-                blist->free();
+                Blist::destroy(blist);
             }
 
         CDcellName refname;
@@ -1452,7 +1457,7 @@ cCHD::translate_write(const FIOcvtPrms *prms, const char *chdcell)
                 if (oiret != OIok)
                     break;
             }
-            sl0->free();
+            syrlist_t::destroy(sl0);
         }
     }
     return (oiret);
@@ -1469,8 +1474,7 @@ cCHD::newInput(bool lmap_ok)
         // The oas_in is connected to the OASIS byte stream, and
         // handles decompression and parsing.
         oas_in *oas = new oas_in(lmap_ok);
-        if (!oas->setup_cgd_if(c_cgd, lmap_ok, c_filename,
-                c_filetype, this)) {
+        if (!oas->setup_cgd_if(c_cgd, lmap_ok, c_filename, c_filetype, this)) {
             delete oas;
             return (0);
         }
@@ -1683,7 +1687,7 @@ cCHD::setBoundaries_rcprv(symref_t *p, unsigned int depth)
             p->add_to_bb(&BB);
             p->set_bbok(true);
 
-            if (user_fb->record())
+            if (fb_t::record(user_fb))
                 return (false);
             return (true);
         }
@@ -1746,7 +1750,7 @@ cCHD::setBoundaries_rcprv(symref_t *p, unsigned int depth)
         p->add_to_bb(&BB);
     }
     p->set_bbok(true);
-    if (user_fb->record())
+    if (fb_t::record(user_fb))
         return (false);
     return (true);
 }

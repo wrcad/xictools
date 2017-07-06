@@ -737,7 +737,7 @@ sClr::c_list_btn_proc(GtkWidget *btn, void*)
             }
             Clr->c_listpop = DSPmainWbagRet(PopUpList(list, "Colors",
                 "click to select", c_list_callback, 0, false, false));
-            list->free();
+            stringlist::destroy(list);
             if (Clr->c_listpop)
                 Clr->c_listpop->register_usrptr((void**)&Clr->c_listpop);
         }

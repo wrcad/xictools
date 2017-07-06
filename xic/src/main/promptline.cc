@@ -957,8 +957,8 @@ cPromptEdit::edit_plain_text(const char *prompt, const char *string,
     bool free_prompt = false;
     if (update == PLedUpdate && !prompt) {
         hyList *hp = get_hyList(true);
-        prompt = hp->string(HYcvPlain, true);
-        hp->free();
+        prompt = hyList::string(hp, HYcvPlain, true);
+        hyList::destroy(hp);
         free_prompt = true;
     }
 
@@ -1080,8 +1080,8 @@ cPromptEdit::edit_hypertext(const char *prompt, hyList *h,
     bool free_prompt = false;
     if (update == PLedUpdate && !prompt) {
         hyList *hp = get_hyList(true);
-        prompt = hp->string(HYcvPlain, true);
-        hp->free();
+        prompt = hyList::string(hp, HYcvPlain, true);
+        hyList::destroy(hp);
         free_prompt = true;
     }
 
@@ -1111,7 +1111,7 @@ cPromptEdit::edit_hypertext(const char *prompt, hyList *h,
             else {
                 if (hh->hent() && hh->hent()->ref_type() == HYrefBogus)
                     continue;
-                char *str = hh->get_entry_string();
+                char *str = hyList::get_entry_string(hh);
                 if (hh->ref_type() == HLrefLongText)
                     pe_buf.set_lt(str, i);
                 else if (hh->hent()) {
@@ -1378,7 +1378,7 @@ cPromptEdit::insert(hyList *hpl)
                 insert(h->text());
         }
         else if (h->hent()) {
-            char *s = h->get_entry_string();
+            char *s = hyList::get_entry_string(h);
             if (!s)
                 s = lstring::copy("<unknown>");
             hret.set_ent(s, h->hent()->dup());
@@ -2182,8 +2182,8 @@ cPromptEdit::key_handler(int code, const char *txt, int mstate)
         case CTRL_T:  // long text block if active
             if (pe_column == pe_colmin && pe_long_text_mode) {
                 hyList *hl = get_hyList();
-                hret.set_lt(hl->string(HYcvPlain, true));
-                hl->free();
+                hret.set_lt(hyList::string(hl, HYcvPlain, true));
+                hyList::destroy(hl);
                 clear_cols_to_end(pe_colmin);
                 insert(&hret);
                 finish(false);
@@ -2423,7 +2423,7 @@ cPromptEdit::button1_handler(bool up)
                         break;
                     }
                 }
-                ol->free();
+                CDol::destroy(ol);
                 if (od)
                     EditIf()->prptyCallback(od);
             }
@@ -2472,7 +2472,7 @@ cPromptEdit::button1_handler(bool up)
                     ent->set_odesc(cd);
                     ent->set_pos_x(pe_press_x);
                     ent->set_pos_y(pe_press_y);
-                    ent->parent()->free();
+                    hyParent::destroy(ent->parent());
                     ent->set_parent(0);
 
                     pe_pxdesc = ms;
@@ -2824,8 +2824,8 @@ cPromptEdit::lt_btn_press_handler()
     }
     sHtxt hret;
     hyList *hl = get_hyList();
-    hret.set_lt(hl->string(HYcvPlain, true));
-    hl->free();
+    hret.set_lt(hyList::string(hl, HYcvPlain, true));
+    hyList::destroy(hl);
     clear_cols_to_end(pe_colmin);
     insert(&hret);
     finish(false);
@@ -3212,7 +3212,7 @@ sPromptContext::save_prompt()
 void
 sPromptContext::restore_prompt()
 {
-    pc_prompt_stack->free();
+    stringlist::destroy(pc_prompt_stack);
     pc_prompt_stack = 0;
     if (pc_saved_prompt) {
         stringlist *sl = pc_saved_prompt;

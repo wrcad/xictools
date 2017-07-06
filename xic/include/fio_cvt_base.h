@@ -355,9 +355,8 @@ struct mitem_t
             overwrite_elec = false;
         }
 
-    void free()
+    static void destroy(mitem_t *m)
         {
-            mitem_t *m = this;
             while (m) {
                 mitem_t *mn = m->next;
                 delete m;

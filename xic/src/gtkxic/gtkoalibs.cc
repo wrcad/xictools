@@ -453,12 +453,6 @@ sLBoa::get_selection(const char **plibname, const char **pcellname)
 void
 sLBoa::update()
 {
-    {
-        sLBoa *lbt = this;
-        if (!lbt)
-            return;
-    }
-
     const char *s = CDvdb()->getVariable(VA_OaUseOnly);
     if (s && ((s[0] == '1' && s[1] == 0) || s[0] == 'p' || s[0] == 'P')) {
         if (!GRX->GetStatus(lb_phys)) {
@@ -490,7 +484,7 @@ sLBoa::update()
     if (!liblist)
         liblist = new stringlist(lstring::copy(nolibmsg), 0);
     else
-        liblist->sort();
+        stringlist::sort(liblist);
     GtkListStore *store =
         GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(lb_list)));
     gtk_list_store_clear(store);
@@ -510,7 +504,7 @@ sLBoa::update()
         gtk_list_store_set(store, &iter, 0, isopen ? lb_open_pb : lb_close_pb,
             1, branded ? "Y" :"N", 2, l->string, -1);
     }
-    liblist->free();
+    stringlist::destroy(liblist);
     char *oldsel = lb_selection;
     lb_selection = 0;
     set_sensitive(false);
@@ -560,11 +554,6 @@ sLBoa::update()
 void
 sLBoa::pop_up_contents()
 {
-    {
-        sLBoa *lbt = this;
-        if (!lbt)
-            return;
-    }
     if (!lb_selection)
         return;
 
@@ -604,7 +593,7 @@ sLBoa::pop_up_contents()
                 lb_content_pop->set_button_sens(-1);
         }
     }
-    list->free();
+    stringlist::destroy(list);
 }
 
 
@@ -633,7 +622,7 @@ sLBoa::update_contents(bool upd_dir)
     lstr.add("Cells found in library - click to select\n");
     lstr.add(lb_contlib);
     lb_content_pop->update(list, lstr.string());
-    list->free();
+    stringlist::destroy(list);
 }
 
 
@@ -979,7 +968,7 @@ sLBoa::lb_content_cb(const char *cellname, void*)
         if (p0) {
             char *dbname = PC()->addSuperMaster(LB->lb_contlib, sel,
                 DSP()->CurMode() == Physical ? "layout" : "schematic", p0);
-            p0->free();
+            PCellParam::destroy(p0);
             if (EditIf()->hasEdit()) {
                 if (!EditIf()->openPlacement(0, dbname)) {
                     Log()->ErrorLogV(mh::PCells,

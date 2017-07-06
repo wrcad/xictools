@@ -159,7 +159,7 @@ BBox::clip_out(const Blist *bc) const
                 }
             }
         }
-        bl->free();
+        Blist::destroy(bl);
         bl = b0;
         bc = bc->next;
     }
@@ -172,11 +172,6 @@ BBox::clip_out(const Blist *bc) const
 Blist *
 BBox::clip_out(const BYlist *yl0) const
 {
-    {
-        const BBox *bt = this;
-        if (!bt)
-            return (0);
-    }
     BYlist *yt = new BYlist(new Blist(this, 0));
     for (const BYlist *y = yl0; y; y = y->next) {
         if (y->yl >= top)
@@ -190,14 +185,14 @@ BBox::clip_out(const BYlist *yl0) const
                 break;
             if (b->BB.bottom >= top)
                 continue;
-            yt = yt->clip_out(&b->BB);
+            yt = BYlist::clip_out(yt, &b->BB);
             if (!yt)
                 break;
         }
         if (!yt)
             break;
     }
-    return (yt->toblist());
+    return (BYlist::toblist(yt));
 }
 
 
@@ -340,11 +335,13 @@ namespace {
 }
 
 
+// Static function.
+//
 Blist *
-Blist::sort(int mode)
+Blist::sort(Blist *thisbl, int mode)
 {
     int len = 0;
-    Blist *b0 = this;
+    Blist *b0 = thisbl;
     for (Blist *b = b0; b; b = b->next, len++) ;
 
     if (len > 1) {
@@ -367,46 +364,46 @@ Blist::sort(int mode)
 }
 
 
+// Static function.
 // Insert an element for tBB, clipped to and merged with the existing
 // elements.
 //
 Blist *
-Blist::insert_merge(const BBox *tBB)
+Blist::insert_merge(Blist *thisbl, const BBox *tBB)
 {
     BYlist *y = 0;
-    {
-        const Blist *bt = this;
-        if (bt)
-            y = new BYlist(this);
-    }
-    y = y->insert_merge(tBB);
-    return (y->toblist());
+    if (thisbl)
+        y = new BYlist(thisbl);
+    y = BYlist::insert_merge(y, tBB);
+    return (BYlist::toblist(y));
 }
 
 
+// Static function.
 // Process the box list making no two boxes overlap, and merge boxes
 // when possible.  Boxes with zero area are removed.
 //
 Blist *
-Blist::merge()
+Blist::merge(Blist *thisbl)
 {
-    Blist *bt = this;
+    Blist *bt = thisbl;
     if (!bt || !bt->next)
         return (bt);
     BYlist *y = new BYlist(bt);
-    y = y->merge();
-    return (y->toblist());
+    y = BYlist::merge(y);
+    return (BYlist::toblist(y));
 }
 
 
+// Static function.
 // Return a list of the parts of this that don't intersect BB, this
 // is deleted.
 //
 Blist *
-Blist::clip_out(const BBox *pBB)
+Blist::clip_out(Blist *thisbl, const BBox *pBB)
 {
     Blist *b0 = 0, *be = 0, *bnxt;
-    for (Blist *bl = this; bl; bl = bnxt) {
+    for (Blist *bl = thisbl; bl; bl = bnxt) {
         bnxt = bl->next;
         Blist *bx = bl->BB.clip_out(pBB);
         if (!b0)
@@ -418,18 +415,19 @@ Blist::clip_out(const BBox *pBB)
         }
         delete bl;
     }
-    return (b0->merge());
+    return (merge(b0));
 }
 
 
+// Static function.
 // Return a list of the parts of this that don't intersect any of the
 // elements of bc, this is deleted.
 //
 Blist *
-Blist::clip_out(const Blist *bc)
+Blist::clip_out(Blist *thisbl, const Blist *bc)
 {
     Blist *b0 = 0, *be = 0, *bnxt;
-    for (Blist *bl = this; bl; bl = bnxt) {
+    for (Blist *bl = thisbl; bl; bl = bnxt) {
         bnxt = bl->next;
         Blist *bx = bl->BB.clip_out(bc);
         if (!b0)
@@ -441,17 +439,18 @@ Blist::clip_out(const Blist *bc)
         }
         delete bl;
     }
-    return (b0->merge());
+    return (merge(b0));
 }
 
 
+// Static function.
 // Return the parts of this that overlap BB, this is consumed.
 //
 Blist *
-Blist::clip_to(const BBox *pBB)
+Blist::clip_to(Blist *thisbl, const BBox *pBB)
 {
     Blist *b0 = 0, *be = 0, *bnxt;
-    for (Blist *bl = this; bl; bl = bnxt) {
+    for (Blist *bl = thisbl; bl; bl = bnxt) {
         bnxt = bl->next;
         Blist *bx = bl->BB.clip_to(pBB);
         if (!b0)
@@ -463,18 +462,19 @@ Blist::clip_to(const BBox *pBB)
         }
         delete bl;
     }
-    return (b0->merge());
+    return (merge(b0));
 }
 
 
+// Static function.
 // Return the parts of this that overlap any of the parts of bc, this
 // is consumed.
 //
 Blist *
-Blist::clip_to(const Blist *bc)
+Blist::clip_to(Blist *thisbl, const Blist *bc)
 {
     Blist *b0 = 0, *be = 0, *bnxt;
-    for (Blist *bl = this; bl; bl = bnxt) {
+    for (Blist *bl = thisbl; bl; bl = bnxt) {
         bnxt = bl->next;
         for (const Blist *b = bc; b; b = b->next) {
             Blist *bx = bl->BB.clip_to(&b->BB);
@@ -488,18 +488,19 @@ Blist::clip_to(const Blist *bc)
         }
         delete bl;
     }
-    return (b0->merge());
+    return (merge(b0));
 }
 
 
+// Static function.
 // Return true if BB overlaps or touches one of the elements
 // of bl, false otherwise.
 //
 bool
-Blist::intersect(const BBox *pBB, bool touchok) const
+Blist::intersect(const Blist *thisbl, const BBox *pBB, bool touchok)
 {
     if (!touchok) {
-        for (const Blist *bl = this ; bl; bl = bl->next) {
+        for (const Blist *bl = thisbl; bl; bl = bl->next) {
             if (pBB->left >= bl->BB.right || pBB->right <= bl->BB.left ||
                     pBB->bottom >= bl->BB.top || pBB->top <= bl->BB.bottom)
                 continue;
@@ -507,7 +508,7 @@ Blist::intersect(const BBox *pBB, bool touchok) const
         }
     }
     else {
-        for (const Blist *bl = this ; bl; bl = bl->next) {
+        for (const Blist *bl = thisbl; bl; bl = bl->next) {
             if (pBB->left > bl->BB.right || pBB->right < bl->BB.left ||
                     pBB->bottom > bl->BB.top || pBB->top < bl->BB.bottom)
                 continue;
@@ -532,7 +533,7 @@ BYlist::BYlist(Blist *b0, bool sub)
             yl = b0->BB.bottom;
         }
         else {
-            b0 = b0->sort(1);
+            b0 = Blist::sort(b0, 1);
             blist = b0;
             yu = b0->BB.top;
             yl = b0->BB.bottom;
@@ -555,22 +556,25 @@ BYlist::BYlist(Blist *b0, bool sub)
 }
 
 
+// Static function.
 // Add BB to the list, clipping and merging.
 //
 BYlist *
-BYlist::insert_merge(const BBox *BB)
+BYlist::insert_merge(BYlist *thisby, const BBox *BB)
 {
-    Blist *bl = BB->clip_out(this);
-    if (!bl)
-        return (this);
+    Blist *bl = BB->clip_out(thisby);
+    if (!bl) {
+        // BB is already fully covered.
+        return (thisby);
+    }
 
-    BYlist *y = this;
+    BYlist *y = thisby;
     Blist *bn;
     for (Blist *b = bl; b; b = bn) {
         bn = b->next;
         b->next = 0;
 
-        for (;;) {
+        while (y) {
             Blist *bx;
             y = y->trymerge(&b->BB, &bx);
             if (bx) {
@@ -580,21 +584,23 @@ BYlist::insert_merge(const BBox *BB)
             }
             break;
         }
-        y = y->insert(b);
+        y = insert(y, b);
     }
     return (y);
 }
 
 
+// Static function.
 // Clip and merge the elements.
 //
 BYlist *
-BYlist::merge()
+BYlist::merge(BYlist *thisby)
 {
-    BYlist *y = clip();
+    if (!thisby)
+        return (0);
+    BYlist *y = thisby->clip();
     if (!y)
         return (0);
-//    y = y->check_rows();
     y->merge_rows();
     for (;;) {
         bool chg = y->merge_cols();
@@ -607,10 +613,12 @@ BYlist::merge()
 }
 
 
+// Static function.
+//
 BYlist *
-BYlist::clip_out(const BBox *BB)
+BYlist::clip_out(BYlist *thisby, const BBox *BB)
 {
-    BYlist *yl0 = this, *yp = 0, *yn;
+    BYlist *yl0 = thisby, *yp = 0, *yn;
     for (BYlist *y = yl0; y; y = yn) {
         yn = y->next;
         // yn is next row not added in insert()
@@ -652,7 +660,7 @@ BYlist::clip_out(const BBox *BB)
                     b0 = be = bt;
             }
         }
-        y->insert(b0);
+        insert(y, b0);
         if (!y->blist) {
             if (!yp)
                 yl0 = y->next; // may != yn!
@@ -667,10 +675,12 @@ BYlist::clip_out(const BBox *BB)
 }
 
 
+// Static function.
+//
 BYlist *
-BYlist::insert(Blist *b0)
+BYlist::insert(BYlist *thisby, Blist *b0)
 {
-    BYlist *y0 = this;
+    BYlist *y0 = thisby;
     if (!y0)
         return (new BYlist(b0));
     Blist *bn;
@@ -723,12 +733,14 @@ BYlist::insert(Blist *b0)
 }
 
 
+// Static function.
+//
 Blist *
-BYlist::toblist()
+BYlist::toblist(BYlist *thisby)
 {
     Blist *b0 = 0, *be = 0;
     BYlist *yn;
-    for (BYlist *y = this; y; y = yn) {
+    for (BYlist *y = thisby; y; y = yn) {
         yn = y->next;
         if (y->blist) {
             if (!b0)
@@ -811,50 +823,6 @@ BYlist::trymerge(const BBox *BB, Blist **bret)
 }
 
 
-// NOT USED
-// Private support function for merge().
-// If two rows differ in yu by 1, merge them, choosing the even
-// value for yu
-//
-BYlist *
-BYlist::check_rows()
-{
-    BYlist *yl0 = this;
-    BYlist *yp = 0, *yn;
-    for (BYlist *y = yl0; y->next; y = yn) {
-        yn = y->next;
-        if (y->yu - yn->yu == 1) {
-            int tyu = y->yu & ~1;
-            if (y->blist) {
-                Blist *b = y->blist;
-                while (b->next)
-                    b = b->next;
-                b->next = yn->blist;
-                yn->blist = y->blist;
-                y->blist = 0;
-                yn->yu = tyu;
-                for (b = yn->blist; b; b = b->next)
-                    b->BB.top = tyu;
-                yn->blist = yn->blist->sort(1);
-            }
-            else {
-                yn->yu = tyu;
-                for (Blist *b = yn->blist; b; b = b->next)
-                    b->BB.top = tyu;
-            }
-            if (!yp)
-                yl0 = yn;
-            else
-                yp->next = yn;
-            delete y;
-            continue;
-        }
-        yp = y;
-    }
-    return (yl0);
-}
-
-
 namespace {
     inline bool
     match_X(BBox &BL, BBox &BR)
@@ -869,7 +837,7 @@ namespace {
 
 
 // Private support function for merge().
-// For each row, join adjacent elements.  Note: 'this" freed on interrupt.
+// For each row, join adjacent elements.
 //
 bool
 BYlist::merge_rows()
@@ -909,7 +877,7 @@ namespace {
 
 
 // Private support function for merge().
-// Join elements in the vertical sense.  Note: 'this" freed on interrupt.
+// Join elements in the vertical sense.
 //
 bool
 BYlist::merge_cols()

@@ -196,7 +196,7 @@ BoxState::b1down()
             Lastx = slp->odesc->oBB().left;
             Lasty = slp->odesc->oBB().bottom;
             makebox(slp->odesc->oBB().right, slp->odesc->oBB().top);
-            slist->free();
+            CDol::destroy(slist);
             return;
         }
         State = 1;

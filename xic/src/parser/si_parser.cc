@@ -241,7 +241,7 @@ SIparser::funcList()
     SIptfunc *ptf;
     while ((ptf = tgen.next()) != 0)
         s0 = new stringlist(lstring::copy(ptf->tab_name()), s0);
-    s0->sort();
+    stringlist::sort(s0);
     return (s0);
 }
 
@@ -254,7 +254,7 @@ SIparser::altFuncList()
     SIptfunc *ptf;
     while ((ptf = tgen.next()) != 0)
         s0 = new stringlist(lstring::copy(ptf->tab_name()), s0);
-    s0->sort();
+    stringlist::sort(s0);
     return (s0);
 }
 
@@ -403,16 +403,16 @@ SIparser::getLexprTree(const char **string, bool noexp)
         if (!noexp) {
             ParseNode *px;
             if (p->checkExpandTree(&px) != OK) {
-                p->free();
+                ParseNode::destroy(p);
                 p = 0;
             }
             else if (px) {
-                p->free();
+                ParseNode::destroy(p);
                 p = px;
             }
         }
         else if (p->checkTree() != OK) {
-            p->free();
+            ParseNode::destroy(p);
             p = 0;
         }
     }
@@ -431,7 +431,7 @@ SIparser::hasGlobalVariable(const char *varstr)
     if (!p)
         return (false);
     if (p->type != PT_VAR) {
-        p->free();
+        ParseNode::destroy(p);
         return (false);
     }
     // If an array, check if subscripting is in bounds.
@@ -452,7 +452,7 @@ SIparser::getGlobalVariable(const char *varstr, siVariable *v)
     if (!p)
         return (BAD);
     if (p->type != PT_VAR) {
-        p->free();
+        ParseNode::destroy(p);
         return (BAD);
     }
 
@@ -466,7 +466,7 @@ SIparser::getGlobalVariable(const char *varstr, siVariable *v)
     siVariable res;
     SIlexprCx cx;
     bool ret = (*pa->evfunc)(pa, &res, &cx);
-    pa->free();
+    ParseNode::destroy(pa);
     res.clear();
     return (ret);
 }
@@ -486,7 +486,7 @@ SIparser::setGlobalVariable(const char *varstr, siVariable *v)
     if (!p)
         return (BAD);
     if (p->type != PT_VAR) {
-        p->free();
+        ParseNode::destroy(p);
         return (BAD);
     }
 
@@ -500,7 +500,7 @@ SIparser::setGlobalVariable(const char *varstr, siVariable *v)
     siVariable res;
     SIlexprCx cx;
     bool ret = (*pa->evfunc)(pa, &res, &cx);
-    pa->free();
+    ParseNode::destroy(pa);
     res.clear();
     return (ret);
 }
@@ -551,7 +551,7 @@ SIparser::evaluate(const char *line, char *buf, int nchars)
         else
             err = BAD;
 
-        p->free();
+        ParseNode::destroy(p);
     }
     else
         err = BAD;

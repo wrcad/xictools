@@ -318,7 +318,7 @@ cv_in::cv_in(bool allow_layer_mapping)
 cv_in::~cv_in()
 {
     delete [] in_filename;
-    in_prpty_list->free_list();
+    CDp::destroy(in_prpty_list);
     delete in_phys_sym_tab;
     delete in_elec_sym_tab;
     if (in_own_in_out)
@@ -791,7 +791,7 @@ cv_in::mark_references(stringlist **slp)
     if (slp)
         *slp = s0;
     else
-        s0->free();
+        stringlist::destroy(s0);
 
     return (true);
 }
@@ -824,7 +824,7 @@ cv_in::mark_top(stringlist **psl, stringlist **esl)
             if (top)
                 top->setArchiveTopLevel(true);
             if (esl) {
-                (*esl)->free();
+                stringlist::destroy(*esl);
                 *esl = 0;
             }
             return;
@@ -852,7 +852,7 @@ cv_in::mark_top(stringlist **psl, stringlist **esl)
             if (top)
                 top->setArchiveTopLevel(true);
             if (psl) {
-                (*psl)->free();
+                stringlist::destroy(*psl);
                 *psl = 0;
             }
         }
@@ -1025,9 +1025,9 @@ cv_out::~cv_out()
     dump_alias(out_filename);
     delete [] out_filename;
     delete out_visited;
-    out_prpty->free_list();
+    CDp::destroy(out_prpty);
     delete out_alias;
-    out_chd_refs->free();
+    stringlist::destroy(out_chd_refs);
 
     CD()->RegisterDestroy("cv_out");
 }
@@ -1570,7 +1570,7 @@ cv_out::write_instances(const CDs *sdesc)
         if (cdesc->cellname())
             cl0 = new CDcl(cdesc, cl0);
     }
-    cl0->sort_instances();
+    CDcl::sort_instances(cl0);
     bool ret = true;
     for (CDcl *cl = cl0; cl; cl = cl->next) {
         cdesc = cl->cdesc;
@@ -1591,7 +1591,7 @@ cv_out::write_instances(const CDs *sdesc)
         if (!ret)
             break;
     }
-    cl0->free();
+    CDcl::destroy(cl0);
     return (ret);
 
 #else
@@ -1730,14 +1730,14 @@ cv_out::write_object_clipped(const CDo *odesc, const BBox *AOI, cvLchk *lchk)
             cdpo.set_oBB(tBB);
             if (!write_object(&cdpo, lchk)) {
                 cdpo.set_points(0);
-                pl->free();
+                PolyList::destroy(pl);
                 return (false);
             }
             if (lchk && *lchk == cvLnogo)
                 break;
         }
         cdpo.set_points(0);
-        pl->free();
+        PolyList::destroy(pl);
         return (true);
     }
 
@@ -1766,7 +1766,7 @@ cv_out::write_object_clipped(const CDo *odesc, const BBox *AOI, cvLchk *lchk)
             if (!write_object(&cdpo, lchk)) {
                 cdpo.set_points(0);
                 cdpo.set_numpts(0);
-                pl->free();
+                PolyList::destroy(pl);
                 return (false);
             }
             if (lchk && *lchk == cvLnogo)
@@ -1774,7 +1774,7 @@ cv_out::write_object_clipped(const CDo *odesc, const BBox *AOI, cvLchk *lchk)
         }
         cdpo.set_points(0);
         cdpo.set_numpts(0);
-        pl->free();
+        PolyList::destroy(pl);
         return (true);
     }
     return (true);
@@ -1840,7 +1840,7 @@ cv_out::queue_properties(const CDo *odesc)
 void
 cv_out::clear_property_queue()
 {
-    out_prpty->free_list();
+    CDp::destroy(out_prpty);
     out_prpty = 0;
 }
 

@@ -96,7 +96,7 @@ cExt::parseDeviceTemplate(FILE *fp, const char *tname)
             Ekw.DeviceTemplate());
         Log()->WarningLogV(mh::Techfile, "%s\n", e);
         delete [] e;
-        s0->free();
+        stringlist::destroy(s0);
         return (false);
     }
 
@@ -111,7 +111,7 @@ cExt::parseDeviceTemplate(FILE *fp, const char *tname)
     SymTabEnt *ent = ext_devtmpl_tab->get_ent(tname);
     if (ent) {
         // Name is already in use, replace text.
-        ((stringlist*)ent->stData)->free();
+        stringlist::destroy((stringlist*)ent->stData);
         ent->stData = s0;
     }
     else
@@ -291,7 +291,7 @@ cExt::techPrintDeviceTemplates(FILE *techfp, bool tech_only)
         // Print all templates.
 
         stringlist *tnames = ext_devtmpl_tab->names();
-        tnames->sort();
+        stringlist::sort(tnames);
         for (stringlist *sl = tnames; sl; sl = sl->next) {
             if (!didhead) {
                 fputs(sep, techfp);
@@ -304,7 +304,7 @@ cExt::techPrintDeviceTemplates(FILE *techfp, bool tech_only)
                 fprintf(techfp, "%s\n", s->string);
             fputs("End\n", techfp);
         }
-        tnames->free();
+        stringlist::destroy(tnames);
     }
     if (didhead) {
         fputs(sep, techfp);
@@ -326,14 +326,14 @@ cExt::techPrintDevices(FILE *techfp)
         fputs("\n", techfp);
 
         stringlist *dnames = ext_device_tab->names();
-        dnames->sort();
+        stringlist::sort(dnames);
         for (stringlist *sl = dnames; sl; sl = sl->next) {
             sDevDesc *descs = (sDevDesc*)ext_device_tab->get(sl->string);
             // The descs are already sorted.
             for (sDevDesc *d = descs; d; d = d->next())
                 d->print(techfp);
         }
-        dnames->free();
+        stringlist::destroy(dnames);
 
         fputs(sep, techfp);
         fputc('\n', techfp);
@@ -349,14 +349,6 @@ cExt::techPrintDevices(FILE *techfp)
 bool
 sDevDesc::parse_device(FILE *fp, bool initialize)
 {
-    {
-        sDevDesc *ddt = this;
-        if (!ddt) {
-            Log()->WarningLogV(mh::Techfile, "parse_device: null object.\n");
-            return (false);
-        }
-    }
-
     bool nogo = false;
 
     Tech()->BeginParse();
@@ -577,7 +569,7 @@ sDevDesc::parse_device_line()
             }
             if (!d_prmconts || !d_prmconts->next ||
                     d_prmconts->next->next) {
-                d_prmconts->free();
+                stringlist::destroy(d_prmconts);
                 d_prmconts = 0;
                 return (Tech()->SaveError("Device %s %s: syntax error, "
                     "exactly two args required.",

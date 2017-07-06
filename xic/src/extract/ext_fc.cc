@@ -593,7 +593,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
                     &fcl_num_c_panels_written);
                 p->print_panel_end(tfp);
             }
-            panels->free();
+            fcCpanel::destroy(panels);
             fcl_num_c_panels_raw += pc;
             TPRINT(".");
 
@@ -610,7 +610,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
                     &fcl_num_c_panels_written);
                 p->print_panel_end(tfp);
             }
-            panels->free();
+            fcCpanel::destroy(panels);
             fcl_num_c_panels_raw += pc;
             TPRINT(".");
 
@@ -627,7 +627,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
                     &fcl_num_c_panels_written);
                 p->print_panel_end(tfp);
             }
-            panels->free();
+            fcCpanel::destroy(panels);
             fcl_num_c_panels_raw += pc;
             TPRINT(".");
 
@@ -644,7 +644,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
                     &fcl_num_c_panels_written);
                 p->print_panel_end(tfp);
             }
-            panels->free();
+            fcCpanel::destroy(panels);
             fcl_num_c_panels_raw += pc;
             TPRINT(".");
 
@@ -661,7 +661,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
                     &fcl_num_c_panels_written);
                 p->print_panel_end(tfp);
             }
-            panels->free();
+            fcCpanel::destroy(panels);
             fcl_num_c_panels_raw += pc;
             TPRINT(".");
 
@@ -678,7 +678,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
                     &fcl_num_c_panels_written);
                 p->print_panel_end(tfp);
             }
-            panels->free();
+            fcCpanel::destroy(panels);
             fcl_num_c_panels_raw += pc;
         }
         else {
@@ -740,7 +740,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
                     fcl_num_c_panels_raw++;
                 }
                 p0->print_panel_end(tfp);
-                p0->free();
+                fcCpanel::destroy(p0);
                 p0 = px;
             }
         }
@@ -937,7 +937,7 @@ fcLayout::write_d_panels(FILE *fp, FILE *tfp, fcDpanel *p0, char *bname,
                 &fcl_num_d_panels_written);
             p->print_panel_end(tfp);
         }
-        p0->free();
+        fcDpanel::destroy(p0);
         fcl_num_d_panels_raw += pc;
         return;
     }
@@ -969,7 +969,7 @@ fcLayout::write_d_panels(FILE *fp, FILE *tfp, fcDpanel *p0, char *bname,
             fcl_num_d_panels_raw++;
         }
         p0->print_panel_end(tfp);
-        p0->free();
+        fcDpanel::destroy(p0);
         p0 = px;
     }
 }
@@ -1139,22 +1139,22 @@ namespace {
 
         ~sPgrp()
             {
-                Zlist::free(list);
+                Zlist::destroy(list);
             }
 
-        sPgrp *add(double e, int z, int xll, int xlr, int yl,
-            int xul, int xur, int yu)
+        static sPgrp *add(sPgrp *thispg, double e, int z, int xll, int xlr,
+            int yl, int xul, int xur, int yu)
             {
-                for (sPgrp *tg = this; tg; tg = tg->next) {
+                for (sPgrp *tg = thispg; tg; tg = tg->next) {
                     if (tg->zval == z && tg->eps == e) {
                         tg->list =
                             new Zlist(xll, xlr, yl, xul, xur, yu, tg->list);
-                        return (this);
+                        return (thispg);
                     }
                 }
                 sPgrp *tg = new sPgrp(e, z);
                 tg->list = new Zlist(xll, xlr, yl, xul, xur, yu, 0);
-                tg->next = this;
+                tg->next = thispg;
                 return (tg);
             }
 
@@ -1216,7 +1216,7 @@ fcLayout::panelize_group_zbot(const glZlistRef3d *z0) const
                 Zx.print();
                 printf("residual\n");
                 Zlist::print(zz);
-                Zlist::free(zz);
+                Zlist::destroy(zz);
             }
         }
 #endif
@@ -1229,7 +1229,7 @@ fcLayout::panelize_group_zbot(const glZlistRef3d *z0) const
         else
             continue;
         if (fcl_domerge) {
-            grps = grps->add(op, z->PZ->zbot, z->PZ->xll, z->PZ->xlr,
+            grps = sPgrp::add(grps, op, z->PZ->zbot, z->PZ->xll, z->PZ->xlr,
                 z->PZ->yl, z->PZ->xul, z->PZ->xur, z->PZ->yu);
         }
         else {
@@ -1307,10 +1307,11 @@ fcLayout::panelize_group_ztop(const glZlistRef3d *z0) const
                         continue;
 
                     if (l->is_insulator()) {
-                        Zlist *zx = yl->clip_to(&z2->Z);
+                        Zlist *zx = Ylist::clip_to(yl, &z2->Z);
                         for (Zlist *zz = zx; zz; zz = zz->next) {
                             if (fcl_domerge) {
-                                grps = grps->add(l->epsrel(), z1->PZ->ztop,
+                                grps = sPgrp::add(grps, l->epsrel(),
+                                    z1->PZ->ztop,
                                     zz->Z.xll, zz->Z.xlr, zz->Z.yl,
                                     zz->Z.xul, zz->Z.xur, zz->Z.yu);
                             }
@@ -1329,9 +1330,9 @@ fcLayout::panelize_group_ztop(const glZlistRef3d *z0) const
                                 }
                             }
                         }
-                        Zlist::free(zx);
+                        Zlist::destroy(zx);
                     }
-                    yl = yl->clip_out(&z2->Z);
+                    yl = Ylist::clip_out(yl, &z2->Z);
                     if (!yl)
                         goto done;
                 }
@@ -1342,10 +1343,10 @@ done:   ;
             // These abut the vacuum assumed to surround
             // everything.
 
-            Zlist *zx = yl->to_zlist();
+            Zlist *zx = Ylist::to_zlist(yl);
             for (Zlist *zz = zx; zz; zz = zz->next) {
                 if (fcl_domerge) {
-                    grps = grps->add(1.0, z1->PZ->ztop,
+                    grps = sPgrp::add(grps, 1.0, z1->PZ->ztop,
                         zz->Z.xll, zz->Z.xlr, zz->Z.yl,
                         zz->Z.xul, zz->Z.xur, zz->Z.yu);
                 }
@@ -1364,7 +1365,7 @@ done:   ;
                     }
                 }
             }
-            Zlist::free(zx);
+            Zlist::destroy(zx);
         }
     }
     if (fcl_domerge) {
@@ -1452,7 +1453,7 @@ fcLayout::panelize_group_yl(const glZlistRef3d *z0) const
                     Zlist::zl_and(&zn, &Z2);
                     while (zn) {
                         if (fcl_domerge) {
-                            grps = grps->add(l->epsrel(), z1->PZ->yl,
+                            grps = sPgrp::add(grps, l->epsrel(), z1->PZ->yl,
                                 zn->Z.xll, zn->Z.xlr, zn->Z.yl,
                                 zn->Z.xul, zn->Z.xur, zn->Z.yu);
                         }
@@ -1485,7 +1486,7 @@ done:   ;
         // Anything left must abut vacuum.
         while (z1yl) {
             if (fcl_domerge) {
-                grps = grps->add(1.0, z1->PZ->yl,
+                grps = sPgrp::add(grps, 1.0, z1->PZ->yl,
                     z1yl->Z.xll, z1yl->Z.xlr, z1yl->Z.yl,
                     z1yl->Z.xul, z1yl->Z.xur, z1yl->Z.yu);
             }
@@ -1590,7 +1591,7 @@ fcLayout::panelize_group_yu(const glZlistRef3d *z0) const
                     Zlist::zl_and(&zn, &Z2);
                     while (zn) {
                         if (fcl_domerge) {
-                            grps = grps->add(l->epsrel(), z1->PZ->yu,
+                            grps = sPgrp::add(grps, l->epsrel(), z1->PZ->yu,
                                 zn->Z.xll, zn->Z.xlr, zn->Z.yl,
                                 zn->Z.xul, zn->Z.xur, zn->Z.yu);
                         }
@@ -1623,7 +1624,7 @@ done:   ;
         // Anything left must abut vacuum.
         while (z1yu) {
             if (fcl_domerge) {
-                grps = grps->add(1.0, z1->PZ->yu,
+                grps = sPgrp::add(grps, 1.0, z1->PZ->yu,
                     z1yu->Z.xll, z1yu->Z.xlr, z1yu->Z.yl,
                     z1yu->Z.xul, z1yu->Z.xur, z1yu->Z.yu);
             }
@@ -1728,7 +1729,7 @@ fcLayout::panelize_group_left(const glZlistRef3d *z0) const
                     while (zn) {
                         if (sl == 0.0 && fcl_domerge) {
                             // Can only merge Manhattan panels for now.
-                            grps = grps->add(l->epsrel(), z1->PZ->xll,
+                            grps = sPgrp::add(grps, l->epsrel(), z1->PZ->xll,
                                 zn->Z.xll, zn->Z.xlr, zn->Z.yl,
                                 zn->Z.xul, zn->Z.xur, zn->Z.yu);
                         }
@@ -1765,7 +1766,7 @@ done:   ;
         // Anything left must abut vacuum.
         while (z1l) {
             if (sl == 0.0 && fcl_domerge) {
-                grps = grps->add(1.0, z1->PZ->xll,
+                grps = sPgrp::add(grps, 1.0, z1->PZ->xll,
                     z1l->Z.xll, z1l->Z.xlr, z1l->Z.yl,
                     z1l->Z.xul, z1l->Z.xur, z1l->Z.yu);
             }
@@ -1874,7 +1875,7 @@ fcLayout::panelize_group_right(const glZlistRef3d *z0) const
                     while (zn) {
                         if (sr == 0.0 && fcl_domerge) {
                             // Can only merge Manhattan panels for now.
-                            grps = grps->add(l->epsrel(), z1->PZ->xlr,
+                            grps = sPgrp::add(grps, l->epsrel(), z1->PZ->xlr,
                                 zn->Z.xll, zn->Z.xlr, zn->Z.yl,
                                 zn->Z.xul, zn->Z.xur, zn->Z.yu);
                         }
@@ -1911,7 +1912,7 @@ done:   ;
         // Anything left must abut vacuum.
         while (z1r) {
             if (sr == 0.0 && fcl_domerge) {
-                grps = grps->add(1.0, z1->PZ->xlr,
+                grps = sPgrp::add(grps, 1.0, z1->PZ->xlr,
                     z1r->Z.xll, z1r->Z.xlr, z1r->Z.yl,
                     z1r->Z.xul, z1r->Z.xur, z1r->Z.yu);
             }
@@ -1989,7 +1990,7 @@ fcLayout::panelize_dielectric_zbot(const Layer3d *l) const
                 Zlist *zz = Zt.clip_out(&Zx, &novl);
                 if (zz || novl) {
                     printf("Internal: panelize_dielectric, cutting error.\n");
-                    Zlist::free(zz);
+                    Zlist::destroy(zz);
 
                     printf("Internal: panelize_electric, cutting error, "
                         "area %g, %s/%s.\n", Zlist::area(zz),
@@ -2002,7 +2003,7 @@ fcLayout::panelize_dielectric_zbot(const Layer3d *l) const
                     Zx.print();
                     printf("residual\n");
                     Zlist::print(zz);
-                    Zlist::free(zz);
+                    Zlist::destroy(zz);
                 }
                 continue;
             }
@@ -2012,7 +2013,7 @@ fcLayout::panelize_dielectric_zbot(const Layer3d *l) const
 #endif
 
             if (fcl_domerge) {
-                grps = grps->add(dc2, z->Z.zbot, z->Z.xll, z->Z.xlr,
+                grps = sPgrp::add(grps, dc2, z->Z.zbot, z->Z.xll, z->Z.xlr,
                     z->Z.yl, z->Z.xul, z->Z.xur, z->Z.yu);
             }
             else {
@@ -2096,10 +2097,10 @@ fcLayout::panelize_dielectric_ztop(const Layer3d *l1) const
                         if (l->is_insulator()) {
                             double dc2 = l->epsrel();
                             if (dc1 != dc2) {
-                                Zlist *zx = yl->clip_to(&z2->Z);
+                                Zlist *zx = Ylist::clip_to(yl, &z2->Z);
                                 for (Zlist *zz = zx; zz; zz = zz->next) {
                                     if (fcl_domerge) {
-                                        grps = grps->add(dc2, z1->Z.ztop,
+                                        grps = sPgrp::add(grps, dc2,z1->Z.ztop,
                                             zz->Z.xll, zz->Z.xlr, zz->Z.yl,
                                             zz->Z.xul, zz->Z.xur, zz->Z.yu);
                                     }
@@ -2118,10 +2119,10 @@ fcLayout::panelize_dielectric_ztop(const Layer3d *l1) const
                                         }
                                     }
                                 }
-                                Zlist::free(zx);
+                                Zlist::destroy(zx);
                             }
                         }
-                        yl = yl->clip_out(&z2->Z);
+                        yl = Ylist::clip_out(yl, &z2->Z);
                         if (!yl)
                             goto done;
                     }
@@ -2133,10 +2134,10 @@ done:       ;
                 // everything.
 
                 if (dc1 != 1.0) {
-                    Zlist *zx = yl->to_zlist();
+                    Zlist *zx = Ylist::to_zlist(yl);
                     for (Zlist *zz = zx; zz; zz = zz->next) {
                         if (fcl_domerge) {
-                            grps = grps->add(1.0, z1->Z.ztop,
+                            grps = sPgrp::add(grps, 1.0, z1->Z.ztop,
                                 zz->Z.xll, zz->Z.xlr, zz->Z.yl,
                                 zz->Z.xul, zz->Z.xur, zz->Z.yu);
                         }
@@ -2155,7 +2156,7 @@ done:       ;
                             }
                         }
                     }
-                    Zlist::free(zx);
+                    Zlist::destroy(zx);
                 }
             }
         }
@@ -2231,7 +2232,7 @@ fcLayout::panelize_dielectric_yl(const Layer3d *l1) const
                                 Zlist::zl_and(&zn, &Z2);
                                 while (zn) {
                                     if (fcl_domerge) {
-                                        grps = grps->add(dc2, z1->Z.yl,
+                                        grps = sPgrp::add(grps, dc2, z1->Z.yl,
                                             zn->Z.xll, zn->Z.xlr, zn->Z.yl,
                                             zn->Z.xul, zn->Z.xur, zn->Z.yu);
                                     }
@@ -2265,7 +2266,7 @@ done:       ;
             if (dc1 != 1.0) {
                 while (z1yl) {
                     if (fcl_domerge) {
-                        grps = grps->add(1.0, z1->Z.yl,
+                        grps = sPgrp::add(grps, 1.0, z1->Z.yl,
                             z1yl->Z.xll, z1yl->Z.xlr, z1yl->Z.yl,
                             z1yl->Z.xul, z1yl->Z.xur, z1yl->Z.yu);
                     }
@@ -2357,7 +2358,7 @@ fcLayout::panelize_dielectric_yu(const Layer3d *l1) const
                                 Zlist::zl_and(&zn, &Z2);
                                 while (zn) {
                                     if (fcl_domerge) {
-                                        grps = grps->add(dc2, z1->Z.yu,
+                                        grps = sPgrp::add(grps, dc2, z1->Z.yu,
                                             zn->Z.xll, zn->Z.xlr, zn->Z.yl,
                                             zn->Z.xul, zn->Z.xur, zn->Z.yu);
                                     }
@@ -2391,7 +2392,7 @@ done:       ;
             if (dc1 != 1.0) {
                 while (z1yu) {
                     if (fcl_domerge) {
-                        grps = grps->add(1.0, z1->Z.yu,
+                        grps = sPgrp::add(grps, 1.0, z1->Z.yu,
                             z1yu->Z.xll, z1yu->Z.xlr, z1yu->Z.yl,
                             z1yu->Z.xul, z1yu->Z.xur, z1yu->Z.yu);
                     }
@@ -2484,7 +2485,7 @@ fcLayout::panelize_dielectric_left(const Layer3d *l1) const
                                         // Can only merge Manhattan
                                         // panels for now.
 
-                                        grps = grps->add(dc2, z1->Z.xll,
+                                        grps = sPgrp::add(grps, dc2, z1->Z.xll,
                                             zn->Z.xll, zn->Z.xlr, zn->Z.yl,
                                             zn->Z.xul, zn->Z.xur, zn->Z.yu);
                                     }
@@ -2522,7 +2523,7 @@ done:       ;
             if (dc1 != 1.0) {
                 while (z1l) {
                     if (sl == 0.0 && fcl_domerge) {
-                        grps = grps->add(1.0, z1->Z.xll,
+                        grps = sPgrp::add(grps, 1.0, z1->Z.xll,
                             z1l->Z.xll, z1l->Z.xlr, z1l->Z.yl,
                             z1l->Z.xul, z1l->Z.xur, z1l->Z.yu);
                     }
@@ -2619,7 +2620,7 @@ fcLayout::panelize_dielectric_right(const Layer3d *l1) const
                                         // Can only merge Manhattan
                                         // panels for now.
 
-                                        grps = grps->add(dc2, z1->Z.xlr,
+                                        grps = sPgrp::add(grps, dc2, z1->Z.xlr,
                                             zn->Z.xll, zn->Z.xlr, zn->Z.yl,
                                             zn->Z.xul, zn->Z.xur, zn->Z.yu);
                                     }
@@ -2657,7 +2658,7 @@ done:       ;
             if (dc1 != 1.0) {
                 while (z1r) {
                     if (sr == 0.0 && fcl_domerge) {
-                        grps = grps->add(1.0, z1->Z.xlr,
+                        grps = sPgrp::add(grps, 1.0, z1->Z.xlr,
                             z1r->Z.xll, z1r->Z.xlr, z1r->Z.yl,
                             z1r->Z.xul, z1r->Z.xur, z1r->Z.yu);
                     }
@@ -2755,11 +2756,11 @@ fcLayout::area_group_ztop(const glZlistRef3d *z0) const
                         continue;
 
                     if (l->is_insulator()) {
-                        Zlist *zx = yl->clip_to(&z2->Z);
+                        Zlist *zx = Ylist::clip_to(yl, &z2->Z);
                         area += Zlist::area(zx);
-                        Zlist::free(zx);
+                        Zlist::destroy(zx);
                     }
-                    yl = yl->clip_out(&z2->Z);
+                    yl = Ylist::clip_out(yl, &z2->Z);
                     if (!yl)
                         goto done;
                 }
@@ -2770,9 +2771,9 @@ done:   ;
             // These abut the vacuum assumed to surround
             // everything.
 
-            Zlist *zx = yl->to_zlist();
+            Zlist *zx = Ylist::to_zlist(yl);
             area += Zlist::area(zx);
-            Zlist::free(zx);
+            Zlist::destroy(zx);
         }
     }
     return (area);
@@ -3146,13 +3147,13 @@ fcLayout::area_dielectric_ztop(const Layer3d *l1) const
                         if (l->is_insulator()) {
                             double dc2 = l->epsrel();
                             if (dc1 != dc2) {
-                                Zlist *zx = yl->clip_to(&z2->Z);
+                                Zlist *zx = Ylist::clip_to(yl, &z2->Z);
                                 for (Zlist *zz = zx; zz; zz = zz->next)
                                     area += zz->Z.area();
-                                Zlist::free(zx);
+                                Zlist::destroy(zx);
                             }
                         }
-                        yl = yl->clip_out(&z2->Z);
+                        yl = Ylist::clip_out(yl, &z2->Z);
                         if (!yl)
                             goto done;
                     }
@@ -3164,10 +3165,10 @@ done:       ;
                 // everything.
 
                 if (dc1 != 1.0) {
-                    Zlist *zx = yl->to_zlist();
+                    Zlist *zx = Ylist::to_zlist(yl);
                     for (Zlist *zz = zx; zz; zz = zz->next)
                         area += zz->Z.area();
-                    Zlist::free(zx);
+                    Zlist::destroy(zx);
                 }
             }
         }
@@ -3473,7 +3474,7 @@ fcCpanel::print_panel(FILE *fp, int xo, int yo, e_unit unit,
             if (pcnt)
                 (*pcnt)++;
         }
-        list->free();
+        qflist3d::destroy(list);
     }
     else {
         Q.print(fp, group, xo, yo, sc, ffmt);
@@ -3583,7 +3584,7 @@ fcDpanel::print_panel(FILE *fp, int xo, int yo, e_unit unit,
             if (pcnt)
                 (*pcnt)++;
         }
-        list->free();
+        qflist3d::destroy(list);
     }
     else {
         Q.print(fp, index, xo, yo, sc, ffmt);

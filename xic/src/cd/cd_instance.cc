@@ -29,6 +29,7 @@
 #include "cd_terminal.h"
 #include "cd_celldb.h"
 #include "cd_netname.h"
+#include <algorithm>
 
 
 // A temporary consistency check.
@@ -1135,7 +1136,52 @@ CDc::addSymbChangeBB(BBox *BB)
     stk.TPop();
     BB->add(&tBB);
 }
-// End of CDs functions.
+// End of CDc functions.
+
+
+namespace {
+    // Alphabetic in cell name, descending in top, ascending in left.
+    //
+    bool instcmp(const CDc *c1, const CDc *c2)
+    {
+        const char *s1 = c1->cellname()->string();
+        const char *s2 = c2->cellname()->string();
+        if (s1 == s2) {
+            const BBox &b1 = c1->oBB();
+            const BBox &b2 = c2->oBB();
+            if (b1.top > b2.top)
+                return (true);
+            if (b1.top < b2.top)
+                return (false);
+            return (b1.left < b2.left);
+        }
+        return (strcmp(s1, s2) < 0);
+    }
+}
+
+
+// Static function.
+// Sort the instance list.
+//
+void
+CDcl::sort_instances(CDcl *thiscl)
+{
+    int cnt = 0;
+    for (CDcl *cl = thiscl; cl; cl = cl->next)
+        cnt++;
+    if (cnt < 2)
+        return;
+    const CDc **ary = new const CDc*[cnt];
+    cnt = 0;
+    for (CDcl *cl = thiscl; cl; cl = cl->next)
+        ary[cnt++] = cl->cdesc;
+    std::sort(ary, ary + cnt, instcmp);
+    cnt = 0;
+    for (CDcl *cl = thiscl; cl; cl = cl->next)
+        cl->cdesc = ary[cnt++];
+    delete [] ary;
+}
+// End CDcl functions
 
 
 // Struct to encapsulate a text token for cell types.

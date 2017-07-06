@@ -186,7 +186,7 @@ public:
 
     void clearVariables()
         {
-            spVariables->free();
+            siVariable::destroy(spVariables);
             spVariables = spVariablesPreset;
             spVariablesPreset = 0;
         }
@@ -194,7 +194,7 @@ public:
     void addGlobal(siVariable *v)
         { v->next = spGlobals; spGlobals = v; }
     void clearGlobals()
-        { spGlobals->free(); spGlobals = 0; }
+        { siVariable::destroy(spGlobals); spGlobals = 0; }
 
     siVariable *findGlobal(const char *name)
         {
@@ -232,7 +232,7 @@ public:
     ParseNode *MakeBopNode(PTokenType t, ParseNode *pl, ParseNode *pr)
         { return (mkbnode(t, pl, pr)); }
 
-    bool isSubFunc(ParseNode *p)
+    bool isSubFunc(const ParseNode *p)
         { return (p->type == PT_FUNCTION && p->evfunc == pt_switch); }
 
 private:

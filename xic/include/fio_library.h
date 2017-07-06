@@ -148,20 +148,22 @@ struct sLib
     libtab_t &symtab()              { return (l_symtab); }
     int lib_type()                  { return (l_type); }
 
-    sLib *open_library(const char*, const char*, bool*);
-    sLib *find(const char*);
-    FILE *open_file(const char*, const char*, int, sLibRef**, sLib**);
-    OItype open_cell(const char*, const char*, int, CDcbin*);
-    sLib *lookup(const char*, const char*, int, sLibRef**);
-    stringlist *namelist(const char*, int);
-    const stringlist *properties(const char*);
-    stringlist *list(int);
-    sLib *close_library(const char*, int);
+    static sLib *open_library(sLib*, const char*, const char*, bool*);
+    static sLib *find(sLib*, const char*);
+    static FILE *open_file(sLib*, const char*, const char*, int, sLibRef**,
+        sLib**);
+    static OItype open_cell(sLib*, const char*, const char*, int, CDcbin*);
+    static sLib *lookup(sLib*, const char*, const char*, int, sLibRef**);
+    static stringlist *namelist(sLib*, const char*, int);
+    static const stringlist *properties(const sLib*, const char*);
+    static stringlist *list(const sLib*, int);
+    static sLib *close_library(sLib*, const char*, int);
+
     cCHD *get_chd(const sLibRef*);
     void set_chd(const sLibRef*, cCHD*);
 
 private:
-    bool match_name(const char *libname)
+    bool match_name(const char *libname) const
         {
             if (libname) {
                 return (!strcmp(libname, l_libfilename) ||
@@ -170,7 +172,7 @@ private:
             return (false);
         }
 
-    bool match_type_and_name(int type, const char *libname)
+    bool match_type_and_name(int type, const char *libname) const
         {
             return ((l_type & type) &&
                 (!libname || !strcmp(libname, l_libfilename) ||

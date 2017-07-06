@@ -186,9 +186,9 @@ cSced::getDevicePrpty(const char *name)
                 else {
                     bool copied;
                     hyList *hs = pd->label_text(&copied, cdesc);
-                    retstr = hs->string(HYcvPlain, false);
+                    retstr = hyList::string(hs, HYcvPlain, false);
                     if (copied)
-                        hs->free();
+                        hyList::destroy(hs);
                 }
                 return (retstr);
             }
@@ -237,7 +237,7 @@ cSced::prptyModify(CDc *cdesc, CDp *oldp, int value, const char *string,
                 hyList *hy = string ? new hyList(0, string, HYcvAscii) : 0;
                 addDeviceLabel(cdesc, oldp, oldp, hy, false, iscur);
                 if (hy)
-                    hy->free();
+                    hyList::destroy(hy);
             }
             return (0);
         }
@@ -246,7 +246,7 @@ cSced::prptyModify(CDc *cdesc, CDp *oldp, int value, const char *string,
         pn->set_assigned_name(0);
         char *nstr = 0;
         if (hystr)
-            nstr = hystr->string(HYcvPlain, false);
+            nstr = hyList::string(hystr, HYcvPlain, false);
         else if (string)
             nstr = lstring::copy(string);
         if (nstr) {
@@ -322,7 +322,7 @@ cSced::prptyModify(CDc *cdesc, CDp *oldp, int value, const char *string,
         if (string || hystr) {
             CDp_user *pu = new CDp_user(value);
             if (hystr)
-                pu->set_data(hystr->dup());
+                pu->set_data(hyList::dup(hystr));
             else
                 pu->set_data(string ? new hyList(0, string, HYcvAscii) : 0);
             if (pu->value() != P_OTHER)
@@ -346,7 +346,7 @@ cSced::prptyModify(CDc *cdesc, CDp *oldp, int value, const char *string,
                     shorted = true;
             }
             else if (hystr) {
-                char *str = hystr->string(HYcvPlain, false);
+                char *str = hyList::string(hystr, HYcvPlain, false);
                 if (*str == 's' || *str == 'S')
                     shorted = true;
                 delete str;
@@ -391,7 +391,7 @@ cSced::prptyModify(CDc *cdesc, CDp *oldp, int value, const char *string,
                         create = true;
                 }
                 else if (hystr) {
-                    char *str = hystr->string(HYcvPlain, false);
+                    char *str = hyList::string(hystr, HYcvPlain, false);
                     if (*str == '0')
                         create = true;
                     delete str;
@@ -424,7 +424,7 @@ cSced::prptyModify(CDc *cdesc, CDp *oldp, int value, const char *string,
 
         char *str;
         if (hystr)
-            str = hystr->string(HYcvPlain, true);
+            str = hyList::string(hystr, HYcvPlain, true);
         else
             str = lstring::copy(string);
         if (!str)

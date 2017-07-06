@@ -709,7 +709,7 @@ cMRcmdIf::cmdReadTech(const char*)
             if_l->lefAddObject(lefc);
         }
     }
-    llist->free();
+    CDll::destroy(llist);
 
     // Now add the 1x1 standard vias.
     tgen_t<sStdVia> gen(Tech()->StdViaTab());
@@ -1576,10 +1576,10 @@ cMRcmdIf::implementRoute(dbNet *net)
                         Errs()->add_error(
                             "implementRoute: net %s, wire creation failed.",
                             net->netname);
-                        p0->free();
+                        Plist::destroy(p0);
                         return (false);
                     }
-                    p0->free();
+                    Plist::destroy(p0);
                     p0 = pe = 0;
                 }
                 lname = 0;
@@ -1626,10 +1626,10 @@ cMRcmdIf::implementRoute(dbNet *net)
                         Errs()->add_error(
                             "implementRoute: net %s, wire creation failed.",
                             net->netname);
-                        p0->free();
+                        Plist::destroy(p0);
                         return (false);
                     }
-                    p0->free();
+                    Plist::destroy(p0);
                     p0 = pe = 0;
 
                     lefObject *lefo = if_l->getLefObject(p->vid);
@@ -1655,10 +1655,10 @@ cMRcmdIf::implementRoute(dbNet *net)
                 Errs()->add_error(
                     "implementRoute: net %s, wire creation failed.",
                     net->netname);
-                p0->free();
+                Plist::destroy(p0);
                 return (false);
             }
-            p0->free();
+            Plist::destroy(p0);
             p0 = pe = 0;
         }
     }
@@ -1690,7 +1690,7 @@ cMRcmdIf::setLayers()
     if (!cnt) {
         Errs()->add_error(
             "No sequencable routing layers found in layer table.");
-        llist->free();
+        CDll::destroy(llist);
         return (false);
     }
     if_layers = new CDl*[cnt];
@@ -1700,7 +1700,7 @@ cMRcmdIf::setLayers()
         if (l->ldesc->isRouting())
             if_layers[cnt++] = l->ldesc;
     }
-    llist->free();
+    CDll::destroy(llist);
     return (true);
 }
 

@@ -26,8 +26,10 @@
 #include "main.h"
 #include "dsp_tkif.h"
 #include "si_parsenode.h"
+#include "si_parser.h"
 #include "menu.h"
 #include "user_menu.h"
+#include "main_scriptif.h"
 
 
 namespace {
@@ -111,7 +113,7 @@ namespace {
             mbox->menu[i].cmd.caller = 0;
         }
         fill_menu(u0, &mbox->menu[nstatic], "/User", 0);
-        u0->free();
+        umenu::destroy(u0);
     }
 }
 

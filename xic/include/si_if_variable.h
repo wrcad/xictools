@@ -98,7 +98,7 @@ struct AryData
     ~AryData()
         {
             if (!ad_refptr)
-                free(ad_values);
+                std::free(ad_values);
         }
 
     // Use this for allocation, ad_values always allocated with C
@@ -106,7 +106,7 @@ struct AryData
     //
     void allocate(int sz)
         {
-            free(ad_values);
+            std::free(ad_values);
             if (sz > 0)
                 ad_values = (double*)calloc(sz, sizeof(double));
             else
@@ -230,9 +230,8 @@ struct Variable
     // Free a list of variables.  This frees the content, unlike the
     // destructor.
     //
-    void free()
+    static void destroy(Variable *v)
         {
-            Variable *v = this;
             while (v) {
                 Variable *vx = v;
                 v = v->next;

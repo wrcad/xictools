@@ -379,7 +379,7 @@ cExt::listDevices()
             s0 = new stringlist(lstr.string_trim(), s0);
         }
     }
-    s0->sort();
+    stringlist::sort(s0);
     return (s0);
 }
 
@@ -434,8 +434,8 @@ cExt::getDevlist(CDcbin *cbin, sDevList **dvl)
             sDevInst *di;
             XIrt ret = d->find(cbin->phys(), &di, 0);
             if (ret != XIok) {
-                di->free();
-                dv0->free();
+                sDevInst::destroy(di);
+                sDevList::destroy(dv0);
                 return (ret);
             }
             if (di) {
@@ -533,7 +533,7 @@ cGroupDesc::find_dev(const char *name, const char *pref, const char *inds,
                         bool err = false;
                         sDevInstList *dx = di->getdev(&aoiBB, &err);
                         if (err) {
-                            d0->free();
+                            sDevInstList::destroy(d0);
                             return (0);
                         }
                         if (dx) {
@@ -592,7 +592,7 @@ cGroupDesc::find_dev_set(const char *name, const char *pref, const char *inds,
                                             &zret) != XIok)
                                         return (found);
                                     if (zret) {
-                                        Zlist::free(zret);
+                                        Zlist::destroy(zret);
                                         di->set_displayed(state);
                                         found++;
                                     }
@@ -709,11 +709,6 @@ cGroupDesc::parse_find_dev(const char *str, bool show)
 stringlist *
 cGroupDesc::list_devs()
 {
-    {
-        cGroupDesc *gdt = this;
-        if (!gdt)
-            return (0);
-    }
     stringlist *s0 = 0;
     char buf[256];
     for (sDevList *dv = gd_devices; dv; dv = dv->next()) {
@@ -729,7 +724,7 @@ cGroupDesc::list_devs()
             s0 = new stringlist(lstring::copy(buf), s0);
         }
     }
-    s0->sort();
+    stringlist::sort(s0);
     return (s0);
 }
 
@@ -753,15 +748,10 @@ cGroupDesc::set_devs_display(bool state)
 int
 cGroupDesc::show_devs(WindowDesc *wdesc, bool d_or_e)
 {
-    {
-        cGroupDesc *gdt = this;
-        if (!gdt)
-            return (0);
-    }
-
     static bool skipit;  // prevent reentrancy
     if (skipit)
         return (0);
+
     if (!wdesc->Wdraw())
         return (0);
     if (!wdesc->IsSimilar(DSP()->MainWdesc(), WDsimXmode))
@@ -950,14 +940,14 @@ cGroupDesc::find_contact_group(sDevContactInst *ci, bool check_hier)
                     if (top_group >= 0) {
                         ci->set_group(top_group);
                         link_contact(ci);
-                        cl->free();
+                        sSubcLink::destroy(cl);
                         return (top_group);
                     }
                 }
             }
         }
     }
-    cl->free();
+    sSubcLink::destroy(cl);
     return (-1);
 }
 
@@ -988,7 +978,7 @@ cGroupDesc::has_bulk_contact(const sDevDesc *d, const BBox *bBB,
         const char *msg = "contact expression for %s%s, evaluation %s.";
         ExtErrLog.add_dev_err(gd_celldesc, 0, msg, d->name(), c->name(),
             ret == XIintr ? "interrupted" : "failed");
-        Zlist::free(zret);
+        Zlist::destroy(zret);
         *xrt = ret;
         return (false);
     }
@@ -997,7 +987,7 @@ cGroupDesc::has_bulk_contact(const sDevDesc *d, const BBox *bBB,
 
     BBox cBB;
     Zlist::BB(zret, cBB);
-    Zlist::free(zret);
+    Zlist::destroy(zret);
     return (check_bulk_contact_group(&cBB, c));
 }
 
@@ -1077,7 +1067,7 @@ cGroupDesc::check_bulk_contact_group(const BBox *cBB, const sDevContactDesc *c)
             }
         }
     }
-    cl->free();
+    sSubcLink::destroy(cl);
     return (false);
 }
 
@@ -1639,7 +1629,7 @@ sEinstList::setup_eval(sParamTab **tret, double **dret) const
     sLstr lstr;
     CDp_user *pv = (CDp_user*)el_cdesc->prpty(P_VALUE);
     if (pv) {
-        char *string = pv->data()->string(HYcvPlain, true);
+        char *string = hyList::string(pv->data(), HYcvPlain, true);
         if (EX()->paramCx())
             EX()->paramCx()->update(&string);
         lstr.add(string);
@@ -1648,7 +1638,7 @@ sEinstList::setup_eval(sParamTab **tret, double **dret) const
 
     CDp_user *pp = (CDp_user*)el_cdesc->prpty(P_PARAM);
     if (pp) {
-        char *string = pp->data()->string(HYcvPlain, true);
+        char *string = hyList::string(pp->data(), HYcvPlain, true);
         if (EX()->paramCx())
             EX()->paramCx()->update(&string);
         if (lstr.string())
@@ -1669,7 +1659,7 @@ sEinstList::setup_eval(sParamTab **tret, double **dret) const
         // Build a parameter table from the string.
         if (*t) {
             ptab = new sParamTab;
-            ptab->extract_params(t);
+            sParamTab::extract_params(ptab, t);
         }
     }
 
@@ -1686,7 +1676,7 @@ sEinstList::setup_eval(sParamTab **tret, double **dret) const
                 ptab->param_subst_all_collapse(&str);
                 sprintf(buf, "M=%s", str);
                 delete [] str;
-                ptab->extract_params(buf);
+                sParamTab::extract_params(ptab, buf);
             }
             else if (EX()->paramCx() && EX()->paramCx()->has_param("M")) {
                 sprintf(buf, "'%d*M'", esects);
@@ -1694,17 +1684,17 @@ sEinstList::setup_eval(sParamTab **tret, double **dret) const
                 EX()->paramCx()->update(&str);
                 sprintf(buf, "M=%s", str);
                 delete [] str;
-                ptab->extract_params(buf);
+                sParamTab::extract_params(ptab, buf);
             }
             else {
                 sprintf(buf, "M=%d", esects);
-                ptab->extract_params(buf);
+                sParamTab::extract_params(ptab, buf);
             }
         }
         else {
             ptab = new sParamTab;
             sprintf(buf, "M=%d", esects);
-            ptab->extract_params(buf);
+            sParamTab::extract_params(ptab, buf);
         }
     }
     if (tret)
@@ -1737,18 +1727,19 @@ namespace {
 }
 
 
+// Static function.
 // Sort the list by name, index, and vec-index.
 //
 sEinstList *
-sEinstList::sort()
+sEinstList::sort(sEinstList *thisil)
 {
     int cnt = 0;
-    for (sEinstList *e = this; e; e = e->next(), cnt++) ;
+    for (sEinstList *e = thisil; e; e = e->next(), cnt++) ;
     if (cnt < 2)
-        return (this);
+        return (thisil);
     sEinstList **ary = new sEinstList*[cnt];
     cnt = 0;
-    for (sEinstList *e = this; e; e = e->next())
+    for (sEinstList *e = thisil; e; e = e->next())
         ary[cnt++] = e;
 
     std::sort(ary, ary + cnt, et_comp);
@@ -2246,13 +2237,14 @@ sDevContactInst::node_prpty(const sEinstList *el) const
 }
 
 
+// Static function.
 // Copy the contact list, providing the device pointer passed.
 //
 sDevContactInst *
-sDevContactInst::dup_list(sDevInst *di) const
+sDevContactInst::dup_list(const sDevContactInst *thisci, sDevInst *di)
 {
     sDevContactInst *c0 = 0, *ce = 0;
-    for (const sDevContactInst *c = this; c; c = c->next()) {
+    for (const sDevContactInst *c = thisci; c; c = c->next()) {
         sDevContactInst *cnew = new sDevContactInst(*c);
         cnew->ci_dev = di;
         if (!c0)
@@ -2816,7 +2808,7 @@ sMprim::cAP(sDevInst *di)
     SIlexprCx cx(di->celldesc(), CDMAXCALLDEPTH, z0);
     Zlist *zret = 0;
     XIrt xrt = c1->desc()->lspec()->getZlist(&cx, &zret);
-    Zlist::free(z0);
+    Zlist::destroy(z0);
     if (xrt != XIok)
         return (false);
     z0 = Zlist::repartition_ni(zret);
@@ -2843,11 +2835,11 @@ sMprim::cAP(sDevInst *di)
             PolyList *pl = Zlist::to_poly_list(z0);
             for (PolyList *p = pl; p; p = p->next)
                 perim += p->po.perim();
-            pl->free();
+            PolyList::destroy(pl);
             mp_extravar->content.value = MICRONS(perim);
         }
         else
-            Zlist::free(z0);
+            Zlist::destroy(z0);
         return (true);
     }
 
@@ -3533,7 +3525,7 @@ sDevDesc::checkEquiv(const sDevDesc *dref)
     if (dref->d_prmconts) {
         if (!d_prmconts) {
             // Silently inherit the reference permutes in this case.
-            d_prmconts = dref->d_prmconts->dup();
+            d_prmconts = stringlist::dup(dref->d_prmconts);
         }
         else {
             // We accept different ordering, but the names must match.
@@ -3993,7 +3985,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
         int j = 0;
         for (int i = 0; i < g->num; i++) {
             if (!Zlist::intersect(g->list[i], AOI, false)) {
-                Zlist::free(g->list[i]);
+                Zlist::destroy(g->list[i]);
                 g->list[i] = 0;
             }
             else {
@@ -4011,7 +4003,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
         for (int i = 0; i < g->num; i++) {
             if (g->list[i]) {
                 if (!findall && j)
-                    Zlist::free(g->list[i]);
+                    Zlist::destroy(g->list[i]);
                 else
                     zz[j++] = g->list[i];
                 g->list[i] = 0;
@@ -4035,7 +4027,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
             CovType ct;
             if (globex.testZlistCovNone(&cx, &ct, 2*Tech()->AngleSupport())
                     == XIok && ct != CovNone) {
-                Zlist::free(g->list[i]);
+                Zlist::destroy(g->list[i]);
                 g->list[i] = 0;
                 continue;
             }
@@ -4280,12 +4272,12 @@ sDevDesc::identify_contacts(CDs *sdesc, sDevInst *d, const Zlist *zbody,
             }
         }
         else {
-            Zlist::free(zbb);
+            Zlist::destroy(zbb);
             *xrt = ret;
             return (false);
         }
     }
-    Zlist::free(zbb);
+    Zlist::destroy(zbb);
     return (true);
 }
 
@@ -4329,9 +4321,11 @@ sDevDesc::identify_contact(CDs *sdesc, sDevInst *d, Zlist **zbbp,
     // Bloat the device body if bloating.  Device contacts must
     // touch or intersect the (possibly bloated) body.
     const Zlist *zb = zbody;
+    Zlist *ztemp = 0;
     if (d_bloat != 0.0) {
         try {
-            zb = Zlist::bloat(zbody, INTERNAL_UNITS(d_bloat), 0);
+            ztemp = Zlist::bloat(zbody, INTERNAL_UNITS(d_bloat), 0);
+            zb = ztemp;
         }
         catch (XIrt zbret) {
             const char *msg = "contact expression for %s%s, body "
@@ -4382,8 +4376,7 @@ sDevDesc::identify_contact(CDs *sdesc, sDevInst *d, Zlist **zbbp,
         }
     }
     delete gc;
-    if (d_bloat != 0.0)
-        Zlist::free(zb);
+    Zlist::destroy(ztemp);
     *zbbp = zbb;
     return (ci0);
 }
@@ -4409,7 +4402,7 @@ sDevDesc::identify_bulk_contact(CDs *sdesc, sDevInst *d, sDevContactDesc *c,
         const char *msg = "contact expression for %s%s, evaluation %s.";
         ExtErrLog.add_dev_err(sdesc, 0, msg, name(), c->name(),
             ret == XIintr ? "interrupted" : "failed");
-        Zlist::free(zret);
+        Zlist::destroy(zret);
         *xrt = ret;
         return (0);
     }
@@ -4498,7 +4491,7 @@ sDevDesc::find_finds(CDs *sdesc, sDevInst *d, XIrt *xrt)
                     delete dt;
                     continue;
                 }
-                di->next()->free();
+                sDevInst::destroy(di->next());
                 di->set_next(0);
             }
             d->fdevs()[j++] = di;
@@ -5201,20 +5194,20 @@ sDevInst::body_layer(sDevInst::bl_type type) const
         CDl *ld = l->ldesc;
         if (type == bl_resis && (tech_prm(ld)->rho() > 0.0 ||
                 tech_prm(ld)->ohms_per_sq() > 0.0)) {
-            l0->free();
+            CDll::destroy(l0);
             return (ld);
         }
         else if (type == bl_cap && (tech_prm(ld)->cap_per_area() > 0.0 ||
                 tech_prm(ld)->cap_per_perim() > 0.0)) {
-            l0->free();
+            CDll::destroy(l0);
             return (ld);
         }
         else if (type == bl_induct && cTech::GetLayerTline(ld, params)) {
-            l0->free();
+            CDll::destroy(l0);
             return (ld);
         }
     }
-    l0->free();
+    CDll::destroy(l0);
     return (0);
 }
 
@@ -5262,7 +5255,7 @@ sDevInst::clip_contacts() const
                 continue;
             if (cnt != i) {
                 Blist bx = Blist(c->cBB(), 0);
-                bla[i] = bla[i]->clip_out(&bx);
+                bla[i] = Blist::clip_out(bla[i], &bx);
             }
             cnt++;
         }
@@ -5287,7 +5280,7 @@ sDevInst::clip_contacts() const
                 }
                 c->set_BB(&tBB);
             }
-            bla[i]->free();
+            Blist::destroy(bla[i]);
         }
         i++;
     }
@@ -5432,13 +5425,13 @@ sDevInst::no_merge()
             CDo *odesc;
             while ((odesc = gen.next(true, false)) != 0) {
                 if (odesc->prpty(XICP_NOMERGE)) {
-                    l0->free();
+                    CDll::destroy(l0);
                     di_nomerge = true;
                     return (true);
                 }
             }
         }
-        l0->free();
+        CDll::destroy(l0);
         di_nm_checked = true;
     }
     return (false);
@@ -5773,7 +5766,7 @@ sDevInst::getdev(BBox *AOI, bool *err)
                 return (0);
             }
             if (zret) {
-                Zlist::free(zret);
+                Zlist::destroy(zret);
                 return (new sDevInstList(this, 0));
             }
         }
@@ -5812,7 +5805,7 @@ sDevInst::insert_parallel(sDevInst *di)
     else {
         sDevInst *dx = new sDevInst(-1, di_desc, di_sdesc);
         dx->di_next = di;
-        dx->di_contacts = di_contacts->dup_list(dx);
+        dx->di_contacts = sDevContactInst::dup_list(di_contacts, dx);
         dx->di_fdevs = di_fdevs;
         di_fdevs = 0;
         dx->di_fnum = di_fnum;
@@ -5859,7 +5852,7 @@ sDevInst::insert_series(sDevInst *di)
     else {
         sDevInst *dx = new sDevInst(-1, di_desc, di_sdesc);
         dx->di_next = di;
-        dx->di_contacts = di_contacts->dup_list(dx);
+        dx->di_contacts = sDevContactInst::dup_list(di_contacts, dx);
         dx->di_fdevs = di_fdevs;
         di_fdevs = 0;
         dx->di_fnum = di_fnum;
@@ -5951,7 +5944,7 @@ sDevInst::setup_squares(bool lmode) const
                 !cg->list[i]) {
             const char *msg = "contact %s, failed to extract area";
             ExtErrLog.add_dev_err(di_sdesc, this, msg, ci->desc()->name());
-            Zlist::free(zlist);
+            Zlist::destroy(zlist);
             delete cg;
             return (0);
         }
@@ -5959,7 +5952,7 @@ sDevInst::setup_squares(bool lmode) const
 
     RLsolver *r = new RLsolver;
     bool ret = r->setup(zlist, bld, cg);
-    Zlist::free(zlist);
+    Zlist::destroy(zlist);
     delete cg;
 
     const char *msg = "RLsolver error: %s";
@@ -6168,7 +6161,7 @@ sGroupXf::find_objects(const sDevContactInst *c1, const CDl *ld)
         CDol *ol = gx_objs->find_object(ld, c1->cBB());
         if (ol) {
             if (tab->get((unsigned long)ol->odesc) != ST_NIL) {
-                ol->free();
+                CDol::destroy(ol);
                 return (0);
             }
             tab->add((unsigned long)ol->odesc, 0, false);
@@ -6248,7 +6241,7 @@ sGroupXf::find_objects_rc(const sDevContactInst *c1, const CDl *ld,
         CDol *ol = gx_objs->find_object(ld, c1->cBB());
         if (ol) {
             if (tab->get((unsigned long)ol->odesc) != ST_NIL) {
-                ol->free();
+                CDol::destroy(ol);
                 return (0);
             }
             tab->add((unsigned long)ol->odesc, 0, false);

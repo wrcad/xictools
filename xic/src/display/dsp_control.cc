@@ -210,19 +210,6 @@ WindowDesc::GhostUpdate(const BBox *AOI)
 }
 
 
-// Ghost drawing finished, uopdate the highlighting.
-//
-void
-WindowDesc::GhostFinalUpdate()
-{
-    WindowDesc *wdt = this;
-    if (wdt && w_accum_mode == WDaccumAccum) {
-        w_accum_mode = WDaccumDone;
-        Update(&w_accum_rect);
-    }
-}
-
-
 // Update the specified area (in window coordinates) from the backing
 // pixmap, if available.  If no backing pixmap, redraw.
 //
@@ -571,10 +558,10 @@ WindowDesc::RunPending()
                 if (!DSP()->NoPixmapStore() && !DSP()->SlowMode() &&
                         !w_frozen) {
                     // Will use pixmap, expand to full window.
-                    pendU->next->free();
+                    Blist::destroy(pendU->next);
                     pendU->next = 0;
                     pendU->BB = w_window;
-                    pendR->free();
+                    Blist::destroy(pendR);
                     pendR = pendU;
                     tBB = pendR->BB;
                 }
@@ -592,7 +579,7 @@ WindowDesc::RunPending()
                         while (b->next)
                             b = b->next;
                         b->next = pendU;
-                        pendR = pendR->merge();
+                        pendR = Blist::merge(pendR);
                     }
                 }
                 pendU = 0;
@@ -640,9 +627,9 @@ WindowDesc::RunPending()
 void
 WindowDesc::ClearPending()
 {
-    w_pending_R->free();
+    Blist::destroy(w_pending_R);
     w_pending_R = 0;
-    w_pending_U->free();
+    Blist::destroy(w_pending_U);
     w_pending_U = 0;
 }
 
@@ -729,7 +716,7 @@ WindowDesc::add_redisp_region(const BBox *BB)
             BB->bottom > w_window.top || BB->top < w_window.bottom)
         return;
     if (*BB == w_window) {
-        w_pending_R->free();
+        Blist::destroy(w_pending_R);
         w_pending_R = 0;
     }
 
@@ -745,7 +732,7 @@ WindowDesc::add_redisp_region(const BBox *BB)
     if (!w_pending_R)
         w_pending_R = new Blist(&tBB, 0);
     else
-        w_pending_R = w_pending_R->insert_merge(&tBB);
+        w_pending_R = Blist::insert_merge(w_pending_R, &tBB);
 }
 
 
@@ -762,7 +749,7 @@ WindowDesc::add_update_region(const BBox *BB)
             BB->bottom < 0 || BB->top >= w_height)
         return;
     if (*BB == Viewport()) {
-        w_pending_U->free();
+        Blist::destroy(w_pending_U);
         w_pending_U = 0;
     }
 
@@ -778,12 +765,12 @@ WindowDesc::add_update_region(const BBox *BB)
     if (!w_pending_U)
         w_pending_U = new Blist(&tBB, 0);
     else {
-        w_pending_U->wtov();
+        Blist::wtov(w_pending_U);
         int t = tBB.top;
         tBB.top = tBB.bottom;
         tBB.bottom = t;
-        w_pending_U = w_pending_U->insert_merge(&tBB);
-        w_pending_U->wtov();
+        w_pending_U = Blist::insert_merge(w_pending_U, &tBB);
+        Blist::wtov(w_pending_U);
     }
 }
 
@@ -865,7 +852,7 @@ WindowDesc::show_cellbb(bool display, const BBox *AOI, bool flag, Blist **bret)
                     for (Blist *bl = b0; bl; bl = bl->next)
                         Refresh(&bl->BB);
 
-                    b0->free();
+                    Blist::destroy(b0);
                     w_clip_rect = tBB;
                 }
                 return (true);

@@ -217,11 +217,11 @@ CDdiff::diff(const CDs *s1, const CDs *s2, Sdiff **pret)
             switch (diff_layer(ldesc, s1, s2, &lf)) {
             case DFerror:
                 Errs()->add_error("diff: diff_layer failed");
-                lf0->free();
+                Ldiff::destroy(lf0);
                 return (DFerror);
             case DFabort:
                 Errs()->add_error("diff: diff_layer aborted");
-                lf0->free();
+                Ldiff::destroy(lf0);
                 return (DFabort);
             default:
                 break;
@@ -256,11 +256,11 @@ CDdiff::diff(const CDs *s1, const CDs *s2, Sdiff **pret)
             switch (diff_layer(ldesc, s1, s2, &lf)) {
             case DFerror:
                 Errs()->add_error("diff: diff_layer failed");
-                lf0->free();
+                Ldiff::destroy(lf0);
                 return (DFerror);
             case DFabort:
                 Errs()->add_error("diff: diff_layer aborted");
-                lf0->free();
+                Ldiff::destroy(lf0);
                 return (DFabort);
             default:
                 break;
@@ -281,7 +281,7 @@ CDdiff::diff(const CDs *s1, const CDs *s2, Sdiff **pret)
 
     Pdiff *pd0 = 0;
     if ((cdf_flags & DiffPrpCell) && !max_diffs() &&
-            !cdf_filt_cell->filter_all()) {
+            !prpfilt_t::filter_all(cdf_filt_cell)) {
         pd0 = diff_cell_props(s1, s2);
         if (pd0)
             cdf_diffcnt++;
@@ -489,13 +489,13 @@ CDdiff::diff_layer(CDl *ldesc, const CDs *s1, const CDs *s2, Ldiff **lret)
                 if (ret == XIintr) {
                     Errs()->add_error("diffLayer: user interrupt");
                     delete ld0;
-                    Zlist::free(z1);
+                    Zlist::destroy(z1);
                     return (DFabort);
                 }
                 else if (ret == XIbad) {
                     Errs()->add_error("diffLayer: getZlist failed");
                     delete ld0;
-                    Zlist::free(z1);
+                    Zlist::destroy(z1);
                     return (DFerror);
                 }
 
@@ -639,7 +639,7 @@ CDdiff::diff_layer(CDl *ldesc, const CDs *s1, const CDs *s2, Ldiff **lret)
             // CDoMark1 flags are now cleared.
 
             if ((cdf_flags & obj_pflags) && !max_diffs() &&
-                    !cdf_filt_obj->filter_all()) {
+                    !prpfilt_t::filter_all(cdf_filt_obj)) {
                 gen1.init(l1, &CDinfiniteBB);
                 gen2.init(l2, &CDinfiniteBB);
                 od1 = next_elem(gen1, otypes);
@@ -767,7 +767,7 @@ CDdiff::diff_layer(CDl *ldesc, const CDs *s1, const CDs *s2)
                     return (DFerror);
                 Zlist *z2 = s2->getZlist(0, ldesc, &zr, &ret);
                 if (ret != XIok) {
-                    Zlist::free(z1);
+                    Zlist::destroy(z1);
                     return (DFerror);
                 }
                 ret = Zlist::zl_andnot2(&z1, &z2);
@@ -775,8 +775,8 @@ CDdiff::diff_layer(CDl *ldesc, const CDs *s1, const CDs *s2)
                     return (DFerror);
 
                 bool df = (z1 || z2);
-                Zlist::free(z1);
-                Zlist::free(z2);
+                Zlist::destroy(z1);
+                Zlist::destroy(z2);
                 if (df)
                     return (DFdiffer);
             }
@@ -1123,7 +1123,7 @@ CDdiff::diff_instances(const CDs *s1, const CDs *s2, Ldiff **lret)
                 }
             }
             if ((cdf_flags & DiffPrpInst) && !max_diffs() &&
-                    !cdf_filt_inst->filter_all()) {
+                    !prpfilt_t::filter_all(cdf_filt_inst)) {
                 for (unsigned int i = 0; i < n1; i++) {
                     if (!e1[i])
                         continue;
@@ -1527,19 +1527,8 @@ prpfilt_t::parse(const char *str)
 Pdiff::~Pdiff()
 {
     delete [] pd_name;
-    pd_list12->free();
-    pd_list21->free();
-}
-
-
-void
-Pdiff::free()
-{
-    Pdiff *pn;
-    for (Pdiff *p = this; p; p = pn) {
-        pn = p->pd_next;
-        delete p;
-    }
+    stringlist::destroy(pd_list12);
+    stringlist::destroy(pd_list21);
 }
 
 
@@ -1558,9 +1547,9 @@ Pdiff::reset(const char *n)
 {
     delete [] pd_name;
     pd_name = lstring::copy(n);
-    pd_list12->free();
+    stringlist::destroy(pd_list12);
     pd_list12 = 0;
-    pd_list21->free();
+    stringlist::destroy(pd_list21);
     pd_list21 = 0;
 }
 
@@ -1624,20 +1613,9 @@ Pdiff::save(Pdiff *pd, const char *n, const char *s1, const char *s2)
 
 Ldiff::~Ldiff()
 {
-    ld_list12->free();
-    ld_list21->free();
-    ld_pdiffs->free();
-}
-
-
-void
-Ldiff::free()
-{
-    Ldiff *ln;
-    for (Ldiff *l = this; l; l = ln) {
-        ln = l->ld_next;
-        delete l;
-    }
+    stringlist::destroy(ld_list12);
+    stringlist::destroy(ld_list21);
+    Pdiff::destroy(ld_pdiffs);
 }
 
 

@@ -58,9 +58,8 @@ struct Layer3d
 
     ~Layer3d();
 
-    void free()
+    static void destroy(Layer3d *l)
         {
-            Layer3d *l = this;
             while (l) {
                 Layer3d *x = l;
                 l = l->l3_next;

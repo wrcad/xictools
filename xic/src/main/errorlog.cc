@@ -383,7 +383,7 @@ cErrLog::ListLogDir()
             s0 = new stringlist(lstring::copy(de->d_name), s0);
         }
         closedir(wdir);
-        s0->sort();
+        stringlist::sort(s0);
     }
     return (s0);
 }
@@ -608,7 +608,7 @@ sMsgList::add_msg(bool warn, const char *header, const char *msgstr,
             else
                 strcpy(buf, "No logfile, message list truncated.");
             sl->string = lstring::copy(buf);
-            sl->next->free();
+            stringlist::destroy(sl->next);
             sl->next = 0;
             break;
         }

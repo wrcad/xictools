@@ -26,7 +26,8 @@ CCFILES = \
   instance.cc join.cc labels.cc layerchg.cc mainstate.cc miscgeom.cc \
   modf_menu.cc move.cc mrouter_if.cc pbtn_menu.cc pcplace.cc \
   polygns.cc prpcedit.cc prpedit.cc prpmisc.cc rotate.cc stretch.cc \
-  transfrm.cc undolist.cc undolist_setif.cc wires.cc xorbox.cc
+  transfrm.cc undolist.cc undolist_setif.cc vtxedit.cc wires.cc \
+  xorbox.cc
 CCOBJS = $(CCFILES:.cc=.o)
 INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
 

@@ -64,12 +64,6 @@ SymTab::SymTab(bool free_tag, bool free_data, int hashwidth)
 
 SymTab::~SymTab()
 {
-    {
-        SymTab *symt = this;
-        if (!symt)
-            return;
-    }
-
     for (unsigned int i = 0; i <= tMask; i++) {
         SymTabEnt *hn;
         for (SymTabEnt *h = tEnt[i]; h; h = hn) {
@@ -88,12 +82,6 @@ SymTab::~SymTab()
 void
 SymTab::clear()
 {
-    {
-        SymTab *symt = this;
-        if (!symt)
-            return;
-    }
-
     // Note that the case-sensitivity flag is retained.
     if (tNumAllocated) {
         for (unsigned int i = 0; i <= tMask; i++) {
@@ -135,12 +123,6 @@ namespace {
 bool
 SymTab::add(const char *tag, const void *data, bool check_unique)
 {
-    {
-        SymTab *symt = this;
-        if (!symt)
-            return (false);
-    }
-
     if (tMode == STint)
         return (false);
     tMode = STchar;
@@ -169,12 +151,6 @@ SymTab::add(const char *tag, const void *data, bool check_unique)
 bool
 SymTab::add(unsigned long itag, const void *data, bool check_unique)
 {
-    {
-        SymTab *symt = this;
-        if (!symt)
-            return (false);
-    }
-
     if (tMode == STchar)
         return (false);
     tMode = STint;
@@ -203,12 +179,6 @@ SymTab::add(unsigned long itag, const void *data, bool check_unique)
 bool
 SymTab::replace(const char *tag, const void *data)
 {
-    {
-        SymTab *symt = this;
-        if (!symt)
-            return (false);
-    }
-
     if (tMode == STint)
         return (false);
     tMode = STchar;
@@ -239,12 +209,6 @@ SymTab::replace(const char *tag, const void *data)
 bool
 SymTab::replace(unsigned long itag, const void *data)
 {
-    {
-        SymTab *symt = this;
-        if (!symt)
-            return (false);
-    }
-
     if (tMode == STchar)
         return (false);
     tMode = STint;
@@ -274,12 +238,6 @@ SymTab::replace(unsigned long itag, const void *data)
 bool
 SymTab::remove(const char *tag)
 {
-    {
-        SymTab *symt = this;
-        if (!symt)
-            return (false);
-    }
-
     if (!tag)
         return (false);
     if (tMode == STint)
@@ -313,12 +271,6 @@ SymTab::remove(const char *tag)
 bool
 SymTab::remove(unsigned long itag)
 {
-    {
-        SymTab *symt = this;
-        if (!symt)
-            return (false);
-    }
-
     if (tMode == STchar)
         return (false);
     unsigned int i = number_hash(itag, tMask);
@@ -349,12 +301,6 @@ SymTab::remove(unsigned long itag)
 void *
 SymTab::get(const char *tag)
 {
-    {
-        SymTab *symt = this;
-        if (!symt)
-            return (ST_NIL);
-    }
-
     if (tMode != STchar)
         return (ST_NIL);
     bool ci = case_insens();
@@ -373,12 +319,6 @@ SymTab::get(const char *tag)
 void *
 SymTab::get(unsigned long itag)
 {
-    {
-        SymTab *symt = this;
-        if (!symt)
-            return (ST_NIL);
-    }
-
     if (tMode != STint)
         return (ST_NIL);
     unsigned int i = number_hash(itag, tMask);
@@ -397,12 +337,6 @@ SymTab::get(unsigned long itag)
 SymTabEnt *
 SymTab::get_ent(const char *tag)
 {
-    {
-        SymTab *symt = this;
-        if (!symt)
-            return (0);
-    }
-
     if (tMode != STchar)
         return (0);
     bool ci = case_insens();
@@ -422,12 +356,6 @@ SymTab::get_ent(const char *tag)
 SymTabEnt *
 SymTab::get_ent(unsigned long itag)
 {
-    {
-        SymTab *symt = this;
-        if (!symt)
-            return (0);
-    }
-
     if (tMode != STint)
         return (0);
     unsigned int i = number_hash(itag, tMask);
@@ -444,12 +372,6 @@ SymTab::get_ent(unsigned long itag)
 stringlist *
 SymTab::names()
 {
-    {
-        SymTab *symt = this;
-        if (!symt)
-            return (0);
-    }
-
     if (tMode != STchar)
         return (0);
     stringlist *s0 = 0;

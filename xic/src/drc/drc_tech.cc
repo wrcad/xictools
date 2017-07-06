@@ -1030,7 +1030,8 @@ cDRC::minSpaceTables(const char *pref)
                 const sTspaceTable *tab = td->spaceTab();
                 if (!tab)
                     continue;
-                char *str = tab->to_lisp_string(pref, ld->name(), 0);
+                char *str = sTspaceTable::to_lisp_string(tab, pref,
+                    ld->name(), 0);
                 if (str) {
                     lstr.add(str);
                     delete [] str;
@@ -1041,7 +1042,7 @@ cDRC::minSpaceTables(const char *pref)
                 if (!tab)
                     continue;
                 CDl *ld2 = td->targetLayer();
-                char *str = tab->to_lisp_string(pref, ld->name(),
+                char *str = sTspaceTable::to_lisp_string(tab, pref, ld->name(),
                     ld2 ? ld2->name() : "unknown");
                 if (str) {
                     lstr.add(str);
@@ -1335,7 +1336,7 @@ DRCtestDesc::print(FILE *fp, sLstr *lstr, bool cmts, const CDl *ldesc,
         }
         if (spaceTab()) {
             putchr(fp, lstr, ' ');
-            spaceTab()->tech_print(fp, lstr);
+            sTspaceTable::tech_print(spaceTab(), fp, lstr);
             putchr(fp, lstr, ' ');
         }
         else {

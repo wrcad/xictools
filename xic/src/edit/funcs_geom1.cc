@@ -1432,7 +1432,7 @@ geom1_funcs::IFevalDerivedLayers(Variable *res, Variable *args, void*)
                 Errs()->add_error(
                     "EvalDerivedLayers: no such derived layer %s.", tok);
                 delete [] tok;
-                l0->free();
+                CDll::destroy(l0);
                 return (BAD);
             }
             l0 = new CDll(ld, l0);
@@ -1453,7 +1453,7 @@ geom1_funcs::IFevalDerivedLayers(Variable *res, Variable *args, void*)
             Errs()->add_error("EvalDerivedLayers: evaluation failed.");
             for (CDll *l = l0; l; l = l->next)
                 cursdp->clearLayer(l->ldesc);
-            l0->free();
+            CDll::destroy(l0);
             return (BAD);
         }
         sLstr lstr;
@@ -1462,7 +1462,7 @@ geom1_funcs::IFevalDerivedLayers(Variable *res, Variable *args, void*)
                 lstr.add_c(' ');
             lstr.add(l->ldesc->name());
         }
-        l0->free();
+        CDll::destroy(l0);
         res->content.string = lstr.string_trim();
     }
     else
@@ -1762,7 +1762,7 @@ geom1_funcs::IFareaHandle(Variable *res, Variable *args, void*)
     CDol *slist = Selections.selectItems(cursd, types, &BB,
         PSELstrict_area);
     CDol *ol = sHdl::sel_list(slist);
-    slist->free();
+    CDol::destroy(slist);
     sHdl *hdl = new sHdlObject(ol, cursd);
     res->type = TYP_HANDLE;
     res->content.value = hdl->id;
@@ -2286,7 +2286,7 @@ geom1_funcs::IFcheckObjectsConnected(Variable *res, Variable *args, void*)
         if (zl0 && zl0->next) {
             Ylist *yl = new Ylist(zl0);
             try {
-                yl = new Ylist(yl->repartition());
+                yl = new Ylist(Ylist::repartition(yl));
             }
             catch (XIrt ret) {
                 if (ret == XIintr) {
@@ -2296,11 +2296,11 @@ geom1_funcs::IFcheckObjectsConnected(Variable *res, Variable *args, void*)
                 else
                     return (BAD);
             }
-            yl = yl->connected(&zl0);
-            Zlist::free(zl0);
+            yl = Ylist::connected(yl, &zl0);
+            Zlist::destroy(zl0);
             if (yl) {
                 res->content.value = 0;
-                yl->free();
+                Ylist::destroy(yl);
             }
         }
     }
@@ -2381,11 +2381,11 @@ geom1_funcs::IFcheckForHoles(Variable *res, Variable *args, void*)
                 return (OK);
             }
             Ylist *yl = new Ylist(zarea);
-            yl = yl->connected(&zl0);
-            Zlist::free(zl0);
+            yl = Ylist::connected(yl, &zl0);
+            Zlist::destroy(zl0);
             if (yl) {
                 res->content.value = 1.0;
-                yl->free();
+                Ylist::destroy(yl);
             }
         }
     }
@@ -2495,7 +2495,7 @@ geom1_funcs::IFbloatObjects(Variable *res, Variable *args, void*)
                 return (OK);
             }
             PolyList *p0 = Zlist::to_poly_list(zl0);
-            CDol *o0 = p0->to_olist(ldset ? ldset : ldfirst);
+            CDol *o0 = PolyList::to_olist(p0, ldset ? ldset : ldfirst);
             if (o0) {
                 sHdl *hnew = new sHdlObject(o0, cursd, true);
                 res->type = TYP_HANDLE;
@@ -2604,12 +2604,12 @@ geom1_funcs::IFedgeObjects(Variable *res, Variable *args, void*)
                     zret = Zlist::edges(zl0, dimen);
                 else
                     zret = Zlist::bloat(zl0, dimen, BL_EDGE_ONLY);
-                Zlist::free(zl0);
+                Zlist::destroy(zl0);
                 zl0 = zret;
             }
             catch (XIrt tmpret) {
                 zret = 0;
-                Zlist::free(zl0);
+                Zlist::destroy(zl0);
                 zl0 = 0;
                 if (tmpret == XIintr)
                     SI()->SetInterrupt();
@@ -2619,7 +2619,7 @@ geom1_funcs::IFedgeObjects(Variable *res, Variable *args, void*)
         }
         if (zl0) {
             PolyList *p0 = Zlist::to_poly_list(zl0);
-            CDol *o0 = p0->to_olist(ldset ? ldset : ldfirst);
+            CDol *o0 = PolyList::to_olist(p0, ldset ? ldset : ldfirst);
             if (o0) {
                 sHdl *hnew = new sHdlObject(o0, cursd, true);
                 res->type = TYP_HANDLE;
@@ -2718,9 +2718,9 @@ geom1_funcs::IFmanhattanizeObjects(Variable *res, Variable *args, void*)
             z = Zlist::manhattanize(z, bsize, mode);
             PolyList *p0 = Zlist::to_poly_list(z);
             if (!o0)
-                o0 = p0->to_olist(ld, &oe);
+                o0 = PolyList::to_olist(p0, ld, &oe);
             else
-                p0->to_olist(ld, &oe);
+                PolyList::to_olist(p0, ld, &oe);
             if (!all)
                 break;
             ol = ol->next;
@@ -2806,7 +2806,7 @@ geom1_funcs::IFgroupObjects(Variable *res, Variable *args, void*)
             res->content.value = g->num;
             for (int i = 0; i < g->num; i++) {
                 PolyList *p0 = g->to_poly_list(i, Zlist::JoinMaxVerts);
-                CDol *o0 = p0->to_olist(ld);
+                CDol *o0 = PolyList::to_olist(p0, ld);
                 if (o0) {
                     sHdl *hnew = new sHdlObject(o0, cursd, true);
                     args[1].content.a->values()[i] = hnew->id;
@@ -2918,7 +2918,7 @@ geom1_funcs::IFjoinObjects(Variable *res, Variable *args, void*)
                 pe->next = Zlist::to_poly_list(zl0);
             }
         }
-        CDol *o0 = p0->to_olist(ldset ? ldset : ldfirst);
+        CDol *o0 = PolyList::to_olist(p0, ldset ? ldset : ldfirst);
         if (o0) {
             sHdl *hnew = new sHdlObject(o0, cursd, true);
             res->type = TYP_HANDLE;
@@ -5090,7 +5090,7 @@ geom1_funcs::IFgetLabelText(Variable *res, Variable *args, void*)
         CDol *ol = (CDol*)hdl->data;
         if (ol && ol->odesc->type() == CDLABEL) {
             res->content.string =
-                OLABEL(ol->odesc)->label()->string(HYcvPlain, true);
+                hyList::string(OLABEL(ol->odesc)->label(), HYcvPlain, true);
             if (res->content.string)
                 res->flags |= VF_ORIGINAL;
         }
@@ -5624,9 +5624,9 @@ geom1_funcs::IFgetInstanceName(Variable *res, Variable *args, void*)
             if (pna) {
                 bool copied;
                 hyList *hyl = pna->label_text(&copied, cd);
-                res->content.string = hyl->string(HYcvPlain, false);
+                res->content.string = hyList::string(hyl, HYcvPlain, false);
                 if (copied)
-                    hyl->free();
+                    hyList::destroy(hyl);
             }
         }
     }
@@ -5744,9 +5744,10 @@ geom1_funcs::IFgetInstanceAltName(Variable *res, Variable *args, void*)
                 else {
                     bool copied;
                     hyList *hyl = pna->label_text(&copied, cd);
-                    res->content.string = hyl->string(HYcvPlain, false);
+                    res->content.string = hyList::string(hyl, HYcvPlain,
+                        false);
                     if (copied)
-                        hyl->free();
+                        hyList::destroy(hyl);
                     res->flags |= VF_ORIGINAL;
                 }
             }

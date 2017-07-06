@@ -516,7 +516,7 @@ Zlist::halo(const Zlist *thiszl, int delta) throw (XIrt)
             ze->next = zl;
         }
     }
-    p0->free();
+    PolyList::destroy(p0);
 
     try {
         z0 = repartition(z0);
@@ -918,7 +918,7 @@ Zlist::transform(const Zlist *thiszl, cTfmStack *tstk)
         }
     }
 
-    p0->free();
+    PolyList::destroy(p0);
     return (z0);
 }
 
@@ -1035,7 +1035,7 @@ Zlist::group(Zlist *thiszl, int max_in_grp)
         }
         return (g);
     }
-    return ((new Ylist(zt))->group(max_in_grp));
+    return (Ylist::group(new Ylist(zt), max_in_grp));
 }
 
 
@@ -1099,8 +1099,8 @@ Zlist::to_poly(Zlist *thiszl, Point **pts, int *num)
         return (0);
     }
     Ylist *y = new Ylist(thiszl);
-    y = y->to_poly(pts, num, JoinMaxVerts);
-    return (y->to_zlist());
+    y = Ylist::to_poly(y, pts, num, JoinMaxVerts);
+    return (Ylist::to_zlist(y));
 }
 
 
@@ -1114,7 +1114,7 @@ Zlist::to_poly_list(Zlist *thiszl)
         return (0);
 
     Ylist *y = new Ylist(thiszl);
-    Zgroup *g = y->group(JoinMaxGroup);
+    Zgroup *g = Ylist::group(y, JoinMaxGroup);
     if (!g)
         return (0);
 
@@ -1149,7 +1149,7 @@ Zlist::to_poly_add(Zlist *thiszl, CDs *sdesc, CDl *ld, bool undoable,
         return (XIbad);
 
     Ylist *y = new Ylist(thiszl);
-    Zgroup *g = y->group(JoinMaxGroup);
+    Zgroup *g = Ylist::group(y, JoinMaxGroup);
     if (!g)
         return (XIok);
 
@@ -1157,10 +1157,11 @@ Zlist::to_poly_add(Zlist *thiszl, CDs *sdesc, CDl *ld, bool undoable,
     for (int i = 0; i < g->num; i++) {
         PolyList *p0 = g->to_poly_list(i, JoinMaxVerts);
         if (p0) {
-            if (sdesc->addToDb(p0, ld, undoable, 0, tstk, use_merge) != CDok)
+            if (sdesc->addToDb(p0, ld, undoable, 0, tstk, use_merge) != CDok) {
                 GEO()->ifInfoMessage(IFMSG_LOG_ERR,
                     Errs()->get_error());
-            p0->free();
+            }
+            PolyList::destroy(p0);
         }
     }
     delete g;
@@ -1204,14 +1205,14 @@ Zlist::to_obj_list(Zlist *thiszl, CDl *ld, bool nomerge)
     }
     else {
         Ylist *y = new Ylist(thiszl);
-        Zgroup *g = y->group(JoinMaxGroup);
+        Zgroup *g = Ylist::group(y, JoinMaxGroup);
         if (!g)
             return (0);
 
         for (int i = 0; i < g->num; i++) {
             PolyList *p0 = g->to_poly_list(i, JoinMaxVerts);
             if (p0) {
-                CDo *od = p0->to_odesc(ld);
+                CDo *od = PolyList::to_odesc(p0, ld);
                 if (od) {
                     CDo *on = od;
                     while (on->next_odesc())

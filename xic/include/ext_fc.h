@@ -124,9 +124,8 @@ struct fcCpanel : public fcPanel
             group = g;
         }
 
-    void free()
+    static void destroy(fcCpanel *p)
         {
-            fcCpanel *p = this;
             while (p) {
                 fcCpanel *px = p;
                 p = p->next;
@@ -159,9 +158,8 @@ struct fcDpanel : public fcPanel
             index = ix;
         }
 
-    void free()
+    static void destroy(fcDpanel *p)
         {
-            fcDpanel *p = this;
             while (p) {
                 fcDpanel *px = p;
                 p = p->next;

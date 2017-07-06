@@ -260,9 +260,8 @@ struct syrlist_t
 {
     syrlist_t(symref_t *s, syrlist_t *n) { symref = s; next = n; }
 
-    void free()
+    static void destroy(syrlist_t *syl)
         {
-            syrlist_t *syl = this;
             while (syl) {
                 syrlist_t *syx = syl;
                 syl = syl->next;
@@ -270,7 +269,7 @@ struct syrlist_t
             }
         }
 
-    void sort(bool);
+    static void sort(syrlist_t*, bool);
 
     symref_t *symref;
     syrlist_t *next;

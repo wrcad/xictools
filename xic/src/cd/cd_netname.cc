@@ -213,7 +213,7 @@ CDvecex::print_this(sLstr *lstr) const
 {
     if (vx_group) {
         lstr->add_c('(');
-        vx_group->print_all(lstr);
+        CDvecex::print_all(vx_group, lstr);
         lstr->add_c(')');
     }
     else {
@@ -230,17 +230,6 @@ CDvecex::print_this(sLstr *lstr) const
     if (vx_postmult > 1) {
         lstr->add_c('*');
         lstr->add_i(vx_postmult);
-    }
-}
-
-
-void
-CDvecex::print_all(sLstr *lstr) const
-{
-    for (const CDvecex *v = this; v; v = v->next()) {
-        v->print_this(lstr);
-        if (v->next())
-            lstr->add_c(',');
     }
 }
 
@@ -295,7 +284,7 @@ CDvecex::parse(const char *str, CDvecex **pvx, const char **endp)
             if (!CDvecex::parse(t+1, &vecex, &tt) || !vecex) {
                 // error
                 Errs()->add_error(msg, "expecting expression after \'(\'");
-                v0->free();
+                destroy(v0);
                 delete [] tok;
                 return (false);
             }
@@ -324,7 +313,7 @@ CDvecex::parse(const char *str, CDvecex **pvx, const char **endp)
                             // error
                             Errs()->add_error(msg,
                                 "expecting integer after \':\'");
-                            v0->free();
+                            destroy(v0);
                             delete [] tok;
                             return (false);
                         }
@@ -333,7 +322,7 @@ CDvecex::parse(const char *str, CDvecex **pvx, const char **endp)
                 else {
                     // error
                     Errs()->add_error(msg, "expecting integer after \':\'");
-                    v0->free();
+                    destroy(v0);
                     delete [] tok;
                     return (false);
                 }
@@ -342,7 +331,7 @@ CDvecex::parse(const char *str, CDvecex **pvx, const char **endp)
         else {
             // error
             Errs()->add_error(msg, "expecting integer or \'(\'");
-            v0->free();
+            destroy(v0);
             delete [] tok;
             return (false);
         }
@@ -353,7 +342,7 @@ CDvecex::parse(const char *str, CDvecex **pvx, const char **endp)
             else {
                 // error;
                 Errs()->add_error(msg, "expecting integer after \'*\'");
-                v0->free();
+                destroy(v0);
                 delete [] tok;
                 return (false);
             }
@@ -370,7 +359,7 @@ CDvecex::parse(const char *str, CDvecex **pvx, const char **endp)
     if (pvx)
         *pvx = v0;
     else
-        v0->free();
+        destroy(v0);
     return (true);
 }
 // End of CDvecex functions.
@@ -569,37 +558,17 @@ CDnetex::print_this(sLstr *lstr) const
     }
     if (nx_group) {
         lstr->add_c('(');
-        nx_group->print_all(lstr);
+        print_all(nx_group, lstr);
         lstr->add_c(')');
     }
     else {
         lstr->add(nx_name->string());
         if (nx_vecex) {
             lstr->add_c('<');
-            nx_vecex->print_all(lstr);
+            CDvecex::print_all(nx_vecex, lstr);
             lstr->add_c('>');
         }
     }
-}
-
-
-void
-CDnetex::print_all(sLstr *lstr) const
-{
-    for (const CDnetex *n = this; n; n = n->next()) {
-        n->print_this(lstr);
-        if (n->next())
-            lstr->add_c(',');
-    }
-}
-
-
-char *
-CDnetex::id_text() const
-{
-    sLstr lstr;
-    print_all(&lstr);
-    return (lstr.string_trim());
 }
 
 
@@ -659,19 +628,15 @@ CDnetex::check_compatible(const CDnetex *nx1, const CDnetex *nx2)
 }
 
 
+// Private support function.
 // Return true if all bits in this can be resolved in nx.  Fill in
 // the name if this is a tap.
 //
 bool
-CDnetex::check_set_compatible(const CDnetex *nx)
+CDnetex::check_set_compatible_prv(const CDnetex *nx)
 {
     // A null netex implies an unlabeled object, which can connect to
     // anything.
-    {
-        CDnetex *ntx = this;
-        if (!ntx)
-            return (true);
-    }
     if (!nx)
         return (true);
 
@@ -731,6 +696,7 @@ CDnetex::check_set_compatible(const CDnetex *nx)
 }
 
 
+// Private support function.
 // Return true if nm<n> exists in this, nm can not be 0.
 //
 bool
@@ -838,7 +804,7 @@ CDnetex::parse(const char *str, CDnetex **pnx)
                 // error
                 Errs()->add_error(msg,
                     "expecting vector expression after \'%c\'", oc);
-                n0->free();
+                destroy(n0);
                 delete [] tok;
                 return (false);
             }
@@ -847,14 +813,14 @@ CDnetex::parse(const char *str, CDnetex **pnx)
             if (t > nstart) {
                 // error
                 Errs()->add_error(msg, "unexpected character before \'(\'");
-                n0->free();
+                destroy(n0);
                 delete [] tok;
                 return (false);
             }
             if (!parse(t+1, &netex) || !netex) {
                 // error
                 Errs()->add_error(msg, "expecting net expression after \'(\'");
-                n0->free();
+                destroy(n0);
                 delete [] tok;
                 return (false);
             }
@@ -871,7 +837,7 @@ CDnetex::parse(const char *str, CDnetex **pnx)
             else {
                 Errs()->add_error(msg,
                     "term with no name or vector expression");
-                n0->free();
+                destroy(n0);
                 delete [] tok;
                 return (false);
             }
@@ -920,7 +886,7 @@ CDnetex::parse(const char *str, CDnetex **pnx)
     if (pnx)
         *pnx = n0;
     else
-        n0->free();
+        destroy(n0);
     return (true);
 }
 
@@ -1023,10 +989,10 @@ CDnetex::parse_bit(const char *str, CDnetName *pname, int *pindx, bool nnok)
         if (vecex->is_simple(&beg, &end) && beg == end) {
             if (pindx)
                 *pindx = beg;
-            vecex->free();
+            CDvecex::destroy(vecex);
             return (true);
         }
-        vecex->free();
+        CDvecex::destroy(vecex);
         Errs()->add_error("parse_bit: vector expression not single-bit");
         return (false);
     }
@@ -1137,7 +1103,7 @@ CDnetexGen::~CDnetexGen()
 {
     delete ng_sub;
     delete ng_vecgen;
-    ng_netex->free();
+    CDnetex::destroy(ng_netex);
 }
 
 

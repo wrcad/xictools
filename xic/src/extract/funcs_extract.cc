@@ -741,7 +741,7 @@ cExt::loadScriptFuncs()
 #endif
 }
 
-#define FREE_CHK_ZL(b, zl) { if (b) Zlist::free(zl); zl = 0; }
+#define FREE_CHK_ZL(b, zl) { if (b) Zlist::destroy(zl); zl = 0; }
 
 
 /*========================================================================*
@@ -1152,7 +1152,7 @@ extract_funcs::IFfindPath(Variable *res, Variable *args, void*)
         return (OK);
     }
 
-    CDol *ol0 = pf->get_object_list()->to_ol();
+    CDol *ol0 = CDol::object_list(pf->get_object_list());
     if (ol0) {
         sHdl *nhdl = new sHdlObject(ol0, cursdp, true);
         res->type = TYP_HANDLE;
@@ -1225,7 +1225,7 @@ extract_funcs::IFfindPathOfGroup(Variable *res, Variable *args, void*)
         return (OK);
     }
 
-    CDol *ol0 = pf.get_object_list()->to_ol();
+    CDol *ol0 = CDol::object_list(pf.get_object_list());
     if (ol0) {
         sHdl *nhdl = new sHdlObject(ol0, cursdp, true);
         res->type = TYP_HANDLE;
@@ -3479,7 +3479,7 @@ extract_funcs::IFlistPhysDevs(Variable *res, Variable *args, void*)
                     te = te->next;
                 }
             }
-            dv0->free();
+            sDevInstList::destroy(dv0);
             sHdl *hdl = new sHdlDevice(t0, gd);
             res->type = TYP_HANDLE;
             res->content.value = hdl->id;
@@ -3686,7 +3686,7 @@ extract_funcs::IFlistPdevMeasures(Variable *res, Variable *args, void*)
             stringlist *s0 = 0;
             for (sMeasure *m = t->elt->desc()->measures(); m; m = m->next())
                 s0 = new stringlist(lstring::copy(m->name()), s0);
-            s0->reverse();
+            stringlist::reverse(s0);
             sHdl *nhdl = new sHdlString(s0);
             res->type = TYP_HANDLE;
             res->content.value = nhdl->id;

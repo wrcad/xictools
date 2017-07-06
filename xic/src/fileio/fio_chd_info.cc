@@ -32,15 +32,9 @@
 cvINFO
 cCHD::infoMode(DisplayMode mode)
 {
-    if (mode == Physical) {
-        if (c_phys_info)
-            return (c_phys_info->savemode());
-    }
-    else {
-        if (c_elec_info)
-            return (c_elec_info->savemode());
-    }
-    return (cvINFOnone);
+    if (mode == Physical)
+        return (cv_info::savemode(c_phys_info));
+    return (cv_info::savemode(c_elec_info));
 }
 
 
@@ -311,7 +305,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
                 fputs("Unresolved Cells:\n", fp);
             else
                 lstr.add("Unresolved Cells:\n");
-            sy0->sort(false);
+            syrlist_t::sort(sy0, false);
             for (syrlist_t *sy = sy0; sy; sy = sy->next) {
                 sprintf(buf, "%-16s\n", sy->symref->get_name()->string());
                 if (fp)
@@ -319,7 +313,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
                 else
                     lstr.add(buf);
             }
-            sy0->free();
+            syrlist_t::destroy(sy0);
             state = true;
         }
     }
@@ -347,7 +341,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
                 delete [] str;
             }
         }
-        sy0->free();
+        syrlist_t::destroy(sy0);
         state = true;
     }
     if (dflags & FIO_INFO_ALLCELLS) {
@@ -383,7 +377,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
                 delete [] str;
             }
         }
-        sy0->free();
+        syrlist_t::destroy(sy0);
         state = true;
     }
 
@@ -649,7 +643,7 @@ cCHD::prDepthCounts(FILE *fp, DisplayMode mode, bool sort_by_offset)
             lstr.add(buf);
         }
     }
-    s0->free();
+    syrlist_t::destroy(s0);
     if (fp)
         return (0);
     return (lstr.string_trim());
@@ -722,7 +716,7 @@ cCHD::prInstanceCounts(FILE *fp, DisplayMode mode, bool print)
     char buf[256];
     SymTab *tab = instanceCounts(s0->symref);
     if (!tab) {
-        s0->free();
+        syrlist_t::destroy(s0);
         const char *errstr = Errs()->get_error();
         char *msg = new char[strlen(errstr) + 20];
         sprintf(msg, "ERROR: %s\n", errstr);
@@ -733,7 +727,7 @@ cCHD::prInstanceCounts(FILE *fp, DisplayMode mode, bool print)
         }
         return (msg);
     }
-    s0->free();
+    syrlist_t::destroy(s0);
     {
         unsigned long totcnt = 0;
         SymTabGen stgen(tab);
@@ -894,7 +888,7 @@ cCHD::prLayers(FILE *fp, DisplayMode mode)
             lstr.add_c(' ');
         lstr.add(s->string);
     }
-    s0->free();
+    stringlist::destroy(s0);
     if (fp) {
         fputs(lstr.string(), fp);
         return (0);
@@ -1082,26 +1076,27 @@ namespace {
 }
 
 
+// Static function.
 // Sort the list, alpha by name, or by offset.
 //
 void
-syrlist_t::sort(bool by_offset)
+syrlist_t::sort(syrlist_t *thissy, bool by_offset)
 {
     int cnt = 0;
-    for (syrlist_t *s = this; s; s = s->next)
+    for (syrlist_t *s = thissy; s; s = s->next)
         cnt++;
     if (cnt <= 1)
         return;
     symref_t **ary = new symref_t*[cnt];
     cnt = 0;
-    for (syrlist_t *s = this; s; s = s->next)
+    for (syrlist_t *s = thissy; s; s = s->next)
         ary[cnt++] = s->symref;
     if (by_offset)
         std::sort(ary, ary + cnt, cmp_off);
     else
         std::sort(ary, ary + cnt, cmp_alp);
     cnt = 0;
-    for (syrlist_t *s = this; s; s = s->next)
+    for (syrlist_t *s = thissy; s; s = s->next)
         s->symref = ary[cnt++];
     delete [] ary;
 }

@@ -93,7 +93,7 @@ namespace {
                 pa_list = 0;
                 pa_elec = elec;
             }
-        ~prp_accum_t() { pa_list->free_list(); }
+        ~prp_accum_t() { CDp::destroy(pa_list); }
 
         void add_properties(CDo*);
 
@@ -113,6 +113,8 @@ namespace {
     void
     prp_accum_t::add_properties(CDo *odesc)
     {
+        if (!odesc)
+            return;
         for (CDp *pp = odesc->prpty_list(); pp; pp = pp->next_prp()) {
             if (pa_elec) {
                 // In electrical mode, merge only unique "other" properties.
@@ -122,9 +124,12 @@ namespace {
                 bool found = false;
                 char *s = 0;
                 for (CDp *p = pa_list; p; pend = p, p = p->next_prp()) {
-                    if (!s)
-                        s = ((CDp_user*)pp)->data()->string(HYcvAscii, true);
-                    char *s1 = ((CDp_user*)p)->data()->string(HYcvAscii, true);
+                    if (!s) {
+                        s = hyList::string(((CDp_user*)pp)->data(), HYcvAscii,
+                            true);
+                    }
+                    char *s1 = hyList::string(((CDp_user*)p)->data(),
+                        HYcvAscii, true);
                     if (!s && !s1) {
                         found = true;
                         delete [] s1;
@@ -348,7 +353,7 @@ CDs::mergeBoxOrPoly(CDo *odesc, bool Undoable)
             }
         }
     }
-    p0->free();
+    PolyList::destroy(p0);
 
     for (CDol *ol = o0; ol; ol = ol->next) {
         CDo *od = ol->odesc;
@@ -361,7 +366,7 @@ CDs::mergeBoxOrPoly(CDo *odesc, bool Undoable)
         else
             unlink(od, false);
     }
-    o0->free();
+    CDol::destroy(o0);
 
     return (true);
 }

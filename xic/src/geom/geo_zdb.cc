@@ -427,9 +427,9 @@ GEOblock::~GEOblock()
 {
     if (b_list) {
         if (b_type == GBLKzlist)
-            Zlist::free(((Zlist*)b_list));
+            Zlist::destroy(((Zlist*)b_list));
         else
-            ((GEOblock*)b_list)->free();
+            destroy((GEOblock*)b_list);
     }
     if (b_context)
         b_context->onDestroy(this);
@@ -699,7 +699,7 @@ Zdb::Zdb(Zlist *z0)
 
 Zdb::~Zdb()
 {
-    db_tree->free();
+    GEOblock::destroy(db_tree);
     delete db_rowtab;
 }
 
@@ -752,7 +752,7 @@ Zdb::mutualClipAndMerge()
         ze = zt;
         clipAroundZoid(zt->Z);
     }
-    db_tree->free();
+    GEOblock::destroy(db_tree);
     delete db_rowtab;
     db_rowtab = new SymTab(false, false);;
     GEOblock *rowlist = GEOblock::build(z0, true);

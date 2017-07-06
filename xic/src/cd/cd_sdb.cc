@@ -253,7 +253,7 @@ cSDB::~cSDB()
     else if (dbtype == sdbZldb) {
         SymTabEnt *h;
         while ((h = gen.next()) != 0) {
-            Zlist::free(((Zlist*)h->stData));
+            Zlist::destroy(((Zlist*)h->stData));
             delete h;
         }
     }
@@ -280,7 +280,7 @@ cSDB::layers()
         CDl *ld = (CDl*)h->stTag;
         s0 = new stringlist(lstring::copy(ld->name()), s0);
     }
-    s0->sort(0);
+    stringlist::sort(s0);
     return (s0);
 }
 // End of cSDB functions.
@@ -336,7 +336,7 @@ bdb_t::getBlist(Blist *bref, XIrt *retp)
         for (unsigned int i = 0; i < n; i++) {
             Blist *bx = new Blist(bdb_objects[i], 0);
             if (!(bx->BB < bl->BB))
-                bx = bx->clip_to(&bl->BB);
+                bx = Blist::clip_to(bx, &bl->BB);
             if (bx) {
                 Blist *bn = bx;
                 while (bn->next)
@@ -347,7 +347,7 @@ bdb_t::getBlist(Blist *bref, XIrt *retp)
         }
     }
     try {
-        b0 = b0->merge();
+        b0 = Blist::merge(b0);
         return (b0);
     }
     catch (XIrt ret) {
@@ -889,7 +889,7 @@ zbins_t::~zbins_t()
 {
     unsigned int n = b_nx*b_ny;
     for (unsigned int i = 0; i < n; i++)
-        Zlist::free(b_array[i]);
+        Zlist::destroy(b_array[i]);
     delete [] b_array;
 }
 

@@ -217,7 +217,7 @@ cPyIf::run(const char *s)
             se = se->next;
         }
     }
-    int ac = s0->length() + 1;
+    int ac = stringlist::length(s0) + 1;
     char **av = new char*[ac+1];
     av[0] = lstring::copy(XM()->Program());
     int i = 1;

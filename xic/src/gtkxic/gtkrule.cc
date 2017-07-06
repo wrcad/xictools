@@ -524,7 +524,7 @@ sRu::update(DRCtype type, const char *username, const DRCtestDesc *rule)
     ru_stabstr = 0;
     if (rule && rule->spaceTab()) {
         sLstr lstr;
-        rule->spaceTab()->tech_print(0, &lstr);
+        sTspaceTable::tech_print(rule->spaceTab(), 0, &lstr);
         ru_stabstr = lstr.string_trim();
     }
 

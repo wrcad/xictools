@@ -62,9 +62,8 @@ struct sExtPermGrp : private sExtPermGrpB
             delete [] pg_order;
         }
 
-    void free()
+    static void destroy(sExtPermGrp *pg)
         {
-            sExtPermGrp *pg = this;
             while (pg) {
                 sExtPermGrp *px = pg;
                 pg = pg->next();
@@ -115,42 +114,24 @@ struct sExtPermGrp : private sExtPermGrpB
             return (true);
         }
 
-    unsigned int num_states_of_this() const
-        {
-            const sExtPermGrp *pgt = this;
-            if (pgt) {
-                switch (pg_num) {
-                    case 2: return (2);
-                    case 3: return (6);
-                    case 4: return (24);
-                    default: break;
-                }
-            }
-            return (1);
-        }
-
     unsigned int num_states() const
         {
-            unsigned ns = num_states_of_this();
-            const sExtPermGrp *pgt = this;
-            if (pgt)
+            unsigned ns = 1;
+            switch (pg_num) {
+                case 2: ns = 2;
+                case 3: ns = 6;
+                case 4: ns = 24;
+                default: break;
+            }
+            if (pg_next)
                 ns *= pg_next->num_states();
             return (ns);
         }
 
-    unsigned int state_of_this() const
-        {
-            const sExtPermGrp *pgt = this;
-            if (pgt)
-                return (pg_state);
-            return (0);
-        }
-
     unsigned int state() const
         {
-            unsigned int s = state_of_this();
-            const sExtPermGrp *pgt = this;
-            if (pgt && pg_next) {
+            unsigned int s = pg_state;
+            if (pg_next) {
                 unsigned int xs = pg_next->num_states();
                 if (xs > 1)
                     s = s*xs + pg_next->state();
@@ -197,13 +178,10 @@ struct sExtPermGrp : private sExtPermGrpB
 
     bool set_state(unsigned int s)
         {
-            sExtPermGrp *pgt = this;
-            if (!pgt)
-                return (false);
             if (s >= num_states())
                 return (false);
             if (pg_next) {
-                unsigned int xs = pg_next->num_states();
+                unsigned int xs = pg_next ? pg_next->num_states() : 1;
                 unsigned int r = s/xs;
                 if (!pg_next->set_state(s - r*xs))
                     return (false);
@@ -272,17 +250,14 @@ struct sExtPermGrp : private sExtPermGrpB
     //
     bool is_permute(const T &o) const
         {
-            const sExtPermGrp *pgt = this;
-            if (pgt) {
-                if (pg_objects) {
-                    for (unsigned int i = 0; i < pg_num; i++) {
-                        if (pg_objects[i] == o)
-                            return (true);
-                    }
+            if (pg_objects) {
+                for (unsigned int i = 0; i < pg_num; i++) {
+                    if (pg_objects[i] == o)
+                        return (true);
                 }
-                if (pg_next)
-                    return (pg_next->is_permute(o));
             }
+            if (pg_next)
+                return (pg_next->is_permute(o));
             return (false);
         }
 
@@ -293,20 +268,17 @@ struct sExtPermGrp : private sExtPermGrpB
         {
             if (o1 == o2)
                 return (true);
-            const sExtPermGrp *pgt = this;
-            if (pgt) {
-                if (pg_objects) {
-                    int f = 0;
-                    for (unsigned int i = 0; i < pg_num; i++) {
-                        if (pg_objects[i] == o1 || pg_objects[i] == o2) {
-                            if (++f == 2)
-                                return (true);
-                        }
+            if (pg_objects) {
+                int f = 0;
+                for (unsigned int i = 0; i < pg_num; i++) {
+                    if (pg_objects[i] == o1 || pg_objects[i] == o2) {
+                        if (++f == 2)
+                            return (true);
                     }
                 }
-                if (pg_next)
-                    return (pg_next->is_equiv(o1, o2));
             }
+            if (pg_next)
+                return (pg_next->is_equiv(o1, o2));
             return (false);
         }
 
@@ -388,9 +360,8 @@ struct sPermGrpList
             pg_type = t;
         }
 
-    void free()
+    static void destroy(sPermGrpList *p)
         {
-            sPermGrpList *p = this;
             while (p) {
                 sPermGrpList *px = p;
                 p = p->pg_next;

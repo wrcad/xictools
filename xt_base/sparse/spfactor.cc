@@ -241,7 +241,7 @@ int
 spMatrixFrame::spOrderAndFactor(spREAL *rhs, spREAL relThreshold,
     spREAL absThreshold, spBOOLEAN diagPivoting)
 {
-    ASSERT(IS_VALID(this) AND NOT Factored);
+    ASSERT(NOT Factored);
 
     Error = spOKAY;
     ReorderFailed = NO;
@@ -436,7 +436,7 @@ spMatrixFrame::spOrderAndFactor(spREAL *rhs, spREAL relThreshold,
 int
 spMatrixFrame::spFactor()
 {
-    ASSERT(IS_VALID(this) AND NOT Factored);
+    ASSERT(NOT Factored);
 
     if (NeedsOrdering)
         return (spOrderAndFactor(0, 0.0, 0.0, DIAG_PIVOTING_AS_DEFAULT));
@@ -1277,7 +1277,6 @@ spMatrixFrame::FactorComplexMatrix()
 void
 spMatrixFrame::spPartition(int mode)
 {
-    ASSERT(IS_SPARSE(this));
     if (Partitioned)
         return;
     Partitioned = YES;

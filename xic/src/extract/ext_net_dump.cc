@@ -209,7 +209,7 @@ cExtNets::dump_nets(const BBox *AOI, int x, int y)
                     if (ltab->get((unsigned long)ldtmp) == ST_NIL)
                         ltab->add((unsigned long)ldtmp, 0, false);
                 }
-                l0->free();
+                CDll::destroy(l0);
             }
         }
     }
@@ -551,7 +551,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
                 continue;
 
             Zlist *zv = sdesc->getZlist(0, ld, z1, &ret);
-            Zlist::free(z1);
+            Zlist::destroy(z1);
             if (ret != XIok) {
                 if (ret == XIbad)
                     Errs()->add_error("write_vias: failed to get zlist for %s",
@@ -569,7 +569,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
                         if (ret == XIbad)
                             Errs()->add_error(
                                 "write_vias: via check returned error");
-                        Zlist::free(zv);
+                        Zlist::destroy(zv);
                         break;
                     }
                     if (istrue && (en_flags & EN_VTRE)) {
@@ -582,12 +582,12 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
                                     Errs()->add_error(
                                     "write_vias: failed to get zlist for %s",
                                         ldtmp->name());
-                                Zlist::free(zv);
+                                Zlist::destroy(zv);
                                 break;
                             }
                             if (zx) {
                                 PolyList *pl = Zlist::to_poly_list(zx);
-                                CDo *od = pl->to_odesc(ldtmp);
+                                CDo *od = PolyList::to_odesc(pl, ldtmp);
 
                                 if (od) {
                                     SymTabEnt *h =
@@ -605,7 +605,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
                                 }
                             }
                         }
-                        l0->free();
+                        CDll::destroy(l0);
                         if (ret != XIok)
                             break;
                     }
@@ -618,11 +618,11 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
                     zv0 = zv;
                 }
                 else
-                    Zlist::free(zv);
+                    Zlist::destroy(zv);
             }
         }
         if (ret != XIok) {
-            Zlist::free(zv0);
+            Zlist::destroy(zv0);
             break;
         }
 
@@ -631,7 +631,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
         // a layer.
 
         PolyList *po = Zlist::to_poly_list(zv0);
-        CDo *od = po->to_odesc(ld);
+        CDo *od = PolyList::to_odesc(po, ld);
 
         if (od) {
             SymTabEnt *h = out_tab->get_ent((unsigned long)ld);
@@ -652,7 +652,7 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
     SymTabGen gen(tab, true);
     SymTabEnt *h;
     while ((h = gen.next()) != 0) {
-        Zlist::free(((Zlist*)h->stData));
+        Zlist::destroy(((Zlist*)h->stData));
         delete h;
     }
     delete tab;
@@ -791,7 +791,7 @@ cExtNets::write_edge_map(const CDs *sdesc, const BBox *AOI, int x, int y) const
             fprintf(fp, "%s\n", EDG_MAGIC);
             fprintf(fp, "TopCell: %s\n", en_cellname);
             fprintf(fp, "%s\n", EDG_BEGIN);
-            em0 = em0->sort_edge();
+            em0 = emrec_t::sort_edge(em0);
             while (em0) {
                 em0->print(fp, 'L');
                 emrec_t *et = em0;
@@ -870,7 +870,7 @@ cExtNets::write_edge_map(const CDs *sdesc, const BBox *AOI, int x, int y) const
             fprintf(fp, "Edge Mapping Info\n");
             fprintf(fp, "TopCell: %s\n", en_cellname);
             fprintf(fp, "%s\n", EDG_BEGIN);
-            em0 = em0->sort_edge();
+            em0 = emrec_t::sort_edge(em0);
             while (em0) {
                 em0->print(fp, 'B');
                 emrec_t *et = em0;
@@ -951,7 +951,7 @@ cExtNets::write_edge_map(const CDs *sdesc, const BBox *AOI, int x, int y) const
             fprintf(fp, "Edge Mapping Info\n");
             fprintf(fp, "TopCell: %s\n", en_cellname);
             fprintf(fp, "%s\n", EDG_BEGIN);
-            em0 = em0->sort_edge();
+            em0 = emrec_t::sort_edge(em0);
             while (em0) {
                 em0->print(fp, 'R');
                 emrec_t *et = em0;
@@ -1032,7 +1032,7 @@ cExtNets::write_edge_map(const CDs *sdesc, const BBox *AOI, int x, int y) const
             fprintf(fp, "Edge Mapping Info\n");
             fprintf(fp, "TopCell: %s\n", en_cellname);
             fprintf(fp, "%s\n", EDG_BEGIN);
-            em0 = em0->sort_edge();
+            em0 = emrec_t::sort_edge(em0);
             while (em0) {
                 em0->print(fp, 'T');
                 emrec_t *et = em0;
@@ -1084,7 +1084,7 @@ namespace {
             const char *name = h->stTag;
             emrec_t *em = (emrec_t*)h->stData;
             delete [] name;
-            em->free();
+            emrec_t::destroy(em);
             delete h;
         }
         delete st;
@@ -1337,15 +1337,15 @@ cExtNets::reduce(FILE *fp, SymTab *st1, SymTab *st2, int x1, int y1,
                 Errs()->add_error("reduce: reduction failed.");
                 delete [] name1;
                 delete [] name2;
-                em1->free();
-                em2->free();
+                emrec_t::destroy(em1);
+                emrec_t::destroy(em2);
                 return (false);
             }
         }
         delete [] name1;
         delete [] name2;
-        em1->free();
-        em2->free();
+        emrec_t::destroy(em1);
+        emrec_t::destroy(em2);
     }
 
     return (true);
@@ -1804,7 +1804,7 @@ cExtNets::stage3()
                         SymTab *st = (SymTab*)h->stData;
                         stringlist *names = st->names();
                         ok = add_listed_nets(flat, names, oas, chd_cache, in);
-                        names->free();
+                        stringlist::destroy(names);
                         if (!ok)
                             break;
                     }
@@ -1884,7 +1884,7 @@ cExtNets::add_listed_nets(bool flat, stringlist *names, oas_out *oas,
 
         // Sort the names, so that names from the same grid file will be
         // grouped.  A lexical sort is good enough.
-        names->sort(0);
+        stringlist::sort(names);
 
         for (stringlist *n = names; n; n = n->next) {
             int x, y, g;
@@ -1996,11 +1996,12 @@ cExtNets::add_listed_nets(bool flat, stringlist *names, oas_out *oas,
 // End of cExtNets functions.
 
 
+// Static function.
 emrec_t *
-emrec_t::sort_edge()
+emrec_t::sort_edge(emrec_t *thisem)
 {
     emrec_t *eml0 = 0, *emle = 0;
-    emrec_t *emlist = this;
+    emrec_t *emlist = thisem;
     while (emlist) {
         emrec_t *em0 = emlist;
         emrec_t *ee = emlist;
@@ -2009,7 +2010,7 @@ emrec_t::sort_edge()
         emlist = ee->next;
         ee->next = 0;
 
-        em0 = em0->sort();  // include merge
+        em0 = sort(em0);  // include merge
 
         if (!eml0)
             eml0 = emle = em0;
@@ -2046,17 +2047,18 @@ namespace {
 }
 
 
+// Static private function.
 emrec_t *
-emrec_t::sort()
+emrec_t::sort(emrec_t *thisem)
 {
     int cnt = 0;
-    for (emrec_t *em = this; em; em = em->next)
+    for (emrec_t *em = thisem; em; em = em->next)
         cnt++;
     if (cnt < 2)
-        return (this);
+        return (thisem);
     emrec_t **ary = new emrec_t*[cnt];
     cnt = 0;
-    for (emrec_t *em = this; em; em = em->next)
+    for (emrec_t *em = thisem; em; em = em->next)
         ary[cnt++] = em;
     std::sort(ary, ary + cnt, emcmp);
     for (int i = 1; i < cnt; i++)

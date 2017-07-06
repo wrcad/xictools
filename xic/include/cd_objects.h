@@ -161,34 +161,6 @@ protected:
 //      }
 
 
-// List element for CDo
-struct CDol
-{
-#ifdef CD_USE_MANAGER
-    void *operator new(size_t);
-    void operator delete(void*, size_t);
-#endif
-    CDol()
-        {
-            next = 0;
-            odesc = 0;
-        }
-
-    CDol(CDo *o, CDol *n)
-        {
-            next = n;
-            odesc = o;
-        }
-
-    void free();
-    void computeBB(BBox*) const;
-    CDol *dup() const;
-
-    CDol *next;
-    CDo *odesc;         // object desc of referencing instance
-};
-
-
 // Object desc
 struct CDo : public RTelem
 {
@@ -251,6 +223,7 @@ struct CDo : public RTelem
     // In one case, this is used to save a pointer to the "real" odesc
     // from which the possibly transformed copy was made.  Below are
     // access functions, const and non-const versions.
+    // See CDol::object_list.
 
     void set_next_odesc(const CDo *ptr)
         {
@@ -268,26 +241,6 @@ struct CDo : public RTelem
             return (is_copy() ? (const CDo*)e_right : 0);
         }
 
-    CDol *to_ol()
-        {
-            CDo *od = this;
-            if (!od)
-                return (0);
-            CDol *o0 = 0, *oe = 0;
-            while (od) {
-                CDo *on = od->next_odesc();
-                od->set_next_odesc(0);
-                if (!o0)
-                    o0 = oe = new CDol(od, 0);
-                else {
-                    oe->next = new CDol(od, 0);
-                    oe = oe->next;
-                }
-                od = on;
-            }
-            return (o0);
-        }
-
     // Next/prev object in database (sorted order)
     CDo *db_next()                    { return ((CDo*)next()); }
     CDo *db_prev()                    { return ((CDo*)prev()); }
@@ -297,7 +250,7 @@ struct CDo : public RTelem
 #ifdef CD_PRPTY_TAB
             CD()->SetPrptyList(this, p);
 #else
-            if (this) this->oPrptyList = p;
+            oPrptyList = p;
 #endif
         }
 
@@ -306,9 +259,9 @@ struct CDo : public RTelem
 #ifdef CD_PRPTY_TAB
             CD()->LinkPrptyList(this, p);
 #else
-            if (this && p) {
-                p->set_next_prp(this->oPrptyList);
-                this->oPrptyList = p;
+            if (p) {
+                p->set_next_prp(oPrptyList);
+                oPrptyList = p;
             }
 #endif
         }
@@ -318,7 +271,7 @@ struct CDo : public RTelem
 #ifdef CD_PRPTY_TAB
             return (CD()->PrptyList(this));
 #else
-            return (this ? this->oPrptyList : 0);
+            return (oPrptyList);
 #endif
         }
 
@@ -336,9 +289,7 @@ struct CDo : public RTelem
 #ifdef CD_GROUP_TAB
             CD()->SetGroup(this, g);
 #else
-            CDo *ot = this;
-            if (ot)
-                ot->oGroup = g;
+            oGroup = g;
 #endif
         }
 
@@ -347,8 +298,7 @@ struct CDo : public RTelem
 #ifdef CD_GROUP_TAB
             return (CD()->Group(this));
 #else
-            const CDo *ot = this;
-            return (ot ? ot->oGroup : DEFAULT_GROUP);
+            return (oGroup);
 #endif
         }
 
@@ -866,6 +816,89 @@ private:
     hyList *laLabel;
     int laX, laY;
     int laWidth, laHeight;
+};
+
+
+// List element for CDo
+struct CDol
+{
+#ifdef CD_USE_MANAGER
+    void *operator new(size_t);
+    void operator delete(void*, size_t);
+#endif
+    CDol()
+        {
+            next = 0;
+            odesc = 0;
+        }
+
+    CDol(CDo *o, CDol *n)
+        {
+            next = n;
+            odesc = o;
+        }
+
+    // Return a list of objects obtained from the list of copies
+    // passed.  The passed list will have its pointer linkage cleared,
+    // so that the returned list owns the copies.
+    //
+    static CDol *object_list(CDo *od)
+        {
+            if (!od)
+                return (0);
+            CDol *o0 = 0, *oe = 0;
+            while (od) {
+                CDo *on = od->next_odesc();
+                od->set_next_odesc(0);
+                if (!o0)
+                    o0 = oe = new CDol(od, 0);
+                else {
+                    oe->next = new CDol(od, 0);
+                    oe = oe->next;
+                }
+                od = on;
+            }
+            return (o0);
+        }
+
+    static void destroy(CDol *ol)
+        {
+            while (ol) {
+                CDol *ox = ol;
+                ol = ol->next;
+                delete ox;
+            }
+        }
+
+    // Copy the list.
+    //
+    static CDol *dup(const CDol *thisol)
+        {
+            CDol *ol0 = 0, *ole = 0;
+            for (const CDol *ol = thisol; ol; ol = ol->next) {
+                if (!ol0)
+                    ol0 = ole = new CDol(ol->odesc, 0);
+                else {
+                    ole->next = new CDol(ol->odesc, 0);
+                    ole = ole->next;
+                }
+            }
+            return (ol0);
+        }
+
+    // Compute the BB of the listed objects.
+    //
+    static void computeBB(const CDol *thisol, BBox *nBB)
+        {
+            *nBB = CDnullBB;
+            for (const CDol *ol = thisol; ol; ol = ol->next) {
+                if (ol->odesc)
+                    nBB->add(&ol->odesc->oBB());
+            }
+        }
+
+    CDol *next;
+    CDo *odesc;         // object desc of referencing instance
 };
 
 #endif

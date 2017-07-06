@@ -48,11 +48,10 @@ namespace {
                 library = l;
             }
 
-        void free()
+        static void destroy(const cf_elt *e)
             {
-                cf_elt *e = this;
                 while (e) {
-                    cf_elt *ex = e;
+                    const cf_elt *ex = e;
                     e = e->next;
                     delete ex;
                 }
@@ -274,7 +273,7 @@ sCF::sCF(GRobject caller, const stringlist *sl, int dmode)
 sCF::~sCF()
 {
     CF = 0;
-    cf_list->free();
+    cf_elt::destroy(cf_list);
     if (cf_caller)
         GRX->Deselect(cf_caller);
     if (wb_shell)
@@ -292,7 +291,7 @@ sCF::update(const stringlist *sl, int dmode)
     }
 
     cf_dmode = dmode;
-    cf_list->free();
+    cf_elt::destroy(cf_list);
     cf_list = 0;
     cf_elt *ce = 0;
 

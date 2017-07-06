@@ -159,7 +159,7 @@ sFileList::sFileList(const char *dir)
 sFileList::~sFileList()
 {
     delete [] fl_directory;
-    fl_file_list->free();
+    stringlist::destroy(fl_file_list);
 }
 
 
@@ -185,7 +185,7 @@ sFileList::read_list(CheckFuncType checkfunc, bool incldirs)
     if (!(wdir = opendir(fl_directory)))
         return (false);
 
-    fl_file_list->free();
+    stringlist::destroy(fl_file_list);
     fl_file_list = 0;
 
     char *path = new char[strlen(fl_directory) + 256];
@@ -257,7 +257,7 @@ sFileList::get_formatted_list(int cols, bool sort_newest_first,
         return (lstring::copy(no_files_msg ? no_files_msg : ""));
     }
     sort_list(sort_newest_first);
-    return (fl_file_list->col_format(cols, col_widp));
+    return (stringlist::col_format(fl_file_list, cols, col_widp));
 }
 
 
@@ -306,11 +306,11 @@ sFileList::sort_list(bool by_mtime)
     if (!fl_file_list || !fl_file_list->next)
         return;
     if (!by_mtime) {
-        fl_file_list->sort(&lcomp);
+        stringlist::sort(fl_file_list, &lcomp);
         return;
     }
 
-    int n = fl_file_list->length();
+    int n = stringlist::length(fl_file_list);
     mt *ary = new mt[n];
     char *path = new char[256 + (fl_directory ? strlen(fl_directory) : 0)];
     char *p = path;

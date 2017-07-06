@@ -146,7 +146,15 @@ struct CDp
 
     virtual bool is_elec()        const { return (false); }
 
-    void free_list();
+    static void destroy(CDp *p)
+        {
+            while (p) {
+                CDp *px = p;
+                p = p->p_next;
+                delete px;
+            }
+        }
+
     bool string(char**) const;
     bool is_longtext() const;
     void scale(double, double, DisplayMode);
@@ -247,6 +255,7 @@ private:
 //
 struct CDcellNameStr
 {
+//XXX FIXME, violates dispatch from null pointer spec.
     const char *string()    const { return ((const char*)this); }
     const char *stringNN()  const
         {
@@ -526,7 +535,7 @@ public:
                 return;
             prpelt_t *elt = cdPrptyTab->remove(od);
             if (elt) {
-                elt->get_list()->free_list();
+                CDp::destroy(elt->get_list());
                 elt->set_list(0);
             }
         }

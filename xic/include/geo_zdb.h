@@ -70,16 +70,10 @@ struct GEOblock
     GEOblock(Zlist*, int = 0);
     ~GEOblock();
 
-    Zlist *removeFirstZoid();
-    Zlist *removeZoid(const Zoid*);
-    bool insertZoid(Zlist*);
-    Zlist *findZoid(int, GEOblock** = 0);
-
     // Destroy the entire list.
     //
-    void free()
+    static void destroy(GEOblock *g)
         {
-            GEOblock *g = this;
             while (g) {
                 GEOblock *gx = g;
                 g = g->next();
@@ -93,8 +87,6 @@ struct GEOblock
     GEOblock *nextBlock()
         {
             GEOblock *b = this;
-            if (!b)
-                return (0);
             while (!b->next()) {
                 b = b->parent();
                 if (!b || b->type() == GBLKrow)
@@ -177,6 +169,11 @@ struct GEOblock
     GBLKtype type()             const { return (b_type); }
 
     static void setContext(Zdb *zdb) { b_context = zdb; }
+
+    Zlist *removeFirstZoid();
+    Zlist *removeZoid(const Zoid*);
+    bool insertZoid(Zlist*);
+    Zlist *findZoid(int, GEOblock** = 0);
 
 protected:
     // Set the parent pointer of the list elements.

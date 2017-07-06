@@ -44,8 +44,6 @@ struct Point
     void set(int xx, int yy) { x = xx; y = yy; }
     void set(const Point &p) { x = p.x; y = p.y; }
 
-    // Methods are static so we can freely allow a null "this" pointer.
-
     static Point *dup(const Point *pts, int n)
         {
             if (!pts)
@@ -173,9 +171,8 @@ struct Plist : public Point_c
     Plist() { next = 0; }
     Plist(int xx, int yy, Plist *n = 0) : Point_c(xx, yy) { next = n; }
 
-    void free()
+    static void destroy(Plist *p)
         {
-            Plist *p = this;
             while (p) {
                 Plist *px = p;
                 p = p->next;
@@ -241,9 +238,9 @@ struct edg_t
 {
     edg_t(int x1, int y1, int x2, int y2, edg_t *n) :
         p1(x1, y1), p2(x2, y2) { next = n; }
-    void free()
+
+    static void destroy(edg_t *e)
         {
-            edg_t *e = this;
             while (e) {
                 edg_t *ex = e;
                 e = e->next;

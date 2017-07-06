@@ -160,7 +160,7 @@ namespace {
             else {
                 sl = SI()->GetSubfuncList();
                 funcList->update(sl, "Functions in memory", 0);
-                sl->free();
+                stringlist::destroy(sl);
             }
         }
         else if (sl) {
@@ -358,7 +358,7 @@ SIlocalContext::clear()
     }
 
     lc_ghostCount = 0;
-    lc_ghostList->free();
+    PolyList::destroy(lc_ghostList);
     lc_ghostList = 0;
 
     lc_applyTransform = false;
@@ -380,7 +380,7 @@ SIlocalContext::clear()
                     CDvdb()->setVariable(h->stTag, s->string);
                 else
                     CDvdb()->clearVariable(h->stTag);
-                s0->free();
+                stringlist::destroy(s0);
             }
             delete [] h->stTag;
             delete h;
@@ -477,7 +477,7 @@ SIlocalContext::popVar(const char *name)
     else
         CDvdb()->clearVariable(name);
     sl->next = 0;
-    sl->free();
+    stringlist::destroy(sl);
 }
 // End of SIlocalContext functions
 
@@ -531,25 +531,26 @@ namespace {
 }
 
 
+// Static function.
 // umenu sort function
 //
 void
-umenu::sort()
+umenu::sort(umenu *thisu)
 {
     int cnt = 0;
-    for (umenu *u = this; u; u = u->u_next, cnt++) ;
+    for (umenu *u = thisu; u; u = u->u_next, cnt++) ;
     if (cnt < 2)
         return;
     ut *aa = new ut[cnt];
     cnt = 0;
-    for (umenu *u = this; u; u = u->u_next, cnt++) {
+    for (umenu *u = thisu; u; u = u->u_next, cnt++) {
         aa[cnt].n = u->u_name;
         aa[cnt].r = u->u_realname;
         aa[cnt].m = u->u_menu;
     }
     std::sort(aa, aa + cnt, comp);
     cnt = 0;
-    for (umenu *u = this; u; u = u->u_next, cnt++) {
+    for (umenu *u = thisu; u; u = u->u_next, cnt++) {
         u->u_name = aa[cnt].n;
         u->u_realname = aa[cnt].r;
         u->u_menu = aa[cnt].m;
@@ -602,7 +603,7 @@ namespace {
                     {
                         delete [] name;
                         delete [] path;
-                        script->free();
+                        stringlist::destroy(script);
                     }
 
                 char *name;         // name of script
@@ -1076,7 +1077,7 @@ SIlocal::InsertScript(sScript *s, bool exec)
                 if (!strcmp(a->name, s->name)) {
                     // No script entries with paths here.
 
-                    a->script->free();
+                    stringlist::destroy(a->script);
                     a->script = s->script;
                     s->script = 0;
                     delete s;
@@ -1105,7 +1106,7 @@ SIlocal::InsertScript(sScript *s, bool exec)
                         s->path = 0;
                     }
                     else if (!a->path) {
-                        a->script->free();
+                        stringlist::destroy(a->script);
                         a->script = s->script;
                         s->script = 0;
                     }
@@ -1399,7 +1400,7 @@ SIlocal::get_lib(const char *lpath)
                 }
                 else {
                     if (nametab->get(ux->label()) != ST_NIL) {
-                        ux->free();
+                        umenu::destroy(ux);
                         delete [] val;
                         continue;
                     }
@@ -1423,7 +1424,7 @@ SIlocal::get_lib(const char *lpath)
 
     if (u0) {
         if (!u1) {
-            u0->free();
+            umenu::destroy(u0);
             return (0);
         }
         if (nosort) {
@@ -1438,7 +1439,7 @@ SIlocal::get_lib(const char *lpath)
             u1 = ur;
         }
         else
-            u1->sort();
+            umenu::sort(u1);
         u0->set_menu(u1);
         return (u0);
     }
@@ -1777,7 +1778,7 @@ cMain::GetFunctionList()
     }
     ul = SIxic.AddScript(ul, nametab);
     delete nametab;
-    ul->sort();
+    umenu::sort(ul);
     return (ul);
 }
 

@@ -924,11 +924,6 @@ zio_stream::zio_read(void *buf, unsigned int len)
 int
 zio_stream::zio_write(const void *buf, unsigned int len)
 {
-    {
-        zio_stream *zst = this;
-        if (!zst)
-            return (Z_STREAM_ERROR);
-    }
     if (z_mode != 'w')
         return (Z_STREAM_ERROR);
 
@@ -1207,11 +1202,6 @@ printf("SEEKING from table %lld %lld %d\n", offset, here->out, here->bits);
 int
 zio_stream::read_core(void *buf, unsigned int len)
 {
-    {
-        zio_stream *zst = this;
-        if (!zst)
-            return (Z_STREAM_ERROR);
-    }
     if (z_mode != 'r')
         return (Z_STREAM_ERROR);
     if (z_err == Z_DATA_ERROR || z_err == Z_ERRNO)
@@ -1302,11 +1292,6 @@ printf("read: assigned file crc\n");
 int
 zio_stream::flush(int flsh)
 {
-    {
-        zio_stream *zst = this;
-        if (!zst)
-            return (Z_STREAM_ERROR);
-    }
     if (z_mode != 'w')
         return (Z_STREAM_ERROR);
 

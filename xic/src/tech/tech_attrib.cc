@@ -1298,10 +1298,10 @@ cTech::PrintAttrVars(FILE *fp)
         tc_nm_t *n;
         while ((n = gen.next()) != 0)
             s0 = new stringlist(lstring::copy(n->name), s0);
-        s0->sort();
+        stringlist::sort(s0);
         for (stringlist *s = s0; s; s = s->next)
             fprintf(fp, "%s\n", s->string);
-        s0->free();
+        stringlist::destroy(s0);
     }
     if (tc_sattr_tab) {
         fprintf(fp, "\n*** String attribute variables\n");
@@ -1310,10 +1310,10 @@ cTech::PrintAttrVars(FILE *fp)
         tc_nm_t *n;
         while ((n = gen.next()) != 0)
             s0 = new stringlist(lstring::copy(n->name), s0);
-        s0->sort();
+        stringlist::sort(s0);
         for (stringlist *s = s0; s; s = s->next)
             fprintf(fp, "%s\n", s->string);
-        s0->free();
+        stringlist::destroy(s0);
     }
 }
 
@@ -1328,7 +1328,7 @@ cTech::print_boolean_attributes(FILE *techfp)
     tc_nm_t *n;
     while ((n = gen.next()) != 0)
         s0 = new stringlist(lstring::copy(n->name), s0);
-    s0->sort();
+    stringlist::sort(s0);
 
     // The default state of these is unset.
     for (stringlist *s = s0; s; s = s->next) {
@@ -1337,7 +1337,7 @@ cTech::print_boolean_attributes(FILE *techfp)
             fprintf(techfp, "%s y\n", s->string);
         CommentDump(techfp, 0, tBlkNone, 0, s->string);
     }
-    s0->free();
+    stringlist::destroy(s0);
 }
 
 
@@ -1351,7 +1351,7 @@ cTech::print_string_attributes(FILE *techfp)
     tc_nm_t *n;
     while ((n = gen.next()) != 0)
         s0 = new stringlist(lstring::copy(n->name), s0);
-    s0->sort();
+    stringlist::sort(s0);
 
     // The default state of these is unset.
     for (stringlist *s = s0; s; s = s->next) {
@@ -1360,7 +1360,7 @@ cTech::print_string_attributes(FILE *techfp)
             fprintf(techfp, "%s %s\n", s->string, val);
         CommentDump(techfp, 0, tBlkNone, 0, s->string);
     }
-    s0->free();
+    stringlist::destroy(s0);
 }
 
 

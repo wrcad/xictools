@@ -317,7 +317,7 @@ cGroupDesc::print_groups(FILE *fp, sDumpOpts *opts)
                     sprintf(buf, "%s: area=%1.3e perim=%1.3e", ld->name(),
                         area, perim);
                     Gen.Comment(fp, buf);
-                    p0->free();
+                    PolyList::destroy(p0);
                 }
             }
         }

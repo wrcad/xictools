@@ -234,7 +234,7 @@ cgx_out::write_object(const CDo *odesc, cvLchk *lchk)
         Text text;
         // use long text for unbound labels
         CDp_lref *prf = (CDp_lref*)odesc->prpty(P_LABRF);
-        text.text = ((CDla*)odesc)->label()->string(HYcvAscii,
+        text.text = hyList::string(((CDla*)odesc)->label(), HYcvAscii,
             !(prf && prf->devref()));
         const Label la(((CDla*)odesc)->la_label());
         bool ret = text.set(&la, out_mode, Fcgx);
@@ -470,7 +470,7 @@ cgx_out::write_poly(const Poly *poly)
                 for (int i = 0; i < p->po.numpts; i++) {
                     if (out_bufcnt >= end) {
                         if (!flush_buf()) {
-                            p0->free();
+                            PolyList::destroy(p0);
                             return (false);
                         }
                     }
@@ -480,7 +480,7 @@ cgx_out::write_poly(const Poly *poly)
                 if (!flush_buf())
                     return (false);
             }
-            p0->free();
+            PolyList::destroy(p0);
         }
         else {
             int dsize = 4 + poly->numpts*8;

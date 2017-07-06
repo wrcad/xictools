@@ -70,7 +70,7 @@ CDl::CDl(CDLtype t)
 CDl::~CDl()
 {
     delete ld_strm_in;
-    ld_strm_out->free();
+    strm_odata::destroy(ld_strm_out);
     delete [] ld_idname;
     delete [] ld_description;
     delete [] ld_drv_expr;

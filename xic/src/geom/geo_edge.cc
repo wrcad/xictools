@@ -544,7 +544,7 @@ namespace {
                 ze = ze->next;
             }
         }
-        Zlist::free(elist);
+        Zlist::destroy(elist);
         return (z0);
     }
 }
@@ -560,7 +560,7 @@ cGEO::merge_edge_zlists(const Zlist *zl1, int code1, Zlist *zl2)
     if (!zl2)
         return (0);
     if (!zl1) {
-        Zlist::free(zl2);
+        Zlist::destroy(zl2);
         return (0);
     }
 
@@ -695,7 +695,7 @@ cGEO::merge_edge_zlists(const Zlist *zl1, int code1, Zlist *zl2)
         }
         break;
     }
-    Zlist::free(zl2);
+    Zlist::destroy(zl2);
     return (zx0);
 }
 

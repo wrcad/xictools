@@ -160,7 +160,7 @@ cv_incr_reader::write_poly(const Poly *po)
                 oend->set_copy(true);
                 px->po.points = 0;
             }
-            pl->free();
+            PolyList::destroy(pl);
         }
         if (need_out) {
             Poly poly(*po);
@@ -195,7 +195,7 @@ cv_incr_reader::write_wire(const Wire *w)
                 oend->set_copy(true);
                 px->po.points = 0;
             }
-            pl->free();
+            PolyList::destroy(pl);
         }
         if (need_out) {
             Wire wire(*w);

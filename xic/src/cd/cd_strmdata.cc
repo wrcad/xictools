@@ -188,12 +188,6 @@ strm_idata::parse_lspec(const char **string)
 bool
 strm_idata::check(unsigned int layer, unsigned int dtype)
 {
-    {
-        strm_idata *st = this;
-        if (!st)
-            return (false);
-    }
-
     if (layer >= GDS_MAX_LAYERS || dtype >= GDS_MAX_DTYPES)
         return (false);
 
@@ -278,7 +272,7 @@ strm_idata::set_lspec(unsigned int min, unsigned int max, bool dt)
     // Otherwise create a new range element.
 
     if (lx0) {
-        lx0->next->free();
+        idata_list::destroy(lx0->next);
         lx0->next = 0;
         lx0->min = min;
         lx0->max = max;

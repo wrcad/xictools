@@ -155,7 +155,7 @@ BreakState::BreakState(const char *nm, const char *hk) : CmdState(nm, hk)
 BreakState::~BreakState()
 {
     BreakCmd = 0;
-    OrigObjs->free();
+    CDol::destroy(OrigObjs);
     DSP()->SetInEdgeSnappingCmd(false);
 }
 
@@ -208,7 +208,7 @@ BreakState::b1up()
         if (State == 3) {
             State = 2;
             CDs *cursd = CurCell();
-            OrigObjs->free();
+            CDol::destroy(OrigObjs);
             OrigObjs = Selections.listQueue(cursd, Types);
             Selections.deselectTypes(cursd, Types);
             Selections.removeTypes(cursd, Types);
@@ -324,7 +324,7 @@ BreakState::undo()
         //
         Gst()->SetGhost(GFnone);
         GhostOn = false;
-        OrigObjs->free();
+        CDol::destroy(OrigObjs);
         OrigObjs = Selections.listQueue(CurCell(), Types);
         Selections.deselectTypes(CurCell(), Types);
         Selections.removeTypes(CurCell(), Types);
@@ -511,7 +511,7 @@ poly:
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
             }
         }
-        p0->free();
+        PolyList::destroy(p0);
 
         p0 = ((const CDpo*)odesc)->po_clip(&BB2);
         for (PolyList *p = p0; p; p = p->next) {
@@ -521,7 +521,7 @@ poly:
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
             }
         }
-        p0->free();
+        PolyList::destroy(p0);
         Ulist()->RecordObjectChange(sdesc, odesc, 0);
         return (true);
     }

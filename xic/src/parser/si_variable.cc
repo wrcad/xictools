@@ -71,7 +71,7 @@ namespace {
     void
     clear__zlist(Variable *v)
     {
-        Zlist::free(v->content.zlist);
+        Zlist::destroy(v->content.zlist);
     }
 
     void
@@ -170,7 +170,7 @@ Variable::cat__handle(Variable *v, Variable *res)
 
         if (hdl1->type == HDLstring) {
             stringlist *s0 = (stringlist*)hdl2->data;
-            s0 = s0->dup();
+            s0 = stringlist::dup(s0);
             if (!hdl1->data)
                 hdl1->data = s0;
             else {
@@ -403,7 +403,7 @@ namespace {
     void
     safe_del__zlist(Variable *v)
     {
-        Zlist::free(v->content.zlist);
+        Zlist::destroy(v->content.zlist);
         v->type = TYP_NOTYPE;
         v->flags = 0;
         v->content.string = v->name;
@@ -488,7 +488,7 @@ namespace {
             return;
         if (res->type == TYP_ZLIST && res->content.zlist == v->content.zlist)
             return;
-        Zlist::free(v->content.zlist);
+        Zlist::destroy(v->content.zlist);
         v->content.zlist = 0;
     }
 
@@ -526,7 +526,7 @@ namespace {
     gc_result__zlist(Variable *v)
     {
         if (!(v->flags & VF_NAMED)) {
-            Zlist::free(v->content.zlist);
+            Zlist::destroy(v->content.zlist);
             v->content.zlist = 0;
         }
     }
@@ -771,7 +771,7 @@ namespace {
                 "-eillegal type conversion: non-zlist to zlist");
             return (BAD);
         }
-        Zlist::free(v->content.zlist);
+        Zlist::destroy(v->content.zlist);
         if (r2.flags & VF_NAMED)
             v->content.zlist = Zlist::copy(r2.content.zlist);
         else

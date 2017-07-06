@@ -462,7 +462,7 @@ sHdlUniq::test(sHdl *hdl)
 
 sHdlString::~sHdlString()
 {
-    ((stringlist*)data)->free();
+    stringlist::destroy((stringlist*)data);
 }
 
 // Iterator for strings: return the string (the string is *always* a copy
@@ -542,7 +542,7 @@ sHdlFd::close(int hd)
 
 sHdlPrpty::~sHdlPrpty()
 {
-    ((CDpl*)data)->free();
+    CDpl::destroy((CDpl*)data);
 }
 
 void *
@@ -564,7 +564,7 @@ sHdlPrpty::iterator()
 
 sHdlNode::~sHdlNode()
 {
-    ((tlist<CDp_nodeEx>*)data)->free();
+    tlist<CDp_nodeEx>::destroy((tlist<CDp_nodeEx>*)data);
 }
 
 void *
@@ -586,7 +586,7 @@ sHdlNode::iterator()
 
 sHdlTerminal::~sHdlTerminal()
 {
-    ((tlist<CDterm>*)data)->free();
+    tlist<CDterm>::destroy((tlist<CDterm>*)data);
 }
 
 void *
@@ -608,7 +608,7 @@ sHdlTerminal::iterator()
 
 sHdlDevice::~sHdlDevice()
 {
-    ((tlist<sDevInst>*)data)->free();
+    tlist<sDevInst>::destroy((tlist<sDevInst>*)data);
 }
 
 void *
@@ -630,7 +630,7 @@ sHdlDevice::iterator()
 
 sHdlDevContact::~sHdlDevContact()
 {
-    ((tlist<sDevContactInst>*)data)->free();
+    tlist<sDevContactInst>::destroy((tlist<sDevContactInst>*)data);
 }
 
 void *
@@ -652,7 +652,7 @@ sHdlDevContact::iterator()
 
 sHdlSubckt::~sHdlSubckt()
 {
-    ((tlist<sSubcInst>*)data)->free();
+    tlist<sSubcInst>::destroy((tlist<sSubcInst>*)data);
 }
 
 void *
@@ -674,7 +674,7 @@ sHdlSubckt::iterator()
 
 sHdlSubcContact::~sHdlSubcContact()
 {
-    ((tlist<sSubcContactInst>*)data)->free();
+    tlist<sSubcContactInst>::destroy((tlist<sSubcContactInst>*)data);
 }
 
 void *

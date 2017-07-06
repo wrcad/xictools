@@ -635,7 +635,7 @@ geom2_funcs::IFcheckPCellParam(Variable *res, Variable *args, void*)
     }
     PCellParam *pcp;
     if (PC()->getDefaultParams(dbname, &pcp) && pcp) {
-        pcp = pcp->find(pname);
+        pcp = PCellParam::find(pcp, pname);
         if (pcp && pcp->constraint()) {
             if (was_string) {
                 if (!pcp->constraint()->checkConstraint(stringval))
@@ -705,7 +705,7 @@ geom2_funcs::IFcheckPCellParams(Variable *res, Variable *args, void*)
     PCellParam *pcp;
     if (PC()->getDefaultParams(dbname, &pcp)) {
         for (PCellParam *p = prm; p; p = p->next()) {
-            PCellParam *pr = pcp->find(p->name());
+            PCellParam *pr = PCellParam::find(pcp, p->name());
             if (!pr || !pr->constraint())
                 continue;
             if (!pr->constraint()->checkConstraint(p)) {
@@ -715,7 +715,7 @@ geom2_funcs::IFcheckPCellParams(Variable *res, Variable *args, void*)
         }
     }
     delete [] dbname;
-    prm->free();
+    PCellParam::destroy(prm);
     return (OK);
 }
 
@@ -853,7 +853,7 @@ geom2_funcs::IFdeleteEmpties(Variable *res, Variable *args, void*)
                     dcnt++;
                 }
             }
-            sl->free();
+            stringlist::destroy(sl);
             if (didone) {
                 cbin.fixBBs();
                 XM()->PopUpCells(0, MODE_UPD);
@@ -1328,7 +1328,7 @@ geom2_funcs::IFplaceSetPCellParams(Variable *res, Variable *args, void*)
     if (!PC()->setPCinstParams(dbname, prm, true)) {
         Errs()->add_error(
             "PlaceSetPCellParams: error setting instantiance parameters.");
-        prm->free();
+        PCellParam::destroy(prm);
         delete [] dbname;
         return (BAD);
     }
@@ -1566,7 +1566,7 @@ namespace {
                         }
                     }
                 }
-                yr->free();
+                Ylist::destroy(yr);
                 if (DSP()->CurMode() == Electrical && DSP()->ShowTerminals())
                     DSP()->ShowCellTerminalMarks(DISPLAY);
                 res->content.value = cnt;
@@ -1653,12 +1653,12 @@ namespace {
                         CDl *ld = ldesc ? ldesc : o->odesc->ldesc();
                         PolyList *p0 = Zlist::to_poly_list(zo);
                         if (!o0)
-                            o0 = p0->to_olist(ld, &oend); 
+                            o0 = PolyList::to_olist(p0, ld, &oend); 
                         else
-                            p0->to_olist(ld, &oend); 
+                            PolyList::to_olist(p0, ld, &oend); 
                     }
                 }
-                yr->free();
+                Ylist::destroy(yr);
                 sHdl *hnew = new sHdlObject(o0, cursd, true);
                 res->type = TYP_HANDLE;
                 res->content.value = hnew->id;
@@ -1764,7 +1764,7 @@ namespace {
                         }
                     }
                 }
-                yl->free();
+                Ylist::destroy(yl);
                 if (DSP()->CurMode() == Electrical && DSP()->ShowTerminals())
                     DSP()->ShowCellTerminalMarks(DISPLAY);
                 res->content.value = cnt;
@@ -1882,12 +1882,12 @@ namespace {
                         CDl *ld = ldesc ? ldesc : o->odesc->ldesc();
                         PolyList *p0 = Zlist::to_poly_list(zo);
                         if (!o0)
-                            o0 = p0->to_olist(ld, &oend);
+                            o0 = PolyList::to_olist(p0, ld, &oend);
                         else
-                            p0->to_olist(ld, &oend);
+                            PolyList::to_olist(p0, ld, &oend);
                     }
                 }
-                yl->free();
+                Ylist::destroy(yl);
                 sHdl *hnew = new sHdlObject(o0, cursd, true);
                 res->type = TYP_HANDLE;
                 res->content.value = hnew->id;
@@ -2166,7 +2166,7 @@ geom2_funcs::IFclipObjects(Variable *res, Variable *args, void*)
                             cnt++;
                         }
                     }
-                    p0->free();
+                    PolyList::destroy(p0);
                 }
                 else {
                     for (Zlist *z = zl; z; z = z->next) {
@@ -2192,7 +2192,7 @@ geom2_funcs::IFclipObjects(Variable *res, Variable *args, void*)
                             }
                         }
                     }
-                    Zlist::free(zl);
+                    Zlist::destroy(zl);
                 }
             }
             res->content.value = cnt;
@@ -2336,16 +2336,16 @@ geom2_funcs::IFclipIntersectCopy(Variable *res, Variable *args, void*)
         if (zl1) {
             PolyList *p0 = Zlist::to_poly_list(zl1);
             if (!o0)
-                o0 = p0->to_olist(ldesc, &oend); 
+                o0 = PolyList::to_olist(p0, ldesc, &oend); 
             else
-                p0->to_olist(ldesc, &oend); 
+                PolyList::to_olist(p0, ldesc, &oend); 
         }
         if (zl2) {
             PolyList *p0 = Zlist::to_poly_list(zl2);
             if (!o0)
-                o0 = p0->to_olist(ldesc, &oend); 
+                o0 = PolyList::to_olist(p0, ldesc, &oend); 
             else
-                p0->to_olist(ldesc, &oend); 
+                PolyList::to_olist(p0, ldesc, &oend); 
         }
         sHdl *hnew = new sHdlObject(o0, cursd, true);
         res->type = TYP_HANDLE;
@@ -4488,8 +4488,7 @@ namespace {
                     p = p->next_prp()) {
                 if (p->value() == P_OTHER) {
                     if (string && *string) {
-                        char *s =
-                            (PUSR(p)->data())->string(HYcvPlain,
+                        char *s = hyList::string((PUSR(p)->data()), HYcvPlain,
                             false);
                         bool zz = lstring::prefix(string, s);
                         delete [] s;

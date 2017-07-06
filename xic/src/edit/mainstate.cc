@@ -371,7 +371,7 @@ click:
             // Handle property label hide/show.
             if ((EV()->Cursor().get_upstate() & GR_SHIFT_MASK)) {
                 if (WindowDesc::LabelHideHandler(slist)) {
-                    slist->free();
+                    CDol::destroy(slist);
                     return;
                 }
             }
@@ -449,7 +449,7 @@ click:
                             // Call the "real" stretch command, allows
                             // vertex selection.
 
-                            slist->free();
+                            CDol::destroy(slist);
                             Menu()->MenuButtonPress("main", MenuSTRCH);
                             return;
                         }
@@ -496,7 +496,7 @@ click:
                         no_object_proc();
                 }
             }
-            slist->free();
+            CDol::destroy(slist);
             return;
         }
         if (EV()->Cursor().is_release_ok() && EV()->CurrentWin()) {
@@ -1173,7 +1173,7 @@ MainState::timeout1(void*)
                 Mcmd()->set_op(SelectObj);
             }
         }
-        slist->free();
+        CDol::destroy(slist);
     }
     return (false);
 }

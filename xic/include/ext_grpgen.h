@@ -82,11 +82,10 @@ namespace ext_group {
                 subs = 0;
             }
 
-        ~sSubcLink()    { subs->free(); }
+        ~sSubcLink()    { destroy(subs); }
 
-        void free()
+        static void destroy(sSubcLink *l)
             {
-                sSubcLink *l = this;
                 while (l) {
                     sSubcLink *x = l;
                     l = l->next;
@@ -116,9 +115,8 @@ namespace ext_group {
                     next = n;
                 }
 
-            void free()
+            static void destroy(sLL *l)
                 {
-                    sLL *l = this;
                     while (l) {
                         sLL *x = l;
                         l = l->next;
@@ -142,9 +140,8 @@ namespace ext_group {
                     next = n;
                 }
 
-            void free()
+            static void destroy(sTF *s)
                 {
-                    sTF *s = this;
                     while (s) {
                         sTF *x = s;
                         s = s->next;
@@ -169,14 +166,14 @@ namespace ext_group {
 
         ~sSubcGen()
             {
-                cg_stack->free();
-                cg_list->free();
+                sTF::destroy(cg_stack);
+                sLL::destroy(cg_list);
             }
 
         void clear()
             {
-                cg_stack->free();
-                cg_list->free();
+                sTF::destroy(cg_stack);
+                sLL::destroy(cg_list);
                 cg_cur = 0;
                 cg_stack = 0;
                 cg_list = 0;
@@ -185,9 +182,9 @@ namespace ext_group {
 
         void set(sSubcLink *c)
             {
-                cg_stack->free();
+                sTF::destroy(cg_stack);
                 cg_stack = new sTF(0, 0);
-                cg_list->free();
+                sLL::destroy(cg_list);
                 cg_list = 0;
                 cg_depth = 0;
                 cg_cur = c;

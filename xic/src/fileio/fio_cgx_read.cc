@@ -1005,7 +1005,7 @@ cgx_in::end_struct()
         stringlist *s0 = in_sdesc->prptyApplyList(0, &in_prpty_list);
         for (stringlist *s = s0; s; s = s->next)
             warning(s->string);
-        s0->free();
+        stringlist::destroy(s0);
         in_has_cprops = 0;
 
         in_sdesc->setPCellFlags();
@@ -1281,7 +1281,7 @@ cgx_in::a_property(int, int)
             stringlist *s0 = in_sdesc->prptyApplyList(0, &in_prpty_list);
             for (stringlist *s = s0; s; s = s->next)
                 warning(s->string);
-            s0->free();
+            stringlist::destroy(s0);
             clear_properties();
             in_has_cprops = 0;
         }
@@ -1304,7 +1304,7 @@ cgx_in::a_layer(int, int)
         stringlist *s0 = in_sdesc->prptyApplyList(0, &in_prpty_list);
         for (stringlist *s = s0; s; s = s->next)
             warning(s->string);
-        s0->free();
+        stringlist::destroy(s0);
         clear_properties();
         in_has_cprops = 0;
     }
@@ -1340,7 +1340,7 @@ cgx_in::a_layer(int, int)
         CDll *lyrs = FIO()->GetGdsInputLayers(layer_num, data_type, in_mode);
         if (lyrs) {
             in_curlayer = lyrs->ldesc;
-            lyrs->free();
+            CDll::destroy(lyrs);
         }
     }
     if (!in_curlayer)
@@ -1380,7 +1380,7 @@ cgx_in::a_box(int size, int)
         stringlist *s0 = in_sdesc->prptyApplyList(0, &in_prpty_list);
         for (stringlist *s = s0; s; s = s->next)
             warning(s->string);
-        s0->free();
+        stringlist::destroy(s0);
         clear_properties();
         in_has_cprops = 0;
     }
@@ -1436,7 +1436,7 @@ cgx_in::a_poly(int size, int)
         stringlist *s0 = in_sdesc->prptyApplyList(0, &in_prpty_list);
         for (stringlist *s = s0; s; s = s->next)
             warning(s->string);
-        s0->free();
+        stringlist::destroy(s0);
         clear_properties();
         in_has_cprops = 0;
     }
@@ -1528,7 +1528,7 @@ cgx_in::a_wire(int size, int flags)
         stringlist *s0 = in_sdesc->prptyApplyList(0, &in_prpty_list);
         for (stringlist *s = s0; s; s = s->next)
             warning(s->string);
-        s0->free();
+        stringlist::destroy(s0);
         clear_properties();
         in_has_cprops = 0;
     }
@@ -1616,7 +1616,7 @@ cgx_in::a_text(int size, int flags)
         stringlist *s0 = in_sdesc->prptyApplyList(0, &in_prpty_list);
         for (stringlist *s = s0; s; s = s->next)
             warning(s->string);
-        s0->free();
+        stringlist::destroy(s0);
         clear_properties();
         in_has_cprops = 0;
     }
@@ -1650,7 +1650,7 @@ cgx_in::a_text(int size, int flags)
         }
 
         hyList *hpl = new hyList(in_sdesc, ptr, HYcvAscii);
-        char *string = hpl->string(HYcvPlain, false);
+        char *string = hyList::string(hpl, HYcvPlain, false);
         // This is the displayed string, not necessarily the same as the
         // label text.
         double tw, th;
@@ -1664,12 +1664,12 @@ cgx_in::a_text(int size, int flags)
             in_cBB.add(&BB);
         }
         else if (!in_areafilt || la.intersect(&in_cBB, false)) {
-            la.label = hpl->dup();
+            la.label = hyList::dup(hpl);
             CDla *newo;
             CDerrType err = in_sdesc->makeLabel(in_curlayer, &la, &newo);
             if (err != CDok) {
                 clear_properties();
-                hpl->free();
+                hyList::destroy(hpl);
                 if (err == CDbadLabel) {
                     warning("bad label (ignored)", la.x, la.y);
                     return (true);
@@ -1679,7 +1679,7 @@ cgx_in::a_text(int size, int flags)
             if (newo)
                 add_properties_db(newo);
         }
-        hpl->free();
+        hyList::destroy(hpl);
     }
     clear_properties();
     return (true);
@@ -1695,7 +1695,7 @@ cgx_in::a_sref(int, int flags)
         stringlist *s0 = in_sdesc->prptyApplyList(0, &in_prpty_list);
         for (stringlist *s = s0; s; s = s->next)
             warning(s->string);
-        s0->free();
+        stringlist::destroy(s0);
         clear_properties();
         in_has_cprops = 0;
     }
@@ -2124,7 +2124,7 @@ cgx_in::ac_box_prv(BBox &BB)
                         if (!ret)
                             break;
                     }
-                    pl->free();
+                    PolyList::destroy(pl);
                 }
                 if (need_out)
                     ret = in_out->write_poly(&po);
@@ -2267,7 +2267,7 @@ cgx_in::ac_poly_prv(Poly &po)
                     if (!ret)
                         break;
                 }
-                pl->free();
+                PolyList::destroy(pl);
             }
             if (need_out)
                 ret = in_out->write_poly(&po);
@@ -2391,7 +2391,7 @@ cgx_in::ac_wire_prv(Wire &w)
                 if (!ret)
                     break;
             }
-            pl->free();
+            PolyList::destroy(pl);
         }
         if (need_out)
             ret = in_out->write_wire(&w);
@@ -2439,14 +2439,14 @@ cgx_in::ac_text(int size, int flags)
     }
 
     hyList *hpl = new hyList(in_sdesc, ptr, HYcvAscii);
-    char *string = hpl->string(HYcvPlain, false);
+    char *string = hyList::string(hpl, HYcvPlain, false);
     // This is the displayed string, not necessarily the same as the
     // label text.
     double tw, th;
     CD()->DefaultLabelSize(string, in_mode, &tw, &th);
     text.height = mmRnd(text.width*th/tw);
     delete [] string;
-    hpl->free();
+    hyList::destroy(hpl);
     text.text = ptr;
 
     bool ret = true;
@@ -2930,7 +2930,7 @@ cgx_in::add_properties_db(CDo *odesc)
 void
 cgx_in::clear_properties()
 {
-    in_prpty_list->free_list();
+    CDp::destroy(in_prpty_list);
     in_prpty_list = 0;
 }
 

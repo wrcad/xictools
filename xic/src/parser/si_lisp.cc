@@ -187,10 +187,10 @@ namespace {
 // Memory Management
 // The parser returns a lispnode tree where all data objects are
 // allocated from the system.  This should be destroyed with
-// lispnode::free();
+// lispnode::destroy();
 //
 // User-defined nodes in the user_nodes table should be destroyed
-// using lispnode::free()
+// using lispnode::destroy()
 //
 // During evaluation, all new lisp nodes that are not on the local
 // stack are obtained with new_temp_node().  These can be given back
@@ -292,7 +292,7 @@ cLispEnv::~cLispEnv()
         SymTabGen st(le_user_nodes, true);
         SymTabEnt *ent;
         while ((ent = st.next()) != 0) {
-            ((lispnode*)ent->stData)->free();
+            lispnode::destroy((lispnode*)ent->stData);
             delete ent;
         }
     }
@@ -356,7 +356,7 @@ cLispEnv::readEvalLisp(const char *s, const char *search_path, bool cwdfirst,
             break;
         }
     }
-    p0->free();
+    lispnode::destroy(p0);
     clear();
     lispnode::set_env(etmp);
     SI()->PopLexprCx();
@@ -384,7 +384,7 @@ cLispEnv::register_user_node(lispnode *p)
     lispnode *px = (lispnode*)le_user_nodes->get(p->string);
     if (px && px != (lispnode*)ST_NIL) {
         le_user_nodes->remove(p->string);
-        px->free();
+        lispnode::destroy(px);
     }
     le_user_nodes->add(p->string, p, false);
 }
@@ -912,8 +912,8 @@ cLispEnv::parseLisp(const char *filename, char **err)
         fprintf(lp, "## ---------------------\n\n");
     }
 
-    char *s0 = sl->flatten(" ");
-    sl->free();
+    char *s0 = stringlist::flatten(sl, " ");
+    stringlist::destroy(sl);
     const char *s = s0;
 
     if (lp) {
@@ -932,7 +932,7 @@ cLispEnv::parseLisp(const char *filename, char **err)
     if (lp) {
         fprintf(lp, "##--- regurgitation ---\n");
         for (lispnode *p = p0; p; p = p->next)
-            p->print(lp, false, false);
+            lispnode::print(p, lp, false, false);
 
         fprintf(lp, "\n## ---------------------\n\n");
         fprintf(lp, "## Parse completed.\n\n");
@@ -1974,7 +1974,7 @@ namespace {
             *err = lstring::copy("procedure: bad argument");
             return (false);
         }
-        lispnode::get_env()->register_user_node(p->dup_list());
+        lispnode::get_env()->register_user_node(lispnode::dup_list(p));
         return (true);
     }
 
@@ -2146,7 +2146,7 @@ namespace {
     //  list( a b ... ) produces a list with var subst
     bool list(lispnode *p0, lispnode *res, char **err)
     {
-        return (p0->args->eval_list(res, err));
+        return (lispnode::eval_list(p0->args, res, err));
     }
 
 
@@ -2445,37 +2445,36 @@ lispnode::lispnode(LN_TYPE ltype, char *str)
 }
 
 
-// Duplicate a node, and all structure
+// Static function.
+// Duplicate a node, and all structure.
 //
 lispnode *
-lispnode::dup()
+lispnode::dup(const lispnode *thisn)
 {
-    {
-        lispnode *lnt = this;
-        if (!lnt)
-            return (0);
-    }
+    if (!thisn)
+        return (0);
     lispnode *n = new lispnode;
-    n->type = type;
-    n->string = lstring::copy(string);
-    n->args = args->dup_list();
-    n->lhs = lhs->dup();
-    n->value = value;
+    n->type = thisn->type;
+    n->string = lstring::copy(thisn->string);
+    n->args = dup_list(thisn->args);
+    n->lhs = dup(thisn->lhs);
+    n->value = thisn->value;
     return (n);
 }
 
 
+// Static function.
 // Duplicate a list, and all structure
 //
 lispnode *
-lispnode::dup_list()
+lispnode::dup_list(const lispnode *thisn)
 {
     lispnode *l0 = 0, *le = 0;
-    for (lispnode *p = this; p; p = p->next) {
+    for (const lispnode *p = thisn; p; p = p->next) {
         if (!l0)
-            l0 = le = p->dup();
+            l0 = le = dup(p);
         else {
-            le->next = p->dup();
+            le->next = dup(p);
             le = le->next;
         }
     }
@@ -2483,6 +2482,7 @@ lispnode::dup_list()
 }
 
 
+// Static function.
 // Free a list of lispnodes, including contents.  The lispnode has no
 // destructor.  Call this *only* for nodes returned from the parser,
 // or otherwise known to be safe to free.
@@ -2492,17 +2492,17 @@ lispnode::dup_list()
 // data.
 //
 void
-lispnode::free()
+lispnode::destroy(const lispnode *thisn)
 {
-    lispnode *pn;
-    for (lispnode *p = this; p; p = pn) {
+    const lispnode *pn;
+    for (const lispnode *p = thisn; p; p = pn) {
         pn = p->next;
         if (p->type != LN_OPER) {
             // for opers, this is ->Loper::name
             delete [] p->string;
         }
-        p->lhs->free();
-        p->args->free();
+        destroy(p->lhs);
+        destroy(p->args);
         delete p;
     }
 }
@@ -2519,30 +2519,28 @@ namespace {
 }
 
 
+// Static function.
 // Print the listing from the tree (recursive).  Returns true if a linefeed
 // was emitted.
 //
 bool
-lispnode::print(FILE *fp, int idlev, bool nonl)
+lispnode::print(const lispnode *thisn, FILE *fp, int idlev, bool nonl)
 {
-    {
-        lispnode *lnt = this;
-        if (!lnt) {
-            fprintf(fp, "\nInternal error: NULL NODE!\n");
-            return (true);
-        }
+    if (!thisn) {
+        fprintf(fp, "\nInternal error: NULL NODE!\n");
+        return (true);
     }
     bool lf = false;
-    if (type == LN_NODE) {
-        if (is_nil())
+    if (thisn->type == LN_NODE) {
+        if (thisn->is_nil())
             fprintf(fp, " nil");
         else {
-            if (string) {
+            if (thisn->string) {
                 if (nonl)
-                    fprintf(fp, " %s(", string);
+                    fprintf(fp, " %s(", thisn->string);
                 else {
                     newline(fp, idlev);
-                    fprintf(fp, "%s(", string);
+                    fprintf(fp, "%s(", thisn->string);
                     lf = true;
                 }
             }
@@ -2556,8 +2554,8 @@ lispnode::print(FILE *fp, int idlev, bool nonl)
                 }
             }
             bool alf = false;
-            for (lispnode *p = args; p; p = p->next) {
-                if (p->print(fp, idlev+1, nonl))
+            for (lispnode *p = thisn->args; p; p = p->next) {
+                if (print(p, fp, idlev+1, nonl))
                     alf = true;
             }
             if (!alf || nonl)
@@ -2568,86 +2566,147 @@ lispnode::print(FILE *fp, int idlev, bool nonl)
             }
         }
     }
-    else if (type == LN_STRING)
-        fprintf(fp, " %s", string);
-    else if (type == LN_NUMERIC) {
-        if (string)
-            fprintf(fp, " %s", string);
+    else if (thisn->type == LN_STRING)
+        fprintf(fp, " %s", thisn->string);
+    else if (thisn->type == LN_NUMERIC) {
+        if (thisn->string)
+            fprintf(fp, " %s", thisn->string);
         else
-            fprintf(fp, " %g", value);
+            fprintf(fp, " %g", thisn->value);
     }
-    else if (type == LN_OPER) {
+    else if (thisn->type == LN_OPER) {
         if (nonl) {
-            if (lhs)
-                lhs->print(fp, 0, true);
-            fprintf(fp, " %s", string);
+            if (thisn->lhs)
+                print(thisn->lhs, fp, 0, true);
+            fprintf(fp, " %s", thisn->string);
         }
         else {
             newline(fp, idlev);
-            if (lhs)
-                lhs->print(fp, 0, true);
-            fprintf(fp, " %s", string);
+            if (thisn->lhs)
+                print(thisn->lhs, fp, 0, true);
+            fprintf(fp, " %s", thisn->string);
             lf = true;
         }
-        args->print(fp, 0, true);
+        print(thisn->args, fp, 0, true);
     }
-    else if (type == LN_QSTRING)
-        fprintf(fp, " \"%s\"", string);
+    else if (thisn->type == LN_QSTRING)
+        fprintf(fp, " \"%s\"", thisn->string);
     return (lf);
 }
 
 
+// Static function.
 void
-lispnode::print(sLstr *lstr)
+lispnode::print(const lispnode *thisn, sLstr *lstr)
 {
-    {
-        lispnode *lnt = this;
-        if (!lnt)
-            return;
-    }
-    if (type == LN_NODE) {
-        if (is_nil())
+    if (!thisn)
+        return;
+    if (thisn->type == LN_NODE) {
+        if (thisn->is_nil())
             lstr->add(" nil");
         else {
-            if (string) {
+            if (thisn->string) {
                 lstr->add_c(' ');
-                lstr->add(string);
+                lstr->add(thisn->string);
                 lstr->add_c('(');
             }
             else {
                 lstr->add_c(' ');
                 lstr->add_c('(');
             }
-            for (lispnode *p = args; p; p = p->next)
-                p->print(lstr);
+            for (const lispnode *p = thisn->args; p; p = p->next)
+                print(p, lstr);
             lstr->add_c(')');
         }
     }
-    else if (type == LN_STRING) {
+    else if (thisn->type == LN_STRING) {
         lstr->add_c(' ');
-        lstr->add(string);
+        lstr->add(thisn->string);
     }
-    else if (type == LN_NUMERIC) {
+    else if (thisn->type == LN_NUMERIC) {
         lstr->add_c(' ');
-        if (string)
-            lstr->add(string);
+        if (thisn->string)
+            lstr->add(thisn->string);
         else
-            lstr->add_g(value);
+            lstr->add_g(thisn->value);
     }
-    else if (type == LN_OPER) {
-        if (lhs) {
-            lhs->print(lstr);
+    else if (thisn->type == LN_OPER) {
+        if (thisn->lhs) {
+            print(thisn->lhs, lstr);
             lstr->add_c(' ');
         }
-        lstr->add(string);
-        args->print(lstr);
+        lstr->add(thisn->string);
+        print(thisn->args, lstr);
     }
-    else if (type == LN_QSTRING) {
+    else if (thisn->type == LN_QSTRING) {
         lstr->add_c(' ');
         lstr->add_c('"');
-        lstr->add(string);
+        lstr->add(thisn->string);
         lstr->add_c('"');
     }
+}
+
+
+// Static function.
+// Evaluate nargs elements, returning the results in the res array
+// which must have size nargs or larger.  The return value is the
+// number of list elements actually evaluated, or -1 if error, in
+// which case a message should be returned in err.
+//
+int
+lispnode::eval_list(lispnode *thisn, lispnode *res, int nargs, char **err)
+{
+    int cnt = 0;
+    for (lispnode *p = thisn; p && cnt < nargs; p = p->next) {
+
+        // Check for a unary operator that follows something
+        // non-numeric.  In this case there are really two arguments: 
+        // the lhs, and the operator-modified rhs.
+
+        if (p->type == LN_OPER && (*p->string == '-' || *p->string == '+')) {
+            if (p->lhs && p->lhs->type != LN_NUMERIC) {
+                if (!p->lhs->eval(&res[cnt], err))
+                    return (-1);
+                if (res[cnt].type != LN_NUMERIC) {
+                    double *dp = 0;
+                    if (res[cnt].type == LN_STRING) {
+                        const char *t = res[cnt].string;
+                        dp = SPnum.parse(&t, true);
+                    }
+                    if (!dp)
+                        cnt++;
+                }
+            }
+        }
+        if (!p->eval(&res[cnt], err))
+            return (-1);
+        cnt++;
+    }
+    return (cnt);
+}
+
+
+// Static function.
+// Evaluate the list, returned as an arg list of res, temporary storage.
+//
+bool
+lispnode::eval_list(lispnode *thisn, lispnode *res, char **err)
+{
+    lispnode *l0 = 0, *le = 0;
+    for (lispnode *p = thisn; p; p = p->next) {
+        if (!l0)
+            l0 = le = lisp_env->new_temp_node();
+        else {
+            le->next = lisp_env->new_temp_node();
+            le = le->next;
+        }
+        if (!p->eval(le, err))
+            return (false);
+    }
+    res->type = LN_NODE;
+    res->string = 0;
+    res->args = l0;
+    return (true);
 }
 
 
@@ -2661,13 +2720,6 @@ lispnode::eval(lispnode *res, char **err)
     if (!lisp_env) {
         *err = lstring::copy("no execution environment");
         return (false);
-    }
-    {
-        lispnode *lnt = this;
-        if (!lnt) {
-            *err = lstring::copy("null node");
-            return (false);
-        }
     }
 
     if (type == LN_NODE) {
@@ -2702,7 +2754,7 @@ lispnode::eval(lispnode *res, char **err)
                     return (false);
             }
             else {
-                if (!args->eval_list(res, err))
+                if (!eval_list(args, res, err))
                     return (false);
             }
         }
@@ -2744,67 +2796,6 @@ lispnode::eval(lispnode *res, char **err)
 }
 
 
-// Evaluate nargs elements, returning the results in the res array
-// which must have size nargs or larger.  The return value is the
-// number of list elements actually evaluated, or -1 if error, in
-// which case a message should be returned in err.
-//
-int
-lispnode::eval_list(lispnode *res, int nargs, char **err)
-{
-    int cnt = 0;
-    for (lispnode *p = this; p && cnt < nargs; p = p->next) {
-
-        // Check for a unary operator that follows something
-        // non-numeric.  In this case there are really two arguments: 
-        // the lhs, and the operator-modified rhs.
-
-        if (p->type == LN_OPER && (*p->string == '-' || *p->string == '+')) {
-            if (p->lhs && p->lhs->type != LN_NUMERIC) {
-                if (!p->lhs->eval(&res[cnt], err))
-                    return (-1);
-                if (res[cnt].type != LN_NUMERIC) {
-                    double *dp = 0;
-                    if (res[cnt].type == LN_STRING) {
-                        const char *t = res[cnt].string;
-                        dp = SPnum.parse(&t, true);
-                    }
-                    if (!dp)
-                        cnt++;
-                }
-            }
-        }
-        if (!p->eval(&res[cnt], err))
-            return (-1);
-        cnt++;
-    }
-    return (cnt);
-}
-
-
-// Evaluate the list, returned as an arg list of res, temporary storage.
-//
-bool
-lispnode::eval_list(lispnode *res, char **err)
-{
-    lispnode *l0 = 0, *le = 0;
-    for (lispnode *p = this; p; p = p->next) {
-        if (!l0)
-            l0 = le = lisp_env->new_temp_node();
-        else {
-            le->next = lisp_env->new_temp_node();
-            le = le->next;
-        }
-        if (!p->eval(le, err))
-            return (false);
-    }
-    res->type = LN_NODE;
-    res->string = 0;
-    res->args = l0;
-    return (true);
-}
-
-
 // Evaluate the present function node as an Xic function.  Return values
 // are -1 if fatal error, 0 if node name not found, 1 if ok.
 //
@@ -2826,7 +2817,7 @@ lispnode::eval_xic_node(lispnode *res, char **err)
     }
 
     lispnode r[MAXARGC];
-    if (args->eval_list(r, ac, err) < 0)
+    if (eval_list(args, r, ac, err) < 0)
         return (-1);
 
     Variable v[MAXARGC+1];
@@ -2878,7 +2869,7 @@ lispnode::eval_user_node(lispnode *res, char **err)
                     return (-1);
                 }
                 lispnode *n = lisp_env->new_temp_node();
-                if (!aa->eval_list(n, err))
+                if (!eval_list(aa, n, err))
                     return (-1);
                 lispnode *x = lisp_env->new_temp_node();
                 x->args = n;
@@ -2919,7 +2910,7 @@ lispnode::eval_user_node(lispnode *res, char **err)
         else if (p->type == LN_NODE) {
             if (optional) {
                 lispnode v[2];
-                int ret = p->args->eval_list(v, 2, err);
+                int ret = eval_list(p->args, v, 2, err);
                 if (ret < 0)
                     return (-1);
                 if (ret < 2 || v[0].type != LN_STRING) {

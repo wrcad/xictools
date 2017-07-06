@@ -149,7 +149,7 @@ GTKfont::setName(const char *name, int fnum)
                 return;
             // throw out styles if family only
             if (isFamilyOnly(fnum)) {
-                style->free();
+                stringlist::destroy(style);
                 style = 0;
             }
             char buf[256];
@@ -160,7 +160,7 @@ GTKfont::setName(const char *name, int fnum)
             }
             sprintf(s, " %d", sz);
             delete family;
-            style->free();
+            stringlist::destroy(style);
             name = buf;
 
             delete [] fonts[fnum].name;

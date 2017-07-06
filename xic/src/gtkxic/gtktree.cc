@@ -568,12 +568,8 @@ sTree::build_tree_rc(CDs *sdesc, GtkTreeIter *parent, int dpt)
         t_mdepth = dpt;
     if (check_fb())
         return (false);
-
-    {
-        sTree *tt = this;
-        if (!tt)
-            return (false);
-    }
+    if (!Tree)
+        return (false);
 
     // The sorting function in gtk is too slow, so we do sorting
     // ourselves.
@@ -631,12 +627,8 @@ sTree::build_tree_rc(cCHD *chd, symref_t *p, GtkTreeIter *parent, int dpt)
         t_mdepth = dpt;
     if (check_fb())
         return (false);
-
-    {
-        sTree *tt = this;
-        if (!tt)
-            return (false);
-    }
+    if (!Tree)
+        return (false);
 
     SymTab *xtab = new SymTab(false, false);
     syrlist_t *s0 = 0;
@@ -651,15 +643,15 @@ sTree::build_tree_rc(cCHD *chd, symref_t *p, GtkTreeIter *parent, int dpt)
         }
     }
     delete xtab;
-    s0->sort(false);
+    syrlist_t::sort(s0, false);
 
     for (syrlist_t *sr = s0; sr; sr = sr->next) {
         if (!build_tree_rc(chd, sr->symref, &iter, dpt+1)) {
-            s0->free();
+            syrlist_t::destroy(s0);
             return (false);
         }
     }
-    s0->free();
+    syrlist_t::destroy(s0);
     return (true);
 }
 
@@ -840,7 +832,7 @@ sTree::t_action(GtkWidget *widget, void *client_data)
             int flgs = FIO_INFO_OFFSET | FIO_INFO_INSTANCES |
                 FIO_INFO_BBS | FIO_INFO_FLAGS;
             char *str = chd->prCells(0, DSP()->CurMode(), flgs, sl);
-            sl->free();
+            stringlist::destroy(sl);
             tree->PopUpInfo(MODE_ON, str, STY_FIXED);
             delete [] str;
         }

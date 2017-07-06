@@ -106,8 +106,8 @@ enum HLrefType
 //
 #define HY_SCRNAME "script"
 
-// Structure for keeping track of coordinate reference through a cell
-// hierarchy.
+// Linked list for keeping track of coordinate reference through a
+// cell hierarchy.
 //
 struct hyParent
 {
@@ -119,9 +119,8 @@ struct hyParent
             pY = y;
         }
 
-    void free()
+    static void destroy(hyParent *p)
         {
-            hyParent *p = this;
             while (p) {
                 hyParent *px = p;
                 p = p->pNext;
@@ -131,10 +130,10 @@ struct hyParent
 
     // Copy the stack.
     //
-    hyParent *dup() const
+    static hyParent *dup(const hyParent *thisp)
         {
             hyParent *p0 = 0, *pe = 0;
-            for (const hyParent *p = this; p; p = p->pNext) {
+            for (const hyParent *p = thisp; p; p = p->pNext) {
                 if (!p0)
                     p0 = pe = new hyParent(p->pCdesc, p->posx(), p->posy(), 0);
                 else {
@@ -148,9 +147,9 @@ struct hyParent
 
     // Return true if the stacks are identical, or both null.
     //
-    bool cmp(const hyParent *pc) const
+    static bool cmp(const hyParent *thisp, const hyParent *pc)
         {
-            const hyParent *p = this;
+            const hyParent *p = thisp;
             while (p) {
                 if (!pc)
                     return (false);
@@ -206,9 +205,9 @@ struct hyEntData
     void set_noref()
     {
         hyOdesc = 0;
-        hyPrnt->free();
+        hyParent::destroy(hyPrnt);
         hyPrnt = 0;
-        hyPrxy->free();
+        hyParent::destroy(hyPrxy);
         hyPrxy = 0;
         hyRefType = HYrefBogus;
         hyOrient = HYorNone;
@@ -333,8 +332,8 @@ struct HYlt
     static void *lt_new(hyList*, void(*)(hyList*, void*), void*);
     static void lt_clear();
     static void lt_update(void*, const char*);
-    static void lt_copy(hyList*, hyList*);
-    static void lt_free(hyList*);
+    static void lt_copy(const hyList*, hyList*);
+    static void lt_free(const hyList*);
 
 private:
     static LTdlist *LtList;
@@ -370,9 +369,8 @@ struct hyList
             delete hlEnt;
         }
 
-    void free()
+    static void destroy(hyList *h)
         {
-            hyList *h = this;
             while (h) {
                 hyList *hx = h;
                 h = h->hlNext;
@@ -388,10 +386,37 @@ struct hyList
             return (false);
         }
 
-    char *string(HYcvType, bool);
-    char *get_entry_string();
-    hyList *dup();
-    int length();
+    static hyList *dup(const hyList*);
+
+    static char *string(hyList *hyl, HYcvType tp, bool allow_long)
+        {
+            return (hyl ? hyl->string_prv(tp, allow_long) : 0);
+        }
+
+    static char *get_entry_string(hyList *hyl)
+        {
+            return (hyl ? hyl->get_entry_string_prv() : 0);
+        }
+
+    // Return the character length of the equivalent text.
+    //
+    static int length(hyList *hyl)
+        {
+            if (!hyl)
+                return (0);
+            char *s = hyl->string_prv(HYcvPlain, true);
+            if (!s)
+                return (0);
+            int i = strlen(s);
+            delete [] s;
+            return (i);
+        }
+
+private:
+    char *string_prv(HYcvType, bool);
+    char *get_entry_string_prv();
+
+public:
     void trim_white_space();
 
     static const char *hy_token(const char*, const char**, char**);

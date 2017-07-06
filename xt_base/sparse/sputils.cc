@@ -194,7 +194,7 @@
 void
 spMatrixFrame::spMNA_Preorder()
 {
-    ASSERT(IS_VALID(this) AND NOT Factored);
+    ASSERT(IS_VALID() AND NOT Factored);
 
     if (Matrix)
         return;
@@ -382,7 +382,7 @@ spMatrixFrame::SwapCols(spMatrixElement *pTwin1, spMatrixElement *pTwin2)
 void
 spMatrixFrame::spScale(spREAL *rhs_ScaleFactors, spREAL *solutionScaleFactors)
 {
-    ASSERT(IS_VALID(this) AND NOT Factored);
+    ASSERT(IS_VALID() AND NOT Factored);
     if (NOT RowsLinked)
         LinkRows();
 
@@ -603,7 +603,7 @@ spMatrixFrame::ScaleComplexMatrix(spREAL *rhs_ScaleFactors,
 void
 spMatrixFrame::spMultiply(spREAL *rhs, spREAL *solution IMAG_VECTORS_P)
 {
-    ASSERT(IS_SPARSE(this) AND NOT Factored);
+    ASSERT(NOT Factored);
     if (NOT RowsLinked)
         LinkRows();
     if (NOT InternalVectorsAllocated)
@@ -832,7 +832,7 @@ spMatrixFrame::ComplexMatrixMultiply(spREAL *rhs, spREAL *solution
 void
 spMatrixFrame::spMultTransposed(spREAL *rhs, spREAL *solution IMAG_VECTORS_P)
 {
-    ASSERT(IS_SPARSE(this) AND NOT Factored);
+    ASSERT(NOT Factored);
     if (NOT InternalVectorsAllocated)
         CreateInternalVectors();
 
@@ -1048,7 +1048,7 @@ void
 spMatrixFrame::spDeterminant(int *pExponent, spREAL *pDeterminant)
 #endif
 {
-    ASSERT(IS_SPARSE(this) AND IS_FACTORED(this));
+    ASSERT(IS_FACTORED());
     *pExponent = 0;
 
     if (Error == spSINGULAR) {
@@ -1225,7 +1225,6 @@ void
 spMatrixFrame::spStripFills()
 {
 
-    ASSERT(IS_SPARSE(this));
     if (Fillins == 0)
         return;
     NeedsOrdering = YES;
@@ -1312,7 +1311,7 @@ spMatrixFrame::spStripFills()
 void
 spMatrixFrame::spDeleteRowAndCol(int row, int col)
 {
-    ASSERT(IS_SPARSE(this) AND row > 0 AND col > 0);
+    ASSERT(row > 0 AND col > 0);
     ASSERT(row <= ExtSize AND col <= ExtSize);
 
     int extRow = row;
@@ -1409,7 +1408,7 @@ spMatrixFrame::spDeleteRowAndCol(int row, int col)
 spREAL
 spMatrixFrame::spPseudoCondition()
 {
-    ASSERT(IS_SPARSE(this) AND IS_FACTORED(this));
+    ASSERT(IS_FACTORED());
     if (Error == spSINGULAR OR Error == spZERO_DIAG)
         return (0.0);
 
@@ -1489,7 +1488,7 @@ spMatrixFrame::spCondition(spREAL normOfMatrix, int *pError)
 {
 #define SLACK   1e4
 
-    ASSERT(IS_SPARSE(this) AND IS_FACTORED(this));
+    ASSERT(IS_FACTORED());
     *pError = Error;
     if (Error >= spFATAL)
         return (0.0);
@@ -2064,7 +2063,7 @@ spMatrixFrame::LongDoubleCondition(spREAL normOfMatrix)
 spREAL
 spMatrixFrame::spNorm()
 {
-    ASSERT(IS_SPARSE(this) AND NOT IS_FACTORED(this));
+    ASSERT(NOT IS_FACTORED());
     if (NOT RowsLinked)
         LinkRows();
 
@@ -2186,8 +2185,6 @@ spMatrixFrame::spNorm()
 spREAL
 spMatrixFrame::spLargestElement()
 {
-    ASSERT(IS_SPARSE(this));
-
     spREAL max = 0.0, maxRow = 0.0, maxCol = 0.0;
 #if SP_OPT_COMPLEX
     if (Complex) {
@@ -2357,7 +2354,7 @@ spMatrixFrame::spLargestElement()
 spREAL
 spMatrixFrame::spRoundoff(spREAL rho)
 {
-    ASSERT(IS_SPARSE(this) AND IS_FACTORED(this));
+    ASSERT(AND IS_FACTORED());
 
     int maxCount = 0;
 
@@ -2527,8 +2524,6 @@ spMatrixFrame::spError()
 void
 spMatrixFrame::spWhereSingular(int *pRow, int *pCol)
 {
-    ASSERT(IS_SPARSE(this));
-
     if (Matrix) {
         int col;
         if (Matrix->where_singular(&col)) {

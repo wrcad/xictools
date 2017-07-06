@@ -225,13 +225,12 @@ struct DRCerrRet
 {
     DRCerrRet(const DRCtestDesc*, int);
 
-    DRCerrRet *filter();
+    static DRCerrRet *filter(DRCerrRet*);
     char *errmsg(const CDo*);
     const char *which_test(char*);
 
-    void free()
+    static void destroy(DRCerrRet *er)
         {
-            DRCerrRet *er = this;
             while (er) {
                 DRCerrRet *ex = er;
                 er = er->next();
@@ -286,9 +285,8 @@ struct DRCedgeCnd
             ec_lspec.set_lname(ex);
         }
 
-    void free()
+    static void destroy(DRCedgeCnd *e)
         {
-            DRCedgeCnd *e = this;
             while (e) {
                 DRCedgeCnd *ex = e;
                 e = e->ec_next;
@@ -326,9 +324,8 @@ struct DRCtestCnd
             tc_lspec.set_lname(ex);
         }
 
-    void free()
+    static void destroy(DRCtestCnd *t)
         {
-            DRCtestCnd *t = this;
             while (t) {
                 DRCtestCnd *tx = t;
                 t = t->tc_next;
@@ -427,7 +424,7 @@ struct DRCtest
     DRCedgeCnd *edges()             const { return (t_edges); }
 
     void setEdges(DRCedgeCnd *e) {
-        t_edges->free();
+        DRCedgeCnd::destroy(t_edges);
         t_edges = e;
     }
 
@@ -435,7 +432,7 @@ struct DRCtest
 
     void setTests(DRCtestCnd *t)
         {
-            t_tests->free();
+            DRCtestCnd::destroy(t_tests);
             t_tests = t;
         }
 
@@ -996,7 +993,7 @@ struct DRCerrCx
 
     ~DRCerrCx()
         {
-            ec_start->free();
+            DRCerrRet::destroy(ec_start);
         }
 
     void add(const DRCtestDesc *dd, int vc)

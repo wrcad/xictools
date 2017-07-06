@@ -85,7 +85,7 @@ cGroupDesc::ep_grp_comp(int grp, int node, const sSubcInst *sc_permuting)
     // If either the group or node is already associated, return 0 unless
     // they are associated to each other.
     int nchk = gd_groups[grp].node();
-    int gchk = gd_etlist->group_of_node(node);
+    int gchk = group_of_node(node);
     if (nchk == node && gchk == grp)
         return (CMP_SCALE);
     if (nchk >= 0 || gchk >= 0)
@@ -111,11 +111,11 @@ cGroupDesc::ep_grp_comp(int grp, int node, const sSubcInst *sc_permuting)
     int num_subc_terms = 0;
     int num_formal_terms = 0;
 
-    CDpin *p0 = gd_etlist->pins_of_node(node);
+    CDpin *p0 = pins_of_node(node);
     for (CDpin *p = p0; p; p = p->next())
         num_formal_terms++;
 
-    CDcont *t0 = gd_etlist->conts_of_node(node);
+    CDcont *t0 = conts_of_node(node);
     if (!t0 && !num_formal_terms)
         return (0);
     for (CDcont *t = t0; t; t = t->next()) {
@@ -275,7 +275,8 @@ cGroupDesc::ep_grp_comp(int grp, int node, const sSubcInst *sc_permuting)
             }
             else {
                 // Otherwise accept any permutation.
-                if (subc->permutes()->is_equiv(subg, ci->subc_group())) {
+                if (subg == ci->subc_group() || (subc->permutes() &&
+                        subc->permutes()->is_equiv(subg, ci->subc_group()))) {
                     sGroup *gp = gd->group_for(subg);
                     if (gp && gp->netname() &&
                             gp->netname_origin() == sGroup::NameFromLabel)
@@ -374,7 +375,7 @@ cGroupDesc::check_bulk_contact(const sDevInst *di, sDevContactInst *ci)
                 Electrical);
             cNodeMap *map = ecd ? ecd->nodes() : 0;
             if (nm && map && SCD()->isGlobalNetName(nm->string())) {
-                int grp = gd_etlist->group_of_node(map->findNode(nm));
+                int grp = group_of_node(map->findNode(nm));
                 if (grp < 0) {
                     for (int i = 0; i < gd_asize; i++) {
                         if (gd_groups[i].netname() == nm) {
@@ -863,7 +864,8 @@ cGroupDesc::ep_subc_comp(sSubcInst *su, const sEinstList *el, bool perm_fix)
                     }
                     else {
                         int subg = ci->subc_group();
-                        if (su->permutes()->num_states() <= 1 ||
+                        if (!su->permutes() ||
+                                su->permutes()->num_states() <= 1 ||
                                 !su->permutes()->is_permute(subg)) {
                             if (!allow_errs())
                                 return (-1);

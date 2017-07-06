@@ -691,7 +691,7 @@ sNM::show_node_terms(int node)
             gtk_list_store_set(store, &iter, 0, strings[0], -1);
             didone = true;
         }
-        sl->free();
+        stringlist::destroy(sl);
         if (!didone) {
             strings[0] = msg;
             gtk_list_store_append(store, &iter);
@@ -804,7 +804,7 @@ sNM::update_map()
                     break;
                 }
             }
-            plx->free();
+            CDpl::destroy(plx);
             if (found) {
                 nm_showing_node = node;
                 break;
@@ -813,7 +813,7 @@ sNM::update_map()
         if (!found)
             nm_showing_node = -1;
     }
-    pl->free();
+    CDpl::destroy(pl);
 
     if (nm_showing_node >= 0) {
         // select row
@@ -1553,13 +1553,13 @@ sNM::do_search(int *pindx, int *ptindx)
                         *pindx = i;
                     if (ptindx)
                         *ptindx = trow;
-                    sl->free();
+                    stringlist::destroy(sl);
                     regfree(&preg);
                     return;
                 }
                 trow++;
             }
-            sl->free();
+            stringlist::destroy(sl);
         }
     }
 
@@ -1645,11 +1645,11 @@ NmpState::b1up()
             if (pn) {
                 NM->show_node_terms(pn->enode());
                 NM->update_map();
-                sels->free();
+                CDol::destroy(sels);
                 return;
             }
         }
-        sels->free();
+        CDol::destroy(sels);
 
         // Check subcells, can't use sels bacause only one subcell is
         // returned.

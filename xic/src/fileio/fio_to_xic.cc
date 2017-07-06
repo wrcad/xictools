@@ -628,7 +628,7 @@ xic_out::write_object(const CDo *odesc, cvLchk *lchk)
         Text text;
         // use long text for unbound labels
         CDp_lref *prf = (CDp_lref*)odesc->prpty(P_LABRF);
-        text.text = ((CDla*)odesc)->label()->string(HYcvAscii,
+        text.text = hyList::string(((CDla*)odesc)->label(), HYcvAscii,
             !(prf && prf->devref()));
         const Label la(((const CDla*)odesc)->la_label());
         bool ret = text.set(&la, out_mode, Fnative);
@@ -1165,7 +1165,7 @@ xic_out::make_native_lib(const char *cellname, const char *defpath)
         s0 = new stringlist(
             lstring::copy(alias(ncbin.cellname()->string())), s0);
     }
-    s0->sort();
+    stringlist::sort(s0);
     if (!defpath || !*defpath)
         defpath = ".";
     char *path = pathlist::expand_path(defpath, true, true);
@@ -1203,7 +1203,7 @@ xic_out::make_native_lib(const char *cellname, const char *defpath)
     GCarray<char*> gc_libfilename(libfilename);
 
     if (!filestat::create_bak(libfilename)) {
-        s0->free();
+        stringlist::destroy(s0);
         delete [] path;
         FIO()->ifInfoMessage(IFMSG_POP_ERR,
             "Unable to create library file.\n%s", filestat::error_msg());
@@ -1211,7 +1211,7 @@ xic_out::make_native_lib(const char *cellname, const char *defpath)
     }
     FILE *fp = fopen(libfilename, "w");
     if (!fp) {
-        s0->free();
+        stringlist::destroy(s0);
         delete [] path;
         filestat::save_perror(libfilename);
         FIO()->ifInfoMessage(IFMSG_POP_ERR,
@@ -1242,7 +1242,7 @@ xic_out::make_native_lib(const char *cellname, const char *defpath)
     for (stringlist *s = s0; s; s = s->next)
         fprintf(fp, "Reference %-20s %s/%s\n", s->string, path, s->string);
     delete [] path;
-    s0->free();
+    stringlist::destroy(s0);
     fclose(fp);
 }
 

@@ -1237,8 +1237,8 @@ GTKfilePopup::check_update()
                 delete [] ndir;
             }
 
-            fa->free();
-            fd->free();
+            stringlist::destroy(fa);
+            stringlist::destroy(fd);
         }
         delete [] dir;
         if (!gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &iter))
@@ -1590,7 +1590,7 @@ GTKfilePopup::list_files()
     }
     delete [] p;
     closedir(wdir);
-    filt->free();
+    stringlist::destroy(filt);
     int w = wb_textarea->allocation.width;
     if (w <= 1)
         w = DEF_TEXT_USWIDTH;

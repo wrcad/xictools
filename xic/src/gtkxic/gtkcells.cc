@@ -983,7 +983,7 @@ sCells::action_hdlr(GtkWidget *caller, void *client_data)
         else
             s0 = raw_cell_list(0, 0, true);
         XM()->PopUpCellFlags(c_flagbtn, MODE_ON, s0, c_mode);
-        s0->free();
+        stringlist::destroy(s0);
     }
     else if (client_data == (void*)InfoCode) {
         if (DSP()->MainWdesc()->DbType() == WDchd) {
@@ -996,7 +996,7 @@ sCells::action_hdlr(GtkWidget *caller, void *client_data)
                     int flgs = FIO_INFO_OFFSET | FIO_INFO_INSTANCES |
                         FIO_INFO_BBS | FIO_INFO_FLAGS;
                     char *str = chd->prCells(0, DSP()->CurMode(), flgs, sl);
-                    sl->free();
+                    stringlist::destroy(sl);
                     PopUpInfo(MODE_ON, str, STY_FIXED);
                     delete [] str;
                 }
@@ -1139,7 +1139,7 @@ sCells::raw_cell_list(int *pcnt, int *ppgs, bool nomark)
                     s0 = new stringlist(lstring::copy(buf), s0);
                 }
             }
-            s0->sort(&cl_comp);
+            stringlist::sort(s0, &cl_comp);
         }
     }
 
@@ -1171,7 +1171,7 @@ sCells::raw_cell_list(int *pcnt, int *ppgs, bool nomark)
         if (cnt == min) {
             if (slprev) {
                 slprev->next = 0;
-                s0->free();
+                stringlist::destroy(s0);
                 s0 = sl;
             }
             continue;
@@ -1179,7 +1179,7 @@ sCells::raw_cell_list(int *pcnt, int *ppgs, bool nomark)
         if (cnt >= max) {
             for (stringlist *st = sl; st; st = st->next)
                 cnt++;
-            sl->next->free();
+            stringlist::destroy(sl->next);
             sl->next = 0;
             break;
         }
@@ -1222,8 +1222,8 @@ sCells::cell_list(int cols)
         gtk_widget_show(c_page_combo);
     }
 
-    char *t = s0->col_format(cols);
-    s0->free();
+    char *t = stringlist::col_format(s0, cols);
+    stringlist::destroy(s0);
     return (t);
 }
 
@@ -1751,12 +1751,13 @@ ListState::cell_list(bool nomark)
             const char *cname = DSP()->MainWdesc()->DbCellName();
             syrlist_t *sy0 = chd->listing(DSP()->CurMode(), cname, false,
                 &lsAOI);
-            for (syrlist_t *s = sy0; s; s = s->next)
+            for (syrlist_t *s = sy0; s; s = s->next) {
                 s0 = new stringlist(
                     lstring::copy(s->symref->get_name()->string()), s0);
-            sy0->free();
+            }
+            syrlist_t::destroy(sy0);
         }
-        s0->sort();
+        stringlist::destroy(s0);
     }
     else {
         if (!DSP()->CurCellName())

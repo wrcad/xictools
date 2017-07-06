@@ -557,7 +557,7 @@ const char *PushState::msg1 = "Click on instance to push to.";
 void
 cMain::pushSetup()
 {
-    xm_push_data->free();
+    CDclxy::destroy(xm_push_data);
     xm_push_data = XM()->GetPushList();
 }
 
@@ -588,7 +588,7 @@ cMain::pushExec(CmdDesc *cmd)
     if (xm_push_data) {
         for (CDclxy *c = xm_push_data; c; c = c->next)
             PP()->PushContext(c->cdesc, c->xind, c->yind);
-        xm_push_data->free();
+        CDclxy::destroy(xm_push_data);
         xm_push_data = 0;
         return;
     }

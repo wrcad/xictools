@@ -1992,8 +1992,8 @@ misc1_funcs::IFlistParents(Variable *res, Variable *args, void*)
         s0 = new stringlist(s->string, s0);
         s->string = 0;
     }
-    l0->free();
-    s0->sort();
+    stringnumlist::destroy(l0);
+    stringlist::sort(s0);
 
     sHdl *hdl = new sHdlString(s0);
     res->type = TYP_HANDLE;
@@ -2367,7 +2367,7 @@ misc1_funcs::IFlistCellsInMem(Variable *res, Variable *args, void*)
         s0 = new stringlist(lstring::copy(cbin.cellname()->string()), s0);
     }
     if (s0) {
-        s0->sort();
+        stringlist::sort(s0);
         sHdl *hdl = new sHdlString(s0);
         res->type = TYP_HANDLE;
         res->content.value = hdl->id;
@@ -2399,7 +2399,7 @@ misc1_funcs::IFlistTopCellsInMem(Variable *res, Variable*, void*)
         s0 = new stringlist(lstring::copy(cbin.cellname()->string()), s0);
     }
     if (s0) {
-        s0->sort();
+        stringlist::sort(s0);
         sHdl *hdl = new sHdlString(s0);
         res->type = TYP_HANDLE;
         res->content.value = hdl->id;
@@ -2434,7 +2434,7 @@ misc1_funcs::IFlistModCellsInMem(Variable *res, Variable*, void*)
         s0 = new stringlist(lstring::copy(cbin.cellname()->string()), s0);
     }
     if (s0) {
-        s0->sort();
+        stringlist::sort(s0);
         sHdl *hdl = new sHdlString(s0);
         res->type = TYP_HANDLE;
         res->content.value = hdl->id;
@@ -2481,7 +2481,7 @@ misc1_funcs::IFlistTopFilesInMem(Variable *res, Variable*, void*)
         }
     }
     if (s0) {
-        s0->sort();
+        stringlist::sort(s0);
         sHdl *hdl = new sHdlString(s0);
         res->type = TYP_HANDLE;
         res->content.value = hdl->id;
@@ -4716,7 +4716,7 @@ misc1_funcs::IFhcListDrivers(Variable *res, Variable*, void*)
     stringlist *s0 = 0;
     for (int i = 0; GRpkgIf()->HCof(i); i++)
         s0 = new stringlist(lstring::copy(GRpkgIf()->HCof(i)->keyword), s0);
-    s0->sort();
+    stringlist::sort(s0);
     sHdl *hdl = new sHdlString(s0);
     res->type = TYP_HANDLE;
     res->content.value = hdl->id;
@@ -5547,7 +5547,7 @@ misc1_funcs::IFhcListPrinters(Variable *res, Variable*, void*)
                 continue;
             s0 = new stringlist(printers[i], s0);
         }
-        s0->sort();
+        stringlist::sort(s0);
         s0 = new stringlist(printers[cur], s0);
         delete [] printers;
         sHdl *hdl = new sHdlString(s0);
@@ -5859,7 +5859,7 @@ bool
 misc1_funcs::IFlistFunctions(Variable *res, Variable*, void*)
 {
     umenu *u = XM()->GetFunctionList();
-    u->free();
+    umenu::destroy(u);
     stringlist *s0 = SI()->GetSubfuncList();
     sHdl *hdl = new sHdlString(s0);
     res->type = TYP_HANDLE;

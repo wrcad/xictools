@@ -214,7 +214,7 @@ sPi::update(CDo *odesc)
 {
     if (pi_odesc)
         DSP()->ShowCurrentObject(ERASE, pi_odesc, HighlightingColor);
-    pi_list->free();
+    Ptxt::destroy(pi_list);
     pi_list = 0;
     if (odesc)
         pi_odesc = odesc;
@@ -260,11 +260,6 @@ sPbase::resolve(int offset, CDo **odp)
 Ptxt *
 sPbase::get_selection()
 {
-    {
-        sPbase *pbt = this;
-        if (!pbt)
-            return (0);
-    }
     int start, end;
     start = pi_start;
     end = pi_end;
@@ -492,8 +487,8 @@ sPbase::drag_data_get(GtkSelectionData *selection_data)
         CDs *cursd =  CurCell(true);
         if (cursd) {
             hyList *hp = cursd->hyPrpList(pi_odesc, p->prpty());
-            char *s = hp->string(HYcvAscii, true);
-            hp->free();
+            char *s = hyList::string(hp, HYcvAscii, true);
+            hyList::destroy(hp);
             sz = sizeof(int) + strlen(s) + 1;
             bf = new char[sz];
             *(int*)bf = p->prpty()->value();
@@ -553,7 +548,7 @@ sPbase::data_received(GtkWidget *caller, GdkDragContext *context,
                                 HYcvAscii);
                             ED()->prptyModify(OCALL(pi_odesc), pdesc, num,
                                 0, hp);
-                            hp->free();
+                            hyList::destroy(hp);
                             Ulist()->CommitChanges(true);
                             accept = true;
                         }

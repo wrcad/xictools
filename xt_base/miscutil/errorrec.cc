@@ -171,7 +171,7 @@ ErrRec::get_error()
     delete [] lastMsg;
     if (erMsgs) {
         lastMsg = getstr();
-        erMsgs->free();
+        stringlist::destroy(erMsgs);
         erMsgs = 0;
     }
     else

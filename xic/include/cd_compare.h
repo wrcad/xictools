@@ -50,7 +50,15 @@ struct Pdiff
         }
     ~Pdiff();
 
-    void free();
+    static void destroy(Pdiff *p)
+        {
+            while (p) {
+                Pdiff *px = p;
+                p = p->pd_next;
+                delete px;
+            }
+        }
+
     void add(const char*, const char*);
     void reset(const char*);
     void print(FILE*);
@@ -81,7 +89,16 @@ struct Ldiff
         }
     ~Ldiff();
 
-    void free();
+
+    static void destroy(Ldiff *l)
+        {
+            while (l) {
+                Ldiff *lx = l;
+                l = l->ld_next;
+                delete lx;
+            }
+        }
+
     void add(const char*, const char*);
     void print(FILE*, bool = false);
 
@@ -114,8 +131,8 @@ struct Sdiff
 
     ~Sdiff()
         {
-            sd_ldiffs->free();
-            sd_pdiffs->free();
+            Ldiff::destroy(sd_ldiffs);
+            Pdiff::destroy(sd_pdiffs);
         }
 
     void print(FILE*);
@@ -167,10 +184,9 @@ struct prpfilt_t
         }
 
     // Return true if filtering everything.
-    bool filter_all()
+    static bool filter_all(prpfilt_t *pt)
         {
-            prpfilt_t *pt = this;
-            return (pt && !pf_skip && !pf_tab);
+            return (pt && !pt->pf_skip && !pt->pf_tab);
         }
 
     void parse(const char*);

@@ -390,11 +390,6 @@ Zoid::test_coverage(const Zlist *zl0, bool *covered, int minsz,
     *covered = false;
     if (zlp)
         *zlp = 0;
-    {
-        const Zoid *zt = this;
-        if (!zt)
-            return (true);
-    }
     if (!zl0)
         return (true);
 
@@ -413,7 +408,7 @@ Zoid::test_coverage(const Zlist *zl0, bool *covered, int minsz,
         return (true);
     }
     if (!head->next & (head->Z == *this)) {
-        Zlist::free(head);
+        Zlist::destroy(head);
         return (true);
     }
 
@@ -421,7 +416,7 @@ Zoid::test_coverage(const Zlist *zl0, bool *covered, int minsz,
     if (zlp)
         *zlp = head;
     else
-        Zlist::free(head);
+        Zlist::destroy(head);
     return (false);
 }
 
@@ -463,12 +458,12 @@ Zoid::test_coverage(const CDs *sdesc, const CDl *ld, bool *covered, int minsz,
             for (zl = zl0; zl; zl = zl->next) {
                 Zlist::zl_andnot(&head, &zl->Z);
                 if (!head) {
-                    Zlist::free(zl0);
+                    Zlist::destroy(zl0);
                     *covered = true;
                     return (true);
                 }
             }
-            Zlist::free(zl0);
+            Zlist::destroy(zl0);
         }
         else if (odesc->type() == CDPOLYGON) {
             Zlist *zl0 = ((const CDpo*)odesc)->po_toZlist();
@@ -476,12 +471,12 @@ Zoid::test_coverage(const CDs *sdesc, const CDl *ld, bool *covered, int minsz,
             for (zl = zl0; zl; zl = zl->next) {
                 Zlist::zl_andnot(&head, &zl->Z);
                 if (!head) {
-                    Zlist::free(zl0);
+                    Zlist::destroy(zl0);
                     *covered = true;
                     return (true);
                 }
             }
-            Zlist::free(zl0);
+            Zlist::destroy(zl0);
         }
     }
     head = Zlist::filter_drc_slivers(head, minsz);
@@ -490,13 +485,13 @@ Zoid::test_coverage(const CDs *sdesc, const CDl *ld, bool *covered, int minsz,
         return (true);
     }
     if (!head->next & (head->Z == *this)) {
-        Zlist::free(head);
+        Zlist::destroy(head);
         return (true);
     }
     if (zlp)
         *zlp = Zlist::repartition_ni(head);
     else
-        Zlist::free(head);
+        Zlist::destroy(head);
     return (false);
 }
 
@@ -515,12 +510,12 @@ Zoid::test_existence(const CDs *sdesc, const CDl *ld, int minsz) const
             Zlist *zn = clip_to(&odesc->oBB());
             for (Zlist *z = zn; z; z = z->next) {
                 if (!z->Z.is_drc_sliver(minsz)) {
-                    Zlist::free(zn);
+                    Zlist::destroy(zn);
                     delete odesc;
                     return (true);
                 }
             }
-            Zlist::free(zn);
+            Zlist::destroy(zn);
         }
         else if (odesc->type() == CDWIRE) {
             Zlist *zl0 = ((const CDw*)odesc)->w_toZlist();
@@ -528,15 +523,15 @@ Zoid::test_existence(const CDs *sdesc, const CDl *ld, int minsz) const
                 Zlist *zn = clip_to(&zl->Z);
                 for (Zlist *z = zn; z; z = z->next) {
                     if (!z->Z.is_drc_sliver(minsz)) {
-                        Zlist::free(zn);
-                        Zlist::free(zl0);
+                        Zlist::destroy(zn);
+                        Zlist::destroy(zl0);
                         delete odesc;
                         return (true);
                     }
                 }
-                Zlist::free(zn);
+                Zlist::destroy(zn);
             }
-            Zlist::free(zl0);
+            Zlist::destroy(zl0);
         }
         else if (odesc->type() == CDPOLYGON) {
             Zlist *zl0 = ((const CDpo*)odesc)->po_toZlist();
@@ -544,15 +539,15 @@ Zoid::test_existence(const CDs *sdesc, const CDl *ld, int minsz) const
                 Zlist *zn = clip_to(&zl->Z);
                 for (Zlist *z = zn; z; z = z->next) {
                     if (!z->Z.is_drc_sliver(minsz)) {
-                        Zlist::free(zn);
-                        Zlist::free(zl0);
+                        Zlist::destroy(zn);
+                        Zlist::destroy(zl0);
                         delete odesc;
                         return (true);
                     }
                 }
-                Zlist::free(zn);
+                Zlist::destroy(zn);
             }
-            Zlist::free(zl0);
+            Zlist::destroy(zl0);
         }
         delete odesc;
     }

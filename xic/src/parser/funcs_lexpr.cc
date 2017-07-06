@@ -600,7 +600,7 @@ SIparser::funcs_lexpr_init()
 #endif
 }
 
-#define FREE_CHK_ZL(b, zl) { if (b) Zlist::free(zl); zl = 0; }
+#define FREE_CHK_ZL(b, zl) { if (b) Zlist::destroy(zl); zl = 0; }
 #define FREE_CHK_LS(b, ls) { if (b) delete ls; ls = 0; }
 
 
@@ -929,7 +929,7 @@ lexpr_funcs::IFzHead(Variable *res, Variable *args, void *datap)
             zl->next = 0;
         }
         else if (free_zl) {
-            Zlist::free(zl->next);
+            Zlist::destroy(zl->next);
             zl->next = 0;
         }
         else {
@@ -1308,7 +1308,7 @@ lexpr_funcs::IFextentZ(Variable *res, Variable *args, void *datap)
     if (zl) {
         BBox BB;
         Zlist::BB(zl, BB);
-        Zlist::free(zl->next);
+        Zlist::destroy(zl->next);
         zl->next = 0;
         zl->Z.yl = BB.bottom;
         zl->Z.xll = zl->Z.xul = BB.left;
@@ -2148,9 +2148,9 @@ lexpr_funcs::IFzToObjects(Variable *res, Variable *args, void *datap)
         PolyList *p0 = Zlist::to_poly_list(zl1);
         if (!todb) {
             if (!o0)
-                o0 = p0->to_olist(ldesc, &oend);
+                o0 = PolyList::to_olist(p0, ldesc, &oend);
             else
-                p0->to_olist(ldesc, &oend);
+                PolyList::to_olist(p0, ldesc, &oend);
         }
         else {
             while (p0) {
@@ -2507,7 +2507,7 @@ lexpr_funcs::IFreadZfile(Variable *res, Variable *args, void*)
                 if (z0) {
                     Zlist::add(z0, SIparse()->ifGetCurPhysCell(), ld, false,
                         false);
-                    Zlist::free(z0);
+                    Zlist::destroy(z0);
                     z0 = ze = 0;
                 }
                 ld = 0;
@@ -2532,7 +2532,7 @@ lexpr_funcs::IFreadZfile(Variable *res, Variable *args, void*)
                 ld = SIparse()->ifGetCurLayer();
             if (ld)
                 Zlist::add(z0, SIparse()->ifGetCurPhysCell(), ld, false, false);
-            Zlist::free(z0);
+            Zlist::destroy(z0);
         }
         fclose(fp);
         res->content.value = 1;
@@ -2756,7 +2756,7 @@ lexpr_funcs::IFfilt(Variable *res, Variable *args, void *datap)
             return (OK);
         }
         if (cov == CovNone) {
-            Zlist::free(zg->list[i]);
+            Zlist::destroy(zg->list[i]);
             zg->list[i] = 0;
         }
     }
@@ -2908,7 +2908,7 @@ lexpr_funcs::IFgeomCat(Variable *res, Variable *args, void *datap)
         bool free_zl;
         XIrt ret = arg_zlist(args, i, &zl, &free_zl, datap);
         if (ret != XIok) {
-            Zlist::free(z0);
+            Zlist::destroy(z0);
             if (ret == XIbad)
                 return (BAD);
             res->type = TYP_ZLIST;
@@ -2983,7 +2983,7 @@ lexpr_funcs::IFgeomOr(Variable *res, Variable *args, void *datap)
         bool free_zl;
         XIrt ret = arg_zlist(args, i, &zl, &free_zl, datap);
         if (ret != XIok) {
-            Zlist::free(z0);
+            Zlist::destroy(z0);
             if (ret == XIbad)
                 return (BAD);
             res->type = TYP_ZLIST;

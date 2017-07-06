@@ -24,7 +24,7 @@ CCFILES = $(SPFILES)
 CCOBJS = $(CCFILES:.cc=.o)
 INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
 
-$(LIB_TARGET): $(CCOBJS)
+$(LIB_TARGET): include $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
 	    rm -f $(LIB_TARGET); \
 	fi
@@ -41,6 +41,9 @@ hash.cc:        $(LPATH)/spnumber/hash.cc
 paramsub.cc:    $(LPATH)/spnumber/paramsub.cc
 spnumber.cc:    $(LPATH)/spnumber/spnumber.cc
 spparse.cc:     $(LPATH)/spnumber/spparse.cc
+
+include:
+	cd ../../include; $(MAKE)
 
 depend: $(SPFILES)
 	@echo depending in xic/wrspif

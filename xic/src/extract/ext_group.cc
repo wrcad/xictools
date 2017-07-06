@@ -216,14 +216,18 @@ cExt::invalidateGroups(bool gptoo)
 
     CDgenTab_s sgen(Physical);
     CDs *sd;
-    while ((sd = sgen.next()) != 0)
-        sd->groups()->clear_groups(gptoo);
+    while ((sd = sgen.next()) != 0) {
+        if (sd->groups())
+            sd->groups()->clear_groups(gptoo);
+    }
     const char *tabname = CDcdb()->tableName();
     CDcdb()->rotateTable();
     while (CDcdb()->tableName() != tabname) {
         sgen = CDgenTab_s(Physical);
-        while ((sd = sgen.next()) != 0)
-            sd->groups()->clear_groups(gptoo);
+        while ((sd = sgen.next()) != 0) {
+            if (sd->groups())
+                sd->groups()->clear_groups(gptoo);
+        }
     }
 
     // Blow away all the sSubcDescs and table.
@@ -246,9 +250,11 @@ cExt::destroyGroups(CDs *sd)
     if (!sd || sd->isElectrical())
         return;
     cGroupDesc *gd = sd->groups();
-    gd->clear_groups();
-    sd->setGroups(0);
-    delete gd;
+    if (gd) {
+        gd->clear_groups();
+        sd->setGroups(0);
+        delete gd;
+    }
 }
 
 
@@ -259,8 +265,8 @@ cExt::clearGroups(CDs *sd)
 {
     if (!sd || sd->isElectrical())
         return;
-    cGroupDesc *gd = sd->groups();
-    gd->clear_groups();
+    if (sd->groups())
+        sd->groups()->clear_groups();
 }
 
 
@@ -351,12 +357,6 @@ cGroupDesc::setup_groups()
 void
 cGroupDesc::clear_groups(bool gptoo)
 {
-    {
-        cGroupDesc *gdt = this;
-        if (!gdt)
-            return;
-    }
-
     clear_extract();
 
     SI()->ClearGroups(this);
@@ -384,7 +384,7 @@ cGroupDesc::clear_groups(bool gptoo)
     gd_asize = 0;
     delete gd_g_phonycell;
     gd_g_phonycell = 0;
-    gd_devices->free();
+    sDevList::destroy(gd_devices);
     gd_devices = 0;
     delete gd_ignore_tab;
     gd_ignore_tab = 0;
@@ -654,7 +654,7 @@ cGroupDesc::process_exclude()
                 if (globex.testZlistCovNone(&cx, &ct,
                         2*Tech()->AngleSupport()) == XIok && ct != CovNone)
                     odesc->set_group(-1);
-                Zlist::free(zl);
+                Zlist::destroy(zl);
             }
         }
         else {
@@ -683,17 +683,17 @@ cGroupDesc::process_exclude()
                     // zret is list of areas to exclude
                     Zlist *zx = odesc->toZlist();
                     if (!zx) {
-                        Zlist::free(zret);
+                        Zlist::destroy(zret);
                         continue;
                     }
                     if (!Zlist::intersect(zx, zret, false)) {
-                        Zlist::free(zret);
-                        Zlist::free(zx);
+                        Zlist::destroy(zret);
+                        Zlist::destroy(zx);
                         continue;
                     }
                     for (Zlist *z = zret; z; z = z->next)
                         Zlist::zl_andnot(&zx, &z->Z);
-                    Zlist::free(zret);
+                    Zlist::destroy(zret);
 
                     // Mark as not included.
                     odesc->set_group(-1);

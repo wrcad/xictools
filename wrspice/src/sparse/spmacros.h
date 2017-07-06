@@ -67,15 +67,6 @@
 #define  AND            &&
 #define  OR             ||
 
-#define  SPARSE_ID      0x772773        // Arbitrary (is Sparse on phone).
-#define  IS_SPARSE(matrix)   ((matrix) != 0 && \
-                              (matrix)->ID == SPARSE_ID)
-#define  IS_VALID(matrix)    ((matrix) != 0 && \
-                              (matrix)->ID == SPARSE_ID && \
-                              (matrix)->Error >= spOKAY && \
-                              (matrix)->Error < spFATAL)
-#define  IS_FACTORED(matrix) ((matrix)->Factored && !(matrix)->NeedsOrdering)
-
 // Macro commands
 // Macro functions that return the maximum or minimum independent of type.
 #ifndef SPMIN

@@ -70,7 +70,7 @@ cMain::PrptyStrings(CDs *sdesc)
                 break;
             }
         }
-        pl0->sort();
+        CDpl::sort(pl0);
         for (CDpl *pl = pl0; pl; pl = pl->next) {
             CDp *pdesc = pl->pdesc;
             const char *string = pdesc->string() ? pdesc->string() : "";
@@ -99,7 +99,7 @@ cMain::PrptyStrings(CDs *sdesc)
                 lend = lend->next();
             }
         }
-        pl0->free();
+        CDpl::destroy(pl0);
 
         CDp_name *pna = (CDp_name*)sdesc->prpty(P_NAME);
         if (pna) {
@@ -192,7 +192,7 @@ cMain::PrptyStrings(CDs *sdesc)
         if (pu) {
             sprintf(tbuf, "(%d) model: ", P_MODEL);
             char *hd = lstring::copy(tbuf);
-            char *str = pu->data()->string(HYcvPlain, false);
+            char *str = hyList::string(pu->data(), HYcvPlain, false);
             if (!list)
                 list = lend = new Ptxt(hd, str, pu);
             else {
@@ -205,7 +205,7 @@ cMain::PrptyStrings(CDs *sdesc)
         if (pu) {
             sprintf(tbuf, "(%d) value: ", P_VALUE);
             char *hd = lstring::copy(tbuf);
-            char *str = pu->data()->string(HYcvPlain, false);
+            char *str = hyList::string(pu->data(), HYcvPlain, false);
             if (!list)
                 list = lend = new Ptxt(hd, str, pu);
             else {
@@ -218,7 +218,7 @@ cMain::PrptyStrings(CDs *sdesc)
         if (pu) {
             sprintf(tbuf, "(%d) param: ", P_PARAM);
             char *hd = lstring::copy(tbuf);
-            char *str = pu->data()->string(HYcvPlain, false);
+            char *str = hyList::string(pu->data(), HYcvPlain, false);
             if (!list)
                 list = lend = new Ptxt(hd, str, pu);
             else {
@@ -231,7 +231,7 @@ cMain::PrptyStrings(CDs *sdesc)
         for ( ; pu; pu = pu->next()) {
             sprintf(tbuf, "(%d) other: ", P_OTHER);;
             char *hd = lstring::copy(tbuf);
-            char *str = pu->data()->string(HYcvPlain, false);
+            char *str = hyList::string(pu->data(), HYcvPlain, false);
             if (!list)
                 list = lend = new Ptxt(hd, str, pu);
             else {
@@ -383,7 +383,7 @@ cMain::PrptyStrings(CDs *sdesc)
         CDpl *pl0 = 0;
         for (CDp *pdesc = sdesc->prptyList(); pdesc; pdesc = pdesc->next_prp())
             pl0 = new CDpl(pdesc, pl0);
-        pl0->sort();
+        CDpl::sort(pl0);
         for (CDpl *pl = pl0; pl; pl = pl->next) {
             CDp *pdesc = pl->pdesc;
             const char *string = pdesc->string() ? pdesc->string() : "";
@@ -419,7 +419,7 @@ cMain::PrptyStrings(CDs *sdesc)
                 lend = lend->next();
             }
         }
-        pl0->free();
+        CDpl::destroy(pl0);
     }
     return (list);
 }
@@ -464,8 +464,8 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                     cdw->points()[0].y, odesc, HYrefNode, HYorNone);
                 ent->add();
                 hp->set_hent(ent);
-                char *str = hp->string(HYcvPlain, false);
-                hp->free();
+                char *str = hyList::string(hp, HYcvPlain, false);
+                hyList::destroy(hp);
                 list = new Ptxt(hd, str, pn, list);
             }
         }
@@ -491,9 +491,9 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                 char *hd = lstring::copy(tbuf);
                 bool copied;
                 hyList *hp = pna->label_text(&copied, OCALL(odesc));
-                char *str = hp->string(HYcvPlain, false);
+                char *str = hyList::string(hp, HYcvPlain, false);
                 if (copied)
-                    hp->free();
+                    hyList::destroy(hp);
                 list = new Ptxt(hd, str, pna, list);
             }
             CDp_range *pr = (CDp_range*)odesc->prpty(P_RANGE);
@@ -508,35 +508,35 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
             if (pu) {
                 sprintf(tbuf, "(%d) model (user): ", P_MODEL);
                 char *hd = lstring::copy(tbuf);
-                char *str = pu->data()->string(HYcvPlain, false);
+                char *str = hyList::string(pu->data(), HYcvPlain, false);
                 list = new Ptxt(hd, str, pu, list);
             }
             pu = (CDp_user*)odesc->prpty(P_VALUE);
             if (pu) {
                 sprintf(tbuf, "(%d) value (user): ", P_VALUE);
                 char *hd = lstring::copy(tbuf);
-                char *str = pu->data()->string(HYcvPlain, false);
+                char *str = hyList::string(pu->data(), HYcvPlain, false);
                 list = new Ptxt(hd, str, pu, list);
             }
             pu = (CDp_user*)odesc->prpty(P_PARAM);
             if (pu) {
                 sprintf(tbuf, "(%d) param (user): ", P_PARAM);
                 char *hd = lstring::copy(tbuf);
-                char *str = pu->data()->string(HYcvPlain, false);
+                char *str = hyList::string(pu->data(), HYcvPlain, false);
                 list = new Ptxt(hd, str, pu, list);
             }
             pu = (CDp_user*)odesc->prpty(P_OTHER);
             for ( ; pu; pu = pu->next()) {
                 sprintf(tbuf, "(%d) other (user): ", P_OTHER);
                 char *hd = lstring::copy(tbuf);
-                char *str = pu->data()->string(HYcvPlain, false);
+                char *str = hyList::string(pu->data(), HYcvPlain, false);
                 list = new Ptxt(hd, str, pu, list);
             }
             pu = (CDp_user*)odesc->prpty(P_DEVREF);
             for ( ; pu; pu = pu->next()) {
                 sprintf(tbuf, "(%d) other (user): ", P_DEVREF);
                 char *hd = lstring::copy(tbuf);
-                char *str = pu->data()->string(HYcvPlain, false);
+                char *str = hyList::string(pu->data(), HYcvPlain, false);
                 list = new Ptxt(hd, str, pu, list);
             }
             CDp *px = odesc->prpty(P_NOPHYS);
@@ -603,8 +603,8 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                         HYorNone);
                     ent->add();
                     hp->set_hent(ent);
-                    char *s = hp->string(HYcvPlain, false);
-                    hp->free();
+                    char *s = hyList::string(hp, HYcvPlain, false);
+                    hyList::destroy(hp);
                     lstr.add(s);
                     delete [] s;
                 }
@@ -620,8 +620,8 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                     HYrefBranch, HYorNone);
                 ent->add();
                 hp->set_hent(ent);
-                char *str = hp->string(HYcvPlain, false);
-                hp->free();
+                char *str = hyList::string(hp, HYcvPlain, false);
+                hyList::destroy(hp);
                 list = new Ptxt(hd, str, pb, list);
             }
             CDp_mutlrf *pm = (CDp_mutlrf*)odesc->prpty(P_MUTLRF);
@@ -654,7 +654,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
         for (CDp *pdesc = odesc->prpty_list(); pdesc;
                 pdesc = pdesc->next_prp())
             pl0 = new CDpl(pdesc, pl0);
-        pl0->sort();
+        CDpl::sort(pl0);
         for (CDpl *pl = pl0; pl; pl = pl->next) {
             CDp *pdesc = pl->pdesc;
             const char *string = pdesc->string() ? pdesc->string() : "";
@@ -674,7 +674,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
             list = new Ptxt(lstring::copy(tbuf), lstring::copy(string),
                 pdesc, list);
         }
-        pl0->free();
+        CDpl::destroy(pl0);
 
         char *s;
         if (odesc->type() != CDINSTANCE) {
@@ -990,7 +990,7 @@ label:
             return (cGEO::path_string(p, 5, 0));
         }
         if (val == XprpText) {
-            char *s = (((CDla*)odesc)->label()->string(HYcvPlain, true));
+            char *s = hyList::string(((CDla*)odesc)->label(), HYcvPlain, true);
             if (!s)
                 s = lstring::copy("(null)");
             else if (!*s)

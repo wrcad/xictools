@@ -148,9 +148,8 @@ struct emrec_t
             group = g;
         }
 
-    void free()
+    static void destroy(emrec_t *em)
         {
-            emrec_t *em = this;
             while (em) {
                 emrec_t *ex = em;
                 em = em->next;
@@ -166,11 +165,11 @@ struct emrec_t
     emrec_t *next_rec() { return (next); }
     void set_next_rec(emrec_t *r) { next = r; }
 
-    emrec_t *sort_edge();
+    static emrec_t *sort_edge(emrec_t*);
     void print(FILE*, int);
 
 private:
-    emrec_t *sort();
+    static emrec_t *sort(emrec_t*);
 
     emrec_t *next;
     const char *lname;

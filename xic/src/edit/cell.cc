@@ -412,7 +412,7 @@ label:
         Label label(((CDla*)odesc)->la_label());
         label.x -= xo;
         label.y -= yo;
-        label.label = label.label->dup();
+        label.label = hyList::dup(label.label);
 
         CDla *newo;
         if (newdesc->makeLabel(odesc->ldesc(), &label, &newo) != CDok)

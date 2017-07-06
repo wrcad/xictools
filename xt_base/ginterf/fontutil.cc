@@ -126,7 +126,7 @@ GRfont::parse_freeform_font_string(const char *string, char **family,
     else
         // no size found, set a default
         *sz = def_size;
-    sx->free();
+    stringlist::destroy(sx);
 
     // Link any style keywords.
     sx = 0;
@@ -143,7 +143,7 @@ GRfont::parse_freeform_font_string(const char *string, char **family,
     if (style)
         *style = sx;
     else
-        sx->free();
+        stringlist::destroy(sx);
 
     // Throw out the trash and reverse the remaining list.
     sx = 0;
@@ -164,7 +164,7 @@ GRfont::parse_freeform_font_string(const char *string, char **family,
         strcpy(t, st->string);
         for ( ; *t; t++) ;
     }
-    sx->free();
+    stringlist::destroy(sx);
     if (buf[0])
         *family = lstring::copy(buf);
     delete [] strtofree;

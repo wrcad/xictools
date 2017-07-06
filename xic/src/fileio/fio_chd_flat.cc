@@ -539,7 +539,7 @@ cCHD::readFlat_zl(SymTab **tabptr, const char *cellname,
         SymTabGen gen(bk.table, true);
         SymTabEnt *h;
         while ((h = gen.next()) != 0) {
-            Zlist::free(((Zlist*)h->stData));
+            Zlist::destroy(((Zlist*)h->stData));
             delete h;
         }
         delete bk.table;
@@ -909,7 +909,7 @@ cCHD::createLayers()
             if (strmdata::hextrn(s->string, &layer, &dtype)) {
                 CDll *ll = FIO()->GetGdsInputLayers(layer, dtype, Physical);
                 if (ll)
-                    ll->free();
+                    CDll::destroy(ll);
                 else {
                     bool err;
                     FIO()->MapGdsLayer(layer, dtype, Physical, s->string,
@@ -935,7 +935,7 @@ cCHD::createLayers()
             }
         }
     }
-    sl->free();
+    stringlist::destroy(sl);
     return (true);
 }
 // End of cCHD functions.
@@ -1073,7 +1073,7 @@ rf_out::write_poly(const Poly *po)
                             rf_targld->getStrmDatatypeFlags(rf_targdt));
                 }
             }
-            pl->free();
+            PolyList::destroy(pl);
         }
         if (need_out) {
             if (rf_backend) {
@@ -1118,7 +1118,7 @@ rf_out::write_wire(const Wire *w)
                         break;
                     }
                 }
-                pl->free();
+                PolyList::destroy(pl);
             }
             if (need_out) {
                 ret = rf_backend->write_poly(&wp);
@@ -1154,7 +1154,7 @@ rf_out::write_wire(const Wire *w)
                             rf_targld->getStrmDatatypeFlags(rf_targdt));
                 }
             }
-            pl->free();
+            PolyList::destroy(pl);
         }
         if (need_out) {
             if (rf_backend) {

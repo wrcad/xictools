@@ -312,8 +312,8 @@ struct tcKWstruct
 
     ~tcKWstruct()
         {
-            kw_list->free();
-            kw_undolist->free();
+            stringlist::destroy(kw_list);
+            stringlist::destroy(kw_undolist);
         }
 
     virtual void load_keywords(const CDl*, const char*) = 0;

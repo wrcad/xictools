@@ -263,11 +263,6 @@ sFL::update()
 char *
 sFL::get_selection()
 {
-    {
-        sFL *flt = this;
-        if (!flt)
-            return (0);
-    }
     if (fl_contlib && fl_content_pop) {
         char *sel = fl_content_pop->get_selection();
         if (sel) {
@@ -520,7 +515,7 @@ sFL::show_content()
                     fl_content_pop->set_button_sens(-1);
             }
         }
-        list->free();
+        stringlist::destroy(list);
         return (true);
     }
     else if (filetype == Fnative) {
@@ -561,7 +556,7 @@ sFL::show_content()
                             fl_content_pop->set_button_sens(-1);
                    }
                 }
-                list->free();
+                stringlist::destroy(list);
                 return (true);
             }
         }
@@ -612,7 +607,7 @@ sFL::show_content()
                         fl_content_pop->set_button_sens(-1);
                 }
             }
-            list->free();
+            stringlist::destroy(list);
             return (true);
         }
         else {

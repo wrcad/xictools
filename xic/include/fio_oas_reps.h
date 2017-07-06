@@ -236,7 +236,7 @@ struct rf_box
 
     void cleanup()
         {
-            properties->free_list();
+            CDp::destroy(properties);
         }
 
     static unsigned int diff(const rf_box*, const rf_box*);
@@ -411,7 +411,7 @@ struct rf_sref
     void cleanup()
         {
             // cname is not deleted here
-            properties->free_list();
+            CDp::destroy(properties);
         }
 
     static unsigned int diff(const rf_sref*, const rf_sref*);

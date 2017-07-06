@@ -85,7 +85,7 @@ cTech::Print(FILE *techfp)
             fputs(sl->string, techfp);
             putc('\n', techfp);
         }
-        sl0->free();
+        stringlist::destroy(sl0);
     }
 
     CommentDump(techfp, 0, tBlkNone, 0, "!Set");
@@ -100,7 +100,7 @@ cTech::Print(FILE *techfp)
             fprintf(techfp, "%s %s = %s\n", Tkw.Set(), sl->string, val);
         }
         CommentDump(techfp, 0, tBlkNone, 0, Tkw.Set());
-        s0->free();
+        stringlist::destroy(s0);
         fprintf(techfp, "\n");
     }
 
@@ -138,7 +138,7 @@ cTech::Print(FILE *techfp)
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.MapLayer());
     if (s2) {
         fprintf(techfp, "\n");
-        s2->free();
+        string2list::destroy(s2);
     }
 
     // Print layer and purpose tables.
@@ -150,7 +150,7 @@ cTech::Print(FILE *techfp)
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.DefineLayer());
     if (s0) {
         fprintf(techfp, "\n");
-        s0->free();
+        stringnumlist::destroy(s0);
     }
     s0 = CDldb()->listOApurposeTab();
     for (stringnumlist *sl = s0; sl; sl = sl->next) {
@@ -160,7 +160,7 @@ cTech::Print(FILE *techfp)
     CommentDump(techfp, 0, tBlkNone, 0, Tkw.DefineLayer());
     if (s0) {
         fprintf(techfp, "\n");
-        s0->free();
+        stringnumlist::destroy(s0);
     }
 
     // Print electrical layers.
@@ -250,7 +250,7 @@ cTech::Print(FILE *techfp)
         sStdViaList *vl = StdViaList();
         for (sStdViaList *sv = vl; sv; sv = sv->next)
             sv->std_via->tech_print(techfp);
-        vl->free();
+        sStdViaList::destroy(vl);
         CommentDump(techfp, 0, tBlkNone, 0, Tkw.StandardVia());
         fprintf(techfp, "\n");
     }

@@ -35,6 +35,7 @@
 #include "si_parsenode.h"
 #include "si_parser.h"
 #include "si_interp.h"
+#include "main_scriptif.h"
 #include "fio.h"
 #include "events.h"
 #include "layertab.h"
@@ -346,7 +347,7 @@ cMain::Rehash()
     else {
         // Read the library files in the script path
         umenu *u = GetFunctionList();
-        u->free();
+        umenu::destroy(u);
     }
 }
 

@@ -577,7 +577,7 @@ fhLayout::setup()
             double vol = 0.0;
             for (Layer3d *l = layers(); l; l = l->next()) {
                 if (l->is_conductor())
-                    vol += l->yl3d()->volume();
+                    vol += glYlist3d::volume(l->yl3d());
             }
             double cvol = vol / val;
             max_rect_size = INTERNAL_UNITS(cbrt(cvol));
@@ -658,7 +658,7 @@ fhLayout::setup()
                                         p->po.points[i]);
                             }
                         }
-                        pl->free();
+                        PolyList::destroy(pl);
                     }
                 }
             }
@@ -682,7 +682,7 @@ fhLayout::setup()
                                         p->po.points[i]);
                             }
                         }
-                        pl->free();
+                        PolyList::destroy(pl);
                     }
                 }
             }
@@ -781,8 +781,8 @@ fhLayout::setup()
                         delete od;
                         continue;
                     }
-                    char *text =
-                        ((CDla*)odla)->label()->string(HYcvPlain, false);
+                    char *text = hyList::string(((CDla*)odla)->label(),
+                        HYcvPlain, false);
                     char *portname, *sfx;
                     splitname(text, &portname, &sfx);
                     delete [] text;
@@ -800,7 +800,7 @@ fhLayout::setup()
                     }
                     delete od;
                 }
-                p0->free();
+                PolyList::destroy(p0);
             }
             delete zg;
         }
@@ -899,9 +899,10 @@ fhLayout::fh_dump(FILE *fp)
                 continue;
             if (t->ccnt() > 0)
                 continue;
-            for (fhNodeList *nl = t->nodes()->next; nl; nl = nl->next)
+            for (fhNodeList *nl = t->nodes()->next; nl; nl = nl->next) {
                 fprintf(fp, ".Equiv N%d N%d\n", t->nodes()->nd->number(),
                     nl->nd->number());
+            }
         }
     }
 
@@ -1093,14 +1094,14 @@ fhLayout::add_terminal(const Poly *po, const char *portname, const char *sfx,
                     Zlist *z0 = po->toZlist();
                     for (Zlist *zl = z0; zl; zl = zl->next) {
                         if (z->Z.Zoid::intersect(&zl->Z, false)) {
-                            Zlist::free(z0);
+                            Zlist::destroy(z0);
                             int grp = c->group();
                             fhl_terms[grp] = new fhTermList(po, portname, sfx,
                                 lnum, cnum, ccnt, fhl_terms[grp]);
                             return;
                         }
                     }
-                    Zlist::free(z0);
+                    Zlist::destroy(z0);
                 }
             }
         }
@@ -1258,12 +1259,13 @@ fhLayout::dump_ports(FILE *fp)
 // End of fhLayout functions.
 
 
+// Static function.
 fhConductor *
-fhConductor::addz3d(const glZoid3d *Z)
+fhConductor::addz3d(fhConductor *thisc, const glZoid3d *Z)
 {
     if (!Z)
-        return (this);
-    fhConductor *cl0 = this;
+        return (thisc);
+    fhConductor *cl0 = thisc;
     for (fhConductor *cl = cl0; cl; cl = cl->next()) {
         if (cl->layer_index() == Z->layer_index && cl->group() == Z->group) {
             cl->hc_zlist3d_ref = new glZlistRef3d(Z, cl->hc_zlist3d_ref);
@@ -1468,7 +1470,7 @@ fhConductor::refine(const BBox *BB)
         hc_zlist3d->Z.xll = hc_zlist3d->Z.xul = z->Z.xlr - dx;
         hc_zlist3d->Z.yl = z->Z.yu - dy;
     }
-    z0->free();
+    glZlist3d::destroy(z0);
     return (true);
 }
 
@@ -1576,9 +1578,9 @@ fhConductor::save_zlist_db()
     sprintf(buf, "G%dL%d:FH", hc_group, hc_layer_ix);
     CDl *ld = CDldb()->newLayer(buf, Physical);
     CurCell(Physical)->db_clear_layer(ld);
-    Zlist *zl = hc_zlist3d->to_zlist();
+    Zlist *zl = glZlist3d::to_zlist(hc_zlist3d);
     Zlist::add(zl, CurCell(Physical), ld, false, false);
-    Zlist::free(zl);
+    Zlist::destroy(zl);
 }
 // End of fhConductor functions.
 
@@ -1705,7 +1707,7 @@ fhNodeGen::clear()
 {
     ng_ncnt = 1;
     for (int i = 0; i < FH_NDHASHW; i++) {
-        ng_tab[i]->free();
+        fhNode::destroy(ng_tab[i]);
         ng_tab[i] = 0;
     }
 }

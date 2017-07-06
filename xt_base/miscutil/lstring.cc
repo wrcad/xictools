@@ -53,26 +53,24 @@
 //
 
 
+// Static function.
 // Return a string containing the list entries, with term added to the
 // end of each entry, if not null, and not already there.
 //
 char *
-stringlist::flatten(const char *term)
+stringlist::flatten(const stringlist *thissl, const char *term)
 {
-    {
-        stringlist *st = this;
-        if (!st)
-            return (lstring::copy(""));
-    }
+    if (!thissl)
+        return (lstring::copy(""));
     int tlen = term ? strlen(term) : 0;
     int cnt = 0;
-    for (stringlist *s = this; s; s = s->next)
+    for (const stringlist *s = thissl; s; s = s->next)
         cnt += strlen(s->string) + tlen;
 
     char *str = new char[cnt + 1];
     char *t = str;
     cnt = 0;
-    for (stringlist *s = this; s; s = s->next) {
+    for (const stringlist *s = thissl; s; s = s->next) {
         strcpy(t+cnt, s->string);
         int ncnt = strlen(s->string);
         cnt += ncnt;
@@ -87,13 +85,14 @@ stringlist::flatten(const char *term)
 }
 
 
+// Static function.
 // Return a copy of the stringlist.
 //
 stringlist *
-stringlist::dup()
+stringlist::dup(const stringlist *thissl)
 {
     stringlist *s0 = 0, *se = 0;
-    for (stringlist *s = this; s; s = s->next) {
+    for (const stringlist *s = thissl; s; s = s->next) {
         if (!s0)
             s0 = se = new stringlist(lstring::copy(s->string), 0);
         else {
@@ -105,34 +104,22 @@ stringlist::dup()
 }
 
 
+// Static function.
 // Reverse a stringlist.
 //
-void
-stringlist::reverse()
+stringlist *
+stringlist::reverse(stringlist *thissl)
 {
-    {
-        stringlist *st = this;
-        if (!st)
-            return;
-    }
-    stringlist *sl = next, *s0 = 0;
+    if (!thissl)
+        return (0);
+    stringlist *sl = thissl->next, *s0 = 0;
     while (sl) {
         stringlist *sn = sl->next;
         sl->next = s0;
         s0 = sl;
         sl = sn;
     }
-    if (s0) {
-        char *s = string;
-        string = s0->string;
-        s0->string = s;
-        if (s0->next) {
-            stringlist *st = next;
-            next = s0->next;
-            st->next = s0;
-            s0->next = 0;
-        }
-    }
+    return (s0);
 }
 
 
@@ -145,29 +132,25 @@ namespace {
 }
 
 
+// Static function.
 // Stringlist sort function.
 //
 void
-stringlist::sort(bool(*cf)(const char*, const char*))
+stringlist::sort(stringlist *thissl, bool(*cf)(const char*, const char*))
 {
-    {
-        stringlist *st = this;
-        if (!st)
-            return;
-    }
-    int len = length();
-    if (len < 2)
+    if (!thissl || !thissl->next)
         return;
+    int len = length(thissl);
     char **aa = new char*[len];
     int cnt = 0;
-    for (stringlist *s = this; s; s = s->next)
+    for (stringlist *s = thissl; s; s = s->next)
         aa[cnt++] = s->string;
     if (cf)
         std::sort(aa, aa + len, cf);
     else
         std::sort(aa, aa + len, comp);
     cnt = 0;
-    for (stringlist *s = this; s; s = s->next)
+    for (stringlist *s = thissl; s; s = s->next)
         s->string = aa[cnt++];
     delete [] aa;
 }
@@ -177,8 +160,7 @@ namespace {
     // Dividing the list into cols columns, compute the total width, len is
     // the length of s.
     //
-    int
-    totwidth(stringlist *s, int len, int cols)
+    int totwidth(const stringlist *s, int len, int cols)
     {
         int rows = len/cols + (len % cols ? 1 : 0);
         int tw = 0;
@@ -197,20 +179,18 @@ namespace {
 }
 
 
+// Static function.
 // Return a columnar listing of the words.  Each line length is less
 // than charcols, if charcols > 25.  Sorting is not done here.
 //
 stringcolumn *
-stringlist::get_columns(int charcols)
+stringlist::get_columns(const stringlist *thissl, int charcols)
 {
-    {
-        stringlist *st = this;
-        if (!st)
-            return (0);
-    }
+    if (!thissl)
+        return (0);
     if (charcols < 25)
         charcols = 25;
-    int len = length();
+    int len = length(thissl);
 
     int lnc = 1;
     for (int nc = 1; nc <= len; nc++) {
@@ -218,14 +198,14 @@ stringlist::get_columns(int charcols)
         int left = len - r*(nc-1);
         if (left <= 0 || left > r)
             continue;
-        if (totwidth(this, len, nc) > charcols)
+        if (totwidth(thissl, len, nc) > charcols)
             break;
         lnc = nc;
     }
     int r = len/lnc + (len % lnc ? 1 : 0);
 
     stringcolumn *c0 = 0, *ce = 0;
-    stringlist *s = this;
+    const stringlist *s = thissl;
     for (int i = 0; s; i++) {
         stringcolumn *c = new stringcolumn(&s, r);
         if (!c0)
@@ -239,15 +219,16 @@ stringlist::get_columns(int charcols)
 }
 
 
+// Static function.
 // Return a columnar listing of the words.  Each line length is less
 // than charcols, if charcols > 25.  Sorting is not done here.  If the
 // col_widp is not null, a 0-terminated list of the column character
 // widths is returned.
 //
 char *
-stringlist::col_format(int charcols, int **col_widp)
+stringlist::col_format(const stringlist *thissl, int charcols, int **col_widp)
 {
-    stringcolumn *c0 = get_columns(charcols);
+    stringcolumn *c0 = get_columns(thissl, charcols);
     if (col_widp) {
         int nc = 0;
         for (stringcolumn *c = c0; c; c = c->next())
@@ -274,7 +255,7 @@ stringlist::col_format(int charcols, int **col_widp)
         delete c;
     }
     c0->strip_trail_sp();
-    char *str = c0->words()->flatten("\n");
+    char *str = flatten(c0->words(), "\n");
     delete c0;
     return (str);
 }
@@ -283,13 +264,14 @@ stringlist::col_format(int charcols, int **col_widp)
 //------------------------------------------------------------------------------
 // stringnumlist - list of string/number elements.
 
+// Static function.
 // Return a copy of the stringnumlist.
 //
 stringnumlist *
-stringnumlist::dup()
+stringnumlist::dup(const stringnumlist *thissl)
 {
     stringnumlist *s0 = 0, *se = 0;
-    for (stringnumlist *s = this; s; s = s->next) {
+    for (const stringnumlist *s = thissl; s; s = s->next) {
         if (!s0)
             s0 = se = new stringnumlist(lstring::copy(s->string), s->num, 0);
         else {
@@ -326,26 +308,24 @@ namespace {
 }
 
 
+// Static function.
 // Sort alphabetically by string.
 //
 void
-stringnumlist::sort_by_string()
+stringnumlist::sort_by_string(stringnumlist *thissl)
 {
-    {
-        stringnumlist *st = this;
-        if (!st || !st->next)
-            return;
-    }
-    int len = length();
+    if (!thissl || !thissl->next)
+        return;
+    int len = length(thissl);
     sn *aa = new sn[len];
     int cnt = 0;
-    for (stringnumlist *s = this; s; s = s->next) {
+    for (stringnumlist *s = thissl; s; s = s->next) {
         aa[cnt].string = s->string;
         aa[cnt++].num = s->num;
     }
     std::sort(aa, aa + len, sn_str_cmp);
     cnt = 0;
-    for (stringnumlist *s = this; s; s = s->next) {
+    for (stringnumlist *s = thissl; s; s = s->next) {
         s->string = aa[cnt].string;
         s->num = aa[cnt++].num;
     }
@@ -353,26 +333,24 @@ stringnumlist::sort_by_string()
 }
 
 
+// Static function.
 // Sort ascending numerically by number.
 //
 void
-stringnumlist::sort_by_num()
+stringnumlist::sort_by_num(stringnumlist *thissl)
 {
-    {
-        stringnumlist *st = this;
-        if (!st || !st->next)
-            return;
-    }
-    int len = length();
+    if (!thissl || !thissl->next)
+        return;
+    int len = length(thissl);
     sn *aa = new sn[len];
     int cnt = 0;
-    for (stringnumlist *s = this; s; s = s->next) {
+    for (stringnumlist *s = thissl; s; s = s->next) {
         aa[cnt].string = s->string;
         aa[cnt++].num = s->num;
     }
     std::sort(aa, aa + len, sn_num_cmp);
     cnt = 0;
-    for (stringnumlist *s = this; s; s = s->next) {
+    for (stringnumlist *s = thissl; s; s = s->next) {
         s->string = aa[cnt].string;
         s->num = aa[cnt++].num;
     }
@@ -386,13 +364,13 @@ stringnumlist::sort_by_num()
 
 // Creation: use h entries from sp, advancing sp.
 //
-stringcolumn::stringcolumn(stringlist **sp, int h)
+stringcolumn::stringcolumn(const stringlist **sp, int h)
 {
     sc_words = 0;
     sc_wid = 0;
     sc_next = 0;
     stringlist *we = 0;
-    stringlist *s = *sp;
+    const stringlist *s = *sp;
     for (sc_hei = 0; sc_hei < h && s; sc_hei++) {
         if (!sc_words)
             sc_words = we = new stringlist(lstring::copy(s->string), 0);
@@ -861,8 +839,7 @@ MacroHandler::macro_expand(const char *str, bool *sub, const char *skipme,
 const char *
 MacroHandler::find_text(const char *def)
 {
-    MacroHandler *mht = this;
-    if (mht && def) {
+    if (def) {
         for (sMacro *m = Macros; m; m = m->next) {
             if (!strcmp(def, m->m_name)) {
                 if (m->m_text)
@@ -881,8 +858,7 @@ MacroHandler::find_text(const char *def)
 void
 MacroHandler::print(FILE *fp, const char *invoke, bool show_predef)
 {
-    MacroHandler *mht = this;
-    if (mht && fp) {
+    if (fp) {
         for (sMacro *m = Macros; m; m = m->next)
             m->print(fp, invoke, show_predef);
     }

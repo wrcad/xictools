@@ -199,12 +199,12 @@ sElecNetList::~sElecNetList()
 {
     if (et_list) {
         for (unsigned int i = 0; i <= et_maxix; i++) {
-            et_list[i].conts->free();
-            et_list[i].pins->free();
+            CDcont::destroy(et_list[i].conts);
+            CDpin::destroy(et_list[i].pins);
         }
         delete [] et_list;
     }
-    et_fcells->free();
+    sdlink::destroy(et_fcells);
     delete et_ftab;
 }
 
@@ -326,7 +326,7 @@ void
 sElecNetList::update_pins()
 {
     for (unsigned int i = 0; i < et_size; i++) {
-        et_list[i].pins->free();
+        CDpin::destroy(et_list[i].pins);
         et_list[i].pins = 0;
     }
 
@@ -616,7 +616,7 @@ sElecNetList::check_flatten(CDc *cdesc)
             if (EX()->paramCx()) {
                 CDp_user *pp = (CDp_user*)cdesc->prpty(P_PARAM);
                 char *pstr =
-                    pp ? pp->data()->string(HYcvPlain, true) : 0;
+                    pp ? hyList::string(pp->data(), HYcvPlain, true) : 0;
                 EX()->paramCx()->push(msdesc, pstr);
 #ifdef PRM_DEBUG
                 printf("%s\n---\n", pstr);
@@ -742,7 +742,7 @@ namespace {
                 CDp_user *p = (CDp_user*)c->prpty(P_PARAM);
                 if (!p)
                     continue;
-                char *pstr = p->data()->string(HYcvPlain, true);
+                char *pstr = hyList::string(p->data(), HYcvPlain, true);
                 if (!pstr)
                     continue;
 
@@ -890,7 +890,7 @@ namespace {
                     printf("%s\n---\n", lstr.string());
 #endif
                 if (!err && scnt) {
-                    p->data()->free();
+                    hyList::destroy(p->data());
                     p->set_data(new hyList(sd, lstr.string(), HYcvPlain));
                 }
                 delete [] pstr;
@@ -1602,8 +1602,8 @@ cExt::arrangeTerms(CDcbin *cbin, bool conts_only)
         t->term()->set_loc(x + i*twid, y + j*thei);
         i++;
     }
-    upins->free();
-    uconts->free();
+    CDpin::destroy(upins);
+    CDcont::destroy(uconts);
 }
 
 

@@ -99,7 +99,7 @@ cDisplay::LabelExtent(hyList *text, int *width, int *height)
         FT.textExtent(0, width, height, &numlines);
         return (numlines);
     }
-    char *str = text->string(HYcvPlain, false);
+    char *str = hyList::string(text, HYcvPlain, false);
     FT.textExtent(str, width, height, &numlines);
     delete [] str;
     return (numlines);
@@ -780,7 +780,7 @@ WindowDesc::show_label(const void *lptr, int x, int y, int width, int height,
         if (!hlabel || (hlabel->ref_type() == HLrefText &&
                 (!hlabel->text() || !hlabel->text()[0])))
             return;
-        label = hlabel->string(HYcvPlain, false);
+        label = hyList::string(hlabel, HYcvPlain, false);
         freelabel = true;
     }
     else

@@ -63,28 +63,29 @@ struct lispnode
 {
     lispnode();
     lispnode(LN_TYPE, char*);
-    lispnode *dup();
-    lispnode *dup_list();
 
-    void free();
-    bool print(FILE*, int, bool);
-    void print(sLstr*);
+    static lispnode *dup(const lispnode*);
+    static lispnode *dup_list(const lispnode*);
+    static void destroy(const lispnode*);
+    static bool print(const lispnode*, FILE*, int, bool);
+    static void print(const lispnode*, sLstr*);
+
+    static int eval_list(lispnode*, lispnode*, int, char**);
+    static bool eval_list(lispnode*, lispnode*, char**);
     bool eval(lispnode*, char**);
-    int eval_list(lispnode*, int, char**);
-    bool eval_list(lispnode*, char**);
     int eval_xic_node(lispnode*, char**);
     int eval_user_node(lispnode*, char**);
     bool ln_to_var(Variable*, char**);
     bool var_to_ln(Variable*, char**);
 
-    int arg_cnt()
+    int arg_cnt() const
         {
             int cnt = 0;
             for (lispnode *n = args; n; n = n->next, cnt++) ;
             return (cnt);
         }
 
-    bool is_nil()
+    bool is_nil() const
         {
             return (type == LN_NODE && !string && !args);
         }
@@ -125,7 +126,6 @@ struct lispnode
 
 private:
     static cLispEnv *lisp_env;
-
 };
 
 // function type for dispatch handlers

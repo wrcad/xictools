@@ -361,7 +361,7 @@ cExt::updateReferenceTable(const CDs *sd)
         SymTabGen gen(ext_reference_tab, true);
         SymTabEnt *ent;
         while ((ent = gen.next()) != 0) {
-            ((sGdList*)ent->stData)->free();
+            sGdList::destroy((sGdList*)ent->stData);
             delete ent;
         }
         delete ext_reference_tab;
@@ -573,7 +573,7 @@ cGroupDesc::setup_extract(int dcnt)
     }
 
     cterms = group_terms(cterms, false);
-    cterms->free();
+    CDpin::destroy(cterms);
 
     compute_cap();
     if (!EX()->skipExtract(gd_celldesc))
@@ -649,11 +649,11 @@ cGroupDesc::clear_extract()
 
     for (int i = 0; i < gd_asize; i++) {
         sGroup &g = gd_groups[i];
-        g.termlist()->free();
+        CDpin::destroy(g.termlist());
         g.set_termlist(0);
-        g.device_contacts()->free();
+        sDevContactList::destroy(g.device_contacts());
         g.set_device_contacts(0);
-        g.subc_contacts()->free();
+        sSubcContactList::destroy(g.subc_contacts());
         g.set_subc_contacts(0);
         g.set_node(-1);
         g.set_netname(0, sGroup::NameFromLabel);
@@ -666,11 +666,11 @@ cGroupDesc::clear_extract()
         delete gd_e_phonycell;
         gd_e_phonycell = 0;
     }
-    gd_devices->free();
+    sDevList::destroy(gd_devices);
     gd_devices = 0;
-    gd_subckts->free();
+    sSubcList::destroy(gd_subckts);
     gd_subckts = 0;
-    gd_vcontacts->free();
+    sVContact::destroy(gd_vcontacts);
     gd_vcontacts = 0;
 
     for (CDm *m = gd_master_list; m; m = gd_master_list) {
@@ -687,7 +687,7 @@ cGroupDesc::clear_extract()
 
     delete gd_flatten_tab;
     gd_flatten_tab = 0;
-    gd_lvs_msgs->free();
+    stringlist::destroy(gd_lvs_msgs);
     gd_lvs_msgs = 0;
 
     // Clear the cached pin layer in the conductor layer descs.  The
@@ -774,7 +774,7 @@ cGroupDesc::compute_cap()
                             MICRONS(p->po.perim()) *
                             tech_prm(ld)->cap_per_perim();
                     }
-                    p0->free();
+                    PolyList::destroy(p0);
                 }
             }
         }
@@ -1092,7 +1092,7 @@ cGroupDesc::add_subckts()
     // groups.
     ret = connect_to_subs(&cg1);
     if (ret != XIok) {
-        cl->free();
+        sSubcLink::destroy(cl);
         return (ret);
     }
 #ifdef TIME_DBG
@@ -1103,7 +1103,7 @@ cGroupDesc::add_subckts()
     // Now look for connections between groups in different subcells.
     ret = connect_between_subs(&cg1);
     if (ret != XIok) {
-        cl->free();
+        sSubcLink::destroy(cl);
         return (ret);
     }
 #ifdef TIME_DBG
@@ -1128,7 +1128,7 @@ cGroupDesc::add_subckts()
                 s2->add(v->vgroup, v->subg2);
             }
         }
-        gd_vcontacts->free();
+        sVContact::destroy(gd_vcontacts);
         gd_vcontacts = 0;
     }
 
@@ -1158,7 +1158,7 @@ cGroupDesc::add_subckts()
             fixup_subc_contacts(s);
     }
 
-    cl->free();
+    sSubcLink::destroy(cl);
     renumber_groups();
 #ifdef TIME_DBG
     Tdbg()->accum_timing("other_stuff");
@@ -1873,7 +1873,7 @@ cGroupDesc::fix_connections_rc(SymTab *done_tab)
                     }
                     for (itemlist<int_list*> *j = list; j; j = j->next)
                         j->item->free();
-                    list->free();
+                    itemlist<int_list*>::destroy(list);
                     if (!ref_list)
                         return;
                 }
@@ -1940,7 +1940,7 @@ cGroupDesc::fix_connections_rc(SymTab *done_tab)
     }
     for (itemlist<int_list*> *l = ref_list; l; l = l->next)
         l->item->free();
-    ref_list->free();
+    itemlist<int_list*>::destroy(ref_list);
 }
 
 
@@ -2205,7 +2205,7 @@ cGroupDesc::flatten_core(sSubcList *sc, bool assoc, int *nf, int *ns, int *nd)
             if (!ok)
                 break;
         }
-        via->free();  // Should have been used and zeroed.
+        CDol::destroy(via);  // Should have been used and zeroed.
 
         // The termlist can be ignored?
 

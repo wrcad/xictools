@@ -378,7 +378,7 @@ cDRC::intrListTest(const op_change_t *list, BBox *errBB)
             continue;
 
         DRCerrRet *er = 0;
-        if (!blist->intersect(&pointer->oBB(), false)) {
+        if (!Blist::intersect(blist, &pointer->oBB(), false)) {
             if (objectRules(pointer, 0, &er) != XIok) {
                 aborting = true;
                 break;
@@ -413,7 +413,7 @@ cDRC::intrListTest(const op_change_t *list, BBox *errBB)
             CDo *odesc;
             while ((odesc = gen.next(false, false)) != 0) {
 
-                if (!blist->intersect(&odesc->oBB(), false)) {
+                if (!Blist::intersect(blist, &odesc->oBB(), false)) {
                     if (objectRules(odesc, 0, &er, ldesc) != XIok) {
                         delete odesc;
                         aborting = true;
@@ -545,7 +545,7 @@ cDRC::batchTest(const BBox *AOI, FILE *fp, sLstr *lstr, BBox *errBB,
                 drc_num_checked++;
 
                 // throw out any that overlap NDRC layer
-                if (!blist->intersect(&odesc->oBB(), false)) {
+                if (!Blist::intersect(blist, &odesc->oBB(), false)) {
 
                     DRCerrRet *er;
                     ret = objectRules(odesc, pass_halo ? &bltAOI : 0, &er);
@@ -916,7 +916,7 @@ cDRC::batchListTest(const CDol *slist, FILE *fp, sLstr *lstr, BBox *errBB)
     if (!update_rule_disable())
         return;
     BBox AOI;
-    slist->computeBB(&AOI);
+    CDol::computeBB(slist, &AOI);
     if (XM()->RunMode() == ModeNormal) {
         PL()->ShowPrompt("Working ... ");
         eraseErrors(&AOI);
@@ -945,7 +945,7 @@ cDRC::batchListTest(const CDol *slist, FILE *fp, sLstr *lstr, BBox *errBB)
         drc_num_checked++;
 
         // throw out any that overlap NDRC layer
-        if (!blist->intersect(&odesc->oBB(), false)) {
+        if (!Blist::intersect(blist, &odesc->oBB(), false)) {
 
             DRCerrRet *er;
             if (objectRules(odesc, 0, &er) != XIok) {
@@ -1040,7 +1040,7 @@ cDRC::layerRules(const CDl *ld, const BBox *AOI, DRCerrRet **eret)
             Ylist *y0 = new Ylist(zret);
             if (!y0)
                 continue;
-            Zgroup *g = y0->group();
+            Zgroup *g = Ylist::group(y0);
 
             // There should be exactly one group.  If multiple groups,
             // the one with the largest area is the good one.
@@ -1071,10 +1071,10 @@ cDRC::layerRules(const CDl *ld, const BBox *AOI, DRCerrRet **eret)
         }
         else if (td->type() == drNoHoles) {
             Ylist *y0 = new Ylist(zret);
-            y0 = y0->remove_backg(AOI);
+            y0 = Ylist::remove_backg(y0, AOI);
             if (!y0)
                 continue;
-            Zgroup *g = y0->group();
+            Zgroup *g = Ylist::group(y0);
 
             // We've inverted the layer and thrown out any zoids in
             // the group that touch the edges, Any groups that
@@ -1146,7 +1146,7 @@ cDRC::objectRules(const CDo *odesc, const BBox *AOI, DRCerrRet **erptr,
                         if (errorLevel() == DRCone_err && errs.has_errs())
                             break;
                     }
-                    DRCerrRet *er = errs.get_errs()->filter();
+                    DRCerrRet *er = DRCerrRet::filter(errs.get_errs());
                     if (er) {
                         if (!e0)
                             e0 = ee = er;
@@ -1162,7 +1162,7 @@ cDRC::objectRules(const CDo *odesc, const BBox *AOI, DRCerrRet **erptr,
                         break;
                 }
             }
-            p0->free();
+            PolyList::destroy(p0);
             *erptr = e0;
         }
         else {
@@ -1175,7 +1175,7 @@ cDRC::objectRules(const CDo *odesc, const BBox *AOI, DRCerrRet **erptr,
                     if (errorLevel() == DRCone_err && errs.has_errs())
                         break;
                 }
-                *erptr = errs.get_errs()->filter();
+                *erptr = DRCerrRet::filter(errs.get_errs());
             }
         }
     }
@@ -1396,13 +1396,13 @@ cDRC::init_drc(const BBox *AOI, Blist **blist, bool skip_cnt)
                 if (l->ldesc->layerType() == CDLderived)
                     drc_drv_tab->add((unsigned long)l->ldesc, 0, true);
             }
-            l0->free();
+            CDll::destroy(l0);
             l0 = td->targetLayers();
             for (CDll *l = l0; l; l = l->next) {
                 if (l->ldesc->layerType() == CDLderived)
                     drc_drv_tab->add((unsigned long)l->ldesc, 0, true);
             }
-            l0->free();
+            CDll::destroy(l0);
         }
     }
 
@@ -1463,7 +1463,7 @@ cDRC::init_drc(const BBox *AOI, Blist **blist, bool skip_cnt)
             drc_drv_tab = new SymTab(false, false);
             for (CDll *l = l0; l; l = l->next)
                 drc_drv_tab->add((unsigned long)l->ldesc, 0, false);
-            l0->free();
+            CDll::destroy(l0);
         }
 
         if (ret != XIok) {
@@ -1522,7 +1522,7 @@ cDRC::init_drc(const BBox *AOI, Blist **blist, bool skip_cnt)
                 bl->next = bl0;
                 bl0 = bl;
             }
-            bl0 = bl0->merge();
+            bl0 = Blist::merge(bl0);
             *blist = bl0;
         }
     }
@@ -1624,7 +1624,7 @@ cDRC::handle_errors(DRCerrRet *er, sPF *gen, const CDo *odesc, BBox *errBB,
 
         if (maxErrors() > 0 && drc_err_count >= maxErrors()) {
             done = true;
-            er->free();
+            DRCerrRet::destroy(er);
             break;
         }
         DRCerrRet *en = er->next();
@@ -1726,7 +1726,7 @@ cDRC::eval_instance(const CDc *cdesc, BBox *errBB, const Blist *blist)
         while ((odesc = gen.next(false, false)) != 0) {
 
             // throw out any that overlap NDRC layer
-            if (!blist->intersect(&odesc->oBB(), false)) {
+            if (!Blist::intersect(blist, &odesc->oBB(), false)) {
 
                 DRCerrRet *er;
                 if (objectRules(odesc, 0, &er) != XIok) {
@@ -1766,7 +1766,7 @@ cDRC::eval_instance(const CDc *cdesc, BBox *errBB, const Blist *blist)
 void
 cDRC::close_drc(Blist *blist)
 {
-    blist->free();
+    Blist::destroy(blist);
     sPF::set_skip_drc(false);
 
     // Clear the derived layers that we created for DRC.

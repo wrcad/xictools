@@ -364,12 +364,6 @@ cGroupDesc::show_objects(WindowDesc *wdesc, const CDl *ldesc)
 void
 cGroupDesc::show_groups(WindowDesc *wdesc, bool d_or_e)
 {
-    {
-        cGroupDesc *gdt = this;
-        if (!gdt)
-            return;
-    }
-
     static bool skipit;  // prevent reentrancy
     if (skipit)
         return;

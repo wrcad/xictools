@@ -333,8 +333,7 @@ sCGL::update()
     }
 
     stringlist *names = CDcgd()->cgdList();
-    if (names)
-        names->sort();
+    stringlist::sort(names);
 
     int rowcnt = 0;
     int rowsel = -1;
@@ -371,7 +370,7 @@ sCGL::update()
         gtk_tree_path_free(p);
     }
 
-    names->free();
+    stringlist::destroy(names);
 }
 
 
@@ -421,7 +420,7 @@ sCGL::action_hdlr(GtkWidget *caller, void *client_data)
                     cgl_cnt_pop->register_caller(cgl_cntbtn);
                 }
             }
-            s0->free();
+            stringlist::destroy(s0);
         }
         else
             err_message("Content scan failed:\n%s");
@@ -683,7 +682,7 @@ sCGL::cgl_cnt_cb(const char *cellname, void*)
             if (CGL->cgl_inf_pop)
                 CGL->cgl_inf_pop->register_usrptr((void**)&CGL->cgl_inf_pop);
         }
-        s0->free();
+        stringlist::destroy(s0);
     }
 }
 

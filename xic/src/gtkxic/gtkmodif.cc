@@ -173,8 +173,8 @@ cEdit::PopUpModified(stringlist *list, bool(*saveproc)(const char*))
 sSC::sSC(stringlist *l, bool(*s)(const char*))
 {
     SC = this;
-    l->sort();
-    int sz = l->length();
+    stringlist::sort(l);
+    int sz = stringlist::length(l);
     sc_list = new s_item[sz+1];
     sc_field = 0;
     sc_width = 0;

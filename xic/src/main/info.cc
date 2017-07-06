@@ -62,7 +62,7 @@ namespace {
         ~tlst_t()
             {
                 delete odesc;
-                cdescs->free();
+                CDclxy::destroy(cdescs);
             }
 
         void free()
@@ -337,14 +337,14 @@ cMain::Info(CDs *sdesc, int level)
         if (list) {
             stringnumlist *liste = 0;
             counte = sdesc->listParents(&liste, true);
-            list->sort_by_string();
-            liste->sort_by_string();
+            stringnumlist::sort_by_string(list);
+            stringnumlist::sort_by_string(liste);
             lstr.add("Parent cells:\n");
             while (list) {
                 if (!liste || strcmp(list->string, liste->string)) {
                     // can't happen;
-                    list->free();
-                    liste->free();
+                    stringnumlist::destroy(list);
+                    stringnumlist::destroy(liste);
                     break;
                 }
                 sprintf(buf, "  %-24s %6d %6d\n", list->string, list->num,
@@ -379,14 +379,14 @@ cMain::Info(CDs *sdesc, int level)
         if (list) {
             stringnumlist *liste = 0;
             counte = sdesc->listSubcells(&liste, true);
-            list->sort_by_string();
-            liste->sort_by_string();
+            stringnumlist::sort_by_string(list);
+            stringnumlist::sort_by_string(liste);
             lstr.add("Subcells:\n");
             while (list) {
                 if (!liste || strcmp(list->string, liste->string)) {
                     // can't happen;
-                    list->free();
-                    liste->free();
+                    stringnumlist::destroy(list);
+                    stringnumlist::destroy(liste);
                     break;
                 }
                 sprintf(buf, "  %-24s %6d %6d\n", list->string, list->num,
@@ -747,7 +747,7 @@ cMain::Info(const CDo *odesc)
         if (ocpy && ocpy->type() != odesc->type())
             ocpy = 0;
         lstr.add("Text: ");
-        char *s = ((CDla*)odesc)->label()->string(HYcvPlain, false);
+        char *s = hyList::string(((CDla*)odesc)->label(), HYcvPlain, false);
         lstr.add(s);
         lstr.add_c('\n');
         delete [] s;
@@ -1279,7 +1279,7 @@ InfoState::InfoState(const char *nm, const char *hk) : CmdState(nm, hk)
 InfoState::~InfoState()
 {
     InfoCmd = 0;
-    SelBack->free();
+    CDol::destroy(SelBack);
     ObjList->free();
     delete TmpObj;
     while (ExpObjs) {
@@ -1632,7 +1632,7 @@ InfoState::show_cell_expand(bool exp, bool clear)
             delete c0;
 
             show_obj_info(&tlst);
-            tlst.cdescs->free();
+            CDclxy::destroy(tlst.cdescs);
             tlst.cdescs = 0;
             tlst.odesc = 0;
         }
@@ -1722,7 +1722,7 @@ InfoState::show_obj_info(tlst_t *ol)
             lstr.add(s->string);
             lstr.add("\n");
         }
-        s0->free();
+        stringlist::destroy(s0);
     }
 
     if (!ol->cdescs) {

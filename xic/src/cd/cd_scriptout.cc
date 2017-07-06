@@ -285,7 +285,7 @@ CDscriptOut::writeLabel(const CDo *odesc)
         so_newlyr = false;
     }
 
-    char *text = l->label()->string(HYcvPlain, false);
+    char *text = hyList::string(l->label(), HYcvPlain, false);
     int ret = 0;
 
     CDp *p0 = objProperties(odesc);
@@ -362,7 +362,7 @@ CDscriptOut::writeInst(const CDo *odesc)
 
         // Instantiation should generate correct instance
         // properties (?)
-        p0->free_list();
+        CDp::destroy(p0);
 
         ret = fprintf(so_fp,
             "Place(\"%s\", %.5f, %.5f, 0, %s, FALSE, FALSE, \"%s\")\n",

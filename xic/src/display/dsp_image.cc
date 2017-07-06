@@ -946,7 +946,7 @@ zimg_backend::queue_layer(const Layer *layer)
             Physical);
         if (layers) {
             ldesc = layers->ldesc;
-            layers->free();
+            CDll::destroy(layers);
         }
         if (!ldesc) {
             bool error;

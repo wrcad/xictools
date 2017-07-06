@@ -39,46 +39,36 @@
 //
 struct chd_src_t
 {
-    chd_src_t(const char*, sChdPrp*);
-    ~chd_src_t();
-    void free();
+    // Note that prp ownership changes.
+    chd_src_t(const char *cname, sChdPrp *prp)
+        {
+            cs_seen_tab = 0;
+            cs_cellnames = new stringlist(lstring::copy(cname), 0);
+            cs_chd_prp = prp;
+            cs_next = 0;
+        }
+
+    ~chd_src_t()
+        {
+            delete cs_seen_tab;
+            stringlist::destroy(cs_cellnames);
+            delete cs_chd_prp;
+        }
+
+    static void destroy(chd_src_t *c)
+        {
+            while (c) {
+                chd_src_t *cx = c;
+                c = c->cs_next;
+                delete cx;
+            }
+        }
 
     SymTab *cs_seen_tab;        // caller uses this
     stringlist *cs_cellnames;   // list of cell names from this CHD
     sChdPrp *cs_chd_prp;        // unique reference property string
     chd_src_t *cs_next;
 };
-
-
-// Constructor, not that prp ownership changes.
-//
-chd_src_t::chd_src_t(const char *cname, sChdPrp *prp)
-{
-    cs_seen_tab = 0;
-    cs_cellnames = new stringlist(lstring::copy(cname), 0);
-    cs_chd_prp = prp;
-    cs_next = 0;
-}
-
-
-chd_src_t::~chd_src_t()
-{
-    delete cs_seen_tab;
-    cs_cellnames->free();
-    delete cs_chd_prp;
-}
-
-
-void
-chd_src_t::free()
-{
-    chd_src_t *c = this;
-    while (c) {
-        chd_src_t *cx = c;
-        c = c->cs_next;
-        delete cx;
-    }
-}
 
 
 // The table, hashes the chd_src_t elements.
@@ -98,7 +88,7 @@ struct chd_src_tab
     ~chd_src_tab()
         {
             for (unsigned int i = 0; i <= hashmask; i++)
-                array[i]->free();
+                chd_src_t::destroy(array[i]);
             delete [] array;
         }
 

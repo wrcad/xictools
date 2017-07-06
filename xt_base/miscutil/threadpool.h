@@ -81,11 +81,10 @@ public:
                     (*jl_destroy)(jl_arg);
             }
 
-        void free()
+        static void destroy(const sTPjobList *j)
             {
-                sTPjobList *j = this;
                 while (j) {
-                    sTPjobList *jx = j;
+                    const sTPjobList *jx = j;
                     j = j->jl_next;
                     delete jx;
                 }
@@ -149,7 +148,7 @@ public:
     void clear()
         {
             tp_list = 0;
-            tp_list_bak->free();
+            sTPjobList::destroy(tp_list_bak);
             tp_list_bak = 0;
             tp_list_end = 0;
         }

@@ -48,18 +48,18 @@ namespace {
     {
         OPlist(CDo *o, PolyList *p, OPlist *n)
             { odesc = o; plist = p; next = n; }
-        ~OPlist() { plist->free(); }
+        ~OPlist() { PolyList::destroy(plist); }
 
-        void free()
+        static void destroy(OPlist *t)
             {
-                OPlist *tn;
-                for (OPlist *t = this; t; t = tn) {
-                    tn = t->next;
-                    delete t;
+                while (t) {
+                    OPlist *tx = t;
+                    t = t->next;
+                    delete tx;
                 }
             }
 
-        void add(CDs*, bool);
+        static void add(OPlist*, CDs*, bool);
 
         CDo *odesc;
         PolyList *plist;
@@ -67,15 +67,16 @@ namespace {
     };
 
 
+    // Static function.
     // Add the new objects to sdesc, and remove the old objects.  This
     // frees the list.
     //
     void
-    OPlist::add(CDs *sdesc, bool undoable)
+    OPlist::add(OPlist *thisop, CDs *sdesc, bool undoable)
     {
         Errs()->init_error();
         OPlist *onext;
-        for (OPlist *o = this; o; o = onext) {
+        for (OPlist *o = thisop; o; o = onext) {
             onext = o->next;
             CDl *ld = o->odesc->ldesc();
             for (PolyList *pl = o->plist; pl; pl = pl->next) {
@@ -190,7 +191,7 @@ cEdit::bloatQueue(int width, int mode)
                 XIrt ret;
                 Zlist *zlist = GEO()->ifBloatObj(od, width, &ret);
                 if (ret != XIok) {
-                    l0->free();
+                    OPlist::destroy(l0);
                     PL()->ErasePrompt();
                     XM()->ShowParameters();
                     dspPkgIf()->SetWorking(false);
@@ -210,9 +211,9 @@ cEdit::bloatQueue(int width, int mode)
 
                     XIrt ret = Zlist::zl_bloat(&zlist, width, mode);
                     if (ret != XIok) {
-                        l0->free();
+                        OPlist::destroy(l0);
                         for (i++; i < nused; i++)
-                            Zlist::free(zheads[i]);
+                            Zlist::destroy(zheads[i]);
                         delete [] zheads;
                         PL()->ErasePrompt();
                         XM()->ShowParameters();
@@ -230,7 +231,7 @@ cEdit::bloatQueue(int width, int mode)
                                             false))
                                         o->plist = new PolyList(po, o->plist);
                                 }
-                                Zlist::free(zlist);
+                                Zlist::destroy(zlist);
                             }
                             else
                                 o->plist = Zlist::to_poly_list(zlist);
@@ -241,7 +242,7 @@ cEdit::bloatQueue(int width, int mode)
             }
             delete [] zheads;
         }
-        l0->add(cursd, true);
+        OPlist::add(l0, cursd, true);
     }
     PL()->ErasePrompt();
     XM()->ShowParameters();

@@ -168,12 +168,12 @@ namespace gtkinterf {
 
             Msg(gtk_bag *wb, pid_t p, Msg *n)
                 { next = n; w = wb; pid = p; msg_list = 0; err = false; }
-            ~Msg() { msg_list->free(); }
+            ~Msg() { stringlist::destroy(msg_list); }
 
             void show()
                 {
                     if (w && msg_list) {
-                        char *msg = msg_list->flatten("\n");
+                        char *msg = stringlist::flatten(msg_list, "\n");
                         GTKprintPopup::hc_pop_up_text(w, msg, err);
                         delete [] msg;
                     }

@@ -85,7 +85,7 @@ cSced::updateNameLabel(CDc *cdesc, CDp_name *pna)
     hyList *htxt = pna->label_text(&copied, cdesc);
     BBox BB;
     if (!updateLabelText(pna->bound(), cdesc->parent(), htxt, &BB))
-        htxt->free();
+        hyList::destroy(htxt);
     else
         DSP()->RedisplayArea(&BB, Electrical);
 }
@@ -107,7 +107,7 @@ cSced::updateLabelText(CDla *ladesc, CDs *sdesc, hyList *htxt, BBox *BB)
         DSP()->LabelResize(htxt, ladesc->label(), &tw, &th);
         ladesc->set_width(tw);
         ladesc->set_height(th);
-        ladesc->label()->free();
+        hyList::destroy(ladesc->label());
         ladesc->set_label(htxt);
         if (BB)
             *BB = ladesc->oBB();
@@ -145,7 +145,8 @@ cSced::changeLabel(CDla *ladesc, CDs *sdesc, hyList *lastr)
     CDp_nmut *pm = 0;
     CDp_lref *prf = (CDp_lref*)ladesc->prpty(P_LABRF);
     if (prf && prf->devref()) {
-        lastr->trim_white_space();
+        if (lastr)
+            lastr->trim_white_space();
         if (prf->propref() && prf->devref()->type() == CDINSTANCE) {
             // device property
             CDp *pd = 0;
@@ -176,7 +177,7 @@ cSced::changeLabel(CDla *ladesc, CDs *sdesc, hyList *lastr)
             //
             double val = 0;
             char devn[128], buf[128];
-            char *string = lastr->string(HYcvPlain, false);
+            char *string = hyList::string(lastr, HYcvPlain, false);
             ScedIf()->mutParseName(string, devn, buf);
             delete [] string;
 
@@ -287,7 +288,7 @@ cSced::addDeviceLabel(CDc *cdesc, CDp *pdesc, CDp *oldp, hyList *hstring,
             olabel ? olabel->ldesc() : defaultLayer(pdesc),
             olabel ? olabel->prpty_list() : 0, true);
         if (copied)
-            label.label->free();
+            hyList::destroy(label.label);
         if (!nlabel) {
             Errs()->add_error("newLabel failed");
             Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());

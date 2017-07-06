@@ -708,27 +708,25 @@ DRCerrRet::DRCerrRet(const DRCtestDesc *td, int vc)
 }
 
 
+// Static function.
 // Keep only the errors according to the current errLevel.
 //
 DRCerrRet *
-DRCerrRet::filter()
+DRCerrRet::filter(DRCerrRet *thiser)
 {
-    {
-        DRCerrRet *ert = this;
-        if (!ert)
-            return (0);
-    }
+    if (!thiser)
+        return (0);
     if (DRC()->errorLevel() == 0) {
         // return one error, the first found
-        er_next->free();
-        er_next = 0;
+        DRCerrRet::destroy(thiser->er_next);
+        thiser->er_next = 0;
     }
     else if (DRC()->errorLevel() == 1) {
         char bits[32];
         memset(bits, 0, 32);
         // return one error of each type
         DRCerrRet *ep = 0, *en;
-        for (DRCerrRet *e = this; e; e = en) {
+        for (DRCerrRet *e = thiser; e; e = en) {
             en = e->er_next;
             if (bits[e->er_rule->type()]) {
                 ep->er_next = en;
@@ -739,7 +737,7 @@ DRCerrRet::filter()
             ep = e;
         }
     }
-    return (this);
+    return (thiser);
 }
 
 

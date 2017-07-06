@@ -83,9 +83,8 @@ public:
                 nl_np = p;
             }
 
-        void free()
+        static void destroy(node_list *n)
             {
-                node_list *n = this;
                 while (n) {
                     node_list *nx = n;
                     n = n->nl_next;
@@ -116,7 +115,7 @@ public:
 
         ~cstk_elt()
             {
-                stk_netex->free();
+                CDnetex::destroy(stk_netex);
             }
 
         cstk_elt *next()            const { return (stk_next); }

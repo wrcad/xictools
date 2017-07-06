@@ -539,9 +539,9 @@ poly_splitter::split(const Poly &po)
         if (!y0)
             y0 = y;
         else
-            y0->merge_end_row(y);
+            Ylist::merge_end_row(y0, y);
     }
-    return (y0->to_zlist());
+    return (Ylist::to_zlist(y0));
 }
 
 

@@ -62,9 +62,8 @@ struct pf_stack_elt
             next = n;
         }
 
-    void free()
+    static void destroy(pf_stack_elt *p)
         {
-            pf_stack_elt *p = this;
             while (p) {
                 pf_stack_elt *x = p;
                 p = p->next;

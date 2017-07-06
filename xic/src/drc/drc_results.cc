@@ -150,15 +150,15 @@ DRCresultParser::openFile(const char *fname)
         return (RPerror);
     }
     if (wl->next) {
-        wl->sort();
+        stringlist::sort(wl);
         DSPmainWbag(PopUpList(wl,
             "Multiple DRC error log files found - click to select",
             0, callback, this, false, true))
-        wl->free();
+        stringlist::destroy(wl);
         return (RPeof);
     }
     callback(wl->string, this);
-    wl->free();
+    stringlist::destroy(wl);
     return (RPok);
 }
 

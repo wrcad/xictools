@@ -72,7 +72,7 @@ cParamCx::push(const CDs *sdesc, const char *inst_prms)
 
         pc_tab = pc_stack->ptab->copy();
         sParamTab *tmpptab = buildParamTab(sdesc);
-        pc_tab = pc_tab->update(tmpptab);
+        pc_tab = sParamTab::update(pc_tab, tmpptab);
         delete tmpptab;
         if (inst_prms) {
             if (!pc_tab)
@@ -90,7 +90,7 @@ cParamCx::push(const CDs *sdesc, const char *inst_prms)
                 pc_tab = new sParamTab;
             pc_tab->update(inst_prms);
         }
-        pc_tab = pc_tab->update(pc_stack->ptab);
+        pc_tab = sParamTab::update(pc_tab, pc_stack->ptab);
     }
     if (pc_tab->errString) {
         Log()->ErrorLog("param expand", pc_tab->errString);
@@ -199,7 +199,7 @@ cParamCx::localParHier(const CDs *sdesc)
             continue;
         hyList *hp = ((CDla*)od)->label();
         if (hp) {
-            char *string = hp->string(HYcvPlain, false);
+            char *string = hyList::string(hp, HYcvPlain, false);
             if (string) {
                 char *s = string;
                 while (isspace(*s))
@@ -242,9 +242,9 @@ cParamCx::buildParamTab(const CDs *sdesc)
     for ( ; pp; pp = pp->next()) {
         hyList *hp = pp->data();
         if (hp) {
-            char *string = hp->string(HYcvPlain, false);
+            char *string = hyList::string(hp, HYcvPlain, false);
             if (string) {
-                ptab->extract_params(string);
+                sParamTab::extract_params(ptab, string);
                 delete [] string;
             }
         }
@@ -263,13 +263,13 @@ cParamCx::buildParamTab(const CDs *sdesc)
             continue;
         hyList *hp = ((CDla*)od)->label();
         if (hp) {
-            char *string = hp->string(HYcvPlain, false);
+            char *string = hyList::string(hp, HYcvPlain, false);
             if (string) {
                 char *s = string;
                 while (isspace(*s))
                     s++;
                 if (lstring::ciprefix(".param", s))
-                    ptab->extract_params(s);
+                    sParamTab::extract_params(ptab, s);
                 delete [] string;
             }
         }

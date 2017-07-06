@@ -78,13 +78,12 @@ struct sElecNetList
                     delete sdcopy[i];
             }
 
-        void free()
+        static void destroy(sdlink *s)
             {
-                sdlink *s = this;
                 while (s) {
                     sdlink *x = s;
                     s = s->next;
-                    ::free(x);
+                    std::free(x);
                 }
             }
 
@@ -117,48 +116,42 @@ struct sElecNetList
 
     void set_group(int n, int g)
         {
-            sElecNetList *nt = this;
-            if (nt && et_list && n >= 0 && n < (int)et_size)
+            if (et_list && n >= 0 && n < (int)et_size)
                 et_list[n].group = g;
         }
 
     int group_of_node(int n) const
         {
-            const sElecNetList *nt = this;
-            if (nt && et_list && n >= 0 && n <= (int)et_maxix)
+            if (et_list && n >= 0 && n <= (int)et_maxix)
                 return (et_list[n].group);
             return (-1);
         }
 
     CDpin *pins_of_node(int n) const
         {
-            const sElecNetList *nt = this;
-            if (nt && et_list && n >= 0 && n <= (int)et_maxix)
+            if (et_list && n >= 0 && n <= (int)et_maxix)
                 return (et_list[n].pins);
             return (0);
         }
 
     CDcont *conts_of_node(int n) const
         {
-            const sElecNetList *nt = this;
-            if (nt && et_list && n >= 0 && n <= (int)et_maxix)
+            if (et_list && n >= 0 && n <= (int)et_maxix)
                 return (et_list[n].conts);
             return (0);
         }
 
     bool node_active(int n) const
         {
-            const sElecNetList *nt = this;
-            if (nt && et_list && n >= 0 && n <= (int)et_maxix)
+            if (et_list && n >= 0 && n <= (int)et_maxix)
                 return (et_list[n].conts || et_list[n].pins);
             return (false);
         }
 
     int count_active() const
         {
-            const sElecNetList *nt = this;
             int n = 0;
-            if (nt && et_list) {
+            if (et_list) {
                 for (unsigned int i = 1; i <= et_maxix; i++) {
                     if (et_list[i].conts || et_list[i].pins)
                         n++;
@@ -227,6 +220,41 @@ private:
     unsigned int    et_maxix;       // Largest array element used.
     unsigned int    et_size;        // Array size allocated.
 };
+
+
+//
+// cGroupDesc deferred inline definitions.
+//
+#ifdef EXT_EXTRACT_H
+
+inline bool
+cGroupDesc::node_active(int n)
+{
+    return (gd_etlist ? gd_etlist->node_active(n) : false);
+}
+
+
+inline int
+cGroupDesc::group_of_node(int n)
+{
+    return (gd_etlist ? gd_etlist->group_of_node(n) : -1);
+}
+
+
+inline CDpin *
+cGroupDesc::pins_of_node(int n)
+{
+    return (gd_etlist ? gd_etlist->pins_of_node(n) : 0);
+}
+
+
+inline CDcont *
+cGroupDesc::conts_of_node(int n)
+{
+    return (gd_etlist ? gd_etlist->conts_of_node(n) : 0);
+}
+
+#endif
 
 #endif
 

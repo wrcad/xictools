@@ -23,7 +23,7 @@ CCFILES = spbuild.cc spfactor.cc spsolve.cc sputils.cc
 CCOBJS = $(CCFILES:.cc=.o)
 INCLUDE = -I../../include -I$(LPATH)/miscutil
 
-$(LIB_TARGET): $(HFILES) $(CCOBJS)
+$(LIB_TARGET): include $(HFILES) $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
 	    rm -f $(LIB_TARGET); \
 	fi
@@ -42,6 +42,9 @@ spbuild.cc:     $(LPATH)/sparse/spbuild.cc
 spfactor.cc:    $(LPATH)/sparse/spfactor.cc
 spsolve.cc:     $(LPATH)/sparse/spsolve.cc
 sputils.cc:     $(LPATH)/sparse/sputils.cc
+
+include:
+	cd ../../include; $(MAKE)
 
 depend: $(HFILES) $(CCFILES)
 	@echo depending in xic/sparse

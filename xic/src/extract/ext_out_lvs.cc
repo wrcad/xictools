@@ -246,7 +246,7 @@ cGroupDesc::print_lvs(FILE *fp)
                     MICRONS(b->locBB()->right), MICRONS(b->locBB()->top));
             }
             fprintf(fp, "\n");
-            bcerrs->free();
+            sBcErr::destroy(bcerrs);
         }
     }
 
@@ -278,7 +278,7 @@ cGroupDesc::print_lvs(FILE *fp)
         }
 
         char nname1[64];
-        if (i < esize && gd_etlist->node_active(i)) {
+        if (i < esize && node_active(i)) {
             const char *nn = SCD()->nodeName(esdesc, i);
             sprintf(nname1, "(%d) %s", i, nn);
         }
@@ -286,10 +286,10 @@ cGroupDesc::print_lvs(FILE *fp)
             *nname1 = 0;
 
         char gr2[32];
-        if (i < esize && gd_etlist->group_of_node(i) >= 0)
-            sprintf(gr2, "%d", gd_etlist->group_of_node(i));
+        if (i < esize && group_of_node(i) >= 0)
+            sprintf(gr2, "%d", group_of_node(i));
         else {
-            if (i < esize && gd_etlist->node_active(i))
+            if (i < esize && node_active(i))
                 strcpy(gr2, "---");
             else
                 *gr2 = 0;
@@ -333,7 +333,7 @@ cGroupDesc::print_lvs(FILE *fp)
         fprintf(fp, "\nFormal terminal group associations (F, location "
             "fixed by user placement):\n\n");
         for (int i = 0; i < esize; i++) {
-            for (CDpin *p = gd_etlist->pins_of_node(i); p; p = p->next()) {
+            for (CDpin *p = pins_of_node(i); p; p = p->next()) {
                 CDsterm *term = p->term();
                 fprintf(fp, "  %-20s %c %4d", term->name()->string(),
                     term->is_fixed() ? 'F' : ' ', term->group());
@@ -342,7 +342,7 @@ cGroupDesc::print_lvs(FILE *fp)
                     // it is not considered to be an error.
 
                     int st, dt;
-                    tcount(gd_etlist->conts_of_node(i), &st, &dt);
+                    tcount(conts_of_node(i), &st, &dt);
                     if (!dt && st <= 1)
                         fprintf(fp, " %s\n", "UNINITIALIZED (virtual)");
                     else {
@@ -652,9 +652,8 @@ namespace {
                 next = n;
             }
 
-        void free()
+        static void destroy(di_list *d)
             {
-                di_list *d = this;
                 while (d) {
                     di_list *dx = d;
                     d = d->next;
@@ -675,7 +674,7 @@ namespace {
             SymTabGen gen(tab, true);
             SymTabEnt *ent;
             while ((ent = gen.next()) != 0) {
-                ((di_list*)ent->stData)->free();
+                di_list::destroy((di_list*)ent->stData);
                 delete ent;
             }
             delete tab;
@@ -828,11 +827,11 @@ cGroupDesc::check_grp_node(int grp, sLVSstat &lvs, FILE *fp)
     bool hdr_printed = false;
     int retval = 0;
     int tcnt = 0;
-    for (CDcont *t = gd_etlist->conts_of_node(g->node()); t; t = t->next())
+    for (CDcont *t = conts_of_node(g->node()); t; t = t->next())
         tcnt++;
     CDcterm **terms = new CDcterm*[tcnt];
     tcnt = 0;
-    for (CDcont *t = gd_etlist->conts_of_node(g->node()); t; t = t->next())
+    for (CDcont *t = conts_of_node(g->node()); t; t = t->next())
         terms[tcnt++] = t->term();
 
     for (sDevContactList *dc = g->device_contacts(); dc; dc = dc->next()) {
@@ -912,7 +911,8 @@ cGroupDesc::check_grp_node(int grp, sLVSstat &lvs, FILE *fp)
                     }
                 }
             }
-            else if (subc->permutes()->is_equiv(subg, ci->subc_group())) {
+            else if (subg == ci->subc_group() || (subc->permutes() &&
+                    subc->permutes()->is_equiv(subg, ci->subc_group()))) {
                 found = true;
                 terms[i] = 0;
                 break;
@@ -951,11 +951,11 @@ cGroupDesc::check_grp_node(int grp, sLVSstat &lvs, FILE *fp)
 
     // now account for formal terminal connections
     int pcnt = 0;
-    for (CDpin *p = gd_etlist->pins_of_node(g->node()); p; p = p->next())
+    for (CDpin *p = pins_of_node(g->node()); p; p = p->next())
         pcnt++;
     CDsterm **pins = new CDsterm*[pcnt];
     pcnt = 0;
-    for (CDpin *p = gd_etlist->pins_of_node(g->node()); p; p = p->next())
+    for (CDpin *p = pins_of_node(g->node()); p; p = p->next())
         pins[pcnt++] = p->term();
 
     for (CDpin *p = g->termlist(); p; p = p->next()) {
@@ -1104,7 +1104,7 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
         }
     }
     for (int i = 1; i < esize; i++) {
-        if (gd_etlist->node_active(i) && gd_etlist->group_of_node(i) < 0) {
+        if (node_active(i) && group_of_node(i) < 0) {
             const char *nn = SCD()->nodeName(esdesc, i);
             fprintf(fp, "  Electrical net %s is not associated", nn);
             something_printed = true;
@@ -1113,7 +1113,7 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
             // If this is simply an unconnected subcircuit terminal,
             // it is not considered to be an error.
             int st, dt;
-            tcount(gd_etlist->conts_of_node(i), &st, &dt);
+            tcount(conts_of_node(i), &st, &dt);
             if (!dt && st <= 1) {
                 fprintf(fp, "  ( virtual net - not an error ).\n");
                 lvs.nt_unassoc--;
@@ -1393,7 +1393,7 @@ cGroupDesc::check_wire_cap(CDc *cd, const char *cname, FILE *fp)
         fprintf(fp, "  wire cap %s: missing VALUE property\n", cname);
         return (true);
     }
-    char *string = pv->data()->string(HYcvPlain, true);
+    char *string = hyList::string(pv->data(), HYcvPlain, true);
     double ecap;
     if (!string || sscanf(string, "%lf", &ecap) != 1) {
         fprintf(fp, "  wire cap %s: bad value %s\n", cname,

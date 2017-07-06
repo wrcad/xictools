@@ -35,6 +35,7 @@
 #include "fio_cif.h"
 #include "fio_chd.h"
 #include <ctype.h>
+#include <algorithm>
 
 
 namespace {
@@ -104,7 +105,7 @@ namespace {
         }
         *ppts = po;
         *pnum = i;
-        p0->free();
+        Plist::destroy(p0);
     }
 
 
@@ -189,19 +190,6 @@ CDp::hpstring(CDs *sdesc) const
         return (new hyList(sdesc, p_string, HYcvPlain));
     }
     return (0);
-}
-
-
-// Free the entire CDp struct list headed by pdesc.
-//
-void
-CDp::free_list()
-{
-    CDp *pd, *pnxt;
-    for (pd = this; pd; pd = pnxt) {
-        pnxt = pd->p_next;
-        delete pd;
-    }
 }
 
 
@@ -1068,13 +1056,13 @@ CDp_oset::~CDp_oset()
 
 CDp_glob::CDp_glob(const CDp_glob &pd) : CDp(pd.p_string, pd.p_value)
 {
-    pg_data = pd.pg_data->dup();
+    pg_data = hyList::dup(pd.pg_data);
 }
 
 
 CDp_glob::~CDp_glob()
 {
-    pg_data->free();
+    hyList::destroy(pg_data);
 }
 
 
@@ -1082,7 +1070,7 @@ bool
 CDp_glob::print(sLstr *lstr, int, int) const
 {
     if (pg_data) {
-        char *s = pg_data->string(HYcvAscii, false);
+        char *s = hyList::string(pg_data, HYcvAscii, false);
         if (s) {
             lstr->add(s);
             delete [] s;
@@ -1100,7 +1088,7 @@ CDp_glob::print(sLstr *lstr, int, int) const
 hyList *
 CDp_glob::hpstring(CDs*) const
 {
-    return (pg_data->dup());
+    return (hyList::dup(pg_data));
 }
 // End CDp_glob functions
 
@@ -1130,7 +1118,7 @@ CDp_user::CDp_user(CDs *sdesc, const char *str, int val) : CDp(0, val)
 CDp_user::CDp_user(const CDp_user &pd) : CDp(0, pd.p_value)
 {
     pu_label = pd.pu_label;
-    pu_data = pd.pu_data->dup();
+    pu_data = hyList::dup(pd.pu_data);
 }
 
 
@@ -1139,14 +1127,14 @@ CDp_user::operator=(const CDp_user &pd)
 {
     (CDp&)*this = (const CDp&)pd;
     pu_label = pd.pu_label;
-    pu_data = pd.pu_data->dup();
+    pu_data = hyList::dup(pd.pu_data);
     return (*this);
 }
 
 
 CDp_user::~CDp_user()
 {
-    pu_data->free();
+    hyList::destroy(pu_data);
 }
 
 
@@ -1157,7 +1145,7 @@ CDp_user::print(sLstr *lstr, int, int) const
 {
     if (!pu_data)
         return (false);
-    char *s = pu_data->string(HYcvAscii, true);
+    char *s = hyList::string(pu_data, HYcvAscii, true);
     if (s) {
         lstr->add(s);
         delete [] s;
@@ -1170,7 +1158,7 @@ CDp_user::print(sLstr *lstr, int, int) const
 hyList *
 CDp_user::hpstring(CDs*) const
 {
-    return (pu_data->dup());
+    return (hyList::dup(pu_data));
 }
 
 
@@ -1437,7 +1425,7 @@ CDp_bnode::CDp_bnode(const CDp_bnode &pd) : CDp(0, pd.p_value)
     pbn_beg_range = pd.pbn_beg_range;
     pbn_end_range = pd.pbn_end_range;
     pbn_name = pd.pbn_name;
-    pbn_bundle = pd.bundle_spec()->dup();
+    pbn_bundle = CDnetex::dup(pd.bundle_spec());
     pbn_label = 0;
 }
 
@@ -1449,7 +1437,7 @@ CDp_bnode::operator=(const CDp_bnode &pd)
     pbn_beg_range = pd.pbn_beg_range;
     pbn_end_range = pd.pbn_end_range;
     pbn_name = pd.pbn_name;
-    pbn_bundle = pd.bundle_spec()->dup();
+    pbn_bundle = CDnetex::dup(pd.bundle_spec());
     pbn_label = 0;
     return (*this);
 }
@@ -1457,7 +1445,7 @@ CDp_bnode::operator=(const CDp_bnode &pd)
 
 CDp_bnode::~CDp_bnode()
 {
-    pbn_bundle->free();
+    CDnetex::destroy(pbn_bundle);
 }
 
 
@@ -1537,7 +1525,7 @@ CDp_bnode::parse_bnode(const char *str)
 void
 CDp_bnode::update_bundle(CDnetex *nx)
 {
-    pbn_bundle->free();
+    CDnetex::destroy(pbn_bundle);
     pbn_bundle = 0;
     if (!nx)
         return;
@@ -1549,7 +1537,7 @@ CDp_bnode::update_bundle(CDnetex *nx)
         pbn_beg_range = 0;
         pbn_end_range = 0;
         pbn_name = nm;
-        nx->free();
+        CDnetex::destroy(nx);
         return;
     }
 
@@ -1559,7 +1547,7 @@ CDp_bnode::update_bundle(CDnetex *nx)
         pbn_beg_range = b;
         pbn_end_range = e;
         pbn_name = nm;
-        nx->free();
+        CDnetex::destroy(nx);
         return;
     }
 
@@ -1590,7 +1578,7 @@ CDp_bnode::add_label_text(sLstr *lstr) const
         lstr->add_c('>');
         return;
     }
-    pbn_bundle->print_all(lstr);
+    CDnetex::print_all(pbn_bundle, lstr);
 }
 
 
@@ -1601,7 +1589,7 @@ CDnetex *
 CDp_bnode::get_netex() const
 {
     if (pbn_bundle)
-        return (pbn_bundle->dup());
+        return (CDnetex::dup(pbn_bundle));
     CDvecex *vx = new CDvecex(0, pbn_beg_range, pbn_end_range, 1, 1);
     return (new CDnetex(pbn_name, 1, vx, 0));
 }
@@ -1619,7 +1607,7 @@ CDp_bnode::has_name() const
 
 NetexWrap::~NetexWrap()
 {
-    nxtmp->free();
+    CDnetex::destroy(nxtmp);
 }
 // End of NetexWrap functions.
 
@@ -1903,7 +1891,7 @@ CDp_bcnode::full_name() const
     // commas.
 
     sLstr lstr;
-    bundle_spec()->print_all(&lstr);
+    CDnetex::print_all(bundle_spec(), &lstr);
     if (!lstr.string())
         return (lstring::copy(nmstr));
     if (!nmstr)
@@ -1931,7 +1919,7 @@ CDp_bcnode::id_text() const
         lstr.add_c('>');
     }
     else
-        pbn_bundle->print_all(&lstr);
+        CDnetex::print_all(pbn_bundle, &lstr);
     return (lstr.string_trim());
 }
 
@@ -3558,7 +3546,7 @@ CDp_mut::find(int x, int y, CDs *sdesc)
             cdesc = (CDc*)sl->odesc;
         }
     }
-    s0->free();
+    CDol::destroy(s0);
     return (cdesc);
 }
 // End CDp_mut functions
@@ -4493,6 +4481,39 @@ CDp_nodmp::parse_nodmp(const char* str)
 }
 // End CDp_nodmp functions
 
+
+namespace {
+    // Comparison function for properties.
+    //
+    inline bool
+    p_comp(const CDp *p1, const CDp *p2)
+    {
+        return (p1->value() < p2->value());
+    }
+}
+
+
+// Static function.
+// Sort a list of properties by increasing value.
+//
+void
+CDpl::sort(CDpl *thisp)
+{
+    int cnt = 0;
+    for (CDpl *p = thisp; p; p = p->next, cnt++) ;
+    if (cnt < 2)
+        return;
+    CDp **aa = new CDp*[cnt];
+    cnt = 0;
+    for (CDpl *p = thisp; p; p = p->next, cnt++)
+        aa[cnt] = p->pdesc;
+    std::sort(aa, aa + cnt, p_comp);
+    cnt = 0;
+    for (CDpl *p = thisp; p; p = p->next, cnt++)
+        p->pdesc = aa[cnt];
+    delete [] aa;
+}
+// End CDpl functions
 
 //
 // Parser/composer for the XICP_CHD_REF property string.

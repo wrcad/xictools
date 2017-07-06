@@ -212,8 +212,32 @@ struct cv_info
     void add_text()             { text_cnt++; }
     void add_inst(bool ary)     { if (ary) aref_cnt++; else sref_cnt++; }
 
-    // data access
-    cvINFO savemode();
+    // data access methods
+
+    // Return the save level enumeration.
+    static cvINFO savemode(const cv_info *cvi)
+        {
+            if (!cvi)
+                return (cvINFOnone);
+            return (cvi->savemode_prv());
+        }
+private:
+    cvINFO savemode_prv() const
+        {
+            if (enable_per_layer) {
+                if (enable_per_cell)
+                    return (cvINFOplpc);
+                else
+                    return (cvINFOpl);
+            }
+            else {
+                if (enable_per_cell)
+                    return (cvINFOpc);
+                else
+                    return (cvINFOtotals);
+            }
+        }
+public:
     stringlist *layers(const char* = 0);
     stringlist *cells();
     pl_data *info(const char*, const char*);

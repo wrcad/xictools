@@ -78,14 +78,23 @@ namespace dsp_mark {
         // mdDspMain     Show mark in schematic cell of name-matching windows.
         // mdDspSymb     Show mark in symbolic cell of name-matching windows.
 
+        enum gp_style { gp_box, gp_barrel, gp_ullr, gp_diam, gp_oct };
+
         sMark();
         virtual ~sMark() { }
 
-        enum gp_style { gp_box, gp_barrel, gp_ullr, gp_diam, gp_oct };
+        static void destroy(const sMark *m)
+            {
+                while (m) {
+                    const sMark *mx  = m;
+                    m = m->mNext;
+                    delete mx;
+                }
+            }
 
         int pixel(WindowDesc*);
         void gp_mark(WindowDesc*, int, bool, gp_style);
-        void free();
+        static void destroy();
         virtual void show(WindowDesc*, bool) = 0;
         virtual void addBB(WindowDesc*, BBox*) = 0;
 
@@ -263,7 +272,7 @@ namespace dsp_mark {
             sMark*);
         ~sMark_Plot()
             {
-                mProxy->free();
+                hyParent::destroy(mProxy);
             }
         void show(WindowDesc*, bool);
         void addBB(WindowDesc*, BBox*);
@@ -593,7 +602,7 @@ cDisplay::ShowCells(const char *name)
         }
         sprintf(buf, "Marked %d instances of %s.",
             CurMode() == Electrical ?
-                MK.elec_show->length() : MK.phys_show->length(),
+                Blist::length(MK.elec_show) : Blist::length(MK.phys_show),
             name);
         show_message(buf);
     }
@@ -614,7 +623,7 @@ cDisplay::ShowCells(const char *name)
             return;
         }
         MK.phys_show = b0;
-        sprintf(buf, "Marked %d instances of %s.", b0->length(),
+        sprintf(buf, "Marked %d instances of %s.", Blist::length(b0),
             pref->get_name()->string());
         show_message(buf);
     }
@@ -884,11 +893,11 @@ cDisplay::ShowCellTerminalMarks(bool display)
                     mm->show(wdesc, ERASE);
             }
         }
-        mp->free();
-        me->free();
-        ms->free();
-        mb->free();
-        my->free();
+        sMark::destroy(mp);
+        sMark::destroy(me);
+        sMark::destroy(ms);
+        sMark::destroy(mb);
+        sMark::destroy(my);
     }
 }
 
@@ -968,11 +977,11 @@ cDisplay::ShowInstTerminalMarks(bool display, CDc *cdesc, int vecix)
                     mm->show(wdesc, ERASE);
             }
         }
-        mp->free();
-        me->free();
-        ms->free();
-        mb->free();
-        my->free();
+        sMark::destroy(mp);
+        sMark::destroy(me);
+        sMark::destroy(ms);
+        sMark::destroy(mb);
+        sMark::destroy(my);
     }
 }
 
@@ -1030,7 +1039,7 @@ cDisplay::ShowPhysTermList(bool display, CDpin *tlist)
             for (sMark *mm = m0; mm; mm = mm->mNext)
                 mm->show(wdesc, ERASE);
         }
-        m0->free();
+        sMark::destroy(m0);
     }
 }
 
@@ -1088,7 +1097,7 @@ cDisplay::ShowPhysTermList(bool display, CDcont *tlist)
             for (sMark *mm = m0; mm; mm = mm->mNext)
                 mm->show(wdesc, ERASE);
         }
-        m0->free();
+        sMark::destroy(m0);
     }
 }
 
@@ -1854,7 +1863,7 @@ cDisplay::EraseMarks(int type)
         for (sMark *mm = m0; mm; mm = mm->mNext)
             mm->show(wdesc, ERASE);
     }
-    m0->free();
+    sMark::destroy(m0);
 }
 
 
@@ -2264,7 +2273,7 @@ WindowDesc::ProxyList() const
     if (!HasProxy())
         return (0);
     return (new hyParent((CDc*)w_proxy->odesc(), w_proxy->pos_x(),
-        w_proxy->pos_y(), w_proxy->proxy()->dup()));
+        w_proxy->pos_y(), hyParent::dup(w_proxy->proxy())));
 }
 
 
@@ -2303,18 +2312,18 @@ WindowDesc::UpdateProxy()
                 lstr.add_c('.');
             bool copied;
             hyList *hp = pn->label_text(&copied, p->cdesc());
-            char *s = hp->string(HYcvPlain, false);
+            char *s = hyList::string(hp, HYcvPlain, false);
             lstr.add(s);
             delete [] s;
             if (copied)
-                hp->free();
+                hyList::destroy(hp);
         }
         else {
             lstr.free();
             break;
         }
     }
-    pl->free();
+    hyParent::destroy(pl);
     Wbag()->SetLabelText(lstr.string());
 }
 
@@ -2347,7 +2356,7 @@ sMK::clear(int type)
 {
     if (type < 0)
         return;
-    mark_heads[listnum(type)]->free();
+    sMark::destroy(mark_heads[listnum(type)]);
     mark_heads[listnum(type)] = 0;
 }
 
@@ -2628,11 +2637,11 @@ sMK::erase_behind(WindowDesc *wdesc)
     if (!wdesc->Wdraw())
         return;
     if (erbh_list) {
-        erbh_list = erbh_list->merge();
+        erbh_list = Blist::merge(erbh_list);
         wdesc->Wdraw()->SetColor(DSP()->Color(BackgroundColor, Physical));
         for (Blist *bl = erbh_list; bl; bl = bl->next)
             wdesc->ShowBox(&bl->BB, CDL_FILLED, 0);
-        erbh_list->free();
+        Blist::destroy(erbh_list);
         erbh_list = 0;
     }
 }
@@ -2705,8 +2714,8 @@ sMK::clear_BBs()
             }
         }
     }
-    pl->free();
-    el->free();
+    Blist::destroy(pl);
+    Blist::destroy(el);
 }
 // End of sMK functions.
 
@@ -2924,17 +2933,6 @@ sMark::gp_mark(WindowDesc *wdesc, int deltap, bool decimal,
         wdesc->ViewportText(nbuf, x0 + xos, y2 - yos, scale, false);
     else
         wdesc->ViewportText(nbuf, x0 + yos, y2 - xos, scale, true);
-}
-
-
-void
-sMark::free()
-{
-    sMark *mn;
-    for (sMark *mm = this; mm; mm = mn) {
-        mn = mm->mNext;
-        delete mm;
-    }
 }
 
 
@@ -4616,7 +4614,7 @@ sMark_Plot::sMark_Plot(const CDs *sd, const hyParent *p, int t, int x, int y,
     mY = y;
     mColor = clr;
     mSdesc = sd;
-    mProxy = p->dup();
+    mProxy = hyParent::dup(p);
 }
 
 
@@ -4627,8 +4625,8 @@ sMark_Plot::show(WindowDesc *wdesc, bool display)
     if (sd != mSdesc)
         return;
     hyParent *p = wdesc->ProxyList();
-    int c = p->cmp(mProxy);
-    p->free();
+    int c = hyParent::cmp(p, mProxy);
+    hyParent::destroy(p);
     if (!c)
         return;
 
@@ -4655,8 +4653,8 @@ sMark_Plot::addBB(WindowDesc *wdesc, BBox *BB)
     if (sd != mSdesc)
         return;
     hyParent *p = wdesc->ProxyList();
-    int c = p->cmp(mProxy);
-    p->free();
+    int c = hyParent::cmp(p, mProxy);
+    hyParent::destroy(p);
     if (!c)
         return;
 

@@ -40,7 +40,7 @@ struct sPbase : public gtk_bag
             pi_drag_y = 0;
             pi_dragging = false;
         }
-    virtual ~sPbase() { pi_list->free(); }
+    virtual ~sPbase() { Ptxt::destroy(pi_list); }
 
     Ptxt *resolve(int, CDo**);
 

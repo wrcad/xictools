@@ -236,20 +236,21 @@ ParseNode::check()
 }
 
 
+// Static function.
+//
 void
-ParseNode::free()
+ParseNode::destroy(const ParseNode *pn)
 {
-    ParseNode *pnt = this;
-    if (pnt) {
-        if (SIparse()->isSubFunc(this)) {
-            SIfunc *sf = data.f.userfunc;
+    if (pn) {
+        if (SIparse()->isSubFunc(pn)) {
+            SIfunc *sf = pn->data.f.userfunc;
             if (sf)
                 sf->sf_refcnt--;
         }
-        left->free();
-        right->free();
-        next->free();
-        delete this;
+        destroy(pn->left);
+        destroy(pn->right);
+        destroy(pn->next);
+        delete pn;
     }
 }
 
@@ -417,19 +418,19 @@ namespace {
         err = (*p->right->evfunc)(p->right, &v[1], datap);
         if (err != OK) {
             if (v[0].type == TYP_ZLIST)
-                Zlist::free(v[0].content.zlist);
+                Zlist::destroy(v[0].content.zlist);
             return (err);
         }
         if (v[1].type != TYP_ZLIST && v[1].type != TYP_SCALAR) {
             if (v[0].type == TYP_ZLIST)
-                Zlist::free(v[0].content.zlist);
+                Zlist::destroy(v[0].content.zlist);
             return (BAD);
         }
         err = (*p->data.f.function)(res, v, datap);
         if (v[0].type == TYP_ZLIST)
-            Zlist::free(v[0].content.zlist);
+            Zlist::destroy(v[0].content.zlist);
         if (v[1].type == TYP_ZLIST)
-            Zlist::free(v[1].content.zlist);
+            Zlist::destroy(v[1].content.zlist);
         return (err);
     }
 
@@ -447,7 +448,7 @@ namespace {
             return (BAD);
         err = (*p->data.f.function)(res, &r1, datap);
         if (r1.type == TYP_ZLIST)
-            Zlist::free(r1.content.zlist);
+            Zlist::destroy(r1.content.zlist);
         return (err);
     }
 }

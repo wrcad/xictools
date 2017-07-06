@@ -607,7 +607,7 @@ secure_prv::test_me(int code)
                     break;
             }
         }
-        ifc->free();
+        miscutil::ifc_t::destroy(ifc);
     }
 
     if (!ret)

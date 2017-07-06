@@ -233,7 +233,7 @@ ant_pathfinder::process(const sDevContactInst *cx)
         Zlist *zl = (Zlist*)h->stData;
         zl = Zlist::repartition_ni(zl);
         double a = Zlist::area(zl);
-        Zlist::free(zl);
+        Zlist::destroy(zl);
         char *s = new char[32];
         sprintf(s, "%.6e", a);
         h->stData = s;
@@ -252,8 +252,8 @@ ant_pathfinder::process(const sDevContactInst *cx)
 
     double gate_area = 0.0;
     for (gate_t *gt = pf_gates; gt; gt = gt->next) {
-        int len = gt->bbs->length();
-        double a = gt->bbs->farea();
+        int len = abl_t::length(gt->bbs);
+        double a = abl_t::farea(gt->bbs);
         gate_area += a;
         sprintf(buf, "  gate=%s sect=%d area=%.6e\n", gt->pathname, len, a);
         lstr.add(buf);

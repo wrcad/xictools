@@ -167,7 +167,7 @@ struct SIlexprCx
     // Take ownership of zl.
     void setZrefSaved(Zlist *zl)
         {
-            Zlist::free(cx_zlSaved);
+            Zlist::destroy(cx_zlSaved);
             cx_zlSaved = zl;
             cx_refZlist = cx_zlSaved;
         }

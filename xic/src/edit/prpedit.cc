@@ -582,7 +582,7 @@ PrptyState::b1up()
                 break;
             }
         }
-        sl0->free();
+        CDol::destroy(sl0);
         if (od)
             ED()->PopUpPropertyInfo(od, MODE_ON);
         return;
@@ -606,7 +606,7 @@ PrptyState::b1up()
                     sd = sd->next;
                 }
             }
-            sl0->free();
+            CDol::destroy(sl0);
         }
         else {
             if (!cEventHdlr::sel_b1up(&AOI, Types, 0))
@@ -667,7 +667,7 @@ PrptyState::b1up()
                     else
                         // Make the new object the currently marked object
                         Scur = sd;
-                    sl0->free();
+                    CDol::destroy(sl0);
                     ED()->PopUpProperties(od_of(Scur), MODE_UPD, PRPnochange);
                     return;
                 }
@@ -697,7 +697,7 @@ PrptyState::b1up()
         // Scur/Shead is null, if objects have been merged away through
         // pseudo-props
         //
-        sl0->free();
+        CDol::destroy(sl0);
         n0->prev = Scur;
         if (Scur) {
             newsel->next = Scur->next;
@@ -948,10 +948,10 @@ PrptyState::ltcallback(hyList *h, void *arg)
 
     char *string;
     if (h->ref_type() == HLrefLongText)
-        string = h->string(HYcvAscii, true);
+        string = hyList::string(h, HYcvAscii, true);
     else
-        string = h->string(HYcvPlain, true);
-    h->free();
+        string = hyList::string(h, HYcvPlain, true);
+    hyList::destroy(h);
 
     if (PrptyCmd && PrptyCmd->Global) {
 
@@ -1104,7 +1104,7 @@ PrptyState::prp_updtext(sSel *sl)
                     hyList *h = new hyList(0, PNAM(pdesc)->assigned_name(),
                         HYcvPlain);
                     PL()->EditHypertextPrompt(buf, h, false, PLedUpdate);
-                    h->free();
+                    hyList::destroy(h);
                 }
                 else
                     PL()->EditHypertextPrompt(buf, 0, false, PLedUpdate);
@@ -1150,7 +1150,7 @@ PrptyState::prp_updtext(sSel *sl)
                 hp = new hyList(cursd, pdesc->string(), HYcvPlain);
         }
         PL()->EditHypertextPrompt(buf, hp, use_lt, PLedUpdate);
-        hp->free();
+        hyList::destroy(hp);
     }
 }
 
@@ -1320,7 +1320,7 @@ PrptyState::prp_add_elec(Ptxt *line, int which, bool edit)
         return;
     if (ret && Udata.hyl) {
         if (Value == P_NAME) {
-            char *pstr = Udata.hyl->string(HYcvPlain, false);
+            char *pstr = hyList::string(Udata.hyl, HYcvPlain, false);
             if (!nameprp_ok(pstr)) {
                 delete [] pstr;
                 PL()->ShowPrompt(
@@ -1366,7 +1366,7 @@ PrptyState::prp_add_elec_noglob()
 
     // Might have exited during modify.
     if (PrptyCmd) {
-        Udata.hyl->free();
+        hyList::destroy(Udata.hyl);
         Udata.hyl = 0;
     }
 }
@@ -1400,7 +1400,7 @@ PrptyState::prp_add_elec_glob_all()
     if (changemade)
         Ulist()->CommitChanges(true);
     if (PrptyCmd) {
-        Udata.hyl->free();
+        hyList::destroy(Udata.hyl);
         Udata.hyl = 0;
     }
 }
@@ -1459,7 +1459,7 @@ PrptyState::prp_add_elec_glob_seq()
         changemade = true;
         // Might have exited during modify.
         if (PrptyCmd) {
-            Udata.hyl->free();
+            hyList::destroy(Udata.hyl);
             Udata.hyl = 0;
         }
         else
@@ -1822,7 +1822,7 @@ PrptyState::prp_get_string(bool global, bool allow_switch)
                 hyList *h = new hyList(0, PNAM(SelPrp)->assigned_name(),
                     HYcvPlain);
                 hnew = PL()->EditHypertextPrompt(tbuf, h, false);
-                h->free();
+                hyList::destroy(h);
             }
             else
                 hnew = PL()->EditHypertextPrompt(tbuf, 0, false);
@@ -1855,7 +1855,7 @@ PrptyState::prp_get_string(bool global, bool allow_switch)
             return (false);
         hnew->trim_white_space();
         if (hnew->ref_type() == HLrefText && !hnew->text()[0]) {
-            hnew->free();
+            hyList::destroy(hnew);
             hnew = 0;
         }
         Udata.hyl = hnew;
@@ -1888,7 +1888,7 @@ PrptyState::prp_get_string(bool global, bool allow_switch)
         ltobj *lt = new ltobj(cursd, Scur->pointer, SelPrp, Value);
         hyList *hnew = PL()->EditHypertextPrompt(tbuf, hp, use_lt,
             PLedStart, PLedNormal, ltcallback, lt);
-        hp->free();
+        hyList::destroy(hp);
         PL()->ErasePrompt();
         if (!hnew) {
             delete lt;
@@ -1900,12 +1900,12 @@ PrptyState::prp_get_string(bool global, bool allow_switch)
 
         delete lt;
         if (hnew->ref_type() == HLrefText && !hnew->text()[0]) {
-            hnew->free();
+            hyList::destroy(hnew);
             hnew = 0;
         }
         if (hnew) {
-            Udata.string = hnew->string(HYcvPlain, true);
-            hnew->free();
+            Udata.string = hyList::string(hnew, HYcvPlain, true);
+            hyList::destroy(hnew);
         }
     }
     return (true);
@@ -2293,10 +2293,12 @@ namespace {
                 if (pdesc->value() != P_OTHER)
                     return (odesc->prpty(pdesc->value()));
                 // Return a P_OTHER property with matching text
-                char *s1 = (PUSR(pdesc)->data())->string(HYcvPlain, false);
+                char *s1 = hyList::string((PUSR(pdesc)->data()), HYcvPlain,
+                    false);
                 for (CDp *pd = odesc->prpty_list(); pd; pd = pd->next_prp()) {
                     if (pd->value() == P_OTHER) {
-                        char *s2 = (PUSR(pd)->data())->string(HYcvPlain, false);
+                        char *s2 = hyList::string((PUSR(pd)->data()),
+                            HYcvPlain, false);
                         int j = strcmp(s1, s2);
                         delete [] s2;
                         if (!j) {
@@ -2428,7 +2430,7 @@ cEdit::editPhysPrpty()
             hyList *hnew = PL()->EditHypertextPrompt("Edit string: ", hp,
                 true, PLedStart, PLedNormal, PrptyState::ltcallback, lt);
             PL()->RegisterCtrlDCallback(0);
-            hp->free();
+            hyList::destroy(hp);
 
             if (!hnew) {
                 PL()->ErasePrompt();
@@ -2440,12 +2442,12 @@ cEdit::editPhysPrpty()
                 return (true);
             }
             if (hnew->ref_type() == HLrefText && !hnew->text()[0]) {
-                hnew->free();
+                hyList::destroy(hnew);
                 hnew = 0;
             }
             if (hnew) {
-                char *string = hnew->string(HYcvPlain, true);
-                hnew->free();
+                char *string = hyList::string(hnew, HYcvPlain, true);
+                hyList::destroy(hnew);
                 DSP()->ShowOdescPhysProperties(odesc, ERASE);
                 Ulist()->ListCheck("editpp", cursd, false);
                 CDp *op = pdesc;
@@ -3542,7 +3544,7 @@ cEdit::acceptLabelPseudoProp(CDla *ladesc, CDs *sdesc, int val,
             return (false);
         }
         if (ladesc->is_copy()) {
-            char *oldstr = ladesc->label()->string(HYcvPlain, false);
+            char *oldstr = hyList::string(ladesc->label(), HYcvPlain, false);
             if (!oldstr)
                 oldstr = lstring::copy("X");
             double oldwidth, oldheight;
@@ -3556,7 +3558,7 @@ cEdit::acceptLabelPseudoProp(CDla *ladesc, CDs *sdesc, int val,
                 &newwidth, &newheight);
             int newlineht = (int)(newheight/newlines);
          
-            ladesc->label()->free();
+            hyList::destroy(ladesc->label());
             ladesc->set_label(hl);
 
             ladesc->set_height(oldlineht * newlines);
@@ -3566,7 +3568,7 @@ cEdit::acceptLabelPseudoProp(CDla *ladesc, CDs *sdesc, int val,
         else {
             // This will handle electrical property changes.
             CDo *newo = changeLabel(ladesc, sdesc, hl);
-            hl->free();
+            hyList::destroy(hl);
             if (!newo) {
                 Errs()->add_error("changeLabel failed");
                 return (false);

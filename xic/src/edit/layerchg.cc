@@ -48,7 +48,7 @@ cEdit::changeLayer()
         return;
     CDol *st = Selections.listQueue(cursd);
     CDmergeInhibit inh(st);
-    st->free();
+    CDol::destroy(st);
 
     CDl *new_layer = LT()->CurLayer();
     sSelGen sg(Selections, cursd, "bpwl");
@@ -143,7 +143,7 @@ label:
     {
         CDla *newo;
         Label label(((CDla*)odesc)->la_label());
-        label.label = label.label->dup();
+        label.label = hyList::dup(label.label);
         if (sdesc->makeLabel(new_layer, &label, &newo) != CDok) {
             Errs()->add_error("makeLabel failed");
             return (false);

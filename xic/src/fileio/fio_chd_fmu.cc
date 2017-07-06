@@ -48,7 +48,7 @@ fmu_t::fmu_t(cCHD *chd, symref_t *top)
         syrlist_t *sl = chd->topCells(Physical, true);
         if (sl)
             ftop = sl->symref;
-        sl->free();
+        syrlist_t::destroy(sl);
     }
 }
 
@@ -110,7 +110,7 @@ fmu_t::find_totals()
             ftab->add((unsigned long)s->symref, (void*)(long)cnt, false);
             cnt++;
         }
-        sl->free();
+        syrlist_t::destroy(sl);
     }
 
     cTfmStack stk;
@@ -168,7 +168,7 @@ fmu_t::fmu_core_rc(symref_t *p, cTfmStack *tstk)
                     double a = 0.0;
                     for (Blist *b = bl; b; b = b->next)
                         a += b->BB.area();
-                    bl->free();
+                    Blist::destroy(bl);
                     double a_max = sBB.area();
                     ret = sum_counts(a/a_max, cp);
                 }

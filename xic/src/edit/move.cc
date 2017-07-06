@@ -150,7 +150,7 @@ MoveState::MoveState(const char *nm, const char *hk) : CmdState(nm, hk)
 MoveState::~MoveState()
 {
     MoveCmd = 0;
-    OrigObjs->free();
+    CDol::destroy(OrigObjs);
 }
 
 
@@ -390,7 +390,7 @@ MoveState::undo()
         }
     }
     else if (Level == 2) {
-        OrigObjs->free();
+        CDol::destroy(OrigObjs);
         OrigObjs = Selections.listQueue(CurCell());
         Selections.deselectTypes(CurCell(), 0);
         Selections.removeTypes(CurCell(), 0);
@@ -434,7 +434,7 @@ MoveState::redo()
             Gst()->SetGhost(GFnone);
             GhostOn = false;
             XM()->SetCoordMode(CO_ABSOLUTE);
-            OrigObjs->free();
+            CDol::destroy(OrigObjs);
             OrigObjs = Selections.listQueue(CurCell());
             Selections.removeTypes(CurCell(), 0);
             Ulist()->RedoOperation();
@@ -514,7 +514,7 @@ cEdit::moveQueue(int ref_x, int ref_y, int new_x, int new_y,
 
     CDol *st = Selections.listQueue(sdesc);
     CDmergeInhibit *inh = new CDmergeInhibit(st);
-    st->free();
+    CDol::destroy(st);
 
     if (DSP()->CurMode() == Electrical && DSP()->ShowTerminals())
         // These might move

@@ -1701,7 +1701,8 @@ misc2_funcs::IFhandleContent(Variable *res, Variable *args, void*)
             if (!hdl->data)
                 hdl->close(id);
             else
-                res->content.value = ((stringlist*)hdl->data)->length();
+                res->content.value =
+                    stringlist::length((stringlist*)hdl->data);
         }
         else if (hdl->type == HDLobject) {
             if (!hdl->data)
@@ -1728,7 +1729,8 @@ misc2_funcs::IFhandleContent(Variable *res, Variable *args, void*)
             if (!hdl->data)
                 hdl->close(id);
             else
-                res->content.value = ((tlist<void>*)hdl->data)->count();
+                res->content.value =
+                    tlist<void>::count((tlist<void>*)hdl->data);
         }
         else
             // HDLgeneric, HDLfd, HDLgen, HDLgraph, HDLregex, HDLchd
@@ -1764,7 +1766,7 @@ misc2_funcs::IFhandleTruncate(Variable *res, Variable *args, void*)
             stringlist *s0 = (stringlist*)hdl->data;
             for (stringlist *s = s0; s; s = s->next) {
                 if (items == 0) {
-                    s->next->free();
+                    stringlist::destroy(s->next);
                     s->next = 0;
                 }
                 items--;
@@ -1775,7 +1777,7 @@ misc2_funcs::IFhandleTruncate(Variable *res, Variable *args, void*)
             CDol *o0 = (CDol*)hdl->data;
             for (CDol *o = o0; o; o = o->next) {
                 if (items == 0) {
-                    o->next->free();
+                    CDol::destroy(o->next);
                     o->next = 0;
                 }
                 items--;
@@ -1786,7 +1788,7 @@ misc2_funcs::IFhandleTruncate(Variable *res, Variable *args, void*)
             CDpl *p0 = (CDpl*)hdl->data;
             for (CDpl *p = p0; p; p = p->next) {
                 if (items == 0) {
-                    p->next->free();
+                    CDpl::destroy(p->next);
                     p->next = 0;
                 }
                 items--;
@@ -1800,7 +1802,7 @@ misc2_funcs::IFhandleTruncate(Variable *res, Variable *args, void*)
             tlist<void> *t0 = (tlist<void>*)hdl->data;
             for (tlist<void> *t = t0; t; t = t->next) {
                 if (items == 0) {
-                    t->next->free();
+                    tlist<void>::destroy(t->next);
                     t->next = 0;
                 }
                 items--;
@@ -1948,7 +1950,7 @@ misc2_funcs::IFhandleDup(Variable *res, Variable *args, void*)
         else if (hdl->type == HDLgen) {
             sPF *gen = (sPF*)hdl->data;
             nhdl = new sHdlGen(gen->dup(), ((sHdlGen*)hdl)->sdesc,
-                ((sHdlGen*)hdl)->rec->dup());
+                gdrec::dup(((sHdlGen*)hdl)->rec));
         }
         if (nhdl) {
             res->type = TYP_HANDLE;
@@ -2087,7 +2089,7 @@ misc2_funcs::IFhandleDupNitems(Variable *res, Variable *args, void*)
         else if (hdl->type == HDLgen) {
             sPF *gen = (sPF*)hdl->data;
             nhdl = new sHdlGen(gen->dup(), ((sHdlGen*)hdl)->sdesc,
-                ((sHdlGen*)hdl)->rec->dup());
+                gdrec::dup(((sHdlGen*)hdl)->rec));
         }
         if (nhdl) {
             res->type = TYP_HANDLE;
@@ -2160,7 +2162,7 @@ misc2_funcs::IFhandleArray(Variable *res, Variable *args, void*)
     if (hdl) {
         if (hdl->type == HDLstring) {
             stringlist *s0 = (stringlist*)hdl->data;
-            int size = s0->length();
+            int size = stringlist::length(s0);
             if (ADATA(args[1].content.a)->resize(size) == BAD)
                 return (OK);
             int cnt = 0;
@@ -2207,7 +2209,7 @@ misc2_funcs::IFhandleArray(Variable *res, Variable *args, void*)
             res->content.value = cnt;
         }
         else if (hdl->type == HDLnode) {
-            int size = ((tlist2<void>*)hdl->data)->count();
+            int size = tlist2<void>::count((tlist2<void>*)hdl->data);
             if (ADATA(args[1].content.a)->resize(size) == BAD)
                 return (OK);
             int cnt = 0;
@@ -2221,7 +2223,7 @@ misc2_funcs::IFhandleArray(Variable *res, Variable *args, void*)
         else if (hdl->type == HDLterminal ||
                 hdl->type == HDLdevice || hdl->type == HDLdcontact ||
                 hdl->type == HDLsubckt || hdl->type == HDLscontact) {
-            int size = ((tlist<void>*)hdl->data)->count();
+            int size = tlist<void>::count((tlist<void>*)hdl->data);
             if (ADATA(args[1].content.a)->resize(size) == BAD)
                 return (OK);
             int cnt = 0;
@@ -2296,7 +2298,7 @@ misc2_funcs::IFhandleReverse(Variable *res, Variable *args, void*)
     res->content.value = 0;
     if (hdl) {
         if (hdl->type == HDLstring)
-            ((stringlist*)hdl->data)->reverse();
+            stringlist::reverse((stringlist*)hdl->data);
         else if (hdl->type == HDLobject) {
             CDol *ol = (CDol*)hdl->data;
             CDol *o0 = 0;
@@ -3168,7 +3170,7 @@ misc2_funcs::IFlistAlphaSort(Variable *res, Variable *args, void*)
             return (BAD);
         stringlist *s = (stringlist*)hdl->data;
         if (s && s->next)
-            s->sort();
+            stringlist::sort(s);
         res->content.value = 1;
     }
     return (OK);
@@ -3202,7 +3204,7 @@ misc2_funcs::IFlistUnique(Variable *res, Variable *args, void*)
                 st->add(s->string, 0, true);
             s = st->names();
             delete st;
-            ((stringlist*)hdl->data)->free();
+            stringlist::destroy((stringlist*)hdl->data);
             hdl->data = s;
         }
         res->content.value = 1;
@@ -3238,7 +3240,8 @@ misc2_funcs::IFlistFormatCols(Variable *res, Variable *args, void*)
     if (hdl) {
         if (hdl->type != HDLstring)
             return (BAD);
-        res->content.string = ((stringlist*)hdl->data)->col_format(cols);
+        res->content.string = stringlist::col_format((stringlist*)hdl->data,
+            cols);
         if (res->content.string)
             res->flags |= VF_ORIGINAL;
     }
@@ -3785,7 +3788,7 @@ namespace {
             s++;
             if (!*s) {
                 // error, stray % at end
-                s0->free();
+                stringlist::destroy(s0);
                 return (0);
             }
             if (*s == '%')
@@ -3795,7 +3798,7 @@ namespace {
                 s++;
             if (!*s) {
                 // premature end
-                s0->free();
+                stringlist::destroy(s0);
                 return (0);
             }
             if (*s == 's' || strchr(sints, *s) || strchr(uints, *s)
@@ -3815,7 +3818,7 @@ namespace {
             }
             else {
                 // found something unexpected
-                s0->free();
+                stringlist::destroy(s0);
                 return (0);
             }
         }
@@ -3883,7 +3886,7 @@ misc2_funcs::IFtoFormat(Variable *res, Variable *args, void*)
                 continue;
             s++;
             if (!*s) {
-                s0->free();
+                stringlist::destroy(s0);
                 return (BAD);
             }
             if (*s == '%')
@@ -3891,7 +3894,7 @@ misc2_funcs::IFtoFormat(Variable *res, Variable *args, void*)
             while (*s && strchr(skip, *s))
                 s++;
             if (!*s) {
-                s0->free();
+                stringlist::destroy(s0);
                 return (BAD);
             }
 
@@ -3915,14 +3918,14 @@ misc2_funcs::IFtoFormat(Variable *res, Variable *args, void*)
                 while (*s && strchr(skip, *s))
                     s++;
                 if (!*s) {
-                    s0->free();
+                    stringlist::destroy(s0);
                     return (BAD);
                 }
             }
 
             if (strchr(sints, *s)) {
                 if (args[ac].type != TYP_SCALAR) {
-                    s0->free();
+                    stringlist::destroy(s0);
                     return (BAD);
                 }
                 if (fw > 0)
@@ -3934,7 +3937,7 @@ misc2_funcs::IFtoFormat(Variable *res, Variable *args, void*)
             }
             if (strchr(uints, *s)) {
                 if (args[ac].type != TYP_SCALAR) {
-                    s0->free();
+                    stringlist::destroy(s0);
                     return (BAD);
                 }
                 if (fw > 0)
@@ -3948,7 +3951,7 @@ misc2_funcs::IFtoFormat(Variable *res, Variable *args, void*)
             }
             if (strchr(dbls, *s)) {
                 if (args[ac].type != TYP_SCALAR) {
-                    s0->free();
+                    stringlist::destroy(s0);
                     return (BAD);
                 }
                 if (fw > 0)
@@ -3961,7 +3964,7 @@ misc2_funcs::IFtoFormat(Variable *res, Variable *args, void*)
             if (*s == 's') {
                 if (args[ac].type != TYP_STRING &&
                         args[ac].type != TYP_NOTYPE) {
-                    s0->free();
+                    stringlist::destroy(s0);
                     return (BAD);
                 }
                 if (fw > 0)
@@ -3979,14 +3982,14 @@ misc2_funcs::IFtoFormat(Variable *res, Variable *args, void*)
                 ac++;
                 break;
             }
-            s0->free();
+            stringlist::destroy(s0);
             return (BAD);
         }
         if (ac == ac0)
             strcpy(buf, sl->string);
         lstr.add(buf);
     }
-    s0->free();
+    stringlist::destroy(s0);
     res->type = TYP_STRING;
     res->content.string = lstr.string_trim();
     res->flags |= VF_ORIGINAL;
@@ -4781,7 +4784,7 @@ misc2_funcs::IFlistDirectory(Variable *res, Variable *args, void*)
             s0 = new stringlist(lstring::copy(de->d_name), s0);
         }
         closedir(wdir);
-        s0->sort();
+        stringlist::sort(s0);
         sHdl *hdl = new sHdlString(s0);
         res->type = TYP_HANDLE;
         res->content.value = hdl->id;
@@ -6821,7 +6824,7 @@ namespace {
                 s0 = new stringlist(lstring::copy(buf), s0);
             }
         }
-        s0->reverse();
+        stringlist::reverse(s0);
         return(s0);
     }
 }
