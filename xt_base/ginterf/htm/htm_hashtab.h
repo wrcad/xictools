@@ -82,11 +82,6 @@ struct htmHashTab
 
     void clear()
     {
-        {
-            htmHashTab *ht = this;
-            if (!ht)
-                return;
-        }
         if (tNumAllocated) {
             for (unsigned int i = 0; i <= tMask; i++) {
                 htmHashEnt *hn;
@@ -105,11 +100,6 @@ struct htmHashTab
     //
     bool add(htmHashEnt *ent)
     {
-        {
-            htmHashTab *ht = this;
-            if (!ht)
-                return (false);
-        }
         if (!ent)
             return (false);
         unsigned int i = string_hash(ent->name(), tMask);
@@ -127,11 +117,6 @@ struct htmHashTab
     //
     htmHashEnt *get(const char *tag)
     {
-        {
-            htmHashTab *ht = this;
-            if (!ht)
-                return (0);
-        }
         if (!tag)
             return (0);
         unsigned int i = string_hash(tag, tMask);

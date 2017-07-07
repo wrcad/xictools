@@ -406,10 +406,8 @@ namespace ginterf
                 next = 0;
             }
 
-        void free()
+        static void destroy(pix_list *x)
             {
-                pix_list *x = this;
-                while (x) {
                     pix_list *xx = x;
                     x = x->next;
                     delete xx;

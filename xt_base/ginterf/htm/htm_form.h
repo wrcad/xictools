@@ -80,7 +80,17 @@ struct htmForm
 {
     htmForm(htmFormData*);
     ~htmForm();
-    void free(htmWidget*);
+
+    static void destroy(htmForm *f, htmWidget *w)
+        {
+            while (f) {
+                htmForm *fx = f;
+                f = f->next;
+                if (w)
+                    w->htm_tk->tk_form_destroy(fx);
+                delete fx;
+            }
+        }
 
     char            *name;          // name for this widget
     componentType   type;           // widget type
@@ -109,7 +119,15 @@ struct htmFormData
 {
     htmFormData(htmWidget*);
     ~htmFormData();
-    void free();
+
+    static void destroy(htmFormData *d)
+        {
+            while (d) {
+                htmFormData *dx = d;
+                d = d->next;
+                delete dx;
+            }
+        }
 
     htmWidget       *html;          // owner of this form
     char            *action;        // destination url/cgi-bin

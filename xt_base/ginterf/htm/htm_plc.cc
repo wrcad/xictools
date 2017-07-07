@@ -899,7 +899,8 @@ PLC::transfer()
         if (plc_owner->im_body_image &&
                 !plc_owner->im_body_image->IsBackground() &&
                 !plc_owner->im_body_image->DelayedCreation() &&
-                plc_owner->im_body_image->html_image->BodyImageLoaded()) {
+                htmImageInfo::BodyImageLoaded(
+                    plc_owner->im_body_image->html_image)) {
 
             int tile_width  = plc_owner->im_body_image->width;
             int tile_height = plc_owner->im_body_image->height;

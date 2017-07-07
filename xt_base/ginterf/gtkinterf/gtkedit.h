@@ -69,9 +69,8 @@ namespace gtkinterf {
                 delete [] h_text;
             }
 
-        void free()
+        static void destroy(histlist *l)
             {
-                histlist *l = this;
                 while (l) {
                     histlist *x = l;
                     l = l->h_next;

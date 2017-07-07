@@ -352,7 +352,7 @@ vl_var::~vl_var()
             delete d;
         delete drivers;
     }
-    events->free();
+    vl_action_item::destroy(events);
 }
 
 

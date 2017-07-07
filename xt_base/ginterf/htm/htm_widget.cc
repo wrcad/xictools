@@ -190,16 +190,16 @@ htmWidget::~htmWidget()
     clearSearch();
     delete [] htm_source;
     delete [] htm_mime_type;
-    htm_formatted->free();
-    htm_elements->free();
+    htmObjectTable::destroy(htm_formatted);
+    htmObject::destroy(htm_elements);
     delete [] htm_anchors;
     delete [] htm_named_anchors;
-    htm_anchor_data->free();
+    htmAnchor::destroy(htm_anchor_data);
     delete [] htm_font_family;
     delete [] htm_font_family_fixed;
-    htm_form_data->free();
+    htmFormData::destroy(htm_form_data);
     delete [] htm_zCmd;
-    htm_tables->free();
+    htmTable::destroy(htm_tables);
 
     destroyFrames();
 
@@ -353,7 +353,7 @@ htmWidget::reformat()
         return;
 
     // destroy any form data
-    htm_form_data->free();
+    htmFormData::destroy(htm_form_data);
     htm_form_data = 0;
 
     // free anchor word data
@@ -539,7 +539,7 @@ htmWidget::repaint(int x, int y, int width, int height)
     bool bg_drawn = false;
     if (htm_im.im_body_image &&
             !htm_im.im_body_image->DelayedCreation() &&
-            htm_im.im_body_image->html_image->BodyImageLoaded()) {
+            htmImageInfo::BodyImageLoaded(htm_im.im_body_image->html_image)) {
 
         // We need to figure out a correct starting point for the first
         // tile to be drawn (ts_[x,y]_origin in the GC).  We know the

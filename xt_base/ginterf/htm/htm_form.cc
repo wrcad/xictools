@@ -80,22 +80,7 @@ htmForm::~htmForm()
     delete [] name;
     delete [] value;
     delete [] content;
-
-    options->free(0);
-}
-
-
-void
-htmForm::free(htmWidget *w)
-{
-    htmForm *f = this;
-    while (f) {
-        htmForm *fn = f->next;
-        if (w)
-            w->htm_tk->tk_form_destroy(f);
-        delete f;
-        f = fn;
-    }
+    htmForm::destroy(options, 0);
 }
 // End of htmForm functions.
 
@@ -117,19 +102,7 @@ htmFormData::~htmFormData()
 {
     delete [] action;
     delete [] enctype;
-    components->free(html);
-}
-
-
-void
-htmFormData::free()
-{
-    htmFormData *d = this;
-    while (d) {
-        htmFormData *dn = d->next;
-        delete d;
-        d = dn;
-    }
+    htmForm::destroy(components, html);
 }
 // End of htmFormData functions.
 
@@ -138,7 +111,7 @@ void
 htmWidget::destroyForms()
 {
     // Destroy any form data and zero pointers.
-    htm_form_data->free();
+    htmFormData::destroy(htm_form_data);
     htm_form_data = 0;
     htm_current_form = 0;
     htm_current_entry = 0;

@@ -122,7 +122,16 @@ struct htmAnchor
     htmAnchor(htmAnchor&);
     ~htmAnchor();
 
-    void free();
+
+    static void destroy(htmAnchor *a)
+        {
+            while (a) {
+                htmAnchor *ax = a;
+                a = a->next;
+                delete ax;
+            }
+        }
+
     void parseHref(const char*);
 
     URLType             url_type;       // url type of anchor
@@ -171,8 +180,16 @@ struct htmObjectTable
     htmObjectTable(htmObject *obj = 0) { reset(obj); }
     ~htmObjectTable();
 
+    static void destroy(htmObjectTable *ot)
+        {
+            while (ot) {
+                htmObjectTable *ox = ot;
+                ot = ot->next;
+                delete ox;
+            }
+        }
+
     void reset(htmObject*);
-    void free();
 
     htmRect         area;           // bounding box of element
     unsigned int    line;           // starting line number of this object

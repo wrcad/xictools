@@ -568,7 +568,7 @@ bool
 HLPcontext::isCurrent(const char *word)
 {
     for (HLPtopic *t = hcxTopList; t; t = t->sibling()) {
-        HLPtopic *last = t->get_last();
+        HLPtopic *last = HLPtopic::get_last(t);
         if (!strcmp(last->keyword(), word))
             return (true);
     }
@@ -680,7 +680,7 @@ HLPcontext::resolveKeyword(const char *hrefin, HLPtopic **ptop, char *hanchor,
         }
     }
 
-    HLPtopic *last = parent->get_last();
+    HLPtopic *last = HLPtopic::get_last(parent);
 
     if (!force_download) {
         char *t = strrchr(href, '.');
@@ -1567,7 +1567,7 @@ HLPcontext::findFile(const char *fname, HLPtopic *parent, bool nonrelative)
     if (!fname)
         return (0);
 
-    HLPtopic *last = parent->get_last();
+    HLPtopic *last = HLPtopic::get_last(parent);
     char *url = urlcat((!nonrelative && last) ? last->keyword() : 0, fname);
     HelpWidget *w = HelpWidget::get_widget(parent);
 
@@ -1767,7 +1767,7 @@ void
 HLPcontext::readBookmarks()
 {
     if (hcxCache) {
-        hcxBookmarks->free();
+        HLPbookMark::destroy(hcxBookmarks);
         hcxBookmarks = 0;
         char buf[URL_BUFSIZE];
         sprintf(buf, "%s/bookmarks", hcxCache->dir_name());

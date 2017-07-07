@@ -154,7 +154,7 @@ void
 htmWidget::parseInput()
 {
     // clear existing elements
-    htm_elements->free();
+    htmObject::destroy(htm_elements);
     htm_elements = 0;
 
     if (!htm_source || !*htm_source)
@@ -180,7 +180,7 @@ htmWidget::parseInput()
                 delete [] text;
             return;
         }
-        htm_elements->free();
+        htmObject::destroy(htm_elements);
         htm_elements = output;
 
         // If the state stack was unbalanced, check if the
@@ -468,7 +468,7 @@ htmParser::htmParser(htmWidget*)
 htmParser::~htmParser()
 {
     delete [] p_source;
-    p_head->free();
+    htmObject::destroy(p_head);
 }
 
 

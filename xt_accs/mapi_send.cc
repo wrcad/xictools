@@ -161,7 +161,7 @@ int main(int argc, char **argv)
             a->string = 0;
         }
         aary[ccnt] = 0;
-        attachments->free();
+        stringlist::destroy(attachments);
     }
 
     const char *ret = msw::MapiSend(address, subject, lstr.string(),

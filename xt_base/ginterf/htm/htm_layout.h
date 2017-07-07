@@ -91,13 +91,13 @@ namespace htm
     struct Exclude
     {
         Exclude() { margin = 0; bottom = 0; next = 0; }
-        void free()
+
+        static void destroy(Exclude *e)
             {
-                Exclude *e = this;
                 while (e) {
-                    Exclude *en = e->next;
-                    delete e;
-                    e = en;
+                    Exclude *ex = e;
+                    e = e->next;
+                    delete ex;
                 }
             }
 
@@ -110,11 +110,12 @@ namespace htm
     {
         Margins() { left = 0; right = 0; }
         ~Margins() { clear(); }
+
         void clear()
             {
-                left->free();
+                Exclude::destroy(left);
                 left = 0;
-                right->free();
+                Exclude::destroy(right);
                 right = 0;
             }
 

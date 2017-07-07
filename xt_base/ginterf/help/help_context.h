@@ -283,13 +283,12 @@ struct HLPbookMark
     HLPbookMark(char *u, char *t) { url = u; title = t; next = 0; }
     ~HLPbookMark() { delete [] url; delete [] title; }
 
-    void free()
+    static void destroy(HLPbookMark *b)
         {
-            HLPbookMark *b = this;
             while (b) {
-                HLPbookMark *bn = b->next;
-                delete b;
-                b = bn;
+                HLPbookMark *bx = b;
+                b = b->next;
+                delete bx;
             }
         }
 

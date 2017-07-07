@@ -137,9 +137,8 @@ struct dbSeg
         }
 #endif
 
-    void free()
+    static void destroy(dbSeg *s)
         {
-            dbSeg *s = this;
             while (s) {
                 dbSeg *sx = s;
                 s = s->next;
@@ -205,9 +204,8 @@ struct dbDseg
         }
 #endif
 
-    void free()
+    static void destroy(dbDseg *ds)
         {
-            dbDseg *ds = this;
             while (ds) {
                 dbDseg *dx = ds;
                 ds = ds->next;
@@ -284,9 +282,8 @@ struct dbDpoint
         }
 #endif
 
-    void free()
+    static void destroy(dbDpoint *dp)
         {
-            dbDpoint *dp = this;
             while (dp) {
                 dbDpoint *dx = dp;
                 dp = dp->next;
@@ -334,9 +331,8 @@ struct dbPath
         }
 #endif
 
-    void free()
+    static void destroy(dbPath *e)
         {
-            dbPath *e = this;
             while (e) {
                 dbPath *ex = e;
                 e = e->next;
@@ -390,15 +386,14 @@ struct dbRoute
 
     ~dbRoute()
         {
-            segments->free();
+            dbSeg::destroy(segments);
 #ifdef LD_MEMDBG
             route_cnt--;
 #endif
         }
 
-    void free()
+    static void destroy(dbRoute *rt)
         {
-            dbRoute *rt = this;
             while (rt) {
                 dbRoute *rx = rt;
                 rt = rt->next;
@@ -441,16 +436,15 @@ struct dbNode
 
     ~dbNode()
         {
-            taps->free();
-            extend->free();
+            dbDpoint::destroy(taps);
+            dbDpoint::destroy(extend);
 #ifdef LD_MEMDBG
             node_cnt--;
 #endif
         }
 
-    void free()
+    static void destroy(dbNode *nd)
         {
-            dbNode *nd = this;
             while (nd) {
                 dbNode *nx = nd;
                 nd = nd->next;
@@ -526,12 +520,11 @@ struct lefPin
     ~lefPin()
         {
             delete [] name;
-            geom->free();
+            dbDseg::destroy(geom);
         }
 
-    void free()
+    static void destroy(lefPin *p)
         {
-            lefPin *p = this;
             while (p) {
                 lefPin *px = p;
                 p = p->next;
@@ -614,9 +607,8 @@ struct dbForeign
             delete [] name;
         }
 
-    void free()
+    static void destroy(dbForeign *f)
         {
-            dbForeign *f = this;
             while (f) {
                 dbForeign *fx = f;
                 f = f->next;
@@ -657,8 +649,8 @@ struct lefMacro
             delete [] gatename;
             delete foreign;
             delete [] sitename;
-            pins->free();
-            obs->free();
+            lefPin::destroy(pins);
+            dbDseg::destroy(obs);
         }
 
     char    *gatename;                  // Name of instance.
@@ -716,18 +708,17 @@ struct dbGate
     ~dbGate()
         {
             delete [] gatename;
-            obs->free();
+            dbDseg::destroy(obs);
             delete [] node;
             delete [] netnum;
             delete [] noderec;
             for (int i = 0; i < nodes; i++)
-                taps[i]->free();
+                dbDseg::destroy(taps[i]);
             delete [] taps;
         }
 
-    void free()
+    static void destroy(dbGate *g)
         {
-            dbGate *g = this;
             while (g) {
                 dbGate *gx = g;
                 g = g->next;
@@ -778,9 +769,8 @@ struct dbNetList
         }
 #endif
 
-    void free()
+    static void destroy(dbNetList *nptr)
         {
-            dbNetList *nptr = this;
             while (nptr) {
                 dbNetList *nx = nptr;
                 nptr = nptr->next;
@@ -790,10 +780,9 @@ struct dbNetList
 
     // Count the number of entries in a simple linked list.
     //
-    u_int countlist()   const
+    static u_int countlist(const dbNetList *nptr)
         {
             u_int count = 0;
-            const dbNetList *nptr = this;
             while (nptr) {
                 count++;
                 nptr = nptr->next;
@@ -852,8 +841,8 @@ struct dbNet
     ~dbNet()
         {
             delete [] netname;
-            netnodes->free();
-            noripup->free();
+            dbNode::destroy(netnodes);
+            dbNetList::destroy(noripup);
             clear_routes();
         }
 
@@ -865,12 +854,12 @@ struct dbNet
                 flags &= ~NET_BULK_ROUTED;
             }
             else {
-                routes->free();
+                dbRoute::destroy(routes);
                 routes = 0;
             }
-            path->free();
+            dbPath::destroy(path);
             path = 0;
-            spath->free();
+            dbPath::destroy(spath);
             spath = 0;
         }
 
@@ -923,7 +912,7 @@ struct dbNet
                         prt->next = rnew;
                     prt = rnew;
                 }
-                routes->free();
+                dbRoute::destroy(routes);
                 routes = (dbRoute*)base;
                 flags |= NET_BULK_ROUTED;
             }
@@ -1052,9 +1041,8 @@ struct lefSpacingRule
             spacing     = s;
         }
 
-    void free()
+    static void destroy(lefSpacingRule *sr)
         {
-            lefSpacingRule *sr = this;
             while (sr) {
                 lefSpacingRule *sx = sr;
                 sr = sr->next;
@@ -1096,7 +1084,7 @@ struct lefRoute
 
     void clear()
         {
-            spacing->free();
+            lefSpacingRule::destroy(spacing);
             spacing     = 0;
             width       = 0;
             pitchX      = 0;

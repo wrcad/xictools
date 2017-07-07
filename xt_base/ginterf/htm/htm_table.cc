@@ -317,18 +317,6 @@ htmTable::~htmTable()
 }
 
 
-void
-htmTable::free()
-{
-    htmTable *table = this;
-    while (table) {
-        htmTable *tmp = table->t_next;
-        delete table;
-        table = tmp;
-    }
-}
-
-
 // Open a new table.
 //
 htmTable*

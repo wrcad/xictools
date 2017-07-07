@@ -236,7 +236,7 @@ cSced::connect(CDs *sd)
         // Shouldn't happen.
         sd->setSPconnected(false);
 
-    bool nm_dirty = sd->nodes()->isDirty();
+    bool nm_dirty = sd->nodes() ? sd->nodes()->isDirty() : false;
     if (sc_include_nophys && !sd->isSPconnected()) {
         bool has_snp = has_shorted_nophys(sd);
         if (!sd->isConnected() || has_snp) {

@@ -212,19 +212,6 @@ private:
 };
 
 
-// Used to free various lists.
-//
-template <class T> void
-hlp__free(T *x)
-{
-    while (x) {
-        T *xn = x->next;
-        delete x;
-        x = xn;
-    }
-}
-
-
 // A private 'wordlist'
 //
 struct HLPwords
@@ -237,7 +224,15 @@ struct HLPwords
         }
 
     ~HLPwords() { delete [] word; }
-    void free() { hlp__free(this); }
+
+    static void destroy(HLPwords *w)
+        {
+            while (w) {
+                HLPwords *wx = w;
+                w = w->next;
+                delete wx;
+            }
+        }
 
     char *word;
     HLPwords *next;
@@ -266,7 +261,14 @@ struct HLPent
             delete [] title;
         }
 
-    void free() { hlp__free(this); }
+    static void destroy(HLPent *e)
+        {
+            while (e) {
+                HLPent *ex = e;
+                e = e->next;
+                delete ex;
+            }
+        }
 
     HLPent *next;
     long offset;                // Offset of topic text in file.
@@ -294,7 +296,14 @@ struct HLPrdir
             delete [] alias;
         }
 
-    void free() { hlp__free(this); }
+    static void destroy(HLPrdir *r)
+        {
+            while (r) {
+                HLPrdir *rx = r;
+                r = r->next;
+                delete rx;
+            }
+        }
 
     char *key;
     char *alias;
@@ -318,7 +327,16 @@ struct HLPdirList
         }
 
     ~HLPdirList();
-    void free() { hlp__free(this); }
+
+    static void destroy(HLPdirList *dl)
+        {
+            while (dl) {
+                HLPdirList *dx = dl;
+                dl = dl->next;
+                delete dx;
+            }
+        }
+
     void init();
     void reset();
     void read_file(const char*);

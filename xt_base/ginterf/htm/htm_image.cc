@@ -756,7 +756,7 @@ htmImageManager::imageAddImageMap(const char *image_map)
     }
 
     delete imageMap;
-    parsed_map->free();
+    htmObject::destroy(parsed_map);
 }
 
 
@@ -1186,7 +1186,7 @@ htmImageManager::imageCheckDelayedCreation()
     // if we have a body image, but it's not yet available, do nothing
     if (im_body_image &&
             !im_body_image->DelayedCreation() &&
-            !im_body_image->html_image->BodyImageLoaded())
+            !htmImageInfo::BodyImageLoaded(im_body_image->html_image))
         return;
 
     // First check if the body image is present.  If it is and we

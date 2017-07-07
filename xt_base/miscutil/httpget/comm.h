@@ -510,13 +510,13 @@ struct HTTPCookieList
             next = 0;
 
         }
-    void free()
+
+    static void destroy(HTTPCookieList *l)
         {
-            HTTPCookieList *l = this;
             while (l) {
-                HTTPCookieList *n = l->next;
-                delete l;
-                l = n;
+                HTTPCookieList *lx = l;
+                l = l->next;
+                delete lx;
             }
         }
 
@@ -537,8 +537,8 @@ struct HTTPCookieRequest
 
     ~HTTPCookieRequest()
         {
-            cookieList->free();
-            setCookie->free();
+            HTTPCookieList::destroy(cookieList);
+            HTTPCookieList::destroy(setCookie);
         }
 
     void set(int, char*, char*);

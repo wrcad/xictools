@@ -69,9 +69,8 @@ struct HLPtopList
             delete [] tl_description;
         }
 
-    void free()
+    static void destroy(HLPtopList *tl)
         {
-            HLPtopList *tl = this;
             while (tl) {
                 HLPtopList *tx = tl;
                 tl = tl->next;
@@ -131,16 +130,33 @@ struct HLPtopic
             delete [] tp_keyword;
             delete [] tp_title;
 
-            tp_subtopics->free();
-            tp_seealso->free();
+            HLPtopList::destroy(tp_subtopics);
+            HLPtopList::destroy(tp_seealso);
 
             delete [] tp_chartext;
             delete [] tp_target;
-            tp_text->free();
+            HLPwords::destroy(tp_text);
+        }
+
+    // Destroy this topic and its descendents.
+    //
+    static void destroy(HLPtopic *ht)
+        {
+            if (ht) {
+                HLPtopic *tn;
+                for (HLPtopic *t = ht->tp_lastborn; t; t = tn) {
+                    tn = t->tp_sibling;
+                    destroy(t);
+                }
+                for (HLPtopic *t = ht->tp_next; t; t = tn) {
+                    tn = t->tp_sibling;
+                    destroy(t);
+                }
+                delete ht;
+            }
         }
 
     // topic.cc
-    void free();
     bool show_in_window();
     void link_new_and_show(bool, HLPtopic*);
     void reuse(HLPtopic*, bool);
@@ -157,17 +173,15 @@ struct HLPtopic
     const char *title()         { return (tp_title); }
     const char *tag()           { return (tp_tag); }
 
-    HLPtopic *get_parent()
+    static HLPtopic *get_parent(HLPtopic *ht)
         {
-            HLPtopic *ht = this;
             if (ht && ht->tp_parent)
                 return (ht->tp_parent);
             return (ht);
         }
 
-    HLPtopic *get_last()
+    static HLPtopic *get_last(HLPtopic *ht)
         {
-            HLPtopic *ht = this;
             if (ht && ht->tp_lastborn)
                 return (ht->tp_lastborn);
             return (ht);
@@ -205,7 +219,7 @@ struct HLPtopic
         { delete [] tp_target; tp_target = lstring::copy(t); }
 
     HLPwords *get_words()       { return (tp_text); }
-    void set_words(HLPwords *h) { tp_text->free(); tp_text = h; }
+    void set_words(HLPwords *h) { HLPwords::destroy(tp_text); tp_text = h; }
     void clear_words()          { tp_text = 0; }
     void register_word(const char *w)
         {

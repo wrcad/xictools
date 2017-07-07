@@ -726,7 +726,7 @@ GTKhelpPopup::~GTKhelpPopup()
     }
     halt_images();
     HLP()->context()->removeTopic(h_root_topic);
-    h_root_topic->free();
+    HLPtopic::destroy(h_root_topic);
     if (!h_is_frame && h_params) {
         h_params->update();
         delete h_params;
@@ -763,7 +763,7 @@ HelpWidget::get_widget(HLPtopic *top)
     if (!top)
         return (0);
     GTKhelpPopup *w =
-        dynamic_cast<GTKhelpPopup*>(top->get_parent()->context());
+        dynamic_cast<GTKhelpPopup*>(HLPtopic::get_parent(top)->context());
     return (w);
 }
 

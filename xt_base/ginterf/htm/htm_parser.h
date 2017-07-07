@@ -92,13 +92,12 @@ struct htmObject
             delete [] element;
         }
 
-    void free()
+    static void destroy(htmObject *ob)
         {
-            htmObject *objects = this;
-            while (objects) {
-                htmObject *nxt = objects->next;
-                delete objects;
-                objects = nxt;
+            while (ob) {
+                htmObject *ox = ob;
+                ob = ob->next;
+                delete ox;
             }
         }
 

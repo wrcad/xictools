@@ -554,7 +554,7 @@ cHelp::search(const char *target)
         if (bb)
             top->add_seealso(bb->title, ww->word);
     }
-    hw->free();
+    HLPwords::destroy(hw);
     top->sort_seealso();
     int i;
     HLPtopList *tl;
@@ -904,7 +904,7 @@ HLPdirList::~HLPdirList()
     stringlist::destroy(hd_tags);
     if (hd_base) {
         for (int i = 0; i < NUMHASH; i++)
-            hd_base[i]->free();
+            HLPent::destroy(hd_base[i]);
         delete [] hd_base;
     }
 }
@@ -947,13 +947,13 @@ HLPdirList::reset()
     hd_files = 0;
     if (hd_base) {
         for (int i = 0; i < NUMHASH; i++)
-            hd_base[i]->free();
+            HLPent::destroy(hd_base[i]);
         delete [] hd_base;
         hd_base = 0;
     }
     if (hd_rdbase) {
         for (int i = 0; i < NUMHASH; i++)
-            hd_rdbase[i]->free();
+            HLPrdir::destroy(hd_rdbase[i]);
         delete [] hd_rdbase;
         hd_rdbase = 0;
     }

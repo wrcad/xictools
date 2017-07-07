@@ -116,7 +116,7 @@ h2text::convert(const char *html_text)
         m = process(m, &lstr);
     flush_text(&lstr);
     char *s = lstr.string_trim();
-    mu->free();
+    htmObject::destroy(mu);
     return (s);
 }
 
@@ -1784,13 +1784,12 @@ namespace htm
         cxt_t(htmObjectTable *e, int i, int o)
             { obj = e; word_indx = i; offset = o; next = 0; }
 
-        void free()
+        static void destroy(cxt_t *t)
             {
-                cxt_t *t = this;
                 while (t) {
-                    cxt_t *n = t;
+                    cxt_t *tx = t;
                     t = t->next;
-                    delete n;
+                    delete tx;
                 }
             }
 
@@ -1830,7 +1829,7 @@ struct htmSearch
     void clear()
         {
             head = 0;
-            cx_list->free();
+            cxt_t::destroy(cx_list);
             cx_list = 0;
             delete [] flat_string;
             flat_string = 0;

@@ -219,18 +219,6 @@ htmImageMap::~htmImageMap()
         areas = anxt;
     }
 }
-
-
-void
-htmImageMap::free()
-{
-    htmImageMap *map = this;
-    while (map) {
-        htmImageMap *mnxt = map->next;
-        delete map;
-        map = mnxt;
-    }
-}
 // End of htmImageMap functions
 
 
@@ -447,7 +435,7 @@ htmImageManager::checkImagemaps()
 void
 htmImageManager::freeImageMaps()
 {
-    im_image_maps->free();
+    htmImageMap::destroy(im_image_maps);
     im_image_maps = 0;
 }
 

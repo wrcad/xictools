@@ -56,28 +56,6 @@
 // Static window counter for positioning.
 int HLPtopic::tp_wincount = 0;
 
-// Destroy this topic and its descendents.
-//
-void
-HLPtopic::free()
-{
-    {
-        HLPtopic *ht = this;
-        if (!ht)
-            return;
-    }
-    HLPtopic *tn;
-    for (HLPtopic *t = tp_lastborn; t; t = tn) {
-        tn = t->tp_sibling;
-        t->free();
-    }
-    for (HLPtopic *t = tp_next; t; t = tn) {
-        tn = t->tp_sibling;
-        t->free();
-    }
-    delete this;
-}
-
 
 // Display the text for the topic, popping up a new window if
 // necessary.  Returns true if ok, false on error.
@@ -107,11 +85,11 @@ HLPtopic::link_new_and_show(bool spawn, HLPtopic *oldtop)
 
     if (!spawn && oldtop) {
         // Reuse present window.
-        HLPtopic *last = oldtop->get_last();
+        HLPtopic *last = HLPtopic::get_last(oldtop);
         if (!strcmp(last->tp_keyword, tp_keyword)) {
             last->set_words(get_words());
             clear_words();
-            HLPtopic *top = oldtop->get_parent();
+            HLPtopic *top = HLPtopic::get_parent(oldtop);
             if (top != last)
                 top->reuse(last, false);
             else
@@ -119,7 +97,7 @@ HLPtopic::link_new_and_show(bool spawn, HLPtopic *oldtop)
             delete this;
         }
         else
-            oldtop->get_parent()->reuse(this, true);
+            HLPtopic::get_parent(oldtop)->reuse(this, true);
         return;
     }
 

@@ -484,7 +484,15 @@ struct htmImageMap
 {
     htmImageMap(const char*);
     ~htmImageMap();
-    void free();
+
+    static void destroy(htmImageMap *map)
+    {
+        while (map) {
+            htmImageMap *mx = map;
+            map = map->next;
+            delete mx;
+        }
+    }
 
     char                *name;      // name of map
     int                 nareas;     // no of areas
@@ -510,10 +518,9 @@ struct htmImageInfo
     bool Progressive()  { return (options & IMAGE_PROGRESSIVE); }
 
     // check whether the body image is fully loaded
-    bool BodyImageLoaded()
+    static bool BodyImageLoaded(htmImageInfo *iit)
         {
-            htmImageInfo *iit = this;
-            return (iit ? (!Delayed() && !Progressive()) : true);
+            return (iit ? (!iit->Delayed() && !iit->Progressive()) : true);
         }
 
     // regular image fields

@@ -838,7 +838,7 @@ cMRouter::cmdStage1(const char *cmd)
                         db->setErrMsg(
                             lddb::copy("stage1: missing -m value."));
                         delete [] tok;
-                        routeNames->free();
+                        dbStringList::destroy(routeNames);
                         return (LD_BAD);
                     }
                     if (*tok == 'a') {
@@ -863,13 +863,13 @@ cMRouter::cmdStage1(const char *cmd)
                     }
                     db->setErrMsg(lddb::copy("stage1: bad -m value."));
                     delete [] tok;
-                    routeNames->free();
+                    dbStringList::destroy(routeNames);
                     return (LD_BAD);
                 }
             }
             db->setErrMsg(write_msg("stage1: unknown option %s.", tok));
             delete [] tok;
-            routeNames->free();
+            dbStringList::destroy(routeNames);
             return (LD_BAD);
         }
         else {
@@ -912,7 +912,7 @@ cMRouter::cmdStage1(const char *cmd)
                 }
             }
         }
-        routeNames->free();
+        dbStringList::destroy(routeNames);
     }
     setMaskVal(omask);
     setForceRoutable(oforce);
@@ -982,7 +982,7 @@ cMRouter::cmdStage2(const char *cmd)
                     db->setErrMsg(
                         lddb::copy("stage2: missing or bad -l value."));
                     delete [] tok;
-                    routeNames->free();
+                    dbStringList::destroy(routeNames);
                     return (LD_BAD);
                 }
                 limit = atoi(tok);
@@ -996,7 +996,7 @@ cMRouter::cmdStage2(const char *cmd)
                     db->setErrMsg(
                         lddb::copy("stage2: missing or bad -t value."));
                     delete [] tok;
-                    routeNames->free();
+                    dbStringList::destroy(routeNames);
                     return (LD_BAD);
                 }
                 tries = atoi(tok);
@@ -1031,7 +1031,7 @@ cMRouter::cmdStage2(const char *cmd)
                         db->setErrMsg(
                             lddb::copy("stage2: missing -m value."));
                         delete [] tok;
-                        routeNames->free();
+                        dbStringList::destroy(routeNames);
                         return (LD_BAD);
                     }
                     if (*tok == 'a') {
@@ -1057,13 +1057,13 @@ cMRouter::cmdStage2(const char *cmd)
                     db->setErrMsg(
                         lddb::copy("stage2: bad -m value."));
                     delete [] tok;
-                    routeNames->free();
+                    dbStringList::destroy(routeNames);
                     return (LD_BAD);
                 }
             }
             db->setErrMsg(write_msg("stage2: unknown option %s.", tok));
             delete [] tok;
-            routeNames->free();
+            dbStringList::destroy(routeNames);
             return (LD_BAD);
         }
         else {
@@ -1098,7 +1098,7 @@ cMRouter::cmdStage2(const char *cmd)
             }
             failcount += routeNetRipup(net, dodebug);
         }
-        routeNames->free();
+        dbStringList::destroy(routeNames);
     }
     setKeepTrying(otries);
     setRipLimit(olimit);
@@ -1169,7 +1169,7 @@ cMRouter::cmdStage3(const char *cmd)
                     db->setErrMsg(
                         lddb::copy("stage3: missing or bad -l value."));
                     delete [] tok;
-                    routeNames->free();
+                    dbStringList::destroy(routeNames);
                     return (LD_BAD);
                 }
                 limit = atoi(tok);
@@ -1183,7 +1183,7 @@ cMRouter::cmdStage3(const char *cmd)
                     db->setErrMsg(
                         lddb::copy("stage3: missing or bad -t value."));
                     delete [] tok;
-                    routeNames->free();
+                    dbStringList::destroy(routeNames);
                     return (LD_BAD);
                 }
                 tries = atoi(tok);
@@ -1218,7 +1218,7 @@ cMRouter::cmdStage3(const char *cmd)
                         db->setErrMsg(
                             lddb::copy("stage3: missing -m value."));
                         delete [] tok;
-                        routeNames->free();
+                        dbStringList::destroy(routeNames);
                         return (LD_BAD);
                     }
                     if (*tok == 'a') {
@@ -1243,13 +1243,13 @@ cMRouter::cmdStage3(const char *cmd)
                     }
                     db->setErrMsg(lddb::copy("stage3: bad -m value."));
                     delete [] tok;
-                    routeNames->free();
+                    dbStringList::destroy(routeNames);
                     return (LD_BAD);
                 }
             }
             db->setErrMsg(write_msg("stage3: unknown option %s.", tok));
             delete [] tok;
-            routeNames->free();
+            dbStringList::destroy(routeNames);
             return (LD_BAD);
         }
         else {
@@ -1354,7 +1354,7 @@ cMRouter::cmdRipUp(const char *cmd)
             sprintf(buf, "%d nets ripped up.", cnt);
             db->setDoneMsg(lddb::copy(buf));
         }
-        netnames->free();
+        dbStringList::destroy(netnames);
     }
     return (LD_OK);
 }

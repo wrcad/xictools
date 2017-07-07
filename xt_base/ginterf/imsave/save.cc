@@ -38,11 +38,6 @@ namespace {
 ImErrType
 Image::save_image(const char *file, SaveInfo *info)
 {
-    {
-        Image *it = this;
-        if (!it)
-            return (ImError);
-    }
     if (!file)
         return (ImError);
 

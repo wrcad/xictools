@@ -789,7 +789,16 @@ struct vl_context
 {
     vl_context() { module = 0; primitive = 0; task = 0; function = 0;
         block = 0; fjblk = 0; parent = 0; }
-    void free();
+
+    static void destroy(vl_context *c)
+        {
+            while (c) {
+                vl_context *cx = c;
+                c = c->parent;
+                delete cx;
+            }
+        }
+
     vl_context *copy();
     vl_context *push();
     vl_context *push(vl_mp*);
@@ -890,7 +899,16 @@ struct vl_action_item : public vl_stmt
 {
     vl_action_item(vl_stmt*, vl_context*);
     virtual ~vl_action_item();
-    void free();
+
+    static void destroy(vl_action_item *a)
+        {
+            while (a) {
+                vl_action_item *ax = a;
+                a = a->next;
+                delete ax;
+            }
+        }
+
     vl_action_item *copy();
     vl_action_item *purge(vl_stmt*);
     EVtype eval(vl_event*, vl_simulator*);
@@ -938,6 +956,16 @@ struct vl_timeslot
 {
     vl_timeslot(vl_time_t);
     ~vl_timeslot();
+
+    static void destroy(vl_timeslot *t)
+        {
+            while (t) {
+                vl_timeslot *tx = t;
+                t = t->next;
+                delete tx;
+            }
+        }
+
     vl_timeslot *find_slot(vl_time_t);
     void append(vl_time_t, vl_action_item*);
     void append_trig(vl_time_t, vl_action_item*);
@@ -949,7 +977,6 @@ struct vl_timeslot
     void do_actions(vl_simulator*);
     void purge(vl_stmt*);
     void print(ostream&);
-    void free();
 
     vl_time_t time;
     vl_action_item *actions;		// "active" events

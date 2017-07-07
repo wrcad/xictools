@@ -574,7 +574,7 @@ cMRouter::routeNetRipup(dbNet *net, bool graphdebug)
             if ((net->flags & NET_PENDING) == 0) {
                 // Clear this net's "noripup" list and try again.
 
-                net->noripup->free();
+                dbNetList::destroy(net->noripup);
                 net->noripup = 0;
                 result = doRoute(net, mrStage2, graphdebug);
                 net->flags |= NET_PENDING;      // Next time we abandon it.
@@ -733,7 +733,7 @@ cMRouter::doSecondStage(bool graphdebug, bool singlestep)
                 if ((net->flags & NET_PENDING) == 0) {
                     // Clear this net's "noripup" list and try again.
 
-                    net->noripup->free();
+                    dbNetList::destroy(net->noripup);
                     net->noripup = 0;
                     result = doRoute(net, mrStage2, graphdebug);
                     net->flags |= NET_PENDING;      // Next time we abandon it.
@@ -784,7 +784,7 @@ cMRouter::doSecondStage(bool graphdebug, bool singlestep)
                 rt->next = 0;
                 rt = rt2;
             }
-            rt->free();
+            dbRoute::destroy(rt);
 
             // Remove both routing information and remove the route
             // from Obs[] for all parts of the net that were
@@ -838,7 +838,7 @@ cMRouter::doSecondStage(bool graphdebug, bool singlestep)
     // Blow away the noripup lists, we're done with these, presumably.
     for (u_int i = 0; i < numNets(); i++) {
         dbNet *net = nlNet(i);
-        net->noripup->free();
+        dbNetList::destroy(net->noripup);
         net->noripup = 0;
         net->flags &= ~NET_PENDING;
     }
@@ -1194,7 +1194,7 @@ cMRouter::ripup_colliding(dbNet *net)
     // number of failed nets to keep increasing.
 
     if (ripped > mr_ripLimit) {
-        nl->free();
+        dbNetList::destroy(nl);
         return (-1);
     }
 

@@ -61,8 +61,8 @@ htmFormatContext::htmFormatContext()
 
 htmFormatContext::~htmFormatContext()
 {
-    head->free();
-    anchor_head->free();
+    htmObjectTable::destroy(head);
+    htmAnchor::destroy(anchor_head);
     clear();
 }
 
@@ -78,10 +78,10 @@ htmFormatContext::init()
 
     num_elements = 1;
     num_anchors  = 0;
-    head->next->free();
+    htmObjectTable::destroy(head->next);
     head->next = 0;
     current = head;
-    anchor_head->free();
+    htmAnchor::destroy(anchor_head);
     anchor_head = 0;
     anchor_current = 0;
 }

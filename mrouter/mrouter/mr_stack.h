@@ -312,12 +312,12 @@ struct mrNetList
 
     ~mrNetList()
         {
-            nl_head->free();
+            dbNetList::destroy(nl_head);
         }
 
     void clear()
         {
-            nl_head->free();
+            dbNetList::destroy(nl_head);
             nl_head = 0;
             nl_tail = 0;
         }
@@ -397,7 +397,7 @@ struct mrNetList
             return (found);
         }
 
-    u_int num_elements()    { return (nl_head->countlist()); }
+    u_int num_elements()    { return (dbNetList::countlist(nl_head)); }
 
     bool is_empty()         { return (nl_head == 0); }
 

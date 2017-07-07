@@ -239,10 +239,10 @@ vl_simulator::~vl_simulator()
         monitors = fmonitors->next;
         delete m;
     }
-    context->free();
+    vl_context::destroy(context);
     delete timewheel;
-    next_actions->free();
-    fj_end->free();
+    vl_action_item::destroy(next_actions);
+    vl_action_item::destroy(fj_end);
 
     if (top_modules) {
         for (int i = 0; i < top_modules->num; i++)
@@ -284,13 +284,13 @@ vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
         delete m;
     }
     time = 0;
-    context->free();
+    vl_context::destroy(context);
     context = 0;
     delete timewheel;
     timewheel = 0;
-    next_actions->free();
+    vl_action_item::destroy(next_actions);
     next_actions = 0;
-    fj_end->free();
+    vl_action_item::destroy(fj_end);
     fj_end = 0;
     if (top_modules) {
         for (int i = 0; i < top_modules->num; i++)
@@ -1225,18 +1225,6 @@ vl_context::currentTask()
     }
     return (0);
 }
-
-
-void
-vl_context::free()
-{
-    vl_context *cx = this;
-    while (cx) {
-        vl_context *cn = cx->parent;
-        delete cx;
-        cx = cn;
-    }
-}
 // End vl_context functions
 
 
@@ -1266,19 +1254,7 @@ vl_action_item::~vl_action_item()
     if (flags & AI_DEL_STMT)
         delete stmt;
     delete stack;
-    context->free();
-}
-
-
-void
-vl_action_item::free()
-{
-    vl_action_item *a = this;
-    while (a) {
-        vl_action_item *an = a->next;
-        delete a;
-        a = an;
-    }
+    vl_context::destroy(context);
 }
 
 
@@ -1404,11 +1380,11 @@ vl_timeslot::vl_timeslot(vl_time_t t)
 
 vl_timeslot::~vl_timeslot() 
 {
-    actions->free();
-    trig_actions->free();
-    zdly_actions->free();
-    nbau_actions->free();
-    mon_actions->free();
+    vl_action_item::destroy(actions);
+    vl_action_item::destroy(trig_actions);
+    vl_action_item::destroy(zdly_actions);
+    vl_action_item::destroy(nbau_actions);
+    vl_action_item::destroy(mon_actions);
 }
   
 // Return the list head corresponding to the indicated time
@@ -1950,25 +1926,13 @@ vl_timeslot::print(ostream &outs)
     for (vl_action_item *a = nbau_actions; a; a = a->next)
         a->print(outs);
 }
-
-
-void
-vl_timeslot::free()
-{
-    vl_timeslot *t = this;
-    while (t) {
-        vl_timeslot *tn = t->next;
-        delete t;
-        t = tn;
-    }
-}
 // End vl_timeslot functions
 
 
 vl_monitor::~vl_monitor()
 {
     // delete args ?
-    cx->free();
+    vl_context::destroy(cx);
 }
 // End vl_monitor functions
 

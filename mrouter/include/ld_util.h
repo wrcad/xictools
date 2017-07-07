@@ -411,21 +411,21 @@ struct dbStringList
             string = s; next = n;
         }   
                 
-    int length()
+    static int length(const dbStringList *thissl)
         {
             int n=0;
-            for (dbStringList *l = this; l; l = l->next)
+            for (const dbStringList *l = thissl; l; l = l->next)
                 n++;
             return (n);
         }
     
-    void free()
+    static void destroy(dbStringList *s)
         {
-            dbStringList *cn;
-            for (dbStringList *c = this; c; c = cn) {
-                cn = c->next;
-                delete [] c->string;
-                delete c;
+            while (s) {
+                dbStringList *sx = s;
+                s = s->next;
+                delete sx->string;
+                delete sx;
             }
         }
 

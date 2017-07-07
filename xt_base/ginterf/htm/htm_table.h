@@ -143,7 +143,14 @@ struct htmTable
     htmTable();
     ~htmTable();
 
-    void free();
+    static void destroy(htmTable *t)
+        {
+            while (t) {
+                htmTable *tx = t;
+                t = t->t_next;
+                delete tx;
+            }
+        }
 
     htmTable *open(htmWidget*, htmObjectTable*, htmObject*, Alignment*,
         unsigned int*, htmImage**, htmTableCell**);

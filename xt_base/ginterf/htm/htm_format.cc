@@ -165,13 +165,13 @@ void
 htmWidget::format()
 {
     // Free any previous lists and initialize
-    htm_formatted->free();
+    htmObjectTable::destroy(htm_formatted);
     htm_formatted = 0;
-    htm_anchor_data->free();
+    htmAnchor::destroy(htm_anchor_data);
     htm_anchor_data = 0;
 
     // free table data
-    htm_tables->free();
+    htmTable::destroy(htm_tables);
     htm_tables = 0;
 
     htmFormatManager fm(this);
@@ -484,18 +484,6 @@ htmAnchor::~htmAnchor()
 }
 
 
-void
-htmAnchor::free()
-{
-    htmAnchor *anchors = this;
-    while (anchors) {
-        htmAnchor *tmp = anchors->next;
-        delete anchors;
-        anchors = tmp;
-    }
-}
-
-
 // Return the url specification found in the given anchor.
 //
 void
@@ -617,18 +605,6 @@ htmObjectTable::reset(htmObject *obj)
     bg                  = 0;
     next                = 0;
     prev                = 0;
-}
-
-
-void
-htmObjectTable::free()
-{
-    htmObjectTable *list = this;
-    while (list) {
-        htmObjectTable *temp = list->next;
-        delete list;
-        list = temp;
-    }
 }
 
 

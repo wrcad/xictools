@@ -1497,7 +1497,7 @@ GTKeditPopup::ed_insert_text_proc(GtkTextBuffer*, GtkTextIter *istart,
     strncpy(ntext, text, len);
     ntext[len] = 0;
     w->ed_undo_list = new histlist(ntext, start, false, w->ed_undo_list);
-    w->ed_redo_list->free();
+    histlist::destroy(w->ed_redo_list);
     w->ed_redo_list = 0;
     w->check_sens();
 }
@@ -1513,7 +1513,7 @@ GTKeditPopup::ed_delete_range_proc(GtkTextBuffer*, GtkTextIter *istart,
     int start = gtk_text_iter_get_offset(istart);
     char *s = lstring::tocpp(gtk_text_iter_get_text(istart, iend));
     w->ed_undo_list = new histlist(s, start, true, w->ed_undo_list);
-    w->ed_redo_list->free();
+    histlist::destroy(w->ed_redo_list);
     w->ed_redo_list = 0;
     w->check_sens();
 }
@@ -1769,9 +1769,9 @@ GTKeditPopup::ed_do_load_proc(const char *fnamein, void *client_data)
             return;
         }
 
-        w->ed_undo_list->free();
+        histlist::destroy(w->ed_undo_list);
         w->ed_undo_list = 0;
-        w->ed_redo_list->free();
+        histlist::destroy(w->ed_redo_list);
         w->ed_redo_list = 0;
         w->check_sens();
 

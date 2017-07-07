@@ -662,9 +662,9 @@ cLDDB::cmdIgnore(const char *s)
                             net->flags &= ~NET_IGNORED;
                     }
                     dbStringList *cnets = noRouteList();
-                    cnets->free();
+                    dbStringList::destroy(cnets);
                     setNoRouteList(0);
-                    netnames->free();
+                    dbStringList::destroy(netnames);
                     db_donemsg = lddb::copy("Ignored net list cleared.");
                     return (LD_OK);
                 }
@@ -726,7 +726,7 @@ cLDDB::cmdIgnore(const char *s)
                 }
             }
         }
-        netnames->free();
+        dbStringList::destroy(netnames);
     }
     return (LD_OK);
 }
@@ -801,9 +801,9 @@ cLDDB::cmdCritical(const char *s)
                             net->flags &= ~NET_CRITICAL;
                     }
                     dbStringList *cnets = criticalNetList();
-                    cnets->free();
+                    dbStringList::destroy(cnets);
                     setCriticalNetList(0);
-                    netnames->free();
+                    dbStringList::destroy(netnames);
                     db_donemsg = lddb::copy("Critical net list cleared.");
                     return (LD_OK);
                 }
@@ -865,7 +865,7 @@ cLDDB::cmdCritical(const char *s)
                 }
             }
         }
-        netnames->free();
+        dbStringList::destroy(netnames);
     }
     return (LD_OK);
 }
@@ -990,7 +990,7 @@ cLDDB::cmdObstruction(const char *cmd)
             // Clear all user obstructions.
 
             dbDseg *ds = userObs();
-            ds->free();
+            dbDseg::destroy(ds);
             setUserObs(0);
             db_donemsg = lddb::copy("User obstruction list cleared.");
             return (LD_OK);
