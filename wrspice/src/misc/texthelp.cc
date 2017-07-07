@@ -64,7 +64,7 @@ text_help::display(HLPtopic *t)
             // Blow this one and its descendants away
             HLPtopic *last = parent->parent();
             parent->unlink();
-            parent->free();
+            HLPtopic::destroy(parent);
             if (!last)
                 break;
             show(last);

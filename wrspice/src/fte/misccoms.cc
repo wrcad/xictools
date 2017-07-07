@@ -178,7 +178,7 @@ CommandTab::com_help(wordlist *wl)
         }
     }
     HLP()->list(h0);
-    h0->free();
+    HLPwords::destroy(h0);
 
     const char *err = HLP()->error_msg();
     if (err)
