@@ -96,7 +96,7 @@ CshPar::Complete(wordlist *wlist, const char *buf, bool esc)
         sTrie *cc = (*commands)->lookup(first, false, false);
         if (cc && cc->invalid())
             cc = 0;
-        int arg = wlist->length() - 2;
+        int arg = wordlist::length(wlist) - 2;
         if (arg > 3)
             arg = 3;
         // First filenames
@@ -119,10 +119,10 @@ CshPar::Complete(wordlist *wlist, const char *buf, bool esc)
                 // Find all the matching keywords
                 wordlist *a = (*kw)->match(xbuf);
                 i = strlen(xbuf);
-                pmatches = pmatches->append(a);
+                pmatches = wordlist::append(pmatches, a);
             }
         }
-        pmatches->sort();
+        wordlist::sort(pmatches);
     }
     else {
         sTrie **commands = CcClass(CT_COMMANDS);
@@ -138,7 +138,7 @@ CshPar::Complete(wordlist *wlist, const char *buf, bool esc)
                 TTY.out_printf("\b\b  \b\b");
             TTY.out_printf("...  matches:\n");
             printem(pmatches);
-            pmatches->free();
+            wordlist::destroy(pmatches);
             Prompt();
         }
         else {
@@ -185,7 +185,7 @@ CshPar::Complete(wordlist *wlist, const char *buf, bool esc)
     }
 found:
     StuffChars(wbuf);
-    pmatches->free();
+    wordlist::destroy(pmatches);
 }
 
 
@@ -398,7 +398,7 @@ CshPar::FileC(const char *buf)
         }
     }
     closedir(wdir);
-    wl->sort();
+    wordlist::sort(wl);
     return (wl);
 }
 // End of CshPar functions.
@@ -587,7 +587,7 @@ namespace {
         int width;
         TTY.winsize(&width, 0);
         TTY.init_more();
-        int num = wl->length();
+        int num = wordlist::length(wl);
         for (wordlist *ww = wl; ww; ww = ww->wl_next) {
             int j = strlen(ww->wl_word);
             if (j > maxl)
@@ -605,7 +605,7 @@ namespace {
                 int j = i*nlines + k;
                 if (j < num) {
                     TTY.printf("%-*s", maxl-shrink*(i+1)/ncols, 
-                        wl->nthelem(j)->wl_word);
+                        wordlist::nthelem(wl, j)->wl_word);
                 }
                 else
                     break;

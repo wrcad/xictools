@@ -228,7 +228,7 @@ CommandTab::com_diff(wordlist *wl)
                 wl2->wl_word, p2->type_name(), p1->type_name());
         }
     }
-    wl20->free();
+    wordlist::destroy(wl20);
 
     dvlist2 *dl0 = 0;
     for (wl1 = wl10; wl1; wl1 = wl1->wl_next) {
@@ -250,7 +250,7 @@ CommandTab::com_diff(wordlist *wl)
                 wl1->wl_word);
         }
     }
-    wl10->free();
+    wordlist::destroy(wl10);
 
     
     // Now we have all the vectors linked to their twins.  Travel

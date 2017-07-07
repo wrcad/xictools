@@ -671,7 +671,7 @@ namespace {
             if (w == 0)
                 return;
             (*command->co_func) (w);
-            w->free();
+            wordlist::destroy(w);
         }
     }
 }

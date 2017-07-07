@@ -92,7 +92,7 @@ CshPar::HistSubst(wordlist **list)
                 cp_didhsubst = true;
                 wordlist *n = dohsubst(s + 1);
                 if (!n) {
-                    wlist->free();
+                    wordlist::destroy(wlist);
                     *list = 0;
                     return;
                 }
@@ -203,8 +203,8 @@ CshPar::dohsubst(char *string)
                 wl = hpattern(buf);
                 if (!wl)
                     return (0);
-                if (s == 0) // No modifiers on this one
-                    return (wl->copy());
+                if (s == 0) // No modifiers on this one.
+                    return (wordlist::copy(wl));
             }
             break;
 
@@ -248,7 +248,7 @@ CshPar::dohsubst(char *string)
         GRpkgIf()->ErrPrintf(ET_MSG, "Event not found.\n");
         return (0);
     }
-    wordlist *nwl = dohmod(&string, wl->copy());
+    wordlist *nwl = dohmod(&string, wordlist::copy(wl));
     if (!nwl)
         return (0);
     if (*string) {
@@ -359,7 +359,7 @@ namespace {
     wordlist *dohmod(char **string, wordlist *wl)
     {
         do {
-            int numwords = wl->length();
+            int numwords = wordlist::length(wl);
             bool globalsubst = false;
             int eventlo = 0;
             int eventhi = numwords - 1;
@@ -405,7 +405,7 @@ namespace {
                 TTY.init_more();
                 TTY.wlprint(wl);
                 TTY.send("\n");
-                wl->free();
+                wordlist::destroy(wl);
                 return (0);
             case 's':   // Do a substitution
                 {
@@ -425,7 +425,7 @@ namespace {
                     }
                     if (!didsub) {
                         GRpkgIf()->ErrPrintf(ET_ERROR, "modifier failed.\n");
-                        wl->free();
+                        wordlist::destroy(wl);
                         return (0);
                     }
                 }
@@ -434,13 +434,13 @@ namespace {
                 if (!isdigit(**string)) {
                     GRpkgIf()->ErrPrintf(ET_ERROR, "%s: bad modifier.\n", 
                         *string);
-                    wl->free();
+                    wordlist::destroy(wl);
                     return (0);
                 }
                 int i = lstring::scannum(*string);
                 if (i > eventhi) {
                     GRpkgIf()->ErrPrintf(ET_ERROR, "bad event number %d\n", i);
-                    wl->free();
+                    wordlist::destroy(wl);
                     return (0);
                 }
                 eventhi = eventlo = i;
@@ -461,8 +461,8 @@ namespace {
             // Now change the word list accordingly and make another pass
             // if there is more of the substitute left.
             
-            wl = wl->range(eventlo, eventhi);
-            numwords = wl->length();
+            wl = wordlist::range(wl, eventlo, eventhi);
+            numwords = wordlist::length(wl);
         } while (**string && *++*string);
         return (wl);
     }

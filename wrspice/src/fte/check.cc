@@ -188,7 +188,7 @@ IFsimulator::MargAnalysis(wordlist *wl)
     // gobble the command options
     char *po = 0, *pe = 0;
     if (wl) {
-        wl = wl->copy();
+        wl = wordlist::copy(wl);
         wordlist *ww, *wn;
         for (ww = wl; wl; wl = wn) {
             wn = wl->wl_next;
@@ -205,7 +205,7 @@ IFsimulator::MargAnalysis(wordlist *wl)
                             if (!ww->wl_next && ww == wl &&
                                     c == ww->wl_word+1 &&
                                     !*(ww->wl_word+2)) {
-                                wl->free();
+                                wordlist::destroy(wl);
                                 return;
                             }
                         }
@@ -250,7 +250,7 @@ IFsimulator::MargAnalysis(wordlist *wl)
                     else {
                         // print help message
                         check_usage();
-                        wl->free();
+                        wordlist::destroy(wl);
                         return;
                     }
                 }
@@ -477,7 +477,7 @@ sCHECKprms::sCHECKprms(bool bt, bool um, bool mt, bool da)
 sCHECKprms::~sCHECKprms()
 {
     delete [] ch_opname;
-    ch_cmdline->free();
+    wordlist::destroy(ch_cmdline);
     delete ch_names;
 
     if (ch_tmpout) {

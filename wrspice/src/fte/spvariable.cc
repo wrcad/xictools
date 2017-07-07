@@ -273,7 +273,7 @@ IFsimulator::SetVar(wordlist *wl)
             break;
         }
     }
-    vars->free();
+    variable::destroy(vars);
 }
 
 
@@ -616,8 +616,8 @@ IFsimulator::VarPrint(char **retstr)
                 sprintf(buf, "%c %-18s", vars[j].x_char, v->name());
 
             wordlist *wl = v->varwl();
-            char *s = wl->flatten();
-            wl->free();
+            char *s = wordlist::flatten(wl);
+            wordlist::destroy(wl);
             if (v->type() == VTYP_LIST) {
                 fmt = "( %s )\n";
                 if (!retstr)
@@ -640,8 +640,8 @@ IFsimulator::VarPrint(char **retstr)
     }
     if (!retstr)
         TTY.send("\n");
-    plvars->free();
-    cktvars->free();
+    variable::destroy(plvars);
+    variable::destroy(cktvars);
     delete [] vars;
 }
 
@@ -931,6 +931,6 @@ IFsimulator::ClearVariables()
     wordlist *wl0 = CP.VarList();
     for (wordlist *tl = wl0; tl; tl = tl->wl_next)
         RemVar(tl->wl_word);
-    wl0->free();
+    wordlist::destroy(wl0);
 }
 

@@ -2542,7 +2542,7 @@ sCKT::checkLVloops()
     // Output a listing of any looped devices.
     //
     if (wl) {
-        wl->sort();
+        wordlist::sort(wl);
         sLstr lstr;
         lstr.add("Voltage source and/or inductor loop(s) detected.\n");
         lstr.add("Devices involved: ");
@@ -2557,7 +2557,7 @@ sCKT::checkLVloops()
             lstr.add_c(' ');
             lstr.add(w->wl_word);
         }
-        wl->free();
+        wordlist::destroy(wl);
 
         OP.error(ERR_FATAL, lstr.string());
         return (E_SINGULAR);

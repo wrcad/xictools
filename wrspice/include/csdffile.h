@@ -82,9 +82,8 @@ struct setvar_t
             delete [] sv_value;
         }
 
-    void free()
+    static void destroy(setvar_t *s)
         {
-            setvar_t *s = this;
             while (s) {
                 setvar_t *x = s;
                 s = s->sv_next;

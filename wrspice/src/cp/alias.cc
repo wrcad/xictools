@@ -97,7 +97,7 @@ CshPar::DoAlias(wordlist **list)
         realw = 0;
     }
     else 
-        realw = cp_lastone->text()->copy();
+        realw = wordlist::copy(cp_lastone->text());
     wordlist *comm = wlist;
     wordlist *nextc;
     do {
@@ -127,7 +127,7 @@ CshPar::DoAlias(wordlist **list)
             if (!al)
                 break;
 
-            wordlist *nwl = al->text()->copy();
+            wordlist *nwl = wordlist::copy(al->text());
             HistSubst(&nwl);
 
             if (cp_didhsubst) {
@@ -138,25 +138,25 @@ CshPar::DoAlias(wordlist **list)
                 // If it had no history args, then append the rest of the nwl
                 wordlist *w;
                 for (w = nwl; w->wl_next; w = w->wl_next) ;
-                w->wl_next = comm->wl_next->copy();
+                w->wl_next = wordlist::copy(comm->wl_next);
                 if (w->wl_next)
                     w->wl_next->wl_prev = w;
             }
             if (lstring::eq(nwl->wl_word, comm->wl_word)) {
                 // Just once through...
-                comm->free();
+                wordlist::destroy(comm);
                 comm = nwl;
                 break;
             }
             else {
-                comm->free();
+                wordlist::destroy(comm);
                 comm = nwl;
             }
         }
 
         if (!ntries) {
             GRpkgIf()->ErrPrintf(ET_ERROR, "alias loop.\n");
-            wlist->free();
+            wordlist::destroy(wlist);
             *list = 0;
             return;
         }
@@ -177,7 +177,7 @@ CshPar::DoAlias(wordlist **list)
 
     if (realw) {
         cp_lastone->update(realw);
-        realw->free();
+        wordlist::destroy(realw);
     }
     else {
         delete cp_lastone;
@@ -265,7 +265,7 @@ CshPar::SetAlias(const char *word, const char *list)
 {
     wordlist *wl = new wordlist(list);
     SetAlias(word, wl);
-    wl->free();
+    wordlist::destroy(wl);
 }
 
 

@@ -131,7 +131,7 @@ sGraph::gr_reset()
     }
     gr_destroy_data();  
     gr_plotdata = 0;
-    gr_command->free();  
+    wordlist::destroy(gr_command);  
     gr_command = 0;  
     delete [] gr_plotname;  
     gr_plotname = 0;
@@ -186,7 +186,7 @@ sGraph::gr_copy()
     if (gr_ylabel)
         ret->gr_ylabel = lstring::copy(gr_ylabel);
     if (gr_command)
-        ret->gr_command = gr_command->copy();
+        ret->gr_command = wordlist::copy(gr_command);
     return (ret);
 }
 

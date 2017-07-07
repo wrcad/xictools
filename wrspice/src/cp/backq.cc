@@ -81,18 +81,18 @@ CshPar::BackQuote(wordlist **list)
             delete [] bcmd;
             if (!nwl || !nwl->wl_word) {
                 delete [] wbuf;
-                wlist->free();
+                wordlist::destroy(wlist);
                 *list = 0;
                 return;
             }
             if (quoted && nwl->wl_next) {
-                char *tt = nwl->flatten();
+                char *tt = wordlist::flatten(nwl);
                 if (strlen(tt) + strlen(wbuf) + strlen(t) >= BSIZE_SP) {
                     tt[BSIZE_SP - strlen(wbuf) - strlen(t) - 1] = 0;
                     GRpkgIf()->ErrPrintf(ET_WARN,
                         "line too long, truncated.\n");
                 }
-                nwl->wl_next->free();
+                wordlist::destroy(nwl->wl_next);
                 nwl->wl_next = 0;
                 delete [] nwl->wl_word;
                 nwl->wl_word = tt;

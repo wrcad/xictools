@@ -80,7 +80,7 @@ CommandTab::com_setfont(wordlist *wl)
         if (!wl || !wl->wl_next)
             return;
         int n = atoi(wl->wl_word);
-        char *fn = wl->wl_next->flatten();
+        char *fn = wordlist::flatten(wl->wl_next);
         switch (n) {
         case FNT_FIXED:
         case FNT_PROP:
@@ -3084,7 +3084,7 @@ xEnt::handler(void *data)
                 wordlist *wl0 = wl;
                 wl = wl->wl_next;
                 variable *v0 = CP.GetList(&wl);
-                wl0->free();
+                wordlist::destroy(wl0);
                 if (v0) {
                     v.set_list(v0);
                     kwstruct->callback(state, &v);
@@ -3092,11 +3092,11 @@ xEnt::handler(void *data)
                 }
             }
             else {
-                char *s = wl->flatten();
+                char *s = wordlist::flatten(wl);
                 v.set_string(s);
                 delete [] s;
                 kwstruct->callback(state, &v);
-                wl->free();
+                wordlist::destroy(wl);
                 return;
             }
         }

@@ -2170,7 +2170,7 @@ sRunDesc::iplot(sDbComm *db)
                 // only from "vs"
                 if (!dp || !dn) {
                     GRpkgIf()->ErrPrintf(ET_ERROR, "misplaced vs arg.\n");
-                    dl0->free();
+                    sDvList::destroy(dl0);
                     dl0 = 0;
                     db->set_point(-1);
                     return;
@@ -2197,7 +2197,7 @@ sRunDesc::iplot(sDbComm *db)
         }
         if (dl != dl0)
             // copied
-            dl->free();
+            sDvList::destroy(dl);
         gr.command = wl;
 
         // the dvec list is copied to graph->plotdata
@@ -2214,7 +2214,7 @@ sRunDesc::iplot(sDbComm *db)
             }
         }
         graph = GP.Init(dl0, &gr, graph);
-        dl0->free();
+        sDvList::destroy(dl0);
         if (graph)
             db->set_graphid(graph->id());
         if (!db->graphid()) {
@@ -2735,7 +2735,7 @@ namespace {
         Sp.SetCurPlot(run->runPlot());
         Sp.SetCurCircuit(run->circuit());
         pnlist *pl = Sp.GetPtree(wl, false);
-        wl->free();
+        wordlist::destroy(wl);
         sDvList *dl0 = 0;
         if (pl) {
             Sp.SetFlag(FT_SILENT, true);  // silence "vec not found" msgs
@@ -2758,7 +2758,7 @@ namespace {
                 *vs_flag = true;
                 if (!dp || !dn) {
                     GRpkgIf()->ErrPrintf(ET_INTERR, msg, 3);
-                    dl0->free();
+                    sDvList::destroy(dl0);
                     db->set_point(-1);
                     return;
                 }
@@ -2861,7 +2861,7 @@ namespace {
             }
             scale->set_length(scale->length() + 1);
         }
-        dl0->free();
+        sDvList::destroy(dl0);
 
         // The following resizes the storage in scroll mode.  The scale of
         // the analysis must be monotonically increasing.

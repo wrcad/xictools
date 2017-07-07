@@ -262,7 +262,7 @@ IFsimulator::PostInit()
         CP.DoGlob(&wl);
         CP.StripList(wl);
         SetVar(wl);
-        wl->free();
+        wordlist::destroy(wl);
     }
     else
         GRpkgIf()->ErrPrintf(ET_WARN, "system scripts path not set.\n");
@@ -327,13 +327,13 @@ bool
 IFsimulator::IsTrue(wordlist *wl)
 {
     // First do all the csh-type stuff here...
-    wl = wl->copy();
+    wl = wordlist::copy(wl);
     CP.VarSubst(&wl);
     CP.BackQuote(&wl);
     CP.StripList(wl);
 
-    char *str = wl->flatten();
-    wl->free();
+    char *str = wordlist::flatten(wl);
+    wordlist::destroy(wl);
 
     const char *s = str;
     pnode *pn = GetPnode(&s, true);

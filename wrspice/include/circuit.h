@@ -1844,40 +1844,36 @@ public:
 #define CKT_DEF_MOS_AD  0.0
 
     double mos_default_l()
-    {
-        const sCKT *ckt = this;
-        double d = ckt && CKTcurTask ? CKTcurTask->TSKdefaultMosL : 0.0;
-        if (d <= 0.0)
-            d = CKT_DEF_MOS_L;
-        return (d);
-    }
+        {
+            double d = CKTcurTask ? CKTcurTask->TSKdefaultMosL : 0.0;
+            if (d <= 0.0)
+                d = CKT_DEF_MOS_L;
+            return (d);
+        }
 
     double mos_default_w()
-    {
-        const sCKT *ckt = this;
-        double d = ckt && CKTcurTask ? CKTcurTask->TSKdefaultMosW : 0.0;
-        if (d <= 0.0)
-            d = CKT_DEF_MOS_W;
-        return (d);
-    }
+        {
+            double d = CKTcurTask ? CKTcurTask->TSKdefaultMosW : 0.0;
+            if (d <= 0.0)
+                d = CKT_DEF_MOS_W;
+            return (d);
+        }
 
     double mos_default_as()
-    {
-        const sCKT *ckt = this;
-        double d = ckt && CKTcurTask ? CKTcurTask->TSKdefaultMosAS : 0.0;
-        if (d <= 0.0)
-            d = CKT_DEF_MOS_AS;
-        return (d);
-    }
+        {
+            double d = CKTcurTask ? CKTcurTask->TSKdefaultMosAS : 0.0;
+            if (d <= 0.0)
+                d = CKT_DEF_MOS_AS;
+            return (d);
+        }
 
     double mos_default_ad()
-    {
-        const sCKT *ckt = this;
-        double d = ckt && CKTcurTask ? CKTcurTask->TSKdefaultMosAD : 0.0;
-        if (d <= 0.0)
-            d = CKT_DEF_MOS_AD;
-        return (d);
-    }
+        {
+            double d = CKTcurTask ? CKTcurTask->TSKdefaultMosAD : 0.0;
+            if (d <= 0.0)
+                d = CKT_DEF_MOS_AD;
+            return (d);
+        }
 
     // Integration
 
@@ -1925,8 +1921,7 @@ public:
     //
     double interp(int which, double deflt = 0.0) const
         {
-            const sCKT *ckt = this;
-            if (!ckt || !CKTstates[0])
+            if (!CKTstates[0])
                 return (deflt);
             if (CKTcurrentAnalysis & DOING_TRAN) {
                 double val = CKTtranDiffs[0]* *(CKTstates[0] + which);
@@ -1938,20 +1933,18 @@ public:
         }
 
     // Return the value from the CKTrhsOld vector, after checking
-    // pointers.
+    // pointer.
     //
     double rhsOld(int which) const
         {
-            const sCKT *ckt = this;
-            if (!ckt || !CKTrhsOld)
+            if (!CKTrhsOld)
                 return (0.0);
             return (*(CKTrhsOld + which));
         }
 
     double irhsOld(int which) const
         {
-            const sCKT *ckt = this;
-            if (!ckt || !CKTirhsOld)
+            if (!CKTirhsOld)
                 return (0.0);
             return (*(CKTirhsOld + which));
         }

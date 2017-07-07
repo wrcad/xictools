@@ -79,7 +79,7 @@ CshPar::DoGlob(wordlist **list)
     for (wl = wlist; wl; wl = wl->wl_next) {
         wordlist *w = BracExpand(wl->wl_word);
         if (!w) {
-            wlist->free();
+            wordlist::destroy(wlist);
             *list = 0;
             return;
         }
@@ -469,7 +469,7 @@ CshPar::brac1(const char *string)
                     nb--;
                 if (*s == '\0') {   // {
                     GRpkgIf()->ErrPrintf(ET_ERROR, "missing }.\n");
-                    words->free();
+                    wordlist::destroy(words);
                     return (0);
                 }
                 if (nb == 0)
@@ -484,10 +484,10 @@ CshPar::brac1(const char *string)
                     nw->wl_word = new char[BSIZE_SP];
                     strcpy(nw->wl_word, wl->wl_word);
                     strcat(nw->wl_word, w->wl_word);
-                    newwl = newwl->append(nw);
+                    newwl = wordlist::append(newwl, nw);
                 }
             }
-            words->free();
+            wordlist::destroy(words);
             words = newwl;
         }
         else
@@ -524,7 +524,7 @@ CshPar::brac2(const char *string)
                 nb--;
             if (*s == '\0') {       // {
                 GRpkgIf()->ErrPrintf(ET_ERROR, "missing }.\n");
-                wlist->free();
+                wordlist::destroy(wlist);
                 delete [] buf;
                 return (0);
             }
@@ -532,7 +532,7 @@ CshPar::brac2(const char *string)
         }
         *s = '\0';
         wordlist *nwl = brac1(buf);
-        wlist = wlist->append(nwl);
+        wlist = wordlist::append(wlist, nwl);
         string += s - buf + 1;
         delete [] buf;
         if (eflag)

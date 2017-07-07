@@ -887,7 +887,7 @@ sMeas::check(sFtCirc *circuit)
         // 'trig' and maybe 'targ' were given, measure over an interval
         // if targ given
         if (start_name && !start_dv) {
-            sMeas *m = circuit->measures()->find(start_name);
+            sMeas *m = sMeas::find(circuit->measures(), start_name);
             if (m) {
                 if (!m->measure_done)
                     return (false);
@@ -907,7 +907,7 @@ sMeas::check(sFtCirc *circuit)
         }
         if (start_at_given && !start_dv) {
             if (start_meas) {
-                sMeas *m = circuit->measures()->find(start_meas);
+                sMeas *m = sMeas::find(circuit->measures(), start_meas);
                 if (!m) {
                     measure_error = true;
                     return (false);
@@ -922,7 +922,7 @@ sMeas::check(sFtCirc *circuit)
             start_dv = circuit->runplot()->scale();
         }
         if (end_name && !end_dv) {
-            sMeas *m = circuit->measures()->find(end_name);
+            sMeas *m = sMeas::find(circuit->measures(), end_name);
             if (m) {
                 if (!m->measure_done)
                     return (false);
@@ -942,7 +942,7 @@ sMeas::check(sFtCirc *circuit)
         }
         if (end_at_given && !end_dv) {
             if (end_meas) {
-                sMeas *m = circuit->measures()->find(end_meas);
+                sMeas *m = sMeas::find(circuit->measures(), end_meas);
                 if (!m) {
                     measure_error = true;
                     return (false);

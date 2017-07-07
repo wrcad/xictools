@@ -675,7 +675,7 @@ namespace {
         if (dim >= MAXDIMS) {
             GRpkgIf()->ErrPrintf(ET_ERROR, "max dimensionality is %d.\n",
                 MAXDIMS);
-            dl0->free();
+            sDvList::destroy(dl0);
             return (true);
         }
         int len = dim ? 1 : dl0->dl_dvec->length();
@@ -696,7 +696,7 @@ namespace {
             if (i != dim) {
                 GRpkgIf()->ErrPrintf(ET_ERROR,
                     "all vectors must be of the same dimensionality.\n");
-                dl0->free();
+                sDvList::destroy(dl0);
                 return (true);
             }
             if (v->iscomplex())
@@ -750,7 +750,7 @@ namespace {
             *datap = data;
         else
             *cdatap = cdata;
-        dl0->free();
+        sDvList::destroy(dl0);
         return (false);
     }
 }

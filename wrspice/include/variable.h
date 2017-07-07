@@ -84,14 +84,13 @@ struct variable
             if (va_type == VTYP_STRING)
                 delete [] va.v_string;
             else if (va_type == VTYP_LIST)
-                va.v_list->free();
+                destroy(va.v_list);
             va_type = VTYP_NONE;
             va.v_real = 0.0;
         }
 
-    void free()
+    static void destroy(variable *v)
         {
-            variable *v = this;
             while (v) {
                 variable *vx = v;
                 v = v->va_next;

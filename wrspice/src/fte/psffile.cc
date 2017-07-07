@@ -455,7 +455,7 @@ cPSFout::file_close()
         awfAcTail();
 #endif
 
-    ps_dlist->free();
+    sDvList::destroy(ps_dlist);
     ps_dlist = 0;
     delete [] ps_dirname;
     ps_dirname = 0;

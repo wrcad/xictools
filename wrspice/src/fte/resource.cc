@@ -671,7 +671,7 @@ ResPrint::print_stat(const char *name, sLstr *plstr)
         }
         else {
             print_var(v, plstr);
-            v->free();
+            variable::destroy(v);
         }
         return;
     }
@@ -701,7 +701,7 @@ ResPrint::print_stat(const char *name, sLstr *plstr)
         // There shouldn't be any variables left.
         for (variable *vv = v; vv; vv = vv->next())
             print_var(vv, plstr);
-        v->free();
+        variable::destroy(v);
     }
     if (!plstr)
         TTY.send("\n");
@@ -728,7 +728,7 @@ ResPrint::print_opt(const char *name, sLstr *plstr)
     if (v) {
         for (variable *vv = v; vv; vv = vv->next())
             print_var(vv, plstr);
-        v->free();
+        variable::destroy(v);
     }
     else if (name)
         GRpkgIf()->ErrPrintf(ET_WARN, "no such option %s.\n", name);

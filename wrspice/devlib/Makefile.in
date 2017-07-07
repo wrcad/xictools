@@ -143,7 +143,7 @@ toc.so: toc.cc
 
 subdirs:
 	for a in $(SUBDIRS); do \
-	    cd $$a; $(MAKE); cd ..; \
+	    (cd $$a; $(MAKE)); \
 	done;
 
 #######################################################################
@@ -152,7 +152,7 @@ subdirs:
 
 depend:
 	-@for a in include $(SUBDIRS); do \
-	    (dir=`pwd`; cd $$a; $(MAKE) depend; cd $$dir) \
+	    (cd $$a; $(MAKE) depend;) \
 	done
 	@echo depending in devlib
 	-@if [ x$(DEPEND_DONE) = x ]; then \
@@ -168,16 +168,16 @@ depend:
 
 clean:
 	-@for a in adms/examples $(SUBDIRS); do \
-	    (dir=`pwd`; cd $$a; $(MAKE) clean; cd $$dir) \
+	    (cd $$a; $(MAKE) clean;) \
 	done
 	-rm -f toc.cc *.o *.a
 
 distclean:
 	-@for a in adms/examples); do \
-	    (dir=`pwd`; cd $$a; $(MAKE) realclean; rm -f Makefile;  cd $$dir) \
+	    (cd $$a; $(MAKE) realclean; rm -f Makefile;) \
 	done
 	-@for a in include adms/include $(SUBDIRS); do \
-	    (dir=`pwd`; cd $$a; $(MAKE) distclean; cd $$dir) \
+	    (cd $$a; $(MAKE) distclean;) \
 	done
 	-rm -f toc.cc *.o *.a Makefile devices modules
 	-rm -f adms/Makefile

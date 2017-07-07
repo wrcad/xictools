@@ -150,12 +150,11 @@ struct sLine
         {
             delete [] li_line;
             delete [] li_error;
-            li_actual->free();
+            sLine::destroy(li_actual);
         }
 
-    void free()
+    static void destroy(sLine *d)
         {
-            sLine *d = this;
             while (d) {
                 sLine *dd = d;
                 d = d->li_next;

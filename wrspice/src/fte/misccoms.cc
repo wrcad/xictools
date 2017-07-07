@@ -287,7 +287,7 @@ CommandTab::com_version(wordlist *wl)
     }
     else {
         // assume version in form major.minor.rev
-        char *s = wl->flatten();
+        char *s = wordlist::flatten(wl);
         int v1, v2, v3;
         int r1 = sscanf(s, "%d.%d.%d", &v1, &v2, &v3);
         int c1, c2, c3;
@@ -497,7 +497,7 @@ CommandTab::com_wrupdate(wordlist *wl)
         return;
     }
 
-    char *s = wl->flatten();
+    char *s = wordlist::flatten(wl);
     GCarray<char*> gc_s(s);
         
     bool os_given = false;
@@ -713,7 +713,7 @@ namespace {
                 TTY.printf("\t%s\n", w->wl_word);
             TTY.printf("\n");
         }
-        tl->free();
+        wordlist::destroy(tl);
     }
 }
 
@@ -747,7 +747,7 @@ CommandTab::com_cache(wordlist *wl)
                 for (wordlist *w = tl; w; w = w->wl_next)
                     TTY.printf("%s\n", w->wl_word);
                 TTY.printf("\n");
-                tl->free();
+                wordlist::destroy(tl);
             }
         }
         else {
@@ -758,7 +758,7 @@ CommandTab::com_cache(wordlist *wl)
                     wordlist *tl = SPcache.dumpCache(w->wl_word);
                     for (wordlist *t = tl; t; t = t->wl_next)
                         TTY.printf("%s\n", t->wl_word);
-                    tl->free();
+                    wordlist::destroy(tl);
                 }
             }
         }

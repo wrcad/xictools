@@ -1091,7 +1091,7 @@ main(int argc, char **argv)
         for (wordlist *wl = CmdLineOpts.modules; wl; wl = wl->wl_next)
             Sp.LoadModules(wl->wl_word);
     }
-    CmdLineOpts.modules->free();
+    wordlist::destroy(CmdLineOpts.modules);
     CmdLineOpts.modules = 0;
 
     if (!CmdLineOpts.notoolbar && !Sp.GetFlag(FT_BATCHMODE))
@@ -1131,7 +1131,7 @@ main(int argc, char **argv)
         f0 = new file_elt(tempfile, 1, 0);
         delete [] tempfile;
     }
-    wl0->free();
+    wordlist::destroy(wl0);
 
     start_timer();
 
@@ -1223,8 +1223,8 @@ main(int argc, char **argv)
     }
     for (wordlist *w = tmpfiles; w; w = w->wl_next)
         unlink(w->wl_word);
-    tmpfiles->free();
-    f0->free();
+    wordlist::destroy(tmpfiles);
+    file_elt::destroy(f0);
 
     if (!Sp.GetFlag(FT_BATCHMODE)) {
         if (CmdLineOpts.portmon) {

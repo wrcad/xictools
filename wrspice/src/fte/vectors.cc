@@ -84,7 +84,7 @@ CommandTab::com_let(wordlist *wl)
         Sp.VecPrintList(0, 0);
         return;
     }
-    char *p = wl->flatten();
+    char *p = wordlist::flatten(wl);
 
     char *rhs = strchr(p, '=');
     if (!rhs) {
@@ -209,8 +209,8 @@ CommandTab::com_cross(wordlist *wl)
     for (pnlist *pl = pl0; pl; pl = pl->next()) {
         sDataVec *n = Sp.Evaluate(pl->node());
         if (n == 0) {
-            pl0->free();
-            dl0->free();
+            pnlist::destroy(pl0);
+            sDvList::destroy(dl0);
             return;
         }
         if (!dl0)
@@ -231,7 +231,7 @@ CommandTab::com_cross(wordlist *wl)
         else
             dl->dl_dvec = n;
     }
-    pl0->free();
+    pnlist::destroy(pl0);
 
     int i = 0;
     bool comp = false;
@@ -266,7 +266,7 @@ CommandTab::com_cross(wordlist *wl)
         }
     }
     CP.AddKeyword(CT_VECTOR, v->name());
-    dl0->free();
+    sDvList::destroy(dl0);
     ToolBar()->UpdateVectors(0);
 }
 
@@ -312,8 +312,8 @@ CommandTab::com_pick(wordlist *wl)
     for (pnlist *pl = pl0; pl; pl = pl->next()) {
         sDataVec *n = Sp.Evaluate(pl->node());
         if (n == 0) {
-            pl0->free();
-            dl0->free();
+            pnlist::destroy(pl0);
+            sDvList::destroy(dl0);
             return;
         }
         if (!dl0)
@@ -334,7 +334,7 @@ CommandTab::com_pick(wordlist *wl)
         else
             dl->dl_dvec = n;
     }
-    pl0->free();
+    pnlist::destroy(pl0);
 
     bool comp = false;
     int len = 0;
@@ -378,7 +378,7 @@ CommandTab::com_pick(wordlist *wl)
     }
 
     CP.AddKeyword(CT_VECTOR, v->name());
-    dl0->free();
+    sDvList::destroy(dl0);
     ToolBar()->UpdateVectors(0);
 }
 
@@ -1945,7 +1945,7 @@ IFsimulator::VecGc(bool purge_temp)
                     wordlist *wl = pl->list_perm_vecs();
                     if (wl) {
                         pl->set_scale(pl->get_perm_vec(wl->wl_word));
-                        wl->free();
+                        wordlist::destroy(wl);
                     }
                 }
                 if (!pd)
@@ -2028,7 +2028,7 @@ IFsimulator::VecPrintList(wordlist *wl, char **retstr)
         return;
     }
     if (!Sp.GetVar(kw_nosort, VTYP_BOOL, 0))
-        tl0->sort();
+        wordlist::sort(tl0);
     sprintf(buf, "Title: %s\n",  ft_plot_cur->title());
     sprintf(buf + strlen(buf), "Name: %s (%s)\nDate: %s\n\n", 
         ft_plot_cur->type_name(), ft_plot_cur->name(), ft_plot_cur->date());
@@ -2059,7 +2059,7 @@ IFsimulator::VecPrintList(wordlist *wl, char **retstr)
             }
         }
     }
-    tl0->free();
+    wordlist::destroy(tl0);
 }
 // End of IFsimulator functions
 
@@ -2131,7 +2131,7 @@ sPlot::~sPlot()
     // clear permanent dvecs
     remove_vec("all");
     delete pl_hashtab;
-    pl_env->free();
+    variable::destroy(pl_env);
 
     // unlink plot from main list
     sPlot *op = 0;
@@ -2167,8 +2167,8 @@ sPlot::~sPlot()
     delete pl_dims;
     delete pl_circuit;
     delete pl_ftopts;
-    pl_commands->free();
-    pl_notes->free();
+    wordlist::destroy(pl_commands);
+    wordlist::destroy(pl_notes);
 }
 
 
@@ -2358,7 +2358,7 @@ sPlot::remove_vec(const char *vname)
                 CP.RemKeyword(CT_VECTOR, wl->wl_word);
         }
         pl_scale = 0;
-        wl0->free();
+        wordlist::destroy(wl0);
         if (this == Sp.CurPlot())
             ToolBar()->UpdateVectors(0);
         return;
@@ -2380,7 +2380,7 @@ sPlot::remove_vec(const char *vname)
         wordlist *wl0 = pl_hashtab->wl();
         if (wl0) {
             pl_scale = get_perm_vec(wl0->wl_word);
-            wl0->free();
+            wordlist::destroy(wl0);
         }
     }
 
@@ -2464,7 +2464,7 @@ sPlot::add_plot()
         CP.AddKeyword(CT_VECTOR, wl->wl_word);
         wl = wl->wl_next;
     }
-    wl0->free();
+    wordlist::destroy(wl0);
 }
 
 
@@ -2547,7 +2547,7 @@ sPlot::compare(const sPlot *pl)
         sDataVec *d0 = get_perm_vec(wl->wl_word);
         sDataVec *d1 = pl->get_perm_vec(wl->wl_word);
         if (!d0 || !d1 || d0->flags() != d1->flags()) {
-            wl0->free();
+            wordlist::destroy(wl0);
             return (false);
         }
         if (d0->numdims() < 1) {
@@ -2559,14 +2559,14 @@ sPlot::compare(const sPlot *pl)
             d1->set_dims(0, d1->length());
         }
         if (abs(d0->numdims() - d1->numdims()) > 1) {
-            wl0->free();
+            wordlist::destroy(wl0);
             return (false);
         }
         int j = d0->numdims() - 1;
         int k = d1->numdims() - 1;
         for (;;) {
             if (d0->dims(j) != d1->dims(k)) {
-                wl0->free();
+                wordlist::destroy(wl0);
                 return (false);
             }
             j--;
@@ -2575,7 +2575,7 @@ sPlot::compare(const sPlot *pl)
                 break;
         }
     }
-    wl0->free();
+    wordlist::destroy(wl0);
     return (true);
 }
 

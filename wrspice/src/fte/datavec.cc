@@ -43,7 +43,7 @@ bool sDataVec::v_temporary = false;
 sDataVec::~sDataVec()
 {
     delete [] v_name;
-    v_link2->free();
+    sDvList::destroy(v_link2);
     if (isreal())
         delete [] v_data.real;
     else

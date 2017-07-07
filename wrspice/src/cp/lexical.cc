@@ -668,7 +668,7 @@ CshPar::Lexer(const char *string)
                     c = '\n';
                 if ((c == cp_hash) && !cp_flags[CP_INTERACTIVE] && (j == 1)) {
                     if (string) {
-                        wlist->free();
+                        wordlist::destroy(wlist);
                         return (0);
                     }
                     while (((c = Getchar(FILENO(cp_input), true))
@@ -765,7 +765,7 @@ CshPar::Lexer(const char *string)
                     if (cp_flags[CP_INTERACTIVE] && !cp_flags[CP_NOCC] &&
                             string == 0) {
                         Complete(wlist, buf, false);
-                        wlist->free();
+                        wordlist::destroy(wlist);
                         nloop = true;
                         done = true;
                         break;
@@ -778,13 +778,13 @@ CshPar::Lexer(const char *string)
                         done = true;
                         break;
                     }
-                    wlist->free();
+                    wordlist::destroy(wlist);
                     return (0);
 
                 case ESCAPE:
                     if (cp_flags[CP_INTERACTIVE] && !cp_flags[CP_NOCC]) {
                         Complete(wlist, buf, true);
-                        wlist->free();
+                        wordlist::destroy(wlist);
                         nloop = true;
                         done = true;
                         break;
@@ -1729,7 +1729,7 @@ sLx::stuffchar(int c)
             wordlist *wlist;
             if (i || isspace(LineBuf[0])) {
                 wlist = CP.Lexer(LineBuf);
-                if (wlist->length() == 1 && isspace(LineBuf[Cpos-1])) {
+                if (wordlist::length(wlist) == 1 && isspace(LineBuf[Cpos-1])) {
                     wlist->wl_next = new wordlist;
                     wlist->wl_next->wl_prev = wlist;
                     // This indicates to Complete() that the first arg
@@ -1741,7 +1741,7 @@ sLx::stuffchar(int c)
                 wlist = new wordlist;
                 CP.Complete(wlist, LineBuf, false);
             }
-            wlist->free();
+            wordlist::destroy(wlist);
         }
         return (1);
 
@@ -1790,7 +1790,7 @@ sLx::stuffchar(int c)
                 wlist = new wordlist;
                 CP.Complete(wlist, LineBuf, true);
             }
-            wlist->free();
+            wordlist::destroy(wlist);
         }
         return (1);
 
@@ -1856,7 +1856,7 @@ sLx::stuffchar(int c)
             cte(0);
             for (i = 0; i < Cend; i++)
                 cur_rev(i);
-            char *s = Histent->text()->flatten();
+            char *s = wordlist::flatten(Histent->text());
             for (Cend = 0; s[Cend]; Cend++) {
                 LineBuf[Cend] = s[Cend];
                 ttyecho(s[Cend]);
@@ -1877,7 +1877,7 @@ sLx::stuffchar(int c)
                 cte(0);
                 for (i = 0; i < Cend; i++)
                     cur_rev(i);
-                char *s = Histent->text()->flatten();
+                char *s = wordlist::flatten(Histent->text());
                 for (Cend = 0; s[Cend]; Cend++) {
                     LineBuf[Cend] = s[Cend];
                     ttyecho(s[Cend]);

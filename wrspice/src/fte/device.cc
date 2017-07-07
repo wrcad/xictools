@@ -198,7 +198,7 @@ namespace {
                 w->wl_word = nn;
             }
         }
-        wl->sort();
+        wordlist::sort(wl);
         TTY.printf("Device modules loaded:\n");
         for (wordlist *w = wl; w; w = w->wl_next)
             TTY.printf("    %s\n", w->wl_word);
@@ -274,7 +274,7 @@ start_again:
 void
 CommandTab::com_devload(wordlist *wl)
 {
-    const char *path = wl->flatten();
+    const char *path = wordlist::flatten(wl);
     if (!path || !*path) {
         delete [] path;
         DevmodDB.list_modules();
@@ -598,7 +598,7 @@ namespace {
                 }
             }
         }
-        w0->sort();
+        wordlist::sort(w0);
         return (w0);
     }
 }
@@ -625,17 +625,17 @@ CommandTab::com_devcnt(wordlist *wl)
     }
 
     // Need to lower-case for glob matching.
-    wordlist *w0 = wl->copy();
+    wordlist *w0 = wordlist::copy(wl);
     wl_tolower(w0);
 
     wordlist *dvs = devcnt(ckt, w0);
-    w0->free();
+    wordlist::destroy(w0);
     TTY.init_more();
     TTY.printf("\n");
     for (wordlist *w = dvs; w; w = w->wl_next)
         TTY.printf("%s\n", w->wl_word);
     TTY.printf("\n");
-    dvs->free();
+    wordlist::destroy(dvs);
     if (freeckt)
         delete ckt;
 }
@@ -749,7 +749,7 @@ CommandTab::com_alter(wordlist *wl)
     }
     wordlist *devs, *parms;
     if (!sFtCirc::parseDevParams(wl, &devs, &parms, false)) {
-        parms->free();
+        wordlist::destroy(parms);
         GRpkgIf()->ErrPrintf(ET_ERROR, "no matching devices found.\n");
         return;
     }
@@ -760,20 +760,20 @@ CommandTab::com_alter(wordlist *wl)
     }
     if (!devs) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "no devices in list.\n");
-        parms->free();
+        wordlist::destroy(parms);
         return;
     }
     if (!parms) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "no parameters in list.\n");
-        devs->free();
+        wordlist::destroy(devs);
         return;
     }
 
     for (wordlist *tw = devs; tw; tw = tw->wl_next)
         Sp.CurCircuit()->alter(tw->wl_word, parms);
 
-    devs->free();
-    parms->free();
+    wordlist::destroy(devs);
+    wordlist::destroy(parms);
 }
 // End of CommandTab functions.
 
@@ -1056,7 +1056,7 @@ IFsimulator::Show(wordlist *wl, char**, bool mod, int contact_node)
     }
     wordlist *objs, *parms;
     if (!sFtCirc::parseDevParams(wl, &objs, &parms, mod)) {
-        parms->free();
+        wordlist::destroy(parms);
         GRpkgIf()->ErrPrintf(ET_ERROR, "no matching devices found.\n");
         return;
     }
@@ -1069,7 +1069,7 @@ IFsimulator::Show(wordlist *wl, char**, bool mod, int contact_node)
                 (*ft_curckt->devices())->wl(true);
     }
 
-    objs->sort();
+    wordlist::sort(objs);
     TTY.init_more();
     TTY.printf("\n");
 
@@ -1134,22 +1134,22 @@ IFsimulator::Show(wordlist *wl, char**, bool mod, int contact_node)
                     len += strlen(ww->wl_word) + 1;
                     TTY.printf(" %s", ww->wl_word);
                 }
-                w0->free();
+                wordlist::destroy(w0);
 
                 for (; len < 40; len++)
                     TTY.send(" ");
                 TTY.printf(" %s\n", v->reference());
                 foundp = true;
             }
-            vv->free();
+            variable::destroy(vv);
         }
         if (foundp)
             TTY.send("\n");
     }
     TTY.send("\n");
 
-    objs->free();
-    parms->free();
+    wordlist::destroy(objs);
+    wordlist::destroy(parms);
 }
 // End of IFsimulator functions.
 
@@ -1823,9 +1823,9 @@ sFtCirc::addDeferred(const char *dname, const char *param, const char *rhs)
 void
 sFtCirc::clearDeferred()
 {
-    ci_deferred->free();
+    wordlist::destroy(ci_deferred);
     ci_deferred = 0;
-    ci_trial_deferred->free();
+    wordlist::destroy(ci_trial_deferred);
     ci_trial_deferred = 0;
     ci_keep_deferred = false;
     ci_use_trial_deferred = false;
@@ -1908,12 +1908,12 @@ sFtCirc::printAlter()
 {
     if (!ci_deferred && !ci_trial_deferred)
         return;
-    wordlist *w0 = ci_deferred->copy();
-    w0 = w0->reverse();  // apply in specified order
+    wordlist *w0 = wordlist::copy(ci_deferred);
+    w0 = wordlist::reverse(w0);  // apply in specified order
 
-    wordlist *w1 = ci_trial_deferred->copy();
-    w1 = w1->reverse();
-    w0 = w0->append(w1);
+    wordlist *w1 = wordlist::copy(ci_trial_deferred);
+    w1 = wordlist::reverse(w1);
+    w0 = wordlist::append(w0, w1);
 
     while (w0) {
         wordlist *wl = w0;
@@ -2113,8 +2113,8 @@ sFtCirc::showDevParms(wordlist *wl, bool devs, bool mods)
                 TTY.printf("%s\n", ww->wl_word);
             for (ww = mwl; ww; ww = ww->wl_next)
                 TTY.printf("%s\n", ww->wl_word);
-            dwl->free();
-            mwl->free();
+            wordlist::destroy(dwl);
+            wordlist::destroy(mwl);
         }
         return;
     }
@@ -2146,8 +2146,8 @@ sFtCirc::showDevParms(wordlist *wl, bool devs, bool mods)
                 TTY.printf("%s\n", ww->wl_word);
             for (ww = mwl; ww; ww = ww->wl_next)
                 TTY.printf("%s\n", ww->wl_word);
-            dwl->free();
-            mwl->free();
+            wordlist::destroy(dwl);
+            wordlist::destroy(mwl);
             if (onepass)
                 break;
             lev++;
@@ -2206,8 +2206,8 @@ sFtCirc::devExpand(const char *name, bool mod)
                 }
             }
         }
-        objs->free();
-        nlist->free();
+        wordlist::destroy(objs);
+        wordlist::destroy(nlist);
     }
     else if (lstring::cieq(name, "all")) {
         if (!Sp.CurCircuit())
@@ -2217,7 +2217,7 @@ sFtCirc::devExpand(const char *name, bool mod)
     }
     else
         wl = new wordlist(name, 0);
-    wl->sort();
+    wordlist::sort(wl);
     return (wl);
 }
 
@@ -2235,7 +2235,7 @@ sFtCirc::parseDevParams(wordlist *line, wordlist **dlist, wordlist **plist,
     *plist = 0;
     if (!line)
         return (true);
-    char *cl = line->flatten();
+    char *cl = wordlist::flatten(line);
     if (!cl)
         return (true);
     bool ret = parseDevParams(cl, dlist, plist, mod);
@@ -2284,7 +2284,7 @@ sFtCirc::parseDevParams(const char *list, wordlist **dlist, wordlist **plist,
     char *s = cl;
     bool gotdev = false;
     while ((tok = lstring::gettok(&s)) != 0) {
-        w0 = w0->append(devExpand(tok, mod));
+        w0 = wordlist::append(w0, devExpand(tok, mod));
         delete [] tok;
         gotdev = true;
     }

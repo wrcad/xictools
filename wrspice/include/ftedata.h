@@ -651,9 +651,8 @@ struct sDvList
             dl_next = 0;
         }
 
-    void free()
+    static void destroy(sDvList *dvl)
         {
-            sDvList *dvl = this;
             while (dvl) {
                 sDvList *dvx = dvl;
                 dvl = dvl->dl_next;

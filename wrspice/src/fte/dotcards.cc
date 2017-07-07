@@ -137,12 +137,12 @@ IFsimulator::GetDotSaves()
             }
             wordlist *w = CP.LexString(s);
             if (w)
-                wl = wl->append(w);
+                wl = wordlist::append(wl, w);
         }
     }
     if (wl) {
         CommandTab::com_save(wl);
-        wl->free();
+        wordlist::destroy(wl);
     }
     // If there aren't any .saves, all vectors will be saved, 
     // which is the default action for rawfiles when com_save()
@@ -171,14 +171,14 @@ IFsimulator::SaveDotArgs()
                 GRpkgIf()->ErrPrintf(ET_WARN, "no nodes given: %s.\n",
                     iline->wl_word);
             else
-                wl = wl->append(w);
+                wl = wordlist::append(wl, w);
         }
     }
     if (wl) {
         fixdotplot(&wl, true);
         if (wl) {
             CommandTab::com_save(wl);
-            wl->free();
+            wordlist::destroy(wl);
         }
     }
     else
@@ -275,7 +275,7 @@ IFsimulator::RunBatch()
                     if (!s || !s[1]) {
                         TTY.printf("Error: bad line %s.\n", coms->wl_word);
                         coms = coms->wl_next;
-                        cl->free();
+                        wordlist::destroy(cl);
                         continue;
                     }
                     int i = atoi(++s);
@@ -287,7 +287,7 @@ IFsimulator::RunBatch()
                 if (!command) {
                     TTY.printf("Error: bad line %s.\n", coms->wl_word);
                     coms = coms->wl_next;
-                    cl->free();
+                    wordlist::destroy(cl);
                     continue;
                 }
                 char *plottype = command->wl_word;
@@ -305,7 +305,7 @@ IFsimulator::RunBatch()
                     if (!command) {
                         TTY.printf("Error: bad line %s.\n", coms->wl_word);
                         coms = coms->wl_next;
-                        cl->free();
+                        wordlist::destroy(cl);
                         continue;
                     }
                     char *plottype = command->wl_word;
@@ -333,7 +333,7 @@ IFsimulator::RunBatch()
                 TTY.printf("Error:unknown command \"%s\".\n",
                     command->wl_word);
             }
-            cl->free();
+            wordlist::destroy(cl);
             coms = coms->wl_next;
         }
     }

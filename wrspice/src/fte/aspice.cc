@@ -343,7 +343,7 @@ CommandTab::com_rspice(wordlist *wl)
             }
         }
         else {
-            analysis = wl->flatten();
+            analysis = wordlist::flatten(wl);
             break;
         }
     }
@@ -596,9 +596,9 @@ sJobc::rhost(wordlist *wl)
             }
         }
         if (w0) {
-            w0->sort();
+            wordlist::sort(w0);
             TTY.wlprint(w0);
-            w0->free();
+            wordlist::destroy(w0);
             TTY.printf("\n");
         }
         else if (TTY.outfile() == stdout)

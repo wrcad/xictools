@@ -228,8 +228,8 @@ cRawOut::file_head()
             if (vv->type() == VTYP_LIST)
                 fprintf(ro_fp, "( ");
             wl = vv->varwl();
-            wl->print(ro_fp);
-            wl->free();
+            wordlist::print(wl, ro_fp);
+            wordlist::destroy(wl);
             if (vv->type() == VTYP_LIST)
                 fprintf(ro_fp, " )");
             putc('\n', ro_fp);
@@ -390,7 +390,7 @@ cRawOut::file_update_pcnt(int pointCount)
 bool
 cRawOut::file_close()
 {
-    ro_dlist->free();
+    sDvList::destroy(ro_dlist);
     ro_dlist = 0;
     if (ro_fp && ro_fp != stdout && !ro_no_close)
         fclose(ro_fp);
@@ -596,7 +596,7 @@ cRawIn::raw_read(const char *name)
                     vv->set_next(CP.ParseSet(wl));
                 else
                     curpl->set_environment(CP.ParseSet(wl));
-                wl->free();
+                wordlist::destroy(wl);
             }
             else
                 GRpkgIf()->ErrPrintf(ET_ERROR, "misplaced Command: line.\n");

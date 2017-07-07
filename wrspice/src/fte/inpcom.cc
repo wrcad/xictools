@@ -452,7 +452,7 @@ IFsimulator::Listing(FILE *file, sLine *deck, sLine *extras, int flags)
                                     fputc('\n', file);
                                 }
                             }
-                            w0->free();
+                            wordlist::destroy(w0);
                         }
                         else {
                             if (useout) {

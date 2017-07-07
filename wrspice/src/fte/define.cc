@@ -581,7 +581,7 @@ cUdf::parse(wordlist *wlist, char **plhs, char **pbody) const
 
     if (!wlist)
         return (true);
-    char *buf = wlist->flatten();
+    char *buf = wordlist::flatten(wlist);
     if (!buf)
         return (true);
 

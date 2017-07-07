@@ -134,7 +134,7 @@ CshPar::UnixCom(wordlist *wl)
     if (!wl)
         return (false);
     char *name = wl->wl_word;
-    char **argv = wl->mkvec();
+    char **argv = wordlist::mkvec(wl);
     if (cp_flags[CP_DEBUG]) {
         GRpkgIf()->ErrPrintf(ET_MSGS, "name: %s, argv: ", name);
         for (wordlist *ww = wl; ww; ww = ww->wl_next) {
@@ -202,7 +202,7 @@ namespace {
                 CP.RemKeyword(CT_COMMANDS, wl->wl_word);
             wl = wl->wl_next;
         }
-        wl0->free();
+        wordlist::destroy(wl0);
 
         hashtabc->clear_data(0, 0);
         delete hashtabc;

@@ -196,8 +196,8 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
             wl = wlast;
         }
         else {
-            wlast->free();
-            wlast = wl->copy();
+            wordlist::destroy(wlast);
+            wlast = wordlist::copy(wl);
             wl = wlast;
             for (wordlist *ww = wl; ww; ww = ww->wl_next) {
                 if (lstring::eq(ww->wl_word, ".")) {
@@ -240,7 +240,7 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
         bool plotall = false;
         sLstr ls_opt;
         sLstr ls_plot;
-        char *string = wl->flatten();
+        char *string = wordlist::flatten(wl);
         const char *s = string;
 
         // This is a bit tricky.  We want to allow an optional '='
@@ -381,7 +381,7 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
         //
         wordlist *plotcmd = CP.Lexer(ls_plot.string());
         pnlist *pl0 = Sp.GetPtree(plotcmd, false);
-        plotcmd->free();
+        wordlist::destroy(plotcmd);
         if (pl0 == 0) {
             GRpkgIf()->ErrPrintf(ET_ERROR, "Bad syntax: %s.\n",
                 ls_plot.string());
@@ -401,7 +401,7 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
                 // only from "vs"
                 if (!tl || !dn) {
                     GRpkgIf()->ErrPrintf(ET_ERROR, "misplaced vs arg.\n");
-                    dl0->free();
+                    sDvList::destroy(dl0);
                     return (false);
                 }
                 xyplot = true;
@@ -415,7 +415,7 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
         if (scale && !scale->length()) {
             GRpkgIf()->ErrPrintf(ET_ERROR, "%s: no such vector.\n",
                 scale->name());
-            dl0->free();
+            sDvList::destroy(dl0);
             return (false);
         }
 
@@ -427,13 +427,13 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
             if (!d) {
                 // only from "vs", can only have one such, already found
                 GRpkgIf()->ErrPrintf(ET_ERROR, "only one \"vs\" allowed.\n");
-                dl0->free();
+                sDvList::destroy(dl0);
                 return (false);
             }
             if (!d->length()) {
                 GRpkgIf()->ErrPrintf(ET_ERROR, "%s: no such vector.\n",
                     d->name());
-                dl0->free();
+                sDvList::destroy(dl0);
                 return (false);
             }
         }
@@ -550,9 +550,9 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
     delete [] plotattr;
     if (!ret) {
         if (dl != dl0)
-            dl0->free();
+            sDvList::destroy(dl0);
         if (!fromgraph)
-            dl->free();
+            sDvList::destroy(dl);
         return (false);
     }
     bool copied = false;
@@ -560,7 +560,7 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
         // copy made
         copied = true;
         if (!fromgraph)
-            dl->free();
+            sDvList::destroy(dl);
     }
 
     if (devname) {
@@ -568,32 +568,32 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
             // Interface to XGraph-11 Plot Program
             Xgraph(dl0, &gr);
             if (!fromgraph)
-                dl0->free();
+                sDvList::destroy(dl0);
             return (true);
         }
         if (lstring::eq(devname, "lpr")) {
             // yecch, line printer plot
             if (!asciilin(dl0, &gr.nointerp)) {
                 if (!fromgraph)
-                    dl0->free();
+                    sDvList::destroy(dl0);
                 return (false);
             }
             AsciiPlot(dl0, (char*)&gr);
             if (!fromgraph)
-                dl0->free();
+                sDvList::destroy(dl0);
             return (true);
         }
     }
 
     if (fromgraph)
-        gr.command = fromgraph->command()->copy();
+        gr.command = wordlist::copy(fromgraph->command());
     else
-        gr.command = wl->copy();
+        gr.command = wordlist::copy(wl);
 
     // the dvec list is copied to graph->plotdata
     sGraph *graph = Init(dl0, &gr);
     if (!fromgraph || copied)
-        dl0->free();
+        sDvList::destroy(dl0);
 
     if (graph == 0)
         return (false);

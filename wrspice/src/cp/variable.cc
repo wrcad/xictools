@@ -196,8 +196,8 @@ rng_t::eval_range(const char *cstring)
             tok1++;
             wordlist *wl = CP.VarEval(tok1);
             if (wl) {
-                tok1 = wl->flatten();
-                wl->free();
+                tok1 = wordlist::flatten(wl);
+                wordlist::destroy(wl);
                 i = (int)(atof(tok1) + .5);
                 delete [] tok1;
                 tok1 = 0;
@@ -216,8 +216,8 @@ rng_t::eval_range(const char *cstring)
             tok2++;
             wordlist *wl = CP.VarEval(tok2);
             if (wl) {
-                tok2 = wl->flatten();
-                wl->free();
+                tok2 = wordlist::flatten(wl);
+                wordlist::destroy(wl);
                 i = (int)(atof(tok2) + .5);
                 delete [] tok2;
                 tok2 = 0;
@@ -326,7 +326,7 @@ CshPar::VarSubst(wordlist **list)
                         for (wz = wlist; wz->wl_next != wl; wz = wz->wl_next) ;
                         wl = wz;
                     }
-                    wl->wl_next->free();
+                    wordlist::destroy(wl->wl_next);
                     wl->wl_next = 0;
                     delete [] wbuf;
                     return;
@@ -334,7 +334,7 @@ CshPar::VarSubst(wordlist **list)
                 if (isspace(*(s-2))) {
                     // end line before comment
                     *(s-2) = 0;
-                    wl->wl_next->free();
+                    wordlist::destroy(wl->wl_next);
                     wl->wl_next = 0;
                     delete [] wbuf;
                     return;
@@ -436,7 +436,7 @@ CshPar::VarSubst(wordlist **list)
                     continue;
                 }
                 else {
-                    char *str = wlist->flatten();
+                    char *str = wordlist::flatten(wlist);
                     GRpkgIf()->ErrPrintf(ET_ERROR,
                         "unbalanced parentheses or brackets.\n  %s\n", str);
                     delete [] str;
@@ -468,7 +468,7 @@ CshPar::VarSubst(wordlist **list)
             wordlist *twl = wl->splice(nwl);
             if (!twl) {
                 if (!wfirst)
-                    wlist->free();
+                    wordlist::destroy(wlist);
                 *list = 0;
                 delete [] wbuf;
                 return;
@@ -585,7 +585,7 @@ CshPar::VarSubst(char **str)
     }
     delete [] *str;
     *str = c;
-    wl0->free();
+    wordlist::destroy(wl0);
 }
 
 
@@ -611,8 +611,8 @@ namespace {
         *s = '\0';
         wordlist *wl = CP.VarEval(str+4);
         *s = ')';
-        char *t = wl->flatten();
-        wl->free();
+        char *t = wordlist::flatten(wl);
+        wordlist::destroy(wl);
         if (!t)
             // some error occurred
             return (str);
@@ -749,7 +749,7 @@ CshPar::VarEval(const char *cstring)
                 variable *v = Sp.EnqPlotVar(s);
                 if (v) {
                     wl->wl_word = lstring::copy("1");
-                    v->free();
+                    variable::destroy(v);
                 }
                 else {
                     // Sp.EnqVectorVar() takes care of range
@@ -763,7 +763,7 @@ CshPar::VarEval(const char *cstring)
                         v = Sp.EnqVectorVar(s, true);
                     if (v) {
                         wl->wl_word = lstring::copy("1");
-                        v->free();
+                        variable::destroy(v);
                     }
                     else
                         wl->wl_word = lstring::copy("0");
@@ -802,7 +802,7 @@ CshPar::VarEval(const char *cstring)
                 }
                 else
                     cnt = (v->type() != VTYP_BOOL);
-                v->free();
+                variable::destroy(v);
             }
             else {
                 // Sp.EnqVectorVar() takes care of range
@@ -821,7 +821,7 @@ CshPar::VarEval(const char *cstring)
                     }
                     else
                         cnt = (v->type() != VTYP_BOOL);
-                    v->free();
+                    variable::destroy(v);
                 }
             }
         }
@@ -847,7 +847,7 @@ CshPar::VarEval(const char *cstring)
     v = Sp.EnqPlotVar(string);
     if (v) {
         wl = var_range(v, range);
-        v->free();
+        variable::destroy(v);
         return (wl);
     }
 
@@ -865,7 +865,7 @@ CshPar::VarEval(const char *cstring)
         delete [] ts;
         if (v) {
             wl = v->varwl();
-            v->free();
+            variable::destroy(v);
             return (wl);
         }
     }
@@ -881,7 +881,7 @@ CshPar::VarEval(const char *cstring)
     delete [] ts;
     if (v) {
         wl = v->varwl();
-        v->free();
+        variable::destroy(v);
         return (wl);
     }
 
@@ -950,7 +950,7 @@ CshPar::RawVarSet(const char *vname, bool isset, variable *v)
     if (!isset) {
         if (alreadythere) {
             cp_vardb->remove(rng.name);
-            vv->free();
+            variable::destroy(vv);
         }
         ToolBar()->UpdateVariables();
         return;
@@ -1086,7 +1086,7 @@ CshPar::ParseSet(wordlist *wl)
 bad:
     GRpkgIf()->ErrPrintf(ET_ERROR, "bad set form.\n");
     delete [] name;
-    vars->free();
+    variable::destroy(vars);
     return (0);
 }
 
@@ -1115,7 +1115,7 @@ CshPar::GetList(wordlist **wlist)
             wl = wl->wl_next;
             vv->set_list(GetList(&wl));
             if (vv->list() == 0) {
-                listv->free();
+                variable::destroy(listv);
                 *wlist = wl;
                 return (0);
             }
@@ -1133,7 +1133,7 @@ CshPar::GetList(wordlist **wlist)
         wl = wl->wl_next;
     }
     *wlist = wl;
-    listv->free();
+    variable::destroy(listv);
     return (0);
 }
 
@@ -1237,11 +1237,11 @@ CshPar::PopArg()
     if (stackp == 0) {
         if (vv) {
             cp_vardb->remove("argv");
-            vv->free();
+            variable::destroy(vv);
         }
         if (vc) {
             cp_vardb->remove("argc");
-            vc->free();
+            variable::destroy(vc);
         }
     }
     else {

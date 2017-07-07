@@ -181,7 +181,7 @@ IFsimulator::DvList(pnlist *pl0)
         else
             dl->dl_dvec = v;
     }
-    pl0->free();
+    pnlist::destroy(pl0);
     return (dl0);
 }
 

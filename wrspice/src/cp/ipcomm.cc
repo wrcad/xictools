@@ -424,7 +424,7 @@ CshPar::MessageHandler(int fc)
                 delete [] dbuf;
                 wrote = true;
             }
-            dl0->free();
+            sDvList::destroy(dl0);
             break;
         }
         if (!wrote)
@@ -683,7 +683,7 @@ CommandTab::com_sced(wordlist *wl)
 
         char portarg[32];
         sprintf(portarg, "-P%d:%d", CP.Port(), (int)pid);
-        int ac = wl->length() + 3;
+        int ac = wordlist::length(wl) + 3;
         char **av = new char*[ac+1];
         av[0] = xpstr.string_trim();
         av[1] = lstring::copy("-E");  // start in electrical mode

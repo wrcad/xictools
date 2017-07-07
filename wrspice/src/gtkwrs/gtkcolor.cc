@@ -332,7 +332,7 @@ CommandTab::com_setrdb(wordlist *wl)
         GRpkgIf()->ErrPrintf(ET_ERROR, "X system not available.\n");
         return;
     }
-    char *str = wl->flatten();
+    char *str = wordlist::flatten(wl);
     XrmDatabase db = XrmGetDatabase(gr_x_display());
     CP.Unquote(str);
     XrmPutLineResource(&db, str);

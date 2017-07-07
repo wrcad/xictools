@@ -229,7 +229,7 @@ sCKT::getParam(const char *word, const char *param, IFspecial *sp) const
                     }
                 }
             }
-            plist->free();
+            wordlist::destroy(plist);
             return (vv);
         }
         else if (mod) {
@@ -255,7 +255,7 @@ sCKT::getParam(const char *word, const char *param, IFspecial *sp) const
                     }
                 }
             }
-            plist->free();
+            wordlist::destroy(plist);
             return (vv);
         }
         return (0);

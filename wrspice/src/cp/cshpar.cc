@@ -179,7 +179,7 @@ CommandTab::com_shell(wordlist *wl)
     char *t = strrchr(shell, '.');
     if (t)
         *t = 0;
-    char *com = wl->flatten();
+    char *com = wordlist::flatten(wl);
 
     int shtype = 0;
     if (lstring::eq(shell, "csh") || lstring::eq(shell, "tcsh"))
@@ -531,7 +531,7 @@ CshPar::Parse(const char *string)
     pwlist(wlist, "After history substitution");
 
     if (cp_flags[CP_INTERACTIVE] && cp_didhsubst) {
-        wlist->print(stdout);
+        wordlist::print(wlist, stdout);
         putc('\n', stdout);
     }
 
@@ -611,7 +611,7 @@ CshPar::Redirect(wordlist **list)
             wordlist *nw = w->wl_next;
             w->wl_next = 0;
             w = nw;
-            bt->free();
+            wordlist::destroy(bt);
         }
         else if (*w->wl_word == cp_gt) {
             wordlist *bt = w;
@@ -680,7 +680,7 @@ CshPar::Redirect(wordlist **list)
                 w->wl_next->wl_prev = bt->wl_prev;
             w = w->wl_next;
             bt->wl_next->wl_next = 0;
-            bt->free();
+            wordlist::destroy(bt);
             if (erralso)
                 TTY.ioRedirect(0, 0, TTY.outfile());
         }
@@ -691,7 +691,7 @@ CshPar::Redirect(wordlist **list)
     return;
 
 error:
-    wl->free();
+    wordlist::destroy(wl);
     *list = 0;
 }
 

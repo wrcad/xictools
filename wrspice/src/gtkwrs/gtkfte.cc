@@ -381,7 +381,7 @@ sVectors::ve_actions(GtkWidget *caller, void *client_data)
 
             GRX->Deselect(caller);
             CommandTab::com_print(wl);
-            wl->free();
+            wordlist::destroy(wl);
             CP.Prompt();
             return;
         }
@@ -391,7 +391,7 @@ sVectors::ve_actions(GtkWidget *caller, void *client_data)
         wordlist *wl = ve_selections();
         if (wl) {
             CommandTab::com_plot(wl);
-            wl->free();
+            wordlist::destroy(wl);
         }
     }
     else if (client_data == (void*)4) {
@@ -411,7 +411,7 @@ sVectors::ve_dfunc()
     wordlist *wl = ve_selections();
     if (wl) {
         CommandTab::com_unlet(wl);
-        wl->free();
+        wordlist::destroy(wl);
     }
 }
 
@@ -806,8 +806,8 @@ sPathList *
 sFiles::fi_listing(int cols)
 {
     wordlist *wl = CP.VarEval(kw_sourcepath);
-    char *path = wl->flatten();
-    wl->free();
+    char *path = wordlist::flatten(wl);
+    wordlist::destroy(wl);
     sPathList *pl = new sPathList(path, 0, fi_nofiles_msg, 0, 0, cols, false);
     delete [] path;
     return (pl);
@@ -1010,8 +1010,8 @@ GTKtoolbar::UpdateFiles()
     if (!fi_shell)
         return;
     wordlist *wl = CP.VarEval(kw_sourcepath);
-    char *path = wl->flatten();
-    wl->free();
+    char *path = wordlist::flatten(wl);
+    wordlist::destroy(wl);
     FL()->update(path);
     delete [] path;
 }

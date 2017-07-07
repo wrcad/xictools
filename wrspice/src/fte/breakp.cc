@@ -189,7 +189,7 @@ CommandTab::com_trace(wordlist *wl)
     sDbComm *d = new sDbComm;
     d->set_type(DB_TRACE);
     d->set_active(true);
-    d->set_string(wl->flatten());
+    d->set_string(wordlist::flatten(wl));
     d->set_number(DB.new_count());
 
     if (CP.GetFlag(CP_INTERACTIVE) || !Sp.CurCircuit()) {
@@ -240,14 +240,14 @@ CommandTab::com_iplot(wordlist *wl)
         GRpkgIf()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
         return;
     }
-    wl = wl->copy();
+    wl = wordlist::copy(wl);
     for (wordlist *ww = wl; ww; ww = ww->wl_next) {
         if (lstring::eq(ww->wl_word, ".")) {
             wordlist *wx = Sp.ExtractPlotCmd(0, "tran");
             if (!wx) {
                 GRpkgIf()->ErrPrintf(ET_ERRORS,
                     "no vectors found for '.'.\n");
-                wl->free();
+                wordlist::destroy(wl);
                 return;
             }
             if (ww == wl)
@@ -262,7 +262,7 @@ CommandTab::com_iplot(wordlist *wl)
             if (!wx) {
                 GRpkgIf()->ErrPrintf(ET_ERRORS,
                     "no vectors found for '.@%d'.\n", n);
-                wl->free();
+                wordlist::destroy(wl);
                 return;
             }
             if (ww == wl)
@@ -275,8 +275,8 @@ CommandTab::com_iplot(wordlist *wl)
     sDbComm *d = new sDbComm;
     d->set_type(DB_IPLOT);
     d->set_active(true);
-    d->set_string(wl->flatten());
-    wl->free();
+    d->set_string(wordlist::flatten(wl));
+    wordlist::destroy(wl);
     d->set_number(DB.new_count());
 
     if (CP.GetFlag(CP_INTERACTIVE) || !Sp.CurCircuit()) {
@@ -949,8 +949,8 @@ sDbComm::istrue()
         db_point = -1;
         return (true);
     }
-    char *str = wl->flatten();
-    wl->free();
+    char *str = wordlist::flatten(wl);
+    wordlist::destroy(wl);
 
     const char *t = str;
     pnode *p = Sp.GetPnode(&t, true);
@@ -1108,7 +1108,7 @@ sDbComm::print_trace(sPlot *plot, bool *flag, int pnt)
 
         sDvList *dvl = 0;
         pnlist *pl = Sp.GetPtree(wl, true);
-        wl->free();
+        wordlist::destroy(wl);
         if (pl)
             dvl = Sp.DvList(pl);
         if (!dvl) {
@@ -1137,7 +1137,7 @@ sDbComm::print_trace(sPlot *plot, bool *flag, int pnt)
                     SPnum.printnum(v1->imagval(0), v1->units(), false));
             }
         }
-        dvl->free();
+        sDvList::destroy(dvl);
     }
     return (true);
 }
@@ -1269,8 +1269,8 @@ sSaveList::list_expr(const char *expr)
             pnlist *pl0 = Sp.GetPtree(wl, false);
             for (pnlist *pl = pl0; pl; pl = pl->next())
                 list_vecs(pl->node());
-            pl0->free();
-            wl->free();
+            pnlist::destroy(pl0);
+            wordlist::destroy(wl);
         }
     }
 }
@@ -1288,7 +1288,7 @@ sSaveList::purge_non_special()
             if (*wl->wl_word != Sp.SpecCatchar())
                 sl_tab->remove(wl->wl_word);
         }
-        wl0->free();
+        wordlist::destroy(wl0);
     }
 }
 

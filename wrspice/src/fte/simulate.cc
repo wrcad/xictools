@@ -529,7 +529,7 @@ sFtCirc::run(SIMtype what, wordlist *args)
         err = newCKT(&ckt, 0);
         if (err != OK)
             return (err);
-        char *tmp = args->flatten();
+        char *tmp = wordlist::flatten(args);
         err = ckt->newTask(analysisString(what), tmp, &task);
         if (err != OK) {
             delete ckt;
@@ -802,13 +802,13 @@ sFtCirc::applyDeferred(sCKT *ckt)
 {
     if (!ci_deferred && !ci_trial_deferred)
         return;
-    wordlist *w0 = ci_deferred->copy();
-    w0 = w0->reverse();  // apply in specified order
+    wordlist *w0 = wordlist::copy(ci_deferred);
+    w0 = wordlist::reverse(w0);  // apply in specified order
 
     wordlist *w1 = ci_trial_deferred;
     ci_trial_deferred = 0;
-    w1 = w1->reverse();
-    w0 = w0->append(w1);
+    w1 = wordlist::reverse(w1);
+    w0 = wordlist::append(w0, w1);
 
     while (w0) {
         wordlist *wl = w0;
@@ -843,7 +843,7 @@ sFtCirc::applyDeferred(sCKT *ckt)
         delete wl;
     }
     if (!ci_keep_deferred) {
-        ci_deferred->free();
+        wordlist::destroy(ci_deferred);
         ci_deferred = 0;
     }
 }

@@ -367,9 +367,8 @@ struct file_elt
             delete [] fe_filename;
         }
 
-    void free()
+    static void destroy(file_elt *f)
         {
-            file_elt *f = this;
             while (f) {
                 file_elt *fx = f;
                 f = f->fe_next;

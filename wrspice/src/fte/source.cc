@@ -242,7 +242,7 @@ file_elt::wl_to_fl(const wordlist *wl, wordlist **tmpfiles)
         FILE *fp = Sp.PathOpen(ww->wl_word, "r", &isfifo);
         if (!fp) {
             GRpkgIf()->Perror(ww->wl_word);
-            f0->free();
+            file_elt::destroy(f0);
             return (0);
         }
         char *tempfile = 0;
@@ -253,7 +253,7 @@ file_elt::wl_to_fl(const wordlist *wl, wordlist **tmpfiles)
             if (!outfp) {
                 GRpkgIf()->Perror(tempfile);
                 delete [] tempfile;
-                f0->free();
+                file_elt::destroy(f0);
                 return (0);
             }
             if (tmpfiles) {
@@ -272,7 +272,7 @@ file_elt::wl_to_fl(const wordlist *wl, wordlist **tmpfiles)
             if (!fp) {
                 GRpkgIf()->Perror(tempfile);
                 delete [] tempfile;
-                f0->free();
+                file_elt::destroy(f0);
                 return (0);
             }
         }
@@ -281,7 +281,7 @@ file_elt::wl_to_fl(const wordlist *wl, wordlist **tmpfiles)
                 ww->wl_word);
             delete [] tempfile;
             fclose(fp);
-            f0->free();
+            file_elt::destroy(f0);
             return (0);
         }
         const char *fname = tempfile ? tempfile : wl->wl_word;
@@ -346,8 +346,8 @@ file_elt::wl_to_fl(const wordlist *wl, wordlist **tmpfiles)
         FILE *outfp = Sp.PathOpen(tempfile, "w");
         if (!outfp) {
             GRpkgIf()->Perror(tempfile);
-            f0->free();
-            f1->free();
+            file_elt::destroy(f0);
+            file_elt::destroy(f1);
             return (0);
         }
         if (tmpfiles) {
@@ -362,8 +362,8 @@ file_elt::wl_to_fl(const wordlist *wl, wordlist **tmpfiles)
         FILE *infp = Sp.PathOpen(fstart->fe_filename, "r");
         if (!infp) {
             GRpkgIf()->Perror(fstart->fe_filename);
-            f0->free();
-            f1->free();
+            file_elt::destroy(f0);
+            file_elt::destroy(f1);
             fclose(outfp);
             return (0);
         }
@@ -399,8 +399,8 @@ file_elt::wl_to_fl(const wordlist *wl, wordlist **tmpfiles)
             infp = Sp.PathOpen(fx->fe_filename, "r");
             if (!infp) {
                 GRpkgIf()->Perror(fx->fe_filename);
-                f0->free();
-                f1->free();
+                file_elt::destroy(f0);
+                file_elt::destroy(f1);
                 fclose(outfp);
                 return (0);
             }
@@ -429,7 +429,7 @@ file_elt::wl_to_fl(const wordlist *wl, wordlist **tmpfiles)
         fstart = fx;
     }
 
-    f0->free();
+    file_elt::destroy(f0);
     return (f1);
 }
 // End of file_elt functions.
@@ -439,7 +439,7 @@ void
 CommandTab::com_source(wordlist *wl)
 {
     bool nospice = false, nocmds = false, reuse = false;
-    wl = wl->copy();
+    wl = wordlist::copy(wl);
     wl->wl_prev = 0;
     wordlist *ww = wl, *wn;
     for ( ; wl; wl = wn) {
@@ -448,7 +448,7 @@ CommandTab::com_source(wordlist *wl)
             continue;
         if (!wl->wl_word[1]) {
             GRpkgIf()->ErrPrintf(ET_ERROR, "syntax, missing options.\n");
-            ww->free();
+            wordlist::destroy(ww);
             return;
         }
         for (char *s = wl->wl_word + 1; *s; s++) {
@@ -461,7 +461,7 @@ CommandTab::com_source(wordlist *wl)
             else {
                 GRpkgIf()->ErrPrintf(ET_ERROR,
                     "unknown option character %c.\n", *s);
-                ww->free();
+                wordlist::destroy(ww);
                 return;
             }
         }
@@ -483,7 +483,7 @@ CommandTab::com_source(wordlist *wl)
 
     wordlist *tmpfiles;
     file_elt *f0 = file_elt::wl_to_fl(wl, &tmpfiles);
-    wl->free();
+    wordlist::destroy(wl);
 
     if (f0) {
 #ifdef SOURCE_DEBUG
@@ -491,7 +491,7 @@ CommandTab::com_source(wordlist *wl)
             printf("mmon started\n");
 #endif
         Sp.Source(f0, nospice, nocmds, reuse);
-        f0->free();
+        file_elt::destroy(f0);
 #ifdef SOURCE_DEBUG
         printf("Allocation table contains %d entries.\n", Memory()->mon_count());
 
@@ -505,7 +505,7 @@ CommandTab::com_source(wordlist *wl)
     }
     for (wordlist *w = tmpfiles; w; w = w->wl_next)
         unlink(w->wl_word);
-    tmpfiles->free();
+    wordlist::destroy(tmpfiles);
 }
 // End of CommandTab functions.
 
@@ -848,7 +848,7 @@ IFsimulator::DeckSource(sLine *deck, bool nospice, bool nocmds,
     Tvals tv;
     tv.start();
     bool bad_deck = false;
-    sFtCirc *ct = SpDeck(deck, filename, execs, controls->copy(), vblk,
+    sFtCirc *ct = SpDeck(deck, filename, execs, wordlist::copy(controls), vblk,
         nospice, false, &bad_deck);
     tv.stop();
     if (ft_flags[FT_SIMDB])
@@ -861,8 +861,8 @@ IFsimulator::DeckSource(sLine *deck, bool nospice, bool nocmds,
             ct->set_runtype(CHECKALL_GIVEN);
     }
     if (bad_deck) {
-        controls->free();
-        postrun->free();
+        wordlist::destroy(controls);
+        wordlist::destroy(postrun);
         return;
     }
 
@@ -883,7 +883,7 @@ IFsimulator::DeckSource(sLine *deck, bool nospice, bool nocmds,
         if (!nocmds || nospice)
             ExecCmds(controls);
     }
-    controls->free();
+    wordlist::destroy(controls);
 
     if (GetFlag(FT_BATCHMODE) && (check || checkall || monte))
         // do margin analysis if in batch mode
@@ -936,7 +936,7 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
     sPlot *pl_ex = 0;
     char tpname[64];
     if (execs && !noexec) {
-        wordlist *wx = execs->copy();
+        wordlist *wx = wordlist::copy(execs);
         if (ptab) {
             // Parameter expand the .exec lines.
             for (wordlist *wl = wx; wl; wl = wl->wl_next)
@@ -952,7 +952,7 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
         pl_ex->set_circuit(ft_curckt->name());
         pl_ex->set_title(ft_curckt->name());
         ExecCmds(wx);
-        wx->free();
+        wordlist::destroy(wx);
 
         // Still in list? may have been destroyed.
         sPlot *px = ft_plot_list;
@@ -981,11 +981,11 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
             ct = 0;
         }
 
-        realdeck->free();
+        sLine::destroy(realdeck);
         delete ptab;
-        execs->free();
-        controls->free();
-        verilog->free();
+        wordlist::destroy(execs);
+        wordlist::destroy(controls);
+        sLine::destroy(verilog);
     }
     else {
         ft_curckt->setup(deck, filename, execs, controls, verilog, ptab);
@@ -1249,7 +1249,7 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                     GRpkgIf()->ErrPrintf(ET_MSG,
                         "Error while reading file %s.\n", filename);
                 }
-                deck->free();
+                sLine::destroy(deck);
                 return (0);
             }
             break;
@@ -1370,7 +1370,7 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                                 "Error while reading file %s.\n", filename);
                         }
                         *err = true;
-                        deck->free();
+                        sLine::destroy(deck);
                         delete [] path;
                         delete [] init_tok;
                         delete [] file;
@@ -1393,7 +1393,7 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                             GRpkgIf()->ErrPrintf(ET_MSG,
                                 "From file %s.\n", filename);
                         }
-                        deck->free();
+                        sLine::destroy(deck);
                         if (path)
                             chdir(cwd);
                         delete [] path;
@@ -1434,7 +1434,7 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                             "Error while reading file %s.\n", filename);
                     }
                     *err = true;
-                    deck->free();
+                    sLine::destroy(deck);
                     if (path)
                         chdir(cwd);
                     delete [] path;
@@ -1457,7 +1457,7 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                         "Error while reading file %s.\n", filename);
                 }
                 *err = true;
-                deck->free();
+                sLine::destroy(deck);
                 delete [] init_tok;
                 return (0);
             }
@@ -1511,7 +1511,7 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                                 "Error while reading file %s.\n", filename);
                         }
                         *err = true;
-                        deck->free();
+                        sLine::destroy(deck);
                         delete [] path;
                         delete [] name;
                         delete [] init_tok;
@@ -1529,7 +1529,7 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                             "Error while reading file %s.\n", filename);
                     }
                     *err = true;
-                    deck->free();
+                    sLine::destroy(deck);
                     if (path)
                         chdir(cwd);
                     delete [] path;
@@ -1550,7 +1550,7 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                             "Error while reading file %s.\n", filename);
                     }
                     *err = true;
-                    deck->free();
+                    sLine::destroy(deck);
                     if (path)
                         chdir(cwd);
                     delete [] path;
@@ -1570,7 +1570,7 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                             "Error while reading file %s.\n", filename);
                     }
                     *err = true;
-                    deck->free();
+                    sLine::destroy(deck);
                     if (path)
                         chdir(cwd);
                     fclose(newfp);
@@ -1592,7 +1592,7 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                         GRpkgIf()->ErrPrintf(ET_MSG,
                             "From file %s.\n", filename);
                     }
-                    deck->free();
+                    sLine::destroy(deck);
                     if (path)
                         chdir(cwd);
                     delete [] path;
@@ -1656,7 +1656,7 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                 }
 
                 *err = true;
-                deck->free();
+                sLine::destroy(deck);
                 delete [] path;
                 delete [] name;
                 delete [] init_tok;
@@ -1861,7 +1861,7 @@ sFtCirc::setup(sLine *spdeck, const char *fname, wordlist *exec,
             }
 
             variable *v = CP.ParseSet(wl);
-            wl->free();
+            wordlist::destroy(wl);
             delete [] pname;
             delete [] value;
             if (!vv) {
@@ -2000,7 +2000,7 @@ sFtCirc::expand(sLine *realdeck, bool *err)
         if (err)
             *err = true;
         GRpkgIf()->ErrPrintf(ET_WARN, "no lines in input.\n");
-        realdeck->free();
+        sLine::destroy(realdeck);
         return (false);
     }
 
@@ -2024,7 +2024,7 @@ sFtCirc::expand(sLine *realdeck, bool *err)
                 *err = true;
             GRpkgIf()->ErrPrintf(ET_ERROR,
                 "subcircuit expansion failed, circuit not loaded.\n");
-            realdeck->free();
+            sLine::destroy(realdeck);
             return (false);
         }
     }
@@ -2459,7 +2459,7 @@ sLine::extract_verilog()
                     while (tmp->li_next && tmp->li_next->li_next)
                         tmp = tmp->li_next;
 
-                    tmp->li_next->free();  // .endv
+                    sLine::destroy(tmp->li_next);  // .endv
                     tmp->li_next = vl->li_next;
                     delete vl;
                 }
@@ -2482,7 +2482,7 @@ sLine::extract_verilog()
             while (tmp->li_next && tmp->li_next->li_next)
                 tmp = tmp->li_next;
 
-            tmp->li_next->free();  // .endv
+            sLine::destroy(tmp->li_next);  // .endv
             tmp->li_next = vl->li_next;
             delete vl;
         }
@@ -2589,7 +2589,7 @@ sLine::process_conditionals(sParamTab *ptab)
             // In a cached block, strip line.
             dp->li_next = dd->li_next;
             dd->li_next = 0;
-            dd->free();
+            sLine::destroy(dd);
             continue;
         }
 
@@ -2653,7 +2653,7 @@ sLine::process_conditionals(sParamTab *ptab)
                 sLine *tmp = blhead->li_next;
                 blhead->li_next = dn;
                 dd->li_next = 0;
-                tmp->free();
+                sLine::destroy(tmp);
                 dp = blhead;
                 blhead = 0;
                 continue;
@@ -2670,7 +2670,7 @@ sLine::process_conditionals(sParamTab *ptab)
                 sLine *tmp = blhead->li_next;
                 blhead->li_next = dn;
                 dd->li_next = 0;
-                tmp->free();
+                sLine::destroy(tmp);
                 dp = blhead;
                 blhead = 0;
                 continue;
@@ -2690,7 +2690,7 @@ sLine::process_conditionals(sParamTab *ptab)
                     sLine *tmp = blhead->li_next;
                     blhead->li_next = dn;
                     dd->li_next = 0;
-                    tmp->free();
+                    sLine::destroy(tmp);
                     dp = blhead;
                     blhead = 0;
                     continue;

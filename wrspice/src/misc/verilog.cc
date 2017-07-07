@@ -73,7 +73,7 @@ sADC::sADC(const char *string)
     if (*string) {
         wordlist *wl = CP.LexString(string);
         pnlist *pl = Sp.GetPtree(wl, true);
-        wl->free();
+        wordlist::destroy(wl);
         if (pl) {
             sDataVec *v = Sp.Evaluate(pl->node());
             if (v) {
@@ -86,7 +86,7 @@ sADC::sADC(const char *string)
                 if (v)
                     quantum = v->realval(0);
             }
-            pl->free();
+            pnlist::destroy(pl);
         }
     }
     indx = 0;

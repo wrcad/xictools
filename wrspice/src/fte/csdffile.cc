@@ -339,7 +339,7 @@ cCSDFout::file_update_pcnt(int)
 bool
 cCSDFout::file_close()
 {
-    co_dlist->free();
+    sDvList::destroy(co_dlist);
     co_dlist = 0;
     if (co_fp && co_fp != stdout && !co_no_close)
         fclose(co_fp);
@@ -361,8 +361,8 @@ cCSDFin::cCSDFin()
 
 cCSDFin::~cCSDFin()
 {
-    ci_header->free();
-    ci_names->free();
+    setvar_t::destroy(ci_header);
+    setvar_t::destroy(ci_names);
     close_file();
 }
 
@@ -594,9 +594,9 @@ cCSDFin::parse_plot()
 bool
 cCSDFin::parse_header()
 {
-    ci_header->free();
+    setvar_t::destroy(ci_header);
     ci_header = 0;
-    ci_names->free();
+    setvar_t::destroy(ci_names);
     ci_names = 0;
     ci_length = 0;
     ci_numvars = 0;

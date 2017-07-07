@@ -140,9 +140,10 @@ public:
             mh_count = 0;
             mh_file_created = false;
         }
+
     virtual ~cMsgHdlr()
         {
-            mh_list->free();
+            wordlist::destroy(mh_list);
         }
 
     void first_message(const char*);

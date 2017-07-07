@@ -259,7 +259,7 @@ CommandTab::com_fourier(wordlist *wl)
         TTY.send("\n");
     }
 
-    dl0->free();
+    sDvList::destroy(dl0);
     delete [] freq;
     delete [] mag;
     delete [] phase;
@@ -408,7 +408,7 @@ CommandTab::com_spec(wordlist *wl)
             ngood++;
         }
     }
-    pl0->free();
+    pnlist::destroy(pl0);
 
     if (!ngood) {
        delete [] win;
@@ -445,7 +445,7 @@ CommandTab::com_spec(wordlist *wl)
             f->newperm();
         }
     }
-    dl0->free();
+    sDvList::destroy(dl0);
 
     double *dc = new double[ngood];
     for (int i = 0; i < ngood; i++)

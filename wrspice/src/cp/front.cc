@@ -129,12 +129,25 @@ struct sControl
             co_children->co_parent = this;
             return (co_children);
         }
+
+    static void destroy(sControl *cc)
+        {
+            while (cc) {
+                sControl *cx = cc;
+                cc = cc->co_next;
+
+                wordlist::destroy(cx->co_cond);
+                wordlist::destroy(cx->co_text);
+                delete [] cx->co_foreachvar;
+                destroy(cx->co_children);
+                destroy(cx->co_elseblock);
+            }
+        }
   
     static void set_block(wordlist*);
 
-    void free();
-    void eval_block();
-    sControl *find_label(const char*);
+    static void eval_block(sControl*);
+    static sControl *find_label(sControl*, const char*);
     void doblock(retinfo *info);
     void dodump(FILE* = 0);
 
@@ -174,14 +187,14 @@ struct block
     ~block()
         {
             delete [] bl_name;
-            bl_cont->free();
+            sControl::destroy(bl_cont);
         }
 
     const char *name()              { return (bl_name); }
     sControl *control()             { return (bl_cont); }
     void set_control(sControl *c)
         {
-            bl_cont->free();
+            sControl::destroy(bl_cont);
             bl_cont = c;
         }
 
@@ -218,8 +231,8 @@ struct ControlStack
         {
             if (cs_cend[cs_stackp] && !cs_cend[cs_stackp]->parent() &&
                     !cs_no_exec) {
-                cs_cend[cs_stackp]->eval_block();
-                cs_control[cs_stackp]->free();
+                sControl::eval_block(cs_cend[cs_stackp]);
+                sControl::destroy(cs_control[cs_stackp]);
                 cs_control[cs_stackp] = 0;
                 cs_cend[cs_stackp] = 0;
             }
@@ -242,7 +255,7 @@ struct ControlStack
             for (cs_stackp = 0; cs_stackp < CS_SIZE; cs_stackp++) {
                 if (!cs_control[cs_stackp])
                     break;
-                cs_control[cs_stackp]->free();
+                sControl::destroy(cs_control[cs_stackp]);
                 cs_control[cs_stackp] = 0;
                 cs_cend[cs_stackp] = 0;
             }
@@ -261,7 +274,7 @@ struct ControlStack
             }
             else {
                 cs_stackp++;
-                cs_control[cs_stackp]->free();
+                sControl::destroy(cs_control[cs_stackp]);
                 cs_control[cs_stackp] = 0;
                 cs_cend[cs_stackp] = 0;
             }
@@ -310,7 +323,7 @@ CommandTab::com_codeblock(wordlist *wl)
     bool listblks = false;
     block *b = 0;
     if (wl) {
-        wl = wl->copy();
+        wl = wordlist::copy(wl);
         wordlist *ww, *wn;
         for (ww = wl; wl; wl = wn) {
             wn = wl->wl_next;
@@ -318,7 +331,7 @@ CommandTab::com_codeblock(wordlist *wl)
                 continue;
             if (!wl->wl_word[1]) {
                 GRpkgIf()->ErrPrintf(ET_ERROR, "syntax, missing options.\n");
-                wl->free();
+                wordlist::destroy(wl);
                 return;
             }
             for (char *s = wl->wl_word + 1; *s; s++) {
@@ -340,7 +353,7 @@ CommandTab::com_codeblock(wordlist *wl)
                 else {
                     GRpkgIf()->ErrPrintf(ET_ERROR,
                         "unknown option character %c.\n", *s);
-                    wl->free();
+                    wordlist::destroy(wl);
                     return;
                 }
             }
@@ -357,7 +370,7 @@ CommandTab::com_codeblock(wordlist *wl)
         if (ww) {
             fname = lstring::copy(ww->wl_word);
             CP.Unquote(fname);
-            ww->free();
+            wordlist::destroy(ww);
         }
     }
 
@@ -391,7 +404,7 @@ CommandTab::com_codeblock(wordlist *wl)
             }
             ww = ww->wl_next;
         }
-        wn->free();
+        wordlist::destroy(wn);
         if (listblks)
             Sp.ListBound();
         return;
@@ -494,11 +507,11 @@ CshPar::ExecBlock(const char *name)
     if (b) {
         sControl *x = CS.cur_control();
         CS.set_cur_control(b->control());
-        CS.cur_control()->eval_block();
+        sControl::eval_block(CS.cur_control());
         CS.set_cur_control(x);
     }
     else
-        CS.cur_control()->eval_block();
+        sControl::eval_block(CS.cur_control());
     CS.pop_stack();
 }
 
@@ -579,7 +592,7 @@ CshPar::EvLoop(const char *string)
         }
         if ((wlist->wl_word == 0) || (*wlist->wl_word == '\0')) {
             // User just typed return
-            wlist->free();
+            wordlist::destroy(wlist);
             if (string)
                 return (1);
             cp_event--;
@@ -596,7 +609,7 @@ CshPar::EvLoop(const char *string)
         }
 
         sControl::set_block(wlist);
-        wlist->free();
+        wordlist::destroy(wlist);
         CS.evl_check_exec();
         if (string)
             return (1); // The return value is irrelevant
@@ -648,11 +661,11 @@ CshPar::ExecControl(sControl *c)
     if (c) {
         sControl *x = CS.cur_control();
         CS.set_cur_control(c);
-        CS.cur_control()->eval_block();
+        sControl::eval_block(CS.cur_control());
         CS.set_cur_control(x);
     }
     else
-        CS.cur_control()->eval_block();
+        sControl::eval_block(CS.cur_control());
     CS.pop_stack();
 }
 
@@ -662,7 +675,7 @@ CshPar::ExecControl(sControl *c)
 void
 CshPar::FreeControl(sControl *cntrl)
 {
-    cntrl->free();
+    sControl::destroy(cntrl);
 }
 
 
@@ -851,7 +864,7 @@ CshPar::DoCommand(wordlist *wlist)
                     for (wordlist *wl = wlist->wl_next; wl; wl = wl->wl_next)
                         nargs++;
                     if (command->co_stringargs) {
-                        char *lcom = wlist->wl_next->flatten();
+                        char *lcom = wordlist::flatten(wlist->wl_next);
                         (*command->co_func) ((wordlist*)lcom);
                         delete [] lcom;
                     }
@@ -882,7 +895,7 @@ CshPar::DoCommand(wordlist *wlist)
         }
     } while (nextc && wlist);
 
-    rwlist->free();
+    wordlist::destroy(rwlist);
     TTY.ioReset();
 }
 
@@ -952,7 +965,7 @@ namespace {
     //
     wordlist *quicksub(wordlist *wl)
     {
-        wordlist *nwl = wl->copy();
+        wordlist *nwl = wordlist::copy(wl);
         CP.DoGlob(&nwl);
         CP.BackQuote(&nwl);
         CP.VarSubst(&nwl);
@@ -984,7 +997,7 @@ sControl::set_block(wordlist *wl)
 
     if (lstring::eq(wl->wl_word, "while")) {
         cur->co_type = CO_WHILE;
-        cur->co_cond = wl->wl_next->copy();
+        cur->co_cond = wordlist::copy(wl->wl_next);
         if (!cur->co_cond) {
             GRpkgIf()->ErrPrintf(ET_ERROR, "missing while condition.\n");
         }
@@ -992,7 +1005,7 @@ sControl::set_block(wordlist *wl)
     }
     else if (lstring::eq(wl->wl_word, "dowhile")) {
         cur->co_type = CO_DOWHILE;
-        cur->co_cond = wl->wl_next->copy();
+        cur->co_cond = wordlist::copy(wl->wl_next);
         if (!cur->co_cond) {
             GRpkgIf()->ErrPrintf(ET_ERROR, "missing dowhile condition.\n");
         }
@@ -1020,13 +1033,13 @@ sControl::set_block(wordlist *wl)
                 GRpkgIf()->ErrPrintf(ET_ERROR, 
                     "bad repeat argument %s.\n", s ? s : "");
             if (ww)
-                ww->free();
+                wordlist::destroy(ww);
         }
         cur = cur->newblock();
     }
     else if (lstring::eq(wl->wl_word, "if")) {
         cur->co_type = CO_IF;
-        cur->co_cond = wl->wl_next->copy();
+        cur->co_cond = wordlist::copy(wl->wl_next);
         if (!cur->co_cond)
             GRpkgIf()->ErrPrintf(ET_ERROR, "missing if condition.\n");
         cur = cur->newblock();
@@ -1041,7 +1054,7 @@ sControl::set_block(wordlist *wl)
         }
         else
             GRpkgIf()->ErrPrintf(ET_ERROR, "missing foreach variable.\n");
-        ww = ww->copy();
+        ww = wordlist::copy(ww);
         CP.DoGlob(&ww);
         cur->co_text = ww;
         cur = cur->newblock();
@@ -1049,7 +1062,7 @@ sControl::set_block(wordlist *wl)
     else if (lstring::eq(wl->wl_word, "label")) {
         cur->co_type = CO_LABEL;
         if (wl->wl_next) {
-            cur->co_text = wl->wl_next->copy();
+            cur->co_text = wordlist::copy(wl->wl_next);
             if (wl->wl_next->wl_next)
                 GRpkgIf()->ErrPrintf(ET_WARN,
                     "ignored extra junk after label.\n");
@@ -1064,7 +1077,7 @@ sControl::set_block(wordlist *wl)
         //
         cur->co_type = CO_GOTO;
         if (wl->wl_next) {
-            cur->co_text = wl->wl_next->copy();
+            cur->co_text = wordlist::copy(wl->wl_next);
             if (wl->wl_next->wl_next)
                 GRpkgIf()->ErrPrintf(ET_WARN,
                     "ignored extra junk after goto.\n");
@@ -1132,36 +1145,18 @@ sControl::set_block(wordlist *wl)
     }
     else {
         cur->co_type = CO_STATEMENT;
-        cur->co_text = wl->copy();
+        cur->co_text = wordlist::copy(wl);
     }
     CS.set_cur_cend(cur);
 }
 
 
-void
-sControl::free()
-{
-    sControl *cc = this;
-    while (cc) {
-        sControl *cx = cc;
-        cc = cc->co_next;
-
-        cx->co_cond->free();
-        cx->co_text->free();
-        delete [] cx->co_foreachvar;
-        cx->co_children->free();
-        cx->co_elseblock->free();
-    }
-}
-
-
+// Static function.
 // Evaluate the statement block.
 //
 void
-sControl::eval_block()
+sControl::eval_block(sControl *x)
 {
-    sControl *x = this;
-
     // We have to toss this do-while loop in here so
     // that gotos at the top level will work.
     //
@@ -1184,7 +1179,7 @@ sControl::eval_block()
                 break;
 
             case LABEL:
-                x = CS.cur_control()->find_label(ri.label());
+                x = sControl::find_label(CS.cur_control(), ri.label());
                 if (!x)
                     GRpkgIf()->ErrPrintf(ET_ERROR, "label %s not found.\n",
                         ri.label());
@@ -1196,10 +1191,10 @@ sControl::eval_block()
 }
 
 
+// Static function.
 sControl *
-sControl::find_label(const char *s)
+sControl::find_label(sControl *ct, const char *s)
 {
-    sControl *ct = this;
     while (ct) {
         if (ct->co_type == CO_LABEL && lstring::eq(s, ct->co_text->wl_word))
             break;
@@ -1272,7 +1267,7 @@ sControl::doblock(retinfo *info)
                     }
 
                 case LABEL:
-                    cn = co_children->find_label(ri.label());
+                    cn = find_label(co_children, ri.label());
                     if (!cn) {
                         info->set_type(LABEL);
                         info->set_label(ri.label());
@@ -1318,7 +1313,7 @@ sControl::doblock(retinfo *info)
                     }
 
                 case LABEL:
-                    cn = co_children->find_label(ri.label());
+                    cn = find_label(co_children, ri.label());
                     if (!cn) {
                         info->set_type(LABEL);
                         info->set_label(ri.label());
@@ -1367,7 +1362,7 @@ sControl::doblock(retinfo *info)
                     }
 
                 case LABEL:
-                    cn = co_children->find_label(ri.label());
+                    cn = find_label(co_children, ri.label());
                     if (!cn) {
                         info->set_type(LABEL);
                         info->set_label(ri.label());
@@ -1385,7 +1380,7 @@ sControl::doblock(retinfo *info)
                 cn = ch->co_next;
                 ch->doblock(&ri);
                 if (ri.type() == LABEL) {
-                    cn = co_children->find_label(ri.label());
+                    cn = find_label(co_children, ri.label());
                     if (!cn) {
                         info->set_type(LABEL);
                         info->set_label(ri.label());
@@ -1405,7 +1400,7 @@ sControl::doblock(retinfo *info)
                 cn = ch->co_next;
                 ch->doblock(&ri);
                 if (ri.type() == LABEL) {
-                    cn = co_elseblock->find_label(ri.label());
+                    cn = find_label(co_elseblock, ri.label());
                     if (!cn) {
                         info->set_type(LABEL);
                         info->set_label(ri.label());
@@ -1460,7 +1455,7 @@ sControl::doblock(retinfo *info)
                     }
 
                 case LABEL:
-                    cn = co_children->find_label(ri.label());
+                    cn = find_label(co_children, ri.label());
                     if (!cn) {
                         info->set_type(LABEL);
                         info->set_label(ri.label());
@@ -1470,7 +1465,7 @@ sControl::doblock(retinfo *info)
                 }
             }
         }
-        ww->free();
+        wordlist::destroy(ww);
         break;
 
     case CO_BREAK:
@@ -1500,7 +1495,7 @@ sControl::doblock(retinfo *info)
                 info->set_label(wl->wl_word);
                 return;
             }
-            wl->free();
+            wordlist::destroy(wl);
         }
         break;
 
@@ -1509,7 +1504,7 @@ sControl::doblock(retinfo *info)
         break;
 
     case CO_STATEMENT:
-        CP.DoCommand(co_text->copy());
+        CP.DoCommand(wordlist::copy(co_text));
         break;
 
     case CO_UNFILLED:
@@ -1553,7 +1548,7 @@ sControl::dodump(FILE *fp)
         }
         else {
             tabf(co_indent);
-            co_text->print(fp);
+            wordlist::print(co_text, fp);
             putc('\n', fp);
         }
         break;
@@ -1567,7 +1562,7 @@ sControl::dodump(FILE *fp)
         else {
             tabf(co_indent);
             fprintf(fp, "while ");
-            co_cond->print(fp);
+            wordlist::print(co_cond, fp);
             putc('\n', fp);
         }
         co_indent += 8;
@@ -1623,7 +1618,7 @@ sControl::dodump(FILE *fp)
         else {
             tabf(co_indent);
             fprintf(fp, "dowhile ");
-            co_cond->print(fp);
+            wordlist::print(co_cond, fp);
             putc('\n', fp);
         }
         co_indent += 8;
@@ -1649,7 +1644,7 @@ sControl::dodump(FILE *fp)
         else {
             tabf(co_indent);
             fprintf(fp, "if ");
-            co_cond->print(fp);
+            wordlist::print(co_cond, fp);
             putc('\n', fp);
         }
         co_indent += 8;
@@ -1675,7 +1670,7 @@ sControl::dodump(FILE *fp)
         else {
             tabf(co_indent);
             fprintf(fp, "foreach %s ", co_foreachvar);
-            co_text->print(fp);
+            wordlist::print(co_text, fp);
             putc('\n', fp);
         }
         co_indent += 8;

@@ -57,14 +57,14 @@ struct sHistEnt
     sHistEnt(int ev, wordlist *wl)
         {
             hi_event = ev;
-            hi_wlist = wl->copy();
+            hi_wlist = wordlist::copy(wl);
             hi_next = 0;
             hi_prev = 0;
         }
 
     ~sHistEnt()
         {
-            hi_wlist->free();
+            wordlist::destroy(hi_wlist);
         }
 
     int event()                 { return (hi_event); }
@@ -76,8 +76,8 @@ struct sHistEnt
 
     void update(wordlist *wl)
         {
-            hi_wlist->free();
-            hi_wlist = wl->copy();
+            wordlist::destroy(hi_wlist);
+            hi_wlist = wordlist::copy(wl);
         }
 
 private:
@@ -96,7 +96,7 @@ struct sAlias
     sAlias(const char *n, wordlist *wl)
         {
             al_name = lstring::copy(n);
-            al_text = wl->copy();
+            al_text = wordlist::copy(wl);
             al_next = 0;
             al_prev = 0;
         }
@@ -104,7 +104,7 @@ struct sAlias
     ~sAlias()
         {
             delete [] al_name;
-            al_text->free();
+            wordlist::destroy(al_text);
         }
 
     const char *name()          { return (al_name); }
@@ -333,7 +333,7 @@ struct CshPar
 
     void AddPendingSource(const char *fn)
         {
-            cp_srcfiles = cp_srcfiles->append(new wordlist(fn, 0));
+            cp_srcfiles = wordlist::append(cp_srcfiles, new wordlist(fn, 0));
         }
 
     static sVarDb *VarDb()                  { return (cp_vardb); }

@@ -630,14 +630,14 @@ void
 sTTYio::wlprint(const wordlist *wl)
 {
     if (wl) {
-        wordlist *wlc = wl->copy();
+        wordlist *wlc = wordlist::copy(wl);
         TTYif.stripList(wlc);
         for (wl = wlc; wl; wl = wl->wl_next) {
             send(wl->wl_word);
             if (wl->wl_next)
                 send(" ");
         }
-        wlc->free();
+        wordlist::destroy(wlc);
     }
 }
 
@@ -661,12 +661,12 @@ sTTYio::prompt_for_input(char *s, int n, const char *prompt, bool hide)
     wordlist *wl = TTYif.getWordlist();
     t_hidechars = false;
     if (wl) {
-        char *t = wl->flatten();
+        char *t = wordlist::flatten(wl);
         if (strlen(t) >= (unsigned)n)
             t[n-1] = '\0';
         strcpy(s, t);
         delete [] t;
-        wl->free();
+        wordlist::destroy(wl);
         return (s);
     }
     return (0);

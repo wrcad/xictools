@@ -67,9 +67,8 @@ struct sMeas
     bool shouldstop() { return stop_flag; }
     void nostop() { stop_flag = false; }
 
-    void free()
+    static void destroy(sMeas *m)
         {
-            sMeas *m = this;
             while (m) {
                 sMeas *mx = m;
                 m = m->next;
@@ -77,10 +76,10 @@ struct sMeas
             }
         }
 
-    sMeas *find(const char *res)
+    static sMeas *find(sMeas *thism, const char *res)
         {
             if (res) {
-                for (sMeas *m = this; m; m = m->next) {
+                for (sMeas *m = thism; m; m = m->next) {
                     if (m->result && !strcmp(res, m->result))
                         return (m);
                 }

@@ -103,7 +103,7 @@ IFsimulator::SweepAnalysis(wordlist *wl)
             if (wl->wl_next) {
                 GRpkgIf()->ErrPrintf(ET_ERROR,
                     "more than one analysis specified.\n");
-                wl->free();
+                wordlist::destroy(wl);
                 delete sweep;
                 return;
             }
@@ -286,10 +286,10 @@ sSWEEPprms::sSWEEPprms()
 sSWEEPprms::~sSWEEPprms()
 {
     delete names;
-    devs[0]->free();
-    devs[1]->free();
-    prms[0]->free();
-    prms[1]->free();
+    wordlist::destroy(devs[0]);
+    wordlist::destroy(devs[1]);
+    wordlist::destroy(prms[0]);
+    wordlist::destroy(prms[1]);
 }
 
 

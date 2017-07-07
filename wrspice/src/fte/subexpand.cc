@@ -289,14 +289,14 @@ sFtCirc::expandSubckts()
     sLine *cache_blk;
     char *cache_name;
     if (!sg.extract_cache_block(&edeck, &cache_name, &cache_blk)) {
-        edeck->free();
+        sLine::destroy(edeck);
         return (false);
     }
     if (cache_name) {
         bool ret = sg.cache_add(cache_name, &cache_blk, ci_params, ci_defines);
-        cache_blk->free();
+        sLine::destroy(cache_blk);
         if (!ret) {
-            edeck->free();
+            sLine::destroy(edeck);
             return (false);
         }
     }
@@ -310,7 +310,7 @@ sFtCirc::expandSubckts()
         if (SPcx.kwMatchSubinvoke(c->line())) {
             GRpkgIf()->ErrPrintf(ET_ERROR,
                 "%s\nSubcircuit expansion, unknown subcircuit.\n", c->line());
-            ll->free();
+            sLine::destroy(ll);
             return (false);
         }
     }
@@ -380,7 +380,7 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
     wordlist *badcalls = 0;
 
     if (!extract_subckts(&deck)) {
-        deck->free();
+        sLine::destroy(deck);
         deck = 0;
         goto cleanup;
     }
@@ -410,7 +410,7 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
         if (!subname || !instname) {
             GRpkgIf()->ErrPrintf(ET_ERROR,
                 "%s\n%Subcircuit expansion, syntax error.\n", c->line());
-            deck->free();
+            sLine::destroy(deck);
             deck = 0;
             goto cleanup;
         }
@@ -463,7 +463,7 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
                 deck = c->next();
 
             c->set_next(0);
-            c->free();
+            sLine::destroy(c);
 
             if (lc)
                 c = lc->next();
@@ -544,9 +544,9 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
 
         delete [] subname;
         if (err) {
-            deck->free();
+            sLine::destroy(deck);
             deck = 0;
-            lcc->free();
+            sLine::destroy(lcc);
             goto cleanup;
         }
 
@@ -554,9 +554,9 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
             GRpkgIf()->ErrPrintf(ET_ERROR,
                 "%s\nSubcircuit expansion, max call depth %d exceeded.\n",
                 c->line(), SUB_STK_DEPTH);
-            deck->free();
+            sLine::destroy(deck);
             deck = 0;
-            lcc->free();
+            sLine::destroy(lcc);
             goto cleanup;
         }
 
@@ -564,7 +564,7 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
         // regarding nesting fix.
 
         if (!lcc) {
-            deck->free();
+            sLine::destroy(deck);
             deck = 0;
             goto cleanup;
         }
@@ -596,8 +596,8 @@ cleanup:
     delete sg_stack[sg_stack_ptr].subs;
     sg_stack[sg_stack_ptr].clear();
     if (badcalls) {
-        badcalls->free();
-        deck->free();
+        wordlist::destroy(badcalls);
+        sLine::destroy(deck);
         deck = 0;
     }
     return (deck);
@@ -625,7 +625,7 @@ sScGlobal::extract_cache_block(sLine **deckp, char **namep, sLine **blkp)
                 GRpkgIf()->ErrPrintf(ET_ERROR, "%s\nMissing %s line.\n",
                     li->line(), ENDCACHE_KW);
                 delete [] bname;
-                b0->free();
+                sLine::destroy(b0);
                 return (false);
             }
             if (found) {
@@ -633,7 +633,7 @@ sScGlobal::extract_cache_block(sLine **deckp, char **namep, sLine **blkp)
                 GRpkgIf()->ErrPrintf(ET_ERROR, "%s\nExtra %s line.\n",
                     li->line(), CACHE_KW);
                 delete [] bname;
-                b0->free();
+                sLine::destroy(b0);
                 return (false);
             }
             // extract block name
@@ -645,7 +645,7 @@ sScGlobal::extract_cache_block(sLine **deckp, char **namep, sLine **blkp)
                 GRpkgIf()->ErrPrintf(ET_ERROR, "%s\nMissing name in %s line.\n",
                     li->line(), CACHE_KW);
                 delete [] bname;
-                b0->free();
+                sLine::destroy(b0);
                 return (false);
             }
         }
@@ -658,7 +658,7 @@ sScGlobal::extract_cache_block(sLine **deckp, char **namep, sLine **blkp)
             if (blkp)
                 *blkp = b0;
             else
-                b0->free();
+                sLine::destroy(b0);
             b0 = be = 0;
             bname = 0;
         }
@@ -679,7 +679,7 @@ sScGlobal::extract_cache_block(sLine **deckp, char **namep, sLine **blkp)
         // no block end found
         GRpkgIf()->ErrPrintf(ET_ERROR, "Missing %s line.\n", ENDCACHE_KW);
         delete [] bname;
-        b0->free();
+        sLine::destroy(b0);
         return (false);
     }
     return (true);
@@ -750,10 +750,10 @@ sScGlobal::extract_subckts(sLine **deckp)
 
             addsub(last);
             last->set_next(0);
-            last->free();
+            sLine::destroy(last);
             last = c->next();
             c->set_next(0);
-            c->free();
+            sLine::destroy(c);
         }
         else {
             lc = last;
@@ -1738,7 +1738,7 @@ sScGlobal::cache_add(const char *name, sLine **linep, const sParamTab *ptab,
             l->clear_error();
         }
     }
-    lm0->free();
+    sLine::destroy(lm0);
     sModTab *new_tab = IP.swapModTab(tmp_tab);
 
     SPcache.add(name, subs, ptab, new_tab, udfdb);
@@ -2187,7 +2187,7 @@ sSubc::~sSubc()
     delete [] su_name;
     delete [] su_args;
     delete su_params;
-    su_body->free();
+    sLine::destroy(su_body);
 }
 
 
@@ -2256,8 +2256,8 @@ sSubc::check_args(const char *args, int nargs)
             }
         }
     }
-    su_args = w0->flatten();
-    w0->free();
+    su_args = wordlist::flatten(w0);
+    wordlist::destroy(w0);
 }
 // End of sSubc functions.
 

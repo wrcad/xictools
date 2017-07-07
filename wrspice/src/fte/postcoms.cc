@@ -63,7 +63,7 @@ CommandTab::com_load(wordlist *wl)
     }
     else {
         ToolBar()->UpdatePlots(2);
-        char *str = wl->flatten();
+        char *str = wordlist::flatten(wl);
         const char *s = str;
         while (*s) {
             Sp.LoadFile(&s, true);
@@ -607,14 +607,14 @@ CommandTab::com_print(wordlist *wl)
             wl = wlast;
         }
         else {
-            wl = wl->copy();
+            wl = wordlist::copy(wl);
             wl->wl_next = wlast;
             wlast = wl;
         }
     }
     else {
-        wlast->free();
-        wlast = wl->copy();
+        wordlist::destroy(wlast);
+        wlast = wordlist::copy(wl);
         wl = wlast;
         for (wordlist *ww = wl; ww; ww = ww->wl_next) {
             if (lstring::eq(ww->wl_word, ".")) {
@@ -711,7 +711,7 @@ CommandTab::com_print(wordlist *wl)
 
     if (TTY.is_tty())
         TTY.send("\n");
-    dl0->free();
+    sDvList::destroy(dl0);
 
     if (Sp.CurPlot()->notes()) {
         TTY.send("Notes:\n");
@@ -906,7 +906,7 @@ sPlot::write(sDvList *dl0, bool appendwrite, const char *file)
                 }
             }
         }
-        wl0->free();
+        wordlist::destroy(wl0);
         if (!scalefound)
             break;
         // Otherwise loop through again...

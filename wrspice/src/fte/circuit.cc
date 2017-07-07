@@ -365,7 +365,7 @@ IFsimulator::OptUpdate()
             }
         }
     }
-    ovars->free();
+    variable::destroy(ovars);
 }
 
 
@@ -535,29 +535,29 @@ sFtCirc::clear()
     delete [] ci_descr;         ci_descr = 0;
     delete [] ci_filename;      ci_filename = 0;
 
-    ci_deck->free();            ci_deck = 0;
+    sLine::destroy(ci_deck);    ci_deck = 0;
                                 ci_origdeck = 0;
-    ci_verilog->free();         ci_verilog = 0;
-    ci_options->free();         ci_options = 0;
+    sLine::destroy(ci_verilog); ci_verilog = 0;
+    sLine::destroy(ci_options); ci_options = 0;
     delete ci_params;           ci_params = 0;
-    ci_vars->free();            ci_vars = 0;
+    variable::destroy(ci_vars); ci_vars = 0;
     delete ci_defines;          ci_defines = 0;
     delete ci_debugs;           ci_debugs = 0;
-    ci_measures->free();        ci_measures = 0;
+    sMeas::destroy(ci_measures); ci_measures = 0;
 
     ci_execs.clear();
     ci_controls.clear();
     ci_postrun.clear();
 
-    ci_commands->free();        ci_commands = 0;
+    wordlist::destroy(ci_commands); ci_commands = 0;
 
     delete ci_nodes;            ci_nodes = 0;
     delete ci_devices;          ci_devices = 0;
     delete ci_models;           ci_models = 0;
 
     delete ci_defOpt;           ci_defOpt = 0;
-    ci_deferred->free();        ci_deferred = 0;
-    ci_trial_deferred->free();  ci_trial_deferred = 0;
+    wordlist::destroy(ci_deferred);         ci_deferred = 0;
+    wordlist::destroy(ci_trial_deferred);   ci_trial_deferred = 0;
 
     delete ci_symtab;           ci_symtab = new sSymTab(true);
     delete ci_runckt;           ci_runckt = 0;
@@ -760,7 +760,7 @@ sFtCirc::getSaves(sSaveList *saves, const sCKT *ckt)
                         }
                     }
                 }
-                wl->free();
+                wordlist::destroy(wl);
             }
         }
     }
@@ -773,7 +773,7 @@ sExBlk::clear()
 {
     delete [] xb_name;
     xb_name = 0;
-    xb_text->free();
+    wordlist::destroy(xb_text);
     xb_text = 0;
     CP.FreeControl(xb_tree);
     xb_tree = 0;

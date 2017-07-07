@@ -295,9 +295,8 @@ struct pnlist
             delete pnl_node;
         }
 
-    void free()
+    static void destroy(pnlist *pl)
         {
-            pnlist *pl = this;
             while (pl) {
                 pnlist *px = pl;
                 pl = pl->next();

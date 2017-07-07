@@ -118,11 +118,11 @@ SPinput::getMod(sLine *curline, sCKT *ckt, const char *name, const char *line,
                 delete [] tok1;
                 if (err) {
                     logError(curline, "Non-numeric value for \"L\"");
-                    l = ckt->mos_default_l();
+                    l = ckt ? ckt->mos_default_l() : CKT_DEF_MOS_L;
                 }
             }
             else
-                l = ckt->mos_default_l();
+                l = ckt ? ckt->mos_default_l() : CKT_DEF_MOS_L;
 
             double w = -1;
             char *tok2 = lookParam("W", line);
@@ -133,11 +133,11 @@ SPinput::getMod(sLine *curline, sCKT *ckt, const char *name, const char *line,
                 delete [] tok2;
                 if (err) {
                     logError(curline, "Non-numeric value for \"W\"");
-                    w = ckt->mos_default_w();
+                    w = ckt ? ckt->mos_default_w() : CKT_DEF_MOS_W;
                 }
             }
             else
-                w = ckt->mos_default_w();
+                w = ckt ? ckt->mos_default_w() : CKT_DEF_MOS_W;
 
             sINPmodel *mm = mosFind(curline, name, l, w);
             if (mm) {
