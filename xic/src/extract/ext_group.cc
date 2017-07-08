@@ -284,7 +284,7 @@ cExt::group_rec(CDs *sdesc, int depth, SymTab *tab)
             CDs *msdesc = md->celldesc();
             if (!msdesc)
                 continue;
-            if (tab->get((unsigned long)msdesc) != ST_NIL)
+            if (SymTab::get(tab, (unsigned long)msdesc) != ST_NIL)
                 continue;
             ret = group_rec(msdesc, depth - 1, tab);
             if (ret != XIok)

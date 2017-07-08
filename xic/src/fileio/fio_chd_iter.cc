@@ -560,7 +560,7 @@ namespace {
             SymTabGen gen(spt_tables, true);
             SymTabEnt *h;
             while ((h = gen.next()) != 0) {
-                SymTabEnt *ho = old_tab->get_ent(h->stTag);
+                SymTabEnt *ho = SymTab::get_ent(old_tab, h->stTag);
                 if (!ho) {
                     spt_t *tab = (spt_t*)h->stData;
                     old_tab->add(tab->keyword(), tab, false);
@@ -642,7 +642,8 @@ namespace {
                 stringlist::destroy(layers);
                 return (XIbad);
             }
-            zbins_t *zdb = (zbins_t*)ci_db1->table()->get((unsigned long)ld);
+            zbins_t *zdb =
+                (zbins_t*)SymTab::get(ci_db1->table(), (unsigned long)ld);
             if (zdb == (zbins_t*)ST_NIL)
                 continue;
 
@@ -785,7 +786,7 @@ namespace {
             const char *s = layer_list;
             char *tok;
             while ((tok = lstring::gettok(&s)) != 0) {
-                if (ci_ltab->get(tok) == ST_NIL)
+                if (SymTab::get(ci_ltab, tok) == ST_NIL)
                     ci_ltab->add(tok, 0, false);
                 else
                     delete [] tok;
@@ -810,7 +811,7 @@ namespace {
         CDlgen lgen(Physical);
         CDl *ld;
         while ((ld = lgen.next()) != 0) {
-            SymTabEnt *h = ci_ldiffs->get_ent((unsigned long)ld);
+            SymTabEnt *h = SymTab::get_ent(ci_ldiffs, (unsigned long)ld);
             if (h) {
                 Ldiff *lx = (Ldiff*)h->stData;
                 h->stData = 0;
@@ -865,14 +866,14 @@ namespace {
         stringlist::destroy(layers);
         layers = ci_db2->layers();
         for (stringlist *s = layers; s; s = s->next) {
-            if (ltab->get(s->string) == ST_NIL)
+            if (SymTab::get(ltab, s->string) == ST_NIL)
                 ltab->add(s->string, 0, false);
             else
                 delete [] s->string;
             s->string = 0;
         }
         stringlist::destroy(layers);
-        layers = ltab->names();
+        layers = SymTab::names(ltab);
         delete ltab;
 
         XIrt ret = XIok;
@@ -880,11 +881,11 @@ namespace {
             const char *lname = s->string;
             if (ci_ltab) {
                 if (ci_lskip) {
-                    if (ci_ltab->get(lname) != ST_NIL)
+                    if (SymTab::get(ci_ltab, lname) != ST_NIL)
                         continue;
                 }
                 else {
-                    if (ci_ltab->get(lname) == ST_NIL)
+                    if (SymTab::get(ci_ltab, lname) == ST_NIL)
                         continue;
                 }
             }
@@ -898,8 +899,10 @@ namespace {
                 ret = XIbad;
                 break;
             }
-            zbins_t *zdb1 = (zbins_t*)ci_db1->table()->get((unsigned long)ld);
-            zbins_t *zdb2 = (zbins_t*)ci_db2->table()->get((unsigned long)ld);
+            zbins_t *zdb1 =
+                (zbins_t*)SymTab::get(ci_db1->table(), (unsigned long)ld);
+            zbins_t *zdb2 =
+                (zbins_t*)SymTab::get(ci_db2->table(), (unsigned long)ld);
 
             if (zdb1 == (zbins_t*)ST_NIL)
                 zdb1 = 0;
@@ -918,7 +921,7 @@ namespace {
 
                     Ldiff *ld0 = 0;
                     if (!ci_fp && ci_ldiffs) {
-                        ld0 = (Ldiff*)ci_ldiffs->get((unsigned long)ld);
+                        ld0 = (Ldiff*)SymTab::get(ci_ldiffs, (unsigned long)ld);
                         if (ld0 == (Ldiff*)ST_NIL)
                             ld0 = 0;
                     }
@@ -999,7 +1002,8 @@ namespace {
                     }
                     else {
                         if (ci_ldiffs) {
-                            if (ci_ldiffs->get((unsigned long)ld) == ST_NIL)
+                            if (SymTab::get(ci_ldiffs, (unsigned long)ld) ==
+                                    ST_NIL)
                                 ci_ldiffs->add((unsigned long)ld, ld0, false);
                         }
                         else

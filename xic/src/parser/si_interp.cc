@@ -651,7 +651,7 @@ SIinterp::GetSubfunc(const char *name, int *argc)
         return (0);
     if (!siFuncTab)
         return (0);
-    SIfunc *sf = (SIfunc*)siFuncTab->get(name);
+    SIfunc *sf = (SIfunc*)SymTab::get(siFuncTab, name);
     if (!sf || sf == (SIfunc*)ST_NIL) {
         // not found
         LineError("no such function %s", name);
@@ -677,7 +677,7 @@ SIinterp::NewSubfunc(const char *name)
     if (!siFuncTab)
         siFuncTab = new SymTab(false, false);
     else {
-        s0 = (SIfunc*)siFuncTab->get(name);
+        s0 = (SIfunc*)SymTab::get(siFuncTab, name);
         if (s0 == (SIfunc*)ST_NIL)
             s0 = 0;
     }
@@ -759,7 +759,7 @@ SIinterp::FreeSubfunc(const char *name)
 
     if (!name || !*name)
         return;
-    SIfunc *sf = (SIfunc*)siFuncTab->get(name);
+    SIfunc *sf = (SIfunc*)SymTab::get(siFuncTab, name);
     if (!sf || sf == (SIfunc*)ST_NIL)
         return;
     siFuncTab->remove(name);
@@ -1943,7 +1943,7 @@ SIinterp::gettokval(const char **line)
     }
     if (!token_tab)
         tt_init();
-    long val = (long)token_tab->get(tok);
+    long val = (long)SymTab::get(token_tab, tok);
     delete [] tok;
     if (val != (long)ST_NIL)
         return ((int)val);

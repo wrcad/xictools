@@ -489,7 +489,7 @@ sCHDout::name_index(CDcellName name)
 {
     if (!co_nmtab)
         co_nmtab = new SymTab(false, false);
-    void *ret = co_nmtab->get(name->string());
+    void *ret = SymTab::get(co_nmtab, name->string());
     if (ret == ST_NIL) {
         co_nmtab->add(name->string(), (void*)(long)co_nmidx, false);
         co_nmidx++;
@@ -529,7 +529,7 @@ sCHDout::save_ticket(ticket_t t)
 
     if (!co_attab)
         co_attab = new SymTab(false, false);
-    void *ret = co_attab->get(t);
+    void *ret = SymTab::get(co_attab, t);
     if (ret == ST_NIL)
         co_attab->add(t, 0, false);
     return (true);

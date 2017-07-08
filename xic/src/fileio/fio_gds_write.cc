@@ -787,7 +787,7 @@ gds_out::queue_layer(const Layer *layer, bool *check_mapping)
         unsigned long ll = (l << 16) | d;
         if (!out_layer_oor_tab)
             out_layer_oor_tab = new SymTab(false, false);
-        if (out_layer_oor_tab->get(ll) == ST_NIL) {
+        if (SymTab::get(out_layer_oor_tab, ll) == ST_NIL) {
             out_layer_oor_tab->add(ll, 0, false);
             FIO()->ifPrintCvLog(IFLOG_WARN,
                 "Using non-standard layer %d or datatype %d, "

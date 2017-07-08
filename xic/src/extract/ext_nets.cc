@@ -834,7 +834,7 @@ namespace {
                     }
 
                     // Maybe we've seen this one before.
-                    const char *val = (const char*)tab.get(expr);
+                    const char *val = (const char*)SymTab::get(&tab, expr);
                     if (!val) {
                         delete [] expr;
                         const char *t = name_start;
@@ -940,7 +940,7 @@ sElecNetList::flatten(const CDc *cdesc, unsigned int vec_ix,
     sd->setName(msd->cellname());
 
     bool new_link = false;
-    sdlink *link = (sdlink*)et_ftab->get((unsigned long)cdesc);
+    sdlink *link = (sdlink*)SymTab::get(et_ftab, (unsigned long)cdesc);
     if (link == (sdlink*)ST_NIL) {
         link = sdlink::alloc(cdesc, et_fcells, wd);
         new_link = true;
@@ -1191,7 +1191,7 @@ sElecNetList::flattened(const CDc *cd, unsigned int vix)
     if (!cd || !et_ftab)
         return (false);
 
-    sdlink *link = (sdlink*)et_ftab->get((unsigned long)cd);
+    sdlink *link = (sdlink*)SymTab::get(et_ftab, (unsigned long)cd);
     if (link == (sdlink*)ST_NIL)
         return (false);
     if (vix >= link->width)
@@ -1296,7 +1296,7 @@ sElecNetList::purge_terminals(SymTab *ttab, SymTab *ntab)
             tn = t->next();
             CDcterm *term = t->term();
             if (term && term->instance()) {
-                if (ttab->get((unsigned long)term) != ST_NIL) {
+                if (SymTab::get(ttab, (unsigned long)term) != ST_NIL) {
                     if (tp)
                         tp->set_next(tn);
                     else

@@ -451,7 +451,7 @@ WindowDesc::redisplay_blist(const BBox *AOI)
             if (ld->isInvisible())
                 continue;
             bdb_t *db = (bdb_t*)
-                tab->table()->get((unsigned long)ld);
+                SymTab::get(tab->table(), (unsigned long)ld);
             if (db == (bdb_t*)ST_NIL)
                 continue;
             w_draw->SetColor(dsp_prm(ld)->pixel());
@@ -514,7 +514,7 @@ WindowDesc::redisplay_sdb(const BBox *AOI)
                 continue;
             if (tab->type() == sdbBdb) {
                 bdb_t *db = (bdb_t*)
-                    tab->table()->get((unsigned long)ld);
+                    SymTab::get(tab->table(), (unsigned long)ld);
                 if (db == (bdb_t*)ST_NIL)
                     continue;
                 w_draw->SetColor(dsp_prm(ld)->pixel());
@@ -541,7 +541,7 @@ WindowDesc::redisplay_sdb(const BBox *AOI)
             }
             else if (tab->type() == sdbOdb) {
                 odb_t *db = (odb_t*)
-                    tab->table()->get((unsigned long)ld);
+                    SymTab::get(tab->table(), (unsigned long)ld);
                 if (db == (odb_t*)ST_NIL)
                     continue;
                 w_draw->SetColor(dsp_prm(ld)->pixel());
@@ -567,7 +567,7 @@ WindowDesc::redisplay_sdb(const BBox *AOI)
             }
             else if (tab->type() == sdbZdb) {
                 zdb_t *db = (zdb_t*)
-                    tab->table()->get((unsigned long)ld);
+                    SymTab::get(tab->table(), (unsigned long)ld);
                 if (db == (zdb_t*)ST_NIL)
                     continue;
                 w_draw->SetColor(dsp_prm(ld)->pixel());
@@ -600,7 +600,7 @@ WindowDesc::redisplay_sdb(const BBox *AOI)
             }
             else if (tab->type() == sdbZbdb) {
                 zbins_t *db = (zbins_t*)
-                    tab->table()->get((unsigned long)ld);
+                    SymTab::get(tab->table(), (unsigned long)ld);
                 if (db == (zbins_t*)ST_NIL)
                     continue;
                 unsigned int xn, xm, yn, ym;

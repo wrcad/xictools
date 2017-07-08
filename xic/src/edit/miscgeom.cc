@@ -739,7 +739,7 @@ namespace {
     {
         if (ld->layerType() != CDLderived)
             return (true);
-        if (tab->get((unsigned long)ld) != ST_NIL)
+        if (SymTab::get(tab, (unsigned long)ld) != ST_NIL)
             return (true);
         tab->add((unsigned long)ld, 0, false);
         sLspec lspec;
@@ -860,7 +860,7 @@ cEdit::evalDerivedLayers(CDll **plist, CDs *sdesc, const BBox *AOI)
             CDll *l0 = lspec.findLayers();
             for (CDll *l = l0; l; l = l->next) {
                 if (l->ldesc->layerType() == CDLderived) {
-                    if (dltab->get((unsigned long)l->ldesc) == ST_NIL) {
+                    if (SymTab::get(dltab, (unsigned long)l->ldesc) == ST_NIL) {
                         defer = true;
                         break;
                     }

@@ -142,7 +142,7 @@ struct CDlabelCache
         {
             if (!name)
                 return;
-            SymTab *ntab = (SymTab*)lc_tab->get((unsigned long)name);
+            SymTab *ntab = (SymTab*)SymTab::get(lc_tab, (unsigned long)name);
             if (ntab == (SymTab*)ST_NIL) {
                 ntab = new SymTab(false, false);
                 lc_tab->add((unsigned long)name, ntab, false);
@@ -154,10 +154,10 @@ struct CDlabelCache
         {
             if (!name)
                 return (0);
-            SymTab *ntab = (SymTab*)lc_tab->get((unsigned long)name);
+            SymTab *ntab = (SymTab*)SymTab::get(lc_tab, (unsigned long)name);
             if (ntab == (SymTab*)ST_NIL)
                 return (0);
-            CDc *cd = (CDc*)ntab->get(n);
+            CDc *cd = (CDc*)SymTab::get(ntab, n);
             if (cd != (CDc*)ST_NIL)
                 return (cd);
             return (0);
@@ -2843,7 +2843,8 @@ namespace {
                         BBox BB = *msdesc->BBforInst(cdesc);
                         TBB(&BB, 0);  
                         if (BB.intersect(&h_AOI, false)) {
-                            if (h_ctab->get((unsigned long)msdesc) == ST_NIL)
+                            if (SymTab::get(h_ctab, (unsigned long)msdesc) ==
+                                    ST_NIL)
                                 h_ctab->add((unsigned long)msdesc, 0, false);
                             if (dp < h_depth)
                                 setup_cells(msdesc, dp+1);

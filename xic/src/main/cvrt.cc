@@ -126,7 +126,7 @@ cConvert::CheckEmpties(bool force_delete_all)
     for (;;) {
         bool didone = false;
         for (stringlist *s = sl; s; s = s->next) {
-            if (tab->get(s->string) == ST_NIL) {
+            if (SymTab::get(tab, s->string) == ST_NIL) {
                 CDcbin cbtmp;
                 if (CDcdb()->findSymbol(s->string, &cbtmp))
                     cbtmp.deleteCells();

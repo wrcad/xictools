@@ -321,7 +321,7 @@ cSced::extractFromSpice(CDs *sdesc, FILE *fp, int modeflag)
                                     for (int i = level; i > 0; i--) {
                                         if (!ary[i])
                                             continue;
-                                        r = (char*)ary[i]->get(tk);
+                                        r = (char*)SymTab::get(ary[i], tk);
                                         if (r == (char*)ST_NIL) {
                                             r = 0;
                                             continue;
@@ -1133,7 +1133,7 @@ cSpiceBuilder::place(CDs *sdesc, const char *key, bool create)
     }
     if (cname) {
         GCarray<const char*> gc_cname(cname);
-        sb_cdesc = (CDc*)sb_stab->get(sb_name);
+        sb_cdesc = (CDc*)SymTab::get(sb_stab, sb_name);
         if (sb_cdesc == (CDc*)ST_NIL) {
             sb_cdesc = 0;
             if (!create)

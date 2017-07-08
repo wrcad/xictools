@@ -102,7 +102,7 @@ sHdl::get(int hd)
 {
     if (!HdlTable)
         return (0);
-    sHdl *hdl = (sHdl*)HdlTable->get(hd);
+    sHdl *hdl = (sHdl*)SymTab::get(HdlTable, hd);
     if (hdl == (sHdl*)ST_NIL)
         return (0);
     return (hdl);
@@ -435,24 +435,24 @@ sHdlUniq::test(sHdl *hdl)
     }
     if (hu_type == HDLstring) {
         stringlist *sl = (stringlist*)hdl->data;
-        if (sl && hu_tab->get(sl->string) == 0)
+        if (sl && SymTab::get(hu_tab, sl->string) == 0)
             return (true);
     }
     else if (hu_type == HDLobject) {
         if (hu_copies == ((sHdlObject*)hdl)->copies) {
             CDol *ol = (CDol*)hdl->data;
-            if (ol && hu_tab->get((unsigned long)ol->odesc) == 0)
+            if (ol && SymTab::get(hu_tab, (unsigned long)ol->odesc) == 0)
                 return (true);
         }
     }
     else if (hu_type == HDLprpty) {
         CDpl *pl = (CDpl*)hdl->data;
-        if (pl && hu_tab->get((unsigned long)pl->pdesc) == 0)
+        if (pl && SymTab::get(hu_tab, (unsigned long)pl->pdesc) == 0)
             return (true);
     }
     else {
         tlist<void> *t0 = (tlist<void>*)hdl->data;
-        if (t0 && hu_tab->get((unsigned long)t0->elt) == 0)
+        if (t0 && SymTab::get(hu_tab, (unsigned long)t0->elt) == 0)
             return (true);
     }
     return (false);

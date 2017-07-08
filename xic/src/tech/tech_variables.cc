@@ -52,7 +52,7 @@ cTech::SetTechVariable(const char *name, const char *val)
     if (!tc_variable_tab)
         tc_variable_tab = new SymTab(true, true);
     else {
-        SymTabEnt *h = tc_variable_tab->get_ent(name);
+        SymTabEnt *h = SymTab::get_ent(tc_variable_tab, name);
         if (h) {
             delete [] (char*)h->stData;
             h->stData = lstring::copy(val);
@@ -131,7 +131,7 @@ cTech::VarSubst(char *line, char **emesg, int *scnt)
 
         const char *sub = 0;
         if (tc_variable_tab) {
-            sub = (const char*)tc_variable_tab->get(t+2);
+            sub = (const char*)SymTab::get(tc_variable_tab, t+2);
             if (sub == (const char*)ST_NIL)
                 sub = 0;
         }
@@ -573,7 +573,7 @@ cTech::vset(const char *line)
     if (!tc_variable_tab)
         tc_variable_tab = new SymTab(true, true);
     else {
-        SymTabEnt *h = tc_variable_tab->get_ent(name);
+        SymTabEnt *h = SymTab::get_ent(tc_variable_tab, name);
         if (h) {
             delete [] (char*)h->stData;
             h->stData = vsub;

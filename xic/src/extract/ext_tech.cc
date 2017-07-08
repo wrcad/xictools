@@ -108,7 +108,7 @@ cExt::parseDeviceTemplate(FILE *fp, const char *tname)
         return (false);
     }
 
-    SymTabEnt *ent = ext_devtmpl_tab->get_ent(tname);
+    SymTabEnt *ent = SymTab::get_ent(ext_devtmpl_tab, tname);
     if (ent) {
         // Name is already in use, replace text.
         stringlist::destroy((stringlist*)ent->stData);
@@ -273,7 +273,8 @@ cExt::techPrintDeviceTemplates(FILE *techfp, bool tech_only)
         // Print only the templates read from the tech file.
 
         for (stringlist *sl = ext_tech_devtmpls; sl; sl = sl->next) {
-            stringlist *lines = (stringlist*)ext_devtmpl_tab->get(sl->string);
+            stringlist *lines = (stringlist*)SymTab::get(
+                ext_devtmpl_tab, sl->string);
             if (lines) {
                 if (!didhead) {
                     fputs(sep, techfp);
@@ -290,7 +291,7 @@ cExt::techPrintDeviceTemplates(FILE *techfp, bool tech_only)
     else {
         // Print all templates.
 
-        stringlist *tnames = ext_devtmpl_tab->names();
+        stringlist *tnames = SymTab::names(ext_devtmpl_tab);
         stringlist::sort(tnames);
         for (stringlist *sl = tnames; sl; sl = sl->next) {
             if (!didhead) {
@@ -298,7 +299,8 @@ cExt::techPrintDeviceTemplates(FILE *techfp, bool tech_only)
                 fputs(top, techfp);
                 didhead = true;
             }
-            stringlist *lines = (stringlist*)ext_devtmpl_tab->get(sl->string);
+            stringlist *lines = (stringlist*)SymTab::get(
+                ext_devtmpl_tab, sl->string);
             fprintf(techfp, "\n%s %s\n", Ekw.DeviceTemplate(), sl->string);
             for (stringlist *s = lines; s; s = s->next)
                 fprintf(techfp, "%s\n", s->string);
@@ -325,10 +327,11 @@ cExt::techPrintDevices(FILE *techfp)
         fputs(top, techfp);
         fputs("\n", techfp);
 
-        stringlist *dnames = ext_device_tab->names();
+        stringlist *dnames = SymTab::names(ext_device_tab);
         stringlist::sort(dnames);
         for (stringlist *sl = dnames; sl; sl = sl->next) {
-            sDevDesc *descs = (sDevDesc*)ext_device_tab->get(sl->string);
+            sDevDesc *descs = (sDevDesc*)SymTab::get(
+                ext_device_tab, sl->string);
             // The descs are already sorted.
             for (sDevDesc *d = descs; d; d = d->next())
                 d->print(techfp);

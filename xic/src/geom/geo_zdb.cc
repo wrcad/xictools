@@ -851,7 +851,7 @@ GEOblock *
 Zdb::getRow(int yval, bool create)
 {
     if (db_rowtab) {
-        GEOblock *b = (GEOblock*)db_rowtab->get((unsigned long)yval);
+        GEOblock *b = (GEOblock*)SymTab::get(db_rowtab, (unsigned long)yval);
         if (b != (GEOblock*)ST_NIL)
             return (b);
         if (!create)

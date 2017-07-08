@@ -136,7 +136,7 @@ cCD::RegisterCreate(const char *name)
 {
     if (!cdAllocTab)
         cdAllocTab = new SymTab(false, false);
-    SymTabEnt *h = cdAllocTab->get_ent(name);
+    SymTabEnt *h = SymTab::get_ent(cdAllocTab, name);
     if (!h)
         cdAllocTab->add(name, (void*)1L, false);
     else {
@@ -152,7 +152,7 @@ cCD::RegisterDestroy(const char *name)
 {
     if (!cdAllocTab)
         return;
-    SymTabEnt *h = cdAllocTab->get_ent(name);
+    SymTabEnt *h = SymTab::get_ent(cdAllocTab, name);
     if (!h)
         cdAllocTab->add(name, (void*)-1L, false);
     else {

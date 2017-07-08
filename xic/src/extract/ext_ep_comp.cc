@@ -460,7 +460,8 @@ cGroupDesc::ep_hier_comp(int grp, int node)
                 sGroup *pg = pgd->group_for(ci->parent_group());
                 if (pg && pg->netname() &&
                         pg->netname_origin() >= sGroup::NameFromTerm) {
-                    if (tab.get((unsigned long)pg->netname()) == ST_NIL)
+                    if (SymTab::get(&tab, (unsigned long)pg->netname()) ==
+                            ST_NIL)
                         tab.add((unsigned long)pg->netname(), 0, false);
                 }
             }
@@ -488,7 +489,7 @@ cGroupDesc::ep_hier_comp(int grp, int node)
                 if (!pc)
                     continue;
                 CDnetName nn = pmap->mapStab(pc->enode());
-                if (tab.get((unsigned long)nn) == ST_NIL)
+                if (SymTab::get(&tab, (unsigned long)nn) == ST_NIL)
                     score--;
                 else
                     score++;
@@ -589,7 +590,7 @@ cGroupDesc::ep_hier_comp_rc(int grp, int node)
                 continue;
             }
 
-            if (ptab.get(ci->parent_group()) != ST_NIL)
+            if (SymTab::get(&ptab, ci->parent_group()) != ST_NIL)
                 continue;
             ptab.add(ci->parent_group(), 0, false);
         }
@@ -611,7 +612,7 @@ cGroupDesc::ep_hier_comp_rc(int grp, int node)
                         continue;
                     pc = pr->node(0, el->cdesc_index(), ps->index());
                 }
-                if (pc && etab.get(pc->enode()) == ST_NIL)
+                if (pc && SymTab::get(&etab, pc->enode()) == ST_NIL)
                     etab.add(pc->enode(), 0, false);
             }
             SymTabGen pgen(&ptab);

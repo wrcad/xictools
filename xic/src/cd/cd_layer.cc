@@ -257,7 +257,9 @@ CDl::setStrmIn(unsigned int lnum, unsigned int dtype)
 bool
 CDl::isStrmIn(unsigned int lnum, unsigned int dtype)
 {
-    return (ld_strm_in->check(lnum, dtype));
+    if (ld_strm_in)
+        return (ld_strm_in->check(lnum, dtype));
+    return (false);
 }
 
 

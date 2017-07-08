@@ -286,7 +286,7 @@ sMC::set_apply_to_all()
 bool
 sMC::refresh(mitem_t *mi)
 {
-    if (mc_names->get(mi->name) != ST_NIL) {
+    if (SymTab::get(mc_names, mi->name) != ST_NIL) {
         // we've seen this cell before
         mi->overwrite_phys = false;
         mi->overwrite_elec = false;

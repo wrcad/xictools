@@ -439,7 +439,7 @@ SIlocalContext::pushVar(const char *name, const char *string)
     stringlist *sl =
         new stringlist(lstring::copy(CDvdb()->getVariable(name)), 0);
 
-    SymTabEnt *h = lc_pushvarTab->get_ent(name);
+    SymTabEnt *h = SymTab::get_ent(lc_pushvarTab, name);
     if (!h)
         lc_pushvarTab->add(lstring::copy(name), sl, false);
     else {
@@ -459,7 +459,7 @@ SIlocalContext::popVar(const char *name)
     if (!lc_pushvarTab)
         return;
 
-    SymTabEnt *h = lc_pushvarTab->get_ent(name);
+    SymTabEnt *h = SymTab::get_ent(lc_pushvarTab, name);
     if (!h)
         return;
 
@@ -795,7 +795,7 @@ umenu *
 SIlocal::AddScript(umenu *ul, SymTab *nametab)
 {
     for (sScript *a = Scripts; a; a = a->next) {
-        if (nametab->get(a->name) == ST_NIL) {
+        if (SymTab::get(nametab, a->name) == ST_NIL) {
             char *s = lstring::copy(a->name);
             ul = new umenu(s, 0, ul);
             nametab->add(s, 0, false);
@@ -1210,14 +1210,14 @@ SIlocal::add_dir(const char *dir, SymTab *nametab, umenu *ul)
 
                     char *label = get_script_label(path);
                     if (label) {
-                        if (nametab->get(label) == ST_NIL) {
+                        if (SymTab::get(nametab, label) == ST_NIL) {
                             ul = new umenu(label, lstring::copy(buf), ul);
                             nametab->add(label, 0, false);
                         }
                         else
                             delete [] label;
                     }
-                    else if (nametab->get(buf) == ST_NIL) {
+                    else if (SymTab::get(nametab, buf) == ST_NIL) {
                         char *stmp = lstring::copy(buf);
                         ul = new umenu(0, stmp, ul);
                         nametab->add(stmp, 0, false);
@@ -1384,7 +1384,7 @@ SIlocal::get_lib(const char *lpath)
         }
         else
             fixup(name);
-        if (name && nametab->get(name) != ST_NIL) {
+        if (name && SymTab::get(nametab, name) != ST_NIL) {
             delete [] name;
             delete [] val;
             continue;
@@ -1399,7 +1399,7 @@ SIlocal::get_lib(const char *lpath)
                     nametab->add(name, 0, false);
                 }
                 else {
-                    if (nametab->get(ux->label()) != ST_NIL) {
+                    if (SymTab::get(nametab, ux->label()) != ST_NIL) {
                         umenu::destroy(ux);
                         delete [] val;
                         continue;

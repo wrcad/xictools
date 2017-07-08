@@ -249,7 +249,7 @@ cGroupDesc::setup_duality_first_pass(SymTab *done_tab, int dcnt)
     if (dcnt >= CDMAXCALLDEPTH)
         return (XIbad);
 
-    if (done_tab->get((unsigned long)this) != ST_NIL)
+    if (SymTab::get(done_tab, (unsigned long)this) != ST_NIL)
         return (XIok);
     if (!gd_devices && !gd_subckts) {
         // Nothing any good here, silently skip it.
@@ -741,7 +741,7 @@ cGroupDesc::subcircuit_permutation_fix(const sSubcList *sl)
                 // consistent.  Put a message in the log.  LVS will
                 // fail.
 
-                unsigned long oldn = (unsigned long)tab.get(old_sg);
+                unsigned long oldn = (unsigned long)SymTab::get(&tab, old_sg);
 
                 if (oldn == (unsigned long)ST_NIL)
                     tab.add(old_sg, (void*)new_nd, false);
@@ -3626,7 +3626,7 @@ cGroupDesc::check_global(int grp)
         return (false);
     CDnetName nn = g.netname();
     if (nn) {
-        if (gd_global_nametab->get((unsigned long)nn) == 0) {
+        if (SymTab::get(gd_global_nametab, (unsigned long)nn) == 0) {
             // Has a global name.
             g.set_global(true);
             return (true);
@@ -3665,7 +3665,7 @@ printf("ZZZ\n");
             g.set_netname(gp->netname(), sGroup::NameFromTerm);
             return (true);
         }
-        if (gd_global_nametab->get((unsigned long)gp->netname()) == 0) {
+        if (SymTab::get(gd_global_nametab, (unsigned long)gp->netname()) == 0) {
             g.set_global(true);
             g.set_netname(gp->netname(), sGroup::NameFromTerm);
             return (true);
@@ -3676,7 +3676,7 @@ printf("ZZZ\n");
                 CDp_snode *ps = (CDp_snode*)esd->prpty(P_NODE);
                 for ( ; ps; ps = ps->next()) {
                     if (ps->enode() == gp->node()) {
-                        if (gd_global_nametab->get(
+                        if (SymTab::get(gd_global_nametab,
                                 (unsigned long)ps->get_term_name()) == 0) {
                             g.set_global(true);
                             g.set_netname(ps->get_term_name(),

@@ -276,10 +276,10 @@ cTechCniIn::dispLayerPurposePairs(lispnode *p0, lispnode*, char **err)
             "Packet names referenced in technology but not defined in drf:\n");
         SymTab tab(false, false);
         for (stringlist *sl = badpkts; sl; sl = sl->next) {
-            if (tab.get(sl->string) == ST_NIL)
+            if (SymTab::get(&tab, sl->string) == ST_NIL)
                 tab.add(sl->string, 0, false);
         }
-        stringlist *names = tab.names();
+        stringlist *names = SymTab::names(&tab);
         stringlist::sort(names);
         for (stringlist *sl = names; sl; sl = sl->next) {
             lstr.add("    ");
@@ -294,10 +294,10 @@ cTechCniIn::dispLayerPurposePairs(lispnode *p0, lispnode*, char **err)
             "Stipple names referenced in technology but not defined in drf:\n");
         SymTab tab(false, false);
         for (stringlist *sl = badstips; sl; sl = sl->next) {
-            if (tab.get(sl->string) == ST_NIL)
+            if (SymTab::get(&tab, sl->string) == ST_NIL)
                 tab.add(sl->string, 0, false);
         }
-        stringlist *names = tab.names();
+        stringlist *names = SymTab::names(&tab);
         stringlist::sort(names);
         for (stringlist *sl = names; sl; sl = sl->next) {
             lstr.add("    ");
@@ -312,10 +312,10 @@ cTechCniIn::dispLayerPurposePairs(lispnode *p0, lispnode*, char **err)
             "Color names referenced in technology but not defined in drf:\n");
         SymTab tab(false, false);
         for (stringlist *sl = badclrs; sl; sl = sl->next) {
-            if (tab.get(sl->string) == ST_NIL)
+            if (SymTab::get(&tab, sl->string) == ST_NIL)
                 tab.add(sl->string, 0, false);
         }
-        stringlist *names = tab.names();
+        stringlist *names = SymTab::names(&tab);
         stringlist::sort(names);
         for (stringlist *sl = names; sl; sl = sl->next) {
             lstr.add("    ");

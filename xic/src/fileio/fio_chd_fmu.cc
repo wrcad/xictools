@@ -204,7 +204,7 @@ fmu_t::sum_counts(double sc, symref_t *sref)
         Errs()->add_error("fmu_t::sum_counts: null symbol reference.");
         return (false);
     }
-    unsigned int offs = (unsigned long)ftab->get((unsigned long)sref);
+    unsigned int offs = (unsigned long)SymTab::get(ftab, (unsigned long)sref);
     if (offs == (unsigned int)(long)ST_NIL) {
         Errs()->add_error(
             "fmu_t::sum_counts: unresolved symbol reference.");

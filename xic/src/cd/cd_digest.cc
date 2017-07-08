@@ -93,7 +93,7 @@ cCDchdDB::chdRecall(const char *name, bool remove)
 {
     if (!chd_table)
         return (0);
-    cCHD *chd = (cCHD*)chd_table->get(name);
+    cCHD *chd = (cCHD*)SymTab::get(chd_table, name);
     if (chd == (cCHD*)ST_NIL)
         return (0);
     if (remove) {
@@ -171,7 +171,7 @@ cCDchdDB::chdList()
 {
     if (!chd_table)
         return (0);
-    return (chd_table->names());
+    return (SymTab::names(chd_table));
 }
 
 
@@ -260,7 +260,7 @@ cCDcgdDB::cgdStore(const char *name, cCGD *cgd)
     }
     if (!cgd_table)
         cgd_table = new SymTab(true, false);
-    cCGD *cgdold = (cCGD*)cgd_table->get(name);
+    cCGD *cgdold = (cCGD*)SymTab::get(cgd_table, name);
     if (cgdold != (cCGD*)ST_NIL) {
         if (cgdold->refcnt()) {
             Errs()->add_error(
@@ -287,7 +287,7 @@ cCDcgdDB::cgdRecall(const char *name, bool remove)
 {
     if (!cgd_table)
         return (0);
-    cCGD *cgd = (cCGD*)cgd_table->get(name);
+    cCGD *cgd = (cCGD*)SymTab::get(cgd_table, name);
     if (cgd == (cCGD*)ST_NIL)
         return (0);
     if (remove) {
@@ -306,7 +306,7 @@ cCDcgdDB::cgdList()
 {
     if (!cgd_table)
         return (0);
-    return (cgd_table->names());
+    return (SymTab::names(cgd_table));
 }
 
 

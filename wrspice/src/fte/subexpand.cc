@@ -125,12 +125,13 @@ struct sMods
     sMods(char *no, char *nt, sMods *n)
         { name_orig = no; name_trans = nt; next = n; }
     ~sMods() { delete [] name_orig; delete [] name_trans; }
-    void free()
+
+    static void destroy(sMods *m)
         {
-            sMods *mn;
-            for (sMods *m = this; m; m = mn) {
-                mn = m->next;
-                delete m;
+            while (m) {
+                sMods *mx = m;
+                m = m->next;
+                delete mx;
             }
         }
 
@@ -592,7 +593,7 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
 #endif
 
 cleanup:
-    sg_stack[sg_stack_ptr].mods->free();
+    sMods::destroy(sg_stack[sg_stack_ptr].mods);
     delete sg_stack[sg_stack_ptr].subs;
     sg_stack[sg_stack_ptr].clear();
     if (badcalls) {

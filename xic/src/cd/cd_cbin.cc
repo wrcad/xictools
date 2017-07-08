@@ -662,7 +662,7 @@ CDcbin::listEmpties() const
             empties->add(cbin.cellname()->string(), 0, false);
     }
 
-    stringlist *sl = empties->names();
+    stringlist *sl = SymTab::names(empties);
     delete empties;
     return (sl);
 }

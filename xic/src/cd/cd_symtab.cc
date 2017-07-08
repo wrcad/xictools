@@ -295,11 +295,17 @@ SymTab::remove(unsigned long itag)
 }
 
 
+//
+// The remaining functions are private, and are called through static
+// inline wrappers so we can query a null table without adverse
+// consequences.
+//
+
 // Return the data keyed by string tag.  If not found,
 // return the datum ST_NIL.
 //
 void *
-SymTab::get(const char *tag)
+SymTab::get_prv(const char *tag)
 {
     if (tMode != STchar)
         return (ST_NIL);
@@ -317,7 +323,7 @@ SymTab::get(const char *tag)
 // return the datum ST_NIL.
 //
 void *
-SymTab::get(unsigned long itag)
+SymTab::get_prv(unsigned long itag)
 {
     if (tMode != STint)
         return (ST_NIL);
@@ -335,7 +341,7 @@ SymTab::get(unsigned long itag)
 // not be messed with.
 //
 SymTabEnt *
-SymTab::get_ent(const char *tag)
+SymTab::get_ent_prv(const char *tag)
 {
     if (tMode != STchar)
         return (0);
@@ -354,7 +360,7 @@ SymTab::get_ent(const char *tag)
 // not be messed with.
 //
 SymTabEnt *
-SymTab::get_ent(unsigned long itag)
+SymTab::get_ent_prv(unsigned long itag)
 {
     if (tMode != STint)
         return (0);
@@ -370,7 +376,7 @@ SymTab::get_ent(unsigned long itag)
 // Return a list of the names
 //
 stringlist *
-SymTab::names()
+SymTab::names_prv()
 {
     if (tMode != STchar)
         return (0);

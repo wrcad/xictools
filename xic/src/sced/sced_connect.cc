@@ -406,7 +406,7 @@ cSced::renumberInstances(CDs *sd)
         if (!pna || !pna->name_string())
             continue;
  
-        long dcnt = (long)stab->get((unsigned long)pna->name_string());
+        long dcnt = (long)SymTab::get(stab, (unsigned long)pna->name_string());
         if (dcnt == (long)ST_NIL)
             dcnt = 0;
         stab->replace((unsigned long)pna->name_string(), (void*)(dcnt+1));
@@ -417,7 +417,7 @@ cSced::renumberInstances(CDs *sd)
         // computed the absolute ordering number.
 
         if (pna->is_subckt()) {
-            dcnt = (long)scstab->get((unsigned long)cdesc->cellname());
+            dcnt = (long)SymTab::get(scstab, (unsigned long)cdesc->cellname());
             if (dcnt == (long)ST_NIL)
                 dcnt = 0;
             scstab->replace((unsigned long)cdesc->cellname(), (void*)(dcnt+1));
@@ -1624,7 +1624,7 @@ cScedConnect::connect()
                 if (n->node()->enode() != i)
                     ScedErrLog.add_err(
                     "final node table numbering error, wrong node number.");
-                if (sytmp->get((unsigned long)n->node()) != ST_NIL)
+                if (SymTab::get(sytmp, (unsigned long)n->node()) != ST_NIL)
                     ScedErrLog.add_err(
                     "final node table numbering error, duplicate property.");
                 else
@@ -1642,7 +1642,7 @@ cScedConnect::connect()
 bool
 cScedConnect::push(const CDw *wdesc)
 {
-    if (cn_wire_tab->get((unsigned long)wdesc) != ST_NIL)
+    if (SymTab::get(cn_wire_tab, (unsigned long)wdesc) != ST_NIL)
         // Already processed this wire.
         return (false);
 
@@ -1690,7 +1690,7 @@ cScedConnect::push(const CDw *wdesc)
 bool
 cScedConnect::push_unnamed(const CDw *wdesc)
 {
-    if (cn_wire_tab->get((unsigned long)wdesc) != ST_NIL)
+    if (SymTab::get(cn_wire_tab, (unsigned long)wdesc) != ST_NIL)
         // Already processed this wire.
         return (false);
 

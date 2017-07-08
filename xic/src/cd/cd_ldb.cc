@@ -829,7 +829,7 @@ cCDldb::clearLayers(CDl **keepPhys, CDl **keepElec)
     tgen_t<loa_t> lgen(ldb_oalnum_tab);
     loa_t *e;
     while ((e = lgen.next()) != 0) {
-        if (tab->get(e->num()) == ST_NIL) {
+        if (SymTab::get(tab, e->num()) == ST_NIL) {
             loa_t *ne = ldb_oalname_tab->remove(e->name());
             if (ne) {
                 // always true
@@ -854,7 +854,7 @@ cCDldb::clearLayers(CDl **keepPhys, CDl **keepElec)
     }
     tgen_t<loa_t> pgen(ldb_oapnum_tab);
     while ((e = pgen.next()) != 0) {
-        if (tab->get(e->num()) == ST_NIL) {
+        if (SymTab::get(tab, e->num()) == ST_NIL) {
             loa_t *ne = ldb_oapname_tab->remove(e->name());
             if (ne) {
                 // always true
@@ -1252,7 +1252,7 @@ cCDldb::setState(const CDldbState *sptr, CDll **trash)
     tgen_t<loa_t> lgen(ldb_oalnum_tab);
     loa_t *eoa;
     while ((eoa = lgen.next()) != 0) {
-        if (tab->get(eoa->num()) == ST_NIL) {
+        if (SymTab::get(tab, eoa->num()) == ST_NIL) {
             loa_t *ne = ldb_oalname_tab->remove(eoa->name());
             if (ne) {
                 // always true
@@ -1286,7 +1286,7 @@ cCDldb::setState(const CDldbState *sptr, CDll **trash)
         tab->add(ll->ldesc->oaPurposeNum(), 0, true);
     tgen_t<loa_t> pgen(ldb_oapnum_tab);
     while ((eoa = pgen.next()) != 0) {
-        if (tab->get(eoa->num()) == ST_NIL) {
+        if (SymTab::get(tab, eoa->num()) == ST_NIL) {
             loa_t *ne = ldb_oapname_tab->remove(eoa->name());
             if (ne) {
                 // always true

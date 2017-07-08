@@ -681,7 +681,7 @@ pathfinder::insert(CDo *odesc)
     // The hash value should be unique, however we account for the
     // possibility of non-unique hash values by using a linked list.
 
-    SymTabEnt *ent = pf_tab->get_ent(k);
+    SymTabEnt *ent = SymTab::get_ent(pf_tab, k);
     if (!ent) {
         odesc->set_next_odesc(0);
         pf_tab->add(k, odesc, false);
@@ -717,7 +717,7 @@ pathfinder::remove(CDo *ocopy)
     if (!pf_tab)
         return (false);
     unsigned long tag = ocopy->hash();
-    SymTabEnt *ent = pf_tab->get_ent(tag);
+    SymTabEnt *ent = SymTab::get_ent(pf_tab, tag);
     if (!ent)
         // not found!
         return (false);
@@ -1026,10 +1026,10 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
         Zlist *zl = od->toZlist();
         if (!zl)
             continue;
-        SymTabEnt *h = tab->get_ent((unsigned long)od->ldesc());
+        SymTabEnt *h = SymTab::get_ent(tab, (unsigned long)od->ldesc());
         if (!h) {
             tab->add((unsigned long)od->ldesc(), 0, false);
-            h = tab->get_ent((unsigned long)od->ldesc());
+            h = SymTab::get_ent(tab, (unsigned long)od->ldesc());
         }
         if (!h->stData)
             h->stData = zl;
@@ -1064,10 +1064,10 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
             if (!ld1 || !ld2)
                 continue;
 
-            Zlist *z1 = (Zlist*)tab->get((unsigned long)ld1);
+            Zlist *z1 = (Zlist*)SymTab::get(tab, (unsigned long)ld1);
             if (z1 == (Zlist*)ST_NIL)
                 continue;
-            Zlist *z2 = (Zlist*)tab->get((unsigned long)ld2);
+            Zlist *z2 = (Zlist*)SymTab::get(tab, (unsigned long)ld2);
             if (z2 == (Zlist*)ST_NIL)
                 continue;
             z1 = Zlist::copy(z1);

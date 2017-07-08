@@ -146,7 +146,7 @@ cExt::dump_elec_recurse(FILE *fp, CDs *sdesc, int depth, sDumpOpts *opts,
             CDs *msdesc = mdesc->celldesc();
             if (!msdesc)
                 continue;
-            if (tab->get((unsigned long)msdesc) != ST_NIL)
+            if (SymTab::get(tab, (unsigned long)msdesc) != ST_NIL)
                 continue;
             if (skipExtract(msdesc))
                 continue;
@@ -215,7 +215,8 @@ cExt::dump_elec(FILE *fp, CDs *sdesc, int, sDumpOpts *opts, SymTab*,
     }
     if (opts->isset(opt_atom_spice)) {
         sp_line_t *d0;
-        d0 = sptab ? (sp_line_t*)sptab->get(sdesc->cellname()->string()) : 0;
+        d0 = sptab ?
+            (sp_line_t*)SymTab::get(sptab, sdesc->cellname()->string()) : 0;
         if (d0 == (sp_line_t*)ST_NIL)
             d0 = 0;
         pr_line(fp, d0);
@@ -240,7 +241,7 @@ cExt::dump_elec_formatted(FILE *fp, CDs *sdesc, const char *format)
     SymTab *format_tab = XM()->GetFormatFuncTab(EX_ENET_FORMAT);
     if (!format_tab)
         return (false);
-    SIfunc *sf = (SIfunc*)format_tab->get(format);
+    SIfunc *sf = (SIfunc*)SymTab::get(format_tab, format);
     if (!sf || sf == (SIfunc*)ST_NIL) {
         // not found
         return (false);

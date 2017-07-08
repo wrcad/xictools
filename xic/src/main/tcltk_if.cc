@@ -251,7 +251,7 @@ cTclIf::register_func(const char *fname,
         return;
     if (!tcl_functions)
         tcl_functions = new SymTab(false, false);
-    SymTabEnt *ent = tcl_functions->get_ent(fname);
+    SymTabEnt *ent = SymTab::get_ent(tcl_functions, fname);
     if (!ent)
         tcl_functions->add(fname, (void*)func, false);
     else

@@ -91,11 +91,41 @@ struct SymTab
     bool replace(unsigned long, const void*);
     bool remove(const char*);
     bool remove(unsigned long);
-    void *get(const char*);
-    void *get(unsigned long);
-    SymTabEnt *get_ent(const char*);
-    SymTabEnt *get_ent(unsigned long);
-    stringlist *names();
+
+    static void *get(SymTab *tab, const char *tag)
+        {
+            if (!tab)
+                return (ST_NIL);
+            return (tab->get_prv(tag));
+        }
+
+    static void *get(SymTab *tab, unsigned long itag)
+        {
+            if (!tab)
+                return (ST_NIL);
+            return (tab->get_prv(itag));
+        }
+
+    static SymTabEnt *get_ent(SymTab *tab, const char *tag)
+        {
+            if (!tab)
+                return (0);
+            return (tab->get_ent_prv(tag));
+        }
+
+    static SymTabEnt *get_ent(SymTab *tab, unsigned long itag)
+        {
+            if (!tab)
+                return (0);
+            return (tab->get_ent_prv(itag));
+        }
+
+    static stringlist *names(SymTab *tab)
+        {
+            if (!tab)
+                return (0);
+            return (tab->names_prv());
+        }
 
     // Default is case-sensitive.  This can be called before any
     // additions, or after calling clear, to set case-insensitivity. 
@@ -124,6 +154,13 @@ struct SymTab
             else
                 tFlags &= ~ST_FREE_DATA;
         }
+
+protected:
+    void *get_prv(const char*);
+    void *get_prv(unsigned long);
+    SymTabEnt *get_ent_prv(const char*);
+    SymTabEnt *get_ent_prv(unsigned long);
+    stringlist *names_prv();
 
 private:
     void rehash();

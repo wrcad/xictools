@@ -362,7 +362,7 @@ cCHD::listCellnames(const char *cname, DisplayMode mode)
     SymTab *tab = new SymTab(false, false);
     stringlist *sl = 0;
     if (listCellnames_rc(p, tab, 0)) {
-        sl = tab->names();
+        sl = SymTab::names(tab);
         stringlist::sort(sl);
     }
     delete tab;
@@ -1397,7 +1397,8 @@ cCHD::write(symref_t *p, cv_in *in, const FIOcvtPrms *prms, bool allcells,
                     out->add_visited(tp->get_name()->string());
                 }
                 else {
-                    if (vtab->get((unsigned long)tp->get_name()) != ST_NIL)
+                    if (SymTab::get(vtab, (unsigned long)tp->get_name()) !=
+                            ST_NIL)
                         continue;
                     vtab->add((unsigned long)tp->get_name(), 0, false);
                 }
@@ -1518,7 +1519,7 @@ cCHD::listCellnames_rc(symref_t *p, SymTab *tab, int depth)
         symref_t *cp = ntab->find_symref(c->srfptr);
         if (!cp || !cp->get_defseen())
             continue;
-        if (tab->get(cp->get_name()->string()) == ST_NIL)
+        if (SymTab::get(tab, cp->get_name()->string()) == ST_NIL)
             listCellnames_rc(cp, tab, depth+1);
     }
     return (true);
@@ -1557,7 +1558,7 @@ cCHD::depthCounts_rc(symref_t *p, unsigned int depth, unsigned long pcnt,
             return (false);
         }
         unsigned long cnt = at.nx*at.ny;
-        SymTabEnt *ent = ctab.get_ent((unsigned long)cp);
+        SymTabEnt *ent = SymTab::get_ent(&ctab, (unsigned long)cp);
         if (!ent)
             ctab.add((unsigned long)cp, (void*)cnt, false);
         else
@@ -1589,7 +1590,7 @@ cCHD::instanceCounts_rc(symref_t *p, unsigned int depth,
         return (false);
     }
 
-    SymTabEnt *ent = tab->get_ent((unsigned long)p);
+    SymTabEnt *ent = SymTab::get_ent(tab, (unsigned long)p);
     if (!ent)
         tab->add((unsigned long)p, (void*)pcnt, false);
     else
@@ -1614,7 +1615,7 @@ cCHD::instanceCounts_rc(symref_t *p, unsigned int depth,
             return (false);
         }
         unsigned long cnt = at.nx*at.ny;
-        ent = ctab.get_ent((unsigned long)cp);
+        ent = SymTab::get_ent(&ctab, (unsigned long)cp);
         if (!ent)
             ctab.add((unsigned long)cp, (void*)cnt, false);
         else

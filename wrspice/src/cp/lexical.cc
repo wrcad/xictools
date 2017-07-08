@@ -1034,7 +1034,7 @@ CshPar::Getchar(int fd, bool literal, bool drain)
             CommandTab::com_source(cp_srcfiles);
             for (wordlist *wl = cp_srcfiles; wl; wl = wl->wl_next)
                 unlink(wl->wl_word);
-            cp_srcfiles->free();
+            lstring::destroy(cp_srcfiles);
             cp_srcfiles = 0;
             Prompt();
         }

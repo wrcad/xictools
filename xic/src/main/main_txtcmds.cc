@@ -3314,7 +3314,7 @@ bangcmds::mklib(const char *s)
     }
 
     // create a stringlist of the cell names
-    stringlist *s0 = tab->names();
+    stringlist *s0 = SymTab::names(tab);
     delete tab;
 
     int len = stringlist::length(s0);

@@ -399,7 +399,8 @@ public:
     bool IsInvisible(CDm *mdesc)
         {
             return (d_invisible_master_tab && mdesc &&
-                d_invisible_master_tab->get((unsigned long)mdesc) != ST_NIL);
+                SymTab::get(d_invisible_master_tab, (unsigned long)mdesc) !=
+                ST_NIL);
         }
 
     WindowDesc *Window(int i)

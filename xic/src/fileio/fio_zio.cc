@@ -400,7 +400,7 @@ cCHD::registerRandomMap()
 #ifdef MAP_DEBUG
 printf("file end crc: %x\n", fcrc);
 #endif
-        zio_index *zi = (zio_index*)c_index_tab->get(fcrc);
+        zio_index *zi = (zio_index*)SymTab::get(c_index_tab, fcrc);
         if (zi != (zio_index*)ST_NIL) {
             // Already have an index for this file.
             c_crc = zi->crc();
@@ -432,7 +432,7 @@ printf("assigned an existing map using file end crc\n");
 
     if (!c_index_tab)
         c_index_tab = new SymTab(false, false);
-    zio_index *ozi = (zio_index*)c_index_tab->get(zi->crc());
+    zio_index *ozi = (zio_index*)SymTab::get(c_index_tab, zi->crc());
     if (ozi != (zio_index*)ST_NIL) {
         // Hmmm, already a map for this file, use it.  Our test above
         // failed.
@@ -474,7 +474,7 @@ cCHD::unregisterRandomMap()
         // We never assigned a map for this CHD.
         return (false);
     }
-    zio_index *zi = (zio_index*)c_index_tab->get(c_crc);
+    zio_index *zi = (zio_index*)SymTab::get(c_index_tab, c_crc);
     if (zi != (zio_index*)ST_NIL) {
         zi->unref();
         if (zi->refcnt() < 0) {
@@ -502,7 +502,7 @@ cCHD::getRandomMap(unsigned int crc)
 {
     if (!c_index_tab)
         return (0);
-    zio_index *zi = (zio_index*)c_index_tab->get(crc);
+    zio_index *zi = (zio_index*)SymTab::get(c_index_tab, crc);
     if (zi == (zio_index*)ST_NIL)
         return (0);
     return (zi);

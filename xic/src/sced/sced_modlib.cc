@@ -204,9 +204,9 @@ cModLib::IsModel(const char *name)
 {
     char *buf = lstring::copy(name);
     lstring::strtolower(buf);
-    void *l = (void*)ModSymTab->get(buf);
+    void *l = SymTab::get(ModSymTab, buf);
     delete [] buf;
-    if (l == (void*)ST_NIL)
+    if (l == ST_NIL)
         return (false);
     return (true);
 }
@@ -219,7 +219,7 @@ cModLib::ModelText(const char *name)
 {
     char *buf = lstring::copy(name);
     lstring::strtolower(buf);
-    libent_t *l = (libent_t*)ModSymTab->get(buf);
+    libent_t *l = (libent_t*)SymTab::get(ModSymTab, buf);
     delete [] buf;
     if (l == (libent_t*)ST_NIL)
         return (0);
@@ -234,7 +234,7 @@ cModLib::SubcktText(const char *name)
 {
     char *buf = lstring::copy(name);
     lstring::strtolower(buf);
-    libent_t *l = (libent_t*)SubcSymTab->get(buf);
+    libent_t *l = (libent_t*)SymTab::get(SubcSymTab, buf);
     delete [] buf;
     if (l == (libent_t*)ST_NIL)
         return (0);
@@ -289,7 +289,7 @@ cModLib::word_tab(const char *word)
 {
     if (!WordTab)
         WordTab = new SymTab(true, false);
-    char *w = (char*)WordTab->get(word);
+    char *w = (char*)SymTab::get(WordTab, word);
     if (w == (char*)ST_NIL) {
         w = lstring::copy(word);
         WordTab->add(w, w, false);

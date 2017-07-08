@@ -752,7 +752,7 @@ cFIO::FromNative(const char *fullpath, CDcbin *cbret, double scale)
     stringnumlist *s0 = new stringnumlist(lstring::copy(topcell), 1, 0);
     while (s0) {
         stringnumlist *inames = 0;
-        if (tab->get(s0->string) == ST_NIL) {
+        if (SymTab::get(tab, s0->string) == ST_NIL) {
             tab->add(lstring::copy(s0->string), 0, false);
 
             CDcbin cbin;
@@ -777,8 +777,8 @@ cFIO::FromNative(const char *fullpath, CDcbin *cbret, double scale)
 
                 if (!fioNativeImportTab)
                     fioNativeImportTab = new SymTab(true, true);
-                SymTabEnt *h =
-                    fioNativeImportTab->get_ent(cbin.cellname()->string());
+                SymTabEnt *h = SymTab::get_ent(
+                    fioNativeImportTab, cbin.cellname()->string());
                 if (h) {
                     if (strcmp((const char*)h->stData, s0->string)) {
                         delete [] (char*)h->stData;
@@ -1679,7 +1679,7 @@ cif_in::parse(DisplayMode mode, bool listonly, double sc, bool save_bb,
         GCtabname.set(tabname);
 
         if (in_mode == Electrical && tabname && in_eos_tab) {
-            cif_eos_t *el = (cif_eos_t*)in_eos_tab->get(tabname);
+            cif_eos_t *el = (cif_eos_t*)SymTab::get(in_eos_tab, tabname);
             if (el != (cif_eos_t*)ST_NIL) {
                 in_line_cnt = el->e_lines;
                 fseek(in_fp, el->e_offset, SEEK_SET);
@@ -2502,9 +2502,8 @@ cif_in::a_symbol_db(const char *unalias_name, int sym_num)
             }
             else {
                 void *xx;
-                if (in_over_tab &&
-                        (xx = in_over_tab->get((unsigned long)sd->cellname()))
-                        != ST_NIL) {
+                if (in_over_tab && (xx = SymTab::get(in_over_tab,
+                        (unsigned long)sd->cellname())) != ST_NIL) {
                     // We already asked about overwriting.
                     if (xx) {
                         // User chose to overwrite the electrical

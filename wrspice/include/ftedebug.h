@@ -71,7 +71,7 @@ struct sDbComm
 
     ~sDbComm()                  { delete [] db_string; }
 
-    void free();                // destroy this debug and descendents
+    static void destroy(sDbComm*); // destroy this debug and descendents
     bool istrue();              // evaluate true if condition met
     bool should_stop(int);      // true if stop condition met
     void print(char**);         // print, in string if given, the debug msg

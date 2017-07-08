@@ -309,7 +309,7 @@ Oper::fixParentConnections()
         if (px->value() != P_NODE)
              continue;
         CDp_snode *pxn = (CDp_snode*)px;
-        pn = (CDp_snode*)tab.get(pxn->index());
+        pn = (CDp_snode*)SymTab::get(&tab, pxn->index());
         if (pn == (CDp_snode*)ST_NIL) {
             // Terminal has been deleted.
             cTfmStack stk;
@@ -608,7 +608,7 @@ Oper::check_objects()
             tab->add((unsigned long)oc1->oadd(), oc1, false);
         }
         if (oc1->odel()) {
-            Ochg *oc2 = (Ochg*)tab->get((unsigned long)oc1->odel());
+            Ochg *oc2 = (Ochg*)SymTab::get(tab, (unsigned long)oc1->odel());
             if (oc2 != (Ochg*)ST_NIL) {
                 // The object is deleted from memory here.
                 if (XM()->DebugFlags() & DBG_UNDOLIST) {

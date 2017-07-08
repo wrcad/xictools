@@ -38,7 +38,16 @@ struct sADC
 {
     sADC(const char*);
     ~sADC() { delete [] dig_var; delete [] node; }
-    void free();
+
+    static void destroy(sADC *a)
+        {
+            while (a) {
+                sADC *ax = a;
+                a = a->next;
+                delete ax;
+            }
+        }
+
     void set_var(VerilogBlock*, double*);
 
     const char *dig_var;  // Verilog variable name

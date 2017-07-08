@@ -579,7 +579,8 @@ oas_out::write_struct(const char *name, tm*, tm*)
             return (false);
     }
     else {
-        unsigned long refnum = (unsigned long)out_cellname_tab->get(name);
+        unsigned long refnum = (unsigned long)SymTab::get(
+            out_cellname_tab, name);
         if (refnum == (unsigned long)ST_NIL) {
             refnum = out_cellname_ix++;
             out_cellname_tab->add(out_string_pool->new_string(name),
@@ -1366,8 +1367,8 @@ oas_out::write_text(const Text *text)
                 return (false);
         }
         else {
-            unsigned long refnum =
-                (unsigned long)out_textstring_tab->get(string);
+            unsigned long refnum = (unsigned long)SymTab::get(
+                out_textstring_tab, string);
             if (refnum == (unsigned long)ST_NIL) {
                 refnum = out_textstring_ix++;
                 out_textstring_tab->add(out_string_pool->new_string(string),
@@ -1537,8 +1538,8 @@ oas_out::write_sref(const Instance *inst)
                     return (false);
             }
             else {
-                unsigned long refnum =
-                    (unsigned long)out_cellname_tab->get(cellname);
+                unsigned long refnum = (unsigned long)SymTab::get(
+                    out_cellname_tab, cellname);
                 if (refnum == (unsigned long)ST_NIL) {
                     refnum = out_cellname_ix++;
                     out_cellname_tab->add(out_string_pool->new_string(cellname),
@@ -2904,7 +2905,8 @@ oas_out::write_cell_properties()
         info_byte |= 2;  // N = 1
         if (!write_char(info_byte))
             return (false);
-        unsigned long refnum = (unsigned long)out_propname_tab->get(pname);
+        unsigned long refnum = (unsigned long)SymTab::get(
+            out_propname_tab, pname);
         if (refnum == (unsigned long)ST_NIL) {
             refnum = out_propname_ix++;
             out_propname_tab->add(out_string_pool->new_string(pname),
@@ -2941,8 +2943,8 @@ oas_out::write_cell_properties()
         else {
             if (!write_unsigned(13))
                 return (false);
-            unsigned long refnum =
-                (unsigned long)out_propstring_tab->get(str);
+            unsigned long refnum = (unsigned long)SymTab::get(
+                out_propstring_tab, str);
             if (refnum == (unsigned long)ST_NIL) {
                 refnum = out_propstring_ix++;
                 out_propstring_tab->add(out_string_pool->new_string(str),
@@ -3012,7 +3014,8 @@ oas_out::write_elem_properties()
         info_byte |= 2;  // N = 1
         if (!write_char(info_byte))
             return (false);
-        unsigned long refnum = (unsigned long)out_propname_tab->get(pname);
+        unsigned long refnum = (unsigned long)SymTab::get(
+            out_propname_tab, pname);
         if (refnum == (unsigned long)ST_NIL) {
             refnum = out_propname_ix++;
             out_propname_tab->add(out_string_pool->new_string(pname),
@@ -3041,8 +3044,8 @@ oas_out::write_elem_properties()
         else {
             if (!write_unsigned(13))
                 return (false);
-            unsigned long refnum =
-                (unsigned long)out_propstring_tab->get(pd->string());
+            unsigned long refnum = (unsigned long)SymTab::get(
+                out_propstring_tab, pd->string());
             if (refnum == (unsigned long)ST_NIL) {
                 refnum = out_propstring_ix++;
                 out_propstring_tab->add(
@@ -3077,7 +3080,8 @@ oas_out::write_offset_std_prpty(uint64_t offset)
         info_byte |= 2;  // N = 1
         if (!write_char(info_byte))
             return (false);
-        unsigned long refnum = (unsigned long)out_propname_tab->get(pname);
+        unsigned long refnum = (unsigned long)SymTab::get(
+            out_propname_tab, pname);
         if (refnum == (unsigned long)ST_NIL) {
             refnum = out_propname_ix++;
             out_propname_tab->add(out_string_pool->new_string(pname),
@@ -3118,7 +3122,8 @@ oas_out::write_label_property(unsigned int width, unsigned int xform)
         info_byte |= 2;  // N = 1
         if (!write_char(info_byte))
             return (false);
-        unsigned long refnum = (unsigned long)out_propname_tab->get(pname);
+        unsigned long refnum = (unsigned long)SymTab::get(
+            out_propname_tab, pname);
         if (refnum == (unsigned long)ST_NIL) {
             refnum = out_propname_ix++;
             out_propname_tab->add(out_string_pool->new_string(pname),
@@ -3161,7 +3166,8 @@ oas_out::write_rounded_end_property()
         info_byte |= 2;  // N = 1
         if (!write_char(info_byte))
             return (false);
-        unsigned long refnum = (unsigned long)out_propname_tab->get(pname);
+        unsigned long refnum = (unsigned long)SymTab::get(
+            out_propname_tab, pname);
         if (refnum == (unsigned long)ST_NIL) {
             refnum = out_propname_ix++;
             out_propname_tab->add(out_string_pool->new_string(pname),

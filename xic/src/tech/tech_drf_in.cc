@@ -288,10 +288,10 @@ cTechDrfIn::report_unresolved(sLstr &lstr)
             "Packet names referenced in technology but not defined in drf:\n");
         SymTab tab(false, false);
         for (stringlist *sl = c_badpkts; sl; sl = sl->next) {
-            if (tab.get(sl->string) == ST_NIL)
+            if (SymTab::get(&tab, sl->string) == ST_NIL)
                 tab.add(sl->string, 0, false);
         }
-        stringlist *names = tab.names();
+        stringlist *names = SymTab::names(&tab);
         stringlist::sort(names);
         for (stringlist *sl = names; sl; sl = sl->next) {
             lstr.add("    ");
@@ -307,10 +307,10 @@ cTechDrfIn::report_unresolved(sLstr &lstr)
             "Stipple names referenced in technology but not defined in drf:\n");
         SymTab tab(false, false);
         for (stringlist *sl = c_badstips; sl; sl = sl->next) {
-            if (tab.get(sl->string) == ST_NIL)
+            if (SymTab::get(&tab, sl->string) == ST_NIL)
                 tab.add(sl->string, 0, false);
         }
-        stringlist *names = tab.names();
+        stringlist *names = SymTab::names(&tab);
         stringlist::sort(names);
         for (stringlist *sl = names; sl; sl = sl->next) {
             lstr.add("    ");
@@ -326,10 +326,10 @@ cTechDrfIn::report_unresolved(sLstr &lstr)
             "Color names referenced in technology but not defined in drf:\n");
         SymTab tab(false, false);
         for (stringlist *sl = c_badclrs; sl; sl = sl->next) {
-            if (tab.get(sl->string) == ST_NIL)
+            if (SymTab::get(&tab, sl->string) == ST_NIL)
                 tab.add(sl->string, 0, false);
         }
-        stringlist *names = tab.names();
+        stringlist *names = SymTab::names(&tab);
         stringlist::sort(names);
         for (stringlist *sl = names; sl; sl = sl->next) {
             lstr.add("    ");
@@ -347,7 +347,7 @@ const sDrfColor *
 cTechDrfIn::find_color(const char *name)
 {
     if (c_color_tab && name) {
-        const sDrfColor *c = (sDrfColor*)c_color_tab->get(name);
+        const sDrfColor *c = (sDrfColor*)SymTab::get(c_color_tab, name);
         if (c != (sDrfColor*)ST_NIL)
             return (c);
     }
@@ -360,7 +360,7 @@ cTechDrfIn::find_color(int r, int g, int b)
 {
     if (c_color_rtab) {
         char *nm = mk_color_name(r, g, b);
-        const sDrfColor *c = (sDrfColor*)c_color_rtab->get(nm);
+        const sDrfColor *c = (sDrfColor*)SymTab::get(c_color_rtab, nm);
         delete [] nm;
         if (c != (sDrfColor*)ST_NIL)
             return (c);
@@ -375,13 +375,13 @@ cTechDrfIn::add_color(sDrfColor *c)
     if (!c || !c->name())
         return;
     if (c_color_tab) {
-        SymTabEnt *ent = c_color_tab->get_ent(c->name());
+        SymTabEnt *ent = SymTab::get_ent(c_color_tab, c->name());
         if (ent) {
             if (ent->stData != (void*)c) {
                 sDrfColor *oldc = (sDrfColor*)ent->stData;
                 char *nm = mk_color_name(oldc->red(), oldc->green(),
                     oldc->blue());
-                SymTabEnt *e2 = c_color_rtab->get_ent(nm);
+                SymTabEnt *e2 = SymTab::get_ent(c_color_rtab, nm);
                 if (e2 && e2->stData == (void*)oldc)
                     c_color_rtab->remove(nm);
                 delete [] nm;
@@ -390,7 +390,7 @@ cTechDrfIn::add_color(sDrfColor *c)
                 ent->stTag = c->name();
                 ent->stData = c;
                 nm = mk_color_name(c->red(), c->green(), c->blue());
-                if (c_color_rtab->get(nm) == ST_NIL)
+                if (SymTab::get(c_color_rtab, nm) == ST_NIL)
                     c_color_rtab->add(nm, c, false);
                 else
                     delete [] nm;
@@ -404,7 +404,7 @@ cTechDrfIn::add_color(sDrfColor *c)
     }
     c_color_tab->add(c->name(), c, false);
     char *nm = mk_color_name(c->red(), c->green(), c->blue());
-    if (c_color_rtab->get(nm) == ST_NIL)
+    if (SymTab::get(c_color_rtab, nm) == ST_NIL)
         c_color_rtab->add(nm, c, false);
     else
         delete [] nm;
@@ -415,7 +415,7 @@ const sDrfStipple *
 cTechDrfIn::find_stipple(const char *name)
 {
     if (c_stipple_tab && name) {
-        const sDrfStipple *s = (sDrfStipple*)c_stipple_tab->get(name);
+        const sDrfStipple *s = (sDrfStipple*)SymTab::get(c_stipple_tab, name);
         if (s != (sDrfStipple*)ST_NIL)
             return (s);
     }
@@ -430,7 +430,7 @@ cTechDrfIn::find_stipple(const GRfillType *fill)
         unsigned char *map = fill->newBitmap();
         char *nm = mk_stp_str(fill->nX(), fill->nY(), map);
         delete [] map;
-        const sDrfStipple *s = (sDrfStipple*)c_stipple_rtab->get(nm);
+        const sDrfStipple *s = (sDrfStipple*)SymTab::get(c_stipple_rtab, nm);
         delete [] nm;
         if (s != (sDrfStipple*)ST_NIL)
             return (s);
@@ -445,12 +445,12 @@ cTechDrfIn::add_stipple(sDrfStipple *s)
     if (!s || !s->name())
         return;
     if (c_stipple_tab) {
-        SymTabEnt *ent = c_stipple_tab->get_ent(s->name());
+        SymTabEnt *ent = SymTab::get_ent(c_stipple_tab, s->name());
         if (ent) {
             if (ent->stData != (void*)s) {
                 sDrfStipple *olds = (sDrfStipple*)ent->stData;
                 char *nm = mk_stp_str(olds->nx(), olds->ny(), olds->map());
-                SymTabEnt *e2 = c_stipple_rtab->get_ent(nm);
+                SymTabEnt *e2 = SymTab::get_ent(c_stipple_rtab, nm);
                 if (e2 && e2->stData == (void*)olds)
                     c_stipple_rtab->remove(nm);
                 delete [] nm;
@@ -459,7 +459,7 @@ cTechDrfIn::add_stipple(sDrfStipple *s)
                 ent->stTag = s->name();
                 ent->stData = s;
                 nm = mk_stp_str(s->nx(), s->ny(), s->map());
-                if (c_stipple_rtab->get(nm) == ST_NIL)
+                if (SymTab::get(c_stipple_rtab, nm) == ST_NIL)
                     c_stipple_rtab->add(nm, s, false);
                 else
                     delete [] nm;
@@ -473,7 +473,7 @@ cTechDrfIn::add_stipple(sDrfStipple *s)
     }
     c_stipple_tab->add(s->name(), s, false);
     char *nm = mk_stp_str(s->nx(), s->ny(), s->map());
-    if (c_stipple_rtab->get(nm) == ST_NIL)
+    if (SymTab::get(c_stipple_rtab, nm) == ST_NIL)
         c_stipple_rtab->add(nm, s, false);
     else
         delete [] nm;
@@ -484,7 +484,7 @@ const sDrfLine *
 cTechDrfIn::find_line(const char *name)
 {
     if (c_line_tab && name) {
-        const sDrfLine *l = (sDrfLine*)c_line_tab->get(name);
+        const sDrfLine *l = (sDrfLine*)SymTab::get(c_line_tab, name);
         if (l != (sDrfLine*)ST_NIL)
             return (l);
     }
@@ -498,7 +498,7 @@ cTechDrfIn::add_line(sDrfLine *l)
     if (!l || !l->name())
         return;
     if (c_line_tab) {
-        SymTabEnt *ent = c_line_tab->get_ent(l->name());
+        SymTabEnt *ent = SymTab::get_ent(c_line_tab, l->name());
         if (ent) {
             if (ent->stData != (void*)l) {
                 delete (sDrfLine*)ent->stData;
@@ -518,7 +518,7 @@ const sDrfPacket *
 cTechDrfIn::find_packet(const char *name)
 {
     if (c_packet_tab && name) {
-        const sDrfPacket *p = (sDrfPacket*)c_packet_tab->get(name);
+        const sDrfPacket *p = (sDrfPacket*)SymTab::get(c_packet_tab, name);
         if (p != (sDrfPacket*)ST_NIL)
             return (p);
     }
@@ -532,7 +532,7 @@ cTechDrfIn::find_packet(const char *color, const char *stipple,
 {
     if (c_packet_rtab) {
         char *nm = mk_packet_name(color, stipple, line, outline);
-        const sDrfPacket *p = (sDrfPacket*)c_packet_rtab->get(nm);
+        const sDrfPacket *p = (sDrfPacket*)SymTab::get(c_packet_rtab, nm);
         delete [] nm;
         if (p != (sDrfPacket*)ST_NIL)
             return (p);
@@ -547,14 +547,14 @@ cTechDrfIn::add_packet(sDrfPacket *p)
     if (!p || !p->name())
         return;
     if (c_packet_tab) {
-        SymTabEnt *ent = c_packet_tab->get_ent(p->name());
+        SymTabEnt *ent = SymTab::get_ent(c_packet_tab, p->name());
         if (ent) {
             if (ent->stData != (void*)p) {
                 sDrfPacket *oldp = (sDrfPacket*)ent->stData;
                 char *nm = mk_packet_name(oldp->fill_color(),
                     oldp->stipple_name(), oldp->linestyle_name(),
                     oldp->outline_color());
-                SymTabEnt *e2 = c_packet_rtab->get_ent(nm);
+                SymTabEnt *e2 = SymTab::get_ent(c_packet_rtab, nm);
                 if (e2 && e2->stData == (void*)oldp)
                     c_packet_rtab->remove(nm);
                 delete [] nm;
@@ -564,7 +564,7 @@ cTechDrfIn::add_packet(sDrfPacket *p)
                 ent->stData = p;
                 nm = mk_packet_name(p->fill_color(), p->stipple_name(),
                     p->linestyle_name(), p->outline_color());
-                if (c_packet_rtab->get(nm) == ST_NIL)
+                if (SymTab::get(c_packet_rtab, nm) == ST_NIL)
                     c_packet_rtab->add(nm, p, false);
                 else
                     delete [] nm;
@@ -579,7 +579,7 @@ cTechDrfIn::add_packet(sDrfPacket *p)
     c_packet_tab->add(p->name(), p, false);
     char *nm = mk_packet_name(p->fill_color(), p->stipple_name(),
         p->linestyle_name(), p->outline_color());
-    if (c_packet_rtab->get(nm) == ST_NIL)
+    if (SymTab::get(c_packet_rtab, nm) == ST_NIL)
         c_packet_rtab->add(nm, p, false);
     else
         delete [] nm;

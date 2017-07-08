@@ -893,7 +893,7 @@ zimg_backend::queue_layer(const Layer *layer)
     if (!zb_ltab)
         zb_ltab = new SymTab(false, false);
 
-    zb_layer_t *ld = (zb_layer_t*)zb_ltab->get(layer->name);
+    zb_layer_t *ld = (zb_layer_t*)SymTab::get(zb_ltab, layer->name);
     if (ld != (zb_layer_t*)ST_NIL) {
         zb_layer = ld;
         return (true);

@@ -2410,9 +2410,8 @@ namespace {
                 next = n;
             }
 
-        void free()
+        static void destroy(sdlist_t *s)
             {
-                sdlist_t *s = this;
                 while (s) {
                     sdlist_t *x = s;
                     s = s->next;

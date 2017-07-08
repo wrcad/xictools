@@ -94,9 +94,10 @@ cTech::Print(FILE *techfp)
 
     // Print the "set name = value" lines.
     if (tc_variable_tab && tc_variable_tab->allocated()) {
-        stringlist *s0 = tc_variable_tab->names();
+        stringlist *s0 = SymTab::names(tc_variable_tab);
         for (stringlist *sl = s0; sl; sl = sl->next) {
-            const char *val = (const char*)tc_variable_tab->get(sl->string);
+            const char *val =
+                (const char*)SymTab::get(tc_variable_tab, sl->string);
             fprintf(techfp, "%s %s = %s\n", Tkw.Set(), sl->string, val);
         }
         CommentDump(techfp, 0, tBlkNone, 0, Tkw.Set());

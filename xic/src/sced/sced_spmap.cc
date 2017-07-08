@@ -361,7 +361,7 @@ sLibMap::find(const char *file, const char *name)
     free(cwd);
 
     SymTab *tab = 0;
-    SymTabEnt *ent = lib_tab->get_ent(fullpath);
+    SymTabEnt *ent = SymTab::get_ent(lib_tab, fullpath);
     if (!ent) {
         FILE *fp = fopen(file, "r");
         if (!fp) {
@@ -384,7 +384,7 @@ sLibMap::find(const char *file, const char *name)
             *tt = tolower(*tt);
     }
 
-    ent = tab->get_ent(lcname);
+    ent = SymTab::get_ent(tab, lcname);
     delete [] lcname;
     if (!ent)
         return (LM_NO_NAME);

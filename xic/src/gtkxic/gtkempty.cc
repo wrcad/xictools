@@ -252,7 +252,7 @@ sEC::update(stringlist *sl)
     e_item *itm = ec_list;
     while (sl) {
         // Save only names not seen before.
-        if (ec_tab->get(sl->string) == ST_NIL) {
+        if (SymTab::get(ec_tab, sl->string) == ST_NIL) {
             itm->name = lstring::copy(sl->string);
             ec_tab->add(itm->name, 0, false);
             int w = strlen(sl->string);

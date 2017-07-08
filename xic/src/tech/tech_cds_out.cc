@@ -828,7 +828,7 @@ cTechCdsOut::dump_drDefineColor()
     while ((ld = pgen.next()) != 0) {
         DspLayerParams *lp = dsp_prm(ld);
         char *colorname = mk_colorname(ld);
-        if (ctab.get(colorname) != ST_NIL) {
+        if (SymTab::get(&ctab, colorname) != ST_NIL) {
             delete [] colorname;
             continue;
         }
@@ -840,7 +840,7 @@ cTechCdsOut::dump_drDefineColor()
     while ((ld = egen.next()) != 0) {
         DspLayerParams *lp = dsp_prm(ld);
         char *colorname = mk_colorname(ld);
-        if (ctab.get(colorname) != ST_NIL) {
+        if (SymTab::get(&ctab, colorname) != ST_NIL) {
             delete [] colorname;
             continue;
         }
@@ -872,7 +872,7 @@ cTechCdsOut::dump_drDefineStipple()
             char *ss = stipstr(fill, "    ");
             if (!ss)
                 continue;
-            if (tab.get(ss) != ST_NIL) {
+            if (SymTab::get(&tab, ss) != ST_NIL) {
                 delete [] ss;
                 continue;
             }
@@ -892,7 +892,7 @@ cTechCdsOut::dump_drDefineStipple()
             char *ss = stipstr(fill, "    ");
             if (!ss)
                 continue;
-            if (tab.get(ss) != ST_NIL) {
+            if (SymTab::get(&tab, ss) != ST_NIL) {
                 delete [] ss;
                 continue;
             }
@@ -935,7 +935,7 @@ cTechCdsOut::dump_drDefinePacket()
         const char *line, *fill;
         dspstrings(ld, &line, &fill, &stipplename);
         char *packetname = mk_packetname(colorname, fill, line);
-        if (tab->get(packetname) == ST_NIL) {
+        if (SymTab::get(tab, packetname) == ST_NIL) {
             snprintf(buf, 256, "  ( display %s %s %s %s %s )\n",
                 packetname, fill, line, colorname, colorname);
             tab->add(packetname, lstring::copy(buf), false);
@@ -952,7 +952,7 @@ cTechCdsOut::dump_drDefinePacket()
         const char *line, *fill;
         dspstrings(ld, &line, &fill, &stipplename);
         char *packetname = mk_packetname(colorname, fill, line);
-        if (tab->get(packetname) == ST_NIL) {
+        if (SymTab::get(tab, packetname) == ST_NIL) {
             snprintf(buf, 256, "  ( display %s %s %s %s %s )\n",
                 packetname, fill, line, colorname, colorname);
             tab->add(packetname, lstring::copy(buf), false);

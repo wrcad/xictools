@@ -296,7 +296,7 @@ cPyIf::register_func(const char *fname, PyObject*(*func)(PyObject*, PyObject*))
         return;
     if (!py_functions)
         py_functions = new SymTab(false, false);
-    SymTabEnt *ent = py_functions->get_ent(fname);
+    SymTabEnt *ent = SymTab::get_ent(py_functions, fname);
     if (!ent)
         py_functions->add(fname, (void*)func, false);
     else

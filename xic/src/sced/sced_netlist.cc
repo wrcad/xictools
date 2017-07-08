@@ -210,10 +210,10 @@ cSced::getElecContactNames(CDs *sdesc, int *size)
                 if (pn1->enode() > max_node)
                     max_node = pn1->enode();
 
-                SymTabEnt *h = list_tab->get_ent(pn1->enode());
+                SymTabEnt *h = SymTab::get_ent(list_tab, pn1->enode());
                 if (!h) {
                     list_tab->add(pn1->enode(), 0, false);
-                    h = list_tab->get_ent(pn1->enode());
+                    h = SymTab::get_ent(list_tab, pn1->enode());
                 }
                 h->stData = new stringlist(
                     lstring::copy(pn1->term_name()->string()),
@@ -230,10 +230,10 @@ cSced::getElecContactNames(CDs *sdesc, int *size)
         if (pn->enode() > max_node)
             max_node = pn->enode();
 
-        SymTabEnt *h = list_tab->get_ent(pn->enode());
+        SymTabEnt *h = SymTab::get_ent(list_tab, pn->enode());
         if (!h) {
             list_tab->add(pn->enode(), 0, false);
-            h = list_tab->get_ent(pn->enode());
+            h = SymTab::get_ent(list_tab, pn->enode());
         }
         h->stData = new stringlist(lstring::copy(pn->term_name()->string()),
             (stringlist*)h->stData);

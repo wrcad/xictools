@@ -194,7 +194,7 @@ cFIO::WriteNative(CDcbin *cbin, const char *sname)
 
         FIOaliasTab *alias = new FIOaliasTab(true, true);
         SymTabGen gen(fioNativeImportTab);
-        SymTabEnt *h, *h0 = fioNativeImportTab->get_ent(sname);
+        SymTabEnt *h, *h0 = SymTab::get_ent(fioNativeImportTab, sname);
         while ((h = gen.next()) != 0) {
             if (h != h0)
                 // Never alias the current cell name!
@@ -409,7 +409,7 @@ cFIO::TabToNative(SymTab *tab, const char *xic_fname)
             ld->setTmpSkip(false);
             lindex++;
 
-            CDol *ol0 = (CDol*)tab->get((unsigned long)ld);
+            CDol *ol0 = (CDol*)SymTab::get(tab, (unsigned long)ld);
             if (ol0 == (CDol*)ST_NIL)
                 continue;
 

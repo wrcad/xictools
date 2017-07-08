@@ -440,7 +440,7 @@ IFsimulator::ExtractPrintCmd(int nth)
 
 
 namespace {
-    // This routine strips and processes the limits (a, b)
+    // This function strips and processes the limits (a, b)
     // specification which can appear in SPICE2 plot lines.  Only the
     // last one is used, and only if nolimits is not set.
     //
@@ -465,8 +465,8 @@ namespace {
                     if (wl->wl_next)
                         wl->wl_next->wl_prev = wl->wl_prev;
                     wordlist *ww = wl->wl_prev;
-                    free(wl->wl_word);
-                    free((char*)wl);
+                    delete [] wl->wl_word;
+                    delete wl;
                     wl = ww;
                 }
                 if (!strchr(buf, ')')) {
@@ -482,8 +482,8 @@ namespace {
                     for (; wl; wl = tl) {
                         tl = wl->wl_next;
                         strcat(buf, wl->wl_word);
-                        free(wl->wl_word);
-                        free((char*)wl);
+                        delete [] wl->wl_word;
+                        delete wl;
                     }
                     wl = ww;
                 }

@@ -198,7 +198,7 @@ CommandTab::com_trace(wordlist *wl)
             for (sDbComm *td = DB.traces(); td; ld = td, td = td->next()) {
                 if (lstring::eq(td->string(), d->string())) {
                     GRpkgIf()->ErrPrintf(ET_WARN, msg, td->string());
-                    d->free();
+                    sDbComm::destroy(d);
                     DB.decrement_count();
                     return;
                 }
@@ -217,7 +217,7 @@ CommandTab::com_trace(wordlist *wl)
             for (sDbComm *td = db->traces(); td; ld = td, td = td->next()) {
                 if (lstring::eq(td->string(), d->string())) {
                     GRpkgIf()->ErrPrintf(ET_WARN, msg, td->string());
-                    d->free();
+                    sDbComm::destroy(d);
                     DB.decrement_count();
                     return;
                 }
@@ -447,7 +447,7 @@ CommandTab::com_delete(wordlist *wl)
                 db->set_saves(d->next());
         }
         ToolBar()->UpdateTrace();
-        d->free();
+        sDbComm::destroy(d);
         return;
     }
     bool inactive = false;
@@ -650,7 +650,7 @@ IFsimulator::DeleteDbg(bool stop, bool trace, bool iplot, bool save,
                     DB.set_stops(dnext);
                 else
                     dlast->set_next(dnext);
-                d->free();
+                sDbComm::destroy(d);
                 if (num >= 0)
                     return;
                 continue;
@@ -668,7 +668,7 @@ IFsimulator::DeleteDbg(bool stop, bool trace, bool iplot, bool save,
                         db->set_stops(dnext);
                     else
                         dlast->set_next(dnext);
-                    d->free();
+                    sDbComm::destroy(d);
                     if (num >= 0)
                         return;
                     continue;
@@ -687,7 +687,7 @@ IFsimulator::DeleteDbg(bool stop, bool trace, bool iplot, bool save,
                     DB.set_traces(dnext);
                 else
                     dlast->set_next(dnext);
-                d->free();
+                sDbComm::destroy(d);
                 if (num >= 0)
                     return;
                 continue;
@@ -705,7 +705,7 @@ IFsimulator::DeleteDbg(bool stop, bool trace, bool iplot, bool save,
                         db->set_traces(dnext);
                     else
                         dlast->set_next(dnext);
-                    d->free();
+                    sDbComm::destroy(d);
                     if (num >= 0)
                         return;
                     continue;
@@ -724,7 +724,7 @@ IFsimulator::DeleteDbg(bool stop, bool trace, bool iplot, bool save,
                     DB.set_iplots(dnext);
                 else
                     dlast->set_next(dnext);
-                d->free();
+                sDbComm::destroy(d);
                 if (num >= 0)
                     return;
                 continue;
@@ -742,7 +742,7 @@ IFsimulator::DeleteDbg(bool stop, bool trace, bool iplot, bool save,
                         db->set_iplots(dnext);
                     else
                         dlast->set_next(dnext);
-                    d->free();
+                    sDbComm::destroy(d);
                     if (num >= 0)
                         return;
                     continue;
@@ -761,7 +761,7 @@ IFsimulator::DeleteDbg(bool stop, bool trace, bool iplot, bool save,
                     DB.set_saves(dnext);
                 else
                     dlast->set_next(dnext);
-                d->free();
+                sDbComm::destroy(d);
                 if (num >= 0)
                     return;
                 continue;
@@ -779,7 +779,7 @@ IFsimulator::DeleteDbg(bool stop, bool trace, bool iplot, bool save,
                         db->set_saves(dnext);
                     else
                         dlast->set_next(dnext);
-                    d->free();
+                    sDbComm::destroy(d);
                     if (num >= 0)
                         return;
                     continue;
@@ -918,20 +918,22 @@ IFsimulator::IsIplot(bool resurrect)
     }
     return (false);
 }
+// End of IFsimulator functions.
 
 
+// Static function.
 void
-sDbComm::free()
+sDbComm::destroy(sDbComm *dd)
 {
-    sDbComm *dd, *dn;
-    for (dd = this; dd; dd = dn) {
-        dn = dd->db_also;
-        if (dd->db_type == DB_DEADIPLOT && dd->db_graphid)
-            // user killed the window
-            GP.DestroyGraph(dd->db_graphid);
-        delete dd;
+    while (dd) {
+        sDbComm *dx = dd;
+        dd = dd->db_also;
+        if (dx->db_type == DB_DEADIPLOT && dx->db_graphid) {
+            // User killed the window.
+            GP.DestroyGraph(dx->db_graphid);
+        }
+        delete dx;
     }
-    return;
 }
 
 

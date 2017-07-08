@@ -879,7 +879,7 @@ CDcellName
 cv_in::check_sub_master(CDcellName cname)
 {
     if (in_mode == Physical) {
-        CDcellName cn = (CDcellName)in_submaster_tab->get(
+        CDcellName cn = (CDcellName)SymTab::get(in_submaster_tab,
             (unsigned long)cname);
         if (cn != (CDcellName)ST_NIL)
             cname = cn;

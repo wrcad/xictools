@@ -947,13 +947,13 @@ Zlist::linewidth(const Zlist *thiszl)
     for (const Zlist *z = thiszl; z; z = z->next) {
         unsigned long ht = z->Z.yu - z->Z.yl;
         unsigned long wd = ((z->Z.xur + z->Z.xlr) - (z->Z.xul + z->Z.xll))/2;
-        SymTabEnt *h = tab->get_ent(ht);
+        SymTabEnt *h = SymTab::get_ent(tab, ht);
         if (!h)
             tab->add(ht, (void*)wd, false);
         else
             h->stData = (void*)(wd + (long)h->stData);
 
-        h = tab->get_ent(wd);
+        h = SymTab::get_ent(tab, wd);
         if (!h)
             tab->add(wd, (void*)ht, false);
         else

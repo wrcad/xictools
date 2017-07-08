@@ -1935,16 +1935,20 @@ public:
 
     bool in_flatten_list(const CDc *cdesc)
         {
-            if (gd_flatten_tab)
-                return (gd_flatten_tab->get((unsigned long)cdesc) != ST_NIL);
+            if (gd_flatten_tab) {
+                return (SymTab::get(gd_flatten_tab, (unsigned long)cdesc) !=
+                    ST_NIL);
+            }
             return (false);
         }
 
 
     bool in_ignore_list(const CDc *cdesc)
         {
-            if (gd_ignore_tab)
-                return (gd_ignore_tab->get((unsigned long)cdesc) != ST_NIL);
+            if (gd_ignore_tab) {
+                return (SymTab::get(gd_ignore_tab, (unsigned long)cdesc) !=
+                    ST_NIL);
+            }
             return (false);
         }
 

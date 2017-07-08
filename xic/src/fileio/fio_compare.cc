@@ -487,7 +487,7 @@ cCompare::setup()
                     st->add(p->get_name()->string(), 0, true);
                 }
             }
-            c_cell_names1 = st->names();
+            c_cell_names1 = SymTab::names(st);
             stringlist::sort(c_cell_names1);
             delete st;
 
@@ -505,7 +505,7 @@ cCompare::setup()
         for (stringlist *sl = c_cell_names1; sl; sl = sl->next) {
             stringlist *sx = c_chd1->listCellnames(sl->string, c_dmode);
             while (sx) {
-                if (st->get(sx->string) == ST_NIL) {
+                if (SymTab::get(st, sx->string) == ST_NIL) {
                     if (c_dmode == Electrical && FIO()->LookupLibCell(0,
                             sx->string, LIBdevice, 0))
                         delete [] sx->string;
@@ -521,7 +521,7 @@ cCompare::setup()
             }
         }
         stringlist::destroy(c_cell_names1);
-        c_cell_names1 = st->names();
+        c_cell_names1 = SymTab::names(st);
         stringlist::sort(c_cell_names1);
         delete st;
         stringlist::destroy(c_cell_names2);

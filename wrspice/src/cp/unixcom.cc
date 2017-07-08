@@ -309,7 +309,7 @@ CshPar::ShellExec(const char *name, char **argv)
         wl->wl_next->wl_prev = wl;
     }
     char *s = wl->flatten();
-    wl->free();
+    wordlist::destroy(wl);
     System(s);
     putc('\n', stdout);
     delete [] s;

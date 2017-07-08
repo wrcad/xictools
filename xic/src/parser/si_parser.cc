@@ -1786,7 +1786,7 @@ SIparser::mksnode(char *string, ParseNode *subscr)
         for (int i = 0; spConstants[i].name; i++)
             spConstTab->add(spConstants[i].name, &spConstants[i], false);
     }
-    PTconstant *pt = (PTconstant*)spConstTab->get(string);
+    PTconstant *pt = (PTconstant*)SymTab::get(spConstTab, string);
     if (pt != (PTconstant*)ST_NIL) {
         ParseNode *p = ParseNode::allocate_pnode(P_ALLOC);
         p->type = PT_CONSTANT;

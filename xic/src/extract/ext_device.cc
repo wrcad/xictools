@@ -210,8 +210,8 @@ cExt::addSubcircuit(sSubcDesc *sd)
         return;
     if (!ext_subckt_tab)
         ext_subckt_tab = new SymTab(false, false);
-    sSubcDesc *osd =
-        (sSubcDesc*)ext_subckt_tab->get((unsigned long)sd->master());
+    sSubcDesc *osd = (sSubcDesc*)SymTab::get(
+        ext_subckt_tab, (unsigned long)sd->master());
     if (osd != (sSubcDesc*)ST_NIL) {
         ext_subckt_tab->remove((unsigned long)sd->master());
         delete osd;
@@ -227,7 +227,8 @@ cExt::findSubcircuit(const CDs *sdesc)
 {
     if (!ext_subckt_tab || !sdesc)
         return (0);
-    sSubcDesc *sd = (sSubcDesc*)ext_subckt_tab->get((unsigned long)sdesc);
+    sSubcDesc *sd = (sSubcDesc*)SymTab::get(
+        ext_subckt_tab, (unsigned long)sdesc);
     if (sd == (sSubcDesc*)ST_NIL)
         return (0);
     return (sd);
@@ -248,7 +249,7 @@ cExt::addDevice(sDevDesc *dd, sDevDesc **pold)
     if (!ext_device_tab)
         ext_device_tab = new SymTab(false, false);
     // Recall that sDevDesc::name() is from the cell name string table.
-    SymTabEnt *ent = ext_device_tab->get_ent(dd->name()->string());
+    SymTabEnt *ent = SymTab::get_ent(ext_device_tab, dd->name()->string());
     if (ent) {
         char *s = dd->checkEquiv((sDevDesc*)ent->stData);
         if (s)
@@ -299,7 +300,7 @@ cExt::removeDevice(const char *name, const char *prefix)
 {
     if (!ext_device_tab)
         return (0);
-    SymTabEnt *ent = ext_device_tab->get_ent(name);
+    SymTabEnt *ent = SymTab::get_ent(ext_device_tab, name);
     if (ent) {
         sDevDesc *dp = 0, *dn;
         for (sDevDesc *d = (sDevDesc*)ent->stData; d; d = dn) {
@@ -329,7 +330,7 @@ cExt::findDevice(const char *name, const char *prefix)
 {
     if (!ext_device_tab)
         return (0);
-    sDevDesc *desc = (sDevDesc*)ext_device_tab->get(name);
+    sDevDesc *desc = (sDevDesc*)SymTab::get(ext_device_tab, name);
     if (desc != (sDevDesc*)ST_NIL) {
         for (sDevDesc *d = desc; d; d = d->next()) {
             int n = ncomp(prefix, d->prefix());
@@ -351,7 +352,7 @@ cExt::findDevices(const char *name)
 {
     if (!ext_device_tab)
         return (0);
-    sDevDesc *desc = (sDevDesc*)ext_device_tab->get(name);
+    sDevDesc *desc = (sDevDesc*)SymTab::get(ext_device_tab, name);
     if (desc != (sDevDesc*)ST_NIL)
         return (desc);
     return (0);
@@ -6160,7 +6161,7 @@ sGroupXf::find_objects(const sDevContactInst *c1, const CDl *ld)
     else if (gx_objs) {
         CDol *ol = gx_objs->find_object(ld, c1->cBB());
         if (ol) {
-            if (tab->get((unsigned long)ol->odesc) != ST_NIL) {
+            if (SymTab::get(tab, (unsigned long)ol->odesc) != ST_NIL) {
                 CDol::destroy(ol);
                 return (0);
             }
@@ -6240,7 +6241,7 @@ sGroupXf::find_objects_rc(const sDevContactInst *c1, const CDl *ld,
     else if (gx_objs) {
         CDol *ol = gx_objs->find_object(ld, c1->cBB());
         if (ol) {
-            if (tab->get((unsigned long)ol->odesc) != ST_NIL) {
+            if (SymTab::get(tab, (unsigned long)ol->odesc) != ST_NIL) {
                 CDol::destroy(ol);
                 return (0);
             }

@@ -388,7 +388,8 @@ cExt::referenceList(const CDs *sdesc)
 {
     if (!ext_reference_tab || !sdesc)
         return (0);
-    sGdList *gdl = (sGdList*)ext_reference_tab->get((unsigned long)sdesc);
+    sGdList *gdl = (sGdList*)SymTab::get(
+        ext_reference_tab, (unsigned long)sdesc);
     if (gdl == (sGdList*)ST_NIL)
         return (0);
     return (gdl);
@@ -536,7 +537,7 @@ cGroupDesc::setup_extract(int dcnt)
                     !SCD()->isGlobalNetName(nm->string()))
                 continue;
 
-            long onum = (long)tab.get((unsigned long)nm);
+            long onum = (long)SymTab::get(&tab, (unsigned long)nm);
             if (onum >= 0) {
                 ExtErrLog.add_log(ExtLogExt,
                     "Merging groups %d and %d named %s by labels.",
@@ -823,7 +824,7 @@ cGroupDesc::list_callers(SymTab *list_tab, SymTab *done_tab)
         CDs *sd = s->subs()->cdesc()->masterCell();
         if (!sd)
             continue;
-        if (done_tab->get((unsigned long)sd) == ST_NIL) {
+        if (SymTab::get(done_tab, (unsigned long)sd) == ST_NIL) {
             cGroupDesc *gd = sd->groups();
             if (!gd) {
                 done_tab->add((unsigned long)sd, 0, false);
@@ -832,7 +833,7 @@ cGroupDesc::list_callers(SymTab *list_tab, SymTab *done_tab)
             gd->list_callers(list_tab, done_tab);
         }
         if (list_tab) {
-            SymTabEnt *ent = list_tab->get_ent((unsigned long)sd);
+            SymTabEnt *ent = SymTab::get_ent(list_tab, (unsigned long)sd);
             if (!ent)
                 list_tab->add((unsigned long)sd, new sGdList(this, 0), false);
             else
@@ -986,7 +987,7 @@ cGroupDesc::fix_connections()
         CDs *sd = s->subs()->cdesc()->masterCell();
         if (!sd)
             continue;
-        if (done_tab.get((unsigned long)sd) != ST_NIL)
+        if (SymTab::get(&done_tab, (unsigned long)sd) != ST_NIL)
             continue;
         cGroupDesc *gd = sd->groups();
         if (!gd)
@@ -1778,7 +1779,7 @@ cGroupDesc::fix_connections_rc(SymTab *done_tab)
         CDs *sd = s->subs()->cdesc()->masterCell();
         if (!sd)
             continue;
-        if (done_tab->get((unsigned long)sd) != ST_NIL)
+        if (SymTab::get(done_tab, (unsigned long)sd) != ST_NIL)
             continue;
         cGroupDesc *gd = sd->groups();
         if (!gd)
@@ -1805,8 +1806,8 @@ cGroupDesc::fix_connections_rc(SymTab *done_tab)
                 for (sSubcContactInst *ci = si->contacts(); ci;
                         ci = ci->next()) {
 
-                    SymTabEnt *ent =
-                        tab.get_ent((unsigned long)ci->parent_group());
+                    SymTabEnt *ent = SymTab::get_ent(&tab,
+                        (unsigned long)ci->parent_group());
                     if (ent) {
                         ent->stData = new int_list(ci->subc_group(),
                             (int_list*)ent->stData);

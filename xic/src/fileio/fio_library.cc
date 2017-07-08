@@ -822,7 +822,7 @@ sLib::get_chd(const sLibRef *ref)
     if (!l_chdtab || !ref)
         return (0);
     char *path = pathlist::mk_path(ref->dir(), ref->file());
-    cCHD *chd = (cCHD*)l_chdtab->get(path);
+    cCHD *chd = (cCHD*)SymTab::get(l_chdtab, path);
     delete [] path;
     if (chd != (cCHD*)ST_NIL)
         return (chd);

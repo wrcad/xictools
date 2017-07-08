@@ -1733,7 +1733,7 @@ gds_in::check_layer(bool *changed, bool create_new)
 
     unsigned long ll = (in_layer << 16) | in_dtype;
 
-    gds_lspec *lspec = (gds_lspec*)layer_tab->get(ll);
+    gds_lspec *lspec = (gds_lspec*)SymTab::get(layer_tab, ll);
     if (lspec != (gds_lspec*)ST_NIL) {
         in_layer = lspec->layer;
         in_dtype = lspec->dtype;
@@ -1866,7 +1866,7 @@ gds_in::check_layer_cvt()
             char buf[256];
             if (!in_undef_layers)
                 in_undef_layers = new SymTab(true, false);
-            if (in_undef_layers->get(in_layer_name) == ST_NIL) {
+            if (SymTab::get(in_undef_layers, in_layer_name) == ST_NIL) {
                 sprintf(buf,
                     "no mapping for layer %d datatype %d (naming layer %s)",
                     in_curlayer, in_curdtype, in_layer_name);
@@ -2294,9 +2294,8 @@ gds_in::a_bgnstr()
             }
             else {
                 void *xx;
-                if (in_over_tab &&
-                        (xx = in_over_tab->get((unsigned long)sd->cellname()))
-                        != ST_NIL) {
+                if (in_over_tab && (xx = SymTab::get(in_over_tab,
+                        (unsigned long)sd->cellname())) != ST_NIL) {
                     // We already asked about overwriting.
                     if (xx) {
                         // User chose to overwrite the electrical

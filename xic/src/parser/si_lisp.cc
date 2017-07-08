@@ -381,7 +381,7 @@ cLispEnv::register_user_node(lispnode *p)
 {
     if (!le_user_nodes)
         le_user_nodes = new SymTab(false, false);
-    lispnode *px = (lispnode*)le_user_nodes->get(p->string);
+    lispnode *px = (lispnode*)SymTab::get(le_user_nodes, p->string);
     if (px && px != (lispnode*)ST_NIL) {
         le_user_nodes->remove(p->string);
         lispnode::destroy(px);
@@ -397,7 +397,7 @@ cLispEnv::find_func(const char *name)
 {
     if (!le_nodetab)
         return (0);
-    nodefunc func = (nodefunc)le_nodetab->get(name);
+    nodefunc func = (nodefunc)SymTab::get(le_nodetab, name);
     if (func == (nodefunc)ST_NIL)
         return (0);
     return (func);
@@ -409,7 +409,7 @@ cLispEnv::find_user_node(const char *name)
 {
     if (!le_user_nodes)
         return (0);
-    lispnode *p = (lispnode*)le_user_nodes->get(name);
+    lispnode *p = (lispnode*)SymTab::get(le_user_nodes, name);
     if (p == (lispnode*)ST_NIL)
         return (0);
     return (p);
@@ -467,7 +467,7 @@ cLispEnv::set_variable(const char *string, lispnode *vrhs, char**)
 {
     if (!le_global_vartab)
         le_global_vartab = new SymTab(true, false);
-    lispnode *v = (lispnode*)le_global_vartab->get(string);
+    lispnode *v = (lispnode*)SymTab::get(le_global_vartab, string);
     if (v == (lispnode*)ST_NIL) {
         v = new_temp_node();
         le_global_vartab->add(lstring::copy(string), v, false);
@@ -484,7 +484,7 @@ cLispEnv::get_variable(lispnode *ret, const char *name)
 {
     lispnode *v;
     if (!le_global_vartab ||
-            (v = (lispnode*)le_global_vartab->get(name)) ==
+            (v = (lispnode*)SymTab::get(le_global_vartab, name)) ==
             (lispnode*)ST_NIL) {
         v = find_local_var(name);
         if (!v)
@@ -961,8 +961,8 @@ cLispEnv::find_local_var(const char *name)
 bool
 cLispEnv::test_variable(const char *name)
 {
-    if (!le_global_vartab ||
-            (lispnode*)le_global_vartab->get(name) == (lispnode*)ST_NIL)
+    if (!le_global_vartab || (lispnode*)SymTab::get(le_global_vartab, name) ==
+            (lispnode*)ST_NIL)
         return (false);
     return (true);
 }

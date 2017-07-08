@@ -434,9 +434,8 @@ public:
                 next = n;
             }
 
-        void free()
+        static void destroy(levmap_t *l)
             {
-                levmap_t *l = this;
                 while (l) {
                     levmap_t *lx = l;
                     l = l->next;
@@ -456,7 +455,7 @@ public:
 
     ~cMosLevMap()
         {
-            mlm_list->free();
+            levmap_t::destroy(mlm_list);
         }
 
     void add_map(int, int);
@@ -512,7 +511,7 @@ cMosLevMap::delete_map(int ext_lev)
 void
 cMosLevMap::clear()
 {
-    mlm_list->free();
+    levmap_t::destroy(mlm_list);
     mlm_list = 0;
 }
 

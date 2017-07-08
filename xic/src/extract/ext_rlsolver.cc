@@ -929,7 +929,7 @@ MRsolver::find_path(int x, int y, int depth, bool use_ex)
     while ((h = gen.next()) != 0) {
 
         CDo *od = (CDo*)h->stData;
-        SymTabEnt *hl = mr_ltab->get_ent((unsigned long)od->ldesc());
+        SymTabEnt *hl = SymTab::get_ent(mr_ltab, (unsigned long)od->ldesc());
         if (!hl)
             mr_ltab->add((unsigned long)od->ldesc(), od, false);
         else {
@@ -980,7 +980,7 @@ MRsolver::load_path(CDol *ol)
     while (ol) {
         CDo *od = ol->odesc;
         od->set_next_odesc(0);
-        SymTabEnt *hl = mr_ltab->get_ent((unsigned long)od->ldesc());
+        SymTabEnt *hl = SymTab::get_ent(mr_ltab, (unsigned long)od->ldesc());
         if (!hl)
             mr_ltab->add((unsigned long)od->ldesc(), od, false);
         else {
@@ -1062,13 +1062,13 @@ MRsolver::find_vias()
             CDl *ld1 = via->layer1();
             if (!ld1)
                 continue;
-            Zlist *z1 = (Zlist*)mr_ltab->get((unsigned long)ld1);
+            Zlist *z1 = (Zlist*)SymTab::get(mr_ltab, (unsigned long)ld1);
             if (z1 == (Zlist*)ST_NIL)
                 continue;
             CDl *ld2 = via->layer2();
             if (!ld2)
                 continue;
-            Zlist *z2 = (Zlist*)mr_ltab->get((unsigned long)ld2);
+            Zlist *z2 = (Zlist*)SymTab::get(mr_ltab, (unsigned long)ld2);
             if (z2 == (Zlist*)ST_NIL)
                 continue;
 
@@ -1197,7 +1197,7 @@ MRsolver::find_vias()
         CDl *ld1 = tech_prm(v->ld)->via_list()->layer1();
         CDl *ld2 = tech_prm(v->ld)->via_list()->layer2();
 
-        cnd_t *c1 = (cnd_t*)mr_ltab->get((unsigned long)ld1);
+        cnd_t *c1 = (cnd_t*)SymTab::get(mr_ltab, (unsigned long)ld1);
         if (c1 != (cnd_t*)ST_NIL) {
             for (cnd_t *c = c1; c; c = c->next) {
                 if (v->po->po.intersect(&c->po->po, false)) {
@@ -1215,7 +1215,7 @@ MRsolver::find_vias()
             delete v;
             continue;
         }
-        cnd_t *c2 = (cnd_t*)mr_ltab->get((unsigned long)ld2);
+        cnd_t *c2 = (cnd_t*)SymTab::get(mr_ltab, (unsigned long)ld2);
         if (c2 != (cnd_t*)ST_NIL) {
             for (cnd_t *c = c2; c; c = c->next) {
                 if (v->po->po.intersect(&c->po->po, false)) {

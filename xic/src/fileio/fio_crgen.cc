@@ -91,7 +91,7 @@ crgen_t::next_remap(ticket_t ntkt, tkt_map_t *map, SymTab *attab,
             if (c & CREF_ATTR) {
                 int n = read_signed();
                 if (n >= 16 && attab) {
-                    void *xx = attab->get(n);
+                    void *xx = SymTab::get(attab, n);
                     if (xx == ST_NIL) {
                         Errs()->add_error("remap: ticket not in table.");
                         delete [] nstr;
@@ -185,7 +185,7 @@ cr_writer::create_table(symref_t *p, unsigned int *pcnt, unsigned *preccnt,
         xmod = c->pos_x();
 
         if (abs(tx) >= 64) {
-            SymTabEnt *h = tab->get_ent((unsigned long)tx);
+            SymTabEnt *h = SymTab::get_ent(tab, (unsigned long)tx);
             if (!h)
                 tab->add((unsigned long)tx, 0, false);
             else if (h->stData == 0)
@@ -196,7 +196,7 @@ cr_writer::create_table(symref_t *p, unsigned int *pcnt, unsigned *preccnt,
         ymod = c->pos_y();
 
         if (abs(ty) >= 64) {
-            SymTabEnt *h = tab->get_ent((unsigned long)ty);
+            SymTabEnt *h = SymTab::get_ent(tab, (unsigned long)ty);
             if (!h)
                 tab->add((unsigned long)ty, 0, false);
             else if (h->stData == 0)
@@ -286,7 +286,7 @@ cr_writer::build_list(symref_t *p, SymTab *tab, unsigned int num_values,
             xmod = c->pos_x();
 
             unsigned int indx =
-                (unsigned int)(long)tab->get((unsigned long)tx);
+                (unsigned int)(long)SymTab::get(tab, (unsigned long)tx);
             if (!indx || indx == (unsigned int)(long)ST_NIL)
                 co.tx = tx;
             else {
@@ -297,7 +297,7 @@ cr_writer::build_list(symref_t *p, SymTab *tab, unsigned int num_values,
             int ty = c->pos_y() - ymod;
             ymod = c->pos_y();
 
-            indx = (unsigned int)(long)tab->get((unsigned long)ty);
+            indx = (unsigned int)(long)SymTab::get(tab, (unsigned long)ty);
             if (!indx || indx == (unsigned int)(long)ST_NIL)
                 co.ty = ty;
             else {

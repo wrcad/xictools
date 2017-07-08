@@ -433,7 +433,7 @@ siDaemon::transact()
 
     t = d_msg;
     char *tok = lstring::gettok(&t);
-    DMNfunc func = (DMNfunc)d_ftab->get(tok);
+    DMNfunc func = (DMNfunc)SymTab::get(d_ftab, tok);
     delete [] tok;
     if (func != (DMNfunc)ST_NIL)
         return ((*func)(t));

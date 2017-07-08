@@ -670,7 +670,7 @@ cif_out::queue_layer(const Layer *layer, bool*)
         // is the data item, which is null if not mapped.
 
         const char *lname = 0;
-        SymTabEnt *h = out_layer_name_tab->get_ent(layer->name);
+        SymTabEnt *h = SymTab::get_ent(out_layer_name_tab, layer->name);
         if (!h) {
 #ifdef MAP_LNAMES
             if (strlen(layer->name) > 4) {
@@ -701,7 +701,7 @@ cif_out::queue_layer(const Layer *layer, bool*)
         }
         else if (!h->stData) {
             if (!out_layer_map_tab ||
-                    out_layer_map_tab->get(layer->name) == ST_NIL)
+                    SymTab::get(out_layer_map_tab, layer->name) == ST_NIL)
                 lname = h->stTag;
             else {
                 // oops, collision with a mapped name
@@ -709,7 +709,7 @@ cif_out::queue_layer(const Layer *layer, bool*)
                 for (;;) {
                     sprintf(buf, "L%03d", out_layer_count);
                     out_layer_count++;
-                    if (out_layer_name_tab->get(buf) != ST_NIL)
+                    if (SymTab::get(out_layer_name_tab, buf) != ST_NIL)
                         continue;
                     break;
                 }

@@ -728,7 +728,7 @@ SubcState::order_bterm_bits()
         int n;
         while (ngen.next(&nm, &n)) {
             CDnetName nnm = CDnetex::mk_name(nm->string(), n);
-            if (tab.get((unsigned long)nnm) == ST_NIL)
+            if (SymTab::get(&tab, (unsigned long)nnm) == ST_NIL)
                 tab.add((unsigned long)nnm, 0, false);
             else
                 continue;
@@ -776,7 +776,7 @@ SubcState::order_bterm_bits()
     unsigned int indx = pb->index();
     while (ngen.next(&nm, &n)) {
         CDnetName nnm = CDnetex::mk_name(nm->string(), n);
-        if (tab.get((unsigned long)nnm) == ST_NIL)
+        if (SymTab::get(&tab, (unsigned long)nnm) == ST_NIL)
             tab.add((unsigned long)nnm, 0, false);
         else
             continue;

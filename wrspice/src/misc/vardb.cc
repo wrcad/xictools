@@ -301,9 +301,8 @@ variable::var2wl(int lo, int hi) const
                 next = 0;
             }
 
-        void free()
+        static void destroy(vlist *v)
             {
-                vlist *v = this;
                 while (v) {
                     vlist *vx = v;
                     v = v->next;
@@ -383,7 +382,7 @@ variable::var2wl(int lo, int hi) const
             ww->wl_prev = wend;
         }
     }
-    l0->free();
+    vlist::destroy(l0);
     return (wl0);
 }
 

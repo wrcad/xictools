@@ -95,17 +95,6 @@ sADC::sADC(const char *string)
 
 
 void
-sADC::free()
-{
-    sADC *an;
-    for (sADC *a = this; a; a = an) {
-        an = a->next;
-        delete a;
-    }
-}
-
-
-void
 sADC::set_var(VerilogBlock *blk, double *vars)
 {
     if (indx > 0)
@@ -141,7 +130,7 @@ VerilogBlock::VerilogBlock(sLine *lines)
         }
     }
     if (!d) {
-        adc->free();
+        sADC::destroy(adc);
         adc = 0;
         return;
     }
@@ -183,7 +172,7 @@ VerilogBlock::~VerilogBlock()
 {
     delete desc;
     delete sim;
-    adc->free();
+    sADC::destroy(adc);
 }
 
 

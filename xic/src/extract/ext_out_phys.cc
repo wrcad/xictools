@@ -126,7 +126,7 @@ cExt::dump_phys_recurse(FILE *fp, CDs *topsdesc, CDs *sdesc, int depth,
             CDs *msdesc = mdesc->celldesc();
             if (!msdesc)
                 continue;
-            if (tab->get((unsigned long)msdesc) != ST_NIL)
+            if (SymTab::get(tab, (unsigned long)msdesc) != ST_NIL)
                 continue;
             if (!opts->isset(opt_atom_all)) {
                 cGroupDesc *tgd = msdesc->groups();
@@ -571,10 +571,10 @@ cGroupDesc::print_spice(FILE *fp, CDs *topsdesc, sDumpOpts *opts)
             for (sDevInst *di = p->devs(); di; di = di->next()) {
                 const char *pf = di->desc()->prefix();
                 if (pf) {
-                    SymTabEnt *ent = name_tab->get_ent(pf);
+                    SymTabEnt *ent = SymTab::get_ent(name_tab, pf);
                     if (!ent) {
                         name_tab->add(pf, 0, false);
-                        ent = name_tab->get_ent(pf);
+                        ent = SymTab::get_ent(name_tab, pf);
                     }
                     unsigned long n = (unsigned long)ent->stData;
                     di->set_spindex(n);
@@ -738,7 +738,7 @@ cGroupDesc::print_formatted(FILE *fp, const char *format, sDumpOpts *opts)
     SymTab *format_tab = XM()->GetFormatFuncTab(EX_PNET_FORMAT);
     if (!format_tab)
         return;
-    SIfunc *sf = (SIfunc*)format_tab->get(format);
+    SIfunc *sf = (SIfunc*)SymTab::get(format_tab, format);
     if (!sf || sf == (SIfunc*)ST_NIL) {
         // not found
         return;

@@ -745,7 +745,7 @@ struct chd_intab : public SymTab
 
     cv_in *find(const cCHD *chd)
         {
-            void *p = get((unsigned long)chd);
+            void *p = get_prv((unsigned long)chd);
             if (p == ST_NIL)
                 return (0);
             return ((cv_in*)p);

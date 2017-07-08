@@ -164,7 +164,7 @@ spt_t::readSpatialParameterTable(const char *filename)
         return (false);
     if (!spt_tab)
         spt_tab = new SymTab(false, false);
-    SymTabEnt *h = spt_tab->get_ent(f->keyword());
+    SymTabEnt *h = SymTab::get_ent(spt_tab, f->keyword());
     if (h) {
         delete (spt_t*)h->stData;
         h->stData = f;
@@ -209,7 +209,7 @@ spt_t::newSpatialParameterTable(const char *name, double x0, double dx,
 
     if (!spt_tab)
         spt_tab = new SymTab(false, false);
-    SymTabEnt *h = spt_tab->get_ent(name);
+    SymTabEnt *h = SymTab::get_ent(spt_tab, name);
     if (h) {
         delete (spt_t*)h->stData;
         h->stData = f;
@@ -239,7 +239,7 @@ spt_t::writeSpatialParameterTable(const char *name, const char *fname)
         Errs()->add_error("null or empty file name.");
         return (false);
     }
-    spt_t *f = (spt_t*)spt_tab->get(name);
+    spt_t *f = (spt_t*)SymTab::get(spt_tab, name);
     if (f == (spt_t*)ST_NIL) {
         Errs()->add_error("table %s not found.", name);
         return (false);
@@ -297,7 +297,7 @@ spt_t::clearSpatialParameterTable(const char *name)
 {
     if (spt_tab) {
         if (name) {
-            spt_t *f = (spt_t*)spt_tab->get(name);
+            spt_t *f = (spt_t*)SymTab::get(spt_tab, name);
             if (f != (spt_t*)ST_NIL) {
                 spt_tab->remove(name);
                 delete f;
@@ -331,7 +331,7 @@ spt_t::findSpatialParameterTable(const char *name)
 {
     if (!spt_tab || !name)
         return (0);
-    spt_t *f = (spt_t*)spt_tab->get(name);
+    spt_t *f = (spt_t*)SymTab::get(spt_tab, name);
     if (f == (spt_t*)ST_NIL)
         return (0);
     return (f);
@@ -363,7 +363,7 @@ nametab::findNametab(const char *tabname, bool create)
             return (0);
         name_tab = new SymTab(true, false);
     }
-    SymTab *st = (SymTab*)name_tab->get(tabname);
+    SymTab *st = (SymTab*)SymTab::get(name_tab, tabname);
     if (st == (SymTab*)ST_NIL) {
         if (create) {
             st = new SymTab(true, false);
@@ -381,7 +381,7 @@ nametab::findNametab(const char *tabname, bool create)
 bool
 nametab::removeNametab(const char *tabname)
 {
-    SymTabEnt *h = name_tab->get_ent(tabname);
+    SymTabEnt *h = SymTab::get_ent(name_tab, tabname);
     if (h) {
         delete (SymTab*)h->stData;
         h->stData = 0;
@@ -397,7 +397,7 @@ nametab::removeNametab(const char *tabname)
 stringlist *
 nametab::listNametabs()
 {
-    return (name_tab->names());
+    return (SymTab::names(name_tab));
 }
 
 

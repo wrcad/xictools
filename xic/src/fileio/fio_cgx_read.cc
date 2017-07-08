@@ -1192,8 +1192,8 @@ cgx_in::a_struct(int, int)
             else {
                 void *xx;
                 if (in_over_tab &&
-                        (xx = in_over_tab->get((unsigned long)sd->cellname()))
-                        != ST_NIL) {
+                        (xx = SymTab::get(in_over_tab,
+                            (unsigned long)sd->cellname())) != ST_NIL) {
                     // We already asked about overwriting.
                     if (xx) {
                         // User chose to overwrite the electrical

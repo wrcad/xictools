@@ -534,7 +534,7 @@ public:
         {
             if (!ext_devtmpl_tab || !nm)
                 return (0);
-            stringlist *sl = (stringlist*)ext_devtmpl_tab->get(nm);
+            stringlist *sl = (stringlist*)SymTab::get(ext_devtmpl_tab, nm);
             if (sl == (stringlist*)ST_NIL)
                 return (0);
             return (sl);
@@ -544,7 +544,7 @@ public:
         {
             if (!ext_device_tab || !nm)
                 return (0);
-            sDevDesc *dd = (sDevDesc*)ext_device_tab->get(nm);
+            sDevDesc *dd = (sDevDesc*)SymTab::get(ext_device_tab, nm);
             if (dd == (sDevDesc*)ST_NIL)
                 return (0);
             return (dd);

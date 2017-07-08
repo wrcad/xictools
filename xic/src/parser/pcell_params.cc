@@ -593,7 +593,7 @@ PCellParam::setup(const PCellParam *p0)
     for (PCellParam *p = this; p; p = p->next())
         tab.add(p->name(), p, false);
     for (const PCellParam *q = p0; q; q = q->next()) {
-        PCellParam *p = (PCellParam*)tab.get(q->name());
+        PCellParam *p = (PCellParam*)SymTab::get(&tab, q->name());
         if (p == (PCellParam*)ST_NIL)
             continue;
         p->set(q);
@@ -618,7 +618,7 @@ PCellParam::reset(const PCellParam *p0)
     for (PCellParam *p = this; p; p = p->next())
         tab.add(p->name(), p, false);
     for (const PCellParam *q = p0; q; q = q->next()) {
-        PCellParam *p = (PCellParam*)tab.get(q->name());
+        PCellParam *p = (PCellParam*)SymTab::get(&tab, q->name());
         if (p == (PCellParam*)ST_NIL)
             continue;
         p->set(q);

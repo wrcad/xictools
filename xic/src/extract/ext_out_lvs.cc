@@ -112,7 +112,7 @@ cExt::lvs_recurse(FILE *fp, CDcbin *cbin, int depth, SymTab *tab)
             CDs *msdesc = mdesc->celldesc();
             if (!msdesc)
                 continue;
-            if (tab->get((unsigned long)msdesc) != ST_NIL)
+            if (SymTab::get(tab, (unsigned long)msdesc) != ST_NIL)
                 continue;
             if (EX()->skipExtract(msdesc))
                 continue;
@@ -779,7 +779,7 @@ cGroupDesc::check_stamping_rc(cGroupDesc *topdesc, SymTab *list_tab,
             }
         }
     }
-    di_list *dil = (di_list*)list_tab->get((unsigned long)gd_celldesc);
+    di_list *dil = (di_list*)SymTab::get(list_tab, (unsigned long)gd_celldesc);
     if (dil == (di_list*)ST_NIL)
         return (0);
     for ( ; dil; dil = dil->next) {

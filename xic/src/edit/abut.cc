@@ -109,7 +109,7 @@ cAbutCtrl::handleAbutment()
 
                 sAbutPrior ap2(cd2);
                 ap2.parse(p2->string());  // This won't fail.
-                if (id_tab.get(ap2.id_number()) != ST_NIL) {
+                if (SymTab::get(&id_tab, ap2.id_number()) != ST_NIL) {
                     // We have already updated this pair.
                     continue;
                 }

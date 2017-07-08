@@ -3202,7 +3202,7 @@ misc2_funcs::IFlistUnique(Variable *res, Variable *args, void*)
             SymTab *st = new SymTab(false, false);
             for ( ; s; s = s->next)
                 st->add(s->string, 0, true);
-            s = st->names();
+            s = SymTab::names(st);
             delete st;
             stringlist::destroy((stringlist*)hdl->data);
             hdl->data = s;

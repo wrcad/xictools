@@ -130,7 +130,7 @@ cPCellDb::setPCinstParams(const char *dbname, const PCellParam *prms,
     if (!prms) {
         // Remove dbname from table.
         if (pc_param_tab) {
-            PCellParam *p = (PCellParam*)pc_param_tab->get(dbname);
+            PCellParam *p = (PCellParam*)SymTab::get(pc_param_tab, dbname);
             if (p != (PCellParam*)ST_NIL) {
                 pc_param_tab->remove(dbname);
                 PCellParam::destroy(p);
@@ -145,10 +145,10 @@ cPCellDb::setPCinstParams(const char *dbname, const PCellParam *prms,
 
         if (!pc_script_param_tab)
             pc_script_param_tab = new SymTab(true, false);
-        if (pc_script_param_tab->get(dbname) == ST_NIL) {
+        if (SymTab::get(pc_script_param_tab, dbname) == ST_NIL) {
             PCellParam *px = 0;
             if (pc_param_tab) {
-                PCellParam *p = (PCellParam*)pc_param_tab->get(dbname);
+                PCellParam *p = (PCellParam*)SymTab::get(pc_param_tab, dbname);
                 if (p != (PCellParam*)ST_NIL)
                     px = PCellParam::dup(p);
             }
@@ -158,7 +158,7 @@ cPCellDb::setPCinstParams(const char *dbname, const PCellParam *prms,
 
     if (!pc_param_tab)
         pc_param_tab = new SymTab(true, false);
-    SymTabEnt *ent = pc_param_tab->get_ent(dbname);
+    SymTabEnt *ent = SymTab::get_ent(pc_param_tab, dbname);
     if (ent) {
         PCellParam::destroy((PCellParam*)ent->stData);
         ent->stData = PCellParam::dup(prms);
@@ -184,7 +184,7 @@ cPCellDb::revertPCinstParams()
         SymTabGen gen(pc_script_param_tab, true);
         SymTabEnt *ent;
         while ((ent = gen.next()) != 0) {
-            PCellParam *p = (PCellParam*)pc_param_tab->get(ent->stTag);
+            PCellParam *p = (PCellParam*)SymTab::get(pc_param_tab, ent->stTag);
             if (p != (PCellParam*)ST_NIL) {
                 pc_param_tab->remove(ent->stTag);
                 PCellParam::destroy(p);
@@ -213,7 +213,7 @@ cPCellDb::curPCinstParams(const char *dbname)
 
     if (!pc_param_tab)
         return (0);
-    PCellParam *pm = (PCellParam*)pc_param_tab->get(dbname);
+    PCellParam *pm = (PCellParam*)SymTab::get(pc_param_tab, dbname);
     if (pm == (PCellParam*)ST_NIL)
         return (0);
     return (pm);
@@ -233,7 +233,7 @@ cPCellDb::addSubMaster(const char *libname, const char *cellname,
     char *dbname = PCellDesc::mk_dbname(libname, cellname, viewname);
     if (!pc_master_tab)
         pc_master_tab = new SymTab(false, false);
-    SymTabEnt *ent = pc_master_tab->get_ent(dbname);
+    SymTabEnt *ent = SymTab::get_ent(pc_master_tab, dbname);
     if (!ent) {
         PCellDesc *pd = new PCellDesc(dbname, 0);
         PCellItem *pi = new PCellItem(pm);
@@ -264,7 +264,7 @@ cPCellDb::addSuperMaster(const char *libname, const char *cellname,
     char *dbname = PCellDesc::mk_dbname(libname, cellname, viewname);
     if (!pc_master_tab)
         pc_master_tab = new SymTab(false, false);
-    SymTabEnt *ent = pc_master_tab->get_ent(dbname);
+    SymTabEnt *ent = SymTab::get_ent(pc_master_tab, dbname);
     if (!ent) {
         PCellDesc *pd = new PCellDesc(dbname, PCellParam::dup(defprms));
         pc_master_tab->add(pd->dbname(), pd, false);
@@ -282,7 +282,7 @@ cPCellDb::findSuperMaster(const char *dbname)
 
     if (!pc_master_tab)
         return (0);
-    PCellDesc *pd = (PCellDesc*)pc_master_tab->get(dbname);
+    PCellDesc *pd = (PCellDesc*)SymTab::get(pc_master_tab, dbname);
     if (pd == (PCellDesc*)ST_NIL)
         pd = 0;
     return (pd);
@@ -300,7 +300,7 @@ cPCellDb::getParams(const char *dbname, const char *input, PCellParam **pret)
     *pret = 0;
 
     if (pc_master_tab) {
-        PCellDesc *pd = (PCellDesc*)pc_master_tab->get(dbname);
+        PCellDesc *pd = (PCellDesc*)SymTab::get(pc_master_tab, dbname);
         if (pd != (PCellDesc*)ST_NIL && pd->defaultParams())
             return (parseParams(input, pret, pd->defaultParams()));
     }
@@ -375,7 +375,7 @@ cPCellDb::getDefaultParams(const char *dbname, PCellParam **pret)
     *pret = 0;
 
     if (pc_master_tab) {
-        PCellDesc *pd = (PCellDesc*)pc_master_tab->get(dbname);
+        PCellDesc *pd = (PCellDesc*)SymTab::get(pc_master_tab, dbname);
         if (pd != (PCellDesc*)ST_NIL && pd->defaultParams()) {
             *pret = PCellParam::dup(pd->defaultParams());
             return (true);

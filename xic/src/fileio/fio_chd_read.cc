@@ -294,7 +294,7 @@ sCHDin::map(ticket_t *ptkt)
 {
     if (!ptkt)
         return (false);
-    CDcellName n = (CDcellName)ci_nmtab->get(*ptkt);
+    CDcellName n = (CDcellName)SymTab::get(ci_nmtab, *ptkt);
     if (n == (CDcellName)ST_NIL) {
         Errs()->add_error(
             "read_nametab: name index from instance not in table.");
@@ -324,7 +324,7 @@ sCHDin::read_nametab()
         int64_t off = read_unsigned64();
         if (ci_nogo)
             break;
-        CDcellName s = (CDcellName)ci_nmtab->get(ni);
+        CDcellName s = (CDcellName)SymTab::get(ci_nmtab, ni);
         if (s == (CDcellName)ST_NIL) {
             Errs()->add_error(
                 "read_nametab: name index not in table (%d).", ni);
@@ -448,7 +448,7 @@ sCHDin::read_nametab()
                     cref_t *c;
                     ticket_t ctk = ci_nametab->new_cref(&c);
 
-                    CDcellName n = (CDcellName)ci_nmtab->get(ci);
+                    CDcellName n = (CDcellName)SymTab::get(ci_nmtab, ci);
                     if (n == (CDcellName)ST_NIL) {
                         Errs()->add_error(
                         "read_nametab: name index from instance not in table.");
@@ -469,7 +469,7 @@ sCHDin::read_nametab()
                     if (ci_nogo)
                         break;
                     ticket_t otkt = c->get_tkt();
-                    void *xx = ci_attab->get(otkt);
+                    void *xx = SymTab::get(ci_attab, otkt);
                     if (xx == ST_NIL) {
                         Errs()->add_error(
                             "read_nametab: ticket not in table.");
@@ -602,7 +602,7 @@ sCHDin::read_tables()
         unsigned int n = read_unsigned();
         if (ci_nogo)
             return (false);
-        if (ci_nmtab->get(n) == ST_NIL) {
+        if (SymTab::get(ci_nmtab, n) == ST_NIL) {
             // The names are inserted into the CD string table here.
             const char *nm = CD()->CellNameTableAdd(s)->string();
             ci_nmtab->add(n, nm, false);
@@ -679,7 +679,7 @@ sCHDin::read_tables()
             }
         }
         ticket_t ntkt = CD()->RecordAttr(&at);
-        if (ci_attab->get(otkt) == ST_NIL)
+        if (SymTab::get(ci_attab, otkt) == ST_NIL)
             // save as ntkt+1 to avoid 0
             ci_attab->add((unsigned int)otkt, (void*)(long)(ntkt+1), false);
     }

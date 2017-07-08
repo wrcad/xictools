@@ -178,7 +178,7 @@ struct prpfilt_t
     // Return true if property number n should be considered.
     bool check(int n)
         {
-            if (!pf_tab || pf_tab->get(n) == ST_NIL)
+            if (SymTab::get(pf_tab, n) == ST_NIL)
                 return (pf_skip);
             return (!pf_skip);
         }

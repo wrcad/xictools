@@ -46,8 +46,7 @@ extern int DkerProc(int, double*, double*, int, sDISTOAN*);
 #define DstorAlloc(a, size) a = new double*[size]
 
 
-void
-sDISTOAN::free()
+sDISTOAN::~sDISTOAN()
 {
     for (int i = 0; i < displacement; i++) {
         if (r1H1stor && r1H1stor[i]) delete [] r1H1stor[i];
@@ -616,7 +615,7 @@ DISTOanalysis::anFunc(sCKT *ckt, int restart)
     }
 
 done:
-    job->free();
+    delete job;
     ckt->CKTcurrentAnalysis &= ~(DOING_AC | DOING_DISTO);
     return (error);
 }

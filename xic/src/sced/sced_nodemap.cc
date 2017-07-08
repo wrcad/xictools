@@ -130,7 +130,7 @@ cSced::registerGlobalNetName(const char *nn)
         sc_global_tab = new SymTab(false, false);
         sc_global_tab->set_case_insens(CDnetex::name_tab_case_insens());
     }
-    if (sc_global_tab->get(nn) != ST_NIL)
+    if (SymTab::get(sc_global_tab, nn) != ST_NIL)
         return;
     CDnetName nm = CDnetex::name_tab_add(nn);
     sc_global_tab->add(nm->string(), 0, false);
@@ -154,7 +154,7 @@ cSced::isGlobalNetName(const char *nn)
 
     if (!sc_global_tab)
         return (false);
-    return (sc_global_tab->get(nn) != ST_NIL);
+    return (SymTab::get(sc_global_tab, nn) != ST_NIL);
 }
 
 
@@ -224,7 +224,7 @@ cNodeMap::findNode(CDnetName name)
     refresh();  // makes this function non-const
 
     if (nm_netname_tab) {
-        long n = (long)nm_netname_tab->get((unsigned long)name);
+        long n = (long)SymTab::get(nm_netname_tab, (unsigned long)name);
         if (n >= 0)
             return (n);
     }

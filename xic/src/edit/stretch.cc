@@ -587,10 +587,11 @@ cEdit::doStretchObjList(int ref_x, int ref_y, int map_x, int map_y, bool reins)
                     while (ox && ox != op) {
                         if (ox->odel())
                             tab.add((unsigned long)ox->odel(), 0, false);
-                        if (ox->oadd() &&
-                                tab.get((unsigned long)ox->oadd()) == ST_NIL)
+                        if (ox->oadd() && SymTab::get(&tab,
+                                (unsigned long)ox->oadd()) == ST_NIL) {
                             Selections.insertObject(CurCell(), ox->oadd(),
                                 true);
+                        }
                         ox = ox->next_chg();
                     }
                 }

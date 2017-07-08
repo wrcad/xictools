@@ -250,7 +250,7 @@ CDdiff::diff(const CDs *s1, const CDs *s2, Sdiff **pret)
         CDlgen gen(dmode, CDlgen::BotToTopWithCells);
         CDl *ldesc;
         while ((ldesc = gen.next()) != 0) {
-            if (tab->get(ldesc->name()) != ST_NIL)
+            if (SymTab::get(tab, ldesc->name()) != ST_NIL)
                 continue;
             Ldiff *lf;
             switch (diff_layer(ldesc, s1, s2, &lf)) {
@@ -338,7 +338,7 @@ CDdiff::diff(const CDs *s1, const CDs *s2)
         CDlgen gen(dmode, CDlgen::BotToTopWithCells);
         CDl *ldesc;
         while ((ldesc = gen.next()) != 0) {
-            if (tab->get(ldesc->name()) != ST_NIL)
+            if (SymTab::get(tab, ldesc->name()) != ST_NIL)
                 continue;
             DFtype dft = diff_layer(ldesc, s1, s2);
             if (dft != DFsame) {

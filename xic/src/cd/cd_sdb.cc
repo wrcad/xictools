@@ -68,7 +68,7 @@ cCDsdbDB::saveDB(cSDB *db)
         return (true);
     if (!sdb_table)
         sdb_table = new SymTab(false, false);
-    SymTabEnt *h = sdb_table->get_ent(db->name());
+    SymTabEnt *h = SymTab::get_ent(sdb_table, db->name());
     if (h) {
         if (((cSDB*)h->stData)->owner())
             return (false);
@@ -89,7 +89,7 @@ cCDsdbDB::findDB(const char *name)
 {
     if (!sdb_table || !name)
         return (0);
-    cSDB *db = (cSDB*)sdb_table->get(name);
+    cSDB *db = (cSDB*)SymTab::get(sdb_table, name);
     if (db != (cSDB*)ST_NIL)
         return (db);
     return (0);
@@ -141,7 +141,7 @@ cCDsdbDB::destroyDB(const char *name)
     if (!sdb_table)
         return;
     if (name) {
-        cSDB *db = (cSDB*)sdb_table->get(name);
+        cSDB *db = (cSDB*)SymTab::get(sdb_table, name);
         if (db != (cSDB*)ST_NIL) {
             if (!db->owner()) {
                 sdb_table->remove(name);

@@ -851,7 +851,7 @@ geom1_funcs::IFclearCell(Variable *res, Variable *args, void*)
     CDl *ldesc;
     while ((ldesc = lgen.next()) != 0) {
         if (lt) {
-            void *xx = lt->get((unsigned long)ldesc);
+            void *xx = SymTab::get(lt, (unsigned long)ldesc);
             if ((xx && !notlayers) || (!xx && notlayers))
                 continue;
         }

@@ -291,7 +291,7 @@ namespace {
         }
         stringlist *names = 0;
         if (ftab) {
-            names = ftab->names();
+            names = SymTab::names(ftab);
             stringlist::sort(names);
         }
         int len = stringlist::length(names) + pnet_build_preset(0);
@@ -621,7 +621,7 @@ namespace {
         }
         stringlist *names = 0;
         if (ftab) {
-            names = ftab->names();
+            names = SymTab::names(ftab);
             stringlist::sort(names);
         }
         int len = stringlist::length(names) + enet_build_preset(0);

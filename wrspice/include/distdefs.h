@@ -169,11 +169,9 @@ struct sDISTOAN : public sJOB
             i3H1m2stor = 0;
         }
 
-    ~sDISTOAN() { free(); }
+    ~sDISTOAN();
 
     sJOB *dup() { return (0); }  // XXX fixme
-
-    void free();
 
     double DstartF1;   // the start value of the higher frequency for
                        //  distortion analysis

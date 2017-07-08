@@ -298,9 +298,8 @@ namespace {
                 maxlev = -1;
             }
 
-        void free()
+        static void destroy(ls_t *l)
             {
-                ls_t *l = this;
                 while (l) {
                     ls_t *lx = l;
                     l = l->next;
@@ -478,7 +477,7 @@ CommandTab::com_devls(wordlist *wl)
         }
         list_dev(i, dv);
     }
-    ls0->free();
+    ls_t::destroy(ls0);
 }
 
 

@@ -177,7 +177,7 @@ ant_pathfinder::find_antennae_rc(CDs *sdesc, int depth) throw(int)
                     continue;
                 }
 
-                if (!pf_gate_tab || pf_gate_tab->get(name) == ST_NIL) {
+                if (SymTab::get(pf_gate_tab, name) == ST_NIL) {
 
                     // Ick, have to back up the stack.
                     for (int k = 0; k < depth; k++)
@@ -214,7 +214,7 @@ ant_pathfinder::process(const sDevContactInst *cx)
     while ((h = gen.next()) != 0) {
         for (CDo *od = (CDo*)h->stData; od; od = od->next_odesc()) {
             Zlist *zl = od->toZlist();
-            SymTabEnt *hh = ltab.get_ent((unsigned long)od->ldesc());
+            SymTabEnt *hh = SymTab::get_ent(&ltab, (unsigned long)od->ldesc());
             if (!hh) {
                 ltab.add((unsigned long)od->ldesc(), zl, false);
                 continue;
@@ -566,7 +566,7 @@ ant_pathfinder::recurse_path(cGroupDesc *gdesc, int grp, int depth)
                 // Add gate to the "visited" table if not already there.
                 if (!pf_gate_tab)
                     pf_gate_tab = new SymTab(true, false);
-                if (pf_gate_tab->get(name) == ST_NIL)
+                if (SymTab::get(pf_gate_tab, name) == ST_NIL)
                     pf_gate_tab->add(name, 0, false);
             }
         }
@@ -637,7 +637,7 @@ ant_pathfinder::recurse_gnd_path(cGroupDesc *gdesc, int depth)
             // Add gate to the "visited" table if not already there.
             if (!pf_gate_tab)
                 pf_gate_tab = new SymTab(true, false);
-            if (pf_gate_tab->get(name) == ST_NIL)
+            if (SymTab::get(pf_gate_tab, name) == ST_NIL)
                 pf_gate_tab->add(name, 0, false);
         }
     }
