@@ -749,7 +749,7 @@ RLsolver::find_tile()
 
     for (int i = 0; i < rl_num_contacts; i++) {
         for (Zlist *z = rl_contacts[i].czl; z; z = z->next)
-            yl = Ylist::clip_out(yl, &z->Z);
+            yl = Ylist::clip_out_zoid(yl, &z->Z);
     }
     zl = Ylist::to_zlist(yl);
 

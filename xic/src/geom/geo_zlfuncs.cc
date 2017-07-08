@@ -106,7 +106,7 @@ Zlist::zl_and(Zlist **zp)
     }
     Ylist *yl = new Ylist(zl);
     try {
-        *zp = Ylist::clip_to(yl);
+        *zp = Ylist::clip_to_self(yl);
         return (XIok);
     }
     catch (XIrt ret) {
@@ -135,7 +135,7 @@ Zlist::zl_and(Zlist **zl1p, const Zoid *ZB)
     }
 
     Ylist *y = new Ylist(*zl1p);
-    *zl1p = Ylist::clip_to(y, ZB);
+    *zl1p = Ylist::clip_to_zoid(y, ZB);
     Ylist::destroy(y);
     return (XIok);
 }
@@ -182,7 +182,7 @@ Zlist::zl_and(Zlist **zl1p, Zlist *zl2)
     }
 #endif
     try {
-        *zl1p = yl1->clip_to(yl2);
+        *zl1p = Ylist::clip_to_ylist(yl1, yl2);
         Ylist::destroy(yl1);
         Ylist::destroy(yl2);
         return (XIok);
@@ -226,7 +226,7 @@ Zlist::zl_and(Zlist **zl1p, const Ylist *yl2)
     }
 #endif
     try {
-        *zl1p = Ylist::clip_to(yl1, yl2);
+        *zl1p = Ylist::clip_to_ylist(yl1, yl2);
         Ylist::destroy(yl1);
         return (XIok);
     }
@@ -262,7 +262,7 @@ Zlist::zl_andnot(Zlist **zp)
     }
 #endif
     try {
-        *zp = Ylist::clip_out(yl);
+        *zp = Ylist::clip_out_self(yl);
         Ylist::destroy(yl);
         return (XIok);
     }
@@ -299,7 +299,7 @@ Zlist::zl_andnot(Zlist **zl1p, const Zoid *ZB)
     }
 
     Ylist *y = new Ylist(*zl1p);
-    *zl1p = Ylist::to_zlist(Ylist::clip_out(y, ZB));
+    *zl1p = Ylist::to_zlist(Ylist::clip_out_zoid(y, ZB));
     return (XIok);
 }
 
@@ -331,7 +331,7 @@ Zlist::zl_andnot(Zlist **zl1p, Zlist *zl2)
 
     Ylist *yl = new Ylist(*zl1p);
     if (!zl2->next) {
-        *zl1p = Ylist::to_zlist(Ylist::clip_out(yl, &zl2->Z));
+        *zl1p = Ylist::to_zlist(Ylist::clip_out_zoid(yl, &zl2->Z));
         return (XIok);
     }
 
@@ -349,7 +349,7 @@ Zlist::zl_andnot(Zlist **zl1p, Zlist *zl2)
     }
 #endif
     try {
-        *zl1p = yl->clip_out(yr);
+        *zl1p = Ylist::clip_out_ylist(yl, yr);
         Ylist::destroy(yl);
         Ylist::destroy(yr);
         return (XIok);
@@ -389,7 +389,7 @@ Zlist::zl_andnot(Zlist **zlp, const Ylist *yr)
     }
 #endif
     try {
-        *zlp = yl->clip_out(yr);
+        *zlp = Ylist::clip_out_ylist(yl, yr);
         Ylist::destroy(yl);
         return (XIok);
     }
@@ -431,8 +431,8 @@ Zlist::zl_andnot2(Zlist **zl1p, Zlist **zl2p)
     }
 #endif
     try {
-        *zl2p = yr->clip_out(yl);
-        *zl1p = yl->clip_out(yr);
+        *zl2p = Ylist::clip_out_ylist(yr, yl);
+        *zl1p = Ylist::clip_out_ylist(yl, yr);
         Ylist::destroy(yl);
         Ylist::destroy(yr);
         return (XIok);

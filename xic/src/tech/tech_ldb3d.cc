@@ -771,8 +771,8 @@ Layer3d::cut(const Layer3d *btm)
 
     Zlist *z1, *z2;
     try {
-        z1 = b->clip_to(bb);
-        z2 = b->clip_out(bb);
+        z1 = Ylist::clip_to_ylist(b, bb);
+        z2 = Ylist::clip_out_ylist(b, bb);
     }
     catch (XIrt) {
         return (false);

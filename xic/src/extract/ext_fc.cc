@@ -1307,7 +1307,7 @@ fcLayout::panelize_group_ztop(const glZlistRef3d *z0) const
                         continue;
 
                     if (l->is_insulator()) {
-                        Zlist *zx = Ylist::clip_to(yl, &z2->Z);
+                        Zlist *zx = Ylist::clip_to_zoid(yl, &z2->Z);
                         for (Zlist *zz = zx; zz; zz = zz->next) {
                             if (fcl_domerge) {
                                 grps = sPgrp::add(grps, l->epsrel(),
@@ -1332,7 +1332,7 @@ fcLayout::panelize_group_ztop(const glZlistRef3d *z0) const
                         }
                         Zlist::destroy(zx);
                     }
-                    yl = Ylist::clip_out(yl, &z2->Z);
+                    yl = Ylist::clip_out_zoid(yl, &z2->Z);
                     if (!yl)
                         goto done;
                 }
@@ -2097,7 +2097,7 @@ fcLayout::panelize_dielectric_ztop(const Layer3d *l1) const
                         if (l->is_insulator()) {
                             double dc2 = l->epsrel();
                             if (dc1 != dc2) {
-                                Zlist *zx = Ylist::clip_to(yl, &z2->Z);
+                                Zlist *zx = Ylist::clip_to_zoid(yl, &z2->Z);
                                 for (Zlist *zz = zx; zz; zz = zz->next) {
                                     if (fcl_domerge) {
                                         grps = sPgrp::add(grps, dc2,z1->Z.ztop,
@@ -2122,7 +2122,7 @@ fcLayout::panelize_dielectric_ztop(const Layer3d *l1) const
                                 Zlist::destroy(zx);
                             }
                         }
-                        yl = Ylist::clip_out(yl, &z2->Z);
+                        yl = Ylist::clip_out_zoid(yl, &z2->Z);
                         if (!yl)
                             goto done;
                     }
@@ -2756,11 +2756,11 @@ fcLayout::area_group_ztop(const glZlistRef3d *z0) const
                         continue;
 
                     if (l->is_insulator()) {
-                        Zlist *zx = Ylist::clip_to(yl, &z2->Z);
+                        Zlist *zx = Ylist::clip_to_zoid(yl, &z2->Z);
                         area += Zlist::area(zx);
                         Zlist::destroy(zx);
                     }
-                    yl = Ylist::clip_out(yl, &z2->Z);
+                    yl = Ylist::clip_out_zoid(yl, &z2->Z);
                     if (!yl)
                         goto done;
                 }
@@ -3147,13 +3147,13 @@ fcLayout::area_dielectric_ztop(const Layer3d *l1) const
                         if (l->is_insulator()) {
                             double dc2 = l->epsrel();
                             if (dc1 != dc2) {
-                                Zlist *zx = Ylist::clip_to(yl, &z2->Z);
+                                Zlist *zx = Ylist::clip_to_zoid(yl, &z2->Z);
                                 for (Zlist *zz = zx; zz; zz = zz->next)
                                     area += zz->Z.area();
                                 Zlist::destroy(zx);
                             }
                         }
-                        yl = Ylist::clip_out(yl, &z2->Z);
+                        yl = Ylist::clip_out_zoid(yl, &z2->Z);
                         if (!yl)
                             goto done;
                     }

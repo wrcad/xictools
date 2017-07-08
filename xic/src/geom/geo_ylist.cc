@@ -325,18 +325,22 @@ Ylist::group(Ylist *thisyl, int max_in_grp)
         gcnt++;
 
         int cnt = 1;
-        for (Zlist *z = ze; z; z = z->next) {
-            Zlist *zret;
-            yl0 = yl0->touching(&zret, &z->Z);
-            ze->next = zret;
-            if (!yl0)
-                break;
-            while (ze->next) {
-                ze = ze->next;
-                cnt++;
+        if (yl0) {
+            for (Zlist *z = ze; z; z = z->next) {
+                Zlist *zret;
+                yl0 = yl0->touching(&zret, &z->Z);
+                if (zret) {
+                    while (ze->next) {
+                        ze = ze->next;
+                        cnt++;
+                    }
+                    ze->next = zret;
+                }
+                if (!yl0)
+                    break;
+                if (max_in_grp > 0 && cnt > max_in_grp)
+                    break;
             }
-            if (max_in_grp > 0 && cnt > max_in_grp)
-                break;
         }
     }
     Zgroup *g = new Zgroup;
@@ -377,11 +381,13 @@ Ylist::remove_backg(Ylist *thisyl, const BBox *AOI)
     while (z0) {
         Zlist *zret;
         yl0 = yl0->touching(&zret, &z0->Z);
-        ze->next = zret;
+        if (zret) {
+            while (ze->next)
+                ze = ze->next;
+            ze->next = zret;
+        }
         if (!yl0)
             break;
-        while (ze->next)
-            ze = ze->next;
         Zlist *zx = z0;
         z0 = z0->next;
         delete zx;
@@ -405,14 +411,18 @@ Ylist::connected(Ylist *thisyl, Zlist **zp)
         if (!ze)
             return (0);
         *zp = ze;
-        for (Zlist *z = ze; z; z = z->next) {
-            Zlist *zret;
-            yl0 = yl0->touching(&zret, &z->Z);
-            ze->next = zret;
-            if (!yl0)
-                break;
-            while (ze->next)
-                ze = ze->next;
+        if (yl0) {
+            for (Zlist *z = ze; z; z = z->next) {
+                Zlist *zret;
+                yl0 = yl0->touching(&zret, &z->Z);
+                if (zret) {
+                    while (ze->next)
+                        ze = ze->next;
+                    ze->next = zret;
+                }
+                if (!yl0)
+                    break;
+            }
         }
     }
     return (yl0);
@@ -603,14 +613,18 @@ Ylist::repartition(Ylist *thisyl) throw (XIrt)
                 break;
 
             Zlist *zl = ze;
-            for (Zlist *z = ze; z; z = z->next) {
-                Zlist *zret;
-                yl0 = yl0->touching(&zret, &z->Z);
-                ze->next = zret;
-                while (ze->next)
-                    ze = ze->next;
-                if (!yl0)
-                    break;
+            if (yl0) {
+                for (Zlist *z = ze; z; z = z->next) {
+                    Zlist *zret;
+                    yl0 = yl0->touching(&zret, &z->Z);
+                    if (zret) {
+                        while (ze->next)
+                            ze = ze->next;
+                        ze->next = zret;
+                    }
+                    if (!yl0)
+                        break;
+                }
             }
             if (!zl->next) {
                 zl->next = zl0;
@@ -804,11 +818,11 @@ Ylist::filter_slivers(Ylist *thisyl, int d)
 // Return a list of the intersection areas, 'this' is destroyed.
 // On exception: 'this' is freed.
 //
-// This should be "safe", see note in Ylist::clip_to(Zoid*) below.  No
-// zoid is clipped more than once.
+// This should be "safe", see note in Ylist::clip_to_zoid(Zoid*)
+// below.  No zoid is clipped more than once.
 //
 Zlist *
-Ylist::clip_to(Ylist *thisyl) throw (XIrt)
+Ylist::clip_to_self(Ylist *thisyl) throw (XIrt)
 {
     if (!thisyl)
         return (0);
@@ -826,7 +840,7 @@ Ylist::clip_to(Ylist *thisyl) throw (XIrt)
                 Zlist::destroy(z0);
                 throw (XIintr);
             }
-            Zlist *zret = clip_to(yl0, &zl->Z);
+            Zlist *zret = clip_to_zoid(yl0, &zl->Z);
             delete zl;
             if (zret) {
                 if (!z0)
@@ -852,7 +866,7 @@ Ylist::clip_to(Ylist *thisyl) throw (XIrt)
 // clipped again, etc.  That is not the case here.
 //
 Zlist *
-Ylist::clip_to(const Ylist *thisyl, const Zoid *Z)
+Ylist::clip_to_zoid(const Ylist *thisyl, const Zoid *Z)
 {
     if (!thisyl)
         return (0);
@@ -893,7 +907,7 @@ Ylist::clip_to(const Ylist *thisyl, const Zoid *Z)
 // once.  See note for Ylist::clip_to(Zoid*).
 //
 Zlist *
-Ylist::clip_to(const Ylist *thisyl, const Ylist *yl0) throw (XIrt)
+Ylist::clip_to_ylist(const Ylist *thisyl, const Ylist *yl0) throw (XIrt)
 {
     Ymgr ym(yl0);
     Zlist *z0 = 0, *ze = 0;
@@ -943,7 +957,7 @@ Ylist::clip_to(const Ylist *thisyl, const Ylist *yl0) throw (XIrt)
 // This should be faster than calling scl_clip_out directly.
 //
 Zlist *
-Ylist::clip_out(const Ylist *thisyl) throw (XIrt)
+Ylist::clip_out_self(const Ylist *thisyl) throw (XIrt)
 {
     Zlist *z0 = 0;
     try {
@@ -986,7 +1000,7 @@ Ylist::clip_out(const Ylist *thisyl) throw (XIrt)
                     // More than one zoid, use the scanline clip-out.
                     Ylist *ya = new Ylist(new Zlist(&z->Z));
                     Ylist *yb = new Ylist(zb);
-                    Zlist *zx = to_zlist(ya->scl_clip_out(yb));
+                    Zlist *zx = to_zlist(scl_clip_out_ylist(ya, yb));
                     if (zx) {
                         Zlist *zn = zx;
                         while (zn->next)
@@ -1020,7 +1034,7 @@ Ylist::clip_out(const Ylist *thisyl) throw (XIrt)
 // again, which is dangerous.
 //
 Ylist *
-Ylist::clip_out(Ylist *thisyl, const Zoid *Z)
+Ylist::clip_out_zoid(Ylist *thisyl, const Zoid *Z)
 {
     // This version saves the fragments and reinserts after the
     // clipping pass, so that no fragment is re-clipped.  The
@@ -1091,7 +1105,7 @@ Ylist::clip_out(Ylist *thisyl, const Zoid *Z)
 // all-angles.  Ylists are not touched.
 //
 Zlist *
-Ylist::clip_out(const Ylist *thisyl, const Ylist *yr) throw (XIrt)
+Ylist::clip_out_ylist(const Ylist *thisyl, const Ylist *yr) throw (XIrt)
 {
     Zlist *z0 = 0;
     try {
@@ -1133,7 +1147,7 @@ Ylist::clip_out(const Ylist *thisyl, const Ylist *yr) throw (XIrt)
                 // More than one zoid, use the scanline clip-out.
                 Ylist *ya = new Ylist(new Zlist(&zl1->Z));
                 Ylist *yb = new Ylist(zb);
-                Zlist *zx = to_zlist(ya->scl_clip_out(yb));
+                Zlist *zx = to_zlist(scl_clip_out_ylist(ya, yb));
                 if (zx) {
                     Zlist *zn = zx;
                     while (zn->next)
@@ -1234,7 +1248,7 @@ namespace {
 // scan-line clip-to is much faster.
 //
 Ylist *
-Ylist::scl_clip_to(Ylist *thisyl, Ylist *y) throw (XIrt)
+Ylist::scl_clip_to_ylist(Ylist *thisyl, Ylist *y) throw (XIrt)
 {
     Ylist *y0 = thisyl;
     Ylist *yb = y;
@@ -1349,7 +1363,7 @@ namespace {
 // list is destroyed.
 //
 Ylist *
-Ylist::scl_clip_out(Ylist *thisyl) throw (XIrt)
+Ylist::scl_clip_out_self(Ylist *thisyl) throw (XIrt)
 {
     Ylist *y0 = thisyl;
     if (!y0)
@@ -1495,7 +1509,7 @@ namespace {
 // directly, for performance reasons.
 //
 Ylist *
-Ylist::scl_clip_out(Ylist *thisyl, Ylist *y) throw (XIrt)
+Ylist::scl_clip_out_ylist(Ylist *thisyl, Ylist *y) throw (XIrt)
 {
     Ylist *y0 = thisyl;
     Ylist *yb = y;
@@ -1543,7 +1557,7 @@ Ylist::scl_clip_out(Ylist *thisyl, Ylist *y) throw (XIrt)
 // As above, but also return y - this in *py.
 //
 Ylist *
-Ylist::scl_clip_out2(Ylist *thisyl, Ylist **py) throw (XIrt)
+Ylist::scl_clip_out2_ylist(Ylist *thisyl, Ylist **py) throw (XIrt)
 {
     Ylist *y0 = thisyl;
     Ylist *y1 = *py;
@@ -1632,7 +1646,7 @@ namespace {
 // this and the passed list are destroyed.
 //
 Ylist *
-Ylist::scl_clip_xor(Ylist *thisyl, Ylist *y) throw (XIrt)
+Ylist::scl_clip_xor_ylist(Ylist *thisyl, Ylist *y) throw (XIrt)
 {
     Ylist *y0 = thisyl;
     Ylist *yb = y;

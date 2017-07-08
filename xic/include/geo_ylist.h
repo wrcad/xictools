@@ -49,9 +49,8 @@ struct Ylist
     Ylist(Zlist*, bool = false);
     ~Ylist() { Zlist::destroy(y_zlist); }
 
-    static void destroy(Ylist *thisyl)
+    static void destroy(Ylist *y)
         {
-            Ylist *y = thisyl;
             while (y) {
                 const Ylist *yx = y;
                 y = y->next;
@@ -202,18 +201,18 @@ struct Ylist
     static Ylist *repartition_group(Ylist*) throw (XIrt);
     static bool merge_end_row(Ylist*, Ylist*);
     static Ylist *filter_slivers(Ylist*, int = 0);
-    static Zlist *clip_to(Ylist*) throw (XIrt);
-    static Zlist *clip_to(const Ylist*, const Zoid*);
-    static Zlist *clip_to(const Ylist*, const Ylist*) throw (XIrt);
-    static Zlist *clip_out(const Ylist*) throw (XIrt);
-    static Ylist *clip_out(Ylist*, const Zoid*);
-    static Zlist *clip_out(const Ylist*, const Ylist*) throw (XIrt);
+    static Zlist *clip_to_self(Ylist*) throw (XIrt);
+    static Zlist *clip_to_zoid(const Ylist*, const Zoid*);
+    static Zlist *clip_to_ylist(const Ylist*, const Ylist*) throw (XIrt);
+    static Zlist *clip_out_self(const Ylist*) throw (XIrt);
+    static Ylist *clip_out_zoid(Ylist*, const Zoid*);
+    static Zlist *clip_out_ylist(const Ylist*, const Ylist*) throw (XIrt);
 
-    static Ylist *scl_clip_to(Ylist*, Ylist*) throw (XIrt);
-    static Ylist *scl_clip_out(Ylist*) throw (XIrt);
-    static Ylist *scl_clip_out(Ylist*, Ylist*) throw (XIrt);
-    static Ylist *scl_clip_out2(Ylist*, Ylist**) throw (XIrt);
-    static Ylist *scl_clip_xor(Ylist*, Ylist*) throw (XIrt);
+    static Ylist *scl_clip_to_ylist(Ylist*, Ylist*) throw (XIrt);
+    static Ylist *scl_clip_out_self(Ylist*) throw (XIrt);
+    static Ylist *scl_clip_out_ylist(Ylist*, Ylist*) throw (XIrt);
+    static Ylist *scl_clip_out2_ylist(Ylist*, Ylist**) throw (XIrt);
+    static Ylist *scl_clip_xor_ylist(Ylist*, Ylist*) throw (XIrt);
     static bool debug(Ylist*);
     bool debug_row();
 
