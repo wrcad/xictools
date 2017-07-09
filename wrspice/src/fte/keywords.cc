@@ -116,7 +116,7 @@ CommandTab::com_usrset(wordlist *wl)
             }
             continue;
         }
-        sKW *entry = (sKW*)Sp.Options()->get(wl->wl_word);
+        sKW *entry = (sKW*)sHtab::get(Sp.Options(), wl->wl_word);
         if (entry)
             TTY.printf("%-18s %s %s\n", entry->word,
                 ((variable*)0)->typeString(entry->type), entry->descr);

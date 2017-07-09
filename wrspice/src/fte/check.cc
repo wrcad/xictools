@@ -1167,7 +1167,7 @@ sCHECKprms::setMfilePlotname(const char *fname, const char *tpname)
 {
     if (!ch_plotnames)
         ch_plotnames = new sHtab(false);
-    sHent *ent = ch_plotnames->get_ent(fname);
+    sHent *ent = sHtab::get_ent(ch_plotnames, fname);
     if (ent) {
         delete [] (char*)ent->data();
         ent->set_data(lstring::copy(tpname));
@@ -1185,7 +1185,7 @@ sCHECKprms::mfilePlotname(const char *fname)
 {
     if (!ch_plotnames || !fname)
         return (0);
-    return ((const char*)ch_plotnames->get(fname));
+    return ((const char*)sHtab::get(ch_plotnames, fname));
 }
 
 

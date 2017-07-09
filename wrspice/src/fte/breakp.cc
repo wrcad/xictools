@@ -1213,7 +1213,7 @@ sSaveList::set_used(const char *name, bool used)
 {
     if (!sl_tab)
         return (false);
-    sHent *h = sl_tab->get_ent(name);
+    sHent *h = sHtab::get_ent(sl_tab, name);
     if (!h)
         return (false);
     h->set_data((void*)(long)used);
@@ -1229,7 +1229,7 @@ sSaveList::is_used(const char *name)
 {
     if (!sl_tab)
         return (-1);
-    sHent *h = sl_tab->get_ent(name);
+    sHent *h = sHtab::get_ent(sl_tab, name);
     if (!h)
         return (-1);
     return (h->data() != 0);
@@ -1244,7 +1244,7 @@ sSaveList::add_save(const char *word)
     if (!sl_tab)
         sl_tab = new sHtab(sHtab::get_ciflag(CSE_NODE));
 
-    if (sl_tab->get_ent(word))
+    if (sHtab::get_ent(sl_tab, word))
         return;
     sl_tab->add(word, 0);
 }
@@ -1285,7 +1285,7 @@ void
 sSaveList::purge_non_special()
 {
     if (sl_tab) {
-        wordlist *wl0 = sl_tab->wl();
+        wordlist *wl0 = sHtab::wl(sl_tab);
         for (wordlist *wl = wl0; wl; wl = wl->wl_next) {
             if (*wl->wl_word != Sp.SpecCatchar())
                 sl_tab->remove(wl->wl_word);

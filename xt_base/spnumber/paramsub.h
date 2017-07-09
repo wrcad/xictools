@@ -215,7 +215,7 @@ struct sParamTab
         }
 
     void add_predefs();
-    sParamTab *copy() const;
+    static sParamTab *copy(const sParamTab*);
     static sParamTab *extract_params(sParamTab*, const char*);
     static sParamTab *update(sParamTab*, const sParamTab*);
     void update(const char*);
@@ -226,10 +226,10 @@ struct sParamTab
     void dump() const;
 
     const sParam *get(const char *n) const
-        { return ((const sParam*)pt_table->get(n)); }
+        { return ((const sParam*)sHtab::get(pt_table, n)); }
 
     unsigned int allocated()
-        { return (pt_table->allocated()); }
+        { return (pt_table ? pt_table->allocated() : 0); }
 
     static char *errString; // global error return
 
@@ -260,7 +260,7 @@ struct sMacroMapTab : public sHtab
     const char *get(const char *name, int argc)
         {
             sprintf(mmbuf, "%s:%d", name, argc);
-            return ((const char*)sHtab::get(mmbuf));
+            return ((const char*)sHtab::get(this, mmbuf));
         }
 
 private:

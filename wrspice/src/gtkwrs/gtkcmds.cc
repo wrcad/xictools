@@ -42,7 +42,7 @@
 
 #define STR(x) #x
 #define STRINGIFY(x) STR(x)
-
+#define KWGET(string) (xKWent*)sHtab::get(Sp.Options(), string)
 
 namespace {
     bool get_helppath(char**);
@@ -137,7 +137,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    xKWent *entry = (xKWent*)Sp.Options()->get(kw_numdgt);
+    xKWent *entry = KWGET(kw_numdgt);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(DEF_numdgt, 1.0, 0.0, 0.0, 0);
@@ -149,7 +149,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_units);
+    entry = KWGET(kw_units);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, KW.units(0)->word, cmd_choice_hdlr);
@@ -161,7 +161,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_dpolydegree);
+    entry = KWGET(kw_dpolydegree);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(DEF_dpolydegree, 1.0, 0.0, 0.0, 0);
@@ -173,7 +173,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(spkw_dcoddstep);
+    entry = KWGET(spkw_dcoddstep);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -184,7 +184,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_dollarcmt);
+    entry = KWGET(kw_dollarcmt);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -195,7 +195,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_nopage);
+    entry = KWGET(kw_nopage);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -206,7 +206,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_random);
+    entry = KWGET(kw_random);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -218,7 +218,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_errorlog);
+    entry = KWGET(kw_errorlog);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, "");
@@ -254,7 +254,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_spicepath);
+    entry = KWGET(kw_spicepath);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, Global.ExecProg());
@@ -290,7 +290,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_checkiterate);
+    entry = KWGET(kw_checkiterate);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(DEF_checkiterate, 1.0, 0.0, 0.0, 0);
@@ -303,7 +303,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_mplot_cur);
+    entry = KWGET(kw_mplot_cur);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, "");
@@ -340,7 +340,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_diff_abstol);
+    entry = KWGET(kw_diff_abstol);
     if (entry) {
         dblpr(tbuf, 2, DEF_diff_abstol, true);
         entry->ent = new xEnt(kw_real_func);
@@ -354,7 +354,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_diff_reltol);
+    entry = KWGET(kw_diff_reltol);
     if (entry) {
         dblpr(tbuf, 2, DEF_diff_reltol, true);
         entry->ent = new xEnt(kw_real_func);
@@ -369,7 +369,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_diff_vntol);
+    entry = KWGET(kw_diff_vntol);
     if (entry) {
         dblpr(tbuf, 2, DEF_diff_vntol, true);
         entry->ent = new xEnt(kw_real_func);
@@ -408,7 +408,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_editor);
+    entry = KWGET(kw_editor);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, "xeditor");
@@ -420,7 +420,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_xicpath);
+    entry = KWGET(kw_xicpath);
     if (entry) {
         char *path;
         const char *progname = Global.GfxProgName() && *Global.GfxProgName() ?
@@ -470,7 +470,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_fourgridsize);
+    entry = KWGET(kw_fourgridsize);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(DEF_fourgridsize, 1.0, 0.0, 0.0, 0);
@@ -482,7 +482,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_nfreqs);
+    entry = KWGET(kw_nfreqs);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(DEF_nfreqs, 1.0, 0.0, 0.0, 0);
@@ -500,7 +500,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
 
     entrycount++;
 
-    entry = (xKWent*)Sp.Options()->get(kw_specwindow);
+    entry = KWGET(kw_specwindow);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, kw_hanning, cmd_choice_hdlr);
@@ -511,7 +511,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_specwindoworder);
+    entry = KWGET(kw_specwindoworder);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(DEF_specwindoworder, 1.0, 0.0, 0.0, 0);
@@ -525,7 +525,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
 
     entrycount++;
 
-    entry = (xKWent*)Sp.Options()->get(kw_spectrace);
+    entry = KWGET(kw_spectrace);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -562,7 +562,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_helpinitxpos);
+    entry = KWGET(kw_helpinitxpos);
     if (entry) {
         sprintf(tbuf, "%d", HLP()->get_init_x());
         entry->ent = new xEnt(kw_int_func);
@@ -575,7 +575,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_helpinitypos);
+    entry = KWGET(kw_helpinitypos);
     if (entry) {
         sprintf(tbuf, "%d", HLP()->get_init_y());
         entry->ent = new xEnt(kw_int_func);
@@ -589,7 +589,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_level);
+    entry = KWGET(kw_level);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, KW.level(0)->word, cmd_choice_hdlr);
@@ -601,7 +601,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_helppath);
+    entry = KWGET(kw_helppath);
     if (entry) {
         char *s;
         get_helppath(&s);
@@ -640,7 +640,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_printautowidth);
+    entry = KWGET(kw_printautowidth);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -652,7 +652,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_printnoindex);
+    entry = KWGET(kw_printnoindex);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -662,7 +662,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
     }
-    entry = (xKWent*)Sp.Options()->get(kw_printnoscale);
+    entry = KWGET(kw_printnoscale);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -674,7 +674,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_printnoheader);
+    entry = KWGET(kw_printnoheader);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -684,7 +684,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
     }
-    entry = (xKWent*)Sp.Options()->get(kw_printnopageheader);
+    entry = KWGET(kw_printnopageheader);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -720,7 +720,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_filetype);
+    entry = KWGET(kw_filetype);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, KW.ft(0)->word, cmd_choice_hdlr);
@@ -731,7 +731,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_rawfileprec);
+    entry = KWGET(kw_rawfileprec);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(DEF_rawfileprec, 1.0, 0.0, 0.0, 0);
@@ -744,7 +744,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_nopadding);
+    entry = KWGET(kw_nopadding);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -756,7 +756,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_rawfile);
+    entry = KWGET(kw_rawfile);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry,
@@ -793,7 +793,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_rhost);
+    entry = KWGET(kw_rhost);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, "");
@@ -805,7 +805,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_rprogram);
+    entry = KWGET(kw_rprogram);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, CP.Program());
@@ -815,7 +815,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
     }
-/////
+
     //
     // source
     //
@@ -841,7 +841,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_noprtitle);
+    entry = KWGET(kw_noprtitle);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, 0);
@@ -851,8 +851,6 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
     }
-
-/////
 
     //
     // write
@@ -879,7 +877,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_appendwrite);
+    entry = KWGET(kw_appendwrite);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, 0);

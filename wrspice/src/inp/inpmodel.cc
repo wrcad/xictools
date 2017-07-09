@@ -95,7 +95,7 @@ SPinput::getMod(sLine *curline, sCKT *ckt, const char *name, const char *line,
     if (ip_badmodtab) {
         char *lcname = lstring::copy(name);
         lstring::strtolower(lcname);
-        if (ip_badmodtab->get_ent(lcname)) {
+        if (sHtab::get_ent(ip_badmodtab, lcname)) {
             delete [] lcname;
             return (false);
         }
@@ -175,7 +175,7 @@ SPinput::lookMod(const char *name)
     if (ip_badmodtab) {
         char *lcname = lstring::copy(name);
         lstring::strtolower(lcname);
-        if (ip_badmodtab->get_ent(lcname)) {
+        if (sHtab::get_ent(ip_badmodtab, lcname)) {
             delete [] lcname;
             return (true);
         }
@@ -245,7 +245,7 @@ SPinput::parseMod(sLine *curline)
 
                 if (!ip_modtab)
                     ip_modtab = new sModTab;
-                else if (ip_modtab->get(lcname)) {
+                else if (sHtab::get(ip_modtab, lcname)) {
                     // Uh-oh, a model with this name has already been seen.
                     logError(curline,
                         ".model %s duplicate definition (ignored)", modname);
@@ -273,7 +273,7 @@ SPinput::parseMod(sLine *curline)
 
             if (!ip_modtab)
                 ip_modtab = new sModTab;
-            else if (ip_modtab->get(lcname)) {
+            else if (sHtab::get(ip_modtab, lcname)) {
                 // Uh-oh, a model with this name has already been seen.
                 logError(curline,
                     ".model %s duplicate definition (ignored)", modname);
@@ -341,9 +341,9 @@ SPinput::findMod(const char *name)
     // case insensitive reference
     char *lcname = lstring::copy(name);
     lstring::strtolower(lcname);
-    sINPmodel *mod = (sINPmodel*)ip_modtab->get(lcname);
+    sINPmodel *mod = (sINPmodel*)sHtab::get(ip_modtab, lcname);
     if (!mod)
-        mod = (sINPmodel*)ip_modcache->get(lcname);
+        mod = (sINPmodel*)sHtab::get(ip_modcache, lcname);
     delete [] lcname;
 
     return (mod);
@@ -363,7 +363,7 @@ SPinput::addMod(const char *token, int type, const char *text)
     char *lcname = lstring::copy(token);
     lstring::strtolower(lcname);
 
-    if (ip_modtab->get(lcname)) {
+    if (sHtab::get(ip_modtab, lcname)) {
         delete [] lcname;
         return (OK);
     }

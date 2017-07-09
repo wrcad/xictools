@@ -912,7 +912,7 @@ sPlot::write(sDvList *dl0, bool appendwrite, const char *file)
         // Otherwise loop through again...
     }
 
-    if (newplot.pl_hashtab->empty())
+    if (sHtab::empty(newplot.pl_hashtab))
         GRpkgIf()->ErrPrintf(ET_WARN, "plot is empty, nothing written.\n");
     else
         do_write(file, &newplot, appendwrite);

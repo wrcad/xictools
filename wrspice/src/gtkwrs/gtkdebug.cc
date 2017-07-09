@@ -40,6 +40,8 @@ typedef void ParseNode;
 #include "spparse.h"
 
 
+#define KWGET(string) (xKWent*)sHtab::get(Sp.Options(), string)
+
 namespace {
     void dbg_cancel_proc(GtkWidget*, void*);
     void dbg_help_proc(GtkWidget*, void*);
@@ -95,7 +97,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     int entrycount = 1;
-    xKWent *entry = (xKWent*)Sp.Options()->get(kw_program);
+    xKWent *entry = KWGET(kw_program);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, CP.Program());
@@ -108,7 +110,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_display);
+    entry = KWGET(kw_display);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, CP.Display());
@@ -122,7 +124,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_debug);
+    entry = KWGET(kw_debug);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->mode = KW_NO_CB;
@@ -139,7 +141,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
 
     xKWent *dbent = entry;
 
-    entry = (xKWent*)Sp.Options()->get(kw_async);
+    entry = KWGET(kw_async);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->mode = KW_NO_CB;
@@ -154,7 +156,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_control);
+    entry = KWGET(kw_control);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->mode = KW_NO_CB;
@@ -170,7 +172,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_cshpar);
+    entry = KWGET(kw_cshpar);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->mode = KW_NO_CB;
@@ -185,7 +187,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_eval);
+    entry = KWGET(kw_eval);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->mode = KW_NO_CB;
@@ -200,7 +202,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_ginterface);
+    entry = KWGET(kw_ginterface);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->mode = KW_NO_CB;
@@ -215,7 +217,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_helpsys);
+    entry = KWGET(kw_helpsys);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->mode = KW_NO_CB;
@@ -231,7 +233,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_plot);
+    entry = KWGET(kw_plot);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->mode = KW_NO_CB;
@@ -246,7 +248,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_parser);
+    entry = KWGET(kw_parser);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->mode = KW_NO_CB;
@@ -261,7 +263,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_siminterface);
+    entry = KWGET(kw_siminterface);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->mode = KW_NO_CB;
@@ -276,7 +278,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_vecdb);
+    entry = KWGET(kw_vecdb);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->mode = KW_NO_CB;
@@ -300,7 +302,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_trantrace);
+    entry = KWGET(kw_trantrace);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(0.0, 1.0, 0.0, 0.0, 0);
@@ -312,7 +314,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_term);
+    entry = KWGET(kw_term);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, "");
@@ -324,7 +326,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_dontplot);
+    entry = KWGET(kw_dontplot);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -335,7 +337,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_nosubckt);
+    entry = KWGET(kw_nosubckt);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -346,7 +348,7 @@ GTKtoolbar::PopUpDebugDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_strictnumparse);
+    entry = KWGET(kw_strictnumparse);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);

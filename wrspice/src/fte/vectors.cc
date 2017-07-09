@@ -2216,7 +2216,7 @@ sPlot::get_perm_vec(const char *word) const
         return (0);
     if (!word || !*word)
         return (0);
-    return ((sDataVec*)pl_hashtab->get(word));
+    return ((sDataVec*)sHtab::get(pl_hashtab, word));
 }
 
 
@@ -2227,7 +2227,7 @@ sPlot::list_perm_vecs() const
 {
     if (!pl_hashtab)
         return (0);
-    return (pl_hashtab->wl());
+    return (sHtab::wl(pl_hashtab));
 }
 
 
@@ -2350,7 +2350,7 @@ sPlot::remove_vec(const char *vname)
             }
         }
 
-        wordlist *wl0 = pl_hashtab->wl();
+        wordlist *wl0 = sHtab::wl(pl_hashtab);
         for (wordlist *wl = wl0; wl; wl = wl->wl_next) {
             sDataVec *v = (sDataVec*)pl_hashtab->remove(wl->wl_word);
             delete v;
@@ -2377,7 +2377,7 @@ sPlot::remove_vec(const char *vname)
     pl_hashtab->remove(vname);
     if (pl_scale == v) {
         pl_scale = 0;
-        wordlist *wl0 = pl_hashtab->wl();
+        wordlist *wl0 = sHtab::wl(pl_hashtab);
         if (wl0) {
             pl_scale = get_perm_vec(wl0->wl_word);
             wordlist::destroy(wl0);
@@ -2458,7 +2458,7 @@ sPlot::add_plot()
     Sp.SetCurPlot(pl_typename);
 
     CP.AddKeyword(CT_PLOT, buf);
-    wordlist *wl0 = pl_hashtab->wl();
+    wordlist *wl0 = sHtab::wl(pl_hashtab);
     wordlist *wl = wl0;
     while (wl) {
         CP.AddKeyword(CT_VECTOR, wl->wl_word);
@@ -2476,7 +2476,7 @@ sPlot::add_segment(const sPlot *pl)
 {
     if (!compare(pl))
         return (false);
-    wordlist *wl0 = pl_hashtab->wl();
+    wordlist *wl0 = sHtab::wl(pl_hashtab);
     int slen = -1;
     sDataVec *xs = pl_scale;
     if (xs)
@@ -2542,7 +2542,7 @@ sPlot::run_commands()
 bool
 sPlot::compare(const sPlot *pl)
 {
-    wordlist *wl0 = pl_hashtab->wl();
+    wordlist *wl0 = sHtab::wl(pl_hashtab);
     for (wordlist *wl = wl0; wl; wl = wl->wl_next) {
         sDataVec *d0 = get_perm_vec(wl->wl_word);
         sDataVec *d1 = pl->get_perm_vec(wl->wl_word);

@@ -2365,7 +2365,7 @@ sCKT::find_macro(const char *name, int numargs)
 
     char buf[256];
     sprintf(buf, "%s:%d", name, numargs);
-    return ((IFmacro*)CKTmacroTab->get(buf));
+    return ((IFmacro*)sHtab::get(CKTmacroTab, buf));
 }
 
 
@@ -2528,14 +2528,14 @@ sCKT::checkLVloops()
     for (int i = 0; i <= sz; i++) {
         for (sdlist_t *sd = heads[i]; sd; sd = heads[i]) {
             heads[i] = sd->next;
-            if (!tab->get((const char*)sd->inst->GENname))
+            if (!sHtab::get(tab, (const char*)sd->inst->GENname))
                 tab->add((const char*)sd->inst->GENname, sd->inst);
             delete sd;
         }
     }
     delete [] heads;
 
-    wordlist *wl = tab->wl();
+    wordlist *wl = sHtab::wl(tab);
     delete tab;
 
     // Output a listing of any looped devices.

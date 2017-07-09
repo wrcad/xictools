@@ -162,24 +162,6 @@ struct sLine
             }
         }
 
-    // inpdeck.cc
-    void set_line(const char*); // Set li_line, copied.
-    void append_line(const char*, bool);  // Append to li_line.
-    void fix_line();            // Strip/alter non-ASCII chars.
-    void elide_parens();        // Remove enclosing ( ... ).
-    void set_error(const char*); // Set li_error, copied.
-    sLine *copy();              // Copy the list of lines.
-    void errcat(const char*);   // Cat arg to error message.
-    void errcat_free(char*);    // Cat arg to error message, delete arg.
-
-    // source.cc
-    bool is_ckt();
-    wordlist *get_speccmds();
-    wordlist *get_controls(bool, CBLK_TYPE, bool = false, int* = 0);
-    sLine *extract_verilog();
-    void var_subst();
-    sParamTab *process_conditionals(sParamTab*);
-
     const char *line()          { return (li_line); }
 
     const char *error()         { return (li_error); }
@@ -202,6 +184,24 @@ struct sLine
             delete [] li_line;
             li_line = s;
         }
+
+    // inpdeck.cc
+    static sLine *copy(const sLine*); // Copy the list of lines.
+    void set_line(const char*); // Set li_line, copied.
+    void append_line(const char*, bool);  // Append to li_line.
+    void fix_line();            // Strip/alter non-ASCII chars.
+    void elide_parens();        // Remove enclosing ( ... ).
+    void set_error(const char*); // Set li_error, copied.
+    void errcat(const char*);   // Cat arg to error message.
+    void errcat_free(char*);    // Cat arg to error message, delete arg.
+
+    // source.cc
+    bool is_ckt();
+    wordlist *get_speccmds();
+    wordlist *get_controls(bool, CBLK_TYPE, bool = false, int* = 0);
+    sLine *extract_verilog();
+    void var_subst();
+    sParamTab *process_conditionals(sParamTab*);
 
 private:
     char *li_line;     // Text of the line, after processing.

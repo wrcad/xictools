@@ -28,7 +28,9 @@
 #include "lstring.h"
 
 
+#ifdef WRSPICE
 struct wordlist;
+#endif
 
 #define HTAB_MAX_DENS   5
 #define HTAB_START_MASK 31
@@ -84,11 +86,13 @@ struct sHtab
     void chg_ciflag(bool);
     void add(const char*, void*);
     void *remove(const char*);
-    void *get(const char*) const;
-    sHent *get_ent(const char*) const;
-    void print(const char*) const;
-    wordlist *wl() const;
-    bool empty() const;
+    static void *get(const sHtab*, const char*);
+    static sHent *get_ent(const sHtab*, const char*);
+    static void print(const sHtab*, const char*);
+#ifdef WRSPICE
+    static wordlist *wl(const sHtab*);
+#endif
+    static bool empty(const sHtab*);
     void clear_data(void(*)(void*, void*), void*);
 
     unsigned int allocated() const { return (ht_allocated); }

@@ -56,7 +56,7 @@ CommandTab::FindCommand(const char *cname)
                 ct_cmdtab->add(c->co_comname, c);
         }
     }
-    return ((sCommand*)ct_cmdtab->get(cname));
+    return ((sCommand*)sHtab::get(ct_cmdtab, cname));
 }
 
 

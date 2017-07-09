@@ -115,12 +115,16 @@ sParamTab::add_predefs()
 }
 
 
+// Static function.
+//
 sParamTab *
-sParamTab::copy() const
+sParamTab::copy(const sParamTab *pt)
 {
-    sParamTab *pnew = new sParamTab;
+    if (!pt)
+        return (0);
 
-    sHgen gen(pt_table);
+    sParamTab *pnew = new sParamTab;
+    sHgen gen(pt->pt_table);
     sHent *h;
     while ((h = gen.next()) != 0) {
         sParam *po = (sParam*)h->data();
@@ -231,7 +235,7 @@ sParamTab::extract_params(sParamTab *thispt, const char *str)
         if (is_func(&pname, &al)) {
             sParam *p = 0;
             if (ptab) {
-                p = (sParam*)ptab->pt_table->get(pname);
+                p = (sParam*)sHtab::get(ptab->pt_table, pname);
                 if (p) {
                     delete [] p->sub();
                     p->set_sub(psub);
@@ -250,7 +254,7 @@ sParamTab::extract_params(sParamTab *thispt, const char *str)
         else {
             sParam *p = 0;
             if (ptab) {
-                p = (sParam*)ptab->pt_table->get(pname);
+                p = (sParam*)sHtab::get(ptab->pt_table, pname);
                 if (p) {
                     if (!p->readonly()) {
                         delete [] p->sub();
@@ -293,7 +297,7 @@ sParamTab::update(sParamTab *thispt, const sParamTab *ptab)
         if (!p)
             // impossible
             continue;
-        sParam *q = (sParam*)p0->pt_table->get(p->name());
+        sParam *q = (sParam*)sHtab::get(p0->pt_table, p->name());
         if (q) {
             if (!q->readonly())
                 q->update(p);
@@ -326,7 +330,7 @@ sParamTab::update(const char *str)
             break;
         sArgList *al;
         if (is_func(&pname, &al)) {
-            sParam *p = (sParam*)pt_table->get(pname);
+            sParam *p = (sParam*)sHtab::get(pt_table, pname);
             if (p && !p->readonly()) {
                 delete [] p->sub();
                 p->set_sub(psub);
@@ -339,7 +343,7 @@ sParamTab::update(const char *str)
             delete [] pname;
         }
         else {
-            sParam *p = (sParam*)pt_table->get(pname);
+            sParam *p = (sParam*)sHtab::get(pt_table, pname);
             if (!p) {
                 p = new sParam(pname, psub);
                 pt_table->add(p->name(), p);
@@ -561,7 +565,7 @@ sParamTab::defn_subst(const sParamTab *thispt, char **str, PTmode mode,
             // along.  This is so constructs like "x=1 y=1 z='x+y'"
             // will work.
 
-            sParam *p = (sParam*)tmp_tab->pt_table->get(pname);
+            sParam *p = (sParam*)sHtab::get(tmp_tab->pt_table, pname);
             if (p) {
                 if (!p->readonly()) {
                     delete [] p->sub();
@@ -633,7 +637,7 @@ sParamTab::line_subst(char **str) const
                 if (*tok == '\'')
                     squote_subst(&tok);
                 else {
-                    if (pt_rctab->get(tok)) {
+                    if (sHtab::get(pt_rctab, tok)) {
                         // Uh-oh, we're already subbing this token,
                         // there is a recursive loop.
                         delete [] errString;
@@ -845,7 +849,7 @@ sParamTab::subst(char **tok) const
 {
     sParam *p = (sParam*)get(*tok);
     if (p) {
-        if (pt_rctab->get(*tok) != 0) {
+        if (sHtab::get(pt_rctab, *tok) != 0) {
             // Uh-oh, we're already subbing this token, there is a
             // recursive loop.
             delete [] errString;

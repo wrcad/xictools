@@ -385,11 +385,11 @@ CommandTab::com_codeblock(wordlist *wl)
         }
 
         wordlist *ww, *wn;
-        ww = wn = CS.block_tab()->wl();
+        ww = wn = sHtab::wl(CS.block_tab());
         while (ww) {
             TTY.printf("%s", ww->wl_word);
             if (print || remove)
-                b = (block*)CS.block_tab()->get(ww->wl_word);
+                b = (block*)sHtab::get(CS.block_tab(), ww->wl_word);
             if (print) {
                 TTY.send(":\n");
                 for (sControl *c = b->control(); c; c = c->next())
@@ -414,7 +414,7 @@ CommandTab::com_codeblock(wordlist *wl)
         add = true;
 
     if (print && !add) {
-        b = (block*)CS.block_tab()->get(fname);
+        b = (block*)sHtab::get(CS.block_tab(), fname);
         if (!b) {
             GRpkgIf()->ErrPrintf(ET_ERROR, "codeblock %s not found.\n",
                 fname);
@@ -439,7 +439,7 @@ CommandTab::com_codeblock(wordlist *wl)
                 fname);
     }
     if (print && add) {
-        b = (block*)CS.block_tab()->get(fname);
+        b = (block*)sHtab::get(CS.block_tab(), fname);
         if (!b) {
             GRpkgIf()->ErrPrintf(ET_ERROR, "codeblock %s not found.\n",
                 fname);
@@ -496,7 +496,7 @@ CshPar::ExecBlock(const char *name)
     CS.push_stack();
     if (name) {
         if (CS.block_tab())
-            b = (block*)CS.block_tab()->get(name);
+            b = (block*)sHtab::get(CS.block_tab(), name);
         if (!b) {
             GRpkgIf()->ErrPrintf(ET_ERROR, "named block %s not found.\n",
                 name);
@@ -522,7 +522,7 @@ CshPar::ExecBlock(const char *name)
 void
 CshPar::PrintBlock(const char *name, FILE *fp)
 {
-    block *b = (block*)CS.block_tab()->get(name);
+    block *b = (block*)sHtab::get(CS.block_tab(), name);
     if (b) {
         for (sControl *c = b->control(); c; c = c->next())
             c->dodump(fp);
@@ -536,7 +536,7 @@ bool
 CshPar::IsBlockDef(const char *name)
 {
 
-    if (CS.block_tab()->get(name))
+    if (sHtab::get(CS.block_tab(), name))
         return (true);
     return (false);
 }
@@ -549,7 +549,7 @@ CshPar::FreeBlock(const char *name)
 {
     if (!name || *name == '\0')
         return;
-    block *b = (block*)CS.block_tab()->get(name);
+    block *b = (block*)sHtab::get(CS.block_tab(), name);
     if (b) {
         delete b;
         CS.block_tab()->remove(name);
@@ -837,7 +837,7 @@ CshPar::DoCommand(wordlist *wlist)
             // First check the named blocks
             block *b = 0;
             if (CS.block_tab())
-                b = (block*)CS.block_tab()->get(wlist->wl_word);
+                b = (block*)sHtab::get(CS.block_tab(), wlist->wl_word);
             if (b) {
                 if (b->control()) {
                     PushArg(wlist);
@@ -949,7 +949,7 @@ ControlStack::add_block(const char *name)
 
     if (cs_block_tab == 0)
         cs_block_tab = new sHtab(sHtab::get_ciflag(CSE_CBLK));
-    block *b = (block*)cs_block_tab->get(name);
+    block *b = (block*)sHtab::get(cs_block_tab, name);
     if (!b) {
         b = new block(name);
         cs_block_tab->add(name, b);

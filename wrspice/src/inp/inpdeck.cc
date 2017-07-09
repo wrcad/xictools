@@ -234,6 +234,30 @@ SPinput::findDev(const char *line)
 // End of SOinput functions.
 
 
+// Static function.
+// Copy a deck, including the actual lines.
+//
+sLine *
+sLine::copy(const sLine *deck)
+{
+    sLine *d = 0, *nd = 0;
+    while (deck) {
+        if (nd) {
+            d->li_next = new sLine;
+            d = d->li_next;
+        }
+        else
+            nd = d = new sLine;
+        d->li_linenum = deck->li_linenum;
+        d->li_line = lstring::copy(deck->li_line);
+        d->li_error = lstring::copy(deck->li_error);
+        d->li_actual = copy(deck->li_actual);
+        deck = deck->li_next;
+    }
+    return (nd);
+}
+
+
 void
 sLine::set_line(const char *t)
 {
@@ -324,30 +348,6 @@ sLine::set_error(const char *t)
     char *s = lstring::copy(t);
     delete [] li_error;
     li_error = s;
-}
-
-
-// Copy a deck, including the actual lines.
-//
-sLine *
-sLine::copy()
-{
-    sLine *d = 0, *nd = 0;
-    sLine *deck = this;
-    while (deck) {
-        if (nd) {
-            d->li_next = new sLine;
-            d = d->li_next;
-        }
-        else
-            nd = d = new sLine;
-        d->li_linenum = deck->li_linenum;
-        d->li_line = lstring::copy(deck->li_line);
-        d->li_error = lstring::copy(deck->li_error);
-        d->li_actual = deck->li_actual->copy();
-        deck = deck->li_next;
-    }
-    return (nd);
 }
 
 

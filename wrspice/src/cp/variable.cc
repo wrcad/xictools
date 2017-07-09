@@ -908,7 +908,7 @@ CshPar::RawVarGet(const char *name)
                 break;
         }
         if (*t) {
-            if (Sp.Options()->get(name)) {
+            if (sHtab::get(Sp.Options(), name)) {
                 // The variable name matches an option name.  This may be
                 // in the database as lower-case.
                 char *tname = lstring::copy(name);

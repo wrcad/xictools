@@ -904,7 +904,7 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
 #ifdef TIME_DEBUG
     double tstart = OP.seconds();
 #endif
-    sLine *realdeck = deck->copy();
+    sLine *realdeck = sLine::copy(deck);
 
     sFtCirc *oldckt = ft_curckt;
 
@@ -2740,7 +2740,7 @@ sLibMap::find(const char *file, const char *name)
     delete [] path;
 
     sHtab *h = 0;
-    sHent *ent = lib_tab->get_ent(fullpath);
+    sHent *ent = sHtab::get_ent(lib_tab, fullpath);
     if (!ent) {
         FILE *fp = fopen(file, "r");
         if (!fp) {
@@ -2755,7 +2755,7 @@ sLibMap::find(const char *file, const char *name)
         h = (sHtab*)ent->data();
 
     delete [] fullpath;
-    ent = h->get_ent(name);
+    ent = sHtab::get_ent(h, name);
     if (!ent)
         return (LM_NO_NAME);
     return ((long)ent->data());

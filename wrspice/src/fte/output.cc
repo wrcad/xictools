@@ -503,8 +503,8 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
             char *nm = name_tok(h->name());
             if (!nm)
                 continue;
-            int j = (unsigned long)dataNameTab.get(nm);
-            if (j && !outTab.get(nm))  {
+            int j = (unsigned long)sHtab::get(&dataNameTab, nm);
+            if (j && !sHtab::get(&outTab, nm))  {
                 j--;
                 run->addDataDesc((char*)outd->dataNames[j], outd->dataType, j);
                 outTab.add(nm, (void*)(long)(j+1));
@@ -525,7 +525,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
                 delete [] nm;
                 continue;
             }
-            if (!outTab.get(nm)) {
+            if (!sHtab::get(&outTab, nm)) {
                 run->addDataDesc((char*)outd->dataNames[j], outd->dataType, j);
                 outTab.add(nm, (void*)(long)(j+1));
             }
@@ -561,10 +561,10 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
                 }
                 if (usevec) {
                     char *nm = name_tok(depbuf);
-                    int j = (long)outTab.get(nm);
+                    int j = (long)sHtab::get(&outTab, nm);
                     if (j == 0) {
                         // Better add it.
-                        j = (unsigned long)dataNameTab.get(nm);
+                        j = (unsigned long)sHtab::get(&dataNameTab, nm);
                         if (j == 0) {
                             sDataVec *d = Sp.VecGet(depbuf, ckt);
                             if (d) {
@@ -623,7 +623,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
                     delete [] nm;
                     continue;
                 }
-                if (!outTab.get(nm)) {
+                if (!sHtab::get(&outTab, nm)) {
                     run->addDataDesc((char*)outd->dataNames[j],
                         outd->dataType, j);
                     outTab.add(nm, (void*)(long)(j+1));

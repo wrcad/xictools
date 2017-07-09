@@ -193,7 +193,7 @@ namespace {
             for (sFunc *f = ft_funcs;  f->name(); f++)
                 funcname_tab->add(f->name(), f);
         }
-        return ((sFunc*)funcname_tab->get(name));
+        return ((sFunc*)sHtab::get(funcname_tab, name));
     }
 
 

@@ -75,7 +75,7 @@ struct variable
     void set_reference(const char*);
 
     const char *typeString(int) const;
-    variable *copy() const;
+    static variable *copy(const variable*);
     wordlist *varwl() const;
     wordlist *var2wl(int, int) const;
 

@@ -56,7 +56,7 @@ IFdevice::findInstanceParm(const char *pname, int mask)
         }
     }
     if (dv_instTab) {
-        IFparm *prm = (IFparm*)dv_instTab->get(pname);
+        IFparm *prm = (IFparm*)sHtab::get(dv_instTab, pname);
         if (prm && (prm->dataType & mask))
             return (prm);
         return (0);
@@ -90,7 +90,7 @@ IFdevice::findModelParm(const char *pname, int mask)
         }
     }
     if (dv_modlTab) {
-        IFparm *prm = (IFparm*)dv_modlTab->get(pname);
+        IFparm *prm = (IFparm*)sHtab::get(dv_modlTab, pname);
         if (prm && (prm->dataType & mask))
             return (prm);
         return (0);

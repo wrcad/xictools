@@ -150,19 +150,19 @@ CshPar::UnixCom(wordlist *wl)
         ret = ShellExec(name, argv);
     else {
         char buf[BSIZE_SP];
-        char *path = (char*)hashtabp->get(name);
+        char *path = (char*)sHtab::get(hashtabp, name);
         if (path) {
             sprintf(buf, "%s/%s", path, name);
             ret = ShellExec(buf, argv);
         }
         else {
-            path = (char*)hashtabc->get(name);
+            path = (char*)sHtab::get(hashtabc, name);
             if (path) {
                 sprintf(buf, "%s", name);
                 ret = ShellExec(buf, argv);
             }
             else {
-                path = (char*)hashtabs->get(name);
+                path = (char*)sHtab::get(hashtabs, name);
                 if (path) {
                     sprintf(buf, "%s/%s", path, name);
                     ret = ShellExec(buf, argv);
@@ -184,9 +184,9 @@ CshPar::UnixCom(wordlist *wl)
 void
 CshPar::HashStat()
 {
-    hashtabp->print("i = %d, name = %s, path = %s\n");
-    hashtabc->print("i = %d, name = %s, path = %s\n");
-    hashtabs->print("i = %d, name = %s, path = %s\n");
+    sHtab::print(hashtabp, "i = %d, name = %s, path = %s\n");
+    sHtab::print(hashtabc, "i = %d, name = %s, path = %s\n");
+    sHtab::print(hashtabs, "i = %d, name = %s, path = %s\n");
 }
 
 
@@ -195,10 +195,11 @@ namespace {
     //
     void upd_hash(bool docc)
     {
-        wordlist *wl0 = (wordlist*)hashtabc->wl();
+        wordlist *wl0 = sHtab::wl(hashtabc);
         wordlist *wl = wl0;
         while (wl) {
-            if (!hashtabp->get(wl->wl_word) && !hashtabs->get(wl->wl_word))
+            if (!sHtab::get(hashtabp, wl->wl_word) &&
+                    !sHtab::get(hashtabs, wl->wl_word))
                 CP.RemKeyword(CT_COMMANDS, wl->wl_word);
             wl = wl->wl_next;
         }

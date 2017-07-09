@@ -365,10 +365,14 @@ struct IFparseNode
 
     ~IFparseNode();
 
-    IFparseNode *copy(bool = false);
-    bool check();
-    bool check_macro();
-    bool is_const();
+    static IFparseNode *copy(IFparseNode *p, bool skip_nd = false)
+        {
+            return (p ? p->copy_prv(skip_nd) : 0);
+        }
+
+    static bool check(const IFparseNode*);
+    static bool check_macro(const IFparseNode*);
+    static bool is_const(const IFparseNode*);
     void collapse(IFparseNode**);
     void set_args(const char*);
     double time_limit(sCKT*, double);
@@ -395,6 +399,7 @@ private:
     int p_macro(double*, const double*, const double*);
     int p_macro_deriv(double*, const double*, const double*);
 
+    IFparseNode *copy_prv(bool = false);
     void p_init_node(double, double);
     void p_init_func(double, double, bool = false);
 

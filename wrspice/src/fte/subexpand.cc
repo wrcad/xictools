@@ -97,8 +97,9 @@ struct sSubc
     sSubc(sLine*);
     ~sSubc();
 
+    static sSubc *copy(const sSubc*);
+
     void check_args(const char*, int);
-    sSubc *copy();
 
     const char *su_name;    // The name.
     const char *su_args;    // The arguments, space seperated.
@@ -115,7 +116,7 @@ struct sSubcTab : public sHtab
     sSubcTab() : sHtab(true) { }
     ~sSubcTab();
 
-    sSubcTab *copy();
+    static sSubcTab *copy(const sSubcTab*);
 };
 
 // List link for model name translations.
@@ -188,7 +189,7 @@ struct sScGlobal
         {
             if (!sg_glob_tab || !tok)
                 return (false);
-            return (sg_glob_tab->get(tok) != 0);
+            return (sHtab::get(sg_glob_tab, tok) != 0);
         }
 
     const char *gettrans(const char *name, sTabc *table)
@@ -340,7 +341,7 @@ sScGlobal::init(sFtCirc *circ)
             IP.advTok(&s, true);
             char *tok;
             while ((tok = IP.getTok(&s, true)) != 0) {
-                if (sg_glob_tab->get(tok) == 0)
+                if (sHtab::get(sg_glob_tab, tok) == 0)
                     sg_glob_tab->add(tok, (void*)1L);
                 delete [] tok;
             }
@@ -368,7 +369,7 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
                 "can't find cache block named %s.\n", cache_name);
             return (0);
         }
-        sg_stack[sg_stack_ptr].subs = blk->cb_subs->copy();
+        sg_stack[sg_stack_ptr].subs = sSubcTab::copy(blk->cb_subs);
         *parm_ptr = sParamTab::update(*parm_ptr, blk->cb_prms);
         IP.setModCache(blk->cb_mods);
 
@@ -480,7 +481,7 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
 
         // Now we have to replace this card with the macro definition.
         //
-        sLine *lcc = sss->su_body->copy();
+        sLine *lcc = sLine::copy(sss->su_body);
 
         sParamTab *ptab = 0;
         if (SPcx.parhier() == ParHierGlobal) {
@@ -789,11 +790,11 @@ sScGlobal::findsub(const char *subname, int ix)
 {
     if (ix < 0) {
         if (sg_stack_ptr >= 0)
-            return ((sSubc*)sg_stack[sg_stack_ptr].subs->get(subname));
+            return ((sSubc*)sHtab::get(sg_stack[sg_stack_ptr].subs, subname));
         return (0);
     }
     for (int j = ix; j >= 0; j--) {
-        sSubc *sss = (sSubc*)sg_stack[j].subs->get(subname);
+        sSubc *sss = (sSubc*)sHtab::get(sg_stack[j].subs, subname);
         if (sss)
             return (sss);
     }
@@ -2192,15 +2193,18 @@ sSubc::~sSubc()
 }
 
 
+// Static function.
 sSubc *
-sSubc::copy()
+sSubc::copy(const sSubc *su)
 {
+    if (!su)
+        return (0);
     sSubc *ns = new sSubc;
-    ns->su_name = lstring::copy(su_name);
-    ns->su_args = lstring::copy(su_args);
-    ns->su_numargs = su_numargs;
-    ns->su_params = su_params->copy();
-    ns->su_body = su_body->copy();
+    ns->su_name = lstring::copy(su->su_name);
+    ns->su_args = lstring::copy(su->su_args);
+    ns->su_numargs = su->su_numargs;
+    ns->su_params = sParamTab::copy(su->su_params);
+    ns->su_body = sLine::copy(su->su_body);
     return (ns);
 }
 
@@ -2274,15 +2278,18 @@ sSubcTab::~sSubcTab()
 }
 
 
+// Static function.
 sSubcTab *
-sSubcTab::copy()
+sSubcTab::copy(const sSubcTab *sct)
 {
-    sSubcTab *tab = new sSubcTab;
+    if (!sct)
+        return (0);
 
-    sHgen gen(this);
+    sSubcTab *tab = new sSubcTab;
+    sHgen gen(sct);
     sHent *h;
     while ((h = gen.next()) != 0) {
-        sSubc *sss = ((sSubc*)h->data())->copy();
+        sSubc *sss = sSubc::copy((sSubc*)h->data());
         tab->add(h->name(), sss);
     }
     return (tab);
@@ -2333,7 +2340,7 @@ sCblkTab::dump_wl(const char *tag)
 
     char buf[128];
     if (tag) {
-        sCblk *blk = (sCblk*)get(tag);
+        sCblk *blk = (sCblk*)get(this, tag);
         if (!blk)
             return (0);
         sprintf(buf, "TAG:  %s", tag);
@@ -2366,7 +2373,7 @@ sCblkTab::dump_wl(const char *tag)
 bool
 sSPcache::inCache(const char *cname)
 {
-    return (cache_tab->get(cname) != 0);
+    return (sHtab::get(cache_tab, cname) != 0);
 }
 
 
@@ -2375,7 +2382,7 @@ sSPcache::inCache(const char *cname)
 wordlist *
 sSPcache::listCache()
 {
-    return (cache_tab->wl());
+    return (sHtab::wl(cache_tab));
 }
 
 
@@ -2418,7 +2425,7 @@ void
 sSPcache::add(const char *name, sSubcTab *subs, const sParamTab *ptab,
     sModTab *new_tab, const cUdf *udfdb)
 {
-    sCblk *b = new sCblk(subs, ptab->copy(), new_tab, udfdb->copy());
+    sCblk *b = new sCblk(subs, sParamTab::copy(ptab), new_tab, udfdb->copy());
     if (!cache_tab)
         cache_tab = new sCblkTab;
     cache_tab->add(name, b);
@@ -2428,7 +2435,7 @@ sSPcache::add(const char *name, sSubcTab *subs, const sParamTab *ptab,
 sCblk *
 sSPcache::get(const char *name)
 {
-    return ((sCblk*)cache_tab->get(name));
+    return ((sCblk*)sHtab::get(cache_tab, name));
 }
 // End of sSPcache functions.
 

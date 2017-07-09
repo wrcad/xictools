@@ -95,8 +95,8 @@ sArgMap::find(const char *name)
             return (0);
         if (!strcmp(n, name)) {
             if (p->type() == PT_COMMA)
-                return (p->left()->copy());
-            return (p->copy());
+                return (IFparseNode::copy(p->left()));
+            return (IFparseNode::copy(p));
         }
         while (*n)
             n++;
@@ -152,7 +152,8 @@ namespace {
         *t = 0;
         if (t - buf < 2)
             return (0);
-        IFparseNode::PTtfunc *tf = (IFparseNode::PTtfunc*)tran_tab->get(buf);
+        IFparseNode::PTtfunc *tf =
+            (IFparseNode::PTtfunc*)sHtab::get(tran_tab, buf);
         if (tf) {
             *pstr = s;
             return (tf->name);
@@ -544,7 +545,7 @@ IFparseTree::getTree(const char **expstr, sCKT *ckt, const char *xalias,
 
     P.init(t, tree);
     IFparseNode *p = P.parse();
-    if (!p || tree->pt_error || (ckt && !macro && !p->check())) {
+    if (!p || tree->pt_error || (ckt && !macro && !IFparseNode::check(p))) {
         delete tree;
         delete [] tbf;
         return (0);
@@ -605,7 +606,7 @@ IFparseTree::treeParse(const char **expstr)
     P.init(t, this);
 
     IFparseNode *p = P.parse();
-    if (!p || pt_error || (pt_ckt && !pt_macro && !p->check())) {
+    if (!p || pt_error || (pt_ckt && !pt_macro && !IFparseNode::check(p))) {
         pt_error = false;
         delete [] tbf;
         return (0);
@@ -633,7 +634,7 @@ IFparseTree::differentiate()
             IFparseNode *pd = differentiate(pt_tree, i);
             if (pd) {
                 pd->collapse(&pd);
-                pt_derivs[i] = pd->copy(true);
+                pt_derivs[i] = IFparseNode::copy(pd, true);
             }
             else {
                 pt_derivs[i] = p_mkcon(0.0);
@@ -653,7 +654,7 @@ IFparseTree::differentiate()
 bool
 IFparseTree::isConst()
 {
-    return (pt_tree->is_const());
+    return (IFparseNode::is_const(pt_tree));
 }
 
 
@@ -827,10 +828,11 @@ IFparseTree::initTran(double step, double finaltime)
 {
     for (int i = 0; i < pt_num_vars; i++) {
         // pass 0, no breakpoint setting on derivs
-        if (pt_derivs)
+        if (pt_derivs && pt_derivs[i])
             pt_derivs[i]->p_init_node(step, finaltime);
     }
-    pt_tree->p_init_node(step, finaltime);
+    if (pt_tree)
+        pt_tree->p_init_node(step, finaltime);
     return (OK);
 }
 
@@ -838,7 +840,7 @@ IFparseTree::initTran(double step, double finaltime)
 double
 IFparseTree::timeLim(double lim)
 {
-    return (pt_tree->time_limit(pt_ckt, lim));
+    return (pt_tree ? pt_tree->time_limit(pt_ckt, lim) : lim);
 }
 
 
@@ -1192,7 +1194,8 @@ IFparseTree::differentiate(IFparseNode *p, int varnum)
                 }
                 if (!r)
                     break;
-                IFparseNode *ad = differentiate(r, varnum)->copy(true);
+                IFparseNode *ad = IFparseNode::copy(differentiate(r, varnum),
+                    true);
                 if (!ad) {
                     Errs()->add_error(
                         "macro %s argument %d differentiation failed",
@@ -1358,7 +1361,7 @@ IFparseTree::newSnode(const char *string)
     if (lstring::cieq(string, "x")) {
         // This is the "xalias" variable (if any).
         if (xtree())
-            return (xtree()->copy());
+            return (IFparseNode::copy(xtree()));
     }
 
     if (pt_argmap) {
@@ -1579,7 +1582,7 @@ IFparseTree::newFnode(const char *string, IFparseNode *arg)
     if (IFparseNode::PTfuncs[i].name) {
         if (IFparseNode::PTfuncs[i].number == PTF_DERIV) {
             // derivative wrt "x"
-            p = differentiate(arg, -1)->copy(true);
+            p = IFparseNode::copy(differentiate(arg, -1), true);
             return (p);
         }
         p = newNode();
@@ -1838,7 +1841,7 @@ IFparseTree::p_mktrand(IFparseNode *p, int varnum)
     case PTF_tINTERP:
         if (varnum < 0 && !pt_num_xvars) {
             // time derivative (only)
-            IFparseNode *np = p->copy();
+            IFparseNode *np = IFparseNode::copy(p);
             np->p_newderiv = true;
             if (p->p_valindx == PTF_tPULSE)
                 np->p_func = &IFparseNode::PTtPulseD;
@@ -1864,20 +1867,20 @@ IFparseTree::p_mktrand(IFparseNode *p, int varnum)
 
     case PTF_tPWL:
         if (varnum < 0 && !pt_num_xvars) {
-            IFparseNode *np = p->copy();
+            IFparseNode *np = IFparseNode::copy(p);
             np->p_newderiv = true;
             np->p_func = &IFparseNode::PTtPwlD;
             return (np);
         }
         if (pt_num_xvars) {
             if (varnum == 0) {
-                IFparseNode *np = p->copy();
+                IFparseNode *np = IFparseNode::copy(p);
                 np->p_newderiv = true;
                 np->p_func = &IFparseNode::PTtPwlD;
                 return (np);
             }
             else if (varnum == 1 && pt_num_xvars == 2) {
-                IFparseNode *np = p->copy();
+                IFparseNode *np = IFparseNode::copy(p);
                 np->p_newderiv = true;
                 np->p_func = &IFparseNode::PTtPwlD;
                 np = p_mkb(PT_TIMES, p_mkcon(-1.0), np);
@@ -1890,7 +1893,7 @@ IFparseTree::p_mktrand(IFparseNode *p, int varnum)
         {
             IFparseNode *arg = differentiate(p->p_left, varnum);
             if (arg) {
-                IFparseNode *dv = p->copy();
+                IFparseNode *dv = IFparseNode::copy(p);
                 dv->p_newderiv = true;
                 dv->p_func = &IFparseNode::PTtTableD;
                 return (p_mkb(PT_TIMES, dv, arg));
@@ -2024,59 +2027,18 @@ IFparseNode::~IFparseNode()
 }
 
 
-IFparseNode *
-IFparseNode::copy(bool skip_nd)
-{
-    const IFparseNode *thispn = this;
-    if (!thispn)
-        return (0);
-
-    // The p_newderiv flag is set if the node was created in differentiation,
-    // so we don't have to copy it, just the args, during the final copy
-    // of the differentiated tree
-    if (skip_nd && p_newderiv) {
-        p_newderiv = false;
-        p_left = p_left->copy();
-        p_right = p_right->copy();
-        return (this);
-    }
-
-    IFparseNode *newp = p_tree->newNode();
-    *newp = *this;
-    newp->p_newderiv = false;
-    if (newp->p_type == PT_TFUNC) {
-        if (p_valindx != PTF_tTABLE)
-            newp->v.td = v.td->dup();
-    }
-    else if (p_type == PT_PARAM || p_type == PT_PLACEHOLDER ||
-            p_type == PT_MACROARG)
-        newp->p_valname = lstring::copy(p_valname);
-    else if (p_type == PT_MACRO_DERIV) {
-        IFmacroDeriv *mdold = v.macro_deriv;
-        IFmacroDeriv *md = new IFmacroDeriv(*mdold);
-        newp->v.macro_deriv = md;
-        for (int i = 0; i < md->md_macro->numargs(); i++)
-            md->md_argdrvs[i] = mdold->md_argdrvs[i]->copy(skip_nd);
-    }
-
-    newp->p_left = p_left->copy();
-    newp->p_right = p_right->copy();
-    return (newp);
-}
-
-
+// Static function.
 // Check for remaining PT_PLACEHOLDERs in the parse tree.
 // Returns true if ok.
 //
 bool
-IFparseNode::check()
+IFparseNode::check(const IFparseNode *pn)
 {
-    const IFparseNode *thispn = this;
-    if (!thispn) {
+    if (!pn) {
         Errs()->add_error("parse error, null parse node");
         return (false);
     }
-    switch (p_type) {
+    switch (pn->p_type) {
     case PT_PLACEHOLDER:
         return (false);
 
@@ -2088,7 +2050,7 @@ IFparseNode::check()
 
     case PT_FUNCTION:
     case PT_MACRO:
-        return (p_left->check());
+        return (check(pn->p_left));
 
     case PT_PLUS:
     case PT_MINUS:
@@ -2096,7 +2058,7 @@ IFparseNode::check()
     case PT_DIVIDE:
     case PT_POWER:
     case PT_COMMA:
-        return (p_left->check() && p_right->check());
+        return (check(pn->p_left) && check(pn->p_right));
 
     case PT_MACRO_DERIV:
         return (true);
@@ -2105,23 +2067,23 @@ IFparseNode::check()
         break;
     }
 
-    Errs()->add_error("bad node type %d", p_type);
+    Errs()->add_error("bad node type %d", pn->p_type);
     return (false);
 }
 
 
+// Static function.
 // Variation for macro checking.  Fails if null or bad node, if
 // PT_PLACEHOLER is found, or PT_VAR.  The latter can't be resolved at
 // run time (presently).
 //
 bool
-IFparseNode::check_macro()
+IFparseNode::check_macro(const IFparseNode *pn)
 {
-    const IFparseNode *thispn = this;
-    if (!thispn)
+    if (!pn)
         return (false);
 
-    switch (p_type) {
+    switch (pn->p_type) {
     case PT_PLACEHOLDER:
     case PT_VAR:
         return (false);
@@ -2134,7 +2096,7 @@ IFparseNode::check_macro()
 
     case PT_FUNCTION:
     case PT_MACRO:
-        return (p_left->check_macro());
+        return (check_macro(pn->p_left));
 
     case PT_PLUS:
     case PT_MINUS:
@@ -2142,7 +2104,7 @@ IFparseNode::check_macro()
     case PT_DIVIDE:
     case PT_POWER:
     case PT_COMMA:
-        return (p_left->check_macro() && p_right->check_macro());
+        return (check_macro(pn->p_left) && check_macro(pn->p_right));
 
     default:
         break;
@@ -2151,19 +2113,19 @@ IFparseNode::check_macro()
 }
 
 
+// Static function.
 // Return true if the tree is a constant expression.
 //
 bool
-IFparseNode::is_const()
+IFparseNode::is_const(const IFparseNode *pn)
 {
-    const IFparseNode *thispn = this;
-    if (thispn) {
-        if (p_type == PT_PLACEHOLDER || p_type == PT_VAR ||
-                p_type == PT_PARAM || p_type == PT_TFUNC)
+    if (pn) {
+        if (pn->p_type == PT_PLACEHOLDER || pn->p_type == PT_VAR ||
+                pn->p_type == PT_PARAM || pn->p_type == PT_TFUNC)
             return (false);
-        if (p_left && !p_left->is_const())
+        if (!is_const(pn->p_left))
             return (false);
-        if (p_right && !p_right->is_const())
+        if (!is_const(pn->p_right))
             return (false);
     }
     return (true);
@@ -2409,27 +2371,24 @@ IFparseNode::set_args(const char *names)
 double
 IFparseNode::time_limit(sCKT *ckt, double lim) 
 {
-    const IFparseNode *thispn = this;
-    if (thispn) {
-        if (p_type == PT_TFUNC) {
-            if (v.td)
-                v.td->time_limit(ckt, &lim);
+    if (p_type == PT_TFUNC) {
+        if (v.td)
+            v.td->time_limit(ckt, &lim);
 
-            // No need to check args, all are constants.  In fact,
-            // recursing through the args may cause a seg fault due to
-            // stack overrun for (e.g.) very long pwl argument lists.
+        // No need to check args, all are constants.  In fact,
+        // recursing through the args may cause a seg fault due to
+        // stack overrun for (e.g.) very long pwl argument lists.
+    }
+    else {
+        if (p_left) { 
+            double lx = p_left->time_limit(ckt, lim); 
+            if (lx < lim)
+                lim = lx;
         }
-        else {
-            if (p_left) { 
-                double lx = p_left->time_limit(ckt, lim); 
-                if (lx < lim)
-                    lim = lx;
-            }
-            if (p_right) {
-                double lx = p_right->time_limit(ckt, lim);
-                if (lx < lim)
-                    lim = lx;
-            }
+        if (p_right) {
+            double lx = p_right->time_limit(ckt, lim);
+            if (lx < lim)
+                lim = lx;
         }
     }
     return (lim);
@@ -2701,7 +2660,7 @@ IFparseNode::parse_if_tranfunc(IFparseNode *p, const char *string, int *error)
             PRSR_NODEHACK | PRSR_USRSTR);
         P.init(tt, p->p_tree);
         p->p_left = P.parse();
-        if (!p->p_left || !p->p_left->check()) {
+        if (!p->p_left || !check(p->p_left)) {
             Errs()->add_error(
                 "parse failed for table reference expression");
             delete [] t0;
@@ -2865,7 +2824,7 @@ IFparseNode::parse_if_tranfunc(IFparseNode *p, const char *string, int *error)
         }
         else {
             // Evaluate the argument, save result.
-            if (!ptmp->is_const()) {
+            if (!is_const(ptmp)) {
                 if (lookingR) {
                     lookingR = false;
                     Errs()->add_error("TRAN function R val not constant.");
@@ -3336,18 +3295,58 @@ IFparseNode::p_macro_deriv(double *res, const double *vals,
 }
 
 
+// Private copy function, accessed publicly through a static wrapper.
+//
+IFparseNode *
+IFparseNode::copy_prv(bool skip_nd)
+{
+    // The p_newderiv flag is set if the node was created in differentiation,
+    // so we don't have to copy it, just the args, during the final copy
+    // of the differentiated tree.
+
+    if (skip_nd && p_newderiv) {
+        p_newderiv = false;
+        p_left = copy(p_left);
+        p_right = copy(p_right);
+        return (this);
+    }
+
+    IFparseNode *newp = p_tree->newNode();
+    *newp = *this;
+    newp->p_newderiv = false;
+    if (newp->p_type == PT_TFUNC) {
+        if (p_valindx != PTF_tTABLE)
+            newp->v.td = v.td->dup();
+    }
+    else if (p_type == PT_PARAM || p_type == PT_PLACEHOLDER ||
+            p_type == PT_MACROARG)
+        newp->p_valname = lstring::copy(p_valname);
+    else if (p_type == PT_MACRO_DERIV) {
+        IFmacroDeriv *mdold = v.macro_deriv;
+        IFmacroDeriv *md = new IFmacroDeriv(*mdold);
+        newp->v.macro_deriv = md;
+        for (int i = 0; i < md->md_macro->numargs(); i++)
+            md->md_argdrvs[i] = copy(mdold->md_argdrvs[i], skip_nd);
+    }
+
+    newp->p_left = copy(p_left);
+    newp->p_right = copy(p_right);
+    return (newp);
+}
+
+
 void
 IFparseNode::p_init_node(double step, double finaltime)
 {
-    const IFparseNode *thispn = this;
-    if (thispn) {
-        // Don't recurse into tranfunc args, unnecessary and can cause
-        // stack overflow for long lists.
-        if (p_type != PT_TFUNC)
+    // Don't recurse into tranfunc args, unnecessary and can cause
+    // stack overflow for long lists.
+    if (p_type != PT_TFUNC) {
+        if (p_left)
             p_left->p_init_node(step, finaltime);
-        p_right->p_init_node(step, finaltime);
-        p_init_func(step, finaltime);
     }
+    if (p_right)
+        p_right->p_init_node(step, finaltime);
+    p_init_func(step, finaltime);
 }
 
 
@@ -3417,7 +3416,7 @@ IFmacro::IFmacro(const char *mname, int arity, const char *mtext,
     }
 
     m_tree->tree()->set_args(names);
-    if (!m_tree->tree()->check_macro()) {
+    if (!IFparseNode::check_macro(m_tree->tree())) {
         // If v(xxx) or similar appears explicitly in a macro, it will
         // not be resolved at present.  So, this is currently not
         // allowed.
@@ -3436,7 +3435,7 @@ IFmacro::IFmacro(const char *mname, int arity, const char *mtext,
             IFparseNode *p = m_tree->differentiate(m_tree->tree(), i);
             if (p) {
                 p->collapse(&p);
-                derivs[i] = p->copy(true);
+                derivs[i] = IFparseNode::copy(p, true);
             }
             else {
                 derivs[i] = m_tree->newNnode(0.0);

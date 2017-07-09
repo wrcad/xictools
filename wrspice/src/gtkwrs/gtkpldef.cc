@@ -37,6 +37,8 @@
 #include "spnumber.h"
 
 
+#define KWGET(string) (xKWent*)sHtab::get(Sp.Options(), string)
+
 namespace {
     void pl_cancel_proc(GtkWidget*, void*);
     void pl_help_proc(GtkWidget*, void*);
@@ -124,7 +126,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    xKWent *entry = (xKWent*)Sp.Options()->get(kw_plotgeom);
+    xKWent *entry = KWGET(kw_plotgeom);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, 0);
@@ -136,7 +138,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_title);
+    entry = KWGET(kw_title);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, 0);
@@ -148,7 +150,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_xlabel);
+    entry = KWGET(kw_xlabel);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, 0);
@@ -160,7 +162,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_ylabel);
+    entry = KWGET(kw_ylabel);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, 0);
@@ -172,7 +174,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_plotstyle);
+    entry = KWGET(kw_plotstyle);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, KW.pstyles(0)->word, pl_choice_hdlr);
@@ -185,14 +187,14 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
 
     hbox = gtk_hbox_new(false, 0);
     gtk_widget_show(hbox);
-    entry = (xKWent*)Sp.Options()->get(kw_ysep);
+    entry = KWGET(kw_ysep);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
         gtk_box_pack_start(GTK_BOX(hbox), entry->ent->frame, true, true, 0);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_noplotlogo);
+    entry = KWGET(kw_noplotlogo);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -204,7 +206,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_gridstyle);
+    entry = KWGET(kw_gridstyle);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, KW.gstyles(0)->word, pl_choice_hdlr);
@@ -215,7 +217,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_nogrid);
+    entry = KWGET(kw_nogrid);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -227,7 +229,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_scaletype);
+    entry = KWGET(kw_scaletype);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, KW.scale(0)->word, pl_choice_hdlr);
@@ -238,7 +240,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_ticmarks);
+    entry = KWGET(kw_ticmarks);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(10.0, 1.0, 0.0, 0.0, 0);
@@ -275,7 +277,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_xlimit);
+    entry = KWGET(kw_xlimit);
     if (entry) {
         entry->ent = new xEnt(real2_func);
         entry->ent->setup(0.0, 0.0, 0.0, 0.0, 2);
@@ -288,7 +290,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_ylimit);
+    entry = KWGET(kw_ylimit);
     if (entry) {
         entry->ent = new xEnt(real2_func);
         entry->ent->setup(0.0, 0.0, 0.0, 0.0, 2);
@@ -302,7 +304,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_xcompress);
+    entry = KWGET(kw_xcompress);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(2.0, 1.0, 0.0, 0.0, 0);
@@ -314,7 +316,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_xindices);
+    entry = KWGET(kw_xindices);
     if (entry) {
         entry->ent = new xEnt(int2_func);
         entry->ent->mode = KW_INT_2;
@@ -328,7 +330,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_xdelta);
+    entry = KWGET(kw_xdelta);
     if (entry) {
         entry->ent = new xEnt(kw_real_func);
         entry->ent->mode = KW_NO_SPIN;
@@ -340,7 +342,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_ydelta);
+    entry = KWGET(kw_ydelta);
     if (entry) {
         entry->ent = new xEnt(kw_real_func);
         entry->ent->mode = KW_NO_SPIN;
@@ -353,7 +355,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_polydegree);
+    entry = KWGET(kw_polydegree);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(1.0, 1.0, 0.0, 0.0, 0);
@@ -365,7 +367,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_polysteps);
+    entry = KWGET(kw_polysteps);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(10.0, 1.0, 0.0, 0.0, 0);
@@ -378,7 +380,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_gridsize);
+    entry = KWGET(kw_gridsize);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(0.0, 1.0, 0.0, 0.0, 0);
@@ -391,7 +393,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_pointchars);
+    entry = KWGET(kw_pointchars);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, DefPointchars);
@@ -427,7 +429,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_noasciiplotvalue);
+    entry = KWGET(kw_noasciiplotvalue);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -438,7 +440,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_nobreak);
+    entry = KWGET(kw_nobreak);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -450,7 +452,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_nointerp);
+    entry = KWGET(kw_nointerp);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -487,7 +489,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_hcopydriver);
+    entry = KWGET(kw_hcopydriver);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, "postscript_line_draw",
@@ -500,7 +502,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_hcopycommand);
+    entry = KWGET(kw_hcopycommand);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry, 0);
@@ -512,7 +514,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_hcopyresol);
+    entry = KWGET(kw_hcopyresol);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(0.0, 1.0, 0.0, 0.0, 0);
@@ -524,7 +526,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_hcopylandscape);
+    entry = KWGET(kw_hcopylandscape);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -536,7 +538,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_hcopywidth);
+    entry = KWGET(kw_hcopywidth);
     if (entry) {
         sprintf(tbuf, "%g", wrsHCcb.width);
         entry->ent = new xEnt(kw_string_func);
@@ -548,7 +550,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_hcopyheight);
+    entry = KWGET(kw_hcopyheight);
     if (entry) {
         sprintf(tbuf, "%g", wrsHCcb.height);
         entry->ent = new xEnt(kw_string_func);
@@ -561,7 +563,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_hcopyxoff);
+    entry = KWGET(kw_hcopyxoff);
     if (entry) {
         sprintf(tbuf, "%g", wrsHCcb.left);
         entry->ent = new xEnt(kw_string_func);
@@ -573,7 +575,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_hcopyyoff);
+    entry = KWGET(kw_hcopyyoff);
     if (entry) {
         sprintf(tbuf, "%g", wrsHCcb.top);
         entry->ent = new xEnt(kw_string_func);
@@ -586,7 +588,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     }
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_hcopyrmdelay);
+    entry = KWGET(kw_hcopyrmdelay);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(0.0, 1.0, 0.0, 0.0, 0);
@@ -623,7 +625,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
         (GtkAttachOptions)0, 2, 2);
 
     entrycount++;
-    entry = (xKWent*)Sp.Options()->get(kw_xgmarkers);
+    entry = KWGET(kw_xgmarkers);
     if (entry) {
         entry->ent = new xEnt(kw_bool_func);
         entry->ent->create_widgets(entry, 0);
@@ -634,7 +636,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
             (GtkAttachOptions)0, 2, 2);
     }
 
-    entry = (xKWent*)Sp.Options()->get(kw_xglinewidth);
+    entry = KWGET(kw_xglinewidth);
     if (entry) {
         entry->ent = new xEnt(kw_int_func);
         entry->ent->setup(1.0, 1.0, 0.0, 0.0, 0);

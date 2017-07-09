@@ -34,31 +34,7 @@ Authors: 1993 Stephen R. Whiteley
 #endif
 
 
-sHtab::sHtab(bool case_insens)
-{
-    ht_allocated = 0;
-    ht_hashmask = HTAB_START_MASK;
-    ht_base = new sHent*[ht_hashmask + 1];
-    memset(ht_base, 0, (ht_hashmask + 1)*sizeof(sHent*));
-    ht_ci = case_insens;
-}
-
-
-// Destructor, does NOT free the data.
-//
-sHtab::~sHtab()
-{
-    for (unsigned int i = 0; i <= ht_hashmask; i++) {
-        sHent *h, *hh;
-        for (h = ht_base[i]; h; h = hh) {
-            hh = h->h_next;
-            delete h;
-        }
-    }
-    delete [] ht_base;
-}
-
-
+// Private inline.
 // A string hashing function (Bernstein, comp.lang.c).
 //
 inline unsigned int
@@ -81,6 +57,7 @@ sHtab::ht_hash(const char *str) const
 }
 
 
+// Private inline.
 // String comparison function.
 //
 inline int
@@ -104,6 +81,32 @@ sHtab::ht_comp(const char *s, const char *t) const
         }
         return (*s - *t);
     }
+}
+// End of inlines.
+
+
+sHtab::sHtab(bool case_insens)
+{
+    ht_allocated = 0;
+    ht_hashmask = HTAB_START_MASK;
+    ht_base = new sHent*[ht_hashmask + 1];
+    memset(ht_base, 0, (ht_hashmask + 1)*sizeof(sHent*));
+    ht_ci = case_insens;
+}
+
+
+// Destructor, does NOT free the data.
+//
+sHtab::~sHtab()
+{
+    for (unsigned int i = 0; i <= ht_hashmask; i++) {
+        sHent *h, *hh;
+        for (h = ht_base[i]; h; h = hh) {
+            hh = h->h_next;
+            delete h;
+        }
+    }
+    delete [] ht_base;
 }
 
 
@@ -232,16 +235,17 @@ sHtab::remove(const char *name)
 }
 
 
+// Static function.
 // Return the data associatd with name.  O is returned if not found.
 //
 void *
-sHtab::get(const char *name) const
+sHtab::get(const sHtab *ht, const char *name)
 {
-    if (!name)
+    if (!ht || !name)
         return (0);
-    unsigned int n = ht_hash(name);
-    for (sHent *h = ht_base[n]; h; h = h->h_next) {
-        int i = ht_comp(name, h->h_name);
+    unsigned int n = ht->ht_hash(name);
+    for (sHent *h = ht->ht_base[n]; h; h = h->h_next) {
+        int i = ht->ht_comp(name, h->h_name);
         if (i < 0)
             continue;
         if (i == 0)
@@ -252,17 +256,18 @@ sHtab::get(const char *name) const
 }
 
 
+// Static function.
 // Return the entry associatd with name.  O is returned if not found.
 // The data can be changed.
 //
 sHent *
-sHtab::get_ent(const char *name) const
+sHtab::get_ent(const sHtab *ht, const char *name)
 {
-    if (!name)
+    if (!ht || !name)
         return (0);
-    unsigned int n = ht_hash(name);
-    for (sHent *h = ht_base[n]; h; h = h->h_next) {
-        int i = ht_comp(name, h->h_name);
+    unsigned int n = ht->ht_hash(name);
+    for (sHent *h = ht->ht_base[n]; h; h = h->h_next) {
+        int i = ht->ht_comp(name, h->h_name);
         if (i < 0)
             continue;
         if (i == 0)
@@ -273,30 +278,37 @@ sHtab::get_ent(const char *name) const
 }
 
 
+// Static function.
 // Print the entries to stderr, according to datafmt, which should have
 // "%d (for hash index), %s (for name), and data format, in that order.
 //
 void
-sHtab::print(const char *datafmt) const
+sHtab::print(const sHtab *ht, const char *datafmt)
 {
+    if (!ht)
+        return;
     if (datafmt == 0)
         datafmt = "hash=%d name=%s data=%x\n";
-    for (unsigned int i = 0; i <= ht_hashmask; i++) {
-        for (sHent *h = ht_base[i]; h; h = h->h_next)
+    for (unsigned int i = 0; i <= ht->ht_hashmask; i++) {
+        for (sHent *h = ht->ht_base[i]; h; h = h->h_next)
             fprintf(stderr, datafmt, i, h->h_name, h->h_data);
     }
 }
 
 
+#ifdef WRSPICE
+
+// Static function.
 // Return a wordlist of the names in the database.
 //
 wordlist *
-sHtab::wl() const
+sHtab::wl(const sHtab *ht)
 {
-#ifdef WRSPICE
+    if (!ht)
+        return (0);
     wordlist *twl = 0, *wl0 = 0;
-    for (unsigned int i = 0; i <= ht_hashmask; i++) {
-        for (sHent *h = ht_base[i]; h; h = h->h_next) {
+    for (unsigned int i = 0; i <= ht->ht_hashmask; i++) {
+        for (sHent *h = ht->ht_base[i]; h; h = h->h_next) {
             if (wl0 == 0)
                 wl0 = twl = new wordlist(h->h_name, 0);
             else {
@@ -306,18 +318,18 @@ sHtab::wl() const
         }
     }
     return (wl0);
-#else
-    return (0);
-#endif
 }
 
+#endif
 
+
+// Static function.
 // Return true if the database contains no data.
 //
 bool
-sHtab::empty() const
+sHtab::empty(const sHtab *ht)
 {
-    return (ht_allocated == 0);
+    return (!ht || !ht->ht_allocated);
 }
 
 

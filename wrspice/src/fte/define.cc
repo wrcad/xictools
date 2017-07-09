@@ -195,10 +195,10 @@ namespace {
             if (!udfdb->table())
                 continue;
             if (name && *name) {
-                sUdFunc *udf = (sUdFunc*)udfdb->table()->get(name);
+                sUdFunc *udf = (sUdFunc*)sHtab::get(udfdb->table(), name);
                 for (sUdFunc *u = udf; u; u = u->next()) {
                     sprintf(buf, "%s:%d", name, u->argc());
-                    udf_text *otxt = (udf_text*)tab->get(buf);
+                    udf_text *otxt = (udf_text*)sHtab::get(tab, buf);
                     if (otxt)
                         continue;
                     udf_text *txt = new udf_text(u);
@@ -211,7 +211,7 @@ namespace {
                 while ((h = hgen.next()) != 0) {
                     for (sUdFunc *u = (sUdFunc*)h->data(); u; u = u->next()) {
                         sprintf(buf, "%s:%d", h->name(), u->argc());
-                        udf_text *otxt = (udf_text*)tab->get(buf);
+                        udf_text *otxt = (udf_text*)sHtab::get(tab, buf);
                         if (otxt)
                             continue;
                         udf_text *txt = new udf_text(u);
@@ -222,10 +222,10 @@ namespace {
         }
         if (shell_udf.table()) {
             if (name && *name) {
-                sUdFunc *udf = (sUdFunc*)shell_udf.table()->get(name);
+                sUdFunc *udf = (sUdFunc*)sHtab::get(shell_udf.table(), name);
                 for (sUdFunc *u = udf; u; u = u->next()) {
                     sprintf(buf, "%s:%dS", name, u->argc());
-                    udf_text *otxt = (udf_text*)tab->get(buf);
+                    udf_text *otxt = (udf_text*)sHtab::get(tab, buf);
                     if (otxt)
                         continue;
                     udf_text *txt = new udf_text(u);
@@ -239,7 +239,7 @@ namespace {
                 while ((h = hgen.next()) != 0) {
                     for (sUdFunc *u = (sUdFunc*)h->data(); u; u = u->next()) {
                         sprintf(buf, "%s:%dS", h->name(), u->argc());
-                        udf_text *otxt = (udf_text*)tab->get(buf);
+                        udf_text *otxt = (udf_text*)sHtab::get(tab, buf);
                         if (otxt)
                             continue;
                         udf_text *txt = new udf_text(u);
@@ -756,7 +756,7 @@ cUdf::define(const char *fname, const char *body)
     if (!ud_tab)
         ud_tab = new sHtab(sHtab::get_ciflag(CSE_UDF));
 
-    sUdFunc *udf = (sUdFunc*)ud_tab->get(buf);
+    sUdFunc *udf = (sUdFunc*)sHtab::get(ud_tab, buf);
     if (!udf)
         ud_tab->add(buf, new sUdFunc(namebf, arity, pn));
     else {
@@ -841,7 +841,7 @@ bool
 cUdf::is_defined(const char *name, int arity) const
 {
     if (ud_tab) {
-        sUdFunc *udf = (sUdFunc*)ud_tab->get(name);
+        sUdFunc *udf = (sUdFunc*)sHtab::get(ud_tab, name);
         for (sUdFunc *u = udf; u; u = u->next()) {
             if (arity < 0 || arity == u->argc())
                 return (true);
@@ -858,7 +858,7 @@ cUdf::get_macro(const char *name, int arity, char** text,
     const char **args) const
 {
     if (ud_tab) {
-        sUdFunc *udf = (sUdFunc*)ud_tab->get(name);
+        sUdFunc *udf = (sUdFunc*)sHtab::get(ud_tab, name);
         for (sUdFunc *u = udf; u; u = u->next()) {
             if (arity < 0 || arity == u->argc()) {
                 *text = u->tree()->get_string();
@@ -882,7 +882,7 @@ sUdFunc *
 cUdf::find(const char *name, int arity) const
 {
     if (ud_tab) {
-        sUdFunc *udf = (sUdFunc*)ud_tab->get(name);
+        sUdFunc *udf = (sUdFunc*)sHtab::get(ud_tab, name);
         for (sUdFunc *u = udf; u; u = u->next()) {
             if (arity < 0 || u->argc() == arity)
                 return (u);
@@ -962,9 +962,9 @@ cUdf::copy() const
             sUdFunc *udf = 0, *uend = 0;
             for (sUdFunc *u = (sUdFunc*)h->data(); u; u = u->next()) {
                 if (!uend)
-                    uend = udf = u->copy();
+                    uend = udf = sUdFunc::copy(u);
                 else {
-                    uend->set_next(u->copy());
+                    uend->set_next(sUdFunc::copy(u));
                     uend = uend->next();
                 }
             }
@@ -1009,7 +1009,7 @@ cUdf::new_unique_name(const char **namep)
     *t++ = UNIQUE_SEP;
     for (int i = 1; ; i++) {
         sprintf(t, "%d", i);
-        if (!ud_tab->get(buf))
+        if (!sHtab::get(ud_tab, buf))
             break;
     }
     *namep = lstring::copy(buf);
@@ -1026,7 +1026,7 @@ cUdf::get_promoted(const char *oname, const char *body)
     char *tmp = new char[strlen(oname) + strlen(body) + 1];
     char *t = lstring::stpcpy(tmp, oname);
     strcpy(t, body);
-    const char *ret = (const char*)ud_promo_tab->get(tmp);
+    const char *ret = (const char*)sHtab::get(ud_promo_tab, tmp);
     delete [] tmp;
     return (ret);
 }
@@ -1056,25 +1056,29 @@ sUdFunc::~sUdFunc()
 }
 
 
+// Static function.
 sUdFunc *
-sUdFunc::copy()
+sUdFunc::copy(const sUdFunc *ud)
 {
+    if (!ud)
+        return (0);
+
     // In ud_name, the args are separated from the function name and
     // each other by nulls.  The token is terminated by two nulls.
-    const char *t = ud_name;
+    const char *t = ud->ud_name;
     while (*t)
         t++;
-    for (int i = 0; i < ud_arity; i++) {
+    for (int i = 0; i < ud->ud_arity; i++) {
         t++;
         while (*t)
             t++;
     }
-    int len = t - ud_name + 2;
+    int len = t - ud->ud_name + 2;
     char *n = new char[len];
-    memcpy(n, ud_name, len);
+    memcpy(n, ud->ud_name, len);
 
-    pnode *p = ud_text->copy();
-    return (new sUdFunc(n, ud_arity, p));
+    pnode *p = ud->ud_text->copy();
+    return (new sUdFunc(n, ud->ud_arity, p));
 }
 
 

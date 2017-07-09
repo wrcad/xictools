@@ -49,7 +49,7 @@ sVarDb::get(const char *vname)
 {
     if (!variables)
         return (0);
-    return ((variable*)variables->get(vname));
+    return ((variable*)sHtab::get(variables, vname));
 }
 
 
@@ -83,7 +83,7 @@ sVarDb::remove(const char *tag)
 wordlist *
 sVarDb::wl()
 {
-    return (variables->wl());
+    return (sHtab::wl(variables));
 }
 // End of sVarDb functions.
 
@@ -195,13 +195,13 @@ variable::typeString(int tp) const
 }
 
 
+// Static function.
 // Copy a variable structure.
 //
 variable *
-variable::copy() const
+variable::copy(const variable *v)
 {
     variable *nv = 0, *n0 = 0;
-    const variable *v = this;
     while (v) {
         if (n0 == 0)
             n0 = nv = new variable;
@@ -221,7 +221,7 @@ variable::copy() const
         else if (v->va_type == VTYP_STRING)
             nv->va.v_string = lstring::copy(v->va.v_string);
         else if (v->va_type == VTYP_LIST)
-            nv->va.v_list = v->va.v_list->copy();
+            nv->va.v_list = copy(v->va.v_list);
         v = v->va_next;
     }
     return (n0);

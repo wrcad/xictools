@@ -358,7 +358,7 @@ IFsimulator::OptUpdate()
                 SetVar(v->name(), v->string());
                 break;
             case VTYP_LIST:
-                SetVar(v->name(), v->list()->copy());
+                SetVar(v->name(), variable::copy(v->list()));
                 break;
             default:
                 break;

@@ -95,7 +95,7 @@ IFsimulator::SetVar(const char *varname)
         v.set_boolean(true);
 
         sKWent<userEnt> *entry =
-            static_cast<sKWent<userEnt>*>(ft_options->get(vname));
+            static_cast<sKWent<userEnt>*>(sHtab::get(ft_options, vname));
         if (entry) {
             entry->callback(true, &v);
             delete [] vname;
@@ -130,7 +130,7 @@ IFsimulator::SetVar(const char *varname, int value)
         v.set_integer(value);
 
         sKWent<userEnt> *entry =
-            static_cast<sKWent<userEnt>*>(ft_options->get(vname));
+            static_cast<sKWent<userEnt>*>(sHtab::get(ft_options, vname));
         if (entry) {
             entry->callback(true, &v);
             delete [] vname;
@@ -165,7 +165,7 @@ IFsimulator::SetVar(const char *varname, double value)
         v.set_real(value);
 
         sKWent<userEnt> *entry =
-            static_cast<sKWent<userEnt>*>(ft_options->get(vname));
+            static_cast<sKWent<userEnt>*>(sHtab::get(ft_options, vname));
         if (entry) {
             entry->callback(true, &v);
             delete [] vname;
@@ -198,7 +198,7 @@ IFsimulator::SetVar(const char *varname, const char *value)
         v.set_string(value);
 
         sKWent<userEnt> *entry =
-            static_cast<sKWent<userEnt>*>(ft_options->get(vname));
+            static_cast<sKWent<userEnt>*>(sHtab::get(ft_options, vname));
         if (entry) {
             entry->callback(true, &v);
             delete [] vname;
@@ -232,7 +232,7 @@ IFsimulator::SetVar(const char *varname, variable *value)
         v.set_list(value);
 
         sKWent<userEnt> *entry =
-            static_cast<sKWent<userEnt>*>(ft_options->get(vname));
+            static_cast<sKWent<userEnt>*>(sHtab::get(ft_options, vname));
         if (entry) {
             entry->callback(true, &v);
             delete [] vname;
@@ -267,7 +267,7 @@ IFsimulator::SetVar(wordlist *wl)
             SetVar(v->name(), v->string());
             break;
         case VTYP_LIST:
-            SetVar(v->name(), v->list()->copy());
+            SetVar(v->name(), variable::copy(v->list()));
             break;
         default:
             break;
@@ -342,7 +342,7 @@ IFsimulator::GetRawVar(const char *name, sFtCirc *circ)
 
     OMRG_TYPE mt = merge_type(circ);
     if (mt != OMRG_GLOBAL) {
-        if (ft_options->get(name)) {
+        if (sHtab::get(ft_options, name)) {
             for (variable *v = circ->vars(); v; v = v->next()) {
                 if (lstring::cieq(v->name(), name))
                     return (v);
@@ -361,7 +361,7 @@ IFsimulator::GetRawVar(const char *name, sFtCirc *circ)
             return (v);
     }
     if (circ && mt == OMRG_GLOBAL) {
-        if (ft_options->get(name)) {
+        if (sHtab::get(ft_options, name)) {
             for (variable *v = circ->vars(); v; v = v->next()) {
                 if (lstring::cieq(v->name(), name))
                     return (v);
@@ -517,7 +517,7 @@ IFsimulator::VarPrint(char **retstr)
     // Copy the list of current circuit variables.
     variable *cktvars = 0;
     if (CurCircuit())
-        cktvars = CurCircuit()->vars()->copy();
+        cktvars = variable::copy(CurCircuit()->vars());
     if (CurAnalysis()) {
         variable *vv = new variable(kw_curanalysis);
         vv->set_string(CurAnalysis()->name);
@@ -528,7 +528,7 @@ IFsimulator::VarPrint(char **retstr)
     // List the plot variables.
     variable *plvars = 0;
     if (CurPlot())
-        plvars = CurPlot()->environment()->copy();
+        plvars = variable::copy(CurPlot()->environment());
     {
         variable *tv;
         if ((tv = EnqPlotVar(kw_plots)) != 0) {
@@ -743,7 +743,7 @@ IFsimulator::EnqPlotVar(const char *name)
             if (lstring::eq(vv->name(), name))
                 break;
         if (vv)
-            vv =  vv->copy();
+            vv =  variable::copy(vv);
         else if (lstring::eq(name, kw_curplotname)) {
             vv = new variable(name);
             vv->set_string(CurPlot()->name());
@@ -788,19 +788,19 @@ IFsimulator::EnqCircuitVar(const char *name)
     if (name && CurCircuit()) {
         if (*name == '$')
             name++;
-        if (ft_options->get(name)) {
+        if (sHtab::get(ft_options, name)) {
             // The name matches one of the built-in option names,
             // which are case-insensitive.
 
             for (variable *v = CurCircuit()->vars(); v; v = v->next()) {
                 if (lstring::cieq(v->name(), name))
-                    return (v->copy());
+                    return (variable::copy(v));
             }
         }
         else {
             for (variable *v = CurCircuit()->vars(); v; v = v->next()) {
                 if (lstring::eq(v->name(), name))
-                    return (v->copy());
+                    return (variable::copy(v));
             }
         }
     }
@@ -914,7 +914,7 @@ IFsimulator::RemVar(const char *varname)
     strcpy(vname, varname);
     CP.Unquote(vname);
     sKWent<userEnt> *entry =
-        static_cast<sKWent<userEnt>*>(ft_options->get(vname));
+        static_cast<sKWent<userEnt>*>(sHtab::get(ft_options, vname));
     if (entry) {
         entry->callback(false, 0);
         return;

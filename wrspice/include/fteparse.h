@@ -107,7 +107,7 @@ struct sUdFunc
 
     ~sUdFunc();
 
-    sUdFunc *copy();
+    static sUdFunc *copy(const sUdFunc*);
     void reuse(char*, pnode*);
 
     const char *name()          { return (ud_name); }

@@ -115,7 +115,7 @@ namespace {
             return (false);
 
         // Probably won't see this error, as dlopen will have failed.
-        if (m_tab && m_tab->get(path))
+        if (sHtab::get(m_tab, path))
             return (false);
 
         if (!m_tab)
@@ -184,7 +184,7 @@ namespace {
     void
     sMdb::list_modules()
     {
-        wordlist *wl = m_tab->wl();
+        wordlist *wl = sHtab::wl(m_tab);
         if (!wl) {
             TTY.printf("No device modules loaded.\n");
             return;
