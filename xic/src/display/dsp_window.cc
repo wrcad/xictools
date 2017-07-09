@@ -221,7 +221,8 @@ namespace {
     {
         for (int i = 0; i < DSP_NUMWINS; i++) {
             if (which_wins[i]) {
-                DSP()->Window(i)->ShowTitleDirect();
+                if (DSP()->Window(i))
+                    DSP()->Window(i)->ShowTitleDirect();
                 which_wins[i] = false;
             }
         }
