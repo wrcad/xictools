@@ -187,7 +187,7 @@ cCoord::do_print(int xc, int yc, int update)
     int fwid, fhei;
     TextExtent(0, &fwid, &fhei);
     int x = 2;
-    int y = fhei + 2;
+    int y = (co_height + fhei)/2;  // center justify
 
     if (co_snap)
         EV()->CurrentWin()->Snap(&xc, &yc);
