@@ -219,13 +219,15 @@ struct Ylist
     static void remove_common(Ylist**, Ylist**);
 
 private:
-    void col_row_merge() throw (XIrt)
+    static void col_row_merge(Ylist *yl) throw (XIrt)
         {
+            if (!yl)
+                return;
             bool chg = true;
             while (chg) {
-                chg = merge_cols();
+                chg = yl->merge_cols();
                 if (chg)
-                    chg = merge_rows();
+                    chg = yl->merge_rows();
             }
         }
 

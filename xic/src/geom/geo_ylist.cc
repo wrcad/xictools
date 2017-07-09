@@ -733,7 +733,7 @@ Ylist::repartition_group(Ylist *thisyl) throw (XIrt)
     }
 
     // Finally, attempt to merge adjacent zoids to reduce count.
-    y0->col_row_merge();
+    col_row_merge(y0);
     return (y0);
 }
 
@@ -1289,7 +1289,7 @@ Ylist::scl_clip_to_ylist(Ylist *thisyl, Ylist *y) throw (XIrt)
         yb = clear_to_next(yb);
     }
     y0 = strip_empty(y0);
-    y0->col_row_merge();
+    col_row_merge(y0);
     return (y0);
 }
 
@@ -1419,7 +1419,7 @@ Ylist::scl_clip_out_self(Ylist *thisyl) throw (XIrt)
         scl_merge(zl);
         y->y_zlist = zl;
     }
-    y0->col_row_merge();
+    col_row_merge(y0);
     return (y0);
 }
 
@@ -1548,7 +1548,7 @@ Ylist::scl_clip_out_ylist(Ylist *thisyl, Ylist *y) throw (XIrt)
         yb = clear_to_next(yb);
     }
     y0 = strip_empty(y0);
-    y0->col_row_merge();
+    col_row_merge(y0);
     return (y0);
 }
 
@@ -1601,14 +1601,14 @@ Ylist::scl_clip_out2_ylist(Ylist *thisyl, Ylist **py) throw (XIrt)
     y0 = strip_empty(y0);
     y1 = strip_empty(y1);
     try {
-        y0->col_row_merge();
+        col_row_merge(y0);
     }
     catch (XIrt) {
         destroy(y1);
         throw;
     }
     try {
-        y1->col_row_merge();
+        col_row_merge(y1);
     }
     catch (XIrt) {
         destroy(y0);
@@ -1709,7 +1709,7 @@ Ylist::scl_clip_xor_ylist(Ylist *thisyl, Ylist *y) throw (XIrt)
         }
     }
     y0 = strip_empty(y0);
-    y0->col_row_merge();
+    col_row_merge(y0);
     return (y0);
 }
 
