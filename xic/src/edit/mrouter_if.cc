@@ -306,13 +306,13 @@ cMRcmdIf::openRouter()
         // development router code.
 
 #ifdef __APPLE__
-        lstr.add("/Users/stevew/src/xictools/src/mrouter/mrouter/");
+        lstr.add("/Users/stevew/src/xt/mrouter/mrouter/");
 #else
 #ifdef WIN32
         lstr.add(
-            "c:\\cygwin\\home\\stevew\\src\\xictools\\src\\mrouter\\mrouter\\");
+            "c:\\cygwin\\home\\stevew\\src\\xt\\mrouter\\mrouter\\");
 #else
-        lstr.add("/home/stevew/src/xictools/src/mrouter/mrouter/");
+        lstr.add("/home/stevew/src/xt/mrouter/mrouter/");
 #endif
 #endif
         lstr.add(LIBMROUTER);
