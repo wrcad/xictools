@@ -58,9 +58,10 @@
 #include "htm_image.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 
-#if defined(HAVE_TIFF) && defined(HAVE_PNG)
+#if defined(HAVE_LIBTIFF) && defined(HAVE_LIBPNG)
 #include <tiff.h>
 #include <tiffio.h>
 #include <png.h>
@@ -83,7 +84,7 @@ htmImageManager::readTIFF(ImageBuffer *ib)
     sprintf(buf, "%s/moz%d-%s.tmp", path, getpid(), "tiff");
     FILE *fp = fopen(buf, "wb");
     if (!fp)
-        return (false);
+        return (0);
 
     fwrite(ib->buffer, 1, ib->size, fp);
     fclose(fp);
@@ -299,7 +300,6 @@ tiffns::tiff_to_png(const char *tiffname, FILE *pngfp)
     png_uint_32 width = cols;
 
     bool have_res = false;
-    float ratio = 0.0;
     float xres, yres;
     png_uint_32 res_x=0, res_y=0;
     int unit_type = 0;
@@ -308,9 +308,9 @@ tiffns::tiff_to_png(const char *tiffname, FILE *pngfp)
             (xres != 0.0) && (yres != 0.0)) {
         uint16 resunit;
         have_res = true;
-        ratio = xres / yres;
 #ifdef DEBUG
         if (verbose) {
+            float ratio = xres / yres;
             fprintf(stderr,
                 "tiff_to_png:  aspect ratio (hor/vert) = %g (%g / %g)\n",
                 ratio, xres, yres);

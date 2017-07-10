@@ -12,6 +12,7 @@ HTM_VERSION = 0.1
 # -DHAVE_LIBZ           | libz (compression) available
 # -DHAVE_LIBPNG         | libpng (PNG images) available
 # -DHAVE_LIBJPEG        | libjpeg (JPEG images) available
+# -DHAVE_LIBTIFF        | libtiff (TIFF images) available
 
 prefix = @prefix@
 CXX = @CXX@
