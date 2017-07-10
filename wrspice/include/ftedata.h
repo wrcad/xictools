@@ -308,8 +308,7 @@ struct sDataVec
             memset(v_dims, 0, MAXDIMS*sizeof(int));
         }
 
-    sDataVec(char *vname, int type, int len, sUnits *u = 0,
-            void *data = 0)
+    sDataVec(char *vname, int type, int len, sUnits *u = 0, void *data = 0)
         {
             v_data.real = 0;
             if (data)
@@ -347,6 +346,7 @@ struct sDataVec
     ~sDataVec();
 
     // datavec.cc
+    void reset(int, int, sUnits* = 0, void* = 0);
     sDataVec *pad(int, bool*);
     void newtemp(sPlot* = 0);
     void newperm(sPlot* = 0);

@@ -50,7 +50,37 @@ sDataVec::~sDataVec()
         delete [] v_data.comp;
 }
 
+
+// Destroy and reset the vector data.
+//
+void
+sDataVec::reset(int type, int len, sUnits *u, void *data)
+{
+    if (isreal())
+        delete [] v_data.real;
+    else
+        delete [] v_data.comp;
+
+    v_data.real = 0;
+    if (data)
+        v_data.real = (double*)data;
+    else if (len) {
+        if (type & VF_COMPLEX)
+            v_data.comp = new complex[len];
+        else
+            v_data.real = new double[len];
+    }
+
+    if (u)
+        v_units = *u;
+
+    v_flags = type;
+    v_length = v_rlength = len;
+    v_numdims = (len > 1);
+    memset(v_dims, 0, MAXDIMS*sizeof(int));
+}
      
+
 sDataVec *
 sDataVec::pad(int len, bool *copied)
 {

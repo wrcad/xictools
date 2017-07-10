@@ -215,19 +215,19 @@ CommandTab::com_compose(wordlist *wl)
         return;
     }
     if (n) {
-        // Vector already exists, clear it then save the new one.
-        if (pl)
-            pl->remove_vec(resname);
-        else {
-            wordlist wx;
-            wx.wl_word = resname;
-            com_unlet(&wx);
-        }
-    }
+        // Vector already exists.  It the plot is active, deleting and
+        // rebuilding may not be safe, so keep the existing vector but
+        // replace the data.
 
-    sDataVec *result = new sDataVec(resname, realflag ? 0 : VF_COMPLEX,
-        length, 0, realflag ? (void*)data : (void*)cdata);
-    result->newperm(pl);
+        delete [] resname;
+        n->reset(realflag ? 0 : VF_COMPLEX, length, 0,
+            realflag ? (void*)data : (void*)cdata);
+    }
+    else {
+        sDataVec *result = new sDataVec(resname, realflag ? 0 : VF_COMPLEX,
+            length, 0, realflag ? (void*)data : (void*)cdata);
+        result->newperm(pl);
+    }
     ToolBar()->UpdateVectors(0);
 }
 

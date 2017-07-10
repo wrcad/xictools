@@ -559,3 +559,11 @@ which should not be too difficult to implement.
 
 Regards,
 Steve
+
+Fedora port: set SIGIO to SIG_IGN, so ipc works.
+
+Bug fixed:  In Monte Carlo analysis, compose call for checkPNTS (e.g.)
+would try and delete and replace the vector, which was prevented and
+a message issued since the plot active flag is set.  Instead, the existing
+vector is now kept but the data array updated, in new sDataVec::reset
+method.
