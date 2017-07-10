@@ -579,9 +579,16 @@ sTree::build_tree_rc(CDs *sdesc, GtkTreeIter *parent, int dpt)
         if (!mdesc->hasInstances())
             continue;
         CDs *msd = mdesc->celldesc();
-        if (!msd || (msd->isDevice() && msd->isLibrary()))
-            // don't include devices
+        if (!msd)
             continue;
+        if (msd->isDevice() && msd->isLibrary()) {
+            // don't include library devices
+            continue;
+        }
+        if (msd->isViaSubMaster()) {
+            // don't include via cells
+            continue;
+        }
         icnt++;
     }
     CDm **ary = new CDm*[icnt];
@@ -591,9 +598,16 @@ sTree::build_tree_rc(CDs *sdesc, GtkTreeIter *parent, int dpt)
         if (!mdesc->hasInstances())
             continue;
         CDs *msd = mdesc->celldesc();
-        if (!msd || (msd->isDevice() && msd->isLibrary()))
-            // don't include devices
+        if (!msd)
             continue;
+        if (msd->isDevice() && msd->isLibrary()) {
+            // don't include library devices
+            continue;
+        }
+        if (msd->isViaSubMaster()) {
+            // don't include via cells
+            continue;
+        }
         ary[icnt] = mdesc;
         icnt++;
     }
