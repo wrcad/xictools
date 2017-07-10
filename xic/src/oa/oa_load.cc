@@ -1890,7 +1890,7 @@ oa_in::getViaName(const oaViaHeader *hdr)
 
         if (!in_via_tab)
             in_via_tab = new SymTab(false, false);
-        SymTabEnt *ent = in_via_tab->get_ent(buf);
+        SymTabEnt *ent = SymTab::get_ent(in_via_tab, buf);
         if (!ent) {
             ViaDesc *vd = new ViaDesc(buf);
             ViaItem *vi = new ViaItem(params);
@@ -2069,7 +2069,7 @@ oa_in::newCell(const char *cellname, ncType *ncret, bool is_submaster)
             if (cell_exists) {
                 if (!in_skip_tab)
                     in_skip_tab = new SymTab(false, false);
-                f = (long)in_skip_tab->get(cellname);
+                f = (long)SymTab::get(in_skip_tab, cellname);
                 if (f == (long)ST_NIL) {
                     if (is_submaster) {
                         // Sub-master already exists, skip it.
@@ -2117,7 +2117,7 @@ oa_in::newCell(const char *cellname, ncType *ncret, bool is_submaster)
             if (cell_exists) {
                 if (!in_skip_tab)
                     in_skip_tab = new SymTab(false, false);
-                f = (long)in_skip_tab->get(cellname);
+                f = (long)SymTab::get(in_skip_tab, cellname);
                 if (f == (long)ST_NIL) {
                     if (is_submaster) {
                         // Sub-master already exists, skip it.
@@ -2167,7 +2167,7 @@ CDcellName
 oa_in::checkSubMaster(CDcellName cname, CDp *plist) 
 {
     if (in_mode == Physical) {
-        CDcellName cn = (CDcellName)in_submaster_tab->get(
+        CDcellName cn = (CDcellName)SymTab::get(in_submaster_tab,
             (unsigned long)cname);
         if (cn != (CDcellName)ST_NIL)
             cname = cn;

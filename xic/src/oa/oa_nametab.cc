@@ -64,7 +64,8 @@ cOAnameTab::findCname(CDcellName nm)
 {
     if (!nt_cname_tab)
         return (0);
-    unsigned long f = (unsigned long)nt_cname_tab->get((unsigned long)nm);
+    unsigned long f = (unsigned long)SymTab::get(nt_cname_tab,
+        (unsigned long)nm);
     if (f == (unsigned long)ST_NIL)
         return (0);
     return (f);
@@ -76,7 +77,7 @@ cOAnameTab::updateCname(CDcellName nm, unsigned long f)
 {
     if (!nt_cname_tab)
         nt_cname_tab = new SymTab(false, false);
-    SymTabEnt *h = nt_cname_tab->get_ent((unsigned long)nm);
+    SymTabEnt *h = SymTab::get_ent(nt_cname_tab, (unsigned long)nm);
     if (!h) {
         OAerrLog.add_log(OAlogLoad, "adding to cell name table: %s.",
             nm->string());
@@ -135,9 +136,9 @@ cOAnameTab::cellNameAlias(const oaScalarName &libName,
     cellName.get(oaNativeNS(), cellname);
     CDcellName lname = CD()->CellNameTableAdd(libname);
     CDcellName cname = CD()->CellNameTableAdd(cellname);
-    SymTab *stab = (SymTab*)nt_libtab_tab->get((unsigned long)lname);
+    SymTab *stab = (SymTab*)SymTab::get(nt_libtab_tab, (unsigned long)lname);
     if (stab != (SymTab*)ST_NIL) {
-        CDcellName nn = (CDcellName)stab->get((unsigned long)cname);
+        CDcellName nn = (CDcellName)SymTab::get(stab, (unsigned long)cname);
         if (nn != (CDcellName)ST_NIL)
             return (nn);
     }
@@ -191,7 +192,7 @@ cOAnameTab::getNewName(CDcellName name)
     for (int i = 1; ; i++) {
         sprintf(e, "%d", i);
         CDcellName nn = CD()->CellNameTableAdd(tbuf);
-        if (nt_cname_tab->get((unsigned long)nn) == ST_NIL) {
+        if (SymTab::get(nt_cname_tab, (unsigned long)nn) == ST_NIL) {
             delete [] tbuf;
             return (nn);
         }

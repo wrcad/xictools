@@ -1175,7 +1175,7 @@ oa_save::save_elec_inst(CDs *sdesc, const char *cellname, oaBlock *block)
                 if (!out_devsused)
                     out_devsused = new SymTab(false, false);
                 const char *nm = msdesc->cellname()->string();
-                if (out_devsused->get(nm) == ST_NIL)
+                if (SymTab::get(out_devsused, nm) == ST_NIL)
                     out_devsused->add(nm, msdesc, false);
 
                 inst = oaScalarInst::create(block, devLibName, cellName,
@@ -1687,7 +1687,7 @@ oa_save::save_cell_properties(CDs *sdesc, oaObject *object)
         if (p->string(&string)) {
             int num = p->value();
             int ix = 0;
-            SymTabEnt *h = tab->get_ent(num);
+            SymTabEnt *h = SymTab::get_ent(tab, num);
             if (!h)
                 tab->add(num, (void*)(long)1, false);
             else {
@@ -1769,7 +1769,7 @@ oa_save::save_obj_properties(const CDo *odesc, oaObject *object)
             if (p->string(&string)) {
                 int num = p->value();
                 int ix = 0;
-                SymTabEnt *h = tab->get_ent(num);
+                SymTabEnt *h = SymTab::get_ent(tab, num);
                 if (!h)
                     tab->add(num, (void*)(long)1, false);
                 else {

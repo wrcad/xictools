@@ -790,7 +790,7 @@ cOAprop::getPcParameters(const oaParamArray &parray, SymTab *pctab)
             {
                 const char *c = 0;
                 if (pctab) {
-                    c = (const char*)pctab->get(name);
+                    c = (const char*)SymTab::get(pctab, name);
                     if (c == (const char*)ST_NIL)
                         c = 0;
                 }
@@ -808,7 +808,7 @@ cOAprop::getPcParameters(const oaParamArray &parray, SymTab *pctab)
             {
                 const char *c = 0;
                 if (pctab) {
-                    c = (const char*)pctab->get(name);
+                    c = (const char*)SymTab::get(pctab, name);
                     if (c == (const char*)ST_NIL)
                         c = 0;
                 }
@@ -826,7 +826,7 @@ cOAprop::getPcParameters(const oaParamArray &parray, SymTab *pctab)
             {
                 const char *c = 0;
                 if (pctab) {
-                    c = (const char*)pctab->get(name);
+                    c = (const char*)SymTab::get(pctab, name);
                     if (c == (const char*)ST_NIL)
                         c = 0;
                 }
@@ -846,7 +846,7 @@ cOAprop::getPcParameters(const oaParamArray &parray, SymTab *pctab)
                 // This isn't really handled.
                 const char *c = 0;
                 if (pctab) {
-                    c = (const char*)pctab->get(name);
+                    c = (const char*)SymTab::get(pctab, name);
                     if (c == (const char*)ST_NIL)
                         c = 0;
                 }
@@ -868,7 +868,7 @@ cOAprop::getPcParameters(const oaParamArray &parray, SymTab *pctab)
             {
                 const char *c = 0;
                 if (pctab) {
-                    c = (const char*)pctab->get(name);
+                    c = (const char*)SymTab::get(pctab, name);
                     if (c == (const char*)ST_NIL)
                         c = 0;
                 }
@@ -886,7 +886,7 @@ cOAprop::getPcParameters(const oaParamArray &parray, SymTab *pctab)
             {
                 const char *c = 0;
                 if (pctab) {
-                    c = (const char*)pctab->get(name);
+                    c = (const char*)SymTab::get(pctab, name);
                     if (c == (const char*)ST_NIL)
                         c = 0;
                 }
@@ -904,7 +904,7 @@ cOAprop::getPcParameters(const oaParamArray &parray, SymTab *pctab)
             {
                 const char *c = 0;
                 if (pctab) {
-                    c = (const char*)pctab->get(name);
+                    c = (const char*)SymTab::get(pctab, name);
                     if (c == (const char*)ST_NIL)
                         c = 0;
                 }
@@ -1221,7 +1221,7 @@ cOAelecInfo::set_prp_info(const char *cname, const oaProp *pip,
         return;
     cOAelecInfo *cdf = 0;
     if (cdf_tab) {
-        cdf = (cOAelecInfo*)cdf_tab->get(cname);
+        cdf = (cOAelecInfo*)SymTab::get(cdf_tab, cname);
         if (cdf == (cOAelecInfo*)ST_NIL)
             cdf = 0;
     }
@@ -1309,7 +1309,7 @@ cOAelecInfo::find(const char *name)
 {
     if (!cdf_tab || !name)
         return (0);
-    cOAelecInfo *info = (cOAelecInfo*)cdf_tab->get(name);
+    cOAelecInfo *info = (cOAelecInfo*)SymTab::get(cdf_tab, name);
     if (info == (cOAelecInfo*)ST_NIL)
         return (0);
     return (info);

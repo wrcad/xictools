@@ -115,7 +115,7 @@ sOAportTab::find(const char *str, unsigned int *t, unsigned int *p) const
     if (!CDnetex::parse(str, &nx)) {
         // Parse failed, keep it as a scalar.
         Errs()->get_error();
-        unsigned long l = (unsigned long)pt_tab->get(str);
+        unsigned long l = (unsigned long)SymTab::get(pt_tab, str);
         if (l == (unsigned long)ST_NIL)
             return (false);
         if (p)
@@ -127,7 +127,7 @@ sOAportTab::find(const char *str, unsigned int *t, unsigned int *p) const
         sLstr lstr;
         CDnetex::print_all(nx, &lstr);
         CDnetex::destroy(nx);
-        unsigned long l = (unsigned long)pt_tab->get(lstr.string());
+        unsigned long l = (unsigned long)SymTab::get(pt_tab, lstr.string());
         if (l == (unsigned long)ST_NIL)
             return (false);
         if (p)

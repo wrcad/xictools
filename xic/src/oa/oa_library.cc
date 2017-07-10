@@ -307,7 +307,7 @@ cOA::set_lib_open(const char *libname, bool open)
     if (open) {
         if (!oa_open_lib_tab)
             oa_open_lib_tab = new SymTab(true, false);
-        if (oa_open_lib_tab->get(libname) == ST_NIL)
+        if (SymTab::get(oa_open_lib_tab, libname) == ST_NIL)
             oa_open_lib_tab->add(lstring::copy(libname), 0, false);
     }
     else {
@@ -332,7 +332,7 @@ cOA::is_lib_open(const char *libname, bool *retval)
     if (!oa_open_lib_tab)
         return (true);
     if (retval)
-        *retval = (oa_open_lib_tab->get(libname) != ST_NIL);
+        *retval = (SymTab::get(oa_open_lib_tab, libname) != ST_NIL);
     return (true);
 }
 
