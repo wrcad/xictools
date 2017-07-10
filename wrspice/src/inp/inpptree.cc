@@ -691,8 +691,7 @@ int
 IFparseTree::eval(double *result, double *vals, double *dvs, int *docomma)
 {
     Errs()->init_error();
-    const IFparseTree *thispt = this;
-    if (!thispt || !pt_tree)
+    if (!pt_tree)
         *result = 0.0;
     else {
         if (docomma && pt_tree->p_type == PT_COMMA) {
@@ -3056,7 +3055,8 @@ IFparseNode::p_vlparm(double *res, const double*, const double*)
     double vv;
     // range starts after null, double null if no range
     const char *rng = p_valname + strlen(p_valname) + 1;
-    if (p_tree->ckt()->CKTvblk->query_var(p_valname, rng, &vv)) {
+    if (p_tree && p_tree->ckt() && p_tree->ckt()->CKTvblk &&
+            p_tree->ckt()->CKTvblk->query_var(p_valname, rng, &vv)) {
         if (vv != p_auxval) {
             p_auxtime = p_tree->ckt()->CKTtime;
             if (p_auxtime == 0.0)
@@ -3316,7 +3316,7 @@ IFparseNode::copy_prv(bool skip_nd)
     newp->p_newderiv = false;
     if (newp->p_type == PT_TFUNC) {
         if (p_valindx != PTF_tTABLE)
-            newp->v.td = v.td->dup();
+            newp->v.td = v.td ? v.td->dup() : 0;
     }
     else if (p_type == PT_PARAM || p_type == PT_PLACEHOLDER ||
             p_type == PT_MACROARG)

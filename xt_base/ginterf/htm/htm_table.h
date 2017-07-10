@@ -152,8 +152,8 @@ struct htmTable
             }
         }
 
-    htmTable *open(htmWidget*, htmObjectTable*, htmObject*, Alignment*,
-        unsigned int*, htmImage**, htmTableCell**);
+    static htmTable *open(htmTable*, htmWidget*, htmObjectTable*, htmObject*,
+        Alignment*, unsigned int*, htmImage**, htmTableCell**);
 
     htmTable *close(htmWidget*, htmObjectTable*, htmTableCell**);
 

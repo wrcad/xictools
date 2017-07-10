@@ -2115,7 +2115,8 @@ htmFormatManager::a_CAPTION()
 {
     if (f_object->is_end) {
         // close the caption
-        f_table->closeCaption(f_html, f_element);
+        if (f_table)
+            f_table->closeCaption(f_html, f_element);
 
         f_halign = f_cx->popAlignment();
         f_bg = f_cx->popBGColor();
@@ -2131,7 +2132,10 @@ htmFormatManager::a_CAPTION()
         f_halign = HALIGN_CENTER;
 
         // open the caption
-        f_table->openCaption(f_html, f_element, f_object, &f_bg, &f_bg_image);
+        if (f_table) {
+            f_table->openCaption(f_html, f_element, f_object, &f_bg,
+                &f_bg_image);
+        }
 
         f_object_type = OBJ_TABLE_FRAME;
     }
@@ -2842,7 +2846,8 @@ htmFormatManager::a_TABLE()
 {
     if (f_object->is_end) {
         // wrapup current table
-        f_table = f_table->close(f_html, f_element, &f_table_cell);
+        if (f_table)
+            f_table = f_table->close(f_html, f_element, &f_table_cell);
 
         f_halign = f_cx->popAlignment();
         f_bg = f_cx->popBGColor();
@@ -2860,8 +2865,8 @@ htmFormatManager::a_TABLE()
         f_cx->pushIdent(f_ident_level);
 
         // Open a new table. Returns a parent or a child table.
-        f_table = f_table->open(f_html, f_element, f_object, &f_halign, &f_bg,
-            &f_bg_image, &f_table_cell);
+        f_table = htmTable::open(f_table, f_html, f_element, f_object,
+            &f_halign, &f_bg, &f_bg_image, &f_table_cell);
 
         // Want to reset indentation level for table contents,
         // but keep the indentation level for tables in
@@ -2897,7 +2902,8 @@ htmFormatManager::a_TD_TH()
             f_font = f_cx->popFont(&f_fontsize);
 
         // close current cell
-        f_table->closeCell(f_html, f_element);
+        if (f_table)
+            f_table->closeCell(f_html, f_element);
         f_halign = f_cx->popAlignment();
         f_bg = f_cx->popBGColor();
         f_bg_image = f_cx->popBGImage();
@@ -2915,8 +2921,8 @@ htmFormatManager::a_TD_TH()
         f_cx->pushBGImage(f_bg_image);
 
         // open a cell
-        f_table_cell = f_table->openCell(f_html, f_element, f_object,
-            &f_halign, &f_bg, &f_bg_image);
+        f_table_cell = f_table ? f_table->openCell(f_html, f_element, f_object,
+            &f_halign, &f_bg, &f_bg_image) : 0;
 
         // table cell always resets linefeeding
         checkLineFeed(LF_DOWN_1, true);
@@ -2949,7 +2955,8 @@ htmFormatManager::a_TR()
     if (f_object->is_end) {
         // optional termination
         // close current row
-        f_table->closeRow(f_html, f_element);
+        if (f_table)
+            f_table->closeRow(f_html, f_element);
         f_halign = f_cx->popAlignment();
         f_bg = f_cx->popBGColor();
         f_bg_image = f_cx->popBGImage();
@@ -2960,8 +2967,10 @@ htmFormatManager::a_TR()
         f_cx->pushAlignment(f_halign);
         f_cx->pushBGColor(f_bg);
         f_cx->pushBGImage(f_bg_image);
-        f_table->openRow(f_html, f_element, f_object, &f_halign, &f_bg,
-            &f_bg_image);
+        if (f_table) {
+            f_table->openRow(f_html, f_element, f_object, &f_halign, &f_bg,
+                &f_bg_image);
+        }
         f_object_type = OBJ_TABLE_FRAME;
     }
 }

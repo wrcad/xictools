@@ -1057,26 +1057,29 @@ IFsimulator::VecGet(const char *word, const sCKT *ckt, bool silent)
     else if (dtype == IF_PARSETREE) {
         d->set_length(1);
         d->set_realvec(new double[1]);
+        d->set_realval(0, 0.0);
 
         IFparseTree *tree = data.v.tValue;
-        int numvars = tree->num_vars();
-        double *vals = new double[numvars + 1];
-        for (int i = 0; i < numvars; i++) {
-            sLstr lstr;
-            tree->varName(i, lstr);
-            sDataVec *v = VecGet(lstr.string(), ckt, silent);
-            if (!v) {
-                delete [] vals;
-                return (0);
+        if (tree) {
+            int numvars = tree->num_vars();
+            double *vals = new double[numvars + 1];
+            for (int i = 0; i < numvars; i++) {
+                sLstr lstr;
+                tree->varName(i, lstr);
+                sDataVec *v = VecGet(lstr.string(), ckt, silent);
+                if (!v) {
+                    delete [] vals;
+                    return (0);
+                }
+                vals[i] = v->realval(0);
             }
-            vals[i] = v->realval(0);
+            double r;
+            int error = tree->eval(&r, vals, 0);
+            delete [] vals;
+            if (error)
+                return (0);
+            d->set_realval(0, r);
         }
-        double r;
-        int error = tree->eval(&r, vals, 0);
-        delete [] vals;
-        if (error)
-            return (0);
-        d->set_realval(0, r);
     }
     else {
         if (!silent)

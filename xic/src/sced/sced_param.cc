@@ -70,7 +70,7 @@ cParamCx::push(const CDs *sdesc, const char *inst_prms)
         // Local parhier, instance and master definitions supersede
         // higher definitions.
 
-        pc_tab = pc_stack->ptab->copy();
+        pc_tab = sParamTab::copy(pc_stack->ptab);
         sParamTab *tmpptab = buildParamTab(sdesc);
         pc_tab = sParamTab::update(pc_tab, tmpptab);
         delete tmpptab;

@@ -481,10 +481,6 @@ sCKTtable::tablEvalDeriv(double x)
 void
 sCKTtable::tablfix()
 {
-    const sCKTtable *thistab = this;
-    if (!thistab)
-        return;
-
     sCKTentry *e, *ee;
     for (e = tab_entry; e; e = ee) {
         ee = e->ent_next;
