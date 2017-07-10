@@ -1446,6 +1446,9 @@ namespace {
 #ifdef SIGFPE
         sigaction(SIGFPE,   &sa, 0);
 #endif
+#ifdef SIGIO
+        signal(SIGIO,  SIG_IGN);
+#endif
 
 #else
 #ifdef HAVE_SIGNAL
@@ -1517,6 +1520,9 @@ namespace {
 #endif
 #ifdef SIGFPE
         signal(SIGFPE,  SIG_HDLR);
+#endif
+#ifdef SIGIO
+        signal(SIGIO,  SIG_IGN);
 #endif
 
 #endif

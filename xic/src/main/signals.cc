@@ -162,6 +162,9 @@ cMain::InitSignals(bool no_die)
 #ifdef SIGUSR2
     signal(SIGUSR2, SIG_HDLR);
 #endif
+#ifdef SIGIO
+    signal(SIGIO, SIG_IGN);
+#endif
 }
 
 
@@ -344,6 +347,10 @@ namespace {
                 "Fatal internal error: too many floating point exceptions.\n",
                     true);
         }
+#ifdef SIGIO
+        else if (sig == SIGIO)
+            return;
+#endif
         else {
             if (XM()->RunMode() == ModeBackground) {
                 char buf[64];

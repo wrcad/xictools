@@ -449,6 +449,10 @@ ebtn_menu::M_SpiceCmd(CmdDesc *cmd)
                 PL()->ShowPrompt(retbuf);
                 delete [] retbuf;
             }
+            if (errbuf) {
+                Log()->ErrorLog("spice ipc", errbuf);
+                delete [] errbuf;
+            }
             return;
         }
         if (retbuf) {

@@ -996,9 +996,22 @@ Remedies:
 -  Find the method calls and add an explicit test for null pointer.
    Mark verified calls with "// XTST ok".
 
+Fedora networking gave trouble with xic/wrspice ipc.
+Set SIGIO to SIG_IGN in Xic and WRspice.  This signal is generated when a
+socket status changes.  Maybe some daye use this, but for now ignore them
+of the program will terminate.
 
+IPC cails if the host name can't be resolved, which was the default.
+1.  In VirtualBox, make sure network mapping is set to "Bridge", default
+is "NAT" which won;t work.
+2.  In Fedora Network setup, create a connection that uses the correct
+addresses and is manual.
+3.  Change the /etc/hostname file.
+4.  I also changed the "hosts" in /etc/nsswotch.conf to "files dns",
+not sure this was needed.
 
-
+In the Spice Cmd operation, error messages weren't being handled, fixed.
+This was a core leak, too.
 
 
 ==== Sticky ==================================
