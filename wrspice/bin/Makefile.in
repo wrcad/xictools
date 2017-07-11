@@ -395,10 +395,10 @@ $(destn)/devkit::
 	    $(INSTALL_LIB) ../devlib/adms/$$a $@/`dirname $$a`; \
         done; \
 	for a in $$edirs; do \
-	    cat ../devlib/adms/examples/$$a/Makefile | sed -e \
-  "s%^ADMST = .*%ADMST = /usr/local/xictools/wrspice/devkit/admst%" \
-  -e "s%^DLL_LOC = .*%DLL_LOC = /usr/local/xictools/bin%" > \
-  $@/examples/$$a/Makefile; \
+	    cat ../devlib/adms/examples/$$a/Makefile | sed \
+  -e "s%^ADMST = .*%ADMST = /usr/local/xictools/wrspice/devkit/admst%" \
+  -e "s%^DLL_LOC = .*%DLL_LOC = /usr/local/xictools/bin%" \
+  -e "s%^WRSPICE = .*%WRSPICE = wrspice%" > $@/examples/$$a/Makefile; \
 	    mkdir $@/examples/$$a/module_dist; \
 	    cp ../devlib/adms/examples/$$a/*.$(SOEXT) $@/examples/$$a/module_dist; \
 	done;

@@ -101,18 +101,20 @@ FLAGS =
 #
 DLL_LOC = /usr/local/xictools/bin
 
-# These should automatically configure the rest of the Makefile to
-# your environment.  You may need to tweak these if wrspice is not in
-# your search path (see below for example values).
+# This should automatically configure the rest of the Makefile to your
+# WRspice environment.  If wrspice in not in your search path, or you
+# are cross-building, you should set this to the full path of the
+# WRspice executable you wish to build modules for.
 #
-DEVLIB_VERSION = $(shell wrspice --v | sed -e "s/ .*//")
-OSNAME = $(shell wrspice --v | sed -e "s/^.* //")
+WRSPICE = wrspice
 
 #  End of (intended) User Configuration.
 #  You may still have to mess around below if your build environment
 #  isn't like mine, likely for non-Linux.
 #######################################################################
 
+DEVLIB_VERSION = $(shell $(WRSPICE) --v | sed -e "s/ .*//")
+OSNAME = $(shell $(WRSPICE) --v | sed -e "s/^.* //")
 
 # This Makefile originated from this distribution:
 #DEVLIB_VERSION = @DEVLIB_VERSION@
