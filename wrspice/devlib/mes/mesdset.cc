@@ -42,8 +42,8 @@ MESdev::dSetup(sMESmodel *model, sCKT *ckt)
     double gmin = ckt->CKTcurTask->TSKgmin;
     double afact;
     double beta;
-    double betap;
-    double cdrain;
+//    double betap;
+//    double cdrain;
     double cg;
     double cgd;
     double csat;
@@ -52,14 +52,14 @@ MESdev::dSetup(sMESmodel *model, sCKT *ckt)
     double denom;
     double evgd;
     double evgs;
-    double gdpr;
-    double gspr;
-    double invdenom;
-    double lfact;
+//    double gdpr;
+//    double gspr;
+//    double invdenom;
+//    double lfact;
     double phib;
     double prod;
     double vcap;
-    double vcrit;
+//    double vcrit;
     double vds;
     double vgd;
     double vgs;
@@ -83,10 +83,10 @@ MESdev::dSetup(sMESmodel *model, sCKT *ckt)
             //  dc model parameters 
             //
             beta = model->MESbeta * inst->MESarea;
-            gdpr = model->MESdrainConduct * inst->MESarea;
-            gspr = model->MESsourceConduct * inst->MESarea;
+//            gdpr = model->MESdrainConduct * inst->MESarea;
+//            gspr = model->MESsourceConduct * inst->MESarea;
             csat = model->MESgateSatCurrent * inst->MESarea;
-            vcrit = model->MESvcrit;
+//            vcrit = model->MESvcrit;
             vto = model->MESthreshold;
             //
             //    initialization
@@ -190,24 +190,24 @@ MESdev::dSetup(sMESmodel *model, sCKT *ckt)
                 //   normal mode, cutoff region 
                 //
                 if (vgst <= 0) {
-                    cdrain = 0;
+//                    cdrain = 0;
                     EqualDeriv(&d_cdrain,&d_zero);
                 }
                 else {
                     prod = 1 + model->MESlModulation * vds;
                     TimesDeriv(&d_prod,&d_r,model->MESlModulation);
                     d_prod.value = prod;
-                    betap = beta * prod;
+//                    betap = beta * prod;
                     TimesDeriv(&d_betap,&d_prod,beta);
                     denom = 1 + model->MESb * vgst;
                     TimesDeriv(&d_denom,&d_vgst,model->MESb);
                     d_denom.value = denom;
-                    invdenom = 1 / denom;
+//                    invdenom = 1 / denom;
                     InvDeriv(&d_invdenom,&d_denom);
                     //
                     //   normal mode, saturation region 
                     //
-                    cdrain = betap * vgst * vgst * invdenom;
+//                    cdrain = betap * vgst * vgst * invdenom;
                     MultDeriv(&d_cdrain,&d_betap,&d_vgst);
                     MultDeriv(&d_cdrain,&d_cdrain,&d_vgst);
                     MultDeriv(&d_cdrain,&d_cdrain,&d_invdenom);
@@ -219,11 +219,11 @@ MESdev::dSetup(sMESmodel *model, sCKT *ckt)
                         afact = 1 - model->MESalpha * vds / 3;
                         TimesDeriv(&d_afact,&d_r,-model->MESalpha/3.0);
                         d_afact.value = afact;
-                        lfact = 1 - afact * afact * afact;
+//                        lfact = 1 - afact * afact * afact;
                         CubeDeriv(&d_lfact,&d_afact);
                         TimesDeriv(&d_lfact,&d_lfact,-1.0);
                         d_lfact.value += 1.0;
-                        cdrain = betap*vgst*vgst*invdenom*lfact;
+//                        cdrain = betap*vgst*vgst*invdenom*lfact;
                         MultDeriv(&d_cdrain,&d_betap,&d_vgst);
                         MultDeriv(&d_cdrain,&d_cdrain,&d_vgst);
                         MultDeriv(&d_cdrain,&d_cdrain,&d_invdenom);
@@ -253,8 +253,8 @@ MESdev::dSetup(sMESmodel *model, sCKT *ckt)
                 //
                 // function qggnew  - private, used by MESload
                 {
-                    double veroot,veff1,veff2,del,vnroot,vnew1,vnew3,vmax,ext;
-                    double qroot,par1,cfact,cplus,cminus;
+                    double veroot,veff1,/*veff2,*/del,vnroot,vnew1,/*vnew3,*/vmax/*,ext */;
+//                    double qroot,par1,cfact,cplus,cminus;
                     Dderivs d_vnroot;
                     Dderivs d_cgsnew, d_cgdnew, d_dummy, d_dummy2;
                     Dderivs d_ext, d_qroot, d_par1, d_cfact, d_cplus, d_cminus;
@@ -273,7 +273,7 @@ MESdev::dSetup(sMESmodel *model, sCKT *ckt)
                     PlusDeriv(&d_veff1,&d_veroot,&d_p);
                     PlusDeriv(&d_veff1,&d_veff1,&d_q);
                     TimesDeriv(&d_veff1,&d_veff1,0.5);
-                    veff2 = veff1 - veroot;
+//                    veff2 = veff1 - veroot;
                     TimesDeriv(&d_veff2,&d_veroot,-1.0);
                     PlusDeriv(&d_veff2,&d_veff2,&d_veff1);
 
@@ -288,44 +288,44 @@ MESdev::dSetup(sMESmodel *model, sCKT *ckt)
                     PlusDeriv(&d_vnew1,&d_veff1,&d_vnroot);
                     d_vnew1.value += vto;
                     TimesDeriv(&d_vnew1,&d_vnew1,0.5);
-                    vnew3 = vnew1;
+//                    vnew3 = vnew1;
                     EqualDeriv(&d_vnew3,&d_vnew1);
                     vmax = 0.5;/*const*/
                     if ( vnew1 < vmax ) {
-                        ext=0;
+//                        ext=0;
                         EqualDeriv(&d_ext,&d_zero);
                     }
                     else {
                         vnew1 = vmax;
                         EqualDeriv(&d_vnew1,&d_zero);
                         d_vnew1.value = vmax;
-                        ext = (vnew3 - vmax)/sqrt(1 - vmax/phib);
+//                        ext = (vnew3 - vmax)/sqrt(1 - vmax/phib);
                         EqualDeriv(&d_ext,&d_vnew3);
                         d_ext.value -= vmax;
                         TimesDeriv(&d_ext,&d_ext,1/sqrt(1 - vmax/phib));
                     }
 
-                    qroot = sqrt(1 - vnew1/phib);
+//                    qroot = sqrt(1 - vnew1/phib);
                     TimesDeriv(&d_qroot,&d_vnew1,-1/phib);
                     d_qroot.value += 1.0;
                     SqrtDeriv(&d_qroot,&d_qroot);
                     //
                     // qggval = czgs * (2*phib*(1-qroot) + ext) + czgd*veff2;
                     //
-                    par1 = 0.5 * ( 1 + (veff1-vto)/vnroot);
+//                    par1 = 0.5 * ( 1 + (veff1-vto)/vnroot);
                     EqualDeriv(&d_par1,&d_veff1);
                     d_par1.value -= vto;
                     DivDeriv(&d_par1,&d_par1,&d_vnroot);
                     d_par1.value += 1.0;
                     TimesDeriv(&d_par1,&d_par1,0.5);
-                    cfact = (vgs- vgd)/veroot;
+//                    cfact = (vgs- vgd)/veroot;
                     TimesDeriv(&d_cfact,&d_q,-1.0);
                     PlusDeriv(&d_cfact,&d_cfact,&d_p);
                     DivDeriv(&d_cfact,&d_cfact,&d_veroot);
-                    cplus = 0.5 * (1 + cfact);
+//                    cplus = 0.5 * (1 + cfact);
                     TimesDeriv(&d_cplus,&d_cfact,0.5);
                     d_cplus.value += 0.5;
-                    cminus = cplus - cfact;
+//                    cminus = cplus - cfact;
                     TimesDeriv(&d_cminus,&d_cfact,-0.5);
                     d_cminus.value += 0.5;
                     //

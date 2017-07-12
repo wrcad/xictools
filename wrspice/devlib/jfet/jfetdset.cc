@@ -52,8 +52,8 @@ JFETdev::dSetup(sJFETmodel *model, sCKT *ckt)
     double lcapgs2;
     double lcapgs3;
     double lcapgs1;
-    double cd;
-    double cdrain;
+//    double cd;
+//    double cdrain;
     double temp;
     double cg;
     double cgd;
@@ -64,8 +64,8 @@ JFETdev::dSetup(sJFETmodel *model, sCKT *ckt)
     double czgsf2;
     double evgd;
     double evgs;
-    double fcpb2;
-    double gdpr;
+//    double fcpb2;
+//    double gdpr;
     double gds1;
     double gds2;
     double gds3;
@@ -81,7 +81,7 @@ JFETdev::dSetup(sJFETmodel *model, sCKT *ckt)
     double gmds;
     double gm2ds;
     double gmds2;
-    double gspr;
+//    double gspr;
     double sarg;
     double twob;
     double twop;
@@ -99,8 +99,8 @@ JFETdev::dSetup(sJFETmodel *model, sCKT *ckt)
             //  dc model parameters 
             //
             beta = model->JFETbeta * inst->JFETarea;
-            gdpr = model->JFETdrainConduct*inst->JFETarea;
-            gspr = model->JFETsourceConduct*inst->JFETarea;
+//            gdpr = model->JFETdrainConduct*inst->JFETarea;
+//            gspr = model->JFETsourceConduct*inst->JFETarea;
             csat = inst->JFETtSatCur*inst->JFETarea;
             //
             //    initialization
@@ -157,7 +157,7 @@ JFETdev::dSetup(sJFETmodel *model, sCKT *ckt)
             //   cutoff region 
             //
             if (vgst <= 0) {
-                cdrain = 0;
+//                cdrain = 0;
                 gm1 = gm2 = gm3 = 0;
                 gds1 = gds2 = gds3 = 0;
                 gmds = gm2ds = gmds2 = 0;
@@ -175,7 +175,7 @@ JFETdev::dSetup(sJFETmodel *model, sCKT *ckt)
                      // become Taylor coeffs. A notational 
                      // inconsistency but simplifies processing later.
                      //
-                    cdrain = betap*vgst*vgst;
+//                    cdrain = betap*vgst*vgst;
                     gm1 = twob*vgst;
                     gm2 = twob;
                     gm3 = 0;
@@ -188,7 +188,7 @@ JFETdev::dSetup(sJFETmodel *model, sCKT *ckt)
                     //
                     //   normal mode, linear region 
                     //
-                    cdrain = betap*vds*(vgst+vgst-vds);
+//                    cdrain = betap*vds*(vgst+vgst-vds);
                     gm1 = twob*vds;
                     gm2 = 0;
                     gm3 = 0;
@@ -206,14 +206,14 @@ JFETdev::dSetup(sJFETmodel *model, sCKT *ckt)
             //
             //   compute equivalent drain current source 
             //
-            cd = cdrain-cgd;
+//            cd = cdrain-cgd;
             // 
             //    charge storage elements 
             //
             czgs = inst->JFETtCGS*inst->JFETarea;
             czgd = inst->JFETtCGD*inst->JFETarea;
             twop = inst->JFETtGatePot+inst->JFETtGatePot;
-            fcpb2 = inst->JFETcorDepCap*inst->JFETcorDepCap;
+//            fcpb2 = inst->JFETcorDepCap*inst->JFETcorDepCap;
             czgsf2 = czgs/model->JFETf2;
             czgdf2 = czgd/model->JFETf2;
             if (vgs < inst->JFETcorDepCap) {

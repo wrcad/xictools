@@ -122,7 +122,7 @@ B1dev::evaluate(double vds, double vbs, double vgs, sB1instance *inst,
     double Args2;
     double Args3;
     double Warg1;
-    double Vcut;
+//    double Vcut;
     double N;
     double N0;
     double NB;
@@ -311,7 +311,7 @@ B1dev::evaluate(double vds, double vbs, double vgs, sB1instance *inst,
 SubthresholdComputation:
 
     N0 = inst->B1subthSlope;
-    Vcut = - 40. * N0 * CONSTvt0 ;
+//    Vcut = - 40. * N0 * CONSTvt0 ;
 
 // The following 'if' statement has been modified so that subthreshold
 // current computation is always executed unless N0 >= 200. This should

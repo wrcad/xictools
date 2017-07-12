@@ -58,7 +58,7 @@ DIOdev::dSetup(sDIOmodel *model, sCKT *ckt)
         double g2,g3;
         double cdiff2,cdiff3;
         double cjunc1,cjunc2,cjunc3;
-        double cd;
+//        double cd;
         double czeroSW;
         double cjunc1SW,cjunc2SW,cjunc3SW;
 
@@ -91,7 +91,7 @@ DIOdev::dSetup(sDIOmodel *model, sCKT *ckt)
                  */
                         if (vd >= -3*vte) { /* forward */
                                 evd = exp(vd/vte);
-                                cd = csat*(evd-1);
+//                                cd = csat*(evd-1);
                                 gd = csat*evd/vte;
                                 
                                 g2 = 0.5 * gd / vte;
@@ -107,7 +107,7 @@ DIOdev::dSetup(sDIOmodel *model, sCKT *ckt)
                                 arg=3*vte/(vd*CONSTe);
                                 arg = arg * arg * arg;
                                 
-                                cd = -csat * (1 + arg);
+//                                cd = -csat * (1 + arg);
                                 gd = csat * 3 * arg / vd;
                                 g2 = -4 * gd / vd;
                                 g3 = 5 * g2 / vd;
@@ -118,7 +118,7 @@ DIOdev::dSetup(sDIOmodel *model, sCKT *ckt)
                         else { /* breakdown*/
                                 /* why using csat instead of breakdowncurrent? */
                                 evrev=exp(-(here->DIOtBrkdwnV+vd)/vt);
-                                cd = -csat*evrev;
+//                                cd = -csat*evrev;
                                 gd = csat*evrev/vte;
                                 /*
                       * cd = -csat*(evrev-1+here->DIOtBrkdwnV/vt);

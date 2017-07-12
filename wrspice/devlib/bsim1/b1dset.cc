@@ -49,7 +49,7 @@ B1dev::dSetup(sB1model *model, sCKT *ckt)
     double SourceArea;
     double DrainPerimeter;
     double SourcePerimeter;
-    double vt0;
+//    double vt0;
     double evbs;
     double lgbs1, lgbs2, lgbs3;
     double czbd, czbs, czbdsw, czbssw;
@@ -57,9 +57,9 @@ B1dev::dSetup(sB1model *model, sCKT *ckt)
     double arg, argsw, sarg, sargsw;
     double capbs1, capbs2, capbs3;
     double capbd1, capbd2, capbd3;
-    double qg;
-    double qb;
-    double qd;
+//    double qg;
+//    double qb;
+//    double qd;
     double Vfb;
     double Phi;
     double K1;
@@ -90,7 +90,7 @@ B1dev::dSetup(sB1model *model, sCKT *ckt)
     double Vc;
     double Term1;
     double K;
-    double Args1;
+//    double Args1;
     double Args2;
     double Args3;
     double Warg1;
@@ -120,7 +120,7 @@ B1dev::dSetup(sB1model *model, sCKT *ckt)
     */
     double Argl5;
     double Argl6;
-    double Argl7;
+//    double Argl7;
     double WLCox;
     double Vtsquare;
     int ChargeComputationNeeded;
@@ -128,8 +128,8 @@ B1dev::dSetup(sB1model *model, sCKT *ckt)
     double VgsVth  = 0.0;
     double lgbd1, lgbd2, lgbd3, evbd; 
     double vbd = 0.0;
-    double vgd = 0.0;
-    double vgb = 0.0;
+//    double vgd = 0.0;
+//    double vgb = 0.0;
     double vds = 0.0;
     double vgs = 0.0;
     double vbs = 0.0;
@@ -169,7 +169,7 @@ B1dev::dSetup(sB1model *model, sCKT *ckt)
             GateSourceOverlapCap = model->B1gateSourceOverlapCap *inst->B1w;
             GateDrainOverlapCap = model->B1gateDrainOverlapCap * inst->B1w;
             GateBulkOverlapCap = model->B1gateBulkOverlapCap *EffectiveLength;
-            vt0 = model->B1type * inst->B1vt0;
+//            vt0 = model->B1type * inst->B1vt0;
 
                     vbs = model->B1type * ( 
                         *(ckt->CKTrhsOld+inst->B1bNode) -
@@ -192,8 +192,8 @@ B1dev::dSetup(sB1model *model, sCKT *ckt)
         vbs = vbs + vds;
             }
 
-            vgb = vgs - vbs;
-            vgd = vgs - vds;
+//            vgb = vgs - vbs;
+//            vgd = vgs - vds;
             vbd = vbs - vds;
 
             if(vbs <= 0.0 ) {
@@ -564,9 +564,9 @@ ChargeComputation:
         (inst->B1w - model->B1deltaW * 1.e-6) * 1.e4;   /* F */
 
     if( ! ChargeComputationNeeded )  {  
-        qg  = 0;
-        qd = 0;
-        qb = 0;
+//        qg  = 0;
+//        qd = 0;
+//        qb = 0;
     EqualDeriv(&d_qg,&d_zero);
     EqualDeriv(&d_qb,&d_zero);
     EqualDeriv(&d_qd,&d_zero);
@@ -651,25 +651,24 @@ ChargeComputation:
 
         if( Vgb_Vfb < 0){
             /* Accumulation Region */
-            qg  =  WLCox * Vgb_Vfb;
+//            qg  =  WLCox * Vgb_Vfb;
         TimesDeriv(&d_qg,&d_Vgb_Vfb,WLCox);
-            qb  =  - qg;
+//            qb  =  - qg;
         TimesDeriv(&d_qb,&d_qg,-1.0);
-            qd  =  0. ;
+//            qd  =  0. ;
         EqualDeriv(&d_qd,&d_zero);
             goto finished;
         } else if ( vgs < Vth0 ){
             /* Subthreshold Region */
-            qg  =  0.5 * WLCox * K1 * K1 * (-1 + 
-                sqrt(1 + 4 * Vgb_Vfb / (K1 * K1)));
+//            qg  =  0.5 * WLCox * K1 * K1 * (-1 + sqrt(1 + 4 * Vgb_Vfb / (K1 * K1)));
             TimesDeriv(&d_qg,&d_Vgb_Vfb,4/(K1*K1));
         d_qg.value += 1.0;
         SqrtDeriv(&d_qg,&d_qg);
         d_qg.value -= 1.0;
         TimesDeriv(&d_qg,&d_qg,0.5 * WLCox * K1 * K1);
-            qb  =  -qg;
+//            qb  =  -qg;
         TimesDeriv(&d_qb,&d_qg,-1.0);
-            qd  =  0.;
+//            qd  =  0.;
         EqualDeriv(&d_qd,&d_zero);
             goto finished;
         } else if( vds < VdsPinchoff ){    /* triode region  */
@@ -696,7 +695,7 @@ ChargeComputation:
         d_Argl5.value = 2.0;
                 Argl6 = 4.0 / 1.5e1;/*const*/
             }
-            Argl7 = Argl5 / 1.2e1;
+//            Argl7 = Argl5 / 1.2e1;
         TimesDeriv(&d_Argl7,&d_Argl5,1.0/12.0);
         /*
             Argl8 = 6.0 * Ent;
@@ -705,14 +704,14 @@ ChargeComputation:
         MultDeriv(&d_Argl9,&d_Argl5,&d_Argl5);
         TimesDeriv(&d_Argl9,&d_Argl9,0.125);
         */
-            qg = WLCox * (vgs - Vfb - Phi - 0.5 * vds + vds * Argl7);
+//            qg = WLCox * (vgs - Vfb - Phi - 0.5 * vds + vds * Argl7);
         EqualDeriv(&d_qg,&d_Argl7);
         d_qg.value -= 0.5;
         MultDeriv(&d_qg,&d_qg,&d_r);
         d_qg.value  += vgs - Vfb - Phi;
         d_qg.d1_p += 1.0;
         TimesDeriv(&d_qg,&d_qg,WLCox);
-            qb = WLCox * ( - Vth0 + Vfb + Phi + 0.5 * Arg3 - Arg3 * Argl7);
+//            qb = WLCox * ( - Vth0 + Vfb + Phi + 0.5 * Arg3 - Arg3 * Argl7);
         TimesDeriv(&d_qb,&d_Argl7,-1.0);
         d_qb.value += 0.5;
         MultDeriv(&d_qb,&d_qb,&d_Arg3);
@@ -720,8 +719,7 @@ ChargeComputation:
         TimesDeriv(&d_dummy,&d_Vth0,-1.0);
         PlusDeriv(&d_qb,&d_qb,&d_dummy);
         TimesDeriv(&d_qb,&d_qb,WLCox);
-            qd =  - WLCox * (0.5 * VgsVth - 0.75 * Arg1 + 
-                0.125 * Arg1 * Argl5);
+//            qd =  - WLCox * (0.5 * VgsVth - 0.75 * Arg1 + 0.125 * Arg1 * Argl5);
         TimesDeriv(&d_qd,&d_Argl5,0.125);
         d_qd.value -= 0.75;
         MultDeriv(&d_qd,&d_qd,&d_Arg1);
@@ -730,15 +728,15 @@ ChargeComputation:
         TimesDeriv(&d_qd,&d_qd, -WLCox);
             goto finished;
         } else if( vds >= VdsPinchoff ) {    /* saturation region   */
-            Args1 = 1.0 /  (3*A);
+//            Args1 = 1.0 /  (3*A);
         TimesDeriv(&d_Args1,&d_A,3.0);
         InvDeriv(&d_Args1,&d_Args1);
-            qg = WLCox * (vgs - Vfb - Phi - VgsVth * Args1);
+//            qg = WLCox * (vgs - Vfb - Phi - VgsVth * Args1);
         MultDeriv(&d_qg,&d_VgsVth,&d_Args1);
         d_qg.value += Vfb + Phi - vgs;
         d_qg.d1_p -= 1.0;
         TimesDeriv(&d_qg,&d_qg,-WLCox);
-            qb = WLCox * (Vfb + Phi - Vth0 + (1.0 - A) * VgsVth * Args1);
+//            qb = WLCox * (Vfb + Phi - Vth0 + (1.0 - A) * VgsVth * Args1);
         TimesDeriv(&d_dummy,&d_A,-1.0);
         d_dummy.value += 1.0;
         MultDeriv(&d_qb,&d_VgsVth, &d_dummy);
@@ -747,7 +745,7 @@ ChargeComputation:
         TimesDeriv(&d_dummy,&d_Vth0,-1.0);
         PlusDeriv(&d_qb,&d_qb,&d_dummy);
         TimesDeriv(&d_qb,&d_qb,WLCox);
-            qd = 0.0;
+//            qd = 0.0;
         EqualDeriv(&d_qd,&d_zero);
             goto finished;
         }
@@ -814,25 +812,24 @@ ChargeComputation:
 
         if( Vgb_Vfb < 0){
             /* Accumulation Region */
-            qg  =  WLCox * Vgb_Vfb;
+//            qg  =  WLCox * Vgb_Vfb;
         TimesDeriv(&d_qg,&d_Vgb_Vfb,WLCox);
-            qb  =  - qg;
+//            qb  =  - qg;
         TimesDeriv(&d_qb,&d_qg,-1.0);
-            qd  =  0. ;
+//            qd  =  0. ;
         EqualDeriv(&d_qd,&d_zero);
             goto finished;
         } else if ( vgs < Vth0 ){
             /* Subthreshold Region */
-            qg  =  0.5 * WLCox * K1 * K1 * (-1 + 
-                sqrt(1 + 4 * Vgb_Vfb / (K1 * K1)));
+//            qg  =  0.5 * WLCox * K1 * K1 * (-1 + sqrt(1 + 4 * Vgb_Vfb / (K1 * K1)));
             TimesDeriv(&d_qg,&d_Vgb_Vfb,4/(K1*K1));
         d_qg.value += 1.0;
         SqrtDeriv(&d_qg,&d_qg);
         d_qg.value -= 1.0;
         TimesDeriv(&d_qg,&d_qg,0.5 * WLCox * K1 * K1);
-            qb  =  -qg;
+//            qb  =  -qg;
         TimesDeriv(&d_qb,&d_qg,-1.0);
-            qd  =  0.;
+//            qd  =  0.;
         EqualDeriv(&d_qd,&d_zero);
             goto finished;
         } else if( vds < VdsPinchoff ){    /* triode region  */
@@ -867,7 +864,7 @@ ChargeComputation:
         EqualDeriv(&d_Argl6,&d_zero);
         d_Argl6.value = Argl6;
             }
-            Argl7 = Argl5 / 1.2e1;
+//            Argl7 = Argl5 / 1.2e1;
         TimesDeriv(&d_Argl7,&d_Argl5,1/12.0);
         /*
             Argl8 = 6.0 * Ent;
@@ -876,14 +873,14 @@ ChargeComputation:
         MultDeriv(&d_Argl9,&d_Argl5,&d_Argl5);
         TimesDeriv(&d_Argl9,&d_Argl9,0.125);
         */
-            qg = WLCox * (vgs - Vfb - Phi - 0.5 * vds + vds * Argl7);
+//            qg = WLCox * (vgs - Vfb - Phi - 0.5 * vds + vds * Argl7);
         EqualDeriv(&d_qg,&d_Argl7);
         d_qg.value -= 0.5;
         MultDeriv(&d_qg,&d_qg,&d_r);
         d_qg.value  += vgs - Vfb - Phi;
         d_qg.d1_p += 1.0;
         TimesDeriv(&d_qg,&d_qg,WLCox);
-            qb = WLCox * ( - Vth0 + Vfb + Phi + 0.5 * Arg3 - Arg3 * Argl7);
+//            qb = WLCox * ( - Vth0 + Vfb + Phi + 0.5 * Arg3 - Arg3 * Argl7);
         TimesDeriv(&d_qb,&d_Argl7,-1.0);
         d_qb.value += 0.5;
         MultDeriv(&d_qb,&d_qb,&d_Arg3);
@@ -891,8 +888,7 @@ ChargeComputation:
         TimesDeriv(&d_dummy,&d_Vth0,-1.0);
         PlusDeriv(&d_qb,&d_qb,&d_dummy);
         TimesDeriv(&d_qb,&d_qb,WLCox);
-            qd =  - WLCox * (0.5 * (VgsVth -  Arg1) +
-                 Arg1 * Argl6);
+//            qd =  - WLCox * (0.5 * (VgsVth -  Arg1) + Arg1 * Argl6);
         MultDeriv(&d_dummy,&d_Arg1,&d_Argl6);
         TimesDeriv(&d_qd,&d_Arg1,-1.0);
         PlusDeriv(&d_qd,&d_qd,&d_VgsVth);
@@ -901,16 +897,16 @@ ChargeComputation:
         TimesDeriv(&d_qd,&d_qd,-WLCox);
             goto finished;
         } else if( vds >= VdsPinchoff ) {    /* saturation region   */
-            Args1 = 1.0 /  (3*A);
+//            Args1 = 1.0 /  (3*A);
         TimesDeriv(&d_Args1,&d_A,3.0);
         InvDeriv(&d_Args1,&d_Args1);
 
-            qg = WLCox * (vgs - Vfb - Phi - VgsVth * Args1);
+//            qg = WLCox * (vgs - Vfb - Phi - VgsVth * Args1);
         MultDeriv(&d_qg,&d_VgsVth,&d_Args1);
         d_qg.value += Vfb + Phi - vgs;
         d_qg.d1_p -= 1.0;
         TimesDeriv(&d_qg,&d_qg,-WLCox);
-            qb = WLCox * (Vfb + Phi - Vth0 + (1.0 - A) * VgsVth * Args1);
+//            qb = WLCox * (Vfb + Phi - Vth0 + (1.0 - A) * VgsVth * Args1);
         TimesDeriv(&d_dummy,&d_A,-1.0);
         d_dummy.value += 1.0;
         MultDeriv(&d_qb,&d_VgsVth, &d_dummy);
@@ -919,7 +915,7 @@ ChargeComputation:
         TimesDeriv(&d_dummy,&d_Vth0,-1.0);
         PlusDeriv(&d_qb,&d_qb,&d_dummy);
         TimesDeriv(&d_qb,&d_qb,WLCox);
-            qd = -co4v15*WLCox*VgsVth;
+//            qd = -co4v15*WLCox*VgsVth;
         TimesDeriv(&d_qd,&d_VgsVth,-co4v15*WLCox);
             goto finished;
         }

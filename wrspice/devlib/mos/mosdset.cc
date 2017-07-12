@@ -60,8 +60,8 @@ MOSdev::dSetup(sMOSmodel *model, sCKT *ckt)
     double lcapgb3;
     double lgbs, lgbs2, lgbs3;
     double lgbd, lgbd2, lgbd3;
-    double lcapbs, lcapbs2, lcapbs3;
-    double lcapbd, lcapbd2, lcapbd3;
+    double /*lcapbs,*/ lcapbs2, lcapbs3;
+    double /*lcapbd,*/ lcapbd2, lcapbd3;
     Dderivs cd;
 
     for ( ; model; model = model->next()) {
@@ -155,7 +155,7 @@ MOSdev::dSetup(sMOSmodel *model, sCKT *ckt)
                 SARGS(arg,model->MOSbulkJctBotGradingCoeff,
                     model->MOSbulkJctSideGradingCoeff,sarg,sargsw);
 
-                lcapbs = inst->MOSCbs*sarg + inst->MOSCbssw*sargsw;
+//                lcapbs = inst->MOSCbs*sarg + inst->MOSCbssw*sargsw;
                 lcapbs2 = 0.5/inst->MOStBulkPot*
                     (inst->MOSCbs*model->MOSbulkJctBotGradingCoeff*sarg +
                     inst->MOSCbssw*model->MOSbulkJctSideGradingCoeff*sargsw)
@@ -172,7 +172,7 @@ MOSdev::dSetup(sMOSmodel *model, sCKT *ckt)
                     inst->MOStBulkPot*arg*arg);
             }
             else {
-                lcapbs  = inst->MOSf2s + inst->MOSf3s*ms.ms_vbs;
+//                lcapbs  = inst->MOSf2s + inst->MOSf3s*ms.ms_vbs;
                 lcapbs2 = 0.5*inst->MOSf3s;
                 lcapbs3 = 0;
             }
@@ -183,7 +183,7 @@ MOSdev::dSetup(sMOSmodel *model, sCKT *ckt)
                 SARGS(arg,model->MOSbulkJctBotGradingCoeff,
                     model->MOSbulkJctSideGradingCoeff,sarg,sargsw);
 
-                lcapbd = inst->MOSCbd*sarg + inst->MOSCbdsw*sargsw;
+//                lcapbd = inst->MOSCbd*sarg + inst->MOSCbdsw*sargsw;
                 lcapbd2 = model->MOStype*0.5/inst->MOStBulkPot*
                     (inst->MOSCbd*model->MOSbulkJctBotGradingCoeff*sarg +
                     inst->MOSCbdsw*model->MOSbulkJctSideGradingCoeff*sargsw)
@@ -200,7 +200,7 @@ MOSdev::dSetup(sMOSmodel *model, sCKT *ckt)
                     inst->MOStBulkPot*arg*arg);
             }
             else {
-                lcapbd  = inst->MOSf2d + ms.ms_vbd * inst->MOSf3d;
+//                lcapbd  = inst->MOSf2d + ms.ms_vbd * inst->MOSf3d;
                 lcapbd2 = 0.5*inst->MOSf3d;
                 lcapbd3 = 0;
             }
