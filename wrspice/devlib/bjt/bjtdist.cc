@@ -69,7 +69,7 @@ BJTdev::disto(int mode, sGENmodel *genmod, sCKT *ckt)
     sBJTinstance *inst;
     sGENinstance *geninst;
     sDISTOAN* job = (sDISTOAN*) ckt->CKTcurJob;
-    struct bjt_d d;
+    struct bjt_d d = bjt_d();
     double td;
 
     if (mode == D_SETUP)

@@ -66,7 +66,7 @@ BJTdev::dSetup(sBJTmodel *model, sCKT *ckt)
     double evbcn;
     double evbe;
     double evben;
-    double f1;
+//    double f1;
     double f2;
     double f3;
     double fcpc;
@@ -87,15 +87,15 @@ BJTdev::dSetup(sBJTmodel *model, sCKT *ckt)
     double pc;
     double pe;
     double ps;
-    double q1;
+//    double q1;
     double q2;
-    double qb;
+//    double qb;
     double rbpi;
     double rbpr;
     double sarg;
     double sqarg;
     double tf;
-    double tr;
+//    double tr;
     double vbc;
     double vbe;
     double vbx;
@@ -110,7 +110,7 @@ BJTdev::dSetup(sBJTmodel *model, sCKT *ckt)
     double xme;
     double xms;
     double xtf;
-    double vbed;
+//    double vbed;
     double vbb;
 
     double lcapbc1 = 0.0;
@@ -120,7 +120,7 @@ BJTdev::dSetup(sBJTmodel *model, sCKT *ckt)
     double lcapsc1 = 0.0;
     double lcapsc2 = 0.0;
     double lcapsc3 = 0.0;
-    double ic;
+//    double ic;
     double dummy;
     Dderivs d_p, d_q, d_r;
     Dderivs d_dummy, d_q1, d_qb, d_dummy2;
@@ -199,7 +199,7 @@ BJTdev::dSetup(sBJTmodel *model, sCKT *ckt)
                 *(ckt->CKTrhsOld+inst->BJTbaseNode) -
                 *(ckt->CKTrhsOld+inst->BJTbasePrimeNode));
 
-            vbed = vbe;
+//            vbed = vbe;
                 // this is just a dummy variable
                 // it is the delayed vbe to be
                 // used in the delayed gm generator 
@@ -304,7 +304,7 @@ BJTdev::dSetup(sBJTmodel *model, sCKT *ckt)
             // q1 is a function of 2 variables p=vbe and q=vbc. r=
             // anything
             //
-            q1=1/(1-model->BJTinvEarlyVoltF*vbc-model->BJTinvEarlyVoltR*vbe);
+//            q1=1/(1-model->BJTinvEarlyVoltF*vbc-model->BJTinvEarlyVoltR*vbe);
             dummy = (1-model->BJTinvEarlyVoltF*vbc-
                 model->BJTinvEarlyVoltR*vbe);
             EqualDeriv(&d_dummy, &d_p);
@@ -315,7 +315,7 @@ BJTdev::dSetup(sBJTmodel *model, sCKT *ckt)
             InvDeriv(&d_q1, &d_dummy);
             // now q1 and its derivatives are set up
             if(oik == 0 && oikr == 0) {
-                qb=q1;
+//                qb=q1;
                 EqualDeriv(&d_qb, &d_q1);
             }
             else {
@@ -346,7 +346,7 @@ BJTdev::dSetup(sBJTmodel *model, sCKT *ckt)
                     SqrtDeriv(&d_sqarg, &d_arg);
                 }
 
-                qb=q1*(1+sqarg)/2;
+//                qb=q1*(1+sqarg)/2;
                 dummy = 1 + sqarg;
                 EqualDeriv(&d_dummy, &d_sqarg);
                 d_dummy.value += 1.0;
@@ -354,7 +354,7 @@ BJTdev::dSetup(sBJTmodel *model, sCKT *ckt)
                 TimesDeriv(&d_qb, &d_qb, 0.5);
             }
 
-            ic = (cbe - cbc)/qb;
+//            ic = (cbe - cbc)/qb;
             // cbe is a fn of vbed only; cbc of vbc; and qb of vbe and vbc
             // p=vbe, q=vbc, r=vbed; now dummy = cbe - cbc
             EqualDeriv(&d_dummy, &d_p);
@@ -494,7 +494,7 @@ BJTdev::dSetup(sBJTmodel *model, sCKT *ckt)
             //   charge storage elements
             //
             tf=model->BJTtransitTimeF;
-            tr=model->BJTtransitTimeR;
+//            tr=model->BJTtransitTimeR;
             czbe=inst->BJTtBEcap*inst->BJTarea;
             pe=inst->BJTtBEpot;
             xme=model->BJTjunctionExpBE;
@@ -577,7 +577,7 @@ BJTdev::dSetup(sBJTmodel *model, sCKT *ckt)
                 czbe*xme*(xme+1)*sarg/(arg*arg*pe*pe*6);
             }
             else {
-                f1=inst->BJTtf1;
+//                f1=inst->BJTtf1;
                 f2=model->BJTf2;
                 f3=model->BJTf3;
                 czbef2=czbe/f2;
@@ -590,7 +590,7 @@ BJTdev::dSetup(sBJTmodel *model, sCKT *ckt)
             d_qbe.d3_p3 += lcapbe3*6.;
 
             fcpc=inst->BJTtf4;
-            f1=inst->BJTtf5;
+//            f1=inst->BJTtf5;
             f2=model->BJTf6;
             f3=model->BJTf7;
             if (vbc < fcpc) {
