@@ -1,20 +1,17 @@
 LPATH = ../../../../xt_base
-include $(LPATH)/packages/files/make_config
 
 VERSION = `../../../version xtlserv`
 RELEASE = `../../../version release`
-PKGFILE = xtlserv-$(OSNAME)-$(VERSION)-$(DARWIN_ARCH).pkg
+PKGFILE = xtlserv-$(OSNAME)-$(VERSION)-x86_64.pkg
 PKGNAME = XicTools.Xtlserv.$(RELEASE)
 PKGDIR = $(LPATH)/packages//pkgfiles
 pd = `pwd`
 
-dummy::
-	echo Darwin targets: Darwin
-
-Darwin Darwin64::
-	sudo $(MAKE) OSNAME=$@ mkpkg
-
-mkpkg::
+.DEFAULT:
+	@if [ ! $@[0-7] != "Darwin" ]; then \
+	    echo "Unknown OSNAME $@"; \
+	    exit; \
+	fi
 	-@rm -f $(PKGDIR)/xtlserv-Darwin*
 	-@rm -rf contents
 	mkdir contents contents/xictools

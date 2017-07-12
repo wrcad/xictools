@@ -262,8 +262,6 @@ AC_PROG_LEX
 AC_PROG_YACC
 AC_PATH_XTRA
 
-DARWIN_ARCH=unknown
-
 DLL_SPICE_PROG='dll-$(SPICE_PROG)'
 NODLL_SPICE_PROG='$(SPICE_PROG)'
 DLL_XIC_PROG='dll-$(XIC_PROG)'
@@ -306,7 +304,6 @@ dnl index - 4 is the OS release, e.g. kernel 10.4.0 is OS X 10.6.4.
         # Assume Yosemite back end,
         SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
         UFLAGS="-mmacosx-version-min=10.10 -arch $ARCH -isysroot $SDK"
-        DARWIN_ARCH=$ARCH
         MALLOC='$(LPATH)/malloc/malloc.a'
         oa_lpath=$oa_loc/lib/darwin_64/opt
     else
@@ -447,7 +444,6 @@ fi
 
 AC_SUBST(SDK)
 AC_SUBST(UFLAGS)
-AC_SUBST(DARWIN_ARCH)
 AC_SUBST(NTSUFFIX)
 AC_SUBST(FILTER)
 AC_SUBST(MALLOC)
@@ -1031,8 +1027,6 @@ makefiles="Makefile \
     miscutil/Makefile \
     miscutil/httpget/Makefile \
     malloc/Makefile \
-    packages/Makefile \
-    packages/files/make_config"
 if test -d ../secure; then
     makefiles="$makefiles ../secure/Makefile"
 fi
@@ -1067,7 +1061,6 @@ if test -d ../xic; then
         ../xic/src/wrspif/Makefile \
         ../xic/src/tech/Makefile \
         ../xic/plugins/Makefile \
-        ../xic/packages/Makefile \
         ../xic/bin/Makefile"
 fi
 if test -d ../KLU; then
@@ -1089,7 +1082,6 @@ if test -d ../wrspice; then
         ../wrspice/src/plot/Makefile \
         ../wrspice/src/sparse/Makefile \
         ../wrspice/wrspice_ipc_demo/Makefile \
-        ../wrspice/packages/Makefile
         ../wrspice/bin/Makefile \
         ../wrspice/devlib/Makefile"
     (cd ../wrspice/devlib; make -f Makefile.in devlist)

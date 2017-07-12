@@ -193,7 +193,6 @@ AC_PROG_LEX
 AC_PROG_YACC
 AC_PATH_XTRA
 
-DARWIN_ARCH=unknown
 EXESUFFIX=""
 
 case $sys_os in
@@ -221,7 +220,6 @@ dnl index - 4 is the OS release, e.g. kernel 10.4.0 is OS X 10.6.4.
         # Assume Yosemite back end,
         SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
         UFLAGS="-mmacosx-version-min=10.10 -arch $ARCH -isysroot $SDK"
-        DARWIN_ARCH=$ARCH
     else
         echo "Architecture not supported."
         exit
@@ -294,7 +292,6 @@ fi
 
 AC_SUBST(SDK)
 AC_SUBST(UFLAGS)
-AC_SUBST(DARWIN_ARCH)
 AC_SUBST(EXESUFFIX)
 AC_SUBST(FILTER)
 AC_SUBST(OSNAME)

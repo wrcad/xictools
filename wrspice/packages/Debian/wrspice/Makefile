@@ -1,5 +1,4 @@
 LPATH = ../../../../xt_base
-include $(LPATH)/packages/files/make_config
 
 VERSION = `../../../version wrspice`
 PKGDIR = $(LPATH)/packages/pkgfiles
@@ -9,7 +8,15 @@ USER = `whoami`
 
 PROG = wrspice
 
-Debian::
+osbase = ${@:_64=}
+
+##### WARNING  this is not tested #####
+
+.DEFAULT:
+	@if [ ! $@[0-7] != "Debian" ]; then \
+	    echo "Unknown OSNAME $@"; \
+	    exit; \
+	fi
 	@if [ ! -d $(DEBIAN) ]; then \
 	    mkdir $(DEBIAN); \
 	fi
@@ -22,27 +29,14 @@ Debian::
 	@chmod 755 $(DEBIAN)/prerm
 	@cat files/postrm | sed s/@VERSION@/$(VERSION)/ > $(DEBIAN)/postrm
 	@chmod 755 $(DEBIAN)/postrm
-	-@rm -f $(PKGDIR)/$(PROG)-Debian*
+	-@rm -f $(PKGDIR)/$(PROG)-$@*
 	@sudo chown -R root:root $(SRCDIR)
-	dpkg-deb -b $(SRCDIR) $(PKGDIR)/$(PROG)-Debian-$(VERSION)-i386.deb;
-	@sudo chown -R $(USER) $(SRCDIR)
-
-Debian64::
-	@if [ ! -d $(DEBIAN) ]; then \
-	    mkdir $(DEBIAN); \
-	fi
-	@cat files/control | sed s/@VERSION@/$(VERSION)/ | \
-            sed s/@ARCH@/amd64/ > $(DEBIAN)/control
-	@chmod 644 $(DEBIAN)/control
-	@cp -pf files/preinst $(DEBIAN)
-	@cp -pf files/postinst $(DEBIAN)
-	@cat files/prerm | sed s/@VERSION@/$(VERSION)/ > $(DEBIAN)/prerm
-	@chmod 755 $(DEBIAN)/prerm
-	@cat files/postrm | sed s/@VERSION@/$(VERSION)/ > $(DEBIAN)/postrm
-	@chmod 755 $(DEBIAN)/postrm
-	-@rm -f $(PKGDIR)/$(PROG)-Debian64*
-	@sudo chown -R root:root $(SRCDIR)
-	dpkg-deb -b $(SRCDIR) $(PKGDIR)/$(PROG)-Debian64-$(VERSION)-amd_64.deb;
+	@if [ $(osbase) = $@ ]; then \
+	    arch=i386; \
+	else \
+	    arch=amd_64; \
+	fi; \
+	dpkg-deb -b $(SRCDIR) $(PKGDIR)/$(PROG)-$@-$(VERSION)-$$arch.deb;
 	@sudo chown -R $(USER) $(SRCDIR)
 
 clean::

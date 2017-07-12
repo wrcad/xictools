@@ -1,5 +1,4 @@
 LPATH = ../../../../xt_base
-include $(LPATH)/packages/files/make_config
 
 VERSION = `../../../version xic`
 BRANCH = `../../../version tools`
@@ -7,17 +6,15 @@ PKGFILE = xic-$@-$(VERSION)-i386.pkg
 PKGDIR = $(LPATH)/packages/pkgfiles
 SRCDIR = `pwd`/../../root
 
-releases = \
-  FreeBSD10
+osbase = ${@:_64=}
 
-dummy::
-	echo FreeBSD targets: $(releases)
+##### WARNING: Incomplete, untested.
 
-# Note:  when using set expansion, make variables seem to be
-# implicitly quoted, so that these have to be moved to a shall
-# variable for the splitting to work correctly.
-
-$(releases)::
+.DEFAULT:
+	@if [ ! $@[0-8] != "FreeBSD" ]; then \
+	    echo "Unknown OSNAME $@"; \
+	    exit; \
+	fi
 	echo "# Package manifest for xic-$@" > manifest
 	echo 'cat << EOF' >> manifest
 	echo "name:          Xic" >> manifest

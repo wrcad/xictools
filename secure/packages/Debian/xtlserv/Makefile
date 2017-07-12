@@ -1,5 +1,4 @@
 LPATH = ../../../../xt_base
-include $(LPATH)/packages/files/make_config
 
 VERSION = `../../../version xtlserv`
 PKGDIR = $(LPATH)/packages//pkgfiles
@@ -9,7 +8,15 @@ USER = `whoami`
 
 PROG = xtlserv
 
-Debian::
+osbase = ${@:_64=}
+
+##### WARNING  this is not tested #####
+          
+.DEFAULT:
+	@if [ ! $@[0-7] != "Debian" ]; then \
+	    echo "Unknown OSNAME $@"; \ 
+	    exit; \
+	fi
 	@if [ ! -d $(DEBIAN) ]; then \
 	    mkdir $(DEBIAN); \
 	fi

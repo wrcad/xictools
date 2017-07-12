@@ -21,12 +21,3 @@ wr_install
 wrspice_files
     master source for wrspice distribution file list
 
-xic_files
-    master source for xic distribution file list
-
-xicii_files
-    master source for xicii distribution file list
-
-xiv_files
-    master source for xiv distribution file list
-

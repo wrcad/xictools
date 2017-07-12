@@ -1,5 +1,4 @@
 LPATH = ../../../../xt_base
-include $(LPATH)/packages/files/make_config
 
 VERSION = `../../../version xtlserv`
 BRANCH = `../../../version tools`
@@ -7,17 +6,20 @@ PKGFILE = xtlserv-$@-$(VERSION)-i386.pkg
 PKGDIR = $(LPATH)/packages//pkgfiles
 SRCDIR = `pwd`/../../root
 
-releases = \
-  FreeBSD \
-  FreeBSD7 \
-  FreeBSD8 \
-  FreeBSD9 \
-  FreeBSD10
+osbase = ${@:_64=}
 
-dummy::
-	echo FreeBSD targets: $(releases)
+##### WARNING This is designed for a packaging system that is no
+##### longer in use.  This script hasn't been tested.
 
-$(releases)::
+# Note:  when using set expansion, make variables seem to be
+# implicitly quoted, so that these have to be moved to a shell
+# variable for the splitting to work correctly.
+
+.DEFAULT:
+	@if [ ! $@[0-8] != "FreeBSD" ]; then \
+	    echo "Unknown OSNAME $@"; \
+	    exit; \
+	fi
 	-@rm -f $(PKGDIR)/xtlserv-$@*
 	-@rm -f contents description postinstall
 	@tifs="$$IFS"; \

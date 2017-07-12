@@ -1,5 +1,5 @@
 #######################################################################
-# secure/packages/Makefile
+# xt_base/packages/Makefile
 #######################################################################
 # $Id:$
 #######################################################################
@@ -77,4 +77,13 @@ distclean: clean
 	    Solaris*) if [ $$a != Solaris ]; then rm -f $$a; fi ;; \
 	    esac \
 	done
+	cd util; $(MAKE) distclean;
+	rm -f files/make_config files/fetch_form.html Makefile
+
+fetch::
+	-@if [ ! -f files/fetch_form.html ]; then \
+	    DIREC=`pwd`; cat files/fetch_form.sed | sed s%DIREC%$$DIREC% \
+  > files/fetch_form.html; \
+	fi
+	mozy files/fetch_form.html &
 

@@ -12,18 +12,8 @@ install::
 clean::
 
 distclean::
+	rm -f utod.exe
 
 utod.exe: utod.c
 	gcc -O utod.c -o utod.exe
 
-# This creates the adms_examples used by the packagers.  This must be
-# kept in sync with the examples tree.
-#
-# Do make distclean in devlib/adms/examples first!
-#
-# Be sure to edit the list in case any crap files sneak in.  The file
-# is kept in CVS to ensure consistency.
-
-adms_examples::
-	-@aex=`pwd`/adms_examples; \
-	cd ../../devlib/adms; find examples -type f | grep -v CVS | sed -e s/Makefile\\.in/Makefile/ | sort > $$aex

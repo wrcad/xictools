@@ -1,6 +1,5 @@
-include ../../files/make_config
 VERSION = 4.0.1
-PKGFILE = gtk2_bundle_x11-Darwin64-$(VERSION)-$(DARWIN_ARCH).pkg
+PKGFILE = gtk2_bundle_x11-Darwin64-$(VERSION)-x86_64.pkg
 RELEASE = `../../../../version release`
 PKGNAME = XicTools.gtk2-bundle-x11
 PKGDIR = ../../pkgfiles

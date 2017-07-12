@@ -1,20 +1,17 @@
 LPATH = ../../../../xt_base
-include $(LPATH)/packages/files/make_config
 
 VERSION = `../../../version xt_accs`
 RELEASE = `../../../version release`
-PKGFILE = xt_accs-$(OSNAME)-$(VERSION)-$(DARWIN_ARCH).pkg
+PKGFILE = xt_accs-$(OSNAME)-$(VERSION)-x86_64.pkg
 PKGNAME = XicTools.Accs.$(RELEASE)
 PKGDIR = $(LPATH)/packages/pkgfiles
 pd = `pwd`
 
-dummy::
-	echo Darwin targets: Darwin
-
-Darwin Darwin64::
-	sudo $(MAKE) OSNAME=$@ mkpkg
-
-mkpkg::
+.DEFAULT:
+	@if [ ! $@[0-7] != "Darwin" ]; then \
+	    echo "Unknown OSNAME $@"; \
+	    exit; \
+	fi
 	-@rm -f $(PKGDIR)/xt_accs-Darwin*
 	-@rm -rf contents
 	mkdir contents contents/xictools
@@ -33,4 +30,3 @@ subdirs::
 
 files::
 	@echo
-
