@@ -91,7 +91,7 @@ cPy *cPy::ptr = 0;
 cPy::cPy()
 {
     methods = 0;
-    idstr = OSNAME " " CVS_RELEASE_TAG;
+    idstr = OSNAME " " XIC_RELEASE_TAG;
     level = 0;
     exit_status = 0;
 

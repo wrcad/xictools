@@ -108,7 +108,7 @@ sParamTab::add_predefs()
 #define STRINGIFY(foo) #foo
 #define XSTRINGIFY(x) STRINGIFY(x)
     prm = new sParam(lstring::copy("WRSPICE_RELEASE"),
-        lstring::copy(XSTRINGIFY(CD_RELEASE_NUM)));
+        lstring::copy(XSTRINGIFY(WRS_RELEASE_NUM)));
     prm->set_readonly();
     pt_table->add(prm->name(), prm);
 #endif

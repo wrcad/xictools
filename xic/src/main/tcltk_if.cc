@@ -102,7 +102,7 @@ namespace {
         }
 
         char idstr[64];
-        sprintf(idstr, "%s %s", XM()->OSname(), CVS_RELEASE_TAG);
+        sprintf(idstr, "%s %s", XM()->OSname(), XIC_RELEASE_TAG);
         cTcl_base *tcl = (*tclptr)();
         if (tcl && (!tcl->id_string() || strcmp(idstr, tcl->id_string()))) {
             if (verbose) {

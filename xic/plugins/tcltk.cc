@@ -197,7 +197,7 @@ cTclTk::cTclTk()
 {
     interp_exiting = 0;
     functions = 0;
-    idstr = OSNAME" "CVS_RELEASE_TAG;
+    idstr = OSNAME " " XIC_RELEASE_TAG;
     in_main = false;
 #ifdef HAVE_TK
     has_tk = true;

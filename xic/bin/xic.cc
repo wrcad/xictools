@@ -57,7 +57,7 @@
 #include "filetool.h"
 #include "ghost.h"
 #include "timer.h"
-#include "reltag.h" // defines CVS_RELEASE_TAG
+#include "reltag.h" // defines XIC_RELEASE_TAG
 #include "pathlist.h"
 #include "filestat.h"
 #include "tvals.h"
@@ -1392,7 +1392,7 @@ cMain::InitializeStrings()
         xm_prefix = lstring::copy(PREFIX);
 
     xm_version_string = VERSION_STR;
-    xm_tag_string = CVS_RELEASE_TAG;
+    xm_tag_string = XIC_RELEASE_TAG;
     xm_about_file = "xic_mesg";
 
     xm_os_name = OSNAME;

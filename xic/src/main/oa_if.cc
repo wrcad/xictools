@@ -108,7 +108,7 @@ namespace {
         }
 
         char idstr[64];
-        sprintf(idstr, "%s %s", XM()->OSname(), CVS_RELEASE_TAG);
+        sprintf(idstr, "%s %s", XM()->OSname(), XIC_RELEASE_TAG);
         cOA_base *oa = (*oaptr)();
         if (oa && (!oa->id_string() || strcmp(idstr, oa->id_string()))) {
             if (verbose) {

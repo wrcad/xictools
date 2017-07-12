@@ -53,7 +53,7 @@ cOA::cOA()
     oa_tech_observer = 0;
     oa_lib_observer = 0;
     oa_open_lib_tab = 0;
-    oa_idstr = OSNAME" "CVS_RELEASE_TAG;
+    oa_idstr = OSNAME " " XIC_RELEASE_TAG;
     oa_api_major = 0;
     oa_initialized = false;
 }

@@ -119,7 +119,7 @@ Authors: 1985 Thomas L. Quarles
 #include <limits.h>
 #endif
 
-// defines CVS_RELEASE_TAG
+// defines WRS_RELEASE_TAG
 #include "reltag.h"
 
 // These are set as compiler -D defines
@@ -848,7 +848,7 @@ main(int argc, char **argv)
             return (0);
         }
         if (lstring::eq(argv[i], "--vv")) {
-            printf("%s\n", CVS_RELEASE_TAG);
+            printf("%s\n", WRS_RELEASE_TAG);
             exit (0);
         }
     }
@@ -2037,7 +2037,7 @@ sGlobal::initialize(const char *argv_0)
     g_product = "WRspice";
     g_version = SPICE_VERSION;
     g_devlib_version = DEVLIB_VERSION;
-    g_tag_string = CVS_RELEASE_TAG;
+    g_tag_string = WRS_RELEASE_TAG;
     g_notice = SPICE_NOTICE;
     g_build_date = SPICE_BUILD_DATE;
     g_os_name = OSNAME;

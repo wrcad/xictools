@@ -194,12 +194,12 @@ namespace {
     macro_predefs(MacroHandler *mh)
     {
         char buf[256];
-        sprintf(buf, "RELEASE %d", CD_RELEASE_NUM);
+        sprintf(buf, "RELEASE %d", XIC_RELEASE_NUM);
         mh->parse_macro(buf, true);
 
-        // CD_RELEASE_NUM is gxyy0
-        int gen = CD_RELEASE_NUM/10000;
-        int n = CD_RELEASE_NUM - gen*10000;
+        // XIC_RELEASE_NUM is gxyy0
+        int gen = XIC_RELEASE_NUM/10000;
+        int n = XIC_RELEASE_NUM - gen*10000;
         int major = n/1000;
         n -= major*1000;
         n /= 10;
