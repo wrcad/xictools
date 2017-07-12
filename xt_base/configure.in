@@ -1041,7 +1041,6 @@ if test -d ../xic; then
         oa=../xic/src/oa/Makefile
     fi
     makefiles="$makefiles \
-        ../xic/include/Makefile \
         ../xic/src/cd/Makefile \
         ../xic/src/display/Makefile \
         ../xic/src/drc/Makefile \

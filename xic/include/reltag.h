@@ -1,2 +1,0 @@
-#define CVS_RELEASE_TAG "xic-4-2-17"
-#define CD_RELEASE_NUM 42170

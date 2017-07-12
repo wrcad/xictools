@@ -1,5 +1,5 @@
 #######################################################################
-# wrspice/include/Makefile
+# xic/include/Makefile
 #######################################################################
 # $Id:$
 #######################################################################
@@ -10,28 +10,28 @@ FILES = spmatrix.h hash.h paramsub.h spnumber.h spparse.h
 depend: $(FILES) reltag
 
 spmatrix.h: $(LPATH)/sparse/spmatrix.h
-	cp -fp $(LPATH)/sparse/spmatrix.h .
-
-spparse.h: $(LPATH)/spnumber/spparse.h
-	cp -fp $(LPATH)/spnumber/spparse.h .
+	cp -f $(LPATH)/sparse/spmatrix.h .
 
 hash.h: $(LPATH)/spnumber/hash.h
-	cp -fp $(LPATH)/spnumber/hash.h .
+	cp -f $(LPATH)/spnumber/hash.h .
 
 paramsub.h: $(LPATH)/spnumber/paramsub.h
-	cp -fp $(LPATH)/spnumber/paramsub.h .
+	cp -f $(LPATH)/spnumber/paramsub.h .
 
 spnumber.h: $(LPATH)/spnumber/spnumber.h
-	cp -fp $(LPATH)/spnumber/spnumber.h .
+	cp -f $(LPATH)/spnumber/spnumber.h .
+
+spparse.h: $(LPATH)/spnumber/spparse.h
+	cp -f $(LPATH)/spnumber/spparse.h .
 
 clean:
-	rm -f $(FILES)
 
 distclean:
-	rm -f $(FILES)
+	rm -f $(FILES) Makefile
 
+# Create/update the reltag.h file.
 reltag:
-	@version=`../version wrspice`; \
+	@version=`../version xic`; \
 	if [ -z "$$version" ]; then \
 	    echo "Can't find version!"; \
 	    exit; \
@@ -47,17 +47,18 @@ reltag:
 	f3=$$1; \
 	rev=$$2; \
 	if [ -z "$$rev" ]; then \
-	    tag="wrs-$$f1-$$f2-$$f3"; \
+	    tag="xic-$$f1-$$f2-$$f3"; \
 	    num="$$f1$$f2`printf %02d $$f3`0"; \
 	else \
-	    tag="wrs-$$f1-$$f2-$$f3-$$rev"; \
-	    num="$$1$$2`printf %02d $$f3`$rev"; \
+	    tag="xic-$$f1-$$f2-$$f3-$$rev"; \
+	    num="$$f1$$f2`printf %02d $$f3`$$rev"; \
 	fi; \
-	echo "#define WRS_RELEASE_TAG \"$$tag\"" > /tmp/reltag.h; \
-	echo "#define WRS_RELEASE_NUM $$num" >> /tmp/reltag.h; \
+	echo "#define XIC_RELEASE_TAG \"$$tag\"" > /tmp/reltag.h; \
+	echo "#define XIC_RELEASE_NUM $$num" >> /tmp/reltag.h; \
 	diff -q /tmp/reltag.h ./reltag.h > /dev/null 2>&1; \
 	if [ $$? != 0 ]; then \
 	    cp -f /tmp/reltag.h .; \
 	fi; \
 	unlink /tmp/reltag.h
 
+#######################################################################
