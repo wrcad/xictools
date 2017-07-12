@@ -1026,14 +1026,12 @@ makefiles="Makefile \
     ginterf/${GRPREF}interf/Makefile \
     miscutil/Makefile \
     miscutil/httpget/Makefile \
-    malloc/Makefile \
+    malloc/Makefile"
 if test -d ../secure; then
     makefiles="$makefiles ../secure/Makefile"
 fi
 if test -d ../xt_accs; then
-    makefiles="$makefiles \
-        ../xt_accs/Makefile \
-        ../xt_accs/packages/Makefile"
+    makefiles="$makefiles ../xt_accs/Makefile"
 fi
 if test -d ../mrouter; then
     makefiles="$makefiles ../mrouter/mrouter/Makefile"
@@ -1067,7 +1065,7 @@ if test -d ../KLU; then
     makefiles="$makefiles ../KLU/Makefile"
 fi
 if test -d ../vl; then
-    makefiles="$makefiles ../vl/Makefile ../vl/packages/Makefile"
+    makefiles="$makefiles ../vl/Makefile"
 fi
 if test -d ../wrspice; then
     makefiles="$makefiles \
