@@ -27,7 +27,7 @@ spparse.h: $(LPATH)/spnumber/spparse.h
 clean:
 
 distclean:
-	rm -f $(FILES) Makefile
+	rm -f $(FILES) reltag.h
 
 # Create/update the reltag.h file.
 reltag:
