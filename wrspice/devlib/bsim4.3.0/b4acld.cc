@@ -50,28 +50,28 @@ BSIM4dev::acLoad(sGENmodel *genmod, sCKT *ckt)
     double gjbd, gjbs, geltd, gcrg, gcrgg, gcrgd, gcrgs, gcrgb;
     double xcbgb, xcbdb, xcbsb, xcbbb;
     double xcggbr, xcgdbr, xcgsbr, xcgbbr, xcggbi, xcgdbi, xcgsbi, xcgbbi;
-    double Cggr, Cgdr, Cgsr, Cgbr, Cggi, Cgdi, Cgsi, Cgbi;
+    double Cggr, Cgdr, Cgsr, /*Cgbr,*/ Cggi, Cgdi, Cgsi, Cgbi;
     double xcddbr, xcdgbr, xcdsbr, xcdbbr, xcsdbr, xcsgbr, xcssbr, xcsbbr;
     double xcddbi, xcdgbi, xcdsbi, xcdbbi, xcsdbi, xcsgbi, xcssbi, xcsbbi;
     double xcdbdb, xcsbsb, xcgmgmb, xcgmdb, xcgmsb, xcdgmb, xcsgmb;
     double xcgmbb, xcbgmb;
-    double capbd, capbs, omega;
+    double /*capbd, capbs,*/ omega;
     double gstot, gstotd, gstotg, gstots, gstotb, gspr;
     double gdtot, gdtotd, gdtotg, gdtots, gdtotb, gdpr;
     double gIstotg, gIstotd, gIstots, gIstotb;
     double gIdtotg, gIdtotd, gIdtots, gIdtotb;
     double gIbtotg, gIbtotd, gIbtots, gIbtotb;
     double gIgtotg, gIgtotd, gIgtots, gIgtotb;
-    double cgso, cgdo, cgbo;
+    double cgso, cgdo/*, cgbo*/;
     double gbspsp, gbbdp, gbbsp, gbspg, gbspb;
     double gbspdp, gbdpdp, gbdpg, gbdpb, gbdpsp;
     double T0, T1, T2, T3/*, T4, T5, T6, T7, T8, T9, T10, T11*/;
     double Csg, Csd, Css/*, Csb*/;
-    double Cdgr, Cddr, Cdsr, Cdbr, Csgr, Csdr, Cssr, Csbr;
+    double Cdgr, Cddr, Cdsr, Cdbr, Csgr, Csdr, Cssr/*, Csbr*/;
     double Cdgi, Cddi, Cdsi, Cdbi, Csgi, Csdi, Cssi, Csbi;
     double gmr, gmi, gmbsr, gmbsi, gdsr, gdsi;
     double FwdSumr, RevSumr, Gmr, Gmbsr/*, Gdsr*/;
-    double FwdSumi, RevSumi, Gmi, Gmbsi, Gdsi;
+    double FwdSumi, RevSumi, Gmi, Gmbsi/*, Gdsi*/;
     struct bsim4SizeDependParam *pParam;
     double ggidld, ggidlg, ggidlb,/*ggisld,*/ ggislg, ggislb, ggisls;
 
@@ -82,11 +82,11 @@ BSIM4dev::acLoad(sGENmodel *genmod, sCKT *ckt)
                 here = here->BSIM4nextInstance)
         {
             pParam = here->pParam;
-            capbd = here->BSIM4capbd;
-            capbs = here->BSIM4capbs;
+//            capbd = here->BSIM4capbd;
+//            capbs = here->BSIM4capbs;
             cgso = here->BSIM4cgso;
             cgdo = here->BSIM4cgdo;
-            cgbo = pParam->BSIM4cgbo;
+//            cgbo = pParam->BSIM4cgbo;
 
             Csd = -(here->BSIM4cddb + here->BSIM4cgdb + here->BSIM4cbdb);
             Csg = -(here->BSIM4cdgb + here->BSIM4cggb + here->BSIM4cbgb);
@@ -121,7 +121,7 @@ BSIM4dev::acLoad(sGENmodel *genmod, sCKT *ckt)
                 Csdr = Csd * T2;
                 Csgr = Csg * T2;
                 Cssr = Css * T2;
-                Csbr = -(Csdr + Csgr + Cssr);
+//                Csbr = -(Csdr + Csgr + Cssr);
 
                 Csdi = Csd * T3 * omega;
                 Csgi = Csg * T3 * omega;
@@ -131,7 +131,7 @@ BSIM4dev::acLoad(sGENmodel *genmod, sCKT *ckt)
                 Cgdr = -(Cddr + Csdr + here->BSIM4cbdb);
                 Cggr = -(Cdgr + Csgr + here->BSIM4cbgb);
                 Cgsr = -(Cdsr + Cssr + here->BSIM4cbsb);
-                Cgbr = -(Cgdr + Cggr + Cgsr);
+//                Cgbr = -(Cgdr + Cggr + Cgsr);
 
                 Cgdi = -(Cddi + Csdi);
                 Cggi = -(Cdgi + Csgi);
@@ -154,13 +154,13 @@ BSIM4dev::acLoad(sGENmodel *genmod, sCKT *ckt)
                 Csdr = Csd;
                 Csgr = Csg;
                 Cssr = Css;
-                Csbr = -(Csdr + Csgr + Cssr);
+//                Csbr = -(Csdr + Csgr + Cssr);
                 Csdi = Csgi = Cssi = Csbi = 0.0;
 
                 Cgdr = here->BSIM4cgdb;
                 Cggr = here->BSIM4cggb;
                 Cgsr = here->BSIM4cgsb;
-                Cgbr = -(Cgdr + Cggr + Cgsr);
+//                Cgbr = -(Cgdr + Cggr + Cgsr);
                 Cgdi = Cggi = Cgsi = Cgbi = 0.0;
             }
 

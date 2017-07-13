@@ -54,7 +54,7 @@ BSIM4dev::convTest(sGENmodel *genmod, sCKT *ckt)
     double vds, vgs, vgd, vgdo, vbs, vbd;
     double vdbd, vdbs, vsbs;
     double cbhat, cdhat, Idtot, Ibtot;
-    double vses, vdes, vdedo, delvses, delvded, delvdes;
+    double vses, vdes, vdedo, delvses, delvded/*, delvdes*/;
     double Isestot, cseshat, Idedtot, cdedhat;
     double Igstot, cgshat, Igdtot, cgdhat, Igbtot, cgbhat;
     double tol0, tol1, tol2, tol3, tol4, tol5, tol6;
@@ -108,7 +108,7 @@ BSIM4dev::convTest(sGENmodel *genmod, sCKT *ckt)
             delvses = vses - (*(ckt->CKTstate0 + here->BSIM4vses));
             vdedo = *(ckt->CKTstate0 + here->BSIM4vdes)
                     - *(ckt->CKTstate0 + here->BSIM4vds);
-            delvdes = vdes - *(ckt->CKTstate0 + here->BSIM4vdes);
+//            delvdes = vdes - *(ckt->CKTstate0 + here->BSIM4vdes);
             delvded = vdes - vds - vdedo;
 
             delvbd_jct = (!here->BSIM4rbodyMod) ? delvbd : delvdbd;

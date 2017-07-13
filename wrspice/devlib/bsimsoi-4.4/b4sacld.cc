@@ -65,7 +65,7 @@ B4SOIdev::acLoad(sGENmodel *genmod, sCKT *ckt)
     double ceeb, ceT;
     double GSoverlapCap, GDoverlapCap, GEoverlapCap, FwdSum, RevSum, Gm, Gmbs, GmT;
     double omega;
-    double dxpart, sxpart;
+//    double dxpart, sxpart;
     double gbbg, gbbdp, gbbb, gbbp, gbbsp, gbbT;
     double gddpg, gddpdp, gddpsp, gddpb, gddpT;
     double gsspg, gsspdp, gsspsp, gsspb, gsspT;
@@ -229,8 +229,8 @@ B4SOIdev::acLoad(sGENmodel *genmod, sCKT *ckt)
                 }
 
 
-                sxpart = 0.6;
-                dxpart = 0.4;
+//                sxpart = 0.6;
+//                dxpart = 0.4;
 
                 /* v3.1 for RF */
                 if (here->B4SOIrgateMod == 2)
@@ -378,8 +378,8 @@ B4SOIdev::acLoad(sGENmodel *genmod, sCKT *ckt)
                 }
 
 
-                sxpart = 0.4;
-                dxpart = 0.6;
+//                sxpart = 0.4;
+//                dxpart = 0.6;
 
                 /* v3.1 for RF */
                 if (here->B4SOIrgateMod == 2)

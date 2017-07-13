@@ -60,7 +60,7 @@ B3SOIdev::acLoad(sGENmodel *genmod, sCKT *ckt)
     double ceeb, ceT;
     double GSoverlapCap, GDoverlapCap, GEoverlapCap, FwdSum, RevSum, Gm, Gmbs, GmT;
     double omega;
-    double dxpart, sxpart;
+//    double dxpart, sxpart;
     double gbbg, gbbdp, gbbb, gbbp, gbbsp, gbbT;
     double gddpg, gddpdp, gddpsp, gddpb, gddpT;
     double gsspg, gsspdp, gsspsp, gsspb, gsspT;
@@ -156,8 +156,8 @@ B3SOIdev::acLoad(sGENmodel *genmod, sCKT *ckt)
                 gTte  = here->B3SOIgtempe;
                 gTtsp = - (gTtg + gTtb + gTtdp + gTte);
 
-                sxpart = 0.6;
-                dxpart = 0.4;
+//                sxpart = 0.6;
+//                dxpart = 0.4;
 
             }
             else
@@ -245,9 +245,9 @@ B3SOIdev::acLoad(sGENmodel *genmod, sCKT *ckt)
                 gTte  = here->B3SOIgtempe;
                 gTtdp = - (gTtg + gTtb + gTtsp + gTte);
 
-                sxpart = 0.6;
-                sxpart = 0.4;
-                dxpart = 0.6;
+//                sxpart = 0.6;
+//                sxpart = 0.4;
+//                dxpart = 0.6;
             }
 
             gdpr=here->B3SOIdrainConductance;

@@ -38,7 +38,7 @@ BSIMSOI3.0 release
 
 
 int
-B3SOIdev::pzLoad(sGENmodel *genmod, sCKT *ckt, IFcomplex *s)
+B3SOIdev::pzLoad(sGENmodel *genmod, sCKT*, IFcomplex *s)
 {
     sB3SOImodel *model = static_cast<sB3SOImodel*>(genmod);
     sB3SOIinstance *here;

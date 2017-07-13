@@ -284,7 +284,7 @@ B4SOIdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
     CKTnode *tmp;
 
 //double tmp1, tmp2;
-    double /* nfb0, */ Cboxt;
+//    double  nfb0, Cboxt;
 //int    itmp1;
 
     /* v3.2 */
@@ -2473,7 +2473,7 @@ B4SOIdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             {
                 model->B4SOIcsi = 1.03594e-10 / model->B4SOItsi;
             }
-            Cboxt = model->B4SOIcbox * model->B4SOIcsi / (model->B4SOIcbox + model->B4SOIcsi);
+//            Cboxt = model->B4SOIcbox * model->B4SOIcsi / (model->B4SOIcbox + model->B4SOIcsi);
 
 
             /* v3.2 */

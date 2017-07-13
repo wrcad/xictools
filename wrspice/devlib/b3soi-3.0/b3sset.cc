@@ -199,7 +199,7 @@ B3SOIdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
     CKTnode *tmp;
 
 //double tmp1, tmp2;
-    double /*nfb0,*/ Cboxt;
+//    double nfb0, Cboxt;
 //int    itmp1;
 
     /*  loop through all the B3SOI device models */
@@ -1415,7 +1415,7 @@ B3SOIdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             /* process effective silicon film thickness */
             model->B3SOIcbox = 3.453133e-11 / model->B3SOItbox;
             model->B3SOIcsi = 1.03594e-10 / model->B3SOItsi;
-            Cboxt = model->B3SOIcbox * model->B3SOIcsi / (model->B3SOIcbox + model->B3SOIcsi);
+//            Cboxt = model->B3SOIcbox * model->B3SOIcsi / (model->B3SOIcbox + model->B3SOIcsi);
             model->B3SOIqsi = Charge_q*model->B3SOInpeak*1e6*model->B3SOItsi;
 
 

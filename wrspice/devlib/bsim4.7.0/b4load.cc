@@ -152,7 +152,7 @@ BSIM4dev::load(sGENinstance *in_inst, sCKT *ckt)
 //double tol0, tol1, tol2, tol3, tol4, tol5, tol6;
 
     double geltd, gcrg, gcrgg, gcrgd, gcrgs, gcrgb, ceqgcrg;
-    double vges, vgms, vgedo, vgmdo, vged, vgmd, delvged, delvgmd;
+    double vges, vgms, vgedo, vgmdo, vged, vgmd/*, delvged, delvgmd*/;
     double delvges, delvgms, vgmb;
     double gcgmgmb, gcgmdb, gcgmsb, gcdgmb, gcsgmb;
     double gcgmbb, gcbgmb, qgmb, qgmid, ceqqgmid;
@@ -174,7 +174,7 @@ BSIM4dev::load(sGENinstance *in_inst, sCKT *ckt)
     double gcdbdb, gcsbsb;
     double gcsgb, gcssb, MJD, MJSWD, MJSWGD, MJS, MJSWS, MJSWGS;
     double qgate, qbulk, qdrn, qsrc, cqgate, cqbody, cqdrn;
-    double Vdb, Vds, Vgs, Vbs, Gmbs, FwdSum, RevSum;
+    double /*Vdb,*/ Vds, /*Vgs,*/ Vbs, Gmbs, FwdSum, RevSum;
     double Igidl, Ggidld, Ggidlg, Ggidlb;
     double Voxacc, dVoxacc_dVg, dVoxacc_dVb;
     double Voxdepinv, dVoxdepinv_dVg, dVoxdepinv_dVd, dVoxdepinv_dVb;
@@ -195,7 +195,7 @@ BSIM4dev::load(sGENinstance *in_inst, sCKT *ckt)
     double Vgs_eff, Vfb, /*dVbs_dVb,*/ Vth_NarrowW;
     /* double Vgd_eff, dVgd_eff_dVg;         v4.7.0 */
     double Phis, dPhis_dVb, sqrtPhis, dsqrtPhis_dVb, Vth, dVth_dVb, dVth_dVd;
-    double Vgst, dVgst_dVg, dVgst_dVb, dVgs_eff_dVg, Nvtms, Nvtmd;
+    double Vgst, /*dVgst_dVg, dVgst_dVb,*/ dVgs_eff_dVg, Nvtms, Nvtmd;
     double /*Vgdt, Vgsaddvth, Vgsaddvth2, Vgsaddvth1o3,*/ Vtm, Vtm0;
     double n, dn_dVb, dn_dVd, voffcv, noff, dnoff_dVd, dnoff_dVb;
     double /*ExpArg, ExpArg1,*/ V0, CoxWLcen, QovCox, LINK;
@@ -470,8 +470,8 @@ BSIM4dev::load(sGENinstance *in_inst, sCKT *ckt)
                 delvbd = vbd - *(ckt->CKTstate0 + here->BSIM4vbd);
                 delvdbd = vdbd - *(ckt->CKTstate0 + here->BSIM4vdbd);
                 delvgd = vgd - vgdo;
-                delvged = vged - vgedo;
-                delvgmd = vgmd - vgmdo;
+//                delvged = vged - vgedo;
+//                delvgmd = vgmd - vgmdo;
 
                 delvds = vds - *(ckt->CKTstate0 + here->BSIM4vds);
                 delvgs = vgs - *(ckt->CKTstate0 + here->BSIM4vgs);
@@ -1123,17 +1123,17 @@ BSIM4dev::load(sGENinstance *in_inst, sCKT *ckt)
             {
                 here->BSIM4mode = 1;
                 Vds = vds;
-                Vgs = vgs;
+//                Vgs = vgs;
                 Vbs = vbs;
-                Vdb = vds - vbs;  /* WDLiu: for GIDL */
+//                Vdb = vds - vbs;  /* WDLiu: for GIDL */
             }
             else
             {
                 here->BSIM4mode = -1;
                 Vds = -vds;
-                Vgs = vgd;
+//                Vgs = vgd;
                 Vbs = vbd;
-                Vdb = -vbs;
+//                Vdb = -vbs;
             }
 
 
@@ -3216,8 +3216,8 @@ BSIM4dev::load(sGENinstance *in_inst, sCKT *ckt)
                 Vth = Vfb + pParam->BSIM4phi + pParam->BSIM4k1ox * sqrtPhis;
                 Vgst = Vgs_eff - Vth;
                 dVth_dVb = pParam->BSIM4k1ox * dsqrtPhis_dVb *dVbseff_dVb; /*4.6.2*/
-                dVgst_dVb = -dVth_dVb;
-                dVgst_dVg = dVgs_eff_dVg;
+//                dVgst_dVb = -dVth_dVb;
+//                dVgst_dVg = dVgs_eff_dVg;
 
                 CoxWL = model->BSIM4coxe * pParam->BSIM4weffCV
                         * pParam->BSIM4leffCV * here->BSIM4nf;

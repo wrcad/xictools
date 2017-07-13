@@ -84,11 +84,11 @@ BSIM3dev::load(sGENinstance *in_inst, sCKT *ckt)
     double Vds, Vgs, Vbs, Gmbs, FwdSum, RevSum;
     double Vgs_eff, Vfb /*, dVbs_dVb*/;
     double Phis, dPhis_dVb, sqrtPhis, dsqrtPhis_dVb, Vth, dVth_dVb, dVth_dVd;
-    double Vgst, dVgst_dVg, dVgst_dVb, dVgs_eff_dVg, Nvtm;
+    double Vgst, /*dVgst_dVg, dVgst_dVb,*/ dVgs_eff_dVg, Nvtm;
     double /* Vgdt, Vgsaddvth, Vgsaddvth2, Vgsaddvth1o3, */ Vtm;
     double n, dn_dVb, dn_dVd, voffcv, noff, dnoff_dVd, dnoff_dVb;
     double ExpArg, /*ExpArg1,*/ V0, CoxWLcen, QovCox, LINK;
-    double DeltaPhi, dDeltaPhi_dVg, dDeltaPhi_dVd, dDeltaPhi_dVb;
+    double DeltaPhi, dDeltaPhi_dVg/*, dDeltaPhi_dVd, dDeltaPhi_dVb*/;
     double Cox, Tox, Tcen, dTcen_dVg, dTcen_dVd, dTcen_dVb;
     double Ccen, Coxeff, dCoxeff_dVg, dCoxeff_dVd, dCoxeff_dVb;
     double Denomi, dDenomi_dVg, dDenomi_dVd, dDenomi_dVb;
@@ -1351,8 +1351,8 @@ BSIM3dev::load(sGENinstance *in_inst, sCKT *ckt)
                 Vth = Vfb + pParam->BSIM3phi + pParam->BSIM3k1ox * sqrtPhis;
                 Vgst = Vgs_eff - Vth;
                 dVth_dVb = pParam->BSIM3k1ox * dsqrtPhis_dVb;
-                dVgst_dVb = -dVth_dVb;
-                dVgst_dVg = dVgs_eff_dVg;
+//                dVgst_dVb = -dVth_dVb;
+//                dVgst_dVg = dVgs_eff_dVg;
 
                 CoxWL = model->BSIM3cox * pParam->BSIM3weffCV
                         * pParam->BSIM3leffCV;
@@ -2172,8 +2172,8 @@ BSIM3dev::load(sGENinstance *in_inst, sCKT *ckt)
 
                     DeltaPhi = Vtm * log(1.0 + T1 * Vgsteff / Denomi);
                     dDeltaPhi_dVg = 2.0 * Vtm * (T1 -T0) / (Denomi + T1 * Vgsteff);
-                    dDeltaPhi_dVd = dDeltaPhi_dVg * dVgsteff_dVd;
-                    dDeltaPhi_dVb = dDeltaPhi_dVg * dVgsteff_dVb;
+//                    dDeltaPhi_dVd = dDeltaPhi_dVg * dVgsteff_dVd;
+//                    dDeltaPhi_dVb = dDeltaPhi_dVg * dVgsteff_dVb;
                     /* End of delta Phis */
 
                     T3 = 4.0 * (Vth - pParam->BSIM3vfbzb - pParam->BSIM3phi);

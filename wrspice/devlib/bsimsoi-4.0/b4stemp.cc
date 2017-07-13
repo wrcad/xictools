@@ -83,7 +83,7 @@ B4SOIdev::temperature(sGENmodel *genmod, sCKT *ckt)
     struct b4soiSizeDependParam *pSizeDependParamKnot, *pLastKnot, *pParam;
     double tmp, tmp1, tmp2, Eg, Eg0, ni, T0, T1, T2, T3, T4, T5/*, T6*/;
     double /*Lnew, Wnew,*/ Ldrn, Wdrn;
-    double Temp, TempRatio, Inv_L, Inv_W, Inv_LW, /*Dw, Dl,*/ Vtm0, Tnom, TRatio;
+    double Temp, TempRatio, Inv_L, Inv_W, Inv_LW, /*Dw, Dl,*/ Vtm0, Tnom/*, TRatio*/;
     double SDphi, SDgamma;
     double Inv_saref, Inv_sbref, Inv_sa, Inv_sb, rho, dvth0_lod;
     double W_tmp, Inv_ODeff, OD_offset, dk2_lod, deta0_lod, kvsat;

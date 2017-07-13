@@ -99,7 +99,7 @@ B4SOIdev::temperature(sGENmodel *genmod, sCKT *ckt)
     double /* Vgs, */ Vgs_eff,Vgsteff, V0, Vth,Vgst;
     double lt1,ltw;
     double TempRatioMinus1;
-    double n, VgstNVt,  ExpArg, sqrtPhisExt,ExpVgst,Vgst2Vtm,vtfbphi2eot;
+    double n, VgstNVt,  ExpArg, sqrtPhisExt,ExpVgst,/*Vgst2Vtm,*/vtfbphi2eot;
     double DIBL_Sft,Lpe_Vb,DITS_Sft,DeltVthtemp, DITS_Sft2;
     double Theta0,Delt_vth,DeltVthw;
     double niter,toxpf,toxpi, Tcen;
@@ -1987,7 +1987,7 @@ B4SOIdev::temperature(sGENmodel *genmod, sCKT *ckt)
                     Vgsteff = T1 / T2;
 
                 }
-                Vgst2Vtm = Vgsteff + 2.0 * Vtmeot;
+//                Vgst2Vtm = Vgsteff + 2.0 * Vtmeot;
 
 
 

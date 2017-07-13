@@ -49,14 +49,14 @@ BSIM4dev::pzLoad(sGENmodel *genmod, sCKT *ckt, IFcomplex *s)
     double gjbd, gjbs, geltd, gcrg, gcrgg, gcrgd, gcrgs, gcrgb;
     double xcggb, xcgdb, xcgsb, xcgbb, xcbgb, xcbdb, xcbsb, xcbbb;
     double xcdgb, xcddb, xcdsb, xcdbb, xcsgb, xcsdb, xcssb, xcsbb;
-    double gds, /*gbd, gbs,*/ capbd, capbs, FwdSum, RevSum, Gm, Gmbs;
+    double gds, /*gbd, gbs, capbd, capbs,*/ FwdSum, RevSum, Gm, Gmbs;
     double gstot, gstotd, gstotg, gstots, gstotb, gspr;
     double gdtot, gdtotd, gdtotg, gdtots, gdtotb, gdpr;
     double gIstotg, gIstotd, gIstots, gIstotb;
     double gIdtotg, gIdtotd, gIdtots, gIdtotb;
     double gIbtotg, gIbtotd, gIbtots, gIbtotb;
     double gIgtotg, gIgtotd, gIgtots, gIgtotb;
-    double cgso, cgdo, cgbo;
+    double cgso, cgdo/*, cgbo*/;
     double xcdbdb, xcsbsb, xcgmgmb, xcgmdb, xcgmsb, xcdgmb, xcsgmb;
     double xcgmbb, xcbgmb;
     double dxpart, sxpart, xgtg, xgtd, xgts, xgtb, xcqgb, xcqdb, xcqsb, xcqbb;
@@ -76,11 +76,11 @@ BSIM4dev::pzLoad(sGENmodel *genmod, sCKT *ckt, IFcomplex *s)
                 here = here->BSIM4nextInstance)
         {
             pParam = here->pParam;
-            capbd = here->BSIM4capbd;
-            capbs = here->BSIM4capbs;
+//            capbd = here->BSIM4capbd;
+//            capbs = here->BSIM4capbs;
             cgso = here->BSIM4cgso;
             cgdo = here->BSIM4cgdo;
-            cgbo = pParam->BSIM4cgbo;
+//            cgbo = pParam->BSIM4cgbo;
 
             if (here->BSIM4mode >= 0)
             {

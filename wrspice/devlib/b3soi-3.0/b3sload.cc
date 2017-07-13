@@ -139,7 +139,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     int selfheat;
 
     double /*SourceSatCurrent, DrainSatCurrent,*/ Gmin;
-    double ag0, qgd, qgs, /*qgb,*/ von, cbhat, VgstNVt, ExpVgst;
+    double ag0, qgd, qgs, /*qgb, von,*/ cbhat, VgstNVt, ExpVgst;
     double cdhat, cdreq, ceqbd, ceqbs, ceqqb, ceqqd, ceqqg /*, ceq, geq */;
     double /*evbd, evbs,*/ arg/*, sarg*/;
     double delvbd, delvbs, delvds, delvgd, delvgs;
@@ -152,10 +152,10 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double gcedb, gcegb, gcesb, gceeb, gceT;
     double gcTt, gTtg, gTtb, gTtdp, gTtt, gTtsp;
     double vbd, vbs, vds, vgb, vgd, vgs, vgdo, xfact;
-    double vg, vd, vs, vp, ve, vb;
+    double vg, vd, vs, vp, ve/*, vb*/;
     double Vds, Vgs, Vbs, Gmbs, FwdSum, RevSum;
     double Vgs_eff, Vfb, dVfb_dVb, dVfb_dVd, dVfb_dT;
-    double Phis, dPhis_dVb, sqrtPhis, dsqrtPhis_dVb, Vth, dVth_dVb, dVth_dVd, dVth_dT;
+    double Phis, /*dPhis_dVb,*/ sqrtPhis, dsqrtPhis_dVb, Vth, dVth_dVb, dVth_dVd, dVth_dT;
     double Vgst, dVgst_dVg, dVgst_dVb, dVgs_eff_dVg/*, Nvtm*/;
     double /*Vgdt, Vgsaddvth, Vgsaddvth2, Vgsaddvth1o3,*/ n, dn_dVb, Vtm;
     double ExpArg, V0;
@@ -207,12 +207,12 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Ids, Gm, Gds, Gmb;
     double CoxWovL;
     double Rds, dRds_dVg, dRds_dVb, dRds_dT, WVCox, WVCoxRds;
-    double Vgst2Vtm, dVgst2Vtm_dT, VdsatCV, /*dVdsatCV_dVd,*/ dVdsatCV_dVg, dVdsatCV_dVb;
+    double Vgst2Vtm, dVgst2Vtm_dT, VdsatCV/*, dVdsatCV_dVd, dVdsatCV_dVg, dVdsatCV_dVb*/;
     double Leff, Weff, dWeff_dVg, dWeff_dVb;
     double AbulkCV, dAbulkCV_dVb;
     double qgdo, qgso, cgdo, cgso;
 
-    double dxpart, sxpart;
+//    double dxpart, sxpart;
 
     struct b3soiSizeDependParam *pParam;
     int ByPass, Check, ChargeComputationNeeded, /*J,*/ error/*, I*/;
@@ -227,7 +227,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Vbd, Ves, Vesfb, /*sqrtXdep,*/ DeltVthtemp, dDeltVthtemp_dT;
     double Vbp, dVbp_dVb;
     double DeltVthw, dDeltVthw_dVb, dDeltVthw_dT;
-    double Gm0, Gds0, Gmb0, GmT0, Gmc, GmT;
+    double Gm0, Gds0, Gmb0, GmT0, /*Gmc,*/ GmT;
     double dDIBL_Sft_dVb;
 //double diffVdsii  ;
     double Idgidl, Gdgidld, Gdgidlg, Isgidl, Gsgidlg;
@@ -319,7 +319,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 
     /* for capMod3 */
     double Cox, Tox, Tcen, dTcen_dVg, dTcen_dVb, LINK, Ccen, Coxeff, dCoxeff_dVg, dCoxeff_dVb;
-    double CoxWLcen, QovCox, dQac0_dVg, DeltaPhi, dDeltaPhi_dVg, dDeltaPhi_dVd, dDeltaPhi_dVb;
+    double CoxWLcen, QovCox, dQac0_dVg, DeltaPhi, dDeltaPhi_dVg/*, dDeltaPhi_dVd, dDeltaPhi_dVb*/;
     double dTcen_dVd, dTcen_dT, dCoxeff_dVd, dCoxeff_dT, dCoxWLcenb_dT, qinoi, qbulk;
     double T3zb, lt1zb, ltwzb, Theta0zb;
     double Delt_vthzb, dDelt_vthzb_dT;
@@ -389,12 +389,12 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                 if (!here->B3SOIvbsusrGiven)
                 {
                     vbs = *(ckt->CKTstate0 + here->B3SOIvbs);
-                    vb = *(ckt->CKTrhsOld + here->B3SOIbNode);
+//                    vb = *(ckt->CKTrhsOld + here->B3SOIbNode);
                 }
                 else
                 {
                     vbs = here->B3SOIvbsusr;
-                    vb = here->B3SOIvbsusr + vs;
+//                    vb = here->B3SOIvbsusr + vs;
                 }
                 vgs = *(ckt->CKTstate0 + here->B3SOIvgs);
                 ves = *(ckt->CKTstate0 + here->B3SOIves);
@@ -414,12 +414,12 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                 if (!here->B3SOIvbsusrGiven)
                 {
                     vbs = *(ckt->CKTstate1 + here->B3SOIvbs);
-                    vb = *(ckt->CKTrhsOld + here->B3SOIbNode);
+//                    vb = *(ckt->CKTrhsOld + here->B3SOIbNode);
                 }
                 else
                 {
                     vbs = here->B3SOIvbsusr;
-                    vb = here->B3SOIvbsusr + vs;
+//                    vb = here->B3SOIvbsusr + vs;
                 }
                 vgs = *(ckt->CKTstate1 + here->B3SOIvgs);
                 ves = *(ckt->CKTstate1 + here->B3SOIves);
@@ -510,7 +510,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                     vs = ve - model->B3SOItype * ves;
                     vg = model->B3SOItype * vgs + vs;
                     vd = model->B3SOItype * vds + vs;
-                    vb = model->B3SOItype * vbs + vs;
+//                    vb = model->B3SOItype * vbs + vs;
                     vp = model->B3SOItype * vps + vs;
 
                     delTemp = (1.0 + xfact)* (*(ckt->CKTstate1 +
@@ -659,7 +659,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 
 
 #endif /*NOBYPASS*/
-                von = here->B3SOIvon;
+//                von = here->B3SOIvon;
 
 
                 if (*(ckt->CKTstate0 + here->B3SOIvds) >= 0.0)
@@ -672,13 +672,13 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                 {
                     vbs = B3SOIlimit(vbs, T0, 0.2, &Check);
                     vbd = vbs - vds;
-                    vb = model->B3SOItype * vbs + vs;
+//                    vb = model->B3SOItype * vbs + vs;
                 }
                 else
                 {
                     vbd = B3SOIlimit(vbd, T0, 0.2, &Check);
                     vbs = vbd + vds;
-                    vb = model->B3SOItype * vbs + vd;
+//                    vb = model->B3SOItype * vbs + vd;
                 }
 
                 delTemp =B3SOIlimit(delTemp, *(ckt->CKTstate0 + here->B3SOIdeltemp),5.0,&Check);
@@ -1011,7 +1011,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 
                 /* VthFD calculation */
                 Phis = phi - Vbs0mos;
-                dPhis_dVb = -1; /* w.r.t Vbs0mos */
+//                dPhis_dVb = -1; /* w.r.t Vbs0mos */
                 sqrtPhis = sqrt(Phis);
                 dsqrtPhis_dVb = -0.5 / sqrtPhis;
                 Xdep = Xdep0 * sqrtPhis / sqrtPhi;
@@ -1322,7 +1322,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                 dVbsh_dVb /= dVbseff_dVb;
 
             Phis = phi - Vbseff;
-            dPhis_dVb = -1;
+//            dPhis_dVb = -1;
             sqrtPhis = sqrt(Phis);
             dsqrtPhis_dVb = -0.5 / sqrtPhis;
 
@@ -2281,7 +2281,7 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
             Gds0 = T0 * dIdl_dVd + Idl * (1.0 - dVdseff_dVd
                                           - T9 * dVa_dVd) / Va;
             Gmb0 = T0 * dIdl_dVb - Idl * (dVdseff_dVb + T9 * dVa_dVb) / Va;
-            Gmc = 0.0;
+//            Gmc = 0.0;
             if (selfheat)
                 GmT0 = T0 * dIdl_dT - Idl * (dVdseff_dT + T9 * dVa_dT) / Va;
             else GmT0 = 0.0;
@@ -3685,8 +3685,8 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                     dAbulkCV_dVb = pParam->B3SOIabulkCVfactor * dAbulk0_dVb;
 
                     VdsatCV = Vgsteff / AbulkCV;
-                    dVdsatCV_dVg = 1.0 / AbulkCV;
-                    dVdsatCV_dVb = -VdsatCV * dAbulkCV_dVb / AbulkCV;
+//                    dVdsatCV_dVg = 1.0 / AbulkCV;
+//                    dVdsatCV_dVb = -VdsatCV * dAbulkCV_dVb / AbulkCV;
 
                     V4 = VdsatCV - Vds - DELTA_4;
                     T0 = sqrt(V4 * V4 + 4.0 * DELTA_4 * VdsatCV);
@@ -3997,8 +3997,8 @@ B3SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 
                     DeltaPhi = Vtm * log(1.0 + T1 * Vgsteff / Denomi);
                     dDeltaPhi_dVg = 2.0 * Vtm * (T1 -T0) / (Denomi + T1 * Vgsteff);
-                    dDeltaPhi_dVd = dDeltaPhi_dVg * dVgsteff_dVd;
-                    dDeltaPhi_dVb = dDeltaPhi_dVg * dVgsteff_dVb;
+//                    dDeltaPhi_dVd = dDeltaPhi_dVg * dVgsteff_dVd;
+//                    dDeltaPhi_dVb = dDeltaPhi_dVg * dVgsteff_dVb;
                     /* End of delta Phis */
 
                     T3 = 4.0 * (Vth - Vfbzb - phi);
@@ -4597,8 +4597,8 @@ line755:
 
                 gcTt = pParam->B3SOIcth * ag0;
 
-                sxpart = 0.6;
-                dxpart = 0.4;
+//                sxpart = 0.6;
+//                dxpart = 0.4;
 
                 /* Lump the overlap capacitance and S/D parasitics */
                 qgd = qgdo;
@@ -4648,8 +4648,8 @@ line755:
 
                 gcTt = pParam->B3SOIcth * ag0;
 
-                dxpart = 0.6;
-                sxpart = 0.4;
+//                dxpart = 0.6;
+//                sxpart = 0.4;
 
                 /* Lump the overlap capacitance */
                 qgd = qgdo;
@@ -4724,7 +4724,7 @@ line850:
             gcegb = gcedb = gceeb = gcesb = gceT = 0.0;
             gcTt = 0.0;
 
-            sxpart = (1.0 - (dxpart = (here->B3SOImode > 0) ? 0.4 : 0.6));
+//            sxpart = (1.0 - (dxpart = (here->B3SOImode > 0) ? 0.4 : 0.6));
 
             goto line900;
 

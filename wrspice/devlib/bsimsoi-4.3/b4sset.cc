@@ -274,13 +274,13 @@ B4SOIdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
 
 // SRW these were originally defined externally, but apparently are
 // not used.
-    double epsrox, toxe, epssub;
+    double epsrox, toxe/*, epssub*/;
 
     int error;
     CKTnode *tmp;
 
 //double tmp1, tmp2;
-    double /* nfb0, */ Cboxt;
+//    double nfb0, Cboxt;
 //int    itmp1;
 
     /* v3.2 */
@@ -358,7 +358,7 @@ B4SOIdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         {
             epsrox = 3.9;
             toxe = model->B4SOIeot;
-            epssub = EPS0 * model->B4SOIepsrsub;
+//            epssub = EPS0 * model->B4SOIepsrsub;
             //model->B4SOIcox = 3.453133e-11 / model->B4SOItox;
             model->B4SOIcox = epsrox * EPS0 / toxe;
         }
@@ -366,7 +366,7 @@ B4SOIdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         {
             epsrox = model->B4SOIepsrox;
             toxe = model->B4SOItox;
-            epssub = EPSSI;
+//            epssub = EPSSI;
             //model->B4SOIcox = epsrox * EPS0 / toxe;
             model->B4SOIcox = 3.453133e-11 / model->B4SOItox;
         }
@@ -2440,7 +2440,7 @@ B4SOIdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             {
                 model->B4SOIcsi = 1.03594e-10 / model->B4SOItsi;
             }
-            Cboxt = model->B4SOIcbox * model->B4SOIcsi / (model->B4SOIcbox + model->B4SOIcsi);
+//            Cboxt = model->B4SOIcbox * model->B4SOIcsi / (model->B4SOIcbox + model->B4SOIcsi);
 
 
             /* v3.2 */

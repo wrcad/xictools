@@ -153,7 +153,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     int selfheat;
 
     double /* SourceSatCurrent, DrainSatCurrent, */ Gmin;
-    double ag0, qgd, qgs, /* qgb, */ von, cbhat, VgstNVt, ExpVgst;
+    double ag0, qgd, qgs, /* qgb, von,*/ cbhat, VgstNVt, ExpVgst;
     double cdhat, cdreq, ceqbd, ceqbs, ceqqb, ceqqd, ceqqg /*, ceq, geq */;
     double /* evbd, evbs, */ arg /*, sarg */;
     double delvbd, delvbs, delvds, delvgd, delvgs;
@@ -166,11 +166,11 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double gcedb, gcegb, gcesb, gceeb, gceT;
     double gcTt, gTtg, gTtb, gTtdp, gTtt, gTtsp;
     double vbd, vbs, vds, vgb, vgd, vgs, vgdo, xfact;
-    double vg, vd, vs, vp, ve, vb;
+    double vg, vd, vs, vp, ve/*, vb*/;
     double Vds, Vgs, Vbs, Gmbs, FwdSum, RevSum;
 
     double Vgs_eff, Vfb, dVfb_dVb, dVfb_dVd, dVfb_dT;
-    double Phis, dPhis_dVb, sqrtPhis, dsqrtPhis_dVb, Vth, dVth_dVb, dVth_dVd, dVth_dT;
+    double Phis, /*dPhis_dVb,*/ sqrtPhis, dsqrtPhis_dVb, Vth, dVth_dVb, dVth_dVd, dVth_dT;
     double Vgst, dVgst_dVg, dVgst_dVb, dVgs_eff_dVg /*, Nvtm */;
     double /* Vgdt, Vgsaddvth, Vgsaddvth2, Vgsaddvth1o3, */ n, dn_dVb, Vtm;
     double ExpArg, V0;
@@ -186,11 +186,11 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double T0, dT0_dVg, dT0_dVd, dT0_dVb, /* dT0_dVrg, */ dT0_dT;
 
     double T1, dT1_dVg, dT1_dVd, dT1_dVb, dT1_dT;
-    double T2, dT2_dVg, dT2_dVd, dT2_dVb, dT2_dT, dT2_dVp;
+    double T2, dT2_dVg, dT2_dVd, dT2_dVb, dT2_dT/*, dT2_dVp*/;
     double T3, dT3_dVg, dT3_dVd, dT3_dVb, dT3_dT;
     double T4, /* dT4_dVg, */ dT4_dVd, dT4_dVb, dT4_dT;
     double T5, dT5_dVg, dT5_dVd, dT5_dVb, dT5_dT;
-    double T6, dT6_dVg, dT6_dVd, dT6_dVb, dT6_dT, dT6_dVp;
+    double T6, dT6_dVg, dT6_dVd, dT6_dVb, dT6_dT/*, dT6_dVp*/;
     double T7 /*, dT7_dVg, dT7_dVd, dT7_dVb */;
     double T8, /* dT8_dVg, */ dT8_dVd /*, dT8_dVb, dT8_dVrg */;
     double T9, /* dT9_dVg, */ dT9_dVd /*, dT9_dVb, dT9_dVrg */;
@@ -224,12 +224,12 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Ids, Gm, Gds, Gmb;
     double CoxWovL;
     double Rds, dRds_dVg, dRds_dVb, dRds_dT, WVCox, WVCoxRds;
-    double Vgst2Vtm, dVgst2Vtm_dT, VdsatCV, /* dVdsatCV_dVd, */ dVdsatCV_dVg, dVdsatCV_dVb;
+    double Vgst2Vtm, dVgst2Vtm_dT, VdsatCV/*, dVdsatCV_dVd, dVdsatCV_dVg, dVdsatCV_dVb*/;
     double Leff, Weff, dWeff_dVg, dWeff_dVb;
     double AbulkCV, dAbulkCV_dVb;
     double qgdo, qgso, cgdo, cgso;
 
-    double dxpart, sxpart;
+//    double dxpart, sxpart;
 
     struct b4soiSizeDependParam *pParam;
     int ByPass, Check, ChargeComputationNeeded, /* J, */ error /*, I */;
@@ -244,7 +244,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Vbd, Ves, Vesfb, /* sqrtXdep, */ DeltVthtemp, dDeltVthtemp_dT;
     double Vbp, dVbp_dVb;
     double DeltVthw, dDeltVthw_dVb, dDeltVthw_dT;
-    double Gm0, Gds0, Gmb0, GmT0, Gmc, GmT;
+    double Gm0, Gds0, Gmb0, GmT0, /*Gmc,*/ GmT;
     double dDIBL_Sft_dVb;
 //    double diffVdsii  ;
     double Igidl, Ggidld, Ggidlg, Ggidlb;
@@ -254,7 +254,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double gppb, gppp;
     double delTemp, deldelTemp, Temp;
     double ceqth, ceqqth;
-    double K1 /*, WL */;
+//    double K1 /*, WL */;
     double qjs, gcjsbs, gcjsT;
     double qjd, gcjdbs, gcjdT;
     double qge;
@@ -343,7 +343,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 
     /* for capMod3 */
     double Cox, Tox, Tcen, dTcen_dVg, dTcen_dVb, LINK, Ccen, Coxeff, dCoxeff_dVg, dCoxeff_dVb;
-    double CoxWLcen, QovCox, dQac0_dVg, DeltaPhi, dDeltaPhi_dVg, dDeltaPhi_dVd, dDeltaPhi_dVb;
+    double CoxWLcen, QovCox, dQac0_dVg, DeltaPhi, dDeltaPhi_dVg/*, dDeltaPhi_dVd, dDeltaPhi_dVb*/;
     double dTcen_dVd, dTcen_dT, dCoxeff_dVd, dCoxeff_dT, dCoxWLcenb_dT, qinoi, qbulk;
     double T3zb, lt1zb, ltwzb, Theta0zb;
     double Delt_vthzb, dDelt_vthzb_dT;
@@ -357,7 +357,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 
     /* v3.1 added for RF */
     double geltd, gcrg, gcrgg, gcrgd, gcrgs, gcrgb, ceqgcrg;
-    double vges, vgms, vgedo, vgmdo, vged, vgmd, delvged, delvgmd;
+    double vges, vgms, /*vgedo, vgmdo,*/ vged, vgmd/*, delvged, delvgmd*/;
     double delvges, delvgms, vgme;
     double gcgmgmb, gcgmdb, gcgmsb, gcdgmb, gcsgmb;
     double gcgmeb, gcegmb, qgme, qgmid, ceqqgmid;
@@ -409,7 +409,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     /* v4.0 */
     double IdlovVdseff, dIdlovVdseff_dVg, dIdlovVdseff_dVd, dIdlovVdseff_dVb /*,
            dIdlovVdseff_dT */;
-    double IdovVds;
+//    double IdovVds;
     double vdbs, vsbs, /* vdb, vsb, */ vdbd, vsbd, vsbdo, vbs_jct, vbd_jct;
     double Vsbs, Vdbd, Vdbs;
     double delvdbd, delvsbs, delvdbs, delvbd_jct,  delvbs_jct;
@@ -419,8 +419,8 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double DITS_Sft, DITS_Sft2, dDITS_Sft_dVb, dDITS_Sft_dVd, dDITS_Sft2_dVd, dDITS_Sft_dT;
     double FP, dFP_dT, dFP_dVg;
     double VADITS, dVADITS_dVg, dVADITS_dVd, dVADITS_dT; /* for DITS */
-    double Iii_Igidl, Giigidl_b, Giigidl_d, Giigidl_g, Giigidl_e, Giigidl_T;
-    double gjsdb;
+    double Iii_Igidl, /*Giigidl_b, Giigidl_d, Giigidl_g, Giigidl_e,*/ Giigidl_T;
+//    double gjsdb;
     double Idbdp, Isbsp, cdbdp, csbsp, gcjdbdp, gcjsbsp, GGjdb, GGjsb;
     double vdes, vses, vdedo, delvdes, delvses, delvded, Isestot, cseshat, Idedtot,        cdedhat;
     double PowWeffWr, rd0, rs0, rdwmin, rswmin, drs0_dT, drd0_dT, drswmin_dT,
@@ -446,12 +446,12 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Vgd, Vgd_eff, dVgd_eff_dVg;
     double dVbs0mos_dVd;
     double Ig_agbcp2, dIg_agbcp2_dVg, dIg_agbcp2_dVp;
-    double vgp_eff, vgp, dvgp_eff_dvg, dvgp_eff_dvp;
+    double vgp_eff, vgp, dvgp_eff_dvg/*, dvgp_eff_dvp*/;
 
     /* improved body contact charge model */
     double CoxWL2, CoxWLb2;
     double ExpVgst2, Vgsteff2, VgstNVt2, ExpArg2;
-    double dVgsteff2_dVd, dVgsteff2_dVg, dVgsteff2_dVb, dVgsteff2_dVe, dVgsteff2_dT;
+    double dVgsteff2_dVd, dVgsteff2_dVg, dVgsteff2_dVb, /*dVgsteff2_dVe,*/ dVgsteff2_dT;
     double T02;
     double Qac02, dQac02_dVrg, dQac02_dVd, dQac02_dVg, dQac02_dVb, dQac02_dT;
     double Vgs_eff2, dVgs_eff2_dVg;
@@ -460,7 +460,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Vfb2, dVfb2_dVd, dVfb2_dVb, dVfb2_dT;
     double Vfbeff2, dVfbeff2_dVd, dVfbeff2_dVrg, dVfbeff2_dVg, dVfbeff2_dVb, dVfbeff2_dT;
     double Qsub02, dQsub02_dVg, dQsub02_dVrg, dQsub02_dVd, dQsub02_dVb, dQsub02_dT;
-    double VdsatCV2, dVdsatCV2_dVg,  dVdsatCV2_dVb;
+    double VdsatCV2/*, dVdsatCV2_dVg, dVdsatCV2_dVb*/;
     double VdseffCV2, dVdseffCV2_dVg, dVdseffCV2_dVd, dVdseffCV2_dVb;
     double Cbg12, Cbd12, Cbb12;
     double Cgg12, Cgd12, Cgb12;
@@ -470,14 +470,14 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
     double Coxeff2, dCoxeff2_dVg, dCoxeff2_dVd, dCoxeff2_dVb, dCoxeff2_dT;
     double CoxWLcenb2, dCoxWLcenb2_dT;
     double QovCox2;
-    double DeltaPhi2, dDeltaPhi2_dVg, dDeltaPhi2_dVd, dDeltaPhi2_dVb;
+    double DeltaPhi2, dDeltaPhi2_dVg/*, dDeltaPhi2_dVd, dDeltaPhi2_dVb*/;
     double CoxWLcen2;
     double T22, T52;
     double qsrc2, qbulk2;
     double Csg2, Csd2, Csb2;
     double  DELTA_3_SOI2;
-    double dphi_dT,dsqrtPhi_dT,dXdep0_dT,cdep0,dcep0_dT,theta0vb0,dtheta0vb0_dT;
-    double thetaRout,dthetaRout_dT,dcdep0_dT;
+    double dphi_dT,dsqrtPhi_dT,dXdep0_dT,cdep0,/*dcep0_dT,*/theta0vb0,dtheta0vb0_dT;
+    double thetaRout/*,dthetaRout_dT,dcdep0_dT*/;
     double dPhis_dT,dsqrtPhis_dT,dXdep_dT,dlt1_dT,dltw_dT;
     double agidl, bgidl, cgidl, egidl, rgidl, kgidl, fgidl;
 
@@ -508,12 +508,12 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                 if (!here->B4SOIvbsusrGiven)
                 {
                     vbs = *(ckt->CKTstate0 + here->B4SOIvbs);
-                    vb = *(ckt->CKTrhsOld + here->B4SOIbNode);
+//                    vb = *(ckt->CKTrhsOld + here->B4SOIbNode);
                 }
                 else
                 {
                     vbs = here->B4SOIvbsusr;
-                    vb = here->B4SOIvbsusr + vs;
+//                    vb = here->B4SOIvbsusr + vs;
                 }
                 vgs = *(ckt->CKTstate0 + here->B4SOIvgs);
                 ves = *(ckt->CKTstate0 + here->B4SOIves);
@@ -548,12 +548,12 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                 if (!here->B4SOIvbsusrGiven)
                 {
                     vbs = *(ckt->CKTstate1 + here->B4SOIvbs);
-                    vb = *(ckt->CKTrhsOld + here->B4SOIbNode);
+//                    vb = *(ckt->CKTrhsOld + here->B4SOIbNode);
                 }
                 else
                 {
                     vbs = here->B4SOIvbsusr;
-                    vb = here->B4SOIvbsusr + vs;
+//                    vb = here->B4SOIvbsusr + vs;
                 }
                 vgs = *(ckt->CKTstate1 + here->B4SOIvgs);
                 ves = *(ckt->CKTstate1 + here->B4SOIves);
@@ -718,7 +718,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                     vs = ve - model->B4SOItype * ves;
                     vg = model->B4SOItype * vgs + vs;
                     vd = model->B4SOItype * vds + vs;
-                    vb = model->B4SOItype * vbs + vs;
+//                    vb = model->B4SOItype * vbs + vs;
                     vp = model->B4SOItype * vps + vs;
 
                     vgge = model->B4SOItype * vges + vs; /* v3.1 */
@@ -805,14 +805,14 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                        - *(ckt->CKTstate0 + here->B4SOIvds);
 
                 /* v3.1 for RF */
-                vgedo = *(ckt->CKTstate0 + here->B4SOIvges)
-                        - *(ckt->CKTstate0 + here->B4SOIvds);
-                vgmdo = *(ckt->CKTstate0 + here->B4SOIvgms)
-                        - *(ckt->CKTstate0 + here->B4SOIvds);
+//                vgedo = *(ckt->CKTstate0 + here->B4SOIvges)
+//                        - *(ckt->CKTstate0 + here->B4SOIvds);
+//                vgmdo = *(ckt->CKTstate0 + here->B4SOIvgms)
+//                        - *(ckt->CKTstate0 + here->B4SOIvds);
                 vged = vges - vds;
                 vgmd = vgms - vds;
-                delvged = vged - vgedo;
-                delvgmd = vgmd - vgmdo;
+//                delvged = vged - vgedo;
+//                delvgmd = vgmd - vgmdo;
                 /* v3.1 for RF end*/
 
                 delvbs = vbs - *(ckt->CKTstate0 + here->B4SOIvbs);
@@ -1029,7 +1029,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                 }
 
 #endif /*NOBYPASS*/
-                von = here->B4SOIvon;
+//                von = here->B4SOIvon;
 
 
                 if (*(ckt->CKTstate0 + here->B4SOIvds) >= 0.0)
@@ -1071,7 +1071,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                 {
                     vbs = B4SOIlimit(vbs, T0, 0.2, &Check);
                     vbd = vbs - vds;
-                    vb = model->B4SOItype * vbs + vs;
+//                    vb = model->B4SOItype * vbs + vs;
 
                     if (here->B4SOIrbodyMod) /* v4.0 */
                     {
@@ -1086,7 +1086,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                 {
                     vbd = B4SOIlimit(vbd, T0, 0.2, &Check);
                     vbs = vbd + vds;
-                    vb = model->B4SOItype * vbs + vd;
+//                    vb = model->B4SOItype * vbs + vd;
                     /* v4.0 */
                     if (here->B4SOIrbodyMod)
                     {
@@ -1212,7 +1212,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                  * pParam->B4SOInpeak * 1.0e6 / 2.0) / sqrtPhi;     */      /* Bug fix #2 Jun 09 Body type is generalized for mtrlMod 1*/
                 cdep0 = sqrt(Charge_q * epssub                                                                      /* Fix */
                              * pParam->B4SOInpeak * 1.0e6 / 2.0) / sqrtPhi;
-                dcep0_dT = cdep0 * sqrtPhi * (-1.0) / phi * dsqrtPhi_dT;
+//                dcep0_dT = cdep0 * sqrtPhi * (-1.0) / phi * dsqrtPhi_dT;
 
                 /* T1 = sqrt(EPSSI / (model->B4SOIepsrox * EPSOX / 3.9) */                   /* Bug fix #3 Jun 09 Body type is generalized for mtrlMod 1*/
                 /*  * model->B4SOItox * Xdep0); */
@@ -1229,7 +1229,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                          / T1 / T1 * dT1_dT;
                 T2 = (T0 + 2.0 * T0 * T0);
                 thetaRout = pParam->B4SOIpdibl1 * T2 + pParam->B4SOIpdibl2;
-                dthetaRout_dT = pParam->B4SOIpdibl1 * (1.0 + 4.0 * T0) * dT0_dT;
+//                dthetaRout_dT = pParam->B4SOIpdibl1 * (1.0 + 4.0 * T0) * dT0_dT;
                 /*  Save the values below for phi calculation in B4SOIaccept()  */
                 here->B4SOIvtm = Vtm;
                 /* here->B4SOIni = ni;      v4.2 bugfix never used in the code */
@@ -1434,7 +1434,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                 dua_dT = dub_dT = duc_dT = 0.0;
                 /* v4.1 */
                 dphi_dT = dsqrtPhi_dT = dXdep0_dT = 0.0;
-                dcdep0_dT = dtheta0vb0_dT = dthetaRout_dT = 0.0;
+//                dcdep0_dT = dtheta0vb0_dT = dthetaRout_dT = 0.0;
 
                 if (!model->B4SOIrdsMod)
                 {
@@ -1630,7 +1630,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 
             Vesfb = Ves - vfbb;
             Cbox = model->B4SOIcbox;
-            K1 = pParam->B4SOIk1eff;
+//            K1 = pParam->B4SOIk1eff;
 
             /* SRW
             ChargeComputationNeeded =
@@ -1836,7 +1836,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 
                 /* VthFD calculation */
                 Phis = phi - Vbs0mos;
-                dPhis_dVb = -1; /* w.r.t Vbs0mos */
+//                dPhis_dVb = -1; /* w.r.t Vbs0mos */
                 sqrtPhis = sqrt(Phis);
                 dsqrtPhis_dVb = -0.5 / sqrtPhis;
                 Xdep = Xdep0 * sqrtPhis / sqrtPhi;
@@ -2346,7 +2346,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                 dVbsh_dVb /= dVbseff_dVb;
 
             Phis = phi - Vbseff;
-            dPhis_dVb = -1;
+//            dPhis_dVb = -1;
             sqrtPhis = sqrt(Phis);
             dsqrtPhis_dVb = -0.5 / sqrtPhis;
 
@@ -3571,13 +3571,13 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 
             here->B4SOIidovVds = IdlovVdseff * T0 / here->B4SOInseg;
             /* v4.0 bug fix */
-            IdovVds = IdlovVdseff * T0 / here->B4SOInseg; /* v4.0 */
+//            IdovVds = IdlovVdseff * T0 / here->B4SOInseg; /* v4.0 */
 
             Gm0 = T0 * dIdl_dVg - Idl * (dVdseff_dVg + T9 * dVa_dVg) / Va;
             Gds0 = T0 * dIdl_dVd + Idl * (1.0 - dVdseff_dVd
                                           - T9 * dVa_dVd) / Va;
             Gmb0 = T0 * dIdl_dVb - Idl * (dVdseff_dVb + T9 * dVa_dVb) / Va;
-            Gmc = 0.0;
+//            Gmc = 0.0;
 
             if (selfheat)
                 GmT0 = T0 * dIdl_dT - Idl * (dVdseff_dT + T9 * dVa_dT) / Va;
@@ -4926,7 +4926,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                 T1 = sqrt(T0 * T0 + 1.0e-4);
                 vgp_eff = 0.5 * (-T0 + T1 - 1.0e-2);
                 dvgp_eff_dvg = 0.5 * (-1.0 + T0 / T1);
-                dvgp_eff_dvp = -dvgp_eff_dvg;
+//                dvgp_eff_dvp = -dvgp_eff_dvg;
 
                 /* T11=A*  T12=B* */
                 T11 = (model->B4SOItype == NMOS) ? 3.42537e-7 : 4.97232e-7;
@@ -4934,7 +4934,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 
                 T2 = vgp * vgp_eff;
                 dT2_dVg = vgp * dvgp_eff_dvg + vgp_eff;
-                dT2_dVp = vgp * dvgp_eff_dvp - vgp_eff;
+//                dT2_dVp = vgp * dvgp_eff_dvp - vgp_eff;
 
                 T3 = pParam->B4SOIaigbcp2 * pParam->B4SOIcigbcp2
                      - pParam->B4SOIbigbcp2;
@@ -4945,13 +4945,13 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                 {
                     T6 = MAX_EXPL;
                     dT6_dVg = 0.0;
-                    dT6_dVp = 0.0;
+//                    dT6_dVp = 0.0;
                 }
                 else if (T5 < -EXPL_THRESHOLD)
                 {
                     T6 = MIN_EXPL;
                     dT6_dVg = 0.0;
-                    dT6_dVp = 0.0;
+//                    dT6_dVp = 0.0;
                 }
                 else
                 {
@@ -4959,7 +4959,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                     T7 = T6 * (-T12) * model->B4SOItoxqm *
                          (T3 - 2.0 * T4 * vgp_eff);
                     dT6_dVg = T7 * dvgp_eff_dvg;
-                    dT6_dVp = T7 * dvgp_eff_dvg;
+//                    dT6_dVp = T7 * dvgp_eff_dvg;
                 }
                 T11 = T11 * here->B4SOIagbcp2 * pParam->B4SOIoxideRatio/here->B4SOInf;
                 Ig_agbcp2 = T11 * T2 * T6;
@@ -5636,17 +5636,17 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 
             if (!here->B4SOIrbodyMod)
             {
-                Giigidl_b = Giigidl_d = Giigidl_g = Giigidl_e
-                                                    = Giigidl_T = Iii_Igidl = 0.0;
+                /* Giigidl_b = Giigidl_d = Giigidl_g = Giigidl_e
+                                                    = */ Giigidl_T = Iii_Igidl = 0.0;
             }
             else
             {
                 here->B4SOIgiigidlb = Giib + Ggidlb + Ggislb;
                 here->B4SOIgiigidld = Giid + Ggidld;
-                Giigidl_b =  - Giib -Ggidlb - Ggislb;
-                Giigidl_d =  - Giid -Ggidld;
-                Giigidl_g =  - Giig -Ggidlg - Ggislg;
-                Giigidl_e =  - Giie;
+//                Giigidl_b =  - Giib -Ggidlb - Ggislb;
+//                Giigidl_d =  - Giid -Ggidld;
+//                Giigidl_g =  - Giig -Ggidlg - Ggislg;
+//                Giigidl_e =  - Giie;
                 if (selfheat) Giigidl_T = -GiiT;
                 else GiiT = Giigidl_T = 0.0;
 
@@ -5868,7 +5868,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                                             + Vgsteff2 / noff * dnoff_dVd;
                             dVgsteff2_dVg = T02 * (dVgs_eff_dVg - dVth_dVb*dVbseff_dVg);
                             dVgsteff2_dVb = T12 * dVbseff_dVb;
-                            dVgsteff2_dVe = T12 * dVbseff_dVe;
+//                            dVgsteff2_dVe = T12 * dVbseff_dVe;
                             if (selfheat)
                                 dVgsteff2_dT = -T02 * (dVth_dT+dVth_dVb*dVbseff_dT
                                                        + (Vgst - 1.12 - pParam->B4SOIdelvt) / Temp)
@@ -5909,7 +5909,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                                         + Vgsteff2 / noff * dnoff_dVd;
                         dVgsteff2_dVg = T02 * (dVgs_eff_dVg - dVth_dVb*dVbseff_dVg);
                         dVgsteff2_dVb = T12 * dVbseff_dVb;
-                        dVgsteff2_dVe = T12 * dVbseff_dVe;
+//                        dVgsteff2_dVe = T12 * dVbseff_dVe;
                         if (selfheat)
                             dVgsteff2_dT = -T02 * (dVth_dT+dVth_dVb*dVbseff_dT
                                                    + (Vgst - 1.12 - pParam->B4SOIdelvt) / Temp)
@@ -6030,7 +6030,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                             dVgsteff2_dVg = dVgs_eff_dVg + T0 * dVbseff_dVg;
                             dVgsteff2_dVd = -dVth_dVd + T0 * dVbseff_dVd;
                             dVgsteff2_dVb = T0 * dVbseff_dVb;
-                            dVgsteff2_dVe = T0 * dVbseff_dVe;
+//                            dVgsteff2_dVe = T0 * dVbseff_dVe;
                             if (selfheat)
                                 dVgsteff2_dT  = -dVth_dT + T0 * dVbseff_dT;
                             else
@@ -6047,7 +6047,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                             T1  = -T3 * (dVth_dVb + T0 * Vtm * dnoff_dVb);
                             dVgsteff2_dVg = T3 * dVgs_eff_dVg+ T1 * dVbseff_dVg;
                             dVgsteff2_dVd = -T3 * (dVth_dVd + T0 * Vtm * dnoff_dVd)+ T1 * dVbseff_dVd;
-                            dVgsteff2_dVe = T1 * dVbseff_dVe;
+//                            dVgsteff2_dVe = T1 * dVbseff_dVe;
                             dVgsteff2_dVb = T1 * dVbseff_dVb;
                             if (selfheat)
                                 dVgsteff2_dT = -T3 * (dVth_dT + T0 * dVtm_dT * noff)
@@ -6093,7 +6093,7 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                             /*  T4 is dVgsteff2_dVbseff  */
                             T4 = (T2 * dT1_dVb - T1 * dT2_dVb) / T3;
                             dVgsteff2_dVb = T4 * dVbseff_dVb;
-                            dVgsteff2_dVe = T4 * dVbseff_dVe;
+//                            dVgsteff2_dVe = T4 * dVbseff_dVe;
                             dVgsteff2_dVg = (T2 * dT1_dVg - T1 * dT2_dVg)
                                             / T3 * dVgs_eff_dVg
                                             + T4 * dVbseff_dVg;
@@ -6249,8 +6249,8 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                     dAbulkCV_dVb = pParam->B4SOIabulkCVfactor * dAbulk0_dVb;
 
                     VdsatCV = Vgsteff / AbulkCV;
-                    dVdsatCV_dVg = 1.0 / AbulkCV;
-                    dVdsatCV_dVb = -VdsatCV * dAbulkCV_dVb / AbulkCV;
+//                    dVdsatCV_dVg = 1.0 / AbulkCV;
+//                    dVdsatCV_dVb = -VdsatCV * dAbulkCV_dVb / AbulkCV;
 
                     V4 = VdsatCV - Vds - DELTA_4;
                     T0 = sqrt(V4 * V4 + 4.0 * DELTA_4 * VdsatCV);
@@ -6266,8 +6266,8 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                     if (here->B4SOIagbcp2 > 0)
                     {
                         VdsatCV2 = Vgsteff2 / AbulkCV;
-                        dVdsatCV2_dVg = 1.0 / AbulkCV;
-                        dVdsatCV2_dVb = -VdsatCV2 * dAbulkCV_dVb / AbulkCV;
+//                        dVdsatCV2_dVg = 1.0 / AbulkCV;
+//                        dVdsatCV2_dVb = -VdsatCV2 * dAbulkCV_dVb / AbulkCV;
                         V4 = VdsatCV2 - Vds - DELTA_4;
                         T0 = sqrt(V4 * V4 + 4.0 * DELTA_4 * VdsatCV2);
                         VdseffCV2 = VdsatCV2 - 0.5 * (V4 + T0);
@@ -6927,8 +6927,8 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
 
                     DeltaPhi = Vtm * log(1.0 + T1 * Vgsteff / Denomi);
                     dDeltaPhi_dVg = 2.0 * Vtm * (T1 -T0) / (Denomi + T1 * Vgsteff);
-                    dDeltaPhi_dVd = dDeltaPhi_dVg * dVgsteff_dVd;
-                    dDeltaPhi_dVb = dDeltaPhi_dVg * dVgsteff_dVb;
+//                    dDeltaPhi_dVd = dDeltaPhi_dVg * dVgsteff_dVd;
+//                    dDeltaPhi_dVb = dDeltaPhi_dVg * dVgsteff_dVb;
 
                     /* v4.1 */
                     if (here->B4SOIagbcp2 > 0)
@@ -6936,8 +6936,8 @@ B4SOIdev::load(sGENinstance *in_inst, sCKT *ckt)
                         T1 = 2.0 * T0 + Vgsteff2;
                         DeltaPhi2 = Vtm * log(1.0 + T1 * Vgsteff2 / Denomi);
                         dDeltaPhi2_dVg = 2.0 * Vtm * (T1 -T0) / (Denomi + T1 * Vgsteff2);
-                        dDeltaPhi2_dVd = dDeltaPhi2_dVg * dVgsteff2_dVd;
-                        dDeltaPhi2_dVb = dDeltaPhi2_dVg * dVgsteff2_dVb;
+//                        dDeltaPhi2_dVd = dDeltaPhi2_dVg * dVgsteff2_dVd;
+//                        dDeltaPhi2_dVb = dDeltaPhi2_dVg * dVgsteff2_dVb;
                     }
                     /* end v4.1 */
                     /* End of delta Phis */
@@ -7991,8 +7991,8 @@ line755:
 
                 gcTt = pParam->B4SOIcth * ag0;
 
-                sxpart = 0.6;
-                dxpart = 0.4;
+//                sxpart = 0.6;
+//                dxpart = 0.4;
 
 
                 /* v3.1 moved the following original code ahead */
@@ -8143,8 +8143,8 @@ line755:
 
                 gcTt = pParam->B4SOIcth * ag0;
 
-                dxpart = 0.6;
-                sxpart = 0.4;
+//                dxpart = 0.6;
+//                sxpart = 0.4;
 
 
                 /* v3.1 moved the following code ahead */
@@ -8263,7 +8263,7 @@ line850:
             ceqqjd = ceqqjs = 0.0; /* v4.0 */
             GGjdb = GGjsb = 0.0;   /* v4.0 */
 
-            sxpart = (1.0 - (dxpart = (here->B4SOImode > 0) ? 0.4 : 0.6));
+//            sxpart = (1.0 - (dxpart = (here->B4SOImode > 0) ? 0.4 : 0.6));
 
             goto line900;
 
@@ -8398,7 +8398,7 @@ line900:
                 {
                     gbbdp = -Giid - Ggidld - Ggisls;
                     gbbb = -Giib + Gbpbs;
-                    gjsdb = Gjsb + Gjdb;
+//                    gjsdb = Gjsb + Gjdb;
                 }
 
                 gbbsp = - ( gbbg + gbbdp + gbbb + gbbp + gbbe);
@@ -8553,7 +8553,7 @@ line900:
                 {
                     gbbsp = -Giid - Ggidld - Ggisls;
                     gbbb = -Giib + Gbpbs;
-                    gjsdb = Gjsb + Gjdb;
+//                    gjsdb = Gjsb + Gjdb;
                 }
                 gbbdp = - ( gbbg + gbbsp + gbbb + gbbp + gbbe);
 

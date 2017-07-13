@@ -176,7 +176,7 @@ BSIM4dev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
 
     /* tnoiMod=2 (v4.7) */
     double eta, Leff, Lvsat, gamma, delta, epsilon, GammaGd0;
-    double npart_c, sigrat, C0, omega, ctnoi, tau;
+    double npart_c, sigrat, C0, omega, ctnoi/*, tau*/;
 
     int /*error,*/ i;
 
