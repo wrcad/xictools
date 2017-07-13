@@ -72,14 +72,14 @@ EKVdev::load(sGENinstance *in_inst, sCKT *ckt)
     sEKVinstance *here = (sEKVinstance*)in_inst;
     sEKVmodel *model = (sEKVmodel*)here->GENmodPtr;
 
-    double Beta;
+//    double Beta;
     double DrainSatCur;
     double EffectiveLength;
     double EffectiveWidth;
     double GateBulkOverlapCap;
     double GateDrainOverlapCap;
     double GateSourceOverlapCap;
-    double OxideCap;
+//    double OxideCap;
     double SourceSatCur;
     double arg;
     double cbhat;
@@ -193,8 +193,8 @@ EKVdev::load(sGENinstance *in_inst, sCKT *ckt)
                 EffectiveWidth;
             GateBulkOverlapCap = model->EKVgateBulkOverlapCapFactor * 
                 EffectiveLength;
-            Beta = here->EKVtkp * EffectiveWidth/EffectiveLength;
-            OxideCap = model->EKVcox*EffectiveLength*EffectiveWidth;
+//            Beta = here->EKVtkp * EffectiveWidth/EffectiveLength;
+//            OxideCap = model->EKVcox*EffectiveLength*EffectiveWidth;
             /* 
              * ok - now to do the start-up operations
              *

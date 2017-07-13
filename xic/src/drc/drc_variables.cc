@@ -244,6 +244,13 @@ namespace {
     }
 
     bool
+    evDrcChd(const char*, bool)
+    {
+        CDvdb()->registerPostFunc(postrun);
+        return (true);
+    }
+
+    bool
     evDrcPartitionSize(const char *vstring, bool set)
     {
         if (set) {
@@ -299,8 +306,8 @@ cDRC::setupVariables()
     vsetup(VA_DrcUseLayerList,      S,  evDrcUseLayerList);
     vsetup(VA_DrcRuleList,          S,  evDrcRuleList);
     vsetup(VA_DrcUseRuleList,       S,  evDrcUseRuleList);
-    vsetup(VA_DrcChdName,           0,  0);
-    vsetup(VA_DrcChdCell,           0,  0);
+    vsetup(VA_DrcChdName,           S,  evDrcChd);
+    vsetup(VA_DrcChdCell,           S,  evDrcChd);
     vsetup(VA_DrcPartitionSize,     S,  evDrcPartitionSize);
 }
 

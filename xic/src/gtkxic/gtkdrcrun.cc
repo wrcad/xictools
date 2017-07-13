@@ -281,6 +281,8 @@ sDC::sDC(GRobject c)
 
     dc_chdname = gtk_entry_new();
     gtk_widget_show(dc_chdname);
+    gtk_signal_connect(GTK_OBJECT(dc_chdname), "changed",
+        GTK_SIGNAL_FUNC(dc_text_changed), 0);
     gtk_box_pack_start(GTK_BOX(row), dc_chdname, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(table), row, 2, 4, rowcnt, rowcnt+1,
@@ -298,6 +300,8 @@ sDC::sDC(GRobject c)
 
     dc_cname = gtk_entry_new();
     gtk_widget_show(dc_cname);
+    gtk_signal_connect(GTK_OBJECT(dc_cname), "changed",
+        GTK_SIGNAL_FUNC(dc_text_changed), 0);
 
     gtk_table_attach(GTK_TABLE(table), dc_cname, 2, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -901,7 +905,6 @@ sDC::dc_action_proc(GtkWidget *caller, void*)
 }
 
 
-//XXX Fixme, not used
 void
 sDC::dc_text_changed(GtkWidget *caller, void*)
 {

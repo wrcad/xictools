@@ -64,7 +64,7 @@ double *cgb;
 	double sqrt_ir, dir_dv;
 	double cgsi, cgdi, cgbi;
 	double /*help,*/ ratioV_ir, ratioV_if;
-	double QD, QG, QS, QB, QI;
+	double QD, /*QG,*/ QS, /*QB,*/ QI;
 	double dQD_dVD, dQD_dVS, dQD_dVG;
 	double dQS_dVD, dQS_dVS, dQS_dVG;
 	double dQB_dVD, dQB_dVS, dQB_dVG;
@@ -79,11 +79,11 @@ double *cgb;
 	double dir_dVD, dir_dVS, dir_dVG;
 	double sir2, sif, sif2, sir, sif3, sir3;
 	double sif_sir_2, sif_sir_3;
-	double n_1, n_1_n, n_Vt_COX;
+	double /*n_1,*/ n_1_n, n_Vt_COX;
 	double VP_PHI_eps, sqrt_PHI_VP_2, WLCox;
 //	double sqrt_PHI_VP, inv_Vt;
 	double dQ_i_factor, pgamma;
-	double /*vd,*/ vp, Vt, phi, i_f, i_r, ir, n;
+	double /*vd,*/ vp, Vt, phi, i_f, i_r, ir/*, n*/;
 	double weff, leff;
 	/*
  * wg 17-SEP-2K  additional declarations for EKV v2.6 rev.XII   
@@ -108,7 +108,7 @@ double *cgb;
 	VGstar  = here->EKVvgstar;                        /* wg 17-SEP-2K*/
 	sqrt_VGstar = sqrt(VGstar*VGstar + 2.0*Vt_Vt_16); /* !! mb  99/09/09  */
 
-	n   = here->EKVslope;
+//	n   = here->EKVslope;
 
 	pgamma = model->EKVgamma;
 
@@ -163,7 +163,7 @@ double *cgb;
 	/*
  * !! mb 97/08/21  replaced GAMMA by GAMMAa in n_1, n_1_n, QB (sa) 
  */
-	n_1 = pgamma/sqrt_PHI_VP_2;
+//	n_1 = pgamma/sqrt_PHI_VP_2;
 	n_1_n = pgamma/(sqrt_PHI_VP_2+pgamma);
 
 // SRW
@@ -237,12 +237,12 @@ goto simple;
 	QD = -n_Vt_COX*(four15th*(3.0*sir3+6.0*sir2*sif+4.0*sir*sif2+2.0*sif3)/sif_sir_2 - 0.5);
 	QS = -n_Vt_COX*(four15th*(3.0*sif3+6.0*sif2*sir+4.0*sif*sir2+2.0*sir3)/sif_sir_2 - 0.5);
 	QI = QS+QD;
-	QB = WLCox * (-0.5*GAMMAprime*sqrt_PHI_VP_2 + VGprime - VGstar)
-	    - QI*GAMMAprime/(GAMMAprime+sqrt_PHI_VP2_2);
+//	QB = WLCox * (-0.5*GAMMAprime*sqrt_PHI_VP_2 + VGprime - VGstar)
+//	    - QI*GAMMAprime/(GAMMAprime+sqrt_PHI_VP2_2);
 	/* (end) new charges expressions (v2.6 Revision III)  */
 
 	/* QG = -QI -Qox -QB;  */
-	QG = -QI -QB;
+//	QG = -QI -QB;
 	/* !! mb 96/11/28 Analytic derivatives of the node charges (transcapacitances) */
 
 	/* new charges derivatives (v2.6 Revision III)  */

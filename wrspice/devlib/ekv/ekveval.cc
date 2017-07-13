@@ -273,7 +273,7 @@ double *vdsatPointer;
 	double /*dn_factor,*/ dn_dVD, dn_dVG, dn_dVS;
 	double GAMMA_sqrt_PHI, eps_COX, Lc, Lc_LAMBDA, WETA_W, LETA_L;
 	double Vt_Vt, Vt_Vt_2, Vt_Vt_16, Vt_2, Vt_4, Lc_UCRIT;
-	double KP_Weff, COX_KP_Vt, deltaV_2, Vip;
+	double /*KP_Weff, COX_KP_Vt,*/ deltaV_2, Vip;
 	double VDSS_sqrt, sqrt_VDSS_deltaV, sqrt_Vds_VDSS_deltaV;
 	double VDSSprime_sqrt, sqrt_VDSSprime_deltaV, sqrt_Vds_VDSSprime_deltaV;
 	double Lprime, Lmin, sqrt_Lprime_Lmin;
@@ -281,7 +281,7 @@ double *vdsatPointer;
 	double VDSSprime,dVDSSprime_factor;
 	double dVDSSprime_dVD, dVDSSprime_dVG, dVDSSprime_dVS;
 	double dLeq_factor, dLeq_dVD, dLeq_dVG, dLeq_dVS;
-	double Vds, Vc, log_Vc_Vt, pgamma, plambda, GAMMA_2;
+	double Vds, Vc, log_Vc_Vt, pgamma, plambda/*, GAMMA_2*/;
 	double GAMMAstar, sqrt_GAMMAstar=0.0;
 	double inv_Vib, Vib, isubprime, gm_isub, gds_isub, gms_isub;
 	double PHI_VD=0.0, sqrt_PHI_VD=0.0, sqrt_PHI_VD_Vt=0.0;
@@ -294,7 +294,7 @@ double *vdsatPointer;
 	double inv_sqrt_VDSS_deltaV, sqrt_ir, ratioV_ir, ibn, lk;
 	double leff, weff, iba, xj, theta, e0, weta, ucrit, phi, Vt;
 	double kp, tibb, vt0, gds, gms, gm, /*gmb,*/ dids_dvg1, dids_dvb1;
-	double dids_dv21, isub, leta;
+	double /*dids_dv21,*/ isub, leta;
 	/*
  * wg 17-SEP-2K  additional declarations for EKV v2.6 rev.XII   
  */
@@ -350,11 +350,11 @@ double *vdsatPointer;
 		Lc_LAMBDA = Lc*plambda;
 		Lc_UCRIT  = Lc*ucrit;
 
-		COX_KP_Vt = cox/(kp*Vt_2);
+//		COX_KP_Vt = cox/(kp*Vt_2);
 
-		GAMMA_2 = 0.01*pgamma*pgamma;   /*  !!  mb  95/12/19  */
+//		GAMMA_2 = 0.01*pgamma*pgamma;   /*  !!  mb  95/12/19  */
 
-		KP_Weff = kp*weff;
+//		KP_Weff = kp*weff;
 		Vc = ucrit*leff;
 		log_Vc_Vt = Vt*(log(Vc/Vt_2)-1.0);
 
@@ -739,13 +739,13 @@ double *vdsatPointer;
 
 		dids_dvg1 = gm;
 		dids_dvb1 = gms - gm - gds;    /* gmb = gms - gm - gds; */
-		dids_dv21 = gds;
+//		dids_dv21 = gds;
 
 		if (vds<0)
 		{
 			dids_dvg1 = -dids_dvg1;
 			dids_dvb1 = -dids_dvb1;
-			dids_dv21 = gms;        /* gms = gds+gm+gmb */
+//			dids_dv21 = gms;        /* gms = gds+gm+gmb */
 		}
 
 		/*  NOTE:  The fourth derivative of the current is the negative of the sum of the

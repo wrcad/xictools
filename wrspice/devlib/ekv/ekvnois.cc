@@ -65,7 +65,7 @@ EKVdev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
     char ekvname[N_MXVLNTH];
     double leff;
     double weff;
-    double coxSquared;
+//    double coxSquared;
     double tempOnoise;
     double tempInoise;
     double noizDens[EKVNSRCS];
@@ -85,7 +85,7 @@ EKVdev::noise(int mode, int operation, sGENmodel *genmod, sCKT *ckt,
 
     for (model=firstModel; model != NULL; model=model->EKVnextModel) {
 
-        coxSquared = model->EKVcox * model->EKVcox;
+//        coxSquared = model->EKVcox * model->EKVcox;
 
         for (inst=model->EKVinstances; inst != NULL; inst=inst->EKVnextInstance) {
 
