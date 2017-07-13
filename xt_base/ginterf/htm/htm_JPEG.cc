@@ -163,24 +163,20 @@ namespace {
 htmRawImageData*
 htmImageManager::readJPEG(ImageBuffer *ib)
 {
-    htmRawImageData *img_data = 0;
-    // avoid some problems with setjmp/longjmp
-    htmRawImageData **img_p = &img_data;
-
     // We set up the normal JPEG error routines, then override error_exit.
     jpeg_decompress_struct cinfo;
     my_error_mgr jerr;
     cinfo.err = jpeg_std_error(&jerr.pub);
     jerr.pub.error_exit = my_error_exit;
 
-    // Establish the setjmp return context for my_error_exit to use.
+    // Establish the initial setjmp return context for my_error_exit
+    // to use.
     if (setjmp(jerr.setjmp_buffer)) {
 
-        // JPEG signalled an error.  Destroy image data, free any
-        // allocated buffers and return 0.
+        // JPEG signalled an error.  Free any allocated buffers and
+        // return 0.
 
         jpeg_destroy_decompress(&cinfo);
-        delete *img_p;
         return (0);
     }
 
@@ -209,7 +205,20 @@ htmImageManager::readJPEG(ImageBuffer *ib)
 
     // fix 03/24/97-01, rr
     // allocate raw image
-    img_data = new htmRawImageData(cinfo.output_height, row_stride);
+    htmRawImageData *img_data = new htmRawImageData(cinfo.output_height,
+        row_stride);
+
+    // Establish a new setjmp return context for my_error_exit to use
+    // which destroys img_data.
+    if (setjmp(jerr.setjmp_buffer)) {
+
+        // JPEG signalled an error.  Destroy image data, free any
+        // allocated buffers and return 0.
+
+        jpeg_destroy_decompress(&cinfo);
+        delete img_data;
+        return (0);
+    }
 
     unsigned char *r = img_data->data;
 

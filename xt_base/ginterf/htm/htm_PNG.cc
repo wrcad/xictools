@@ -108,12 +108,6 @@ htmImageManager::readPNG(ImageBuffer *ib)
 {
     char msg[128];
 
-    unsigned char *data = 0;
-    htmRawImageData *img_data = 0;
-    // avoid some problems with setjmp/longjmp
-    unsigned char **data_p = &data;
-    htmRawImageData **img_p = &img_data;
-
     // get configuration defaults
     volatile double gamma = im_html->htm_screen_gamma;
 
@@ -128,7 +122,8 @@ htmImageManager::readPNG(ImageBuffer *ib)
         png_destroy_read_struct(&png_ptr, 0, 0);
         return (0);
     }
-    // now set error handler
+
+    // set initial error handler
     if (setjmp(png_jmpbuf(png_ptr))) {
 
         // PNG signaled an error.  Destroy image data, free any
@@ -140,8 +135,6 @@ htmImageManager::readPNG(ImageBuffer *ib)
             ibtmp->buffer ? (char*)ibtmp->buffer : (char*)"unknown error");
 
         png_destroy_read_struct(&png_ptr, &info_ptr, 0);
-        delete *img_p;
-        delete *data_p;
         return (0);
     }
 
@@ -159,7 +152,23 @@ htmImageManager::readPNG(ImageBuffer *ib)
     png_read_info(png_ptr, info_ptr);
 
     // allocate raw image data
-    img_data = new htmRawImageData();
+    htmRawImageData *img_data = new htmRawImageData();
+
+    // set error handler to destroy img_data.
+    if (setjmp(png_jmpbuf(png_ptr))) {
+
+        // PNG signaled an error.  Destroy image data, free any
+        // allocated buffers and return 0.
+
+        ImageBuffer *ibtmp = (ImageBuffer*)png_get_io_ptr(png_ptr);
+        im_html->warning("png_error",
+            "libpng error on image %s: %s.", ibtmp->file,
+            ibtmp->buffer ? (char*)ibtmp->buffer : (char*)"unknown error");
+
+        png_destroy_read_struct(&png_ptr, &info_ptr, 0);
+        delete img_data;
+        return (0);
+    }
 
     // save width & height
     int width  = img_data->width  = png_get_image_width(png_ptr, info_ptr);
@@ -182,9 +191,15 @@ htmImageManager::readPNG(ImageBuffer *ib)
     // of xpaint).  It has been quite heavily modified but it was an
     // invaluable starting point!
 
-    volatile bool has_alpha = false;
-    volatile bool has_cmap = false;
-    volatile bool do_gamma = true;
+    struct pdata
+    {
+        unsigned char *data;
+        bool has_alpha;
+        bool has_cmap;
+        bool do_gamma;
+    };
+    pdata pd = pdata();
+
     switch (color_type) {
     case PNG_COLOR_TYPE_PALETTE:
         img_data->color_class = IMAGE_COLORSPACE_INDEXED;
@@ -204,8 +219,8 @@ htmImageManager::readPNG(ImageBuffer *ib)
 
         if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
             png_set_expand(png_ptr);
-            has_alpha = true;
-            do_gamma = false;
+            pd.has_alpha = true;
+            pd.do_gamma = false;
         }
         else {
             // store colormap and allocate buffer for read image data
@@ -215,8 +230,8 @@ htmImageManager::readPNG(ImageBuffer *ib)
                 img_data->cmap[i].green = palette[i].green;
                 img_data->cmap[i].blue  = palette[i].blue;
             }
-            has_cmap = true;
-            data = new unsigned char[width*height];
+            pd.has_cmap = true;
+            pd.data = new unsigned char[width*height];
         }
         break;
 
@@ -227,7 +242,7 @@ htmImageManager::readPNG(ImageBuffer *ib)
             ib->depth = 8;
         }
         // image data
-        data = new unsigned char[width*height*3];
+        pd.data = new unsigned char[width*height*3];
         break;
 
     case PNG_COLOR_TYPE_GRAY:
@@ -243,8 +258,8 @@ htmImageManager::readPNG(ImageBuffer *ib)
         if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
             png_set_gray_to_rgb(png_ptr);
             png_set_expand(png_ptr);
-            has_alpha = true;
-            do_gamma = false;
+            pd.has_alpha = true;
+            pd.do_gamma = false;
             break;
         }
 
@@ -288,16 +303,16 @@ htmImageManager::readPNG(ImageBuffer *ib)
             break;
         }
         // valid colormap
-        has_cmap = true;
+        pd.has_cmap = true;
 
         // image data
-        data = new unsigned char[width*height];
+        pd.data = new unsigned char[width*height];
         break;
 
     case PNG_COLOR_TYPE_RGB_ALPHA:
         img_data->color_class = IMAGE_COLORSPACE_RGB;
-        do_gamma = false;
-        has_alpha = true;
+        pd.do_gamma = false;
+        pd.has_alpha = true;
 
         // strip 16bit down to 8bits
         if (ib->depth == 16)
@@ -306,8 +321,8 @@ htmImageManager::readPNG(ImageBuffer *ib)
 
     case PNG_COLOR_TYPE_GRAY_ALPHA:
         img_data->color_class = IMAGE_COLORSPACE_GRAYSCALE;
-        do_gamma = false;
-        has_alpha = true;
+        pd.do_gamma = false;
+        pd.has_alpha = true;
 
         // expand to rgb
         png_set_gray_to_rgb(png_ptr);
@@ -320,11 +335,28 @@ htmImageManager::readPNG(ImageBuffer *ib)
         break;
     }
 
+    // set error handler to destroy img_data and pd.data.
+    if (setjmp(png_jmpbuf(png_ptr))) {
+
+        // PNG signaled an error.  Destroy image data, free any
+        // allocated buffers and return 0.
+
+        ImageBuffer *ibtmp = (ImageBuffer*)png_get_io_ptr(png_ptr);
+        im_html->warning("png_error",
+            "libpng error on image %s: %s.", ibtmp->file,
+            ibtmp->buffer ? (char*)ibtmp->buffer : (char*)"unknown error");
+
+        png_destroy_read_struct(&png_ptr, &info_ptr, 0);
+        delete img_data;
+        delete [] pd.data;
+        return (0);
+    }
+
     // We only substitute background pixel if we don't have an alpha
     // channel Doing that for alpha channel images would change the
     // colortype of the current image, leading to weird results.
 
-    if (!has_alpha && png_get_valid(png_ptr, info_ptr, PNG_INFO_bKGD)) {
+    if (!pd.has_alpha && png_get_valid(png_ptr, info_ptr, PNG_INFO_bKGD)) {
         png_color_16p background;
         png_get_bKGD(png_ptr, info_ptr, &background);
         png_set_background(png_ptr, background, PNG_BACKGROUND_GAMMA_FILE,
@@ -342,7 +374,7 @@ htmImageManager::readPNG(ImageBuffer *ib)
         fg_gamma = 0.45;
 
     // set it
-    if (do_gamma)
+    if (pd.do_gamma)
         png_set_gamma(png_ptr, gamma, fg_gamma);
 
     // dithering gets handled by caller
@@ -412,7 +444,7 @@ htmImageManager::readPNG(ImageBuffer *ib)
     png_bytep *row_ptrs = new png_bytep[height];
 
     for (int i = 0; i < height; ++i)
-        row_ptrs[i] = (png_bytep)data + i*png_get_rowbytes(png_ptr, info_ptr);
+        row_ptrs[i] = (png_bytep)pd.data + i*png_get_rowbytes(png_ptr, info_ptr);
 
     // read it
     png_read_image(png_ptr, row_ptrs);
@@ -422,17 +454,20 @@ htmImageManager::readPNG(ImageBuffer *ib)
 
     // We're lucky: having a colormap means we have an indexed image.
 
-    if (has_cmap)
-        img_data->data = data;
+    if (pd.has_cmap) {
+        img_data->data = pd.data;
+        pd.data = 0;
+    }
     else {
         // RGB image.  Convert to paletted image.  First allocate a
         // buffer which will receive the final image data.
         img_data->data = new unsigned char[width*height];
-        convert24to8(data, img_data,
+        convert24to8(pd.data, img_data,
             im_html->htm_max_image_colors, im_html->htm_rgb_conv_mode);
 
         // and we no longer need the image data itself
-        delete [] data;
+        delete [] pd.data;
+        pd.data = 0;
     }
 
     // PNG cleanup
