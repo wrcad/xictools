@@ -601,7 +601,7 @@ sStv::stv_action(GtkWidget *caller, void*)
 #endif
         if (!nm)
             return;
-        sStdVia *sv = Tech()->StdViaTab()->find(nm);
+        sStdVia *sv = Tech()->FindStdVia(nm);
         g_free(nm);
         if (!sv)
             return;
@@ -712,7 +712,7 @@ sStv::stv_name_menu_proc(GtkWidget*, void*)
 #endif
     if (!nm)
         return;
-    const sStdVia *sv = Tech()->StdViaTab()->find(nm);
+    const sStdVia *sv = Tech()->FindStdVia(nm);
     g_free(nm);
     if (!sv)
         return;

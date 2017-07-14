@@ -444,6 +444,7 @@ cMain::Clear(const char *name)
 #ifdef HAVE_LOCAL_ALLOCATOR
         Memory()->register_free_talk(0);
 #endif
+        Tech()->StdViaReset(false);
 
         FIOreadPrms prms;
         EditCell(XM()->DefaultEditName(), false, &prms);
@@ -575,6 +576,7 @@ cMain::ClearAll(bool clear_tech)
 
     if (clear_tech)
         LT()->InitElecLayers();
+    Tech()->StdViaReset(clear_tech);
 
     // reopen device library
     FIO()->OpenLibrary(CDvdb()->getVariable(VA_LibPath),

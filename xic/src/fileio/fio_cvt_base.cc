@@ -702,6 +702,9 @@ cv_in::mark_references(stringlist **slp)
                 Errs()->add_error(
                     "mark_references: internal error, cell %s not in database.",
                     p->get_name()->string());
+//XXX don't die here
+printf("ERROR: %s\n", p->get_name()->string());
+continue;
                 Tdbg()->stop_timing("check_links");
                 return (false);
             }
@@ -868,7 +871,7 @@ cv_in::mark_top(stringlist **psl, stringlist **esl)
 // or find the sub-master.  It may already exist under a different
 // name, so we keep a table of name mappings.  Calling this will make
 // sure that the (correct) sub-master is available in CDs::makeCall. 
-// Vias will always be recognized here it they exist in the current
+// Vias will always be recognized here if they exist in the current
 // technology.  PCells will be recognized if the super-master is
 // available.  In either case, if the sub-master can't be created, we
 // silently continue.  The sub-masters might be saved as cells in the

@@ -132,7 +132,7 @@ cCD::Clear(CDcellName name)
         CDm_gen pgen(sdphys, GEN_MASTERS);
         for (CDm *mdesc = pgen.m_first(); mdesc; mdesc = pgen.m_next()) {
             CDs *msdesc = mdesc->celldesc();
-            if (msdesc)
+            if (msdesc && !msdesc->isViaSubMaster())
                 symtab->add(mdesc->cellname()->string(), 0, true);
         }
         delete sdphys;

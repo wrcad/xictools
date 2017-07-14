@@ -1352,7 +1352,7 @@ cMRcmdIf::createVias()
         svia.set_top_off_x(INTERNAL_UNITS(0.25*(tx - vx)));
         svia.set_top_off_y(INTERNAL_UNITS(0.25*(ty - vy)));
 
-        sStdVia *ov = Tech()->StdViaTab()->find(lv->lefName);
+        sStdVia *ov = Tech()->FindStdVia(lv->lefName);
         if (ov) {
             if (!(*ov == svia)) {
                 Log()->WarningLogV(LefDefHdr,

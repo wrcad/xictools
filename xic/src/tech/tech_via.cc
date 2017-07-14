@@ -37,7 +37,7 @@
 // Support for Standard Vias.
 //
 
-//#define STV_DEBUG
+#define STV_DEBUG
 
 // Link the sv content into the table.  This is called when reading
 // tech data.  The sStdVia requires a name for linking.  If there is a
@@ -75,6 +75,15 @@ cTech::AddStdVia(const sStdVia &sv)
 }
 
 
+sStdVia *
+cTech::FindStdVia(const char *svname)
+{
+    if (tc_std_vias && svname)
+        return (tc_std_vias->find(svname));
+    return (0);
+}
+
+
 // The argument is the XICP_STDVIA property string.  Return (create if
 // necessary) the corresponding sub-master pointer.
 //
@@ -88,7 +97,7 @@ cTech::OpenViaSubMaster(const char *str)
     }
     // The first token is the standard via name.
 
-    sStdVia *sv = StdViaTab()->find(vname);
+    sStdVia *sv = tc_std_vias ? tc_std_vias->find(vname) : 0;
     if (!sv) {
         Errs()->add_error("OpenViaSubMaster: no standard via named \"%s\".",
             vname);
@@ -153,12 +162,12 @@ sStdViaList *
 cTech::StdViaList()
 {
     sStdViaList *vl = 0;
-    if (StdViaTab() && StdViaTab()->allocated()) {
-        tgen_t<sStdVia> gen(StdViaTab());
+    if (tc_std_vias && tc_std_vias->allocated()) {
+        tgen_t<sStdVia> gen(tc_std_vias);
         const sStdVia *v;
         int cnt = 0;
         while ((v = gen.next()) != 0) {
-            if (!v || !v->via() || !v->bottom() || !v->top())
+            if (!v->via() || !v->bottom() || !v->top())
                 continue;
             vl = new sStdViaList(v, vl);
             cnt++;
@@ -176,7 +185,33 @@ cTech::StdViaList()
         delete [] ary;
     }
     return (vl);
+}
 
+
+// The cell database and cellname tables have been cleared.  Either
+// blow away the standard vieas (clear == true), or recreate the
+// cells.
+//
+void
+cTech::StdViaReset(bool clear)
+{
+    if (tc_std_vias && tc_std_vias->allocated()) {
+        tgen_t<sStdVia> gen(tc_std_vias);
+        sStdVia *v;
+        while ((v = gen.next()) != 0) {
+            if (clear) {
+                tc_std_vias->unlink(v);
+                v->clear_variations();
+                delete v;
+            }
+            else
+                v->reset();
+        }
+        if (clear) {
+            delete tc_std_vias;
+            tc_std_vias = 0;
+        }
+    }
 }
 // End of cTech functions.
 
@@ -429,12 +464,12 @@ sStdVia::string() const
     if (sv_reference) {
         if (!sv_reference->sv_name)
             return (0);
-        lstr.add(sv_reference->sv_name->string());
+        lstr.add(sv_reference->sv_name);
     }
     else {
         if (!sv_name)
             return (0);
-        return (lstring::copy(sv_name->string()));
+        return (lstring::copy(sv_name));
     }
     unsigned int *i1 = (unsigned int*)&sv_via_wid;
     unsigned int *i2 = (unsigned int*)&sv_reference->sv_via_wid;
@@ -549,7 +584,7 @@ sStdVia::open()
     delete [] sname;
 
     if (!sv_name)
-        sv_name = cellname;
+        sv_name = lstring::copy(cellname->string());
 
     CDs *sd = new CDs(cellname, Physical);
     CDcdb()->linkCell(sd);
@@ -615,6 +650,23 @@ sStdVia::open()
 
     sv_sdesc = sd;
     return (sd);
+}
+
+
+// We know that this is a super-master, and the corresponding CDs has
+// been destroyed.  Clear the variations, and recreate the cell.
+//
+void
+sStdVia::reset()
+{
+    if (sv_reference)
+        return;
+    sv_sdesc = 0;
+    clear_variations();
+    open();
+#ifdef STV_DEBUG
+    printf("reset %s, %x\n", sv_name, CDcdb()->findCell(sv_name, Physical));
+#endif
 }
 
 

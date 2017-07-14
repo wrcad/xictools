@@ -469,8 +469,10 @@ public:
 
     // tech_via.cc
     sStdVia *AddStdVia(const sStdVia&);
+    sStdVia *FindStdVia(const char*);
     CDs *OpenViaSubMaster(const char*);
     sStdViaList *StdViaList();
+    void StdViaReset(bool);
 
     // tech_write.cc
     void Print(FILE*);

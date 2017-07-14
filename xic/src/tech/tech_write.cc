@@ -245,7 +245,7 @@ cTech::Print(FILE *techfp)
     // End of layer definitions.
 
     // Print standard via definitions
-    if (StdViaTab() && StdViaTab()->allocated()) {
+    if (tc_std_vias && tc_std_vias->allocated()) {
         fputs(sep, techfp);
         fprintf(techfp, "# Standard Via Definitions\n\n");
         sStdViaList *vl = StdViaList();

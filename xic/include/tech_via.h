@@ -45,7 +45,7 @@ struct sStdVia
             sv_next = 0;
             sv_variations = 0;
             sv_reference = 0;
-            sv_name = CD()->CellNameTableAdd(nm);
+            sv_name = lstring::copy(nm);
             sv_sdesc = 0;
             sv_res_per_cut = 0.0;
 
@@ -81,6 +81,61 @@ struct sStdVia
             sv_imp2_enc_y = 0;
         }
 
+    sStdVia(const sStdVia &v)
+        {
+            sv_next = 0;
+            sv_variations = 0;
+            sv_reference = 0;
+            sv_name = lstring::copy(v.sv_name);
+            sv_sdesc = 0;
+            sv_res_per_cut = v.sv_res_per_cut;
+
+            sv_via = v.sv_via;
+            sv_bot = v.sv_bot;
+            sv_top = v.sv_top;
+
+            sv_via_wid = v.sv_via_wid;
+            sv_via_hei = v.sv_via_hei;
+            sv_via_rows = v.sv_via_rows;
+            sv_via_cols = v.sv_via_cols;
+            sv_via_spa_x = v.sv_via_spa_x;
+            sv_via_spa_y = v.sv_via_spa_y;
+
+            sv_bot_enc_x = v.sv_bot_enc_x;
+            sv_bot_enc_y = v.sv_bot_enc_y;
+            sv_bot_off_x = v.sv_bot_off_x;
+            sv_bot_off_y = v.sv_bot_off_y;
+
+            sv_top_enc_x = v.sv_top_enc_x;
+            sv_top_enc_y = v.sv_top_enc_y;
+            sv_top_off_x = v.sv_top_off_x;
+            sv_top_off_y = v.sv_top_off_y;
+
+            sv_org_off_x = v.sv_org_off_x;
+            sv_org_off_y = v.sv_org_off_y;
+
+            sv_implant1 = v.sv_implant1;
+            sv_imp1_enc_x = v.sv_imp1_enc_x;
+            sv_imp1_enc_y = v.sv_imp1_enc_y;
+            sv_implant2 = v.sv_implant2;
+            sv_imp2_enc_x = v.sv_imp2_enc_x;
+            sv_imp2_enc_y = v.sv_imp2_enc_y;
+        }
+
+    ~sStdVia()
+        {
+            delete [] sv_name;
+        }
+
+    void clear_variations()
+        {
+            while (sv_variations) {
+                sStdVia *vx = sv_variations;
+                sv_variations = sv_variations->sv_variations;
+                delete vx;
+            }
+        }
+
     unsigned int hash(unsigned int mask)
         {
             unsigned int k = INCR_HASH_INIT;
@@ -108,6 +163,7 @@ struct sStdVia
     bool parse(const char*);
     char *string() const;
     CDs *open();
+    void reset();
     void tech_print(FILE*) const;
 
     static TCret tech_parse(const char*);
@@ -132,11 +188,12 @@ struct sStdVia
             v->sv_variations = sv_variations;
             sv_variations = v;
             v->sv_reference = this;
+            delete [] v->sv_name;
             v->sv_name = 0;
             v->sv_sdesc = 0;
         }
 
-    const char *tab_name()          const { return (sv_name->string()); }
+    const char *tab_name()          const { return (sv_name); }
     CDs *sdesc()                    const { return (sv_sdesc); }
 
     double res_per_cut()            const { return (sv_res_per_cut); }
@@ -202,7 +259,7 @@ private:
     sStdVia *sv_next;
     sStdVia *sv_variations;
     sStdVia *sv_reference;
-    CDcellName sv_name;
+    char *sv_name;
     CDs *sv_sdesc;
     double sv_res_per_cut;
 

@@ -542,13 +542,13 @@ struct cxfact_t
             return ((symref_t*)sytab->find_item(t));
         }
 
-/*
+    /*** UNUSED
     // See comment above.
     ticket_t find_symref_ticket(const symref_t *s)
         {
             return (sytab->find_ticket((char*)s));
         }
-*/
+    ***/
 
     //
     // Cref allocation.
@@ -566,7 +566,7 @@ struct cxfact_t
 
     cref_t *find_cref(ticket_t t)
         {
-            return ((cref_t*)crtab->find_item(t));
+            return (crtab ? (cref_t*)crtab->find_item(t) : 0);
         }
 
     void cref_clear()
