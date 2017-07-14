@@ -37,7 +37,7 @@
 // Support for Standard Vias.
 //
 
-#define STV_DEBUG
+//#define STV_DEBUG
 
 // Link the sv content into the table.  This is called when reading
 // tech data.  The sStdVia requires a name for linking.  If there is a
@@ -189,7 +189,7 @@ cTech::StdViaList()
 
 
 // The cell database and cellname tables have been cleared.  Either
-// blow away the standard vieas (clear == true), or recreate the
+// blow away the standard vias (clear == true), or recreate the
 // cells.
 //
 void

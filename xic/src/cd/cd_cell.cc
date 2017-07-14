@@ -3227,18 +3227,21 @@ CDs::prptyApplyList(CDo *odesc, CDp **pplist)
     const char *msg2 = "bad property string for value %d (ignored)";
     stringlist *s0 = 0;
 
-    // If these properties are found, then they came from the super-
+    // If these PC properties are found, then they came from the super-
     // master and are therefor known-good.  They override any property
     // read from the file.
     //
     int n1 = 0;
     int n2 = 0;
+    int n3 = 0;
     if (odesc && odesc->type() == CDINSTANCE && displayMode() == Physical) {
         for (CDp *p = odesc->prpty_list(); p; p = p->next_prp()) {
             if (p->value() == XICP_PC)
                 n1++;
             if (p->value() == XICP_PC_PARAMS)
                 n2++;
+            if (p->value() == XICP_STDVIA)
+                n3++;
         }
     }
 
@@ -3277,6 +3280,17 @@ CDs::prptyApplyList(CDo *odesc, CDp **pplist)
                 continue;
             }
             n2++;
+        }
+        if (pd->value() == XICP_STDVIA) {
+            if (n3) {
+                if (!pp)
+                    *pplist = pn;
+                else
+                    pp->set_next_prp(pn);
+                delete pd;
+                continue;
+            }
+            n3++;
         }
         bool ret = odesc ?
             odesc->prptyAdd(pd->value(), pd->string(), displayMode()) :
