@@ -693,20 +693,25 @@ cv_in::mark_references(stringlist **slp)
     nametab_t *tab = in_mode == Physical ? in_phys_sym_tab : in_elec_sym_tab;
     if (tab) {
         Tdbg()->start_timing("check_links");
+        stringlist *unkns = 0;
         namegen_t gen(tab);
         symref_t *p;
         while ((p = gen.next()) != 0) {
             CDs *sdesc = CDcdb()->findCell(p->get_name(), in_mode);
             if (!sdesc) {
-                // This should have been created as the file was read.
-                Errs()->add_error(
-                    "mark_references: internal error, cell %s not in database.",
-                    p->get_name()->string());
-//XXX don't die here
-printf("ERROR: %s\n", p->get_name()->string());
-continue;
-                Tdbg()->stop_timing("check_links");
-                return (false);
+                // See if the submasterTtab resolves this.  In CIF,
+                // the first pass can put unmapped names into the
+                // phys_sym_tab.
+
+                CDcellName cn = (CDcellName)SymTab::get(in_submaster_tab,
+                    (unsigned long)p->get_name());
+                if (cn != (CDcellName)ST_NIL && cn != p->get_name())
+                    sdesc = CDcdb()->findCell(cn, in_mode);
+            }
+            if (!sdesc) {
+                unkns = new stringlist(lstring::copy(p->get_name()->string()),
+                    unkns);
+                continue;
             }
             sdesc->setArchiveTopLevel(false);
             FIO()->SetSkipFixBB(true);
@@ -760,6 +765,15 @@ continue;
                 if (compressed)
                     sdesc->setCompressed(true);
             }
+        }
+        if (unkns) {
+            // These should have been created as the file was read.
+            char *str = stringlist::col_format(unkns, 72, 0);
+            FIO()->ifPrintCvLog(IFLOG_WARN,
+                "Internal error, the following cell names were found in "
+                "input but not resolved after conversion.\n%s\n", str);
+            delete [] str;
+            stringlist::destroy(unkns);
         }
         Tdbg()->stop_timing("check_links");
     }

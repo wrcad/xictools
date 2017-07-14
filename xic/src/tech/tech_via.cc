@@ -586,6 +586,10 @@ sStdVia::open()
     if (!sv_name)
         sv_name = lstring::copy(cellname->string());
 
+#ifdef STV_DEBUG
+    printf("new master %s\n", cellname->string());
+#endif
+
     CDs *sd = new CDs(cellname, Physical);
     CDcdb()->linkCell(sd);
 
