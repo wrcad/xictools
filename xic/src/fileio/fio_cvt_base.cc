@@ -699,7 +699,7 @@ cv_in::mark_references(stringlist **slp)
         while ((p = gen.next()) != 0) {
             CDs *sdesc = CDcdb()->findCell(p->get_name(), in_mode);
             if (!sdesc) {
-                // See if the submasterTtab resolves this.  In CIF,
+                // See if the submaster tab resolves this.  In CIF,
                 // the first pass can put unmapped names into the
                 // phys_sym_tab.
 
