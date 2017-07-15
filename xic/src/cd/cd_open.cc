@@ -25,9 +25,9 @@
 
 #include "cd.h"
 #include "cd_propnum.h"
-#include "cd_celldb.h"
 #include "fio.h"
 #include "fio_library.h"
+#include "cd_celldb.h"
 
 
 // Create a new cell if it doesn't already exist in the database, or

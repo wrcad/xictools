@@ -816,7 +816,7 @@ cDRC::chdGridBatchTest(cCHD *chd, const char *cellname, const BBox *AOI,
 #define STNAME "drc_tmp_table"
     if (CDcdb()->findTable(STNAME)) {
         CDcdb()->switchTable(STNAME);
-        CDcdb()->clearTable(false);
+        CDcdb()->destroyTable(false);
     }
 
     long start_time = Timer()->elapsed_msec();
@@ -873,7 +873,7 @@ cDRC::chdGridBatchTest(cCHD *chd, const char *cellname, const BBox *AOI,
                 MICRONS(coarse_cBB.right), MICRONS(coarse_cBB.top));
 
             ret = batchTest(&coarse_cBB, fp, 0, 0, nvals == 1 ? 0 : fbbuf);
-            CDcdb()->clearTable(false);
+            CDcdb()->destroyTable(false);
             DSP()->SetCurCellName(tname);
             regcnt++;
 

@@ -102,8 +102,9 @@ struct CDs;
 struct CDtables
 {
     CDtables(const char*);
-    ~CDtables();
+    ~CDtables() { clear(); }
 
+    void clear();
     CDs *findPhysCell(const char*);
     CDs *removePhysCell(const char*);
     CDs *linkPhysCell(CDs*);
@@ -114,37 +115,37 @@ struct CDtables
     CDs *linkElecCell(CDs*);
     CDs *unlinkElecCell(CDs*);
 
-    const char *tableName() { return (table_name->string()); }
+    const char *tableName()         { return (t_table_name->string()); }
 
-    CDtables *nextTable() { return (next); }
-    void setNextTable(CDtables *t) { next = t; }
+    CDtables *nextTable()           { return (t_next); }
+    void setNextTable(CDtables *t)  { t_next = t; }
 
     itable_t<CDs> *cellTable(DisplayMode m)
-        { return (m == Physical ? phys_table : elec_table); }
+        { return (m == Physical ? t_phys_table : t_elec_table); }
 
     unsigned int allocated(DisplayMode m)
         {
-            if (m == Physical && phys_table)
-                return (phys_table->allocated());
-            if (m == Electrical && elec_table)
-                return (elec_table->allocated());
+            if (m == Physical && t_phys_table)
+                return (t_phys_table->allocated());
+            if (m == Electrical && t_elec_table)
+                return (t_elec_table->allocated());
             return (0);
         }
 
-    const char *cellname()      const { return (cell_name->string()); }
-    void setCellname(CDcellName n)  { cell_name = n; }
+    const char *cellname()          const { return (t_cell_name->string()); }
+    void setCellname(CDcellName n)  { t_cell_name = n; }
 
-    CDcellTab *auxCellTab()     { return (aux_cell_tab); }
+    CDcellTab *auxCellTab()         { return (t_aux_cell_tab); }
 
 private:
-    CDcellName table_name;      // identifier
-    CDcellName cell_name;       // remember current cell
-    CDtables *next;             // next available table
-    itable_t<CDs> *phys_table;  // physical cells
-    itable_t<CDs> *elec_table;  // electrical cells
-    CDs *prev_phys;             // cached last find
-    CDs *prev_elec;             // cached last find
-    CDcellTab *aux_cell_tab;    // auxiliary cell name table
+    CDcellName t_table_name;        // identifier
+    CDcellName t_cell_name;         // remember current cell
+    CDtables *t_next;               // next available table
+    itable_t<CDs> *t_phys_table;    // physical cells
+    itable_t<CDs> *t_elec_table;    // electrical cells
+    CDs *t_prev_phys;               // cached last find
+    CDs *t_prev_elec;               // cached last find
+    CDcellTab *t_aux_cell_tab;      // auxiliary cell name table
 };
 
 
@@ -169,8 +170,6 @@ public:
 
     cCDcdb();
 
-    CDs *findCell(CDcellName, DisplayMode);
-    CDs *findCell(const char*, DisplayMode);
     CDs *insertCell(const char*, DisplayMode);
     CDs *removeCell(CDcellName, DisplayMode);
     CDs *linkCell(CDs*);
@@ -185,11 +184,57 @@ public:
     stringlist *listTables();
     const char *tableCellName();
     void setTableCellname(CDcellName);
-    void clearTable(bool);
-    void clearAllTables();
+    void clearTable();
+    void destroyTable(bool);
+    void destroyAllTables();
+
+    // The special subm_table keeps via and pcell submasters.  These
+    // are kept in this table only, which is searched first in a find
+    // operation.
+
+    CDs *findSubmCell(CDcellName name)
+        {
+            if (!c_subm_table)
+                return (0);
+            return (c_subm_table->findPhysCell(name->string()));
+        }
+
+    CDs *findCell(CDcellName name, DisplayMode mode)
+        {
+            CDs *sd = mode == Physical ? findSubmCell(name) : 0;
+            if (!sd && c_tables) {
+                if (mode == Physical)
+                    sd = c_tables->findPhysCell(name->string());
+                else
+                    sd = c_tables->findElecCell(name->string());
+            }
+            return (sd);
+        }
+
+    CDs *findCell(const char *name, DisplayMode mode)
+        {
+            CDcellName nm = CD()->CellNameTableFind(name);
+            return (findCell(nm, mode));
+        }
+
+    CDs *linkSubmCell(CDs *sdesc)
+        {
+            if (!sdesc || sdesc->isElectrical())
+                return (0);
+            if (!c_subm_table)
+                c_subm_table = new CDtables(0);
+            return (c_subm_table->linkPhysCell(sdesc));
+        }
+
+    CDs *unlinkSubmCell(CDs *sdesc)
+        {
+            if (!c_subm_table || !sdesc || sdesc->isElectrical())
+                return (0);
+            return (c_tables->unlinkPhysCell(sdesc));
+        }
 
     bool isNoCellCallback()     { return (c_no_cell_callback); }
-    bool isEmpty()              { return (c_tables == 0); }
+    bool isEmpty()              { return (!c_tables && !c_subm_table); }
 
     void incNoInsertNew()       { c_no_insert_new++; }
     void decNoInsertNew()       { c_no_insert_new--; }
@@ -210,7 +255,8 @@ public:
         }
 
 private:
-    CDtables *c_tables;
+    CDtables *c_tables;         // List of cell tables.
+    CDtables *c_subm_table;     // Special cell table for via/pcell submasters.
     int c_no_insert_new;
     bool c_no_cell_callback;
 

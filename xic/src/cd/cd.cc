@@ -188,7 +188,7 @@ cCD::CheckAlloc()
 void
 cCD::ClearAll(bool clear_tech)
 {
-    CDcdb()->clearAllTables();
+    CDcdb()->destroyAllTables();
     CDchd()->chdClear();
     CDcgd()->cgdClear();
     ClearStringTables();

@@ -531,23 +531,15 @@ namespace {
         char buf[256];
         char *e = lstring::stpcpy(buf, pfx);
         CDcbin cbin;
-        // Look in main symbol table.
-        const char *tname = CDcdb()->tableName();
-        CDcdb()->switchTable(0);
         if (trybare) {
-            if (!CDcdb()->findSymbol(buf, &cbin)) {
-                CDcdb()->switchTable(tname);
+            if (!CDcdb()->findSymbol(buf, &cbin))
                 return (CD()->CellNameTableAdd(buf));
-            }
         }
         for (int i = 1; ; i++) {
             sprintf(e, "_%d", i);
-            if (!CDcdb()->findSymbol(buf, &cbin)) {
-                CDcdb()->switchTable(tname);
+            if (!CDcdb()->findSymbol(buf, &cbin))
                 return (CD()->CellNameTableAdd(buf));
-            }
         }
-        CDcdb()->switchTable(tname);
         return (0);
     }
 }
@@ -599,11 +591,7 @@ sStdVia::open()
 #endif
 
     CDs *sd = new CDs(cellname, Physical);
-    // Open in main symbol table.
-    const char *tname = CDcdb()->tableName();
-    CDcdb()->switchTable(0);
-    CDcdb()->linkCell(sd);
-    CDcdb()->switchTable(tname);
+    CDcdb()->linkSubmCell(sd);
 
     CDo *newb;
     int xo = sv_org_off_x;

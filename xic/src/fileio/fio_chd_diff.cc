@@ -60,7 +60,7 @@ CHDdiff::~CHDdiff()
             curtab = 0;
         CDcdb()->switchTable(df_st1);
         if (CDcdb()->tableName() && !strcmp(CDcdb()->tableName(), df_st1))
-            CDcdb()->clearTable(false);
+            CDcdb()->destroyTable(false);
         CDcdb()->switchTable(curtab);
     }
     if (df_st2 && *df_st2 && CDcdb()->findTable(df_st2)) {
@@ -69,7 +69,7 @@ CHDdiff::~CHDdiff()
             curtab = 0;
         CDcdb()->switchTable(df_st2);
         if (CDcdb()->tableName() && !strcmp(CDcdb()->tableName(), df_st2))
-            CDcdb()->clearTable(false);
+            CDcdb()->destroyTable(false);
         CDcdb()->switchTable(curtab);
     }
     delete [] df_st1;
@@ -195,7 +195,7 @@ CHDdiff::diff(const char *cname1, const char *cname2, DisplayMode mode,
         const char *stbak = CDcdb()->tableName();
         CDcdb()->switchTable(df_st2);
         if (CDcdb()->tableName() && !strcmp(CDcdb()->tableName(), df_st2)) {
-            CDcdb()->clearTable(false);
+            CDcdb()->destroyTable(false);
             CDcdb()->switchTable(stbak);
         }
     }
@@ -203,7 +203,7 @@ CHDdiff::diff(const char *cname1, const char *cname2, DisplayMode mode,
         const char *stbak = CDcdb()->tableName();
         CDcdb()->switchTable(df_st1);
         if (CDcdb()->tableName() && !strcmp(CDcdb()->tableName(), df_st1)) {
-            CDcdb()->clearTable(false);
+            CDcdb()->destroyTable(false);
             CDcdb()->switchTable(stbak);
         }
     }

@@ -327,7 +327,7 @@ cMain::ClearSymbolTable()
 
     DSP()->SetCurCellName(0);
     DSP()->SetTopCellName(0);
-    CDcdb()->clearTable(true);
+    CDcdb()->destroyTable(true);
 
     EditCell(CDcdb()->tableCellName(), false);
     PopUpSymTabs(0, MODE_UPD);
@@ -423,20 +423,7 @@ cMain::Clear(const char *name)
         EditIf()->ulListBegin(true, false);
         SI()->UpdateCell(0);
 
-        CDgenTab_cbin sgen;
-        CDcbin cbin;
-        while (sgen.next(&cbin)) {
-            // These can appear in either order, but it may be
-            // slightly more efficient to free electrical first.  When
-            // physical is freed first, and we free extraction data,
-            // "missing" (already freed) masters can be regenerated as
-            // empty cells (however this is now explicitly prevented). 
-            // This doesn't happen if the electrical cell is freed
-            // before the extraction data.
-
-            delete cbin.elec();
-            delete cbin.phys();
-        }
+        CDcdb()->clearTable();
 
         CD()->CompactPrptyTab();
         CD()->CompactGroupTab();
@@ -444,8 +431,6 @@ cMain::Clear(const char *name)
 #ifdef HAVE_LOCAL_ALLOCATOR
         Memory()->register_free_talk(0);
 #endif
-        Tech()->StdViaReset(false);
-
         FIOreadPrms prms;
         EditCell(XM()->DefaultEditName(), false, &prms);
         WDgen gen(WDgen::SUBW, WDgen::CDDB);

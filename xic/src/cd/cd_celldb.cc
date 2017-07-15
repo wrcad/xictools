@@ -43,6 +43,7 @@ cCDcdb::cCDcdb()
     instancePtr = this;
 
     c_tables = 0;
+    c_subm_table = 0;
     c_no_insert_new = 0;
     c_no_cell_callback = false;
 }
@@ -55,35 +56,6 @@ cCDcdb::on_null_ptr()
 {
     fprintf(stderr, "Singleton class cCDcdb used before instantiated.\n");
     exit(1);
-}
-
-
-CDs *
-cCDcdb::findCell(CDcellName name, DisplayMode mode)
-{
-    if (!c_tables)
-        return (0);
-    CDs *sd;
-    if (mode == Physical)
-        sd = c_tables->findPhysCell(name->string());
-    else
-        sd = c_tables->findElecCell(name->string());
-    return (sd);
-}
-
-
-CDs *
-cCDcdb::findCell(const char *name, DisplayMode mode)
-{
-    if (!c_tables)
-        return (0);
-    CDcellName nm = CD()->CellNameTableFind(name);
-    CDs *sd;
-    if (mode == Physical)
-        sd = c_tables->findPhysCell(nm->string());
-    else
-        sd = c_tables->findElecCell(nm->string());
-    return (sd);
 }
 
 
@@ -344,12 +316,22 @@ cCDcdb::setTableCellname(CDcellName cn)
 }
 
 
+// Remove and destroy the contents of the table, cleared for reuse.
+//
+void
+cCDcdb::clearTable()
+{
+    if (c_tables)
+        c_tables->clear();
+}
+
+
 // Destroy and remove the current table and its contents.  The
 // argument is true if we are destroying the main table in use by the
 // application, false if the table is a subsidiary or temporary table.
 //
 void
-cCDcdb::clearTable(bool is_main_table)
+cCDcdb::destroyTable(bool is_main_table)
 {
     c_no_cell_callback = !is_main_table;
     // This suppresses callbacks when cells are destroyed in a temporary
@@ -365,10 +347,11 @@ cCDcdb::clearTable(bool is_main_table)
 // Clear all tables and cells.
 //
 void
-cCDcdb::clearAllTables()
+cCDcdb::destroyAllTables()
 {
     while (c_tables)
-        clearTable(true);
+        destroyTable(true);
+    delete c_subm_table;
 }
 // End of cCDcdb functions.
 
@@ -382,54 +365,62 @@ CDtables::CDtables(const char *n)
     if (!n)
         n = CD_MAIN_ST_NAME;
     // Use the cell name table to allocate the table names, too.
-    table_name = CD()->CellNameTableAdd(n);
-    cell_name = 0;
-    next = 0;
-    phys_table = 0;
-    elec_table = 0;
-    prev_phys = 0;
-    prev_elec = 0;
-    aux_cell_tab = new CDcellTab();
+    t_table_name = CD()->CellNameTableAdd(n);
+    t_cell_name = 0;
+    t_next = 0;
+    t_phys_table = 0;
+    t_elec_table = 0;
+    t_prev_phys = 0;
+    t_prev_elec = 0;
+    t_aux_cell_tab = new CDcellTab();
 }
 
 
-CDtables::~CDtables()
+void
+CDtables::clear()
 {
-    CDgenTab_s egen(elec_table);
+    CDgenTab_s egen(t_elec_table);
     CDs *sd;
     while ((sd = egen.next()) != 0)
         delete sd;
-    delete elec_table;
-    CDgenTab_s pgen(phys_table);
+    delete t_elec_table;
+    t_elec_table = 0;
+    t_prev_elec = 0;
+
+    CDgenTab_s pgen(t_phys_table);
     while ((sd = pgen.next()) != 0)
         delete sd;
-    delete phys_table;
-    delete aux_cell_tab;
+    delete t_phys_table;
+    t_phys_table = 0;
+    t_prev_phys = 0;
+
+    delete t_aux_cell_tab;
+    t_aux_cell_tab = 0;
 }
 
 
 CDs *
 CDtables::findPhysCell(const char *name)
 {
-    if (!prev_phys || prev_phys->cellname() != (CDcellName)name) {
-        if (!phys_table || !name)
+    if (!t_prev_phys || t_prev_phys->cellname() != (CDcellName)name) {
+        if (!t_phys_table || !name)
             return (0);
-        prev_phys = phys_table->find(name);
+        t_prev_phys = t_phys_table->find(name);
     }
-    return (prev_phys);
+    return (t_prev_phys);
 }
 
 
 CDs *
 CDtables::removePhysCell(const char *name)
 {
-    if (!phys_table || !name)
+    if (!t_phys_table || !name)
         return (0);
-    CDs *sd = phys_table->remove(name);
+    CDs *sd = t_phys_table->remove(name);
     if (sd) {
-        phys_table = phys_table->check_rehash();
-        if (sd == prev_phys)
-            prev_phys = 0;
+        t_phys_table = t_phys_table->check_rehash();
+        if (sd == t_prev_phys)
+            t_prev_phys = 0;
     }
     return (sd);
 }
@@ -440,11 +431,11 @@ CDtables::linkPhysCell(CDs *sdesc)
 {
     if (!sdesc)
         return (0);
-    if (!phys_table)
-        phys_table = new itable_t<CDs>;
-    CDs *sd = phys_table->link(sdesc);
-    phys_table = phys_table->check_rehash();
-    prev_phys = sd;
+    if (!t_phys_table)
+        t_phys_table = new itable_t<CDs>;
+    CDs *sd = t_phys_table->link(sdesc);
+    t_phys_table = t_phys_table->check_rehash();
+    t_prev_phys = sd;
     return (sd);
 }
 
@@ -454,13 +445,13 @@ CDtables::unlinkPhysCell(CDs *sdesc)
 {
     if (!sdesc)
         return (0);
-    if (!phys_table)
+    if (!t_phys_table)
         return (sdesc);
-    CDs *sd = phys_table->unlink(sdesc);
+    CDs *sd = t_phys_table->unlink(sdesc);
     if (sd) {
-        phys_table = phys_table->check_rehash();
-        if (sd == prev_phys)
-            prev_phys = 0;
+        t_phys_table = t_phys_table->check_rehash();
+        if (sd == t_prev_phys)
+            t_prev_phys = 0;
     }
     return (sd);
 }
@@ -469,25 +460,25 @@ CDtables::unlinkPhysCell(CDs *sdesc)
 CDs *
 CDtables::findElecCell(const char *name)
 {
-    if (!prev_elec || prev_elec->cellname() != (CDcellName)name) {
-        if (!elec_table || !name)
+    if (!t_prev_elec || t_prev_elec->cellname() != (CDcellName)name) {
+        if (!t_elec_table || !name)
             return (0);
-        prev_elec = elec_table->find(name);
+        t_prev_elec = t_elec_table->find(name);
     }
-    return (prev_elec);
+    return (t_prev_elec);
 }
 
 
 CDs *
 CDtables::removeElecCell(const char *name)
 {
-    if (!elec_table || !name)
+    if (!t_elec_table || !name)
         return (0);
-    CDs *sd = elec_table->remove(name);
+    CDs *sd = t_elec_table->remove(name);
     if (sd) {
-        elec_table = elec_table->check_rehash();
-        if (sd == prev_elec)
-            prev_elec = 0;
+        t_elec_table = t_elec_table->check_rehash();
+        if (sd == t_prev_elec)
+            t_prev_elec = 0;
     }
     return (sd);
 }
@@ -502,11 +493,11 @@ CDtables::linkElecCell(CDs *sdesc)
         CD()->DbgError("symbolic", "linkElecCell");
         return (0);
     }
-    if (!elec_table)
-        elec_table = new itable_t<CDs>;
-    CDs *sd = elec_table->link(sdesc);
-    elec_table = elec_table->check_rehash();
-    prev_elec = sd;
+    if (!t_elec_table)
+        t_elec_table = new itable_t<CDs>;
+    CDs *sd = t_elec_table->link(sdesc);
+    t_elec_table = t_elec_table->check_rehash();
+    t_prev_elec = sd;
     return (sd);
 }
 
@@ -516,13 +507,13 @@ CDtables::unlinkElecCell(CDs *sdesc)
 {
     if (!sdesc)
         return (0);
-    if (!elec_table)
+    if (!t_elec_table)
         return (sdesc);
-    CDs *sd = elec_table->unlink(sdesc);
+    CDs *sd = t_elec_table->unlink(sdesc);
     if (sd) {
-        elec_table = elec_table->check_rehash();
-        if (sd == prev_elec)
-            prev_elec = 0;
+        t_elec_table = t_elec_table->check_rehash();
+        if (sd == t_prev_elec)
+            t_prev_elec = 0;
     }
     return (sd);
 }

@@ -344,7 +344,7 @@ cConvert::ReadIntoCurrent(const char *filename, const char *cellname,
         }
     }
     CDcdb()->switchTable(stname);
-    CDcdb()->clearTable(false);
+    CDcdb()->destroyTable(false);
     CDcdb()->switchTable(stbak);
 
     DSP()->MainWdesc()->CenterFullView();
