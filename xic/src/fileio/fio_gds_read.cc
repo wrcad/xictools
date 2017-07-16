@@ -686,6 +686,12 @@ gds_in::setup_backend(cv_out *out)
 }
 
 
+// Set this to create standard via masters when listing a hierarchy,
+// such as when creating a CHD.  Creating these at this point might
+// avoid name uncertainty later.
+//
+#define VIAS_IN_LISTONLY
+
 // Main entry for reading.  If sc is not 1.0, geometry will be scaled.
 // If listonly is true, the file offsets will be saved in the name
 // table, but there is no conversion.
@@ -719,7 +725,11 @@ gds_in::parse(DisplayMode mode, bool listonly, double sc, bool save_bb,
         }
     }
     in_listonly = listonly;
+#ifdef VIAS_IN_LISTONLY
+    in_ignore_prop = listonly && (in_mode == Electrical);
+#else
     in_ignore_prop = listonly;
+#endif
     in_header_read = false;
 
     in_savebb = save_bb;
@@ -2789,6 +2799,13 @@ gds_in::a_instance(bool ary)
             nametab_t *ntab = get_sym_tab(in_mode);
             cref_t *ar;
             ticket_t ctk = ntab->new_cref(&ar);
+#ifdef VIAS_IN_LISTONLY
+            if (in_mode == Physical) {
+                CDcellName cname = CD()->CellNameTableAdd(cellname);
+                cname = check_sub_master(cname);
+                cellname = cname->string();
+            }
+#endif
             symref_t *ptr = get_symref(cellname, in_mode);
             if (!ptr) {
                 ar->set_refptr(ntab->new_symref(cellname, in_mode, &ptr));

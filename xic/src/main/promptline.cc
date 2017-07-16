@@ -2112,6 +2112,7 @@ cPromptEdit::key_handler(int code, const char *txt, int mstate)
         sHtxt hret;
         switch (ch) {
         case '\b':
+            pe_firstinsert = false;
             if (pe_column <= pe_colmin)
                 return (true);
             show_del(pe_column-1);
@@ -2731,6 +2732,7 @@ cPromptEdit::button_press_handler(int btn, int x, int y)
         draw_cursor(UNDRAW);
         set_col(i);
         draw_cursor(DRAW);
+        pe_firstinsert = false;
     }
     else if (btn == 2) {
         // get primary

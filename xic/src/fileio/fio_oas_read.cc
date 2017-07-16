@@ -749,6 +749,12 @@ oas_in::setup_cgd_if(cCGD *cgd, bool lmap_ok, const char *fname,
 }
 
 
+// Set this to create standard via masters when listing a hierarchy,
+// such as when creating a CHD.  Creating these at this point might
+// avoid name uncertainty later.
+//
+#define VIAS_IN_LISTONLY
+
 // Main entry for reading.  If sc is not 1.0, geometry will be scaled.
 // If listonly is true, the file offsets will be saved in the name
 // table, but there is no conversion.
@@ -2435,6 +2441,13 @@ oas_in::a_placement(int dx, int dy, unsigned int nx, unsigned int ny)
             nametab_t *ntab = get_sym_tab(in_mode);
             cref_t *sr;
             ticket_t ctk = ntab->new_cref(&sr);
+#ifdef VIAS_IN_LISTONLY
+            if (in_mode == Physical) {
+                CDcellName cname = CD()->CellNameTableAdd(cellname);
+                cname = check_sub_master(cname);
+                cellname = cname->string();
+            }
+#endif
             symref_t *ptr = get_symref(cellname, in_mode);
             if (!ptr) {
                 sr->set_refptr(ntab->new_symref(cellname, in_mode, &ptr));

@@ -468,6 +468,12 @@ cgx_in::setup_backend(cv_out *out)
 }
 
 
+// Set this to create standard via masters when listing a hierarchy,
+// such as when creating a CHD.  Creating these at this point might
+// avoid name uncertainty later.
+//
+#define VIAS_IN_LISTONLY
+
 // Main entry for reading.  If sc is not 1.0, geometry will be scaled.
 // If listonly is true, the file offsets will be saved in the name
 // table, but there is no conversion.
@@ -1274,7 +1280,11 @@ cgx_in::a_cprpty(int, int)
 bool
 cgx_in::a_property(int, int)
 {
+#ifdef VIAS_IN_LISTONLY
+    if (in_sdesc || (in_listonly && in_mode == Physical)) {
+#else
     if (in_sdesc) {
+#endif
         if (in_has_cprops) {
             FIO()->ScalePrptyStrings(in_prpty_list, in_phys_scale, 1.0,
                 in_mode);
@@ -1826,6 +1836,13 @@ cgx_in::a_sref(int, int flags)
             nametab_t *ntab = get_sym_tab(in_mode);
             cref_t *sr;
             ticket_t ctk = ntab->new_cref(&sr);
+#ifdef VIAS_IN_LISTONLY
+            if (in_mode == Physical) {
+                CDcellName cname = CD()->CellNameTableAdd(cellname);
+                cname = check_sub_master(cname);
+                cellname = cname->string();
+            }
+#endif
             symref_t *srf = get_symref(cellname, in_mode);
             if (!srf) {
                 sr->set_refptr(ntab->new_symref(cellname, in_mode, &srf));

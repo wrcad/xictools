@@ -1643,6 +1643,12 @@ cif_in::setup_backend(cv_out *out)
 //   is not done, since records that use A/B will never have properties
 //   that require scaling.
 
+// Set this to create standard via masters when listing a hierarchy,
+// such as when creating a CHD.  Creating these at this point might
+// avoid name uncertainty later.
+//
+#define VIAS_IN_LISTONLY
+
 // Main entry for reading.  If sc is not 1.0, geometry will be scaled.
 // If listonly is true, the symbol offsets will be saved in the name
 // table, but there is no conversion.
@@ -2718,7 +2724,13 @@ cif_in::a_call()
                 const char *sn = alias(in_cellname);
                 if (sn != in_cellname)
                     strcpy(in_cellname, sn);
-
+#ifdef VIAS_IN_LISTONLY
+                if (in_mode == Physical) {
+                    CDcellName cname = CD()->CellNameTableAdd(in_cellname);
+                    cname = check_sub_master(cname);
+                    strcpy(in_cellname, cname->string());
+                }
+#endif
                 ptr = get_symref(in_cellname, in_mode);
                 if (!ptr) {
                     // The symref was not found in the name table.  It
