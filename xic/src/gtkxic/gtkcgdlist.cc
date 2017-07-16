@@ -156,7 +156,7 @@ sCGL::sCGL(GRobject c)
     wb_shell = gtk_NewPopup(0, "Cell Geometry Digests", cgl_cancel, 0);
     if (!wb_shell)
         return;
-    gtk_window_set_default_size(GTK_WINDOW(wb_shell), 350, 150);
+    gtk_window_set_default_size(GTK_WINDOW(wb_shell), 380, 150);
 
     GtkWidget *form = gtk_table_new(1, 5, false);
     gtk_widget_show(form);

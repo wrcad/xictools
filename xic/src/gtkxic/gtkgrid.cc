@@ -233,15 +233,29 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_container_add(GTK_CONTAINER(wb_shell), topform);
     int rowcnt = 0;
 
+    //
+    // label in frame plus help btn
+    //
+
+    GtkWidget *row = gtk_hbox_new(false, 2);
+    gtk_widget_show(row);
+    GtkWidget *label = gtk_label_new("Set grid parameters");
+    gtk_widget_show(label);
+    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
+    GtkWidget *frame = gtk_frame_new(0);
+    gtk_widget_show(frame);
+    gtk_container_add(GTK_CONTAINER(frame), label);
+    gtk_box_pack_start(GTK_BOX(row), frame, true, true, 0);
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "help");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
         GTK_SIGNAL_FUNC(gd_btn_proc), grid_pops + gd_win_num);
-    gtk_widget_set_uposition(button, -1, 2);
-    gtk_table_attach(GTK_TABLE(topform), button, 1, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(0),
+    gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
+    gtk_table_attach(GTK_TABLE(topform), row, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
 
     GtkWidget *nbook = gtk_notebook_new();
     gtk_widget_show(nbook);
@@ -259,7 +273,7 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
 
     // Grid Snapping controls
 
-    GtkWidget *frame = gtk_frame_new("Snap Spacing");
+    frame = gtk_frame_new("Snap Spacing");
     gtk_widget_show(frame);
     GtkWidget *vbox = gtk_vbox_new(false, 0);
     gtk_widget_show(vbox);
@@ -272,7 +286,7 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     gtk_widget_set_usize(sb, 80, -1);
     gtk_box_pack_start(GTK_BOX(vbox), sb, false, false, 0);
 
-    GtkWidget *label = gtk_label_new("");
+    label = gtk_label_new("");
     gtk_widget_show(label);
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gd_mfglabel = label;
@@ -711,7 +725,7 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
     // Apply and Dismiss buttons
     //
 
-    GtkWidget *row = gtk_hbox_new(false, 2);
+    row = gtk_hbox_new(false, 2);
     gtk_widget_show(row);
 
     button = gtk_button_new_with_label("Apply");

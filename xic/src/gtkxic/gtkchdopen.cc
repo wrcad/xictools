@@ -441,7 +441,7 @@ sCo::sCo(GRobject caller, bool(*callback)(const char*, const char*, int, void*),
     gtk_window_set_focus(GTK_WINDOW(wb_shell), co_p1_text);
 
     // Constrain overall widget width so title text isn't truncated.
-    gtk_widget_set_usize(wb_shell, 340, -1);
+    gtk_widget_set_usize(wb_shell, 360, -1);
     update(init_idname, init_str);
 }
 

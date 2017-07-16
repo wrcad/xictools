@@ -666,6 +666,9 @@ GTKnumPopup::GTKnumPopup(gtk_bag *owner, const char *prompt_str,
         GTK_SIGNAL_FUNC(pw_numer_val_changed), this);
     gtk_window_set_focus(GTK_WINDOW(pw_shell), pw_text);
     gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(pw_text), true);
+
+    /***
+//XXX rid this, way too narrow in Fedora
     char buf[64];
     sprintf(buf, "%.*f", numd, maxd);
     int wid = GTKfont::stringWidth(pw_text, buf);
@@ -675,6 +678,7 @@ GTKnumPopup::GTKnumPopup(gtk_bag *owner, const char *prompt_str,
         wid = wid1;
     wid += 22;  // arrow
     gtk_widget_set_usize(pw_text, wid, -1);
+    ***/
 
     gtk_table_attach(GTK_TABLE(form), DblClickSpinBtnContainer(pw_text),
         0, 1, 1, 2,
