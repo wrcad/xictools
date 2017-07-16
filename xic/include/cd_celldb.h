@@ -201,13 +201,15 @@ public:
 
     CDs *findCell(CDcellName name, DisplayMode mode)
         {
-            CDs *sd = mode == Physical ? findSubmCell(name) : 0;
-            if (!sd && c_tables) {
-                if (mode == Physical)
+            CDs *sd = 0;
+            if (mode == Physical) {
+                if (c_tables)
                     sd = c_tables->findPhysCell(name->string());
-                else
-                    sd = c_tables->findElecCell(name->string());
+                if (!sd && c_subm_table)
+                    sd = c_subm_table->findPhysCell(name->string());
             }
+            else if (c_tables)
+                sd = c_tables->findElecCell(name->string());
             return (sd);
         }
 

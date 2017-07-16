@@ -892,6 +892,14 @@ cCHD::open(CDcbin *cbret, const char *cellname, const FIOreadPrms *prms,
         return (OIerror);
     }
 
+    if (srf_phys && !srf_phys->get_defseen() && !allcells) {
+        // A standard via submaster that hasn't been created yet?
+        // This can happen in the diff command, assume it is not a
+        // real error.
+
+        return (OInew);
+    }
+
     // Create input for this CHD.
     //
     cv_in *in = newInput(prms->allow_layer_mapping());
