@@ -626,7 +626,7 @@ namespace {
             void RegisterScript(const char*, const char*);
             void DumpScripts(FILE*, char*, bool);
             umenu *AddScript(umenu*, SymTab*);
-            void OpenScript(const char*, SIfile**, stringlist**);
+            void OpenScript(const char*, SIfile**, stringlist**, bool);
             char *FindScript(const char*);
             void OpenFormatLib(int);
             void RunExecs();
@@ -815,7 +815,8 @@ SIlocal::AddScript(umenu *ul, SymTab *nametab)
 // containing the script text.
 //
 void
-SIlocal::OpenScript(const char *namein, SIfile **pfp, stringlist **pwl)
+SIlocal::OpenScript(const char *namein, SIfile **pfp, stringlist **pwl,
+    bool checkcwd)
 {
     *pfp = 0;
     *pwl = 0;
@@ -823,6 +824,8 @@ SIlocal::OpenScript(const char *namein, SIfile **pfp, stringlist **pwl)
     char *name = pathlist::expand_path(namein, false, true);
     if (!name)
         return;
+    GCarray<char*> gc_name(name);
+
     char *ext = strrchr(name, '.');
     if (lstring::strdirsep(name) && !lstring::prefix(SCR_LIBCODE, name)) {
         // file path, open the file
@@ -830,11 +833,9 @@ SIlocal::OpenScript(const char *namein, SIfile **pfp, stringlist **pwl)
             char *cp = new char[strlen(name) + strlen(SCR_SUFFIX) + 1];
             strcpy(cp, name);
             strcat(cp, SCR_SUFFIX);
-            delete [] name;
             name = cp;
         }
         *pfp = SIfile::create(name, 0, 0);
-        delete [] name;
         return;
     }
     if (ext && lstring::cieq(ext, SCR_SUFFIX))
@@ -850,7 +851,6 @@ SIlocal::OpenScript(const char *namein, SIfile **pfp, stringlist **pwl)
                 char *p = pathlist::expand_path(a->path, false, true);
                 *pfp = SIfile::create(p, 0, 0);
                 delete [] p;
-                delete [] name;
                 return;
             }
         }
@@ -866,24 +866,33 @@ SIlocal::OpenScript(const char *namein, SIfile **pfp, stringlist **pwl)
             delete [] p;
             if (fp) {
                 *pfp = SIfile::create(name, fp, 0);
-                break;
+                return;
             }
         }
     }
 
-    // Last, check for a tech file script.
+    // Check for a tech file script.
     if (!lstring::prefix(SCR_LIBCODE, name)) {
         // not a library reference, so check stored scripts
         sScript *a = GetScript(name);
         if (a) {
             if (!a->path && a->script) {
                 *pwl = a->script;
-                delete [] name;
                 return;
             }
         }
     }
-    delete [] name;
+
+    // Optionally, just look in the current directory for the file.
+    if (checkcwd) {
+        FILE *fp = fopen(name, "r");
+        if (fp) {
+            *pfp = SIfile::create(name, fp, 0);
+            return;
+        }
+    }
+
+    // Unresolved.
 }
 
 
@@ -1784,9 +1793,10 @@ cMain::GetFunctionList()
 
 
 void
-cMain::OpenScript(const char *namein, SIfile **pfp, stringlist **pwl)
+cMain::OpenScript(const char *namein, SIfile **pfp, stringlist **pwl,
+    bool checkcwd)
 {
-    SIxic.OpenScript(namein, pfp, pwl);
+    SIxic.OpenScript(namein, pfp, pwl, checkcwd);
 }
 
 

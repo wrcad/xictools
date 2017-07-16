@@ -432,7 +432,7 @@ public:
     siVariable *GetFormatVars(int);
     void RegisterScript(const char*, const char*);
     umenu *GetFunctionList();
-    void OpenScript(const char*, SIfile**, stringlist**);
+    void OpenScript(const char*, SIfile**, stringlist**, bool = false);
     char *FindScript(const char*);
     void OpenFormatLib(int);
     void RunTechScripts();

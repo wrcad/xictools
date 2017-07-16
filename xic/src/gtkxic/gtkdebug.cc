@@ -1747,9 +1747,10 @@ sDbg::db_open_cb(const char *namein, void*)
         if (lstring::strdirsep(name))
             fp = fopen(name, "r");
         else {
+            // Search will check CWD first, then path.
             char *fpath;
             fp = pathlist::open_path_file(name,
-                CDvdb()->getVariable(VA_ScriptPath), "r", &fpath, false);
+                CDvdb()->getVariable(VA_ScriptPath), "r", &fpath, true);
             if (fpath) {
                 delete [] name;
                 name = fpath;

@@ -4077,7 +4077,7 @@ bangcmds::exec(const char *s)
     }
     SIfile *sfp;
     stringlist *sl;
-    XM()->OpenScript(s, &sfp, &sl);
+    XM()->OpenScript(s, &sfp, &sl, true);
     if (sfp || sl) {
         EditIf()->ulListCheck("script", CurCell(), false);
         SI()->Interpret(sfp, sl, 0, 0);

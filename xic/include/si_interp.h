@@ -259,7 +259,7 @@ struct SIcstack
 // Returned from SIfile::create.
 enum sif_err { sif_ok, sif_open, sif_crypt };
 
-// Special "file descriptor" to deal with decryption,
+// Special "file descriptor" to deal with decryption.
 //
 struct SIfile
 {
@@ -270,11 +270,10 @@ struct SIfile
             filename = fn;
         }
 
-    ~SIfile();
-
-    int sif_getc();
-
+    // si_support.cc
     static SIfile *create(const char*, FILE*, sif_err*);
+    ~SIfile();
+    int sif_getc();
 
     FILE *fp;
     sCrypt *cr;
