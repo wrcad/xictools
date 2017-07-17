@@ -32,6 +32,7 @@
 
 // Program codes
 #define SERVER_CODE         3
+#define OA_CODE             5
 #define XIV_CODE            7
 #define XICII_CODE          9
 #define XIC_CODE            11

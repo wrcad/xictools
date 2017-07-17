@@ -211,6 +211,7 @@ lfinfo::verify()
         }
         switch (d) {
         case SERVER_CODE:
+        case OA_CODE:
         case XIV_CODE:
         case XICII_CODE:
         case XIC_CODE:

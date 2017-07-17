@@ -30,6 +30,7 @@
 #include "gtkmain.h"
 #include "gtkinlines.h"
 #include "gtkcv.h"
+#include "oa_if.h"
 
 
 //--------------------------------------------------------------------

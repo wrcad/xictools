@@ -1634,6 +1634,9 @@ xtlserv::jobs_dump(int fd)
         case SERVER_CODE:
             what = "xtlserv";
             break;
+        case OA_CODE:
+            what = "oa";
+            break;
         case XIV_CODE:
             what = "xiv";
             break;

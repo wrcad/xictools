@@ -41,10 +41,11 @@
 #include "reltag.h"
 #include "filestat.h"
 #include "help/help_defs.h"
+#include "secure.h"
 
 #ifdef HAVE_OA
 #include <dlfcn.h>
-#include <pwd.h>
+//#include <pwd.h>
 #endif
 
 
@@ -59,14 +60,17 @@ namespace {
     //
     cOA_base *find_oa(char **lname)
     {
-#ifdef HAVE_GETPWUID
-        // Only stevew can load the OpenAccess plug-in at prsent.
-        passwd *pw = getpwuid(getuid());
-        if (!pw)
+        // Use requires a license.
+        int code = XM()->Auth()->validate(OA_CODE,
+            CDvdb()->getVariable(VA_LibPath));
+        if (code != OA_CODE) {
+            if (verbose)
+                printf("The OpenAccess plug-in is not not licensed, "
+                "contact\nWhiteley Research for product and licensing "
+                "information.\n");
             return (0);
-        if (strcmp(pw->pw_name, "stevew"))
-            return (0);
-#endif
+        }
+
         bool verbose = (getenv("XIC_PLUGIN_DBG") != 0);
         sLstr lstr;
         const char *oaso_path = getenv("XIC_OASO_PATH");
