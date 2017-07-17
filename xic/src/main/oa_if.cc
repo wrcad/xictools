@@ -63,6 +63,7 @@ namespace {
         // Use requires a license.
         int code = XM()->Auth()->validate(OA_CODE,
             CDvdb()->getVariable(VA_LibPath));
+        bool verbose = (getenv("XIC_PLUGIN_DBG") != 0);
         if (code != OA_CODE) {
             if (verbose)
                 printf("The OpenAccess plug-in is not not licensed, "
@@ -71,7 +72,6 @@ namespace {
             return (0);
         }
 
-        bool verbose = (getenv("XIC_PLUGIN_DBG") != 0);
         sLstr lstr;
         const char *oaso_path = getenv("XIC_OASO_PATH");
         if (oaso_path) {

@@ -458,15 +458,21 @@ validate::setup_license(bool use_def)
     }
 
     // Set the limits.  The server will balk at accepting more than the
-    // limit for each type code, for all machines served.  Currently,
-    // this is used only for daemon licenses.
+    // limit for each type code, for all machines served.
     //
     int limits[20];
     for (int i = 0; i < 20; i++)
         limits[i] = -1;
     for (int i = 0; i <= count; i++) {
         int c = Tr[i].limits[0];
-        if (c == XIV_CODE) {
+        switch (c) {
+        case SERVER_CODE:
+        case OA_CODE:
+        case XIV_CODE:
+        case XICII_CODE:
+        case XIC_CODE:
+        case XIC_DAEMON_CODE:
+        case WRSPICE_CODE:
             if (limits[c] < 0) {
                 printf("Code %d user limitation? [0] ", c);
                 fflush(stdout);
@@ -488,110 +494,8 @@ validate::setup_license(bool use_def)
             }
             else
                 Tr[i].limits[1] = limits[c];
-        }
-    }
-    for (int i = 0; i <= count; i++) {
-        int c = Tr[i].limits[0];
-        if (c == XICII_CODE) {
-            if (limits[c] < 0) {
-                printf("Code %d user limitation? [0] ", c);
-                fflush(stdout);
-                fgets(buf, 1024, stdin);
-                int lim;
-                if (sscanf(buf, "%d", &lim) == 1 && lim > 0) {
-                    if (lim > 255)
-                        lim = 255;
-                    Tr[i].limits[1] = lim;
-                    limits[c] = lim;
-                }
-                else {
-                    Tr[i].limits[1] = 0;
-                    limits[c] = 0;
-                }
-                sprintf(tbuf, "%d", Tr[i].limits[1]);
-                se->next = new v_stringlist(tbuf);
-                se = se->next;
-            }
-            else
-                Tr[i].limits[1] = limits[c];
-        }
-    }
-    for (int i = 0; i <= count; i++) {
-        int c = Tr[i].limits[0];
-        if (c == XIC_CODE) {
-            if (limits[c] < 0) {
-                printf("Code %d user limitation? [0] ", c);
-                fflush(stdout);
-                fgets(buf, 1024, stdin);
-                int lim;
-                if (sscanf(buf, "%d", &lim) == 1 && lim > 0) {
-                    if (lim > 255)
-                        lim = 255;
-                    Tr[i].limits[1] = lim;
-                    limits[c] = lim;
-                }
-                else {
-                    Tr[i].limits[1] = 0;
-                    limits[c] = 0;
-                }
-                sprintf(tbuf, "%d", Tr[i].limits[1]);
-                se->next = new v_stringlist(tbuf);
-                se = se->next;
-            }
-            else
-                Tr[i].limits[1] = limits[c];
-        }
-    }
-    for (int i = 0; i <= count; i++) {
-        int c = Tr[i].limits[0];
-        if (c == XIC_DAEMON_CODE) {
-            if (limits[c] < 0) {
-                printf("Code %d user limitation? [0] ", c);
-                fflush(stdout);
-                fgets(buf, 1024, stdin);
-                int lim;
-                if (sscanf(buf, "%d", &lim) == 1 && lim > 0) {
-                    if (lim > 255)
-                        lim = 255;
-                    Tr[i].limits[1] = lim;
-                    limits[c] = lim;
-                }
-                else {
-                    Tr[i].limits[1] = 0;
-                    limits[c] = 0;
-                }
-                sprintf(tbuf, "%d", Tr[i].limits[1]);
-                se->next = new v_stringlist(tbuf);
-                se = se->next;
-            }
-            else
-                Tr[i].limits[1] = limits[c];
-        }
-    }
-    for (int i = 0; i <= count; i++) {
-        int c = Tr[i].limits[0];
-        if (c == WRSPICE_CODE) {
-            if (limits[c] < 0) {
-                printf("Code %d user limitation? [0] ", c);
-                fflush(stdout);
-                fgets(buf, 1024, stdin);
-                int lim;
-                if (sscanf(buf, "%d", &lim) == 1 && lim > 0) {
-                    if (lim > 255)
-                        lim = 255;
-                    Tr[i].limits[1] = lim;
-                    limits[c] = lim;
-                }
-                else {
-                    Tr[i].limits[1] = 0;
-                    limits[c] = 0;
-                }
-                sprintf(tbuf, "%d", Tr[i].limits[1]);
-                se->next = new v_stringlist(tbuf);
-                se = se->next;
-            }
-            else
-                Tr[i].limits[1] = limits[c];
+        default:
+            break;
         }
     }
 
