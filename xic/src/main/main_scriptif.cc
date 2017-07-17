@@ -885,7 +885,7 @@ SIlocal::OpenScript(const char *namein, SIfile **pfp, stringlist **pwl,
 
     // Optionally, just look in the current directory for the file.
     if (checkcwd) {
-        FILE *fp = fopen(name, "r");
+        FILE *fp = findopen(".", name, 0);
         if (fp) {
             *pfp = SIfile::create(name, fp, 0);
             return;

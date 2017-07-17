@@ -250,13 +250,17 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         GTK_SIGNAL_FUNC(cvi_action), 0);
     gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
     cvi_nonpc = button;
-    button = gtk_check_button_new_with_label("Eval OpenAccess");
-    gtk_widget_set_name(button, "yesoapc");
-    gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_action), 0);
-    gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
-    cvi_yesoapc = button;
+
+    if (OAif()->hasOA()) {
+        button = gtk_check_button_new_with_label("Eval OpenAccess");
+        gtk_widget_set_name(button, "yesoapc");
+        gtk_widget_show(button);
+        gtk_signal_connect(GTK_OBJECT(button), "clicked",
+            GTK_SIGNAL_FUNC(cvi_action), 0);
+        gtk_box_pack_start(GTK_BOX(row), button, true, true, 0);
+        cvi_yesoapc = button;
+    }
+
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);

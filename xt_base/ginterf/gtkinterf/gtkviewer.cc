@@ -1468,7 +1468,7 @@ namespace {
 // End of form element callbacks
 
 
-#define PADVAL 10
+#define PADVAL 16
 
 
 // Create the appropriate widget(s) for the entry.  The accurate
@@ -1624,7 +1624,6 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             if (!lab)
                 lab = " ";
             GtkWidget *cb = gtk_button_new_with_label(lab);
-
             entry->width = GTKfont::stringWidth(cb, lab) + PADVAL;
             entry->height = GTKfont::stringHeight(cb, 0) + PADVAL;
             gtk_widget_set_usize(cb, entry->width, entry->height);
