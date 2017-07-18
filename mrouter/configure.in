@@ -13,15 +13,21 @@ if test "`uname -m`" = i686; then
     linux32=yes;
 fi
 
-dnl Override hack for 32-bit build on x86_64 machine.
-linux32_64=no
+dnl --enable-force32
+dnl Force 32-bit build on 64-bit systems.
+force32="no"
+AC_ARG_ENABLE(force32,
+    [  ]--enable-force32        force 32-bit build,
+if test $enable_force32 = yes; then
+    force32="yes"
+fi
+)
+
+dnl Set the -m32 flag to build for 32-bits, which is GNU-specific.
 if test $linux32 = no; then
     if test "`uname -m`" = x86_64; then
-        if test -f BUILD-32; then
-            CC="gcc -m32 -march=i686"
-            CXX="g++ -m32 -march=i686"
-            GCC=yes
-            linux32_64=yes
+        if test $force32 = yes; then
+            flags32="-m32 -march=i686"
             linux32=yes
             export PKG_CONFIG_PATH=/usr/lib/pkgconfig
         fi
@@ -38,16 +44,6 @@ AC_SUBST(VERSION)
 dnl ***
 dnl *** Setup configure args
 dnl ***
-
-dnl --enable-m64
-dnl enable addition of -m64 gcc option to force 64-bit output
-m64="no"
-AC_ARG_ENABLE(m64,
-    [  ]--enable-m64            enable 64-bit build,
-if test $enable_m64 = yes; then
-    m64="yes"
-fi
-)
 
 dnl --enable-mingw[=/path/to/mingw]
 dnl enable mingw (Win32), the default on MSW systems, cross tools otherwise
@@ -156,6 +152,21 @@ AC_SUBST(RANLIB)
 AC_SUBST(LD)
 AC_SUBST(WINPTHREADFIX)
 
+if test "$GCC" = yes; then
+    if test -n "$flags32"; then
+        CC="$CC $flags32"
+        CXX="$CXX $flags32"
+    fi
+    DEPEND_PROG='$(CC) -MM'
+    c_flags="-Wall -W -Wshadow -Wwrite-strings"
+    if test $profiling = yes; then
+        c_flags="-pg $c_flags"
+    fi
+else
+    DEPEND_PROG='gcc -MM'
+fi
+AC_SUBST(DEPEND_PROG)
+
 # Test whether a gcc option (-Wno-ignored-qualifiers) is valid.
 NO_IGNORED_QUALIFIERS=""
 AC_MSG_CHECKING([whether CC supports -Wno-ignored-qualifiers])
@@ -174,18 +185,6 @@ fi
 rm -rf conftest*
 AC_SUBST([NO_IGNORED_QUALIFIERS])
 
-if test "$GCC" = yes; then
-    DEPEND_PROG='$(CC) -MM'
-    c_flags="-Wall -W -Wshadow -Wwrite-strings"
-    if test $profiling = yes; then
-        c_flags="-pg $c_flags"
-    fi
-dnl    CXX_FLAGS_CHECK(["-Wno-ignored-qualifiers"])
-else
-    DEPEND_PROG='gcc -MM'
-fi
-AC_SUBST(DEPEND_PROG)
-
 AC_PROG_MAKE_SET
 
 LEX="flex -l"
@@ -201,7 +200,6 @@ CYGWIN*)
     FILTER="|sed -e s/C:// -e s///"
     OSNAME="Win32"
     ARCH="i386"
-    m64="no"
     lib_dirs="/usr/lib /usr/local/lib"
     SOEXT=dll
     LSHFLAG="-shared -Wl,--enable-auto-import,--export-all-symbols"
@@ -224,7 +222,6 @@ dnl index - 4 is the OS release, e.g. kernel 10.4.0 is OS X 10.6.4.
         echo "Architecture not supported."
         exit
     fi
-    m64="no"
     INSTALL='STRIPPROG="strip -S" $(LPATH)/../util/install-sh'
     lib_dirs="$lib_dirs $ac_x_libraries"
     SOEXT=dylib
@@ -237,7 +234,6 @@ FreeBSD)
     else
         ARCH="x86_64"
     fi
-    m64="no"
     PIC_OPT="-fPIC"
     LFLAGS="-rdynamic"
     LSHFLAG="-shared"
@@ -245,17 +241,18 @@ FreeBSD)
     lib_dirs="$lib_dirs $ac_x_libraries"
     SOEXT=so
     LIBDL="-ldl"
-
 ;;
 Linux)
     OSNAME="Linux"
     if test $linux32 = yes; then
         ARCH="i686"
+        ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
+        lib_dirs="/usr/lib"
     else
         ARCH="x86_64"
+        lib_dirs="/usr/lib64"
     fi
     
-    m64="no"
     PIC_OPT="-fPIC"
     LFLAGS="-rdynamic"
     LSHFLAG="-shared"
@@ -414,7 +411,7 @@ fi
 AC_SUBST(LINKCC)
 
 AC_CONFIG_HEADER(include/config.h)
-AC_OUTPUT(lddb/Makefile mrouter/Makefile examples/Makefile)
+AC_OUTPUT(Makefile lddb/Makefile mrouter/Makefile examples/Makefile)
 
 (cd lddb; ${MAKE-make} ../include/ld_vers.h)
 (cd mrouter; ${MAKE-make} ../include/mr_vers.h)

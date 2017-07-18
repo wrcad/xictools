@@ -21,7 +21,7 @@ DATE = @DATE@
 OSNAME = @OSNAME@
 ARCH = @ARCH@
 CC = @CC@
-CFLAGS = -O3 @PIC_OPT@
+CFLAGS = @CFLAGS_S@ @PIC_OPT@
 LSHFLAG = @LSHFLAG@
 SOEXT = @SOEXT@
 
@@ -176,11 +176,11 @@ buildlib:
 	if [ ! -d AMD ]; then \
 	    $(MAKE) unpack patch; \
 	fi
-	cd AMD/Lib;  $(MAKE) CFLAGS="$(CFLAGS)"
-	cd BTF/Lib;  $(MAKE) CFLAGS="$(CFLAGS)"
-	cd COLAMD/Lib;  $(MAKE) CFLAGS="$(CFLAGS)"
-	cd KLU/Lib;  $(MAKE) CFLAGS="$(CFLAGS)"
-	cd SuiteSparse_config;  $(MAKE) CFLAGS="$(CFLAGS)" SuiteSparse_config.o
+	cd AMD/Lib;  $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)"
+	cd BTF/Lib;  $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)"
+	cd COLAMD/Lib;  $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)"
+	cd KLU/Lib;  $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)"
+	cd SuiteSparse_config;  $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" SuiteSparse_config.o
 
 clean:
 	cd AMD;  $(MAKE) distclean

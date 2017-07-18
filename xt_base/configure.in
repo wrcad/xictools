@@ -10,7 +10,6 @@ dnl ***
 AC_INIT(configure)
 
 linux32=no
-linux32_64=no
 if test "`uname -m`" = i686; then
     linux32=yes;
 fi
@@ -29,10 +28,7 @@ dnl Set the -m32 flag to build for 32-bits, which is GNU-specific.
 if test $linux32 = no; then
     if test "`uname -m`" = x86_64; then
         if test $force32 = yes; then
-            CC="gcc -m32 -march=i686"
-            CXX="g++ -m32 -march=i686"
-            GCC=yes
-            linux32_64=yes
+            flags32="-m32 -march=i686"
             linux32=yes
             export PKG_CONFIG_PATH=/usr/lib/pkgconfig
         fi
@@ -70,16 +66,6 @@ AC_SUBST(TOOLROOT)
 dnl ***
 dnl *** Setup configure args
 dnl ***
-
-dnl --enable-m64
-dnl enable addition of -m64 gcc option to force 64-bit output
-m64="no"
-AC_ARG_ENABLE(m64,
-    [  ]--enable-m64            enable 64-bit build,
-if test $enable_m64 = yes; then
-    m64="yes"
-fi
-)
 
 dnl --enable-mingw[=/path/to/mingw]
 dnl enable mingw (Win32), the default on MSW systems, cross tools otherwise
@@ -221,19 +207,17 @@ CYGWIN*)
     CC=$mingw_dir/bin/gcc
     CXX=$mingw_dir/bin/g++
     GCC=yes
-    TOOLKIT="Win32"
     WINDRES=$mingw_dir/bin/windres
     RESOURCE=resource.o
     AR=$mingw_dir/bin/ar
     RANLIB=$mingw_dir/bin/ranlib
     LD=$mingw_dir/bin/ld
-    # static link avoids libwinpthread-1.dll dependence
+dnl # static link avoids libwinpthread-1.dll dependence
     WINPTHREADFIX="-static"
     ;;
 *)
     AC_PROG_CC
     AC_PROG_CXX
-    TOOLKIT="Gtk2"
     if test "$AR" = ""; then
         AR=ar
     fi
@@ -245,7 +229,6 @@ CYGWIN*)
     fi
     ;;
 esac
-AC_SUBST(TOOLKIT)
 AC_SUBST(WINDRES)
 AC_SUBST(RESOURCE)
 AC_SUBST(AR)
@@ -254,6 +237,10 @@ AC_SUBST(LD)
 AC_SUBST(WINPTHREADFIX)
 
 if test "$GCC" = yes; then
+    if test -n "$flags32"; then
+        CC="$CC $flags32"
+        CXX="$CXX $flags32"
+    fi
     DEPEND_PROG='$(CC) -MM'
     c_flags="-Wall -W -Wshadow -Wwrite-strings"
     if test $profiling = yes; then
@@ -284,9 +271,8 @@ CYGWIN*)
     OSNAME="Win32"
     ARCH="i386"
     DIST_SUFFIX="exe"
-    m64="no"
-    dnl  # needed for gcc-2
-    dnl c_flags="-fvtable-thunks $c_flags"
+dnl # needed for gcc-2
+dnl # c_flags="-fvtable-thunks $c_flags"
     INSTALL='$(LPATH)/util/install-sh'
     lib_dirs="/usr/lib /usr/local/lib"
     SOEXT=dll
@@ -304,8 +290,8 @@ Darwin)
     IFS="."
     set $kern
     IFS=$tifs
-dnl uname -r returns the kernel release, it seems that the major
-dnl index - 4 is the OS release, e.g. kernel 10.4.0 is OS X 10.6.4.
+dnl # uname -r returns the kernel release, it seems that the major
+dnl # index - 4 is the OS release, e.g. kernel 10.4.0 is OS X 10.6.4.
     if test $1 -ge 13; then
         OSNAME="Darwin64"
         ARCH="x86_64"
@@ -319,7 +305,6 @@ dnl index - 4 is the OS release, e.g. kernel 10.4.0 is OS X 10.6.4.
         echo "Architecture not supported."
         exit
     fi
-    m64="no"
     INSTALL='STRIPPROG="strip -S" $(LPATH)/util/install-sh'
     lib_dirs="$lib_dirs $ac_x_libraries"
     SOEXT=dylib
@@ -340,7 +325,6 @@ FreeBSD)
     ARCH="i386"
     DIST_SUFFIX="pkg.tbz"
     MALLOC='$(LPATH)/malloc/malloc.a'
-    m64="no"
     PIC_OPT="-fPIC"
     LFLAGS="-rdynamic"
     LSHFLAG="-shared"
@@ -360,29 +344,30 @@ Linux)
         dst=`rpm -qf /etc/SuSE-release`
     fi
     if test x"$dst" != x; then
-dnl  RPM-based:  Red Hat, CentOS, OpenSuSE, and others.  Recognize 5/6/7
-dnl  and assume RHEL production releases.  We obtain the release name
-dnl  and number from RPM, which will work even if someone hacked the text
-dnl  of the redhat-release file.
+dnl     # RPM-based:  Red Hat, CentOS, OpenSuSE, and others.  Recognize 5/6/7
+dnl     # and assume RHEL production releases.  We obtain the release name
+dnl     # and number from RPM, which will work even if someone hacked the text
+dnl     # of the redhat-release file.
         tifs=$IFS
         IFS=".-_ "
         set -- $dst
         IFS=$tifs
         word=$1
         ch=${word:0:1}
-dnl  Upper-case the first letter of oname.
+dnl     # Upper-case the first letter of oname.
         oname=`echo -n "$ch" | tr [a-z] [A-Z]; echo ${word:1}`
         major=$3
         minor=$4
 
         if test ! -z "$major"; then
-            # RedHat/CentOS/Fedora etc.
+dnl         # RedHat/CentOS/Fedora etc.  The $major may be a bare integer, or something
+dnl         # like "5Server".
             case $major in
-            1,2,3,4)
+            1* | 2* | 3* | 4*)
                 echo "Architecture too archaic, not supported."
                 exit
                 ;;
-            5)
+            5*)
                 if test $linux32 = yes; then
                     OSNAME="LinuxRHEL5"
                     ARCH="i686"
@@ -390,33 +375,32 @@ dnl  Upper-case the first letter of oname.
                 else
                     OSNAME="LinuxRHEL5_64"
                     ARCH="x86_64"
-                    lib_dirs="/usr/lib64 /usr/local/lib64"
-                    largs="-L/usr/local/lib64"
+                    lib_dirs="/usr/lib64"
                 fi
                 ;;
-            6)
+            6*)
                 if test $linux32 = yes; then
                     OSNAME="LinuxRHEL6"
                     ARCH="i686"
                     ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
-                    lib_dirs="/usr/lib /usr/local/lib"
+                    lib_dirs="/usr/lib"
                 else
                     OSNAME="LinuxRHEL6_64"
                     ARCH="x86_64"
-                    lib_dirs="/usr/lib64 /usr/local/lib64"
+                    lib_dirs="/usr/lib64"
                 fi
                 with_psf_ok=yes
                 ;;
-            7)
+            7*)
                 if test $linux32 = yes; then
                     OSNAME="LinuxRHEL7"
                     ARCH="i686"
                     ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
-                    lib_dirs="/usr/lib /usr/local/lib"
+                    lib_dirs="/usr/lib"
                 else
                     OSNAME="LinuxRHEL7_64"
                     ARCH="x86_64"
-                    lib_dirs="/usr/lib64 /usr/local/lib64"
+                    lib_dirs="/usr/lib64"
                 fi
                 with_psf_ok=yes
                 ;;
@@ -425,23 +409,22 @@ dnl  Upper-case the first letter of oname.
                     OSNAME="Linux$oname$major"
                     ARCH="i686"
                     ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
-                    lib_dirs="/usr/lib /usr/local/lib"
+                    lib_dirs="/usr/lib"
                 else
                     OSNAME="Linux$oname${major}_64"
                     ARCH="x86_64"
-                    lib_dirs="/usr/lib64 /usr/local/lib64"
+                    lib_dirs="/usr/lib64"
                 fi
                 ;;
             esac
         fi
     else
-dnl  Need Debian/Ubuntu, etc.
+dnl     # Need Debian/Ubuntu, etc.
         echo "Architecture not supported."
         exit
     fi
     
     DIST_SUFFIX="rpm"
-    m64="no"
     MALLOC='$(LPATH)/malloc/malloc.a'
     PIC_OPT="-fPIC"
     LFLAGS="-rdynamic"
@@ -494,7 +477,7 @@ AC_SUBST(OA_CFLAGS)
 AC_SUBST(OA_SUBDIR)
 
 dnl # Always enable pthreads, supported on all platforms.
-PTHREADOPT="-pthread"
+c_flags="$c_flags -pthread"
 
 if test x$with_psf = xyes -a x$with_psf_ok = xyes; then
 TKTOOLS=$psf_loc
@@ -522,14 +505,14 @@ dnl # instruction.  Seems to be an optimization for handling BBox on
 dnl # the stack, which is not being aligned-16?  Haven't a clue why
 dnl # it only crashes with multi-threads.
 if test $OSNAME = Win32; then
-    CFLAGS_S="-O2 $c_flags $PTHREADOPT"
-    CFLAGS_SG="-O2 -g $c_flags $PTHREADOPT"
+    CFLAGS_S="-O2 $c_flags"
+    CFLAGS_SG="-O2 -g $c_flags"
 else
-    CFLAGS_S="-O3 $c_flags $PTHREADOPT"
-    CFLAGS_SG="-O3 -g $c_flags $PTHREADOPT"
+    CFLAGS_S="-O3 $c_flags"
+    CFLAGS_SG="-O3 -g $c_flags"
 fi
-CFLAGSG="-O -g $c_flags $PTHREADOPT"
-CFLAGS="-O $c_flags $PTHREADOPT"
+CFLAGSG="-O -g $c_flags"
+CFLAGS="-O $c_flags"
 
 if test $valgrind = yes; then
    dnl # Minimal optimization for memory leak debugging
@@ -749,7 +732,6 @@ if test $OSNAME = "Win32"; then
     AC_CHECK_LIB(tiff, main)
     AC_CHECK_LIB(tiff, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBTIFF"
           IMG_LIBS="$IMG_LIBS -ltiff")
-    IMG_INCLUDES="-I/usr/local/include"
     LDFLAGS=$zzldflags
     MSLIBS=
     if test z"$mingwlib" != z; then
@@ -797,11 +779,6 @@ else
     if test "$ac_x_libraries" != ""; then
         LDFLAGS="$LDFLAGS -L$ac_x_libraries"
     fi
-    if test $m64 = yes; then
-        LDFLAGS="$LDFLAGS -L/usr/local/m64/lib"
-    else
-        LDFLAGS="$LDFLAGS -L/usr/local/lib"
-    fi
     AC_CHECK_LIB(X11, main)
     AC_CHECK_LIB(Xext, main)
     gxi=`${gtklocd}pkg-config --libs gtk+-2.0 | grep lXi`
@@ -809,7 +786,7 @@ else
         AC_CHECK_LIB(Xi, main)
     fi
 
-    IMG_INCLUDES="-I/usr/local/include -I/usr/X11R6/include"
+    IMG_INCLUDES="-I/usr/X11R6/include"
     IMG_LIBS=
     IMG_FLAGS=
 
@@ -871,11 +848,11 @@ dnl  Try to link static graphics libraries if found.
     DYNAMIC_LIBS="-DDYNAMIC_LIBS"
     LIBS=$tmplibs1
 
-    if test "$ac_x_libraries" != ""; then
+    if test -n "$ac_x_libraries"; then
         largs="$largs -L$ac_x_libraries"
     fi
 
-    if test x"$largs" != x; then
+    if test -n "$largs"; then
         LIBS="$largs $LIBS"
     fi
     if test ${OSNAME:0:5} = Linux; then
