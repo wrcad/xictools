@@ -745,7 +745,14 @@ if test $OSNAME = "Win32"; then
     LIBS="$MSLIBS $MSLIBS2 $LIBS"
     NTREGEX='$(LPATH)/miscutil/libregex/libregex.a'
     EXTRALIBS="-lpthread"
+
+dnl # png.h is in a strange place under win-builds
+    if test -d /usr/local/win-builds/include/libpng14; then
+        IMG_INCLUDES="-I/usr/local/win-builds/include/libpng14"
+    fi
+
 elif test $OSNAME = "Darwin64"; then
+dnl # XXX point to /opt/include instead of gtk2-bundle
     if test $with_quartz = yes; then
         LIBS=-L/usr/local/gtk2-bundle/lib
         IMG_LIBS=-L/usr/local/gtk2-bundle/lib
