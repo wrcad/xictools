@@ -12,6 +12,10 @@ SUBDIRS = xt_base secure $(WRSPICE) $(XIC) xt_accs
 #######################################################################
 # Configuration
 
+# Force 32-bit build on x86_64 Linux systems.
+#
+#32BIT = --enable-force32=yes
+
 # OpenAccess support, Linux only, OS X experimental.
 # If you have an OpenAccess source tree, specify its location in this
 # variable and uncomment.  This enables OpenAccess support in Xic.
@@ -41,7 +45,7 @@ SUBDIRS = xt_base secure $(WRSPICE) $(XIC) xt_accs
 ACONF  = autoconf
 
 #######################################################################
-CFARGS = $(OALOC) $(KITLOC) $(MINGW) $(GTKLOC)
+CFARGS = $(32BIT) $(OALOC) $(KITLOC) $(MINGW) $(GTKLOC)
 
 FLAGFILE = .configured
 

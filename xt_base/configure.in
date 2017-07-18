@@ -10,15 +10,25 @@ dnl ***
 AC_INIT(configure)
 
 linux32=no
+linux32_64=no
 if test "`uname -m`" = i686; then
     linux32=yes;
 fi
 
-dnl Override hack for 32-bit build on x86_64 machine.
-linux32_64=no
+dnl --enable-force32
+dnl Force 32-bit build on 64-bit systems.
+force32="no"
+AC_ARG_ENABLE(force32,
+    [  ]--enable-force32        force 32-bit build,
+if test $enable_force32 = yes; then
+    force32="yes"
+fi
+)
+
+dnl Set the -m32 flag to build for 32-bits, which is GNU-specific.
 if test $linux32 = no; then
     if test "`uname -m`" = x86_64; then
-        if test -f BUILD-32; then
+        if test $force32 = yes; then
             CC="gcc -m32 -march=i686"
             CXX="g++ -m32 -march=i686"
             GCC=yes
@@ -28,7 +38,6 @@ if test $linux32 = no; then
         fi
     fi
 fi
-
 
 DATE=`/bin/date`
 if test -d ../wrspice; then
@@ -366,50 +375,64 @@ dnl  Upper-case the first letter of oname.
         major=$3
         minor=$4
 
-        # RedHat/CentOS
-        # Supported 7_64, 6_64, 5_64, 5_32
-        if test x$major == x7; then
-            if test $linux32 == yes; then
-                OSNAME="LinuxRHEL7"
-                ARCH="i686"
-                lib_dirs="/usr/lib /usr/local/lib"
-            else
-                OSNAME="LinuxRHEL7_64"
-                ARCH="x86_64"
-                lib_dirs="/usr/lib64 /usr/local/lib64"
-            fi
-            with_psf_ok=yes
-        elif test x$major == x6; then 
-            if test $linux32 == yes; then
-                OSNAME="LinuxRHEL6"
-                ARCH="i686"
-                lib_dirs="/usr/lib /usr/local/lib"
-            else
-                OSNAME="LinuxRHEL6_64"
-                ARCH="x86_64"
-                lib_dirs="/usr/lib64 /usr/local/lib64"
-            fi
-            with_psf_ok=yes
-        elif test x$major == x5; then 
-            if test $linux32 == yes; then
-                OSNAME="LinuxRHEL5"
-                ARCH="i686"
-                ac_x_libraries=/usr/X11R6/lib
-            else
-                OSNAME="LinuxRHEL5_64"
-                ARCH="x86_64"
-                lib_dirs="/usr/lib64 /usr/local/lib64"
-                largs="-L/usr/local/lib64"
-            fi
-        else
-            if test $linux32 == yes; then
-                OSNAME="Linux$oname$major"
-                ARCH="i686"
-            else
-                OSNAME="Linux$oname${major}_64"
-                ARCH="x86_64"
-                lib_dirs="/usr/lib64"
-            fi
+        if test ! -z "$major"; then
+            # RedHat/CentOS/Fedora etc.
+            case $major in
+            1,2,3,4)
+                echo "Architecture too archaic, not supported."
+                exit
+                ;;
+            5)
+                if test $linux32 = yes; then
+                    OSNAME="LinuxRHEL5"
+                    ARCH="i686"
+                    ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
+                else
+                    OSNAME="LinuxRHEL5_64"
+                    ARCH="x86_64"
+                    lib_dirs="/usr/lib64 /usr/local/lib64"
+                    largs="-L/usr/local/lib64"
+                fi
+                ;;
+            6)
+                if test $linux32 = yes; then
+                    OSNAME="LinuxRHEL6"
+                    ARCH="i686"
+                    ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
+                    lib_dirs="/usr/lib /usr/local/lib"
+                else
+                    OSNAME="LinuxRHEL6_64"
+                    ARCH="x86_64"
+                    lib_dirs="/usr/lib64 /usr/local/lib64"
+                fi
+                with_psf_ok=yes
+                ;;
+            7)
+                if test $linux32 = yes; then
+                    OSNAME="LinuxRHEL7"
+                    ARCH="i686"
+                    ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
+                    lib_dirs="/usr/lib /usr/local/lib"
+                else
+                    OSNAME="LinuxRHEL7_64"
+                    ARCH="x86_64"
+                    lib_dirs="/usr/lib64 /usr/local/lib64"
+                fi
+                with_psf_ok=yes
+                ;;
+            *)
+                if test $linux32 = yes; then
+                    OSNAME="Linux$oname$major"
+                    ARCH="i686"
+                    ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
+                    lib_dirs="/usr/lib /usr/local/lib"
+                else
+                    OSNAME="Linux$oname${major}_64"
+                    ARCH="x86_64"
+                    lib_dirs="/usr/lib64 /usr/local/lib64"
+                fi
+                ;;
+            esac
         fi
     else
 dnl  Need Debian/Ubuntu, etc.
@@ -426,7 +449,7 @@ dnl  Need Debian/Ubuntu, etc.
     INSTALL='$(LPATH)/util/install-sh'
     lib_dirs="$lib_dirs $ac_x_libraries"
     SOEXT=so
-    if test -f BUILD-32; then
+    if test $linux32=yes; then
         oa_lpath=$oa_loc/lib/linux_32/opt
     else
         oa_lpath=$oa_loc/lib/linux_64/opt
@@ -794,7 +817,7 @@ dnl  Try to link static graphics libraries if found.
 
     AC_CHECK_LIB(png, main)
     AC_CHECK_LIB(png, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBPNG"
-    if test $linux32 == yes; then
+    if test $linux32 = yes; then
         if test -f /usr/lib/libpng.a; then
             IMG_LIBS="$IMG_LIBS /usr/lib/libpng.a"
         else
@@ -810,7 +833,7 @@ dnl  Try to link static graphics libraries if found.
 
     AC_CHECK_LIB(jpeg, main)
     AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
-    if test $linux32 == yes; then
+    if test $linux32 = yes; then
         if test -f /usr/lib/libjpeg.a; then
             IMG_LIBS="$IMG_LIBS /usr/lib/libjpeg.a"
         else
@@ -826,7 +849,7 @@ dnl  Try to link static graphics libraries if found.
 
     AC_CHECK_LIB(tiff, main)
     AC_CHECK_LIB(tiff, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBTIFF"
-    if test $linux32 == yes; then
+    if test $linux32 = yes; then
         if test -f /usr/lib/libtiff.a; then
             IMG_LIBS="$IMG_LIBS /usr/lib/libtiff.a"
         else
@@ -855,7 +878,7 @@ dnl  Try to link static graphics libraries if found.
     if test x"$largs" != x; then
         LIBS="$largs $LIBS"
     fi
-    if test ${OSNAME:0:5} == Linux; then
+    if test ${OSNAME:0:5} = Linux; then
         AC_CHECK_LIB(pthread, main, EXTRALIBS="$EXTRALIBS -lpthread")
         AC_CHECK_LIB(dl, main, EXTRALIBS="$EXTRALIBS -ldl")
         AC_CHECK_LIB(X11, main, EXTRALIBS="$EXTRALIBS -lX11")
