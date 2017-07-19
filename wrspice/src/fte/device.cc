@@ -52,6 +52,7 @@ Authors: 1986 Wayne A. Christopher
 #include <dirent.h>
 #ifdef WIN32
 #include <windows.h>
+#include <libiberty.h>  // provides vasprintf
 #else
 #include <dlfcn.h>
 #endif
@@ -1170,12 +1171,6 @@ namespace {
         return (true);
     }
 }
-
-
-#ifdef WIN32
-// in libiberty.a
-extern "C" int vasprintf(char**, const char*, va_list);
-#endif
 
 
 // This is exported to the device library, to avoid exporting the

@@ -55,6 +55,7 @@
 #ifdef WIN32
 #include <windows.h>
 #include <process.h>
+#include <libiberty.h>
 #endif
 #include "graphics.h"
 #include "lstring.h"
@@ -440,12 +441,6 @@ GRpkg::RegisterErrorCallback(GRerrorCallback cb)
 }
 
 
-#ifdef WIN32
-// in libiberty.a
-extern "C" int vasprintf(char**, const char*, va_list);
-#endif
-
-
 #define GR_ERR_BUFSIZE 8192
 
 // General error printing function, uses a window if possible.
@@ -454,8 +449,7 @@ void
 GRpkg::ErrPrintf(Etype type, const char *fmt, ...)
 {
 #ifdef HAVE_VASPRINTF
-    // FreeBSD and Linux have this, it is in mingw library but not
-    // header so I don't trust it.
+    // This is provided by libiberty in MINGW.
     va_list args;
     const char *pfx = 0;
     bool to_stdout = false;

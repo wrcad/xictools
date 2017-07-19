@@ -57,6 +57,7 @@ Authors: 1988 Wayne A. Christopher
 extern int StateInitialized;  // security
 #ifdef WIN32
 #include "msw.h"
+#include <libiberty.h>  // provides vasprintf
 #endif
 #endif
 #include <stdarg.h>
@@ -1170,12 +1171,6 @@ namespace {
         return (true);
     }
 }
-
-
-#ifdef WIN32
-// in libiberty.a
-extern "C" int vasprintf(char**, const char*, va_list);
-#endif
 
 
 // error():             Output an error or warning message.

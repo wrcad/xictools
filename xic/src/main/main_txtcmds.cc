@@ -4269,7 +4269,7 @@ bangcmds::ldshared(const char *s)
     if (!winldtab)
         winldtab = new SymTab(true, false);
     else {
-        handle = (HINSTANCE)winldtab->get(path);
+        handle = (HINSTANCE)SymTab::get(winldtab, path);
         if (handle == (HINSTANCE)ST_NIL)
             handle = 0;
         else {
