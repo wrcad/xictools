@@ -195,31 +195,31 @@ struct Ylist
     static Ylist *connected(Ylist*, Zlist**);
     static Ylist *remove_backg(Ylist*, const BBox*);
     static void scanlines(const Ylist*, const Ylist*, intDb&);
-    static Ylist *slice(Ylist*, const int*, int) throw (XIrt);
-    static Zlist *repartition(Ylist*) throw (XIrt);
+    static Ylist *slice(Ylist*, const int*, int) THROW_XIrt;
+    static Zlist *repartition(Ylist*) THROW_XIrt;
     static Zlist *repartition_ni(Ylist*);
-    static Ylist *repartition_group(Ylist*) throw (XIrt);
+    static Ylist *repartition_group(Ylist*) THROW_XIrt;
     static bool merge_end_row(Ylist*, Ylist*);
     static Ylist *filter_slivers(Ylist*, int = 0);
-    static Zlist *clip_to_self(Ylist*) throw (XIrt);
+    static Zlist *clip_to_self(Ylist*) THROW_XIrt;
     static Zlist *clip_to_zoid(const Ylist*, const Zoid*);
-    static Zlist *clip_to_ylist(const Ylist*, const Ylist*) throw (XIrt);
-    static Zlist *clip_out_self(const Ylist*) throw (XIrt);
+    static Zlist *clip_to_ylist(const Ylist*, const Ylist*) THROW_XIrt;
+    static Zlist *clip_out_self(const Ylist*) THROW_XIrt;
     static Ylist *clip_out_zoid(Ylist*, const Zoid*);
-    static Zlist *clip_out_ylist(const Ylist*, const Ylist*) throw (XIrt);
+    static Zlist *clip_out_ylist(const Ylist*, const Ylist*) THROW_XIrt;
 
-    static Ylist *scl_clip_to_ylist(Ylist*, Ylist*) throw (XIrt);
-    static Ylist *scl_clip_out_self(Ylist*) throw (XIrt);
-    static Ylist *scl_clip_out_ylist(Ylist*, Ylist*) throw (XIrt);
-    static Ylist *scl_clip_out2_ylist(Ylist*, Ylist**) throw (XIrt);
-    static Ylist *scl_clip_xor_ylist(Ylist*, Ylist*) throw (XIrt);
+    static Ylist *scl_clip_to_ylist(Ylist*, Ylist*) THROW_XIrt;
+    static Ylist *scl_clip_out_self(Ylist*) THROW_XIrt;
+    static Ylist *scl_clip_out_ylist(Ylist*, Ylist*) THROW_XIrt;
+    static Ylist *scl_clip_out2_ylist(Ylist*, Ylist**) THROW_XIrt;
+    static Ylist *scl_clip_xor_ylist(Ylist*, Ylist*) THROW_XIrt;
     static bool debug(Ylist*);
     bool debug_row();
 
     static void remove_common(Ylist**, Ylist**);
 
 private:
-    static void col_row_merge(Ylist *yl) throw (XIrt)
+    static void col_row_merge(Ylist *yl) THROW_XIrt
         {
             if (!yl)
                 return;
@@ -271,8 +271,8 @@ private:
         }
 
     // geo_ylist.cc
-    bool merge_rows() throw (XIrt);
-    bool merge_cols() throw (XIrt);
+    bool merge_rows() THROW_XIrt;
+    bool merge_cols() THROW_XIrt;
     Ylist *find_bottom(geo_ylist::topoly_t*);
     Ylist *find_top(geo_ylist::topoly_t*);
     Ylist *find_left(geo_ylist::topoly_t*);
@@ -297,7 +297,7 @@ public:
 // Static function.
 //
 inline Zlist *
-Zlist::repartition(Zlist *z0) throw (XIrt)
+Zlist::repartition(Zlist *z0) THROW_XIrt
 {
     if (!z0 || !z0->next)
         return (z0);

@@ -4514,6 +4514,7 @@ namespace {
     };
 
 
+    /*** Unused presently.
     // Handle shell termination, this will shut down the idle proc if
     // active, e.g., user immediately closed the window before giving
     // a password.
@@ -4527,6 +4528,7 @@ namespace {
         }
         delete p;
     }
+    ***/
 
 
     // Idle proc, check for timeout, data availability.  If the
@@ -4668,13 +4670,11 @@ bangcmds::ssh(const char *s)
     char hostname[256];
     if (gethostname(hostname, 256) == 0) {
 
-//#define XXX_SSH_CB
-#ifdef XXX_SSH_CB
-// The call back with the DISPLAY value through an ephemeral port is
-// disabled here.  Seems that this port is most likely blocked, which
-// causes trouble.  There must be a way to get the DISPLAY without
-// user intervention!
+// Comment this to disable the automatic callback to set the
+// SpiceHostDisplay variable.
+#define SSH_CALLBACK
 
+#ifdef SSH_CALLBACK
         skt = socket(AF_INET, SOCK_STREAM, 0);
         if (skt > 0) {
             sockaddr_in sin;
@@ -4762,11 +4762,16 @@ bangcmds::ssh(const char *s)
         ssh_pill_t *p = new ssh_pill_t(::time(0), skt);
         int id = dspPkgIf()->RegisterIdleProc(&ssh_idle_proc, p);
         p->idle_id = id;
-        Proc()->RegisterChildHandler(pid, &ssh_child_proc, p);
+
+        // We can't do this with gnome-terminal and possibly others. 
+        // The pid process apparently sub-forks and exits immediately,
+        // calling the handler prematurely and breaking everything. 
+        // The time-out should provide adequate clean-up.
+        //
+        // Proc()->RegisterChildHandler(pid, &ssh_child_proc, p);
     }
     else
         PL()->ShowPrompt("Can't get remote DISPLAY, SpiceHostDisplay not set.");
-        
 }
 
 

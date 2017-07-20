@@ -539,7 +539,7 @@ Ylist::scanlines(const Ylist *thisyl, const Ylist *y1, intDb &idb)
 // consumed.  The scans array is sorted ascending.
 //
 Ylist *
-Ylist::slice(Ylist *thisyl, const int *scans, int nscans) throw (XIrt)
+Ylist::slice(Ylist *thisyl, const int *scans, int nscans) THROW_XIrt
 {
     if (!thisyl)
         return (0);
@@ -598,7 +598,7 @@ Ylist::slice(Ylist *thisyl, const int *scans, int nscans) throw (XIrt)
 // On interrupt, 'this' is freed.
 //
 Zlist *
-Ylist::repartition(Ylist *thisyl) throw (XIrt)
+Ylist::repartition(Ylist *thisyl) THROW_XIrt
 {
     TimeDbgAccum ac("repartition");
 
@@ -677,7 +677,7 @@ Ylist::repartition_ni(Ylist *thisyl)
 // On interrupt, 'this' is freed.
 //
 Ylist *
-Ylist::repartition_group(Ylist *thisyl) throw (XIrt)
+Ylist::repartition_group(Ylist *thisyl) THROW_XIrt
 {
     // Check trivial cases.
     Ylist *y0 = thisyl;
@@ -822,7 +822,7 @@ Ylist::filter_slivers(Ylist *thisyl, int d)
 // below.  No zoid is clipped more than once.
 //
 Zlist *
-Ylist::clip_to_self(Ylist *thisyl) throw (XIrt)
+Ylist::clip_to_self(Ylist *thisyl) THROW_XIrt
 {
     if (!thisyl)
         return (0);
@@ -907,7 +907,7 @@ Ylist::clip_to_zoid(const Ylist *thisyl, const Zoid *Z)
 // once.  See note for Ylist::clip_to(Zoid*).
 //
 Zlist *
-Ylist::clip_to_ylist(const Ylist *thisyl, const Ylist *yl0) throw (XIrt)
+Ylist::clip_to_ylist(const Ylist *thisyl, const Ylist *yl0) THROW_XIrt
 {
     Ymgr ym(yl0);
     Zlist *z0 = 0, *ze = 0;
@@ -957,7 +957,7 @@ Ylist::clip_to_ylist(const Ylist *thisyl, const Ylist *yl0) throw (XIrt)
 // This should be faster than calling scl_clip_out directly.
 //
 Zlist *
-Ylist::clip_out_self(const Ylist *thisyl) throw (XIrt)
+Ylist::clip_out_self(const Ylist *thisyl) THROW_XIrt
 {
     Zlist *z0 = 0;
     try {
@@ -1105,7 +1105,7 @@ Ylist::clip_out_zoid(Ylist *thisyl, const Zoid *Z)
 // all-angles.  Ylists are not touched.
 //
 Zlist *
-Ylist::clip_out_ylist(const Ylist *thisyl, const Ylist *yr) throw (XIrt)
+Ylist::clip_out_ylist(const Ylist *thisyl, const Ylist *yr) THROW_XIrt
 {
     Zlist *z0 = 0;
     try {
@@ -1199,7 +1199,7 @@ namespace {
     // Compute all the scan lines for the two lists and cross terms,
     // and slice the two lists at the scans.
     //
-    void slice_scans(Ylist **pyl, Ylist **pyr) throw (XIrt)
+    void slice_scans(Ylist **pyl, Ylist **pyr) THROW_XIrt
     {
         TimeDbgAccum ac("slice_scans");
 
@@ -1248,7 +1248,7 @@ namespace {
 // scan-line clip-to is much faster.
 //
 Ylist *
-Ylist::scl_clip_to_ylist(Ylist *thisyl, Ylist *y) throw (XIrt)
+Ylist::scl_clip_to_ylist(Ylist *thisyl, Ylist *y) THROW_XIrt
 {
     Ylist *y0 = thisyl;
     Ylist *yb = y;
@@ -1363,7 +1363,7 @@ namespace {
 // list is destroyed.
 //
 Ylist *
-Ylist::scl_clip_out_self(Ylist *thisyl) throw (XIrt)
+Ylist::scl_clip_out_self(Ylist *thisyl) THROW_XIrt
 {
     Ylist *y0 = thisyl;
     if (!y0)
@@ -1509,7 +1509,7 @@ namespace {
 // directly, for performance reasons.
 //
 Ylist *
-Ylist::scl_clip_out_ylist(Ylist *thisyl, Ylist *y) throw (XIrt)
+Ylist::scl_clip_out_ylist(Ylist *thisyl, Ylist *y) THROW_XIrt
 {
     Ylist *y0 = thisyl;
     Ylist *yb = y;
@@ -1557,7 +1557,7 @@ Ylist::scl_clip_out_ylist(Ylist *thisyl, Ylist *y) throw (XIrt)
 // As above, but also return y - this in *py.
 //
 Ylist *
-Ylist::scl_clip_out2_ylist(Ylist *thisyl, Ylist **py) throw (XIrt)
+Ylist::scl_clip_out2_ylist(Ylist *thisyl, Ylist **py) THROW_XIrt
 {
     Ylist *y0 = thisyl;
     Ylist *y1 = *py;
@@ -1646,7 +1646,7 @@ namespace {
 // this and the passed list are destroyed.
 //
 Ylist *
-Ylist::scl_clip_xor_ylist(Ylist *thisyl, Ylist *y) throw (XIrt)
+Ylist::scl_clip_xor_ylist(Ylist *thisyl, Ylist *y) THROW_XIrt
 {
     Ylist *y0 = thisyl;
     Ylist *yb = y;
@@ -1765,7 +1765,7 @@ Ylist::debug_row()
 // freed.
 //
 bool
-Ylist::merge_rows() throw (XIrt)
+Ylist::merge_rows() THROW_XIrt
 {
     bool change = false;
     for (Ylist *y = this; y; y = y->next) {
@@ -1798,7 +1798,7 @@ Ylist::merge_rows() throw (XIrt)
 // freed.
 //
 bool
-Ylist::merge_cols() throw (XIrt)
+Ylist::merge_cols() THROW_XIrt
 {
     bool change = false;
     for (Ylist *y = this; y; y = y->next) {

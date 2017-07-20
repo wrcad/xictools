@@ -208,7 +208,7 @@ Zlist::sort(Zlist *thiszl, int mode)
 //
 //
 Zlist *
-Zlist::bloat(const Zlist *thiszl, int delta, int blflags) throw (XIrt)
+Zlist::bloat(const Zlist *thiszl, int delta, int blflags) THROW_XIrt
 {
     if (!thiszl)
         return (0);
@@ -488,7 +488,7 @@ Zlist::bloat(const Zlist *thiszl, int delta, int blflags) throw (XIrt)
 // polygons formed from this.  'this' is untouched.
 //
 Zlist *
-Zlist::halo(const Zlist *thiszl, int delta) throw (XIrt)
+Zlist::halo(const Zlist *thiszl, int delta) THROW_XIrt
 {
     if (!thiszl)
         return (0);
@@ -539,7 +539,7 @@ Zlist::halo(const Zlist *thiszl, int delta) throw (XIrt)
 // non-Manhattan.  'this' is untouched.
 //
 Zlist *
-Zlist::edges(const Zlist *thiszl, int dim) throw (XIrt)
+Zlist::edges(const Zlist *thiszl, int dim) THROW_XIrt
 {
     if (dim == 0)
         return (copy(thiszl));
@@ -644,7 +644,7 @@ Zlist::edges(const Zlist *thiszl, int dim) throw (XIrt)
 // each joined polygon.  'this' is untouched.
 //
 Zlist *
-Zlist::wire_edges(const Zlist *thiszl, int delta) throw (XIrt)
+Zlist::wire_edges(const Zlist *thiszl, int delta) THROW_XIrt
 {
     if (!thiszl)
         return (0);

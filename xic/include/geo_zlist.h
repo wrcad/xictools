@@ -80,6 +80,10 @@ enum BLCtype { BLCclip, BLCflat, BLCextend, BLCextend1,
 #define TTLnoinsert     0x2
 #define TTLjoin         0x4
 
+// Deprecated in C++11
+// #define THROW_XIrt throw(XIrt)
+#define THROW_XIrt
+
 // List of zoids
 //
 struct Zlist
@@ -216,7 +220,7 @@ struct Zlist
         }
 
     // geo_ylist.h
-    inline static Zlist *repartition(Zlist*) throw (XIrt);
+    inline static Zlist *repartition(Zlist*) THROW_XIrt;
     inline static Zlist *repartition_ni(Zlist*);
 
     // geo_zlist,cc
@@ -225,10 +229,10 @@ struct Zlist
     static Zlist *filter_slivers(Zlist*, int = 0);
     static Zlist *filter_drc_slivers(Zlist*, int = 0);
     static Zlist *sort(Zlist*, int=0);
-    static Zlist *bloat(const Zlist*, int, int) throw (XIrt);
-    static Zlist *halo(const Zlist*, int) throw (XIrt);
-    static Zlist *edges(const Zlist*, int) throw (XIrt);
-    static Zlist *wire_edges(const Zlist*, int) throw (XIrt);
+    static Zlist *bloat(const Zlist*, int, int) THROW_XIrt;
+    static Zlist *halo(const Zlist*, int) THROW_XIrt;
+    static Zlist *edges(const Zlist*, int) THROW_XIrt;
+    static Zlist *wire_edges(const Zlist*, int) THROW_XIrt;
     static Zlist *manhattanize(Zlist*, int, int);
     static Zlist *transform(const Zlist*, cTfmStack*);
     static int linewidth(const Zlist*);
