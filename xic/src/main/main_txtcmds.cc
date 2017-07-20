@@ -4667,6 +4667,14 @@ bangcmds::ssh(const char *s)
     int skt = 0;
     char hostname[256];
     if (gethostname(hostname, 256) == 0) {
+
+//#define XXX_SSH_CB
+#ifdef XXX_SSH_CB
+// The call back with the DISPLAY value through an ephemeral port is
+// disabled here.  Seems that this port is most likely blocked, which
+// causes trouble.  There must be a way to get the DISPLAY without
+// user intervention!
+
         skt = socket(AF_INET, SOCK_STREAM, 0);
         if (skt > 0) {
             sockaddr_in sin;
@@ -4693,6 +4701,7 @@ bangcmds::ssh(const char *s)
             Errs()->sys_error("socket");
             Log()->WarningLogV("!ssh", emsg, Errs()->get_error());
         }
+#endif
     }
     else {
         Errs()->sys_error("gethostname");
@@ -4755,6 +4764,9 @@ bangcmds::ssh(const char *s)
         p->idle_id = id;
         Proc()->RegisterChildHandler(pid, &ssh_child_proc, p);
     }
+    else
+        PL()->ShowPrompt("Can't get remote DISPLAY, SpiceHostDisplay not set.");
+        
 }
 
 

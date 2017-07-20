@@ -534,8 +534,7 @@ miscutil::fork_terminal(const char *cmd)
         return (pid);
     }
 #else
-    // Stock RHEL6 does not have xterm installed.
-
+    // XTerm is not around much anymore.
     char *termpath = xterm_path();
     if (termpath) {
         int pid = fork();
@@ -558,7 +557,47 @@ miscutil::fork_terminal(const char *cmd)
         int pid = fork();
         if (pid < 0)
             return (0);
+
+#define NEW_GTERM
+#ifdef NEW_GTERM
+        stringlist *s0 = 0;
+        char **argv = 0;
         if (pid == 0) {
+            // This is the new preferred form:  use "--" followed by
+            // the command string.  This DOES NOT work if the command
+            // is passed as a single token, so we have to retokenize
+            // here.
+
+            stringlist *se = 0;
+            s0 = se = new stringlist(
+                lstring::copy(lstring::strip_path(gtpath)), 0);
+            se->next = new stringlist(lstring::copy("--"), 0);
+            se = se->next;
+
+            int tcnt = 2;
+            char *tok;
+            while ((tok = lstring::getqtok(&cmd)) != 0) {
+                se->next = new stringlist(tok, 0);
+                se = se->next;
+                tcnt++;
+            }
+            tcnt++;
+            argv = new char*[tcnt];
+            tcnt = 0;
+            for (stringlist *s = s0; s; s = s->next)
+                argv[tcnt++] = s->string;
+            argv[tcnt] = 0;
+            execv(gtpath, argv);
+            return (0);
+        }
+        delete [] argv;
+        stringlist::destroy(s0);
+        return (pid);
+#else
+        if (pid == 0) {
+            // This now generates a warning from gnome-terminal that
+            // "--command" is deprecated and may be removed.
+
             char *argv[4];
             argv[0] = (char*)lstring::strip_path(gtpath);
             argv[1] = (char*)"--command";
@@ -568,6 +607,8 @@ miscutil::fork_terminal(const char *cmd)
             return (0);
         }
         return (pid);
+#endif
+
     }
 #endif
     return (0);
