@@ -641,6 +641,7 @@ CKTdisto(sCKT *ckt, int mode)
                 *(ckt->CKTirhs + i) = 0;
             }
         }
+        // fallthrough
 
     case D_SETUP:
         {
@@ -656,6 +657,7 @@ CKTdisto(sCKT *ckt, int mode)
 
     case D_RHSF1:
          cv->Df2given = 0; // will change if any F2 source is found
+        // fallthrough
 
     case D_RHSF2:
         {

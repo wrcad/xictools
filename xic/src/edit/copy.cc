@@ -502,6 +502,7 @@ CopyState::key(int code, const char*, int)
             }
             return (true);
         }
+        break;
 
     case BSP_KEY:
     case DELETE_KEY:
@@ -1015,6 +1016,8 @@ cEdit::copy_call(int ref_x, int ref_y, int new_x, int new_y,
             case P_NAME:
                 if (mc == CDcopy)
                     break;
+                cdesc->prptyAddCopy(pdesc);
+                break;
             case P_RANGE:
             case P_BNODE:
             case P_MODEL:

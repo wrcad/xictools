@@ -392,7 +392,7 @@ lzwStream::getCode()
 int
 lzwStream::uncompressData()
 {
-    char msg_buf[256];
+    char msg_buf[300];
     lz_err_msg = 0;
 
     if (lz_zPipe == 0) {

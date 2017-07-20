@@ -142,6 +142,7 @@ cExtErrLog::add_log(ExtLogType type, const char *fmt, ...)
     case ExtLogGrpV:
         if (!el_verbose)
             return;
+        // fallthrough
     case ExtLogGrp:
         if (!el_log_grouping)
             return;
@@ -149,6 +150,7 @@ cExtErrLog::add_log(ExtLogType type, const char *fmt, ...)
     case ExtLogExtV:
         if (!el_verbose)
             return;
+        // fallthrough
     case ExtLogExt:
         if (!el_log_extracting)
             return;
@@ -156,6 +158,7 @@ cExtErrLog::add_log(ExtLogType type, const char *fmt, ...)
     case ExtLogAssocV:
         if (!el_verbose)
             return;
+        // fallthrough
     case ExtLogAssoc:
         if (!el_log_associating)
             return;

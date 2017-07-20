@@ -2095,10 +2095,11 @@ gds_in::a_libname()
 {
     if (in_mode == Electrical)
         return (true);
-    char buf2[256];
-    sprintf(buf2, "( LIBNAME %s )", in_cbuf);
+    char *tbf = new char[strlen(in_cbuf) + 16];
+    sprintf(tbf, "( LIBNAME %s )", in_cbuf);
     Attribute *h =
-        new Attribute(GDSII_PROPERTY_BASE + II_LIBNAME, in_cbuf, buf2);
+        new Attribute(GDSII_PROPERTY_BASE + II_LIBNAME, in_cbuf, tbf);
+    delete [] tbf;
     if (!in_sprops)
         in_sprops = h;
     else {
@@ -3318,10 +3319,11 @@ gds_in::a_attrtable()
         return (true);
     if (in_ignore_prop)
         return (true);
-    char buf2[256];
-    sprintf(buf2, "( ATTRIBUTE TABLE %s )", in_cbuf);
+    char *tbf = new char[strlen(in_cbuf) + 22];
+    sprintf(tbf, "( ATTRIBUTE TABLE %s )", in_cbuf);
     Attribute *h =
-        new Attribute(GDSII_PROPERTY_BASE + II_ATTRTABLE, in_cbuf, buf2);
+        new Attribute(GDSII_PROPERTY_BASE + II_ATTRTABLE, in_cbuf, tbf);
+    delete [] tbf;
     if (!in_sprops)
         in_sprops = h;
     else {

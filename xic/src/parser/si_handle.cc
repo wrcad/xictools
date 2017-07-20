@@ -430,6 +430,7 @@ sHdlUniq::test(sHdl *hdl)
     case HDLscontact:
         if (hu_type == hdl->type)
             break;
+        // fallthrough
     default:
         return (false);
     }

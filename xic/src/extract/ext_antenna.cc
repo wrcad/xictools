@@ -120,7 +120,7 @@ ant_pathfinder::find_antennae(CDs *sdesc)
 // extract the net connected to the gate, and other connected gates.
 //
 bool
-ant_pathfinder::find_antennae_rc(CDs *sdesc, int depth) throw(int)
+ant_pathfinder::find_antennae_rc(CDs *sdesc, int depth) THROW_int
 {
     if (!sdesc) {
         Errs()->add_error("find_antennae_rc: null cell pointer!");

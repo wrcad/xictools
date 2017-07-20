@@ -1281,7 +1281,7 @@ cDisplay::HliteElecTerm(bool display, const CDp_node *pn, const CDc *cdesc,
             sMark *mp = 0, *mn;
             for (sMark *mm = MK.hlite_list; mm; mm = mn) {
                 mn = mm->mNext;
-                if (mm->mType == symb ? MARK_STERM : MARK_ETERM &&
+                if (mm->mType == (symb ? MARK_STERM : MARK_ETERM) &&
                         mm->mX == x && mm->mY == y &&
                         mm->mColor == SelectColor) {
                     if (!mp)
@@ -1345,7 +1345,7 @@ cDisplay::HliteElecBsc(bool display, const CDp_bsnode *pn)
             sMark *mp = 0, *mn;
             for (sMark *mm = MK.hlite_list; mm; mm = mn) {
                 mn = mm->mNext;
-                if (mm->mType == symb ? MARK_STERM : MARK_ETERM &&
+                if (mm->mType == (symb ? MARK_STERM : MARK_ETERM) &&
                         mm->mX == x && mm->mY == y &&
                         mm->mColor == SelectColor) {
                     if (!mp)

@@ -118,10 +118,17 @@ struct sExtPermGrp : private sExtPermGrpB
         {
             unsigned ns = 1;
             switch (pg_num) {
-                case 2: ns = 2;
-                case 3: ns = 6;
-                case 4: ns = 24;
-                default: break;
+                case 2:
+                    ns = 2;
+                    break;
+                case 3:
+                    ns = 6;
+                    break;
+                case 4:
+                    ns = 24;
+                    break;
+                default:
+                    break;
             }
             if (pg_next)
                 ns *= pg_next->num_states();

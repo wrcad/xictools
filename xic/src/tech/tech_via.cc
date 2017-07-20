@@ -37,7 +37,7 @@
 // Support for Standard Vias.
 //
 
-#define STV_DEBUG
+//#define STV_DEBUG
 
 // Link the sv content into the table.  This is called when reading
 // tech data.  The sStdVia requires a name for linking.  If there is a
@@ -669,7 +669,7 @@ sStdVia::reset()
     clear_variations();
     open();
 #ifdef STV_DEBUG
-    printf("reset %s, %x\n", sv_name, sv_sdesc);
+    printf("reset %s, %p\n", sv_name, sv_sdesc);
 #endif
 }
 

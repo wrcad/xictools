@@ -642,7 +642,7 @@ cGroupDesc::ep_hier_comp_rc(int grp, int node)
 // the score.
 //
 int
-cGroupDesc::ep_param_comp(sDevInst *di, const sEinstList *el) throw (XIrt)
+cGroupDesc::ep_param_comp(sDevInst *di, const sEinstList *el) THROW_XIrt
 {
     bool do_comp = false;
     for (sMeasure *m = di->desc()->measures(); m; m = m->next()) {
@@ -688,7 +688,7 @@ cGroupDesc::ep_param_comp(sDevInst *di, const sEinstList *el) throw (XIrt)
 //
 int
 cGroupDesc::ep_param_comp_core(sDevInst *di, const double *leadval,
-    sParamTab *ptab) throw (XIrt)
+    sParamTab *ptab) THROW_XIrt
 {
     int tot = 0;
     int cnt = 0;

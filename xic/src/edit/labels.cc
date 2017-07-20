@@ -1246,8 +1246,8 @@ LabelState::key(int code, const char*, int mstate)
             if (DSP()->CurMode() == Electrical)
                 ScedIf()->PopUpNodeMap(0, MODE_UPD);
             XM()->ShowParameters();
-            return (true);
         }
+        return (true);
 
     case LEFT_KEY:
         if (mstate & GR_CONTROL_MASK) {

@@ -2141,10 +2141,13 @@ GTKprintPopup::hc_do_go(gtk_bag *wb)
                 break;
             case PSlucida:
                 fontcode++;
+                // fallthrough
             case PScentury:
                 fontcode++;
+                // fallthrough
             case PShelv:
                 fontcode++;
+                // fallthrough
             case PStimes:
                 text = wb->GetPostscriptText(fontcode, 0, 0, true,
                     hc->hc_metric);

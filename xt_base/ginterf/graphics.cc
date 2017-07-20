@@ -457,20 +457,24 @@ GRpkg::ErrPrintf(Etype type, const char *fmt, ...)
     default:
     case ET_MSGS:
         to_stdout = true;
+        // fallthrough
     case ET_MSG:
         break;
     case ET_WARNS:
         to_stdout = true;
+        // fallthrough
     case ET_WARN:
         pfx = "Warning: ";
         break;
     case ET_ERRORS:
         to_stdout = true;
+        // fallthrough
     case ET_ERROR:
         pfx = "Error: ";
         break;
     case ET_INTERRS:
         to_stdout = true;
+        // fallthrough
     case ET_INTERR:
         pfx = "Internal error: ";
         break;

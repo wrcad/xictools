@@ -178,16 +178,8 @@ unsigned int
 incr_hash(unsigned int k, T *v)
 {
     unsigned char *s = (unsigned char*)v;
-    switch (sizeof(T)) {
-        case 8: k = ((k << 5) + k) ^ *s++;
-        case 7: k = ((k << 5) + k) ^ *s++;
-        case 6: k = ((k << 5) + k) ^ *s++;
-        case 5: k = ((k << 5) + k) ^ *s++;
-        case 4: k = ((k << 5) + k) ^ *s++;
-        case 3: k = ((k << 5) + k) ^ *s++;
-        case 2: k = ((k << 5) + k) ^ *s++;
-        case 1: k = ((k << 5) + k) ^ *s++;
-    }
+    for (int i = sizeof(T); i > 0; i--)
+        k = ((k << 5) + k) ^ *s++;
     return (k);
 }
 

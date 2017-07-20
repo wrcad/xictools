@@ -2094,6 +2094,7 @@ cPromptEdit::key_handler(int code, const char *txt, int mstate)
             }
             draw_cursor(DRAW);
         }
+        return (true);
 
     case HOME_KEY:
         return (false);

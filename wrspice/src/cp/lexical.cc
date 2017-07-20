@@ -824,6 +824,7 @@ CshPar::Lexer(const char *string)
                         case '<':
                             if (i > 1 && buf[i-2] == '$')
                                 break;
+                            // fallthrough
 
                         case '>':
                             d = c;
@@ -903,6 +904,7 @@ CshPar::Prompt()
                 *t++ = STRIP(*++ps);
                 *t = '\0';
             }
+            // fallthrough
 
         // -p prints cwd
         case '-':
@@ -915,6 +917,7 @@ CshPar::Prompt()
                 ps++;
                 break;
             }
+            // fallthrough
         default:
             char *t = buf + strlen(buf);
             *t++ = *ps;

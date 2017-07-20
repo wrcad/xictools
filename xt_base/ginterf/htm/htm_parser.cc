@@ -655,8 +655,8 @@ htmParser::parseHTML()
                         delete [] msg;
                     }
                     chPtr = tmpE;
-                    // fall thru
                 }
+                // fallthrough
 
                 case '>':
                     // go and store the element
@@ -1493,7 +1493,7 @@ htmParser::checkElementOccurance(htmlEnum current, htmlEnum state)
     case HT_A:
         if (state == HT_A)
             return (-1);  // no nested anchors
-        // fall thru, all these elements may occur in the given context
+        // fallthrough
     case HT_FONT:
     case HT_APPLET:
     case HT_B:
@@ -1770,7 +1770,7 @@ htmParser::checkElementContent(htmlEnum current, htmlEnum state)
     case HT_ADDRESS:
         if (current == HT_P)
             return (true);
-        // fall thru, these elements are also allowed
+        // fallthrough
     case HT_CAPTION:
     case HT_CITE:
     case HT_DFN:

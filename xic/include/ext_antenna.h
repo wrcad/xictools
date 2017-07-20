@@ -29,6 +29,9 @@
 #include "ext_pathfinder.h"
 #include "cd_netname.h"
 
+// Deprecated in C++11
+// #define THROW_int throw(int)
+#define THROW_int
 
 inline class cAntParams *AP();
 
@@ -266,7 +269,7 @@ struct ant_pathfinder : public pathfinder, public cTfmStack
     void set_output(FILE *fp) { pf_outfp = fp; }
 
     bool find_antennae(CDs*);
-    bool find_antennae_rc(CDs*, int) throw(int);
+    bool find_antennae_rc(CDs*, int) THROW_int;
     void process(const sDevContactInst*);
 
     static bool read_file(int*, BBox*);

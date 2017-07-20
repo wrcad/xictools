@@ -1350,7 +1350,7 @@ cMRouter::cmdRipUp(const char *cmd)
                 ripupNet(net, true);
                 cnt++;
             }
-            char buf[8];
+            char buf[64];
             sprintf(buf, "%d nets ripped up.", cnt);
             db->setDoneMsg(lddb::copy(buf));
         }

@@ -2229,6 +2229,7 @@ cMRouter::route_segs(mrRouteInfo *iroute, mrStage stage, bool graphdebug)
                 switch (check_order[i]) {
                 case EAST | PR_CONFLICT:
                     predecessor = PR_CONFLICT;
+                    // fallthrough
                 case EAST:
                     predecessor |= PR_PRED_W;
                     if ((curpt.x + 1) < numChannelsX(curpt.lay)) {
@@ -2244,6 +2245,7 @@ printf("RSa %d %d %d\n", curpt.x+1, curpt.y, curpt.lay);
 
                 case WEST | PR_CONFLICT:
                     predecessor = PR_CONFLICT;
+                    // fallthrough
                 case WEST:
                     predecessor |= PR_PRED_E;
                     if ((curpt.x - 1) >= 0) {
@@ -2259,6 +2261,7 @@ printf("RSb %d %d %d\n", curpt.x-1, curpt.y, curpt.lay);
      
                 case SOUTH | PR_CONFLICT:
                     predecessor = PR_CONFLICT;
+                    // fallthrough
                 case SOUTH:
                     predecessor |= PR_PRED_N;
                     if ((curpt.y - 1) >= 0) {
@@ -2274,6 +2277,7 @@ printf("RSc %d %d %d\n", curpt.x, curpt.y-1, curpt.lay);
 
                 case NORTH | PR_CONFLICT:
                     predecessor = PR_CONFLICT;
+                    // fallthrough
                 case NORTH:
                     predecessor |= PR_PRED_S;
                     if ((curpt.y + 1) < numChannelsY(curpt.lay)) {
@@ -2289,6 +2293,7 @@ printf("RSd %d %d %d\n", curpt.x, curpt.y+1, curpt.lay);
   
                 case DOWN | PR_CONFLICT:
                     predecessor = PR_CONFLICT;
+                    // fallthrough
                 case DOWN:
                     predecessor |= PR_PRED_U;
                     if (curpt.lay > 0) {
@@ -2304,6 +2309,7 @@ printf("RSe %d %d %d\n", curpt.x, curpt.y, curpt.lay-1);
      
                 case UP | PR_CONFLICT:
                     predecessor = PR_CONFLICT;
+                    // fallthrough
                 case UP:
                     predecessor |= PR_PRED_D;
                     if (curpt.lay < ((int)numLayers() - 1)) {

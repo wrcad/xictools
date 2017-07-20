@@ -658,11 +658,12 @@ DRCresultParser::listFiles(const char *dir)
     while ((de = readdir(wdir)) != 0) {
         if (strncmp(de->d_name, prefix, strlen(prefix)))
             continue;
-        char fbuf[128];
-        sprintf(fbuf, "%s/%s", dir, de->d_name);
-        FILE *fp = fopen(fbuf, "r");
-        if (!fp)
+        char *fpath = pathlist::mk_path(dir, de->d_name);
+        FILE *fp = fopen(fpath, "r");
+        if (!fp) {
+            delete [] fpath;
             continue;
+        }
         // The cell name is the last word on the line.
         char buf[256];
         if (fgets(buf, 256, fp) && (t = buf + strlen(buf) - 1) > buf) {
@@ -674,12 +675,12 @@ DRCresultParser::listFiles(const char *dir)
             t++;
             if (!strcmp(t, DSP()->CurCellName()->string())) {
                 // avoid printing "./"
-                t = strrchr(fbuf, '/');
+                t = strrchr(fpath, '/');
                 char *fn;
                 if (t == buf + 2 && *(buf+1) == '.')
                     fn = lstring::copy(t+1);
                 else
-                    fn = lstring::copy(fbuf);
+                    fn = lstring::copy(fpath);
                 if (wl0 == 0)
                     wl = wl0 = new stringlist(fn, 0);
                 else {
@@ -688,6 +689,7 @@ DRCresultParser::listFiles(const char *dir)
                 }
             }
         }
+        delete [] fpath;
         fclose(fp);
     }
     closedir(wdir);

@@ -48,6 +48,10 @@ struct sLVSstat;
 struct sPermGrpList;
 struct RLsolver;
 
+// Deprecated in C++11
+// #define THROW_XIrt throw(XIrt)
+#define THROW_XIrt
+
 namespace ext_group {
     struct sGrpGen;
     struct sSubcLink;
@@ -2079,23 +2083,23 @@ private:
     void position_labels(cTfmStack*);
     void subcircuit_permutation_fix_rc(int);
     bool ident_node(int);
-    bool ident_dev(sDevList*, int, bool = false) throw (XIrt);
-    bool find_match(sDevList*, sDevComp&, bool) throw (XIrt);
+    bool ident_dev(sDevList*, int, bool = false) THROW_XIrt;
+    bool find_match(sDevList*, sDevComp&, bool) THROW_XIrt;
     bool ident_subckt(sSubcList*, int, bool = false, bool = false);
     bool find_match(sSubcList*, sSubcInst*, bool, bool);
     void ident_term_nodes(sDevInst*);
-    int solve_duals() throw (XIrt);
+    int solve_duals() THROW_XIrt;
     void check_split();
     bool check_global(int);
     bool check_unas_wire_only(int);
     bool check_associations(int);
-    bool break_symmetry() throw (XIrt);
+    bool break_symmetry() THROW_XIrt;
 
     // ext_ep_comp.cc
     int ep_hier_comp(int, int);
     int ep_hier_comp_rc(int, int);
-    int ep_param_comp(sDevInst*, const sEinstList*) throw (XIrt);
-    int ep_param_comp_core(sDevInst*, const double*, sParamTab*) throw (XIrt);
+    int ep_param_comp(sDevInst*, const sEinstList*) THROW_XIrt;
+    int ep_param_comp_core(sDevInst*, const double*, sParamTab*) THROW_XIrt;
     int ep_subc_comp(sSubcInst*, const sEinstList*, bool);
 
     // ext_extract.cc

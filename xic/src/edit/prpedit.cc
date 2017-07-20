@@ -1256,6 +1256,7 @@ PrptyState::prp_add_elec(Ptxt *line, int which, bool edit)
     case P_SYMBLC:
         if (!edit)
             break;
+        // fallthrough
     default:
         PL()->ShowPrompt("This property can not be edited.");
         return;

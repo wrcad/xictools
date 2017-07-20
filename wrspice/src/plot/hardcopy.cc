@@ -234,6 +234,7 @@ CommandTab::com_hardcopy(wordlist *wl)
             case 'l':
                 lands = true;
                 wl = wl->wl_next;
+                break;
             default:
                 fail = true;
             }

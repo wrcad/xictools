@@ -315,6 +315,7 @@ sPbase::update_display()
                         if (pn && pn->assigned_name())
                             cx = c3;
                     }
+                    // fallthrough
                 case P_RANGE:
                 case P_MODEL:
                 case P_VALUE:

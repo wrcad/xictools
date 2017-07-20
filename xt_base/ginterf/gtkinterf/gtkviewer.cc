@@ -1873,6 +1873,7 @@ gtk_viewer::tk_set_text(htmForm *entry, const char *string)
                     gtk_entry_set_text(GTK_ENTRY(ed), string);
             }
         }
+        break;
 
     case FORM_TEXTAREA:
         text_set_chars(GTK_WIDGET(entry->widget), string);

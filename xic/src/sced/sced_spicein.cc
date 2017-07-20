@@ -1671,7 +1671,7 @@ cSpiceBuilder::process_muts(CDs *sdesc)
             if (!pm->get_descs(&cdesc1, &cdesc2))
                 continue;
             name1 = cdesc1->getBaseName();
-            name1 = cdesc2->getBaseName();
+            name2 = cdesc2->getBaseName();
             if ((!strcmp(name1, m->ind1) && !strcmp(name2, m->ind2)) ||
                     (!strcmp(name1, m->ind2) && !strcmp(name2, m->ind2))) {
                 found = true;

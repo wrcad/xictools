@@ -978,9 +978,9 @@ PtState::key(int code, const char*, int)
             Level = 1;
             State = 0;
         }
+        break;
     default:
         return (false);
-        break;
     }
     return (true);
 }

@@ -89,6 +89,7 @@ CommandTab::com_usrset(wordlist *wl)
                 TTY.printf("Commands:\n");
                 for (i = 0; KW.cmds(i)->word; i++)
                     KW.cmds(i)->print(0);
+                continue;
             case 'd':
             case 'D':
                 TTY.printf("Debug:\n");

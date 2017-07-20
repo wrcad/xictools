@@ -2670,7 +2670,7 @@ namespace {
 // established.
 //
 bool
-cGroupDesc::ident_dev(sDevList *dv, int level, bool brksym) throw (XIrt)
+cGroupDesc::ident_dev(sDevList *dv, int level, bool brksym) THROW_XIrt
 {
     bool new_assoc = false;
     if (!dv->edevs())
@@ -2760,7 +2760,7 @@ again:
 // True is returned if a new device association is made.
 //
 bool
-cGroupDesc::find_match(sDevList *dv, sDevComp &comp, bool brksym) throw (XIrt)
+cGroupDesc::find_match(sDevList *dv, sDevComp &comp, bool brksym) THROW_XIrt
 {
     if (comp.nogood())
         return (false);
@@ -3262,7 +3262,7 @@ cGroupDesc::ident_term_nodes(sDevInst *di)
 // Return a count of unresolved references.
 //
 int
-cGroupDesc::solve_duals() throw (XIrt)
+cGroupDesc::solve_duals() THROW_XIrt
 {
     int psize = nextindex();
 
@@ -3938,7 +3938,7 @@ cGroupDesc::check_associations(int grp)
 // arbitrary choice to break the symmetry, and return true.
 //
 bool
-cGroupDesc::break_symmetry() throw (XIrt)
+cGroupDesc::break_symmetry() THROW_XIrt
 {
     // Return false if there is a mismatch in the number of
     // unassigned devices.

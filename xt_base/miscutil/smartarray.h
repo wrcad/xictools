@@ -79,7 +79,7 @@ struct SmartArray
                     if (ix >= nsz)
                         nsz = ix + 1;
                     T *tmp = new T[nsz];
-                    memcpy(tmp, sa_list, sa_size * sizeof(T));
+                    memcpy(tmp, sa_list, (int)(sa_size * sizeof(T)));
                     sa_size = nsz;
                     delete [] sa_list;
                     sa_list = tmp;
