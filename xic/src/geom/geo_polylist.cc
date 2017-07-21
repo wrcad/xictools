@@ -62,17 +62,20 @@ PolyList::to_odesc(PolyList *thisp, CDl *ld)
     CDo *od0 = 0;
     PolyList *p = thisp;
     while (p) {
-        CDo *od;
+        CDo *od = 0;
         if (p->po.is_rect()) {
             BBox BB(p->po.points);
+            if (BB.valid())
+                od = new CDo(ld, &BB);
             delete [] p->po.points;
-            od = new CDo(ld, &BB);
         }
-        else
+        else if (p->po.valid())
             od = new CDpo(ld, &p->po);
-        od->set_copy(true);
-        od->set_next_odesc(od0);
-        od0 = od;
+        if (od) {
+            od->set_copy(true);
+            od->set_next_odesc(od0);
+            od0 = od;
+        }
         p->po.points = 0;
         PolyList *px = p;
         p = p->next;
@@ -95,20 +98,23 @@ PolyList::to_olist(PolyList *thisp, CDl *ld, CDol **endp)
     CDol *oe = ol0;
     PolyList *p = thisp;
     while (p) {
-        CDo *od;
+        CDo *od = 0;
         if (p->po.is_rect()) {
             BBox BB(p->po.points);
+            if (BB.valid())
+                od = new CDo(ld, &BB);
             delete [] p->po.points;
-            od = new CDo(ld, &BB);
         }
-        else
+        else if (p->po.valid())
             od = new CDpo(ld, &p->po);
-        od->set_copy(true);
-        if (!ol0)
-            ol0 = oe = new CDol(od, 0);
-        else {
-            oe->next = new CDol(od, 0);
-            oe = oe->next;
+        if (od) {
+            od->set_copy(true);
+            if (!ol0)
+                ol0 = oe = new CDol(od, 0);
+            else {
+                oe->next = new CDol(od, 0);
+                oe = oe->next;
+            }
         }
         p->po.points = 0;
         PolyList *px = p;

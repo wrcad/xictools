@@ -498,7 +498,6 @@ Zlist::halo(const Zlist *thiszl, int delta) THROW_XIrt
     int tv = JoinMaxVerts;
     JoinMaxGroup = 0;
     JoinMaxVerts = 0;
-//XXX copy?
     PolyList *p0 = to_poly_list(copy(thiszl));
     JoinMaxGroup = tg;
     JoinMaxVerts = tv;
@@ -654,7 +653,6 @@ Zlist::wire_edges(const Zlist *thiszl, int delta) THROW_XIrt
     int tv = JoinMaxVerts;
     JoinMaxGroup = 0;
     JoinMaxVerts = 0;
-//XXX copy?
     PolyList *p0 = to_poly_list(copy(thiszl));
     JoinMaxGroup = tg;
     JoinMaxVerts = tv;
@@ -771,7 +769,6 @@ Zlist::manhattanize(Zlist *thiszl, int mindim, int mode)
                     xlr += s2;
                 }
             }
-//XXX thiszl?
             if (thiszl->Z.yu != z->Z.yu) {
                 tZ.yu = z->Z.yu;
                 tZ.xul = z->Z.xul;

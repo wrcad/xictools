@@ -720,11 +720,11 @@ sTT::bb(BBox *BB, Point **ppts) const
 void
 sTT::path(int numpts, Point *p, const Point *psrc) const
 {
-    if (!p || !numpts)
+    if (!p || (numpts <= 0))
         return;
     if (!psrc)
         psrc = p;
-    bool closed = (psrc[numpts-1] == psrc[0]);
+    bool closed = (numpts > 1 && psrc[numpts-1] == psrc[0]);
     if (closed)
         numpts--;
     if (is_orthogonal()) {

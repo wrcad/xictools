@@ -125,9 +125,10 @@ CDs::getZlist(int maxdepth, const CDl *ld, const Zlist *zref,
             }
         }
         else {
+            const bool nocopy = (maxdepth == 0);
             sPF gen(this, &tBB, ld, maxdepth);
             CDo *odesc;
-            while ((odesc = gen.next(false, false)) != 0) {
+            while ((odesc = gen.next(nocopy, false)) != 0) {
                 Zlist *zx = odesc->toZlist();
                 if (!noclip && (!manh || !(odesc->oBB() <= tBB)))
                     Zlist::zl_and(&zx, &zl->Z);
@@ -138,7 +139,8 @@ CDs::getZlist(int maxdepth, const CDl *ld, const Zlist *zref,
                     zn->next = z0;
                     z0 = zx;
                 }
-                delete odesc;
+                if (!nocopy)
+                    delete odesc;
             }
         }
     }
