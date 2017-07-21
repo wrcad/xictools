@@ -136,8 +136,10 @@ URCdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
             sCKTnode *lowl = ckt->num2node(inst->URCposNode);
             sCKTnode *hir = ckt->num2node(inst->URCnegNode);
             for (i = 1; i <= inst->URClumps; i++) {
-                namehi = new char[10];
-                (void)sprintf(namehi,"hi%d", i);
+                char namebf[16];
+                sprintf(namebf, "hi%d", i);
+                namehi = new char[strlen(namebf)+1];
+                strcpy(namehi, namebf);
                 error = ckt->mkVolt(&nodehi, inst->GENname, namehi);
                 if (error)
                     return (error);
@@ -146,8 +148,9 @@ URCdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
                 if (i == inst->URClumps)
                     lowr = hil;
                 else {
-                    namelo = new char[10];
-                    (void)sprintf(namelo,"lo%d", i);
+                    sprintf(namebf, "lo%d", i);
+                    namelo = new char[strlen(namebf)+1];
+                    strcpy(namelo, namebf);
                     error = ckt->mkVolt(&nodelo, inst->GENname, namelo);
                     if (error)
                         return (error);
@@ -156,8 +159,9 @@ URCdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
                 double r = prop*r1;
                 double c = prop*c1;
 
-                nameelt =  new char[10];
-                (void)sprintf(nameelt,"rlo%d",i);
+                sprintf(namebf, "rlo%d",i);
+                nameelt =  new char[strlen(namebf)+1];
+                strcpy(nameelt, namebf);
                 error = ckt->newUid(&eltUid, inst->GENname, nameelt,
                     UID_INSTANCE);
                 if (error)
@@ -176,8 +180,9 @@ URCdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
                 if (error)
                     return (error);
 
-                nameelt = new char[10];
-                (void)sprintf(nameelt, "rhi%d", i);
+                sprintf(namebf, "rhi%d", i);
+                nameelt = new char[strlen(namebf)+1];
+                strcpy(nameelt, namebf);
                 error = ckt->newUid(&eltUid, inst->GENname, nameelt,
                     UID_INSTANCE);
                 if (error)
@@ -197,8 +202,9 @@ URCdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
 
                 if (model->URCisPerLGiven) {
                     // use diode
-                    nameelt = new char[10];
-                    (void)sprintf(nameelt, "dlo%d", i);
+                    sprintf(namebf, "dlo%d", i);
+                    nameelt = new char[strlen(namebf)+1];
+                    strcpy(nameelt, namebf);
                     error = ckt->newUid(&eltUid, inst->GENname, nameelt,
                         UID_INSTANCE);
                     if (error)
@@ -219,8 +225,9 @@ URCdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
                 }
                 else {
                     // use simple capacitor
-                    nameelt = new char[10];
-                    (void)sprintf(nameelt, "clo%d", i);
+                    sprintf(namebf, "clo%d", i);
+                    nameelt = new char[strlen(namebf)+1];
+                    strcpy(nameelt, namebf);
                     error = ckt->newUid(&eltUid, inst->GENname, nameelt,
                         UID_INSTANCE);
                     if (error)
@@ -243,8 +250,9 @@ URCdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
                 if (i != inst->URClumps){
                     if (model->URCisPerLGiven) {
                         // use diode
-                        nameelt = new char[10];
-                        (void)sprintf(nameelt, "dhi%d", i);
+                        sprintf(namebf, "dhi%d", i);
+                        nameelt = new char[strlen(namebf)+1];
+                        strcpy(nameelt, namebf);
                         error = ckt->newUid(&eltUid, inst->GENname, nameelt,
                             UID_INSTANCE);
                         if (error)
@@ -265,8 +273,9 @@ URCdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
                     }
                     else {
                         // use simple capacitor
-                        nameelt = new char[10];
-                        (void)sprintf(nameelt, "chi%d", i);
+                        sprintf(namebf, "chi%d", i);
+                        nameelt = new char[strlen(namebf)+1];
+                        strcpy(nameelt, namebf);
                         error = ckt->newUid(&eltUid, inst->GENname, nameelt,
                             UID_INSTANCE);
                         if (error)

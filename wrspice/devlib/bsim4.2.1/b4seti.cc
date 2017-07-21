@@ -153,9 +153,11 @@ BSIM4dev::setInst(int param, IFdata *data, sGENinstance *geninst)
         case 3:
             here->BSIM4icVBS = *(value->v.vec.rVec+2);
             here->BSIM4icVBSGiven = TRUE;
+            // fallthrough
         case 2:
             here->BSIM4icVGS = *(value->v.vec.rVec+1);
             here->BSIM4icVGSGiven = TRUE;
+            // fallthrough
         case 1:
             here->BSIM4icVDS = *(value->v.vec.rVec);
             here->BSIM4icVDSGiven = TRUE;

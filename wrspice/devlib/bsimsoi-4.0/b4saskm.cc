@@ -988,6 +988,7 @@ B4SOIdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case B4SOI_MOD_TNOIMOD :
         value->iValue = model->B4SOItnoiMod;
         data->type = IF_INTEGER;
+        return(OK);
     case B4SOI_MOD_TNOIA:
         value->rValue = model->B4SOItnoia;
         return(OK);

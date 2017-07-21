@@ -331,14 +331,16 @@ DRCtestCnd::init()
     const char *tstr = str;
     char *tok = lstring::gettok(&str);
     char buf[64];
-    double g;
-    if (sscanf(tok, "%lf", &g) != 1 || g <= 0.0) {
-        sprintf(buf, "bad dimension %s", tok);
-        delete [] tstr;
+    double g = 0.0;
+    if (tok) {
+        if (sscanf(tok, "%lf", &g) != 1 || g <= 0.0) {
+            sprintf(buf, "bad dimension %s", tok);
+            delete [] tstr;
+            delete [] tok;
+            return (lstring::copy(buf));
+        }
         delete [] tok;
-        return (lstring::copy(buf));
     }
-    delete [] tok;
     tc_dimension = INTERNAL_UNITS(g);
     bool ret = tc_lspec.parseExpr(&str, true);
     delete [] tstr;

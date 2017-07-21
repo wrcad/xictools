@@ -86,12 +86,15 @@ UFSdev::setInst(int param, IFdata *data, sGENinstance *geninst)
             case 4:
                 here->UFSicVBS = *(value->v.vec.rVec+3);
                 here->UFSicVBSGiven = TRUE;
+                // fallthrough
             case 3:
                 here->UFSicVGBS = *(value->v.vec.rVec+2);
                 here->UFSicVGBSGiven = TRUE;
+                // fallthrough
             case 2:
                 here->UFSicVGFS = *(value->v.vec.rVec+1);
                 here->UFSicVGFSGiven = TRUE;
+                // fallthrough
             case 1:
                 here->UFSicVDS = *(value->v.vec.rVec);
                 here->UFSicVDSGiven = TRUE;

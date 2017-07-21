@@ -56,6 +56,7 @@ MESdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         case 2:
             inst->MESicVGS = *(value->v.vec.rVec+1);
             inst->MESicVGSGiven = true;
+            // fallthrough
         case 1:
             inst->MESicVDS = *(value->v.vec.rVec);
             inst->MESicVDSGiven = true;

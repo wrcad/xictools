@@ -109,9 +109,11 @@ BSIM3dev::setInst(int param, IFdata *data, sGENinstance *geninst)
         case 3:
             here->BSIM3icVBS = *(value->v.vec.rVec+2);
             here->BSIM3icVBSGiven = TRUE;
+            // fallthrough
         case 2:
             here->BSIM3icVGS = *(value->v.vec.rVec+1);
             here->BSIM3icVGSGiven = TRUE;
+            // fallthrough
         case 1:
             here->BSIM3icVDS = *(value->v.vec.rVec);
             here->BSIM3icVDSGiven = TRUE;

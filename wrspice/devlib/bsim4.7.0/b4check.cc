@@ -772,7 +772,7 @@ BSIM4dev::checkModel(sBSIM4model *model, sBSIM4instance *here, sCKT *ckt)
                 }
                 if (model->BSIM4lodeta0 <= 0.0)
                 {
-                    fprintf(fplog, "Warning: LODETA0 = %g is not positive.\n",model->BSIM4lodeta0);
+                    ChkFprintf(fplog, "Warning: LODETA0 = %g is not positive.\n",model->BSIM4lodeta0);
                     WarnPrintf("Warning: LODETA0 = %g is not positive.\n",model->BSIM4lodeta0);
                 }
             }

@@ -171,15 +171,19 @@ B3SOIdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         case 5:
             here->B3SOIicVPS = *(value->v.vec.rVec+4);
             here->B3SOIicVPSGiven = TRUE;
+            // fallthrough
         case 4:
             here->B3SOIicVES = *(value->v.vec.rVec+3);
             here->B3SOIicVESGiven = TRUE;
+            // fallthrough
         case 3:
             here->B3SOIicVBS = *(value->v.vec.rVec+2);
             here->B3SOIicVBSGiven = TRUE;
+            // fallthrough
         case 2:
             here->B3SOIicVGS = *(value->v.vec.rVec+1);
             here->B3SOIicVGSGiven = TRUE;
+            // fallthrough
         case 1:
             here->B3SOIicVDS = *(value->v.vec.rVec);
             here->B3SOIicVDSGiven = TRUE;

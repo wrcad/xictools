@@ -122,6 +122,7 @@ BJTdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         case 2:
             inst->BJTicVCE = *(value->v.vec.rVec+1);
             inst->BJTicVCEGiven = true;
+            // fallthrough
         case 1:
             inst->BJTicVBE = *(value->v.vec.rVec);
             inst->BJTicVBEGiven = true;

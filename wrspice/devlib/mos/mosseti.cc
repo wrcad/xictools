@@ -100,9 +100,11 @@ MOSdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         case 3:
             inst->MOSicVBS = *(value->v.vec.rVec+2);
             inst->MOSicVBSGiven = true;
+            // fallthrough
         case 2:
             inst->MOSicVGS = *(value->v.vec.rVec+1);
             inst->MOSicVGSGiven = true;
+            // fallthrough
         case 1:
             inst->MOSicVDS = *(value->v.vec.rVec);
             inst->MOSicVDSGiven = true;

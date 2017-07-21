@@ -163,9 +163,11 @@ SRCdev::setInst(int param, IFdata *data, sGENinstance *geninst)
             case 2:
                 inst->SRCacPhase = *(value->v.vec.rVec+1);
                 inst->SRCacPGiven = true;
+                // fallthrough
             case 1:
                 inst->SRCacMag = *(value->v.vec.rVec);
                 inst->SRCacMGiven = true;
+                // fallthrough
             case 0:
                 inst->SRCacGiven = true;
                 data->cleanup();

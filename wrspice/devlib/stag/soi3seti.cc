@@ -138,12 +138,15 @@ SOI3dev::setInst(int param, IFdata *data, sGENinstance *geninst)
         case 4:
             here->SOI3icVBS = *(value->v.vec.rVec+3);
             here->SOI3icVBSGiven = TRUE;
+            // fallthrough
         case 3:
             here->SOI3icVGBS = *(value->v.vec.rVec+2);
             here->SOI3icVGBSGiven = TRUE;
+            // fallthrough
         case 2:
             here->SOI3icVGFS = *(value->v.vec.rVec+1);
             here->SOI3icVGFSGiven = TRUE;
+            // fallthrough
         case 1:
             here->SOI3icVDS = *(value->v.vec.rVec);
             here->SOI3icVDSGiven = TRUE;

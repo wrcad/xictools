@@ -61,6 +61,7 @@ JFETdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         case 2:
             inst->JFETicVGS = *(value->v.vec.rVec+1);
             inst->JFETicVGSGiven = true;
+            // fallthrough
         case 1:
             inst->JFETicVDS = *(value->v.vec.rVec);
             inst->JFETicVDSGiven = true;

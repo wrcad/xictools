@@ -95,9 +95,11 @@ B2dev::setInst(int param, IFdata *data, sGENinstance *geninst)
         case 3:
             inst->B2icVBS = *(value->v.vec.rVec+2);
             inst->B2icVBSGiven = true;
+            // fallthrough
         case 2:
             inst->B2icVGS = *(value->v.vec.rVec+1);
             inst->B2icVGSGiven = true;
+            // fallthrough
         case 1:
             inst->B2icVDS = *(value->v.vec.rVec);
             inst->B2icVDSGiven = true;

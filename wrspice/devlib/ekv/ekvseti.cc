@@ -99,9 +99,11 @@ EKVdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         case 3:
             here->EKVicVBS = *(value->v.vec.rVec+2);
             here->EKVicVBSGiven = TRUE;
+            // fallthrough
         case 2:
             here->EKVicVGS = *(value->v.vec.rVec+1);
             here->EKVicVGSGiven = TRUE;
+            // fallthrough
         case 1:
             here->EKVicVDS = *(value->v.vec.rVec);
             here->EKVicVDSGiven = TRUE;

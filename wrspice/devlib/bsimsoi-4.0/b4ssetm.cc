@@ -913,6 +913,7 @@ B4SOIdev::setModl(int param, IFdata *data, sGENmodel *genmod)
     case  B4SOI_MOD_RBDB :
         mod->B4SOIrbdb = value->rValue;
         mod->B4SOIrbdbGiven = TRUE;
+        break;
     case  B4SOI_MOD_RBSB :
         mod->B4SOIrbsb = value->rValue;
         mod->B4SOIrbsbGiven = TRUE;
@@ -1100,6 +1101,7 @@ B4SOIdev::setModl(int param, IFdata *data, sGENmodel *genmod)
     case  B4SOI_MOD_LODK2 :
         mod->B4SOIlodk2 = value->rValue;
         mod->B4SOIlodk2Given = TRUE;
+        break;
     case  B4SOI_MOD_STETA0 :
         mod->B4SOIsteta0 = value->rValue;
         mod->B4SOIsteta0Given = TRUE;

@@ -107,9 +107,11 @@ HSM1dev::setInst(int param, IFdata *data, sGENinstance *geninst)
     case 3:
       here->HSM1_icVBS = *(value->v.vec.rVec + 2);
       here->HSM1_icVBS_Given = TRUE;
+      // fallthrough
     case 2:
       here->HSM1_icVGS = *(value->v.vec.rVec + 1);
       here->HSM1_icVGS_Given = TRUE;
+      // fallthrough
     case 1:
       here->HSM1_icVDS = *(value->v.vec.rVec);
       here->HSM1_icVDS_Given = TRUE;

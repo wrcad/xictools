@@ -214,10 +214,13 @@ TRAdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         switch (value->v.numValue) {
         case 4:
             inst->TRAinitCur2 = *(value->v.vec.rVec+3);
+            // fallthrough
         case 3:
             inst->TRAinitVolt2 =  *(value->v.vec.rVec+2);
+            // fallthrough
         case 2:
             inst->TRAinitCur1 = *(value->v.vec.rVec+1);
+            // fallthrough
         case 1:
             inst->TRAinitVolt1 = *(value->v.vec.rVec);
             data->cleanup();

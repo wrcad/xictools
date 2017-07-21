@@ -99,9 +99,11 @@ B3dev::setInst(int param, IFdata *data, sGENinstance *geninst)
         case 3:
             inst->B3icVBS = *(value->v.vec.rVec+2);
             inst->B3icVBSGiven = true;
+            // fallthrough
         case 2:
             inst->B3icVGS = *(value->v.vec.rVec+1);
             inst->B3icVGSGiven = true;
+            // fallthrough
         case 1:
             inst->B3icVDS = *(value->v.vec.rVec);
             inst->B3icVDSGiven = true;

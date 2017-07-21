@@ -79,6 +79,7 @@ VBICdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         case 2:
             here->VBICicVCE = *(value->v.vec.rVec+1);
             here->VBICicVCEGiven = TRUE;
+            // fallthrough
         case 1:
             here->VBICicVBE = *(value->v.vec.rVec);
             here->VBICicVBEGiven = TRUE;

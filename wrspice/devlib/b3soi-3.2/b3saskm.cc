@@ -745,6 +745,7 @@ B3SOIdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case B3SOI_MOD_TNOIMOD :
         value->iValue = model->B3SOItnoiMod;
         data->type = IF_INTEGER;
+        return(OK);
     case B3SOI_MOD_TNOIA:
         value->rValue = model->B3SOItnoia;
         return(OK);

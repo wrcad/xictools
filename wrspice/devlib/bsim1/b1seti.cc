@@ -95,9 +95,11 @@ B1dev::setInst(int param, IFdata *data, sGENinstance *geninst)
         case 3:
             inst->B1icVBS = *(value->v.vec.rVec+2);
             inst->B1icVBSGiven = true;
+            // fallthrough
         case 2:
             inst->B1icVGS = *(value->v.vec.rVec+1);
             inst->B1icVGSGiven = true;
+            // fallthrough
         case 1:
             inst->B1icVDS = *(value->v.vec.rVec);
             inst->B1icVDSGiven = true;

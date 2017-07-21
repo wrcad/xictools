@@ -89,6 +89,7 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         case 2:
             inst->JJinitPhase = *(value->v.vec.rVec+1);
             inst->JJinitPhaseGiven = true;
+            // fallthrough
         case 1:
             inst->JJinitVoltage = *(value->v.vec.rVec);
             inst->JJinitVoltGiven = true;
