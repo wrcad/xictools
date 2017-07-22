@@ -1,0 +1,1311 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2009, Whiteley Research Inc., Sunnyvale CA
+% $Id: properties.tex,v 1.43 2017/03/22 07:29:56 stevew Exp $
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+% prptyspec 021513
+\index{properties}
+\chapter{Property Specifications}
+\label{prptyspec}
+
+In {\Xic}, cells and database objects contain a list of number-string
+associations called ``properties''.  These are used to store various
+pieces of information about the object.  Some properties a used only
+by the internals of {\Xic} and are not accessible to the user, while
+other properties can be set by the user to assign certain attributes
+to an object.  The user will encounter properties primarily in electrical
+mode, as this is the means by which devices are assigned values, models,
+and other parameters.
+
+The properties that are assigned by {\Xic}, and/or have meaning to
+{\Xic} are described if the following sections.  Generally, the
+property numbers 7000 -- 7199 are reserved by {\Xic}, and property
+numbers in this range should not be assigned by the user.  Also,
+property numbers in the range 7200 -- 7299 correspond to
+``pseudo-properties'' which are used to query or change the parameters
+of a physical object (see \ref{pseudoprops}).  These values should not
+be used for assigned properties.
+
+
+% -----------------------------------------------------------------------------
+% physpropfmt 101016
+\section{Physical Mode Property Specifications}
+\label{physpropfmt}
+\index{properties!physical}
+
+This section lists the properties known to {\Xic} that may be found in
+physical cells, instances, or objects.  This lists only properties
+likely to be encountered by the user, there may be additional
+properties that are not specifically documented used internally by
+{\Xic}.  All physical properties known to {\Xic} use numbers in the
+reserved range 7000 -- 7199.
+
+\begin{description}
+\index{properties!text}
+\index{text property}
+\item{\et text} property, number 7012\\
+This property saves GDSII label parameters ANGLE, MAG, WIDTH, and
+PTYPE, which are unused by {\Xic}.  The string consists of a
+concatenation of keyword/value pairs, using the keywords above
+(not all need be present).  These attributes will be reassigned to
+the label when a GDSII file is written.
+
+\index{pathtype property}
+\index{properties!pathtype}
+\item{\et pathtype} property, number 7033\\
+This property is used for physical mode wires of nonzero width
+which have a non-default path type.  The string has the form
+\begin{quote}
+{\vt PATHTYPE} {\it pathtype}
+\end{quote}
+where {\it pathtype} is 0 for flush ends, 1 for rounded ends.  The
+default pathtype is 2 (extended ends).
+This property is added to wires in native and CIF output if the {\et
+CifOutExtensions} variable has the {\cb wire extension} flag set, and
+the {\cb wire extension new} flag is {\bf not} set.  The wire end
+style is included in the wire specification in the present default
+syntax, so {\cb wire extension new} is set by default. 
+
+\index{properties!grid}
+\index{grid property}
+\item{\et grid} property, number 7100\\
+This property is applied to the top-level physical cell when the cell
+is saved, preserving the current grid setting.  This property is used
+in physical mode only.  The property string has the format
+\begin{quote}
+{\vt grid} {\it resol} {\it snap}
+\end{quote}
+where {\it resol} is the number of internal units per snap point, and
+{\it snap} is the number of snap points per grid line if positive, or
+grid lines per snap point if negative.
+
+\index{properties!flags}
+\index{flags property}
+\item{\et flags} property, number 7105\\
+This property can be be applied to physical cells.  The property
+string can take one of two forms:  a hex number, or a space-separated
+list of string tokens.  The tokens and corresponding bits are
+
+\begin{tabular}{|l|l|l|} \hline
+\bf Bit & \bf Keyword & \bf Description\\ \hline\hline
+  &            & When set, the cell is ``opaque'' with regard to\\
+0 & \vt OPAQUE & extraction.  The cell will look like a black box\\
+  &            & with terminals.\\ \hline
+1 & \vt CONNECTOR & Not implemented, don't use.\\ \hline
+2 & \vt USER0 & User flags, not used by {\Xic}.  These flags
+  may be\\ \cline{1-2}
+3 & \vt USER1 & useful to the user.\\ \hline
+\end{tabular}
+
+When the {\et ExtractOpaque} variable is set, the {\vt OPAQUE} flag is
+ignored.
+
+\index{properties!refcell}
+\index{refcell property}
+\item{\et refcell} property, number 7150\\
+A reference cell is an empty cell with a {\et refcell} property,
+which references a cell hierarchy in another layout file.  Reference
+cells can exist in memory or as a native cell file on disk.
+
+The string for this property consists of space-separated {\it
+keyword\/}{\vt =}{\it value} pairs.  The known keywords are as
+follows:
+
+\begin{description}
+\item{\vt cellname}\\
+The top-level cell to extract from the referenced hierarchy.
+\item{\vt dbname}\\
+The CHD name in memory.  This is never written to a file, it is only
+used when the cell is in memory.
+\item{\vt filename}\\
+The full path to the referenced layout file.
+\item{\vt bound}\\
+The bounding box, may be used for area filtering, in the form
+{\it L\/},{\it B\/},{\it R\/},{\it T\/} where the values are
+floating-point in microns.
+\item{\vt aflags}\\
+Alias flags integer, these set name aliasing modes.
+\item{\vt aprefix}\\
+Cell name change prefix.
+\item{\vt asuffix}\\
+Cell name change suffix.
+\end{description}
+
+\index{properties!flatten}
+\index{flatten property}
+\item{\et flatten} property, number 7151\\
+During extraction, simple cells that contain only geometry or perhaps
+all or part of a device can be logically flattened (see \ref{exthier})
+into their parent cells for extraction purposes.  If this property is
+set in a cell, that cell will always be considered as part of its
+containing cell by the extraction system.
+
+This is identical to the effect of listing the cell name in the {\et
+FlattenPrefix} variable.
+
+The string for this property is ignored, but is set to ``{\vt
+flatten}'' by convention.
+
+\index{properties!nomerge}
+\index{nomerge property}
+\item{\et nomerge} property, number 7152\\
+The {\et nomerge} property applies to physical boxes, polygons, and
+wires, and is used by the extraction system.  If this property is
+found on any object used to recognize a device body, that device will
+never be merged with similar devices.  This is relevant when merging
+is enabled for the device during extraction, and one wants to suppress
+this in individual cases.  It prevents both parallel and series
+merging.
+
+\index{properties!stdvia}
+\index{stdvia property}
+\item{\et stdvia} property, number 7160\\
+This property is given to standard via sub-masters and instances.
+\ifoa
+The property is recognized by the OpenAccess plug-in providing
+transparent conversion between OpenAccess and {\Xic} standard vias.
+\fi
+The syntax is described in \ref{stdviaprp}.
+
+\index{properties!termorder}
+\index{termorder property}
+\item{\et termorder} property, number 7168\\
+This is set to a space-separated list of group names, and can be
+applied to physical cells.  It will provide the cell connection
+terminal names and ordering when electrical data are absent.  The
+names must match net name labels (see \ref{netname}) placed in the
+layout.  Names not found are silently ignored.
+
+\index{properties!skipdrc}
+\index{skipdrc property}
+\item{\et skipdrc} property, number 7178\\
+This property is applied in output to boxes, polygons, or wires which
+have the {\cb skip DRC} flag set.  It is used to set the {\cb skip
+DRC} flag in boxes, polygons, and wires as an input file is being
+read.
+
+\index{properties!labelsize}
+\index{labelsize property}
+\item{\et labelsize} property, number 7180\\
+This property is added to labels when writing to GDSII, and saves the
+label width, height and visibility status.  The string has the format
+\begin{quote}
+{\vt width} {\it width} {\vt height} {\it height} [{\vt show}|{\vt hide}]
+ [{\vt tlev}] [{\vt liml}]
+\end{quote}
+where {\it width} and {\it height} are in internal units.
+
+The keywords ``{\vt show}'' or ``{\vt hide}'' appended to the string
+store the display state of the label, which can be visible or
+``hidden'', toggled by clicking with button 1 with the {\kb hift} key
+held.  The {\et LabelHiddenMode} variable controls the scope of this
+feature.
+
+The {\vt tlev} keyword gives the label the property of being invisible
+in instances of the containing cell, but visible when the cell is
+viewed as the top-level (current cell).
+
+The {\vt liml} keyword causes the label to limit the number of lines
+displayed, when the label text has multiple lines.  The maximum line
+count defaults to 5, and is otherwise given with the {\vt
+LabelMaxLines} variable.
+
+The four flags are the same as those accessible with the {\et
+XprpXform} pseudo-property.
+\end{description}
+
+\ifoa
+This group of properties applies to the OpenAccess interface.
+
+\begin{description}
+\index{properties!oa\_cstmvia}
+\index{oa\_cstmvia property}
+\item{\et oa\_cstmvia} property, number 7161\\
+This property is applied by the translator to {\Xic} cells that
+represent a custom via object from OpenAccess.  The format is
+described in \ref{oaplugin}.
+
+\index{properties!oa\_orig}
+\index{oa\_orig property}
+\item{\et oa\_orig} property, number 7183\\
+This property is applied transiently when reading cell data into
+{\Xic}.  The format is described in \ref{oaplugin}.
+\end{description}
+\fi
+
+The following group of properties implements the Ciranova abutment
+protocol for parameterized cells.  Parameterized cells may use this
+protocol to automatically merge abutted instances so as to share
+common features.
+
+\begin{description}
+\index{properties!ab\_class}
+\index{ab\_class property}
+\item{\et ab\_class} property, number 7185\\
+This is similar to the Ciranova {\vt pycAbutClass} property.
+The format of the {\et ab\_class} property is described in \ref{pcabut}.
+
+\index{properties!ab\_rules}
+\index{ab\_rules property}
+\item{\et ab\_rules} property, number 7186\\
+This is similar to the Ciranova {\vt pycAbutRules} property.
+The format of the {\et ab\_rules} property is described in \ref{pcabut}.
+
+\index{properties!ab\_directs}
+\index{ab\_directs property}
+\item{\et ab\_directs} property, number 7187\\
+This is similar to the Ciranova {\vt pycAbutDirections} property.
+The format of the {\et ab\_directs} property is described in \ref{pcabut}.
+
+\index{properties!ab\_shapename}
+\index{ab\_shapename property}
+\item{\et ab\_shapename} property, number 7188\\
+This is similar to the Ciranova {\vt pycShapeName} property.
+The format of the {\et ab\_shapename} property is described in \ref{pcabut}.
+
+\index{properties!ab\_pinsize}
+\index{ab\_pinsize property}
+\item{\et ab\_pinsize} property, number 7189\\
+This is similar to the Ciranova {\vt pycPinSize} property.
+The format of the {\et ab\_pinsize} property is described in \ref{pcabut}.
+
+\index{properties!ab\_inst}
+\index{ab\_inst property}
+\item{\et ab\_inst} property, number 7190\\
+The format of the {\et ab\_inst} property is described in \ref{pcabut}.
+
+\index{properties!ab\_prior}
+\index{ab\_prior property}
+\item{\et ab\_prior} property, number 7191\\
+The format of the {\et ab\_prior} property is described in \ref{pcabut}.
+
+\index{properties!ab\_copy}
+\index{ab\_copy property}
+\item{\et ab\_copy} property, number 7192
+The format of the {\et ab\_copy} property is described in \ref{pcabut}.
+\end{description}
+
+The following property is required to implement the Ciranova protocol
+for stretch handles in parameterized cells.  A stretch handle is a
+display element that can be dragged with the mouse, which initiates a
+change of a cell property and appropriate remastering.
+
+\begin{description}
+\index{properties!grip}
+\index{grip property}
+\item{\et grip} property, number 7195\\
+The format of the {\et grip} property is described in \ref{pcstretch}.
+\end{description}
+
+The remaining properties support parameterized cells (pcells).  The
+super-master pcell contains a script reference, default parameter
+values, and (optionally) parameter constraint strings.  When the
+super-master is instantiated, the script is executed producing a
+sub-master under a modified name, plus an instance of the sub-master. 
+The instance contains the name of the super-master and a copy of the
+instantiation parameters.
+
+\begin{description}
+\index{properties!pc\_name}
+\index{pc\_name property}
+\item{\et pc\_name} property, number 7197\\
+This property is assigned by {\Xic} to pcell sub-masters and their
+instances.  It provides the name of the pcell from which the
+sub-master or instance was derived.
+
+\index{properties!pc\_params}
+\index{pc\_params property}
+\item{\et pc\_params} property, number 7198\\
+This property is assigned by the user to pcells, and contains the
+default parameter set.  It will be assigned by {\Xic} to sub-masters
+and instances, and contains the parameter set that was used to create
+the sub-master.  See \ref{pcnative} for a complete description.
+
+\index{properties!pc\_script}
+\index{pc\_script property}
+\item{\et pc\_script} property, number 7199\\
+This property is assigned by the user to a pcell, and appears only in
+the super-master.  It contains the script, or a path to a script,
+which is executed when the pcell is instantiated.  See \ref{pcnative}
+for a complete description.
+\end{description}
+
+
+% -----------------------------------------------------------------------------
+% elecpropuser 030415
+\section{User-Specified Electrical Property Specifications}
+\label{elecpropuser}
+\index{properties!electrical}
+
+The properties described in this section provide user-specified
+information to device and subcircuit instances, and to device and cell
+definitions.  In many cases, the property applied to a device
+definition will supply a default for a similar property created in the
+new instance when the device is instantiated.  The instance property
+can be subsequently modified by the user. 
+
+The {\et name} property described in the next section, plus the {\et
+devref}, {\et model}, {\et value} and {\et param} properties discussed
+below, translate into fields of device definition lines when
+generating SPICE output, and in order to set these properties
+proficiently, the user must have familiarity with the SPICE syntax.
+
+The strings for these properties may contain special escape sequences
+indicating hypertext references or other characteristics.  These are
+described in \ref{prpescapes}.
+
+\begin{description}
+\index{properties!model}
+\index{model property}
+\item{\et model} property, number 1\\
+The {\et model} property appears in device instances and defines a
+device model to be included in the SPICE line for the device.  This
+property is normally assigned to the device instance with the {\cb
+Property Editor} from the {\cb Edit Menu}, but a default model can be
+supplied by including this property in the device definition in the
+device library file.
+\begin{quote}\vt
+5 1 {\it model\_name\/};
+\end{quote}
+The {\it model\_name\/} is arbitrary, but a corresponding entry should
+exist in a model library file.
+
+\index{value property}
+\index{properties!value}
+\item{\et value} property, number 2\\
+The {\et value} property supplies a string to be used in the device
+line in SPICE output for the device ``value''.  It should not appear
+if the device has a model property, and if it does, it will be
+ignored.  The property is normally applied to device instances with
+the {\cb Property Editor}, but can appear in the device definition
+in the device library file to assign a default value for the device.
+\begin{quote}\vt
+5 2 {\it value\/};
+\end{quote}
+The {\it value\/} is a string which may, for example, represent a
+floating point number specifying the component value, e.g., in ohms
+for a resistor.  In general, any string can appear, and it may include
+hypertext references.  A complex string would be necessary for a
+voltage source with functional dependence, for example.
+
+The {\et model} and {\et value} properties are mutually exclusive,
+either can be supplied, but not both.
+
+\index{initc property}
+\index{param property}
+\index{properties!param}
+\item{\et param} property, number 3\\
+The {\et param} property specifies the part of the device SPICE line
+which provides an initial condition or other data not included in a
+model or value string.  The property is normally applied to device and
+subcircuit instances with the {\cb Property Editor}, or to cells with
+the {\cb Cell Property Editor} command.  When applied to cells or
+subcircuit instances, the property is used to provide parameter
+definitions for SPICE (see the description of the {\vt .subckt} line
+in the {\WRspice} manual).  This can also appear in the device
+definition in the device library file to provide a default.  If given
+to a cell, instances of the cell will inherit the property, which can
+then be changed from within {\Xic} on a per-instance basis.  For
+device instances, this property specifies any parameter, such as
+device area, which is provided in the device line after the model. 
+This manifestation was referred to as the initial condition (``{\et
+initc}'') property in previous documentation.
+\begin{quote}\vt
+5 3 {\it string\/};
+\end{quote}
+The {\it string\/} will be appended to the device line when a SPICE file
+is created.  It can contain initial condition data or other parameters
+significant to the device, which are syntactically expected to the
+right of the model or value.
+
+The parameter definitions in a {\et param} property string have the
+form
+\begin{quote}
+{\it name1\/}{\vt =}{\it value1} {\it name2\/}{\vt =}{\it value2} ...
+\end{quote}
+
+There may be white space around the `{\vt =}' character.  The {\it
+name} tokens are parameter names, which are alphanumeric words
+starting with an alpha character.  The {\it value} token can not be
+empty, and must be a single text token.  This means that if the {\it
+value} string contains white space, it must be single or double
+quoted.  Be aware that the interpretation of single quoted ({\vt
+'word'}) and double quoted ({\vt "word"}) differs fundamentally. 
+Double quoting implies a manifest string type.  The string will be
+assigned verbatim to the parameter, which will be of string type.  No
+further processing will be done.  Single quoting implies an expression
+which reduces to a number when evaluated.  If a {\it value} is not
+quoted, it will be evaluated as an expression if necessary, otherwise
+it will be taken as a numeric value.  Generally, parameter assignment
+failures are silently ignored.
+
+\index{other property}
+\index{properties!other}
+\item{\et other} property, number 4\\
+The {\et other} property is a catch-all device property that is not
+used by {\Xic} and does not appear in SPICE output.  There can be
+arbitrarily many {\et other} properties specified for a device, unlike
+the {\et model}, {\et value}, and {\et param} properties which can
+appear at most once.  The {\et other} property can be used for storage
+of alternate values for the {\et model}, {\et value}, and {\et param}
+properties.  It is applied to device instances with the {\cb Property
+Editor}.  Although it can be used in device definitions in the device
+library file, there seems to be no reason for doing so.
+\begin{quote}
+{\vt 5 4 {\it string\/};}
+\end{quote}
+
+\index{nophys property}
+\index{properties!nophys}
+\item{\et nophys} property, number 5\\
+When the {\et nophys} property is applied to an electrical device or
+subcircuit, that device or subcircuit is assumed to have no physical
+implementation and is ignored in the algorithm that associates
+electrical and physical devices and subcircuits.  A device or
+subcircuit with this property has no dual in the physical layout, and
+its terminals will never be placed in the physical layout, where they
+would otherwise be visible with the {\cb Show Terms} command.  Devices
+and subcircuits with this property will be ignored in LVS testing.
+
+In order to actually simulate a circuit that has been extracted from
+the physical layout, it is necessary to add sources and perhaps other
+devices, which have no counterparts in the physical layout.  In
+general, this will cause LVS errors in subsequent LVS runs.  The {\et
+nophys} property can be added to the additional devices to avoid these
+errors.
+
+By ``ignoring'' these devices, the device terminals are considered as
+open circuits.  However, there are times when it would be useful to
+consider these devices as shorted.  For example, suppose that one
+wishes to include parasitic series inductance in a resistor during
+simulation.  However, this inductance would cause LVS to fail, since
+the series inductor added to the schematic has no explicit physical
+counterpart.
+
+It is possible to configure the {\et nophys} property to indicate that
+when the electrical netlist is generated for use by the extraction
+system, the corresponding devices will be forced such that all
+terminals connect to the same net, i.e., the terminals are effectively
+shorted together.  Thus, the inductor in the example above, if given
+this property, would disappear properly during LVS.
+
+The numerical value of the property is 5.  The property string is
+either ``{\vt nophys}'' or ``{\vt shorted}''.  The latter indicates
+that the shorting feature is to be used.  {\Xic} will always set the
+property string to one of these values.  Devices inherit this property
+from cell definitions in the device library file.  The format is
+\begin{quote}
+{\vt 5 5 nophys;} or\\
+{\vt 5 5 shorted;}
+\end{quote}
+
+Devices with the {\et nophys} property applied will be rendered using
+a different color than other devices.
+
+\index{virtual property}
+\index{properties!virtual}
+\item{\vt virtual} property, number 6\\
+When the {\et virtual} property is applied to an electrical
+subcircuit, the subcircuit will not be included in netlist output. 
+This means that in SPICE output, the corresponding ``{\vt .subckt}''
+block of lines will be absent.  However, calls to this subcircuit, if
+any, will be included, and must be resolved through text from a {\vt
+.include} line or by some other means.
+
+This is a method for including ``foreign'' subcircuits within the
+{\Xic}/{\WRspice} framework.
+
+The numerical value of the property is 6.  The property string is
+``{\vt virtual}''.  {\Xic} will always set the property string to this
+value.  This property applies only to electrical cell definitions
+(subcircuits).  The format is
+\begin{quote}
+\vt 5 5 virtual;
+\end{quote}
+
+\index{flatten property}
+\index{properties!flatten}
+\item{\vt flatten} property, number 7\\
+This can be applied to electrical masters and instances.  The state is
+active if the instance has the property and the master does not, or
+the instance does not have the property and the master does.  If
+active, the schematic will be logically flattened into its parent
+before association in LVS.
+
+\index{range property}
+\index{properties!range}
+\item{\vt range} property, number 8\\
+The {\et range} property can be applied to device (other than terminal
+devices) and subcircuit instances.  The property contains two
+non-negative integers, which define a range of values between the
+start and end integers inclusive, stepping by one.  When applied to an
+instance, the instance becomes {\it vectorized}, with the range
+providing the subscripts for the individual scalar instances.  Scalar
+contact terminals become vectors, and vectors become bundles.  Use of
+vector instances can simplify some schematics with repeated circuit
+blocks.  More information about vector instances and the rules for
+connecting to them can be found in \ref{vecinst}.
+
+The property number is 8, and the property string consists of two
+non-negative integers, the starting and ending values of the
+subscripting range.  The property applies only to non-terminal device
+instances and subcell instances.
+
+\index{macro property}
+\index{properties!macro}
+\item{\vt macro} property, number 20\\
+The {\et macro} property can be meaningfully applied to device master
+cells.  When present, its only effect is that in SPICE output, an
+`{\vt X}' is prepended to the device name in device reference lines. 
+Thus, SPICE will treat the device instance as a subcircuit call. 
+These instances must have a {\et model} property that will match a
+{\vt .subckt} definition somewhere, likely from a PDK device model
+file.
+
+This accounts for devices that are likely the electrical part of
+parameterized cells, that implement nonlinear behavior through a
+network of controlled sources expressed as a subcircuit in the SPICE
+model definitions file.  MOS capacitors and poly resistors are devices
+that are frequently modelled this way.
+
+Within {\Xic}, this property is otherwise ignored, so that a device
+with this property is treated as a device consistently.
+
+\index{devref property}
+\index{properties!devref}
+\item{\vt devref} property, number 21\\
+This property maps text that appears in a SPICE device call after the
+node list but ahead of the model or value.  The purpose is to provide
+the name of a reference device for current-controlled sources (CCCS
+and CCVS), and the current-controlled switch (CSW).  This property
+can be applied to device instances only, and is supplied by the user
+typically with the {\cb Property Editor}.
+
+The property supports hypertext, and the reference name should be
+added as a hypertext reference, so that the correct device is
+referenced if the name should change.  That is, when editing the
+property string on the prompt line, click on the device to reference. 
+The device name will be entered in the line using colored text,
+indicating a hypertext entry.  Unlike plain test, the hypertext entry
+will still be correct if the referenced device name changes.
+  
+There is no default, and a missing property will produce a syntax
+error in a generated SPICE file.
+\end{description}
+
+
+%------------------------------------------------------------------------------
+% elecpropxic 022816
+\section{{\Xic}-Managed Electrical Property Specifications}
+\index{properties!electrical}
+\label{branchprop}
+
+The properties that are set by {\Xic} in electrical mode are described
+below.  The electrical property values use the integers 1--21.  The
+values 22--30 are reserved for future use.
+
+\begin{description}
+\index{bnode property}
+\index{properties!bnode}
+\item{\et bnode} property, number 9\\
+The {\et bnode} property identifies the location of a ``bus
+connector'' which is used to specify multiple connections to a device
+or subcircuit.  It may appear in subcircuit cell definitions and
+instance references.
+
+\begin{quote}{\vt
+5 9} {\it index beg\_range end\_range x y};
+\end{quote}
+
+The {\it index} is a non-negative integer index which serves to link
+the bus node to an existing node with the same index.  The {\it
+beg\_range} and {\it end\_range} are non-negative integers which set
+the indexing of the bus.  The bus bit indices range from {\it
+beg\_range} through {\it end\_range}.  Note that the numbers can be
+ascending or descending.  The ``bit'' for {\it beg\_range} is
+connected to the node with the given {\it index}.  The ``bit'' for
+{\it end\_range} is connected to the node with index equal to {\it
+index} + {\vt abs(}{\it beg\_range} - {\it end\_range\/}{\vt )}.  If
+no node property has an equal index value, then that ``bit'' is simply
+open.
+
+For cells, the {\it elecX} and {\it elecY} each have the general form
+\begin{quote}
+{\it schemX\/}[{\vt :}{\it symbX\/}[{\vt ,}{\it symbX} ...]]
+\end{quote}
+and similar for the Y values.  This represents a single X,Y contact
+location in the schematic, and an arbitrary number of contact
+locations in the schematic symbol.  The schematic value is separated
+from the symbolic values by a colon.  The symbolic values are
+separated from each other by commas.  If the 3.2 format is being
+written due to the {\et Out32nodes} variable being set, at most one
+number will appear following the colon, the first that would otherwise
+be listed if there are multiple contact points.
+
+If there is no symbolic representation, or the terminal location has
+not been set in the symbolic view, the {\it elecX} and {\it elecY}
+each consist of a single number.  In the more general case, both terms
+should supply the same number of integers.
+
+In cell instances, there is no colon delimiter, and the general form
+is simply a comma-separated list of numbers.  This is all identical to
+the coordinate specification for a {\et node} property.
+
+\index{node property}
+\index{properties!node}
+\item{\et node} property, number 10\\
+The {\et node} property defines a circuit connection point.  It
+appears as a property of wires, device and subcircuit instances, and
+cells.  Its string is a bit different in the three cases.
+
+Wire property\\
+\begin{quote}{\vt
+5 10} {\it circuit\_node}
+\end{quote}
+
+Any text that follows the form shown above is ignored.  The {\it
+circuit\_node} is the node number in the current cell of the net
+containing the wire.  All wires that participate in connectivity,
+i.e., on the {\vt SCED} layer and any layer with the {\vt WireActive}
+technology file keyword applied, should have a {\et node} property.
+
+Instance property\\
+\begin{quote}{\vt
+5 10} {\it circuit\_node index elecX  elecY\/} [{\it name\/}]
+\end{quote}
+
+A subcircuit or device instance will have one {\et node} property per
+circuit connection.  The {\it circuit\_node} is the node number of the
+connection in the current cell.  The {\it index} is the terminal
+ordering parameter.  Each {\et node} property of an instance will have
+a unique {\it index\/}.  The indices form a compact run starting with
+0.
+
+The {\it elecX} and {\it elecY}, are integers, or comma-separated
+lists of integers.  Both terms specify the same number of integers. 
+Taken as ordered X,Y values, these provide the ``hot spots'' where
+connection to the terminal can be made.  {\Xic} allows an arbitrary
+number of hot spots per node.  If the {\et Out32nodes} variable is
+set, which forces output compatible with earlier {\Xic} releases, the
+{\it elecX} and {\it elecY} will each consist of a single value, the
+first in the list that would otherwise be output if there are multiple
+contact points.
+
+Internally, there are 1000 integer counts per ``micron'', and hot
+spots must appear on a 1 ``micron'' (1000 unit) grid.  In a cell file,
+scaling may be applied.  In particular, the default for CIF and native
+cell files is 100 units per micron, but this is usually changed to
+1000 units with the {\vt RESOLUTION 1000} directive.  Anyway, if a
+user is for some reason writing a node property string by hand, the
+hot spot locations must be chosen appropriately, arbitrary locations
+do not work.
+
+Anything that follows is actually ignored by the reader.  The
+terminal's name is printed in output since it might be of interest to
+humans.
+
+Cell property\\
+\begin{quote}{\vt
+5 10} {\it circuit\_node index elecX elecY\/} [{\vt 0x}{\it flagstype
+ name phyX physY layer\_name\/}];
+\end{quote}
+
+Cell property, old 3.2 syntax\\
+\begin{quote}{\vt
+5 10} {\it circuit\_node index elecX elecY\/} [{\it name phyX physY
+ flags layer\_name type\_name\/}];
+\end{quote}
+
+The {\et node} properties applied to a cell make it possible for the
+cell to be instantiated and used as a subcircuit (or device) in
+another cell.
+
+The property string parser can recognize and read the old release 3.2
+string format for compatibility.  When writing output in any file
+format, if the variable {\et Out32nodes} is set, the old string format
+will be generated.  This will, however, strip out multiple contact
+points if any have been defined, as this is not supported by the older
+format, which allows exactly one contact per node.  The variable
+tracks the {\cb Use back-compatible format (warning!  data loss)}
+check box in the {\cb Export Control} panel from the {\cb Export
+Cell Data} button in the {\cb Convert Menu}.
+
+The {\it circuit\_node} is the node number in the current cell where
+contact is to be made.  In a device cell that has no internal nodes,
+this will be -1.  The {\it index} is an ordering parameter as
+discussed above.  Index zero is the reference node.  When the device
+or subcircuit is placed in a schematic, the location of the reference
+node corresponds to where the user clicks.
+
+The {\it elecX} and {\it elecY} each have the general form
+\begin{quote}
+{\it schemX\/}[{\vt :}{\it symbX\/}[{\vt ,}{\it symbX} ...]]
+\end{quote}
+and similar for the Y values.  This represents a single X,Y contact
+location in the schematic, and an arbitrary number of contact
+locations in the schematic symbol.  The schematic value is separated
+from the symbolic values by a colon.  The symbolic values are
+separated from each other by commas.  If the 3.2 format is being
+written due to the {\et Out32nodes} variable being set, at most one
+number will appear following the colon, the first that would otherwise
+be listed if there are multiple contact points.
+
+If there is no symbolic representation, or the terminal location has
+not been set in the symbolic view, the {\it elecX} and {\it elecY}
+each consist of a single number.  In the more general case, both terms
+should supply the same number of integers.
+
+The remaining tokens are optional.  The {\it flagstype} is a hex
+integer that if present {\bf must} be prefixed with ``{\vt 0x}'' or
+``{\vt 0X}''.  The least significant byte contains a value that
+specifies a terminal type.  This is a numerical equivalent of the
+optional {\it type\_name} which appears in the old 3.2 format
+syntax.  The values and keywords are listed below.  {\Xic} does not
+presently use this.
+
+\begin{quote}
+\begin{tabular}{ll}\\
+\bf value & \bf keyword\\
+0 & {\vt input} (default)\\
+1 & \vt output\\
+2 & \vt inout\\
+3 & \vt tristate\\
+4 & \vt clock\\
+5 & \vt outclock\\
+6 & \vt supply\\
+7 & \vt outsupply\\
+8 & \vt ground\\
+\end{tabular}
+\end{quote}
+
+The remainder of the word may contain any of the following flag bits.
+
+\begin{description}
+\item{\vt 0x100} (BYNAME)\\
+The terminal will associate to a wire net by name, there will be no
+connectivity due to placement location in the schematic.
+
+\item{\vt 0x200} (VIRTUAL)\\
+The terminal is ``virtual'' meaning that there is no wire vertex or
+subcircuit or device contact at the terminal's location in the
+schematic.  This is irrelevant if the BYNAME flag is set.
+
+\item{\vt 0x400} (FIXED)\\
+It set, {\Xic} will not move the corresponding physical terminal
+location in the layout.  This indicates that the location has been
+``locked'' by the user.
+
+\item{\vt 0x800} (INVIS)\\
+The terminal will be invisible in the schematic, except when the {\cb
+subct} command from the side menu, used for terminal editing, is
+active.  The corresponding terminal in the layout will show normally.
+\end{description}
+
+The {\it name} is the terminal name.  This is either a short name
+provided by the user, or if not provided a default name will be
+created by {\Xic}.  The name is unique among the cell's terminals.
+
+If the cell has a physical counterpart, the remaining arguments have
+significance.  In particular, if the cell has no physical counterpart,
+or the node has no physical counterpart, the remaining parameters
+should not appear.  The lack of physical coordinates informs the
+reader that this terminal has no physical counterpart.  The
+coordinates should be set to zero in device cells that have a physical
+implementation.
+
+If the node has a corresponding physical implementation in the layout,
+the {\it physX} and {\it physY} will be given.  When the property is
+being read, the presence of these numbers indicates that internal
+setup to link to the layout is required.  If both numbers don't
+appear, the node will exist in the schematic only.  This is
+appropriate for devices that don't have a physical implementation,
+such as voltage sources, or for cases like the phase node of a
+Josephson junction, or in the case where there is no layout.  In
+output, if the physical association exists.  the two numbers give the
+corresponding point in the layout.  These will be nonzero if the
+corresponding location has been identified, either by running
+extraction, or if the location was set by hand.
+
+It is not necessarily true that all nodes of the device either have or
+don't have the optional parameters.  The phase node of a Josephson
+junction device, for example, does not have a physical counterpart. 
+The other two nodes do have physical implementations, since these are
+the physical connection points.  A side-effect is that in SPICE files
+extracted from physical data only the two nodes will appear in the
+device instantiation lines.  This is acceptable to {\WRspice},
+since the phase node is optional.  If a device has no nodes with the
+optional parameters given, then it can never have a physical
+counterpart.  The {\et nophys} property should also be given in that
+case.  This is true for devices like voltage sources that have no
+physical implementation.
+
+If the physical location is valid, a {\it layer\_name} will be provided. 
+This is the name of a physical layer which has the {\et Conductor}
+attribute, and an object on this layer touches or is under the
+physical location.
+
+In the old 3.2 format, the flags values are the following:
+\begin{description}
+\item{\vt 0x2} (VIRTUAL)\\
+The terminal is ``virtual'' meaning that there is no wire vertex or
+subcircuit or device contact at the terminal's location in the
+schematic.  This is irrelevant if the BYNAME flag is set.
+
+\item{\vt 0x4} (FIXED)\\
+It set, {\Xic} will not move the corresponding physical terminal
+location in the layout.  This indicates that the location has been
+``locked'' by the user.
+\end{description}
+
+In the old format, instead of a numerical type code, an optional {\it
+type\_name} can be given.  This is one of the keywords from the table
+shown earlier.
+
+\index{name property}
+\index{properties!name}
+\item{\et name} property, number 11\\
+The {\et name} property gives the device an identifying prefix or
+name.  If a name has been assigned to the device with the {\cb
+Properties} command or equivalent, that name will be used in SPICE
+output.  Otherwise, the name prefix from the device library file is
+suffixed with a unique integer generated by {\Xic} to form the name. 
+SPICE expects that the first character of the name match the
+convention for the device, for example, resistors use R, capacitors C,
+etc.~(see the SPICE documentation).
+
+\begin{quote}
+{\vt 5 11} {\it prefix\/}.{\it assigned\_name\/} {\it devnum}
+{\it subname physX physY\/};
+\end{quote}
+
+The {\it prefix} is the default name prefix, and should conform to the
+SPICE conventions.  The {\it assigned\_name\/}, if present, will be
+used in actual spice output.  The {\it assigned\_name} should {\bf
+not} be present in device definitions, it is used in cell
+files for device instances to which a name has been assigned with the
+{\cb Property Editor}.  The {\it prefix} can start with any
+character, but is intended to have significance to SPICE.  The
+character `{\vt @}' is reserved for the terminal device, and `{\vt
+\#}' is reserved for the bus terminal device.  The {\it
+assigned\_name\/} can be any contiguous string.  The {\it devnum} is
+an index assigned by {\Xic} to the device, and is used when forming
+the default device name.  This should always be specified as 0 in the
+device library file.
+
+If the name applies to a subcircuit ({\bf not\/} a subcircuit macro
+reference in the device library file), the three additional entries
+may appear in cell files.  The {\it subname} will be set to ``{\vt
+subckt}'', and the {\it physX} and {\it physY} are coordinates where
+the physical subcircuit instance label is applied.  This will be in a
+physical instance of the subcircuit, or the two coordinates are set to
+-1 to indicate that the label has not been placed.
+
+{\Xic} generates the internal device or subcircuit index, used as part
+of the default device or subcircuit name, according to the position of
+the upper-left corner of the bounding box of the object.  The
+numbering starts with zero, and increases for positions with smaller Y
+value, or with larger X value for devices with the same Y coordinate. 
+Each device and subcircuit type has its own numbering.
+
+\index{labloc property}
+\index{properties!labloc}
+\item{\et labloc} property, number 12\\
+The {\et name}, {\et model}, {\et value}, {\et param}, and {\et
+devref} property values are normally displayed on-screen near the
+device body.  This is a device property for setting the default
+locations of the property labels when shown on-screen.  If this
+property does not appear, the internal default locations are used. 
+This property allows more control over label placement, on a
+per-device basis.  This property should only be used in devices in the
+device library file.  Presently, the property can only be added with a
+text editor by editing the property strings in the device library
+file.
+
+\begin{quote}\vt
+5 12 {\it pname code} [ {\it pname code\/} ] ... ;
+\end{quote}
+
+The {\it pname} is one of the literal tokens ``{\vt name}'', ``{\vt
+model}'', ``{\vt value}'', ``{\vt param}'', and ``{\vt devref}''.  For
+backward compatibility, ``{\vt initc}'' is accepted as an alias for
+``{\vt param}''.  The {\it code} is an integer, -1 -- 23.  If the {\it
+code} is -1, the default placement is used.  If code is 0 -- 23, the
+placement and justification are as shown in the figure:  The '.'
+position implies the justification.  Horizontally, all are left or
+right justified except for 16 and 19 which are centered.  Similarly,
+vertical justification is bottom or top except for 17 and 18 which are
+center justified.
+
+\begin{figure}
+\caption{\label{cpos}Locations and justification for character position 
+codes around the device bounding box.}
+\vspace{1.5ex}
+\begin{center}
+\input{images/cpos33.latex}
+\end{center}
+\end{figure}
+
+The default locations are shwon in the table below.  The locations
+differ when the height of the placement bounding box is less than or
+greater than the width.
+ 
+\begin{tabular}{|l|l|l|}
+\bf Property & \bf height $>$ width & \bf height $<=$ width\\ \hline
+\et name & 5 & 2\\ \hline
+\et model & 8 & 13\\ \hline
+\et value & 8 & 13\\ \hline
+\et param & 11 & 14\\ \hline
+\et devref & 18 & 12\\ \hline
+\end{tabular}
+
+\index{oldmut property}
+\index{properties!oldmut}
+\item{\et oldmut} property, number 13\\
+This property is used for compatibility with the mutual inductors used
+in the schematic files produced by the {\et Jspice3} program.  The
+format should not be used, and is not documented.
+
+\index{mut property}
+\index{properties!mut}
+\item{\et mut} property, number 14\\
+This property appears with the properties of cells containing mutual
+inductors, and is not copied to instantiations of the cell.  Mutual
+inductors do not appear as devices in the device library file, rather,
+they are implemented with this property.  Mutual properties are
+generated by selecting the ``{\et mut}'' device from the device
+menu, with one property assigned for each mutual inductor pair in
+the circuit.
+\begin{quote}\vt
+5 14 {\it num name1 num1 name2 num2 coeff} [{\it name\/}];
+\end{quote}
+
+This property appears only in the list for cell definitions, and not
+for instances.  It defines a mutual inductor pair within the cell. 
+The {\it num} is the index of the mutual inductor pair, used in
+forming the default specification to SPICE: ``{\vt K}{\it num\/}''. 
+However, if the {\it name} appears (supplied in {\Xic} by using the
+label editor on a mutual inductor label), the SPICE specification will
+use {\it name\/} (without {\it num\/}).  The {\it name1, num1, name2,
+num2} are the prefixes and assigned numbers of the inductors in the
+mutual inductor pair.  The {\it coeff} is a string which represents
+the coupling factor as given to SPICE.
+
+\index{branch property}
+\index{properties!branch}
+\item{\et branch} property, number 15\\
+The {\et branch} property is used to define a ``hot spot'' that when
+clicked on yields a device parameter, such as device current, which
+can be used in plots.  In SPICE, voltage sources and inductors have
+internal storage for current values present by default.  Other device
+parameters may require additional computational or storage overhead. 
+If the {\et branch} property is given in the device definition in the
+device library file, it is added to instantiated devices by {\Xic}.
+\begin{quote}\vt
+5 15 {\it x y dx dy} [{\it string\/}];
+\end{quote}
+
+The {\it x} and {\it y} values specify the hot spot where the branch
+current can be accessed by clicking.  The next two numbers specify the
+assumed direction of current flow.  They are interpreted as a unit
+vector directed outward from the origin along the $+/-$ x or y axes. 
+Thus,
+\begin{quote}
+\begin{tabular}{rrr}
+direction & \it dx & \it dy\\
+$+$y &  0 & 1\\
+$-$y &  0 & $-$1\\
+$+$x &  1 & 0\\
+$-$x & $-$1 & 0
+\end{tabular}
+\end{quote}
+are the options.  The {\it string} will be expanded and added to
+the token list in the prompt line when the branch is selected for
+plotting.
+
+When the hot spot is clicked on, an expression will be produced which
+after expansion is added to the input line in the {\cb plot} command. 
+The {\it string} token can contain the following literal tokens, which
+will be replaced with the appropriate values during expansion:
+
+\begin{tabular}{ll}\\
+\vt <v>      & Voltage across the device\\
+\vt <value>  & The ``value'' property\\
+\vt <name>   & The device name
+\end{tabular}\\
+
+Anything else in the {\it string} will be copied literally.  If the
+string is absent, the expression will be ``{\vt <name>\#branch}''.
+
+Here are some examples.
+for a resistor, the string is
+\begin{quote}
+ {\vt <v>/<value>}
+\end{quote}
+to return the current.  Similarly for a capacitor,
+\begin{quote}
+ {\vt <value>*deriv(<v>)}.
+\end{quote}
+Thus the current will be computed using the {\WRspice} {\vt deriv}
+function.  For an inductor or voltage source, no string is required,
+as the default
+\begin{quote}
+ {\vt <name>\#branch}
+\end{quote}
+is appropriate.  For a current source, one can use
+\begin{quote}
+ {\vt @<name>[c]}.
+\end{quote}
+This works through the {\WRspice} {\vt @{\it device\/}[{\it param\/}]}
+mechanism, however the vector must be saved, most conveniently by
+setting the {\et LibSave} global property for the device (see
+\ref{devdotlib}).
+
+\index{labrf property}
+\index{properties!labrf}
+\item{\et labref} property, number 16\\
+The {\et labrf} property is applied by {\Xic} to labels that are
+associated with device properties or wire nodes.  The property is not
+used in the device library file.
+
+\begin{quote}\vt
+5 16 {\it name num property\/};
+5 16 {\it x y} {\vt 10};
+\end{quote}
+This property applies only to labels, and indicates that the label is
+to be bound to a given property of a certain device or mutual
+inductor, or wire.
+
+The first form applies to a label for an instance or mutual inductor
+property.  Bound labels automatically reflect changes in the
+underlying property string, and may be used to set the string using
+the label editing function in {\Xic}.  The {\it name} and {\it num}
+are the device prefix and assigned number of the device to which the
+label is bound.  The {\it property} is the property number of the
+bound property.  If the label is assigned to a mutual inductor pair,
+the {\it name} is `{\vt K}'.
+
+The second form applies to labels that have been attached to a wire,
+and are used to contribute a name for the net containing the wire. 
+The {\it x} and {\it y} specify the coordinates of a vertex of the
+wire.  The {\vt 10} is the value of the {\et node} property.
+
+\index{mutlrf property}
+\index{properties!mutlrf}
+\item{\et mutlrf} property, number 17\\
+This property is assigned to inductor instances which are referenced
+for use in mutual inductor pairs.  One such property exists per
+reference.  It is not used in device library files.
+\begin{quote}\vt
+5 17 mutual;
+\end{quote}
+This property applies only to inductors that are referenced as one of
+a mutual inductor pair.  There can be several such properties if the
+inductor is associated with multiple mutual inductor pairs.
+
+\index{symbolic property}
+\index{properties!symbolic}
+\index{nosymb property}
+\index{properties!nosymb}
+\item{\et symbolic} property, number 18\\
+The {\et symbolic} property is a property applied to cells which have
+a symbolic view associated.  It does not appear in device library
+files, as all devices are essentially symbolic.  It is not inherited by
+instances.
+\begin{quote}\vt
+5 18 0/1 {\it geometry\_spec};
+\end{quote}
+The third field is nonzero if the symbolic mode is active, and 0
+if symbolic mode is inactive.  The {\it geometry\_spec} is a string of
+separated CIF primitives for the symbolic representation, which can
+include L, B, P, W, and 94 (label) directives.  Each record (CIF
+primitive) is terminated by a colon ({\bf not} a semicolon!) which
+must be immediately followed by an end-of-line character.  Colons that
+are not at the end of a text line will {\bf not} terminate a record.
+
+The {\et symbolic} property may be applied to subcircuit instances, in
+which case it will negate the effect of a {\et symbolic} property
+found in the instance master cell.  In this utilization, the property
+is named {\cb nosymb}.  The flag and {\it geometry\_spec} are ignored
+and need not be provided.  A subcircuit instance with this property
+would (in all cases) be displayed as expanded.  Thus, it is possible
+in {\Xic} to have different instances of the same subcircuit cell
+master display symbolically and expanded within the same containing
+cell.
+
+\index{nodemap property}
+\index{properties!nodemap}
+\item{\et nodemap} property, number 19\\
+The {\et nodemap} property is applied to the electrical cell
+definition and is not inherited by instances.  The {\et nodemap}
+property provides a mapping between internally generated node numbers
+and assigned textual names. 
+
+\begin{quote}\vt
+5 19 0/1 {\it name x y name x y ...\/};
+\end{quote}
+
+The third token can be 0 or 1, but is unused.  In releases prior to
+3.1.5, a 0 value would disable the node map.  In current releases,
+node mapping is always enabled.
+
+The remainder of the line consists of triples containing an assigned
+name and a coordinate pair.  The coordinates correspond to a device or
+subcircuit terminal connected to the assigned node, and serve as the
+reference to that node.  See \ref{nodmp} for more information on node
+mapping.
+\end{description}
+
+The ``global'' properties are added to the electrical top level cell
+of a hierarchy when being saved.  They save plot points and other
+information in the file, to use as defaults when the file is
+subsequently loaded for editing.
+
+\begin{description}
+\index{properties!run}
+\index{run property}
+\item{\et run} property, number 7101\\
+The {\et run} property string specifies the default analysis command
+entered when the {\cb run} button is pressed which initiates a
+simulation.
+
+\index{plot property}
+\index{properties!plot}
+\item{\et plot} property, number 7102\\
+The {\et Plot} property is used only in electrical mode.  The string
+represents the plot points used in the {\cb plot} command, in the
+format of arguments to the {\WRspice} {\vt plot} command.
+
+\index{iplot property}
+\index{properties!iplot}
+\item{\et iplot} property, number 7103\\
+The {\et Iplot} property is used in electrical mode.  The string
+specifies the points to plot when using the {\cb iplot} button, in the
+format of arguments to the {\WRspice} {\vt plot} command.
+\end{description}
+
+The strings for the {\et plot} and {\et iplot} properties may contain
+special escape sequences indicating hypertext references or other
+characteristics.  These are described in \ref{prpescapes}.
+
+
+% -----------------------------------------------------------------------------
+% spiceline 030415
+\label {spiceline}
+\index{spice device line}
+In SPICE, Each line of a given device type begins with the device
+name, set by the {\et name} property.  This is followed by the device
+nodes, corresponding to the order of enumeration in the {\it
+device\_node\/} of the {\et node} properties.  This is followed by
+text from the {\et devref} property, which is intended to provide a
+reference device name for current-controlled sources and the
+current-controlled switch.  It is not used generally.  This is
+followed by the {\et value} or {\et model} property (these are really
+just two different names for the same text field).  This is followed
+by the text of the {\et param} property.
+
+The device name, if not assigned by the user with the {\cb Property
+Editor} command, and nodes are assigned by {\Xic} so as to be unique.
+
+The line looks like:
+\begin{quote}
+{\it name n1 ... nLast devref value\/}/{\it model parameter\_string}
+\end{quote}
+
+The {\it name} is either the user assigned name, or the device prefix
+with a unique numerical suffix created by {\Xic} if no name was
+assigned.  The nodes can be numbers or text tokens, in accordance with
+the current node name mapping (see \ref{nodmp}).  The remaining
+properties are read verbatim from the specifications, with hypertext
+references expanded.
+
+Hypertext references are generated when assigning properties by
+clicking on devices or other features in the drawing.  Since {\Xic}
+assigns device names and nodes, if one needs to reference a specific
+device or node, a hypertext reference provides a link which is
+independent of the assigned values, which can change.
+
+When applied to subcircuit cells and instances, the {\cb param}
+property provides support for subcircuit parameterization, which is
+available in {\WRspice} and some other simulators.
+
+Here is a brief description of how to use parameterization.  Suppose
+that you are editing a cell that contains a resistor, and you wish to
+parameterize the resistance value.  Give the resistor a {\et value}
+property consisting of some word, say ``{\vt rshunt}''.  Using the
+{\cb Cell Properties Editor}, give the cell a {\et param} property
+something like ``{\vt rshunt=2.5}''.  This will give the resistor a
+default value of 2.5 ohms.  Editing another cell, place two instances
+of the previous cell.  Using the {\cb Property Editor} give one of the
+instances a {\et param} property of ``{\vt rshunt=5}''.  A label will
+appear containing this text.  The other instance will not have a
+similar label.  The resistor in the labeled subcircuit will have value
+5, set by the {\et param} property applied to the instance.  The
+other instance will have resistance value 2.5, as set by the {\et
+param} property applied to the master, which serves as the default
+value.
+
+
+% -----------------------------------------------------------------------------
+% prpescapes 062908
+\section{Special Escapes}
+\label{prpescapes}
+\index{hypertext reference format}
+
+In property and label strings, there is a special encoding used to
+indicate certain attributes, such as hypertext references.  These are
+in the form:
+\begin{quote}
+{\vt (||}{\it something\/}{\vt ||)}
+\end{quote}
+
+The following forms are recognized by {\Xic}
+\begin{description}
+\item{\vt (||sc||)}\\
+This sequence is simply converted to a semicolon (`{\vt ;}')
+when the string is internalized.  In CIF, semicolons can not be
+included in label or property strings, as the character is
+reserved for line termination.  {\Xic} will convert
+semicolons in property strings and labels to this form when
+creating a CIF or native file.
+
+\item{\vt (||text||)}\\
+This token may appear at the beginning of a label string, and
+indicates that the string is in long text format (see \ref{longtext}). 
+These labels do not appear on-screen (the characters ``{\vt [text]}''
+appear instead), but the full string can be accessed with the label
+editor.  Thus, large blocks of text can be saved as properties or {\vt
+spicetext} labels without crowding the screen.
+
+\item{\vt (||}{\it x\/}:{\it y type\/}{\vt ||)}\\
+This sequence indicates a hypertext reference, and can appear anywhere
+in a property or label string, in electrical data only.  Hypertext
+references are generated when assigning properties by clicking on
+other devices in the drawing.  Since {\Xic} by default internally
+assigns device names and nodes, if one needs to reference a specific
+device or node, a hypertext reference provides a link which is
+independent of the assigned values, which can change.  The {\it
+x},{\it y} is a coordinate, in internal units, giving a location for
+the reference.  This is generally the point where the user clicked to
+create the reference.  The space-separated integer that follows gives
+the type of the reference, and is one of:
+
+\begin{tabular}{ll}
+1 & node reference\\
+2 & branch reference\\
+4 & device name reference\\
+8 & subcircuit name reference\\
+\end{tabular}
+
+In the case of a node reference, the coordinate must be over a
+connection point, or along a wire.  For a branch, the coordinate must
+be over a branch reference point of a device.  For a device name
+reference, the coordinate must be in or on the bounding box of a
+device.  For a subcircuit name reference, the coordinate must be in or
+on the bounding box of a subcircuit.
+
+When the string is used, the hypertext reference is resolved, and
+the actual text replaces the hypertext reference in the string.
+\end{description}
+

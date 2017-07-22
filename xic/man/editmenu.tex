@@ -1,0 +1,1855 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2009, Whiteley Research Inc., Sunnyvale CA
+% $Id: editmenu.tex,v 1.77 2017/03/22 07:29:56 stevew Exp $
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+% xic:editmenu 031815
+\chapter{The Edit Menu:  Edit Layout}
+\index{Edit Menu}
+The {\cb Edit Menu} contains commands which control aspects of layout
+editing, such as transformations and other settings, and commands that
+bring up panels that control cell placement and flattening, property
+editing, and other functions.
+
+The table below summarizes the commands that appear in the {\cb Edit Menu},
+including the internal command name and the command function.
+
+\begin{tabular}{|l|l|l|p{1.75in}|} \hline
+\multicolumn{4}{|c|}{\kb Edit Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Enable Editing & \vt cedit & none & Enable/disable editing mode
+ for current cell\\ \hline
+\et Setup & \vt edset & \cb Editing Setup & Show {\cb Editing Setup} panel\\
+ \hline
+\et PCell Control & \vt pcctl & \cb PCell Control & Set pcell options\\ \hline
+\et Create Cell & \vt crcel & none & Create new cell\\ \hline
+\et Create Via & \vt crvia & none & Create a standard via\\ \hline
+\et Flatten & \vt flatn & \cb Flatten Hierarchy & Flatten hierarchy\\ \hline
+\et Join/Split & \vt join & \cb Join or Split Objects & Control join/split
+  operations\\ \hline
+\et Layer Expression & \vt lexpr & \cb Evaluate Layer Expression & Control
+  layer expression evaluation\\ \hline
+\et Properties & \vt prpty & \cb Property Editor & Edit properties\\ \hline
+\et Cell Properties & \vt cprop & \cb Cell Property Editor & Edit cell
+  properties\\ \hline
+\end{tabular}
+
+
+% -----------------------------------------------------------------------------
+% properties 021513
+\section{Cell, Instance, and Object Properties}
+\index{properties}
+
+A property consists of an integer and a corresponding text string. 
+Every database object, including cells, instances, and geometrical
+objects, has the native ability to accept properties, though this is
+enabled selectively.  Properties are saved in the design data file
+along with the item to which it is attached.
+
+The {\cb Property Editor}, which is brought up with the {\cb
+Properties} button in the {\cb Edit Menu}, provides the primary means
+of property manipulation of objects found in the current cell.  The
+{\cb Cell Property Editor}, which is obtained with the {\cb Cell
+Properties} button in the same menu, provides the primary means for
+manipulating properties of the current cell itself.
+
+Properties can be applied to physical objects and cells by the user,
+using the user's property number and format, to suit tye user's
+purposes.  This is fine, as long as the user's property numbers are
+outside of the range reserved by {\Xic}.  Other properties are set by
+{\Xic} for internal use such as to store the grid used for the layout,
+or the GDSII end style for wires.  Still others may be set by the
+user, but have significance to {\Xic}.  In schematic layouts, these
+properties define electrical parameters for devices, and are used when
+generating SPICE output.  In electrical mode, the user is restricted
+to a small set of properties understood by {\Xic}, whereas in physical
+mode any non-restricted number and string are allowed.  Finally,
+{\Xic} supports ``pseudo-properties'' which are not actual properties,
+i.e., they are not stored, but their application modifies or returns
+some parameter related to the object.  These are listed in the {\cb
+Property Editor} when in physical mode.
+
+
+%-----------------------------------
+%physprops 032015
+\subsection{Physical Mode Properties}
+
+In physical mode, the user has wide freedom to apply properties to
+cells, subcells, and objects.  The only constraint is that the
+following number ranges are restricted and must be avoided, for
+arbitrary user-specified properties.  However, there are some
+properties within the range that can be set by the user, that have
+specific syntax requirements and meaning to {\Xic}.  These will be
+described.
+
+The property number ranges used by {\Xic} are:
+\begin{description}
+\item{1 -- 30}\\
+These numbers are used or reserved in electrical mode only, they can
+be used freely in physical mode cells, instances, and objects.
+\item{7000 -- 7199}\\
+Property values in this range are reserved for use by {\Xic},
+and should (in general) not be assigned by the user.
+\item{7200 -- 7299}\\
+These values are reserved for the pseudo-properties (see
+\ref{pseudoprops}) and can not be used for other purposes.
+\end{description}
+
+The {\cb Property Editor} from the {\cb Properties} button in the {\cb
+Edit Menu} is used to assign properties to cell instances and objects
+within the current cell.  The {\cb Add} button in the editor allows
+addition of special properties used by {\Xic}, and arbitrary
+user-specified properties.  See the {\cb Property Editor} description
+in \ref{prptybut}) for a description of the properties that can be
+added.
+
+The object's existing properties, and available pseudo-properties are
+listed in the {\cb Property Editor}, with color and syntax coding to
+indicate the classification.  Pseudo-properties are not actual
+properties, but when applied to an object will change or report some
+parameter of the object.
+
+The {\cb Cell Property Editor} from the {\cb Cell Properties} button
+in the {\cb Edit Menu} allows editing of the properties of the current
+cell.  See the {\cb Cell Property Editor} description for a list and
+discussion of the cell properties that can be added with the {\cb Add}
+menu.
+
+A description of the physical properties used by {\Xic}, including the
+property string syntax, is provided in \ref{physpropfmt}.
+
+
+%--------------------------------------------
+% pseudoprops 101016
+\subsection{Pseudo-Properties}
+\index{pseudo-properties}
+\label{pseudoprops}
+
+{\Xic} supports ``pseudo-properties'' which when applied are not saved
+as properties, but rather change or return some parameter related to
+the object.  This allows the property setting mechanism to be used to
+alter the physical layout, which can be an important feature in design
+automation.
+
+In physical mode, when the {\cb Property Editor} is in use, the
+listing will include the available pseudo-properties for the current
+object.  The pseudo-properties can be ``added'' or ``edited'' to
+modify the current object (or all objects if in global mode).  As
+usual, such changes can be undone/redone with the standard operations. 
+
+Internally, pseudo-properties can be applied to any object, electrical
+or physical.  Many of the script functions that modify objects use the
+pseudo-property mechanism internally.  These functions can take
+electrical or physical input.  The graphical user interface, though,
+allows pseudo-properties to be applied in physical mode only, through
+the {\cb Property Editor}.
+
+The pseudo-properties are listed below, giving the property number
+and an internal name for the pseudo-property.
+
+\begin{description}
+\index{pseudo-properties!XprpType}
+\index{XprpType pseudo-property}
+\item{7200: {\et XprpType}}\\
+This value can be read from all objects.  The returned property string
+consists of a single character:  {\vt b}, {\vt p}, {\vt w}, {\vt l},
+or {\vt c} for boxes, polygons, wires, labels, or subcells
+respectively.  The returned value indicates the type of object.
+
+\index{pseudo-properties!XprpBB}
+\index{XprpBB pseudo-property}
+\item{7201: {\et XprpBB}}\\
+This value can be read from all objects, and can be applied to boxes,
+polygons, wires, and labels.  The property string is in the form {\it
+left\/},{\it bottom} {\it right\/},{\it top} where the {\it left\/},
+etc.  are the coordinates of the object's bounding box in internal
+units.  The {\et x} and {\et y} values are separated by commas.  When
+this property is applied to an object other than a subcell, the
+object's geometry is stretched to conform to the bounding box given.
+
+\index{pseudo-properties!XprpLayer}
+\index{XprpLayer pseudo-property}
+\item{7202: {\et XprpLayer}}\\
+This value can be read from all objects, and can be applied to boxes,
+polygons, wires, and labels.  The property string is the name of the
+layer on which the object is defined.  For subcells, the returned name
+is ``{\vt \$\$}'', which is the internal name for the layer on which
+subcells are defined.  When this property is given to an object (not a
+subcell), and if the name is found in the layer table, the object will
+be moved to the given layer.
+
+\index{pseudo-properties!XprpFlags}
+\index{XprpFlags pseudo-property}
+\item{7203: {\et XprpFlags}}\\
+This value can be read from all objects, and can be applied to all
+objects.  The property string is a list of values and keywords
+corresponding to special flags associated with the object.  These
+flags are set internally, and should not be set by the general user.
+
+\index{pseudo-properties!XprpState}
+\index{XprpState pseudo-property}
+\item{7204: {\et XprpState}}\\
+This value can be read from all objects, and can be applied to all
+objects.  The property string contains one of the keywords {\vt
+normal}, {\vt selected}, {\vt deleted}, {\vt incomplete}, and {\vt
+internal}.  This indicates a state value for the object which is used
+internally.  These values should not be set by the general user.
+
+\index{pseudo-properties!XprpGroup}
+\index{XprpGroup pseudo-property}
+\item{7205: {\et XprpGroup}}\\
+This value can be read from all objects, and can be applied to all
+objects.  The property string is an integer corresponding to the
+conductor group assigned to the object by the extraction system. 
+Though all objects have this data field, it has relevance to objects
+that are defined on conducting layers only.  It is generally unwise
+for the user to set this value.
+
+\index{pseudo-properties!XprpCoords}
+\index{XprpCoords pseudo-property}
+\item{7206: {\et XprpCoords}}\\
+This value can be read from all objects, and can be applied to boxes,
+polygons, wires, and labels.  The property string is a list of
+coordinates, one for each vertex, with the {\et x} and {\et y} values
+separated by a comma.  Line feeds are included in returned strings to
+keep the line length below 80 characters.  The values are in internal
+units.  For boxes, labels, and subcells, the coordinates are those of
+the bounding box.  For polygons and wires, the coordinates are the
+actual vertices.  For all but wires, the first and last coordinates
+are the same, i.e., the path is closed.  For boxes and polygons,
+applying this property will change the object geometry.  If the new
+geometry is a Manhattan rectangle, the new figure will be a box,
+otherwise it will be a polygon.  When applied to wires, the new object
+will always be a wire, but with the new path.  The coordinates given
+to a label must describe a Manhattan rectangle, and the label will be
+stretched to fill the given rectangle, as with applying {\et XprpBB}.
+
+\index{pseudo-properties!XprpMagn}
+\index{XprpMagn pseudo-property}
+\item{7207: {\et XprpMagn}}\\
+This value can be read from all objects, and can be applied to all
+objects.  The return value is ``1.000000'' for objects other than cell
+instances, and the magnification value for cell instances.  When
+applied to an object or cell instance, the size of the object will
+change, and a ``reference point'' of the object will remain in a fixed
+location.
+
+\begin{quote}
+\begin{tabular}{ll}\\
+\bf object & \bf reference point\\
+box & lower-left corner\\
+polygon & first vertex in internal list\\
+wire & first vertex in internal list\\
+label & label reference point\\
+instance & transformed master origin\\
+\end{tabular}
+\end{quote}
+
+\index{pseudo-properties!XprpWwidth}
+\index{XprpWwidth pseudo-property}
+\item{7208: {\et XprpWwidth}}\\
+This value can be read from wires, and can be applied to wires.  The
+property string is the width of the wire in internal units.  When
+applied to a wire, the width will take the new value.  This has no
+effect when applied to objects other than wires.
+
+\index{pseudo-properties!XprpWstyle}
+\index{XprpWstyle pseudo-property}
+\item{7209: {\et XprpWstyle}}\\
+This value can be read from and applied to wires.  When the property
+string is read, only the first character is significant, the rest if
+any are ignored.  This is used to set the end style of the wire to one
+of three possible states:  {\bf flush}, {\bf rounded}, or {\bf
+extended}.  In {\Xic}, both wire ends will have the same style.  If
+{\bf flush}, the wire is truncated normal to the edges at the end
+vertices.  If {\bf rounded}, the wire continues beyond the vertex by
+half the wire width, but is given a rounded (ideally semicircular)
+shape (this style is rarely used and is not recommended).  The {\bf
+extended} style is similar in that the wire extends a half-width past
+the vertices, but the end is square.  This is the {\Xic} default.
+
+\begin{quote}
+\begin{tabular}{ll}
+\bf leading character & \bf style\\
+{\vt f},{\vt F}, or {\vt 0} (zero) & flush\\
+{\vt r},{\vt R}, or {\vt 1} (one) & rounded\\
+{\vt e},{\vt E}, or {\vt 2} & extended\\
+\end{tabular}
+\end{quote}
+ 
+Applying this property to a wire will cause that wire to be rendered
+with the given end style.  The property has no effect if given to
+objects other than wires.
+
+\index{pseudo-properties!XprpText}
+\index{XprpText pseudo-property}
+\item{7210: {\et XprpText}}\\
+This value can be read from labels, and can be applied to labels.  The
+return value is the text of the label.  The full text including
+encoded hypertext entries is provided.  When applied to a label, the
+label takes the new text.  There is no effect if this property is
+applied to objects other than labels.
+
+\index{pseudo-properties!XprpXform}
+\index{XprpXform pseudo-property}
+\item{7211: {\et XprpXform}}\\
+This value can be read from and applied to text labels.  It controls a
+set of flags associated with the label which define the presentation
+attributes.
+
+The general syntax for the string value is
+\begin{quote}
+[{\vt +|-}] [{\vt 0x}]{\it hex\/}{\vt |}{\it word\/}[,...]
+\end{quote}
+
+Optionally, the string begins with a {\vt +} or {\vt -} character. 
+If {\vt +} appears, it indicates that the flag bits that are specified
+will be set, and those not specified will be unchanged.  If {\vt -}
+is given, the flag bits specified will be unset, those not specified
+will be unchanged.  If neither, the flags will be set to a new value
+consisting of the bits specified which are set, other bits are not
+set.
+
+The remaining part of the string effectively specifies a set of flag
+bits.  This consists of space or comma-separated keywords or hex
+integers.  Hex integers can have an optional ``{\vt 0x}'' or ``{\vt
+0X}'' prefix.  The overall value is the OR of all terms given.  The
+table below lists the accepted keywords and the equivalent flag bits. 
+Keyword recognition is case-insensitive.
+
+\begin{quote}
+\begin{tabular}{|l|l|l|} \hline
+\bf Word & \bf Hex Bits & \bf Description\\ \hline\hline
+\vt R0 & 0 & no rotation (dummy token)\\ \hline
+\vt R45 & 10 & 45 degree rotation\\ \hline
+\vt R90 & 1 & 90 degree rotation\\ \hline
+\vt R135 & 11 & 135 degree rotation\\ \hline
+\vt R180 & 2 & 180 degree rotation\\ \hline
+\vt R225 & 12 & 225 degree rotation\\ \hline
+\vt R270 & 3 & 270 degree rotation\\ \hline
+\vt R315 & 13 & 315 degree rotation\\ \hline
+\vt MY & 4 & mirror Y after rotation\\ \hline
+\vt MX & 8 & mirror X after rotation and mirror Y\\ \hline
+\vt HJL & 0 & left justify (dummy token)\\ \hline
+\vt HJC & 20 & center X justify\\ \hline
+\vt HJR & 40 & right justify\\ \hline
+\vt VJB & 0 & bottom justify (dummy token)\\ \hline
+\vt VJC & 80 & center Y justify\\ \hline
+\vt VJT & 100 & top justify\\ \hline
+\vt T0 & 0 & text font 0 (dummy)\\ \hline
+\vt T1 & 200 & text font 1 (unused)\\ \hline
+\vt T2 & 400 & text font 2 (unused)\\ \hline
+\vt T3 & 600 & text font 3 (unused)\\ \hline
+\vt SHOW & 1000 & show hidden label\\ \hline
+\vt HIDE & 2000 & hide label\\ \hline
+\vt TLEN & 4000 & show in top-level only\\ \hline
+\vt LIML & 8000 & limit lines\\ \hline
+\end{tabular}
+\end{quote}
+
+The {\vt HJR} will override {\vt HJC} if both are given, similarly
+{\vt VJT} will override {\vt VJC}.
+
+The {\vt SHOW}/{\vt HIDE} bits are for implementing a clickable text
+display, where the label text can be shown or ``hidden'' by rendering
+a small glyph instead.  At most one of these bits should be set. 
+Either bit overrides the default which is in force when neither is
+set.  These can be applied to any label, however the ``clickability''
+of the label is set by the {\et LabelHiddenMode} variable.  All labels
+are ``clickable'' by default, press {\kb Shift} and click on the label
+to toggle the hidden/viewing status.
+
+The {\vt TLEV} bit gives the label the property of being invisible in
+instances of the containing cell, but visible when the cell is viewed
+as the top-level (current cell).
+
+The {\vt LIML} bit causes the label to limit the number of lines
+displayed, when the label text has multiple lines.  The maximum line
+count defaults to 5, and is otherwise given with the {\et
+LabelMaxLines} variable.
+
+\ifoa
+The {\vt TLEV} and {\vt LIML} bits may be applied when reading
+schematic cells through OpenAccess for Virtuoso compatibility, but are
+not otherwise used in {\Xic}, except as controlled through this
+pseudo-property.
+\fi
+
+When applied to a label, the label will be rendered using the new flags. 
+This property has no effect when applied to objects other than labels.
+
+\index{pseudo-properties!XprpArray}
+\index{XprpArray pseudo-property}
+\item{7212: {\et XprpArray}}\\
+This value can be read from subcell instances, and can be applied to
+subcell instances.  The property string is of the form ``{\it
+nx\/},{\it ny} {\it dx\/},{\it dy}'' where {\it nx} and {\it ny} are
+the number of columns and rows, and the {\it dx} and {\it dy} are the
+center to center spacings in internal units, for an array of subcells. 
+When applied to an instance, the array parameters of the instance are
+correspondingly changed.  This property has no effect on objects other
+than subcells.
+
+\index{pseudo-properties!XprpTransf}
+\index{XprpTransf pseudo-property}
+\item{7213: {\et XprpTransf}}\\
+This value can be read from subcell instances, and can be applied to
+subcell instances.  The property string is the CIF transformation
+string for the instance, with coordinates in internal units.  When
+applied to an instance, the instance placement and orientation change
+to reflect the new transformation.  This property has no effect on
+objects other than subcells.
+
+\index{pseudo-properties!XprpName}
+\index{XprpName pseudo-property}
+\item{7214: {\et XprpName}}\\
+This value can be read from subcell instances, and can be applied to
+subcell instances.  The property string is the name of the
+instantiated cell.  If this property is set, the instance is replaced
+by an instance of the given cell name.  The current transform is added
+to the existing transform when the new instance is placed.  This
+property has no effect on objects other than subcells.
+
+\index{pseudo-properties!XprpXY}
+\index{XprpXY pseudo-property}
+\item{7215: {\et XprpXY}}\\
+This pseudo-property has a value that is an x,y coordinate, and can be
+read from or applied to any object or subcell.  The interpretation of
+this coordinate depends on the type of object.  For boxes, it is the
+lower-left corner.  For polygons and wires, it is the first vertex in
+the vertex list.  For labels, it is the text anchor point, and for
+subcells it is the placement coordinate.  Setting the property is
+equivalent to moving the object.
+
+\index{pseudo-properties!XprpWidth}
+\index{XprpWidth pseudo-property}
+\item{7216: {\et XprpWidth}}\\
+This pseudo-property returns the width of any object or cell instance
+in internal units.  It can be applied to objects but not cell
+instances, and will scale the object to the specified width.
+
+\index{pseudo-properties!XprpHeight}
+\index{XprpHeight pseudo-property}
+\item{7217: {\et XprpHeight}}\\
+This pseudo-property returns the height of any object or cell instance
+in internal units.  It can be applied to objects but not cell
+instances, and will scale the object to the specified height.
+\end{description}
+
+The settable pseudo-properties for an object are listed in the {\cb
+Property Editor}, along with the ``real'' properties.  These can be
+changed in the same way, which will produce physical changes to the
+object.
+
+%-------------------------------------
+% elecprops 110313
+\subsection{Electrical Mode Properties}
+\label{elprops}
+
+In electrical mode, only properties with certain values and data can
+be entered, and only to objects corresponding to library devices or
+subcircuit instances.
+
+These properties are generally applied with the {\cb Property Editor}
+from the {\cb Properties} button in the {\cb Edit Menu}.  However, the
+most frequently used properties, such as those that set device
+parameters, have values that are shown on-screen as text labels.  If
+one edits the label, the underlying property value is changed as well. 
+This is generally more convenient than using the {\cb Property
+Editor}.  Labels are edited by first selecting a label by clicking on
+it, then entering the {\cb label} command by pressing the button in
+the side menu.
+
+A description of the electrical properties used by {\Xic}, including
+the property string syntax, is provided in \ref{elecpropuser}.
+
+See the description of the {\cb Property Editor} for a listing and
+discussion of the properties that can be added with the {\cb Add}
+menu.
+
+Properties of the current call can be added or modified with the {\cb
+Cell Property Editor} from the {\cb Cell Properties} button in the
+{\cb Edit Menu}, and are listed in the {\cb Add} menu of the editor. 
+See the {\cb Cell Property Editor} description for a list and
+discussion of these properties.
+
+
+% -----------------------------------------------------------------------------
+% xic:cedit 111609
+\section{The {\cb Enable Editing} Button: Enable Cell Editing}
+\index{Enable Editing button}
+This button tracks the state of the IMMUTABLE flag of the current
+cell, and will alter the flag if editing mode is changed.  When the
+current cell is IMMUTABLE, it can not be modified, and all editing
+features are disabled.  The side menu is hidden, the {\cb Modify Menu}
+is disabled, and all but this button and {\cb Create Cell} are
+disabled in the {\cb Edit Menu}.
+
+If there is no current cell, editing features are disabled.
+
+Cells read into {\Xic} through the library mechanism have the
+IMMUTABLE flag set.  This button can be used to allow modification of
+these cells.
+
+Setting the IMMUTABLE flag of the current cell from the {\cb Flags}
+button in the {\cb Cells Listing} panel from the {\cb Cells Menu} or
+with the {\cb !setflag} command will have the same effect as use of
+this button.
+
+
+% -----------------------------------------------------------------------------
+% xic:edset 100416
+\section{The {\cb Setup} Button: Show Editing Setup Panel}
+\index{Setup button (Edit Menu)}
+
+The {\cb Setup} button in the {\cb Edit Menu} brings up the {\cb
+Editing Setup} panel.  The panel provides controls for setting various
+parameters and options which apply during layout editing.
+
+\begin{description}
+\item{\cb Constrain angles to 45 degree multiples}\\
+When this check box is active, wire and polygon vertices are
+constrained to form angles of multiples of 45 degrees.  By default, a
+``smart'' path generator is employed, which will construct a valid
+path to the pointer location from the previous point during wire or
+polygon construction.  This will often add two vertices:  a 45 degree
+extension, followed by a Manhattan extension, in order to connect the
+points.  If the {\kb Ctrl} key is held while the new point is defined,
+the ``smart'' feature is disabled, and only one new vertex is added. 
+If the {\kb Shift} key is held, then the 45 degree constraint is
+removed entirely.
+
+The {\et Constrain45} variable tracks the state of this check box, and
+setting or clearing the variable will also set or clear the mode.
+
+When active, rotation angles available in the {\cb spin} command, and
+translation angles in the {\cb Stretch} command, and the vertex
+editors for polygons and wires, are constrained to multiples of 45
+degrees.  However, pressing the {\kb Shift} key will remove the
+constraint in these commands while the key is held.  If the {\et
+Constrain 45} variable is not defined, holding {\kb Shift} will impose
+the 45 degree angle constraint.  Thus, the {\kb Shift} key inverts the
+effective state of the {\et Constrain 45} variable (and this check
+box) in these commands.
+
+\item{\cb Merge new boxes and polys with existing boxes/polys}\\
+When this check box is set, new boxes and polygons that are created
+with the side menu commands are merged with existing boxes and
+polygons to form a larger polygon in the database.  New wires will be
+connected to existing wires on the same layer with the same width and
+endpoint, but do not participate in the box/polygon merging of new
+objects.
+
+However, on layers with the {\vt NoMerge} technology file keyword set,
+merging is always suppressed.
+
+The state of this check box tracks the logically inverted state of the
+boolean variable {\et NoMergeObjects}, which can (equivalently) be set
+with the {\cb !set} command.
+
+Existing objects can be similarly joined, or split into trapezoids,
+with the buttons in the {\cb Join or Split Objects} panel brought up
+with the {\cb Join/Split} button in the {\cb Edit Menu}.
+
+Join (merging) operations are subject to the settings of several
+variables, which have equivalent entries in the {\cb Join or Split
+Objects} panel.  These limit the complexity of polygons created by
+merging, mostly for optimizing for speed for merging large object
+collections.
+
+The {\cb Clip and merge new boxes only, not polys} button in this
+panel modifies the merging behavior to clip and merge boxes only.
+
+This object merging is separate and unrelated to the box merging
+available when reading a layout file into the database, which has a
+separate merging control in the {\cb Setup} page of the {\cb Import
+Control} panel from the {\cb Convert Menu}.
+
+\item{\cb Clip and merge new boxes only, not polys}\\
+When merging is enabled (the {\cb Merge new boxes and polys with
+existing boxes/polys} check box is active), and this check box is also
+active, polygons are ignored when merging, and new boxes are
+clipped/merged.  This was the merging behavior in releases prior to
+3.1.7.
+
+This setting has no effect if merging is not enabled.  It tracks the
+state of the {\et NoMergePolys} variable.
+
+\item{\cb Prompt to save modified native cells}\\
+When the box is checked, the user will be prompted to save the current
+cell if the cell is modified, and would be saved as a native cell
+file, and a new current cell is about to be set.  This was standard
+behavior in releases earlier than generation 4.  Although it is always
+a good idea to save work periodically, the prompt can be annoying to
+experienced users and is now disabled by default.  The user will be
+given the chance to save modified cells when exiting {\Xic} in any
+case.
+
+This check box tracks the state of the {\et AskSaveNative} variable. 
+The variable can be set as a boolean or cleared to change the mode,
+which is equivalent to checking or un-checking this check box.
+
+\item{\cb No wire width change in magnification}\\
+When the box is checked, the width of wires does not change when the
+wire undergoes magnification, in a {\cb Move}, {\cb Copy}, or {\cb
+Flatten} operation.
+
+This check box tracks the state of the {\et NoWireWidthMag} variable. 
+The variable can be set as a boolean or cleared to change the mode,
+which is equivalent to checking or un-checking this check box.
+
+\item{\cb Allow Create Cell to overwrite existing cell}\\
+When this check box is active, The {\cb Create Cell} operation in the
+{\cb Edit Menu} and the {\vt CreateCell} script function can overwrite
+cells already in memory.  This can be dangerous and is prevented by
+default, and the user is advised to be careful if using this feature.
+
+This check box tracks the state of the {\et CrCellOverwrite} variable. 
+The variable can be set as a boolean or cleared to change the mode,
+which is equivalent to checking or un-checking this check box.
+
+\item{\cb Maximum undo list length}\\
+This integer entry sets the number of operations remembered in the
+{\cb Undo} command.  If not set, 25 operations are saved.  If set to
+zero, the length is unlimited.
+
+This entry tracks the value of the {\et UndoListLength} variable.  The
+variable can be set as an integer or cleared to change the value,
+which is equivalent to changing the integer entry in this panel.
+
+\item{\cb Maximum number of ghost-drawn objects}\\
+This integer entry sets the maximum number of objects to render
+individually as ``ghosts'' attached to the mouse pointer during
+operations such as move and copy.  This can be set to an unsigned
+integer in the range 50--50000.  If there are more than this number,
+some outlines won't be shown, the smaller-area objects will be
+skipped.  The default is 4000 if this variable is not set.  If, when
+moving a large number of objects, the pointer motion is too sluggish,
+the user can set this variable to compensate.
+
+This entry tracks the value of the {\et MaxGhostObjects} variable. 
+The variable can be set as an integer or cleared to change the value,
+which is equivalent to changing the integer entry in this panel.
+
+\item{\cb Maximum subcell depth in ghosting}\\
+This menu sets the maximum expansion depth for instance expansion in
+ghosting.  If {\cb as expanded}, this is the same as the normal
+expansion depth.  The actual expansion depth used in ghosting will not
+be larger than the normal expansion depth, but can be smaller.  For
+example, setting this to 0 (zero) will prevent expansion of ghosted
+subcells entirely.
+
+This entry tracks the value of the {\et MaxGhostDepth} variable. 
+The variable can be set as an integer or cleared to change the value,
+which is equivalent to changing the integer entry in this panel.
+\end{description}
+
+
+% -----------------------------------------------------------------------------
+% xic:pcctl 091614
+\section{The {\cb PCell Control} Button: PCell Control Panel}
+\index{PCell Control button}
+\index{PCell Control panel}
+\index{pcell options}
+The {\cb PCell Control} button in the {\cb Edit Menu} brings up the
+{\cb PCell Control} panel.  From the panel, various options related to
+parameterized cells (pcells, see \ref{pcells}) can be set.  The
+following elements are available.
+
+\begin{description}
+\item{\cb Auto-abutment mode}\\
+The drop-down menu provides three choices, {\cb Mode 1} through {\cb
+Mode 3}.  This provides the three values for the {\et otherPinsOnNet}
+parameter that is part of the Ciranova auto-abutment protocol as
+implemented in {\Xic} (see \ref{pcabut}).  How the pcell uses this
+parameter is up to the pcell author, there is really no {\it a-priori}
+interpretation.
+
+The Ciranova {\et Nmos2} example pcell interprets the value to
+have the following meanings.  This is likely to be used in other
+pcells as well.
+
+\begin{tabular}{ll}\\
+{\bf Mode 1} value 0 & Auto-abutment is disabled.\\
+{\bf Mode 2} value 1 & Abutment takes place with no contact between
+  the gates.\\
+{\bf Mode 3} value 2 & Abutment takes place with a contact (to layer M1)
+  between the gates.\\
+\end{tabular}
+
+This setting tracks the value of the {\et PCellAbutMode} variable. 
+The default (when the variable is not set) is Mode 2.  The variable
+can be set to the integers 0--2, which correspond to the three modes.
+
+\item{\cb Hide and disable stretch handles}\\
+{\Xic} implements the Ciranova stretch handle protocol (see
+\ref{pcstretch}).  By default, the stretch handles are visible in
+selected, expanded instances, and in the current cell if the cell is a
+sub-master.  Setting this option will hide and disable all stretch
+handles.
+
+The {\et PCellHideGrips} variable tracks the state of this check box.
+
+\item{\cb Instance min. pixel size for stretch handles}\\
+The stretch handles of a selected instance are shown only if the
+instance is displayed large enough to avoid inadvertently engaging the
+stretch handles when using the mouse for other purposes.  By default,
+the smaller of the instance width or height must be 100 pixels or
+larger for stretch handles to appear.  This numerical entry will
+modify this threshold.
+
+The {\et PCellGripInstSize} variable tracks the value of this entry.
+
+\item{\cb List sub-masters as modified cells}\\
+When this check box is checked, the {\cb Modified Cells} panel, which
+appears when exiting {\Xic} or from the {\cb !sa} command and {\cb
+Save} button (in the {\cb Edit Menu}) when there are cells that are
+modified and unsaved, will include sub-master cells.  Normally,
+sub-masters live only in memory, to be re-created when needed, and are
+excluded from the listing.  However, there may be times when it is
+desirable to write these to disk.
+
+The {\et PCellListSubMasters} variable tracks the state of this check
+box.
+
+\item{\cb Show all evaluation warnings}\\
+By default, certain warning messages are suppressed while
+evaluating a pcell script, since they can be annoying and are
+probably only of interest to the pcell author.  At present, this
+applies only to coincident (duplicate) object checking.  If this
+check box is checked, these messages will pop up in a window when
+the pcell sub-master is created.
+
+The {\et PCellShowAllWarnings} variable tracks the state of this check
+box.
+\end{description}
+
+
+% -----------------------------------------------------------------------------
+% xic:crcel 062109
+\section{The {\cb Create Cell} Button: Create New Cell}
+\index{Create Cell button}
+\index{cell creation}
+The {\cb Create Cell} button in the {\cb Edit Menu} will create a new
+cell from the currently selected objects.  The user is prompted for a
+name for the new cell.  The new cell is created in memory, and should
+be saved to disk if future use is intended.  It is marked as
+``modified'' so the user will be given the chance to save it when
+exiting {\Xic}.
+
+The {\cb !sqdump} function is similar, but writes a native file to
+disk and does not create a cell in memory.
+
+In electrical mode, note that the new cell is not a subcircuit.  It
+must be edited and connection points added (with the {\cb subct}
+command) before it can be used in another circuit.
+
+The user is given the option to replace the selected objects with
+an instance of the new cell.
+
+By default, an attempt to overwrite a cell already in memory will
+fail.  If the {\et CrCellOverwrite} variable is set, existing cells in
+memory can be overwritten (use this with care). 
+
+
+% -----------------------------------------------------------------------------
+% xic:crvia 031815
+\section{The {\cb Create Via} Button: Create Standard Via Variant}
+\index{Create Via button}
+\index{standard via}
+
+The {\cb Create Via} button in the {\cb Edit Menu} brings up the {\cb
+Via Creation} panel, if standard vias are defined in the current
+technology.  If no standard vias are defined, the menu entry will be
+grayed, and the panel will not be available.  This will be the case
+for the example {\vt scmos} and Hypres technology files provided.  The
+{\vt xic\_tech.demo} technology file found with the memory chip
+examples does provide standard via definitions, should the user wish
+to try this feature.
+
+The panel contans a number of entry areas, corresponding to the
+standard via parameters as described below.  Of these, the numerical
+parameters can be changed by the user to create variants.  The fields
+that contain layer names can not be changed, except by creating a new
+standard via definition.  Presently, this must be done by editing the
+technology file.
+
+Each row of the panel contains a description and two entry areas, as
+most of the entries have separate values for X and Y directions. 
+Dimensions are in microns.
+
+\begin{description}
+\item{\cb Via name, cut layer}\\
+This row contains two menus, which together provide access to all of
+the available standard via definitions.  The menu on the right
+provides the process layer names that are used as ``cuts''.  These are
+the layers that represent holes in an insulating layer, generally
+called ``via layers''.  The menu on the left provides the names of
+standard vias defined which use that via layer.  Most often, there is
+only one such definition, for a metal to metal contact.  In other
+cases, one of the ``conductors'' may be an implanted area, in which
+case there may be several choices.  When the user selects a standard
+via using these menus, the other fields in the panel will be set to
+the default values for the various parameters.
+
+\item{\cb Layer 1, Layer 2}\\
+These are the layer names of the two layers to be connected by the
+via.  These can not be changed by the user, except by selecting
+another standard via.  In {\Xic}, {\cb Layer 1}, and the `1'
+designation in general, corresponds to the bottom conductor.
+
+\item{\cb Cut width, height}\\
+The ``cut'' is the feature on the via layer that actually forms the
+contact.  In a standard via, this is always rectangular.  In a
+semiconductor process, this is almost always a square of a fixed size. 
+Although the two dimensions can be changed by the user, one must be
+aware of the relevant design rules before doing so.
+
+\item{\cb Cut rows, columns}\\
+In order to lower contact resistance and handle higher current, the
+cut structure can be arrayed.  In some situations it may be possible
+to simply increase the size of a single cut, but in more advanced
+processing the cut size is fixed and arrays are used.  This is
+probably the most common variant.
+
+\item{\cb Cut spacing X,Y}\\
+This is the space between cut edges (not center-to-center) in the X
+and Y directions.  This is only useful if the cut is arrayed.  In
+general, the two values are the same, and fixed at a minimum from a
+design rule.  The values should be changed only with knowledge of the
+appropriate design rules.
+
+\item{\cb Enclosure 1 X,Y}\\
+In addition to the cut, the via will also contain squares of the two
+metal layers.  The ``Enclosure'' is the distance the metal layer
+overhangs the cut.  The two numbers apply to the bottom layer, in the
+X and Y directions.  The two numbers are typically set to a design
+rule minimum, and should be changed only with knowledge of the design
+rules involved.
+
+\item{\cb Offset 1 X,Y}\\
+If the offset parameters are zero, the metal rectangle is centered on
+the cut.  One can set the offset to a nonzero value, which will move
+the center of the metal rectangle relative to the center of the cut. 
+This entry applies to the bottom conductor.  These entries are almost
+always zero.
+
+\item{\cb Enclosure 2 X,Y}\\
+As for {\cb Enclosure 1}, but the values apply to the top conductor.
+
+\item{\cb Offset 2 X,Y}\\
+As for {\cb Offset 1}, but the values apply to the top conductor.
+
+\item{\cb Origin offset X,Y}\\
+This is the origin of the sub-master coordinate system, which if zero
+is centered on the cut array.  This is the same as Virtuoso, but
+appears to differ from the OpenAccess specification which seems to
+indicate that the origin is centered on the lower-left cut element. 
+All features of the via are drawn relative to this offset, so there
+are no design rule implications.  These values are most often zero.
+
+\item{\cb Implant 1, Implant 2}\\
+Up to two additional rectangles can be drawn in the via, representing
+implant areas.  These may apply when contacting activated substrate
+areas, where additional spacing rules to an implant region edge may
+apply.  If defined in the standard via definition, one or both of
+these entries may contain an implant layer name.  If not, the entry
+area is grayed.  The layer names can not be changed by the user,
+except by selecting another standard via.
+
+\item{\cb Implant 1 enc X,Y}\\
+If an {\cb Implant 1} layer is present, these entries will contain the
+enclosure values of the implant 1 layer rectangle relative to the
+bottom conductor rectangle.  That is, the implant 1 rectangle will
+overhang the bottom conductor rectangle in the X and Y directions by
+the values given.
+
+\item{\cb Implant 2 enc X,Y}\\
+If an {\cb Implant 2} layer is present, these entries will contain the
+enclosure values of the implant 2 layer rectangle relative to the top
+conductor rectangle.  That is, the implant 2 rectangle will overhang
+the top conductor rectangle in the X and Y directions by the values
+given.
+\end{description}
+
+The easiest way to understand the effect of these parameters is to
+create some vias.
+
+Entering the parameters has no effect until the {\cb Apply} button is
+pressed.  When {\cb Apply} is pressed, a new internal sub-master cell
+for the variant is created if necessary, and the via structure is
+ghost-drawn and attached to the mouse pointer.  Instances of the via
+will be placed where the user clicks in a drawing window.  As for
+normal subcells, the current transform will be applied to the via. 
+Most process rules will not accept 45-degree rotations.  The placement
+mode can be exited by pressing the {\kb Esc} key.
+
+
+% -----------------------------------------------------------------------------
+% xic:flatn 102913
+\section{The {\cb Flatten} Button: Flatten Hierarchy}
+\index{Flatten button}
+\index{flatten hierarchy}
+The {\cb Flatten} button in the {\cb Edit Menu} brings up a small {\cb
+Flatten Hierarchy} pop-up which controls flattening of the hierarchy
+by moving the contents of selected subcells into the current cell.  A
+{\cb Depth} choice menu selects the depth into the hierarchy to
+flatten.  If 0, geometry in the selected subcells is brought into the
+current cell, and sub-subcells are placed in the current cell,
+becoming subcells.  If ``{\vt all}'', the entire subcell hierarchy is
+flattened, i.e., all geometry under a selected subcell is brought into
+the current cell.
+
+The {\cb Use fast mode} check box will select a processing mode that
+will skip undo list processing and object merging operations for speed
+and reduced memory use.  This may be desirable for large jobs
+containing complex cells, which may take a long time to process.  In
+this mode, there is no ``undo'' capability, however.
+
+If the {\cb Use object merging when flattening} check box is checked,
+the new object merging will be performed when objects from the
+subcells are promoted to the current cell.  This is the same merging
+as specified in the {\cb Editing Setup} panel from the {\cb Edit
+Menu}.  Use of full polygon merging can greatly increase processing
+time, simple box clipping/merging has much lower overhead.  Merging
+will generally reduce the object count in the layout.
+
+The {\cb Flatten} button on the pop-up initiates the operation.  The
+subcells to be flattened must have been selected at this point.
+
+Pressing {\kb Ctrl-c} will pause the process, and give the user the
+option of terminating the job.  It is usually not desirable to stop in
+the middle of a flatten operation, but invoking this prompt may
+reassure the user that the operation is in progress and not ``hung''.
+
+In electrical mode, symbolic instances and library devices are never
+flattened, they are considered atomic.  If you must flatten an
+instance that is displayed symbolically, the instance must first be
+forced to display as a schematic, either by reverting its master to
+non-symbolic temporarily, or by adding a {\et NoSymb} property to the
+instance with the {\cb Property Editor}.
+
+
+% -----------------------------------------------------------------------------
+% xic:join 070616
+\section{The {\cb Join/Split} Button: Join or Split Objects}
+\index{Join/Split button}
+
+The {\cb Join/Split} button in the {\cb Edit Menu} brings up the {\cb
+Join or Split Objects} panel.  This panel contains controls for
+setting defaults and initiating join and split operations.  These
+operations are identical to those available from the {\cb !join} and
+{\cb !split} text commands.
+
+The panel contains the following controls:
+\begin{description}
+\item{\cb No limits in join operation}\\
+This check box unsets the limits on the complexity of polygons that
+are created during the merge, by setting the {\et JoinMaxPolyVerts},
+{\et JoinMaxPolyGroup}, and {\et JoinMaxPolyQueue} variables to
+``0'' (zero).
+
+\item{\cb Maximum vertices in joined polygon}\\
+This provides an entry area for setting the value of the {\et
+JoinMaxPolyVerts} variable, which limits the number of vertices
+allowed in a polygon created as the result of a join operation.
+
+\item{\cb Maximum trapezoids per poly for join}\\
+This provides an entry area for setting the value of the {\et
+JoinMaxPolyGroup} variable, which places a limit on the number of
+connected trapezoids that can be used to form a polygon.
+
+\item{\cb Trapezoid queue size for join}\\
+This provides an entry area for setting the value of the {\et
+JoinMaxPolyQueue} variable, which provides a limit on the number of
+trapezoids that can be considered for joining into polygons in a
+single pass.
+
+\item{\cb Clean break in join operation limiting}\\
+When this check box is set, {\Xic} will attempt to break polygons
+where the vertex limit is reached into pieces so that the boundaries
+are more visually attractive.  This tracks the state of the {\et
+JoinBreakClean} variable.
+
+\item{\cb Include wires (as polygons) in join/split}\\
+If this check box is set, wire objects will be included in join/split
+operations, treated as polygons.  If not checked, wires are ignored in
+these operations.  This tracks the state of the {\et JoinSplitWires}
+variable.
+
+\item{\cb Join}\\
+This push button initiates a join operation on selected objects.  All
+suitable selected objects will be joined on their respective layers,
+as for the {\cb !join} command without an argument.  Unlike other
+commands that join (merge) objects, this overrides the {\vt NoMerge}
+technology attribute if set on an object's layer.
+
+\item{\cb Join Lyr}\\
+This will join objects on the current layer, whether selected or not. 
+The layer must be visible, and not have the {\vt NoMerge} technology
+attribute set.  This is equivalent to the {\cb !join} command with the
+``layer'' argument.
+
+\item{\cb Join All}\\
+\index{NoMerge keyword}
+This push button initiates a join operation on all objects in the
+current cell, selected or not.  It applies to objects on visible,
+selectable layers that do not have the {\vt NoMerge} technology
+attribute applied.  This is the same as the {\cb !join} command with
+the ``all'' argument given.
+
+\item{\cb Split Horiz}\\
+This will decompose complex polygons into a collection of trapezoids
+(boxes and simple polygons in the database) that collectively cover
+the same area and do not overlap.  The splitting is performed using
+horizontal scan lines.  This is the same effect as the {\cb !split}
+command.  Wire objects will also be split if the {\et JoinSplitWires}
+variable or the corresponding check box is set.
+
+\item{\cb Split Vert}\\
+This will also decompose complex polygons into a collection of
+trapezoids, however vertical scan lines are used.  This is the same
+effect as using the ``{\vt v}'' argument to the {\cb !split} command. 
+Wire objects will also be split if the {\et JoinSplitWires} variable
+or the corresponding check box is set.
+\end{description}
+
+
+% -----------------------------------------------------------------------------
+% xic:lexpr 100516
+\section{The {\cb Layer Expression} Button: Evaluate Layer Expression}
+\index{Layer Expression button}
+The {\cb Layer Expression} button in the {\cb Edit Menu} brings up the
+{\cb Evaluate Layer Expression} panel.  Layer expressions are logical
+expressions referencing the geometry on existing layers, with various
+operators and functions.  These evaluate to a pattern, which can be
+applied to a new or existing layer.  Operations include polarity
+inversion, intersection, union, and many more complex possibilities.
+
+The {\cb Evaluate Layer Expression} panel allows layer expressions to
+be applied to the current cell hierarchy, much the same as the
+text-mode {\cb !layer} command.  The panel allows easy setting of
+variables which control the expression evaluation, whether initiated
+from the panel or the {\cb !layer} command.
+
+Full layer expression evaluation is available in physical mode only,
+though joining, splitting and copying are available in either mode.
+
+The controls found in the {\cb Evaluate Layer Expression} panel are
+described below.
+
+\begin{description}
+\item{\cb To layer}\\
+This entry area requires the name of a layer on which new geometry
+will be created while the layer expression is evaluated.  This is the
+only control in the panel that requires an entry.  If the layer name
+does not match an existing layer name (as a short or long name), a new
+layer is created, with a name generated from the given name in the
+same way as in the technology file layer definitions.
+
+If no expression is given, the {\cb To layer} is created, if it does
+not exist.  If the layer exists, and one of {\cb Joined}, {\cb Horiz
+Split}, or {\cb Vert Split} is set, that operation will be performed
+on the {\cb To layer}.  The result is similar to the corresponding
+operations as initiated form the {\cb Join or Split Objects} panel
+from the {\cb Join/Split} button in the {\cb Edit Menu}, or the {\cb !join}
+and {\cb !split} commands.  If the {\cb To layer} did not previously
+exist, or the {\cb Default} new object format is selected, layer
+creation is the only operation performed.
+
+\item{\cb Depth to process}\\
+When the layer expression is evaluated, the layer geometry used in the
+processing is obtained to this level in the hierarchy.  If 0, only the
+geometry in the present cell is considered.  If ``{\vt all}'', the
+geometry of the complete hierarchy is taken.
+
+\item{\cb Recursively create in subcells}\\
+This check box has effect only if the {\cb Depth} is not zero.  When
+checked, the layer expression is evaluated in the current cell and
+each subcell to depth, using only the objects from that cell.  If this
+is unchecked, the operation is quite different.  In this case, there
+is no recursion, and all new geometry is created in the current cell,
+but geometry in cells to depth is considered when creating the new
+geometry.
+
+\item{\cb Partition Size}\\
+To maximize computation speed, the expression evaluation is performed
+step-wise over a logical grid in the target cell.  The grid origin is
+the lower-left corner of the cell.  The partition size is the width of
+an (assumed square) grid cell.  The calculations are performed for
+each grid square that overlaps the cell area.  This can be more
+efficient than calculating the whole cell in one shot (which might not
+even be possible due to memory limitations).
+
+The gridding is used only if an actual expression is given, and not
+simply a layer name (or no expression at all).  If the expression
+consists only of a layer name, processing requires only a simple copy
+and there would be no reason to use partitioning.
+
+If the {\cb None} button is pressed, no partitioning will be used.
+
+The default partition size is 100 microns, which can be adjusted for
+best performance.  The size should be large enough to minimize the
+number of grid cells to evaluate, but small enough to limit the amount
+of geometry to process on average in each grid, to avoid huge memory
+consumption and other ill effects of taking too big of a ``bite''.
+
+For simple cells, the grid size can be large, or partitioning can be
+skipped entirely.  Partitioning can be skipped by pressing the {\cb
+None} button, or by setting the size to a value larger than the cell
+bounding box width and height.
+
+This entry tracks the state of the {\cb Partition Size} variable,
+which is also used by the {\cb !layer} command and elsewhere.
+
+\item{\cb Number of helper threads}\\
+{\bf PRELIMINARY. EXPERIMENTAL!}
+
+Multiple threads can be used when evaluating a layer expression over a
+grid.  Evaluation in each of the grid cells can be done in parallel,
+so these jobs are submitted to the thread pool.  This allows processor
+cores to work simultaneously on different parts of the grid.
+  
+Multi-threading will be used if this entry is set nonzero.  The value
+is the number of helper threads that can be called upon to parallelize
+the operation.  The speediest value is probably one less than twice
+the number of available processor cores, as each Intel core provides
+two hardware threads.  Your results may differ, so one should
+experiment.  One can also experiment with the partition size to get
+fastest results, larger partitions are more likely to overcome the
+multi-threading overhead.
+
+This should not be set to a value larger than the number of available
+hardware threads minus one, but one might wish to try smaller values. 
+If set to a larger value, software threads will be used, which will
+increase computation time.  If set to 0, the operation is
+single-threaded.
+
+This entry tracks the value of the {\et Threads} variable.
+
+\item{\cb Don't clear layer before evaluation}\\
+By default, the layer given in the {\cb To layer} entry is cleared
+before the expression is evaluated, so that the layer will contain
+only the result of the operation.  It this check box is set, the {\cb
+To layer} will not be cleared, new data will appear in addition to
+existing data.
+
+\item{\cb New object format}\\
+This consists of four interlocking ``radio'' buttons which establish
+the nature of the new objects created by evaluating the layer
+expression.  If {\cb Joined} is selected, objects will be combined
+into polygons before being added to the cell.  If {\cb Horiz Split} is
+selected, objects are added as trapezoids, with a horizontal
+orientation (maximal width) favored.  If {\cb Vert Split} is selected,
+objects will also be added as trapezoids, however a vertical
+orientation (maximal height) is favored.
+
+The {\cb Default} choice has the same effect as {\cb Joined} in cases
+where the layer expression contains more than a layer name, i.e., it
+contains at least one operator, function, or numeric entry.  If the
+expression consists of a layer name only, the {\cb Default} choice
+will read the objects from that layer and add them to the {\cb To
+layer}, without modification.  The other new object format choices
+will cause the objects read from the layer to be joined or split
+before being added to the {\cb To layer}.
+
+When joining objects, there are several variables which fine-tune the
+operation.  These are most conveniently set from the {\cb Join or
+Split Objects} panel brought up by the {\cb Join/Split} button in the
+{\cb Edit Menu}.
+
+\item{\cb Expression}\\
+This entry area contains the layer expression to evaluate.  This is an
+expression consisting of existing layer names, operators, and function
+calls, which will be evaluated.  Dark areas will be rendered on the
+layer given in the {\cb To layer} entry.
+
+Thus, this provides a means of creating a new layer from geometry on
+existing layers.  Labels are ignored during processing, but all other
+objects contribute.  The same layer name can appear in the {\cb To
+layer} entry and in the expression, in which case the contents of that
+layer is updated with the result of the expression.
+
+There are eight registers which can be used to save and recall layer
+expression strings, for convenience.  The {\cb Save} and {\cb Recall}
+buttons provide access to these registers.  Selecting an item in the
+{\cb Save} menu will save the current contents of the {\cb Expression}
+entry in that register.  Selecting an item in the {\cb Recall} menu
+will load that text into the {\cb Expression} entry area.
+
+\item{\cb Use object merging while processing}\\
+When this check box is set, new objects created during evaluation of
+the layer expression will be merged with existing objects, using the
+same object merging as specified in the {\cb Editing Setup} panel from
+the {\cb Edit Menu}.
+
+If there is no {\cb Expression} given, or the expression consists only
+of the same layer name given in {\cb To layer}, then merging is not
+performed.
+
+In every other case, the merging enabled from the {\cb Edit Menu} will
+be performed as new objects are added to the {\cb To Layer}.  This
+merging will defeat the purpose of the join and split format choices,
+so one must consider when merging makes sense.  Merging applies to
+objects initially on the {\cb To layer}, if not clearing, plus the
+accumulated objects added as the operation progresses.
+
+Full polygon merging can greatly increase the time and memory required
+to process a large job.  Box clipping has much less overhead.
+
+\item{\cb Fast mode}\\
+When set, undo list processing and object merging will be skipped,
+which reduces memory use and computational overhead to a minimum. 
+However, the operation can not be undone, so this mode should be used
+with care.
+
+\item{\cb Evaluate}\\
+Pressing this button will create the {\cb To layer} if necessary,
+evaluate the layer expression, and add the newly created geometry to
+the current hierarchy.
+\end{description}
+
+\subsection{Examples}
+
+\begin{description}
+\item{Clear layer {\vt M0}}\\
+{\cb To layer}: {\vt M0}\\
+{\cb Expression}: {\vt 0}
+\item{Copy layer {\vt M1} to layer {\vt NEW}}\\
+{\cb To layer}: {\vt NEW}\\
+{\cb Expression}: {\vt M1}
+\item{Copy the inverse of layer {\vt M1} to {\vt NEW}}\\
+{\cb To layer}: {\vt NEW}\\
+{\cb Expression}: {\vt !M1}
+\item{Copy the intersection area of {\vt I1} and {\vt I2} to {\vt NEW}}\\
+{\cb To layer}: {\vt NEW}\\
+{\cb Expression}: {\vt I1\&I2}
+\item{Copy the {\vt R1} and {\vt R2} areas to {\vt New}}\\
+{\cb To layer}: {\vt NEW}\\
+{\cb Expression}: {\vt R1|R2}
+\end{description}
+
+\subsection{Extended Layer Names}
+
+The layer names in the layer expression (but not the {\cb To layer}
+entry) can actually be given in an extended form:
+
+\begin{quote}
+{\it lname\/}[{\vt .}{\it stname\/}][{\vt .}{\it cellname\/}]
+\end{quote}
+
+Most generally, the ``layer'' name consists of three tokens, two of
+which are optional (indicated by square brackets above).  The tokens
+are separated by a period (`{\vt .}') character.  The individual
+tokens can be double-quoted (i.e., using the double-quote (`{\vt "}')
+character), which must be used if the tokens contain non-alphanumeric
+characters.  The period separators must appear outside the scope of
+any quoting.
+
+\begin{description}
+\item{\it lname}\\
+This is a short or long layer name, as found in the layer table.
+\item{\it stname}\\
+The name of a symbol table which contains the {\it cellname\/}.
+\item{\it cellname}\\
+The name of a cell.
+\end{description}
+
+If only one separator appears, the token that follows is taken as the
+{\it cellname}, and the current symbol table is assumed.
+
+The {\it cellname} is the name of a cell used as the source for
+geometry.  If no {\it cellname} is given, the name of the current cell
+is understood.  The odd case of an empty {\it stname} indicates the
+``{\vt main}'' symbol table, e.g., {\vt layer..cell} is equivalent to
+{\vt layer.main.cell}.
+
+If the {\it cellname} starts with the `{\vt \@}' character, and no
+symbol table name is given, then the rest of the {\it cellname} is
+taken as the name of a ``special'' database, as created with script
+functions like {\vt ChdOpenZdb}.  If found, geometry will be obtained
+from the database rather than a cell.  Otherwise, when a {\it
+cellname} is given, the geometry is obtained from the given cell, as
+if it were overlaid on the current cell.  The {\it cellname} (or any
+of the three tokens) can be double quoted, and must be quoted if the
+name contains a `{\vt .}' character, for example {\vt
+CPG."mycell.xic"}.
+
+If a {\it stname} is given, and the name matches an existing symbol
+table name, the cell is obtained from that symbol table.  If the
+symbol table name is given, the {\it cellname} field must appear, but
+can be empty (a trailing period) which indicates the name of the
+current cell.
+
+If the {\it stname} is given, and the cell is not in this table, it
+will be opened from disk into the given table (not the current table)
+if found as a native cell file in the search path.
+
+The coordinate origin of the source cell is taken as the origin of the
+current cell.  The source cell must be in memory, or be in a native
+cell in the search path.
+
+Objects read from a ``special'' database are clipped to the boundary
+of the cell being added to.  No such clipping is done when objects are
+read from another cell.
+
+\subsection{Advanced Examples}
+
+Suppose one has two versions of a cell, {\vt cell} and {\vt cell\_old},
+and one needs to know if they differ on layer {\vt M1}.  Open a dummy
+cell for editing, then supply the following and evaluate.
+\begin{quote}
+{\cb To layer}: {\vt ZZ}\\
+{\cb Expression}: {\vt M1.cell\symbol{94}M1.cell\_old}
+\end{quote}
+Press the {\kb Home} key to view the entire cell space.  Any geometry
+shown on the new dummy layer {\vt ZZ} is the exclusive-OR of the
+geometry on {\vt M1} of the two cells, i.e., the difference.  If there
+is no geometry on {\vt ZZ}, {\vt M1} is the same in {\vt cell} and
+{\vt cell\_old}.
+
+As a variation, suppose that the user has done the following:
+\begin{quote}
+{\it Set symbol table to} "{\vt old}''.\\
+{\it open} {\vt oldstuff/mycell}\\
+{\it return to previous symbol table}\\
+{\it open} {\vt newstuff/mycell}
+\end{quote}
+
+There are now two versions of {\vt mycell} in memory.  To compare the
+layer {\vt M1} in the two cells, one could then evaluate
+\begin{quote}
+{\cb To layer}: {\vt ZZ}\\
+{\cb Expression}: {\vt M1\symbol{94}M1.old.}
+\end{quote}
+Then the {\vt ZZ} layer, which consists of the exclusive-OR of old and
+new {\vt M1} in {\vt mycell}, would be added to the current {\vt
+mycell}.  Pressing the {\kb Tab} key undoes the addition.
+
+Suppose one wants to import the inverse of the geometry on layer {\vt
+VIA} from {\vt cell} into the current cell, also on layer {\vt VIA}:
+\begin{quote}
+{\cb To layer}: {\vt VIA}\\
+{\cb Expression}: {\vt !VIA.cell}
+\end{quote}
+The {\vt VIA} layer now consists of the inverse from {\vt cell}.  Any
+geometry that existed on {\vt VIA} in the current cell before the
+command was given is deleted (assuming that the {\cb Don't clear}
+check box is unchecked).  The bounding box of the current cell may
+have been expanded to include the bounding box of {\vt cell}.  The
+area used to create an inversion is the rectangle bounding all cells
+referenced in the expression, plus the current cell.
+
+Suppose one simply wants to copy the geometry from layer {\vt M2} of
+{\vt cell} into the current cell:
+\begin{quote}
+{\cb To layer}: {\vt M2}\\
+{\cb Expression}: {\vt M2.cell}
+\end{quote}
+The {\vt M2} layer now consists of the geometry on {\vt M2} from {\vt
+cell}.  The bounding box of the current cell may have been expanded,
+in which case some of the {\vt M2} features may be off-screen (press
+the {\kb Home} key to view the entire cell).  Any objects previously
+existing on {\vt M2} in the current cell are deleted before the
+operation, unless the {\cb Don't clear} check box is checked.
+
+
+% -----------------------------------------------------------------------------
+% xic:prpty 030415
+\section{The {\cb Properties} Button: Property Editor Panel}
+\label{prptybut}
+\index{Properties button}
+\index{properties}
+\index{Property Editor window}
+The {\cb Properties} button in the {\cb Edit Menu} brings up the {\cb
+Property Editor} containing commands for adding and modifying
+properties of objects.  For the most part {\Xic} does not use
+properties in physical layouts, but they provide important electrical
+information in schematic layouts, which is required when building a
+netlist or SPICE deck.
+
+Clicking on a selected non-pcell instance with button 1 and the {\kb
+Ctrl} key held will also bring up the {\cb Property Editor}, if it is
+not already present.
+
+When the {\cb Property Editor} first appears, or upon pressing the
+{\cb Activate} button in the panel, or if the {\cb Properties} menu
+button is pressed with the {\cb Property Editor} already visible but
+inactive, a command state begins where it is possible to list and edit
+the properties of selected objects.  The command state is terminated
+by pressing the {\cb Activate} button again, or pressing the {\cb
+Properties} button in the {\cb Edit Menu}, or pressing the {\kb Esc}
+key, or by starting a different command.  The {\cb Property Editor}
+remains visible, but will go to an inactive state.  The {\cb Dismiss}
+button in the {\cb Property Editor} will exit the command state if
+active, and retire the panel.
+
+Unless stated otherwise, the descriptions of operations below apply
+only when the command state is active.  When inactive, the presence of
+the {\cb Property Editor} window has no effect, and other commands can
+be executed normally.
+
+When the command mode becomes active, properties of one of the
+selected objects (if any) are shown in the text window of the panel. 
+The objects are not generally shown as selected, but an internal list
+of objects that were selected before the command mode was started, or
+were clicked on with the command state active, is maintained.  The
+object for which the properties are displayed is marked with a dotted
+outline around the object or a cross over the object.  Clicking on the
+marked object will delete that object from the internal list, and
+another object's properties (if any in the list) will be shown. 
+Clicking on an unmarked object will mark that object, add it to the
+list if it is not already there, and display its properties.
+
+The {\cb desel} button in the top button menu and other methods of
+deselection will clear the list of objects.
+
+If the {\cb Global} button in the panel is active, all objects in the
+list are shown as selected (blinking outline or symbol).  The {\cb
+Global} button allows manipulation of the properties of all objects in
+the list, not just the marked object.
+
+When more than one device is in the list, the arrow keys can be used
+to cycle the marked object through the list.
+
+\index{Property Info window}
+When the {\cb Info} button is active, clicking on an object will bring
+up or update the {\cb Property Info} window, loaded with the
+properties of the object.  This contains a listing identical to the
+{\cb Property Editor}, however there are no buttons other than {\cb
+Dismiss}.  The object whose properties are listed in the {\cb Property
+Info} window is marked on-screen similarly to the current object in
+the {\cb Property Editor}, but with a different color.
+
+When the {\cb Property Editor} is active, clicking on an object with
+the {\kb Shift} or {\kb Control} key pressed will also bring up or
+update the {\cb Property Info} window, whether or not the {\cb Info}
+button is active.
+
+The {\cb Property Editor} and {\cb Property Info} windows are
+drag/drop sources and receivers, meaning that one can drag properties
+from one window to another.  This will apply the dragged property to
+the object associated with the drop window (the source object is not
+affected).  Properties that must be unique, such as most electrical
+properties, will be replaced with the dropped property.  Properties
+that are not unique will be added, without replacement.  Only
+ordinary, user-modifiable properties can be copied in this manner. 
+The prompt line, while in editing mode, is also a drop receiver for
+these windows.
+
+The listing in either window shows the property number, a descriptive
+name in electrical mode, and the property string, for all properties
+attached to the current object.  A property can be selected in the
+list by clicking on the text --- it will be shown highlighted when
+selected.  The current selection is used as input by many of the
+command buttons in the panel.
+
+In the properties listing, color is used to distinguish the types of
+properties.  The colors can be modified by setting the Special GUI
+Colors (see \ref{attrcolor}) listed below.  This can be done in the
+technology file, or with the {\cb !setcolor} command.
+
+\begin{tabular}{|l|l|l|} \hline
+\bf variable & \bf default & \bf purpose\\ \hline
+ & black & internal properties\\ \hline
+\vt GUIcolorHl1 & red & user-set {\et name} property\\ \hline
+\vt GUIcolorHl2 & dark blue & physical mode pseudo-properties\\ \hline
+\vt GUIcolorHl4 & sienna & ordinary (user-modifiable) properties\\ \hline
+\end{tabular}
+
+The value of the electrical mode {\et name} property is shown in a
+different color when the property is set.  This property always
+exists, and it would not otherwise be obvious when viewing the listing
+when the {\et name} property has been set by the user, or is simply
+showing the name assigned by {\Xic}.
+
+The command buttons in the {\cb Property Editor} allow addition,
+modification, and deletion of properties both globally (on all
+selected objects) or on the marked object.  Those properties in the
+list marked as ``internal'' can not be modified.  The physical mode
+pseudo-properties can not be edited, but can be added (with the {\cb
+Add} button).  In this case, no property is added, but the operation
+will cause some aspect of the object to change.
+
+\index{editing properties}
+\index{properties panel!Edit}
+\subsection{The {\cb Edit} Button: Edit Property}
+The {\cb Edit} button allows editing of the current property.  If no
+property is selected in the text when the {\cb Edit} button is
+pressed, the first user-modifiable property listed will become
+selected, and the text of that property will appear on the prompt line
+for editing.  If a user-modifiable property was selected before the
+{\cb Edit} button was pressed, the text of that property will appear
+on the prompt line.  The up/down arrow keys will cycle through the
+editable properties listed in the window, selecting and placing the
+text on the prompt line in sequence.  Also, clicking on an entry for a
+modifiable property in the window will select it and load its text
+into the prompt line. 
+
+The text in the prompt line can be edited, and pressing the {\kb
+Enter} key completes the edit.  The property listing will show the
+changes, if any.  While editing, text from other windows can be
+inserted using drag/drop (from the property windows or the {\cb File
+Selection} pop-up only) or with the window system cut/paste method.
+
+When inserting text from property windows, hypertext references (see
+\ref{hypertext}) are preserved.  Hypertext entries can also be
+inserted in electrical mode by clicking on a device contact point or
+wire (node reference), on the `$+$' symbol of some devices (branch
+reference), or elsewhere on a device (name reference).  Pressing {\kb
+Shift} or {\kb Control} while clicking on a device or subcircuit will
+bring up the {\cb Property Info} window, whether or not editing is
+active.
+
+For physical properties and {\et value}, {\et param}, and {\et other}
+electrical properties, the ``long text'' feature (see \ref{longtext})
+is available.  This is indicated by the presence of a small ``{\cb
+L}'' button to the left of the prompt line, which appears when the
+prompt line cursor is in the first column.  If this button is pressed,
+or {\kb Ctrl-t} typed, a text editor window appears, loaded with the
+text of the property (if any).  When a property is in long text
+format, the display listings will show only ``{\vt [text]}'' as the
+content, and the prompt line will show the same string as a hypertext
+entry.  In this case, just pressing {\kb Enter} will bring up the text
+editor leaded with the ``real'' property text.  This feature allows
+long, multi-line text blocks to be associated with properties.
+
+The description thus far applies whether or not the {\cb Global}
+button is set.  With the {\cb Global} button not set, when the {\kb
+Enter} key is pressed to complete the editing, the property will be
+updated, and the text in the {\cb Property Editor} will display the
+change.  The operation, as with all operations described in this
+section, can be undone or redone with the {\cb Undo}/{\cb Redo}
+commands or {\kb Tab}/{\kb Shift Tab} keys.
+
+If the {\cb Global} button is set, the user will be prompted, in
+sequence, for a new string for each of the devices in the internal
+list.  After the first prompt, the arrow keys and click-selection are
+disabled.  Each device will be assigned a new property or a matching
+existing property will be replaced.  For properties that can have more
+than one instance ({\et other} electrical properties and all physical
+properties) if the number and string of the original property shown
+highlighted in the {\cb Property Editor} window match those of an
+existing property, that property will be replaced, otherwise a new
+property will be added.
+
+\subsection{The {\cb Add} Button: Add New property}
+\index{properties!addition of}
+In physical mode, the {\cb Add} button will produce a drop-down menu
+containing the following items.
+
+\begin{description}
+\index{nomerge property}
+\item{\cb nomerge}\\
+The {\cb nomerge} choice will add a {\et nomerge} property (a property
+used by the extraction system) to the selected object or objects.
+
+\item{\cb flatten}\\
+The {\et flatten} property applies to electrical and physical cells
+and instances.  It is used during association and LVS to determine if
+the contents of the instance master should be logically promoted into
+the containing cell (see \ref{exthier}).  Although {\Xic} can handle
+most hierarchy differences automatically and transparently, this
+property may be used when needed to force proper behavior.
+
+If a {\et flatten} property has been applied to the master cell, then
+instances of the cell will be flattened, unless the instance also has
+the {\et flatten} property applied, in which case the instance will
+not be flattened.  If the master does not contain a {\et flatten}
+property, then and instance will be flattened only if the instance has
+a {\et flatten} property applied.  Thus, the {\et flatten} property of
+an instance reverses the effect of a {\et flatten} property applied to
+the master.
+
+The {\et FlattenPrefix} variable, and equivalently the {\cb Cell
+flattening name keys} entry area in the {\cb Net and Cell Config} page
+of the {\cb Extraction Setup} panel from the {\cb Extract Menu},
+provide another means of causing instances of cells to be flattened.
+
+\item{\cb any}\\
+The {\cb any} choice allows an arbitrary property to be added.  This will
+initiate prompting for a property number and string to add.
+\end{description}
+
+In electrical mode, the {\cb Add} button brings up a menu of property
+types that can be added.  Selecting an entry will initiate prompting
+for the associated string.  Any selection in the listing will be
+ignored.  Unlike the case of the {\cb Edit} button, the arrow keys and
+subsequent selection in the listing will not affect the prompt line.
+
+With the {\cb Global} button off, completion of editing by pressing
+{\kb Enter} will ``add'' the new property to the current object.  In
+electrical mode, properties other than the {\et other} property will
+be replaced if they exist, since there can be at most one such
+property.  There can be arbitrarily many {\et other} properties, or
+properties of any number in physical mode.  Such properties are always
+added and not replaced.
+
+If the {\cb Global} button is active, an identical copy of the
+property will be added to each of the devices in the internal list. 
+This will be a replacement for electrical properties other than {\et
+other}, and an addition otherwise.  Unlike the {\cb Edit} button case,
+there is no individual prompting for a string for each device.  The
+initial string (and number, in the case of physical mode) is added to
+each object.
+
+In electrical mode, the {\cb Add} menu contains buttons for the
+modifiable device and subcircuit instance properties listed below. 
+Unless stated otherwise, there can be at most one each of the
+properties described below.  This is enforced by {\Xic}, i.e.,
+attempts to add a second property of a given type will cause
+replacement, not addition.
+
+\begin{description}
+\index{name property}
+\item{\cb name}\\
+The {\cb name} button allows the modification of a {\et name}
+property.  The {\et name} property specifies the device or subcircuit
+instance name to SPICE.  Unlike the other user-settable properties,
+the {\et name} property always exists.  If not explicitly set by the
+user, the device name will be generated internally.  However, if a
+correspondence to an existing SPICE file is necessary, the name must
+be specified.  {\Xic} allows any name, however for the device to be
+recognized by SPICE, the name must start with the device's key letter
+as expected by SPICE.  Deleting the {\et name} property simply reverts
+back to the internally generated name.
+
+If an assigned name property conflicts with an internally generated
+name, the internally generated name will be updated so as to not
+conflict by appending ``\_{\it N\/}'', where {\it N} is some integer.
+
+\index{model property}
+\index{value property}
+\item{\cb model\newline\cb value}\\
+The {\cb model} and {\cb value} buttons allow addition of a {\et
+model} or {\et value} property, respectively.  Only one of the {\et
+model} or {\et value} properties should be used per device, as this
+really represents two different names for the same text field in SPICE
+output.  One has the choice a supplying a device model or component
+value to the device, but not both.  These properties generally apply
+to devices only, not subcircuits.
+
+\index{param property}
+\item{\cb param}\\
+The {\et param} property is a catch-all for additional parameters
+found in the device and subcircuit instance lines in SPICE, such as
+initial conditions or device geometrical factors.  The string will
+generally contain a list of {\it name\/}{\vt =}{\it value} terms, each
+separated by white space.  Only one {\et param} property is allowed.
+
+\index{devref property}
+\item{\cb devref}\\
+The {\et devref} property provides the name of the controlling device
+to current-controlled sources and the current-controlled switch.  At
+most one {\et devref} property is allowed.
+
+\index{other property}
+\item{\cb other}\\
+The {\cb other} button allows addition of an {\et other} property. 
+These properties have no significance to {\Xic} and are not used in
+SPICE output.  They can be used to store alternate values for the {\et
+model}, {\et value}, or {\et param} properties, or to store any other
+information desired by the user.  There can be arbitrarily many
+{\et other} properties per device or subcircuit instance.
+
+\index{nophys property}
+\item{\cb nophys}\\
+The {\cb nophys} button allows addition of a {\et nophys} property. 
+This property does not affect SPICE output, but specifies that the
+device or subcircuit instance has no physical implementation.  When
+{\Xic} is associating physical and electrical objects for extraction
+and LVS, a physical implementation will not be sought for objects with
+this property.
+
+When the property is created, the user is prompted as to whether the
+device terminals should be shorted together during LVS.  Devices that
+have the {\et nophys} property applied will be rendered using a
+different color than ``normal'' devices.  See the description of LVS
+in \ref{lvs} for a more complete discussion of the use of this
+property.
+
+\index{flatten property}
+\item{\cb flatten}\\
+This will add a {\et flatten} property, which applies to electrical
+and physical cells and instances.  See the description in the listing
+of physical properties above.
+
+\index{nosymb property}
+\item{\cb nosymb}\\
+The {\cb nosymb} button is used to add a property to electrical
+subcircuit instances which forces them to be displayed as expanded,
+whether of not the master cell of the instance is symbolic. 
+Instances with this property will behave in all respects as if the
+master were non-symbolic.  Thus, instances of the same master can be
+displayed symbolically or not, in the same design.  This property
+uses the same property number as the {\et symbolic} property applied
+to cells.
+
+\index{range property}
+\item{\cb range}\\
+The {\cb range} button is used to add a property to electrical device
+or subcell instances (other than terminal devices) that {\it
+vectorizes} the instance.  The user is prompted for two non-negative
+numbers which define the subscripting range.  Vectorized instances and
+connection rules are discussed in \ref{vecinst}.
+\end{description}
+
+\subsection{The {\cb Delete} Button: Delete Property}
+\index{property deletion}
+\index{properties panel!Delete}
+If a modifiable property is selected in the list, pressing the {\cb
+Delete} button will delete the property.  If there is no selection,
+the user will be prompted.  In physical mode, the user is requested to
+provide the number for the property or properties to delete.  In
+electrical mode, the user is requested to provide a code consisting of
+any combination of the letters {\vt n}, {\vt m}, {\vt v}, {\vt p},
+{\vt o}, {\vt y} to specify the properties to delete.  If the response
+is ``{\vt vp}'', for example, the {\et value} and {\et param}
+properties will be deleted.  In the case of physical properties, all
+of the properties with the given number will be deleted (there can be
+more than one).  Similarly, in electrical mode, if ``{\vt o}'' is
+given, all {\et other} properties will be deleted.
+
+If the {\cb Global} button is not active, the properties are deleted
+from the current object.  If the {\cb Global} button is active,
+properties will be removed from all objects in the internal list.  If
+a property was selected in the listing before the {\cb Delete} button
+was pressed, and this is a physical property or {\et other} electrical
+property, only properties that match both the number and string
+(physical mode), or {\et other} properties that match the string
+(electrical mode) of the selected property will be deleted.  If no
+selection is given, all properties that match the specification given
+will be deleted.
+
+
+% -----------------------------------------------------------------------------
+% xic:cprop 012014
+\section{The {\cb Cell Properties} Button: Edit Cell properties}
+\index{Cell Properties button}
+The {\cb Cell Properties} button in the {\cb Edit Menu} brings up the
+{\cb Cell Property Editor}, which is used to view and manipulate
+properties of the current cell.  It is a simplified version of the
+{\cb Property Editor} which is used to manipulate the properties of
+objects contained within the current cell.
+
+The {\cb Cell Property Editor} contains buttons to add, edit, and
+remove cell properties.  In general, cell properties are assigned
+internally and can not be modified.  The exceptions are the
+properties listed in the {\cb Add} menu and further discussed below. 
+Pressing the {\cb Add} button brings up a pop-up menu containing
+entries corresponding to properties that can be set or modified by
+the user.  Only the properties that are applicable to the current
+mode (physical or electrical) are active.
+
+In physical mode, the entries listed below are available, allowing
+modification of physical cell properties (see \ref{physpropfmt}).
+
+\begin{description}
+\item{\cb any}\\
+The {\cb any} entry allows an arbitrary property to be assigned to
+the cell.  The user will be prompted for a number and string for the
+property.  These are arbitrary, however there are certain numbers
+that are reserved by {\Xic} and will not be accepted.  {\Xic} will
+not use these properties, but they may be important for interfacing
+to third-party applications.
+
+\index{flags property}
+\item{\cb flags}\\
+The {\cb flags} entry is used to set flags in the cell, notably the
+{\et OPAQUE} flag which causes the cell contents to be ignored during
+extraction.
+
+\index{FlattenPrefix variable}
+\index{flatten property}
+\item{\cb flatten}\\
+The {\et flatten} property applies to electrical and physical cells
+and instances.  It is used during association and LVS to determine if
+the contents of the instance master should be logically promoted into
+the containing cell (see \ref{exthier}).  Although {\Xic} can handle
+most hierarchy differences automatically and transparently, this
+property may be used when needed to force proper behavior.
+
+If a {\et flatten} property has been applied to the master cell, then
+instances of the cell will be flattened, unless the instance also has
+the {\cb flatten} property applied, in which case the instance will
+not be flattened.  If the master does not contain a {\et flatten}
+property, then and instance will be flattened only if the instance has
+a {\et flatten} property applied.  Thus, the {\et flatten} property of
+an instance reverses the effect of a {\et flatten} property applied to
+the master.
+
+The {\et FlattenPrefix} variable, and equivalently the {\cb Cell
+flattening name keys} entry area in the {\cb Net and Cell Config} page
+of the {\cb Extraction Setup} panel from the {\cb Extract Menu},
+provide another means of causing instances of cells to be flattened.
+
+\index{pc\_params property}
+\item{\cb pc\_params}\\
+The {\cb pc\_params} entry is used when defining parameterized cells
+(pcells, see \ref{pcells}).  It is used to set or modify the parameter
+list associated with the pcell.
+
+\index{pc\_script property}
+\item{\cb script}\\
+The {\cb pc\_script} entry is used when defining parameterized cells. 
+It is used to set or modify the script which implements the pcell
+features.
+\end{description}
+
+In electrical mode, the following properties can be set from the
+{\cb Add} menu.
+
+\begin{description}
+\index{param property}
+\item{\et param}\\
+Selecting the {\cb param} button allows a {\et param} property to be
+added to the cell.  The {\et param} property provides support for the
+subcircuit parameterization feature of {\WRspice} (see the description
+of the {\vt .subckt} line).  The use of parameterization is briefly
+described in \ref{spiceline}.
+
+\index{other property}
+\item{\et other}\\
+Selecting {\cb other} allows an {\et other} property to be added to
+the cell.  These have no meaning to {\Xic}, but might be of use to the
+user.  Any number of {\et other} properties can be added.
+
+\index{virtual property}
+\item{\et virtual}\\
+Adding a {\et virtual} property will prevent the cell from being
+included in netlist output, most importantly SPICE output.  The cell
+becomes a ``placeholder'', and the actual {\vt .subckt} text, which is
+required to satisfy references, is included in the SPICE file by
+another means.  For example, the cell might represent an opamp, and a
+{\vt .include} line can be used to bring in the {\vt .subckt} block
+representing the opamp, from a vendor model file.
+
+\index{flatten property}
+\item{\et flatten}\\
+See the description of the {\et flatten} property in the physical {\cb
+Add} menu properties list above.  The property has the same use in
+electrical mode.
+
+\index{macro property}
+\item{\et macro}\\
+This property can be applied to device masters.  The only effect is
+that when {\Xic} is generating SPICE output, instances of devices with
+this property will have an `{\vt X}' prepended to the device name,
+thereby making the device appear as a subcircuit call in SPICE.  This
+enables a component, such as a resistor, to be modeled by a subcircuit
+that may contain dependent sources to model nonlinear behavior.  The
+subcircuit definition is likely provided in the SPICE models from a
+vendor or foundry.
+\end{description}
+
+For device cells, as would appear in the device library file, {\et
+model}, {\et value}, and {\et param} properties can be applied.  When
+a device instance is placed, the instance will inherit copies of these
+properties.  Instances of non-devices do {\bf not} inherit a {\et
+param} property from the master.  The {\et model} and {\et value}
+properties can not be applied with the {\cb Cell Properties Editor},
+but can be added to device masters with the {\cb Library Device
+Parameters} panel (see \ref{devedit}).
+ 

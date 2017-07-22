@@ -1,0 +1,37 @@
+#! /bin/sh
+
+# $Id: mkeps,v 1.4 2015/02/07 05:40:27 stevew Exp $
+
+# This converts xpms from the help directory into suitable
+# encapsulated PostScript format for latex.
+#
+# The "none" transparent background doesn't seem to survive through
+# conversion, so we convert this to white.  Existing white is
+# converted to black.
+#
+# We first convert the xpm to ppm, then convert to eps using the
+# pnmtops utility.  We could convert directly with convert, however
+# the ImageMagick eps file is much more complicated and at least at
+# one time didn't seem to work properly in latex.
+
+while [ x$1 != x ]; do
+   args="$1 $args"
+   shift
+done
+
+bitmaps="../../src/xic/include/bitmaps"
+
+for a in $args; do
+   tifs=$IFS
+   IFS="."
+   set $a
+   IFS=$tifs
+   base=$1
+   cat $bitmaps/$a | sed -e s/white/black/ -e s/none/white/ > ${base}_temp.xpm
+   convert ${base}_temp.xpm ${base}_temp.ppm
+   unlink ${base}_temp.xpm
+# Use -noturn to suppress image rotation.
+   pnmtops -noturn ${base}_temp.ppm > ${base}.eps
+   unlink ${base}_temp.ppm
+done
+

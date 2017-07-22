@@ -1,0 +1,2929 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2013, Whiteley Research Inc., Sunnyvale CA
+% $Id: techfile.tex,v 1.32 2017/03/22 23:39:49 stevew Exp $
+% -----------------------------------------------------------------------------
+
+\appendix
+\chapter{Technology File}
+% -----------------------------------------------------------------------------
+% techfile 032117
+\label{techfile}
+\index{technology file}
+\index{xic\_tech file}
+\index{-T option}
+\index{technology file!extension}
+The technology file tells {\Xic} all it knows about the layers and
+display attributes, as well as being a general source of
+initialization information.  The name of the file is ``{\vt
+xic\_tech}'', and an extension {\it .xxx\/} can be added to the name,
+so that if {\Xic} is started with the {\vt -T}{\it xxx\/} option, the
+technology file with the extension will be used.  For example, ``{\vt
+xic -Ttrw}'' would cause {\Xic} to read {\vt xic\_tech.trw}.
+
+\index{starting {\Xic}!no technology file}
+It is legitimate to start {\Xic} without reading a technology file, by
+using ``{\vt xic -T}''.  In this case, new layers will be assigned as
+needed as cells are read in.  This can be useful for examining an
+undocumented GDSII file, for example.  Once the layout has been read
+in, new colors and fill styles can be assigned, and the {\cb Save
+Tech} command in the {\cb Attributes Menu} used to dump an appropriate
+technology file for the next time.
+
+\index{library path}
+\index{Save Tech button}
+The technology file is expected to be found along the library search
+path, which can be set with the environment variable {\et
+XIC\_LIB\_PATH}.  The default path is
+\begin{quote}
+ {\vt ( . /usr/local/xictools/xic/startup )}.
+\end{quote}
+The default technology file has been provided by your system
+administrator.  A personalized version can be generated with the {\cb
+Save Tech} command.
+
+The technology file generally begins with comment lines explaining the
+process that the file supports.  The order of the sections that follow
+is rather flexible, though the printer driver blocks should appear
+last.  It is recommended that one follow the ordering described here,
+which is the order used by {\Xic} when generating a technology file,
+to be on the safe side.  None of the sections is required to exist. 
+Technology files for {\XicII} and {\Xiv} feature sets are simplified,
+omitting the sections that apply to unavailable features.
+
+At the top of the file are macro definitions using the {\vt Set} or
+{\vt Define} keywords, and {\cb !set} lines for setting global
+variables.  The introductory part of the file further consists of
+optional path specifications.  The layer blocks follow, which is where
+the core information about the particular technology resides.  The
+electrical layers are defined first, followed by user-defined design
+rules, followed by the physical layer definitions.
+
+The physical layers are followed by the standard via definitions, then
+the device blocks, where physical characteristics for device
+extraction are given.  These are followed by script function
+definitions.  Finally, there is a section containing display attribute
+specifiers and other parameters, and the hard-copy driver parameter
+blocks.
+
+\index{technology file!backslash continuation}
+Long lines can be continued in the technology file by using backslash
+continuation.  For example, the following would be read as one line:
+\begin{samepage}
+\begin{quote}\vt
+    This a line to be continued, the backslash $\backslash$ \\
+    must be the last character in the line.
+\end{quote}
+\end{samepage}
+
+The technology file has a macro facility which can be used to simplify
+the constructs and to customize the file to a particular variation of
+the technology.
+
+The technology file may contain the following keyword/value pair
+near the top of the file:
+\begin{description}
+\index{technology name}
+\item{\vt Technology} {\it name}\\
+The {\it name} can be any character token (no white space allowed)
+and gives a name to the technology.  This is not directly used by
+{\Xic}, but but the {\it name} is placed in the macro name space of
+the macro preprocessor used when reading various types of input
+files, including the device library.  The name is displayed in the
+status line of the main window, and is part of the information
+available for output in scripts and elsewhere.
+
+\index{device library name}
+\item{\vt DeviceLibrary} {\it libname}\\
+The {\it libname} is the name of a device library file which provides
+device outlines for use in schematics.  If not given, the name
+defaults to ``{\vt device.lib}''.  The {\it libname} should be a file
+name, without any directory path.  A file by that name should be found
+in the library search path on program startup.
+
+\index{model library name}
+\item{\vt ModelLibrary} {\it libname}\\
+The {\it libname} is the name of a model library file which provides
+SPICE models for use in SPICE output.  If not given, the name defaults
+to ``{\vt model.lib}''.  A file by that name should be found in the
+library search path on program startup.
+
+\index{model subdirectory name}
+\item{\vt ModelSubdir} {\it dirname}\\
+The {\it dirname} is the name of a subdirectory of the directories of
+the library search path, in which are found SPICE model files.  All
+directories of this name found in the library path will be searched
+for SPICE models.  If not given, the name defaults to ``{\vt
+models}''.
+
+\item{\vt ReadDRF} {\it filename}\\
+This is part of the Cadence$^{TM}$ compatibility package (see
+\ref{cdscompat}).  The {\it filename} is the name of or path to a file
+in the format of a Virtuoso display resource file (including those
+from the Ciranova PyCell Studio).  The full path should be given
+unless the file is in the library search path.  This provides display
+attributes for layers.
+
+\item{\vt ReadCdsTech} {\it filename}\\
+This is part of the Cadence$^{TM}$ compatibility package (see
+\ref{cdscompat}).  The {\it filename} is the name of or path to a file
+in the format of a Virtuoso ASCII technology file.  The full path
+should be given unless the file is in the library search path.  This
+provides layer and purpose definitions, rules, constraints, and other
+technology data.  Layers defined in this file will appear in addition
+to those defined elsewhere.
+
+\ifoa
+\item{\vt ReadOaTech} {\it library}\\
+This will obtain Virtuoso technology information directly from
+OpenAccess.  The {\it library} is an OpenAccess library, listed in
+the {\vt lib.defs} or {\vt cds.lib} file.  This obtains technology
+information by use of the OpenAccess plug-in.  There should be no
+reason to use both this and {\vt ReadCdsTech}, as they should
+retrieve the same information.
+\fi
+
+\item{\vt ReadCdsLmap} {\it filename}\\
+This is part of the Cadence$^{TM}$ compatibility package (see
+\ref{cdscompat}).  The {\it filename} is a path to a Virtuoso
+layer-mapping file, which provides GDSII layer/datatype numbers for
+the layers.  This can be used in addition to, and must be called
+after, {\vt ReadCdsTech}.  It is used to import the Stream mapping
+for the layers.
+
+\item{\vt ReadCniTech} {\it filename}\\
+The {\it filename} is the name of or path to a file in the format
+of a Ciranova (now Synopsys) ASCII technology file.  The full path
+should be given unless the file is in the library
+search path.  This file format is
+superficially similar to a Virtuoso ASCII technology file, yet
+sufficiently different that a separate reader is required.  The
+format is documented in the PyCell Studio distribution from
+\ifoa
+Synopsys, and example files are provided (see \ref{ciranova}).
+\else
+Synopsys.
+\fi
+
+When setting up a technology file for the PyCell Studio or something
+similar using Ciranova technology, it may be necessary to use this
+keyword more than once, if the technology is described in more than
+one file.  It is also necessary to use the {\vt ReadDRF} keyword to
+read display resource files.
+
+For example, here is a skeletal technology file for the Ciranova
+130nm model process in the PyCell Studio, which is installed under
+{\vt /usr/local/ciranova}.
+
+\begin{quote} \vt
+Set cni130 = /usr/local/ciranova/tech/cni130\\
+ReadDRF \$(cni130)/santanaDisplay/SantanaDisplay.drf\\
+ReadCniTech \$(cni130)/santanaTech/Santana.tech\\
+ReadCniTech \$(cni130)/santanaDisplay/SantanaDisplay.tech
+\end{quote}
+\end{description}
+
+The ability to read the Lisp/Skill file format used by Virtuoso is
+provided by an internal Lisp parser.  The parser is available to run
+general scripts through the {\cb !lisp} command, though this has
+limited utility at present.
+
+In the technology file, is is sometimes useful to enable debugging
+output from the Lisp parser.  The following keyword enables this.
+
+\begin{description}
+\item{\vt LispLogging} [{\vt y/n}]\\
+If this boolean keyword is set in the technology file, a log file will
+be generated when the Lisp parser is used.  This can be used to track
+down issues when parsing Virtuoso-style input files.  Asserting this
+keyword is equivalent to setting the Lisp logging in the {\cb Logging
+Options} panel from the {\cb Help Menu}, which otherwise can't be done
+before the technology file is read on program startup.
+
+The logging output is put into a file named {\it filename\/}{\vt
+-lisp.log} in the logfiles directory.  The {\it filename} is the name
+of the input file being parsed.
+\end{description}
+
+
+% -----------------------------------------------------------------------------
+% techfile:comments 032117
+\section{Technology File Comments}
+\index{Comment keyword}
+
+The technology file recognizes a {\vt Comment} keyword.  These lines have
+no effect, but are saved and included when the file is written with
+the {\cb Save Tech} command.  Thus, notes about the file can be preserved. 
+An attempt is made to to place the comment in the same relative
+position during an update.
+
+Comments can also be included in the technology file after the `{\vt
+\#}' character or `{\vt //}' sequence, however these comments will not
+appear in a file written with the {\cb Save Tech} command.
+
+Example:
+\begin{quote} \vt
+Comment  Technology file for the Ultra-MOS version 3.5 process\\
+Comment  Version 1.3  March 24, 2002  George H. Frump
+\end{quote}
+
+
+% -----------------------------------------------------------------------------
+% techfile:macros 032613
+\section{Technology File Macros}
+\index{technology file!macros}
+\label{techmacros}
+
+\index{Define keyword}
+In order to facilitate customization of the technology file to
+different variations, in particular to support scalable technology, a
+macro facility is provided, along with an expression evaluator. 
+Macros can be used to simplify or clarify the constructs used in the
+technology file, and facilitate portability by effectively customizing
+the technology file to different environments.
+
+The macro capability makes use of the generic macro preprocessor
+provided in {\Xic}, which is described in \ref{macro}.  The reader
+should refer to this section for a full description of the
+preprocessor capabilities.  The preprocessor provides a few predefined
+macros used for testing (and customizing for) release number,
+operating system, etc.  The keyword names, which correspond to the
+generic names as described for the macro preprocessor, are
+case-insensitive and listed in the following table.
+
+\begin{tabular}{ll}
+\bf Keyword & \bf Function\\
+\vt Define & Define a macro.\\
+\vt If & Conditional evaluated test.\\
+\vt IfDef & Conditional definition test.\\
+\vt IfnDef & Conditional non-definition test.\\
+\vt Else & Conditional else clause.\\
+\vt Endif & Conditional end clause.\\
+\end{tabular}
+
+A macro definition can appear anywhere in the technology file. 
+Throughout the technology file, each line is macro expanded.  The
+actual arguments replace the formal arguments (if any) in the
+substitution text, which replaces the macro reference.  The macro is
+recognized as a text token.
+
+Example:
+
+\begin{quote}\rr\vt
+Define  mytext(x)  this is rule number x\\
+...\\
+MinWidth 2 \# mytext(1.2)\\
+\end{quote}
+
+The {\vt MinWidth} line expands to
+\begin{quote}\vt
+MinWidth 2 \# this is rule number 1.2
+\end{quote}
+
+The conditional keywords provide tests which can be used to select
+which lines of the technology file are actually read, based of the
+settings of existing macros and/or expression evaluation.  The logic
+is explained in the description of the generic macro preprocessor.
+
+Example:
+
+\begin{quote}\rr\vt
+Define TightRules\\
+...\\
+Layer M1\\
+IfDef TightRules\\
+MinWidth .4\\
+Else\\
+MinWidth .8\\
+Endif\\
+\end{quote}
+
+In the example above, commenting out the {\vt Define} line
+\begin{quote}\vt
+\#Define TightRules
+\end{quote}
+reconfigures the technology file.
+
+When the technology file is updated with the {\cb Save Tech} command,
+only the lines that were actually processed are written, i.e., the
+{\vt IfDef}, etc.  lines and unused blocks are stripped.
+
+\subsection{The {\vt Set} Keyword: Variable Expansion}
+\index{Set keyword}
+
+A different type of macro is defined using the {\vt Set} keyword,
+where the words following are parsed into three tokens
+\begin{quote}
+{\vt Set} {\it name\/} {\vt =} {\it value\/}
+\end{quote}
+
+This type of macro is referred to by
+\begin{quote}
+{\vt \$({\it name\/})}
+\end{quote}
+
+which is replaced by {\it value\/} as the file is read.  If the {\it
+name} has not been assigned in a {\vt Set} line, but an environment
+variable by that name is found, the substitution will be made from the
+value of the environment variable.  Otherwise, the variable must be
+set before being referenced, meaning that the {\vt Set} line must
+appear before the first reference in the technology file.
+
+Neither the {\it name\/} or {\it value\/} tokens can contain a
+carriage return, though they can contain embedded white space.  In
+either case, the beginning and end of the token is the first and last
+non-white character.  Substitution is performed recursively.  The two
+types of macro can be mixed, though the {\vt Set} line is not expanded
+for {\vt Define}'ed macros.  Other lines are first expanded for {\vt
+Define}'ed macros, then for {\vt Set} macros.
+
+The {\vt Set} keyword should not be confused with the {\cb !set}
+command, which can also appear in the technology file.
+
+\subsection{The {\vt eval} Keyword: Expression Evaluation}
+
+\index{lambda}
+An expression involving integers or floating point numbers can be
+evaluated as the file is read, with the result inserted into the line
+at the place of evaluation.  This facilitates, for example, the use of
+design rules based on the {\it lambda} concept.  In this type of rule
+set, design rules are specified in terms of a minimum dimension {\it
+lambda\/}.  The {\it lambda\/} may vary between different process
+implementations.  In the technology file, {\it lambda\/} is defined as
+a macro, and inputs to the design rule specifications is evaluated in
+terms of {\it lambda\/}.
+
+\index{eval keyword}
+\index{technology file!eval}
+The syntax for expression evaluation is {\vt eval({\it expression\/})}. 
+This construct can occur anywhere in the text, although it makes sense
+only where a number is expected.  The result of the evaluation is
+substituted into the text replacing the {\vt eval} construct, before
+that line of the technology file is interpreted.  The expression is
+interpreted by the parser otherwise used for interpreting command
+scripts, and the full complement of operations and functions is
+available.  Macros are expanded before the expression is parsed.
+
+Example:
+\begin{quote}\vt
+Set lambda = .6\\
+...\\
+PhysLayer BASE\\
+MinWidth eval(2*\$(lambda))  \#Minimum width of the BASE layer is 2*lambda
+\end{quote}
+
+In this example, the parameter {\vt lambda} is defined to ``.6'' with
+the {\vt Set} keyword.  Elsewhere in the file, design rules can be
+specified as functions of {\vt lambda} using the {\vt eval} construct,
+as shown.
+
+Example:
+
+\begin{quote}\rr\vt
+Set lambda = .6\\
+Define L(x) eval(\$(lambda)*x)\\
+...\\
+
+PhysLayer BASE\\
+MinWidth L(2)  \#Min width of BASE layer is L(2)\\
+\end{quote}
+
+In this example, the macro {\vt L(x)} is used to hide the call to the
+evaluation function, simplifying syntax.
+
+If the technology file is updated to disk using the {\cb Save Tech}
+command button, only the macros used in the design rule keywords will
+be preserved in their original macro form in the new file.  Elsewhere,
+the written lines will contain the expanded quantity.  All of the {\vt
+Set} and {\vt Define} lines will be preserved.  Thus, the use of
+macros should be restricted to the design rule keywords, unless the
+user is willing to hand edit the new files produced with the {\cb Save
+Tech} command.
+
+
+% -----------------------------------------------------------------------------
+% techfile:set 021615
+\section{Technology File Global Variables}
+
+\index{technology file!"!set}
+Also typically appearing near the top of the technology file are
+the {\vt !set} commands.
+\begin{quote}
+{\vt !set} {\it arguments}
+\end{quote}
+Unlike the {\vt Set} keyword, this directive assigns variables as if
+the keyboard {\cb !set} command, as used interactively from the prompt
+line, had been given.  The {\it arguments} are exactly as they would
+appear on the prompt line.  Thus, the command attributes that are
+controlled with the {\cb !set} command can be specified in the
+technology file.  The technology file is read after the {\vt .xicinit}
+file and before the {\vt .xicstart} initialization file, which are
+other options for executing the {\cb !set} command at program startup.
+
+This form is appropriate for variables that are defined by the user. 
+Variables that are known to {\Xic} can presently be set as keywords
+(see \ref{attrvars}), though the form described here can be used as
+well.
+
+When a new technology file is written with the {\cb Save Tech}
+command, all {\cb !set} lines from the original technology file (if
+any) are written as a block, but commented out.  This is followed by
+another block containing all of the currently defined variables,
+except for those known to {\Xic} that can be set as keywords.  These
+include the path variables, and are written as keyword definitions
+elsewhere in the file.  The present list will contain variables
+defined by the user.  These lines are active.  The user can edit these
+blocks as necessary.
+
+The {\cb !attrvars} command generates a listing of the variables that
+can be set as technology file keywords.
+
+
+% -----------------------------------------------------------------------------
+% techfile:paths 062109
+\section{Technology File Path Definitions}
+
+There are four search paths that may be specified.  In each case, the
+path specification consists of a keyword, followed by the path.  The
+format of the path is described in section \ref{searchpaths}
+detailing the {\Xic} search paths.
+
+In the path defaults below, if the {\et XT\_PREFIX} environment
+variable is defined, its value will replace ``{\vt /usr/local}''.
+
+\begin{description}
+\index{Path keyword}
+\item{\vt Path} {\it path}\\
+The {\vt Path} keyword specifies the path to design data files: 
+native cell, archive, and library files.  The current directory ``.''
+should generally be listed first in this path.  The design data path can
+also be set in the environment with the {\vt XIC\_SYM\_PATH} variable. 
+A specification in the technology file will override a specification
+in the environment.\\
+Default:  {\vt ( ~.  )}
+
+\index{LibPath keyword}
+\item{\vt LibPath} {\it path}\\
+The {\vt LibPath} keyword specifies the path to the startup files. 
+The startup files include the device library (default name {\vt
+device.lib}), and the model library (default name {\vt model.lib}). 
+This path can also be set with the environment variable {\et
+XIC\_LIB\_PATH}, and a specification in the technology file will
+override an environment specification.  Unlike other search paths, the
+current directory is always checked first when looking for files in
+this path, as if '.' was the first component.\\
+Default: {\vt ( .  /usr/local/xictools/xic/startup )}
+
+\index{HlpPath keyword}
+\item{\vt HlpPath} {\it path}\\
+The {\vt HlpPath} lists directories containing database files for the
+help system.  These files have names with suffix {\vt .hlp}, and it is
+possible for users to create customized help files for their own
+purposes (the format is described in \ref{helpfiles}).  The help path
+can also be specified with the environment variable {\et
+XIC\_HLP\_PATH}, which will be overridden by a specification in the
+technology file.\\
+Default: {\vt ( /usr/local/xictools/xic/help )}
+
+\index{ScriptPath keyword}
+\item{\vt ScriptPath} {\it path}\\
+The {\vt ScriptPath} contains directories where {\Xic} searches for
+user generated command scripts.  The script files have names with
+suffix ``{\vt .scr}'', except for the library script which is named
+``{\vt library}''.  This path can also be set with the environment
+variable {\et XIC\_SCR\_PATH}, which will be overridden by a
+specification in the technology file.\\
+Default:{\vt ( /usr/local/xictools/xic/scripts )}.
+\end{description}
+
+\index{XIC\_LIB\_PATH}
+Note that the {\vt XIC\_LIB\_PATH} variable can be used to define the
+location of the technology file, and then redefined in the technology
+file to provide alternate locations for the device and model library
+files.
+
+The path keywords, and all other keywords, are interpreted without
+case sensitivity when the technology file is read.
+
+
+% -----------------------------------------------------------------------------
+% techfile:scripts 033112
+\section{Technology File Scripts}
+\index{technology file!scripts in}
+
+Scripts can be included in the technology file.  These scripts can
+appear as buttons in the {\cb User Menu}, as with other scripts, or
+they can be ``run once'' scripts.  This feature is useful for
+including simple technology-specific commands, such as those that
+create special extraction layers or physical features.  Scripts
+defined in the technology file, however, can not be loaded into the
+debugger.
+
+A script is included In the technology file as follows.  The {\vt
+Script} keyword is followed by the text which will appear in the
+command button.  If the button text contains white space, it must be
+quoted, e.g.,
+
+\begin{quote} \vt
+Script "My Cell Counter"
+\end{quote}
+
+The lines of the script follow, and the script text must be
+terminated with the keyword {\vt EndScript} on a separate line.
+
+\begin{quote}
+  {\vt Script} {\it menu\_label}\\
+  script text\\
+  ...\\
+  {\vt EndScript}
+\end{quote}
+
+If the line
+\begin{quote} \vt
+RunScript
+\end{quote}
+appears anywhere after the {\vt Script} line and before {\vt
+EndScript}, the script is taken as a ``run once'' script.  It will not
+be added to the {\cb User Menu}.  Instead, it will be executed after
+the technology file has been read, then discarded.  Any number of
+scripts can be treated this way, they execute in order of appearance
+in the technology file.
+
+Scripts defined in the technology file have lower priority than other
+scripts in the event of a menu label text clash.  Thus, technology
+file scripts will be ``hidden'' by other scripts with the same menu
+label, should any exist.
+
+
+% -----------------------------------------------------------------------------
+% techfile:layers 032117
+\section{Technology File Layer Blocks}
+\label{techlayers}
+
+{\Xic} maintains a table of layer aliases, which can be used instead
+of the actual layer name where a layer entry is required.  This
+follows the Virtuoso ``{\vt techParams}'' definitions where the value
+is a layer name.  The alias name is intended to be a generic name such
+as ``{\vt active\_layer}'', or ``{\vt nwell\_layer}'', which can be
+used in device blocks and elsewhere to provide a degree of process
+independence.  Further, some of these names may be specific to
+Virtuoso, and be handled in special ways.  The only example of this at
+present is handling of ``{\vt active\_layer}''.
+
+Each line of the layer alias list takes the following form.
+\begin{quote}
+{\vt MapLayer} {\it alias} {\it layer\_name}
+\end{quote}
+The {\it layer\_name} must be resolvable as an {\Xic} layer.
+
+\begin{description}
+\item{\vt active\_layer} alias handling\\
+If a layer alias named ``{\vt active\_layer}'' is given, as is at
+least one of the alias names ``{\vt ngate\_layer}'' and ``{\vt
+pgate\_layer}'', and the {\vt active\_layer} does not have a {\vt
+Conductor Exclude} directive, one will be created.  The excluded area
+is logically {\vt ngate\_layer|pgate\_layer}.  This supports correct
+MOS device recognition when technology data are obtained exclusively
+from Virtuoso.
+\end{description}
+
+The component layer names and numbers, and purpose names and numbers,
+are specified in optional tables.  These tables must appear before any
+{\Xic} layer definitions.  A layer name or purpose name used by an
+{\Xic} layer that is not found in a table will be created, and
+assigned a number by {\Xic}.  The tables ensure a strict and
+repeatable correspondence between names and numbers, which may be
+necessary for compatibility with other tools.
+
+\index{DefineLayer keyword}
+\index{DefinePurpose keyword}
+The tables consist of lines in the following form:
+\begin{quote}
+{\vt DefineLayer} {\it layer\_name} {\it layer\_number}\\
+{\vt DefinePurpose} {\it purpose\_name} {\it purpose\_number}
+\end{quote}
+
+Name strings may contain alphanumeric characters plus the dollar sign
+('{\vt \$}') and underscore ('{\vt \_}').  The numbers can be any
+value representable with 32-bits, except that -1 is reserved.  Be
+aware that other tools may define ranges of values that are reserved
+for internal use.
+
+\index{SCED layer}
+Following the layer and purpose tables, if any, {\Xic} layers may be
+defined.  There are separate definitions of layers used in electrical
+(schematic) mode, and in physical mode (for layouts).  {\Xic}
+maintains a standard set of electrical layers, in a standard order. 
+These will be created if the definitions do not appear in the
+technology file (or no technology file is read).  The SCED layer,
+which is the electrically-active wiring layer, is always first.  The
+user can modify the presentation attributes, and add layers as
+desired.  For physical mode, there are no such layers, all layers must
+be defined in some manner.
+
+The separation of electrical and physical layers is a bit of an
+anachronism, and in current {\Xic} releases a user-defined layer can
+actually exist in both electrical and physical layer tables.  This
+accommodates technologies imported from other tools, such as Cadence
+Virtuoso, where no such distinction is made.
+
+\index{PhysLayer keyword}
+\index{ElecLayer keyword}
+Each layer definition starts with the keyword {\vt PhysLayer} for
+physical layers or {\vt ElecLayer} for electrical layers, followed by
+a name.  Both of these keywords have synonyms (listed below) for
+backwards compatibility.  The name should be a valid layer name,
+though an attempt is made to use invalid names if possible by editing
+out unacceptable characters.
+
+Layer blocks appear in a contiguous section in the technology file,
+and in physical mode will appear in the layer table in the order
+given.  In electrical mode, reordering may be applied, as there are
+some internal assumptions.
+
+A layer block is terminated by the start of another layer block, or by
+a keyword which would logically end per-layer parsing.
+
+\begin{description}
+\index{ElecLayer keyword}
+\item{\vt ElecLayer} {\it name}\\
+This keyword specifies the beginning of the layer block for the
+electrical layer {\it name\/}.  The keyword {\vt ElecLayerName} is a
+synonym.
+
+\index{PhysLayer keyword}
+\item{\vt PhysLayer} {\it name}\\
+This keyword specifies the beginning of the layer block for the
+physical layer {\it name\/}.  Layers will appear in the physical mode
+layer table in the order given.  The keywords {\vt PhysLayerName},
+{\vt Layer}, and {\vt LayerName} are all synonyms for this keyword.
+
+\index{DerivedLayer keyword}
+\item{\vt DerivedLayer} {\it name} [{\vt join|split|splitv}]
+ {\it expression}\\
+This line provides a definition of a derived layer.  Derived layers
+represent an expression of other layers, derived and normal physical,
+which can be referenced in layer expressions.  Derived layers were
+introduced in support of the design rule checking system, but can be
+accessed for other purposes through a script function interface.
+
+This will add a derived layer to the database, under the name given in
+the first token.  The remainder of the line is the layer expresion. 
+The expression is not parsed until evaluation time.
+
+When the derived layer is evaluated, the geometry can appear as an
+assemblage of trapezoids if either of the {\vt split} or {\vt splitv}
+keywords is given, or alternatively as a minimal number of complex
+polygons if the {\vt join} keyword is given instead.  If {\vt splitv}
+is given, a vertical orientation is favored for the decomposition,
+whereas similarly {\vt split} will produce a decomposition favoring a
+horizontal orientation.  The default is the joined form if none of
+these optional keywords is given, except when simply copying from
+another layer in which case the default is to copy objects without
+change.  The keyword ``{\vt splith}'' is a synonym for ``{\vt
+split}''.
+
+These lines begin a layer block description, and any of the keywords
+which can apply to physical layers can be used in the derived layer
+blocks, though the definitions may be useless.  Layer block keywords
+that are significant are listed below.
+
+\begin{enumerate}
+\item{Design rules.  These rules will be evaluated while doing design
+rule checking.  As further described in the in the DRC description,
+there are some types of tests that require use of derived layers.}
+
+\item{When a new normal layer is created as a copy of a derived layer,
+which can be done with the {\cb !layer} command, or with the {\cb
+Layer Expression Evaluation} panel from the {\cb Edit Menu}, or with
+the {\vt Layer} script function, the new layer will inherit the
+attributes of the derived layer.  This includes color, fill pattern,
+GDSII mpping, and other flags and properties.  This gives purpose to
+the definitions provided in the derived layer block.}
+\end{enumerate}
+\end{description}
+
+The sub-sections that follow categorize and describe the fairly
+lengthly list of per-layer keywords.  All of the keywords are
+optional, and can appear under an electrical or physical layer, unless
+stated otherwise.  Many of these keywords can be programmed from
+within {\Xic} with the {\cb Tech Parameter Editor} from the {\cb
+Attributes Menu}.  Other panels from the {\cb Attributes Menu} allow
+setting colors, fill patterns, etc.  which correspond to values from
+keywords.
+
+In the syntax descriptions, the italicized quantities represent data
+the needs to be provided.  The ``{\vt y}$|${\vt n}'' symbol implies that
+one of `{\vt y}' or `{\vt n}' should follow the keyword.  Actually,
+`{\vt 0}' (zero), or any word that begins with the letters or sequence
+(case insensitive) `{\vt n}', `{\vt f}', `{\vt of}' is taken as a
+false value.  Anything else, including no following text, is taken as
+true (`{\vt y}' is always redundant).
+
+
+%-------------------------------
+% techfile:layers:misc 070114
+\subsection{Technology File Layer Block Keywords:  Misc. Attributes}
+\label{misclattr}
+
+These miscellaneous keywords apply bits of information to the layer,
+which affects behavior in situations described.
+
+\begin{description}
+\index{LppName keyword}
+\item{\vt LppName} {\it name}\\
+This provides an optional alias for the layer/purpose pair that
+represents the {\Xic} layer name.  The {\Xic} layer can be accessed by
+this alias, in addition to the normal name.  If no non-space
+characters are found after the keyword, the statement is ignored.  Any
+character is allowed in the alias name, but leading and training white
+space is removed, and inclusion of some characters, for example a
+colon ('{\vt :}'), can definitely cause trouble.
+
+\index{Description keyword}
+\item{\vt Description} {\it description\_string}\\
+This will set the description field of the current layer.  If no
+non-space characters are found after the keyword, the statement is
+ignored.  Leading and training white space is removed from the
+description string.
+
+\index{NoSelect keyword}
+\item{\vt NoSelect} [{\vt y}$|${\vt n}]\\
+If this keyword appears, and any following argument indicates true,
+objects on the layer can not be selected.  The selectability status of
+the layers can be changed from the layer table.
+
+\index{NoMerge keyword}
+\item{\vt NoMerge} [{\vt y}$|${\vt n}]\\
+This keyword indicates that automatic merging of objects is suppressed
+on the layer.  This overrides any merging enabled by the {\cb Merge
+new boxes and polys with existing boxes/polys} and {\cb Clip and merge
+new boxes only, not polys} check boxes in the {\cb Editing Setup}
+panel from the {\cb Edit Menu}, and the {\cb Clip and merge
+overlapping boxes} button in the {\cb Set Import Parameters} panel
+from the {\cb Convert Menu}, and the corresponding variables.
+
+\index{WireActive keyword}
+\item{\vt WireActive} [{\vt y}$|${\vt n}]\\
+If this keyword appears, and any following argument indicates true,
+wires on the layer will be considered for wire connectivity in
+schematics.  This flag is always set implicitly in the {\vt SCED}
+layer.  The Cadence compatibility system may create a layer named {\vt
+wire} with purpose {\vt drawing} which will have this flag set.
+
+\index{Symbolic keyword}
+\item{\vt Symbolic} [{\vt y}$|${\vt n}]\\
+This keyword indicates that the layer will not be shown in the display
+produced by the {\cb Cross Section} command (in the {\cb View Menu}). 
+Otherwise, it doesn't have any purpose in {\Xic}, but might be useful
+to the user as a flag to indicate a non-physical layer.
+
+\index{Invalid keyword}
+\item{\vt Invalid} [{\vt y}$|${\vt n}]\\
+If this keyword appears, and any following argument indicates true,
+the layer will not appear in the layer table, but will exist
+internally and resolve any references to the layer in a design.  Such
+layers are invisible, as the redisplay involves cycling through layers
+in the layer table.
+
+This is for compatibility with Cadence Virtuoso, whose layer
+presentation attributes include a {\vt Valid} flag.  When reading a
+Virtuoso technology file, if a layer is invisible, not selectable, and
+is invalid, the {\Xic} {\vt Invalid} flag will be set.
+\end{description}
+
+
+%-------------------------------
+% techfile:layers:pres 120314
+\subsection{Technology File Layer Block Keywords:  Presentation}
+
+These keywords impact the appearance of objects on the layer on-screen
+and in prints.
+
+\begin{description}
+\index{RGB keyword}
+\item{\vt RGB} {\it colorspec}\\
+This keyword will set the color used to render objects on the layer
+on-screen.  The {\it colorspec} string is the name of a color or an
+RGB triple:
+\begin{itemize}
+\item{The name of a color.  The recognized names can be listed from
+   the {\cb Set Color} pop-up in the {\cb Attributes} menu with the {\cb
+   Colors} button.}
+\item{Three space-separated numbers, each 0--255, representing the
+   red, green, and blue intensity.  E.g., ``{\vt 196 240 235}''.}
+\item{Other forms recognized by the {\vt XParseColor} C library
+   function, including ``{\vt \#RRRRGGGGBBBB}'' and ``{\vt
+   rgb:RRRR/GGGG/BBBB}''.  Here, {\vt R}, {\vt G}, and {\vt B} are
+   single hexadecimal digits.}
+
+\end{itemize}
+If the color is given as a name, the color will be converted to its
+RGB values if the file is updated.  If no {\vt RGB} keyword is given
+for a layer, {\Xic} will assign a random color.  The {\vt RGB} keyword
+is allowed in the mini-layer blocks found in the print driver
+specifications.
+
+\index{Filled keyword}
+\item\parbox[b]{4in}{
+{\vt Filled} [{\vt y}[...]]\\
+{\vt Filled} {\vt n}[...] [{\vt o, f, c}]\\
+{\vt Filled} {\it bit\_data\/} [{\vt o, f, c}]
+}\\
+This keyword sets the fill and outline style used to render objects on
+the layer.  The tokens (other than {\it bit\_data}) can be words
+starting with the indicated letters, or or just the letters
+themselves, e.g., ``{\vt n}'', ``{\vt no}'', and ``{\vt none}'', are
+equivalent.  This is case-insensitive.
+
+If no tokens follow the keyword, or the first token starts with `{\vt
+y}', solid fill will be used.  Additional tokens on the line will be
+ignored.
+
+If the first token starts with `{\vt n}', no fill pattern (empty fill)
+will be used.  In this case, there are three outline styles available:
+\begin{enumerate}
+\item{A thin solid line boundary.}
+\item{A thin dashed line boundary.}
+\item{A thick solid line boundary for Manhattan boxes and polygons,    
+and a thin solid line boundary for other objects.}
+\end{enumerate}
+
+There is also the ``cut'' attribute, where diagonal lines are drawn
+over boxes, forming an X.  This applies to boxes only, not wires or
+polygons, even though they may be rendered as four-sided rectangular
+figures.
+
+Any text that follows the word that started with `{\vt n}' is examined
+for the presence of the characters `{\vt o}', `{\vt f}', and `{\vt
+c}'.  These can be found as individual letters or parts of words, for
+example ``{\vt outline cut}'' and ``{\vt oc}'' and ``{\vt o c}'' are
+all equivalent.  In addition, this is all case-insensitive.
+
+If neither `{\vt o}' or `{\vt f}' is found, a thin solid outline
+(style 1) is used.  If `{\vt o}' is found but not `{\vt f}', a thin
+dashed line (style 2) is used.  If `{\vt f}' is found, with or without
+`{\vt o}', then a thick solid line is used for edge segments of
+Manhattan objects, and a thin solid line is used for non-Manhattan
+objects (style 3).
+
+In any case, if `{\vt c}' is found, the ``cut'' attribute is applied. 
+If `{\vt o}' is also found buf not `{\vt f}', the diagonals are shown
+as dashed lines, the same as the boundary.  Otherwise, the diagonals
+are always thin solid lines.
+
+The form on the third line is used to specify a stipple pattern to
+use for fill.  {\Xic} supports any stipple map size with the x and y
+dimensions in the range of 2--32.  However, {\Xic} releases prior to
+3.2.25 supported only 8x8, 8x16, 16x8, and 16x16 maps.  The format
+described here is generally not backwards compatible with these
+releases.
+
+Maps can be read as hex numbers, or as ASCII tokens, but not in the
+same line.  When {\Xic} writes a technology file, the default is to
+use the ASCII token format, which actually renders the map in a crude
+way.  This format is best illustrated by an example:
+
+\begin{quote}
+\begin{verbatim}
+    Filled \
+      |   ..   |  (0x18) \
+      |  ....  |  (0x3c) \
+      | ...... |  (0x7e) \
+      |...  ...|  (0xe7) \
+      |...  ...|  (0xe7) \
+      | ...... |  (0x7e) \
+      |  ....  |  (0x3c) \
+      |   ..   |  (0x18) outline
+\end{verbatim}
+\end{quote}
+
+The points to note here are the following.
+\begin{enumerate}
+\item{Line continuation is used so that the map is visible to a human
+reader.  This is not required in general.}
+
+\item{Each line of the map contains space and non-space characters,
+surrounded by '{\vt |}' characters.  Although a period is used here,
+any non-space printing character will work.}
+
+\item{Each of these must contain the same number of characters, this
+number being in the range 2--32.  This sets the width of the map.}
+
+\item{The number of these constructs found in the line sets the height
+of the map.  This must be in the range 2--32.}
+
+\item{The map data parser ignores anything enclosed in parentheses. 
+Above, the equivalent hex number for the data pattern is provided, but
+is ignored by the parser.}
+\end{enumerate}
+
+An equivalent form using hex data is
+
+\begin{quote}
+    [{\vt x=}{\it width\/}] [{\vt y=}{\it height\/}] {\it hex\_number}
+      {\it hex\_number} ...
+\end{quote}
+
+The {\it width} and {\it height} are decimal numbers in the range
+2--32.  The number of hex digits that follow must match the {\it
+height\/}.
+
+The width and height specifications can be omitted, in which case the
+format reverts to the pre-3.2.25 expectation.  The hex numbers must be
+one of
+\begin{itemize}
+\item{8 2-digit hex numbers that specify an 8x8 map.}
+\item{16 2-digit hex numbers that specify an 8x16 map.}
+\item{8 4-digit hex numbers that specify a 16x8 map.}
+\item{16 4-digit hex numbers that specify a 16x16 map.}
+\end{itemize}
+
+Additional text on the line is examined for the `{\vt o}', `{\vt f}',
+and `{\vt c}' characters as described above for the no-fill case. 
+With a fill pattern, the interpretation is slightly different, as
+there is no dashed line outline available in this case.  If neither
+`{\vt o}' or `{\vt f}' appear, the pattern will not be outlined.  If
+`{\vt o}' appears without `{\vt f}', a thin solid outline will be
+used.  If `{\vt f}' appears, edges of boxes and Manhattan polygons
+will be thick.  The `{\vt c}' will draw diagonals on boxes.  For
+historical reasons, the character `{\vt y}' is treated the same as
+`{\vt o}'.
+
+If the boolean variable {\et TechNoPrintPatMap} is set when {\Xic}
+writes a technology file, then the hex form will be used to specify
+fill patterns.  Otherwise, the ASCII form is used.
+
+Here are a few more example fill specifications:\\
+\begin{quote}
+{\vt Filled y}\\
+{\vt Filled no fat}\\
+{\vt Filled cc aa cc aa cc aa cc aa outline}
+\end{quote}
+
+In electrical mode, the SCED layer defaults to solid fill, and other
+layers default to empty fill with a thin outline.  All layers default
+to empty fill with a thin outline in physical mode.  The {\vt Filled}
+keyword is allowed in the mini-layer blocks found in the print driver
+specifications.
+
+\index{Invisible keyword}
+\item{\vt Invisible} [{\vt y}$|${\vt n}]\\
+If this keyword appears, and the following argument indicates true,
+the layer will not be visible, though it will appear in the layer
+table, where the visibility status can be changed.
+
+The {\vt Invisible} keyword is allowed in the mini-layer blocks found
+in the print driver specifications.  This is the only place where use
+of the {\vt y}$|${\vt n} argument may be needed, in particular if {\vt
+Invisible} is specified in the main layer block, {\vt Invisible n} may
+be used in the driver block to make the layer visible in print driver
+output.
+
+\index{Blink keyword}
+\item{\vt Blink} [{\vt y}$|${\vt n}]\\
+If this keyword appears, the layer color will oscillate between two
+shades with a 0.5 second period.  This is only supported in
+pseudo-color (usually 256 colors) graphics mode.\\
+Default: not blinking
+
+\index{NoInstView keyword}
+\item{\vt NoInstView} [{\vt y}$|${\vt n}]\\
+If this keyword appears, and any following argument indicates true,
+objects on the layer will not be shown in electrical instances of the
+containing cell.  However they will appear when the cell is the
+current cell.  This is ignored in physical node.
+
+\index{WireWidth keyword}
+\item{\vt WireWidth} {\it width}\\
+This keyword can appear in physical layer fields.  The {\it width\/}
+is a floating point number which sets the default wire width to that
+value in microns.  This value will be used when wires are created in
+{\Xic}.\\
+Default: 0
+
+\index{CrossThick keyword}
+\item{\et CrossThick} {\it thickness}\\
+This keyword, which can be applied to physical layers only, sets the
+layer thickness as rendered in the {\cb Cross Section} command in the
+{\cb View Menu}.  The {\it thickness} is given in microns.
+\end{description}
+
+
+%-------------------------------
+% techfile:layers:conv 070114
+\subsection{Technology File Layer Block Keywords:  Conversion}
+\label{convlattr}
+
+The following keywords set the layer mapping for GDSII and OASIS
+format input and output.  These can be programmed from within {\Xic}
+with the {\cb Tech Parameter Editor} in the {\cb Attributes Menu}. 
+
+\begin{description}
+\index{StreamData keyword}
+\index{GDSII layer mapping}
+\item{\vt StreamData} {\it layernum datatype}\\
+This keyword is deprecated, and can be read but is not generated by
+{\Xic}.  The {\it layernum\/} and {\it datatype\/} are the layer
+mapping used when converting to and from GDSII format.  The layer must
+be in the range 0 through 65535, and the datatype can take values -1
+through 65535.  Values larger than 255 are outside of the GDSII
+specification, but are sometimes used anyway although files containing
+such data may not be generally portable.  If -1 is given as the
+datatype, all GDSII datatypes will be mapped to the present {\Xic}
+layer, and datatype 0 will be used for output.  Otherwise, the layer
+and datatype in a GDSII file must match those given for successful
+mapping to the {\Xic} layer.  Note that often the end of range values
+are reserved in other CAD environments, and that some releases of the
+GDSII format support only 64 layers and datatypes.  The datatype is
+used by {\Xic} only in conjunction with the {\vt NoDrcDatatype}
+keyword, and is otherwise typically set to 0.  This keyword has been
+superseded by {\vt StreamIn} and {\vt StreamOut}.
+
+\index{StreamIn keyword}
+\item{\et StreamIn {\it layer\_list\/} [, {\it datatype\_list\/}]}\\
+This keyword specifies a set of layer/datatype combinations that will
+map to the present {\Xic} layer when reading GDSII and OASIS files. 
+Any number of such lines can be present.  The {\it layer\_list\/} is a
+space-separated list of tokens, each of which is either a GDSII layer
+number (``32'') or a range of numbers (``35-41'').  The {\it
+datatype\_list\/} is similarly constructed, and is optional.  The
+numbers in either list can range from 0 to 65535, though numbers
+larger than 255 are outside of the GDSII specification (but sometimes
+used anyway).  If a {\it datatype\_list} appears, it is separated from
+the {\it layer\_list} with a comma.  The line specifies that each of
+the datatypes listed on each of the GDSII layers listed will be
+converted to the present {\Xic} layer.  If the datatype list is
+absent, it defaults to ``0-65535''.  For example,
+\begin{quote}\vt
+    StreamIn 5 7 8 21-30, 0 20-63
+\end{quote}
+specifies that datatypes 0 and 20-63 on GDSII layers 5, 7, 8, and
+21-30 will be mapped to the present {\Xic} layer as a GDSII or OASIS
+file is read.  Note that GDSII layers cam be mapped to more than one
+{\Xic} layer.  In this case, the geometry will be created on each of
+the {\Xic} layers mapped to.
+
+\index{MultiMapOk variable}
+It is possible for more than one {\Xic} layer to map from a given
+GDSII layer/datatype.  If the {\et MultiMapOk} variable is set, then
+multiple objects will be created when a GDSII or OASIS file is read,
+one on each matching {\Xic} layer.  If this variable is not set, only
+the first mapping will be used, which will be the lowest matching
+layer found in the layer table.
+
+\index{StreamOut keyword}
+\item{\et StreamOut {\it out\_layer\/} [{\it out\_datatype\/}]}\\
+This line specifies a layer/datatype combination to be used when
+generating GDSII and OASIS files for the present {\Xic} layer.  One of
+these should appear for each {\Xic} layer.  The {\it out\_layer} and
+{\it out\_datatype} can be in the range 0--65535, though numbers
+larger than 255 are outside of the GDSII specification but are
+sometimes used anyway.  Be aware that use of numbers larger than 255
+may render the file non-portable.  Note that often the end of range
+values are reserved in other CAD environments, and that some releases
+of the GDSII format support only 64 layers and datatypes.  The default
+datatype, if not given, is 0.
+
+If there are more than one {\et StreamOut} lines given for a layer,
+and the {\et MultiMapOk} variable is set, the objects will be added to
+the GDSII or OASIS file on each of the GDSII layers/datatypes
+specified.  If the variable is not set, only the first {\et StreamOut}
+specification will be used.
+
+There is no default for this keyword.
+
+\index{NoDrcDataType keyword}
+\item{\et NoDrcDatatype} {\it datatype}\\
+If this keyword is given, then any object that has the given datatype
+will be ignored during DRC.  On output, objects that have their DRC
+skip flags set will be written with this datatype, and not the default
+datatype given in the {\et StreamOut} line.  The given datatype should
+appear in the input mapping for the layer.
+\end{description}
+
+
+%-------------------------------
+% techfile:layers:ext 062016
+\subsection{Technology File Layer Block Keywords:  Extraction}
+\label{exkwords}
+
+This section describes the keyword entries which appear in layer
+blocks which categorize the purpose of the layer for extraction. 
+These define the conductor layers which are involved in grouping,
+identify vias between conductors, etc.  These keywords can appear only
+in physical layer fields.
+
+All of these settings can be entered with the {\cb Edit Tech Params}
+command in the {\cb Attributes Menu} and then written to disk with the
+{\cb Save Tech} command in the {\cb Attributes Menu}, or be entered
+with a text editor directly into the technology file.
+
+Some of the keywords below use layer expressions, as were described in
+\ref{layerexp}.  A layer expression in its simplest form is a layer
+name.  More generally, it consists of an expression involving layer
+names, the intersection operator ({\vt \&}), the union operator ({\vt
+|}), and the inversion operator ({\vt !}).  Parentheses can be used to
+enforce precedence.  These are the same type of expressions as used in
+the DRC tests.  The expression is ``true'' at points where the
+expression would return opacity.
+
+\begin{description}
+\item{\et Conductor} [{\et Exclude} {\it expression\/}]\\
+\index{Conductor keyword}
+This keyword indicates that the present layer is to be included in
+conductor net grouping.  If the keyword {\et Exclude} and a following
+layer expression are given, the regions of the current layer under
+which the expression is true are clipped out for grouping purposes. 
+For example, in CMOS technology a transistor is formed by a strip of
+CAA (active area) bisected by a CPG (polysilicon) gate.  If ``{\vt
+Conductor Exclude CPG}'' is given in the CAA layer block, the two
+pieces of CAA will be given separate group numbers, which is necessary
+to keep the transistor source and drain separate.
+
+\item{\et Routing} [{it route params\/}]\\
+This keyword implies that the layer is a conductor used for connecting
+between cells.  The {\et Conductor} keyword is implied, so that the
+{\et Conductor} keyword does not also have to be supplied, unless
+there is an {\et Exclude} directive.  Only layers with the {\et
+Routing} keyword given will be considered by the extraction system for
+connecting between cells, and cell formal terminals will only be
+assigned to {\et Routing} layers.  This is not absolute, however.  The
+extraction system will place formal terminals on {\et Conductor}
+layers under some circumstances, if necessary.
+
+Optionally, routing parameter definitions may follow the keyword. 
+These provide information to a third-party auto-route system, The
+parameters are saved in the {\Xic} technology database, and are used
+when writing a technology file, but are not otherwise used directly by
+{\Xic}.  The recognized routing parameter definitions are listed
+below.  These can appear in any order.  These parameters will be
+parsed and set when reading the technology file, but can also be set
+when reading Cadence ASCII technology files.
+
+\begin{description}
+\item{\vt dir=H|V|X|Y}[...]\\
+This sets the preferred direction of routes on the layer.  The ``{\vt
+dir=}'' is literal, and is followed by a letter or word, only the
+first letter of which is significant.  If the first letter is {\vt H}
+or {\vt X} (case insensitive), the route direction is horizontal.  If
+the letter is {\vt V} or {\vt Y}, also case insensitive) the routing
+direction is vertical.  Otherwise, an error ensues.
+
+\item{\vt p}[{\vt itch}]{\vt =}{\it px\/}[{\vt ,}{\it py\/}]\\
+This provides the values for the route pitch.  Only the first letter
+of the ``{\vt pitch}'' keyword need be present.  This is followed by
+an equal sign (``{\vt =}''), and one or two real numbers.  The numbers
+are pitch values in microns.  If there are two numbers, the first is
+the horizontal pitch, the second vertical, separated by a comma.  Two
+numbers are required only if the horizontal and vertical pitch values
+differ.
+
+\item{\vt o}[{\vt ffset}]{\vt =}{\it ox\/}[{\vt ,}{\it oy\/}]\\
+This provides values for the route offset, and is parsed the same way
+as the pitch.  The values are real numbers giving the offset in
+microns.  The second number can be omitted if it is the same as the
+first.  The offset is the routing grid origin relative to the cell
+origin.
+
+\item{\vt w}[{\vt idth}]{\vt =}{\it w}\\
+This specifies the line width, in microns, used for routing. 
+Presently, only one number is accepted, implying that horizontal and
+vertical routes have the same width.
+
+\item{\vt maxd}[{\vt ist}]{\vt =}{\it d}\\
+This provides a maximum route length, in microns.  A router may use
+this value to limit route lengths.
+\end{description}
+
+\item\parbox[b]{4in}{\rr
+{\et GroundPlane}\\
+{\et GroundPlaneDark} (alias)\\
+}\\
+\index{GroundPlane keyword}
+\index{GroundPlaneDark keyword}
+\index{extraction!ground plane}
+This keyword indicates that the present layer is to be treated as a
+clear-field ground plane.  The layer is given the {\et Conductor}
+attribute.  If the keyword ``{\vt Global}'' appears, then every object
+on the layer will be assigned to the ground group 0.  This would be
+appropriate if the layer represents a diffusion rather than a metallic
+ground plane.  The default is to treat this level as a normal
+conductor, except that when this layer is grouped in the top-level
+cell, the group with the largest area is assigned to the ground group.
+
+If ``{\vt Global}'' is given, the {\et GroundPlaneGlobal} variable,
+which activates the mode, will be set.
+
+Only one of the ground plane keywords can appear in the technology
+file.  Conductor group 0 is used only if a ground plane has been
+specified.  The ground plane layer can be referenced in {\et Via} and
+{\et Contact} lines just as any {\et Conductor}.
+
+\item\parbox[b]{4in}{\rr
+{\et GroundPlaneClear} [{\et MultiNet} [0$|$1$|$2]]\\
+{\et TermDefault} [{\et MultiNet} [0$|$1$|$2]] (alias)\\
+}\\
+\index{GroundPlaneClear keyword}
+\index{TermDefault keyword}
+\index{ MultiNet keyword}
+This keyword indicates that the present layer is to be treated as a
+dark-field ground plane.  These keywords imply {\et DarkField}. 
+Giving {\et GroundPlane} (or {\et GroundPlaneDark}) and {\et
+DarkField} is equivalent to {\et GroundPlaneClear} without {\et
+MultiNet}.
+
+Only one of the ground plane keywords can appear in the technology
+file.  Conductor group 0 is used only if a ground plane has been
+specified.
+
+Without the {\et MultiNet} keyword, connections to this layer (as
+specified with the {\et Via} and {\et Contact} keywords), where this
+layer does {\it not} appear, are considered as connections to ground
+(group 0).  Although this approach may work for simple cells, it can
+lead to trouble.  Suppose that an island of ground plane metal is used
+as part of the metalization for the chip pads.  This would appear as a
+hole in the displayed representation of the ground plane layer.  Then
+each pad will be extracted as shorted to ground!
+
+\index{GroundPlaneMulti variable}
+There is provision for more intelligent handling of the {\et
+GroundPlaneClear} layer, allowing the layer to be included in paths
+and groups.  If the {\et MultiNet} keyword appears, the inverse of the
+layer is computed, and that (temporary) layer is used in the grouping. 
+However, it can take quite a lot of behind-the-scenes computation if
+the {\et GroundPlaneClear} layer has complex patterning.  Inversion is
+also done if the {\cb !set} variable {\et GroundPlaneMulti} is given
+(note:  this variable was formerly named {\et HandleTermDefault}). 
+The temporary layer is treated as a clear-field ground plane, and all
+references to the ground plane will be applied to the temporary layer
+during grouping and extraction.
+
+The name of the internal layer created is ``{\vt \$GPI}''.  By default,
+this layer is invisible.  It should not be directly edited by the
+user.  The inverse layer is an internal layer and is never written to
+a file during conversion or a save.  During extraction the {\et
+GroundPlaneClear} layer is ignored, and the inverse, which is a {\et
+Conductor}, is used to establish connectivity.
+
+\index{GroundPlaneMethod variable}
+To establish connectivity for the commands in the {\cb Extract Menu},
+the inverse layer is created according to one of the algorithms
+described below.  An optional integer 0--2 may follow the {\et
+MultiNet} keyword, which indicates the algorithm used for inversion. 
+The algorithm can also be selected by setting the variable {\et
+GroundPlaneMethod} to an integer in the same range, with the {\cb
+!set} command.
+
+\begin{description}
+\item{\bf 0}
+The inverted layer is created for each cell in the hierarchy by
+computing
+\begin{quote}
+{\vt \$GPI = !{\it GP} \& !\$\$}
+\end{quote}
+i.e., for each cell the ground plane is inverted and the areas over
+subcells are removed (recall that ``{\vt \$\$}'' is a pseudo-layer
+representing subcell boundaries).  This is the default.
+\item{\bf 1}
+The inverted layer is created only in the top cell in the hierarchy,
+and is the inverse of a flat representation of the ground plane layer
+from all cells in the hierarchy.  The extraction algorithm will add
+virtual contacts from this layer to the appropriate places in the
+subcells.
+\item{\bf 2}
+The inverted layer is created in each cell of the hierarchy by
+creating a flat inverse of all of the ground plane found in the cell
+or lower in the hierarchy.
+\end{description}
+
+The default (0) method is the most efficient computationally, but the
+method will probably fail if sibling subcells overlap.  In general, it
+is good practice to avoid cell overlap.
+
+Method 1 will work if subcells overlap.  However, since there is no
+local ground plane in the subcells, generating a netlist while in a
+{\cb Push} (subedit) will not yield correct results.
+
+Method 2 is the least efficient computationally, but each cell has a
+local ground plane.
+
+\item{\et Via {\it layer1 layer2\/} [{\it expression\/}]}\\
+\index{Via keyword}
+\index{via expression}
+This keyword indicates that the present layer may provide connection
+points between conductor nets on {\it layer1\/} and {\it layer2\/}. 
+The {\it layer1\/} and {\it layer2\/} are names of layers each of
+which have the {\et Conductor}, {\et Routing}, or one of the
+GroundPlane keywords specified.  In extraction, it is assumed that the
+via is formed by dark area on the present layer, and vias are
+completely covered by {\it layer1\/} and {\it layer2\/}.  A connection
+is indicated if the {\it expression} (which is a layer expression) is
+true at any point within the via.  The {\et Via} keyword implicitly
+assigns {\et DarkField}.  The recognition logic is as follows:
+
+\begin{quote}
+{\bf for each} {\it region} of the {\et Via} layer \{\\
+\hspace*{2mm}{\bf if} (there exists an object on {\it layer1} that overlaps {\it region})\\
+\hspace*{4mm}{\bf if} (there exists an object on {\it layer2} that overlaps {\it region})\\
+\hspace*{6mm}{\bf if} (there is no {\it expression}, {\bf or} the area where {\it expression} is true in {\it region} is nonzero)\\
+\hspace*{8mm}{\bf then} the via indicates a connection between the two objects\\
+\}
+\end{quote}
+
+If the {\it expression} is not given, it is always taken as ``true''.
+
+Examples:
+\begin{description}
+\item{\vt Via M1 M2 !RES}\\
+A via is indicated if part of the via object on the present layer
+which is being evaluated is not covered by objects on {\vt RES}.
+
+\item{\vt Via M1 M2 I2}\\
+A via is indicated if the via object on the present layer is
+partially or completely covered with {\vt I2}.
+
+\item{\vt Via M1 M2 (!I2)\&(!RES)}\\
+A via is indicated if part of the via object is not covered by {\vt I2}
+or by {\vt RES}.
+\end{description}
+
+\item{\et Dielectric}\\
+\index{Dielectric keyword}
+This keyword is intended to specify an explicit capacitor dielectric,
+which is different from a {\vt Via} layer.  A layer can not have both
+keywords.  This is primarily to support the capacitance extraction
+interface.  A {\vt Dielectric} layer is assumed to be clear-field,
+unlike {\vt Via} layers, though the {\vt DarkField} keyword can also
+be applied.  Also unlike {\vt Via} layers, {\vt Dielectric} layers are
+not assumed to be planarizing by default.
+
+\item{\et Contact} {\it layer} [{\it expression\/}]\\
+\index{Contact keyword}
+This keyword specifies that the present layer may be in contact with
+{\it layer}, which has the {\et Conductor} attribute, and is to be
+grouped accordingly in the wire net extraction.  The {\it expression}
+(which is a layer expression), if given, must be true in the overlap
+region between the object and the objects on {\it layer} for contact
+to be established.
+
+The purpose is to account for a contact metalization which is applied
+over the normal wiring layers, which may itself be used for making
+connections occasionally.  The {\et Contact} keyword implies {\et
+Conductor}.  The {\et Contact} keyword should be given in the layer
+block of the contact metal layer.  It is not necessary (or desirable)
+to include a reciprocal {\et Contact} specification in the referenced
+layer's block.
+
+\item{\et DarkField}\\
+\index{DarkField keyword}
+This keyword indicates that the layer polarity on the chip is the
+reverse of that shown on-screen.  This is usually the case for via
+layers, for example, which are rendered as small squares to indicate
+the contact location, which is actually a hole in an insulating layer. 
+At present, the only command that uses this keyword is the {\cb Cross
+Section} command in the {\cb View Menu}.  Layers with the keyword
+applied will be shown as on-chip in the cross sectional view.
+This keyword is implicitly assigned by both {\et Via} and
+{\et GroundPlaneClear}.
+
+The keyword has a secondary effect if used in conjunction with the
+{\et GroundPlane} (or the equivalent {\et GroundPlaneDark}) keyword. 
+The combination is equivalent to {\et GroundPlaneClear}.
+\end{description}
+
+
+%-------------------------------
+% techfile:layers:phys 090714
+\subsection{Technology File Layer Block Keywords:  Physical Properties}
+\label{phkwords}
+
+The following keywords can appear only in physical layer fields, and
+they mostly specify physical material properties, or electrical
+parameters, used in various ways by the extraction system.
+
+Many of these parameters are redundant or incompatible with each
+other.  Warning messages may be issued when incompatibilities are
+detected, however unused information is usually simply ignored and
+does no real harm.  In particular, there are two basic groups, those
+keywords that apply to conductors, and those that apply to insulators. 
+Mixing these parameters on the same layer will likely generate a
+warning.
+
+All of these settings can be entered with the {\cb Edit Tech Params}
+command in the {\cb Attributes Menu} and then written to disk with the
+{\cb Save Tech} command in the {\cb Attributes Menu}, or be entered
+with a text editor directly into the technology file.
+
+\begin{description}
+\item{\et Planarize} [{\vt y}$|${\vt n}]\\
+\index{Planarize keyword}
+This specifies whether or not a layer is planarizing.  This is used by
+the three-dimensional layer sequence generator when creating layer
+sequences for the capacitance extraction interface.  The {\vt
+Planarize} keyword can be applied to prevent planarization of layers
+that are planarized by default, or to force planarizing of layers that
+don't normally have this property.  See the description of the
+sequence generator in \ref{ldb3d} for a description of planarization,
+and which layers are planarized by default.
+
+\item{\et Thickness {\it thickness}}\\
+\index{Thickness keyword}
+This keyword supplies the film thickness of the corresponding
+deposited film.  The {\it thickness} is given in microns.  This can be
+applied to any physical layer.
+\end{description}
+
+At most one of the following two keywords ({\et Rho} and {\et Sigma})
+should be used.
+
+\begin{description}
+\item{\et Rho {\it resistivity}}\\
+\index{Rho keyword}
+This keyword supplies the resistivity, in MKS units (ohm-meters), of
+the corresponding conducting film.  If {\et Rsh} (below) and {\et
+Thickness} are both given, then the resistivity is already available
+and this keyword is redundant.  Supplying this keyword overrides the
+{\et Rsh}*{\et Thickness} value for the resistivity, when resistivity
+is used explicitly in the extraction system (in the
+inductance/resistance extraction interface).
+
+\item{\et Sigma {\it conductivity}}\\
+This keyword supplies the conductivity, in MKS units, of the
+corresponding conducting film.  This is converted to resistivity
+(1.0/{\it conductivity\/}) internally, i.e., it is equivalent to
+giving {\et Rho}.
+
+\item{\et Rsh {\it ohms\_per\_square}}\\
+\index{Rho keyword}
+The single parameter is a floating point number giving the ohms per
+square value of the conducting material.  This is used in computation
+of the resistance value of resistor devices.  If {\et Rho} or {\et
+Sigma} is given, and also {\et Thickness}, then the sheet resistance
+is already available and this keyword is redundant.  Supplying this
+keyword overrides the {\et Rho}/{\et Thickness} value for sheet
+resistance.
+
+\item{\et EpsRel {\it diel\_constant}}\\
+This keyword supplies the relative dielectric constant of insulating
+layers.
+
+\item{\et Capacitance {\it units\_per\_sq\_micron}
+     [{\it units\_per\_micron}]}\\
+\index{Capacitance keyword}
+This enables computation of the capacitance of a conductor group on
+the present conducting layer.  The first parameter is a floating point
+number giving capacitance per square micron.  The optional second
+parameter (default 0) is the edge capacitance, per micron.  The
+extracted capacitance is the conductor group area multiplied by the
+first parameter, plus the conductor group perimeter length multiplied
+by the second parameter, if given.  The capacitance for each wire net
+is computed during extraction, and will be printed (if enabled) in the
+physical netlist output file.
+
+The keyword ``{\et Cap}'' is accepted as an alias for ``{\et
+Capacitance}''.
+
+\item{\et Lambda {\it pene\_depth}}\\
+This keyword specifies the London penetration depth of superconducting
+conductors, in microns.  When {\et Lambda} is given, {\et Rho}/{\et
+Sigma} (if given) represents the conductivity due to unpaired
+electrons from the two-fluid model.
+
+\item{\et Tline {\it grnd\_plane\_layer} [{\it diel\_thick diel\_const\/}]}\\
+\index{Tline keyword}
+This keyword will enable use of a microstrip model which computes
+transmission line parameters.  A microstripline geometry is assumed,
+with an object on the present layer forming a strip over an infinite
+ground plane layer, separated by a homogeneous dielectric of constant
+thickness.  No account is taken of ``real'' geometry, except for the
+dimensions of the strip on the present layer.
+
+The first argument is the name of a layer assumed as the ground plane. 
+Both the present layer and the ground plane layer must be conductors
+and have {\et Thickness} and, if superconductors, {\et Lambda}
+defined.  Non-superconductors are treated as perfect conductors.
+
+The second argument is the assumed height, in microns, of the
+intervening dielectric.  The third argument is the relative dielectric
+constant.  If either or both of these arguments is missing or given as
+``0'' (zero), then {\Xic} will search for a layer with the {\et Via}
+keyword set that contains the present and the ground plane layers, and
+obtain the missing values from that layer.
+
+\item{\et Antenna} {\it float\_value}\\
+This keyword applies to the {\cb !antenna} command, and is meaningful
+on conducting layers.  The {\it float\_value} is a threshold
+antenna ratio, as explained for the {\cb !antenna} command.  The value
+is effectively passed to that command as a default for the layer.
+\end{description}
+
+
+%-------------------------------
+% techfile:layers:drc 090814
+\subsection{Technology File Layer Block Keywords:  Design Rules}
+
+The layer block may contain design rule specifications, which begin
+with a keyword.  These keywords can appear only in physical layer
+blocks.  See the description of the design rules in \ref{designrules}
+for information regarding these keywords.  The rules can be programmed
+from within {\Xic} with the {\cb Design Rule Editor}.  These keywords
+are not recognized in the {\XicII} and {\Xiv} feature sets.
+
+
+% -----------------------------------------------------------------------------
+% techfile:stdvia 031815
+\section{Technology File Standard Via Definitions}
+
+{\Xic} provides support for OpenAccess/Virtuoso-style standard vias
+(see \ref{stdvia}).  These definitions are imported from a Virtuoso
+ASCII technology file when the {\vt ReadCdsTech} is used to source a
+Cadence technology database, if any <tt>standardViaDefs</tt> nodes
+exist.  They will be written to and read from the {\Xic} technology
+file using syntax described in this section.
+
+Standard via definitions will be written following the derived layers
+when a new technology file is being created.  This is the recommended
+location when hand editing a technology file.  The definitions are
+required to follow the layer definition blocks of any layers used, but
+otherwise location in the technology file is flexible.
+
+The syntax for a standard via definition is as follows.
+
+\begin{quote}
+{\vt StandardVia} {\it viaName layer1 layer2 cutLayer cutWidth
+cutHeight cutRows cutCols $\backslash$\\
+\hspace*{2em}cutSpace\_x cutSpace\_y layer1Enc\_x layer1Enc\_y layer2Enc\_x
+layer2Enc\_y $\backslash$\\
+\hspace*{2em}layer1Off\_x layer1Off\_y layer2Off\_x layer2Off\_y
+originOff\_x originOff\_y\/} $\backslash$\\
+\hspace*{2em}$[${\it implant1 imp1Enc\_x imp1Enc\_y}
+$[${\it implant2 imp2Enc\_x imp2Enc\_y\/}$]]$
+\end{quote}
+
+The terms correspond to the options shown in the {\cb Via Creation}
+panel from the {\cb Edit Menu}, and their effects are described in
+that section.  The definition must appear on a single logical line,
+but backslash line continuation (as shown) can be employed to break
+the line for improved human readability.
+
+The line must begin with the {\vt StandardVia} keyword.  The remaining
+tokens are as follows.  All of the numerical values can be altered by
+the user before placement, the values provided in the definition are
+the initial defaults.  The layer names, however, can not be changed
+subsequently.  All dimensions are in microns.
+
+\begin{description}
+\item{\it viaName}\\
+This is a unique name for the standard via, and can be any text word
+that can be used as a cell name.  One convention is to use the layer
+names of the twe conductors, top conductor first, separated by an
+underscore (e.g., ``{\vt M2\_M1}'').
+
+\item{\it layer1 layer2 cutlayer}\\
+The three tokens that follow are the names of the bottom conductor,
+the top conductor, and the via layer, in that order.  These layers
+must have been already defined in the technology file.
+
+\item{\it cutWidth cutHeight}\\
+These are floating-point numbers giving the size of the cut in
+microns.  The cut is always rectangular.
+
+\item{\it cutRows cutCols}\\
+These are integers not less than 1, which indicate that the cut should
+be arrayed according to the numbers of rows and colums given.  These
+are both usually 1 in a standard via definition, representing a
+minimum via.  The user can array the cuts when necessary from the {\cb
+Via Creation} panel.
+
+\item{\it cutSpace\_x cutSpace\_y}\\
+These apply when the cut is arrayed, and provide the edge-to-edge
+space between cuts in the x and y direction.  This is usually a
+minimum value given by a design rule.
+
+\item{\it layer1Enc\_x layer1Enc\_y layer2Enc\_x layer2Enc\_y}\\
+These four dimensions provide the enclosure distance for the bottom
+(layer1) and top conductor rectangles relative to the cut.  The
+enclosure is the distance that the metal rectangle extends outside of
+the cut area.  This is usually a minimum value given by a design rule.
+
+\item{\it layer1Off\_x layer1Off\_y layer2Off\_x layer2Off\_y}\\
+These four dimensions provide offsets for the center of the two
+conductor rectangles relative to the center of the cut.  These values
+are unlikely to be other than zero.
+
+\item{\it originOff\_x originOff\_y}\\
+These coordinates provide the origin of the sub-master cell relative
+to the center of the cut array.  It is the location that corresponds
+to the mouse pointer when a new via instance is placed.  These are
+unlikely to be other than zero.
+\end{description}
+
+All of the terms mentioned thus far are required.  The remaining terms
+are optional.
+
+\begin{description}
+\item{\it implant1 imp1Enc\_x imp1Enc\_y}\\
+This is the name of a layer followed by two dimensions.  If found, an
+additional rectangle of {\it implant1} is centered over the {\it
+layer1} (bottom conductor) rectangle.  The enclosure values specify
+the distance the implant extends outside of the conductor, in the x
+and y directions.
+
+\item{\it implant2 imp2Enc\_x imp2Enc\_y}\\
+These may follow an {\it implant1} group only.  This is the name of a
+layer followed by two dimensions.  If found, an additional rectangle
+of {\it implant2}> is centered over the {\it layer2} (top conductor)
+rectangle.  The enclosure values specify the distance the implant
+extends outside of the conductor, in the x and y directions.
+\end{description}
+
+Standard via definitions successfully read from the technology file
+will be saved internally, and the definitions can be accessed from the
+{\cb Via Creation} panel.  The panel allows the default values to be
+overridden, and new vias to be created and placed.  If no stantard via
+definitions were successfully read, the panel is unavailable and the
+{\cb Create Via} button in the {\cb Edit Menu} is grayed.
+
+
+% -----------------------------------------------------------------------------
+% techfile:attr 021615
+\section{Technology File Attributes}
+\label{techattr}
+
+The keywords described below appear (by convention) after the layer
+specifications, and control various global attributes of {\Xic}. 
+These are broken down into categories, which are presented in the
+order in which they will be written to a new technology file created
+by {\Xic}.  Actual order in the file is unimportant.  The categories
+are:
+
+\begin{description}
+\item{\bf Grid Presentation}\\
+Display options for the grid, which can be adjusted from within
+{\Xic} in the {\cb Style} page of the {\cb Grid Setup} panel.
+
+\item{\bf Misc. Presentation}\\
+Other general display attributes that correspond to the entries in the
+{\cb Main Window} sub-menu of the {\cb Attributes Menu}.
+
+\item{\bf Attribute Colors}\\
+Colors used for background, highlighting, etc.
+
+\item{\bf Grid and Edge Snapping}\\
+Parameters for grid spacing and edge snapping, which can be adjusted
+from within {\Xic} in the {\cb Snapping} page of the {\cb Grid Setup}
+panel.
+
+\item{\bf Function Key Assignments}\\
+Command mapping to keyboard function keys.
+
+\item{\bf Grid Registers}\\
+Saved grid register contents.
+
+\item{\bf Layer Palette Registers}\\
+Saved palette register contents.
+
+\item{\bf Font Assignments}\\
+Fonts used by the graphical user interface.
+
+\item{\bf Keyword Variables}\\
+Variable initialization as keywords.
+\end{description}
+
+Keywords listed in the first three categories ({\bf Grid
+Presentation}, {\bf Misc.  Presentation}, and {\bf Attribute Colors}
+can also appear in print driver blocks, in which case they are in
+effect when printing with that driver.
+
+In the syntax descriptions, the italicized quantities represent data
+the needs to be provided.  The ``{\vt y}$|${\vt n}'' symbol implies that one
+of `{\vt y}' or `{\vt n}' should follow the keyword.  Actually, `{\vt
+0}' (zero), or any word that begins with the letters or sequence
+(case insensitive) `{\vt n}', `{\vt f}', `{\vt of}' is taken as a
+false value.  Anything else, including no following text, is taken as
+true (`{\vt y}' is always redundant).
+
+
+%-------------------------------
+% techfile:attr:grid 021415
+\subsection{Grid Presentation}
+
+These keywords define the appearance of the axes and grid shown in the
+drawing windows on program startup.  Within {\Xic}, the presentation
+can be modified from the {\cb Style} page of the {\cb Grid Setup}
+panels associated with the drawing windows.  The parameters given in
+the technology file apply to the main window, which are inherited by
+sub-windows when created.  The parameters can subsequently be changed
+with the panel on a per-window basis.
+
+For the main drawing window, the {\cb Main Window} sub-menu of the
+{\cb Attributes Menu} provides the {\cb Set Grid} button, which brings
+up the {\cb Grid Setup} panel.  Sub-windows have the {\cb Grid Setup}
+panel available from the {\cb Attributes} menu in the sub-window. 
+Pressing {\kb Ctrl-g} while a drawing window has focus will also bring
+up the panel.
+
+The keywords described in this section can also appear within print
+driver blocks.  If they appear in a print driver block, the attribute
+will apply on-screen when that driver is active in printing mode, and
+in the printer output.
+
+\begin{description}
+\index{Axes keyword}
+\item{\vt Axes} {\vt [Plain | Mark | None]}\\
+This determines the presentation style for the axes in physical mode. 
+The default is {\vt Mark}, where the origin is marked with a small
+box.  If {\vt Plain} is given, the axes are simple lines.  If {\vt
+None} is given, the axes will not be drawn.
+
+\index{ShowGrid keyword}
+\item{\vt ShowGrid} [{\vt y}$|${\vt n}]\\
+This determines whether or not the grid will be shown by default, and
+applies to both physical and electrical modes.\\
+Default: {\vt y}
+
+\index{PhysShowGrid keyword}
+\index{ElecShowGrid keyword}
+\item\parbox[b]{4in}{
+{\vt ElecShowGrid} [{\vt y}$|${\vt n}]\\
+{\vt PhysShowGrid} [{\vt y}$|${\vt n}]}\\
+These keywords allow the grid display to be set independently for the
+two modes.  The last {\vt ShowGrid} directive will have precedence for a
+given mode.
+
+\index{GridOnBottom keyword}
+\item{\vt GridOnBottom} [{\vt y}$|${\vt n}]\\
+This keyword determines whether the grid is shown on top of or below
+the rendered objects.\\
+Default: {\vt y}
+
+\index{PhysGridOnBottom keyword}
+\index{ElecGridOnBottom keyword}
+\item\parbox[b]{4in}{
+{\vt ElecGridOnBottom} [{\vt y}$|${\vt n}]\\
+{\vt PhysGridOnBottom} [{\vt y}$|${\vt n}]}\\
+These keywords allow the grid to be displayed above or below the
+rendered objects independently for the two modes.  The last {\vt
+GridOnBottom} directive will have precedence for a given mode.
+
+\index{GridStyle keyword}
+\item{\vt GridStyle} {\it style} [{\it xsize\/}]\\
+This sets the style of grid to use in both electrical and physical
+modes.  The style is a decimal of hex (with ``{\vt 0x}'' prefix)
+integer whose binary pattern is used to replicate the grid lines.  A
+value of 0 indicates a point grid, and -1 indicates solid grid lines. 
+Other values are taken as a line pattern that is periodically
+reproduced.  From the MSB, the pattern starts with the first set bit,
+and continues through the LSB.
+
+If the {\it style} value is 0, for a ``dots'' grid, a second integer
+will be read if present.  This value can be 0--6, and represents the
+number of pixels to light up around the central pixel in the four
+compass directions.  The ``dots'' can appear as brighter dots or small
+crosses, as set by this integer.  This integer is ignored if {\it
+style} is nonzero, and is taken as 0 if absent.\\
+Default: 0xcc (hex)
+
+\index{PhysGridStyle keyword}
+\index{ElecGridStyle keyword}
+\item\parbox[b]{4in}{\vt
+ElecGridStyle {\it style}\\
+PhysGridStyle {\it style}}\\
+These keywords allow the grid style to be set independently for
+electrical and physical modes.  The last {\vt GridStyle} directive has
+precedence for a given mode.
+
+\index{CoarseGridMult keyword}
+\item{\vt CoarseGridMult} {\it num}\\
+This can be set to an integer 1--50, and specifies that coarse grid
+lines will appear every {\it num} fine grid lines.  With value 1, the
+grid will use the coarse grid color only.  This applies in both
+electrical and physical modes.\\
+Default: 5
+
+\index{ElecCoarseGridMult keyword}
+\index{PhysCoarseGridMult keyword}
+\item\parbox[b]{4in}{{\vt ElecCoarseGridMult} {\it num}\\
+{\vt PhysCoarseGridMult} {\it num}}\\
+These provide the coarse grid multiplier independently for the two
+modes.  The last {\vt CoarseGridMult} directive seen for a given mode
+has precedence.
+\end{description}
+
+
+%-------------------------------
+% techfile:attr:misc 021415
+\subsection{Misc. Presentation}
+
+These keywords set initial values for a number of display attributes. 
+These generally apply to all drawing windows, but the values can be
+reset on a per-window basis within {\Xic}.  For the main window, most
+have corresponding toggle buttons in the {\cb Main Window} sub-menu of
+the {\cb Attributes Menu}.  In sub-windows, the buttons are located
+within the {\cb Attributes} menu itself.
+
+The keywords described in this section can also appear within
+print driver blocks.  If they appear in a print driver block, the
+setting will apply on-screen when that driver is active in printing
+mode, and in the printer output.
+
+\begin{description}
+\index{Expand keyword}
+\item{\vt Expand} {\it num}\\
+This keyword sets the initial expansion level for subcells, for both
+electrical and physical modes.  If zero, no subcells are expanded.  If
+-1, all subcells will be shown expanded.  A positive integer indicates
+that subcells up to that depth will be shown expanded.\\
+Default: 0
+
+In {\Xic}, the {\cb Expand} pop-up controls expansion level, on a
+per-window basis.  This panel is available from the {\cb Expand}
+button in the main and sub-window {\cb View} menus.
+
+\index{ElecExpand keyword}
+\index{PhysExpand keyword}
+\item\parbox[b]{4in}{\vt
+ElecExpand {\it num}\\
+PhysExpand {\it num}}\\
+These forms allow the expansion level for electrical and physical
+modes to be set separately.
+
+\index{DisplayAllText keyword}
+\item{\vt DisplayAllText} {\it num}\\
+This keyword sets whether label text is displayed or not, for both
+electrical and physical modes.  If {\it num} is 0, labels will not be
+displayed.  If 1 (actually, any number not 0 or 2), labels will be
+displayed in ``legible'' orientation.  If 2, labels will be shown in
+true orientation, i.e., rotated and mirrored as placed and transformed
+along with the containing instance.\\
+Default: {\vt 1}
+
+The {\cb Show Labels} and {\cb Label True Orient} buttons in the {\cb
+Main Window} sub-menu of the {\cb Attributes Menu} and in the {\cb
+Attributes} menu of sub-windows control these settings.
+
+\index{ElecDisplayAllText keyword}
+\index{PhysDisplayAllText keyword}
+\item\parbox[b]{4in}{\vt
+ElecDisplayAllText {\it num}\\
+PhysDisplayAllText {\it num}}\\
+These forms allow the display of label text for electrical and
+physical modes to be set separately.
+
+\index{ShowPhysProps keyword}
+\item{\vt ShowPhysProps} [{\vt y}$|${\vt n}]\\
+This keyword sets whether physical property strings are displayed
+in physical mode.\\
+Default: {\vt n}
+
+The {\cb Show Phys Properties} button in the {\cb Main Window} sub-menu
+of the {\cb Attributes Menu} and in the {\cb Attributes} menu of
+sub-windows controls this setting.
+
+\index{LabelAllInstances keyword}
+\item{\vt LabelAllInstances} {\it num}\\
+This keyword sets whether unexpanded instances are labeled or not, for
+both electrical and physical modes.  If {\it num\/} is 0, instances
+will not be labeled.  If 1, instances will be labeled, with the label
+appearing either in horizontal or vertical orientation, whichever
+provides the best fit into the cell bounding box.  If 2, the cell name
+is rotated and mirrored along with the cell.\\
+Default: 1
+
+The {\cb Show Cell Names} and {\cb Cell Name True Orient} buttons in
+the {\cb Main Window} sub-menu of the {\cb Attributes Menu} and in the
+{\cb Attributes} menu of sub-windows control these settings.
+
+\index{ElecLabelAllInstances keyword}
+\index{PhysLabelAllInstances keyword}
+\item\parbox[b]{4in}{\vt
+ElecLabelAllInstances {\it num}\\
+PhysLabelAllInstances {\it num}}\\
+These forms allow the display of unexpanded instance text for
+electrical and physical modes to be set separately.
+
+\index{ShowContext keyword}
+\item{\vt ShowContext} [{\vt y}$|${\vt n}]\\
+When given `{\vt y}', the context surrounding a subcell is shown during
+a sub-edit initiated with the {\cb Push} command in the {\cb Cell Menu}.
+This applies to both electrical and physical modes.\\
+Default: {\vt y}
+
+The {\cb Show Context in Push} button in the {\cb Main Window}
+sub-menu of the {\cb Attributes Menu} and in the {\cb Attributes} menu
+of sub-windows controls this setting.
+
+\index{ElecShowContext keyword}
+\index{PhysShowContext keyword}
+\item\parbox[b]{4in}{\vt
+ElecShowContext {\it num}\\
+PhysShowContext {\it num}}\\
+These forms allow the display of editing context for electrical and
+physical modes to be set separately.
+
+\index{ShowTinyBB keyword}
+\item{\vt ShowTinyBB} [{\vt y}$|${\vt n}]\\
+If `y' is given, tiny subcells will be represented by their bounding
+box.  Otherwise, these subcells will not be shown.  The size threshold
+is given by the {\et CellThreshold} variable, set with the {\cb !set}
+command.  This applies to both electrical and physical modes.\\
+Default: {\vt y}
+
+The {\cb Subthreshold Boxes} button in the {\cb Main Window} sub-menu
+of the {\cb Attributes Menu} and in the {\cb Attributes} menu of
+sub-windows controls this setting.
+
+\index{ElecShowTinyBB keyword}
+\index{PhysShowTinyBB keyword}
+\item\parbox[b]{4in}{\vt
+ElecShowTinyBB {\it num}\\
+PhysShowTinyBB {\it num}}\\
+These forms allow the tiny subcell rendering for electrical and
+physical modes to be set separately.
+\end{description}
+
+
+%-------------------------------
+% techfile:attr:color 070214
+\subsection{Attribute Colors}
+\label{attrcolor}
+
+The following keywords set colors used on-screen and in printer
+output.  All of these keywords take a {\it colorspec} string as the
+argument list.  This is the name of a color or an RGB triple:
+
+\begin{itemize}
+\item{The name of a color.  The recognized names can be listed from
+   the {\cb Set Color} pop-up in the {\cb Attributes} menu with the
+   {\cb Colors} button.}
+\item{Three space-separated numbers, each 0--255, representing the
+   red, green, and blue intensity.  E.g., ``{\vt 196 240 235}''.}
+\item{Other forms recognized by the {\vt XParseColor} C library
+   function, including\\ ``{\vt \#RRRRGGGGBBBB}'' and ``{\vt
+   rgb:RRRR/GGGG/BBBB}''.  Here, {\vt R}, {\vt G}, and {\vt B} are
+   single hexadecimal digits.}
+\end{itemize}
+
+Following the general pattern for the technology file keywords, the
+keyword form without the ``Phys'' or ``Elec'' prefix sets the color
+for both modes.  The mode-specific keywords set the color only for
+that mode.
+
+A single internal data structure maintains all other attribute
+(non-layer) colors.  All attribute colors can be set from the {\cb
+Color Selection} panel provided by the {\cb Set Color} button in the
+{\cb Attributes Menu}.  Attribute colors can also be changed with the
+{\cb !setcolor} command.  In Unix/Linux, colors can be initialized
+from a resource file (see \ref{resourcefile}), as well as from the
+technology file.
+
+When {\Xic} starts, the colors are set to default values.  Then, any
+colors found in a resource file are updated.  Then, some of the colors
+may be modified in the technology file.  Finally, the colors may be
+changed in a {\vt .xicstart} file.
+
+Below is the list of attribute colors, the defaults, and techfile
+keywords and aliases.  The {\vt SelectColor}1/2 set the blinking
+highlighting used for selected objects.  Setting both to the same
+color stops the blinking.  The {\vt MarkerColor} is used for
+electrical-mode terminal marks.  The {\cb Plot Mark} colors are used
+only for the plot point indicators, and match the colors defined for
+plots in {\WRspice}.
+
+The {\bf Prompt Line Colors} apply tho the prompt line, status area,
+coordinate readout, and main window keys-pressed area.  The {\vt
+PromptBackgroundColor} controls the common background color, except
+when the prompt line is in editing mode.  The other colors are
+self-explanatory, with the \newline{\vt PromptHighlightingColor} being the
+color used for hypertext entries (mostly for electrical mode).
+
+The {\cb Special GUI Colors} are miscellaneous colors used for
+highlighting and other purposes in the graphical user interface.
+
+\begin{tabular}{|l|p{4in}|} \hline
+\kb Variable & \kb Use\\ \hline
+\vt GUIcolorDel & {\cb Cell Hierarchy Digests}, {\cb File Selection}, etc.\\
+  \hline
+\vt GUIcolorNo  & {\cb Empty Cells}, {\cb Modified Cells},
+ {\cb Set Cell Flags}\\ \hline
+\vt GUIcolorYes & {\cb Empty Cells}, {\cb Modified Cells},
+ {\cb Set Cell Flags}\\ \hline
+\vt GUIcolorHl1 & {\cb Script Debugger}, {\cb Design Rule Editor},
+ {\cb Property Editor}\\ \hline
+\vt GUIcolorHl2 & {\cb Modified Cells}, {\cb Property Editor},
+ {\cb Cell Property Editor}\\ \hline
+\vt GUIcolorHl3 & {\cb Modified Cells}\\ \hline
+\vt GUIcolorHl4 & {\cb Design Rule Editor}, {\cb Tech Parameter Editor},
+ {\cb Property Editor}, {\cb Cell Property Editor}\\ \hline
+\vt GUIcolorDvBg & Pictorial device menu background\\ \hline
+\vt GUIcolorDvFg & Pictorial device menu foreground\\ \hline
+\vt GUIcolorDvHl & Pictorial device menu highlight\\ \hline
+\vt GUIcolorDvSl & Pictorial device menu selection\\ \hline
+\end{tabular}
+
+The {\cb Attribute Colors} listed in the first block in the table
+below can also be specified in printer driver blocks.  In this case,
+the color will apply when that driver is selected in print mode, both
+on-screen and in the hard-copy output generated by the driver.
+
+\label{attrcolors}
+\hspace*{-1.5em}\parbox[t]{3.0in} {
+\begin{tabular}{|p{3.8cm}|l|} \hline
+\kb Keyword{\newline}Alias & \kb Default\\ \hline
+\multicolumn{2}{|l|}{\kb Attribute Colors}\\ \hline
+\vt GhostColor & white\\ \hline
+\vt ElecGhostColor & \vt GhostColor\\ \hline
+\vt PhysGhostColor & \vt GhostColor\\ \hline
+\vt HighlightingColor{\newline}Highlighting & white\\ \hline
+\vt ElecHighlightingColor{\newline}ElecHighlighting &
+  \vt HighlightingColor\\ \hline
+\vt PhysHighlightingColor{\newline}PhysHighlighting &
+  \vt HighlightingColor\\ \hline
+\vt SelectColor1 & white\\ \hline
+\vt ElecSelectColor1 & \vt SelectColor1\\ \hline
+\vt PhysSelectColor1 & \vt SelectColor1\\ \hline
+\vt SelectColor2 & pink\\ \hline
+\vt ElecSelectColor2 & \vt SelectColor2\\ \hline
+\vt PhysSelectColor2 & \vt SelectColor2\\ \hline
+\vt MarkerColor & yellow\\ \hline
+\vt ElecMarkerColor & \vt MarkerColor\\ \hline
+\vt PhysMarkerColor & \vt MarkerColor\\ \hline
+\vt InstanceBBColor{\newline}InstanceBB{\newline}InstanceBox & turquoise\\
+  \hline
+\vt ElecInstanceBBColor{\newline}ElecInstanceBB{\newline}ElecInstanceBox &
+  \vt InstanceBBColor\\ \hline
+\vt PhysInstanceBBColor{\newline}PhysInstanceBB{\newline}PhysInstanceBox &
+  \vt InstanceBBColor\\ \hline
+\vt InstanceNameColor{\newline}InstanceName & pink\\ \hline
+\vt ElecInstanceNameColor{\newline}ElecInstanceName &
+  \vt InstanceNameColor\\ \hline
+\vt PhysInstanceNameColor{\newline}PhysInstanceName &
+  \vt InstanceNameColor\\ \hline
+\vt InstanceSizeColor{\newline}InstanceSize & salmon\\ \hline
+\vt CoarseGridColor{\newline}CoarseGrid & sky blue\\ \hline
+\vt ElecCoarseGridColor{\newline}ElecCoarseGrid & \vt CoarseGridColor\\ \hline
+\vt PhysCoarseGridColor{\newline}PhysCoarseGrid & \vt CoarseGridColor\\ \hline
+\vt FineGridColor{\newline}FineGrid & royal blue\\ \hline
+\vt ElecFineGridColor{\newline}ElecFineGrid & \vt FineGridColor\\ \hline
+\vt PhysFineGridColor{\newline}PhysFineGrid & \vt FineGridColor\\ \hline
+\end{tabular}
+}
+\hspace{.5cm}
+\parbox[t]{2.5in} {
+\begin{tabular}{|p{4.0cm}|l|} \hline
+\kb Keyword{\newline}Alias & \kb Default\\ \hline
+\multicolumn{2}{|l|}{\kb Prompt Line Colors}\\ \hline
+\vt PromptTextColor{\newline}PromptText & sienna\\ \hline
+\vt PromptEditTextColor{\newline}PromptEditText & black\\ \hline
+\vt PromptHighlightColor{\newline}PromptHighlight & red\\ \hline
+\vt PromptCursorColor{\newline}PromptCursor & blue\\ \hline
+\vt PromptBackgroundColor{\newline}PromptBackground & gray92\\ \hline
+\vt PromptEditBackgColor{\newline}PromptEditBackg
+  {\newline}PromptEditBackground & gray96\\ \hline
+\vt PromptEditFocusBackgColor{\newline}PromptEditFocusBackg
+  {\newline}PromptEditFocusBackground & gray100\\ \hline
+\multicolumn{2}{|l|}{\kb Plot Mark Colors}\\ \hline
+\vt Color2 & red\\ \hline
+\vt Color3 & lime green\\ \hline
+\vt Color4 & blue\\ \hline
+\vt Color5 & orange\\ \hline
+\vt Color6 & magenta\\ \hline
+\vt Color7 & turquoise\\ \hline
+\vt Color8 & sienna\\ \hline
+\vt Color9 & gray\\ \hline
+\vt Color10 & hot pink\\ \hline
+\vt Color11 & slate blue\\ \hline
+\vt Color12 & spring green\\ \hline
+\vt Color13 & cadet blue\\ \hline
+\vt Color14 & pink\\ \hline
+\vt Color15 & indian red\\ \hline
+\vt Color16 & chartreuse\\ \hline
+\vt Color17 & khaki\\ \hline
+\vt Color18 & dark salmon\\ \hline
+\vt Color19 & rosy brown\\ \hline
+\multicolumn{2}{|l|}{\kb Special GUI Colors}\\ \hline
+\vt GUIcolorSel & \#e1e1ff\\ \hline
+\vt GUIcolorNo & red\\ \hline
+\vt GUIcolorYes & green3\\ \hline
+\vt GUIcolorHl1 & red\\ \hline
+\vt GUIcolorHl2 & darkblue\\ \hline
+\vt GUIcolorHl3 & darkviolet\\ \hline
+\vt GUIcolorHl4 & sienna\\ \hline
+\vt GUIcolorDvBg & gray90\\ \hline
+\vt GUIcolorDvFg & black\\ \hline
+\vt GUIcolorDvHl & blue\\ \hline
+\vt GUIcolorDvSl & gray80\\ \hline
+\end{tabular}
+}
+
+
+%-------------------------------
+% techfile:attr:snap 100916
+\subsection{Grid and Edge Snapping}
+
+These keywords define the grid and edge snapping parameters.  These
+can be reset from within {\Xic} from the {\cb Snapping} page of the
+{\cb Grid Setup} panels associated with the drawing windows.  The
+parameters given in the technology file apply to the main window,
+which are inherited by sub-windows when created.  The parameters can
+subsequently be changed with the panel on a per-window basis.
+
+For the main drawing window, the {\cb Main Window} sub-menu of the
+{\cb Attributes Menu} provides the {\cb Set Grid} button, which brings
+up the {\cb Grid Setup} panel.  Sub-windows have the {\cb Grid Setup}
+panel available from the {\cb Attributes} menu in the sub-window. 
+Pressing {\kb Ctrl-g} while a drawing window has focus will also bring
+up the panel.
+
+\begin{description}
+\index{MfgGrid keyword}
+\item{\vt MfgGrid} {\it delta}\\
+If set nonzero, the actual {\vt SnapGridSpacing} used will be
+constrained to be a multiple of this value.  This applies in physical
+mode only.
+
+This can be considered to be the ``pixel'' size of the mask.  The {\et
+SpotSize} variable is related, see this topic in \ref{spotsize} for
+more information.
+
+\index{SnapGridSpacing keyword}
+\item{\vt SnapGridSpacing} {\it spacing}\\
+The {\it spacing} is a floating point number which represents the
+spacing, in microns, between snap points.  This applies to physical
+mode only.\\
+Default: 1.0 microns    
+
+The electrical grid is set to spacing value 1.0 with unit snap per
+grid on program startup, which can't be changed from the technology
+file.  The electrical grid can be changed within {\Xic} from the {\cb
+Grid Parameters} pop-up, in the unusual circumstance that non-default
+values are needed.
+
+\index{SnapPerGrid keyword}
+\index{GridPerSnap keyword}
+\item\parbox[b]{4in}{{\vt SnapPerGrid} {\it num}\\
+{\vt GridPerSnap} {\it num}}\\
+At most one of these keywords should be given.  The {\it num} is an
+integer 1--10.  These apply to physical mode only.
+
+If {\vt SnapPerGrid} is given, then the fine grid lines will be spaced
+{\it num\/}{\vt *SnapGridSpacing} apart.  If {\vt GridPerSnap} is
+given, fine grid lines will appear at {\vt SnapGridSpacing/}{\it num}
+intervals.\\
+Default: 1
+
+\index{EdgeSnapping keyword}
+\item\parbox[b]{6in}{{\vt EdgeSnapping} [{\vt none}$|${\vt some}$|${\vt all}]
+  [{\vt +}$|${\vt -off\_grid}]      [{\vt +}$|${\vt -non\_manh}]
+  [{\vt +}$|${\vt -edge\_of\_wire}] [{\vt +}$|${\vt -path\_of\_wire}]}\\
+This keyword sets the initial state of the controls of the {\cb Edge
+Snapping} group in the {\cb Snapping} page of the main window {\cb
+Grid Setup} panel.  All fields are optional, with the effective
+default being
+
+\begin{quote} \vt
+ EdgeSnapping some -off\_grid -non\_manh +edge\_of\_wires -path\_of\_wires
+\end{quote}
+
+Only the first letter of the keywords is needed, and recognition is
+case-insensitive.
+
+The first word specifies when edge snapping is enabled:
+\begin{quote}
+\begin{tabular}{ll}
+\vt none & not enabled\\
+\vt some & enabled in some commands (the default)\\
+\vt all  & always enabled\\
+\end{tabular}
+\end{quote}
+
+The remaining items are flags that must start with a {\vt +} or {\vt
+-} character.  The {\vt +} turns the option on, the {\vt -} turns the
+option off.  These have obvious correspondence to the check boxes in
+the {\cb Edge Snapping} control group in the {\cb Grid Setup} panel,
+and set the initial state of the check boxes for the main window.
+
+\index{RulerEdgeSnapping keyword}
+\item\parbox[b]{6.5in}{{\vt RulerEdgeSnapping}
+  [{\vt none}$|${\vt some}$|${\vt all}]
+  [{\vt +}$|${\vt -off\_grid}]      [{\vt +}$|${\vt -non\_manh}]
+  [{\vt +}$|${\vt -edge\_of\_wire}] [{\vt +}$|${\vt -path\_of\_wire}]}\\
+This keyword uses the same syntax as the {\vt EdgeSnapping} keyword,
+and species the initial edge snapping mode when the {\cb Rulers}
+command in the {\cb View Menu} is in effect.  This command has its own
+settings, with the default being that all flags are enabled.
+
+\index{RulerSnapToGrid keyword}
+\item{\vt RulerSnapToGrid} [{\vt y}$|${\vt n}]\\
+This boolean keyword specifies the initial state of grid snapping in
+the {\cb Rulers} command in the {\cb View Menu} In the command, the
+mode can be toggled by presing the period (`{\vt .}') key.  By
+default, grid snapping is asserted.
+\end{description}
+
+
+%-------------------------------
+% techfile:attr:fkey 070214
+\subsection{Function Key Assignments}
+\index{function keys}
+
+It is possible to map the keyboard function keys to {\Xic} operations. 
+The function key assignments are sensitive to the {\kb Shift}, {\kb
+Control}, and {\kb Alt} keys.  This means that a function key ({\kb
+F1} - {\kb F12}) press can have different effects depending on the
+state of these keys.
+
+\begin{description}
+\index{function keys assignment}
+\index{F{\it N\/} keyword}
+\item{\vt F{\it N\/}Key {\it text}}\\
+The {\it N} is an integer in the range 1--12, to correspond to the
+{\kb F1} -- {\kb F12} function keys found on most keyboards.
+
+The {\it text} has the form
+\begin{quote}
+[{\vt <}{\it tok\/}{\vt >}] {\it cmd}
+[{\vt <}{\vt tok\/}{\vt >} {\it cmd\/}] ...
+\end{quote}
+
+Each {\it tok} is a combination of the letters {\vt s}, {\vt c}, and
+{\vt a}.  The presence of the letters indicates that {\kb Shift}, {\kb
+Control} and {\kb Alt} are pressed, respectively.  The {\it tok} is
+surrounded by angle brackets.
+
+Examples:
+\begin{description}
+\item{\vt <s>}\\
+The {\kb Shift} key is pressed, {\kb Control} and {\kb Alt} are not
+pressed.
+\item{\vt <ca>}\\
+The {\kb Control} and {\kb Alt} keys are pressed, the {\kb Shift} key
+is not pressed.
+\end{description}
+
+These tokens are followed by a {\it cmd}, which is a command.  If the
+command starts with `{\vt !}', the remainder is treated as a ``bang''
+command (see \ref{bangcmds}).  Otherwise, the text is the
+five-character (or fewer) command keyword associated with GUI command
+buttons.  If the {\it cmd} contains white space, it must be quoted.
+
+The command keywords are displayed in the pop-up ``tooltip'' which
+appears when the mouse pointer is positioned over a command button,
+after a short delay.  This is the internal name for the command, which
+is generally a short mnemonic of five characters or fewer.  The
+keywords are also generally provided in the help system topic
+describing the command.  In the {\cb User Menu}, for user scripts, the
+name which appears on the menu button is the appropriate name to use.
+
+The first {\it tok} is generally absent, and the {\it cmd} applies to
+the function key with no modifiers pressed.
+
+Example:
+\begin{quote}
+\vt F1Key box <s> "!exec /path/to/myscript.scr" <c> !!Clear(0) <sca> polyg
+\end{quote}
+
+The terms are:
+\begin{description}
+\item{\vt F1Key}\\
+We're setting the {\kb F1} key in this example.
+
+\item{\vt box}\\
+This indicates that when {\kb F1} is pressed without pressing a
+modifier key, the ``{\vt box}'' command from the side menu wil be
+started.
+
+\item{\vt <s> "!exec /path/to/myscript.scr"}\\
+This specifies that when {\kb Shift-F1} is pressed, the script in the
+{\vt myscript.scr} file will be executed, using the {\cb !exec} bang
+command.  Since the command contains a space character, it is quoted.
+
+\item{\vt <c> !!Clear(0)}\\
+This specifies that when {\kb Control-F1} is pressed, the {\vt Clear()}
+script function is called with argument 0.  This will clear the
+database.  Note that the single/double exclamation point syntax is the
+same as is accepted on the command line.
+
+\item{\vt <sca> polyg}\\
+When {\kb Shift}, {\kb Control}, and {\kb Alt} are pressed along with
+{\kb F1}, the ``{\vt polyg}'' polygon creation command from the side
+menu is started.
+\end{description}
+
+The menu containing the named button must be active (not grayed) for
+the function key to have effect.  The mappings are completely defined
+by the user --- there are no defaults.  Pressing an unmapped function
+key has no effect on {\Xic}.  Be aware that the window manager in use,
+and the GTK toolkit, may map functions keys, and this may have higher
+priority than the mapping assigned here.  The use of the {\kb Alt} key
+is generally not a good idea, as it is commonly assigned for other
+purposes.  Sometimes, an assignment will simply be ignored for some
+reason.  For example, on one system {\kb Control-F1} is never
+returned, but {\kb Control} works fine with other function keys. 
+\end{description}
+
+
+%-------------------------------
+% techfile:attr:gridreg 070214
+\subsection{Grid Registers}
+\index{grid registers}
+
+The grid registers from the {\cb Grid Setup} pop-up are saved in
+the technology file if they contain a non-default grid.
+
+\begin{description}
+\index{ElecGridReg keyword}
+\index{PhysGridReg keyword}
+\item\parbox[b]{4in}{{\vt ElecGridReg}{\it N} {\it spec}\\
+ {\vt PhysGridReg}{\it N} {\it spec}}\\
+The {\it N} is an integer value in the range 1--7.  Each register
+index can store both a physical and electrical grid specification. 
+The specifications define the contents of the grid registers,
+available in the {\cb Grid Setup} panel and elsewhere.
+
+The {\it spec} string has the form:
+\begin{quote}
+{\it snapspace} {\it snapval} {\it linestyle} [{\it xsize\/}]
+[{\vt -a} {\it axes\/}] [{\vt -d} {\it dsp\/}]
+[{\vt -t} {\it ontop\/}] [{\vt -m} {\it cmult\/}]
+\end{quote}
+
+The first three tokens are mandatory, and must appear in the order
+shown.
+
+\begin{description}
+\item{\it snapspace} (real number)\\
+The spacing between snap points, in microns.
+
+\item{\it snapval} (integer, -10 through 10 excluding 0)\\
+If the value is positive, it sets the number of snap points per fine
+grid line.  For example, a value of 3 would indicate that a fine grid
+line is drawn at every third snap point.  If negative, this sets the
+number of fine grid lines per snap interval.  In this case, a value of
+three indicates that fine grid lines appear at snap points and at the
+1/3 and 2/3 proportional distances within the snap interval.
+
+\item{\it linestyle} (integer)\\
+This is the line style code.  The value is 0 for a dot grid, otherwise
+the bit pattern represents the line dashes, as for the {\vt GridStyle}
+keyword.
+\end{description}
+
+The remaining tokens are optional, and can follow the first three in
+any order.
+
+\begin{description}
+\item{\it xsize} (integer 0--6)\\
+If the {\it linestyle} code is 0 (for a dot grid), then a fourth
+number can appear.  This is an integer 0--6 which indicates the number
+of pixels in the four orthogonal directions to extend the dot into a
+cross.
+
+\item{\vt -a} {\it axes} (integer 0--2)\\
+This sets the axes presentation mode in physical mode.  If 0, axes
+aren't shown.  If 1, plain axes are shown, and if 2, axes are shown
+and the origin decorated.
+
+\item{\vt -d} {\it dsp} (boolean)\\
+This sets whether the grid is displayed or not.  The {\it dsp} token
+can be about any alphanumeric token that by convention indicates true
+or false.
+
+\item{\vt -t} {\it ontop} (boolean)\\
+This sets whether the grid is displayed after all geometry (``on
+top'') or before geometry.  The {\it ontop} token can be about any
+alphanumeric token that by convention indicates true or false.
+
+\item{\vt -m} {\it cmult} (integer 1--50)\\
+This sets the number of fine grid lines per coarse grid line.
+\end{description}
+For backward compatibility, ``{\vt GridReg}'' is accepted as ``{\vt
+PhysGridReg}''.
+\end{description}
+
+
+%-------------------------------
+% techfile:attr:lpal
+\subsection{Layer Palette Registers}
+\index{palette registers}
+
+The palette registers from the {\cb Layer Palette} are saved
+to and assigned from the technology file.
+
+\begin{description}
+\index{ElecLayerPalette keyword}
+\index{PhysLayerPalette keyword}
+\item\parbox[b]{4in}{{\vt ElecLayerPalette}{\it N} {\it layer\_list}\\
+ {\vt PhysLayerPalette}{\it N} {\it layer\_list}}\\
+The {\it N} is an integer value in the range 1--7 that specifies a
+register number.  The {\it layer\_list} is a list of layer names
+separated by white space.  There are separate entries for electrical
+and physical mode for each register number.  The list provides the
+layer names and ordering of the layers in the ``user'' part of the
+layer palette.
+\end{description}
+
+
+%-------------------------------
+% techfile:attr:font 070214
+\subsection{Font Assignments}
+\index{Font keywords}
+
+The keywords described below set the fonts used in various places in
+{\Xic}.  These correspond to the fonts settable from the {\cb Font
+Selection} pop-up from the {\cb Set Font} button in the {\cb
+Attributes Menu}.
+
+Since the font string format varies between the operating systems and
+graphical interfaces supported by {\Xic}, provision is made for
+separate font specifications for each supported variation, thus making
+the technology file more portable between different versions of
+{\Xic}.
+
+There are six fonts that may be set, and four sets of corresponding
+keywords, specific to different systems.  The four sets correspond to
+a suffix character added to the font keyword.
+
+\begin{description}
+\item{\vt Font1 --- Font6} {\it name\_of\_font}\\
+These keywords will be read and (if possible) applied by any version
+of {\Xic}.  Although there is an attempt at portability, the {\it
+name\_of\_font} should apply to the release of {\Xic} in use.  A
+mismatch will not cause errors, but the font may not be as expected,
+or a default may be used.  These keywords are mostly for backwards
+compatibility, and are never written to a new technology file created
+with the {\cb Save Tech} button in the {\cb Attributes Menu}.  Rather,
+the system-specific keywords below will be written.
+
+\item{\vt Font1P --- Font6P} {\it name\_of\_font}\\
+These fonts apply to the releases that use the GTK-2 (Pango) font
+system.  At the 3.3 release level, all {\XicTools} programs use this
+graphical toolkit, and will use these keysords.
+
+\item{\vt Font1X --- Font6X} {\it name\_of\_font}\\
+These keywords apply to non-current releases (FreeBSD7, Linux2, OS X)
+that use the GTK-1 X-windows font system.  The {\it name\_of\_font} is
+the X Logical Font Descriptor for a font available on the user's
+system, or an alias.  These font specifications are ignored in GTK-2
+(all current) releases.
+
+\item{\vt Font1W --- Font6W} {\it name\_of\_font}\\
+These keywords apply only to the non-current Microsoft Windows
+release, which used native Win32 for the graphical interface.  There
+is really no syntactical difference between these and Pango ({\vt P})
+specifications, and (current) GTK-2 releases will accept (but not
+write) these.
+\end{description}
+
+If a font is specified more than once in the technology file, such as
+with duplicate or equivalent keywords, the last specification read
+will take precedence.
+
+When a new technology file is written, only the keywords for
+non-default fonts in use will actually be written in the file.
+
+The index number of the keyword indicates the following fonts:
+\begin{description}
+\item{\vt 1} (Fixed Pitch Text Window Font)\\
+This sets the font used in pop-up multi-line text windows other than
+the text editor/file browser, such as the {\cb Files Listing} and {\cb
+Cells Listing}, where the names are formatted into columns.\\
+Defaults:\\
+Unix/Linux: {\vt Monospace 9}\\
+Windows: {\vt Lucida Console 9}
+
+\item{\vt 2} (Proportional Text Window Font)\\
+This sets the font used in pop-up multi-line text windows other than
+the text editor/file browser, where text is not formatted, such as the
+{\cb Info} and error message pop-ups.\\
+Defaults:\\
+Unix/Linux: {\vt Sans 9}\\
+Windows: {\vt Sans 9}
+
+\item{\vt 3} (Fixed Pitch Drawing Window Font)\\
+This is the font used in the coordinate readout, the status line,
+layer table, and the prompt line.  It is not the font used to render
+label text in the drawing windows, which is a vector font generated by
+other means.\\
+Defaults:\\
+Unix/Linux: {\vt Monospace 9}\\
+Windows: {\vt Lucida Console 9}
+
+\item{\vt 4} (Text Editor Font)\\
+This is the font used in the {\cb Text Editor} and {\cb File Browser}
+pop-ups.\\
+Defaults:\\
+Unix/Linux: {\vt Monospace 9}\\
+Windows: {\vt Lucida Console 9}
+
+\item{\vt 5} (HTML Viewer Proportional Font)\\
+This is the base font used for proportional text in the HTML viewer
+(help windows).  If set, this will override the font set in the {\vt
+.mozyrc} file, if any.\\
+Defaults:\\
+Unix/Linux: {\vt Sans 9}\\
+Windows: {\vt Sans 9}
+
+\item{\vt 6} (HTML Viewer Fixed Pitch Font)\\
+This is the base fixed-pitch font used by the HTML viewer.  If set,
+this will override the font set in the {\vt .mozyrc} file, if any.\\
+Defaults:\\
+Unix/Linux: {\vt Monospace 9}\\
+Windows: {\vt Lucida Console 9}
+\end{description}
+
+The platform-specific font keywords were added in release 3.1.6. 
+Older technology files will use only the {\vt Font1 --- Font6}
+keywords.  It may be be best to comment these out when importing a
+technology file developed for another platform, or to modify the {\vt
+Font} keywords to the appropriate flavor with a text editor.
+
+Fonts can be set within {\Xic} with the {\cb Set Font} command in the
+{\cb Attributes Menu}.
+
+
+%-------------------------------
+% techfile:attr:vars 021615
+\subsection{Variable Setting as Keywords}
+\label{attrvars}
+In addition to the keywords described in the previous sections, most
+of the variables (see \ref{variables}) that are known to {\Xic} can be
+set as keywords.  These variables control various aspects of {\Xic},
+including the states of most of the controls in the various pop-up
+panels.  When a technology file is written, variables that participate
+in this protocol and are set will contribute a corresponding line to
+the attributes section of the new technology file.
+
+Most variables participate in the protocol.  A few do not, for one
+reason or another, and it is unlikely that these will be missed.  The
+{\cb !attrvars} command will produce a list of the variables that
+participate, the user can check this if necessary.
+
+When a new technology file is being written, variables that are set
+will generate content.  There is no ``default'', and the options in
+the {\cb Write Tech File} panel that alter the treatment of ``default
+definitions'' have no effect on these lines.
+
+The same variables can also be set with the {\vt !set} lines.  If a
+variable is set multiple times by any means, the last one seen will
+have precedence.  The variables that participate in the protocol but
+are set with the {\vt !set} line will not be remembered as having been
+set.  When a technology file is written, the remembered variables are
+given {\vt !set} lines in the new file.  This is not necessary for
+variables that participate in the protocol.
+
+Variables are logically divided into classes.  Boolean variables are
+switches that are either set (usually to an empty string) or not set. 
+Other variables we refer to as ``string'' variables.  They are set to
+an arbitrary text string, when set at all.
+
+In the technology file, booleans take the form
+\begin{quote}
+{\it VariableName} [{\vt y}$|${\vt n}]
+\end{quote}
+which is the same syntax as for boolean keywords.  The ``{\vt
+y}$|${\vt n}'' symbol implies that one of `{\vt y}' or `{\vt n}'
+should follow the keyword.  Actually, `{\vt 0}' (zero), or any word
+that begins with the letters or sequence (case insensitive) `{\vt n}',
+`{\vt f}', `{\vt of}' is taken as a false value.  Anything else,
+including no following text, is taken as true (`{\vt y}' is always
+redundant).  If the second token indicates affirmative, then the
+variable will be set.  If the second token is negative, no action is
+taken.
+
+String variables take the form
+\begin{quote}
+{\it VariableName} {\it arbitrary text}
+\end{quote}
+where the variable will be assigned the {\it arbitrary text\/}, with
+leading and training white space stripped.
+
+The {\cb !attrvars} command lists the variables that are boolean and
+string separately, so the user can check this list if unsure of the
+variable type.
+
+The {\it VariableName} in this context is recognized as a known
+variable name without case sensitivity.  In every other context,
+variable names are case-sensitive.  Since this syntax applies only to
+internal variable names, there is no conflict as there are no such
+variables that differ only in case.
+
+
+% -----------------------------------------------------------------------------
+% hcopytech 071010
+\section{Hardcopy Driver Parameters}
+By default, all hardcopy drivers available within the program are made
+available to the user through the {\cb Format} menu in the {\cb Print
+Control Panel}.  Drivers can be disabled, so they don't appear in the
+{\cb Format} menu, by adding the ``{\vt off}'' keyword to the ``{\vt
+HardCopyDevice}'' line, which begins the block of lines describing the
+driver defaults.  The driver blocks are found near the end of the
+technology file, and are written in their entirety when the {\cb Save
+Tech} command is used to generate a technology file.  It is not an
+error for a driver block to be absent; internal defaults will be used.
+
+The following keyword(s) may be used outside of the driver blocks to
+set the default print driver.
+
+\begin{description}
+\index{DefaultDriver keyword}
+\index{AltDriver keyword}
+\item{\vt DefaultDriver} {\it driver\_name}\\
+This keyword sets the default print driver to use in both electrical
+and physical modes.  When the {\cb Print Control Panel} initially
+appears, the {\cb Format} menu will have this driver selected.  The
+{\it driver\_name} is one of the driver names as listed in the {\vt
+HardCopyDevice} keyword description below.  The keyword {\vt
+AltDriver} is recognized as a synonym for this keyword.
+
+\index{ElecDefaultDriver keyword}
+\index{ElecAltDriver keyword}
+\item{\vt ElecDefaultDriver} {\it driver\_name}\\
+Similar to {\vt DefaultDriver}, but sets the default to use in
+electrical mode only.  The keyword {\vt AltElecDriver} is a synonym.
+
+\index{PhysDefaultDriver keyword}
+\index{PhysAltDriver keyword}
+\item{\vt PhysDefaultDriver} {\it driver\_name}\\
+Similar to {\vt DefaultDriver}, but sets the default to use in
+physical mode only.  The keyword {\vt AltPhysDriver} is a synonym.
+\end{description}
+
+A driver block begins with a {\vt HardCopyDevice} line naming the
+driver, and ends with the next {\vt HardCopyDevice} line or end of
+file.  In addition to the {\vt HardCopy...} keywords that specify
+driver defaults, any of the keywords described in the {\bf
+Presentation Attributes} and {\bf Attribute Colors} categories of the
+{\bf Technology File Attributes} section \ref{techattr} can be used. 
+The attribute or color will then apply while in print mode and the
+driver is selected, both on-screen and in the driver output.  The
+keyword formats are exactly as described in these subsections.  If not
+given in a driver block, the driver will use the attribute or color
+values set in the main part of the technology file, or the program
+defaults if no value is specified.
+
+Layer colors, fill, and visibility can be set on a per-layer basis for
+the driver, by including a ``mini-layer block''.  This is a truncated
+version of the layer blocks described in {\bf Technology File Layer
+Blocks}, section \ref{techlayers}.  The only keywords which are
+accepted in a mini-layer block are {\vt RGB} (to set the color), {\vt
+Filled} (to set the fill pattern or outline style, and {\vt Invisible}
+(to set visibility).  However, there are two additional special
+keywords that may be included in specific drivers:
+
+\begin{description}
+\index{HPGLfilled keyword}
+\item{\vt HPGLfilled} {\it filltype} [ {\it option1 option2\/} ]\\
+This keyword is recognized and used only by the HP-GL hard copy driver
+(``hpgl\_line\_draw\_color''), and is used to specify a fill pattern
+for the layer (electrical or physical).  The parameters are those
+appropriate for the {\vt FT} HPGL directive, as documented in
+\begin{quote}
+ ``{\sc The HP-GL2 and HP RTL Reference Guide:  A
+Handbook for Program Developers}''
+\end{quote}
+from Hewlett-Packard, (ISBN 0-201-63325-6) pages 127-129.  This is
+summarized below:
+
+\begin{tabular}{|l|c|c|c|}\hline
+\bf filltype & \bf description & \bf option1 & \bf option2\\ \hline
+1  & solid, bidirectional & ignored & ignored\\ \hline
+2  & solid, unidirectional & ignored & ignored\\ \hline
+3  & hatched, parallel lines & line spacing & line angle\\ \hline
+4  & crosshatched & line spacing & line angle\\ \hline
+10 & shadings & shading level & ignored\\ \hline
+11 & not supported & ignored & ignored\\ \hline
+\end{tabular}
+
+There are 1016 dots per inch and angles are in degrees.  Shading level
+is 0--100.  If the {\vt HPGLfilled} keyword is supplied for a layer
+and the {\it filltype} and options (if given) are valid, that fill
+will be used with the layer in HPGL output.  There is presently no way
+to assign the layer color.
+
+This parameter must be added to the technology file with a text
+editor.  The default is no fill.  Note that the fill patterns set on
+the screen in hard copy mode are not used by the HP-GL driver.
+
+\index{XfigFilled keyword}
+\item{\vt XfigFilled} {\it filltype}\\
+This keyword is recognized and used only by the {\et xfig} hard copy
+driver (``xfig\_line\_draw\_color''), and allows setting the fill
+patterns for the layer (electrical or physical).  The {\it filltype}
+is an integer 1--56, which selects one of {\et xfig}'s internal fill
+patterns.
+
+\begin{tabular}{|l|l|}\hline
+0 & No fill\\ \hline
+... & shades\\ \hline
+20 & Full saturation of the color\\ \hline
+... & tints\\ \hline
+40 & White\\ \hline
+41 & 30 degree left diagonal pattern\\ \hline
+42 & 30 degree right diagonal pattern\\ \hline
+43 & 30 degree crosshatch\\ \hline
+44 & 45 degree left diagonal pattern\\ \hline
+45 & 45 degree right diagonal pattern\\ \hline
+46 & 45 degree crosshatch\\ \hline
+47 & Bricks\\ \hline
+48 & Circles\\ \hline
+49 & Horizontal lines\\ \hline
+50 & Vertical lines\\ \hline
+51 & Crosshatch\\ \hline
+52 & Fish scales\\ \hline
+53 & Small fish scales\\ \hline
+54 & Octagons\\ \hline
+55 & Horizontal "tire treads"\\ \hline
+56 & Vertical "tire treads"\\ \hline
+\end{tabular}
+
+Values 1 to 19 are ``shades'' of the color, from darker to lighter, a
+shade is defined as the color mixed with black.  Values from 21 to 39
+are ``tints'' of the color from the color to white, a tint is defined
+as the color mixed with white.  The {\vt XfigFilled} parameter must be
+added to the technology file with a text editor.  The default is no
+fill.  Note that the fill patterns set on the screen in hard copy mode
+are not used by the {\et xfig} driver.
+\end{description}
+
+As for regular layer blocks, a mini-layer block starts with a {\vt
+PhysLayer} or {\vt ElecLayer} keyword, or one of the aliases.  The
+layer name given must be the name of a layer supplied in one of the
+regular layer blocks.  A mini-layer block terminates when a new
+mini-layer block starts, or at the end of the driver block.  The block
+order, and order with respect to other keywords, is arbitrary.
+
+The other keywords of the driver block are described below.
+
+\index{hard copy driver parameters}
+\begin{description}
+\index{HardCopyDevice keyword}
+\index{hard copy driver names}
+\item{{\vt HardCopyDevice} {\it device\_name} [off]}\\
+This line begins the driver block, and the keywords that follow apply
+to the {\it device\_name\/} driver.  The names are internally
+recognized strings:
+\begin{quote}\rr\vt
+hp\_laser\_pcl\\
+hpgl\_line\_draw\_color\\
+postscript\_bitmap\\
+postscript\_bitmap\_encoded\\
+postscript\_bitmap\_color\\
+postscript\_bitmap\_color\_encoded\\
+postscript\_line\_draw\\
+postscript\_line\_draw\_color\\
+windows\_native\\
+xfig\_line\_draw\_color\\
+image\\
+\end{quote}
+If the ``{\vt off}'' keyword is given (``{\vt disable}'' and ``{\vt
+n}'' are synonyms), the driver is disabled, and will not appear in the
+{\cb Format} menu of the {\cb Print Control Panel}.
+
+See the description of the {\cb Print} button in the {\cb File Menu}
+(\ref{hcformat}) for more information on these drivers.
+
+\index{HardCopyLegend keyword}
+\item{\vt HardCopyLegend} {\it n}\\
+This keyword sets the default status of the {\cb Legend} button in the
+{\cb Print Control Panel} when the driver is active.  Values can be 0,
+1, or 2:
+
+\begin{tabular}{ll}
+0 & {\cb Legend} button is off\\
+1 & {\cb Legend} button is on\\
+2 & {\cb Legend} button is grayed and inactive\\
+\end{tabular}
+
+\index{HardCopyOrient keyword}
+\item{\vt HardCopyOrient} {\it n}\\
+This keyword sets the default status of the {\cb Portrait}, {\cb
+Landscape}, and {\cb Best Fit} buttons in the {\cb Print Control
+Panel} while the driver is active.  Values are 0--3:
+
+\begin{tabular}{ll}
+bit 0 set & {\cb Landscape} on, {\cb Portrait} off\\
+bit 0 unset & {\cb Landscape} off, {\cb Portrait} on\\
+bit 1 set & {\cb Best Fit} button on\\
+bit 1 unset & {\cb Best Fit} button off\\
+\end{tabular}
+
+\index{HardCopyCommand keyword}
+\item{{\vt HardCopyCommand} {\it command\_string}}\\
+Specifies the command to use to queue the plot.  This will be shown in
+the command text box of the {\cb Print Control Panel}.  The characters
+``{\vt \%s}'' will be replaced with the name of the temporary file,
+all other characters are passed verbatim.  If ``{\vt \%s}'' does not
+appear in the string, the file name will be appended to the string,
+separated by a space character.  This keyword is ignored under
+Microsoft Windows.
+
+\index{HardCopyResol keyword}
+\item{{\vt HardCopyResol} {\it list\_of\_integers}}\\
+This sets the resolutions supported by the driver, in dots per
+inch.
+
+\index{HardCopyDefResol keyword}
+\item{{\vt HardCopyDefResol} {\it integer}}\\
+This has meaning only to drivers that have selectable resolutions. 
+The value following this keyword is a zero-based index into the list
+of resolutions as given with the {\vt HardCopyResol} keyword, and
+indicates the default resolution which will be selected in the {\cb
+Print Control Panel} for the driver.
+
+Example:
+\begin{quote} \vt
+HardCopyDevice postscript\_line\_draw\\
+HardCopyResol 72 75 100 150 200 300 400\\
+HardCopyDefResol 2\\
+\end{quote}
+
+This will select 100 as the resolution for the {\vt
+postscript\_line\_draw} driver when the {\cb Print Control Panel}
+first appears.  The resolution can be changed with the menu.
+
+\index{HardCopyDefHeight keyword}
+\index{HardCopyDefWidth keyword}
+\index{HardCopyDefXoff keyword}
+\index{HardCopyDefYoff keyword}
+\item\parbox[b]{4in}{\vt
+HardCopyDefHeight {\it float\_format\_number}\\
+HardCopyDefWidth {\it float\_format\_number}\\
+HardCopyDefXoff {\it float\_format\_number}\\
+HardCopyDefYoff {\it float\_format\_number}}\\
+These set the default image size and location, and are in inches,
+unless followed by the letter `c' which denotes centimeters.  The {\vt
+Yoff} number may be interpreted as a top or bottom margin, depending
+upon the driver.  The dimensions are in all cases relative to the
+portrait orientation of the page.  If the width or height is set to
+zero (but not both) the driver will assume auto-width or auto-hight
+mode, where the width or height is set to the minimum necessary to
+render the object.
+
+\index{HardCopyMinHeight keyword}
+\index{HardCopyMinWidth keyword}
+\index{HardCopyMinXoff keyword}
+\index{HardCopyMinYoff keyword}
+\item\parbox[b]{4in}{\vt
+HardCopyMinHeight {\it float\_format\_number}\\
+HardCopyMinWidth {\it float\_format\_number}\\
+HardCopyMinXoff {\it float\_format\_number}\\
+HardCopyMinYoff {\it float\_format\_number}}\\
+These set the minimum acceptable values for the parameters.
+
+\index{HardCopyMaxHeight keyword}
+\index{HardCopyMaxWidth keyword}
+\index{HardCopyMaxXoff keyword}
+\index{HardCopyMaxYoff keyword}
+\item\parbox[b]{4in}{\vt
+HardCopyMaxHeight {\it float\_format\_number}\\
+HardCopyMaxWidth {\it float\_format\_number}\\
+HardCopyMaxXoff {\it float\_format\_number}\\
+HardCopyMaxYoff {\it float\_format\_number}}\\
+These set the maximum acceptable values for the parameters.
+\end{description}
+
+
+% -----------------------------------------------------------------------------
+% resourcefile 090814
+\section{Resource File}
+\label{resourcefile}
+One can use the resource-setting capability of the X-Windows system to
+set attribute colors.  This applies when running under the X-Windows
+system, which is presently true for all releases except those for
+Microsoft Windows.  However, this is archaic and not really recommended.
+
+One can create an X resource file for {\Xic}.  This is a file that
+should be created in the user's home directory, with a name that is
+the executable program name with the first letter capitalized, i.e.,
+{\vt Xic}.  The file contains lines in the following form:
+
+\begin{quote}\vt
+xic.HighlightingColor: green\\
+xic.MarkerColor: blue
+\end{quote}
+
+or generally
+\begin{quote}\vt
+{\vt xic.}{\it resourcename}: {\it colorspec}
+\end{quote}
+
+The {\it resourcename} is a keyword from the list of attribute colors
+as listed in \ref{attrcolors}.  Note that the keyword must be used,
+not an alias.  The aliases are recognized in the technology file and
+{\cb !setcolor} command.  The {\it colorspec} string is the name of a
+color or an RGB triple:
+
+\begin{itemize}
+\item{The name of a color.  The recognized names can be listed from
+   the {\cb Set Color} pop-up in the {\cb Attributes} menu with the
+   {\cb Colors} button.}
+\item{Three space-separated numbers, each 0--255, representing the
+   red, green, and blue intensity.  E.g., ``{\vt 196 240 235}''.}
+\item{Other forms recognized by the {\vt XParseColor} C library
+   function, including\\ ``{\vt \#RRRRGGGGBBBB}'' and ``{\vt
+   rgb:RRRR/GGGG/BBBB}''.  Here, {\vt R}, {\vt G}, and {\vt B} are
+   single hexadecimal digits.}
+\end{itemize}
+
