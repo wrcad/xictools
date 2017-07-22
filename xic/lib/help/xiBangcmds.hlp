@@ -1685,7 +1685,7 @@ keybang
 
     <p>
     This prints two numbers on the console.  The first number is the
-    current transform stack depth, which should always be 1.  The
+    current transform stack depth, which should always be 0.  The
     second number is the transform stack maximum depth used since the
     last <b>!xdepth</b> call or program start.  This is rather useless
     except for debugging "Transform stack full" errors.
