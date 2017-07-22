@@ -1,0 +1,2620 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2013, Whiteley Research Inc., Sunnyvale CA
+% $Id: startup.tex,v 1.25 2017/03/22 23:39:49 stevew Exp $
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+\chapter{{\Xic} Configuration and Startup}
+
+% xic:graphics 110613
+\section{Graphics Support and Requirements}
+
+Starting with Generation 4, {\Xic} and all other Whiteley Research
+products use the GTK-2 graphical user interface toolkit exclusively
+(see {\vt http://www.gtk.org} for more information).  The toolkit must
+be provided by the user's installation.  This is almost certain to be
+the case under Linux, as GTK is a default part of virtually all Linux
+distributions.  In FreeBSD, it will have to be installed from the
+ports or packages collection, if it wasn't automatically installed
+from the distribution DVD.  For Windows, a complete GTK-2 installation
+package is available from Whiteley Research, which is a
+self-extracting {\vt .exe} version of the zip distribution provided
+from {\vt www.gtk.org}.  One of these packages must now be
+installed on a Windows host.  Similarly, GTK-2 must be installed on
+the Mac.  This makes use of the X-window system, which also must be
+installed and running on the Mac.  Although there is a version of
+GTK-2 that uses the native Quartz screen interface instead of
+X-windows, it has very serious flaws and is unusable at present.
+
+The Win32 graphical interface previously used under Windows is now
+retired, as is the GTK-1 interface used in some earlier releases. 
+Thus, all present releases will have precisely the same graphical
+interface, which will greatly simplify documentation, maintenance, and
+future development.
+
+The GTK-2 toolkit handles the interface to the screen, window manager,
+keyboard, and mouse.  It is not likely that there will be serious
+incompatibilities.
+
+% -----------------------------------------------------------------------------
+% macosx 022514
+\section{Apple OS X Notes}
+
+In OS X, lurking beneath the pretty graphics is a complete Unix
+operating system based on FreeBSD, including support for X-windows. 
+Most of the open-source software developed for Linux/FreeBSD has been
+ported to OS X, so for the Unix fans (like me), the operating system
+can look like Unix with a great graphical interface that also runs
+Macintosh applications.  Overall, OS X is a very impressive
+desktop/laptop operating system.
+
+All Generation 4 OS X distributions require OS X 10.9 (Mavericks) or
+later.  Unfortunately, it is not possible to support earlier OS X
+releases at this time.  However, the upgrade to 10.9 is free and was
+accomplished smoothly over the internet at Whiteley Research.
+
+The Whiteley Research programs presently require that the X-windows
+server be running, as X is used for graphics.  Unlike in some earlier
+OS X releases, it is not installed automatically in Mavericks.  The
+Apple-sponsored X-server is called "XQuartz" and is available for
+download from the project web site (google ``XQuartz download'').
+
+Operation and behavior should be identical to the Unix/Linux versions
+of the programs.  These are 64-bit binaries.
+
+\subsection{Installation}
+
+The package distribution files are ``flat'' Apple package files.  This
+is a different format from the release files for Generation 3, which
+were tarred/gzipped Apple package directories.  As an alternative to
+using {\vt wr\_install}, one can use Apple's installer (click on the
+listing icon in the Finder).
+
+The installation procedure is pretty much the same as under
+Unix/Linux.  As under Unix/Linux (but not Windows) the {\Xic} and
+{\WRspice} programs can make use of a separate license server, and all
+of the workgroup configuration options apply.  Similarly, due to the
+X-Windows support, graphical operation from remote OS X systems is
+possible, unlike under Windows.
+
+There are two differences from the Linux releases.
+\begin{enumerate}
+\item{The programs use the GTK-2 graphical interface toolkit for
+display, which is supplied in a separate ``{\vt gtk2-bundle-x11}''
+distribution file.  As in Windows, the bundle supplies all of the
+libraries and supporting files needed, as they are not native to OS X. 
+The user will need to download and install the bundle package.  Once
+installed, it should rarely if ever need to be upgraded.  The bundle
+can be installed with the {\vt wr\_install} script, or with Apple's
+installer, the same as the program distribution files.}
+
+\item{The program installation location can not be changed.  The
+programs will be installed under {\vt /usr/local/xictools}, and the
+bundle is installed under {\vt /usr/local/gtk2-bundle-x11}.}
+\end{enumerate}
+
+The user must have root permission to install the programs.  If a root
+password has been defined, the user can use ``{\vt su}'' to become
+root as in Unix/Linux.  Otherwise, there is a ``{\vt sudo}'' command
+that can be issued which provides temporary root privileges to certain
+pre-designated users.  From a command line, one can use {\vt sudo} to
+execute commands that require root privileges.  The user is asked for
+their password, and the command is executed if the password is
+accepted.
+
+The {\vt sudo} command is built into the {\vt wr\_install} script, so
+that users should not need to become root explicitly to perform
+updates.  To edit configuration files in the installation, root access
+is needed.  The {\vt sudo} command can be used to start the license
+server, if running the server is necessary.
+
+\subsection{Un-Installation}
+
+The OS X package system does not provide an uninstall function, and
+overall is quite a bit less capable than the package management
+systems in supported Unix/Linux systems.  In release 4.0.7 and later,
+when a new release is installed, the preinstall script will explicitly
+clear all of the files of an existing package if found, as is done by
+the installer on other systems.  In earlier releases, a new release
+would simply overwrite the existing release.
+
+To uninstall, the files must be removed manually.  This is easy, as
+all files are installed under {\vt /usr/local/xictools}.  One should
+also clear the package ``receipt'' from the OS X database with the
+terminal command
+\begin{quote}
+{\vt pkgutil --forget} {\it packagename}
+\end{quote}
+if the program is being removed permanently.  The {\it packagename} is
+the name of the package as known to Apple, which is in a form like
+``{\vt XicTools.Xic.4}''.  All of the Whiteley Research installed
+packages can be listed by name with the terminal command
+\begin{quote} \vt
+pkgutil --pkgs $|$ grep XicTools
+\end{quote}
+This will provide the Apple package names.
+
+\subsection{Running the Applications}
+
+It is assumed that the user will be initiating the applications from a
+terminal window, as under Unix/Linux.  The directories containing the
+program binaries ({\vt /usr/local/xictools/bin}) and the bundle
+programs ({\vt /usr/local/gtk2-bundle-x11/bin}) should be in the
+shell search path.  Then, all executables will be found by name. 
+Operation is the same as under Unix/Linux.
+
+The X-Windows server must be running for successful execution of the
+programs that use graphics.  In OS X Mavericks the Apple "XQuartz"
+X-server will start automatically when needed (remember that this must
+be downloaded, as it is not installed automatically in Mavericks),
+however this causes the initial program startup time to be rather
+long.
+
+\subsection{MacBook Keyboard Mapping Issues}
+
+The Darwin64 releases work great on a MacBook Pro, however there are
+some keyboard mapping issues.  Keys which have normal significance to
+{\Xic}, such as {\kb Home}, {\kb Page Up} and {\kb Page Down}, and the
+numeric keypad plus and minus keys are nowhere to be found.  Yet, all
+functionality is present, but maps to alternative key combinations. 
+One can run the {\cb Key Map} command in the {\cb Attributes Menu} if
+another mapping is needed.
+
+The table below describes the default mapping.
+
+\begin{tabular}{|l|p{5in}|} \hline
+\bf MacBook Pro &  \bf Normal keyboard\\ \hline\hline
+\kb Delete & {\kb Backspace}\newline
+  The key labeled ``{\kb Delete}'' actually sends a backspace
+  character.\\ \hline
+\kb fn-Delete & {\kb Delete}\newline
+  Press the {\kb fn} key with {\kb Delete} to get a real delete
+  character.\\ \hline
+\kb fn-Left & {\kb Home}\newline
+  Press the {\kb fn} key with the left arrow for the center-full-view
+  function in {\Xic}.\\ \hline
+\kb fn-Up & {\kb Page Up}\newline
+  Press the {\kb fn} key with up arrow to get a page up code, used in
+  {\Xic} for displaying DRC errors.\\ \hline
+\kb fn-Down & {\kb Page Down}\newline
+  Press the {\kb fn} key with down arrow to get a page down code, used
+  in {\Xic} for displaying DRC errors.\\ \hline\hline
+\multicolumn{2}{|c|}
+  {These mappings are set in Apple releases only.}\\ \hline\hline
+\kb fn-Enter & {\kb KeyPad Enter}\newline
+  Press the {\kb fn} key with {\kb Enter} to get the numeric keypad
+  enter code.  This is mapped to the zoom-in action, as for {\kb
+  Numeric Plus}.\\ \hline
+\kb fn-Right & {\kb End}\newline
+  Press the {\kb fn} key with the right arrow to get the end key code. 
+  This is mapped to the zoom-out action, as for {\kb Numeric Minus}.\\
+  \hline
+\end{tabular}
+
+Note that if you use a ``normal'' keyboard with your Apple computer,
+the two new mappings will be in addition to the normmal mappings.
+
+The ``secondary press'' mentioned in Apple documents is button 3 (the
+right mouse button on a three-button mouse).  You should probably
+change the track-pad settings in the {\cb Preferences} to enable this. 
+There is no button 2 (middle mouse button).  You'll have to live
+without it, or get a three-button pointing device.
+
+\subsection{The Alt Key Issue}
+
+The MacBook Pro and probably other Mac machines lack a compatible {\kb
+Alt} key.  This {\kb Alt} key is used in {\Xic} as a menu accelerator,
+and for a button-press modifier.  It is reasonable to live without it,
+but there is a fix.
+
+The following fix works on my MacBook Pro.  Create a file in your home
+directory named ``{\vt .Xmodmap}'' containing the following two lines:
+
+\begin{quote}\vt
+keycode 66 = Alt\_L\\
+add mod1 = Alt\_L
+\end{quote}
+
+This will map the left ``option'' button to {\kb Alt}.  The right
+option button will still do the normal Mac thing, i.e., send alternate
+character keycodes.
+
+However, this depends on the left option key returning scan code 66,
+which may not be true on different hardware.  The {\vt xev} program
+can be used to find the actual scan code.
+
+This will apply to all X applications, and the mapping will be
+recorded when the X server starts.  You can also give the command
+\begin{quote}
+\vt xmodmap -e "keycode 66 = Alt\_L" -e "add mod1 = Alt\_L"
+\end{quote}
+which will re-map the keys for the current X session.
+
+
+% -----------------------------------------------------------------------------
+% mswindows 020514
+\section{Microsoft Windows Notes}
+
+This section contains notes relevant to the Microsoft Windows
+release of the {\XicTools}.
+
+\subsection{Installation and Setup}
+
+In order to license a Windows host, two pieces of information are
+needed:
+\begin{enumerate}
+\item{The machine's host name}
+\item{The Windows Product ID}
+\end{enumerate}
+
+The recommended way to retrieve this information is to download the
+{\vt licinfo.exe} program from the {\vt wrcad.com} web site.  When
+run, this program generates a file named ``{\vt tLicenseInfo}'' which
+should be emailed to Whiteley Research.  A pop-up window displays the
+information, and indicates success or failure.
+
+The distributions are available from the {\vt wrcad.com} web site,
+along with the distributions for Linux and OS X.  The distributions
+come in self-extracting {\vt .exe} files.  Simply run the files to do
+the installation.  The programs can later be uninstalled, either from
+the {\cb Control Panel} or by clicking the {\cb Uninstall} icons in
+the {\cb XicTools} program group in the {\cb Start} menu.
+
+The same process can be used to install updated releases -- it is not
+necessary to uninstall first.  A more convenient way to keep current
+is to set up automatic update checking.  For this, you need to have a
+``home'' directory.  The procedure is discussed below.  Then, the {\cb
+!passwd} command in {\Xic} or the {\cb password} command in {\WRspice}
+can be run, and the user/password to the distribution repository
+entered.  This will produce a file ``{\vt .wrpasswd}'' in the home
+directory, used to authenticate with the web server at {\vt
+wrcad.com}.  When this is set up, the programs will check for updates
+on startup.  If an update is available, the user is asked (separately)
+whether to download the update distribution file, and whether to
+install it.  The actual installation will start when the user exits
+the program.
+
+Before an update, any configuration files in the installation that
+have been customized should be saved as they may be overwritten.
+
+WARNING\\
+The programs use an entry in the Windows Registry
+to find their startup files, license, etc.  This entry is created by
+the installer program.  Thus
+\begin{enumerate}
+\item{The correct way to move an existing installation to another
+location is to uninstall the program, and reinstall to the new
+location using the standard distribution file.  If you just move the
+files to a new location, the Registry won't be updated and the program
+won't run correctly.}
+
+\item{You can not simply copy files from another machine when creating
+a new installation.  The files must be installed through the
+distribution files, or the Registry entry won't be set.}
+\end{enumerate}
+
+The Registry entry used (by the {\vt inno} installer program) is
+(for example)
+\begin{quote}\vt
+HKLM$\backslash$Software$\backslash$Microsoft$\backslash$Windows$\backslash$CurrentVersion$\backslash$Uninstall$\backslash$Xic-4is1
+\end{quote}
+
+The Windows {\vt regedit} utility can be used to repair the Registry
+if necessary.  The Windows {\vt reg} utility can also be used to query
+and modify the Registry from the command line.
+
+The programs are installed by default under {\vt
+C:{$\backslash$}usr{$\backslash$}local}, which can be specified to the
+program installer.  The installation directories will be created if
+necessary.  All of the programs will install under a directory named
+``{\vt xictools}'' under the prefix, (for example, {\Xic} files would
+be installed by default in {\vt
+C:$\backslash$usr$\backslash$local$\backslash$xictools$\backslash$xic}). 
+The structure of the tree is exactly that as under Linux, which
+simplifies compatibility.  It is recommended that the default
+installation location be used, if possible.
+
+The Generation 4 programs all use the GTK-2 toolkit for the user
+interface.  The DLLs and other support files for this toolkit are in
+the {\vt gtk2-bundle} distribution file.  This must be installed, by
+executing the file, in the same manner as the program distribution
+files.  You will only need to do this once, or at least very
+infrequently.  The default location is under {\vt
+C:$\backslash$usr$\backslash$local$\backslash$gtk2-bundle}.
+
+IMPORTANT!\\
+The installation prefix given to the installer for all programs, and
+the gtk2-bundle, {\bf must} be the same.
+
+By default, the actual binary executable is run from a script ({\vt
+.bat}) file, which is installed in the same directory as the
+executables, which by default is {\vt
+C:$\backslash$usr$\backslash$local$\backslash$xictools$\backslash$bin}. 
+The script takes care of properly specifying the path to the DLLs
+provided by the gtk2-bundle.
+
+A program group named {\vt XicTools} is created in the {\vt Start}
+menu (or equivalent), from which the programs can be started.  The
+programs can also be started from a command line, in either a Windows
+{\cb Command Prompt} window or a Cygwin shell window.  One will need
+to type the full path to the bat file (e.g., type ``{\vt
+C:$\backslash$usr$\backslash$local$\backslash$xictools$\backslash$bin$\backslash$xic}''
+to start {\Xic}).  There are two ways to avoid having to type the
+whole path:
+
+\begin{enumerate}
+\item{Add the directory to your search path.  This is the {\vt PATH}
+variable in the environment.  This can be set in your {\cb Command
+Prompt}window by giving a command like
+\begin{quote}
+ \vt PATH=\%PATH\%;c:$\backslash$usr$\backslash$local$\backslash$xictools$\backslash$bin
+\end{quote}
+or the {\vt PATH} can be set from the {\cb Control Panel} (the
+procedure is described below for Windows 8).}
+
+\item{The {\vt bat} files can be copied from the installation location
+into a directory that is already in the search path, or to the current
+directory.}
+\end{enumerate}
+
+Note that if you know your way around Windows {\vt bat} scripts, you
+can avoid the installation location requirement in the warning above.
+
+WARNING\\
+In early alpha test releases, it was suggested that the {\vt
+gtk2-bundle/bin} be added to the system {\vt PATH}.  This is a very
+bad idea, since this may have an adverse effect on other programs. 
+Unless you really know what you are doing, the {\vt gtk2-bundle/bin}
+directory should never appear in a global search path.
+
+\subsection{General Notes}
+
+The {\XicTools} for Windows are supported on Windows XP and later. 
+The programs retain the ``look and feel'' of the Unix/Linux versions
+as much as possible, given the constraints of the Windows operating
+system.
+
+Starting with Generation 4, the programs use the GTK-2 graphical
+interface toolkit, as used by the other releases.  The native Win32
+interface is gone.  The GTK-2 libraries are supplied in a separate
+installation module.  Installation is mandatory, but the libraries are
+quite static so will not require much attention after the initial
+installation.
+
+Most basic features are available under Windows.  Some of the more
+advanced features are not.
+
+\begin{itemize}
+\item{There is presently no support for the Tcl/Tk or Python script 
+language plug-ins.
+\ifoa
+There is also no support for the OpenAccess plug-in.
+\fi}
+
+\item{There is no provision for remote running of the programs as
+with the X window system in Linux.}
+
+\item{Under Unix/Linux, when the program crashes (of course, a very
+rare occurrence!), the {\vt gdb} debugger is called to generate a
+stack trace, which is emailed to Whiteley Research for analysis. 
+Since it is rare to find {\vt gdb} on a Windows system, an alternative
+is built in.  This produces a file named {\it progname\/}.{\vt
+stackdump}, which is emailed (if possible) to Whiteley Research.}
+
+\item{Windows does not provide a reliable interface for internet mail,
+so the email clients and crash-dump report in the {\XicTools} may not
+work.  The mail in {\XicTools} works by passing the message to a
+Windows interface called ``MAPI'', which in turn relies on another
+installed program to actually send the mail.
+
+To get this working in Windows 8, I had to download and install
+something called ``live mail'' from Microsoft, which eventually
+worked.  This app supports MAPI, apparently the Windows 8 Mail app
+does not(?).  The Windows 8 app also does not work with POP3 servers,
+solidifying my disrespect.}
+
+\item{The {\XicTools} programs can use a separate license server
+daemon under Unix/Linux.  Under Windows, no license server is
+used, as the authentication is built into the programs.}
+\end{itemize}
+
+The ``environment variables'' mentioned in the {\Xic}/{\WRspice}
+documentation are available, and can be set in a {\cb Command Prompt}
+window with the ``{\vt set}'' command before starting the programs, or
+from the {\cb System} entry in the {\cb Control Panel} (or wherever
+this capability lives in your version of Windows).  Only the latter
+method works if the programs are started from an icon or menu.
+
+Directory path names used by the programs can use either `/' or
+`$\backslash$' as the directory separator character, interchangeably. 
+The path can also contain a drive specifier.
+
+The path variables used by {\Xic} that contain lists of directory
+paths must use either a space or `;' (semicolon) as a separator. 
+Under Unix, the separation characters are space and `:' (colon).
+
+The text files used by the programs can have either DOS or Unix line
+termination.  Text files produced by the programs under Windows will
+use the DOS format.
+
+Under Windows, where the concept of a ``home directory'' is somewhat
+tenuous, the programs will look for environment variables,
+particularly {\et HOME}, and if found interpret the value as a path to
+the home directory.  This is true when programs look for startup
+files.  When the program is started from an icon or shortcut, and the
+start directory is not explicitly set in the icon properties (it
+defaults to {\vt C:/}), the current directory will be the home
+directory, rather than {\vt C:/}.
+
+Those used to a Unix environment are encouraged to download and
+install the Cygwin tools.  These include most of your favorite Unix
+commands, plus a complete compiler toolchain for application
+development.  In particular, the bash shell is quite useful, as it
+provides a ``DOS box'' that responds to Unix shell commands, and from
+which one can execute shell scripts.  The tools can be downloaded as
+individual modules.
+
+If it is needed and does not exist, {\Xic} and {\WRspice} will create
+a {\vt {$\backslash$}tmp} directory on the current drive.  This will
+contain temporary files, used by the programs.  These should be
+removed automatically when the programs terminate, but if not the
+files can be safely deleted if {\Xic} and {\WRspice} are not running.
+
+\subsection{Setting Environment Variables}
+
+By running Cygwin, the setting of environment variables and similar
+becomes very familiar to a Linux user.  In particular, running {\Xic}
+from a Cygwin bash-shell window emulates pretty well the Linux
+experience.  This is a recommended approach for those familiar with
+Unix/Linux.
+
+Otherwise, environment variables can be set manually in a {\cb Command
+Prompt} window from which the programs are run.  The {\vt bat} files
+can be modified and ``{\vt set}'' lines added, as an option to avoid
+manual setting of variables that should always be in force.  Another
+option is to set the system default environment variables.  Be aware
+that all other programs will see the variables.  Setting the system
+environment variables is probably something to avoid if possible.  If
+you insist, here is the procedure for Windows 8.1.  Other supported
+Windows releases are probably not horribly different.
+
+\begin{enumerate}
+\item{Go to the infamous {\cb Start} page, click on the circle with
+down arrow icon near the bottom-left corner.  This shifts to the {\cb
+Apps} page.}
+
+\item{Find the {\cb Control Panel}, it is listed on the {\cb Apps}
+page under {\cb Windwos System} You can use the search tool if
+necessary.  Eventually, you'll find the icon, then click it to bring
+up the {\cb Control Panel}.}
+
+\item{Click {\cb System and Security}.  The display will change to a
+new set of choices.}
+
+\item{Click {\cb System}.}
+
+\item{Click {\cb Advanced system settings} along the left.  This
+brings up a {\cb System Properties} window.}
+
+\item{Click the {\cb Environment Variables} button near the bottom of
+the {\cb Advanced} page (this page should be shown initially).}
+\end{enumerate}
+
+There are a couple of things one may want to do here, as examples.
+
+\begin{enumerate}
+\item{Add the {\XicTools} {\vt bin} directory  to the system search path.\\\\
+Scroll the lower {\cb System variables} window to find the {\vt Path}
+entry.  Click on this to select it.  Click the {\cb Edit...} button
+below, which brings up a text entry window.  In the {\cb Variable
+value} window, scroll all the way to the right, and add, for example
+(use the actual paths if different on your system)
+\begin{quote}\vt
+;c:$\backslash$usr$\backslash$local$\backslash$xictools$\backslash$bin
+\end{quote}
+Check the spelling, and make sure there is no white space, and that
+the character before the `{\vt c}' is a semicolon, and the character
+that follows the `{\vt c}' is a colon.  Then click the {\cb OK}
+button.}
+
+\item{Add a {\vt HOME} variable to define a ``home directory''.\\\\
+Press the {\cb New...} button below the UPPER listing window (not the
+one you just used).  This brings up a text entry as we saw before. 
+Enter {\vt HOME} for {\cb Variable name}, For {\cb Variable value},
+enter a path to some directory which you want to be your ``working''
+directory, where {\Xic} and {\WRspice} will look for startup files,
+license files, etc.  Enter the full path to this directory.  Check
+spelling, Click {\cb OK}.}
+\end{enumerate}
+
+Finally, click the {\cb OK} button at the bottom of the window, we're
+done.
+
+When a program is started from an icon, an icon property specifies the
+directory where the program logically starts from.  This is the
+apparent current directory seen by the user when running the program. 
+By default, this is usually sonething like ``{\vt C:$\backslash$}'',
+which is not a good choice.  The user should have a directory
+dedicated for this, and the following procedure can be used to cause
+the programs started from an icon to start in this directory.
+
+\begin{enumerate}
+\item{Go to the {\cb Start} page, click on the circle with down arrow
+icon near the bottom-left corner.  This shifts to the {\cb Apps} page.}
+
+\item{Find the {\cb XicTools} program group.  There should be entries
+for the programs that you have installed.}
+
+\item{For each program:\\
+\begin{enumerate}
+  \item{Click on the program icon with the RIGHT mouse button.  An
+  icon banner along the bottom of the screen will appear.}
+
+  \item{Click on {\cb Open File Location}.  This brings up a listing
+  showing the {\cb XicTools} programs.}
+
+  \item{Above the list, find the {\cb Properties} icon and click it. 
+  This brings up a multi-page {\cb Properties} pop-up.}
+
+  \item{In the {\cb Shortcut} page, change the entry in the {\cb Start
+  in} entry area to a full directory path to the directory where the
+  program should start.  This might be the same directory that you
+  used for the {\vt HOME} environment variable.}
+
+  \item{Then click the {\cb Apply} button, and click {\cb OK} if there
+  is a confirmation pop-up.}
+\end{enumerate}
+}
+\end{enumerate}
+
+This applies to the icon in the {\cb Apps} page.  Other icons can be
+set similarly.
+
+
+% -----------------------------------------------------------------------------
+% xic:cmdline 030413
+\section{Command Line Options}
+
+\index{command line}
+The following syntax applies when {\Xic} is invoked from the command
+line.  Arguments not recognized as options are expected to be files
+containing layout information in supported formats.  The first such file
+(if any) will be loaded into the editor.  Subsequent files can be loaded
+sequentially with the {\cb Open} command.
+
+\vspace*{5mm}
+\begin{quote}\vt \rr
+xic [-F {\it filetool\_args\/}] | [
+  [-B{\it batch\_opt\/} | -S[{\it port\/}]
+  [-C | -C1] [-E] [-G{\it geometry\_spec\/}]
+  [-H{\it directory\_path}]
+  \hspace*{1em}[-K{\it password}] [-L{\it serverhost\/}[:{\it port\/}]]
+  [-R{\it prefix\_path\/}]
+  [-T[{\it extension\/}]]
+  [{\it toolkit\_options\/}]
+  \hspace*{1em}[{\it filename} ...] ]
+\end{quote}
+
+{\Xic} will accept command line options common to applications
+designed around the GTK user interface toolkit.  In addition, there
+are a few command line options used exclusively by {\Xic}.  Options
+are keyed by a hyphen `{\vt -}', and can not be grouped.  Above, the square
+brackets indicate that the specification is optional (which applies to
+all arguments), and the `{\vt |}' symbol is a logical ``OR'' operator
+indicating that one may specify one of the surrounding forms.
+
+\begin{description}
+\item{``Undocumented'' options:  {\vt --v}, {\vt --vv}, and {\vt --vb}}\\
+If {\Xic} is given one of these options, and no other options, {\Xic}
+will print some text on the standard output and exit.  Note that there
+are two hyphens in these options.  For {\vt --v} {\Xic} will print the
+version followed by the distribution name, for example ``{\vt 3.2.5
+LinuxRHEL5}''.  For {\vt --vv}, {\Xic} will print the CVS release tag,
+for example ``{\vt xic-3-2-5}''.  For {\vt --vb}, {\Xic} will print
+the build date string.
+
+\index{command line!options!-B}
+\index{-B option}
+\index{batch mode!start in}
+\item{\et -B}{\it batch\_opt\/}\\
+{\Xic} supports a batch mode of operation, where {\Xic} will run a
+script or perform certain commands without graphics.  The form for
+this option is one of
+\begin{quote}\vt
+  -B{\it scriptfile\/}[,{\it args\/}...]\\
+  -B-{\it command}[{\vt @}{\it arguments\/}]
+\end{quote}
+Batch mode will be described in \ref{batchmode}.
+\end{description}
+
+\index{colormap options}
+The {\et -C} and {\et -C1} options apply only to ``pseudo-color''
+displays.  These are displays with ``8-bits'' or ``256 colors'', found
+on older workstations.  By default, {\Xic} uses a large percentage of
+the system colormap.  If there are insufficient colormap entries
+available, {\Xic} will create its own virtual colormap, which is
+loaded when an {\Xic} window has the keyboard focus.  A problem is
+that some X terminals and emulators apparently do not support virtual
+colormaps, or do so improperly.  Also, the use of a virtual colormap
+can be annoying.  For these reasons, options have been provided to
+limit colormap usage, and avoid creation of a virtual colormap.
+
+\begin{description}
+\index{command line!options!-C}
+\index{-C option}
+\item{\et -C}\\
+This option applies only in pseudo-color visual modes.  The {\et -C}
+option, if given, will prevent {\Xic} from allocating private colors
+from the system colormap.  Instead, it will use cells shared with
+other applications.  The colormap usage can be dramatically reduced by
+this option.  The cost is 1) the colors may not be quite ``right'' if
+the colormap is already heavily used by other applications, 2) there
+is no blinking, 3) the colors can not be changed, and 4) highlighting
+may be difficult to see, as for the {\vt -C1} option.  A second copy
+of {\Xic} running with the same technology file as the first will use
+no additional colormap space.  A virtual colormap is never produced if
+the {\et -C} option is given.  This option is recommended primarily
+for users who want to run multiple copies of {\Xic} without the
+virtual colormap.
+
+\index{dual plane colorcells}
+\index{-C1 option}
+\item{\et -C1}\\
+This option applies only in pseudo-color visual modes.  The {\et -C1}
+option similarly saves colormap space by directing {\Xic} to allocate
+single-plane cells.  By default, and if sufficient colormap space is
+available, {\Xic} will allocate ``dual-plane'' color cells for the
+layer rendering colors.  These cells contain two pixel values, one
+representing the color, and one which is white.  The white pixel is
+addressed during highlighting, and having one white pixel per layer
+ensures that the exclusive-or drawing mode always produces white
+highlighting.
+
+Single-plane color cells use half the colormap space of dual plane
+cells.  However, the exclusive-or highlighting is only guaranteed to
+be white over the background, and the highlighting can take any color
+over the layers.  This can sometimes be difficult to see.
+
+\index{command line!options!-E}
+\index{-E option}
+\index{electrical mode!start in}
+\item{\et -E}\\
+The {\et -E} option signals {\Xic} to start in electrical mode.  The
+default is to start in physical mode.
+
+\index{command line!options!-F}
+\index{-F option}
+\index{filetool option}
+\item{\et -F}\\
+This option must be the first given, and arguments that follow must be
+appropriate for the {\FileTool} utility (see Appendix \ref{filetool}). 
+The program will behave as the command-line {\FileTool} program, which
+can perform various manipulations and diagnostics on layout files.
+
+If the {\vt xic}, {\vt xicii}, or {\vt xiv} binary executable files
+(or Windows {\vt .exe} equivalents) are copied or linked under the
+name ``{\vt filetool}'' (``{\vt filetool.exe}'' under Windows), the
+new program will behave as a {\FileTool} when invoked.
+
+\index{command line!options!-G}
+\index{-G option}
+\item{\et -G}{\it geometry\_spec}\\
+The {\it geometry\_spec} is an X-style window geometry specification,
+which allows the main window size and position to be specified.  There
+is no space between {\vt -G} and the specification.  The command line
+specification will override the {\et XIC\_GEOMETRY} variable.  The
+format of the {\it geometry\_spec} is described with the environment
+variable.
+
+\index{command line!options!-H}
+\index{-H option}
+\item{\et -H}{\it directory\_path}\\
+Giving this option will cause {\Xic} to start in {\it directory\_path}
+as the current working directory.  Note that there is no space between
+the ``{\vt -H}'' and the directory path.
+
+\index{command line!options!-K}
+\index{-K option}
+\item{\et -K}{\it password}\\
+The password used to enable use of encrypted scripts can be given to
+{\Xic} on the command line with this option.  Note that there is no
+space between the ``{\vt -K}'' and the password.  As the password can
+contain almost any character, if the password contains characters
+which could be misinterpreted by the shell, the password should be
+quoted, e.g., {\vt -K'}{\it password\/}{\vt '}.
+
+If no password is given to {\Xic} with the {\vt -K} option, a default
+password is effective.  The default password has a key that is
+compiled into the executable file, which can be changed with the {\vt
+wrsetpass} utility.  The ``factory'' default password is
+\begin{quote}
+{\cb Default password}: {\vt qwerty}
+\end{quote}
+The password set with the {\vt -K} option overrides the default
+password.  The password can also be set with the {\vt SetKey} script
+function.
+
+If the {\vt .xicinit} or {\vt .xicstart} file, or the function library
+file, or a script run from batch mode is encrypted, the encryption
+password must be given to {\Xic} with the {\vt -K} option, or be the
+default password.  As the password can be changed with the {\vt
+SetKey} script function, {\cb User Menu} scripts can in principle use
+different passwords, which must be set before the script is executed.
+
+\index{command line!options!-L}
+\index{-L option}
+\item{\et -L}{\it serverhost}[:{\it port\/}]\\
+This supplies the host name of the machine running the license server,
+and optionally specifies the port number.  Note that there is no space
+after {\vt -L}.  If given, this will override the server host supplied
+by other means.
+
+Below is the logic hierarchy for setting the license server host, each
+method will override those listed lower.  See the documentation for
+the {\vt xtlserv} (license server) program for more information.
+\begin{quote}
+-L{\it serverhost}[:{\it port\/}]\\
+{\et XTLSERVER} in environment\\
+{\vt license.host} file\\
+{\vt xtlserver} in {\vt /etc/hosts}\\
+name of local machine
+\end{quote}
+
+\index{command line!options!-R}
+\index{-R option}
+\item{\et -R}{\it prefix\_path}\\
+If given, the {\it prefix\_path} internally replaces ``{\vt
+/usr/local}'' when {\Xic} composes directory paths to search for
+startup files.  This will override the value of the {\et XT\_PREFIX}
+environment variable.  This is one method of specifying to {\Xic} the
+startup file location, if the distribution was installed in a
+non-default location.  Under Windows, the installation location is
+saved in the registry and is available to {\Xic}, so {\Xic} should be
+able to find its startup files without this option.
+
+\index{command line!options!-S}
+\index{-S option}
+\index{server mode!start in}
+\item{\et -S}[{\it port\/}]\\
+If the {\et -S} option is given, {\Xic} will run in server mode.  In
+this mode, {\Xic} runs in the background as a daemon process, serving
+requests through a communications port.  This mode will be described
+in \ref{servermode}.  The option can be immediately followed (no
+space) by a port number to use for connections.
+
+\index{command line!options!-T}
+\index{-T option}
+\index{technology file!extension}
+\index{xic\_tech file}
+\item{\et -T}[{\it extension\/}]\\
+The {\et -T}{\it extension\/} option is used to designate a particular
+technology file, which is a file used by {\Xic} to initialize itself
+to a particular manufacturing process and set of user preferences. 
+The technology file has a name of the form {\vt xic\_tech} or {\vt
+xic\_tech.}{\it extension\/}, the base name is always ``xic\_tech'',
+but there may be an arbitrary extension (characters other than `.'
+following `.').  If no {\et -T} option is given, then the {\vt
+xic\_tech} file is used.  Otherwise, the {\it extension\/} given in
+the option will signal {\Xic} to use the technology file with the same
+extension.  Note that it is allowable to start {\Xic} without any
+technology file, which is the effect of giving just the {\et -T}
+without any extension.  Note that there must not be any space between
+the {\et T} and the extension.
+\end{description}
+
+The graphical interface accepts the following options.  These options
+are not processed by {\Xic}, but are intercepted by the graphics
+subsystem and affect the interface to the X-window system.  The
+multiple forms are equivalent.
+
+\index{command line!options|(}
+\index{command line!options!-d}
+\index{command line!options!-display}
+\index{command line!options!\symbol{45}\symbol{45}display}
+\index{X display!specification}
+\index{environment!DISPLAY}
+\begin{description}
+\item\parbox[b]{4in}{
+{\et -d} {\it dispname}\\
+{\et -display} {\it dispname}\\
+{\et \symbol{45}\symbol{45}display} {\it dispname}}\\
+This option specifies the name of the X display to use.  The {\it
+dispname} is in the form
+\begin{quote}
+ [{\it host\/}]:{\it server\/}[.{\it screen\/}]\\
+\end{quote}
+The {\it host\/} is the host name of the
+physical display, {\it server\/} specifies the display server number,
+and {\it screen\/} specifies the screen number.  Either or both of the
+{\it host\/} and {\it screen\/} elements to the display specification
+can be omitted.  If {\it host\/} is omitted, the local display is
+assumed.  If {\it screen\/} is omitted, screen 0 is assumed (and the
+period is unnecessary).  The colon and (display) {\it server\/} are
+necessary in all cases.  If no display is specified on the command
+line, the display is set to the value of the environment variable {\et
+DISPLAY}.
+
+\index{command line!options!-name}
+\index{command line!options!\symbol{45}\symbol{45}name}
+\item\parbox[b]{4in}{
+{\et -name} {\it string}\\
+{\et \symbol{45}\symbol{45}name} {\it string}}\\
+This option provides an alternative name to the application, as known
+to the X window system.  The application name is used by X to apply
+resource specifications.
+
+\index{command line!options!\symbol{45}\symbol{45}class}
+\item{\et \symbol{45}\symbol{45}class} {\it string}\\
+This option provides an alternative class name to the application, as
+known to the X window system.  The application class name is used by X
+to apply resource specifications.
+
+\index{command line!options!-synchronous}
+\index{command line!options!\symbol{45}\symbol{45}sync}
+\item\parbox[b]{4in}{
+{\et -synchronous}\\
+{\et \symbol{45}\symbol{45}sync}}\\
+This option indicates that requests to the X server should be sent
+synchronously, instead of asynchronously.  Since the X system normally
+buffers requests to the server, errors do not necessarily get reported
+immediately after they occur.  This option turns off the buffering so
+that the application can be debugged more easily.  It should never be
+used with a working program.
+
+\index{command line!options!\symbol{45}\symbol{45}no-xshm}
+\index{MIT-SHM extension}
+\item{\et \symbol{45}\symbol{45}no-xshm} {\it string}\\
+In releases running under the X-Window system (Unix/Linux), {\Xic}
+will use the MIT-SHM shared memory extension if the X server supports
+this extension, and the server is running on the local machine.  This
+allows image data to be transferred to the X server via shared memory,
+which is faster than the normal X socket interface.  Screen updates
+may be faster as a result.
+
+Giving the option {\et \symbol{45}\symbol{45}no-xshm} on the command
+line will prevent use of this extension, if for some reason this is
+necessary.
+\end{description}
+
+Any words found in the command line that are not recognized as options
+will be interpreted as files to load into {\Xic} for editing.  The
+files will be loaded in order of their appearance, with the first file
+loaded at startup, and the other files loaded in response to an {\cb
+Open} command.
+\index{command line!options|)}
+
+
+% -----------------------------------------------------------------------------
+% xic:env 092615
+\section{{\Xic} Environment Variables}
+\label{xicenv}
+\index{environment}
+Environment variables are keyword/value pairs that are made available
+to an application by the command shell or operating system.  The value
+of an environment variable is a text string, which may be empty. 
+Environment variables can be set by the user to control various
+defaults in {\Xic}.
+
+\subsection{Unix/Linux}
+
+Environment variables are maintained by the user's command shell.  It
+is often convenient to set environment variables in a shell startup
+file such as {\vt .cshrc} or {\vt .login} for the C-shell or {\vt
+.profile} for the Bourne shell.  These files reside in the user's home
+directory.  See the manual page for your shell for more information.
+
+For the C-shell, the command that sets an environment variable is
+\begin{quote}
+{\vt setenv} {\it variable\_name} [{\it value\/}]
+\end{quote}
+For example,
+\begin{quote}
+{\vt setenv XT\_DUMMY "hello world!"}
+\end{quote}
+Note that if the value contains white space, it should be quoted. 
+Note also that it is not necessary to have a value, in which case the
+variable acts as a boolean (set or not set).
+
+In the C-shell, one can use {\vt setenv} without arguments, or {\vt
+printenv}, to list all of the environment variables currently set.
+
+For a modern Bourne-type shell, such as {\vt bash}, the corresponding
+command is
+\begin{quote}
+{\vt export} {\it variable\_name\/}[={\it value\/}]
+\end{quote}
+In this type of shell one can list the variables currently set by
+giving the {\vt set} command with no arguments.
+
+\subsection{Microsoft Windows}
+
+Under Windows, environment variables can be set in a DOS box with the
+{\vt set} command before starting the program from the command line,
+or in the {\vt AUTOEXEC.BAT} file, or from the {\cb System} entry in
+the {\cb Control Panel}.  Only the latter two methods work if the
+programs are started from an icon.  If using a Cygwin bash-box,
+environment variables can be set in the startup file as under Unix.
+
+\subsection{{\XicTools} Environment Variables}
+
+The following environment variables are used by all {\XicTools}
+programs.
+
+\begin{description}
+\index{environment!CYGWIN\_BIN}
+\item{\et CYGWIN\_BIN}\\
+This variable applies only when running under Microsoft Windows, and
+Cygwin is installed.  Cygwin is Linux-like environment and tool set
+which is a very useful adjunct to Windows.  In particular, it provides
+a bash shell with standard Linux commands, and an X server, among many
+installable features.
+
+{\XicTools} programs will in some cases, such as when popping up a
+shell window, look for a Cygwin program.  If the Cygwin program
+binaries ({\vt .exe} files) are located in {\vt /bin} or {\vt
+/cygwin/bin} on the current disk drive, they will be found
+automatically.  Otherwise, this variable can be set to the Windows
+path, including a drive letter if necessary, to the directory
+containing the Cygwin binaries.  This is not necessarily the path one
+perceives from within Cygwin, since the {\XicTools} programs do not
+know about the Cygwin mount points or symbolic links.  The path is the
+one that would be seen from a DOS box, with forward or reverse slash
+directory separators.
+
+\index{environment!XT\_AUTH\_MODE}
+\item{\et XT\_AUTH\_MODE}\\
+By default, Unix/Linux versions of {\Xic} and {\WRspice} use
+authorization provided by an external license server, possibly hosted
+on a different machine.  On the other hand, the Windows versions use
+built-in local authentication.  Both the external license server and
+the programs not using the license server make use of a file named
+``{\vt LICENSE}'' provided by Whiteley Research, Inc., which provides
+authorization to run on the host computer.
+
+Whether to use a license server or local authentication can be set
+with the environment variable {\et XT\_AUTH\_MODE}.  This variable has
+meaning if set to one of the keywords ``{\vt Server}'' or ``{\vt
+Local}''.  If set to ``{\vt Server}'' on a Windows machine, {\Xic} and
+{\WRspice} can by authenticated from a license server.  If set to
+``{\vt Local}'' on a Linux/OS X system, {\Xic} and {\WRspice}
+will be self-validating.
+
+{\Xic} and/or {\WRspice} users on a single licensed workstation may
+prefer to set the environment variable in their shell startup file and
+not use the external license server.
+
+When the programs look for the LICENSE file in ``{\vt Local}'' mode,
+if the file is not found in the startup or license directories, the
+programs will look in the home and current directories, in that order,
+unless {\et XT\_LICENSE\_PATH} is also set.
+
+\index{environment!XT\_LICENSE\_PATH}
+\index{XT\_LICENSE\_PATH environment variable}
+\item{\et XT\_LICENSE\_PATH}\\
+When using local validation (i.e., not using the license server) {\et
+XT\_LICENSE\_PATH} can be set to the full path to the license file. 
+Only this file will be used -- the regular search is suppressed.
+
+\index{environment!XTLSERVER}
+\index{XTLSERVER environment variable}
+\item{\et XTLSERVER}\\
+This provides the host name of the host running the license server
+needed to validate the application.  It is in a format understandable
+to the local name server.  The host name can optionally be suffixed by
+``{\vt :}{\it port\/}'', where {\it port} is the port number in use by
+the server.  There should be no space around the colon when using this
+form.
+
+\index{environment!XT\_PREFIX}
+\index{XT\_PREFIX environment variable}
+\item{\et XT\_PREFIX}\\
+All of the {\XicTools} programs respond to the {\et XT\_PREFIX}
+environment variable.  When the tools are installed in a non-standard
+location, i.e., other than {\vt /usr/local}, this can be set to the
+directory prefix which effectively replaces ``{\vt /usr/local}'', and
+the programs will be able to access the installation library files
+without further directives.  The {\Xic} {\et -R} command line option
+can also be used for this purpose.  This should not be needed under
+Windows, as the Registry provides the default paths.
+
+\index{environment!XTNETDEBUG}
+\index{XTNETDEBUG environment variable}
+\item{\et XTNETDEBUG}\\
+If the variable {\et XTNETDEBUG} is defined, {\Xic} and {\WRspice}
+will echo interprocess messages sent and received to the console.  In
+server mode, {\Xic} will not go into the background, but will remain
+in the foreground, printing status messages while servicing requests.
+
+\index{memory management}
+\index{environment!XT\_LOCAL\_MALLOC}
+\index{XT\_LOCAL\_MALLOC environment variable}
+Linux and FreeBSD releases can use an included local memory allocation
+package.  In earlier {\Xic} releases, this allocator, rather than the
+allocator provided by the operating system, was used by default.  In
+32-bit releases, the local allocator was often able to allocate more
+memory than the allocators provided by the operating system.  It also
+provided custom error reporting and statistics.
+
+This feature is now disabled, as in modern operating systems there is
+dubious benefit, and it can produce stability problems in some cases. 
+However, if this variable is set in the environment when {\Xic} is
+started, the local allocator will be used.  The interested user is
+encouraged to experiment.
+
+\index{environment!XT\_SYSTEM\_MALLOC}
+\index{XT\_SYSTEM\_MALLOC environment variable}
+\item{\et XT\_SYSTEM\_MALLOC}\\
+This variable was once used to disable the internal local memory
+allocator, which in earlier releases was enabled by default. 
+Currently, this variable is ignored.
+\end{description}
+
+\subsection{{\Xic} Environment Variables}
+
+The following paragraphs describe the environment variables which are
+relevant to {\Xic}.
+
+\begin{description}
+\index{environment!FORCE\_XICII}
+\index{FORCE\_XICII environment variable}
+\item{\et FORCE\_XICII}\\
+If this variable is set when {\Xic} starts, the program will run as
+{\XicII}.  This enables those with a full {\Xic} license to run as
+{\XicII}, for whatever reason.  One can create an ``{\vt xicii}''
+program with the following shell script:
+
+\begin{quote}\vt
+\#! /bin/sh\newline\newline
+FORCE\_XICII=1 xic \$*
+\end{quote}
+
+\index{environment!FORCE\_XIV}
+\index{FORCE\_XIV environment variable}
+\item{\et FORCE\_XIV}\\
+If this variable is set when {\Xic} starts, the program will run as
+{\Xiv}.  This enables those with a full {\Xic} license to run as
+{\Xiv}, for whatever reason.  One can create an ``{\vt xiv}'' program
+with the following shell script:
+
+\begin{quote}\vt
+\#! /bin/sh\newline\newline
+FORCE\_XIV=1 xic \$*
+\end{quote}
+
+\index{environment!XIC\_HOME}
+\index{XIC\_HOME environment variable}
+\item{\et XIC\_HOME}\\
+This environment variable applies only to the {\Xic} program.  If
+found in the environment when {\Xic} starts, it is expected to contain
+a path to the {\Xic} installation area or equivalent, which defaults
+to ``{\vt /usr/local/xictools/xic}''.  This overrides {\et XT\_PREFIX}
+if that environment variable is also found.
+ 
+There is an important subtlety when using this variable.  Although it
+allows {\Xic} to find its startup files anywhere, only the directory
+structure implied by {\et XT\_PREFIX}, that is, for {\Xic},
+\begin{quote} \vt
+\$XT\_PREFIX/xictools/xic
+\end{quote}
+is compatible with the program installation script.  The variable is
+perhaps useful for pointing {\Xic} toward a secondary set of startup
+files, perhaps heavily customized by the user, which may reside in
+an arbitrary location.
+
+\index{environment!XIC\_GEOMETRY}
+\index{XIC\_GEOMETRY environment variable}
+\item{\et XIC\_GEOMETRY}\\
+This can be set to an X-style geometry string, to specify the 
+default size and position of the {\Xic} main window.
+
+If the geometry has been specified, {\Xic} will use it to position and
+size the main window (if the window manager permits this).  The
+geometry specification, used to define window size and position, is a
+string in the form
+\begin{quote}
+{\it width\/}{\vt x}{\it height\/}$+${\it xoff\/}$+${\it yoff}
+\end{quote}
+where {\it width\/}, {\it height\/}, {\it xoff\/}, and {\it yoff} are
+numbers representing screen pixels.  The ``{\vt x}'' or ``{\vt X}''
+between the {\it width} and {\it height} is literal.  A plus sign
+`$+$' or minus sign `$-$' must appear ahead of {\it xoff} and {\it
+yoff}.
+
+\begin{description}
+\item{$+${\it xoff}}\\
+The left edge of the window is to be placed {\it xoff} pixels in from
+the left edge of the screen.
+
+\item{$-${\it xoff}}\\
+The right edge of the window is to be placed {\it xoff} pixels in from
+the right edge of the screen.
+
+\item{$+${\it yoff}}\\
+The top edge of the window is to be {\it yoff} pixels below the top
+edge of the screen.
+
+\item{$-${\it yoff}}\\
+The bottom edge of the window is to be {\it yoff} pixels above the
+bottom edge of the screen.
+\end{description}
+
+\index{temp directory}
+\index{environment!XIC\_TMP\_DIR}
+\index{XIC\_TMP\_DIR environment variable}
+\item{{\et XIC\_TMP\_DIR}, {\et TMPDIR}}\\
+By default, {\Xic} uses the directory {\vt /tmp} for temporary files. 
+In some installations, this directory may be too small to accommodate
+the large files needed by {\Xic}, for example when producing hard copy
+plots.  An alternative directory for temporary files can be specified
+with the {\et XIC\_TMP\_DIR} environment variable (which has
+precedence) or with the {\et TMPDIR} variable, which is a Unix
+standard.  One of these should be set to a path to a directory to use
+for temporary files, if necessary.
+
+\index{log files}
+\index{environment!XIC\_LOGDIR}
+\index{XIC\_LOGDIR environment variable}
+\item{\et XIC\_LOGDIR}\\
+The variable {\et XIC\_LOGDIR} can be set to a path to a directory
+which will be used to store certain log files produced while {\Xic} is
+running.  The location used for the log files is the first defined of
+{\et XIC\_LOGDIR}, {\et XIC\_TMP\_DIR}, {\et TMPDIR}, or {\vt /tmp} if
+none of these variables is defined.  The log files are removed on
+normal exit.
+
+\index{menu!right side placement}
+\index{environment!XIC\_MENU\_RIGHT}
+\index{XIC\_MENU\_RIGHT environment variable}
+\item{\et XIC\_MENU\_RIGHT}\\
+If the variable {\et XIC\_MENU\_RIGHT} is defined in the environment,
+{\Xic} will place the side menu and layer table to the right of the
+main window.  The default to to place the menu at the left.
+
+\index{menu!buttons on top}
+\index{environment!XIC\_HORIZ\_BUTTONS}
+\index{XIC\_HORIZ\_BUTTONS environment variable}
+\item{\et XIC\_HORIZ\_BUTTONS}\\
+If this variable is set in the environment when {\Xic} starts, the
+buttons in the side menu will be arrayed horizontally across the top
+of the main window instead.
+
+\index{environment!XIC\_PLUGIN\_DBG}
+\index{XIC\_PLUGIN\_DBG environment variable}
+\item{\et XIC\_PLUGIN\_DBG}\\
+If this variable is set in the environment when {\Xic} starts, error
+messages concerning plug-in loading will be printed in the console
+window.  Without this set, {\Xic} will simply silently not load a
+plug-in if an error occurs.  These diagnostic messages can help
+identify why the plug-in is not being loaded, and are instrumental in
+tracking down problems when the user expects success.
+
+\index{environment!XIC\_START\_DIR}
+\index{XIC\_START\_DIR environment variable}
+\item{{\et XIC\_START\_DIR}, {\et HOME}}\\
+Under Windows, the user's ``home'' directory is determined by looking
+at environment variables.  The first one found to be set is assumed to
+contain a path to the user's home directory.  First, {\et
+XIC\_START\_DIR} is checked.  This is {\Xic} (and family) specific, and
+would be set previously by the user.  If not found, {\et HOME} is
+checked.  This can be set by environments such as Cygwin, when
+starting in a Cygwin shell window, or may be set by other environments
+or by the user.  If not found, the {\et HOMEDIR} and {\et HOMEPATH}
+variables, if both are found, are concatenated to yield the home
+directory path.  In the unlikely event that these are not set, the
+{\et USERPROFILE} variable is checked, and if all else fails, ``{\vt
+C:$\backslash$}'' is assumed.  The {\et HOMEDIR}/{\et HOMEPATH} and
+{\et USERPROFILE} variables are set by Windows, at least in recent
+Windows versions.
+
+Under other operating systems, the home directory is well-defined
+and is obtained from operating system calls.
+
+Under Windows, if {\Xic} finds itself in the {\vt C:$\backslash$}
+directory on startup, it will change the working directory to the home
+directory.  This is the default when starting from the Windows {\cb
+Start Menu} or otherwise from an icon, unless the icon property is
+changed.
+
+\index{exit command}
+\index{environment!XIC\_EXIT\_CMD}
+\index{XIC\_EXIT\_CMD environment variable}
+\item{\et XIC\_EXIT\_CMD}\\
+If the environment variable {\et XIC\_EXIT\_CMD} is set to a command string,
+that command will be executed when {\Xic} exits.  If the command string
+contains spaces, the command should be quoted.  For example, using
+\begin{quote}
+{\vt setenv XIC\_EXIT\_CMD "/usr/games/fortune -o"}
+\end{quote}
+may print a rude limerick on some installations.  This feature may
+have less frivolous uses, however.
+
+\index{environment!XIC\_SYM\_PATH}
+\index{XIC\_SYM\_PATH environment variable}
+\index{environment!XIC\_LIB\_PATH}
+\index{XIC\_LIB\_PATH environment variable}
+\index{environment!XIC\_HLP\_PATH}
+\index{XIC\_HLP\_PATH environment variable}
+\index{environment!XIC\_SCR\_PATH}
+\index{XIC\_SCR\_PATH environment variable}
+\item{{\et XIC\_SYM\_PATH}, {\et XIC\_LIB\_PATH}, {\et XIC\_HLP\_PATH},
+  {\et XIC\_SCR\_PATH}}\\
+There are four additional environment variables used to specify
+locations where {\Xic} is to look for certain types of files.  These
+variables are {\et XIC\_SYM\_PATH}, {\et XIC\_LIB\_PATH}, {\et
+XIC\_HLP\_PATH}, and {\et XIC\_SCR\_PATH}.  These variables are
+described in the next section.
+
+The internal default values for the paths assume that the installation
+location is the standard place under {\vt /usr/local}, or if the {\et
+XT\_PREFIX} variable is set, that value will be taken instead of
+``{\vt /usr/local}''.
+
+\index{environment!XIC\_DOCS\_DIR}
+\index{XIC\_DOCS\_DIR environment variable}
+\item{\et XIC\_DOCS\_DIR}\\
+The environment variable {\et XIC\_DOCS\_DIR} can be set to an
+alternate location for the archive of release notes.  This location is
+searched in the {\cb Release Notes} command in the {\cb Help Menu}. 
+The default location is {\vt /usr/local/xictools/xic/docs}, or,
+if {\et XT\_PREFIX} is set, its value will replace {\vt /usr/local}.
+
+\ifoa
+\index{environment!XIC\_OASO\_PATH}
+\index{XIC\_OASO\_PATH environment variable}
+\item{\et XIC\_OASO\_PATH}\\
+Plugins are normally found in the {\vt plugins} directory in the
+installation area, which by default is
+\begin{quote}
+\vt /usr/local/xictools/xic/plugins
+\end{quote}
+This variable can be set to the full path to the OpenAccess plug-in,
+which {\Xic} will attempt to load on program startup instead of
+looking in the default location.
+\fi
+
+\index{environment!XIC\_PYSO\_PATH}
+\index{XIC\_PYSO\_PATH environment variable}
+\item{\et XIC\_PYSO\_PATH}\\
+Plugins are normally found in the {\vt plugins} directory in the
+installation area, which by default is
+\begin{quote}
+\vt /usr/local/xictools/xic/plugins
+\end{quote}
+This variable can be set to the full path to the Python plug-in,
+which {\Xic} will attempt to load on program startup instead of
+looking in the default location.
+
+\index{environment!XIC\_TCLSO\_PATH}
+\index{XIC\_TCLSO\_PATH environment variable}
+\item{\et XIC\_TCLSO\_PATH}\\
+Plugins are normally found in the {\vt plugins} directory in the
+installation area, which by default is
+\begin{quote}
+\vt /usr/local/xictools/xic/plugins
+\end{quote}
+This variable can be set to the full path to the TclTk or Tcl-only
+plug-in, which {\Xic} will attempt to load on program startup instead
+of looking in the default location.
+
+\index{environment!XIC\_LIBRARY\_PATH}
+\index{XIC\_LIBRARY\_PATH environment variable}
+\item{\et XIC\_LIBRARY\_PATH}\\
+This applies to Linux and OS X only.  If set, the value will be
+prepended to the {\vt LD\_LIBRARY\_PATH} in the {\Xic} process.  This
+can be used to point to installed libraries needed for plugins,
+\ifoa
+for example the OpenAccess libraries,
+\fi
+without having to set {\vt LD\_LIBRARY\_PATH} in the environment. 
+This is basically equivalent to setting {\vt LD\_LIBRARY\_PATH} in a
+wrapper script, but avoids the need for the script.
+
+\index{environment!XICNOMAIL}
+\index{XICNOMAIL environment variable}
+\item{\et XICNOMAIL}\\
+If the variable {\et XICNOMAIL} is set, no mail will be sent during a
+crash.  If a fatal error is encountered, a file named ``{\vt gdbout}''
+is created in the current directory, which contains a stack backtrace
+from the stack frame of the error.  Despite the name, the file is
+generated internally on all platforms, and no longer makes use of the
+{\vt gdb} program.
+ 
+By default, this file will be emailed to Whiteley Research for
+analysis.  However, the emailing can be suppressed by setting this
+variable in the environment.  The {\vt gdbout} file is produced in any
+case, and would be very useful to Whiteley Research for fixing program
+bugs.
+
+\index{environment!XTNOMAIL}
+\index{XTNOMAIL environment variable}
+\item{\et XTNOMAIL}\\
+This has the same effect as {\et XICNOMAIL} but also prevents email
+from the {\WRspice}> program.
+
+\index{environment!SPICE\_HOST}
+\index{SPICE\_HOST environment variable}
+\index{environment!SPICE\_EXEC\_DIR}
+\index{SPICE\_EXEC\_DIR environment variable}
+\index{environment!SPICE\_EXEC\_NAME}
+\index{SPICE\_EXEC\_NAME environment variable}
+\item{{\et SPICE\_HOST}, {\et SPICE\_EXEC\_DIR}, {\et SPICE\_EXEC\_NAME}}\\
+When connecting to SPICE in the {\cb run} command, the {\et
+SPICE\_HOST} variable is used to set the name of a remote SPICE host
+which provides SPICE service.  The name can optionally be followed by
+a colon and a port number, if a non-default port is used by the SPICE
+server.  The {\et SPICE\_EXEC\_DIR} environment variable provides the
+directory which contains the {\vt wrspice} executable, which may need
+to be identified to {\Xic} if it is other than {\vt /usr/local/bin}. 
+The {\et SPICE\_EXEC\_NAME} environment variable can be used to
+provide an alternate name for the {\vt wrspice} executable, if it has
+been changed.  The default is, of course, ``{\vt wrspice}''.  Each or
+these environment variables can be overridden by a corresponding
+internal variable, which can be set with the {\cb !set} command.
+
+\index{environment!IMSAVE\_PATH}
+\index{IMSAVE\_PATH environment variable}
+\item{\et IMSAVE\_PATH}\\
+The printing interface includes a driver for generating image files in
+various formats.  A few formats are handled internally, however vastly
+more are available through other software that may be available on the
+system.  The driver can usually locate these programs by looking in
+standard places, however, if the programs exist but can't be located,
+this variable can be set to a colon-separated list of directories to
+search for the executables.  This applies to Unix/Linux/OS X only. 
+See the description of the {\bf Image} print driver in \ref{hcformat}
+for more information.
+\end{description}
+
+
+% -----------------------------------------------------------------------------
+% xicpaths 031611
+\section{{\Xic} Search Paths}
+\label{searchpaths}
+\index{paths}
+\index{search paths}
+
+There are four search paths used by {\Xic}.  Search paths are lists of
+directories, which are searched in left-to-right order for files of a
+particular type.  In addition to search paths, {\Xic} provides a
+``redirect file'' mechanism for finding files, which supplements the
+search path.  If a specific file is being sought, the first file with
+matching name is used.  The format used for search path strings can be
+one of two forms:
+
+\begin{description}
+\item{{\bf Unix-shell style:}\hspace{5mm}
+  {\vt ( directory{\it 1} directory{\it 2} ...  directory{\it N} )}}\\
+The tokens are separated by white space.  If white space appears in a
+directory entry, that entry should be single or double quoted.  The
+entire path should be enclosed in parentheses.  Space between the
+parentheses and directory names is optional.
+
+Examples:
+\begin{quote}
+{\vt ( ~. )}\\
+{\vt ( /usr/local/bin "/Program Files/xic/stuff" \symbol{126}/work )}
+\end{quote}
+
+This format is the same in Windows and Unix releases, however in
+Windows, back and forward slashes are equivalent, and the drive
+specifier can appear in the entries.
+
+\item{{\bf Traditional search path:}\hspace{5mm}
+  {\vt directory{\it 1\/}:directory{\it 2\/}:...:directory{\it N}}}\\
+The entries are separated by a special character, which is a colon
+`{\vt :}' in Unix/Linux, and a semicolon `{\vt ;}' in Windows.  There
+should be no white space that is not part of a file/directory name. 
+An entry should be single or double quoted if it contains the
+separation character.  In the examples here, a colon is used, which in
+Windows must be converted to a semicolon.  The separation character is
+optional at the front or end of the path, unless it is needed to
+delimit white space that is part of an entry.
+
+Examples:
+\begin{quote}
+{\vt .}\\
+{\vt /usr/local/bin:/Program Files/xic/stuff:\symbol{126}/work}
+\end{quote}
+\end{description}
+
+In earlier {\Xic} releases, parsing was fairly loose, and in
+particular hybrids of the two formats would be accepted.  This is not
+true in the present release, due to support for white space in path
+entries.  The format used in a path string must be consistent.
+
+The following special symbols are recognized in entries:\\
+\begin{tabular}{|l|p{3.5in}|} \hline
+\vt . & The current directory\\ \hline
+\vt .. & The parent directory of the current directory\\ \hline
+\vt \symbol{126}  & The user's home directory (Unix) or the content of the
+    {\et HOME} environment variable (Windows)\\ \hline
+\vt \symbol{126}joe & The home directory of user {\vt joe} (Unix only, no
+   substitution in Windows)\\ \hline
+\end{tabular}
+
+\index{cell data path}
+\index{paths!cell data}
+The four paths are the design data path, the library path, the help
+path, and the script path.  The design data path is used to locate
+design data files, consisting of native cell, archive, and library
+files.  The library path is used to locate the technology file, device
+and model libraries, and various other configuration files.  The help
+path contains files for the help system, and the script path contains
+executable scripts and libraries which appear as commands in the {\cb
+User Menu}.
+
+These paths can be set in the technology file, the {\vt .xicinit} or
+{\vt .xicstart} initialization files, or by use of environment
+variables, or with the {\cb !set} command.  A specification in the
+{\vt .xicinit} will override specification in the environment, which
+is in turn superseded by a specification in the technology file, and
+the {\vt .xicstart} file supersedes the technology file.  Once {\Xic}
+is running, the {\cb !set} command can be used to set or examine the
+search paths.  Similar commands exist in the script interpreter
+interface function library.
+
+\index{design data path!updating}
+\index{paths!design data!updating}
+In addition, the design data path is augmented with any path preceding
+a native cell file to open in the {\cb Open} command.  By default, the
+path is added to the beginning of the present design data path.  For
+example, suppose a design hierarchy exists in the directory {\vt
+/usr/work}.  If the user enters {\vt /usr/work/maincell} in response
+to the prompt which appears after pressing the {\cb Open} button, then
+the file {\et maincell} is opened for editing, and the directory {\vt
+/usr/work} is added to the front of the design data path.  Once the
+design data path is updated, the cells in that path can be accessed by
+their base file name only.  The treatment of any path which is given
+with a native cell to open in the {\cb Open} command can be altered
+with the {\et NoReadExclusive} and {\et AddToBack} variables.
+
+The use of paths facilitates user customization of {\Xic}, particularly
+when the directories used in the system installation are not writable
+by the user.  By installing a different search path, the user can
+augment or substitute for the system default files and libraries.
+
+Below are the environment variable names and internal defaults:
+\index{environment!XIC\_SYM\_PATH}
+\index{environment!XIC\_HLP\_PATH}
+\index{environment!XIC\_LIB\_PATH}
+\index{environment!XIC\_SCR\_PATH}
+
+\begin{description}
+\item{Design Data Path}\\
+\begin{tabular}{ll}
+variable: & {\et Path}\\
+environment: & {\et XIC\_SYM\_PATH}\\
+default: & {\vt ( ~. )}
+\end{tabular}
+\item{Library Path}\\
+\begin{tabular}{ll}
+variable: & {\et LibPath}\\
+environment: & {\et XIC\_LIB\_PATH}\\
+default: & {\vt ( ~. /usr/local/xictools/xic/startup )}
+\end{tabular}
+\item{HelpPath}\\
+\begin{tabular}{ll}
+variable: & {\et HlpPath}\\
+environment: & {\et XIC\_HLP\_PATH}\\
+default: & {\vt ( /usr/local/xictools/xic/help )}
+\end{tabular}
+\item{ScriptPath}\\
+\begin{tabular}{ll}
+variable: & {\et ScriptPath}\\
+environment: & {\et XIC\_SCR\_PATH}\\
+default: & {\vt ( /usr/local/xictools/xic/scripts )}
+\end{tabular}
+\end{description}
+
+If the {\et XT\_PREFIX} environment variable is set, its value will be
+taken instead of ``{\vt /usr/local}'' in the defaults.
+
+The ``variable'' field in the table above provides the name of the
+variable, which can be altered with the {\cb !set} command to set the
+path.  Unlike other variables, these are always defined and cannot be
+unset.  The same name is also used as a keyword in the technology
+file.
+
+Files containing cell data, whether {\Xic} native, GDSII, or some
+other format, are expected to be found in a directory along the design
+data search path.  The first file found matching the name requested is
+opened.  Normally, it is desirable to include the current directory
+`.' in the design data path, otherwise files located in the current
+directory will not be found.
+
+\index{library path}
+\index{paths!library}
+The technology file, {\vt device.lib} file, {\vt model.lib} file and
+other model files are found along the library path.
+
+The search behavior of the library path is slightly different from the
+other paths, in that an attempt is made to open a file in the current
+directory before looking through the search directories.  Thus, the
+current directory `.' is always logically at the head of the library
+path.  There is no problem if `.' is also explicitly defined in the
+path.  A consequence is that startup files that exist in the current
+directory will {\it always} have precedence over files located in
+other directories.
+
+\index{help path}
+\index{help mode! path}
+\index{paths!help}
+Each directory in the help path is expected to contain help database
+files.  These files use names with an extension ``{\vt .hlp}''.  The
+directories may also contain graphics files used by the help system. 
+Changing this path allows the user to provide their own help files for
+the custom functions (scripts) which appear in the {\cb User Menu},
+for example, or to add information topics, such as about local design
+rules, to the database.
+
+\index{script path}
+\index{paths!script}
+The scripts and related files are found along the script path.  Only
+files which have the extension ``{\vt .scr}'' are taken as scripts. 
+The directories in this path may also contain script menus, with
+extension ``{\vt .scm}'', and files named ``{\vt library}'' which
+contain subroutines used by other scripts.  Whenever the script path
+is changed, a {\cb rehash} is performed, i.e., the {\cb User Menu} is
+rebuilt.
+
+
+% -----------------------------------------------------------------------------
+% xt\_redirect 031611
+\section{Redirect Files}
+\index{redirect files}
+\index{xt\_redirect file}
+Redirect files are an adjunct to the search path mechanism used by
+{\Xic} for finding files.  Redirect files are files created by the
+user, that tell {\Xic} about additional locations to search for input
+files.
+
+Redirect files {\bf must} be named ``{\vt xt\_redirect}'', and are
+text files with the following format and properties:
+
+\begin{itemize}
+\item{Lines that start with `{\vt \#}' or contain only white space
+  are ignored.}
+\item{Each line otherwise contains one or more directory paths,
+  separated by white space.  If a directory path contains white
+  space or other special characters, it should be double-quoted
+  (i.e., as {\vt "..."}).}
+\item{Multiple directories can be provided on a single line, or in
+  different lines.}
+\item{Paths that are not rooted are taken as relative to the
+  directory containing the redirect file.}
+\item{Paths that do not point to an existing directory are silently
+  ignored.}
+\end{itemize}
+
+When searching a directory, the directories found in a redirect file
+are also searched, in order, after the current directory.  The search
+is recursive, so that arbitrarily deep hierarchies can be searched via
+the redirect file mechanism.
+
+With redirect files, only the top directory of a hierarchy needs to be
+included in the search path (or given explicitly).  This can be very
+convenient for organizing collections of native cell files, for
+example.
+
+The {\cb Path Files Listing} panel from the {\cb File Menu} will list
+files found through the redirect files on separate pages for each
+redirected directory, just as for the directories contained in the
+search path.
+
+
+% -----------------------------------------------------------------------------
+% initfiles 092615
+\section{Initialization Files}
+\index{initialization files}
+
+When {\Xic} is started, a number of files are read.  This section
+describes these files, and the order of access.  None or these files
+is required to exist.  In addition, there are a few more files used to
+maintain state for certain startup operations, described in the next
+section.
+
+On installation, a default configuration is provided for {\Xic}.  The
+user will need to reconfigure {\Xic} for their requirements.  This
+reconfiguration is accomplished primarily by editing a custom
+technology file, which {\Xic} reads on startup, and also by possibly
+setting some of the environment variables before starting {\Xic}. 
+These variables can be set in the user's shell startup file, as
+appropriate for the user's operating system. 
+
+The default technology file, plus several other files needed, are
+placed in a system-wide location on installation, usually {\vt
+/usr/local/xictools/xic/startup}, which is included in library
+path.  This directory is typically set to be read-only, thus the user
+must establish an alternative location in their own directory tree for
+customized startup files, and add this to the library path to the left
+of or instead of the default location.  The default technology file
+provided with {\Xic} is for generic MOSIS scalable CMOS.
+
+\begin{description}
+\index{license.host file}
+\item{{\vt license.host} file}\\
+When using a license server on a remote machine, it is necessary to
+provide the name of this machine or {\Xic} can not run.  One way to do
+this is to create a {\vt license.host} file in the startup directory,
+e.g. {\vt /usr/local/xictools/xic/startup}.  The {\vt
+license.host} file consists of a single line of text, giving the host
+name of the license server machine.  The host name can optionally be
+suffixed with ``{\vt :}{\it port\/}'', where {\it port} is the port
+number in use by the license server.  This is required if for some
+reason the license server is not running on the default port.
+
+\item{X resource file}\\
+As the program starts and the graphics is initialized, the X window
+system may access various files for resource resetting.  See the X
+documentation for details.  The attribute (non-layer) colors used in
+{\Xic} can be set through the resource mechanism (see
+\ref{resourcefile}), but one must take care that these are not reset
+in the technology file.
+
+\index{.xicinit file}
+\item{{\vt .xicinit} file}\\
+Next, an ``{\vt .xicinit}'' initialization script, if present, will be
+read and executed.  The user may create this file, it is not present
+by default.  The initialization script uses exactly the same format as
+other script files, as are normally found along the script search
+path.  The script can set user preferences or otherwise modify {\Xic}. 
+Since this file is read before other files, it can be used to set the
+search paths used to find other startup files, in particular the
+technology file.  The base name for the script is ``{\vt .xicinit}'',
+and the same extension as the technology files can be present.
+
+If, for example, {\Xic} is started with an extension ``{\vt .ext}''
+({\et -Text} given on the command line), {\Xic} will look for files
+{\vt ./.xicinit.ext} and {\vt \$HOME/.xicinit.ext}, then {\vt
+./.xicinit} and {\vt \$HOME/.xicinit}, in that order, where ``{\vt
+\$HOME}'' indicates the user's home directory.  The first file found
+will be executed.  If {\Xic} is started without a technology file
+extension, only the script files without an extension will be
+executed.
+
+\index{technology file}
+\item{Technology file}\\
+If a technology file is being used, {\Xic} will read the file at this
+point, before reading the user's script and macro files (below).
+
+The technology file contains all of the information {\Xic} needs for
+physical and electrical layout, extraction, and design rule checking,
+plus information on hard copy support, printer commands, and the like. 
+It also provides values for a number of presentation attributes
+including the colors used on-screen.
+
+The {\cb Save Tech} button in the {\cb Attributes Menu} creates an
+updated copy of the technology file in the current directory.  Most of
+the changes to an existing technology file can be performed from
+within {\Xic}, though some text editing may be required on occasion.
+
+\index{.xicstart file}
+\item{{\vt .xicstart} file}\\
+Next, an initialization script, if present, will be read and executed. 
+This file can be created by the user, is is not present by default. 
+The initialization script uses exactly the same format as other script
+files, as are normally found along the script search path.  The script
+can set user preferences or otherwise modify {\Xic}, and, unlike the
+similar ``{\vt .xicinit}'' file, performs these commands after the
+technology file has been read.  The base name for the script is ``{\vt
+.xicstart}'', and the same extension as the technology files can be
+present.
+
+If, for example, {\Xic} is started with an extension ``{\vt .ext}''
+({\vt -Text} given on the command line), {\Xic} will look for the
+files {\vt ./.xicstart.ext} and {\vt \$HOME/.xicstart.ext}, and then
+{\vt ./.xicstart} and {\vt \$HOME/.xicstart}, in that order, where
+``{\vt \$HOME}'' indicates the user's home directory.  The first file
+found will be executed.  If {\Xic} is started without a technology
+file extension, only the script files without an extension will be
+executed.
+
+\index{xic\_stipples file}
+\item{{\vt xic\_stipples} file}\\
+The {\vt xic\_stipples} file is read, which initializes the default
+fill pattern registers in the fill pattern editor in the {\cb
+Attributes Menu}.  Like the device and model libraries, the technology
+file, font files, etc., the library search path is used to locate this
+file.  A default stipple file is provided, and new files can be
+obtained from the {\cb Dump Defs} button in the {\cb Fill Pattern
+Editor}.
+
+\index{.xicmacros file}
+\item{{\vt .xicmacros} file}\\
+Next, {\Xic} will attempt to read a file with the base name ``{\vt
+.xicmacros}'', and the same extension as the technology files can be
+present.  This file does not exist by default, but is created if the
+user defines macro definitions which are mapped to key presses, as
+generated by the {\cb Key Map} command in the {\cb Attributes Menu}. 
+The {\vt .xicmacros} file is rarely if ever directly edited by the
+user.
+
+If, for example, {\Xic} is started with an extension ``{\vt .ext}''
+({\et -Text} given on the command line), {\Xic} will look for files
+{\vt ./.xicmacros.ext} and {\vt \$HOME/.xicmacros.ext}, then {\vt
+./.xicmacros} and {\vt \$HOME/.xicmacros}, in that order, where ``{\vt
+\$HOME}'' indicates the user's home directory.  The first file found
+will be read.  If {\Xic} is started without a technology file
+extension, only the script files without an extension will be read. 
+
+\index{xic\_font file}
+\item{{\vt .xic\_font} file}\\
+If a file named ``xic\_font'' is found in the library search path, the
+file is read to obtain the text font used for on-screen label text. 
+This file is created by the user from the {\cb Dump Vector Font}
+button in the {\cb Font Selection} panel, and is subsequently editing
+to the user's requirements.  The default font is hard-coded
+internally.
+
+\index{xic\_logofont file}
+\item{{\vt .xic\_logofont} file}\\
+If a file named ``xic\_logofont'' is found in the library search path,
+the file is read to obtain the text font used for the {\cb logo}
+(physical text) command.  This file is created by the user from the
+{\cb Dump Vector Font} button in the {\cb Logo Font Setup} panel, and
+is subsequently editing to the user's requirements.  The default font
+is hard-coded internally.
+
+\index{xic\_mesg file}
+\item{{\vt xic\_mesg} file}\\
+This is a text file providing the legal disclaimer.  It once supplied
+text for the {\cb About} window, but is no longer used for that
+purpose.
+
+\item{Device Libraries}\\
+As needed, {\Xic} will also read the device library ({\vt device.lib})
+file, search and map the device models and help files, and open the
+first command line file for editing.  The device library file supplies
+the device templates used in electrical mode.  The model files provide
+SPICE models used for generating SPICE output.  These files are read
+the first time access is required.  Defaults are provided for these
+files, but the user will very likely need custom device and model
+library files.
+
+\index{.wrpasswd file}
+\item{{\vt .wrpasswd} file}
+The {\vt .wrpasswd} file is created in the user's home directory with
+the {\cb !passwd} command.  It is an encrypted file that contains the
+user name and password to the distribution repository.  The user name
+and password are provided by Whiteley Research upon program or
+maintenance extension purchase, and are required to gain access to the
+distribution site for program updates.  This file is common to all
+Whiteley Research products.
+
+If the file exists, {\Xic} will check for program updates on startup,
+and alert the user if an update is available.  This is also required
+to use the {\cb !update} command.  The user will also be alerted if
+the password has expired.
+\end{description}
+
+
+% -----------------------------------------------------------------------------
+% initops 092615
+\section{Initial Operations}
+
+When {\Xic} starts, the following operations are generally
+performed.
+
+\begin{enumerate}
+\item{If configured, the program will check for the availability of
+software updates.  A pop-up message will notify the user if an update
+is available.  These can be downloaded and installed with the {\cb
+!update} command.  The {\cb !passwd} command is used to enable this
+feature, The username and password to the Whiteley Research software
+repository should be given, and the command will create a {\vt
+.wrpasswd} file in the user's home directory.  This will enable update
+checking in both {\Xic} and {\WRspice}.}
+
+\item{The program will check the {\vt wrcad.com} web site for a
+message file.  If a file is found, and the user has not seen it, the
+message text will be shown in a pop-up window.  This is a means of
+providing users with bug reports or other information which could be
+important.
+
+The record of the message is saved in the {\vt .wr\_cache}
+directory in the user's home directory.  There are two files:
+\begin{description}
+\item{\vt xic\_current\_mesg}\\
+The is the current message text.
+\item{\vt xic\_current\_mesg\_digest}\\
+This is a checksum of the current message.
+\end{description}
+
+The program will compare the checksum of the message to the checksum
+on {\vt wrcad.com}.  If a message is found at {\vt wrcad.com}, and
+there is no checksum or a different checksum in the user's home
+directory, the message is downloaded and shown, and the user's files
+are updated.  Thus, the user will only see the message once, but can
+find a copy of the message in their {\vt .wr\_cache} directory.  Note
+that there is only one message file, future messages overwrite the
+files.}
+
+\item{If a new {\Xic} release is run for the first time, the release
+notes will appear in a pop-up window, as if the {\cb Notes} button in
+the {\cb Help} menu was pressed.  There is a file in the user's {\vt
+.wr\_cache} directory named {\vt xic\_current\_release} that contains
+a release number.  If, when {\Xic} starts, this file is missing or the
+release number is not current, {\Xic} will show the release notes and
+update the file.  If the release numbers match, there is no action.}
+\end{enumerate}
+
+If the {\et NoCheckUpdate} variable is set (from an initialization
+file) then there will be no communications with {\vt wrcad.com}, so
+the checking for updates and a message will be skipped.  This should
+be set if the user doesn't have internet access, for example, to avoid
+the delays caused by lack of access and subsequent connection timeout.
+
+
+% -----------------------------------------------------------------------------
+% logfiles 051115
+\section{Log Files and Error Reporting}
+
+There are several methods by which error and warning messages are
+presented to the user.  In many commands, particularly those that use
+input from the prompt line, the prompt line is used to print messages
+informing the user of incorrect input, and general command status. 
+These messages are intended to direct the user toward correct usage of
+the command.
+
+More serious errors are reported in a pop-up window.  There are two
+types of messages:  those that are logged, and those that aren't.  If
+a message is logged, it is assigned a unique sequence number, and is
+saved in the {\vt xic\_error.log} file discussed below.
+
+The same pop-up window is generally used for both types of message. 
+Most error and warning messages are logged.  A few messages are
+unlogged, these generally report an immediate command failure due to
+some condition such as lack of a current cell, or something such as a
+help keyword not found message which is probably not worth logging.
+
+The text window presenting an unlogged message will contain only that
+message.  One of the disadvantages of unlogged messages is if several
+are emitted, only the most recent is shown in the window, the others
+are lost.  This is unlikely to happen in current {\Xic} releases.
+
+The text window will display the sequence number and text of an
+emitted logged message, and some number (currently hard-coded as 20)
+of the previously emitted messages.  One can scroll through the list
+to find previously emitted messages, which unlike in the unlogged case
+still exist.
+
+The error message window contains two buttons in addition to the
+{\cb Dismiss} button.
+
+\begin{description}
+\item{\cb Save Text}\\
+This allows the user to save the text shown in the pop-up to a file. 
+This may be useful for documenting errors seen for bug reporting, and
+for other purposes.
+
+\item{\cb Show Error Log}\\
+This button will bring up a file browser window loaded with the {\vt
+xic\_error.log} file.  This allows the user to browse all errors, in
+sequence.  This can be used to revisit old errors that have scrolled
+off the end of the list in the pop-up error window.
+\end{description}
+
+\subsection{Log Files}
+\index{logfiles}
+\label{logfiles}
+
+While {\Xic} is running, various log files are produced.  These files
+contain a record of operations and errors, which may be useful for
+debugging purposes.  Ordinarily, though, many of the log files are
+rarely used, and these files are stored in a temporary directory which
+is removed when {\Xic} exits normally.  Other log files, such as DRC
+error reports, are saved in the current directory and are not removed
+on exit.
+
+Below is a listing of the log files that are saved in a temporary
+directory.  The files in this directory can be browsed from within
+{\Xic} with the {\cb Log Files} button in the {\cb Help Menu}.  In
+addition, a button in the error pop-up allows the {\vt xic\_error.log}
+to be viewed.
+
+The {\cb Logging Options} panel from the {\cb Logging} button in the
+{\cb Help Menu} selects whether or not certain operations are logged,
+such as those done during extraction.  This will optionally produce
+additional log files not listed below.
+
+\begin{description}
+\item{\vt xic\_run.log}\\
+\index{xic\_run.log file}
+This file contains a listing of key press/release and mouse button
+press/release events, in a format which can be understood as script
+instructions.  Although presently this feature in incomplete, the
+instructions can be used to ``play back'' the current session by
+executing the log file as a script.  The file is limited in size to
+about 100Kb, at which point the file is given a ``{\vt .0}'' extension
+and a new file is started.  If {\Xic} should ever crash or otherwise
+misbehave, the current {\vt xic\_run.log} should be included with the
+bug report sent to Whiteley Research.  This will greatly help in
+tracking down the problem.
+    
+\item{\vt xic\_error.log}\\
+\index{xic\_error.log file}
+This file contains a list of error messages generated during the
+session.  The previous 20 errors are displayed in the error pop-up
+window in {\Xic}, but the {\vt xic\_error.log} file retains a complete
+record.  This file may also be of use in diagnosing problems within
+{\Xic}, and should be included with the bug report if it contains an
+entry relevant to the problem.
+
+\item{\vt xic\_mem\_errors.log}\\
+\index{xic\_mem\_errors.log file}
+This file, used under Unix/Linux only, is generated or appended to if
+memory corruption is detected.  If this file exists when {\Xic} exits,
+it will be emailed to Whiteley Research (by default).  However, if
+either {\et XICNOMAIL} or {\et XTNOMAIL} is set in the environment,
+the file will instead be moved to the current directory, and a message
+will be printed requesting that the user mail it to Whiteley Research. 
+Memory corruption should never occur, and this file contains stack
+trace information that will help identify the problem.
+
+\item\parbox[b]{4in}{\vt
+read\_cgx.log\\
+read\_cif.log\\
+read\_gds.log\\
+read\_oas.log\\
+read\_native.log}\\
+These files contain messages emitted when a file is read into {\Xic}
+for editing.  The file name generated depends on the type of file read.
+
+\item\parbox[b]{4in}{\vt
+write\_cgx.log\\
+write\_cif.log\\
+write\_gds.log\\
+write\_oas.log\\
+write\_native.log}\\
+These files contain messages emitted when a file is written to disk.
+The file name generated depends on the type of file written.
+
+\item\parbox[b]{4in}{\vt
+convert\_cgx.log\\
+convert\_cif.log\\
+convert\_gds.log\\
+convert\_oas.log\\
+convert\_native.log}\\
+These files contain messages emitted when a file is converted directly
+to another format through the commands in the {\cb Convert Menu}.
+\end{description}
+
+The size of the log files that grow progressively as {\Xic} is running
+are size-limited to about 100Kb.  If the file exceeds this size, the
+file is moved to the same name with a ``{\vt .0}'' extension, and the
+original log file is reopened.  Thus, a maximum of 200Kb per log of
+information is retained.
+
+The environment variable {\et XIC\_LOGDIR} can be set to an existing
+directory that will be used to store the log files.  The log files
+will be placed in a directory
+\begin{quote}
+{\it logdir}/{\vt xic}.{\it pid}
+\end{quote}
+where {\it logdir} is the first defined of the environment variables
+{\et XIC\_LOGDIR}, {\et XIC\_TMP\_DIR}, {\et TMPDIR}, or defaults to
+``{\et /tmp}''.  The {\it pid} is the process id of the {\Xic}
+process.  This directory is created when {\Xic} starts, and is deleted
+when {\Xic} terminates normally.  If {\Xic} terminates abnormally, the
+log files will still be around for inspection.  If a user needs to
+look at a log file after running {\Xic}, the file must be copied to
+another location before exiting {\Xic}.  The {\cb !logfiles} command
+can be used to read logfiles from within {\Xic}.
+
+This mechanism lets multiple copies of {\Xic} run on the same machine
+from any directory, and minimizes the pollution of the file system and
+in particular the current directory with a lot of generally unused log
+files.
+
+\subsection{Abnormal Termination Logging}
+\index{panic}
+\index{crash}
+If {\Xic} experiences an internal memory referencing error, {\Xic}
+will terminate.  Such occurrences should be rare to nonexistent,
+however this is the ideal and generally not the reality.  During a
+``panic'', the following will happen:
+
+\begin{itemize}
+\item{A subdirectory will be created in the current directory, with
+the name ``{\vt panic.}{\it pid\/}'', where {\it pid} is the process
+id number of the running program.}
+
+\item{All cells in memory that have the modified flag set will be
+written into this directory.  The files will be in the original file
+format.  Cells created in {\Xic} and never saved will be saved in
+native format.  Although it can not be guaranteed that these files are
+not corrupted by whatever error occurred, generally they are clean and
+accurately reflect unsaved work.  After a thorough check, they can be
+copied back to the original file name.}
+
+\item{A file named ``{\vt xic\_panic.log}'' is created in the current
+directory.  This contains the log messages emitted while the modified
+cells are being dumped, and other information.}
+
+\item{The log files that are normally removed after normal exit are
+retained.  The location of the log files is given in the {\vt
+xic\_panic.log} file.}
+
+\item{Unless either of the environment variables {\et XICNOMAIL} or
+{\et XTNOMAIL} is set, a stack trace is emailed to Whiteley Research,
+which will be analyzed to resolve the cause of the fault, and if
+possible the problem will be fixed in the next {\Xic} release.  The
+file that is emailed is named ``{\vt gdbout}''.  The file will be
+created in the current directory.}
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+% plugins 012813
+\section{Plug-Ins}
+\index{plug-ins}
+A ``plug-in'' is a software library that is read into a running
+program, that provides additional features or capability.  Within
+{\Xic}, plug-ins provide optional support for
+\ifoa
+OpenAccess, and
+\fi
+the Python and Tck/Tk languages.  The plug-in provides an interface to
+external libraries that may or not be present on the user's computer. 
+If the needed libraries are present, the plug-in will be loaded into
+{\Xic} on program startup, and a message, such as
+\begin{quote}
+``{\vt Using Tcl/Tk (tcltk.so)}''
+\end{quote}
+will appear in the console among the text generated on program
+startup.  If the needed libraries are not found, the plug-in is not
+loaded, but {\Xic} will run normally except that the plug-in's
+features will be absent.
+
+At present, plug-ins are supported on all platforms except for
+Microsoft Windows.  Windows does not provide the type of shared
+library technology needed for plug-ins.  Although a similar capability
+could be instituted, there are many substantial issues and it is not
+clear if it is worth the development effort.
+
+Plug-ins are distributed as shared library code, and are found in the
+{\vt plugins} sub-directory in the distribution area, i.e.,
+\begin{quote}
+{\it prefix\/}{\vt /xictools/xic/plugins}
+\end{quote}
+The plug-in files are version-specific, and will work {\cb only} with
+the program from the same distribution file.  Of course, {\Xic} needs
+to be able to find its startup files for the plug-ins to be available. 
+If {\Xic} is not installed in the standard location, the {\et
+XT\_PREFIX} environment variable should be set to enable {\Xic} to
+find its startup files.
+
+Normally, if a plug-in is not loaded, there is no message.  If,
+however, the {\et XIC\_PLUGIN\_DBG} environment variable is set,
+diagnostic messages will be printed.  These can help identify why the
+plug-in is not being loaded, and are instrumental in tracking down
+problems when the user expects success.
+
+Lack of success loading a plug-in and generally due to the inability
+of the plug-in code to find the shared libraries needed on the host
+computer.  Unless the library is ``standard'' on the system, which may
+be true of Python, then it will be necessary to use the {\et
+LD\_LIBRARY\_PATH} environment variable to specify where to look for
+the libraries.  The libraries much match the address size (32 or 64
+bit) of the running {\Xic} program.
+
+\ifoa
+% -----------------------------------------------------------------------------
+% oaplugin 040216
+\section{OpenAccess Support}
+\label{oaplugin}
+\index{OpenAccess}
+
+{\bf This interface is presently not available under Microsoft Windows.}
+
+OpenAccess is an open-source database for CAD/EDA data.  It is used
+by Cadence Virtuoso 6.{\it x\/}, and by many other tools.  It provides
+a commonality among tools from different vendors, and is intended to
+facilitate seamless integration of tools from different vendors into a
+process flow.  OpenAccess is distributed by Si2 ({\vt www.si2.org}). 
+Source code and binary distributions are available for a number of
+operating systems, to registered users and coalition members.
+
+{\Xic} can connect to an OpenAccess (OA) database through a plug-in,
+which is supplied with all {\Xic} releases for other than Microsoft
+Windows, on which there is no OA support.  Since there is no default
+location for OA, the user must set the {\vt XIC\_LIBRARY\_PATH} or the
+{\vt LD\_LIBRARY\_PATH} variable to include the library location in
+the search path during program loading.  This is most conveniently
+done in the user's shell startup script.
+
+Presently, the plug-in is compiled with the OpenAccess releases below. 
+The plug-in can work with libraries from newer OpenAccess releases,
+but not with libraries from an older release.
+ 
+\begin{tabular}{ll}
+\bf Distribution & \bf OpenAccess Release\\
+LinuxRHEL5 (32 and 64 bit) & 22.04.054\\
+all others & 22.04.064\\
+\end{tabular}
+ 
+These are known to be compatible will OpenAccess from Ciranova PyCell
+Studio release 4.7.1 and later, and Cadence Virtuoso 6.1.4 and later. 
+This includes Virtuoso 6.1.7 which jumps to OpenAccess API level 5. 
+The existing plugin can handle API levels 4 and 5.
+
+There are at least three ways to obtain OpenAccess.
+\begin{enumerate}
+\item{From a Cadence Virtuoso installation on the same computer.}
+\item{From a Ciranova (now Synopsys) PyCell Studio portable-pcell
+  installation on the same computer.}
+\item{From an OpenAccess distribution from the Si2 organization.}
+\end{enumerate}
+
+The OpenAccess plug-in is provided with OS X releases, though
+(regrettably) Ciranova and Cadence do not support the platform.  Those
+inclined can get OpenAccess from Si2 and build it on OS X, using
+patches available from the Whiteley Research web site.  Unlike
+Windows, OS X is inherently a first-class CAD platform, too bad the
+big guys don't support it.  The patch also ports OpenAccess to
+FreeBSD, and improves support for recent Linux releases.
+
+Probably, the main interest in using OA is for limited compatibility
+with Cadence Virtuoso.  There are two levels here.  The first level is
+compatibility with the OA system.  This is basically complete, as any
+{\Xic} design can be saved to and read from OA without data loss or
+change.  The second level is compatibility with the conventions and
+methods used in the Virtuoso product, much of which is proprietary or
+undocumented.  This is a much tougher nut to crack.  Presently, there
+is fairly reasonable capability of taking Virtuoso designs into
+{\Xic}, but the reverse is not true.  Presently, physical (layout
+view) data from {\Xic} can be read by Virtuoso and should appear
+correct, however there is no netlist information or connection to a
+schematic.  It is as if the layout view was read from a GDSII file. 
+Schematic and schematic symbol views from {\Xic} can not be read as
+anything but garbage by Virtuoso.  There are plans for a data
+translation stage in the future to possibly adapt {\Xic} schematics to
+Virtuoso format.
+
+When the OpenAccess plug-in is loaded, there are several changes to
+{\Xic}.
+
+\begin{enumerate}
+\item{There is an {\cb OpenAccess Libs} entry added to the {\cb File
+Menu}.  Pressing this will bring up the {\cb OpenAccess Libraries}
+panel, which provides access to the existing OpenAccess design data.}
+
+\item{A number of ``bang'' commands (text-mode commands that start
+with '!') are made available.  These commands are typed into the
+prompt line to start.  Much of the functionality of these commands is
+also available graphically in the panel.
+\begin{quote}
+{\cb !oaversion}\\
+{\cb !oanewlib}\\
+{\cb !oabrand}\\
+{\cb !oatech}\\
+{\cb !oasave}\\
+{\cb !oaload}\\
+{\cb !oadelete}
+\end{quote}
+}
+\end{enumerate}
+
+In addition, the standard commands for reading and writing design data
+become operable with OpenAccess data.  When specifying a cell, one
+provides two words:  the OpenAccess library name and the cell name.
+
+It is not possible to write to an OA library unless the library has
+been ``branded'' by {\Xic}.  By default, libraries created in {\Xic}
+are writable from {\Xic}, libraries created by other tools are not. 
+The read-only status from {\Xic} of any library can be set from the
+{\cb OpenAccess Libraries} panel, or with the {\cb !oabrand} command.
+
+\subsection{Representing {\Xic} Cells in OpenAccess}
+
+When an {\Xic} cell is saved in OpenAccess, up to three views may be
+created.  The user has specified a library name where the views will
+be saved, and of course the cell name.  Some write commands allow the
+user to save a cell under a different name.
+
+If the cell contains physical data, this will be saved in a view named
+``{\vt layout}'' of OpenAccess view type ``{\vt maskLayout}''.  If the
+cell contains electrical data, the schematic will be saved in a view
+named ``{\vt schematic}'' of view type ``{\vt schematic}''.  If a
+symbolic representation has been defined, this will be saved in a view
+named ``{\vt symbol}'' of OpenAccess view type ``{\vt
+schematicSymbol}''.  This latter view can only exist, as part of an
+{\Xic} cell representation, if a schematic view also exists.  Reading
+or writing an {\Xic} cell will involving translating each of these
+views that exist.
+
+This group of properties applies to the OpenAccess interface.
+
+\begin{description}
+\index{properties!stdvia}
+\index{stdvia property}
+\item{\et stdvia} property, number 7160\\
+This property is applied to standard via sub-masters and instances,
+and is used by the translator to convert OpenAccess standard vias to
+{\Xic} standard vias, and the reverse.  The property is used in {\Xic}
+to identify and specify standard via instances and sub-masters.  The
+format of the property string is described in \ref{stdviaprp}.
+
+\index{properties!oa\_cstmvia}
+\index{oa\_cstmvia property}
+\item{\et oa\_cstmvia} property, number 7161\\
+This property is applied by the OpenAccess reader to master cells that
+represent a custom via.  In {\Xic}, vias are cells, they have no
+unique type as in OpenAccess.  The string format consists of the cell
+identifier followed by parameter specifications.  The cell identifier
+has the form
+\begin{quote}
+$<${\it libname\/}$><${\it cellname\/}$><${\it viewname\/}$>$
+\end{quote}
+This is followed by a space-separated parameter specification string
+in the same format as the {\et pc\_params} property.  A custom via
+master is basically a pcell sub-master.
+
+When written back to OpenAccess, cells with this property will be
+ignored.  A sub-master for the custom via will be created within
+OpenAccess when needed.
+
+\index{properties!oa\_orig}
+\index{oa\_orig property}
+\item{\et oa\_orig} property, number 7183\\
+This property is used transiently when loading OpenAccess cell data
+into {\Xic}.  If is applied to cells, and removed when reading
+completes.  If an instance is read before the corresponding cell
+definition, a dummy {\Xic} cell descriptor is created and given this
+property.  The property string contains the library and cell names,
+separated by a forward slash (`{\vt /}') character.  Using this
+information, the cell is read later.
+\end{description}
+\fi
+
+% -----------------------------------------------------------------------------
+% pyplugin 032017
+\section{Python Support}
+\label{pyplugin}
+\index{Python}
+
+{\bf This interface is presently not available under Microsoft Windows.}
+
+The Python ({\vt www.python.org}) scripting language is a powerful,
+versatile language enjoying much popularity.  In particular, it has
+become the language of choice for writing portable parameterized
+cells, as used in the PyCell Studio project from Ciranova, Inc.  (now
+Synopsys).
+\ifoa
+This download provides the essentials for creating portable pcells,
+using the Python language, and OpenAccess.  Whiteley Research strongly
+favors this approach, and will integrate Ciranova standards as tightly
+as possible.
+\fi
+
+Python is made available, when Python-2.6 or newer is found on the
+user's computer, via the Python plug-in.  Red Hat Enterprise Linux 6
+and 7 provide a compatible native Python.  Presently, only Python
+release 2.6 is supported on Red Hat Enterprise Linux 5, so
+installation of an updated package is required on that operating
+system.
+
+\ifoa
+The Ciranova PCell Studio provides Python 2.6, as well as OpenAccess. 
+If using Ciranova, the Ciranova-supplied Python should be used.
+\fi
+
+\begin{description}
+\item{Red Hat Enterprise Linux 6,7}\\
+This supplies a native Python-2.6/2.7, which will work with the
+plug-in without any configuration.
+\ifoa
+Unfortunately, this is not compatible with the Python-2.6 provided by
+Ciranova.  {\Xic} can use either one.  The Python-2.6 provided by
+Ciranova was built with different setup flags for handling UTF8 text
+than the stock Python-2.6.
+\fi
+
+\item{Red Hat Enterprise Linux 5}\\
+The operating system provides Python-2.4, which is not supported.  The
+Ciranova PyCell Studio provides Python-2.6, which is one source for a
+compatible Python.  Another is to install the {\vt python26} extension
+package.  Using the {\cb Package Manager} or {\vt yum}, install
+\begin{quote}
+{\vt epel-release-5-4.noarch}.
+\end{quote}
+This will add additional repositories.  Then, in the {\vt epel}
+repository, find and install a release like ``{\vt
+python26-2.6.8-2.el5.x86\_64}''.
+\end{description}
+
+To use a non-default Python such as that supplied by Ciranova in the
+PyCell Studio, one will need to set the {\et LD\_LIBRARY\_PATH}
+variable to include the alternative shared library location.
+\ifoa
+This will happen automatically if Ciranova's setup procedure is
+followed before starting {\Xic} (see \ref{ciranova}).
+\fi
+
+Failure to load the Python plug-in is by default silent.  If the
+environment variable {\vt XIC\_PLUGIN\_DBG} is set, diagnostics and
+error messages will be printed in the console when attempting to load
+plug-ins at program startup.
+
+When the Python plug-in is loaded, {\Xic} is able to execute Python
+scripts.  This includes stand-alone scripts, and scripts that are used
+in parameterized cells.  Note that Ciranova PyCells, which are also
+Python-based, are supported via OpenAccess, and are independent of
+Python support in {\Xic}.  However, future plans are to support
+PyCells natively in {\Xic}.  {\Xic} is presently able to support the
+Ciranova protocols for stretch handles and abutment natively.
+
+{\bf This information is preliminary, and may change.}
+
+The entire library of native script functions are callable from
+Python.  However, at this point many of the more complicated data
+types found in the native function library are unsupported.  There are
+two ways to call a native function from Python:
+
+\begin{quote}
+{\vt xic.}{\it native\_func\/}{\vt (}{\it args\/}, ...{\vt )}\\
+{\vt xic.eval}{\vt ("}{\it native\_func\/}{\vt ",} {\it args\/}, {\vt ...)}
+\end{quote}
+
+The choice of style is up to the user, the first is probably slightly
+more efficient and is recommended.
+
+The Python script must include some initialization lines in order to
+use the {\Xic} interface.  As a simple example, the script below will
+draw two boxes in the current cell, using the current layer.
+
+\begin{quote}\vt
+import xic\\
+import xicerr\\
+import sys\\
+sys.stderr = xicerr\\
+xic.Box(2.0, 2.0, 6.0, 7.0)\\
+xic.eval("Box", 1.0, 1.0, 5.0, 6.0)\\
+xic.Commit()\\
+\end{quote}
+
+The first line is mandatory for using any native script functions.  It
+loads the {\Xic} interface module.
+
+The next three lines redirect Python error messages to the {\Xic}
+error reporting system.  These are optional, if not included Python
+messages will be printed on the console window.
+
+The final three lines call functions from the native script library. 
+The first two of these lines illustrate calling the {\vt Box} function
+using the two syntax styles.  The final line calls the {\vt Commit}
+function, which registers the change with the undo system, among other
+things.
+
+The first four lines are implicitly added during pcell evaluation,
+thus no not have to be included in a Python pcell script (see
+\ref{pcells}).
+
+Presently, datatypes translate in the following manner.  If an
+un-handled data type is encountered, the script will terminate with a
+fatal error.
+
+\begin{tabular}{|l|p{4in}|} \hline
+\bf {\Xic} type & Python type\\ \hline
+string & String.\\ \hline
+scalar & Float.\\ \hline
+array & List of float.\\ \hline
+zlist & List of ``{\vt zlist}'' followed by lists of
+  six integers (LL, LR, YL, UL, UR, YU in internal units).\\ \hline
+handle & A list containing ``{\vt xic\_handle}'',
+  followed by the handle integer value.  For stringlist handles only,
+  the strings follow.\\ \hline
+\end{tabular}
+
+When these forms are passed back to {\Xic} functions, they are
+reverted to the {\Xic} data type.  Note that handles can be passed
+through Python, but except for stringlist handles they are useless in
+Python at present.
+
+When the Python plug-in is loaded, the {\cb !py} command is available. 
+This command will execute a script file containing Python commands,
+the path to which is given as the argument.  Also, the following
+script functions are available:
+
+\begin{tabular}{ll}
+{\vt RunPython} & Run a Python script.\\
+{\vt RunPythonModFunc} & Execute a Python module function.\\
+{\vt ResetPython} & Reset the Python interpreter.\\
+\end{tabular}
+
+
+% -----------------------------------------------------------------------------
+% tclplugin 022713
+\section{Tcl/Tk Support}
+\label{tcltk}
+\index{Tcl}
+\index{TK}
+
+{\bf This interface is presently not available under Microsoft Windows.}
+
+{\Xic} provides a plug-in interface to Tcl/Tk.  Tcl (Tool control
+language) is a popular open source scripting language, and Tk is a
+graphical package addition.  The language syntax is provided in
+documentation supplied with Tcl/Tk, and is described in several books.
+
+Since this capability is dynamically loaded, {\Xic} can use this
+capability if it has been installed, but does not require the
+installation.  Support is provided for Tcl, with and without Tk.
+
+\index{LD\_LIBRARY\_PATH environment variable}
+If Tcl/Tk have been installed via a standard distribution file on the
+system, which is common for Linux, the plug-in should be able to
+locate the shared libraries automatically.  If the installation is
+non-standard, the user may need to inform the system dynamic linker of
+the shared library location.  This is generally accomplished by
+setting the {\et LD\_LIBRARY\_PATH} variable in the environment,
+before running {\Xic}.  This would normally be done in the user's
+shell startup file.
+
+There are two text-mode commands that can be used to run a Tcl/Tk
+script.
+
+\begin{description}
+\item{\cb !tcl}\\
+This command will exist only if the Tcl language support plug-in is
+loaded, which will occur on program startup if the Tcl shared
+libraries are found.  The script should contain only Tcl commands, not
+Tk.
+
+\item{\cb !tk}\\
+This command will exist only if the Tcl and Tk language support
+plug-in is loaded, which will occur on program startup if both Tcl and
+Tk shared libraries are found.  The script may contain any combination
+of Tcl and Tk commands.
+\end{description}
+
+In either case, the first argument is a path to a file containing the
+script body.  Additional arguments are taken as arguments to the
+script.  The script will be executed as if by the {\et wish} shell
+supplied with Tcl/Tk.
+
+The startup file, which can be used to set defaults, is named ``{\vt
+.xic-wishrc}'' in the user's home directory.  The contents is
+analogous to the {\vt .wishrc} file normally used with Tcl/Tk.  The
+user must create this file if needed.
+
+All of the {\Xic} script functions are exported to Tcl/Tk and can be
+called by name from a Tcl/Tl script.  However, only the basic data
+types are supported.  There is also a function named ``{\vt xic}''
+which can be used in the following manner:
+\begin{quote}
+{\vt xic} {\it function arguments...}
+\end{quote}
+
+The function {\vt xic} is a Tcl function which loads the interface
+function or user-defined function given in the first argument (a
+string).  User defined functions can be accessed if they are already
+known to {\Xic}, i.e., they were defined in a library file or were
+defined in a previously-run {\Xic} script.  The arguments to the
+function follow, and should match the arguments expected by the
+function.  This form must be used when executing a user-defined
+function.
+
+The variable type of an argument is inferred as follows:
+\begin{itemize}
+\item{A single-token numeric value without leading or trailing
+characters not part of the number is taken as a scalar.}
+\item{A token of the form \&{\it arrayname}() is taken as an array.}
+\item{Anything else is taken as a string.}
+\end{itemize}
+
+To explicitly coerce a numeric token into a string, backslash escaped
+double quotes should be used to delimit the token.  For example, {\vt
+$\backslash$"1.234$\backslash$"} is taken as a string.  The backslash
+prevents {\et tcl} from removing the double quotes before passing the
+token.
+
+Arrays passed to interface functions must use ``0'', ``1'', etc.  as
+indices, and are ordered accordingly (in {\et tcl}, array indices can
+be any text token and have no natural order).  The ``0'' element (at
+least) must be set before the array can be passed to a function.  If
+the array is dynamically expanded, new {\et tcl} elements will be
+created.  The initial size of the array is implied by the largest
+contiguous index assigned.  Thus, for example, if the interface
+function requires an array of size 4, the following {\et tcl} code
+could be used
+
+\begin{quote}\vt
+set array(0) 0\\
+set array(1) 0\\
+set array(2) 0\\
+set array(3) 0\\
+xic {\it Function} \&array()
+\end{quote}
+
+When the function returns, the array values will be updated.  Only
+one-dimensional arrays are available.
+
+There is an additional special {\et tcl} function which has been added.
+\begin{quote}
+{\vt xwin} {\it win\_name}
+\end{quote}
+This function returns the X window id of the {\et tk} window given as
+a widget path in {\it win\_name}.  This is used to obtain the window
+id of a {\et tk} window to be used for {\Xic} graphics through the
+{\vt GRopen} interface.  A suggested way to use a {\et tk} window for
+exported drawing from {\Xic} is given in the example below.  The {\vt
+xwin} procedure is used to obtain the window id.  This window should
+be configured with `{\vt -background ""}' which allows redraws to be
+handled through a procedure bound to the window with the {\vt bind}
+command which responds to expose events.  Otherwise, expose events
+will cause the window to be redrawn in gray {\it after} the event
+handler is called.  A pixmap is used to store the image for redraws.
+
+Example
+
+\begin{verbatim}
+
+# This is the window used for drawing by Xic.
+# Note the '-background ""' directive.  This
+# is necessary for proper redrawing after expose
+# events.
+frame .f -width 8c -height 8c -background ""
+pack .f
+
+set win_id [xwin .f]
+set ghandle [xic GRopen ":0" $win_id]
+# The win_id is the X id of the drawing window,
+# the ghandle is the handle value returned from
+# Xic upon opening graphics on this window.
+
+set size(0) 0
+set size(1) 0
+set size(2) 0
+set size(3) 0
+xic GetWindowView 0 &size()
+# The size array contains the displayed area of the
+# cell in the main Xic window, in order L, B, R, T
+
+xic GRdraw $ghandle $size(0) $size(1) $size(2) $size(3)
+# This draws the Xic view into the Tk window
+
+xic GRupdate $ghandle
+# Due to the way Tk (and X) works, unless GRupdate is
+# called after drawing, the drawing won't be visible.
+# The operations are stuck in a cache somewhere waiting.
+# GRupdate flushes the operations.
+
+set dsize(0) 0
+set dsize(1) 0
+xic GRgetDrawableSize $ghandle $win_id &dsize()
+# The dsize array contains the size in pixels of the
+# Tk drawing area.
+
+set pixm [xic GRcreatePixmap $ghandle $dsize(0) $dsize(1)]
+xic GRcopyDrawable $ghandle $pixm $win_id 0 0 $dsize(0) $dsize(1) 0 0
+xic GRupdate $ghandle
+# We have created a pixmap of the same size and depth as
+# the drawing area, and copied the drawing area into it.
+# This will be used to redraw the drawing area after an
+# expose event.
+
+bind .f <Expose> {
+    # This sets up a handler for expose events.  Expose
+    # events are received when a previously obscured part
+    # of the window is uncovered.  The pixmap is copied
+    # into the Tk window.
+    xic GRcopyDrawable $ghandle $win_id $pixm 0 0 $dsize(0) $dsize(1) 0 0
+    xic GRupdate $ghandle
+}
+\end{verbatim}
+
+The {\vt TextCmd} script function can be used to launch a {\et
+tcl/tk} script.  At present, {\et tcl/tk} scripts are not recognized
+in the script path, but one can use a native language wrapper to
+include {\et tck/tk} scripts in the {\cb User Menu}.
+
+The following native script functions can also be used to run Tcl/Tk
+scripts, or perform other related manipulations related to the Tcl/Tk
+interpreter.
+
+\begin{tabular}{ll}
+{\vt RunTcl} & Run a Tcl or Tk script.\\
+{\vt ResetTcl} & Reset the Tcl/Tl interpreter.\\
+\end{tabular}
+

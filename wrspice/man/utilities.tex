@@ -1,0 +1,245 @@
+
+\chapter{Utility Programs}
+
+% spMain.hlp:utilities 012609
+
+The {\WRspice} distribution provides a few supplemental utility
+and accessory programs.
+
+
+%S-----------------------------------------------------------------------------
+\section{The {\vt multidec} Utility: Coupled Lossy Transmission Lines}
+\index{multidec program}
+
+% spMain.hlp:multidec 012609
+
+The standalone program {\vt multidec} produces a subcircuit for
+multiconductor lossy transmission lines in terms of uncoupled (single)
+simple lossy lines.  This decomposition is valid only if the following
+hold:
+
+\begin{enumerate}
+\item{The electrical parameters (R, G, Cs, Cm, Ls, Lm) of all wires are
+ identical and independent of frequency.}
+\item{Each line is coupled only to its (maximum 2) nearest neighbors.}
+\end{enumerate}
+
+The subcircuit is sent to the standard output and is intended to be
+included in an input file.
+
+The command-line options for {\vt multidec} are as follows:
+\begin{quote}
+{\vt -l}$<$self-inductance Ls$>$\\
+{\vt -c}$<$self-capacitance Cs$>$\\
+{\vt -r}$<$series-resistance R$>$\\
+{\vt -g}$<$parallel-conductance G$>$\\
+{\vt -k}$<$coeff-of-inductive-coupling K$>$\\
+{\vt -x}$<$mutual-capacitance Cm$>$\\
+{\vt -o}$<$subckt-name$>$\\
+{\vt -n}$<$number-of-conductors$>$\\
+{\vt -L}$<$length$>$
+\end{quote}
+
+The inductive coupling coefficient K is the ratio of Lm
+to Ls. Values for -l, -c, -o, -n and -L must be specified.
+
+Example:
+\begin{quote}
+{\vt multidec -n4 -l9e-9 -c20e-12 -r5.3 -x5e-12 -k0.7 -otest -L5.4}
+\end{quote}
+
+This utility was written by J.S.  Roychowdhury for use with the lossy
+transmission line model \cite{ltra}.
+
+
+%S-----------------------------------------------------------------------------
+\section{The {\vt printtoraw} Utility: Print to Rawfile Conversion}
+\index{printtoraw program}
+
+% spMain.hlp:printtoraw 012609
+
+The {\vt printtoraw} program is a stand-alone utility provided with
+the {\WRspice} distribution.  This converts the data in files produced
+by the {\et print} command using output redirection into the rawfile
+format, which can be plotted.  This works only for print files in the
+standard columnar form.
+
+\begin{quote}
+Usage: {\vt printtoraw} [{\it printfile\/}]
+\end{quote}
+
+The argument, if given, is assumed to be a path to a file that was
+produced by the {\WRspice} {\et print} command through redirection. 
+If no argument is given, the standard input is read.  The data are
+converted to rawfile format and dumped to the standard output.
+
+Example:
+\begin{quote}
+{\vt wrspice> run}\\
+{\vt wrspice> print v(1) v(2) v(3) > myfile}\\
+{\vt wrspice> quit}\\
+\\
+{\vt bash> printtoraw myfile > myfile.raw}\\
+\\
+{\vt wrspice> load myfile.raw}\\
+{\vt wrspice> plot all}
+\end{quote}
+
+
+%S-----------------------------------------------------------------------------
+\section{The {\vt proc2mod} Utility: BSIM1 Model Generation}
+\index{proc2mod program}
+
+% spMain.hlp:proc2mod 012609
+
+This utility, provided with SPICE3, produces a set of BSIM1 models
+from process-dependent data provided in a ``process'' file.  An
+example process ({\vt .pro}) file is provided with the {\WRspice}
+examples.  This utility was written by J.  Pierret \cite{pierret},
+and the reference presumably provides more information.
+
+
+%S-----------------------------------------------------------------------------
+\section{The {\vt wrspiced} Daemon: Remote SPICE Controller}
+\label{wrspiced}
+\index{wrspiced program}
+
+% spMain.hlp:wrspiced 021811
+
+{\WRspice} can be accessed and run from a remote system for
+asynchronous simulation runs, for assistance in computationally
+intensive tasks such as Monte Carlo analysis, and as a simulator for
+the {\Xic} graphical editor.  This is made possible through a daemon
+(background) process which controls {\WRspice} on the remote machine. 
+The daemon has the executable name ``{\vt wrspiced}'', and should be
+running on the remote machine.  This can be initiated in the system
+startup procedure, or manually.  Generally, any user can start {\vt
+wrspiced}, but only one daemon can be running on the host computer.
+
+The {\vt wrspiced} program is part of the {\WRspice} distribution, and
+is installed in the same directory as the {\vt wrspice} executable. 
+The daemon manages the queue of submitted jobs and responses, and
+maintains the communications port.  The {\vt wrspiced} daemon will
+establish itself on a port, and wait for client messages.
+
+%SU-------------------------------------
+\subsection{SPICE Server Configuration}
+
+There is little or no configuration required to run {\vt wrspiced},
+but there are a few basic prerequisites.  Our assumption is that
+{\WRspice} is installed on a network-reachable remote computer (the
+``SPICE server''), and we wish to submit jobs to this {\WRspice} from
+within {\Xic}, or from within {\WRspice} running on local computers
+(the "clients").
+
+The SPICE server must have {\WRspice} installed, and {\WRspice} must
+be licensed to run on the server.
+As a prerequisite, {\WRspice} should operate on the
+SPICE server host in the normal way.
+
+Historically, {\vt wrspiced} has used the service name ``{\vt spice}''
+and port number 3004.  Releases 3.2.8 and later use the service name
+``{\vt wrspice}'' instead of ``{\vt spice}'', and use port number 6114
+by default.  The port 6114 is registered with IANA for this service.
+
+The system services database is represented by the contents of the
+file {\vt /etc/services} in simple installations.  If using NIS, then
+the system will get its services information from elsewhere.  A system
+administrator can add service names and port assignments to this
+database.  The {\vt wrspiced} program does not require this.
+
+%SU-------------------------------------
+\subsection{Starting the Daemon}
+
+The {\vt wrspiced} program command line has the following form:
+
+\begin{quote}
+{\vt wrspiced} [{\vt -fg}] [{\vt -l} {\it logfile\/}]
+  [{\vt -p} {\it program\/}] [{\vt -m} {\it maxjobs\/}] [{\vt -t} {\it port\/}]
+\end{quote}
+
+There are five optional arguments.
+\begin{description}
+\item{\vt -fg}\\
+If given, the {\vt wrspiced} program will remain in the foreground
+(i.e., not become a ``daemon''), but will service requests normally. 
+This may be useful for debugging purposes.
+
+\item{{\vt -l} {\it logfile}}\\
+The {\it logfile} is a path to a file that will receive status
+messages from {\vt wrspiced}.  The default is the value of the {\et
+SPICE\_DAEMONLOG} environment variable if set when the program is
+started, or {\vt /tmp/wrspiced.log}.
+
+\item{{\vt -p} {\it program}}\\
+This specifies the {\WRspice} program to run, in case for some reason
+the {\vt wrspice} binary has been renamed, or {\vt wrspice} is not in
+the expected location.  This overrides the values of the {\et
+SPICE\_PATH} and {\et SPICE\_EXEC\_DIR} environment variables, which
+can also be used to set the path to the binary.  The default is ``{\vt
+/usr/local/xictools/bin/wrspice}''.
+
+\item{{\vt -m} {\it maxjobs}}\\
+This sets the maximum number of jobs that the server will allow to be
+running at the same time.  The default is 5.
+
+\item{{\vt -t} {\it port}}\\
+This sets the port to be used by the daemon, and overrides any port
+set in the services database.  Clients must use the same port number
+to connect to the SPICE server.
+\end{description}
+
+The daemon is started by simply typing the command.  If a machine is
+to operate continuously as a SPICE server, it is recommended that the
+{\vt wrspiced} daemon be started in the system initialization scripts. 
+The daemon will run until explicitly killed by a signal, or the
+machine is halted.  When the {\vt wrspiced} process terminates, any
+{\WRspice} processes under management will also be killed.  The daemon
+can be terminated, by the process owner, by giving the command ``{\vt
+ps aux | grep wrspiced}'' and noting the process id (pid) number of
+the running {\vt wrspiced} process, and then issuing ``{\vt kill} {\it
+pid\/}'' using this pid number.
+
+It may be necessary to become root before starting {\vt wrspiced}, as
+on some systems connection to the port will otherwise be refused due
+to permission requirements.  Starting by root is also required if the
+log file is to be written to a directory such as {\vt /var/log} that
+requires root permission for writing.
+
+%SU-------------------------------------
+\subsection{Client Configuration}
+
+The port number used by the client must be the same as that used for
+the server.  As for the server, if not supplied the port number will
+be resolved if possible in the services database (e.g., the {\vt
+/etc/services} file), and will revert to a default if not found.
+
+In {\Xic} and {\WRspice}, the port number to use can be specified with
+the host name, by appending the number following a colon, i.e.,
+\begin{quote}
+{\it hostname\/}[:{\it port\/}]
+\end{quote}
+
+A {\WRspice} server can receive jobs from {\Xic}, and from {\WRspice}
+({\cb rspice} command).  Both programs have means by which the SPICE
+server can be specified from within the program.  One means common to
+both programs is through use of the {\et SPICE\_HOST} environment
+variable.  The variable should be set to the host name of the SPICE
+server, as resolvable by the client, followed by the optional colon
+and port number.  When set, {\Xic} will by default use this server for
+SPICE jobs initiated with the {\cb Run} button in the side menu, and
+{\WRspice} will use this host in the {\et rspice} command.  In a
+situation where the SPICE server provides the only SPICE available,
+the {\et SPICE\_HOST} variable should be set in the user's shell
+startup script.  In {\WRspice} the {\et rhost} shell variable and the
+{\cb rhost} command can also be used to specify the remote host, and
+these override any value set in the environment.
+
+Note:  In {\Xic}, when {\WRspice} connects, a message is printed in
+the terminal window similar to
+\begin{quote}
+{\vt Stream established to wrspice://chaucer, port 4573.}
+\end{quote}
+The ``port'' in this case is {\it not} the {\vt wrspiced} port
+discussed above, but is a transient port created for the process.
+

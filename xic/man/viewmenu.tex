@@ -1,0 +1,888 @@
+% -----------------------------------------------------------------------------
+% Xic Manual
+% (C) Copyright 2009, Whiteley Research Inc., Sunnyvale CA
+% $Id: viewmenu.tex,v 1.39 2015/03/07 21:18:34 stevew Exp $
+% -----------------------------------------------------------------------------
+
+% -----------------------------------------------------------------------------
+% xic:viewmenu 061608
+\chapter{The View Menu: Alter Presentation}
+\index{View Menu}
+The {\cb View Menu} contains commands which alter the view shown
+in the drawing windows.
+
+The table below lists the commands found in the {\cb View Menu}.  The
+internal command name is listed, as is the command function.
+
+\begin{tabular}{|l|l|l|l|} \hline
+\multicolumn{4}{|c|}{\kb View Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et View & \vt view & none & Set view in window\\ \hline
+{\et Physical} or {\et Electrical} & {\vt phys} or {\vt sced} & none &
+ Switch mode\\ \hline
+\et Expand & \vt expnd & \cb Expand & Show detail in window\\ \hline
+\et Zoom & \vt zoom & dialog & Change window scale\\ \hline
+\et Viewport & \vt vport & sub-window & New drawing window\\ \hline
+\et Peek & \vt peek & none & Show layers in area\\ \hline
+\et Cross Section & \vt csect & sub-window & Show layers in cross-section\\
+ \hline
+\et Rulers & \vt ruler & none & Add transient gradations\\ \hline
+\et Info & \vt info & \cb Info & Show cell/object parameters\\ \hline
+\et Allocation & \vt alloc & \cb Memory Monitor & Show memory statistics\\
+ \hline
+\end{tabular}
+
+
+% -----------------------------------------------------------------------------
+% xic:view 061608
+\section{The {\cb View} Button: Select Cell View}
+\index{View button}
+\index{view}
+The {\cb View} button in the {\cb View Menu}, and the {\cb View} menu
+of sub-windows, produces a drop-down menu of view choices for the
+associated window.  For each window, the last five views are saved in
+a list.  In addition, up to five views can be saved by pressing {\kb
+Ctrl-n}.  These are assigned names consisting of the letters A--E. 
+The drop-down menu entries are:
+
+\begin{tabular}{ll}
+\cb full  & center full view of cell\\
+\cb prev  & cycle view backwards\\
+\cb next  & cycle view forwards\\
+\cb A-E   & if view saved with {\kb Ctrl-n}, set selected view\\
+\end{tabular}
+
+If the {\cb View} command is ``pressed'' by a key sequence, the center
+full view is shown (same as for the {\kb Home} key).
+
+The view list is cleared whenever a new cell is displayed, or whenever
+the mode is changed for the window.
+
+The {\kb Ctrl-Shift-Right} arrow and {\kb Ctrl-Shift-Up} arrow are
+accelerators for {\cb prev}, {\kb Ctrl-Shift-Left} arrow and {\kb
+Ctrl-Shift-Down} arrow are accelerators for {\cb next}, and {\kb
+Ctrl-Shift-a} through {\kb Ctrl-Shift-e} are accelerators for {\cb A}
+through {\cb E}.
+
+
+% -----------------------------------------------------------------------------
+% xic:phys 062109
+\section{The {\cb Physical} Button: Show Physical Mode}
+\index{Physical button}
+\index{physical mode!switch to}
+The {\cb Physical} button in the {\cb View Menu}, and the {\cb View}
+menu of sub-windows, available only when the window is displaying
+electrical mode, changes the display from electrical (schematic) mode
+to physical mode.  In the main menu, this places {\Xic} into an
+editing mode appropriate for physical representation.  In the
+sub-windows, the {\cb Physical} button changes the view only.  Editing
+can not be performed in a sub-window whose mode is not that of the main
+window.
+
+While in a {\cb Push} (see \ref{pushcmd}), the cell currently being
+edited remains the current cell, but becomes top-level (i.e., not in
+a {\cb Push}) in the new mode.  If the original mode is returned to
+without editing a different cell, the {\cb Push} stack is retained. 
+If a new cell is edited in the new mode, through a {\cb Push} or
+otherwise, the original {\cb Push} context is lost.  This context is
+also lost if the {\cb Clear} function in the {\cb Cells Listing} is
+invoked.
+
+The present display mode can be made immutable, with certain
+side-effects, by setting the variable {\et LockMode}.
+
+
+% -----------------------------------------------------------------------------
+% xic:sced 062109
+\section{The {\cb Electrical} Button: Show Electrical Mode}
+\index{Electrical button}
+\index{mode switch}
+The {\cb Electrical} button in the {\cb View Menu}, and the {\cb View}
+menu of sub-windows, available only when the window is displaying
+physical mode, changes the display from physical to electrical
+(schematic) mode.  In the main menu, this places {\Xic} into an
+editing mode appropriate for electrical representation.  In the
+sub-windows, the {\cb Electrical} button changes the view only. 
+Editing can not be performed in a sub-window whose mode is not that of
+the main window.
+
+While in a {\cb Push}, the cell currently being edited
+remains the current cell, but becomes top-level (i.e., not in a {\cb Push})
+in the new mode.  If the original mode is returned to without editing
+a different cell, the {\cb Push} stack is retained.  If a new cell is
+edited in the new mode, through a {\cb Push} or otherwise, the
+original {\cb Push} context is lost.  This context is also lost if the
+{\cb Clear} function in the {\cb Cells Listing} is invoked.
+
+The present display mode can be made immutable, with certain
+side-effects, by setting the variable {\et LockMode}.
+
+
+% -----------------------------------------------------------------------------
+% xic:expnd 061608
+\section{The {\cb Expand} Button: Expand Subcells}
+\index{Expand button}
+\index{expanded view}
+\label{expansion}
+The {\cb Expand} button in the {\cb View Menu}, and the {\cb View}
+menu of sub-windows, brings up the {\cb Expand} pop-up, which controls
+the expansion of subcells in the window.  All geometry is shown in an
+expanded cell, whereas only the bounding box and possibly a name label
+are shown in the unexpanded state.  If the cell happens to be an
+array, the bounding box in the unexpanded state is shown as a dashed
+line.  Ordinary instances have a solid line bounding box.
+
+After pressing {\cb Expand}, the pop-up appears.  The pop-up contains
+a text entry area, a number of buttons which push specific text into
+the entry area, an {\cb Apply} button, a {\cb Dismiss} button, and a
+{\cb Help} button.  When the pop-up first appears, it is given the
+keyboard focus.  Under most (if not all) window managers, one should
+be able to type into the text entry area immediately.  Pressing the
+{\kb Enter} key is equivalent to pressing the {\cb Apply} button. 
+Thus, one can quickly change the expansion status entirely with the
+keyboard accelerators (the change will apply to the window containing
+the pointer).
+
+For example, the default keypress mapping applies {\kb Ctrl-x} to the
+{\cb Expand} button, so typing
+\begin{quote}
+{\kb Ctrl-x} {\kb 0} {\kb Enter}
+\end{quote}
+will set the expansion level to 0, and
+\begin{quote}
+{\kb Ctrl-x} {\kb a} {\kb Enter}
+\end{quote}
+will set the expansion level to ``all''.
+
+The functions of the symbols which are recognized in the text string
+will be described below.  The buttons which push text into the entry
+area avoid the need for typing.  These are:
+
+\begin{tabular}{ll}
+{\kb $+$} & set to `$+$' (there can be multiple $+$'s added)\\
+{\kb $-$} & set to `$-$' (there can be multiple $-$'s added)\\
+{\cb All} & set to `{\vt all}'\\
+{\cb 0-5} & set to `{\vt 0}' -- `{\vt 5}'\\
+{\cb Peek Mode} & set to `{\vt p}' (available from main window only)\\
+\end{tabular}
+
+Pressing the {\cb Apply} button will pass the expansion string to the
+internal expansion control function.
+
+The characters which are recognized in the string are the letters {\vt
+a}, {\vt n} for ``all'' and ``none'', one or more $+$ or $-$ symbols
+(not mixed) which will increment or decrement the hierarchy depth of
+expansion, a $+$ or $-$ followed by an integer, which will increase or
+decrease the level by that integer, or simply an integer, which will
+set the hierarchy depth to that integer.  Setting the hierarchy depth
+to zero is the same as ``none''.  All subcells up to the hierarchy
+depth are shown expanded.
+
+Each drawing window has its own expansion parameters and {\cb Expand}
+button.  When a sub-window is created, it inherits the expansion status
+of the main window.  The expansion depth entered applies only to that
+window. 
+
+\subsection{Peek Mode}
+\index{peek mode}
+If the {\cb Expand} button from the {\cb View Menu} is selected, there
+is an additional feature available:  peek mode, which is entered by
+returning {\et p}.  This should not be confused with the {\cb Peek}
+command in the {\cb View Menu}.  In peek mode, the expanded status of
+individual cells and subcells can be set by clicking or dragging with
+button 1.  Only cells below the current expansion depth are affected,
+i.e., those that are normally displayed as unexpanded.  Thus, peek
+mode has no effect if the expansion depth is set to ``all''.  Clicking
+on an unexpanded cell, or dragging such that the cell is enclosed
+within the drag rectangle, will cause that cell to be shown as
+expanded (to one level) in the window where the button down event
+occurred.  The process can be repeated to expose cells arbitrarily
+deep in the hierarchy.  If the {\kb Shift} key is held during the
+pointing operation, previously expanded cells are unexpanded.  This
+applies only to cells below the expansion depth.  Note that unlike a
+standard selection operation, in peek mode one can address subcells
+below the first hierarchy level, so long as the parent cell is shown
+expanded.
+
+Peek mode works by setting a flag in the instance descriptor of a
+subcell.  Instance descriptors are stored in the parent cell.  Suppose
+that a design contains multiple instances of cell B, each of which
+contains a left and right instance of cell A.  In peek mode, for
+example, if the left instance of A is made to be expanded in an
+instance of B (which of course is also expanded), this expansion of A
+will appear in all instances of B which are expanded, not just the one
+clicked on.  This is a consequence of the hierarchical nature of the
+database, where each instance of B represents the contents of B, which
+includes the instance of A with the flag set.
+
+In peek mode, the operation applies to any window in which the pointer
+was located when button one was pressed.  The result will be
+consistent with the expansion depth of the particular window.  While
+in peek mode, certain keyboard commands can be applied, which will
+affect the window where the pointer was located when the key press
+occurred.  The {\kb $+$} and {\kb $-$} keys increment and decrement
+the expansion depth, a number key will set the expansion depth, {\kb
+a} will set the depth to ``all'', and {\kb n} will set the depth to
+``none'', as will {\kb 0} (zero).  Each window has independent
+expansion parameters.  Setting the expansion depth to zero by pressing
+{\kb 0} or {\kb n} will clear the peek mode display flags.  Otherwise,
+the expansion depth and the peek mode display of cells are
+independent.
+
+\index{symbolic cells!expanded view}
+In electrical mode, symbolic cells can be shown as expanded, with a
+miniature rendition of the actual circuit inside the symbolic bounding
+box area, in peek mode.  Click on the symbolic cell to expand, {\kb
+Shift}-click to unexpand.  Wires connecting the circuit connections to
+the symbol terminals are added.  This rendition is for visual purposes
+only.  If a subcell placed in symbolic mode is later changed to
+non-symbolic mode, the view of the parent cell is likely to look
+horrid, since the subcircuits will probably overlap.  The peek mode
+feature allows viewing of the underlying circuit without this problem.
+
+The expansion status of a given subcell in a window is retained after
+exiting peek mode, and after canceling a sub-window.  Setting the
+expansion to ``none'' clears all expansion in peek mode.
+
+
+% -----------------------------------------------------------------------------
+% xic:zoom 032213
+\section{The {\cb Zoom} Button: Zoom In/Out}
+\index{Zoom button}
+\index{zooming}
+Pressing the {\cb Zoom} button in the {\cb View Menu} or the {\cb
+View} menu of sub-windows brings up the {\cb Set Display Window}
+pop-up.  This pop-up can change the scale (zoom) the window, or set a
+new display region.
+
+To change the scale, enter a factor into the {\cb Zoom Factor} entry
+area, and press the associated {\cb Apply} button.  Factors greater
+that 1.0 will zoom out.
+
+Alternatively, one can enter the center x and y values and width (all
+in microns) of a new region to display.  The coordinates are relative
+to the origin of the displayed cell.  The width is the displayed width
+of the region to be displayed in the window, the displayed height will
+depend on the drawing window's aspect ratio.  Pressing the associated
+{\cb Apply} button will redisplay the new location.
+
+The windowing parameter entries are pre-loaded with the current window
+parameters, and track any changes made when the pop-up is visible.
+
+The right mouse button (button 3) can also be used to zoom, as can the
+numeric keypad {\kb $+$} and {\kb $-$} keys which zoom in and out by a
+factor of two, or by ten percent if {\kb Shift} is also held.
+
+In the case where the panel is brought by from a sub-window that is
+displaying a cross-section, there are additional controls that allow
+adjustment of the vertical scaling used in the cross section display.
+
+This control group has its own {\cb Apply} button.  The {\cb Auto
+Y-Scale} check box disables the automatic vertical scaling when set. 
+The automatic scaling maintains full view of the entire layer stack
+independent of the zoom factor.  The {\cb Y-Scale} entry allows a
+vertical scale factor to be entered, for use when displaying the cross
+section.  When the {\cb Apply} button is pressed, the cross-section is
+redrawn with the settings given.  The {\et XSectNoAutoY} variable will
+be set or unset to reflect the state of the check box.  The {\et
+XSectYScale} variable will be set to the scale factor if it is other
+than unity.  See \ref{csect} more more information.
+
+
+% -----------------------------------------------------------------------------
+% xic:vport 053110
+\section{The {\cb Viewport} Button: Create Sub-Window}
+\label{subwin}
+\index{Viewport button}
+\index{viewports}
+\index{sub-windows}
+The {\cb Viewport} button in the {\cb View Menu} brings up a
+sub-window, which is a display window similar to the main drawing
+window.  The user is requested to point at the diagonal endpoints of
+the region to be displayed in the sub-window.  Each viewport contains a
+menu of attribute buttons which apply to that window only.  In
+particular, the sub-window can display cells in either electrical or
+physical mode, however editing operations are only possible if the
+sub-window mode and cell match those of the main window.
+
+The sub-window has a set of menus which control attributes which can be
+set on a per-window basis.  When the cursor is in a sub-window,
+characters entered are delivered to that sub-window, and an unambiguous
+sequence match will select a sub-window button.  Matches are looked for
+in the sub-window menu, the main menu, and any pop-up menus, in that
+order.
+
+The {\cb View} menu button commands are mostly analogous to the
+commands found in the main {\cb View Menu}, however there are a few
+entries in the {\cb View} menu that have no analogs in the main menu.
+
+\begin{tabular}{|l|l|l|l|} \hline
+\multicolumn{4}{|c|}{\kb Sub-Window View Menu} (additional)\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Dump To File & \vt wdump & text entry & Dump window to image file\\ \hline
+\et Show Location & \vt lshow & none & Show position in main window\\ \hline
+\et Swap With Main & \vt swap & none & Swap contents with main window\\ \hline
+\et Load New & \vt load & none & Load cell or file for viewing\\ \hline
+\end{tabular}
+
+The {\cb Attributes} menu is identical to the {\cb Main Window} sub-menu
+found in the main {\cb Attributes Menu}.  The functions are the same (see
+\ref{attrsubmenu} but apply to the sub-window only.  When a new sub-window
+appears, it inherits the current attribute settings of the main window.
+
+\begin{tabular}{|l|l|l|l|} \hline
+\multicolumn{4}{|c|}{\kb Sub-Window Attributes Menu}\\ \hline
+\kb Label & \kb Name & \kb Pop-up & \kb Function\\ \hline\hline
+\et Freeze Display & \vt freez & none & Suppress redisplay\\ \hline
+\et Show Context in Push & \vt cntxt & none & Show context in subedit\\ \hline
+\et Show Phys Properties & \vt props & none & Show physical properties\\ \hline
+\et Show Labels & \vt labls & none & Show labels\\ \hline
+\et Label True Orient & \vt larot & none & Show labels transformed\\ \hline
+\et Show Cell Names & \vt cnams & none & Show cell names\\ \hline
+\et Cell Name true Orient & \vt cnrot & none & Show cell names transformed\\
+  \hline
+\et Don't Show Unexpanded & \vt nouxp & none & Don't show unexpanded
+  subcells\\ \hline
+\et Objects Shown & \vt objs & none & Object display control\\ \hline
+\et Subthreshold Boxes & \vt tinyb & none & Show outline of subthreshold
+  cells\\ \hline
+\et Set Grid & \vt grid & {\cb Grid Parameters} & Set grid parameters\\ \hline
+\end{tabular}
+
+If a cell shown in a sub-window is the cell shown in the main window,
+with the same mode (physical or electrical), then all editing
+operations will work in the sub-window as well as the main window.  The
+sub-window will display all highlighting, terminals, and other special
+markings.  If the sub-window shows a different cell, then in that
+window selections and editing are not possible, and no highlighting or
+special markings are shown.
+
+When the {\cb Viewport} command is used to create a new sub-window, the
+sub-window will initially show the same cell as the main window.
+
+The sub-windows are sensitive as drop-receivers from the file manager
+and other listing pop-ups.  File or cell names can be dragged from the
+listing pop-up and dropped in a sub-window, which will cause that
+cell/file to be opened and displayed in the window.
+
+% -----------------------------------------------------------------------------
+% xic:wdump 021410
+\index{Dump to File button}
+The {\cb Dump To File} button in the {\cb iew} menu of sub-windows will
+dump the contents of the window to a disk file.  When pressed, a file
+name will be solicited, and the contents of the sub-window will be
+dumped to the file.  The filename extension determines the file type: 
+jpg, tiff, png, etc.  This provides a mechanism for obtaining
+printable output from the {\cb Cross Section} views.  The dumped
+bitmap will be the same size as the window.
+
+This feature makes use of the {\vt imsave} system, which is also used
+in the Image print driver (see \ref{hcformat}).
+
+% -----------------------------------------------------------------------------
+% xic:lshow 061608
+\index{Show Location button}
+When the {\cb Show Location} button in the sub-window {\cb View} menu
+is active, and both the sub-window and the main window are in physical
+mode and displaying the same cell, an outline box is drawn in the main
+window around the area displayed in the sub-window.  This indicates the
+position of the sub-window display, assuming that the sub-window is
+showing a zoomed-in part of the display in the main window.
+
+% -----------------------------------------------------------------------------
+% xic:swap 061608
+\index{Swap With Main button}
+The {\cb Swap With Main} button in the sub-window {\cb View} menu will
+swap the cells, display modes, and views between the sub-window and the
+main window.  This has the effect of making the cell displayed in the
+sub-window the current cell, allowing it to be modified.
+
+% -----------------------------------------------------------------------------
+% xic:load 102208
+\index{Load New button}
+The {\cb Load New} button in the sub-window {\cb View} menu will prompt
+for a new cell or file to display in the window.  The command will
+prompt the user for a file/cell name, in the manner of the {\cb Open}
+command.  The given file/cell will be opened for display in the
+sub-window.
+
+
+% -----------------------------------------------------------------------------
+% xic:peek 061608
+\section{The {\cb Peek} Button: Show Layer Composition}
+\index{Peek button}
+\index{PeekSleepMsec variable}
+The {\cb Peek} button in the {\cb View Menu} asks the user to define a
+rectangular area with pointer clicks ar drag, and then redisplays the
+area slowly so that underlying layers can be seen.  It also prints the
+names of layers found (only physical objects are considered, not
+labels).  The delay, which defaults to .4 second per existing layer,
+can be reset with the {\et PeekSleepMsec} variable, which can be set
+to the delay time in milliseconds. 
+
+% -----------------------------------------------------------------------------
+% xic:ldb3d 102114
+\section{Three-Dimensional Layer Sequence Generator}
+\label{ldb3d}
+\index{layer sequence generator}
+
+{\Xic} contains functionality to generate sequenced three-dimensional
+layer stack representations of layout geometry.  This capability is
+employed by the {\cb Cross Section} command in the {\cb View Menu}
+which displays the layout in cross-section, and in the interface to
+external capacitance and inductance extraction programs.
+
+In order to use this functionality, the appropriate keywords must have
+been applied to the layers.  Most of the setup parallels that required
+for the extraction system.
+
+Layers that participate must satisfy the following constraints.
+\begin{itemize}
+\item{The layer must {\bf not} have the {\et Symbolic} technology file
+keyword given.}
+
+\item{The layer must be visible in the layer table.}
+
+\item{The layer must have a nonzero thickness applied with the
+{\et Thickness} technology file keyword.}
+
+\item{The layer must be a conductor or an insulator.  A conductor
+layer has one of the following:
+\begin{enumerate}
+\item{The {\et Conductor} keyword is given, explicitly or implicitly
+if one of the {\et Routing}, {\et GroundPlane}, {\et
+GroundPlaneClear}, {\et Contact}, or their aliases is given.}
+
+\item{Any of the {\et Rsh}, {\et Rho}, {\et Sigma}, or {\et Lambda}
+keywords is given with a positive value.}
+\end{enumerate}
+
+An insulating layer has either the {\et Via} or {\et Dielectric}
+keyword given, and also the {\et EpsRel} keyword given with a value of
+1.0 or larger.}
+\end{itemize}
+
+The technology file keywords are normally applied in layer blocks of
+the technology file, but can be applied from within {\Xic} as well. 
+The {\cb Tech Parameter Editor} from the {\cb Edit Tech Params} button
+in the {\cb Attributes Menu} allows editing of the associated
+keywords.
+
+The polarity of the layer will be obtained from the keywords applied
+to the layer.  The layer will be considered dark field if any of the
+{\et DarkField}, {\et Via}, or {\et GroundPlaneClear} keywords are
+given to the layer.  In this database, each layer represents the true
+presence of physical material which is the inverse of the normal
+presentation if the layer is dark field.  For example, a via showing
+as a small colored square in a normal layout window is actually a hole
+in an otherwise continuous insulating film.  The layer represented in
+this database will contain shapes representing the areas where the
+physical film is present.  This can be seen in the {\cb Cross Section}
+displays, where the dark field layers will be displayed with the
+inverse polarity from normal drawing windows.
+
+All layers can be set to planarize, or not.  This is an important
+difference from the original interface, which always assumed
+planarization.  If a layer is not planarizing, it conforms to the
+underlying topology, which is translated exactly to the top surface of
+the layer.  If the layer is planarizing, representing the layer
+three-dimensionally is accomplished as follows.  Initially, the shapes
+on each layer are decomposed into a non-overlapping collection of
+trapezoids.
+
+\begin{enumerate}
+\item{Consider the non-planarized representation of the layer, which
+is composed of trapezoids in the X-Y plane (parallel to the
+substrate), each with an elevation (distance from the substrate in the
+Z direction) and constant thickness.  Each trapezoid represents an
+area of the layer material at constant elevation.  Sort through the
+trapezoids, and find the bottom surface value with the highest
+elevation.}
+
+\item{From the maximum lower surface elevation, set the ``plane''
+value for the layer.  Set the top elevation of all trapezoids to the
+plane value plus the film thickness value.  All trapezoids will have
+the same top elevation, but in general will have differing bottom
+elevation.  The actual film thickness varies, but is equal to or
+greater than the thickness value of the layer.}
+\end{enumerate}
+
+Thus, for a planarizing layer, the top surface of the layer will be a
+plane at the highest point on the top surface of the layer below plus
+the layer thickness.  The bottom surface of the layer will conform to
+the top surface of the layer below by filling in where material of the
+layer below is not present.
+
+By default, all {\et Conductor} (and the rest of the keywords that
+imply {\et Conductor}) and {\et Via} layers are planarizing.  This is
+normal for a modern metal stack in a semiconductor process.  The {\et
+Dielectric} layers, and conductor layers that don't have {\et
+Conductor} applied implicitly or explicitly, but therefor must have
+{\et Rho} or {\et Rsh} applied, are not planarizing by default.
+
+However, if the {\et NoPlanarize} variable is set, or the global
+technology file attribute of the same name is given, by default no
+layers will be planarizing.
+
+There is a technology file layer block keyword which provides
+planarization control for each layer.  It overrides defaults and state
+of the {\et NoPlanarize} variable.
+
+\begin{description}
+\item{{\vt Planarize} [{\vt y}|{\vt n}]}\\
+This specifies whether or not a layer is ``planarizing''.  The {\et
+Planarize} keyword can be applied to prevent planarization of layers
+that are planarized by default, or to force planarizing of layers that
+don't normally have this property.
+\end{description}
+
+The database is not intended for large collections of objects, and
+processing time is near quadratic in the number of database
+trapezoids.  By default, the total trapezoid count is limited to
+10000.  Attempts to exceed the limit will fail, causing the command
+using the database to also fail, with an appropriate error message.
+
+The limit can be modified with the {\et Db3ZoidLimit} variable.  This
+variable can be set to an integer 1000 or larger to reset the limit. 
+If not set, the limit of 10000 applies.
+
+%-----------------------------------
+\subsection{Layer Sequencing}
+     
+By default, all conducting and insulating layers are assumed to stack
+in layer table order, starting at the substrate.  We therefor ignore
+the upper and lower conductor references in {\et Via} layers.  Any
+layer order is acceptable, there is no constraint regarding adjacency
+of layer types, but of course the layer table order must match the
+physical order.
+
+However, we allow for the case that {\et Via} layers are out of
+sequence in the layer table.  They will be moved to the correct
+position in the stacking order used by the interface.  Since layers
+are rendered bottom-up in drawing windows, having a {\et Via} layer
+positioned above the referenced top conductor in the layer table would
+cause the via to be drawn on top of the metal, probably enhancing
+visibility.  The correct sequence, of course, would place the {\et
+Via} layer below the top referenced conductor.
+
+The {\et LayerReorderMode} variable can be set to allow {\et Via}
+layer repositioning.  The variable is set to an integer in the range
+0--2.
+
+\begin{description}
+\item{0}\\
+No repositioning is done, the same as if the variable is not set.
+
+\item{1}\\
+Consider the via references.  A layer can have multiple {\et Via}
+keywords, each specifying a pair of conducting layers which are to be
+connected through a hole in this layer.  For each pair, we identify
+the bottom conductor by its position in the layer table relative to
+the other referenced conductor.  For each of the bottom consuctors, we
+find the one that is highest in layer table order, and move the {\et
+Via} layer to just above this layer.
+
+\item{2}\\
+Similarly, we identify the lowest of the upper conductors, and move
+the {\et Via} layer to just below this layer.
+\end{description}
+
+Once the layers are recognized and sequenced, a three-dimensional
+representation of the layers found within a specified area is
+constructed.  This representation is then available for such useful
+things as displaying a cross section, or building up an input file for
+a parameter extraction program.
+
+
+% -----------------------------------------------------------------------------
+% xic:csect 070314
+\section{The {\cb Cross Section} Button: Show Cross Section}
+\label{csect}
+\index{Cross Section button}
+The {\cb Cross Section} button in the {\cb View Menu} brings up a
+special sub-window which displays a cross sectional (side) view of the
+layers under an arbitrary line.  After pressing the command button,
+the user is asked to define a line, which can be done by clicking
+twice or dragging.  If the line covers any geometry (which may be
+implied by dark field layers), a sub-window showing the cross
+sectional view will appear.  The process can be repeated.  Pressing
+the {\kb Esc} key will exit the command.
+
+All geometry under the line will be shown, without regard to cell
+hierarchy.
+
+If the {\cb Constrain angles to 45 degree multiples} check box in the
+{\cb Editing Setup} panel from the {\cb Edit Menu} is checked, the
+angle is constrained to multiples of 45 degrees.  If not checked, the
+angle is unconstrained, but snaps to multiples of 45 degrees when the
+angle is close.  In either case, pressing the {\kb Ctrl} key removes
+the constraint.
+
+The endpoints initially do not snap to grid points.  The period (`.')
+key toggles snapping to grid of the endpoints, when defined with the
+mouse or other pointing device.
+
+The endpoints are saved in persistent storage, and the previous cross
+section can be repeated by pressing {\kb Enter} while the command is
+active, even if the command terminated after the last cross section
+was displayed.  One can experiment with different thicknesses or
+planarizing behavior of the layers, and easily compare cross sections
+from the same line, using this feature.  If the current cell has
+changed, the stored endpoints will have no effect.
+
+The display makes use of the three-dimensional layer sequencing
+database described in \ref{ldb3d} to build up a three-dimensional
+representation of the geometry along the line.  This requires that the
+layers are appropriately set up in the technology file.  There are few
+defaults, and this command will not work without proper setup.
+
+The layer thickness shown can be set with the {\et CrossThick}
+technology file keyword.  This can be applied in the physical layer
+blocks of the technology file, or can be set or edited from the {\cb
+Tech Parameter Editor}.
+
+If {\et CrossThick} is not set, the displayed thickness will be taken
+from the {\et Thickness} parameter, which must be set to a nonzero
+value in any case.  This is the physical film thickness.  In cases
+where this is too thick or thin for convient viewing in cross-section,
+the {\et CrossThick} keyword can be set to provide an overriding
+thickness used in the display.
+
+The layer shown in the cross section is always true polarity, showing
+where the material will exist on the substrate.  This is the inverse
+of the normal drawing windows when the layer is dark field.  A via,
+for example, which appears as a colored square in the main window,
+should appear as a hole in cross section, since the painted area
+actually represents lack of insulating material.  This is a "dark
+field" layer.
+
+By default, the display uses {\cb Auto Y-Scale} mode, where the total
+displayed thickness of the layer stack is a little less than the
+display window height.  This scaling is used for any magnification,
+which of course has the usual effect in the horizontal direction.
+
+The Y-scale can be manipulated by the panel brought up from the {\cb
+Zoom} button in the {\cb View} menu of the cross-section display
+window.  In this configuration, the {\cb Set Display Window} panel has
+a set of controls for adjusting the Y-scale.  The {\cb Auto Y-Scale}
+check box sets whether of not the automatic scaling is used.  This
+corresponds to the {\et XSectNoAutoY} variable.
+
+The {\cb Y-Scale} entry area allows a scale factor to be entered.  In
+{\cb Auto Y-Scale} mode, this will change the displayed layer stack
+height relative to the window height.  Otherwise, this will be a
+constant linear scale factor applied in the Y direction.
+
+Note that the grid lines will be shown taking into account the current
+Y scale, and the cells will therefor not, in general, be square.  The
+scaling is also accounted for in the gradations computed for rulers
+that may be applied to the cross-section window.
+
+
+% -----------------------------------------------------------------------------
+% xic:ruler 012815
+\section{The {\cb Rulers} Button: Create Rulers}
+\index{Rulers button}
+\index{show rulers}
+The {\cb Rulers} button in the {\cb View Menu} provides a facility for
+creating rulers.  Rulers, available in physical mode, are visible
+calibrated gradations which indicate physical distance in microns. 
+Rulers are often convenient for measuring distances, and in hard
+copies to indicate size scale.
+
+When the {\cb Rulers} button is on, rulers can be created by clicking
+twice at the endpoints of the ruler, or by pressing and dragging,
+where the ruler will extend from the press and release points.  The
+ruler will only be visible in the window where the first button press
+occurred, and only rulers in the main window will be visible in hard
+copies.  Rulers can be created in any physical-mode window, including
+cross-section and cell hierarchy digest displays.
+
+The computed distance between endpoints of the ruler is printed in the
+prompt area after a ruler is created.  This can be used to accurately
+measure the distance between two points.
+
+Rulers remain visible until another cell is edited, or until deleted. 
+The rulers in effect for a certain cell are remembered, so that upon
+returning to a previously edited cell, the rulers previously in effect
+will be visible.
+
+Presently, rulers exist only in memory, and are not saved to disk with
+cell data.
+
+Rulers can be deleted, while the {\cb Rulers} button is on, by
+pressing the {\kb Delete} or {\kb Tab} (undo) keys, and are deleted in
+reverse order of creation, but only in the window that has keyboard
+focus..  Rulers associated with the current cell can be deleted at any
+time with the {\cb !dr} command.
+
+When a ruler is being created, the ghost-drawn vector which appears
+when creating a ruler indicates the side which will have the
+gradations.  The side with the gradations can be toggled by pressing
+the `/' or `$\backslash$' keys.
+
+If {\kb Shift} is pressed during completion of a ruler, the endpoint
+will be the start point of a new ruler, and the calibration in the new
+ruler will be an extension of that in the current ruler.  Thus rulers
+can be ``chained'' around an object to measure the periphery.
+
+If the {\cb Constrain angles to 45 degree multiples} check box in the
+{\cb Editing Setup} panel from the {\cb Edit Menu} is checked, the
+angle is constrained to multiples of 45 degrees.  If not checked, the
+angle is unconstrained, but snaps to multiples of 45 degrees when the
+angle is close.  In either case, pressing the {\kb Ctrl} key removes
+the constraint.
+
+By default, the tiny snap-box near the mouse pointer, where ruler
+endpoints can be placed, is constrained to the current snap grid, as
+is true elsewhere in {\Xic}.  The period ('.') key toggles
+snapping to grid points while in the {\cb Rulers} command.  When not
+snapping, the snap box follows the mouse pointer, allowing per-pixel
+resolution.
+
+Additionally, if the window shows a normal layout (not CHD or cross
+section) the endpoints will by default snap to nearby edges and
+vertices.  This is the same edge snapping as is controlled from the
+{\cb Edge Snapping} group in the {\cb Snapping} page of the {\cb Grid
+Setup} panel (pressing {\kb Ctrl-g} will produce this panel). 
+However, the {\cb Rulers} command has its own defaults, which are
+active while the {\cb Rulers} command is active.  The default is to
+allow off-grid locations, and non-Manhattan edges, and to snap to both
+edges and the path (central spine) of wires.  Any of these settings
+can be changed, and edge snapping disabled, from the {\cb Grid Setup}
+panel.  Changes will apply only in the {\cb Rulers} command.  Edge
+snapping applies whether or not grid snapping is enabled.
+
+
+% -----------------------------------------------------------------------------
+% xic:info 100312
+\section{The {\cb Info} Button: Display Information About Objects}
+\index{Info button}
+\index{object info}
+\index{InfoInternal variable}
+The {\cb Info} button in the {\cb View Menu} brings up a an {\cb Info}
+window, which can display information about the current cell or any
+visible object.  This command can also facilitate pushing the editing
+context to specific locations within the hierarchy.
+
+Alternatively, if any objects are selected when the command is given,
+information about all selected objects can be dumped to a file.  When
+the command is entered, if there are selected objects, the user is
+prompted whether to dump the info to a file.  If `{\vt y}' is given to
+the prompt, the user is asked for a file name, and is given the option
+of viewing the file when the dump is complete.
+
+If there is no prompt, or `{\vt n}' is given at the prompt, any
+selected objects become deselected, and ``info mode'' becomes active. 
+Objects and unexpanded subcells can be clicked on, and information
+about an object will be displayed in the text window that will appear. 
+The chosen object will be highlighted in the display.
+
+Although the clicking/highlighting operation is superficially similar
+to normal selection, in fact there are important differences. 
+However, the layer selectability and object type selectability flags
+for normal selections are observed.
+
+\begin{enumerate}
+\item{Any object or unexpanded subcell visible in the drawing window
+can be chosen, at any depth in the cell hierarchy.  In normal
+selection, only objects and subcells of the current cell can be
+selected.  The ``selection'' mechanism tracks the expansion depth of
+the display window, including peek mode if active (see
+\ref{expansion}).  Any object that is visible, or any subcell that is
+shown as unexpanded, can be chosen by clicking on the object in the
+window.}
+
+\item{Only one object or unexpanded subcell can be highlighted at a
+time.  This is the item whose information is shown in the window.  To
+highlight a different object at the same location, click multiple
+times.  A different object will be highlighted on each click.}
+\end{enumerate}
+
+The information shown in the window will include the name of the cell
+that contains the chosen object, and a ``back trace'' of containing
+subcells in the hierarchy up to the current cell.  Thus, one can
+easily determine the cell which ``owns'' an object in the display.
+
+While an object is selected, pressing {\kb Enter} will toggle
+selection of all or other objects in the cell containing the original
+selected object.  The objects selected will respect the settings of
+layer-specific selection mode, and object type selectability, as set
+in the {\cb Selection Control Panel}.  In this state, the text in the
+{\cb Info} window will describe the instance containing the selected
+objects.  Pressing {\kb Enter} again will revert to the previous
+state.  This is useful for determining which objects belong to a
+particular cell instance.
+
+When an object is highlighted, initiating the {\cb Push} command in
+the {\cb Cell Menu} will push the editing context to the cell
+containing the chosen object.  That is, the current cell becomes the
+cell containing the object, in the context of the instance in the
+chosen location.  The objects in this cell can then be edited.  The
+{\cb Pop} command in the {\cb Cell Menu} can be used to pop the
+editing context back up the hierarchy to the original current cell. 
+This can be a useful way to navigate through a complex hierarchy,
+while editing a layout.
+
+If the {\kb Shift} key is held while the user clicks anywhere in a
+drawing window showing the current cell, or if the click occurs
+outside of the current cell bounding box, information about the
+current cell is shown, rather than information about a chosen object.
+
+If the user clicks in a sub-window that is displaying a cell that is
+not the current cell, information about the cell will be shown.  It is
+not possible to select objects in this case.
+
+The information shown in the text window contains items such as the
+object type and bounding box, as well as details specific to the type
+of object.  For objects not in the current cell, coordinates are
+usually shown relative to the object's containing cell, as well as
+those reflected to the current cell.
+
+By default, dimensions are given in microns.  If the variable {\et
+InfoInternal} is set (with the {\cb !set} command) then dimensions are
+given in internal units (usually 1000 units per micron).
+
+The text window contains two buttons.  The {\cb Dismiss} button
+removes the pop-up and exits info mode.  The {\cb Activate} button,
+which is initially active, can be used to exit and reenter info mode,
+while the pop-up remains visible.
+
+When applied to polygons, the {\cb Info} command performs reentrancy
+tests, and a message is added if the condition is found, i.e., if the
+polygon can not be rendered unambiguously.
+
+Similarly, when applied to wires, the wire is checked for certain
+properties that might cause trouble.  See the description of the {\cb
+!wirecheck} command in \ref{wirecheck} for a description of the flag
+keywords that might appear in the info text.
+
+The {\cb Info} pop-up is also made visible by the {\cb Info} button in
+the {\cb Cells Listing} panel brought up by the {\cb Cells List}
+button in the {\cb Cell Menu}.  When this button is used, previously
+selected objects are ignored, and there is no provision for dumping to
+a file.  The {\cb Info} window will provide information on cells
+selected in the cells listing, or on objects selected in the drawing
+windows.
+
+
+% -----------------------------------------------------------------------------
+% xic:alloc 061608
+\section{The {\cb Allocation} Button: Show Memory Allocation}
+\index{Allocation button}
+\index{memory}
+Pressing the {\cb Allocation} button in the {\cb View Menu} brings up
+the {\cb Memory Monitor} pop-up.  This displays the number of cells in
+memory, the total dynamic memory in use by the program, and system
+limits on dynamic memory.  While visible, the pop-up is refreshed
+every few seconds.
+
+The maximum memory that can be used by the program before a fault
+occurs is not well defined, and may be much less that the limits,
+depending on what other programs are running, the actual size of the
+swap space, and other factors.  The limits are either system defaults,
+or values set with the {\vt limits}(1) shell command (Unix/Linux). 
+The ``hard'' and ``soft'' values are those returned by the system
+call, and have different interpretations under different Unix
+versions.
+

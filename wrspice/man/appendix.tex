@@ -1,0 +1,621 @@
+\appendix
+\chapter{File Formats}
+\index{file formats}
+
+%S-----------------------------------------------------------------------------
+\section{Rawfile Format}
+\index{file formats!rawfile}
+\label{rawfilefmt}
+
+% spMain.hlp:rawfilefmt 012409
+
+Rawfiles produced and read by {\WRspice} have either an ASCII or a
+binary format.  ASCII format is the preferred format for general use,
+as it is hardware independent and easy to modify, though the binary
+format is the most economical in terms of space and speed of access.
+
+\index{rawfile ASCII format}
+The ASCII format consists of lines or sets of lines introduced by a
+keyword.  The {\vt Title} and {\vt Date} lines should be the first in
+the file and should occur only once.  There may be any number of plots
+in the file, each one beginning with the {\vt Plotname}, {\vt Flags},
+{\vt No.~Variables}, {\vt No.~Points}, {\vt Variables}, and {\vt
+Values} lines.  The {\vt Command} and {\vt Option} lines are optional
+and may occur anywhere between the {\vt Plotname} and {\vt Values}
+lines.  Note that after the {\vt Variables} keyword there must be {\it
+numvars} ``declarations'' of outputs, and after the {\vt Values}
+keyword, there must be {\it numpoints} lines, each consisting of {\it
+numvars} values.  To clarify this discussion, one should create an
+ASCII rawfile with {\WRspice} and examine it.
+
+\begin{quote}
+\begin{tabular}{|l|l|}\hline
+\bf Line Name     & \bf Description\\[0.5ex]\hline \hline
+\vt Title         & An arbitrary string describing the circuit\\ \hline
+\vt Date          & A free-format date string\\ \hline
+\vt Plotname      & A string describing the analysis type\\ \hline
+\vt Flags         & Either ``{\vt complex}'' or ``{\vt real}''\\ \hline
+\vt No.~Variables & The number of variables (numvars)\\ \hline
+\vt No.~Points    & The number of points (numpoints)\\ \hline
+\vt Command       & An arbitrary {\WRspice} command\\ \hline
+\vt Option        & {\WRspice} variables\\ \hline
+\vt Variables     & A number of variable lines (see below)\\ \hline
+\vt Values        & A number of data lines (see below)\\ \hline
+\end{tabular}
+\end{quote}
+Any text on a {\vt Command} line is executed when the file is loaded
+as if it were typed as a command.  By default, {\WRspice} puts a
+{\cb version} command into every rawfile it creates.
+
+\index{rawfile options}
+Text on an {\vt Option} line is parsed as if it were the arguments to a
+{\WRspice} {\cb set} command.  The variables set are then available
+normally, except that they are read-only and are associated with the
+plot.
+
+\index{rawfile variables}
+A {\vt Variable} line looks like
+\begin{quote}
+{\it number name typename} {\vt [ {\it parm=value} ] ....}
+\end{quote}
+The number field is ignored by {\WRspice}.  The {\it name} is the name
+by which this quantity will be referenced in {\WRspice}.  The {\it
+typename} may be either a pre-defined type from the table below, or
+one defined with the {\cb deftype} command.
+
+\begin{quote}
+\begin{tabular}{|l|c|c|}\hline
+Name         & Description          & SPICE2 Numeric Code\\ \hline\hline
+{\vt notype}       & Dimensionless value  & 0\\ \hline
+{\vt time}         & Time                 & 1\\ \hline
+{\vt frequency}    & Frequency            & 2\\ \hline
+{\vt voltage}      & Voltage              & 3\\ \hline
+{\vt current}      & Current              & 4\\ \hline
+{\vt output-noise} & SPICE2 .noise result & 5\\ \hline
+{\vt input-noise}  & SPICE2 .noise result & 6\\ \hline
+{\vt HD2}          & SPICE2 .disto result & 7\\ \hline
+{\vt HD3}          & SPICE2 .disto result & 8\\ \hline
+{\vt DIM2}         & SPICE2 .disto result & 9\\ \hline
+{\vt SIM2}         & SPICE2 .disto result & 10\\ \hline
+{\vt DIM3}         & SPICE2 .disto result & 11\\ \hline
+{\vt pole}         & SPICE3 pz result     & 12\\ \hline
+{\vt zero}         & SPICE3 pz result     & 13\\ \hline
+\end{tabular}
+\end{quote}
+
+The (optional) {\it parm} keywords and values follow.  The known
+parameter names are listed in the table below.
+
+\begin{quote}
+\begin{tabular}{|l|l|}\hline
+Name      & Description\\ \hline\hline
+\vt min   & Minimum significant value for this output\\ \hline
+\vt max   & Maximum significant value for this output\\ \hline
+\vt color & The name of a color to use for this value\\ \hline
+\vt scale & The name of another output to use as the scale\\ \hline
+\vt grid  & The type of grid to use -- numeric codes are:\\
+\qquad\vt 0 &  Linear grid\\
+\qquad\vt 1 &  Log-log grid\\
+\qquad\vt 2 &  X-log/Y-linear grid\\
+\qquad\vt 3 &  X-linear/Y-log grid\\
+\qquad\vt 4 &  Polar grid\\
+\qquad\vt 5 &  Smith grid\\ \hline
+\vt plot  & The plotting style to use -- numeric codes are:\\
+\qquad\vt 0 & Connected points\\
+\qquad\vt 1 & ``Comb'' style\\
+\qquad\vt 2 & Unconnected points\\ \hline
+\vt dims  & The dimensions of this vector -- not fully supported\\ \hline
+\end{tabular}
+\end{quote}
+
+If the flags value is {\vt complex}, the points look like {\it
+r\/},{\it i} where {\it r} and {\it i} are exponential floating point
+format.  Otherwise they are real values in exponential format.  Only
+one of {\vt real} and {\vt complex} should appear.
+
+The lines are guaranteed to be less than 80 columns wide, unless the
+plot title or variable names are very long, or a large number of
+variable options are given.
+
+\index{rawfile binary format}
+The binary format is similar to the ASCII format in organization,
+except that it is not text-mode.  Strings are NULL terminated instead
+of newline terminated, and the values are in the machine's double
+precision floating point format instead of in ASCII.  This makes it
+much easier to read and write and reduces file size, but the binary
+format is not portable between machines with different floating point
+formats.
+
+The circuit title, date, and analysis type name in that order are at
+the start of the plot, each terminated by a NULL byte.  Then the flags
+field (a short, which is 1 for real data and 2 for complex data), the
+number of outputs, and the number of points (both integers) are
+present.  Following this is a list of NULL-terminated strings which
+are command lines.  This list is terminated by an extra NULL byte. 
+Then come the options, which consist of the name, followed by the type
+and the value in binary.  The output ``declarations'' consist of the
+name, type code, flags, color, grid type, plot type, and dimension
+information in that order.  Next come the values, which are either
+doubles or pairs of doubles in the case of complex data.
+
+The ``old'' binary format, which is used by SPICE2, is not accepted by
+{\WRspice}, however the format is given below should it be necessary
+to write a translator.
+
+\begin{quote}
+\begin{tabular}{|l|l|}\hline
+\multicolumn{2}{|l|}{\bf SPICE2 Binary Rawfile Format}\\ \hline
+\bf Field       & \bf Size in Bytes\\ \hline\hline
+title           & 80\\ \hline
+date            & 8\\ \hline
+time            & 8\\ \hline
+numoutputs      & 2\\ \hline
+the integer 4   & 2\\ \hline
+output names    & 8 for each output\\ \hline
+types of output & 2 for each output\\ \hline
+node index      & 2 for each output\\ \hline
+plot title      & 24\\ \hline
+data            & {\vt numpoints * numoutputs * 8}\\ \hline
+\end{tabular}
+\end{quote}
+
+The data are in the form of double precision numbers, or
+pairs of single precision numbers if the data are complex.
+
+The values recognized for the ``types of output'' fields are listed in
+the data types (top) table above as the ``SPICE2 Numeric Code''.
+
+
+%S-----------------------------------------------------------------------------
+\section{Help Database Files}
+\label{helpfiles}
+\index{file formats!help files}
+\index{help files}
+
+% HelpSys.hlp:helpfiles
+
+The help information is obtained from database files suffixed with
+{\vt .hlp} found along the help search path.  These directories may
+also contain other files referenced in the help text, such as image
+files.  The help search path can be set in the environment with the
+variable {\et SPICE\_HLP\_DIR}, and/or may be set with the {\vt
+helppath} variable, which will override the environment.  These files
+have a simple format, allowing users to create and modify them.  Each
+help entry is associated with one or more keywords, which should be
+unique in the database.  The help system has a debugging mode, which
+can usually be switched on by the application, which will issue a
+warning message on {\vt stderr} if a name clash is detected.  The
+files are ASCII text, either in DOS or Unix format.  Fields are
+separated by keywords which begin with ``{\vt !!}''.  Although the
+help system provides rich-text presentation from HTML formatting,
+entries can be in plain text.  A sample plain-text entry has the form:
+
+\begin{quote}
+\begin{verbatim}
+!!KEYWORD
+excmd
+!!TITLE
+Example Command
+!!TEXT
+    This command exists only in this example.  Note that the
+    !!keywords only have effect if they start in the first
+    column.  The blank line below is optional.
+
+!!SUBTOPICS
+akeyword
+anotherkeyword
+!!SEEALSO
+yetanotherkeyword
+\end{verbatim}
+\end{quote}
+
+In this example, the keyword ``{\vt excmd}'' is used to access the
+topic, and should be unique among the database entries accessed by the
+application.  The text which appears in the topic (following {\vt
+!!TEXT}) is shown indented, which is recommended for clarity, but is
+not required.
+
+In ``{\vt .hlp}'' files, lines anywhere with `{\vt *}' or `{\vt \#}'
+in the first column are ignored, as they are assumed to be comments.
+Blank lines outside of the {\vt !!TEXT} field are ignored.  Leading
+white space is stripped, which can be a problem for maintaining
+indentation in formatted plain text.  To add a space which will not be
+stripped, use the HTML escape ``{\vt \&\#32;}''.
+
+The following `{\vt !!}' keywords can appear in ``{\vt .hlp}'' files.
+These are recognized only in upper case, and must start in the first
+text column.
+
+\begin{description}
+\item{{\vt !!}(space) {\it anything}}\\
+A line beginning with two exclamation points followed by a space
+character is ignored.
+
+\item{\vt !!KEYWORD {\it keyword-list}}\\
+This keyword signals the start of a new topic.  The {\it keyword-list}
+consists of one or more tokens, each of which must be unique among all
+topics in the database.  The words are used to identify the topic, and
+if more than one is listed, the additional words are equivalent
+aliases.  The {\it keyword-list} may follow {\vt !!KEYWORD} on the
+same line, or may be listed in the following line, in which case {\vt
+!!KEYWORD} should appear alone on the line.
+
+Punctuation is allowed in keywords, only white space characters can
+not be used.  The `{\vt \#}' character has special meaning and should
+not be part of a keyword name.  Also, character sequences that could
+be confused with a URL or directory path should be avoided.  The
+latter basically prohibits the `{\vt /}' character (and also
+`$\backslash$' under Windows) from being included in keywords.  There
+are special names starting with `\$' which are expanded to
+application-specific internal variables, as described below.  To avoid
+any possibility of a clash, it is probably best to avoid `\$' in
+general keywords.
+
+It is often useful to include a meaningful prefix in keywords to
+ensure uniqueness, for example in {\Xic}, all commands have keywords
+prefixed with ``{\vt xic:}''.
+
+\item{\vt !!TITLE {\it string}}\\
+The {\vt !!TITLE} specifies the title of the topic, and should follow
+the {\vt !!KEYWORD} specification.  The title text can appear on the
+same line following {\vt !!TITLE}, or on the next line, in which case
+{\vt !!TITLE} should appear alone in the line.  The title is printed
+at the top of the topic display, and is used in menus of topics.
+
+\item{\vt !!TEXT}\\
+This line signals the beginning of the topic text, which is expected
+to be plain text.  The keyword is mutually exclusive with the {\vt
+!!HTML} keyword.  The lines following {\vt !!TEXT} up to the next {\vt
+!!KEYWORD}, {\vt !!SEEALSO}, or {\vt !!SUBTOPICS} line or end of file
+are read into the display window.  The plain text is converted to HTML
+before being sent to the display in the following manner:
+
+\begin{enumerate}\rr
+\item The title text is enclosed in {\vt <H1>...</H1>}.
+\item Each line of text has a {\vt <BR>} appended.
+\item The subtopics and see-alsos are preceded with added
+    {\vt <H3>Subtopics</H3>} and {\vt <H3>References</H3>} lines.
+\item The subtopics and see-alsos are converted to links of the form
+    {\vt <A HREF="{\it keyword\/}">{\it title\/}</A>} where the {\it
+    keyword} is the database keyword, and the {\it title} is the title
+    text for the entry.
+\end{enumerate}
+
+Note that the text area can contain HTML tags for various things, such
+as images.  Also note that text formatting is taken from the help file
+(the {\vt <BR>} breaks lines), and not reformatted at display time.
+The {\vt !!HTML} line should be used rather than {\vt !!TEXT} if the
+text requires full HTML formatting.
+
+\item{\vt !!HTML}\\
+This line signals the beginning of the topic text, which is expected
+to be HTML-formatted.  The keyword is mutually exclusive with the {\vt
+!!TEXT} keyword.  The parser understands all of the standard HTML 3.2
+syntax, and a few 4.0 extensions.  References are to keywords found in
+the database and general URLs.  Image ({\vt .gif}, etc.) files can be
+referenced, and are expected to be found along with the {\vt .hlp}
+files.
+
+\item{\vt !!IFDEF {\it word}}\\
+This line can appear in the block of text following {\vt !!TEXT} or
+{\vt !!HTML}.  In conjunction with the {\vt !!ELSE} and {\vt !!ENDIF}
+directives, it allows for the conditional inclusion of blocks of text
+in the topic.  The {\it word} is one of the special words defined by
+the application.  Presently, the following words are defined:
+
+\begin{tabular}{ll}\\
+in {\Xic} & {\vt Xic}\\
+in {\WRspice} & {\vt WRspice}\\
+in either, under Windows & {\vt Windows}\\
+\end{tabular}
+
+If {\it word} is defined, the text up to the next {\vt !!ELSE} or {\vt
+!!ENDIF} will be included in the topic, and any text following an {\vt
+!!ELSE} up to {\vt !!ENDIF} is discarded.  If {\it word} is not
+defined, the text up to the next {\vt !!ELSE} or {\vt !!ENDIF} is
+discarded, and any text following an {\vt !!ELSE} is included.  The
+constructs can be nested.  A word that is not recognized or absent is
+``not defined''.  Every {\vt !!IFDEF} should have a corresponding {\vt
+!!ENDIF}.  The {\vt !!ELSE} is optional.  The {\vt !!SEEALSO} and {\vt
+!!SUBTOPICS} lines can appear within the blocks.
+
+Example:
+\begin{verbatim}
+!!HTML
+   Here is some text.
+!!IFDEF Xic
+   You are reading this in Xic.
+!!ELSE
+!!IFDEF WRspice
+   You are reading this in WRspice.
+!!ELSE
+   You are not reading this in Xic or WRspice.
+!!ENDIF
+!!ENDIF
+\end{verbatim}
+
+\item{\vt !!IFNDEF {\it word}}\\
+This keyword can appear in the block of text following {\vt !!TEXT} or
+{\vt !!HTML}.  It is similar to {\vt !!IFDEF} but has the reverse
+logic.
+
+\item{\vt !!ELSE}\\
+This keyword can follow {\vt !!IFDEF} or {\vt !!IFNDEF} and defines
+the start of a block of text to include in the topic if the condition
+is not satisfied.
+
+\item{\vt !!ENDIF}\\
+This keyword terminates the text blocks to be conditionally included
+in the topic, using {\vt !!IFDEF} or {\vt !!IFNDEF}.
+
+\item{\vt !!INCLUDE {\it filename}}\\
+The keyword may appear in the text following {\vt !!TEXT} or {\vt
+!!HTML}.  When encountered in the text to be included in the topic,
+the text of {\it filename}, which is searched for in the help search
+path if not an absolute pathname, is added to the displayed text of
+the current topic.  There is no modification of the text from {\it
+filename}.
+
+If the filename is a relative path to a subdirectory of one of the
+directories of a directory in the help search path, the subdirectory
+is added to the search list.  Thus, an HTML document and associated
+gif files can be placed in a separate subdirectory in the help tree.
+The HTML document can be referenced from the main help files with a
+{\vt !!INCLUDE} directive, and there is no need to explicitly change
+the help search path.
+
+\item{\vt !!REDIRECT {\it keyword target}}\\
+This will define {\it keyword} as an alias for {\it target}.  The {\it
+target} can be any input token recognizable by the help system,
+including URLs, named anchors, and local files.  For example:
+\begin{quote}
+{\vt !!REDIRECT nyt http://www.nytimes.com}
+\end{quote}
+Giving ``{\vt !help nyt}'' in {\Xic} or ``{\vt help nyt}'' in
+{\WRspice} will bring up a help window containing the New York Times
+web page.
+
+\item{\vt !!HEADER}\\
+The text that follows, up until the next {\vt !!KEYWORD} or {\vt
+!!FOOTER}, is saved for inclusion in each page composed from the {\vt
+!!HTML} lines for database keywords.  The header is inserted at the
+top of the page.  There can be only one header defined, and if more
+than one are found in the help files, the first one read will be used.
+
+In the header text, the literal token {\vt \%TITLE\%} is replaced with
+the {\vt !!TITLE} text of the current topic when displayed.
+
+\item{\vt !!FOOTER}\\
+The text that follows, up until the next {\vt !!KEYWORD} or {\vt
+!!HEADER}, is saved for inclusion in each page composed from the {\vt
+!!HTML} lines for database keywords.  The footer is inserted at the
+bottom of the page.  There can be only one footer defined, and if more
+than one are found in the help files, the first one read will be used.
+
+\item{\vt !!SEEALSO {\vt keyword-list}}\\
+The {\it keyword-list} consists of a list of keywords that are
+expected to be defined by {\vt !!KEYWORD} lines elsewhere in the
+database.  A menu of these items is displayed at the bottom of the
+topic text, under the heading ``References''.  The keywords specified
+after {\vt !!SEEALSO} can appear on the same line separated with
+space, or on multiple lines.  If a keyword in these lists is not found
+in the database, the normal action is to ignore the error.  The
+application may provide a debugging mode, whereby unresolved
+references will produce a warning message.
+
+\item{\vt !!SUBTOPICS {\it keyword-list}}\\
+This produces a menu of the topics found in the {\it keyword-list}
+very similar to {\vt !!SEEALSO}, however under the heading
+``Subtopics''.  This can be used in addition to {\vt !!SEEALSO}.
+\end{description}
+
+%SU-------------------------------------
+\subsection{Anchor Text}
+
+Clickable references in the HTML text have the usual form:
+\begin{quote}
+{\vt <a href="{\it something}">{\it highlighted text}</a>}
+\end{quote}
+Here, ``{\it something}'' can be a help database keyword or an
+ordinary URL.
+
+One can use named anchors in help keywords.  This means that the `{\vt
+\#}' symbol is holy, and should not be used in help keywords.  The
+named anchors can appear in the {\vt !!HTML} part of the help database
+entries in the usual HTML way, e.g.
+
+\begin{verbatim}
+!!KEYWORD
+somekeyword
+...
+!!HTML
+    ...
+    <a name="refname">some text</a>
+\end{verbatim}
+
+\begin{flushleft}
+Then, referencing forms like ``{\vt !help somekeyword\#refname}'' and
+{\vt <a href="somekeyword\#refname">blather</a>} will bring up the
+``somekeyword'' topic, but with ``some text'' at the top of the help
+window, rather than the start of the document.
+\end{flushleft}
+
+There is an additional capability:  `{\vt \$}' expansion.  Words found
+in anchor text that begin with a dollar sign (`{\vt \$}') character
+may be replaced by either a path related to the program, the value of
+a variable saved in the program, or the value of an environment
+variable.  The character that immediately follows the word can not be
+alphanumeric.
+
+This replacement is handled by a callback to the application, but both
+{\Xic} (and its derivatives) and {\WRspice} support the following
+keywords and behavior.
+
+\begin{description}
+\item{\vt \$PROGROOT}\\
+This word is replaced by the full path to the program installation
+directory, for example\\ ``{\vt /usr/local/xictools/xic}''.
+\item{\vt \$HELP}\\
+This word is replaced by {\vt \$PROGROOT/help}, meaning the same
+directory as {\vt \$PROGROOT} suffixed with {\vt /help}.
+\item{\vt \$EXAMPLES}\\
+This word is replaced by {\vt \$PROGROOT/examples}, as above.
+\item{\vt \$DOCS}\\
+This word is replaced by {\vt \$PROGROOT/docs}, as above.
+\item{\vt \$SCRIPTS}\\
+This word is replaced by {\vt \$PROGROOT/scripts}, as above.
+\end{description}
+
+If there is no match to these words, the word, without the dollar
+sign, is checked against the variable database.  If a variable is set
+with the same name, the string value of the variable replaces the
+word.  If there is no match, but the word without the dollar sign
+matches tne name of an environment variable, the value of the
+environment variable will replace the word.  If there is no match,
+there is no substitution.  Substitutions are evaluated recursively.
+
+If the first character of an anchor URL is `{\vt \symbol{126}}', the
+path is tilde expanded.  This is done after `{\vt \$}' substitution. 
+Tildes denote a user's home directory:  ``{\vt \symbol{126}/mydir}''
+might expand to ``{\vt /home/yourhome/mydir}'', and ``{\vt
+\symbol{126}joe/joesdir}'' might expand to ``{\vt
+/home/joe/joesdir}'', etc.
+
+In {\WRspice}, one can source files from anchor text in the HTML
+viewer, if the anchor text consists of a file name with a ``{\vt
+.cir}'' extension.  Thus, if one has a circuit file named ``{\vt
+mycircuit.cir}'', and the HTML text in the help window contains a
+reference like
+\begin{quote}
+{\vt <a html="mycircuit.cir">click here</a>}
+\end{quote}
+then clicking on the ``click here'' tag will source {\vt
+mycircuit.cir} into {\WRspice}.  Similarly, anchor references to files
+with a ``{\vt .raw}'' extension will be loaded into {\WRspice} (as a
+{\it rawfile\/}, i.e., a plot data file) when the anchor is clicked.
+
+%SU-------------------------------------
+\subsection{{\vt .mozyrc} File}
+\label{mozyrc}
+
+% HelpSys.hlp:mozyrcfile
+
+\index{.mozyrc file}
+The help system looks for a file named ``{\vt .mozyrc}'' in the user's
+home directory, which contains keywords which define the default
+behavior of many of the commands and features of the help window. 
+This is used only in UNIX/Linux releases.  It is necessary to install
+this file if one wants alternate selections from the help window, for
+example different fonts, to be persistent.
+
+A sample {\vt .mozyrc} file listing is provided below.  The file can
+be found in the {\vt startup} directory in the installation tree,
+under the name ``{\vt mozyrc}''.  To install, edit the file if
+necessary, then move it to your home directory under the name ``{\vt
+.mozyrc}''.
+
+\begin{verbatim}
+# This is the startup file which sets defaults for the mozy web browser
+# and the Xic/WRspice HTML viewer.  It should be installed as ".mozyrc"
+# in the user's home directory, should the user wish to change the
+# defaults.
+
+# --- DISPLAY ATTRIBUTES -------------------------------------------------
+
+# Background color used for pages that don't have a <body> tag,
+# such as help text (default #e8e8f0)
+DefaultBgColor #e8e8f0
+
+
+# Background image URL to use for pages that don't have a <body> tag
+# (no default)
+#DefaultBgImage /some/dir/pretty_picture.jpg
+
+# Text color to use for pages that don't have a <body> tag
+# (default black)
+DefaultFgText black
+
+# Color to use for links in pages without a <body> tag
+# (default blue)
+DefaultFgLink blue
+
+# How to handle images:
+#  0 Don't display images that require downloading
+#  1 Download images when encountered in document
+#  2 Download images after document is displayed
+#  3 Display images progressively after document is displayed (the default)
+ImageLoadMode 3
+
+# How to underline anchors when underlining is enabled
+#  0 No underline
+#  1 Single solid underline (default)
+#  2 Double solid underline
+#  3 Single dashed underline
+#  4 Double dashed underline
+AnchorUnderline 1
+
+# If this is set to one (the default) anchors are shown as buttons.  If set
+# to zero, anchors use the underlining style
+AnchorButtons 0
+
+# If set to one (the default) anchors will be highlighted when the pointer
+# passes over them.  If zero, there will be no highlighting
+AnchorHighlight 1
+
+# The default font families.  This is the XLFD family name with "-size"
+# appended.  Defaults:  adobe-times-normal-p-14   misc-fixed-normal-c-14
+FontFamily adobe-times-normal-p-14
+FixedFontFamily misc-fixed-normal-*-14
+
+# If set to one, animations are frozen.  If zero (the default) animations
+# will be shown normally
+FreezeAnimations 0
+
+# --- COMMUNICATIONS -----------------------------------------------------
+
+# Time in seconds allowed for a response from a message (0 for no timeout,
+# to 600, default 15)
+Timeout 15
+
+# Number of times to retry a message after a timeout (0 to 10, default 4)
+Retries 4
+
+# The port number used for HTTP communications (1 to 65536, default 80)
+HTTP_Port 80
+
+# The port number used for FTP communications (1 to 65536, default 21)
+FTP_Port 21
+
+# --- GENERAL ------------------------------------------------------------
+
+# Number of cache files to save (2 to 4096, default 64)
+CacheSize 64
+
+# Set to one to disable disk cache, 0 (the default) enables cache
+NoCache 0
+
+# Set to one to disable sending and receiving cookies
+NoCookies 0
+
+# --- DEBUGGING ----------------------------------------------------------
+
+# Set this to one to print extended status messages on terminal screen
+# (default 0)
+DebugMode 0
+
+# Set this to one to print transaction headers to terminal screen
+# (default 0)
+PrintTransact 0
+
+# Debugging mode for images
+#  0 Disable debugging mode (the default)
+#  1 Load local images after document is displayed
+#  2 Display local images progressively after document is displayed
+LocalImageTestMode 0
+
+# Issue warnings about bad HTML syntax to terminal (1) or not (0, the default)
+BadHTMLwarnings 0
+\end{verbatim}
+
+\input{examples}
+
