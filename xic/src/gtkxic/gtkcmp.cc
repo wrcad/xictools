@@ -1257,6 +1257,9 @@ sCmp::cmp_action(GtkWidget *caller, void*)
         return;
     }
     if (!strcmp(name, "Go")) {
+        // If the prompt to view output is still active, bail.
+        PL()->AbortEdit();
+
         char *str = Cmp->compose_arglist();
 
         cCompare cmp;
@@ -1280,18 +1283,20 @@ sCmp::cmp_action(GtkWidget *caller, void*)
             PL()->ShowPromptV("Comparison failed: %s", Errs()->get_error());
         else {
             char buf[256];
-            if (df == DFsame)
-                strcpy(buf, "No differences, ");
-            else
-                strcpy(buf, "Differences found, ");
-            sprintf(buf + strlen(buf),
-                "comparison data written to file \"%s\", view file? [n] ",
-                DIFF_LOG_FILE);
-            char *in = PL()->EditPrompt(buf, "n");
-            in = lstring::strip_space(in);
-            if (in && (*in == 'y' || *in == 'Y'))
-                DSPmainWbag(PopUpFileBrowser(DIFF_LOG_FILE))
-            PL()->ErasePrompt();
+            if (df == DFsame) {
+                sprintf(buf, "No differences found, see file \"%s\".",
+                    DIFF_LOG_FILE);
+                PL()->ShowPrompt(buf);
+            }
+            else {
+                sprintf(buf, "Differences found, data written to "
+                    "file \"%s\", view file? [y] ", DIFF_LOG_FILE);
+                char *in = PL()->EditPrompt(buf, "y");
+                in = lstring::strip_space(in);
+                if (in && (*in == 'y' || *in == 'Y'))
+                    DSPmainWbag(PopUpFileBrowser(DIFF_LOG_FILE))
+                PL()->ErasePrompt();
+            }
         }
         delete [] str;
         return;
