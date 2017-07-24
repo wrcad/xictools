@@ -9,6 +9,11 @@ OSNAME=$1
 VERSION=$2
 SRCDIR=$3
 
+with_cadence=no
+if [ $OSNAME = LinuxRHEL6_64 -o $OSNAME = LinuxRHEL7_64 ]; then
+    with_cadence=yes
+fi
+
 tifs="$IFS"
 IFS="."
 set -- $VERSION
@@ -130,6 +135,118 @@ if [ $with_devkit=yes ]; then
       echo "%attr(0644, root, root) /usr/local/xictools/wrspice/devkit/$a"
   done
   echo
+fi
+
+echo
+if [ $with_cadence=yes ]; then
+  dir=/usr/local/xictools/wrspice/cadence-oasis
+  echo "%dir $dir"
+  echo "%attr(0644, root, root) $dir/advTool.il"
+  echo "%attr(0644, root, root) $dir/analysis.il"
+  echo "%attr(0644, root, root) $dir/ChangeLog"
+  echo "%attr(0644, root, root) $dir/classes.il"
+  echo "%attr(0644, root, root) $dir/dataAccess.il"
+  echo "%attr(0644, root, root) $dir/envOption.il"
+  echo "%attr(0644, root, root) $dir/hnl.ile"
+  echo "%attr(0644, root, root) $dir/initialize.il"
+  echo "%attr(0644, root, root) $dir/labels.il"
+  echo "%attr(0755, root, root) $dir/makeAnalog"
+  echo "%attr(0755, root, root) $dir/makeWrs"
+  echo "%attr(0755, root, root) $dir/mkcdsenv"
+  echo "%attr(0755, root, root) $dir/mkcx"
+  echo "%attr(0644, root, root) $dir/netlist.il"
+  echo "%attr(0644, root, root) $dir/OasisCustomer.pdf"
+  echo "%attr(0644, root, root) $dir/params.il"
+  echo "%attr(0644, root, root) $dir/README"
+  echo "%attr(0644, root, root) $dir/se.ile"
+  echo "%attr(0644, root, root) $dir/simControl.il"
+  echo "%attr(0644, root, root) $dir/simInfo.il"
+  echo "%attr(0644, root, root) $dir/simOption.il"
+  echo "%attr(0644, root, root) $dir/startup.il"
+  echo "%attr(0644, root, root) $dir/WRspiceBuild.il"
+  echo "%attr(0644, root, root) $dir/WRspiceCdsenvFile"
+  echo "%attr(0644, root, root) $dir/WRspice.cxt"
+  echo "%attr(0644, root, root) $dir/WRspice.il"
+  echo "%attr(0644, root, root) $dir/WRspice.ini"
+  echo "%attr(0644, root, root) $dir/WRspiceInit.il"
+  echo "%attr(0644, root, root) $dir/WRspice.menus"
+
+  echo "%dir $dir/64bit"
+  echo "%attr(0644, root, root) $dir/64bit/README"
+  echo "%attr(0644, root, root) $dir/64bit/WRspice.cxt"
+
+  echo "%dir $dir/iftest"
+  echo "%attr(0644, root, root) $dir/iftest/cdsinfo.tag"
+  echo "%attr(0644, root, root) $dir/iftest/data.dm"
+  echo "%attr(0644, root, root) $dir/iftest/.oalib"
+  echo "%dir $dir/iftest/ift1"
+  sch=$dir/iftest/ift1/schematic
+  echo "%dir $sch"
+  echo "%attr(0644, root, root) $sch/data.dm"
+  echo "%attr(0644, root, root) $sch/master.tag"
+  echo "%attr(0644, root, root) $sch/sch.oa"
+  echo "%attr(0644, root, root) $sch/thumbnail_128x128.png"
+  echo "%dir $dir/iftest/ift2"
+  sch=$dir/iftest/ift2/schematic
+  echo "%dir $sch"
+  echo "%attr(0644, root, root) $sch/data.dm"
+  echo "%attr(0644, root, root) $sch/master.tag"
+  echo "%attr(0644, root, root) $sch/sch.oa"
+  echo "%attr(0644, root, root) $sch/thumbnail_128x128.png"
+  echo "%dir $dir/iftest/ift3"
+  sch=$dir/iftest/ift3/schematic
+  echo "%dir $sch"
+  echo "%attr(0644, root, root) $sch/data.dm"
+  echo "%attr(0644, root, root) $sch/master.tag"
+  echo "%attr(0644, root, root) $sch/sch.oa"
+  echo "%attr(0644, root, root) $sch/thumbnail_128x128.png"
+  echo "%dir $dir/iftest/ift4"
+  sch=$dir/iftest/ift4/schematic
+  echo "%dir $sch"
+  echo "%attr(0644, root, root) $sch/data.dm"
+  echo "%attr(0644, root, root) $sch/master.tag"
+  echo "%attr(0644, root, root) $sch/sch.oa"
+  echo "%attr(0644, root, root) $sch/thumbnail_128x128.png"
+  echo "%dir $dir/iftest/ift5"
+  sch=$dir/iftest/ift5/schematic
+  echo "%dir $sch"
+  echo "%attr(0644, root, root) $sch/data.dm"
+  echo "%attr(0644, root, root) $sch/master.tag"
+  echo "%attr(0644, root, root) $sch/sch.oa"
+  echo "%attr(0644, root, root) $sch/thumbnail_128x128.png"
+  echo "%dir $dir/iftest/jtl4"
+  echo "%attr(0644, root, root) $dir/iftest/jtl4//data.dm"
+  sch=$dir/iftest/jtl4/schematic
+  echo "%dir $sch"
+  echo "%attr(0644, root, root) $sch/data.dm"
+  echo "%attr(0644, root, root) $sch/master.tag"
+  echo "%attr(0644, root, root) $sch/sch.oa"
+  echo "%attr(0644, root, root) $sch/thumbnail_128x128.png"
+  sch=$dir/iftest/jtl4/symbol
+  echo "%dir $sch"
+  echo "%attr(0644, root, root) $sch/master.tag"
+  echo "%attr(0644, root, root) $sch/symbol.oa"
+  echo "%attr(0644, root, root) $sch/thumbnail_128x128.png"
+
+  echo "%dir $dir/WRspiceDevs"
+  echo "%attr(0644, root, root) $dir/WRspiceDevs/cdsinfo.tag"
+  echo "%attr(0644, root, root) $dir/WRspiceDevs/data.dm"
+  echo "%attr(0644, root, root) $dir/WRspiceDevs/.oalib"
+  echo "%dir $dir/WRspiceDevs/jj"
+  echo "%attr(0644, root, root) $dir/WRspiceDevs/jj/data.dm"
+  sch=$dir/WRspiceDevs/jj/symbol
+  echo "%dir $sch"
+  echo "%attr(0644, root, root) $sch/master.tag"
+  echo "%attr(0644, root, root) $sch/symbol.oa"
+  echo "%attr(0644, root, root) $sch/thumbnail_128x128.png"
+  sch=$dir/WRspiceDevs/jj/WRspice
+  echo "%dir $sch"
+  echo "%attr(0644, root, root) $sch/master.tag"
+  echo "%attr(0644, root, root) $sch/symbol.oa"
+  echo "%attr(0644, root, root) $sch/thumbnail_128x128.png"
+
+  echo "%dir $dir/wrsmods"
+  echo "%attr(0644, root, root) $dir/wrsmods/models.scs"
 fi
 cat files/scripts
 

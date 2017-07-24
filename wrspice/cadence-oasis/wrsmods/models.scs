@@ -1,0 +1,31 @@
+
+* Josephson junctions for Hypres foundry process.
+* Based on Hypres Design Rules Revision #24, Jan. 11, 2008.
+* Note that capacitance values are substantially larger than the models
+* provided earlier.
+
+* These scale to 1mA for area=1.  Use the area device parameter to set
+* actual critical current.
+
+* Nb 30 A/cm2
+.model jj1 jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
++ icrit=1m, r0=30, rn=1.7, cap=123.3p)
+
+* Nb 1000 A/cm2
+.model jj2 jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
++ icrit=1m, r0=30, rn=1.7, cap=5.0p)
+
+* Nb 4500 A/cm2
+.model jj3 jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
++ icrit=1m, r0=30, rn=1.7, cap=1.31p)
+.model jjr jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
++ icrit=1m, vshunt=0.5mV cap=1.31p)
+
+* Made-up YBCO model, the Vg is kept small so that timestep-limiting
+* does not make simulations ridiculously slow.  This will not affect
+* SFQ circuits since junction voltage is always much smaller than this
+* value.
+* YBCO
+.model ybco1 jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
++ icrit=1m, r0=1, rn=1, cap=.1p)
+

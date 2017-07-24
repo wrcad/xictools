@@ -286,6 +286,7 @@ install_scripts:    $(destn)/scripts
 install_examples:   $(destn)/examples
 install_docs:       $(destn)/docs
 install_devkit:     $(destn)/devkit
+install_cadence:    $(destn)/cadence-oasis
 
 install_test::
 	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
@@ -403,6 +404,9 @@ $(destn)/devkit::
 	    cp ../devlib/adms/examples/$$a/*.$(SOEXT) $@/examples/$$a/module_dist; \
 	done;
 
+$(destn)/cadence-oasis::
+	cp -pfr ../cadence-oasis $(destn)
+
 package::
 	$(MAKE) all
 	(export PATH=`pwd`:$$PATH; cd ../devlib/adms/examples; \
@@ -411,6 +415,9 @@ package::
 	mkdir ../packages/root
 	$(MAKE) INSTALL_PREFIX=../packages/root$(prefix) install
 	$(MAKE) INSTALL_PREFIX=../packages/root$(prefix) install_devkit
-	cd ../packages; make $(SPICE_PROG)-$(OSNAME)
+	if [ $(OSNAME) = LinuxRHEL6_64 -o $(OSNAME) = LinuxRHEL7_64 ]; then \
+	    $(MAKE) INSTALL_PREFIX=../packages/root$(prefix) install_cadence; \
+	fi
+	cd ../packages; $(MAKE) $(SPICE_PROG)-$(OSNAME)
 
 #######################################################################

@@ -1,0 +1,84 @@
+#!/bin/sh
+
+# This script will generate a custom "analogLib" (library of devices
+# for use in Virtuoso schematics) which supports WRspice.  Devices
+# from this library must be used when simulating with WRspice.
+
+# Usage:         ./makeAnalog [test]
+# generates:     ./analogLib directory
+# option:        test,  Don't touch library, keep tmp.il script.
+
+test=no
+if [ -n $1 -a $1 = test ]; then
+    test=yes
+fi
+
+# Sanity checks.
+
+if [ -z "$CDSHOME" ]; then
+   echo ERROR:  CDSHOME not set in environment.  This should be set to
+   echo your Virtuoso installation directory containing the tools link.
+   exit 1.
+fi
+if [ ! -d $CDSHOME/tools/dfII/src/artist ]; then
+   echo ERROR:  no such directory $CDSHOME/tools/dfII/src/artist
+   echo Error in path, or Virtuoso setup incomplete.
+   exit 2;
+fi
+if [ ! -d $CDSHOME/tools/dfII/src/artist/WRspice ]; then
+   echo ERROR:  no such directory $CDSHOME/tools/dfII/src/artist/WRspice
+   echo WRspice subdirectory missing.
+   exit 3;
+fi
+if [ ! -d $CDSHOME/tools/dfII/etc/cdslib/artist/analogLib ]; then
+   echo ERROR:  analogLib source directory not found.
+   echo Error in path, or Virtuoso setup incomplete.
+   exit 4;
+fi
+
+# Clear any existing library, and copy down a fresh one from Virtuoso.
+
+if [ $test = no ]; then
+    echo Copying library...
+    rm -rf analogLib
+    cp -r $CDSHOME/tools/dfII/etc/cdslib/artist/analogLib .
+fi
+
+# Get a list of the simulators known to Virtuoso.  This assumes that
+# WRspice/simImfo.il has been installed under $path with the other
+# simulators.
+
+path="$CDSHOME/tools/dfII/src/artist"
+simulators=`cd $path
+for a in *; do
+    if [ $a = analogLib ]; then
+        continue
+    fi
+    if [ ! -f $a/simInfo.il ]; then
+        continue
+    fi
+    echo -n " $a"
+done`
+simulators="($simulators )"
+
+# Build to script to load.
+
+cat << EOF > tmp.il
+\i printf("Loading tmp.il...")
+\i lib = "analogLib"
+\i sourcePath = "$path"
+\i simulators = '$simulators
+\i ddGetObj( lib )
+\i sstatus( writeProtect nil)
+\i load("./params.il")
+\i load("./labels.il")
+\i (almBuildLibrary ?lib lib ?sourcePath sourcePath ?simulators simulators)
+\i exit()
+EOF
+
+if [ $test = no ]; then
+    /bin/rm -f AnalogLib.log
+    virtuoso -replay ./tmp.il -nograph -log ./AnalogLib.log
+    rm tmp.il
+fi
+
