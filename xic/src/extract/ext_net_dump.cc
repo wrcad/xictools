@@ -67,7 +67,7 @@ cExtNets::cExtNets(cCHD *chd, const char *cname, const char *basename,
     if (en_chd) {
         symref_t *p = en_chd->findSymref(cname, Physical, true);
         if (p) {
-            en_cellname = p->get_name()->string();
+            en_cellname = Tstring(p->get_name());
             en_chd->setBoundaries(p);
             if (!en_basename)
                 en_basename = lstring::copy(en_cellname);
@@ -379,7 +379,7 @@ cExtNets::write_metal_file(const CDs *sdesc, int x, int y) const
     cGroupDesc *gd = sdesc->groups();
     if (!gd) {
         Errs()->add_error("write_metal_file: cell %s has no group info.",
-            sdesc->cellname()->string());
+            Tstring(sdesc->cellname()));
         return (false);
     }
 
@@ -443,10 +443,10 @@ cExtNets::write_metal_file(const CDs *sdesc, int x, int y) const
             return (false);
         }
     }
-    if (!oas->write_begin_struct(sdesc->cellname()->string())) {
+    if (!oas->write_begin_struct(Tstring(sdesc->cellname()))) {
         Errs()->add_error(
             "write_metal_file: write_begin_struct %s returned error.",
-            sdesc->cellname()->string());
+            Tstring(sdesc->cellname()));
         return (false);
     }
     Instance inst;
@@ -463,13 +463,13 @@ cExtNets::write_metal_file(const CDs *sdesc, int x, int y) const
             return (false);
         }
     }
-    if (!oas->write_end_struct(sdesc->cellname()->string())) {
+    if (!oas->write_end_struct(Tstring(sdesc->cellname()))) {
         Errs()->add_error(
             "write_metal_file: write_end_struct %s returned error.",
-            sdesc->cellname()->string());
+            Tstring(sdesc->cellname()));
         return (false);
     }
-    if (!oas->write_endlib(sdesc->cellname()->string())) {
+    if (!oas->write_endlib(Tstring(sdesc->cellname()))) {
         Errs()->add_error(
             "write_metal_file: write_endlib returned error.");
         return (false);
@@ -714,7 +714,7 @@ cExtNets::write_edge_map(const CDs *sdesc, const BBox *AOI, int x, int y) const
     cGroupDesc *gd = sdesc->groups();
     if (!gd) {
         Errs()->add_error("write_edge_map: cell %s has no group info.",
-            sdesc->cellname()->string());
+            Tstring(sdesc->cellname()));
         return (false);
     }
 

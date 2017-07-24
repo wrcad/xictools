@@ -333,11 +333,11 @@ cSced::makeSymbolic()
 
     // Put a name label in the box.
     Label la;
-    la.label = new hyList(cursde, cursde->cellname()->string(), HYcvAscii);
+    la.label = new hyList(cursde, Tstring(cursde->cellname()), HYcvAscii);
     la.x = 0;
     la.y = 0;
     double wid, hei;
-    CD()->DefaultLabelSize(cdsymb->cellname()->string(), Electrical,
+    CD()->DefaultLabelSize(Tstring(cdsymb->cellname()), Electrical,
         &wid, &hei);
     la.width = ELEC_INTERNAL_UNITS(2.0*wid);
     la.height = ELEC_INTERNAL_UNITS(2.0*hei);

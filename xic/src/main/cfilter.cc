@@ -330,7 +330,7 @@ cfilter_t::prnt_list() const
 {
     sLstr lstr;
     for (cnlist_t *s = cf_p_list; s; s = s->next) {
-        lstr.add(s->cname->string());
+        lstr.add(Tstring(s->cname));
         if (s->next)
             lstr.add_c(' ');
     }
@@ -343,7 +343,7 @@ cfilter_t::not_prnt_list() const
 {
     sLstr lstr;
     for (cnlist_t *s = cf_np_list; s; s = s->next) {
-        lstr.add(s->cname->string());
+        lstr.add(Tstring(s->cname));
         if (s->next)
             lstr.add_c(' ');
     }
@@ -356,7 +356,7 @@ cfilter_t::subc_list() const
 {
     sLstr lstr;
     for (cnlist_t *s = cf_s_list; s; s = s->next) {
-        lstr.add(s->cname->string());
+        lstr.add(Tstring(s->cname));
         if (s->next)
             lstr.add_c(' ');
     }
@@ -369,7 +369,7 @@ cfilter_t::not_subc_list() const
 {
     sLstr lstr;
     for (cnlist_t *s = cf_ns_list; s; s = s->next) {
-        lstr.add(s->cname->string());
+        lstr.add(Tstring(s->cname));
         if (s->next)
             lstr.add_c(' ');
     }
@@ -587,7 +587,7 @@ cfilter_t::string() const
         lstr.add(" parent ");
         lstr.add_c('"');
         for (cnlist_t *s = cf_p_list; s; s = s->next) {
-            lstr.add(s->cname->string());
+            lstr.add(Tstring(s->cname));
             if (s->next)
                 lstr.add_c(' ');
         }
@@ -597,7 +597,7 @@ cfilter_t::string() const
         lstr.add(" notparent ");
         lstr.add_c('"');
         for (cnlist_t *s = cf_np_list; s; s = s->next) {
-            lstr.add(s->cname->string());
+            lstr.add(Tstring(s->cname));
             if (s->next)
                 lstr.add_c(' ');
         }
@@ -607,7 +607,7 @@ cfilter_t::string() const
         lstr.add(" subcell ");
         lstr.add_c('"');
         for (cnlist_t *s = cf_s_list; s; s = s->next) {
-            lstr.add(s->cname->string());
+            lstr.add(Tstring(s->cname));
             if (s->next)
                 lstr.add_c(' ');
         }
@@ -617,7 +617,7 @@ cfilter_t::string() const
         lstr.add(" notsubcell ");
         lstr.add_c('"');
         for (cnlist_t *s = cf_ns_list; s; s = s->next) {
-            lstr.add(s->cname->string());
+            lstr.add(Tstring(s->cname));
             if (s->next)
                 lstr.add_c(' ');
         }

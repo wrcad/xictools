@@ -992,7 +992,7 @@ sCells::action_hdlr(GtkWidget *caller, void *client_data)
                 symref_t *p = chd->findSymref(cname, DSP()->CurMode(), true);
                 if (p) {
                     stringlist *sl = new stringlist(
-                        lstring::copy(p->get_name()->string()), 0);
+                        lstring::copy(Tstring(p->get_name())), 0);
                     int flgs = FIO_INFO_OFFSET | FIO_INFO_INSTANCES |
                         FIO_INFO_BBS | FIO_INFO_FLAGS;
                     char *str = chd->prCells(0, DSP()->CurMode(), flgs, sl);
@@ -1116,7 +1116,7 @@ sCells::raw_cell_list(int *pcnt, int *ppgs, bool nomark)
                 }
                 if (nomark) {
                     s0 = new stringlist(lstring::copy(
-                        cbin.cellname()->string()), s0);
+                        Tstring(cbin.cellname())), s0);
                 }
                 else {
                     int j = 0;
@@ -1135,7 +1135,7 @@ sCells::raw_cell_list(int *pcnt, int *ppgs, bool nomark)
                     }
                     if (!j)
                         buf[j++] = ' ';
-                    strcpy(buf+j, cbin.cellname()->string());
+                    strcpy(buf+j, Tstring(cbin.cellname()));
                     s0 = new stringlist(lstring::copy(buf), s0);
                 }
             }
@@ -1373,7 +1373,7 @@ sCells::c_rename_cb(const char *newname, void *arg)
             if (wd->Attrib()->expand_level(wd->Mode()) != -1)
                 wd->Redisplay(0);
         }
-        const char *nn = cbin.cellname()->string();
+        const char *nn = Tstring(cbin.cellname());
         for (const char *n = nn; *n; n++) {
             if (isalnum(*n) || *n == '_' || *n == '$' || *n == '?')
                 continue;
@@ -1715,11 +1715,11 @@ ListState::label_text()
                 symref_t *p = chd->findSymref(DSP()->MainWdesc()->DbCellName(),
                     DSP()->CurMode(), true);
                 sprintf(buf, "Cells under %s",
-                    p ? p->get_name()->string() : "<unknown>");
+                    p ? Tstring(p->get_name()) : "<unknown>");
             }
         }
         else
-            sprintf(buf, "Cells under %s", DSP()->CurCellName()->string());
+            sprintf(buf, "Cells under %s", Tstring(DSP()->CurCellName()));
     }
     else {
         if (CDvdb()->getVariable(VA_InfoInternal))
@@ -1753,7 +1753,7 @@ ListState::cell_list(bool nomark)
                 &lsAOI);
             for (syrlist_t *s = sy0; s; s = s->next) {
                 s0 = new stringlist(
-                    lstring::copy(s->symref->get_name()->string()), s0);
+                    lstring::copy(Tstring(s->symref->get_name())), s0);
             }
             syrlist_t::destroy(sy0);
         }

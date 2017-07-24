@@ -5514,7 +5514,7 @@ geom1_funcs::IFgetInstanceMaster(Variable *res, Variable *args, void*)
         CDol *ol = (CDol*)hdl->data;
         if (ol && ol->odesc && ol->odesc->type() == CDINSTANCE) {
             CDc *cd = (CDc*)ol->odesc;
-            res->content.string = lstring::copy(cd->cellname()->string());
+            res->content.string = lstring::copy(Tstring(cd->cellname()));
             res->flags |= VF_ORIGINAL;
         }
     }
@@ -5733,9 +5733,9 @@ geom1_funcs::IFgetInstanceAltName(Variable *res, Variable *args, void*)
                 if (tp == CDelecMacro || tp == CDelecSubc) {
                     char buf[16];
                     sprintf(buf, "%d", pna->scindex());
-                    char *nm = new char[strlen(msd->cellname()->string()) +
+                    char *nm = new char[strlen(Tstring(msd->cellname())) +
                         strlen(buf) + 2];
-                    char *e = lstring::stpcpy(nm, msd->cellname()->string());
+                    char *e = lstring::stpcpy(nm, Tstring(msd->cellname()));
                     *e++ = '_';
                     strcpy(e, buf);
                     res->content.string = nm;

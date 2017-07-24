@@ -1063,7 +1063,7 @@ inst:
         // This is not standard CIF, used for comparison output
         CDc *c = (CDc*)this;
         lstr.add("C (");
-        lstr.add(c->cellname()->string());
+        lstr.add(Tstring(c->cellname()));
         CDattr at;
         if (!CD()->FindAttr(c->attr(), &at)) {
             lstr.add(" unresolved transform ticket");

@@ -566,8 +566,7 @@ CDcbin::rename(const char *newname)
 
     // Can't change name if immutable.
     if (isImmutable()) {
-        Errs()->add_error("rename: cell %s is immutable",
-            cellname()->string());
+        Errs()->add_error("rename: cell %s is immutable", Tstring(cellname()));
         return (false);
     }
 
@@ -659,7 +658,7 @@ CDcbin::listEmpties() const
         if (cbin == *this)
             continue;
         if (cbin.isEmpty())
-            empties->add(cbin.cellname()->string(), 0, false);
+            empties->add(Tstring(cbin.cellname()), 0, false);
     }
 
     stringlist *sl = SymTab::names(empties);

@@ -325,7 +325,7 @@ cMain::CheckCurCell(bool editable, bool create, DisplayMode mode)
                 DisplayModeNameLC(mode));
             return (false);
         }
-        if (!CD()->ReopenCell(DSP()->CurCellName()->string(), mode)) {
+        if (!CD()->ReopenCell(Tstring(DSP()->CurCellName()), mode)) {
             PL()->ShowPrompt(Errs()->get_error());
             return (false);
         }

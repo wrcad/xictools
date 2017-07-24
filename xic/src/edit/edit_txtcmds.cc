@@ -340,7 +340,7 @@ edit_bangcmds::array(const char *s)
         }
 
         Ulist()->ListCheck("delarry", sdesc, true);
-        const char *cname = cdesc->cellname()->string();
+        const char *cname = Tstring(cdesc->cellname());
         sArrayManip amp(sdesc, cdesc);
         if (!amp.delete_elements(nx1, nx2, ny1, ny2)) {
             PL()->ShowPromptV("Error: %s", Errs()->get_error());
@@ -516,7 +516,7 @@ edit_bangcmds::array(const char *s)
             ap.dy += dyoff;
 
         Ulist()->ListCheck("cfgarry", sdesc, true);
-        const char *cname = cdesc->cellname()->string();
+        const char *cname = Tstring(cdesc->cellname());
         sArrayManip amp(sdesc, cdesc);
         if (!amp.reconfigure(ap.nx, ap.dx, ap.ny, ap.dy)) {
             PL()->ShowPromptV("Error: %s", Errs()->get_error());
@@ -628,7 +628,7 @@ ArrState::do_arrdel(const BBox *AOI)
 
     if (nx1 < (int)ap.nx && ny1 < (int)ap.ny) {
         Ulist()->ListCheck("delarry", Sdesc, true);
-        const char *cname = Cdesc->cellname()->string();
+        const char *cname = Tstring(Cdesc->cellname());
         sArrayManip amp(Sdesc, Cdesc);
         if (!amp.delete_elements(nx1, nx2, ny1, ny2)) {
             PL()->ShowPromptV("Error: %s", Errs()->get_error());

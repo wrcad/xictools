@@ -346,7 +346,7 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
                 }
                 else {
                     const char *sym_name =
-                        OCALL(unsel_list->odesc)->cellname()->string();
+                        Tstring(OCALL(unsel_list->odesc)->cellname());
                     PL()->ShowPromptV(
                         "You have selected an instance of %s.",
                         sym_name);
@@ -997,7 +997,7 @@ cSelections::check()
                             "Selection list for nondisplayed %s cell %s with "
                             "length %d deleted.",
                             DisplayModeNameLC(sq->celldesc()->displayMode()),
-                            sq->celldesc()->cellname()->string(), n);
+                            Tstring(sq->celldesc()->cellname()), n);
                     sq->remove_types(0);
                 }
             }
@@ -1465,7 +1465,7 @@ cSelections::cmatch(const CDs *sd, const char *str, bool select, CDol **sx)
         selqueue_t *sq = 0;
         CDm_gen mgen(sd, GEN_MASTERS);
         for (CDm *m = mgen.m_first(); m; m = mgen.m_next()) {
-            if (all || !regexec(&preg, m->cellname()->string(), 0, 0, 0)) {
+            if (all || !regexec(&preg, Tstring(m->cellname()), 0, 0, 0)) {
                 if (!sq)
                     sq = findQueue(sd, true);
                 if (sq) {
@@ -1481,8 +1481,8 @@ cSelections::cmatch(const CDs *sd, const char *str, bool select, CDol **sx)
         sSelGen sg(*this, sd, "c");
         CDo *od;
         while ((od = sg.next()) != 0) {
-            if (all || !regexec(&preg,
-                OCALL(od)->cellname()->string(), 0, 0, 0)) {
+            if (all || !regexec(&preg, Tstring(OCALL(od)->cellname()),
+                    0, 0, 0)) {
                 s0 = new CDol(od, s0);
                 sg.remove();
             }

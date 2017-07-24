@@ -894,7 +894,7 @@ cMRcmdIf::cmdSource(const char *cmd)
                                 ll->layer, ll->lefId, 0);
 
                             lefPin *pin = new lefPin(
-                                lstring::copy(p->term_name()->string()),
+                                lstring::copy(Tstring(p->term_name())),
                                 ds,     // geom
                                 0,      // direction
                                 0,      // use
@@ -1413,7 +1413,7 @@ cMRcmdIf::removeVia(const char *vname, int x, int y)
     CDc *cd;
     while ((cd = (CDc*)gdesc.next()) != 0) {
         CDs *ms = cd->masterCell();
-        if (!strcmp(vname, ms->cellname()->string()) &&
+        if (!strcmp(vname, Tstring(ms->cellname())) &&
                 cd->posX() == x && cd->posY() == y) {
             Ulist()->RecordObjectChange(sd, cd, 0);
             break;

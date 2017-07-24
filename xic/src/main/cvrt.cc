@@ -196,7 +196,7 @@ cConvert::Export(const char *filename, bool allcells)
     }
 
     stringlist *namelist = new stringlist(lstring::copy(
-        allcells ? FIO_CUR_SYMTAB : DSP()->CurCellName()->string()), 0);
+        allcells ? FIO_CUR_SYMTAB : Tstring(DSP()->CurCellName())), 0);
 
     GCdestroy<stringlist> gc_namelist(namelist);
     GCarray<char*> gc_path(path);
@@ -262,7 +262,7 @@ cConvert::ReadIntoCurrent(const char *filename, const char *cellname,
         return;
     }
     char *infile = pathlist::expand_path(filename, false, true);
-    if (!strcmp(DSP()->CurCellName()->string(), infile)) {
+    if (!strcmp(Tstring(DSP()->CurCellName()), infile)) {
         PL()->ShowPrompt("Can't import from current cell!");
         delete [] infile;
         return;
@@ -644,7 +644,7 @@ CutState::cut_doit(int x, int y)
         Cvt()->SetupWriteCut(&AOI);
         if (Menu()->MenuButtonStatus("conv", MenuEXPRT) == 0)
             Menu()->MenuButtonPress("conv", MenuEXPRT);
-        sprintf(namebuf, "%s-cut", DSP()->CurCellName()->string());
+        sprintf(namebuf, "%s-cut", Tstring(DSP()->CurCellName()));
         Cvt()->SetWriteFilename(namebuf);
         Cvt()->PopUpExport(0, MODE_UPD, 0, 0);
     }

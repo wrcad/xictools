@@ -544,8 +544,7 @@ namespace {
     inline bool
     m_cmp(const CDm *m1, const CDm *m2)
     {
-        return (strcmp(m1->cellname()->string(),
-            m2->cellname()->string()) < 0);
+        return (strcmp(Tstring(m1->cellname()), Tstring(m2->cellname())) < 0);
     }
 }
 
@@ -562,7 +561,7 @@ sTree::build_tree_rc(CDs *sdesc, GtkTreeIter *parent, int dpt)
         GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(t_tree)));
     GtkTreeIter iter;
     gtk_tree_store_append(store, &iter, parent);
-    gtk_tree_store_set(store, &iter, 0, sdesc->cellname()->string(), -1);
+    gtk_tree_store_set(store, &iter, 0, Tstring(sdesc->cellname()), -1);
 
     if (dpt > t_mdepth)
         t_mdepth = dpt;
@@ -635,7 +634,7 @@ sTree::build_tree_rc(cCHD *chd, symref_t *p, GtkTreeIter *parent, int dpt)
         GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(t_tree)));
     GtkTreeIter iter;
     gtk_tree_store_append(store, &iter, parent);
-    gtk_tree_store_set(store, &iter, 0, p->get_name()->string(), -1);
+    gtk_tree_store_set(store, &iter, 0, Tstring(p->get_name()), -1);
 
     if (dpt > t_mdepth)
         t_mdepth = dpt;
@@ -842,7 +841,7 @@ sTree::t_action(GtkWidget *widget, void *client_data)
             if (!p)
                 return;
             stringlist *sl = new stringlist(
-                lstring::copy(p->get_name()->string()), 0);
+                lstring::copy(Tstring(p->get_name())), 0);
             int flgs = FIO_INFO_OFFSET | FIO_INFO_INSTANCES |
                 FIO_INFO_BBS | FIO_INFO_FLAGS;
             char *str = chd->prCells(0, DSP()->CurMode(), flgs, sl);

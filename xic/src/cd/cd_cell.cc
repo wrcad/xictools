@@ -802,7 +802,7 @@ CDs::computeBB()
             CD()->ifPrintCvLog(IFLOG_WARN,
                 "The bounding box of %s extends beyond \"infinity\",\n"
                 "scaling problem?  Display and other things won't work right!",
-                cellname()->string());
+                Tstring(cellname()));
         }
     }
 
@@ -880,7 +880,7 @@ CDs::checkInstances()
                 ok = false;
                 CD()->ifPrintCvLog(IFLOG_WARN,
                     "internal error, instance of %s not in %s database.",
-                    mdesc->cellname()->string(), cellname()->string());
+                    Tstring(mdesc->cellname()), Tstring(cellname()));
                 continue;
             }
             if (CD()->IsReading() && CD()->DupCheckMode() != cCD::DupNoTest) {
@@ -892,9 +892,9 @@ CDs::checkInstances()
                     }
                     char tbf[256];
                     sprintf(tbf, "coincident instance of %s (%s)",
-                        mdesc->cellname()->string(), what);
+                        Tstring(mdesc->cellname()), what);
                     CD()->ifPrintCvLog(IFLOG_WARN, "%s [%s %d,%d].", tbf,
-                        cellname()->string(), c->oBB().left, c->oBB().top);
+                        Tstring(cellname()), c->oBB().left, c->oBB().top);
                 }
             }
         }
@@ -1308,11 +1308,11 @@ CDs::makeBox(CDl *ldesc, const BBox *pBB, CDo **pointer, bool internal)
     if (pointer)
         *pointer = 0;
     if (!ldesc) {
-        CD()->Error(CDbadLayer, cellname()->string());
+        CD()->Error(CDbadLayer, Tstring(cellname()));
         return (CDbadLayer);
     }
     if (!pBB || !pBB->valid()) {
-        CD()->Error(CDbadBox, cellname()->string());
+        CD()->Error(CDbadBox, Tstring(cellname()));
         return (CDbadBox);
     }
     CDo *odesc = new CDo(ldesc, pBB);
@@ -1336,13 +1336,13 @@ CDs::makeBox(CDl *ldesc, const BBox *pBB, CDo **pointer, bool internal)
             if (c < 0) {
                 snprintf(tbf, 64, "coincident box (%s)", what);
                 CD()->ifPrintCvLog(IFLOG_WARN, "%s [%s %d,%d %s].", tbf,
-                    cellname()->string(), odesc->oBB().left, odesc->oBB().top,
+                    Tstring(cellname()), odesc->oBB().left, odesc->oBB().top,
                     odesc->ldesc()->name());
             }
             else if (c == 0) {
                 snprintf(tbf, 64, "more coincident objects (%s)", what);
                 CD()->ifPrintCvLog(IFLOG_WARN, "%s [%s].", tbf,
-                    cellname()->string());
+                    Tstring(cellname()));
             }
             if (CD()->DupCheckMode() == cCD::DupRemove) {
                 unlink(odesc, false);
@@ -1408,7 +1408,7 @@ CDs::makePolygon(CDl *ldesc, Poly *poly, CDpo **pointer, int *pchk_flags,
             delete [] poly->points;
             poly->points = 0;
         }
-        CD()->Error(CDbadLayer, cellname()->string());
+        CD()->Error(CDbadLayer, Tstring(cellname()));
         return (CDbadLayer);
     }
     if (!poly || poly->numpts < 1 || !poly->points) {
@@ -1416,7 +1416,7 @@ CDs::makePolygon(CDl *ldesc, Poly *poly, CDpo **pointer, int *pchk_flags,
             delete [] poly->points;
             poly->points = 0;
         }
-        CD()->Error(CDbadPolygon, cellname()->string());
+        CD()->Error(CDbadPolygon, Tstring(cellname()));
         return (CDbadPolygon);
     }
     // Always include closure point in path.
@@ -1440,7 +1440,7 @@ CDs::makePolygon(CDl *ldesc, Poly *poly, CDpo **pointer, int *pchk_flags,
         if (!poly->check_quick()) {
             delete [] poly->points;
             poly->points = 0;
-            CD()->Error(CDbadPolygon, cellname()->string());
+            CD()->Error(CDbadPolygon, Tstring(cellname()));
             return (CDbadPolygon);
         }
         if (!CD()->IsNoPolyCheck()) {
@@ -1448,7 +1448,7 @@ CDs::makePolygon(CDl *ldesc, Poly *poly, CDpo **pointer, int *pchk_flags,
             if (ret & (PCHK_NVERTS | PCHK_OPEN)) {
                 delete [] poly->points;
                 poly->points = 0;
-                CD()->Error(CDbadPolygon, cellname()->string());
+                CD()->Error(CDbadPolygon, Tstring(cellname()));
                 return (CDbadPolygon);
             }
             if (pchk_flags)
@@ -1479,13 +1479,13 @@ CDs::makePolygon(CDl *ldesc, Poly *poly, CDpo **pointer, int *pchk_flags,
             if (c < 0) {
                 snprintf(tbf, 64, "coincident polygon (%s)", what);
                 CD()->ifPrintCvLog(IFLOG_WARN, "%s [%s %d,%d %s].", tbf,
-                    cellname()->string(), pdesc->points()->x,
+                    Tstring(cellname()), pdesc->points()->x,
                     pdesc->points()->y, pdesc->ldesc()->name());
             }
             else if (c == 0) {
                 snprintf(tbf, 64, "more coincident objects (%s)", what);
                 CD()->ifPrintCvLog(IFLOG_WARN, "%s [%s].", tbf,
-                    cellname()->string());
+                    Tstring(cellname()));
             }
             if (CD()->DupCheckMode() == cCD::DupRemove) {
                 unlink(pdesc, false);
@@ -1509,7 +1509,7 @@ CDs::newPoly(CDo *oldobj, Poly *poly, CDl *ldesc, CDp *prps, bool Copy)
     CDpo *newo;
     if (Copy) {
         if (!poly || poly->numpts < 1 || !poly->points) {
-            CD()->Error(CDbadPolygon, cellname()->string());
+            CD()->Error(CDbadPolygon, Tstring(cellname()));
             return (0);
         }
         Poly npoly(poly->numpts, Point::dup(poly->points, poly->numpts));
@@ -1544,7 +1544,7 @@ CDs::makeWire(CDl *ldesc, Wire *wire, CDw **pointer, int *wchk_flags,
             delete [] wire->points;
             wire->points = 0;
         }
-        CD()->Error(CDbadLayer, cellname()->string());
+        CD()->Error(CDbadLayer, Tstring(cellname()));
         return (CDbadLayer);
     }
     if (!wire || wire->numpts < 1 || !wire->points) {
@@ -1552,7 +1552,7 @@ CDs::makeWire(CDl *ldesc, Wire *wire, CDw **pointer, int *wchk_flags,
             delete [] wire->points;
             wire->points = 0;
         }
-        CD()->Error(CDbadWire, cellname()->string());
+        CD()->Error(CDbadWire, Tstring(cellname()));
         return (CDbadWire);
     }
 
@@ -1566,7 +1566,7 @@ CDs::makeWire(CDl *ldesc, Wire *wire, CDw **pointer, int *wchk_flags,
             if (!wire->toPoly(&pts, &npts, &flags)) {
                 delete [] wire->points;
                 wire->points = 0;
-                CD()->Error(CDbadWire, cellname()->string());
+                CD()->Error(CDbadWire, Tstring(cellname()));
                 return (CDbadWire);
             }
             delete [] pts;
@@ -1581,7 +1581,7 @@ CDs::makeWire(CDl *ldesc, Wire *wire, CDw **pointer, int *wchk_flags,
                 wire->wire_width() == 0)) {
             delete [] wire->points;
             wire->points = 0;
-            CD()->Error(CDbadWire, cellname()->string());
+            CD()->Error(CDbadWire, Tstring(cellname()));
             return (CDbadWire);
         }
     }
@@ -1609,13 +1609,13 @@ CDs::makeWire(CDl *ldesc, Wire *wire, CDw **pointer, int *wchk_flags,
             if (c < 0) {
                 snprintf(tbf, 64, "coincident wire (%s)", what);
                 CD()->ifPrintCvLog(IFLOG_WARN, "%s [%s %d,%d %s].", tbf,
-                    cellname()->string(), wdesc->points()->x,
+                    Tstring(cellname()), wdesc->points()->x,
                     wdesc->points()->y, wdesc->ldesc()->name());
             }
             else if (c == 0) {
                 snprintf(tbf, 64, "more coincident objects (%s)", what);
                 CD()->ifPrintCvLog(IFLOG_WARN, "%s [%s].", tbf,
-                    cellname()->string());
+                    Tstring(cellname()));
             }
             if (CD()->DupCheckMode() == cCD::DupRemove) {
                 unlink(wdesc, false);
@@ -1639,7 +1639,7 @@ CDs::newWire(CDo *oldobj, Wire *wire, CDl *ldesc, CDp *prps, bool Copy)
     CDw *newo;
     if (Copy) {
         if (!wire || wire->numpts < 1 || !wire->points) {
-            CD()->Error(CDbadWire, cellname()->string());
+            CD()->Error(CDbadWire, Tstring(cellname()));
             return (0);
         }
         Wire nwire(wire->numpts, Point::dup(wire->points, wire->numpts),
@@ -1671,11 +1671,11 @@ CDs::makeLabel(CDl *ldesc, Label *label, CDla **pointer, bool internal)
             hyList::destroy(label->label);
             label->label = 0;
         }
-        CD()->Error(CDbadLayer, cellname()->string());
+        CD()->Error(CDbadLayer, Tstring(cellname()));
         return (CDbadLayer);
     }
     if (!label || !label->label) {
-        CD()->Error(CDbadLabel, cellname()->string());
+        CD()->Error(CDbadLabel, Tstring(cellname()));
         return (CDbadLabel);
     }
     CDla *ladesc = new CDla(ldesc, label);
@@ -1701,13 +1701,13 @@ CDs::makeLabel(CDl *ldesc, Label *label, CDla **pointer, bool internal)
             if (c < 0) {
                 snprintf(tbf, 64, "coincident label (%s)", what);
                 CD()->ifPrintCvLog(IFLOG_WARN, "%s [%s %d,%d %s].", tbf,
-                    cellname()->string(), ladesc->oBB().left,
+                    Tstring(cellname()), ladesc->oBB().left,
                     ladesc->oBB().top, ladesc->ldesc()->name());
             }
             else if (c == 0) {
                 snprintf(tbf, 64, "more coincident objects (%s)", what);
                 CD()->ifPrintCvLog(IFLOG_WARN, "%s [%s].", tbf,
-                    cellname()->string());
+                    Tstring(cellname()));
             }
             if (CD()->DupCheckMode() == cCD::DupRemove) {
                 unlink(ladesc, false);
@@ -1731,7 +1731,7 @@ CDs::newLabel(CDo *oldobj, Label *label, CDl *ldesc, CDp *prps, bool Copy)
     CDla *newo;
     if (Copy) {
         if (!label || !label->label) {
-            CD()->Error(CDbadLabel, cellname()->string());
+            CD()->Error(CDbadLabel, Tstring(cellname()));
             return (0);
         }
         hyList *tl = label->label;
@@ -1851,7 +1851,7 @@ CDs::makeCall(CallDesc *calldesc, const CDtx *tx, const CDap *ap,
     if (!calldesc->name()) {
         Errs()->add_error(
             "Null name in instance call encountered in cell %s.",
-            cellname()->string());
+            Tstring(cellname()));
         return (OIerror);
     }
     if (isImmutable()) {
@@ -1873,7 +1873,7 @@ CDs::makeCall(CallDesc *calldesc, const CDtx *tx, const CDap *ap,
             if (isRecursive(calldesc->celldesc())) {
                 Errs()->add_error(
                 "Can't instantiate %s in %s, hierarchy would be recursive!",
-                    calldesc->name()->string(), cellname()->string());
+                    Tstring(calldesc->name()), Tstring(cellname()));
                 return (OIerror);
             }
         }
@@ -1886,7 +1886,7 @@ CDs::makeCall(CallDesc *calldesc, const CDtx *tx, const CDap *ap,
         // "can't happen"
         Errs()->add_error(
             "Can't directly instantiate a super-master (%s).",
-            msdesc->cellname()->string());
+            Tstring(msdesc->cellname()));
         return (OIerror);
     }
     CDc *cdesc = new CDc(CellLayer());
@@ -1903,7 +1903,7 @@ CDs::makeCall(CallDesc *calldesc, const CDtx *tx, const CDap *ap,
         if (!msdesc) {
             msdesc = CDcdb()->findCell(mdesc->cellname(), displayMode());
             if (!msdesc) {
-                const char *cname = mdesc->cellname()->string();
+                const char *cname = Tstring(mdesc->cellname());
                 CDcbin cbin;
                 if (FIO()->OpenLibCell(0, cname,
                         LIBdevice | LIBuser | LIBnativeOnly, &cbin) == OIok)
@@ -1913,7 +1913,7 @@ CDs::makeCall(CallDesc *calldesc, const CDtx *tx, const CDap *ap,
                 // Create a new cell with the unread flag set.  These
                 // should be resolved later.
 
-                msdesc = CDcdb()->insertCell(mdesc->cellname()->string(),
+                msdesc = CDcdb()->insertCell(Tstring(mdesc->cellname()),
                     displayMode());
                 if (msdesc)
                     msdesc->setUnread(true);
@@ -1922,7 +1922,7 @@ CDs::makeCall(CallDesc *calldesc, const CDtx *tx, const CDap *ap,
                 Errs()->add_error(
                     "makeCall: creation %s %s in %s failed.",
                     isElectrical() ? "electrical" : "physical",
-                    calldesc->name(), cellname()->string());
+                    calldesc->name(), Tstring(cellname()));
                 delete cdesc;
                 return (OIerror);
             }
@@ -2178,7 +2178,7 @@ CDs::removeMaster(CDcellName mname)
         return (0);
     CDm *m = 0;
     if (sMasters & 1)
-        m = ((itable_t<CDm>*)(sMasters & ~1))->remove(mname->string());
+        m = ((itable_t<CDm>*)(sMasters & ~1))->remove(Tstring(mname));
     else {
         CDm *mp = 0;
         for (CDm *mm = (CDm*)sMasters; mm; mm = mm->tab_next()) {
@@ -2509,7 +2509,7 @@ CDs::checkTerminals(CDp_snode ***nary)
             // bad index
             CD()->ifPrintCvLog(IFLOG_WARN,
                 "Deleting node property %s in %s, index %d was a duplicate.",
-                pn->term_name(), cellname()->string(), pn->index());
+                pn->term_name(), Tstring(cellname()), pn->index());
             delete pn;
         }
     }
@@ -2562,7 +2562,7 @@ CDs::checkBterms()
                 CD()->ifPrintCvLog(IFLOG_WARN,
                     "Deleting bus node property %s in %s, index %d was "
                     "a duplicate.",
-                    pb->term_name(), cellname()->string(), pb->index());
+                    pb->term_name(), Tstring(cellname()), pb->index());
                 delete pb;
             }
         }
@@ -2877,7 +2877,7 @@ namespace {
         stringlist *s0 = 0;
         if (sdesc) {
             if (mark) {
-                char *s = new char[strlen(sdesc->cellname()->string()) + 3];
+                char *s = new char[strlen(Tstring(sdesc->cellname())) + 3];
                 int j = 0;
                 if (sdesc->isModified())
                     s[j++] = '+';
@@ -2885,12 +2885,12 @@ namespace {
                     s[j++] = '*';
                 if (!j)
                     s[j++] = ' ';
-                strcpy(s+j, sdesc->cellname()->string());
+                strcpy(s+j, Tstring(sdesc->cellname()));
                 s0 = new stringlist(s, s0);
             }
             else {
                 s0 = new stringlist(lstring::copy(
-                    sdesc->cellname()->string()), s0);
+                    Tstring(sdesc->cellname())), s0);
             }
         }
         SymTabGen gen(h_ctab, false);
@@ -2898,7 +2898,7 @@ namespace {
         while ((ent = gen.next()) != 0) {
             CDs *sd = (CDs*)ent->stTag;
             if (mark) {
-                char *s = new char[strlen(sd->cellname()->string()) + 2];
+                char *s = new char[strlen(Tstring(sd->cellname())) + 2];
                 int j = 1;
                 if (sd->isModified()) {
                     *s = '+';
@@ -2907,12 +2907,12 @@ namespace {
                 }
                 else
                     *s = ' ';
-                strcpy(s+j, sd->cellname()->string());
+                strcpy(s+j, Tstring(sd->cellname()));
                 s0 = new stringlist(s, s0);
             }
             else {
                 s0 = new stringlist(lstring::copy(
-                    sd->cellname()->string()), s0);
+                    Tstring(sd->cellname())), s0);
             }
         }
         stringlist::sort(s0, mark ? &cl_comp : 0);
@@ -2933,7 +2933,7 @@ CDs::listSubcells(int depth, bool incl_top, bool mark, const BBox *AOI)
     if (!AOI) {
         if (incl_top) {
             if (mark) {
-                char *s = new char[strlen(cellname()->string()) + 3];
+                char *s = new char[strlen(Tstring(cellname())) + 3];
                 int j = 0;
                 if (isModified())
                     s[j++] = '+';
@@ -2941,11 +2941,11 @@ CDs::listSubcells(int depth, bool incl_top, bool mark, const BBox *AOI)
                     s[j++] = '*';
                 if (!j)
                     s[j++] = ' ';
-                strcpy(s+j, cellname()->string());
+                strcpy(s+j, Tstring(cellname()));
                 s0 = new stringlist(s,  s0);
             }
             else
-                s0 = new stringlist(lstring::copy(cellname()->string()), s0);
+                s0 = new stringlist(lstring::copy(Tstring(cellname())), s0);
         }
 
         if (depth < 0)
@@ -2957,17 +2957,17 @@ CDs::listSubcells(int depth, bool incl_top, bool mark, const BBox *AOI)
             if (sd->isDevice())
                 continue;
             if (mark) {
-                char *s = new char[strlen(sd->cellname()->string()) + 2];
+                char *s = new char[strlen(Tstring(sd->cellname())) + 2];
                 if (sd->isModified())
                     *s = '+';
                 else
                     *s = ' ';
-                strcpy(s+1, sd->cellname()->string());
+                strcpy(s+1, Tstring(sd->cellname()));
                 s0 = new stringlist(s,  s0);
             }
             else {
                 s0 = new stringlist(lstring::copy(
-                    sd->cellname()->string()), s0);
+                    Tstring(sd->cellname())), s0);
             }
         }
         if (err) {
@@ -2999,7 +2999,7 @@ CDs::listParents(stringnumlist **list, bool expand) const
             CDs *parent = m->parent();
             if (parent)
                 *list = new stringnumlist(
-                    lstring::copy(parent->cellname()->string()), count, *list);
+                    lstring::copy(Tstring(parent->cellname())), count, *list);
         }
     }
     return (count);
@@ -3030,7 +3030,7 @@ void
 CDs::bincnt(const CDl *ld, int lev) const
 {
     if (ld) {
-        printf("Cell %s Layer %s\n", cellname()->string(), ld->name());
+        printf("Cell %s Layer %s\n", Tstring(cellname()), ld->name());
         db_bincnt(ld, lev);
     }
 }
@@ -3072,7 +3072,7 @@ CDs::elecCellType(CDpfxName *nret)
         }
         if (needX) {
             char buf[64];
-            sprintf(buf, "X 0 %s", cellname()->string());
+            sprintf(buf, "X 0 %s", Tstring(cellname()));
             prptyAdd(P_NAME, buf);
             etype = CDelecSubc;
             if (nret) {
@@ -3100,7 +3100,7 @@ CDs::elecCellType(CDpfxName *nret)
             bf[1] = 0;
             pa->set_name_string(bf);
         }
-        int key = *pa->name_string()->string();
+        int key = *Tstring(pa->name_string());
         if (nret)
             *nret = pa->name_string();
 
@@ -3912,7 +3912,7 @@ CDs::prptyInstPatch(CDc *cdesc)
         return;
 
     int num = pn->number();
-    const char *pname = pn->name_string()->string();
+    const char *pname = Tstring(pn->name_string());
 
     // This is one of the 'new' mutual inductors.  Establish the
     // pointer.  If the pointer is already set, there is an error,
@@ -4206,8 +4206,8 @@ CDs::prptyMutualAdd(CDc *odesc1, CDc *odesc2, const char *val,
         return (false);
     }
     CDp_nmut *pm = new CDp_nmut(0,
-        lstring::copy(pn1->name_string()->string()), pn1->number(),
-        lstring::copy(pn2->name_string()->string()), pn2->number(),
+        lstring::copy(Tstring(pn1->name_string())), pn1->number(),
+        lstring::copy(Tstring(pn2->name_string())), pn2->number(),
         lstring::copy(val), (mname && *mname) ? lstring::copy(mname) : 0);
     pm->set_l1_dev(odesc1);
     pm->set_l2_dev(odesc2);
@@ -4350,7 +4350,7 @@ CDs::prptyMutualFind(CDp *pdesc, CDc **od1, CDc **od2)
         CDm_gen mgen(this, GEN_MASTERS);
         CDm *mdesc;
         for (mdesc = mgen.m_first(); mdesc; mdesc = mgen.m_next()) {
-            const char *cn = mdesc->cellname()->string();
+            const char *cn = Tstring(mdesc->cellname());
             if ((cn[0] == 'i' || cn[0] == 'I') &&
                     (cn[1] == 'n' || cn[1] == 'N') &&
                     (cn[2] == 'd' || cn[2] == 'D') && !cn[3])

@@ -1887,7 +1887,7 @@ cvrt_funcs::IFtoXIC(Variable *res, Variable *args, void*)
     if (!cbin.isSubcell())
         EditIf()->assignGlobalProperties(&cbin);
     stringlist *namelist =
-        new stringlist(lstring::copy(DSP()->CurCellName()->string()), 0);
+        new stringlist(lstring::copy(Tstring(DSP()->CurCellName())), 0);
 
     FIOcvtPrms prms;
     prms.set_scale(FIO()->WriteScale());
@@ -1931,7 +1931,7 @@ cvrt_funcs::IFtoCGX(Variable *res, Variable *args, void*)
         return (BAD);
     char buf[128];
     if (!name || !*name) {
-        strcpy(buf, DSP()->CurCellName()->string());
+        strcpy(buf, Tstring(DSP()->CurCellName()));
         strcat(buf, ".cgx");
         name = buf;
     }
@@ -1944,7 +1944,7 @@ cvrt_funcs::IFtoCGX(Variable *res, Variable *args, void*)
     if (!cbin.isSubcell())
         EditIf()->assignGlobalProperties(&cbin);
     stringlist *namelist =
-        new stringlist(lstring::copy(DSP()->CurCellName()->string()), 0);
+        new stringlist(lstring::copy(Tstring(DSP()->CurCellName())), 0);
 
     FIOcvtPrms prms;
     prms.set_scale(FIO()->WriteScale());
@@ -1988,7 +1988,7 @@ cvrt_funcs::IFtoCIF(Variable *res, Variable *args, void*)
         return (BAD);
     char buf[128];
     if (!name || !*name) {
-        strcpy(buf, DSP()->CurCellName()->string());
+        strcpy(buf, Tstring(DSP()->CurCellName()));
         strcat(buf, ".cif");
         name = buf;
     }
@@ -2001,7 +2001,7 @@ cvrt_funcs::IFtoCIF(Variable *res, Variable *args, void*)
     if (!cbin.isSubcell())
         EditIf()->assignGlobalProperties(&cbin);
     stringlist *namelist =
-        new stringlist(lstring::copy(DSP()->CurCellName()->string()), 0);
+        new stringlist(lstring::copy(Tstring(DSP()->CurCellName())), 0);
 
     FIOcvtPrms prms;
     prms.set_scale(FIO()->WriteScale());
@@ -2045,7 +2045,7 @@ cvrt_funcs::IFtoGDS(Variable *res, Variable *args, void*)
         return (BAD);
     char buf[128];
     if (!name || !*name) {
-        strcpy(buf, DSP()->CurCellName()->string());
+        strcpy(buf, Tstring(DSP()->CurCellName()));
         strcat(buf, ".gds");
         name = buf;
     }
@@ -2058,7 +2058,7 @@ cvrt_funcs::IFtoGDS(Variable *res, Variable *args, void*)
     if (!cbin.isSubcell())
         EditIf()->assignGlobalProperties(&cbin);
     stringlist *namelist =
-        new stringlist(lstring::copy(DSP()->CurCellName()->string()), 0);
+        new stringlist(lstring::copy(Tstring(DSP()->CurCellName())), 0);
 
     FIOcvtPrms prms;
     prms.set_scale(FIO()->WriteScale());
@@ -2160,7 +2160,7 @@ cvrt_funcs::IFtoOASIS(Variable *res, Variable *args, void*)
         return (BAD);
     char buf[128];
     if (!name || !*name) {
-        strcpy(buf, DSP()->CurCellName()->string());
+        strcpy(buf, Tstring(DSP()->CurCellName()));
         strcat(buf, ".oas");
         name = buf;
     }
@@ -2173,7 +2173,7 @@ cvrt_funcs::IFtoOASIS(Variable *res, Variable *args, void*)
     if (!cbin.isSubcell())
         EditIf()->assignGlobalProperties(&cbin);
     stringlist *namelist =
-        new stringlist(lstring::copy(DSP()->CurCellName()->string()), 0);
+        new stringlist(lstring::copy(Tstring(DSP()->CurCellName())), 0);
 
     FIOcvtPrms prms;
     prms.set_scale(FIO()->WriteScale());
@@ -3029,10 +3029,10 @@ cvrt_funcs::IFchdTopCells(Variable *res, Variable *args, void*)
             for (syrlist_t *s = s0; s; s = s->next) {
                 if (!sl0)
                     sl0 = se = new stringlist(
-                        lstring::copy(s->symref->get_name()->string()), 0);
+                        lstring::copy(Tstring(s->symref->get_name())), 0);
                 else {
                     se->next = new stringlist(
-                        lstring::copy(s->symref->get_name()->string()), 0);
+                        lstring::copy(Tstring(s->symref->get_name())), 0);
                     se = se->next;
                 }
             }

@@ -178,7 +178,7 @@ namespace {
             return (false);
         }
         stringlist *namelist = new stringlist(lstring::copy(
-            allcells ? FIO_CUR_SYMTAB : DSP()->CurCellName()->string()), 0);
+            allcells ? FIO_CUR_SYMTAB : Tstring(DSP()->CurCellName())), 0);
         GCdestroy<stringlist> gc_namelist(namelist);
 
         CDcbin cbin(DSP()->CurCellName());
@@ -827,9 +827,9 @@ cvrt_menu::M_TextEdit(CmdDesc*)
             if (ft == Fnative) {
                 if (cbin.fileName()) {
                     fn = new char[strlen(cbin.fileName()) +
-                        strlen(cbin.cellname()->string()) + 2];
+                        strlen(Tstring(cbin.cellname())) + 2];
                     sprintf(fn, "%s/%s", cbin.fileName(),
-                        cbin.cellname()->string());
+                        Tstring(cbin.cellname()));
                 }
             }
             else if (ft == Fcif) {

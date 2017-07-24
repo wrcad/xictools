@@ -482,9 +482,9 @@ cCompare::setup()
                 symref_t *p;
                 while ((p = gen.next()) != 0) {
                     if (c_dmode == Electrical && FIO()->LookupLibCell(0,
-                            p->get_name()->string(), LIBdevice, 0))
+                            Tstring(p->get_name()), LIBdevice, 0))
                         continue;
-                    st->add(p->get_name()->string(), 0, true);
+                    st->add(Tstring(p->get_name()), 0, true);
                 }
             }
             c_cell_names1 = SymTab::names(st);

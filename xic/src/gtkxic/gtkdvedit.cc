@@ -238,7 +238,7 @@ sDE::sDE(GRobject caller)
         (GtkAttachOptions)0, 2, 2);
     row++;
 
-    gtk_entry_set_text(GTK_ENTRY(de_cname), DSP()->CurCellName()->string());
+    gtk_entry_set_text(GTK_ENTRY(de_cname), Tstring(DSP()->CurCellName()));
 
     label = gtk_label_new("SPICE Prefix");
     gtk_widget_show(label);
@@ -253,7 +253,7 @@ sDE::sDE(GRobject caller)
 
     CDp_name *pn = (CDp_name*)(cursde ? cursde->prpty(P_NAME) : 0);
     if (pn && pn->name_string())
-        gtk_entry_set_text(GTK_ENTRY(de_prefix), pn->name_string()->string());
+        gtk_entry_set_text(GTK_ENTRY(de_prefix), Tstring(pn->name_string()));
 
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "help");

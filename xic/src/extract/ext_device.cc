@@ -249,7 +249,7 @@ cExt::addDevice(sDevDesc *dd, sDevDesc **pold)
     if (!ext_device_tab)
         ext_device_tab = new SymTab(false, false);
     // Recall that sDevDesc::name() is from the cell name string table.
-    SymTabEnt *ent = SymTab::get_ent(ext_device_tab, dd->name()->string());
+    SymTabEnt *ent = SymTab::get_ent(ext_device_tab, Tstring(dd->name()));
     if (ent) {
         char *s = dd->checkEquiv((sDevDesc*)ent->stData);
         if (s)
@@ -290,7 +290,7 @@ cExt::addDevice(sDevDesc *dd, sDevDesc **pold)
         dp->set_next(dd);
     }
     else
-        ext_device_tab->add(dd->name()->string(), dd, false);
+        ext_device_tab->add(Tstring(dd->name()), dd, false);
     return (0);
 }
 
@@ -312,7 +312,7 @@ cExt::removeDevice(const char *name, const char *prefix)
                 else
                     ent->stData = dn;
                 if (!ent->stData)
-                    ext_device_tab->remove(d->name()->string());
+                    ext_device_tab->remove(Tstring(d->name()));
                 return (d);
             }
             if (n > 0)
@@ -372,7 +372,7 @@ cExt::listDevices()
     while ((ent = gen.next()) != 0) {
         for (sDevDesc *d = (sDevDesc*)ent->stData; d; d = d->next()) {
             sLstr lstr;
-            lstr.add(d->name()->string());
+            lstr.add(Tstring(d->name()));
             if (d->prefix()) {
                 lstr.add_c(' ');
                 lstr.add(d->prefix());
@@ -403,11 +403,11 @@ cExt::initDevs()
                 else
                     dp->set_next(d->next());
                 if (!ent->stData)
-                    ext_device_tab->remove(d->name()->string());
+                    ext_device_tab->remove(Tstring(d->name()));
                 Log()->ErrorLogV(mh::Techfile,
                     "Init failed for device %s, prefix %s, device will "
                     "be ignored.\n%s",
-                    d->name()->string(), d->prefix() ? d->prefix() : "none",
+                    Tstring(d->name()), d->prefix() ? d->prefix() : "none",
                     Errs()->get_error());
                 delete d;
                 continue;
@@ -522,7 +522,7 @@ cGroupDesc::find_dev(const char *name, const char *pref, const char *inds,
 
     sDevInstList *d0 = 0;
     for (sDevList *dv = gd_devices; dv; dv = dv->next()) {
-        if (name && strcmp(name, dv->devname()->string()))
+        if (name && strcmp(name, Tstring(dv->devname())))
             continue;
         for (sDevPrefixList *p = dv->prefixes(); p; p = p->next()) {
             if (pref && p->devs()->desc()->prefix() &&
@@ -576,7 +576,7 @@ cGroupDesc::find_dev_set(const char *name, const char *pref, const char *inds,
 
     int found = 0;
     for (sDevList *dv = gd_devices; dv; dv = dv->next()) {
-        if (!name || !*name || !strcmp(name, dv->devname()->string())) {
+        if (!name || !*name || !strcmp(name, Tstring(dv->devname()))) {
             for (sDevPrefixList *p = dv->prefixes(); p; p = p->next()) {
                 if (!pref || !*pref || (p->devs()->desc()->prefix() &&
                         !strcmp(pref, p->devs()->desc()->prefix()))) {
@@ -719,7 +719,7 @@ cGroupDesc::list_devs()
                 if (di->index() > maxidx)
                     maxidx = di->index();
             }
-            sprintf(buf, "%s %s %d-%d", p->devs()->desc()->name()->string(), 
+            sprintf(buf, "%s %s %d-%d", Tstring(p->devs()->desc()->name()), 
                 p->devs()->desc()->prefix() ?
                     p->devs()->desc()->prefix() : EXT_NONE_TOK, 0, maxidx);
             s0 = new stringlist(lstring::copy(buf), s0);
@@ -834,7 +834,7 @@ cGroupDesc::find_contact_group(sDevContactInst *ci, bool check_hier)
         sLstr lstr;
         lstr.add(d->lname());
         lstr.add(" for ");
-        lstr.add(d->name()->string());
+        lstr.add(Tstring(d->name()));
         const char *msg = "conductor layer %s not found.";
         ExtErrLog.add_dev_err(gd_celldesc, ci->dev(), msg, lstr.string());
         return (-1);
@@ -1317,7 +1317,7 @@ cGroupDesc::add_devs()
 {
     if (EX()->isVerbosePromptline()) {
         PL()->ShowPromptV("Extracting devices in %s...",
-            gd_celldesc->cellname()->string());
+            Tstring(gd_celldesc->cellname()));
     }
 
     sDevList *dv;
@@ -1349,8 +1349,8 @@ cGroupDesc::add_devs()
                     if (!df) {
                         ExtErrLog.add_err(
                             "In %s, add_devs: can't find reference %d in %s %d",
-                            gd_celldesc->cellname()->string(),
-                            i, di->desc()->name()->string(), di->index());
+                            Tstring(gd_celldesc->cellname()),
+                            i, Tstring(di->desc()->name()), di->index());
                     }
                 }
             }
@@ -1836,20 +1836,20 @@ sDevContactDesc::checkEquiv(const sDevContactDesc *cref)
     char buf[256];
     if (c_name != cref->c_name) {
         snprintf(buf, 256, "contact name is %s, expecting %s",
-            c_name ? c_name->string() : "null",
-            cref->c_name ? cref->c_name->string() : "null");
+            c_name ? Tstring(c_name) : "null",
+            cref->c_name ? Tstring(cref->c_name) : "null");
         return (lstring::copy(buf));
     }
     if (c_bulk != cref->c_bulk) {
         snprintf(buf, 256, "%s contact %s, expecting %s",
-            c_bulk ? "bulk" : "non-bulk", c_name ? c_name->string() : "null",
+            c_bulk ? "bulk" : "non-bulk", c_name ? Tstring(c_name) : "null",
             cref->c_bulk ? "bulk" : "non-bulk");
         return (lstring::copy(buf));
     }
     if (c_multiple != cref->c_multiple) {
         snprintf(buf, 256, "%s contact %s, expecting %s",
             c_multiple ? "multiple" : "non-multiple",
-            c_name ? c_name->string() : "null",
+            c_name ? Tstring(c_name) : "null",
             cref->c_multiple ? "multiple" : "non-multiple");
         return (lstring::copy(buf));
     }
@@ -1900,10 +1900,10 @@ sDevContactDesc::setup_contact_indices(const sDevDesc *dd)
     if (!ps0) {
         if (!esd)
             Errs()->add_error("Device %s, can't open electrical cell,",
-                dd->name()->string());
+                Tstring(dd->name()));
         else
             Errs()->add_error("Device %s, electrical cell has no nodes,",
-                dd->name()->string());
+                Tstring(dd->name()));
         for (sDevContactDesc *c = this; c; c = c->next())
             c->c_el_index = -1;
         return (false);
@@ -1921,8 +1921,8 @@ sDevContactDesc::setup_contact_indices(const sDevDesc *dd)
         if (c->c_el_index < 0) {
             Errs()->add_error(
                 "Physical device %s contact %s not found in "
-                "electrical cell.", dd->name()->string(),
-                c->name()->string());
+                "electrical cell.", Tstring(dd->name()),
+                Tstring(c->name()));
             for (c = this; c; c = c->next())
                 c->c_el_index = -1;
             return (false);
@@ -1955,7 +1955,7 @@ sDevContactDesc::parse_contact(const char **line, sDevDesc *d)
     if (!c->c_name_gvn || !c->c_lname) {
         sprintf(buf,
             "Syntax error, no contact name, contact spec in Device %s "
-            "block,\nline %d.\n", d->name()->stringNN(), Tech()->LineCount());
+            "block,\nline %d.\n", TstringNN(d->name()), Tech()->LineCount());
         delete c;
         return (lstring::copy(buf));
     }
@@ -1963,7 +1963,7 @@ sDevContactDesc::parse_contact(const char **line, sDevDesc *d)
         sLstr lstr;
         sprintf(buf,
             "Layer expression parse error, contact spec in Device %s "
-            "block,\nline %d:\n", d->name()->stringNN(),
+            "block,\nline %d:\n", TstringNN(d->name()),
             Tech()->LineCount());
         lstr.add(buf);
         lstr.add(Errs()->get_error());
@@ -1977,7 +1977,7 @@ sDevContactDesc::parse_contact(const char **line, sDevDesc *d)
             sprintf(buf,
                 "Error, contact spec in Device %s block, \"...\" "
                 "found in first contact,\nline %d.\n",
-                d->name()->stringNN(), Tech()->LineCount());
+                TstringNN(d->name()), Tech()->LineCount());
             delete c;
             return (lstring::copy(buf));
         }
@@ -2032,7 +2032,7 @@ sDevContactDesc::parse_bulk_contact(const char **line, sDevDesc *d)
     if (!c->c_name_gvn) {
         sprintf(buf,
             "Error, missing terminal name in Device %s block, line %d.\n",
-            d->name()->stringNN(), Tech()->LineCount());
+            TstringNN(d->name()), Tech()->LineCount());
         delete c;
         return (lstring::copy(buf));
     }
@@ -2043,7 +2043,7 @@ sDevContactDesc::parse_bulk_contact(const char **line, sDevDesc *d)
         sprintf(buf,
             "Error, missing text in bulk contact spec in "
             "Device %s block, line %d.\n",
-            d->name()->stringNN(), Tech()->LineCount());
+            TstringNN(d->name()), Tech()->LineCount());
         delete c;
         return (lstring::copy(buf));
     }
@@ -2065,7 +2065,7 @@ sDevContactDesc::parse_bulk_contact(const char **line, sDevDesc *d)
                 sprintf(buf,
                     "Error, missing net name in bulk contact spec in "
                     "Device %s block, line %d.\n",
-                    d->name()->stringNN(), Tech()->LineCount());
+                    TstringNN(d->name()), Tech()->LineCount());
                 delete c;
                 return (lstring::copy(buf));
             }
@@ -2079,7 +2079,7 @@ sDevContactDesc::parse_bulk_contact(const char **line, sDevDesc *d)
             sprintf(buf,
                 "Error, missing bloat value in bulk contact spec in "
                 "Device %s block, line %d.\n",
-                d->name()->stringNN(), Tech()->LineCount());
+                TstringNN(d->name()), Tech()->LineCount());
             delete c;
             return (lstring::copy(buf));
         }
@@ -2091,7 +2091,7 @@ sDevContactDesc::parse_bulk_contact(const char **line, sDevDesc *d)
         sprintf(buf,
             "Error, bad bloat value in bulk contact spec in "
             "Device %s block, line %d.\n",
-            d->name()->stringNN(), Tech()->LineCount());
+            TstringNN(d->name()), Tech()->LineCount());
         delete c;
         delete [] tok;
         return (lstring::copy(buf));
@@ -2110,7 +2110,7 @@ sDevContactDesc::parse_bulk_contact(const char **line, sDevDesc *d)
     if (!c->c_lname) {
         sprintf(buf,
             "Syntax error, no layer name, contact spec in Device %s block,\n"
-            "line %d.\n", d->name()->stringNN(), Tech()->LineCount());
+            "line %d.\n", TstringNN(d->name()), Tech()->LineCount());
         delete c;
         return (lstring::copy(buf));
     }
@@ -2118,7 +2118,7 @@ sDevContactDesc::parse_bulk_contact(const char **line, sDevDesc *d)
         sLstr lstr;
         sprintf(buf,
             "Syntax error, no layer name, contact spec in Device %s block,\n"
-            "line %d:\n", d->name()->stringNN(), Tech()->LineCount());
+            "line %d:\n", TstringNN(d->name()), Tech()->LineCount());
         lstr.add(buf);
         lstr.add(Errs()->get_error());
         lstr.add_c('\n');
@@ -2289,7 +2289,7 @@ sDevContactInst::show(WindowDesc *wdesc, BBox *eBB) const
             delta = dim;
 
         int x, y, w, h;
-        DSP()->DefaultLabelSize(cont_name()->string(), wdesc->Mode(), &w, &h);
+        DSP()->DefaultLabelSize(Tstring(cont_name()), wdesc->Mode(), &w, &h);
         w = (w*delta)/h;
         h = delta;
         x = (ci_BB.left + ci_BB.right - w)/2;
@@ -2299,7 +2299,7 @@ sDevContactInst::show(WindowDesc *wdesc, BBox *eBB) const
             eBB->add(&tBB);
         }
         else
-            wdesc->ShowLabel(cont_name()->string(), x, y, w, h, 0);
+            wdesc->ShowLabel(Tstring(cont_name()), x, y, w, h, 0);
     }
 }
 
@@ -3498,7 +3498,7 @@ sDevDesc::checkEquiv(const sDevDesc *dref)
         char *s = c->checkEquiv(cr);
         if (s) {
             snprintf(buf, 256, "Device %s, prefix %s:  %s",
-            d_name->string(), d_prefix ? d_prefix : "null", s);
+            Tstring(d_name), d_prefix ? d_prefix : "null", s);
             delete [] s;
             return (lstring::copy(buf));
         }
@@ -3508,17 +3508,17 @@ sDevDesc::checkEquiv(const sDevDesc *dref)
     if (c) {
         snprintf(buf, 256,
             "Device %s, prefix %s:  extra contact %s not found in reference\n"
-            "device with the same name.", d_name->string(),
+            "device with the same name.", Tstring(d_name),
             d_prefix ? d_prefix : "null",
-            c->name()->string());
+            Tstring(c->name()));
         return (lstring::copy(buf));
     }
     if (cr) {
         snprintf(buf, 256,
             "Device %s, prefix %s:  missing contact %s found in reference\n"
-            "devices with the same name.", d_name->string(),
+            "devices with the same name.", Tstring(d_name),
             d_prefix ? d_prefix : "null",
-            cr->name()->string());
+            Tstring(cr->name()));
         return (lstring::copy(buf));
     }
 
@@ -3554,7 +3554,7 @@ sDevDesc::checkEquiv(const sDevDesc *dref)
                     "Device %s, prefix %s:  permutes %s, %s differ "
                     "from %s, %s\n"
                     "found in reference device with the same name.",
-                    d_name->string(), d_prefix ? d_prefix : "null",
+                    Tstring(d_name), d_prefix ? d_prefix : "null",
                     p1 ? p1 : "null", p2 ? p2 : "null",
                     pr1 ? pr1 : "null", pr2 ? pr2 : "null");
                 return (lstring::copy(buf));
@@ -3565,7 +3565,7 @@ sDevDesc::checkEquiv(const sDevDesc *dref)
         snprintf(buf, 256,
             "Device %s, prefix %s:  permutes are inconsistent with\n"
             "reference device with the same name.",
-            d_name->string(), d_prefix ? d_prefix : "null");
+            Tstring(d_name), d_prefix ? d_prefix : "null");
         return (lstring::copy(buf));
     }
 
@@ -3650,23 +3650,23 @@ sDevDesc::init()
         char *nm1 = d_prmconts->string;
         if (!nm1 || !*nm1) {
             Errs()->add_error("Device %s, permute name null or empty.",
-                d_name->stringNN());
+                TstringNN(d_name));
             return (false);
         }
         if (!d_prmconts->next) {
             Errs()->add_error("Device %s, permute name missing.",
-                d_name->stringNN());
+                TstringNN(d_name));
             return (false);
         }
         char *nm2 = d_prmconts->next->string;
         if (!nm2 || !*nm2) {
             Errs()->add_error("Device %s, second permute name null or empty.",
-                d_name->stringNN());
+                TstringNN(d_name));
             return (false);
         }
         if (d_prmconts->next->next) {
             Errs()->add_error("Device %s, too many permute names, maximum 2.",
-                d_name->stringNN());
+                TstringNN(d_name));
             return (false);
         }
 
@@ -3677,7 +3677,7 @@ sDevDesc::init()
         if (!c1) {
             Errs()->add_error(
                 "Device %s, can't find permutable contact named %s.",
-                d_name->stringNN(), nm1);
+                TstringNN(d_name), nm1);
             return (false);
         }
 
@@ -3685,7 +3685,7 @@ sDevDesc::init()
         if (!c2) {
             Errs()->add_error(
                 "Device %s, can't find permutable contact named %s.",
-                d_name->stringNN(), nm2);
+                TstringNN(d_name), nm2);
             return (false);
         }
         d_prm1 = CDnetex::name_tab_add(nm1);
@@ -3814,7 +3814,7 @@ sDevDesc::find_contact(const char *cname)
 {
     if (cname) {
         for (sDevContactDesc *c = d_contacts; c; c = c->next())
-            if (!lstring::cieq(c->name()->stringNN(), cname))
+            if (!lstring::cieq(TstringNN(c->name()), cname))
                 return (c);
     }
     return (0);
@@ -4361,7 +4361,7 @@ sDevDesc::identify_contact(CDs *sdesc, sDevInst *d, Zlist **zbbp,
                 else {
                     char buf[64];
                     char *s = lstring::stpcpy(buf,
-                        ci->desc()->name()->stringNN());
+                        TstringNN(ci->desc()->name()));
                     *s++ = 'a' + nc - 1;
                     *s = 0;
                     ci->set_name(CDnetex::name_tab_add(buf));
@@ -4636,7 +4636,7 @@ sDevInst::show(WindowDesc *wdesc, BBox *eBB) const
             mmItoA(s, di_index);
         }
         else {
-            char *s = lstring::stpcpy(buf, di_desc->name()->stringNN());
+            char *s = lstring::stpcpy(buf, TstringNN(di_desc->name()));
             *s++ = ' ';
             mmItoA(s, di_index);
         }
@@ -4698,7 +4698,7 @@ namespace {
             fprintf(fp, "%*ssegment %d:\n", 2*dp, "", *pcnt);
             for (sDevContactInst *ci = di->contacts(); ci; ci = ci->next()) {
                 fprintf(fp, "  %*sContact %s, ", 2*dp, "",
-                    ci->cont_name()->stringNN());
+                    TstringNN(ci->cont_name()));
                 fprintf(fp, "   Area %.*f,%.*f %.*f,%.*f\n",
                     ndgt, MICRONS(ci->BB()->left),
                     ndgt, MICRONS(ci->BB()->bottom),
@@ -4717,7 +4717,7 @@ void
 sDevInst::print(FILE *fp, bool verbose)
 {
     int ndgt = CD()->numDigits();
-    fprintf(fp, "Instance %d of %s:\n", di_index, di_desc->name()->stringNN());
+    fprintf(fp, "Instance %d of %s:\n", di_index, TstringNN(di_desc->name()));
     int cnt = count_sections();
     if (cnt > 1) {
         fprintf(fp, "  merged - %d components\n", cnt);
@@ -4726,7 +4726,7 @@ sDevInst::print(FILE *fp, bool verbose)
             pr_conts(fp, di_multi_devs, 0, &cnt);
     }
     for (sDevContactInst *ci = contacts(); ci; ci = ci->next()) {
-        fprintf(fp, " Contact %s, ", ci->cont_name()->stringNN());
+        fprintf(fp, " Contact %s, ", TstringNN(ci->cont_name()));
         fprintf(fp, " Group %d, ", ci->group());
         fprintf(fp, " Area %.*f,%.*f %.*f,%.*f\n",
             ndgt, MICRONS(ci->cBB()->left), ndgt, MICRONS(ci->cBB()->bottom),
@@ -5101,7 +5101,7 @@ sDevInst::net_line(char **ret, const char *format, PhysSpicePrintMode pmode)
         t = lstring::copy("");
     if (!Tech()->EvaluateEval(t)) {
         ExtErrLog.add_err("In %s, netLine: evaluation error in %s.",
-            di_sdesc->cellname()->string(), t);
+            Tstring(di_sdesc->cellname()), t);
     }
 
     *ret = t;
@@ -5220,7 +5220,7 @@ sDevInst::find_contact(const char *name) const
 {
     if (name) {
         for (sDevContactInst *ci = di_contacts; ci; ci = ci->next()) {
-            if (lstring::cieq(name, ci->cont_name()->stringNN()))
+            if (lstring::cieq(name, TstringNN(ci->cont_name())))
                 return (ci);
         }
     }
@@ -5556,8 +5556,8 @@ sDevInst::measure()
             if (m->tree()->evfunc(m->tree(), &v, &cx) != OK) {
                 ExtErrLog.add_err(
                     "In %s, measure: measure %s evaluation failed for %s %d.",
-                    di_sdesc->cellname()->string(), m->name(),
-                    di_desc->name()->stringNN(), di_index);
+                    Tstring(di_sdesc->cellname()), m->name(),
+                    TstringNN(di_desc->name()), di_index);
             }
             m->result()->content.value =
                 (v.type == TYP_SCALAR ? v.content.value : 0.0);
@@ -6028,7 +6028,7 @@ sDevInst::cache_measures()
                     ExtErrLog.add_err(
                         "cacheMeasures: measure %s evaluation "
                         "failed for %s %d.", m->name(),
-                        di_desc->name()->stringNN(), di_index);
+                        TstringNN(di_desc->name()), di_index);
                 }
                 m->result()->content.value =
                     (v.type == TYP_SCALAR ? v.content.value : 0.0);

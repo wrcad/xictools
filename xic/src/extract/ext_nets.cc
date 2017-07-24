@@ -498,7 +498,7 @@ sElecNetList::is_permutable(unsigned int i, unsigned int j)
             delete [] terms2;
             return (false);
         }
-        sDevDesc *dd = EX()->findDeviceDesc(dname->string());
+        sDevDesc *dd = EX()->findDeviceDesc(Tstring(dname));
         if (!dd) {
             delete [] terms1;
             delete [] terms2;
@@ -574,7 +574,7 @@ sElecNetList::is_permutable(unsigned int i, unsigned int j)
             delete [] ary2;
             return (false);
         }
-        sDevDesc *dd = EX()->findDeviceDesc(cd1->cellname()->string());
+        sDevDesc *dd = EX()->findDeviceDesc(Tstring(cd1->cellname()));
         for (int m = 0; m < sz1; m++) {
             if (m == skipix)
                 continue;
@@ -628,13 +628,13 @@ sElecNetList::check_flatten(CDc *cdesc)
             pset = true;
         }
         ExtErrLog.add_log(ExtLogAssoc, "Smashing %s %d into %s schematic.",
-            cdesc->cellname()->string(), vec_ix,
-            et_sdesc->cellname()->string());
+            Tstring(cdesc->cellname()), vec_ix,
+            Tstring(et_sdesc->cellname()));
         if (!flatten(cdesc, vec_ix)) {
             ExtErrLog.add_err(
                 "In %s schematic, flatten of instance of %s failed: %s.",
-                et_sdesc->cellname()->string(),
-                msdesc->cellname()->string(),
+                Tstring(et_sdesc->cellname()),
+                Tstring(msdesc->cellname()),
                 Errs()->get_error());
         }
         vec_ix++;
@@ -655,15 +655,15 @@ namespace {
             return;
         sLstr lstr;
         if (CD()->GetSubcCatmode() == cCD::SUBC_CATMODE_SPICE3) {
-            lstr.add_c(*pc->term_name()->string());
+            lstr.add_c(*Tstring(pc->term_name()));
             lstr.add_c(CD()->GetSubcCatchar());
             lstr.add(instname);
             lstr.add_c(CD()->GetSubcCatchar());
-            lstr.add(pc->term_name()->string() + 1);
+            lstr.add(Tstring(pc->term_name()) + 1);
         }
         else {
             // cCD::SUBC_CATMODE_WR
-            lstr.add(pc->term_name()->string());
+            lstr.add(Tstring(pc->term_name()));
             lstr.add_c(CD()->GetSubcCatchar());
             lstr.add(instname);
         }
@@ -1065,7 +1065,7 @@ sElecNetList::flatten(const CDc *cdesc, unsigned int vec_ix,
         CDnetName nm = subl->et_list[i].name;
         if (!nm)
             continue;
-        if (!SCD()->isGlobalNetName(nm->string()))
+        if (!SCD()->isGlobalNetName(Tstring(nm)))
             continue;
 
         // If we don't find a match, we'll create one later.
@@ -1144,7 +1144,7 @@ sElecNetList::flatten(const CDc *cdesc, unsigned int vec_ix,
             t->set_next(et_list[pnode].conts);
             et_list[pnode].conts = t;
         }
-        if (SCD()->isGlobalNetName(nm->string())) {
+        if (SCD()->isGlobalNetName(Tstring(nm))) {
             // If global, we didn't find an existing match
             // previously, so create one now.
 
@@ -1317,16 +1317,16 @@ sElecNetList::purge_terminals(SymTab *ttab, SymTab *ntab)
 void
 sElecNetList::dump(FILE *fp)
 {
-    fprintf(fp, "%s max_ix=%d size=%d\n", et_sdesc->cellname()->string(),
+    fprintf(fp, "%s max_ix=%d size=%d\n", Tstring(et_sdesc->cellname()),
         et_maxix, et_size);
     for (unsigned int i = 1; i <= et_maxix; i++) {
         CDnetName nm = et_list[i].name;
-        fprintf(fp, "  %2d %-16s:", i, nm ? nm->string() : "");
+        fprintf(fp, "  %2d %-16s:", i, nm ? Tstring(nm) : "");
 
         for (CDpin *p = et_list[i].pins; p; p = p->next())
-            fprintf(fp, " %s", p->term()->name()->string());
+            fprintf(fp, " %s", Tstring(p->term()->name()));
         for (CDcont *t = et_list[i].conts; t; t = t->next())
-            fprintf(fp, " %s", t->term()->name()->string());
+            fprintf(fp, " %s", Tstring(t->term()->name()));
         putc('\n', fp);
     }
 }
@@ -1393,7 +1393,7 @@ cExt::makeElec(CDs *sdesc, int depth, int modeflag)
     if (!sdesc || sdesc->isElectrical())
         return (false);
     if (!CurCell(Electrical))
-        CDcdb()->insertCell(sdesc->cellname()->string(), Electrical);
+        CDcdb()->insertCell(Tstring(sdesc->cellname()), Electrical);
     CDcbin cbin(sdesc->cellname());
     SCD()->connectAll(false);
 #ifdef SP_DEBUG
@@ -1488,13 +1488,13 @@ namespace {
     inline bool
     tscmp(const CDsterm *ta, const CDsterm *tb)
     {
-        return (strcmp(ta->name()->string(), tb->name()->string()) < 0);
+        return (strcmp(Tstring(ta->name()), Tstring(tb->name())) < 0);
     }
 
     inline bool
     tccmp(const CDcterm *ta, const CDcterm *tb)
     {
-        return (strcmp(ta->name()->string(), tb->name()->string()) < 0);
+        return (strcmp(Tstring(ta->name()), Tstring(tb->name())) < 0);
     }
 
     // Alphabetically sort the terminal list by name.  Return the

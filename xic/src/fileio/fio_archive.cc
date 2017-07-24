@@ -1012,13 +1012,13 @@ cFIO::OpenImport(const char *fullname, const FIOreadPrms *prms,
         }
 
         // Change the name of the new cell, if necessary.
-        if (strcmp(cbin.cellname()->string(), new_cellname)) {
+        if (strcmp(Tstring(cbin.cellname()), new_cellname)) {
             CDcellName oldname = cbin.cellname();
             if (!cbin.rename(new_cellname)) {
                 Errs()->add_error(
                     "Name change from %s to %s failed,\n"
                     "cell is in memory under first name.",
-                    oldname->string(), new_cellname);
+                    Tstring(oldname), new_cellname);
                 oiret = OIerror;
             }
         }
@@ -1048,17 +1048,17 @@ cFIO::DefaultFilename(CDcbin *cbin, FileType ft)
         }
         else if (ft == Fnative) {
             const char *path = cbin->fileName();  // source directory
-            const char *cn = cbin->cellname()->string();
+            const char *cn = Tstring(cbin->cellname());
             char *fn = new char[strlen(path) + strlen(cn) + 2];
             sprintf(fn, "%s/%s", path, cn);
             return (fn);
         }
     }
     if (ft == Fnone || ft == Fnative)
-        return (lstring::copy(cbin->cellname()->string()));
+        return (lstring::copy(Tstring(cbin->cellname())));
     if (ft == Fgds) {
-        char *fn = new char[strlen(cbin->cellname()->string()) + 8];
-        strcpy(fn, cbin->cellname()->string());
+        char *fn = new char[strlen(Tstring(cbin->cellname())) + 8];
+        strcpy(fn, Tstring(cbin->cellname()));
         if (TypeExt(fn) != Fgds)
             strcat(fn, ".gds");
         if (cbin->isCompressed())
@@ -1066,8 +1066,8 @@ cFIO::DefaultFilename(CDcbin *cbin, FileType ft)
         return (fn);
     }
     if (ft == Fcgx) {
-        char *fn = new char[strlen(cbin->cellname()->string()) + 8];
-        strcpy(fn, cbin->cellname()->string());
+        char *fn = new char[strlen(Tstring(cbin->cellname())) + 8];
+        strcpy(fn, Tstring(cbin->cellname()));
         if (TypeExt(fn) != Fcgx)
             strcat(fn, ".cgx");
         if (cbin->isCompressed())
@@ -1075,15 +1075,15 @@ cFIO::DefaultFilename(CDcbin *cbin, FileType ft)
         return (fn);
     }
     if (ft == Foas) {
-        char *fn = new char[strlen(cbin->cellname()->string()) + 8];
-        strcpy(fn, cbin->cellname()->string());
+        char *fn = new char[strlen(Tstring(cbin->cellname())) + 8];
+        strcpy(fn, Tstring(cbin->cellname()));
         if (TypeExt(fn) != Foas)
             strcat(fn, ".oas");
         return (fn);
     }
     if (ft == Fcif) {
-        char *fn = new char[strlen(cbin->cellname()->string()) + 5];
-        strcpy(fn, cbin->cellname()->string());
+        char *fn = new char[strlen(Tstring(cbin->cellname())) + 5];
+        strcpy(fn, Tstring(cbin->cellname()));
         if (TypeExt(fn) != Fcif)
             strcat(fn, ".cif");
         return (fn);

@@ -214,28 +214,28 @@ cExtErrLog::add_dev_err(const CDs *sdesc, const sDevInst *di,
     if (di) {
         if (di->desc()->prefix()) {
             fprintf(el_errfp, "In %s, device %s, prefix %s, index %d:\n",
-                sdesc->cellname()->stringNN(), di->desc()->name()->stringNN(),
+                TstringNN(sdesc->cellname()), TstringNN(di->desc()->name()),
                 di->desc()->prefix(), di->index());
             if (el_logfp)
                 fprintf(el_logfp, "In %s, device %s, prefix %s, index %d:\n",
-                    sdesc->cellname()->stringNN(),
-                    di->desc()->name()->stringNN(),
+                    TstringNN(sdesc->cellname()),
+                    TstringNN(di->desc()->name()),
                     di->desc()->prefix(), di->index());
         }
         else {
             fprintf(el_errfp, "In %s, device %s, index %d:\n",
-                sdesc->cellname()->string(), di->desc()->prefix(),
+                Tstring(sdesc->cellname()), di->desc()->prefix(),
                 di->index());
             if (el_logfp)
                 fprintf(el_logfp, "In %s, device %s, index %d:\n",
-                    sdesc->cellname()->stringNN(), di->desc()->prefix(),
+                    TstringNN(sdesc->cellname()), di->desc()->prefix(),
                     di->index());
         }
     }
     else {
-        fprintf(el_errfp, "In %s: ", sdesc->cellname()->stringNN());
+        fprintf(el_errfp, "In %s: ", TstringNN(sdesc->cellname()));
         if (el_logfp)
-            fprintf(el_logfp, "In %s: ", sdesc->cellname()->stringNN());
+            fprintf(el_logfp, "In %s: ", TstringNN(sdesc->cellname()));
     }
 
     char buf[2048];
@@ -312,7 +312,7 @@ cExtErrLog::open_files()
                 fprintf(el_errfp, "# %s  %s\n", EL_ERRFILE, XM()->IdString());
                 el_errfile = lstr.string_trim();
                 fprintf(el_errfp, "Grouping top cell: %s\n",
-                    el_cellname->string());
+                    Tstring(el_cellname));
             }
         }
     }
@@ -320,13 +320,13 @@ cExtErrLog::open_files()
         el_errfp = fopen(lstr.string(), "a");
         if (el_errfp)
             fprintf(el_errfp, "Extracting top cell: %s\n",
-                el_cellname->string());
+                Tstring(el_cellname));
     }
     else if (el_state == ELassociating) {
         el_errfp = fopen(lstr.string(), "a");
         if (el_errfp)
             fprintf(el_errfp, "Associating top cell: %s\n",
-                el_cellname->string());
+                Tstring(el_cellname));
     }
     if (!el_errfp) {
         if (!el_warned_err) {
@@ -360,7 +360,7 @@ cExtErrLog::open_files()
                         XM()->IdString());
                     el_logfile = lstr.string_trim();
                     fprintf(el_logfp, "Grouping top cell: %s\n",
-                        el_cellname->string());
+                        Tstring(el_cellname));
                 }
                 else if (!el_warned_g_log) {
                     lstr_errs.add("Can't open ");
@@ -384,7 +384,7 @@ cExtErrLog::open_files()
                         XM()->IdString());
                     el_logfile = lstr.string_trim();
                     fprintf(el_logfp, "Extracting top cell: %s\n",
-                        el_cellname->string());
+                        Tstring(el_cellname));
                 }
                 else if (!el_warned_e_log) {
                     lstr_errs.add("Can't open ");
@@ -408,7 +408,7 @@ cExtErrLog::open_files()
                         XM()->IdString());
                     el_logfile = lstr.string_trim();
                     fprintf(el_logfp, "Associating top cell: %s\n",
-                        el_cellname->string());
+                        Tstring(el_cellname));
                 }
                 else if (!el_warned_a_log) {
                     lstr_errs.add("Can't open ");

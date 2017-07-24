@@ -345,7 +345,7 @@ cEdit::cellPrptyAdd(int which)
                     return;
                 }
                 if (PopUpPCellParams(0, MODE_ON, pm,
-                        cursd->cellname()->string(), pcpEdit)) {
+                        Tstring(cursd->cellname()), pcpEdit)) {
                     newstr = pm->string(false);
                     PCellParam::destroy(pm);
                 }
@@ -494,7 +494,7 @@ cEdit::cellPrptyEdit(Ptxt *line)
                 return;
             }
             if (PopUpPCellParams(0, MODE_ON, pm,
-                    cursd->cellname()->string(), pcpEdit)) {
+                    Tstring(cursd->cellname()), pcpEdit)) {
                 newstr = pm->string(false);
                 PCellParam::destroy(pm);
             }

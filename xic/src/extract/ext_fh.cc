@@ -262,7 +262,7 @@ cFH::fhRun(const char *infile, const char *outfile, const char *resfile,
     bool run_foreg = CDvdb()->getVariable(VA_FhForeg);
     bool monitor = CDvdb()->getVariable(VA_FhMonitor);
 
-    fxJob *newjob = new fxJob(CurCell(Physical)->cellname()->string(),
+    fxJob *newjob = new fxJob(Tstring(CurCell(Physical)->cellname()),
         fxIndMode, this, fxJob::jobs());
     fxJob::set_jobs(newjob);
     char *in_f = 0, *ot_f = 0, *lg_f = 0;
@@ -336,7 +336,7 @@ cFH::getFileName(const char *ext, int pid)
     if (!CurCell(Physical))
         return (0);
     char buf[128];
-    const char *s = CurCell(Physical)->cellname()->string();
+    const char *s = Tstring(CurCell(Physical)->cellname());
     if (pid > 0)
         sprintf(buf, "%s-%d.%s", s, pid, ext);
     else

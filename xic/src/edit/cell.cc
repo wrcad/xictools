@@ -158,7 +158,7 @@ cEdit::createCellExec(CmdDesc*)
             sCurTx curtf = *GEO()->curTx();
             sCurTx ident;
             GEO()->setCurTx(ident);
-            makeInstance(cursd, cbin.cellname()->string(), xo, yo, 0, 0);
+            makeInstance(cursd, Tstring(cbin.cellname()), xo, yo, 0, 0);
             GEO()->setCurTx(curtf);
 
             Ulist()->CommitChanges(true);
@@ -529,8 +529,8 @@ cEdit::renameSymbol(const char *name, const char *newname)
     CDcellName nname = CD()->CellNameTableAdd(newname);
     ScedIf()->updateDotsCellName(oldname, nname);
 
-    plChangeMenuEnt(newname, oldname->string());
-    XM()->ReplaceOpenCellName(newname, oldname->string());
+    plChangeMenuEnt(newname, Tstring(oldname));
+    XM()->ReplaceOpenCellName(newname, Tstring(oldname));
     WDgen gen(WDgen::MAIN, WDgen::CDDB);
     WindowDesc *wd;
     while ((wd = gen.next()) != 0) {
@@ -559,7 +559,7 @@ cEdit::renameAll(CDcbin *tbin, const char *pre, const char *suf)
     while (gen.next(&cbin, 0)) {
         if ((cbin.isLibrary() && cbin.isDevice()) || cbin.isImmutable())
             continue;
-        s0 = new stringlist(lstring::copy(cbin.cellname()->string()), s0);
+        s0 = new stringlist(lstring::copy(Tstring(cbin.cellname())), s0);
     }
     int cnt = 0;
     stringlist *sx = 0;

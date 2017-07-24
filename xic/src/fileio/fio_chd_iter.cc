@@ -410,7 +410,7 @@ namespace {
             data[8] = MICRONS(ci_aoiBB.top);
 
             tmpstr1 = lstring::copy(DBNAME);
-            tmpstr2 = lstring::copy(ci_symref1->get_name()->string());
+            tmpstr2 = lstring::copy(Tstring(ci_symref1->get_name()));
             tmpstr3 = lstring::copy(CDchd()->chdFind(ci_chd1));
 
             vars[0].content.string = tmpstr1;
@@ -621,7 +621,7 @@ namespace {
             (cBB->height()%ci_fine_grid != 0);
 
         char buf[256];
-        char *lnp = lstring::stpcpy(buf, ci_symref1->get_name()->string());
+        char *lnp = lstring::stpcpy(buf, Tstring(ci_symref1->get_name()));
         *lnp++ = '.';
 
         // Swap in local SP table context.

@@ -121,7 +121,7 @@ cSced::checkElectrical(CDcbin *cbin)
         //
         CDp_name *pna = (CDp_name*)sd->prpty(P_NAME);
         if (pna && pna->name_string() &&
-                *pna->name_string()->string() == P_NAME_TERM) {
+                *Tstring(pna->name_string()) == P_NAME_TERM) {
             CDp_labloc *pl = (CDp_labloc*)sd->prpty(P_LABLOC);
             if (!pl)
                 sd->prptyAdd(P_LABLOC, "name 2");
@@ -197,7 +197,7 @@ cSced::prptyCheck(CDs *sdesc, FILE* fp, bool select_labels)
     if (!nofix)
         Ulist()->ListCheckPush("check", sdesc, false, true);
     fprintf(fp, "Checking electrical properties in cell %s...",
-        sdesc->cellname()->string());
+        Tstring(sdesc->cellname()));
     neednl = true;
 
     char *str;
@@ -300,7 +300,7 @@ cSced::prptyCheck(CDs *sdesc, FILE* fp, bool select_labels)
             // subckts have 3 entries in name field
             if (!sdesc->prpty(P_NAME)) {
                 if (!nofix) {
-                    sprintf(tbuf, "X 0 %s", sdesc->cellname()->string());
+                    sprintf(tbuf, "X 0 %s", Tstring(sdesc->cellname()));
                     sdesc->prptyAdd(P_NAME, tbuf);
                 }
             }
@@ -350,7 +350,7 @@ cSced::prptyCheckCell(CDs *sdesc, char **str)
         *str = 0;
     if (!sdesc)
         return (true);
-    const char *cname = sdesc->cellname()->string();
+    const char *cname = Tstring(sdesc->cellname());
     const bool nofix = sdesc->isImmutable();
     CDelecCellType tp = sdesc->elecCellType();
 
@@ -581,7 +581,7 @@ cSced::prptyCheckMutual(CDs *sdesc, CDp_nmut *pm, char **str)
                 if (pd->value() == P_MUTLRF)
                     mutrf = true;
                 else if (pd->value() == P_NAME)
-                    name = PNAM(pd)->name_string()->string();
+                    name = Tstring(PNAM(pd)->name_string());
                 if (mutrf && name)
                     break;
             }
@@ -590,7 +590,7 @@ cSced::prptyCheckMutual(CDs *sdesc, CDp_nmut *pm, char **str)
                     printed = printprop(pm, lstr);
                 lstr.add("  Object field1 has no mut ref, fixing.\n");
                 if (nofix)
-                    print_err(lstr, im_msg, sdesc->cellname()->string());
+                    print_err(lstr, im_msg, Tstring(sdesc->cellname()));
                 else
                     odesc->prptyAdd(P_MUTLRF, "mutual", Electrical);
             }
@@ -629,7 +629,7 @@ cSced::prptyCheckMutual(CDs *sdesc, CDp_nmut *pm, char **str)
                 if (pd->value() == P_MUTLRF)
                     mutrf = true;
                 else if (pd->value() == P_NAME)
-                    name = PNAM(pd)->name_string()->string();
+                    name = Tstring(PNAM(pd)->name_string());
                 if (mutrf && name)
                     break;
             }
@@ -638,7 +638,7 @@ cSced::prptyCheckMutual(CDs *sdesc, CDp_nmut *pm, char **str)
                     printed = printprop(pm, lstr);
                 lstr.add("  Object field2 has no mut ref, fixing.\n");
                 if (nofix)
-                    print_err(lstr, im_msg, sdesc->cellname()->string());
+                    print_err(lstr, im_msg, Tstring(sdesc->cellname()));
                 else
                     odesc->prptyAdd(P_MUTLRF, "mutual", Electrical);
             }
@@ -669,7 +669,7 @@ cSced::prptyCheckMutual(CDs *sdesc, CDp_nmut *pm, char **str)
         lstr.add(mname);
         lstr.add(" property due to errors.\n");
         if (nofix)
-            print_err(lstr, im_msg, sdesc->cellname()->string());
+            print_err(lstr, im_msg, Tstring(sdesc->cellname()));
         else {
             if (pm->bound())
                 // get rid of label, too
@@ -755,7 +755,7 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
     CDs *msdesc = cdesc->masterCell();
     bool isdev = (msdesc && msdesc->elecCellType() == CDelecDev);
     bool ismac = (msdesc && msdesc->elecCellType() == CDelecMacro);
-    const char *cname = msdesc ? msdesc->cellname()->string() : "<unknown>";
+    const char *cname = msdesc ? Tstring(msdesc->cellname()) : "<unknown>";
     double xll = ELEC_MICRONS(cdesc->oBB().left);
     double yll = ELEC_MICRONS(cdesc->oBB().bottom);
 
@@ -853,7 +853,7 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
     }
     if (lstr.string()) {
         if (nofix)
-            print_err(lstr, im_msg, sdesc->cellname()->string());
+            print_err(lstr, im_msg, Tstring(sdesc->cellname()));
         else {
             for (int i = 0; i < prpmax; i++)
                 pcnts[i] = 0;
@@ -962,7 +962,7 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
             // not a gnd device
             print_err(lstr,
                 "Instance of %s at LL=%.3f,%.3f with no name property.\n",
-                cdesc->cellname()->string(),
+                Tstring(cdesc->cellname()),
                 ELEC_MICRONS(cdesc->oBB().left),
                 ELEC_MICRONS(cdesc->oBB().bottom));
         }
@@ -980,7 +980,7 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
             if (!pn1) {
                 print_err(lstr, "%s %s has no name property!\n",
                     msdesc->isDevice() ? "Device" : "Cell",
-                    msdesc->cellname()->string());
+                    Tstring(msdesc->cellname()));
             }
             else if (msdesc->elecCellType() != CDelecTerm) {
 
@@ -989,10 +989,10 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
                     print_err(lstr,
                         "Name prefix for %s (%s) doesn't match "
                         "cell entry (%s), updating.\n",
-                        name, pn->name_string()->stringNN(),
-                        pn1->name_string()->stringNN());
+                        name, TstringNN(pn->name_string()),
+                        TstringNN(pn1->name_string()));
                     if (nofix)
-                        print_err(lstr, im_msg, sdesc->cellname()->string());
+                        print_err(lstr, im_msg, Tstring(sdesc->cellname()));
                     else {
                         CDp *op = pn;
                         pn = (CDp_name*)pn->dup();
@@ -1024,7 +1024,7 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
         if (mtp != itp) {
             print_err(lstr,
         "Instance of %s at LL=%.3f,%.3f, master/instance types differ %d/%d.\n",
-                cdesc->cellname()->string(),
+                Tstring(cdesc->cellname()),
                 ELEC_MICRONS(cdesc->oBB().left),
                 ELEC_MICRONS(cdesc->oBB().bottom), mtp, itp);
         }
@@ -1080,7 +1080,7 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
                 ELEC_MICRONS(cdesc->oBB().left),
                 ELEC_MICRONS(cdesc->oBB().bottom));
             if (nofix)
-                print_err(lstr, im_msg, sdesc->cellname()->string());
+                print_err(lstr, im_msg, Tstring(sdesc->cellname()));
             else {
                 while (count--)
                     cdesc->prptyAdd(P_MUTLRF, "mutual", Electrical);
@@ -1095,7 +1095,7 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
                 ELEC_MICRONS(cdesc->oBB().left),
                 ELEC_MICRONS(cdesc->oBB().bottom));
             if (nofix)
-                print_err(lstr, im_msg, sdesc->cellname()->string());
+                print_err(lstr, im_msg, Tstring(sdesc->cellname()));
             else {
                 while (count--) {
                     CDp_mutlrf *px = (CDp_mutlrf*)cdesc->prpty(P_MUTLRF);
@@ -1117,10 +1117,10 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
             if (SCD()->checkAddConnection(sdesc, x, y, !nofix)) {
                 print_err(lstr,
                     "Cell %s, added missing connection at %.3f,%.3f.\n",
-                    sdesc->cellname()->string(),
+                    Tstring(sdesc->cellname()),
                     ELEC_MICRONS(x), ELEC_MICRONS(y));
                 if (nofix)
-                    print_err(lstr, im_msg, sdesc->cellname()->string());
+                    print_err(lstr, im_msg, Tstring(sdesc->cellname()));
                 else
                     sdesc->incModified();
             }
@@ -1135,10 +1135,10 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
             if (SCD()->checkAddConnection(sdesc, x, y, !nofix)) {
                 print_err(lstr,
                     "Cell %s, added missing connection at %.3f,%.3f.\n",
-                    sdesc->cellname()->string(),
+                    Tstring(sdesc->cellname()),
                     ELEC_MICRONS(x), ELEC_MICRONS(y));
                 if (nofix)
-                    print_err(lstr, im_msg, sdesc->cellname()->string());
+                    print_err(lstr, im_msg, Tstring(sdesc->cellname()));
                 else
                     sdesc->incModified();
             }

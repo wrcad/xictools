@@ -199,7 +199,7 @@ te_info_t::te_info_t(const CDp_snode *pn, int indx)
     ti_bterm = false;
     ti_has_phys = false;
     if (pn) {
-        ti_name = pn->get_term_name()->string();
+        ti_name = Tstring(pn->get_term_name());
         ti_flags = pn->term_flags();
         CDsterm *term = pn->cell_terminal();
         if (term) {
@@ -227,7 +227,7 @@ te_info_t::te_info_t(const CDsterm *term)
         ti_layer_name = term->layer() ? term->layer()->name() : 0;
         CDp_snode *pn = term->node_prpty();
         if (pn) {
-            ti_name = pn->get_term_name()->string();
+            ti_name = Tstring(pn->get_term_name());
             ti_flags = pn->term_flags();
         }
     }
@@ -247,7 +247,7 @@ te_info_t::te_info_t(const CDp_bsnode *pb)
     ti_bterm = true;
     ti_has_phys = false;
     if (pb) {
-        ti_name = pb->get_term_name()->string();
+        ti_name = Tstring(pb->get_term_name());
         sLstr lstr;
         pb->add_label_text(&lstr);
         ti_netex = lstr.string_trim();

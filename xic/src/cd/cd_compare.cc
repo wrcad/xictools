@@ -960,12 +960,12 @@ CDdiff::diff_instances(const CDs *s1, const CDs *s2, Ldiff **lret)
     if (s1 && s1->masters()) {
         CDm_gen mgen(s1, GEN_MASTERS);
         for (CDm *md = mgen.m_first(); md; md = mgen.m_next())
-            st->add(md->cellname()->string(), 0, true);
+            st->add(Tstring(md->cellname()), 0, true);
     }
     if (s2 && s2->masters()) {
         CDm_gen mgen(s2, GEN_MASTERS);
         for (CDm *md = mgen.m_first(); md; md = mgen.m_next())
-            st->add(md->cellname()->string(), 0, true);
+            st->add(Tstring(md->cellname()), 0, true);
     }
     CDl *ldesc = CellLayer();
 
@@ -1028,7 +1028,7 @@ CDdiff::diff_instances(const CDs *s1, const CDs *s2, Ldiff **lret)
                     ld0 = Ldiff::save(ld0, ldesc, morediffs(), 0);
                     break;
                 }
-                char *str = c1->string(sname->string());
+                char *str = c1->string(Tstring(sname));
                 ld0 = Ldiff::save(ld0, ldesc, str, 0);
                 delete [] str;
                 cdf_diffcnt++;
@@ -1045,7 +1045,7 @@ CDdiff::diff_instances(const CDs *s1, const CDs *s2, Ldiff **lret)
                         ld0 = Ldiff::save(ld0, ldesc, 0, morediffs());
                         break;
                     }
-                    char *str = c2->string(sname->string());
+                    char *str = c2->string(Tstring(sname));
                     ld0 = Ldiff::save(ld0, ldesc, 0, str);
                     delete [] str;
                     cdf_diffcnt++;
@@ -1099,7 +1099,7 @@ CDdiff::diff_instances(const CDs *s1, const CDs *s2, Ldiff **lret)
                     ld0 = Ldiff::save(ld0, ldesc, morediffs(), 0);
                     break;
                 }
-                char *str = c1->string(sname->string());
+                char *str = c1->string(Tstring(sname));
                 ld0 = Ldiff::save(ld0, ldesc, str, 0);
                 delete [] str;
                 cdf_diffcnt++;
@@ -1116,7 +1116,7 @@ CDdiff::diff_instances(const CDs *s1, const CDs *s2, Ldiff **lret)
                         ld0 = Ldiff::save(ld0, ldesc, 0, morediffs());
                         break;
                     }
-                    char *str = c2->string(sname->string());
+                    char *str = c2->string(Tstring(sname));
                     ld0 = Ldiff::save(ld0, ldesc, 0, str);
                     delete [] str;
                     cdf_diffcnt++;
@@ -1187,12 +1187,12 @@ CDdiff::diff_instances(const CDs *s1, const CDs *s2)
     if (s1 && s1->masters()) {
         CDm_gen mgen(s1, GEN_MASTERS);
         for (CDm *md = mgen.m_first(); md; md = mgen.m_next())
-            st->add(md->cellname()->string(), 0, true);
+            st->add(Tstring(md->cellname()), 0, true);
     }
     if (s2 && s2->masters()) {
         CDm_gen mgen(s2, GEN_MASTERS);
         for (CDm *md = mgen.m_first(); md; md = mgen.m_next())
-            st->add(md->cellname()->string(), 0, true);
+            st->add(Tstring(md->cellname()), 0, true);
     }
 
     SymTabGen stgen(st);

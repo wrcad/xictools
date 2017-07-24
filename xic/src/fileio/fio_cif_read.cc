@@ -769,7 +769,7 @@ cFIO::FromNative(const char *fullpath, CDcbin *cbret, double scale)
             }
             if (divert) {
                 tab->remove(s0->string);
-                tab->add(lstring::copy(cbin.cellname()->string()), 0, false);
+                tab->add(lstring::copy(Tstring(cbin.cellname())), 0, false);
 
                 // Add the association cellname -> archive path to a
                 // hash table.  This will be used when writing to put
@@ -778,7 +778,7 @@ cFIO::FromNative(const char *fullpath, CDcbin *cbret, double scale)
                 if (!fioNativeImportTab)
                     fioNativeImportTab = new SymTab(true, true);
                 SymTabEnt *h = SymTab::get_ent(
-                    fioNativeImportTab, cbin.cellname()->string());
+                    fioNativeImportTab, Tstring(cbin.cellname()));
                 if (h) {
                     if (strcmp((const char*)h->stData, s0->string)) {
                         delete [] (char*)h->stData;
@@ -787,7 +787,7 @@ cFIO::FromNative(const char *fullpath, CDcbin *cbret, double scale)
                 }
                 else {
                     fioNativeImportTab->add(
-                        lstring::copy(cbin.cellname()->string()),
+                        lstring::copy(Tstring(cbin.cellname())),
                         lstring::copy(s0->string), false);
                 }
             }
@@ -1037,7 +1037,7 @@ cFIO::OpenNative(const char *spath, CDcbin *cbret, double scale, bool *divert)
                 if (fp && !FIO()->IsReadingLibrary()) {
                     Errs()->add_error("OpenNative: "
                         "can't overwrite library cell %s already in memory.",
-                        cbin.cellname()->string());
+                        Tstring(cbin.cellname()));
                     return (OIerror);
                 }
             }
@@ -1202,12 +1202,12 @@ cFIO::OpenNative(const char *spath, CDcbin *cbret, double scale, bool *divert)
             if (!libptr || libptr->lib_type() != LIBdevice ||
                     HasPHYSICAL(fp)) {
                 // LIBdevice has optional physical part.
-                cif->setup_native(cbin.cellname()->string(), fp,
+                cif->setup_native(Tstring(cbin.cellname()), fp,
                     overwrite_phys ? cbin.phys() : 0);
                 ret = cif->parse(Physical, false, scale);
             }
             if (ret && overwrite_elec) {
-                cif->setup_native(cbin.cellname()->string(), fp,
+                cif->setup_native(Tstring(cbin.cellname()), fp,
                     cbin.elec());
                 ret = cif->parse(Electrical, false, 1.0);
             }
@@ -2281,7 +2281,7 @@ cif_in::a_symbol()
     char unalias_name[256];
     strcpy(unalias_name, in_cellname);
     const char *sn = in_chd_state.symref() ?
-        in_chd_state.symref()->get_name()->string() : alias(in_cellname);
+        Tstring(in_chd_state.symref()->get_name()) : alias(in_cellname);
     if (sn != in_cellname)
         strcpy(in_cellname, sn);
 
@@ -2534,8 +2534,7 @@ cif_in::a_symbol_db(const char *unalias_name, int sym_num)
                         FIO()->ifMergeControl(&mi);
                     }
                     if (mi.overwrite_phys) {
-                        if (!get_symref(sd->cellname()->string(),
-                                Physical)) {
+                        if (!get_symref(Tstring(sd->cellname()), Physical)) {
                             // The phys cell was not read from the
                             // current file.  If overwriting, clear
                             // existing phys cell.
@@ -2728,7 +2727,7 @@ cif_in::a_call()
                 if (in_mode == Physical) {
                     CDcellName cname = CD()->CellNameTableAdd(in_cellname);
                     cname = check_sub_master(cname);
-                    strcpy(in_cellname, cname->string());
+                    strcpy(in_cellname, Tstring(cname));
                 }
 #endif
                 ptr = get_symref(in_cellname, in_mode);
@@ -2934,7 +2933,7 @@ cif_in::a_call_db(int sym_num)
                     ptr = in_elec_map->get(sym_num);
                 }
                 if (ptr)
-                    strcpy(in_cellname, ptr->get_name()->string());
+                    strcpy(in_cellname, Tstring(ptr->get_name()));
                 else {
                     char buf[256];
                     sprintf(buf, "reference to undefined symbol %d", sym_num);
@@ -2966,9 +2965,9 @@ cif_in::a_call_db(int sym_num)
             if (in_symref) {
                 // Add a symref for this instance if necessary.
                 nametab_t *ntab = get_sym_tab(in_mode);
-                symref_t *ptr = get_symref(cname->string(), in_mode);
+                symref_t *ptr = get_symref(Tstring(cname), in_mode);
                 if (!ptr) {
-                    ntab->new_symref(cname->string(), in_mode, &ptr, true);
+                    ntab->new_symref(Tstring(cname), in_mode, &ptr, true);
                     add_symref(ptr, in_mode);
                 }
             }
@@ -3044,7 +3043,7 @@ cif_in::a_call_cvt(int sym_num)
 
         Instance inst;
         inst.magn = at.magn;
-        inst.name = cellname->string();
+        inst.name = Tstring(cellname);
         inst.nx = at.nx;
         inst.ny = at.ny;
         inst.dx = dx;
@@ -3077,7 +3076,7 @@ cif_in::a_call_cvt(int sym_num)
                 ptr = in_elec_map->get(sym_num);
             }
             if (ptr)
-                strcpy(in_cellname, ptr->get_name()->string());
+                strcpy(in_cellname, Tstring(ptr->get_name()));
             else {
                 char buf[256];
                 sprintf(buf, "reference to undefined symbol %d", sym_num);
@@ -3143,7 +3142,7 @@ cif_in::a_call_backend(Instance *inst, symref_t *p, bool no_area_test)
 
                 if (!tsBB) {
                     Errs()->add_error("Bounding box for master %s not found.",
-                        p->get_name()->string());
+                        Tstring(p->get_name()));
                     return (false);
                 }
                 BBox sBB(*tsBB);

@@ -106,7 +106,7 @@ cMain::PrptyStrings(CDs *sdesc)
             sprintf(tbuf, "(%d) name: ", P_NAME);
             char *hd = lstring::copy(tbuf);
             if (pna->name_string())
-                strcpy(tbuf, pna->name_string()->string());
+                strcpy(tbuf, Tstring(pna->name_string()));
             else
                 tbuf[0] = 0;
             char *str = lstring::copy(tbuf);
@@ -163,7 +163,7 @@ cMain::PrptyStrings(CDs *sdesc)
             lstr.add_i(pn->enode());
             lstr.add_c(' ');
             if (pn->get_term_name())
-                lstr.add(pn->term_name()->string());
+                lstr.add(Tstring(pn->term_name()));
             else
                 lstr.add("<unnamed>");
             if (pn->has_flag(TE_BYNAME)) {
@@ -338,8 +338,8 @@ cMain::PrptyStrings(CDs *sdesc)
                 CDp_name *p2 = (CDp_name*)pnm->l2_dev()->prpty(P_NAME);
                 if (p1 && p1->name_string() && p2 && p2->name_string())
                     sprintf(tbuf, "%d %s%d %s%d %s", pnm->index(),
-                        p1->name_string()->string(), pnm->l1_index(),
-                        p2->name_string()->string(), pnm->l2_index(),
+                        Tstring(p1->name_string()), pnm->l1_index(),
+                        Tstring(p2->name_string()), pnm->l2_index(),
                         pnm->coeff_str());
             }
             char *str = lstring::copy(tbuf);
@@ -455,7 +455,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                 char *hd = lstring::copy(tbuf);
                 sLstr lstr;
                 if (pn->bound() && pn->get_term_name()) {
-                    lstr.add(pn->get_term_name()->string());
+                    lstr.add(Tstring(pn->get_term_name()));
                     lstr.add_c(' ');
                 }
                 CDw *cdw = OWIRE(odesc);
@@ -475,7 +475,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                 sprintf(tbuf, "(%d) labref (internal): ", P_LABRF);
                 char *hd = lstring::copy(tbuf);
                 if (pl->name())
-                    sprintf(tbuf, "%s %d %d", pl->name()->string(),
+                    sprintf(tbuf, "%s %d %d", Tstring(pl->name()),
                         pl->number(), pl->propnum());
                 else
                     sprintf(tbuf, "%d %d %d", pl->pos_x(), pl->pos_y(),
@@ -590,7 +590,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                 char *hd = lstring::copy(tbuf);
                 sLstr lstr;
                 if (pn->get_term_name()) {
-                    lstr.add(pn->get_term_name()->string());
+                    lstr.add(Tstring(pn->get_term_name()));
                     lstr.add_c(' ');
                 }
 
@@ -1082,7 +1082,7 @@ inst:
             return (lstring::copy("T 0 0"));
         }
         if (val == XprpName)
-            return (lstring::copy(((CDc*)odesc)->cellname()->string()));
+            return (lstring::copy(Tstring(((CDc*)odesc)->cellname())));
         if (val ==  XprpXY) {
             Point p;
             CDtx tx((CDc*)odesc);

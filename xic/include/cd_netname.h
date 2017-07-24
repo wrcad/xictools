@@ -178,22 +178,6 @@ private:
 
 
 //-----------------------------------------------------------------------------
-// An encapsulation of the cTnameTab string pointer.
-//
-struct CDnetNameStr
-{
-//XXX fixme, can't call thru void pointer.
-    const char *string()    const { return ((const char*)this); }
-    const char *stringNN()  const
-        {
-            const CDnetNameStr *cn = this;
-            return (cn ? (const char*)cn : "");
-        }
-};
-typedef CDnetNameStr* CDnetName;
-
-
-//-----------------------------------------------------------------------------
 // A class for maintaining node/terminal names in a string table.
 //
 class cTnameTab

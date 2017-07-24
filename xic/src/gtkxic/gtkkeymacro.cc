@@ -690,7 +690,7 @@ namespace {
             Tech()->TechFilename() ? Tech()->TechFilename() : "<none>");
         fprintf(fp, "Edit(\"%s\", 0)\n",
             DSP()->CurCellName() ?
-                DSP()->CurCellName()->string() : "<none>");
+                Tstring(DSP()->CurCellName()) : "<none>");
         fprintf(fp, "Mode(%d)\n", DSP()->CurMode());
         if (DSP()->CurMode() == Physical) {
             fprintf(fp, "Window(%g, %g, %g, 0)\n",

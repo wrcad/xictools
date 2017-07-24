@@ -468,7 +468,7 @@ subw_view_menu::M_SwapMain(CmdDesc *cmd)
         return;
 
     DisplayMode nmode = cmd->wdesc->Mode();
-    const char *newname = cmd->wdesc->CurCellName()->string();
+    const char *newname = Tstring(cmd->wdesc->CurCellName());
     int nx = (cmd->wdesc->Window()->left + cmd->wdesc->Window()->right)/2;
     int ny = (cmd->wdesc->Window()->bottom + cmd->wdesc->Window()->top)/2;
     double nw = cmd->wdesc->Window()->width();
@@ -532,7 +532,7 @@ subw_view_menu::M_LoadNew(CmdDesc *cmd)
 
     if (cmd->wdesc->DbType() == WDcddb) {
         char *s = XM()->OpenFileDlg("File, CHD and/or cell? ",
-            DSP()->Window(win)->CurCellName()->string());
+            Tstring(DSP()->Window(win)->CurCellName()));
         char *cn = lstring::getqtok(&s);
         if (cn) {
             char *p = pathlist::expand_path(cn, false, false);

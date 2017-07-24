@@ -1207,7 +1207,7 @@ cEventHdlr::sel_b1up(BBox *AOI, const char *types, CDol **selection,
                 }
                 else {
                     const char *sym_name =
-                        OCALL((*selection)->odesc)->cellname()->string();
+                        Tstring(OCALL((*selection)->odesc)->cellname());
                     PL()->ShowPromptV("You have selected an instance of %s.",
                         sym_name);
                 }
@@ -1317,7 +1317,7 @@ cEventHdlr::sel_b1up_altw(BBox *AOI, const char *types, CDol **selection,
                 }
                 else {
                     const char *sym_name =
-                        OCALL((*selection)->odesc)->cellname()->string();
+                        Tstring(OCALL((*selection)->odesc)->cellname());
                     PL()->ShowPromptV("You have selected an instance of %s.",
                         sym_name);
                 }

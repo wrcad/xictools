@@ -51,7 +51,7 @@ cGroupDesc::connect_to_subs(const sSubcGen *cgx)
 {
     Ufb ufb;
     ufb.save("Connecting to subcircuits in %s...",
-        gd_celldesc->cellname()->string());
+        Tstring(gd_celldesc->cellname()));
     ufb.print();
 
     cTfmStack stk;
@@ -63,7 +63,7 @@ cGroupDesc::connect_to_subs(const sSubcGen *cgx)
         BBox BB1(g1.net()->BB());
 
         ufb.save("Connecting to subcircuits in %s...  %d/%d",
-            gd_celldesc->cellname()->string(), i, gd_asize);
+            Tstring(gd_celldesc->cellname()), i, gd_asize);
 
         sGroupXf *gx1 = 0;
         bool skipsubs = false;
@@ -233,7 +233,7 @@ cGroupDesc::connect_between_subs(const sSubcGen *cgx)
 {
     Ufb ufb;
     ufb.save("Connecting between subcircuits in %s...",
-        gd_celldesc->cellname()->string());
+        Tstring(gd_celldesc->cellname()));
     ufb.print();
 
     cTfmStack stk;

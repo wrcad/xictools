@@ -380,7 +380,7 @@ sCF::refresh(bool check_cc)
                 cf->immutable = cursdesc->isImmutable();
                 cf->library = cursdesc->isLibrary();
             }
-            sprintf(buf, "%-*s  ", cf_field, cf->name->string());
+            sprintf(buf, "%-*s  ", cf_field, Tstring(cf->name));
             text_insert_chars_at_point(wb_textarea, 0, buf, -1, -1);
             const char *yn = cf->immutable ? "yes" : "no";
             sprintf(buf, "%-3s  ", yn);
@@ -537,7 +537,7 @@ sCF::cf_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
         char *cname = lstring::gettok(&line_start);
         if (cname) {
             for (cf_elt *cf = CF->cf_list; cf; cf = cf->next) {
-                if (!strcmp(cname, cf->name->string())) {
+                if (!strcmp(cname, Tstring(cf->name))) {
                     if (col == 0) {
                         if (*yn == 'y')
                             cf->immutable = true;

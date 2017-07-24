@@ -607,7 +607,7 @@ cPCellDb::openSubMaster(const CDs *sdsup, const char *params, CDs **sdret)
     if (!PCellParam::parseParams(params, &pcprms))
         return (OIerror);
     const char *nm = addSubMaster(XIC_NATIVE_LIBNAME,
-        sdsup->cellname()->string(),
+        Tstring(sdsup->cellname()),
         sdsup->isElectrical() ? "schematic" : "layout", pcprms);
 
     CDcbin cbin;
@@ -636,7 +636,7 @@ cPCellDb::openSubMaster(const CDs *sdsup, const char *params, CDs **sdret)
             sdsup->cloneCell(sdsub);
             sdsub->prptyRemove(XICP_PC_PARAMS);
             sdsub->prptyAdd(XICP_PC_PARAMS, params);
-            if (!evalScript(sdsub, sdsup->cellname()->string())) {
+            if (!evalScript(sdsub, Tstring(sdsup->cellname()))) {
                 Errs()->add_error("Error: pcell evaluation failed.");
                 delete sdsub;
                 return (OIerror);
@@ -693,7 +693,7 @@ cPCellDb::openSubMaster(const char *nmstr, const char *prpstr, CDs **psd,
         // sub-master cellname in the table.
 
         char *newcname = addSubMaster(libname, cellname, viewname, prms);
-        if (sdesc && strcmp(newcname, sdesc->cellname()->string())) {
+        if (sdesc && strcmp(newcname, Tstring(sdesc->cellname()))) {
             PCellDesc *pd = findSuperMaster(dbname);
             if (!pd) {
                 Errs()->add_error(
@@ -710,7 +710,7 @@ cPCellDb::openSubMaster(const char *nmstr, const char *prpstr, CDs **psd,
                 delete [] dbname;
                 return (false);
             }
-            pi->setCellname(sdesc->cellname()->string());
+            pi->setCellname(Tstring(sdesc->cellname()));
         }
         if (sdesc)
             delete [] newcname;
@@ -737,7 +737,7 @@ cPCellDb::openSubMaster(const char *nmstr, const char *prpstr, CDs **psd,
         }
         sdsup->cloneCell(sdesc);
         sdesc->prptyAdd(XICP_PC_PARAMS, prpstr);
-        if (!evalScript(sdesc, sdsup->cellname()->string())) {
+        if (!evalScript(sdesc, Tstring(sdsup->cellname()))) {
             Errs()->add_error("openSubMaster: pcell evaluation failed.");
             return (false);
         }
@@ -763,7 +763,7 @@ cPCellDb::openSubMaster(const char *nmstr, const char *prpstr, CDs **psd,
         // sub-master cellname in the table.
 
         char *newcname = addSubMaster(libname, cellname, viewname, prms);
-        if (sdesc && strcmp(newcname, sdesc->cellname()->string())) {
+        if (sdesc && strcmp(newcname, Tstring(sdesc->cellname()))) {
             PCellDesc *pd = findSuperMaster(nmstr);
             if (!pd) {
                 Errs()->add_error("openSubMaster: missing pc_name property.");
@@ -775,7 +775,7 @@ cPCellDb::openSubMaster(const char *nmstr, const char *prpstr, CDs **psd,
                     "openSubMaster: sub-master not in item list.");
                 return (false);
             }
-            pi->setCellname(sdesc->cellname()->string());
+            pi->setCellname(Tstring(sdesc->cellname()));
         }
         delete [] newcname;
 

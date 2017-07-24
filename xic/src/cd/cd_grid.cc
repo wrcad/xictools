@@ -159,7 +159,7 @@ cCD::CheckGrid(CDs *sdesc, int spacing, const BBox *BB, const char *layer_list,
     bool dowire = (!types || !*types || strchr(types, 'w'));
 
     fprintf(fp, "Off-Grid Vertex Check, %s\n", ifIdString());
-    fprintf(fp, "Cell: %s\n", sdesc->cellname()->string());
+    fprintf(fp, "Cell: %s\n", Tstring(sdesc->cellname()));
     fprintf(fp, "Grid: %.4f\n", MICRONS(spacing));
     if (BB)
         fprintf(fp, "BBox: %.4f,%.4f %.4f,%.4f\n", MICRONS(BB->left),

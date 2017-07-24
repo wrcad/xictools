@@ -99,7 +99,7 @@ namespace {
     const char *
     get_cur_cell_name()
     {
-        return (DSP()->CurCellName()->string());
+        return (Tstring(DSP()->CurCellName()));
     }
 
     // Resolve the cell desc from the passed GroupDesc, which is an opaque

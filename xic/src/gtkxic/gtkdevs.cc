@@ -577,7 +577,7 @@ sDv::sDv(GRobject caller, stringlist *wl)
                 break;
             case CDelecDev:
                 {
-                    char c = namestr ? *namestr->string() : 0;
+                    char c = namestr ? *Tstring(namestr) : 0;
                     if (isupper(c))
                         c = tolower(c);
                     switch (c) {

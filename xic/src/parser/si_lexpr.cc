@@ -91,20 +91,20 @@ SIlexprCx::getZlist(const LDorig *ldorig, Zlist **zret)
 
     if (ldorig->cellname() || ldorig->stab_name()) {
         if (!ldorig->stab_name() && ldorig->cellname() &&
-                *ldorig->cellname()->string() == SI_DBCHAR) {
+                *Tstring(ldorig->cellname()) == SI_DBCHAR) {
             // This triggers use of a named database.
 
             const CDs *tsd = cx_sdesc;
             cx_sdesc = 0;
             const char *tn = cx_db_name;
-            cx_db_name = ldorig->cellname()->string() + 1;
+            cx_db_name = Tstring(ldorig->cellname()) + 1;
             XIrt ret = getDbZlist(ldorig->ldesc(), ldorig->origname(), zret);
             cx_db_name = tn;
             cx_sdesc = tsd;
             return (ret);
         }
-        CDs *targ = SIparse()->openReference(ldorig->cellname()->string(),
-            ldorig->stab_name()->string());
+        CDs *targ = SIparse()->openReference(Tstring(ldorig->cellname()),
+            Tstring(ldorig->stab_name()));
         if (!targ)
             return (XIbad);
         if (cx_verbose)

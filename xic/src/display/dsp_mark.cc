@@ -624,7 +624,7 @@ cDisplay::ShowCells(const char *name)
         }
         MK.phys_show = b0;
         sprintf(buf, "Marked %d instances of %s.", Blist::length(b0),
-            pref->get_name()->string());
+            Tstring(pref->get_name()));
         show_message(buf);
     }
     // actual display is in WindowDesc::ShowHighlighting()
@@ -1260,14 +1260,14 @@ cDisplay::HliteElecTerm(bool display, const CDp_node *pn, const CDc *cdesc,
             if (cdesc) {
                 CDp_cnode *pcn = (CDp_cnode*)pn;
                 MK.hlite_list = new sMark_Eterm(x, y, 40, SelectColor,
-                    pcn->index(), cdesc, pcn->term_name()->string(),
+                    pcn->index(), cdesc, Tstring(pcn->term_name()),
                     pcn->term_flags(), symb, false, MK.hlite_list);
             }
             else {
                 CDp_snode *psn = (CDp_snode*)pn;
                 MK.hlite_list = new sMark_Eterm(x, y, 40, SelectColor,
                     termnum < 0 ? psn->index() : termnum, 0,
-                    psn->term_name()->string(), psn->term_flags(),
+                    Tstring(psn->term_name()), psn->term_flags(),
                     symb, (termnum < 0), MK.hlite_list);
             }
 
@@ -1622,7 +1622,7 @@ cDisplay::ShowEtermMark(bool display, int x, int y, int color, int pixsz,
     if (display) {
         sMark *mm = MK.mark_heads[MARK_ETERM] =
             new sMark_Eterm(x, y, pixsz, color, termnum, 0,
-                pn->term_name()->string(), pn->term_flags(),
+                Tstring(pn->term_name()), pn->term_flags(),
                 false, false, MK.mark_heads[MARK_ETERM]);
         WDgen wgen(WDgen::MAIN, WDgen::CDDB);
         WindowDesc *wdesc;
@@ -1665,7 +1665,7 @@ cDisplay::ShowStermMark(bool display, int x, int y, int color, int pixsz,
     if (display) {
         sMark *mm = MK.mark_heads[MARK_STERM] =
             new sMark_Eterm(x, y, pixsz, color, termnum, 0,
-                pn->term_name()->string(), pn->term_flags(),
+                Tstring(pn->term_name()), pn->term_flags(),
                 true, false, MK.mark_heads[MARK_STERM]);
         WDgen wgen(WDgen::MAIN, WDgen::CDDB);
         WindowDesc *wdesc;
@@ -3078,7 +3078,7 @@ sMark::new_term_marks(DisplayMode mode, CDc *cdesc, int vecix, bool symbolic)
                         if (!pn->get_pos(ix, &x, &y))
                             break;
                         m0 = new sMark_Eterm(x, y, 40, MarkerColor,
-                            pn->index(), 0, pn->term_name()->string(),
+                            pn->index(), 0, Tstring(pn->term_name()),
                             pn->term_flags(), true, false, m0);
                     }
                 }
@@ -3086,7 +3086,7 @@ sMark::new_term_marks(DisplayMode mode, CDc *cdesc, int vecix, bool symbolic)
                     int x, y;
                     pn->get_schem_pos(&x, &y);
                     m0 = new sMark_Eterm(x, y, 40, MarkerColor,
-                        pn->index(), 0, pn->term_name()->string(),
+                        pn->index(), 0, Tstring(pn->term_name()),
                         pn->term_flags(), false, false, m0);
                 }
             }
@@ -3121,7 +3121,7 @@ sMark::new_term_marks(DisplayMode mode, CDc *cdesc, int vecix, bool symbolic)
                     if (!pn1->get_pos(ix, &x, &y))
                         break;
                     m0 = new sMark_Eterm(x, y, 40, MarkerColor,
-                        pn1->index(), cdesc, pn1->term_name()->string(),
+                        pn1->index(), cdesc, Tstring(pn1->term_name()),
                         pn1->term_flags(), false, false, m0);
                 }
             }
@@ -3934,7 +3934,7 @@ sMark_Pterm::addBB(WindowDesc *wdesc, BBox *BB)
     int wn, wl, h;
     int d4 = delta/4;
     if (mTerm->name()) {
-        DSP()->DefaultLabelSize(mTerm->name()->string(), wdesc->Mode(),
+        DSP()->DefaultLabelSize(Tstring(mTerm->name()), wdesc->Mode(),
             &wn, &h);
         wn = mmRnd((wn*(double)phei)/h);
         h = phei;
@@ -3977,7 +3977,7 @@ sMark_Pterm::pterm_mark(WindowDesc *wdesc, bool display)
     int d4 = delta/4;
     bool show_name = false;
     if (mTerm->name()) {
-        DSP()->DefaultLabelSize(mTerm->name()->string(), wdesc->Mode(),
+        DSP()->DefaultLabelSize(Tstring(mTerm->name()), wdesc->Mode(),
             &wn, &h);
         wn = mmRnd((wn*(double)phei)/h);
         h = phei;
@@ -4011,7 +4011,7 @@ sMark_Pterm::pterm_mark(WindowDesc *wdesc, bool display)
         wdesc->ShowLine(x-delta, y, x+delta, y);
         wdesc->ShowLine(x, y-delta, x, y+delta);
         if (show_name)
-            wdesc->ShowLabel(mTerm->name()->string(),
+            wdesc->ShowLabel(Tstring(mTerm->name()),
                 x + d4, y + d4, wn, h, 0);
         if (ld)
             wdesc->ShowLabel(ld->name(), x + d4, y - d4 - h, wl, h, 0);
@@ -5479,7 +5479,7 @@ sMK::dump_user_marks(const char *fname, const CDs *sd)
 
     char buf[256];
     if (!fname || !*fname) {
-        sprintf(buf, "%s.%s.marks", sd->cellname()->string(),
+        sprintf(buf, "%s.%s.marks", Tstring(sd->cellname()),
             sd->isElectrical() ? "elec" : "phys");
         fname = buf;
     }
@@ -5492,7 +5492,7 @@ sMK::dump_user_marks(const char *fname, const CDs *sd)
         Errs()->add_error("Unable to open %s.", fname);
         return (-1);
     }
-    fprintf(fp, "%s %s\n", sd->cellname()->string(),
+    fprintf(fp, "%s %s\n", Tstring(sd->cellname()),
         sd->isElectrical() ? "elec" : "phys");
     int mcnt = 0;
     for (hlite_t *m = (hlite_t*)h->stData; m; m = m->next) {
@@ -5748,7 +5748,7 @@ cDisplay::ReadUserMarks(const char *fname)
             Errs()->add_error("ReadUserMarks: no current cell!");
             return (-1);
         }
-        sprintf(buf, "%s.%s.marks", sd->cellname()->string(),
+        sprintf(buf, "%s.%s.marks", Tstring(sd->cellname()),
             sd->isElectrical() ? "elec" : "phys");
         fname = buf;
     }

@@ -49,7 +49,7 @@ cCHD::memuse()
         namegen_t gen(c_ptab);
         symref_t *p;
         while ((p = gen.next()) != 0)
-            base += strlen(p->get_name()->string()) + 1;
+            base += strlen(Tstring(p->get_name())) + 1;
     }
     if (c_etab) {
         // Assume here that cell names are already included from c_ptab.
@@ -307,7 +307,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
                 lstr.add("Unresolved Cells:\n");
             syrlist_t::sort(sy0, false);
             for (syrlist_t *sy = sy0; sy; sy = sy->next) {
-                sprintf(buf, "%-16s\n", sy->symref->get_name()->string());
+                sprintf(buf, "%-16s\n", Tstring(sy->symref->get_name()));
                 if (fp)
                     fputs(buf, fp);
                 else
@@ -361,7 +361,7 @@ cCHD::prInfo(FILE *fp, DisplayMode mode, int dflags)
             }
             if (!sy->symref->get_defseen()) {
                 sprintf(buf, "%-16s   (UNRESOLVED)\n",
-                    sy->symref->get_name()->string());
+                    Tstring(sy->symref->get_name()));
                 if (fp)
                     fputs(buf, fp);
                 else
@@ -488,7 +488,7 @@ cCHD::prCell(FILE *fp, symref_t *p, int dflags)
 
     sLstr lstr;
     char buf[256];
-    sprintf(buf, "Name: %s\n", p->get_name()->string());
+    sprintf(buf, "Name: %s\n", Tstring(p->get_name()));
     if (fp)
         fputs(buf, fp);
     else
@@ -539,7 +539,7 @@ cCHD::prCell(FILE *fp, symref_t *p, int dflags)
         while ((c = gen.next()) != 0) {
             symref_t *cp = ntab->find_symref(c->srfptr);
             sprintf(buf, "Subcell:  %-14s\n",
-                cp ? cp->get_name()->string() : "UNRESOLVED");
+                cp ? Tstring(cp->get_name()) : "UNRESOLVED");
             if (fp)
                 fputs(buf, fp);
             else
@@ -702,8 +702,8 @@ namespace {
 
     inline bool instcmp(const icnt_t &i1, const icnt_t &i2)
     {
-        return (strcmp(i1.symref->get_name()->string(),
-            i2.symref->get_name()->string()) < 0);
+        return (strcmp(Tstring(i1.symref->get_name()),
+            Tstring(i2.symref->get_name())) < 0);
     }
 }
 
@@ -764,7 +764,7 @@ cCHD::prInstanceCounts(FILE *fp, DisplayMode mode, bool print)
     else
         lstr.add("Instantiation Counts:\n");
     for (int i = 0; i < n; i++) {
-        sprintf(buf, "%-26s %ld\n", ary[i].symref->get_name()->string(),
+        sprintf(buf, "%-26s %ld\n", Tstring(ary[i].symref->get_name()),
             ary[i].cnt);
         if (fp)
             fputs(buf, fp);
@@ -1058,8 +1058,8 @@ namespace {
     inline bool
     cmp_alp(const symref_t *s1, const symref_t *s2)
     {
-        const char *n1 = s1->get_name()->string();
-        const char *n2 = s2->get_name()->string();
+        const char *n1 = Tstring(s1->get_name());
+        const char *n2 = Tstring(s2->get_name());
         return (strcmp(n1, n2) < 0);
     }
 

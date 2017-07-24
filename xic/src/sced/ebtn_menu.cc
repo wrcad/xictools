@@ -567,7 +567,7 @@ ebtn_menu::M_SpiceDeck(CmdDesc*)
     }
 
     char tbuf[256];
-    strcpy(tbuf, DSP()->CurCellName()->string());
+    strcpy(tbuf, Tstring(DSP()->CurCellName()));
     char *s;
     if ((s = strrchr(tbuf, '.')) != 0) {
         if (!strcmp(s+1, "cir"))

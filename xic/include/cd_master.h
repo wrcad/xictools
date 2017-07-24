@@ -51,7 +51,7 @@ struct CDm
         {
             // The name must be in the name string table if it is
             // not null.
-            mName = n->string();
+            mName = Tstring(n);
             mTabNext = 0;
             mPtabNext = 0;
             mParent = 0;
@@ -76,7 +76,7 @@ struct CDm
     void setCelldesc(CDs*);
 
     CDcellName cellname()           const { return ((CDcellName)mName); }
-    void setCellname(CDcellName n)        { mName = n->string(); }
+    void setCellname(CDcellName n)        { mName = Tstring(n); }
 
     CDs *parent()                   const { return (mParent); }
 

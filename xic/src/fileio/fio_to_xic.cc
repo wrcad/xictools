@@ -80,12 +80,12 @@ cFIO::ToNative(const char *cellname, const FIOcvtPrms *prms)
             CDs *sdesc = cbin.phys();
             if (sdesc)
                 ok = xic->write_this_cell(sdesc,
-                    sdesc->cellname()->string(), prms->scale());
+                    Tstring(sdesc->cellname()), prms->scale());
             sdesc = cbin.elec();
             if (ok && sdesc && !sdesc->isEmpty()) {
                 FIO()->ifUpdateNodes(sdesc);
                 ok = xic->write_this_cell(sdesc,
-                    sdesc->cellname()->string(), prms->scale());
+                    Tstring(sdesc->cellname()), prms->scale());
             }
             if (!ok)
                 break;
@@ -106,12 +106,12 @@ cFIO::ToNative(const char *cellname, const FIOcvtPrms *prms)
                 CDs *sdesc = ncbin.phys();
                 if (sdesc)
                     ok = xic->write_this_cell(sdesc,
-                        sdesc->cellname()->string(), prms->scale());
+                        Tstring(sdesc->cellname()), prms->scale());
                 sdesc = ncbin.elec();
                 if (ok && sdesc && !sdesc->isEmpty()) {
                     FIO()->ifUpdateNodes(sdesc);
                     ok = xic->write_this_cell(sdesc,
-                        sdesc->cellname()->string(), prms->scale());
+                        Tstring(sdesc->cellname()), prms->scale());
                 }
                 if (!ok)
                     break;
@@ -141,12 +141,12 @@ cFIO::WriteNative(CDcbin *cbin, const char *sname)
         return (true);
     char *tmpstr = 0;
     if (!sname || !*sname)
-        sname = cbin->cellname()->string();
+        sname = Tstring(cbin->cellname());
     else if (cbin->isImmutable()) {
         // We cant't change the name of an immutable cell, but we want to
         // use the given directory path, if any.
         const char *cngiven = lstring::strip_path(sname);
-        const char *cname = cbin->cellname()->string();
+        const char *cname = Tstring(cbin->cellname());
         if (cngiven == sname)
             // No path given.
             sname = cname;
@@ -262,7 +262,7 @@ cFIO::WriteFile(CDs *sdesc, const char *sfile, FILE *fp)
         sdesc = tsd;
 
     if (!sfile || !*sfile) {
-        sfile = sdesc->cellname()->string();
+        sfile = Tstring(sdesc->cellname());
         if (!sfile || !*sfile) {
             Errs()->add_error("Null or empty cell name encountered.");
             return (false);
@@ -327,7 +327,7 @@ cFIO::ListToNative(CDol *olist, const char *xic_fname)
                     }
 
                     Instance inst;
-                    inst.name = cdesc->cellname()->string();
+                    inst.name = Tstring(cdesc->cellname());
                     if (!inst.name) {
                         Errs()->add_error("null cell name encountered");
                         nogo = true;
@@ -1163,7 +1163,7 @@ xic_out::make_native_lib(const char *cellname, const char *defpath)
                 ncbin.phys()->isViaSubMaster())
             continue;
         s0 = new stringlist(
-            lstring::copy(alias(ncbin.cellname()->string())), s0);
+            lstring::copy(alias(Tstring(ncbin.cellname()))), s0);
     }
     stringlist::sort(s0);
     if (!defpath || !*defpath)

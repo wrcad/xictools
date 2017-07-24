@@ -478,7 +478,7 @@ CDs::hyPrpList(CDo *odesc, const CDp *pdesc)
 
                 char tbuf[128];
                 char *s = lstring::stpcpy(tbuf,
-                    pl->name() ? pl->name()->string() : "?");
+                    pl->name() ? Tstring(pl->name()) : "?");
                 *s++ = ' ';
                 s = mmItoA(s, pl->number());
                 *s++ = ' ';

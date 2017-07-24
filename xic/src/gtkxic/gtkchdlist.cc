@@ -691,12 +691,12 @@ sCHL::action_hdlr(GtkWidget *caller, void *client_data)
                 }
                 char *t;
                 if (!istop)
-                    t = lstring::copy(x->symref->get_name()->string());
+                    t = lstring::copy(Tstring(x->symref->get_name()));
                 else {
                     t = new char[
-                        strlen(x->symref->get_name()->string()) + 2];
+                        strlen(Tstring(x->symref->get_name())) + 2];
                     *t = '*';
-                    strcpy(t+1, x->symref->get_name()->string());
+                    strcpy(t+1, Tstring(x->symref->get_name()));
                 }
                 if (!s0)
                     s0 = se = new stringlist(t, 0);
@@ -1209,7 +1209,7 @@ sCHL::chl_cnt_cb(const char *cellname, void*)
             return;
         dspPkgIf()->SetWorking(true);
         stringlist *sl = new stringlist(
-            lstring::copy(p->get_name()->string()), 0);
+            lstring::copy(Tstring(p->get_name())), 0);
         int flgs = FIO_INFO_OFFSET | FIO_INFO_INSTANCES |
             FIO_INFO_BBS | FIO_INFO_FLAGS;
         char *str = chd->prCells(0, DSP()->CurMode(), flgs, sl);

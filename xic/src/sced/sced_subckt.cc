@@ -650,7 +650,7 @@ SubcState::check_bterm_bits()
             if (ps->get_term_name()) {
                 CDnetName tnm;
                 int tn;
-                if (!CDnetex::parse_bit(ps->get_term_name()->string(),
+                if (!CDnetex::parse_bit(Tstring(ps->get_term_name()),
                         &tnm, &tn)) {
                     Errs()->get_error();
                     cnt++;
@@ -664,7 +664,7 @@ SubcState::check_bterm_bits()
             cnt++;
         }
         if (!found) {
-            CDnetName tnm = CDnetex::mk_name(nm->string(), n);
+            CDnetName tnm = CDnetex::mk_name(Tstring(nm), n);
             CDp_snode *pn = new CDp_snode;
             pn->CDp_node::set_term_name(tnm);
             if (!insert_terminal(EditBterm, pn)) {
@@ -727,7 +727,7 @@ SubcState::order_bterm_bits()
         CDnetName nm;
         int n;
         while (ngen.next(&nm, &n)) {
-            CDnetName nnm = CDnetex::mk_name(nm->string(), n);
+            CDnetName nnm = CDnetex::mk_name(Tstring(nm), n);
             if (SymTab::get(&tab, (unsigned long)nnm) == ST_NIL)
                 tab.add((unsigned long)nnm, 0, false);
             else
@@ -741,7 +741,7 @@ SubcState::order_bterm_bits()
                 if (ps->get_term_name()) {
                     CDnetName tnm;
                     int tn;
-                    if (!CDnetex::parse_bit(ps->get_term_name()->string(),
+                    if (!CDnetex::parse_bit(Tstring(ps->get_term_name()),
                             &tnm, &tn)) {
                         Errs()->get_error();
                         continue;
@@ -775,7 +775,7 @@ SubcState::order_bterm_bits()
     int n;
     unsigned int indx = pb->index();
     while (ngen.next(&nm, &n)) {
-        CDnetName nnm = CDnetex::mk_name(nm->string(), n);
+        CDnetName nnm = CDnetex::mk_name(Tstring(nm), n);
         if (SymTab::get(&tab, (unsigned long)nnm) == ST_NIL)
             tab.add((unsigned long)nnm, 0, false);
         else
@@ -791,7 +791,7 @@ SubcState::order_bterm_bits()
             if (ps->get_term_name()) {
                 CDnetName tnm;
                 int tn;
-                if (!CDnetex::parse_bit(ps->get_term_name()->string(),
+                if (!CDnetex::parse_bit(Tstring(ps->get_term_name()),
                         &tnm, &tn)) {
                     Errs()->get_error();
                     cnt++;
@@ -872,7 +872,7 @@ SubcState::bterm_bits_flags(bool set, int flag)
             if (ps->get_term_name()) {
                 CDnetName tnm;
                 int tn;
-                if (!CDnetex::parse_bit(ps->get_term_name()->string(),
+                if (!CDnetex::parse_bit(Tstring(ps->get_term_name()),
                         &tnm, &tn)) {
                     Errs()->get_error();
                     cnt++;
@@ -1850,7 +1850,7 @@ SubcState::update()
         // subckts have 3 entries in name field
         if (!cursde->prpty(P_NAME)) {
             char tbuf[128];
-            sprintf(tbuf, "X 0 %s", DSP()->CurCellName()->string());
+            sprintf(tbuf, "X 0 %s", Tstring(DSP()->CurCellName()));
             cursde->prptyAdd(P_NAME, tbuf);
         }
         // update BB
@@ -2453,7 +2453,7 @@ SubcState::te_cb(te_info_t *tinfo, CDp *prp)
             tname = 0;
 
             PL()->ShowPromptV("Default name for terminal is %s.",
-                CDnetex::default_name(ps->index())->string());
+                Tstring(CDnetex::default_name(ps->index())));
         }
         else {
             CDp_snode *pt = (CDp_snode*)cbin.elec()->prpty(P_NODE);
@@ -2462,7 +2462,7 @@ SubcState::te_cb(te_info_t *tinfo, CDp *prp)
                     continue;
                 if (!pt->get_term_name())
                     continue;
-                if (!strcmp(tname, pt->get_term_name()->string())) {
+                if (!strcmp(tname, Tstring(pt->get_term_name()))) {
                     Log()->ErrorLogV(mh::NetlistCreation,
                         "Terminal name %s already in use.", tname);
                     return;

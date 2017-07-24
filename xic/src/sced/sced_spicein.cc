@@ -399,7 +399,7 @@ cSced::extractFromSpice(CDs *sdesc, FILE *fp, int modeflag)
     Ulist()->ListChangeCell(sdesc);
 
     // dump the models found to a file
-    pr.dump_models(sdesc->cellname()->string());
+    pr.dump_models(Tstring(sdesc->cellname()));
     if (pr.modfile_name()) {
         // The file was created successfully (there were models).  Add
         // an include label for the file.
@@ -447,7 +447,7 @@ cSced::extractFromSpice(CDs *sdesc, FILE *fp, int modeflag)
     // Make sure that the top-level has a name property.
     if (!sdesc->prpty(P_NAME)) {
         char buf[64];
-        sprintf(buf, "X 0 %s", sdesc->cellname()->string());
+        sprintf(buf, "X 0 %s", Tstring(sdesc->cellname()));
         sdesc->prptyAdd(P_NAME, buf);
     }
 
@@ -781,7 +781,7 @@ cSpiceBuilder::findmod(const CDs *sdesc, const char *modname, char **newname)
         *newname = 0;
     if (!sdesc || !modname)
         return (0);
-    sSubcLink *sc = findsc(sdesc->cellname()->string());
+    sSubcLink *sc = findsc(Tstring(sdesc->cellname()));
     if (sc) {
         do {
             for (sModLink *m = sc->models; m; m = m->next) {
@@ -1039,7 +1039,7 @@ cSpiceBuilder::place(CDs *sdesc, const char *key, bool create)
             // Error, the subckt wasn't found.
             sprintf(tbuf,
                 "no subckt found for %s in %s, saved as spicetext label.",
-                sb_name, sdesc->cellname()->string());
+                sb_name, Tstring(sdesc->cellname()));
             record_error(tbuf);
 
             sb_nodes = 0;
@@ -1126,7 +1126,7 @@ cSpiceBuilder::place(CDs *sdesc, const char *key, bool create)
         cname = devname(which);
         if (!cname) {
             sprintf(tbuf, "can't resolve device %s in %s.  No model?",
-                sb_name, sdesc->cellname()->string());
+                sb_name, Tstring(sdesc->cellname()));
             record_error(tbuf);
         }
         cname = lstring::copy(cname);
@@ -1153,7 +1153,7 @@ cSpiceBuilder::place(CDs *sdesc, const char *key, bool create)
                 if (!fix_empty_cell(esdesc)) {
                     sprintf(tbuf,
                         "Attempt to fix empty instance of %s in %s failed.",
-                        cname, sdesc->cellname()->string());
+                        cname, Tstring(sdesc->cellname()));
                     record_error(tbuf);
                     return;
                 }
@@ -1179,7 +1179,7 @@ cSpiceBuilder::place(CDs *sdesc, const char *key, bool create)
             }
             else {
                 sprintf(tbuf, "instance creation failed for %s in %s.",
-                    cname, sdesc->cellname()->string());
+                    cname, Tstring(sdesc->cellname()));
                 record_error(tbuf);
             }
         }
@@ -1320,8 +1320,7 @@ cSpiceBuilder::sub_glob(CDs *sdesc)
             if (!strcmp(g->subst, gg->subst)) {
                 char buf[128];
                 sprintf(buf, "ambiguous mapping for %s (%s and %s) in %s.",
-                    g->subst, g->nname, gg->nname,
-                    sdesc->cellname()->string());
+                    g->subst, g->nname, gg->nname, Tstring(sdesc->cellname()));
                 record_error(buf);
             }
         }
@@ -1388,7 +1387,7 @@ cSpiceBuilder::apply_terms(CDs *sdesc)
         for (sNodeLink *nk = sb_nodes; nk; nk = nk->next)
             acnt++;
         if (ncnt < acnt)
-            add_glob(nodename(acnt-1), sb_cdesc->cellname()->string());
+            add_glob(nodename(acnt-1), Tstring(sb_cdesc->cellname()));
 
         pn = (CDp_cnode*)sb_cdesc->prpty(P_NODE);
         for ( ; pn; pn = pn->next()) {
@@ -1433,7 +1432,7 @@ cSpiceBuilder::apply_terms(CDs *sdesc)
                     }
                     else {
                         sprintf(buf, "instance creation failed for %s in %s.",
-                            sb_term_name, sdesc->cellname()->string());
+                            sb_term_name, Tstring(sdesc->cellname()));
                         record_error(buf);
                     }
                 }
@@ -1456,7 +1455,7 @@ cSpiceBuilder::apply_terms(CDs *sdesc)
                     if (!ED()->makeInstance(sdesc, sb_gnd_name, x, y)) {
                         char buf[128];
                         sprintf(buf, "instance creation failed for %s in %s.",
-                            sb_gnd_name, sdesc->cellname()->string());
+                            sb_gnd_name, Tstring(sdesc->cellname()));
                         record_error(buf);
                     }
                 }
@@ -1708,12 +1707,12 @@ cSpiceBuilder::process_muts(CDs *sdesc)
             char buf[256];
             if (!cdesc1) {
                 sprintf(buf, "can't find %s for mutual pair in %s.",
-                    m->ind1, sdesc->cellname()->string());
+                    m->ind1, Tstring(sdesc->cellname()));
                 record_error(buf);
             }
             else if (!cdesc2) {
                 sprintf(buf, "can't find %s for mutual pair in %s.",
-                    m->ind2, sdesc->cellname()->string());
+                    m->ind2, Tstring(sdesc->cellname()));
                 record_error(buf);
             }
             else if (!sdesc->prptyMutualAdd(cdesc1, cdesc2, m->val,
@@ -2320,14 +2319,14 @@ namespace {
                 for ( ; pn; pn = pn->next())
                     nn++;
 
-                sDevDesc *d = EX()->findDevices(sd->cellname()->string());
+                sDevDesc *d = EX()->findDevices(Tstring(sd->cellname()));
                 if (d) {
                     int nx = 0;
                     for (sDevContactDesc *cx = d->contacts(); cx;
                             cx = cx->next())
                         nx++;
                     if (nn != nx)
-                        log_mosfoo(nn, d->name()->stringNN(), nx);
+                        log_mosfoo(nn, TstringNN(d->name()), nx);
                 }
             }
             sd = open_device(k->k_pdev);
@@ -2337,14 +2336,14 @@ namespace {
                 for ( ; pn; pn = pn->next())
                     nn++;
 
-                sDevDesc *d = EX()->findDevices(sd->cellname()->string());
+                sDevDesc *d = EX()->findDevices(Tstring(sd->cellname()));
                 if (d) {
                     int nx = 0;
                     for (sDevContactDesc *cx = d->contacts(); cx;
                             cx = cx->next())
                         nx++;
                     if (nn != nx)
-                        log_mosfoo(nn, d->name()->stringNN(), nx);
+                        log_mosfoo(nn, TstringNN(d->name()), nx);
                 }
             }
         }

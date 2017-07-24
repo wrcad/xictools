@@ -60,7 +60,7 @@ struct sMOSgrps
             if (!di || (!di->is_nmos() && !di->is_pmos()))
                 return;
             for (sDevContactInst *ci = di->contacts(); ci; ci = ci->next()) {
-                const char *cn = ci->cont_name()->string();
+                const char *cn = Tstring(ci->cont_name());
                 if (!cn)
                     continue;
                 switch (*cn) {
@@ -109,7 +109,7 @@ namespace {
     {
         if (!ci)
             return (false);
-        const char *cn = ci->cont_name()->string();
+        const char *cn = Tstring(ci->cont_name());
         if (!cn)
             return (false);
         switch (*cn) {
@@ -131,7 +131,7 @@ namespace {
     {
         if (!ci)
             return (false);
-        const char *cn = ci->cont_name()->string();
+        const char *cn = Tstring(ci->cont_name());
         if (!cn)
             return (false);
         switch (*cn) {
@@ -150,7 +150,7 @@ namespace {
     int gate_group(const sDevInst *di)
     {
         for (sDevContactInst *ci = di->contacts(); ci; ci = ci->next()) {
-            const char *n = ci->cont_name()->string();
+            const char *n = Tstring(ci->cont_name());
             if (n && (*n == 'g' || *n == 'G'))
                 return (ci->group());
         }
@@ -321,7 +321,7 @@ cGroupDesc::mos_np_input(const CDsterm *term, sDevInst **ptndev,
         }
         else
             return (false);
-        const char *n = ci->cont_name()->string();
+        const char *n = Tstring(ci->cont_name());
         if (!n)
             return (false);
         if (*n != 'g' && *n != 'G')

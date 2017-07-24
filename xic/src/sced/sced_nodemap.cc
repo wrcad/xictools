@@ -101,7 +101,7 @@ cSced::nodeName(const CDs *sd, int node, bool *glob)
         *glob = false;
     char buf[64];
     mmItoA(buf, node);
-    return (CDnetex::name_tab_add(buf)->string());
+    return (Tstring(CDnetex::name_tab_add(buf)));
 }
 
 
@@ -133,7 +133,7 @@ cSced::registerGlobalNetName(const char *nn)
     if (SymTab::get(sc_global_tab, nn) != ST_NIL)
         return;
     CDnetName nm = CDnetex::name_tab_add(nn);
-    sc_global_tab->add(nm->string(), 0, false);
+    sc_global_tab->add(Tstring(nm), 0, false);
 }
 
 
@@ -244,7 +244,7 @@ cNodeMap::findNode(CDnetName name)
     // No name match.  If the name is an integer in range, return the
     // node.
     bool isnum = true;
-    for (const char *s = name->string(); *s; s++) {
+    for (const char *s = Tstring(name); *s; s++) {
         if (!isdigit(*s)) {
             isnum = false;
             break;
@@ -252,7 +252,7 @@ cNodeMap::findNode(CDnetName name)
     }
 
     int d;
-    if (isnum && sscanf(name->string(), "%d", &d) == 1 && d >= 0 &&
+    if (isnum && sscanf(Tstring(name), "%d", &d) == 1 && d >= 0 &&
             d < nm_size)
         return (d);
     return (-1);
@@ -424,9 +424,9 @@ cNodeMap::map(int i) const
     if (nm_dirty || i < 0 || i >= nm_size || !nm_nmap[i]) {
         char buf[64];
         mmItoA(buf, i);
-        return (CDnetex::name_tab_add(buf)->string());
+        return (Tstring(CDnetex::name_tab_add(buf)));
     }
-    return (nm_nmap[i]->string());
+    return (Tstring(nm_nmap[i]));
 }
 
 
@@ -446,7 +446,7 @@ cNodeMap::mapName(int i) const
 {
     if (nm_dirty || i < 0 || i >= nm_size || !nm_nmap[i])
         return ("");
-    return (nm_nmap[i]->string());
+    return (Tstring(nm_nmap[i]));
 }
 
 
@@ -474,7 +474,7 @@ cNodeMap::isGlobal(int i) const
     }
     if (nm_fmap[i] & NM_GLOB)
         return (true);
-    if (SCD()->isGlobalNetName(nm_nmap[i]->string())) {
+    if (SCD()->isGlobalNetName(Tstring(nm_nmap[i]))) {
         nm_fmap[i] |= NM_GLOB;
         return (true);
     }
@@ -683,12 +683,12 @@ cNodeMap::setup()
             // global, or comes first in strcmp() order.
 
             CDnetName oname = nm_nmap[node];
-            bool oglb = SCD()->isGlobalNetName(oname->string());
-            bool nglb = SCD()->isGlobalNetName(nm->string());
+            bool oglb = SCD()->isGlobalNetName(Tstring(oname));
+            bool nglb = SCD()->isGlobalNetName(Tstring(nm));
             if (nglb && !oglb)
                 nm_nmap[node] = nm;
             else if ((oglb == nglb) && 
-                    strcmp(nm->string(), oname->string()) < 0)
+                    strcmp(Tstring(nm), Tstring(oname)) < 0)
                 nm_nmap[node] = nm;
         }
     }
@@ -788,7 +788,7 @@ cNodeMap::setup()
         }
 
         CDnetName oname = nm_nmap[ps->enode()];
-        bool oglb = SCD()->isGlobalNetName(oname->string());
+        bool oglb = SCD()->isGlobalNetName(Tstring(oname));
         if (!oglb) {
             // Terminal name has priority if existing name isn't
             // global.
@@ -798,12 +798,12 @@ cNodeMap::setup()
         }
 
         CDnetName nname = ps->get_term_name();
-        bool nglb = SCD()->isGlobalNetName(nname->string());
+        bool nglb = SCD()->isGlobalNetName(Tstring(nname));
         if (nglb) {
             // Both global.  This is probably a user error, but keep
             // the name that comes first in strcmp order.
 
-            if (strcmp(nname->string(), oname->string()) < 0)
+            if (strcmp(Tstring(nname), Tstring(oname)) < 0)
                 nm_nmap[ps->enode()] = nname;
         }
     }
@@ -820,7 +820,7 @@ cNodeMap::setup()
         }
 
         CDnetName oname = nm_nmap[node];
-        bool oglb = SCD()->isGlobalNetName(oname->string());
+        bool oglb = SCD()->isGlobalNetName(Tstring(oname));
         if (!oglb) {
             // Set-name has priority if existing name isn't
             // global.
@@ -831,19 +831,19 @@ cNodeMap::setup()
         }
 
         CDnetName nname = sn->name();
-        bool nglb = SCD()->isGlobalNetName(nname->string());
+        bool nglb = SCD()->isGlobalNetName(Tstring(nname));
         if (nglb) {
             // Both global.  This is probably a user error, but keep
             // the name that comes first in strcmp order.
 
-            if (strcmp(nname->string(), oname->string()) < 0) {
+            if (strcmp(Tstring(nname), Tstring(oname)) < 0) {
                 nm_nmap[node] = nname;
                 nm_fmap[node] |= NM_SET;
             }
         }
     }
     for (int i = 1; i < nm_size; i++) {
-        if (SCD()->isGlobalNetName(nm_nmap[i]->string()))
+        if (SCD()->isGlobalNetName(Tstring(nm_nmap[i])))
             nm_fmap[i] |= NM_GLOB;
     }
 

@@ -63,9 +63,10 @@ namespace {
             {
                 Fcnt++;
                 if (Ftime != Timer()->elapsed_msec()) {
-                    if (Fcn)
+                    if (Fcn) {
                         PL()->ShowPromptV("Flattening %s %d/%d",
-                            Fcn->string(), Fcnt, Fmax);
+                            Tstring(Fcn), Fcnt, Fmax);
+                    }
                     Ftime = Timer()->elapsed_msec();
                 }
             }

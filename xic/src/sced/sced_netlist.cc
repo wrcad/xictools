@@ -104,7 +104,7 @@ cSced::getElecNodeContactNames(CDs *sdesc, int node)
                 // function setup.
 
                 if (pc->enode() == node) {
-                    const char *lname = pc->get_term_name()->string();
+                    const char *lname = Tstring(pc->get_term_name());
                     if (!lname)
                         lname = "UNNAMED";
                     char *lbl = new char[strlen(lname) + 3];
@@ -130,7 +130,7 @@ cSced::getElecNodeContactNames(CDs *sdesc, int node)
                     cnt++;
                     if (px && px->enode() == node)
                         s0 = new stringlist(
-                            lstring::copy(px->term_name()->string()), s0);
+                            lstring::copy(Tstring(px->term_name())), s0);
                 }
             }
         }
@@ -154,7 +154,7 @@ cSced::getElecNodeContactNames(CDs *sdesc, int node)
             if (!pn || (pn->enode() != node) || !pn->get_term_name())
                 continue;
 
-            const char *lname = pn->get_term_name()->string();
+            const char *lname = Tstring(pn->get_term_name());
             char *lbl = new char[strlen(lname) + 3];
             char *t = lbl;
             *t++ = 'W';
@@ -167,7 +167,7 @@ cSced::getElecNodeContactNames(CDs *sdesc, int node)
     CDp_snode *ps = (CDp_snode*)sdesc->prpty(P_NODE);
     for ( ; ps; ps = ps->next()) {
         if (ps->enode() == node)
-            s0 = new stringlist(lstring::copy(ps->term_name()->string()), s0);
+            s0 = new stringlist(lstring::copy(Tstring(ps->term_name())), s0);
     }
     stringlist::sort(s0);
     return (s0);
@@ -216,7 +216,7 @@ cSced::getElecContactNames(CDs *sdesc, int *size)
                     h = SymTab::get_ent(list_tab, pn1->enode());
                 }
                 h->stData = new stringlist(
-                    lstring::copy(pn1->term_name()->string()),
+                    lstring::copy(Tstring(pn1->term_name())),
                     (stringlist*)h->stData);
             }
             cnt++;
@@ -235,7 +235,7 @@ cSced::getElecContactNames(CDs *sdesc, int *size)
             list_tab->add(pn->enode(), 0, false);
             h = SymTab::get_ent(list_tab, pn->enode());
         }
-        h->stData = new stringlist(lstring::copy(pn->term_name()->string()),
+        h->stData = new stringlist(lstring::copy(Tstring(pn->term_name())),
             (stringlist*)h->stData);
     }
     stringlist **ary = new stringlist*[max_node+1];

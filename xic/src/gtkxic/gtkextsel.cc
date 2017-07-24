@@ -635,7 +635,7 @@ sES::es_action_proc(GtkWidget *caller, void*)
         pathfinder *pf = EX()->pathFinder(cExt::PFget);
         if (pf) {
             char buf[256];
-            sprintf(buf, "%s_grp_%s", DSP()->CurCellName()->string(),
+            sprintf(buf, "%s_grp_%s", Tstring(DSP()->CurCellName()),
                 pf->pathname());
             ES->PopUpInput("Enter native cell name", buf, "Save Cell",
                 tof_cb, 0);

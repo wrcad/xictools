@@ -1580,7 +1580,7 @@ sNM::find_row(const char *str)
             char *text = list_get_text(nm_node_list, i, 1);
             if (!text)
                 break;
-            if (!strcmp(nn->string(), text)) {
+            if (!strcmp(Tstring(nn), text)) {
                 delete [] text;
                 return (i);
             }

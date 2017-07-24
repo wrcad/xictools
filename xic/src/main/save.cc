@@ -111,10 +111,8 @@ cMain::CheckModified(bool panic)
             fprintf(xm_panic_fp, "# %s crash log, pid: %d\n",
                 XM()->IdString(), (int)getpid());
             fprintf(xm_panic_fp, "cell: %s top: %s mode: %d\n",
-                DSP()->CurCellName() ?
-                    DSP()->CurCellName()->string() : "none",
-                DSP()->TopCellName() ?
-                    DSP()->TopCellName()->string() : "none",
+                DSP()->CurCellName() ? Tstring(DSP()->CurCellName()) : "none",
+                DSP()->TopCellName() ? Tstring(DSP()->TopCellName()) : "none",
                 DSP()->CurMode());
             EV()->PanicPrint(xm_panic_fp);
             if (Log()->LogDirectory()) {
@@ -203,13 +201,13 @@ cMain::CheckModified(bool panic)
                 if (cbin.isLibrary() && cbin.isDevice())
                     continue;
                 s0 = new stringlist(
-                    lstring::copy(cbin.cellname()->string()), s0);
+                    lstring::copy(Tstring(cbin.cellname())), s0);
             }
         }
         else if (cbin.fileType() == Foa) {
             if (cbin.isModified()) {
                 s0 = new stringlist(
-                    lstring::copy(cbin.cellname()->string()), s0);
+                    lstring::copy(Tstring(cbin.cellname())), s0);
             }
         }
         else if (!cbin.isSubcell() &&
@@ -218,7 +216,7 @@ cMain::CheckModified(bool panic)
             if ((cbin.phys() && cbin.phys()->isHierModified()) ||
                     (cbin.elec() && cbin.elec()->isHierModified())) {
                 s0 = new stringlist(
-                    lstring::copy(cbin.cellname()->string()), s0);
+                    lstring::copy(Tstring(cbin.cellname())), s0);
 
                 // Purge all modified archive cells in this hierarchy
                 // from the modified table.
@@ -248,7 +246,7 @@ cMain::CheckModified(bool panic)
             cbin.setFileType(Fnone);
             cbin.setFileName(0);
             s0 = new stringlist(
-                lstring::copy(cbin.cellname()->string()), s0);
+                lstring::copy(Tstring(cbin.cellname())), s0);
         }
     }
     delete modtab;
@@ -678,7 +676,7 @@ SaveHlpr::save_panic(CDcbin *cbin)
     XM()->SetPanicDir(dn);
 
     char buf[256];
-    sprintf(buf, "%s/%s", dn, cbin->cellname()->string());
+    sprintf(buf, "%s/%s", dn, Tstring(cbin->cellname()));
     FileType ft = cbin->fileType();
     if (ft != Fnone && ft != Fnative && ft != Foa) {
         const char *ext = FIO()->GetTypeExt(ft);
@@ -700,7 +698,7 @@ SaveHlpr::save_panic(CDcbin *cbin)
         if (!cbin->isSubcell())
             EditIf()->assignGlobalProperties(cbin);
         bool ret = FIO()->WriteNative(cbin, buf);
-        const char *cn = cbin->cellname()->string();
+        const char *cn = Tstring(cbin->cellname());
         if (ret) {
             PL()->ShowPromptV("%s saved.", cn);
             if (XM()->PanicFp())
@@ -816,11 +814,11 @@ SaveHlpr::get_new_name(bool no_prompt)
         char *fn = 0;
         if (cbin.fileType() == Fnative && cbin.fileName()) {
             fn = new char[strlen(cbin.fileName()) +
-                strlen(cbin.cellname()->string()) + 2];
-            sprintf(fn, "%s/%s", cbin.fileName(), cbin.cellname()->string());
+                strlen(Tstring(cbin.cellname())) + 2];
+            sprintf(fn, "%s/%s", cbin.fileName(), Tstring(cbin.cellname()));
         }
         if (!fn)
-            fn = lstring::copy(cbin.cellname()->string());
+            fn = lstring::copy(Tstring(cbin.cellname()));
         if (no_prompt)
             return (fn);
         in = XM()->SaveFileDlg("Save as native: ", fn);
@@ -866,12 +864,12 @@ SaveHlpr::get_new_name(bool no_prompt)
         char buf[256];
         if (cbin.fileType() == Foa && cbin.fileName()) {
             sprintf(buf, "oa %s %s", cbin.fileName(),
-                cbin.cellname()->string());
+                Tstring(cbin.cellname()));
         }
         else {
             // Shouldn't happen.
             sprintf(buf, "oa %s %s", "xic_unknown",
-                cbin.cellname()->string());
+                Tstring(cbin.cellname()));
         }
         if (no_prompt)
             return (lstring::copy(buf));
@@ -1181,14 +1179,14 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
             if (!libname) {
                 Errs()->add_error(
                     "Can't save %s, no library given and no default.",
-                    cbin.cellname()->string());
+                    Tstring(cbin.cellname()));
                 if (!silent_errors)
                     Log()->ErrorLog(save_file, Errs()->get_error());
                 ret = false;
             }
             else if (!is_oa_lib(libname, silent_errors)) {
                 Errs()->add_error("Can't save %s, unknown library %s.",
-                    cbin.cellname()->string(), libname);
+                    Tstring(cbin.cellname()), libname);
                 if (!silent_errors)
                     Log()->ErrorLog(save_file, Errs()->get_error());
                 ret = false;
@@ -1197,7 +1195,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
                 if (!OAif()->save(&cbin, libname)) {
                     Errs()->add_error(
                         "Error occurred: can't save %s in OA lib %s.",
-                        cbin.cellname()->string(), libname);
+                        Tstring(cbin.cellname()), libname);
                     if (!silent_errors)
                         Log()->ErrorLog(save_file, Errs()->get_error());
                     ret = false;
@@ -1205,7 +1203,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
                 else {
                     PL()->ShowPromptV(
                         "Current cell has been saved as %s in OA lib %s.",
-                        cbin.cellname()->string(), libname);
+                        Tstring(cbin.cellname()), libname);
                 }
                 delete [] libname;
             }
@@ -1219,7 +1217,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
                 if (!libname) {
                     Errs()->add_error(
                         "Can't save %s, no library given and no default.",
-                        cbin.cellname()->string());
+                        Tstring(cbin.cellname()));
                     if (!silent_errors)
                         Log()->ErrorLog(save_file, Errs()->get_error());
                     ret = false;
@@ -1227,7 +1225,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
                 else if (!is_oa_lib(libname, silent_errors)) {
                     Errs()->add_error(
                         "Can't save %s hierarchy, unknown library %s.",
-                        cbin.cellname()->string(), libname);
+                        Tstring(cbin.cellname()), libname);
                     if (!silent_errors)
                         Log()->ErrorLog(save_file, Errs()->get_error());
                     ret = false;
@@ -1251,7 +1249,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
 
                 if (!is_oa_lib(token1, silent_errors)) {
                     Errs()->add_error("Can't save %s, unknown library %s.",
-                        cbin.cellname()->string(), token1);
+                        Tstring(cbin.cellname()), token1);
                     if (!silent_errors)
                         Log()->ErrorLog(save_file, Errs()->get_error());
                     ret = false;
@@ -1259,7 +1257,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
                 else if (!OAif()->save(&cbin, token1)) {
                     Errs()->add_error(
                         "Error occurred: can't save %s in OA lib %s.",
-                        cbin.cellname()->string(), token1);
+                        Tstring(cbin.cellname()), token1);
                     if (!silent_errors)
                         Log()->ErrorLog(save_file, Errs()->get_error());
                     ret = false;
@@ -1267,7 +1265,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
                 else {
                     PL()->ShowPromptV(
                         "Current cell has been saved as %s in OA lib %s.",
-                        cbin.cellname()->string(), token1);
+                        Tstring(cbin.cellname()), token1);
                 }
             }
         }
@@ -1278,7 +1276,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
                 if (!is_oa_lib(token1, silent_errors)) {
                     Errs()->add_error(
                         "Can't save %s hierarchy, unknown library %s.",
-                        cbin.cellname()->string(), token1);
+                        Tstring(cbin.cellname()), token1);
                     if (!silent_errors)
                         Log()->ErrorLog(save_file, Errs()->get_error());
                     ret = false;
@@ -1365,7 +1363,7 @@ SaveHlpr::write_native(CDcbin &cbin, const char *dir, const char *newname)
         }
         return (ret);
     }
-    if (newname && strcmp(newname, cbin.cellname()->string())) {
+    if (newname && strcmp(newname, Tstring(cbin.cellname()))) {
         // Don't allow writing a native cell that would conflict
         // with the name of an existing cell in memory.
 
@@ -1381,7 +1379,7 @@ SaveHlpr::write_native(CDcbin &cbin, const char *dir, const char *newname)
     if (newname)
         lstr.add(newname);
     else
-        lstr.add(cname->string());
+        lstr.add(Tstring(cname));
 
     bool ret = FIO()->WriteNative(&cbin, lstr.string());
     if (!ret)
@@ -1389,7 +1387,7 @@ SaveHlpr::write_native(CDcbin &cbin, const char *dir, const char *newname)
     else {
         const char *newcn = lstring::strip_path(lstr.string());
 
-        if (!newcn || !strcmp(newcn, cname->string())) {
+        if (!newcn || !strcmp(newcn, Tstring(cname))) {
             // Update fileName field if cell name not changed.
 
             char *p = pathlist::expand_path(lstr.string(), true, true);
@@ -1411,7 +1409,7 @@ SaveHlpr::write_native(CDcbin &cbin, const char *dir, const char *newname)
             }
         }
         const char *msg2 = "Current cell %s has been saved as %s.";
-        PL()->ShowPromptV(msg2, cname->string(), lstr.string());
+        PL()->ShowPromptV(msg2, Tstring(cname), lstr.string());
     }
     return (ret);
 }
@@ -1434,7 +1432,7 @@ SaveHlpr::write_export(CDcellName cellname, const char *fname, FileType ftype)
     if (!cbin.isSubcell())
         EditIf()->assignGlobalProperties(&cbin);
     stringlist *namelist =
-        new stringlist(lstring::copy(cellname->string()), 0);
+        new stringlist(lstring::copy(Tstring(cellname)), 0);
     GCdestroy<stringlist> gc_namelist(namelist);
 
     bool tmp[7];

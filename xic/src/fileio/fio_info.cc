@@ -513,7 +513,7 @@ cv_info::format_counts(const symref_t *p)
 
     sLstr lstr;
     char buf[256];
-    pc_data *pcd = pcdata->find(p->get_name()->string());
+    pc_data *pcd = pcdata->find(Tstring(p->get_name()));
     if (pcd && pcd->data_tab()) {
         HEADER(buf);
         lstr.add(buf);

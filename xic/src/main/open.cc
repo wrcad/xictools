@@ -101,7 +101,7 @@ cMain::EditCell(const char *file_or_cell_name, bool noask,
                 // Allow the default name.
                 symref_t *p = chd->defaultSymref(Physical);
                 if (p)
-                    cellname = p->get_name()->string();
+                    cellname = Tstring(p->get_name());
             }
             if (chd->loadCell(cellname) != OIok) {
                 GRpkgIf()->ErrPrintf(ET_ERROR, "%s", Errs()->get_error());
@@ -215,13 +215,13 @@ cMain::EditCell(const char *file_or_cell_name, bool noask,
         if (!file_or_cell_name) {
             CDc *cd = (CDc*)Selections.firstObject(CurCell(), "c");
             if (cd)
-                file_or_cell_name = cd->cellname()->string();
+                file_or_cell_name = Tstring(cd->cellname());
         }
         if (!file_or_cell_name)
             file_or_cell_name = NextArg();
         if (!file_or_cell_name) {
             if (DSP()->CurCellName())
-                file_or_cell_name = DSP()->CurCellName()->string();
+                file_or_cell_name = Tstring(DSP()->CurCellName());
             else
                 file_or_cell_name = "";
         }
@@ -411,7 +411,7 @@ cMain::Load(WindowDesc *wdesc, const char *file_or_cell_name,
                 // Allow the default name.
                 symref_t *p = chd->defaultSymref(Physical);
                 if (p)
-                    cellname = p->get_name()->string();
+                    cellname = Tstring(p->get_name());
             }
             if (chd->loadCell(cellname) != OIok) {
                 GRpkgIf()->ErrPrintf(ET_ERROR, "%s", Errs()->get_error());
@@ -574,7 +574,7 @@ cMain::Load(WindowDesc *wdesc, const char *file_or_cell_name,
     }
 
     ShowParameters();
-    PushOpenCellName(DSP()->CurCellName()->string());
+    PushOpenCellName(Tstring(DSP()->CurCellName()));
 
     if (oiret == OInew)
         PL()->ShowPromptV("Current cell is %s.", wdesc->CurCellName());

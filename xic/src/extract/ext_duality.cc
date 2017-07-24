@@ -125,7 +125,7 @@ cExt::associate(CDs *sdesc)
     if (ret == XIok)
         ret = gd->setup_duality();
     ExtErrLog.add_log(ExtLogAssoc, "Associating %s complete, %s.",
-        sdesc->cellname()->string(),
+        Tstring(sdesc->cellname()),
         ret == XIok ? "no errors" : "error(s) encountered");
     ExtErrLog.end_logging();
 
@@ -136,7 +136,7 @@ cExt::associate(CDs *sdesc)
 
     if (ret == XIok)
         PL()->ShowPromptV("Association complete in %s.",
-            sdesc->cellname()->string());
+            Tstring(sdesc->cellname()));
     else
         PL()->ShowPrompt("Association aborted.");
 
@@ -403,7 +403,7 @@ cGroupDesc::fixup_duality(const sSubcList *sl)
             continue;
 
         ExtErrLog.add_log(ExtLogAssoc, "fixup: cell %s terminal %s",
-            cbin.cellname()->string(), term->name());
+            Tstring(cbin.cellname()), term->name());
 
         // Find node of unplaced terminal.
         int node = ps->enode();
@@ -750,7 +750,7 @@ cGroupDesc::subcircuit_permutation_fix(const sSubcList *sl)
                     ExtErrLog.add_log(ExtLogAssoc,
                         "Permuting nodes in %s, instance %s has "
                         "inconsistency,\ngroup %ld, node %ld or %ld.",
-                        gd_celldesc->cellname()->string(),
+                        Tstring(gd_celldesc->cellname()),
                         iname, old_sg, new_nd, oldn);
                     delete [] iname;
                 }
@@ -772,7 +772,7 @@ cGroupDesc::subcircuit_permutation_fix(const sSubcList *sl)
                 ExtErrLog.add_log(ExtLogAssocV,
                     "In %s, hinting node %d (%s) to group %d, "
                     "was node %d (%s).",
-                    mgd->gd_celldesc->cellname()->string(),
+                    Tstring(mgd->gd_celldesc->cellname()),
                     nd, nnhint, grp, ndcur, nncur);
             }
             mgd->gd_groups[grp].set_hint_node(nd);
@@ -781,7 +781,7 @@ cGroupDesc::subcircuit_permutation_fix(const sSubcList *sl)
 
         ExtErrLog.add_log(ExtLogAssoc,
             "\nPermutation check/fix in %s, %d fixes.",
-            mgd->gd_celldesc->cellname()->string(), nfixes);
+            Tstring(mgd->gd_celldesc->cellname()), nfixes);
 
         mgd->subcircuit_permutation_fix_rc(nfixes);
     }
@@ -1037,7 +1037,7 @@ cGroupDesc::bind_term_to_group(CDsterm *term, int group)
                     // location is ok
                     term->set_ref(o->odesc);
                     bind_term(term, group);
-                    warn_conductor(group, term->name()->string());
+                    warn_conductor(group, Tstring(term->name()));
                     return (true);
                 }
                 if (firstone) {
@@ -1059,7 +1059,7 @@ cGroupDesc::bind_term_to_group(CDsterm *term, int group)
                 // location is ok
                 term->set_ref(o->odesc);
                 bind_term(term, group);
-                warn_conductor(group, term->name()->string());
+                warn_conductor(group, Tstring(term->name()));
                 return (true);
             }
             if (firstone) {
@@ -1141,7 +1141,7 @@ cGroupDesc::bind_term_to_group(CDsterm *term, int group)
                     term->set_ref(oset);
                     bind_term(term, group);
                     if (!oset->ldesc()->isRouting())
-                        warn_conductor(group, term->name()->string());
+                        warn_conductor(group, Tstring(term->name()));
                     return (true);
                 }
             }
@@ -1381,7 +1381,7 @@ cGroupDesc::set_duality_first_pass()
         fprintf(fp,
             "\n=======================================================\n");
         fprintf(fp, "Pre-Associating cell %s\n",
-            gd_celldesc->cellname()->string());
+            Tstring(gd_celldesc->cellname()));
     }
 tiptop:
     clear_duality();
@@ -1431,8 +1431,8 @@ top:
         link_elec_subs(subs);
         link_elec_devs(devs);
         ExtErrLog.add_log(ExtLogAssoc, "Smashing %s %d into %s schematic.",
-            s->cdesc()->cellname()->string(), s->cdesc_index(),
-            gd_celldesc->cellname()->string());
+            Tstring(s->cdesc()->cellname()), s->cdesc_index(),
+            Tstring(gd_celldesc->cellname()));
         delete s;
     }
 
@@ -1526,7 +1526,7 @@ top:
     bool smashed = false;
     if (!flatten(&smashed, true)) {
         ExtErrLog.add_err("In %s, physical flatten failed while associating.",
-            gd_celldesc->cellname()->string());
+            Tstring(gd_celldesc->cellname()));
         return (XIbad);
     }
     if (smashed) {
@@ -1581,8 +1581,8 @@ top:
                     smashed = true;
                     ExtErrLog.add_log(ExtLogAssoc,
                         "Smashing %s %d into %s schematic.",
-                        s->cdesc()->cellname()->string(), s->cdesc_index(),
-                        gd_celldesc->cellname()->string());
+                        Tstring(s->cdesc()->cellname()), s->cdesc_index(),
+                        Tstring(gd_celldesc->cellname()));
                     delete s;
                     continue;
                 }
@@ -1663,7 +1663,7 @@ top:
                     }
                     char *instname = s->cdesc()->getInstName(s->cdesc_index());
                     ExtErrLog.add_log(ExtLogAssoc, "  subcircuit %s %s",
-                        s->cdesc()->cellname()->string(), instname);
+                        Tstring(s->cdesc()->cellname()), instname);
                     delete [] instname;
                 }
         }
@@ -1676,7 +1676,7 @@ top:
                     }
                     char *instname = s->cdesc()->getInstName(s->cdesc_index());
                     ExtErrLog.add_log(ExtLogAssoc, "  device %s %s",
-                        s->cdesc()->cellname()->string(), instname);
+                        Tstring(s->cdesc()->cellname()), instname);
                     delete [] instname;
                 }
             }
@@ -1723,7 +1723,7 @@ cGroupDesc::set_duality()
         fprintf(fp,
             "\n=======================================================\n");
         fprintf(fp, "Associating cell %s\n",
-            gd_celldesc->cellname()->string());
+            Tstring(gd_celldesc->cellname()));
     }
 
     try {
@@ -1771,7 +1771,7 @@ cGroupDesc::set_duality()
                                     pc->index());
                         }
                         sprintf(buf + strlen(buf), " %8s %3d",
-                            pc->term_name()->string(),
+                            Tstring(pc->term_name()),
                             pc1 ? pc1->enode() : pc->enode());
                     }
                     ExtErrLog.add_log(ExtLogAssoc, buf);
@@ -1787,7 +1787,7 @@ cGroupDesc::set_duality()
             if (np != ne) {
                 ExtErrLog.add_log(ExtLogAssoc,
                 "Subcircuit %s count mismatch: %d physical, %d electrical.",
-                    sl->subs()->cdesc()->cellname()->string(), np, ne);
+                    Tstring(sl->subs()->cdesc()->cellname()), np, ne);
             }
         }
 
@@ -1862,7 +1862,7 @@ cGroupDesc::set_duality()
                     }
                     char *instname = s->cdesc()->getInstName(s->cdesc_index());
                     ExtErrLog.add_log(ExtLogAssoc, "  subcircuit %s %s",
-                        s->cdesc()->cellname()->string(), instname);
+                        Tstring(s->cdesc()->cellname()), instname);
                     delete [] instname;
                 }
         }
@@ -1875,7 +1875,7 @@ cGroupDesc::set_duality()
                     }
                     char *instname = s->cdesc()->getInstName(s->cdesc_index());
                     ExtErrLog.add_log(ExtLogAssoc, "  device %s %s",
-                        s->cdesc()->cellname()->string(), instname);
+                        Tstring(s->cdesc()->cellname()), instname);
                     delete [] instname;
                 }
             }
@@ -1953,7 +1953,7 @@ cGroupDesc::check_series_merge()
                         "In %s, terminal %s must have the FIXED flag set, as\n"
                         "it connects only to an intermediate node of a "
                         "series-mergeable device.\n",
-                        gd_celldesc->cellname()->string(), ps->term_name());
+                        Tstring(gd_celldesc->cellname()), ps->term_name());
                     return (false);
                 }
             }
@@ -1999,7 +1999,7 @@ cGroupDesc::link_elec_subs(sEinstList *slist)
             ExtErrLog.add_log(ExtLogAssoc, "Extra electrical subckts:");
             for (sEinstList *s = slist; s; s = s->next()) {
                 ExtErrLog.add_log(ExtLogAssoc, "  Instance of %s",
-                    s->cdesc()->cellname()->string());
+                    Tstring(s->cdesc()->cellname()));
             }
         }
         if (!gd_extra_subs)
@@ -2057,7 +2057,7 @@ cGroupDesc::link_elec_devs(sEinstList *dlist)
                     printed = true;
                 }
                 ExtErrLog.add_log(ExtLogAssoc, "  Instance of %s",
-                    d->cdesc()->cellname()->string());
+                    Tstring(d->cdesc()->cellname()));
                 if (!dp)
                     dlist = dn;
                 else
@@ -2198,7 +2198,7 @@ cGroupDesc::reposition_terminals(bool no_errs)
                     if (no_errs) {
                         ExtErrLog.add_log(ExtLogAssoc,
                             "In %s, failed to bind %s %s to group %d.",
-                            gd_celldesc->cellname()->string(),
+                            Tstring(gd_celldesc->cellname()),
                             gd_groups[group].net() ?
                                 "terminal" : "virtual terminal",
                             psterm->name(), group);
@@ -2206,7 +2206,7 @@ cGroupDesc::reposition_terminals(bool no_errs)
                     else {
                         ExtErrLog.add_err(
                             "In %s, failed to bind %s %s to group %d.",
-                            gd_celldesc->cellname()->string(),
+                            Tstring(gd_celldesc->cellname()),
                             gd_groups[group].net() ?
                                 "terminal" : "virtual terminal",
                             psterm->name(), group);
@@ -2258,14 +2258,14 @@ cGroupDesc::reposition_terminals(bool no_errs)
                 ExtErrLog.add_log(ExtLogAssoc,
                     "In %s, failed to bind terminal %s to a group,\n"
                     "as the FIXED flag is set but no group is resolved "
-                    "at the location.", gd_celldesc->cellname()->string(),
+                    "at the location.", Tstring(gd_celldesc->cellname()),
                     psterm->name());
             }
             else {
                 ExtErrLog.add_err(
                     "In %s, failed to bind terminal %s to a group,\n"
                     "as the FIXED flag is set but no group is resolved "
-                    "at the location.", gd_celldesc->cellname()->string(),
+                    "at the location.", Tstring(gd_celldesc->cellname()),
                     psterm->name());
             }
             continue;
@@ -2703,7 +2703,7 @@ again:
             ndevs++;
             if (!comp.set(di)) {
                 ExtErrLog.add_err("In %s, error while associating:\n%s",
-                    gd_celldesc->cellname()->string(), Errs()->get_error());
+                    Tstring(gd_celldesc->cellname()), Errs()->get_error());
                 continue;
             }
 
@@ -2836,7 +2836,7 @@ cGroupDesc::find_match(sDevList *dv, sDevComp &comp, bool brksym) THROW_XIrt
                     sDevContactInst *ci = di->contacts();
                     for ( ; ci; ci = ci->next()) {
                         lstr.add_c(' ');
-                        lstr.add(ci->desc()->name()->string());
+                        lstr.add(Tstring(ci->desc()->name()));
                         lstr.add_c(' ');
                         lstr.add_i(ci->group());
                     }
@@ -3631,7 +3631,7 @@ cGroupDesc::check_global(int grp)
             g.set_global(true);
             return (true);
         }
-        if (SCD()->isGlobalNetName(nn->string())) {
+        if (SCD()->isGlobalNetName(Tstring(nn))) {
             // The name is a global name, but we haven't seen it in
             // the schematic hierarchy.  If the name ends with '!' it
             // is global, and the function call adds it to the table.
@@ -3760,12 +3760,12 @@ cGroupDesc::check_associations(int grp)
         lstr.add("  Elec Dev:");
         for (int i = 0; i < tcnt; i++) {
             lstr.add_c(' ');
-            lstr.add(terms[i]->master_name()->string());
+            lstr.add(Tstring(terms[i]->master_name()));
         }
         lstr.add("\n  Phys Dev:");
         for (sDevContactList *dc = g->device_contacts(); dc; dc = dc->next()) {
             lstr.add_c(' ');
-            lstr.add(dc->contact()->desc()->name()->string());
+            lstr.add(Tstring(dc->contact()->desc()->name()));
         }
         ExtErrLog.add_log(ExtLogAssoc, lstr.string());
     }
@@ -3834,8 +3834,8 @@ cGroupDesc::check_associations(int grp)
         lstr.add("  Elec Subc:");
         for (int i = 0; i < tcnt; i++) {
             sprintf(buf, " %s:%s:%d",
-                terms[i]->instance()->cellname()->string(),
-                terms[i]->master_name()->stringNN(), terms[i]->master_group());
+                Tstring(terms[i]->instance()->cellname()),
+                TstringNN(terms[i]->master_name()), terms[i]->master_group());
             lstr.add(buf);
         }
         lstr.add("\n  Phys Subc: ");
@@ -3843,7 +3843,7 @@ cGroupDesc::check_associations(int grp)
             sSubcContactInst *ci = sc->contact();
             sEinstList *el = ci->subc()->dual();
             sprintf(buf, " %s:%d:%d",
-                el ? el->cdesc()->cellname()->string() : "",
+                el ? Tstring(el->cdesc()->cellname()) : "",
                 ci->parent_group(), ci->subc_group());
             lstr.add(buf);
         }
@@ -3963,7 +3963,7 @@ cGroupDesc::break_symmetry() THROW_XIrt
             ExtErrLog.add_log(ExtLogAssoc,
                 "Inconsistent unassociation count for device %s,\n"
                 "  elec %d of %d, phys %d of %d, skipping symmetry trials.",
-                dv->prefixes()->devs()->desc()->name()->string(),
+                Tstring(dv->prefixes()->devs()->desc()->name()),
                 eucnt, etcnt, pucnt, ptcnt);
             return (false);
         }
@@ -3990,7 +3990,7 @@ cGroupDesc::break_symmetry() THROW_XIrt
             ExtErrLog.add_log(ExtLogAssoc,
                 "Inconsistent unassociation count for subcircuit %s,\n"
                 "  elec %d of %d, phys %d of %d, skipping symmetry trials.",
-                sl->subs()->cdesc()->cellname()->string(),
+                Tstring(sl->subs()->cdesc()->cellname()),
                 eucnt, etcnt, pucnt, ptcnt);
             return (false);
         }
@@ -4104,7 +4104,7 @@ cGroupDesc::break_symmetry() THROW_XIrt
                     comp.associate(this);
                 else {
                     ExtErrLog.add_err("In %s, error while associating:\n%s",
-                        gd_celldesc->cellname()->string(),
+                        Tstring(gd_celldesc->cellname()),
                         Errs()->get_error());
                 }
             }
@@ -4440,7 +4440,7 @@ sSubcDesc::find_and_set_permutes()
     if (pgl && ExtErrLog.log_associating()) {
         sLstr lstr;
         lstr.add("Permutable contacts detected in ");
-        lstr.add(master()->cellname()->string());
+        lstr.add(Tstring(master()->cellname()));
         lstr.add_c(':');
         for (sPermGrpList *p = pgl; p; p = p->next()) {
             lstr.add_c(' ');

@@ -266,7 +266,7 @@ CDs::checkPhysTerminals(bool cterms_only)
                 // Failed again?  Something is screwed up seriously.
                 Errs()->add_error(
                     "Internal error: checknodes %s failed twice in %s",
-                    msd->cellname()->string(), cellname()->string());
+                    Tstring(msd->cellname()), Tstring(cellname()));
                 ret = false;
             }
         }

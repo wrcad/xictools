@@ -828,7 +828,7 @@ extract_funcs::IFdumpPhysNetlist(Variable *res, Variable *args, void*)
     bool fnset = true;
     if (!fname) {
         char buf[128];
-        strcpy(buf, DSP()->CurCellName()->string());
+        strcpy(buf, Tstring(DSP()->CurCellName()));
         char *t = strrchr(buf, '.');
         if (t && t != buf)
             *t = 0;
@@ -925,7 +925,7 @@ extract_funcs::IFdumpElecNetlist(Variable *res, Variable *args, void*)
     bool fnset = true;
     if (!fname) {
         char buf[128];
-        strcpy(buf, DSP()->CurCellName()->string());
+        strcpy(buf, Tstring(DSP()->CurCellName()));
         char *t = strrchr(buf, '.');
         if (t && t != buf)
             *t = 0;
@@ -1490,7 +1490,7 @@ extract_funcs::IFgetTerminalName(Variable *res, Variable *args, void*)
             tlist2<CDp_nodeEx> *t = (tlist2<CDp_nodeEx>*)hdl->data;
             if (t && t->elt) {
                 res->content.string =
-                    lstring::copy(t->elt->term_name()->string());
+                    lstring::copy(Tstring(t->elt->term_name()));
                 res->flags |= VF_ORIGINAL;
             }
         }
@@ -1498,7 +1498,7 @@ extract_funcs::IFgetTerminalName(Variable *res, Variable *args, void*)
             tlist<CDterm> *t = (tlist<CDterm>*)hdl->data;
             if (t && t->elt) {
                 res->content.string =
-                    lstring::copy(t->elt->name()->string());
+                    lstring::copy(Tstring(t->elt->name()));
                 res->flags |= VF_ORIGINAL;
             }
         }
@@ -2229,7 +2229,7 @@ extract_funcs::IFcreatePhysTerminal(Variable *res, Variable *args, void*)
         if (t && t->elt) {
             CDp_snode *ps = dynamic_cast<CDp_snode*>(t->elt);
             if (ps)
-                name = ps->term_name()->string();
+                name = Tstring(ps->term_name());
         }
     }
     else if (name) {
@@ -2849,7 +2849,7 @@ extract_funcs::IFgetGroupNetName(Variable *res, Variable *args, void*)
         if (gd) {
             sGroup *g = gd->group_for(group);
             if (g) {
-                res->content.string = lstring::copy(g->netname()->string());
+                res->content.string = lstring::copy(Tstring(g->netname()));
                 res->flags |= VF_ORIGINAL;
             }
         }
@@ -3395,7 +3395,7 @@ extract_funcs::IFlistGroupTerminalNames(Variable *res, Variable *args, void*)
                 stringlist *s0 = 0;
                 for (CDpin *p = g->termlist(); p; p = p->next()) {
                     s0 = new stringlist(
-                        lstring::copy(p->term()->name()->string()), s0);
+                        lstring::copy(Tstring(p->term()->name())), s0);
                 }
                 sHdl *nhdl = new sHdlString(s0);
                 res->type = TYP_HANDLE;
@@ -3512,7 +3512,7 @@ extract_funcs::IFgetPdevName(Variable *res, Variable *args, void*)
         tlist<sDevInst> *t = (tlist<sDevInst>*)hdl->data;
         if (t) {
             char buf[128];
-            char *s = lstring::stpcpy(buf, t->elt->desc()->name()->stringNN());
+            char *s = lstring::stpcpy(buf, TstringNN(t->elt->desc()->name()));
             *s++ = '_';
             mmItoA(s, t->elt->index());
             res->content.string = lstring::copy(buf);
@@ -3760,7 +3760,7 @@ extract_funcs::IFgetPdevContactName(Variable *res, Variable *args, void*)
         tlist<sDevContactInst> *ct = (tlist<sDevContactInst>*)hdl->data;
         if (ct) {
             res->content.string =
-                lstring::copy(ct->elt->desc()->name()->stringNN());
+                lstring::copy(TstringNN(ct->elt->desc()->name()));
             res->flags |= VF_ORIGINAL;
         }
     }
@@ -3907,7 +3907,7 @@ extract_funcs::IFgetPdevContactDevName(Variable *res, Variable *args, void*)
         tlist<sDevContactInst> *ct = (tlist<sDevContactInst>*)hdl->data;
         if (ct && ct->elt->dev() && ct->elt->dev()->desc()) {
             res->content.string =
-                lstring::copy(ct->elt->dev()->desc()->name()->stringNN());
+                lstring::copy(TstringNN(ct->elt->dev()->desc()->name()));
             res->flags |= VF_ORIGINAL;
         }
     }
@@ -3998,7 +3998,7 @@ extract_funcs::IFlistPhysSubckts(Variable *res, Variable *args, void*)
                     if (!sb->cdesc() || !sb->cdesc()->master())
                         continue;
                     if (name && *name &&
-                            strcmp(name, sb->cdesc()->cellname()->string()))
+                            strcmp(name, Tstring(sb->cdesc()->cellname())))
                         continue;
                     if (BBp && !BBp->intersect(&sb->cdesc()->oBB(), true))
                         continue;
@@ -4040,7 +4040,7 @@ extract_funcs::IFgetPscName(Variable *res, Variable *args, void*)
         tlist<sSubcInst> *su = (tlist<sSubcInst>*)hdl->data;
         if (su && su->elt->cdesc()) {
             res->content.string =
-                lstring::copy(su->elt->cdesc()->cellname()->string());
+                lstring::copy(Tstring(su->elt->cdesc()->cellname()));
             res->flags |= VF_ORIGINAL;
         }
     }
@@ -4543,7 +4543,7 @@ extract_funcs::IFgetPscContactSubcName(Variable *res, Variable *args, void*)
         tlist<sSubcContactInst> *s = (tlist<sSubcContactInst>*)hdl->data;
         if (s && s->elt->subc() && s->elt->subc()->cdesc()) {
             res->content.string =
-                lstring::copy(s->elt->subc()->cdesc()->cellname()->string());
+                lstring::copy(Tstring(s->elt->subc()->cdesc()->cellname()));
             res->flags |= VF_ORIGINAL;
         }
     }

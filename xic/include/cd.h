@@ -251,58 +251,39 @@ private:
 
 #endif
 
-// An encapsulation of the cCD::CellNameTable string pointer.
+// This wraps the string table pointers, which we keep as a separate
+// type, and provides conversion functions to const char*.
 //
-struct CDcellNameStr
+struct CDtptr
 {
-//XXX FIXME, violates dispatch from null pointer spec.
-    const char *string()    const { return ((const char*)this); }
-    const char *stringNN()  const
+    static const char *string(const void *v)
         {
-            const CDcellNameStr *cn = this;
-            return (cn ? (const char*)cn : "");
+            return ((const char*)v);
         }
-};
-typedef CDcellNameStr* CDcellName;
 
-// An encapsulation of the cCD::PfxTable string pointer.
-//
-struct CDpfxNameStr
-{
-    const char *string()    const { return ((const char*)this); }
-    const char *stringNN()  const
+    static const char *stringNN(const void *v)
         {
-            const CDpfxNameStr *cn = this;
-            return (cn ? (const char*)cn : "");
+            return (v ? (const char*)v : "");
         }
 };
-typedef CDpfxNameStr* CDpfxName;
 
-// An encapsulation of the cCD::InstNameTable string pointer.
-//
-struct CDinstNameStr
-{
-    const char *string()    const { return ((const char*)this); }
-    const char *stringNN()  const
-        {
-            const CDinstNameStr *cn = this;
-            return (cn ? (const char*)cn : "");
-        }
-};
-typedef CDinstNameStr* CDinstName;
+struct CDcellNameStr : public CDtptr { };
+typedef CDcellNameStr* CDcellName;      // cCD::CellNameTable string pointer.
 
-// An encapsulation of the cCD::ArchiveTable string pointer.
-//
-struct CDarchiveNameStr
-{
-    const char *string()    const { return ((const char*)this); }
-    const char *stringNN()  const
-        {
-            const CDarchiveNameStr *cn = this;
-            return (cn ? (const char*)cn : "");
-        }
-};
-typedef CDarchiveNameStr* CDarchiveName;
+struct CDpfxNameStr : public CDtptr { };
+typedef CDpfxNameStr* CDpfxName;        // cCD::PfxTable string pointer.
+
+struct CDinstNameStr : public CDtptr { };
+typedef CDinstNameStr* CDinstName;      // cCD::InstNameTable string pointer.
+
+struct CDarchiveNameStr : public CDtptr { };
+typedef CDarchiveNameStr* CDarchiveName; // cCD::ArchiveTable string pointer.
+
+struct CDnetNameStr : public CDtptr { };
+typedef CDnetNameStr* CDnetName;        // cTnameTab string pointer.
+
+inline const char *Tstring(const CDtptr *p)   { return (CDtptr::string(p)); }
+inline const char *TstringNN(const CDtptr *p) { return (CDtptr::stringNN(p)); }
 
 
 //-------------------------------------------------------------------------

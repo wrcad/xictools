@@ -182,10 +182,10 @@ cExt::invertGroundPlane(CDs *sdesc, int mode, const char *gpiname,
     dspPkgIf()->SetWorking(true);
     if (EX()->isVerbosePromptline())
         PL()->PushPromptV("Inverting ground plane in %s: ",
-            sdesc->cellname()->string());
+            Tstring(sdesc->cellname()));
     else
         PL()->ShowPromptV("Inverting ground plane in %s ...",
-            sdesc->cellname()->string());
+            Tstring(sdesc->cellname()));
     char buf[128];
     XIrt ret = XIok;
     if (mode == GPI_PLACE) {

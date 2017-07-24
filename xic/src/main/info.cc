@@ -280,7 +280,7 @@ cMain::Info(CDs *sdesc, int level)
         return (0);
     sLstr lstr;
     char buf[512];
-    sprintf(buf, "Symbol: %s\n", sdesc->cellname()->string());
+    sprintf(buf, "Symbol: %s\n", Tstring(sdesc->cellname()));
     lstr.add(buf);
     const BBox *tBB = sdesc->BB();
     bool printint = (CDvdb()->getVariable(VA_InfoInternal) != 0);
@@ -459,7 +459,7 @@ cMain::Info(CDs *sdesc, int level)
         if (level > 0) {
             ps = (CDp_snode*)cbin.elec()->prpty(P_NODE);
             for ( ; ps; ps = ps->next()) {
-                sprintf(buf, "  Name: %s\n", ps->term_name()->string());
+                sprintf(buf, "  Name: %s\n", Tstring(ps->term_name()));
                 lstr.add(buf);
                 FlagDef *f;
                 for (f = TermTypes; f->name; f++) {
@@ -590,7 +590,7 @@ namespace {
                 else
                     pc = pct;
 
-                sprintf(buf, "  Name %s\n", pc->term_name()->string());
+                sprintf(buf, "  Name %s\n", Tstring(pc->term_name()));
                 lstr.add(buf);
                 sprintf(buf, "  Node %d\n", pc->enode());
                 lstr.add(buf);
@@ -896,7 +896,7 @@ cMain::Info(const CDo *odesc)
         lstr.add(buf);
     }
     else {
-        sprintf(buf, "Master: %s\n", ((CDc*)odesc)->cellname()->string());
+        sprintf(buf, "Master: %s\n", Tstring(((CDc*)odesc)->cellname()));
         lstr.add(buf);
     }
     if (CDvdb()->getVariable(VA_InfoInternal)) {
@@ -1705,7 +1705,7 @@ InfoState::show_obj_info(tlst_t *ol)
         lstr.add("In current cell:\n");
     else if (!ol->cdescs->next) {
         lstr.add("In subcell ");
-        lstr.add(ol->cdescs->cdesc->cellname()->string());
+        lstr.add(Tstring(ol->cdescs->cdesc->cellname()));
         lstr.add(":\n");
     }
     else {
@@ -1713,7 +1713,7 @@ InfoState::show_obj_info(tlst_t *ol)
         stringlist *s0 = 0;
         for (CDclxy *cl = ol->cdescs; cl; cl = cl->next) {
             s0 = new stringlist(
-                lstring::copy(cl->cdesc->cellname()->string()), s0);
+                lstring::copy(Tstring(cl->cdesc->cellname())), s0);
         }
         lstr.add("Instance hierarchy (top-down):\n");
         for (stringlist *s = s0; s; s = s->next) {

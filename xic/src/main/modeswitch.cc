@@ -436,7 +436,7 @@ cMain::Clear(const char *name)
         WDgen gen(WDgen::SUBW, WDgen::CDDB);
         WindowDesc *wd;
         while ((wd = gen.next()) != 0)
-            XM()->Load(wd, DSP()->CurCellName()->string(), 0, 0);
+            XM()->Load(wd, Tstring(DSP()->CurCellName()), 0, 0);
     }
     else {
         CDcbin cbin;
@@ -504,7 +504,7 @@ cMain::Clear(const char *name)
         WindowDesc *wd;
         while ((wd = gen.next()) != 0) {
             if (!CDcdb()->findCell(wd->CurCellName(), wd->Mode()))
-                XM()->Load(wd, DSP()->CurCellName()->string(), 0, 0);
+                XM()->Load(wd, Tstring(DSP()->CurCellName()), 0, 0);
         }
     }
     PopUpCells(0, MODE_UPD);

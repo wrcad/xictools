@@ -331,7 +331,7 @@ CDscriptOut::writeInst(const CDo *odesc)
     int xpos, ypos;
     getRefPt(msdesc, c, &xpos, &ypos);
     const BBox *pBB = msdesc->BB();
-    const char *cn = c->cellname()->string();
+    const char *cn = Tstring(c->cellname());
     if (ap.nx > 1 || ap.ny > 1) {
         fprintf(so_fp, "mkscr_ary[0] = [%d, %d, %.5f, %.5f]\n",
             ap.nx, ap.ny, MICRONS(ap.dx - pBB->width()),

@@ -198,7 +198,7 @@ WindowDesc::ShowTitleDirect()
     buf[0] = 0;
     if (DbType() == WDcddb)
         sprintf(buf, "[cell: %s]",
-            CurCellName() ? CurCellName()->string() : "<none>");
+            CurCellName() ? Tstring(CurCellName()) : "<none>");
     else if (DbType() == WDchd)
         sprintf(buf, "[chd: %s cell: %s]",
             DbName() ? DbName() : "<none>",

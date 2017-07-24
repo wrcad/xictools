@@ -584,7 +584,7 @@ sStdVia::open()
     delete [] sname;
 
     if (!sv_name)
-        sv_name = lstring::copy(cellname->string());
+        sv_name = lstring::copy(Tstring(cellname));
 
 #ifdef STV_DEBUG
     printf("new master %s\n", cellname->string());

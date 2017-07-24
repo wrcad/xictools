@@ -359,7 +359,7 @@ cDRC::dumpCurError(const char *fname)
     if (!fp)
         return (-1);
     int cnt = 0;
-    if (!printFileHeader(fp, DSP()->CurCellName()->string(),
+    if (!printFileHeader(fp, Tstring(DSP()->CurCellName()),
             DRC_UNKNOWN_AREA)) {
         Errs()->get_error();
         fclose(fp);

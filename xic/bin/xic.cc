@@ -1131,10 +1131,10 @@ xic_main::do_batch_commands()
             return;
 
         if (!args.ba_name)
-            args.ba_name = lstring::copy(DSP()->CurCellName()->string());
+            args.ba_name = lstring::copy(Tstring(DSP()->CurCellName()));
 
         if (!strcmp(c, "drc")) {
-            if (strcmp(DSP()->CurCellName()->string(), args.ba_name))
+            if (strcmp(Tstring(DSP()->CurCellName()), args.ba_name))
                 DSP()->SetCurCellName(CD()->CellNameTableAdd(args.ba_name));
             CDcbin cbin(DSP()->CurCellName());
             if (!cbin.phys()) {
@@ -1156,7 +1156,7 @@ xic_main::do_batch_commands()
                 fprintf(stderr, "Could not open file %s.\n", buf);
                 return;
             }
-            if (!DRC()->printFileHeader(fp, DSP()->CurCellName()->string(),
+            if (!DRC()->printFileHeader(fp, Tstring(DSP()->CurCellName()),
                     &args.ba_BB)) {
                 fprintf(stderr, "Error: %s\n", Errs()->get_error());
                 return;

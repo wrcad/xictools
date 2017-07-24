@@ -372,8 +372,8 @@ struct CDs : public CDdb
         {
             CDs *sd = owner();
             if (sd)
-                return (sd->sLibname->string());
-            return (sLibname->string());
+                return (Tstring(sd->sLibname));
+            return (Tstring(sLibname));
         }
 
     void setFileName(CDarchiveName fn)
@@ -401,9 +401,9 @@ struct CDs : public CDdb
         {
             if (sMasters & 1) {
                 itable_t<CDm> *tab = (itable_t<CDm>*)(sMasters & ~1);
-                return (tab ? tab->find(mname->string()) : 0);
+                return (tab ? tab->find(Tstring(mname)) : 0);
             }
-            return (CDm::findInList((CDm*)sMasters, mname->string()));
+            return (CDm::findInList((CDm*)sMasters, Tstring(mname)));
         }
 
     // Use this to invalidate all connectivity of electrical cell,

@@ -253,7 +253,7 @@ CDla::link(CDs *sdesc, CDo *odesc, CDp *pdesc)
 
         CDp_lref *prf = (CDp_lref*)prpty(P_LABRF);
         if (!prf) {
-            char *s = lstring::stpcpy(buf,  pn->name_string()->stringNN());
+            char *s = lstring::stpcpy(buf,  TstringNN(pn->name_string()));
             *s++ = ' ';
             s = mmItoA(s, pn->number());
             *s++ = ' ';

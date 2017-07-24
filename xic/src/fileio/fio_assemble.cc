@@ -491,9 +491,9 @@ ajob_t::write_stream(asource_t *src)
             if (!p)
                 ret = false;
             else {
-                const char *nn = j_alias->new_name(p->get_name()->string(),
+                const char *nn = j_alias->new_name(Tstring(p->get_name()),
                     false);
-                j_alias->set_alias(p->get_name()->string(), nn);
+                j_alias->set_alias(Tstring(p->get_name()), nn);
 
                 FIO()->ifInfoMessage(IFMSG_CNAME, "Streaming: %s from %s",
                     p->get_name(), chd->filename());

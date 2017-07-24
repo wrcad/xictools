@@ -166,7 +166,7 @@ cDRC::runDRC(const BBox *AOI, bool backg, cCHD *chd, const char *cellname,
             topcname = chd->defaultCell(Physical);
     }
     else
-        topcname = DSP()->CurCellName()->string();
+        topcname = Tstring(DSP()->CurCellName());
     if (!topcname) {
         PL()->ShowPrompt("No applicable cell name!");
         return;
@@ -622,7 +622,7 @@ cDRC::gridBatchTest(const BBox *AOI, FILE *outfp)
     char *outfile = 0;
     FILE *fp = 0;
     if (!outfp) {
-        outfile = errFilename(cursdp->cellname()->string(), 0);
+        outfile = errFilename(Tstring(cursdp->cellname()), 0);
         if (!filestat::create_bak(outfile)) {
             Errs()->add_error(
                 "gridBatchTest: can't open backup output file %s.", outfile);
@@ -644,7 +644,7 @@ cDRC::gridBatchTest(const BBox *AOI, FILE *outfp)
         PL()->ShowPrompt("Working ... ");
         eraseErrors(AOI);
     }
-    if (!printFileHeader(fp, cursdp->cellname()->string(), AOI, 0)) {
+    if (!printFileHeader(fp, Tstring(cursdp->cellname()), AOI, 0)) {
         if (fp && fp != outfp)
             fclose(fp);
         return (XIbad);
@@ -786,7 +786,7 @@ cDRC::chdGridBatchTest(cCHD *chd, const char *cellname, const BBox *AOI,
     char *outfile = 0;
     FILE *fp = 0;
     if (!outfp) {
-        outfile = errFilename(top->get_name()->string(), 0);
+        outfile = errFilename(Tstring(top->get_name()), 0);
         if (!filestat::create_bak(outfile)) {
             Errs()->add_error(
                 "chdGridBatchTest: can't open backup output file %s.",
@@ -805,7 +805,7 @@ cDRC::chdGridBatchTest(cCHD *chd, const char *cellname, const BBox *AOI,
     else
         fp = outfp;
 
-    if (!printFileHeader(fp, top->get_name()->string(), AOI, chd)) {
+    if (!printFileHeader(fp, Tstring(top->get_name()), AOI, chd)) {
         if (fp && fp != outfp)
             fclose(fp);
         return (XIbad);
@@ -1568,7 +1568,7 @@ cDRC::handle_errors(DRCerrRet *er, sPF *gen, const CDo *odesc, BBox *errBB,
         if (drc_doing_inter && !isIntrNoErrMsg()) {
             if (gen) {
                 sprintf(buf, "In instance of %s:\n",
-                    sdesc->cellname()->string());
+                    Tstring(sdesc->cellname()));
                 char *str = lstring::copy(buf);
                 str = lstring::build_str(str, s);
                 Log()->WarningLog(mh::DRCViolation, str);
@@ -1580,7 +1580,7 @@ cDRC::handle_errors(DRCerrRet *er, sPF *gen, const CDo *odesc, BBox *errBB,
         else if (fp || lstr ||
                 (XM()->RunMode() == ModeNormal && !isIntrNoErrMsg())) {
             sprintf(buf, "DRC error %d in cell %s:\n", drc_err_count,
-                sdesc->cellname()->string());
+                Tstring(sdesc->cellname()));
             char *str = lstring::copy(buf);
             str = lstring::build_str(str, s);
             if (fp)
@@ -1595,7 +1595,7 @@ cDRC::handle_errors(DRCerrRet *er, sPF *gen, const CDo *odesc, BBox *errBB,
         }
 
         if (XM()->RunMode() == ModeNormal && !drc_with_chd) {
-            sprintf(buf, "In %s: ", sdesc->cellname()->string());
+            sprintf(buf, "In %s: ", Tstring(sdesc->cellname()));
             char *str = lstring::copy(buf);
             str = lstring::build_str(str, s);
             delete [] s;

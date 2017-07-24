@@ -779,7 +779,7 @@ sPlc::pl_menu_proc(GtkWidget *caller, void*)
             if (!defname) {
                 CDc *cd = (CDc*)Selections.firstObject(CurCell(), "c");
                 if (cd)
-                    defname = cd->cellname()->string();
+                    defname = Tstring(cd->cellname());
             }
         }
         if (Plc->pl_str_editor)

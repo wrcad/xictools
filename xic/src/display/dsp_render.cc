@@ -1101,7 +1101,7 @@ WindowDesc::show_unexpanded_instance(const CDc *cdesc)
             }
         }
         if (!mname)
-            mname = cdesc->cellname()->string();
+            mname = Tstring(cdesc->cellname());
         while (*mname && *mname != '>')
             *s++ = *mname++;
         *s = 0;

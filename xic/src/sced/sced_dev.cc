@@ -229,7 +229,7 @@ cSced::saveAsDev(const char *name, bool tofile)
 
     bool wok = true;
     CDcbin cbin;
-    if (OIfailed(CD()->OpenExisting(cname->string(), &cbin))) {
+    if (OIfailed(CD()->OpenExisting(Tstring(cname), &cbin))) {
         Errs()->add_error("Huh?  The cell disappeared, this can' happen!");
         wok = false;
     }

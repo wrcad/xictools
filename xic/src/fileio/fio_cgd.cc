@@ -1352,7 +1352,7 @@ cCGD::load_cells(cCHD *chd, stringlist *cellnames, double scale,
             bool ret = in->chd_read_cell(p, false);
             if (!ret) {
                 Errs()->add_error("cCGD::load_cells: cell %s read failed.",
-                    p->get_name()->string());
+                    Tstring(p->get_name()));
                 ok = false;
                 break;
             }

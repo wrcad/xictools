@@ -889,7 +889,7 @@ drc_funcs::IFdrcCheckArea(Variable *res, Variable *args, void*)
         }
     }
     else if (!fname) {
-        outfile = DRC()->errFilename(sd->cellname()->string(), 0);
+        outfile = DRC()->errFilename(Tstring(sd->cellname()), 0);
         if (!filestat::create_bak(outfile)) {
             Errs()->add_error("can't open backup output file %s.",
                 outfile);
@@ -915,7 +915,7 @@ drc_funcs::IFdrcCheckArea(Variable *res, Variable *args, void*)
         }
     }
     if (fp) {
-        if (!DRC()->printFileHeader(fp, sd->cellname()->string(),
+        if (!DRC()->printFileHeader(fp, Tstring(sd->cellname()),
                 vals ? &AOI : 0))
             return (OK);
     }

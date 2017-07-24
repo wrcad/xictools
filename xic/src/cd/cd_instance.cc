@@ -324,9 +324,9 @@ CDc::elecCellType(const char **nret)
             bf[1] = 0;
             pa->set_name_string(bf);
         }
-        int key = *pa->name_string()->string();
+        int key = *Tstring(pa->name_string());
         if (nret)
-            *nret = pa->name_string()->string();
+            *nret = Tstring(pa->name_string());
 
         if (pa->is_subckt()) {
             // If set, this is a subcircuit, not from the device
@@ -389,7 +389,7 @@ CDc::elecCellType(const char **nret)
             CDelecCellTypeName ninst(etype);
             printf(
                 "WARNING: master and instance of %s have different cell\n"
-                "types \"%s\" and \"%s\".\n",  sd->cellname()->string(),
+                "types \"%s\" and \"%s\".\n",  Tstring(sd->cellname()),
                 ncell.name(), ninst.name());
         }
     }
@@ -408,7 +408,7 @@ CDc::getBaseName(const CDp_name *pn) const
     CDs *sd = masterCell(true);
     if (sd && !sd->isElectrical()) {
         // Phyical instance, return cell name.
-        return (cellname()->string());
+        return (Tstring(cellname()));
     }
     if (!pn)
         pn = (CDp_name*)prpty(P_NAME);
@@ -418,7 +418,7 @@ CDc::getBaseName(const CDp_name *pn) const
 
         if (pn->name_string()) {
             char buf[256];
-            char *s = lstring::stpcpy(buf, pn->name_string()->string());
+            char *s = lstring::stpcpy(buf, Tstring(pn->name_string()));
             s = mmItoA(s, pn->number());
             if (!nameOK(buf)) {
                 // there is a clash
@@ -429,7 +429,7 @@ CDc::getBaseName(const CDp_name *pn) const
                         break;
                 }
             }
-            return (CD()->InstNameTableAdd(buf)->string());
+            return (Tstring(CD()->InstNameTableAdd(buf)));
         }
     }
     return ("_UNKNOWN_");
@@ -446,7 +446,7 @@ CDc::getInstName(unsigned int ix) const
     CDs *sd = masterCell(true);
     if (sd && !sd->isElectrical()) {
         // Phyical instance, return cell name.
-        return (lstring::copy(cellname()->string()));
+        return (lstring::copy(Tstring(cellname())));
     }
     CDp_range *pr = (CDp_range*)prpty(P_RANGE);
     char buf[256];
@@ -457,7 +457,7 @@ CDc::getInstName(unsigned int ix) const
         strcpy(buf, pn->assigned_name());
     }
     else if (pn && pn->name_string()) {
-        char *s = lstring::stpcpy(buf, pn->name_string()->string());
+        char *s = lstring::stpcpy(buf, Tstring(pn->name_string()));
         s = mmItoA(s, pn->number());
         if (!nameOK(buf)) {
             // there is a clash
@@ -995,7 +995,7 @@ CDc::updateTermNames()
             if (!pr) {
                 sLstr lstr;
                 lstr.add(basename);
-                lstr.add(ps ? ps->term_name()->string() : "?");
+                lstr.add(ps ? Tstring(ps->term_name()) : "?");
                 pn->set_term_name(lstr.string());
                 break;
             }
@@ -1005,7 +1005,7 @@ CDc::updateTermNames()
                 lstr.add_c(cTnameTab::subscr_open());
                 lstr.add_i(n);
                 lstr.add_c(cTnameTab::subscr_close());
-                lstr.add(ps ? ps->term_name()->string() : "?");
+                lstr.add(ps ? Tstring(ps->term_name()) : "?");
                 pn->set_term_name(lstr.string());
             }
             else {
@@ -1017,7 +1017,7 @@ CDc::updateTermNames()
                 lstr.add_c(cTnameTab::subscr_open());
                 lstr.add_i(n);
                 lstr.add_c(cTnameTab::subscr_close());
-                lstr.add(ps ? ps->term_name()->string() : "?");
+                lstr.add(ps ? Tstring(ps->term_name()) : "?");
                 px->set_term_name(lstr.string());
             }
             cnt++;
@@ -1034,7 +1034,7 @@ CDc::updateTermNames()
         if (!pr) {
             sLstr lstr;
             lstr.add(basename);
-            lstr.add(ps ? ps->term_name()->string() : "?");
+            lstr.add(ps ? Tstring(ps->term_name()) : "?");
             pb->set_term_name(lstr.string());
             break;
         }
@@ -1046,7 +1046,7 @@ CDc::updateTermNames()
             lstr.add_c(':');
             lstr.add_i(pr->end_range());
             lstr.add_c(cTnameTab::subscr_close());
-            lstr.add(ps ? ps->term_name()->string() : "?");
+            lstr.add(ps ? Tstring(ps->term_name()) : "?");
             pb->set_term_name(lstr.string());
         }
     }
@@ -1144,8 +1144,8 @@ namespace {
     //
     bool instcmp(const CDc *c1, const CDc *c2)
     {
-        const char *s1 = c1->cellname()->string();
-        const char *s2 = c2->cellname()->string();
+        const char *s1 = Tstring(c1->cellname());
+        const char *s2 = Tstring(c2->cellname());
         if (s1 == s2) {
             const BBox &b1 = c1->oBB();
             const BBox &b2 = c2->oBB();

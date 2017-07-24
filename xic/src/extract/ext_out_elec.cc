@@ -185,7 +185,7 @@ cExt::dump_elec(FILE *fp, CDs *sdesc, int, sDumpOpts *opts, SymTab*,
     if (opts->isset(opt_atom_net)) {
         fprintf(fp, "############  %s\n", XM()->IdString());
         fprintf(fp, "Electrical netlist of cell %s\n",
-            sdesc->cellname()->string());
+            Tstring(sdesc->cellname()));
         sElecNetList *eterms = new sElecNetList(sdesc);
         if (!eterms) {
             fprintf(fp, "No electrical nets found.\n\n");
@@ -205,9 +205,9 @@ cExt::dump_elec(FILE *fp, CDs *sdesc, int, sDumpOpts *opts, SymTab*,
                 }
 
                 for (CDpin *p = eterms->pins_of_node(i); p; p = p->next())
-                    fprintf(fp, "\t%s\n", p->term()->name()->string());
+                    fprintf(fp, "\t%s\n", Tstring(p->term()->name()));
                 for (CDcont *t = eterms->conts_of_node(i); t; t = t->next())
-                    fprintf(fp, "\t%s\n", t->term()->name()->string());
+                    fprintf(fp, "\t%s\n", Tstring(t->term()->name()));
             }
         }
         delete eterms;
@@ -216,7 +216,7 @@ cExt::dump_elec(FILE *fp, CDs *sdesc, int, sDumpOpts *opts, SymTab*,
     if (opts->isset(opt_atom_spice)) {
         sp_line_t *d0;
         d0 = sptab ?
-            (sp_line_t*)SymTab::get(sptab, sdesc->cellname()->string()) : 0;
+            (sp_line_t*)SymTab::get(sptab, Tstring(sdesc->cellname())) : 0;
         if (d0 == (sp_line_t*)ST_NIL)
             d0 = 0;
         pr_line(fp, d0);

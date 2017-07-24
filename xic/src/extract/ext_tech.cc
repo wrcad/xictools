@@ -136,7 +136,7 @@ cExt::parseDevice(FILE *fp, bool initialize)
     if (errm) {
         delete d;
         Log()->WarningLogV(mh::Techfile, "%s %s: failed to add device.\n%s",
-            Ekw.Device(), d->name()->stringNN(), errm);
+            Ekw.Device(), TstringNN(d->name()), errm);
         delete [] errm;
         return (false);
     }
@@ -223,7 +223,7 @@ cExt::addMOS(const sMOSdev *m)
     if (nogo) {
         Log()->WarningLogV(mh::Techfile,
             "Device %s block ignored due to errors.\n",
-            d->name () ? d->name()->stringNN() : "");
+            d->name () ? TstringNN(d->name()) : "");
         delete d;
         return;
     }
@@ -233,7 +233,7 @@ cExt::addMOS(const sMOSdev *m)
     if (errm) {
         delete d;
         Log()->WarningLogV(mh::Techfile, "%s %s: failed to add device.\n%s",
-            Ekw.Device(), d->name()->stringNN(), errm);
+            Ekw.Device(), TstringNN(d->name()), errm);
         delete [] errm;
         return;
     }
@@ -368,7 +368,7 @@ sDevDesc::parse_device(FILE *fp, bool initialize)
             }
             char *e = Tech()->SaveError(
                 "Unknown keyword %s in Device %s block.\n",
-                Tech()->KwBuf(), name()->stringNN());
+                Tech()->KwBuf(), TstringNN(name()));
             Log()->WarningLogV(mh::Techfile, "%s\n", e);
             delete [] e;
             continue;
@@ -385,8 +385,7 @@ sDevDesc::parse_device(FILE *fp, bool initialize)
     }
     if (nogo) {
         Log()->WarningLogV(mh::Techfile,
-            "Device %s block ignored due to errors.\n",
-            name () ? name()->stringNN() : "");
+            "Device %s block ignored due to errors.\n", TstringNN(name()));
     }
     return (!nogo);
 }
@@ -499,7 +498,7 @@ sDevDesc::parse_device_line()
         d_prefix = lstring::gettok(&line);
         if (!d_prefix) {
             return (Tech()->SaveError("Device %s %s: missing prefix.",
-                name()->stringNN(), Ekw.Prefix()));
+                TstringNN(name()), Ekw.Prefix()));
         }
         return (TCmatch);
     }
@@ -507,7 +506,7 @@ sDevDesc::parse_device_line()
         // Body <expression>
         if (!d_body.parseExpr(&line)) {
             return (Tech()->SaveError("Device %s %s: parse error.\n%s",
-                name()->stringNN(), Ekw.Body(), Errs()->get_error()));
+                TstringNN(name()), Ekw.Body(), Errs()->get_error()));
         }
         return (TCmatch);
     }
@@ -526,7 +525,7 @@ sDevDesc::parse_device_line()
         }
         else {
             return (Tech()->SaveError("Device %s %s: missing value.",
-                name()->stringNN(), Ekw.Find()));
+                TstringNN(name()), Ekw.Find()));
         }
         return (TCmatch);
     }
@@ -535,7 +534,7 @@ sDevDesc::parse_device_line()
         char *errm = sDevContactDesc::parse_contact(&line, this);
         if (errm) {
             char *e = Tech()->SaveError("Device %s %s: parse error.\n%s",
-                name()->stringNN(), Ekw.Contact(), errm);
+                TstringNN(name()), Ekw.Contact(), errm);
             delete [] errm;
             return (e);
         }
@@ -547,7 +546,7 @@ sDevDesc::parse_device_line()
         char *errm = sDevContactDesc::parse_bulk_contact(&line, this);
         if (errm) {
             char *e = Tech()->SaveError("Device %s %s: parse error.\n%s",
-                name()->stringNN(), Ekw.BulkContact(), errm);
+                TstringNN(name()), Ekw.BulkContact(), errm);
             delete [] errm;
             return (e);
         }
@@ -557,7 +556,7 @@ sDevDesc::parse_device_line()
         // Permute name1 name2
         if (d_prmconts) {
             return (Tech()->SaveError("Device %s %s: permutes already given.",
-                name()->stringNN(), Ekw.Permute()));
+                TstringNN(name()), Ekw.Permute()));
         }
         else {
             stringlist *pend = 0;
@@ -576,7 +575,7 @@ sDevDesc::parse_device_line()
                 d_prmconts = 0;
                 return (Tech()->SaveError("Device %s %s: syntax error, "
                     "exactly two args required.",
-                    name()->stringNN(), Ekw.Permute()));
+                    TstringNN(name()), Ekw.Permute()));
             }
         }
         return (TCmatch);
@@ -593,7 +592,7 @@ sDevDesc::parse_device_line()
         else {
             return (Tech()->SaveError("Device %s %s: parse error, "
                 "expecting integer or 'a'.",
-                name()->stringNN(), Ekw.Depth()));
+                TstringNN(name()), Ekw.Depth()));
         }
         return (TCmatch);
     }
@@ -604,7 +603,7 @@ sDevDesc::parse_device_line()
         else {
             return (Tech()->SaveError("Device %s %s: parse error, "
                 "expecting real value.",
-                name()->stringNN(), Ekw.Bloat()));
+                TstringNN(name()), Ekw.Bloat()));
         }
         return (TCmatch);
     }
@@ -620,7 +619,7 @@ sDevDesc::parse_device_line()
         else {
             return (Tech()->SaveError("Device %s %s: parse error, "
                 "unknown token.",
-                name()->stringNN(), Ekw.Merge()));
+                TstringNN(name()), Ekw.Merge()));
         }
         delete [] tok;
         return (TCmatch);
@@ -628,7 +627,7 @@ sDevDesc::parse_device_line()
     if (Tech()->Matching(Ekw.Measure())) {
         if (!parse_measure(line)) {
             return (Tech()->SaveError("Device %s %s: parse error.",
-                name()->stringNN(), Ekw.Measure()));
+                TstringNN(name()), Ekw.Measure()));
         }
         return (TCmatch);
     }
@@ -641,7 +640,7 @@ sDevDesc::parse_device_line()
             if (!set_lvs_word(tok, word)) {
                 char *e = Tech()->SaveError("Device %s %s: measure %s "
                     "not found.",
-                    name()->stringNN(), Ekw.LVS(), tok);
+                    TstringNN(name()), Ekw.LVS(), tok);
                 delete [] tok;
                 return (e);
             }
@@ -649,7 +648,7 @@ sDevDesc::parse_device_line()
         }
         else {
             return (Tech()->SaveError("Device %s %s: missing token.",
-                name()->stringNN(), Ekw.LVS()));
+                TstringNN(name()), Ekw.LVS()));
         }
         return (TCmatch);
     }
@@ -742,7 +741,7 @@ sDevDesc::finalize_device(bool initialize)
         if (!init()) {
             Log()->WarningLogV(mh::Techfile,
                 "Initialization failed for Device %s block.\n%s\n",
-                name()->stringNN(), Errs()->get_error());
+                TstringNN(name()), Errs()->get_error());
             nogo = true;
         }
     }
@@ -759,12 +758,12 @@ sDevDesc::finalize_device(bool initialize)
     if (d_flags & EXT_DEV_MOS) {
         if (!(d_flags & EXT_DEV_PTYPE) && !(d_flags & EXT_DEV_NTYPE_GIVEN) &&
                 d_name) {
-            if (*d_name->string() == 'p' || *d_name->string() == 'P')
+            if (*Tstring(d_name) == 'p' || *Tstring(d_name) == 'P')
                 d_flags |= EXT_DEV_PTYPE;
         }
 
         // Register the MOS device in the Antenna Params database.
-        AP()->set_mos_name(d_name->string());
+        AP()->set_mos_name(Tstring(d_name));
     }
 
     if (!nogo && merge_series()) {
@@ -786,36 +785,36 @@ sDevDesc::print(FILE *techfp)
 {
     fprintf(techfp, "%s\n", Ekw.Device());
     Tech()->CommentDump(techfp, 0, tBlkDev, 0, Ekw.Device());
-    fprintf(techfp, "%s %s\n", Ekw.Name(), name()->stringNN());
-    Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(), Ekw.Name());
+    fprintf(techfp, "%s %s\n", Ekw.Name(), TstringNN(name()));
+    Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()), Ekw.Name());
     if (d_prefix)
         fprintf(techfp, "%s %s\n", Ekw.Prefix(), d_prefix);
-    Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(), Ekw.Prefix());
+    Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()), Ekw.Prefix());
     fprintf(techfp, "%s ", Ekw.Body());
     d_body.print(techfp);
     fprintf(techfp, "\n");
-    Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(), Ekw.Body());
+    Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()), Ekw.Body());
     for (stringlist *f = d_finds; f; f = f->next) {
         fprintf(techfp, "%s %s\n", Ekw.Find(), f->string);
-        Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(), Ekw.Find());
+        Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()), Ekw.Find());
     }
     if (overlap_conts())
         fprintf(techfp, "%s\n", Ekw.ContactsOverlap());
-    Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(),
+    Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()),
         Ekw.ContactsOverlap());
     for (sDevContactDesc *c = d_contacts; c; c = c->next()) {
         if (c->is_bulk()) {
-            fprintf(techfp, "%s %s", Ekw.BulkContact(), c->name()->stringNN());
+            fprintf(techfp, "%s %s", Ekw.BulkContact(), TstringNN(c->name()));
             if (c->level() == BC_defer) {
                 char *expr = c->lspec()->string();
                 fprintf(techfp, " %s %s %g %s %s\n", Ekw.defer(),
-                    c->netname()->stringNN(), c->bulk_bloat(), c->lname(),
+                    TstringNN(c->netname()), c->bulk_bloat(), c->lname(),
                     expr);
                 delete [] expr;
             }
             else if (c->level() == BC_skip) {
                 fprintf(techfp, " %s %s\n", Ekw.skip(),
-                    c->netname()->stringNN());
+                    TstringNN(c->netname()));
             }
             else {
                 char *expr = c->lspec()->string();
@@ -825,14 +824,14 @@ sDevDesc::print(FILE *techfp)
             }
         }
         else {
-            fprintf(techfp, "%s %s %s ", Ekw.Contact(), c->name()->stringNN(),
+            fprintf(techfp, "%s %s %s ", Ekw.Contact(), TstringNN(c->name()),
                 c->lname());
             c->lspec()->print(techfp);
             if (c->multiple())
                 fprintf(techfp, " ...\n");
             else
                 fprintf(techfp, "\n");
-            Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(),
+            Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()),
                 Ekw.Contact());
         }
     }
@@ -842,13 +841,13 @@ sDevDesc::print(FILE *techfp)
             fprintf(techfp, " %s", l->string);
         fprintf(techfp, "\n");
     }
-    Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(), Ekw.Permute());
+    Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()), Ekw.Permute());
     if (d_depth != 0)
         fprintf(techfp, "%s %d\n", Ekw.Depth(), d_depth);
-    Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(), Ekw.Depth());
+    Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()), Ekw.Depth());
     if (d_bloat != 0.0)
         fprintf(techfp, "%s %g\n", Ekw.Bloat(), d_bloat);
-    Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(), Ekw.Bloat());
+    Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()), Ekw.Bloat());
     if (merge_parallel() || merge_series()) {
         if (merge_parallel() && merge_series())
             fprintf(techfp, "%s S\n", Ekw.Merge());
@@ -857,35 +856,35 @@ sDevDesc::print(FILE *techfp)
         else
             fprintf(techfp, "%s\n", Ekw.Merge());
     }
-    Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(), Ekw.Merge());
+    Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()), Ekw.Merge());
     for (sMeasure *m = d_measures; m; m = m->next()) {
         m->print(techfp);
-        Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(),
+        Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()),
             Ekw.Measure());
     }
     for (sMeasure *m = d_measures; m; m = m->next()) {
         if (m->lvsword())
             fprintf(techfp, "%s %s %s\n", Ekw.LVS(), m->name(), m->lvsword());
-        Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(), Ekw.LVS());
+        Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()), Ekw.LVS());
     }
     if (d_netline)
         fprintf(techfp, "%s %s\n", Ekw.Spice(), d_netline);
-    Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(), Ekw.Spice());
+    Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()), Ekw.Spice());
     if (d_netline1)
         fprintf(techfp, "%s %s\n", Ekw.Cmput(), d_netline1);
-    Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(), Ekw.Cmput());
+    Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()), Ekw.Cmput());
     if (d_model)
         fprintf(techfp, "%s %s\n", Ekw.Model(), d_model);
-    Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(), Ekw.Model());
+    Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()), Ekw.Model());
     if (d_value)
         fprintf(techfp, "%s %s\n", Ekw.Value(), d_value);
-    Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(), Ekw.Value());
+    Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()), Ekw.Value());
     if (d_param)
         fprintf(techfp, "%s %s\n", Ekw.Param(), d_param);
-    Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(), Ekw.Param());
-    Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(), Ekw.Initc());
+    Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()), Ekw.Param());
+    Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()), Ekw.Initc());
     fprintf(techfp, "%s\n", Ekw.End());
-    Tech()->CommentDump(techfp, 0, tBlkDev, name()->stringNN(), Ekw.End());
+    Tech()->CommentDump(techfp, 0, tBlkDev, TstringNN(name()), Ekw.End());
     fprintf(techfp, "\n");
 }
 

@@ -468,8 +468,8 @@ sCHDout::init_tables()
                 symref_t *cp = tab->find_symref(c->srfptr);
                 Errs()->add_error(
                     "init_tables: instance of %s in %s, bad ticket.",
-                    cp ? cp->get_name()->string() : "UNRESOLVED",
-                    p->get_name()->string());
+                    cp ? Tstring(cp->get_name()) : "UNRESOLVED",
+                    Tstring(p->get_name()));
                 return (false);
             }
         }
@@ -489,9 +489,9 @@ sCHDout::name_index(CDcellName name)
 {
     if (!co_nmtab)
         co_nmtab = new SymTab(false, false);
-    void *ret = SymTab::get(co_nmtab, name->string());
+    void *ret = SymTab::get(co_nmtab, Tstring(name));
     if (ret == ST_NIL) {
-        co_nmtab->add(name->string(), (void*)(long)co_nmidx, false);
+        co_nmtab->add(Tstring(name), (void*)(long)co_nmidx, false);
         co_nmidx++;
         return (co_nmidx - 1);
     }

@@ -593,7 +593,7 @@ cEdit::addMaster(const char *mnamein, const char *cname, cCHD *chd)
 
         // Note that mname is the file name for gds/cif, we want the
         // actual cell name.
-        plAddMenuEnt(cbin.cellname()->string());
+        plAddMenuEnt(Tstring(cbin.cellname()));
         setCurrentMaster(0);
     }
 }
@@ -783,13 +783,13 @@ cEdit::replaceInstance(CDc *cdesc, CDcbin *newcbin, bool add_cur_xform,
     CDs *sdesc = cdesc->parent();
     if (!sdesc) {
         Errs()->add_error("Internal: %s not resolved to parent.",
-            cdesc->cellname() ? cdesc->cellname()->string() : "??");
+            cdesc->cellname() ? Tstring(cdesc->cellname()) : "??");
         return (false);
     }
     CDs *msdesc = cdesc->masterCell(true);
     if (!msdesc) {
         Errs()->add_error("Internal: %s not resolved to master.",
-            cdesc->cellname() ? cdesc->cellname()->string() : "??");
+            cdesc->cellname() ? Tstring(cdesc->cellname()) : "??");
         return (false);
     }
 

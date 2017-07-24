@@ -685,7 +685,7 @@ SelState::key(int code, const char *text, int)
             pathfinder *pf = EX()->pathFinder(cExt::PFget);
             if (pf) {
                 char buf[256];
-                sprintf(buf, "%s_grp_%s", DSP()->CurCellName()->string(),
+                sprintf(buf, "%s_grp_%s", Tstring(DSP()->CurCellName()),
                     pf->pathname());
 
                 char *in = PL()->EditPrompt("Native cell file name? ", buf);

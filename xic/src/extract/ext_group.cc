@@ -179,7 +179,7 @@ cExt::group(CDs *sdesc, int depth)
     gd->set_top_level(false);
 
     ExtErrLog.add_log(ExtLogGrp, "Grouping %s complete, %s.",
-        sdesc->cellname()->string(),
+        Tstring(sdesc->cellname()),
         ret == XIok ? "no errors" : "error(s) encountered");
     ExtErrLog.end_logging();
 
@@ -188,7 +188,7 @@ cExt::group(CDs *sdesc, int depth)
     if (ret == XIok) {
         if (EX()->isVerbosePromptline())
             PL()->ShowPromptV("Grouping complete in %s.",
-                sdesc->cellname()->string());
+                Tstring(sdesc->cellname()));
     }
     else
         PL()->ShowPrompt("Grouping aborted.");
@@ -315,7 +315,7 @@ cExt::group_rec(CDs *sdesc, int depth, SymTab *tab)
         if (ret == XIok) {
             if (EX()->isVerbosePromptline())
                 PL()->ShowPromptV("Grouping complete in %s.",
-                    sdesc->cellname()->string());
+                    Tstring(sdesc->cellname()));
         }
         else
             PL()->ShowPrompt("Grouping aborted.");
@@ -439,7 +439,7 @@ cGroupDesc::intersect_phony(BBox *AOI)
 void
 cGroupDesc::dump(FILE *fp)
 {
-    fprintf(fp, "Cell %s summary\n", gd_celldesc->cellname()->string());
+    fprintf(fp, "Cell %s summary\n", Tstring(gd_celldesc->cellname()));
     fprintf(fp, "Allocated groups: %d\n", gd_asize);
 
     fprintf(fp, "Grouping temporary objects:\n");
@@ -495,7 +495,7 @@ cGroupDesc::dump(FILE *fp)
             }
             if (cnt) {
                 fprintf(fp, "  %-16s %-5d copies %-5d\n",
-                    s->subs()->cdesc()->cellname()->string(),
+                    Tstring(s->subs()->cdesc()->cellname()),
                     cnt, cpycnt);
             }
         }
@@ -514,7 +514,7 @@ cGroupDesc::dump(FILE *fp)
                 for (sDevInst *di = p->devs(); di; di = di->next())
                     cnt++;
                 fprintf(fp, "  %-16s prefix %-6s %d\n",
-                    p->devs()->desc()->name()->stringNN(),
+                    TstringNN(p->devs()->desc()->name()),
                     p->devs()->desc()->prefix(), cnt);
             }
         }
@@ -538,7 +538,7 @@ cGroupDesc::dump(FILE *fp)
             CDc_gen cgen(m);
             for (CDc *c = cgen.c_first(); c; c = cgen.c_next())
                 cnt++;
-            fprintf(fp, "  %-16s %d\n", m->celldesc()->cellname()->string(),
+            fprintf(fp, "  %-16s %d\n", Tstring(m->celldesc()->cellname()),
                 cnt);
         }
     }
@@ -844,7 +844,7 @@ cGroupDesc::group_objects()
         FILE *fp = ExtErrLog.log_fp();
         fprintf(fp,
             "\n=======================================================\n");
-        fprintf(fp, "Grouping cell %s\n", gd_celldesc->cellname()->string());
+        fprintf(fp, "Grouping cell %s\n", Tstring(gd_celldesc->cellname()));
     }
 
     // Group objects on layers top-down.
@@ -1127,7 +1127,7 @@ cGroupDesc::reduce(int n1, int n2)
     if (oldn >= gd_asize || newn >= gd_asize) {
         ExtErrLog.add_err(
             "In %s, reduce: group index out of range, %d %d %d.",
-            gd_celldesc->cellname()->string(), oldn, newn, gd_asize);
+            Tstring(gd_celldesc->cellname()), oldn, newn, gd_asize);
         return;
     }
 
@@ -1404,7 +1404,7 @@ void
 sGroup::dump(FILE *fp)
 {
     if (g_netname) {
-        fprintf(fp, "  Name: %s", g_netname->string());
+        fprintf(fp, "  Name: %s", Tstring(g_netname));
         const char *f = "associated node";
         if (g_nn_origin == NameFromLabel)
             f = "label";
@@ -1441,7 +1441,7 @@ sGroup::dump(FILE *fp)
             putc('s', fp);
         putc(':', fp);
         for (CDpin *t = g_termlist; t; t = t->next())
-            fprintf(fp, " %s", t->term()->name()->string());
+            fprintf(fp, " %s", Tstring(t->term()->name()));
         putc('\n', fp);
     }
     int ndc = 0;

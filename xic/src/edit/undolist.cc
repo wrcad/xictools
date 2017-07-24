@@ -514,7 +514,7 @@ namespace {
             break;
         case CDINSTANCE:
             fprintf(fp, "C %s %d,%d %d,%d\n",
-                OCALL(od)->cellname()->string(),
+                Tstring(OCALL(od)->cellname()),
                 od->oBB().left, od->oBB().bottom,
                 od->oBB().right, od->oBB().top);
             break;
@@ -934,15 +934,15 @@ cUndoList::RecordObjectChange(CDs *sdesc, CDo *olddesc, CDo *newdesc)
         if (olddesc)
             fprintf(DBG_FP, "ROC %c %s delete %c %s\n",
                 sdesc->isElectrical() ? 'E' : 'P',
-                sdesc->cellname()->string(),
+                Tstring(sdesc->cellname()),
                 olddesc->type(), olddesc->type() == CDINSTANCE ?
-                    OCALL(olddesc)->cellname()->string() : "");
+                    Tstring(OCALL(olddesc)->cellname()) : "");
         if (newdesc)
             fprintf(DBG_FP, "ROC %c %s add %c %s\n",
                 sdesc->isElectrical() ? 'E' : 'P',
-                sdesc->cellname()->string(),
+                Tstring(sdesc->cellname()),
                 newdesc->type(), newdesc->type() == CDINSTANCE ?
-                    OCALL(newdesc)->cellname()->string() : "");
+                    Tstring(OCALL(newdesc)->cellname()) : "");
         fprintf(DBG_FP, "---\n");
     }
 

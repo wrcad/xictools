@@ -2502,7 +2502,7 @@ cPromptEdit::button1_handler(bool up)
         // Returned a cell name, enter as plain text.
         if (ent->odesc() && ent->odesc()->type() == CDINSTANCE) {
             CDc *cd = (CDc*)ent->odesc();
-            insert(cd->cellname()->string());
+            insert(Tstring(cd->cellname()));
         }
         delete [] string;
         delete ent;

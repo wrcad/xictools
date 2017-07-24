@@ -1529,7 +1529,7 @@ bool
 misc1_funcs::IFcurCellName(Variable *res, Variable*, void*)
 {
     res->type = TYP_STRING;
-    res->content.string = lstring::copy(DSP()->CurCellName()->string());
+    res->content.string = lstring::copy(Tstring(DSP()->CurCellName()));
     if (res->content.string)
         res->flags |= VF_ORIGINAL;
     return (OK);
@@ -1546,7 +1546,7 @@ bool
 misc1_funcs::IFtopCellName(Variable *res, Variable*, void*)
 {
     res->type = TYP_STRING;
-    res->content.string = lstring::copy(DSP()->TopCellName()->string());
+    res->content.string = lstring::copy(Tstring(DSP()->TopCellName()));
     if (res->content.string)
         res->flags |= VF_ORIGINAL;
     return (OK);
@@ -1569,9 +1569,8 @@ misc1_funcs::IFfileName(Variable *res, Variable*, void*)
         if (cbin.fileType() == Fnative) {
             if (cbin.fileName()) {
                 char *s = new char[strlen(cbin.fileName()) +
-                    strlen(cbin.cellname()->string()) + 2];
-                sprintf(s, "%s/%s", cbin.fileName(),
-                    cbin.cellname()->string());
+                    strlen(Tstring(cbin.cellname())) + 2];
+                sprintf(s, "%s/%s", cbin.fileName(), Tstring(cbin.cellname()));
                 res->content.string = s;
             }
         }
@@ -1785,7 +1784,7 @@ misc1_funcs::IFupdateNative(Variable *res, Variable *args, void*)
     if (DSP()->CurCellName()) {
         CDcbin cbin(DSP()->CurCellName());
         if (cbin.isModified()) {
-            sprintf(buf, "%s/%s", dir, cbin.cellname()->string());
+            sprintf(buf, "%s/%s", dir, Tstring(cbin.cellname()));
             if (!FIO()->WriteNative(&cbin, buf))
                 return (BAD);
             ccnt++;
@@ -1796,7 +1795,7 @@ misc1_funcs::IFupdateNative(Variable *res, Variable *args, void*)
         CDcbin tcbin;
         while (sgen.next(&tcbin, &err)) {
             if (tcbin.isModified()) {
-                sprintf(buf, "%s/%s", dir, tcbin.cellname()->string());
+                sprintf(buf, "%s/%s", dir, Tstring(tcbin.cellname()));
                 if (!FIO()->WriteNative(&tcbin, buf))
                     return (BAD);
                 ccnt++;
@@ -2024,9 +2023,9 @@ namespace {
                     l = l->next;
             }
         }
-        if (t->add(sdesc->cellname()->string(), 0, true)) {
+        if (t->add(Tstring(sdesc->cellname()), 0, true)) {
             stringlist *lx = new stringlist(
-                lstring::copy(sdesc->cellname()->string()), 0);
+                lstring::copy(Tstring(sdesc->cellname())), 0);
             if (!l)
                 l = l0 = lx;
             else
@@ -2073,7 +2072,7 @@ namespace {
             CDm_gen mgen(sdesc, GEN_MASTERS);
             for (CDm *m = mgen.m_first(); m; m = mgen.m_next()) {
                 l0 = new stringlist(
-                    lstring::copy(m->cellname()->string()), l0);
+                    lstring::copy(Tstring(m->cellname())), l0);
                 l0 = setgen(m->celldesc(), l0, depth - 1);
             }
         }
@@ -2265,7 +2264,7 @@ misc1_funcs::IFisFileInMem(Variable *res, Variable *args, void*)
         if (!cbin.fileName())
             continue;
         if (cbin.fileType() == Fnative) {
-            if (!strcmp(fsp, cbin.cellname()->string())) {
+            if (!strcmp(fsp, Tstring(cbin.cellname()))) {
                 if (lstring::is_rooted(fname) && fsp > fname+1) {
                     if (!strncmp(fname, cbin.fileName(), fsp - fname - 1)) {
                         res->content.value = 1.0;
@@ -2364,7 +2363,7 @@ misc1_funcs::IFlistCellsInMem(Variable *res, Variable *args, void*)
                 // don't list library devices
                 continue;
         }
-        s0 = new stringlist(lstring::copy(cbin.cellname()->string()), s0);
+        s0 = new stringlist(lstring::copy(Tstring(cbin.cellname())), s0);
     }
     if (s0) {
         stringlist::sort(s0);
@@ -2396,7 +2395,7 @@ misc1_funcs::IFlistTopCellsInMem(Variable *res, Variable*, void*)
             continue;
         if (cbin.isSubcell())
             continue;
-        s0 = new stringlist(lstring::copy(cbin.cellname()->string()), s0);
+        s0 = new stringlist(lstring::copy(Tstring(cbin.cellname())), s0);
     }
     if (s0) {
         stringlist::sort(s0);
@@ -2431,7 +2430,7 @@ misc1_funcs::IFlistModCellsInMem(Variable *res, Variable*, void*)
             continue;
         if (!cbin.isModified())
             continue;
-        s0 = new stringlist(lstring::copy(cbin.cellname()->string()), s0);
+        s0 = new stringlist(lstring::copy(Tstring(cbin.cellname())), s0);
     }
     if (s0) {
         stringlist::sort(s0);
@@ -2469,9 +2468,8 @@ misc1_funcs::IFlistTopFilesInMem(Variable *res, Variable*, void*)
             continue;
         if (cbin.fileType() == Fnative) {
             char *s = new char[strlen(cbin.fileName()) +
-                strlen(cbin.cellname()->string()) + 2];
-            sprintf(s, "%s/%s", cbin.fileName(),
-                cbin.cellname()->string());
+                strlen(Tstring(cbin.cellname())) + 2];
+            sprintf(s, "%s/%s", cbin.fileName(), Tstring(cbin.cellname()));
             s0 = new stringlist(s, s0);
         }
         else if (FIO()->IsSupportedArchiveFormat(cbin.fileType())) {
@@ -3133,7 +3131,7 @@ misc1_funcs::IFdumpMarks(Variable *res, Variable *args, void*)
         return (OK);
     char buf[256];
     if (!fname || !*fname) {
-        sprintf(buf, "%s.%s.marks", sd->cellname()->string(),
+        sprintf(buf, "%s.%s.marks", Tstring(sd->cellname()),
             sd->isElectrical() ? "elec" : "phys");
         fname = buf;
     }
@@ -3166,7 +3164,7 @@ misc1_funcs::IFreadMarks(Variable *res, Variable *args, void*)
         return (OK);
     char buf[256];
     if (!fname || !*fname) {
-        sprintf(buf, "%s.%s.marks", sd->cellname()->string(),
+        sprintf(buf, "%s.%s.marks", Tstring(sd->cellname()),
             sd->isElectrical() ? "elec" : "phys");
         fname = buf;
     }

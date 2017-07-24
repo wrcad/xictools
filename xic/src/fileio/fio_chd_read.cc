@@ -302,7 +302,7 @@ sCHDin::map(ticket_t *ptkt)
     }
     symref_t *p = ci_nametab->get(n);
     if (!p) {
-        ci_nametab->new_symref(n->string(), ci_mode, &p);
+        ci_nametab->new_symref(Tstring(n), ci_mode, &p);
         ci_nametab->add(p);
         p->set_flags(ci_flags);
     }
@@ -337,7 +337,7 @@ sCHDin::read_nametab()
 
         symref_t *p = ci_nametab->get(s);
         if (!p) {
-            ci_nametab->new_symref(s->string(), ci_mode, &p,
+            ci_nametab->new_symref(Tstring(s), ci_mode, &p,
                 (ci_flags & CVcif));
             ci_nametab->add(p);
         }
@@ -459,7 +459,7 @@ sCHDin::read_nametab()
                     }
                     symref_t *pt = ci_nametab->get(n);
                     if (!pt) {
-                        ci_nametab->new_symref(n->string(), ci_mode, &pt);
+                        ci_nametab->new_symref(Tstring(n), ci_mode, &pt);
                         ci_nametab->add(pt);
                         pt->set_flags(ci_flags);
                     }
@@ -604,7 +604,7 @@ sCHDin::read_tables()
             return (false);
         if (SymTab::get(ci_nmtab, n) == ST_NIL) {
             // The names are inserted into the CD string table here.
-            const char *nm = CD()->CellNameTableAdd(s)->string();
+            const char *nm = Tstring(CD()->CellNameTableAdd(s));
             ci_nmtab->add(n, nm, false);
         }
         delete [] s;

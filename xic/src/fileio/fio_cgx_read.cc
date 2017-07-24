@@ -1054,7 +1054,7 @@ cgx_in::a_struct(int, int)
     delete [] in_cellname;
     if (in_chd_state.symref())
         in_cellname =
-            lstring::copy(in_chd_state.symref()->get_name()->string());
+            lstring::copy(Tstring(in_chd_state.symref()->get_name()));
     else
         in_cellname = lstring::copy(alias(ptr));
     char *cellname = ptr;
@@ -1224,8 +1224,7 @@ cgx_in::a_struct(int, int)
                         FIO()->ifMergeControl(&mi);
                     }
                     if (mi.overwrite_phys) {
-                        if (!get_symref(sd->cellname()->string(),
-                                Physical)) {
+                        if (!get_symref(Tstring(sd->cellname()), Physical)) {
                             // The phys cell was not read from the
                             // current file.  If overwriting, clear
                             // existing phys cell.
@@ -1840,7 +1839,7 @@ cgx_in::a_sref(int, int flags)
             if (in_mode == Physical) {
                 CDcellName cname = CD()->CellNameTableAdd(cellname);
                 cname = check_sub_master(cname);
-                cellname = cname->string();
+                cellname = Tstring(cname);
             }
 #endif
             symref_t *srf = get_symref(cellname, in_mode);
@@ -1897,9 +1896,9 @@ cgx_in::a_sref(int, int flags)
             if (in_symref) {
                 // Add a symref for this instance if necessary.
                 nametab_t *ntab = get_sym_tab(in_mode);
-                symref_t *srf = get_symref(cname->string(), in_mode);
+                symref_t *srf = get_symref(Tstring(cname), in_mode);
                 if (!srf) {
-                    ntab->new_symref(cname->string(), in_mode, &srf);
+                    ntab->new_symref(Tstring(cname), in_mode, &srf);
                     add_symref(srf, in_mode);
                 }
             }
@@ -1940,7 +1939,7 @@ cgx_in::ac_struct(int, int)
             info()->add_cell(in_chd_state.symref());
         if (in_chd_state.symref())
             in_cellname =
-                lstring::copy(in_chd_state.symref()->get_name()->string());
+                lstring::copy(Tstring(in_chd_state.symref()->get_name()));
         else
             in_cellname = lstring::copy(alias(ptr));
 
@@ -2604,7 +2603,7 @@ cgx_in::ac_sref(int, int flags)
 
         Instance inst;
         inst.magn = at.magn;
-        inst.name = cellname->string();
+        inst.name = Tstring(cellname);
         inst.nx = at.nx;
         inst.ny = at.ny;
         inst.dx = dx;
@@ -2732,7 +2731,7 @@ cgx_in::ac_sref_backend(Instance *inst, symref_t *p, bool no_area_test)
 
                 if (!tsBB) {
                     Errs()->add_error("Bounding box for master %s not found.",
-                        p->get_name()->string());
+                        Tstring(p->get_name()));
                     return (false);
                 }
                 BBox sBB(*tsBB);

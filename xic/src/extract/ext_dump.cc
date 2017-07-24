@@ -135,7 +135,7 @@ namespace {
         }
 
         char fname[256];
-        sprintf(fname, "%s.physnet", DSP()->CurCellName()->string());
+        sprintf(fname, "%s.physnet", Tstring(DSP()->CurCellName()));
         delete [] pnet_cmd.filename();
         pnet_cmd.set_filename(lstring::copy(fname));
 
@@ -526,7 +526,7 @@ namespace {
         }
 
         char fname[256];
-        sprintf(fname, "%s.elecnet", DSP()->CurCellName()->string());
+        sprintf(fname, "%s.elecnet", Tstring(DSP()->CurCellName()));
         delete [] enet_cmd.filename();
         enet_cmd.set_filename(lstring::copy(fname));
 
@@ -815,7 +815,7 @@ namespace {
         }
 
         char fname[256];
-        sprintf(fname, "%s.lvs", DSP()->CurCellName()->string());
+        sprintf(fname, "%s.lvs", Tstring(DSP()->CurCellName()));
         delete [] lvs_cmd.filename();
         lvs_cmd.set_filename(lstring::copy(fname));
 

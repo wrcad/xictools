@@ -164,7 +164,7 @@ cParam::print()
         p_text.append_string("  ", c2);
     }
     else {
-        str = (DSP()->CurCellName() ? DSP()->CurCellName()->string() : "none");
+        str = (DSP()->CurCellName() ? Tstring(DSP()->CurCellName()) : "none");
         p_text.append_string("Cell: ", c1);
         p_text.append_string(str, c2);
 
@@ -202,7 +202,7 @@ cParam::print()
         p_text.append_string(textbuf, c2);
         CDc *cd = (CDc*)Selections.firstObject(CurCell(), "c");
         if (cd) {
-            sprintf(textbuf, " (%s)", cd->cellname()->string());
+            sprintf(textbuf, " (%s)", Tstring(cd->cellname()));
             p_text.append_string(textbuf, c2);
         }
         p_text.append_string("  ", c2);

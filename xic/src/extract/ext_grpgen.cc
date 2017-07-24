@@ -237,7 +237,7 @@ namespace ext_group {
     {
         for (sTF *t = cg_stack; t; t = t->next) {
             if (t->cl)
-                printf("%s(%d,%d)\\", t->cl->cdesc->cellname()->string(),
+                printf("%s(%d,%d)\\", Tstring(t->cl->cdesc->cellname()),
                     t->cl->ix, t->cl->iy);
         }
         printf("\n");

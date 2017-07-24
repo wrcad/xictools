@@ -1289,7 +1289,7 @@ bool
 oas_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
 {
     if (in_cgd && in_bakif && (in_mode == Electrical ||
-            in_cgd->unlisted_test(p->get_name()->string()))) {
+            in_cgd->unlisted_test(Tstring(p->get_name())))) {
 
         // In electrical mode, always obtain data from the file. 
         // Likewse, in physical mode if the cell has been removed from
@@ -1334,14 +1334,14 @@ oas_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
         // geometry database.
 
         if (in_action == cvOpenModeDb) {
-            if (!a_cell(p->get_name()->string()))
+            if (!a_cell(Tstring(p->get_name())))
                 return (false);
         }
         else if (in_action == cvOpenModeTrans) {
             // Need this for error messages.
-            in_cellname = lstring::copy(p->get_name()->string());
+            in_cellname = lstring::copy(Tstring(p->get_name()));
             if (in_transform <= 0) {
-                in_out->write_struct(p->get_name()->string(),
+                in_out->write_struct(Tstring(p->get_name()),
                     &in_cdate, &in_mdate);
             }
         }
@@ -1412,7 +1412,7 @@ oas_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
                 else {
                     Instance inst;
                     inst.magn = at.magn;
-                    inst.name = cellname->string();
+                    inst.name = Tstring(cellname);
                     inst.nx = at.nx;
                     inst.ny = at.ny;
                     inst.dx = tdx;
@@ -1428,7 +1428,7 @@ oas_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
         }
 
         bool ret = true;
-        stringlist *layers = in_cgd->layer_list(p->get_name()->string());
+        stringlist *layers = in_cgd->layer_list(Tstring(p->get_name()));
         if (layers) {
             GCdestroy<stringlist> gc_layers(layers);
             for (stringlist *s = layers; s; s = s->next) {
@@ -1439,7 +1439,7 @@ oas_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
                 }
 
                 oas_byte_stream *bs;
-                if (!in_cgd->get_byte_stream(p->get_name()->string(),
+                if (!in_cgd->get_byte_stream(Tstring(p->get_name()),
                         s->string, &bs))
                     return (false);
                 if (!bs)
@@ -1650,7 +1650,7 @@ OItype
 oas_in::has_geom(symref_t *p, const BBox *AOI)
 {
     if (in_cgd && in_bakif && (in_mode == Electrical ||
-            in_cgd->unlisted_test(p->get_name()->string()))) {
+            in_cgd->unlisted_test(Tstring(p->get_name())))) {
 
         // In electrical mode, always obtain data from the file. 
         // Likewse, in physical mode if the cell has been removed from
@@ -1693,7 +1693,7 @@ oas_in::has_geom(symref_t *p, const BBox *AOI)
         // This takes care of accessing the data through an attached
         // geometry database.
 
-        stringlist *layers = in_cgd->layer_list(p->get_name()->string());
+        stringlist *layers = in_cgd->layer_list(Tstring(p->get_name()));
         if (!layers)
             return (OIambiguous);
 
@@ -1712,7 +1712,7 @@ oas_in::has_geom(symref_t *p, const BBox *AOI)
             }
 
             oas_byte_stream *bs;
-            if (!in_cgd->get_byte_stream(p->get_name()->string(),
+            if (!in_cgd->get_byte_stream(Tstring(p->get_name()),
                     s->string, &bs)) {
                 return (OIerror);
             }
@@ -2315,7 +2315,7 @@ oas_in::a_cell(const char *name)
                         FIO()->ifMergeControl(&mi);
                     }
                     if (mi.overwrite_phys) {
-                        if (!get_symref(sd->cellname()->string(),
+                        if (!get_symref(Tstring(sd->cellname()),
                                 Physical)) {
                             // The phys cell was not read from the
                             // current file.  If overwriting, clear
@@ -2445,7 +2445,7 @@ oas_in::a_placement(int dx, int dy, unsigned int nx, unsigned int ny)
             if (in_mode == Physical) {
                 CDcellName cname = CD()->CellNameTableAdd(cellname);
                 cname = check_sub_master(cname);
-                cellname = cname->string();
+                cellname = Tstring(cname);
             }
 #endif
             symref_t *ptr = get_symref(cellname, in_mode);
@@ -2497,9 +2497,9 @@ oas_in::a_placement(int dx, int dy, unsigned int nx, unsigned int ny)
             if (in_symref) {
                 // Add a symref for this instance if necessary.
                 nametab_t *ntab = get_sym_tab(in_mode);
-                symref_t *ptr = get_symref(cname->string(), in_mode);
+                symref_t *ptr = get_symref(Tstring(cname), in_mode);
                 if (!ptr) {
-                    ntab->new_symref(cname->string(), in_mode, &ptr);
+                    ntab->new_symref(Tstring(cname), in_mode, &ptr);
                     add_symref(ptr, in_mode);
                 }
             }
@@ -3260,7 +3260,7 @@ oas_in::ac_placement(int dx, int dy, unsigned int nx, unsigned int ny)
 
         Instance inst;
         inst.magn = at.magn;
-        inst.name = cellname->string();
+        inst.name = Tstring(cellname);
         inst.nx = at.nx;
         inst.ny = at.ny;
         inst.dx = tdx;
@@ -3342,7 +3342,7 @@ oas_in::ac_placement_backend(Instance *inst, symref_t *p, bool no_area_test)
 
                 if (!tsBB) {
                     Errs()->add_error("Bounding box for master %s not found.",
-                        p->get_name()->string());
+                        Tstring(p->get_name()));
                     return (false);
                 }
                 BBox sBB(*tsBB);
@@ -6999,7 +6999,7 @@ oas_in::read_cell(unsigned int ix)
         // properties.
         if (in_chd_state.symref()) {
             name = lstring::copy(
-                in_chd_state.symref()->get_name()->string());
+                Tstring(in_chd_state.symref()->get_name()));
         }
         oas_elt *te = in_cellname_table->get(refnum);
         if (!te) {
@@ -7034,8 +7034,7 @@ oas_in::read_cell(unsigned int ix)
         }
         if (in_chd_state.symref()) {
             delete [] name;
-            name = lstring::copy(
-                in_chd_state.symref()->get_name()->string());
+            name = lstring::copy(Tstring(in_chd_state.symref()->get_name()));
         }
     }
     else {

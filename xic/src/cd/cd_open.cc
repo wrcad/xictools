@@ -133,7 +133,7 @@ cCD::Clear(CDcellName name)
         for (CDm *mdesc = pgen.m_first(); mdesc; mdesc = pgen.m_next()) {
             CDs *msdesc = mdesc->celldesc();
             if (msdesc && !msdesc->isViaSubMaster())
-                symtab->add(mdesc->cellname()->string(), 0, true);
+                symtab->add(Tstring(mdesc->cellname()), 0, true);
         }
         delete sdphys;
     }
@@ -142,7 +142,7 @@ cCD::Clear(CDcellName name)
         for (CDm *mdesc = egen.m_first(); mdesc; mdesc = egen.m_next()) {
             CDs *msdesc = mdesc->celldesc();
             if (msdesc && (!msdesc->isDevice() || !msdesc->isLibrary()))
-                symtab->add(mdesc->cellname()->string(), 0, true);
+                symtab->add(Tstring(mdesc->cellname()), 0, true);
         }
         delete sdelec;
     }

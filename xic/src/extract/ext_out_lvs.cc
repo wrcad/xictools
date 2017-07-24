@@ -89,12 +89,12 @@ cExt::lvs_recurse(FILE *fp, CDcbin *cbin, int depth, SymTab *tab)
     CDs *psdesc = cbin->phys();
     tab->add((unsigned long)esdesc, 0, false);
     fprintf(fp, "############  %s\n", XM()->IdString());
-    fprintf(fp, "LVS comparison for cell %s.\n", cbin->cellname()->string());
+    fprintf(fp, "LVS comparison for cell %s.\n", Tstring(cbin->cellname()));
     cGroupDesc *gd = psdesc->groups();
     if (!gd || gd->isempty()) {
         fprintf(fp, "No physical nets found.\n");
         const char *fmt = "\nLVS of cell %s %s.\n\n";
-        fprintf(fp, fmt, cbin->cellname()->string(), "FAILED");
+        fprintf(fp, fmt, Tstring(cbin->cellname()), "FAILED");
         return (LVSfail);
     }
 
@@ -240,8 +240,8 @@ cGroupDesc::print_lvs(FILE *fp)
             for (sBcErr *b = bcerrs; b; b = b->next()) {
                 lvs.bad_conts++;
                 fprintf(fp, "%-12s %-18s %.4f,%.4f %.4f,%.4f\n",
-                    b->devDesc()->name()->string(),
-                    b->owner()->cellname()->string(),
+                    Tstring(b->devDesc()->name()),
+                    Tstring(b->owner()->cellname()),
                     MICRONS(b->locBB()->left), MICRONS(b->locBB()->bottom),
                     MICRONS(b->locBB()->right), MICRONS(b->locBB()->top));
             }
@@ -269,7 +269,7 @@ cGroupDesc::print_lvs(FILE *fp)
         else {
             if (i < psize && has_net_or_terms(i)) {
                 if (gd_groups[i].global() && gd_groups[i].netname())
-                    strcpy(nname2, gd_groups[i].netname()->string());
+                    strcpy(nname2, Tstring(gd_groups[i].netname()));
                 else
                     strcpy(nname2, "---");
             }
@@ -318,7 +318,7 @@ cGroupDesc::print_lvs(FILE *fp)
 
                     fprintf(fp, "  %-8d %c %-20s", i,
                         types[gd_groups[i].netname_origin()],
-                        gd_groups[i].netname()->string());
+                        Tstring(gd_groups[i].netname()));
                     if (nn)
                         fprintf(fp, " N %s\n", nn);
                     else
@@ -335,7 +335,7 @@ cGroupDesc::print_lvs(FILE *fp)
         for (int i = 0; i < esize; i++) {
             for (CDpin *p = pins_of_node(i); p; p = p->next()) {
                 CDsterm *term = p->term();
-                fprintf(fp, "  %-20s %c %4d", term->name()->string(),
+                fprintf(fp, "  %-20s %c %4d", Tstring(term->name()),
                     term->is_fixed() ? 'F' : ' ', term->group());
                 if (term->is_uninit()) {
                     // If this is simply an unconnected subcircuit terminal,
@@ -391,12 +391,12 @@ cGroupDesc::print_lvs(FILE *fp)
         for (sDevList *dl = gd_devices; dl; dl = dl->next()) {
             for (sDevPrefixList *p = dl->prefixes(); p; p = p->next()) {
                 for (sDevInst *di = p->devs(); di; di = di->next()) {
-                    fprintf(fp, "  %-8s%-6d:",  di->desc()->name()->stringNN(),
+                    fprintf(fp, "  %-8s%-6d:",  TstringNN(di->desc()->name()),
                         di->index());
                     if (di->dual()) {
                         char *instname = di->dual()->instance_name();
                         fprintf(fp, " %-8s%s\n",
-                            di->dual()->cdesc()->cellname()->string(),
+                            Tstring(di->dual()->cdesc()->cellname()),
                             instname);
                         delete [] instname;
                     }
@@ -412,13 +412,13 @@ cGroupDesc::print_lvs(FILE *fp)
                             const char *nn = SCD()->nodeName(esdesc, node);
                             fprintf(fp, "    %-12s:   physical group %d, "
                                 "electrical node (%d) %s\n",
-                                ci->desc()->name()->stringNN(), ci->group(),
+                                TstringNN(ci->desc()->name()), ci->group(),
                                 node, nn);
                         }
                         else
                             fprintf(fp, "    %-12s:   physical group %d, "
                                 "electrical node <not found>\n",
-                                ci->desc()->name()->stringNN(), ci->group());
+                                TstringNN(ci->desc()->name()), ci->group());
                     }
 
                     // print parameters
@@ -458,7 +458,7 @@ cGroupDesc::print_lvs(FILE *fp)
                 if (s->dual()) {
                     char *instname = s->dual()->instance_name();
                     fprintf(fp, " %-24s%s\n",
-                        s->dual()->cdesc()->cellname()->string(), instname);
+                        Tstring(s->dual()->cdesc()->cellname()), instname);
                     delete [] instname;
                 }
                 else
@@ -507,7 +507,7 @@ cGroupDesc::print_lvs(FILE *fp)
                         continue;
                     fprintf(fp,
                         "  %-20s,  (%.*f,%.*f %.*f,%.*f)\n",
-                        mdesc->cellname()->string(),
+                        Tstring(mdesc->cellname()),
                         ndgt, MICRONS(cdesc->oBB().left),
                         ndgt, MICRONS(cdesc->oBB().bottom),
                         ndgt, MICRONS(cdesc->oBB().right),
@@ -533,7 +533,7 @@ cGroupDesc::print_lvs(FILE *fp)
 
                 fprintf(fp,
                     "  %-20s,  (%.*f,%.*f %.*f,%.*f)\n",
-                    mdesc->cellname()->string(),
+                    Tstring(mdesc->cellname()),
                     ndgt, MICRONS(cdesc->oBB().left),
                     ndgt, MICRONS(cdesc->oBB().bottom),
                     ndgt, MICRONS(cdesc->oBB().right),
@@ -620,7 +620,7 @@ cGroupDesc::print_subc_contact_lvs(FILE *fp, const CDcbin &cbin,
     if (p_node < 0) {
         if (gd_groups[c->parent_group()].global() &&
                 gd_groups[c->parent_group()].netname())
-            strcpy(tbuf, gd_groups[c->parent_group()].netname()->string());
+            strcpy(tbuf, Tstring(gd_groups[c->parent_group()].netname()));
         else 
             strcpy(tbuf, "unconnected");
     }
@@ -632,7 +632,7 @@ cGroupDesc::print_subc_contact_lvs(FILE *fp, const CDcbin &cbin,
         if (g && g->gd_groups[c->subc_group()].global() &&
                 g->gd_groups[c->subc_group()].netname())
             strcpy(tbuf,
-                g->gd_groups[c->subc_group()].netname()->string());
+                Tstring(g->gd_groups[c->subc_group()].netname()));
         else 
             strcpy(tbuf, "unconnected");
     }
@@ -865,8 +865,8 @@ cGroupDesc::check_grp_node(int grp, sLVSstat &lvs, FILE *fp)
             }
             fprintf(fp,
             "    Physical device contact %s %d %s not connected to node.\n",
-                di->desc()->name()->stringNN(), di->index(),
-                dc->contact()->desc()->name()->stringNN());
+                TstringNN(di->desc()->name()), di->index(),
+                TstringNN(dc->contact()->desc()->name()));
             retval |= GROUP_ASSOC_ERROR;
         }
     }
@@ -974,7 +974,7 @@ cGroupDesc::check_grp_node(int grp, sLVSstat &lvs, FILE *fp)
             }
             fprintf(fp,
             "    Physical formal terminal %s not connected to node.\n",
-                p->term()->name()->string());
+                Tstring(p->term()->name()));
             retval |= GROUP_ASSOC_ERROR;
         }
     }
@@ -1034,7 +1034,7 @@ cGroupDesc::check_grp_node(int grp, sLVSstat &lvs, FILE *fp)
         }
         fprintf(fp,
         "    Electrical terminal %s not connected to group.\n",
-            terms[i]->name()->string());
+            Tstring(terms[i]->name()));
         retval |= GROUP_ASSOC_ERROR;
     }
 
@@ -1088,7 +1088,7 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
             CDnetName nn = g.netname();
             if (g.global() && nn) {
                 fprintf(fp, "  Physical group %d is global net %s.\n", i,
-                    nn->string());
+                    Tstring(nn));
                 something_printed = true;
             }
             else if (g.has_terms() && !g.unas_wire_only()) {
@@ -1127,7 +1127,7 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
             for (sDevInst *s = p->devs(); s; s = s->next()) {
                 if (!s->dual()) {
                     fprintf(fp, "  Physical device %s %d is not associated.\n",
-                        s->desc()->name()->stringNN(), s->index());
+                        TstringNN(s->desc()->name()), s->index());
                     something_printed = true;
                     lvs.pd_unassoc++;
                 }
@@ -1146,7 +1146,7 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
                 else {
                     fprintf(fp,
                         "  Electrical device %s (%s) is not associated.\n",
-                        instname, cd->cellname()->string());
+                        instname, Tstring(cd->cellname()));
                     something_printed = true;
                     lvs.ed_unassoc++;
                 }
@@ -1166,7 +1166,7 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
             else {
                 fprintf(fp,
                     "  Electrical device %s (%s) is not associated.\n",
-                    instname, cd->cellname()->string());
+                    instname, Tstring(cd->cellname()));
                 something_printed = true;
                 lvs.ed_unassoc++;
             }
@@ -1199,7 +1199,7 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
                 char *instname = s->cdesc()->getInstName(s->cdesc_index());
                 fprintf(fp,
                     "  Electrical subcircuit %s (%s) is not associated.\n",
-                    instname, s->cdesc()->cellname()->string());
+                    instname, Tstring(s->cdesc()->cellname()));
                 delete [] instname;
                 something_printed = true;
                 lvs.es_unassoc++;
@@ -1211,7 +1211,7 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
             char *instname = c->cdesc()->getInstName(c->cdesc_index());
             fprintf(fp,
                 "  Electrical subcircuit %s (%s) is not associated.\n",
-                instname, c->cdesc()->cellname()->string());
+                instname, Tstring(c->cdesc()->cellname()));
             delete [] instname;
             something_printed = true;
             lvs.es_unassoc++;
@@ -1344,20 +1344,20 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
             lvs.nt_unassoc + lvs.ed_unassoc + lvs.es_unassoc +
             lvs.dc_unassoc + lvs.ps_unassoc + lvs.pd_unassoc +
             lvs.sc_unassoc + lvs.dc_assoc + lvs.sc_assoc) {
-        fprintf(fp, fmt, gd_celldesc->cellname()->string(), "FAILED");
+        fprintf(fp, fmt, Tstring(gd_celldesc->cellname()), "FAILED");
         return (LVSfail);
     }
     if (lvs.val_cmp_errs) {
-        fprintf(fp, fmt, gd_celldesc->cellname()->string(),
+        fprintf(fp, fmt, Tstring(gd_celldesc->cellname()),
             "PASSED, but with PARAMETER DIFFERENCES");
         return (LVStopok);
     }
     if (lvs.val_amb_cnt) {
-        fprintf(fp, fmt, gd_celldesc->cellname()->string(),
+        fprintf(fp, fmt, Tstring(gd_celldesc->cellname()),
             "PASSED, but with UNAVAILABLE PARAMETERS");
         return (LVSap);
     }
-    fprintf(fp, fmt, gd_celldesc->cellname()->string(), "CLEAN");
+    fprintf(fp, fmt, Tstring(gd_celldesc->cellname()), "CLEAN");
     return (LVSclean);
 }
 

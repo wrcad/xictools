@@ -1366,9 +1366,9 @@ bangcmds::netxp(const char *s)
     CDnetexGen ngen(netex);
     while (ngen.next(&nm, &n)) {
         if (n < 0)
-            printf(" %s\n", nm->string());
+            printf(" %s\n", Tstring(nm));
         else
-            printf(" %s<%d>\n", nm->string(), n);
+            printf(" %s<%d>\n", Tstring(nm), n);
     }
     printf("\n");
     CDnetex::destroy(netex);
@@ -2051,7 +2051,7 @@ bangcmds::summary(const char *s)
     const char *sep = "---------------------------------------------\n";
     fprintf(fp, "Summary of %s cells rooted in %s\n",
         cursd->isElectrical() ? "electrical" : "physical",
-        cursd->cellname()->string());
+        Tstring(cursd->cellname()));
     fprintf(fp, "Created with %s.\n", XM()->IdString());
 
     stringlist *s0 = 0;
@@ -2059,7 +2059,7 @@ bangcmds::summary(const char *s)
     CDs *sd;
     bool err;
     while ((sd = gen.next(&err)) != 0)
-        s0 = new stringlist(lstring::copy(sd->cellname()->string()), s0);
+        s0 = new stringlist(lstring::copy(Tstring(sd->cellname())), s0);
     stringlist::sort(s0);
     while (s0) {
         CDcbin cbin;
@@ -2404,7 +2404,7 @@ namespace {
         }
         if (!fname) {
             char buf[256];
-            sprintf(buf, "%s_vertices.log", cursd->cellname()->string());
+            sprintf(buf, "%s_vertices.log", Tstring(cursd->cellname()));
             fname = lstring::copy(buf);
         }
         FILE *fp;
@@ -2547,7 +2547,7 @@ bangcmds::checkover(const char *s)
     }
     int ndgt = CD()->numDigits();
     fprintf(fp, "Overlapping subcells of %s.\n\n",
-        DSP()->CurCellName()->string());
+        Tstring(DSP()->CurCellName()));
     bool found = false;
     CDm_gen mgen(cursdp, GEN_MASTERS);
     for (CDm *m = mgen.m_first(); m; m = mgen.m_next()) {
@@ -2567,7 +2567,7 @@ bangcmds::checkover(const char *s)
                     continue;
                 if (!hdr) {
                     fprintf(fp, "Instance of %s, %.*f,%.*f %.*f,%.*f\n",
-                        m->cellname()->string(),
+                        Tstring(m->cellname()),
                         ndgt, MICRONS(c->oBB().left),
                         ndgt, MICRONS(c->oBB().bottom),
                         ndgt, MICRONS(c->oBB().right),
@@ -2575,7 +2575,7 @@ bangcmds::checkover(const char *s)
                     hdr = true;
                 }
                 fprintf(fp, "    Instance of %s, %.*f,%.*f %.*f,%.*f\n",
-                    cdesc->cellname()->string(),
+                    Tstring(cdesc->cellname()),
                     ndgt, MICRONS(cdesc->oBB().left),
                     ndgt, MICRONS(cdesc->oBB().bottom),
                     ndgt, MICRONS(cdesc->oBB().right),
@@ -3114,7 +3114,7 @@ namespace {
             CDm_gen mgen(sdesc, GEN_MASTERS);
             for (CDm *m = mgen.m_first(); m; m = mgen.m_next())
                 list_subcells(m->celldesc(), tab);
-            tab->add(sdesc->cellname()->string(), 0, true);
+            tab->add(Tstring(sdesc->cellname()), 0, true);
         }
     }
 }
@@ -3164,7 +3164,7 @@ bangcmds::mklib(const char *s)
     char *arcname = 0;
 
     if (!arcfile && FIO()->IsSupportedArchiveFormat(cbin.fileType())) {
-        sprintf(buf, "%s%s", DSP()->CurCellName()->string(),
+        sprintf(buf, "%s%s", Tstring(DSP()->CurCellName()),
             FIO()->GetTypeExt(cbin.fileType()));
         char mbuf[256];
         const char *msg =
@@ -3225,7 +3225,7 @@ bangcmds::mklib(const char *s)
     else if (arcname)
         strcpy(buf, arcname);
     else
-        strcpy(buf, DSP()->CurCellName()->string());
+        strcpy(buf, Tstring(DSP()->CurCellName()));
     char *t = strrchr(buf, '.');
     if (t) {
         *t++ = 0;
@@ -3290,20 +3290,20 @@ bangcmds::mklib(const char *s)
             namegen_t gen(chd->nameTab(Physical));
             symref_t *p;
             while ((p = gen.next()) != 0) {
-                if (FIO()->LookupLibCell(0, p->get_name()->string(),
+                if (FIO()->LookupLibCell(0, Tstring(p->get_name()),
                         LIBdevice, 0))
                     continue;
-                tab->add(p->get_name()->string(), 0, true);
+                tab->add(Tstring(p->get_name()), 0, true);
             }
         }
         if (chd->nameTab(Electrical)) {
             namegen_t gen(chd->nameTab(Electrical));
             symref_t *p;
             while ((p = gen.next()) != 0) {
-                if (FIO()->LookupLibCell(0, p->get_name()->string(),
+                if (FIO()->LookupLibCell(0, Tstring(p->get_name()),
                         LIBdevice, 0))
                     continue;
-                tab->add(p->get_name()->string(), 0, true);
+                tab->add(Tstring(p->get_name()), 0, true);
             }
         }
         delete chd;
@@ -3484,7 +3484,7 @@ namespace {
         if (!sd)
             return;  // can't happen
         char buf[256];
-        sprintf(buf, "%s.%s.marks", sd->cellname()->string(),
+        sprintf(buf, "%s.%s.marks", Tstring(sd->cellname()),
             sd->isElectrical() ? "elec" : "phys");
         const char *in = PL()->EditPrompt("Filename for saved marks? ", buf);
         if (!in) {
@@ -3522,7 +3522,7 @@ namespace {
         if (!sd)
             return;  // can't happen
         char buf[256];
-        sprintf(buf, "%s.%s.marks", sd->cellname()->string(),
+        sprintf(buf, "%s.%s.marks", Tstring(sd->cellname()),
             sd->isElectrical() ? "elec" : "phys");
         const char *in = PL()->EditPrompt("Marks file to read? ", buf);
         if (!in) {
@@ -4220,7 +4220,7 @@ bangcmds::mkscript(const char *s)
         if (sd->isDevice() && sd->isLibrary())
             continue;
         fprintf(fp, "TouchCell(pfx + \"%s\", TRUE)\n",
-            sd->cellname()->string());
+            Tstring(sd->cellname()));
         fprintf(fp, "ClearCell(FALSE, 0)\n");
         if (!sd->writeScript(fp, "pfx")) {
             fclose(fp);

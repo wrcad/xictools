@@ -162,7 +162,7 @@ cCHD::setDefaultCellname(const char *topname, const char **prvname)
 
     if (prvname) {
         if (c_top_symref)
-            *prvname = c_top_symref->get_name()->string();
+            *prvname = Tstring(c_top_symref->get_name());
         else
             *prvname = 0;
     }
@@ -280,7 +280,7 @@ cCHD::defaultCell(DisplayMode mode)
 {
     symref_t *s = defaultSymref(mode);
     if (s)
-        return (s->get_name()->string());
+        return (Tstring(s->get_name()));
     return (0);
 }
 
@@ -313,16 +313,16 @@ cCHD::listCellnames(int mode, bool mark)
         symref_t *pref = defaultSymref(Physical);
         while ((p = gen.next()) != 0) {
             if (!p->get_defseen() && FIO()->LookupLibCell(0,
-                    p->get_name()->string(), LIBdevice, 0))
+                    Tstring(p->get_name()), LIBdevice, 0))
                 continue;
             if (mark) {
                 buf[0] = p == pref ? '*' : ' ';
-                strcpy(buf+1, p->get_name()->string());
+                strcpy(buf+1, Tstring(p->get_name()));
                 s0 = new stringlist(lstring::copy(buf), s0);
             }
             else
                 s0 = new stringlist(
-                    lstring::copy(p->get_name()->string()), s0);
+                    lstring::copy(Tstring(p->get_name())), s0);
         }
     }
     if (mode < 0 || mode == Electrical) {
@@ -330,17 +330,17 @@ cCHD::listCellnames(int mode, bool mark)
         gen = namegen_t(c_etab);
         while ((p = gen.next()) != 0) {
             if (!p->get_defseen() && FIO()->LookupLibCell(0,
-                    p->get_name()->string(), LIBdevice, 0))
+                    Tstring(p->get_name()), LIBdevice, 0))
                 continue;
             if (!c_ptab || !c_ptab->get(p->get_name())) {
                 if (mark) {
                     buf[0] = p == pref ? '*' : ' ';
-                    strcpy(buf+1, p->get_name()->string());
+                    strcpy(buf+1, Tstring(p->get_name()));
                     s0 = new stringlist(lstring::copy(buf), s0);
                 }
                 else
                     s0 = new stringlist(
-                        lstring::copy(p->get_name()->string()), s0);
+                        lstring::copy(Tstring(p->get_name())), s0);
             }
         }
     }
@@ -384,7 +384,7 @@ cCHD::listing(DisplayMode mode, bool sort_by_offset, tristate_t skip)
     symref_t *p;
     while ((p = gen.next()) != 0) {
         if (!p->get_defseen() && FIO()->LookupLibCell(0,
-                p->get_name()->string(), LIBdevice, 0))
+                Tstring(p->get_name()), LIBdevice, 0))
             continue;
 
         bool b2;
@@ -825,10 +825,10 @@ cCHD::loadCell(const char *cellname)
                 "cCHD::loadCell: instance back pointer unresolved.");
             return (OIerror);
         }
-        if (!createReferenceCell(cp->get_name()->string())) {
+        if (!createReferenceCell(Tstring(cp->get_name()))) {
             Errs()->add_error(
                 "cCHD::loadCell: createReferenceCell failed for %s.",
-                cp->get_name()->string());
+                Tstring(cp->get_name()));
             return (OIerror);
         }
     }
@@ -1400,9 +1400,9 @@ cCHD::write(symref_t *p, cv_in *in, const FIOcvtPrms *prms, bool allcells,
             if (vtab) {
                 if (vtab == CHD_USE_VISITED && out) {
                     if (tp != p &&
-                            out->visited(tp->get_name()->string()) >= 0)
+                            out->visited(Tstring(tp->get_name())) >= 0)
                         continue;
-                    out->add_visited(tp->get_name()->string());
+                    out->add_visited(Tstring(tp->get_name()));
                 }
                 else {
                     if (SymTab::get(vtab, (unsigned long)tp->get_name()) !=
@@ -1431,7 +1431,7 @@ cCHD::write(symref_t *p, cv_in *in, const FIOcvtPrms *prms, bool allcells,
 
     if (ok && out) {
         if (!in->no_end_lib() &&
-                !out->write_endlib(p->get_name()->string())) {
+                !out->write_endlib(Tstring(p->get_name()))) {
             Errs()->add_error("cCHD::write: write end lib failed.");
             ok = false;
         }
@@ -1455,13 +1455,13 @@ cCHD::translate_write(const FIOcvtPrms *prms, const char *chdcell)
         symref_t *p = getConfigSymref();
         if (p)
             // CHD has been configured, use as-is.
-            oiret = write(p->get_name()->string(), prms, true);
+            oiret = write(Tstring(p->get_name()), prms, true);
         else {
             // Write all top-level symrefs, using area if given.
             syrlist_t *sl0 = topCells(Physical, true);
             oiret = OIok;
             for (syrlist_t *sl = sl0; sl; sl = sl->next) {
-                const char *cn = sl->symref->get_name()->string();
+                const char *cn = Tstring(sl->symref->get_name());
                 oiret = write(cn, prms, true);
                 if (oiret != OIok)
                     break;
@@ -1518,7 +1518,7 @@ cCHD::listCellnames_rc(symref_t *p, SymTab *tab, int depth)
 {
     if (depth >= CDMAXCALLDEPTH)
         return (false);
-    tab->add(p->get_name()->string(), 0, false);
+    tab->add(Tstring(p->get_name()), 0, false);
     DisplayMode mode = p->mode();
     nametab_t *ntab = nameTab(mode);
     crgen_t gen(ntab, p);
@@ -1527,7 +1527,7 @@ cCHD::listCellnames_rc(symref_t *p, SymTab *tab, int depth)
         symref_t *cp = ntab->find_symref(c->srfptr);
         if (!cp || !cp->get_defseen())
             continue;
-        if (SymTab::get(tab, cp->get_name()->string()) == ST_NIL)
+        if (SymTab::get(tab, Tstring(cp->get_name())) == ST_NIL)
             listCellnames_rc(cp, tab, depth+1);
     }
     return (true);
@@ -1670,18 +1670,18 @@ cCHD::setBoundaries_rcprv(symref_t *p, unsigned int depth)
             if (FIO()->IsChdFailOnUnresolved()) {
                 Errs()->add_error(
                     "cCHD::setBoundaries_rc: unresolved symref %s.",
-                    p->get_name()->string());
+                    Tstring(p->get_name()));
                 return (false);
             }
             p->set_bbok(true);
             return (true);
         }
         if (tchd) {
-            symref_t *px = tchd->findSymref(p->get_name()->string(), mode);
+            symref_t *px = tchd->findSymref(Tstring(p->get_name()), mode);
             if (!px) {
                 Errs()->add_error(
                     "cCHD::setBoundaries_rc: symref %s not found in CHD.",
-                    p->get_name()->string());
+                    Tstring(p->get_name()));
                 return (false);
             }
             if (!tchd->setBoundaries_rc(px, depth))
@@ -1702,7 +1702,7 @@ cCHD::setBoundaries_rcprv(symref_t *p, unsigned int depth)
         }
         Errs()->add_error(
             "cCHD::setBoundaries_rc: unresolvable symref %s.",
-            p->get_name()->string());
+            Tstring(p->get_name()));
         return (false);
     }
 
@@ -1789,7 +1789,7 @@ cCHD::instanceBoundaries_rc(symref_t *p, fio_chd::ib_t *ib, unsigned int depth)
             if (FIO()->IsChdFailOnUnresolved()) {
                 Errs()->add_error(
                     "cCHD::instanceBoundaries_rc: unresolved symref %s.",
-                    p->get_name()->string());
+                    Tstring(p->get_name()));
                 return (false);
             }
             return (true);
@@ -1801,15 +1801,15 @@ cCHD::instanceBoundaries_rc(symref_t *p, fio_chd::ib_t *ib, unsigned int depth)
                 return (true);
             Errs()->add_error(
                 "cCHD::instanceBoundaries_rc: unresolvable symref %s.",
-                p->get_name()->string());
+                Tstring(p->get_name()));
             return (false);
         }
 
-        symref_t *px = tchd->findSymref(p->get_name()->string(), mode);
+        symref_t *px = tchd->findSymref(Tstring(p->get_name()), mode);
         if (!px) {
             Errs()->add_error(
                 "cCHD::instanceWindows_rc: cell %s not found in CHD.",
-                p->get_name()->string());
+                Tstring(p->get_name()));
         }
         if (tchd->instanceBoundaries_rc(px, ib, depth)) {
             if (ib->check_tab.find(px))

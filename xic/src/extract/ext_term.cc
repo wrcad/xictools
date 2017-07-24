@@ -113,7 +113,7 @@ namespace {
             // name field.
             if (!cursde->prpty(P_NAME)) {
                 char tbuf[256];
-                sprintf(tbuf, "X 0 %s", cursde->cellname()->string());
+                sprintf(tbuf, "X 0 %s", Tstring(cursde->cellname()));
                 cursde->prptyAdd(P_NAME, tbuf);
             }
 

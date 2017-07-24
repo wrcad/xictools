@@ -456,7 +456,7 @@ sTE::te_action_proc(GtkWidget *caller, void*)
             CDp_snode *ps = TE->te_term->node_prpty();
             if (!ps)
                 return;
-            te_info_t tinfo(ps->term_name()->string(), TE->te_lname,
+            te_info_t tinfo(Tstring(ps->term_name()), TE->te_lname,
                 ps->index(), f, true);
             (*TE->te_action)(&tinfo, TE->te_term);
             EX()->PopUpPhysTermEdit(0, MODE_UPD, &tinfo, 0, TE->te_term,

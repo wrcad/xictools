@@ -1330,7 +1330,7 @@ struct CDp_name : public CDp
 
     int key()                   const
         {
-            int c = (pna_name ? *pna_name->string() : 0);
+            int c = (pna_name ? *Tstring(pna_name) : 0);
             return (isupper(c) ? tolower(c) : c);
         }
 

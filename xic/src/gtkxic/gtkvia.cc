@@ -650,7 +650,7 @@ sStv::stv_action(GtkWidget *caller, void*)
         }
 
         // Place instance
-        ED()->placeDev(Stv->stv_apply, sd->cellname()->string(), false);
+        ED()->placeDev(Stv->stv_apply, Tstring(sd->cellname()), false);
     }
 }
 

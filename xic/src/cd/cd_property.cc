@@ -1570,7 +1570,7 @@ CDp_bnode::add_label_text(sLstr *lstr) const
     if (!lstr)
         return;
     if (!pbn_bundle) {
-        lstr->add(pbn_name->string());
+        lstr->add(Tstring(pbn_name));
         lstr->add_c('<');
         lstr->add_i(pbn_beg_range);
         lstr->add_c(':');
@@ -1886,7 +1886,7 @@ CDp_bcnode::term_name() const
 char *
 CDp_bcnode::full_name() const
 {
-    const char *nmstr = pbn_name->string();
+    const char *nmstr = Tstring(pbn_name);
     // The nmstr is always a simple text token, no range, index, or
     // commas.
 
@@ -1911,7 +1911,7 @@ CDp_bcnode::id_text() const
 {
     sLstr lstr;   
     if (!pbn_bundle) {
-        lstr.add(term_name()->string());
+        lstr.add(Tstring(term_name()));
         lstr.add_c('<');
         lstr.add_i(pbn_beg_range);
         lstr.add_c(':');
@@ -2377,7 +2377,7 @@ CDp_nodeEx::term_name() const
 char *
 CDp_nodeEx::id_text() const
 {
-    return (lstring::copy(term_name()->string()));
+    return (lstring::copy(Tstring(term_name())));
 }
 // End of CDp_nodeEx functions.
 
@@ -2459,7 +2459,7 @@ CDp_cnode::print(sLstr *lstr, int xo, int yo) const
             return (true);
 
         lstr->add_c(' ');
-        lstr->add(term_name()->string());
+        lstr->add(Tstring(term_name()));
 
         lstr->add_c(' ');
         lstr->add_i(inst_terminal()->lx());
@@ -2483,7 +2483,7 @@ CDp_cnode::print(sLstr *lstr, int xo, int yo) const
     else if (pno_name) {
         // We'll print the assigned name, but the reader will ignore it.
         lstr->add_c(' ');
-        lstr->add(pno_name->string());
+        lstr->add(Tstring(pno_name));
     }
 
     return (true);
@@ -2757,7 +2757,7 @@ CDp_snode::print(sLstr *lstr, int xo, int yo) const
             return (true);
 
         lstr->add_c(' ');
-        lstr->add(term_name()->string());
+        lstr->add(Tstring(term_name()));
 
         // phys position x, y
         lstr->add_c(' ');
@@ -2801,7 +2801,7 @@ CDp_snode::print(sLstr *lstr, int xo, int yo) const
         if (!pno_name && !cell_terminal())
             return (true);
         lstr->add_c(' ');
-        lstr->add(term_name()->string());
+        lstr->add(Tstring(term_name()));
 
         if (!cell_terminal())
             return (true);
@@ -3189,7 +3189,7 @@ CDp_name::print(sLstr *lstr, int, int) const
     if (!pna_name)
         lstr->add_c(P_NAME_NULL);
     else
-        lstr->add(pna_name->string());
+        lstr->add(Tstring(pna_name));
     if (pna_setname) {
         lstr->add_c('.');
         lstr->add(pna_setname);
@@ -3226,7 +3226,7 @@ CDp_name::label_text(bool *copied, CDc *cdesc) const
         return (new hyList(0, "??", HYcvPlain));
     // Check the name field.  If it is not alpha, treat it
     // specially.
-    if (isalpha(*pna_name->string())) {
+    if (isalpha(*Tstring(pna_name))) {
         // ordinary device name
         if (cdesc) {
             CDp_range *pr = (CDp_range*)cdesc->prpty(P_RANGE);
@@ -3256,7 +3256,7 @@ CDp_name::label_text(bool *copied, CDc *cdesc) const
     if (pna_labtext)
         return (new hyList(0, pna_labtext, HYcvPlain));
     if (cdesc && cdesc->master())
-        return (new hyList(0, cdesc->cellname()->string(), HYcvPlain));
+        return (new hyList(0, Tstring(cdesc->cellname()), HYcvPlain));
     return (new hyList(0, "label", HYcvPlain));
 }
 
@@ -3518,7 +3518,7 @@ CDp_mut::find(int x, int y, CDs *sdesc)
     while ((cdesc = (CDc*)gdesc.next()) != 0) {
         if (!cdesc->is_normal())
             continue;
-        const char *name = cdesc->cellname()->string();
+        const char *name = Tstring(cdesc->cellname());
         if (!lstring::cieq(name, "ind"))
             continue;
         if (cdesc->oBB().left - x > OLDWID &&
@@ -3622,11 +3622,11 @@ CDp_nmut::print(sLstr *lstr, int, int) const
 
     lstr->add_i(pnmu_indx);
     lstr->add_c(' ');
-    lstr->add(pn1->name_string()->string());
+    lstr->add(Tstring(pn1->name_string()));
     lstr->add_c(' ');
     lstr->add_i(pnmu_num1);
     lstr->add_c(' ');
-    lstr->add(pn2->name_string()->string());
+    lstr->add(Tstring(pn2->name_string()));
     lstr->add_c(' ');
     lstr->add_i(pnmu_num2);
     lstr->add_c(' ');
@@ -3933,7 +3933,7 @@ CDp_lref::print(sLstr *lstr, int, int) const
         // Instance property.
         if (plr.devref && plr.devref->type() == CDWIRE)
             return (false);
-        lstr->add(name()->string());
+        lstr->add(Tstring(name()));
         lstr->add_c(' ');
         lstr->add_i(number());
         lstr->add_c(' ');
@@ -4396,7 +4396,7 @@ CDp_nodmp::print(sLstr *lstr, int xo, int yo) const
     int len = 1;
     char buf[256];
     for (int i = 0; i < pnm_size; i++) {
-        char *s = lstring::stpcpy(buf, pnm_list[i].name->string());
+        char *s = lstring::stpcpy(buf, Tstring(pnm_list[i].name));
         *s++ = ' ';
         s = mmItoA(s, xo + pnm_list[i].x);
         *s++ = ' ';

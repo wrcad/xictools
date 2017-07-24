@@ -102,7 +102,7 @@ cEdit::startPlacement(const CDcbin *cbin, const char *dbname, pcpMode pmode)
     if (sd) {
         if (!PC()->isSuperMaster(sd)) {
             Errs()->add_error("Cell %s is not a super-master.",
-                sd->cellname()->string());
+                Tstring(sd->cellname()));
             return (false);
         }
 
@@ -110,7 +110,7 @@ cEdit::startPlacement(const CDcbin *cbin, const char *dbname, pcpMode pmode)
         stopPlacement();
         ed_pcsuper = sd;
         char *dbn = PCellDesc::mk_native_dbname(
-            ed_pcsuper->cellname()->string());
+            Tstring(ed_pcsuper->cellname()));
 
         if (!PC()->getDefaultParams(dbn, &ed_pcparams))
             return (false);
@@ -152,7 +152,7 @@ cEdit::resetPlacement(const char *dbname)
         ed_pcparams = pdef;
         PopUpPCellParams(0, MODE_UPD, ed_pcparams, 0, pcpNone);
         char *dbn = PCellDesc::mk_native_dbname(
-            ed_pcsuper->cellname()->string());
+            Tstring(ed_pcsuper->cellname()));
         PC()->setPCinstParams(dbn, ed_pcparams, false);
         delete [] dbn;
         PCellParam::destroy(px);
@@ -211,12 +211,12 @@ cEdit::resolvePCell(CDcbin *cbin, const char *dbname, bool openmode)
             // can't happen
             Errs()->add_error(
                 "resolvePCell: super-master %s is not physical.",
-                ed_pcsuper->cellname()->string());
+                Tstring(ed_pcsuper->cellname()));
             return (false);
         }
 
         char *dbn = PCellDesc::mk_native_dbname(
-            ed_pcsuper->cellname()->string());
+            Tstring(ed_pcsuper->cellname()));
         PC()->setPCinstParams(dbn, ed_pcparams, false);
 
         CDs *sdsub;
@@ -225,7 +225,7 @@ cEdit::resolvePCell(CDcbin *cbin, const char *dbname, bool openmode)
         if (oiret != OIok) {
             Errs()->add_error(
                 "resolvePCell: failed to generate sub-master of "
-                "%s.\nParams: %s", ed_pcsuper->cellname()->string(),
+                "%s.\nParams: %s", Tstring(ed_pcsuper->cellname()),
                 prms ? prms : "null");
             delete [] prms;
             return (false);
@@ -366,7 +366,7 @@ cEdit::reparamSubMaster(CDs *sdesc, const char *inprms)
 
             // Temporarily set the cellname, we will revert this.
             oldcellname = lstring::copy(pinew->cellname());
-            pinew->setCellname(sdesc->cellname()->string());
+            pinew->setCellname(Tstring(sdesc->cellname()));
         }
         else {
             // Change the existing parameter set associated with this
@@ -489,7 +489,7 @@ cEdit::reparamSubMaster(CDs *sdesc, const char *inprms)
 
             // Temporarily set the cellname, we will revert this.
             oldcellname = lstring::copy(pinew->cellname());
-            pinew->setCellname(sdesc->cellname()->string());
+            pinew->setCellname(Tstring(sdesc->cellname()));
         }
         else {
             // Change the existing parameter set associated with this
@@ -658,7 +658,7 @@ cEdit::reparamInstance(CDs *sdesc, CDc *cdesc, const CDp *newp, CDc **pnew)
             Errs()->add_error(
                 "reparamInstance: failed to generate sub-master of "
                 "%s.\nParams: %s",
-                sdsup->cellname()->string(), prmstr ? prmstr : "null");
+                Tstring(sdsup->cellname()), prmstr ? prmstr : "null");
             delete [] prmstr;
             return (false);
         }

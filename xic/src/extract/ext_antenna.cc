@@ -129,7 +129,7 @@ ant_pathfinder::find_antennae_rc(CDs *sdesc, int depth) THROW_int
     cGroupDesc *gdesc = sdesc->groups();
     if (!gdesc) {
         Errs()->add_error("find_antennae_rc: null group pointer in cell %s!",
-            sdesc->cellname()->string());
+            Tstring(sdesc->cellname()));
         return (false);
     }
     if (TFull()) {
@@ -311,7 +311,7 @@ ant_pathfinder::read_file(int *pnetnum, BBox *pnetBB)
     }
 
     char buf[256];
-    sprintf(buf, "%s.antenna.log", sdesc->cellname()->string());
+    sprintf(buf, "%s.antenna.log", Tstring(sdesc->cellname()));
 
     FILE *fp = fopen(buf, "r");
     if (!fp) {

@@ -832,9 +832,9 @@ sHcImage::legend(WindowDesc *wdesc, bool nodraw)
     char buf1[80];
     drawptr->SetColor(DSP()->Color(HighlightingColor));
     if (DSP()->CurMode() == Electrical)
-        sprintf(buf1, "circuit: %s", DSP()->CurCellName()->string());
+        sprintf(buf1, "circuit: %s", Tstring(DSP()->CurCellName()));
     else
-        sprintf(buf1, "cell: %s", DSP()->CurCellName()->string());
+        sprintf(buf1, "cell: %s", Tstring(DSP()->CurCellName()));
     drawptr->Text(buf1, vp->left + cwidth, ypos, 0);
     if (DSP()->CurMode() == Physical) {
         char *s = buf1;

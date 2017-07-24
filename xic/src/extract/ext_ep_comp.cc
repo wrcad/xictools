@@ -334,7 +334,7 @@ cGroupDesc::ep_grp_comp(int grp, int node, const sSubcInst *sc_permuting)
         // found, the score is incremented.  This should help ensure
         // convergence in such cases.
 
-        const char *nn = gd_etlist->net_name(node)->string();
+        const char *nn = Tstring(gd_etlist->net_name(node));
         if (nn && nn[0] == 'n' && isdigit(nn[1])) {
             if (grp == atoi(nn+1))
                 del++;
@@ -374,7 +374,7 @@ cGroupDesc::check_bulk_contact(const sDevInst *di, sDevContactInst *ci)
             CDs *ecd = CDcdb()->findCell(gd_celldesc->cellname(),
                 Electrical);
             cNodeMap *map = ecd ? ecd->nodes() : 0;
-            if (nm && map && SCD()->isGlobalNetName(nm->string())) {
+            if (nm && map && SCD()->isGlobalNetName(Tstring(nm))) {
                 int grp = group_of_node(map->findNode(nm));
                 if (grp < 0) {
                     for (int i = 0; i < gd_asize; i++) {
@@ -387,7 +387,7 @@ cGroupDesc::check_bulk_contact(const sDevInst *di, sDevContactInst *ci)
                 if (grp >= 0) {
                     ExtErrLog.add_log(ExtLogAssocV,
                         "resolved %s %d bulk contact group %d by name %s",
-                        di->desc()->name()->string(), di->index(), grp,
+                        Tstring(di->desc()->name()), di->index(), grp,
                         cd->netname_gvn());
                     ci->set_group(grp);
                     link_contact(ci);
@@ -965,7 +965,7 @@ sDevComp::set(sDevInst *di)
             numconts++;
         if (!numconts) {
             Errs()->add_error("Instance of device %s has no contacts.",
-                di->desc()->name()->string());
+                Tstring(di->desc()->name()));
             dc_conts_sz = 0;
             return (false);
         }
@@ -984,8 +984,8 @@ sDevComp::set(sDevInst *di)
         if (ix >= dc_conts_sz) {
             Errs()->add_error(
                 "Instance of device %s, contact %s, index %d out "
-                "of range.", di->desc()->name()->string(),
-                ci->desc()->name()->string(), ix);
+                "of range.", Tstring(di->desc()->name()),
+                Tstring(ci->desc()->name()), ix);
             dc_conts_sz = 0;
             return (false);
         }
@@ -993,7 +993,7 @@ sDevComp::set(sDevInst *di)
 
         // If a MOS device, save the gate index.
         if (di->desc()->is_mos()) {
-            char c = *ci->desc()->name()->string();
+            char c = *Tstring(ci->desc()->name());
             if (c == 'g' || c == 'G')
                 dc_gix = ix;
         }
@@ -1002,7 +1002,7 @@ sDevComp::set(sDevInst *di)
         if (!dc_conts[i]) {
             Errs()->add_error(
                 "Instance of device %s, contact index %d unset.",
-                di->desc()->name()->string(), i);
+                Tstring(di->desc()->name()), i);
             dc_conts_sz = 0;
             return (false);
         }
@@ -1019,14 +1019,14 @@ sDevComp::set(sDevInst *di)
         if (dc_pix1 < 0) {
             Errs()->add_error(
                 "Instance of device %s, permute name %s not found.",
-                di->desc()->name()->string(), dd->permute_cont1()->string());
+                Tstring(di->desc()->name()), Tstring(dd->permute_cont1()));
             dc_conts_sz = 0;
             return (false);
         }
         if (dc_pix2 < 0) {
             Errs()->add_error(
                 "Instance of device %s, permute name %s not found.",
-                di->desc()->name()->string(), dd->permute_cont2()->string());
+                Tstring(di->desc()->name()), Tstring(dd->permute_cont2()));
             dc_conts_sz = 0;
             return (false);
         }
@@ -1049,7 +1049,7 @@ sDevComp::set(sEinstList *el)
     for (CDp_cnode *pc = pc0; pc; pc = pc->next(), cnt++) ;
     if (!cnt) {
         Errs()->add_error("Instance of device %s has no nodes.",
-            el->cdesc()->cellname()->string());
+            Tstring(el->cdesc()->cellname()));
         return (false);
     }
     if (cnt > dc_nodes_sz) {
@@ -1065,7 +1065,7 @@ sDevComp::set(sEinstList *el)
         if (!pr) {
             Errs()->add_error("Instance of device %s has nonzero vector "
                 "index but no range property.",
-                el->cdesc()->cellname()->string());
+                Tstring(el->cdesc()->cellname()));
             return (false);
         }
     }
@@ -1082,7 +1082,7 @@ sDevComp::set(sEinstList *el)
             Errs()->add_error(
                 "Instance of device %s has no node property "
                 "for index %d",
-                el->cdesc()->cellname()->string(), i);
+                Tstring(el->cdesc()->cellname()), i);
             return (false);
         }
     }
@@ -1417,7 +1417,7 @@ sDevComp::is_mos_tpeq(cGroupDesc *gd, const sEinstList *el)
     int ns1 = -1;
     int nd1 = -1;
     for (unsigned int i = 0; i < dc_nodes_sz; i++) {
-        switch (*dc_conts[i]->cont_name()->string()) {
+        switch (*Tstring(dc_conts[i]->cont_name())) {
         case 'g':
         case 'G':
             ng1 = dc_nodes[i]->enode();
@@ -1457,7 +1457,7 @@ sDevComp::is_mos_tpeq(cGroupDesc *gd, const sEinstList *el)
             pc = pc0;
         if (!pc)
             return (false);
-        switch (*dc_conts[pc->index()]->cont_name()->string()) {
+        switch (*Tstring(dc_conts[pc->index()]->cont_name())) {
         case 'g':
         case 'G':
             ng2 = pc->enode();

@@ -562,7 +562,7 @@ CDnetex::print_this(sLstr *lstr) const
         lstr->add_c(')');
     }
     else {
-        lstr->add(nx_name->string());
+        lstr->add(Tstring(nx_name));
         if (nx_vecex) {
             lstr->add_c('<');
             CDvecex::print_all(nx_vecex, lstr);

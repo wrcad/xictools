@@ -41,7 +41,7 @@ public:
     struct name_elt
     {
         // sntable_t<> stuff
-        const char *tab_name()          { return (ne_name->string()); }
+        const char *tab_name()          { return (Tstring(ne_name)); }
         int tab_indx()                  { return (ne_indx); }
         name_elt *tab_next()            { return (ne_next); }
         void set_tab_next(name_elt *n)  { ne_next = n; }

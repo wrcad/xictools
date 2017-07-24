@@ -346,7 +346,7 @@ WindowDesc::show_boundaries(symref_t *p, bnd_draw_t *bd, int hlev)
 
                 if (bd->show_text() != SLnone) {
                     char s1[128], s2[128];
-                    const char *mname = px->get_name()->string();
+                    const char *mname = Tstring(px->get_name());
                     if (at.nx != 1 || at.ny != 1) {
                         char *s = mmUtoA(s1, at.nx);
                         *s++ = '/';

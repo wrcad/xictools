@@ -431,7 +431,7 @@ cv_in::chd_process_override_cell(symref_t *p)
         return (OInew);
 
     if (!FIO()->IsSkipOverrideCells()) {
-        const char *cname = p->get_name()->string();
+        const char *cname = Tstring(p->get_name());
         CDs *sd = CDcdb()->findCell(cname, in_mode);
         if (!sd) {
             Errs()->add_error("Override cell %s not found.", cname);
@@ -709,7 +709,7 @@ cv_in::mark_references(stringlist **slp)
                     sdesc = CDcdb()->findCell(cn, in_mode);
             }
             if (!sdesc) {
-                unkns = new stringlist(lstring::copy(p->get_name()->string()),
+                unkns = new stringlist(lstring::copy(Tstring(p->get_name())),
                     unkns);
                 continue;
             }
@@ -733,7 +733,7 @@ cv_in::mark_references(stringlist **slp)
                 CDcbin cbin;
                 FIO()->SetSkipFixBB(true);
                 OItype oiret = FIO()->OpenLibCell(0,
-                    sdesc->cellname()->string(), LIBdevice | LIBuser, &cbin);
+                    Tstring(sdesc->cellname()), LIBdevice | LIBuser, &cbin);
                 FIO()->SetSkipFixBB(false);
                 if (oiret != OIok) {
                     // An error or user abort.  OIok is returned whether
@@ -761,7 +761,7 @@ cv_in::mark_references(stringlist **slp)
             }
             else if (is_toplevel_in_tab(sdesc, tab)) {
                 s0 = new stringlist(
-                    lstring::copy(p->get_name()->string()), s0);
+                    lstring::copy(Tstring(p->get_name())), s0);
                 if (compressed)
                     sdesc->setCompressed(true);
             }
@@ -1122,7 +1122,7 @@ cv_out::write(const stringlist *cnlist, DisplayMode mode, double sc)
             CDs *sdesc = ncbin.celldesc(out_mode);
             if (!sdesc || sdesc->isEmpty())
                 continue;
-            if (out_visited->find(sdesc->cellname()->string()) < 0) {
+            if (out_visited->find(Tstring(sdesc->cellname())) < 0) {
                 if (!wrote_header) {
                     if (!write_header(top_sdesc))
                         return (false);
@@ -1151,7 +1151,7 @@ cv_out::write(const stringlist *cnlist, DisplayMode mode, double sc)
         if (!write_chd_refs())
             return (false);
         return (write_endlib(
-            top_sdesc ? top_sdesc->cellname()->string() : 0));
+            top_sdesc ? Tstring(top_sdesc->cellname()) : 0));
     }
     return (true);
 }
@@ -1197,7 +1197,7 @@ cv_out::write_flat(const char *cname, double sc, const BBox *AOI, bool clip)
     }
     Errs()->arm_warnings(false);
 
-    return (ok && write_endlib(sdesc->cellname()->string()));
+    return (ok && write_endlib(Tstring(sdesc->cellname())));
 }
 
 
@@ -1254,7 +1254,7 @@ cv_out::write_begin_struct(const char *name)
 {
     if (!name || !*name)
         return (false);
-    name = CD()->CellNameTableAdd(name)->string();
+    name = Tstring(CD()->CellNameTableAdd(name));
     add_visited(name);
 
     time_t tloc = time(0);
@@ -1274,7 +1274,7 @@ cv_out::write_symbol(const CDs *sdesc, bool thisonly)
         return (true);
 
     // Mark cell as visited, store symbol number.
-    add_visited(sdesc->cellname()->string());
+    add_visited(Tstring(sdesc->cellname()));
 
     // Never write library cell definitions.
     if (sdesc->isDevice() && sdesc->isLibrary())
@@ -1301,7 +1301,7 @@ cv_out::write_symbol(const CDs *sdesc, bool thisonly)
 
     if (sdesc->isChdRef() && out_filetype != Fnative) {
         out_chd_refs = new stringlist(
-            lstring::copy(sdesc->cellname()->string()), out_chd_refs);
+            lstring::copy(Tstring(sdesc->cellname())), out_chd_refs);
         return (true);
     }
 
@@ -1314,7 +1314,7 @@ cv_out::write_symbol(const CDs *sdesc, bool thisonly)
             if (mdesc->hasInstances()) {
                 CDs *msdesc = mdesc->celldesc();
                 if (msdesc && out_visited->find(
-                        msdesc->cellname()->string()) < 0) {
+                        Tstring(msdesc->cellname())) < 0) {
                     // Write master's definition to output file
                     if (!write_symbol(msdesc))
                         return (false);
@@ -1329,7 +1329,7 @@ cv_out::write_symbol(const CDs *sdesc, bool thisonly)
 
     time_t tloc = time(0);
     tm *date = gmtime(&tloc);
-    bool ret = write_struct(sdesc->cellname()->string(), date, date);
+    bool ret = write_struct(Tstring(sdesc->cellname()), date, date);
     clear_property_queue();
     if (!ret)
         return (false);
@@ -1383,20 +1383,20 @@ cv_out::write_chd_refs()
         if (!sdesc) {
             Errs()->add_error(
                 "write_chd_refs: no %s cell found in current symbol table.",
-                sdesc->cellname()->string());
+                Tstring(sdesc->cellname()));
             return (false);
         }
         if (!sdesc->isChdRef()) {
             Errs()->add_error(
                 "write_chd_refs: cell %s not a CHD reference.",
-                sdesc->cellname()->string());
+                Tstring(sdesc->cellname()));
             return (false);
         }
         CDp *p = sdesc->prpty(XICP_CHD_REF);
         if (!p) {
             Errs()->add_error(
                 "write_chd_refs: no ChdRef (7150) property in cell %s.",
-                sdesc->cellname()->string());
+                Tstring(sdesc->cellname()));
             return (false);
         }
         tab.add(sl->string, new sChdPrp(p->string()));
@@ -1530,7 +1530,7 @@ cv_out::write_symbol_flat(const CDs *sdesc, const BBox *AOI, bool clip)
 {
     time_t tloc = time(0);
     tm *date = gmtime(&tloc);
-    if (!write_struct(sdesc->cellname()->string(), date, date))
+    if (!write_struct(Tstring(sdesc->cellname()), date, date))
         return (false);
 
     clear_property_queue();
@@ -1598,7 +1598,7 @@ cv_out::write_instances(const CDs *sdesc)
             break;
 
         Instance inst;
-        inst.name = cdesc->cellname()->string();
+        inst.name = Tstring(cdesc->cellname());
         if (!inst.name)
             continue;
         ret = inst.set(cdesc);

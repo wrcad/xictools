@@ -107,7 +107,7 @@ cCVtab::build_BB_table(cCHD *chd, symref_t *p, unsigned int ix,
     if (!p->get_defseen()) {
         Errs()->add_error(
             "build_BB_table: top-level symref %s not resolved in CHD.",
-            p->get_name()->string());
+            Tstring(p->get_name()));
         return (false);
     }
     if (BB && p->get_elec()) {
@@ -205,7 +205,7 @@ cCVtab::build_TS_table(symref_t *p, unsigned int ix, unsigned int maxdepth)
     if (!p->get_defseen()) {
         Errs()->add_error(
             "build_TS_table: top-level symref %s not resolved in CHD.",
-            p->get_name()->string());
+            Tstring(p->get_name()));
         return (false);
     }
     if (p->get_elec()) {
@@ -713,7 +713,7 @@ cCVtab::prune_empties_core(chd_intab *itab, unsigned int ix)
 
                     Instance inst;
                     inst.magn = at.magn;
-                    inst.name = cp->get_name()->string();
+                    inst.name = Tstring(cp->get_name());
                     inst.nx = at.nx;
                     inst.ny = at.ny;
                     inst.dx = at.dx;
@@ -768,7 +768,7 @@ cCVtab::prune_empties_core(chd_intab *itab, unsigned int ix)
                 return (OIaborted);
             else {
                 Errs()->add_error("prune_empties: error processing %s.",
-                    p->get_name()->string());
+                    Tstring(p->get_name()));
                 return (OIerror);
             }
         }
@@ -853,7 +853,7 @@ cCVtab::prune_empties_rc(cvtab_item_t *pitem, fio_chd_cvtab::ph_item_t *ph)
 
                     Instance inst;
                     inst.magn = at.magn;
-                    inst.name = cp->get_name()->string();
+                    inst.name = Tstring(cp->get_name());
                     inst.nx = at.nx;
                     inst.ny = at.ny;
                     inst.dx = at.dx;
@@ -910,7 +910,7 @@ cCVtab::prune_empties_rc(cvtab_item_t *pitem, fio_chd_cvtab::ph_item_t *ph)
             return (OIaborted);
         else {
             Errs()->add_error("prune_empties_rc: error processing %s.",
-                p->get_name()->string());
+                Tstring(p->get_name()));
             return (OIerror);
         }
     }

@@ -156,7 +156,7 @@ cell_menu::M_Tree(CmdDesc *cmd)
         if (DSP()->CurCellName())
             XM()->PopUpTree(cmd ? cmd->caller : 0,
                 cmd && Menu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF,
-                DSP()->CurCellName()->string());
+                Tstring(DSP()->CurCellName()));
     }
     else if (DSP()->MainWdesc()->DbType() == WDchd) {
         XM()->PopUpTree(cmd ? cmd->caller : 0,

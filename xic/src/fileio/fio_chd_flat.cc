@@ -881,7 +881,7 @@ cCHD::flatten(symref_t *p, cv_in *in, int maxdepth, const FIOcvtPrms *prms)
         }
         if (ok) {
             if (!in->no_end_lib() &&
-                    !out->write_endlib(p->get_name()->string())) {
+                    !out->write_endlib(Tstring(p->get_name()))) {
                 Errs()->add_error("cCHD::flatten: write end lib failed.");
                 ok = false;
             }

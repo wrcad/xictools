@@ -1958,7 +1958,7 @@ sEs::es_dev_menu_proc(GtkWidget*, void *client_data, unsigned int type)
     sDevDesc *d = (sDevDesc*)client_data;
     if (GRX->GetStatus(Es->es_p2_delblk)) {
         GRX->Deselect(Es->es_p2_delblk);
-        if (d && EX()->removeDevice(d->name()->string(), d->prefix())) {
+        if (d && EX()->removeDevice(Tstring(d->name()), d->prefix())) {
             d->set_next(0);
             delete Es->es_devdesc;
             Es->es_devdesc = d;

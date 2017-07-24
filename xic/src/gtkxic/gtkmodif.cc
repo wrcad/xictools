@@ -196,9 +196,9 @@ sSC::sSC(stringlist *l, bool(*s)(const char*))
             itm->name = lstring::copy(l->string);
             if (cbin.fileType() == Fnative && cbin.fileName()) {
                 itm->path = new char[strlen(cbin.fileName()) +
-                    strlen(cbin.cellname()->string()) + 2];
+                    strlen(Tstring(cbin.cellname())) + 2];
                 sprintf(itm->path, "%s/%s", cbin.fileName(),
-                    cbin.cellname()->string());
+                    Tstring(cbin.cellname()));
             }
             else if (FIO()->IsSupportedArchiveFormat(cbin.fileType()))
                 itm->path = FIO()->DefaultFilename(&cbin, cbin.fileType());

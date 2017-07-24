@@ -128,7 +128,7 @@ cExt::extract(CDs *sdesc)
 #endif
 
     ExtErrLog.add_log(ExtLogExt, "Extracting %s complete, %s.",
-        sdesc->cellname()->string(),
+        Tstring(sdesc->cellname()),
         ret == XIok ? "no errors" : "error(s) encountered");
     ExtErrLog.end_logging();
 
@@ -137,7 +137,7 @@ cExt::extract(CDs *sdesc)
     if (ret == XIok) {
         if (EX()->isVerbosePromptline())
             PL()->ShowPromptV("Extraction complete in %s.",
-                sdesc->cellname()->string());
+                Tstring(sdesc->cellname()));
     }
     else
         PL()->ShowPrompt("Extraction aborted.");
@@ -345,7 +345,7 @@ cExt::shouldFlatten(const CDc *cdesc, CDs *parent)
         return (true);
 
     // Check the "flatten prefix" list.
-    return (flt_match(mstr->cellname()->string(), flattenPrefix()));
+    return (flt_match(Tstring(mstr->cellname()), flattenPrefix()));
 }
 
 
@@ -460,7 +460,7 @@ cGroupDesc::setup_extract(int dcnt)
         fprintf(fp,
             "\n=======================================================\n");
         fprintf(fp, "Extracting cell %s\n",
-            gd_celldesc->cellname()->string());
+            Tstring(gd_celldesc->cellname()));
     }
     clear_extract();
 
@@ -534,7 +534,7 @@ cGroupDesc::setup_extract(int dcnt)
             // The global flag in the group has not been officially
             // set yet.
             if (gd_groups[i].is_wire_only() &&
-                    !SCD()->isGlobalNetName(nm->string()))
+                    !SCD()->isGlobalNetName(Tstring(nm)))
                 continue;
 
             long onum = (long)SymTab::get(&tab, (unsigned long)nm);
@@ -564,7 +564,7 @@ cGroupDesc::setup_extract(int dcnt)
                 CDnetName name = gd_groups[i].netname();
                 if (!name)
                     continue;
-                ExtErrLog.add_log(ExtLogExt, "  %3d  %s", i, name->string());
+                ExtErrLog.add_log(ExtLogExt, "  %3d  %s", i, Tstring(name));
             }
         }
     }
@@ -949,7 +949,7 @@ cGroupDesc::bind_term_group_at_location(CDsterm *term)
             if ((!term->layer() || term->layer() == ol->odesc->ldesc()) &&
                     ol->odesc->intersect(term->lx(), term->ly(), true)) {
                 term->set_ref(ol->odesc);
-                warn_conductor(i, term->name()->string());
+                warn_conductor(i, Tstring(term->name()));
                 bind_term(term, term->group());
                 return (true);
             }
@@ -964,7 +964,7 @@ cGroupDesc::bind_term_group_at_location(CDsterm *term)
             if ((!term->layer() || term->layer() == ol->odesc->ldesc()) &&
                     ol->odesc->intersect(term->lx(), term->ly(), true)) {
                 term->set_ref(ol->odesc);
-                warn_conductor(0, term->name()->string());
+                warn_conductor(0, Tstring(term->name()));
                 bind_term(term, term->group());
                 return (true);
             }
@@ -1114,7 +1114,7 @@ cGroupDesc::add_subckts()
 
     if (EX()->isVerbosePromptline()) {
         PL()->ShowPromptV("Pruning nets in %s...",
-            gd_celldesc->cellname()->string());
+            Tstring(gd_celldesc->cellname()));
     }
     if (gd_vcontacts) {
         int cnt = vnextnum();
@@ -1301,7 +1301,7 @@ cGroupDesc::fixup_subc_contacts(sSubcInst *s)
                     ExtErrLog.add_err(
                         "Internal error in fixup_subc_contacts for %s, "
                         "parent groups not equal.",
-                        gd_celldesc->cellname()->string());
+                        Tstring(gd_celldesc->cellname()));
                 }
                 else {
                     cp->set_next(cn);
@@ -1328,7 +1328,7 @@ cGroupDesc::fixup_subc_contacts(sSubcInst *s)
                         ExtErrLog.add_err(
                             "Internal error in fixup_subc_contacts for %s, "
                             "contact not found in list.",
-                            gd_celldesc->cellname()->string());
+                            Tstring(gd_celldesc->cellname()));
                     }
                     delete cx;
                     continue;
@@ -1371,7 +1371,7 @@ cGroupDesc::fixup_subc_contacts(sSubcInst *s)
                 ExtErrLog.add_err(
                     "Internal error in fixup_subc_contacts for %s, "
                     "ground contact not found in list.",
-                    gd_celldesc->cellname()->string());
+                    Tstring(gd_celldesc->cellname()));
             }
 
             reduce(cpg, 0);
@@ -1435,7 +1435,7 @@ cGroupDesc::remap_subc_contacts(sSubcInst *s, const int *map)
                 ExtErrLog.add_err(
                     "Internal error in remap_subc_contacts for %s, "
                     "contact not found in list.",
-                    gd_celldesc->cellname()->string());
+                    Tstring(gd_celldesc->cellname()));
 
                 // Remap the subc_group entry.
                 c->set_subc_group(map[c->subc_group()]);
@@ -1764,7 +1764,7 @@ cGroupDesc::warn_conductor(int grp, const char *tname)
     ExtErrLog.add_err(
         "Warning in %s, terminal %s is associated with a\n"
         "CONDUCTOR layer in group %d since no ROUTING layer was found.",
-        gd_celldesc->cellname()->string(), tname, grp);
+        Tstring(gd_celldesc->cellname()), tname, grp);
 }
 
 
@@ -1897,7 +1897,7 @@ cGroupDesc::fix_connections_rc(SymTab *done_tab)
 
             ExtErrLog.add_log(ExtLogExt,
                 "Merging contact groups %d and %d in %s due to context.",
-                grp, il->value, gd_celldesc->cellname()->string());
+                grp, il->value, Tstring(gd_celldesc->cellname()));
             reduce(grp, il->value);
             ndone++;
         }
@@ -2253,12 +2253,12 @@ cGroupDesc::flatten_core(sSubcList *sc, bool assoc, int *nf, int *ns, int *nd)
         if (assoc) {
             ExtErrLog.add_log(ExtLogAssoc, "Smashed %d %s of %s into %s.",
                 fcnt, fcnt > 1 ? "instances" : "instance",
-                mstrname->string(), gd_celldesc->cellname()->string());
+                Tstring(mstrname), Tstring(gd_celldesc->cellname()));
         }
         else {
             ExtErrLog.add_log(ExtLogExt, "Smashed %d %s of %s into %s.",
                 fcnt, fcnt > 1 ? "instances" : "instance",
-                mstrname->string(), gd_celldesc->cellname()->string());
+                Tstring(mstrname), Tstring(gd_celldesc->cellname()));
         }
     }
     delete [] map;
@@ -2288,22 +2288,22 @@ namespace {
         const char *n1 = 0;
         sSubcInst *s1 = l1->subs();
         if (s1 && s1->cdesc())
-            n1 = s1->cdesc()->cellname()->string();
+            n1 = Tstring(s1->cdesc()->cellname());
         if (!n1) {
             sEinstList *e1 = l1->esubs();
             if (e1 && e1->cdesc())
-                n1 = e1->cdesc()->cellname()->string();
+                n1 = Tstring(e1->cdesc()->cellname());
         }
         if (!n1)
             n1 = "";
         const char *n2 = 0;
         sSubcInst *s2 = l2->subs();
         if (s2 && s2->cdesc())
-            n2 = s2->cdesc()->cellname()->string();
+            n2 = Tstring(s2->cdesc()->cellname());
         if (!n2) {
             sEinstList *e2 = l2->esubs();
             if (e2 && e2->cdesc())
-                n2 = e2->cdesc()->cellname()->string();
+                n2 = Tstring(e2->cdesc()->cellname());
         }
         if (!n2)
             n2 = "";
@@ -2428,10 +2428,10 @@ namespace {
     // Sort comparison function for devices, alphabetical by name.
     bool dl_comp(const sDevList *d1, const sDevList *d2)
     {
-        const char *n1 = d1->devname()->string();
+        const char *n1 = Tstring(d1->devname());
         if (!n1)
             n1 = "";
-        const char *n2 = d2->devname()->string();
+        const char *n2 = Tstring(d2->devname());
         if (!n2)
             n2 = "";
         return (strcmp(n1, n2) < 0);
@@ -2678,9 +2678,9 @@ cGroupDesc::add_dev_copy(cTfmStack *tstk, sDevInst *di, int *map)
         if (!link_contact(c) && c->desc()->level() == BC_immed) {
             ExtErrLog.add_err(
                 "In %s, add_dev_copy: %s %d %s index out of range %d %d.",
-                gd_celldesc->cellname()->string(),
-                di->desc()->name()->string(), di->index(),
-                c->desc()->name()->string(), c->group(), gd_asize);
+                Tstring(gd_celldesc->cellname()),
+                Tstring(di->desc()->name()), di->index(),
+                Tstring(c->desc()->name()), c->group(), gd_asize);
         }
     }
     return (di);
@@ -2723,7 +2723,7 @@ cGroupDesc::add_subc_copy(cTfmStack *tstk, sSubcInst *su, int *map)
         else {
             ExtErrLog.add_err(
                 "In %s, add_subc_copy: index out of range %d %d.",
-                gd_celldesc->cellname()->string(), cpg, gd_asize);
+                Tstring(gd_celldesc->cellname()), cpg, gd_asize);
         }
     }
 }
@@ -2915,7 +2915,7 @@ sSubcInst::instance_name()
 {
     char buf[16];
     sprintf(buf, "%d", sc_index);
-    const char *nm = sc_cdesc ? sc_cdesc->cellname()->string() : 0;
+    const char *nm = sc_cdesc ? Tstring(sc_cdesc->cellname()) : 0;
     if (!nm)
         nm = "UNKNOWN";
     char *name = new char[strlen(nm) + strlen(buf) + 2];

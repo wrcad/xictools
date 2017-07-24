@@ -1470,7 +1470,7 @@ geom2_funcs::IFopenViaSubMaster(Variable *res, Variable *args, void*)
         return (BAD);
     }
     res->type = TYP_STRING;
-    res->content.string = lstring::copy(sd->cellname()->string());
+    res->content.string = lstring::copy(Tstring(sd->cellname()));
     res->flags |= VF_ORIGINAL;
     return (OK);
 }
@@ -2527,7 +2527,7 @@ namespace {
             *odptr = 0;
         CDs *cursd = CurCell();
         if (!cursd) {
-            if (!CD()->ReopenCell(DSP()->CurCellName()->string(),
+            if (!CD()->ReopenCell(Tstring(DSP()->CurCellName()),
                     DSP()->CurMode()) || !(cursd = CurCell()))
                 return (BAD);
         }
@@ -2643,7 +2643,7 @@ namespace {
             *odptr = 0;
         CDs *cursd = CurCell();
         if (!cursd) {
-            if (!CD()->ReopenCell(DSP()->CurCellName()->string(),
+            if (!CD()->ReopenCell(Tstring(DSP()->CurCellName()),
                     DSP()->CurMode()) || !(cursd = CurCell()))
                 return (BAD);
         }
@@ -2764,7 +2764,7 @@ namespace {
             *odptr = 0;
         CDs *cursd = CurCell();
         if (!cursd) {
-            if (!CD()->ReopenCell(DSP()->CurCellName()->string(),
+            if (!CD()->ReopenCell(Tstring(DSP()->CurCellName()),
                     DSP()->CurMode()) || !(cursd = CurCell()))
                 return (BAD);
         }
@@ -3103,7 +3103,7 @@ namespace {
             *odptr = 0;
         CDs *cursd = CurCell();
         if (!cursd) {
-            if (!CD()->ReopenCell(DSP()->CurCellName()->string(),
+            if (!CD()->ReopenCell(Tstring(DSP()->CurCellName()),
                     DSP()->CurMode()) || !(cursd = CurCell()))
                 return (BAD);
         }
@@ -3216,7 +3216,7 @@ namespace {
             *odptr = 0;
         CDs *cursd = CurCell();
         if (!cursd) {
-            if (!CD()->ReopenCell(DSP()->CurCellName()->string(),
+            if (!CD()->ReopenCell(Tstring(DSP()->CurCellName()),
                     DSP()->CurMode()) || !(cursd = CurCell()))
                 return (BAD);
         }
@@ -4713,7 +4713,7 @@ geom2_funcs::IFaddCellProperty(Variable *res, Variable *args, void*)
         return (BAD);
     CDs *cursd = CurCell();
     if (!cursd) {
-        if (!CD()->ReopenCell(DSP()->CurCellName()->string(),
+        if (!CD()->ReopenCell(Tstring(DSP()->CurCellName()),
                 DSP()->CurMode()) || !(cursd = CurCell()))
             return (BAD);
     }

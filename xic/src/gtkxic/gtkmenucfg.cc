@@ -1513,7 +1513,7 @@ gtkMenuConfig::user_cmd_proc(void *arg)
         bool cell_created = false;
         CDs *cursd = CurCell();
         if (!cursd) {
-            if (!CD()->ReopenCell(DSP()->CurCellName()->string(),
+            if (!CD()->ReopenCell(Tstring(DSP()->CurCellName()),
                     DSP()->CurMode())) {
                 Log()->ErrorLog(mh::Processing, Errs()->get_error());
                 return (false);

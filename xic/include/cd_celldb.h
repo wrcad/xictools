@@ -115,7 +115,7 @@ struct CDtables
     CDs *linkElecCell(CDs*);
     CDs *unlinkElecCell(CDs*);
 
-    const char *tableName()         { return (t_table_name->string()); }
+    const char *tableName()         { return (Tstring(t_table_name)); }
 
     CDtables *nextTable()           { return (t_next); }
     void setNextTable(CDtables *t)  { t_next = t; }
@@ -132,7 +132,7 @@ struct CDtables
             return (0);
         }
 
-    const char *cellname()          const { return (t_cell_name->string()); }
+    const char *cellname()          const { return (Tstring(t_cell_name)); }
     void setCellname(CDcellName n)  { t_cell_name = n; }
 
     CDcellTab *auxCellTab()         { return (t_aux_cell_tab); }
@@ -196,7 +196,7 @@ public:
         {
             if (!c_subm_table)
                 return (0);
-            return (c_subm_table->findPhysCell(name->string()));
+            return (c_subm_table->findPhysCell(Tstring(name)));
         }
 
     CDs *findCell(CDcellName name, DisplayMode mode)
@@ -204,12 +204,12 @@ public:
             CDs *sd = 0;
             if (mode == Physical) {
                 if (c_tables)
-                    sd = c_tables->findPhysCell(name->string());
+                    sd = c_tables->findPhysCell(Tstring(name));
                 if (!sd && c_subm_table)
-                    sd = c_subm_table->findPhysCell(name->string());
+                    sd = c_subm_table->findPhysCell(Tstring(name));
             }
             else if (c_tables)
-                sd = c_tables->findElecCell(name->string());
+                sd = c_tables->findElecCell(Tstring(name));
             return (sd);
         }
 

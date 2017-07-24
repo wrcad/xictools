@@ -160,7 +160,7 @@ cGroupDesc::group_name(int grp, bool *has_cterm, bool *has_conflict) const
             }
         }
         if (gd_groups[grp].netname())
-            return (gd_groups[grp].netname()->string());
+            return (Tstring(gd_groups[grp].netname()));
     }
     return (0);
 }
@@ -174,12 +174,12 @@ const char *
 cGroupDesc::group_name(int grp, sLstr *map_lstr) const
 {
     if (grp < 0)
-        return (CDnetex::name_tab_add("-1")->string());
+        return (Tstring(CDnetex::name_tab_add("-1")));
     sGroup *g = group_for(grp);
     if (!g)
-        return (CDnetex::name_tab_add("-1")->string());
+        return (Tstring(CDnetex::name_tab_add("-1")));
 
-    const char *nm = g->netname()->string();
+    const char *nm = Tstring(g->netname());
     if (nm && (!EX()->isIgnoreGroupNames() || SCD()->isGlobalNetName(nm)))
         return (nm);
 
@@ -198,13 +198,13 @@ cGroupDesc::group_name(int grp, sLstr *map_lstr) const
         map_lstr->add("* ");
         map_lstr->add_i(grp);
         map_lstr->add_c(' ');
-        map_lstr->add(cnm ? cnm->string() : "???");
+        map_lstr->add(cnm ? Tstring(cnm) : "???");
         map_lstr->add_c('\n');
     }
 
     char buf[64];
     mmItoA(buf, grp);
-    return (CDnetex::name_tab_add(buf)->string());
+    return (Tstring(CDnetex::name_tab_add(buf)));
 }
 
 
@@ -254,7 +254,7 @@ cGroupDesc::update_net_label(int grp)
     if (grp < 1 || grp >= gd_asize)
         return (0);
     CDol *list = find_net_labels(grp, 0);
-    const char *newstr = gd_groups[grp].netname()->string();
+    const char *newstr = Tstring(gd_groups[grp].netname());
     if (!list && newstr)
         return (create_net_label(grp, newstr, false, 0));
 
@@ -558,8 +558,8 @@ cGroupDesc::find_set_net_names()
                 ExtErrLog.add_err(
                     "In %s, group %d has conflicting net labels\n"
                     "%s and %s, labels ignored.",
-                    gd_celldesc->cellname()->string(), i,
-                    name->string(), nn->string());
+                    Tstring(gd_celldesc->cellname()), i,
+                    Tstring(name), Tstring(nn));
                 name = 0;
                 break;
             }
@@ -848,8 +848,8 @@ cGroupDesc::find_group_at_location_rc(const sSubcInstList *sil, const CDl *ld,
 
                         ExtErrLog.add_log(ExtLogExtV,
                             "New group %d in %s for link to %d in %s.",
-                            group, pg->gd_celldesc->cellname()->string(),
-                            sbg, gd->gd_celldesc->cellname()->string());
+                            group, Tstring(pg->gd_celldesc->cellname()),
+                            sbg, Tstring(gd->gd_celldesc->cellname()));
                     }
                     sl = sl->next();
                     if (!sl)

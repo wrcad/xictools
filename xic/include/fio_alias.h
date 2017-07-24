@@ -139,8 +139,7 @@ struct ATstrTab
                 if (st_local)
                     e->set_tab_name(st_buf.new_string(string));
                 else
-                    e->set_tab_name(
-                        CD()->CellNameTableAdd(string)->string());
+                    e->set_tab_name(Tstring(CD()->CellNameTableAdd(string)));
                 st_tab->link(e, false);
                 st_tab = st_tab->check_rehash();
             }

@@ -96,9 +96,9 @@ cCDcdb::removeCell(CDcellName name, DisplayMode mode)
         return (0);
     CDs *sd;
     if (mode == Physical)
-        sd = c_tables->removePhysCell(name->string());
+        sd = c_tables->removePhysCell(Tstring(name));
     else
-        sd = c_tables->removeElecCell(name->string());
+        sd = c_tables->removeElecCell(Tstring(name));
     return (sd);
 }
 
@@ -601,7 +601,7 @@ namespace {
         if (!sd)
             return;
         const char *str = sd->isElectrical() ? "elec" : "phys";
-        const char *name = sd->cellname()->string();
+        const char *name = Tstring(sd->cellname());
 
         CDm_gen rgen(sd, GEN_MASTER_REFS);
         for (CDm *mstr = rgen.m_first(); mstr; mstr = rgen.m_next()) {
@@ -613,21 +613,21 @@ namespace {
                 if (cd->master() != mstr)
                     printf(
                 "Error: in %s %s, refs ObjRefs instance inconsistent, %s\n",
-                        str, name, mstr->cellname()->string());
+                        str, name, Tstring(mstr->cellname()));
             }
             CDc_gen cgen_u(mstr, true);
             for (CDc *cd = cgen_u.c_first(); cd; cd = cgen_u.c_next()) {
                 if (cd->master() != mstr)
                     printf(
                 "Error: in %s %s, refs Unlinked instance inconsistent, %s\n",
-                        str, name, mstr->cellname()->string());
+                        str, name, Tstring(mstr->cellname()));
             }
             if (!mstr->parent())
                 printf("Error: in %s %s, ref no parent, %s\n",
-                    str, name, mstr->cellname()->string());
+                    str, name, Tstring(mstr->cellname()));
             if (mstr != mstr->parent()->findMaster(mstr->cellname()))
                 printf("Error: in %s %s, ref master not in parent table, %s\n",
-                    str, name, mstr->cellname()->string());
+                    str, name, Tstring(mstr->cellname()));
 
         }
         CDm_gen mgen(sd, GEN_MASTERS);
@@ -637,21 +637,21 @@ namespace {
                 if (cd->master() != mstr)
                     printf(
                 "Error: in %s %s, list ObjRefs instance inconsistent, %s\n",
-                        str, name, mstr->cellname()->string());
+                        str, name, Tstring(mstr->cellname()));
             }
             CDc_gen cgen_u(mstr, true);
             for (CDc *cd = cgen_u.c_first(); cd; cd = cgen_u.c_next()) {
                 if (cd->master() != mstr)
                     printf(
                 "Error: in %s %s, list Unlinked instance inconsistent, %s\n",
-                        str, name, mstr->cellname()->string());
+                        str, name, Tstring(mstr->cellname()));
             }
             if (mstr->parent() != sd)
                 printf("Error: in %s %s, no parent, %s\n", str, name,
-                    mstr->cellname()->string());
+                    Tstring(mstr->cellname()));
             if (!mstr->celldesc())
                 printf("Error: in %s %s, no cell ptr, %s\n", str, name,
-                    mstr->cellname()->string());
+                    Tstring(mstr->cellname()));
             bool found = false;
             CDm_gen tgen(mstr->celldesc(), GEN_MASTER_REFS);
             for (CDm *m = tgen.m_first(); m; m = tgen.m_next()) {
@@ -662,7 +662,7 @@ namespace {
             }
             if (!found)
                 printf("Error: in %s %s, no back ptr, %s\n",
-                    str, name, mstr->cellname()->string());
+                    str, name, Tstring(mstr->cellname()));
         }
     }
 }
@@ -680,13 +680,13 @@ CDcellTab::do_test_ptrs()
         if (cbin.phys()) {
             if (cbin.phys()->isElectrical())
                 printf("Error: in %s, phys is electrical\n",
-                    cbin.cellname()->string());
+                    Tstring(cbin.cellname()));
             test_ptrs(cbin.phys());
         }
         if (cbin.elec()) {
             if (!cbin.elec()->isElectrical())
                 printf("Error: in %s, elec is physical\n",
-                    cbin.cellname()->string());
+                    Tstring(cbin.cellname()));
             test_ptrs(cbin.elec());
         }
     }

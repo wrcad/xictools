@@ -525,7 +525,7 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
     if (!deck) {
         PL()->ShowPromptV(
             "Unknown error: no SPICE listing available for %s.",
-            cursde->cellname()->string());
+            Tstring(cursde->cellname()));
         dspPkgIf()->SetWorking(false);
         return (false);
     }

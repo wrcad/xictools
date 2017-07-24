@@ -566,7 +566,7 @@ cCHD::writeMulti(const char *cellname, const FIOcvtPrms *iprms,
     const char *ext = cFIO::GetTypeExt(iprms->filetype());
     char *bname = lstring::copy(iprms->destination());
     if (!bname)
-        bname = lstring::copy(ptop->get_name()->string());
+        bname = lstring::copy(Tstring(ptop->get_name()));
     GCarray<char*> gc_bname(bname);
 
     bool do_gz = false;
@@ -645,7 +645,7 @@ cCHD::writeMulti(const char *cellname, const FIOcvtPrms *iprms,
 
             if (prms.flatten()) {
                 if (flat_map) {
-                    const char *cn = ptop->get_name()->string();
+                    const char *cn = Tstring(ptop->get_name());
                     tbuf = new char[strlen(cn) + 32];
                     sprintf(tbuf, "%s_%d", cn, cnt);
                     out_alias->set_alias(cn, tbuf);
@@ -723,7 +723,7 @@ cCHD::writeMulti(const char *cellname, const FIOcvtPrms *iprms,
 
                 if (prms.flatten()) {
                     if (flat_map) {
-                        const char *cn = ptop->get_name()->string();
+                        const char *cn = Tstring(ptop->get_name());
                         tbuf = new char[strlen(cn) + 32];
                         sprintf(tbuf, "%s_%d", cn, cnt);
                         out_alias->set_alias(cn, tbuf);
@@ -1337,7 +1337,7 @@ cCHD::write_multi_hier(symref_t *ptop, const FIOcvtPrms *prms,
     //
     const char *bname = prms->destination();
     if (!bname)
-        bname = ptop->get_name()->string();
+        bname = Tstring(ptop->get_name());
     char *fname = new char[strlen(bname) + 32];
     strcpy(fname, bname);
 
@@ -1526,7 +1526,7 @@ cCHD::write_multi_hier(symref_t *ptop, const FIOcvtPrms *prms,
 
     if (ok && wmc.out) {
         if (!wmc.in->no_end_lib() &&
-                !wmc.out->write_endlib(ptop->get_name()->string())) {
+                !wmc.out->write_endlib(Tstring(ptop->get_name()))) {
             Errs()->add_error(
                 "write_multi_hier: write end lib failed.");
             ok = false;
@@ -1955,7 +1955,7 @@ cCHD::write_multi_flat(symref_t *ptop, const FIOcvtPrms *prms,
     //
     const char *bname = prms->destination();
     if (!bname)
-        bname = ptop->get_name()->string();
+        bname = Tstring(ptop->get_name());
     char *fname = new char[strlen(bname) + 32];
     strcpy(fname, bname);
 
@@ -2009,7 +2009,7 @@ cCHD::write_multi_flat(symref_t *ptop, const FIOcvtPrms *prms,
             FIOaliasTab *out_alias = FIO()->NewWritingAlias(mask, flat_map);
             wmc.channels[chcnt]->assign_alias(out_alias);
             if (flat_map) {
-                const char *cn = ptop->get_name()->string();
+                const char *cn = Tstring(ptop->get_name());
                 char *tbuf = new char[strlen(cn) + 32];
                 sprintf(tbuf, "%s_%d", cn, cnt);
                 out_alias->set_alias(cn, tbuf);
@@ -2058,7 +2058,7 @@ cCHD::write_multi_flat(symref_t *ptop, const FIOcvtPrms *prms,
                     flat_map);
                 wmc.channels[cnt]->assign_alias(out_alias);
                 if (flat_map) {
-                    const char *cn = ptop->get_name()->string();
+                    const char *cn = Tstring(ptop->get_name());
                     char *tbuf = new char[strlen(cn) + 32];
                     sprintf(tbuf, "%s_%d", cn, cnt);
                     out_alias->set_alias(cn, tbuf);
@@ -2218,7 +2218,7 @@ cCHD::write_multi_flat(symref_t *ptop, const FIOcvtPrms *prms,
         }
         if (ok) {
             if (!wmc.in->no_end_lib() &&
-                    !wmc.out->write_endlib(ptop->get_name()->string())) {
+                    !wmc.out->write_endlib(Tstring(ptop->get_name()))) {
                 Errs()->add_error(
                     "write_multi_flat: write end lib failed.");
                 ok = false;

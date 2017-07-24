@@ -274,7 +274,7 @@ sced_funcs::IFtoSpice(Variable *res, Variable *args, void*)
         return (BAD);
     char buf[256];
     if (!spicefile || !*spicefile) {
-        strcpy(buf, DSP()->CurCellName()->string());
+        strcpy(buf, Tstring(DSP()->CurCellName()));
         strcat(buf, ".cir");
         spicefile = buf;
     }
@@ -670,11 +670,11 @@ sced_funcs::IFlistNodePinNames(Variable *res, Variable *args, void*)
         if (ps->enode() == node) {
             if (!s0) {
                 s0 = se = new stringlist(
-                    lstring::copy(ps->term_name()->string()), 0);
+                    lstring::copy(Tstring(ps->term_name())), 0);
             }
             else {
                 se->next = new stringlist(
-                    lstring::copy(ps->term_name()->string()), 0);
+                    lstring::copy(Tstring(ps->term_name())), 0);
                 se = se->next;
             }
         }
@@ -721,11 +721,11 @@ sced_funcs::IFlistNodeContactNames(Variable *res, Variable *args, void*)
             if (pc->enode() == node) {
                 if (!s0) {
                     s0 = se = new stringlist(
-                        lstring::copy(pc->term_name()->string()), 0);
+                        lstring::copy(Tstring(pc->term_name())), 0);
                 }
                 else {
                     se->next = new stringlist(
-                        lstring::copy(pc->term_name()->string()), 0);
+                        lstring::copy(Tstring(pc->term_name())), 0);
                     se = se->next;
                 }
             }

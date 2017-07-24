@@ -600,7 +600,7 @@ cScedConnect::run(CDs *sd, bool lvsmode)
         name_elt *ne;
         while ((ne = gen.next()) != 0) {
             if (ne->index() >= 0) {
-                CDnetName nm = CDnetex::mk_name(ne->name()->string(),
+                CDnetName nm = CDnetex::mk_name(Tstring(ne->name()),
                     ne->index());
                 ntab->add((unsigned long)nm,
                     (void*)(long)ne->nodeprp()->enode(), false);
@@ -615,7 +615,7 @@ cScedConnect::run(CDs *sd, bool lvsmode)
         name_elt *ne;
         while ((ne = gen.next()) != 0) {
             if (ne->index() >= 0) {
-                CDnetName nm = CDnetex::mk_name(ne->name()->string(),
+                CDnetName nm = CDnetex::mk_name(Tstring(ne->name()),
                     ne->index());
                 ntab->add((unsigned long)nm,
                     (void*)(long)ne->nodeprp()->enode(), false);
@@ -684,7 +684,7 @@ cScedConnect::init(CDs *sd, bool lvsmode)
             if (nm) {
                 CDp_snode *px = find_node_prp(cn_sdesc, ps, indx);
                 if (px) {
-                    name_elt *ne = tname_tab_find(nm->string(), n);
+                    name_elt *ne = tname_tab_find(Tstring(nm), n);
                     if (ne)
                         add_to_ntab(ne->nodenum(), px);
                     else {
@@ -714,13 +714,13 @@ cScedConnect::init(CDs *sd, bool lvsmode)
 
         CDnetName nm;
         int n;
-        if (!CDnetex::parse_bit(pn->get_term_name()->string(), &nm, &n)) {
+        if (!CDnetex::parse_bit(Tstring(pn->get_term_name()), &nm, &n)) {
             ScedErrLog.add_err("cell terminal has invalid name %s.\n%s",
                 pn->term_name(), Errs()->get_error());
             continue;
         }
         if (pn->enode() < 0) {
-            name_elt *ne = tname_tab_find(nm->string(), n);
+            name_elt *ne = tname_tab_find(Tstring(nm), n);
             if (ne)
                 add_to_ntab(ne->nodenum(), pn);
             else {
@@ -732,7 +732,7 @@ cScedConnect::init(CDs *sd, bool lvsmode)
             }
         }
         else {
-            name_elt *ne = tname_tab_find(nm->string(), n);
+            name_elt *ne = tname_tab_find(Tstring(nm), n);
             if (ne) {
                 if (ne->nodenum() != pn->enode()) {
                     // This indicates a name clash in the terminal
@@ -788,7 +788,7 @@ cScedConnect::init(CDs *sd, bool lvsmode)
                 pn->string(), Errs()->get_error());
             continue;
         }
-        name_elt *ne = tname_tab_find(nm->string(), n);
+        name_elt *ne = tname_tab_find(Tstring(nm), n);
         if (ne)
             add_to_ntab(ne->nodenum(), pn);
         else {
@@ -892,10 +892,10 @@ cScedConnect::init(CDs *sd, bool lvsmode)
                         if (!nm)
                             continue;
 
-                        name_elt *ne = tname_tab_find(nm->string(), n);
+                        name_elt *ne = tname_tab_find(Tstring(nm), n);
                         if (!ne) {
                             CDp_cnode *pc = new CDp_cnode;
-                            CDnetName tnm = CDnetex::mk_name(nm->string(), n);
+                            CDnetName tnm = CDnetex::mk_name(Tstring(nm), n);
                             pc->CDp_node::set_term_name(tnm);
                             pc->set_pos(0, ((CDw*)odesc)->points()[0].x,
                                 ((CDw*)odesc)->points()[0].y);
@@ -981,7 +981,7 @@ cScedConnect::init(CDs *sd, bool lvsmode)
                 continue;
             }
 
-            name_elt *ne = tname_tab_find(nm->string(), n);
+            name_elt *ne = tname_tab_find(Tstring(nm), n);
             if (ne)
                 add_to_ntab(ne->nodenum(), pn);
             else {
@@ -1133,7 +1133,7 @@ cScedConnect::init_terminal(CDc *cdesc)
         pn->set_pos(0, x, y);
         pn->CDp_node::set_term_name(nm);
 
-        name_elt *ne = tname_tab_find(nm->string(), beg);
+        name_elt *ne = tname_tab_find(Tstring(nm), beg);
         if (ne)
             add_to_ntab(ne->nodenum(), pn);
         else {
@@ -1166,10 +1166,10 @@ cScedConnect::init_terminal(CDc *cdesc)
                 delete [] tn;
                 continue;
             }
-            name_elt *ne = tname_tab_find(nm->string(), n);
+            name_elt *ne = tname_tab_find(Tstring(nm), n);
             if (!ne) {
                 CDp_cnode *pc = new CDp_cnode;
-                CDnetName tnm = CDnetex::mk_name(nm->string(), n);
+                CDnetName tnm = CDnetex::mk_name(Tstring(nm), n);
                 pn->CDp_bnode::set_term_name(tnm);
                 pc->set_pos(0, x, y);
                 pc->set_enode(-1);
@@ -1526,7 +1526,7 @@ cScedConnect::connect()
                 continue;
 
             int nnam;
-            find_node(pn->term_name()->string(), &nnam);
+            find_node(Tstring(pn->term_name()), &nnam);
             if (nnam < 0)
                 continue;
 
@@ -1763,7 +1763,7 @@ cScedConnect::infer_name(const CDw *wdesc, CDnetex **pnx)
                 ps->get_schem_pos(&p.x, &p.y);
                 if (wdesc->has_vertex_at(p)) {
                     if (pnx) {
-                        const char *nmstr = ps->get_term_name()->string();
+                        const char *nmstr = Tstring(ps->get_term_name());
                         if (!CDnetex::parse(nmstr, pnx)) {
                             ScedErrLog.add_err("bad terminal name %s, %s.",
                                 ps->term_name(), Errs()->get_error());
@@ -2135,9 +2135,9 @@ cScedConnect::get_netex(const CDw *wdesc)
     CDp_node *pn = (CDp_node*)wdesc->prpty(P_NODE);
     if (pn && pn->get_term_name()) {
         CDnetex *nx;
-        if (!CDnetex::parse(pn->get_term_name()->string(), &nx)) {
+        if (!CDnetex::parse(Tstring(pn->get_term_name()), &nx)) {
             ScedErrLog.add_err("bad name for scalar label %s, %s.",
-                pn->get_term_name()->string(), Errs()->get_error());
+                Tstring(pn->get_term_name()), Errs()->get_error());
             return (0);
         }
         return (nx);
@@ -3020,7 +3020,7 @@ cScedConnect::bit_to_named(CDp_nodeEx *pcn1, const CDp_range *pr1,
         CDnetName name;
         int n;
         if (ngen.next(&name, &n)) {
-            name_elt *ne = tname_tab_find(name->string(), n);
+            name_elt *ne = tname_tab_find(Tstring(name), n);
             if (ne && ne->nodeprp())
                 wbit_to_bit(ne->nodeprp(), pcn1, pr1);
         }
@@ -3033,7 +3033,7 @@ cScedConnect::bit_to_named(CDp_nodeEx *pcn1, const CDp_range *pr1,
         CDnetName name;
         int n;
         while (ngen.next(&name, &n)) {
-            name_elt *ne = tname_tab_find(name->string(), n);
+            name_elt *ne = tname_tab_find(Tstring(name), n);
             if (!ne || !ne->nodeprp())
                 continue;
             connect_nodes(pcn1, ne->nodeprp());
@@ -3065,7 +3065,7 @@ cScedConnect::bit_to_named(CDp_nodeEx *pcn1, const CDp_range *pr1,
             else
                 pn1 = pr1->node(0, cnt, pcn1->index());
             cnt++;
-            name_elt *ne = tname_tab_find(name2->string(), n2);
+            name_elt *ne = tname_tab_find(Tstring(name2), n2);
             if (!ne || !ne->nodeprp())
                 continue;
             CDp_node *pn2 = ne->nodeprp();
@@ -3224,7 +3224,7 @@ cScedConnect::wbit_to_named(CDp_node *pn1, const CDnetex *nx2)
     CDnetName name;
     int n;
     while (ngen.next(&name, &n)) {
-        name_elt *ne = tname_tab_find(name->string(), n);
+        name_elt *ne = tname_tab_find(Tstring(name), n);
         if (!ne || !ne->nodeprp())
             continue;
         connect_nodes(pn1, ne->nodeprp());
@@ -3433,7 +3433,7 @@ cScedConnect::inst_to_named(const CDc *cdesc, const CDp_bcnode *pbcn1,
         CDnetName name2;
         int n2;
         if (ngen2.next(&name2, &n2)) {
-            name_elt *ne = tname_tab_find(name2->string(), n2);
+            name_elt *ne = tname_tab_find(Tstring(name2), n2);
             if (ne && ne->nodeprp())
                 wbit_to_inst(ne->nodeprp(), cdesc, pbcn1, pr1);
         }
@@ -3467,7 +3467,7 @@ cScedConnect::inst_to_named(const CDc *cdesc, const CDp_bcnode *pbcn1,
             if (!pn1)
                 break;
             indx++;
-            name_elt *ne = tname_tab_find(name2->string(), n2);
+            name_elt *ne = tname_tab_find(Tstring(name2), n2);
             if (!ne || !ne->nodeprp())
                 continue;
             CDp_node *pn2 = ne->nodeprp();
@@ -3518,7 +3518,7 @@ cScedConnect::inst_to_named(const CDc *cdesc, const CDp_bcnode *pbcn1,
                     ngen = CDnetexGen(nx2);
                     ngen.next(&nm, &n);
                 }
-                name_elt *ne = tname_tab_find(nm->string(), n);
+                name_elt *ne = tname_tab_find(Tstring(nm), n);
                 if (!ne || !ne->nodeprp())
                     continue;
                 connect_nodes(pn1, ne->nodeprp());
@@ -3663,7 +3663,7 @@ cScedConnect::named_to_cell(const CDnetex *nx1, const CDp_bsnode *pbsn2)
         CDnetName name1;
         int n1;
         if (ngen1.next(&name1, &n1)) {
-            name_elt *ne1 = tname_tab_find(name1->string(), n1);
+            name_elt *ne1 = tname_tab_find(Tstring(name1), n1);
             if (ne1 && ne1->nodeprp())
                 wbit_to_cell(ne1->nodeprp(), pbsn2);
         }
@@ -3695,7 +3695,7 @@ cScedConnect::named_to_cell(const CDnetex *nx1, const CDp_bsnode *pbsn2)
     CDgenRange rgen2(pbsn2);
     unsigned int indx = 0;
     while (ngen1.next(&name1, &n1) && rgen2.next(0)) {
-        name_elt *ne1 = tname_tab_find(name1->string(), n1);
+        name_elt *ne1 = tname_tab_find(Tstring(name1), n1);
         if (!ne1 || !ne1->nodeprp())
             continue;
         CDp_node *pn1 = ne1->nodeprp();
@@ -3795,7 +3795,7 @@ cScedConnect::setup_map(CDp_bsnode *pb)
                 continue;
             CDnetName tnm;
             int tn;
-            if (!CDnetex::parse_bit(ps->get_term_name()->string(),
+            if (!CDnetex::parse_bit(Tstring(ps->get_term_name()),
                     &tnm, &tn)) {
                 Errs()->get_error();
                 continue;
@@ -3804,9 +3804,9 @@ cScedConnect::setup_map(CDp_bsnode *pb)
                 break;
         }
         if (!ps) {
-            CDnetName tnm = CDnetex::mk_name(nm->string(), n);
+            CDnetName tnm = CDnetex::mk_name(Tstring(nm), n);
             ScedErrLog.add_err("can't find terminal %s for bus terminal %s",
-                tnm->string(), pb->term_name());
+                Tstring(tnm), pb->term_name());
             need_map = true;
             map[indx] = P_NODE_MAX_INDEX + 1;
         }
@@ -3992,7 +3992,7 @@ cScedConnect::find_node(const char *tname, int *nret)
     CDnetName nm;
     if (!CDnetex::parse_bit(tname, &nm, &n))
         return (false);
-    name_elt *ne = tname_tab_find(nm->string(), n);
+    name_elt *ne = tname_tab_find(Tstring(nm), n);
     if (!ne)
         return (false);
     *nret = ne->nodeprp()->enode();

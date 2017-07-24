@@ -982,7 +982,7 @@ sPcp::pcp_action_proc(GtkWidget *caller, void*)
         // sub-master that we just created or referenced.
         if (DSP()->CurMode() == Physical && cbin.phys()) {
             if (cbin.phys()->pcType() == CDpcOA) {
-                EditType et = XM()->EditCell(cbin.cellname()->string(),
+                EditType et = XM()->EditCell(Tstring(cbin.cellname()),
                     true);
                 if (et != EditOK) {
                     Log()->ErrorLogV(mh::PCells,

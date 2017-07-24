@@ -534,7 +534,7 @@ sPcmd::key(int code, const char *text, int)
         }
         if (*text == 's') {
             char buf[256];
-            sprintf(buf, "%s_grp_%s", DSP()->CurCellName()->string(),
+            sprintf(buf, "%s_grp_%s", Tstring(DSP()->CurCellName()),
                 pf->pathname());
 
             char *in = PL()->EditPrompt("Native cell file name? ", buf);

@@ -1251,7 +1251,7 @@ cTfmStack::TInitGen(const CDs *sdesc, const CDl *ldesc, const BBox *pBB,
 "A CHD reference cell was passed to the hierarchy traversal\n"
 "generator.  This will be treated as an empty cell.  The present operation\n"
 "may not yield expected results.  (cellname %s)",
-            sdesc->cellname()->string());
+            Tstring(sdesc->cellname()));
     }
 
     // Apply inverse of current transformation to AOI.

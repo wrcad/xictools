@@ -96,7 +96,7 @@ cScedErrLog::add_log(const char *fmt, ...)
     if (!el_log_connect)
         return;
 
-    fprintf(el_logfp, "In %s: ", el_cellname->string());
+    fprintf(el_logfp, "In %s: ", Tstring(el_cellname));
     va_list args;
     va_start(args, fmt);
     vfprintf(el_logfp, fmt, args);
@@ -111,7 +111,7 @@ cScedErrLog::add_err(const char *fmt, ...)
     if (!el_errfp)
         return;
     el_errcnt++;
-    fprintf(el_errfp, "(%d) In %s: ", el_errcnt, el_cellname->string());
+    fprintf(el_errfp, "(%d) In %s: ", el_errcnt, Tstring(el_cellname));
 
     va_list args;
     va_start(args, fmt);

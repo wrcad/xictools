@@ -391,7 +391,7 @@ DRCresultParser::open_file(const char *name)
         while (*t && !isspace(*t))
             t++;
         *t = '\0';
-        if (strcmp(s, DSP()->CurCellName()->string())) {
+        if (strcmp(s, Tstring(DSP()->CurCellName()))) {
             // This can happen when background job finishes if user
             // switches edit cell.
             Errs()->add_error(
@@ -673,7 +673,7 @@ DRCresultParser::listFiles(const char *dir)
             while (t >= buf && !isspace(*t))
                 t--;
             t++;
-            if (!strcmp(t, DSP()->CurCellName()->string())) {
+            if (!strcmp(t, Tstring(DSP()->CurCellName()))) {
                 // avoid printing "./"
                 t = strrchr(fpath, '/');
                 char *fn;
@@ -1064,7 +1064,7 @@ cDRC::errReset(const char *fname, int pid)
     if (!SEV.active())
         return;
     if (pid > 0 && !fname) {
-        char *fn = errFilename(DSP()->CurCellName()->string(), pid);
+        char *fn = errFilename(Tstring(DSP()->CurCellName()), pid);
         if (access(fn, F_OK) == 0)
             SEV.reset_file(fn);
         delete [] fn;

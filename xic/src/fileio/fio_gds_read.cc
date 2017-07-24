@@ -2331,7 +2331,7 @@ gds_in::a_bgnstr()
                         FIO()->ifMergeControl(&mi);
                     }
                     if (mi.overwrite_phys) {
-                        if (!get_symref(sd->cellname()->string(),
+                        if (!get_symref(Tstring(sd->cellname()),
                                 Physical)) {
                             // The phys cell was not read from the
                             // current file.  If overwriting, clear
@@ -2440,7 +2440,7 @@ gds_in::a_strname()
     // in_cellname is unaliased
     strcpy(in_cellname, in_cbuf);
     if (in_chd_state.symref())
-        strcpy(in_cbuf, in_chd_state.symref()->get_name()->string());
+        strcpy(in_cbuf, Tstring(in_chd_state.symref()->get_name()));
     else
         strcpy(in_cbuf, alias(in_cellname));
     return (true);
@@ -2804,7 +2804,7 @@ gds_in::a_instance(bool ary)
             if (in_mode == Physical) {
                 CDcellName cname = CD()->CellNameTableAdd(cellname);
                 cname = check_sub_master(cname);
-                cellname = cname->string();
+                cellname = Tstring(cname);
             }
 #endif
             symref_t *ptr = get_symref(cellname, in_mode);
@@ -2852,9 +2852,9 @@ gds_in::a_instance(bool ary)
             if (in_symref) {
                 // Add a symref for this instance if necessary.
                 nametab_t *ntab = get_sym_tab(in_mode);
-                symref_t *ptr = get_symref(cname->string(), in_mode);
+                symref_t *ptr = get_symref(Tstring(cname), in_mode);
                 if (!ptr) {
-                    ntab->new_symref(cname->string(), in_mode, &ptr);
+                    ntab->new_symref(Tstring(cname), in_mode, &ptr);
                     add_symref(ptr, in_mode);
                 }
             }
@@ -3971,7 +3971,7 @@ gds_in::ac_instance(bool ary)
 
         Instance inst;
         inst.magn = at.magn;
-        inst.name = cellname->string();
+        inst.name = Tstring(cellname);
         inst.nx = at.nx;
         inst.ny = at.ny;
         inst.dx = dx;
@@ -4088,7 +4088,7 @@ gds_in::ac_instance_backend(Instance *inst, symref_t *p, bool no_area_test)
 
                 if (!tsBB) {
                     Errs()->add_error("Bounding box for master %s not found.",
-                        p->get_name()->string());
+                        Tstring(p->get_name()));
                     return (false);
                 }
                 BBox sBB(*tsBB);

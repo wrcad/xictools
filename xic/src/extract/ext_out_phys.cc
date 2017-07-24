@@ -110,7 +110,7 @@ cExt::dump_phys_recurse(FILE *fp, CDs *topsdesc, CDs *sdesc, int depth,
             if (!gd || (gd->test_nets_only() && !opts->isset(opt_atom_all))) {
                 if (opts->isset(opt_atom_net)) {
                     fprintf(fp, "## %s (empty cell)\n",
-                        sdesc->cellname()->string());
+                        Tstring(sdesc->cellname()));
                 }
                 return (true);
             }
@@ -162,7 +162,7 @@ cExt::dump_phys_recurse(FILE *fp, CDs *topsdesc, CDs *sdesc, int depth,
             if (!gd || (gd->test_nets_only() && !opts->isset(opt_atom_all))) {
                 if (opts->isset(opt_atom_net)) {
                     fprintf(fp, "## %s (empty cell)\n",
-                        sdesc->cellname()->string());
+                        Tstring(sdesc->cellname()));
                 }
                 return (true);
             }
@@ -187,7 +187,7 @@ cGroupDesc::print_phys(FILE *fp, CDs *topsdesc, int, sDumpOpts *opts)
     bool do_spice = true;
     if (opts->isset(opt_atom_devs)) {
         fprintf(fp, "Device and subcircuit instances in physical cell %s:\n",
-            gd_celldesc->cellname()->string());
+            Tstring(gd_celldesc->cellname()));
 
         int cnt = print_devs_subs(fp, opts);
         if (!cnt) {
@@ -218,7 +218,7 @@ cGroupDesc::print_groups(FILE *fp, sDumpOpts *opts)
 {
     fprintf(fp, "############  %s\n", XM()->IdString());
     fprintf(fp, "Physical netlist of cell %s\n",
-        gd_celldesc->cellname()->string());
+        Tstring(gd_celldesc->cellname()));
     if (isempty()) {
         fprintf(fp, "No physical nets found.\n");
         return;
@@ -244,13 +244,13 @@ cGroupDesc::print_groups(FILE *fp, sDumpOpts *opts)
             if (!g.net() && i > 0) {
                 if (g.netname())
                     fprintf(fp, "Group %d (%s, virtual):\n", i,
-                        g.netname()->string());
+                        Tstring(g.netname()));
                 else
                     fprintf(fp, "Group %d (virtual):\n", i);
             }
             else {
                 if (g.netname())
-                    fprintf(fp, "Group %d (%s):\n", i, g.netname()->string());
+                    fprintf(fp, "Group %d (%s):\n", i, Tstring(g.netname()));
                 else
                     fprintf(fp, "Group %d:\n", i);
             }
@@ -327,15 +327,15 @@ cGroupDesc::print_groups(FILE *fp, sDumpOpts *opts)
                 continue;
             if (p->term()->name())
                 fprintf(fp, "  Cell terminal %s\n",
-                    p->term()->name()->string());
+                    Tstring(p->term()->name()));
             else
                 fprintf(fp, "  Cell terminal <unnamed>\n");
         }
         for (sDevContactList *c = g.device_contacts(); c; c = c->next()) {
             fprintf(fp, "  %s %d: %s\n",
-                c->contact()->dev()->desc()->name()->stringNN(),
+                TstringNN(c->contact()->dev()->desc()->name()),
                 c->contact()->dev()->index(),
-                c->contact()->desc()->name()->stringNN());
+                TstringNN(c->contact()->desc()->name()));
         }
         for (sSubcContactList *s = g.subc_contacts(); s; s = s->next()) {
             // ignore contacts to ignored or flattened subcells
@@ -364,7 +364,7 @@ cGroupDesc::print_groups(FILE *fp, sDumpOpts *opts)
                     if (nm) {
                         if (has_conflict) {
                             fprintf(fp, "%d (net %s term %s CONFLICT)\n", grp,
-                                nm, gd->group_for(grp)->netname()->string());
+                                nm, Tstring(gd->group_for(grp)->netname()));
                         }
                         else if (has_term)
                             fprintf(fp, "%d (term %s)\n", grp, nm);
@@ -410,7 +410,7 @@ cGroupDesc::print_devs_subs(FILE *fp, sDumpOpts *opts)
                 continue;
             CDp *pd = s->cdesc()->prpty(XICP_INST);
             if (pd && pd->string() && *pd->string())
-                fprintf(fp, "%s %s\n", s->cdesc()->cellname()->string(),
+                fprintf(fp, "%s %s\n", Tstring(s->cdesc()->cellname()),
                     pd->string());
             else {
                 char *iname = s->instance_name();
@@ -435,7 +435,7 @@ cGroupDesc::print_spice(FILE *fp, CDs *topsdesc, sDumpOpts *opts)
             return (true);
     }
     fprintf(fp, "* SPICE listing of physical cell %s\n",
-        gd_celldesc->cellname()->string());
+        Tstring(gd_celldesc->cellname()));
 
     // Control the global state for how to print group names.
     struct ign_ctrl {
@@ -458,7 +458,7 @@ cGroupDesc::print_spice(FILE *fp, CDs *topsdesc, sDumpOpts *opts)
         sSubcDesc *scd = EX()->findSubcircuit(gd_celldesc);
         if (scd) {
             fprintf(fp, ".subckt %s",
-                gd_celldesc->cellname()->string());
+                Tstring(gd_celldesc->cellname()));
             for (unsigned int i = 0; i < scd->num_contacts(); i++) {
                 int grp = scd->contact(i);
                 const char *grpname = group_name(grp, &lstr);
@@ -479,7 +479,7 @@ cGroupDesc::print_spice(FILE *fp, CDs *topsdesc, sDumpOpts *opts)
                     // using the electrical ordering.
 
                     fprintf(fp, ".subckt %s",
-                        gd_celldesc->cellname()->string());
+                        Tstring(gd_celldesc->cellname()));
                     for (unsigned int i = 0; i < nsize; i++) {
                         if (!nary[i])
                             continue;
@@ -518,7 +518,7 @@ cGroupDesc::print_spice(FILE *fp, CDs *topsdesc, sDumpOpts *opts)
 
             CDp *pto = gd_celldesc->prpty(XICP_TERM_ORDER);
             if (pto) {
-                fprintf(fp, ".subckt %s", gd_celldesc->cellname()->string());
+                fprintf(fp, ".subckt %s", Tstring(gd_celldesc->cellname()));
                 const char *s = pto->string();
                 char *tok;
                 while ((tok = lstring::gettok(&s)) != 0) {
@@ -528,11 +528,11 @@ cGroupDesc::print_spice(FILE *fp, CDs *topsdesc, sDumpOpts *opts)
                         if (gd_groups[i].netname() == nm) {
                             if (opts->isset(opt_atom_labels)) {
                                 fprintf(fp, " %d", i);
-                                sprintf(buf, "* %d %s\n", i, nm->string());
+                                sprintf(buf, "* %d %s\n", i, Tstring(nm));
                                 lstr.add(buf);
                             }
                             else
-                                fprintf(fp, " %s", nm->string());
+                                fprintf(fp, " %s", Tstring(nm));
                         }
                     }
                 }
@@ -544,7 +544,7 @@ cGroupDesc::print_spice(FILE *fp, CDs *topsdesc, sDumpOpts *opts)
     else {
         sSubcDesc *scd = EX()->findSubcircuit(gd_celldesc);
         if (scd) {
-            fprintf(fp, ".subckt %s", gd_celldesc->cellname()->string());
+            fprintf(fp, ".subckt %s", Tstring(gd_celldesc->cellname()));
             for (unsigned int i = 0; i < scd->num_contacts(); i++) {
                 int grp = scd->contact(i);
                 const char *grpname = group_name(grp, &lstr);
@@ -556,7 +556,7 @@ cGroupDesc::print_spice(FILE *fp, CDs *topsdesc, sDumpOpts *opts)
         if (!printsc) {
             // Add a "bogus" .subckt line.
 
-            fprintf(fp, ".subckt %s\n", gd_celldesc->cellname()->string());
+            fprintf(fp, ".subckt %s\n", Tstring(gd_celldesc->cellname()));
             printsc = true;
         }
     }
@@ -631,7 +631,7 @@ cGroupDesc::print_spice(FILE *fp, CDs *topsdesc, sDumpOpts *opts)
                     // should be a formal term
                     if (p) {
                         fprintf(fp, "* %d %s\n", grp,
-                            p->term()->name()->string());
+                            Tstring(p->term()->name()));
                     }
                 }
                 else
@@ -700,7 +700,7 @@ cGroupDesc::print_spice(FILE *fp, CDs *topsdesc, sDumpOpts *opts)
                     if (s->contacts())
                         error = true;
                 }
-                fprintf(fp, " %s\n", s->cdesc()->cellname()->string());
+                fprintf(fp, " %s\n", Tstring(s->cdesc()->cellname()));
 
                 if (error) {
                     fprintf(fp, "  *** contact list doesn't match template\n");
@@ -722,7 +722,7 @@ cGroupDesc::print_spice(FILE *fp, CDs *topsdesc, sDumpOpts *opts)
     }
 
     if (printsc)
-        fprintf(fp, ".ends %s\n", gd_celldesc->cellname()->string());
+        fprintf(fp, ".ends %s\n", Tstring(gd_celldesc->cellname()));
     fprintf(fp, "\n");
     return (true);
 }

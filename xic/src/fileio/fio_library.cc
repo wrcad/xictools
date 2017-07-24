@@ -176,7 +176,7 @@ cFIO::ResolveLibSymref(symref_t *p, cCHD **chdptr, bool *is_devlib)
     }
 
     sLibRef *libref;
-    sLib *lib = LookupLibCell(0, p->get_name()->string(),
+    sLib *lib = LookupLibCell(0, Tstring(p->get_name()),
         LIBdevice | LIBuser, &libref);
     if (!lib || !libref)
         return (RESOLVnone);
@@ -253,7 +253,7 @@ cFIO::ResolveUnseen(cCHD **pchd, symref_t **ppx)
         // unresolved
         if (IsChdFailOnUnresolved()) {
             Errs()->add_error("ResolveUnseen: unresolved symref %s.",
-                cp->get_name()->string());
+                Tstring(cp->get_name()));
             return (RESOLVerror);
         }
         return (rval);
@@ -267,7 +267,7 @@ cFIO::ResolveUnseen(cCHD **pchd, symref_t **ppx)
         if (!px) {
             Errs()->add_error(
                 "ResolveUnseen: symref %s not found in CHD.",
-                cp->get_name()->string());
+                Tstring(cp->get_name()));
             return (RESOLVerror);
         }
         *pchd = rchd;
@@ -277,13 +277,13 @@ cFIO::ResolveUnseen(cCHD **pchd, symref_t **ppx)
 
     if (CDcdb()->findCell(cp->get_name(), mode))
         return (RESOLVnone);
-    OItype oiret = OpenLibCell(0, cp->get_name()->string(),
+    OItype oiret = OpenLibCell(0, Tstring(cp->get_name()),
         LIBdevice | LIBuser, 0);
     if (oiret == OIok || oiret == OIold)
         return (RESOLVnone);
 
     Errs()->add_error("ResolveUnseen: unresolvable symref %s.",
-        cp->get_name()->string());
+        Tstring(cp->get_name()));
     return (RESOLVerror);
 }
 // End of cFIO functions

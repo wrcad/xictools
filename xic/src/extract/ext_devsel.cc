@@ -311,7 +311,7 @@ DvselState::handle_selection(const BBox *AOI)
                     lstr.add(buf);
                 }
                 for (sDevContactInst *c = di->contacts(); c; c = c->next()) {
-                    lstr.add(c->cont_name()->string());
+                    lstr.add(Tstring(c->cont_name()));
                     lstr.add_c(':');
                     sprintf(buf, "%d", c->group());
                     lstr.add(buf);
@@ -344,8 +344,8 @@ DvselState::handle_selection(const BBox *AOI)
                 sLstr lstr;
                 char *instname = di->dual()->instance_name();
                 sprintf(buf, "Device %s %d --- %s (%s)\n",
-                    di->desc()->name()->stringNN(), di->index(), instname,
-                    di->dual()->cdesc()->cellname()->stringNN());
+                    TstringNN(di->desc()->name()), di->index(), instname,
+                    TstringNN(di->dual()->cdesc()->cellname()));
                 delete [] instname;
                 lstr.add(buf);
                 lstr.add("Parameters:\n");
@@ -354,7 +354,7 @@ DvselState::handle_selection(const BBox *AOI)
             }
             else {
                 sprintf(buf, "Device %s %d is not associated.",
-                    di->desc()->name()->stringNN(), di->index());
+                    TstringNN(di->desc()->name()), di->index());
                 DSPmainWbag(PopUpInfo(MODE_ON, buf))
             }
         }
