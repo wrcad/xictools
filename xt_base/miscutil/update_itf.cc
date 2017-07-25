@@ -411,6 +411,13 @@ UpdIf::distrib_version(const char *osname, char **arch, char **suffix,
         delete [] os;
         delete [] t0;
     }
+    if (errmsg) {
+        lstr.free();
+        lstr.add("Sorry, prebuilt packages for ");
+        lstr.add(osname);
+        lstr.add(" are not currently available.");
+        *errmsg = lstr.string_trim();
+    }
     return (rel);
 }
 

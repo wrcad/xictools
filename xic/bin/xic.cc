@@ -279,14 +279,21 @@ namespace {
         fprintf(stdout, "Checking for update...");
         fflush(stdout);
 
-        release_t new_rel = udif.distrib_version();
+        char *emsg;
+        release_t new_rel = udif.distrib_version(0, 0, 0, 0, &emsg);
         if (new_rel == release_t(0)) {
-            const char *msg =
+            if (emsg && !strncmp(emsg, "Sorry,", 6)) {
+                DSPmainWbag(PopUpMessage(emsg, false))
+                delete [] emsg;
+            }
+            else {
+                const char *msg =
     "Unable to access the repository to check for updates.  Your password\n"
     "may have expired.  To stop this message from appearing you can\n"
     "purchase a maintenance extension, or set NoCheckUpdates, or delete\n"
     "your .wrpasswd file.";
-            DSPmainWbag(PopUpMessage(msg, false))
+                DSPmainWbag(PopUpMessage(msg, false))
+            }
         }
         else if (my_rel < new_rel) {
             char *my_rel_str = my_rel.string();
