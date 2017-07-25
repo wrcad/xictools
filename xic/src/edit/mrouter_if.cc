@@ -300,27 +300,37 @@ cMRcmdIf::openRouter()
     void *handle = 0;
 #endif
 
-//XXX rid this crap
-    sLstr lstr;
-    if (access("./WRdevelop", F_OK) == 0) {
-        // Hack for development.  If this file exists, look for
-        // development router code.
+// Hack for development.  If this file exists, it provides a path to a
+// directory containing the plug-in, presumably a work area.
+//
+#define DEVFILE "./MRdevelop"
 
-#ifdef __APPLE__
-        lstr.add("/Users/stevew/src/xt/mrouter/mrouter/");
-#else
-#ifdef WIN32
-        lstr.add(
-            "c:\\cygwin\\home\\stevew\\src\\xt\\mrouter\\mrouter\\");
-#else
-        lstr.add("/home/stevew/src/xt/mrouter/mrouter/");
-#endif
-#endif
-        lstr.add(LIBMROUTER);
-        lstr.add(so_sfx());
-        verbose = true;
+    bool gotdev = false;
+    sLstr lstr;
+    if (access(DEVFILE, F_OK) == 0) {
+
+        FILE *fp = fopen(DEVFILE, "r");
+        if (fp) {
+            char *tbf = new char[2048];
+            char *s = fgets(tbf, 2048, fp);
+            if (s) {
+                char *e = s + strlen(s) - 1;
+                while (e >= s && isspace(*e))
+                    *e-- = 0;
+                if (*s) {
+                    lstr.add(s);
+                    lstr.add_c('/');
+                }
+                lstr.add(LIBMROUTER);
+                lstr.add(so_sfx());
+                verbose = true;
+                gotdev = true;
+            }
+            delete [] tbf;
+            fclose(fp);
+        }
     }
-    else
+    if (!gotdev)
         lstr.add(getenv("MROUTER_PATH"));
 
     if (!lstr.string() || !*lstr.string()) {
