@@ -153,7 +153,7 @@ cTech::InitPostParse()
 
 
 // Call this before starting a dispatch loop using GetKeywordLine, if
-// the function ca be called stand-alone (outside of the Parse
+// the function can be called stand-alone (outside of the Parse
 // function).
 //
 void
@@ -1104,8 +1104,8 @@ cTech::ExpandLine(FILE *techfp, tReadMode rmode)
 TCret
 cTech::dispatch(FILE *techfp)
 {
-    if (!tc_kwbuf || !tc_origbuf)
-        return (lstring::copy("Internal error: unallocated buffer."));
+    if (!tc_kwbuf || !tc_inbuf)
+        return (lstring::copy("dispatch:  unallocated buffer."));
 
     // Cadence and Ciranova DRF/Techfile and layer map inclusions.
     //
@@ -1382,8 +1382,8 @@ namespace {
 TCret
 cTech::dispatchLayerBlock()
 {
-    if (!tc_kwbuf || !tc_origbuf)
-        return (SaveError("Internal error: unallocated buffer."));
+    if (!tc_kwbuf || !tc_inbuf)
+        return (SaveError("dispatchLayerBlock: unallocated buffer."));
 
     const char *lmsg = "Layer %s: Bad %s specification.";
 
