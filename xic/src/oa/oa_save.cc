@@ -396,7 +396,7 @@ oa_save::save_cell(CDs *sd, const char *libname, const char *altcname)
         return (false);
     oaScalarName libName(oaNativeNS(), libname);
 
-    PL()->ShowPromptV("Saving: %s", sd->cellname()->string());
+    PL()->ShowPromptV("Saving: %s", Tstring(sd->cellname()));
     bool ret = sd->isElectrical() ?
         save_elec_cell(sd, libname, altcname) :
         save_phys_cell(sd, libname, altcname);
@@ -600,7 +600,7 @@ oa_save::save_phys_cell(CDs *sdesc, const char *libname, const char *altcname)
         }
     }
 
-    const char *cellname = sdesc->cellname()->string();
+    const char *cellname = Tstring(sdesc->cellname());
     if (altcname && strcmp(cellname, altcname))
         cellname = altcname;
 
@@ -649,7 +649,7 @@ namespace {
                 Errs()->add_error(
                     "Fatal error: In cell %s, instance of %s has\n"
                     "standard via property with no via name.",
-                    cellname, cdesc->cellname()->string());
+                    cellname, Tstring(cdesc->cellname()));
                 return (false);
             }
             oaViaParam vparam;
@@ -657,7 +657,7 @@ namespace {
                 Errs()->add_error(
                     "Fatal error: In cell %s, instance of %s has\n"
                     "syntax error in standard via property.",
-                    cellname, cdesc->cellname()->string());
+                    cellname, Tstring(cdesc->cellname()));
                 delete [] vianame;
                 return (false);
             }
@@ -677,7 +677,7 @@ namespace {
                     Errs()->add_error(
                         "Fatal error: In cell %s, instance of %s has\n"
                         "incorrect standard via name.",
-                        cellname, cdesc->cellname()->string());
+                        cellname, Tstring(cdesc->cellname()));
                     return (false);
                 }
                 oaStdVia::create(block, (oaStdViaDef*)vdef, tform, &vparam);
@@ -699,7 +699,7 @@ namespace {
                 Errs()->add_error(
                     "Fatal error: In cell %s, instance of %s has\n"
                     "custom via property with no via name.",
-                    cellname, cdesc->cellname()->string());
+                    cellname, Tstring(cdesc->cellname()));
                 return (false);
             }
             PCellParam *prms;
@@ -707,7 +707,7 @@ namespace {
                 Errs()->add_error(
                     "Fatal error: In cell %s, instance of %s has\n"
                     "custom via property syntax error.",
-                    cellname, cdesc->cellname()->string());
+                    cellname, Tstring(cdesc->cellname()));
                 delete [] vianame;
                 return (false);
             }
@@ -729,7 +729,7 @@ namespace {
                     Errs()->add_error(
                         "Fatal error: In cell %s, instance of %s has\n"
                         "incorrect custom via name.",
-                        cellname, cdesc->cellname()->string());
+                        cellname, Tstring(cdesc->cellname()));
                     PCellParam::destroy(prms);
                     return (false);
                 }
@@ -777,7 +777,7 @@ oa_save::save_phys_inst(CDs *sdesc, const char *cellname, oaBlock *block)
                     "Fatal error: In cell %s, instance of %s has\n"
                     "nonorthogonal rotation, can't represent this "
                     "in OpenAccess.",
-                    cellname, cdesc->cellname()->string());
+                    cellname, Tstring(cdesc->cellname()));
                 return (false);
             }
             oaTransform tform(tx.tx, tx.ty, orient_from_tx(tx));
@@ -799,7 +799,7 @@ oa_save::save_phys_inst(CDs *sdesc, const char *cellname, oaBlock *block)
                     Errs()->add_error(
                         "Fatal error: In cell %s, instance of %s has\n"
                         "no pc_name property.",
-                        cellname, cdesc->cellname()->string());
+                        cellname, Tstring(cdesc->cellname()));
                     return (false);
                 }
                 if (!pc_parm)
@@ -809,7 +809,7 @@ oa_save::save_phys_inst(CDs *sdesc, const char *cellname, oaBlock *block)
                     Errs()->add_error(
                         "Fatal error: In cell %s, instance of %s has\n"
                         "no pc_params property.",
-                        cellname, cdesc->cellname()->string());
+                        cellname, Tstring(cdesc->cellname()));
                     return (false);
                 }
 
@@ -820,7 +820,7 @@ oa_save::save_phys_inst(CDs *sdesc, const char *cellname, oaBlock *block)
                     Errs()->add_error(
                         "Fatal error: In cell %s, instance of %s has\n"
                         "bad pc_name property.",
-                        cellname, cdesc->cellname()->string());
+                        cellname, Tstring(cdesc->cellname()));
                     return (false);
                 }
                 PCellDesc::LCVcleanup lcv(lname, cname, vname);
@@ -831,7 +831,7 @@ oa_save::save_phys_inst(CDs *sdesc, const char *cellname, oaBlock *block)
                     Errs()->add_error(
                         "Fatal error: In cell %s, instance of %s has\n"
                         "parse error in pc_params property.",
-                        cellname, cdesc->cellname()->string());
+                        cellname, Tstring(cdesc->cellname()));
                     return (false);
                 }
                 oaParamArray parray;
@@ -854,7 +854,7 @@ oa_save::save_phys_inst(CDs *sdesc, const char *cellname, oaBlock *block)
                 }
                 continue;
             }
-            oaScalarName cellName(out_ns, cdesc->cellname()->string());
+            oaScalarName cellName(out_ns, Tstring(cdesc->cellname()));
             if (ap.nx <= 1 && ap.ny <= 1) {
                 oaScalarInst *inst = oaScalarInst::create(block, libName,
                     cellName, viewName, tform);
@@ -1053,7 +1053,7 @@ oa_save::save_elec_cell(CDs *sdesc, const char *libname, const char *altcname)
                 Errs()->add_error(
                     "In electrical cell %s, pc_name property has "
                     "syntax error.",
-                    sdesc->cellname()->string());
+                    Tstring(sdesc->cellname()));
                 return (false);
             }
             delete [] cname;
@@ -1072,7 +1072,7 @@ oa_save::save_elec_cell(CDs *sdesc, const char *libname, const char *altcname)
     if (!ScedIf()->connect(sdesc))
         return (false);
 
-    const char *cellname = sdesc->cellname()->string();
+    const char *cellname = Tstring(sdesc->cellname());
     if (altcname && strcmp(cellname, altcname))
         cellname = altcname;
 
@@ -1144,7 +1144,7 @@ oa_save::save_elec_inst(CDs *sdesc, const char *cellname, oaBlock *block)
                 Errs()->add_error(
                     "Fatal error: In cell %s, master %s has\n"
                     "bad pc_name property.",
-                    cellname, msdesc->cellname()->string());
+                    cellname, Tstring(msdesc->cellname()));
                 return (false);
             }
             if (!strcmp(lname, XIC_NATIVE_LIBNAME))
@@ -1169,12 +1169,12 @@ oa_save::save_elec_inst(CDs *sdesc, const char *cellname, oaBlock *block)
                 continue;
             }
 
-            oaScalarName cellName(out_ns, cdesc->cellname()->string());
+            oaScalarName cellName(out_ns, Tstring(cdesc->cellname()));
             oaScalarInst *inst;
             if (msdesc->isLibrary() && msdesc->isDevice()) {
                 if (!out_devsused)
                     out_devsused = new SymTab(false, false);
-                const char *nm = msdesc->cellname()->string();
+                const char *nm = Tstring(msdesc->cellname());
                 if (SymTab::get(out_devsused, nm) == ST_NIL)
                     out_devsused->add(nm, msdesc, false);
 
@@ -1219,7 +1219,7 @@ oa_save::save_elec_inst(CDs *sdesc, const char *cellname, oaBlock *block)
                 if (!psn)
                     continue;
 
-                const char *tname = psn->term_name()->string();
+                const char *tname = Tstring(psn->term_name());
                 oaScalarName termName(out_ns, tname);;
                 oaInstTerm *term = oaInstTerm::create(net, inst, termName);
                 (void)term;
@@ -1249,7 +1249,7 @@ oa_save::save_elec_inst(CDs *sdesc, const char *cellname, oaBlock *block)
             net = oaNet::create(block, nodeName);
         net->setGlobal(isglobal);
 
-        const char *tname = pn->term_name()->string();
+        const char *tname = Tstring(pn->term_name());
         oaScalarName termName(out_ns, tname);;
         oaTerm *term = oaTerm::create(net, termName);
         term->setPosition(pn->index());
@@ -1430,7 +1430,7 @@ oa_save::save_symb_cell(CDs *srep, CDs *sprnt, const char *libname,
     if (!sprnt)
         sprnt = srep;
 
-    const char *cellname = sprnt->cellname()->string();
+    const char *cellname = Tstring(sprnt->cellname());
     if (altcname && strcmp(cellname, altcname))
         cellname = altcname;
 
@@ -1463,7 +1463,7 @@ oa_save::save_symb_cell(CDs *srep, CDs *sprnt, const char *libname,
             net = oaNet::create(block, nodeName);
         net->setGlobal(isglobal);
 
-        const char *tname = pn->term_name()->string();
+        const char *tname = Tstring(pn->term_name());
         oaScalarName termName(out_ns, tname);;
         oaTerm::create(net, termName);
     }
@@ -1665,7 +1665,7 @@ oa_save::save_cell_properties(CDs *sdesc, oaObject *object)
             switch (tp) {
             case CDelecDev:
                 oaStringProp::create(object, "instNamePrefix",
-                    pn->name_string()->string());
+                    Tstring(pn->name_string()));
                 break;
             default:
                 break;

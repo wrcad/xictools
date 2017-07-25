@@ -80,7 +80,7 @@ cOAnameTab::updateCname(CDcellName nm, unsigned long f)
     SymTabEnt *h = SymTab::get_ent(nt_cname_tab, (unsigned long)nm);
     if (!h) {
         OAerrLog.add_log(OAlogLoad, "adding to cell name table: %s.",
-            nm->string());
+            Tstring(nm));
         nt_cname_tab->add((unsigned long)nm, (void*)f, false);
     }
     else {
@@ -161,7 +161,7 @@ cOAnameTab::cellNameAlias(const oaScalarName &libName,
 
     bool clash = findCname(newcname);
     if (!clash && !from_xic)
-        clash = FIO()->LookupLibCell(0, newcname->string(), LIBdevice, 0);
+        clash = FIO()->LookupLibCell(0, Tstring(newcname), LIBdevice, 0);
     if (clash)
         newcname = getNewName(newcname);
 
@@ -185,7 +185,7 @@ cOAnameTab::getNewName(CDcellName name)
     // We assume here that the "_N" suffix automatically prevents
     // a clash with an Xic library device name.
 
-    const char *oldname = name->string();
+    const char *oldname = Tstring(name);
     char *tbuf = new char[strlen(oldname) + 20];
     char *e = lstring::stpcpy(tbuf, oldname);
     *e++ = '_';

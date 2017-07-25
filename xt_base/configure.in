@@ -439,7 +439,7 @@ dnl     # Need Debian/Ubuntu, etc.
     INSTALL='$(LPATH)/util/install-sh'
     lib_dirs="$lib_dirs $ac_x_libraries"
     SOEXT=so
-    if test $linux32=yes; then
+    if test $linux32 = yes; then
         oa_lpath=$oa_loc/lib/linux_32/opt
     else
         oa_lpath=$oa_loc/lib/linux_64/opt

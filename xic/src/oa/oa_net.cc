@@ -424,15 +424,15 @@ cOAnetHandler::setupNets(bool symbolic)
                         CDnetName nm;
                         int n;
                         if (ngen.next(&nm, &n)) {
-                            CDnetName nn = CDnetex::mk_name(nm->string(), n);
+                            CDnetName nn = CDnetex::mk_name(Tstring(nm), n);
                             unsigned int t, p;
-                            if (port_tab.find(nn->string(), &t, &p))
+                            if (port_tab.find(Tstring(nn), &t, &p))
                                 pb->set_index(p);
                         }
                         OAerrLog.add_log(OAlogNet,
                             "new bterm %s in %s %s index=%d.",
                             (const char*)tname,
-                            nh_sdesc->cellname()->string(),
+                            Tstring(nh_sdesc->cellname()),
                             symbolic ? "symb" : "schem", pb->index());
                     }
                     if (symbolic) {
@@ -494,8 +494,8 @@ cOAnetHandler::setupNets(bool symbolic)
                     CDnetName nm;
                     int n;
                     while (ngen.next(&nm, &n)) {
-                        CDnetName tnm = CDnetex::mk_name(nm->string(), n);
-                        implement_bit(port_tab, term, tnm->string(),
+                        CDnetName tnm = CDnetex::mk_name(Tstring(nm), n);
+                        implement_bit(port_tab, term, Tstring(tnm),
                             symbolic, ind, pincnt, x, y);
                         ind++;
                     }
@@ -1157,7 +1157,7 @@ cOAnetHandler::implement_bit(const sOAportTab &port_tab, const oaTerm *term,
     for ( ; ps; ps = ps->next()) {
         CDnetName nm;
         int ix;
-        if (!CDnetex::parse_bit(ps->term_name()->string(), &nm, &ix))
+        if (!CDnetex::parse_bit(Tstring(ps->term_name()), &nm, &ix))
             continue;
         if (nm == bitbase && ix == bitnum)
             break;
@@ -1206,7 +1206,7 @@ cOAnetHandler::implement_bit(const sOAportTab &port_tab, const oaTerm *term,
         }
         ps->set_flag(f);
         OAerrLog.add_log(OAlogNet, "new node %s in %s %s flg=Ox%x indx=%d.",
-            (const char*)tname, nh_sdesc->cellname()->string(),
+            (const char*)tname, Tstring(nh_sdesc->cellname()),
             symbolic ? "symb" : "schem", f, ps->index());
     }
 
@@ -1656,7 +1656,7 @@ cOAnetHandler::add_terminal(int x, int y, const char *tname)
     CDp_name *pa = (CDp_name*)cdesc->prpty(P_NAME);
     if (!pa) {
         Errs()->add_error("Instance of %s has no name property.",
-            msdesc->cellname()->string());
+            Tstring(msdesc->cellname()));
         return (false);
     }
 

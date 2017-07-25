@@ -561,12 +561,12 @@ oa_bangcmds::oasave(const char *s)
         if (all) {
             PL()->ShowPromptV(
                 "Hierarchy under %s saved to library %s.",
-                DSP()->CurCellName()->string(), libname);
+                Tstring(DSP()->CurCellName()), libname);
         }
         else {
             PL()->ShowPromptV(
                 "Cell %s saved to library %s.",
-                DSP()->CurCellName()->string(), libname);
+                Tstring(DSP()->CurCellName()), libname);
         }
         return;
     }

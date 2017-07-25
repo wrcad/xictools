@@ -879,8 +879,8 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
     int superMasterStatus = 0;
 
     // Take care of mapping to a new cellname if there is a conflict.
-    const char *alt_cellname = NameTab.cellNameAlias(libName,
-        cellName, in_from_xic)->string();
+    const char *alt_cellname = Tstring(NameTab.cellNameAlias(libName,
+        cellName, in_from_xic));
 
     if (maskLayoutView) {
         oaScalarName viewName;
@@ -1154,7 +1154,7 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
             sd_elec->prptyRemove(XICP_PC);
             sd_elec->prptyAdd(XICP_PC, dbname);
             OAerrLog.add_log(OAlogPCell, "marking elec part of pcell %s %s",
-                sd_elec->cellname()->string(), dbname);
+                Tstring(sd_elec->cellname()), dbname);
             delete [] dbname;
         }
     }
@@ -1172,7 +1172,7 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
         if (!checkMasterXicProps(msdesc)) {
             Errs()->add_error(
                 "Failed to set properties for electrical cell %s.",
-                msdesc->cellname()->string());
+                Tstring(msdesc->cellname()));
             return (OIerror);
         }
     }
@@ -1783,7 +1783,7 @@ oa_in::loadVia(const oaViaHeader *viaHeader, oaUInt4  depth)
         }
 
         CDs *sd = 0;
-        OItype oiret = loadDesign(design, cname->string(), &sd, depth);
+        OItype oiret = loadDesign(design, Tstring(cname), &sd, depth);
 
         design->close();
         lib->releaseAccess();
@@ -2012,7 +2012,7 @@ oa_in::loadMaster(const oaInstHeader *hdr, oaInt4 depth)
     }
 
     CDs *sd = 0;
-    OItype oiret = loadDesign(design, cname->string(), &sd, depth);
+    OItype oiret = loadDesign(design, Tstring(cname), &sd, depth);
 
     design->close();
     lib->releaseAccess();
@@ -2073,7 +2073,7 @@ oa_in::newCell(const char *cellname, ncType *ncret, bool is_submaster)
                 if (f == (long)ST_NIL) {
                     if (is_submaster) {
                         // Sub-master already exists, skip it.
-                        in_skip_tab->add(sdesc->cellname()->string(), 0,
+                        in_skip_tab->add(Tstring(sdesc->cellname()), 0,
                             false);
                     }
                     else {
@@ -2084,7 +2084,7 @@ oa_in::newCell(const char *cellname, ncType *ncret, bool is_submaster)
                             mi.overwrite_elec = true;
                         FIO()->ifMergeControl(&mi);
                         f = mi.overwrite_phys | (mi.overwrite_elec << 1);
-                        in_skip_tab->add(sdesc->cellname()->string(),
+                        in_skip_tab->add(Tstring(sdesc->cellname()),
                             (void*)f, false);
                     }
                 }
@@ -2121,7 +2121,7 @@ oa_in::newCell(const char *cellname, ncType *ncret, bool is_submaster)
                 if (f == (long)ST_NIL) {
                     if (is_submaster) {
                         // Sub-master already exists, skip it.
-                        in_skip_tab->add(sdesc->cellname()->string(), 0,
+                        in_skip_tab->add(Tstring(sdesc->cellname()), 0,
                             false);
                     }
                     else {
@@ -2132,7 +2132,7 @@ oa_in::newCell(const char *cellname, ncType *ncret, bool is_submaster)
                             mi.overwrite_elec = true;
                         FIO()->ifMergeControl(&mi);
                         f = mi.overwrite_phys | (mi.overwrite_elec << 1);
-                        in_skip_tab->add(sdesc->cellname()->string(),
+                        in_skip_tab->add(Tstring(sdesc->cellname()),
                             (void*)f, false);
                     }
                 }
@@ -2285,7 +2285,7 @@ oa_in::readOaDesign(const oaDesign *design, const oaString &xic_cname,
     }
 
     if (!symbolic)
-        in_cell_name = sdesc->cellname()->string();
+        in_cell_name = Tstring(sdesc->cellname());
 
     // Read properties.  If symbolic, properties will pass through to
     // the schematic view.
@@ -2339,7 +2339,7 @@ oa_in::readInstances(const oaBlock *blk, CDs *sdesc)
             long f = in_mode == Physical ? OAL_REFP : OAL_REFE;
             NameTab.updateCname(cname, f);
 
-            ret = readOaInstHeader(header, sdesc, cname->string());
+            ret = readOaInstHeader(header, sdesc, Tstring(cname));
             if (!ret)
                 break;
         }
@@ -4315,7 +4315,7 @@ namespace {
         if (oiret != OIok) {
             Errs()->add_error(
                 "Failed to create database instance of %s.",
-                calldesc->name()->string());
+                Tstring(calldesc->name()));
             return (false);
         }
         if (!newo)
