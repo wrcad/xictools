@@ -186,6 +186,16 @@ struct Ylist
             }
         }
 
+    static bool merge_cols(Ylist *yl) THROW_XIrt
+        {
+            return (yl ? yl->merge_cols() : false);
+        }
+
+    static bool merge_rows(Ylist *yl) THROW_XIrt
+        {
+            return (yl ? yl->merge_rows() : false);
+        }
+
     // geo_ylist.cc
     static bool intersect(const Ylist*, const Ylist*, bool);
     static const Zoid *find_container(const Ylist*, const Point*);

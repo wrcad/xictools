@@ -74,9 +74,7 @@ cFIO::ListLibraries(int type)
 bool
 cFIO::OpenLibrary(const char *path, const char *name)
 {
-    bool err;
-    fioLibraries = sLib::open_library(fioLibraries, path, name, &err);
-    return (!err);
+    return (sLib::open_library(&fioLibraries, path, name));
 }
 
 
@@ -106,8 +104,7 @@ cFIO::GetLibraryProperties(const char *libname)
 void
 cFIO::CloseLibrary(const char *libname, int type)
 {
-    fioLibraries = sLib::close_library(fioLibraries, libname, type);
-    ifLibraryChange();
+    sLib::close_library(&fioLibraries, libname, type);
 }
 
 
@@ -315,40 +312,36 @@ sLib::~sLib()
 
 // Static function.
 // Open a new library.  The searchpath is a search path, used to find
-// filename, the file name.  If an error, the err address is set.  The
-// (new) head of the libraries list is returned.
+// fname, the file name.  Return false on error, with a message in
+// Errs.  The list of libraries in *plib is updated.
 //
-sLib *
-sLib::open_library(sLib *thislib, const char *searchpath, const char *fname,
-    bool *err)
+bool
+sLib::open_library(sLib **plib, const char *searchpath, const char *fname)
 {
-    if (err)
-        *err = 0;
+    if (!plib || !fname) {
+        Errs()->add_error("open_library: null argument.");
+        return (false);
+    }
     char *fullname;
     FILE *fp = pathlist::open_path_file(fname, searchpath, "rb", &fullname,
         false);
-    if (fp == 0) {
+    if (!fp) {
         Errs()->add_error("Unable to open %s.", fname);
-        if (err)
-            *err = true;
-        return (thislib);
+        return (false);
     }
-    sLib *lib, *l0 = thislib;
-    for (lib = l0; lib; lib = lib->l_nextlib) {
+    for (sLib *lib = *plib; lib; lib = lib->l_nextlib) {
         if (!strcmp(fullname, lib->l_libfilename)) {
             // already open
             delete [] fullname;
             fclose(fp);
-            return (l0);
+            return (true);
         }
     }
     if (!FIO()->IsLibrary(fp)) {
         delete [] fullname;
         fclose(fp);
         Errs()->add_error("Not a library: %s.", fname);
-        if (err)
-            *err = true;
-        return (l0);
+        return (false);
     }
 
     const char *devlib_name =  FIO()->ifDeviceLibName();
@@ -358,7 +351,7 @@ sLib::open_library(sLib *thislib, const char *searchpath, const char *fname,
     // LIBdevice designates the "device.lib" library.
     int type = (!strcmp(lstring::strip_path(fullname), devlib_name) ?
         LIBdevice : LIBuser);
-    lib = new sLib(fullname, type);
+    sLib *lib = new sLib(fullname, type);
     delete [] fullname;
 
     char buf[MACRO_BUFSIZE];
@@ -542,15 +535,15 @@ sLib::open_library(sLib *thislib, const char *searchpath, const char *fname,
     // Link the new library into the list.  The LIBdevice libraries
     // are listed first in order of opening, followed by the LIBuser
     // libraries.
-    if (!l0)
-        l0 = lib;
+    if (!*plib)
+        *plib = lib;
     else if (lib->l_type == LIBdevice) {
         sLib *lp = 0;
-        for (sLib *l = l0; l; l = l->l_nextlib) {
+        for (sLib *l = *plib; l; l = l->l_nextlib) {
             if (l->l_type == LIBuser) {
                 lib->l_nextlib = l;
                 if (!lp)
-                    l0 = lib;
+                    *plib = lib;
                 else
                     lp->l_nextlib = lib;
                 break;
@@ -563,14 +556,51 @@ sLib::open_library(sLib *thislib, const char *searchpath, const char *fname,
         }
     }
     else {
-        sLib *l = l0;
+        sLib *l = *plib;
         while (l->l_nextlib)
             l = l->l_nextlib;
         l->l_nextlib = lib;
     }
     if (lib->l_type == LIBuser)
         FIO()->ifLibraryChange();
-    return (l0);
+    return (true);
+}
+
+
+// Static function.
+// Close and free the named library, and delete the cells from the
+// database if the named library has type LIBdevice.  If name is null,
+// clear all libraries and library cells.  Return true if something
+// was changed.
+//
+bool
+sLib::close_library(sLib **plib, const char *libname, int type)
+{
+    bool changed = false;
+    sLib *lp = 0, *ln;
+    for (sLib *lib = *plib; lib; lib = ln) {
+        ln = lib->l_nextlib;
+        if (lib->match_type_and_name(type, libname)) {
+            if (!lp)
+                *plib = ln;
+            else
+                lp->l_nextlib = ln;
+            if (lib->l_type == LIBdevice) {
+                // close all cells
+                tgen_t<sLibRef> gen(lib->l_symtab.table());
+                sLibRef *r;
+                while ((r = gen.next()) != 0)
+                    CD()->Close(CD()->CellNameTableFind(r->name()));
+            }
+            delete lib;
+            changed = true;
+            continue;
+        }
+        lp = lib;
+    }
+    if (changed)
+        FIO()->ifLibraryChange();
+    return (changed);
 }
 
 
@@ -776,39 +806,6 @@ sLib::list(const sLib *thislib, int type)
         }
     }
     return (s0);
-}
-
-
-// Static function.
-// Close and free the named library, and delete the cells from the
-// database if lib is LIBdevice.  If name is null, clear all
-// libraries and library cells.
-//
-sLib *
-sLib::close_library(sLib *thislib, const char *libname, int type)
-{
-    sLib *lp = 0, *ln;
-    sLib *l0 = thislib;
-    for (sLib *lib = l0; lib; lib = ln) {
-        ln = lib->l_nextlib;
-        if (lib->match_type_and_name(type, libname)) {
-            if (!lp)
-                l0 = ln;
-            else
-                lp->l_nextlib = ln;
-            if (lib->l_type == LIBdevice) {
-                // close all cells
-                tgen_t<sLibRef> gen(lib->l_symtab.table());
-                sLibRef *r;
-                while ((r = gen.next()) != 0)
-                    CD()->Close(CD()->CellNameTableFind(r->name()));
-            }
-            delete lib;
-            continue;
-        }
-        lp = lib;
-    }
-    return (l0);
 }
 
 

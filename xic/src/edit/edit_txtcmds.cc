@@ -1830,20 +1830,16 @@ namespace {
         else {
             Ylist *y = new Ylist(z0);
             if (!strcmp(s, "mc")) {
-/*XXX fixme, need access to private members
                 CD()->SetIgnoreIntr(true);
-                bool chg = y->merge_cols();
+                bool chg = Ylist::merge_cols(y);
                 CD()->SetIgnoreIntr(false);
                 printf("merge_cols returned %s.\n", chg ? "true" : "false");
-*/
             }
             else if (!strcmp(s, "mr")) {
-/*XXX fixme, need access to private members
                 CD()->SetIgnoreIntr(true);
-                bool chg = y->merge_rows();
+                bool chg = Ylist::merge_rows(y);
                 CD()->SetIgnoreIntr(false);
                 printf("merge_rows returned %s.\n", chg ? "true" : "false");
-*/
             }
             else if (!strcmp(s, "r"))
                 y = new Ylist(Ylist::repartition_ni(y));

@@ -148,7 +148,8 @@ struct sLib
     libtab_t &symtab()              { return (l_symtab); }
     int lib_type()                  { return (l_type); }
 
-    static sLib *open_library(sLib*, const char*, const char*, bool*);
+    static bool open_library(sLib**, const char*, const char*);
+    static bool close_library(sLib**, const char*, int);
     static sLib *find(sLib*, const char*);
     static FILE *open_file(sLib*, const char*, const char*, int, sLibRef**,
         sLib**);
@@ -157,7 +158,6 @@ struct sLib
     static stringlist *namelist(sLib*, const char*, int);
     static const stringlist *properties(const sLib*, const char*);
     static stringlist *list(const sLib*, int);
-    static sLib *close_library(sLib*, const char*, int);
 
     cCHD *get_chd(const sLibRef*);
     void set_chd(const sLibRef*, cCHD*);

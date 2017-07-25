@@ -36,6 +36,7 @@
 #include "gtkfont.h"
 #include "gtkinlines.h"
 #include "events.h"
+#include "errorlog.h"
 #include "filestat.h"
 #include "pathlist.h"
 #include <algorithm>
@@ -598,10 +599,13 @@ sLB::lb_action_proc(GtkWidget *caller, void *client_data)
     if (client_data == (void*)LBopen) {
         if (LB->lb_selection) {
             char *tmp = lstring::copy(LB->lb_selection);
-            if (FIO()->FindLibrary(tmp))
+            if (FIO()->FindLibrary(tmp)) {
                 FIO()->CloseLibrary(tmp, LIBuser);
-            else
-                FIO()->OpenLibrary(0, tmp);
+            }
+            else {
+                if (!FIO()->OpenLibrary(0, tmp))
+                    Log()->PopUpErr(Errs()->get_error());
+            }
             // These call update.
             delete [] tmp;
         }

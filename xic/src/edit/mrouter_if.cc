@@ -300,6 +300,7 @@ cMRcmdIf::openRouter()
     void *handle = 0;
 #endif
 
+//XXX rid this crap
     sLstr lstr;
     if (access("./WRdevelop", F_OK) == 0) {
         // Hack for development.  If this file exists, look for
