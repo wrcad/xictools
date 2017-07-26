@@ -174,6 +174,7 @@ cMain::SetMode(DisplayMode mode, int wnum)
     DSPmainWbag(PopUpGrid(0, MODE_UPD))
     ExtIf()->postModeSwitchCallback();
     ShowParameters();
+    PopUpColor(0, MODE_UPD);
     UpdateCursor(DSP()->MainWdesc(), GetCursor());
     DSP()->MainWdesc()->UpdateProxy();
 }

@@ -6601,7 +6601,7 @@ scr:library
 !!SEEALSO
 keybang
 
-!! 100315
+!! 072517
 !!KEYWORD
 !ldshared
 !!TITLE
@@ -6617,7 +6617,7 @@ keybang
     scripts.
 
     <p>
-    Thew required argument is a path to the shared library file as
+    The required argument is a path to the shared library file as
     generated from the <tt>scrkit</tt> system.  Anything else in the
     line is passed to the library <tt>init</tt> function verbatim. 
     The library author can add a parser for this, for providing
@@ -6638,7 +6638,7 @@ keybang
 !! Selections
 !! ----------------------------------------------------------------------------
 
-!! 060108
+!! 072517
 !!KEYWORD
 !select
 !!TITLE
@@ -6739,7 +6739,7 @@ keybang
     <tt>!select l V1|V2 AnyNoOverlap M1 & M2</tt>
     </blockquote>
 
-    This will all geometric objects on V1 and V2 that are not
+    This will select all geometric objects on V1 and V2 that are not
     completely covered by both M1 and M2.
 
     <p>

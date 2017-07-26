@@ -1,5 +1,5 @@
 
-/*========================================================================g
+/*========================================================================*
  *                                                                        *
  *  XICTOOLS Integrated Circuit Design System                             *
  *  Copyright (c) 2007 Whiteley Research Inc, all rights reserved.        *
@@ -114,6 +114,8 @@ namespace {
     namespace gtkcolor {
         struct sClr
         {
+            enum { CATEG_ATTR, CATEG_PROMPT, CATEG_PLOT };
+
             sClr(GRobject);
             ~sClr();
 
@@ -127,6 +129,8 @@ namespace {
 
             static void c_change_proc(GtkWidget*, void*);
             static void c_btn_proc(GtkWidget*, void*);
+            static void c_mode_menu_proc(GtkWidget*, void*);
+            static void c_categ_menu_proc(GtkWidget*, void*);
             static void c_attr_menu_proc(GtkWidget*, void*);
             static void c_cancel_proc(GtkWidget*, void*);
             static void c_apply_proc(GtkWidget*, void*);
@@ -137,12 +141,16 @@ namespace {
 
             GRobject c_caller;
             GtkWidget *c_shell;
+            GtkWidget *c_modemenu;
+            GtkWidget *c_categmenu;
+            GtkWidget *c_pmmi;
             GtkWidget *c_entry;
             GtkWidget *c_sel;
             GtkWidget *c_listbtn;
             GtkWidget *c_sample;
             GRlistPopup *c_listpop;
             DisplayMode c_display_mode;
+            DisplayMode c_ref_mode;
 
             int c_mode;
             int c_red;
@@ -157,8 +165,7 @@ namespace {
 using namespace gtkcolor;
 
 
-// Menu function to bring up the color popup.  The widget is created
-// or destroyed on alternate calls.
+// Menu function to display, update, or destroy the color popup.
 //
 void
 cMain::PopUpColor(GRobject caller, ShowMode mode)
@@ -220,12 +227,16 @@ sClr::sClr(GRobject c)
     c_mode = CLR_CURLYR;
     c_caller = c;
     c_shell = 0;
+    c_modemenu = 0;
+    c_categmenu = 0;
+    c_pmmi = 0;
     c_entry = 0;
     c_sel = 0;
     c_listbtn = 0;
     c_sample = 0;
     c_listpop = 0;
     c_display_mode = DSP()->CurMode();
+    c_ref_mode = DSP()->CurMode();
     c_red = 0;
     c_green = 0;
     c_blue = 0;
@@ -252,50 +263,99 @@ sClr::sClr(GRobject c)
     gtk_widget_show(hbox);
 
     //
-    // entry menu
+    // Physical/Electrical mode selector
     //
     GtkWidget *entry = gtk_option_menu_new();
+    c_modemenu = entry;
+    gtk_widget_set_name(entry, "ModeMenu");
+    gtk_widget_show(entry);
+    gtk_box_pack_start(GTK_BOX(hbox), entry, false, false, 0);
+    {
+        GtkWidget *menu = gtk_menu_new();
+        gtk_widget_set_name(menu, "modemenu");
+
+        GtkWidget *mi = gtk_menu_item_new_with_label("Physical");
+        gtk_widget_set_name(mi, "ph");
+        gtk_widget_show(mi);
+        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_signal_connect(GTK_OBJECT(mi), "activate",
+            GTK_SIGNAL_FUNC(c_mode_menu_proc), (void*)(long)Physical);
+
+        mi = gtk_menu_item_new_with_label("Electrical");
+        gtk_widget_set_name(mi, "ph");
+        gtk_widget_show(mi);
+        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_signal_connect(GTK_OBJECT(mi), "activate",
+            GTK_SIGNAL_FUNC(c_mode_menu_proc), (void*)(long)Electrical);
+
+        gtk_option_menu_set_menu(GTK_OPTION_MENU(c_modemenu), menu);
+        gtk_option_menu_set_history(GTK_OPTION_MENU(c_modemenu),
+            c_display_mode);
+    }
+
+    //
+    // Categories menu
+    //
+    entry = gtk_option_menu_new();
+    c_categmenu = entry;
+    gtk_widget_set_name(entry, "CategMenu");
+    gtk_widget_show(entry);
+    gtk_box_pack_start(GTK_BOX(hbox), entry, false, false, 0);
+    {
+        GtkWidget *menu = gtk_menu_new();
+        gtk_widget_set_name(menu, "CMenu");
+
+        GtkWidget *mi = gtk_menu_item_new_with_label("Attributes");
+        gtk_widget_set_name(mi, "at");
+        gtk_widget_show(mi);
+        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_signal_connect(GTK_OBJECT(mi), "activate",
+            GTK_SIGNAL_FUNC(c_categ_menu_proc),
+            (void*)(long)CATEG_ATTR);
+
+        mi = gtk_menu_item_new_with_label("Prompt Line");
+        gtk_widget_set_name(mi, "pl");
+        gtk_widget_show(mi);
+        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_signal_connect(GTK_OBJECT(mi), "activate",
+            GTK_SIGNAL_FUNC(c_categ_menu_proc),
+            (void*)(long)CATEG_PROMPT);
+
+        mi = gtk_menu_item_new_with_label("Plot Marks");
+        c_pmmi = mi;
+        gtk_widget_set_name(mi, "pm");
+        if (c_display_mode == Electrical)
+            gtk_widget_show(mi);
+        else
+            gtk_widget_hide(mi);
+        gtk_menu_append(GTK_MENU(menu), mi);
+        gtk_signal_connect(GTK_OBJECT(mi), "activate",
+            GTK_SIGNAL_FUNC(c_categ_menu_proc),
+            (void*)(long)CATEG_PLOT);
+
+        gtk_option_menu_set_menu(GTK_OPTION_MENU(c_categmenu), menu);
+        gtk_option_menu_set_history(GTK_OPTION_MENU(c_categmenu), 0);
+    }
+
+    //
+    // Attribute selection menu
+    //
+    entry = gtk_option_menu_new();
     c_entry = entry;
     gtk_widget_set_name(entry, "AttrMenu");
     gtk_widget_show(entry);
     gtk_box_pack_start(GTK_BOX(hbox), entry, false, false, 0);
-    gtk_widget_set_usize(entry, 140, -1);
-    c_btn_proc(0, (void*)1);
+    gtk_widget_set_usize(entry, 180, -1);
+    c_categ_menu_proc(0, (void*)(long)CATEG_ATTR);
 
     //
-    // radio button group
+    // Colors button
     //
-    GtkWidget *button = gtk_radio_button_new_with_label(0, "Attributes");
-    gtk_widget_set_name(button, "Attributes");
-    gtk_widget_show(button);
-    GSList *group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, false, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_btn_proc), (void*)1);
-
-    button = gtk_radio_button_new_with_label(group, "Prompt");
-    gtk_widget_set_name(button, "Prompt");
-    gtk_widget_show(button);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, false, 0);
-    group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_btn_proc), (void*)2);
-
-    button = gtk_radio_button_new_with_label(group, "Plot Marks");
-    gtk_widget_set_name(button, "PlotMarks");
-    gtk_widget_show(button);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, false, 0);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(c_btn_proc), (void*)3);
-
-    //
-    // colors button
-    //
-    button = gtk_toggle_button_new_with_label("Colors");
+    GtkWidget *button = gtk_toggle_button_new_with_label("Colors");
     c_listbtn = button;
     gtk_widget_set_name(button, "Colors");
     gtk_widget_show(button);
-    gtk_box_pack_start(GTK_BOX(hbox), button, true, false, 0);
+    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
         GTK_SIGNAL_FUNC(c_list_btn_proc), 0);
 
@@ -313,7 +373,7 @@ sClr::sClr(GRobject c)
     rowcnt++;
 
     //
-    // colorsel widget
+    // Color Selection widget
     //
     c_sel = gtk_color_selection_new();
     gtk_widget_show(c_sel);
@@ -359,7 +419,7 @@ sClr::sClr(GRobject c)
     rowcnt++;
 
     //
-    // apply and dismiss button
+    // Apply and Dismiss buttons
     //
     hbox = gtk_hbox_new(false, 2);
     gtk_widget_show(hbox);
@@ -409,12 +469,24 @@ sClr::~sClr()
 void
 sClr::update()
 {
-    if (c_display_mode != DSP()->CurMode()) {
-        c_display_mode = DSP()->CurMode();
-        update_color();
+    if (c_ref_mode != DSP()->CurMode()) {
+        // User changed between Physical and Electrical modes. 
+        // Rebuild the ATTR menu if current, since the visibility of
+        // the Current Layer item will have changed.
+        //
+        if (gtk_option_menu_get_history(
+                GTK_OPTION_MENU(Clr->c_categmenu)) == CATEG_ATTR) {
+            sClr::c_categ_menu_proc(0, (void*)CATEG_ATTR);
+        }
+        c_ref_mode = DSP()->CurMode();
     }
-    else if (c_mode == CLR_CURLYR)
-        update_color();
+    else {
+        // The current layer changed.  The second term in the
+        // conditional is redundant, for sanity.
+        //
+        if (c_mode == CLR_CURLYR && c_display_mode == DSP()->CurMode())
+            update_color();
+    }
 }
 
 
@@ -478,7 +550,7 @@ sClr::c_change_proc(GtkWidget*, void*)
 
 // Static function.
 void
-sClr::c_btn_proc(GtkWidget *widget, void *arg)
+sClr::c_btn_proc(GtkWidget *widget, void*)
 {
     if (!Clr)
         return;
@@ -489,56 +561,114 @@ sClr::c_btn_proc(GtkWidget *widget, void *arg)
             return;
         }
     }
-    if (arg == (void*)1) {
-        GtkWidget *menu = gtk_menu_new();
-        gtk_widget_set_name(menu, "Menu");
-        for (clritem *c = Menu1; c->descr; c++) {
-            GtkWidget *mi = gtk_menu_item_new_with_label(c->descr);
-            gtk_widget_set_name(mi, c->descr);
-            gtk_widget_show(mi);
-            gtk_menu_append(GTK_MENU(menu), mi);
-            gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                GTK_SIGNAL_FUNC(sClr::c_attr_menu_proc),
-                (void*)(long)c->tab_indx);
+}
+
+
+// Static function.
+void
+sClr::c_mode_menu_proc(GtkWidget*, void *arg)
+{
+    if (!Clr)
+        return;
+    bool atupd = false;
+    Clr->c_display_mode = arg ? Electrical : Physical;
+    if (Clr->c_display_mode == Electrical)
+        gtk_widget_show(Clr->c_pmmi);
+    else {
+        // The plot marks are available when showing Electrical only.
+        if (gtk_option_menu_get_history(
+                GTK_OPTION_MENU(Clr->c_categmenu)) == CATEG_PLOT) {
+            sClr::c_categ_menu_proc(0, (void*)CATEG_ATTR);
+            atupd = true;
         }
-        Clr->c_mode = Menu1[0].tab_indx;
-        gtk_option_menu_set_menu(GTK_OPTION_MENU(Clr->c_entry), menu);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(Clr->c_entry), 0);
-        Clr->update_color();
+        gtk_widget_hide(Clr->c_pmmi);
     }
-    else if (arg == (void*)2) {
-        GtkWidget *menu = gtk_menu_new();
-        gtk_widget_set_name(menu, "Menu");
-        for (clritem *c = Menu2; c->descr; c++) {
-            GtkWidget *mi = gtk_menu_item_new_with_label(c->descr);
-            gtk_widget_set_name(mi, c->descr);
-            gtk_widget_show(mi);
-            gtk_menu_append(GTK_MENU(menu), mi);
-            gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                GTK_SIGNAL_FUNC(sClr::c_attr_menu_proc),
-                (void*)(long)c->tab_indx);
-        }
-        Clr->c_mode = Menu2[0].tab_indx;
-        gtk_option_menu_set_menu(GTK_OPTION_MENU(Clr->c_entry), menu);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(Clr->c_entry), 0);
-        Clr->update_color();
+
+    // Rebuild the ATTR menu if current, since the visibility of the
+    // Current Layer item will have changed.  Don't need to call this
+    // if already done above.
+    //
+    if (!atupd && gtk_option_menu_get_history(
+            GTK_OPTION_MENU(Clr->c_categmenu)) == CATEG_ATTR) {
+        sClr::c_categ_menu_proc(0, (void*)CATEG_ATTR);
     }
-    else if (arg == (void*)3) {
-        GtkWidget *menu = gtk_menu_new();
-        gtk_widget_set_name(menu, "Menu");
-        for (clritem *c = Menu3; c->descr; c++) {
-            GtkWidget *mi = gtk_menu_item_new_with_label(c->descr);
-            gtk_widget_set_name(mi, c->descr);
-            gtk_widget_show(mi);
-            gtk_menu_append(GTK_MENU(menu), mi);
-            gtk_signal_connect(GTK_OBJECT(mi), "activate",
-                GTK_SIGNAL_FUNC(sClr::c_attr_menu_proc),
-                (void*)(long)c->tab_indx);
+    Clr->update_color();
+}
+
+
+// Static function.
+void
+sClr::c_categ_menu_proc(GtkWidget*, void *arg)
+{
+    if (!Clr)
+        return;
+    switch ((long)arg) {
+    case CATEG_ATTR:
+        {
+            GtkWidget *menu = gtk_menu_new();
+            gtk_widget_set_name(menu, "Menu");
+            for (clritem *c = Menu1; c->descr; c++) {
+                // We want the Current Layer entry only when the mode
+                // matches the display mode, since the current layer
+                // of the "opposite" mode is not known here.
+                //
+                if (c == Menu1 && Clr->c_display_mode != DSP()->CurMode())
+                    continue;
+                GtkWidget *mi = gtk_menu_item_new_with_label(c->descr);
+                gtk_widget_set_name(mi, c->descr);
+                gtk_widget_show(mi);
+                gtk_menu_append(GTK_MENU(menu), mi);
+                gtk_signal_connect(GTK_OBJECT(mi), "activate",
+                    GTK_SIGNAL_FUNC(sClr::c_attr_menu_proc),
+                    (void*)(long)c->tab_indx);
+            }
+            if (Clr->c_display_mode == DSP()->CurMode())
+                Clr->c_mode = Menu1[0].tab_indx;
+            else
+                Clr->c_mode = Menu1[1].tab_indx;
+            gtk_option_menu_set_menu(GTK_OPTION_MENU(Clr->c_entry), menu);
+            gtk_option_menu_set_history(GTK_OPTION_MENU(Clr->c_entry), 0);
+            Clr->update_color();
         }
-        Clr->c_mode = Menu3[0].tab_indx;
-        gtk_option_menu_set_menu(GTK_OPTION_MENU(Clr->c_entry), menu);
-        gtk_option_menu_set_history(GTK_OPTION_MENU(Clr->c_entry), 0);
-        Clr->update_color();
+        break;
+    case CATEG_PROMPT:
+        {
+            GtkWidget *menu = gtk_menu_new();
+            gtk_widget_set_name(menu, "Menu");
+            for (clritem *c = Menu2; c->descr; c++) {
+                GtkWidget *mi = gtk_menu_item_new_with_label(c->descr);
+                gtk_widget_set_name(mi, c->descr);
+                gtk_widget_show(mi);
+                gtk_menu_append(GTK_MENU(menu), mi);
+                gtk_signal_connect(GTK_OBJECT(mi), "activate",
+                    GTK_SIGNAL_FUNC(sClr::c_attr_menu_proc),
+                    (void*)(long)c->tab_indx);
+            }
+            Clr->c_mode = Menu2[0].tab_indx;
+            gtk_option_menu_set_menu(GTK_OPTION_MENU(Clr->c_entry), menu);
+            gtk_option_menu_set_history(GTK_OPTION_MENU(Clr->c_entry), 0);
+            Clr->update_color();
+        }
+        break;
+    case CATEG_PLOT:
+        {
+            GtkWidget *menu = gtk_menu_new();
+            gtk_widget_set_name(menu, "Menu");
+            for (clritem *c = Menu3; c->descr; c++) {
+                GtkWidget *mi = gtk_menu_item_new_with_label(c->descr);
+                gtk_widget_set_name(mi, c->descr);
+                gtk_widget_show(mi);
+                gtk_menu_append(GTK_MENU(menu), mi);
+                gtk_signal_connect(GTK_OBJECT(mi), "activate",
+                    GTK_SIGNAL_FUNC(sClr::c_attr_menu_proc),
+                    (void*)(long)c->tab_indx);
+            }
+            Clr->c_mode = Menu3[0].tab_indx;
+            gtk_option_menu_set_menu(GTK_OPTION_MENU(Clr->c_entry), menu);
+            gtk_option_menu_set_history(GTK_OPTION_MENU(Clr->c_entry), 0);
+            Clr->update_color();
+        }
+        break;
     }
 }
 
@@ -574,9 +704,10 @@ sClr::c_apply_proc(GtkWidget*, void*)
     int red = Clr->c_red;
     int green = Clr->c_green;
     int blue = Clr->c_blue;
+    DisplayMode dm = Clr->c_display_mode;
 
     if (mode == CLR_CURLYR) {
-        if (LT()->CurLayer()) {
+        if (LT()->CurLayer() && dm == DSP()->CurMode()) {
             LT()->SetLayerColor(LT()->CurLayer(), red, green, blue);
             LT()->ShowLayerTable(LT()->CurLayer());
             XM()->PopUpFillEditor(0, MODE_UPD);
@@ -589,20 +720,20 @@ sClr::c_apply_proc(GtkWidget*, void*)
         return;
     }
     if (mode == BackgroundColor) {
-        DSP()->ColorTab()->set_rgb(mode, red, green, blue);
-        if (LT()->CurLayer()) {
+        DSP()->ColorTab()->set_rgb(mode, dm, red, green, blue);
+        if (dm == DSP()->CurMode()) {
             LT()->ShowLayerTable(LT()->CurLayer());
             XM()->PopUpFillEditor(0, MODE_UPD);
             XM()->PopUpLayerPalette(0, MODE_UPD, false, 0);
         }
         XM()->UpdateCursor(0, XM()->GetCursor());
-        if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw()) {
-            DSP()->RedisplayAll();
+        if (dm == Electrical || !LT()->NoPhysRedraw()) {
+            DSP()->RedisplayAll(dm);
         }
         return;
     }
 
-    DSP()->ColorTab()->set_rgb(mode, red, green, blue);
+    DSP()->ColorTab()->set_rgb(mode, dm, red, green, blue);
     switch (mode) {
     case PromptEditTextColor:
     case PromptTextColor:
@@ -618,8 +749,8 @@ sClr::c_apply_proc(GtkWidget*, void*)
 
     case CoarseGridColor:
     case FineGridColor:
-        if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw()) {
-            DSP()->RedisplayAll();
+        if (dm == Electrical || !LT()->NoPhysRedraw()) {
+            DSP()->RedisplayAll(dm);
         }
         break;
 
@@ -628,8 +759,8 @@ sClr::c_apply_proc(GtkWidget*, void*)
         break;
 
     case HighlightingColor:
-        if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw()) {
-            DSP()->RedisplayAll();
+        if (dm == Electrical || !LT()->NoPhysRedraw()) {
+            DSP()->RedisplayAll(dm);
         }
         break;
 
@@ -641,8 +772,8 @@ sClr::c_apply_proc(GtkWidget*, void*)
     case InstanceBBColor:
     case InstanceNameColor:
     case InstanceSizeColor:
-        if (DSP()->CurMode() == Electrical || !LT()->NoPhysRedraw()) {
-            DSP()->RedisplayAll();
+        if (dm == Electrical || !LT()->NoPhysRedraw()) {
+            DSP()->RedisplayAll(dm);
         }
         break;
 
@@ -667,8 +798,17 @@ sClr::c_get_rgb(int mode, int *red, int *green, int *blue)
             *blue = 0;
         }
     }
-    else
-        DSP()->ColorTab()->get_rgb(mode, red, green, blue);
+    else {
+        if (Clr) {
+            DSP()->ColorTab()->get_rgb(mode, Clr->c_display_mode,
+                red, green, blue);
+        }
+        else {
+            *red = 0;
+            *green = 0;
+            *blue = 0;
+        }
+    }
 }
 
 

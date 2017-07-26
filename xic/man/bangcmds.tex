@@ -4888,7 +4888,7 @@ Incorporation of this feature led to some significant updates in
 script functions and elsewhere for efficient support.
 
 % -----------------------------------------------------------------------------
-% !ldshared 100315
+% !ldshared 072517
 \subsection{The {\cb !ldshared} Command: Load Plug-In Script Library}
 \index{"!ldshared command}
 \begin{quote}
@@ -4899,7 +4899,7 @@ scrkit} provided with {\Xic} distributions.  The {\vt scrkit}
 directory contains files and instruction for creating libraries of
 C/C++ functions which can be called from scripts.
 
-Thew required argument is a path to the shared library file as
+The required argument is a path to the shared library file as
 generated from the {\vt scrkit} system.  Anything else in the line is
 passed to the library {\vt init} function verbatim.  The library
 author can add a parser for this, for providing initialization options
@@ -4913,7 +4913,7 @@ functions, which would likely crash the program if referenced.
 \section{Selections}
 
 % -----------------------------------------------------------------------------
-% !select 060108
+% !select 072517
 \subsection{The {\cb !select} Command: Select Objects}
 \index{"!select command}
 \index{selections!"!select command}
@@ -4999,8 +4999,8 @@ This will select boxes on CAA that are entirely covered by CPG.
 \begin{quote}
     {\vt !select l V1|V2 AnyNoOverlap M1 \& M2}
 \end{quote}
-This will all geometric objects on V1 and V2 that are not completely
-covered by both M1 and M2.
+This will select all geometric objects on V1 and V2 that are not
+completely covered by both M1 and M2.
 
 The {\cb !select}/{\cb !desel} commands with electrical property
 modifiers also work in physical mode.  The selected cell will be the
