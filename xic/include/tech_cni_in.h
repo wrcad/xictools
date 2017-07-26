@@ -37,7 +37,12 @@ inline class cTechCniIn *CniIn();
 class cTechCniIn : public cLispEnv
 {
 public:
-    friend inline cTechCniIn *CniIn() { return (cTechCniIn::instancePtr); }
+    friend inline cTechCniIn *CniIn()
+        {
+            if (!cTechCniIn::instancePtr)
+                new cTechCniIn;
+            return (cTechCniIn::instancePtr);
+        }
 
     cTechCniIn();
     ~cTechCniIn();

@@ -1043,8 +1043,7 @@ cTechCdsOut::mk_stipplename(const CDl *ld)
 
     // We'll use the drf input reader to keep track of stipple
     // patterns that were not read from an external drf file.
-    if (!DrfIn())
-        new cTechDrfIn;
+
     char buf[32];
     sprintf(buf, "stp_%d", tco_stip_cnt);
 

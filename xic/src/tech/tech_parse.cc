@@ -1114,8 +1114,6 @@ cTech::dispatch(FILE *techfp)
         return (TCmatch);
     }
     if (Matching(Tkw.ReadDRF())) {
-        if (!DrfIn())
-            new cTechDrfIn;
         char *err;
         if (!DrfIn()->read(tc_inbuf, &err)) {
             char *e = SaveError("%s: %s", Tkw.ReadDRF(),
@@ -1131,8 +1129,6 @@ cTech::dispatch(FILE *techfp)
             FILE *fp = fopen(techtemp, "w");
             if (fp) {
                 OAif()->print_tech(fp, tc_inbuf, 0, 0);
-                if (!CdsIn())
-                    new cTechCdsIn;
                 char *err;
                 bool ret = CdsIn()->read(techtemp, &err);
                 fclose(fp);
@@ -1157,8 +1153,6 @@ cTech::dispatch(FILE *techfp)
         return (TCmatch);
     }
     if (Matching(Tkw.ReadCdsTech())) {
-        if (!CdsIn())
-            new cTechCdsIn;
         char *err;
         if (!CdsIn()->read(tc_inbuf, &err)) {
             char *e = SaveError("%s: %s", Tkw.ReadCdsTech(),
@@ -1177,8 +1171,6 @@ cTech::dispatch(FILE *techfp)
         return (TCmatch);
     }
     if (Matching(Tkw.ReadCniTech())) {
-        if (!CniIn())
-            new cTechCniIn;
         char *err;
         if (!CniIn()->read(tc_inbuf, &err)) {
             char *e = SaveError("%s: %s", Tkw.ReadCniTech(),

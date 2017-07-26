@@ -556,8 +556,6 @@ cTechCdsIn::include_node(lispnode *p0, lispnode*, char **err)
     lispnode n;
     int cnt = lispnode::eval_list(p0->args, &n, 1, err);
     if (cnt == 1 && n.type == LN_STRING) {
-        if (!CdsIn())
-            new cTechCdsIn;
         char *erret;
         if (!CdsIn()->readEvalLisp(n.string,
                 CDvdb()->getVariable(VA_LibPath), true, &erret))

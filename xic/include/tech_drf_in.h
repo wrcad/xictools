@@ -183,7 +183,12 @@ inline class cTechDrfIn *DrfIn();
 class cTechDrfIn : public cLispEnv
 {
 public:
-    friend inline cTechDrfIn *DrfIn() { return (cTechDrfIn::instancePtr); }
+    friend inline cTechDrfIn *DrfIn()
+        {
+            if (!cTechDrfIn::instancePtr)
+                new cTechDrfIn;
+            return (cTechDrfIn::instancePtr);
+        }
 
     cTechDrfIn();
     ~cTechDrfIn();
