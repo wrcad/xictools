@@ -345,6 +345,22 @@ GTKdev::Init(int *argc, char **argv)
 #endif
         return (true);
     }
+
+    // Here's a bit of a hack - some themes leave a lot of white space
+    // around button content, taking a lot of area, and possibly
+    // causing the side menu buttons to truncate the images if there
+    // is insufficient screen resolution.  If the environment variable
+    // is set, make this spacing zero.
+
+    if (getenv("XT_GUI_COMPACT")) {
+        const char *c_str =
+"style \"mybtn\" = \"GtkButton\" { GtkButton::inner_border = {0, 0, 0, 0} }\n"
+"style \"myent\" = \"GtkEntry\" { GtkEntry::inner_border = {0, 0, 0, 0} }\n" 
+"class \"GtkButton\" style \"mybtn\"\n"
+"class \"GtkEntry\" style \"myent\"\n";
+        gtk_rc_parse_string(c_str);
+    }
+
 #ifdef WITH_X11
     // Set again, since GTK-2 has reset the handler.
     XSetErrorHandler(x_error_handler);

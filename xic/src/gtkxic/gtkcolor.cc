@@ -24,6 +24,7 @@
  *========================================================================*/
 
 #include "main.h"
+#include "scedif.h"
 #include "cd_lgen.h"
 #include "dsp_layer.h"
 #include "dsp_color.h"
@@ -268,7 +269,10 @@ sClr::sClr(GRobject c)
     GtkWidget *entry = gtk_option_menu_new();
     c_modemenu = entry;
     gtk_widget_set_name(entry, "ModeMenu");
-    gtk_widget_show(entry);
+    if (ScedIf()->hasSced())
+        gtk_widget_show(entry);
+    else
+        gtk_widget_hide(entry);
     gtk_box_pack_start(GTK_BOX(hbox), entry, false, false, 0);
     {
         GtkWidget *menu = gtk_menu_new();
