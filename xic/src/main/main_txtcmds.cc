@@ -4799,10 +4799,23 @@ void
 bangcmds::dumpcds(const char *s)
 {
     cTechCdsOut out;
-    if (out.write_cds_tech(s))
-        PL()->ShowPrompt("Cadence tech and DRF files written, no errors.");
-    else
-        PL()->ShowPrompt("Error writing Cadence tech/DRF files.");
+    if (!out.write_tech(s)) {
+        PL()->ShowPrompt("Error writing Cadence ASCII technology file.");
+        Log()->PopUpErr(Errs()->get_error());
+        return;
+    }
+    if (!out.write_drf(s)) {
+        PL()->ShowPrompt("Error writing Cadence DRF file.");
+        Log()->PopUpErr(Errs()->get_error());
+        return;
+    }
+    if (!out.write_lmap(s)) {
+        PL()->ShowPrompt("Error writing Cadence GDSII layer map file.");
+        Log()->PopUpErr(Errs()->get_error());
+        return;
+    }
+    PL()->ShowPrompt(
+        "Cadence tech, DRF, and GDSII map files written, no errors.");
 }
 
 

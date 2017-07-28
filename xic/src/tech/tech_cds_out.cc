@@ -26,6 +26,7 @@
 #include "dsp.h"
 #include "dsp_layer.h"
 #include "cd_lgen.h"
+#include "cd_strmdata.h"
 #include "si_parsenode.h"
 #include "si_parser.h"
 #include "si_lisp.h"
@@ -35,6 +36,7 @@
 #include "tech_cds_out.h"
 #include "tech_drf_in.h"
 #include "drcif.h"
+#include "filestat.h"
 
 
 //
@@ -43,21 +45,37 @@
 
 #define DEFAULT_BASENAME "xic_tech_cds"
 
-// Public function for write Cadence Virtuoso compatible ascii
-// technology and display resource files.  The files will be named
-// <basename>.txt and <basename>.drf.  The basename can have a path
-// prepended.  If basename is null, a default "xic_tech_cds" is used.
+// Public function for writing a Cadence Virtuoso compatible ascii
+// technology file.  The file will be named <basename>.txt The
+// basename can have a path prepended.  If basename is null, a default
+// "xic_tech_cds" is used.
+
+
 //
 bool
-cTechCdsOut::write_cds_tech(const char *basename)
+cTechCdsOut::write_tech(const char *basename)
 {
     if (!basename || !*basename)
         basename = DEFAULT_BASENAME;
     char *filename = new char[strlen(basename) + 8];
     char *end = lstring::stpcpy(filename, basename);
 
-    // Technology file.
     strcpy(end, ".txt");
+
+    filestat::clear_error();
+    if (!filestat::create_bak(filename)) {
+        const char *erm = filestat::error_msg();
+        if (erm) {
+            Errs()->add_error(erm);
+            filestat::clear_error();
+        }
+        else {
+            Errs()->add_error("failed to back up %s.",
+                lstring::strip_path(filename));
+        }
+        delete [] filename;
+        return (false);
+    }
 
     tco_fp = fopen(filename, "w");
     if (!tco_fp) {
@@ -76,8 +94,43 @@ cTechCdsOut::write_cds_tech(const char *basename)
         return (false);
     }
 
-    // DRF file.
+    delete [] filename;
+    if (tco_fp) {
+        fclose(tco_fp);
+        tco_fp = 0;
+    }
+    return (true);
+}
+
+
+// Public function for writing a Cadence Virtuoso compatible display
+// resource file.  The file will be named <basename>.drf.  The
+// basename can have a path prepended.  If basename is null, a default
+// "xic_tech_cds" is used.
+//
+bool
+cTechCdsOut::write_drf(const char *basename)
+{
+    if (!basename || !*basename)
+        basename = DEFAULT_BASENAME;
+    char *filename = new char[strlen(basename) + 8];
+    char *end = lstring::stpcpy(filename, basename);
+
     strcpy(end, ".drf");
+
+    if (!filestat::create_bak(filename)) {
+        const char *erm = filestat::error_msg();
+        if (erm) {
+            Errs()->add_error(erm);
+            filestat::clear_error();
+        }
+        else {
+            Errs()->add_error("failed to back up %s.",
+                lstring::strip_path(filename));
+        }
+        delete [] filename;
+        return (false);
+    }
 
     tco_fp = fopen(filename, "w");
     if (!tco_fp) {
@@ -101,6 +154,87 @@ cTechCdsOut::write_cds_tech(const char *basename)
         fclose(tco_fp);
         tco_fp = 0;
     }
+    return (true);
+}
+
+
+// Public function for writing a Cadence Virtuoso compatible GDSII
+// layer map file.  The file will be named <basename>.gdsmap.  The
+// basename can have a path prepended.  If basename is null, a default
+// "xic_tech_cds" is used.
+//
+bool
+cTechCdsOut::write_lmap(const char *basename)
+{
+    if (!basename || !*basename)
+        basename = DEFAULT_BASENAME;
+    char *filename = new char[strlen(basename) + 8];
+    char *end = lstring::stpcpy(filename, basename);
+    strcpy(end, ".gdsmap");
+
+    filestat::clear_error();
+    if (!filestat::create_bak(filename)) {
+        const char *erm = filestat::error_msg();
+        if (erm) {
+            Errs()->add_error(erm);
+            filestat::clear_error();
+        }
+        else {
+            Errs()->add_error("failed to back up %s.",
+                lstring::strip_path(filename));
+        }
+        delete [] filename;
+        return (false);
+    }
+
+    tco_fp = fopen(filename, "w");
+    if (!tco_fp) {
+        Errs()->sys_error(lstring::strip_path(filename));
+        Errs()->add_error("failed to open %s for writing.",
+            lstring::strip_path(filename));
+        delete [] filename;
+        return (false);
+    }
+    fprintf(tco_fp, "#  %s\n", CD()->ifIdString());
+    fprintf(tco_fp, "#  GDSII mapping, technology %s\n",
+        Tech()->TechnologyName() ? Tech()->TechnologyName() : "unnamed");
+
+    CDlgen pgen(Physical);
+    CDl *ld;
+    while ((ld = pgen.next()) != 0) {
+        if (ld->strmOut()) {
+            int l = ld->oaLayerNum();
+            const char *lname = CDldb()->getOAlayerName(l);
+            if (lname) {
+                int p = ld->oaPurposeNum();
+                const char *pname = CDldb()->getOApurposeName(p);
+                if (!pname)
+                    pname = "drawing";
+                fprintf(tco_fp, "%-20s %-20s %-6d %d\n", lname,
+                    pname, ld->strmOut()->layer(), ld->strmOut()->dtype());
+            }
+        }
+    }
+
+    CDlgen egen(Electrical);
+    while ((ld = egen.next()) != 0) {
+        if (ld->strmOut()) {
+            int l = ld->oaLayerNum();
+            const char *lname = CDldb()->getOAlayerName(l);
+            if (lname) {
+                int p = ld->oaPurposeNum();
+                const char *pname = CDldb()->getOApurposeName(p);
+                if (!pname)
+                    pname = "drawing";
+                fprintf(tco_fp, "%-20s %-20s %-6d %d\n", lname,
+                    pname, ld->strmOut()->layer(), ld->strmOut()->dtype());
+            }
+        }
+    }
+
+    delete [] filename;
+    fclose (tco_fp);
+    tco_fp = 0;
     return (true);
 }
 

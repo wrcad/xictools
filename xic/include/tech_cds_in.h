@@ -48,7 +48,6 @@ public:
     ~cTechCdsIn();
 
     bool read(const char*, char**);
-
     static bool readLayerMap(const char*);
 
 private:

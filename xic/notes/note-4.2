@@ -984,17 +984,16 @@ Remedies:
 -  Make the functions static, and pass the pointer.  This is probably
    the easiest/safest approach.  But, some structs will end up with
    all or mostly static methods.  The syntax becomes a bit ugly and
-   cluttered.  The language default behavior for simple objects should
-   be exactly this.  Fecken idiots!
+   cluttered.  Did a lot of this.
 
--  Define a macro that will test for a null pointer before a call, something
-   like
+- Define a macro that will test for a null pointer before a call,
+  something like
 #define ZCK(foo, bar, baz) (foo ? foo->bar : baz)
 #define ZCK(foo, bar) if (foo) foo->bar
-   Wrap calls in the macro.
+   Wrap calls in the macro.  Never did this, too ugly.
 
 -  Find the method calls and add an explicit test for null pointer.
-   Mark verified calls with "// XTST ok".
+   Did a lot of this.
 
 Fedora networking gave trouble with xic/wrspice ipc.
 Set SIGIO to SIG_IGN in Xic and WRspice.  This signal is generated when a
@@ -1015,12 +1014,20 @@ This was a core leak, too.
 
 Numerous fixes to std via handling internally.
 
-TODO: std vias should be handled transparently in all CHD operations.  Vias
-are ignored in display mode, compare mode (probably).
-
 Grid panel changed visually, new screenshot needed in help.
 
-ToDo:  output a layer map file from !dumpcds.
+The Color Selection panel was changed and updated to allow setting
+opposite-mode colors.  Needs new screen shot.
+
+New environment variable XT_GUI_COMPRESS.  When set, don't allow space
+around button contents.  Such space can cuase side menu button images to
+be truncated on low-res displays.
+
+The !dumpcds command will now output a GDSII layer mapping file in
+addition top the tech and drf files.
+
+ToDo: std vias should be handled transparently in all CHD operations.  Vias
+are ignored in display mode, compare mode (probably).
 
 ToDo:  Allow !join to join electrical wires.  In memory design from Cadence,
 all electrical wire segments are individual wires.  Maybe a join-all-wires
@@ -1029,9 +1036,6 @@ command?
 ToDo:  In the Click-Select Mode of the Node Mapping panel,
 add highlighting to selected physical net in subwindow,
 Hook to the Net Selections function somehow?
-
-The Color Selection panel was changed and updated to all setting
-opposite-mode colors.  Needs new screen shot.
 
 
 ==== Sticky ==================================

@@ -74,9 +74,6 @@ public:
     static void make_temp_conf(const char*, const char*);
     static char *make_temp(const char*);
 
-    static const char *error_msg() { return (errmsg); }
-    static void save_perror(const char *s) { save_sys_err(s); }
-
     static void set_rm_minutes(int);
     static int rm_minutes();
     static char *schedule_rm_file(const char*);
@@ -98,6 +95,10 @@ public:
             stringlist::destroy(tmp_deletes);
             tmp_deletes = 0;
         }
+
+    static const char *error_msg()          { return (errmsg); }
+    static void save_perror(const char *s)  { save_sys_err(s); }
+    static void clear_error()               { save_err(0); }
 
 private:
     static void save_sys_err(const char*);

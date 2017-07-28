@@ -43,7 +43,9 @@ public:
             tco_stip_cnt = 100;
         }
 
-    bool write_cds_tech(const char*);
+    bool write_tech(const char*);
+    bool write_drf(const char*);
+    bool write_lmap(const char*);
 
 private:
     bool dump_tech();

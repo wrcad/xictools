@@ -253,9 +253,9 @@ filestat::open_file(const char *fname, const char *mode)
 }
 
 
-// This function returns true and creates a .bak file if it is ok to
-// write to fname.  Set *bakname to the backup name if an existing
-// file was moved.
+// This function returns true and creates a .bak file if fname exists
+// and it is ok to write to fname.  Set *bakname to the backup name if
+// an existing file was moved.
 //
 bool
 filestat::create_bak(const char *fname, char **bakname)
@@ -513,13 +513,19 @@ filestat::save_sys_err(const char *str)
 void
 filestat::save_err(const char *fmt, ...)
 {
-    va_list args;
-    char buf[BUFSIZ];
-    va_start(args, fmt);
-    vsnprintf(buf, BUFSIZ, fmt, args);
-    va_end(args);
-    delete [] errmsg;
-    errmsg = lstring::copy(buf);
+    if (!fmt) {
+        delete [] errmsg;
+        errmsg = 0;
+    }
+    else {
+        va_list args;
+        char buf[BUFSIZ];
+        va_start(args, fmt);
+        vsnprintf(buf, BUFSIZ, fmt, args);
+        va_end(args);
+        delete [] errmsg;
+        errmsg = lstring::copy(buf);
+    }
 }
 // End of filestat functions
 
