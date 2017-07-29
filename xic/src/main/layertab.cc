@@ -404,6 +404,11 @@ namespace {
         }
         memset(List, 0, ListSize*sizeof(unsigned char));
         BBox BB(x, y, x, y);
+        WindowDesc *wd = EV()->ButtonWin(false);
+        if (wd) {
+            int delta = 2.0/wd->Ratio();
+            BB.bloat(delta);
+        }
         cTfmStack stk;
         add_layers(CurCell(), &BB, &stk);
         Index = -1;

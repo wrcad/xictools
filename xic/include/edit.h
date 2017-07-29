@@ -353,6 +353,8 @@ public:
     bool joinLyrCmd();
     bool joinCmd();
     XIrt joinQueue();
+    bool joinWireCmd();
+    bool joinWireLyrCmd();
     bool splitCmd(bool);
     XIrt splitQueue(bool);
 

@@ -1510,6 +1510,14 @@ namespace {
     CDll *match_layers(const char *str)
     {
         bool all = (!str || !strcmp(str, "all"));
+        if (!all && str[0] == '-' && !str[1]) {
+            // A '-' is a stand-in for the current layer.
+            CDl *ld = LT()->CurLayer();
+            if (ld)
+                return (new CDll(ld, 0));
+            PL()->ShowPrompt("No current layer.");
+            return (0);
+        }
 
         CDll *l0 = 0;
         regex_t preg;
@@ -1522,7 +1530,8 @@ namespace {
         CDl *ld;
         CDlgen lgen(DSP()->CurMode());
         while ((ld = lgen.next()) != 0) {
-            if (all || !regexec(&preg, ld->name(), 0, 0, 0))
+            if (all || !regexec(&preg, ld->name(), 0, 0, 0) ||
+                   (ld->lppName() && !regexec(&preg, ld->lppName(), 0, 0, 0)))
                 l0 = new CDll(ld, l0);
         }
         if (!all)

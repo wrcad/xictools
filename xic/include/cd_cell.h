@@ -975,7 +975,7 @@ struct CDs : public CDdb
     // cd_merge.cc
     bool mergeBoxOrPoly(CDo*, bool);
     bool mergeBox(CDo*, bool);
-    bool mergeWire(CDw*, bool);
+    bool mergeWire(CDw*, bool, CDw** = 0);
 
     // cd_scriptout.cc
     bool writeScript(FILE*, const char*) const;

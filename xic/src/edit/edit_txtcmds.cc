@@ -73,6 +73,7 @@ namespace {
         void bloat(const char*);
         void join(const char*);
         void split(const char*);
+        void jw(const char*);
         void manh(const char*);
         void polyfix(const char*);
         void polyrev(const char*);
@@ -109,6 +110,7 @@ cEdit::setupBangCmds()
     XM()->RegisterBangCmd("bloat", &edit_bangcmds::bloat);
     XM()->RegisterBangCmd("join", &edit_bangcmds::join);
     XM()->RegisterBangCmd("split", &edit_bangcmds::split);
+    XM()->RegisterBangCmd("jw", &edit_bangcmds::jw);
     XM()->RegisterBangCmd("manh", &edit_bangcmds::manh);
     XM()->RegisterBangCmd("polyfix", &edit_bangcmds::polyfix);
     XM()->RegisterBangCmd("polyrev", &edit_bangcmds::polyrev);
@@ -1259,6 +1261,26 @@ edit_bangcmds::split(const char *s)
     if (*s == '1' || *s == 'v' || *s == 'V')
         vert = true;
     if (!ED()->splitCmd(vert))
+        PL()->ShowPrompt(Errs()->get_error());
+}
+
+
+void
+edit_bangcmds::jw(const char *s)
+{
+    PL()->ErasePrompt();
+    if (s && *s) {
+        if (*s == '-')
+            s++;
+        if (*s == 'l' || *s == 'L') {
+            if (!ED()->joinWireLyrCmd())
+                PL()->ShowPrompt(Errs()->get_error());
+            return;
+        }
+        PL()->ShowPrompt("Unknown option, command aborted.");
+        return;
+    }
+    if (!ED()->joinWireCmd())
         PL()->ShowPrompt(Errs()->get_error());
 }
 
