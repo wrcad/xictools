@@ -1,3 +1,4 @@
+
 /*========================================================================*
  *                                                                        *
  *  XICTOOLS Integrated Circuit Design System                             *
@@ -410,6 +411,188 @@ cEdit::joinQueue()
     XM()->ShowParameters();
     dspPkgIf()->SetWorking(false);
     return (XIok);
+}
+
+
+// Take the most recently selected wire from the selection list. 
+// Recursively attempt to merge this wire with similar wires that
+// share an endpoint.
+//
+bool
+cEdit::joinWireCmd()
+{
+    CDs *cursd = CurCell();
+    if (!cursd) {
+        Errs()->add_error("No current cell!");
+        return (false);
+    }
+
+    CDw *wdesc = 0;
+    CDol *olst = Selections.listQueue(cursd, "w", true);
+    for (CDol *o = olst; o; o = o->next) {
+        if (o->odesc->type() == CDWIRE) {
+            wdesc = (CDw*)o->odesc;
+            break;
+        }
+    }
+    CDol::destroy(olst);
+
+    if (!wdesc) {
+        Errs()->add_error("No wire is selected.");
+        return (false);
+    }
+    if (!wdesc->is_normal()) {
+        Errs()->add_error("Wire is abnormal, can't merge (internal error).");
+        return (false);
+    }
+    if (cursd->isElectrical() && wdesc->has_label()) {
+        Errs()->add_error("Can't merge a wire with an associated label.");
+        return (false);
+    }
+    if (wdesc->has_flag(CDnoMerge)) {
+        Errs()->add_error("Wire has the NoMerge flag set, can't merge.");
+        return (false);
+    }
+
+    // Back up the NoMerge and layer NoMerge flags, we override these
+    // here.
+
+    bool no_merge = CD()->IsNoMergeObjects();
+    CD()->SetNoMergeObjects(false);
+
+    CDl *ld = wdesc->ldesc();
+    bool l_no_merge = ld->isNoMerge();
+    ld->setNoMerge(false);
+
+    EV()->InitCallback();
+    Ulist()->ListCheck("MERGW", cursd, true);
+
+    bool didmrg = false;
+    bool ret = true;
+    while (wdesc) {
+        CDw *neww;
+        if (!cursd->mergeWire(wdesc, true, &neww)) {
+            Errs()->add_error("mergeWire: wire creation failed.");
+            ret = false;
+            break;
+        }
+        if (neww)
+            didmrg = true;
+        wdesc = neww;
+    }
+    ld->setNoMerge(l_no_merge);
+    CD()->SetNoMergeObjects(no_merge);
+
+    if (ret) {
+        if (didmrg)
+            PL()->ShowPrompt("Done, selected wire was merged.");
+        else
+            PL()->ShowPrompt("Done, selected wire could not be merged.");
+    }
+    XM()->ShowParameters();
+
+    BBox BB1;
+    Selections.computeBB(cursd, &BB1, false);
+    Selections.removeTypes(cursd, "w");
+    Ulist()->CommitChanges(true);
+    WindowDesc *wd;
+    WDgen wgen(WDgen::MAIN, WDgen::CDDB);
+    while ((wd = wgen.next()) != 0)
+        wd->Refresh(&BB1);
+    return (ret);
+}
+
+
+// Join all wires on the current layer that share an endpoint.
+//
+bool
+cEdit::joinWireLyrCmd()
+{
+    CDs *cursd = CurCell();
+    if (!cursd) {
+        Errs()->add_error("No current cell!");
+        return (false);
+    }
+
+    CDl *ld = LT()->CurLayer();
+    if (!ld) {
+        Errs()->add_error("No current layer!");
+        return (false);
+    }
+    if (ld->isInvisible()) {
+        Errs()->add_error("Current layer is invisible, join not allowed.");
+        return (false);
+    }
+    if (ld->isNoMerge()) {
+        Errs()->add_error("Current layer has NoMerge set, join not allowed.");
+        return (false);
+    }
+
+    // Make a list of all joinable wires on the current layer.
+    CDol *ol0 = 0;
+    CDg gdesc;
+    gdesc.init_gen(cursd, ld);
+    CDo *odesc;
+    while ((odesc = gdesc.next()) != 0) {
+        if (odesc->type() == CDWIRE) {
+            CDw *wdesc = (CDw*)odesc;
+            if (cursd->isElectrical() && wdesc->has_label())
+                continue;
+            if (wdesc->has_flag(CDnoMerge))
+                continue;
+            ol0 = new CDol(wdesc, ol0);
+        }
+    }
+    if (!ol0) {
+        Errs()->add_error("No joinable wire found on current layer.");
+        return (false);
+    }
+
+    EV()->InitCallback();
+    Ulist()->ListCheck("MERGW", cursd, true);
+
+    int mcnt = 0;
+    bool ret = true;
+    while (ol0) {
+        CDw *wdesc = (CDw*)ol0->odesc;
+        CDol *ox = ol0;
+        ol0 = ol0->next;
+        delete ox;
+
+        // Skip the deleted wires, these are produced as join
+        // operations are performed.  Newly created wires can be
+        // ignored, as we know that no further joining is possible.
+
+        if (!wdesc->is_normal())
+            continue;
+        bool didmrg = 0;
+        while (wdesc) {
+            CDw *neww;
+            if (!cursd->mergeWire(wdesc, true, &neww)) {
+                Errs()->add_error("mergeWire: wire creation failed.");
+                ret = false;
+                break;
+            }
+            if (neww)
+                didmrg = true;
+            wdesc = neww;
+        }
+        if (didmrg)
+            mcnt++;
+    }
+
+    if (ret) {
+        PL()->ShowPromptV("Done, %d %s merged on current layer.",
+            mcnt, mcnt == 1 ? "wire" : "wires");
+    }
+    XM()->ShowParameters();
+
+    Ulist()->CommitChanges(true);
+    WindowDesc *wd;
+    WDgen wgen(WDgen::MAIN, WDgen::CDDB);
+    while ((wd = wgen.next()) != 0)
+        wd->Redisplay(0);
+    return (ret);
 }
 
 

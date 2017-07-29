@@ -479,27 +479,19 @@ namespace {
         else
             sdesc->unlink(odesc, false);
     }
-
-    // Return true if the wire has a bound node name label.
-    //
-    bool has_label(const CDw *wdesc)
-    {
-        CDp_node *pn = (CDp_node*)wdesc->prpty(P_NODE);
-        if (pn && pn->bound())
-            return (true);
-        CDp_bnode *pb = (CDp_bnode*)wdesc->prpty(P_BNODE);
-        if (pb && pb->bound())
-            return (true);
-        return (false);
-    }
 }
 
 
-// If two wires of equal width share an endpoint, merge into one.
+// If the passed wire (which is in the database) shares an endpoint
+// with another wire of the same width and end style, combine the
+// wires into a new wire, and delete the existing wires.  If an
+// address is passed in pnew, return a pointer to the new wire.
 //
 bool
-CDs::mergeWire(CDw *wdesc, bool Undoable)
+CDs::mergeWire(CDw *wdesc, bool Undoable, CDw **pnew)
 {
+    if (pnew)
+        *pnew = 0;
     if (CD()->IsNoMergeObjects())
         return (true);
     CDs *sdt = this;
@@ -513,7 +505,7 @@ CDs::mergeWire(CDw *wdesc, bool Undoable)
         return (true);
 
     // Never merge a wire with a label.
-    if (isElectrical() && has_label(wdesc))
+    if (isElectrical() && wdesc->has_label())
         return (true);
 
     bool merged1 = false, merged2 = false;
@@ -537,9 +529,12 @@ CDs::mergeWire(CDw *wdesc, bool Undoable)
                 pointer1->has_flag(CDnoMerge) || wdesc == (CDw*)pointer1)
             continue;
         CDw *wold = (CDw*)pointer1;
-        if (isElectrical() && has_label(wold))
+        if (isElectrical() && wold->has_label())
             continue;
         if (wold->wire_width() != wdesc->wire_width())
+            continue;
+        if (wdesc->wire_width() > 0 &&
+                wold->wire_style() != wdesc->wire_style())
             continue;
         if (path->x == wold->points()[wold->numpts() - 1].x &&
                 path->y == wold->points()[wold->numpts() - 1].y) {
@@ -564,9 +559,12 @@ CDs::mergeWire(CDw *wdesc, bool Undoable)
                 pointer2->has_flag(CDnoMerge) || wdesc == (CDw*)pointer2)
             continue;
         CDw *wold = (CDw*)pointer2;
-        if (isElectrical() && has_label(wold))
+        if (isElectrical() && wold->has_label())
             continue;
         if (wold->wire_width() != wdesc->wire_width())
+            continue;
+        if (wdesc->wire_width() > 0 &&
+                wold->wire_style() != wdesc->wire_style())
             continue;
         if (path[numpts-1].x == wold->points()[wold->numpts() - 1].x &&
                 path[numpts-1].y == wold->points()[wold->numpts() - 1].y) {
@@ -618,6 +616,8 @@ CDs::mergeWire(CDw *wdesc, bool Undoable)
         do_delete(this, pointer1, Undoable);
     if (merged2)
         do_delete(this, pointer2, Undoable);
+    if (pnew)
+        *pnew = wpointer;
 
     return (true);
 }

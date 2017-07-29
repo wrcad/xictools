@@ -611,6 +611,20 @@ struct CDw : public CDo
             return (false);
         }
 
+    // Return true if the wire has a bound node name label, Electrical
+    // mode only.
+    //
+    bool has_label()
+        {
+            CDp_node *pn = (CDp_node*)prpty(P_NODE);
+            if (pn && pn->bound())
+                return (true);
+            CDp_bnode *pb = (CDp_bnode*)prpty(P_BNODE);
+            if (pb && pb->bound())
+                return (true);
+            return (false);
+        }
+
     const Point *points()       const { return (wPoints); }
     void set_points(Point *p)   { wPoints = p; }
     int numpts()                const { return (wNumpts); }
