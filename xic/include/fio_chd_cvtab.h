@@ -318,10 +318,12 @@ public:
                 if (!item)
                     return (0);
                 cCHD *tchd = ct_chd_db.chd(item->get_chd_tkt());
-                p = resolve_symref(tchd, p);
-                if (!p)
-                    return (0);
-                *pp = p;
+
+                symref_t *pt = resolve_symref(tchd, p);
+                if (pt) {
+                    p = pt;
+                    *pp = pt;
+                }
             }
             if (p->should_skip())
                 return (0);

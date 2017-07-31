@@ -1317,16 +1317,33 @@ oas_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
     in_curdtype = -1;
     in_nogo = false;
 
-    // The AuxCellTab may contain cells to stream out from the main
-    // database, overriding the cell data in the CHD.
-    //
-    if (in_mode == Physical && in_action == cvOpenModeTrans &&
-            FIO()->IsUseCellTab()) {
-        OItype oiret = chd_process_override_cell(p);
-        if (oiret == OIerror)
-            return (false);
-        if (oiret == OInew)
-            return (true);
+    if (FIO()->IsUseCellTab()) {
+        if (in_mode == Physical && in_action == cvOpenModeTrans) {
+            // The AuxCellTab may contain cells to stream out from the
+            // main database, overriding the cell data in the CHD.
+
+            OItype oiret = chd_process_override_cell(p);
+            if (oiret == OIerror)
+                return (false);
+            if (oiret == OInew)
+                return (true);
+        }
+    }
+    if (!p->get_defseen()) {
+        CDs *sd = CDcdb()->findCell(p->get_name(), in_mode);
+        if (in_mode == Physical && in_action == cvOpenModeTrans) {
+            // The cell definition was not in the file.  This could mean
+            // that the cell is a standard via or parameterized cell
+            // sub-master, or is a native library cell.  In any case, it
+            // should be in memory.
+
+            if (sd && (sd->isViaSubMaster() || sd->isPCellSubMaster()))
+                return (chd_output_cell(sd) == OIok);
+        }
+        FIO()->ifPrintCvLog(IFLOG_WARN, "Unresolved cell %s (%s).",
+            DisplayModeNameLC(in_mode), Tstring(p->get_name()),
+            sd ? "in memory" : "not found");
+        return (true);
     }
 
     if (in_mode == Physical && in_cgd) {
@@ -1349,7 +1366,7 @@ oas_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
             Errs()->add_error("chd_read_cell: internal, bad action.");
             return (false);
         }
-        if (in_flatten_mode != cvTfFlatten) {
+        if (!in_flatten) {
 
             // If not flattening, have to write the instances.
             nametab_t *ntab = get_sym_tab(in_mode);
@@ -1481,18 +1498,13 @@ oas_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
                 ret = end_cell();
             }
             else if (in_action == cvOpenModeTrans) {
-                if (in_flatten_mode != cvTfFlatten && in_transform <= 0)
+                if (!in_flatten && in_transform <= 0)
                     ret = in_out->write_end_struct();
                 delete [] in_cellname;
                 in_cellname = 0;
             }
         }
         return (ret);
-    }
-
-    if (!p->get_defseen()) {
-        // No cell definition in file, just ignore this.
-        return (true);
     }
 
     in_byte_offset = p->get_offset();
@@ -2061,7 +2073,7 @@ oas_in::end_cell()
     }
     else if (in_action == cvOpenModeTrans) {
         if (in_transform <= 0) {
-            if (in_flatten_mode != cvTfFlatten) {
+            if (!in_flatten) {
                 if (!in_out->write_end_struct())
                     return (false);
             }

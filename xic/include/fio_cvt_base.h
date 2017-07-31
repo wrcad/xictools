@@ -44,6 +44,7 @@ struct nametab_t;
 struct cref_t;
 struct crgen_t;
 struct FIOlayerAliasTab;
+struct CDcellTab;
 
 // Log file
 // Prehistoric filenames.
@@ -477,13 +478,6 @@ enum cvOpenMode
 //  cvOpenModeTrans         Direct translation mode.
 //  cvOpenModePrint         Print diagnostic output.
 
-// Flattening mode.
-enum cvFlattenMode
-{
-    cvNoFlatten,            // No flattening.
-    cvTfFlatten             // Use transform list.
-};
-
 // Print message after this many bytes.
 #define UFB_INCR 100000
 
@@ -551,6 +545,7 @@ struct cv_in : public cTfmStack
     bool chd_setup(cCHD*, cv_bbif*, int, DisplayMode, double);
     void chd_finalize();
     OItype chd_process_override_cell(symref_t*);
+    OItype chd_output_cell(CDs*, CDcellTab* = 0);
 
     cCHD *cur_chd() { return (in_chd_state.chd()); }
     void set_tf_list(unsigned char *s) { in_tf_list = s; }
@@ -614,14 +609,7 @@ struct cv_in : public cTfmStack
     // windowing and flattening setup
     void set_area_filt(bool on, const BBox *BB)
         { in_areafilt = on; if (BB) in_cBB = *BB; }
-    void set_flatten(int i, cvFlattenMode m)
-        {
-            in_flatten_mode = m;
-            if (m == cvNoFlatten)
-                in_flatmax = 0;
-            else
-                in_flatmax = i < 0 ? 0 : i;
-        }
+    inline void set_flatten(int, bool);  // Deferred definition below.
     void set_clip(bool on) { in_clip = on; }
     void set_keep_clipped_text(bool b) { in_keep_clip_text = b; }
 
@@ -671,8 +659,7 @@ protected:
     nametab_t   *in_elec_sym_tab;   // cell table
     SymTab      *in_submaster_tab;  // pcell/via submasters created
     unsigned char *in_tf_list;      // transformation list
-    cvFlattenMode in_flatten_mode;  // flattening mode
-
+    bool        in_flatten;         // flattening mode
     bool        in_gzipped;         // file was gzipped
     bool        in_needs_mult;      // flag to indicate in_scale != 1.0
     bool        in_listonly;        // list the cell offsets only
@@ -837,9 +824,47 @@ private:
 // Layer mapping check for cv_out::write_object.
 enum cvLchk { cvLneedCheck, cvLok, cvLnogo };
 
-// Base class for output generation
+// Interface passed to cCHD::readFlat, redirects output.
 //
-struct cv_out
+struct cv_backend
+{
+    cv_backend()
+        {
+            be_w2p = false;
+            be_abort = false;
+            CD()->RegisterCreate("cv_backend");
+        }
+
+    virtual ~cv_backend()
+        {
+            CD()->RegisterDestroy("cv_backend");
+        }
+
+    bool wire_to_poly() const       { return (be_w2p); }
+    void set_wire_to_poly(bool b)   { be_w2p = b; }
+    bool aborted() const            { return (be_abort); }
+
+    // Handle geometry.
+    virtual bool queue_layer(const Layer*, bool* = 0) = 0;
+    virtual bool write_box(const BBox*) = 0;
+    virtual bool write_poly(const Poly*) = 0;
+    virtual bool write_wire(const Wire*) = 0;
+    virtual bool write_text(const Text*) = 0;
+
+    // Called when done.
+    virtual void print_report() { }
+
+protected:
+    bool be_w2p;            // True if we would rather receive polys than
+                            // wires, setting this can save computation if,
+                            // e.g., creating zoids.
+    bool be_abort;          // Set this on user abort.
+};
+
+
+// Class for output generation, used as base for the file writers.
+//
+struct cv_out : public cv_backend
 {
     cv_out();
     virtual ~cv_out();
@@ -901,14 +926,19 @@ struct cv_out
     virtual bool write_library(int, double, double, tm*, tm*, const char*) = 0;
     virtual bool write_struct(const char*, tm*, tm*) = 0;
     virtual bool write_end_struct(bool = false) = 0;
+
+    // cv_backend interface
     virtual bool queue_layer(const Layer*, bool* = 0) = 0;
     virtual bool write_box(const BBox*) = 0;
     virtual bool write_poly(const Poly*) = 0;
     virtual bool write_wire(const Wire*) = 0;
     virtual bool write_text(const Text*) = 0;
+
     virtual bool write_sref(const Instance*) = 0;
     virtual bool write_endlib(const char*) = 0;
     virtual bool write_info(Attribute*, const char*) = 0;
+
+    void set_transform(cTfmStack *stk)  { out_stk = stk; }
 
     // Instance size filtering, hack for image creation.
     bool size_test(const symref_t *p, const cTfmStack *stk)
@@ -936,6 +966,7 @@ protected:
     CDp             *out_prpty;             // property cache
     FIOaliasTab     *out_alias;             // alias table
     stringlist      *out_chd_refs;          // list of chd ref cells found
+    cTfmStack       *out_stk;               // apply to odesc output
     Layer           out_layer;              // current layer desc
     BBox            out_cellBB;             // current cell BB
     int             out_size_thr;           // size threshold
@@ -949,6 +980,22 @@ protected:
     bool            out_interrupted;        // user interrupt
     bool            out_no_struct;          // skip struct beg/end recs
 };
+
+
+// Definition deferred until cv_out defined.
+//
+inline void
+cv_in::set_flatten(int i, bool fltn)
+{
+    in_flatten = fltn;
+    if (!fltn)
+        in_flatmax = 0;
+    else {
+        in_flatmax = i < 0 ? 0 : i;
+        if (in_out)
+            in_out->set_transform(this);
+    }
+}
 
 
 // Class for generating native symbol files

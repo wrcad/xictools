@@ -203,32 +203,62 @@ cgx_out::write_object(const CDo *odesc, cvLchk *lchk)
         *lchk = cvLok;
     }
 
+    bool ret = true;
     if (odesc->type() == CDBOX) {
-        if (odesc->prpty_list()) {
-            if (!write_box(&odesc->oBB()))
-                return (false);
+        BBox BB(odesc->oBB());
+        bool wrote_poly = false;
+        if (out_stk) {
+            Point *p;
+            out_stk->TBB(&BB, &p);
+            if (p) {
+                Poly po(5, p);
+                ret = write_poly(&po);
+                delete [] p;
+                wrote_poly = true;
+            }
         }
-        else {
-            // Cache boxes without properties.  Probably should
-            // cache boxes with identical properties, but this
-            // would be a lot more work
-            out_boxbuf[out_boxcnt++] = odesc->oBB();
-            if (out_boxcnt == CGX_BOX_MAX) {
-                if (!write_box(out_boxbuf))
-                    return (false);
-                out_boxcnt = 0;
+        if (!wrote_poly) {
+            if (odesc->prpty_list())
+                ret = write_box(&BB);
+            else {
+                // Cache boxes without properties.  Probably should
+                // cache boxes with identical properties, but this
+                // would be a lot more work
+                out_boxbuf[out_boxcnt++] = BB;
+                if (out_boxcnt == CGX_BOX_MAX) {
+                    ret = write_box(out_boxbuf);
+                    out_boxcnt = 0;
+                }
             }
         }
     }
     else if (odesc->type() == CDPOLYGON) {
-        const Poly po(((const CDpo*)odesc)->po_poly());
-        if (!write_poly(&po))
-            return (false);
+        if (out_stk) {
+            int num = ((const CDpo*)odesc)->numpts();
+            Poly po(num, Point::dup(((const CDpo*)odesc)->points(), num));
+            out_stk->TPath(po.numpts, po.points);
+            ret = write_poly(&po);
+            delete [] po.points;
+        }
+        else {
+            const Poly po(((const CDpo*)odesc)->po_poly());
+            ret = write_poly(&po);
+        }
     }
     else if (odesc->type() == CDWIRE) {
-        const Wire w(((const CDw*)odesc)->w_wire());
-        if (!write_wire(&w))
-            return (false);
+        if (out_stk) {
+            int num = ((const CDw*)odesc)->numpts();
+            Wire w(num, Point::dup(((const CDw*)odesc)->points(), num),
+                ((const CDw*)odesc)->attributes());
+            w.set_wire_width(mmRnd(w.wire_width() * out_stk->TGetMagn()));
+            out_stk->TPath(w.numpts, w.points);
+            ret =  write_wire(&w);
+            delete [] w.points;
+        }
+        else {
+            const Wire w(((const CDw*)odesc)->w_wire());
+            ret = write_wire(&w);
+        }
     }
     else if (odesc->type() == CDLABEL) {
         Text text;
@@ -236,15 +266,16 @@ cgx_out::write_object(const CDo *odesc, cvLchk *lchk)
         CDp_lref *prf = (CDp_lref*)odesc->prpty(P_LABRF);
         text.text = hyList::string(((CDla*)odesc)->label(), HYcvAscii,
             !(prf && prf->devref()));
-        const Label la(((CDla*)odesc)->la_label());
-        bool ret = text.set(&la, out_mode, Fcgx);
-        if (ret)
+        const Label la(((const CDla*)odesc)->la_label());
+        ret = text.set(&la, out_mode, Fcgx);
+        if (ret) {
+            if (out_stk)
+                text.transform(out_stk);
             ret = write_text(&text);
+        }
         delete [] text.text;
-        if (!ret)
-            return (false);
     }
-    return (true);
+    return (ret);
 }
 
 

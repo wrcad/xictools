@@ -128,7 +128,7 @@ WindowDesc::CreateImage(const BBox *AOI, int *numgeom)
 
 
 // Render the geometry of the hierarchy under cellname in chd within
-// AOI to maxdepth.  Return a image struct comtaining the image.
+// AOI to maxdepth.  Return an image struct containing the image.
 //
 // WARNING! The image data are not copied, and become bogus if the
 // w_rgbimg changes.  If not used immediately, call set_own_data()
@@ -861,7 +861,7 @@ WindowDesc::redisplay_cddb_zimg_rc(CDs *sdesc, int hierlev,
 // ximg_backend
 //
 
-zimg_backend::zimg_backend(WindowDesc *wdesc, RGBzimg *img) : cv_backend(false)
+zimg_backend::zimg_backend(WindowDesc *wdesc, RGBzimg *img)
 {
     zb_wdesc = wdesc;
     zb_rgbimg = img;
@@ -885,7 +885,7 @@ zimg_backend::~zimg_backend()
 
 
 bool
-zimg_backend::queue_layer(const Layer *layer)
+zimg_backend::queue_layer(const Layer *layer, bool*)
 {
     if (!layer->name)
         return (false);

@@ -30,43 +30,6 @@ struct Layer;
 struct Text;
 
 
-// Optionally passed to cCHD::readFlat, redirects output.
-//
-struct cv_backend
-{
-    cv_backend(bool w2p)
-        {
-            be_w2p = w2p;
-            be_abort = false;
-            CD()->RegisterCreate("cv_backend");
-        }
-
-    virtual ~cv_backend()
-        {
-            CD()->RegisterDestroy("cv_backend");
-        }
-
-    bool wire_to_poly()     { return (be_w2p); }
-    bool aborted()          { return (be_abort); }
-
-    // Handle geometry.
-    virtual bool queue_layer(const Layer*) = 0;
-    virtual bool write_box(const BBox*) = 0;
-    virtual bool write_poly(const Poly*) = 0;
-    virtual bool write_wire(const Wire*) = 0;
-    virtual bool write_text(const Text*) = 0;
-
-    // Called when done.
-    virtual void print_report() { }
-
-protected:
-    bool be_w2p;            // True if we would rather receive polys than
-                            // wires, setting this can save computation if,
-                            // e.g., creating zoids.
-    bool be_abort;          // Set this on user abort.
-};
-
-
 // Class for estimating memory requirements for flat_read.
 //
 struct fmu_t

@@ -34,12 +34,12 @@ struct rf_out : public cv_out
 {
     rf_out(CDs *sd, const BBox *bb, cTfmStack *tstk, bool clip)
         {
+            out_stk = tstk;
             rf_clip = bb ? clip : false;
             rf_noAOI = !bb;
             if (bb)
                 rf_AOI = *bb;
             rf_backend = 0;
-            rf_stack = tstk;
             rf_targcell = sd;
             rf_targld = 0;
             rf_targdt = 0;
@@ -91,7 +91,6 @@ struct rf_out : public cv_out
     BBox rf_AOI;
     cv_backend *rf_backend;
 
-    cTfmStack *rf_stack;
     CDs *rf_targcell;
     CDl *rf_targld;
     int rf_targdt;
@@ -101,14 +100,14 @@ struct rf_out : public cv_out
 //
 struct cv_backend_odb : cv_backend
 {
-    cv_backend_odb() : cv_backend(false)
+    cv_backend_odb()
         {
             table = 0;
             ldesc = 0;
             entry = 0;
         }
 
-    bool queue_layer(const Layer *layer)
+    bool queue_layer(const Layer *layer, bool*)
         {
             ldesc = CDldb()->findLayer(layer->name, Physical);
             if (!ldesc)
@@ -172,14 +171,15 @@ private:
 //
 struct cv_backend_zdb : cv_backend
 {
-    cv_backend_zdb() : cv_backend(true)
+    cv_backend_zdb()
         {
             table = 0;
             ldesc = 0;
             entry = 0;
+            set_wire_to_poly(true);
         }
 
-    bool queue_layer(const Layer *layer)
+    bool queue_layer(const Layer *layer, bool*)
         {
             ldesc = CDldb()->findLayer(layer->name, Physical);
             if (!ldesc)
@@ -245,14 +245,15 @@ private:
 //
 struct cv_backend_zl : cv_backend
 {
-    cv_backend_zl() : cv_backend(true)
+    cv_backend_zl()
         {
             table = 0;
             ldesc = 0;
             entry = 0;
+            set_wire_to_poly(true);
         }
 
-    bool queue_layer(const Layer *layer)
+    bool queue_layer(const Layer *layer, bool*)
         {
             ldesc = CDldb()->findLayer(layer->name, Physical);
             if (!ldesc)
@@ -323,7 +324,7 @@ struct cv_backend_zbdb : cv_backend
     cv_backend_zbdb(SymTab *tab, int x, int y,
             unsigned int nx, unsigned int ny,
             unsigned int dx, unsigned int dy,
-            unsigned int bx, unsigned int by) : cv_backend(true)
+            unsigned int bx, unsigned int by)
         {
             table = tab;
             ldesc = 0;
@@ -337,9 +338,10 @@ struct cv_backend_zbdb : cv_backend
             b_dy = dy;
             b_bx = bx;
             b_by = by;
+            set_wire_to_poly(true);
         }
 
-    bool queue_layer(const Layer *layer)
+    bool queue_layer(const Layer *layer, bool*)
         {
             ldesc = CDldb()->findLayer(layer->name, Physical);
             if (!ldesc)

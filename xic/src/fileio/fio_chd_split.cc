@@ -2094,7 +2094,7 @@ cCHD::write_multi_flat(symref_t *ptop, const FIOcvtPrms *prms,
     //
     if (maxdepth > CDMAXCALLDEPTH)
         maxdepth = CDMAXCALLDEPTH;
-    wmc.in->set_flatten(maxdepth, cvTfFlatten);
+    wmc.in->set_flatten(maxdepth, true);
     wmc.in->TPush();
     wmc.in->TLoad(CDtfRegI2);
 
@@ -2121,7 +2121,7 @@ cCHD::write_multi_flat(symref_t *ptop, const FIOcvtPrms *prms,
             new_in->set_area_filt(true, prms->window());
             new_in->set_clip(prms->clip());
         }
-        new_in->set_flatten(maxdepth, cvTfFlatten);
+        new_in->set_flatten(maxdepth, true);
         new_in->TPush();
         new_in->TLoad(CDtfRegI2);
         wmc.itab->insert(tchd, new_in);

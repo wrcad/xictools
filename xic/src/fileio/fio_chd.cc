@@ -1297,7 +1297,7 @@ cCHD::write(symref_t *p, cv_in *in, const FIOcvtPrms *prms, bool allcells,
     else
         in->set_clip(false);
 
-    in->set_flatten(0, cvNoFlatten);
+    in->set_flatten(0, false);
 
     // If layer filtering, do the empty-cell pre-filtering, which sets
     // the CVemty flags in the symrefs in the hierarchy.  These are

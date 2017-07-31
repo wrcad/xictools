@@ -241,47 +241,77 @@ cFIO::ResolveUnseen(cCHD **pchd, symref_t **ppx)
 {
     symref_t *cp = *ppx;
 
+    DisplayMode mode = cp->mode();
     cCHD *rchd;
     bool isdev;
     RESOLVtype rval = ResolveLibSymref(cp, &rchd, &isdev);
     if (rval == RESOLVerror)
-        return (rval);
-    if (rval == RESOLVnone) {
-        // unresolved
-        if (IsChdFailOnUnresolved()) {
-            Errs()->add_error("ResolveUnseen: unresolved symref %s.",
-                Tstring(cp->get_name()));
-            return (RESOLVerror);
-        }
-        return (rval);
-    }
-    if (isdev)
-        return (RESOLVnone);
+        return (RESOLVerror);
 
-    DisplayMode mode = cp->mode();
-    if (rchd) {
-        symref_t *px = rchd->findSymref(cp->get_name(), mode);
-        if (!px) {
-            Errs()->add_error(
-                "ResolveUnseen: symref %s not found in CHD.",
-                Tstring(cp->get_name()));
-            return (RESOLVerror);
+    bool inlib = false;
+    if (rval == RESOLVok) {
+        // Found the cell in a library.  If it came from an archive
+        // file, we'll get a CHD.
+        if (rchd) {
+            symref_t *px = rchd->findSymref(cp->get_name(), mode);
+            if (!px) {
+                Errs()->add_error(
+                    "ResolveUnseen: symref %s not found in CHD.",
+                    Tstring(cp->get_name()));
+                return (RESOLVerror);
+            }
+            *pchd = rchd;
+            *ppx = px;
+            return (RESOLVok);
         }
-        *pchd = rchd;
-        *ppx = px;
-        return (RESOLVok);
+        inlib = true;
+
+        // The cell was native, perhaps inlined.  We'll try and open
+        // it below.
     }
 
-    if (CDcdb()->findCell(cp->get_name(), mode))
-        return (RESOLVnone);
-    OItype oiret = OpenLibCell(0, Tstring(cp->get_name()),
-        LIBdevice | LIBuser, 0);
-    if (oiret == OIok || oiret == OIold)
-        return (RESOLVnone);
+    // If we find the cell in memory, set up the BB which is probably
+    // needed later for the tables.
 
-    Errs()->add_error("ResolveUnseen: unresolvable symref %s.",
-        Tstring(cp->get_name()));
-    return (RESOLVerror);
+    CDs *sd = CDcdb()->findCell(cp->get_name(), mode);
+    if (sd && (sd->isViaSubMaster() || sd->isPCellSubMaster())) {
+        // Cell is a via or pcell, we keep these.
+
+        cp->set_bb(sd->BB());
+        cp->set_bbok(true);
+        return (RESOLVmem);
+    }
+
+    if (inlib) {
+        // Open library cell, if successful we keep these.
+
+        OItype oiret = OpenLibCell(0, Tstring(cp->get_name()),
+            LIBdevice | LIBuser, 0);
+        if (oiret == OIok || oiret == OIold) {
+            CDs *tsd = CDcdb()->findCell(cp->get_name(), mode);
+            if (tsd) {
+                cp->set_bb(tsd->BB());
+                cp->set_bbok(true);
+                return (RESOLVmem);
+            }
+        }
+    }
+
+    // May want to add an option to let existing cells in memory
+    // resolve symref.  Presently they are ignored unless they are a
+    // via/pcell sub-master or come from a library.
+
+    // Note that memory cells that we resolve here are included in the
+    // tables, and will be processed similar to Override cells when
+    // reading cell data, i.e., data from the memory cell will be
+    // entered into output as if read through the CHD.
+
+    if (IsChdFailOnUnresolved()) {
+        Errs()->add_error("ResolveUnseen: unresolved symref %s%s",
+            Tstring(cp->get_name()), sd ? ", but found in memory." : ".");
+        return (RESOLVerror);
+    }
+    return (RESOLVnone);
 }
 // End of cFIO functions
 

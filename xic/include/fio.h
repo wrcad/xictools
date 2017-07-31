@@ -361,8 +361,15 @@ enum OAScompType { OAScompNone, OAScompSmart, OAScompForce };
 // Enum for cFIO::OasWriteChecksum.
 enum OASchksumType { OASchksumNone, OASchksumCRC, OASchksumBsum };
 
-// Enum for symref resolution functions.
-enum RESOLVtype { RESOLVerror = -1, RESOLVnone = 0, RESOLVok = 1 };
+// Enum for symref resolution functions.  We know that this cell was
+// not defined in the source file.  It could be a library cell or
+// standard via.
+enum RESOLVtype {
+    RESOLVerror = -1,       // Error, something is wrong.
+    RESOLVnone = 0,         // Don't know this cell at all.
+    RESOLVmem = 1,          // Found cell in memory, but not in libs.
+    RESOLVok = 2            // Found cell in libs.
+};
 
 // Creation type for CGD, for cFIO::NewCGD.
 // CGDmemory    Geometry data in memory.

@@ -377,6 +377,8 @@ cCVtab::prune_empties(const symref_t *ptop, chd_intab *itab, unsigned int ix)
         Tdbg()->save_message("pruned %u", ph.empty_cnt());
     }
 
+#ifdef notdef
+// No, we keep them now, so this should not be needed.
     // Do another pass to ensure that missing symrefs are not referenced
     // in the instance lists.
     //
@@ -402,11 +404,9 @@ cCVtab::prune_empties(const symref_t *ptop, chd_intab *itab, unsigned int ix)
             }
 
             if (!cp->get_defseen()) {
-                cp = resolve_symref(tchd, cp);
-                if (!cp) {
-                    item->unset_flag(cgen.call_count());
-                    continue;
-                }
+                symref_t *tcp = resolve_symref(tchd, cp);
+                if (tcp)
+                    cp = tcp;
             }
             if (cp->should_skip())
                 continue;
@@ -414,6 +414,7 @@ cCVtab::prune_empties(const symref_t *ptop, chd_intab *itab, unsigned int ix)
                 item->unset_flag(cgen.call_count());
         }
     }
+#endif
 
     return (OIok);
 }
@@ -484,8 +485,6 @@ cCVtab::listing(unsigned int ix)
     cvtab_item_t *item;
     while ((item = gen.next()) != 0) {
         symref_t *p = (symref_t*)item->tab_key();
-        if (!p->get_defseen())
-            continue;
         s0 = new syrlist_t(p, s0);
     }
     return (s0);
@@ -817,6 +816,12 @@ cCVtab::prune_empties_rc(cvtab_item_t *pitem, fio_chd_cvtab::ph_item_t *ph)
 
             tchd = chd;
             if (!cp->get_defseen()) {
+                // This will resolve library cells and via/pcell
+                // sub-masters.  If the cell resolves to an archive, a
+                // CHD and new symref will be returned.  The remaining
+                // "unseen" symrefs will be resolved to cells in
+                // memory later.
+
                 RESOLVtype rsv = FIO()->ResolveUnseen(&tchd, &cp);
                 if (rsv == RESOLVerror)
                     return (OIerror);
@@ -954,6 +959,12 @@ cCVtab::build_BB_table_full_rc(cvtab_item_t *pitem, unsigned int ix)
 
             tchd = chd;
             if (!cp->get_defseen()) {
+                // This will resolve library cells and via/pcell
+                // sub-masters.  If the cell resolves to an archive, a
+                // CHD and new symref will be returned.  The remaining
+                // "unseen" symrefs will be resolved to cells in
+                // memory later.
+
                 RESOLVtype rsv = FIO()->ResolveUnseen(&tchd, &cp);
                 if (rsv == RESOLVerror)
                     return (false);
@@ -1023,6 +1034,12 @@ cCVtab::build_BB_table_full_norc(cvtab_item_t *pitem)
 
             tchd = chd;
             if (!cp->get_defseen()) {
+                // This will resolve library cells and via/pcell
+                // sub-masters.  If the cell resolves to an archive, a
+                // CHD and new symref will be returned.  The remaining
+                // "unseen" symrefs will be resolved to cells in
+                // memory later.
+
                 RESOLVtype rsv = FIO()->ResolveUnseen(&tchd, &cp);
                 if (rsv == RESOLVerror)
                     return (false);
@@ -1078,6 +1095,12 @@ cCVtab::build_BB_table_rc(cvtab_item_t *pitem, unsigned int ix)
 
             tchd = chd;
             if (!cp->get_defseen()) {
+                // This will resolve library cells and via/pcell
+                // sub-masters.  If the cell resolves to an archive, a
+                // CHD and new symref will be returned.  The remaining
+                // "unseen" symrefs will be resolved to cells in
+                // memory later.
+
                 RESOLVtype rsv = FIO()->ResolveUnseen(&tchd, &cp);
                 if (rsv == RESOLVerror)
                     return (false);
@@ -1306,6 +1329,12 @@ cCVtab::build_BB_table_norc(cvtab_item_t *pitem)
 
             tchd = chd;
             if (!cp->get_defseen()) {
+                // This will resolve library cells and via/pcell
+                // sub-masters.  If the cell resolves to an archive, a
+                // CHD and new symref will be returned.  The remaining
+                // "unseen" symrefs will be resolved to cells in
+                // memory later.
+
                 RESOLVtype rsv = FIO()->ResolveUnseen(&tchd, &cp);
                 if (rsv == RESOLVerror)
                     return (false);

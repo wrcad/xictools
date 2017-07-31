@@ -254,7 +254,7 @@ cv_in::cv_in(bool allow_layer_mapping)
     in_elec_sym_tab = new nametab_t(Electrical);
     in_submaster_tab = 0;
     in_tf_list = 0;
-    in_flatten_mode = cvNoFlatten;
+    in_flatten = false;
 
     in_gzipped = false;
     in_needs_mult = false;
@@ -437,13 +437,38 @@ cv_in::chd_process_override_cell(symref_t *p)
             Errs()->add_error("Override cell %s not found.", cname);
             return (OIerror);
         }
-        if (in_flatten_mode == cvNoFlatten) {
-            // Not flattening, write out sd, and the hierarchy under sd if
-            // expanding.
+        if (chd_output_cell(sd, ct) != OIok)
+            return (OIerror);
+    }
+    elt->set_written(true);
+    return (OInew);
+}
 
-            if (!in_out->write_symbol(sd, true))
-                return (OIerror);
-            elt->set_written(true);
+
+// Output the memory cell, as if read from an input channel.  This is
+// intended for override cells, via, and parameterized sub-masters.
+// Returns OIok on success, OIerror otherwise.
+//
+OItype
+cv_in::chd_output_cell(CDs *sd, CDcellTab *ct)
+{
+    if (!sd) {
+        Errs()->add_error("chd_output_cell:  unexpected null argument.");
+        return (OIerror);
+    }
+    if (!in_flatten) {
+        // Not flattening, write out sd, and the hierarchy under sd if
+        // expanding.
+
+        if (!in_out->write_symbol(sd, true))
+            return (OIerror);
+
+        // If ct is not null, we are processing override cells.  Via and
+        // PCells don't have hierarchy.
+        if (ct) {
+            ct_elt *elt = ct->find(sd->cellname());
+            if (elt)
+                elt->set_written(true);
             CDgenHierDn_s gen(sd);
             while ((sd = gen.next()) != 0) {
                 elt = ct->find(sd->cellname());
@@ -455,49 +480,48 @@ cv_in::chd_process_override_cell(symref_t *p)
                     elt->set_written(true);
                 }
             }
-            return (OInew);
         }
+        return (OIok);
+    }
 
-        // We're flattening, write out sd only, using the transform list.
-        if (in_tf_list) {
-            ts_reader tsr(in_tf_list);
-            CDtx ttx;
-            CDap ap;
+    // We're flattening, write out sd only, using the transform list.
+    if (in_tf_list) {
+        ts_reader tsr(in_tf_list);
+        CDtx ttx;
+        CDap ap;
 
-            while (tsr.read_record(&ttx, &ap)) {
-                ttx.scale(in_ext_phys_scale);
-                ap.scale(in_ext_phys_scale);
-                TPush();
-                TApply(ttx.tx, ttx.ty, ttx.ax, ttx.ay, ttx.magn, ttx.refly);
-                in_transform++;
+        while (tsr.read_record(&ttx, &ap)) {
+            ttx.scale(in_ext_phys_scale);
+            ap.scale(in_ext_phys_scale);
+            TPush();
+            TApply(ttx.tx, ttx.ty, ttx.ax, ttx.ay, ttx.magn, ttx.refly);
+            in_transform++;
 
-                if (ap.nx > 1 || ap.ny > 1) {
-                    int tx, ty;
-                    TGetTrans(&tx, &ty);
-                    xyg_t xyg(0, ap.nx-1, 0, ap.ny-1);
-                    do {
-                        TTransMult(xyg.x*ap.dx, xyg.y*ap.dy);
-                        if (!in_out->write_geometry(sd))
-                            return (OIerror);
-                        TSetTrans(tx, ty);
-                    } while (xyg.advance());
-                }
-                else {
+            if (ap.nx > 1 || ap.ny > 1) {
+                int tx, ty;
+                TGetTrans(&tx, &ty);
+                xyg_t xyg(0, ap.nx-1, 0, ap.ny-1);
+                do {
+                    TTransMult(xyg.x*ap.dx, xyg.y*ap.dy);
                     if (!in_out->write_geometry(sd))
                         return (OIerror);
-                }
-
-                in_transform--;
-                TPop();
+                    TSetTrans(tx, ty);
+                } while (xyg.advance());
             }
-        }
-        else {
-            if (!in_out->write_geometry(sd))
-                return (OIerror);
+            else {
+                if (!in_out->write_geometry(sd))
+                    return (OIerror);
+            }
+
+            in_transform--;
+            TPop();
         }
     }
-    elt->set_written(true);
-    return (OInew);
+    else {
+        if (!in_out->write_geometry(sd))
+            return (OIerror);
+    }
+    return (OIok);
 }
 
 
@@ -1022,6 +1046,7 @@ cv_out::cv_out()
     out_prpty = 0;
     out_alias = 0;
     out_chd_refs = 0;
+    out_stk = 0;
     out_size_thr = 0;
     out_symnum = 0;
     out_rec_count = 0;
@@ -1050,7 +1075,7 @@ cv_out::~cv_out()
 }
 
 
-// Writ all cells in the current symbol table.
+// Write all cells in the current symbol table.
 //
 bool
 cv_out::write_all(DisplayMode mode, double sc)
@@ -1185,6 +1210,7 @@ cv_out::write_flat(const char *cname, double sc, const BBox *AOI, bool clip)
     if (!write_header(sdesc))
         return (false);
 
+// XXX need this anymore?
     // The flattening can't handle CHD reference cells which might be in
     // the hierarchy.  The hierarchy traversal generator will issue a
     // warning if a CHD reference is passed.  Turn on warnings and warn
@@ -1663,6 +1689,9 @@ cv_out::write_instances(const CDs *sdesc)
 }
 
 
+// Process the geometry records.  If a transform is given, we
+// transform each object before output.
+//
 bool
 cv_out::write_geometry(const CDs *sdesc)
 {
@@ -1684,12 +1713,10 @@ cv_out::write_geometry(const CDs *sdesc)
         while ((odesc = gdesc.next()) != 0) {
             if (!odesc->is_normal())
                 continue;
-
-            out_cellBB.add(&odesc->oBB());
             if (!queue_properties(odesc))
                 return (false);
-
             bool ret = write_object(odesc, &lchk);
+
             clear_property_queue();
             if (!ret)
                 return (false);

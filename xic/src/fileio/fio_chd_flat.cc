@@ -146,7 +146,7 @@ cCHD::writeFlatRegions(const char *cellname, const FIOcvtPrms *prms,
 
     // Set up flattening.
     //
-    wfc.in->set_flatten(CDMAXCALLDEPTH, cvTfFlatten);
+    wfc.in->set_flatten(CDMAXCALLDEPTH, true);
     wfc.in->TPush();
     wfc.in->TLoad(CDtfRegI2);
 
@@ -202,7 +202,7 @@ cCHD::writeFlatRegions(const char *cellname, const FIOcvtPrms *prms,
             }
             new_in->set_area_filt(true, &nbl->BB);
             new_in->set_clip(true);
-            new_in->set_flatten(CDMAXCALLDEPTH, cvTfFlatten);
+            new_in->set_flatten(CDMAXCALLDEPTH, true);
             new_in->TPush();
             new_in->TLoad(CDtfRegI2);
             new_in->setup_backend(wfc.in->peek_backend());
@@ -741,7 +741,7 @@ cCHD::flatten(symref_t *p, cv_in *in, int maxdepth, const FIOcvtPrms *prms)
     //
     if (maxdepth < 0 || maxdepth > CDMAXCALLDEPTH)
         maxdepth = CDMAXCALLDEPTH;
-    in->set_flatten(maxdepth, cvTfFlatten);
+    in->set_flatten(maxdepth, true);
     in->TPush();
     in->TLoad(CDtfRegI2);
 
@@ -793,7 +793,7 @@ cCHD::flatten(symref_t *p, cv_in *in, int maxdepth, const FIOcvtPrms *prms)
             new_in->set_area_filt(true, prms->window());
             new_in->set_clip(prms->clip());
         }
-        new_in->set_flatten(maxdepth, cvTfFlatten);
+        new_in->set_flatten(maxdepth, true);
         new_in->TPush();
         new_in->TLoad(CDtfRegI2);
         new_in->setup_backend(in->peek_backend());
@@ -967,38 +967,55 @@ rf_out::write_object(const CDo *odesc, cvLchk *lchk)
 
     bool ret = true;
     if (odesc->type() == CDBOX) {
-        BBox BB = odesc->oBB();
-        Point *p;
-        rf_stack->TBB(&BB, &p);
-        if (p) {
-            Poly po(5, p);
-            ret = write_poly(&po);
-            delete [] p;
+        if (out_stk) {
+            BBox BB = odesc->oBB();
+            Point *p;
+            out_stk->TBB(&BB, &p);
+            if (p) {
+                Poly po(5, p);
+                ret = write_poly(&po);
+                delete [] p;
+            }
+            else
+                ret = write_box(&BB);
         }
         else
-            ret = write_box(&BB);
+            ret = write_box(&odesc->oBB());
     }
     else if (odesc->type() == CDPOLYGON) {
-        int num = ((const CDpo*)odesc)->numpts();
-        Poly po(num, Point::dup(((const CDpo*)odesc)->points(), num));
-        rf_stack->TPath(po.numpts, po.points);
-        ret = write_poly(&po);
-        delete [] po.points;
+        if (out_stk) {
+            int num = ((const CDpo*)odesc)->numpts();
+            Poly po(num, Point::dup(((const CDpo*)odesc)->points(), num));
+            out_stk->TPath(po.numpts, po.points);
+            ret = write_poly(&po);
+            delete [] po.points;
+        }
+        else {
+            const Poly po(((const CDpo*)odesc)->po_poly());
+            ret = write_poly(&po);
+        }
     }
     else if (odesc->type() == CDWIRE) {
-        int num = ((const CDpo*)odesc)->numpts();
-        Wire w(num, Point::dup(((const CDw*)odesc)->points(), num),
-            ((const CDw*)odesc)->attributes());
-        w.set_wire_width(mmRnd(w.wire_width() * rf_stack->TGetMagn()));
-        rf_stack->TPath(w.numpts, w.points);
-        ret =  write_wire(&w);
-        delete [] w.points;
+        if (out_stk) {
+            int num = ((const CDw*)odesc)->numpts();
+            Wire w(num, Point::dup(((const CDw*)odesc)->points(), num),
+                ((const CDw*)odesc)->attributes());
+            w.set_wire_width(mmRnd(w.wire_width() * out_stk->TGetMagn()));
+            out_stk->TPath(w.numpts, w.points);
+            ret =  write_wire(&w);
+            delete [] w.points;
+        }
+        else {
+            const Wire w(((const CDw*)odesc)->w_wire());
+            ret = write_wire(&w);
+        }
     }
     else if (odesc->type() == CDLABEL) {
         Label la(((CDla*)odesc)->la_label());
         Text text;
         text.set(&la, Physical, Fnone);
-        text.transform(rf_stack);
+        if (out_stk)
+            text.transform(out_stk);
         ret =  write_text(&text);
     }
     return (ret);

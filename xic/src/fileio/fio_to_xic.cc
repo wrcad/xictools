@@ -610,19 +610,50 @@ xic_out::write_object(const CDo *odesc, cvLchk *lchk)
         *lchk = cvLok;
     }
 
+    bool ret = true;
     if (odesc->type() == CDBOX) {
-        if (!write_box(&odesc->oBB()))
-            return (false);
+        if (out_stk) {
+            BBox BB(odesc->oBB());
+            Point *p;
+            out_stk->TBB(&BB, &p);
+            if (p) {
+                Poly po(5, p);
+                ret = write_poly(&po);
+                delete [] p;
+            }
+            else
+                ret = write_box(&BB);
+        }
+        else
+            ret = write_box(&odesc->oBB());
     }
     else if (odesc->type() == CDPOLYGON) {
-        const Poly po(((const CDpo*)odesc)->po_poly());
-        if (!write_poly(&po))
-            return (false);
+        if (out_stk) {
+            int num = ((const CDpo*)odesc)->numpts();
+            Poly po(num, Point::dup(((const CDpo*)odesc)->points(), num));
+            out_stk->TPath(po.numpts, po.points);
+            ret = write_poly(&po);
+            delete [] po.points;
+        }
+        else {
+            const Poly po(((const CDpo*)odesc)->po_poly());
+            ret = write_poly(&po);
+        }
     }
     else if (odesc->type() == CDWIRE) {
-        const Wire w(((const CDw*)odesc)->w_wire());
-        if (!write_wire(&w))
-            return (false);
+        if (out_stk) {
+            int num = ((const CDw*)odesc)->numpts();
+            Wire w(num, Point::dup(((const CDw*)odesc)->points(), num),
+                ((const CDw*)odesc)->attributes());
+            w.set_wire_width(mmRnd(w.wire_width() * out_stk->TGetMagn()));
+            out_stk->TPath(w.numpts, w.points);
+            ret =  write_wire(&w);
+            delete [] w.points;
+        }
+        else {
+            const Wire w(((const CDw*)odesc)->w_wire());
+            ret = write_wire(&w);
+        }
     }
     else if (odesc->type() == CDLABEL) {
         Text text;
@@ -631,14 +662,15 @@ xic_out::write_object(const CDo *odesc, cvLchk *lchk)
         text.text = hyList::string(((CDla*)odesc)->label(), HYcvAscii,
             !(prf && prf->devref()));
         const Label la(((const CDla*)odesc)->la_label());
-        bool ret = text.set(&la, out_mode, Fnative);
-        if (ret)
+        ret = text.set(&la, out_mode, Fnative);
+        if (ret) {
+            if (out_stk)
+                text.transform(out_stk);
             ret = write_text(&text);
+        }
         delete [] text.text;
-        if (!ret)
-            return (false);
     }
-    return (true);
+    return (ret);
 }
 
 

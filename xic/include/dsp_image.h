@@ -122,7 +122,7 @@ struct zimg_backend : public cv_backend
     zimg_backend(WindowDesc*, RGBzimg*);
     ~zimg_backend();
 
-    bool queue_layer(const Layer*);
+    bool queue_layer(const Layer*, bool*);
     bool write_box(const BBox*);
     bool write_poly(const Poly*);
     bool write_wire(const Wire*);

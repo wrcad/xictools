@@ -612,22 +612,35 @@ cgx_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
     in_has_cprops = false;
     in_uselist = true;
 
-    // The AuxCellTab may contain cells to stream out from the main
-    // database, overriding the cell data in the CHD.
-    //
-    if (in_mode == Physical && in_action == cvOpenModeTrans &&
-            FIO()->IsUseCellTab()) {
-        OItype oiret = chd_process_override_cell(p);
-        if (oiret == OIerror)
-            return (false);
-        if (oiret == OInew)
-            return (true);
-    }
+    if (FIO()->IsUseCellTab()) {
+        if (in_mode == Physical && in_action == cvOpenModeTrans) {
+            // The AuxCellTab may contain cells to stream out from the
+            // main database, overriding the cell data in the CHD.
 
+            OItype oiret = chd_process_override_cell(p);
+            if (oiret == OIerror)
+                return (false);
+            if (oiret == OInew)
+                return (true);
+        }
+    }
     if (!p->get_defseen()) {
-        // No cell definition in file, just ignore this.
+        CDs *sd = CDcdb()->findCell(p->get_name(), in_mode);
+        if (in_mode == Physical && in_action == cvOpenModeTrans) {
+            // The cell definition was not in the file.  This could mean
+            // that the cell is a standard via or parameterized cell
+            // sub-master, or is a native library cell.  In any case, it
+            // should be in memory.
+
+            if (sd && (sd->isViaSubMaster() || sd->isPCellSubMaster()))
+                return (chd_output_cell(sd) == OIok);
+        }
+        FIO()->ifPrintCvLog(IFLOG_WARN, "Unresolved cell %s (%s).",
+            DisplayModeNameLC(in_mode), Tstring(p->get_name()),
+            sd ? "in memory" : "not found");
         return (true);
     }
+
     in_offset = p->get_offset();
     in_fp->z_seek(in_offset, SEEK_SET);
 
@@ -983,7 +996,7 @@ cgx_in::end_struct()
     else if (in_action == cvOpenModeTrans) {
         if (in_transform <= 0) {
             if (in_defsym) {
-                if (in_flatten_mode != cvTfFlatten) {
+                if (!in_flatten) {
                     if (!in_out->write_end_struct())
                         return (false);
                 }
